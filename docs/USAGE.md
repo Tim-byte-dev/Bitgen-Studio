@@ -2771,6 +2771,32 @@ The panel lists every saved layout:
 The button is highlighted while a layout is saved for the dockers that are
 open now.
 
+## 🟧 A Blender layer: the timeline's scene tools in the image editor (2.542.0)
+
+**🟧** on the image editor's menu bar (beside ⛶), or **Layer ▸ New Blender Layer (Scene Tools)…**, puts the timeline's
+Blender scene tools over the canvas. They are the same tools, the same scene and the same edits as in the timeline:
+
+- **📂 Open a .blend**, or carry on with the scene that is already open. **✨ Build a scene with AI** works here too.
+- **🎥 Scene camera** looks through the .blend's camera. **🧭 Free view**: drag to orbit, right-drag to pan, use the wheel
+  to zoom, and press F to frame everything.
+- **Click an object** to pick it, then **✥ ⟲ ⤡** (G, R, S) to move, rotate or scale it. You can also key it, hide it,
+  duplicate it, delete it, or add a model with ＋ Model.
+- **💾 Save** writes the edits into the .blend, the same way as in the timeline.
+
+Their settings are in the **🟧 Blender** tab. The scene becomes a **Blender layer** that holds the view as you see it.
+**✕** (or 🟧 again, or Esc) closes the tools, and the layer keeps the view. It is an ordinary layer: hide it, move it or
+delete it. Pick it and press **🟧 Scene tools** to open the tools again.
+
+**Making a picture from the scene.** Pick the Blender layer and choose **✏ Edit** (or 🔁 Refine) in the prompt docker's
+dropdown. The button reads "✏ Edit · 🟧 Blender". Type what the picture should be and press it. The scene goes to the edit
+model, and **each result comes in as a new layer** above the Blender layer. Nothing is left over the canvas, and the
+Blender layer stays picked. The 🟧 Blender tab's **Edit from** sets which picture of the scene is used:
+
+- **The view as shown** (instant): the live view while the tools are open, else the layer's last view.
+- **Blender render - Solid** or **EEVEE**: Blender renders that view at the picture's full size first.
+
+The 3D layers from Layer ▸ New 3D Layer work the same way now: an Edit from the scene is a new layer.
+
 ## ▾ Generate, Edit, Refine, Fill, Replace background, Remove, and Blender mode (2.541.0)
 
 In 🖼 Image mode, the prompt docker's menu bar has a dropdown that says what its button does. It works like the Krita AI

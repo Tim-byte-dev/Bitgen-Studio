@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.542.0** — 🟧 a Blender Layer: The Timeline's Scene Tools in the Image Editor; Edit from the Scene = a New Layer
 - **2.541.0** — ▾ Generate / Edit / Refine / Fill / Replace Background / Remove in the Prompt Docker + 🟧 Blender Mode (the Model)
 - **2.540.9** — ⤴ Push-To-Github.bat: The Right Folder + "Detected Dubious Ownership"
 - **2.540.8** — ✅ Github's Unit Tests on Node 22 (the First Public Runs Failed on Node 20)

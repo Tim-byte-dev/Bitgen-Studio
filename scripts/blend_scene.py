@@ -295,7 +295,10 @@ def render(src, edits_path, job_path):
         r.engine = "BLENDER_WORKBENCH"
     elif eng == "EEVEE":
         r.engine = eevee_id()
-    w, h = fit_size(r.resolution_x * r.resolution_percentage / 100.0, r.resolution_y * r.resolution_percentage / 100.0)
+    if job.get("w") and job.get("h"):        # 2.542.0: a still at the image editor's picture size
+        w, h = max(16, min(4096, int(job["w"]))), max(16, min(4096, int(job["h"])))
+    else:
+        w, h = fit_size(r.resolution_x * r.resolution_percentage / 100.0, r.resolution_y * r.resolution_percentage / 100.0)
     r.resolution_x, r.resolution_y, r.resolution_percentage = w, h, 100
     r.film_transparent = False
     extra = {}
@@ -314,6 +317,11 @@ def render(src, edits_path, job_path):
             r.filepath = job["still"]
             bpy.ops.render.render(write_still=True)
             extra["still"] = job["still"] if os.path.isfile(job["still"]) else None
+            if job.get("still_only"):           # 2.542.0: only this frame (the image editor's Blender layer)
+                with open(job_path + ".out.json", "w", encoding="utf-8") as fh:
+                    json.dump(dict({"frames": 1, "width": w, "height": h, "start": start, "end": start}, **extra), fh)
+                say("H3B done " + job["still"])
+                return
     im = r.image_settings
     if hasattr(im, "media_type"):
         try:

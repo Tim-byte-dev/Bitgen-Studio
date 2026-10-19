@@ -2196,7 +2196,9 @@
     /** opt (2.444.0, the prompt docker driving it - pcpromptlink.js): {prompt, editStyle, into: true = ✔ Apply blends
      *  into the layer that was selected, whole: no selection = the whole picture}
      *  2.541.0: source = a canvas of the picture's size to work from INSTEAD of the layers (the 🟧 Blender scene rendered
-     *  for an Edit / Refine - pc3d.js), always the whole of it; label = what ✔ Apply calls the new layer */
+     *  for an Edit / Refine - pc3d.js), always the whole of it; label = what ✔ Apply calls the new layer
+     *  2.542.0: direct = each result goes straight in as a NEW LAYER (no preview over the canvas - Tim: "create a new
+     *  layer. right now the canvas is getting the rendered image and it cannot be deleted"); keep = the layer to leave picked */
     async function runAI(opt) {
       opt = opt && typeof opt === "object" && !opt.type ? opt : {};
       if (!S.w) return say("open a picture first");
@@ -2266,15 +2268,25 @@
         const r = await api.aiedit(req, say);
         if (!r || !r.jobs) return;
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
-        renderResults();
+        if (!opt.direct) renderResults();
+        let added = 0;
         await Promise.all(S.results.map(async (res, i) => {
           const url = await api.awaitResult(res.id, say);
-          if (!url) { res.failed = true; renderResults(); return; }
+          if (!url) { res.failed = true; if (!opt.direct) renderResults(); return; }
           const im = await imgOf(url);
           res.url = url; res.layer = resultLayer(im, ctxInfo);
+          if (opt.direct) {                                      // 2.542.0: straight in as a new layer
+            const L = makeLayer(`${ctxInfo.label || "✨ " + mode}: ${(prompt || "").slice(0, 28)}` + (S.results.length > 1 ? ` ${i + 1}` : ""));
+            ctx(L.canvas).drawImage(res.layer, 0, 0);
+            addLayer(L, "AI result", false); added++;
+            if (opt.keep && S.layers.includes(opt.keep)) S.active = S.layers.indexOf(opt.keep);   // the scene's layer stays picked (Blender mode)
+            refresh(); renderLayersPanel();
+            return;
+          }
           renderResults();
           if (!S.preview || i === 0) showResult(S.results.indexOf(res));
         }));
+        if (opt.direct) { discardResults(true); say(added ? `${added} new layer(s) from the ${mode} - hide (👁) or delete them like any layer` : "no result came back - see the job log"); return; }
         const ok = S.results.filter((x) => x.layer).length;
         say(ok ? `${ok} result(s) - click one to compare, ✔ Apply keeps it as a new layer (Enter), ✕ Discard (Esc)` : "no result came back - see the job log");
       } catch (e) { say(`${mode} failed: ${e.message}`); }
@@ -2550,7 +2562,8 @@
     if (win.PCCaFill && win.PCCaFill.install) win.PCCaFill.install(E);   // 2.448.0: the Content-Aware Fill workspace
     if (win.PCDimGroup && win.PCDimGroup.install) win.PCDimGroup.install(E);   // 2.457.0: dimensions as groups of parts (before the handles: its parts win)
     if (win.PCDimAuto && win.PCDimAuto.install) win.PCDimAuto.install(E);   // 2.458.0: auto / floorplan dimensions + the Chain Dimension tool
-    if (win.PC3D && win.PC3D.install) win.PC3D.install(E);   // 2.460.0: a Daz / Blender scene as a 3D layer (camera, pose, render, generate)
+    if (win.PC3D && win.PC3D.install) win.PC3D.install(E);
+    if (win.PCBlendLayer && win.PCBlendLayer.install) win.PCBlendLayer.install(E);   // 2.542.0: a Blender layer - the timeline's scene tools over the canvas   // 2.460.0: a Daz / Blender scene as a 3D layer (camera, pose, render, generate)
     if (win.PCSketchTools && win.PCSketchTools.install) win.PCSketchTools.install(E);   // 2.462.0: sketch layers (a CAD sketch: constraints + dimensions)
     if (win.PCSketchCADUI && win.PCSketchCADUI.install) win.PCSketchCADUI.install(E);   // 2.464.0: the sketch's Measure tool, units, DXF / SVG out, DXF in
     if (win.PCHandles && win.PCHandles.install) win.PCHandles.install(E);   // 2.452.0: the Move tool's scale / rotate handles, transform options

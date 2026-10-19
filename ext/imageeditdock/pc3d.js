@@ -559,7 +559,7 @@
       status(`🟧 the scene rendered - ${mode === "edit" ? "the edit model" : "Refine"} takes it with the prompt…`);
       if (root.H3TestEvent) { try { root.H3TestEvent("ie_blender_edit", mode); } catch (e) { /* the 🧪 list */ } }
       if (S.aiMode !== mode && E.setAiMode) E.setAiMode(mode);
-      await E.runAI({ prompt: t, editStyle: editStyle || "", source: c, whole: true, into: false, label: "🟧 " + L.l3d.name + " " + mode });
+      await E.runAI({ prompt: t, editStyle: editStyle || "", source: c, whole: true, into: false, direct: true, keep: L, label: "🟧 " + L.l3d.name + " " + mode });   // 2.542.0: a new layer each
       return c;
     }
 

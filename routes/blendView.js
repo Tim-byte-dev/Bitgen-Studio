@@ -12,6 +12,8 @@
 //        (2.540.0: realrefs {token, items, style_id} = the reference docker's pictures, uploaded with /api/realrefs/upload:
 //         Blender also renders the first frame + the objects' boxes, the first frame is made real with them, 3DREAL follows)
 //   GET  /api/blendview/render/:id                {state, done, of, error, name, job, note, realrefs, objects2d}
+//   POST /api/blendview/still     {stem, frame, view?, engine, w, h} -> {id}   2.542.0: one frame as a PNG (the image editor)
+//   GET  /api/blendview/still/:id                 {state, error, png, w, h};   GET /api/blendview/still/:id/png  the picture
 "use strict";
 const bv = require("../lib/blendView");
 
@@ -44,6 +46,13 @@ function mount(app) {
     try { res.json(bv.render(b.stem, b)); } catch (e) { fail(res, e); }
   });
   app.get("/api/blendview/render/:id", (req, res) => res.json(bv.renderStatus(req.params.id)));
+  // 2.542.0: one frame as a PNG (the image editor's Blender layer)
+  app.post("/api/blendview/still", J, (req, res) => { const b = req.body || {}; try { res.json(bv.still(b.stem, b)); } catch (e) { fail(res, e); } });
+  app.get("/api/blendview/still/:id", (req, res) => res.json(bv.stillStatus(req.params.id)));
+  app.get("/api/blendview/still/:id/png", (req, res) => {
+    const f = bv.stillPath(req.params.id); if (!f) return res.status(404).json({ error: "no such picture" });
+    res.set("Cache-Control", "no-store"); res.type("png"); res.sendFile(f);
+  });
 }
 
 module.exports = { mount };

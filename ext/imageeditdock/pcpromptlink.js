@@ -178,6 +178,7 @@
       if (E.ui && E.ui.showTab) { try { E.ui.showTab("kxAi"); } catch (e) { /* the results show there */ } }
       if (S.aiMode !== act.mode && E.setAiMode) E.setAiMode(act.mode);
       if (act.kind === "blender") {                                         // 🟧 Blender mode: the scene, rendered, is the picture
+        if (E.blendLayer && E.blendLayer.isCurrent()) { E.blendLayer.editFromScene(E.layer(), text, act.mode, editStyle); return true; }   // 2.542.0: a Blender layer
         if (!E.layer3d || !E.layer3d.editFromScene) { say("the 3D layer tools are not loaded (reload the page)"); return true; }
         E.layer3d.editFromScene(E.layer(), text, act.mode, editStyle);
         return true;

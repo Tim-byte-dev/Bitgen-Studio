@@ -173,7 +173,7 @@
 
   /* ============================ snapshots (undo) - pure ============================ */
   const STRUCT = ["name", "visible", "opacity", "fillOpacity", "blend", "type", "parent", "clip", "label", "open"];
-  const DEEP = ["control", "locks", "styles", "adj", "text", "shape", "fill", "vmask", "smart", "frame", "artboard", "dimg", "dimPart", "l3d", "sketch"];   // 2.462.0: + a sketch layer's sketch (pcsketch.js)   // 2.460.0: + a 3D layer (pc3d.js)   // 2.457.0: + a dimension group and its parts (pcdimgroup.js)   // 2.442.0: + a frame (pcframes.js)   // 2.422.0: + a smart object's settings (pcsmart.js)   // 2.421.0: + the vector mask (pcpath.js)
+  const DEEP = ["control", "locks", "styles", "adj", "text", "shape", "fill", "vmask", "smart", "frame", "artboard", "dimg", "dimPart", "l3d", "sketch", "bscene"];   // 2.542.0: + a Blender layer's scene (pcblendlayer.js)   // 2.462.0: + a sketch layer's sketch (pcsketch.js)   // 2.460.0: + a 3D layer (pc3d.js)   // 2.457.0: + a dimension group and its parts (pcdimgroup.js)   // 2.442.0: + a frame (pcframes.js)   // 2.422.0: + a smart object's settings (pcsmart.js)   // 2.421.0: + the vector mask (pcpath.js)
   function snapLayer(L) {
     const s = { L };
     for (const k of STRUCT) s[k] = L[k];

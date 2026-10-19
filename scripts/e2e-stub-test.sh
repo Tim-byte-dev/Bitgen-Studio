@@ -12032,6 +12032,14 @@ node scripts/test-imgop541.js > /tmp/op541.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui541-ui.js > /tmp/ui541.log 2>&1 \
   && ok "2.541.0 browser test: the ▾ only in Image mode, Refine's slider + words both ways, Fill / Refine / Replace background / Remove run in the editor, the Model moved by numbers and by dragging (real Blender), Edit in Blender mode renders the scene, ✔ on a thumbnail = a new layer - or SKIP without playwright" \
   || { bad "2.541.0 image ops browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui541.log | head -14; }
+
+# ---- 2.542.0 (a Blender layer in the image editor)
+node scripts/test-blendlayer542.js > /tmp/bl542.log 2>&1 \
+  && ok "Blender layer units (2.542.0: the tools lent + given back, viewPicture vs the undo snapshot, one frame as a PNG, L.bscene, Edit -> new layers, the wiring)" \
+  || { bad "2.542.0 Blender layer units"; grep -a "^FAIL" -A2 /tmp/bl542.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui542-ui.js > /tmp/ui542.log 2>&1 \
+  && ok "2.542.0 browser test: 🟧 lends the timeline's scene tools to the editor (real Blender + WebGL), the Blender layer keeps the view, deletes like any layer, Edit from the view / a Blender still -> a new layer, the timeline takes them back - or SKIP without playwright / Blender" \
+  || { bad "2.542.0 Blender layer browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui542.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

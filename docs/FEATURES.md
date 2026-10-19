@@ -931,6 +931,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **Frame and render** — pick a frame of an animated scene; render it Quick, EEVEE or Cycles, with a transparent background. *Where:* the 3D tab. *Since:* 2.460.0
 - **Model** — move, turn, scale or hide the scene's objects, by numbers or by dragging them on the canvas; the .blend is not changed. *Where:* the 3D tab > Model. *Since:* 2.541.0
 - **Blender mode** — with a 3D layer picked, the prompt docker's Edit and Refine render the scene with Blender and work from that picture; the results come into the AI panel, and ✔ keeps one as a layer. *Where:* the prompt docker's dropdown. *Since:* 2.541.0
+- **Blender layer** — the timeline's Blender scene tools over the image editor's canvas (open a .blend, scene camera or free view, move / rotate / scale objects, save); the view becomes a layer, and Edit in the prompt docker makes a new layer from the scene. *Where:* the editor's 🟧 button, or Layer > New Blender Layer. *Since:* 2.542.0
 
 ### 3D scenes and models from pictures
 

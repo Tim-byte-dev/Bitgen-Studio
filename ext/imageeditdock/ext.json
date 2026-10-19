@@ -78,6 +78,7 @@
     "pcmode.js",
     "pcsubject.js",
     "pcimgop.js",
+    "pcblendlayer.js",
     "imageedit.js",
     "mount.js",
     "ieeditonly.js"

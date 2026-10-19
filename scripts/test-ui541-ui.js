@@ -88,6 +88,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const f1 = await ev(() => ({ last: window.__rq[window.__rq.length - 1], ai: document.getElementById("kxAi").classList.contains("on"), th: document.querySelectorAll("#kxResults .kxth .kxthok").length }));
     check("🪣 Fill with a selection: the editor's Generate (100 %) into it, the results in the ✨ AI panel's gallery, each with its own ✔",
       f1.last.mode === "generate" && f1.last.prompt === "a red ball" && f1.last.strength === 100 && f1.ai && f1.th === 1, f1);
+    const fn0 = await ev(() => window.imageEditorInstance.E.S.layers.length);
+    await ev(() => document.querySelector("#kxResults .kxth .kxthok").click()); await p.waitForTimeout(400);
+    const fap = await ev(() => ({ n: window.imageEditorInstance.E.S.layers.length, left: document.querySelectorAll("#kxResults .kxth").length }));
+    check("...✔ on the thumbnail keeps that result (Fill blends it into the layer - pl.blend - or a new layer); the gallery is cleared", fap.left === 0 && fap.n >= fn0, { fn0, fap });
     await ev(() => window.imageEditorInstance.discardResults(true));
     await press("refine", "sharper, golden light");
     await p.waitForFunction(() => document.querySelectorAll("#kxResults .kxth").length > 0, null, { timeout: 20000 });
@@ -152,16 +156,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       check("🟧 Blender mode (a 3D layer selected): the chip shows, the button reads \"✏ Edit · 🟧 Blender\"", c1.chip && c1.go === "✏ Edit · 🟧 Blender", c1);
       // paint the 3D layer white on the canvas: the edit must still see the red body (it comes from Blender, not the canvas)
       await ev(() => { const L = window.imageEditorInstance.E.layer(), g = L.canvas.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, 640, 480); window.imageEditorInstance.E.refresh(); });
-      const nb = await ev(() => window.__rq.length);
+      const nb = await ev(() => window.__rq.length), nl = await ev(() => window.imageEditorInstance.E.S.layers.length);
       await ev(() => { document.getElementById("prompt").value = "a photo of a red armchair in a sunny room"; }); await p.click("#go");
-      try { await p.waitForFunction((n) => window.__rq.length > n && document.querySelectorAll("#kxResults .kxth").length > 0, nb, { timeout: 180000 }); }
+      try { await p.waitForFunction(([n, l]) => window.__rq.length > n && window.imageEditorInstance.E.S.layers.length > l, [nb, nl], { timeout: 180000 }); }
       catch (er) { console.log("      status:", await ev(() => [(document.getElementById("l3Msg") || {}).textContent, (document.getElementById("ieStatus") || {}).textContent, window.imageEditorInstance.E.S.busy])); throw er; }
-      const e1 = await ev(() => ({ last: window.__rq[window.__rq.length - 1], layers: window.imageEditorInstance.E.S.layers.length }));
-      check("Edit in Blender mode: Blender renders the scene (the red body is in the picture sent, though the canvas was painted white), the edit model gets it with the prompt, the result in the gallery",
+      await p.waitForTimeout(500);
+      const e1 = await ev(() => ({ last: window.__rq[window.__rq.length - 1] }));
+      check("Edit in Blender mode: Blender renders the scene (the red body is in the picture sent, though the canvas was painted white), the edit model gets it with the prompt",
         e1.last.mode === "edit" && e1.last.prompt === "a photo of a red armchair in a sunny room" && e1.last.cropRed > 100, e1);
-      await ev(() => document.querySelector("#kxResults .kxth .kxthok").click()); await p.waitForTimeout(500);
-      const ap = await ev(() => { const E = window.imageEditorInstance.E, L = E.layer(); const d = L.canvas.getContext("2d").getImageData(320, 240, 1, 1).data; return { n: E.S.layers.length, name: L.name, px: [...d], left: document.querySelectorAll("#kxResults .kxth").length }; });
-      check("✔ on the thumbnail -> a NEW layer (\"🟧 … edit: …\") with the result; the gallery is cleared", ap.n === e1.layers + 1 && /^🟧 .* edit: a photo of a red armchair/.test(ap.name) && ap.px[0] > 240 && ap.px[1] < 20 && ap.left === 0, ap);
+      const ap = await ev(() => { const E = window.imageEditorInstance.E, T = E.S.layers.find((x) => /edit: a photo of a red armchair/.test(x.name)); const d = T ? T.canvas.getContext("2d").getImageData(320, 240, 1, 1).data : []; return { n: E.S.layers.length, name: T && T.name, px: [...d], left: document.querySelectorAll("#kxResults .kxth").length, preview: !!E.S.preview, act: E.layer().name }; });
+      check("2.542.0: the result comes in as a NEW layer (\"🟧 … edit: …\") at once - nothing previewed over the canvas, no thumbnails; the 3D layer stays picked", ap.n === nl + 1 && /^🟧 .* edit: a photo of a red armchair/.test(ap.name) && ap.px[0] > 240 && ap.px[1] < 20 && ap.left === 0 && !ap.preview && /^3D: /.test(ap.act), ap);
     }
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("crashed: " + (e.stack || e), false); }

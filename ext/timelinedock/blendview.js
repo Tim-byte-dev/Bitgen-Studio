@@ -24,7 +24,12 @@
  * workflow?"): ✨ Build a scene with AI - the description goes to the local LLM, which writes a plan Blender builds
  * (lib/sceneAI.js); its detailed objects are drawn with the image style picked in Basic Settings and turned into 3D
  * (Hunyuan3D 2.1 = the shape, TRELLIS.2 = textured). The scene opens here when it is built. ＋ Model adds any .glb in
- * the project's models3d/ (a picture sent to 🧊 3D lands there) - one object, 1 m tall, where the view looks.  * 2.540.0 🖼 REFERENCES (Tim: "the block is a car, the reference for the car is in our reference docker ... animated with
+ * the project's models3d/ (a picture sent to 🧊 3D lands there) - one object, 1 m tall, where the view looks.  * 2.542.0 (Tim: "add blender button to open scene tools to image-editor as a blender layer - open blender scene etc. the same
+ *   as the timeline docker"): the same tools can be LENT to another docker - TlBlend.attach({wrap, props, onShow}) moves
+ *   this view (#tlBlendView) into `wrap` and the Properties into `props` (the image editor: pcblendlayer.js), detach() puts
+ *   them back; snapshot(w, h) = the view as shown at any size (no widget / grid); still({w, h, engine}) = Blender renders
+ *   this frame through the view (or the scene camera) -> a PNG (lib/blendView.still). One scene, one set of edits.
+ * 2.540.0 🖼 REFERENCES (Tim: "the block is a car, the reference for the car is in our reference docker ... animated with
  *   our 3dreal"): Render to real's 🖼 References - each mesh gets a reference docker picture (by its name - car, sofa,
  *   lamp … - or picked in its dropdown); ticked, Blender also renders the first frame + where each mesh is on it, an edit
  *   model makes that frame a photo with the pictures (lib/realRefs.js), and 3DREAL animates it along the render.
@@ -44,7 +49,8 @@
                  set: function (k, v) { try { localStorage.setItem("tlb." + k, JSON.stringify(v)); } catch (e) { /* fine */ } } };
 
   function start() {
-    var T = null, R = null, scene = null, root = null, mixer = null, clips = [], camFree = null, camScene = null, orbit = null, tc = null;
+    var T = null, R = null, scene = null, root = null, mixer = null, clips = [], camFree = null, camScene = null, orbit = null, tc = null, grid = null;
+    var ext = null;                  // 2.542.0: another docker borrowing the view + the Properties ({wrap, props, onShow})
     var S = { on: false, st: null, meta: {}, E: { objects: {} }, sel: null, frame: 1, inF: 1, outF: 1, playing: false, view: store0.get("view", "scene"),
               gmode: "translate", nodes: {}, rest: {}, orig: {}, clones: {}, undo: [], busy: "", render: null, studio: store0.get("studio", true),
               autoKey: store0.get("autokey", false), models: {}, modelList: [], ai: null, aiOpen: false };
@@ -104,6 +110,11 @@
     var cv = $("tlbGl");
 
     function placeProps() {          // the props sit where the canvas's Properties are (the toolbox when floated)
+      if (ext) {                     // 2.542.0: lent to another docker - its own box
+        if (PR.parentNode !== ext.props) ext.props.appendChild(PR);
+        PR.style.cssText = S.on ? "display:block;padding:6px 8px;font-size:.72rem;overflow:auto" : "display:none";
+        return;
+      }
       var P = $("tlProps"); if (!P || !P.parentNode) return;
       if (PR.parentNode !== P.parentNode || PR.nextSibling !== P) P.parentNode.insertBefore(PR, P);
       PR.style.display = S.on ? "" : "none"; P.style.display = S.on ? "none" : "";
@@ -123,12 +134,36 @@
         .catch(function (e) { msg(""); if (!S.st) show(false); alert(String(e.message || e)); throw e; });
     }
     function show(on) {
-      S.on = !!on; ov.classList.toggle("on", S.on); btn.classList.toggle("on", S.on);
+      S.on = !!on; ov.classList.toggle("on", S.on); btn.classList.toggle("on", S.on && !ext);
       placeProps();
       if (S.on) { paint(); (R ? Promise.resolve() : three().then(setupGl)).then(function () { resize(); paint(); dirty(); listModels(); }); }
       else stop();
+      if (ext && ext.onShow) { try { ext.onShow(S.on); } catch (e) { /* the borrower's */ } }
+    }
+    /* 2.542.0: lend the view + the Properties to another docker (the image editor's Blender layer) */
+    function attach(h) {
+      if (ext && ext !== h) detach();
+      if (!ext) {                    // the timeline's own Properties back on if the scene was showing there
+        var P = $("tlProps"); if (P) P.style.display = "";
+        if (S.on) { S.on = false; ov.classList.remove("on"); btn.classList.remove("on"); stop(); }
+      }
+      ext = h; h.wrap.appendChild(ov); placeProps();
+      return openUi();
+    }
+    function detach() {
+      if (!ext) return;
+      var h = ext; S.on = false; ov.classList.remove("on"); stop();
+      ext = null; $("tlCanvasWrap").appendChild(ov);
+      if (PR.parentNode === h.props) h.props.removeChild(PR);
+      placeProps();
+    }
+    /** the scene tools on screen: the open scene, else the server's current one, else 📂 Open */
+    function openUi() {
+      if (S.st) { show(true); return Promise.resolve(S.st); }
+      return fetch("/api/blendview/current").then(j).then(function (c) { show(true); return c && c.stem ? load(c) : null; }).catch(function () { show(true); return null; });
     }
     btn.addEventListener("click", function () {
+      if (ext) { var h = ext; detach(); if (h.onTaken) { try { h.onTaken(); } catch (e) { /* the borrower's */ } } }
       if (S.on) { show(false); return; }
       if (S.st) { show(true); return; }
       // no scene yet: the view opens with 📂 Open and ✨ Build a scene with AI in the Properties
@@ -153,7 +188,7 @@
       scene.add(tc.getHelper ? tc.getHelper() : tc);
       var hemi = new T.HemisphereLight(0xffffff, 0x444455, 1.6), dir = new T.DirectionalLight(0xffffff, 1.8);
       dir.position.set(5, 10, 7); studio = [hemi, dir]; studio.forEach(function (l) { scene.add(l); });
-      var grid = new T.GridHelper(40, 40, 0x555555, 0x333333); grid.userData.noPick = true; scene.add(grid);
+      grid = new T.GridHelper(40, 40, 0x555555, 0x333333); grid.userData.noPick = true; scene.add(grid);
       new ResizeObserver(resize).observe($("tlbStage"));
       wireInput();
     }
@@ -531,7 +566,7 @@
       setGizmo(S.gmode);
       if (!S.st) {
         PR.innerHTML = '<div class="tlp-t">Blender scene</div><div class="tlp-row"><button class="ghost" id="tlbOpen" type="button" title="Open a .blend">📂 Open a .blend</button>'
-          + '<button class="ghost" id="tlbClose" type="button" title="Back to the timeline\'s canvas">✕</button></div>' + aiHtml(true);
+          + '<button class="ghost" id="tlbClose" type="button" title="' + (ext ? "Close the scene tools (the layer keeps the view)" : "Back to the timeline\'s canvas") + '">✕</button></div>' + aiHtml(true);
         wireProps();
         if ($("tlbAiEngine")) $("tlbAiEngine").value = store0.get("tlbAiEngine", "auto");
         return;
@@ -543,7 +578,7 @@
         + '<div class="tlb-st" title="' + esc(st.source) + '">' + esc(st.source) + '<br>working copy: ' + esc(st.project) + '/blender/' + esc(st.stem) + '.tmp</div>'
         + '<div class="tlp-row"><button class="ghost" id="tlbOpen" type="button" title="Open another .blend">📂 Open</button>'
         + '<button class="ghost" id="tlbReload" type="button" title="Drop the edits and read the .blend again">⟲ Reload</button>'
-        + '<button class="ghost" id="tlbClose" type="button" title="Back to the timeline\'s canvas (the scene stays open)">✕</button></div>'
+        + '<button class="ghost" id="tlbClose" type="button" title="' + (ext ? "Close the scene tools - the layer keeps this view (the scene stays open)" : "Back to the timeline\'s canvas (the scene stays open)") + '">✕</button></div>'
         + aiHtml(false)
         + '<div class="tlb-sec"><b>Objects</b> <span class="tlb-st">(click to select · 👁 hide)</span><div class="tlb-list">'
         + objs.map(function (oid) {
@@ -749,7 +784,38 @@
     // the canvas's Properties are repainted often - keep ours in front of them while the scene is shown
     setInterval(function () { if (S.on) placeProps(); }, 700);
 
+    /* 2.542.0: the view as shown, at any size (the widget + the grid left out) */
+    function viewPicture(w, h) {      // (not snapshot() - that is the edits' undo copy)
+      if (!R || !root) return null;
+      w = Math.max(16, Math.round(w)); h = Math.max(16, Math.round(h));
+      var cam = curCam(), pr = R.getPixelRatio(), a0 = cam.aspect, hp = tc && (tc.getHelper ? tc.getHelper() : tc), hv = hp ? hp.visible : false, gv = grid ? grid.visible : false;
+      if (hp) hp.visible = false; if (grid) grid.visible = false;
+      R.setPixelRatio(1); R.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+      R.render(scene, cam);
+      var c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(R.domElement, 0, 0, w, h);
+      if (hp) hp.visible = hv; if (grid) grid.visible = gv;
+      cam.aspect = a0; cam.updateProjectionMatrix(); R.setPixelRatio(pr); resize();
+      return c;
+    }
+    /** 2.542.0: Blender renders this frame through the view (free view) or the scene camera -> {png} (lib/blendView.still) */
+    function stillReal(o) {
+      o = o || {};
+      if (!S.st) return Promise.reject(new Error("no Blender scene is open"));
+      var body = { stem: S.st.stem, frame: S.frame, view: S.view === "free" || !camScene ? viewOf() : null, engine: o.engine || "EEVEE", w: o.w, h: o.h };
+      return post("/api/blendview/edits", { stem: S.st.stem, edits: S.E }).then(function () { return post("/api/blendview/still", body); }).then(function (r) {
+        return new Promise(function (ok, no) {
+          (function poll() {
+            fetch("/api/blendview/still/" + r.id).then(j).then(function (st) {
+              if (st.state === "running") { setTimeout(poll, 600); return; }
+              if (st.state === "done" && st.png) ok(st); else no(new Error(st.error || "Blender wrote no picture"));
+            }).catch(function () { setTimeout(poll, 1500); });
+          })();
+        });
+      });
+    }
+
     window.TlBlend = {
+      attach: attach, detach: detach, openUi: openUi, snapshot: viewPicture, still: stillReal, host: function () { return ext; },
       open: openPath, show: show, state: S, select: select, setTrs: setSelTrs, key: keyNow, unkey: unkeyNow, dup: dup, del: del,
       hide: hide, reset: resetObj, undo: undo, goto: goto, setRange: setRange, setView: setView, setGizmo: setGizmo, save: save,
       render: renderReal, view: viewOf, node: node, frameAll: frameAll, trs: function (id) { var n = node(id); return n ? trsOf(n) : null; },

@@ -77,7 +77,7 @@
     bar.insertBefore(box, bar.firstChild);
     let op = opOf(store.get("imgop", "generate")).id, quiet = false;
     const genMode = () => { const g = $("genModeSel"); return g ? g.value : "image"; };
-    const blender = () => !!(S.w && E.layer3d && E.layer3d.isCurrent && E.layer3d.isCurrent());
+    const blender = () => !!(S.w && ((E.layer3d && E.layer3d.isCurrent && E.layer3d.isCurrent()) || (E.blendLayer && E.blendLayer.isCurrent())));   // 2.542.0: + a Blender layer
     const strength = () => S.strength || 50;
     function paint() {
       box.hidden = !shown(genMode());
