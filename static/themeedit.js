@@ -126,13 +126,18 @@
     return o;
   }
   /** {selector: rule} -> only the good ones (at most 300) */
+  /** 2.540.6: the page itself (html / body / :root / *) - colours are fine, but never sized, moved or hidden.
+   *  Tim: "when i try to edit the theme by dragging the handles the entire ui gets dragged to the left" */
+  const isRootSel = (s) => /(?:^|[\s>+~])(?:html|body|:root|\*)(?:[.#:\[][^\s>+~]*)?$/i.test(String(s || "").trim());
+  const LAYOUT_KEYS = ["w", "h", "dx", "dy", "hide"];
+  function forSel(sel, r) { if (isRootSel(sel)) for (const k of LAYOUT_KEYS) delete r[k]; return r; }
   function cleanStyles(m) {
     const out = {}; if (!m || typeof m !== "object" || Array.isArray(m)) return out;
     let n = 0;
     for (const k of Object.keys(m)) {
       if (n >= MAX_RULES) break;
       const s = cleanSel(k); if (!s) continue;
-      const r = cleanRule(m[k]); if (!Object.keys(r).length) continue;
+      const r = forSel(s, cleanRule(m[k])); if (!Object.keys(r).length) continue;
       out[s] = r; n++;
     }
     return out;
@@ -266,7 +271,7 @@
   }
   function setRule(sel, rule) {
     const s = cleanSel(sel); if (!s) return null;
-    const next = Object.assign({}, styles), r = cleanRule(rule);
+    const next = Object.assign({}, styles), r = forSel(s, cleanRule(rule));
     if (Object.keys(r).length) next[s] = r; else delete next[s];
     setStyles(next);
     return styles[s] || null;
@@ -337,15 +342,23 @@
     e.preventDefault(); e.stopPropagation();
     const r0 = picked.getBoundingClientRect(), rule0 = ruleNow(), x0 = e.clientX, y0 = e.clientY;
     const box = { w: rule0.w != null ? rule0.w : Math.round(r0.width), h: rule0.h != null ? rule0.h : Math.round(r0.height), dx: rule0.dx || 0, dy: rule0.dy || 0 };
+    swallowClick = false; let sized = false;
     const mv = (m) => {
+      m.preventDefault(); sized = true;
       const o = resizeBy(dir, box, m.clientX - x0, m.clientY - y0), nx = Object.assign({}, rule0);
       if (/[ew]/.test(dir)) nx.w = o.w; if (/[ns]/.test(dir)) nx.h = o.h; nx.dx = o.dx; nx.dy = o.dy;
       setRule(scope, nx); placeHi(picked); syncLayout();
     };
-    const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); };
+    // 2.540.6: the click after a drag lands on what the press and the release share (often <html>) - it is not a pick
+    const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); if (sized) swallowClick = true; sizing = null; unscroll(); };
+    // 2.540.6: block() (registered first) stops a release that is not over the handle - it ends the drag through sizing,
+    // so the size no longer follows the mouse after the button is let go
+    sizing = up; try { e.target.setPointerCapture(e.pointerId); } catch (err) { /* old */ }
     root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
   }
-  let moving = null, swallowClick = false;
+  /** 2.540.6: a drag never leaves the page scrolled sideways (the app is a fixed layout - nothing of it should scroll) */
+  function unscroll() { for (const el of [doc.documentElement, doc.body]) if (el && (el.scrollLeft || el.scrollTop)) { el.scrollLeft = 0; el.scrollTop = 0; } }
+  let moving = null, swallowClick = false, sizing = null;
   /** 2.514.0: press on the picked element and drag = move it (translate); a click without moving still picks */
   function startMove(e) {
     const rule0 = ruleNow(), x0 = e.clientX, y0 = e.clientY;
@@ -357,7 +370,7 @@
       moving.moved = true; doc.body.classList.add("h3-thmove");
       setRule(scope, Object.assign({}, rule0, { dx: (rule0.dx || 0) + Math.round(dx), dy: (rule0.dy || 0) + Math.round(dy) })); placeHi(picked); syncLayout();
     };
-    const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); doc.body.classList.remove("h3-thmove"); if (moving && moving.moved) swallowClick = true; moving = null; };
+    const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); doc.body.classList.remove("h3-thmove"); if (moving && moving.moved) swallowClick = true; moving = null; unscroll(); };
     moving.up = up;                                     // block() ends it too (it stops the pointerup before this listener)
     root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
   }
@@ -483,13 +496,16 @@
     $("teMsg").textContent = `${count(scope)} element(s)`;
   }
   function closePanel() { if (panel) { panel.remove(); panel = null; } picked = null; placeHi(null); }
-  const over = (e) => { if (!on || ours(e.target)) { if (on && !picked) placeHi(null); return; } if (!picked) placeHi(e.target); };
+  const isPage = (el) => !el || el === doc.documentElement || el === doc.body;   // 2.540.6: the page itself is never picked
+  const over = (e) => { if (!on || ours(e.target) || isPage(e.target)) { if (on && !picked) placeHi(null); return; } if (!picked) placeHi(e.target); };
   const block = (e) => {
     if (!on || ours(e.target)) return;
     e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if (e.type === "pointerdown") swallowClick = false;                                         // 2.540.6: a new press - the last drag's click is history
+    if (e.type === "pointerup" && sizing) { sizing(); return; }                                   // 2.540.6
     if (e.type === "pointerup" && moving && moving.up) { moving.up(); return; }
     if (e.type === "pointerdown" && e.button === 0 && picked && picked.contains(e.target)) { startMove(e); return; }   // 2.514.0
-    if (e.type === "click") { if (swallowClick) { swallowClick = false; return; } scope = ""; if (panel) panel.dataset.moved = ""; pick(e.target); }
+    if (e.type === "click") { if (swallowClick) { swallowClick = false; return; } if (isPage(e.target)) return; scope = ""; if (panel) panel.dataset.moved = ""; pick(e.target); }
   };
   // 2.455.0: Esc anywhere but in the Style panel (it handles its own) or a dialog / menu (theirs) - the 🖌 button focused too
   const keys = (e) => {
@@ -631,7 +647,7 @@
   if (doc) { if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start(); }
   if (root.addEventListener) root.addEventListener("keydown", hotkey, true);          // 2.515.0: Ctrl+Shift+Alt+E
 
-  const H3ThemeEdit = { ICON_POS, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, session: () => sesName,
+  const H3ThemeEdit = { ICON_POS, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, isRootSel, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, session: () => sesName,
     styles: () => JSON.parse(JSON.stringify(styles)), setStyles, setRule, toggle, isOn: () => on, dialogs: () => dlgs, saveAndLeave, pick: (el) => { if (!on) toggle(true); scope = ""; pick(el); }, scope: () => scope, applyIcons, start };
   if (typeof module !== "undefined" && module.exports) module.exports = H3ThemeEdit;
   else root.H3ThemeEdit = H3ThemeEdit;

@@ -85,6 +85,7 @@ models, so nothing in them was generated.*
 1. **Install**: download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
 2. **Make something**: type a prompt and press **Generate**, or ask the assistant to *create a screenplay* and render the scenes on the board. The **[user guide](docs/USAGE.md)** (also as a [PDF](docs/bitGen-Studio-Guide.pdf)) walks through every docker.
 3. **Found a bug or have an idea?** Please open an issue. This is a beta, and every report helps.
+4. **UI dragged off the screen, or a black window?** Close bitGen Studio and run `reset-layout.bat` (in the app folder). It puts back the default layout and theme, and clears the desktop app's caches. Your projects, settings and models are kept, and everything it resets is copied to `backups\layout-<time>\` first.
 
 **Optional bridges** (each in its own folder):
 - `blender/bitgen_bridge`: the Blender add-on.

@@ -149,8 +149,14 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
             # `yue2 batch`, and there is no default sub-command); the song lands in
             # <output>/<id>/audio.flac. PYTHONUTF8: it reads the request with the
             # locale's encoding - lyrics beyond ASCII need UTF-8 on Windows.
-            cmd = [str(cli), "generate", "--model", model, "--request", str(req_file),
-                   "--output", str(out_dir), "--quiet"]
+            # 2.540.6: through scripts/yue2_run.py in the same venv - on Windows it stops
+            # huggingface_hub from symlinking its cache (WinError 1314 without Developer
+            # Mode); the plain CLI is the fallback when the venv's python is not found
+            vpy = cli.parent / ("python.exe" if os.name == "nt" else "python")
+            runner = Path(__file__).resolve().parent / "scripts" / "yue2_run.py"
+            head = [str(vpy), str(runner)] if vpy.exists() and runner.exists() else [str(cli)]
+            cmd = head + ["generate", "--model", model, "--request", str(req_file),
+                          "--output", str(out_dir), "--quiet"]
             say("@@CMD " + json.dumps(cmd))
             try:
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,

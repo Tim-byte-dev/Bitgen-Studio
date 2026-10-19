@@ -275,6 +275,7 @@ models and the engines are all ignored by Git, so a pull never touches them.
 | `You need pytorch with cu130` in the ComfyUI console | RTX 50-series: update the driver and reinstall ComfyUI's torch (see `minimax-fixed.txt`). |
 | No sound on a take | the take's badge says whether the file has an audio stream; a native-audio scene always has one. |
 | The app window never appears | run with `H3_NO_SHELL=1` and use the browser at <http://127.0.0.1:8311>. |
+| A black or frozen app window, or the UI dragged off the screen | close bitGen Studio and run `reset-layout.bat` in the app folder: it puts back the default layout and theme and clears the desktop app's caches (projects, settings and models are kept; what it resets goes to `backups\layout-<time>\`). In a browser, the same reset is the line the bat prints for the F12 console. |
 
 Still stuck? Open an issue with the **Console** docker's output and the failing
 job's log from the **Queue** docker.

@@ -75,6 +75,11 @@ function createWindow() {
     shell.openExternal(url);
     return { action: "deny" };
   });
+  // 2.540.6: Ctrl+Shift+R = reload without the cache, like a browser (Tim: "ctrl+shift+r resets it in firefox but not
+  // in electron") - the frameless window has no menu to carry it
+  win.webContents.on("before-input-event", (e, k) => {
+    if (k.type === "keyDown" && (k.control || k.meta) && k.shift && !k.alt && String(k.key || "").toLowerCase() === "r") { e.preventDefault(); win.webContents.reloadIgnoringCache(); }
+  });
   win.on("maximize", () => win.webContents.send("h3:maximized", true));
   win.on("unmaximize", () => win.webContents.send("h3:maximized", false));
   win.loadURL(`http://127.0.0.1:${PORT}/`);

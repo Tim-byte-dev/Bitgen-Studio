@@ -12009,6 +12009,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5405-ui.js > /tmp/ui5405.log 2
   && ok "2.540.5 browser test: Settings ▸ General ▸ ⟳ Updates - check, the commits, ⤓ Update now asks, the log, restart - or SKIP without playwright" \
   || { bad "2.540.5 updater browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5405.log | head -14; }
 
+# ---- 2.540.6 (YuE2 on Windows without symlink rights)
+node scripts/test-yue2run5406.js > /tmp/yr5406.log 2>&1 \
+  && ok "yue2 runner (2.540.6: the Hugging Face cache told to copy instead of symlink before yue2's CLI runs; music_worker launches it from the venv)" \
+  || { bad "2.540.6 yue2 runner"; grep -a "^FAIL" -A2 /tmp/yr5406.log | head -14; }
+node scripts/test-themeedit5406.js > /tmp/te5406.log 2>&1 \
+  && ok "theme edit page guard (2.540.6: html / body / :root / * keep colours but are never sized, moved or hidden - set, cleaned on load, saved)" \
+  || { bad "2.540.6 theme edit page guard"; grep -a "^FAIL" -A2 /tmp/te5406.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
+  && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
+  || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
+
 # ---- 2.403.0 (Tim: "can we preview the blender scene in our preview canvas (load the blend) file and navigate the scene ...")
 node scripts/test-blendview-ui.js > /tmp/blendviewui4030.log 2>&1 \
   && ok "blend preview browser test: 🟧 opens a .blend over the preview canvas (<project>/blender/<name>.tmp), scene camera + free view draw, a click selects, a still object's move = its place, an animated one's = a key (played between keys), duplicate / delete / undo / hide reach .edits.json, the toolbox Save to (bitGen | write back | copy) + 💾 Save bakes them in (original untouched), [ In / Out ] + Render to real through this view -> Video assets, ✕ gives the canvas back - or SKIP without playwright / Blender" \

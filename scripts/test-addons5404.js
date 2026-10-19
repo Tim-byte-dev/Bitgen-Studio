@@ -96,7 +96,7 @@ function fakeRun(o) {
     check("the page loads static/addons.js (Settings ▸ Add-ons)", /<script src="\/static\/addons\.js"><\/script>/.test(fs.readFileSync(path.join(ROOT, "static", "index.html"), "utf8")));
     const MW = fs.readFileSync(path.join(ROOT, "music_worker.py"), "utf8");
     check("music_worker.py: `yue2 generate --model M --request FILE --output DIR` (the real CLI), PYTHONUTF8=1, the song at <output>/<id>/audio.flac, and 'not installed' points to Settings > Add-ons",
-      /cmd = \[str\(cli\), "generate", "--model", model, "--request", str\(req_file\),/.test(MW) && /"PYTHONUTF8": "1"/.test(MW) && /flac = out_dir \/ req\["id"\] \/ "audio\.flac"/.test(MW)
+      /cmd = (?:\[str\(cli\), |head \+ \[)"generate", "--model", model, "--request", str\(req_file\),/.test(MW) && /"PYTHONUTF8": "1"/.test(MW) && /flac = out_dir \/ req\["id"\] \/ "audio\.flac"/.test(MW)
       && /install it in Settings > Add-ons/.test(MW) && !/"--input", str\(req_file\)/.test(MW));
   } catch (e) { check("crashed: " + (e.stack || e), false); }
   finally { try { fs.rmSync(T, { recursive: true, force: true }); } catch { /* fine */ } }
