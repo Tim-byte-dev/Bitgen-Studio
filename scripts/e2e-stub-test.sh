@@ -11988,6 +11988,27 @@ node scripts/test-setuppacks5402.js > /tmp/sp5402.log 2>&1 \
   && ok "setup node packs (2.540.2: run() timeout, git with no prompts / no background gc, a subfolder pack copied out, a temp folder that will not delete left with a warning, install() never throws, setupRun keeps going)" \
   || { bad "2.540.2 setup node packs"; grep -a "^FAIL" -A2 /tmp/sp5402.log | head -14; }
 
+# ---- 2.540.3 (a checkpoint override only where it fits the style)
+node scripts/test-modelfit5403.js > /tmp/mf5403.log 2>&1 \
+  && ok "model fit (2.540.3: an Anima / SDXL checkpoint left out of a Qwen / FLUX 3 Klein workflow, the SDXL families fit SDXL, the route's note)" \
+  || { bad "2.540.3 model fit"; grep -a "^FAIL" -A2 /tmp/mf5403.log | head -14; }
+
+# ---- 2.540.4 (Settings ▸ Add-ons: YuE2 installed in the app; the YuE2 call fixed)
+node scripts/test-addons5404.js > /tmp/ao5404.log 2>&1 \
+  && ok "add-ons units (2.540.4: the YuE2 install steps with a stand-in runner, the Python / GPU gates, the CUDA index fallback, one job at a time, the routes, music_worker's yue2 generate --request)" \
+  || { bad "2.540.4 add-ons units"; grep -a "^FAIL" -A2 /tmp/ao5404.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5404-ui.js > /tmp/ui5404.log 2>&1 \
+  && ok "2.540.4 browser test: Settings ▸ Add-ons cards, ⤓ Install asks, the job's log in the tab (the no-GPU refusal here) - or SKIP without playwright" \
+  || { bad "2.540.4 add-ons browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5404.log | head -14; }
+
+# ---- 2.540.5 (⟳ Update from GitHub)
+node scripts/test-updater5405.js > /tmp/up5405.log 2>&1 \
+  && ok "updater units (2.540.5: a real git + a local GitHub - behind -> updated with backups + the user's quick prompts kept + npm when the lock changed, ahead -> refused, up to date; the zip install; the routes + the restart wiring)" \
+  || { bad "2.540.5 updater units"; grep -a "^FAIL" -A2 /tmp/up5405.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5405-ui.js > /tmp/ui5405.log 2>&1 \
+  && ok "2.540.5 browser test: Settings ▸ General ▸ ⟳ Updates - check, the commits, ⤓ Update now asks, the log, restart - or SKIP without playwright" \
+  || { bad "2.540.5 updater browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5405.log | head -14; }
+
 # ---- 2.403.0 (Tim: "can we preview the blender scene in our preview canvas (load the blend) file and navigate the scene ...")
 node scripts/test-blendview-ui.js > /tmp/blendviewui4030.log 2>&1 \
   && ok "blend preview browser test: 🟧 opens a .blend over the preview canvas (<project>/blender/<name>.tmp), scene camera + free view draw, a click selects, a still object's move = its place, an animated one's = a key (played between keys), duplicate / delete / undo / hide reach .edits.json, the toolbox Save to (bitGen | write back | copy) + 💾 Save bakes them in (original untouched), [ In / Out ] + Render to real through this view -> Video assets, ✕ gives the canvas back - or SKIP without playwright / Blender" \

@@ -26,6 +26,8 @@ The developer has used these end to end on a real GPU with real models, and they
 | **🖼️ Image generation** | Every built-in image style |
 | **🎬 Video generation** | Rendering video through ComfyUI |
 | **🎵 Music** | Song generation |
+| **💬 Local LLM** | Chat, screenplays, ✨ Enhance |
+| **📦 Installing from the repository** | A fresh clone on Windows: the setup wizard installs ComfyUI, PyTorch and the node packs |
 
 ## Built, but not yet tested enough
 

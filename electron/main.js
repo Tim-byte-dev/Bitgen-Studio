@@ -170,6 +170,10 @@ ipcMain.handle("h3:win", (_e, action) => {
   return win.isMaximized();
 });
 
+// 2.540.5: ⟳ Restart now after an update (Settings ▸ General ▸ Updates) - relaunch is set first, then the normal
+// quit runs (before-quit asks the server to shut down cleanly), and Electron starts the app again
+ipcMain.handle("h3:relaunch", () => { app.relaunch(); app.quit(); return true; });
+
 app.whenReady().then(async () => {
   // 2.220.0: first-run setup comes before the app — same gate as start.bat's
   // console prompt, H3_SETUP=1 forces it. The setup window hands off to the

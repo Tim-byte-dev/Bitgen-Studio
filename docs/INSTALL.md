@@ -246,7 +246,7 @@ video model or unload it before long renders.
 | OmniVoice (voice cloning / TTS) | Settings → Audio → **Install OmniVoice** | voice clones, TTS, Read replies |
 | faster-whisper (speech-to-text) | Settings → Audio → **Install faster-whisper** | transcription, 🎤 Speak |
 | demucs (stems) | the Stems docker's **⚙ Install** | stem separation |
-| YuE2 (songs) | `get-yue2.ps1` | Music docker → YuE2 |
+| YuE2 (songs) | Settings ▸ Add-ons ▸ YuE2 music (or `get-yue2.ps1`) | Music docker → YuE2 |
 | MiniMax Music3 (songs) | ComfyUI workflow `audio_minimax_music3.json` | Music docker → MiniMax |
 | sd-cli (legacy engine) | `get-sd-cli.ps1` | only when Settings → ComfyUI → Engine is *sd-cli* |
 

@@ -1,3 +1,6 @@
+# 2.540.4: the easy way is Settings > Add-ons > YuE2 music (the same steps, in the app). This script is the
+# manual route.
+#
 # Installs the OFFICIAL YuE2 music-generation pipeline (2.229.0, Tim: "can
 # we add this to our music docker, use dropdown to change from minimax to
 # yue2") into its own Python venv at <app>\yue2\.venv — the same
@@ -10,7 +13,7 @@
 # RefMod pack): the repo moves fast, and an unpinned install is a different
 # program every month. Pass -Tag to move the pin deliberately.
 #
-# Requirements (the upstream README's own words): Python 3.12, an NVIDIA
+# Requirements (the upstream README's own words): Python 3.10+ (3.12 recommended), an NVIDIA
 # GPU with BF16 support and ~24 GB VRAM. Model files (m-a-p/YuE2-3B, the
 # vocoder) download from Hugging Face on FIRST generation — the first song
 # needs the network; later runs are offline-capable. Output is 48 kHz
@@ -25,20 +28,20 @@ $dest = Join-Path $PSScriptRoot "yue2"
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 $venv = Join-Path $dest ".venv"
 
-# ---- Python 3.12 -----------------------------------------------------------
+# ---- Python 3.10 - 3.13 -----------------------------------------------------
 $py = $null
-foreach ($cand in @("py -3.12", "python3.12", "python")) {
+foreach ($cand in @("py -3.12", "py -3.13", "py -3.11", "python")) {
     try {
         $v = & $cand.Split(" ")[0] $cand.Split(" ")[1..99] --version 2>&1
-        if ("$v" -match "3\.12\.") { $py = $cand; break }
+        if ("$v" -match "3\.1[0-3]\.") { $py = $cand; break }
     } catch { }
 }
 if (-not $py) {
-    Write-Host "Python 3.12 is required (the upstream pipeline pins it)." -ForegroundColor Red
+    Write-Host "Python 3.10 - 3.13 is required (the pipeline needs >= 3.10; PyTorch 2.10 has wheels up to 3.13)." -ForegroundColor Red
     Write-Host "Install it from https://www.python.org/downloads/ (tick 'py launcher') and re-run."
     exit 1
 }
-Write-Host "Python 3.12 found: $py"
+Write-Host "Python found: $py ($v)"
 
 # ---- the venv --------------------------------------------------------------
 if (-not (Test-Path (Join-Path $venv "Scripts\python.exe"))) {
@@ -50,7 +53,10 @@ $vpy = Join-Path $venv "Scripts\python.exe"
 # ---- the pinned pipeline ---------------------------------------------------
 Write-Host "Installing YuE2 @ $Tag (this compiles nothing but downloads a lot)..."
 & $vpy -m pip install --upgrade pip
-& $vpy -m pip install "git+https://github.com/multimodal-art-projection/YuE@$Tag"
+# PyTorch 2.10.0 (the pipeline's pin) from the CUDA index first - PyPI's Windows wheel is CPU-only
+& $vpy -m pip install "torch==2.10.0" --index-url https://download.pytorch.org/whl/cu130
+if ($LASTEXITCODE -ne 0) { & $vpy -m pip install "torch==2.10.0" --index-url https://download.pytorch.org/whl/cu128 }
+& $vpy -m pip install "yue2-infer @ https://github.com/multimodal-art-projection/YuE/archive/refs/tags/$Tag.zip"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "pip install failed - see above. The pin was: $Tag" -ForegroundColor Red
     exit 1

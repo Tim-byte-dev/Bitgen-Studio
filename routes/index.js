@@ -45,6 +45,7 @@ const lyrics = require("../lib/lyrics");
 const venv = require("../lib/venv");
 const transitions = require("../lib/transitions");
 const styles = require("../lib/styles");
+const modelFit = require("../lib/modelFit");   // 2.540.3: a checkpoint override only where it fits
 const h3Long = require("../lib/h3Long");                 // 2.503.0: MiniMax H3 long single runs (up to 30 s)
 const swapLib = require("../lib/swap");   // 2.328.0: swap styles (mmh3_chr_swap)
 const imageSeed = require("../lib/imageSeed");
@@ -186,6 +187,8 @@ function mount(app) {
   require("./queuePresets").mount(app); // 2.518.0: the menu bar's ⏱ queue presets (lib/queuePresets.js)
   require("./modelMgr").mount(app);     // 2.518.0: the 🧩 Model manager's cards + ✚ New style (lib/modelCards.js)
   require("./civitai").mount(app);      // 2.518.0: Civitai search / download into ComfyUI's folders (lib/civitai.js)
+  require("./updater").mount(app);      // 2.540.5: ⟳ Update bitGen Studio from GitHub (lib/updater.js)
+  require("./addons").mount(app);       // 2.540.4: Settings ▸ Add-ons - optional engines (YuE2, Viggle native) installed in the app (lib/addons.js)
   require("./realRefs").mount(app);     // 2.540.0: Blender / Unreal renders made real with the reference docker's pictures (lib/realRefs.js)
   require("./modelFolders").mount(app); // 2.538.0: model_folders.json - where each model type's downloads go (lib/modelFolders.js)
   require("./testPlan").mount(app);     // 2.518.0: the 🧪 Testing docker's checklist + the log to upload (lib/testPlan.js)
@@ -1786,14 +1789,21 @@ function mount(app) {
     // one contract, no second lora path through the worker.
     let styled = styles.applyLoraWeights(style, b.lora_weights);
     // 2.115.0: a checkpoint picked in Basic Settings replaces the style's for this render
-    if (b.model && typeof b.model === "string" && b.model.trim() && !b.model.includes(".."))
-      styled = Object.assign({}, styled, { model: b.model.trim().slice(0, 300), model_override: true });
+    // 2.540.3: ...only when the model FITS the style's workflow (lib/modelFit.js) - an SDXL / Anima checkpoint in a
+    // FLUX 3 Klein or Qwen edit workflow can only fail; it is left out for this render and the log says why
+    let overrideNote = "";
+    if (b.model && typeof b.model === "string" && b.model.trim() && !b.model.includes("..")) {
+      const mf = modelFit.fit(styled, b.model.trim());
+      if (mf.ok) styled = Object.assign({}, styled, { model: b.model.trim().slice(0, 300), model_override: true });
+      else overrideNote = modelFit.note(styled, mf, b.model.trim());
+    }
     // 2.111.0: temporary LoRAs from Basic Settings ride along, after the style's own
     const extra = tempLoras.normalize(b.extra_loras);
     if (extra.length) styled = Object.assign({}, styled, { loras: tempLoras.merge(styled.loras, extra) });
     if (b.mm_override === true) styled = Object.assign({}, styled, { mm_override: true });   // 2.518.0: the 🧩 Model manager's selection
     const p = { mode: "image", prompt, style: styled,
                 style_id: style.id, style_name: style.name };
+    if (overrideNote) p.workflow_note = overrideNote;                                  // 2.540.3: shown in the worker log
     /* 2.316.0 (Tim: "show the first image generated, the controlnet
        preprocessor gen and the final generation in the gallery"): Basic
        Settings -> ControlNet ticked = first image -> control map -> final
@@ -1852,9 +1862,9 @@ function mount(app) {
       const rw = imageRefs.resolve(styled, p.images.length, core.BASE);
       if (rw.swapped) {
         p.workflow = rw.workflow;
-        p.workflow_note = rw.note;
+        p.workflow_note = [p.workflow_note, rw.note].filter(Boolean).join(" · ");
         if (p.images.length > rw.slots) p.images = p.images.slice(0, rw.slots);
-      } else if (rw.note) p.workflow_note = rw.note;
+      } else if (rw.note) p.workflow_note = [p.workflow_note, rw.note].filter(Boolean).join(" · ");
     }
     // 2.340.0: Qwen Image 2.1 reads the dock's pictures as <image1..N>
     if (qwenRefs.isQwen21Style(styled, core.BASE)) {

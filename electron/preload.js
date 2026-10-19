@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld("h3shell", {
   close: () => ipcRenderer.invoke("h3:win", "close"),
   isMaximized: () => ipcRenderer.invoke("h3:win", "isMaximized"),
   onMaximized: (cb) => ipcRenderer.on("h3:maximized", (_e, v) => cb(v)),
+  relaunch: () => ipcRenderer.invoke("h3:relaunch"),   // 2.540.5: ⟳ Restart now after an update
   // 2.367.0: the left dock's 📷 screenshot / ⏺ screen recording (electron/capture.js)
   capture: {
     setup: (p) => ipcRenderer.invoke("capture:setup", p),

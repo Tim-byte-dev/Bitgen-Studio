@@ -30,7 +30,7 @@ yue2(we will probably add more models later"). The dispatch is BY ARCH ID
 engine field to "comfy", so the arch is the truth): every comfy arch rides
 an Export (API) workflow through the user's ComfyUI exactly as before;
 "yue2" shells the OFFICIAL YuE2 pipeline (pinned yue2-v0.1.6) from its own
-venv — install with get-yue2.ps1, first run downloads m-a-p/YuE2-3B from
+venv — install it in Settings > Add-ons (2.540.4; get-yue2.ps1 is the manual route), first run downloads m-a-p/YuE2-3B from
 Hugging Face. Adding a model later = a musicArch entry + a starter style
 + (a workflow for comfy, or a run_<engine> branch here).
 
@@ -101,7 +101,7 @@ ENGINE_FOR = {"yue2": "yue2"}
 
 
 def _yue2_cli(app_dir: Path):
-    """The pinned pipeline's CLI inside its own venv (get-yue2.ps1)."""
+    """The pinned pipeline's CLI inside its own venv (Settings > Add-ons / get-yue2.ps1)."""
     for p in (app_dir / "yue2" / ".venv" / "Scripts" / "yue2.exe",
               app_dir / "yue2" / ".venv" / "bin" / "yue2"):
         if p.exists():
@@ -119,8 +119,8 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
     app_dir = Path(cfg.get("_app_dir") or ".")
     cli = _yue2_cli(app_dir)
     if cli is None:
-        fail("YuE2 is not installed - run get-yue2.ps1 once (it makes a "
-             "Python 3.12 venv in yue2\\.venv and installs the pinned "
+        fail("YuE2 is not installed - install it in Settings > Add-ons > "
+             "YuE2 music (its own venv in yue2\\.venv, PyTorch + the pinned "
              "pipeline). Needs an NVIDIA GPU with BF16 and ~24 GB VRAM.")
     lyrics = str(params.get("prompt") or "").strip()
     if not lyrics:
@@ -145,13 +145,18 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
             say(f"[worker] ===== chunk {i + 1}/{batch}")
             say(f"[worker] YuE2 seed {s_i} - generating (first run downloads "
                 f"{model} from Hugging Face; later runs are offline-capable)")
-            cmd = [str(cli), "--model", model, "--input", str(req_file),
+            # 2.540.4: the pipeline's CLI is `yue2 generate --request FILE` (`--input` belongs to
+            # `yue2 batch`, and there is no default sub-command); the song lands in
+            # <output>/<id>/audio.flac. PYTHONUTF8: it reads the request with the
+            # locale's encoding - lyrics beyond ASCII need UTF-8 on Windows.
+            cmd = [str(cli), "generate", "--model", model, "--request", str(req_file),
                    "--output", str(out_dir), "--quiet"]
             say("@@CMD " + json.dumps(cmd))
             try:
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT, text=True,
-                                        encoding="utf-8", errors="replace")
+                                        encoding="utf-8", errors="replace",
+                                        env={**os.environ, "PYTHONUTF8": "1"})
                 tail = []
                 for line in proc.stdout:
                     line = line.rstrip()
@@ -164,7 +169,7 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
             if rc != 0:
                 fail("YuE2 exited with code " + str(rc) + " - last lines:\n"
                      + "\n".join(tail))
-            flac = out_dir / "audio.flac"
+            flac = out_dir / req["id"] / "audio.flac"
             if not flac.exists():
                 found = sorted(out_dir.rglob("*.flac")) if out_dir.exists() else []
                 if found:

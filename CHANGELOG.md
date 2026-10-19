@@ -8,6 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.540.5** — ⟳ Update bitGen Studio from GitHub (Settings ▸ General ▸ Updates)
+- **2.540.4** — 🧩 Settings ▸ Add-Ons (YuE2 Installed in the App) + The YuE2 Call Fixed
+- **2.540.3** — 🖼 a Checkpoint Override Only Where It Fits the Style; Installing from the Repo ✅
 - **2.540.2** — 🧩 the Setup Never Stops on a Node Pack (Timeouts, No Git Prompts, Safe Temp Cleanup)
 - **2.540.1** — 📦 the Clean Public Repo, Screenshots + The Beta Testing Status; Four Unit Tests Fixed
 - **2.540.0** — 🎬 Blender / Unreal Renders Made Real with the Reference Docker's Pictures (+ 3DREAL)

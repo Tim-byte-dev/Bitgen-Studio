@@ -16,6 +16,8 @@
 | 🖼️ **Image generation** (every built-in style) | ✅ Tested on real hardware - works |
 | 🎬 **Video generation** | ✅ Tested on real hardware - works |
 | 🎵 **Music** | ✅ Tested on real hardware - works |
+| 💬 **Local LLM** (chat, screenplays, ✨ Enhance) | ✅ Tested on real hardware - works |
+| 📦 **Installing from this repository** (Windows, the setup wizard: ComfyUI, PyTorch, the node packs) | ✅ Tested on a fresh install - works |
 | 🖌️ **The editors** (image editor, timeline, CAD sketches and 3D bodies) | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
 | 🏠 **House builder** | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
 | 🎮 **Unreal Engine and Daz Studio bridges** | 🧪 Experimental - tested only against stand-in servers, not inside the real programs |

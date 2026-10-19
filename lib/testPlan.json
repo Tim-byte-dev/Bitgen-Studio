@@ -1,7 +1,37 @@
 {
   "_comment": "bitGen Studio — the 🧩 Testing docker's checklist (lib/testPlan.js). auto = ticked by itself when the app sees it work; manual = you tick ✓ / ✗ (+ a note). Newest release first.",
-  "version": "2.540.0",
+  "version": "2.540.4",
   "groups": [
+    {
+      "id": "g5404",
+      "title": "2.540.4 — 🧩 Settings ▸ Add-ons: install YuE2 in the app",
+      "items": [
+        {
+          "id": "ao_tab",
+          "title": "Settings ▸ Add-ons lists YuE2 music and Viggle (native) - what each is for, needs, size, installed or not",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "ao_yue2",
+          "title": "⤓ Install YuE2: its log streams in the tab (venv, PyTorch 2.10 with CUDA, the pipeline) and ends ✓ installed",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "ao_song",
+          "title": "…then a song with the \"YuE2\" style in the Music docker (the first one downloads the model)",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "ao_remove",
+          "title": "🗑 Remove takes the yue2 folder away again (and ⤓ Install brings it back)",
+          "where": "app",
+          "manual": true
+        }
+      ]
+    },
     {
       "id": "g540",
       "title": "2.540.0 — 🖼 Blender / Unreal renders made real with the reference docker's pictures (+ 3DREAL)",

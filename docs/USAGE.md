@@ -2771,6 +2771,38 @@ The panel lists every saved layout:
 The button is highlighted while a layout is saved for the dockers that are
 open now.
 
+## ⟳ Update bitGen Studio from GitHub (2.540.5)
+
+**Settings ▸ General ▸ ⟳ Updates** shows your version, how bitGen Studio was installed (a git clone, or the full zip)
+and the GitHub repository it updates from.
+
+- **🔍 Check for updates** asks GitHub for the newest version and lists the new changes.
+- **⤓ Update now** puts the newest version in place. It asks first, and the log appears in the section.
+  - **A git clone** moves to GitHub's version. If you changed any of the app's own files, they are copied to
+    `backups\update-<time>\` first.
+  - **An install from the zip** downloads GitHub's copy and writes the files that changed.
+  - **Either way**, your projects, settings, styles, models, ComfyUI and saved quick prompts are not touched. When the
+    Node or Python package lists change, they are installed too.
+  - A folder with commits of its own (a developer's copy) is not updated. Use git there instead.
+- **⟳ Restart now** finishes the update in the desktop app. In a browser, close the window running `start.bat` and
+  start it again.
+- **A note on start:** a little after start, bitGen Studio checks quietly. If GitHub has a newer version, it says so
+  once.
+
+## 🧩 Settings ▸ Add-ons: optional engines installed in the app (2.540.4)
+
+**Settings ▸ Add-ons** lists the engines that are not part of the main install. For each one it shows what it is for,
+what it needs, how big it is and whether it is installed. **⤓ Install**, **⟳ Reinstall** and **🗑 Remove** work there,
+and the install log appears in the tab. One install runs at a time.
+
+- **YuE2 music**: the "YuE2" style in the Music docker (songs from lyrics plus a style caption).
+  - ⤓ Install makes its own Python environment in the app's `yue2` folder.
+  - It then installs PyTorch 2.10 with CUDA for your card and the pinned YuE2 pipeline (yue2-infer 0.1.6), about 5 GB.
+  - The model, m-a-p/YuE2-3B, downloads on the first song.
+  - It needs an NVIDIA GPU with BF16, about 24 GB of VRAM, and the app's Python 3.10 - 3.13.
+  - 🗑 Remove deletes the `yue2` folder.
+- **Viggle (native)**: starts its own installer. Its progress shows in the Queue.
+
 ## 🎬 Blender and Unreal renders made real with the reference docker's pictures (2.540.0)
 
 Each object in a Blender or Unreal scene can be matched to a picture in the References docker. The grey block called
