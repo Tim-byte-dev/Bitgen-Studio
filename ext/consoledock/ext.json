@@ -1,0 +1,9 @@
+{
+  "id": "consoledock",
+  "name": "Console",
+  "order": 90,
+  "html": "dock.html",
+  "scripts": [
+    "consoledock.js"
+  ]
+}

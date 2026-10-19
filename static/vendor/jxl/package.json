@@ -1,0 +1,1 @@
+{ "type": "module", "private": true, "description": "bitGen Studio: the vendored JPEG XL codecs are ES modules (lib/jxl.js imports them in Node)" }

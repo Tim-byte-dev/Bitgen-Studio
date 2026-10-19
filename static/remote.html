@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101216">
+<title>bitGen Studio — phone</title>
+<style>
+  :root { --bg:#101216; --panel:#181b21; --line:#262a33; --ink:#e8eaee; --dim:#9aa2b1;
+          --accent:#5b8cff; --ok:#3ecf8e; --bad:#ff6b6b; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+         padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+  header { padding:14px 16px; border-bottom:1px solid var(--line);
+           display:flex; align-items:center; gap:10px; position:sticky; top:0;
+           background:var(--bg); z-index:5; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--dim); }
+  .dot.on { background:var(--ok); }
+  main { padding:16px; max-width:640px; margin:0 auto; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px;
+          padding:14px; margin-bottom:14px; }
+  .card h2 { font-size:14px; margin:0 0 10px; color:var(--dim); font-weight:600;
+             text-transform:uppercase; letter-spacing:.04em; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  button, label.btn { flex:1 1 45%; min-height:52px; border-radius:12px; border:1px solid var(--line);
+           background:#20242c; color:var(--ink); font-size:15px; font-weight:500;
+           display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; }
+  button:active, label.btn:active { background:#2a2f39; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.rec { background:var(--bad); border-color:var(--bad); color:#fff; }
+  button:disabled { opacity:.5; }
+  input[type=file] { display:none; }
+  #log { font-size:13px; color:var(--dim); min-height:20px; }
+  #chat { display:flex; flex-direction:column; gap:10px; max-height:52vh; overflow:auto; }
+  .msg { padding:10px 12px; border-radius:12px; max-width:85%; white-space:pre-wrap;
+         word-wrap:break-word; }
+  .me { align-self:flex-end; background:#2b3b63; }
+  .ai { align-self:flex-start; background:#20242c; }
+  .composer { display:flex; gap:8px; margin-top:10px; }
+  .composer textarea { flex:1; background:#20242c; border:1px solid var(--line); color:var(--ink);
+        border-radius:12px; padding:10px; font:15px inherit; resize:none; min-height:48px; }
+  .composer button { flex:0 0 78px; }
+  .warn { background:#3a2d16; border-color:#5a4520; color:#f0d9a8; font-size:13px;
+          padding:10px 12px; border-radius:10px; margin-bottom:14px; }
+  .thumbs { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .thumbs div { font-size:12px; color:var(--dim); background:#20242c; padding:6px 9px;
+                border-radius:8px; }
+</style>
+</head>
+<body>
+<header><span class="dot" id="dot"></span><h1>bitGen Studio</h1>
+  <span id="proj" style="margin-left:auto;font-size:13px;color:var(--dim)"></span></header>
+<main>
+  <div class="warn" id="secwarn" hidden></div>
+
+  <div class="card">
+    <h2>Send to the studio</h2>
+    <div class="row">
+      <label class="btn">Take photo
+        <input type="file" accept="image/*" capture="environment" data-send></label>
+      <label class="btn">Record video
+        <input type="file" accept="video/*" capture="environment" data-send></label>
+      <label class="btn">From gallery
+        <input type="file" accept="image/*,video/*" multiple data-send></label>
+      <label class="btn">Audio file
+        <input type="file" accept="audio/*" data-send></label>
+    </div>
+    <div class="thumbs" id="sent"></div>
+    <div id="log" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Talk to the model</h2>
+    <div id="chat"></div>
+    <div class="composer">
+      <textarea id="say" placeholder="Type, or hold the mic button…" rows="1"></textarea>
+      <button id="send" class="primary">Send</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="mic">🎙 Hold to talk</button>
+      <label class="btn" id="voicefile">🎤 Record a clip
+        <input type="file" accept="audio/*" capture data-voice></label>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const chat = $("#chat"), log = $("#log");
+  let history = [];
+
+  const say = (t, cls) => {
+    const d = document.createElement("div");
+    d.className = "msg " + cls; d.textContent = t;
+    chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+    return d;
+  };
+  const note = (t) => { log.textContent = t; };
+
+  // Camera and mic through getUserMedia need a secure context; a LAN address on
+  // plain http is not one. The capture-attribute buttons above hand off to the
+  // phone's own camera and recorder and work anyway, so say what is available
+  // rather than showing a dead button.
+  const secure = window.isSecureContext && navigator.mediaDevices
+                 && navigator.mediaDevices.getUserMedia;
+  if (!secure) {
+    const w = $("#secwarn");
+    w.hidden = false;
+    w.textContent = "Over plain http the browser won't give this page the microphone "
+      + "directly, so hold-to-talk is off. The camera, video and voice buttons still "
+      + "work — they open your phone's own camera and recorder apps.";
+    $("#mic").disabled = true;
+  }
+
+  fetch("/api/remote/me").then(r => r.json()).then(d => {
+    if (d.ok) { $("#dot").classList.add("on"); $("#proj").textContent = d.project || ""; }
+    else note(d.error || "not connected");
+  }).catch(() => note("cannot reach the studio"));
+
+  // ---- sending pictures, video and audio --------------------------------
+  async function sendFile(file) {
+    note(`sending ${file.name || "capture"}…`);
+    const fd = new FormData();
+    fd.append("file", file, file.name || "capture");
+    const r = await fetch("/api/remote/upload", { method: "POST", body: fd });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) { note(d.error || "upload failed"); return; }
+    const t = document.createElement("div");
+    t.textContent = `${d.kind}: ${d.name}`;
+    $("#sent").appendChild(t);
+    note("added to the project");
+  }
+  document.querySelectorAll("input[data-send]").forEach(inp => {
+    inp.addEventListener("change", async () => {
+      for (const f of inp.files) { try { await sendFile(f); } catch (e) { note(String(e)); } }
+      inp.value = "";
+    });
+  });
+
+  // ---- chat -------------------------------------------------------------
+  async function ask(text) {
+    if (!text.trim()) return;
+    say(text, "me");
+    history.push({ role: "user", content: text });
+    const holder = say("…", "ai");
+    try {
+      const r = await fetch("/api/remote/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }) });
+      const d = await r.json().catch(() => ({}));
+      holder.textContent = d.reply || d.error || "no reply";
+      if (d.reply) history.push({ role: "assistant", content: d.reply });
+    } catch (e) { holder.textContent = String(e); }
+  }
+  $("#send").addEventListener("click", () => { const v = $("#say").value; $("#say").value = ""; ask(v); });
+  $("#say").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#send").click(); }
+  });
+
+  // ---- voice: a recorded clip -> whisper -> the model --------------------
+  async function sendVoice(blob, filename) {
+    const holder = say("🎙 …", "me");
+    const fd = new FormData();
+    fd.append("file", blob, filename);
+    fd.append("history", JSON.stringify(history));
+    try {
+      const r = await fetch("/api/remote/voice", { method: "POST", body: fd });
+      const d = await r.json().catch(() => ({}));
+      if (d.error) { holder.textContent = d.error; return; }
+      holder.textContent = d.heard || "(nothing heard)";
+      if (d.heard) history.push({ role: "user", content: d.heard });
+      if (d.reply) { say(d.reply, "ai"); history.push({ role: "assistant", content: d.reply }); }
+    } catch (e) { holder.textContent = String(e); }
+  }
+  document.querySelector("input[data-voice]").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (f) sendVoice(f, f.name || "voice.m4a");
+    e.target.value = "";
+  });
+
+  // hold-to-talk, only where the browser allows it
+  if (secure) {
+    let rec = null, chunks = [];
+    const mic = $("#mic");
+    const start = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        rec = new MediaRecorder(stream);
+        chunks = [];
+        rec.ondataavailable = (e) => chunks.push(e.data);
+        rec.onstop = () => {
+          stream.getTracks().forEach(t => t.stop());
+          if (chunks.length) sendVoice(new Blob(chunks, { type: chunks[0].type }), "voice.webm");
+        };
+        rec.start(); mic.classList.add("rec"); mic.textContent = "● release to send";
+      } catch (e) { note("microphone refused: " + e.message); }
+    };
+    const stop = () => {
+      if (rec && rec.state !== "inactive") rec.stop();
+      rec = null; mic.classList.remove("rec"); mic.textContent = "🎙 Hold to talk";
+    };
+    mic.addEventListener("pointerdown", (e) => { e.preventDefault(); start(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(ev =>
+      mic.addEventListener(ev, stop));
+  }
+})();
+</script>
+</body>
+</html>

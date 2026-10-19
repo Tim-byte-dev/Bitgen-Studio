@@ -1,0 +1,11 @@
+{
+  "id": "previewdock",
+  "name": "Preview",
+  "order": 10,
+  "html": "dock.html",
+  "scripts": [
+    "audioviz.js",
+    "vr360.js",
+    "seedvr2.js", "dlss5.js"
+  ]
+}

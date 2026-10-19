@@ -1,0 +1,17 @@
+{
+  "name": "bitgen-studio",
+  "version": "2.540.2",
+  "private": true,
+  "description": "bitGen Studio - a local, self-hosted studio for video, image, audio and speech generation on Windows, driving ComfyUI.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "stub": "SD_CLI_STUB=1 node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "jsdom": "^30.0.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "license": "MIT"
+}

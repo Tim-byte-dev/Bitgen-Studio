@@ -1,0 +1,297 @@
+// DAZ Script
+// bitGen Studio — the Daz Studio -> bitGen bridge, 1.0.0 (bitGen 2.405.0).
+//
+// Tim (verbatim): "can we have a daz3d to bitgen bridge?" and "can we add option to merge daz3d scene with blender scene
+// - create a dialog for list of objects, lights, cameras to merge. dialogs must have a titlebar".
+//
+// Install: copy the "Scripts/bitGen" folder of this zip into a Daz content library (for example
+// Documents/DAZ 3D/Studio/My Library/Scripts/bitGen), then Content Library -> Scripts -> bitGen -> double-click
+// "bitGen Bridge". bitGen Studio must be running on this computer (its address is asked once and remembered).
+//
+// What it sends (bitGen's routes/daz.js -> lib/dazBridge.js):
+//   1  Render the animation -> real : Daz renders the timeline's play range with its own render settings (Iray /
+//      Filament / 3Delight) as an image series; bitGen makes daz_<name>.mp4 and, ticked, runs LTX 2.3 · 3DREAL on it
+//   2  Render this frame -> a picture : one render -> bitGen's Gallery + Images assets
+//   3  The scene as 3D -> bitGen's .blend preview : FBX (figures + rig + animation, props, lights, cameras) -> Blender
+//   4  The scene as 3D -> merge : the same FBX, held in bitGen for its Merge dialog (pick the objects, lights,
+//      cameras to bring into the .blend open in bitGen's preview)
+//   5  The selected figure / prop -> a 3D model : FBX -> .glb in the project's models3d (+ a timeline 3D layer)
+// The files are written into Daz's temp folder; ONE small JSON with their paths goes to bitGen with curl (Windows 10+
+// and macOS ship it). Only scripting that Daz Studio 4.2x and Daz Studio 2025 / 6 both have is used.
+
+(function () {
+	var BRIDGE_VERSION = "1.0.0";
+	var KEY = "bitGen/Bridge";
+	var MODES = [
+		"Render the animation -> real (LTX 2.3 + 3DREAL)",
+		"Render this frame -> a picture (Gallery)",
+		"The scene as 3D -> open in bitGen's .blend preview",
+		"The scene as 3D -> merge into the scene open in bitGen",
+		"The selected figure / prop -> a 3D model (models3d)"
+	];
+	var KIND = ["render", "picture", "scene", "scene", "figure"];
+	var REAL = [["Auto (newest)", ""], ["strong v2", "3DREAL-strong-v2.safetensors"], ["strong", "3DREAL-strong.safetensors"],
+		["light", "3DREAL-light.safetensors"]];
+
+	/* ---------- small helpers */
+	function str(v) { return v === undefined || v === null ? "" : String(v); }
+	function quote(s) {
+		return '"' + str(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r")
+			.replace(/\t/g, "\\t") + '"';
+	}
+	// JSON.stringify where the script engine has it, else a small one (strings, numbers, booleans, arrays, objects)
+	function toJson(v) {
+		if (typeof JSON !== "undefined" && JSON.stringify) { return JSON.stringify(v); }
+		if (v === null || v === undefined) { return "null"; }
+		if (typeof v === "number") { return isFinite(v) ? String(v) : "null"; }
+		if (typeof v === "boolean") { return v ? "true" : "false"; }
+		if (typeof v === "string") { return quote(v); }
+		var i, out = [];
+		if (v instanceof Array) {
+			for (i = 0; i < v.length; i++) { out.push(toJson(v[i])); }
+			return "[" + out.join(",") + "]";
+		}
+		for (i in v) { if (v.hasOwnProperty(i) && v[i] !== undefined) { out.push(quote(i) + ":" + toJson(v[i])); } }
+		return "{" + out.join(",") + "}";
+	}
+	function fromJson(s) {
+		if (!s) { return null; }
+		try {
+			if (typeof JSON !== "undefined" && JSON.parse) { return JSON.parse(s); }
+			return eval("(" + s + ")");
+		} catch (e) { return null; }
+	}
+	function slash(p) { return str(p).replace(/\\/g, "/"); }
+	function baseName(p) { var s = slash(p).split("/"); return s[s.length - 1]; }
+	function stemOf(p) { return baseName(p).replace(/\.[^.]+$/, ""); }
+	function safe(s) { return str(s).replace(/[^A-Za-z0-9 ._()-]+/g, " ").replace(/^\s+|\s+$/g, "").replace(/\s+/g, "_") || "daz"; }
+	function writeText(path, text) {
+		var f = new DzFile(path);
+		if (!f.open(DzFile.WriteOnly)) { return false; }
+		f.write(text);
+		f.close();
+		return true;
+	}
+	function readText(path) {
+		var f = new DzFile(path);
+		if (!f.exists() || !f.open(DzFile.ReadOnly)) { return ""; }
+		var t = f.read();
+		f.close();
+		return str(t);
+	}
+	function fileExists(path) { return new DzFile(path).exists(); }
+	function workDir() {
+		var d = slash(App.getTempPath()) + "/bitgen_bridge/" + String(new Date().getTime());
+		new DzDir(slash(App.getTempPath())).mkpath(d);
+		return d;
+	}
+	function images(dir) {
+		var d = new DzDir(dir);
+		var list = d.entryList(["*.png", "*.jpg", "*.jpeg", "*.tif", "*.tiff", "*.bmp"], DzDir.Files, DzDir.Name);
+		var out = [];
+		for (var i = 0; i < list.length; i++) { out.push(dir + "/" + list[i]); }
+		return out;
+	}
+	function curlPath() {
+		var c = ["C:/Windows/System32/curl.exe", "/usr/bin/curl", "/usr/local/bin/curl", "/opt/homebrew/bin/curl"];
+		for (var i = 0; i < c.length; i++) { if (fileExists(c[i])) { return c[i]; } }
+		return "curl";
+	}
+	// run curl, wait for it (the UI kept alive), -> {code: http status, body: object|null, text}
+	function http(url, jsonPath, dir, timeoutSec) {
+		var resp = dir + "/response.json";
+		var args = [curlPath(), "-s", "-S", "-o", resp, "-w", "%{http_code}"];
+		if (jsonPath) { args = args.concat(["-X", "POST", "-H", "Content-Type: application/json", "--data-binary", "@" + jsonPath]); }
+		args.push(url);
+		var p = new DzProcess(args);
+		if (!p.start()) { return { code: 0, body: null, text: "curl could not start - is curl installed?" }; }
+		var t0 = new Date().getTime(), out = "";
+		while (p.running) {
+			processEvents();
+			out += str(p.readStdout());
+			if (new Date().getTime() - t0 > (timeoutSec || 360) * 1000) { if (p.kill) { p.kill(); } return { code: 0, body: null, text: "bitGen did not answer in time" }; }
+		}
+		out += str(p.readStdout());
+		var text = readText(resp);
+		return { code: parseInt(out, 10) || 0, body: fromJson(text), text: text };
+	}
+
+	/* ---------- the scene's timing (Daz keeps 4800 ticks a second) */
+	function timing() {
+		var step = Scene.getTimeStep();
+		var fps = step > 0 ? Math.round(4800 / step) : 30;
+		var r = Scene.getPlayRange();
+		var start = Math.round(r.start / step), end = Math.round(r.end / step);
+		var cur = Math.round(Scene.getTime() / step);
+		return { fps: fps, step: step, start: start, end: end, current: cur, range: r };
+	}
+	function sceneName() {
+		var f = str(Scene.getFilename());
+		return f ? stemOf(f) : "daz_scene";
+	}
+
+	/* ---------- the dialog (a window with its own title bar) */
+	var S = new DzAppSettings(KEY);
+	var dlg = new DzBasicDialog();
+	dlg.caption = "bitGen Bridge " + BRIDGE_VERSION;
+	dlg.setAcceptButtonText("Send to bitGen");
+
+	var gConn = new DzVGroupBox(dlg); gConn.title = "bitGen Studio (running on this computer)";
+	var eUrl = new DzLineEdit(gConn); eUrl.text = S.getStringValue("url", "http://127.0.0.1:8311");
+	var bTest = new DzPushButton(gConn); bTest.text = "Test connection";
+	var lConn = new DzLabel(gConn); lConn.text = "";
+	dlg.addWidget(gConn);
+
+	var gWhat = new DzVGroupBox(dlg); gWhat.title = "What to send";
+	var cMode = new DzComboBox(gWhat);
+	for (var mi = 0; mi < MODES.length; mi++) { cMode.addItem(MODES[mi]); }
+	cMode.currentItem = Math.max(0, Math.min(MODES.length - 1, S.getIntValue("mode", 0)));
+	var T = timing();
+	var lTime = new DzLabel(gWhat);
+	lTime.text = "Timeline play range: frames " + T.start + " - " + T.end + " at " + T.fps + " fps (" + ((T.end - T.start + 1) / T.fps).toFixed(1)
+		+ " s), now at frame " + T.current + ". The render uses Daz's own render settings (Iray / Filament / 3Delight).";
+	lTime.wordWrap = true;
+	dlg.addWidget(gWhat);
+
+	var gReal = new DzVGroupBox(dlg); gReal.title = "Render -> real (LTX 2.3 + 3DREAL in bitGen)";
+	var lLook = new DzLabel(gReal); lLook.text = "Looks like (the prompt):";
+	var eLook = new DzLineEdit(gReal); eLook.text = S.getStringValue("look", "");
+	var lReal = new DzLabel(gReal); lReal.text = "3DREAL variant:";
+	var cReal = new DzComboBox(gReal);
+	for (var ri = 0; ri < REAL.length; ri++) { cReal.addItem(REAL[ri][0]); }
+	cReal.currentItem = Math.max(0, Math.min(REAL.length - 1, S.getIntValue("real", 0)));
+	var lStr = new DzLabel(gReal); lStr.text = "Strength (0 - 2):";
+	var eStr = new DzLineEdit(gReal); eStr.text = S.getStringValue("strength", "1");
+	var kNow = new DzCheckBox(gReal); kNow.text = "Render in bitGen right away"; kNow.checked = S.getBoolValue("now", true);
+	dlg.addWidget(gReal);
+
+	var g3d = new DzVGroupBox(dlg); g3d.title = "3D (FBX through Blender in bitGen)";
+	var kLights = new DzCheckBox(g3d); kLights.text = "Lights"; kLights.checked = S.getBoolValue("lights", true);
+	var kCams = new DzCheckBox(g3d); kCams.text = "Cameras"; kCams.checked = S.getBoolValue("cameras", true);
+	var kAnim = new DzCheckBox(g3d); kAnim.text = "Animation (the timeline)"; kAnim.checked = S.getBoolValue("anim", true);
+	var kLayer = new DzCheckBox(g3d); kLayer.text = "Figure: also add it as a 3D layer on bitGen's timeline"; kLayer.checked = S.getBoolValue("layer", false);
+	dlg.addWidget(g3d);
+
+	function test() {
+		var d = workDir();
+		var r = http(slash(eUrl.text).replace(/\/+$/, "") + "/api/daz/ping", null, d, 15);
+		lConn.text = r.code === 200 && r.body && r.body.ok
+			? "Connected: " + r.body.app + " " + r.body.version + " - project " + r.body.project + (r.body.blender ? "" : " (Blender not found - 3D sends need it)")
+			: "No answer from bitGen at " + eUrl.text + " (" + (r.text || r.code) + ")";
+	}
+	connect(bTest, "clicked()", test);
+
+	if (!dlg.exec()) { return; }
+	var mode = cMode.currentItem, url = slash(eUrl.text).replace(/\/+$/, "");
+	S.setStringValue("url", url); S.setIntValue("mode", mode); S.setStringValue("look", eLook.text); S.setIntValue("real", cReal.currentItem);
+	S.setStringValue("strength", eStr.text); S.setBoolValue("now", kNow.checked); S.setBoolValue("lights", kLights.checked);
+	S.setBoolValue("cameras", kCams.checked); S.setBoolValue("anim", kAnim.checked); S.setBoolValue("layer", kLayer.checked);
+
+	var dir = workDir();
+	var name = safe(sceneName());
+	var body = { kind: KIND[mode], name: name, bridge: BRIDGE_VERSION, daz: str(App.versionString) };
+
+	/* ---------- render (the animation / this frame) with Daz's own settings, put back after */
+	function render(series) {
+		var mgr = App.getRenderMgr();
+		var o = mgr.getRenderOptions();
+		var keep = { img: o.renderImgToId, imgF: o.renderImgFilename, mov: o.renderMovToId, ser: o.renderSerFilename,
+			st: o.startTime, en: o.endTime, cur: o.isCurrentFrameRender };
+		var target = series ? dir + "/frame.png" : dir + "/still.png";
+		o.renderImgToId = DzRenderOptions.DirectToFile;
+		o.renderImgFilename = target;
+		if (series) {
+			o.isCurrentFrameRender = false;
+			o.renderMovToId = DzRenderOptions.ImageSeries;
+			o.renderSerFilename = target;
+			o.startTime = T.range.start;
+			o.endTime = T.range.end;
+		} else {
+			o.isCurrentFrameRender = true;
+		}
+		if (o.applyChanges) { o.applyChanges(); }
+		var ok = mgr.doRender(o);
+		o.renderImgToId = keep.img; o.renderImgFilename = keep.imgF; o.renderMovToId = keep.mov; o.renderSerFilename = keep.ser;
+		o.startTime = keep.st; o.endTime = keep.en; o.isCurrentFrameRender = keep.cur;
+		if (o.applyChanges) { o.applyChanges(); }
+		return ok;
+	}
+	/* ---------- FBX (Daz's own exporter, silently) */
+	function exportFbx(selectedOnly) {
+		var ex = App.getExportMgr().findExporterByClassName("DzFbxExporter");
+		if (!ex) { return ""; }
+		var st = new DzFileIOSettings();
+		ex.getOptions(st, false, "");
+		st.setBoolValue("doSelected", !!selectedOnly);
+		st.setBoolValue("doVisible", true);
+		st.setBoolValue("doFigures", true);
+		st.setBoolValue("doProps", true);
+		st.setBoolValue("doLights", !selectedOnly && kLights.checked);
+		st.setBoolValue("doCameras", !selectedOnly && kCams.checked);
+		st.setBoolValue("doAnims", kAnim.checked);
+		st.setBoolValue("doMorphs", false);
+		st.setBoolValue("doEmbed", true);
+		st.setBoolValue("doCopyTextures", false);
+		st.setBoolValue("doDiffuseOpacity", false);
+		st.setBoolValue("doMergeClothing", false);
+		st.setBoolValue("doStaticClothing", false);
+		st.setBoolValue("degradedSkinning", true);
+		st.setBoolValue("degradedScaling", true);
+		st.setBoolValue("doSubD", false);
+		st.setBoolValue("doCollapseUVTiles", false);
+		st.setStringValue("rules", "");
+		st.setStringValue("format", "FBX 2012 -- Binary");
+		st.setIntValue("RunSilent", 1);
+		var file = dir + "/" + (selectedOnly ? "figure" : "scene") + ".fbx";
+		var err = ex.writeFile(file, st);
+		ex.deleteLater();
+		return fileExists(file) ? file : "";
+	}
+
+	var problem = "";
+	if (mode === 0) {
+		if (T.end <= T.start) { problem = "Set the timeline's play range first (at least two frames)."; }
+		else if (!render(true)) { problem = "The render was cancelled or failed."; }
+		else {
+			body.frames = images(dir);
+			body.fps = T.fps; body.start = T.start; body.end = T.end;
+			body.prompt = eLook.text; body.ic_lora = REAL[cReal.currentItem][1];
+			body.ic_strength = parseFloat(eStr.text) || 1; body.render = kNow.checked;
+			if (body.frames.length < 2) { problem = "Daz wrote no image series into " + dir + " - check the render settings."; }
+		}
+	} else if (mode === 1) {
+		if (!render(false)) { problem = "The render was cancelled or failed."; }
+		else {
+			var stills = images(dir);
+			body.file = stills.length ? stills[0] : "";
+			body.name = name + "_f" + T.current;
+			if (!body.file) { problem = "Daz wrote no picture into " + dir + "."; }
+		}
+	} else if (mode === 2 || mode === 3) {
+		body.file = exportFbx(false);
+		body.fps = T.fps; body.start = T.start; body.end = T.end; body.merge = mode === 3;
+		if (!body.file) { problem = "Daz's FBX exporter wrote nothing."; }
+	} else {
+		var sel = Scene.getPrimarySelection();
+		if (!sel) { problem = "Select a figure or a prop first."; }
+		else {
+			var sk = sel.getSkeleton ? sel.getSkeleton() : null;
+			body.name = safe(str((sk || sel).getLabel ? (sk || sel).getLabel() : (sk || sel).name));
+			body.file = exportFbx(true);
+			body.layer = kLayer.checked;
+			if (!body.file) { problem = "Daz's FBX exporter wrote nothing."; }
+		}
+	}
+	if (problem) { MessageBox.warning(problem, "bitGen Bridge", "&OK", ""); return; }
+
+	var jsonPath = dir + "/send.json";
+	writeText(jsonPath, toJson(body));
+	var r = http(url + "/api/daz/send", jsonPath, dir, 600);
+	if (r.code === 200 && r.body && r.body.ok) {
+		MessageBox.information("bitGen: " + str(r.body.message || "sent")
+			+ (r.body.state === "merge" ? "\n\nSwitch to bitGen: its Merge dialog lists the objects, lights and cameras." : ""), "bitGen Bridge", "&OK");
+	} else {
+		MessageBox.warning("bitGen did not take it" + (r.code ? " (HTTP " + r.code + ")" : "") + ":\n"
+			+ str((r.body && (r.body.error || r.body.message)) || r.text || "no answer - is bitGen Studio running at " + url + "?"), "bitGen Bridge", "&OK", "");
+	}
+})();

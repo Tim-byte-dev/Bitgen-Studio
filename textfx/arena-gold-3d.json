@@ -1,0 +1,984 @@
+{
+ "v": 1,
+ "id": "psd:arena-gold-3d",
+ "name": "Arena Gold 3D",
+ "source": "7374-arena-golden-3d-font-style-text-effect.psd",
+ "ref": {
+  "inkW": 1414,
+  "inkH": 322
+ },
+ "fill": "#fefefe",
+ "font": {
+  "family": "blantic",
+  "weight": 400
+ },
+ "nodes": [
+  {
+   "type": "group",
+   "name": "shadow",
+   "blend": "normal",
+   "opacity": 1,
+   "styles": {
+    "shadow": {
+     "on": true,
+     "color": "#000000",
+     "opacity": 0.05,
+     "angle": 90,
+     "distance": 130,
+     "size": 80
+    },
+    "shadows": [
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.07,
+      "angle": 90,
+      "distance": 120,
+      "size": 80
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.1,
+      "angle": 140,
+      "distance": 80,
+      "size": 70
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.15,
+      "angle": 140,
+      "distance": 60,
+      "size": 50
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.17,
+      "angle": 140,
+      "distance": 30,
+      "size": 30
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.2,
+      "angle": 140,
+      "distance": 15,
+      "size": 15
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.25,
+      "angle": 140,
+      "distance": 7,
+      "size": 7
+     },
+     {
+      "on": true,
+      "color": "#000000",
+      "opacity": 0.3,
+      "angle": 140,
+      "distance": 3,
+      "size": 4
+     }
+    ]
+   },
+   "kids": [
+    {
+     "type": "text",
+     "name": "Arena copy 20",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.09332,
+      "ey": 0,
+      "dx": 0.0264,
+      "dy": 0
+     }
+    }
+   ]
+  },
+  {
+   "type": "group",
+   "name": "butom effect",
+   "blend": "pass-through",
+   "opacity": 1,
+   "kids": [
+    {
+     "type": "text",
+     "name": "Arena copy 19",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.08783,
+      "ey": 0,
+      "dx": 0.02484,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 18",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.08234,
+      "ey": 0,
+      "dx": 0.02329,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 17",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.07685,
+      "ey": 0,
+      "dx": 0.02174,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 16",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.07136,
+      "ey": 0,
+      "dx": 0.02019,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 15",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.06587,
+      "ey": 0,
+      "dx": 0.01863,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 14",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.06038,
+      "ey": 0,
+      "dx": 0.01708,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 13",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#713000",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.05489,
+      "ey": 0,
+      "dx": 0.01553,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 12",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.0494,
+      "ey": 0,
+      "dx": 0.01398,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 11",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.04391,
+      "ey": 0,
+      "dx": 0.01242,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 10",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.03842,
+      "ey": 0,
+      "dx": 0.01087,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 9",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.03293,
+      "ey": 0,
+      "dx": 0.00932,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 8",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.02745,
+      "ey": 0,
+      "dx": 0.00776,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 7",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.02196,
+      "ey": 0,
+      "dx": 0.00621,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 6",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.01647,
+      "ey": 0,
+      "dx": 0.00466,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": -0.01098,
+      "ey": 0,
+      "dx": 0.00311,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#bc6f00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 60,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 0.78,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     }
+    }
+   ]
+  },
+  {
+   "type": "group",
+   "name": "top effect",
+   "blend": "pass-through",
+   "opacity": 1,
+   "kids": [
+    {
+     "type": "text",
+     "name": "Arena copy 5",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 1,
+     "styles": {
+      "colorOverlay": {
+       "on": true,
+       "color": "#ff8400",
+       "opacity": 1,
+       "blend": "normal"
+      },
+      "bevel": {
+       "on": true,
+       "style": "inner bevel",
+       "depth": 100,
+       "direction": "up",
+       "size": 30,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#ffffff",
+       "hiOpacity": 1,
+       "shColor": "#1c021c",
+       "shOpacity": 0.8,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      },
+      "satin": {
+       "on": true,
+       "color": "#fcff00",
+       "opacity": 0.2,
+       "angle": -68,
+       "distance": 5,
+       "size": 50,
+       "invert": true,
+       "blend": "multiply"
+      }
+     },
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "glitter",
+     "blend": "screen",
+     "opacity": 0.7,
+     "fillOpacity": 1,
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     },
+     "styles": {
+      "patternOverlay": {
+       "on": true,
+       "pattern": "glitter",
+       "c1": "#fff7a8",
+       "c2": "#000000",
+       "scale": 800,
+       "blend": "normal",
+       "opacity": 1
+      }
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 2",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 0,
+     "styles": {
+      "bevel": {
+       "on": true,
+       "style": "inner bevel",
+       "depth": 100,
+       "direction": "up",
+       "size": 12,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 1,
+       "shColor": "#1c021c",
+       "shOpacity": 0,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 3",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 0,
+     "styles": {
+      "bevel": {
+       "on": true,
+       "style": "inner bevel",
+       "depth": 100,
+       "direction": "up",
+       "size": 12,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 1,
+       "shColor": "#1c021c",
+       "shOpacity": 0,
+       "hiBlend": "screen",
+       "shBlend": "multiply"
+      }
+     },
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     }
+    },
+    {
+     "type": "text",
+     "name": "Arena copy 4",
+     "blend": "normal",
+     "opacity": 1,
+     "fillOpacity": 0,
+     "styles": {
+      "stroke": {
+       "on": true,
+       "color": "#ffcc00",
+       "opacity": 1,
+       "size": 6,
+       "position": "outside"
+      },
+      "bevel": {
+       "on": true,
+       "style": "stroke emboss",
+       "depth": 100,
+       "direction": "up",
+       "size": 10,
+       "soften": 0,
+       "angle": 90,
+       "altitude": 30,
+       "hiColor": "#fff600",
+       "hiOpacity": 0,
+       "shColor": "#642100",
+       "shOpacity": 1,
+       "hiBlend": "screen",
+       "shBlend": "multiply",
+       "gloss": [
+        [
+         0,
+         0
+        ],
+        [
+         32,
+         74
+        ],
+        [
+         64,
+         219
+        ],
+        [
+         96,
+         187
+        ],
+        [
+         128,
+         0
+        ],
+        [
+         159,
+         175
+        ],
+        [
+         191,
+         202
+        ],
+        [
+         223,
+         2
+        ],
+        [
+         255,
+         255
+        ]
+       ]
+      }
+     },
+     "t": {
+      "ex": 0,
+      "ey": 0,
+      "dx": 0,
+      "dy": 0
+     }
+    }
+   ]
+  },
+  {
+   "type": "text",
+   "name": "your text here",
+   "blend": "normal",
+   "opacity": 1,
+   "fillOpacity": 0,
+   "t": {
+    "ex": 0,
+    "ey": 0,
+    "dx": 0,
+    "dy": 0
+   }
+  }
+ ],
+ "notes": {
+  "decor": 10,
+  "hidden": 0,
+  "skipped": 0,
+  "glossLost": 20,
+  "skew": 0
+ }
+}

@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "name": "End card",
+  "description": "Thanks for watching and a red subscribe button",
+  "w": 1920,
+  "h": 1080,
+  "layers": [
+    {
+      "name": "EC thanks",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0,
+          "len": 5,
+          "opacity": 1,
+          "label": "Message",
+          "text": {
+            "content": "Thanks for watching",
+            "font": "Arial",
+            "size": 96,
+            "color": "#ffffff",
+            "bold": true,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 4,
+            "shadow": true,
+            "align": "center"
+          },
+          "tf": {
+            "x": 0,
+            "y": -90,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "scale": 0.85
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "scale": 1
+            },
+            {
+              "at": 4.5,
+              "op": 1
+            },
+            {
+              "at": 5,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EC button",
+      "text": false,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.5,
+          "len": 4.5,
+          "opacity": 1,
+          "name": "ec_button.png",
+          "tf": {
+            "x": 0,
+            "y": 70,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "scale": 0.85
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "scale": 1
+            },
+            {
+              "at": 4.0,
+              "op": 1
+            },
+            {
+              "at": 4.5,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EC call",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.6,
+          "len": 4.4,
+          "opacity": 1,
+          "label": "Button text",
+          "text": {
+            "content": "SUBSCRIBE",
+            "font": "Arial",
+            "size": 48,
+            "color": "#ffffff",
+            "bold": true,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 0,
+            "shadow": false,
+            "align": "center"
+          },
+          "tf": {
+            "x": 0,
+            "y": 70,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "scale": 0.85
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "scale": 1
+            },
+            {
+              "at": 3.9000000000000004,
+              "op": 1
+            },
+            {
+              "at": 4.4,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

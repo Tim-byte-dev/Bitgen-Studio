@@ -1,0 +1,222 @@
+{
+  "_comment": [
+    "FLUX 3 Image Klein BASE - Text to Image, with a real negative prompt (cfg 3.5, 50 steps).",
+    "2.502.0 (Tim: \"add flux 3 klein model\"). The base checkpoint is the undistilled one (for LoRA training and",
+    "the most faithful renders); the distilled style is about 3x faster.",
+    "",
+    "MODELS (ComfyUI's OWN folders; black-forest-labs/flux-3-image-klein-comfy on Hugging Face - gated, accept the",
+    "FLUX Kommunity licence there first; free commercial use under USD 5M yearly revenue):",
+    "  models/diffusion_models/flux3-image-klein-int8-convrot.safetensors   (distilled, 16 steps, cfg 1)",
+    "  models/diffusion_models/flux3-image-klein-base-int8-convrot.safetensors (base, 50 steps, cfg 3.5)",
+    "  models/text_encoders/qwen3vl_4b_int8_convrot.safetensors   (CLIPLoader type flux3)",
+    "  models/vae/flux2-vae.safetensors",
+    "bf16 (11 GB) and nvfp4 (Blackwell only) builds sit beside the int8 ones - set the style's Model to use one.",
+    "Needs ComfyUI 0.41.0 or later (FLUX 3 support). BFL advise a prompt upsampler: write a long, specific",
+    "prompt (or let the app's LLM expand it) - short prompts under-perform.",
+    "The scheduler is BasicScheduler 'simple' on the model's own sampling (model-agnostic core node); ComfyUI's",
+    "own FLUX 3 templates are subgraphs - export one with Export (API) and use it as the workflow if it differs."
+  ],
+  "70": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "71": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+      "type": "flux3",
+      "device": "default"
+    }
+  },
+  "72": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "101": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "70",
+        0
+      ],
+      "clip": [
+        "71",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "102": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "101",
+        0
+      ],
+      "clip": [
+        "101",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "103": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "102",
+        0
+      ],
+      "clip": [
+        "102",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "104": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "103",
+        0
+      ],
+      "clip": [
+        "103",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "74": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  },
+  "67": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  },
+  "63": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "positive": [
+        "74",
+        0
+      ],
+      "negative": [
+        "67",
+        0
+      ],
+      "cfg": 3.5
+    }
+  },
+  "62": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 50,
+      "denoise": 1.0
+    }
+  },
+  "61": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "73": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 0
+    }
+  },
+  "66": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "64": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "73",
+        0
+      ],
+      "guider": [
+        "63",
+        0
+      ],
+      "sampler": [
+        "61",
+        0
+      ],
+      "sigmas": [
+        "62",
+        0
+      ],
+      "latent_image": [
+        "66",
+        0
+      ]
+    }
+  },
+  "65": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "64",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "H3-Studio",
+      "images": [
+        "65",
+        0
+      ]
+    }
+  }
+}

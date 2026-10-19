@@ -1,0 +1,473 @@
+{
+  "_comment": [
+    "FLUX 3 Image Klein BASE - IMAGE EDIT, 4 reference-image slots, 4 LoRA slots (cfg 3.5, 50 steps, real negative).",
+    "The edit sibling the FLUX 3 Klein base style switches to when reference pictures are given (lib/imageRefs.js).",
+    "2.502.0 (Tim: \"add flux 3 klein model\" + \"in edit image mode, show only models that can edit the images\").",
+    "Built from the FLUX.2 Klein edit graph (Tim's upload of ComfyUI's template): each reference goes",
+    "LoadImage -> ImageScaleToTotalPixels (1 MP, as FLUX 3's templates resize them) -> VAEEncode -> a PAIR of",
+    "ReferenceLatent nodes (positive + negative chains); FLUX 3 reads the same reference latents ComfyUI's",
+    "'Set Reference Multi Latent' appends. Picture 1 sets the output size (GetImageSize). In the prompt the",
+    "pictures are <ref_image_0>, <ref_image_1>, ... in slot order (FLUX 3's own naming).",
+    "Slots 81-84 and LoRAs 101-104 ship empty; bitGen Studio fills the ones it needs and removes the rest.",
+    "AT LEAST ONE REFERENCE IMAGE IS REQUIRED. Distilled: cfg 1, 16 steps; for the BASE checkpoint set the",
+    "style's Model to flux3-image-klein-base-int8-convrot.safetensors, cfg 3.5, ~50 steps.",
+    "",
+    "MODELS (ComfyUI's OWN folders; black-forest-labs/flux-3-image-klein-comfy on Hugging Face - gated, accept the",
+    "FLUX Kommunity licence there first; free commercial use under USD 5M yearly revenue):",
+    "  models/diffusion_models/flux3-image-klein-int8-convrot.safetensors   (distilled, 16 steps, cfg 1)",
+    "  models/diffusion_models/flux3-image-klein-base-int8-convrot.safetensors (base, 50 steps, cfg 3.5)",
+    "  models/text_encoders/qwen3vl_4b_int8_convrot.safetensors   (CLIPLoader type flux3)",
+    "  models/vae/flux2-vae.safetensors",
+    "bf16 (11 GB) and nvfp4 (Blackwell only) builds sit beside the int8 ones - set the style's Model to use one.",
+    "Needs ComfyUI 0.41.0 or later (FLUX 3 support). BFL advise a prompt upsampler: write a long, specific",
+    "prompt (or let the app's LLM expand it) - short prompts under-perform.",
+    "The scheduler is BasicScheduler 'simple' on the model's own sampling (model-agnostic core node); ComfyUI's",
+    "own FLUX 3 templates are subgraphs - export one with Export (API) and use it as the workflow if it differs."
+  ],
+  "70": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "71": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+      "type": "flux3",
+      "device": "default"
+    }
+  },
+  "72": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "101": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "70",
+        0
+      ],
+      "clip": [
+        "71",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "102": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "101",
+        0
+      ],
+      "clip": [
+        "101",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "103": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "102",
+        0
+      ],
+      "clip": [
+        "102",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "104": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "103",
+        0
+      ],
+      "clip": [
+        "103",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "74": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  },
+  "67": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  },
+  "81": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    }
+  },
+  "91": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "81",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1
+    }
+  },
+  "111": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "91",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "121": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "74",
+        0
+      ],
+      "latent": [
+        "111",
+        0
+      ]
+    }
+  },
+  "131": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "67",
+        0
+      ],
+      "latent": [
+        "111",
+        0
+      ]
+    }
+  },
+  "82": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    }
+  },
+  "92": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "82",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1
+    }
+  },
+  "112": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "92",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "122": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "121",
+        0
+      ],
+      "latent": [
+        "112",
+        0
+      ]
+    }
+  },
+  "132": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "131",
+        0
+      ],
+      "latent": [
+        "112",
+        0
+      ]
+    }
+  },
+  "83": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    }
+  },
+  "93": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "83",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1
+    }
+  },
+  "113": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "93",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "123": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "122",
+        0
+      ],
+      "latent": [
+        "113",
+        0
+      ]
+    }
+  },
+  "133": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "132",
+        0
+      ],
+      "latent": [
+        "113",
+        0
+      ]
+    }
+  },
+  "84": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    }
+  },
+  "94": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "84",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1
+    }
+  },
+  "114": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "94",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "124": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "123",
+        0
+      ],
+      "latent": [
+        "114",
+        0
+      ]
+    }
+  },
+  "134": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "133",
+        0
+      ],
+      "latent": [
+        "114",
+        0
+      ]
+    }
+  },
+  "100": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "91",
+        0
+      ]
+    }
+  },
+  "63": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "positive": [
+        "124",
+        0
+      ],
+      "negative": [
+        "134",
+        0
+      ],
+      "cfg": 3.5
+    }
+  },
+  "62": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 50,
+      "denoise": 1.0
+    }
+  },
+  "61": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "73": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 0
+    }
+  },
+  "66": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": [
+        "100",
+        0
+      ],
+      "height": [
+        "100",
+        1
+      ],
+      "batch_size": 1
+    }
+  },
+  "64": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "73",
+        0
+      ],
+      "guider": [
+        "63",
+        0
+      ],
+      "sampler": [
+        "61",
+        0
+      ],
+      "sigmas": [
+        "62",
+        0
+      ],
+      "latent_image": [
+        "66",
+        0
+      ]
+    }
+  },
+  "65": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "64",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "H3-Studio-Edit",
+      "images": [
+        "65",
+        0
+      ]
+    }
+  }
+}

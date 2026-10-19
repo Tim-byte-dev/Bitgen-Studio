@@ -1,0 +1,8 @@
+{
+  "name": "bitgen-studio-shell",
+  "version": "1.0.0",
+  "description": "Frameless Electron shell for bitGen Studio (optional).",
+  "main": "main.js",
+  "private": true,
+  "license": "MIT"
+}

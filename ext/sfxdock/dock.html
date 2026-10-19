@@ -1,0 +1,52 @@
+    <div class="bdock" id="sfxdock">
+      <div class="bhead" data-collapse="sfxdock">▾ SFX<button class="maxbtn" data-max="sfxdock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- 2.360.0 (Tim: "can you add a sfx docker, let user add video files, including .mov or audio files,
+             extract audio from video files allow user to select section from the waveform and trim - give option
+             to keep selected or delete selected"): the project's sound effects (projects/<p>/sfx, 48 kHz WAV).
+             📂 adds audio or video (the audio is extracted); drag across the waveform to select; ✂ Keep selected
+             leaves only the selection, 🗑 Delete selected cuts it out; ↶ Undo; → 🔊 copies it to the Sound
+             assets (timeline, references). lib/sfx.js + routes/sfx.js. -->
+        <div class="brow" style="gap:6px;align-items:end;flex-wrap:wrap">
+          <label style="flex:1;min-width:160px">Sound effect
+            <select id="sfxSel" title="This project's sound effects (projects/&lt;project&gt;/sfx)"></select></label>
+          <button class="ghost gbtn" id="sfxAdd" type="button"
+            title="Add audio or video files (.mov .mp4 .mkv .webm .avi ... / .wav .mp3 .flac .ogg .m4a ...) - a video's audio is extracted">📂 Add</button>
+          <input type="file" id="sfxFile" class="hidden" multiple
+            accept=".mov, .mp4, .m4v, .mkv, .webm, .avi, .wmv, .flv, .mpg, .mpeg, .3gp, .mts, .m2ts, .ts, .mxf, .wav, .mp3, .flac, .ogg, .m4a, .aac, .opus, .wma, .aif, .aiff">
+          <button class="ghost gbtn" id="sfxRefresh" type="button" title="Re-read the sound effects">⟳</button>
+          <button class="ghost gbtn" id="sfxToSound" type="button"
+            title="Copy this sound effect into the project's Sound assets (the timeline and the references use those)">→ 🔊</button>
+          <button class="ghost gbtn" id="sfxDel" type="button" title="Delete this sound effect">🗑</button>
+        </div>
+        <div class="brow" style="gap:6px;align-items:center;margin-top:6px">
+          <button class="ghost gbtn" id="sfxPlay" type="button" title="Play the selection (or the whole sound when nothing is selected)">▶</button>
+          <canvas id="sfxWave" height="64" style="flex:1;min-width:0;height:64px;cursor:crosshair;touch-action:none"
+            aria-label="Waveform - drag to select a part" title="Click to seek - DRAG to select a part"></canvas>
+          <button class="ghost gbtn" id="sfxZoomIn" type="button" title="Zoom in (on the selection)">🔍+</button>
+          <button class="ghost gbtn" id="sfxZoomOut" type="button" title="Zoom out">🔍−</button>
+          <button class="ghost gbtn" id="sfxZoomReset" type="button" title="The whole sound">⤢</button>
+        </div>
+        <div class="brow" style="gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px">
+          <!-- 2.361.0 (Tim: "allow user to choose duration and drag selection box of specified duration"):
+               a Duration makes the selection a box of exactly that length - press on the waveform to drop it
+               there, drag to slide it; blank = a free drag-select. Any selection can be slid by dragging it. -->
+          <label class="hint" style="display:flex;gap:3px;align-items:center"
+                 title="A fixed selection length: press on the waveform to drop a box of this many seconds, drag it to move it. Blank = drag to select any length.">Duration
+            <input type="number" id="sfxDur" step="0.1" min="0.05" placeholder="free" style="width:62px" aria-label="Selection duration (seconds) - blank for a free selection"> s</label>
+          <label class="hint" style="display:flex;gap:3px;align-items:center">Start
+            <input type="number" id="sfxStart" step="0.01" min="0" style="width:70px" aria-label="Selection start (seconds)"></label>
+          <label class="hint" style="display:flex;gap:3px;align-items:center">End
+            <input type="number" id="sfxEnd" step="0.01" min="0" style="width:70px" aria-label="Selection end (seconds)"></label>
+          <span class="hint" id="sfxLen"></span>
+          <button class="ghost gbtn" id="sfxKeep" type="button" title="Keep only the selected part (the rest is removed)">✂ Keep selected</button>
+          <button class="ghost gbtn" id="sfxCut" type="button" title="Delete the selected part (the two sides are joined)">🗑 Delete selected</button>
+          <label class="hint" style="display:flex;gap:3px;align-items:center" title="Write the result as a new file (name_keep / name_cut) and leave this one as it is">
+            <input type="checkbox" id="sfxAsNew">as a new file</label>
+          <button class="ghost gbtn" id="sfxUndo" type="button" title="Undo the last cut of this sound">↶ Undo</button>
+        </div>
+        <div class="hint" id="sfxMsg" style="margin-top:6px">—</div>
+      </div>
+    </div>
+    <!-- the sfxdock's BOTTOM resize handle - drag it and THIS docker follows the mouse -->
+    <div class="hsplit" data-hresize="sfh"></div>

@@ -1,0 +1,6 @@
+huggingface_hub[cli]>=0.24
+# 2.330.0: the character swap in stereo VR (scripts/vr_swap.py - the right eye through the original depth)
+numpy
+opencv-python-headless
+# 2.417.0: the AAF export for Avid Media Composer / Pro Tools (scripts/aaf_export.py - pure Python)
+pyaaf2>=1.7

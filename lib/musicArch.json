@@ -1,0 +1,126 @@
+{
+ "version": 1,
+ "_comment": [
+  "THE music-architecture catalogue (2.90.0; second engine 2.229.0). Same",
+  "doctrine as lib/imageArch.json: lib/styles.js, the Settings -> Music tab",
+  "(GET /api/musicarchs) and music_worker.py all read this ONE file, so the",
+  "dropdown, the defaults and the renderer cannot disagree.",
+  "",
+  "ONE ENTRY PER MUSIC MODEL. 2.229.0 (Tim: 'use dropdown to change from",
+  "minimax to yue2(we will probably add more models later'): an entry now",
+  "carries `engine` - 'comfy' rides an Export (API) workflow through the",
+  "user's ComfyUI as always; 'yue2' rides the pinned YuE2 pipeline in its",
+  "own venv (get-yue2.ps1; music_worker.run_yue2). Adding a model = one",
+  "entry here + a starter style in lib/styles.js (+ a workflow for comfy",
+  "engines, or a worker branch for a genuinely new runtime).",
+  "",
+  "THE LYRICS ARE THE PROMPT; the caption is the STYLE (unchanged for both",
+  "engines - YuE2 calls the caption its 'style prompt')."
+ ],
+ "samplers": [
+  "euler",
+  "euler_ancestral",
+  "heun",
+  "dpmpp_2m",
+  "dpmpp_2m_sde",
+  "dpmpp_sde",
+  "lcm",
+  "ddim",
+  "uni_pc",
+  "res_multistep",
+  "dpm_2"
+ ],
+ "schedulers": [
+  "simple",
+  "normal",
+  "karras",
+  "exponential",
+  "sgm_uniform",
+  "beta",
+  "linear_quadratic"
+ ],
+ "archs": [
+  {
+   "id": "minimax-music3",
+   "label": "MiniMax Music3",
+   "workflow_hint": "comfy_workflows/audio_minimax_music3.json",
+   "model_hint": "minimax_music3_dit_fp16.safetensors",
+   "vae": {
+    "required": false,
+    "hint": "minimax_music3_dav.safetensors"
+   },
+   "te": [
+    {
+     "label": "Text encoder",
+     "required": false,
+     "hint": "minimax_music3_text_encoder_pruned_int8_convrot.safetensors"
+    }
+   ],
+   "defaults": {
+    "steps": 30,
+    "cfg": 1.7,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "max_duration": 60
+   },
+   "limits": {
+    "max_duration": 300
+   },
+   "caption_hint": "Global Metadata: genre, BPM, key, mood.\n\nVocal Details: who sings and how.\n\nArrangement: instruments, intro/verse/chorus/outro.",
+   "lyrics_hint": "[Intro]\n...\n\n[Verse]\n...\n\n[Chorus]\n...",
+   "note": "Text + lyrics to a full song with vocals. The caption (genre, BPM, key, mood, vocal, arrangement) is the style; the lyrics are the prompt, with [Verse] / [Chorus] / [Instrumental] section tags. cfg 1.7 and 30 steps are the ComfyUI template defaults.",
+   "engine": "comfy"
+  },
+  {
+   "id": "yue2",
+   "label": "YuE2",
+   "engine": "yue2",
+   "model": "m-a-p/YuE2-3B",
+   "pin": "yue2-v0.1.6",
+   "defaults": {
+    "steps": 1,
+    "cfg": 1.0,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "max_duration": 600
+   },
+   "limits": {},
+   "caption_hint": "Style prompt, one line: language, genre, voice, instruments, mood, BPM. Example: English, warm piano pop, expressive female voice, acoustic piano, rounded bass and light drums, lyrical memorable melody, unhurried phrasing, 88 BPM",
+   "notes": "Runs the official YuE2 pipeline (pinned yue2-v0.1.6) in its own venv - install with get-yue2.ps1. Needs an NVIDIA GPU with BF16 and ~24 GB VRAM; model files download from Hugging Face on FIRST use. Song length follows the lyrics and the model's plan - the Length field does not apply. Output is 48 kHz stereo FLAC.",
+   "te": [],
+   "vae": {
+    "required": false
+   },
+   "_defaults_note": "steps/cfg/sampler/scheduler are shape-fillers for the shared style normalizer - the yue2 engine ignores them (the pipeline plans its own rendering); max_duration is uncapped-in-practice"
+  },
+  {
+   "id": "yue2-comfy",
+   "label": "YuE2 (ComfyUI)",
+   "engine": "comfy",
+   "workflow_hint": "comfy_workflows/audio_yue2.json",
+   "workflow_cover_hint": "comfy_workflows/audio_yue2_cover.json",
+   "workflow_abc_hint": "comfy_workflows/audio_yue2_abc.json",
+   "workflow_transcribe_hint": "comfy_workflows/audio_yue2_transcribe.json",
+   "model_hint": "yue2_convrot_int8.safetensors",
+   "audio_encoder_hint": "sheetsage2_bf16.safetensors",
+   "vae": {
+    "required": false,
+    "hint": "(inside the checkpoint)"
+   },
+   "te": [],
+   "defaults": {
+    "steps": 32,
+    "cfg": 1,
+    "sampler": "dpm_2",
+    "scheduler": "sgm_uniform",
+    "max_duration": 360
+   },
+   "limits": {
+    "max_duration": 900
+   },
+   "caption_hint": "YuE2's style prompt - genre, instruments, voice, mood (e.g. 'violin with girl singing jpop anime')",
+   "lyrics_hint": "[verse] / [chorus] tags on their own lines - the words of the song",
+   "note": "ComfyUI-NATIVE YuE2 (2.236.0, Tim's yue2_full.json): the song is written as ABC sheet notation first (YuE2GenerateABC), then sung from that score. Files ComfyUI needs: the checkpoint yue2_convrot_int8.safetensors in models/checkpoints, and for the Cover/Transcribe tabs sheetsage2_bf16.safetensors in models/audio_encoders. The music dock's Sheet Music tab shows the score; every song saves its .abc beside the audio."
+  }
+ ]
+}

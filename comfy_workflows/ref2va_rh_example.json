@@ -1,0 +1,425 @@
+{
+ "1": {
+  "class_type": "RHMiniMaxH3TextEncoderLoader",
+  "inputs": {
+   "model_family": "MiniMax-H3",
+   "device": "auto",
+   "text_encoder": "qwen3-vl-32b-int8_convrot.safetensors"
+  }
+ },
+ "2": {
+  "class_type": "RHMiniMaxH3ModelLoader",
+  "inputs": {
+   "model_type": "Ref2VA",
+   "model_family": "MiniMax-H3",
+   "device": "auto",
+   "model": "MiniMax-H3-Ref2VA-int8_convrot.safetensors"
+  }
+ },
+ "3": {
+  "class_type": "RHMiniMaxH3VAELoader",
+  "inputs": {
+   "model_family": "MiniMax-H3",
+   "video_vae": "MiniMax-H3-video_vae.safetensors",
+   "audio_vae": "MiniMax-H3-audio_vae.safetensors"
+  }
+ },
+ "10": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "20": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "10",
+    0
+   ]
+  }
+ },
+ "11": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "21": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "11",
+    0
+   ],
+   "references": [
+    "20",
+    0
+   ]
+  }
+ },
+ "12": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "22": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "12",
+    0
+   ],
+   "references": [
+    "21",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "23": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "13",
+    0
+   ],
+   "references": [
+    "22",
+    0
+   ]
+  }
+ },
+ "14": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "24": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "14",
+    0
+   ],
+   "references": [
+    "23",
+    0
+   ]
+  }
+ },
+ "15": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "25": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "15",
+    0
+   ],
+   "references": [
+    "24",
+    0
+   ]
+  }
+ },
+ "16": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "26": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "16",
+    0
+   ],
+   "references": [
+    "25",
+    0
+   ]
+  }
+ },
+ "17": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "27": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "17",
+    0
+   ],
+   "references": [
+    "26",
+    0
+   ]
+  }
+ },
+ "18": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  }
+ },
+ "28": {
+  "class_type": "RHMiniMaxH3Ref2VAImageReference",
+  "inputs": {
+   "image": [
+    "18",
+    0
+   ],
+   "references": [
+    "27",
+    0
+   ]
+  }
+ },
+ "30": {
+  "class_type": "LoadVideo",
+  "inputs": {
+   "file": "0"
+  }
+ },
+ "40": {
+  "class_type": "RHMiniMaxH3Ref2VAVideoReference",
+  "inputs": {
+   "video": [
+    "30",
+    0
+   ],
+   "references": [
+    "28",
+    0
+   ],
+   "mode": "video_audio"
+  }
+ },
+ "31": {
+  "class_type": "LoadVideo",
+  "inputs": {
+   "file": "0"
+  }
+ },
+ "41": {
+  "class_type": "RHMiniMaxH3Ref2VAVideoReference",
+  "inputs": {
+   "video": [
+    "31",
+    0
+   ],
+   "references": [
+    "40",
+    0
+   ],
+   "mode": "video_audio"
+  }
+ },
+ "32": {
+  "class_type": "LoadVideo",
+  "inputs": {
+   "file": "0"
+  }
+ },
+ "42": {
+  "class_type": "RHMiniMaxH3Ref2VAVideoReference",
+  "inputs": {
+   "video": [
+    "32",
+    0
+   ],
+   "references": [
+    "41",
+    0
+   ],
+   "mode": "video_audio"
+  }
+ },
+ "50": {
+  "class_type": "LoadAudio",
+  "inputs": {
+   "audio": "0"
+  }
+ },
+ "60": {
+  "class_type": "RHMiniMaxH3Ref2VAAudioReference",
+  "inputs": {
+   "audio": [
+    "50",
+    0
+   ],
+   "references": [
+    "42",
+    0
+   ]
+  }
+ },
+ "51": {
+  "class_type": "LoadAudio",
+  "inputs": {
+   "audio": "0"
+  }
+ },
+ "61": {
+  "class_type": "RHMiniMaxH3Ref2VAAudioReference",
+  "inputs": {
+   "audio": [
+    "51",
+    0
+   ],
+   "references": [
+    "60",
+    0
+   ]
+  }
+ },
+ "52": {
+  "class_type": "LoadAudio",
+  "inputs": {
+   "audio": "0"
+  }
+ },
+ "62": {
+  "class_type": "RHMiniMaxH3Ref2VAAudioReference",
+  "inputs": {
+   "audio": [
+    "52",
+    0
+   ],
+   "references": [
+    "61",
+    0
+   ]
+  }
+ },
+ "70": {
+  "class_type": "RHMiniMaxH3Ref2VATarget",
+  "inputs": {
+   "references": [
+    "62",
+    0
+   ],
+   "aspect_ratio": "16:9",
+   "duration_seconds": 15.0,
+   "width": 1024,
+   "height": 576
+  }
+ },
+ "71": {
+  "class_type": "RHMiniMaxH3Ref2VAEncode",
+  "inputs": {
+   "h3_text_encoder": [
+    "1",
+    0
+   ],
+   "h3_vae_bundle": [
+    "3",
+    0
+   ],
+   "target": [
+    "70",
+    0
+   ],
+   "references": [
+    "62",
+    0
+   ],
+   "prompt": "Follow the supplied references in order: keep the referenced subject's identity and wardrobe, match the referenced audio's rhythm, and keep lip movement synchronized. Natural camera motion, no subtitles, no logos.",
+   "reference_mode": "match"
+  }
+ },
+ "72": {
+  "class_type": "RHMiniMaxH3EmptyAVLatent",
+  "inputs": {
+   "target": [
+    "70",
+    0
+   ]
+  }
+ },
+ "73": {
+  "class_type": "RHMiniMaxH3DualSigmaSampler",
+  "inputs": {
+   "h3_model": [
+    "2",
+    0
+   ],
+   "conditioning": [
+    "71",
+    0
+   ],
+   "av_latent": [
+    "72",
+    0
+   ],
+   "seed": 42,
+   "sigma_points": 21,
+   "guidance": 12.0,
+   "audio_guidance": 3.0,
+   "cache_mode": "off",
+   "flash_attention": true,
+   "sigma_shift": 0.12,
+   "phase_split": 2,
+   "steps_a": 4,
+   "steps_b": 4,
+   "sampler": "res_multistep",
+   "debug": false
+  }
+ },
+ "74": {
+  "class_type": "RHMiniMaxH3DecodeAV",
+  "inputs": {
+   "h3_vae_bundle": [
+    "3",
+    0
+   ],
+   "sampled_av_latent": [
+    "73",
+    0
+   ]
+  }
+ },
+ "75": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "images": [
+    "74",
+    0
+   ],
+   "audio": [
+    "74",
+    1
+   ],
+   "fps": 24,
+   "bit_depth": 8
+  }
+ },
+ "76": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "75",
+    0
+   ],
+   "filename_prefix": "minimax_h3/ref2va",
+   "format": "mp4",
+   "codec": "h264"
+  }
+ }
+}

@@ -1,0 +1,6 @@
+{
+  "id": "chatdock",
+  "name": "Prompt chat",
+  "order": 70,
+  "html": "dock.html"
+}

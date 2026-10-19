@@ -1,0 +1,904 @@
+{
+  "version": "2.391.1",
+  "groups": [
+    {
+      "title": "Anywhere in the app",
+      "rows": [
+        [
+          "Ctrl+K",
+          "Find anything - a docker, a setting, a button, a style, the guide, a shortcut (the 🔍 in the menu bar too). Over the timeline's layers Ctrl+K still splits, in the image editor it is its own palette"
+        ],
+        [
+          "P",
+          "Show / hide the prompt docker (not while typing in a box; over the image editor P is its Pen)"
+        ],
+        [
+          "S",
+          "Show / hide Basic Settings - a floating docker (not while typing; over the image editor S is its Clone Stamp)"
+        ],
+        [
+          "L",
+          "Show / hide LLM tokens - a floating docker (not while typing; over the image editor L is its Lasso, over the timeline the shuttle)"
+        ],
+        [
+          "1",
+          "Show / hide the timeline Tools & Properties window"
+        ],
+        [
+          "2",
+          "Show / hide the negative prompt docker (not while typing; while the 🎥 multi-camera dialog is open 1 - 9 cut cameras)"
+        ],
+        [
+          "Space",
+          "Pause / play the preview - the timeline canvas, the live preview or the preview video (not while typing in a box)"
+        ],
+        [
+          "Esc",
+          "Leave a maximized docker"
+        ],
+        [
+          "Delete",
+          "Delete the selected gallery picture (to the recycle bin)"
+        ],
+        [
+          "Enter",
+          "In the prompt box: send it to the chat"
+        ],
+        [
+          "Shift+Enter",
+          "In the prompt box: a new line"
+        ],
+        [
+          "Ctrl+Shift+Alt+E",
+          "Edit theme mode with the dialogs too (an open Settings stays open to be styled) - again to leave"
+        ],
+        [
+          "Ctrl+S (in edit theme mode)",
+          "Save the theme and leave edit theme mode"
+        ],
+        [
+          "Ctrl+Alt+Shift+B",
+          "🐞 Bug report - a screenshot of the window first, then the docker (works while typing too); again hides it"
+        ]
+      ]
+    },
+    {
+      "title": "Lightbox (a picture or clip opened full size)",
+      "rows": [
+        [
+          "← / →",
+          "Previous / next"
+        ],
+        [
+          "+ / −",
+          "Zoom in / out"
+        ],
+        [
+          "0",
+          "Fit again"
+        ]
+      ]
+    },
+    {
+      "title": "Timeline canvas (pointer over the canvas)",
+      "rows": [
+        [
+          "V",
+          "Move"
+        ],
+        [
+          "T",
+          "Text"
+        ],
+        [
+          "H",
+          "Hand"
+        ],
+        [
+          "Z",
+          "Zoom"
+        ],
+        [
+          "M",
+          "Select (for ✨ Fill)"
+        ],
+        [
+          "B",
+          "Mask brush"
+        ],
+        [
+          "Shift+P",
+          "Path tool (path layers)"
+        ],
+        [
+          "Shift+C",
+          "Camera tool: drag = pan / tilt, Alt+drag = roll, Shift+drag = height, wheel = dolly, Shift+wheel = zoom"
+        ],
+        [
+          "Space (hold)",
+          "Pan with the hand"
+        ],
+        [
+          "Space (tap)",
+          "Play / pause"
+        ],
+        [
+          "Delete",
+          "Remove the selected clip"
+        ],
+        [
+          "F2",
+          "Rename the selected layer"
+        ],
+        [
+          "← / →",
+          "Nudge the selected clip (Shift: the bigger step - timeline ⚙)"
+        ],
+        [
+          "Enter",
+          "Set the selected clip's start time"
+        ],
+        [
+          "Delete / Backspace",
+          "Remove the selected keyframe (in its popup)"
+        ],
+        [
+          "Esc / Enter",
+          "Path tool: back to the Move tool"
+        ],
+        [
+          "Alt+click",
+          "Path tool: remove a point"
+        ],
+        [
+          "Shift+Q",
+          "✎ Freehand shape: draw a path (Alt = into the picked shape layer)"
+        ],
+        [
+          "Shift+M",
+          "✒ Mask Pen: click = a corner, drag = a curve, the first point / Enter = closed, Esc = done"
+        ]
+      ]
+    },
+    {
+      "title": "Timeline layers (pointer over the layers, the ruler or the menu bar)",
+      "rows": [
+        [
+          "V",
+          "▸ Select tool"
+        ],
+        [
+          "B",
+          "⇤ Ripple edit tool"
+        ],
+        [
+          "N",
+          "⇹ Roll edit tool"
+        ],
+        [
+          "Y",
+          "⇆ Slip tool"
+        ],
+        [
+          "U",
+          "↔ Slide tool"
+        ],
+        [
+          "I",
+          "In - the ruler selection starts at the position marker"
+        ],
+        [
+          "O",
+          "Out - the ruler selection ends at the position marker"
+        ],
+        [
+          "Ctrl+K",
+          "Split at the position marker (the selected clip, else the highlighted layer's)"
+        ],
+        [
+          "↑ / ↓",
+          "Previous / next edit point"
+        ],
+        [
+          "Home / End",
+          "The start / end of the timeline"
+        ],
+        [
+          "M",
+          "Add a marker at the position marker (on a marker: its name, colour, comment - double-click a flag does the same)"
+        ],
+        [
+          "Shift+M / Alt+M",
+          "Next / previous marker"
+        ],
+        [
+          "Ctrl+Shift+E",
+          "Export the frame at the position marker as a PNG (the canvas too)"
+        ],
+        [
+          "Ctrl+Shift+M",
+          "A clip marker on the selected clip at the position marker (it stays on its frame)"
+        ],
+        [
+          "J / K / L",
+          "Shuttle the preview: backwards / stop / forwards - J or L again plays at 2x, 4x, 8x (anywhere in the timeline docker, the canvas too)"
+        ],
+        [
+          "K + J / K + L",
+          "Hold K: one frame back / on"
+        ]
+      ]
+    },
+    {
+      "title": "3D layers (a 3D layer selected)",
+      "rows": [
+        [
+          "G",
+          "Move widget (again = off)"
+        ],
+        [
+          "R",
+          "Rotate widget"
+        ],
+        [
+          "S",
+          "Scale widget"
+        ]
+      ]
+    },
+    {
+      "title": "House builder (the plan has the focus)",
+      "rows": [
+        [
+          "V",
+          "⬚ Select: drag a piece, its corner squares size it (Shift keeps its shape), its ↻ handle turns it; drag on an empty spot for a box, Shift+click adds one"
+        ],
+        [
+          "R / Shift+R",
+          "Turn the picked piece / stairs / camera 15° - several picked: about their middle (with 🛋 or ⇗ chosen: turn what you are about to place 90°)"
+        ],
+        [
+          "Arrows",
+          "Nudge the picked thing(s) 5 cm - a picked 📷 camera: ← → turn it, ↑ ↓ tilt it"
+        ],
+        [
+          "Hold Shift / hold Alt",
+          "A picked 📷 camera rises (3 m over the roof at most) / sinks (down to the ground floor) - the 3D view looks through it"
+        ],
+        [
+          "Delete / Backspace",
+          "Remove the picked thing(s) (a wall takes its doors and windows)"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z)",
+          "Undo / redo"
+        ],
+        [
+          "Ctrl+S",
+          "💾 Save the house (+ its plan picture)"
+        ],
+        [
+          "Enter / double-click / Esc",
+          "Finish a wall run or a polygon room (Esc also clears the selection)"
+        ],
+        [
+          "Shift (drawing walls)",
+          "Any angle (otherwise walls snap straight within 8°)"
+        ],
+        [
+          "Alt (drawing)",
+          "Don't snap to the wall corners"
+        ],
+        [
+          "Wheel / right-drag",
+          "Zoom / pan the plan"
+        ],
+        [
+          "Drag in a camera's own 3D view",
+          "Aim that camera"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - tools",
+      "rows": [
+        [
+          "V",
+          "Move"
+        ],
+        [
+          "M  (Shift+M cycles)",
+          "Rectangular Marquee · Elliptical Marquee"
+        ],
+        [
+          "L  (Shift+L cycles)",
+          "Lasso · Polygonal Lasso · Magnetic Lasso"
+        ],
+        [
+          "W  (Shift+W cycles)",
+          "Object Selection (Segment Anything) · Magic Wand · Quick Selection Brush"
+        ],
+        [
+          "C",
+          "Crop"
+        ],
+        [
+          "I",
+          "Eyedropper"
+        ],
+        [
+          "J  (Shift+J cycles)",
+          "Spot Healing Brush · Healing Brush · Patch · Content-Aware Move · Red Eye"
+        ],
+        [
+          "B  (Shift+B cycles)",
+          "Brush · Pencil · Mixer Brush"
+        ],
+        [
+          "S",
+          "Clone Stamp"
+        ],
+        [
+          "Y",
+          "History Brush"
+        ],
+        [
+          "E  (Shift+E cycles)",
+          "Eraser · Background Eraser · Magic Eraser"
+        ],
+        [
+          "G  (Shift+G cycles)",
+          "Gradient · Paint Bucket"
+        ],
+        [
+          "R  (Shift+R cycles)",
+          "Blur · Sharpen · Smudge"
+        ],
+        [
+          "O  (Shift+O cycles)",
+          "Dodge · Burn · Sponge"
+        ],
+        [
+          "P  (Shift+P cycles)",
+          "Pen · Freeform Pen · Curvature Pen · Add Anchor Point · Delete Anchor Point · Convert Point"
+        ],
+        [
+          "T  (Shift+T cycles)",
+          "Horizontal Type · Vertical Type · Type on a Path"
+        ],
+        [
+          "A  (Shift+A cycles)",
+          "Path Selection · Direct Selection"
+        ],
+        [
+          "U  (Shift+U cycles)",
+          "Shape (rectangle, ellipse, polygon, line) · Custom Shape"
+        ],
+        [
+          "H",
+          "Hand"
+        ],
+        [
+          "Z",
+          "Zoom"
+        ],
+        [
+          "F5  (F5 again cycles)",
+          "Curve tools: Bézier · Freehand · 2-Point Line · Polyline · 3-Point Curve · B-Spline · Pen · Artistic Media"
+        ],
+        [
+          "F10",
+          "Shape tool (nodes)"
+        ],
+        [
+          "F6  (F6 again cycles)",
+          "Shapes: Rectangle · 3-Point Rectangle · Ellipse · 3-Point Ellipse · Polygon · Star · Complex Star · Spiral · Graph Paper · Common Shapes"
+        ],
+        [
+          "F8  (F8 again cycles)",
+          "Parallel · Horizontal / Vertical · Angular Dimension · 3-Point Callout · Connector"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - File menu",
+      "rows": [
+        [
+          "Ctrl+N",
+          "New"
+        ],
+        [
+          "Ctrl+O",
+          "Open"
+        ],
+        [
+          "Alt+Ctrl+O",
+          "Place as Layer"
+        ],
+        [
+          "Ctrl+S",
+          "Save to Images"
+        ],
+        [
+          "Shift+Ctrl+S",
+          "Save as PSD"
+        ],
+        [
+          "Alt+Ctrl+S",
+          "Save Project (.bgi)"
+        ],
+        [
+          "Shift+Delete",
+          "Delete Layer"
+        ],
+        [
+          "Ctrl+;",
+          "Guidelines"
+        ],
+        [
+          "Alt+Ctrl+;",
+          "Lock Guidelines"
+        ],
+        [
+          "Shift+Ctrl+;",
+          "Snap"
+        ],
+        [
+          "Alt+Shift+Ctrl+W",
+          "Export As"
+        ],
+        [
+          "Ctrl+W",
+          "Close"
+        ],
+        [
+          "Alt+Ctrl+W",
+          "Close All"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Edit menu",
+      "rows": [
+        [
+          "Ctrl+Z",
+          "Undo"
+        ],
+        [
+          "Shift+Ctrl+Z",
+          "Redo"
+        ],
+        [
+          "Ctrl+X",
+          "Cut"
+        ],
+        [
+          "Ctrl+C",
+          "Copy"
+        ],
+        [
+          "Shift+Ctrl+C",
+          "Copy Merged"
+        ],
+        [
+          "Ctrl+V",
+          "Paste"
+        ],
+        [
+          "Shift+Ctrl+V",
+          "Paste in Place"
+        ],
+        [
+          "Shift+F5",
+          "Fill"
+        ],
+        [
+          "Ctrl+T",
+          "Free Transform"
+        ],
+        [
+          "Alt+Shift+Ctrl+C",
+          "Content-Aware Scale"
+        ],
+        [
+          "Ctrl+,",
+          "Preferences"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Image menu",
+      "rows": [
+        [
+          "Shift+Ctrl+L",
+          "Auto Tone"
+        ],
+        [
+          "Alt+Shift+Ctrl+L",
+          "Auto Contrast"
+        ],
+        [
+          "Shift+Ctrl+B",
+          "Auto Color"
+        ],
+        [
+          "Alt+Ctrl+I",
+          "Image Size"
+        ],
+        [
+          "Alt+Ctrl+C",
+          "Canvas Size"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Layer menu",
+      "rows": [
+        [
+          "Shift+Ctrl+N",
+          "Layer"
+        ],
+        [
+          "Ctrl+J",
+          "Layer via Copy"
+        ],
+        [
+          "Shift+Ctrl+J",
+          "Layer via Cut"
+        ],
+        [
+          "Alt+Ctrl+G",
+          "Create / Release Clipping Mask"
+        ],
+        [
+          "Ctrl+G",
+          "Group Layers"
+        ],
+        [
+          "Shift+Ctrl+G",
+          "Ungroup Layers"
+        ],
+        [
+          "Shift+Ctrl+]",
+          "Bring to Front"
+        ],
+        [
+          "Ctrl+]",
+          "Bring Forward"
+        ],
+        [
+          "Ctrl+[",
+          "Send Backward"
+        ],
+        [
+          "Shift+Ctrl+[",
+          "Send to Back"
+        ],
+        [
+          "Ctrl+/",
+          "Lock All"
+        ],
+        [
+          "Ctrl+E",
+          "Merge Down"
+        ],
+        [
+          "Shift+Ctrl+E",
+          "Merge Visible"
+        ],
+        [
+          "F12",
+          "Outline Pen"
+        ],
+        [
+          "Ctrl+Q",
+          "Convert to Curves"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Select menu",
+      "rows": [
+        [
+          "Ctrl+A",
+          "All"
+        ],
+        [
+          "Ctrl+D",
+          "Deselect"
+        ],
+        [
+          "Shift+Ctrl+D",
+          "Reselect"
+        ],
+        [
+          "Shift+Ctrl+I",
+          "Inverse"
+        ],
+        [
+          "Shift+F6",
+          "Feather"
+        ],
+        [
+          "Q",
+          "Edit in Quick Mask Mode"
+        ],
+        [
+          "Alt+Ctrl+R",
+          "Select and Mask"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Channels panel",
+      "rows": [
+        [
+          "Ctrl+2",
+          "RGB (all channels)"
+        ],
+        [
+          "Ctrl+3",
+          "Red channel alone"
+        ],
+        [
+          "Ctrl+4",
+          "Green channel alone"
+        ],
+        [
+          "Ctrl+5",
+          "Blue channel alone"
+        ],
+        [
+          "Ctrl-click a channel",
+          "its lightness / the saved selection as a selection"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - curve tools (F5) and Shape tool (F10)",
+      "rows": [
+        [
+          "click / drag",
+          "Bézier: a cusp node / a smooth node (curve)"
+        ],
+        [
+          "C / S while dragging",
+          "Bézier: the node cusp / smooth"
+        ],
+        [
+          "Ctrl",
+          "curve tools: 15° steps"
+        ],
+        [
+          "click the first node",
+          "close the curve"
+        ],
+        [
+          "double-click · Enter · Space",
+          "done"
+        ],
+        [
+          "Esc",
+          "drop the line being drawn"
+        ],
+        [
+          "C / S / Y",
+          "Shape tool: cusp / smooth / symmetrical node"
+        ],
+        [
+          "+ · Insert",
+          "Shape tool: add a node"
+        ],
+        [
+          "- · Delete",
+          "Shape tool: delete the picked nodes"
+        ],
+        [
+          "double-click the line / a node",
+          "Shape tool: add / delete a node"
+        ],
+        [
+          "arrows (Shift ×10)",
+          "Shape tool: nudge the picked nodes"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Filter menu",
+      "rows": [
+        [
+          "Ctrl+F",
+          "Last Filter"
+        ],
+        [
+          "Shift+Ctrl+X",
+          "Liquify"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - View menu",
+      "rows": [
+        [
+          "Ctrl+=",
+          "Zoom In"
+        ],
+        [
+          "Ctrl+-",
+          "Zoom Out"
+        ],
+        [
+          "Ctrl+0",
+          "Fit on Screen"
+        ],
+        [
+          "Ctrl+1",
+          "100%"
+        ],
+        [
+          "Ctrl+R",
+          "Rulers"
+        ],
+        [
+          "Ctrl+'",
+          "Grid"
+        ],
+        [
+          "\\",
+          "Mask Overlay"
+        ],
+        [
+          "F",
+          "Full Screen Mode"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Window menu",
+      "rows": [
+        [
+          "F7",
+          "Layers"
+        ],
+        [
+          "Tab",
+          "Show / Hide Panels"
+        ],
+        [
+          "Alt+F9",
+          "Actions"
+        ],
+        [
+          "Alt+F7",
+          "Dockers: Transform"
+        ],
+        [
+          "Shift+Ctrl+A",
+          "Dockers: Align and Distribute"
+        ],
+        [
+          "Alt+Enter",
+          "Dockers: Object Properties"
+        ],
+        [
+          "Ctrl+Tab",
+          "Next Document"
+        ],
+        [
+          "Shift+Ctrl+Tab",
+          "Previous Document"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - Help menu",
+      "rows": [
+        [
+          "F1",
+          "Image Editor Help"
+        ],
+        [
+          "Ctrl+K",
+          "Command Palette"
+        ]
+      ]
+    },
+    {
+      "title": "Image editor - single keys and clicks",
+      "rows": [
+        [
+          "Q",
+          "Quick Mask on / off"
+        ],
+        [
+          "X",
+          "Swap the foreground / background colours"
+        ],
+        [
+          "D",
+          "Default colours (black / white)"
+        ],
+        [
+          "F",
+          "Full screen"
+        ],
+        [
+          "K",
+          "Selection brush"
+        ],
+        [
+          "1 … 0",
+          "Brush opacity 10 … 100 % (paint tools)"
+        ],
+        [
+          "[ / ]",
+          "Brush size smaller / bigger"
+        ],
+        [
+          "Tab",
+          "Show / hide the panels"
+        ],
+        [
+          "Shift+Tab",
+          "Show / hide the panel groups"
+        ],
+        [
+          "\\",
+          "Mask overlay: red where the mask hides (always while painting a mask)"
+        ],
+        [
+          "Space (hold)",
+          "Pan"
+        ],
+        [
+          "Enter",
+          "Apply the shown ✨ result / close a polygon"
+        ],
+        [
+          "Esc",
+          "Discard ✨ results / cancel a polygon / leave the mask view"
+        ],
+        [
+          "Shift / Alt / Shift+Alt",
+          "Selection tools: add / subtract / intersect"
+        ],
+        [
+          "Click / Shift / Alt",
+          "Object Selection: the thing / add one / take one away (drag = a box)"
+        ],
+        [
+          "Ctrl+click a layer",
+          "Pick it for ✨ Compose / → References (in order)"
+        ],
+        [
+          "Ctrl+click a thumbnail",
+          "Load its transparency (or mask) as the selection"
+        ],
+        [
+          "Alt+click a mask",
+          "View the mask itself"
+        ],
+        [
+          "Shift+click a mask",
+          "Disable / enable the mask"
+        ],
+        [
+          "Alt+click the eye",
+          "Show only this layer"
+        ],
+        [
+          "O",
+          "Sketch: the Offset tool (F = the other side, Enter = the typed distance)"
+        ],
+        [
+          "Shift + middle-drag",
+          "Orbit the picked 3D body (or 3D view layer)"
+        ],
+        [
+          "Middle-drag",
+          "Pan the canvas"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "_": "bitGen Studio 2.407.0 (+ AV1, H.265 10-bit: 2.411.0; ProRes 4444 alpha, H.264 10-bit: 2.412.0) - the 📤 Export presets (lib/deliver.js for the page and the route, scripts/deliver.py for the encode). id -> what the dialog shows. 2.417.0: colours - a deliverable of a 'wide' preset (10-bit) can be HDR10 (PQ), HLG or Rec.2020 SDR (scripts/hdr.py).",
+  "presets": [
+    {
+      "id": "h264",
+      "label": "MP4 · H.264",
+      "ext": "mp4",
+      "video": true,
+      "audio": true,
+      "note": "plays everywhere"
+    },
+    {
+      "id": "h265",
+      "label": "MP4 · H.265 / HEVC",
+      "ext": "mp4",
+      "video": true,
+      "audio": true,
+      "note": "half the size, newer players"
+    },
+    {
+      "id": "prores",
+      "label": "MOV · ProRes 422 HQ",
+      "ext": "mov",
+      "video": true,
+      "audio": true,
+      "note": "for editing / finishing (large)",
+      "wide": true
+    },
+    {
+      "id": "prores4444",
+      "label": "MOV · ProRes 4444 (alpha)",
+      "ext": "mov",
+      "video": true,
+      "audio": true,
+      "note": "see-through where nothing is drawn - titles / overlays for another editor (2.412.0)",
+      "wide": true
+    },
+    {
+      "id": "dnxhr",
+      "label": "MOV · DNxHR HQ",
+      "ext": "mov",
+      "video": true,
+      "audio": true,
+      "note": "for Avid / Resolve (large)"
+    },
+    {
+      "id": "webm",
+      "label": "WebM · VP9",
+      "ext": "webm",
+      "video": true,
+      "audio": true,
+      "note": "for the web"
+    },
+    {
+      "id": "av1",
+      "label": "MP4 · AV1",
+      "ext": "mp4",
+      "video": true,
+      "audio": true,
+      "note": "the smallest at a quality - newest players (2.411.0)",
+      "wide": true
+    },
+    {
+      "id": "h265_10",
+      "label": "MP4 · H.265 10-bit",
+      "ext": "mp4",
+      "video": true,
+      "audio": true,
+      "note": "smoother gradients, HDR-ready grading (2.411.0)",
+      "wide": true
+    },
+    {
+      "id": "h264_10",
+      "label": "MP4 · H.264 10-bit",
+      "ext": "mp4",
+      "video": true,
+      "audio": true,
+      "note": "High 10 - smoother gradients for editing / grading (2.412.0)"
+    },
+    {
+      "id": "gif",
+      "label": "GIF (animated)",
+      "ext": "gif",
+      "video": true,
+      "audio": false,
+      "note": "no sound, 15 fps, 640 wide at most"
+    },
+    {
+      "id": "wav",
+      "label": "WAV · the sound only",
+      "ext": "wav",
+      "video": false,
+      "audio": true,
+      "note": "48 kHz 24-bit"
+    },
+    {
+      "id": "mp3",
+      "label": "MP3 · the sound only",
+      "ext": "mp3",
+      "video": false,
+      "audio": true,
+      "note": "320 kb/s"
+    }
+  ],
+  "sizes": [
+    "source",
+    "2160",
+    "1440",
+    "1080",
+    "720",
+    "480"
+  ],
+  "aspects": [
+    "source",
+    "16:9",
+    "9:16",
+    "1:1",
+    "4:5",
+    "21:9"
+  ],
+  "fits": [
+    "crop",
+    "pad",
+    "blur",
+    "follow"
+  ],
+  "fps": [
+    "source",
+    "24",
+    "25",
+    "30",
+    "50",
+    "60"
+  ],
+  "qualities": [
+    "high",
+    "standard",
+    "small"
+  ],
+  "colours": [
+    "sdr",
+    "hdr10",
+    "hlg",
+    "rec2020"
+  ],
+  "colourLabels": {
+    "sdr": "Rec.709 (SDR)",
+    "hdr10": "HDR10 · PQ, BT.2020",
+    "hlg": "HLG · BT.2020",
+    "rec2020": "Rec.2020 SDR (wide gamut)"
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "python": "python3",
+  "sd_cli": "sd-cpp/sd-cli.exe",
+  "lora_dir": "loras",
+  "models": {
+    "fl2va": "models/minimax_h3_fl2va_pruned-Q6_K.gguf",
+    "ref2va": "models/minimax_h3_ref2va_pruned-Q6_K.gguf",
+    "text_encoder": "models/qwen3vl_32b_minimax_h3-Q4_K_M.gguf",
+    "video_vae": "models/minimax_h3_video_vae_fp16.safetensors",
+    "audio_vae": "models/minimax_h3_audio_vae_fp32.safetensors"
+  },
+  "flags": {
+    "ref_image": "--ref-image",
+    "first_frame": "--init-img",
+    "last_frame": "--end-img",
+    "convert_mode": "--mode convert",
+    "convert_type": "--type",
+    "offload_cpu": "--offload-to-cpu"
+  },
+  "extra_args": "--diffusion-fa",
+  "gpu": {
+    "diffusion": "cuda0",
+    "te": "cpu",
+    "vae": "cuda0",
+    "vae_tiling": false,
+    "offload_cpu": false,
+    "cuda_stability": false,
+    "engine_env": ""
+  },
+  "llm": {
+    "dir": "llm-models",
+    "engine_dir": "llama-cpp",
+    "port": 8090,
+    "device": "cuda1",
+    "external_url": "",
+    "external_model": "local",
+    "max_tokens": 600,
+    "gpu_layers": -1,
+    "ctx": 8192,
+    "big_model_gb": 12,
+    "autostart": false,
+    "last_file": ""
+  },
+  "captioner": {
+    "model": "",
+    "mmproj": "",
+    "dir": "",
+    "device": "",
+    "port": 8199,
+    "keep": false,
+    "idle_min": 5
+  },
+  "chain": {},
+  "hf": {
+    "repo": "Comfy-Org/MiniMax-H3",
+    "token": ""
+  },
+  "engine": {
+    "backend": "comfy",
+    "comfy": {
+      "url": "http://127.0.0.1:8188",
+      "dir": "",
+      "launch": "",
+      "lora_4step": false,
+      "keep_alive": true,
+      "free_before_gen": true,
+      "clip_device": "default",
+      "chunk_on_oom": false,
+      "stdio": "file",
+      "vram_ceiling": 0,
+      "vram_ceiling_note": "",
+      "workflows": {
+        "t2va": "comfy_workflows/t2va.json",
+        "ref2va": "comfy_workflows/ref2va.json",
+        "fl2va": "comfy_workflows/fl2va.json"
+      },
+      "widget_overrides": {},
+      "node_bypass": [],
+      "autostart": false
+    },
+    "runpod": {
+      "enabled": false,
+      "endpoint": "",
+      "api_key": "",
+      "poll_seconds": 5,
+      "base_url": "https://api.runpod.ai"
+    }
+  },
+  "defaults": {
+    "width": 960,
+    "height": 544,
+    "frames": 121,
+    "steps": 0,
+    "seed": -1,
+    "format": "mp4"
+  },
+  "tts": {
+    "engine": "omnivoice",
+    "device": "cuda",
+    "timeout_ms": 900000,
+    "omnivoice": {
+      "venv": "",
+      "model": "k2-fsa/OmniVoice",
+      "num_step": 32
+    }
+  },
+  "asr": {
+    "venv": "",
+    "model": "base",
+    "model_dir": "",
+    "device": "auto",
+    "compute_type": "",
+    "language": "",
+    "vad": false,
+    "timeout_ms": 1800000
+  },
+  "current_project": "default",
+  "ui": {
+    "confirm_delete": false,
+    "expert": false,
+    "builtin_dialogs": true,
+    "docks": {
+      "timelinedock": {
+        "height": 150,
+        "state": "open"
+      },
+      "imageeditdock": {
+        "height": 320,
+        "state": "closed"
+      },
+      "comfydock": {
+        "height": 420,
+        "state": "closed"
+      },
+      "musicdock": {
+        "height": 170,
+        "state": "open"
+      },
+      "stemsdock": {
+        "height": 240,
+        "state": "open"
+      },
+      "sfxdock": {
+        "height": 220,
+        "state": "open"
+      },
+      "chatdock": {
+        "height": 200,
+        "state": "closed"
+      },
+      "promptdock": {
+        "height": 120,
+        "state": "open"
+      },
+      "consoledock": {
+        "height": 190,
+        "state": "closed"
+      },
+      "ldock": {
+        "width": 300,
+        "state": "open"
+      },
+      "refs": {
+        "width": 260,
+        "state": "open"
+      },
+      "assets": {
+        "width": 260,
+        "state": "open"
+      },
+      "qdock": {
+        "width": 200,
+        "state": "open"
+      },
+      "rdock": {
+        "width": 300,
+        "state": "open"
+      }
+    }
+  },
+  "stems": {
+    "venv": "",
+    "model": "htdemucs",
+    "device": "auto",
+    "timeout_ms": 1200000
+  },
+  "native": {
+    "venv": "",
+    "dir": "",
+    "port": 8199,
+    "prefer": "both",
+    "pack": "int8",
+    "pin": true,
+    "ram_budget_gb": 0,
+    "idle_unload_min": 20,
+    "idle_exit_min": 120,
+    "free_comfy": true,
+    "device": "auto",
+    "picks": {},
+    "checks": {},
+    "sources": {},
+    "base": "",
+    "lora_dirs": [],
+    "python": ""
+  }
+}

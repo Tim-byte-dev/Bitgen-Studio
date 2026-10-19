@@ -1,0 +1,501 @@
+<h1>Timeline</h1>
+
+<h3 id="anykeys516">✅ Keyframes on any setting (2.516.0)</h3>
+<ul>
+  <li><b>◇</b> beside a clip's setting = a key of it at the playhead (◆ = a key here; click it to take it away, Alt+click = all of them). Once keyed, changing it anywhere keys it there.</li>
+  <li>Colour (exposure … hue, LUT mix, wheel brightness, HSL ranges), lens, warp, the keyer, ✒ mask feather / expansion / opacity, text size / outline, ⏱ time effects.</li>
+  <li>📈 the Graph Editor lists every keyed setting. ⚙ Compile draws the same.</li>
+</ul>
+
+<h3 id="scene515">✅ Cut out a subject, remove it, solve the camera (2.515.0)</h3>
+<ul>
+  <li><b>🧍 Cut out</b> (a video clip's Properties): ✚ click the subject, ✖ what is not it, or ▭ drag a box, then <b>▶ Cut out</b>. The subject is followed through the whole clip (SAM 2, the AI matte, or built in). Refine edge: snap, feather, choke, smooth. On a video layer, <b>use it</b> = see-through round the subject (canvas + compile).</li>
+  <li><b>🩹 Remove</b>: what was cut out (or the layer's ✒ masks) taken out of every frame. The background comes from the frames round it, what is never seen is painted in. A reference frame filled in the image editor helps. ↺ Original undoes it.</li>
+  <li><b>📷 3D camera track</b>: ▶ Solve, then 📷 Pick points and 📌 Place a layer flat on them, standing on them or facing the camera. The 🧊 3D camera follows the solve.</li>
+  <li><b>Ctrl+Shift+Alt+E</b>: edit theme mode with the dialogs (Settings stays open to style). <b>Ctrl+S</b> saves the theme and leaves.</li>
+</ul>
+
+<h3 id="framebar">✅ The timeline's frame size bar; Load UE project (2.513.0)</h3>
+<ul>
+  <li><b>Frame</b> (the bar at the top of the Timeline): width × height, a <b>Preset</b> (Auto = the V1 video's size, 4K, Full HD, HD, vertical, square, 4:5, 21:9, cinema …) and an <b>Aspect</b> that is kept while you type. V1 is fitted inside and centred; the compile matches.</li>
+  <li><b>☐ CAD toolbar</b> on the same bar shows the CAD toolbar (its ⌬ button is hidden).</li>
+  <li><b>🎮 Load UE project</b> (the app's menu bar): pick the project folder, press Select. The bitGen Bridge plugin goes in, the plugins it needs are switched on, and Unreal restarts with the project.</li>
+</ul>
+
+<h3 id="lottie">✅ Lottie (JSON) export (2.512.0)</h3>
+<ul>
+  <li><b>📤 Export → ⤓ Lottie (JSON)</b>: the picture and text layers as <code>&lt;project&gt;_lottie.json</code> beside the movies.</li>
+  <li>Moves, scales, turns and fades stay animated layers (eases and holds kept, blend modes too). Layers with effects, masks, 3D, parents or expressions go in as frames.</li>
+  <li>Video layers and track mattes are left out and named.</li>
+</ul>
+
+<h3 id="data">✅ Variable feather, data, template fields (2.511.0)</h3>
+<ul>
+  <li><b>✒ Variable mask feather</b>: Shift+drag a mask point with the Mask Pen = its own feather (a ring shows it); the edge glides between the points' feathers.</li>
+  <li><b>📋 Data</b>: import CSV / JSON as a set with a current row; <code>{{set.column}}</code> in texts, <code>data("set", "column", row)</code> in ƒx, <b>📋 Data → keys</b> (a row every so many seconds).</li>
+  <li><b>📋 Template fields</b>: expose text colour, opacity, scale, x, y, turn with a label; edit them all in one list; 🧩 templates offer them when dropped in.</li>
+</ul>
+
+<h3 id="d3">✅ 2D layers in 3D (2.510.0)</h3>
+<ul>
+  <li><b>🧊 3D layer</b> in the Properties: a card with depth z, an x / y turn, casts / accepts shadows (keyable).</li>
+  <li><b>🎥 3D camera</b>: position, aim, zoom, all keyable; <b>🧊 Orbit</b> (Shift+O) drag = orbit, Shift = dolly, Alt = track.</li>
+  <li><b>Depth of field</b> (focus, aperture) and a <b>light</b> whose shadows fall from cards onto the cards behind.</li>
+  <li>Cards stack in layer order. The compile matches the canvas, 3D video layers included.</li>
+</ul>
+
+<h3 id="motion">✅ Motion sketch, wiggler, smoother (2.509.0)</h3>
+<ul>
+  <li><b>✍ Motion sketch</b> (Shift+K, or 〰 Motion → ✍ Sketch): press and move. The timeline plays and the layer follows the pointer; let go to stop. Speed %, smooth px.</li>
+  <li><b>≈ Wiggler</b>: random movement on a property. Per second, amount, smooth or jagged, position x / y apart, seed.</li>
+  <li><b>⌇ Smoother</b>: a property's keys averaged over ± frames, then thinned within a tolerance.</li>
+  <li>The results are plain keys for the graph editor, and the compile plays them.</li>
+</ul>
+
+<h3 id="audio">✅ Audio → keys, waveform and spectrum layers (2.508.0)</h3>
+<ul>
+  <li><b>♪ Audio → keys</b> in any layer's Properties: one clip's sound or all sound; loudness, bass, mids or treble; a property (opacity, scale, x, y, turn, generator / rays numbers) from quiet to loud; smooth; <b>♪ Make keys</b>.</li>
+  <li><b>🌫 Waveform</b>: Alt+click with the 🌫 tool. Wave / line / bars, span, gain, colours.</li>
+  <li><b>🌫 Spectrum</b>: Alt+Shift+click. Bars / line / circle, bands, gain, gap, floor, colours low → high.</li>
+  <li><b>ƒx audio()</b>, <b>audio("bass")</b>, <b>audio("mid")</b>, <b>audio("treble")</b>: the mix at that moment, 0..1. The compile matches the canvas.</li>
+</ul>
+
+<h3 id="warp">✅ Puppet pins and mesh warp (2.507.0)</h3>
+<ul>
+  <li><b>📌 Puppet</b> (Shift+W) on the picked layer: click = a pin, drag a pin = the layer bends while the other pins hold, Alt+click = remove it.</li>
+  <li><b>◇ key here</b> in 📌 Warp keys every pin; after that each drag is a key at the playhead and pins glide between keys.</li>
+  <li><b>⌗ Mesh warp</b>: a grid of columns × rows points dragged with the 📌 tool; smooth curves through them.</li>
+  <li>falloff (how far a pin reaches), detail; the compile matches the canvas, video layers included.</li>
+</ul>
+
+<h3 id="particles">✅ Particles and light rays (2.506.0)</h3>
+<ul>
+  <li><b>✨ Particles</b>: <b>Shift+click</b> with the 🌫 Generator tool. Point / line / box emitter; rate, life, pre-roll; speed, direction, spread, gravity, wind; dot / circle / square / star / spark; size, colour and opacity over a particle's life.</li>
+  <li><b>☀ Light rays</b> on any layer: its bright parts streak from a source point (length, intensity, threshold, tint, rays only) and may reach past its edges.</li>
+  <li>Every setting keyable (◇) and open to ƒx. The compile matches the canvas. A video layer with rays is baked whole by the page, and its sound is kept.</li>
+</ul>
+
+<h3 id="gen">✅ Generators and distortions (2.505.0)</h3>
+<ul>
+  <li><b>🌫 Generator tool</b>: click = a <b>Fractal Noise</b> layer (basic / turbulent; scale, complexity, evolution that moves by itself, colours), drag = a <b>Gradient Ramp</b> (linear / radial).</li>
+  <li><b>〰 Distort</b> on any layer: <b>Turbulent displace</b> (amount, size, evolution) or a <b>Displacement map</b> from another layer (brightness, or red ↔ / green ↕).</li>
+  <li>Every setting keyable (◇) and open to ƒx; the compile matches the canvas, video layers included.</li>
+</ul>
+
+<h3 id="remap">✅ Time remapping on a curve (2.501.0)</h3>
+<ul>
+  <li><b>⏱ Time remap</b> in a video clip's 🎬 Speed: a curve of clip time against source time. Drag keys, double-click to add or remove one.</li>
+  <li><b>◇ Key</b> at the playhead, <b>❄ Freeze</b> the frame at the playhead for a few seconds, and a key row to type exact values.</li>
+  <li>Forward, backwards, frozen, faster or slower in one clip; the sound follows; the compile matches the canvas.</li>
+</ul>
+
+<h3 id="time">✅ Motion blur, Posterize Time, Echo (2.500.0)</h3>
+<ul>
+  <li><b>⏱ Time</b> (a layer's Properties): motion blur (shutter angle, samples), posterize time (fps), echo (copies, apart, first strength, fade).</li>
+  <li>On pictures, text, shapes and video layers; the compile matches the canvas.</li>
+</ul>
+
+<h3 id="track">✅ Tracking + corner pin (2.499.0)</h3>
+<ul>
+  <li><b>🎯 Track</b> (a video clip's Properties): a point, two points (+ scale / rotation), corner pin, planar (a flat surface) - ◎ Place, ▶ Track (every frame, sub-pixel), Apply to a layer.</li>
+  <li><b>▢ Corner pin</b> (any layer): the layer drawn into 4 corners - tracked, or dragged with ✥ Edit corners.</li>
+  <li>The compile: pinned pictures baked, pinned video warped by the compile - the same as the canvas.</li>
+</ul>
+
+<h3 id="masks">✅ Bézier masks (2.498.0)</h3>
+<ul>
+  <li><b>✒ Mask Pen</b> (Shift+M): click corners, drag curves, close on the first point / Enter; drag points and handles to edit (Alt = one handle).</li>
+  <li><b>✒ Masks</b> (Properties): several per layer - add / subtract / intersect / difference, feather, expansion, opacity, invert; ◇ keys the path (animated masks).</li>
+  <li>On pictures, text, shapes and video layers; the compile matches the canvas (a video's masks as a mask video).</li>
+</ul>
+
+<h3 id="expr">✅ Expressions (2.497.0)</h3>
+<ul>
+  <li><b>ƒx Expressions</b> (a layer's Properties): a little formula on x / y / scale / rotation / opacity / anchor (and shape / text animator numbers) - presets, a live check.</li>
+  <li><code>value</code>, <code>time</code>, <code>wiggle(f, a)</code>, <code>loopOut("cycle" | "pingpong" | "offset" | "continue")</code>, <code>valueAtTime</code>, <code>linear / ease</code>, <code>random</code>, <code>layer("name", "x")</code> links.</li>
+  <li>Not JavaScript - nothing else runs. The compile gets keys worked out from them.</li>
+</ul>
+
+<h3 id="ae496">✅ Freehand shapes, Merge Paths, text on a path, roving keyframes (2.496.0)</h3>
+<ul>
+  <li><b>✎ Freehand</b> (Shift+Q): draw a closed shape or an open line (Alt = into the picked shape layer).</li>
+  <li><b>⧉ ＋ Path</b> + <b>⊕ Merge Paths</b>: several paths in one shape layer, combined by add / subtract / intersect / exclude (holes too).</li>
+  <li><b>〰 On a path</b>: a text along an arc, circle, wave or a shape layer's outline; start % keyable.</li>
+  <li><b>Rove</b> (Graph Editor): a position key timed for an even speed along the path.</li>
+</ul>
+
+<h3 id="hsl">✅ Colour blend modes + video layers that follow a parent (2.495.0)</h3>
+<ul>
+  <li><b>◐ Blend</b>: + Hue, Saturation, Color, Luminosity - brightness from one, colour from the other; the compile matches the canvas.</li>
+  <li><b>⛓ Parent</b> on a video layer: it moves, turns and scales with its parent (a null, a picture, another video); the compile follows it too.</li>
+</ul>
+
+<h3 id="textanim">✅ Text animators (2.493.0)</h3>
+<ul>
+  <li><b>✨ Text Animators</b> (a text layer's Properties): ＋ Animator - Typewriter, Fade up, Pop in, Slide in, Wave, Blur in, or Custom.</li>
+  <li>Changes x / y, scale, rotation, opacity, tracking, blur, colour on the letters its range selects: start / end / offset / amount, by letters / words / lines, square / ramp / triangle / round / smooth.</li>
+  <li>Every number keyable with ◇ (and in the 📈 Graph Editor); baked for the compile.</li>
+</ul>
+
+<h3 id="shapes">✅ Shape layers + operators (2.492.0)</h3>
+<ul>
+  <li><b>◆ Shape tool</b> (Q): drag a rectangle / ellipse / star / polygon layer.</li>
+  <li>Fill (colour or gradient), stroke (width, ends); <b>Trim Paths</b>, <b>Repeater</b>, <b>Offset Paths</b>, <b>Pucker &amp; Bloat</b>, <b>Twist</b>, <b>Zig Zag</b>, <b>Wiggle Paths</b>, <b>Round Corners</b>.</li>
+  <li>Every number keyable with its ◇ (and in the 📈 Graph Editor); baked for the compile.</li>
+</ul>
+
+<h3 id="blend">✅ Blend modes and track mattes (2.491.0)</h3>
+<ul>
+  <li><b>◐ Blend</b> (Properties, per layer): Multiply, Screen, Overlay, Darken, Lighten, Color Dodge / Burn, Hard / Soft Light, Difference, Exclusion, Add.</li>
+  <li><b>▣ Matte</b>: Alpha, Alpha Inverted, Luma, Luma Inverted - the layer shows only where the layer right above it is (or is not); that layer is not drawn itself.</li>
+  <li>The compile draws the same (ffmpeg blend + alpha merge).</li>
+</ul>
+
+<h3 id="parent">✅ Parenting and null objects (2.490.0)</h3>
+<ul>
+  <li><b>⛓ Parent</b> (Properties): a picture / text / null layer follows another - moves, turns and scales with it; it stays put when you choose or clear the parent.</li>
+  <li><b>＋ Null</b>: an empty control layer (a red dashed square on the canvas, never compiled) to key and parent others to.</li>
+  <li>The compile: parented layers are baked by the page (video/tlb_….webm) before ⚙ Compile.</li>
+</ul>
+
+<h3 id="graph">✅ The Graph Editor, Easy Ease, the anchor point, curved motion paths (2.489.0)</h3>
+<ul>
+  <li><b>📈 Graph</b> (Properties): value and speed graphs of position, scale, rotation, opacity and the anchor; drag ■ keys and ● Bézier handles; double-click adds a key; Delete; F9 Easy Ease.</li>
+  <li><b>Easy Ease</b> (F9), <b>Ease In</b> / <b>Ease Out</b> on the key at the playhead; the ease menu's <b>Bézier</b>.</li>
+  <li><b>⊕ Anchor X / Y</b>: what position places and scale / rotation pivot on (keyable).</li>
+  <li><b>↝ Smooth path</b> and the motion path on the canvas: drag ■ keys, Alt-drag to pull handles, drag ● handles to bend it. The compile draws the same.</li>
+</ul>
+
+<h3 id="tlcad">✅ The CAD toolbar, 3D bodies, Unreal Engine 5.8 (2.470.0 - 2.472.0)</h3>
+<ul>
+  <li>A toolbar along the top of the preview row: <b>CREATE</b> (Text, 3D Text, 3D Model, Camera, Path, Move / Hand / Zoom / Fit / Select / Mask), <b>3D</b> (the widget, the views, Key, Bake), <b>SKETCH</b> (sketch on this frame in the image editor).</li>
+  <li><b>SOLID</b>: a 3D body of the image editor -> a 3D layer here (it follows when the body changes).</li>
+  <li><b>UNREAL</b>: Unreal Layer (a Level Sequence rendered by Unreal), MetaHuman Layer, Unreal Camera (＋ Key from Unreal's viewport, Keys…, Render Again).</li>
+  <li>With the Move tool the clip under the pointer is outlined blue; the picked one orange.</li>
+</ul>
+
+<h3 id="rulers">Rulers and guidelines (2.446.0)</h3>
+<ul>
+  <li>📏 in the menu bar: rulers on the preview canvas (picture pixels).</li>
+  <li>Drag from a ruler: a guideline; drag it to move it, back onto its ruler to remove it; double-click to type its place.</li>
+  <li>Moved layers snap to the guidelines, the picture's edges / centre and the grid (Alt = free).</li>
+</ul>
+
+<h3 id="grid">Grid (2.445.0)</h3>
+<ul>
+  <li>⊞ in the menu bar (beside 🧰): a grid over the preview canvas.</li>
+  <li>⚙ Timeline settings ▸ Grids & Guides: spacing, major lines, lines or dots, grid colour, guideline colour, snap distance.</li>
+</ul>
+
+<h3 id="canvas">The preview canvas</h3>
+<ul>
+  <li><b>Drop</b> videos, pictures or sounds on the canvas: each lands on a new layer at the position marker, where you dropped it. A video dropped on an empty timeline goes on V1.</li>
+  <li><b>✥ Move</b> <kbd>V</kbd>: click a layer to select it, drag to move it, drag a corner to scale, drag the round handle to rotate. <kbd>Shift</kbd> rotates in 15° steps or moves along one axis. V1 always fills the frame.</li>
+  <li><b>T Text</b> <kbd>T</kbd>: click to add a text layer; type, font, size, colour, outline and shadow are in the Layers panel.</li>
+  <li><b>⬚ Select</b> <kbd>M</kbd>: drag a box. <b>🖌 Mask</b> <kbd>B</kbd>: paint the area to change (<kbd>Alt</kbd> erases). The feather softens the edge.</li>
+  <li><b>✋ Hand</b> <kbd>H</kbd> or hold <kbd>Space</kbd> pans; <b>🔍 Zoom</b> <kbd>Z</kbd> zooms (<kbd>Alt</kbd>-click or <kbd>Ctrl</kbd> + wheel zooms out); <b>⤢</b> fits.</li>
+  <li><b>Play</b>: ▶ under the canvas, or tap <kbd>Space</kbd> over it. 🔁 loops the ruler selection or the whole timeline.</li>
+  <li><b>Layer names</b>: double-click a name in the Layers list and type (<kbd>Enter</kbd> keeps it, <kbd>Esc</kbd> cancels), press <kbd>F2</kbd> for the selected layer, or use the <b>Name</b> box at the top of its properties. Clicking a layer's name on the timeline's track renames it too.</li>
+</ul>
+
+<h3 id="fill">✨ Fill: generate inside a selection</h3>
+<ul>
+  <li>Select or mask an area, write what should be there, then <b>Image</b> or <b>Video</b> and <b>✨ Generate</b>.</li>
+  <li><b>Image</b> repaints the area from the frame at the position marker (the image editor's inpaint styles) and puts it on a new picture layer that blends into the scene through the feathered mask. It lasts the ruler selection, else 3 s.</li>
+  <li><b>Video</b> does the same, then animates that picture with the video model for the seconds you set and puts it on a new video layer with the same soft mask.</li>
+</ul>
+
+<h3 id="keyframes">Keyframes</h3>
+<ul>
+  <li>Select a layer, put the position marker where the animation starts, click <b>◇ Key</b>: position, scale, rotation, opacity (and a text layer's colour) are saved there, shown as ◆ on the clip.</li>
+  <li>Move the marker and change the layer: a second keyframe is made there. The canvas and Compile tween between them.</li>
+  <li><b>◀ ▶</b> jump between keyframes; the menu on a keyframe sets how it moves to the next one: linear, ease in, ease out, ease in+out, hold. <b>✕◆</b> deletes it. Click a ◆ on the timeline to edit it.</li>
+</ul>
+
+<h3 id="marker">The red position marker</h3>
+<ul>
+  <li><b>Drag</b> it - by its head or anywhere along its line, with or without a ruler selection. While a preview plays, playback carries on until you drop it, then continues from there; stopped, the previews show the frame where you drop it.</li>
+  <li><b>Click</b> an empty part of a track: the marker jumps there (a playing preview continues from there). <b>Double-click</b> a time on the ruler or a track: the marker goes there and the preview plays from there.</li>
+  <li>Play / pause / stop are under the preview canvas (or <kbd>Space</kbd> over it); a click on the marker itself pauses a playing preview.</li>
+</ul>
+
+<h3 id="layers">Layers on the timeline</h3>
+<ul>
+  <li>Every layer has its own colour: a stripe on its header, a tint on its row, its clips in that colour. The selected layer is outlined and its header lit.</li>
+  <li>The F/L and REF marker rows grow with the zoom (never smaller than one line of text).</li>
+</ul>
+
+<h3 id="selection">The ruler selection</h3>
+<ul>
+  <li>Drag on the ruler, or <b>⟦ In</b> / <b>Out ⟧</b> at the position marker; <b>＋1s</b> selects one second. The bar shows <code>start:end - frames</code>.</li>
+  <li><b>⇥ Keep</b> keeps only the selection, <b>✂ Cut</b> removes it - on the highlighted layer (scope <i>layer</i>) or only the clip under it (scope <i>clip</i>). <i>ripple</i> closes the gap. <b>▦ Frames</b> shows every frame in it.</li>
+  <li><b>⇤ Head</b> / <b>Tail ⇥</b> trim the clip under the position marker at the marker.</li>
+</ul>
+
+<h3 id="karaoke">🎤 Karaoke</h3>
+<ul>
+  <li>The timeline's <b>🎤</b> makes a karaoke overlay for a song: pick the song (a sound clip on the timeline or a sound asset), the whole song or the ruler selection, check the lyrics, <b>Generate</b>. The overlay lands on the Karaoke layer, lined up with the song.</li>
+  <li>The lyrics are timed with speech-to-text when it is installed (Settings → Audio), else spread evenly.</li>
+  <li><b>🎤 Karaoke style</b> (in ⚙ here and in the video docker's ⚙): font, sizes, colours, the background band, the ball. New overlays use it.</li>
+</ul>
+
+<h3 id="settings">⚙ Timeline settings</h3>
+<ul>
+  <li><b>Nudge</b>: click a clip, then <kbd>←</kbd> / <kbd>→</kbd> moves it by the frames set here (<kbd>Shift</kbd>: the larger step). V1 plays its clips one after another.</li>
+  <li><b>Place each rendered scene at its song time</b>: with a song on the video docker's board, a take lands at the second its part of the song starts.</li>
+</ul>
+
+<h3 id="h3size">H3 size (the video docker's ⚙)</h3>
+<ul>
+  <li>H3 renders in 32-px steps. <b>704</b>: 1280×720 renders as 1280×704. <b>736</b>: renders 1280×736 and crops the take back to exactly 1280×720 (about 4% slower).</li>
+</ul>
+
+<h3 id="docks">Dock sizes, 📌 pins and maximize</h3>
+<ul>
+  <li>The statusbar has a button for every docker (Preview, Timeline, Video, Music, Stems, SFX, Editor, ComfyUI, Chat, Prompt, Console, and ⟨ Refs Assets Queue ⟩). A button is lit while its docker is on screen - open or collapsed to its titlebar - and a click hides the docker or shows it again.</li>
+  <li>Every dock's open / closed / hidden state, height, width, 📌 max-height / max-width and maximize are kept in <b>docker_status.json</b> beside the app (the same layout in every project). It is loaded before anything else paints.</li>
+  <li><b>📌</b> (the first button in a dock's header): pinned, the dock's height as it is now becomes its max-height - dragging can make it smaller but not taller. Click again to unpin (max-height 0: any height). On a side dock the pin keeps its width.</li>
+  <li>Opening a dock puts the other open pinned docks back at their pinned height; the room comes from the unpinned docks.</li>
+  <li><b>⛶ Maximize</b>: the dock takes all the room the other open docks leave; they stay open at their own height (or their pin, whichever is less). Every splitter still works while a dock is maximized. <kbd>Esc</kbd> or 🗗 restores.</li>
+</ul>
+
+<h3 id="m3d">🧊 3D layers: 3D text and 3D models</h3>
+<ul>
+  <li><b>🧊</b> (under T in the canvas toolbar): <b>3D text</b>, or <b>3D model file…</b> (.fbx, .obj, .glb or .gltf - pick an OBJ's .mtl / a glTF's .bin and texture pictures together with it). Models already in the project are listed too. Dropping .fbx / .obj files on the canvas works the same.</li>
+  <li>A 3D layer is placed like a video: drag it, the corners scale it, the top handle turns it flat; X / Y / Scale / Rotation / Opacity and ◆ keyframes work as on any layer.</li>
+  <li>Its own settings: the text, font (this computer's fonts), bold / italic, depth and bevel; or the model, its own materials or one colour, its animation; <b>Rot X / Y / Z</b> (tilt, turn, roll - ◇ Key keyframes them) and <b>Spin</b> (degrees per second); the 3D picture's W × H; the length.</li>
+  <li>The canvas draws it live. For ⚙ Compile it is <b>baked</b> into a see-through video (video/m3d_&lt;id&gt;.webm) a moment after each change; Compile waits for any bake still due. The state line shows it; 🧊 Bake bakes it now.</li>
+  <li>Model files are kept in the project's models3d folder.</li>
+</ul>
+
+<h3 id="float">🧰 Tools &amp; Properties (the floating docker)</h3>
+<ul>
+  <li>2.438.0: it stays inside the timeline docker (dragged, sized, or when the docker changes size) and hides while the timeline docker is collapsed.</li>
+  <li>The canvas tools (Move, Text, 🧊 3D, Select, Mask, Hand, Zoom, Fit, colour) and the selected layer's Properties are in a floating docker of their own. <b>1</b> on the keyboard shows / hides it (not while typing); so do <b>🧰</b> in the timeline's menu bar and <b>✕</b> on its titlebar.</li>
+  <li>Drag it by its titlebar, size it by any edge - where it is and its size are remembered.</li>
+  <li><b>Docks beside the preview canvas</b> (2.410.0): drag it to the canvas's left or right edge - that side lights up - and let go; or click <b>◧</b> / <b>◨</b> in its titlebar. Docked, it is as tall as the canvas and the canvas makes room; drag the column's inner edge to size it. Drag its titlebar away (or click the lit ◧ / ◨ again) and it floats. 🎤 Karaoke docks the same way, and two dockers on one side sit one above the other.</li>
+</ul>
+
+<h3 id="camera">🎥 The camera path (2.399.0)</h3>
+<ul>
+  <li><b>🎥 Camera</b> (the timeline bar) opens the Camera panel, a docker of its own. <b>Preset ▸ Apply</b> gives a move: push in, pull out, truck, pedestal, pan, tilt, roll, orbit, crane, zoom, fly in.</li>
+  <li><b>Camera / Top / Side</b>: what the camera sees, and the path from above and from the side (drag a point, or click empty space to add one). <b>Pan, Tilt, Roll, Height, Dolly, Lens</b> write a ◆ key at that moment.</li>
+  <li>The <b>🎥</b> tool (<b>Shift+C</b>) draws the camera's frame on the picture. Drag = pan / tilt, Alt+drag = roll, Shift+drag = height, wheel = dolly, Shift+wheel = zoom.</li>
+  <li><b>Use in Generate</b>: MiniMax H3 gets its camera sentence (one move a shot), Wan its Fun Camera move, LTX its camera-control LoRA, plus the moves in words. <b>Exact path</b> + <b>🎬 Make guide</b> also sends a guide video (the picture flown along the path, with its depth).</li>
+</ul>
+<h3 id="paths">⤳ Path layers: subjects that follow a path you draw</h3>
+<ul>
+  <li><b>＋ Path layer</b> (the timeline bar) makes one and picks the <b>⤳ Path</b> tool (<b>P</b>): click the canvas to lay the path's points, drag a point to move it, Alt-click one to remove it (Esc / Enter = done). The green dot is the start, the red one the end; the dashed box shows where the subject is, and how big, at the position marker.</li>
+  <li>The layer's panel (in 🧰 Tools &amp; Properties): what follows the path (a golden retriever, a red vintage car, a woman in a yellow raincoat…), whether it is an animal, a person or a vehicle, <b>Start</b> and <b>Length</b>, its <b>Size</b> at the start and at the end (% of the picture's height - smaller = further away), the pace, which way it faces, the picture and video styles, and how the green screen is cut away.</li>
+  <li><b>✨ Generate</b> - <b>In place + follow path</b> (any video model): a picture of it on a green screen, a video of it walking / driving on the spot, the green cut away, then the layer's clips move it along the path with ◆ keyframes - mirrored where the path turns back (side view) or turned with the path (from above), looped if the path is longer than the video. <b>⟲ Place again</b> rebuilds the clips after you move points or change sizes. <b>Along the path (Wan ATI)</b> (a Wan 2.1 style + the Wan2_1-I2V-ATI-14B model): the subject is put at the path's start and the model makes it travel the path itself - one full-frame clip.</li>
+  <li><b>Cut out</b>: the AI matte (BiRefNet - fur, hair and soft edges; <b>⬇ Install AI matte</b> once, ~1.5 GB) or a chroma key (nothing to install). Every path layer is its own see-through video, so the scene is built from them - and the compile keeps their transparency.</li>
+</ul>
+
+<h3 id="bar3d">🧊 The 3D toolbar</h3>
+<ul>
+  <li>Select a 3D layer and a toolbar appears along the top of the preview canvas (it goes when nothing 3D is selected): the layer's name; the widget ✥ move / ⟲ rotate / ⤡ scale / ○ none (as G / R / S); 🧲 snap turns to 15°; views ⬛ front, ◧ left, ◨ right, ⬒ top, ⬓ bottom, ↺ back and ⟲0 no rotation; ⟳ spin round Y; ⤢ depth 0 and scale 100%; 🎨 a material preset; ☀ the studio lights on / off and their brightness; ＋💡 add a light; ◇ Key a keyframe at the position marker; 🟧 render with Blender, ⚙ its settings, 🧊 Bake.</li>
+</ul>
+
+<h3 id="kfdrag">Moving and removing ◆ keyframes</h3>
+<ul>
+  <li>Drag a ◆ along its clip (whole frames; its time shows while you drag). It never passes its neighbours: the first one goes from the clip's start to the next ◆ − 1 frame, the last one from the ◆ before + 1 frame to the clip's end.</li>
+  <li>Remove one: right-click it, Alt-click it, or select it and press <b>Delete</b> / Backspace (also with its editor open) - or ✕ Delete keyframe in its editor.</li>
+</ul>
+
+<h3 id="m3dtools">🧊 3D widgets, materials and lights</h3>
+<ul>
+  <li><b>Widgets</b> (Move tool, a 3D layer selected): <b>G</b> ✥ move - red X / green Y move it across the picture, the blue Z arrow toward / away from the camera, the square freely; <b>R</b> ⟲ rotate - drag inside the ball to tumble it, the red / green rings turn it round X / Y only, the blue outer ring rolls it (Shift = 15° steps); <b>S</b> ⤡ scale - the coloured handles stretch it along its own X / Y / Z, the centre ring evenly. The same key again hides the widget (also ○ in the Properties). Depth and Scale X / Y / Z are also numbers in the Properties, and ◆ keyframes hold them.</li>
+  <li><b>🎨 Material</b>: a preset (gold, silver, chrome, copper, brushed steel, glossy plastic, matte clay, rubber, glass, frosted glass, car paint, neon glow, wireframe) or your own colour, metal, rough, glow, opacity, clear coat, glass + IOR, wireframe, flat shading and a texture picture (＋ adds one; × = how often it repeats). A model's parts can each keep the file's material, use this one, or take a preset.</li>
+  <li><b>💡 Lights</b>: the studio lights (on / off and their brightness) plus your own - ＋ Point, Spot, Sun, Ambient, Sky - each with on / off, colour, a <b>brightness</b> slider and where it is (X right, Y up, Z toward the camera; the object is 1 unit across).</li>
+  <li>Models can also be <b>.glb / .gltf</b> (glTF, with their .bin and textures).</li>
+</ul>
+
+<h3 id="blendpose">🧍 Poses in the .blend preview (2.461.0)</h3>
+<ul>
+  <li>Properties ▸ <b>Pose</b>: figure + bone, X / Y / Z turns (on top of its pose / motion), Reset; Blender keys them on Save / Render.</li>
+  <li><b>🧊 To the image editor</b>: a 3D layer with this pose and view. <b>📡 View + pose → Daz</b>: the experimental Daz live link (Scripts ▸ bitGen ▸ bitGen Live Link in Daz).</li>
+</ul>
+
+<h3 id="blender">🟧 The Blender bridge</h3>
+<ul>
+  <li><b>The add-on</b> (the bitgen-blender-addon zip): in Blender, Edit → Preferences → Add-ons → Install from Disk, tick <b>bitGen Bridge</b>. The 3D view's sidebar (N) gets a <b>bitGen</b> tab: the address (bitGen's, e.g. http://127.0.0.1:8311), 🔌 Test, <b>Send to bitGen</b> (glTF with materials, textures and animation - the selection or the whole scene; "Add as 3D layer" puts it on the timeline at the position marker), <b>Live link</b> (every Save in Blender sends it again; bitGen reloads it and re-bakes its layers) and <b>Get from bitGen</b> (imports one of the project's 3D models into Blender).</li>
+  <li><b>Render with Blender</b> (a 3D layer's Properties, 🟧): the canvas still shows the fast three.js preview, but for ⚙ Compile a local Blender renders the layer (Eevee, Cycles or Workbench) with the same framing, lights and materials. ⚙ there sets Blender's path (empty = found by itself), the engine, the samples and GPU. A Blender bake waits for edits to settle (8 s); 🧊 Bake starts it now.</li>
+</ul>
+
+<h3 id="clipfx">🎬 Speed, 🎨 Colour and 🎧 Sound on a clip (2.406.0)</h3>
+<ul>
+  <li>Select a video clip (V1 or a video layer): its Properties get three folds. <b>🎬 Speed</b>: the speed in % (50 = half speed, 200 = double), <b>⇄ reverse</b>, a <b>ramp</b> (slow → fast, fast → slow, slow middle, fast middle - the speed changes along the clip) and how slowed frames are made (<b>repeat</b> - crisp; <b>blend</b> - neighbours mixed; <b>optical flow</b> - smooth, slow to compile). The clip's length on the timeline follows; the trim edges still trim the source.</li>
+  <li><b>🎨 Colour</b>: a <b>look</b> (teal &amp; orange, warm film, cool night, bleach bypass, vivid, faded, mono) or your own sliders - exposure, contrast, saturation, temperature, tint, hue - and a <b>LUT</b> (a 3D <code>.cube</code>; <b>＋ LUT</b> imports one into the project's <code>luts/</code> folder; LUT mix blends it). The canvas shows the grade exactly as the movie gets it (the same table).</li>
+  <li><b>🎧 Sound</b> (also on a sound clip): <b>voice clarity</b> (rumble cut, a little presence, a gentle compressor), <b>denoise</b> and <b>gain</b>; <b>🎧 before / after</b> plays a few seconds from the position marker, first as it is, then cleaned up. The <b>role</b> (🗣 voice, 🎵 music, 💥 sfx) is the layer's part in the mix.</li>
+  <li>A reversed or ramped clip is silent in the canvas preview (browsers cannot play sound backwards); the compile renders its sound.</li>
+</ul>
+
+<h3 id="mix">🎚 Mix: ducking and loudness</h3>
+<ul>
+  <li>The timeline's 🎚: each layer's role, <b>ducking</b> (the music dips by the chosen dB while anyone speaks, then comes back) and <b>loudness</b> (the whole movie evened out to -14 LUFS for YouTube / Spotify, -16 for podcasts, -23 / -24 for broadcast).</li>
+</ul>
+
+<h3 id="captions">💬 Captions</h3>
+<ul>
+  <li><b>✨ From speech</b> listens to everything that speaks on the timeline (V1, the video layers and any sound layer set to 🗣 voice) on this machine (faster-whisper - Settings → Audio installs it) and makes the captions, placed where each clip sits (its trim and speed too). Each file is transcribed once and remembered.</li>
+  <li>Edit the times and the words, ＋ add one at the position marker, ✕ remove one; ▶ jumps there. Style: font, size (% of the picture's height), colour, outline or a box behind the words, bottom / middle / top and the margin.</li>
+  <li>The canvas draws them where the compile burns them. <b>burn into the movie</b> and / or <b>.srt beside it</b> (the movie's name with .srt - players and YouTube take it as a track); <b>⬇ .srt</b> downloads them now.</li>
+</ul>
+
+<h3 id="edittools">▸ ⇤ ⇹ ⇆ ↔ Edit tools (2.407.0)</h3>
+<ul>
+  <li>The timeline's tool buttons: <b>▸ Select</b> (as before), <b>⇤ Ripple</b> (drag an edge: trim it and move everything after it), <b>⇹ Roll</b> (drag the edge between two touching clips: the cut moves, the total length stays), <b>⇆ Slip</b> (drag a clip: other frames of its source, same place and length) and <b>↔ Slide</b> (drag a clip between its neighbours: they give and take). A tip shows what the drag does. Zoom in so each edge has its own handle.</li>
+  <li><b>J / L cuts</b>: a V1 clip's 🎧 Sound has <b>J … s early</b> (its sound starts before its picture) and <b>L … s late</b> (its sound runs on after it); the neighbour's sound is silenced there.</li>
+  <li>The <b>timecode</b> (HH:MM:SS:FF) shows beside the position; 📤 Export or ⇄ Exchange set its start and frame rate.</li>
+</ul>
+
+<h3 id="colourpanel">🎨 Colour: wheels, curves, HSL, scopes</h3>
+<ul>
+  <li>The timeline's 🎨 (or <b>🎨 more…</b> in a clip's Colour fold) opens the Colour dialog for the selected clip: <b>Lift / Gamma / Gain</b> wheels (drag the puck toward a colour, the slider for darker / brighter; double-click centres it), <b>Curves</b> (Master, R, G, B: click adds a point, drag moves it, double-click removes it), <b>HSL secondaries</b> (pick a hue range and shift it, (de)saturate it or lighten it - skies, skin, foliage) and the <b>scopes</b> (waveform, RGB parade, vectorscope, histogram) of the picture at the position marker.</li>
+</ul>
+
+<h3 id="deliver">📤 Export</h3>
+<ul>
+  <li>Choose every format the movie should come out in: MP4 H.264 / H.265, MOV ProRes 422 HQ / DNxHR HQ, WebM VP9, GIF, WAV / MP3 - each at a size, a <b>reframe</b> (9:16, 1:1, 4:5, 21:9: crop the middle, pad, or a blurred fill), a frame rate and a quality. The packs add several at once. <b>⚙ Compile + export</b> makes them all from one compile, beside &lt;project&gt;.mp4; <b>Delivered</b> lists them to download.</li>
+</ul>
+
+<h3 id="exchange">⇄ Exchange: XML, EDL, OTIO</h3>
+<ul>
+  <li><b>Send</b> the timeline to DaVinci Resolve, Avid or another video editor as a Final Cut Pro 7 XML, as a CMX3600 EDL (V1 only) or as OpenTimelineIO. <b>Bring in</b> an XML or EDL from them: it opens as a new named timeline; clips are found by file name in this project, and the missing ones are listed.</li>
+</ul>
+
+<h3 id="transcript">📝 Transcript: edit by words, pauses, fillers, scene cuts (2.408.0)</h3>
+<ul>
+  <li>Select a video or sound clip, then 📝. Its words appear (the file is transcribed once on this machine - Settings → Audio installs speech-to-text). Click words to choose them, shift-click for a run, or drag across them; double-click one to go there.</li>
+  <li><b>✂ Cut them</b> takes the chosen words out and closes the gap (the clips after it move up); <b>⇥ Keep only them</b> keeps just those. <b>Remove pauses over … s</b> shortens every silence longer than that to 0.3 s; <b>Remove filler words</b> takes out um, uh, erm, hmm. <b>↺ Undo</b> puts back the last cut.</li>
+  <li><b>✂ Scene cuts</b> splits the clip where its shots change (a lower sensitivity number finds softer changes).</li>
+</ul>
+
+<h3 id="karaokewords">🎤 Karaoke: correcting the words</h3>
+<ul>
+  <li><b>✎ Edit lyrics</b>: when a song has no lyrics on file, the box shows the words speech-to-text heard - exactly what the karaoke showed - so the wrong ones can be fixed (or the real lyrics pasted). Generate saves them and times them against the song.</li>
+  <li><b>⏱ Words &amp; timing</b>: every word the overlay will show, with its start and end; ▶ plays it. Change a word or its time and Generate keeps those for the song (↺ undoes them) - until its lyrics change.</li>
+  <li>🎤 Karaoke is a <b>docker</b> (2.410.0): the first time it docks right of the preview canvas, so you can play the song and correct its words side by side; ◧ / ◨ / its titlebar move it (see 🧰 above). In ⏱ Words &amp; timing the word being sung is lit and the list follows the preview; a word's <b>time</b> is a button that puts the preview there; <b>⤓</b> beside a start or an end sets it to where the preview is. <b>👁 on canvas</b> draws the corrected words over the preview (the canvas only - never the movie), so a fix shows at once; Generate makes the real overlay.</li>
+  <li><b>◀ ▶</b> on a word (2.433.0) move it earlier / later by the <b>Nudge</b> (0.05 s); <b>Shift</b>+click = the larger nudge (0.25 s); <b>Ctrl</b>+click = that word and every word after it; <b>Shift+Ctrl</b>+click = them all by the larger nudge. The amounts are the boxes above the list; nothing goes before 0 s. The <b>line under the preview marker</b> is lit (all its words).</li>
+  <li><b>💾 Save words</b> keeps the corrections without making an overlay. The video docker's <b>✎</b> (beside 🎤 Karaoke) opens this dialog on the board's song; once saved, the scenes' lyrics overlays are remade with the corrected words.</li>
+</ul>
+
+<h3 id="effects">✨ Effects and ◐ adjustment layers (2.409.0)</h3>
+<ul>
+  <li>A video clip's Properties have <b>✨ Effects</b>: blur, sharpen, glow, vignette, grain, <b>crop</b> (the edges made see-through, % of each side), <b>key</b> (green / blue screen: the colour, how close still keys, a soft edge, spill clean-up - the layer under it shows through) and <b>stabilise</b> (the compile; the canvas shows it as shot).</li>
+  <li><b>◐</b> on the timeline's toolbar adds an <b>adjustment layer</b> at the position marker: a clip on a new top layer whose 🎨 Colour and ✨ Effects (blur, sharpen, glow, vignette, grain) work on every layer under it while it is on the timeline. Trim and move it like a picture; its opacity mixes the adjustment in.</li>
+</ul>
+
+<h3 id="keys">⌨ Keys, markers, In / Out export and frames (2.410.0)</h3>
+<ul>
+  <li><b>Space</b> pauses whatever preview is playing - the canvas, the live preview, a video in the Preview docker - wherever the pointer is, unless you are typing in a box (a focused button is not typing). Paused, Space plays again; over the canvas a tap plays and holding it is the hand.</li>
+  <li>With the pointer over the timeline's <b>layers</b> (not the canvas, whose own V / T / H / Z / M / B keys stay): <b>V</b> ▸ Select, <b>B</b> ⇤ Ripple, <b>N</b> ⇹ Roll, <b>Y</b> ⇆ Slip, <b>U</b> ↔ Slide; <b>I</b> / <b>O</b> set the ruler selection's In / Out at the position marker; <b>Ctrl+K</b> splits at the position marker (the selected clip, else the highlighted layer's clip under it); <b>↑ / ↓</b> go to the previous / next edit point; <b>Home / End</b> the start / end.</li>
+  <li><b>Markers</b>: <b>M</b> (or <b>⚑</b> in the menu bar) drops one at the position marker - a coloured flag on the ruler and a line down the layers. Click a flag to go there, drag it to move it, double-click it (or press M on it) for its name, colour and comment, 🗑 removes it. <b>Shift+M</b> / <b>Alt+M</b>: the next / previous marker. 📝 ✂ Scene cuts with <b>as markers</b> drops one at every shot change instead of cutting. ⇄ Exchange writes them into the XML, the EDL and OTIO and reads them back.</li>
+  <li>📤 Export's <b>Range</b>: the whole movie, or <b>In / Out only</b> - every format is made of the ruler selection only (&lt;project&gt;_&lt;format&gt;_io), its timecode and its captions moved to match. <b>🖼 Export frame</b> (or <b>Ctrl+Shift+E</b>) saves the picture at the position marker as a PNG beside the movies.</li>
+</ul>
+
+<h3 id="textfx">🅰 Text effect presets (2.411.0)</h3>
+<ul>
+  <li>A text layer's Properties have <b>Preset</b>: text effects made from layered PSD text effects (<b>Arena Gold 3D</b>, <b>Trend Candy 3D</b> come with the app) and the classic looks (Gold, Chrome ...). Pick one and the words are drawn with it - its colours, outlines, bevels, glitter and depth - <b>live as you type</b>: a quick picture while the words change, the sharp one a moment after you stop. ⚙ Compile always uses the sharp one. While a preset is on, the layer's own shadow and outline are off (the preset draws its own); <b>(none)</b> goes back to them.</li>
+  <li><b>＋ Import a PSD text effect…</b> adds your own: a PSD where the word is a smart object with layer effects (most "editable text effect" PSDs). Its backgrounds and decorations are left out; the preset is saved with your presets (🗑 deletes one of yours). The PSD's font is named in the note under Preset - install it and choose it as the layer's font for the closest match.</li>
+  <li>The same presets are in the image editor: the Type tool's options bar and a text layer's Properties.</li>
+  <li>Honest limits: bevel profile contours are approximated, a heavy preset (dozens of copies) draws its quick picture in about a second on a machine without a graphics card - faster on most machines.</li>
+</ul>
+
+<h3 id="shuttle">⏯ J / K / L shuttle, AV1, 10-bit and the graphics card (2.411.0)</h3>
+<ul>
+  <li>Anywhere in the timeline docker (the canvas too, not while typing): <b>L</b> plays forwards, press again for <b>2×, 4×, 8×</b>; <b>J</b> plays backwards the same way (it stops at the start); <b>K</b> stops. Hold <b>K</b> and press <b>L</b> / <b>J</b> for one frame on / back. The speed shows beside ▶. Over the timeline L is the shuttle; elsewhere it still shows LLM tokens.</li>
+  <li>📤 Export has <b>MP4 · AV1</b> (the smallest file at a quality; newest players) and <b>MP4 · H.265 10-bit</b> (smoother gradients), and the <b>smallest</b> pack (AV1 1080 + 720).</li>
+  <li><b>use the graphics card's encoder when it has one</b>: H.264 / H.265 / AV1 are made with NVENC (NVIDIA), Quick Sync (Intel) or AMF (AMD) when one works on this machine - each is tried with a one-frame test; none = the normal software encoder. The log says which was used.</li>
+</ul>
+
+<h3 id="premiere7">⏱ Drop-frame, ranges, clip markers, targets, linked sound, audio effects, hue curves, effect keyframes (2.412.0)</h3>
+<ul>
+  <li><b>Drop-frame timecode</b>: 📤 Export (and ⇄ Exchange) at 29.97 or 59.94 fps has <b>drop-frame</b> - the timecode skips frame numbers so it keeps up with the clock (HH:MM:SS;FF). It goes into the MP4 / MOV, the XML (DF) and the EDL (FCM: DROP FRAME).</li>
+  <li><b>Marker ranges</b>: a marker's editor has <b>length</b> (or ⟦ ⟧ to take the ruler's In / Out); a range is a band on the ruler whose right end drags its length. <b>Clip markers</b>: <b>Ctrl+Shift+M</b> (or Shift+click ⚑) puts one on the selected clip at the position marker - a small flag on the clip that stays on its frame when you trim, slip, speed up or reverse it. Shift+M / Alt+M stop at clip markers and range ends too; ⇄ XML / OTIO carry both.</li>
+  <li><b>◎ Track targets</b>: the ◎ in a layer's header targets it - Ctrl+K with no clip selected splits the clips under the position marker on every targeted layer.</li>
+  <li><b>🔗 Linked sound</b>: a video clip's Properties → 🔗 Sound → <b>⤓ as its own clip</b> puts its sound on a "V1 sound" layer, linked; the picture plays silent. With <b>🔗 linked selection</b> on (the menu bar) the two move and trim together; off, each on its own. <b>⛓ Unlink</b> parts them for good, <b>↩ Sound back</b> removes the separate clip.</li>
+  <li><b>J / L cuts</b> on every video layer (V2+) and on 🎬 retimed clips (the extra sound at the clip's speed; a reversed clip's backwards).</li>
+  <li>🎧 <b>EQ</b> (low shelf 120 Hz, a middle bell you can move, high shelf 8 kHz), a <b>multiband</b> compressor and a <b>reverb</b> (small / room / hall) - hear them with 🎧 before / after; the compile renders them.</li>
+  <li>🎨 Curves have <b>H/H</b> (hue vs hue: move one colour toward another) and <b>H/S</b> (hue vs saturation: more or less of one colour) - the ends wrap at red.</li>
+  <li>✨ <b>Effect keyframes</b>: <b>◆ key here</b> stores the effects at the position marker; with keys, a slider moved where there is no key makes one there. Blur, sharpen, glow, vignette, grain and crop move in a straight line from key to key - on the canvas and in the compile.</li>
+  <li>📤 <b>MOV · ProRes 4444 (alpha)</b> - see-through where nothing is drawn (V1's gaps, a see-through picture): the timeline is compiled once more on black and on white and the difference is the alpha. <b>MP4 · H.264 10-bit</b> (High 10). The graphics-card option also tries <b>VAAPI</b> on Linux.</li>
+</ul>
+
+<h3 id="premiere8">✅ Reversed / ramped edits, smart reframe, steady preview, bevel contours (2.413.0)</h3>
+<ul>
+  <li>The edit tools (ripple, roll, slip, slide), the edge handles and <b>Ctrl+K</b> work on <b>reversed</b> and <b>ramped</b> 🎬 clips - frame-exact: trimming keeps exactly the frames that were there; lengthening plays the new source at the clip's speed at that edge (a ramp gets a key there).</li>
+  <li><b>Edit by transcript</b> and <b>scene cuts</b> work on retimed clips too - the pieces are laid out in the order they play.</li>
+  <li>📤 Export's fit <b>follow</b> (smart reframe): a 9:16 / 1:1 / 4:5 version whose crop follows the subject - faces first, then people, then what stands out and moves - on a calm, smoothed path.</li>
+  <li>✨ <b>Stabilise</b> has <b>smooth</b> (how steady the camera path is made) and <b>locked</b> (no camera motion at all). The compile measures the shake first (vidstab). The canvas shows a <b>steady preview</b> once it is made (the status beside the controls); without vidstab in ffmpeg it uses deshake and the canvas shows the shot as is.</li>
+  <li>⇄ The XML writes a sped-up / slowed clip's in / out the way Final Cut 7 and other editors do (speed-adjusted frames) - checked with OpenTimelineIO's reader; older bitGen XMLs still import.</li>
+  <li>🅰 Text presets keep a bevel's <b>profile contour</b> as well as its gloss contour. The two presets that came with 2.411 were made before this - import their PSDs again (＋ Import a PSD text effect…) to get the exact profile.</li>
+</ul>
+
+<h3 id="premiere9">✅ Nested sequences, the fuller XML, FCPXML, whole-sequence transcripts (2.414.0)</h3>
+<ul>
+  <li><b>⧉ Nest</b> (the menu bar): choose another named timeline - it is compiled into <b>one clip</b> on a new layer "⧉ name" at the position marker, an ordinary clip from then on (trim, move, grade, nest again). When that timeline is saved again the clip's badge turns <b>↻ out of date</b>: its Properties have <b>↻ Re-render</b> (same place and trim) and <b>⧉ Open</b> (switch to it). A timeline cannot be nested in itself or in one it already holds.</li>
+  <li>⇄ The <b>XML</b> now carries position / scale / rotation (Basic Motion), opacity and volume with their ◆ keyframes, the 💬 captions (as text titles) and the <b>grade</b>: each graded clip's look is baked into a <b>.cube</b> beside the export (<code>exports/&lt;name&gt;_luts/</code>) and named in the clip's comment - apply it as the clip's input LUT in other editors (Lumetri → Basic → Input LUT), Resolve or Final Cut (Custom LUT). bitGen reads its own grade back exactly.</li>
+  <li>⇄ <b>FCPXML 1.10</b> (Final Cut Pro X) out and in: V1 = the primary storyline, other layers = connected lanes above, sound layers below; speed, moves, keyframes, markers, captions and the start timecode.</li>
+  <li>📝 <b>Transcript scope</b>: <i>this clip</i>, <i>its whole layer</i> or <i>the whole sequence</i> (V1, the video layers and the 🗣 voice sound layers as one text, in playing order). A cut comes out of whichever clip says the words; for the whole sequence <b>every layer</b> after it moves up as well. ↺ undoes it.</li>
+</ul>
+
+<h3 id="premiere10">✅ Track mixer, distort effects, the transitions library, colour match (2.415.0)</h3>
+<ul>
+  <li><b>🎚 Mixer</b> (the menu bar): a strip per track (V1, each video layer, each sound layer) and the <b>master</b> - a fader to +6 dB, <b>pan</b>, <b>M</b>ute / <b>S</b>olo and a live left / right <b>level meter</b> while the canvas plays (−60 .. +6 dBFS; the white tick holds the peak, red = over 0 dB). Double-click: 0 dB / centre. The movie pans and mixes the same way.</li>
+  <li>✨ <b>Distort</b> (a clip's Effects): <b>lens</b> (barrel / pincushion), <b>mirror</b> (left → right, top → bottom, four ways), <b>warp</b> (<i>wave</i> with size and speed, <i>twirl</i>). The canvas and the movie sample the very same points.</li>
+  <li><b>Transitions</b>: 59 - every one ffmpeg has (wipes to the corners, soft wipes, covers, reveals, squeezes, irises, barn doors, slices, wind, zoom). A video or picture layer's <b>entry / exit</b> is drawn as its shape on the canvas and in the movie; the dissolves stay dissolves.</li>
+  <li>🎨 <b>🎯 Match</b>: choose another clip - this clip's R / G / B curves are set so its tones match that clip's frame as the movie shows it. Tweak the curves after, or reset them.</li>
+</ul>
+
+<h3 id="premiere11">✅ Masks + tracking, multi-camera, proxies (2.416.0)</h3>
+<ul>
+  <li>🎨 <b>◯ Mask</b> (the Colour panel): an ellipse or a box with centre, size, rotation, <b>feather</b> and <b>invert</b> - the grade and the effects after it only inside (or outside) it. Its outline shows on the canvas while the panel is open; adjustment layers have masks too.</li>
+  <li><b>🎯 Track</b>: with the position marker where the mask sits right, 🎯 makes it follow that thing to the clip's end - on the canvas and in the movie. Lost (it left the frame) = it holds there and says so. <b>✕ track</b> removes it; moving a tracked mask moves its whole path.</li>
+  <li><b>🎥 Multi-camera</b>: tick the angles on the timeline (the first = the reference), choose whose sound plays, <b>⇆ Sync by sound</b>. V1 becomes the program: play and press <b>1 - 9</b> (or click an angle) to cut live; <b>⇲ Flatten</b> keeps the cuts as clips.</li>
+  <li><b>🪶 Proxies</b>: heavy clips (over 1920 wide, HEVC / ProRes / DNx, over 40 Mbit/s) are listed - make their 960-wide proxies and tick <b>play proxies on the canvas</b>. The movie always uses the originals.</li>
+</ul>
+
+<h3 id="premiere12">✅ HDR, AAF, the sound of reversed clips, motion graphics templates (2.417.0)</h3>
+<ul>
+  <li>📤 <b>HDR</b>: the 10-bit presets have a <b>colour</b> - SDR, <b>HDR10</b> (PQ, BT.2020 + HDR10 metadata), <b>HLG</b> or <b>Rec.2020 SDR</b>. The master's white sits at 203 nits so it looks as graded. The <b>HDR pack</b> adds both. An HDR clip on the timeline is tone-mapped into the movie.</li>
+  <li>⇄ <b>AAF</b> (Exchange): the cut for <b>Avid Media Composer / Pro Tools</b> - picture tracks, mono sound tracks, gaps, timecode, the media linked. Opacity, volume, moves and the grade stay in the FCP 7 XML.</li>
+  <li>🔊 A <b>reversed or ramped</b> clip is <b>heard</b> on the canvas: its sound is rendered once with the movie's retime and plays in step.</li>
+  <li>🧩 <b>Motion graphics templates</b>: pick one, fill in its texts, <b>⤓ Insert at the playhead</b> - sized to the picture, moves and keyframes kept. 4 built in; <b>💾 Save as a template</b> keeps the ticked picture / text layers for every project.</li>
+</ul>
+
+<h3 id="premiere13">✅ Real-time playback: render bar, ⚡ Render, ⏱, playback resolution (2.418.0)</h3>
+<ul>
+  <li>The <b>render bar</b> under the ruler: nothing = plays live in real time, <b>yellow</b> = may drop frames, <b>red</b> = too heavy (or it dropped frames), <b>green</b> = rendered. Hover a stretch for why.</li>
+  <li><b>⚡ Render</b>: the movie compiled once into the project's cache - playing over green stretches shows it, exactly and at full speed. An edit re-reds only its stretch. Shift+click ⚡: previews off / on.</li>
+  <li><b>⏱</b> beside ▶ counts late frames since ▶; <b>Full / ½ / ¼</b> works the clips' looks on a smaller picture while playing.</li>
+</ul>
+
+<h3 id="negprompt">✅ One prompt docker, ⊖ the negative prompt docker (2.419.0)</h3>
+<ul>
+  <li>Every tool (✨ AI edit, ✨ Fill, path subject, ✨ AI scene, 3DREAL look, characters, environments, VR worlds) uses the <b>prompt docker</b>'s text - a line shows what it will use; click it to edit there.</li>
+  <li><b>2</b> (or Negative in the statusbar) shows the <b>negative prompt</b> docker: what the picture must not have. It goes with every generation; its status line says if the model uses it (SDXL / Pony / Illustrious, LTX, Wan, H3 at cfg &gt; 1 - not FLUX / Qwen / Z-Image). The LLM's "Negative:" lines land there.</li>
+</ul>
+
+<h3 id="bgv">✅ 🎞 The video project file: .bgv (2.436.0)</h3>
+<ul>
+  <li><b>💾 Save</b>: the timeline open now - layers, clips, keyframes, effects, captions, markers, settings - as XML, with the nested timelines its nest clips use and the list of its media, in the project's <code>bgv</code> folder (+ a download when asked).</li>
+  <li><b>📂 Open a .bgv</b> (the computer or the project's list) ▸ <b>Look</b>: what is in it and the media this project lacks; <b>Open it</b>: a named timeline of this project, switched to. Nested timelines this project has are kept as they are.</li>
+  <li>The whole project (media too) is 📦 <b>.bgp</b> in the menu bar.</li>
+</ul>
+
+<h3 id="tlai">✅ 🤖 AI inside the timeline (2.420.0)</h3>
+<ul>
+  <li>🤖 renders with the <b>prompt docker</b>'s words and the <b>⊖ negative</b>, in the selected video style.</li>
+  <li><b>🔁 New take</b> of the selected clip in its own slot (⇆ switches takes) · <b>⇥ Extend</b> it from its last frame · <b>🎞 B-roll</b> for the empty stretch of V1 at the position marker, or a cutaway over the ruler selection · <b>✂ Cut to the beat</b>: ♪ find a song's beats, then ⚑ markers or ✂ cuts.</li>
+</ul>
+
+<h3 id="glcomp">✅ The GPU compositor (2.420.0)</h3>
+<ul>
+  <li>While playing, the layers are composited on the graphics card (a grade-only clip graded in the same pass). <b>GPU</b> beside ⏱ switches it; paused frames, wipes and adjustment layers use the 2D path.</li>
+</ul>
+
+<h3 id="progress">The Generate button's progress</h3>
+<ul>
+  <li>Above Generate: the step count of the running job (hover it for the job, percentage, time and the last log line). Under Generate: the progress bar, shown only while a job runs (a moving stripe until its first step).</li>
+</ul>

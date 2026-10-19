@@ -1,0 +1,826 @@
+    <!-- THE VIDEO DOCKER (moved 2.142.2, Tim: "the video docker should be
+         under the timeline docker"). It began life in 2.134.0 as a grid
+         ASIDE with no grid column of its own, so whenever it was visible,
+         CSS auto-placement slid every dock one column over (refs button
+         resized the video docker, assets landed in the main track). It is
+         now a bdock BLOCK like Timeline/Image editor: collapse via the
+         header or the Video button in the status bar, drag the splitter
+         above to resize (--vh), maximize with ⛶. -->
+    <div class="bdock" id="videodock">
+      <div class="bhead" data-collapse="videodock">▾ Video<button class="maxbtn" data-max="videodock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+    <!-- THE MOVIE FILE MENU (2.150.0, by instruction): New clears the docker
+         (cast stashed, nothing deleted), Save/Load bundle cast + chapters +
+         scenes + renders under the project's movies/ folder, Compile joins
+         every rendered take of the loaded movie in scene order. -->
+    <div class="grpbar" id="mvBar" style="gap:6px;align-items:center;border-bottom:1px solid #262a33;padding-bottom:6px">
+      <button class="ghost gbtn" id="mvNew" type="button"
+              title="New movie — clears the cast, chapters and scenes from the docker. Nothing is deleted: the cast is stashed under movies/, renders stay in the gallery."
+              aria-label="New movie">🆕 New</button>
+      <input id="mvName" type="text" placeholder="Movie name" style="flex:1;min-width:60px"
+             aria-label="Name to save the movie under">
+      <button class="ghost gbtn" id="mvSave" type="button"
+              title="Save the movie — cast with its files, chapters, scenes and renders — under this name"
+              aria-label="Save the movie">💾 Save</button>
+      <select id="mvSel" style="max-width:140px" title="Saved movies"
+              aria-label="Saved movies"><option value="">— movies —</option></select>
+      <!-- 2.299.0 (Tim: "allow user to load song from the load button in
+           the video docker menubar. song can be loaded from anywhere but is
+           copied to the active project"): 📂 Load opens a two-item menu -
+           the selected movie, or a song from anywhere on disk (copied into
+           the ACTIVE project's sound assets, becomes the board's song, its
+           waveform opens below). The 🎵 button lives in this menu now. -->
+      <span id="mvLoadWrap" style="position:relative;display:inline-flex;flex:none">
+      <button class="ghost gbtn" id="mvLoad" type="button"
+              title="Load - the selected movie, or a song from anywhere on disk (copied into this project)"
+              aria-label="Load a movie or a song" aria-haspopup="menu" aria-expanded="false">📂 Load ▾</button>
+      <div id="mvLoadMenu" role="menu"
+           style="position:absolute;top:100%;left:0;z-index:30;margin-top:2px;display:none;flex-direction:column;gap:2px;min-width:210px;background:#1a1d24;border:1px solid #3a4050;border-radius:4px;padding:4px">
+        <button class="ghost gbtn" id="mvLoadMovie" type="button" role="menuitem"
+                style="text-align:left"
+                title="Load the selected movie: its cast, chapters, scenes and renders (back into the gallery)"
+                aria-label="Load the selected movie">🎬 Movie <span id="mvLoadMovieName" class="hint"></span></button>
+        <button class="ghost gbtn" id="vdLoadAudio" type="button" role="menuitem"
+                style="text-align:left"
+                title="Load a song from anywhere on disk - it is COPIED into this project's sound assets and becomes the board's song; its waveform opens below auto-segmented (the stems dock's rules); 💾 on the waveform saves the .seg and creates the scenes"
+                aria-label="Load a song from disk">🎵 A song from disk… <span class="hint">(copied into this project)</span></button>
+      </div></span>
+      <!-- 2.275.0 (Tim: "add a dropdown in the menubar of video docker for
+           workflows (show video) workflows"): the board's render workflow,
+           in the MENUBAR — Character chain plus every VIDEO style
+           (H3_Video_Ref, MMH3_Music_Video, ...). One truth with the scene
+           strip's scStyleSel: both fill from the same list, both post
+           /api/scenes/style, each mirrors the other. "create the music
+           video" in the chat selects MMH3_Music_Video here itself. -->
+      <!-- 2.289.0 (Tim: "when we are making a music video, put a load
+           audio button in the video docker menubar. load a waveform of the
+           song, auto segment the song the same as the stem docker does it
+           (do not actually cut the files) just save the segment start time
+           and duration to the .seg file, create the blank scenes on save,
+           populate the start and duration inputs for each scene"): 🎵
+           picks a song from disk (it lands in the project's sound assets
+           and becomes the board's song); the waveform strip below the
+           menubar shows it with the red segment lines, and its 💾 writes
+           the .seg and stages the scenes. -->
+      <input id="vdAudioFile" type="file" style="display:none"
+             accept=".wav,.mp3,.flac,.ogg,.m4a,.opus,audio/wav,audio/mpeg,audio/flac,audio/ogg"
+             aria-label="Choose the song to load">
+      <label style="display:flex;gap:4px;align-items:center;font-size:.72rem;flex:none">Audio
+        <select id="vdAudio" style="max-width:150px;padding:2px 4px;font-size:.72rem"
+                title="The board's song (optional). With a song every scene lip-syncs its own start/duration window of it. With none (—) the board is a screenplay: the characters speak their lines in their own voices"
+                aria-label="Board audio (the song)"><option value="">—</option></select></label>
+      <label style="display:flex;gap:4px;align-items:center;font-size:.72rem;flex:none">Workflow
+        <!-- 2.323.0 (Tim: "get rid of the looping workflows and replace them
+             with the ref2va and fl2va"): the looping chains are gone from the
+             pickers - every scene renders on its own (Ref / Cont = ref2va,
+             First / Trans = fl2va) with the characters, sheets, voices and tags -->
+        <select id="vdWorkflow" style="max-width:170px;padding:2px 4px;font-size:.72rem"
+                title="The board's render flow. Native audio: each scene is its own clip - Ref / Cont through ref2va (reference pictures, character sheets, voices, @tags), First / Trans through fl2va; with a song it lip-syncs, without one the characters speak. H3_Video_Ref: every scene through the plain ref2va export. LTX 2.5: each scene through Tim's LTX 2.5 all-in-one canvas - text, the frame it starts on (First / Cont), first + last (Trans), and with a song the lip-synced versions."
+                aria-label="Board render workflow">
+          <option value="MMH3_NativeAudio_MV">Native audio · ref2va / fl2va</option>
+          <option value="H3_Video_Ref">H3_Video_Ref</option>
+          <option value="LTX25">LTX 2.5 · text / first-last / lipsync</option>
+        </select></label>
+      <!-- 2.323.0 (Tim: "can we add scenes to the video docker, and the llm
+           counts the scenes (or we have a txt file with number of scenes)") -->
+      <label style="display:flex;gap:4px;align-items:center;font-size:.72rem;flex:none"
+             title="How many scenes the writer makes. Blank: the number in projects/<name>/scenes.txt, else the number in your request, else the LLM decides. With a song loaded the song's segments set it">Scenes
+        <input type="number" id="scCount" min="1" max="40" step="1" placeholder="LLM"
+               style="width:52px;padding:2px 4px;font-size:.72rem" aria-label="Number of scenes the writer makes"></label>
+      <!-- 2.293.0 (Tim: "can we populate each scene as they are created so
+           users with 2 gpu's can start rendering while waiting for new
+           scenes to be created"): each scene the writer finishes joins the
+           render queue (in story order, one at a time). LLM and ComfyUI on
+           different GPUs: renders start while the writer works; the same
+           GPU: they start when it finishes. -->
+      <label style="display:flex;gap:3px;align-items:center;font-size:.72rem;flex:none"
+             title="▶ as written - every scene the assistant writes is queued to render as soon as it lands (in story order, one at a time). With the LLM and ComfyUI on different GPUs the renders run WHILE the next scenes are written; on one GPU they start when the writer finishes.">
+        <input type="checkbox" id="vdAutoRender" aria-label="Render scenes as they are written">▶ as written</label>
+      <!-- 2.373.0 (Tim: "can we add a checkbox to videodocker menu for kareoke - when the video renders, render
+           another video with transparent background with the kareoke lyrics that can be added as an overlay layer
+           in timeline - first render of the scene won't have the kareoke lyrics"): karaoke.js drives it -->
+      <label style="display:flex;gap:3px;align-items:center;font-size:.72rem;flex:none"
+             title="🎤 Karaoke - when a scene renders, a second, TRANSPARENT video is made with its part of the song's lyrics and a bouncing ball, and placed on the timeline's Karaoke layer above the scene. The scene's own take has no lyrics. The lyrics come from lyrics/&lt;song&gt;.txt (saved with every song bitGen makes), timed by speech-to-text when it is installed. Turning it on also makes the overlays for scenes already rendered.">
+        <input type="checkbox" id="vdKaraoke" aria-label="Karaoke - a transparent lyrics overlay for each rendered scene">🎤 Karaoke</label>
+      <span id="vdKaraokeMsg" style="font-size:.68rem;color:#9aa4b2;flex:none;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" aria-live="polite"></span>
+      <!-- 2.329.0 (Tim: "add a button in the video docker "Swap" to open the
+           dialog"): the character swap dialog - static/swapdlg.js listens
+           for this id (no ext script needed) -->
+      <button class="ghost gbtn" id="vdSwapDlg" type="button"
+              title="Character swap - put the character from a picture into a whole video, segment by segment"
+              aria-label="Open the character swap dialog">⇄ Swap</button>
+      <!-- 2.368.0 (Tim: "is it possible for bitgen to create vr 3d sbs movies from reference pictures and audio
+           references- maybe using a 360 sbs picture as reference?" -> "lets try route 2"): the VR World dialog -
+           static/vrworld.js listens for this id (no ext script needed) -->
+      <button class="ghost gbtn" id="vdVrWorld" type="button"
+              title="VR World - a performer (pictures + a sound) inside a 360° / 180° picture, as a VR clip"
+              aria-label="Open the VR World dialog">🥽 VR World</button>
+      <button class="ghost gbtn" id="mvCompile" type="button"
+              title="Compile — join every rendered take of the loaded movie, in scene order, into one film"
+              aria-label="Compile the movie's renders">🎬 Compile</button>
+      <button class="ghost gbtn" id="mvResetWf" type="button"
+              title="Reset workflow — rebuild MM3_Characters_tmp.json from the base workflow with the current cast, environments and parameters, so the next render uses them"
+              aria-label="Reset the render workflow">♻ Workflow</button>
+      <!-- 2.312.0 (Tim: "add a settings button to the right of the video
+           docker menu bar ... on click show a dropdown, with resolution,
+           steps, cfg, lora adder, sage attention checkbox, spectrum
+           checkbox, comfy kitchen checkbox, upscaler dropdown, upscale
+           resolution"): every board render reads these (lib/renderSettings);
+           blank = the workflow's own. rendersettings.js drives it. -->
+      <span id="vdSetWrap" style="position:relative;display:inline-flex;flex:none;margin-left:auto">
+      <button class="ghost gbtn" id="vdSetBtn" type="button"
+              title="Render settings for the scenes - size, steps, cfg, LoRAs, accelerators, upscaler"
+              aria-label="Render settings" aria-haspopup="dialog" aria-expanded="false">⚙</button>
+      <div id="vdSetPanel" role="dialog" aria-label="Render settings"
+           style="position:absolute;top:100%;right:0;z-index:40;margin-top:2px;display:none;flex-direction:column;gap:6px;width:300px;max-height:70vh;overflow-y:auto;background:#1a1d24;border:1px solid #3a4050;border-radius:4px;padding:8px;font-size:.72rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <label style="display:flex;flex-direction:column;gap:2px">Resolution
+            <select id="vdSetRes" title="The render size's short side - default = the left Basic Settings' width x height (sent with each render)">
+              <option value="">Basic Settings</option><option value="480">480p</option>
+              <option value="540">540p</option><option value="720">720p</option><option value="1080">1080p</option>
+            </select></label>
+          <label style="display:flex;flex-direction:column;gap:2px">Aspect
+            <select id="vdSetAspect" title="The render's aspect ratio">
+              <option>16:9</option><option>9:16</option><option>4:3</option><option>3:4</option><option>1:1</option>
+            </select></label>
+          <label style="display:flex;flex-direction:column;gap:2px">Steps
+            <input id="vdSetSteps" type="number" min="1" max="200" step="1" placeholder="workflow's"
+                   title="Sampler steps - blank keeps the workflow's own"></label>
+          <label style="display:flex;flex-direction:column;gap:2px">CFG
+            <input id="vdSetCfg" type="number" min="0" max="30" step="0.1" placeholder="workflow's"
+                   title="Guidance - blank keeps the workflow's own. The native H3 graphs guide at 1 (no cfg input), so it reaches only graphs that have one"></label>
+        </div>
+        <!-- 2.380.0 (Tim: "add the 736 as an option in videodocker settings"): H3 renders in 32-px steps -->
+        <label style="display:flex;flex-direction:column;gap:2px">H3 size
+          <select id="vdSetH3Fit" title="H3 renders in 32-px steps. 704: round down (1280x704). 736: render 1280x736 and crop to exactly 1280x720 (about 4% slower)">
+            <option value="down">704 - round down</option><option value="up">736 - crop to 720</option>
+          </select></label>
+        <!-- 2.384.0 (Tim: "add option in settings of video docker to reuse same seed for all scenes and the seed input
+             (show last seed used with option to set as seed)"): a scene's own seed (its card) still wins -->
+        <label style="display:flex;flex-direction:column;gap:2px">Seed
+          <select id="vdSetSeedMode" title="Random: every scene a fresh seed. Same: every scene renders with the seed below (blank = the last seed used). A seed typed on a scene's card wins either way">
+            <option value="random">Random for each scene</option><option value="same">Same seed for every scene</option>
+          </select></label>
+        <div style="display:flex;gap:4px;align-items:center">
+          <input type="number" id="vdSetSeed" min="0" step="1" placeholder="last used" style="flex:1;min-width:0"
+                 title="The seed every scene uses when 'Same seed' is on - blank = the last seed used" aria-label="Seed for every scene">
+          <button class="ghost" id="vdSetSeedUse" type="button" title="Set the last seed used as the seed" aria-label="Use the last seed">♻</button>
+        </div>
+        <div class="hint" style="margin:0" id="vdSetSeedLast"></div>
+        <button class="ghost gbtn" id="vdSetKaraoke" type="button" title="Karaoke style - font, colours, background, ball" aria-label="Karaoke style">🎤 Karaoke style</button>
+        <div id="vdSetSize" class="hint" style="margin:0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span>LoRAs</span>
+          <button class="ghost gbtn" id="vdSetLoraAdd" type="button"
+                  title="Add a LoRA - the same list as Basic Settings' video LoRAs" aria-label="Add a LoRA">＋ LoRA</button>
+        </div>
+        <div id="vdSetLoras" style="display:flex;flex-direction:column;gap:4px"></div>
+        <label style="display:flex;gap:6px;align-items:center" title="Sage attention on the video model (needs the Sage install: Settings -> ComfyUI -> Video accelerators)">
+          <input type="checkbox" id="vdSetSage"> Sage attention</label>
+        <label style="display:flex;gap:6px;align-items:center" title="Spectrum feature forecast - about 30% fewer H3 steps, approximate (needs the Spectrum install)">
+          <input type="checkbox" id="vdSetSpectrum"> Spectrum</label>
+        <label style="display:flex;gap:6px;align-items:center" title="Comfy Kitchen's FP8 kernels: loads the video model as fp8_e4m3fn_fast so they can run. An int8 / fp8 / GGUF model file is left as it is (Settings -> ComfyUI -> Comfy Kitchen installs it)">
+          <input type="checkbox" id="vdSetKitchen"> Comfy Kitchen (FP8)</label>
+        <label style="display:flex;gap:6px;align-items:center" title="Long video (2.503.0): KJNodes' MiniMax low-VRAM attention + chunked feed-forward (the secret-sauce workflow's patches) - one scene renders up to 30 s in ONE generation instead of joined 15 s chunks. MiniMax H3 only; needs the latest KJNodes (Settings → ComfyUI → Video accelerators). With Comfy Kitchen ticked its attention backend goes in front.">
+          <input type="checkbox" id="vdSetLong"> Long video (one run up to 30 s)</label>
+        <label style="display:flex;flex-direction:column;gap:2px">Upscaler
+          <select id="vdSetUpscaler" title="MMH3 Ultimate Upscale - a 3D latent upscaler from ComfyUI's models/latent_upscale_models - or SeedVR2 (video): the take goes through ComfyUI's core SeedVR2 nodes as its own job (any style, the preview's ⏫ SeedVR2 options). The scene's ⏫ (or ⏫ in the scene menubar for the ticked scenes) upscales a take with it. Off = no upscaler">
+            <option value="">Off</option><option value="seedvr2">SeedVR2 (video) - the take as its own job</option><option value="dlss5">DLSS 5 (NVIDIA RTX) - the take as its own job</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:2px">Upscale resolution
+          <select id="vdSetUpRes" title="The upscaled short side, the render's aspect kept">
+            <option value="720">720p</option><option value="1080">1080p</option>
+            <option value="1440">1440p</option><option value="2160">2160p (4K)</option>
+          </select></label>
+        <!-- 2.315.0 (Tim: "i would prefer to press the button so i can
+             preview the scene"): OFF by default - renders stay fast, ⏫
+             upscales the take you approved -->
+        <label style="display:flex;gap:6px;align-items:center" title="Off (default): a scene renders at its own size so you can preview it; ⏫ on the scene (or ⏫ in the scene menubar for the ticked scenes) upscales that exact take. On: every render runs the upscaler as well">
+          <input type="checkbox" id="vdSetUpAuto"> Upscale every render</label>
+        <!-- 2.313.0 (Tim: "save the last 2 seconds of the video as 1080p
+             png, and use one of those frames to continue the video or first
+             frame for next video ... add option in video docker settings for
+             png size, upscaler dropdown"): the take's tail PNGs
+             (<song>\scene_<n>\<song>_scene_<n>_<x>.png) the next scene starts from -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;border-top:1px solid #2a2f3a;padding-top:6px">
+          <label style="display:flex;flex-direction:column;gap:2px">Tail PNG size
+            <select id="vdSetPngSize" title="The take's last 2 seconds are saved as PNGs at this size (the render's aspect) and the next scene continues from them. Off = continue from the video as before">
+              <option value="off">Off</option><option value="720">720p</option><option value="1080">1080p</option>
+              <option value="1440">1440p</option><option value="2160">2160p (4K)</option>
+            </select></label>
+          <label style="display:flex;flex-direction:column;gap:2px">PNG upscaler
+            <select id="vdSetPngUp" title="How the tail frames reach that size: Lanczos (fast); SeedVR2 7B (a diffusion upscaler that restores detail - comfy_workflows/utility_seedvr2_7b_int8_upscale_image_api.json, slower); or an upscale model from ComfyUI's models/upscale_models (e.g. 4x-ESRGAN)">
+              <option value="">Lanczos (no model)</option>
+              <option value="seedvr2">SeedVR2 7B (ComfyUI workflow)</option></select></label>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="vdSetPack" class="hint" style="flex:1;margin:0"></span>
+          <button class="ghost gbtn" id="vdSetPackInstall" type="button" style="display:none"
+                  title="Clone github.com/bbaudio-2025/Comfyui-MMH3-UltimateUpscale into ComfyUI's custom_nodes (restart ComfyUI after)"
+                  aria-label="Install the upscaler pack">⬇ Install pack</button>
+        </div>
+        <div id="vdSetMsg" class="hint" style="margin:0"></div>
+      </div></span>
+    </div>
+    <!-- 2.289.0: THE SONG STRIP - the board song's waveform with its
+         segment map (static/segmap.js, the stems dock's rules: drag a red
+         line, click a duration to lock it, drag a locked segment whole,
+         zoom). 💾 = save the .seg (start + duration per segment) and put
+         one scene per segment on the board with its start/duration inputs
+         filled. Nothing is cut. Hidden until a song is loaded or picked. -->
+    <div id="vdWave" style="display:none;border-bottom:1px solid #262a33;padding:4px 0 6px">
+      <div class="grpbar" style="gap:6px;align-items:center">
+        <button class="ghost gbtn" id="vdWavePlay" type="button"
+                title="Play / pause the song" aria-label="Play the song">▶</button>
+        <span class="hint" id="vdWaveName" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button class="ghost gbtn" id="vdZoomIn" type="button" title="Zoom in"
+                aria-label="Zoom in on the waveform">🔍+</button>
+        <button class="ghost gbtn" id="vdZoomOut" type="button" title="Zoom out"
+                aria-label="Zoom out of the waveform">🔍−</button>
+        <button class="ghost gbtn" id="vdZoomReset" type="button" title="Reset the view to the whole song"
+                aria-label="Reset the waveform view">⤢</button>
+        <!-- 2.358.0 (Tim: "add a transition checkbox to the song menubar before the save button, with a
+             duration input"): ☐ Transition + seconds + type - 💾 then puts a BRIDGE scene of that length after
+             every segment (carved from the segment's end): AI fl2va from the scene before's last frame to the
+             scene after's first frame, or a standard transition (fade, wipe ...) drawn with ffmpeg -->
+        <label class="hint" for="vdSegGap" style="display:flex;gap:3px;align-items:center;white-space:nowrap;cursor:pointer"
+               title="Transition: 💾 puts a bridge scene of this many seconds after every segment (taken from the end of the segment, so each segment still starts on its cut). A bridge goes from the scene before's last frame to the scene after's first frame.">
+          <input type="checkbox" id="vdSegGap">Transition</label>
+        <input type="number" id="vdSegGapDur" value="0.5" min="0.1" max="4" step="0.1" disabled
+               title="The bridge's length in seconds (0.1 - 4)" aria-label="Transition length in seconds"
+               style="width:46px;font-size:.7rem;padding:1px 3px">
+        <select id="vdSegGapType" disabled aria-label="Transition type"
+                title="AI (fl2va) renders the move with the model through the native-audio board; a transition (fade, dissolve, wipe ...) is drawn with ffmpeg - no model. Each bridge card can change its own."
+                style="max-width:118px;font-size:.7rem;padding:0 2px">
+          <option value="ai">AI (fl2va)</option>
+        </select>
+        <button class="ghost gbtn" id="vdSegSave" type="button"
+                title="Save - writes the segment start times and durations to the song's .seg file and creates one scene per segment with its start/duration filled in (nothing is cut)"
+                aria-label="Save the segments and create the scenes">💾</button>
+        <button class="ghost gbtn" id="vdWaveClose" type="button"
+                title="Hide the waveform (the board keeps its song)"
+                aria-label="Hide the waveform">✕</button>
+      </div>
+      <canvas id="vdWaveCv" style="display:block;width:100%;height:56px;margin-top:4px;cursor:crosshair;touch-action:none"
+              aria-label="Song waveform with segment lines"></canvas>
+      <div class="hint" id="vdWaveMsg" style="margin-top:2px"></div>
+    </div>
+    <div class="scroll" data-dockscroll>
+      <h2 class="sec drop" data-sec="vdcast"><span class="caret">▾</span>Characters</h2>
+      <div class="secbody" id="sec-vdcast">
+      <div class="grpbar">
+        <button class="ghost gbtn" id="chNew" type="button" title="Add a character: sheet, voice and details">NEW</button>
+        <button class="ghost gbtn" id="chCastBtn" type="button"
+          title="Choose which Actors are in the current scene — only they ride the reference chain and the screenplay">🎭 Actors</button>
+        <button class="ghost gbtn" id="chNewPic" type="button"
+                title="Create a character FROM ONE PICTURE — upload a photo or render and a reference sheet (front, side, back, portraits) is generated with the Klein edit style; regenerate until it's right, then add it to the cast"
+                aria-label="Create a character from one picture">🖼 NEW</button>
+        <input id="chNewPicFile" type="file" accept="image/png,image/jpeg,image/webp" multiple
+               style="display:none" aria-label="Choose the character's pictures — several at once generate one sheet each">
+        <span class="hint" id="chCount" style="margin-left:6px"></span>
+        <button class="ghost gbtn" id="chBuild" type="button" style="margin-left:auto"
+                title="Rebuild MM3_Characters_tmp.json from this cast">Build</button>
+      </div>
+      <div id="chList"></div>
+      <div id="chSheetPanel" style="display:none;margin-top:6px">
+        <div class="hint" id="chSheetStatus"></div>
+      </div>
+      <!-- 2.203.0 (by instruction): pick ONE subject out of a group before
+           the sheet renders — a rectangle mask with corner handles; every
+           pixel outside it goes BLACK in the uploaded picture, so the Klein
+           edit sees only the chosen person or animal. -->
+      <!-- 2.223.4 (by instruction): "make the character sheet dialog double the
+           size" — width doubled (980 -> 1960, viewport-capped) and set as a
+           real width so the dialog takes it; the mask canvas is 100% and
+           grows with it. -->
+      <!-- 2.369.0 (Tim: "in the character creator dialog, resize load image to fit in the dialog (keep aspect
+           ratio). so the dialog doesn't resize or look messy. fix the input widths. make it's appearance conform
+           with the rest of the app"): ONE fixed-size dialog (header tabs + ✕, then two columns per tab). The picture
+           sits in a fixed STAGE and is scaled to fit it, aspect kept - loading a tall or huge picture never
+           resizes the dialog; the controls live in a right-hand column of full-width fields. Every id is the
+           same as before (characters.js drives them). -->
+      <style>
+        #chMaskDlg { padding: 0; height: min(90vh, 980px); max-height: 90vh; overflow: hidden; }
+        #chMaskDlg[open] { display: flex; flex-direction: column; }
+        #chMaskDlg .chHead { display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+                             border-bottom: 1px solid var(--line); flex: none; }
+        #chMaskDlg .chHead h2 { margin: 0 10px 0 0; font-size: .82rem; }
+        #chMaskDlg .chTab { padding: 3px 12px; font-size: .78rem; }
+        #chMaskDlg .chPane { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 380px;
+                             grid-template-rows: minmax(0, 1fr); gap: 12px; padding: 10px 12px 12px; }
+        #chMaskDlg .chMain { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+        #chMaskDlg .chSide { min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;
+                             gap: 8px; padding-right: 4px; }
+        #chMaskDlg .chBar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        #chMaskDlg .chBar .gbtn { padding: 3px 9px; font-size: .78rem; }
+        #chMaskDlg .chStage { position: relative; flex: 1; min-height: 180px; background: #0c0a08;
+                              border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+        #chMaskDlg .chStage > canvas, #chMaskDlg .chStage > img {
+          position: absolute; inset: 0; margin: auto; max-width: 100%; max-height: 100%;
+          width: auto; height: auto; display: block; }
+        #chMaskDlg #chMaskCanvas { touch-action: none; cursor: move; }
+        #chMaskDlg #ccPrev { object-fit: contain; }
+        #chMaskDlg #ccPrev:not([src]), #chMaskDlg #ccPrev[src=""] { display: none; }
+        #chMaskDlg .chEmpty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+                              color: var(--dim); font-size: .8rem; text-align: center; padding: 12px; pointer-events: none; }
+        #chMaskDlg .chLbl { font-family: var(--disp); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
+                            color: var(--tiger); margin-top: 2px; }
+        #chMaskDlg .chForm { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 6px 8px; align-items: center; }
+        #chMaskDlg .chForm > label { font-size: .72rem; color: var(--dim); }
+        #chMaskDlg .chForm > * { min-width: 0; }
+        #chMaskDlg .chSide select, #chMaskDlg .chSide input[type=text], #chMaskDlg .chSide textarea {
+          width: 100%; box-sizing: border-box; }
+        #chMaskDlg .chSide input[type=number] { width: 84px; box-sizing: border-box; }
+        #chMaskDlg .chSide input[type=range] { flex: 1; min-width: 0; }
+        #chMaskDlg .chGo { width: 100%; padding: 7px; font-family: var(--disp); letter-spacing: .08em;
+                           border-color: var(--tiger); color: var(--tiger); }
+        #chMaskDlg .chRow2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        #chMaskDlg .chRow2 .gbtn { width: 100%; }
+        #chMaskDlg .chStrip { display: flex; gap: 6px; overflow-x: auto; flex: none; min-height: 0; padding-bottom: 2px; }
+        #chMaskDlg #ccStrip { height: 82px; }
+        #chMaskDlg #chSheetStrip { flex-wrap: wrap; }
+        #chMaskDlg details summary { font-size: .74rem; }
+        #chMaskDlg .chVal { font-size: .7rem; color: var(--dim); width: 74px; text-align: right; flex: none; }
+        #chMaskDlg #ccLoraList { font-size: .72rem; }
+      </style>
+      <dialog id="chMaskDlg" class="chdlg" style="max-width:min(96vw,1960px);width:min(96vw,1960px)" aria-label="Character creator">
+        <!-- 2.223.7 (by instruction): the dialog is TWO tabs — the sheet creator, and a CHARACTER CREATOR that
+             generates images for this character and feeds the pick straight into the sheet tab. -->
+        <div class="chHead">
+          <h2>Character creator</h2>
+          <button class="ghost gbtn chTab" id="cstabSheet" data-cstab="sheet" type="button"
+                  style="border-color:var(--tiger);color:var(--tiger)">🪪 Character sheet</button>
+          <button class="ghost gbtn chTab" id="cstabCreate" data-cstab="create" type="button">🎨 Create images</button>
+          <span style="flex:1"></span>
+          <button class="ghost gbtn" id="chMaskCancel" type="button" title="Close" aria-label="Close">✕</button>
+        </div>
+        <div id="cspane-sheet" class="chPane">
+          <div class="chMain">
+            <!-- 2.223.8 (by instruction): the picker lives INSIDE the dialog -->
+            <div class="chBar">
+              <button class="ghost gbtn" id="chSheetLoad" type="button"
+                      title="Load a picture from disk into the sheet creator"
+                      aria-label="Load a picture">📂 Load picture</button>
+              <!-- 2.228.0 (by instruction): add files to the character's dataset folder -->
+              <button class="ghost gbtn" id="chSheetDataset" type="button"
+                      title="Add files to this character's dataset folder (select from disk). The RefMod extracts from that folder; the character must be saved first."
+                      aria-label="Add files to the character's dataset">＋📁 Dataset</button>
+              <input id="chSheetDatasetFile" type="file" multiple style="display:none"
+                     accept="image/png,image/jpeg,image/webp,image/bmp,video/mp4,video/webm,video/quicktime"
+                     aria-label="Choose files to add to the dataset">
+              <span class="hint help">…or generate one in 🎨 Create images.</span>
+            </div>
+            <!-- the picture is scaled to FIT the stage (aspect kept) - the dialog never resizes for it -->
+            <div class="chStage"><canvas id="chMaskCanvas" aria-label="The picture - drag the box over one subject"></canvas></div>
+            <div class="hint help">Drag the box over ONE person or animal — corner handles resize, dragging inside
+              moves. Everything outside the box is blacked out before the sheet is generated.</div>
+            <!-- 2.223.12: the H3-Character_creator workflow's turnaround VIDEO -->
+            <video id="chSheetVid" controls playsinline
+                   style="width:100%;max-height:28vh;border-radius:8px;display:none;background:#000"></video>
+          </div>
+          <div class="chSide">
+            <div class="chLbl">Subject</div>
+            <div class="chForm">
+              <label for="chOptKind">Kind</label>
+              <select id="chOptKind" aria-label="What kind of subject" title="What the subject IS — 'animal' forbids anthropomorphizing outright">
+                <option value="person">Person</option>
+                <option value="animal">Animal</option>
+                <option value="vehicle">Vehicle</option>
+                <option value="object">Object</option>
+              </select>
+              <label for="chOptGender">Gender</label>
+              <input id="chOptGender" type="text" placeholder="optional" aria-label="Gender">
+              <label for="chOptDesc">Description</label>
+              <input id="chOptDesc" type="text" placeholder="optional" aria-label="Subject description">
+            </div>
+            <div class="chLbl">Sheet</div>
+            <div class="chForm">
+              <label for="chOptStyle">Look</label>
+              <select id="chOptStyle" aria-label="Sheet style" title="photo = photorealistic (not a cartoon)">
+                <option value="photo">Photo</option>
+                <option value="2.5d">2.5D</option>
+                <option value="anime">Anime</option>
+              </select>
+              <label for="chOptPose">Pose</label>
+              <select id="chOptPose" aria-label="Pose template for the sheet"
+                      title="Which black-and-white line-drawing pose template anchors the sheet's panels and poses — Auto guesses from the kind and description">
+                <option value="">Auto pose</option>
+                <option value="human">Human</option>
+                <option value="horse">Horse</option>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+                <option value="mouse">Mouse</option>
+                <option value="quadruped">Quadruped</option>
+                <option value="none">No pose template</option>
+              </select>
+              <!-- 2.223.4 (by instruction): the render style is a dropdown the user can change -->
+              <label for="chSheetStyleSel">Render style</label>
+              <select id="chSheetStyleSel" aria-label="Sheet render style"
+                      title="Which image style renders the sheet — seeded from the Prompt dock's dropdown, changeable here; LoRAs load ONLY when the style carries them"></select>
+            </div>
+            <span id="chSheetStyleHint" class="hint"></span>
+            <div class="chRow2">
+              <button class="ghost gbtn" id="chMaskUse" type="button"
+                      title="Use the selection — outside goes black in the uploaded picture"
+                      aria-label="Use the selected area">✔ Use selection</button>
+              <button class="ghost gbtn" id="chMaskAll" type="button"
+                      title="Use the whole picture unmasked"
+                      aria-label="Use the whole picture">▣ Whole picture</button>
+            </div>
+            <!-- 2.212.0 (by instruction): ▶ Generate keeps the dialog open; every press queues its own take -->
+            <button class="ghost gbtn chGo" id="chSheetGen" type="button"
+                    title="Generate the character sheet with these options — nothing renders until this is pressed; the dialog stays open, so press again for more takes, each with a fresh seed"
+                    aria-label="Generate the character sheet">▶ Generate sheet</button>
+            <div class="hint" id="chSheetGenNote"></div>
+            <!-- 2.224.0 (by instruction): tick takes, stitch them into one file -->
+            <div class="chBar" id="chStitchBar" style="display:none">
+              <button class="ghost gbtn" id="chStitchBtn" type="button"
+                      title="Stitch the ticked takes side by side into one file — the result joins the strip as a new take"
+                      aria-label="Stitch the ticked takes into one file">🧵 Stitch ticked</button>
+              <span class="hint" id="chStitchHint">tick two or more takes to stitch</span>
+            </div>
+            <div id="chSheetStrip" class="chStrip" style="display:none"></div>
+          </div>
+        </div>
+        <div id="cspane-create" class="chPane" style="display:none">
+          <div class="chMain">
+            <div class="chStage">
+              <span class="chEmpty">Generated images appear here — describe the character and press ▶ Generate</span>
+              <img id="ccPrev" alt="Generated preview">
+            </div>
+            <!-- thumbnails of THIS character's generations — the gens list, not the whole gallery -->
+            <div id="ccStrip" class="chStrip"></div>
+            <div class="chBar">
+              <button class="ghost gbtn" id="ccMakeSheet" type="button"
+                      title="Take the selected image into the sheet creator"
+                      aria-label="Create character sheet from the selected image">🪪 Create character sheet</button>
+            </div>
+          </div>
+          <div class="chSide">
+            <div class="chLbl">Describe</div>
+            <textarea id="ccPrompt" rows="5" spellcheck="false"
+                      placeholder="Describe the character to generate…" style="resize:vertical"></textarea>
+            <div class="chForm">
+              <label for="ccStyle">Style</label>
+              <select id="ccStyle" aria-label="Image style"></select>
+            </div>
+            <details id="ccAdv">
+              <summary class="hint" style="cursor:pointer">Settings (size, steps, cfg, scheduler, batch)</summary>
+              <div class="chForm" style="margin-top:6px">
+                <label>Size</label>
+                <div class="chBar" style="flex-wrap:nowrap">
+                  <input type="number" id="ccW" step="16" min="256" max="2048" placeholder="width" aria-label="Width">
+                  <span class="hint">×</span>
+                  <input type="number" id="ccH" step="16" min="256" max="2048" placeholder="height" aria-label="Height">
+                </div>
+                <label for="ccSteps">Steps</label>
+                <div class="chBar" style="flex-wrap:nowrap">
+                  <input type="range" id="ccSteps" min="0" max="60" value="0">
+                  <span class="chVal" id="ccStepsV">style default</span>
+                </div>
+                <label for="ccCfg">CFG</label>
+                <div class="chBar" style="flex-wrap:nowrap">
+                  <input type="range" id="ccCfg" min="0" max="30" value="0">
+                  <span class="chVal" id="ccCfgV">style default</span>
+                </div>
+                <label for="ccSched">Scheduler</label>
+                <select id="ccSched">
+                  <option value="">style default</option>
+                  <option>euler</option><option>euler_a</option>
+                  <option>dpm++2m</option><option>dpm++2mv2</option>
+                  <option>ddim</option><option>lcm</option>
+                </select>
+                <label for="ccBatch">Batch</label>
+                <select id="ccBatch"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select>
+              </div>
+            </details>
+            <div class="chLbl">LoRA</div>
+            <!-- 2.232.0 (by instruction): a folder filter from ComfyUI + extra paths, the LoRA a dropdown -->
+            <div class="chForm">
+              <label for="ccLoraFolder">Folder</label>
+              <select id="ccLoraFolder" title="Folder filter — subfolders of every loras root (ComfyUI + extra_model_paths)" aria-label="LoRA folder filter"><option value="*">all folders</option></select>
+              <label for="ccLoraSel">File</label>
+              <select id="ccLoraSel" title="The LoRAs in the filtered folder" aria-label="LoRA file"></select>
+              <label for="ccLoraW">Weight</label>
+              <div class="chBar" style="flex-wrap:nowrap">
+                <input type="number" id="ccLoraW" step="0.05" min="-2" max="2" value="1" title="weight">
+                <button class="ghost gbtn" id="ccLoraAdd" type="button" title="Add this LoRA to the render" aria-label="Add LoRA">＋ Add</button>
+              </div>
+            </div>
+            <div id="ccLoraList" class="hint" style="display:flex;flex-direction:column;gap:3px"></div>
+            <button class="ghost gbtn chGo" id="ccGen" type="button"
+                    title="Generate images for this character" aria-label="Generate">▶ Generate</button>
+            <span class="hint" id="ccStat"></span>
+          </div>
+        </div><!-- #cspane-create -->
+      </dialog>
+      <!-- 2.202.0 (by instruction): the finished sheet PREVIEWS in a dialog —
+           ⛶ fullscreen, ✔ Keep adopts it into the cast, ✕ Discard deletes
+           the render and closes. -->
+      <dialog id="chSheetDlg" style="max-width:min(92vw,1100px);width:92vw">
+        <h3 style="margin:0 0 6px">Generated character sheet</h3>
+        <img id="chSheetImg" alt="Generated character sheet"
+             style="display:none;width:100%;border-radius:8px;border:1px solid var(--line);cursor:zoom-in"
+             title="Click for full screen">
+        <div class="grpbar" id="chSheetBtns" style="display:none;gap:6px;margin-top:8px">
+          <input id="chSheetName" type="text" placeholder="Character name"
+                 aria-label="Name for the new character" style="flex:1;min-width:0">
+          <button class="ghost gbtn" id="chSheetAdopt" type="button"
+                  title="Keep — the sheet becomes this character's first reference sheet and the profile opens for editing"
+                  aria-label="Keep this sheet as a new character">✔ Keep</button>
+          <button class="ghost gbtn" id="chSheetRegen" type="button"
+                  title="Regenerate the sheet from the same uploaded picture with a fresh seed"
+                  aria-label="Regenerate the sheet">↻</button>
+          <button class="ghost gbtn" id="chSheetFull" type="button"
+                  title="Full screen — Esc leaves" aria-label="View the sheet full screen">⛶</button>
+          <button class="ghost gbtn" id="chSheetDismiss" type="button"
+                  title="Discard — deletes this render and closes"
+                  aria-label="Discard the generated sheet">✕ Discard</button>
+        </div>
+      </dialog>
+      </div>
+      <!-- 2.391.0 (Tim: "remove Start clip / Range / Redo scene / ⇥ Timeline / 🎬 Produce from videodocker"): the
+           Scenes section held only those three fields - gone with them; Build's notes go to the info line -->
+      <!-- 360° ENVIRONMENTS (2.142.0): a location = a 360 pano + a camera +
+           a scene range; its projected view rides the reference chain so
+           every scene in that range sees the same place. -->
+      <h2 class="sec drop" data-sec="vdenv" style="margin-top:10px"><span class="caret">▾</span>Locations (360°)</h2>
+      <div class="secbody" id="sec-vdenv">
+      <div class="grpbar" style="gap:6px">
+        <input id="envName" type="text" placeholder="Location name" style="flex:1;min-width:0">
+        <button class="ghost gbtn" id="envAdd" type="button" title="Add an environment"
+                aria-label="Add an environment">＋</button>
+        <button class="ghost gbtn" id="envNewDlg" type="button"
+                title="Open the location dialog — upload a 360 pano or generate one, with a 360° preview"
+                aria-label="Open the location dialog">🌐 NEW</button>
+      </div>
+      <div id="envList"></div>
+      <!-- 2.213.0: .exr/.hdr panos are accepted and tone-mapped ONCE at
+           upload into the stored 8-bit pano (Hable operator, server-side);
+           types are enumerated rather than image-slash-star both to list
+           the HDR extensions Windows gives no image MIME and to retire the
+           comment-stripper hazard the old wildcard carried. -->
+      <!-- 2.223.10 (by instruction): "the same kind of dialog for location,
+           with a 360 viewer option for the preview ... so users can upload
+           an environment or generate one" — the chMaskDlg pattern, sized
+           the same, with an equirect 360 toggle on the preview. -->
+      <dialog id="envCreDlg" style="max-width:min(96vw,1960px);width:min(96vw,1960px)">
+        <div class="grpbar" style="gap:6px;margin-bottom:8px">
+          <button class="ghost gbtn" id="ectabView" data-ectab="view" type="button"
+                  style="border-color:var(--tiger);color:var(--tiger)">Location</button>
+          <button class="ghost gbtn" id="ectabCreate" data-ectab="create" type="button">🎨 Create images</button>
+          <button class="ghost gbtn" id="envCreClose" type="button" style="margin-left:auto"
+                  title="Close" aria-label="Close the location dialog">✕</button>
+        </div>
+        <div class="grpbar" style="gap:6px;margin-bottom:8px">
+          <label class="f">Location</label>
+          <input id="ecName" type="text" placeholder="Location name" style="flex:1;min-width:120px"
+                 aria-label="Location name">
+        </div>
+        <div id="ecpane-view">
+          <div class="grpbar" style="gap:6px;margin-bottom:6px">
+            <button class="ghost gbtn" id="ecLoad" type="button"
+                    title="Load a 360 pano from disk (PNG, JPEG, WebP, EXR or HDR — HDR is tone-mapped on upload)"
+                    aria-label="Load a pano picture">📂 Load pano</button>
+            <button class="ghost gbtn" id="ec360" type="button"
+                    title="Toggle the 360° look-around view of the pano"
+                    aria-label="Toggle the 360 degree view">🌐 360°</button>
+            <span class="hint" id="ecViewStat" style="align-self:center">…or generate one in the 🎨 Create images tab.</span>
+          </div>
+          <div id="ecViewWrap" style="position:relative;min-height:240px">
+            <img id="ecPano" alt="Location pano"
+                 style="width:100%;border:1px solid var(--line);border-radius:8px;object-fit:contain;background:#0c0a08;display:block;min-height:240px">
+          </div>
+        </div>
+        <div id="ecpane-create" style="display:none">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex:1;min-width:0">
+              <img id="ecPrev" alt="Generated preview" style="width:100%;min-height:220px;border:1px solid var(--line);border-radius:8px;object-fit:contain;background:#0c0a08;display:block">
+              <div id="ecStrip" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"></div>
+              <div class="grpbar" style="margin-top:8px">
+                <button class="ghost gbtn" id="ecUse" type="button"
+                        title="Make the selected image this location's 360 pano"
+                        aria-label="Use the selected image as the location pano">🌐 Use as location</button>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+              <textarea id="ecPrompt" rows="4" spellcheck="false"
+                        placeholder="Describe the place… (tip: '360 equirectangular panorama of …')"
+                        style="width:100%;resize:vertical"></textarea>
+              <select id="ecStyle" aria-label="Image style"></select>
+              <details id="ecAdv">
+                <summary class="hint" style="cursor:pointer">Settings (size, steps, cfg, scheduler, batch)</summary>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+                  <div class="grpbar" style="gap:6px">
+                    <label class="f">Size</label>
+                    <input type="number" id="ecW" step="16" min="256" max="4096" placeholder="width" style="width:90px">
+                    <span class="hint">×</span>
+                    <input type="number" id="ecH" step="16" min="256" max="2048" placeholder="height" style="width:90px">
+                    <span class="hint">2:1 = equirect</span>
+                  </div>
+                  <div class="grpbar" style="gap:6px">
+                    <label class="f">Steps</label>
+                    <input type="range" id="ecSteps" min="0" max="60" value="0" style="flex:1">
+                    <span class="hint" id="ecStepsV" style="width:70px">style default</span>
+                  </div>
+                  <div class="grpbar" style="gap:6px">
+                    <label class="f">CFG</label>
+                    <input type="range" id="ecCfg" min="0" max="30" value="0" style="flex:1">
+                    <span class="hint" id="ecCfgV" style="width:70px">style default</span>
+                  </div>
+                  <div class="grpbar" style="gap:6px">
+                    <label class="f">Scheduler</label>
+                    <select id="ecSched">
+                      <option value="">style default</option>
+                      <option>euler</option><option>euler_a</option>
+                      <option>dpm++2m</option><option>dpm++2mv2</option>
+                      <option>ddim</option><option>lcm</option>
+                    </select>
+                    <label class="f">Batch</label>
+                    <select id="ecBatch"><option>1</option><option>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select>
+                  </div>
+                </div>
+              </details>
+              <div class="grpbar" style="gap:6px;flex-wrap:wrap">
+                <label class="f">LoRA</label>
+                <!-- 2.232.0: the same folder-filtered dropdown as the
+                     character creator's (one catalogue, two consumers). -->
+                <select id="ecLoraFolder" style="width:130px" title="Folder filter — subfolders of every loras root (ComfyUI + extra_model_paths)" aria-label="LoRA folder filter"><option value="*">all folders</option></select>
+                <select id="ecLoraSel" style="flex:1;min-width:140px" title="The LoRAs in the filtered folder" aria-label="LoRA file"></select>
+                <input type="number" id="ecLoraW" step="0.05" min="-2" max="2" value="1" style="width:70px" title="weight">
+                <button class="ghost gbtn" id="ecLoraAdd" type="button" title="Add this LoRA to the render" aria-label="Add LoRA">＋</button>
+              </div>
+              <div id="ecLoraList" class="hint" style="display:flex;flex-direction:column;gap:3px"></div>
+              <div class="grpbar">
+                <button class="ghost gbtn" id="ecGen" type="button"
+                        title="Generate location images" aria-label="Generate">▶ Generate</button>
+                <span class="hint" id="ecStat" style="align-self:center"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </dialog>
+      <input id="envPanoFile" type="file" accept="image/png,image/jpeg,image/webp,.exr,.hdr"
+             style="display:none"
+             aria-label="Choose a 360 pano image (PNG, JPEG, WebP, EXR or HDR)"
+             title="360 equirectangular pano — EXR and Radiance HDR files are tone-mapped to 8-bit on upload">
+      </div>
+      <!-- THE SCENE BOARD (2.139.0): one card per screenplay scene, a circular
+           play button each, a chapter adder, a preview with keep/redo under it
+           and Produce at the bottom. State lives server-side in the .prj. -->
+      <!-- 2.391.1 (Tim: "put the scenes in a dropdown"): the scene board - the shared prompt, the scene menubar, the
+           chapter references, the scene cards and the take bar - is one Scenes dropdown like Characters / Locations
+           (open / closed remembered); its title counts the scenes -->
+      <h2 class="sec drop" data-sec="vdscenes" style="margin-top:10px"><span class="caret">▾</span>Scenes <span class="hint" id="scSecCount" style="font-weight:400;letter-spacing:0;text-transform:none"></span></h2>
+      <div class="secbody" id="sec-vdscenes">
+      <!-- THE SHARED PROMPT (2.146.0, by instruction): the plan's
+           prompt_prefix — character assignments and @tags — editable here,
+           populated from the cast with 👥, saved with 💾. It rides in front
+           of every scene the board renders. -->
+      <div class="grpbar" style="gap:6px;align-items:flex-start">
+        <textarea id="scPrefix" rows="3"
+                  placeholder="Shared prompt — character definitions, voice assignments and @tags. Rides in front of every scene. 👥 populates it from the cast."
+                  aria-label="Shared prompt for all scenes"
+                  style="flex:1;min-width:0;resize:vertical"></textarea>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="ghost gbtn" id="scPrefixSave" type="button"
+                  title="Save the shared prompt" aria-label="Save the shared prompt">💾</button>
+          <button class="ghost gbtn" id="scPrefixGen" type="button"
+                  title="Populate from the cast — character assignments and @tags (press 💾 to keep it)"
+                  aria-label="Populate the shared prompt from the cast">👥</button>
+        </div>
+      </div>
+      <div class="grpbar" style="gap:6px;align-items:center">
+        <input type="checkbox" id="scSelAll" title="Select every scene"
+               aria-label="Select all scenes" style="flex:none">
+        <button class="ghost gbtn" id="scRenderSel" type="button"
+                title="Render the ticked scenes, one after another"
+                aria-label="Render the selected scenes">▶ Selected</button>
+        <!-- 2.315.0 (Tim: "i would like a icon only button in the scene
+             menubar to upscale selected") -->
+        <button class="ghost gbtn" id="scUpSel" type="button"
+                title="Upscale the ticked scenes' takes, one after another, with the ⚙ Upscaler and Upscale resolution (the take you previewed - no new render)"
+                aria-label="Upscale the selected scenes">⏫</button>
+        <!-- 2.295.0 (Tim: "allow user to change all scenes radio buttons
+             before first render so user can start job and job will run to
+             completion"): set EVERY scene's anchor in one press - then tick
+             all + ▶ Selected renders the lot in order, each First/Trans
+             scene starting on the last frame of the scene before it. -->
+        <span style="display:flex;gap:3px;align-items:center;font-size:.7rem;flex:none"
+              title="Set every scene's radio at once - Ref: each scene re-establishes from its references · First: each scene starts on the last frame (or the frame you picked) of the scene before · Cont: each scene opens on that frame with the cast sheets (keeps the character) · Trans: each scene travels from that frame to its new location picture. Scene 1 stays Ref.">All:
+          <button class="ghost gbtn" type="button" data-scallanchor="reference" style="font-size:.7rem;padding:1px 5px"
+                  aria-label="Set every scene to Ref">Ref</button>
+          <button class="ghost gbtn" type="button" data-scallanchor="first" style="font-size:.7rem;padding:1px 5px"
+                  aria-label="Set every scene to First">First</button>
+          <button class="ghost gbtn" type="button" data-scallanchor="continue" style="font-size:.7rem;padding:1px 5px"
+                  aria-label="Set every scene to Cont">Cont</button>
+          <button class="ghost gbtn" type="button" data-scallanchor="transition" style="font-size:.7rem;padding:1px 5px"
+                  aria-label="Set every scene to Trans">Trans</button></span>
+        <button class="ghost gbtn" id="scDelSel" type="button"
+                title="Delete the ticked scenes from the board — their shots leave the plan; rendered files stay in the gallery"
+                aria-label="Delete the selected scenes">🗑 Selected</button>
+        <button class="ghost gbtn" id="scClear" type="button"
+                title="Clear ALL scenes from the board — the shared prompt and chapters stay; rendered files stay in the gallery"
+                aria-label="Clear all scenes">🧹 Clear</button>
+        <button class="ghost gbtn" id="scAdd" type="button"
+                title="Add a new scene to the end of the board"
+                aria-label="Add a scene">＋ Scene</button>
+        <input id="scChapName" type="text" placeholder="Chapter name" style="flex:1;min-width:0">
+        <button class="ghost gbtn" id="scChapAdd" type="button" title="Add a chapter"
+                aria-label="Add a chapter">＋</button>
+        <button class="ghost gbtn" id="scChapLoad" type="button"
+                title="Load this chapter's saved scenes from its files (chaptername1.json, chaptername2.json, ...) — replaces that chapter's scenes on the board"
+                aria-label="Load the named chapter's saved scenes">⤓</button>
+        <label for="scDefDur" class="hint" style="flex:none;margin-left:6px">Duration s</label>
+        <input type="number" id="scDefDur" min="0.5" max="600" step="0.5"
+               title="Duration in seconds for EVERY scene (saved to the chain settings; snapped to the pack's valid frame lengths). All scenes share one duration — the workflow doesn't render mixed lengths."
+               aria-label="Scene duration in seconds, applied to every scene" style="width:64px;flex:none">
+        <!-- H3_VIDEO_REF (2.223.16; reshaped 2.227.0, Tim verbatim: "remove
+             the extend workflow, this workflow needs a node that corrupts
+             the other h3 nodes"): the board's render flow. Character chain
+             = the MM3 chain as always. H3_Video_Ref = EVERY scene through
+             the native ref2va export (reference pictures + character sheets
+             + character voices + the global prompt as its references);
+             scene n carries scene n-1's take in ref2va's own
+             video-reference slot. Persisted with the board. -->
+        <select id="scStyleSel" style="flex:none;width:auto;max-width:170px;padding:2px 4px;font-size:.72rem;margin-left:6px"
+                title="How \u25b6 renders the scenes. Native audio: each scene on its own - Ref / Cont through ref2va (pictures, character sheets, voices, @tags), First / Trans through fl2va; a song is optional. H3_Video_Ref: every scene through the plain ref2va export."
+                aria-label="Scene render flow">
+          <option value="MMH3_NativeAudio_MV">Native audio · ref2va / fl2va</option>
+          <option value="H3_Video_Ref">H3_Video_Ref</option>
+        </select>
+        <button class="ghost gbtn" id="scAddRef" type="button"
+                title="Add a reference image (clothing, pose, a two-character composition) to the SELECTED scene's chapter — each chapter keeps its own references"
+                aria-label="Add a reference image to the selected scene's chapter">🖼＋</button>
+      </div>
+      <h2 class="sec drop" data-sec="vdrefs" id="scRefHead" style="display:none;margin-top:6px"><span class="caret">▾</span>References <span class="hint" id="scRefCount"></span></h2>
+      <div class="secbody" id="sec-vdrefs"><div id="scRefStrip" class="hint" style="display:none;gap:6px;flex-wrap:wrap;align-items:flex-start"></div></div>
+      <!-- 2.391.1 (Tim: "put the scenes in a dropdown" - asked: "Both"): the ▾ Scenes section above, and this PICKER -
+           every scene, or only the one chosen (◀ ▶ step through them) -->
+      <div class="grpbar" id="scPickRow" style="gap:6px;align-items:center">
+        <button class="ghost gbtn" id="scPickPrev" type="button" title="The scene before" aria-label="Show the scene before">◀</button>
+        <select id="scPick" style="flex:1;min-width:0" title="Show every scene, or only the one chosen" aria-label="Which scenes to show"><option value="">All scenes</option></select>
+        <button class="ghost gbtn" id="scPickNext" type="button" title="The next scene" aria-label="Show the next scene">▶</button>
+      </div>
+      <div id="scList"><div class="modehint">No scenes yet. Ask the assistant to
+        “create a screenplay” and the scenes appear here.</div></div>
+      <!-- 2.223.6 (by instruction): "don't show the preview in the video
+           docker" — the inline take player is GONE from the dock body. The
+           take bar stays (a take must still be reviewable before ✔ Keep):
+           ▶ opens the selected scene's take in a floating dialog ON DEMAND,
+           nothing plays inside the docker. -->
+      <div class="grpbar" id="scPrevBtns" style="display:none;gap:10px;justify-content:center">
+        <button class="ghost gbtn" id="scWatch" type="button"
+                title="Watch the selected scene's take — opens in a floating player, nothing shows in the docker"
+                aria-label="Watch the selected scene's take">▶</button>
+        <button class="ghost gbtn" id="scKeep" type="button"
+                title="Keep this take — marks it for Produce" aria-label="Keep this take">✔</button>
+        <button class="ghost gbtn" id="scRedo" type="button"
+                title="Redo — render this scene again" aria-label="Redo this scene">↻</button>
+        <!-- 2.324.0 (Tim: "or from a scene (we add the reference image to a
+             rendered scene) and run this workflow"): the character swap -->
+        <button class="ghost gbtn" id="scSwap" type="button"
+                title="Swap the character in this take — keeps its motion, background and sound; the character becomes a cast sheet or a picture you drop. The result is this scene's next take."
+                aria-label="Swap the character in this take">⇄</button>
+      </div>
+      </div><!-- /sec-vdscenes -->
+      <dialog id="scSwapDlg" style="max-width:min(94vw,560px);width:min(94vw,560px)">
+        <div style="font-weight:600;margin-bottom:4px">⇄ Swap the character — scene <span id="scSwapN"></span></div>
+        <div class="hint help">The take keeps its performance, background, camera and sound (MiniMax_H3_Swap). Pick who plays it: a cast sheet, or a picture of anyone.</div>
+        <div id="scSwapCast" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0"></div>
+        <label class="hint" for="scSwapFile">…or a picture of the new character</label>
+        <input type="file" id="scSwapFile" accept="image/png,image/jpeg,image/webp,image/bmp"
+               aria-label="A picture of the new character" style="width:100%">
+        <div class="grpbar" style="gap:8px;margin-top:6px">
+          <label class="hint" for="scSwapStart">From s</label>
+          <input type="number" id="scSwapStart" min="0" step="0.1" value="0" style="width:70px"
+                 title="Where in the take the swap starts">
+          <label class="hint" for="scSwapDur">Length s</label>
+          <input type="number" id="scSwapDur" min="0.3" step="0.1" placeholder="all" style="width:70px"
+                 title="How much of the take to swap - blank = the whole take (one run, up to ~15 s)">
+        </div>
+        <textarea id="scSwapText" rows="2" style="width:100%;margin-top:6px"
+                  placeholder="Extra direction (optional) — the swap instructions always ride"
+                  aria-label="Extra direction for the swap"></textarea>
+        <div class="hint" id="scSwapMsg" style="margin:6px 0"></div>
+        <div class="grpbar" style="justify-content:flex-end;gap:8px">
+          <button class="ghost gbtn" id="scSwapCancel" type="button" aria-label="Cancel the swap">Cancel</button>
+          <button class="gbtn" id="scSwapGo" type="button" aria-label="Swap the character">⇄ Swap</button>
+        </div>
+      </dialog>
+      <dialog id="scWatchDlg" style="max-width:min(94vw,1200px);width:min(94vw,1200px)">
+        <video id="scWatchVid" controls playsinline autoplay
+               style="width:100%;border-radius:8px"></video>
+        <div class="grpbar" style="margin-top:6px;justify-content:flex-end">
+          <button class="ghost gbtn" id="scWatchClose" type="button"
+                  title="Close" aria-label="Close the take player">✕</button>
+        </div>
+      </dialog>
+    </div>
+      </div>
+      <!-- 2.391.0 (Tim: "make the video docker info window the height of the statusbar"): the docker's messages in ONE
+           line the status bar's height, under the scrolling body at the docker's bottom (the full text on hover) -->
+      <div class="vdinfo" id="scNotes" aria-live="polite"></div>
+    </div>
+    <!-- the videodock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="vh"></div>

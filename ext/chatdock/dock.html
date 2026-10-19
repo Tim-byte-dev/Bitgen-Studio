@@ -1,0 +1,33 @@
+    <div class="bdock" id="chatdock">
+      <div class="bhead" data-collapse="chatdock">▾ Prompt chat
+        <button class="maxbtn" data-max="chatdock" title="Maximize">⛶</button>
+      </div>
+      <div class="bbody">
+        <!-- THE CHAT MENUBAR (2.164.0, by instruction): the header's buttons
+             and the last-chat note move here, joined by save and load. A
+             conversation is already a file (projects/<p>/chat/<date_time>.chat,
+             the 2.85.0 doctrine); 💾 freezes the current one as an archive and
+             continues in a fresh copy, 📂 opens a past conversation the same
+             way — the original file is never edited again. -->
+        <div class="grpbar" id="chatBar" style="gap:6px;align-items:center;flex-wrap:wrap">
+          <button class="ghost gbtn" id="chatNew" title="Start a new conversation. The old one stays in the project's chat folder.">🆕</button>
+          <button class="ghost gbtn" id="chatToPrompt" title="Put the last reply into the Prompt box, ready to edit or generate">⬇</button>
+          <button class="ghost gbtn" id="chatGuide" title="Show the prompting guide the assistant is taught for the model that will run (video / selected image style / music)">📖</button>
+          <button class="ghost gbtn" id="chatSaveBtn" title="Save this conversation as &lt;subject&gt; - &lt;date&gt; (the running LLM names the subject, else your first words); the chat continues in a fresh copy">💾 Save</button>
+          <select id="chatSaves" title="Saved conversations in this project's chat folder, newest first" style="max-width:220px"></select>
+          <!-- 2.370.0 (Tim: "add a clear chat icon only button next to the dropdown"): empties THIS conversation
+               (the window and what the model is given); saved chats are kept -->
+          <button class="ghost gbtn" id="chatClear" title="Clear the chat - empties this conversation (saved chats are kept)" aria-label="Clear the chat">🧹</button>
+          <button class="ghost gbtn" id="chatLoadBtn" title="Load the picked conversation — it opens as a fresh copy; the original is never edited again">📂 Load</button>
+          <span id="chatnote" class="dim" style="margin-left:auto;font-size:11px"></span>
+        </div>
+        <!-- NO INPUT OF ITS OWN (2.85.2, by instruction): the Prompt box below
+             is the chat box. One place to type means what you asked for and
+             what you render are the same text, and the reply can be edited into
+             a prompt without moving it between two fields. -->
+        <div id="chatlog" tabindex="0"></div>
+      </div>
+    </div>
+    <!-- the chatdock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="ch2"></div>

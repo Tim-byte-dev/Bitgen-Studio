@@ -1,0 +1,374 @@
+{
+  "_comment": "bitGen Studio — the LoRA trainer's base models (lib/loraTrain.js -> an ai-toolkit config). model = ai-toolkit's model: block (arch / name_or_path / flags); train / sample = what differs from the defaults. vram_gb = what it needs to train (the trainer's own guidance, an estimate). family = the Model manager's type for the finished LoRA. checked = the keys were read from ai-toolkit's own examples / its issue tracker; the others are best knowledge - the YAML stays editable in the docker before a run. 2.521.0: full = a full (checkpoint) fine-tune - no network block, every weight trained, saved in diffusers format and joined into one .safetensors for ComfyUI's diffusion_models; note = what the docker shows under it.",
+  "presets": [
+    {
+      "id": "zimage_turbo",
+      "label": "Z-Image Turbo (pictures - the easiest start)",
+      "family": "z-image",
+      "vram_gb": 16,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "arch": "zimage:turbo",
+        "name_or_path": "Tongyi-MAI/Z-Image-Turbo",
+        "assistant_lora_path": "ostris/zimage_turbo_training_adapter",
+        "quantize": true,
+        "qtype": "qfloat8",
+        "quantize_te": true,
+        "qtype_te": "qfloat8"
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "sigmoid",
+        "lr": 0.0001,
+        "steps": 3000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 1,
+        "sample_steps": 8
+      }
+    },
+    {
+      "id": "flux2_klein_4b",
+      "label": "FLUX.2 klein base 4B (pictures - Apache 2.0, fast to learn)",
+      "family": "flux2",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "arch": "flux2_klein_4b",
+        "name_or_path": "black-forest-labs/FLUX.2-klein-base-4B"
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "lr": 0.0001,
+        "steps": 1800
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      },
+      "note": "BFL's own guide: 15-40 pictures, ~1800 steps, the best checkpoint is usually at 750-1500 - pick it by its samples. Use the LoRA with the distilled FLUX.2 klein 4B (4 steps)."
+    },
+    {
+      "id": "zimage",
+      "label": "Z-Image base (pictures)",
+      "family": "z-image",
+      "vram_gb": 16,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "arch": "zimage",
+        "name_or_path": "Tongyi-MAI/Z-Image",
+        "quantize": true,
+        "qtype": "qfloat8",
+        "quantize_te": true,
+        "qtype_te": "qfloat8"
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "weighted",
+        "lr": 0.0001,
+        "steps": 3000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 30
+      }
+    },
+    {
+      "id": "flux_dev",
+      "label": "FLUX.1 dev (pictures - gated on Hugging Face)",
+      "family": "flux",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "name_or_path": "black-forest-labs/FLUX.1-dev",
+        "is_flux": true,
+        "quantize": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "lr": 0.0001,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 20
+      }
+    },
+    {
+      "id": "flux_schnell",
+      "label": "FLUX.1 schnell (pictures, Apache licence)",
+      "family": "flux",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "name_or_path": "black-forest-labs/FLUX.1-schnell",
+        "assistant_lora_path": "ostris/FLUX.1-schnell-training-adapter",
+        "is_flux": true,
+        "quantize": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "lr": 0.0001,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 1,
+        "sample_steps": 4
+      }
+    },
+    {
+      "id": "qwen_image",
+      "label": "Qwen-Image (pictures + text in pictures)",
+      "family": "qwen",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "qwen_image",
+        "name_or_path": "Qwen/Qwen-Image",
+        "quantize": true,
+        "qtype": "qfloat8",
+        "quantize_te": true,
+        "qtype_te": "qfloat8",
+        "low_vram": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "weighted",
+        "lr": 0.0001,
+        "steps": 3000,
+        "cache_text_embeddings": true
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      }
+    },
+    {
+      "id": "sdxl",
+      "label": "SDXL (pictures - 12 GB cards)",
+      "family": "sdxl",
+      "vram_gb": 12,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "sdxl",
+        "name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+        "is_xl": true
+      },
+      "train": {
+        "noise_scheduler": "ddpm",
+        "lr": 0.0001,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "ddpm",
+        "guidance_scale": 7,
+        "sample_steps": 30
+      }
+    },
+    {
+      "id": "sd15",
+      "label": "SD 1.5 (pictures - 8 GB cards)",
+      "family": "sd15",
+      "vram_gb": 8,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "sd15",
+        "name_or_path": "stable-diffusion-v1-5/stable-diffusion-v1-5"
+      },
+      "train": {
+        "noise_scheduler": "ddpm",
+        "lr": 0.0001,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "ddpm",
+        "guidance_scale": 7,
+        "sample_steps": 30,
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "chroma",
+      "label": "Chroma (pictures)",
+      "family": "chroma",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "chroma",
+        "name_or_path": "lodestones/Chroma1-HD",
+        "quantize": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "lr": 0.0001,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      }
+    },
+    {
+      "id": "wan21_14b",
+      "label": "Wan 2.1 14B (video - 24 GB+, slow)",
+      "family": "wan",
+      "vram_gb": 24,
+      "kind": "video",
+      "checked": false,
+      "model": {
+        "arch": "wan21",
+        "name_or_path": "Wan-AI/Wan2.1-T2V-14B-Diffusers",
+        "quantize": true,
+        "qtype": "qfloat8",
+        "quantize_te": true,
+        "low_vram": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "sigmoid",
+        "lr": 0.0001,
+        "steps": 2000,
+        "cache_text_embeddings": true
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 5,
+        "sample_steps": 25,
+        "num_frames": 41,
+        "fps": 16
+      }
+    },
+    {
+      "id": "lumina2_ft",
+      "full": true,
+      "label": "Lumina-Image 2.0 - full fine-tune (24 GB+)",
+      "family": "lumina2",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "name_or_path": "Alpha-VLLM/Lumina-Image-2.0",
+        "is_lumina2": true,
+        "quantize_te": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "lumina2_shift",
+        "optimizer": "adafactor",
+        "lr": 3e-05,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      },
+      "note": "ai-toolkit's own full fine-tune example (24 GB). Every weight of the model is trained - a new checkpoint, not an add-on."
+    },
+    {
+      "id": "flex1_ft",
+      "full": true,
+      "label": "Flex.1-alpha (FLUX-type, Apache 2.0) - full fine-tune (48 GB, less with parameter swapping)",
+      "family": "flux",
+      "vram_gb": 48,
+      "kind": "image",
+      "checked": true,
+      "model": {
+        "name_or_path": "ostris/Flex.1-alpha",
+        "is_flux": true,
+        "quantize_te": true,
+        "only_if_contains": [
+          "transformer.transformer_blocks.",
+          "transformer.single_transformer_blocks."
+        ]
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "timestep_type": "sigmoid",
+        "bypass_guidance_embedding": true,
+        "optimizer": "adafactor",
+        "lr": 3e-05,
+        "steps": 2000,
+        "ema_config": {
+          "use_ema": true,
+          "ema_decay": 0.99
+        }
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      },
+      "note": "ai-toolkit's own full fine-tune example (48 GB). Parameter swapping trains part of the weights each step and needs much less VRAM (a RunPod pod otherwise)."
+    },
+    {
+      "id": "flux2_klein_4b_ft",
+      "full": true,
+      "label": "FLUX.2 klein base 4B - full fine-tune (experimental, ~32 GB)",
+      "family": "flux2",
+      "vram_gb": 32,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "flux2_klein_4b",
+        "name_or_path": "black-forest-labs/FLUX.2-klein-base-4B",
+        "quantize_te": true
+      },
+      "train": {
+        "noise_scheduler": "flowmatch",
+        "optimizer": "adafactor",
+        "lr": 2e-05,
+        "steps": 2000
+      },
+      "sample": {
+        "sampler": "flowmatch",
+        "guidance_scale": 4,
+        "sample_steps": 25
+      },
+      "note": "ai-toolkit trains klein LoRAs; a full fine-tune of it is not one of its published examples - experimental."
+    },
+    {
+      "id": "sdxl_ft",
+      "full": true,
+      "label": "SDXL - full fine-tune (experimental, 24 GB)",
+      "family": "sdxl",
+      "vram_gb": 24,
+      "kind": "image",
+      "checked": false,
+      "model": {
+        "arch": "sdxl",
+        "name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+        "is_xl": true
+      },
+      "train": {
+        "noise_scheduler": "ddpm",
+        "optimizer": "adafactor",
+        "lr": 1e-05,
+        "steps": 3000
+      },
+      "sample": {
+        "sampler": "ddpm",
+        "guidance_scale": 7,
+        "sample_steps": 30
+      },
+      "note": "Not one of ai-toolkit's published full fine-tune examples - experimental."
+    }
+  ]
+}

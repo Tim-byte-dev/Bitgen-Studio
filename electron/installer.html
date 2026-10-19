@@ -1,0 +1,604 @@
+<!doctype html>
+<!-- bitGen Studio — SETUP WIZARD (2.331.0; the 2.222.0 window, rebuilt).
+     Tim: "create a windows 11 type installer for the package, on the first
+     page offer comfyui, input with folder select button for existing comfyui
+     package, comfyui nodes (if existing) if not existing install all the
+     custom nodes used in this project, omnivoice, after installing all the
+     packages offer a list of models that can be downloaded from HF that we
+     use in this project, before the list have an input for hf token. if no
+     hf token only download non-gated models. Do a gpu check, set up bitgen
+     studio for the hardware the user is using ... start using bitgen studio
+     immediately after setup with no further action needed" + "make it
+     crossplatform".
+
+     Pages: 1 Welcome (your hardware + the plan for it, ComfyUI new or
+     existing with its node packs, OmniVoice / assistant / speech-to-text)
+     -> 2 Installing (steps + log) -> 3 Models (Hugging Face token, the list
+     checked live, pre-ticked for this GPU) -> 4 Downloading -> 5 Done
+     (launches by itself). All the work is lib/setupRun.js behind
+     2.519.0 (Tim: "in the initial setup ask the user for their gfx card, ram and cpu if setup can't detect it. install a
+     package with recommendations for the hardware the user has ... show the user what they will be able to use and if
+     they still want to install"): page 1 asks for what setup could not find (the card from a list + its memory, RAM,
+     the CPU - "Not right?" opens the same form); NEW page 2 "Your package" (lib/hwPlan.js): Editor / + small AI /
+     + mid-size AI / Everything, the recommended one picked, what this computer can use with it (✓ ~ ✗, add later) and
+     the download - Install (or Install anyway) or Back. The Editor package installs no ComfyUI and no models.
+     window.h3setup (electron/installer-preload.js) - the same engine as
+     scripts/setup-cli.js. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>bitGen Studio Setup</title>
+<style>
+  :root {
+    --ink: #100e0b; --card: #1c1915; --card2: #231f1a; --line: #332d25;
+    --text: #ece7df; --dim: #a89f92; --tiger: #ff8b3d; --tiger-deep: #b35a1f;
+    --ok: #6fce7e; --bad: #e06c5a; --warn: #e8b64a;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI Variable", "Segoe UI", -apple-system, "SF Pro Text", Ubuntu, system-ui, sans-serif;
+    font-size: 13.5px; color: var(--text); user-select: none;
+    background: linear-gradient(160deg, #16120d 0%, var(--ink) 55%, #0b0a08 100%);
+    display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line);
+  }
+  #tbar { height: 38px; display: flex; align-items: center; flex: none; -webkit-app-region: drag; padding-left: 14px; gap: 9px; }
+  #tbar .logo { width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg, var(--tiger), var(--tiger-deep)); }
+  #tbar .title { font-size: 12px; color: var(--dim); }
+  #tbar .sp { flex: 1; }
+  #tbar button { -webkit-app-region: no-drag; width: 46px; height: 38px; border: 0; background: transparent;
+    color: var(--dim); font-size: 14px; cursor: default; }
+  #tbar button:hover { background: rgba(255,255,255,.06); color: var(--text); }
+  #tbar #w_close:hover { background: #c42b1c; color: #fff; }
+
+  #steps { display: flex; gap: 6px; padding: 0 32px 6px; flex: none; }
+  #steps span { flex: 1; height: 3px; border-radius: 2px; background: var(--line); }
+  #steps span.on { background: var(--tiger); }
+
+  .page { flex: 1; display: none; flex-direction: column; padding: 6px 32px 18px; min-height: 0; }
+  .page.on { display: flex; }
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; padding-right: 4px; }
+  h1 { font-size: 22px; font-weight: 600; }
+  .sub { color: var(--dim); margin-top: 4px; }
+  .head { display: flex; gap: 14px; align-items: center; margin: 4px 0 14px; }
+  .mark { width: 48px; height: 48px; border-radius: 12px; flex: none;
+    background: linear-gradient(135deg, var(--tiger), var(--tiger-deep)); box-shadow: 0 6px 24px rgba(255,139,61,.22); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+  .card h2 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .card ul { margin: 4px 0 0 18px; color: var(--dim); font-size: 12.5px; line-height: 1.55; }
+  .gpu { font-size: 15px; font-weight: 600; }
+  .note { color: var(--dim); font-size: 12.5px; margin-top: 3px; line-height: 1.45; }
+  .note.warn { color: var(--warn); }
+  .radio { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; }
+  .radio input, .opt input { accent-color: var(--tiger); width: 15px; height: 15px; }
+  .frow { display: flex; gap: 8px; margin-left: 23px; }
+  .frow input[type=text], .tok input { flex: 1; background: var(--card2); border: 1px solid var(--line); border-radius: 5px;
+    color: var(--text); padding: 7px 9px; font-size: 12.5px; user-select: text; }
+  .frow input:focus, .tok input:focus { outline: none; border-color: var(--tiger); }
+  .frow input:disabled { opacity: .45; }
+  .packs { margin: 6px 0 0 23px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { font-size: 11.5px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--line); color: var(--dim); }
+  .chip.ok { border-color: rgba(111,206,126,.5); color: var(--ok); }
+  .chip.miss { border-color: rgba(255,139,61,.5); color: var(--tiger); }
+  .opt { display: flex; align-items: flex-start; gap: 9px; margin: 5px 0; }
+  .opt small { display: block; color: var(--dim); font-size: 12px; }
+
+  .btns { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex: none; margin-top: 12px; }
+  .btns .sp { flex: 1; }
+  a.link { color: var(--dim); font-size: 12.5px; text-decoration: underline; cursor: default; }
+  a.link:hover { color: var(--text); }
+  button.b { border-radius: 5px; padding: 7px 20px; font-size: 13px; border: 1px solid var(--line);
+    background: var(--card2); color: var(--text); font-family: inherit; }
+  button.b:hover { background: #2a251f; }
+  button.b.accent { background: var(--tiger); border-color: var(--tiger); color: #1b1006; font-weight: 600; }
+  button.b.accent:hover { background: #ff9d59; }
+  button.b:disabled { opacity: .45; }
+
+  .slist { list-style: none; margin: 4px 0 10px; }
+  .slist li { display: flex; gap: 10px; align-items: center; padding: 4px 0; color: var(--dim); }
+  .slist li .ic { width: 18px; text-align: center; }
+  .slist li.run { color: var(--text); } .slist li.ok .ic { color: var(--ok); }
+  .slist li.err .ic { color: var(--bad); } .slist li.warn .ic { color: var(--warn); }
+  .slist li .sub2 { font-size: 11.5px; color: var(--dim); margin-left: auto; }
+  .bar { height: 4px; border-radius: 2px; background: var(--card2); overflow: hidden; flex: none; }
+  .bar > div { height: 100%; width: 0%; background: var(--tiger); transition: width .3s ease; }
+  .log { height: 150px; flex: none; background: #0c0a08; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px;
+    margin-top: 10px; overflow-y: auto; font: 11px Consolas, Menlo, monospace; color: var(--dim); white-space: pre-wrap; user-select: text; }
+  .log .err { color: var(--bad); }
+
+  .tok { display: flex; gap: 8px; align-items: center; }
+  .tokmsg { font-size: 12px; margin-top: 5px; color: var(--dim); }
+  .tokmsg.ok { color: var(--ok); } .tokmsg.bad { color: var(--bad); }
+  .grp { margin: 10px 0 4px; font-size: 12px; font-weight: 600; color: var(--tiger); text-transform: uppercase; letter-spacing: .05em; }
+  .mrow { display: grid; grid-template-columns: 22px 1fr auto; gap: 2px 8px; align-items: center; padding: 5px 8px;
+    border-radius: 6px; }
+  .mrow:hover { background: var(--card); }
+  .mrow input { accent-color: var(--tiger); width: 15px; height: 15px; }
+  .mrow .nm { font-size: 12.5px; }
+  .mrow .sz { font-size: 12px; color: var(--dim); text-align: right; }
+  .mrow .why { grid-column: 2 / 4; font-size: 11.5px; color: var(--dim); }
+  .mrow .why.bad { color: var(--warn); }
+  .mrow.off .nm { color: var(--dim); }
+  .tag { font-size: 10.5px; border: 1px solid var(--line); border-radius: 8px; padding: 0 6px; margin-left: 6px; color: var(--dim); }
+  .tag.rec { border-color: rgba(255,139,61,.5); color: var(--tiger); }
+  .tag.have { border-color: rgba(111,206,126,.5); color: var(--ok); }
+  .tag.gate { border-color: rgba(232,182,74,.5); color: var(--warn); }
+  .mbar { height: 3px; border-radius: 2px; background: var(--card2); grid-column: 2 / 4; overflow: hidden; display: none; }
+  .mbar > div { height: 100%; width: 0; background: var(--tiger); }
+  .mrow.dl .mbar { display: block; }
+  .totals { font-size: 12.5px; color: var(--dim); }
+  /* 2.519.0: the hardware form + the package page */
+  .ask { margin-top: 10px; padding: 10px 12px; border: 1px dashed rgba(255,139,61,.5); border-radius: 8px; }
+  .agrid { display: grid; grid-template-columns: 150px 1fr; gap: 6px 10px; align-items: center; margin-top: 8px; }
+  .agrid select, .agrid input { background: var(--card2); border: 1px solid var(--line); border-radius: 5px; color: var(--text); padding: 6px 8px; font: inherit; user-select: text; }
+  .pkgs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .pkg { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; cursor: default; display: flex; flex-direction: column; gap: 4px; }
+  .pkg:hover { border-color: #4a4034; }
+  .pkg.sel { border-color: var(--tiger); box-shadow: 0 0 0 1px var(--tiger) inset; }
+  .pkg .pn { font-weight: 600; font-size: 13.5px; display: flex; gap: 6px; align-items: center; }
+  .pkg .pn input { accent-color: var(--tiger); }
+  .pkg .pb { color: var(--dim); font-size: 11.5px; line-height: 1.4; flex: 1; }
+  .pkg .ps { font-size: 11.5px; color: var(--text); }
+  .pkg .pw { font-size: 11px; color: var(--warn); }
+  .cap { display: grid; grid-template-columns: 20px 1fr auto; gap: 1px 8px; padding: 4px 2px; border-top: 1px solid rgba(255,255,255,.04); font-size: 12.5px; }
+  .cap .ci { text-align: center; font-weight: 700; }
+  .cap.yes .ci { color: var(--ok); } .cap.slow .ci, .cap.limited .ci { color: var(--warn); } .cap.no .ci { color: var(--bad); }
+  .cap.no .cl { color: var(--dim); }
+  .cap .cw { grid-column: 2 / 4; font-size: 11.5px; color: var(--dim); }
+  .cap .cx { font-size: 10.5px; border: 1px solid var(--line); border-radius: 8px; padding: 0 6px; color: var(--dim); align-self: start; white-space: nowrap; }
+  .cap .cx.in { color: var(--ok); border-color: rgba(111,206,126,.5); }
+  .capg { margin: 8px 0 2px; font-size: 11.5px; font-weight: 600; color: var(--tiger); text-transform: uppercase; letter-spacing: .05em; }
+  .tick { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px;
+    background: rgba(111,206,126,.12); color: var(--ok); border: 1px solid rgba(111,206,126,.4); flex: none; }
+</style>
+</head>
+<body>
+  <div id="tbar">
+    <div class="logo"></div><div class="title">bitGen Studio Setup</div><div class="sp"></div>
+    <button id="w_min" title="Minimize">&#8211;</button>
+    <button id="w_close" title="Close">&#10005;</button>
+  </div>
+  <div id="steps"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- ================= 1: WELCOME ================= -->
+  <div class="page on" id="pg_welcome">
+    <div class="head"><div class="mark"></div>
+      <div><h1>Welcome to bitGen Studio</h1>
+        <div class="sub">One pass sets everything up for this computer - then the studio opens, ready to use.</div></div></div>
+    <div class="scroll">
+      <div class="card">
+        <h2>Your hardware</h2>
+        <div class="gpu" id="hw_gpu">Checking your GPU…</div>
+        <div id="hw_notes"></div>
+        <ul id="hw_plan"></ul>
+        <!-- 2.519.0: what setup could not find, asked - "Not right?" opens it too -->
+        <div class="ask" id="hw_ask" style="display:none">
+          <div class="note warn" id="hw_ask_why">Tell setup about this computer.</div>
+          <div class="agrid">
+            <label for="hw_pick">Graphics card</label><select id="hw_pick"></select>
+            <label for="hw_name" id="hw_name_l">Its name</label><input type="text" id="hw_name" spellcheck="false" placeholder="e.g. Radeon RX 6700 XT">
+            <label for="hw_vram" id="hw_vram_l">Its memory (VRAM, GB)</label><input type="number" id="hw_vram" min="0" max="256" step="1" placeholder="e.g. 12">
+            <label for="hw_ram">System memory (RAM, GB)</label><input type="number" id="hw_ram" min="1" max="4096" step="1" placeholder="e.g. 32">
+            <label for="hw_cpu">Processor (CPU)</label><input type="text" id="hw_cpu" spellcheck="false" placeholder="e.g. AMD Ryzen 7 7800X3D">
+          </div>
+          <div class="note" style="margin-top:6px">Windows: Task Manager → Performance shows all three (GPU → "Dedicated GPU memory").</div>
+        </div>
+        <div style="margin-top:8px"><a class="link" id="hw_change">Not right? Tell setup your hardware</a></div>
+      </div>
+    </div>
+    <div class="btns">
+      <a class="link" id="b_skip">Skip setup</a>
+      <div class="sp"></div>
+      <button class="b accent" id="b_next">Next</button>
+    </div>
+  </div>
+
+  <!-- ================= 2: YOUR PACKAGE (2.519.0) ================= -->
+  <div class="page" id="pg_package">
+    <div class="head"><div class="mark"></div>
+      <div><h1>Your package</h1>
+        <div class="sub" id="pkg_sub">Picked for this computer. The editor works on any computer; the AI parts depend on the graphics card.</div></div></div>
+    <div class="scroll">
+      <div class="pkgs" id="pkgs" role="radiogroup" aria-label="Package"></div>
+      <div class="card">
+        <h2>What you'll be able to use <span class="note" id="cap_pkg" style="font-weight:400"></span></h2>
+        <div id="caps"></div>
+        <div class="note" style="margin-top:6px">✓ works well · ~ works, slower or at a smaller size · ✗ not on this computer ·
+          "add later" = not in this package, Settings → Models adds it any time. The memory needs are estimates.</div>
+      </div>
+      <div class="card" id="cm_card">
+        <h2>ComfyUI (the engine the studio renders with)</h2>
+        <label class="radio"><input type="radio" name="cmode" value="new" id="cm_new" checked> Install a new ComfyUI in this folder</label>
+        <div class="frow"><input type="text" id="dir_new" spellcheck="false"><button class="b" id="b_new">Browse…</button></div>
+        <label class="radio" style="margin-top:10px"><input type="radio" name="cmode" value="existing" id="cm_ex"> Use a ComfyUI I already have</label>
+        <div class="frow"><input type="text" id="dir_ex" spellcheck="false" placeholder="the folder with main.py, or the portable build's folder" disabled><button class="b" id="b_ex" disabled>Browse…</button></div>
+        <div class="note" id="ex_note" style="margin-left:23px"></div>
+        <div class="note" id="packs_note" style="margin-left:23px;margin-top:8px">All the custom node packs the studio uses are installed with it.</div>
+        <div class="packs" id="packs"></div>
+      </div>
+      <div class="card">
+        <h2>Also set up</h2>
+        <label class="opt"><input type="checkbox" id="cb_omni" checked><span>OmniVoice<small>voice cloning and text-to-speech for your characters (~3 GB)</small></span></label>
+        <label class="opt"><input type="checkbox" id="cb_llama" checked><span>The assistant's engine (llama.cpp)<small>screenplays, the prompt chat and ✨ Enhance</small></span></label>
+        <label class="opt"><input type="checkbox" id="cb_whisper"><span>faster-whisper<small>speech-to-text: transcripts, lyrics timing, 🎤 speaking to the assistant</small></span></label>
+        <!-- 2.355.0: optional - ComfyUI's Viggle (H3) works without it; unticked = components.txt viggle native=2 -->
+        <label class="opt"><input type="checkbox" id="cb_viggle"><span>Viggle (native)<small id="vg_note">Viggle-Animate in bitGen's own engine, without ComfyUI (optional - the swap dialog's Viggle (H3) uses ComfyUI and works without it). Installs when the studio first opens. Checking the download size…</small></span></label>
+      </div>
+    </div>
+    <div class="note" id="welcome_err" style="color:var(--bad)"></div>
+    <div class="btns">
+      <button class="b" id="b_back">Back</button>
+      <span class="totals" id="pkg_tot"></span>
+      <div class="sp"></div>
+      <button class="b accent" id="b_install">Install</button>
+    </div>
+  </div>
+
+  <!-- ================= 2: INSTALLING ================= -->
+  <div class="page" id="pg_install">
+    <div class="head"><div class="mark"></div><div><h1>Installing…</h1>
+      <div class="sub">This takes a while the first time (ComfyUI and PyTorch are several GB). You can leave it running.</div></div></div>
+    <ul class="slist" id="slist"></ul>
+    <div class="bar"><div id="ibar"></div></div>
+    <div class="log" id="ilog"></div>
+  </div>
+
+  <!-- ================= 3: MODELS ================= -->
+  <div class="page" id="pg_models">
+    <div class="head"><div class="mark"></div><div><h1>Models</h1>
+      <div class="sub">The files the studio's workflows load, from Hugging Face. The ones for your computer are ticked.</div></div></div>
+    <div class="card">
+      <h2>Hugging Face token <span class="note" style="font-weight:400">(optional)</span></h2>
+      <div class="tok"><input type="password" id="tok" spellcheck="false" placeholder="hf_… - from huggingface.co/settings/tokens (read access)">
+        <button class="b" id="b_tok">Use token</button></div>
+      <div class="tokmsg" id="tokmsg">Without a token only the models that are not gated can be downloaded.</div>
+      <!-- 2.341.0: the Hugging Face CLI as the downloader -->
+      <div class="tok" style="margin-top:8px"><label>Download with
+        <select id="dl_engine">
+          <option value="auto">Hugging Face CLI when installed, else built-in</option>
+          <option value="hf">Hugging Face CLI (hf download)</option>
+          <option value="builtin">Built-in downloader</option>
+        </select></label>
+        <button class="b" id="b_hfcli">Install hf CLI</button></div>
+      <div class="tokmsg" id="hfclimsg">Checking for the Hugging Face CLI…</div>
+    </div>
+    <div class="scroll" id="mlist"><div class="note">Asking Hugging Face about each model…</div></div>
+    <div class="btns">
+      <span class="totals" id="mtot"></span>
+      <div class="sp"></div>
+      <a class="link" id="b_nomodels">Skip - I'll add models myself</a>
+      <button class="b accent" id="b_download">Download</button>
+    </div>
+  </div>
+
+  <!-- ================= 4: DOWNLOADING ================= -->
+  <div class="page" id="pg_dl">
+    <div class="head"><div class="mark"></div><div><h1>Downloading models…</h1>
+      <div class="sub" id="dl_sub">A stopped download continues where it left off the next time.</div></div></div>
+    <div class="scroll" id="dlist"></div>
+    <div class="bar"><div id="dbar"></div></div>
+    <div class="log" id="dlog" style="height:90px"></div>
+  </div>
+
+  <!-- ================= 5: DONE ================= -->
+  <div class="page" id="pg_done">
+    <div class="head"><div class="tick">&#10003;</div><div><h1 id="done_h">bitGen Studio is ready</h1>
+      <div class="sub" id="done_sub">Set up for your hardware. ComfyUI starts with the studio.</div></div></div>
+    <div class="scroll"><div class="card" id="done_card" style="display:none"><h2>Worth knowing</h2><ul id="done_list"></ul></div></div>
+    <div class="btns"><span class="totals" id="launch_in"></span><div class="sp"></div>
+      <button class="b accent" id="b_launch">Open bitGen Studio</button></div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const gbs = (n) => (n >= 1073741824 ? (n / 1073741824).toFixed(1) + " GB" : n >= 1048576 ? Math.round(n / 1048576) + " MB" : Math.max(1, Math.round((n || 0) / 1024)) + " KB");
+  const PAGES = ["pg_welcome", "pg_package", "pg_install", "pg_models", "pg_dl", "pg_done"];
+  function page(id) {
+    for (const p of document.querySelectorAll(".page")) p.classList.toggle("on", p.id === id);
+    const n = PAGES.indexOf(id);
+    [...$("steps").children].forEach((s, i) => s.classList.toggle("on", i <= n));
+  }
+  function logTo(el, line, err) {
+    const s = document.createElement("span");
+    if (err) s.className = "err";
+    s.textContent = String(line).replace(/\s+$/, "") + "\n";
+    el.appendChild(s);
+    while (el.childNodes.length > 800) el.removeChild(el.firstChild);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  $("w_min").onclick = () => h3setup.minimize();
+  $("w_close").onclick = () => h3setup.close();
+  $("b_skip").onclick = () => h3setup.skip();
+
+  // ---------------------------------------------------------------- page 1
+  let D = null, exInfo = null;
+  h3setup.detect().then((d) => {
+    D = d;
+    const g = d.gpu;
+    $("hw_gpu").textContent = g.main ? `${g.main.name} - ${g.vram_gb} GB` + (g.second ? `  +  ${g.second.name} - ${g.second_vram_gb} GB` : "")
+      : (g.gpus[0] ? g.gpus[0].name : "No NVIDIA GPU found");
+    $("hw_notes").innerHTML = g.notes.slice(g.main ? 1 : 0).map((n) => `<div class="note ${/under|no NVIDIA|RAM|experimental/.test(n) ? "warn" : ""}">${esc(n)}</div>`).join("")
+      + (g.ram_gb ? `<div class="note">${g.ram_gb} GB of system RAM · ${esc(d.platform)} ${esc(d.arch)}</div>` : "");
+    $("hw_plan").innerHTML = d.plan.map((l) => `<li>${esc(l)}</li>`).join("");
+    $("dir_new").value = d.comfy.defaultDir;
+    if (d.comfy.configured) { $("cm_ex").checked = true; $("dir_ex").value = d.comfy.configured; modeChanged(); }
+    if (d.llama) $("cb_llama").nextElementSibling.querySelector("small").textContent += " - already installed";
+    if (d.omnivoice) $("cb_omni").nextElementSibling.querySelector("small").textContent += " - already installed";
+    viggleNote(d.viggle);
+    hwInit(d);                                         // 2.519.0
+  });
+
+  /* ---- 2.519.0: what setup could not find, asked; the package page ---- */
+  let HW = null, PK = null, PKG = null;               // HW = the answers (null = what was found); PK = the package plan
+  const MISS = { gpu: "your graphics card", vram: "your graphics card's memory", cpu: "your processor", ram: "your system memory" };
+  function hwInit(d) {
+    const list = d.gpu_list || [];
+    if (!list.length) { $("hw_change").style.display = "none"; return; }
+    $("hw_pick").innerHTML = '<option value="">' + esc(d.gpu.main ? `${d.gpu.main.name} (found)` : d.gpu.other ? `${d.gpu.other.name} (found)` : "- pick your card -") + "</option>"
+      + list.map((g) => `<option value="${esc(g.id)}">${esc(g.name)}${g.vram_gb ? " - " + g.vram_gb + " GB" : ""}</option>`).join("");
+    $("hw_ram").value = d.gpu.ram_gb || "";
+    $("hw_cpu").value = (d.gpu.cpu && d.gpu.cpu.model) || "";
+    const miss = d.gpu.missing || [];
+    if (miss.length) {
+      $("hw_ask").style.display = "";
+      $("hw_ask_why").textContent = "Setup could not find " + miss.map((m) => MISS[m] || m).join(", ") + " - tell it below, so it can pick the right package.";
+    }
+    hwPick();
+  }
+  function hwPick() {
+    const g = (D && D.gpu_list || []).find((x) => x.id === $("hw_pick").value);
+    const other = !!g && g.id === "other", needVram = other || ((D && (D.gpu.missing || []).includes("vram")) && !$("hw_pick").value);
+    $("hw_name").style.display = $("hw_name_l").style.display = other ? "" : "none";
+    $("hw_vram").style.display = $("hw_vram_l").style.display = needVram || (g && !g.vram_gb && g.vendor !== "apple" && g.vendor !== "none") ? "" : "none";
+  }
+  $("hw_pick").onchange = hwPick;
+  $("hw_change").onclick = () => { $("hw_ask").style.display = ""; $("hw_ask_why").textContent = "Pick what this computer has - the package is chosen from it."; };
+  /** the answers, or null when the form was never needed / opened */
+  function answers() {
+    if ($("hw_ask").style.display === "none") return null;
+    return { gpu: $("hw_pick").value, gpu_name: $("hw_name").value.trim(), vram_gb: +$("hw_vram").value || 0,
+             ram_gb: +$("hw_ram").value || 0, cpu: $("hw_cpu").value.trim() };
+  }
+  $("b_next").onclick = async () => {
+    const a = answers();
+    if (a && (D.gpu.missing || []).includes("gpu") && !a.gpu) { $("hw_ask_why").textContent = "Pick your graphics card (or \"No graphics card\") first."; return; }
+    HW = a;
+    if (!h3setup.packages) { page("pg_package"); paintPackages(null); return; }
+    PK = await h3setup.packages(HW, { omnivoice: true });
+    PKG = PK.recommended;
+    page("pg_package");
+    paintPackages(PK);
+  };
+  $("b_back").onclick = () => page("pg_welcome");
+  function paintPackages(pk) {
+    if (!pk) { $("pkgs").innerHTML = ""; $("caps").innerHTML = ""; return; }
+    const h = pk.hardware || {};
+    $("pkg_sub").textContent = `For ${[h.gpu, h.ram, h.cpu].filter(Boolean).join(" · ")}${pk.manual ? " (as you told setup)" : ""}. The editor works on any computer; the AI parts depend on the graphics card.`;
+    $("pkgs").innerHTML = pk.packages.map((k) => `<label class="pkg ${k.id === PKG ? "sel" : ""}" data-pkg="${esc(k.id)}"><span class="pn"><input type="radio" name="pkg" value="${esc(k.id)}" ${k.id === PKG ? "checked" : ""}>${esc(k.label)}</span>`
+      + `<span class="tag ${k.recommended ? "rec" : ""}" style="margin:0;align-self:flex-start">${k.recommended ? "recommended for you" : esc(k.tag)}</span>`
+      + `<span class="pb">${esc(k.blurb)}</span><span class="ps">${k.bytes ? "≈ " + gbs(k.bytes) + " of models" : "no models to download"}</span>`
+      + (k.fits ? "" : `<span class="pw">more than this computer runs well</span>`) + "</label>").join("");
+    for (const r of document.querySelectorAll('#pkgs input[name="pkg"]')) r.onchange = () => { PKG = r.value; paintPackages(PK); };
+    const k = pk.packages.find((x) => x.id === PKG) || pk.packages[0];
+    $("cap_pkg").textContent = `with ${k.label}: ${k.counts.yes} work well, ${k.counts.limited} slower / smaller, ${k.counts.no} not on this computer`;
+    let g = "";
+    $("caps").innerHTML = k.rows.map((r) => {
+      const head = r.group !== g ? `<div class="capg">${esc(g = r.group)}</div>` : "";
+      const ic = r.state === "yes" ? "✓" : r.state === "no" ? "✗" : "~";
+      const x = r.included ? (r.group.startsWith("Editing") ? "" : '<span class="cx in">in this package</span>') : r.later ? '<span class="cx">add later</span>' : "";
+      return head + `<div class="cap ${esc(r.state)}" data-cap="${esc(r.id)}"><span class="ci">${ic}</span><span class="cl">${esc(r.label)}</span>${x}${r.why ? `<span class="cw">${esc(r.why)}</span>` : ""}</div>`;
+    }).join("");
+    const editor = k.id === "editor";
+    $("cm_card").style.display = editor ? "none" : "";
+    // what else installs follows the package (you can still change the boxes)
+    if (k.id !== paintPackages.last) {
+      paintPackages.last = k.id;
+      const can = (id) => { const r = k.rows.find((x) => x.id === id); return r && r.state !== "no"; };
+      $("cb_omni").checked = !editor && can("ai_voice");
+      $("cb_llama").checked = !editor;
+      $("cb_whisper").checked = !editor;
+      $("cb_viggle").checked = k.id === "full" && can("vid_swap");
+    }
+    $("pkg_tot").textContent = k.bytes ? `≈ ${gbs(k.bytes)} of models (you can untick them on the models page)` : "no models";
+    $("b_install").textContent = (k.fits ? "Install " : "Install anyway: ") + k.label;
+  }
+  /* 2.355.0: the Viggle (native) box - what it downloads (less when the ComfyUI folder already has the
+     Viggle files its workflows name) */
+  function viggleNote(v) {
+    if (!v) return;
+    const base = "Viggle-Animate in bitGen's own engine, without ComfyUI (optional - the swap dialog's Viggle (H3) uses ComfyUI and works without it). ";
+    if (v.installed) { $("vg_note").textContent = base + "Already installed."; $("cb_viggle").checked = true; return; }
+    $("vg_note").textContent = base + `Download: ~${v.total_gb} GB`
+      + (v.venv_gb ? ` (its Python environment ~${v.venv_gb} GB + the models ~${v.gb} GB)` : ` (the models)`)
+      + (v.from_comfy && v.from_comfy.length ? ` - your ComfyUI's ${v.from_comfy.join(", ")} used instead of downloading them` : "")
+      + ". Installs when the studio first opens (follow it in the queue).";
+    if (v.value === "0") $("cb_viggle").checked = true;
+  }
+  function modeChanged() {
+    const ex = $("cm_ex").checked;
+    $("dir_new").disabled = ex; $("b_new").disabled = ex;
+    $("dir_ex").disabled = !ex; $("b_ex").disabled = !ex;
+    if (ex) inspectEx(); else { $("ex_note").textContent = ""; $("packs").innerHTML = "";
+      $("packs_note").textContent = "All the custom node packs the studio uses are installed with it."; if (D) viggleNote(D.viggle); }
+  }
+  $("cm_new").onchange = modeChanged; $("cm_ex").onchange = modeChanged;
+  async function inspectEx() {
+    const dir = $("dir_ex").value.trim();
+    exInfo = null; $("packs").innerHTML = "";
+    if (!dir) { $("ex_note").textContent = ""; return; }
+    const r = await h3setup.inspect(dir);
+    if (!r.ok) { $("ex_note").innerHTML = `<span style="color:var(--bad)">${esc(r.error)}</span>`; return; }
+    exInfo = r;
+    $("ex_note").textContent = `ComfyUI found (${r.main})` + (r.python ? ` · its Python: ${r.how}` : " · its Python was not found - node packs can be added but not their requirements");
+    viggleNote(r.viggle);                // 2.355.0: its Viggle files lower the download
+    const miss = r.packs.filter((p) => !p.present);
+    $("packs_note").textContent = miss.length ? `${miss.length} of the ${r.packs.length} node packs the studio uses are missing - they will be installed:`
+      : "Every node pack the studio uses is already installed:";
+    $("packs").innerHTML = r.packs.map((p) => `<span class="chip ${p.present ? "ok" : "miss"}" title="${esc(p.for)}">${p.present ? "✓" : "+"} ${esc(p.folder)}</span>`).join("");
+  }
+  $("dir_ex").onchange = inspectEx;
+  $("b_new").onclick = async () => { const p = await h3setup.browse({ start: $("dir_new").value, title: "Where should ComfyUI be installed?" }); if (p) $("dir_new").value = p; };
+  $("b_ex").onclick = async () => { const p = await h3setup.browse({ start: $("dir_ex").value, title: "Pick your ComfyUI folder" }); if (p) { $("dir_ex").value = p; inspectEx(); } };
+
+  // ---------------------------------------------------------------- page 2
+  const STEPS = { python: "Python", comfy: "ComfyUI", packs: "Custom node packs", settings: "Settings for your hardware",
+                  omnivoice: "OmniVoice", whisper: "faster-whisper", llama: "The assistant's engine", check: "Checking ComfyUI loads everything" };
+  const ICON = { wait: "○", run: "◐", ok: "✓", err: "✕", warn: "!" };
+  let planIds = [], doneSteps = 0, warnings = [];
+  $("b_install").onclick = async () => {
+    const editorOnly = PKG === "editor";                // 2.519.0: no ComfyUI, no models
+    const ex = $("cm_ex").checked;
+    const dir = (ex ? $("dir_ex") : $("dir_new")).value.trim();
+    if (!editorOnly && !dir) { $("welcome_err").textContent = "Pick a folder for ComfyUI."; return; }
+    if (!editorOnly && ex && !exInfo) { await inspectEx(); if (!exInfo) { $("welcome_err").textContent = "That folder is not a ComfyUI install."; return; } }
+    const plan = { comfy: editorOnly ? { mode: "none", dir: "" } : { mode: ex ? "existing" : "new", dir }, omnivoice: $("cb_omni").checked, whisper: $("cb_whisper").checked,
+                   llama: $("cb_llama").checked, check: !editorOnly,
+                   viggle: $("cb_viggle").checked };   // 2.355.0: -> components.txt viggle native=0 / 2
+    if (PKG) plan.package = PKG;                        // 2.519.0
+    if (HW) plan.hw = HW;
+    planIds = ["python"].concat(editorOnly ? [] : ["comfy", "packs"], ["settings"], plan.omnivoice ? ["omnivoice"] : [], plan.whisper ? ["whisper"] : [],
+      plan.llama ? ["llama"] : [], editorOnly ? [] : ["check"]);
+    $("slist").innerHTML = planIds.map((id) => `<li id="st_${id}" class="wait"><span class="ic">${ICON.wait}</span>${esc(STEPS[id])}<span class="sub2"></span></li>`).join("");
+    page("pg_install");
+    const r = await h3setup.install(plan);
+    warnings = r.warnings || [];
+    if (!r.ok && ((r.steps.python && !r.steps.python.ok) || (r.steps.comfy && !r.steps.comfy.ok))) {
+      $("done_h").textContent = "Setup stopped";
+      $("done_sub").textContent = "Something needed failed - the log explains it (also in setup.log in the app folder). Fix it and run setup again - it continues where it stopped.";
+      $("done_card").style.display = ""; $("done_list").innerHTML = Object.entries(r.steps).filter(([, s]) => s && s.error).map(([k, s]) => `<li>${esc(STEPS[k] || k)}: ${esc(s.error)}</li>`).join("");
+      $("b_launch").textContent = "Close"; noAuto = true; stopped = true;
+      return page("pg_done");
+    }
+    if (editorOnly) return finish();                    // 2.519.0: nothing to download
+    page("pg_models"); loadModels("");
+  };
+  h3setup.onEvent((e) => {
+    if (e.type === "log") return logTo(PAGES.indexOf(curPage()) >= PAGES.indexOf("pg_dl") ? $("dlog") : $("ilog"), e.line, e.err);
+    if (e.type === "step") {
+      const li = $("st_" + e.id); if (!li) return;
+      li.className = e.state; li.querySelector(".ic").textContent = ICON[e.state] || "•";
+      if (e.state !== "run") { doneSteps++; $("ibar").style.width = Math.round(100 * doneSteps / planIds.length) + "%"; li.querySelector(".sub2").textContent = e.error || ""; }
+    }
+    if (e.type === "sub") { const li = $("st_" + e.id); if (li) li.querySelector(".sub2").textContent = e.label; }
+    if (e.type === "file") fileEvent(e);
+  });
+  const curPage = () => (document.querySelector(".page.on") || {}).id;
+
+  // ---------------------------------------------------------------- page 3
+  let rows = [], token = "";
+  $("b_tok").onclick = async () => {
+    const t = $("tok").value.trim();
+    $("tokmsg").className = "tokmsg"; $("tokmsg").textContent = "Checking…";
+    const r = await h3setup.token(t);
+    if (r.ok) { token = t; $("tokmsg").className = "tokmsg ok"; $("tokmsg").textContent = `Signed in as ${r.name} - gated models you have accepted can be downloaded.`; }
+    else { token = ""; $("tokmsg").className = "tokmsg bad"; $("tokmsg").textContent = r.error + " - only the open models for now."; }
+    loadModels(token);
+  };
+  // 2.341.0: the Hugging Face CLI
+  async function hfPaint() {
+    const r = h3setup.hfcli ? await h3setup.hfcli() : { found: false };
+    $("hfclimsg").className = "tokmsg" + (r.found ? " ok" : "");
+    $("hfclimsg").textContent = r.found ? `Hugging Face CLI ready (huggingface_hub ${r.version || "?"}) - big files come down faster and resume by themselves.`
+      : "The Hugging Face CLI is not installed - Install hf CLI adds it to the studio's Python (or keep the built-in downloader).";
+    $("b_hfcli").textContent = r.found ? "Update hf CLI" : "Install hf CLI";
+  }
+  $("b_hfcli").onclick = async () => {
+    $("b_hfcli").disabled = true; $("hfclimsg").className = "tokmsg"; $("hfclimsg").textContent = "Installing huggingface_hub…";
+    const r = await h3setup.hfcliInstall();
+    $("b_hfcli").disabled = false;
+    if (!r.ok) { $("hfclimsg").className = "tokmsg bad"; $("hfclimsg").textContent = r.error; return; }
+    hfPaint();
+  };
+  hfPaint();
+  async function loadModels(t) {
+    $("mlist").innerHTML = '<div class="note">Asking Hugging Face about each model…</div>';
+    const r = await h3setup.models(t, { omnivoice: $("cb_omni").checked, package: PKG || undefined, hw: HW || undefined });
+    rows = r.rows;
+    const byGroup = {};
+    for (const m of rows) (byGroup[m.group] = byGroup[m.group] || []).push(m);
+    // 2.520.0: grouped downloads - the group's own box ticks / unticks all of it, with its size
+    const grpHead = (g) => { const can = byGroup[g.id].filter((m) => m.available && !m.present); const sz = can.reduce((a, m) => a + (m.size || 0), 0);
+      return `<div class="grp"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-grp="${esc(g.id)}" ${can.length ? "" : "disabled"} style="accent-color:var(--tiger)">${esc(g.label)}`
+        + `<span style="margin-left:auto;font-weight:400;text-transform:none;color:var(--dim)">${can.length ? can.length + " to get · " + gbs(sz) : "nothing to get"}</span></label></div>`; };
+    $("mlist").innerHTML = r.groups.filter((g) => byGroup[g.id]).map((g) => grpHead(g)
+      + byGroup[g.id].map((m) => {
+        const tags = (m.recommended ? '<span class="tag rec">for your GPU</span>' : "") + (m.present ? '<span class="tag have">downloaded</span>' : "")
+          + (m.gated ? '<span class="tag gate">gated</span>' : "");
+        const why = m.available ? esc(m.for || "") : `<span>${esc(m.why)}</span>`;
+        return `<label class="mrow ${m.available && !m.present ? "" : "off"}" id="m_${m.id}"><input type="checkbox" data-id="${m.id}" data-in="${esc(g.id)}"
+          ${m.ticked ? "checked" : ""} ${m.available && !m.present ? "" : "disabled"}><span class="nm">${esc(m.label)}${tags}</span>
+          <span class="sz">${m.size ? gbs(m.size) : ""}</span><span class="why ${m.available ? "" : "bad"}">${why}</span>
+          <div class="mbar"><div></div></div></label>`;
+      }).join("")).join("");
+    for (const c of document.querySelectorAll("#mlist input[data-id]")) c.onchange = totals;
+    for (const c of document.querySelectorAll("#mlist input[data-grp]")) c.onchange = () => {
+      for (const x of document.querySelectorAll(`#mlist input[data-in="${c.dataset.grp}"]:not(:disabled)`)) x.checked = c.checked;
+      totals();
+    };
+    totals();
+  }
+  async function totals() {
+    const ids = [...document.querySelectorAll("#mlist input[data-id]:checked")].map((c) => c.dataset.id);
+    for (const g of document.querySelectorAll("#mlist input[data-grp]")) {
+      const all = [...document.querySelectorAll(`#mlist input[data-in="${g.dataset.grp}"]:not(:disabled)`)], on = all.filter((x) => x.checked).length;
+      g.checked = all.length > 0 && on === all.length; g.indeterminate = on > 0 && on < all.length;
+    }
+    const sum = rows.filter((r) => ids.includes(r.id)).reduce((a, r) => a + (r.size || 0), 0);
+    const free = await h3setup.disk();
+    $("mtot").textContent = `${ids.length} file(s), ${gbs(sum)}` + (free ? ` · ${gbs(free)} free on the models drive` : "")
+      + (free && sum > free ? " - NOT ENOUGH SPACE" : "");
+    $("b_download").disabled = !ids.length;
+  }
+  $("b_nomodels").onclick = () => finish();
+  $("b_download").onclick = async () => {
+    const ids = [...document.querySelectorAll("#mlist input[data-id]:checked")].map((c) => c.dataset.id);
+    $("dlist").innerHTML = rows.filter((r) => ids.includes(r.id)).map((m) => `<div class="mrow dl" id="d_${m.id}"><span class="ic">○</span>
+      <span class="nm">${esc(m.label)}</span><span class="sz">${m.size ? gbs(m.size) : ""}</span><span class="why"></span>
+      <div class="mbar"><div></div></div></div>`).join("");
+    page("pg_dl");
+    dlTotal = rows.filter((r) => ids.includes(r.id)).reduce((a, r) => a + (r.size || 0), 0) || 1;
+    const r = await h3setup.download(ids, token, { engine: $("dl_engine").value });
+    for (const f of r.failed || []) warnings.push(`${(rows.find((x) => x.id === f.id) || {}).label || f.id}: ${f.error}`);
+    finish();
+  };
+  let dlTotal = 1; const dlGot = {};
+  function fileEvent(e) {
+    const row = $("d_" + e.id); if (!row) return;
+    const ic = row.querySelector(".ic"), bar = row.querySelector(".mbar > div"), why = row.querySelector(".why");
+    if (e.state === "run") {
+      ic.textContent = "◐";
+      if (e.total) { bar.style.width = Math.round(100 * e.got / e.total) + "%"; why.textContent = `${gbs(e.got)} of ${gbs(e.total)}`; dlGot[e.id] = e.got; }
+    } else if (e.state === "ok") { ic.textContent = "✓"; ic.style.color = "var(--ok)"; bar.style.width = "100%"; why.textContent = "done";
+      const r = rows.find((x) => x.id === e.id); dlGot[e.id] = (r && r.size) || dlGot[e.id] || 0; }
+    else if (e.state === "err") { ic.textContent = "✕"; ic.style.color = "var(--bad)"; why.textContent = e.error || "failed"; why.classList.add("bad"); }
+    const got = Object.values(dlGot).reduce((a, b) => a + b, 0);
+    $("dbar").style.width = Math.min(100, Math.round(100 * got / dlTotal)) + "%";
+  }
+
+  // ---------------------------------------------------------------- page 5
+  let noAuto = false; // eslint-disable-line
+  function finish() {
+    if (warnings.length) {
+      $("done_card").style.display = "";
+      $("done_list").innerHTML = warnings.map((w) => `<li>${esc(w)}</li>`).join("");
+      $("done_sub").textContent = "Set up for your hardware - with the notes below (all of it is in setup.log too).";
+    }
+    page("pg_done");
+    // no notes to read: the studio opens by itself (Tim: "no further action needed")
+    if (warnings.length) return;
+    let n = 8;
+    const tick = () => {
+      if (noAuto) { $("launch_in").textContent = ""; return; }
+      if (n <= 0) { noAuto = true; h3setup.finish(); return; }
+      $("launch_in").textContent = `Opening in ${n} s…`;
+      n--; setTimeout(tick, 1000);
+    };
+    tick();
+  }
+  let stopped = false;
+  $("b_launch").onclick = () => { noAuto = true; if (stopped) h3setup.close(); else h3setup.finish(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "_comment": [
+    "THE image-architecture catalogue. Same doctrine as lib/transitions.json:",
+    "lib/styles.js (validation + the /api/styles route), the Settings UI and",
+    "scripts/image_gen.py (which builds the sd-cli argv) ALL read this one file,",
+    "so the dropdown and the renderer cannot disagree about what exists or about",
+    "which flag a text encoder is passed with.",
+    "",
+    "Flag names were taken from stable-diffusion.cpp's own docs (docs/flux.md,",
+    "docs/flux2.md, docs/z_image.md, docs/qwen_image.md, docs/sd.md) and from",
+    "examples/cli/main.cpp, NOT from memory. Note that three of the five",
+    "architectures pass their text encoder with --llm, which is the same flag",
+    "worker.py already uses for the H3 text encoder.",
+    "",
+    "sd.cpp is under active development and says so in its own README: if a flag",
+    "is renamed upstream, edit it HERE (one place) or override per style with",
+    "the style's Extra args field."
+  ],
+  "samplers": ["euler", "euler_a", "heun", "dpm2", "dpm++2s_a", "dpm++2m",
+               "dpm++2mv2", "ipndm", "ipndm_v", "lcm", "ddim_trailing", "tcd"],
+  "archs": [
+    {
+      "id": "flux",
+      "label": "FLUX.1 (dev / schnell)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "ae.safetensors" },
+      "te": [
+        { "flag": "--clip_l", "label": "CLIP-L", "required": true, "hint": "clip_l.safetensors" },
+        { "flag": "--t5xxl", "label": "T5-XXL", "required": true, "hint": "t5xxl_fp16.safetensors / .gguf" }
+      ],
+      "extra": [],
+      "negative": false,
+      "defaults": { "steps": 20, "cfg": 1.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "Distilled: cfg-scale 1.0 and no negative prompt. schnell needs about 4 steps, dev about 20."
+    },
+    {
+      "id": "flux2klein9b",
+      "label": "FLUX.2 klein 9B",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "flux2_ae.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3-8B", "required": true, "hint": "qwen_3_8b.safetensors / Qwen3-8B GGUF" }
+      ],
+      "extra": [],
+      "negative": false,
+      "defaults": { "steps": 4, "cfg": 1.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "klein 9B is the distilled one: cfg 1.0, ~4 steps. The klein BASE 9B checkpoint wants cfg 4.0 and ~20 steps instead."
+    },
+    {
+      "id": "flux3klein",
+      "label": "FLUX 3 Image Klein (ComfyUI)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "flux2-vae.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3-VL 4B", "required": true, "hint": "qwen3vl_4b_int8_convrot.safetensors" }
+      ],
+      "extra": [],
+      "negative": false,
+      "comfy_only": true,
+      "defaults": { "steps": 16, "cfg": 1.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "2.502.0: FLUX 3 Image Klein renders through ComfyUI only (0.41.0+; sd.cpp has no FLUX 3 yet). Distilled: cfg 1, 16 steps (4-16). Base: cfg 3.5, ~50 steps. Text and up to 10 reference pictures (<ref_image_0>...)."
+    },
+    {
+      "id": "krea2",
+      "label": "Krea 2 (Turbo / Raw - ComfyUI)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "qwen_image_vae.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3-VL 4B", "required": true, "hint": "qwen3vl_4b_fp8_scaled.safetensors (CLIPLoader type krea2)" }
+      ],
+      "extra": [],
+      "negative": true,
+      "comfy_only": true,
+      "defaults": { "steps": 8, "cfg": 1.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "2.516.0: Krea 2 (12B) renders through ComfyUI only (Krea 2 support: 0.26+). Turbo: 8 steps, cfg 1 (er_sde / simple). Raw: 52 steps, cfg 3.5 with a negative prompt. safetensors (models/diffusion_models) or GGUF (models/unet - ComfyUI-GGUF with Krea 2 support)."
+    },
+    {
+      "id": "anima",
+      "label": "Anima (anime - ComfyUI)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "qwen_image_vae.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3 0.6B", "required": true, "hint": "qwen_3_06b_base.safetensors" }
+      ],
+      "extra": [],
+      "negative": true,
+      "comfy_only": true,
+      "defaults": { "steps": 30, "cfg": 4.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "2.517.0: Anima (CircleStone Labs, 2B anime / illustration) renders through ComfyUI only. 30-50 steps, cfg 4-5 (er_sde), a negative prompt; start the prompt with 'masterpiece, best quality, score_7, safe, '. Aesthetic v1.1 or Base v1.0 (models/diffusion_models)."
+    },
+    {
+      "id": "sdxl",
+      "label": "SDXL / SDXL-Turbo",
+      "model_flag": "-m",
+      "vae": { "flag": "--vae", "required": false, "hint": "sdxl_vae.safetensors (optional — most checkpoints bake one in)" },
+      "te": [
+        { "flag": "--clip_l", "label": "CLIP-L", "required": false, "hint": "optional — usually inside the checkpoint" },
+        { "flag": "--clip_g", "label": "CLIP-G", "required": false, "hint": "optional — usually inside the checkpoint" }
+      ],
+      "extra": [],
+      "negative": true,
+      "defaults": { "steps": 30, "cfg": 7.0, "clip_skip": 2, "width": 1024, "height": 1024, "sampler": "dpm++2m" },
+      "note": "A full checkpoint, so it goes to -m and normally needs no separate VAE or text encoders. Turbo variants want cfg 1.0 and 1-4 steps."
+    },
+    {
+      "id": "z-image",
+      "label": "Z-Image (Turbo / Base)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "ae.sft (the FLUX.1-schnell VAE)" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3-4B", "required": true, "hint": "qwen_3_4b.safetensors / Qwen3-4B-Instruct GGUF" }
+      ],
+      "extra": [],
+      "negative": false,
+      "defaults": { "steps": 8, "cfg": 1.0, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "Turbo: cfg 1.0 and ~8 steps. Z-Image BASE wants cfg 5.0 instead. Runs in very little VRAM."
+    },
+    {
+      "id": "qwen-image",
+      "label": "Qwen-Image",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "qwen_image_vae.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen2.5-VL 7B", "required": true, "hint": "Qwen2.5-VL-7B-Instruct safetensors / GGUF" }
+      ],
+      "extra": ["--flow-shift", "3"],
+      "negative": false,
+      "defaults": { "steps": 20, "cfg": 2.5, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "Very strong at rendering text inside the image. --flow-shift 3 is applied automatically unless your Extra args already set it."
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+# bitGen Studio — what never goes in the repo (2.123.0).
+#
+# THE SAME LIST AS scripts/make_zips.sh. That script decides what ships in a
+# release zip; this decides what ships in a commit, and the answer is the same
+# for the same reason: everything below is either enormous, generated, or THIS
+# MACHINE'S — model weights, renders, your projects, your settings. A repo that
+# carries any of them is a repo nobody can clone.
+#
+# scripts/check-gitignore.sh compares the two lists and fails if they drift, so
+# if you add an exclusion to one, add it to the other.
+
+# --- generated / installed -------------------------------------------------
+node_modules/
+dist/
+venvs/
+sd-cpp/
+comfy/
+llama-cpp/
+electron/dist/
+electron/node_modules/
+__pycache__/
+*.pyc
+*.log
+
+# --- model weights (tens of gigabytes; downloaded, never committed) --------
+models/
+loras/
+llm-models/
+checkpoints/
+
+# --- this machine's work ---------------------------------------------------
+workspace/
+projects/
+output/
+# styles/ and graphs/ are USER CONTENT: the app seeds the starter styles in
+# code (lib/styles.js STARTER_STYLES), so an empty folder is the correct
+# starting state and a committed one would overwrite somebody's own.
+styles/
+graphs/
+
+# --- settings --------------------------------------------------------------
+# default.settings SHIPS: it is the authored default layer, and the app needs
+# it to start. custom.settings NEVER does — it is this machine's diff from
+# those defaults, including absolute paths to your drives (2.99.0).
+custom.settings
+custom.settings.bak
+# dockers.json is this machine's dock layout (2.159.0) — user state, like
+# custom.settings, never authored content
+dockers.json
+dockers.json.tmp
+
+# Tim's own upscale export (the scene board's upscale queue drives it when
+# present) — this machine's file, never the repo's; the e2e writes a fixture
+# under this name and deletes it, and a crashed run must not ship it.
+MM3_Characters_upscale.json
+default.settings.broken
+config.json
+config.json.migrated
+
+# --- releases --------------------------------------------------------------
+*.zip
+
+# --- editors / OS ----------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+comfy_workflows/MM3_Characters_tmp.json
+images.tmp
+
+# 2.270.0: music-video segment temp (user content, split output)
+music/
+
+# 2.353.0: which optional components are installed (written on start - per machine)
+components.txt
+
+# 2.381.0: docker_status.json is this machine's dock layout - user state
+docker_status.json
+docker_status.json.tmp
+
+# 2.520.0: the LoRA trainer's ai-toolkit checkout + the usage log
+/ai-toolkit/
+/usage/
+# 2.521.0: llama.cpp's source (the fine-tunes' GGUF converter)
+/tools/
+# 2.522.0: the 🐞 bug reports (lib/bugReport.js)
+/bug-reports/
+# 2.526.0: workspaces.json is this machine's workspace memory (the Workspace dropdown) - user state
+workspaces.json
+workspaces.json.tmp
+model_info/
+model_folders.json

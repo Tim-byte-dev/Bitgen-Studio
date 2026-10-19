@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "name": "Corner tag",
+  "description": "A gold tag in the top-left corner (a topic, a chapter, LIVE)",
+  "w": 1920,
+  "h": 1080,
+  "layers": [
+    {
+      "name": "CT tag",
+      "text": false,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0,
+          "len": 5,
+          "opacity": 1,
+          "name": "ct_tag.png",
+          "tf": {
+            "x": -680,
+            "y": -430,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "x": -1000
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "x": -680
+            },
+            {
+              "at": 4.5,
+              "op": 1
+            },
+            {
+              "at": 5,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CT text",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.15,
+          "len": 4.85,
+          "opacity": 1,
+          "label": "Tag",
+          "text": {
+            "content": "CHAPTER ONE",
+            "font": "Arial",
+            "size": 44,
+            "color": "#14161c",
+            "bold": true,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 0,
+            "shadow": false,
+            "align": "center"
+          },
+          "tf": {
+            "x": -680,
+            "y": -430,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "x": -1000
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "x": -680
+            },
+            {
+              "at": 4.35,
+              "op": 1
+            },
+            {
+              "at": 4.85,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

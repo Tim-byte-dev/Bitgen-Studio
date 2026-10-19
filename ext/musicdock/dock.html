@@ -1,0 +1,195 @@
+    <!-- MUSIC DOCK (2.90.1, by instruction): the song is made HERE, not from
+         the prompt box. Left: the lyrics, which are the PROMPT (section tags
+         on their own lines). Middle: a per-song caption override — empty means
+         the style's own caption, which is the normal case. Right: the style,
+         length, count, seed, and the button. Settings → Music is still where a
+         style is edited; this dock only uses one. -->
+    <div class="bdock" id="musicdock">
+      <div class="bhead" data-collapse="musicdock">▾ Music<button class="maxbtn" data-max="musicdock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- 2.236.0 (Tim: "integrate this workflow into our music docker,
+             add a tab to our music docker for sheet music and tabs for each
+             of yue2's capabilities"): the dock grows tabs. Song is the
+             existing dock unchanged; Cover and Sheet Music ride the YuE2
+             (ComfyUI) arch's own workflows (Tim's yue2_full.json - the song
+             is WRITTEN AS ABC NOTATION first, then sung from the score).
+             Cover and Sheet reuse the Song tab's style/lyrics/settings, so
+             the words and the sound live in ONE place. -->
+        <!-- 2.240.0 (Tim: "create a menubar in music docker, move create
+             video button to the right of the menubar, move song, cover and
+             sheet music to the left of the menubar"): ONE menubar row —
+             the three tabs sit LEFT, 🎬 Create video sits RIGHT
+             (margin-left:auto). The tabs switch panes by DELEGATION on the
+             bar (musicdock.js), so moving buttons around can never detach
+             them again. -->
+        <div class="mubar" id="muBar">
+          <!-- 2.241.0 (Tim: "add a save button to the left of the music
+               dockers menu bar ... a load button next to the save button
+               ... a new button at the left of the menu bar for a new
+               song"): the FILE group sits far left — New (press twice: the
+               first press asks, so lyrics are never wiped by one slip),
+               Save and Load share one dialog (muSongDlg) over
+               projects/<p>/songs/. -->
+          <!-- 2.245.0: a PLAIN flex wrapper (not .gtabs) and the app's own
+               ghost-button theme — the file group is a set of ACTIONS, not
+               tabs: themed like every other button (Tim: "change the button
+               color to match the theme") and forever outside any
+               class-wide tab wiring (the dead-buttons lesson). -->
+          <div id="muFile" style="display:flex;gap:4px;margin:0">
+            <button type="button" class="ghost gbtn" id="muNew" title="New song — clears the lyrics and details. The first press asks; press again to clear.">🆕 New</button>
+            <button type="button" class="ghost gbtn" id="muSave" title="Save this song — lyrics, caption, style, length, count, seed and save-as — into the project's songs folder">💾 Save</button>
+            <button type="button" class="ghost gbtn" id="muLoad" title="Load a saved song from this project">📂 Load</button>
+          </div>
+          <!-- 2.247.0 (Tim: "make the song, cover and sheetmusic button the
+               same theme as the other buttons"): the tabs wear the app's
+               ghost-button theme like 🆕/💾/📂 and 🎬 — a plain flex wrapper
+               (never .gtabs: the 2.245.0 lesson), selection shown the
+               app's own way (.on = tiger text + border, the statusbar
+               convention), switching still by data-mutab delegation. -->
+          <div id="muTabs" style="display:flex;gap:4px;margin:0">
+            <button type="button" class="ghost gbtn on" data-mutab="song" title="Write a song: lyrics + style">🎶 Song</button>
+            <button type="button" class="ghost gbtn" data-mutab="cover" title="YuE2 cover: a reference track is transcribed to sheet notation and sung with the Song tab's style and lyrics">🎤 Cover</button>
+            <button type="button" class="ghost gbtn" data-mutab="sheet" title="YuE2 sheet music: the ABC score of a song - written from the Song tab's lyrics, or transcribed from an audio file">🎼 Sheet Music</button>
+          </div>
+          <button class="ghost gbtn" id="muVidBtn" type="button" style="margin-left:auto"
+            title="Create video — a music-video screenplay from this song's lyrics: pick the video style, the characters and the locations; the LLM writes the screenplay onto the scene board (video docker)."
+            aria-label="Create a music video screenplay from these lyrics">🎬 Create video</button>
+        </div>
+        <div id="muPaneCover" class="hidden">
+          <div class="hint help">A YuE2 cover: the reference track is transcribed to ABC
+            sheet notation (SheetSage2) and sung from that score with the
+            <b>Song tab's</b> style, lyrics, length and seed. Pick a
+            <b>YuE2 (ComfyUI)</b> style on the Song tab first.</div>
+          <div class="murow" style="grid-template-columns:1fr auto;align-items:end;gap:8px">
+            <label class="f">Reference track
+              <input type="file" id="muCoverRef" accept="audio/*"></label>
+            <div>
+              <button class="go" id="goCover" title="Transcribe the reference and sing it: Song tab's lyrics + style, this track's melody">🎤 Generate Cover</button>
+              <div id="muCoverStatus" class="dim">idle</div>
+            </div>
+          </div>
+        </div>
+        <div id="muPaneSheet" class="hidden">
+          <div class="hint help">The sheet music (ABC notation) of a song. <b>Write</b>
+            composes a score from the Song tab's lyrics and style;
+            <b>Transcribe</b> reads one out of an audio file (SheetSage2).
+            Every generated song also saves its score as a .abc beside the
+            audio.</div>
+          <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:6px 0">
+            <button class="go" id="goSheetWrite" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write sheet from lyrics</button>
+            <label class="f" style="margin:0">Audio file
+              <input type="file" id="muSheetRef" accept="audio/*"></label>
+            <button class="go" id="goSheetTranscribe" title="Transcribe the picked audio file into ABC notation">📜 Transcribe audio</button>
+            <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
+            <span id="muSheetStatus" class="dim">idle</span>
+          </div>
+          <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:0" class="hint">— no sheet yet —</pre>
+        </div>
+        <div id="muPaneSong">
+        <!-- 2.243.0 (Tim: "add a title input for the song in music docker"):
+             the title LEADS the rendered filename (Neon-Nights_<stamp>…),
+             saves/loads with the song, and prefills the Save dialog's name. -->
+        <label class="f" style="flex:0 0 auto;margin:0 0 6px" title="The song's title — it leads the rendered filename, saves with the song, and prefills the Save name.">Title
+          <input type="text" id="muTitle" style="width:100%;box-sizing:border-box" placeholder="untitled"></label>
+        <div class="murow">
+          <textarea id="muLyrics" placeholder="Lyrics — the prompt for the song. Section tags on their own lines: [verse] … [chorus] … [bridge] … [outro]"></textarea>
+          <textarea id="muCaption" placeholder="Caption override for this song only — leave empty to use the style's. Global Metadata: genre, BPM, key, mood.  Vocal Details: …  Arrangement: …"></textarea>
+          <div class="muside">
+            <label>Style</label>
+            <select id="musicSel" title="Music style — the sound of the song. Styles are created and edited in Settings → Music">
+              <option value="">— none —</option>
+            </select>
+            <div class="munums">
+              <label title="Seconds of song. Blank = the style's own length.">Length<input type="number" id="muDur" min="1" max="600" placeholder="style"></label>
+              <label title="How many songs per press — each gets its own seed. At most 4: a song is minutes of GPU.">Songs<input type="number" id="muBatch" min="1" max="4" value="1"></label>
+              <label title="Blank = a fresh random seed every press. Set a number to make a song again.">Seed<input type="number" id="muSeed" min="0" placeholder="random"></label>
+              <!-- 2.238.0 (Tim: "add a filetype to save the song to ...
+                   flac, mp3, wav"): the workflow renders lossless flac;
+                   mp3/wav are converted from it after the render — same
+                   quality as a native save, one path for every engine. -->
+              <label title="The file the song is saved as. flac = lossless (the render itself); mp3 = lame V0; wav = 16-bit PCM. Converted after the render from the lossless flac.">Save as<select id="muFormat">
+                <option value="flac">flac</option>
+                <option value="mp3">mp3</option>
+                <option value="wav">wav</option>
+              </select></label>
+            </div>
+            <button class="go" id="goMusic" title="Make a song: the lyrics box is the PROMPT, the selected music style is the sound">🎶 Generate Music</button>
+            <div id="muStatus" class="dim">idle</div>
+          </div>
+        </div>
+        </div><!-- /muPaneSong -->
+        <!-- 2.231.0 (by instruction): "in the menubar of the music docker add
+             a button - Create video - make a create video dialog, style of
+             video, characters,locations etc.  use the lyrics and details to
+             send to llm, llm will create the screenplay and pass it to
+             video-docker" -->
+        <!-- 2.246.0 (by instruction): SEPARATE Save and Load dialogs. Each has a
+             TITLEBAR with ✕ on the right; every button is ICON-ONLY and wears
+             the app's ghost theme (aria-labels + tooltips carry the words).
+             Save: one wide name row, the TITLE as the default name (editable).
+             Load: the saved list, each row with ▶ (hear the newest rendered
+             file of that song, via /outputs) and 📂 (load it into the dock). -->
+        <dialog id="muSaveDlg" style="max-width:min(94vw,520px);width:min(94vw,520px);padding:0">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line,#262a33)">
+            <b style="flex:1">💾 Save song</b>
+            <button class="ghost gbtn" id="muSaveX" type="button" title="Close" aria-label="Close">✕</button>
+          </div>
+          <div style="padding:10px 12px">
+            <div style="display:flex;gap:8px;align-items:end">
+              <label class="f" style="flex:1;margin:0">Song name
+                <input id="muSongName" type="text" style="width:100%;box-sizing:border-box" placeholder="the Title, or a name of your own"></label>
+              <button class="ghost gbtn" id="muSongGo" type="button" title="Save the song — lyrics, style and details" aria-label="Save">💾</button>
+            </div>
+            <span class="hint" id="muSaveMsg" style="display:block;margin-top:6px"></span>
+          </div>
+        </dialog>
+        <dialog id="muLoadDlg" style="max-width:min(94vw,520px);width:min(94vw,520px);padding:0">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line,#262a33)">
+            <b style="flex:1">📂 Load song</b>
+            <button class="ghost gbtn" id="muLoadX" type="button" title="Close" aria-label="Close">✕</button>
+          </div>
+          <div style="padding:10px 12px">
+            <div id="muSongList" style="max-height:260px;overflow:auto">— none yet — Save one first —</div>
+            <!-- 2.250.0: the ⓘ hover card — filename, title, created,
+                 created by and the lyrics of the RENDER RECORD, floating
+                 over the list; mouseover opens it, mouseout closes it. -->
+            <div id="muInfoPop" class="hidden" style="position:fixed;z-index:60;max-width:340px;background:var(--panel-2,#141822);border:1px solid var(--line,#262a33);border-radius:8px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none;font-size:.74rem"></div>
+            <audio id="muSongAudio" style="display:none"></audio>
+            <span class="hint" id="muLoadMsg" style="display:block;margin-top:6px"></span>
+          </div>
+        </dialog>
+        <dialog id="muVidDlg" style="max-width:min(94vw,700px);width:min(94vw,700px)">
+          <h3 style="margin-top:0">🎬 Create video from this song</h3>
+          <div class="hint help" style="margin-bottom:8px">The lyrics box is the song —
+            the screenplay follows it, verse to scene. The writer uses the
+            characters and locations you tick and lands the screenplay on the
+            scene board in the video docker.</div>
+          <label class="f">Style of video</label>
+          <input id="muVidStyle" type="text" style="width:100%"
+                 placeholder="e.g. cinematic neon performance, rainy streets, slow motion"
+                 aria-label="Style of the music video">
+          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <label class="f">Characters</label>
+              <div id="muVidCast" style="max-height:150px;overflow:auto;border:1px solid var(--line,#262a33);border-radius:6px;padding:6px"></div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <label class="f">Locations</label>
+              <div id="muVidEnvs" style="max-height:150px;overflow:auto;border:1px solid var(--line,#262a33);border-radius:6px;padding:6px"></div>
+            </div>
+          </div>
+          <div class="grpbar" style="gap:10px;margin-top:8px;align-items:center">
+            <label title="How many scenes the screenplay has">Scenes
+              <input type="number" id="muVidScenes" min="1" max="24" value="6" style="width:70px"></label>
+            <button class="go" id="muVidGo" type="button" style="margin-left:auto"
+                    aria-label="Write the music video screenplay">🎬 Write screenplay</button>
+            <button class="ghost gbtn" id="muVidCancel" type="button"
+                    aria-label="Close without writing">Cancel</button>
+          </div>
+          <div class="hint" id="muVidMsg" style="margin-top:6px"></div>
+        </dialog>
+      </div>
+    </div>
+    <!-- the musicdock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="mh"></div>

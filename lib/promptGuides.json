@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "_comment": "PROMPT GUIDES (2.104.0, by instruction: 'teach the LLMs how to write prompts for minimax h3, minimax music, flux klein, sdxl, pony, illustrious and z-image'). lib/promptGuides.js picks a guide by kind + arch + model file name and appends its `rules` and `example` to every LLM system prompt (prompt chat, Enhance, music-video shots). Edit here, or drop an override with the same shape at styles/prompt-guides.json (guides there replace guides here by id). Keep each guide short: it is read by a local model with a small context. 2.335.0: minimax_h3_swap (kind 'swap', no match words - never picked for a normal render) teaches the character-swap prompt; lib/swapPrompt.js asks for it by id (the swap dialog's ✎ Write prompt). 2.338.0: ltx_25 (kind video, matched by 'ltx' in the style's arch / model name) teaches LTX 2.5's long cinematic prompts - from Tim's Prompt Sample.",
+  "guides": [
+    {
+      "id": "minimax_h3",
+      "kind": "video",
+      "label": "MiniMax H3 (video + audio)",
+      "match": [
+        "h3",
+        "minimax"
+      ],
+      "rules": [
+        "MiniMax H3 makes video WITH its own stereo sound, up to 15 s, 24 fps. It reads the prompt as a shot description, so every word is a directing instruction.",
+        "Structure one shot as: style/medium, then subject + action, then camera (framing + ONE move over the whole clip), then light, then a line for SOUND (ambience, effects, music, or spoken words in quotes).",
+        "ONE CONTINUOUS SHOT unless the user wants cuts: open with 'one continuous take, single shot, no cuts'. Do NOT write time ranges (0-5s:) or ordinal words (then, next, later, scene) — the model cuts on them.",
+        "MULTI-SHOT on purpose: label them CUT 1: / CUT 2: (or SHOT n:) and put TRANSITION: between them; write what each cut shows and how it ends.",
+        "References: pictures are <Picture 1>, <Picture 2> … in tray order; sound is <Audio 1>; a reference video is <Video 1>. Name the reference INSIDE the action sentence: 'the woman from <Picture 1> turns toward the man from <Picture 2>'. Never describe the crop of a picture (face/head/body) — the model stages that crop as its own shot.",
+        "Two people in one frame: put both in ONE sentence with their spatial relation (behind, beside, facing). Say who does what to whom.",
+        "Speech: put the exact words in double quotes and say who says them and how ('she says softly: \"…\"'). Lip-sync follows the quoted line.",
+        "On-screen text: quote it and give font/colour/placement, or say 'no text, no captions'.",
+        "Camera vocabulary the model knows: push in, pull back, dolly, truck, orbit, crane, handheld, static, whip pan, rack focus, low angle, top-down, fisheye, macro, slow motion.",
+        "Length: 60-140 words for one shot. Concrete nouns and verbs; no lists of adjectives, no 'masterpiece/4k' tags, no negative prompt (there is none).",
+        "Keep every <Picture n>/<Audio n>/<Video n> tag the user gave exactly; never invent new numbers.",
+        "LONGER THAN 15 s IS A CHAIN, NOT A LONGER PROMPT. The ceiling is per generation; a longer piece is several shots, each starting from the last frames of the one before, with every recurring subject described in identical words each time. If the user asks for one, write a numbered shot list rather than one long paragraph."
+      ],
+      "example": "One continuous take, single shot, no cuts. Cinematic drama, late afternoon. On a wooden boardwalk beside the sea, the woman from <Picture 1> and the shirtless man from <Picture 2> stand together facing the water. He steps close behind her, wraps his arms around her waist and holds her; she leans back and rests her head on his shoulder. Medium shot, the camera slowly circles from behind them to their side, soft backlight off the water. Sound: waves rolling in, a light breeze, distant gulls; no music."
+    },
+    {
+      "id": "minimax_music",
+      "kind": "music",
+      "label": "MiniMax Music",
+      "match": [
+        "music",
+        "minimax"
+      ],
+      "rules": [
+        "A song is LYRICS + a CAPTION. The caption is the SOUND: 'Global Metadata: genre, BPM, key, mood. Vocal Details: gender, range, delivery. Arrangement: instruments, structure, production.' The lyrics are what is sung, with section tags on their own lines: [intro] [verse] [pre-chorus] [chorus] [bridge] [outro] [instrumental].",
+        "When asked for a song, reply with ONE fenced block: metadata lines first (Theme:, Genre:, Instruments:, BPM:, Vocals:), a blank line, then the tagged lyrics. The 🎶 button splits exactly there.",
+        "Write real lyrics: rhythm and rhyme that a singer can phrase, 4-8 lines per section, a chorus that repeats. Avoid stacking abstract nouns; use images.",
+        "Sound-effect and performance cues go in brackets inside the lyrics: [whisper] [spoken] [laugh] [drum fill] [guitar solo].",
+        "Length follows the requested seconds: about 2 verses + chorus per minute. Say the target length in the metadata.",
+        "No copyrighted lyrics or melodies; original words only."
+      ],
+      "example": "Theme: driving home after a long night\nGenre: indie pop, warm synths\nInstruments: synth pads, electric bass, soft drums, clean guitar\nBPM: 96\nVocals: female, mid-range, breathy, close-mic\n\n[verse]\nStreetlights count me down the avenue\nradio half-asleep, still humming you\n...\n[chorus]\nTake me home, take the long way home\n..."
+    },
+    {
+      "id": "flux_klein",
+      "kind": "image",
+      "label": "FLUX.2 Klein / FLUX family",
+      "match": [
+        "flux",
+        "klein"
+      ],
+      "rules": [
+        "FLUX reads natural language. Write 1-3 plain sentences: subject and what it is doing, setting, composition/framing, lens and light, then style/medium.",
+        "NO tag soup, NO weights ((like this)), NO quality tokens (masterpiece, 8k), NO negative prompt — the model has none; say what you want instead of what you don't.",
+        "Be specific about materials, colours and light direction; name the lens if it matters (35mm, 85mm portrait, macro).",
+        "Text in the image: put it in quotes and say where and in what style; FLUX renders text well.",
+        "It is a STILL: no camera movement, no 'then'.",
+        "EDIT mode (Klein edit): describe the CHANGE, not the whole picture: 'replace the sky with a stormy one, keep everything else'. Reference pictures are <Picture n>.",
+        "Length: 30-120 words."
+      ],
+      "example": "A weathered fisherman in a yellow oilskin coils rope on a wet stone pier at dawn, low golden light from the left, thin sea mist, gulls blurred in the background. Medium shot, 50mm, shallow depth of field, muted teal and amber palette, documentary photograph."
+    },
+    {
+      "id": "sdxl",
+      "kind": "image",
+      "label": "SDXL (base / fine-tunes)",
+      "match": [
+        "sdxl",
+        "juggernaut",
+        "realvis",
+        "dreamshaper",
+        "xl"
+      ],
+      "rules": [
+        "SDXL takes a comma-separated list of phrases, most important first: subject, then details, setting, lighting, style, medium, quality words.",
+        "Weights are allowed: (phrase:1.2) to emphasise, (phrase:0.8) to soften. Keep them rare.",
+        "A NEGATIVE prompt helps: 'blurry, deformed, extra fingers, text, watermark, low quality'. Give it after a line 'Negative:' when the style has a negative box.",
+        "Style/medium words carry a lot: 'photograph, 85mm, film grain' vs 'oil painting, impasto' vs 'digital illustration, cel shading'.",
+        "Keep it to 40-75 tokens (about 30-60 words); SDXL's first 75 tokens matter most.",
+        "It is a still: no camera moves."
+      ],
+      "example": "portrait of a young woman with silver braids, freckles, green wool coat, standing in a birch forest, soft overcast light, shallow depth of field, 85mm photograph, film grain, highly detailed\nNegative: blurry, deformed hands, extra fingers, text, watermark, low quality"
+    },
+    {
+      "id": "pony",
+      "kind": "image",
+      "label": "Pony Diffusion (SDXL-based)",
+      "match": [
+        "pony",
+        "ponydiffusion",
+        "pdxl"
+      ],
+      "rules": [
+        "Pony uses BOORU TAGS, comma-separated, most important first. Tag phrases like 'long hair, red dress, standing, looking at viewer'.",
+        "START with the score tags: 'score_9, score_8_up, score_7_up' (quality), then optionally a rating tag: 'rating_safe' (or rating_questionable / rating_explicit). Keep the user's chosen rating; default to rating_safe.",
+        "Use 'source_anime', 'source_cartoon', 'source_furry', 'source_pony' or 'source_3d' for the medium; 'realistic' is weak on Pony — say 'source_realistic' only for the fine-tunes that support it.",
+        "Character count tags: '1girl', '1boy', '2girls', 'solo'. Then features, clothing, pose, expression, setting, lighting, in that order.",
+        "Negative prompt: 'score_6, score_5, score_4, worst quality, low quality, text, watermark, extra limbs'.",
+        "No sentences, no articles; commas between every tag. 20-50 tags."
+      ],
+      "example": "score_9, score_8_up, score_7_up, rating_safe, source_anime, 1girl, solo, silver hair, long braid, freckles, green coat, standing, looking at viewer, birch forest, overcast, soft lighting, depth of field\nNegative: score_6, score_5, score_4, worst quality, low quality, text, watermark, extra limbs"
+    },
+    {
+      "id": "illustrious",
+      "kind": "image",
+      "label": "Illustrious / NoobAI (SDXL-based)",
+      "match": [
+        "illustrious",
+        "noobai",
+        "noob",
+        "wai",
+        "ilxl"
+      ],
+      "rules": [
+        "Illustrious uses Danbooru TAGS, comma-separated. Quality tags go FIRST: 'masterpiece, best quality, very aesthetic, absurdres'. NoobAI variants also accept 'newest' / 'recent' for era.",
+        "NO Pony score_ tags — they hurt here.",
+        "Character count first ('1girl, solo'), then hair/eyes/body, then clothing, pose, expression, then background, lighting, then style/artist tags if any (write 'by <artist>' only when the user asks).",
+        "Underscores or spaces both work; keep the tag vocabulary from Danbooru (e.g. 'looking at viewer, cowboy shot, from below, dutch angle').",
+        "Negative prompt: 'lowres, bad anatomy, bad hands, text, error, missing fingers, extra digits, jpeg artifacts, signature, watermark, username, blurry'.",
+        "20-50 tags. Weights (tag:1.2) sparingly."
+      ],
+      "example": "masterpiece, best quality, very aesthetic, absurdres, 1girl, solo, silver hair, long braid, freckles, green coat, standing, looking at viewer, birch forest, overcast sky, soft lighting, depth of field, cowboy shot\nNegative: lowres, bad anatomy, bad hands, text, error, missing fingers, extra digits, jpeg artifacts, signature, watermark, blurry"
+    },
+    {
+      "id": "z_image",
+      "kind": "image",
+      "label": "Z-Image (Tongyi)",
+      "match": [
+        "z-image",
+        "zimage",
+        "z_image",
+        "tongyi"
+      ],
+      "rules": [
+        "Z-Image reads natural language like FLUX: full sentences, subject first, then setting, composition, light, style. English or Chinese both work.",
+        "It renders text well: put any text in quotes and say where it goes and its style.",
+        "It follows long detailed prompts faithfully — 40-150 words is fine; describe materials, colours, spatial layout (left/right/foreground/background).",
+        "No booru tags, no weights, no quality tokens. Z-Image Turbo has no negative prompt and needs no CFG; say what you want.",
+        "It is a still: no camera moves."
+      ],
+      "example": "A cosy ramen shop at night seen from the street, warm light spilling through steamed-up glass, a red lantern on the left reading \"拉麺\", a cyclist pausing on the right, wet asphalt reflecting neon, 35mm photograph, cinematic colour."
+    },
+    {
+      "id": "qwen_image",
+      "kind": "image",
+      "label": "Qwen-Image",
+      "match": [
+        "qwen"
+      ],
+      "rules": [
+        "Qwen-Image reads natural language (English or Chinese), like FLUX: sentences with subject, setting, layout, light, style.",
+        "It is the strongest of these at TEXT: quote every piece of text, give its position, font feel and colour; long text and multi-line signs are fine.",
+        "Describe spatial layout explicitly (left/right/top, foreground/background); it follows layout instructions closely.",
+        "No tags, no weights, no quality tokens; a negative prompt exists but usually stays empty.",
+        "Edit mode: state the change and 'keep everything else unchanged'.",
+        "It is a still: no camera moves. 40-150 words."
+      ],
+      "example": "A minimalist poster on a cream background: at the top in bold black serif the words \"OPEN LATE\", below it a single red ceramic teapot centred with soft studio light from the upper left, a thin black line under the teapot, generous white space, print-quality flat design."
+    },
+    {
+      "id": "minimax_h3_swap",
+      "kind": "swap",
+      "label": "MiniMax H3 character swap (Ref2V + the H3 Character Swap LoRA)",
+      "match": [],
+      "rules": [
+        "TWO TAGS, spelled exactly: <Video 1> is the source performance, <Picture 1> is the new character. Never write <Image 1>, <Audio 1> or any other tag - H3 binds a reference only by its own tag, and a wrong tag means the picture is ignored.",
+        "OPEN with the sentence the swap LoRA was trained on: 'Replace only <who> in <Video 1> with the character in <Picture 1>.' <who> is the performer as they LOOK in the video - clothing colour, item, position ('the man in the purple shirt on the left'). With several people, 'only' plus that description is what keeps the others untouched.",
+        "SECOND: 'Keep the replacement character's identity, outfit, and art style from <Picture 1>:' then the character's defining details from the picture's description - face, hair, skin or fur colour, each garment with its colour and material, footwear, accessories, the art style. Concrete nouns and colours, 25-60 words. No personality, no backstory, no names.",
+        "KEEP THE PERFORMANCE: 'Retain the full-body motion, timing, head turns, facial expressions and lip movement from <Video 1> exactly.' Never describe new actions, a different camera move or a new setting - the video owns all of that.",
+        "CLOSE with: 'Preserve the source video's camera, background, lighting, objects, and all other people.'",
+        "STYLE MISMATCH (a cartoon or anime character into live footage): keep the picture's art style unless the user asks for photoreal; when they do, say 'rendered photorealistically in the lighting of <Video 1>, keeping the face, hair and outfit of <Picture 1>'.",
+        "The user's own wishes ('keep his red cap', 'make her taller', 'photoreal') are folded into the right sentence - never dropped, never allowed to remove a tag.",
+        "Plain prose, 80-160 words, one paragraph or three short ones. No lists, headings, quotes, timestamps or sound descriptions. The swap holds best on 4-5 second pieces, so describe the character, not a story."
+      ],
+      "example": "Replace only the man in the purple shirt in <Video 1> with the character in <Picture 1>. Keep the replacement character's identity, outfit, and art style from <Picture 1>: a young woman with a silver bob haircut, pale skin and green eyes, a cropped black leather jacket over a white tank top, high-waisted red cargo trousers, chunky black boots and a thin gold chain, rendered as a clean 3D animated character. Retain the full-body motion, timing, head turns, facial expressions and lip movement from <Video 1> exactly. Preserve the source video's camera, background, lighting, objects, and all other people."
+    },
+    {
+      "id": "ltx_25",
+      "kind": "video",
+      "label": "LTX 2.5 (video + audio, Tim's all-in-one canvas)",
+      "match": [
+        "ltx"
+      ],
+      "rules": [
+        "LTX 2.5 reads a LONG, concrete, cinematic description (120-300 words). Write it as prose paragraphs, in this order: the subject and their exact look (face, hair, build, every garment and its colour), the setting, then the ACTION as beats in the order they happen, then the camera, then light and atmosphere, then the sound, then a style line.",
+        "Action beats may follow each other in one shot ('He lunges... She dodges, pivots and counters...'): LTX follows a sequence of physical actions well. Every action should connect to the next - no teleporting, no sudden new characters.",
+        "CAMERA: name the framing, the lens and the movement ('medium close-up, 50mm, a slow push-in toward her face', 'tracks alongside at low altitude', 'a smooth 180-degree orbit'). One or two moves per clip.",
+        "SOUND is generated with the picture: write the audio as its own sentences - ambience, effects, music, and spoken words in quotes with who says them and how ('The woman whispers nervously, \"Wait... did you hear that?\"').",
+        "With a STARTING PICTURE (image to video, first/last frame, lipsync): begin with 'Use the input image as the exact starting frame' / 'Start exactly from the reference frame' and say what must stay the same - identity, face, outfit, composition, lighting. With a LAST picture, say where the shot travels to.",
+        "LIPSYNC to a song: say the performer sings with highly accurate lip-sync, lips and jaw matching every syllable of the lyrics, and let the expressions follow the lyric's emotion; quote the line being sung when it is known ('Lyrics: \"Parisian reverie, a whispered sigh\"'). Keep the body natural - small head moves, breathing, one expressive hand.",
+        "Close with the look ('photorealistic, cinematic depth of field, subtle film grain, HDR') and then a 'No ...' sentence for what must not happen: 'No subtitles, no text, no watermark, no extra people, no distorted hands or faces, no identity changes.'",
+        "Then, on a LAST line of its own, 'Negative:' and the things to avoid as comma-separated phrases (e.g. 'Negative: subtitles, text, watermark, extra people, distorted hands, deformed faces, flicker, identity change') - bitGen puts that line in the negative prompt docker, which LTX uses.",
+        "No @tags, no <Picture n> tags, no timestamps (0-5s:) and no CUT / SHOT labels - LTX renders one continuous clip; describe characters by what they look like."
+      ],
+      "example": "A highly emotional male singer performs passionately inside a dark professional recording studio, matching the reference image exactly: a muscular young man with short dark brown hair, a neatly trimmed dark beard and a fitted black T-shirt. He stands close to a large condenser microphone with a round black pop filter, singing at full intensity - mouth wide open, eyebrows drawn together, eyes narrowed with passion - his lips and jaw matching every syllable of the song with highly accurate lip-sync. He leans toward the microphone, breathes heavily between phrases and lifts one hand toward the camera on the strongest line. A warm horizontal amber light beam glows behind him through floating dust; soft rim light outlines his hair and shoulders. Camera: a medium close-up on a 50mm lens, a very slow push-in toward his face with gentle handheld micro-movement, shallow depth of field. Sound: his powerful vocal over the track, the faint hum of the studio. Photorealistic music-video look, filmic contrast, subtle film grain. No subtitles, no text, no additional people, no change of clothing, no distorted hands.\nNegative: subtitles, text, watermark, extra people, distorted hands, deformed faces, flicker, identity change"
+    },
+    {
+      "id": "wan",
+      "kind": "video",
+      "label": "Wan 2.1 / 2.2 (text / image to video)",
+      "match": [
+        "wan"
+      ],
+      "rules": [
+        "Wan reads a clear descriptive paragraph of 60-120 words: the subject and their look first, then the ACTION (one or two continuous movements across the clip), the setting, the camera (framing and ONE move: 'slow dolly in', 'static wide shot', 'tracking shot from the side'), light and mood, then a style line ('cinematic, 35mm film, shallow depth of field').",
+        "Describe motion explicitly - Wan animates what is described and holds still what is not. Keep it one continuous shot: no cuts, no timestamps, no shot lists.",
+        "With a starting picture (image to video): describe what MOVES and how the camera moves; keep the look of the picture ('the woman in the picture turns toward the window').",
+        "Wan has no sound - do not describe audio or dialogue.",
+        "End with a LAST line of its own: 'Negative:' and comma-separated phrases to avoid. Wan uses a negative prompt and does better with one: e.g. 'Negative: overexposed, static, blurred details, subtitles, text, watermark, worst quality, low quality, JPEG artifacts, ugly, deformed, extra fingers, poorly drawn hands, poorly drawn face, fused fingers, still picture, cluttered background, walking backwards' - bitGen puts that line in the negative prompt docker."
+      ],
+      "example": "A young woman in a yellow raincoat walks along a wet cobblestone street at dusk, her umbrella tilting as the wind picks up; she stops, looks up at a neon sign flickering above a cafe and smiles. Puddles ripple under her boots, reflecting the pink and blue light. Tracking shot from the side at walking pace, medium shot. Soft rain, moody evening light, cinematic, 35mm film, shallow depth of field.\nNegative: overexposed, static, blurred details, subtitles, text, watermark, worst quality, low quality, deformed, extra fingers, poorly drawn hands, poorly drawn face, still picture, walking backwards"
+    }
+  ],
+  "addenda": [
+    {
+      "id": "vr_sbs",
+      "kind": "video",
+      "label": "SBS VR (side-by-side stereoscopic) — REQUIRED extras",
+      "_comment": "2.118.0, Tim: 'when i ask the llm for a sbs vr video, please help it develop the prompt, do not mirror, needs to be for vr'. Matched on the USER'S OWN words (rough prompt / chat thread / shot-writer style line), not on the selected style. The (?!...) after vr keeps 'a man wearing a vr headset' from triggering it; stereo(?!sound/audio/music) keeps 'side by side with stereo sound' — a scene + audio note, not a format — from firing (the e2e's adversarial phrase caught this).",
+      "match_text": [
+        "\\bsbs\\b",
+        "(?<!360\\s)\\bvr\\b(?!\\s*(headset|goggles|glasses|helmet|360))",
+        "\\bstereoscopic\\b",
+        "virtual\\s+reality",
+        "side[\\s-]?by[\\s-]?side[^.\\n]{0,24}\\b(3d|vr|stereo(?!\\s*(sound|audio|music)))\\b",
+        "\\b(3d|vr|stereo(?!\\s*(sound|audio|music)))\\b[^.\\n]{0,24}side[\\s-]?by[\\s-]?side"
+      ],
+      "rules": [
+        "The user wants SIDE-BY-SIDE STEREOSCOPIC VR: ONE wide frame holding a STEREO PAIR — the LEFT half is the left-eye view, the RIGHT half is the right-eye view of the SAME scene. Open the prompt by saying exactly that.",
+        "NEVER A MIRROR. Do not use the words 'mirrored', 'mirror image', 'reflected' or 'symmetrical' anywhere — they make the model flip the right half and the depth dies. Instead write: 'not a mirror — the right-eye view is the same scene from a viewpoint shifted about 6.5 cm to the right; both halves face the same direction and move in perfect sync'.",
+        "Depth comes from PARALLAX: put something near (arm's length) that shifts clearly between the halves and something far that barely moves, and say so in the prompt.",
+        "VR comfort: a static camera or ONE slow, smooth move (slow push in, slow dolly, slow orbit). Level horizon, eye height. No whip pans, no handheld shake, no rack focus, no fast cuts — one continuous take.",
+        "Composition: the subject centred in EACH half; keep action away from the halves' inner edges; nothing crosses the centre seam.",
+        "Both halves identical in exposure, colour and timing. No on-screen text, captions or watermarks — they break the stereo.",
+        "If the user asks about settings: the widest aspect (21:9) so each eye is near-square; the render is ONE video whose two halves are the pair — VR players read it as '3D side-by-side (SBS)'."
+      ],
+      "example": "side-by-side stereoscopic VR pair, one continuous take, single shot, no cuts. One widescreen frame split into two halves: the LEFT half is the left-eye view, the RIGHT half is the right-eye view of the SAME scene — not a mirror; the right-eye view is shifted about 6.5 cm to the right, both halves facing the same direction and moving in perfect sync. A sea turtle glides over a sunlit coral reef straight toward the camera while small silver fish part around it; the nearest fish show strong parallax between the halves, the distant reef wall barely shifts. Camera: static, level horizon, eye height, the turtle centred in each half, nothing touching the centre seam. Light: dappled sun rays through clear blue water. Sound: soft underwater ambience, slow bubbles, one distant whale call."
+    },
+    {
+      "id": "vr_360",
+      "kind": "video",
+      "label": "360° VR (equirectangular panorama) — REQUIRED extras",
+      "_comment": "2.119.0, Tim: 'is it possible to make a 360 vr video'. Prompt-level equirect: H3 has no 360 training, so the seam and poles are the honest weak spots — the rules keep action away from both. Matched on the user's words; the format-noun requirement after 360 keeps 'the camera orbits 360 degrees around her' and 'xbox 360' from firing.",
+      "match_text": [
+        "\\bequirect(angular)?\\b",
+        "\\b360\\s*(\\u00b0|degrees?)?\\s*(vr|video|panorama|pano|view|clip|film|footage|movie)\\b",
+        "\\bvr\\s*360\\b",
+        "\\bmonoscopic\\b"
+      ],
+      "rules": [
+        "The user wants a 360\\u00b0 VR video: ONE equirectangular frame \\u2014 the full sphere unwrapped flat, 2:1 aspect, the horizon along the vertical centre. Open the prompt with 'equirectangular 360-degree panorama, monoscopic VR video, full sphere'.",
+        "MONOSCOPIC only \\u2014 this is NOT the side-by-side stereo format; never mix the two in one prompt.",
+        "The frame's LEFT and RIGHT edges are the same direction behind the viewer: write 'the left and right edges connect seamlessly \\u2014 one continuous environment in every direction' AND keep every subject away from the frame edges (the model is not trained for the wrap; the seam is the weak spot).",
+        "The top and bottom of the frame are the poles and stretch badly: keep people and detail in the middle band; describe a SIMPLE sky overhead and SIMPLE ground underfoot ('clear sky above, plain sand below'), never faces or text near top or bottom.",
+        "The camera is the VIEWER'S HEAD: fixed position, eye height, perfectly level, NO camera moves at all \\u2014 turning is the viewer's job, translation breaks presence. One continuous take, no cuts.",
+        "Make turning around worth it: place things at different compass directions in one sentence each \\u2014 'ahead, \\u2026; to the left, \\u2026; behind the viewer, \\u2026'.",
+        "Even, consistent lighting all the way round; no on-screen text or captions anywhere.",
+        "Settings: aspect 2:1 (Basic Settings has it, labelled 360\\u00b0) at the widest render affordable \\u2014 the pixels spread over the whole sphere, so per-view sharpness is low. The player's 360\\u00b0 button views the result."
+      ],
+      "example": "equirectangular 360-degree panorama, monoscopic VR video, full sphere, one continuous take, no cuts. The left and right edges of the frame connect seamlessly \\u2014 one continuous environment in every direction. A quiet mountain meadow at golden hour: ahead, a weathered wooden cabin with smoke curling from its chimney; to the left, a shallow stream over smooth stones; behind the viewer, pine forest edge swaying gently; to the right, open grass rolling toward distant peaks. Clear warm sky overhead, plain wildflower grass underfoot. Camera fixed at eye height, perfectly level, no movement. Even golden light all around. Sound: light wind through pines, the stream trickling left, one distant bird call behind."
+    },
+    {
+      "id": "continuous_video",
+      "kind": "video",
+      "label": "Continuous / unlimited-length video — REQUIRED extras",
+      "_comment": "2.126.0, Tim: 'teach the llm how to make continuous videos with unlimited time'. Matched on the USER'S OWN words, like the VR addenda. The negative lookaheads are the false-positive wall: 'a continuous take' / 'one continuous shot' are SINGLE-CLIP directions (they are in the minimax_h3 guide's own example) and must NOT pull in the whole chaining lecture; a duration only counts when it is over 15 s, because H3's ceiling is what makes chaining necessary in the first place.",
+      "match_text": [
+        "\\b(long ?form|longform)\\b",
+        "\\bunlimited\\b[^.\\n]{0,20}\\b(length|time|duration|video)\\b",
+        "\\b(continuous(?!\\s+(take|shot|sequence|pan|zoom))|continue|continuing|continuation)\\b[^.\\n]{0,24}\\b(video|scene|shot|clip|story|sequence)s?\\b",
+        "\\b(chain|chained|chaining|stitch|stitched|extend|extended)\\b[^.\\n]{0,24}\\b(clip|shot|scene|video|generation)s?\\b",
+        "\\b(multi[\\s-]?shot|multiple shots|several shots|shot list|storyboard)\\b",
+        "\\b([1-9]\\d*)\\s*(minute|minutes|min)\\b[^.\\n]{0,20}\\b(video|film|movie|scene|story)\\b",
+        "\\b(2[0-9]|[3-9]\\d|\\d{3,})\\s*(second|seconds|secs?)\\b[^.\\n]{0,20}\\b(video|film|movie|scene|story)\\b"
+      ],
+      "rules": [
+        "The user wants a video LONGER THAN ONE GENERATION. MiniMax H3 renders at most about 15 s of video-with-audio in a single run (362 frames at 24 fps). Unlimited length is therefore not one huge prompt — it is a CHAIN of shots, each one generated from the tail of the one before. Say so, then write the chain.",
+        "WRITE ONE PROMPT PER SHOT, NUMBERED, each 8-15 s. Do not write a single prompt covering five minutes; the model renders the first few seconds of it and ignores the rest.",
+        "THE CONTINUITY RULE, and it is the whole trick: shot N+1 begins from the LAST FRAMES of shot N, which are handed to it as a reference image. So shot N+1's prompt must describe the world AS IT IS AT THAT MOMENT — the same people, in the positions the previous shot left them in, in the same place, in the same light. Never re-establish a scene that is already on screen.",
+        "REPEAT THE DESCRIPTIONS WORD FOR WORD. Every shot that contains the same person, place or object must describe it with the SAME wording, not a fresh paraphrase. 'the young woman with long blonde hair in a light-pink button-down shirt' stays exactly that in shot 4. Synonyms are how a face drifts into a different face over a chain.",
+        "DEFINE THE CAST ONCE, AT THE TOP. Give each recurring thing a tag — <Subject 1>, <Subject 2> — with one full description each, then refer to it by tag plus a short reminder afterwards. Reference pictures are <Picture 1>, <Picture 2>...; reference videos <Video 1>...; reference audio <Audio 1>... , numbered IN CONNECTION ORDER, and a tag must be introduced before it is used.",
+        "KEEP THE CAMERA AND LIGHT LANGUAGE IDENTICAL between shots unless a change is the point. State the medium and the lighting once per shot in the same words ('realistic multi-camera sitcom style, warm indoor lighting'). A new lens or grade every shot reads as a different film.",
+        "ONE CAMERA MOVE PER SHOT, and let it finish. A shot that pans, then cuts, then pushes in is three shots — write it as three.",
+        "PUT THE CUTS ON SHOT BOUNDARIES, not inside a prompt. Do not ask for a cut, a transition or a fade mid-shot: the join between generations is where the edit happens, and asking for one inside a clip produces a jump that the chain then has to inherit.",
+        "SOUND CARRIES ACROSS TOO. Name the ambience in every shot in the same words ('room tone, distant traffic') so the bed does not change under the cut; put spoken lines in <d>[English] ...</d> and keep one speaker per line. If a voice must stay the same person across shots, say which <Audio N> is its timbre reference.",
+        "END EACH SHOT SOMEWHERE THE NEXT ONE CAN START. Finish on a held, readable frame — a face, a wide, a hand coming to rest. A shot ending mid-whip-pan or on motion blur gives the next generation a smeared reference and the chain visibly breaks there.",
+        "IN THIS APP: for a straight continuation set Seconds past the ceiling and the planner splits it into chunks automatically, handing the EXACT last frame of each chunk to the next (fl2va). For a scripted multi-shot piece, use the Longform blueprint graph, where each scene's tail_frames output feeds the next scene's continuity_ref input and the clips are merged at the end. Both are the same idea; the blueprint just lets each shot have its own prompt."
+      ],
+      "example": "A three-shot continuous scene, each shot generated from the tail of the last.\n\nCast: <Subject 1> is the coffee shop in <Picture 1> — exposed brick wall, orange tufted sofa with patterned pillows, a neon sign, a low wooden table. <Subject 2> is the young woman in <Picture 2> — long blonde hair, light-pink button-down shirt with rolled sleeves. <Audio 1> is the voice timbre for <Subject 2>.\n\n[Shot 1] Realistic sitcom style, warm indoor lighting. Medium shot of <Subject 1>, the coffee shop with its exposed brick wall, orange tufted sofa, patterned pillows and neon sign. <Subject 2>, the young woman with long blonde hair in the light-pink button-down shirt, sits on the sofa holding a cookie. The camera holds still. She looks up towards the door and says, in the timbre of <Audio 1>, <d>[English] You're late.</d> She settles back, cookie in hand. Sound: room tone, a milk steamer hissing off screen, no music.\n\n[Shot 2] Realistic sitcom style, warm indoor lighting. Continuing from the previous frame: <Subject 2>, the young woman with long blonde hair in the light-pink button-down shirt, is still on the orange tufted sofa in <Subject 1>, cookie in hand, looking towards the door. A man in a dark-grey hoodie walks in from the left and sits beside her. The camera pushes in slowly to a two-shot. He shrugs, and she turns her face back to him. Sound: room tone, the same milk steamer, footsteps, no music.\n\n[Shot 3] Realistic sitcom style, warm indoor lighting. Continuing from the previous frame: the two of them sit side by side on the orange tufted sofa in <Subject 1>, her face turned to him. Close-up on <Subject 2>, the young woman with long blonde hair in the light-pink button-down shirt. The camera holds still. She raises the cookie, takes a bite, and says, in the timbre of <Audio 1>, <d>[English] Then you're buying.</d> She holds the look. Sound: room tone, the same milk steamer, a short canned audience laugh over the last beat."
+    },
+    {
+      "id": "music_video",
+      "kind": "video",
+      "label": "Music video / lyric lip-sync (MMH3_Music_Video) — REQUIRED extras",
+      "_comment": "2.268.0, Tim: 'add this workflow as a style, call it MMH3_Music_Video. Prepare the llm ... for this workflows requirements'. Distilled from the pack's own LLM_PROMPT_GUIDE.md (The AI BRIEF). Matched on the USER'S OWN words. 2.271.0, Tim: 'using the music video zip instructions teach the llm how to lipsync' — the pack's Lip-sync-the-critical-syntax section carried in full (S1 speaker ID, voice outside <d>, syllable sentence, mouth staging, closed instrumental lips, reference definitions).",
+      "match_text": [
+        "\\bmusic\\s*video\\b",
+        "\\blyrics?\\b",
+        "\\blip\\s*-?\\s*sync\\w*\\b",
+        "\\bsing(s|ing|er)?\\b[^.\\n]{0,30}\\b(song|chorus|verse|track|lyric)s?\\b",
+        "\\bMMH3_Music_Video\\b"
+      ],
+      "rules": [
+        "LYRIC LOCK: a lip-sync scene sings its EXACT lyric line as `sings, <d>[English] Exact lyric line.</d>` — one sung line per lip-sync clip. Never paraphrase lyrics inside <d>, and never leave lyrics only in prose (that renders gibberish vocals).",
+        "LIPSYNC SYNTAX: the sung line rides a PERFORMER sentence — '@<singer-tag> (S1), a <voice, e.g. raw strained male rock vocalist>, sings directly to camera, <d>[English] Exact lyric line.</d>' — where @<singer-tag> means the REAL cast tag from the system prompt, spelled exactly. The speaker ID (S1) stays the SAME for the performer in every clip; the voice description sits OUTSIDE the <d>; the lyric sits INSIDE, verbatim. A bare prose label like 'LIP SYNC exactly: ...' is NOT sufficient and causes gibberish vocals.",
+        "LIPSYNC STAGING: in every lip-sync clip the performer's mouth is FULLY VISIBLE and unobstructed — face toward camera, nothing (hands, mic, hair, typography) across the lips — and the prompt says explicitly 'Her lip movement matches every syllable exactly.' (his/their to match the performer).",
+        "INSTRUMENTAL LIPS: cinematic/instrumental clips carry NO <d> block and say 'Her lips remain completely closed.' — closed mouths in the no-vocal clips are what make the sung clips read as singing.",
+        "NATIVE-AUDIO LIPSYNC (MMH3_NativeAudio_MV style): each scene is ONE clip with the scene's fifteen-second song segment locked in as the real vocal - there is no TTS and no <d> block; do NOT write dialogue markup. Shape every sung shot's prompt as: the @tag anchored to their reference (identity, outfit, setting); what they do with the camera movement; the instruction 'sing the exact supplied vocal audio with natural, precise lip synchronization' - or, on instrumental segments, 'lips remain fully closed for every frame'; then 'Maintain <locked palette / lighting / time of day>' and a 'No <unwanted changes>' line. CONTINUING A SCENE: set visual_context_source to the previous shot's id whenever the shot follows on from it. The user's anchor radio then decides the render: First continues from that shot's final (or picked) frame through fl2va - write the prompt as what happens NEXT from that exact frame, same place and light; Trans travels from that frame to the new location's picture - describe the move into the new place; Ref renders ref2va for a new location or character, carrying the end of the previous take as a transition video - describe the new place fully by its @tags. Leave visual_context_source unset only for a hard cut with no carry-over. REFERENCES UNDER THIS STYLE: a Ref render carries up to nine pictures (every cast sheet - people, animals, vehicles, objects - location views, chapter pictures such as props or poses, and clothing) and three audios (the scene's song window first, then voices); the app writes the numbered <Picture n>/<Audio n> map itself and turns each @tag into its number, so address every character, location, prop and vehicle by its @tag and never write <Picture n> or <Audio n> numbers yourself. STYLE PICTURE TAGS: use a picture tag (for example a title-card reference) ONLY when that tag is listed among the chapter references in the system prompt — a picture tag that is not listed does not exist in this project and fails validation. REFERENCE DEFINITIONS: open the prompt by defining the references — '<Subject 1> is the performer defined by <Picture 1>, preserving exact face, hair, skin, body and wardrobe from the reference sheet in every appearance. <Picture 2> is the typography reference styled from @typo. <Audio 1> is the current song segment used for vocal timing, melody and rhythm.'",
+        "CLIP MAP: break the song on the H3 frame grid (5, 22, 39, ... 124 ≈ 5.2s, 158 ≈ 6.6s). Instrumental intros/outros and breaths between vocal phrases are CINEMATIC clips with NO <d> line; each vocal phrase gets its own lip-sync clip.",
+        "TYPOGRAPHY: when a chapter reference tagged like @typo exists, put its styled text ONLY on major lyric hits, showing the SAME WORDS being sung in that clip — large, in-world (walls, metal, glass), never subtitle-style, never covering the mouth.",
+        "SOURCE TRACK: when the chapter carries a SOUND reference (the song), write `<Audio 1> is the definitive music timing reference for this clip. Time mouth movement and typography to the vocal phrase named in this scene. Do not invent replacement lyrics.` in the shared prompt; with no song, put the full lyric map in the shared prompt and lock every sung line with <d>. When the song was split into per-scene segments, scene n's own segment sound (e.g. @my_song_3 in scene 3) IS that clip's <Audio 1> — never another scene's segment.",
+        "IDENTITY: the performer is the cast character, addressed by their REAL @tag — same face, hair and wardrobe every clip; the character sheet rides as its picture reference.",
+        "CASTING REQUIREMENT: every @tag placed on camera needs a character SHEET (the picture reference) — the render pack refuses an aliased tag with no reference behind it. A character VOICE clip is OPTIONAL in a music video: the lips sync to the scene's own 15-second song segment (the source track), never to TTS. Never invent a placeholder tag: every @ in the screenplay must be one of the real cast tags listed in the system prompt, spelled exactly — an @ followed by any other word fails validation and the render."
+      ],
+      "example": "<Subject 1> is the performer defined by <Picture 1>, preserving exact face, hair, skin, body and wardrobe in every appearance. <Audio 1> is this scene's song segment, the definitive timing reference.\n[Shot 1] Neon rain over the overpass. @vera (S1), a smoky female alt-rock vocalist, walks the guardrail toward camera and sings directly into the lens, <d>[English] I burned the map you drew for me.</d> Her mouth is fully visible and unobstructed; her lip movement matches every syllable exactly. Behind her the word BURNED slams onto the wet concrete wall in the @typo style, distressed off-white with a red scratch, well clear of her face.\n[Shot 2 - instrumental] The camera drifts across flooded asphalt to @vera silhouetted under the sodium lights as the guitar line swells; her lips remain completely closed."
+    }
+  ]
+}

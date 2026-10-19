@@ -1,0 +1,21 @@
+    <!-- COMFYUI DOCK (2.120.0, by instruction: "create a comfyui docker, this
+         will load the comfyui ui"). ComfyUI's own interface, framed, so the
+         graph you are wiring on the Graphs tab is one dock away from the
+         canvas you exported it from. It only loads when the dock is OPENED:
+         an iframe that boots ComfyUI's whole frontend on every app start,
+         behind a closed dock nobody asked for, is minutes of nothing. -->
+    <div class="bdock" id="comfydock">
+      <div class="bhead" data-collapse="comfydock">▾ ComfyUI
+        <button class="hbtn" id="cfReload" title="Reload the ComfyUI page">↻</button>
+        <button class="hbtn" id="cfOpen" title="Open ComfyUI in a real browser window">⧉</button>
+        <span id="cfnote" class="dim" style="margin-left:8px;font-size:11px"></span>
+        <button class="maxbtn" data-max="comfydock" title="Maximize">⛶</button>
+      </div>
+      <div class="bbody">
+        <div id="comfydown">ComfyUI is not reachable. Start it in Settings → ComfyUI, then press ↻.</div>
+        <iframe id="comfyframe" class="hidden" title="ComfyUI"></iframe>
+      </div>
+    </div>
+    <!-- the comfydock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="cfh"></div>

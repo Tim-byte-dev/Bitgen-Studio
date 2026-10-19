@@ -1,0 +1,223 @@
+{
+  "_comment": [
+    "FLUX.2 [Klein] BASE 9B - Text to Image. Export (API) format, for a bitGen Studio",
+    "image style (Settings -> Image, Rendered by ComfyUI).",
+    "",
+    "Same source as img_flux2_klein_9b_t2i.json - ComfyUI's own template at",
+    "https://comfy.org/workflows/image_flux2_text_to_image_9b-1606e79dd224/ -",
+    "but the UNDISTILLED variant, which differs in three ways that matter:",
+    "  * flux-2-klein-base-9b-fp8.safetensors instead of the distilled checkpoint",
+    "  * cfg 5.0 and ~20 steps instead of cfg 1.0 and ~4",
+    "  * a REAL negative prompt (node 67) instead of a zeroed copy of the positive",
+    "Slower and heavier than the distilled one; use it when you want cfg control",
+    "and a negative prompt to actually do something.",
+    "",
+    "MODELS (into ComfyUI's OWN folders):",
+    "  models/diffusion_models/flux-2-klein-base-9b-fp8.safetensors",
+    "  models/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+    "  models/vae/flux2-vae.safetensors",
+    "",
+    "FOUR LORA SLOTS (101-104) ship BYPASSED - see the note in the distilled",
+    "template. bitGen Studio fills them from the style and removes the rest before",
+    "queueing, so this file is a template, not a runnable graph."
+  ],
+  "70": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux-2-klein-base-9b-fp8.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "71": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+      "type": "flux2",
+      "device": "default"
+    }
+  },
+  "72": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "101": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "70",
+        0
+      ],
+      "clip": [
+        "71",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "102": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "101",
+        0
+      ],
+      "clip": [
+        "101",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "103": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "102",
+        0
+      ],
+      "clip": [
+        "102",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "104": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "103",
+        0
+      ],
+      "clip": [
+        "103",
+        1
+      ],
+      "lora_name": "",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "74": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  },
+  "63": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "positive": [
+        "74",
+        0
+      ],
+      "negative": [
+        "67",
+        0
+      ],
+      "cfg": 5
+    }
+  },
+  "62": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 20,
+      "width": 1024,
+      "height": 1024
+    }
+  },
+  "61": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "73": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 0
+    }
+  },
+  "66": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "64": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "73",
+        0
+      ],
+      "guider": [
+        "63",
+        0
+      ],
+      "sampler": [
+        "61",
+        0
+      ],
+      "sigmas": [
+        "62",
+        0
+      ],
+      "latent_image": [
+        "66",
+        0
+      ]
+    }
+  },
+  "65": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "64",
+        0
+      ],
+      "vae": [
+        "72",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "H3-Studio",
+      "images": [
+        "65",
+        0
+      ]
+    }
+  },
+  "67": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "104",
+        1
+      ]
+    }
+  }
+}

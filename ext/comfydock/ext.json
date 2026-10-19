@@ -1,0 +1,10 @@
+{
+  "id": "comfydock",
+  "name": "ComfyUI",
+  "order": 50,
+  "html": "dock.html",
+  "scripts": [
+    "graphwire.js",
+    "comfydock.js"
+  ]
+}

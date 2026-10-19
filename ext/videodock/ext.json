@@ -1,0 +1,14 @@
+{
+  "id": "videodock",
+  "name": "StoryBoard",
+  "order": 30,
+  "html": "dock.html",
+  "scripts": [
+    "qedit.js",
+    "characters.js",
+    "audioseg.js",
+    "rendersettings.js",
+    "karaoke.js",
+    "storyboard.js"
+  ]
+}

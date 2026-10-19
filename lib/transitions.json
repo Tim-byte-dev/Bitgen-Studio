@@ -1,0 +1,362 @@
+{
+  "_comment": "The ONE transition catalogue. lib/transitions.js (endpoint + UI) and scripts/transitions.py (the ffmpeg side) both read this file, so a transition can never exist in the dropdown but not in the render. 'xfade' is the ffmpeg xfade filter name; null means a hard cut with no filter at all. 2.415.0: every ffmpeg 6 xfade transition (Tim: \"lets do the medium jobs now\" - a transitions library beyond the layer fades); a layer's boundary (where an overlay / picture layer begins or ends) now draws the shape too - scripts/transitions.py boundary_chain.",
+  "default_duration": 0.5,
+  "min_duration": 0.08,
+  "max_duration": 4,
+  "transitions": [
+    {
+      "id": "none",
+      "label": "Cut (no transition)",
+      "group": "Cut",
+      "xfade": null
+    },
+    {
+      "id": "fade",
+      "label": "Cross dissolve",
+      "group": "Dissolves",
+      "xfade": "fade"
+    },
+    {
+      "id": "dissolve",
+      "label": "Dissolve (grain)",
+      "group": "Dissolves",
+      "xfade": "dissolve"
+    },
+    {
+      "id": "fadeblack",
+      "label": "Dip to black",
+      "group": "Dissolves",
+      "xfade": "fadeblack"
+    },
+    {
+      "id": "fadewhite",
+      "label": "Dip to white",
+      "group": "Dissolves",
+      "xfade": "fadewhite"
+    },
+    {
+      "id": "fadegrays",
+      "label": "Dissolve through grey",
+      "group": "Dissolves",
+      "xfade": "fadegrays"
+    },
+    {
+      "id": "fadefast",
+      "label": "Fast dissolve",
+      "group": "Dissolves",
+      "xfade": "fadefast"
+    },
+    {
+      "id": "fadeslow",
+      "label": "Slow dissolve",
+      "group": "Dissolves",
+      "xfade": "fadeslow"
+    },
+    {
+      "id": "wipeleft",
+      "label": "Wipe left",
+      "group": "Wipes",
+      "xfade": "wipeleft"
+    },
+    {
+      "id": "wiperight",
+      "label": "Wipe right",
+      "group": "Wipes",
+      "xfade": "wiperight"
+    },
+    {
+      "id": "wipeup",
+      "label": "Wipe up",
+      "group": "Wipes",
+      "xfade": "wipeup"
+    },
+    {
+      "id": "wipedown",
+      "label": "Wipe down",
+      "group": "Wipes",
+      "xfade": "wipedown"
+    },
+    {
+      "id": "wipetl",
+      "label": "Wipe to top-left",
+      "group": "Wipes",
+      "xfade": "wipetl"
+    },
+    {
+      "id": "wipetr",
+      "label": "Wipe to top-right",
+      "group": "Wipes",
+      "xfade": "wipetr"
+    },
+    {
+      "id": "wipebl",
+      "label": "Wipe to bottom-left",
+      "group": "Wipes",
+      "xfade": "wipebl"
+    },
+    {
+      "id": "wipebr",
+      "label": "Wipe to bottom-right",
+      "group": "Wipes",
+      "xfade": "wipebr"
+    },
+    {
+      "id": "smoothleft",
+      "label": "Soft wipe left",
+      "group": "Wipes",
+      "xfade": "smoothleft"
+    },
+    {
+      "id": "smoothright",
+      "label": "Soft wipe right",
+      "group": "Wipes",
+      "xfade": "smoothright"
+    },
+    {
+      "id": "smoothup",
+      "label": "Soft wipe up",
+      "group": "Wipes",
+      "xfade": "smoothup"
+    },
+    {
+      "id": "smoothdown",
+      "label": "Soft wipe down",
+      "group": "Wipes",
+      "xfade": "smoothdown"
+    },
+    {
+      "id": "diagtl",
+      "label": "Diagonal from top-left",
+      "group": "Wipes",
+      "xfade": "diagtl"
+    },
+    {
+      "id": "diagtr",
+      "label": "Diagonal from top-right",
+      "group": "Wipes",
+      "xfade": "diagtr"
+    },
+    {
+      "id": "diagbl",
+      "label": "Diagonal from bottom-left",
+      "group": "Wipes",
+      "xfade": "diagbl"
+    },
+    {
+      "id": "diagbr",
+      "label": "Diagonal from bottom-right",
+      "group": "Wipes",
+      "xfade": "diagbr"
+    },
+    {
+      "id": "slideleft",
+      "label": "Slide left",
+      "group": "Slides",
+      "xfade": "slideleft"
+    },
+    {
+      "id": "slideright",
+      "label": "Slide right",
+      "group": "Slides",
+      "xfade": "slideright"
+    },
+    {
+      "id": "slideup",
+      "label": "Slide up",
+      "group": "Slides",
+      "xfade": "slideup"
+    },
+    {
+      "id": "slidedown",
+      "label": "Slide down",
+      "group": "Slides",
+      "xfade": "slidedown"
+    },
+    {
+      "id": "coverleft",
+      "label": "Cover left",
+      "group": "Slides",
+      "xfade": "coverleft"
+    },
+    {
+      "id": "coverright",
+      "label": "Cover right",
+      "group": "Slides",
+      "xfade": "coverright"
+    },
+    {
+      "id": "coverup",
+      "label": "Cover up",
+      "group": "Slides",
+      "xfade": "coverup"
+    },
+    {
+      "id": "coverdown",
+      "label": "Cover down",
+      "group": "Slides",
+      "xfade": "coverdown"
+    },
+    {
+      "id": "revealleft",
+      "label": "Reveal left",
+      "group": "Slides",
+      "xfade": "revealleft"
+    },
+    {
+      "id": "revealright",
+      "label": "Reveal right",
+      "group": "Slides",
+      "xfade": "revealright"
+    },
+    {
+      "id": "revealup",
+      "label": "Reveal up",
+      "group": "Slides",
+      "xfade": "revealup"
+    },
+    {
+      "id": "revealdown",
+      "label": "Reveal down",
+      "group": "Slides",
+      "xfade": "revealdown"
+    },
+    {
+      "id": "squeezeh",
+      "label": "Squeeze sideways",
+      "group": "Slides",
+      "xfade": "squeezeh"
+    },
+    {
+      "id": "squeezev",
+      "label": "Squeeze up-down",
+      "group": "Slides",
+      "xfade": "squeezev"
+    },
+    {
+      "id": "circleopen",
+      "label": "Circle open",
+      "group": "Shapes",
+      "xfade": "circleopen"
+    },
+    {
+      "id": "circleclose",
+      "label": "Circle close",
+      "group": "Shapes",
+      "xfade": "circleclose"
+    },
+    {
+      "id": "radial",
+      "label": "Clock wipe",
+      "group": "Shapes",
+      "xfade": "radial"
+    },
+    {
+      "id": "circlecrop",
+      "label": "Iris (circle)",
+      "group": "Shapes",
+      "xfade": "circlecrop"
+    },
+    {
+      "id": "rectcrop",
+      "label": "Iris (box)",
+      "group": "Shapes",
+      "xfade": "rectcrop"
+    },
+    {
+      "id": "vertopen",
+      "label": "Barn doors open (vertical)",
+      "group": "Shapes",
+      "xfade": "vertopen"
+    },
+    {
+      "id": "vertclose",
+      "label": "Barn doors close (vertical)",
+      "group": "Shapes",
+      "xfade": "vertclose"
+    },
+    {
+      "id": "horzopen",
+      "label": "Barn doors open (horizontal)",
+      "group": "Shapes",
+      "xfade": "horzopen"
+    },
+    {
+      "id": "horzclose",
+      "label": "Barn doors close (horizontal)",
+      "group": "Shapes",
+      "xfade": "horzclose"
+    },
+    {
+      "id": "hlslice",
+      "label": "Slices left",
+      "group": "Slices",
+      "xfade": "hlslice"
+    },
+    {
+      "id": "hrslice",
+      "label": "Slices right",
+      "group": "Slices",
+      "xfade": "hrslice"
+    },
+    {
+      "id": "vuslice",
+      "label": "Slices up",
+      "group": "Slices",
+      "xfade": "vuslice"
+    },
+    {
+      "id": "vdslice",
+      "label": "Slices down",
+      "group": "Slices",
+      "xfade": "vdslice"
+    },
+    {
+      "id": "hlwind",
+      "label": "Wind left",
+      "group": "Slices",
+      "xfade": "hlwind"
+    },
+    {
+      "id": "hrwind",
+      "label": "Wind right",
+      "group": "Slices",
+      "xfade": "hrwind"
+    },
+    {
+      "id": "vuwind",
+      "label": "Wind up",
+      "group": "Slices",
+      "xfade": "vuwind"
+    },
+    {
+      "id": "vdwind",
+      "label": "Wind down",
+      "group": "Slices",
+      "xfade": "vdwind"
+    },
+    {
+      "id": "pixelize",
+      "label": "Pixelize",
+      "group": "Effects",
+      "xfade": "pixelize"
+    },
+    {
+      "id": "hblur",
+      "label": "Blur",
+      "group": "Effects",
+      "xfade": "hblur"
+    },
+    {
+      "id": "distance",
+      "label": "Distance",
+      "group": "Effects",
+      "xfade": "distance"
+    },
+    {
+      "id": "zoomin",
+      "label": "Zoom in",
+      "group": "Effects",
+      "xfade": "zoomin"
+    }
+  ]
+}

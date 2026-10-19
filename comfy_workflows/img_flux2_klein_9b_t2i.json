@@ -1,0 +1,136 @@
+{
+  "_comment": [
+    "FLUX.2 [Klein] 9B - Text to Image. Export (API) format, ready for a",
+    "bitGen Studio image style (Settings -> Image, Rendered by ComfyUI).",
+    "",
+    "Derived from ComfyUI's own template, the DISTILLED klein 9B variant:",
+    "https://comfy.org/workflows/image_flux2_text_to_image_9b-1606e79dd224/",
+    "Node types, widget names and default values were taken from that file, not",
+    "from memory. The published template wraps all of this in a subgraph, which",
+    "is a UI-only construct; this is the same graph flattened, which is what",
+    "Export (API) produces and what /prompt accepts.",
+    "",
+    "MODELS (into ComfyUI's OWN folders, not bitGen Studio's):",
+    "  models/diffusion_models/flux-2-klein-9b.safetensors",
+    "  models/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+    "  models/vae/flux2-vae.safetensors",
+    "Distilled: cfg 1.0, ~4 steps. For the BASE 9B checkpoint use",
+    "flux-2-klein-base-9b-fp8.safetensors with cfg 5.0 and ~20 steps, and",
+    "delete node 76 so the negative prompt is a real one instead of a zeroed",
+    "copy of the positive.",
+    "",
+    "THE NEGATIVE PROMPT IS NOT A PROMPT HERE. Node 76 (ConditioningZeroOut)",
+    "takes the POSITIVE conditioning and zeroes it - that is what a distilled",
+    "model uses in place of a negative. Both of node 63's conditioning inputs",
+    "therefore trace back to node 74. bitGen Studio detects this and refuses to",
+    "write a negative prompt into it; writing one would overwrite the actual",
+    "prompt and render 'blurry, low quality' as the subject.",
+    "",
+    "FOUR LORA SLOTS (101-104) ship BYPASSED. Their lora_name is empty, and an",
+    "empty lora_name is not a no-op in ComfyUI - it fails validation. bitGen Studio",
+    "fills slots from the style's LoRA stack in order and removes the unused",
+    "ones, passing model and clip straight through, before the graph is queued.",
+    "So this file is a template, not a runnable graph: do not drag it into",
+    "ComfyUI and press Run with the slots empty."
+  ],
+  "70": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux-2-klein-9b.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "71": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+      "type": "flux2",
+      "device": "default"
+    }
+  },
+  "72": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "flux2-vae.safetensors" }
+  },
+
+  "101": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["70", 0], "clip": ["71", 0],
+      "lora_name": "", "strength_model": 1.0, "strength_clip": 1.0
+    }
+  },
+  "102": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["101", 0], "clip": ["101", 1],
+      "lora_name": "", "strength_model": 1.0, "strength_clip": 1.0
+    }
+  },
+  "103": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["102", 0], "clip": ["102", 1],
+      "lora_name": "", "strength_model": 1.0, "strength_clip": 1.0
+    }
+  },
+  "104": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["103", 0], "clip": ["103", 1],
+      "lora_name": "", "strength_model": 1.0, "strength_clip": 1.0
+    }
+  },
+
+  "74": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "", "clip": ["104", 1] }
+  },
+  "76": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": { "conditioning": ["74", 0] }
+  },
+  "63": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": ["104", 0],
+      "positive": ["74", 0],
+      "negative": ["76", 0],
+      "cfg": 1
+    }
+  },
+  "62": {
+    "class_type": "Flux2Scheduler",
+    "inputs": { "steps": 4, "width": 1024, "height": 1024 }
+  },
+  "61": {
+    "class_type": "KSamplerSelect",
+    "inputs": { "sampler_name": "euler" }
+  },
+  "73": {
+    "class_type": "RandomNoise",
+    "inputs": { "noise_seed": 0 }
+  },
+  "66": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "64": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["73", 0],
+      "guider": ["63", 0],
+      "sampler": ["61", 0],
+      "sigmas": ["62", 0],
+      "latent_image": ["66", 0]
+    }
+  },
+  "65": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["64", 0], "vae": ["72", 0] }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": { "filename_prefix": "H3-Studio", "images": ["65", 0] }
+  }
+}

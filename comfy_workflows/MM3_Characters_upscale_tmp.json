@@ -1,0 +1,48 @@
+{
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": "0"
+    }
+  },
+  "5": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "prompt": "@jinx turns away.",
+      "width": 192,
+      "height": 96,
+      "length": 175,
+      "ref_image_size": "max",
+      "video": [
+        "1",
+        0
+      ],
+      "ref_audios.ref_audio_0": [
+        "6",
+        0
+      ]
+    }
+  },
+  "2": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "filename_prefix": "minimax_h3/upscale",
+      "format": "auto",
+      "codec": "auto",
+      "video": [
+        "5",
+        0
+      ],
+      "format.codec": "auto"
+    }
+  },
+  "6": {
+    "class_type": "LoadAudio",
+    "inputs": {
+      "audio": "0"
+    },
+    "_meta": {
+      "title": "Load Audio (ref 1, added by bitGen)"
+    }
+  }
+}

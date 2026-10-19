@@ -1,0 +1,482 @@
+<h1>Image editor</h1>
+
+<p>The editor's layout, tools and keys.</p>
+
+<h3 id="dockers514">✅ View ▸ Dockers; folding and closing the docker groups (2.514.0)</h3>
+<ul>
+  <li><b>▾</b> at the start of a docker group's tabs folds the group to its tabs; click a tab to open it again.</li>
+  <li><b>✕</b> closes the group. <b>View ▸ Dockers</b> lists every image editor docker with a tick, plus <b>All Dockers</b> to bring them all back.</li>
+  <li>The app's side dockers fold to a thin title strip with the <b>▾</b> in their title bar.</li>
+  <li>🖌 Edit theme mode: drag an element's handles to resize it, drag inside it to move it, hide it or change its text. Leaving asks to save the theme.</li>
+</ul>
+
+<h3 id="pen">✅ The Pen <kbd>P</kbd> (2.421.0)</h3>
+<ul>
+  <li><b>Pen</b>: click = a corner anchor, drag = a smooth anchor (its handles mirror), click the first anchor = close. <kbd>Alt</kbd> = a cusp, <kbd>Shift</kbd> = 45° steps, <kbd>Ctrl</kbd> = Direct Selection for a moment, <kbd>Enter</kbd> / <kbd>Esc</kbd> leave it open. Over the picked path it adds an anchor on a segment, deletes one on an anchor (<b>Auto Add/Delete</b>).</li>
+  <li><b>Freeform Pen</b>: draw by hand; <b>Curve Fit</b> (px) says how closely the Béziers follow. Ending near the start closes it.</li>
+  <li><b>Add / Delete Anchor Point</b>, <b>Convert Point</b> (click: curve ⇄ corner; drag an anchor: new handles; drag a handle: a cusp). <kbd>Shift</kbd>+<kbd>P</kbd> cycles them. Over the editor <kbd>P</kbd> is the Pen; elsewhere it still shows / hides the prompt docker.</li>
+  <li><b>Mode</b>: <i>Shape</i> draws a shape layer (foreground fill, background + W stroke), <i>Path</i> the Work Path. <b>▣ ⊕ ⊖ ⊗ ⊘</b>: New Layer, Combine, Subtract Front Shape, Intersect, Exclude.</li>
+</ul>
+
+<h3 id="pathsel">✅ Path Selection / Direct Selection <kbd>A</kbd> (2.421.0)</h3>
+<ul>
+  <li><b>Path Selection</b>: click a component (<kbd>Shift</kbd> adds), drag moves, <kbd>Alt</kbd>-drag copies, <kbd>Delete</kbd> removes; its operation in the options bar; <b>⧉ Merge Components</b> (the result as plain outlines); <b>⟳ Transform…</b> (scale, rotate, flip).</li>
+  <li><b>Direct Selection</b>: anchors and handles - <kbd>Shift</kbd> adds, a box picks several, arrows nudge (<kbd>Shift</kbd> ×10), <kbd>Delete</kbd> removes, <b>Corner</b> / <b>Smooth</b>. Click a shape layer's outline to edit it; a shape layer becomes a path the moment an anchor moves.</li>
+</ul>
+
+<h3 id="cshape">✅ Custom shapes <kbd>U</kbd> (2.421.0)</h3>
+<ul>
+  <li>The <b>Custom Shape</b> tool: heart, star, burst, arrow, chevron, plus, cross, check, lightning, speech bubble, drop, moon, house, cloud, ring, frame - drag (<kbd>Shift</kbd> keeps its proportions). <b>Edit ▸ Define Custom Shape…</b> adds the picked path (right-click one of yours in the picker removes it).</li>
+  <li>The <b>Shape</b> tool (rectangle, ellipse, polygon, line) has the same operation buttons: anything but New Layer adds to the active shape layer.</li>
+</ul>
+
+<h3 id="paths">✅ The Paths panel (2.421.0)</h3>
+<ul>
+  <li>Beside Layers and History: the Work Path, saved paths, the active layer's Shape Path and Vector Mask. Click = pick; <kbd>Ctrl</kbd>-click = load as a selection (<kbd>Shift</kbd> adds, <kbd>Alt</kbd> subtracts). Double-click the Work Path = save it; a saved path = rename.</li>
+  <li><b>●</b> fill with the foreground · <b>○</b> stroke with the brush · <b>⬚</b> as a selection · <b>⟲</b> work path from the selection · <b>◇</b> vector mask · <b>＋</b> new · <b>⧉</b> duplicate · <b>☰</b> more (save, SVG, custom shape, shape layer) · <b>🗑</b> delete. <kbd>Alt</kbd>-click ● ○ ⬚ ⟲ for their options.</li>
+</ul>
+
+<h3 id="vmask">✅ Vector masks (2.421.0)</h3>
+<ul>
+  <li><b>Layer ▸ Vector Mask</b>: Reveal All, Hide All, Current Path, Disable / Enable, Rasterize (into the pixel mask), Delete. Its thumbnail sits beside the layer mask's: click = edit its path, <kbd>Shift</kbd>-click = off / on.</li>
+  <li>Properties: Density, Feather, Invert, Link. Crop, canvas size, image size and rotate take every path with the picture; a PSD keeps vector masks and path shape layers; <b>File ▸ Export Path as SVG…</b> / <b>Place SVG as Shape Layer…</b>.</li>
+</ul>
+
+<h3 id="smart">✅ Smart objects (2.422.0)</h3>
+<ul>
+  <li><b>Layer ▸ Smart Objects: Convert to Smart Object</b>: a layer or a group goes inside (still editable); the smart object (▣) is re-drawn from it, so scaling / turning / warping loses nothing.</li>
+  <li><b>Edit Contents</b> (double-click the thumbnail): the inside opens with a banner - <b>✔ Done</b> updates the smart object and every duplicate of it, <b>✕ Cancel</b> leaves it. <b>New Smart Object via Copy</b> = independent contents. <b>Replace Contents…</b>, <b>Export Contents…</b>, <b>Convert to Layers</b>, <b>Rasterize</b>.</li>
+</ul>
+
+<h3 id="sfilters">✅ Smart filters (2.422.0)</h3>
+<ul>
+  <li>A Filter / Adjustment on a smart object is ADDED under the layer: 👁 on / off, double-click = its settings, right-click = opacity, ▲ order, ✕ delete.</li>
+  <li>The <b>filter mask</b> (on the Smart Filters row): click it and paint - black hides the filters there; <kbd>Shift</kbd>-click turns it off.</li>
+</ul>
+
+<h3 id="xform">✅ Skew, Distort, Perspective, Warp (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Transform: Skew / Distort / Perspective / Warp</b>, or <kbd>Ctrl</kbd>+<kbd>T</kbd> on a smart object; the options bar switches modes. Warp: drag a grid point or anywhere inside; presets with a Bend %. <kbd>Enter</kbd> applies, <kbd>Esc</kbd> cancels.</li>
+</ul>
+
+<h3 id="puppet">✅ Puppet Warp (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Puppet Warp</b>: click to pin, drag a pin to bend, <kbd>Alt</kbd>-click / <kbd>Delete</kbd> removes; Density, Show Mesh. A smart filter on a smart object.</li>
+</ul>
+
+<h3 id="cas">✅ Content-Aware Scale (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Content-Aware Scale…</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd>): width / height %, the unimportant pixels go (or are doubled); <b>Protect: the selection</b>; a live preview.</li>
+</ul>
+
+<h3 id="liquify">✅ Liquify (2.422.0)</h3>
+<ul>
+  <li><b>Filter ▸ Liquify…</b> (<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>X</kbd>): <kbd>W</kbd> push, <kbd>R</kbd> reconstruct, <kbd>C</kbd> twirl (<kbd>Alt</kbd> reverses), <kbd>S</kbd> pucker, <kbd>B</kbd> bloat, <kbd>F</kbd> / <kbd>D</kbd> freeze / thaw; size <kbd>[</kbd> <kbd>]</kbd>, pressure, Restore All. A smart filter on a smart object.</li>
+</ul>
+
+<h3 id="selmask">✅ Select and Mask (2.423.0)</h3>
+<ul>
+  <li><b>Select ▸ Select and Mask…</b> (<kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>R</kbd>): Quick Selection <kbd>W</kbd>, Refine Edge <kbd>R</kbd> (over hair), Brush <kbd>B</kbd> (<kbd>Alt</kbd> takes away); views; Radius / Smart Radius, Smooth, Feather, Contrast, Shift Edge; Decontaminate Colors; Output To Selection / Layer Mask / New Layer / New Layer with Layer Mask.</li>
+</ul>
+
+<h3 id="maglasso">✅ Magnetic Lasso, Quick Selection, Sky (2.423.0)</h3>
+<ul>
+  <li><b>Magnetic Lasso</b> (<kbd>L</kbd>): move along an edge - it snaps; click sets a point, <kbd>Backspace</kbd> takes one back, double-click / <kbd>Enter</kbd> closes. Width, Contrast, Frequency.</li>
+  <li><b>Quick Selection</b> (<kbd>W</kbd>): paint - it grows to the edges; <kbd>Alt</kbd> takes away; Tolerance, Auto-Enhance. <b>Select ▸ Sky</b>.</li>
+</ul>
+
+<h3 id="channels">✅ Channels and saved selections (2.423.0)</h3>
+<ul>
+  <li>The <b>Channels</b> tab: RGB / Red / Green / Blue (click = see it, <kbd>Ctrl</kbd>+<kbd>2</kbd> … <kbd>5</kbd>; <kbd>Ctrl</kbd>-click = its lightness as a selection) and alpha channels - <b>Select ▸ Save Selection…</b> / <b>Load Selection…</b>; ⬚ ◫ ＋ 🗑.</li>
+</ul>
+
+<h3 id="retouch">✅ Patch, Content-Aware Move / Fill, Red Eye (2.423.0)</h3>
+<ul>
+  <li><b>J</b>: Spot Healing (Content-Aware / Proximity Match), Healing Brush (blended: the texture from the source, the light from here), <b>Patch</b> (draw round it, drag onto clean texture), <b>Content-Aware Move</b> (drag the selection: Move / Extend), <b>Red Eye</b> (click the pupil).</li>
+  <li><b>Edit ▸ Content-Aware Fill…</b> and Content-Aware in <b>Edit ▸ Fill…</b> - no AI: filled from the picture itself.</li>
+</ul>
+
+<h3 id="erasers">✅ Mixer Brush, Background / Magic Eraser (2.423.0)</h3>
+<ul>
+  <li><b>Mixer Brush</b> (<kbd>B</kbd>): Wet, Load, Mix, Clean after each stroke. <b>Background Eraser</b> (<kbd>E</kbd>): Continuous / Once, Tolerance, Protect Foreground Color. <b>Magic Eraser</b> (<kbd>E</kbd>): a click clears that colour (Tolerance, Contiguous).</li>
+</ul>
+
+<h3 id="pdf">✅ PDF files: open, edit, save (2.424.0)</h3>
+<ul>
+  <li><b>Save PDF… / Save as New PDF…</b> (2.435.0): the Save dialog's <b>Embed fonts</b> writes each line in its own font, embedded (only the letters used) - from this computer's fonts or the install's <code>fonts</code> folder; any alphabet stays real text.</li>
+  <li><b>File ▸ Open PDF…</b> (or drop a .pdf), <b>Open PDF from Project…</b>: the Pages strip; a page opens as a Background without its text + a <b>type layer per line</b> (font, size, colour, width matched).</li>
+  <li>Edit with every tool; each page keeps its layers and undo (also over another picture - File ▸ PDF Pages).</li>
+  <li><b>💾 Save PDF</b>: the changed pages replaced in the original (the project's copy, also downloaded); <b>Save as New…</b>. Unchanged pages stay vector; type becomes real, selectable PDF text (Helvetica / Times / Courier); what those fonts cannot write goes into the picture.</li>
+</ul>
+
+<h3 id="vlines">✅ Vector lines: curve tools, Shape tool, Outline Pen (2.425.0)</h3>
+<ul>
+  <li><kbd>F5</kbd> (again = the next): <b>Bézier</b> (click = cusp node, drag = smooth node, <kbd>C</kbd> / <kbd>S</kbd> while dragging, <kbd>Ctrl</kbd> = 15°, click the first node = close, double-click / <kbd>Enter</kbd> / <kbd>Space</kbd> = done, <kbd>Esc</kbd> = drop it), <b>Freehand</b>, <b>2-Point Line</b>, <b>Polyline</b>, <b>3-Point Curve</b>, <b>B-Spline</b>, <b>Node Pen</b>. Start on an open end of the active line to carry it on.</li>
+  <li><kbd>F10</kbd> <b>Shape tool</b>: pick / drag nodes, handles, segments; double-click = add / delete a node; <kbd>C</kbd> <kbd>S</kbd> <kbd>Y</kbd> = cusp / smooth / symmetrical; join, break, to line / curve, reverse, close, extract, auto-close, reduce nodes.</li>
+  <li><kbd>F12</kbd> <b>Outline Pen</b>: width, colour, dashes, corners, caps, position, arrowheads, behind fill, scale with object. <kbd>Ctrl</kbd>+<kbd>Q</kbd> <b>Convert to Curves</b>.</li>
+  <li><b>Layer ▸ Vector Line: Convert to Path…</b> / <b>Make from Path…</b> (the Paths panel's 〰): a line becomes a path that remembers its outline, and comes back exactly. SVG and PSD keep them.</li>
+</ul>
+
+<h3 id="curvpen">✅ Curvature Pen, Rubber Band, path align / distribute (2.425.0)</h3>
+<ul>
+  <li><b>Curvature Pen</b> (<kbd>P</kbd>): click points - the curve passes through them; double-click a point = corner / smooth; drag to move; <kbd>Enter</kbd> ends. The Pen's <b>Rubber Band</b> option. <b>Path Selection</b> (<kbd>A</kbd>): align / distribute the picked components (to them or the canvas).</li>
+</ul>
+
+<h3 id="typepanels">✅ Character and Paragraph panels, paragraph text, styles (2.426.0)</h3>
+<ul>
+  <li><b>Character</b> (next to Color): font, style, size, leading, kerning, tracking, vertical / horizontal scale, baseline shift, colour, Faux Bold / Italic, All Caps, Small Caps, Superscript / Subscript, Underline / Strikethrough.</li>
+  <li><b>Paragraph</b>: alignment, Justify last left / centred / right / all, indents (left, right, first line), space before / after, Hyphenate. <b>Paragraph text</b>: drag with the Type tool (<kbd>T</kbd>) - it wraps in the box; Layer ▸ Type: Convert to Paragraph / Point Text.</li>
+  <li><b>Character / Paragraph Styles</b>: ＋ new from the text, click = apply, ⌫ Clear Override, ⟲ Redefine (every text with it follows), 🗑.</li>
+</ul>
+
+<h3 id="actions">✅ Actions and Batch (2.427.0)</h3>
+<ul>
+  <li>The <b>Actions</b> tab (next to History, <kbd>Alt</kbd>+<kbd>F9</kbd>): ● record (menu commands + their dialogs' settings, filters, the Layers panel), ■ stop, ▶ play; ☑ a step on / off, ▢ stop in its dialog; ▲ ▼ 🗑; double-click = record a step again / an action's name and function key; ☰ Insert Stop, Insert Menu Item, Duplicate, Button Mode, Load / Save (.json), Reset.</li>
+  <li><b>File ▸ Automate: Batch…</b>: an action over picked files or a folder - saved to the project's batch folder, the image gallery, downloaded or left; PNG / JPEG; stop or log errors; a report.</li>
+</ul>
+
+<h3 id="coreldraw">✅ Drawing tools (2.428.0)</h3>
+<ul>
+  <li><kbd>F6</kbd> (again = the next): Rectangle (corner radii; round / scallop / chamfer), 3-Point Rectangle, Ellipse (pie / arc), 3-Point Ellipse, Polygon, Star, Complex Star, Spiral, Graph Paper, Common Shapes. <kbd>Ctrl</kbd> = square / circle, <kbd>Shift</kbd> = from the centre. Live until <kbd>F10</kbd> edits a node or <kbd>Ctrl</kbd>+<kbd>Q</kbd>.</li>
+  <li>Artistic Media (in <kbd>F5</kbd>): Preset, Calligraphic, Pressure, Sprayer.</li>
+  <li><kbd>F8</kbd>: Parallel, Horizontal / Vertical and Angular Dimensions, 3-Point Callout, Connector (straight / right-angle / rounded - it follows the objects it joins).</li>
+</ul>
+
+<h3 id="dockers">✅ Dockers (2.429.0)</h3>
+<ul>
+  <li>Window ▸ Dockers: <b>Transform</b> (<kbd>Alt</kbd>+<kbd>F7</kbd>: position, rotate, scale &amp; mirror, size, skew - about 9 anchor points, copies), <b>Shaping</b> (weld, trim, intersect, simplify, front / back minus, boundary), <b>Align and Distribute</b> (<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>A</kbd>), <b>Object Properties</b> (<kbd>Alt</kbd>+<kbd>Enter</kbd>: fill incl. gradients, outline, transparency). Ctrl-click layers to pick several.</li>
+</ul>
+
+<h3 id="documents">✅ Documents, the colour palette, ⊠ transparent, auto-fill (2.430.0)</h3>
+<ul>
+  <li><b>Documents</b>: every New / Open is its own document - the first docks as a tab, the next float in their own window (Window ▸ Arrange ▸ Open Documents as Tabs docks them all). Drag a window onto the tab strip to dock it, a tab off the strip to float it; <kbd>Ctrl</kbd>+<kbd>W</kbd> Close, <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>W</kbd> Close All, <kbd>Ctrl</kbd>+<kbd>Tab</kbd> next document; Tile / Cascade / Consolidate All to Tabs.</li>
+  <li><b>Colour palette</b> on the right: click = fill, right-click = outline on a curve / shape / type; on pixels click = foreground, right-click = background. <b>⊠</b> = no colour / a transparent foreground (a brush paints transparency).</li>
+  <li><b>Auto-fill</b>: a closed curve or a new shape is filled with the colour picked last (▨ on the curve tools' bar turns it off).</li>
+</ul>
+
+<h3 id="generated">✅ Generated pictures onto the canvas (2.431.0)</h3>
+<ul>
+  <li>With the editor open the prompt docker generates <b>🖼 Image</b> (→ ▦ canvas), and every picture it makes lands on the document in front as a new layer named after the prompt (no document = it opens as one). Closing the editor puts the prompt docker back in the mode it was in.</li>
+</ul>
+
+<h3 id="paneldock">✅ The panel column is a docker (2.454.0)</h3>
+<ul>
+  <li>⇱ floats any tab group; drag it by its title over the column - an orange line shows where it docks.</li>
+  <li>The column's left edge drags its width; the order and width are kept.</li>
+</ul>
+
+<h3 id="frames453">✅ Frames: contents locked, right-click to edit (2.453.0)</h3>
+<ul>
+  <li>Contents are locked to their frame: the Move tool and its handles take the frame; the contents move / scale / turn with it.</li>
+  <li>Right-click ▸ Edit Frame Contents / Finish Editing Frame / Extract Contents / Lock Contents to Frame.</li>
+</ul>
+
+<h3 id="handles">✅ Move tool handles (2.452.0)</h3>
+<ul>
+  <li>Click = scale handles (Shift = proportional, Alt = from the centre); double-click = rotate handles (corners turn, Shift 15°; sides skew).</li>
+  <li>Transform options in the options bar: angle, ⟲90 ⟳90, flips, W % x H %.</li>
+  <li>Type stays editable when turned; shapes stay vector.</li>
+</ul>
+
+<h3 id="promptlink451">✅ Edit / Generate from the prompt docker, Del (2.451.0)</h3>
+<ul>
+  <li>✨ AI ▸ Edit: the prompt docker goes to 🖼 Image + Qwen Image 2.1 edit, its button reads ✏ Edit. Generate: ✨ Generate into the selected layer's selection.</li>
+  <li>Del deletes the current layer (a selection: clears it).</li>
+</ul>
+
+<h3 id="warpgrid">✅ Warp grid + split lines, Liquify extras (2.450.0)</h3>
+<ul>
+  <li>Warp: Grid (Default / 3 x 3 / 4 x 4 / 5 x 5 / Custom columns x rows); Split Warp Crosswise / Vertically / Horizontally - click where; Alt-click a split line takes it away.</li>
+  <li>Liquify: Smooth (E), Push Left (O).</li>
+  <li>Face-Aware Liquify: the Face tool (A) places the face; 13 sliders for the eyes, nose, mouth and face shape.</li>
+</ul>
+
+<h3 id="pcruns">✅ Per-character type (2.449.0)</h3>
+<ul>
+  <li>Typing: select letters, then the options bar (font, B, I, size, tracking, colour) or the Character panel - only those letters change.</li>
+  <li>Nothing selected = the whole layer. Typing inside a styled run takes its style. One baseline, each line as tall as its largest letters.</li>
+  <li>Layer ▸ Type: Clear Character Overrides.</li>
+</ul>
+
+<h3 id="cafill">✅ The Content-Aware Fill workspace (2.448.0)</h3>
+<ul>
+  <li>Edit ▸ Content-Aware Fill… (a selection): the sampling area in green - Auto, Rectangular or Custom (the 🖌 Sampling Brush + / −, Alt).</li>
+  <li>A live Preview; Colour Adaptation None / Default / High / Very High.</li>
+  <li>Output To Current Layer / New Layer / Duplicate Layer; one undo.</li>
+</ul>
+
+<h3 id="artboards">✅ Artboards (2.447.0)</h3>
+<ul>
+  <li>Layer ▸ New ▸ Artboard… (sizes, background, the picked layers in it), the Artboard tool (V again), Artboard from Group.</li>
+  <li>Its layers show only inside it; moving it moves them; Properties: X / Y / W / H, background, ⇱ Fit.</li>
+  <li>File ▸ Export ▸ Artboards to Files…: a PNG each.</li>
+</ul>
+
+<h3 id="grids">✅ Grid button, Grids & Guides settings (2.445.0)</h3>
+<ul>
+  <li>⊞ on the top bar: the grid on / off (Ctrl+').</li>
+  <li>⚙ ▸ Grids & Guides: grid spacing, major every n lines, lines or dots, grid colour + strength, guideline colour, snap distance.</li>
+</ul>
+
+<h3 id="promptlink">✅ ✨ Edit / Generate from the prompt docker, ⚙ settings (2.444.0)</h3>
+<ul>
+  <li>✨ AI ▸ Edit: the prompt docker's style = Qwen Image 2.1 edit, its button = ✏ Edit - type the instruction there.</li>
+  <li>✨ AI ▸ Generate: the prompt docker's ✨ Generate renders into the selection of the selected layer; ✔ Apply blends it into that layer.</li>
+  <li>⚙ (right of the menu bar) / Edit ▸ Preferences… (Ctrl+,): the editor's settings.</li>
+</ul>
+
+<h3 id="frames">✅ Frames: layers inside a shape (2.442.0)</h3>
+<ul>
+  <li>Layer ▸ Frame ▸ Place Inside Frame… (or drag a layer onto the middle of a closed shape's row): the layers show only inside the shape, a tree under it in Layers.</li>
+  <li>Move / turn / scale the frame - its contents go with it (Lock Contents to Frame).</li>
+  <li>Edit Frame Contents (double-click it with the Move tool) - work on them alone; ✓ Finish Editing Frame. Extract Contents takes them out.</li>
+  <li>✨ Generate with a closed shape active: the picture goes inside the shape.</li>
+</ul>
+
+<h3 id="flux3">✅ FLUX 3 Image Klein; edit image mode lists only edit styles (2.502.0)</h3>
+<ul>
+  <li><b>FLUX 3 Klein</b> (distilled, 16 steps), <b>FLUX 3 Klein base</b> (50 steps, cfg 3.5) and <b>FLUX 3 Klein edit</b> (up to 4 reference pictures) image styles. ComfyUI 0.41.0+.</li>
+  <li>With the image editor open, the image style dropdown shows only styles that can edit a picture; closing the editor shows them all again.</li>
+</ul>
+
+<h3 id="cad494">✅ The CAD workings refined (2.494.0)</h3>
+<ul>
+  <li><b>⌬ CAD</b> in the tool column: the CAD toolbar shows by itself while a sketch / sketch tool / 3D body is picked; the button keeps it on. The timeline has its own ⌬ CAD button.</li>
+  <li>Sketch: <b>Select</b> first, <b>Create Sketch</b> hidden while sketching, <b>Finish Sketch</b> → the Solid tab, a <b>＋</b> at the ends of a picked line draws on from there.</li>
+  <li><b>Offset (O)</b>: click a chain, the pointer picks the side and the distance (or type it + Enter, F flips); lines drawn any way round offset together, rounded corners stay joined.</li>
+  <li><b>Extrude / Revolve</b>: click the closed regions to use (they light up), Enter = the settings.</li>
+  <li>3D: <b>Shift + middle-drag</b> orbits, the <b>view cube</b> (faces, corners, drag) with Home / Orbit / Pan / Fit.</li>
+</ul>
+
+<h3 id="round-h">✅ PDF pages, Select Subject (built in + AI matte), Remove Background (2.488.0)</h3>
+<ul>
+  <li>The PDF Pages strip: <b>＋ Page</b>, <b>⤓ PDF…</b> (another PDF's pages), <b>▲ ▼</b> and drag to reorder, <b>🗑</b> to take a page out - saved in the new order, untouched pages still vector.</li>
+  <li><b>Select ▸ Subject</b>: built in (no download) or the AI matte (BiRefNet on this computer); <b>Subject Settings…</b>; <b>Layer ▸ Remove Background</b> (the subject as the layer mask). Segment Anything: <b>Subject by Words…</b>.</li>
+</ul>
+
+<h3 id="modes">✅ Image ▸ Mode, Proof Colors, Gamut Warning, CMYK TIFF (2.487.0)</h3>
+<ul>
+  <li><b>Image ▸ Mode</b>: Bitmap (threshold, pattern, diffusion, halftone), Grayscale, Duotone (1-4 inks, presets), Indexed Color (Local / Web / Uniform / Grey palettes, dither) + <b>Color Table…</b> (.act), RGB Color, CMYK Color (coated / uncoated / newsprint, black generation, total ink).</li>
+  <li><b>View ▸ Proof Setup…</b>, <b>Proof Colors</b> (Alt+Ctrl+Y), <b>Gamut Warning</b> (Shift+Ctrl+Y) - on screen only; the Info panel marks unprintable colours with "!".</li>
+  <li><b>Export As ▸ TIFF (CMYK, for print)</b>. 8 bits per channel only (the browser's canvas).</li>
+</ul>
+
+<h3 id="merge">✅ Auto-Align / Auto-Blend Layers, Photomerge, Merge to HDR (2.486.0)</h3>
+<ul>
+  <li><b>Edit ▸ Auto-Align Layers…</b>: the picked layers lined up - perspective, move / turn / scale, or move only; on the middle, active or bottom layer.</li>
+  <li><b>Edit ▸ Auto-Blend Layers…</b>: masks for a panorama (soft seams, matched tones) or a focus stack (the sharpest layer at each spot).</li>
+  <li><b>Automate ▸ Photomerge…</b>: files or open documents stitched into a new Panorama document, one masked layer each.</li>
+  <li><b>Automate ▸ Merge to HDR…</b>: bracketed exposures lined up and fused into one well-exposed picture (exposure fusion, 8-bit).</li>
+</ul>
+
+<h3 id="fileplus">✅ More file types, File Info, Print, Contact Sheet, Crop and Straighten Photos (2.485.0)</h3>
+<ul>
+  <li><b>Export As</b>: + AVIF (made by ffmpeg on this computer), GIF (256 colours, a clear colour), TIFF, BMP, TGA (with transparency).</li>
+  <li><b>File Info…</b> (Alt+Shift+Ctrl+I): title, author, description, keywords, copyright, URL - kept with the document and written into exported PNG and JPEG files.</li>
+  <li><b>Print…</b> (Ctrl+P): fit, a size or a percentage, the orientation, then the system's print dialog.</li>
+  <li><b>Automate ▸ Contact Sheet…</b> (files or the open documents, a grid, captions) and <b>Crop and Straighten Photos</b> (each photo of a scan as its own document).</li>
+</ul>
+
+<h3 id="brushset">✅ Brush Settings, presets, .abr brushes (2.484.0)</h3>
+<ul>
+  <li>The <b>🖌 Brush</b> tab: presets (built in, yours, imported), <b>⤒ Import .abr…</b>, <b>💾 New Brush Preset…</b> (brushes/&lt;name&gt;.json).</li>
+  <li>Brush Tip Shape (angle, roundness, flips), Shape Dynamics, Scattering, Texture, Dual Brush, Color Dynamics, Transfer, Smoothing.</li>
+</ul>
+
+<h3 id="measure">✅ Navigator, Histogram, Info, measuring tools (2.483.0)</h3>
+<ul>
+  <li>Tabs: <b>Navigator</b>, <b>Histogram</b> (channels, statistics), <b>Info</b> (RGB / HSB / CMYK under the pointer, samplers), <b>Notes</b>.</li>
+  <li>With the Eyedropper (I): <b>Color Sampler</b>, <b>Ruler</b> (↻ Straighten), <b>Note</b>, <b>Count</b>. With the Crop tool (C): <b>Perspective Crop</b>.</li>
+  <li>Select ▸ Grow, Similar, Focus Area…, Transform Selection…; Layer ▸ Matting ▸ Defringe, Remove Black / White Matte.</li>
+</ul>
+
+<h3 id="develop">✅ The Develop Filter + Lens Correction (2.482.0)</h3>
+<ul>
+  <li>Filter ▸ <b>Develop Filter…</b> (Alt+Shift+Ctrl+A): Basic (white balance, exposure, tone, texture / clarity / dehaze, vibrance, B&amp;W, ✨ Auto), Curve, Color mixer, Grading, Detail, Optics, Geometry, Effects, Presets (+ your own).</li>
+  <li>Filter ▸ <b>Lens Correction…</b> (Alt+Shift+Ctrl+R): distortion, fringes, vignette, perspective, angle, scale, the edge; a grid while it is open.</li>
+</ul>
+
+<h3 id="fltroundB">✅ 44 more filters (2.481.0)</h3>
+<ul>
+  <li>Filter ▸ Blur: Surface, Smart, Average, <b>Lens Blur</b>. Blur Gallery: <b>Field</b>, <b>Iris</b>, <b>Path</b>, <b>Spin</b> (click the picture to place the centre).</li>
+  <li>Noise: Reduce Noise, Dust &amp; Scratches, Despeckle. Sharpen: <b>Smart Sharpen</b>. Other: High Pass, Minimum, Maximum, Offset, <b>Custom</b> (5 x 5), HSB / HSL.</li>
+  <li>Distort: Displace, Polar Coordinates, Pinch, ZigZag, Shear, Glass. Pixelate: Color Halftone, Crystallize, Pointillize, Facet, Fragment, Mezzotint. Render: <b>Lighting Effects</b>, Fibers, Difference Clouds. Stylize: Diffuse, Tiles, Trace Contour. Artistic / Sketch / Texture: Cutout, Poster Edges, Watercolor, Dry Brush, Graphic Pen, Charcoal, Grain, Craquelure.</li>
+</ul>
+
+<h3 id="adjroundA">✅ More adjustments + Apply Image (2.480.0)</h3>
+<ul>
+  <li>Image ▸ Adjustments: <b>Shadows / Highlights</b>, <b>HDR Toning</b>, <b>Selective Color</b> (nine ranges, C / M / Y / K, relative / absolute), <b>Replace Color</b> (click the picture to pick), <b>Match Color</b> (another layer, the merged picture or a file), <b>Color Lookup</b> (looks + .cube LUTs).</li>
+  <li>Image ▸ <b>Apply Image…</b>: another layer or a channel of it, blended onto the layer. New adjustment layers: Selective Color, Color Lookup.</li>
+</ul>
+
+<h3 id="uelights">✅ Unreal lights, volumetric lights and fog (2.476.0)</h3>
+<ul>
+  <li>UNREAL ▸ <b>Lights &amp; Fog</b> / the 💡 Lights tab: presets, Point / Spot / Rect / Sun / Sky lights (colour or temperature, intensity, reach, cone, volumetric, shadows), height fog + volumetric fog.</li>
+  <li>UNREAL ▸ <b>Lights</b>: drag the lights on the picture (Shift = depth, Alt = aim). The timeline's UNREAL ▸ Lights &amp; Fog… uses the same panel.</li>
+</ul>
+
+<h3 id="uecam">✅ The Unreal camera (2.475.0)</h3>
+<ul>
+  <li>UNREAL ▸ <b>Camera</b>: drag = orbit, Ctrl = look, Shift = pan, Alt = roll, wheel = dolly, Ctrl+wheel = zoom; Focus mode = click what should be sharp. One undo step per move.</li>
+  <li>The 🎥 <b>Camera</b> tab: lens presets, focal length / field of view, filmback, f-stop, focus, exposure, X Y Z, roll / pitch / yaw, to / from Unreal's viewport.</li>
+</ul>
+
+<h3 id="multisel">✅ No tool, the selection box, several layers (2.474.0)</h3>
+<ul>
+  <li><b>Esc</b> = no tool. Then drag a dashed box: left to right picks what is wholly inside, right to left what it touches; Shift adds.</li>
+  <li>Layers panel: Shift-click = every layer between, Ctrl-click = add / take away. The Move tool moves all picked layers; <b>Del</b> deletes them.</li>
+</ul>
+
+<h3 id="unreal">✅ The Unreal Engine 5.8 bridge (2.472.0)</h3>
+<ul>
+  <li>Install the <b>bitGen Bridge</b> plugin (bitgen-ue-bridge zip) in your Unreal project's Plugins folder; Settings ▸ 3D ▸ Unreal Engine ▸ Test connection.</li>
+  <li>UNREAL tab: <b>Unreal Layer</b> (a level through a camera) and <b>MetaHuman Layer</b> (a pose, framed, on a clear background); the 🎮 Unreal tab nudges the camera / figure and renders again.</li>
+</ul>
+
+<h3 id="bodies">✅ Parametric 3D bodies (2.471.0)</h3>
+<ul>
+  <li>SOLID tab: <b>Extrude</b> / <b>Revolve</b> a closed sketch (New Body, Join, Cut, Intersect), <b>Fillet</b>, <b>Chamfer</b>, <b>Shell</b>, <b>Split Body</b> (the other side = a new body layer).</li>
+  <li>Every number can be a sum over named parameters (ƒx Change Parameters); a changed sketch or parameter rebuilds the body.</li>
+  <li>The 🧊 Body tab: the features (suppress, edit, reorder, delete), the view (🖐 Orbit), the look, Export STL / glTF / STEP / → Timeline.</li>
+  <li>Settings ▸ 3D: the engine - OpenCascade in the browser or Blender.</li>
+</ul>
+
+<h3 id="cadbar">✅ Picking like a drawing program, the CAD toolbar (2.470.0)</h3>
+<ul>
+  <li>Move tool: the object under the pointer outlined <b>blue</b>, the picked one <b>orange</b>; a click on empty canvas or Esc picks nothing.</li>
+  <li>After drawing a shape the Move tool comes up with the shape picked (⚙ on the toolbar switches it off).</li>
+  <li>The <b>CAD toolbar</b> along the top: SKETCH (Create / Modify / Constraints / Inspect / Insert / Finish Sketch) and SHAPES; Window ▸ CAD Toolbar.</li>
+  <li>The timeline's toolbar over the preview: CREATE, 3D, SKETCH (Sketch on This Frame).</li>
+</ul>
+
+<h3 id="linked">✅ Linked smart objects, PSD smart objects, .atn actions (2.469.0)</h3>
+<ul>
+  <li>File ▸ <b>Place Linked…</b>; Layer ▸ Smart Objects ▸ Convert to Linked… / Embed Linked / <b>Update Modified Content</b> / Relink to File… - the contents in the project's linked folder (🔗).</li>
+  <li>PSD smart objects open as smart objects and are saved as placed layers with their contents.</li>
+  <li>Actions ▸ Load Actions… takes <b>.atn</b> action files (matched steps play, the others come in off).</li>
+</ul>
+
+<h3 id="actionsx">✅ Actions: strokes + selections recorded, conditionals, Image Processor, droplets (2.468.0)</h3>
+<ul>
+  <li>Recording keeps brush strokes and hand-made selections - played, at the same place (scaled to the picture).</li>
+  <li>☰ ▸ Insert Conditional… - if landscape / portrait / a selection / a layer kind… play one action, else another.</li>
+  <li>File ▸ Scripts: <b>Image Processor…</b> (JPEG / PNG, resize to fit, an action); File ▸ Automate: <b>Create Droplet…</b> - a 💧 tile in the Actions tab to drop pictures on.</li>
+</ul>
+
+<h3 id="chanspot">✅ Single-channel editing; spot channels (2.467.0)</h3>
+<ul>
+  <li>Channels panel: click <b>Red / Green / Blue</b> (Ctrl+3-5) - edits change only it; Shift-click adds one; RGB (Ctrl+2) = all.</li>
+  <li><b>◍</b> New Spot Channel (ink colour + solidity, from the selection); <b>✎</b> paints the picked alpha / spot channel, <b>✔</b> keeps it; <b>⇣</b> merges a spot channel as a layer.</li>
+</ul>
+
+<h3 id="otype">✅ OpenType, optical kerning, type to outlines, text in a shape, round corners (2.466.0)</h3>
+<ul>
+  <li>Character panel: <b>OpenType</b> buttons + Stylistic set; Kerning <b>Optical</b> (both use the font's file on your computer).</li>
+  <li>Layer ▸ <b>Type: Convert to Shape</b> / <b>Create Work Path</b> - the letters' outlines.</li>
+  <li>Type tool clicked inside the picked shape layer (or Type: Text in the Picked Shape) - the text flows inside it.</li>
+  <li>Direct Selection: <b>⌜ Radius</b> + <b>Round Corners</b> - the picked corners (or all) of any path, a joined shape too.</li>
+</ul>
+
+<h3 id="pinpatch">✅ Puppet pin depth + rotation; Patch Content-Aware (2.465.0)</h3>
+<ul>
+  <li>Puppet Warp: the picked pin's <b>Pin Depth ⬆ / ⬇</b> (which part goes on top where it folds) and <b>Rotate Auto / Fixed</b> + angle; <kbd>Alt</kbd>-drag near the picked pin turns it.</li>
+  <li>Patch: <b>Normal</b> (Transparent, Diffusion 1-7) or <b>Content-Aware</b> (Structure 1-7, Color 0-10). Content-Aware Move: Structure + Color.</li>
+</ul>
+
+<h3 id="sketchcad">✅ Sketch layers: typed sizes, Measure, units, DXF / SVG (2.464.0)</h3>
+<ul>
+  <li>While drawing, type a number: Line length (<kbd>Tab</kbd> angle), rectangle width (<kbd>Tab</kbd> height), circle diameter, polygon radius - <kbd>Enter</kbd> draws it and keeps the values as dimensions.</li>
+  <li><kbd>M</kbd> Measure: one item = its sizes, two = between them, inside a closed region = its area + perimeter. Units (px / mm / in) in the 📐 Sketch tab.</li>
+  <li>File ▸ Export Sketch as DXF… / SVG… (the project's cad folder); File ▸ Import DXF… / from Project… (fit or real size).</li>
+</ul>
+
+<h3 id="sketchmod">✅ Sketch modify tools (2.463.0)</h3>
+<ul>
+  <li><kbd>T</kbd> Trim (the red piece goes), <kbd>E</kbd> Extend (to the next line / circle), <kbd>F</kbd> Fillet / Chamfer (a corner, then type the radius / distance).</li>
+  <li>Polygon (Sides on the options bar), Slot, 2-Point Circle, 3-Point Circle, Spline (Enter ends it).</li>
+  <li>📐 Sketch tab ▸ Modify: ⇉ Offset…, ⇋ Mirror (the mirror line picked last), ▦ Rectangular Pattern…, ✺ Circular Pattern….</li>
+</ul>
+
+<h3 id="sketch">✅ Sketch layers - constraints + dimensions (2.462.0)</h3>
+<ul>
+  <li>Layer ▸ <b>New Sketch</b>, or draw with the <b>N</b> tools: <kbd>L</kbd> line, <kbd>R</kbd> rectangle, <kbd>C</kbd> circle, <kbd>A</kbd> 3-point arc, <kbd>P</kbd> point, <kbd>D</kbd> dimension, <kbd>S</kbd> select; <kbd>X</kbd> construction, <kbd>Del</kbd> delete.</li>
+  <li>Level / upright lines snap (Horizontal / Vertical); points join where they meet. Dimensions: click, place, type the value.</li>
+  <li>📐 Sketch tab: degrees of freedom (✓ fully constrained), Coincident · Collinear · Concentric · Midpoint · Fix · Parallel · Perpendicular · Horizontal · Vertical · Tangent · Equal · Symmetric.</li>
+  <li>⬚ Profiles → Shapes makes shape layers of the closed regions.</li>
+</ul>
+
+<h3 id="dazlive">🧪 The Daz live link (2.461.0, experimental)</h3>
+<ul>
+  <li>Daz Studio: Scripts ▸ bitGen ▸ <b>bitGen Live Link</b> (keep its window open).</li>
+  <li>🧊 3D tab: <b>📡 Camera → Daz</b>, <b>📡 Pose → Daz</b>, <b>↺</b> (turns back), ☐ <b>as I change</b>. Daz looks through a "bitGen Camera"; the same-named bones turn.</li>
+</ul>
+
+<h3 id="layer3d">✅ 3D layers: a Daz / Blender scene (2.460.0)</h3>
+<ul>
+  <li>Daz Studio: Scripts ▸ bitGen ▸ bitGen Bridge ▸ <b>Scene</b>. Then Layer ▸ <b>New 3D Layer (Daz / Blender)…</b> - or pick any .blend.</li>
+  <li>🧊 3D tab: 🎥 scene camera, Front / Back / Left / Right / Top, Turn / Tilt / Distance / Lens; <b>🖐 Drag the view</b> = orbit, <kbd>Shift</kbd> = pan, <kbd>Ctrl</kbd> / wheel = zoom.</li>
+  <li>Pose: figure + bone, X / Y / Z turns, Reset. Frame. Render: Quick / EEVEE / Cycles, transparent, ▶ Render.</li>
+  <li><b>✨ Generate from it</b>: the prompt docker (Edit mode) makes a new image from the view.</li>
+</ul>
+
+<h3 id="dimauto">✅ Auto, floorplan and chain dimensions (2.458.0)</h3>
+<ul>
+  <li>Layer ▸ Auto Dimension (⊞ Auto on a dimension tool's bar): the picked object's width + height.</li>
+  <li>Layer ▸ Floorplan Dimensions… (⌂ Floorplan): every wall of the picked closed shape, outside, + the overall size - one group.</li>
+  <li>Chain Dimension tool (F8): click points, Enter or double-click, then where the line goes - every part + the total. <kbd>Shift</kbd> = horizontal, <kbd>Ctrl</kbd> = vertical, <kbd>Backspace</kbd> = undo a point.</li>
+</ul>
+
+<h3 id="dimgroup">✅ Dimension groups (2.457.0)</h3>
+<ul>
+  <li>Each dimension is a group: Extension Line 1, Extension Line 2 and the Dimension Line (arrowheads + number).</li>
+  <li>Press on an edge and drag = a dimension of that edge. Or click a node / edge, another node / edge, then where the line goes.</li>
+  <li>Drag an extension line = the length changes live. Drag its end nodes = that extension line alone gets longer / shorter.</li>
+  <li><kbd>Shift</kbd> = horizontal, <kbd>Ctrl</kbd> = vertical. The Move tool moves the whole group by its line; the dot in the middle moves the line.</li>
+</ul>
+
+<h3 id="dims">✅ CAD dimensions: exact points, live ends, a scale (2.441.0)</h3>
+<ul>
+  <li>Dimension tools snap to nodes, midpoints, corners, side middles, the nearest point on an outline, guideline crossings (named at the point; <kbd>Alt</kbd> = free).</li>
+  <li>The Move tool on a dimension: drag an end - the number follows live; <kbd>Shift</kbd> = horizontal, <kbd>Ctrl</kbd> = vertical.</li>
+  <li>📏 on the property bar: the real size + unit of the picked dimension = the picture's scale for all its dimensions (Layer ▸ Dimension Scale…).</li>
+</ul>
+
+<h3 id="guides">✅ Rulers, guidelines and snapping (2.440.0)</h3>
+<ul>
+  <li><b>Rulers</b> (<kbd>Ctrl</kbd>+<kbd>R</kbd>) in px, mm, cm, in or pt (View ▸ Ruler Units). Drag out of a ruler = a <b>guideline</b>; the Move tool (or <kbd>Ctrl</kbd>) moves one, back onto the ruler removes it. View ▸ Guidelines / Lock / New… / Guidelines… / Clear.</li>
+  <li><b>View ▸ Snap To</b>: Snap (<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>;</kbd>), Grid, Guidelines, Objects, Nodes, Midpoints, Intersections, Page. Drawing tools snap the pointer, the Move tool the layer's box. Grid and Snapping… sets the distance, grid spacing, dpi.</li>
+</ul>
+
+<h3 id="propbar">✅ The property bar, corner radii, ⊕ / ⊖ into a shape, line width and style (2.439.0)</h3>
+<ul>
+  <li>The <b>Object</b> bar under the tool options: <b>X Y W H</b> of the picked layer, <b>🔒</b> keeps the proportions.</li>
+  <li>A rectangle: its four corner radii (<b>🔗</b> = all together). A vector shape: its outline width (with presets) and line style (from pictures).</li>
+  <li>Shape tools (F6): <b>◻ New / ⊕ Add / ⊖ Subtract / ⊗ Intersect / ⊘ Exclude</b> - with a shape picked, a new shape joins it as a part; the shape it was stays as it was.</li>
+</ul>
+
+<h3 id="floatpanels">✅ Floating panel groups, named dockers, dialogs in the middle (2.438.0)</h3>
+<ul>
+  <li><b>⇱</b> on the Layers / Colour groups' tabs floats the group inside the editor - its title drags it, every edge sizes it, <b>⇲</b> puts it back.</li>
+  <li><b>Window ▸ New Docker…</b>: an empty named docker - drag a floating group onto it to dock it as a tab; <b>⚙</b>: main docker or confined to a docker, rename, delete. Kept in <code>panel_layout.cfg</code>.</li>
+  <li>Dialogs open in the middle of the screen, or where you last moved them (<code>dialog_layout.cfg</code>). <kbd>Shift</kbd>+<kbd>Del</kbd> deletes the selected layer.</li>
+</ul>
+
+<h3 id="genfill">✅ ✨ Generate Fill in Shape / in Mask, the pattern library (2.437.0)</h3>
+<ul>
+  <li><b>Layer ▸ ✨ Generate Fill in Shape…</b> (also right-click a layer, or Properties): generates inside the layer's outline; <b>✔ Apply</b> puts it on a new layer <b>clipped</b> to the shape (it stays live). <b>✨ Generate Fill in Mask…</b>: inside the layer's mask, the result with a copy of it.</li>
+  <li><b>Edit ▸ Define Pattern…</b> / <b>Pattern Library…</b>: patterns/&lt;name&gt;.png in the install folder - <b>New Fill Layer ▸ Pattern…</b> (scale, offset in Properties), <b>Edit ▸ Fill ▸ Pattern</b>, <b>Pattern Overlay</b> (user:&lt;name&gt;). A .bgi carries the patterns it uses.</li>
+</ul>
+
+<h3 id="bgi">✅ The project file: .bgi (2.436.0)</h3>
+<ul>
+  <li><b>File ▸ Save Project (.bgi)</b> <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>S</kbd> / <b>Save Project As (.bgi)…</b>: the document exactly as it is - layers, groups, masks, text / shape / fill / adjustment layers, styles, smart objects with their contents and smart filters, paths, channels, the selection, layer comps - in the project's <code>bgi</code> folder (+ a download when asked).</li>
+  <li><b>Open Project (.bgi)…</b>, <b>Open Project from Project…</b>, Open… (<kbd>Ctrl</kbd>+<kbd>O</kbd>) or a .bgi dropped on the editor: a new document, everything editable, a fresh history.</li>
+  <li>A zip: <code>doc.xml</code> (the document as XML) + <code>preview.png</code> + each layer / mask as a PNG.</li>
+</ul>
+
+<h3 id="gradients">✅ Gradient Editor, Layer Comps, smart filter blend modes (2.434.0)</h3>
+<ul>
+  <li><b>Gradient Editor</b> (Edit ▸ Gradient Editor…, the Gradient tool's gradient button, a fill layer's / a shape's gradient): presets + your own, click under the bar = a new stop, drag = move, drag down = delete; each stop's colour (or foreground / background), opacity, location; Reverse, Distribute.</li>
+  <li><b>Layer Comps</b> (Window ▸ Layer Comps): keep the layers' visibility / position / appearance and switch between them (▶, ◀ ▶), ↻ update, Last Document State.</li>
+  <li><b>Smart filter Blending Options</b> (right-click a smart filter): a blend mode + opacity.</li>
+</ul>

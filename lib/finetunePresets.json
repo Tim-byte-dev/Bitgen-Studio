@@ -1,0 +1,34 @@
+{
+  "_comment": "bitGen Studio 2.521.0 — the trainer's LLM and VISION base models (lib/fineTune.js -> scripts/ft_unsloth.py, Unsloth). model = the Hugging Face repo (the docker's Model path replaces it); loader = Unsloth's FastLanguageModel (language) / FastModel (model) / FastVisionModel (vision); vram_gb = what a bf16 LoRA needs (Unsloth's own tables; qlora = 4-bit, full = every weight); methods = what it can be trained with; checked = the repo + settings are from Unsloth's docs (false: best knowledge - check Config). The result is a .gguf for the app's assistant (llm-models) or its vision model (llm-models/vision/<name>/ + its mmproj).",
+  "llm": [
+    { "id": "qwen35_4b", "label": "Qwen3.5 4B - the best start (12 GB cards)", "family": "qwen3.5", "model": "Qwen/Qwen3.5-4B", "loader": "language", "vram_gb": 10, "methods": ["lora", "full"], "method": "lora", "lr": 0.0002, "checked": true, "rec": true, "licence": "Apache 2.0",
+      "note": "Unsloth: 10 GB for a bf16 LoRA. 4-bit (QLoRA) is not recommended for Qwen3.5 - it trains in 16-bit." },
+    { "id": "qwen35_9b", "label": "Qwen3.5 9B - the strongest that fits a 24 GB card", "family": "qwen3.5", "model": "Qwen/Qwen3.5-9B", "loader": "language", "vram_gb": 22, "methods": ["lora"], "method": "lora", "lr": 0.0002, "checked": true, "rec": true, "licence": "Apache 2.0",
+      "note": "Unsloth: 22 GB for a bf16 LoRA (an RTX 4090 / 5090 / 3090)." },
+    { "id": "qwen35_2b", "label": "Qwen3.5 2B - small and quick (8 GB cards)", "family": "qwen3.5", "model": "Qwen/Qwen3.5-2B", "loader": "language", "vram_gb": 5, "methods": ["lora", "full"], "method": "lora", "lr": 0.0002, "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth: 5 GB for a bf16 LoRA; a full fine-tune needs about 4x that." },
+    { "id": "qwen35_0_8b", "label": "Qwen3.5 0.8B - tiny (any card, full fine-tune fits)", "family": "qwen3.5", "model": "Qwen/Qwen3.5-0.8B", "loader": "language", "vram_gb": 3, "methods": ["lora", "full"], "method": "full", "lr": 0.00002, "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth: 3 GB for a LoRA, ~12 GB for a full fine-tune (every weight)." },
+    { "id": "gemma4_e4b", "label": "Gemma 4 E4B - Google, strong writing (16-24 GB cards)", "family": "gemma4", "model": "unsloth/gemma-4-E4B-it", "loader": "model", "vram_gb": 17, "methods": ["lora", "qlora"], "method": "lora", "lr": 0.0002, "chat_template": "gemma-4", "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth: 17 GB for a LoRA (less in 4-bit)." },
+    { "id": "gemma4_e2b", "label": "Gemma 4 E2B - Google, small (8-10 GB cards)", "family": "gemma4", "model": "unsloth/gemma-4-E2B-it", "loader": "model", "vram_gb": 9, "methods": ["lora", "qlora"], "method": "lora", "lr": 0.0002, "chat_template": "gemma-4", "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth: trains on 8 GB, a LoRA on 8-10 GB." },
+    { "id": "gemma4_31b", "label": "Gemma 4 31B - 4-bit QLoRA on a 24 GB card", "family": "gemma4", "model": "unsloth/gemma-4-31B-it", "loader": "model", "vram_gb": 22, "methods": ["qlora"], "method": "qlora", "lr": 0.0001, "chat_template": "gemma-4", "checked": false, "licence": "Apache 2.0",
+      "note": "Unsloth: 22 GB for a 31B QLoRA. The repo name follows Unsloth's naming - check Config." },
+    { "id": "qwen38_27b", "label": "Qwen3.8 27B - the newest (a 64-80 GB pod)", "family": "qwen3.8", "model": "Qwen/Qwen3.8-27B", "loader": "language", "vram_gb": 56, "methods": ["lora"], "method": "lora", "lr": 0.0001, "checked": false, "licence": "Apache 2.0",
+      "note": "A 27B bf16 LoRA needs ~56 GB (Unsloth's Qwen3.5-27B figure) - Settings -> Remote GPU -> a RunPod pod. The repo name is best knowledge - check Config." }
+  ],
+  "vision": [
+    { "id": "qwen35_4b_vl", "label": "Qwen3.5 4B vision - the best start (12-16 GB cards)", "family": "qwen3.5", "model": "Qwen/Qwen3.5-4B", "loader": "vision", "vram_gb": 12, "methods": ["lora"], "method": "lora", "lr": 0.0002, "checked": true, "rec": true, "licence": "Apache 2.0",
+      "note": "Unsloth has a Qwen3.5 4B vision notebook; ~10 GB for the LoRA + the pictures." },
+    { "id": "qwen35_9b_vl", "label": "Qwen3.5 9B vision - the strongest that fits a 24 GB card", "family": "qwen3.5", "model": "Qwen/Qwen3.5-9B", "loader": "vision", "vram_gb": 24, "methods": ["lora"], "method": "lora", "lr": 0.0002, "checked": true, "rec": true, "licence": "Apache 2.0",
+      "note": "~22 GB for the LoRA + the pictures - an RTX 4090 / 5090." },
+    { "id": "qwen35_2b_vl", "label": "Qwen3.5 2B vision - small (8 GB cards)", "family": "qwen3.5", "model": "Qwen/Qwen3.5-2B", "loader": "vision", "vram_gb": 6, "methods": ["lora"], "method": "lora", "lr": 0.0002, "checked": true, "licence": "Apache 2.0",
+      "note": "A quick captioner of your own." },
+    { "id": "gemma4_e4b_vl", "label": "Gemma 4 E4B vision - Google (16-24 GB cards)", "family": "gemma4", "model": "unsloth/gemma-4-E4B-it", "loader": "vision", "vram_gb": 17, "methods": ["lora", "qlora"], "method": "lora", "lr": 0.0002, "chat_template": "gemma-4", "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth: Gemma 4 vision fine-tuning; 17 GB for an E4B LoRA." },
+    { "id": "gemma4_e2b_vl", "label": "Gemma 4 E2B vision - Google, small (8-10 GB cards)", "family": "gemma4", "model": "unsloth/gemma-4-E2B-it", "loader": "vision", "vram_gb": 10, "methods": ["lora", "qlora"], "method": "lora", "lr": 0.0002, "chat_template": "gemma-4", "checked": true, "licence": "Apache 2.0",
+      "note": "Unsloth has a Gemma 4 E2B vision notebook." }
+  ],
+  "quants": ["q4_k_m", "q5_k_m", "q6_k", "q8_0", "f16"]
+}

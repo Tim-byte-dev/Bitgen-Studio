@@ -1,0 +1,1494 @@
+{
+  "_comment": "bitGen Studio — the 🧩 Testing docker's checklist (lib/testPlan.js). auto = ticked by itself when the app sees it work; manual = you tick ✓ / ✗ (+ a note). Newest release first.",
+  "version": "2.540.0",
+  "groups": [
+    {
+      "id": "g540",
+      "title": "2.540.0 — 🖼 Blender / Unreal renders made real with the reference docker's pictures (+ 3DREAL)",
+      "items": [
+        {
+          "id": "rr_blend_tl",
+          "title": "Timeline .blend → Render to real → 🖼 References: name a block \"Car\" in Blender, put a car picture in the reference docker - it is matched (auto); tick Use them, 🎬 Render to real: a first-frame job, then a 3DREAL job animates it",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "realrefs"
+          }
+        },
+        {
+          "id": "rr_manual",
+          "title": "…pick a picture by hand in an object's dropdown (or \"- no reference -\") - it is kept for that .blend",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "rr_ie_blend",
+          "title": "Image editor 🧊 3D layer: 🖼 References lists the meshes; with pictures set, ✨ Generate from it makes a real picture as a new layer",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_realrefs"
+          }
+        },
+        {
+          "id": "rr_ie_ue",
+          "title": "Image editor Unreal Layer → 🎮 Unreal tab: 🔍 Find the objects (update the bridge to 1.3.0), pick pictures, ✨ Make it real → a new layer",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "rr_tl_ue",
+          "title": "Timeline Unreal clip → UNREAL ▸ Render to Real: 🔍 Find the objects, pictures, 🎬 → a first-frame job then a 3DREAL job",
+          "where": "app",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "g539",
+      "title": "2.539.0 — 🖼 reference descriptions + wall / floor / furniture / light types, references in the house builder and the image editor",
+      "items": [
+        {
+          "id": "ref_desc",
+          "title": "References docker: type a short description under a picture, a video and a sound - Save the project, reopen it: they are still there; the mapping line shows the picture's",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "ref_types",
+          "title": "A picture's Type dropdown has wall · floor · furniture · light",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "house_tex",
+          "title": "🏠 Drag a wall / floor picture from the References docker onto a wall or a room on the plan - the 3D view (and a 📷 shot) shows it; Tile (m) sizes it",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_ref"
+          }
+        },
+        {
+          "id": "house_look",
+          "title": "🏠 A furniture / light picture on a piece (🖼 Looks like → From References…) - ✨ Make it real's prompt says \"look exactly like the one in picture N\" and sends it",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "ie_ref_layer",
+          "title": "🖼 Image editor: drag a reference picture onto an open picture - it comes in as a new layer named by its description",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_ref"
+          }
+        },
+        {
+          "id": "ie_ref_edit",
+          "title": "🖼 Image editor ✨ AI → Edit: pick a 'reference' (the dock's pictures) - the edit gets it as Picture 2 (\"put the lamp from Picture 2 on the table\")",
+          "where": "app",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "g538",
+      "title": "2.538.0 — 🧩 ⤓ Civitai into each type's folder, 📁 model_folders.json, 🔄 Sync, 🏠 ◯ lights, ⛶ beside the side dockers",
+      "items": [
+        {
+          "id": "mf_first",
+          "title": "🧩 Civitai tab: ⤓ on a card the first time for a type (e.g. SDXL LoRA) - the Select Folder dialog asks where; pick one and it downloads there",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "model_folder"
+          }
+        },
+        {
+          "id": "mf_again",
+          "title": "⤓ another model of the same type: no dialog - it goes straight to that folder (the downloads list shows it)",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "civitai_download"
+          }
+        },
+        {
+          "id": "mf_shift",
+          "title": "Shift+click ⤓: the dialog opens to change that type's folder (and downloads there)",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mf_list",
+          "title": "📁 in the Models docker: every type's folder (model_folders.json) - Change…, ✕ forget, pick one for any type",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mm_sync",
+          "title": "🔄 Sync: Civitai's details + pictures for every model + LoRA on this computer (all tabs) - by version id / SHA-256 / file name",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "model_sync"
+          }
+        },
+        {
+          "id": "house_light",
+          "title": "🏠 ◯ Light tool: press where it hangs, drag its reach - the plan shows the circle, the 3D view lights it (height, brightness, colour in the panel)",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_light"
+          }
+        },
+        {
+          "id": "max_sides",
+          "title": "⛶ Maximize a docker with the Gallery / Queue / References / Assets open: it fills the room between them, not over them",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "docker_max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g537",
+      "title": "2.537.0 — 🧩 Models: pages, folder tabs, card size, the info page, Civitai info for every model, This project",
+      "items": [
+        {
+          "id": "mm_pages",
+          "title": "🧩 Models with your 400+ models: a page holds what fits the docker (auto) - resize the docker and it refits; ‹ 1 2 … › and 24 / 48 / 96 / 200 a page",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mm_folders",
+          "title": "Folder tabs under Models / LoRAs: SDXL, Pony, Flux … (your folders inside checkpoints / loras, not 'checkpoints/SDXL') - each shows only its models",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mm_size",
+          "title": "⇲ Edit: drag a card's corner (or the slider) - every card follows and the columns refill the docker; it is remembered",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mm_fetch",
+          "title": "⤓ Civitai info: details, a thumbnail and example pictures arrive for your models (matched by file name) into model_info - another project shows them too",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "model_info"
+          }
+        },
+        {
+          "id": "mm_info",
+          "title": "Hover a card, move onto its description card, click it: the info page (examples + their prompts, Use this prompt, ✓ Use this model, Civitai ↗, ‹ Back / Esc)",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "mm_used",
+          "title": "📌 This project: the models + LoRAs this project's renders used",
+          "where": "app",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "g536",
+      "title": "2.536.0 — Veda sparse attention (an optional video accelerator)",
+      "items": [
+        {
+          "id": "vd_install",
+          "title": "Settings -> ComfyUI -> Video accelerators -> ⬇ Install Veda, then Settings -> Models -> Model catalog -> 'Veda predictor (MiniMax H3)'; restart ComfyUI (needs 0.38+)",
+          "where": "settings",
+          "manual": true
+        },
+        {
+          "id": "vd_render",
+          "title": "A MiniMax H3 video style with Veda On renders; the log says 'accel: veda on -> h3veda' and which predictor",
+          "where": "app",
+          "manual": true,
+          "auto": {
+            "kind": "job_log",
+            "re": "accel: veda (on|quality) -> h3veda"
+          }
+        },
+        {
+          "id": "vd_speed",
+          "title": "Same seed + prompt at 1344x768: time Veda On against Sage auto (and Off) - Veda should be clearly faster; note any softer faces",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "vd_quality",
+          "title": "Veda Quality (denser) on a hero shot: closer to Veda off, still faster than Sage",
+          "where": "app",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "g535",
+      "title": "2.535.0 — FLUX 3 Klein: an old ComfyUI is named as such",
+      "items": [
+        {
+          "id": "f3_update",
+          "title": "Update ComfyUI to 0.41.0 or newer (0.41.1+ best), restart it: a FLUX 3 Klein picture renders",
+          "where": "image",
+          "manual": true,
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "flux ?3"
+          }
+        },
+        {
+          "id": "f3_msg",
+          "title": "Before updating: the error says 'flux3' is a CHOICE this ComfyUI does not offer, names the version it needs and how to update (not 'the file is not on a search path')",
+          "where": "image",
+          "manual": true,
+          "auto": {
+            "kind": "job_log",
+            "re": "is a CHOICE of CLIPLoader\\.type"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g534",
+      "title": "2.534.0 — 🧪 Test mode (it suggests, you confirm + suggest), new renders join the open preview",
+      "items": [
+        {
+          "id": "tm_on",
+          "title": "Settings -> General -> 🧪 Test mode: on = tests tick and are suggested where you are; off = nothing ticks, nothing pops up",
+          "where": "settings",
+          "manual": true
+        },
+        {
+          "id": "tm_confirm",
+          "title": "Use something on the list: a small box asks 'Did it work?' - ✓ / ✗, what happened, and a suggestion to change the feature",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "tm_next",
+          "title": "In the image editor (or the House builder) a reminder says what to test next there; Later / Skip / ✕ move it along",
+          "where": "app",
+          "manual": true
+        },
+        {
+          "id": "lb_new",
+          "title": "A render finishing while the preview (lightbox) is open: it joins the strip and '✨ 1 new' takes you to it - the picture you are looking at stays",
+          "where": "image",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "gie",
+      "title": "Image editor - the everyday tools (each ticks when you use it in Test mode)",
+      "items": [
+        {
+          "id": "ie_blur",
+          "title": "Filters -> Blur -> Gaussian Blur on a layer",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^Gaussian Blur$"
+          }
+        },
+        {
+          "id": "ie_paint",
+          "title": "🖌 Brush: paint a stroke (size, opacity, colour)",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^paint$"
+          }
+        },
+        {
+          "id": "ie_erase",
+          "title": "Eraser: rub part of a layer out",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^erase$"
+          }
+        },
+        {
+          "id": "ie_select",
+          "title": "Make a selection (rectangle / lasso / magic wand)",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^(selection|Select)"
+          }
+        },
+        {
+          "id": "ie_move",
+          "title": "Move tool: drag a layer",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^move$"
+          }
+        },
+        {
+          "id": "ie_layer",
+          "title": "Layers: a new layer, Duplicate Layer, Merge Down",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "new layer|Duplicate Layer|merge down"
+          }
+        },
+        {
+          "id": "ie_transform",
+          "title": "Free transform (Ctrl+T): scale / turn a layer",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "transform"
+          }
+        },
+        {
+          "id": "ie_mask",
+          "title": "A layer mask: add one and paint on it",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "mask"
+          }
+        },
+        {
+          "id": "ie_sharpen",
+          "title": "Filters -> Sharpen -> Unsharp Mask",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^Unsharp Mask$"
+          }
+        },
+        {
+          "id": "ie_ai",
+          "title": "✨ Generate into a selection (the AI panel)",
+          "where": "imageedit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "ie_action",
+            "what": "^✨ generate into"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g533",
+      "title": "2.533.0 — Dropdown lists inside a dialog open in front of it",
+      "items": [
+        {
+          "id": "ss_lora",
+          "title": "📁 next to a LoRA (Select a LoRA): the folder dropdown opens IN FRONT of the dialog, its search box takes typing, a click picks the folder",
+          "manual": true,
+          "where": "image"
+        },
+        {
+          "id": "ss_set",
+          "title": "Settings: a long dropdown (e.g. the energy currency) opens its search list in front of the Settings dialog",
+          "manual": true,
+          "where": "settings"
+        }
+      ]
+    },
+    {
+      "id": "g532",
+      "title": "2.532.0 — Tests tick themselves, docker title bar ▁ ⛶ ✕, House: select / turn / size, walk a camera",
+      "items": [
+        {
+          "id": "tp_auto",
+          "title": "A job that finishes ticks its test by itself (auto ✓) - and it is still ticked after you restart the app",
+          "auto": {
+            "kind": "job",
+            "mode": "image"
+          },
+          "where": "image"
+        },
+        {
+          "id": "tp_more",
+          "title": "Things you used tick themselves too: Ctrl+K palette, a workspace, ↺ reset, 🪄 Furnish, ⌂ roof, 🧍 people, ⤓ .glb, 🎬 Every camera, 🩺 why it failed",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "workspace_used"
+          },
+          "where": "app"
+        },
+        {
+          "id": "dk_min",
+          "title": "▁ on a floating docker's title bar: only the title bar stays (▭ - or a double-click on the title - opens it again)",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "docker_min"
+          },
+          "where": "app"
+        },
+        {
+          "id": "dk_max",
+          "title": "⛶ maximize: the docker fills the window between the menu bar and the statusbar; 🗗 puts it back where it was (docked or floating)",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "docker_max"
+          },
+          "where": "app"
+        },
+        {
+          "id": "dk_x",
+          "title": "✕ closes the docker (its button / key opens it again)",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "hs_size",
+          "title": "🏠 ⬚ Select a sofa: drag a corner square to size it (Shift keeps its shape); the ↻ handle turns it (15° steps, Shift = free)",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_scale"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hs_box",
+          "title": "Drag on an empty spot: a box selects everything inside it; Shift+click adds / takes one off; drag one to move them all, R turns them, Delete removes them",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_select"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hs_walk",
+          "title": "Drag a 📷 camera through the plan: the 3D view looks through it as it moves",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_walk"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hs_keys",
+          "title": "A camera selected: ← → turn it, ↑ ↓ tilt it; hold Shift - it rises (3 m over the roof at most); hold Alt - it sinks (the ground floor)",
+          "manual": true,
+          "where": "house"
+        }
+      ]
+    },
+    {
+      "id": "g531",
+      "title": "2.531.0 — Anima: the text encoder found or named",
+      "items": [
+        {
+          "id": "an_dl",
+          "title": "Settings -> Models -> ⤓ Model catalog -> 'Anima text encoder (Qwen3 0.6B base)' downloads qwen_3_06b_base.safetensors; restart ComfyUI",
+          "manual": true,
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "anima"
+          },
+          "where": "settings"
+        },
+        {
+          "id": "an_render",
+          "title": "Anima (your animakimi_v13 in models/checkpoints) renders a picture",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "anima"
+          },
+          "where": "image"
+        },
+        {
+          "id": "an_doc",
+          "title": "🩺 Style doctor on Anima before the download: the row names the catalog entry",
+          "manual": true,
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g530",
+      "title": "2.530.0 — 🔍 the Ctrl+K command palette + 📖 Help",
+      "items": [
+        {
+          "id": "pal_open",
+          "title": "Ctrl+K (or 🔍 in the menu bar): type 'lora', 'house', 'depth map', 'negative' - the right dockers / windows / settings / guide sections come up; Enter opens it",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "palette_run"
+          },
+          "where": "app"
+        },
+        {
+          "id": "pal_set",
+          "title": "A Settings field from the palette: the dialog opens on its tab with the field lit",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "palette_settings"
+          },
+          "where": "app"
+        },
+        {
+          "id": "pal_help",
+          "title": "A guide section from the palette opens the 📖 Help window (pick any section there)",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "help_open"
+          },
+          "where": "app"
+        },
+        {
+          "id": "pal_tl",
+          "title": "Over the timeline's layers Ctrl+K still splits a clip (it does not open the palette)",
+          "manual": true,
+          "where": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "g529",
+      "title": "2.529.0 — House builder extras (roof, trace a plan, furnish, .glb, shot list)",
+      "items": [
+        {
+          "id": "hx_roof",
+          "title": "⌂ Roof (nothing picked -> the House panel): Gable / Hip / Flat - an outside camera's shot shows it",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_roof"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hx_trace",
+          "title": "🖼 Load a plan picture, 📐 set the scale with two points, draw the walls over it",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_trace"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hx_furnish",
+          "title": "🪄 Furnish this room (a room picked): the pieces against the walls, the door clear; with an LLM running it picks from the library",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_furnish"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hx_glb",
+          "title": "⤓ .glb opens in Blender / Unreal with its colours",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_glb"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hx_list",
+          "title": "🎬 Every camera: a StoryBoard scene per camera with the shot as its first frame + the list as .md",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_shotlist"
+          },
+          "where": "house"
+        }
+      ]
+    },
+    {
+      "id": "g528",
+      "title": "2.528.0 — 🧍 characters in House shots",
+      "items": [
+        {
+          "id": "pp_place",
+          "title": "🏠 House -> 🧍 Person: press where they stand, drag the way they face; pick the character + pose in the properties; a grey mannequin in 3D",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_people"
+          },
+          "where": "house"
+        },
+        {
+          "id": "pp_shot",
+          "title": "📷 Shot + maps: the mannequin is in the picture AND its depth map (for ControlNet)",
+          "auto": {
+            "kind": "event",
+            "event": "house_shot"
+          },
+          "where": "house"
+        },
+        {
+          "id": "pp_real",
+          "title": "✨ Make it real with FLUX.2 Klein edit (3 pictures) / Qwen Image 2.1 edit: the character replaces the mannequin, the room stays",
+          "manual": true,
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "image": "^house-.*-char-"
+          },
+          "where": "house"
+        }
+      ]
+    },
+    {
+      "id": "g527",
+      "title": "2.527.0 — 🩺 the Style doctor",
+      "items": [
+        {
+          "id": "sd_run",
+          "title": "🩺 (menu bar) -> ▶ Check (Quick): every image style gets a test picture; the table says which work",
+          "auto": {
+            "kind": "event",
+            "event": "style_doctor"
+          },
+          "where": "image"
+        },
+        {
+          "id": "sd_why",
+          "title": "A style that fails shows the log line that matters and what to do (e.g. a model ComfyUI does not list -> which folder)",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "style_doctor_explain"
+          },
+          "where": "image"
+        },
+        {
+          "id": "sd_real",
+          "title": "Real render: a style with its own steps + size (slower) - the times look right",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "style_doctor",
+            "cat": "real"
+          },
+          "where": "image"
+        },
+        {
+          "id": "sd_clean",
+          "title": "The test pictures are NOT in the gallery or the Image assets afterwards (unless 'Keep the test pictures')",
+          "manual": true,
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g526",
+      "title": "2.526.0 — the Workspace dropdown (Basic, Image editing, Video editing, Music video, Expert)",
+      "items": [
+        {
+          "id": "ws_pick",
+          "title": "Workspace (menu bar): each of the five shows its dockers and hides the buttons it does not need; Image editing sets Generate to 🖼 Image, Video editing to 🎬 Video",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "workspace_used",
+            "cat": "basic|image|video|musicvideo"
+          },
+          "where": "app"
+        },
+        {
+          "id": "ws_keep",
+          "title": "Change a workspace (hide a docker, resize, open 🏠 House), go to another and back: it is as you left it",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "ws_expert",
+          "title": "Expert: your old layout - every button is back",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "workspace_used",
+            "cat": "expert"
+          },
+          "where": "app"
+        },
+        {
+          "id": "ws_reset",
+          "title": "↺ next to the dropdown puts the workspace back to its default",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "workspace_reset"
+          },
+          "where": "app"
+        },
+        {
+          "id": "ws_restart",
+          "title": "Restart the app: it opens in the workspace you were in, its buttons still hidden",
+          "manual": true,
+          "where": "app"
+        }
+      ]
+    },
+    {
+      "id": "g525",
+      "title": "2.525.0 — a model ComfyUI's loader does not list is found where ComfyUI does list it",
+      "items": [
+        {
+          "id": "rl_krea",
+          "title": "Krea 2 Raw with Krea2/jibMixKrea_v60CarolinaReaper.safetensors renders - if the file is in models/checkpoints the log says '-> as ComfyUI lists it: … loaded by Load Checkpoint'",
+          "auto": {
+            "kind": "job_log",
+            "re": "loaded by Load Checkpoint"
+          },
+          "where": "image"
+        },
+        {
+          "id": "rl_anima",
+          "title": "Anima Aesthetic / Base render a picture (if not: 🐞 Ctrl+Alt+Shift+B and send the report - its log shows which list it was looked for in)",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "anima"
+          },
+          "where": "image"
+        },
+        {
+          "id": "rl_none",
+          "title": "A model in no ComfyUI folder at all: the error says it is in no list (checkpoints, diffusion_models, unet) and where to put it",
+          "manual": true,
+          "auto": {
+            "kind": "job_log",
+            "re": "not in Load Checkpoint.s list"
+          },
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g524",
+      "title": "2.524.0 — 🏠 the House builder (a floor plan you can use as a Location)",
+      "items": [
+        {
+          "id": "hb_open",
+          "title": "🏠 House (statusbar) opens the House builder; 📋 Example shows a furnished house on the plan AND in 3D",
+          "manual": true,
+          "auto": {
+            "kind": "event",
+            "event": "house_example"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hb_draw",
+          "title": "Draw: ▭ drag a room (its walls come with it), 🚪 / 🪟 click onto a wall, 🛋 place a sofa (R turns it), ⇗ stairs after ＋ a floor; Ctrl+Z / Ctrl+Y",
+          "manual": true,
+          "where": "house"
+        },
+        {
+          "id": "hb_save",
+          "title": "💾 Save: the house is in the list (with its rooms + m²)",
+          "auto": {
+            "kind": "event",
+            "event": "house_saved"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hb_3d",
+          "title": "3D: orbit it; ☀ Time moves the sun (noon = north), Lamps on at night; 👁 a camera's view - drag in it to aim the camera",
+          "manual": true,
+          "where": "house"
+        },
+        {
+          "id": "hb_shot",
+          "title": "📷 Shot + maps: the picture + its depth + normal maps land in the Image assets",
+          "auto": {
+            "kind": "event",
+            "event": "house_shot"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hb_pano",
+          "title": "📍 360° location: a new Location with the room as its 360° view (Locations docker; its @tag works in the prompt)",
+          "auto": {
+            "kind": "event",
+            "event": "house_pano"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hb_real",
+          "title": "✨ Make it real (an edit style - Qwen Image Edit / Kontext / FLUX.2 Klein): a photoreal picture of the room, same layout",
+          "manual": true,
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "image": "^house-"
+          },
+          "where": "house"
+        },
+        {
+          "id": "hb_obj",
+          "title": "⤓ .obj: the zip imports into Blender (Y up) / Unreal (scale 100) with its colours",
+          "auto": {
+            "kind": "event",
+            "event": "house_obj"
+          },
+          "where": "house"
+        }
+      ]
+    },
+    {
+      "id": "g523",
+      "title": "2.523.0 — a style's model can be a .gguf or a .safetensors",
+      "items": [
+        {
+          "id": "ls_krea",
+          "title": "Krea 2 Raw GGUF style with a .safetensors model (e.g. Krea2/jibMixKrea…): it renders - the log says 'UnetLoaderGGUF -> UNETLoader'",
+          "auto": {
+            "kind": "job_log",
+            "re": "UnetLoaderGGUF -> UNETLoader"
+          },
+          "where": "image"
+        },
+        {
+          "id": "ls_gguf",
+          "title": "A safetensors style (Krea 2 Raw / Turbo, Anima) with a .gguf model: it renders - 'UNETLoader -> UnetLoaderGGUF'",
+          "auto": {
+            "kind": "job_log",
+            "re": "UNETLoader -> UnetLoaderGGUF"
+          },
+          "where": "image"
+        },
+        {
+          "id": "ls_anima",
+          "title": "Anima Aesthetic / Base render a picture (if not: 🐞 Ctrl+Alt+Shift+B and send the report)",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "anima"
+          },
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g522",
+      "title": "2.522.0 — 🐞 the Bug report docker (Ctrl+Alt+Shift+B)",
+      "items": [
+        {
+          "id": "br_key",
+          "title": "Ctrl+Alt+Shift+B anywhere (even while typing): a screenshot of the window, then the 🐞 Bug report docker; again hides it",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "br_marks",
+          "title": "The screenshot: ✏ Pen and ▭ Box marks in red, ↶ Undo, 📷 Again (the docker hides for it), 📎 a picture of your own",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "br_steps",
+          "title": "⤵ Use the recorded steps: your last clicks, choices and shortcut keys with the docker they were in - never what you typed",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "br_peek",
+          "title": "👁 What is included: the system, each log's last lines, the steps, the settings with every key / token shown as •••",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "br_save",
+          "title": "💾 Save report: bitgen-bug-….zip downloads (report.md, report.json, screenshot.png, logs/) - upload it to Claude",
+          "auto": {
+            "kind": "event",
+            "event": "bugreport_saved"
+          },
+          "where": "app"
+        },
+        {
+          "id": "br_list",
+          "title": "Earlier reports: ⤓ downloads one again, 🗑 deletes it; Settings -> General -> 🐞 Report a bug… opens the docker too",
+          "manual": true,
+          "where": "app"
+        }
+      ]
+    },
+    {
+      "id": "g521",
+      "title": "2.521.0 — checkpoint / LLM / vision fine-tunes in the trainer, ⧉ bake a LoRA into a checkpoint",
+      "items": [
+        {
+          "id": "ft_types",
+          "title": "🎓 LoRA -> a job's Type: 🎨 LoRA / 🧱 Checkpoint fine-tune / 💬 LLM fine-tune / 👁 Vision fine-tune - each lists its base models (★ = recommended) with what it needs vs your card",
+          "manual": true,
+          "where": "lora"
+        },
+        {
+          "id": "ft_unsloth",
+          "title": "An LLM or vision job -> ⚙ Install Unsloth: the queue job makes its venv, installs Unsloth + llama.cpp's converter and says it is ready",
+          "auto": {
+            "kind": "job",
+            "mode": "install_unsloth"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "ft_llm",
+          "title": "💬 LLM fine-tune: type a few examples or ⤒ Import a JSONL / CSV, ▶ Start - steps + loss in the Run tab, then a .gguf in the LLM folder (Settings -> LLM picks it)",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[ft\\] the fine-tuned model is .*Settings -> LLM picks it \\(the assistant\\)"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "ft_vision",
+          "title": "👁 Vision fine-tune: pictures + the answer under each + the instruction, ▶ Start - the .gguf + its mmproj land in the vision folder",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[ft\\] the fine-tuned model is .*Vision model picks it"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "ft_ckpt",
+          "title": "🧱 Checkpoint fine-tune (Lumina 2 / Flex.1 / FLUX.2 klein / SDXL): ▶ Start - the new model is in ComfyUI's diffusion_models/trained (Load Diffusion Model)",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[lora\\] the fine-tuned model is in ComfyUI's diffusion_models folder"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "ft_bake",
+          "title": "A finished picture LoRA -> Run tab -> ⧉ Bake into a new checkpoint: pick its base model, strength, name - the new file is in checkpoints|diffusion_models/trained",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[bake\\] the new (checkpoint|model) is in ComfyUI's"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "ft_export",
+          "title": "An LLM / vision job -> ⤓ Export job: config.json + the dataset + ft_unsloth.py - runs on a RunPod pod with Unsloth",
+          "manual": true,
+          "where": "lora"
+        },
+        {
+          "id": "ft_klein",
+          "title": "🎨 LoRA -> FLUX.2 klein base 4B: a LoRA trains (24 GB) and works with the distilled klein 4B",
+          "manual": true,
+          "where": "lora"
+        }
+      ]
+    },
+    {
+      "id": "g520",
+      "title": "2.520.0 — LoRA trainer, peak / off-peak pricing + usage log, Remote GPU, packages in Settings, grouped downloads",
+      "items": [
+        {
+          "id": "lt_install",
+          "title": "Statusbar 🎓 LoRA -> ⚙ Install ai-toolkit: the queue job clones ai-toolkit, makes its venv + PyTorch and says it is ready",
+          "auto": {
+            "kind": "job",
+            "mode": "install_aitoolkit"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "lt_job",
+          "title": "LoRA trainer -> ＋ New job: pick a base (Z-Image Turbo / FLUX / SDXL…), a trigger word, rank, steps; Save keeps it",
+          "manual": true,
+          "where": "lora"
+        },
+        {
+          "id": "lt_data",
+          "title": "Dataset tab: add pictures (upload, drag in, or pick from the gallery), write captions or ✨ Caption all with the assistant",
+          "manual": true,
+          "where": "lora"
+        },
+        {
+          "id": "lt_train",
+          "title": "Run tab -> ▶ Train: the queue shows step N/M + loss, samples appear, the LoRA lands in loras/trained with its Model manager card",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[lora\\] the LoRA is in ComfyUI's loras folder"
+          },
+          "where": "lora"
+        },
+        {
+          "id": "lt_yaml",
+          "title": "Job tab -> 📄 YAML: edit ai-toolkit's config by hand; ✎ Use my YAML trains with yours, ↺ Back to the generated one returns to the form's",
+          "manual": true,
+          "where": "lora"
+        },
+        {
+          "id": "pk_price",
+          "title": "Settings -> General -> Energy cost: a peak price + ＋ Peak times (days + from/to); everything else is off-peak",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "pk_job",
+          "title": "A job run in a peak window: its ⚡ card / log splits peak and off-peak Wh and their cost",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[power\\] .*\\(peak .* off-peak"
+          },
+          "where": "image"
+        },
+        {
+          "id": "us_review",
+          "title": "📊 Usage… (or click the ⚡ statusbar figure): days + jobs for a range, totals, CSV export",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "rg_url",
+          "title": "Settings -> Remote GPU: another machine's ComfyUI URL -> ✓ Test -> Use it; generation runs there, Local puts it back",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "rg_runpod",
+          "title": "Remote GPU -> RunPod: your API key lists your pods, start / stop one, Use it points the app at its ComfyUI proxy",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "rg_ssh",
+          "title": "Remote GPU -> SSH tunnel: user@host + key -> ▶ Open the tunnel forwards its ComfyUI to this computer",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "hw_panel",
+          "title": "Settings -> Models: 🖥 This computer & package shows your card, the package installed and what each package lets you use",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "hw_upgrade",
+          "title": "⬆ Upgrade to a bigger package: it installs what it adds + downloads its models in the background (log + progress there)",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "md_groups",
+          "title": "The models page (setup / Model downloads): a group's checkbox ticks or clears its whole group and shows its size",
+          "manual": true,
+          "where": "settings"
+        }
+      ]
+    },
+    {
+      "id": "g519",
+      "title": "2.519.0 — daily supply charge, setup asks your hardware, packages",
+      "items": [
+        {
+          "id": "ec_supply",
+          "title": "Settings -> General -> Energy cost: the daily supply charge is saved; a job's ⚡ card tooltip splits energy + supply",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[power\\] .* of the .*/day supply charge\\)"
+          },
+          "where": "settings"
+        },
+        {
+          "id": "hw_ask",
+          "title": "Setup (H3_SETUP=1 or a new install): the hardware card shows your graphics card, RAM and CPU - or asks for what it could not find",
+          "manual": true,
+          "steps": [
+            "Start the app with H3_SETUP=1 (or run setup again)",
+            "Check the card, RAM and CPU on the first page",
+            "Not right? -> pick your card from the list"
+          ]
+        },
+        {
+          "id": "hw_pkg",
+          "title": "Setup -> Next: the package page picks the right package for your card and lists what you can use (✓ ~ ✗, add later) and the download",
+          "manual": true
+        },
+        {
+          "id": "hw_editor",
+          "title": "Install the Editor package on a computer (or a test folder): no ComfyUI, no models - the studio opens and the editors work",
+          "manual": true
+        },
+        {
+          "id": "hw_cli",
+          "title": "node scripts/setup-cli.js --packages prints the packages for this computer",
+          "manual": true
+        }
+      ]
+    },
+    {
+      "id": "g518",
+      "title": "2.518.0 — queue presets, model manager, Civitai, energy cost",
+      "items": [
+        {
+          "id": "qp_menu",
+          "title": "Menu bar: the ⏱ queue preset dropdown is there and lists Normal / Quiet / Eco / Cool-down / Max / Custom",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "qp_power",
+          "title": "Pick Quiet (overnight): ⓘ says the power limit was set - or why not (needs the app run as administrator)",
+          "manual": true,
+          "steps": [
+            "Menu bar ⏱ -> Quiet (overnight)",
+            "Click ⓘ - read the ✓ / ✗ line",
+            "Pick Normal afterwards to put the default limit back"
+          ],
+          "where": "app"
+        },
+        {
+          "id": "qp_rest",
+          "title": "Quiet: two image jobs in a row - the second waits about 20 s ([queue] waited ... in its log)",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[queue\\] waited \\d+ s"
+          },
+          "where": "app"
+        },
+        {
+          "id": "mm_open",
+          "title": "🧩 Model manager: it opens (the 🧩 Models button in the statusbar) and shows a card for each model",
+          "auto": {
+            "kind": "cards",
+            "min": 1
+          },
+          "where": "app"
+        },
+        {
+          "id": "mm_cards",
+          "title": "Cards: thumbnail, name, rating, release date, model type (SDXL / Pony / Flux ...), category (image / image edit / video / music)",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "mm_hover",
+          "title": "Hovering a card opens its description card beside it (cfg, steps, VAE, text encoder, keywords); moving off closes it",
+          "manual": true,
+          "where": "app"
+        },
+        {
+          "id": "mm_override",
+          "title": "Select a model + a LoRA, tick Override the style - an image renders with them (its ⓘ shows the model + LoRA)",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "override": true
+          },
+          "where": "image"
+        },
+        {
+          "id": "mm_newstyle",
+          "title": "✚ New style from the selected model - the new style is in the Style dropdown and renders",
+          "auto": {
+            "kind": "event",
+            "event": "style_from_model"
+          },
+          "where": "image"
+        },
+        {
+          "id": "mm_edit",
+          "title": "✎ on a card: change its type / cfg / steps / keywords - it keeps them after ⟳ Rescan",
+          "auto": {
+            "kind": "event",
+            "event": "card_edit"
+          },
+          "where": "app"
+        },
+        {
+          "id": "cv_key",
+          "title": "Settings -> General -> Civitai: the key tests OK (civitai.red or civitai.com)",
+          "auto": {
+            "kind": "civitai_key"
+          },
+          "where": "settings"
+        },
+        {
+          "id": "cv_search",
+          "title": "Model manager -> Civitai: a search shows cards with pictures",
+          "auto": {
+            "kind": "event",
+            "event": "civitai_search"
+          },
+          "where": "app"
+        },
+        {
+          "id": "cv_lora",
+          "title": "Download a LoRA from Civitai - it lands in ComfyUI's loras folder (no Save As) with its picture + keywords",
+          "auto": {
+            "kind": "event",
+            "event": "civitai_download",
+            "cat": "loras"
+          },
+          "where": "image"
+        },
+        {
+          "id": "cv_ckpt",
+          "title": "Download a checkpoint - it lands in checkpoints (or diffusion_models when it has no VAE / text encoder inside)",
+          "auto": {
+            "kind": "event",
+            "event": "civitai_download",
+            "cat": "checkpoints|diffusion_models"
+          },
+          "where": "image"
+        },
+        {
+          "id": "cv_lookup",
+          "title": "🔍 Look up a model you already had on Civitai - its card fills in (picture, base model, keywords)",
+          "auto": {
+            "kind": "event",
+            "event": "civitai_lookup"
+          },
+          "where": "app"
+        },
+        {
+          "id": "ec_set",
+          "title": "Settings -> General -> Energy cost: your price per kWh is saved",
+          "auto": {
+            "kind": "price"
+          },
+          "where": "settings"
+        },
+        {
+          "id": "ec_job",
+          "title": "A finished job's ⚡ card / [power] line shows what it cost",
+          "auto": {
+            "kind": "job_log",
+            "re": "^\\[power\\] .* - cost "
+          },
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g517",
+      "title": "2.517.0 — power draw, clock speeds, a job's energy, Anima",
+      "items": [
+        {
+          "id": "pw_gpu",
+          "title": "System stats: each GPU has Power (W) and Clock graphs (nvidia-smi found)",
+          "auto": {
+            "kind": "gpu_power"
+          }
+        },
+        {
+          "id": "pw_temp",
+          "title": "The GPUs' temperatures are read (queue presets need them)",
+          "auto": {
+            "kind": "gpu_temp"
+          }
+        },
+        {
+          "id": "pw_cpu",
+          "title": "System stats: CPU clock shows",
+          "auto": {
+            "kind": "cpu_clock"
+          }
+        },
+        {
+          "id": "pw_job",
+          "title": "A finished job has ⚡ … Wh on its card in the Done tab",
+          "auto": {
+            "kind": "job_energy"
+          },
+          "where": "image"
+        },
+        {
+          "id": "an_aes",
+          "title": "Anima style renders an image (anima-aesthetic-v1.1)",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Anima$"
+          },
+          "where": "image"
+        },
+        {
+          "id": "an_base",
+          "title": "Anima base style renders an image",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Anima base$"
+          },
+          "where": "image"
+        }
+      ]
+    },
+    {
+      "id": "g516",
+      "title": "2.516.0 — Krea 2, keyframes on any property",
+      "items": [
+        {
+          "id": "k2_turbo",
+          "title": "Krea 2 Turbo renders",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Krea 2 Turbo$"
+          },
+          "where": "image"
+        },
+        {
+          "id": "k2_raw",
+          "title": "Krea 2 Raw renders",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Krea 2 Raw$"
+          },
+          "where": "image"
+        },
+        {
+          "id": "k2_tgguf",
+          "title": "Krea 2 Turbo GGUF renders",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Krea 2 Turbo GGUF$"
+          },
+          "where": "image"
+        },
+        {
+          "id": "k2_rgguf",
+          "title": "Krea 2 Raw GGUF renders",
+          "auto": {
+            "kind": "job",
+            "mode": "image",
+            "style": "^Krea 2 Raw GGUF$"
+          },
+          "where": "image"
+        },
+        {
+          "id": "kf_any",
+          "title": "Keyframes on any property: key a clip's effect setting, ⚙ Compile - the movie matches the canvas",
+          "manual": true,
+          "where": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "g515",
+      "title": "2.515.0 — theme edit keys, cut-out, camera tracker, fill",
+      "items": [
+        {
+          "id": "te_keys",
+          "title": "Ctrl+Shift+Alt+E enters theme edit mode (Settings dialog editable); Ctrl+S saves and leaves",
+          "manual": true,
+          "where": "settings"
+        },
+        {
+          "id": "ai_cut",
+          "title": "AI cut-out through a shot: the subject is cut out on every frame and the compile keeps it",
+          "manual": true,
+          "where": "timeline"
+        },
+        {
+          "id": "cam3d",
+          "title": "3D camera tracker: solves a real clip and a 3D card sticks to the scene",
+          "manual": true,
+          "where": "timeline"
+        },
+        {
+          "id": "vfill",
+          "title": "Content-aware fill for video: a removed object stays gone through the shot",
+          "manual": true,
+          "where": "timeline"
+        }
+      ]
+    },
+    {
+      "id": "gbase",
+      "title": "This computer",
+      "items": [
+        {
+          "id": "comfy",
+          "title": "ComfyUI answers (Settings -> ComfyUI)",
+          "auto": {
+            "kind": "comfy"
+          }
+        },
+        {
+          "id": "anyimg",
+          "title": "Any image job finished",
+          "auto": {
+            "kind": "job",
+            "mode": "image"
+          },
+          "where": "image"
+        },
+        {
+          "id": "anyvid",
+          "title": "Any video job finished",
+          "auto": {
+            "kind": "job",
+            "mode": "^(ref2va|t2va|fl2va)$"
+          },
+          "where": "app"
+        }
+      ]
+    }
+  ]
+}

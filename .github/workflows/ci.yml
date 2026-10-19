@@ -1,0 +1,30 @@
+# bitGen Studio — the quick tests on every push and pull request (2.477.0).
+# scripts/ci-units.sh: every self-contained unit test + the repository checks. The browser suite against stub
+# servers (scripts/e2e-stub-test.sh) runs before each release; it needs Playwright and takes an hour or more.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  units:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: npm ci --no-audit --no-fund
+      - run: bash scripts/check-gitignore.sh
+      - run: bash scripts/ci-units.sh

@@ -1,0 +1,11 @@
+{
+  "id": "promptdock",
+  "name": "Prompt",
+  "order": 80,
+  "html": "dock.html",
+  "scripts": [
+    "promptdock.js",
+    "quickprompts.js",
+    "pfloat.js"
+  ]
+}

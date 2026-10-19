@@ -1,0 +1,196 @@
+    <div class="bdock" id="promptdock">
+      <div class="bhead" data-collapse="promptdock">▾ Prompt <button class="maxbtn" data-max="promptdock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- THE PROMPT MENUBAR (2.164.0, by instruction): the dock's actions
+             in one row at the top — Enhance and Clear from the old header,
+             Abort / Camera / Speak / Read replies from the old right column.
+             Same ids, same wiring; only the furniture moved. -->
+        <div class="grpbar" id="pmBar" style="gap:6px;align-items:center;flex-wrap:wrap">
+          <!-- 2.401.0 (Tim: "use the enhance button in the prompt docker to upscale the selected video - the selected video
+               will be the one selected from gallery,assets or reference"; asked, he said the prompt enhance is not
+               needed - Enter already sends the prompt to the LLM): ⏫ Enhance = SeedVR2 on the selected video -->
+          <button class="ghost gbtn" id="enhanceBtn" title="Upscale the selected video with SeedVR2 - click a video in the gallery, the Video assets or the reference dock first">⏫ Enhance</button>
+          <button class="ghost gbtn" id="promptClear" title="Clear the prompt text">🧹 Clear</button>
+          <button class="ghost gbtn" id="abortBtn" disabled
+            title="Stop the render that is running — asks whether to stop just it, retry it, or empty the queue too">⏹ Abort</button>
+          <button class="ghost gbtn" id="camBtn"
+            title="Camera presets — framing, angle, lens and movement, with previews">🎥 Camera</button>
+          <button class="ghost gbtn" id="micBtn"
+            title="Hold a conversation out loud: record, transcribe with faster-whisper, and put the words in the prompt box">🎤 Speak</button>
+          <label class="chk" title="Read each reply aloud with the selected voice. The audio is saved to the project's Sound assets."><input type="checkbox" id="readBack"> 🔊 Read replies</label>
+          <!-- 2.233.0 (by instruction): ON = attached pictures go through the
+               vision model and the descriptions ride the LLM context + the
+               stored chat; OFF = the pictures store as files with a plain
+               "[N picture(s) attached, not described]" note and the
+               captioner is never started — the switch for when the VL model
+               is not wanted warm. Persisted (store pdDescribe). -->
+          <label class="chk" title="Describe attached pictures with the local vision model and let the chat LLM use the descriptions. Off: pictures attach as files only and the vision model is never started."><input type="checkbox" id="pdDescribe" checked> 🖼 Describe image</label>
+        </div>
+        <div id="mapline" class="hidden"><div id="maphead"></div><div id="mapbody" class="hidden"></div></div>
+        <div class="prow">
+          <!-- 2.257.0 (by instruction): a VERTICAL toolbar left of the
+               prompt input — icon-only. Each button adds its phrase to the
+               prompt ONCE (pressing it again while the phrase is already
+               there does nothing); the phrase leads the prompt so the chat
+               reads the intent first. -->
+          <div id="ptools" style="display:flex;flex-direction:column;gap:6px;flex:0 0 auto;align-self:flex-start">
+            <button class="ghost gbtn" id="ptScreenplay" type="button" aria-label="Create screenplay"
+              title="Create screenplay — adds &quot;create screenplay&quot; to the prompt (once)">🎬</button>
+            <button class="ghost gbtn" id="ptImage" type="button" aria-label="Create image prompt from image"
+              title="Create image prompt from image — adds &quot;create image prompt from image&quot; to the prompt (once); attach the picture with ＋ first">🖼</button>
+            <button class="ghost gbtn" id="ptVideo" type="button" aria-label="Create video prompt"
+              title="Create video prompt — adds &quot;create video prompt&quot; to the prompt (once)">📹</button>
+            <button class="ghost gbtn" id="ptSong" type="button" aria-label="Create song"
+              title="Create song — adds &quot;create song&quot; to the prompt (once)">🎵</button>
+            <!-- 2.270.0 (by instruction): MUSIC VIDEO — the phrase fires the
+                 music_video LLM addendum (lyric lock, clip grid). Attach the
+                 VOCAL STEM with ＋: it splits into 15s segments at
+                 music/temp/ and each scene gets its own slice as an audio
+                 reference. -->
+            <button class="ghost gbtn" id="ptMusicVideo" type="button" aria-label="Create music video"
+              title="Create music video — adds &quot;create music video&quot; to the prompt (once); attach the vocal stem with ＋ and it splits into 15-second per-scene audio references">🎤</button>
+          </div>
+          <div class="pleft">
+            <!-- 2.233.0 ATTACHED-IMAGE LAYOUT "like this website does": a
+                 horizontal row of small rounded thumbnail chips INSIDE the
+                 composer, ABOVE the text input; each chip carries a hover ✕;
+                 the chips clear when the message sends. promptdock.js owns
+                 the wiring; drag-drop onto the composer adds too. -->
+            <div id="pdChips" class="hidden" style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 2px"></div>
+            <!-- 2.270.0: the split's one-line report (segments made, scenes
+                 bound) — promptdock-owned, no core seam needed -->
+            <div id="pdStemNote" class="hidden" style="font-size:11px;opacity:.8;padding:2px 2px"></div>
+            <textarea id="prompt" style="flex:1;min-height:0" placeholder="Your prompt — or a question for the chat above (💬 Send to chat, or Ctrl+Enter). e.g. <subject 1> walks through a rain-soaked laneway at night, neon reflections, handheld camera, ambient street sound."></textarea>
+            <div class="llmrow">
+              <!-- 2.233.0: ＋ opens a multi-image picker (png/jpg/webp);
+                   picked files become chips above the prompt input. NOTE the
+                   accept list is explicit — never image/* (the 2.157-era
+                   comment-stripper reads /* as a block comment). -->
+              <button class="ghost ibtn" id="pdAttachBtn" aria-label="Attach pictures or a vocal stem"
+                title="Attach picture(s) to the prompt (described by the vision model when 🖼 Describe image is on) — or a vocal stem / song: audio splits into 15-second segments and each scene gets its own slice as an audio reference">＋</button>
+              <!-- 2.270.0: ＋ also takes AUDIO (the vocal stem) — picked
+                   audio posts to /api/stems/split, never becomes a chip.
+                   Types stay EXPLICIT — never a slash-star wildcard type
+                   (the 2.157-era comment-stripper reads slash-star as a
+                   block comment opener). -->
+              <input type="file" id="pdAttachFile" class="hidden" multiple
+                accept="image/png, image/jpeg, image/webp, audio/wav, audio/x-wav, audio/mpeg, audio/flac, audio/ogg, audio/mp4, audio/x-m4a">
+              <label>LLM</label>
+              <select id="llmSel"><option value="">— none found —</option></select>
+              <!-- 2.233.0: the VISION model — populated from /api/captioner/models
+                   (only .gguf files with an mmproj beside them; a model without
+                   its projector cannot see and is not listed). Selection
+                   persists as config captioner.model/mmproj. -->
+              <label style="margin-left:8px" title="Vision model used to describe attached pictures — install one with get-qwen3vl.ps1">Vision</label>
+              <select id="visionSel" title="Vision model for 🖼 Describe image — every .gguf model (an mmproj beside it lets it see pictures), from the Settings → LLM vision folder when set, else qwen3vl/, the LLM folder's vision/ subfolder, and the LLM folder">
+                <option value="">(no vision models - run get-qwen3vl.ps1)</option>
+              </select>
+              <label style="margin-left:8px">Voice</label>
+              <select id="voiceSel" title="Voice used by the Speech button — clones are saved in Settings → Audio">
+                <option value="">default</option>
+              </select>
+              <label style="margin-left:8px">Style</label>
+              <select id="styleSel" title="Image style used by the Generate Image button — styles are created in Settings → Image">
+                <option value="">— none —</option>
+              </select>
+              <label style="margin-left:8px" title="Video style used by Generate (video): its workflow, checkpoints per phase, text encoder, VAE and LoRAs — created in Settings → Video">Video</label>
+              <select id="videoStyleSel" title="Video style used by Generate — styles are created in Settings → Video">
+                <option value="">— template —</option>
+              </select>
+              <!-- 2.338.0: an LTX 2.5 style renders one mode of Tim's all-in-one canvas;
+                   Auto picks it from what the reference dock holds -->
+              <select id="ltxModeSel" hidden style="margin-left:4px;max-width:190px"
+                title="LTX 2.5 mode - Auto picks from the reference dock: a video = style transfer; with an audio: 1 picture = lipsync, 2 = first/last lipsync, 3 = first/middle/last, none = audio to video; without: 1 picture = image to video (first frame), 2 = first/last frame, none = text. LTX 2.3: a video = 3D render -> real (3DREAL), 2 pictures = first/last, 1 = image to video, none = text"
+                aria-label="LTX mode" onchange="window.ltxModePaint && ltxModePaint()">
+                <option value="auto">LTX: Auto (from the references)</option>
+                <option value="t2v">Text to video</option>
+                <option value="i2v">Image to video (picture 1 = first frame)</option>
+                <option value="flf">First / last frame (pictures 1 + 2)</option>
+                <option value="fmlf">First / middle / last + audio (pictures 1-3)</option>
+                <option value="a2v">Audio to video (text + audio)</option>
+                <option value="lipsync">Lipsync (picture 1 + audio)</option>
+                <option value="fl_lipsync">First / last lipsync (pictures 1 + 2 + audio)</option>
+                <option value="v2v">Video to video (style transfer, video + picture 1)</option>
+                <option value="3dreal">3D render → real (3DREAL: the video = the render, picture 1 = optional real first frame)</option>
+              </select>
+              <!-- 2.402.0: LTX 2.3's 3DREAL IC-LoRA variant (fal/LTX-2.3-3DREAL-LoRA) -->
+              <select id="ltx3dSel" hidden style="margin-left:4px;max-width:170px"
+                title="fal's 3DREAL LoRA (render -> photoreal): strong-v2 = newest (multi-scene, audio, faces), strong = a harder photoreal push, light = faithful / gentle. Auto = the newest one in ComfyUI's loras"
+                aria-label="3DREAL variant" onchange="window.ltxModePaint && ltxModePaint()">
+                <option value="">3DREAL: Auto</option>
+                <option value="3DREAL-strong-v2.safetensors">3DREAL: strong v2</option>
+                <option value="3DREAL-strong.safetensors">3DREAL: strong</option>
+                <option value="3DREAL-light.safetensors">3DREAL: light</option>
+              </select>
+              <select id="ltxTransSel" hidden style="margin-left:4px;max-width:150px"
+                title="The transition LoRA (ltx2.3-transition) - Auto: on in the modes that travel between pictures (first/last, first/last lipsync, first/middle/last), off in the others"
+                aria-label="LTX transition LoRA">
+                <option value="auto">Transition: Auto</option>
+                <option value="on">Transition: On</option>
+                <option value="off">Transition: Off</option>
+              </select>
+              <input type="number" id="imgBatch" min="1" max="8" value="1" style="width:3.4em;margin-left:6px"
+                title="How many images to render per press of Generate Image (each gets its own seed)">
+            </div>
+          </div>
+          <div class="pside">
+            <!-- 2.382.0 (Tim: "make the info above the generate button show the steps only not the full details -
+                 below the generate button add a progress bar while generating"): the step count above (the full
+                 line is its tooltip), the bar under the button, shown only while a job runs -->
+            <div id="progdetail"></div>
+            <button class="go" id="go">Generate</button>
+            <div id="progbar" class="idle" role="progressbar" aria-label="Generation progress" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+            <!-- WHAT GENERATE MEANS (2.86.0). One button, one Enter key, and a
+                 dropdown that says which worker it reaches. The icon row below
+                 still triggers each thing directly; this is for the keyboard. -->
+            <select id="genModeSel" title="What the Generate button (and Enter) makes from the prompt">
+              <option value="video">🎬 Video</option>
+              <option value="image">🖼 Image</option>
+              <option value="audio">🎶 Music</option>
+              <option value="speech">🗣 Speech</option>
+              <option value="graph">⚙ Graph</option>
+              <option value="chat">💬 Chat</option>
+            </select>
+            <!-- ICON ONLY (2.85.0), by instruction. The label lives in title=,
+                 which is both the tooltip and what a screen reader announces;
+                 aria-label repeats it so the button is never just an emoji to
+                 anything that cannot render one. -->
+            <div class="iconrow">
+              <button class="ghost ibtn" id="goImg" aria-label="Generate Image"
+                title="Render a still image from the prompt using the selected style">🖼</button>
+              <button class="ghost ibtn" id="speechBtn" aria-label="Speech"
+                title="Speak the prompt text in the selected voice and save it to the project's Sound assets">🗣</button>
+              <button class="ghost ibtn" id="mvBtn" aria-label="Music video"
+                title="Cut a song into 15-second shots and render a music video">🎵</button>
+              <!-- 2.185.0: MOVED here from beside the music dock's Generate
+                   Music (2.184.0 put it in the wrong dock — Tim: "the start
+                   comfy button is not in the prompt docker") -->
+              <button class="ghost ibtn" id="goComfyStart" type="button"
+                aria-label="Start ComfyUI" title="Start ComfyUI">⚙</button>
+              <!-- 2.259.0 (by instruction): start the LLM picked in the
+                   dropdown on this row — loads it into memory now, ready
+                   for chat / Enhance, instead of on the first message. -->
+              <button class="ghost ibtn" id="goLlmStart" type="button"
+                aria-label="Start LLM" title="Start the LLM selected in the dropdown — loads it now, ready for chat and Enhance">🧠</button>
+            </div>
+            <!-- UNDER the icon row, and NOT an icon: this is the second thing
+                 the prompt box does, so it says which one it is. -->
+            <!-- 2.122.0, by instruction: this was "💬 Send to chat". ENTER now
+                 does that from the prompt box, which frees the button for the
+                 thing the queue actually needs and had nowhere to live. -->
+          </div>
+        </div>
+        <div id="enhanced" class="hidden">
+          <label class="f" style="margin:0">Enhanced prompt — review, edit, then choose:</label>
+          <textarea id="enhancedText"></textarea>
+          <div class="brow" style="margin-top:0">
+            <button class="ghost" id="enhGenerate" style="border-color:var(--tiger);color:var(--tiger)">Generate with this</button>
+            <button class="ghost" id="enhUse">Copy to prompt</button>
+            <button class="ghost" id="enhDiscard">Discard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- the promptdock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="ph"></div>

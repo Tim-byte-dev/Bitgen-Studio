@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "name": "Lower third",
+  "description": "A name and a title on a dark bar with a gold edge - slides in, fades out",
+  "w": 1920,
+  "h": 1080,
+  "layers": [
+    {
+      "name": "LT bar",
+      "text": false,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0,
+          "len": 5,
+          "opacity": 1,
+          "name": "lt_bar.png",
+          "tf": {
+            "x": -350,
+            "y": 350,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "x": -600
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "x": -350
+            },
+            {
+              "at": 4.5,
+              "op": 1
+            },
+            {
+              "at": 5,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LT name",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.15,
+          "len": 4.85,
+          "opacity": 1,
+          "label": "Name",
+          "text": {
+            "content": "Jordan Rivers",
+            "font": "Arial",
+            "size": 60,
+            "color": "#ffffff",
+            "bold": true,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 0,
+            "shadow": true,
+            "align": "center"
+          },
+          "tf": {
+            "x": -350,
+            "y": 322,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "x": -600
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "x": -350
+            },
+            {
+              "at": 4.35,
+              "op": 1
+            },
+            {
+              "at": 4.85,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "LT title",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.3,
+          "len": 4.7,
+          "opacity": 1,
+          "label": "Title",
+          "text": {
+            "content": "Producer \u00b7 bitGen Studio",
+            "font": "Arial",
+            "size": 34,
+            "color": "#f2c14e",
+            "bold": false,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 0,
+            "shadow": false,
+            "align": "center"
+          },
+          "tf": {
+            "x": -350,
+            "y": 388,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "x": -600
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "x": -350
+            },
+            {
+              "at": 4.2,
+              "op": 1
+            },
+            {
+              "at": 4.7,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

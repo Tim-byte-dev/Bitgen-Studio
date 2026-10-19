@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "name": "Title card",
+  "description": "A big title and a line under it - grows in, fades out",
+  "w": 1920,
+  "h": 1080,
+  "layers": [
+    {
+      "name": "Title",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0,
+          "len": 5,
+          "opacity": 1,
+          "label": "Title",
+          "text": {
+            "content": "THE BIG TITLE",
+            "font": "Arial",
+            "size": 140,
+            "color": "#ffffff",
+            "bold": true,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 6,
+            "shadow": true,
+            "align": "center"
+          },
+          "tf": {
+            "x": 0,
+            "y": -50,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0,
+              "scale": 0.85
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out",
+              "scale": 1
+            },
+            {
+              "at": 4.5,
+              "op": 1
+            },
+            {
+              "at": 5,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Subtitle",
+      "text": true,
+      "opacity": 1,
+      "clips": [
+        {
+          "start": 0.4,
+          "len": 4.6,
+          "opacity": 1,
+          "label": "Subtitle",
+          "text": {
+            "content": "a line under it",
+            "font": "Arial",
+            "size": 50,
+            "color": "#dddddd",
+            "bold": false,
+            "italic": false,
+            "stroke": "#000000",
+            "strokeW": 2,
+            "shadow": true,
+            "align": "center"
+          },
+          "tf": {
+            "x": 0,
+            "y": 90,
+            "scale": 1,
+            "rot": 0
+          },
+          "kf": [
+            {
+              "at": 0,
+              "op": 0
+            },
+            {
+              "at": 0.5,
+              "op": 1,
+              "ease": "out"
+            },
+            {
+              "at": 4.1,
+              "op": 1
+            },
+            {
+              "at": 4.6,
+              "op": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

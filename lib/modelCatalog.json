@@ -1,0 +1,937 @@
+{
+  "_comment": "2.331.0: every model file bitGen Studio's shipped workflows and features load, with its Hugging Face source. dest: comfy/<folder> = ComfyUI's models/<folder>; app/<folder> = the app's own folder; hf-cache = a snapshot into the Hugging Face cache (read on first use). as = the name the workflows ask for when the repo names it differently. size = bytes (the wizard replaces it with the live size). The wizard asks each repo LIVE whether it is gated - no token = only the open ones. The workflows' own file names were checked against the shipped comfy_workflows (scripts/test-setup.js keeps them in step). 2.332.0 adds the image editor's edit engines (Kontext + FLUX Fill inpaint share clip_l / t5xxl_fp16 / ae; Qwen-Image-Edit 2511 int8 + its Lightning LoRA), the files ComfyUI's own templates link. 2.402.0 adds LTX 2.3 (group video_ltx23: the fp8 checkpoints, distilled LoRA, Gemma 3 encoder, x2 upscaler, fal's 3DREAL IC-LoRAs - 3DREAL sizes approximate, the wizard reads them live). 2.338.0 adds LTX 2.5 (group video_ltx; not recommended by default - big, and Lightricks' repo is gated). 2.337.0 adds Qwen Image 2.1 (the scene cards' ✎ First frame). 2.334.0 adds akatz-ai's H3 Character Swap LoRA (the swap stacks it on its LoRA loader when ComfyUI has it). Checked against the repos' file trees, September 2026. 2.502.0 adds FLUX 3 Image Klein (black-forest-labs/flux-3-image-klein-comfy, gated; its VAE is FLUX.2's flux2-vae). 2.516.0 adds Krea 2 (Comfy-Org/Krea-2: Turbo + Raw fp8 scaled, the Qwen3-VL 4B fp8 encoder; vantagewithai's Turbo / Raw GGUF Q5_K_M; the VAE is the Qwen-Image VAE already listed). 2.517.0 adds Anima (circlestone-labs/Anima: Aesthetic v1.1 + Base v1.0, the Qwen3 0.6B encoder; the Qwen-Image VAE already listed).",
+  "groups": [
+    {
+      "id": "video",
+      "label": "Video - MiniMax H3 (needed for every scene)"
+    },
+    {
+      "id": "video_extra",
+      "label": "Video extras"
+    },
+    {
+      "id": "video_ltx",
+      "label": "Video - LTX 2.5 (the LTX 2.5 style / board flow; Lightricks' repo is gated - add your HF token)"
+    },
+    {
+      "id": "video_ltx23",
+      "label": "Video - LTX 2.3 (the LTX 2.3 style: text / picture / first-last and 3DREAL render -> real from Blender)"
+    },
+    {
+      "id": "video_viggle",
+      "label": "Video - Viggle-Animate (the swap dialog's Viggle (H3) engine; also needs the MiniMax H3 video VAE)"
+    },
+    {
+      "id": "images",
+      "label": "Images"
+    },
+    {
+      "id": "edit",
+      "label": "Image editing - the image editor's ✨ AI (Regenerate, Qwen Edit, Kontext)"
+    },
+    {
+      "id": "face",
+      "label": "Face fix"
+    },
+    {
+      "id": "music",
+      "label": "Music"
+    },
+    {
+      "id": "upscale",
+      "label": "Upscaling"
+    },
+    {
+      "id": "llm",
+      "label": "Assistant (LLM) and vision"
+    },
+    {
+      "id": "voice",
+      "label": "Voice"
+    },
+    {
+      "id": "models3d",
+      "label": "3D models - a picture -> a 3D model (✨ Build a scene with AI, 🧊 on a picture): Hunyuan3D 2.1 = the shape, TRELLIS.2 = shape + texture"
+    }
+  ],
+  "models": [
+    {
+      "id": "h3_ref2va",
+      "group": "video",
+      "label": "MiniMax H3 Ref2VA (int8)",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 22548578304,
+      "for": "Ref / Cont scenes, character swap"
+    },
+    {
+      "id": "h3_fl2va",
+      "group": "video",
+      "label": "MiniMax H3 FL2VA (int8)",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 22548578304,
+      "for": "First / Trans scenes, first-last frame"
+    },
+    {
+      "id": "h3_te",
+      "group": "video",
+      "label": "MiniMax H3 text encoder (Qwen3-VL 32B, nvfp4)",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 16857718784,
+      "for": "every video render"
+    },
+    {
+      "id": "h3_vvae",
+      "group": "video",
+      "label": "MiniMax H3 video VAE",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "vae/minimax_h3_video_vae_fp16.safetensors",
+      "dest": "comfy/vae",
+      "size": 5583457484,
+      "for": "every video render"
+    },
+    {
+      "id": "h3_avae",
+      "group": "video",
+      "label": "MiniMax H3 audio VAE",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "vae/minimax_h3_audio_vae_fp32.safetensors",
+      "dest": "comfy/vae",
+      "size": 634388480,
+      "for": "every video render (the sound)"
+    },
+    {
+      "id": "taeh3",
+      "group": "video_extra",
+      "label": "TAEH3 tiny preview decoder",
+      "repo": "Kijai/MiniMax-H3-TAE",
+      "file": "vae_approx/taeh3.safetensors",
+      "dest": "comfy/vae_approx",
+      "size": 10000000,
+      "for": "live previews while a scene renders"
+    },
+    {
+      "id": "veda_h3",
+      "group": "video_extra",
+      "label": "Veda predictor (MiniMax H3)",
+      "repo": "Veda-Sparse/Minimax-H3-T2VA-Veda-8NFE-600Step-Preview",
+      "file": "minimax_h3_t2va_veda_8nfe_600step_preview_fp8.safetensors",
+      "dest": "comfy/veda",
+      "size": 275000000,
+      "for": "a video style's Veda sparse attention (2-3x faster H3; works for text, first-last and reference video - trained with the 8-step Turbo LoRA). Needs the Veda pack: Settings -> ComfyUI -> Video accelerators"
+    },
+    {
+      "id": "h3_swap_lora",
+      "group": "video_extra",
+      "label": "H3 Ref2V lightx2v turbo LoRA (character swap)",
+      "repo": "Kijai/MiniMax-H3_comfy",
+      "file": "loras/minimax_h3_ref2v_lightx2v_turbo_4step_v0.1_resized_avg_rank_20_bf16.safetensors",
+      "dest": "comfy/loras/minimax-h3",
+      "size": 307000000,
+      "for": "the character swap workflow (MiniMax_H3_Swap) loads it"
+    },
+    {
+      "id": "h3_charswap_lora",
+      "group": "video_extra",
+      "label": "H3 Character Swap LoRA (akatz-ai)",
+      "repo": "akatz-ai/MiniMax-H3-Character-Swap-LoRA",
+      "file": "h3_character_swap_pro4500_1000.safetensors",
+      "dest": "comfy/loras/minimax-h3",
+      "size": 490000000,
+      "for": "character swap - trained to put <Picture 1> into <Video 1>; the swap stacks it automatically when present (2.334.0)"
+    },
+    {
+      "id": "h3_turbo_ref",
+      "group": "video",
+      "label": "H3 Ref2V turbo LoRA (4 steps)",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "loras/minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 2147483648,
+      "for": "the default Ref / Cont scene workflow loads it (4-step renders)"
+    },
+    {
+      "id": "h3_turbo_fl",
+      "group": "video",
+      "label": "H3 FL2V turbo LoRA (8 steps)",
+      "repo": "Comfy-Org/MiniMax-H3",
+      "file": "loras/minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 2147483648,
+      "for": "the default First / Trans scene workflow loads it (8-step renders)"
+    },
+    {
+      "id": "ltx25_gguf",
+      "group": "video_ltx",
+      "label": "LTX 2.5 distilled Q4_K_M (GGUF, 8-16 GB cards)",
+      "repo": "realrebelai/LTX-2.5_GGUFs",
+      "file": "LTX-2.5-Distilled-Q4_K_M.gguf",
+      "dest": "comfy/diffusion_models",
+      "size": 15100000000,
+      "for": "LTX 2.5 - the model Tim's all-in-one canvas loads (GGUF loader)"
+    },
+    {
+      "id": "ltx25_int8",
+      "group": "video_ltx",
+      "label": "LTX 2.5 22B distilled (int8, 24 GB+)",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 23000000000,
+      "for": "LTX 2.5 - the full int8 model Comfy-Org's LTX 2.5 templates load (text / picture / first-last frame, 2.401.5); the GGUF works too"
+    },
+    {
+      "id": "ltx25_te",
+      "group": "video_ltx",
+      "label": "LTX 2.5 text encoder (Gemma 4 12B int8)",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 13000000000,
+      "for": "every LTX 2.5 render"
+    },
+    {
+      "id": "ltx25_vvae",
+      "group": "video_ltx",
+      "label": "LTX 2.5 video VAE",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "vae/ltx-2.5-video-vae-bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 1600000000,
+      "for": "every LTX 2.5 render"
+    },
+    {
+      "id": "ltx25_vvae_conv",
+      "group": "video_ltx",
+      "label": "LTX 2.5 video VAE (conv)",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "vae/ltx-2.5-video-vae-conv-bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 1452269922,
+      "for": "LTX Ripple - the video VAE Tim's LTX_Ripple_FFAF_Edit_v11 loads (2.342.0)"
+    },
+    {
+      "id": "ltx25_avae",
+      "group": "video_ltx",
+      "label": "LTX 2.5 audio VAE",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "vae/ltx-2.5-audio-vae-bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 220000000,
+      "for": "LTX 2.5's sound"
+    },
+    {
+      "id": "ltx25_up",
+      "group": "video_ltx",
+      "label": "LTX 2.5 latent upscaler x2",
+      "repo": "Lightricks/LTX-2.5",
+      "file": "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors",
+      "dest": "comfy/latent_upscale_models",
+      "size": 1000000000,
+      "for": "the x2 second stage (the canvas and Comfy-Org's text / picture templates)"
+    },
+    {
+      "id": "ltx_ripple",
+      "group": "video_ltx",
+      "label": "LTX Ripple IC-LoRA v1.1 (WepeNerd)",
+      "repo": "WepeNerd/LTX-Ripple",
+      "file": "LTX25_Ripple_v11.safetensors",
+      "dest": "comfy/loras",
+      "size": 654000000,
+      "for": "character swap engine LTX Ripple - carries the edited first frame through the original clip (IC-LoRA at 1.35, 2.339.0)"
+    },
+    {
+      "id": "ltx23_omninft",
+      "group": "video_ltx",
+      "label": "LTX 2.3 OmniNFT RL LoRA (Kijai)",
+      "repo": "Kijai/LTX2.3_comfy",
+      "file": "loras/LTX-2.3-OmniNFT-RL-Lora_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 616948520,
+      "for": "the LTX 2.5 canvas's Power Lora Loader row 1 (0.4) - sharper, steadier motion (2.341.0)"
+    },
+    {
+      "id": "ltx23_transition",
+      "group": "video_ltx",
+      "label": "LTX 2.3 Transition LoRA (valiantcat)",
+      "repo": "valiantcat/LTX-2.3-Transition-LORA",
+      "file": "ltx2.3-transition.safetensors",
+      "dest": "comfy/loras",
+      "size": 390229424,
+      "for": "the canvas's transition row - on in first/last, first/last lipsync and first/middle/last (2.341.0)"
+    },
+    {
+      "id": "ltx23_union",
+      "group": "video_ltx",
+      "label": "LTX 2.3 IC-LoRA Union Control",
+      "repo": "Lightricks/LTX-2.3-22b-IC-LoRA-Union-Control",
+      "file": "ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors",
+      "dest": "comfy/loras",
+      "size": 654465352,
+      "for": "the canvas's video-to-video (style transfer) mode - pose / depth / canny guide (2.341.0)"
+    },
+    {
+      "id": "ltx2_detailer",
+      "group": "video_ltx",
+      "label": "LTX 2 IC-LoRA Detailer",
+      "repo": "Lightricks/LTX-2-19b-IC-LoRA-Detailer",
+      "file": "ltx-2-19b-ic-lora-detailer.safetensors",
+      "dest": "comfy/loras",
+      "size": 2617401920,
+      "for": "the canvas's detail pass (0.2-0.3) (2.341.0)"
+    },
+    {
+      "id": "gemma4_e2b",
+      "group": "video_ltx",
+      "label": "Gemma 4 E2B text encoder (bf16)",
+      "repo": "Comfy-Org/gemma-4",
+      "file": "text_encoders/gemma4_e2b_it_bf16.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 10278774160,
+      "for": "the canvas's second CLIPLoader (ltxv) (2.341.0)"
+    },
+    {
+      "id": "taeltx23",
+      "group": "video_ltx",
+      "label": "TAE LTX 2.3 (tiny preview VAE)",
+      "repo": "Kijai/LTX2.3_comfy",
+      "file": "vae/taeltx2_3.safetensors",
+      "dest": "comfy/vae",
+      "size": 23531296,
+      "for": "the canvas's live previews while sampling (2.341.0)"
+    },
+    {
+      "id": "ltx23_distilled",
+      "group": "video_ltx23",
+      "label": "LTX 2.3 22B distilled (fp8 checkpoint, 24 GB+)",
+      "repo": "Lightricks/LTX-2.3-fp8",
+      "file": "ltx-2.3-22b-distilled-fp8.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 27500000000,
+      "for": "LTX 2.3 - first / last frame and 3DREAL (render -> real); alone it runs text / image too (2.402.0)"
+    },
+    {
+      "id": "ltx23_dev",
+      "group": "video_ltx23",
+      "label": "LTX 2.3 22B dev (fp8 checkpoint)",
+      "repo": "Lightricks/LTX-2.3-fp8",
+      "file": "ltx-2.3-22b-dev-fp8.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 27140000000,
+      "for": "LTX 2.3 text / image to video, with the distilled LoRA (Comfy-Org's templates)"
+    },
+    {
+      "id": "ltx23_dlora",
+      "group": "video_ltx23",
+      "label": "LTX 2.3 distilled LoRA 1.1",
+      "repo": "Comfy-Org/ltx-2.3",
+      "file": "split_files/loras/ltx_2.3_22b_distilled_1.1_lora_dynamic_fro09_avg_rank_111_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 2550000000,
+      "for": "the dev checkpoint's 8-step distilled pass (text / image)"
+    },
+    {
+      "id": "ltx23_te",
+      "group": "video_ltx23",
+      "label": "LTX 2.3 text encoder (Gemma 3 12B fp4)",
+      "repo": "Comfy-Org/ltx-2",
+      "file": "split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 8800000000,
+      "for": "every LTX 2.3 render"
+    },
+    {
+      "id": "ltx23_glora",
+      "group": "video_ltx23",
+      "label": "Gemma 3 12B abliterated LoRA (optional)",
+      "repo": "Comfy-Org/ltx-2",
+      "file": "split_files/loras/gemma-3-12b-it-abliterated_lora_rank64_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 599100000,
+      "for": "the templates' text-encoder LoRA - left out when missing"
+    },
+    {
+      "id": "ltx23_up",
+      "group": "video_ltx23",
+      "label": "LTX 2.3 spatial upscaler x2 1.1",
+      "repo": "Lightricks/LTX-2.3",
+      "file": "ltx-2.3-spatial-upscaler-x2-1.1.safetensors",
+      "dest": "comfy/latent_upscale_models",
+      "size": 949600000,
+      "for": "LTX 2.3 text / image to video's x2 second stage"
+    },
+    {
+      "id": "ltx23_3dreal_v2",
+      "group": "video_ltx23",
+      "label": "3DREAL strong v2 (fal, render -> real IC-LoRA)",
+      "repo": "fal/LTX-2.3-3DREAL-LoRA",
+      "file": "3DREAL-strong-v2.safetensors",
+      "dest": "comfy/loras",
+      "size": 1300000000,
+      "for": "Blender / CG render -> photoreal (the newest: multi-scene, audio, faces) - 2.402.0"
+    },
+    {
+      "id": "ltx23_3dreal_strong",
+      "group": "video_ltx23",
+      "label": "3DREAL strong (fal)",
+      "repo": "fal/LTX-2.3-3DREAL-LoRA",
+      "file": "3DREAL-strong.safetensors",
+      "dest": "comfy/loras",
+      "size": 1300000000,
+      "for": "render -> real, a harder photoreal push"
+    },
+    {
+      "id": "ltx23_3dreal_light",
+      "group": "video_ltx23",
+      "label": "3DREAL light (fal)",
+      "repo": "fal/LTX-2.3-3DREAL-LoRA",
+      "file": "3DREAL-light.safetensors",
+      "dest": "comfy/loras",
+      "size": 1300000000,
+      "for": "render -> real, faithful / gentle"
+    },
+    {
+      "id": "viggle_pruned",
+      "group": "video_viggle",
+      "label": "Viggle-Animate H3 model (pruned int8, 21 GB - fits a 32 GB card)",
+      "repo": "drbaph/Viggle-Animate-ComfyUI",
+      "file": "diffusion_models/minimax_h3_ref2va_viggle_pruned_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 21033720080,
+      "for": "the swap dialog's Viggle (H3) engine (2.344.0)"
+    },
+    {
+      "id": "viggle_dmd",
+      "group": "video_viggle",
+      "label": "Viggle DMD LoRA r64 (the 3-step accelerator)",
+      "repo": "drbaph/Viggle-Animate-ComfyUI",
+      "file": "loras/viggle_animate_dmd_lora_r64.safetensors",
+      "dest": "comfy/loras",
+      "size": 941893032,
+      "for": "the swap dialog's Viggle (H3) engine (2.344.0)"
+    },
+    {
+      "id": "viggle_textcond",
+      "group": "video_viggle",
+      "label": "Viggle text conditioning",
+      "repo": "drbaph/Viggle-Animate-ComfyUI",
+      "file": "text_cond/fixed_embed_fwd_anyframe.safetensors",
+      "dest": "comfy/text_cond",
+      "size": 3713456,
+      "for": "the swap dialog's Viggle (H3) engine (2.344.0)"
+    },
+    {
+      "id": "h3_latent_up",
+      "group": "upscale",
+      "label": "H3 latent upscaler (3D)",
+      "repo": "LBH-123-AI/Minimax_h3_latent_Upscaler",
+      "file": "minimax_h3_latent_upscaler_3d_conv_v1/minimax_h3_latent_upscaler_3d_conv_v1_bf16.safetensors",
+      "dest": "comfy/latent_upscale_models",
+      "size": 300000000,
+      "for": "⏫ upscaling a take (pick it in the video docker ⚙)",
+      "as": "minimax_h3_latent_upscaler_3d_bf16.safetensors"
+    },
+    {
+      "id": "seedvr2",
+      "group": "upscale",
+      "label": "SeedVR2 7B (int8)",
+      "repo": "Comfy-Org/SeedVR2",
+      "file": "diffusion_models/seedvr2_7b_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 8943718400,
+      "for": "SeedVR2 image / tail upscaling"
+    },
+    {
+      "id": "seedvr2_sharp",
+      "group": "upscale",
+      "label": "SeedVR2 7B sharp (fp16, 16.5 GB)",
+      "repo": "Comfy-Org/SeedVR2",
+      "file": "diffusion_models/seedvr2_7b_sharp_fp16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 16500000000,
+      "for": "⏫ SeedVR2 video upscaling - the preview's ⏫ SeedVR2 and the video docker ⚙ Upscaler \"SeedVR2 (video)\" (2.400.0)"
+    },
+    {
+      "id": "seedvr2_3b",
+      "group": "upscale",
+      "label": "SeedVR2 3B (int8, 3.2 GB - smaller cards)",
+      "repo": "Comfy-Org/SeedVR2",
+      "file": "diffusion_models/seedvr2_3b_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 3220000000,
+      "for": "⏫ SeedVR2 video upscaling on a smaller card (picked when the 7B is not installed, 2.400.0)"
+    },
+    {
+      "id": "seedvr2_vae",
+      "group": "upscale",
+      "label": "SeedVR2 VAE",
+      "repo": "Comfy-Org/SeedVR2",
+      "file": "vae/seedvr2_ema_vae_fp16.safetensors",
+      "dest": "comfy/vae",
+      "size": 525670400,
+      "for": "SeedVR2 upscaling"
+    },
+    {
+      "id": "klein9b",
+      "group": "images",
+      "label": "FLUX.2 Klein 9B",
+      "repo": "black-forest-labs/FLUX.2-klein-9B",
+      "file": "flux-2-klein-9b.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 18000000000,
+      "for": "the FLUX.2 Klein image styles (non-commercial licence)"
+    },
+    {
+      "id": "klein_te",
+      "group": "images",
+      "label": "FLUX.2 Klein text encoder (Qwen3 8B fp8)",
+      "repo": "Comfy-Org/vae-text-encorder-for-flux-klein-9b",
+      "file": "split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 8664848742,
+      "for": "the FLUX.2 Klein image styles"
+    },
+    {
+      "id": "flux2_vae",
+      "group": "images",
+      "label": "FLUX.2 VAE",
+      "repo": "Comfy-Org/vae-text-encorder-for-flux-klein-9b",
+      "file": "split_files/vae/flux2-vae.safetensors",
+      "dest": "comfy/vae",
+      "size": 336211292,
+      "for": "the FLUX.2 Klein image styles"
+    },
+    {
+      "id": "flux3_klein",
+      "group": "images",
+      "label": "FLUX 3 Image Klein (distilled, int8)",
+      "repo": "black-forest-labs/flux-3-image-klein-comfy",
+      "file": "diffusion_models/flux3-image-klein-int8-convrot.safetensors",
+      "as": "flux3-image-klein-int8-convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 5800000000,
+      "for": "the FLUX 3 Klein + FLUX 3 Klein edit image styles (gated: accept the FLUX Kommunity licence)"
+    },
+    {
+      "id": "flux3_klein_base",
+      "group": "images",
+      "label": "FLUX 3 Image Klein base (int8)",
+      "repo": "black-forest-labs/flux-3-image-klein-comfy",
+      "file": "diffusion_models/flux3-image-klein-base-int8-convrot.safetensors",
+      "as": "flux3-image-klein-base-int8-convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 5800000000,
+      "for": "the FLUX 3 Klein base image style (gated)"
+    },
+    {
+      "id": "flux3_te",
+      "group": "images",
+      "label": "FLUX 3 Klein text encoder (Qwen3-VL 4B int8)",
+      "repo": "black-forest-labs/flux-3-image-klein-comfy",
+      "file": "text_encoders/qwen3vl_4b_int8_convrot.safetensors",
+      "as": "qwen3vl_4b_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 4900000000,
+      "for": "the FLUX 3 Klein image styles (gated)"
+    },
+    {
+      "id": "krea2_turbo",
+      "group": "images",
+      "label": "Krea 2 Turbo (fp8 scaled)",
+      "repo": "Comfy-Org/Krea-2",
+      "file": "diffusion_models/krea2_turbo_fp8_scaled.safetensors",
+      "as": "krea2_turbo_fp8_scaled.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 12900000000,
+      "for": "the Krea 2 Turbo image style"
+    },
+    {
+      "id": "krea2_raw",
+      "group": "images",
+      "label": "Krea 2 Raw (fp8 scaled)",
+      "repo": "Comfy-Org/Krea-2",
+      "file": "diffusion_models/krea2_raw_fp8_scaled.safetensors",
+      "as": "krea2_raw_fp8_scaled.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 12900000000,
+      "for": "the Krea 2 Raw image style"
+    },
+    {
+      "id": "krea2_turbo_gguf",
+      "group": "images",
+      "label": "Krea 2 Turbo GGUF (Q5_K_M - a 12 GB card)",
+      "repo": "vantagewithai/Krea-2-Turbo-GGUF",
+      "file": "krea2_turbo-Q5_K_M.gguf",
+      "dest": "comfy/unet",
+      "size": 8870000000,
+      "for": "the Krea 2 Turbo GGUF image style (ComfyUI-GGUF with Krea 2 support; other quants: Q2_K .. Q8_0)"
+    },
+    {
+      "id": "krea2_raw_gguf",
+      "group": "images",
+      "label": "Krea 2 Raw GGUF (Q5_K_M)",
+      "repo": "vantagewithai/Krea-2-Raw-GGUF",
+      "file": "krea2_raw-Q5_K_M.gguf",
+      "dest": "comfy/unet",
+      "size": 8870000000,
+      "for": "the Krea 2 Raw GGUF image style"
+    },
+    {
+      "id": "krea2_te",
+      "group": "images",
+      "label": "Krea 2 text encoder (Qwen3-VL 4B fp8 scaled)",
+      "repo": "Comfy-Org/Krea-2",
+      "file": "text_encoders/qwen3vl_4b_fp8_scaled.safetensors",
+      "as": "qwen3vl_4b_fp8_scaled.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 5240000000,
+      "for": "every Krea 2 image style (with the Qwen-Image VAE)"
+    },
+    {
+      "id": "anima_aesthetic",
+      "group": "images",
+      "label": "Anima Aesthetic v1.1 (anime)",
+      "repo": "circlestone-labs/Anima",
+      "file": "split_files/diffusion_models/anima-aesthetic-v1.1.safetensors",
+      "as": "anima-aesthetic-v1.1.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 4180000000,
+      "for": "the Anima image style (non-commercial licence; the pictures may be used commercially)"
+    },
+    {
+      "id": "anima_base",
+      "group": "images",
+      "label": "Anima Base v1.0",
+      "repo": "circlestone-labs/Anima",
+      "file": "split_files/diffusion_models/anima-base-v1.0.safetensors",
+      "as": "anima-base-v1.0.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 4180000000,
+      "for": "the Anima base image style"
+    },
+    {
+      "id": "anima_te",
+      "group": "images",
+      "label": "Anima text encoder (Qwen3 0.6B base)",
+      "repo": "circlestone-labs/Anima",
+      "file": "split_files/text_encoders/qwen_3_06b_base.safetensors",
+      "as": "qwen_3_06b_base.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 1190000000,
+      "for": "the Anima image styles (with the Qwen-Image VAE)"
+    },
+    {
+      "id": "sdxl",
+      "group": "images",
+      "label": "SDXL base 1.0",
+      "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+      "file": "sd_xl_base_1.0.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 6938078334,
+      "for": "the SDXL image styles"
+    },
+    {
+      "id": "kontext",
+      "group": "edit",
+      "label": "FLUX.1 Kontext dev (fp8)",
+      "repo": "Comfy-Org/flux1-kontext-dev_ComfyUI",
+      "file": "split_files/diffusion_models/flux1-dev-kontext_fp8_scaled.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 11905561600,
+      "for": "Kontext edits AND the FLUX Fill inpaint Regenerate style"
+    },
+    {
+      "id": "flux_clip_l",
+      "group": "edit",
+      "label": "FLUX CLIP-L text encoder",
+      "repo": "comfyanonymous/flux_text_encoders",
+      "file": "clip_l.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 246144152,
+      "for": "Kontext + FLUX Fill inpaint"
+    },
+    {
+      "id": "flux_t5",
+      "group": "edit",
+      "label": "FLUX T5-XXL text encoder (fp16)",
+      "repo": "comfyanonymous/flux_text_encoders",
+      "file": "t5xxl_fp16.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 9787841024,
+      "for": "Kontext + FLUX Fill inpaint"
+    },
+    {
+      "id": "flux_ae",
+      "group": "edit",
+      "label": "FLUX VAE (ae)",
+      "repo": "Comfy-Org/Lumina_Image_2.0_Repackaged",
+      "file": "split_files/vae/ae.safetensors",
+      "dest": "comfy/vae",
+      "size": 335304388,
+      "for": "Kontext + FLUX Fill inpaint"
+    },
+    {
+      "id": "qwen21",
+      "group": "edit",
+      "label": "Qwen Image 2.1 (int8)",
+      "repo": "Comfy-Org/Qwen-Image-2.1",
+      "file": "diffusion_models/qwen_image_2.1_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 7260000000,
+      "for": "✎ First frame on the scene cards (character + location + props -> a first frame) and the image editor's Qwen 2.1 edit"
+    },
+    {
+      "id": "qwen21_te",
+      "group": "edit",
+      "label": "Qwen Image 2.1 text encoder (Qwen3-VL 8B int8)",
+      "repo": "Comfy-Org/Qwen-Image-2.1",
+      "file": "text_encoders/qwen3vl_8b_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 9350000000,
+      "for": "Qwen Image 2.1"
+    },
+    {
+      "id": "qwen21_vae",
+      "group": "edit",
+      "label": "Qwen Image 2.1 VAE",
+      "repo": "Comfy-Org/Qwen-Image-2.1",
+      "file": "vae/qwen_image_2.1_vae_bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 676000000,
+      "for": "Qwen Image 2.1"
+    },
+    {
+      "id": "qwen_edit",
+      "group": "edit",
+      "label": "Qwen-Image-Edit 2511 (int8)",
+      "repo": "Comfy-Org/Qwen-Image-Edit_ComfyUI",
+      "file": "split_files/diffusion_models/qwen_image_edit_2511_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 20430635136,
+      "for": "Qwen instruction edits in the image editor"
+    },
+    {
+      "id": "qwen_te",
+      "group": "edit",
+      "label": "Qwen2.5-VL 7B text encoder (fp8)",
+      "repo": "Comfy-Org/HunyuanVideo_1.5_repackaged",
+      "file": "split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 9384670680,
+      "for": "Qwen Image Edit"
+    },
+    {
+      "id": "qwen_vae",
+      "group": "edit",
+      "label": "Qwen-Image VAE",
+      "repo": "Comfy-Org/Qwen-Image_ComfyUI",
+      "file": "split_files/vae/qwen_image_vae.safetensors",
+      "dest": "comfy/vae",
+      "size": 253806966,
+      "for": "Qwen Image Edit + every Krea 2 image style + the Anima image styles"
+    },
+    {
+      "id": "qwen_lightning",
+      "group": "edit",
+      "label": "Qwen-Image-Edit 2511 Lightning LoRA (4 steps)",
+      "repo": "lightx2v/Qwen-Image-Edit-2511-Lightning",
+      "file": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 849608296,
+      "for": "Qwen Image Edit in 4 steps (the style's LoRA slot 1)"
+    },
+    {
+      "id": "face_yolo",
+      "group": "face",
+      "label": "Face detector (YOLOv8m)",
+      "repo": "Bingsu/adetailer",
+      "file": "face_yolov8m.pt",
+      "dest": "comfy/ultralytics/bbox",
+      "size": 52000000,
+      "for": "face fix"
+    },
+    {
+      "id": "music3_dit",
+      "group": "music",
+      "label": "MiniMax Music 3 (fp16)",
+      "repo": "Comfy-Org/MiniMax-Music-3",
+      "file": "diffusion_models/minimax_music3_dit_fp16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 4914197682,
+      "for": "songs (Music docker -> MiniMax)"
+    },
+    {
+      "id": "music3_te",
+      "group": "music",
+      "label": "MiniMax Music 3 text encoder (int8)",
+      "repo": "Comfy-Org/MiniMax-Music-3",
+      "file": "text_encoders/minimax_music3_text_encoder_pruned_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 9196611886,
+      "for": "songs (MiniMax)"
+    },
+    {
+      "id": "music3_vae",
+      "group": "music",
+      "label": "MiniMax Music 3 audio decoder",
+      "repo": "Comfy-Org/MiniMax-Music-3",
+      "file": "vae/minimax_music3_dav.safetensors",
+      "dest": "comfy/vae",
+      "size": 216696128,
+      "for": "songs (MiniMax)"
+    },
+    {
+      "id": "yue2",
+      "group": "music",
+      "label": "YuE2 3B (int8)",
+      "repo": "Comfy-Org/YuE2",
+      "file": "checkpoints/yue2_3b_int8_convrot.safetensors",
+      "as": "yue2_convrot_int8.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 3960938800,
+      "for": "songs (Music docker -> YuE2 in ComfyUI)"
+    },
+    {
+      "id": "sheetsage",
+      "group": "music",
+      "label": "SheetSage 2 (melody transcription)",
+      "repo": "Comfy-Org/YuE2",
+      "file": "audio_encoders/sheetsage2_bf16.safetensors",
+      "dest": "comfy/audio_encoders",
+      "size": 1386868122,
+      "for": "YuE2 covers"
+    },
+    {
+      "id": "llm_4b",
+      "group": "llm",
+      "label": "Assistant LLM - Qwen3 4B (Q4_K_M)",
+      "repo": "unsloth/Qwen3-4B-GGUF",
+      "file": "Qwen3-4B-Q4_K_M.gguf",
+      "dest": "app/llm-models",
+      "size": 2500000000,
+      "llm": true,
+      "for": "screenplays, chat, ✨ Enhance (small: shares one GPU with the video model)"
+    },
+    {
+      "id": "llm_8b",
+      "group": "llm",
+      "label": "Assistant LLM - Qwen3 8B (Q4_K_M)",
+      "repo": "unsloth/Qwen3-8B-GGUF",
+      "file": "Qwen3-8B-Q4_K_M.gguf",
+      "dest": "app/llm-models",
+      "size": 5030000000,
+      "llm": true,
+      "for": "screenplays, chat, ✨ Enhance"
+    },
+    {
+      "id": "llm_14b",
+      "group": "llm",
+      "label": "Assistant LLM - Qwen3 14B (Q4_K_M)",
+      "repo": "unsloth/Qwen3-14B-GGUF",
+      "file": "Qwen3-14B-Q4_K_M.gguf",
+      "dest": "app/llm-models",
+      "size": 9000000000,
+      "llm": true,
+      "for": "better screenplays (a second GPU with 12 GB+)"
+    },
+    {
+      "id": "vl_model",
+      "group": "llm",
+      "label": "Vision - Qwen3-VL 8B caption (Q4_K_M)",
+      "repo": "mradermacher/Qwen3-VL-8B-NSFW-Caption-V4-GGUF",
+      "file": "Qwen3-VL-8B-NSFW-Caption-V4.Q4_K_M.gguf",
+      "dest": "app/qwen3vl",
+      "size": 5030000000,
+      "vision": "model",
+      "with": "vl_mmproj",
+      "for": "describing pictures you put in the prompt"
+    },
+    {
+      "id": "vl_mmproj",
+      "group": "llm",
+      "label": "Vision projector (mmproj f16)",
+      "repo": "mradermacher/Qwen3-VL-8B-NSFW-Caption-V4-GGUF",
+      "file": "Qwen3-VL-8B-NSFW-Caption-V4.mmproj-f16.gguf",
+      "dest": "app/qwen3vl",
+      "size": 1200000000,
+      "vision": "mmproj",
+      "with": "vl_model",
+      "for": "the vision model can see (mandatory with it)"
+    },
+    {
+      "id": "omnivoice",
+      "group": "voice",
+      "label": "OmniVoice voice model",
+      "repo": "k2-fsa/OmniVoice",
+      "file": "",
+      "dest": "hf-cache",
+      "size": 3267433726,
+      "for": "voice cloning / text to speech (OmniVoice)"
+    },
+    {
+      "id": "hunyuan3d21",
+      "group": "models3d",
+      "label": "Hunyuan3D 2.1 (the shape - the default)",
+      "repo": "Comfy-Org/hunyuan3D_2.1_repackaged",
+      "file": "hunyuan_3d_v2.1.safetensors",
+      "dest": "comfy/checkpoints",
+      "size": 6860000000,
+      "for": "a picture -> a 3D shape (Comfy-Org's 3d_hunyuan3d-v2.1 template, 2.404.0)"
+    },
+    {
+      "id": "birefnet",
+      "group": "models3d",
+      "label": "BiRefNet background removal",
+      "repo": "Comfy-Org/BiRefNet",
+      "file": "background_removal/birefnet.safetensors",
+      "dest": "comfy/background_removal",
+      "size": 423900000,
+      "for": "cuts the object out of its picture first (Hunyuan3D, TRELLIS.2)"
+    },
+    {
+      "id": "trellis2",
+      "group": "models3d",
+      "label": "TRELLIS.2 (int8 - shape + texture)",
+      "repo": "Comfy-Org/TRELLIS.2",
+      "file": "diffusion_models/trellis_2_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 4890000000,
+      "for": "a picture -> a textured 3D model (Comfy-Org's 3d_pixal3d_trellis2 template)"
+    },
+    {
+      "id": "trellis2_shape_vae",
+      "group": "models3d",
+      "label": "TRELLIS.2 shape VAE",
+      "repo": "Comfy-Org/Pixal3D",
+      "file": "vae/trellis_2_shape_vae_bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 1020000000,
+      "for": "TRELLIS.2"
+    },
+    {
+      "id": "trellis2_texture_vae",
+      "group": "models3d",
+      "label": "TRELLIS.2 texture VAE",
+      "repo": "Comfy-Org/Pixal3D",
+      "file": "vae/trellis_2_texture_vae_bf16.safetensors",
+      "dest": "comfy/vae",
+      "size": 904500000,
+      "for": "TRELLIS.2"
+    },
+    {
+      "id": "dinov3",
+      "group": "models3d",
+      "label": "DINOv3 L (TRELLIS.2's image encoder)",
+      "repo": "Comfy-Org/Pixal3D",
+      "file": "clip_vision/dino_v3_L_naf_fp32.safetensors",
+      "dest": "comfy/clip_vision",
+      "size": 1130000000,
+      "for": "TRELLIS.2"
+    }
+  ]
+}

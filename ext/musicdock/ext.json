@@ -1,0 +1,9 @@
+{
+  "id": "musicdock",
+  "name": "Music",
+  "order": 60,
+  "html": "dock.html",
+  "scripts": [
+    "musicdock.js"
+  ]
+}

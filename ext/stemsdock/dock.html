@@ -1,0 +1,88 @@
+    <div class="bdock" id="stemsdock">
+      <div class="bhead" data-collapse="stemsdock">▾ Stems<button class="maxbtn" data-max="stemsdock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- 2.269.0 (Tim: "is there any way bitgen can separate the lyrics
+             from the instruments/music" + "add the demucs stem separation
+             as an extension"): Meta's demucs (htdemucs), fully local in
+             venvs/demucs. A song splits into <song>_vocals.wav (the lyrics)
+             and <song>_instrumental.wav — ordinary sound assets, ready as
+             chapter SOUND references (the vocal stem is the cleanest
+             @music timing reference when a full mix confuses lip-sync). -->
+        <div class="brow" style="gap:6px;align-items:end;flex-wrap:wrap">
+          <label style="flex:1;min-width:160px">Song
+            <select id="stSong" title="A sound asset of this project — the music dock's songs land here too"></select></label>
+          <button class="ghost gbtn" id="stZoomIn" type="button" title="Zoom in on all three waveforms">🔍+</button>
+          <button class="ghost gbtn" id="stZoomOut" type="button" title="Zoom out">🔍−</button>
+          <button class="ghost gbtn" id="stZoomReset" type="button" title="Reset the view to the whole song">⤢</button>
+          <select id="stSegFmt" title="Segment file format for save / send">
+            <option value="mp3">mp3</option><option value="wav">wav</option></select>
+          <button class="ghost gbtn" id="stSegExport" type="button"
+            title="Save the segments as files - songs/&lt;song&gt;/segments/&lt;song&gt;_seg_n">⬇</button>
+          <button class="ghost gbtn" id="stSegSend" type="button"
+            title="Send all segments to video - one blank scene per segment, filled by 'create the music video'">📤</button>
+          <!-- 2.272.0 (by instruction): 📂 adds songs from ANYWHERE on the
+               computer — each picked file uploads into the project's sound
+               assets (the app's one uniquify rule) and the dropdown selects
+               the newest. Types stay EXPLICIT — never a slash-star wildcard
+               (the 2.157-era comment-stripper). -->
+          <button class="ghost gbtn" id="stBrowse" type="button"
+            title="Add song(s) from anywhere on this computer — uploaded into the project's sound assets, ready to separate">📂</button>
+          <input type="file" id="stFile" class="hidden" multiple
+            accept="audio/wav, audio/x-wav, audio/mpeg, audio/flac, audio/ogg, audio/mp4, audio/x-m4a, audio/opus">
+          <button class="ghost gbtn" id="stRefresh" type="button" title="Re-read the project's sound assets">⟳</button>
+          <button class="ghost gbtn" id="stGo" type="button"
+            title="Split into vocals + instrumental with demucs (GPU if available; the first run downloads the htdemucs weights into demucs' own cache)">✂🎤 Separate</button>
+          <button class="ghost gbtn" id="stInstall" type="button"
+            title="Install demucs into its own venv (venvs/demucs) — a job like the other audio installs">⚙ Install</button>
+        </div>
+        <div class="hint" id="stMsg" style="margin-top:6px">—</div>
+        <div class="hint" id="stOut" style="margin-top:4px"></div>
+        <!-- 2.273.0 (by instruction): THREE WAVEFORMS — the full song and,
+             once demucs has run, its vocal and instrumental stems, each
+             with its own ▶. Peaks come from /api/waveform (the app's ONE
+             peak extractor — the timeline's cache serves these for free);
+             audio streams from /passets/sound/. A row hides when its file
+             does not exist yet. Click a waveform to seek. -->
+        <div id="stWaves" style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+          <div class="strow hidden" id="stRowSong" style="display:flex;gap:6px;align-items:center">
+            <span style="flex:0 0 92px;font-size:11px;opacity:.85">🎵 Full song</span>
+            <button class="ghost gbtn" id="stPlaySong" type="button" title="Play / pause the full song">▶</button>
+            <canvas id="stWaveSong" height="36" style="flex:1;min-width:0;height:36px;cursor:pointer" title="Click to seek — DRAG to select a region"></canvas>
+            <!-- 2.277.0 (by instruction): the number input is GONE — clicking
+                 the selected area opens a volume SLIDER above it (instant
+                 apply, ✕ closes, clicking away closes). 💾 opens the same
+                 slider for the current selection. -->
+            <button class="ghost gbtn" id="stSegSong" type="button" title="Segment the song - red lines mark the cuts; drag a line to move it">✂#</button>
+            <button class="ghost gbtn" id="stSaveSong" type="button" aria-label="Open the volume slider for the selection"
+              title="Volume for the SELECTED region — opens the slider (drag across the waveform first); changes apply and save instantly, same name everywhere">💾</button>
+          </div>
+          <div class="strow hidden" id="stRowVoc" style="display:flex;gap:6px;align-items:center">
+            <span style="flex:0 0 92px;font-size:11px;opacity:.85">🎤 Vocals</span>
+            <button class="ghost gbtn" id="stPlayVoc" type="button" title="Play / pause the vocal stem">▶</button>
+            <canvas id="stWaveVoc" height="36" style="flex:1;min-width:0;height:36px;cursor:pointer" title="Click to seek — DRAG to select a region"></canvas>
+            <!-- 2.277.0 (by instruction): the number input is GONE — clicking
+                 the selected area opens a volume SLIDER above it (instant
+                 apply, ✕ closes, clicking away closes). 💾 opens the same
+                 slider for the current selection. -->
+            <button class="ghost gbtn" id="stSegVoc" type="button" title="Segment the song - red lines mark the cuts; drag a line to move it">✂#</button>
+            <button class="ghost gbtn" id="stSaveVoc" type="button" aria-label="Open the volume slider for the selection"
+              title="Volume for the SELECTED region — opens the slider (drag across the waveform first); changes apply and save instantly, same name everywhere">💾</button>
+          </div>
+          <div class="strow hidden" id="stRowInst" style="display:flex;gap:6px;align-items:center">
+            <span style="flex:0 0 92px;font-size:11px;opacity:.85">🎸 Instruments</span>
+            <button class="ghost gbtn" id="stPlayInst" type="button" title="Play / pause the instrumental stem">▶</button>
+            <canvas id="stWaveInst" height="36" style="flex:1;min-width:0;height:36px;cursor:pointer" title="Click to seek — DRAG to select a region"></canvas>
+            <!-- 2.277.0 (by instruction): the number input is GONE — clicking
+                 the selected area opens a volume SLIDER above it (instant
+                 apply, ✕ closes, clicking away closes). 💾 opens the same
+                 slider for the current selection. -->
+            <button class="ghost gbtn" id="stSegInst" type="button" title="Segment the song - red lines mark the cuts; drag a line to move it">✂#</button>
+            <button class="ghost gbtn" id="stSaveInst" type="button" aria-label="Open the volume slider for the selection"
+              title="Volume for the SELECTED region — opens the slider (drag across the waveform first); changes apply and save instantly, same name everywhere">💾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- the stemsdock's BOTTOM resize handle (2.299.1): like every other
+         horizontal dock - drag it and THIS docker follows the mouse -->
+    <div class="hsplit" data-hresize="sth"></div>

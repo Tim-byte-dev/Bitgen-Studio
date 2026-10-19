@@ -1,0 +1,214 @@
+{
+ "version": 1,
+ "_comment": "VIDEO STYLE ARCHITECTURES (2.110.0, by instruction). A video style is a ComfyUI Export (API) workflow per generation mode plus overrides the patcher writes into it: PHASES (checkpoint + steps + cfg, one per sampler/loader pair in graph order — Wan 2.2 high/low is two), a text encoder, a VAE, LoRAs. MiniMax H3 ships now; Tim will upload Wan and other templates later — add an arch here and the style editor picks it up. 2.338.0: ltx-2.5 (Tim's LTX 2.5 all-in-one canvas; mode 'ltx' -> ltx_worker.py). 2.368.0: wan21 + wan22 render through wan_worker.py (lib/wan.js) - built graphs, files picked per mode.",
+ "archs": [
+  {
+   "id": "minimax-h3",
+   "label": "MiniMax H3 (video + audio)",
+   "modes": [
+    "t2va",
+    "ref2va",
+    "fl2va"
+   ],
+   "workflow_hints": {
+    "t2va": "comfy_workflows/t2va.json",
+    "ref2va": "comfy_workflows/ref2va.json",
+    "fl2va": "comfy_workflows/fl2va.json"
+   },
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder (CLIPLoader)",
+     "hint": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "Video VAE",
+    "hint": "minimax_h3_video_vae.safetensors"
+   },
+   "defaults": {
+    "steps": 0,
+    "cfg": 1.0,
+    "width": 960,
+    "height": 544
+   },
+   "note": "Steps 0 = auto (20 base / the LoRA's count). cfg 1.0 is the distilled model's intended value.",
+   "accel": {
+    "sage": true,
+    "memeff": true,
+    "spectrum": true,
+    "long": true,
+    "veda": true,
+    "note": "Veda (2.536.0) = learned sparse attention, about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768); it replaces attention, so Sage is skipped while it is on. Long video (2.503.0) = KJNodes' MiniMax low-VRAM attention + chunked feed-forward (+ comfy kitchen attention): one run up to 30 s. Sage = KJNodes attention patch (needs the sageattention wheel in ComfyUI's python). Spectrum = xmarre's H3 feature-forecast node (~30% fewer transformer steps, APPROXIMATE - motion can drift). Settings -> ComfyUI -> Video accelerators installs both."
+   }
+  },
+  {
+   "id": "ltx-2.5",
+   "label": "LTX 2.5 (video + audio, Tim's all-in-one canvas)",
+   "modes": [
+    "ltx"
+   ],
+   "workflow_hints": {
+    "ltx": "comfy_workflows/LTX25_All_In_One.json"
+   },
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder (CLIPLoader)",
+     "hint": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "Video VAE (the canvas loads both VAEs itself)",
+    "hint": "ltx-2.5-video-vae-bf16.safetensors"
+   },
+   "defaults": {
+    "steps": 0,
+    "cfg": 1.0,
+    "width": 960,
+    "height": 544
+   },
+   "note": "2.338.0: the model is Tim's all-in-one canvas (8 modes: text, audio, image, first/last, lipsync, F/L lipsync, first-middle-last, style transfer). A .gguf model runs the GGUF loader, a .safetensors one the UNET loader. Steps and sigmas are the canvas's own (distilled, 2 stages + the x2 latent upscaler). Clips are whole seconds (1-30) at 24 fps.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "The LTX canvas carries its own settings; the H3 accelerators do not apply."
+   }
+  },
+  {
+   "id": "ltx-2.3",
+   "label": "LTX 2.3 (video + audio, Comfy-Org's templates + 3DREAL render -> real)",
+   "modes": [
+    "ltx"
+   ],
+   "workflow_hints": {},
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder (LTXAVTextEncoderLoader)",
+     "hint": "gemma_3_12B_it_fp4_mixed.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "(the checkpoint carries the video + audio VAEs)",
+    "hint": ""
+   },
+   "defaults": {
+    "steps": 0,
+    "cfg": 1.0,
+    "width": 960,
+    "height": 544
+   },
+   "note": "2.402.0: LTX 2.3 on Comfy-Org's own templates (core ComfyUI nodes only): text, image (first frame), first / last frame, and 3D render -> real - fal's 3DREAL IC-LoRA with a render (Blender layout, game viewport, any CG clip) as the guide. Model = an LTX 2.3 CHECKPOINT (models/checkpoints): text / image want ltx-2.3-22b-dev-fp8 + the distilled LoRA + the x2 spatial upscaler, first-last / 3DREAL the distilled fp8 (with only the distilled one everything runs on it). Text encoder = Gemma 3 12B (gemma_3_12B_it_fp4_mixed). Clips are whole seconds at 24 fps; 3DREAL takes the render's length (up to Seconds).",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "The LTX canvas carries its own settings; the H3 accelerators do not apply."
+   }
+  },
+  {
+   "id": "wan21",
+   "label": "Wan 2.1",
+   "modes": [
+    "t2va",
+    "ref2va",
+    "fl2va"
+   ],
+   "workflow_hints": {},
+   "phases_max": 1,
+   "te": [
+    {
+     "label": "Text encoder",
+     "hint": "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "VAE",
+    "hint": "wan_2.1_vae.safetensors"
+   },
+   "defaults": {
+    "steps": 30,
+    "cfg": 6.0,
+    "width": 1280,
+    "height": 720
+   },
+   "note": "2.368.0: renders through wan_worker.py - the graph is built from ComfyUI's core Wan nodes, no export needed. The model file is PICKED from what ComfyUI lists for each mode (t2v / i2v 480p-720p / flf2v / vace for Ref; no VACE file = the picture starts the clip). Phase 1 = force a file. 16 fps, interpolated to 24; the reference dock's first sound is laid under the take (Wan makes no sound). A Lightning / CausVid LoRA sets 4 steps, cfg 1.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "Wan's graph is built by the worker; the H3 accelerators do not apply."
+   }
+  },
+  {
+   "id": "wan22",
+   "label": "Wan 2.2 (high / low noise)",
+   "modes": [
+    "t2va",
+    "ref2va",
+    "fl2va"
+   ],
+   "workflow_hints": {},
+   "phases_max": 2,
+   "te": [
+    {
+     "label": "Text encoder",
+     "hint": "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
+    }
+   ],
+   "vae": {
+    "label": "VAE",
+    "hint": "wan_2.1_vae.safetensors"
+   },
+   "defaults": {
+    "steps": 20,
+    "cfg": 3.5,
+    "width": 1280,
+    "height": 720
+   },
+   "note": "2.368.0: renders through wan_worker.py - the graph is built from ComfyUI's core Wan nodes, no export needed. The model files are PICKED from what ComfyUI lists for each mode (t2v / i2v pairs, high + low noise; first+last frame runs on the i2v pair; Ref = a VACE pair, else the picture starts the clip). Phase 1 / 2 = force a high / low file. 16 fps, interpolated to 24; the reference dock's first sound is laid under the take (Wan makes no sound). A Lightning / lightx2v LoRA sets 4 steps, cfg 1.",
+   "accel": {
+    "sage": false,
+    "memeff": false,
+    "spectrum": false,
+    "note": "Wan's graph is built by the worker; the H3 accelerators do not apply."
+   }
+  },
+  {
+   "id": "custom",
+   "label": "Other (your own export)",
+   "modes": [
+    "t2va",
+    "ref2va",
+    "fl2va"
+   ],
+   "workflow_hints": {},
+   "phases_max": 4,
+   "te": [
+    {
+     "label": "Text encoder",
+     "hint": ""
+    }
+   ],
+   "vae": {
+    "label": "VAE",
+    "hint": ""
+   },
+   "defaults": {
+    "steps": 20,
+    "cfg": 5.0,
+    "width": 1024,
+    "height": 576
+   },
+   "note": "Any ComfyUI video graph. Phases map to the graph's model loaders / samplers in order.",
+   "accel": {
+    "sage": true,
+    "memeff": false,
+    "spectrum": false,
+    "note": "Generic Sage attention only - the memeff patch and Spectrum are MiniMax H3-specific."
+   }
+  }
+ ]
+}

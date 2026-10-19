@@ -1,0 +1,39 @@
+    <!-- THE PREVIEW DOCK (2.148.0, by instruction: "create a preview docker,
+         put everything above the timeline docker into the preview docker").
+         It is the ONE flexible dock in the column — every other bottom dock
+         has a fixed height var, so this is what stretches; collapsing it
+         behaves like any bdock (30px header, body hidden). -->
+    <div class="bdock" id="previewdock">
+      <div class="bhead" data-collapse="previewdock">▾ Preview<button class="maxbtn" data-max="previewdock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+    <div id="viewerpane">
+      <!-- 2.214.0 (by instruction): a PICTURE can load into the preview —
+           #pvImg sits beside the player and exactly one of the two shows.
+           EXR/Radiance-HDR picks round-trip through /api/preview/hdr for the
+           same Hable tone-map the Locations pano gets; ordinary pictures
+           show from a local object URL, no upload. -->
+      <div id="viewerwrap"><video id="player" controls class="hidden fit"></video><img id="pvImg" class="hidden" alt="Loaded preview picture" style="max-width:100%;display:block;margin:0 auto"><div id="ovl"></div></div>
+      <div class="vctrl">
+        <button id="fsBtn" title="Fullscreen">⛶ Fullscreen</button>
+        <!-- 2.251.0: FIT is the default — the preview fills the dock's
+             height; 1:1 (native pixels, scrollbars) is one press away. -->
+        <button id="fitBtn" title="Toggle native 1:1 / fit">Fit</button>
+        <button id="pv360" title="View as a 360° equirectangular VR video — drag to look around, wheel to zoom, click to play/pause, double-click to level. Lights up when the loaded video is 2:1.">360°</button>
+        <button id="contBtn" title="Use the last frame of this video as the first frame of a new generation">⏩ Continue</button>
+        <button id="pvLoad" title="Load a picture into the preview — EXR and Radiance HDR files are tone-mapped server-side so you can see them; nothing is saved or imported">🖼 Picture</button>
+        <!-- 2.400.0 (Tim: "add seedvr2 for upscaling videos"): the previewed video through ComfyUI's core SeedVR2
+             nodes (ext/previewdock/seedvr2.js, lib/seedvr2.js) - its own job in the queue -->
+        <button id="pvSeedvr2" title="⏫ Upscale the video you are previewing with SeedVR2 (ComfyUI core nodes, seedvr2_7b_sharp_fp16) - pick the size, then Upscale; the result lands in the gallery">⏫ SeedVR2</button>
+        <button id="pvDlss5" title="⚡ Enhance / upscale the video you are previewing with NVIDIA DLSS 5 (RH DLSS 5 nodes, RTX only) - optional frame generation; the result lands in the gallery">⚡ DLSS 5</button>
+        <button id="pvSaveBtn" title="Save the previewed picture — a save dialog lets you pick the folder and name (a tone-mapped EXR/HDR saves as the PNG you are seeing)">💾 Save</button>
+        <input id="pvLoadFile" type="file" accept="image/png,image/jpeg,image/webp,.exr,.hdr"
+               style="display:none" aria-label="Choose a picture to preview (PNG, JPEG, WebP, EXR or HDR)">
+        <span class="meta" id="vmeta"></span>
+        <span class="meta" id="vtitle" style="margin-left:8px"></span>
+      </div>
+    </div>
+      </div>
+    </div>
+    <!-- the previewdock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="pv"></div>

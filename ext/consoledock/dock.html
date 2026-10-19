@@ -1,0 +1,22 @@
+    <div class="bdock" id="consoledock">
+      <div class="bhead" data-collapse="consoledock">▾ Console<button class="maxbtn" data-max="consoledock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- 2.237.0 (Tim: "no logs to show. show all logs in console and
+             make it copiable"): the console grows a source toggle — Job
+             (the selected job's log, as ever) and 🖼 Vision (EVERYTHING the
+             captioner and the vision llama-server itself said, live) — and
+             a ⧉ Copy button that copies whichever log is showing. The text
+             is explicitly selectable for copying by hand. -->
+        <div class="gtabs" id="conSrc" style="margin-bottom:4px">
+          <button type="button" class="on" data-consrc="job" title="The selected job's log">Job</button>
+          <button type="button" data-consrc="vision" title="The vision (describe) model's full log — the captioner's lines and the vision llama-server's own output">🖼 Vision</button>
+          <button type="button" class="ghost gbtn" id="conCopy" title="Copy the whole visible log to the clipboard" style="margin-left:auto">⧉ Copy log</button>
+        </div>
+        <div id="log" style="user-select:text">Select a job to follow its log.</div>
+        <div id="vlog" class="hidden" style="user-select:text;white-space:pre-wrap;overflow:auto">— no vision activity yet — attach a picture with 🖼 Describe on, or pick a model in the Vision dropdown —</div>
+        <div class="brow">
+          <button class="ghost hidden" id="cancelBtn">Cancel job</button>
+          <button class="ghost hidden" id="copyCmd">Copy command</button>
+        </div>
+      </div>
+    </div>

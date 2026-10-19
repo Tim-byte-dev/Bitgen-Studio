@@ -1,0 +1,102 @@
+    <div class="bdock" id="timelinedock">
+      <div class="bhead" data-collapse="timelinedock">▾ Timeline<button class="maxbtn" data-max="timelinedock" title="Maximize">⛶</button></div>
+      <div class="bbody">
+        <!-- 2.377.0 (Tim: "Add a preview canvas to the timeline docker ... create a layers docker on the right of the
+             timeline docker the same height as the preview canvas, add a photoshop style toolbar to the left of the
+             preview canvas. user will be able to play preview in the preview canvas, similar to after effects"):
+             canvas.js drives the toolbar, the canvas + its transport and the layers panel; ⧉ in the menu bar
+             shows / hides the whole row, the bar under it resizes it -->
+        <div id="tlStage">
+          <div id="tlTools" role="toolbar" aria-orientation="vertical" aria-label="Canvas tools">
+            <button class="ghost on" id="tlTool_move" type="button" title="Move (V) - select, drag, the corners scale, the top handle rotates" aria-label="Move tool">✥</button>
+            <button class="ghost" id="tlTool_text" type="button" title="Text (T) - click to add a text layer, click a text layer to edit it" aria-label="Text tool"><b style="font-family:Georgia,serif">T</b></button>
+            <button class="ghost" id="tlTool_hand" type="button" title="Hand (H, or hold Space) - pan the view" aria-label="Hand tool">✋</button>
+            <button class="ghost" id="tlTool_zoom" type="button" title="Zoom (Z) - click to zoom in, Alt-click to zoom out (Ctrl + wheel too)" aria-label="Zoom tool">🔍</button>
+            <span class="tlt-sep"></span>
+            <button class="ghost" id="tlTool_fit" type="button" title="Fit the picture in the view" aria-label="Fit to view">⤢</button>
+            <span class="tlt-sep"></span>
+            <input type="color" id="tlTool_color" value="#ffffff" title="Text colour (new text layers, and the selected one)" aria-label="Text colour">
+          </div>
+          <div id="tlCanvasCol">
+            <div id="tlCanvasWrap" tabindex="0" aria-label="Preview canvas - drop videos, pictures and sounds here">
+              <canvas id="tlCanvas"></canvas>
+              <div class="tlc-hint" id="tlCHint"></div>
+            </div>
+            <div id="tlCTrans" role="group" aria-label="Canvas transport">
+              <button class="ghost" id="tlCStart" type="button" title="Go to the start" aria-label="Go to the start">⏮</button>
+              <button class="ghost" id="tlCPlay" type="button" title="Play the preview from the position marker (Space)" aria-label="Play">▶</button>
+              <button class="ghost" id="tlCStop" type="button" title="Stop - back to the start" aria-label="Stop">⏹</button>
+              <button class="ghost" id="tlCEnd" type="button" title="Go to the end" aria-label="Go to the end">⏭</button>
+              <span id="tlCTime" title="Hours:minutes:seconds:frames">0:00:00:00</span>
+              <button class="ghost" id="tlCLoop" type="button" title="Loop - the ruler selection, else the whole timeline" aria-label="Loop">🔁</button>
+              <button class="ghost" id="tlCZoomFit" type="button" title="Fit (click to fit the picture)" aria-label="Zoom"><span id="tlCZoom">100%</span></button>
+              <span id="tlCInfo"></span>
+            </div>
+          </div>
+          <div id="tlLayersPanel" aria-label="Layers">
+            <div class="tll-head">Layers</div>
+            <div id="tlLayerList"></div>
+            <div id="tlProps"></div>
+          </div>
+        </div>
+        <div class="tlstagesplit" id="tlStageSplit" title="Drag to resize the preview canvas"></div>
+        <div id="tlbar">
+          <button class="ghost on" id="tlStageTog" type="button" title="Show / hide the preview canvas, its tools and the layers panel" aria-label="Preview canvas">⧉</button>
+          <button class="ghost" id="tlAddVideo">＋ Video clip</button>
+          <button class="ghost" id="tlAddAudio">＋ Audio clip</button>
+          <button class="ghost" id="tlAddTrack">＋ Audio layer</button>
+          <button class="ghost" id="tlAddImage">＋ Image</button>
+          <button class="ghost" id="tlAddImgTrack">＋ Image layer</button>
+          <!-- 2.383.0 (Tim: "remove the media play,stop,pause next and previous buttons from the timeline menubar"): the
+               transport is the canvas's (⏮ ▶ ⏹ ⏭ under the preview canvas, Space over it); the red marker is dragged
+               or a time double-clicked to move / play -->
+          <span class="zoomrow"><span style="font-size:.68rem;color:var(--dim)">🔍</span><input type="range" id="tlZoom" min="0" max="100" value="30"></span>
+          <label class="chk"><input type="checkbox" id="tlKeepA" checked> keep clips' own audio</label>
+          <span style="border-left:1px solid var(--line);height:16px"></span>
+          <span id="tlPh" style="font-family:var(--mono);font-size:.68rem;color:var(--dim)">—</span>
+          <button class="ghost" id="tlSetFirst" title="Capture the frame at the playhead as the FIRST frame (First/Last mode)">⊢ First</button>
+          <button class="ghost" id="tlSetLast" title="Capture the frame at the playhead as the LAST frame (First/Last mode)">Last ⊣</button>
+          <button class="ghost" id="tlAddRef" title="Capture the frame at the playhead as a reference image (Reference mode)">＋ Ref frame</button>
+          <span style="border-left:1px solid var(--line);height:16px"></span>
+          <button class="ghost" id="tlTrimHead"
+            title="Trim head (Task B): the clip under the playhead, on the highlighted layer, starts AT the playhead — what came before is dropped. No selection needed.">⇤ Head</button>
+          <button class="ghost" id="tlTrimTail"
+            title="Trim tail (Task B): the clip under the playhead, on the highlighted layer, ends AT the playhead — what came after is dropped. No selection needed.">Tail ⇥</button>
+          <span class="selgrp" id="tlSelGrp">
+            <button class="ghost" id="tlSelIn" title="Set the selection START at the playhead">⟦ In</button>
+            <button class="ghost" id="tlSelOut" title="Set the selection END at the playhead">Out ⟧</button>
+            <button class="ghost" id="tlSel1s" title="Select exactly one second (24 frames) from the playhead">＋1s</button>
+            <span id="tlSelInfo"></span>
+            <button class="ghost" id="tlSelClear" title="Clear the selection">✕</button>
+            <button class="ghost" id="tlFrames" title="Show every frame inside the selection">▦ Frames</button>
+            <button class="ghost" id="tlKeepSel" title="Keep the selection: scope 'layer' trims the whole highlighted layer to it, scope 'clip' trims only the clip under it">⇥ Keep</button>
+            <button class="ghost" id="tlCutSel" title="Cut the selection out: scope 'layer' removes it from the whole highlighted layer, scope 'clip' only from the clip under it (ripple joins the halves)">✂ Cut</button>
+            <label class="chk" title="Close the gap after the edit"><input type="checkbox" id="tlRipple" checked> ripple</label>
+            <select id="tlScope" title="What Keep/Cut edits: the whole highlighted LAYER, or only the CLIP under the middle of the selection (other clips stay untouched)">
+              <option value="layer">layer</option>
+              <option value="clip">clip</option>
+            </select>
+          </span>
+          <span style="flex:1"></span>
+          <button class="ghost" id="tlClear">Clear</button>
+          <span style="border-left:1px solid var(--line);height:16px"></span>
+          <select id="tlSel" title="Timelines saved in this project (projects/<name>/timelines/). Switching loads that one." style="max-width:150px"></select>
+          <button class="ghost" id="tlSaveBtn" title="Save this timeline under its current name">💾 Save</button>
+          <button class="ghost" id="tlSaveAs" title="Save this timeline under a new name (and switch to it)">Save as…</button>
+          <button class="ghost" id="tlExport" style="border-color:var(--tiger);color:var(--tiger)">⚙ Compile</button>
+          <!-- 2.376.0 (Tim: "please add a settings button to the right of the timeline docker. add nudge settings to a
+               timeline settings dialog"): tlsettings.js drives it (icon only) -->
+          <!-- 2.380.0 (Tim: "add a karaoke generator to timeline"): karaokegen.js; ❔ = static/help/timeline.html -->
+          <button class="ghost" id="tlKaraokeGen" type="button" title="Karaoke" aria-label="Karaoke generator" aria-haspopup="dialog">🎤</button>
+          <button class="ghost" id="tlHelp" type="button" title="Help" aria-label="Help" onclick="window.H3Help &amp;&amp; H3Help.open('timeline')">❔</button>
+          <button class="ghost" id="tlSettings" type="button" title="Timeline settings"
+                  aria-label="Timeline settings" aria-haspopup="dialog">⚙</button>
+        </div>
+        <div id="tlscroll"><div id="tlinner"></div></div>
+        <input type="file" id="audiopick" accept="audio/*,.m4a,.aac,.opus,.flac,.ogg" class="hidden">
+        <input type="file" id="imagepick" accept="image/*" class="hidden">
+      </div>
+    </div>
+    <!-- the timelinedock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="th"></div>

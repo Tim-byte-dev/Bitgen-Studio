@@ -1,0 +1,12 @@
+    <!-- IMAGE EDITOR DOCK (2.108.0, by instruction): below the timeline.
+         Krita-style selection tools on the picture, and "Infill selection"
+         which regenerates the selected area from the prompt box with the
+         selected image style and blends it into the rest of the picture.
+         The editor itself is static/imageedit.js; this is only its home. -->
+    <div class="bdock" id="imageeditdock">
+      <div class="bhead" data-collapse="imageeditdock">▾ Image editor<span id="ieName" class="dim" style="margin-left:8px;font-size:11px"></span><button class="maxbtn" data-max="imageeditdock" title="Maximize">⛶</button></div>
+      <div class="bbody" id="ieHost"></div>
+    </div>
+    <!-- the imageeditdock's BOTTOM resize handle (2.223.0): grab it and THIS
+         docker follows the mouse; the dock below gives/takes the room -->
+    <div class="hsplit" data-hresize="eh"></div>

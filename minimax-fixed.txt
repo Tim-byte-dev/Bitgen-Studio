@@ -1,0 +1,104 @@
+MINIMAX H3 — THE 15-SECOND CLIP, FIXED (2026-08-26, bitGen Studio 2.101.1)
+=====================================================================
+
+WHAT WAS WRONG
+--------------
+Not the model, not the clip length, not bitGen Studio, not the encoder choice.
+Upgrading ComfyUI to 0.33 left the venv on a PyTorch that ComfyUI 0.30+
+can no longer use properly:
+
+    pytorch version: 2.7.1+cu128
+    WARNING: You need pytorch with cu130 or higher to use optimized CUDA operations.
+    WARNING: Unsupported Pytorch detected. DynamicVRAM support requires Pytorch
+             version 2.8 or later. Falling back to legacy ModelPatcher.
+    Found comfy_kitchen backend cuda: {'available': True, 'disabled': True, ...}
+
+Three consequences, all visible in the failing log:
+
+  1. DYNAMIC VRAM OFF. The mechanism the Comfy blog credits for running H3 on
+     a 3060 was not running on a 5090. The legacy patcher guessed the model
+     split differently every attempt (5.3 / 8.3 / 9.8 / 12.3 / 18.0 GB
+     "loaded partially") because it cannot estimate the sampler's need.
+  2. INT8 ON THE PURE-PYTHON FALLBACK. With the comfy_kitchen CUDA backend
+     disabled, every quantized linear went through
+     comfy_kitchen/backends/eager/quantization.py::int8_linear, which
+     dequantizes each weight chunk to bf16 and torch.cat()s them — the full-
+     precision tensors materialize in VRAM on every layer. That is where
+     every "torch.OutOfMemoryError: Allocation on device" died, at step 0/20,
+     regardless of how much was offloaded. The real CUDA kernel is a fused
+     int8 GEMM and never allocates that.
+  3. FP8 COULD NOT RUN AT ALL: "No backend can handle 'rms_rope_split_half_':
+     q_scale dtype float8_e4m3fn" — the eager backend has no fp8 rope.
+
+THE FIX (one command, in the ComfyUI venv)
+------------------------------------------
+    E:\ComfyUI\venv\Scripts\python.exe -m pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+
+Driver 610.62 already supports CUDA 13. After the upgrade the same
+workflow rendered a 362-frame (15 s) ref2va clip in ONE pass:
+
+    pytorch version: 2.13.0+cu130
+    aimdo: ... comfy-aimdo inited for GPU: NVIDIA GeForce RTX 5090 (VRAM: 32606 MB)
+    DynamicVRAM support detected and enabled
+    Found comfy_kitchen backend cuda: {'available': True, 'disabled': False, ...}
+    Model MiniMaxH3 prepared for dynamic VRAM loading. 19995MB Staged.
+    70%|█████████    | 14/20 [22:40<09:45, 97.51s/it]
+
+HOW TO CHECK A ComfyUI INSTALL (read the first screen of its console)
+----------------------------------------------------------------------
+  [ ] "ComfyUI version:" 0.30.0 or newer            (H3 nodes + dynamic VRAM)
+  [ ] "pytorch version:" 2.8 or newer AND "+cu130"  (2.13.0+cu130 is known good)
+  [ ] "DynamicVRAM support detected and enabled"    (NOT "Falling back to legacy ModelPatcher")
+  [ ] "comfy_kitchen backend cuda: ... 'disabled': False"
+  [ ] no "--disable-dynamic-vram", "--highvram", "--gpu-only", "--lowvram",
+      "--novram" in the launch line (all of them defeat or duplicate the
+      streaming that makes the long clip fit)
+  [ ] "Total VRAM 32607 MB" on the 5090, "Device: cuda:0 NVIDIA GeForce RTX 5090"
+
+From inside bitGen Studio the same facts are on http://127.0.0.1:8188/system_stats
+(pytorch_version, comfyui_version, argv).
+
+Or from a shell:
+    E:\ComfyUI\venv\Scripts\python.exe -c "import torch;print(torch.__version__, torch.version.cuda, torch.cuda.get_device_name(0))"
+    -> 2.13.0+cu130 13.0 NVIDIA GeForce RTX 5090
+
+WHAT IS STILL OFF IN THAT LOG (not blocking, in order of usefulness)
+---------------------------------------------------------------------
+  * SageAttention: "DLL load failed while importing _fused" — the wheel was
+    built for the old torch. Reinstall a build for torch 2.13 / cu130 and
+    the 97 s/it should drop noticeably (attention is the long-clip cost).
+    Then launch with --use-sage-attention. Pair with --disable-dynamic-vram
+    ONLY if you hit the abort in ComfyUI issue #15566; otherwise leave
+    dynamic VRAM on.
+  * bitsandbytes: libbitsandbytes_cuda130.dll missing — same cause, reinstall
+    the cu130 build (only needed by custom nodes that use it; H3 does not).
+  * numpy 2.3.5 vs onnxruntime built for numpy 1.x — every
+    "AttributeError: _ARRAY_API not found" traceback. Breaks rmbg / pulid /
+    dwpose / tbox / SenseVoice, not H3. Either `pip install "numpy<2"` or
+    upgrade onnxruntime-gpu.
+  * tbg-etur import failed (pulls sageattention) — fixed by the Sage reinstall.
+  * "Enabled pinned memory 51355.0" with 128 GB RAM is the setup ComfyUI issue
+    #15488 describes for "GPU is lost" on Blackwell. Only revisit if a render
+    dies with a device-lost error instead of an OOM.
+
+H3 STUDIO SETTINGS THAT MATTER FOR THE LONG CLIP (2.100.0+)
+-----------------------------------------------------------
+  Steps                       0 = auto (base 20 / LoRA count). Leave at 0.
+  Settings -> ComfyUI
+    Split clips on OOM        OFF (Tim: no chunks)
+    Free VRAM before gen      ON
+    Keep text encoder in RAM  either; the nvfp4 encoder (17 GB) is what the
+                              shipped templates load; the int8 one (27 GB)
+                              does not fit beside the model.
+    Turbo LoRA                OFF for quality (20 steps); ON = 4 / 8 steps.
+  Templates                   comfy_workflows/ref2va.json, fl2va.json load
+                              qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors.
+
+WHY THREE RELEASES MISSED IT
+----------------------------
+2.99.x read the OOM as a VRAM-size problem and built a chunk ladder, a
+free-before-generate, an Errno-22 stdio fix and an encoder swap. All of
+those are still correct, but none of them could work: the sampler was
+running on a code path that cannot fit in 32 GB at any clip length. The
+lesson, now in HANDOVER.md: when a ComfyUI upgrade precedes a regression,
+read the FIRST screen of its console before the last one.

@@ -1,0 +1,184 @@
+// DAZ Script
+// bitGen Studio — the EXPERIMENTAL Daz Studio live link, 1.1.0 (bitGen 2.461.0).
+//
+// Tim (verbatim): "bridge daz3d to image editor and timeline - allow me to move the camera and adjust poses in daz3d
+// through the image editor or timeline docker ... if we can't do it wit daz directly we can send daz scene to blender".
+//
+// EXPERIMENTAL: written against Daz Studio's scripting documentation; it could not be run in a real Daz Studio when it
+// was made. If something does not move, the window's log says what failed.
+//
+// Install: like "bitGen Bridge" (the same Scripts/bitGen folder). Run it: Content Library -> Scripts -> bitGen ->
+// double-click "bitGen Live Link". A small window stays open while it is linked; Stop (or closing it) ends the link.
+//
+// About once a second it asks bitGen (POST /api/daz/live/poll - lib/dazLive.js) for what to do, telling it the selected
+// figure and its bones:
+//   view   a camera "bitGen Camera" is placed where bitGen's view is (Daz units: cm, Y up) and aimed at its target; the
+//          active viewport looks through it (the focal length set from the field of view, a 36 mm frame)
+//   pose   the figure's same-named bones (the names, as Daz's FBX export writes them) turn by the degrees given ON TOP of
+//          where they were when the link first turned them (X / Y / Z Rotate - Daz's own axes)
+//   reset  every bone the link turned goes back
+// Daz's own render / "bitGen Bridge" sends the result back as usual (Render this frame -> a picture).
+
+(function () {
+	var VERSION = "1.1.0";
+	var KEY = "bitGen/Bridge";
+
+	function str(v) { return v === undefined || v === null ? "" : String(v); }
+	function quote(s) { return '"' + str(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t") + '"'; }
+	function toJson(v) {
+		if (typeof JSON !== "undefined" && JSON.stringify) { return JSON.stringify(v); }
+		if (v === null || v === undefined) { return "null"; }
+		if (typeof v === "number") { return isFinite(v) ? String(v) : "null"; }
+		if (typeof v === "boolean") { return v ? "true" : "false"; }
+		if (typeof v === "string") { return quote(v); }
+		var i, out = [];
+		if (v instanceof Array) { for (i = 0; i < v.length; i++) { out.push(toJson(v[i])); } return "[" + out.join(",") + "]"; }
+		for (i in v) { if (v.hasOwnProperty(i) && v[i] !== undefined) { out.push(quote(i) + ":" + toJson(v[i])); } }
+		return "{" + out.join(",") + "}";
+	}
+	function fromJson(s) {
+		if (!s) { return null; }
+		try { if (typeof JSON !== "undefined" && JSON.parse) { return JSON.parse(s); } return eval("(" + s + ")"); } catch (e) { return null; }
+	}
+	function slash(p) { return str(p).replace(/\\/g, "/"); }
+	function writeText(path, text) { var f = new DzFile(path); if (!f.open(DzFile.WriteOnly | DzFile.Truncate)) { return false; } f.write(text); f.close(); return true; }
+	function readText(path) { var f = new DzFile(path); if (!f.exists() || !f.open(DzFile.ReadOnly)) { return ""; } var t = f.read(); f.close(); return str(t); }
+	function fileExists(path) { return new DzFile(path).exists(); }
+	function workDir() { var d = slash(App.getTempPath()) + "/bitgen_live"; var dir = new DzDir(d); if (!dir.exists()) { dir.mkpath(d); } return d; }
+	function curlPath() {
+		var c = ["C:/Windows/System32/curl.exe", "/usr/bin/curl", "/usr/local/bin/curl", "/opt/homebrew/bin/curl"];
+		for (var i = 0; i < c.length; i++) { if (fileExists(c[i])) { return c[i]; } }
+		return "curl";
+	}
+	// curl, waited for with the UI kept alive -> {code, body, text}
+	function http(url, jsonPath, dir, timeoutSec) {
+		var resp = dir + "/live_response.json";
+		var args = [curlPath(), "-s", "-S", "-o", resp, "-w", "%{http_code}"];
+		if (jsonPath) { args = args.concat(["-X", "POST", "-H", "Content-Type: application/json", "--data-binary", "@" + jsonPath]); }
+		args.push(url);
+		var p = new DzProcess(args);
+		if (!p.start()) { return { code: 0, body: null, text: "curl could not start - is curl installed?" }; }
+		var t0 = new Date().getTime(), out = "";
+		while (p.running) {
+			processEvents();
+			out += str(p.readStdout());
+			if (new Date().getTime() - t0 > (timeoutSec || 10) * 1000) { if (p.kill) { p.kill(); } return { code: 0, body: null, text: "bitGen did not answer in time" }; }
+		}
+		out += str(p.readStdout());
+		var text = readText(resp);
+		return { code: parseInt(out, 10) || 0, body: fromJson(text), text: text };
+	}
+
+	/* ---------- the window */
+	var S = new DzAppSettings(KEY);
+	var running = true, logLines = [];
+	var dlg = new DzBasicDialog();
+	dlg.caption = "bitGen Live Link " + VERSION + " (experimental)";
+	var g = new DzVGroupBox(dlg); g.title = "bitGen Studio (running on this computer)";
+	var eUrl = new DzLineEdit(g); eUrl.text = S.getStringValue("url", "http://127.0.0.1:8311");
+	var lState = new DzLabel(g); lState.text = "starting …";
+	var lLog = new DzLabel(g); lLog.text = ""; lLog.wordWrap = true;
+	dlg.addWidget(g);
+	dlg.setAcceptButtonText("Stop");
+	try { dlg.setRejectButtonText("Stop"); } catch (e) { /* older */ }
+	connect(dlg, "accepted()", function () { running = false; });
+	connect(dlg, "rejected()", function () { running = false; });
+	function log(s) { logLines.push(str(s)); while (logLines.length > 8) { logLines.shift(); } lLog.text = logLines.join("\n"); }
+
+	/* ---------- what Daz has: the selected figure + its bones */
+	function skeletonOf(n) {
+		if (!n) { return null; }
+		try { if (n.inherits("DzBone")) { n = n.getSkeleton(); } } catch (e) { return null; }
+		try { return n.inherits("DzSkeleton") ? n : null; } catch (e2) { return null; }
+	}
+	function figureNamed(name) {
+		var sk = null;
+		if (name) { try { sk = skeletonOf(Scene.findNodeByLabel(name)) || skeletonOf(Scene.findNode(name)); } catch (e) { sk = null; } }
+		if (!sk) { sk = skeletonOf(Scene.getPrimarySelection()); }
+		if (!sk) { for (var i = 0; i < Scene.getNumSkeletons(); i++) { sk = Scene.getSkeleton(i); if (sk) { break; } } }
+		return sk;
+	}
+	function info() {
+		var sk = figureNamed(""), bones = [];
+		if (sk) { var all = sk.getAllBones(); for (var i = 0; i < all.length && i < 600; i++) { bones.push(str(all[i].name)); } }
+		var cam = "";
+		try { cam = str(MainWindow.getViewportMgr().getActiveViewport().get3DViewport().getCamera().getLabel()); } catch (e) { cam = ""; }
+		return { figure: sk ? str(sk.getLabel()) : "", bones: bones, camera: cam, version: VERSION };
+	}
+
+	/* ---------- view: the bitGen Camera */
+	function bitgenCamera() {
+		var c = Scene.findNodeByLabel("bitGen Camera");
+		if (!c) { c = new DzBasicCamera(); c.setLabel("bitGen Camera"); Scene.addNode(c); log("made the bitGen Camera"); }
+		return c;
+	}
+	function applyView(v) {
+		var c = bitgenCamera();
+		c.setWSPos(new DzVec3(v.cam.pos[0], v.cam.pos[1], v.cam.pos[2]));
+		try { c.aimAt(new DzVec3(v.cam.target[0], v.cam.target[1], v.cam.target[2])); } catch (e) { log("aim: " + e); }
+		try { c.getFocalLengthControl().setValue(18 / Math.tan(v.cam.fov * Math.PI / 360)); } catch (e2) { log("focal length: " + e2); }
+		try { MainWindow.getViewportMgr().getActiveViewport().get3DViewport().setCamera(c); } catch (e3) { log("viewport: " + e3); }
+		log("view: camera at " + Math.round(v.cam.pos[0]) + ", " + Math.round(v.cam.pos[1]) + ", " + Math.round(v.cam.pos[2]) + " cm");
+	}
+
+	/* ---------- pose: turns on top of where the bones were */
+	var BASE = {};          // "<figure>/<bone>" -> {bone, v: [x, y, z]} as they were before the link turned them
+	function controls(b) { return [b.getXRotControl(), b.getYRotControl(), b.getZRotControl()]; }
+	function applyPose(cmd) {
+		var sk = figureNamed(cmd.figure);
+		if (!sk) { log("pose: no figure selected"); return; }
+		var fig = str(sk.getLabel()), n = 0, missing = [];
+		for (var name in cmd.bones) {
+			if (!cmd.bones.hasOwnProperty(name)) { continue; }
+			var b = sk.findBone(name);
+			if (!b && sk.findBoneByLabel) { b = sk.findBoneByLabel(name); }
+			if (!b) { missing.push(name); continue; }
+			var k = fig + "/" + name, cs = controls(b);
+			if (!BASE[k]) { BASE[k] = { bone: b, v: [cs[0].getValue(), cs[1].getValue(), cs[2].getValue()] }; }
+			for (var i = 0; i < 3; i++) { cs[i].setValue(BASE[k].v[i] + (+cmd.bones[name][i] || 0)); }
+			n++;
+		}
+		for (var key in BASE) {                         // turned before but not in this pose: back
+			if (BASE.hasOwnProperty(key) && key.indexOf(fig + "/") === 0 && !cmd.bones.hasOwnProperty(key.slice(fig.length + 1))) {
+				var c2 = controls(BASE[key].bone); for (var j = 0; j < 3; j++) { c2[j].setValue(BASE[key].v[j]); }
+				delete BASE[key];
+			}
+		}
+		log("pose: " + n + " bone(s) of " + fig + (missing.length ? " - not found: " + missing.slice(0, 4).join(", ") : ""));
+	}
+	function resetPose() {
+		var n = 0;
+		for (var key in BASE) { if (BASE.hasOwnProperty(key)) { var cs = controls(BASE[key].bone); for (var i = 0; i < 3; i++) { cs[i].setValue(BASE[key].v[i]); } n++; } }
+		BASE = {};
+		log("pose: " + n + " bone(s) back");
+	}
+
+	/* ---------- the loop */
+	dlg.show();
+	var dir = workDir(), since = 0, lastPoll = 0, fails = 0;
+	while (running) {
+		processEvents();
+		try { if (dlg.visible === false) { running = false; break; } } catch (e) { /* older */ }
+		var now = new Date().getTime();
+		if (now - lastPoll < 1000) { continue; }
+		lastPoll = now;
+		var url = slash(eUrl.text).replace(/\/+$/, "");
+		writeText(dir + "/live_poll.json", toJson({ since: since, info: info() }));
+		var r = http(url + "/api/daz/live/poll", dir + "/live_poll.json", dir, 8);
+		if (r.code !== 200 || !r.body) { fails++; lState.text = "no answer from bitGen at " + url + " (" + (r.text || r.code) + ")"; continue; }
+		if (fails || lState.text.indexOf("linked") < 0) { S.setStringValue("url", url); }
+		fails = 0;
+		lState.text = "linked to bitGen at " + url;
+		var cmds = r.body.cmds || [];
+		for (var ci = 0; ci < cmds.length; ci++) {
+			var c = cmds[ci];
+			since = Math.max(since, +c.seq || 0);
+			try {
+				if (c.type === "view") { applyView(c); }
+				else if (c.type === "pose") { applyPose(c); }
+				else if (c.type === "reset") { resetPose(); }
+			} catch (e) { log(c.type + ": " + e); }
+		}
+	}
+	try { dlg.close(); } catch (e) { /* closed */ }
+})();
