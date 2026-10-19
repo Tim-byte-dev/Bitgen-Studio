@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.540.8** — ✅ Github's Unit Tests on Node 22 (the First Public Runs Failed on Node 20)
+- **2.540.7** — 🎵 YuE2 Without Flashattention (the Windows Pytorch Wheels)
 - **2.540.6** — 🖌 Theme Edit Handles No Longer Drag the Whole UI + reset-layout.bat + 🎵 YuE2 Without Symlink Rights
 - **2.540.5** — ⟳ Update bitGen Studio from GitHub (Settings ▸ General ▸ Updates)
 - **2.540.4** — 🧩 Settings ▸ Add-Ons (YuE2 Installed in the App) + The YuE2 Call Fixed

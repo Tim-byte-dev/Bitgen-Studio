@@ -1,5 +1,11 @@
 # Contributing to bitGen Studio
 
+## Pushing (maintainer)
+
+`push-to-github.bat` (Windows): double-click it to commit what changed in this folder and push it to `origin` /
+`main`, or drag a `bitgen-studio-v<version>-repo.zip` onto it to replace the repo files with that release first. It
+never force-pushes and never commits the private release notes.
+
 ## Helping test the beta
 
 bitGen Studio is a **beta and still in testing**, so the most useful help right now is using it and telling us what
@@ -21,7 +27,8 @@ start.bat                 # Windows  (bitgen-studio.sh on Linux / macOS)
 ```
 
 The first start installs the Node packages and the Python environment. ComfyUI, the node packs and the models come
-from Settings ▸ ComfyUI and the setup wizard. Development needs Node.js 18+, Python 3.10+, Git and ffmpeg.
+from Settings ▸ ComfyUI and the setup wizard. Development needs Node.js 18+, Python 3.10+, Git and ffmpeg. The unit tests need Node.js 22.22+ (or 24.15+): their
+DOM library, jsdom, does not run on older versions.
 
 ## How the code is laid out
 

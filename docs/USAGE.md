@@ -2800,6 +2800,9 @@ and the install log appears in the tab. One install runs at a time.
   - It then installs PyTorch 2.10 with CUDA for your card and the pinned YuE2 pipeline (yue2-infer 0.1.6), about 5 GB.
   - The model, m-a-p/YuE2-3B, downloads on the first song.
   - It needs an NVIDIA GPU with BF16, about 24 GB of VRAM, and the app's Python 3.10 - 3.13.
+  - On Windows, PyTorch comes without FlashAttention. bitGen Studio gives YuE2 another attention kernel (cuDNN, then
+    PyTorch's own, then the slower no-graph mode), says which one in the log, and remembers the one that worked
+    (2.540.7).
   - 🗑 Remove deletes the `yue2` folder.
 - **Viggle (native)**: starts its own installer. Its progress shows in the Queue.
 

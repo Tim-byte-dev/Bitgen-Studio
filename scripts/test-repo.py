@@ -58,7 +58,7 @@ lic = sorted(os.path.relpath(os.path.join(dp, f), os.path.join(ROOT, "static", "
 check("NOTICE.md names every licence file in static/vendor and says how the LGPL OpenCascade files ship", lic and all(l in nt for l in lic) and "LGPL-2.1" in nt and "unmodified" in nt and "github.com/sgenoud/replicad" in nt, [l for l in lic if l not in nt])
 # GitHub
 ci = read(".github/workflows/ci.yml")
-check("the GitHub workflow: on push + pull requests, Node 20, npm ci, check-gitignore, scripts/ci-units.sh", all(w in ci for w in ["push:", "pull_request:", "node-version: 20", "npm ci", "check-gitignore.sh", "scripts/ci-units.sh"]))
+check("the GitHub workflow: on push + pull requests, Node 22 (jsdom 30 needs it - 2.540.8), the Node-24 actions, ubuntu-24.04, npm ci, check-gitignore, scripts/ci-units.sh", all(w in ci for w in ["push:", "pull_request:", "node-version: 22", "actions/checkout@v5", "actions/setup-node@v5", "actions/setup-python@v6", "runs-on: ubuntu-24.04", "npm ci", "check-gitignore.sh", "scripts/ci-units.sh"]))
 check("issue templates (bug report, feature request) and a pull request template", all(read(p) for p in [".github/ISSUE_TEMPLATE/bug_report.md", ".github/ISSUE_TEMPLATE/feature_request.md", ".github/PULL_REQUEST_TEMPLATE.md"]))
 lst = subprocess.run(["bash", os.path.join(ROOT, "scripts", "ci-units.sh"), "--list"], capture_output=True, text=True).stdout.split()
 tests = [t for t in lst if t.startswith("scripts/")]

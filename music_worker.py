@@ -40,6 +40,8 @@ through scripts/comfy_image.py, which writes the prompt into the encoder's
 """
 import json
 import os
+import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -109,6 +111,39 @@ def _yue2_cli(app_dir: Path):
     return None
 
 
+# 2.540.6: the ways to run YuE2's attention, fastest first - "auto" = scripts/yue2_run.py decides
+# (FlashAttention when PyTorch really has it, else cuDNN in the CUDA graph); "sdpa" = PyTorch's own
+# attention in the CUDA graph; "torch-eager" = no CUDA graph at all (the pipeline's --backend)
+YUE2_WAYS = ("auto", "sdpa", "torch-eager")
+ATTN_ERR = re.compile(r"FLASH_ATTENTION|FlashAttention|flash_attention|[Cc]u[Dd][Nn][Nn]|CUDNN|No available kernel|sdpa_kernel")
+
+
+def _yue2_state(cli: Path) -> Path:
+    """yue2/bitgen-attention.txt - next to yue2/.venv (cli = yue2/.venv/<Scripts|bin>/yue2)"""
+    return cli.parent.parent.parent / "bitgen-attention.txt"
+
+
+def _yue2_ways(cli: Path):
+    """the ways to try, starting with the one that worked last time"""
+    try:
+        last = _yue2_state(cli).read_text(encoding="utf-8").strip()
+    except OSError:
+        last = ""
+    return YUE2_WAYS[YUE2_WAYS.index(last):] if last in YUE2_WAYS else YUE2_WAYS
+
+
+def _yue2_remember(cli: Path, way: str) -> None:
+    try:
+        st = _yue2_state(cli)
+        if way == "auto":
+            if st.exists():
+                st.unlink()
+        else:
+            st.write_text(way, encoding="utf-8")
+    except OSError:
+        pass
+
+
 def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
     """One song (or a small batch) through the OFFICIAL YuE2 pipeline —
     lyrics are the prompt, the style's caption IS YuE2's style prompt, one
@@ -155,24 +190,41 @@ def run_yue2(params, cfg, style, output_dir, stem, batch, seed):
             vpy = cli.parent / ("python.exe" if os.name == "nt" else "python")
             runner = Path(__file__).resolve().parent / "scripts" / "yue2_run.py"
             head = [str(vpy), str(runner)] if vpy.exists() and runner.exists() else [str(cli)]
-            cmd = head + ["generate", "--model", model, "--request", str(req_file),
-                          "--output", str(out_dir), "--quiet"]
-            say("@@CMD " + json.dumps(cmd))
-            try:
-                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT, text=True,
-                                        encoding="utf-8", errors="replace",
-                                        env={**os.environ, "PYTHONUTF8": "1"})
-                tail = []
-                for line in proc.stdout:
-                    line = line.rstrip()
-                    if line:
-                        tail = (tail + [line])[-12:]
-                        say("[yue2] " + line)
-                rc = proc.wait()
-            except OSError as e:
-                fail(f"could not launch the YuE2 pipeline: {e}")
-            if rc != 0:
+            # 2.540.6: an attention kernel this PyTorch build lacks ("USE_FLASH_ATTENTION was
+            # not enabled for build" - the Windows wheels) -> the next way: sdpa in the CUDA
+            # graph, then --backend torch-eager; what worked is remembered (yue2/bitgen-attention.txt)
+            ways = _yue2_ways(cli)
+            for k, way in enumerate(ways):
+                cmd = head + ["generate", "--model", model, "--request", str(req_file),
+                              "--output", str(out_dir), "--quiet"]
+                env = {**os.environ, "PYTHONUTF8": "1"}
+                if way == "sdpa":
+                    env["BITGEN_YUE2_ATTN"] = "sdpa"
+                elif way == "torch-eager":
+                    cmd += ["--backend", "torch-eager"]
+                if way != "auto":
+                    say(f"[worker] YuE2 attention: {way}")
+                say("@@CMD " + json.dumps(cmd))
+                try:
+                    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                            stderr=subprocess.STDOUT, text=True,
+                                            encoding="utf-8", errors="replace", env=env)
+                    tail = []
+                    for line in proc.stdout:
+                        line = line.rstrip()
+                        if line:
+                            tail = (tail + [line])[-12:]
+                            say("[yue2] " + line)
+                    rc = proc.wait()
+                except OSError as e:
+                    fail(f"could not launch the YuE2 pipeline: {e}")
+                if rc == 0:
+                    _yue2_remember(cli, way)
+                    break
+                if k + 1 < len(ways) and ATTN_ERR.search("\n".join(tail)):
+                    say(f"[worker] YuE2: this PyTorch cannot run that attention kernel - trying {ways[k + 1]}")
+                    shutil.rmtree(out_dir, ignore_errors=True)    # a fresh start for the next way
+                    continue
                 fail("YuE2 exited with code " + str(rc) + " - last lines:\n"
                      + "\n".join(tail))
             flac = out_dir / req["id"] / "audio.flac"

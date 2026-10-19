@@ -12016,6 +12016,14 @@ node scripts/test-yue2run5406.js > /tmp/yr5406.log 2>&1 \
 node scripts/test-themeedit5406.js > /tmp/te5406.log 2>&1 \
   && ok "theme edit page guard (2.540.6: html / body / :root / * keep colours but are never sized, moved or hidden - set, cleaned on load, saved)" \
   || { bad "2.540.6 theme edit page guard"; grep -a "^FAIL" -A2 /tmp/te5406.log | head -14; }
+node scripts/test-pushbat5406.js > /tmp/pb5406.log 2>&1 \
+  && ok "push-to-github.bat (2.540.6: CRLF, labels, no parens in a block, a dropped zip runs from TEMP, tracked files only, the private notes never committed, never a force push + the zip step's git commands for real)" \
+  || { bad "2.540.6 push-to-github.bat"; grep -a "^FAIL" -A2 /tmp/pb5406.log | head -14; }
+
+# ---- 2.540.7 (YuE2 without FlashAttention)
+node scripts/test-yue2attn5406.js > /tmp/ya5407.log 2>&1 \
+  && ok "yue2 attention (2.540.7: no FlashAttention in PyTorch -> cuDNN / sdpa in the CUDA graph; music_worker retries sdpa then torch-eager on an attention error, remembers it, an OOM is not retried)" \
+  || { bad "2.540.7 yue2 attention"; grep -a "^FAIL" -A2 /tmp/ya5407.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
