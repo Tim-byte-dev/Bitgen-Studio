@@ -72,7 +72,12 @@
     "filters4.js",
     "filters5.js",
     "pcmeasure.js",
-    "brushdyn.js", "pcfileplus.js", "pcmerge.js", "pcmode.js", "pcsubject.js",
+    "brushdyn.js",
+    "pcfileplus.js",
+    "pcmerge.js",
+    "pcmode.js",
+    "pcsubject.js",
+    "pcimgop.js",
     "imageedit.js",
     "mount.js",
     "ieeditonly.js"

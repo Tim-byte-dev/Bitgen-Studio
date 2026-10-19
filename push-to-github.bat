@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 rem ===========================================================================
-rem  bitGen Studio - push this folder to GitHub (2.540.6)
+rem  bitGen Studio - push this folder to GitHub (2.540.6, 2.540.9)
 rem
 rem  DOUBLE-CLICK: commits everything that changed in this folder and pushes
 rem  it to GitHub (origin, branch main).
@@ -44,6 +44,19 @@ echo  Folder: %CD%
 where git >nul 2>nul
 if errorlevel 1 goto :nogit
 
+rem -- 2.540.9: the right folder? a .git or the app's package.json says this is the repository
+rem    (a bitgen-studio folder inside this one first: the bat was put one folder too high)
+if exist "bitgen-studio\.git" goto :wrongplace
+if exist "bitgen-studio\package.json" goto :wrongplace
+if exist ".git" goto :placeok
+if exist "package.json" goto :placeok
+echo.
+echo  This folder has no git repository and no bitGen Studio files.
+echo  This file belongs IN your bitgen-studio folder - the one with package.json.
+choice /C YN /M " Make THIS folder the repository anyway"
+if errorlevel 2 goto :stopped
+:placeok
+
 rem -- the first time: make this folder a git repository linked to GitHub
 if exist ".git" goto :hasgit
 echo  This folder is not a git repository yet - setting it up for
@@ -51,6 +64,7 @@ echo    %URL%
 git init -q -b %BRANCH%
 if errorlevel 1 goto :fail
 :hasgit
+call :trustdir
 git remote get-url origin >nul 2>nul
 if errorlevel 1 git remote add origin %URL%
 set "ORIGIN="
@@ -189,8 +203,8 @@ goto :end
 
 :nofetch
 echo.
-echo  Could not reach GitHub ^(no internet, or the sign-in was cancelled^).
-echo  Nothing was changed. Try again in a moment.
+echo  Git could not talk to GitHub - the message above says why ^(no internet,
+echo  a cancelled sign-in ...^). Nothing was pushed. Try again in a moment.
 goto :end
 
 :notzip
@@ -229,7 +243,33 @@ echo.
 echo  Something went wrong ^(the message above is from git^). Nothing was
 echo  force-pushed; your files are as they were.
 
+:wrongplace
+echo.
+echo  This file is in %CD%
+echo  but the repository is %CD%\bitgen-studio
+echo  Move push-to-github.bat into that folder and run it from there.
+if not exist ".git" goto :end
+echo.
+echo  This folder also has a .git folder ^(an earlier run of this file made it here^).
+echo  It is not your repository - delete it with:  rmdir /s /q "%CD%\.git"
+goto :end
+
 :end
 echo.
 pause
 endlocal
+exit /b
+
+rem -- 2.540.9: a folder Windows says belongs to another user account (an older Windows install, another PC, a
+rem    copied drive): git refuses it ("detected dubious ownership") until it is trusted - do what git suggests, once
+:trustdir
+git rev-parse --git-dir >nul 2>"%TEMP%\bitgen-git-err.txt"
+findstr /c:"dubious ownership" "%TEMP%\bitgen-git-err.txt" >nul
+if errorlevel 1 goto :eof
+set "SAFE=%CD:\=/%"
+echo.
+echo  Windows says this folder belongs to another user account ^(an older Windows
+echo  install or another PC^), so git will not use it until it is trusted.
+echo  Trusting it: git config --global --add safe.directory %SAFE%
+git config --global --add safe.directory "%SAFE%"
+goto :eof

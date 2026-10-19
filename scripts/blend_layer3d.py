@@ -13,7 +13,9 @@ Run by lib/layer3d.js (blender -b --factory-startup -P this -- <cmd> ...):
       loads the file ONCE, then reads one JSON job per line from stdin:
         {"cmd": "render", "out": png, "w", "h", "engine": "WORKBENCH" | "EEVEE" | "CYCLES", "samples", "transparent",
          "cam": null (the scene camera) | {target: [x,y,z], dist, yaw, pitch, fov} (degrees, Blender's Z up),
-         "pose": {<armature>: {<bone>: [x, y, z] degrees added to the bone's own rotation}}, "frame": n | null}
+         "pose": {<armature>: {<bone>: [x, y, z] degrees added to the bone's own rotation}}, "frame": n | null,
+         "objects": {<object>: {"move": [x, y, z] m, "turn": [x, y, z] degrees, "scale": k, "hide": true}} (2.541.0 - on
+         top of the file's own places, world axes, round the object's own origin; every job starts from the file's)}
         {"cmd": "quit"}
       Every job starts from the file's own pose (kept at load), so poses never pile up. Prints "H3L ready",
       "H3L done <png> <ms>", "H3L error <message>".
@@ -117,6 +119,55 @@ def apply_pose(pose, frame):
     return blend_pose.apply(pose, [frame], mute=True)
 
 
+# ---------------------------------------------------------------- the model (2.541.0)
+_ORIG = {}
+
+
+def keep_objects():
+    """the file's own place of every object - each job starts from it, so edits never pile up"""
+    _ORIG.clear()
+    for o in bpy.data.objects:
+        if o.name.startswith("bitgen_"):
+            continue
+        _ORIG[o.name] = (o.location.copy(), o.rotation_mode, o.rotation_euler.copy(), o.rotation_quaternion.copy(),
+                         o.rotation_axis_angle[:], o.scale.copy(), o.hide_render, o.hide_viewport)
+
+
+def reset_objects():
+    for name, (loc, mode, eul, quat, axa, scl, hr, hv) in _ORIG.items():
+        o = bpy.data.objects.get(name)
+        if not o:
+            continue
+        o.location, o.rotation_mode, o.rotation_euler, o.rotation_quaternion = loc, mode, eul, quat
+        o.rotation_axis_angle = axa
+        o.scale, o.hide_render, o.hide_viewport = scl, hr, hv
+
+
+def apply_objects(objs):
+    """the page's model edits, in world space round each object's own origin: scale, turn (X, Y, Z), then move"""
+    from mathutils import Euler, Matrix
+    done = []
+    for name, e in (objs or {}).items():
+        o = bpy.data.objects.get(name)
+        if not o or o.name.startswith("bitgen_") or not isinstance(e, dict):
+            continue
+        if e.get("hide"):
+            o.hide_render = True
+            done.append(name)
+            continue
+        m = o.matrix_world.copy()
+        t = m.to_translation()
+        k = float(e.get("scale") or 1.0)
+        tn = [math.radians(float(v or 0)) for v in (e.get("turn") or [0, 0, 0])[:3]]
+        mv = Vector([float(v or 0) for v in (e.get("move") or [0, 0, 0])[:3]])
+        about = Matrix.Translation(t) @ Euler(tn, "XYZ").to_matrix().to_4x4() @ Matrix.Scale(k, 4) @ Matrix.Translation(-t)
+        o.matrix_world = Matrix.Translation(mv) @ about @ m
+        done.append(name)
+    if done:
+        bpy.context.view_layer.update()
+    return done
+
+
 # ---------------------------------------------------------------- camera + render
 def view_cam(sc, cam):
     co = bpy.data.objects.get("bitgen_layer3d_cam")
@@ -153,9 +204,10 @@ def render_job(job):
     t0 = time.time()
     sc = bpy.context.scene
     frame = job.get("frame")
-    if frame is not None:
-        sc.frame_set(int(frame))
+    reset_objects()                        # 2.541.0: the file's own places first (then the frame's animation)
+    sc.frame_set(int(frame) if frame is not None else sc.frame_current)
     apply_pose(job.get("pose"), sc.frame_current)
+    apply_objects(job.get("objects"))
     keep_cam = sc.camera
     if job.get("cam"):
         sc.camera = view_cam(sc, job["cam"])
@@ -200,6 +252,7 @@ def render_job(job):
 def serve(src):
     open_file(src)
     keep_pose()
+    keep_objects()
     say("H3L ready")
     while True:
         line = sys.stdin.readline()
@@ -228,6 +281,7 @@ def main():
         elif cmd == "render":
             open_file(argv[1])
             keep_pose()
+            keep_objects()
             render_job(json.load(open(argv[2], encoding="utf-8")))
         else:
             raise RuntimeError("unknown command " + cmd)

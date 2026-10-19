@@ -5,7 +5,7 @@
 //   GET  /api/layer3d                         the project's opened scenes {items}
 //   POST /api/layer3d/open    {path}          -> {id, name, source, meta}
 //   GET  /api/layer3d/:id                     {id, name, source, meta}
-//   POST /api/layer3d/:id/render {cam, pose, w, h, engine, samples, transparent, frame} -> {rid}
+//   POST /api/layer3d/:id/render {cam, pose, w, h, engine, samples, transparent, frame, objects (2.541.0: the model's edits)} -> {rid}
 //   GET  /api/layer3d/render/:rid             {state, error, ms, png}
 //   GET  /api/layer3d/:id/png?f=              a render
 //   POST /api/layer3d/:id/close               ends that scene's Blender

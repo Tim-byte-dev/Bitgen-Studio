@@ -512,6 +512,7 @@
   .kxres{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
   .kxres canvas{width:62px;height:62px;object-fit:contain;border:1px solid var(--pc-line);cursor:pointer;background:#111}
   .kxres canvas.on{border-color:var(--pc-accent)}
+  .kxres .kxth{position:relative;display:inline-block;line-height:0}.kxres .kxthok{position:absolute;right:2px;bottom:2px;padding:0 4px;font-size:11px;line-height:16px;min-width:0;background:var(--pc-accent);color:#fff;border:0;border-radius:3px;cursor:pointer;opacity:.85}.kxres .kxthok:hover{opacity:1}
   .kxres .wait{width:62px;height:62px;border:1px dashed var(--pc-sep);display:flex;align-items:center;justify-content:center;color:var(--pc-dim)}
   .kxlayers{display:flex;flex-direction:column;gap:0;max-height:300px;min-height:60px;overflow:auto;background:var(--pc-input);border:1px solid var(--pc-line)}
   .kxlayer{display:flex;align-items:center;gap:4px;padding:2px 4px;border-bottom:1px solid var(--pc-line);cursor:default;min-height:30px;user-select:none}
@@ -2162,6 +2163,9 @@
     }
     host.querySelectorAll("#kxModes button").forEach((b) => { b.onclick = () => setAiMode(b.dataset.mode); });
     setAiMode(store.get("aimode", "generate"));
+    // 2.541.0: the prompt docker's ▾ Generate / Edit / Refine … dropdown (pcimgop.js) sets the mode and Refine's strength
+    E.setAiMode = setAiMode;
+    E.setStrength = (v) => { const n = Math.max(5, Math.min(95, Math.round((+v || 50) / 5) * 5)); S.strength = n; $("kxStrength").value = n; $("kxStrengthV").textContent = n + "%"; store.set("strength", n); return n; };
 
     /* 2.539.0: the References docker's pictures (their descriptions) for an Edit's Picture 2 */
     function paintRefs() {
@@ -2190,7 +2194,9 @@
     const blobOf = (c) => new Promise((r) => c.toBlob(r, "image/png"));
 
     /** opt (2.444.0, the prompt docker driving it - pcpromptlink.js): {prompt, editStyle, into: true = ✔ Apply blends
-     *  into the layer that was selected, whole: no selection = the whole picture} */
+     *  into the layer that was selected, whole: no selection = the whole picture}
+     *  2.541.0: source = a canvas of the picture's size to work from INSTEAD of the layers (the 🟧 Blender scene rendered
+     *  for an Edit / Refine - pc3d.js), always the whole of it; label = what ✔ Apply calls the new layer */
     async function runAI(opt) {
       opt = opt && typeof opt === "object" && !opt.type ? opt : {};
       if (!S.w) return say("open a picture first");
@@ -2198,8 +2204,9 @@
       if (!api || !api.aiedit) return say("the AI is not connected (reload the page)");
       const mode = S.aiMode;
       if (mode === "compose") return E.runCompose ? E.runCompose() : say("Compose is not loaded (reload the page)");
-      if (E.beforeGenerate) E.beforeGenerate(mode);              // 2.442.0: a closed shape active - into it (pcframes.js)
-      let sel = hasSel() ? Uint8Array.from(S.sel) : null;
+      const source = opt.source && opt.source.width === S.w && opt.source.height === S.h ? opt.source : null;   // 2.541.0
+      if (!source) { if (E.beforeGenerate) E.beforeGenerate(mode); }   // 2.442.0: a closed shape active - into it (pcframes.js); 2.541.0: not for a source picture
+      let sel = hasSel() && !source ? Uint8Array.from(S.sel) : null;
       if (mode === "background") { if (!sel) return say("select what to KEEP first - everything else gets a new background"); sel = P.invert(sel); }
       if (!sel && mode === "generate" && opt.whole) sel = new Uint8Array(S.w * S.h).fill(255);
       if (!sel && (mode === "generate" || mode === "remove")) return say("select the area first (or Select All)");
@@ -2208,7 +2215,7 @@
       const bb = P.bbox(sel, S.w, S.h); if (!bb) return say("the selection is empty");
       const box = whole ? { x: 0, y: 0, w: S.w, h: S.h } : P.contextRect(bb, S.w, S.h, S.context, 16);
       const cropMask = P.cropMask(sel, S.w, box);
-      const src = flatten();
+      const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
       const full = newCanvas(box.w, box.h), fg = ctx(full);
       fg.drawImage(src, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
@@ -2250,7 +2257,7 @@
       S.busy = true; $("kxRun").disabled = true;
       discardResults(true);
       // 2.437.0: ✨ Generate Fill in Shape / in Mask (pcgenfill.js) - the result goes onto that layer (clipped / masked)
-      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto ? 0 : S.feather, mode, prompt, into: S.genInto || null,
+      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
         blendInto: !S.genInto && opt.into && mode === "generate" && layer() ? layer().id : null };   // 2.444.0: ✔ Apply = into that layer
       S.genInto = null;
       say(`${mode}: ${box.w}×${box.h} crop` + (fit.scale < 1 ? ` rendered at ${fit.w}×${fit.h}` : "") + ` · ${S.count} result(s)`
@@ -2350,12 +2357,16 @@
       S.results.forEach((r, i) => {
         if (!r.layer) { const w = doc.createElement("div"); w.className = "wait"; w.textContent = r.failed ? "✕" : "…"; w.title = r.failed ? "failed - see the job log" : "rendering"; box.appendChild(w); return; }
         const t = newCanvas(124, 124), g = ctx(t), b = r.info.box, k = Math.min(124 / b.w, 124 / b.h);
-        g.drawImage(flatCache || cv, b.x, b.y, b.w, b.h, (124 - b.w * k) / 2, (124 - b.h * k) / 2, b.w * k, b.h * k);
+        g.drawImage(r.info.source || flatCache || cv, b.x, b.y, b.w, b.h, (124 - b.w * k) / 2, (124 - b.h * k) / 2, b.w * k, b.h * k);
         g.drawImage(r.layer, b.x, b.y, b.w, b.h, (124 - b.w * k) / 2, (124 - b.h * k) / 2, b.w * k, b.h * k);
         t.title = `result ${i + 1} (seed ${r.seed})`;
         if (S.previewIndex === i) t.className = "on";
         t.onclick = () => showResult(i);
-        box.appendChild(t);
+        // 2.541.0 (Tim: "if user selects apply on the thumbnail then add a new layer"): each result has its own ✔
+        const w = doc.createElement("span"); w.className = "kxth"; w.appendChild(t);
+        const ok = doc.createElement("button"); ok.type = "button"; ok.className = "kxthok"; ok.textContent = "✔"; ok.title = `Apply result ${i + 1} as a layer`;
+        ok.onclick = (ev) => { ev.stopPropagation(); showResult(i); applyResult(); };
+        w.appendChild(ok); box.appendChild(w);
       });
       $("kxResBtns").style.display = S.results.some((r) => r.layer) ? "" : "none";
     }
@@ -2366,7 +2377,7 @@
     function applyResult() {
       const r = S.results[S.previewIndex]; if (!r || !r.layer) return say("no result shown");
       const into = r.info.into, T = into ? S.layers.find((x) => x.id === into.id) : null;
-      const L = makeLayer(T ? `✨ fill in ${T.name}: ${(r.info.prompt || "").slice(0, 24)}` : `✨ ${r.info.mode}: ${(r.info.prompt || "").slice(0, 28)}`);
+      const L = makeLayer(T ? `✨ fill in ${T.name}: ${(r.info.prompt || "").slice(0, 24)}` : r.info.label ? `${r.info.label}: ${(r.info.prompt || "").slice(0, 28)}` : `✨ ${r.info.mode}: ${(r.info.prompt || "").slice(0, 28)}`);
       ctx(L.canvas).drawImage(r.layer, 0, 0);
       if (T && win.PCGenFill) {                                   // 2.437.0: onto the shape (clipped) / inside the mask (its copy)
         win.PCGenFill.placeOnto(E, L, T, into.how);
@@ -2533,6 +2544,7 @@
     if (win.PCDims && win.PCDims.install) win.PCDims.install(E);
     if (win.PCFrames && win.PCFrames.install) win.PCFrames.install(E);
     if (win.PCPrefs && win.PCPrefs.install) win.PCPrefs.install(E);   // 2.444.0: ⚙ the editor's settings (tabs modules add)
+    if (win.PCImgOp && win.PCImgOp.install) win.PCImgOp.install(E);   // 2.541.0: the prompt docker's ▾ Generate / Edit / Refine / Fill / Replace background / Remove
     if (win.PCPromptLink && win.PCPromptLink.install) win.PCPromptLink.install(E);
     if (win.PCArtboards && win.PCArtboards.install) win.PCArtboards.install(E);   // 2.447.0: artboards   // 2.444.0: ✨ Edit / Generate run from the prompt docker   // 2.442.0: frames (PowerClip) - layers inside a closed shape   // 2.441.0: CAD dimensions - exact points, live ends, the scale
     if (win.PCCaFill && win.PCCaFill.install) win.PCCaFill.install(E);   // 2.448.0: the Content-Aware Fill workspace

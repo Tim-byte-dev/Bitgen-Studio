@@ -2771,6 +2771,37 @@ The panel lists every saved layout:
 The button is highlighted while a layout is saved for the dockers that are
 open now.
 
+## ▾ Generate, Edit, Refine, Fill, Replace background, Remove, and Blender mode (2.541.0)
+
+In 🖼 Image mode, the prompt docker's menu bar has a dropdown that says what its button does. It works like the Krita AI
+plugin, on the picture open in the image editor:
+
+- **✨ Generate**: a new picture from the prompt, as before. With the editor open it lands on the canvas as a layer.
+- **✏ Edit**: the edit model follows the instruction ("make her jacket red") on the selection, else the whole picture.
+- **🔁 Refine**: redraws the selection, else the whole picture. A slider appears on the menu bar for how much it changes
+  (5 – 95 %). It is the same setting as the ✨ AI panel's strength.
+- **🪣 Fill**: fills the selection from the prompt. Select the area first.
+- **🖼 Replace background**: keeps what is selected and makes everything else new.
+- **🧽 Remove**: takes out what is selected and continues the surroundings. The prompt is optional.
+
+The button's words follow the choice ("🔁 Refine 40%"), and the ✨ AI panel's tabs follow it too. If the editor is
+closed, the button opens it. The results come into the ✨ AI panel: click one to compare, and its **✔** keeps it as a new
+layer.
+
+**Blender mode.** Pick a 3D layer (Layer ▸ New 3D Layer, a Daz or Blender scene), and a 🟧 Blender chip shows beside the
+dropdown. Edit and Refine then work from the scene: Blender renders it at the picture's full size with the layer's engine,
+and that picture goes to the edit model with the prompt. The 3D layer itself is left as it is.
+
+**The model.** The 🧊 3D tab has a **Model** section under the camera:
+
+- **Object**: pick one of the scene's objects (cameras are not listed).
+- **Move m**, **Turn °** and **Scale %** move it on top of where the file has it. **hidden** leaves it out.
+- **🖐 Drag the object**: click an object on the canvas to pick it, then drag it along the ground as the camera sees it.
+  Shift + drag moves it up or down, and Ctrl + drag turns it.
+- **Reset object** and **Reset all** put things back. Each change is one undo step.
+
+The original .blend file is never changed.
+
 ## ⟳ Update bitGen Studio from GitHub (2.540.5)
 
 **Settings ▸ General ▸ ⟳ Updates** shows your version, how bitGen Studio was installed (a git clone, or the full zip)

@@ -12024,6 +12024,14 @@ node scripts/test-pushbat5406.js > /tmp/pb5406.log 2>&1 \
 node scripts/test-yue2attn5406.js > /tmp/ya5407.log 2>&1 \
   && ok "yue2 attention (2.540.7: no FlashAttention in PyTorch -> cuDNN / sdpa in the CUDA graph; music_worker retries sdpa then torch-eager on an attention error, remembers it, an OOM is not retried)" \
   || { bad "2.540.7 yue2 attention"; grep -a "^FAIL" -A2 /tmp/ya5407.log | head -14; }
+
+# ---- 2.541.0 (the prompt docker's ▾ + Blender mode in the image editor)
+node scripts/test-imgop541.js > /tmp/op541.log 2>&1 \
+  && ok "image ops units (2.541.0: the six choices, the button's words, what each does, Blender mode, the model's edits + their checks, the wiring)" \
+  || { bad "2.541.0 image ops units"; grep -a "^FAIL" -A2 /tmp/op541.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui541-ui.js > /tmp/ui541.log 2>&1 \
+  && ok "2.541.0 browser test: the ▾ only in Image mode, Refine's slider + words both ways, Fill / Refine / Replace background / Remove run in the editor, the Model moved by numbers and by dragging (real Blender), Edit in Blender mode renders the scene, ✔ on a thumbnail = a new layer - or SKIP without playwright" \
+  || { bad "2.541.0 image ops browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui541.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

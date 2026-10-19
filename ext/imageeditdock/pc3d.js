@@ -24,7 +24,20 @@
  *              Live Link" script takes them (lib/dazLive.js): its viewport looks through a "bitGen Camera" placed like
  *              this view, the same-named bones turn
  *   Every change is one undo step (the layer's pixels + its camera / pose). The .bgi keeps L.l3d.
- * Pure (Node: scripts/test-layer3d.js): orbitPos, basis, project, orbitDrag, VIEWS, setBone, boxPoints.
+ *   2.541.0 (Tim: "add blender bridge to image-editor so user can modify model/view/camera ... if image editor is in blender
+ *   mode and the user clicks edit use the blender scene to render the picture from the prompt add it to the gallery, if
+ *   user selects apply on the thumbnail then add a new layer to the image-editor"):
+ *     Model    pick an object (or click it on the canvas with 🖐 Drag the object), Move X / Y / Z (m), Turn X / Y / Z (°),
+ *              Scale %, hidden, Reset object / Reset all; 🖐 Drag the object: drag = along the ground (left-right /
+ *              away-near as the camera sees it), Shift = up / down, Ctrl = turn round Z. L.l3d.objs = {name: {move, turn,
+ *              scale, hide}} - Blender applies them on top of the file's own places (lib/layer3d.js cleanObjects,
+ *              scripts/blend_layer3d.py apply_objects); the original .blend is never changed.
+ *     BLENDER MODE = a 3D layer selected: the prompt docker's ▾ Edit / Refine (pcimgop.js) render the scene with Blender
+ *              (the layer's engine, the picture's full size - the layer itself is left as it is) and send THAT picture
+ *              with the prompt to the edit model / Refine (editFromScene); the results come into the ✨ AI panel's
+ *              gallery, ✔ on a result keeps it as a new layer.
+ * Pure (Node: scripts/test-layer3d.js, test-model3d541.js): orbitPos, basis, project, orbitDrag, VIEWS, setBone, boxPoints,
+ * setObj, objDrag, objBox, pickObject, editable.
  */
 (function (root) {
   "use strict";
@@ -84,6 +97,53 @@
     return out;
   }
 
+  /* ---- 2.541.0: the MODEL - an object's edit {move: [x,y,z] m, turn: [x,y,z] °, scale: k, hide} on top of the file's place */
+  const r4 = (v) => Math.round(v * 1e4) / 1e4;
+  /** the objects that can be moved: everything but cameras and bitGen's own helpers */
+  const editable = (objects) => (objects || []).filter((o) => o && o.name && o.type !== "CAMERA" && !/^bitgen_/.test(o.name));
+  /** objs with one object's edit changed (patch merged; a no-op edit dropped) */
+  function setObj(objs, name, patch) {
+    const all = JSON.parse(JSON.stringify(objs || {})), e = Object.assign({}, all[name] || {}, patch || {}), c = {};
+    const v3 = (a) => (Array.isArray(a) ? a.slice(0, 3).map((x) => r4(+x || 0)) : [0, 0, 0]);
+    if (v3(e.move).some((x) => x !== 0)) c.move = v3(e.move);
+    if (v3(e.turn).some((x) => x !== 0)) c.turn = v3(e.turn).map((x) => Math.round(x * 100) / 100);
+    const k = Math.max(0.01, Math.min(100, Number(e.scale) || 1)); if (Math.abs(k - 1) > 1e-6) c.scale = r4(k);
+    if (e.hide === true) c.hide = true;
+    if (Object.keys(c).length) all[name] = c; else delete all[name];
+    return all;
+  }
+  /** a drag of (dx, dy) px on an object seen through camera c: "move" = along the ground (right / away), "lift" = up /
+   *  down, "turn" = round Z -> its new edit (e0 = the edit before the drag) */
+  function objDrag(c, e0, dx, dy, how, h) {
+    const e = { move: ((e0 && e0.move) || [0, 0, 0]).slice(), turn: ((e0 && e0.turn) || [0, 0, 0]).slice(), scale: (e0 && e0.scale) || 1, hide: !!(e0 && e0.hide) };
+    if (how === "turn") { e.turn[2] = Math.round((((e.turn[2] - dx * 0.5) % 360) + 540) % 360 - 180); return e; }
+    const B = basis(c), k = (2 * (c.dist || 5) * Math.tan(rad(c.fov || 40) / 2)) / Math.max(1, h || 500);
+    if (how === "lift") { e.move[2] = r4(e.move[2] - dy * k); return e; }
+    let fw = [B.f[0], B.f[1], 0]; const l = Math.hypot(fw[0], fw[1]); fw = l > 1e-6 ? [fw[0] / l, fw[1] / l, 0] : [B.u[0], B.u[1], 0];
+    let rt = [B.r[0], B.r[1], 0]; const lr = Math.hypot(rt[0], rt[1]) || 1; rt = [rt[0] / lr, rt[1] / lr, 0];
+    for (let i = 0; i < 2; i++) e.move[i] = r4(e.move[i] + dx * k * rt[i] - dy * k * fw[i]);
+    return e;
+  }
+  /** an object's box on the picture (its file box moved by its edit) -> [x0, y0, x1, y1] px, or null */
+  function objBox(o, e, c, w, h) {
+    if (!o || !o.box) return null;
+    const mv = (e && e.move) || [0, 0, 0], [lo, hi] = o.box, pts = [];
+    for (const x of [lo[0], hi[0]]) for (const y of [lo[1], hi[1]]) for (const z of [lo[2], hi[2]]) { const p = project(c, w, h, [x + mv[0], y + mv[1], z + mv[2]]); if (p) pts.push(p); }
+    if (pts.length < 2) return null;
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  }
+  /** the object under (x, y) on the picture - the smallest box that holds the point - or null */
+  function pickObject(objects, objs, c, w, h, x, y) {
+    let best = null, area = Infinity;
+    for (const o of editable(objects)) {
+      if ((objs || {})[o.name] && objs[o.name].hide) continue;
+      const b = objBox(o, (objs || {})[o.name], c, w, h); if (!b || x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
+      const a = (b[2] - b[0]) * (b[3] - b[1]); if (a < area) { area = a; best = o.name; }
+    }
+    return best;
+  }
+
   /** 2.540.0: the scene's meshes on a w x h picture through camera c -> [{name, box}] (their world boxes projected) */
   function objectsOnPicture(objects, c, w, h) {
     const RR = root.RealRefs || (typeof require === "function" ? (() => { try { return require("../../static/realrefs.js"); } catch (e) { return null; } })() : null);
@@ -111,6 +171,21 @@
 
     /* ---- rendering into the layer (one undo step: its pixels + its l3d) */
     let token = 0;
+    /** 2.541.0: Blender draws the layer's scene (camera, pose, model, frame) -> {img, st, job} - nothing is changed */
+    async function renderImage(L, final, qw, qh) {
+      const l = L.l3d;
+      const job = { cam: l.cam, pose: l.pose, objects: l.objs || {}, w: qw, h: qh, engine: final ? l.engine : "WORKBENCH", samples: l.samples || 32, transparent: !!l.transparent, frame: l.frame };
+      const { rid } = await api(`/api/layer3d/${encodeURIComponent(l.id)}/render`, job);
+      let st = null;
+      for (let i = 0; i < 6000; i++) {
+        await new Promise((r) => root.setTimeout(r, i < 20 ? 100 : 300));
+        st = await api("/api/layer3d/render/" + rid);
+        if (st.state === "done" || st.state === "error") break;
+      }
+      if (!st || st.state !== "done") return { st, job, img: null };
+      const img = await new Promise((res, rej) => { const im = new root.Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("the render did not load")); im.src = st.png + "&t=" + Date.now(); });
+      return { st, job, img };
+    }
     async function render(L, opt) {
       if (!is3d(L)) return null;
       const o = opt || {}, final = !!o.final, my = ++token, l = L.l3d;
@@ -118,17 +193,9 @@
       status(final ? `rendering ${S.w} x ${S.h} with ${l.engine === "WORKBENCH" ? "Quick" : l.engine}…` : "drawing the view…");
       L.l3d.busy = true;
       try {
-        const job = { cam: l.cam, pose: l.pose, w: qw, h: qh, engine: final ? l.engine : "WORKBENCH", samples: l.samples || 32, transparent: !!l.transparent, frame: l.frame };
-        const { rid } = await api(`/api/layer3d/${encodeURIComponent(l.id)}/render`, job);
-        let st = null;
-        for (let i = 0; i < 6000; i++) {
-          await new Promise((r) => root.setTimeout(r, i < 20 ? 100 : 300));
-          st = await api("/api/layer3d/render/" + rid);
-          if (st.state === "done" || st.state === "error") break;
-        }
-        if (!st || st.state !== "done") { if (my === token || final) status("Blender: " + ((st && st.error) || "no picture")); return null; }
+        const { st, job, img } = await renderImage(L, final, qw, qh);
+        if (!img) { if (my === token || final) status("Blender: " + ((st && st.error) || "no picture")); return null; }
         if (my !== token && !final) return null;                     // a newer view is on its way
-        const img = await new Promise((res, rej) => { const im = new root.Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("the render did not load")); im.src = st.png + "&t=" + Date.now(); });
         const before = o.before || (stash && stash.L === L ? stash.before : E.snapStruct()), copy = E.beginPx(L);
         const g = L.canvas.getContext("2d"); g.clearRect(0, 0, S.w, S.h); g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, S.w, S.h);
         L.l3d.last = { w: qw, h: qh, engine: job.engine, ms: st.ms };
@@ -165,7 +232,7 @@
       let L = null;
       E.structOp("new 3D layer", () => {
         L = E.makeLayer("3D: " + sc.name, S.w, S.h, "pixel");
-        L.l3d = { id: sc.id, name: sc.name, cam: null, pose: {}, engine: "WORKBENCH", samples: 32, transparent: false, frame: null };
+        L.l3d = { id: sc.id, name: sc.name, cam: null, pose: {}, objs: {}, engine: "WORKBENCH", samples: 32, transparent: false, frame: null };
         const A = E.layer();
         S.layers = D.insert(S.layers, L, A ? A.id : null, false);
         S.active = S.layers.indexOf(L);
@@ -208,6 +275,7 @@
       E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "k3d") paint(true); return r; };
     }
     let dragOn = false, bone = { arm: "", name: "" };
+    let objOn = false, objName = "";                   // 2.541.0: 🖐 Drag the object + the object picked in the Model list
     /* ---- 2.461.0: the EXPERIMENTAL Daz live link (lib/dazLive.js; Daz runs Scripts ▸ bitGen ▸ bitGen Live Link) */
     let dazAuto = false, dazT = 0, dazLine = "Daz Studio: run Scripts ▸ bitGen ▸ bitGen Live Link there to link it";
     try { dazAuto = !!store.get("l3.dazAuto", false); } catch (er) { /* fine */ }
@@ -250,6 +318,7 @@
         <div class="r">${Object.keys(VIEWS).map((k) => `<button type="button" class="ghost" data-view="${k}">${k[0].toUpperCase() + k.slice(1)}</button>`).join("")}</div>
         <div class="r"><span>Turn °</span><input type="number" id="l3Yaw" step="5"><span>Tilt °</span><input type="number" id="l3Pitch" step="5" min="-89" max="89"></div>
         <div class="r"><span>Distance</span><input type="number" id="l3Dist" step="0.1" min="0.01"><span>Lens °</span><input type="number" id="l3Fov" step="1" min="1" max="170"></div>
+        ${modelHtml(L, m)}
         <h5>Pose</h5>
         ${arms.length ? `<div class="r"><span>Figure</span><select id="l3Arm">${arms.map((a) => `<option${a.name === bone.arm ? " selected" : ""}>${esc(a.name)}</option>`).join("")}</select></div>
         <div class="r"><span>Bone</span><input type="text" id="l3BoneQ" placeholder="find…" style="width:70px"><select id="l3Bone" style="flex:1">${(A ? A.bones : []).map((x) => `<option${x.name === bone.name ? " selected" : ""}>${esc(x.name)}</option>`).join("")}</select></div>
@@ -270,6 +339,21 @@
         <div id="l3Msg">${esc(msg)}</div>`;
       fill(L, m); bind(L, m);
     }
+    /* 2.541.0: the MODEL - the scene's objects moved / turned / scaled / hidden on top of the file's own places */
+    function modelHtml(L, m) {
+      const list = editable(m.meta.objects);
+      if (!list.length) return `<h5>Model</h5><div style="color:var(--pc-dim)">No objects listed for this scene (open it again to read them).</div>`;
+      if (!list.some((o) => o.name === objName)) objName = (list.find((o) => o.type === "MESH") || list[0]).name;
+      const objs = L.l3d.objs || {}, n = Object.keys(objs).length;
+      const xyz = (pre, step, t) => ["X", "Y", "Z"].map((k) => `<input type="number" id="${pre}${k}" step="${step}" title="${t} ${k}">`).join("");
+      return `<h5 title="Move, turn, scale or hide the scene's objects - Blender draws them there; the .blend itself is never changed">Model <span style="color:var(--pc-dim);font-weight:400">${n ? n + " object(s) changed" : "as in the file"}</span></h5>
+        <div class="r"><span>Object</span><select id="l3Obj" style="flex:1">${list.map((o) => `<option value="${esc(o.name)}"${o.name === objName ? " selected" : ""}>${objs[o.name] ? "• " : ""}${esc(o.name)} (${esc(String(o.type || "").toLowerCase())})</option>`).join("")}</select></div>
+        <div class="r"><button type="button" class="ghost${objOn ? " on" : ""}" id="l3ObjDrag" title="On the canvas: click an object to pick it; drag = along the ground (as the camera sees it) · Shift = up / down · Ctrl = turn">🖐 Drag the object</button>
+          <label title="Leave it out of the picture"><input type="checkbox" id="l3ObjHide"> hidden</label></div>
+        <div class="r"><span>Move m</span>${xyz("l3M", 0.05, "Move (metres, world)")}</div>
+        <div class="r"><span>Turn °</span>${xyz("l3T", 5, "Turn (degrees, world axes, round its own origin)")}</div>
+        <div class="r"><span>Scale %</span><input type="number" id="l3Sc" step="5" min="1" max="10000"><button type="button" class="ghost" id="l3ObjReset" title="This object back where the file has it">Reset object</button><button type="button" class="ghost" id="l3ObjAll" title="Every object back where the file has it">Reset all</button></div>`;
+    }
     /* 2.540.0: 🖼 the reference docker's pictures for the scene's meshes */
     const rrRefs = () => (root.H3Refs ? root.H3Refs.images() : []);
     const rrObjects = (L, m) => objectsOnPicture(m.meta.objects, camOf(L), S.w || 1280, S.h || 720);
@@ -287,12 +371,19 @@
       set("l3Frame", L.l3d.frame == null ? "" : L.l3d.frame); set("l3Eng", L.l3d.engine);
       const tr = $("l3Tr"); if (tr) tr.checked = !!L.l3d.transparent;
       const sb = $("l3Scene"); if (sb) sb.classList.toggle("on", !L.l3d.cam);
+      if ($("l3Obj")) {                                                 // 2.541.0: the picked object's edit
+        const e = (objDrag0 && objDrag0.L === L && objDrag0.e) || (L.l3d.objs || {})[objName] || {}, mv = e.move || [0, 0, 0], tn = e.turn || [0, 0, 0];
+        ["X", "Y", "Z"].forEach((k, i) => { set("l3M" + k, r1(mv[i])); set("l3T" + k, r1(tn[i])); });
+        set("l3Sc", Math.round((e.scale || 1) * 1000) / 10);
+        const hb = $("l3ObjHide"); if (hb) hb.checked = !!e.hide;
+        const db = $("l3ObjDrag"); if (db) db.classList.toggle("on", objOn);
+      }
       void m;
     }
     function bind(L, m) {
       const q = (id) => $(id);
       q("l3Scene").onclick = () => change(L, (l) => { l.cam = null; }, "3D: scene camera", true);
-      q("l3Drag").onclick = () => { dragOn = !dragOn; q("l3Drag").classList.toggle("on", dragOn); say(dragOn ? "drag on the canvas: orbit · Shift = pan · Ctrl = zoom · wheel = zoom" : "the canvas is yours again"); };
+      q("l3Drag").onclick = () => { dragOn = !dragOn; if (dragOn && objOn) { objOn = false; const ob = q("l3ObjDrag"); if (ob) ob.classList.remove("on"); } q("l3Drag").classList.toggle("on", dragOn); say(dragOn ? "drag on the canvas: orbit · Shift = pan · Ctrl = zoom · wheel = zoom" : "the canvas is yours again"); };
       body().querySelectorAll("[data-view]").forEach((b) => { b.onclick = () => change(L, (l) => { const c = Object.assign({}, camOf(L)); [c.yaw, c.pitch] = VIEWS[b.dataset.view]; l.cam = c; }, "3D: " + b.dataset.view + " view", true); });
       const camNum = (id, key, lo, hi) => { q(id).onchange = (e) => change(L, (l) => { const c = Object.assign({}, camOf(L)); c[key] = Math.max(lo, Math.min(hi, +e.target.value || 0)); l.cam = c; }, "3D camera", true); };
       camNum("l3Yaw", "yaw", -360, 360); camNum("l3Pitch", "pitch", -89, 89); camNum("l3Dist", "dist", 0.001, 1e6); camNum("l3Fov", "fov", 1, 170);
@@ -307,6 +398,17 @@
         });
         q("l3ResetB").onclick = () => change(L, (l) => { l.pose = setBone(l.pose, bone.arm, bone.name, [0, 0, 0]); }, "3D pose: reset " + bone.name, true);
         q("l3ResetP").onclick = () => change(L, (l) => { l.pose = {}; }, "3D pose: reset", true);
+      }
+      if (q("l3Obj")) {                                                 // 2.541.0: the Model
+        const edit = (patch, label) => change(L, (l) => { l.objs = setObj(l.objs, objName, patch); }, label || "3D model: " + objName, true);
+        q("l3Obj").onchange = (e) => { objName = e.target.value; fill(L, m); E.drawOverlay(); };
+        q("l3ObjDrag").onclick = () => { objOn = !objOn; if (objOn) { dragOn = false; const d = q("l3Drag"); if (d) d.classList.remove("on"); } q("l3ObjDrag").classList.toggle("on", objOn); E.drawOverlay(); say(objOn ? "click an object on the canvas to pick it · drag = along the ground · Shift = up / down · Ctrl = turn" : "the canvas is yours again"); };
+        q("l3ObjHide").onchange = (e) => edit({ hide: e.target.checked }, (e.target.checked ? "3D model: hide " : "3D model: show ") + objName);
+        const vec = (pre, key) => () => edit({ [key]: ["X", "Y", "Z"].map((k) => +q(pre + k).value || 0) });
+        ["X", "Y", "Z"].forEach((k) => { q("l3M" + k).onchange = vec("l3M", "move"); q("l3T" + k).onchange = vec("l3T", "turn"); });
+        q("l3Sc").onchange = (e) => edit({ scale: Math.max(1, +e.target.value || 100) / 100 });
+        q("l3ObjReset").onclick = () => change(L, (l) => { const o = Object.assign({}, l.objs || {}); delete o[objName]; l.objs = o; }, "3D model: reset " + objName, true);
+        q("l3ObjAll").onclick = () => change(L, (l) => { l.objs = {}; }, "3D model: reset all", true);
       }
       q("l3Frame").onchange = (e) => change(L, (l) => { l.frame = e.target.value === "" ? null : Math.round(+e.target.value); }, "3D frame", true);
       q("l3Eng").onchange = (e) => { L.l3d.engine = e.target.value; };
@@ -359,6 +461,36 @@
       } catch (e) { status("🖼 " + e.message); say("references: " + e.message); return null; }
     }
 
+    /* ---- 2.541.0: 🖐 dragging an OBJECT on the canvas (click = pick it) */
+    let objDrag0 = null;
+    const ptOf = (e) => (E.pos ? E.pos(e) : (() => { const r = stage.getBoundingClientRect(); return [(e.clientX - r.left - (S.panX || 0)) / (S.zoom || 1), (e.clientY - r.top - (S.panY || 0)) / (S.zoom || 1)]; })());
+    stage.addEventListener("pointerdown", (e) => {
+      const L = cur(); if (!objOn || !L || e.button !== 0 || S.space) return;
+      const m = metas.get(L.l3d.id); if (!m) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      const [x, y] = ptOf(e), hit = pickObject(m.meta.objects, L.l3d.objs, camOf(L), S.w, S.h, x, y);
+      if (hit && hit !== objName) { objName = hit; paint(true); }
+      objDrag0 = { L, x: e.clientX, y: e.clientY, name: objName, e0: (L.l3d.objs || {})[objName] || {}, how: e.shiftKey ? "lift" : (e.ctrlKey || e.metaKey) ? "turn" : "move", before: E.snapStruct(), moved: false };
+      try { stage.setPointerCapture(e.pointerId); } catch (er) { /* fine */ }
+      E.drawOverlay();
+    }, true);
+    stage.addEventListener("pointermove", (e) => {
+      if (!objDrag0) return; e.stopImmediatePropagation();
+      const dx = (e.clientX - objDrag0.x) / (S.zoom || 1), dy = (e.clientY - objDrag0.y) / (S.zoom || 1);
+      if (!objDrag0.moved && Math.hypot(dx, dy) < 3) return;
+      objDrag0.moved = true;
+      objDrag0.e = objDrag(camOf(objDrag0.L), objDrag0.e0, dx, dy, objDrag0.how, S.h);
+      E.drawOverlay(); fill(objDrag0.L, metas.get(objDrag0.L.l3d.id));
+    }, true);
+    const objUp = (e) => {
+      if (!objDrag0) return; if (e) e.stopImmediatePropagation();
+      const d = objDrag0; objDrag0 = null;
+      if (!d.moved || !d.e) { E.drawOverlay(); return; }
+      if (!stash || stash.L !== d.L) stash = { L: d.L, before: d.before };
+      change(d.L, (l) => { l.objs = setObj(l.objs, d.name, d.e); }, "3D model: " + d.name, true);
+    };
+    stage.addEventListener("pointerup", objUp, true); stage.addEventListener("pointercancel", objUp, true);
+
     /* ---- 🖐 dragging the view on the canvas */
     let drag = null;
     stage.addEventListener("pointerdown", (e) => {
@@ -386,16 +518,50 @@
       e.preventDefault(); e.stopImmediatePropagation();
       change(L, (l) => { l.cam = orbitDrag(camOf(L), 0, e.deltaY > 0 ? 12 : -12, "zoom"); }, "3D camera", false);
     }, { capture: true, passive: false });
+    // 2.541.0: the picked object's box while 🖐 Drag the object is on (where it goes while dragging)
+    E.overlayHooks.push((g, px) => {
+      const L = cur(); if (!L || !objOn) return;
+      const m = metas.get(L.l3d.id); if (!m) return;
+      const o = editable(m.meta.objects).find((x) => x.name === objName); if (!o) return;
+      const b = objBox(o, objDrag0 && objDrag0.e ? objDrag0.e : (L.l3d.objs || {})[objName], drag && drag.cam ? drag.cam : camOf(L), S.w, S.h); if (!b) return;
+      g.save(); g.strokeStyle = "#f5792c"; g.lineWidth = 2 * px; g.setLineDash([6 * px, 4 * px]); g.strokeRect(b[0], b[1], b[2] - b[0], b[3] - b[1]);
+      g.setLineDash([]); g.fillStyle = "#f5792c"; g.font = `${11 * px}px sans-serif`; g.fillText(objName, b[0] + 3 * px, Math.max(11 * px, b[1] - 4 * px));
+      g.restore();
+    });
     // the wire box while the view moves
     E.overlayHooks.push((g, px) => {
       const L = cur(); if (!L) return;
-      const m = metas.get(L.l3d.id); if (!m || !(drag || L.l3d.busy || (pend && pend.L === L))) return;
+      const m = metas.get(L.l3d.id); if (!m || !(drag || L.l3d.busy || (pend && pend.L === L)) || objOn) return;
       const c = drag && drag.cam ? drag.cam : camOf(L), pts = boxPoints(m.meta.center, m.meta.radius).map((p) => project(c, S.w, S.h, p));
       g.save(); g.strokeStyle = "#2680eb"; g.lineWidth = 1.5 * px; g.setLineDash([5 * px, 4 * px]);
       const E2 = [[0, 1], [0, 2], [1, 3], [2, 3], [4, 5], [4, 6], [5, 7], [6, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
       g.beginPath(); for (const [a, b] of E2) { if (!pts[a] || !pts[b]) continue; g.moveTo(pts[a][0], pts[a][1]); g.lineTo(pts[b][0], pts[b][1]); } g.stroke();
       g.restore();
     });
+
+    /* ---- 2.541.0: BLENDER MODE - the prompt docker's Edit / Refine work from the scene rendered by Blender */
+    async function editFromScene(L, text, mode, editStyle) {
+      if (!is3d(L)) { say("pick a 3D layer first"); return null; }
+      const t = String(text || "").trim();
+      if (!t && mode === "edit") { say("type in the prompt docker what to make of the Blender scene (e.g. \"a photo of a woman waving in a sunny park\")"); return null; }
+      if (L.l3d.busy) { say("the 3D view is still being drawn"); return null; }
+      if (S.busy) { say("still working on the last one"); return null; }
+      const eng = L.l3d.engine === "WORKBENCH" ? "Quick" : L.l3d.engine;
+      status(`🟧 Blender renders the scene ${S.w} x ${S.h} (${eng}) for the ${mode}…`); say(`🟧 Blender renders the scene (${eng}) for the ${mode}…`);
+      L.l3d.busy = true;
+      let img = null;
+      try { const r = await renderImage(L, true, S.w, S.h); img = r.img; if (!img) { status("Blender: " + ((r.st && r.st.error) || "no picture")); say("Blender: " + ((r.st && r.st.error) || "no picture")); return null; } }
+      catch (e) { status("3D: " + e.message); say("3D layer: " + e.message); return null; }
+      finally { L.l3d.busy = false; paint(); }
+      const c = E.newCanvas(S.w, S.h), g = c.getContext("2d");
+      if (L.l3d.transparent) { g.fillStyle = "#ffffff"; g.fillRect(0, 0, S.w, S.h); }
+      g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, S.w, S.h);
+      status(`🟧 the scene rendered - ${mode === "edit" ? "the edit model" : "Refine"} takes it with the prompt…`);
+      if (root.H3TestEvent) { try { root.H3TestEvent("ie_blender_edit", mode); } catch (e) { /* the 🧪 list */ } }
+      if (S.aiMode !== mode && E.setAiMode) E.setAiMode(mode);
+      await E.runAI({ prompt: t, editStyle: editStyle || "", source: c, whole: true, into: false, label: "🟧 " + L.l3d.name + " " + mode });
+      return c;
+    }
 
     /* ---- commands */
     const C = E.ui.addCmd;
@@ -404,10 +570,11 @@
     // the tab follows the picked layer
     const prevHist = E.ui.history;
     E.ui.history = function () { const r = prevHist ? prevHist.apply(this, arguments) : undefined; try { paint(); } catch (er) { /* fine */ } return r; };
-    E.layer3d = { openScene, newDialog, render, change, generate, generateWithRefs, rrObjects, camOf, metaOf, paint, dazSend, dazStatus, state: () => ({ dragOn, bone: Object.assign({}, bone), msg }), setDrag: (v) => { dragOn = !!v; paint(true); } };
+    E.layer3d = { isCurrent: () => !!cur(), current: cur, editFromScene, renderImage, objName: () => objName, pickObj: (n) => { objName = n; paint(true); }, setObjDrag: (v) => { objOn = !!v; if (objOn) dragOn = false; paint(true); },
+      openScene, newDialog, render, change, generate, generateWithRefs, rrObjects, camOf, metaOf, paint, dazSend, dazStatus, state: () => ({ dragOn, bone: Object.assign({}, bone), msg }), setDrag: (v) => { dragOn = !!v; paint(true); } };
   }
 
-  const PC3D = { objectsOnPicture, orbitPos, basis, project, orbitDrag, VIEWS, setBone, boxPoints, dazView, install };
+  const PC3D = { objectsOnPicture, orbitPos, basis, project, orbitDrag, VIEWS, setBone, boxPoints, dazView, setObj, objDrag, objBox, pickObject, editable, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PC3D;
   else root.PC3D = PC3D;
 })(typeof window !== "undefined" ? window : globalThis);

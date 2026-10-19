@@ -112,6 +112,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 ### The prompt docker and Generate
 
 - **One Generate button** — the dropdown under it says what it makes: video, image, music, speech, a wired graph or a chat reply. *Where:* the prompt docker
+- **Generate, Edit, Refine, Fill, Replace background, Remove** — in Image mode a dropdown on the menu bar says what Generate does to the picture in the image editor, like the Krita AI plugin; Refine gets a strength slider and the button's words follow the choice. *Where:* the prompt docker's menu bar. *Since:* 2.541.0
 - **Generate modes** — Ref (reference pictures), F/L (first / last frame), Text, and Swap. *Where:* Basic Settings
 - **Several jobs from one prompt** — /br/ on its own line splits the prompt into jobs that run one after another. *Where:* the prompt box
 - **Enter improves the prompt** — Enter sends the prompt to the local LLM, which rewrites it. *Where:* the prompt box
@@ -928,6 +929,8 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **Camera** — the scene camera, front, back, left, right or top, or turn, tilt, distance and lens; drag on the canvas to orbit, pan and zoom. *Where:* the 3D tab. *Since:* 2.460.0
 - **Pose** — pick a figure and bone and turn it on top of its pose. *Where:* the 3D tab. *Since:* 2.460.0
 - **Frame and render** — pick a frame of an animated scene; render it Quick, EEVEE or Cycles, with a transparent background. *Where:* the 3D tab. *Since:* 2.460.0
+- **Model** — move, turn, scale or hide the scene's objects, by numbers or by dragging them on the canvas; the .blend is not changed. *Where:* the 3D tab > Model. *Since:* 2.541.0
+- **Blender mode** — with a 3D layer picked, the prompt docker's Edit and Refine render the scene with Blender and work from that picture; the results come into the AI panel, and ✔ keeps one as a layer. *Where:* the prompt docker's dropdown. *Since:* 2.541.0
 
 ### 3D scenes and models from pictures
 
