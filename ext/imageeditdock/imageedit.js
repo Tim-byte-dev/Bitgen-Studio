@@ -83,6 +83,11 @@
   /** Pad a box by `margin` on every side, clamp to the picture, then snap the
    *  size UP to a multiple of `mult` (models want /16 or /64 sizes) without
    *  leaving the picture; returns {x,y,w,h}. */
+  /** 2.551.0 (Krita AI's "automatic context"): the margin around a selection - at least the user's, at least 3/4 of the
+   *  selection's long side, and enough that the region is about 512 px across (the model sees what it continues) */
+  P.autoMargin = function (box, user) {
+    return Math.max(user || 0, Math.round(Math.max(box.w, box.h) * 0.75), Math.round((512 - Math.min(box.w, box.h)) / 2));
+  };
   P.contextRect = function (box, w, h, margin, mult) {
     mult = mult || 16;
     let x = Math.max(0, box.x - margin), y = Math.max(0, box.y - margin);
@@ -1412,7 +1417,7 @@
       } else if (S.tool === "move") {
         h += `<label title="A click picks the topmost layer with pixels there"><input type="checkbox" id="pcAuto" ${S.autoSelect ? "checked" : ""}> Auto-select layer</label><span class="sep"></span>`
           + ["left", "hcenter", "right", "top", "vcenter", "bottom"].map((a) => `<button class="ghost pcalign" data-al="${a}" title="Align the layer ${a === "hcenter" ? "horizontal centres" : a === "vcenter" ? "vertical centres" : a + " edges"} to the selection (or the canvas)">${{ left: "⇤", hcenter: "↔", right: "⇥", top: "⤒", vcenter: "↕", bottom: "⤓" }[a]}</button>`).join("")
-          + `<span class="sep"></span><button class="ghost" id="pcXform" title="Free Transform (Ctrl+T): drag inside = move, corners / edges = scale, outside = rotate, Ctrl + an edge = skew; Enter keeps, Esc cancels">⤡ Transform</button>`;   // 2.550.0
+          + `<span class="sep"></span><button class="ghost" id="pcXform" title="Free Transform (Ctrl+T): drag inside = move, a corner = scale, a middle handle = skew (Shift + it = stretch), outside = rotate; Enter keeps, Esc cancels">⤡ Transform</button>`;   // 2.550.0
       }
       o.innerHTML = h;
       o.querySelectorAll(".kxsm").forEach((b) => { b.onclick = () => { S.mode = b.dataset.sm; renderOptions(); }; });
@@ -2229,7 +2234,7 @@
       const whole = !sel;
       if (whole) sel = new Uint8Array(S.w * S.h).fill(255);
       const bb = P.bbox(sel, S.w, S.h); if (!bb) return say("the selection is empty");
-      const box = whole ? { x: 0, y: 0, w: S.w, h: S.h } : P.contextRect(bb, S.w, S.h, S.context, 16);
+      const box = whole ? { x: 0, y: 0, w: S.w, h: S.h } : P.contextRect(bb, S.w, S.h, mode === "generate" || mode === "remove" || mode === "refine" ? P.autoMargin(bb, S.context) : S.context, 16);   // 2.551.0: more context
       const cropMask = P.cropMask(sel, S.w, box);
       const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
@@ -2239,6 +2244,9 @@
       let hasHole = false;
       for (let i = 0; i < cropMask.length; i++) if (cropMask[i] && fid.data[i * 4 + 3] < 250) { hasHole = true; break; }
       if (mode === "remove" || hasHole) { P.fillHole(fid.data, mode === "remove" ? cropMask : new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }
+      // 2.551.0 (as the Krita AI plugin: "pre-fill the masked area ... avoid seams"): Generate in a selection starts from the
+      // selection filled with the colours around it (border fill), not the old pixels or a hole
+      else if (mode === "generate" && !whole) { P.fillHole(fid.data, cropMask, box.w, box.h); fg.putImageData(fid, 0, 0); }
       // what the model renders at (<= the MP budget)
       const fit = P.fitSize(box.w, box.h, S.res * 1048576, 16);
       const crop = newCanvas(fit.w, fit.h), cg = ctx(crop); cg.imageSmoothingQuality = "high"; cg.drawImage(full, 0, 0, fit.w, fit.h);

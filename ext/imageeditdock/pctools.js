@@ -19,7 +19,8 @@
  *   Shapes (U)          rectangle / rounded / ellipse / line / triangle / polygon as SHAPE layers (fill, stroke,
  *                       dashes), still editable
  *   Zoom (Z)            click in, Alt-click out
- *   Free Transform      Ctrl+T: move, scale (corners keep the proportions, Shift frees them), rotate outside the box
+ *   Free Transform      Ctrl+T: move, scale (corners keep the proportions, Shift frees them), rotate outside the box;
+ *                       2.551.0: a MIDDLE handle skews (the skew cursor), Shift / Alt + a middle handle stretches that side
  *                       (Shift = 15° steps); X / Y / W / H / angle in the options bar; Enter / Esc
  *   E.img               the Image menu: Image Size, Canvas Size, rotate / flip the canvas or the layer, Crop to the
  *                       selection, Trim, Auto Tone / Contrast / Color
@@ -644,6 +645,11 @@
 
     /* ---------------- free transform (Ctrl+T) ---------------- */
     let X = null;
+    // 2.551.0: Photoshop-like cursors - a slanted double arrow on a middle handle (skew), a curved arrow outside (rotate)
+    const svgCur = (svg, x, y, fb) => `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${x} ${y}, ${fb}`;
+    const SKEW_H = svgCur('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15 L21 9" stroke="#fff" stroke-width="4"/><path d="M3 15 L21 9" stroke="#000" stroke-width="1.6"/><path d="M5 11 L3 15 L7 16 M17 8 L21 9 L19 13" stroke="#fff" stroke-width="4"/><path d="M5 11 L3 15 L7 16 M17 8 L21 9 L19 13" stroke="#000" stroke-width="1.6"/></g></svg>', 12, 12, "ew-resize");
+    const SKEW_V = svgCur('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 L15 21" stroke="#fff" stroke-width="4"/><path d="M9 3 L15 21" stroke="#000" stroke-width="1.6"/><path d="M13 5 L9 3 L8 7 M16 17 L15 21 L11 19" stroke="#fff" stroke-width="4"/><path d="M13 5 L9 3 L8 7 M16 17 L15 21 L11 19" stroke="#000" stroke-width="1.6"/></g></svg>', 12, 12, "ns-resize");
+    const ROT_CURSOR = svgCur('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 A8 8 0 0 1 17 6" stroke="#fff" stroke-width="4"/><path d="M5 14 A8 8 0 0 1 17 6" stroke="#000" stroke-width="1.6"/><path d="M13 4 L17 6 L15 10" stroke="#fff" stroke-width="4"/><path d="M13 4 L17 6 L15 10" stroke="#000" stroke-width="1.6"/></g></svg>', 12, 12, "alias");
     function startTransform() {
       const L = E.layer();
       if (!L) return say("open a picture first");
@@ -658,7 +664,7 @@
       const box = E.alphaBox(c); if (!box) return say("nothing to transform - the layer (or the selection on it) is empty");
       if (sc) { const lg = ctx(L.canvas); lg.save(); lg.globalCompositeOperation = "destination-out"; lg.drawImage(sc, 0, 0); lg.restore(); } else ctx(L.canvas).clearRect(0, 0, S.w, S.h);
       X = { L, copy, c, box, tx: 0, ty: 0, sx: 1, sy: 1, rot: 0, kx: 0, ky: 0, prev: S.tool, hadSel: !!sc, selBefore: S.sel ? Uint8Array.from(S.sel) : null };
-      say("Free Transform: drag inside = move, a corner / an edge = scale (Shift frees the proportions), outside = rotate, Ctrl + an edge = skew - Enter keeps, Esc cancels");
+      say("Free Transform: drag inside = move, a corner = scale (Shift frees the proportions), a middle handle = skew (Shift / Alt + a middle handle = stretch that side), outside = rotate - Enter keeps, Esc cancels");
       S.float = { c, m: xform(X) };
       E.setTool("transform");
       E.renderSoon();
@@ -715,9 +721,11 @@
       down(e, fx, fy) {
         if (!X) return false;
         const h = hitTransform(X, fx, fy, 7 / S.zoom);
-        X.drag = { h, x0: fx, y0: fy, skew: (e.ctrlKey || e.metaKey) && h.kind === "edge", t0: { tx: X.tx, ty: X.ty, sx: X.sx, sy: X.sy, rot: X.rot, kx: X.kx || 0, ky: X.ky || 0 } };
+        // 2.551.0 (Tim: "when user hovers over middle handle ... change transform icon to skew then skew like photoshop
+        // instead of rotate"): a MIDDLE (edge) handle skews; Shift or Alt + a middle handle stretches that side
+        X.drag = { h, x0: fx, y0: fy, skew: h.kind === "edge" && !e.shiftKey && !e.altKey, t0: { tx: X.tx, ty: X.ty, sx: X.sx, sy: X.sy, rot: X.rot, kx: X.kx || 0, ky: X.ky || 0 } };
       },
-      hover(e, fx, fy) { if (!X) return; const h = hitTransform(X, fx, fy, 7 / S.zoom); E.stage.style.cursor = h.kind === "move" ? "move" : h.kind === "rotate" ? "alias" : h.kind === "corner" ? "nwse-resize" : (e.ctrlKey || e.metaKey) ? (h.i === 1 ? "ew-resize" : "ns-resize") : (h.i === 1 ? "ns-resize" : "ew-resize"); },
+      hover(e, fx, fy) { if (!X) return; const h = hitTransform(X, fx, fy, 7 / S.zoom); E.stage.style.cursor = h.kind === "move" ? "move" : h.kind === "rotate" ? ROT_CURSOR : h.kind === "corner" ? "nwse-resize" : (e.shiftKey || e.altKey) ? (h.i === 1 ? "ns-resize" : "ew-resize") : (h.i === 1 ? SKEW_H : SKEW_V); },   // 2.551.0: the skew cursor on a middle handle
       move(e, fx, fy) {
         if (!X || !X.drag) return;
         const d = X.drag, t0 = d.t0, cx = X.box.x + X.box.w / 2 + t0.tx, cy = X.box.y + X.box.h / 2 + t0.ty;

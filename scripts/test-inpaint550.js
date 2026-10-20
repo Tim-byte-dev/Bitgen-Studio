@@ -26,7 +26,7 @@ const byCls = (G, c) => Object.entries(G).filter(([, v]) => v.class_type === c);
 check("latentMaskGraph: two LoadImage nodes with the LOWEST ids (crop 1, mask 2 - the patcher fills slots in id order)", g && g["1"].class_type === "LoadImage" && g["2"].class_type === "LoadImage" && byCls(g, "LoadImage").length === 2, g && Object.keys(g));
 const enc = byCls(g, "VAEEncode")[0], noise = byCls(g, "SetLatentNoiseMask")[0], grow = byCls(g, "GrowMask")[0], dd = byCls(g, "DifferentialDiffusion")[0];
 check("...the crop encoded with the graph's own VAE, the mask (LoadImage #2's MASK) grown, a noise mask on the latent; the sampler reads it",
-  enc[1].inputs.pixels[0] === "1" && enc[1].inputs.vae[0] === "12" && grow[1].inputs.mask.join() === "2,1" && noise[1].inputs.samples[0] === enc[0] && noise[1].inputs.mask[0] === grow[0] && g["3"].inputs.latent_image[0] === noise[0]);
+  enc[1].inputs.pixels[0] === "1" && enc[1].inputs.vae[0] === "12" && grow[1].inputs.mask.join() === "2,1" && noise[1].inputs.samples[0] === enc[0] && noise[1].inputs.mask[0] === byCls(g, "ImageToMask")[0][0] && byCls(g, "ImageBlur")[0][1].inputs.image[0] === byCls(g, "MaskToImage")[0][0] && byCls(g, "MaskToImage")[0][1].inputs.mask[0] === grow[0] && g["3"].inputs.latent_image[0] === noise[0]);   // 2.551.0: grown + blurred
 check("...the model through DifferentialDiffusion (a soft change at the edge); the empty latent gone", dd && dd[1].inputs.model.join() === "10,0" && g["3"].inputs.model[0] === dd[0] && !g["5"]);
 const low = JSON.parse(JSON.stringify(t2i)); low["1"] = { class_type: "Note", inputs: {} };
 const g2 = IL.latentMaskGraph(low);

@@ -1966,8 +1966,8 @@ overlays in a PSD are still left out.
 - **Crop (C):** drag a box, pick a ratio, Enter crops (Esc cancels).
 - **Free Transform (Ctrl+T, or ⤡ Transform on the Move tool's bar):** drag inside to move. A corner scales and keeps
   the proportions; Shift-drag a corner to scale freely. Drag outside the box
-  to rotate (Shift for 15° steps). 2.550.0: **Ctrl + drag an edge** skews it (top / bottom = sideways, left / right =
-  up and down). You can also type X, Y, W, H, the angle and the two skews (⇋ ⇵) in the options bar. Enter applies it.
+  to rotate (Shift for 15° steps). 2.551.0: a **middle handle skews** it like Photoshop (the cursor turns into a slanted
+  arrow; top / bottom = sideways, left / right = up and down); **Shift or Alt + a middle handle** stretches that side. You can also type X, Y, W, H, the angle and the two skews (⇋ ⇵) in the options bar. Enter applies it.
   With a selection that holds none of the layer's pixels, the whole layer is transformed.
 - **Move (V) and Paste (2.550.0):** Ctrl+V puts the picture in the middle as a new layer and drops the selection (it sat
   on the copied area, so the Move tool moved an empty part of the new layer). The Move tool moves the selected pixels,
@@ -2307,6 +2307,13 @@ FLUX.2 / FLUX 3 Klein styles, Qwen …) runs its own graph with the picture arou
 the selection (plus differential diffusion for a soft edge), so the new part continues what is there instead of being a
 new picture. Checkpoint styles (SDXL …) keep the SDXL inpaint export; a style's own inpaint workflow still wins. Refine
 (a strength) works the same way.
+
+2.551.0, closer to the Krita AI plugin: the region sent around a selection is bigger (at least 3/4 of the selection's
+size on every side, about 512 px across), the selection is **pre-filled with the colours around it** before it is
+encoded, the mask is grown and **blurred** (a soft edge), and a style that was not trained to inpaint (Krea 2, Klein,
+Qwen …) starts just below full noise (0.9) so the new part keeps the light and colours of what is around it. For the
+best fills use a real inpaint model - FLUX Fill inpaint, or the SDXL inpaint export (the Krita plugin uses inpaint models
+too: Fooocus inpaint for SDXL, a ControlNet inpaint for SD 1.5, Flux Fill).
 
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a

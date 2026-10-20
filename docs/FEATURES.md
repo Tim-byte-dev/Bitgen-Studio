@@ -616,6 +616,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Generate = a new layer** — in image-edit mode a generated picture always comes in as a new layer, with the style picked in the prompt docker (Krea 2 and every other style are listed for Generate). *Where:* the prompt docker in image-edit mode. *Since:* 2.549.0
 - **Seamless fill** — a selection is filled with the prompt docker's style through its own graph (the picture encoded + a noise mask + differential diffusion), so it blends like the Krita AI plugin; Krea 2, Klein and the others can fill now. *Where:* the image editor with a selection, Generate / Refine. *Since:* 2.550.0
 - **Transform with skew; Move after Paste** — Ctrl+T (or ⤡ Transform on the Move tool's bar) scales, rotates and skews (Ctrl + an edge); Paste drops the selection so the Move tool moves the pasted layer. *Where:* the image editor. *Since:* 2.550.0
+- **Skew from the middle handles** — Free Transform's middle handles skew like Photoshop (a skew cursor), Shift / Alt + a middle handle stretches. *Where:* the image editor, Ctrl+T. *Since:* 2.551.0
+- **Fill like the Krita AI plugin** — more context around a selection, the selection pre-filled from its border, a soft mask, a start at 0.9 for models not trained to inpaint. *Where:* the image editor with a selection. *Since:* 2.551.0
 
 ### Selections
 

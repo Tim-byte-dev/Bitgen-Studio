@@ -12104,6 +12104,14 @@ node scripts/test-inpaint550.js > /tmp/ip550.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui550-ui.js > /tmp/ui550.log 2>&1 \
   && ok "2.550.0 browser test (WebGL + Blender): a rigged figure picked by its rig and moved, paste + Move, a selection without the layer's pixels, Ctrl+T skew, Generate with a selection = the prompt docker's style, the ▣ docker's right-click menu - or SKIP without playwright" \
   || { bad "2.550.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui550.log | head -14; }
+
+# ---- 2.551.0 (middle handles skew; the fill closer to the Krita AI plugin)
+node scripts/test-fill551.js > /tmp/f551.log 2>&1 \
+  && ok "2.551.0 units (autoMargin, FILL_DENOISE for non-inpaint styles, the soft mask chain, the pre-fill, the skew handles / cursors)" \
+  || { bad "2.551.0 units"; grep -a "^FAIL" -A2 /tmp/f551.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui551-ui.js > /tmp/ui551.log 2>&1 \
+  && ok "2.551.0 browser test: the skew cursor on a middle handle, a plain drag skews, Shift stretches; Generate in a selection = ~512 px context, the selection pre-filled; /api/aiedit Krea 2 = a fill graph at 0.9 - or SKIP without playwright" \
+  || { bad "2.551.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui551.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
