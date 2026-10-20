@@ -12160,6 +12160,14 @@ node scripts/test-aifill557.js > /tmp/a557.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui557-ui.js > /tmp/ui557.log 2>&1 \
   && ok "2.557.0 browser test: Settings ▸ Add-ons shows AI fill models with six models to tick (three ticked), ⤓ Download ticked posts the ticked ones - or SKIP without playwright" \
   || { bad "2.557.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui557.log | head -14; }
+
+# ---- 2.558.0 (▣ dockers in the floating band; side dockers + the StoryBoard dragged in)
+node scripts/test-dockgroup558.js > /tmp/d558.log 2>&1 \
+  && ok "2.558.0 units (the floating band 45 / 48 beside the prompt docker 44 and Basic Settings 47, the side dockers + OWN StoryBoard, SIDE column classes, the stand-in / outline / front wiring)" \
+  || { bad "2.558.0 units"; grep -a "^FAIL" -A2 /tmp/d558.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui558-ui.js > /tmp/ui558.log 2>&1 \
+  && ok "2.558.0 browser test: the ▣ docker at z 45 (48 when clicked), outlined while References is dragged in by its title, its column closed + a stand-in, ⇲ back in its own place - or SKIP without playwright" \
+  || { bad "2.558.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui558.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

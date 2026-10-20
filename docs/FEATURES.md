@@ -625,6 +625,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **⏳ Pending** — every ✨ run queues without waiting; results wait in a docker inside the editor, ✔ Apply puts one above its layer in that layer's "✨ changes" group, 🗑 Delete drops it. *Where:* the image editor (⏳ Pending in the ✨ AI panel). *Since:* 2.556.0
 - **References in every ✨ mode** — "picture N" in the prompt brings the References docker's picture to Edit, Generate, Fill, Remove, Refine (through the edit model); "ref N" in Compose. *Where:* the image editor's ✨ AI panel, the prompt docker. *Since:* 2.556.0
 - **AI fill models add-on** — the node pack + the Fooocus / MAT / inpainting ControlNet files for the Krita-way fill, ticked and downloaded from Settings ▸ Add-ons. *Where:* Settings ▸ Add-ons ▸ AI fill models. *Since:* 2.557.0
+- **▣ dockers take every docker** — in the floating band with the other floating dockers (not on top of all), outlined while a docker is dragged; Settings, References, Assets, Queue, Gallery and the StoryBoard drag in by their title bar. *Where:* the statusbar's ▣ Docker (Ctrl+Alt+D). *Since:* 2.558.0
 
 ### Selections
 

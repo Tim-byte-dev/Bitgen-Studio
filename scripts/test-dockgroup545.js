@@ -28,7 +28,7 @@ check("Ctrl+Alt+D (either case, by key or code); not with Shift / Meta, not Ctrl
   G.isToggleKey({ ctrlKey: true, altKey: true, key: "d", code: "KeyD" }) && G.isToggleKey({ ctrlKey: true, altKey: true, key: "D", code: "KeyD" }) && G.isToggleKey({ ctrlKey: true, altKey: true, key: "d", code: "" })
   && !G.isToggleKey({ ctrlKey: true, altKey: true, shiftKey: true, key: "D", code: "KeyD" }) && !G.isToggleKey({ ctrlKey: true, key: "d", code: "KeyD" }) && !G.isToggleKey({ ctrlKey: true, altKey: true, key: "đ", code: "KeyD" }) && !G.isToggleKey(null));
 check("titleOf: the header's own words (▾ / ▸ and spaces dropped), else the fallback", G.titleOf(["▾ ", " Music  ", ""]) === "Music" && G.titleOf(["▸"], "musicdock") === "musicdock");
-check("the main dockers ⇱ floats (not the prompt docker - its own float; not the StoryBoard - its own ⇱)", G.CANDIDATES.length === 9 && !G.CANDIDATES.includes("promptdock") && !G.CANDIDATES.includes("videodock") && G.GROUP === "fd-dockers");
+check("the main dockers ⇱ floats (not the prompt docker - its own float; not the StoryBoard - its own ⇱)", G.CANDIDATES.length >= 9 && !G.CANDIDATES.includes("promptdock") && !G.CANDIDATES.includes("videodock") && G.GROUP === "fd-dockers");
 
 const FP = rd("static", "floatpanels.js"), DG = rd("static", "dockgroup.js"), IX = rd("static", "index.html"), SJ = JSON.parse(rd("docs", "shortcuts.json"));
 check("floatpanels: the layout is kept (snapshot + newDocker + load), each one's share (grow), drop = at the slot, a docker restored in its saved place",

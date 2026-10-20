@@ -5731,6 +5731,13 @@ orange line shows where it will go - and let go.
   Tabs, 📌 Make permanent or ⇱ Float it again, and 🗑 Delete docker. Only the dockers you made have it. A permanent docker
   goes where the window was (before the main docker under its middle) and takes room in the column (it shrinks with the
   others down to 180 px - it was added at the bottom and could sit below the room the column has).
+- 2.558.0: a floating ▣ docker no longer sits **above every other docker**: it is one of the app's floating dockers (with the
+  floating prompt docker, Basic Settings and LLM tokens), and the one you clicked last comes to the front. While you drag a
+  docker by its title bar every ▣ docker shows a **dashed orange outline**, so you can see where to drop it.
+- 2.558.0: more dockers go in: **Settings, References, Assets, Queue and Gallery** (the side columns - press on their title,
+  not their ▾ / 📌) and the **StoryBoard** are dragged in by their title bar like the others. A side docker's column closes
+  while it is in a ▣ docker, and **⇲** puts it back in its own place with its column open again. (The prompt docker,
+  Basic Settings and LLM tokens dock with their own drop zones and do not go into a ▣ docker yet.)
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

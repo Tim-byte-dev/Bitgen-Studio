@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.558.0** — ▣ Dockers in the App's Floating Band (Not 9300); Side Dockers + The Storyboard Dragged in
 - **2.557.0** — Settings ▸ Add-Ons ▸ AI Fill Models (the Krita-Way Fill's Node Pack + Models)
 - **2.556.0** — ⏳ Pending (Queue + Apply into a Changes Group); References in Every ✨ Mode; Mount.js Sends the Editor's Settings
 - **2.555.0** — The Krita AI Plugin's Fill per Model Family (Fooocus / Inpaint ControlNets / Mat), Krita's Bounds + Fill Modes

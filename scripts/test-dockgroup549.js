@@ -27,7 +27,7 @@ check("needsEdit: only Edit / Replace background / Compose narrow the style list
 const DG = rd("static", "dockgroup.js"), FP = rd("static", "floatpanels.js"), IOs = rd("ext", "imageeditdock", "ieeditonly.js"), PL = rd("ext", "imageeditdock", "pcpromptlink.js"), IE = rd("ext", "imageeditdock", "imageedit.js");
 check("the ⇱ button has its label (a comment had swallowed `b.type = …; b.textContent = \"⇱\"` in 2.545.0)", /b\.id = "dgFloat_" \+ id; b\.type = "button"; b\.textContent = "⇱";/.test(DG));
 check("a main docker's title bar drags in (headDrag: the tag, the orange line, dockInto at the slot, the click after a drag eaten)",
-  /function headDrag\(h, id\)/.test(DG) && /headDrag\(h, id\);/.test(DG) && /P\(\)\.dockInto\("bd\." \+ id, over\.id, slot \? slot\.index : undefined\)/.test(DG) && /root\.addEventListener\("click", eat, true\)/.test(DG));
+  /function headDrag\(h, id, pid\)/.test(DG) && /headDrag\(h, id, "bd\." \+ id\);/.test(DG) && /P\(\)\.dockInto\(pid \|\| "bd\." \+ id, over\.id, slot \? slot\.index : undefined\)/.test(DG) && /root\.addEventListener\("click", eat, true\)/.test(DG));
 check("📌 / 🗑 in the title bar; Make permanent = a .bdock in #maincol with the regular title bar (▾ name, ⇱, 🗑, ⛶), its statusbar button in H3GoneDocks; restored on load",
   /h3fp-perm/.test(DG) && /h3fp-del/.test(DG) && /d\.className = "bdock dgperm"/.test(DG) && /main\.insertBefore\(d, before\)/.test(DG) && /root\.H3GoneDocks\[btnIdFor\(id\)\] = d\.id/.test(DG) && /if \(r\.perm\) makePerm\(r\.id, true\)/.test(DG));
 check("the buttons carry the docker's name (▣ <name>), one per ▣ docker", /const name = r \? r\.title : "Docker", text = "▣ " \+ name;/.test(DG));

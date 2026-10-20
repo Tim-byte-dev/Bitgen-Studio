@@ -17,12 +17,27 @@
  *   🗑 Delete (2.549.0): asks, then the dockers in it go back where they came from, and the docker and its button go.
  *   The layout (⇆ side by side / ⇅ stacked / tabs), its name, what is in it, the sizes, permanent or not are kept in
  *   panel_layout.cfg.
- * Pure (Node: scripts/test-dockgroup545.js, test-dockgroup549.js): isToggleKey, titleOf, CANDIDATES, GROUP, isGroup,
- *   btnIdFor, nextGroupId, dragged. */
+ *   2.558.0 (Tim: "the new docker still doesn't work. i suspect it's z-index it too high = putting it above all other
+ *   dockers so nothing can find its drop zones"): the ▣ dockers and the floated main dockers sit in the app's floating band
+ *   (45, 48 when clicked last - the prompt docker is 44, Basic Settings / LLM tokens 47 / 49) instead of 9300 over
+ *   everything; while a docker is dragged the ▣ dockers are outlined; the StoryBoard and the side dockers (Settings,
+ *   References, Assets, Queue, Gallery) can be dragged in too (their column closes while they are out, a stand-in keeps the
+ *   grid in order, ⇲ brings them back).
+ * Pure (Node: scripts/test-dockgroup545.js, test-dockgroup549.js, test-dockgroup558.js): isToggleKey, titleOf, CANDIDATES,
+ *   SIDE, Z, GROUP, isGroup, btnIdFor, nextGroupId, dragged. */
 (function (root) {
   "use strict";
   const GROUP = "fd-dockers";
-  const CANDIDATES = ["previewdock", "timelinedock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "consoledock"];
+  // 2.558.0: + the side dockers (Settings, References, Assets, Queue, Gallery); the StoryBoard keeps its own ⇱ (OWN)
+  const CANDIDATES = ["previewdock", "timelinedock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "consoledock",
+                      "ldock", "refsdock", "assetsdock", "qdock", "rdock"];
+  /** 2.558.0: a side docker's column class on #app (its column goes to 0 while the docker is out) */
+  /** 2.558.0: dockers that float through H3Panels on their own (their record) - dragged in by their title bar too */
+  const OWN = { videodock: "sb.dock" };
+  const SIDE = { ldock: "no-left", refsdock: "no-refs", assetsdock: "no-assets", qdock: "no-queue", rdock: "no-right" };
+  /** 2.558.0: the floating band the app's own floating dockers share - the prompt docker 44, ▣ dockers and floated main
+   *  dockers 45 (48 when clicked last), Basic Settings / LLM tokens 47 / 49 - instead of 9300 over everything */
+  const Z = { base: 45, front: 48 };
   /** Ctrl+Alt+D (not with Shift / Meta; an AltGr layout's own character on D is left alone) */
   function isToggleKey(e) {
     if (!e || !e.ctrlKey || !e.altKey || e.shiftKey || e.metaKey) return false;
@@ -47,7 +62,7 @@
   }
   /** a press moved far enough to be a drag (not a click that folds the docker) */
   const dragged = (x0, y0, x, y) => Math.hypot(x - x0, y - y0) > 8;
-  const API = { GROUP, CANDIDATES, isToggleKey, titleOf, isGroup, btnIdFor, nextGroupId, dragged };
+  const API = { GROUP, CANDIDATES, OWN, SIDE, Z, isToggleKey, titleOf, isGroup, btnIdFor, nextGroupId, dragged };
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -103,7 +118,7 @@
       if (d) p.setPerm(id, { hidden: d.classList.contains("dockgone") });
     } else if (want && r.state === "in") p.float(id);          // it was dropped in another docker - out again
     else p.show(id, want);
-    watch(); paint();
+    watch(); paint(); markApp();
     tev("docker_group", want ? "shown" : "hidden");
   }
   const watched = new WeakSet();
@@ -241,7 +256,7 @@
   }
 
   /* ---- ⇱ on the main dockers + dragging them in by their title bar */
-  function headText(h) { return titleOf([...h.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent)); }
+  function headText(h) { return titleOf([...h.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent)) || ((h.querySelector(":scope > h1") || {}).textContent || "").trim(); }   // 2.558.0: a side docker's title is its h1
   function css() {
     if ($("dgCss")) return;
     const s = doc.createElement("style"); s.id = "dgCss";
@@ -257,7 +272,13 @@
       + ".dgp-grip{flex:0 0 5px;cursor:row-resize;background:var(--line)}.dgp-grip:hover{background:var(--tiger)}.bdock.dgperm.collapsed+.dgp-grip,.bdock.dgperm.dockgone+.dgp-grip{display:none}"
       + ".h3fp-perm,.h3fp-del{background:none;border:0;color:inherit;cursor:pointer;padding:0 3px;font-size:12px;opacity:.85}.h3fp-perm:hover,.h3fp-del:hover{opacity:1}"
       + "#dgDragTag{position:fixed;z-index:100000;pointer-events:none;padding:2px 8px;border-radius:4px;background:var(--panel-2,#2a2620);border:1px solid var(--tiger,#f59e2c);color:var(--tiger,#f59e2c);font-size:11px}"
-      + "#dgDropLine{position:fixed;z-index:99999;pointer-events:none;background:var(--tiger,#f59e2c);border-radius:2px}";
+      + "#dgDropLine{position:fixed;z-index:99999;pointer-events:none;background:var(--tiger,#f59e2c);border-radius:2px}"
+      // 2.558.0 (Tim: "the new docker still doesn't work. i suspect it's z-index it too high"): the app's floating dockers
+      // in the app's floating band, not 9300 over every other docker; the ▣ dockers outlined while a docker is dragged
+      + ".h3fp.dg-app{z-index:" + Z.base + "}.h3fp.dg-app.dg-front{z-index:" + Z.front + "}"
+      + ".h3fp.dg-target>.h3fp-b>.h3fd{outline:2px dashed var(--tiger,#f59e2c);outline-offset:-3px}"
+      + ".h3fp .dock.dg-floating{flex:1 1 auto!important;height:auto!important;width:auto!important;min-width:0!important;border:0!important;display:flex;flex-direction:column}"
+      + ".dg-ph{min-width:0;overflow:hidden}";
     doc.head.appendChild(s);
   }
   function floatDock(id) {
@@ -269,7 +290,7 @@
   }
   function adoptDock(id) {
     const p = P(), d = $(id); if (!p || !d || $("dgFloat_" + id)) return !!$("dgFloat_" + id);
-    const h = d.querySelector(":scope > .bhead"); if (!h) return false;
+    const h = d.querySelector(":scope > .bhead") || d.querySelector(":scope > .dockhead"); if (!h) return false;   // 2.558.0: side dockers too
     css();
     const name = headText(h) || id;
     const b = doc.createElement("button");
@@ -282,11 +303,44 @@
       onState: (s) => {
         d.classList.toggle("dg-floating", s !== "home");
         if (s !== "home") d.classList.remove("dockgone", "collapsed");
+        if (SIDE[id]) sideState(id, d, s);                                // 2.558.0: its column closes while it is out
+        markApp();
         if (typeof root.paintDockButtons === "function") { try { root.paintDockButtons(); } catch (er) { /* fine */ } }
         try { root.dispatchEvent(new root.Event("resize")); } catch (er) { /* fine */ }
       } });
-    headDrag(h, id);
+    headDrag(h, id, "bd." + id);
     return true;
+  }
+  /** 2.558.0: a docker with its own float (the StoryBoard): only the drag by its title bar */
+  function adoptOwn(id) {
+    const d = $(id), pid = OWN[id], p = P(); if (!d || !p || !p.get(pid)) return false;
+    if (d.dataset.dgDrag) return true;
+    const h = d.querySelector(":scope > .bhead"); if (!h) return false;
+    d.dataset.dgDrag = "1"; css(); headDrag(h, id, pid);
+    return true;
+  }
+  /** 2.558.0: a side docker out of its column: a stand-in keeps the column's place in the grid (the grid places its children
+   *  in order), the column closes (#app.no-…); back home the stand-in goes and the column opens */
+  function sideState(id, d, s) {
+    const app = $("app"), ph = $("dgph_" + id), r = P() && P().get("bd." + id);
+    if (s === "home") { if (ph) ph.remove(); if (app) app.classList.remove(SIDE[id]); return; }
+    if (!ph && r && r.home && r.home.parent) {
+      const x = doc.createElement("div"); x.id = "dgph_" + id; x.className = "dg-ph";
+      r.home.parent.insertBefore(x, r.home.before && r.home.before.parentNode === r.home.parent ? r.home.before : null);
+    }
+    if (app) app.classList.add(SIDE[id]);
+    try { if (typeof root.saveLayout === "function") root.saveLayout(); } catch (e) { /* fine */ }
+  }
+  /** 2.558.0: the app's floating dockers (▣ dockers, floated main / side dockers) in the app's floating band; a press on one
+   *  brings it to the front of that band */
+  function markApp() {
+    const p = P(); if (!p) return;
+    const wins = groups().map((r) => r.win).concat(CANDIDATES.map((id) => (p.get("bd." + id) || {}).win), Object.values(OWN).map((pid) => (p.get(pid) || {}).win)).filter(Boolean);
+    for (const w of wins) {
+      if (w.classList.contains("dg-app")) continue;
+      w.classList.add("dg-app");
+      w.addEventListener("pointerdown", () => { doc.querySelectorAll(".h3fp.dg-front").forEach((x) => { if (x !== w) x.classList.remove("dg-front"); }); w.classList.add("dg-front"); }, true);
+    }
   }
   /** 2.549.0: drag a main docker's title bar onto a ▣ docker (shown) = it goes in, where the orange line is */
   function groupAt(x, y, skip) {
@@ -300,15 +354,17 @@
     }
     return best ? best.r : null;
   }
-  function headDrag(h, id) {
+  function headDrag(h, id, pid) {
     h.addEventListener("pointerdown", (e) => {
       if (e.button !== 0 || e.target.closest("button, select, input, textarea")) return;
       const d = $(id); if (!d || d.classList.contains("dg-floating")) return;
+      if (!groups().some((g) => shownOf(g))) return;                        // 2.558.0: no ▣ docker shown - a plain press
       const x0 = e.clientX, y0 = e.clientY; let on = false, tag = null, line = null, over = null, slot = null;
       const mv = (m) => {
         if (!on) { if (!dragged(x0, y0, m.clientX, m.clientY)) return; on = true; css();
           tag = doc.createElement("div"); tag.id = "dgDragTag"; tag.textContent = "⇱ " + (headText(h) || id) + " - drop it on a ▣ docker"; doc.body.appendChild(tag);
-          line = doc.createElement("div"); line.id = "dgDropLine"; line.style.display = "none"; doc.body.appendChild(line); }
+          line = doc.createElement("div"); line.id = "dgDropLine"; line.style.display = "none"; doc.body.appendChild(line);
+          for (const g of groups()) if (g.win && shownOf(g)) g.win.classList.add("dg-target"); }   // 2.558.0: where it can go
         m.preventDefault();
         tag.style.left = (m.clientX + 14) + "px"; tag.style.top = (m.clientY + 10) + "px";
         over = groupAt(m.clientX, m.clientY);
@@ -321,13 +377,14 @@
       const up = () => {
         root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true);
         if (tag) tag.remove(); if (line) line.remove();
+        doc.querySelectorAll(".h3fp.dg-target").forEach((x) => x.classList.remove("dg-target"));
         if (!on) return;
         // the click that follows a drag must not fold the docker
         const eat = (c) => { c.stopPropagation(); c.preventDefault(); root.removeEventListener("click", eat, true); };
         root.addEventListener("click", eat, true); root.setTimeout(() => root.removeEventListener("click", eat, true), 300);
         if (!over) return;
         if (d.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse(id);
-        P().dockInto("bd." + id, over.id, slot ? slot.index : undefined);
+        P().dockInto(pid || "bd." + id, over.id, slot ? slot.index : undefined);
         tev("docker_dragged_in", id + ">" + over.id);
       };
       root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
@@ -336,7 +393,7 @@
   let tries = 0;
   function adoptAll() {
     if (!P()) return;
-    const left = CANDIDATES.filter((id) => !adoptDock(id));
+    const left = CANDIDATES.filter((id) => !adoptDock(id)).concat(Object.keys(OWN).filter((id) => !adoptOwn(id)));
     if (left.length && ++tries < 40) root.setTimeout(adoptAll, 1500);  // the extension dockers load late
   }
   function start() {
@@ -345,8 +402,8 @@
     const p = P(); if (!p) return;
     p.load().then(() => { for (const r of groups()) if (r.perm) makePerm(r.id, true); watch(); paint(); }).catch(() => {});
     adoptAll();
-    root.setInterval(() => { try { watch(); paint(); } catch (e) { /* fine */ } }, 1000);
+    root.setInterval(() => { try { watch(); paint(); markApp(); } catch (e) { /* fine */ } }, 1000);
   }
-  root.H3DockGroup = Object.assign(API, { menu, toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock });
+  root.H3DockGroup = Object.assign(API, { menu, toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock, markApp });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);
