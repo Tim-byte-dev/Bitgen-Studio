@@ -618,6 +618,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Transform with skew; Move after Paste** — Ctrl+T (or ⤡ Transform on the Move tool's bar) scales, rotates and skews (Ctrl + an edge); Paste drops the selection so the Move tool moves the pasted layer. *Where:* the image editor. *Since:* 2.550.0
 - **Skew from the middle handles** — Free Transform's middle handles skew like Photoshop (a skew cursor), Shift / Alt + a middle handle stretches. *Where:* the image editor, Ctrl+T. *Since:* 2.551.0
 - **Fill like the Krita AI plugin** — more context around a selection, the selection pre-filled from its border, a soft mask, a start at 0.9 for models not trained to inpaint. *Where:* the image editor with a selection. *Since:* 2.551.0
+- **Fill and Edit from the Krita plugin's own code** — Generate at full strength, a small region rendered bigger, the mask sized by the selection, a blend past the edge with a colour match, Edit in a selection changes only the selection. *Where:* the image editor with a selection. *Since:* 2.552.0
 
 ### Selections
 

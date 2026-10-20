@@ -23,6 +23,11 @@
 //                                  -> {jobs:[{id,seed}], workflow, note, input, mode, controls}
 //                                  2.539.0: + ref0 (a picture from the References docker) + ref_desc with mode edit:
 //                                  the crop is Picture 1, the reference Picture 2
+//                                  2.552.0: + mask_grow / mask_feather (the mask's grow and feather in the render's pixels,
+//                                  Krita's sizes), whole ("1" = no selection); an Edit in a selection runs the edit graph
+//                                  with the picture as its starting latent under the mask (lib/inpaintLatent.js
+//                                  editLatentGraph) - images [crop, mask, (ref)]; the answer says soft: true when the graph
+//                                  kept what is outside the selection (the editor then blends past its edge)
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -170,7 +175,14 @@ function mount(app) {
     if (mask && mask.buffer) fs.writeFileSync(path.join(dir, names.mask), mask.buffer);
     if (rgba && rgba.buffer) fs.writeFileSync(path.join(dir, names.rgba), rgba.buffer);
     if (ref0) { names.ref = `aiedit-${stamp}-ref.png`; fs.writeFileSync(path.join(dir, names.ref), ref0.buffer); }
-    if (refGraph) { const gp = path.join(dir, `aiedit-${stamp}-ref.json`); fs.writeFileSync(gp, JSON.stringify(refGraph, null, 1)); plan.workflow = gp; }
+    // 2.552.0: an Edit inside a selection changes only the selection (Krita AI: the picture is the starting latent under a
+    // noise mask) - the mask rides as image 2: [crop, mask, (reference)]
+    let editMask = null;
+    if (plan.mode === "edit" && mask && mask.buffer && b.whole !== "1") {
+      editMask = aiEdit.editMasked(plan, refGraph, core.BASE, b);
+      if (editMask) { refGraph = editMask.graph; plan.note += editMask.note; plan.input = "crop+mask"; }
+    }
+    if (refGraph) { const gp = path.join(dir, `aiedit-${stamp}-${editMask ? "edit" : "ref"}.json`); fs.writeFileSync(gp, JSON.stringify(refGraph, null, 1)); plan.workflow = gp; }
     // 2.550.0: a seamless fill builds its graph from the style's own (lib/inpaintLatent.js via lib/infill.js)
     else if (plan.graph && plan.mode !== "edit") { const gp = path.join(dir, `aiedit-${stamp}-fill.json`); fs.writeFileSync(gp, JSON.stringify(plan.graph, null, 1)); plan.workflow = gp; }
     const controls = ctl.map((c, i) => {
@@ -180,7 +192,8 @@ function mount(app) {
     });
     let styled = styles.applyLoraWeights(style, null);
     if (plan.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
-    const imgs = names.ref ? [names.crop, names.ref] : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
+    const imgs = editMask ? [names.crop, names.mask].concat(names.ref ? [names.ref] : [])
+      : names.ref ? [names.crop, names.ref] : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
     const n = aiEdit.count(b.count);
     const first = imageSeed.forRequest(styles.numOrNull(b.seed));
     const jobs = [];
@@ -199,7 +212,8 @@ function mount(app) {
       job.chunk = { i: 0, n: 1 };
       jobs.push({ id: job.id, seed: p.seed });
     }
-    res.json({ jobs, workflow: plan.workflow, note: plan.note, input: plan.input, mode: plan.mode,
+    // soft: the graph kept everything outside the (grown, feathered) selection - the editor blends past the edge (Krita)
+    res.json({ jobs, workflow: plan.workflow, note: plan.note, input: plan.input, mode: plan.mode, soft: !!(editMask || (plan.graph && plan.mode !== "edit")),
                denoise: plan.denoise, crop: names.crop, controls: controls.map((c) => ({ type: c.type, model: c.model, strength: c.strength, start: c.start, end: c.end })),
                ignored_controls: plan.mode === "edit" && !!b.controls });
   });

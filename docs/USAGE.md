@@ -2315,6 +2315,20 @@ Qwen …) starts just below full noise (0.9) so the new part keeps the light and
 best fills use a real inpaint model - FLUX Fill inpaint, or the SDXL inpaint export (the Krita plugin uses inpaint models
 too: Fooocus inpaint for SDXL, a ControlNet inpaint for SD 1.5, Flux Fill).
 
+2.552.0, from the Krita AI plugin's own code:
+- **Generate** in a selection runs at **full strength** again (as Krita does with a model that was not trained to inpaint -
+  the picture around the selection is kept while the model draws, so the new part is drawn into it). **Remove** starts at
+  0.9 from the colours around the selection.
+- A small selection's region is **rendered bigger** (at least about 0.75 megapixels, at most 4x) and scaled back - a 512 px
+  region of a model trained at 1 megapixel comes out muddled.
+- The mask's soft edge **grows with the selection**: feathered by 10 % of the selection's diagonal (at least 32 px) and
+  grown by 4 px + half of that, as in Krita. Refine uses less (times its strength).
+- When the model kept the picture around the selection, the result is **blended a little past the selection's edge** (no
+  visible line) and **colour-matched** to the picture around it (Krita's Color Match).
+- **Edit** (Qwen Image Edit, FLUX Kontext, FLUX.2 / FLUX 3 Klein edit) inside a selection now changes **only the
+  selection**: the picture is the model's reference and also its starting point under the same soft mask, so everything
+  around the selection stays exactly as it was.
+
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
   mode picked while it was open is kept). Opening / closing the editor is what switches it; the project keeps the mode

@@ -295,6 +295,51 @@
     return { w: w + l + r, h: h + t + b, ox: l, oy: t };
   };
 
+  /** 2.552.0 (the Krita AI plugin's model.py calc_selection_pre_process + settings: feather 10 % of the selection's
+   *  diagonal, at least 32 px, both times the strength; grow 4 + feather / 2; the result blended over at most 25 px):
+   *  the mask sizes for a selection box, in the picture's pixels. reach = how far past the selection the model may
+   *  change pixels (grow + feather / 2) - the soft result is blended out to there. */
+  P.maskParams = function (box, strength, blend) {
+    const s = Math.max(0.05, Math.min(1, strength == null ? 1 : +strength || 1));
+    const feather = Math.max(Math.round(0.1 * s * Math.hypot(box.w, box.h)), Math.round(32 * s));
+    const grow = 4 + (feather >> 1), reach = grow + (feather >> 1);
+    return { feather, grow, reach, blend: Math.max(0, Math.min(blend == null ? 25 : blend, reach)) };
+  };
+  /** 2.552.0 (Krita AI's Color Match - "match peripheral colors and brightness with existing content"): the result's
+   *  colours moved so that, AROUND the selection (where `exclude` is 0), they have the original's mean and spread per
+   *  channel. dst / ref RGBA of the same size; dst changed in place. -> true when there was enough around to match */
+  P.colorMatch = function (dst, ref, exclude, w, h, strength) {
+    const k = strength == null ? 1 : Math.max(0, Math.min(1, strength));
+    const sd = [0, 0, 0], sd2 = [0, 0, 0], sr = [0, 0, 0], sr2 = [0, 0, 0];
+    let n = 0;
+    for (let i = 0; i < w * h; i++) {
+      if (exclude[i] || ref[i * 4 + 3] < 250) continue;
+      n++;
+      for (let c = 0; c < 3; c++) { const a = dst[i * 4 + c], b = ref[i * 4 + c]; sd[c] += a; sd2[c] += a * a; sr[c] += b; sr2[c] += b * b; }
+    }
+    if (!k || n < Math.max(64, w * h * 0.02)) return false;
+    const md = [], mr = [], g = [];
+    for (let c = 0; c < 3; c++) {
+      md[c] = sd[c] / n; mr[c] = sr[c] / n;
+      const vd = Math.max(1, sd2[c] / n - md[c] * md[c]), vr = Math.max(1, sr2[c] / n - mr[c] * mr[c]);
+      g[c] = Math.max(0.5, Math.min(2, Math.sqrt(vr / vd)));
+    }
+    for (let i = 0; i < w * h; i++) for (let c = 0; c < 3; c++) {
+      const v = dst[i * 4 + c], t = (v - md[c]) * g[c] + mr[c];
+      dst[i * 4 + c] = Math.max(0, Math.min(255, Math.round(v + (t - v) * k)));
+    }
+    return true;
+  };
+  /** 2.552.0: the size to render a crop at with a lower bound too - a small crop is rendered bigger (Krita AI renders a
+   *  selection at the model's resolution - resolution.py CheckpointResolution: 512² .. 1 MP for FLUX-type inpaint,
+   *  800² for SDXL), at most 4x and never past maxPixels. -> {w, h, scale} */
+  P.renderSize = function (w, h, maxPixels, mult, minPixels) {
+    const m = mult || 16, cap = Math.max(64 * 64, maxPixels || 1048576), lo = Math.min(cap, Math.max(0, minPixels || 0));
+    const px = w * h;
+    const k = px > cap ? Math.sqrt(cap / px) : px < lo ? Math.min(4, Math.sqrt(lo / px)) : 1;
+    const sw = Math.max(m, Math.round((w * k) / m) * m), sh = Math.max(m, Math.round((h * k) / m) * m);
+    return { w: sw, h: sh, scale: sw / w };
+  };
   /** The size to RENDER a crop at: at most `maxPixels`, snapped to `mult`,
    *  never upscaled. -> {w, h, scale} */
   P.fitSize = function (w, h, maxPixels, mult) {
@@ -2241,14 +2286,18 @@
       const full = newCanvas(box.w, box.h), fg = ctx(full);
       fg.drawImage(src, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
       const fid = fg.getImageData(0, 0, box.w, box.h);
+      const origData = whole ? null : new Uint8ClampedArray(fid.data);     // 2.552.0: before any pre-fill (the colour match)
       let hasHole = false;
       for (let i = 0; i < cropMask.length; i++) if (cropMask[i] && fid.data[i * 4 + 3] < 250) { hasHole = true; break; }
       if (mode === "remove" || hasHole) { P.fillHole(fid.data, mode === "remove" ? cropMask : new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }
       // 2.551.0 (as the Krita AI plugin: "pre-fill the masked area ... avoid seams"): Generate in a selection starts from the
       // selection filled with the colours around it (border fill), not the old pixels or a hole
       else if (mode === "generate" && !whole) { P.fillHole(fid.data, cropMask, box.w, box.h); fg.putImageData(fid, 0, 0); }
-      // what the model renders at (<= the MP budget)
-      const fit = P.fitSize(box.w, box.h, S.res * 1048576, 16);
+      // what the model renders at (<= the MP budget); 2.552.0: a small crop is rendered bigger, as Krita does (a 512 px
+      // region of a model trained at 1 MP comes out muddled) - an Edit graph scales its picture itself
+      const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" ? 0 : 0.75 * 1048576);
+      // 2.552.0: Krita's mask sizes (grow / feather by the selection's size), sent in the render's pixels
+      const mp = whole ? null : P.maskParams(bb, mode === "refine" ? S.strength / 100 : 1, S.feather);
       const crop = newCanvas(fit.w, fit.h), cg = ctx(crop); cg.imageSmoothingQuality = "high"; cg.drawImage(full, 0, 0, fit.w, fit.h);
       const mFull = newCanvas(box.w, box.h), mg = ctx(mFull), mid = mg.createImageData(box.w, box.h);
       for (let i = 0; i < cropMask.length; i++) mid.data[i * 4 + 3] = 255 - cropMask[i];      // transparent = the selection
@@ -2262,6 +2311,8 @@
       const req = { mode: mode === "background" ? "generate" : mode, prompt, count: S.count, strength: mode === "refine" ? S.strength : 100,
                     style_id: mode === "edit" ? (opt.editStyle || $("ieEditStyle").value) : (opt.style || $("ieStyle").value), width: fit.w, height: fit.h,   // 2.550.0: opt.style
                     crop: await blobOf(crop), mask: await blobOf(mask), rgba: await blobOf(rgba) };
+      if (mp) { req.mask_grow = Math.round(mp.grow * fit.scale); req.mask_feather = Math.round(mp.feather * fit.scale); }
+      if (whole) req.whole = "1";
       // 2.539.0: Edit + a picture from the References docker (Picture 2)
       if (mode === "edit" && $("kxRef") && $("kxRef").value !== "") {
         const rr = (api.refList ? api.refList() : [])[+$("kxRef").value];
@@ -2282,13 +2333,15 @@
       discardResults(true);
       // 2.437.0: ✨ Generate Fill in Shape / in Mask (pcgenfill.js) - the result goes onto that layer (clipped / masked)
       const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
+        orig: origData, mp, soft: false,                                                          // 2.552.0
         blendInto: !S.genInto && opt.into && mode === "generate" && layer() ? layer().id : null };   // 2.444.0: ✔ Apply = into that layer
       S.genInto = null;
-      say(`${mode}: ${box.w}×${box.h} crop` + (fit.scale < 1 ? ` rendered at ${fit.w}×${fit.h}` : "") + ` · ${S.count} result(s)`
+      say(`${mode}: ${box.w}×${box.h} crop` + (Math.abs(fit.scale - 1) > 0.01 ? ` rendered at ${fit.w}×${fit.h}` : "") + ` · ${S.count} result(s)`
         + (req.controls ? ` · ${req.controls.length} control layer(s)` : "") + "…");
       try {
         const r = await api.aiedit(req, say);
         if (!r || !r.jobs) return;
+        ctxInfo.soft = !!r.soft && !ctxInfo.into;               // 2.552.0: the graph kept what is around - blend past the edge
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
         if (!opt.direct) renderResults();
         let added = 0;
@@ -2394,8 +2447,18 @@
       const patch = newCanvas(I.box.w, I.box.h), pg = ctx(patch);
       pg.imageSmoothingQuality = "high"; pg.drawImage(im, 0, 0, I.box.w, I.box.h);
       if (!I.whole || I.feather) {
-        const fm = P.feather(I.cropMask, I.box.w, I.box.h, I.feather);
-        const d = pg.getImageData(0, 0, I.box.w, I.box.h); P.maskAlpha(d.data, fm); pg.putImageData(d, 0, 0);
+        // 2.552.0 (Krita AI: the result is composited over the GROWN + feathered mask, fully opaque inside the selection):
+        // a graph that kept what is around the selection is blended out to where it was allowed to change pixels;
+        // otherwise the old soft edge inside the selection
+        const W = I.box.w, H = I.box.h;
+        const grown = I.soft && I.mp && I.cropMask ? P.morph(I.cropMask, W, H, I.mp.reach) : null;
+        const fm = grown ? P.feather(grown, W, H, Math.max(1, I.mp.blend)) : P.feather(I.cropMask, W, H, I.feather);
+        const d = pg.getImageData(0, 0, W, H);
+        // 2.552.0 (Krita AI's Color Match): the colours around the selection decide the result's colour / brightness - only
+        // for a soft answer (around the selection it is the picture again, so any difference there is drift, as in Krita);
+        // a regenerated crop may differ there for real
+        if (grown && I.orig && I.orig.length === d.data.length) P.colorMatch(d.data, I.orig, grown, W, H, 1);
+        P.maskAlpha(d.data, fm); pg.putImageData(d, 0, 0);
       }
       g.drawImage(patch, I.box.x, I.box.y);
       return c;

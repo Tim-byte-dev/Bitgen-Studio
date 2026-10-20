@@ -12112,6 +12112,14 @@ node scripts/test-fill551.js > /tmp/f551.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui551-ui.js > /tmp/ui551.log 2>&1 \
   && ok "2.551.0 browser test: the skew cursor on a middle handle, a plain drag skews, Shift stretches; Generate in a selection = ~512 px context, the selection pre-filled; /api/aiedit Krea 2 = a fill graph at 0.9 - or SKIP without playwright" \
   || { bad "2.551.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui551.log | head -14; }
+
+# ---- 2.552.0 (the fill and Edit made like the Krita AI plugin's code)
+node scripts/test-fill552.js > /tmp/f552.log 2>&1 \
+  && ok "2.552.0 units (maskParams / renderSize / colorMatch, the graph's mask sizes, Generate 1.0 + Remove 0.9, editLatentGraph on the Qwen / Kontext / Klein edit graphs, the wiring)" \
+  || { bad "2.552.0 units"; grep -a "^FAIL" -A2 /tmp/f552.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui552-ui.js > /tmp/ui552.log 2>&1 \
+  && ok "2.552.0 browser test: a small region rendered bigger with Krita's mask sizes; a soft answer blended past the edge + colour-matched, a whole-crop one kept inside; /api/aiedit Edit in a selection = the edit graph with the mask - or SKIP without playwright" \
+  || { bad "2.552.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui552.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -69,9 +69,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       const fd = new FormData(); fd.append("crop", bl, "c.png"); fd.append("mask", bl, "m.png"); fd.append("rgba", bl, "r.png"); fd.append("mode", "generate"); fd.append("prompt", "a yellow flower"); fd.append("style_id", st.id); fd.append("width", "64"); fd.append("height", "64"); fd.append("count", "1"); fd.append("strength", "100");
       const r = await fetch("/api/aiedit", { method: "POST", body: fd }); const o = await r.json();
       let g = null; try { g = o.workflow ? await (await fetch("/api/jobs/" + o.jobs[0].id)).json() : null; } catch (e) { g = null; }
-      return { status: r.status, workflow: o.workflow, denoise: o.denoise, input: o.input, note: o.note };
+      return { status: r.status, workflow: o.workflow, denoise: o.denoise, input: o.input, note: o.note, soft: o.soft };
     });
-    if (srv) check("/api/aiedit with Krea 2 Turbo (not an inpaint model): its own graph made a fill graph, crop + mask, denoise 0.9", srv.status === 200 && /-fill\.json$/.test(srv.workflow || "") && srv.denoise === 0.9 && srv.input === "crop+mask" && /seamless fill/.test(srv.note || ""), srv);
+    if (srv) check("/api/aiedit with Krea 2 Turbo (not an inpaint model): its own graph made a fill graph, crop + mask, full strength (2.552.0, as Krita), soft", srv.status === 200 && /-fill\.json$/.test(srv.workflow || "") && srv.denoise == null && srv.soft === true && srv.input === "crop+mask" && /seamless fill/.test(srv.note || ""), srv);
     else console.log("SKIP: no Krea 2 Turbo style here");
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }

@@ -19,7 +19,7 @@ const am = new Function("P", IE.slice(IE.indexOf("P.autoMargin = function"), IE.
 check("autoMargin: at least the user's margin, 3/4 of the long side, and about 512 px across in all", am({ w: 80, h: 80 }, 64) === 216 && am({ w: 400, h: 200 }, 64) === 300 && am({ w: 1000, h: 900 }, 64) === 750 && am({ w: 10, h: 10 }, 400) === 400);
 const st = { engine: "comfy", name: "Krea 2 Turbo", arch: "krea2", workflow: "comfy_workflows/img_krea2_turbo_t2i.json" };
 const pg = A.plan(st, { mode: "generate", prompt: "a hat", strength: 100 }, ROOT), pr = A.plan(st, { mode: "refine", prompt: "a hat", strength: 40 }, ROOT), pm = A.plan(st, { mode: "remove", prompt: "" }, ROOT);
-check("a style not trained to inpaint: Generate / Remove start at FILL_DENOISE (0.9) from the pre-filled picture; Refine keeps its strength", A.FILL_DENOISE === 0.9 && pg.denoise === 0.9 && pm.denoise === 0.9 && pr.denoise === 0.4 && !!pg.graph, { pg: pg.denoise, pr: pr.denoise, pm: pm.denoise });
+check("a style not trained to inpaint: (2.552.0, as Krita) Generate at full strength, Remove at FILL_DENOISE (0.9) from the pre-filled picture; Refine keeps its strength", A.FILL_DENOISE === 0.9 && pg.denoise == null && pm.denoise === 0.9 && pr.denoise === 0.4 && !!pg.graph, { pg: pg.denoise, pr: pr.denoise, pm: pm.denoise });
 const g = IL.latentMaskGraph(JSON.parse(rd("comfy_workflows", "img_krea2_turbo_t2i.json")));
 const by = (c) => Object.entries(g).filter(([, v]) => v.class_type === c);
 check("the fill graph's mask: grown 8, MaskToImage -> ImageBlur (12 / 6) -> ImageToMask -> SetLatentNoiseMask (a soft edge for DifferentialDiffusion)",
