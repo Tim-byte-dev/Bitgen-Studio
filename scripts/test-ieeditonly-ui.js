@@ -53,8 +53,14 @@ const check = (n, cond, got) => {
     check("the server: FLUX 3 Klein and FLUX 3 Klein edit can edit, SDXL cannot",
       (eng.edit || []).some((s) => s.name === "FLUX 3 Klein") && (eng.edit || []).some((s) => s.name === "FLUX 3 Klein edit") && !editIds.includes(sdxl), eng.edit);
     await ieShow(true); await p.waitForTimeout(700);
+    // 2.549.0 (Tim: "krea2 ... should be availaible at all times"): with the prompt docker's ▾ on ✨ Generate every style is listed
+    await p.waitForFunction(() => window.H3ImgOp, null, { timeout: 20000 });
+    await ev(() => window.H3ImgOp.set("generate")); await p.waitForTimeout(900);
+    const G0 = await look();
+    check("edit image mode, ▾ ✨ Generate: EVERY style is listed (SDXL / Krea 2 too - 2.549.0)", !G0.cls && G0.shown.length === G0.all && G0.names.includes("SDXL"), G0);
+    await ev(() => window.H3ImgOp.set("edit")); await p.waitForTimeout(900);
     const L1 = await look();
-    check("edit image mode: only the styles that can edit are offered; SDXL hidden; an edit style picked in its place",
+    check("edit image mode, ▾ Edit: only the styles that can edit are offered; SDXL hidden; an edit style picked in its place",
       L1.cls && L1.shown.length === editIds.length && L1.shown.every((v) => editIds.includes(v)) && !L1.shown.includes(sdxl) && editIds.includes(L1.value) && L1.names.includes("FLUX 3 Klein edit"), L1);
     const f3e = await ev(() => { const o = [...document.getElementById("styleSel").options].find((x) => x.textContent.startsWith("FLUX 3 Klein edit")); return o ? o.value : ""; });
     await ev((v) => { const s = document.getElementById("styleSel"); s.value = v; s.dispatchEvent(new Event("change")); if (s.onchange) s.onchange(); }, f3e);
@@ -65,6 +71,7 @@ const check = (n, cond, got) => {
     const L3 = await look();
     check("closed: every style again, the SDXL that was picked before is back", !L3.cls && L3.shown.length === L3.all && L3.value === sdxl, L3);
     await ieShow(true); await p.waitForTimeout(700);
+    await ev(() => window.H3ImgOp.set("edit")); await p.waitForTimeout(900);
     const L4 = await look();
     check("reopened: the edit style picked last time (FLUX 3 Klein edit) comes back", L4.cls && L4.value === f3e, L4);
     await ieShow(false); await p.waitForTimeout(300);

@@ -374,6 +374,7 @@
     const lay = (LAY.dockers || {})[id];
     const r = R[id] = { id, kind: "docker", title: String(o.name || "Docker").slice(0, 40), confineId: o.confine || "", tabs: [], active: null, state: "float",
                         layout: LAYOUTS.includes(o.layout) ? o.layout : lay && LAYOUTS.includes(lay.layout) ? lay.layout : "tabs" };   // 2.545.0
+    if (lay && lay.perm && typeof lay.perm === "object") r.perm = Object.assign({}, lay.perm);                                 // 2.549.0
     makeWin(r);
     float(id, lay ? { x: lay.x, y: lay.y, w: lay.w, h: lay.h } : null);
     if (lay && lay.shown === false) r.win.classList.add("off");
@@ -405,6 +406,15 @@
     r.confineId = hostId || "";
     if (r.state === "float") float(id, { x: r.x, y: r.y, w: r.w, h: r.h });
     save();
+  }
+  /** 2.549.0: a named docker made permanent (static/dockgroup.js moves its window into a main-column docker) - on = an
+   *  object {h, hidden, collapsed} or false; its state is "perm" while it is (no float rect, no relayout) */
+  function setPerm(id, on) {
+    const r = R[id]; if (!r || r.kind !== "docker") return null;
+    if (on) { r.perm = Object.assign({}, r.perm || {}, typeof on === "object" ? on : {}); r.state = "perm"; if (r.win) r.win.classList.remove("off"); }
+    else { delete r.perm; if (r.state === "perm") r.state = "float"; }
+    save();
+    return r.perm || null;
   }
   function remove(id) {
     const r = R[id]; if (!r || r.kind !== "docker") return;
@@ -458,7 +468,8 @@
       const s = { state: r.state, docker: r.docker || null, x: r.x, y: r.y, w: r.w, h: r.h };
       if (r.grow > 0 && r.grow !== 1) s.grow = r.grow;                 // 2.545.0: its share of a row / column
       if (r.kind === "panel") o.panels[r.id] = s;
-      else o.dockers[r.id] = Object.assign(s, { name: r.title, layout: r.layout || "tabs", confine: r.confineId || "", tabs: r.tabs || [], active: r.active || null, shown: !!r.win && !r.win.classList.contains("off") });
+      else o.dockers[r.id] = Object.assign(s, { name: r.title, layout: r.layout || "tabs", confine: r.confineId || "", tabs: r.tabs || [], active: r.active || null, shown: !!r.win && !r.win.classList.contains("off") },
+        r.perm ? { perm: Object.assign({}, r.perm) } : {});   // 2.549.0: made a permanent docker in the main column (static/dockgroup.js)
     }
     // panels / dockers not on this page (another docker not loaded): keep what the file has
     for (const k of Object.keys(LAY.panels || {})) if (!o.panels[k]) o.panels[k] = LAY.panels[k];
@@ -489,7 +500,7 @@
   function relayout() {
     if (down) return;                                   // not in the middle of a drag / a resize
     for (const r of Object.values(R)) {
-      if (r.state !== "float" || !r.win || r.win.classList.contains("off")) continue;
+      if (r.state !== "float" || r.perm || !r.win || r.win.classList.contains("off")) continue;   // 2.549.0: a permanent one sits in the main column
       r.win.style.visibility = visibleHost(r) ? "" : "hidden";
       const b = r.win.getBoundingClientRect(); if (!b.width) continue;
       const f = fit({ x: b.left, y: b.top, w: b.width, h: b.height }, bounds(r));
@@ -501,7 +512,7 @@
     root.addEventListener("pointerdown", () => { down = true; }, true); root.addEventListener("pointerup", () => { down = false; }, true);
   }
 
-  const H3Panels = { slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+  const H3Panels = { setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;
   else { root.H3Panels = H3Panels; if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start(); }

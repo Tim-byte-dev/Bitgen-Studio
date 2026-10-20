@@ -34,6 +34,7 @@ The window, its dockers, the look of the app, projects and the files they hold.
 - **Floating Basic Settings and LLM tokens** — both are dockers of their own: float them, dock them as a tab in another docker, beside or inside a column, or in the left docker's list. *Where:* keys S and L. *Since:* 2.393.0
 - **Named dockers** — make an empty floating docker with your own name and dock floating panels into it as tabs; it can float over the whole app or stay confined to one docker. *Where:* Docker layout > New docker. *Since:* 2.438.0
 - **▣ Docker: an empty docker the others drop into** — show it with the statusbar's ▣ Docker or Ctrl+Alt+D, float main dockers with ⇱ and drag them in; an orange line shows where each lands, side by side or stacked, with splitters to size them. *Where:* the statusbar > ▣ Docker. *Since:* 2.545.0
+- **Docker drag-in, Make permanent, Delete** — drag a main docker in by its own title bar; 📌 makes the ▣ docker a regular docker in the main column, 🗑 deletes it and its button; the statusbar button carries its name. *Where:* the ▣ docker's title bar. *Since:* 2.549.0
 - **Named docker layouts and titles** — a named docker shows its dockers as tabs, side by side or stacked (⇆ / ⇅ in its title, or ⚙ > Layout); double-click the title to rename it in place. *Where:* a named docker's title bar. *Since:* 2.545.0
 - **Dialogs in the middle** — dialogs and message boxes open in the middle of the screen, or where you last moved them. *Where:* dialog_layout.cfg. *Since:* 2.438.0
 - **Panel layout file** — where every floating panel is, its size, name and tabs are kept in panel_layout.cfg. *Where:* the install folder. *Since:* 2.438.0
@@ -610,6 +611,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **The selection box** — with no tool, drag a dashed box: left to right picks the layers wholly inside it, right to left the ones it touches; Shift adds. *Where:* the canvas with no tool. *Since:* 2.474.0
 - **Several layers at once** — Shift-click picks every layer between two, Ctrl-click adds or takes one away; the Move tool moves them together and Del deletes them all. *Where:* the Layers panel. *Since:* 2.474.0
 - **Group and delete picked layers** — with several layers picked, Ctrl+G puts them in one group (Ctrl+G on one group ungroups it), and the 🗑 button deletes them all. *Where:* the Layers panel. *Since:* 2.547.0
+- **Drop as a layer or a new document** — a picture dropped on an open canvas asks: add it as a layer or open it as a new document. *Where:* the image editor's canvas. *Since:* 2.549.0
+- **Generate = a new layer** — in image-edit mode a generated picture always comes in as a new layer, with the style picked in the prompt docker (Krea 2 and every other style are listed for Generate). *Where:* the prompt docker in image-edit mode. *Since:* 2.549.0
 
 ### Selections
 

@@ -125,6 +125,7 @@ const api = async (u, body, method) => (await fetch(URL_ + u.replace(/^\//, ""),
     const n0 = await ev(() => window.imageEditorInstance.state.layers.length);
     await ev(() => { dragPayload = { type: "refimg", refIndex: 2 }; const st = document.getElementById("ieStage"), dt = new DataTransfer(); dt.setData("text/plain", "ref");
       st.dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, dataTransfer: dt })); st.dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true, dataTransfer: dt })); dragPayload = null; });
+    await p.waitForSelector("#ieDropAsk [data-as=layer]", { timeout: 5000 }); await p.click("#ieDropAsk [data-as=layer]");   // 2.549.0: it asks - as a layer
     await p.waitForTimeout(800);
     const L = await ev(() => ({ n: window.imageEditorInstance.state.layers.length, w: window.imageEditorInstance.state.w, names: window.imageEditorInstance.state.layers.map((l) => l.name) }));
     check("a reference dropped on an open picture comes in as a NEW LAYER named by its description (the picture stays open)", L.n === n0 + 1 && L.w === 320 && L.names.includes("a brass floor lamp"), L);

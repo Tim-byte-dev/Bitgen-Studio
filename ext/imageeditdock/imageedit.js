@@ -1841,6 +1841,14 @@
     host.querySelectorAll("#pcLocks [data-lock]").forEach((b) => { b.onclick = () => { const L = layer(); if (!L) return; structOp("lock", () => { L.locks = Object.assign({}, L.locks || {}); L.locks[b.dataset.lock] = !L.locks[b.dataset.lock]; }); }; });
 
     /* ---------------- keyboard (only while the editor has focus) ---------------- */
+    /* 2.549.0 (Tim: "group layers work from the context menu but not with the shortcut keys"): a click in the Layers
+       panel (a row is not focusable) left the focus on the page - Ctrl+G / Ctrl+E / Shift+Del never reached the editor.
+       A press anywhere in the editor that is not a box or a button hands the focus to the canvas (no scroll). */
+    host.addEventListener("pointerdown", (e) => {
+      const t = e.target;
+      if (!t || !t.closest || t.closest("input, textarea, select, button, [contenteditable], a, .h3fp-t")) return;
+      root.setTimeout(() => { const a = doc.activeElement; if (!a || a === doc.body || !host.contains(a)) { try { stage.focus({ preventScroll: true }); } catch (er) { stage.focus(); } } }, 0);
+    }, true);
     host.addEventListener("keydown", (e) => {
       const t = e.target, tag = (t && t.tagName) || "";
       if (/INPUT|TEXTAREA|SELECT/.test(tag) && t.type !== "range") return;
@@ -2471,11 +2479,38 @@
 
     /* ---------------- drops ---------------- */
     stage.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
+    /* 2.549.0 (Tim: "dragging an image onto the canvas from gallery, assets or references should give user option to add
+       as layer or add as new document"): a picture dropped while a document is open asks - ▦ As a layer / 🗋 As a new
+       document (Enter = layer, Esc = neither); Shift held = a layer at once, nothing open = a new document */
+    function askDrop(x, y, name, go) {
+      const old = doc.getElementById("ieDropAsk"); if (old) old.remove();
+      const box = doc.createElement("div"); box.id = "ieDropAsk"; box.className = "kxmenu"; box.setAttribute("role", "dialog");
+      box.style.cssText = "position:fixed;z-index:100001;padding:6px;display:flex;flex-direction:column;gap:4px;min-width:200px";
+      const esc = (t) => String(t || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      box.innerHTML = `<div style="font-size:11px;color:var(--pc-dim);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</div>`
+        + `<button type="button" class="ghost" data-as="layer">▦ Add as a layer</button><button type="button" class="ghost" data-as="doc">🗋 Open as a new document</button>`;
+      doc.body.appendChild(box);
+      const bw = box.offsetWidth || 220, bh = box.offsetHeight || 90;
+      box.style.left = Math.max(4, Math.min(x, (win.innerWidth || 1200) - bw - 4)) + "px"; box.style.top = Math.max(4, Math.min(y, (win.innerHeight || 800) - bh - 4)) + "px";
+      const done = (as) => { box.remove(); doc.removeEventListener("keydown", key, true); doc.removeEventListener("pointerdown", out, true); if (as) { tevIe("ie_drop", as); go(as === "layer"); } };
+      const key = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(null); } else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); done("layer"); } };
+      const out = (e) => { if (!box.contains(e.target)) done(null); };
+      box.querySelectorAll("[data-as]").forEach((b) => { b.onclick = () => done(b.dataset.as); });
+      doc.addEventListener("keydown", key, true); win.setTimeout(() => doc.addEventListener("pointerdown", out, true), 0);
+      const first = box.querySelector("[data-as=layer]"); if (first) first.focus();
+      return box;
+    }
+    function dropPicture(e, url, name) {
+      if (!S.w) return load(url, name, false);
+      if (e.shiftKey) return load(url, name, true);
+      askDrop(e.clientX, e.clientY, name, (asLayer) => load(url, name, asLayer));
+    }
+    E.askDrop = askDrop;
     stage.addEventListener("drop", (e) => {
       e.preventDefault();
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
-      if (f && /^image\//.test(f.type)) { load(URL.createObjectURL(f), f.name, e.shiftKey); return; }
-      if (api && api.dropUrl) { const d = api.dropUrl(e); if (d) { load(d.url, d.name, e.shiftKey || (!!d.asLayer && !!S.w)); if (d.asLayer && S.w) tevIe("ie_ref", "layer"); } }
+      if (f && /^image\//.test(f.type)) { dropPicture(e, URL.createObjectURL(f), f.name); return; }
+      if (api && api.dropUrl) { const d = api.dropUrl(e); if (d) { dropPicture(e, d.url, d.name); if (d.asLayer && S.w) tevIe("ie_ref", "drop"); } }
     });
     if (typeof win.ResizeObserver === "function") new win.ResizeObserver(() => { if (S.w && !S.userView) fitView(); if (E.ui.rulers) E.ui.rulers(); }).observe(stage);
     // a narrow dock (a column layout) gets the panels as an overlay, hidden until ▤ - the canvas keeps the room

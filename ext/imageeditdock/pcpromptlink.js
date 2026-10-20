@@ -178,7 +178,13 @@
       const sel = styleSel();
       const editStyle = S.aiMode === "edit" && sel && S.engines && (S.engines.edit || []).some((x) => x.id === sel.value) ? sel.value : "";
       if (E.flattenCache) E.flattenCache();
-      E.runAI({ prompt: text, editStyle, into: S.aiMode === "generate" && store.get("pl.blend", true) !== false, whole: true });
+      // 2.549.0 (Tim: "when in image-edit mode a generated image is becoming the canvas instead of a new layer"): a
+      // Generate is a NEW LAYER - with no selection the prompt docker's own Generate runs (the style picked there -
+      // Krea 2 … - not the editor's inpaint style) and the picture lands as a new layer (mount.js H3OnGenerated); with a
+      // selection the editor fills it, as a new layer; it no longer blends into the selected layer
+      if (S.aiMode === "generate" && !(E.hasSel && E.hasSel())) return false;
+      if (S.aiMode === "generate") E.runAI({ prompt: text, editStyle, into: false, whole: false, direct: true, keep: E.layer(), label: "✨ generate" });
+      else E.runAI({ prompt: text, editStyle, into: false, whole: true });
       return true;
     };
     /** 2.541.0: Edit / Refine / Fill / Replace background / Remove from the prompt docker's ▾ */
@@ -222,6 +228,7 @@
         return true;
       }
       if (E.flattenCache) E.flattenCache();
+      if (act.op === "generate") { E.runAI({ prompt, editStyle, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate" }); return true; }   // 2.549.0: a new layer
       E.runAI({ prompt, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
       return true;
     }

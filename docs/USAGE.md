@@ -1743,7 +1743,8 @@ In Basic Settings:
 
 From 2.389.0 the editor has a menu bar, an options bar, a tool column and
 panels (the same layout as PhotoCraft). Open it with **Editor** in the bottom bar. Drop a picture on it
-(from the gallery, assets, references or a file), or use **File ▸ Open**
+(from the gallery, assets, references or a file) - 2.549.0: with a picture already open it asks **▦ Add as a layer** or
+**🗋 Open as a new document** (Enter = a layer, Esc = neither, Shift while dropping = a layer at once) - or use **File ▸ Open**
 (Ctrl+O) or **File ▸ New** (Ctrl+N). **⛶** or **F** gives it the whole
 screen. **Tab** shows or hides the panels; **Shift+Tab** hides only the panel
 groups.
@@ -1898,7 +1899,8 @@ overlays in a PSD are still left out.
     text again to edit it);
   - **shape layers** (U: rectangle, rounded rectangle, ellipse, triangle,
     polygon, line), which stay editable;
-  - **groups** (Ctrl+G groups the active layer; Shift+Ctrl+G ungroups). A
+  - **groups** (Ctrl+G groups the active layer; Shift+Ctrl+G ungroups; 2.549.0: the keys work right after a click in the
+    Layers panel too). A
     group set to *Pass Through* lets its adjustment layers reach the layers
     under it. Any other blend mode composites the group on its own.
     2.547.0: with **several layers picked** (Ctrl-click / Shift-click in the Layers panel) **Ctrl+G** puts them all in
@@ -2291,6 +2293,10 @@ blended in (Poisson), all in the page.
   Saturation, Color, Luminosity) + Opacity; the row says the mode.
 
 ### The image editor and the prompt docker: Image mode, generated pictures onto the canvas (2.431.0)
+
+2.549.0: **a Generate in image-edit mode is always a NEW LAYER**. With no selection the prompt docker's own Generate runs
+with the style picked there (Krea 2 …) and the picture comes in as a new layer; with a selection the editor fills it, as
+a new layer too. It no longer paints into the selected layer.
 
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
@@ -4228,10 +4234,11 @@ encoder. The VAE is FLUX.2's `flux2-vae.safetensors`. The Hugging Face repo is g
 there first and add your token. bf16 and nvfp4 builds are in the same repo; set the style's Model to use one. FLUX 3
 needs ComfyUI 0.41.0 or later. It works best with long, specific prompts.
 
-**Edit image mode.** While the image editor is open, the image style dropdown lists only styles that can edit a
-picture: the FLUX 3 and FLUX.2 Klein styles, Qwen Image Edit, FLUX.1 Kontext and the like. A style that cannot edit,
-such as SDXL, is hidden, and an edit style is picked in its place. Close the editor and every style is back, with the
-one you had picked before. The edit style you used last is picked again the next time you open the editor.
+**Edit image mode.** While the image editor is open and the prompt docker's ▾ is on **Edit**, **Replace background** or
+**Compose**, the image style dropdown lists only styles that can edit a picture: the FLUX 3 and FLUX.2 Klein styles,
+Qwen Image Edit, FLUX.1 Kontext and the like. 2.549.0: on **✨ Generate**, Refine, Fill or Remove EVERY style is listed
+(Krea 2, SDXL …), and picking one that cannot edit while the ▾ is on Edit puts the ▾ on Generate. Close the editor and
+the style you had picked before is back. The edit style you used last is picked again the next time you edit.
 
 ## Time remapping on a curve (2.501.0)
 
@@ -5615,6 +5622,14 @@ orange line shows where it will go - and let go.
   the main window. Drag the bar between two to size them.
 - **Double-click the title** to rename it in place - Enter keeps it, Esc leaves it as it was.
 - What is in it, the order, the sizes, the layout and the name are kept in panel_layout.cfg.
+- 2.549.0: **drag a main docker in by its own title bar** - press on Music's (or Preview's, Timeline's …) title and drag
+  it over the ▣ docker; a tag follows the pointer and the orange line shows where it lands. A plain click still folds the
+  docker. (The ⇱ on the title bars was an empty button since 2.545.0 - it shows ⇱ again.)
+- 2.549.0: the statusbar button carries the docker's **name** (▣ Audio). Its title bar has **📌 Make permanent** - it
+  becomes a regular docker in the main column with the regular title bar (▾ fold, ⇱ float it again, 🗑, ⛶ maximize), its
+  statusbar button shows / hides it, the grip under it sets its height, floating dockers still drop into it - and
+  **🗑 Delete** (asks first; the dockers in it go back where they came from, the docker and its button go). Ctrl+Alt+D
+  then makes a new one.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

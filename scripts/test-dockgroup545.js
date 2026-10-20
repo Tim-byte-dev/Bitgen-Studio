@@ -39,7 +39,7 @@ check("floatpanels: the title edited in place (double-click), ⇆ / ⇅ in the t
 check("index.html loads dockgroup.js after floatpanels.js; the shortcut is listed (Anywhere)",
   IX.indexOf('src="/static/dockgroup.js"') > IX.indexOf('src="/static/floatpanels.js"') && SJ.groups[0].rows.some((r) => r[0] === "Ctrl+Alt+D"));
 check("dockgroup: the button after Queue, Ctrl+Alt+D in the capture phase, a floating main docker's statusbar button hides the whole window",
-  /const q = \$\("tQ"\); sb\.insertBefore\(b, q \? q\.nextSibling/.test(DG) && /addEventListener\("keydown", \(e\) => \{ if \(isToggleKey\(e\)\)/.test(DG) && /:has\(>\.h3fp-b>\.bdock\.dg-floating\.dockgone\)/.test(DG));
+  /let after = \$\("tQ"\);/.test(DG) && /sb\.insertBefore\(b, after \? after\.nextSibling/.test(DG) && /addEventListener\("keydown", \(e\) => \{ if \(isToggleKey\(e\)\)/.test(DG) && /:has\(>\.h3fp-b>\.bdock\.dg-floating\.dockgone\)/.test(DG));
 
 const DC = rd("static", "dockcfg.js"), VH = rd("ext", "videodock", "dock.html");
 check("the StoryBoard is \"StoryBoard\" everywhere: Docker configs, its header, the statusbar button", /videodock: "StoryBoard"/.test(DC) && /▾ StoryBoard/.test(VH) && />StoryBoard<\/button>/.test(IX));

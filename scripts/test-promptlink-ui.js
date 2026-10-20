@@ -78,16 +78,18 @@ const check = (n, cond, got) => {
     check("the Generate tab: the prompt docker's style is put back, its button reads ✨ Generate (the panel's own button gone too)", g1.style === g1.was && g1.go === "✨ Generate" && !(await btn("#kxRun")), g1);
     const n0 = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await ev(() => { document.getElementById("prompt").value = "a red ball"; runGenerate(); });
-    await p.waitForFunction(() => { const S = window.imageEditorInstance.E.S; return S.results.length && S.results[0].layer; }, null, { timeout: 15000 });
-    const r2 = await ev(() => { const S = window.imageEditorInstance.E.S; return { req: window.__pl[window.__pl.length - 1], into: S.results[0].info.blendInto, paint: S.layers.find((L) => L.name === "Paint").id }; });
-    await ev(() => document.getElementById("kxApply").click()); await p.waitForTimeout(300);
-    const a2 = await ev(() => { const E = window.imageEditorInstance.E, S = E.S, L = S.layers.find((x) => x.name === "Paint"), g = L.canvas.getContext("2d");
-      const px = (x, y) => Array.from(g.getImageData(x, y, 1, 1).data); return { n: S.layers.length, inP: px(100, 75), outP: px(10, 10), active: E.layer().name }; });
-    await shot("2-blended");
-    check("...the prompt docker's Generate renders into the selection of the selected layer (Paint), with its prompt", r2.req.mode === "generate" && r2.req.prompt === "a red ball" && r2.into === r2.paint, r2);
-    check("...✔ Apply BLENDS it into Paint (no new layer): magenta inside the selection, nothing outside it", a2.n === n0 && a2.inP[0] > 240 && a2.inP[1] < 20 && a2.inP[3] > 240 && a2.outP[3] === 0 && a2.active === "Paint", { a2, n0 });
-    const u = await ev(() => { const E = window.imageEditorInstance.E; E.undo(); const L = E.S.layers.find((x) => x.name === "Paint"); return L.canvas.getContext("2d").getImageData(100, 75, 1, 1).data[3]; });
-    check("...one undo takes it out", u === 0, u);
+    // 2.549.0 (Tim: "when in image-edit mode a generated image is becoming the canvas instead of a new layer"): a NEW LAYER
+    await p.waitForFunction((n) => window.imageEditorInstance.E.S.layers.length > n, n0, { timeout: 15000 });
+    await p.waitForTimeout(300);
+    const a2 = await ev(() => { const E = window.imageEditorInstance.E, S = E.S, P0 = S.layers.find((x) => x.name === "Paint"), N = S.layers.find((x) => /✨ generate: a red ball/.test(x.name));
+      const px = (L, x, y) => Array.from(L.canvas.getContext("2d").getImageData(x, y, 1, 1).data);
+      return { req: window.__pl[window.__pl.length - 1], n: S.layers.length, name: N && N.name, inN: N && px(N, 100, 75), outN: N && px(N, 10, 10), inP: px(P0, 100, 75), results: S.results.length }; });
+    await shot("2-newlayer");
+    check("...the prompt docker's Generate renders the selection with its prompt", a2.req.mode === "generate" && a2.req.prompt === "a red ball", a2);
+    check("...the result is a NEW LAYER (2.549.0 - it blended into Paint): magenta inside the selection, nothing outside it, Paint untouched, nothing left over the canvas",
+      a2.n === n0 + 1 && !!a2.name && a2.inN[0] > 240 && a2.inN[1] < 20 && a2.inN[3] > 240 && a2.outN[3] === 0 && a2.inP[3] === 0 && a2.results === 0, { a2, n0 });
+    const u = await ev(() => { const E = window.imageEditorInstance.E; E.undo(); return E.S.layers.length; });
+    check("...one undo takes it out", u === n0, u);
 
     /* 3 another tab: not linked - the prompt docker as before */
     await ev(() => window.imageEditorInstance.E.ui.showTab("pcProps")); await p.waitForTimeout(300);

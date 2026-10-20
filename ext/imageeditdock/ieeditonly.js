@@ -9,7 +9,11 @@
  * picked is swapped for an edit one and remembered; closing the editor shows them all again and puts it back.
  * Nothing is removed from the list - the options are hidden + disabled, so the page's own code (style reloads,
  * project restore) keeps working on the whole list.
- * Pure (Node: scripts/test-ieeditonly.js): pick(options, editIds, current, preferred).
+ * 2.549.0 (Tim: "krea2 is available when editimagedocker is minimized but not when edit-image docker is open, it should
+ * be availaible at all times"): since 2.541.0 the prompt docker's ▾ says what its button does - only EDIT, REPLACE
+ * BACKGROUND and COMPOSE need an edit model, so only then is the list narrowed; ✨ Generate / Refine / Fill / Remove list
+ * every style (Krea 2, SDXL …). Picking a style that cannot edit while the ▾ is on Edit puts the ▾ on Generate.
+ * Pure (Node: scripts/test-ieeditonly.js, test-ieedit549.js): pick(options, editIds, current, preferred), needsEdit(op).
  */
 (function (root) {
   "use strict";
@@ -22,7 +26,9 @@
     if (preferred && edit.has(preferred)) return preferred;
     return ok[0];
   }
-  var pure = { pick: pick };
+  /** 2.549.0: does the ▾ op need an edit model? (no ▾ = the old rule: yes) */
+  function needsEdit(op) { return op == null || op === "edit" || op === "background" || op === "compose"; }
+  var pure = { pick: pick, needsEdit: needsEdit };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   var doc = root.document, edit = null, busy = false, wasOn = false, t = null;
@@ -39,7 +45,8 @@
   }
   function apply() {
     var sel = $("styleSel"); if (!sel || busy) return;
-    var on = onScreen() && !!edit && edit.size > 0;
+    var opNow = root.H3ImgOp && root.H3ImgOp.get ? root.H3ImgOp.get() : null;
+    var on = onScreen() && !!edit && edit.size > 0 && needsEdit(opNow);   // 2.549.0: only for the ops that edit
     busy = true;
     try {
       var opts = [].slice.call(sel.options);
@@ -48,15 +55,18 @@
       if (on) {
         sel.dataset.ieTitle = sel.dataset.ieTitle || sel.title || "";
         sel.title = "Edit image mode: only styles that can edit a picture are listed (close the image editor to see them all)";
+        // 2.549.0: the style to put back on close = the last one that could not edit (the ▾'s Edit may have switched
+        // it already - pcpromptlink.js toEditStyle - before this ran)
+        if (!wasOn) pref.set("ie.styleWas", edit.has(sel.value) ? (pref.get("ie.lastPlain") || sel.value) : sel.value);
         var want = pick(opts.map(function (o) { return o.value; }), edit, sel.value, pref.get("ie.editStyle"));
         if (want && want !== sel.value) {
-          if (!wasOn) pref.set("ie.styleWas", sel.value);
           sel.value = want;
           if (sel.onchange) sel.onchange();
         }
         if (sel.value) pref.set("ie.editStyle", sel.value);
       } else {
         if (sel.dataset.ieTitle != null) { sel.title = sel.dataset.ieTitle; delete sel.dataset.ieTitle; }
+        if (!wasOn && sel.value && edit && !edit.has(sel.value)) pref.set("ie.lastPlain", sel.value);   // 2.549.0
         var was = pref.get("ie.styleWas");
         if (wasOn && was && opts.some(function (o) { return o.value === was; }) && edit && edit.has(sel.value) && !edit.has(was)) {
           sel.value = was;
@@ -75,7 +85,17 @@
       new MutationObserver(function () { load().then(soon); }).observe(sel, { childList: true });   // a style reload
       new MutationObserver(soon).observe(dock, { attributes: true, attributeFilter: ["class"] });      // opened / closed
     }
-    sel.addEventListener("change", function () { if (wasOn && sel.value) pref.set("ie.editStyle", sel.value); });
+    sel.addEventListener("change", function () {
+      if (wasOn && sel.value) pref.set("ie.editStyle", sel.value);
+      if (!wasOn && sel.value && edit && !edit.has(sel.value)) pref.set("ie.lastPlain", sel.value);   // 2.549.0
+      // 2.549.0: a style that cannot edit picked while the ▾ is on an edit op (it is listed now): the ▾ goes to Generate
+      var op = root.H3ImgOp && root.H3ImgOp.get ? root.H3ImgOp.get() : null;
+      if (onScreen() && edit && sel.value && !edit.has(sel.value) && op && needsEdit(op) && root.H3ImgOp.set) { root.H3ImgOp.set("generate"); soon(); }
+    });
+    // 2.549.0: the ▾ op changes what is listed
+    var lastOp = null;
+    setInterval(function () { var op = root.H3ImgOp && root.H3ImgOp.get ? root.H3ImgOp.get() : null; if (op !== lastOp) { lastOp = op; soon(); } }, 600);
+    var ops = $("pmOpSel"); if (ops) ops.addEventListener("change", soon);
     load().then(apply);
   }
   root.IeEditOnly = { pick: pick, apply: function () { return load().then(apply); }, ids: function () { return edit; } };

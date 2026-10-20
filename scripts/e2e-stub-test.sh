@@ -12088,6 +12088,14 @@ node scripts/test-refkeep548.js > /tmp/rk548.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui548-ui.js > /tmp/ui548.log 2>&1 \
   && ok "2.548.0 browser test: 10 pictures kept without Save (two image.png apart), F/L / Text keep them, back after a close, 💾 Save with 10, the shared prompt kept as typed and on close, scene + chapter references through Save + close, 409 - or SKIP without playwright" \
   || { bad "2.548.0 refs kept browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui548.log | head -14; }
+
+# ---- 2.549.0 (▣ Docker drag-in / permanent / delete; Krea 2 listed; Generate = a new layer; Ctrl+G focus; drop asks)
+node scripts/test-dockgroup549.js > /tmp/dg549.log 2>&1 \
+  && ok "2.549.0 units (isGroup / btnIdFor / nextGroupId / dragged, needsEdit, the ⇱ label, headDrag, Make permanent, setPerm, Generate = new layer, Ctrl+G focus, askDrop)" \
+  || { bad "2.549.0 units"; grep -a "^FAIL" -A2 /tmp/dg549.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui549-ui.js > /tmp/ui549.log 2>&1 \
+  && ok "2.549.0 browser test: ⇱ labelled, Music dragged in by its title bar, rename -> ▣ Audio, 📌 permanent (regular title bar, button, fold, kept, reopened), Stems dropped in, ⇱ back, 🗑 delete, Ctrl+G after Layers clicks, a drop asks layer / document - or SKIP without playwright" \
+  || { bad "2.549.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui549.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
