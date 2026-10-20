@@ -163,6 +163,7 @@ window.ieOpenUrl = function (url, name) {
      fit, centred); no document open = it opens as one. The gallery keeps it as always. */
 const IE_PICS = /\.(png|jpe?g|webp|bmp|jxl)$/i;
 function ieOnScreen() { const d = $("imageeditdock"); return !!d && !d.classList.contains("dockgone") && !d.classList.contains("collapsed"); }
+window.ieOnScreen = ieOnScreen;      // 2.543.0: the prompt docker's ▾ asks (pcimgop / pcpromptlink) - it was never global, so they always saw "open"
 const iePref = {
   get: (k, d) => { try { const v = localStorage.getItem("h3." + k); return v == null ? d : v; } catch { return d; } },
   set: (k, v) => { try { if (v == null) localStorage.removeItem("h3." + k); else localStorage.setItem("h3." + k, v); } catch { /* private */ } },

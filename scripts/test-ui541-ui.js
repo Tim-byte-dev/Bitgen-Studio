@@ -60,7 +60,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await gm("image"); await p.waitForTimeout(200);
     const i0 = await st();
     check("the ▾ is on the prompt docker's menu bar only in 🖼 Image mode - Generate, Edit, Refine, Fill, Replace background, Remove",
-      !v.shown && i0.shown && i0.opts.join("|") === "✨ Generate|✏ Edit|🔁 Refine|🪣 Fill|🖼 Replace background|🧽 Remove", { v, i0 });
+      !v.shown && i0.shown && i0.opts.join("|") === "✨ Generate|✏ Edit|🔁 Refine|🪣 Fill|🖼 Replace background|🧽 Remove|🧩 Compose", { v, i0 });
 
     /* 2 Refine: the slider, the button's words, the ✨ AI panel follows (both ways) */
     await p.selectOption("#pmOpSel", "refine"); await p.waitForTimeout(200);

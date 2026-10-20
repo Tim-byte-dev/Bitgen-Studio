@@ -17,28 +17,28 @@ const P3 = require(path.join(ROOT, "ext", "imageeditdock", "pc3d.js"));
 const L3 = require(path.join(ROOT, "lib", "layer3d.js"));
 
 // ---- the dropdown
-check("the six choices in Tim's order: Generate, Edit, Refine, Fill, Replace background, Remove", O.OPS.map((o) => o.label).join("|") === "Generate|Edit|Refine|Fill|Replace background|Remove");
+check("the choices in Tim's order: Generate, Edit, Refine, Fill, Replace background, Remove (+ 2.543.0 Compose)", O.OPS.map((o) => o.label).join("|") === "Generate|Edit|Refine|Fill|Replace background|Remove|Compose");
 check("each picks the ✨ AI panel's mode (Fill = Generate into the selection; Replace background = New background)",
-  ["generate", "edit", "refine", "fill", "background", "remove"].map(O.modeFor).join() === "generate,edit,refine,generate,background,remove");
-check("the panel's tab -> the dropdown: Generate keeps Fill when Fill was picked; Compose / unknown = no change",
-  O.opForMode("generate", "fill") === "fill" && O.opForMode("generate", "edit") === "generate" && O.opForMode("refine", "x") === "refine" && O.opForMode("compose", "edit") === null && O.opForMode("zz") === null);
+  ["generate", "edit", "refine", "fill", "background", "remove", "compose"].map(O.modeFor).join() === "generate,edit,refine,generate,background,remove,compose");
+check("the panel's mode -> the dropdown: Generate keeps Fill when Fill was picked; unknown = no change (2.543.0: Compose is one of them)",
+  O.opForMode("generate", "fill") === "fill" && O.opForMode("generate", "edit") === "generate" && O.opForMode("refine", "x") === "refine" && O.opForMode("compose", "edit") === "compose" && O.opForMode("zz") === null);
 check("the button's words: \"🔁 Refine 30%\", \"✏ Edit · 🟧 Blender\" in Blender mode, \"🪣 Fill\", \"🖼 Replace background\"",
   O.labelFor("refine", 30) === "🔁 Refine 30%" && O.labelFor("edit", 50, true) === "✏ Edit · 🟧 Blender" && O.labelFor("fill") === "🪣 Fill" && O.labelFor("background") === "🖼 Replace background" && O.labelFor("nope") === "✨ Generate");
 check("shown only in 🖼 Image mode", O.shown("image") && !O.shown("video") && !O.shown("chat"));
 
-// ---- what the button does
-const s = { onScreen: true, open: true, aiShown: false, mode: "generate", genMode: "image", hasSel: false, blender: false };
+// ---- what the button does (2.543.0 rules - test-imgop543.js has the rest)
+const s = { onScreen: true, open: true, aiShown: false, mode: "generate", genMode: "image", hasSel: false, blender: false, picks: 0, refs: 0 };
 const A = (x) => PL.actionFor(Object.assign({}, s, x));
-check("✨ Generate: the prompt docker's own (null) unless the ✨ AI panel shows its Generate tab (then into the selection / the whole picture, as 2.444)",
+check("✨ Generate: the prompt docker's own (null) unless the ✨ AI panel shows its Generate (then into the selection / the whole picture, as 2.444)",
   A({ op: "generate" }) === null && A({ op: "generate", aiShown: true }).kind === "run" && A({ op: "generate", aiShown: true }).into === true && A({ op: "generate", genMode: "video" }) === null);
-check("Edit / Refine: the editor's, the whole picture without a selection, a new layer on ✔",
-  JSON.stringify(A({ op: "edit" })) === JSON.stringify({ kind: "run", op: "edit", mode: "edit", whole: true, into: false }) && A({ op: "refine" }).mode === "refine" && A({ op: "refine" }).whole);
-check("Fill / Replace background / Remove need a selection (said); with one: Generate into it (blends on ✔) / New background / Remove",
-  A({ op: "fill" }).kind === "say" && /select the area/.test(A({ op: "fill" }).msg) && A({ op: "background" }).kind === "say" && A({ op: "remove" }).kind === "say"
+check("Edit / Refine without a selection: from the selected LAYER (a new layer each); Refine with a selection: the picture's selection",
+  JSON.stringify(A({ op: "edit" })) === JSON.stringify({ kind: "layer", op: "edit", mode: "edit" }) && A({ op: "refine" }).kind === "layer" && A({ op: "refine", hasSel: true }).kind === "run");
+check("Fill / Remove need a selection (said); with one: Generate into it (blends on ✔) / Remove; Replace background with one = New background",
+  A({ op: "fill" }).kind === "say" && /select the area/.test(A({ op: "fill" }).msg) && A({ op: "remove" }).kind === "say"
   && JSON.stringify(A({ op: "fill", hasSel: true })) === JSON.stringify({ kind: "run", op: "fill", mode: "generate", whole: false, into: true })
   && A({ op: "background", hasSel: true }).mode === "background" && A({ op: "remove", hasSel: true }).mode === "remove");
-check("the editor closed -> open it; no picture -> say so; not in Image mode -> the prompt docker's own",
-  A({ op: "edit", onScreen: false }).kind === "open" && A({ op: "refine", open: false }).kind === "say" && A({ op: "edit", genMode: "video" }) === null);
+check("no picture -> say so; not in Image mode -> the prompt docker's own",
+  A({ op: "refine", open: false }).kind === "say" && A({ op: "edit", genMode: "video" }) === null);
 check("🟧 Blender mode: Edit / Refine render the scene (kind blender); Fill / Remove still work on the canvas",
   JSON.stringify(A({ op: "edit", blender: true })) === JSON.stringify({ kind: "blender", op: "edit", mode: "edit" }) && A({ op: "refine", blender: true }).kind === "blender"
   && A({ op: "fill", blender: true, hasSel: true }).kind === "run");

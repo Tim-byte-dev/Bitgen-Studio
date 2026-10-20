@@ -2317,12 +2317,15 @@
       g.drawImage(c, box.x, box.y, box.w, box.h, 0, 0, fit.w, fit.h);
       return o;
     }
-    async function runCompose() {
+    /** opt (2.543.0 - the prompt docker's ▾ Compose / Edit / Replace background with layers picked): {prompt, layers, direct} */
+    async function runCompose(opt) {
+      opt = opt && typeof opt === "object" && !opt.type ? opt : {};
       if (!api || !api.compose) return say("Compose is not connected (reload the page)");
-      const picks = (E.picked ? E.picked() : []).filter((L) => !L.control);
+      const picks = (opt.layers || (E.picked ? E.picked() : [])).filter((L) => L && !L.control);
       if (!picks.length) return say("Ctrl-click the layers to use in the Layers panel first - in order: the first is the scene, then the things to bring in (up to 3)");
       if (picks.length > 3) return say("at most 3 layers (the edit models take three pictures) - Ctrl-click one to un-pick it");
-      const prompt = $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
+      if (S.busy) return say("still working on the last one");
+      const prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
       if (!prompt) return say("say what to make from the layers (\"put the dog from Layer 2 on the sofa in Layer 1\")");
       const pics = [];
       for (let k = 0; k < picks.length; k++) pics.push(await blobOf(onWhite(layerPicture(picks[k]), k === 0 ? S.res : 1, k > 0)));
@@ -2335,15 +2338,24 @@
         const r = await api.compose({ pics, names: picks.map((L) => L.name), prompt, style_id: $("ieEditStyle").value, count: S.count, width: fit.w, height: fit.h }, say);
         if (!r || !r.jobs) return;
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
-        renderResults();
+        if (!opt.direct) renderResults();
+        let added = 0;
         await Promise.all(S.results.map(async (res, i) => {
           const url = await api.awaitResult(res.id, say);
-          if (!url) { res.failed = true; renderResults(); return; }
+          if (!url) { res.failed = true; if (!opt.direct) renderResults(); return; }
           const im = await imgOf(url);
           res.url = url; res.layer = resultLayer(im, ctxInfo);
+          if (opt.direct) {                                      // 2.543.0: straight in as a new layer
+            const L = makeLayer(`🧩 ${prompt.slice(0, 32)}` + (S.results.length > 1 ? ` ${i + 1}` : ""));
+            ctx(L.canvas).drawImage(res.layer, 0, 0); addLayer(L, "AI result", false); added++;
+            if (opt.keep && S.layers.includes(opt.keep)) S.active = S.layers.indexOf(opt.keep);
+            refresh(); renderLayersPanel();
+            return;
+          }
           renderResults();
           if (!S.preview || i === 0) showResult(S.results.indexOf(res));
         }));
+        if (opt.direct) { discardResults(true); say(added ? `${added} new layer(s) from ${picks.map((L) => L.name).join(" + ")}` : "no result came back - see the job log"); return; }
         const ok = S.results.filter((x) => x.layer).length;
         say(ok ? `${ok} result(s) - click one to compare, ✔ Apply keeps it as a new layer (Enter), ✕ Discard (Esc)` : "no result came back - see the job log");
       } catch (e) { say(`compose failed: ${e.message}`); }

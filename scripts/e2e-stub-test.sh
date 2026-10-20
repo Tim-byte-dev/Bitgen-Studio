@@ -12040,6 +12040,14 @@ node scripts/test-blendlayer542.js > /tmp/bl542.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui542-ui.js > /tmp/ui542.log 2>&1 \
   && ok "2.542.0 browser test: 🟧 lends the timeline's scene tools to the editor (real Blender + WebGL), the Blender layer keeps the view, deletes like any layer, Edit from the view / a Blender still -> a new layer, the timeline takes them back - or SKIP without playwright / Blender" \
   || { bad "2.542.0 Blender layer browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui542.log | head -14; }
+
+# ---- 2.543.0 (references or layers; Compose in the ▾)
+node scripts/test-imgop543.js > /tmp/op543.log 2>&1 \
+  && ok "image ops by source units (2.543.0: Fill / Remove only with the editor, the chip's words, references vs layers vs picked layers, the background instruction, the tabs hidden, ieOnScreen global)" \
+  || { bad "2.543.0 image ops by source units"; grep -a "^FAIL" -A2 /tmp/op543.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui543-ui.js > /tmp/ui543.log 2>&1 \
+  && ok "2.543.0 browser test: the editor minimized -> the references (Edit, 2 = Compose, Replace background, Refine, Compose), Fill / Remove gone and back; open -> the selected layer, 2 picked = Compose, a new layer each - or SKIP without playwright" \
+  || { bad "2.543.0 image ops by source browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui543.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

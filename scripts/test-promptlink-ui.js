@@ -65,11 +65,12 @@ const check = (n, cond, got) => {
     check("the ✨ AI panel's Edit tab: the prompt docker's image style becomes Qwen Image 2.1 edit, its button reads ✏ Edit", /qwen image 2\.1 edit/i.test(e1.style) && e1.go === "✏ Edit", e1);
     check("...the panel's own ✨ Edit button, its model row and its prompt box are gone; a line says to use the prompt docker", !hidden.run && !hidden.model && !hidden.prompt && hidden.note && /prompt docker/.test(e1.note), hidden);
     const q0 = await ev(() => GENQUEUE.waiting(GQ).length + (GENQUEUE.running(GQ) ? 1 : 0));
+    const nE = await ev(() => window.imageEditorInstance.E.S.layers.length);
     await ev(() => { document.getElementById("prompt").value = "make it red"; runGenerate(); });
-    await p.waitForFunction(() => { const S = window.imageEditorInstance.E.S; return S.results.length && S.results[0].layer; }, null, { timeout: 15000 });
-    const r1 = await ev(() => ({ req: window.__pl[0], q: GENQUEUE.waiting(GQ).length + (GENQUEUE.running(GQ) ? 1 : 0) }));
-    check("...the prompt docker's Edit runs the EDITOR's edit with its prompt (nothing goes into the generate queue)", r1.req && r1.req.mode === "edit" && r1.req.prompt === "make it red" && r1.q === q0, { r1, q0 });
-    await ev(() => window.imageEditorInstance.E.discardResults(true));
+    await p.waitForFunction((n) => window.imageEditorInstance.E.S.layers.length > n, nE, { timeout: 15000 });   // 2.543.0: an Edit is a new layer
+    const r1 = await ev(() => ({ req: window.__pl[0], q: GENQUEUE.waiting(GQ).length + (GENQUEUE.running(GQ) ? 1 : 0), top: window.imageEditorInstance.E.S.layers.map((L) => L.name) }));
+    check("...the prompt docker's Edit runs the EDITOR's edit with its prompt (nothing goes into the generate queue) - 2.543.0: the result a new layer", r1.req && r1.req.mode === "edit" && r1.req.prompt === "make it red" && r1.q === q0 && r1.top.some((n) => /edit: make it red/.test(n)), { r1, q0 });
+    await ev(() => { const E = window.imageEditorInstance.E, i = E.S.layers.findIndex((L) => /edit: make it red/.test(L.name)); if (i >= 0) { E.S.layers.splice(i, 1); E.S.active = E.S.layers.findIndex((L) => L.name === "Paint"); E.refresh(); E.renderLayersPanel(); } });
 
     /* 2 the Generate tab: the style back, the button Generate; it renders into the selection; ✔ Apply blends into the layer */
     await ev(() => document.querySelector('#kxModes [data-mode="generate"]').click()); await p.waitForTimeout(300);

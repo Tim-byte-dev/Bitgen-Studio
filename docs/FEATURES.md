@@ -113,6 +113,8 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 
 - **One Generate button** — the dropdown under it says what it makes: video, image, music, speech, a wired graph or a chat reply. *Where:* the prompt docker
 - **Generate, Edit, Refine, Fill, Replace background, Remove** — in Image mode a dropdown on the menu bar says what Generate does to the picture in the image editor, like the Krita AI plugin; Refine gets a strength slider and the button's words follow the choice. *Where:* the prompt docker's menu bar. *Since:* 2.541.0
+- **References or layers** — with the image editor closed, Edit, Refine, Replace background and Compose use the References docker's pictures (Fill and Remove leave the list); with it open, they use the selected layer, or several picked layers; a chip says which. *Where:* the prompt docker's menu bar. *Since:* 2.543.0
+- **Compose** — one picture from up to three pictures: the layers picked in the image editor, or the References docker's pictures. *Where:* the prompt docker's dropdown. *Since:* 2.543.0
 - **Generate modes** — Ref (reference pictures), F/L (first / last frame), Text, and Swap. *Where:* Basic Settings
 - **Several jobs from one prompt** — /br/ on its own line splits the prompt into jobs that run one after another. *Where:* the prompt box
 - **Enter improves the prompt** — Enter sends the prompt to the local LLM, which rewrites it. *Where:* the prompt box

@@ -23,7 +23,15 @@
  *   results come into the ✨ AI panel (click one to compare, its ✔ or ✔ Apply keeps it as a layer) - Krita AI's way.
  *   pcpromptlink.js does the running (H3TakeGenerate); this file is the dropdown, its state and the label.
  *
- * Pure (Node: scripts/test-imgop541.js): OPS, opOf, modeFor, opForMode, labelFor, shown.
+ * 2.543.0 (Tim: "if the image editor docker is minimized or closed, use the reference images for the edit,replace
+ * background functions, delete fill and remove from the prompt docker dropdown, if image editor docker is open use image
+ * editor layer as reference image if user selects multiple layers use those layers as reference images for the operations
+ * add the fill and remove functions back to the list. remove the tabs for generate,refine,edit,background and compose from
+ * image editor docker. Add compose to the prompt docker dropdown"): + 🧩 Compose; Fill and Remove are listed only while
+ * the editor is on screen (the op picked comes back when it opens again); a chip says what the button will use - 🖼 N
+ * reference(s) (the editor closed), ▦ <layer> / ▦ N layers (open), 🟧 Blender (a Blender / 3D layer).
+ * Pure (Node: scripts/test-imgop541.js, test-imgop543.js): OPS, opOf, modeFor, opForMode, labelFor, shown, available,
+ * sourceText.
  */
 (function (root) {
   "use strict";
@@ -32,18 +40,33 @@
     { id: "generate", icon: "✨", label: "Generate", mode: "generate", tip: "A new picture from the prompt (with the ✨ AI panel showing: into the selection, else the whole picture)" },
     { id: "edit", icon: "✏", label: "Edit", mode: "edit", tip: "Follow an instruction with the edit model - \"make her jacket red\" (the selection, else the whole picture; in Blender mode the Blender scene)" },
     { id: "refine", icon: "🔁", label: "Refine", mode: "refine", tip: "Redraw the selection (else the whole picture) at the strength on the slider - keeps the shapes, changes the detail" },
-    { id: "fill", icon: "🪣", label: "Fill", mode: "generate", needSel: true, tip: "Fill the selection from the prompt (100 %) - select the area first" },
+    { id: "fill", icon: "🪣", label: "Fill", mode: "generate", needSel: true, needEditor: true, tip: "Fill the selection from the prompt (100 %) - select the area first" },
     { id: "background", icon: "🖼", label: "Replace background", mode: "background", needSel: true, tip: "Keep what is selected, make everything else new from the prompt" },
-    { id: "remove", icon: "🧽", label: "Remove", mode: "remove", needSel: true, tip: "Take out what is selected and continue the surroundings (the prompt is optional)" },
+    { id: "remove", icon: "🧽", label: "Remove", mode: "remove", needSel: true, needEditor: true, tip: "Take out what is selected and continue the surroundings (the prompt is optional)" },
+    { id: "compose", icon: "🧩", label: "Compose", mode: "compose", tip: "Make one picture from several: the layers picked in the image editor (Ctrl-click), or the References docker's pictures when the editor is closed - \"put the dog from picture 2 on the sofa in picture 1\"" },
   ];
+  /** 2.543.0: Fill and Remove work on a selection in the image editor - only while it is on screen */
+  const available = (id, editorOn) => !!editorOn || !opOf(id).needEditor;
   const opOf = (id) => OPS.find((o) => o.id === id) || OPS[0];
   /** the ✨ AI panel's mode for an op */
   const modeFor = (id) => opOf(id).mode;
   /** the op for a panel mode the user clicked (Generate keeps Fill when Fill was picked; Compose = no change -> null) */
   function opForMode(mode, cur) {
     if (mode === "generate") return cur === "fill" ? "fill" : "generate";
-    if (mode === "compose" || !OPS.some((o) => o.id === mode)) return null;
-    return mode;
+    if (!OPS.some((o) => o.id === mode)) return null;
+    return mode;                                                   // 2.543.0: Compose is one of them now
+  }
+  /** 2.543.0: what the button works from - s = {op, editorOn, open, blender, refs, picks, layer, hasSel} -> the chip's words ("" = none) */
+  function sourceText(s) {
+    const o = s && s.op;
+    if (!o || o === "generate") return "";
+    if (s.blender && (o === "edit" || o === "refine")) return "";                    // the 🟧 Blender chip says it
+    if (!s.editorOn) return s.refs ? `🖼 ${s.refs} reference${s.refs === 1 ? "" : "s"}` : "🖼 no references";
+    if (!s.open) return "";
+    if (o === "fill" || o === "remove") return s.hasSel ? "▭ the selection" : "";
+    if ((o === "refine" || o === "background") && s.hasSel) return "▭ the selection";
+    if (s.picks > 1) return `▦ ${Math.min(s.picks, 3)} layers`;
+    return s.layer ? `▦ ${s.layer}` : "";
   }
   /** the Generate button's words: "🔁 Refine 40%", "✏ Edit · 🟧 Blender" */
   function labelFor(id, strength, blender) {
@@ -66,22 +89,38 @@
       st.textContent = "#pmImgOp{display:inline-flex;align-items:center;gap:6px}#pmImgOp[hidden]{display:none}"
         + "#pmOpSel{max-width:190px;border-color:var(--tiger,#f59e2c)}#pmRefWrap{display:inline-flex;align-items:center;gap:4px;font-size:.75rem}"
         + "#pmRefWrap[hidden],#pmBlendChip[hidden]{display:none}#pmRefine{width:110px}#pmRefineV{min-width:2.6em;color:var(--tiger,#f59e2c)}"
-        + "#pmBlendChip{font-size:.66rem;color:#f5792c;border:1px solid #f5792c;border-radius:8px;padding:0 6px;white-space:nowrap}";
+        + "#pmBlendChip{font-size:.66rem;color:#f5792c;border:1px solid #f5792c;border-radius:8px;padding:0 6px;white-space:nowrap}"
+        + "#pmSrcChip{font-size:.66rem;color:var(--dim,#aaa);border:1px solid var(--line,#444);border-radius:8px;padding:0 6px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}#pmSrcChip[hidden]{display:none}";
       doc.head.appendChild(st);
     }
     const box = doc.createElement("span"); box.id = "pmImgOp";
     box.innerHTML = `<select id="pmOpSel" title="What the Generate button does with the picture in the image editor (Krita AI's way)" aria-label="Image operation">`
       + OPS.map((o) => `<option value="${o.id}" title="${o.tip.replace(/"/g, "&quot;")}">${o.icon} ${o.label}</option>`).join("") + `</select>`
       + `<span id="pmRefWrap" title="How much Refine changes (5 % = a touch, 95 % = nearly new)"><span>strength</span><input type="range" id="pmRefine" min="5" max="95" step="5"><span id="pmRefineV"></span></span>`
-      + `<span id="pmBlendChip" title="Blender mode: the selected layer is a Blender / Daz 3D layer - Edit and Refine render its scene with Blender first and work from that picture">🟧 Blender</span>`;
+      + `<span id="pmBlendChip" title="Blender mode: the selected layer is a Blender / Daz 3D layer - Edit and Refine render its scene with Blender first and work from that picture">🟧 Blender</span>`
+      + `<span id="pmSrcChip" title="What the button works from: the References docker's pictures (the image editor closed), the selected layer / the layers picked with Ctrl-click (open), or the selection"></span>`;
     bar.insertBefore(box, bar.firstChild);
     let op = opOf(store.get("imgop", "generate")).id, quiet = false;
     const genMode = () => { const g = $("genModeSel"); return g ? g.value : "image"; };
     const blender = () => !!(S.w && ((E.layer3d && E.layer3d.isCurrent && E.layer3d.isCurrent()) || (E.blendLayer && E.blendLayer.isCurrent())));   // 2.542.0: + a Blender layer
     const strength = () => S.strength || 50;
+    const editorOn = () => (typeof root.ieOnScreen === "function" ? !!root.ieOnScreen() : true);     // 2.543.0
+    const srcState = () => {
+      let refs = 0; try { refs = root.H3Refs ? root.H3Refs.images().length : 0; } catch (e) { refs = 0; }
+      const pk = E.picked ? E.picked().filter((L) => L && !L.control) : [], L = pk.length === 1 ? pk[0] : S.w ? E.layer() : null;
+      return { op, editorOn: editorOn(), open: !!S.w, blender: blender(), refs, picks: pk.length, layer: L ? L.name : "", hasSel: !!(E.hasSel && E.hasSel()) };
+    };
+    let lastSrc = "";
     function paint() {
       box.hidden = !shown(genMode());
+      const on = editorOn();
+      // 2.543.0: Fill / Remove only with the editor on screen - the op picked comes back when it opens again
+      for (const o of $("pmOpSel").options) { const ok = available(o.value, on); o.hidden = !ok; o.disabled = !ok; }
+      if (!available(op, on)) { store.set("imgop.was", op); op = "generate"; store.set("imgop", op); }
+      else if (on && op === "generate" && store.get("imgop.was", null)) { const w = store.get("imgop.was", null); store.set("imgop.was", null); if (OPS.some((x) => x.id === w)) { op = w; store.set("imgop", op); if (E.setAiMode && S.aiMode !== modeFor(op)) { quiet = true; try { E.setAiMode(modeFor(op)); } finally { quiet = false; } } } }
       $("pmOpSel").value = op;
+      const src = sourceText(srcState()); lastSrc = src;
+      $("pmSrcChip").textContent = src; $("pmSrcChip").hidden = !src;
       $("pmRefWrap").hidden = op !== "refine";
       $("pmRefine").value = strength(); $("pmRefineV").textContent = strength() + "%";
       $("pmBlendChip").hidden = !(blender() && (op === "edit" || op === "refine"));
@@ -89,7 +128,7 @@
     }
     /** pick an op: the ✨ AI panel follows (its tab), the button's words follow */
     function set(id, fromPanel) {
-      op = opOf(id).id; store.set("imgop", op);
+      op = opOf(id).id; store.set("imgop", op); store.set("imgop.was", null);
       if (!fromPanel && E.setAiMode && S.aiMode !== modeFor(op)) { quiet = true; try { E.setAiMode(modeFor(op)); } finally { quiet = false; } }
       paint();
       if (root.H3TestEvent) { try { root.H3TestEvent("imgop", op); } catch (e) { /* the 🧪 list */ } }
@@ -107,15 +146,16 @@
     // the page sets the mode in code too (sel.value = …; sel.onchange() - no change event): a light look twice a second
     root.setInterval(() => {
       const chipOff = !(blender() && (op === "edit" || op === "refine"));
-      if ($("pmBlendChip").hidden !== chipOff || box.hidden !== !shown(genMode())) paint();
+      if ($("pmBlendChip").hidden !== chipOff || box.hidden !== !shown(genMode()) || sourceText(srcState()) !== lastSrc || available(op, editorOn()) === false
+          || [...$("pmOpSel").options].some((o) => o.hidden === available(o.value, editorOn()))) paint();
     }, 500);
     if (op !== "generate" && E.setAiMode && S.aiMode !== modeFor(op)) { quiet = true; try { E.setAiMode(modeFor(op)); } finally { quiet = false; } }
     paint();
-    E.imgOp = { get: () => op, set, fromMode, strength, blender, paint, label: () => labelFor(op, strength(), blender()), opOf };
+    E.imgOp = { get: () => op, set, fromMode, strength, blender, paint, label: () => labelFor(op, strength(), blender()), opOf, editorOn, source: () => sourceText(srcState()) };
     root.H3ImgOp = E.imgOp;
   }
 
-  const PCImgOp = { OPS, opOf, modeFor, opForMode, labelFor, shown, install };
+  const PCImgOp = { OPS, opOf, modeFor, opForMode, labelFor, shown, available, sourceText, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCImgOp;
   else root.PCImgOp = PCImgOp;
 })(typeof window !== "undefined" ? window : globalThis);

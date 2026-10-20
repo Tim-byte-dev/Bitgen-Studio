@@ -2771,6 +2771,30 @@ The panel lists every saved layout:
 The button is highlighted while a layout is saved for the dockers that are
 open now.
 
+## ▾ Which picture the prompt docker works from: references or layers, and 🧩 Compose (2.543.0)
+
+The prompt docker's dropdown (🖼 Image mode) now picks the picture by where you are working. The ✨ AI panel in the image
+editor no longer has its own Generate / Refine / Edit / Background / Compose tabs; the dropdown chooses. A chip beside it
+says what the button will use.
+
+**With the image editor minimized or closed**, the dropdown has Generate, Edit, Refine, Replace background and 🧩 Compose,
+and they work from the **References docker's pictures** (up to 3). Fill and Remove leave the list, because they need a
+selection in the editor. Your choice comes back when the editor opens again.
+
+- **✏ Edit**: with one reference, the edit model changes it. With two or three, they are composed together.
+- **🖼 Replace background**: the edit model is told to replace the background and keep the subject as it is.
+- **🔁 Refine**: redraws reference picture 1 at the slider's strength.
+- **🧩 Compose**: one picture made from the references ("put the dog from picture 2 on the sofa in picture 1").
+- The results land in the gallery like any picture.
+
+**With the image editor open**, Fill and Remove are back, and the picture comes from the **selected layer**:
+
+- **✏ Edit**, **🔁 Refine** and **🖼 Replace background** work from the selected layer, even if other layers cover it.
+  An empty layer uses the picture as you see it. Each result comes in as a new layer.
+- **Several layers picked** (Ctrl-click in the Layers panel) are all used: Edit and Replace background compose them,
+  and **🧩 Compose** makes one picture from them.
+- With a **selection**, Refine and Replace background work on the selection as before, and Fill and Remove need one.
+
 ## 🟧 A Blender layer: the timeline's scene tools in the image editor (2.542.0)
 
 **🟧** on the image editor's menu bar (beside ⛶), or **Layer ▸ New Blender Layer (Scene Tools)…**, puts the timeline's

@@ -47,13 +47,27 @@
     if (!s || s.genMode !== "image") return null;
     const op = s.op || (s.aiShown && LINKED_MODES.includes(s.mode) ? s.mode : "generate");
     if (op === "generate") return linkedNow(s) && s.mode === "generate" ? { kind: "run", op, mode: "generate", whole: true, into: true } : null;
-    const O = { edit: ["edit", true, false], refine: ["refine", true, false], fill: ["generate", false, true], background: ["background", false, false], remove: ["remove", false, false] }[op];
-    if (!O) return null;
-    if (!s.onScreen) return { kind: "open", op };
+    if (!["edit", "refine", "fill", "background", "remove", "compose"].includes(op)) return null;
+    // 2.543.0: the editor minimized / closed -> the References docker's pictures (Fill / Remove need the editor)
+    if (!s.onScreen) {
+      if (op === "fill" || op === "remove") return { kind: "say", op, msg: "Fill and Remove work on a selection in the image editor - open it (▦ Image editor)" };
+      if (!s.refs) return { kind: "say", op, msg: "put a picture in the References docker first (or open the image editor and a picture)" };
+      return { kind: "refs", op, mode: op === "refine" ? "refine" : op === "compose" || s.refs > 1 ? "compose" : "edit", bg: op === "background" };
+    }
     if (!s.open) return { kind: "say", op, msg: op === "edit" ? "open a picture to edit first (File ▸ Open, or drop one on the editor)" : `open a picture first - ${op} works on the picture in the image editor` };
-    if (s.blender && (op === "edit" || op === "refine")) return { kind: "blender", op, mode: O[0] };
-    if (!O[1] && !s.hasSel) return { kind: "say", op, msg: { fill: "select the area to fill first (or Select All)", background: "select what to KEEP first - everything else gets a new background", remove: "select what to remove first" }[op] };
-    return { kind: "run", op, mode: O[0], whole: O[1], into: O[2] };
+    if (s.blender && (op === "edit" || op === "refine")) return { kind: "blender", op, mode: op };
+    if (op === "compose") return { kind: "compose", op, mode: "compose" };
+    if (op === "fill" || op === "remove") return s.hasSel ? { kind: "run", op, mode: op === "fill" ? "generate" : "remove", whole: false, into: op === "fill" } : { kind: "say", op, msg: op === "fill" ? "select the area to fill first (or Select All)" : "select what to remove first" };
+    // 2.543.0: Edit / Refine / Replace background work from the selected LAYER (several picked = all of them); a
+    // selection keeps Refine / Replace background on the picture's selection as before
+    if (op === "refine") return s.hasSel ? { kind: "run", op, mode: "refine", whole: true, into: false } : { kind: "layer", op, mode: "refine" };
+    if (op === "background") return s.hasSel ? { kind: "run", op, mode: "background", whole: false, into: false } : s.picks > 1 ? { kind: "compose", op, mode: "compose", bg: true } : { kind: "layer", op, mode: "edit", bg: true };
+    return s.picks > 1 ? { kind: "compose", op, mode: "compose" } : { kind: "layer", op, mode: "edit" };
+  }
+  /** 2.543.0: Replace background as an instruction for the edit model (no selection to keep) */
+  function bgPrompt(t) {
+    const x = String(t || "").trim().replace(/[.\s]+$/, "");
+    return x ? `Replace the background with ${x}. Keep the main subject exactly as it is - its shape, pose, colours and lighting.` : "";
   }
   /** the "Qwen Image 2.1 edit" option among [{value, text}] (any Qwen edit, then any edit, by name) - its value or "" */
   function pickEditStyle(opts) {
@@ -69,6 +83,7 @@
     if (!$("pcPlinkCss")) {
       const st = doc.createElement("style"); st.id = "pcPlinkCss";
       st.textContent = "#kxAi.pd-linked #kxRun,#kxAi.pd-linked #iePrompt,#kxAi.pd-linked.pd-edit #kxRowEdit{display:none!important}"
+        + "#kxAi #kxModes{display:none!important}"                         // 2.543.0: the prompt docker's ▾ chooses (Tim: "remove the tabs")
         + "#kxAi .kxpdnote{display:none;color:var(--pc-dim);font-size:11px;padding:4px 6px;border:1px dashed var(--pc-line);border-radius:5px;margin:4px 0}"
         + "#kxAi.pd-linked .kxpdnote{display:block}#kxAi .kxpdnote b{color:var(--pc-accent)}";
       doc.head.appendChild(st);
@@ -79,7 +94,10 @@
     const genMode = () => { const g = doc.getElementById("genModeSel"); return g ? g.value : "image"; };
     const onScreen = () => (typeof root.ieOnScreen === "function" ? root.ieOnScreen() : true);
     const state = () => ({ onScreen: onScreen(), open: !!S.w, aiShown: !!($("kxAi") && $("kxAi").classList.contains("on")), mode: S.aiMode, genMode: genMode(),
-                           op: E.imgOp ? E.imgOp.get() : null, blender: !!(E.imgOp && E.imgOp.blender()), hasSel: !!(E.hasSel && E.hasSel()) });   // 2.541.0
+                           op: E.imgOp ? E.imgOp.get() : null, blender: !!(E.imgOp && E.imgOp.blender()), hasSel: !!(E.hasSel && E.hasSel()),   // 2.541.0
+                           picks: picksNow().length, refs: refsNow().length });                                                                       // 2.543.0
+    const picksNow = () => (E.picked ? E.picked().filter((L) => L && !L.control) : []);
+    const refsNow = () => { try { return root.H3Refs ? root.H3Refs.images() : []; } catch (e) { return []; } };
     // 2.541.0: linked = the panel's own ✨ button / prompt box give way to the prompt docker's (any op but a plain Generate)
     const linked = () => { const s = state(); return linkedNow(s) || (s.onScreen && s.genMode === "image" && !!s.op && s.op !== "generate"); };
 
@@ -125,12 +143,12 @@
       const b = ev.target && ev.target.closest ? ev.target.closest("[data-mode]") : null; if (!b || !onScreen()) return;
       if (LINKED_MODES.includes(b.dataset.mode)) toImageMode(); else fromImageMode();
     }, true);
-    let lastMode = null;
+    let lastMode = null, inTake = false;
     E.onAiMode = (m) => {
       if (m === "edit" && onScreen()) toEditStyle();
       else if (lastMode === "edit") fromEditStyle();
       lastMode = m;
-      if (E.imgOp) E.imgOp.fromMode(m);                                     // 2.541.0: the prompt docker's ▾ follows the tab
+      if (E.imgOp && !inTake) E.imgOp.fromMode(m);                          // 2.541.0: the prompt docker's ▾ follows the tab (not the mode a run picks)
       paint();
     };
     /* ---- the page asks these (index.html goLabel / runGenerate) */
@@ -164,28 +182,82 @@
       return true;
     };
     /** 2.541.0: Edit / Refine / Fill / Replace background / Remove from the prompt docker's ▾ */
-    function takeOp(act, text) {
-      if (act.kind === "open") {
-        openDock();
-        root.setTimeout(() => { const a2 = actionFor(state()); if (a2 && a2.kind !== "open") takeOp(a2, text); else say("the image editor is not on screen - open it (▦ Image editor) and a picture"); }, 120);
-        return true;
-      }
-      if (act.kind === "say") { say(act.msg); return true; }
-      if (S.busy) { say("still working on the last one"); return true; }
-      if (act.mode === "edit" && styleSel() && !(S.engines && (S.engines.edit || []).some((x) => x.id === styleSel().value))) toEditStyle();
+    /** 2.543.0: the edit model now - the prompt docker's style when it can edit, else the ✨ AI panel's Edit model */
+    function editStyleNow() {
       const sel = styleSel();
-      const editStyle = act.mode === "edit" && sel && S.engines && (S.engines.edit || []).some((x) => x.id === sel.value) ? sel.value : "";
+      if (sel && S.engines && (S.engines.edit || []).some((x) => x.id === sel.value)) return sel.value;
+      return ($("ieEditStyle") || {}).value || "";
+    }
+    const tellSay = (m) => { say(m); try { if (typeof root.logLine === "function") root.logLine("[image] " + m); } catch (e) { /* fine */ } };
+    function takeOp(act, text) {
+      if (act.kind === "say") { tellSay(act.msg); return true; }
+      if (act.kind === "refs") { runRefs(act, text); return true; }                   // 2.543.0: the editor closed
+      if (S.busy) { say("still working on the last one"); return true; }
+      if ((act.mode === "edit" || act.mode === "compose") && styleSel() && !(S.engines && (S.engines.edit || []).some((x) => x.id === styleSel().value))) toEditStyle();
+      const sel = styleSel();
+      const editStyle = (act.mode === "edit" || act.mode === "compose") && sel && S.engines && (S.engines.edit || []).some((x) => x.id === sel.value) ? sel.value : "";
       if (E.ui && E.ui.showTab) { try { E.ui.showTab("kxAi"); } catch (e) { /* the results show there */ } }
-      if (S.aiMode !== act.mode && E.setAiMode) E.setAiMode(act.mode);
+      if (S.aiMode !== act.mode && E.setAiMode) { inTake = true; try { E.setAiMode(act.mode); } finally { inTake = false; } }
       if (act.kind === "blender") {                                         // 🟧 Blender mode: the scene, rendered, is the picture
         if (E.blendLayer && E.blendLayer.isCurrent()) { E.blendLayer.editFromScene(E.layer(), text, act.mode, editStyle); return true; }   // 2.542.0: a Blender layer
         if (!E.layer3d || !E.layer3d.editFromScene) { say("the 3D layer tools are not loaded (reload the page)"); return true; }
         E.layer3d.editFromScene(E.layer(), text, act.mode, editStyle);
         return true;
       }
+      const prompt = act.bg ? bgPrompt(text) : text;
+      if (act.bg && !prompt) { say("say what the new background is (\"a beach at sunset\")"); return true; }
+      if (act.kind === "compose") {                                      // 2.543.0: the layers picked (else the selected one)
+        const picks = picksNow(), layers = picks.length ? picks.slice(0, 3) : [E.layer()].filter(Boolean);
+        if (picks.length > 3) say("the first 3 picked layers are used (the edit models take three pictures)");
+        if ($("ieEditStyle") && editStyle && [...$("ieEditStyle").options].some((o) => o.value === editStyle)) $("ieEditStyle").value = editStyle;
+        E.runCompose({ prompt, layers, direct: true, keep: E.layer() });
+        return true;
+      }
+      if (act.kind === "layer") {                                        // 2.543.0: the selected layer is the picture
+        const pk = picksNow(), L = pk.length === 1 ? pk[0] : E.layer();
+        let c = L && E.layerPicture ? E.layerPicture(L) : null;
+        if (c && !hasPixels(c)) c = null;                                 // an empty layer (a new paint layer): the picture as seen instead
+        if (!c && E.flattenCache) E.flattenCache();
+        E.runAI({ prompt, editStyle, source: c, whole: true, into: false, direct: true, keep: L, label: `${act.op === "refine" ? "🔁" : act.bg ? "🖼" : "✏"} ${c ? L.name : "picture"} ${act.op === "background" ? "new background" : act.op}` });
+        return true;
+      }
       if (E.flattenCache) E.flattenCache();
-      E.runAI({ prompt: text, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
+      E.runAI({ prompt, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
       return true;
+    }
+    /** a picture with anything in it (a quick look at a small copy) */
+    function hasPixels(c) {
+      const t = doc.createElement("canvas"); t.width = 48; t.height = 48; const g = t.getContext("2d"); g.drawImage(c, 0, 0, 48, 48);
+      const d = g.getImageData(0, 0, 48, 48).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 8) return true; return false;
+    }
+    /** 2.543.0: the editor minimized / closed - the References docker's pictures (up to 3) go to the edit model;
+     *  Refine redraws picture 1 at the slider's strength; the results land in the gallery like any picture */
+    async function runRefs(act, text) {
+      const api = E.api, refs = refsNow().slice(0, 3), t = String(text || "").trim();
+      if (!api || !api.aiedit) { say("the AI is not connected (reload the page)"); return; }
+      if (!refs.length) { tellSay("put a picture in the References docker first"); return; }
+      const prompt = act.bg ? bgPrompt(t) : t;
+      if (!prompt && act.mode !== "refine") { tellSay(act.bg ? "say what the new background is (\"a beach at sunset\")" : "type in the prompt docker what to make of the reference picture(s)"); return; }
+      try {
+        const blobs = await Promise.all(refs.map((r) => (r.file ? Promise.resolve(r.file) : root.fetch(r.url).then((x) => x.blob()))));
+        const bmp = await root.createImageBitmap(blobs[0]);
+        const fit = E.P.fitSize(bmp.width, bmp.height, (S.res || 1) * 1048576, 16);
+        const crop = E.newCanvas(fit.w, fit.h), cg = crop.getContext("2d"); cg.imageSmoothingQuality = "high"; cg.drawImage(bmp, 0, 0, fit.w, fit.h);
+        const blobOf = (c) => new Promise((r) => c.toBlob(r, "image/png"));
+        if (root.H3TestEvent) { try { root.H3TestEvent("imgop_refs", act.op); } catch (e) { /* the 🧪 list */ } }
+        let r = null;
+        if (act.mode === "compose") {
+          const editStyle = editStyleNow();
+          r = await api.compose({ pics: [await blobOf(crop)].concat(blobs.slice(1)), names: refs.map((x, i) => String(x.desc || x.name || `Picture ${i + 1}`).slice(0, 60)), prompt, style_id: editStyle, count: S.count || 1, width: fit.w, height: fit.h }, tellSay);
+        } else if (act.mode === "edit") {
+          r = await api.aiedit({ mode: "edit", prompt, style_id: editStyleNow(), count: S.count || 1, strength: 100, width: fit.w, height: fit.h, crop: await blobOf(crop) }, tellSay);
+        } else {                                                            // refine: the whole of picture 1
+          const none = E.newCanvas(fit.w, fit.h);                          // a clear mask = everything selected; the hole picture = all clear
+          r = await api.aiedit({ mode: "refine", prompt: prompt || (api.mainPrompt ? api.mainPrompt() : ""), style_id: ($("ieStyle") || {}).value || "", count: S.count || 1, strength: S.strength || 50,
+                                 width: fit.w, height: fit.h, crop: await blobOf(crop), mask: await blobOf(none), rgba: await blobOf(none) }, tellSay);
+        }
+        if (r && r.jobs) tellSay(`${r.jobs.length} render(s) queued from the References docker's picture${refs.length > 1 && act.mode === "compose" ? "s" : " 1"} - the results land in the gallery`);
+      } catch (e) { tellSay(`${act.op} failed: ${e.message || e}`); }
     }
     // the panel's tab shown / hidden, the editor opened / closed, the prompt docker's mode: the label follows
     try {
@@ -200,7 +272,7 @@
     E.promptLink = { linked, state, paint, toEditStyle, fromEditStyle, toImageMode, fromImageMode, openDock, takeOp };
   }
 
-  const PCPromptLink = { LINKED_MODES, linkedNow, goLabelFor, pickEditStyle, actionFor, install };
+  const PCPromptLink = { LINKED_MODES, linkedNow, goLabelFor, pickEditStyle, actionFor, bgPrompt, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCPromptLink;
   else root.PCPromptLink = PCPromptLink;
 })(typeof window !== "undefined" ? window : globalThis);
