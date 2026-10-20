@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.548.0** — The Reference Docker Kept (Close / Save), All Its Pictures, the Shared Prompt Kept as Typed
 - **2.547.0** — Picked Layers: 🗑 Deletes All, Ctrl+g Groups / Ungroups; The Krea 2 Styles Back (↺ Built-In)
 - **2.546.0** — 🟧 Blender Scene + The References Docker's Pictures, Zoom, No Player in the Editor
 - **2.545.0** — ▣ Docker: An Empty Docker the Others Drop into (Side by Side / Stacked), Storyboard Everywhere

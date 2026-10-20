@@ -56,7 +56,7 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
       g.images[0].desc === "green sofa" && g2.images[0].desc === "green sofa" && g2.notes.videos["d.mp4"] === "the dance" && g2.notes.audios["v.wav"] === "her voice" && g2.images[0].role === "furniture", g2);
   } finally { fs.rmSync(T, { recursive: true, force: true }); }
   const ri = read("routes", "index.js");
-  check("the project save keeps the notes of what it stored; the group route takes notes", /stored\.notes = projectRefs\.notesKept\(want\.notes, stored\)/.test(ri) && /notes: b\.notes && typeof b\.notes === "object"/.test(ri));
+  check("the project save keeps the notes of what it stored (2.548.0: lib/projectRefs.store); the group route takes notes", /projectRefs\.store\(pdir, data\.references/.test(ri) && /out\.notes = notesKept\(want\.notes, out\)/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "lib", "projectRefs.js"), "utf8")) && /notes: b\.notes && typeof b\.notes === "object"/.test(ri));
 
   /* ---- the LLM sees the descriptions */
   const RC = require("../lib/refContext.js");

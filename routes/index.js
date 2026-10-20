@@ -181,6 +181,7 @@ function mount(app) {
   require("./unreal").mount(app);       // 2.472.0: the Unreal Engine 5.8 bridge (lib/unreal.js <-> ue/bitGenBridge)
   require("./layout").mount(app);      // 2.438.0: dialog_layout.cfg / panel_layout.cfg - where windows were left
   require("./stylesRestore").mount(app);   // 2.547.0: ↺ the built-in styles back (Krea 2 …)
+  require("./refKeep").mount(app);         // 2.548.0: the reference docker kept as it changes (POST /api/projects/refs)
   require("./sceneedit").mount(app);   // 2.337.0: the scene cards' ✎ First frame (Qwen Image 2.1)
   require("./ltx").mount(app);         // 2.338.0: LTX 2.5 from the prompt docker (Tim's all-in-one canvas)
   require("./h3Viggle").mount(app);    // 2.352.0: the H3_Viggle style - each scene's 🎬 motion video
@@ -2622,7 +2623,7 @@ const trap = require("../lib/trap");
      data.references. Videos/sounds are named project assets (video/, sound/)
      and are copied from there. A save WITHOUT a `references` key keeps the
      manifest already on disk (the beforeunload beacon cannot carry files). */
-  app.post("/api/projects/save", upload.array("ref_images", 9), (req, res) => {
+  app.post("/api/projects/save", require("../lib/refKeep").upload().array("ref_images", projectRefs.MAX_IMAGES), (req, res) => {   // 2.548.0: was 9 - a 10th picture refused the whole save
     const b = req.body || {};
     let data = b.data;
     if (typeof data === "string") { try { data = JSON.parse(data); } catch { return res.status(400).json({ error: "data is not JSON" }); } }
@@ -2644,21 +2645,9 @@ const trap = require("../lib/trap");
     try { prev = JSON.parse(fs.readFileSync(core.prjPath(core.getProject()), "utf8")) || {}; } catch {}
     let stored = null;
     if (data.references !== undefined) {
-      const want = projectRefs.normalize(data.references);
-      const files = req.files || [];
-      // pictures: uploaded bytes win (the tray may hold images that exist
-      // nowhere else); a manifest entry with no upload must already be stored
-      const images = [];
-      want.images.forEach((im, i) => {
-        const f = files.find((x) => x.originalname === im.file) || files[i];
-        if (f && f.buffer) images.push({ ...im, file: projectRefs.placeBytes(pdir, "images", im.file, f.buffer) });
-        else if (fs.existsSync(projectRefs.servePath(pdir, "images", im.file))) images.push(im);
-      });
-      const copy = (kind, assetKind, names) => names.map((n) =>
-        fs.existsSync(projectRefs.servePath(pdir, kind, n)) ? n
-          : projectRefs.placeFile(pdir, kind, path.join(core.pDir(assetKind), n))).filter(Boolean);
-      stored = { images, videos: copy("videos", "video", want.videos), audio: copy("audio", "sound", want.audio) };
-      stored.notes = projectRefs.notesKept(want.notes, stored);              // 2.539.0: the descriptions of what is kept
+      // pictures: uploaded bytes win (the tray may hold images that exist nowhere else); a manifest entry with no
+      // upload must already be stored (2.548.0: lib/projectRefs.store - the dock's autosave uses the same)
+      stored = projectRefs.store(pdir, data.references, req.files || [], (assetKind, n) => path.join(core.pDir(assetKind), n));
       data.references = stored;
     } else if (prev.references) {
       data.references = prev.references;

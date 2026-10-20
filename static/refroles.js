@@ -29,7 +29,9 @@
   }
   function plan(mode, refs) {
     var list = (refs || []).slice();
-    if (mode !== "ref2va") return { mode: mode, refs: list, note: "" };
+    // 2.548.0: the dock keeps every picture whatever the mode - each mode sends what it takes
+    if (mode !== "ref2va") { var take = mode === "t2va" ? 0 : mode === "swap" ? 1 : mode === "fl2va" ? 2 : list.length;
+      return { mode: mode, refs: list.slice(0, take), note: list.length > take ? (list.length - take) + " picture(s) kept in the dock, not used by " + mode : "" }; }
     var first = list.filter(function (r) { return r.role === FIRST; })[0];
     var last = list.filter(function (r) { return r.role === LAST; })[0];
     if (first) {

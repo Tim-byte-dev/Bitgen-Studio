@@ -55,9 +55,10 @@ const fresh = () => fs.mkdtempSync(path.join(os.tmpdir(), "projrefs-"));
   check("normalize: videos accept strings and objects", JSON.stringify(m.videos) === '["v.mp4","w.mp4"]', m.videos);
   check("normalize: the legacy 'audios' key is read as 'audio'", JSON.stringify(m.audio) === '["s.wav"]', m.audio);
   check("normalize: subject clamps to 1..9", R.normalize({ images: [{ file: "a", subject: 40 }] }).images[0].subject === 9, null);
-  check("normalize: at most 9 pictures, 3 videos, 3 sounds",
-    R.normalize({ images: Array.from({ length: 12 }, (_, i) => `${i}.png`), videos: ["1", "2", "3", "4"] }).images.length === 9
-    && R.normalize({ videos: ["1", "2", "3", "4"] }).videos.length === 3, null);
+  // 2.548.0: the dock keeps ALL it holds (a render sends its own limit) - up to MAX_IMAGES / MAX_MEDIA
+  check("normalize: keeps 12 pictures and 4 videos (2.548.0 - it dropped all after the 9th / 3rd); capped at MAX_IMAGES / MAX_MEDIA",
+    R.normalize({ images: Array.from({ length: 12 }, (_, i) => `${i}.png`), videos: ["1", "2", "3", "4"] }).images.length === 12
+    && R.normalize({ videos: ["1", "2", "3", "4"] }).videos.length === 4 && R.normalize({ images: Array.from({ length: 99 }, (_, i) => `${i}.png`) }).images.length === R.MAX_IMAGES, null);
   check("isEmpty is true for nothing and false for one picture", R.isEmpty({}) && R.isEmpty(null) && !R.isEmpty({ images: ["a.png"] }), null);
 }
 

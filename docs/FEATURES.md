@@ -844,6 +844,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Control layers** — scribble, line art, soft edge, canny, depth, normal, pose or segmentation layers guide the AI through ControlNet. *Where:* the Control panel
 - **Compose** — layers as references: put the thing from one layer into the scene of another. *Where:* the AI panel. *Since:* 2.390.0
 - **Send to References** — the picked layers go to the reference dock for any render. *Where:* Layer > Send to References. *Since:* 2.390.0
+- **References kept** — the reference docker is written to the project as it changes (closing the app keeps it), all its pictures are saved, and F/L, Swap or Text mode no longer drop pictures. *Where:* the reference docker. *Since:* 2.548.0
+- **Shared prompt kept as you type** — the StoryBoard's shared prompt is saved a moment after typing, when it is left and on close. *Where:* the StoryBoard > Scenes. *Since:* 2.548.0
 - **Generate Fill in Shape or Mask** — generate inside a shape's outline or a layer's mask, clipped to it. *Where:* the Layer menu. *Since:* 2.437.0
 - **Generate into a shape** — with a closed shape active the result goes inside it as a frame. *Where:* the AI panel. *Since:* 2.442.0
 - **The prompt docker follows the tab** — the Edit tab switches the prompt docker to image editing, the Generate tab to generating into the selection. *Where:* the AI panel. *Since:* 2.451.0

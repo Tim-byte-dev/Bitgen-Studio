@@ -12080,6 +12080,14 @@ node scripts/test-layers547.js > /tmp/ly547.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui547-ui.js > /tmp/ui547.log 2>&1 \
   && ok "2.547.0 browser test: 🗑 / Delete Layer with picked layers = all of them (undo), Ctrl+G = one group, Ctrl+G on it = ungrouped, one layer as before; ↺ Built-in puts Krea 2 Turbo back - or SKIP without playwright" \
   || { bad "2.547.0 layers + styles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui547.log | head -14; }
+
+# ---- 2.548.0 (the reference docker kept on close / save; the shared prompt kept as it is typed)
+node scripts/test-refkeep548.js > /tmp/rk548.log 2>&1 \
+  && ok "references kept units (2.548.0: uniqueNames, store / keep - only references written, only new pictures, 409 for another project, refroles.plan, the wiring)" \
+  || { bad "2.548.0 refs kept units"; grep -a "^FAIL" -A2 /tmp/rk548.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui548-ui.js > /tmp/ui548.log 2>&1 \
+  && ok "2.548.0 browser test: 10 pictures kept without Save (two image.png apart), F/L / Text keep them, back after a close, 💾 Save with 10, the shared prompt kept as typed and on close, scene + chapter references through Save + close, 409 - or SKIP without playwright" \
+  || { bad "2.548.0 refs kept browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui548.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

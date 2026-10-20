@@ -3289,7 +3289,8 @@
 <script src="/static/dlglayout.js"></script>  <!-- 2.438.0: dialogs in the middle of the screen / where they were left (dialog_layout.cfg) -->
 <script src="/static/floatpanels.js"></script>  <!-- 2.438.0: floating + named dockers (H3Panels, panel_layout.cfg) -->
 <script src="/static/dockgroup.js"></script>
-<script src="/static/stylerestore.js"></script>  <!-- 2.547.0: ↺ Built-in styles back (Settings ▸ Image / Video styles) -->  <!-- 2.545.0: ▣ Docker (Ctrl+Alt+D) - an empty docker the others drop into; ⇱ on the main dockers -->
+<script src="/static/stylerestore.js"></script>
+<script src="/static/refkeep.js"></script>  <!-- 2.548.0: the reference docker kept as it changes (POST /api/projects/refs) -->  <!-- 2.547.0: ↺ Built-in styles back (Settings ▸ Image / Video styles) -->  <!-- 2.545.0: ▣ Docker (Ctrl+Alt+D) - an empty docker the others drop into; ⇱ on the main dockers -->
 <script src="/static/tlai.js"></script>  <!-- 2.420.0: 🤖 AI in the timeline maths (H3TlAi) -->
 <script src="/static/glcomp.js"></script>  <!-- 2.421.0: the GPU compositor (H3GLComp) -->
 <script src="/static/trprev.js"></script>  <!-- 2.415.0: a layer's entry / exit transition on the canvas (H3TrPrev) -->
@@ -3614,12 +3615,13 @@ function renderTray() {
   const fopT = curFrameOp();
   const fopTags = fopT && RefRoles.frameOpTags ? RefRoles.frameOpTags(fopT, refs) : null;
   if (mode === "t2va") {
-    tray.innerHTML = '<span class="modehint">Text mode uses no references.</span>';
+    tray.innerHTML = '<span class="modehint">Text mode uses no references.' + (refs.length ? ` (${refs.length} picture${refs.length > 1 ? "s" : ""} kept for Ref / F/L)` : "") + '</span>';
     return;
   }
   refs.forEach((r, i) => {
     const s = document.createElement("div");
     s.className = "slot";
+    if (i >= CAP[mode]) { s.classList.add("unused"); s.title = `Kept - ${mode === "swap" ? "Swap" : "F/L"} mode uses the first ${CAP[mode]}`; }   // 2.548.0
     const tag = fopTags ? fopTags[i]                                                                     // 2.395.0
       : mode === "ref2va" ? (window.RefRoles && RefRoles.isFrame(r) ? r.role : `<Picture ${i + 1}>`)   // 2.340.0
       : mode === "swap" ? "<Picture 1>"
@@ -3734,6 +3736,7 @@ function renderTray() {
   }
   updateMapline();
 }
+{ const st = document.createElement("style"); st.textContent = "#tray .slot.unused{opacity:.38}"; document.head.appendChild(st); }   // 2.548.0
 const filepick = document.createElement("input");
 filepick.type = "file"; filepick.accept = "image/png,image/jpeg,image/webp,image/bmp"; filepick.multiple = true;
 filepick.onchange = e => {
@@ -3749,7 +3752,8 @@ filepick.onchange = e => {
 document.querySelectorAll(".modes button").forEach(b => b.onclick = () => {
   mode = b.dataset.mode;
   document.querySelectorAll(".modes button").forEach(x => x.classList.toggle("active", x === b));
-  while (refs.length > CAP[mode]) URL.revokeObjectURL(refs.pop().url);
+  // 2.548.0: a mode that takes fewer pictures (F/L 2, Swap 1, Text none) no longer THROWS AWAY the rest - they stay in
+  // the dock (and the project), the render sends what the mode takes (static/refroles.js plan)
   normalizeSubjects();
   $("modehint").textContent = HINTS[mode];
   if ($("swapRow")) $("swapRow").classList.toggle("hidden", mode !== "swap");   // 2.324.0

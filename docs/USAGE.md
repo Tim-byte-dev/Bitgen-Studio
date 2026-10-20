@@ -1415,6 +1415,15 @@ to the ⚙ or the workflow.
 - **💾 Save** keeps everything in the project: the StoryBoard's song and scenes, the prompt, the prompt chat,
   characters, environments, references, assets, the gallery, the timeline and each docker's fields (for example
   the music title and the enhanced prompt). Keep the name as it is to save in place.
+- **The reference docker is kept as you change it** (2.548.0): a picture, video or sound added, removed or described
+  is written to the project within a couple of seconds, so closing the app keeps it even without 💾 Save. All of
+  them are kept - a save used to keep only 9 pictures, and a 10th refused the whole save. Pictures with the same name
+  (pasted pictures are all "image.png") get their own names (image_2.png …).
+- **F/L, Swap and Text no longer throw pictures away** (2.548.0): the dock keeps them all; F/L sends the first two
+  (the rest show faded), Swap the first one, Text none. Back in Ref they are all there.
+- **The StoryBoard's shared prompt is kept as you type** (2.548.0) - a moment after you stop, when you leave the box,
+  and when the app closes; 💾 beside it still saves at once. Its @tags, the chapter references and each scene's own
+  pictures are kept with the project through Save, Save as and closing.
 - **Save as**: type a new name in the same box. The whole project is copied under that name, and the app opens
   the copy. The original stays as it was. An existing project's name is refused, so nothing is overwritten.
 - **Open**: the project you're leaving is saved first. The app then reopens on the one you picked, with every

@@ -1121,6 +1121,25 @@
     all.checked = list.length > 0 && list.every(function (r) { return scChecked[r.n]; });
   }
 
+  /* 2.548.0: the shared prompt as the server last had it; the box differs = an edit not kept yet */
+  var scPrefixKept = null, scPrefixT = 0, scPrefixBusy = false;
+  function scPrefixDirty() { var t = el("scPrefix"); return !!t && scPrefixKept !== null && t.value !== scPrefixKept; }
+  function scPrefixKeep(loud) {
+    var t = el("scPrefix"); if (!t || scPrefixBusy) return;
+    if (!loud && !scPrefixDirty()) return;
+    var text = t.value; scPrefixBusy = true; clearTimeout(scPrefixT);
+    scPost("/api/scenes/prefix", { text: text })
+      .then(function (d) {
+        if (d && d.ok) {
+          scPrefixKept = text;
+          if (d.plan) scState.plan = d.plan;
+          el("scNotes").textContent = loud ? "shared prompt saved" : "shared prompt kept";
+          if (window.H3TestEvent) { try { window.H3TestEvent("sc_prefix_kept", String(text.length)); } catch (e) { /* the 🧪 list */ } }
+        }
+      })
+      .catch(function () { /* scPost said why */ })
+      .then(function () { scPrefixBusy = false; });
+  }
   function scEditing() {
     var a = document.activeElement;
     return !!a && (a.id === "scPrefix"
@@ -1233,8 +1252,12 @@
       : '<div class="modehint">No scenes yet. Press ＋ Scene, or ask the '
         + 'assistant to “create a screenplay”.</div>';
     scPickPaint(list);
-    if (el("scPrefix"))
+    // 2.548.0: an edit not saved yet is never painted over (the next poll used to put the stored text back the
+    // moment the box lost focus - the @tags / references typed into it were gone)
+    if (el("scPrefix") && !scPrefixDirty()) {
       el("scPrefix").value = ((scState.plan || {}).prompt_prefix || []).join("\n");
+      scPrefixKept = el("scPrefix").value;
+    }
     // — a restart, a project switch or another tab's change all paint true
     // 2.223.16: the style pick mirrors the persisted board state too
     /* 2.323.0: a board still on a looping chain ("" / MM3_Characters /
@@ -2643,11 +2666,16 @@
         }
       });
     });
-    el("scPrefixSave").addEventListener("click", function () {
-      scPost("/api/scenes/prefix", { text: el("scPrefix").value })
-        .then(function (d) {
-          if (d && d.ok) el("scNotes").textContent = "shared prompt saved";
-        });
+    el("scPrefixSave").addEventListener("click", function () { scPrefixKeep(true); });
+    /* 2.548.0 (Tim: "... and the references in storyboard general prompt"): the shared prompt is KEPT as it is typed
+       (1.5 s after the last key, when the box is left, and when the app closes) - 💾 still saves at once */
+    el("scPrefix").addEventListener("input", function () {
+      clearTimeout(scPrefixT); scPrefixT = setTimeout(function () { scPrefixKeep(false); }, 1500);
+    });
+    el("scPrefix").addEventListener("change", function () { scPrefixKeep(false); });
+    window.addEventListener("beforeunload", function () {
+      if (!scPrefixDirty() || !navigator.sendBeacon) return;
+      try { navigator.sendBeacon("/api/scenes/prefix", new Blob([JSON.stringify({ text: el("scPrefix").value })], { type: "application/json" })); } catch (e) { /* closing */ }
     });
     el("scPrefixGen").addEventListener("click", function () {
       fetch("/api/screenplay/prefix").then(function (r) { return r.json(); })
