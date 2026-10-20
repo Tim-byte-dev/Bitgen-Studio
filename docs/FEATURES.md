@@ -621,6 +621,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Fill and Edit from the Krita plugin's own code** — Generate at full strength, a small region rendered bigger, the mask sized by the selection, a blend past the edge with a colour match, Edit in a selection changes only the selection. *Where:* the image editor with a selection. *Since:* 2.552.0
 - **Fill with the edit model** — Generate / Remove / New background in a selection through the edit model (the selection painted green + Krita's instruction), so the new part belongs in the scene; ▾ Edit keeps to the selection, or to the layer's own pixels. *Where:* the image editor's ✨ AI panel (👁), the prompt docker. *Since:* 2.553.0
 - **Generate fits the selection** — a style that cannot see around a selection makes its picture at the selection's own box, so what it draws is the selection's size. *Where:* the image editor's ✨ AI panel (👁 off), the prompt docker. *Since:* 2.554.0
+- **The Krita AI plugin's fill per model family** — SDXL / Pony with the Fooocus inpaint patch, Illustrious / SD 1.5 / FLUX.1 with inpainting ControlNets, Remove with MAT / LaMa first, Krita's context bounds and its Add content / Fill modes. *Where:* the image editor's ✨ AI panel (fill row), the prompt docker; setup lists the pack and models. *Since:* 2.555.0
 
 ### Selections
 

@@ -40,7 +40,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
         window.__rq = { cw: im.width, ch: im.height, w: req.width, h: req.height, fill_edit: req.fill_edit || "" };
         const o = document.createElement("canvas"); o.width = im.width; o.height = im.height; const g = o.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, o.width, o.height);
         g.fillStyle = "#ff0000"; g.beginPath(); g.ellipse(o.width / 2, o.height / 2, o.width * 0.4, o.height * 0.4, 0, 0, 7); g.fill(); window.__ans = o.toDataURL("image/png");
-        return { jobs: [{ id: "stub", seed: 1 }], soft: true }; };
+        return { jobs: [{ id: "stub", seed: 1 }], soft: false }; };   // 2.555.0: a whole-crop answer (the stub's white surroundings are not the picture - a soft one would be colour-matched)
       E.api.awaitResult = async () => window.__ans;
       document.getElementById("kxSee").checked = fillEdit; document.getElementById("kxSee").onchange();
       document.getElementById("ieEditStyle").value = ids.qwen;
@@ -53,7 +53,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     }, { fillEdit, ids });
     const a = await run(false);
     check("👁 off with Krea 2 (it cannot see around the selection): its picture is made at the SELECTION'S box (+ the soft edge's room), not a 3x bigger region - what it draws is the selection's size",
-      a.rq && a.rq.fill_edit === "" && a.corner && a.corner[0] > 200 && a.corner[1] > 200 && a.corner[3] === 255, a);
+      a.rq && a.rq.fill_edit === "" && a.corner && a.corner[0] > 200 && a.corner[1] > 200 && a.corner[3] > 0, a);
     check("...rendered at the model's size (>= 0.75 MP) and scaled back; the drawn disc sits in the selection (red in the middle, white in its corner - the whole picture fits it)",
       a.rq && a.rq.w * a.rq.h >= 0.7 * 1048576 && a.mid && a.mid[0] > 200 && a.mid[1] < 60, a);
     const b2 = await run(true);

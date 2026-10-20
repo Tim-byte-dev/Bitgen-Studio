@@ -330,6 +330,74 @@
     }
     return true;
   };
+  /** 2.555.0 (the Krita AI plugin: document.py create_mask_from_selection + resolution.py compute_bounds + image.py
+   *  Bounds.pad / clamp): the MASK bounds (the selection padded by its feather + 4 + 6 % of its diagonal, >= 256, a
+   *  multiple of 8) and the CONTEXT the model sees at 100 % (the mask bounds padded by max(the picture's long side / 16,
+   *  the mask's mean side / 2), >= 512, squarish) - both inside the picture. -> {mask, context} */
+  P.kritaBounds = function (bb, W, H, strength) {
+    const s = Math.max(0.05, Math.min(1, strength == null ? 1 : +strength || 1)), diag = Math.hypot(bb.w, bb.h);
+    const feather = Math.max(Math.round(0.1 * s * diag), Math.round(32 * s));
+    const mult8 = (v) => Math.ceil(v / 8) * 8;
+    const pad = (b, p, min, square) => {
+      let px = p, py = p;
+      if (square && b.w > b.h) px = Math.max(px >> 1, px - ((b.w - b.h) >> 1));
+      else if (square && b.h > b.w) py = Math.max(py >> 1, py - ((b.h - b.w) >> 1));
+      const one = (x, size, q) => { const n = mult8(Math.max(size + 2 * q, min)); return [x - ((n - size) >> 1), n]; };
+      const [x, w] = one(b.x, b.w, px), [y, h] = one(b.y, b.h, py);
+      return { x, y, w, h };
+    };
+    const clamp = (b) => {
+      const one = (o, size, max) => (size >= max ? [0, max] : [Math.max(o, 0) - Math.max(Math.max(o, 0) + size - max, 0), size]);
+      const [x, w] = one(b.x, b.w, W), [y, h] = one(b.y, b.h, H);
+      return { x, y, w, h };
+    };
+    const mask = clamp(pad(bb, feather + 4 + Math.floor(0.06 * diag), 256, false));
+    const ctxPad = Math.max(Math.floor(Math.max(W, H) / 16), Math.floor(((mask.w + mask.h) >> 1) / 2));
+    return { mask, context: clamp(pad(mask, ctxPad, 512, true)) };
+  };
+  /** a 0..1 copy of a mask blurred (three box passes ≈ a Gaussian of sigma ≈ r) */
+  P.blurF = function (src, w, h, r) {
+    let a = Float32Array.from(src), b = new Float32Array(w * h);
+    const R = Math.max(0, Math.round(r));
+    if (!R) return a;
+    const box = (s, d, len, lines, idx) => {
+      for (let l = 0; l < lines; l++) {
+        let acc = 0;
+        for (let k = -R; k <= R; k++) acc += s[idx(l, Math.min(len - 1, Math.max(0, k)))];
+        for (let k = 0; k < len; k++) {
+          d[idx(l, k)] = acc / (2 * R + 1);
+          acc += s[idx(l, Math.min(len - 1, k + R + 1))] - s[idx(l, Math.max(0, k - R))];
+        }
+      }
+    };
+    for (let i = 0; i < 3; i++) { box(a, b, w, h, (l, k) => l * w + k); box(b, a, h, w, (l, k) => k * w + l); }
+    return a;
+  };
+  /** Krita's pre-fill alpha (comfyui-inpaint-nodes MaskedFill / MaskedBlur): only the FULLY selected pixels, eroded by
+   *  the falloff and softened by it -> Float32 0..1 */
+  P.fillAlpha = function (mask, w, h, falloff) {
+    const bin = new Uint8Array(w * h); for (let i = 0; i < bin.length; i++) bin[i] = mask[i] >= 252 ? 255 : 0;
+    const f = Math.max(0, Math.round(falloff || 0));
+    if (!f) { const o = new Float32Array(w * h); for (let i = 0; i < o.length; i++) o[i] = bin[i] ? 1 : 0; return o; }
+    const er = P.morph(bin, w, h, -f), b = P.blurF(er, w, h, Math.max(1, f / 3));
+    for (let i = 0; i < b.length; i++) b[i] = bin[i] ? b[i] / 255 : 0;
+    return b;
+  };
+  /** Krita "Add content" (FillMode.neutral, falloff 9): the selection grey before the model starts. rgba in place */
+  P.maskedFill = function (rgba, mask, w, h, falloff, grey) {
+    const a = P.fillAlpha(mask, w, h, falloff), g = grey == null ? 127 : grey;
+    for (let i = 0; i < a.length; i++) if (a[i] > 0) for (let c = 0; c < 3; c++) rgba[i * 4 + c] = Math.round(rgba[i * 4 + c] + (g - rgba[i * 4 + c]) * a[i]);
+    return rgba;
+  };
+  /** Krita "Fill" (FillMode.blur: MaskedBlur 65, falloff 9): the selection replaced by a heavy blur of what is there. rgba
+   *  in place; blur = the Gaussian kernel's size in these pixels */
+  P.maskedBlur = function (rgba, mask, w, h, blur, falloff) {
+    const a = P.fillAlpha(mask, w, h, falloff);
+    const sigma = 0.3 * ((Math.max(3, blur) - 1) * 0.5 - 1) + 0.8, r = Math.max(1, Math.round(sigma));
+    const ch = [0, 1, 2].map((c) => { const p = new Float32Array(w * h); for (let i = 0; i < p.length; i++) p[i] = rgba[i * 4 + c]; return P.blurF(p, w, h, r); });
+    for (let i = 0; i < a.length; i++) if (a[i] > 0) for (let c = 0; c < 3; c++) rgba[i * 4 + c] = Math.round(rgba[i * 4 + c] + (ch[c][i] - rgba[i * 4 + c]) * a[i]);
+    return rgba;
+  };
   /** 2.552.0: the size to render a crop at with a lower bound too - a small crop is rendered bigger (Krita AI renders a
    *  selection at the model's resolution - resolution.py CheckpointResolution: 512² .. 1 MP for FLUX-type inpaint,
    *  800² for SDXL), at most 4x and never past maxPixels. -> {w, h, scale} */
@@ -718,6 +786,8 @@
                 <div class="kxrow" id="kxRowStyle"><span>style</span><select id="ieStyle" title="The image style Regenerate / Refine / Remove render with (its inpaint graph, model and LoRAs — Settings → Image)"></select></div>
                 <div class="kxrow" id="kxRowSee" title="2.553.0: Generate / Remove / New background in a selection with the EDIT model below - it sees the picture around the selection, so the new part belongs in the scene (the Krita AI plugin fills this way with FLUX.2 Klein / Qwen). Off = the style's own model draws into the selection. A real inpaint style (FLUX Fill inpaint, SDXL inpaint) is always used as it is.">
                   <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="kxSee"> 👁 fill with the edit model (sees the picture)</label></div>
+                <div class="kxrow" id="kxRowFill" title="2.555.0 - the Krita AI plugin's fill modes for Generate in a selection. Add content: something NEW goes there (the selection starts grey; with the edit model: &quot;Add the object to the scene.&quot;). Fill: the picture continues there (the selection starts as a blur of what is there; with the edit model it is painted green). A selection along a whole edge of the picture always expands it."><span>fill</span>
+                  <select id="kxFillMode"><option value="add">Add content</option><option value="fill">Fill (continue the picture)</option></select></div>
                 <div class="kxrow" id="kxRowEdit"><span>model</span><select id="ieEditStyle" title="The edit model: Qwen Image Edit 2511, FLUX.1 Kontext, FLUX.2 Klein edit"></select></div>
                 <div class="kxrow" id="kxRowPicks" style="display:none" title="Ctrl-click layers in the Layers panel to pick them, in order: 1 = the scene, 2 and 3 = what to bring in">
                   <span id="kxPicksTxt" style="flex:1;color:var(--pc-dim)">Ctrl-click layers to pick them (1 = the scene)</span>
@@ -2208,6 +2278,9 @@
     $("kxRes").onchange = () => { S.res = +$("kxRes").value || 1; store.set("res", S.res); };
     // 2.553.0: fill with the edit model (on unless turned off)
     S.fillEdit = store.get("fillEdit", true) !== false;
+    // 2.555.0: Krita's fill mode for Generate in a selection (Tim: "the add content type works the best")
+    S.fillMode = store.get("fillMode", "add") === "fill" ? "fill" : "add";
+    if ($("kxFillMode")) { $("kxFillMode").value = S.fillMode; $("kxFillMode").onchange = () => { S.fillMode = $("kxFillMode").value === "fill" ? "fill" : "add"; store.set("fillMode", S.fillMode); }; }
     if ($("kxSee")) { $("kxSee").checked = S.fillEdit; $("kxSee").onchange = () => { S.fillEdit = !!$("kxSee").checked; store.set("fillEdit", S.fillEdit); setAiMode(S.aiMode); }; }
     $("kxCount").onchange = () => { S.count = +$("kxCount").value || 1; store.set("count", S.count); };
     $("kxStrength").oninput = () => { S.strength = +$("kxStrength").value; $("kxStrengthV").textContent = S.strength + "%"; store.set("strength", S.strength); };
@@ -2218,6 +2291,7 @@
       $("kxRowStyle").style.display = ed ? "none" : "";
       $("kxRowEdit").style.display = ed || (S.fillEdit && (m === "generate" || m === "remove" || m === "background")) ? "" : "none";   // 2.553.0: the fill's edit model
       if ($("kxRowSee")) $("kxRowSee").style.display = m === "generate" || m === "remove" || m === "background" ? "" : "none";
+      if ($("kxRowFill")) $("kxRowFill").style.display = m === "generate" ? "" : "none";   // 2.555.0
       if ($("kxRowPicks")) $("kxRowPicks").style.display = m === "compose" ? "" : "none";
       $("kxRowStrength").style.display = m === "refine" ? "" : "none";
       if ($("kxRowRef")) { $("kxRowRef").style.display = m === "edit" ? "" : "none"; if (m === "edit") paintRefs(); }   // 2.539.0
@@ -2296,15 +2370,21 @@
       const fillInfo = (eng.inpaint || []).find((x) => x.id === fillId);
       const editId = (eng.edit || []).some((x) => x.id === fillId) ? fillId : (opt.editStyle || $("ieEditStyle").value || "");
       const viaEdit = !whole && !clip && S.fillEdit !== false && (mode === "generate" || mode === "remove" || mode === "background")
-        && !!editId && (eng.edit || []).some((x) => x.id === editId) && (!fillInfo || fillInfo.latent !== false);
+        && !!editId && (eng.edit || []).some((x) => x.id === editId) && (!fillInfo || (fillInfo.latent !== false && !fillInfo.helper));   // 2.555.0: a style with Krita's helper fills itself
       // 2.554.0 (Tim: "i think it doesn't know to resize it to the size of the selection - it works if i use qwen2.1 and say
       // transparent background, but the size is not right for the selection"): a style that cannot see around the
       // selection (Krea 2 … with 👁 off or no edit model) draws a whole picture of its own - so it gets the SELECTION'S
       // box (+ room for the soft edge) as its whole picture: what it draws is the selection's size and shape
       const fitSel = !whole && !viaEdit && !clip && mode === "generate" && !!fillInfo && fillInfo.latent === true;
+      // 2.555.0: the Krita AI plugin's bounds - at 100 % the context (the mask bounds + max(long side / 16, mean side / 2),
+      // >= 512, squarish); Refine (below 100 %) and a style that cannot see around the selection: the mask bounds only
+      const KB = whole ? null : P.kritaBounds(bb, S.w, S.h, mode === "refine" ? S.strength / 100 : 1);
       const box = whole ? { x: 0, y: 0, w: S.w, h: S.h }
-        : fitSel ? P.contextRect(bb, S.w, S.h, P.maskParams(bb, 1, S.feather).reach, 16)
-        : P.contextRect(bb, S.w, S.h, mode === "generate" || mode === "remove" || mode === "refine" ? P.autoMargin(bb, S.context) : S.context, 16);   // 2.551.0: more context
+        : fitSel || mode === "refine" ? KB.mask
+        : mode === "generate" || mode === "remove" || mode === "background" ? KB.context
+        : P.contextRect(bb, S.w, S.h, S.context, 16);
+      // Krita's fill kind (workflow.py detect_inpaint_mode: a selection across the whole picture = expand)
+      const fillKind = mode !== "generate" || whole ? mode : (bb.w >= S.w || bb.h >= S.h) ? "expand" : S.fillMode === "fill" ? "fill" : "add";
       const cropMask = P.cropMask(sel, S.w, box);
       const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
@@ -2314,23 +2394,28 @@
       const origData = whole ? null : new Uint8ClampedArray(fid.data);     // 2.552.0: before any pre-fill (the colour match)
       let hasHole = false;
       for (let i = 0; i < cropMask.length; i++) if (cropMask[i] && fid.data[i * 4 + 3] < 250) { hasHole = true; break; }
+      const kind = hasHole && mode === "generate" ? "expand" : fillKind;
+      // what the model renders at (<= the MP budget); 2.552.0: a small crop is rendered bigger, as Krita does (a 512 px
+      // region of a model trained at 1 MP comes out muddled) - an Edit graph scales its picture itself
+      const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" || viaEdit ? 0 : 0.75 * 1048576);
+      const px = (v) => Math.max(1, Math.round(v / fit.scale));            // Krita's sizes are in the render's pixels
       if (viaEdit) {
-        // Krita (FillMode.green): the selection painted green for a fill - the model is told to fill the green; Remove /
-        // New background keep the pixels (the instruction says what to do); a hole is always green
+        // Krita (FillMode.green): the selection painted green for a fill / expand - the model is told to fill the green;
+        // Add content / Remove / New background keep the pixels (the instruction says what to do); a hole is always green
         for (let i = 0; i < cropMask.length; i++) {
           const hole = cropMask[i] && fid.data[i * 4 + 3] < 250;
-          if (hole || (mode === "generate" && cropMask[i] >= 252)) { fid.data[i * 4] = 0; fid.data[i * 4 + 1] = 255; fid.data[i * 4 + 2] = 0; fid.data[i * 4 + 3] = 255; }
+          if (hole || ((kind === "fill" || kind === "expand") && cropMask[i] >= 252)) { fid.data[i * 4] = 0; fid.data[i * 4 + 1] = 255; fid.data[i * 4 + 2] = 0; fid.data[i * 4 + 3] = 255; }
         }
         fg.putImageData(fid, 0, 0);
       }
       else if (clip) { P.fillHole(fid.data, new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }   // the layer's transparent surroundings: its own colours, not black
+      // 2.555.0: Krita's pre-fill per kind (workflow.py fill_masked): Add content = neutral grey (falloff 9), Fill = a blur
+      // of what is there (65, falloff 9), Expand = the border continued + blurred; Remove = the border continued (an
+      // inpaint model replaces it on the server when ComfyUI has one)
+      else if (mode === "generate" && !whole && kind === "add") { P.maskedFill(fid.data, cropMask, box.w, box.h, px(9)); fg.putImageData(fid, 0, 0); }
+      else if (mode === "generate" && !whole && kind === "fill") { P.maskedBlur(fid.data, cropMask, box.w, box.h, px(65), px(9)); fg.putImageData(fid, 0, 0); }
+      else if (mode === "generate" && !whole && kind === "expand") { P.fillHole(fid.data, cropMask, box.w, box.h); P.maskedBlur(fid.data, cropMask, box.w, box.h, px(65), 0); fg.putImageData(fid, 0, 0); }
       else if (mode === "remove" || hasHole) { P.fillHole(fid.data, mode === "remove" ? cropMask : new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }
-      // 2.551.0 (as the Krita AI plugin: "pre-fill the masked area ... avoid seams"): Generate in a selection starts from the
-      // selection filled with the colours around it (border fill), not the old pixels or a hole
-      else if (mode === "generate" && !whole) { P.fillHole(fid.data, cropMask, box.w, box.h); fg.putImageData(fid, 0, 0); }
-      // what the model renders at (<= the MP budget); 2.552.0: a small crop is rendered bigger, as Krita does (a 512 px
-      // region of a model trained at 1 MP comes out muddled) - an Edit graph scales its picture itself
-      const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" || viaEdit ? 0 : 0.75 * 1048576);
       // 2.552.0: Krita's mask sizes (grow / feather by the selection's size), sent in the render's pixels
       const mp = whole ? null : P.maskParams(bb, mode === "refine" ? S.strength / 100 : 1, S.feather);
       const crop = newCanvas(fit.w, fit.h), cg = ctx(crop); cg.imageSmoothingQuality = "high"; cg.drawImage(full, 0, 0, fit.w, fit.h);
@@ -2348,7 +2433,7 @@
                     crop: await blobOf(crop), mask: await blobOf(mask), rgba: await blobOf(rgba) };
       if (mp) { req.mask_grow = Math.round(mp.grow * fit.scale); req.mask_feather = Math.round(mp.feather * fit.scale); }
       if (whole) req.whole = "1";
-      if (viaEdit) { req.fill_edit = "1"; req.edit_style_id = editId; req.fill_kind = mode; }   // 2.553.0
+      if (viaEdit) { req.fill_edit = "1"; req.edit_style_id = editId; req.fill_kind = mode === "generate" ? (kind === "add" ? "add" : "generate") : mode; }   // 2.553.0; 2.555.0 add
       // 2.539.0: Edit + a picture from the References docker (Picture 2)
       if (mode === "edit" && $("kxRef") && $("kxRef").value !== "") {
         const rr = (api.refList ? api.refList() : [])[+$("kxRef").value];
@@ -2379,6 +2464,7 @@
         if (!r || !r.jobs) return;
         ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;      // 2.552.0: the graph kept what is around - blend past the edge
         if (r.edit_fill) say(`${mode}: ${r.style_name || "the edit model"} fills the selection - it sees the picture around it…`);
+        else if (r.helpers && r.helpers.length) say(`${mode} (${kind}): ${r.style_name || "the style"} with the Krita AI way - ${r.helpers.join(" + ")}…`);   // 2.555.0
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
         if (!opt.direct) renderResults();
         let added = 0;

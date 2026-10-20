@@ -12136,6 +12136,14 @@ node scripts/test-fill554.js > /tmp/f554.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui554-ui.js > /tmp/ui554.log 2>&1 \
   && ok "2.554.0 browser test: 👁 off with Krea 2 = the picture made at the selection's box (the drawn disc fits it), rendered >= 0.75 MP; 👁 on = the edit model's wider region - or SKIP without playwright" \
   || { bad "2.554.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui554.log | head -14; }
+
+# ---- 2.555.0 (the Krita AI plugin's fill per model family)
+node scripts/test-krita555.js > /tmp/k555.log 2>&1 \
+  && ok "2.555.0 units (archOf, capsFrom, helpersFor, the Fooocus / ControlNet / AliMama / MAT graphs, plan + engines with caps, caps() per class, kritaBounds, Add content / Fill pre-fills, setup lists)" \
+  || { bad "2.555.0 units"; grep -a "^FAIL" -A2 /tmp/k555.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui555-ui.js > /tmp/ui555.log 2>&1 \
+  && ok "2.555.0 browser test: the fill row (Add content first); Pony + Fooocus fills itself with Krita's context, grey for Add content, a blur for Fill; Krea 2 + 👁: add keeps the pixels, fill paints green; engines say what is missing - or SKIP without playwright" \
+  || { bad "2.555.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui555.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

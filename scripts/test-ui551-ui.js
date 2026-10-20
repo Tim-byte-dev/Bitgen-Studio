@@ -61,7 +61,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       return window.__rq[0];
     });
     check("Generate in an 80 px selection sends a region about 512 px across (it was the selection + 64 px)", got && got.cw >= 400 && got.ch >= 400, got);
-    check("...the selection PRE-FILLED with the colours around it (the red square under it is gone - blue-ish), not the old pixels", got && got.mid[2] > got.mid[0], got && got.mid);
+    check("...the selection PRE-FILLED, not the old pixels (2.555.0: Krita's Add content - neutral grey)", got && Math.abs(got.mid[0] - 127) <= 6 && Math.abs(got.mid[2] - 127) <= 6, got && got.mid);
     // the server: a style that was not trained to inpaint = its own graph, a soft mask, started at 0.9
     const srv = await ev(async () => {
       const j = await (await fetch("/api/styles?kind=image")).json(); const st = (j.styles || []).find((s) => /^Krea 2 Turbo$/.test(s.name)); if (!st) return null;

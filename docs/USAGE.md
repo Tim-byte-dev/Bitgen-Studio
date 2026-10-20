@@ -2343,6 +2343,23 @@ style (FLUX Fill inpaint, the SDXL inpaint export) is always used as it is.
   box** as its whole picture (plus a little room for the soft edge), rendered at the model's size and scaled back - so
   what it draws is the size and place of the selection, not a bigger picture cut down.
 
+**2.555.0 - the Krita AI plugin's fill, per model family.** Each family gets the helper the Krita plugin uses - a part
+that was *trained* to fill - when ComfyUI has it:
+- **SDXL / Pony**: the Fooocus inpaint patch (the style's OWN checkpoint fills - Pony stays Pony).
+- **Illustrious / NoobAI**: the NoobAI inpainting ControlNet (else the Fooocus patch).
+- **SD 1.5**: the SD 1.5 inpaint ControlNet. **FLUX.1**: the Alimama FLUX inpainting ControlNet.
+- **Remove** (any style): MAT / LaMa takes the object out first.
+- **FLUX.2 / FLUX 3 Klein, Qwen, Krea 2**: no helper - with 👁 on they fill through the edit model (as before).
+Also as in Krita: the region the model sees (the selection padded by its feather, then by max(the picture's long side / 16,
+half its size), at least 512 px), and the **fill** row for Generate - **Add content** (the default: something new goes
+there; the selection starts grey, with the edit model "Add the object to the scene.") or **Fill** (the picture continues
+there; the selection starts as a blur of what was there). A selection across a whole side of the picture expands it.
+**What to install** (the setup wizard lists both): the node pack
+**comfyui-inpaint-nodes** (in the setup's node list) and, from the setup's model list group **Selection fill - the
+Krita AI way**: the Fooocus inpaint head + patch (models/inpaint), MAT (models/inpaint), and the inpainting ControlNets you
+need (models/controlnet). If the Krita plugin already downloaded them, add Krita's ComfyUI models folder in Settings →
+ComfyUI → Folders instead of downloading them again.
+
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
   mode picked while it was open is kept). Opening / closing the editor is what switches it; the project keeps the mode

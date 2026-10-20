@@ -31,6 +31,10 @@
 //                                  2.553.0: + fill_edit ("1") + edit_style_id + fill_kind (generate | remove | background):
 //                                  Generate / Remove / New background in a selection run through that EDIT model with
 //                                  Krita's instruction (aiEdit.fillEditPlan) under the noise mask -> edit_fill, style_name
+//                                  2.555.0: Generate / Remove / Refine get the Krita AI plugin's helper for the style's family
+//                                  when ComfyUI has it (lib/kritaInpaint.js: Fooocus for SDXL / Pony, inpainting ControlNets
+//                                  for Illustrious / SD 1.5 / FLUX.1, MAT / LaMa before Remove) -> helpers; the engines list
+//                                  says per style (helper) and what is missing (krita.missing)
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -49,6 +53,7 @@ const imageSeed = require("../lib/imageSeed");
 const aiEdit = require("../lib/aiEdit");
 const refWords = require("../lib/refWords");      // 2.546.0: the model's word for its pictures; a scene + references
 const comfyModels = require("../lib/comfyModels");
+const kritaInpaint = require("../lib/kritaInpaint");   // 2.555.0: the Krita AI plugin's per-family fill helpers
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 96 * 1024 * 1024, files: 8 } });
 const CTL_FIELDS = Array.from({ length: aiEdit.MAX_CONTROLS }, (_, i) => ({ name: `ctl${i}`, maxCount: 1 }));
@@ -70,10 +75,12 @@ function inputDir() {
 }
 
 function mount(app) {
-  app.get("/api/aiedit/engines", (_req, res) => {
+  app.get("/api/aiedit/engines", async (_req, res) => {
     try {
-      res.json(Object.assign(aiEdit.engines(styles.read(core.STYLES_DIR, "image"), core.BASE),
-        { control_types: aiEdit.CONTROL_TYPES.map((t) => ({ id: t.id, label: t.label, lines: t.lines })), max_controls: aiEdit.MAX_CONTROLS }));
+      const caps = await kritaInpaint.caps();            // 2.555.0: what ComfyUI has for the Krita way
+      res.json(Object.assign(aiEdit.engines(styles.read(core.STYLES_DIR, "image"), core.BASE, caps),
+        { control_types: aiEdit.CONTROL_TYPES.map((t) => ({ id: t.id, label: t.label, lines: t.lines })), max_controls: aiEdit.MAX_CONTROLS,
+          krita: { online: caps.online, missing: kritaInpaint.missing(caps) } }));
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
@@ -140,7 +147,7 @@ function mount(app) {
     res.json({ jobs, workflow: path.basename(plan.workflow), note: plan.note, prompt, mode: "compose" });
   });
 
-  app.post("/api/aiedit", upload.fields([{ name: "crop", maxCount: 1 }, { name: "mask", maxCount: 1 }, { name: "rgba", maxCount: 1 }, { name: "ref0", maxCount: 1 }, ...CTL_FIELDS]), (req, res) => {
+  app.post("/api/aiedit", upload.fields([{ name: "crop", maxCount: 1 }, { name: "mask", maxCount: 1 }, { name: "rgba", maxCount: 1 }, { name: "ref0", maxCount: 1 }, ...CTL_FIELDS]), async (req, res) => {
     const b = req.body || {};
     const files = req.files || {};
     const crop = (files.crop || [])[0], mask = (files.mask || [])[0], rgba = (files.rgba || [])[0];
@@ -157,8 +164,10 @@ function mount(app) {
       const es = styles.byId(core.STYLES_DIR, String(b.edit_style_id || ""));
       if (es) { try { plan = aiEdit.fillEditPlan(es, b, core.BASE); style = es; } catch (e) { plan = null; } }
     }
+    let caps = null;
+    if (!plan && b.mode !== "edit") { try { caps = await kritaInpaint.caps(); } catch (e) { caps = null; } }
     try {
-      if (!plan) plan = aiEdit.plan(style, b, core.BASE);
+      if (!plan) plan = aiEdit.plan(style, b, core.BASE, caps);
       if (plan.mode !== "edit" && !plan.editFill && b.controls) ctl = aiEdit.controls(b.controls, controlNetNames());
     } catch (e) { return res.status(400).json({ error: e.message }); }
     const w = Math.max(64, parseInt(b.width, 10) || 0), h = Math.max(64, parseInt(b.height, 10) || 0);
@@ -223,7 +232,7 @@ function mount(app) {
     }
     // soft: the graph kept everything outside the (grown, feathered) selection - the editor blends past the edge (Krita)
     res.json({ jobs, workflow: plan.workflow, note: plan.note, input: plan.input, mode: plan.mode, soft: !!(editMask || (plan.graph && plan.mode !== "edit")),
-               edit_fill: plan.editFill || null, style_name: style.name,
+               edit_fill: plan.editFill || null, style_name: style.name, helpers: plan.helpers || [],
                denoise: plan.denoise, crop: names.crop, controls: controls.map((c) => ({ type: c.type, model: c.model, strength: c.strength, start: c.start, end: c.end })),
                ignored_controls: plan.mode === "edit" && !!b.controls });
   });

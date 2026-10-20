@@ -1,5 +1,5 @@
 {
-  "_comment": "2.331.0: every model file bitGen Studio's shipped workflows and features load, with its Hugging Face source. dest: comfy/<folder> = ComfyUI's models/<folder>; app/<folder> = the app's own folder; hf-cache = a snapshot into the Hugging Face cache (read on first use). as = the name the workflows ask for when the repo names it differently. size = bytes (the wizard replaces it with the live size). The wizard asks each repo LIVE whether it is gated - no token = only the open ones. The workflows' own file names were checked against the shipped comfy_workflows (scripts/test-setup.js keeps them in step). 2.332.0 adds the image editor's edit engines (Kontext + FLUX Fill inpaint share clip_l / t5xxl_fp16 / ae; Qwen-Image-Edit 2511 int8 + its Lightning LoRA), the files ComfyUI's own templates link. 2.402.0 adds LTX 2.3 (group video_ltx23: the fp8 checkpoints, distilled LoRA, Gemma 3 encoder, x2 upscaler, fal's 3DREAL IC-LoRAs - 3DREAL sizes approximate, the wizard reads them live). 2.338.0 adds LTX 2.5 (group video_ltx; not recommended by default - big, and Lightricks' repo is gated). 2.337.0 adds Qwen Image 2.1 (the scene cards' ✎ First frame). 2.334.0 adds akatz-ai's H3 Character Swap LoRA (the swap stacks it on its LoRA loader when ComfyUI has it). Checked against the repos' file trees, September 2026. 2.502.0 adds FLUX 3 Image Klein (black-forest-labs/flux-3-image-klein-comfy, gated; its VAE is FLUX.2's flux2-vae). 2.516.0 adds Krea 2 (Comfy-Org/Krea-2: Turbo + Raw fp8 scaled, the Qwen3-VL 4B fp8 encoder; vantagewithai's Turbo / Raw GGUF Q5_K_M; the VAE is the Qwen-Image VAE already listed). 2.517.0 adds Anima (circlestone-labs/Anima: Aesthetic v1.1 + Base v1.0, the Qwen3 0.6B encoder; the Qwen-Image VAE already listed).",
+  "_comment": "2.555.0: + group inpaint (the Krita AI plugin's fill models, its presets/models.json). 2.331.0: every model file bitGen Studio's shipped workflows and features load, with its Hugging Face source. dest: comfy/<folder> = ComfyUI's models/<folder>; app/<folder> = the app's own folder; hf-cache = a snapshot into the Hugging Face cache (read on first use). as = the name the workflows ask for when the repo names it differently. size = bytes (the wizard replaces it with the live size). The wizard asks each repo LIVE whether it is gated - no token = only the open ones. The workflows' own file names were checked against the shipped comfy_workflows (scripts/test-setup.js keeps them in step). 2.332.0 adds the image editor's edit engines (Kontext + FLUX Fill inpaint share clip_l / t5xxl_fp16 / ae; Qwen-Image-Edit 2511 int8 + its Lightning LoRA), the files ComfyUI's own templates link. 2.402.0 adds LTX 2.3 (group video_ltx23: the fp8 checkpoints, distilled LoRA, Gemma 3 encoder, x2 upscaler, fal's 3DREAL IC-LoRAs - 3DREAL sizes approximate, the wizard reads them live). 2.338.0 adds LTX 2.5 (group video_ltx; not recommended by default - big, and Lightricks' repo is gated). 2.337.0 adds Qwen Image 2.1 (the scene cards' ✎ First frame). 2.334.0 adds akatz-ai's H3 Character Swap LoRA (the swap stacks it on its LoRA loader when ComfyUI has it). Checked against the repos' file trees, September 2026. 2.502.0 adds FLUX 3 Image Klein (black-forest-labs/flux-3-image-klein-comfy, gated; its VAE is FLUX.2's flux2-vae). 2.516.0 adds Krea 2 (Comfy-Org/Krea-2: Turbo + Raw fp8 scaled, the Qwen3-VL 4B fp8 encoder; vantagewithai's Turbo / Raw GGUF Q5_K_M; the VAE is the Qwen-Image VAE already listed). 2.517.0 adds Anima (circlestone-labs/Anima: Aesthetic v1.1 + Base v1.0, the Qwen3 0.6B encoder; the Qwen-Image VAE already listed).",
   "groups": [
     {
       "id": "video",
@@ -28,6 +28,10 @@
     {
       "id": "edit",
       "label": "Image editing - the image editor's ✨ AI (Regenerate, Qwen Edit, Kontext)"
+    },
+    {
+      "id": "inpaint",
+      "label": "Selection fill - the Krita AI way (Generate / Remove in a selection with SDXL, Pony, Illustrious, SD 1.5, FLUX.1)"
     },
     {
       "id": "face",
@@ -932,6 +936,78 @@
       "dest": "comfy/clip_vision",
       "size": 1130000000,
       "for": "TRELLIS.2"
+    },
+    {
+      "id": "fooocus_head",
+      "group": "inpaint",
+      "label": "Fooocus inpaint head",
+      "repo": "lllyasviel/fooocus_inpaint",
+      "file": "fooocus_inpaint_head.pth",
+      "dest": "comfy/inpaint",
+      "size": 52602,
+      "for": "SDXL / Pony fill (with the patch below; needs comfyui-inpaint-nodes)"
+    },
+    {
+      "id": "fooocus_patch",
+      "group": "inpaint",
+      "label": "Fooocus inpaint patch v2.6",
+      "repo": "lllyasviel/fooocus_inpaint",
+      "file": "inpaint_v26.fooocus.patch",
+      "dest": "comfy/inpaint",
+      "size": 1323362033,
+      "for": "SDXL / Pony fill"
+    },
+    {
+      "id": "mat_places",
+      "group": "inpaint",
+      "label": "MAT Places512 (fp16) - object removal",
+      "repo": "Acly/MAT",
+      "file": "MAT_Places512_G_fp16.safetensors",
+      "dest": "comfy/inpaint",
+      "size": 125000000,
+      "for": "Remove in a selection (any style)"
+    },
+    {
+      "id": "cn_noobai_inpaint",
+      "group": "inpaint",
+      "label": "NoobAI inpainting ControlNet",
+      "repo": "Acly/NoobAI-Inpainting",
+      "file": "noobaiInpainting_v10.fp16.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 2502139104,
+      "for": "Illustrious / NoobAI fill"
+    },
+    {
+      "id": "cn_flux_inpaint",
+      "group": "inpaint",
+      "label": "FLUX.1-dev ControlNet Inpainting Beta (Alimama)",
+      "repo": "alimama-creative/FLUX.1-dev-Controlnet-Inpainting-Beta",
+      "file": "diffusion_pytorch_model.safetensors",
+      "as": "FLUX.1-dev-Controlnet-Inpainting-Beta.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 4280000000,
+      "for": "FLUX.1 fill"
+    },
+    {
+      "id": "cn_sd15_inpaint",
+      "group": "inpaint",
+      "label": "SD 1.5 inpaint ControlNet (fp16)",
+      "repo": "comfyanonymous/ControlNet-v1-1_fp16_safetensors",
+      "file": "control_v11p_sd15_inpaint_fp16.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 722601100,
+      "for": "SD 1.5 fill"
+    },
+    {
+      "id": "klein4b_outpaint",
+      "group": "inpaint",
+      "label": "FLUX.2 Klein 4B outpaint LoRA",
+      "repo": "fal/flux-2-klein-4B-outpaint-lora",
+      "file": "LyNiaZ53Tudg0J6sT8Xbx_pytorch_lora_weights_comfy_converted.safetensors",
+      "as": "flux-2-klein-4B-outpaint-lora.safetensors",
+      "dest": "comfy/loras",
+      "size": 80000000,
+      "for": "FLUX.2 Klein 4B fill (optional)"
     }
   ]
 }

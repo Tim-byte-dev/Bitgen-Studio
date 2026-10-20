@@ -1,5 +1,5 @@
 {
-  "_comment": "2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
+  "_comment": "2.555.0: + comfyui-inpaint-nodes (Acly - the Krita AI plugin's fill helpers). 2.401.2: - ComfyMath (gone from GitHub; its CM_* nodes and pysssss' MathExpression run as ComfyUI's core Math Expression, lib/mathNodes.js). 2.338.0: + GGUF, mxToolkit, ComfyMath, pysssss Custom-Scripts, Easy-Use for Tim's LTX 2.5 canvas (its ResolutionSelector is a ComfyUI core node). 2.331.0: THE custom node packs bitGen Studio's shipped workflows use (one list: the setup wizard installs them, lib/comfy.js requiredNodes() reads them, the in-app accelerator panels share the kjnodes/spectrum/upscale entries). provides = the node classes the pack adds that the workflows need (the verification step maps a missing class back to its pack). subdir = the pack lives in a folder INSIDE the repo. Repos checked against their GitHub pages / ComfyUI-Manager's registry, September 2026.",
   "packs": [
     { "id": "manager", "folder": "ComfyUI-Manager", "url": "https://github.com/Comfy-Org/ComfyUI-Manager",
       "for": "installing / updating node packs from inside ComfyUI", "provides": [] },
@@ -47,6 +47,9 @@
     { "id": "res4lyf", "folder": "RES4LYF", "url": "https://github.com/ClownsharkBatwing/RES4LYF",
       "for": "LTX Ripple: Frames Slice (the guide's first frame + the clip, cut to Frames) (2.342.0)", "provides": ["Frames Slice"] },
     { "id": "viggle", "folder": "ComfyUI-Viggle-Animate-H3", "url": "https://github.com/Saganaki22/ComfyUI-Viggle-Animate-H3",
-      "for": "the swap dialog's Viggle (H3) engine: Viggle-Animate conditioning + its text conditioning loader (2.344.0)", "provides": ["ViggleAnimateConditioning", "ViggleTextCondLoader"] }
+      "for": "the swap dialog's Viggle (H3) engine: Viggle-Animate conditioning + its text conditioning loader (2.344.0)", "provides": ["ViggleAnimateConditioning", "ViggleTextCondLoader"] },
+    { "id": "inpaint", "folder": "comfyui-inpaint-nodes", "url": "https://github.com/Acly/comfyui-inpaint-nodes",
+      "for": "filling a selection the Krita AI way (2.555.0): the Fooocus inpaint patch for SDXL / Pony, MAT / LaMa for Remove",
+      "provides": ["INPAINT_LoadFooocusInpaint", "INPAINT_ApplyFooocusInpaint", "INPAINT_VAEEncodeInpaintConditioning", "INPAINT_LoadInpaintModel", "INPAINT_InpaintWithModel"] }
   ]
 }

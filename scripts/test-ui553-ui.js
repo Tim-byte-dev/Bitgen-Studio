@@ -40,6 +40,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       E.api.aiedit = async (req) => { const im = await createImageBitmap(req.crop); const c = document.createElement("canvas"); c.width = im.width; c.height = im.height; const g = c.getContext("2d"); g.drawImage(im, 0, 0);
         window.__rq = { fill_edit: req.fill_edit || "", edit_style_id: req.edit_style_id || "", fill_kind: req.fill_kind || "", style_id: req.style_id, mid: Array.from(g.getImageData(im.width >> 1, im.height >> 1, 1, 1).data) }; return { jobs: [] }; };
       document.getElementById("kxSee").checked = fillEdit; document.getElementById("kxSee").onchange();
+      if (document.getElementById("kxFillMode")) { document.getElementById("kxFillMode").value = "fill"; document.getElementById("kxFillMode").onchange(); }   // 2.555.0: Krita's Fill (green)
       document.getElementById("ieEditStyle").value = ids.qwen;
       E.S.active = 0; E.renderLayersPanel(); E.setAiMode(mode);
       const m = new Uint8Array(E.S.w * E.S.h); for (let y = 260; y < 340; y++) for (let x = 360; x < 440; x++) m[y * E.S.w + x] = 255; E.setSel(m, true);

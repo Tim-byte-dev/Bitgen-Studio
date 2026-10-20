@@ -24,8 +24,8 @@ const g = IL.latentMaskGraph(JSON.parse(rd("comfy_workflows", "img_krea2_turbo_t
 const by = (c) => Object.entries(g).filter(([, v]) => v.class_type === c);
 check("the fill graph's mask: grown 8, MaskToImage -> ImageBlur (12 / 6) -> ImageToMask -> SetLatentNoiseMask (a soft edge for DifferentialDiffusion)",
   by("GrowMask")[0][1].inputs.expand === 8 && by("ImageBlur")[0][1].inputs.blur_radius === 12 && by("ImageToMask")[0][1].inputs.channel === "red" && by("SetLatentNoiseMask")[0][1].inputs.mask[0] === by("ImageToMask")[0][0] && by("DifferentialDiffusion").length === 1);
-check("the editor: Generate / Remove / Refine take the auto context; Generate in a selection pre-fills it from its border (P.fillHole with the crop mask)",
-  /mode === "generate" \|\| mode === "remove" \|\| mode === "refine" \? P\.autoMargin\(bb, S\.context\)/.test(IE) && /else if \(mode === "generate" && !whole\) \{ P\.fillHole\(fid\.data, cropMask, box\.w, box\.h\);/.test(IE));
+check("the editor: (2.555.0) Generate / Remove take Krita's context, Refine its mask bounds; Generate pre-fills by Krita's kind (Add content grey, Fill blur, Expand the border)",
+  /: mode === "generate" \|\| mode === "remove" \|\| mode === "background" \? KB\.context/.test(IE) && /: fitSel \|\| mode === "refine" \? KB\.mask/.test(IE) && /kind === "add"\) \{ P\.maskedFill\(fid\.data, cropMask/.test(IE) && /kind === "expand"\) \{ P\.fillHole\(fid\.data, cropMask, box\.w, box\.h\);/.test(IE));
 check("Free Transform: a middle handle skews (no key), Shift / Alt + it stretches; the skew / rotate cursors are SVGs",
   /skew: h\.kind === "edge" && !e\.shiftKey && !e\.altKey/.test(PT) && /const SKEW_H = svgCur\(/.test(PT) && /const ROT_CURSOR = svgCur\(/.test(PT) && /\(h\.i === 1 \? SKEW_H : SKEW_V\)/.test(PT));
 console.log(`\n${pass} passed, ${fail} failed`);

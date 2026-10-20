@@ -41,8 +41,8 @@ check("actionFor: ▾ Edit with a selection = the selection (Krita - the rest un
 /* wiring */
 const IE = rd("ext", "imageeditdock", "imageedit.js"), RA = rd("routes", "aiedit.js"), PLs = rd("ext", "imageeditdock", "pcpromptlink.js");
 check("the editor: 👁 fill with the edit model (on by default, remembered); a real inpaint style is used as it is; the selection painted green for a fill; the request says fill_edit + the edit model + the kind",
-  /id="kxSee"/.test(IE) && /S\.fillEdit = store\.get\("fillEdit", true\) !== false/.test(IE) && /fillInfo\.latent !== false/.test(IE)
-  && /mode === "generate" && cropMask\[i\] >= 252/.test(IE) && /req\.fill_edit = "1"; req\.edit_style_id = editId; req\.fill_kind = mode;/.test(IE));
+  /id="kxSee"/.test(IE) && /S\.fillEdit = store\.get\("fillEdit", true\) !== false/.test(IE) && /fillInfo\.latent !== false && !fillInfo\.helper/.test(IE)
+  && /\(kind === "fill" \|\| kind === "expand"\) && cropMask\[i\] >= 252/.test(IE) && /req\.fill_edit = "1"; req\.edit_style_id = editId; req\.fill_kind = mode === "generate" \? \(kind === "add" \? "add" : "generate"\) : mode;/.test(IE));
 check("the editor: opt.sel / opt.clip - a layer's own pixels only, its transparent surroundings filled with its colours, the result keeps the layer's outline",
   /if \(!sel && opt\.sel && opt\.sel\.length === S\.w \* S\.h\) sel = Uint8Array\.from\(opt\.sel\)/.test(IE) && /else if \(clip\) \{ P\.fillHole/.test(IE) && /feather: whole \|\| S\.genInto \|\| clip \? 0 : S\.feather/.test(IE)
   && /const am = c && act\.mode === "edit" && !act\.bg \? alphaMask\(c\) : null;/.test(PLs) && /clip: !!am/.test(PLs));
