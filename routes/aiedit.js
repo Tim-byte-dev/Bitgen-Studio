@@ -28,6 +28,9 @@
 //                                  with the picture as its starting latent under the mask (lib/inpaintLatent.js
 //                                  editLatentGraph) - images [crop, mask, (ref)]; the answer says soft: true when the graph
 //                                  kept what is outside the selection (the editor then blends past its edge)
+//                                  2.553.0: + fill_edit ("1") + edit_style_id + fill_kind (generate | remove | background):
+//                                  Generate / Remove / New background in a selection run through that EDIT model with
+//                                  Krita's instruction (aiEdit.fillEditPlan) under the noise mask -> edit_fill, style_name
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -143,14 +146,20 @@ function mount(app) {
     const crop = (files.crop || [])[0], mask = (files.mask || [])[0], rgba = (files.rgba || [])[0];
     const ref0 = ((files.ref0 || [])[0] || {}).buffer ? files.ref0[0] : null;          // 2.539.0: a picture from the References docker
     if (!crop || !crop.buffer) return res.status(400).json({ error: "crop image missing" });
-    const style = styles.byId(core.STYLES_DIR, String(b.style_id || ""));
+    let style = styles.byId(core.STYLES_DIR, String(b.style_id || ""));
     if (!style) return res.status(400).json({ error: b.mode === "edit"
       ? "pick an Edit model in the editor's AI panel (Qwen Image Edit, FLUX Kontext ...)"
       : "pick a Regenerate style in the editor's AI panel (FLUX Fill inpaint, SDXL ...)" });
-    let plan, ctl = [];
+    let plan = null, ctl = [];
+    // 2.553.0: Generate / Remove / New background in a selection through the EDIT model (it sees the picture - the Krita
+    // AI plugin's way, lib/aiEdit.js fillEditPlan); an edit style that cannot = the style's own fill as before
+    if (b.fill_edit === "1" && b.mode !== "edit" && b.mode !== "refine") {
+      const es = styles.byId(core.STYLES_DIR, String(b.edit_style_id || ""));
+      if (es) { try { plan = aiEdit.fillEditPlan(es, b, core.BASE); style = es; } catch (e) { plan = null; } }
+    }
     try {
-      plan = aiEdit.plan(style, b, core.BASE);
-      if (plan.mode !== "edit" && b.controls) ctl = aiEdit.controls(b.controls, controlNetNames());
+      if (!plan) plan = aiEdit.plan(style, b, core.BASE);
+      if (plan.mode !== "edit" && !plan.editFill && b.controls) ctl = aiEdit.controls(b.controls, controlNetNames());
     } catch (e) { return res.status(400).json({ error: e.message }); }
     const w = Math.max(64, parseInt(b.width, 10) || 0), h = Math.max(64, parseInt(b.height, 10) || 0);
     // 2.539.0: Edit + a reference picture = the crop is Picture 1, the reference Picture 2 (a second slot added if needed)
@@ -178,7 +187,7 @@ function mount(app) {
     // 2.552.0: an Edit inside a selection changes only the selection (Krita AI: the picture is the starting latent under a
     // noise mask) - the mask rides as image 2: [crop, mask, (reference)]
     let editMask = null;
-    if (plan.mode === "edit" && mask && mask.buffer && b.whole !== "1") {
+    if ((plan.mode === "edit" || plan.editFill) && mask && mask.buffer && b.whole !== "1") {
       editMask = aiEdit.editMasked(plan, refGraph, core.BASE, b);
       if (editMask) { refGraph = editMask.graph; plan.note += editMask.note; plan.input = "crop+mask"; }
     }
@@ -214,6 +223,7 @@ function mount(app) {
     }
     // soft: the graph kept everything outside the (grown, feathered) selection - the editor blends past the edge (Krita)
     res.json({ jobs, workflow: plan.workflow, note: plan.note, input: plan.input, mode: plan.mode, soft: !!(editMask || (plan.graph && plan.mode !== "edit")),
+               edit_fill: plan.editFill || null, style_name: style.name,
                denoise: plan.denoise, crop: names.crop, controls: controls.map((c) => ({ type: c.type, model: c.model, strength: c.strength, start: c.start, end: c.end })),
                ignored_controls: plan.mode === "edit" && !!b.controls });
   });

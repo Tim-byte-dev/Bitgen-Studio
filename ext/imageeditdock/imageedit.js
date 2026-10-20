@@ -716,6 +716,8 @@
                 <div class="kxmodes" id="kxModes">${MODES.map(([id, label, tip]) => `<button class="ghost" data-mode="${id}" title="${tip}">${label}</button>`).join("")}</div>
                 <textarea id="iePrompt" placeholder="What should appear in the selection (empty = the main prompt box)"></textarea>
                 <div class="kxrow" id="kxRowStyle"><span>style</span><select id="ieStyle" title="The image style Regenerate / Refine / Remove render with (its inpaint graph, model and LoRAs — Settings → Image)"></select></div>
+                <div class="kxrow" id="kxRowSee" title="2.553.0: Generate / Remove / New background in a selection with the EDIT model below - it sees the picture around the selection, so the new part belongs in the scene (the Krita AI plugin fills this way with FLUX.2 Klein / Qwen). Off = the style's own model draws into the selection. A real inpaint style (FLUX Fill inpaint, SDXL inpaint) is always used as it is.">
+                  <label style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="kxSee"> 👁 fill with the edit model (sees the picture)</label></div>
                 <div class="kxrow" id="kxRowEdit"><span>model</span><select id="ieEditStyle" title="The edit model: Qwen Image Edit 2511, FLUX.1 Kontext, FLUX.2 Klein edit"></select></div>
                 <div class="kxrow" id="kxRowPicks" style="display:none" title="Ctrl-click layers in the Layers panel to pick them, in order: 1 = the scene, 2 and 3 = what to bring in">
                   <span id="kxPicksTxt" style="flex:1;color:var(--pc-dim)">Ctrl-click layers to pick them (1 = the scene)</span>
@@ -2204,6 +2206,9 @@
     $("ieFeather").onchange = () => { S.feather = Math.max(0, Math.min(256, +$("ieFeather").value || 0)); store.set("feather", S.feather); };
     $("ieContext").onchange = () => { S.context = Math.max(0, Math.min(1024, +$("ieContext").value || 0)); store.set("context", S.context); };
     $("kxRes").onchange = () => { S.res = +$("kxRes").value || 1; store.set("res", S.res); };
+    // 2.553.0: fill with the edit model (on unless turned off)
+    S.fillEdit = store.get("fillEdit", true) !== false;
+    if ($("kxSee")) { $("kxSee").checked = S.fillEdit; $("kxSee").onchange = () => { S.fillEdit = !!$("kxSee").checked; store.set("fillEdit", S.fillEdit); setAiMode(S.aiMode); }; }
     $("kxCount").onchange = () => { S.count = +$("kxCount").value || 1; store.set("count", S.count); };
     $("kxStrength").oninput = () => { S.strength = +$("kxStrength").value; $("kxStrengthV").textContent = S.strength + "%"; store.set("strength", S.strength); };
     function setAiMode(m) {
@@ -2211,7 +2216,8 @@
       host.querySelectorAll("#kxModes button").forEach((b) => b.classList.toggle("on", b.dataset.mode === m));
       const ed = m === "edit" || m === "compose";
       $("kxRowStyle").style.display = ed ? "none" : "";
-      $("kxRowEdit").style.display = ed ? "" : "none";
+      $("kxRowEdit").style.display = ed || (S.fillEdit && (m === "generate" || m === "remove" || m === "background")) ? "" : "none";   // 2.553.0: the fill's edit model
+      if ($("kxRowSee")) $("kxRowSee").style.display = m === "generate" || m === "remove" || m === "background" ? "" : "none";
       if ($("kxRowPicks")) $("kxRowPicks").style.display = m === "compose" ? "" : "none";
       $("kxRowStrength").style.display = m === "refine" ? "" : "none";
       if ($("kxRowRef")) { $("kxRowRef").style.display = m === "edit" ? "" : "none"; if (m === "edit") paintRefs(); }   // 2.539.0
@@ -2273,13 +2279,32 @@
       const source = opt.source && opt.source.width === S.w && opt.source.height === S.h ? opt.source : null;   // 2.541.0
       if (!source) { if (E.beforeGenerate) E.beforeGenerate(mode); }   // 2.442.0: a closed shape active - into it (pcframes.js); 2.541.0: not for a source picture
       let sel = hasSel() && !source ? Uint8Array.from(S.sel) : null;
+      // 2.553.0: opt.sel = a mask of the picture's size to work in instead (a layer's own pixels - an Edit of a layer with
+      // transparent parts changes only those, Tim: "it redraws the entire layer and fills in the edges to fill the canvas");
+      // opt.clip = the result keeps exactly that mask (no soft edge past it)
+      if (!sel && opt.sel && opt.sel.length === S.w * S.h) sel = Uint8Array.from(opt.sel);
+      const clip = !!(opt.clip && opt.sel);
       if (mode === "background") { if (!sel) return say("select what to KEEP first - everything else gets a new background"); sel = P.invert(sel); }
       if (!sel && mode === "generate" && opt.whole) sel = new Uint8Array(S.w * S.h).fill(255);
       if (!sel && (mode === "generate" || mode === "remove")) return say("select the area first (or Select All)");
       const whole = !sel;
       if (whole) sel = new Uint8Array(S.w * S.h).fill(255);
       const bb = P.bbox(sel, S.w, S.h); if (!bb) return say("the selection is empty");
-      const box = whole ? { x: 0, y: 0, w: S.w, h: S.h } : P.contextRect(bb, S.w, S.h, mode === "generate" || mode === "remove" || mode === "refine" ? P.autoMargin(bb, S.context) : S.context, 16);   // 2.551.0: more context
+      // 2.553.0: through the EDIT model? (Generate / Remove / New background in a selection, 👁 on, a style that was not
+      // trained to inpaint - a real inpaint style stays) - the edit model is the prompt docker's style when it can edit
+      const fillId = opt.style || $("ieStyle").value, eng = S.engines || {};
+      const fillInfo = (eng.inpaint || []).find((x) => x.id === fillId);
+      const editId = (eng.edit || []).some((x) => x.id === fillId) ? fillId : (opt.editStyle || $("ieEditStyle").value || "");
+      const viaEdit = !whole && !clip && S.fillEdit !== false && (mode === "generate" || mode === "remove" || mode === "background")
+        && !!editId && (eng.edit || []).some((x) => x.id === editId) && (!fillInfo || fillInfo.latent !== false);
+      // 2.554.0 (Tim: "i think it doesn't know to resize it to the size of the selection - it works if i use qwen2.1 and say
+      // transparent background, but the size is not right for the selection"): a style that cannot see around the
+      // selection (Krea 2 … with 👁 off or no edit model) draws a whole picture of its own - so it gets the SELECTION'S
+      // box (+ room for the soft edge) as its whole picture: what it draws is the selection's size and shape
+      const fitSel = !whole && !viaEdit && !clip && mode === "generate" && !!fillInfo && fillInfo.latent === true;
+      const box = whole ? { x: 0, y: 0, w: S.w, h: S.h }
+        : fitSel ? P.contextRect(bb, S.w, S.h, P.maskParams(bb, 1, S.feather).reach, 16)
+        : P.contextRect(bb, S.w, S.h, mode === "generate" || mode === "remove" || mode === "refine" ? P.autoMargin(bb, S.context) : S.context, 16);   // 2.551.0: more context
       const cropMask = P.cropMask(sel, S.w, box);
       const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
@@ -2289,13 +2314,23 @@
       const origData = whole ? null : new Uint8ClampedArray(fid.data);     // 2.552.0: before any pre-fill (the colour match)
       let hasHole = false;
       for (let i = 0; i < cropMask.length; i++) if (cropMask[i] && fid.data[i * 4 + 3] < 250) { hasHole = true; break; }
-      if (mode === "remove" || hasHole) { P.fillHole(fid.data, mode === "remove" ? cropMask : new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }
+      if (viaEdit) {
+        // Krita (FillMode.green): the selection painted green for a fill - the model is told to fill the green; Remove /
+        // New background keep the pixels (the instruction says what to do); a hole is always green
+        for (let i = 0; i < cropMask.length; i++) {
+          const hole = cropMask[i] && fid.data[i * 4 + 3] < 250;
+          if (hole || (mode === "generate" && cropMask[i] >= 252)) { fid.data[i * 4] = 0; fid.data[i * 4 + 1] = 255; fid.data[i * 4 + 2] = 0; fid.data[i * 4 + 3] = 255; }
+        }
+        fg.putImageData(fid, 0, 0);
+      }
+      else if (clip) { P.fillHole(fid.data, new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }   // the layer's transparent surroundings: its own colours, not black
+      else if (mode === "remove" || hasHole) { P.fillHole(fid.data, mode === "remove" ? cropMask : new Uint8Array(cropMask.length), box.w, box.h); fg.putImageData(fid, 0, 0); }
       // 2.551.0 (as the Krita AI plugin: "pre-fill the masked area ... avoid seams"): Generate in a selection starts from the
       // selection filled with the colours around it (border fill), not the old pixels or a hole
       else if (mode === "generate" && !whole) { P.fillHole(fid.data, cropMask, box.w, box.h); fg.putImageData(fid, 0, 0); }
       // what the model renders at (<= the MP budget); 2.552.0: a small crop is rendered bigger, as Krita does (a 512 px
       // region of a model trained at 1 MP comes out muddled) - an Edit graph scales its picture itself
-      const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" ? 0 : 0.75 * 1048576);
+      const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" || viaEdit ? 0 : 0.75 * 1048576);
       // 2.552.0: Krita's mask sizes (grow / feather by the selection's size), sent in the render's pixels
       const mp = whole ? null : P.maskParams(bb, mode === "refine" ? S.strength / 100 : 1, S.feather);
       const crop = newCanvas(fit.w, fit.h), cg = ctx(crop); cg.imageSmoothingQuality = "high"; cg.drawImage(full, 0, 0, fit.w, fit.h);
@@ -2313,6 +2348,7 @@
                     crop: await blobOf(crop), mask: await blobOf(mask), rgba: await blobOf(rgba) };
       if (mp) { req.mask_grow = Math.round(mp.grow * fit.scale); req.mask_feather = Math.round(mp.feather * fit.scale); }
       if (whole) req.whole = "1";
+      if (viaEdit) { req.fill_edit = "1"; req.edit_style_id = editId; req.fill_kind = mode; }   // 2.553.0
       // 2.539.0: Edit + a picture from the References docker (Picture 2)
       if (mode === "edit" && $("kxRef") && $("kxRef").value !== "") {
         const rr = (api.refList ? api.refList() : [])[+$("kxRef").value];
@@ -2332,16 +2368,17 @@
       S.busy = true; $("kxRun").disabled = true;
       discardResults(true);
       // 2.437.0: ✨ Generate Fill in Shape / in Mask (pcgenfill.js) - the result goes onto that layer (clipped / masked)
-      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
+      const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto || clip ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
         orig: origData, mp, soft: false,                                                          // 2.552.0
         blendInto: !S.genInto && opt.into && mode === "generate" && layer() ? layer().id : null };   // 2.444.0: ✔ Apply = into that layer
       S.genInto = null;
-      say(`${mode}: ${box.w}×${box.h} crop` + (Math.abs(fit.scale - 1) > 0.01 ? ` rendered at ${fit.w}×${fit.h}` : "") + ` · ${S.count} result(s)`
+      say(`${mode}: ${box.w}×${box.h} crop` + (Math.abs(fit.scale - 1) > 0.01 ? ` rendered at ${fit.w}×${fit.h}` : "") + (fitSel ? " (made at the selection's size - this style cannot see around it; 👁 fills with the edit model)" : "") + ` · ${S.count} result(s)`
         + (req.controls ? ` · ${req.controls.length} control layer(s)` : "") + "…");
       try {
         const r = await api.aiedit(req, say);
         if (!r || !r.jobs) return;
-        ctxInfo.soft = !!r.soft && !ctxInfo.into;               // 2.552.0: the graph kept what is around - blend past the edge
+        ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;      // 2.552.0: the graph kept what is around - blend past the edge
+        if (r.edit_fill) say(`${mode}: ${r.style_name || "the edit model"} fills the selection - it sees the picture around it…`);
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
         if (!opt.direct) renderResults();
         let added = 0;

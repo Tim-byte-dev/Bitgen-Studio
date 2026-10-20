@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.554.0** — A Style That Cannot See Around a Selection Draws at the Selection's Size
+- **2.553.0** — Fill with the Edit Model (Green + Krita's Instruction); Edit Keeps to the Selection / The Layer's Pixels
 - **2.552.0** — The Fill and Edit in a Selection from the Krita AI Plugin's Own Code
 - **2.551.0** — Middle Handles Skew; The Fill Closer to the Krita AI Plugin (Context, Pre-Fill, Soft Mask, 0.9)
 - **2.550.0** — Seamless Fill (Any Style's Own Graph), Rigged Figures Picked by the Rig, Move / Paste / Ctrl+t Skew, Docker Menu

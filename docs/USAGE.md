@@ -2329,6 +2329,20 @@ too: Fooocus inpaint for SDXL, a ControlNet inpaint for SD 1.5, Flux Fill).
   selection**: the picture is the model's reference and also its starting point under the same soft mask, so everything
   around the selection stays exactly as it was.
 
+2.553.0 - **👁 fill with the edit model (sees the picture)**, in the ✨ AI panel, on unless you turn it off: Generate,
+Remove and New background in a selection run through the **edit model** (the prompt docker's style when it can edit -
+FLUX.2 / FLUX 3 Klein, Qwen Image Edit - else the panel's Edit model). A model that was not trained to fill (Krea 2 …)
+cannot see the picture around a selection and draws a picture of its own into it; the edit model looks at the whole
+region, so the new part belongs in the scene. As in the Krita AI plugin, the selection is painted **green** and the model
+is told "Fill the green spaces according to the image." followed by your prompt (Remove: "Remove the object.", New
+background: "Replace the background while keeping the main subject."), and only the selection changes. A real inpaint
+style (FLUX Fill inpaint, the SDXL inpaint export) is always used as it is.
+- **▾ Edit** with a selection changes **only the selection** (a new layer over it). Without a selection it edits the
+  selected layer - a layer with transparent parts keeps its outline: only its own pixels change, nothing is added around it.
+- 2.554.0: a style that cannot see around a selection (Krea 2 …, with 👁 off or no edit model) gets the **selection's own
+  box** as its whole picture (plus a little room for the soft edge), rendered at the model's size and scaled back - so
+  what it draws is the size and place of the selection, not a bigger picture cut down.
+
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
   mode picked while it was open is kept). Opening / closing the editor is what switches it; the project keeps the mode

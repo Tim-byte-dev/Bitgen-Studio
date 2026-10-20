@@ -62,6 +62,8 @@
     // selection keeps Refine / Replace background on the picture's selection as before
     if (op === "refine") return s.hasSel ? { kind: "run", op, mode: "refine", whole: true, into: false } : { kind: "layer", op, mode: "refine" };
     if (op === "background") return s.hasSel ? { kind: "run", op, mode: "background", whole: false, into: false } : s.picks > 1 ? { kind: "compose", op, mode: "compose", bg: true } : { kind: "layer", op, mode: "edit", bg: true };
+    // 2.553.0 (Tim: "edit works but it redraws the entire layer"): a selection = the Edit changes only the selection
+    if (s.hasSel) return { kind: "run", op, mode: "edit", whole: false, into: false };
     return s.picks > 1 ? { kind: "compose", op, mode: "compose" } : { kind: "layer", op, mode: "edit" };
   }
   /** 2.543.0: Replace background as an instruction for the edit model (no selection to keep) */
@@ -227,13 +229,23 @@
         let c = L && E.layerPicture ? E.layerPicture(L) : null;
         if (c && !hasPixels(c)) c = null;                                 // an empty layer (a new paint layer): the picture as seen instead
         if (!c && E.flattenCache) E.flattenCache();
-        E.runAI({ prompt, editStyle, source: c, whole: true, into: false, direct: true, keep: L, label: `${act.op === "refine" ? "🔁" : act.bg ? "🖼" : "✏"} ${c ? L.name : "picture"} ${act.op === "background" ? "new background" : act.op}` });
+        // 2.553.0: a layer with transparent parts - only its own pixels change, the result keeps its outline (no new edges)
+        const am = c && act.mode === "edit" && !act.bg ? alphaMask(c) : null;
+        E.runAI({ prompt, editStyle, source: c, whole: !am, sel: am || undefined, clip: !!am, into: false, direct: true, keep: L, label: `${act.op === "refine" ? "🔁" : act.bg ? "🖼" : "✏"} ${c ? L.name : "picture"} ${act.op === "background" ? "new background" : act.op}` });
         return true;
       }
+      if (act.mode === "edit") { E.runAI({ prompt, editStyle, into: false, whole: false, direct: true, keep: E.layer(), label: "✏ edit" }); return true; }   // 2.553.0: in the selection
       if (E.flattenCache) E.flattenCache();
       if (act.op === "generate") { E.runAI({ prompt, editStyle, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate" }); return true; }   // 2.549.0: a new layer
       E.runAI({ prompt, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
       return true;
+    }
+    /** 2.553.0: a picture's alpha as a mask (0..255), or null when it is opaque everywhere (or empty) */
+    function alphaMask(c) {
+      let d; try { d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; } catch (e) { return null; }
+      const m = new Uint8Array(c.width * c.height); let clear = false, any = false;
+      for (let i = 0; i < m.length; i++) { const a = d[i * 4 + 3]; m[i] = a; if (a < 255) clear = true; if (a > 0) any = true; }
+      return clear && any ? m : null;
     }
     /** a picture with anything in it (a quick look at a small copy) */
     function hasPixels(c) {

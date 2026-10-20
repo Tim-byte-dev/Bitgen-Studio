@@ -12120,6 +12120,22 @@ node scripts/test-fill552.js > /tmp/f552.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui552-ui.js > /tmp/ui552.log 2>&1 \
   && ok "2.552.0 browser test: a small region rendered bigger with Krita's mask sizes; a soft answer blended past the edge + colour-matched, a whole-crop one kept inside; /api/aiedit Edit in a selection = the edit graph with the mask - or SKIP without playwright" \
   || { bad "2.552.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui552.log | head -14; }
+
+# ---- 2.553.0 (fill with the edit model; Edit keeps to the selection / the layer's pixels)
+node scripts/test-fill553.js > /tmp/f553.log 2>&1 \
+  && ok "2.553.0 units (fillEditPlan's instructions, engines' latent flag, ▾ Edit with a selection = the selection, the wiring)" \
+  || { bad "2.553.0 units"; grep -a "^FAIL" -A2 /tmp/f553.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui553-ui.js > /tmp/ui553.log 2>&1 \
+  && ok "2.553.0 browser test: Generate with Krea 2 goes through Qwen Image Edit (green selection), Remove keeps the pixels, 👁 off = the style; the route's edit graph under the mask; a layer edit keeps its outline - or SKIP without playwright" \
+  || { bad "2.553.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui553.log | head -14; }
+
+# ---- 2.554.0 (a style that cannot see around a selection draws at the selection's size)
+node scripts/test-fill554.js > /tmp/f554.log 2>&1 \
+  && ok "2.554.0 units (the selection's box + the soft edge's room; fitSel wiring)" \
+  || { bad "2.554.0 units"; grep -a "^FAIL" -A2 /tmp/f554.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui554-ui.js > /tmp/ui554.log 2>&1 \
+  && ok "2.554.0 browser test: 👁 off with Krea 2 = the picture made at the selection's box (the drawn disc fits it), rendered >= 0.75 MP; 👁 on = the edit model's wider region - or SKIP without playwright" \
+  || { bad "2.554.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui554.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

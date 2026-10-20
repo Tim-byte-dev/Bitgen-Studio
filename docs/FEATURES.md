@@ -619,6 +619,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Skew from the middle handles** — Free Transform's middle handles skew like Photoshop (a skew cursor), Shift / Alt + a middle handle stretches. *Where:* the image editor, Ctrl+T. *Since:* 2.551.0
 - **Fill like the Krita AI plugin** — more context around a selection, the selection pre-filled from its border, a soft mask, a start at 0.9 for models not trained to inpaint. *Where:* the image editor with a selection. *Since:* 2.551.0
 - **Fill and Edit from the Krita plugin's own code** — Generate at full strength, a small region rendered bigger, the mask sized by the selection, a blend past the edge with a colour match, Edit in a selection changes only the selection. *Where:* the image editor with a selection. *Since:* 2.552.0
+- **Fill with the edit model** — Generate / Remove / New background in a selection through the edit model (the selection painted green + Krita's instruction), so the new part belongs in the scene; ▾ Edit keeps to the selection, or to the layer's own pixels. *Where:* the image editor's ✨ AI panel (👁), the prompt docker. *Since:* 2.553.0
+- **Generate fits the selection** — a style that cannot see around a selection makes its picture at the selection's own box, so what it draws is the selection's size. *Where:* the image editor's ✨ AI panel (👁 off), the prompt docker. *Since:* 2.554.0
 
 ### Selections
 
