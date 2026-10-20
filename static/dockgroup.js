@@ -125,6 +125,27 @@
     const pin = mk("h3fp-perm", "📌", "Make permanent - a regular docker in the main column (its title bar, its statusbar button)", () => makePerm(r.id));
     const del = mk("h3fp-del", "🗑", "Delete this docker and its statusbar button (the dockers in it go back where they came from)", () => remove(r.id));
     bar.insertBefore(pin, cfg || bar.lastElementChild); bar.insertBefore(del, cfg || bar.lastElementChild);
+    bar.addEventListener("contextmenu", (e) => { e.preventDefault(); e.stopPropagation(); menu(r.id, e.clientX, e.clientY); });   // 2.550.0
+  }
+  /** 2.550.0 (Tim: "add a right click context menu when user right clicks the new titlebar to delete docker (after it was
+   *  made permanent) this applies only to user made custom dockers"): right-click a ▣ docker's title bar - floating or
+   *  permanent - for Rename, its layout, Make permanent / Float it again, Delete docker */
+  function menu(id, x, y) {
+    const p = P(), r = p && p.get(id); if (!r) return null;
+    doc.querySelectorAll(".h3fp-menu").forEach((m) => m.remove());
+    const L = r.layout || "tabs", m = doc.createElement("div"); m.className = "h3fp-menu dg-menu";
+    const items = [["Rename…", () => p.rename(id).then(() => paint())], ["-"], ["h", "Layout:"],
+      ["Side by side", () => p.setLayout(id, "row"), L === "row"], ["Stacked", () => p.setLayout(id, "col"), L === "col"], ["Tabs", () => p.setLayout(id, "tabs"), L === "tabs"], ["-"],
+      r.perm ? ["⇱ Float it again", () => unPerm(id)] : ["📌 Make permanent", () => makePerm(id)],
+      ["🗑 Delete docker", () => remove(id)]];
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    m.innerHTML = items.map((it, i) => (it[0] === "-" ? "<hr>" : it[0] === "h" ? `<div class="h">${esc(it[1])}</div>` : `<div data-i="${i}"${it[2] ? ' class="on"' : ""}>${esc(it[0])}</div>`)).join("");
+    doc.body.appendChild(m);
+    m.style.left = Math.max(4, Math.min(x, root.innerWidth - 200)) + "px"; m.style.top = Math.max(4, Math.min(y, root.innerHeight - 26 * items.length)) + "px";
+    m.onclick = (e) => { const d = e.target.closest("[data-i]"); if (!d) return; m.remove(); items[+d.dataset.i][1](); };
+    root.setTimeout(() => root.addEventListener("pointerdown", function off(e) { if (!m.contains(e.target)) { m.remove(); root.removeEventListener("pointerdown", off, true); } }, true), 0);
+    tev("docker_group_menu", id);
+    return m;
   }
   async function remove(id, quiet) {
     const p = P(), r = p && p.get(id); if (!r) return false;
@@ -152,7 +173,10 @@
       d = doc.createElement("div"); d.className = "bdock dgperm"; d.id = permId(id); d.dataset.dg = id;
       d.innerHTML = '<div class="bhead"></div><div class="bbody"></div>';
       const grip = doc.createElement("div"); grip.className = "dgp-grip"; grip.title = "Drag to set its height";
-      main.appendChild(d); main.appendChild(grip);
+      // 2.550.0: where the window was - before the main docker under its middle (appended at the bottom it could sit
+      // below the room the column has, out of sight); restored = where it was kept
+      const before = placeFor(r, main, restoring && r.perm && r.perm.before);
+      main.insertBefore(d, before); main.insertBefore(grip, before);
       const head = d.querySelector(".bhead");
       head.dataset.collapse = d.id;
       head.appendChild(doc.createTextNode("▾ " + r.title));
@@ -163,6 +187,7 @@
       mx.dataset.max = d.id; head.appendChild(mx);
       head.onclick = (e) => { if (e.target.closest("button, select, input")) return; if (typeof root.toggleCollapse === "function") { root.toggleCollapse(d.id); p.setPerm(id, { collapsed: d.classList.contains("collapsed") }); } };
       head.ondblclick = (e) => { if (e.target.closest("button")) return; p.rename(id).then(() => paint()); };
+      head.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); menu(id, e.clientX, e.clientY); };   // 2.550.0
       gripDrag(grip, d, id);
       try { if (root.H3GoneDocks) root.H3GoneDocks[btnIdFor(id)] = d.id; } catch (e) { /* fine */ }
     }
@@ -170,13 +195,21 @@
     r.win.classList.add("dg-perm"); r.win.classList.remove("off");
     const keep = restoring && r.perm ? r.perm : {};
     p.setPerm(id, { h: keep.h > 80 ? keep.h : r.perm && r.perm.h > 80 ? r.perm.h : 320, hidden: !!keep.hidden, collapsed: !!keep.collapsed });
-    d.style.height = r.perm.h + "px";
+    d.style.height = ""; d.style.flex = "1 1 " + r.perm.h + "px";   // 2.550.0: takes room but gives way when the column is full
+    p.setPerm(id, { before: (() => { const n = d.nextElementSibling && d.nextElementSibling.nextElementSibling; return n && n.id ? n.id : ""; })() });
     d.classList.toggle("dockgone", !!r.perm.hidden);
     d.classList.toggle("collapsed", !!r.perm.collapsed);
     paint(); paintPerm(r);
     if (!restoring) tev("docker_group_perm", id);
     try { root.dispatchEvent(new root.Event("resize")); } catch (e) { /* fine */ }
     return d;
+  }
+  /** 2.550.0: the main-column child a permanent docker goes before - the kept one, else the docker under the window's middle */
+  function placeFor(r, main, keptId) {
+    if (keptId) { const k = $(keptId); if (k && k.parentNode === main) return k; }
+    const b = r.win ? r.win.getBoundingClientRect() : null, y = b && b.height ? b.top + b.height / 2 : null;
+    if (y != null) for (const c of [...main.children]) { if (!c.classList.contains("bdock") || c.classList.contains("dgperm")) continue; const cb = c.getBoundingClientRect(); if (cb.height && cb.top + cb.height / 2 > y) return c; }
+    return null;
   }
   function paintPerm(r) {
     const d = $(permId(r.id)); if (!d) return;
@@ -201,8 +234,8 @@
       if (e.button !== 0) return;
       e.preventDefault();
       const y0 = e.clientY, h0 = d.getBoundingClientRect().height;
-      const mv = (m) => { d.style.height = Math.max(80, Math.round(h0 + m.clientY - y0)) + "px"; };
-      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); P().setPerm(id, { h: Math.round(d.getBoundingClientRect().height) }); try { root.dispatchEvent(new root.Event("resize")); } catch (er) { /* fine */ } };
+      const mv = (m) => { d.style.flex = "0 0 " + Math.max(80, Math.round(h0 + m.clientY - y0)) + "px"; };
+      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); const h = Math.round(d.getBoundingClientRect().height); d.style.flex = "1 1 " + h + "px"; P().setPerm(id, { h }); try { root.dispatchEvent(new root.Event("resize")); } catch (er) { /* fine */ } };
       root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
     };
   }
@@ -218,7 +251,7 @@
       + ".h3fp .bdock.dg-floating>.bhead{display:none}.h3fp .bdock.dg-floating>.bbody{flex:1 1 auto;min-height:0;overflow:auto;display:block}"
       + ".h3fp:has(>.h3fp-b>.bdock.dg-floating.dockgone){display:none!important}"   // its statusbar button hides the whole window
       // 2.549.0: a permanent ▣ docker - its window fills a regular docker in the main column
-      + ".bdock.dgperm{flex:0 0 auto}.bdock.dgperm>.bbody{padding:0;min-height:0;overflow:hidden}.bdock.dgperm.maxed{flex:1 1 auto;height:auto!important}"
+      + ".bdock.dgperm{min-height:180px}.bdock.dgperm>.bbody{padding:0;min-height:0;overflow:hidden}.bdock.dgperm.maxed{flex:1 1 auto!important;height:auto!important}.bdock.dgperm.collapsed{flex:0 0 30px!important;min-height:0}"
       + ".h3fp.dg-perm{position:relative!important;left:auto!important;top:auto!important;width:auto!important;height:auto!important;flex:1 1 auto;min-height:0;z-index:auto!important;box-shadow:none!important;border:0!important;border-radius:0!important;display:flex;flex-direction:column}"
       + ".h3fp.dg-perm>.h3fp-t{display:none!important}.h3fp.dg-perm>.h3fp-b{flex:1 1 auto;min-height:0}"
       + ".dgp-grip{flex:0 0 5px;cursor:row-resize;background:var(--line)}.dgp-grip:hover{background:var(--tiger)}.bdock.dgperm.collapsed+.dgp-grip,.bdock.dgperm.dockgone+.dgp-grip{display:none}"
@@ -314,6 +347,6 @@
     adoptAll();
     root.setInterval(() => { try { watch(); paint(); } catch (e) { /* fine */ } }, 1000);
   }
-  root.H3DockGroup = Object.assign(API, { toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock });
+  root.H3DockGroup = Object.assign(API, { menu, toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

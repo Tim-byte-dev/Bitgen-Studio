@@ -1411,7 +1411,8 @@
         h += `<label>Sample <select id="pcSample"><option value="all"${S.sampleAll ? " selected" : ""}>All layers</option><option value="cur"${S.sampleAll ? "" : " selected"}>Current layer</option></select></label>`;
       } else if (S.tool === "move") {
         h += `<label title="A click picks the topmost layer with pixels there"><input type="checkbox" id="pcAuto" ${S.autoSelect ? "checked" : ""}> Auto-select layer</label><span class="sep"></span>`
-          + ["left", "hcenter", "right", "top", "vcenter", "bottom"].map((a) => `<button class="ghost pcalign" data-al="${a}" title="Align the layer ${a === "hcenter" ? "horizontal centres" : a === "vcenter" ? "vertical centres" : a + " edges"} to the selection (or the canvas)">${{ left: "⇤", hcenter: "↔", right: "⇥", top: "⤒", vcenter: "↕", bottom: "⤓" }[a]}</button>`).join("");
+          + ["left", "hcenter", "right", "top", "vcenter", "bottom"].map((a) => `<button class="ghost pcalign" data-al="${a}" title="Align the layer ${a === "hcenter" ? "horizontal centres" : a === "vcenter" ? "vertical centres" : a + " edges"} to the selection (or the canvas)">${{ left: "⇤", hcenter: "↔", right: "⇥", top: "⤒", vcenter: "↕", bottom: "⤓" }[a]}</button>`).join("")
+          + `<span class="sep"></span><button class="ghost" id="pcXform" title="Free Transform (Ctrl+T): drag inside = move, corners / edges = scale, outside = rotate, Ctrl + an edge = skew; Enter keeps, Esc cancels">⤡ Transform</button>`;   // 2.550.0
       }
       o.innerHTML = h;
       o.querySelectorAll(".kxsm").forEach((b) => { b.onclick = () => { S.mode = b.dataset.sm; renderOptions(); }; });
@@ -1427,6 +1428,7 @@
       const sp = o.querySelector("#pcSample"); if (sp) sp.onchange = () => { S.sampleAll = sp.value === "all"; store.set("sampleall", S.sampleAll); };
       const au = o.querySelector("#pcAuto"); if (au) au.onchange = () => { S.autoSelect = au.checked; store.set("autosel", S.autoSelect); };
       o.querySelectorAll(".pcalign").forEach((b) => { b.onclick = () => alignLayer(b.dataset.al); });
+      const xf = o.querySelector("#pcXform"); if (xf) xf.onclick = () => { if (E.startTransform) E.startTransform(); };   // 2.550.0
       bindCommon(o);
     }
     function bindCommon(o) {
@@ -1608,9 +1610,13 @@
             S.drag = { moveSet: true, x0: fx, y0: fy, before: snapStruct(), list: [], last: [0, 0] };
             stage.setPointerCapture(e.pointerId); return;
           }
-          const copy = beginPx(A), c = newCanvas(S.w, S.h), g = ctx(c), sc = selCanvas();
+          const copy = beginPx(A), c = newCanvas(S.w, S.h), g = ctx(c);
+          let sc = selCanvas();
           g.drawImage(A.canvas, 0, 0);
-          if (sc) { g.globalCompositeOperation = "destination-in"; g.drawImage(sc, 0, 0); const lg = ctx(A.canvas); lg.save(); lg.globalCompositeOperation = "destination-out"; lg.drawImage(sc, 0, 0); lg.restore(); }
+          // 2.550.0 (Tim: "the move tool doesn't work. make the move tool move the selection or layer"): a selection with
+          // none of this layer's pixels in it (a pasted layer sits elsewhere) moved nothing - the whole layer moves then
+          if (sc) { g.globalCompositeOperation = "destination-in"; g.drawImage(sc, 0, 0); g.globalCompositeOperation = "source-over"; if (!alphaBox(c)) { g.clearRect(0, 0, S.w, S.h); g.drawImage(A.canvas, 0, 0); sc = null; } }
+          if (sc) { const lg = ctx(A.canvas); lg.save(); lg.globalCompositeOperation = "destination-out"; lg.drawImage(sc, 0, 0); lg.restore(); }
           else ctx(A.canvas).clearRect(0, 0, S.w, S.h);
           S.float = { c, dx: 0, dy: 0 }; S.drag = { move: true, x0: fx, y0: fy, copy, selBefore: S.sel ? Uint8Array.from(S.sel) : null, whole: !sc };
           stage.setPointerCapture(e.pointerId); renderSoon(); return;
@@ -1846,7 +1852,7 @@
        A press anywhere in the editor that is not a box or a button hands the focus to the canvas (no scroll). */
     host.addEventListener("pointerdown", (e) => {
       const t = e.target;
-      if (!t || !t.closest || t.closest("input, textarea, select, button, [contenteditable], a, .h3fp-t")) return;
+      if (!t || !t.closest || t.closest("input, textarea, select, button, [contenteditable], a, .h3fp-t, #ieBlendWrap")) return;   // 2.550.0: not the Blender view (its own keys)
       root.setTimeout(() => { const a = doc.activeElement; if (!a || a === doc.body || !host.contains(a)) { try { stage.focus({ preventScroll: true }); } catch (er) { stage.focus(); } } }, 0);
     }, true);
     host.addEventListener("keydown", (e) => {
@@ -2246,7 +2252,7 @@
       let prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
       if (!prompt && hasHole && mode === "generate") prompt = "the same scene continues naturally, seamless, same style and light";
       const req = { mode: mode === "background" ? "generate" : mode, prompt, count: S.count, strength: mode === "refine" ? S.strength : 100,
-                    style_id: mode === "edit" ? (opt.editStyle || $("ieEditStyle").value) : $("ieStyle").value, width: fit.w, height: fit.h,
+                    style_id: mode === "edit" ? (opt.editStyle || $("ieEditStyle").value) : (opt.style || $("ieStyle").value), width: fit.w, height: fit.h,   // 2.550.0: opt.style
                     crop: await blobOf(crop), mask: await blobOf(mask), rgba: await blobOf(rgba) };
       // 2.539.0: Edit + a picture from the References docker (Picture 2)
       if (mode === "edit" && $("kxRef") && $("kxRef").value !== "") {

@@ -35,6 +35,7 @@ The window, its dockers, the look of the app, projects and the files they hold.
 - **Named dockers** — make an empty floating docker with your own name and dock floating panels into it as tabs; it can float over the whole app or stay confined to one docker. *Where:* Docker layout > New docker. *Since:* 2.438.0
 - **▣ Docker: an empty docker the others drop into** — show it with the statusbar's ▣ Docker or Ctrl+Alt+D, float main dockers with ⇱ and drag them in; an orange line shows where each lands, side by side or stacked, with splitters to size them. *Where:* the statusbar > ▣ Docker. *Since:* 2.545.0
 - **Docker drag-in, Make permanent, Delete** — drag a main docker in by its own title bar; 📌 makes the ▣ docker a regular docker in the main column, 🗑 deletes it and its button; the statusbar button carries its name. *Where:* the ▣ docker's title bar. *Since:* 2.549.0
+- **Docker title right-click menu** — right-click a docker you made (floating or permanent) for Rename, its layout, Make permanent / Float it again and Delete docker. *Where:* the ▣ docker's title bar. *Since:* 2.550.0
 - **Named docker layouts and titles** — a named docker shows its dockers as tabs, side by side or stacked (⇆ / ⇅ in its title, or ⚙ > Layout); double-click the title to rename it in place. *Where:* a named docker's title bar. *Since:* 2.545.0
 - **Dialogs in the middle** — dialogs and message boxes open in the middle of the screen, or where you last moved them. *Where:* dialog_layout.cfg. *Since:* 2.438.0
 - **Panel layout file** — where every floating panel is, its size, name and tabs are kept in panel_layout.cfg. *Where:* the install folder. *Since:* 2.438.0
@@ -613,6 +614,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Group and delete picked layers** — with several layers picked, Ctrl+G puts them in one group (Ctrl+G on one group ungroups it), and the 🗑 button deletes them all. *Where:* the Layers panel. *Since:* 2.547.0
 - **Drop as a layer or a new document** — a picture dropped on an open canvas asks: add it as a layer or open it as a new document. *Where:* the image editor's canvas. *Since:* 2.549.0
 - **Generate = a new layer** — in image-edit mode a generated picture always comes in as a new layer, with the style picked in the prompt docker (Krea 2 and every other style are listed for Generate). *Where:* the prompt docker in image-edit mode. *Since:* 2.549.0
+- **Seamless fill** — a selection is filled with the prompt docker's style through its own graph (the picture encoded + a noise mask + differential diffusion), so it blends like the Krita AI plugin; Krea 2, Klein and the others can fill now. *Where:* the image editor with a selection, Generate / Refine. *Since:* 2.550.0
+- **Transform with skew; Move after Paste** — Ctrl+T (or ⤡ Transform on the Move tool's bar) scales, rotates and skews (Ctrl + an edge); Paste drops the selection so the Move tool moves the pasted layer. *Where:* the image editor. *Since:* 2.550.0
 
 ### Selections
 
@@ -946,6 +949,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **Reference pictures with a Blender scene** — name a References docker picture in the prompt ("the face of the woman in picture 1") and it goes to the edit model with the scene; the numbers and the word are changed to the model's own (image 2, <image2>, Picture 2). *Where:* the 🟧 Blender tab > References. *Since:* 2.546.0
 - **Built-in styles back** — ↺ Built-in lists the built-in image or video styles that are missing and puts them back; the Krea 2 styles come back once on their own. *Where:* Settings > Image styles / Video styles. *Since:* 2.547.0
 - **Zoom in the Blender view** — 🔍＋ / 🔍－, Alt+drag (forward = in, back = out) and ⌖ Zoom to object (Z); in the image editor the player bar and Auto-key are left out. *Where:* the Blender scene tools' buttons. *Since:* 2.546.0
+- **Rigged figures picked by their rig** — a click on a skinned body picks its armature, so moving it moves the figure (not just the widget). *Where:* the Blender scene tools (timeline and image editor). *Since:* 2.550.0
 
 ### 3D scenes and models from pictures
 

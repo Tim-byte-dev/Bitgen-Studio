@@ -171,6 +171,8 @@ function mount(app) {
     if (rgba && rgba.buffer) fs.writeFileSync(path.join(dir, names.rgba), rgba.buffer);
     if (ref0) { names.ref = `aiedit-${stamp}-ref.png`; fs.writeFileSync(path.join(dir, names.ref), ref0.buffer); }
     if (refGraph) { const gp = path.join(dir, `aiedit-${stamp}-ref.json`); fs.writeFileSync(gp, JSON.stringify(refGraph, null, 1)); plan.workflow = gp; }
+    // 2.550.0: a seamless fill builds its graph from the style's own (lib/inpaintLatent.js via lib/infill.js)
+    else if (plan.graph && plan.mode !== "edit") { const gp = path.join(dir, `aiedit-${stamp}-fill.json`); fs.writeFileSync(gp, JSON.stringify(plan.graph, null, 1)); plan.workflow = gp; }
     const controls = ctl.map((c, i) => {
       const n = `aiedit-${stamp}-ctl${i}-${c.type}.png`;
       fs.writeFileSync(path.join(dir, n), files[`ctl${i}`][0].buffer);

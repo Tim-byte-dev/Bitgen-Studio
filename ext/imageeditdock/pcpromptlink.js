@@ -183,7 +183,10 @@
       // Krea 2 … - not the editor's inpaint style) and the picture lands as a new layer (mount.js H3OnGenerated); with a
       // selection the editor fills it, as a new layer; it no longer blends into the selected layer
       if (S.aiMode === "generate" && !(E.hasSel && E.hasSel())) return false;
-      if (S.aiMode === "generate") E.runAI({ prompt: text, editStyle, into: false, whole: false, direct: true, keep: E.layer(), label: "✨ generate" });
+      // 2.550.0: ...with the prompt docker's style when it can fill (any style with its own graph now - Krea 2 …): a
+      // seamless fill (lib/inpaintLatent.js), not the editor's inpaint style
+      const fillStyle = sel && S.engines && (S.engines.inpaint || []).some((x) => x.id === sel.value) ? sel.value : "";
+      if (S.aiMode === "generate") E.runAI({ prompt: text, editStyle, style: fillStyle, into: false, whole: false, direct: true, keep: E.layer(), label: "✨ generate" });
       else E.runAI({ prompt: text, editStyle, into: false, whole: true });
       return true;
     };

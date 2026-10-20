@@ -1157,6 +1157,9 @@
       if (!inPlace) { x = Math.round((S.w - c.width) / 2); y = Math.round((S.h - c.height) / 2); }
       g.drawImage(c, x, y);
       E.addLayer(Lp, "paste", false);
+      // 2.550.0: as Photoshop - the selection goes with a paste (it sat on the copied area, not on the pasted picture, so the
+      // Move tool moved the empty selected part of the new layer)
+      if (E.hasSel && E.hasSel() && E.deselect) E.deselect();
     }
 
     /* ---------------- rulers + grid ---------------- */

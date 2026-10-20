@@ -45,14 +45,26 @@
   }
   /** the free transform's matrix [a b c d e f]: about the box centre, then moved */
   function xform(T) {
-    const cx = T.box.x + T.box.w / 2, cy = T.box.y + T.box.h / 2, c = Math.cos(T.rot), s = Math.sin(T.rot);
-    const a = c * T.sx, b = s * T.sx, cc = -s * T.sy, d = c * T.sy;
+    // 2.550.0: + skew - kx (horizontal: x += kx·y) / ky (vertical: y += ky·x), applied after the scale, before the turn
+    const cx = T.box.x + T.box.w / 2, cy = T.box.y + T.box.h / 2, c = Math.cos(T.rot), s = Math.sin(T.rot), kx = T.kx || 0, ky = T.ky || 0;
+    const a = T.sx * (c - s * ky), b = T.sx * (s + c * ky), cc = T.sy * (c * kx - s), d = T.sy * (s * kx + c);
     return [a, b, cc, d, cx + T.tx - (a * cx + cc * cy), cy + T.ty - (b * cx + d * cy)];
   }
   const apply = (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
   function invert(m) {
     const det = m[0] * m[3] - m[1] * m[2] || 1e-9;
     return [m[3] / det, -m[1] / det, -m[2] / det, m[0] / det, (m[2] * m[5] - m[3] * m[4]) / det, (m[1] * m[4] - m[0] * m[5]) / det];
+  }
+  /** 2.550.0: the skew a drag of (dx, dy) on edge handle h gives - the top / bottom edge (j 0 / 2) = horizontal (kx),
+   *  the left / right edge (i 0 / 2) = vertical (ky); the drag is turned back by the rotation and counted in the
+   *  scaled box (t0 = the transform when the drag started) */
+  function skewFor(h, dx, dy, t0, box) {
+    const c = Math.cos(-t0.rot), s = Math.sin(-t0.rot), lx = dx * c - dy * s, ly = dx * s + dy * c;
+    let kx = t0.kx || 0, ky = t0.ky || 0;
+    if (h.i === 1 && (h.j === 0 || h.j === 2)) kx = (t0.kx || 0) + (h.j === 2 ? 2 : -2) * lx / Math.max(1, box.h * Math.abs(t0.sy));
+    else if (h.j === 1 && (h.i === 0 || h.i === 2)) ky = (t0.ky || 0) + (h.i === 2 ? 2 : -2) * ly / Math.max(1, box.w * Math.abs(t0.sx));
+    const cap = Math.tan(80 * Math.PI / 180);
+    return { kx: Math.max(-cap, Math.min(cap, kx)), ky: Math.max(-cap, Math.min(cap, ky)) };
   }
   /** what is under (x, y) of a transform: a corner / edge handle, inside (move) or outside (rotate) */
   function hitTransform(T, x, y, tol) {
@@ -637,12 +649,16 @@
       if (!L) return say("open a picture first");
       if (L.type !== "pixel") return say(L.type === "text" || L.type === "shape" ? "change a text / shape layer in the options bar (or Layer ▸ Rasterize first)" : `a ${L.type} layer has nothing to transform`);
       if (L.locks && (L.locks.pos || L.locks.all)) return say("the layer's position is locked");
-      const copy = E.beginPx(L), c = newCanvas(S.w, S.h), g = ctx(c), sc = E.selCanvas();
+      const copy = E.beginPx(L), c = newCanvas(S.w, S.h), g = ctx(c);
+      let sc = E.selCanvas();
       g.drawImage(L.canvas, 0, 0);
-      if (sc) { g.globalCompositeOperation = "destination-in"; g.drawImage(sc, 0, 0); }
+      if (sc) { g.globalCompositeOperation = "destination-in"; g.drawImage(sc, 0, 0); g.globalCompositeOperation = "source-over"; }
+      // 2.550.0: a selection with none of the layer's pixels in it = the whole layer is transformed
+      if (sc && !E.alphaBox(c)) { g.clearRect(0, 0, S.w, S.h); g.drawImage(L.canvas, 0, 0); sc = null; }
       const box = E.alphaBox(c); if (!box) return say("nothing to transform - the layer (or the selection on it) is empty");
       if (sc) { const lg = ctx(L.canvas); lg.save(); lg.globalCompositeOperation = "destination-out"; lg.drawImage(sc, 0, 0); lg.restore(); } else ctx(L.canvas).clearRect(0, 0, S.w, S.h);
-      X = { L, copy, c, box, tx: 0, ty: 0, sx: 1, sy: 1, rot: 0, prev: S.tool, hadSel: !!sc, selBefore: S.sel ? Uint8Array.from(S.sel) : null };
+      X = { L, copy, c, box, tx: 0, ty: 0, sx: 1, sy: 1, rot: 0, kx: 0, ky: 0, prev: S.tool, hadSel: !!sc, selBefore: S.sel ? Uint8Array.from(S.sel) : null };
+      say("Free Transform: drag inside = move, a corner / an edge = scale (Shift frees the proportions), outside = rotate, Ctrl + an edge = skew - Enter keeps, Esc cancels");
       S.float = { c, m: xform(X) };
       E.setTool("transform");
       E.renderSoon();
@@ -679,6 +695,8 @@
         return `<label>X <input type="number" id="ptXx" value="${cx}"></label><label>Y <input type="number" id="ptXy" value="${cy}"></label>`
           + `<label>W <input type="number" id="ptXw" value="${Math.round(X.sx * 1000) / 10}" step="1">%</label><label>H <input type="number" id="ptXh" value="${Math.round(X.sy * 1000) / 10}" step="1">%</label>`
           + `<label>∠ <input type="number" id="ptXr" value="${Math.round(X.rot * 1800 / Math.PI) / 10}" step="1">°</label>`
+          + `<label title="Horizontal skew (Ctrl + drag the top / bottom edge)">⇋ <input type="number" id="ptXkx" value="${Math.round(Math.atan(X.kx || 0) * 1800 / Math.PI) / 10}" step="1">°</label>`
+          + `<label title="Vertical skew (Ctrl + drag the left / right edge)">⇵ <input type="number" id="ptXky" value="${Math.round(Math.atan(X.ky || 0) * 1800 / Math.PI) / 10}" step="1">°</label>`
           + `<button class="ghost" id="ptXok" title="Commit (Enter)">✔</button><button class="ghost" id="ptXno" title="Cancel (Esc)">✕</button>`;
       },
       bindOptions(o) {
@@ -689,19 +707,25 @@
         o.querySelector("#ptXw").onchange = (e) => { X.sx = (+e.target.value || 100) / 100; upd(); };
         o.querySelector("#ptXh").onchange = (e) => { X.sy = (+e.target.value || 100) / 100; upd(); };
         o.querySelector("#ptXr").onchange = (e) => { X.rot = (+e.target.value || 0) * Math.PI / 180; upd(); };
+        o.querySelector("#ptXkx").onchange = (e) => { X.kx = Math.tan(Math.max(-80, Math.min(80, +e.target.value || 0)) * Math.PI / 180); upd(); };   // 2.550.0
+        o.querySelector("#ptXky").onchange = (e) => { X.ky = Math.tan(Math.max(-80, Math.min(80, +e.target.value || 0)) * Math.PI / 180); upd(); };
         o.querySelector("#ptXok").onclick = () => finishTransform(true);
         o.querySelector("#ptXno").onclick = () => finishTransform(false);
       },
       down(e, fx, fy) {
         if (!X) return false;
         const h = hitTransform(X, fx, fy, 7 / S.zoom);
-        X.drag = { h, x0: fx, y0: fy, t0: { tx: X.tx, ty: X.ty, sx: X.sx, sy: X.sy, rot: X.rot } };
+        X.drag = { h, x0: fx, y0: fy, skew: (e.ctrlKey || e.metaKey) && h.kind === "edge", t0: { tx: X.tx, ty: X.ty, sx: X.sx, sy: X.sy, rot: X.rot, kx: X.kx || 0, ky: X.ky || 0 } };
       },
-      hover(e, fx, fy) { if (!X) return; const h = hitTransform(X, fx, fy, 7 / S.zoom); E.stage.style.cursor = h.kind === "move" ? "move" : h.kind === "rotate" ? "alias" : h.kind === "corner" ? "nwse-resize" : "ew-resize"; },
+      hover(e, fx, fy) { if (!X) return; const h = hitTransform(X, fx, fy, 7 / S.zoom); E.stage.style.cursor = h.kind === "move" ? "move" : h.kind === "rotate" ? "alias" : h.kind === "corner" ? "nwse-resize" : (e.ctrlKey || e.metaKey) ? (h.i === 1 ? "ew-resize" : "ns-resize") : (h.i === 1 ? "ns-resize" : "ew-resize"); },
       move(e, fx, fy) {
         if (!X || !X.drag) return;
         const d = X.drag, t0 = d.t0, cx = X.box.x + X.box.w / 2 + t0.tx, cy = X.box.y + X.box.h / 2 + t0.ty;
         if (d.h.kind === "move") { X.tx = t0.tx + fx - d.x0; X.ty = t0.ty + fy - d.y0; }
+        else if (d.skew) {                                 // 2.550.0: Ctrl + an edge = skew along that edge
+          const k = skewFor(d.h, fx - d.x0, fy - d.y0, t0, X.box);
+          X.kx = k.kx; X.ky = k.ky;
+        }
         else if (d.h.kind === "rotate") {
           let a = t0.rot + Math.atan2(fy - cy, fx - cx) - Math.atan2(d.y0 - cy, d.x0 - cx);
           if (e.shiftKey) a = Math.round(a / (Math.PI / 12)) * (Math.PI / 12);
@@ -805,7 +829,7 @@
     E.img = img;
   }
 
-  const api = { install, RATIOS, cropBox, xform, apply, invert, hitTransform, toneWeight, toneDab, gradStops, GRAD_KINDS };
+  const api = { install, RATIOS, cropBox, xform, apply, invert, hitTransform, skewFor, toneWeight, toneDab, gradStops, GRAD_KINDS };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCTools = api;
 })(typeof window !== "undefined" ? window : globalThis);

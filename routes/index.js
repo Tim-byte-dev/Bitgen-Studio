@@ -1747,6 +1747,7 @@ function mount(app) {
     if (wf.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
     const imgs = wf.input === "rgba" ? [rgbaName]
                : wf.input === "crop+mask" ? [cropName, maskName] : [cropName];
+    if (wf.graph) { const gp = path.join(core.tempDir(), `infill-${stamp}-fill.json`); fs.writeFileSync(gp, JSON.stringify(wf.graph, null, 1)); wf.workflow = gp; }   // 2.550.0: the seamless fill's graph (lib/inpaintLatent.js)
     const p = { mode: "image", prompt, style: styled, style_id: style.id, style_name: style.name,
                 width: w, height: h, batch: 1,
                 workflow: wf.workflow, workflow_note: wf.note, infill: true, infill_input: wf.input,

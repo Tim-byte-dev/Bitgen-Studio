@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.550.0** — Seamless Fill (Any Style's Own Graph), Rigged Figures Picked by the Rig, Move / Paste / Ctrl+t Skew, Docker Menu
 - **2.549.0** — ▣ Docker: Drag in by Title, 📌 Permanent, 🗑 Delete; Krea 2 Listed; Generate = New Layer; Ctrl+g; Drop Asks
 - **2.548.0** — The Reference Docker Kept (Close / Save), All Its Pictures, the Shared Prompt Kept as Typed
 - **2.547.0** — Picked Layers: 🗑 Deletes All, Ctrl+g Groups / Ungroups; The Krea 2 Styles Back (↺ Built-In)

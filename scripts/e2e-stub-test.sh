@@ -12096,6 +12096,14 @@ node scripts/test-dockgroup549.js > /tmp/dg549.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui549-ui.js > /tmp/ui549.log 2>&1 \
   && ok "2.549.0 browser test: ⇱ labelled, Music dragged in by its title bar, rename -> ▣ Audio, 📌 permanent (regular title bar, button, fold, kept, reopened), Stems dropped in, ⇱ back, 🗑 delete, Ctrl+G after Layers clicks, a drop asks layer / document - or SKIP without playwright" \
   || { bad "2.549.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui549.log | head -14; }
+
+# ---- 2.550.0 (seamless fill; rigged figures picked by the rig; paste / move / transform skew; the docker menu)
+node scripts/test-inpaint550.js > /tmp/ip550.log 2>&1 \
+  && ok "2.550.0 units (latentMaskGraph wiring / renumbering / refusals, infill.resolve for Krea 2, xform skew + skewFor, the pick / paste / move / menu wiring)" \
+  || { bad "2.550.0 units"; grep -a "^FAIL" -A2 /tmp/ip550.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui550-ui.js > /tmp/ui550.log 2>&1 \
+  && ok "2.550.0 browser test (WebGL + Blender): a rigged figure picked by its rig and moved, paste + Move, a selection without the layer's pixels, Ctrl+T skew, Generate with a selection = the prompt docker's style, the ▣ docker's right-click menu - or SKIP without playwright" \
+  || { bad "2.550.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui550.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

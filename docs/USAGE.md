@@ -1964,10 +1964,14 @@ overlays in a PSD are still left out.
   white, or a spectrum.
 - **Paint Bucket (Shift+G):** fills an area of similar colour.
 - **Crop (C):** drag a box, pick a ratio, Enter crops (Esc cancels).
-- **Free Transform (Ctrl+T):** drag inside to move. A corner scales and keeps
+- **Free Transform (Ctrl+T, or ⤡ Transform on the Move tool's bar):** drag inside to move. A corner scales and keeps
   the proportions; Shift-drag a corner to scale freely. Drag outside the box
-  to rotate (Shift for 15° steps). You can also type X, Y, W, H and the angle
-  in the options bar. Enter applies it.
+  to rotate (Shift for 15° steps). 2.550.0: **Ctrl + drag an edge** skews it (top / bottom = sideways, left / right =
+  up and down). You can also type X, Y, W, H, the angle and the two skews (⇋ ⇵) in the options bar. Enter applies it.
+  With a selection that holds none of the layer's pixels, the whole layer is transformed.
+- **Move (V) and Paste (2.550.0):** Ctrl+V puts the picture in the middle as a new layer and drops the selection (it sat
+  on the copied area, so the Move tool moved an empty part of the new layer). The Move tool moves the selected pixels,
+  or the whole layer when there is no selection - or when the selection holds none of the layer's pixels.
 - **Edit ▸ Transform** rotates or flips the layer.
 - **Image:**
   - Adjustments (all 18, applied directly to the pixels);
@@ -2297,6 +2301,12 @@ blended in (Poisson), all in the page.
 2.549.0: **a Generate in image-edit mode is always a NEW LAYER**. With no selection the prompt docker's own Generate runs
 with the style picked there (Krea 2 …) and the picture comes in as a new layer; with a selection the editor fills it, as
 a new layer too. It no longer paints into the selected layer.
+
+2.550.0: **a selection is filled SEAMLESSLY**, the way the Krita AI plugin does it: the prompt docker's style (Krea 2, the
+FLUX.2 / FLUX 3 Klein styles, Qwen …) runs its own graph with the picture around the selection encoded and a noise mask on
+the selection (plus differential diffusion for a soft edge), so the new part continues what is there instead of being a
+new picture. Checkpoint styles (SDXL …) keep the SDXL inpaint export; a style's own inpaint workflow still wins. Refine
+(a strength) works the same way.
 
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
@@ -2829,6 +2839,9 @@ Blender scene tools over the canvas. They are the same tools, the same scene and
   the timeline (2.546.0).
 - **Click an object** to pick it, then **✥ ⟲ ⤡** (G, R, S) to move, rotate or scale it. You can also key it, hide it,
   duplicate it, delete it, or add a model with ＋ Model.
+- 2.550.0: **a rigged figure** (a Daz character, anything with an armature) is picked by its **rig** - a click on its body
+  (or its mesh in the object list) picks the armature, because a skinned body is drawn by its bones: moving the mesh
+  alone only moved the widget. A figure the click ray missed (its bounds were the rest pose) is found by its posed box.
 - **💾 Save** writes the edits into the .blend, the same way as in the timeline.
 
 Their settings are in the **🟧 Blender** tab. The scene becomes a **Blender layer** that holds the view as you see it.
@@ -5630,6 +5643,10 @@ orange line shows where it will go - and let go.
   statusbar button shows / hides it, the grip under it sets its height, floating dockers still drop into it - and
   **🗑 Delete** (asks first; the dockers in it go back where they came from, the docker and its button go). Ctrl+Alt+D
   then makes a new one.
+- 2.550.0: **right-click a ▣ docker's title bar** (floating, or made permanent) for Rename…, Side by side / Stacked /
+  Tabs, 📌 Make permanent or ⇱ Float it again, and 🗑 Delete docker. Only the dockers you made have it. A permanent docker
+  goes where the window was (before the main docker under its middle) and takes room in the column (it shrinks with the
+  others down to 180 px - it was added at the bottom and could sit below the room the column has).
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

@@ -72,7 +72,8 @@ const en = A.engines(L, ROOT);
 check("engines: FLUX 3 Klein (via its edit sibling) and FLUX 3 Klein edit can edit; SDXL t2i cannot",
   en.edit.map((s) => s.id).join() === "f3,f3e", en.edit);
 const eg = A.editGraph(L[0], ROOT), inf = IF.resolve(L[0], ROOT);
-check("edit + infill notes name FLUX 3", /FLUX 3 Klein edit graph img_flux3_klein_edit\.json/.test(eg.note) && /FLUX 3 Klein edit graph/.test(inf.note), [eg.note, inf.note]);
+// 2.550.0: a selection is filled SEAMLESSLY with the style's own t2i graph (lib/inpaintLatent.js), no longer by regenerating the crop with the edit graph
+check("edit note names FLUX 3; the infill is the seamless fill of its own t2i graph (2.550.0)", /FLUX 3 Klein edit graph img_flux3_klein_edit\.json/.test(eg.note) && /seamless fill with the style's own graph img_flux3_klein_t2i\.json/.test(inf.note) && inf.input === "crop+mask" && !!inf.graph, [eg.note, inf.note]);
 
 /* ---- the patcher on the real edit graph: one picture -> slots 2-4 gone, the chain healed */
 const pat = JSON.parse(py("import comfy_image as C, os\ng = C.load_workflow(os.path.join(" + JSON.stringify(path.join(ROOT, "comfy_workflows")) + ", 'img_flux3_klein_edit.json'))\n"

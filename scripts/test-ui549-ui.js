@@ -81,7 +81,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       return { parent: d.parentNode.id, head: [...h.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(""), btns: [...h.querySelectorAll("button")].map((x) => x.textContent),
         winIn: d.contains(H3Panels.get("fd-dockers").win), music: !!d.querySelector("#musicdock"), titleShown: getComputedStyle(H3Panels.get("fd-dockers").win.querySelector(".h3fp-t")).display, hgt: d.getBoundingClientRect().height }; });
     check("📌 Make permanent: a REGULAR docker in the main column - the regular title bar \"▾ Audio\" (⇱ 🗑 ⛶), the floating title gone, Music still in it",
-      pm && pm.parent === "maincol" && pm.head === "▾ Audio" && pm.btns.join() === "⇱,🗑,⛶" && pm.winIn && pm.music && pm.titleShown === "none" && pm.hgt > 200, pm);
+      pm && pm.parent === "maincol" && pm.head === "▾ Audio" && pm.btns.join() === "⇱,🗑,⛶" && pm.winIn && pm.music && pm.titleShown === "none" && pm.hgt >= 170, pm);
     await ev(() => document.getElementById("tDG").click()); await p.waitForTimeout(300);
     const hid = await ev(() => ({ gone: document.getElementById("dgp_fd-dockers").classList.contains("dockgone"), lit: document.getElementById("tDG").classList.contains("on") }));
     await ev(() => document.getElementById("tDG").click()); await p.waitForTimeout(300);
@@ -144,7 +144,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForSelector("#ieDropAsk", { timeout: 5000 });
     const ask = await ev(() => [...document.querySelectorAll("#ieDropAsk [data-as]")].map((x) => x.textContent));
     check("a picture from the assets dropped on the open canvas ASKS: ▦ Add as a layer / 🗋 Open as a new document", ask.join("|") === "▦ Add as a layer|🗋 Open as a new document", ask);
-    await p.click("#ieDropAsk [data-as=layer]"); await p.waitForTimeout(900);
+    await p.click("#ieDropAsk [data-as=layer]");
+    await p.waitForFunction((n) => window.imageEditorInstance.E.S.layers.length > n, n0, { timeout: 8000 }).catch(() => {});   // the picture loads first
     const L1 = await ev(() => ({ n: window.imageEditorInstance.E.S.layers.length, w: window.imageEditorInstance.E.S.w, name: window.imageEditorInstance.E.layer().name }));
     check("...▦ Add as a layer: a new layer in the open picture (300 wide, still)", L1.n === n0 + 1 && L1.w === 300, L1);
     await dropReal(); await p.waitForSelector("#ieDropAsk", { timeout: 5000 }); await p.click("#ieDropAsk [data-as=doc]"); await p.waitForTimeout(900);

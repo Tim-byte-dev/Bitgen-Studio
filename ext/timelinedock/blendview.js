@@ -443,6 +443,9 @@
 
     /* ---------- selection, widgets */
     function select(id) {
+      // 2.550.0: a skinned mesh picked (a click or the object list) -> its armature (the mesh alone does not move)
+      if (id && node(id)) { var n0 = node(id), sk = n0.isSkinnedMesh ? n0 : null; if (!sk) n0.children.forEach(function (k) { if (!sk && k.isSkinnedMesh) sk = k; });
+        if (sk) { var ow = pickOwner(sk); if (ow && ow.userData && ow.userData.bitgen_id && ow.userData.bitgen_id !== id) { msg(id + " is moved by its rig - " + ow.userData.bitgen_id + " picked"); id = ow.userData.bitgen_id; } } }
       S.sel = id && node(id) && !isDeleted(id) ? id : null;
       if (S.sel) { tc.attach(node(S.sel)); tc.setMode(S.gmode); } else tc.detach();
       paint(); dirty();
@@ -474,17 +477,41 @@
         var r = cv.getBoundingClientRect();
         var p = new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
         var ray = new T.Raycaster(); ray.setFromCamera(p, curCam());
-        var hits = ray.intersectObject(root, true).filter(function (h) { return h.object.visible; });
+        var hits = ray.intersectObject(root, true).filter(function (h) { return h.object.visible && shownUp(h.object); });
         for (var i = 0; i < hits.length; i++) {
-          var o = hits[i].object;
-          while (o && !(o.userData && o.userData.bitgen_id)) o = o.parent;
+          var o = pickOwner(hits[i].object);
           if (o) { select(o.userData.bitgen_id); return; }
         }
+        // 2.550.0: a SKINNED character (Daz / a rigged figure) the ray did not find (its bounds are the rest pose): its
+        // posed box instead - the nearest one under the pointer
+        var best = null;
+        root.traverse(function (m) {
+          if (!m.isSkinnedMesh || !m.visible || !shownUp(m)) return;
+          try { m.computeBoundingBox(); } catch (e) { return; }
+          if (!m.boundingBox) return;
+          var b = m.boundingBox.clone().applyMatrix4(m.matrixWorld), at = ray.ray.intersectBox(b, new T.Vector3());
+          if (at) { var dd = at.distanceTo(ray.ray.origin); if (!best || dd < best.d) best = { m: m, d: dd }; }
+        });
+        if (best) { var ow = pickOwner(best.m); if (ow) { select(ow.userData.bitgen_id); return; } }
         select(null);
       });
       cv.addEventListener("keydown", keys);
       ov.addEventListener("keydown", keys);
     }
+    /** 2.550.0 (Tim: "i can't select objects in a blender scene. when an object is selected only the move widget moves, not
+     *  the actual object"): what a click on a mesh picks - a SKINNED mesh is drawn by its bones, so moving the mesh object
+     *  moves only the widget: its ARMATURE (the nearest object with an id above its first bone) is picked instead; else
+     *  the nearest object with an id above the mesh */
+    function pickOwner(o) {
+      if (o && o.isSkinnedMesh && o.skeleton && o.skeleton.bones && o.skeleton.bones.length) {
+        var a = o.skeleton.bones[0];
+        while (a && !(a.userData && a.userData.bitgen_id)) a = a.parent;
+        if (a && a !== root) return a;
+      }
+      while (o && !(o.userData && o.userData.bitgen_id)) o = o.parent;
+      return o || null;
+    }
+    function shownUp(o) { for (var p = o; p; p = p.parent) if (p.visible === false) return false; return true; }
     function keys(ev) {
       if (!S.on || /input|textarea|select/i.test((ev.target && ev.target.tagName) || "") && ev.target !== cv) return;
       var k = ev.key.toLowerCase();
@@ -887,7 +914,7 @@
       attach: attach, detach: detach, openUi: openUi, snapshot: viewPicture, still: stillReal, host: function () { return ext; },
       open: openPath, show: show, state: S, select: select, setTrs: setSelTrs, key: keyNow, unkey: unkeyNow, dup: dup, del: del,
       hide: hide, reset: resetObj, undo: undo, goto: goto, setRange: setRange, setView: setView, setGizmo: setGizmo, save: save,
-      render: renderReal, view: viewOf, node: node, frameAll: frameAll, zoomBy: zoomBy, zoomToObject: zoomToObject,
+      render: renderReal, view: viewOf, node: node, frameAll: frameAll, zoomBy: zoomBy, zoomToObject: zoomToObject, pickOwner: pickOwner,
       look: function () { return camFree && orbit ? { dist: camFree.position.distanceTo(orbit.target), target: orbit.target.toArray(), view: S.view } : null; },   // 2.546.0: where the free view looks (tests)
       trs: function (id) { var n = node(id); return n ? trsOf(n) : null; },
       draw: function () { if (R) R.render(scene, curCam()); }, _cam: curCam,

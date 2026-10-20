@@ -57,7 +57,8 @@ check("composite: outside untouched, inside taken from the result, half-weight p
 // lib/infill.js workflow choice
 const st = (o) => Object.assign({ engine: "comfy", name: "S" }, o);
 const k = IF.resolve(st({ arch: "flux2klein9b", workflow: "comfy_workflows/img_flux2_9b_t2i_verified.json" }), ROOT);
-check("infill: a Klein 9B style uses its edit graph, mask handled by the editor", /edit_verified/.test(k.workflow) && k.takesMask === false, k);
+// 2.550.0 (Tim: "it generates a new image not a seamless fill/blend like the krita ai does"): a Klein 9B style fills with its OWN t2i graph + a latent noise mask (lib/inpaintLatent.js)
+check("infill: a Klein 9B style fills SEAMLESSLY with its own graph (crop + mask, a latent noise mask) - 2.550.0", !!k.graph && k.takesMask === true && k.input === "crop+mask" && /seamless fill/.test(k.note), k.note);
 const x = IF.resolve(st({ arch: "sdxl", workflow: "comfy_workflows/img_flux2_klein_9b_ckpt_t2i.json" }), ROOT);
 check("infill: a checkpoint style uses Tim's img_inpaint_sdxl.json export — one slot, the hole is the alpha, self-contained",
   x.workflow.endsWith("img_inpaint_sdxl.json") && x.slots === 1 && x.input === "rgba" && x.selfContained === true, x);
@@ -71,8 +72,9 @@ check("infill: the FLUX Fill style — one slot (alpha = hole), NOT self-contain
 check("infill: modelLoaders counts one for FLUX Fill and three for the SDXL export",
   IF.modelLoaders(ROOT, "comfy_workflows/img_flux_fill_inpaint.json") === 1 && IF.modelLoaders(ROOT, "comfy_workflows/img_inpaint_sdxl.json") === 3, null);
 check("infill: an sd-cli style is refused in words", (() => { try { IF.resolve({ engine: "sdcli", name: "old" }, ROOT); return false; } catch (e) { return /sd-cli/.test(e.message); } })(), null);
-check("infill: a UNET style that is not Klein and has no inpaint graph is refused with the fix named",
-  (() => { try { IF.resolve(st({ arch: "flux", workflow: "comfy_workflows/img_flux2_klein_9b_t2i.json", model: "flux1-dev.safetensors" }), ROOT); return false; } catch (e) { return /inpaint_workflow/.test(e.message); } })(), null);
+check("infill: a UNET style with a text-to-image graph fills seamlessly through it (2.550.0); one whose graph is not there is refused with the fix named",
+  !!IF.resolve(st({ arch: "flux", workflow: "comfy_workflows/img_flux2_klein_9b_t2i.json", model: "flux1-dev.safetensors" }), ROOT).graph
+  && (() => { try { IF.resolve(st({ arch: "flux", workflow: "comfy_workflows/nope_t2i.json", model: "flux1-dev.safetensors" }), ROOT); return false; } catch (e) { return /inpaint_workflow/.test(e.message); } })(), null);
 const wf = JSON.parse(fs.readFileSync(path.join(ROOT, "comfy_workflows", "img_inpaint_sdxl.json"), "utf8"));
 check("the shipped inpaint graph (Tim's export): inpaint UNet + checkpoint + refiner, ONE LoadImage, VAEEncodeForInpaint fed by its MASK output",
   Object.values(wf).filter((n) => n && n.class_type === "LoadImage").length === 1 && wf["30"].class_type === "UNETLoader"

@@ -29,13 +29,13 @@ check("the ⇱ button has its label (a comment had swallowed `b.type = …; b.te
 check("a main docker's title bar drags in (headDrag: the tag, the orange line, dockInto at the slot, the click after a drag eaten)",
   /function headDrag\(h, id\)/.test(DG) && /headDrag\(h, id\);/.test(DG) && /P\(\)\.dockInto\("bd\." \+ id, over\.id, slot \? slot\.index : undefined\)/.test(DG) && /root\.addEventListener\("click", eat, true\)/.test(DG));
 check("📌 / 🗑 in the title bar; Make permanent = a .bdock in #maincol with the regular title bar (▾ name, ⇱, 🗑, ⛶), its statusbar button in H3GoneDocks; restored on load",
-  /h3fp-perm/.test(DG) && /h3fp-del/.test(DG) && /d\.className = "bdock dgperm"/.test(DG) && /main\.appendChild\(d\)/.test(DG) && /root\.H3GoneDocks\[btnIdFor\(id\)\] = d\.id/.test(DG) && /if \(r\.perm\) makePerm\(r\.id, true\)/.test(DG));
+  /h3fp-perm/.test(DG) && /h3fp-del/.test(DG) && /d\.className = "bdock dgperm"/.test(DG) && /main\.insertBefore\(d, before\)/.test(DG) && /root\.H3GoneDocks\[btnIdFor\(id\)\] = d\.id/.test(DG) && /if \(r\.perm\) makePerm\(r\.id, true\)/.test(DG));
 check("the buttons carry the docker's name (▣ <name>), one per ▣ docker", /const name = r \? r\.title : "Docker", text = "▣ " \+ name;/.test(DG));
 check("floatpanels: setPerm (state perm, kept in panel_layout.cfg, no relayout), restored by newDocker",
   /function setPerm\(id, on\)/.test(FP) && /r\.perm \? \{ perm: Object\.assign\(\{\}, r\.perm\) \} : \{\}/.test(FP) && /if \(lay && lay\.perm && typeof lay\.perm === "object"\) r\.perm/.test(FP) && /r\.state !== "float" \|\| r\.perm/.test(FP));
 check("ieeditonly: narrows only for the ops that edit; a non-edit style picked on Edit puts the ▾ on Generate", /needsEdit\(opNow\)/.test(IOs) && /root\.H3ImgOp\.set\("generate"\)/.test(IOs));
 check("Generate in image-edit mode: no selection = the prompt docker's own Generate (its style) -> a new layer; a selection = the editor fills it as a NEW layer (direct), never blended into the layer",
-  /if \(S\.aiMode === "generate" && !\(E\.hasSel && E\.hasSel\(\)\)\) return false;/.test(PL) && /E\.runAI\(\{ prompt: text, editStyle, into: false, whole: false, direct: true/.test(PL));
+  /if \(S\.aiMode === "generate" && !\(E\.hasSel && E\.hasSel\(\)\)\) return false;/.test(PL) && /E\.runAI\(\{ prompt: text, editStyle, style: fillStyle, into: false, whole: false, direct: true/.test(PL));
 check("Ctrl+G: a press in the editor that is not a box / button gives the canvas the focus", /host\.addEventListener\("pointerdown", \(e\) => \{\s*const t = e\.target;[\s\S]{0,800}stage\.focus\(\{ preventScroll: true \}\)/.test(IE));
 check("a dropped picture asks (▦ Add as a layer / 🗋 Open as a new document); Shift = a layer; nothing open = a document",
   /function askDrop\(x, y, name, go\)/.test(IE) && /if \(!S\.w\) return load\(url, name, false\);/.test(IE) && /if \(e\.shiftKey\) return load\(url, name, true\);/.test(IE) && /dropPicture\(e, d\.url, d\.name\)/.test(IE));
