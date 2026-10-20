@@ -624,6 +624,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **The Krita AI plugin's fill per model family** — SDXL / Pony with the Fooocus inpaint patch, Illustrious / SD 1.5 / FLUX.1 with inpainting ControlNets, Remove with MAT / LaMa first, Krita's context bounds and its Add content / Fill modes. *Where:* the image editor's ✨ AI panel (fill row), the prompt docker; setup lists the pack and models. *Since:* 2.555.0
 - **⏳ Pending** — every ✨ run queues without waiting; results wait in a docker inside the editor, ✔ Apply puts one above its layer in that layer's "✨ changes" group, 🗑 Delete drops it. *Where:* the image editor (⏳ Pending in the ✨ AI panel). *Since:* 2.556.0
 - **References in every ✨ mode** — "picture N" in the prompt brings the References docker's picture to Edit, Generate, Fill, Remove, Refine (through the edit model); "ref N" in Compose. *Where:* the image editor's ✨ AI panel, the prompt docker. *Since:* 2.556.0
+- **AI fill models add-on** — the node pack + the Fooocus / MAT / inpainting ControlNet files for the Krita-way fill, ticked and downloaded from Settings ▸ Add-ons. *Where:* Settings ▸ Add-ons ▸ AI fill models. *Since:* 2.557.0
 
 ### Selections
 

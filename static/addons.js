@@ -3,10 +3,12 @@
  * for, what it needs, how big it is, installed or not, and ⤓ Install / ⟳ Reinstall / 🗑 Remove; the running install's
  * log streams in the tab (one at a time). Viggle (native) uses its own installer - its job shows in the Queue.
  * API: GET /api/addons, POST /api/addons/:id/install|remove, GET /api/addons/job?from=N (routes/addons.js).
- * Exports H3Addons {open, refresh, state}. */
+ * 2.557.0: an add-on with a list (AI fill models - lib/aiFillAddon.js) shows its items with checkboxes, sizes and ✓
+ * downloaded; ⤓ Download ticked sends {items} and 🗑 Remove models deletes the files.
+ * Exports H3Addons {open, refresh, act, state}. */
 (function () {
   "use strict";
-  var S = { list: [], job: null, lines: [], next: 0, timer: null };
+  var S = { list: [], job: null, lines: [], next: 0, timer: null, picks: {} };
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function j(r) { return r.json(); }
@@ -17,7 +19,9 @@
     + "#stab-addons .ao .kv{font-size:11.5px;color:var(--dim,#aaa);margin:2px 0}#stab-addons .ao .kv b{color:var(--text,#ddd);font-weight:600}"
     + "#stab-addons .ao .btns{display:flex;gap:6px;margin-top:6px}"
     + "#aoLog{max-height:260px;overflow:auto;font:11px ui-monospace,monospace;background:var(--bg,#151310);border:1px solid var(--line,#3a352e);border-radius:4px;padding:6px;white-space:pre-wrap;margin:6px 0 0}"
-    + "#aoLog .e{color:#e88}";
+    + "#aoLog .e{color:#e88}"
+    + "#stab-addons .ao .its{display:grid;gap:3px;margin:6px 0 0;font-size:11.5px}#stab-addons .ao .its label{display:flex;gap:6px;align-items:baseline;cursor:pointer}"
+    + "#stab-addons .ao .its .sz{color:var(--dim,#999)}#stab-addons .ao .its .ok{color:#7fd17f}";
   function boot() {
     var dlg = $("settings"), tabs = dlg && dlg.querySelector(".stabs");
     if (!tabs || $("stab-addons")) return;
@@ -53,18 +57,31 @@
     var running = S.job && S.job.state === "running";
     L.innerHTML = S.list.map(function (a) {
       var btn = function (act, label, title) { return '<button type="button" class="ghost" data-ao="' + esc(a.id) + '" data-act="' + act + '"' + (running || a.busy ? " disabled" : "") + ' title="' + esc(title) + '">' + label + "</button>"; };
+      var hasItems = Array.isArray(a.items) && a.items.length;
       var acts = (a.actions || []).map(function (x) {
+        if (hasItems) {                                   // 2.557.0: an add-on with a list - download what is ticked
+          return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Install the node pack (if missing) and download the ticked models")
+            : x === "remove" ? btn("remove", "🗑 Remove models", "Delete its downloaded model files (the node pack stays in ComfyUI)") : "";
+        }
         return x === "install" ? btn("install", "⤓ Install", a.external ? "Starts its installer - follow it in the Queue" : "Install " + a.label + " (" + a.size + ")")
           : x === "reinstall" ? btn("install", "⟳ Reinstall", "Install it again over the top (the same pinned versions)")
           : x === "remove" ? btn("remove", "🗑 Remove", "Delete its folder (its venv and packages; the model cache stays)") : "";
       }).join("");
+      var its = hasItems ? '<div class="its">' + a.items.map(function (it) {
+        var on = S.picks[a.id] ? S.picks[a.id].indexOf(it.id) >= 0 : (!it.present && it.dflt);
+        return '<label title="' + esc(it.for) + '"><input type="checkbox" data-aoi="' + esc(a.id) + '" value="' + esc(it.id) + '"' + (on ? " checked" : "") + (running || a.busy ? " disabled" : "") + "> "
+          + esc(it.label) + ' <span class="sz">' + esc(it.size) + "</span>" + (it.present ? ' <span class="ok">✓ downloaded</span>' : "") + "</label>";
+      }).join("") + "</div>" : "";
       return '<div class="ao" data-addon="' + esc(a.id) + '"><h4>' + esc(a.label) + " " + badge(a) + "</h4>"
         + '<div class="kv"><b>For</b> ' + esc(a.for) + "</div>"
         + '<div class="kv"><b>Needs</b> ' + esc(a.needs) + "</div>"
         + '<div class="kv"><b>Size</b> ' + esc(a.size) + "</div>"
         + (a.note ? '<div class="kv"><b>State</b> ' + esc(a.note) + "</div>" : "")
-        + '<div class="btns">' + acts + "</div></div>";
+        + its + '<div class="btns">' + acts + "</div></div>";
     }).join("") || "No add-ons.";
+    Array.prototype.forEach.call(L.querySelectorAll("[data-aoi]"), function (el) {
+      el.onchange = function () { S.picks[el.dataset.aoi] = picked(el.dataset.aoi); };
+    });
     Array.prototype.forEach.call(L.querySelectorAll("[data-ao]"), function (el) {
       el.onclick = function () { act(el.dataset.ao, el.dataset.act); };
     });
@@ -78,12 +95,25 @@
       + '<div id="aoLog">' + S.lines.map(function (l) { return l.charAt(0) === "!" ? '<span class="e">' + esc(l.slice(2)) + "</span>" : esc(l); }).join("\n") + "</div>";
     var lg = $("aoLog"); if (lg) lg.scrollTop = lg.scrollHeight;
   }
-  function act(id, action) {
+  /** the ticked items of an add-on with a list */
+  function picked(id) {
+    var L = $("aoList"); if (!L) return [];
+    return Array.prototype.filter.call(L.querySelectorAll('[data-aoi="' + id + '"]'), function (c) { return c.checked; }).map(function (c) { return c.value; });
+  }
+  function act(id, action, items) {
     var a = S.list.find(function (x) { return x.id === id; }) || {};
-    if (action === "remove" && !confirm("Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
-    if (action === "install" && !a.external && !a.installed && !confirm("Install " + (a.label || id) + "?\n\nSize: " + a.size + "\nNeeds: " + a.needs)) return Promise.resolve(null);
+    var hasItems = Array.isArray(a.items) && a.items.length;
+    var picks = items || (hasItems ? picked(id) : null);
+    if (hasItems && action === "install" && !picks.length) { if (typeof window.toast === "function") window.toast("tick the models to download first"); else alert("tick the models to download first"); return Promise.resolve(null); }
+    if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (the node pack stays)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
+    if (hasItems && action === "install" && !items) {
+      var sel = a.items.filter(function (it) { return picks.indexOf(it.id) >= 0; });
+      if (!confirm("Download for " + (a.label || id) + "?\n\n" + sel.map(function (it) { return "• " + it.label + " - " + it.size + (it.present ? " (already there)" : ""); }).join("\n") + "\n\nNeeds: " + a.needs)) return Promise.resolve(null);
+    } else if (action === "install" && !a.external && !a.installed && !hasItems && !confirm("Install " + (a.label || id) + "?\n\nSize: " + a.size + "\nNeeds: " + a.needs)) return Promise.resolve(null);
     S.lines = []; S.next = 0;
-    return fetch("/api/addons/" + encodeURIComponent(id) + "/" + action, { method: "POST" }).then(j).then(function (r) {
+    var opt = { method: "POST" };
+    if (hasItems && action === "install") { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ items: picks }); }
+    return fetch("/api/addons/" + encodeURIComponent(id) + "/" + action, opt).then(j).then(function (r) {
       if (r.error) { if (typeof window.toast === "function") window.toast(r.error); else alert(r.error); return r; }
       if (window.H3TestEvent) window.H3TestEvent("addon_" + action, id);
       if (r.external) { if (typeof window.toast === "function") window.toast(a.label + ": its install is in the Queue"); return refresh(); }

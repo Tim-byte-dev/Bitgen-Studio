@@ -12152,6 +12152,14 @@ node scripts/test-pending556.js > /tmp/p556.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui556-ui.js > /tmp/ui556.log 2>&1 \
   && ok "2.556.0 browser test: two runs queued at once into ⏳ Pending, ✔ Apply into one changes group, 🗑 Delete, the docker kept inside the editor; references with Generate / Edit / Refine / Compose through mount.js; the server's 4-picture fill graph - or SKIP without playwright" \
   || { bad "2.556.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui556.log | head -14; }
+
+# ---- 2.557.0 (Settings ▸ Add-ons ▸ AI fill models)
+node scripts/test-aifill557.js > /tmp/a557.log 2>&1 \
+  && ok "2.557.0 units (the items from the model list, status / install order with fakes - packs then files, a ControlNet adds the preprocessor pack, remove keeps the pack, the add-ons list + job, the route / tab wiring)" \
+  || { bad "2.557.0 units"; grep -a "^FAIL" -A2 /tmp/a557.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui557-ui.js > /tmp/ui557.log 2>&1 \
+  && ok "2.557.0 browser test: Settings ▸ Add-ons shows AI fill models with six models to tick (three ticked), ⤓ Download ticked posts the ticked ones - or SKIP without playwright" \
+  || { bad "2.557.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui557.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

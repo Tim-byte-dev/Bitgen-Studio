@@ -1,7 +1,7 @@
 // bitGen Studio — routes/addons.js (2.540.4): Settings ▸ Add-ons. Mounted by routes/index.js (never server.js);
 // the list, the installs and the job are lib/addons.js.
 //   GET  /api/addons                  {addons: [...], job}
-//   POST /api/addons/:id/install      (also reinstall) -> {ok, job} | 409 {error}
+//   POST /api/addons/:id/install      (also reinstall; 2.557.0 JSON {items: [ids]} = what to download) -> {ok, job} | 409 {error}
 //   POST /api/addons/:id/remove       -> {ok, job} | 409 {error}
 //   GET  /api/addons/job?from=N       {job: {id, action, state, error}, lines: [from…], next}
 "use strict";
@@ -13,7 +13,9 @@ function mount(app) {
     res.json({ addons: A.list(), job: j ? { id: j.id, action: j.action, state: j.state, error: j.error, lines: j.lines.length } : null });
   });
   const go = (action) => (req, res) => {
-    const r = A.start(String(req.params.id || ""), action);
+    // 2.557.0: {items: [ids]} - what to download (AI fill models)
+    const items = Array.isArray((req.body || {}).items) ? req.body.items.map(String).slice(0, 20) : undefined;
+    const r = A.start(String(req.params.id || ""), action, { items });
     if (r.error) return res.status(/already/.test(r.error) ? 409 : 400).json(r);
     const j = A.job();
     res.json({ ok: true, external: !!r.external, job: r.external ? null : { id: j.id, action: j.action, state: j.state } });

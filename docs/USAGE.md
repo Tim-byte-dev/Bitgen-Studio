@@ -2381,6 +2381,8 @@ which layer it belongs to:
 Also fixed: the editor's settings from 2.552.0-2.555.0 (the mask sizes, 👁 fill with the edit model, Add content / Fill)
 were dropped on the way to the server - they reach it now.
 
+2.557.0: the files the Krita-way fill needs download from **Settings ▸ Add-ons ▸ AI fill models** (tick, ⤓ Download ticked).
+
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
   mode picked while it was open is kept). Opening / closing the editor is what switches it; the project keeps the mode
@@ -3006,6 +3008,15 @@ and the install log appears in the tab. One install runs at a time.
     PyTorch's own, then the slower no-graph mode), says which one in the log, and remembers the one that worked
     (2.540.7).
   - 🗑 Remove deletes the `yue2` folder.
+- **AI fill models (the Krita AI way)** (2.557.0): what the image editor's Generate / Fill / Remove in a selection uses
+  per model family (see the 2.555.0 fill). Tick what you need - each with its size, ✓ downloaded when it is there:
+  - Fooocus inpaint (SDXL / Pony), MAT (Remove) and the NoobAI inpainting ControlNet (Illustrious / NoobAI) are ticked;
+    the FLUX.1 and SD 1.5 inpainting ControlNets and the FLUX.2 Klein 4B outpaint LoRA are there to tick.
+  - **⤓ Download ticked** installs the node pack comfyui-inpaint-nodes into your ComfyUI (and comfyui_controlnet_aux when a
+    ControlNet is ticked), then downloads the files into ComfyUI's models/inpaint, models/controlnet and models/loras
+    (resumable; your Hugging Face token from Settings is used). Restart ComfyUI once after the first install.
+  - **🗑 Remove models** deletes the downloaded files (the node pack stays).
+  - It needs ComfyUI's folder set in Settings ▸ ComfyUI.
 - **Viggle (native)**: starts its own installer. Its progress shows in the Queue.
 
 ## 🎬 Blender and Unreal renders made real with the reference docker's pictures (2.540.0)
