@@ -556,6 +556,7 @@
       const c = E.newCanvas(S.w, S.h), g = c.getContext("2d");
       if (L.l3d.transparent) { g.fillStyle = "#ffffff"; g.fillRect(0, 0, S.w, S.h); }
       g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, S.w, S.h);
+      if (mode === "edit" && E.sceneRefs && await E.sceneRefs.run(c, t, editStyle, L, "🟧 " + L.l3d.name + " edit")) return c;   // 2.546.0: + the References docker's pictures
       status(`🟧 the scene rendered - ${mode === "edit" ? "the edit model" : "Refine"} takes it with the prompt…`);
       if (root.H3TestEvent) { try { root.H3TestEvent("ie_blender_edit", mode); } catch (e) { /* the 🧪 list */ } }
       if (S.aiMode !== mode && E.setAiMode) E.setAiMode(mode);

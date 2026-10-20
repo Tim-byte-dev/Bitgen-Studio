@@ -12064,6 +12064,22 @@ node scripts/test-dockgroup545.js > /tmp/dg545.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui545-ui.js > /tmp/ui545.log 2>&1 \
   && ok "2.545.0 browser test: ▣ Docker / Ctrl+Alt+D, rename in place, ⇱ Music + Stems dropped in at the line, splitter, ⇆ / ⇅ / tabs, kept, ⇲ back, the StoryBoard stays StoryBoard - or SKIP without playwright" \
   || { bad "2.545.0 docker group browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui545.log | head -14; }
+
+# ---- 2.546.0 (a Blender scene + the References docker's pictures; Blender zoom; no player / Auto-key in the editor)
+node scripts/test-scenerefs546.js > /tmp/sr546.log 2>&1 \
+  && ok "scene + references units (2.546.0: the model's word, mentions, pickRefs, the scene's prompt, the route, zoom + lent-view wiring)" \
+  || { bad "2.546.0 scene refs units"; grep -a "^FAIL" -A2 /tmp/sr546.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui546-ui.js > /tmp/ui546.log 2>&1 \
+  && ok "2.546.0 browser test (WebGL + Blender): no player / Auto-key in the editor, 🔍＋ 🔍－ Alt+drag ⌖ zoom, ✏ Edit naming picture 1 = the scene + that reference, none named / Never = the scene alone - or SKIP without playwright / Blender" \
+  || { bad "2.546.0 scene refs + zoom browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui546.log | head -14; }
+
+# ---- 2.547.0 (picked layers: 🗑 deletes all, Ctrl+G groups / ungroups; ↺ the built-in styles back - Krea 2)
+node scripts/test-layers547.js > /tmp/ly547.log 2>&1 \
+  && ok "picked layers + built-in styles units (2.547.0: groupKey, pcdoc group / ungroup, missing / restore / RESEED Krea 2, the question, the wiring)" \
+  || { bad "2.547.0 layers + styles units"; grep -a "^FAIL" -A2 /tmp/ly547.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui547-ui.js > /tmp/ui547.log 2>&1 \
+  && ok "2.547.0 browser test: 🗑 / Delete Layer with picked layers = all of them (undo), Ctrl+G = one group, Ctrl+G on it = ungrouped, one layer as before; ↺ Built-in puts Krea 2 Turbo back - or SKIP without playwright" \
+  || { bad "2.547.0 layers + styles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui547.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

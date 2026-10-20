@@ -311,6 +311,9 @@ original isn't touched until you save to it.
 
 - **🎥 Scene camera** looks through the scene's active camera, with its animation playing. **🧭 Free view**: drag to
   orbit, right-drag or Shift-drag to pan, the wheel to zoom, **F** to frame everything.
+- **Zoom** (2.546.0): **🔍＋ / 🔍－**, or **Alt+drag** - forward (up) zooms in, back (down) zooms out. **⌖ Zoom to object**
+  (or **Z**) brings the view to the picked object from the side you are looking from; with nothing picked it frames the
+  whole scene. Zooming from the 🎥 Scene camera switches to the free view at the camera's place first.
 - **Select** an object by clicking it, or in the object list in **Tools & Properties** (key 1). **G / R / S** (or ✥ ⟲
   ⤡) switch the widget between move, rotate and scale. The Properties also take X / Y / Z (Blender's axes) and a size.
 - **Edits**:
@@ -1889,6 +1892,9 @@ overlays in a PSD are still left out.
   - **groups** (Ctrl+G groups the active layer; Shift+Ctrl+G ungroups). A
     group set to *Pass Through* lets its adjustment layers reach the layers
     under it. Any other blend mode composites the group on its own.
+    2.547.0: with **several layers picked** (Ctrl-click / Shift-click in the Layers panel) **Ctrl+G** puts them all in
+    one new group, in their order; with **one group** selected **Ctrl+G** ungroups it. With several layers picked the
+    **🗑** button, Layer ▸ Delete Layer and Shift+Del delete them all (one Ctrl+Z brings them back).
 - **Layer masks** (◫, or Layer ▸ Layer Mask) show where white and hide where
   black:
   - click the mask thumbnail to paint on it;
@@ -2802,7 +2808,10 @@ Blender scene tools over the canvas. They are the same tools, the same scene and
 
 - **📂 Open a .blend**, or carry on with the scene that is already open. **✨ Build a scene with AI** works here too.
 - **🎥 Scene camera** looks through the .blend's camera. **🧭 Free view**: drag to orbit, right-drag to pan, use the wheel
-  to zoom, and press F to frame everything.
+  to zoom, and press F to frame everything. **🔍＋ / 🔍－** or **Alt+drag** (forward = in, back = out) zoom, and
+  **⌖ Zoom to object** (Z) goes to the picked object (2.546.0).
+- In the image editor there is no player bar and no Auto-key: the scene is one still picture there. They are still in
+  the timeline (2.546.0).
 - **Click an object** to pick it, then **✥ ⟲ ⤡** (G, R, S) to move, rotate or scale it. You can also key it, hide it,
   duplicate it, delete it, or add a model with ＋ Model.
 - **💾 Save** writes the edits into the .blend, the same way as in the timeline.
@@ -2820,6 +2829,17 @@ Blender layer stays picked. The 🟧 Blender tab's **Edit from** sets which pict
 - **Blender render - Solid** or **EEVEE**: Blender renders that view at the picture's full size first.
 
 The 3D layers from Layer ▸ New 3D Layer work the same way now: an Edit from the scene is a new layer.
+
+**The References docker's pictures with the scene** (2.546.0). Name a reference picture in the prompt and it goes to the
+edit model together with the scene - for example *"photo real blonde woman on a beach with the face of the woman in
+picture 1"*. Picture 1 is the first picture in the References docker, picture 2 the second, and so on ("image 2", "pic 2",
+"ref 2" work too). At most two go along with the scene, because the edit models take three pictures.
+- The scene is always the model's first picture, so bitGen renumbers your references for the model, and it uses the
+  model's own word: FLUX.2 / FLUX 3 Klein are told "image 2", Qwen Image 2.1 "<image2>", Qwen Image Edit 2511
+  "Picture 2". You write "picture 1" either way.
+- The 🟧 Blender tab's **References** setting: **When the prompt names them** (the default), **Always** (the ones named,
+  else the first ones), or **Never**. It works for Blender layers and for 3D layers.
+- A prompt that names no picture sends the scene alone, as before.
 
 ## ▾ Generate, Edit, Refine, Fill, Replace background, Remove, and Blender mode (2.541.0)
 
@@ -3670,6 +3690,10 @@ later):
 - **Krea 2 Turbo**: 8 steps, cfg 1.
 - **Krea 2 Raw**: the full model, 52 steps, cfg 3.5, with a negative prompt.
 - **Krea 2 Turbo GGUF** and **Krea 2 Raw GGUF**: the same, from a GGUF file.
+
+If they are gone from the list (2.547.0): they come back by themselves once, the next time bitGen starts. Any other
+built-in style that went missing: Settings ▸ Image styles (or Video styles) ▸ **↺ Built-in** lists the built-in styles
+that are not there and puts them back after you say yes. Your own styles and the ones you edited are never touched.
 
 Where the files go:
 

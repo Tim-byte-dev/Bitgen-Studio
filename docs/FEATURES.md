@@ -609,6 +609,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **No tool** — Esc puts the tools down (nothing picked); a click picks an object, Shift or Ctrl adds it. *Where:* the image editor, Esc. *Since:* 2.474.0
 - **The selection box** — with no tool, drag a dashed box: left to right picks the layers wholly inside it, right to left the ones it touches; Shift adds. *Where:* the canvas with no tool. *Since:* 2.474.0
 - **Several layers at once** — Shift-click picks every layer between two, Ctrl-click adds or takes one away; the Move tool moves them together and Del deletes them all. *Where:* the Layers panel. *Since:* 2.474.0
+- **Group and delete picked layers** — with several layers picked, Ctrl+G puts them in one group (Ctrl+G on one group ungroups it), and the 🗑 button deletes them all. *Where:* the Layers panel. *Since:* 2.547.0
 
 ### Selections
 
@@ -937,6 +938,9 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **Model** — move, turn, scale or hide the scene's objects, by numbers or by dragging them on the canvas; the .blend is not changed. *Where:* the 3D tab > Model. *Since:* 2.541.0
 - **Blender mode** — with a 3D layer picked, the prompt docker's Edit and Refine render the scene with Blender and work from that picture; the results come into the AI panel, and ✔ keeps one as a layer. *Where:* the prompt docker's dropdown. *Since:* 2.541.0
 - **Blender layer** — the timeline's Blender scene tools over the image editor's canvas (open a .blend, scene camera or free view, move / rotate / scale objects, save); the view becomes a layer, and Edit in the prompt docker makes a new layer from the scene. *Where:* the editor's 🟧 button, or Layer > New Blender Layer. *Since:* 2.542.0
+- **Reference pictures with a Blender scene** — name a References docker picture in the prompt ("the face of the woman in picture 1") and it goes to the edit model with the scene; the numbers and the word are changed to the model's own (image 2, <image2>, Picture 2). *Where:* the 🟧 Blender tab > References. *Since:* 2.546.0
+- **Built-in styles back** — ↺ Built-in lists the built-in image or video styles that are missing and puts them back; the Krea 2 styles come back once on their own. *Where:* Settings > Image styles / Video styles. *Since:* 2.547.0
+- **Zoom in the Blender view** — 🔍＋ / 🔍－, Alt+drag (forward = in, back = out) and ⌖ Zoom to object (Z); in the image editor the player bar and Auto-key are left out. *Where:* the Blender scene tools' buttons. *Since:* 2.546.0
 
 ### 3D scenes and models from pictures
 

@@ -1822,7 +1822,7 @@
     $("kxLCopy").onclick = () => layerFromSelection();
     $("kxLUp").onclick = () => moveLayer(1);
     $("kxLDown").onclick = () => moveLayer(-1);
-    $("kxLDel").onclick = () => deleteLayer();
+    $("kxLDel").onclick = () => E.deleteLayer();   // 2.547.0: E. - every picked layer (pcmultisel.js)
     $("kxLMerge").onclick = () => mergeDown();
     $("kxLMask").onclick = () => { if (S.w) addMask(); };
     $("kxLGroup").onclick = () => { if (S.w) newGroup(); };
@@ -2321,21 +2321,23 @@
     async function runCompose(opt) {
       opt = opt && typeof opt === "object" && !opt.type ? opt : {};
       if (!api || !api.compose) return say("Compose is not connected (reload the page)");
-      const picks = (opt.layers || (E.picked ? E.picked() : [])).filter((L) => L && !L.control);
+      // 2.546.0: opt.pics = pictures instead of layers ({canvas, name}: a Blender scene + the References docker's pictures)
+      const given = Array.isArray(opt.pics) && opt.pics.length ? opt.pics : null;
+      const picks = given ? given.map((p) => ({ name: p.name || "picture", pic: p.canvas })) : (opt.layers || (E.picked ? E.picked() : [])).filter((L) => L && !L.control);
       if (!picks.length) return say("Ctrl-click the layers to use in the Layers panel first - in order: the first is the scene, then the things to bring in (up to 3)");
       if (picks.length > 3) return say("at most 3 layers (the edit models take three pictures) - Ctrl-click one to un-pick it");
       if (S.busy) return say("still working on the last one");
       const prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
       if (!prompt) return say("say what to make from the layers (\"put the dog from Layer 2 on the sofa in Layer 1\")");
       const pics = [];
-      for (let k = 0; k < picks.length; k++) pics.push(await blobOf(onWhite(layerPicture(picks[k]), k === 0 ? S.res : 1, k > 0)));
+      for (let k = 0; k < picks.length; k++) pics.push(await blobOf(onWhite(given ? picks[k].pic : layerPicture(picks[k]), k === 0 ? S.res : 1, !given && k > 0)));
       const fit = P.fitSize(S.w, S.h, S.res * 1048576, 16);
       S.busy = true; $("kxRun").disabled = true;
       discardResults(true);
       const ctxInfo = { box: { x: 0, y: 0, w: S.w, h: S.h }, cropMask: null, whole: true, feather: 0, mode: "compose", prompt };
       say(`compose: ${picks.map((L, k) => `Picture ${k + 1} = ${L.name}`).join(", ")} · ${S.count} result(s)…`);
       try {
-        const r = await api.compose({ pics, names: picks.map((L) => L.name), prompt, style_id: $("ieEditStyle").value, count: S.count, width: fit.w, height: fit.h }, say);
+        const r = await api.compose({ pics, names: picks.map((L) => L.name), prompt, style_id: $("ieEditStyle").value, count: S.count, width: fit.w, height: fit.h, scene_refs: opt.sceneRefs || undefined }, say);
         if (!r || !r.jobs) return;
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
         if (!opt.direct) renderResults();
@@ -2346,7 +2348,7 @@
           const im = await imgOf(url);
           res.url = url; res.layer = resultLayer(im, ctxInfo);
           if (opt.direct) {                                      // 2.543.0: straight in as a new layer
-            const L = makeLayer(`🧩 ${prompt.slice(0, 32)}` + (S.results.length > 1 ? ` ${i + 1}` : ""));
+            const L = makeLayer((opt.label ? opt.label : `🧩 ${prompt.slice(0, 32)}`) + (S.results.length > 1 ? ` ${i + 1}` : ""));
             ctx(L.canvas).drawImage(res.layer, 0, 0); addLayer(L, "AI result", false); added++;
             if (opt.keep && S.layers.includes(opt.keep)) S.active = S.layers.indexOf(opt.keep);
             refresh(); renderLayersPanel();

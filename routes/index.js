@@ -180,6 +180,7 @@ function mount(app) {
   require("./body3d").mount(app);       // 2.471.0: parametric 3D bodies - the engine setting + the Blender engine
   require("./unreal").mount(app);       // 2.472.0: the Unreal Engine 5.8 bridge (lib/unreal.js <-> ue/bitGenBridge)
   require("./layout").mount(app);      // 2.438.0: dialog_layout.cfg / panel_layout.cfg - where windows were left
+  require("./stylesRestore").mount(app);   // 2.547.0: ↺ the built-in styles back (Krea 2 …)
   require("./sceneedit").mount(app);   // 2.337.0: the scene cards' ✎ First frame (Qwen Image 2.1)
   require("./ltx").mount(app);         // 2.338.0: LTX 2.5 from the prompt docker (Tim's all-in-one canvas)
   require("./h3Viggle").mount(app);    // 2.352.0: the H3_Viggle style - each scene's 🎬 motion video

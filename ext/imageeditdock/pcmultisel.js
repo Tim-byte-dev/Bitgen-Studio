@@ -14,7 +14,13 @@
  *   MOVE TOOL      a drag on any of several picked layers moves them all (one undo step)
  *   DEL            deletes every picked layer (one undo step; with a pixel selection it still clears the pixels)
  * The picked layers are S.picks (layer ids, in the order picked) + the active layer. E.multi.
- * Pure (Node: scripts/test-multisel.js): boxPick(boxes, rect, crossing), rangeIds(order, a, b), norm(rect).
+ * 2.547.0 (Tim: "when the user selects multiple layers in the image-editor and presses the delete button, delete all the
+ *   selected layers, if the user pressed ctrl+g then group the layers, if user selects 1 group and presses ctrl+g then
+ *   ungroup that group"): Layer ▸ Delete Layer - the Layers panel's 🗑, Shift+Del - deletes every picked layer too (one
+ *   undo step); Ctrl+G (Layer ▸ Group Layers) puts every picked layer in ONE new group (above the top one picked, the
+ *   panel's order kept), and with one group selected it ungroups it. One plain layer: grouped alone, as before.
+ * Pure (Node: scripts/test-multisel.js, test-layers547.js): boxPick(boxes, rect, crossing), rangeIds(order, a, b), norm(rect),
+ *   groupKey(n, activeType) -> "many" | "ungroup" | "one" | null.
  */
 (function (root) {
   "use strict";
@@ -31,7 +37,14 @@
     const i = order.indexOf(a), j = order.indexOf(b); if (i < 0 || j < 0) return j >= 0 ? [b] : [];
     return order.slice(Math.min(i, j), Math.max(i, j) + 1);
   }
-  const pure = { norm, boxPick, rangeIds };
+  /** 2.547.0: what Ctrl+G does - n layers selected (the picked + the active), the active one's type */
+  function groupKey(n, activeType) {
+    const k = Math.max(0, parseInt(n, 10) || 0);
+    if (k >= 2) return "many";
+    if (activeType === "group") return "ungroup";
+    return activeType ? "one" : null;
+  }
+  const pure = { norm, boxPick, rangeIds, groupKey };
 
   function install(E) {
     const { S, D, say } = E, SH = root.PCSelHl;
@@ -133,7 +146,26 @@
       if ((k === "delete" || k === "del") && !e.ctrlKey && !e.metaKey && !E.hasSel() && list().length > 1) { deleteAll(); return true; }
       return keyBase ? keyBase(e) : false;
     };
-    E.multi = { list, count, has, clear, set, toggle, hit, deleteAll, box: () => box && norm(box) };
+    /* 2.547.0: the 🗑 / Layer ▸ Delete Layer / Shift+Del and Ctrl+G act on every picked layer */
+    const delOne = E.deleteLayer, groupOne = E.groupActive, ungroupOne = E.ungroupActive;
+    E.deleteLayer = function () { if (list().length > 1) return deleteAll(); return delOne ? delOne.apply(this, arguments) : undefined; };
+    function groupAll() {
+      const L = list(); if (L.length < 2) return false;
+      const ids = L.map((x) => x.id);
+      return E.structOp("group layers", () => {
+        const G = E.makeLayer("Group " + (S.layers.filter((x) => x.type === "group").length + 1), S.w, S.h, "group");
+        const next = D.group(S.layers, ids, G); if (next === S.layers) return false;
+        S.layers = next; S.picks = []; S.objSel = false; S.active = S.layers.indexOf(G);
+      }) && (say(`${ids.length} layers grouped - Ctrl+G with the group selected ungroups it`), true);
+    }
+    E.groupActive = function () {
+      const A = E.layer(), how = groupKey(list().length, A && A.type);
+      if (root.H3TestEvent) { try { root.H3TestEvent("ie_ctrl_g", how || "none"); } catch (e) { /* the 🧪 list */ } }
+      if (how === "many") return groupAll();
+      if (how === "ungroup") return ungroupOne ? ungroupOne() : undefined;
+      return groupOne ? groupOne.apply(this, arguments) : undefined;
+    };
+    E.multi = { list, count, has, clear, set, toggle, hit, deleteAll, groupAll, box: () => box && norm(box) };
   }
   const PCMultiSel = Object.assign({ install }, pure);
   if (typeof module !== "undefined" && module.exports) module.exports = PCMultiSel;

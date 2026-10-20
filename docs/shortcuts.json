@@ -161,6 +161,14 @@
         [
           "Shift+M",
           "✒ Mask Pen: click = a corner, drag = a curve, the first point / Enter = closed, Esc = done"
+        ],
+        [
+          "Alt+drag (Blender view)",
+          "Zoom - drag up / forward = in, down / back = out (in the image editor's Blender scene tools too)"
+        ],
+        [
+          "Z (Blender view)",
+          "Zoom to the picked object (nothing picked = the whole scene)"
         ]
       ]
     },

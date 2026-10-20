@@ -25,7 +25,9 @@
 //                                  the crop is Picture 1, the reference Picture 2
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
-//                                  style_id (an edit style), width, height, count, seed
+//                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
+//                                  is a 3D / Blender scene, pic1.. the References docker's pictures with these numbers:
+//                                  the prompt's "picture 1" becomes the model's own "image 2" / "<image2>" / "Picture 2")
 //                                  -> {jobs:[{id,seed}], workflow, note, prompt}
 //   POST /api/aiedit/preprocess   multipart image + type -> {job} (a control
 //                                  layer's "From image"; the map is the job's output)
@@ -37,6 +39,7 @@ const core = require("../lib/core");
 const styles = require("../lib/styles");
 const imageSeed = require("../lib/imageSeed");
 const aiEdit = require("../lib/aiEdit");
+const refWords = require("../lib/refWords");      // 2.546.0: the model's word for its pictures; a scene + references
 const comfyModels = require("../lib/comfyModels");
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 96 * 1024 * 1024, files: 8 } });
@@ -100,8 +103,14 @@ function mount(app) {
     try { plan = aiEdit.composePlan(style, pics.length, core.BASE); } catch (e) { return res.status(400).json({ error: e.message }); }
     let names = [];
     try { names = JSON.parse(b.names || "[]").map((x) => String(x || "").slice(0, 60)); } catch { names = []; }
-    const qwen21 = require("../lib/qwenRefs").isQwen21Style(style, core.BASE);
-    const prompt = aiEdit.composePrompt(typed, pics.map((_p, i) => names[i] || `Layer ${i + 1}`), qwen21);
+    // 2.546.0: the model's own word for its pictures (Qwen 2.1 <image1>, FLUX.2 Klein "image 1", Qwen 2511 "Picture 1");
+    // scene_refs = a 3D / Blender scene (pic0) + the References docker's pictures numbered as the docker numbers them
+    const wording = refWords.wordingFor(style, core.BASE);
+    let sceneRefs = null;
+    try { sceneRefs = b.scene_refs ? JSON.parse(b.scene_refs).map((x) => parseInt(x, 10)).filter((x) => x >= 1).slice(0, pics.length - 1) : null; } catch { sceneRefs = null; }
+    const prompt = sceneRefs && sceneRefs.length === pics.length - 1
+      ? refWords.sceneRefsPrompt(typed, sceneRefs, wording, names.slice(1))
+      : aiEdit.composePrompt(refWords.retag(typed, wording), pics.map((_p, i) => names[i] || `Layer ${i + 1}`), wording);
     const stamp = Date.now().toString(36);
     const dir = inputDir();
     const images = pics.map((f, i) => { const n = path.join(dir, `aiedit-${stamp}-compose${i + 1}.png`); fs.writeFileSync(n, f.buffer); return n; });
@@ -145,7 +154,7 @@ function mount(app) {
       if (plan.mode !== "edit") return res.status(400).json({ error: "a reference picture goes with ✨ Edit (an edit model takes it as Picture 2) - pick Edit, or Compose with the picture as a layer" });
       try { const rp = aiEdit.refPlan(style, core.BASE); plan = Object.assign({}, plan, { workflow: rp.workflow, note: plan.note + " + a reference picture (Picture 2)" }); refGraph = rp.graph; }
       catch (e) { return res.status(400).json({ error: e.message }); }
-      plan.prompt = aiEdit.refPrompt(plan.prompt, b.ref_desc, require("../lib/qwenRefs").isQwen21Style(style, core.BASE));
+      plan.prompt = aiEdit.refPrompt(plan.prompt, b.ref_desc, refWords.wordingFor(style, core.BASE));   // 2.546.0: the model's word
     }
     if (plan.mode !== "edit") {
       if (!mask || !mask.buffer) return res.status(400).json({ error: "mask image missing (select an area first)" });

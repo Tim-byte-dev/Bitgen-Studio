@@ -108,6 +108,7 @@ function mountImageEditor() {
       const fd = new FormData();
       req.pics.forEach((b, i) => fd.append(`pic${i}`, b, `pic${i}.png`));
       fd.append("names", JSON.stringify(req.names || []));
+      if (Array.isArray(req.scene_refs)) fd.append("scene_refs", JSON.stringify(req.scene_refs));   // 2.546.0: a Blender scene + the References docker's pictures
       for (const k of ["prompt", "style_id", "count", "width", "height"]) fd.append(k, String(req[k] == null ? "" : req[k]));
       const r = await fetch("/api/aiedit/compose", { method: "POST", body: fd });
       const j = await r.json();

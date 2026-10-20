@@ -29,6 +29,12 @@
  *   this view (#tlBlendView) into `wrap` and the Properties into `props` (the image editor: pcblendlayer.js), detach() puts
  *   them back; snapshot(w, h) = the view as shown at any size (no widget / grid); still({w, h, engine}) = Blender renders
  *   this frame through the view (or the scene camera) -> a PNG (lib/blendView.still). One scene, one set of edits.
+ * 2.546.0 (Tim: "add zoom in and zoom out controls for blender - alt+drag foward = zoom in,alt+drag back=zoom out, add a
+ *   zoom to object button. remove auto key and media player from image-edit mode"): 🔍＋ / 🔍－ in the view's buttons and
+ *   Alt+drag (up / away = in, down / back = out) move the free view toward / away from what it looks at (from the scene
+ *   camera, the free view takes over at the camera's place first); ⌖ (Z) frames the picked object (nothing picked = all),
+ *   from the side the view looks from. Lent to the image editor (attach) the play bar and Auto-key are gone (one still
+ *   picture - no segment to play; moves there are not auto-keyed), Space does not play.
  * 2.540.0 🖼 REFERENCES (Tim: "the block is a car, the reference for the car is in our reference docker ... animated with
  *   our 3dreal"): Render to real's 🖼 References - each mesh gets a reference docker picture (by its name - car, sofa,
  *   lamp … - or picked in its dropdown); ticked, Blender also renders the first frame + where each mesh is on it, an edit
@@ -61,6 +67,7 @@
       var css = document.createElement("style"); css.id = "tlbCss";
       css.textContent = "#tlCanvasWrap{position:relative}"
         + "#tlBlendView{position:absolute;inset:0;z-index:6;background:#16181c;display:none;flex-direction:column}"
+        + "#tlBlendView.ext #tlbBar{display:none}"   // 2.546.0: no player in the image editor
         + "#tlBlendView.on{display:flex}#tlbStage{flex:1;position:relative;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}"
         + "#tlbGl{display:block;outline:none;touch-action:none}"
         + "#tlbHud{position:absolute;left:6px;top:6px;display:flex;gap:4px;flex-wrap:wrap;z-index:2}#tlbHud button{padding:1px 7px;font-size:.72rem}"
@@ -95,7 +102,10 @@
       + '<button class="ghost" id="tlbCamFree" type="button" title="Free view: drag = orbit, right-drag / Shift-drag = pan, wheel = zoom, F = frame all">🧭 Free view</button>'
       + '<button class="ghost" id="tlbG" type="button" title="Move (G)">✥</button><button class="ghost" id="tlbR" type="button" title="Rotate (R)">⟲</button>'
       + '<button class="ghost" id="tlbS" type="button" title="Scale (S)">⤡</button>'
-      + '<button class="ghost" id="tlbStudio" type="button" title="Studio light on / off (the .blend\'s own lights stay on)">💡</button></div>'
+      + '<button class="ghost" id="tlbStudio" type="button" title="Studio light on / off (the .blend\'s own lights stay on)">💡</button>'
+      + '<button class="ghost" id="tlbZoomIn" type="button" title="Zoom in (Alt+drag up = in, down = out; the wheel too)">🔍＋</button>'      // 2.546.0
+      + '<button class="ghost" id="tlbZoomOut" type="button" title="Zoom out (Alt+drag down)">🔍－</button>'
+      + '<button class="ghost" id="tlbZoomObj" type="button" title="Zoom to the picked object (Z) - nothing picked = the whole scene">⌖ Zoom to object</button></div>'
       + '<div id="tlbMsg"></div></div>'
       + '<div id="tlbBar"><button class="ghost" id="tlbFirst" type="button" title="The segment\'s first frame">⏮</button>'
       + '<button class="ghost" id="tlbPlay" type="button" title="Play / pause the scene (the segment loops)">▶</button>'
@@ -147,13 +157,13 @@
         var P = $("tlProps"); if (P) P.style.display = "";
         if (S.on) { S.on = false; ov.classList.remove("on"); btn.classList.remove("on"); stop(); }
       }
-      ext = h; h.wrap.appendChild(ov); placeProps();
+      ext = h; h.wrap.appendChild(ov); ov.classList.add("ext"); placeProps();
       return openUi();
     }
     function detach() {
       if (!ext) return;
       var h = ext; S.on = false; ov.classList.remove("on"); stop();
-      ext = null; $("tlCanvasWrap").appendChild(ov);
+      ext = null; ov.classList.remove("ext"); $("tlCanvasWrap").appendChild(ov);
       if (PR.parentNode === h.props) h.props.removeChild(PR);
       placeProps();
     }
@@ -383,12 +393,52 @@
       if (!root) return;
       var b = new T.Box3();
       root.traverse(function (o) { if (o.isMesh && o.visible) b.expandByObject(o); });
-      if (b.isEmpty()) return;
-      var c = b.getCenter(new T.Vector3()), r = Math.max(0.5, b.getSize(new T.Vector3()).length() / 2);
+      frameBox(b, null);
+    }
+    /** the free view onto box b - from dir (the side it looks from now) or the default corner; 2.546.0 */
+    function frameBox(b, dir) {
+      if (!b || b.isEmpty()) return false;
+      var c = b.getCenter(new T.Vector3()), r = Math.max(0.05, b.getSize(new T.Vector3()).length() / 2);
       var d = r / Math.sin(camFree.fov * Math.PI / 360) * 1.1;
-      camFree.position.copy(c).add(new T.Vector3(1, 0.7, 1).normalize().multiplyScalar(d));
-      camFree.near = Math.max(0.01, d / 500); camFree.far = d * 50; camFree.updateProjectionMatrix();
+      var v = dir && dir.lengthSq() > 1e-9 ? dir.clone().normalize() : new T.Vector3(1, 0.7, 1).normalize();
+      camFree.position.copy(c).add(v.multiplyScalar(d));
+      camFree.near = Math.max(0.005, d / 500); camFree.far = Math.max(50, d * 50); camFree.updateProjectionMatrix();
       orbit.target.copy(c); orbit.update(); dirty();
+      return true;
+    }
+    /** 2.546.0: the scene camera's view handed to the free view (so zooming from it works) */
+    function freeFromScene() {
+      if (S.view !== "scene" || !camScene) return;
+      camScene.updateMatrixWorld(true);
+      var p = camScene.getWorldPosition(new T.Vector3()), q = camScene.getWorldQuaternion(new T.Quaternion());
+      var fwd = new T.Vector3(0, 0, -1).applyQuaternion(q), b = new T.Box3();
+      if (root) root.traverse(function (o) { if (o.isMesh && o.visible) b.expandByObject(o); });
+      var dist = b.isEmpty() ? 5 : Math.max(0.5, b.getCenter(new T.Vector3()).sub(p).dot(fwd));
+      camFree.position.copy(p); camFree.quaternion.copy(q);
+      if (camScene.fov) camFree.fov = camScene.fov;
+      camFree.updateProjectionMatrix();
+      orbit.target.copy(p).add(fwd.multiplyScalar(dist));
+      setView("free"); orbit.update();
+    }
+    /** 2.546.0: f < 1 = in (closer), > 1 = out; never through what it looks at */
+    function zoomBy(f) {
+      if (!camFree || !orbit) return;
+      freeFromScene();
+      var v = camFree.position.clone().sub(orbit.target), L = v.length();
+      var n = Math.max(0.02, Math.min(5000, L * f));
+      camFree.position.copy(orbit.target).add(v.multiplyScalar(n / Math.max(1e-6, L)));
+      orbit.update(); dirty();
+      if (window.H3TestEvent) { try { window.H3TestEvent("blend_zoom", f < 1 ? "in" : "out"); } catch (e) { /* the 🧪 list */ } }
+    }
+    /** 2.546.0: ⌖ the picked object (nothing picked = everything), from the side the view looks from */
+    function zoomToObject() {
+      if (!root) return;
+      freeFromScene();
+      var n = S.sel ? node(S.sel) : null, b = new T.Box3();
+      if (n) n.traverse(function (o) { if (o.isMesh) b.expandByObject(o); });
+      if (b.isEmpty()) { frameAll(); return; }
+      frameBox(b, camFree.position.clone().sub(orbit.target));
+      if (window.H3TestEvent) { try { window.H3TestEvent("blend_zoom", "object"); } catch (e) { /* the 🧪 list */ } }
     }
 
     /* ---------- selection, widgets */
@@ -400,6 +450,22 @@
     function setGizmo(m) { S.gmode = m; if (tc) tc.setMode(m); ["G", "R", "S"].forEach(function (k, i) { $("tlb" + k).classList.toggle("on", ["translate", "rotate", "scale"][i] === m); }); }
     function wireInput() {
       var down = null;
+      // 2.546.0: Alt+drag = zoom (up / away = in, down / back = out) - caught before the orbit and the widget see it
+      var az = null;
+      $("tlbStage").addEventListener("pointerdown", function (ev) {
+        if (!ev.altKey || ev.button !== 0 || ev.target !== cv) return;
+        ev.preventDefault(); ev.stopPropagation(); az = { y: ev.clientY, id: ev.pointerId };
+        try { cv.setPointerCapture(ev.pointerId); } catch (e) { /* fine */ }
+      }, true);
+      $("tlbStage").addEventListener("pointermove", function (ev) {
+        if (!az) return;
+        ev.stopPropagation();
+        var dy = ev.clientY - az.y; az.y = ev.clientY;
+        if (dy) zoomBy(Math.exp(dy * 0.006));
+      }, true);
+      var azEnd = function (ev) { if (!az) return; ev.stopPropagation(); try { cv.releasePointerCapture(az.id); } catch (e) { /* fine */ } az = null; down = null; };
+      $("tlbStage").addEventListener("pointerup", azEnd, true);
+      $("tlbStage").addEventListener("pointercancel", azEnd, true);
       cv.addEventListener("pointerdown", function (ev) { down = { x: ev.clientX, y: ev.clientY }; cv.focus(); });
       cv.addEventListener("pointerup", function (ev) {
         if (!down || Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 4 || (tc && tc.dragging) || ev.button !== 0) { down = null; return; }
@@ -424,8 +490,8 @@
       var k = ev.key.toLowerCase();
       if ((ev.ctrlKey || ev.metaKey) && k === "z") { undo(); ev.preventDefault(); return; }
       if (k === "g") setGizmo("translate"); else if (k === "r") setGizmo("rotate"); else if (k === "s") setGizmo("scale");
-      else if (k === "f") frameAll(); else if (k === "delete" && S.sel) del();
-      else if (k === " ") { play(); } else return;
+      else if (k === "f") frameAll(); else if (k === "z" && !ev.ctrlKey && !ev.metaKey) zoomToObject(); else if (k === "delete" && S.sel) del();   // 2.546.0: Z
+      else if (k === " " && !ext) { play(); } else return;                                                                                  // 2.546.0: no player lent
       ev.preventDefault();
     }
 
@@ -441,12 +507,12 @@
     function E(id) { return S.E.objects[id] || (S.E.objects[id] = {}); }
     function hasKeys(id) { var e = S.E.objects[id]; return !!(e && e.keys && Object.keys(e.keys).length); }
     /** after a widget drag: a key at this frame (animated / keyed / auto-key), else a new rest place */
-    function committed() {
+    function committed() {           // 2.546.0: Auto-key only in the timeline (not lent to the image editor)
       var id = S.sel; if (!id) return;
       var n = node(id), before = S.dragFrom; S.dragFrom = null;
       var now = trsOf(n);
       pushUndo(before);
-      if (animated(id) || hasKeys(id) || S.autoKey) { var e = E(id); e.keys = e.keys || {}; e.keys[String(S.frame)] = now; delete e.base; }
+      if (animated(id) || hasKeys(id) || (S.autoKey && !ext)) { var e = E(id); e.keys = e.keys || {}; e.keys[String(S.frame)] = now; delete e.base; }
       else E(id).base = now;
       persist(); drawFrame();
     }
@@ -605,9 +671,9 @@
           + '<button class="ghost" id="tlbReset" type="button" title="Undo every edit on it">↺</button></div>'
           + '<div class="tlb-keys" id="tlbKeys"></div>';
       }
-      h += '<div class="tlp-row"><label title="Every move keys the object at this frame (objects Blender animates are always keyed)"><input type="checkbox" id="tlbAuto"'
-        + (S.autoKey ? " checked" : "") + '> Auto-key every move</label></div>'
-        + '<div class="tlb-sec"><b>Save</b><div class="tlp-row"><select id="tlbMode" title="Where 💾 Save writes the scene">'
+      if (!ext) h += '<div class="tlp-row"><label title="Every move keys the object at this frame (objects Blender animates are always keyed)"><input type="checkbox" id="tlbAuto"'
+        + (S.autoKey ? " checked" : "") + '> Auto-key every move</label></div>';    // 2.546.0: not in the image editor
+      h += '<div class="tlb-sec"><b>Save</b><div class="tlp-row"><select id="tlbMode" title="Where 💾 Save writes the scene">'
         + '<option value="bitgen">Only in bitGen (' + esc(st.stem) + '.blend in the project)</option>'
         + '<option value="writeback">Write back to the original .blend (keeps .blend1)</option>'
         + '<option value="copy">Copy to a new file (' + esc(st.stem) + '_bitgen.blend beside it)</option></select></div>'
@@ -774,6 +840,9 @@
     $("tlbCamFree").onclick = function () { setView("free"); };
     $("tlbG").onclick = function () { setGizmo("translate"); }; $("tlbR").onclick = function () { setGizmo("rotate"); }; $("tlbS").onclick = function () { setGizmo("scale"); };
     $("tlbStudio").onclick = function () { S.studio = !S.studio; store0.set("studio", S.studio); paint(); dirty(); };
+    $("tlbZoomIn").onclick = function () { zoomBy(1 / 1.25); };           // 2.546.0
+    $("tlbZoomOut").onclick = function () { zoomBy(1.25); };
+    $("tlbZoomObj").onclick = zoomToObject;
     $("tlbFirst").onclick = function () { goto(S.inF); };
     $("tlbPlay").onclick = play;
     $("tlbFrame").addEventListener("input", function () { goto($("tlbFrame").value); });
@@ -818,7 +887,9 @@
       attach: attach, detach: detach, openUi: openUi, snapshot: viewPicture, still: stillReal, host: function () { return ext; },
       open: openPath, show: show, state: S, select: select, setTrs: setSelTrs, key: keyNow, unkey: unkeyNow, dup: dup, del: del,
       hide: hide, reset: resetObj, undo: undo, goto: goto, setRange: setRange, setView: setView, setGizmo: setGizmo, save: save,
-      render: renderReal, view: viewOf, node: node, frameAll: frameAll, trs: function (id) { var n = node(id); return n ? trsOf(n) : null; },
+      render: renderReal, view: viewOf, node: node, frameAll: frameAll, zoomBy: zoomBy, zoomToObject: zoomToObject,
+      look: function () { return camFree && orbit ? { dist: camFree.position.distanceTo(orbit.target), target: orbit.target.toArray(), view: S.view } : null; },   // 2.546.0: where the free view looks (tests)
+      trs: function (id) { var n = node(id); return n ? trsOf(n) : null; },
       draw: function () { if (R) R.render(scene, curCam()); }, _cam: curCam,
       addModel: addModel, models: listModels, ai: aiBuild,
       // 2.461.0 (blendpose.js): the pose preview + the image editor hand-over
