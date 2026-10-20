@@ -33,6 +33,7 @@ const check = (n, cond, got) => {
   spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "color=c=0x4682b4:s=640x400", "-frames:v", "1", pic]);
   const b = await chromium.launch({ executablePath: fs.existsSync("/opt/pw-browsers/chromium") ? undefined : undefined });
   const p = await b.newPage({ viewport: { width: 1600, height: 1000 } });
+  await p.addInitScript(() => { window.__H3_PENDING_AUTO = true; });   // 2.556.0: results straight in, as when this test was written (no ⏳ Pending)
   const errs = [];
   p.on("pageerror", (e) => errs.push(e.message));
   try {

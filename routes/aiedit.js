@@ -35,6 +35,9 @@
 //                                  when ComfyUI has it (lib/kritaInpaint.js: Fooocus for SDXL / Pony, inpainting ControlNets
 //                                  for Illustrious / SD 1.5 / FLUX.1, MAT / LaMa before Remove) -> helpers; the engines list
 //                                  says per style (helper) and what is missing (krita.missing)
+//                                  2.556.0: ref0 + ref1 + ref_nums + ref_descs - up to two References docker pictures with
+//                                  an Edit or any run through the edit model (fill_edit; Refine too): the prompt's docker
+//                                  numbers become the model's pictures 2 / 3 (lib/refWords.js withRefs)
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -147,11 +150,16 @@ function mount(app) {
     res.json({ jobs, workflow: path.basename(plan.workflow), note: plan.note, prompt, mode: "compose" });
   });
 
-  app.post("/api/aiedit", upload.fields([{ name: "crop", maxCount: 1 }, { name: "mask", maxCount: 1 }, { name: "rgba", maxCount: 1 }, { name: "ref0", maxCount: 1 }, ...CTL_FIELDS]), async (req, res) => {
+  app.post("/api/aiedit", upload.fields([{ name: "crop", maxCount: 1 }, { name: "mask", maxCount: 1 }, { name: "rgba", maxCount: 1 }, { name: "ref0", maxCount: 1 }, { name: "ref1", maxCount: 1 }, ...CTL_FIELDS]), async (req, res) => {
     const b = req.body || {};
     const files = req.files || {};
     const crop = (files.crop || [])[0], mask = (files.mask || [])[0], rgba = (files.rgba || [])[0];
-    const ref0 = ((files.ref0 || [])[0] || {}).buffer ? files.ref0[0] : null;          // 2.539.0: a picture from the References docker
+    // 2.539.0: a picture from the References docker; 2.556.0: up to two (ref0, ref1) + ref_nums (their docker numbers - the
+    // prompt's "picture 1" means the docker's picture 1) + ref_descs
+    const refFiles = ["ref0", "ref1"].map((k) => (((files[k] || [])[0] || {}).buffer ? files[k][0] : null)).filter(Boolean);
+    const ref0 = refFiles[0] || null;
+    const jsonArr = (v) => { try { const a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch { return []; } };
+    const refNums = jsonArr(b.ref_nums).map((x) => parseInt(x, 10)).filter((x) => x >= 1), refDescs = jsonArr(b.ref_descs).map((x) => String(x || "").slice(0, 200));
     if (!crop || !crop.buffer) return res.status(400).json({ error: "crop image missing" });
     let style = styles.byId(core.STYLES_DIR, String(b.style_id || ""));
     if (!style) return res.status(400).json({ error: b.mode === "edit"
@@ -160,7 +168,7 @@ function mount(app) {
     let plan = null, ctl = [];
     // 2.553.0: Generate / Remove / New background in a selection through the EDIT model (it sees the picture - the Krita
     // AI plugin's way, lib/aiEdit.js fillEditPlan); an edit style that cannot = the style's own fill as before
-    if (b.fill_edit === "1" && b.mode !== "edit" && b.mode !== "refine") {
+    if (b.fill_edit === "1" && b.mode !== "edit" && (b.mode !== "refine" || refFiles.length)) {   // 2.556.0: Refine too, with references
       const es = styles.byId(core.STYLES_DIR, String(b.edit_style_id || ""));
       if (es) { try { plan = aiEdit.fillEditPlan(es, b, core.BASE); style = es; } catch (e) { plan = null; } }
     }
@@ -174,10 +182,12 @@ function mount(app) {
     // 2.539.0: Edit + a reference picture = the crop is Picture 1, the reference Picture 2 (a second slot added if needed)
     let refGraph = null;
     if (ref0) {
-      if (plan.mode !== "edit") return res.status(400).json({ error: "a reference picture goes with ✨ Edit (an edit model takes it as Picture 2) - pick Edit, or Compose with the picture as a layer" });
-      try { const rp = aiEdit.refPlan(style, core.BASE); plan = Object.assign({}, plan, { workflow: rp.workflow, note: plan.note + " + a reference picture (Picture 2)" }); refGraph = rp.graph; }
+      if (plan.mode !== "edit" && !plan.editFill) return res.status(400).json({ error: "a reference picture goes with ✨ Edit (an edit model takes it as Picture 2) - pick Edit, or Compose with the picture as a layer" });
+      const nr = refFiles.length;
+      try { const rp = aiEdit.composePlan(style, 1 + nr, core.BASE); plan = Object.assign({}, plan, { workflow: rp.workflow, note: plan.note + (nr > 1 ? ` + ${nr} reference pictures (pictures 2 and 3)` : " + a reference picture (Picture 2)") }); refGraph = rp.graph; }
       catch (e) { return res.status(400).json({ error: e.message }); }
-      plan.prompt = aiEdit.refPrompt(plan.prompt, b.ref_desc, refWords.wordingFor(style, core.BASE));   // 2.546.0: the model's word
+      const wording = refWords.wordingFor(style, core.BASE);   // 2.546.0: the model's word
+      plan.prompt = refNums.length === nr ? refWords.withRefs(plan.prompt, refNums, wording, refDescs) : aiEdit.refPrompt(plan.prompt, b.ref_desc, wording);
     }
     if (plan.mode !== "edit") {
       if (!mask || !mask.buffer) return res.status(400).json({ error: "mask image missing (select an area first)" });
@@ -192,7 +202,8 @@ function mount(app) {
     fs.writeFileSync(path.join(dir, names.crop), crop.buffer);
     if (mask && mask.buffer) fs.writeFileSync(path.join(dir, names.mask), mask.buffer);
     if (rgba && rgba.buffer) fs.writeFileSync(path.join(dir, names.rgba), rgba.buffer);
-    if (ref0) { names.ref = `aiedit-${stamp}-ref.png`; fs.writeFileSync(path.join(dir, names.ref), ref0.buffer); }
+    names.refs = refFiles.map((f, i) => { const n = `aiedit-${stamp}-ref${i + 1}.png`; fs.writeFileSync(path.join(dir, n), f.buffer); return n; });
+    if (names.refs.length) names.ref = names.refs[0];
     // 2.552.0: an Edit inside a selection changes only the selection (Krita AI: the picture is the starting latent under a
     // noise mask) - the mask rides as image 2: [crop, mask, (reference)]
     let editMask = null;
@@ -210,8 +221,8 @@ function mount(app) {
     });
     let styled = styles.applyLoraWeights(style, null);
     if (plan.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
-    const imgs = editMask ? [names.crop, names.mask].concat(names.ref ? [names.ref] : [])
-      : names.ref ? [names.crop, names.ref] : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
+    const imgs = editMask ? [names.crop, names.mask].concat(names.refs)
+      : names.refs.length ? [names.crop].concat(names.refs) : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
     const n = aiEdit.count(b.count);
     const first = imageSeed.forRequest(styles.numOrNull(b.seed));
     const jobs = [];

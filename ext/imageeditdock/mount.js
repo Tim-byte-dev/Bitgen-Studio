@@ -86,9 +86,16 @@ function mountImageEditor() {
       const fd = new FormData();
       fd.append("crop", req.crop, "crop.png");
       if (req.mask) fd.append("mask", req.mask, "mask.png");
-      if (req.ref) { fd.append("ref0", req.ref, "ref.png"); fd.append("ref_desc", req.ref_desc || ""); }   // 2.539.0: the References docker's picture
+      if (Array.isArray(req.refs) && req.refs.length) {                  // 2.556.0: up to two References docker pictures + their numbers
+        req.refs.forEach((b, i) => fd.append(`ref${i}`, b, `ref${i}.png`));
+        fd.append("ref_desc", (req.ref_descs || [])[0] || "");          // the first one's, as 2.539.0 sent it
+        fd.append("ref_nums", JSON.stringify(req.ref_nums || [])); fd.append("ref_descs", JSON.stringify(req.ref_descs || []));
+      } else if (req.ref) { fd.append("ref0", req.ref, "ref.png"); fd.append("ref_desc", req.ref_desc || ""); }   // 2.539.0: the References docker's picture
       if (req.rgba) fd.append("rgba", req.rgba, "hole.png");
       for (const k of ["mode", "prompt", "style_id", "strength", "count", "width", "height"]) fd.append(k, String(req[k] == null ? "" : req[k]));
+      // 2.556.0: the editor's 2.552-2.555 settings - they never left the browser before (this list did not carry them):
+      // Krita's mask sizes, no selection, fill with the edit model + its style + the fill kind
+      for (const k of ["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind"]) if (req[k] != null && req[k] !== "") fd.append(k, String(req[k]));
       if (req.mode !== "remove" && window.H3Neg && H3Neg.get()) fd.append("negative", H3Neg.get());   // 2.419.0: ⊖ the negative docker
       // 2.333.0: the ◈ control layers - one picture each + their settings
       if (req.controls && req.controls.length) {

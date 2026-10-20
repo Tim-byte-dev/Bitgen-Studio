@@ -12144,6 +12144,14 @@ node scripts/test-krita555.js > /tmp/k555.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui555-ui.js > /tmp/ui555.log 2>&1 \
   && ok "2.555.0 browser test: the fill row (Add content first); Pony + Fooocus fills itself with Krita's context, grey for Add content, a blur for Fill; Krea 2 + 👁: add keeps the pixels, fill paints green; engines say what is missing - or SKIP without playwright" \
   || { bad "2.555.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui555.log | head -14; }
+
+# ---- 2.556.0 (⏳ Pending; the References docker in every ✨ mode; mount.js sends the editor's settings)
+node scripts/test-pending556.js > /tmp/p556.log 2>&1 \
+  && ok "2.556.0 units (groupFor / clampPos / caption, apply into the changes group, the queue wiring, refMentions / pickRefNums / composeRefNums, withRefs, refine through the edit model, composePlan 3 pictures, the route's ref0 + ref1, mount.js fields)" \
+  || { bad "2.556.0 units"; grep -a "^FAIL" -A2 /tmp/p556.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui556-ui.js > /tmp/ui556.log 2>&1 \
+  && ok "2.556.0 browser test: two runs queued at once into ⏳ Pending, ✔ Apply into one changes group, 🗑 Delete, the docker kept inside the editor; references with Generate / Edit / Refine / Compose through mount.js; the server's 4-picture fill graph - or SKIP without playwright" \
+  || { bad "2.556.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui556.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -27,6 +27,7 @@ const api = async (u, body, method) => (await fetch(URL_ + u.replace(/^\//, ""),
   try { await fetch(URL_ + "api/docker-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ docks: { imageeditdock: { state: "open", hidden: false, maximized: false } } }) }); } catch { /* fine */ }
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1800, height: 1100 } });
+  await p.addInitScript(() => { window.__H3_PENDING_AUTO = true; });   // 2.556.0: results straight in, as when this test was written (no ⏳ Pending)
   const errs = [];
   p.on("pageerror", (e) => errs.push(e.message));
   const ev = (f, a) => p.evaluate(f, a);

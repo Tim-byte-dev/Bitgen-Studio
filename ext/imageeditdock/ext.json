@@ -79,6 +79,7 @@
     "pcsubject.js",
     "pcimgop.js",
     "pcblendlayer.js",
+    "pcpending.js",
     "imageedit.js",
     "mount.js",
     "ieeditonly.js"

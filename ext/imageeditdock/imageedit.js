@@ -88,6 +88,25 @@
   P.autoMargin = function (box, user) {
     return Math.max(user || 0, Math.round(Math.max(box.w, box.h) * 0.75), Math.round((512 - Math.min(box.w, box.h)) / 2));
   };
+  /** 2.556.0 (the References docker in every ✨ mode): the reference numbers a prompt names - "picture 1", "image 2",
+   *  "pic 3", "photo 1", "ref 2", "reference 1", "<Picture 1>", "<image1>" (lib/refWords.js mentions, in the browser) */
+  P.refMentions = function (text) {
+    const out = [], re = /<\s*(?:picture|image)\s*(\d{1,2})\s*>|\b(?:pictures?|images?|imgs?|pics?|photos?|refs?|references?)\s*(?:no\.?\s*|#\s*)?(\d{1,2})\b/gi;
+    String(text || "").replace(re, (m, a, b) => { const n = parseInt(a || b, 10); if (n >= 1 && !out.includes(n)) out.push(n); return m; });
+    return out;
+  };
+  /** the docker pictures to send (1-based): the ones named (that exist), then `extra` (the ↳ reference dropdown), at most max */
+  P.pickRefNums = function (text, have, max, extra) {
+    const H = Math.max(0, have | 0), out = P.refMentions(text).filter((n) => n <= H);
+    if (extra >= 1 && extra <= H && !out.includes(extra)) out.push(extra);
+    return out.slice(0, Math.max(0, max | 0));
+  };
+  /** ✨ Compose: references are named "ref N" / "reference N" there ("picture N" is a picked layer) */
+  P.composeRefNums = function (text, have) {
+    const out = [], re = /\b(?:refs?|references?)\s*#?\s*(\d{1,2})\b/gi;
+    String(text || "").replace(re, (m, a) => { const n = parseInt(a, 10); if (n >= 1 && n <= (have | 0) && !out.includes(n)) out.push(n); return m; });
+    return out;
+  };
   P.contextRect = function (box, w, h, margin, mult) {
     mult = mult || 16;
     let x = Math.max(0, box.x - margin), y = Math.max(0, box.y - margin);
@@ -2346,10 +2365,12 @@
     async function runAI(opt) {
       opt = opt && typeof opt === "object" && !opt.type ? opt : {};
       if (!S.w) return say("open a picture first");
-      if (S.busy) return say("still working on the last one");
+      if (S.busy && !(E.pending && !E.pending.auto)) return say("still working on the last one");
       if (!api || !api.aiedit) return say("the AI is not connected (reload the page)");
       const mode = S.aiMode;
       if (mode === "compose") return E.runCompose ? E.runCompose() : say("Compose is not loaded (reload the page)");
+      // 2.556.0: the editor never waits - every run queues into ⏳ Pending (pcpending.js); E.pending.auto = the old way
+      const pend = !!(E.pending && !E.pending.auto);
       const source = opt.source && opt.source.width === S.w && opt.source.height === S.h ? opt.source : null;   // 2.541.0
       if (!source) { if (E.beforeGenerate) E.beforeGenerate(mode); }   // 2.442.0: a closed shape active - into it (pcframes.js); 2.541.0: not for a source picture
       let sel = hasSel() && !source ? Uint8Array.from(S.sel) : null;
@@ -2369,8 +2390,21 @@
       const fillId = opt.style || $("ieStyle").value, eng = S.engines || {};
       const fillInfo = (eng.inpaint || []).find((x) => x.id === fillId);
       const editId = (eng.edit || []).some((x) => x.id === fillId) ? fillId : (opt.editStyle || $("ieEditStyle").value || "");
-      const viaEdit = !whole && !clip && S.fillEdit !== false && (mode === "generate" || mode === "remove" || mode === "background")
-        && !!editId && (eng.edit || []).some((x) => x.id === editId) && (!fillInfo || (fillInfo.latent !== false && !fillInfo.helper));   // 2.555.0: a style with Krita's helper fills itself
+      // 2.556.0 (Tim: "check to see if the reference images can still be used in generate, edit, fill, refine, compose
+      // modes"): the References docker's pictures the prompt names ("picture 1", "image 2", "ref 1" - the docker's numbers)
+      // or the ↳ reference dropdown (Edit) go along as the edit model's pictures 2 and 3 - for Generate / Fill / Remove /
+      // New background / Refine the run then goes through the edit model (only it can take pictures)
+      const typed0 = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
+      const refsAll = !opt.noRefs && api.refList ? api.refList() : [];
+      const kxr = mode === "edit" && $("kxRef") && $("kxRef").value !== "" ? +$("kxRef").value + 1 : 0;
+      // the ↳ reference dropdown picked = 2.539.0's way: that picture is the model's Picture 2 and the prompt says so as it is
+      const refLegacy = kxr >= 1 && kxr <= refsAll.length;
+      const refNums = refLegacy ? [kxr] : refsAll.length ? P.pickRefNums(typed0, refsAll.length, 2, 0) : [];
+      const editOk = !!editId && (eng.edit || []).some((x) => x.id === editId);
+      const wantRefs = refNums.length > 0 && mode !== "edit";
+      const viaEdit = !whole && !clip && editOk && (((mode === "generate" || mode === "remove" || mode === "background") && S.fillEdit !== false
+        && (!fillInfo || (fillInfo.latent !== false && !fillInfo.helper)))   // 2.555.0: a style with Krita's helper fills itself
+        || (wantRefs && (mode === "generate" || mode === "remove" || mode === "background" || mode === "refine")));
       // 2.554.0 (Tim: "i think it doesn't know to resize it to the size of the selection - it works if i use qwen2.1 and say
       // transparent background, but the size is not right for the selection"): a style that cannot see around the
       // selection (Krea 2 … with 👁 off or no edit model) draws a whole picture of its own - so it gets the SELECTION'S
@@ -2398,6 +2432,8 @@
       // what the model renders at (<= the MP budget); 2.552.0: a small crop is rendered bigger, as Krita does (a 512 px
       // region of a model trained at 1 MP comes out muddled) - an Edit graph scales its picture itself
       const fit = P.renderSize(box.w, box.h, S.res * 1048576, 16, mode === "edit" || viaEdit ? 0 : 0.75 * 1048576);
+      // 2.556.0: the ⏳ Pending card's picture (what the region looked like)
+      const base = (() => { const k = Math.min(1, 160 / Math.max(box.w, box.h)), c = newCanvas(Math.max(1, Math.round(box.w * k)), Math.max(1, Math.round(box.h * k))); ctx(c).drawImage(src, box.x, box.y, box.w, box.h, 0, 0, c.width, c.height); return c; })();
       const px = (v) => Math.max(1, Math.round(v / fit.scale));            // Krita's sizes are in the render's pixels
       if (viaEdit) {
         // Krita (FillMode.green): the selection painted green for a fill / expand - the model is told to fill the green;
@@ -2434,13 +2470,20 @@
       if (mp) { req.mask_grow = Math.round(mp.grow * fit.scale); req.mask_feather = Math.round(mp.feather * fit.scale); }
       if (whole) req.whole = "1";
       if (viaEdit) { req.fill_edit = "1"; req.edit_style_id = editId; req.fill_kind = mode === "generate" ? (kind === "add" ? "add" : "generate") : mode; }   // 2.553.0; 2.555.0 add
-      // 2.539.0: Edit + a picture from the References docker (Picture 2)
-      if (mode === "edit" && $("kxRef") && $("kxRef").value !== "") {
-        const rr = (api.refList ? api.refList() : [])[+$("kxRef").value];
-        if (rr) {
-          try { req.ref = rr.file || await (await win.fetch(rr.url)).blob(); req.ref_desc = rr.desc || ""; tevIe("ie_ref", "edit"); }
-          catch (e) { return say("could not read that reference picture: " + e.message); }
+      // 2.539.0: Edit + a picture from the References docker (Picture 2); 2.556.0: up to two, named in the prompt or picked,
+      // with an Edit and with every run through the edit model; a style that cannot take pictures gets their descriptions
+      if (refNums.length && (mode === "edit" || viaEdit)) {
+        req.refs = []; req.ref_nums = []; req.ref_descs = [];
+        for (const n of refNums) {
+          const rr = refsAll[n - 1]; if (!rr) continue;
+          try { req.refs.push(rr.file || await (await win.fetch(rr.url)).blob()); req.ref_nums.push(n); req.ref_descs.push(rr.desc || rr.name || ""); }
+          catch (e) { return say(`could not read reference picture ${n}: ${e.message}`); }
         }
+        tevIe("ie_ref", `${mode}:${req.ref_nums.join("+")}`);
+        if (refLegacy) req.ref_nums = [];                       // the server words it the 2.539.0 way (refPrompt)
+      } else if (wantRefs) {
+        req.prompt = prompt + "\n" + refNums.map((n) => `(picture ${n}: ${(refsAll[n - 1] || {}).desc || (refsAll[n - 1] || {}).name || "a reference"})`).join(" ");
+        say(`${mode}: no edit model to take the References docker's picture ${refNums.join(" + ")} - its description goes in the prompt instead`);
       }
       // ◈ the control layers ride along (not with an Edit - an edit model takes the picture itself)
       const ctls = mode === "edit" ? [] : activeControls();
@@ -2450,15 +2493,33 @@
                                                   model: L.control.model || "", blob: await blobOf(controlImage(L, box, fit)) });
       }
       if (mode === "edit" && activeControls().length) say("control layers guide Generate / Refine / Remove - an Edit model takes the picture itself, so they are left out");
-      S.busy = true; $("kxRun").disabled = true;
-      discardResults(true);
+      if (!pend) { S.busy = true; $("kxRun").disabled = true; discardResults(true); }
       // 2.437.0: ✨ Generate Fill in Shape / in Mask (pcgenfill.js) - the result goes onto that layer (clipped / masked)
       const ctxInfo = { box, cropMask, whole, feather: whole || S.genInto || clip ? 0 : S.feather, mode, prompt, into: S.genInto || null, label: opt.label || "", source: source || null,
         orig: origData, mp, soft: false,                                                          // 2.552.0
         blendInto: !S.genInto && opt.into && mode === "generate" && layer() ? layer().id : null };   // 2.444.0: ✔ Apply = into that layer
       S.genInto = null;
       say(`${mode}: ${box.w}×${box.h} crop` + (Math.abs(fit.scale - 1) > 0.01 ? ` rendered at ${fit.w}×${fit.h}` : "") + (fitSel ? " (made at the selection's size - this style cannot see around it; 👁 fills with the edit model)" : "") + ` · ${S.count} result(s)`
-        + (req.controls ? ` · ${req.controls.length} control layer(s)` : "") + "…");
+        + (req.controls ? ` · ${req.controls.length} control layer(s)` : "") + (req.ref_nums && req.ref_nums.length ? ` · + the References docker's picture ${req.ref_nums.join(" + ")}` : "") + "…");
+      if (pend) {                                               // 2.556.0: into ⏳ Pending - the editor stays free
+        const T = opt.keep && S.layers.includes(opt.keep) ? opt.keep : layer();
+        E.pending.track();
+        try {
+          const r = await api.aiedit(req, say);
+          if (!r || !r.jobs) return;
+          ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;
+          const its = r.jobs.map((j, i) => E.pending.add({ seed: j.seed, mode, prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "",
+                                                            info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
+          say(`${mode}: ${its.length} render(s) queued in ⏳ Pending${r.edit_fill ? ` (${r.style_name || "the edit model"} - it sees the picture)` : r.helpers && r.helpers.length ? ` (the Krita AI way: ${r.helpers.join(" + ")})` : ""} - keep working, queue more`);
+          await Promise.all(r.jobs.map(async (j, i) => {
+            const url = await api.awaitResult(j.id, say);
+            if (!url) { E.pending.fail(its[i]); return; }
+            E.pending.ready(its[i], resultLayer(await imgOf(url), ctxInfo));
+          }));
+        } catch (e) { say(`${mode} failed: ${e.message}`); }
+        finally { E.pending.untrack(); }
+        return;
+      }
       try {
         const r = await api.aiedit(req, say);
         if (!r || !r.jobs) return;
@@ -2524,18 +2585,47 @@
       const picks = given ? given.map((p) => ({ name: p.name || "picture", pic: p.canvas })) : (opt.layers || (E.picked ? E.picked() : [])).filter((L) => L && !L.control);
       if (!picks.length) return say("Ctrl-click the layers to use in the Layers panel first - in order: the first is the scene, then the things to bring in (up to 3)");
       if (picks.length > 3) return say("at most 3 layers (the edit models take three pictures) - Ctrl-click one to un-pick it");
-      if (S.busy) return say("still working on the last one");
-      const prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
+      const pend = !!(E.pending && !E.pending.auto);            // 2.556.0: queued into ⏳ Pending
+      if (S.busy && !pend) return say("still working on the last one");
+      let prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
       if (!prompt) return say("say what to make from the layers (\"put the dog from Layer 2 on the sofa in Layer 1\")");
       const pics = [];
       for (let k = 0; k < picks.length; k++) pics.push(await blobOf(onWhite(given ? picks[k].pic : layerPicture(picks[k]), k === 0 ? S.res : 1, !given && k > 0)));
+      // 2.556.0: + the References docker's pictures named "ref N" / "reference N" (up to three pictures in all) - each is
+      // called "Ref N" for the model's line that says which picture is which
+      const refNames = [];
+      if (!given && api.refList) {
+        const all = api.refList(), want = P.composeRefNums(prompt, all.length);
+        for (const n of want) {
+          if (picks.length + refNames.length >= 3) { say("the edit models take three pictures - the extra references stay out"); break; }
+          const rr = all[n - 1];
+          try { const im = await imgOf(rr.url || URL.createObjectURL(rr.file)); const c = newCanvas(im.naturalWidth || im.width, im.naturalHeight || im.height); ctx(c).drawImage(im, 0, 0); pics.push(await blobOf(onWhite(c, 1, false))); refNames.push(`Ref ${n}`); }
+          catch (e) { return say(`could not read reference ${n}: ${e.message}`); }
+        }
+        if (refNames.length) prompt = prompt.replace(/\b(?:refs?|references?)\s*#?\s*(\d{1,2})\b/gi, (m, a) => (refNames.includes(`Ref ${+a}`) ? `Ref ${+a}` : m));
+      }
       const fit = P.fitSize(S.w, S.h, S.res * 1048576, 16);
-      S.busy = true; $("kxRun").disabled = true;
-      discardResults(true);
+      if (!pend) { S.busy = true; $("kxRun").disabled = true; discardResults(true); }
       const ctxInfo = { box: { x: 0, y: 0, w: S.w, h: S.h }, cropMask: null, whole: true, feather: 0, mode: "compose", prompt };
-      say(`compose: ${picks.map((L, k) => `Picture ${k + 1} = ${L.name}`).join(", ")} · ${S.count} result(s)…`);
+      const names = picks.map((L) => L.name).concat(refNames);
+      say(`compose: ${names.map((nm, k) => `Picture ${k + 1} = ${nm}`).join(", ")} · ${S.count} result(s)…`);
+      const creq = { pics, names, prompt, style_id: $("ieEditStyle").value, count: S.count, width: fit.w, height: fit.h, scene_refs: opt.sceneRefs || undefined };
+      if (pend) {
+        const T = opt.keep && S.layers.includes(opt.keep) ? opt.keep : layer();
+        const base = (() => { const k = Math.min(1, 160 / Math.max(S.w, S.h)), c = newCanvas(Math.round(S.w * k), Math.round(S.h * k)); ctx(c).drawImage(given ? picks[0].pic : flatten(), 0, 0, c.width, c.height); return c; })();
+        E.pending.track();
+        try {
+          const r = await api.compose(creq, say);
+          if (!r || !r.jobs) return;
+          const its = r.jobs.map((j, i) => E.pending.add({ seed: j.seed, mode: "compose", prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "", info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
+          say(`compose: ${its.length} render(s) queued in ⏳ Pending - keep working, queue more`);
+          await Promise.all(r.jobs.map(async (j, i) => { const url = await api.awaitResult(j.id, say); if (!url) { E.pending.fail(its[i]); return; } E.pending.ready(its[i], resultLayer(await imgOf(url), ctxInfo)); }));
+        } catch (e) { say(`compose failed: ${e.message}`); }
+        finally { E.pending.untrack(); }
+        return;
+      }
       try {
-        const r = await api.compose({ pics, names: picks.map((L) => L.name), prompt, style_id: $("ieEditStyle").value, count: S.count, width: fit.w, height: fit.h, scene_refs: opt.sceneRefs || undefined }, say);
+        const r = await api.compose(creq, say);
         if (!r || !r.jobs) return;
         S.results = r.jobs.map((j) => ({ id: j.id, seed: j.seed, url: null, layer: null, info: ctxInfo }));
         if (!opt.direct) renderResults();
@@ -2562,6 +2652,9 @@
       finally { S.busy = false; $("kxRun").disabled = false; }
     }
     E.runCompose = runCompose; E.layerPicture = layerPicture; E.onWhite = onWhite;
+    // 2.556.0: ⏳ Pending shows a result over the canvas (null = off)
+    E.setPreview = (c) => { S.preview = c || null; S.previewIndex = -1; renderLayers(); };
+    E.resultLayer = (im, info) => resultLayer(im, info);
 
     /** the result as a full-size transparent layer: the model's pixels inside
      *  the feathered selection only */
@@ -2817,7 +2910,8 @@
     if (win.PCSketchCADUI && win.PCSketchCADUI.install) win.PCSketchCADUI.install(E);   // 2.464.0: the sketch's Measure tool, units, DXF / SVG out, DXF in
     if (win.PCHandles && win.PCHandles.install) win.PCHandles.install(E);   // 2.452.0: the Move tool's scale / rotate handles, transform options
     if (win.PCSelHl && win.PCSelHl.install) win.PCSelHl.install(E);       // 2.470.0: hover / picked outlines, a click on nothing picks nothing, the Move tool after drawing
-    if (win.PCMultiSel && win.PCMultiSel.install) win.PCMultiSel.install(E);   // 2.474.0: Esc = no tool, the selection box, several layers picked, Del
+    if (win.PCMultiSel && win.PCMultiSel.install) win.PCMultiSel.install(E);
+    if (win.PCPending && win.PCPending.install) win.PCPending.install(E);   // 2.556.0: ⏳ Pending - the queued AI results, ✔ Apply into a changes group   // 2.474.0: Esc = no tool, the selection box, several layers picked, Del
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab

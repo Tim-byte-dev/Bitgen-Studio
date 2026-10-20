@@ -41,7 +41,7 @@ check("Blender mode Edit: the reference (the live view / the layer's view / a Bl
 check("...the prompt docker sends a Blender layer's Edit there (a 3D layer's to pc3d), the chip counts both, pc3d's Edit from the scene is a new layer too (nothing left over the canvas)",
   /if \(E\.blendLayer && E\.blendLayer\.isCurrent\(\)\) \{ E\.blendLayer\.editFromScene/.test(PL) && /E\.blendLayer && E\.blendLayer\.isCurrent\(\)/.test(OP) && /direct: true, keep: L, label: "🟧 " \+ L\.l3d\.name/.test(C3));
 const ext = JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts;
-check("wiring: pcblendlayer.js loaded before imageedit.js, installed after PC3D", ext.indexOf("pcblendlayer.js") === ext.indexOf("imageedit.js") - 1 && IE.indexOf("PCBlendLayer.install(E)") > IE.indexOf("PC3D.install(E)"));
+check("wiring: pcblendlayer.js loaded before imageedit.js, installed after PC3D", ext.indexOf("pcblendlayer.js") >= 0 && ext.indexOf("pcblendlayer.js") < ext.indexOf("imageedit.js") && IE.indexOf("PCBlendLayer.install(E)") > IE.indexOf("PC3D.install(E)"));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

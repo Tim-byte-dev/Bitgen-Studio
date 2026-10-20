@@ -23,6 +23,7 @@ const api = async (u, b) => { const r = await fetch(URL_.replace(/\/$/, "") + u,
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1700, height: 1000 } });
+  await p.addInitScript(() => { window.__H3_PENDING_AUTO = true; });   // 2.556.0: results straight in, as when this test was written (no ⏳ Pending)
   const errs = [];
   p.on("pageerror", (e) => errs.push(e.message + " @ " + String(e.stack || "").split("\n").slice(1, 3).join(" | ")));
   p.on("dialog", (d) => d.accept().catch(() => {}));

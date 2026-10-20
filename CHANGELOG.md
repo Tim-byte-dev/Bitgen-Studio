@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.556.0** — ⏳ Pending (Queue + Apply into a Changes Group); References in Every ✨ Mode; Mount.js Sends the Editor's Settings
 - **2.555.0** — The Krita AI Plugin's Fill per Model Family (Fooocus / Inpaint ControlNets / Mat), Krita's Bounds + Fill Modes
 - **2.554.0** — A Style That Cannot See Around a Selection Draws at the Selection's Size
 - **2.553.0** — Fill with the Edit Model (Green + Krita's Instruction); Edit Keeps to the Selection / The Layer's Pixels

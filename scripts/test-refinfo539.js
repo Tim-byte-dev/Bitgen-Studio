@@ -113,9 +113,9 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
     /^Picture 1 is the scene; Picture 2 is a reference \(a brass floor lamp\)\./.test(AE.refPrompt("put it by the sofa", "a brass floor lamp")) && /\nput it by the sofa$/.test(AE.refPrompt("put it by the sofa", "x")) && /^<image1> is the scene; <image2> is a reference\./.test(AE.refPrompt("t", "", true)));
   const ra = read("routes", "aiedit.js"), ie = read("ext", "imageeditdock", "imageedit.js"), mt = read("ext", "imageeditdock", "mount.js");
   check("/api/aiedit takes ref0 + ref_desc with an Edit (a second picture slot when the graph has one); other modes refuse it",
-    /\{ name: "ref0", maxCount: 1 \}/.test(ra) && /aiEdit\.refPlan\(style, core\.BASE\)/.test(ra) && /names\.ref \? \[names\.crop, names\.ref\]/.test(ra) && /a reference picture goes with ✨ Edit/.test(ra));
+    /\{ name: "ref0", maxCount: 1 \}/.test(ra) && /aiEdit\.composePlan\(style, 1 \+ nr, core\.BASE\)/.test(ra) && /names\.refs\.length \? \[names\.crop\]\.concat\(names\.refs\)/.test(ra) && /a reference picture goes with ✨ Edit/.test(ra));
   check("the editor: a reference picture dropped on an open picture = a new layer named by its description (2.549.0: after ▦ Add as a layer); ✨ AI Edit has a 'reference' dropdown (the dock's pictures)",
-    /asLayer: true/.test(mt) && /dropPicture\(e, d\.url, d\.name\)/.test(ie) && /data-as="layer">▦ Add as a layer/.test(ie) && /id="kxRowRef"/.test(ie) && /function paintRefs\(\)/.test(ie) && /req\.ref = rr\.file/.test(ie) && /fd\.append\("ref0", req\.ref/.test(mt) && /refList: \(\) =>/.test(mt));
+    /asLayer: true/.test(mt) && /dropPicture\(e, d\.url, d\.name\)/.test(ie) && /data-as="layer">▦ Add as a layer/.test(ie) && /id="kxRowRef"/.test(ie) && /function paintRefs\(\)/.test(ie) && /req\.refs\.push\(rr\.file/.test(ie) && /fd\.append\("ref0", req\.ref/.test(mt) && /fd\.append\(`ref\$\{i\}`, b/.test(mt) && /refList: \(\) =>/.test(mt));
 
   /* ---- the checklist */
   const tp = JSON.parse(read("lib", "testPlan.json")), gg = tp.groups.find((x) => x.id === "g539");

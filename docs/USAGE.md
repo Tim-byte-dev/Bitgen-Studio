@@ -2360,6 +2360,27 @@ Krita AI way**: the Fooocus inpaint head + patch (models/inpaint), MAT (models/i
 need (models/controlnet). If the Krita plugin already downloaded them, add Krita's ComfyUI models folder in Settings →
 ComfyUI → Folders instead of downloading them again.
 
+**2.556.0 - ⏳ Pending: queue as many as you like.** ✨ Generate, Edit, Refine, Fill, Remove, New background and Compose never
+wait for the last one any more - press again (another selection, another prompt, another layer) and the new renders queue
+behind the others. Every result lands in **⏳ Pending**, a small docker that floats *inside* the image editor (drag it by
+its title; ✕ hides it, the ✨ AI panel's **⏳ Pending** button shows it again, and every new render brings it back). Each
+card shows the result over the area it was made for (click the picture to preview it over the canvas), what it was and
+which layer it belongs to:
+- **✔ Apply** puts it on a new layer **above the layer that was selected when you asked for it** - inside one group per
+  layer, **"✨ changes: <layer>"**, made the first time and reused after that (each Apply is one undo step).
+- **🗑 Delete** throws it away. **✔ all** / **🗑 all** in the title bar do every card.
+
+**The References docker in every ✨ mode (2.556.0).** Name a reference picture in the prompt by its number in the docker -
+"picture 1", "image 2", "ref 3" - and it goes along:
+- **Edit**: up to two pictures (the ↳ reference dropdown still works as before: that picture is "Picture 2").
+- **Generate / Fill / Remove / New background / Refine**: the run goes through the **edit model** (only an edit model can
+  take pictures), the selection is filled using them, and the numbers are rewritten for the model ("picture 3" in the docker
+  becomes the model's "Picture 2"). With no edit model the pictures' descriptions are added to the prompt instead.
+- **Compose**: write "ref 1" / "reference 2" (in Compose "picture N" means the N-th picked layer); the picture is added after
+  the picked layers (three pictures in all).
+Also fixed: the editor's settings from 2.552.0-2.555.0 (the mask sizes, 👁 fill with the edit model, Add content / Fill)
+were dropped on the way to the server - they reach it now.
+
 - While the image editor is **open** (on screen, not collapsed) the prompt docker's Generate mode is **🖼 Image**, and a
   **→ ▦ canvas** chip beside it says where the pictures go. When the editor closes the mode it was in comes back (a
   mode picked while it was open is kept). Opening / closing the editor is what switches it; the project keeps the mode

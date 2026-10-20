@@ -57,6 +57,7 @@ execFileSync(exe, ["-b", "--factory-startup", "-P", path.join(T, "make.py"), "--
 (async () => {
   const b = await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
   const p = await b.newPage({ viewport: { width: 1900, height: 1150 } });
+  await p.addInitScript(() => { window.__H3_PENDING_AUTO = true; });   // 2.556.0: results straight in, as when this test was written (no ⏳ Pending)
   const errs = []; p.on("pageerror", (e) => errs.push(e.message + " @ " + String(e.stack || "").split("\n").slice(1, 3).join(" | ")));
   p.setDefaultTimeout(30000);
   const ev = (f, a) => p.evaluate(f, a);

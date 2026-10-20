@@ -76,7 +76,7 @@ check("aiEdit.editMasked: the style's edit graph (or the reference picture's gra
 /* 4 wiring */
 const RA = rd("routes", "aiedit.js"), IE = rd("ext", "imageeditdock", "imageedit.js");
 check("the route: an Edit in a selection runs editMasked, images [crop, mask, (ref)], the answer says soft",
-  /editMask = aiEdit\.editMasked\(plan, refGraph, core\.BASE, b\)/.test(RA) && /editMask \? \[names\.crop, names\.mask\]\.concat\(names\.ref \? \[names\.ref\] : \[\]\)/.test(RA) && /soft: !!\(editMask \|\| \(plan\.graph && plan\.mode !== "edit"\)\)/.test(RA) && /b\.whole !== "1"/.test(RA));
+  /editMask = aiEdit\.editMasked\(plan, refGraph, core\.BASE, b\)/.test(RA) && /editMask \? \[names\.crop, names\.mask\]\.concat\(names\.refs\)/.test(RA) && /soft: !!\(editMask \|\| \(plan\.graph && plan\.mode !== "edit"\)\)/.test(RA) && /b\.whole !== "1"/.test(RA));
 check("the editor: renderSize with a 0.75 MP floor (not for Edit), Krita's mask sizes in render pixels, whole flagged; the result blended out to the reach (soft) and colour-matched",
   /P\.renderSize\(box\.w, box\.h, S\.res \* 1048576, 16, mode === "edit" \|\| viaEdit \? 0 : 0\.75 \* 1048576\)/.test(IE) && /req\.mask_grow = Math\.round\(mp\.grow \* fit\.scale\)/.test(IE) && /if \(whole\) req\.whole = "1"/.test(IE)
   && /ctxInfo\.soft = !!r\.soft && !ctxInfo\.into && !clip/.test(IE) && /P\.morph\(I\.cropMask, W, H, I\.mp\.reach\)/.test(IE) && /if \(grown && I\.orig && I\.orig\.length === d\.data\.length\) P\.colorMatch\(d\.data, I\.orig, grown, W, H, 1\)/.test(IE));

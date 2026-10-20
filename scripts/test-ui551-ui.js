@@ -22,6 +22,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1700, height: 1050 } });
+  await p.addInitScript(() => { window.__H3_PENDING_AUTO = true; });   // 2.556.0: results straight in, as when this test was written (no ⏳ Pending)
   const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   const ev = (f, a) => p.evaluate(f, a);
   try {
