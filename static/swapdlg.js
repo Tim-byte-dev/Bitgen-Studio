@@ -229,7 +229,7 @@
       + '<div class="swBar">'
       + '<button type="button" class="ghost gbtn swSave" title="Save a copy of the previewed segment to the project\'s Video assets">💾 Save</button>'
       + '<button type="button" class="ghost gbtn swRetry" title="Render the previewed segment again with a new seed">↻ Retry</button>'
-      + '<button type="button" class="ghost gbtn swUp" title="Upscale the previewed segment - the same window and seed with the video docker ⚙ upscaler">⏫ Upscale</button>'
+      + '<button type="button" class="ghost gbtn swUp" title="Upscale the previewed segment - the same window and seed with the StoryBoard ⚙ upscaler">⏫ Upscale</button>'
       + '<button type="button" class="gbtn swCompile" title="Join the ticked KEPT segments (vidSwap), in time order, into one video in the Video assets">🎬 Compile</button>'
       + '</div><div class="swF swOutName"></div>'
       + '<div class="swLbl">Finished · vidTemp</div><div class="swList swTempL"></div>'

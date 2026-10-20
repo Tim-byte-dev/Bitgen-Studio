@@ -77,7 +77,7 @@
       foot.className = "kg-foot";
       foot.innerHTML = '<span class="kg-msg" id="kgMsg" aria-live="polite"></span>'
         + '<button type="button" class="ghost" id="kgStyleBtn">🎤 Style</button>'
-        + '<button type="button" class="ghost" id="kgSave" title="Keep the corrected lyrics / words for this song without making an overlay now (the video docker\'s scene overlays use them too)">💾 Save words</button>'
+        + '<button type="button" class="ghost" id="kgSave" title="Keep the corrected lyrics / words for this song without making an overlay now (the StoryBoard\'s scene overlays use them too)">💾 Save words</button>'
         + '<button type="button" class="go" id="kgGo" style="width:auto;margin-top:0;padding:6px 22px">Generate</button>';
       dlg.appendChild(body); dlg.appendChild(foot);
       $("kgSave").addEventListener("click", function () { saveOnly(); });   // 2.408.0

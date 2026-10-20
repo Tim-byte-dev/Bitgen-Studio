@@ -12056,6 +12056,14 @@ node scripts/test-themeedit544.js > /tmp/te544.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui544-ui.js > /tmp/ui544.log 2>&1 \
   && ok "2.544.0 browser test: ☐ hidden in Expert mode - gone with Expert on, shown in Basic, faint in edit mode, untick = back - or SKIP without playwright" \
   || { bad "2.544.0 theme xhide browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui544.log | head -14; }
+
+# ---- 2.545.0 (▣ Docker: an empty docker the others drop into; the StoryBoard keeps its name)
+node scripts/test-dockgroup545.js > /tmp/dg545.log 2>&1 \
+  && ok "▣ Docker units (2.545.0: slotIn, the layouts, Ctrl+Alt+D, the ⇱ dockers, the layout kept, StoryBoard everywhere)" \
+  || { bad "2.545.0 docker group units"; grep -a "^FAIL" -A2 /tmp/dg545.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui545-ui.js > /tmp/ui545.log 2>&1 \
+  && ok "2.545.0 browser test: ▣ Docker / Ctrl+Alt+D, rename in place, ⇱ Music + Stems dropped in at the line, splitter, ⇆ / ⇅ / tabs, kept, ⇲ back, the StoryBoard stays StoryBoard - or SKIP without playwright" \
+  || { bad "2.545.0 docker group browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui545.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

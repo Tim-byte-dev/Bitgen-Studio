@@ -34,7 +34,7 @@ check("Basic Settings 1280x720: the render is 1280x720, said", o.width === 1280 
   && o.notes.includes("render size 1280x720 (Basic Settings, the left dock)"), o);
 o = RS.jobOverrides({ basic_width: 1280, basic_height: 720, res: "1080", aspect: "16:9" }, base);
 check("the ⚙ Resolution still wins (and says how to hand it back to Basic Settings)", o.width === 1936 && o.height === 1088
-  && o.notes.some((n) => /the video docker's ⚙ - set its Resolution to default to use Basic Settings/.test(n)), o);
+  && o.notes.some((n) => /the StoryBoard's ⚙ - set its Resolution to default to use Basic Settings/.test(n)), o);
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bsz_"));
 RS.save(tmp, { steps: 12, upscaler: "x.safetensors" });
 let r = RS.rememberBasic(tmp, { width: 1024, height: 576 });

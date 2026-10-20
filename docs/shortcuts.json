@@ -9,6 +9,10 @@
           "Find anything - a docker, a setting, a button, a style, the guide, a shortcut (the 🔍 in the menu bar too). Over the timeline's layers Ctrl+K still splits, in the image editor it is its own palette"
         ],
         [
+          "Ctrl+Alt+D",
+          "Show / hide ▣ Docker - an empty docker the others drop into (side by side or stacked; ⇱ on a docker's title floats it, then drag it in by its title)"
+        ],
+        [
           "P",
           "Show / hide the prompt docker (not while typing in a box; over the image editor P is its Pen)"
         ],

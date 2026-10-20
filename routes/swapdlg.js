@@ -531,7 +531,7 @@ function mount(app) {
       if (!size) return res.status(400).json({ error: `could not read the size of ${r0.file} (is ffprobe installed?)` });
       const u = renderSettings.upscaleDims(rs.upscale_res, size.width, size.height);
       if (!(u && (u.width > size.width || u.height > size.height)))
-        return res.status(400).json({ error: `${r0.file} is already ${size.width}x${size.height} - pick a larger Upscale resolution in the video docker's ⚙` });
+        return res.status(400).json({ error: `${r0.file} is already ${size.width}x${size.height} - pick a larger Upscale resolution in the StoryBoard's ⚙` });
       stage = { model: rs.upscaler, width: u.width, height: u.height };
     }
     const down = r0.engine === "viggle_native" ? "" : await comfyUp();          // 2.351.0: no ComfyUI for native

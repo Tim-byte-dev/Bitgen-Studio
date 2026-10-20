@@ -87,7 +87,7 @@ const SC = require(path.join(ROOT, "lib", "sceneCount"));
     fs.writeFileSync(path.join(d, "scenes.txt"), "scenes: 7\n");
     check("scenes.txt's first number (1-40) when the field is blank; the field wins over it; the request's number last",
       SC.fromFile(d) === 7 && SC.pick("", d, 3).n === 7 && SC.pick("5", d, 3).n === 5
-      && SC.pick("5", d, 3).source === "the video docker's Scenes field" && SC.pick("", d, 3).source === "scenes.txt");
+      && SC.pick("5", d, 3).source === "the StoryBoard's Scenes field" && SC.pick("", d, 3).source === "scenes.txt");
     fs.writeFileSync(path.join(d, "scenes.txt"), "99");
     check("...an out-of-range file is ignored; then the request's number",
       SC.fromFile(d) === 0 && SC.pick(null, d, 4).n === 4 && SC.pick(null, d, 4).source === "your request");

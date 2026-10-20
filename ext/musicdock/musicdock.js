@@ -96,7 +96,7 @@ $("muVidGo") && ($("muVidGo").onclick = function () {
       var got = ((d && d.plan && d.plan.shots) || []).length
         || ((d && d.shots) || []).length || n;
       $("muVidMsg").textContent = "🎬 screenplay is on the scene board - "
-        + got + " scene(s). Open the video docker and press ▶.";
+        + got + " scene(s). Open the StoryBoard and press ▶.";
     })
     .catch(function (er) {
       $("muVidGo").disabled = false;

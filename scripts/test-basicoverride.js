@@ -58,11 +58,11 @@ check("rememberBasic: kept even without a usable size; the ⚙ untouched",
 // 3
 let j = rs.jobOverrides(rec, { width: 1280, height: 720 });
 check("Override ON: Basic's 15 steps beat the ⚙'s 6, the note says so", j.steps === 15
-  && j.notes.includes("steps 15 (Basic Settings - Override style is on; the video docker's ⚙ says 6)"), j.notes);
+  && j.notes.includes("steps 15 (Basic Settings - Override style is on; the StoryBoard's ⚙ says 6)"), j.notes);
 check("...its CFG too", j.cfg === 1 && j.notes.some((n) => /cfg 1 \(Basic Settings - Override style/.test(n)));
 rs.rememberBasic(D, { override: false, steps: 15, cfg: 3 });
 j = rs.jobOverrides(rs.read(D), {});
-check("Override OFF: the ⚙ rules (6), cfg the default 1", j.steps === 6 && j.cfg === 1 && j.notes.includes("steps 6 (the video docker's ⚙)"), j);
+check("Override OFF: the ⚙ rules (6), cfg the default 1", j.steps === 6 && j.cfg === 1 && j.notes.includes("steps 6 (the StoryBoard's ⚙)"), j);
 rs.save(D, { steps: null });
 j = rs.jobOverrides(rs.read(D), {});
 check("...no ⚙ steps: the workflow's own, the note says how to override", j.steps === 0

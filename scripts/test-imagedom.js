@@ -2305,10 +2305,10 @@ function route(url, opts) {
         && MJ.includes('" Video style: " + style')
         && MJ.includes('" Locations to use: " + envs.join(", ")')
         && MJ.includes("THE LYRICS:"));
-  check("empty lyrics and an empty cast are refused in words; the answer points at the video docker",
+  check("empty lyrics and an empty cast are refused in words; the answer points at the StoryBoard",
         MJ.includes("the lyrics box is empty")
         && MJ.includes("tick at least one character")
-        && MJ.includes("Open the video docker"));
+        && MJ.includes("Open the StoryBoard"));
 }
 
 console.log(`RESULT: ${pass} passed, ${fail} failed`);

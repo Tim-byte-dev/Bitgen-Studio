@@ -125,7 +125,7 @@
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function say(t, cls) { var m = $("brMsg"); if (m) { m.textContent = t || ""; m.className = "bnote " + (cls || ""); } }
-  var AREAS = ["Timeline", "Image editor", "Video docker", "Music", "Prompt / generate", "Queue", "Settings", "ComfyUI", "Assistant (LLM)", "Vision model", "Install / setup", "Export", "Other"];
+  var AREAS = ["Timeline", "Image editor", "StoryBoard", "Music", "Prompt / generate", "Queue", "Settings", "ComfyUI", "Assistant (LLM)", "Vision model", "Install / setup", "Export", "Other"];
   /** the floating dockers open now (SecFloat's own state - a fixed window has no offsetParent) */
   function shownDockers() {
     var W = (root.SecFloat && SecFloat.windows) || {};

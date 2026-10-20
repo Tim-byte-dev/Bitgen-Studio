@@ -1069,7 +1069,7 @@
       + '<div style="display:flex;gap:2px;align-items:center">'
       + '<input type="number" min="0" step="1" data-scseed="' + r.n + '" '
       + 'value="' + (r.user_seed != null ? r.user_seed : "") + '" placeholder="seed" '
-      + 'title="Scene ' + r.n + '\'s own seed - blank: the video docker\'s ⚙ rule (a fresh random seed, or the same seed for every scene)'
+      + 'title="Scene ' + r.n + '\'s own seed - blank: the StoryBoard\'s ⚙ rule (a fresh random seed, or the same seed for every scene)'
       + (r.seed_used != null ? ". Its last take used " + r.seed_used : "") + '" '
       + 'aria-label="Seed for scene ' + r.n + '" style="width:58px;font-size:.7rem;padding:1px 3px">'
       + (r.seed_used != null && Number.isSafeInteger(Number(r.seed_used))

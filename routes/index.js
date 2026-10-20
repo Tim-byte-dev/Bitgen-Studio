@@ -1343,7 +1343,7 @@ function mount(app) {
           + "(Ref / F-L / Text in Basic Settings) or in the 🥽 VR World dialog; music videos run on MiniMax H3 or LTX 2.5" });
       if (vs0 && require("../lib/ltx").isLtxStyle(vs0))
         return res.status(400).json({ error: `"${vs0.name}" is an LTX style - LTX music videos run on the scene board: `
-          + "Video docker -> Workflow \"LTX 2.5\", load the song, ▶ render (each scene lip-syncs to its slice)" }); }
+          + "StoryBoard -> Workflow \"LTX 2.5\", load the song, ▶ render (each scene lip-syncs to its slice)" }); }
     const grid = gridFor((core.getConfig().engine || {}).backend);
     const shotsIn = Array.isArray(b.shots) ? b.shots : [];
     if (!shotsIn.length) return res.status(400).json({ error: "no shots — add at least one" });
@@ -3197,7 +3197,7 @@ const trap = require("../lib/trap");
       content: llmChat.CHAT_SYSTEM + llmChat.selectionContext(core.STYLES_DIR, b.context,
         recalled.filter((m) => m.role === "user").map((m) => m.text).join("\n"))
         + chatRecall.castNote(charsLib.list(b.project), envsLib.list(b.project))
-        + (boardPrompt ? "\n\nTHE BOARD'S GLOBAL PROMPT (the video docker's "
+        + (boardPrompt ? "\n\nTHE BOARD'S GLOBAL PROMPT (the StoryBoard's "
             + "shared prompt — any screenplay you discuss or draft must be "
             + "consistent with it):\n" + boardPrompt : "")
         + tmpRag

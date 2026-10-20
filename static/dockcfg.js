@@ -27,7 +27,7 @@
   var BOTTOM = ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "stemsdock",
                 "sfxdock", "chatdock", "promptdock", "consoledock"];
   var SIDE = ["ldock", "refs", "assets", "qdock", "rdock"];
-  var NAMES = { previewdock: "Preview", timelinedock: "Timeline", videodock: "Video", imageeditdock: "Image editor",
+  var NAMES = { previewdock: "Preview", timelinedock: "Timeline", videodock: "StoryBoard", imageeditdock: "Image editor",
                 comfydock: "ComfyUI", musicdock: "Music", stemsdock: "Stems", sfxdock: "SFX", chatdock: "Chat",
                 promptdock: "Prompt", consoledock: "Console" };
   var SAME = 40;                     // window sizes within 40 px are "the same screen"

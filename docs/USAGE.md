@@ -82,7 +82,7 @@ In the **Video** docker's **Characters** section:
 
 ![The scene board](images/video-docker.png)
 
-1. **Workflow** (top of the Video docker): *Native audio · ref2va / fl2va* —
+1. **Workflow** (top of the StoryBoard): *Native audio · ref2va / fl2va* —
    each scene is its own clip with video **and** sound.
 2. **Scenes**: type how many scenes you want, or leave it blank — then
    `projects\<name>\scenes.txt`, the number in your request, or the LLM
@@ -120,11 +120,11 @@ In the **Video** docker's **Characters** section:
 7. The take bar under the board: **▶** watch · **✔** keep · **↻** redo ·
    **⇄** swap the character. **⏫** upscales a take you like with the ⚙
    upscaler (no new render).
-8. **🎬 Compile** (at the top of the Video docker) joins the rendered takes
+8. **🎬 Compile** (at the top of the StoryBoard) joins the rendered takes
    into one film, in scene order. From 2.391.0 the board no longer has its
    own 🎬 Produce and ⇥ Timeline buttons.
 
-The **info line** at the bottom of the Video docker is the same height as the
+The **info line** at the bottom of the StoryBoard is the same height as the
 status bar. It shows the docker's latest message; hover it to read the whole
 text.
 
@@ -146,7 +146,7 @@ A full **PDF guide** with every shortcut key is in `docs\bitGen-Studio-Guide.pdf
 
 **⚙** (render settings) sets the scenes' size, steps, LoRAs, the Sage /
 Spectrum / Comfy Kitchen accelerators, the upscaler and the tail frames used
-for continuity. **🆕 New / 💾 Save / 📂 Load** at the top of the Video docker
+for continuity. **🆕 New / 💾 Save / 📂 Load** at the top of the StoryBoard
 start, save and reload whole movies (cast, chapters, scenes and renders).
 
 ## A music video
@@ -190,7 +190,7 @@ beside the template list:
 The **Seconds**, **Width / Height** (rounded to multiples of 32) and **Seed**
 fields apply; clips are 24 fps, 1–30 s.
 
-**On the scene board.** Set the Video docker's **Workflow** to **LTX 2.5**.
+**On the scene board.** Set the StoryBoard's **Workflow** to **LTX 2.5**.
 Each scene's card decides the mode:
 
 | scene | no song | with the board's song |
@@ -550,7 +550,7 @@ A clip with a changed speed (🎬) has to go back to 100 % before it can be cut 
   or nudge its timing here; **Generate** keeps your corrections for that song (*↺ undo my corrections* removes them).
   Changing the lyrics later starts again from the new lyrics.
 - **💾 Save words** keeps the corrections for the song without making an overlay now.
-- **From the video docker**: the **✎** beside 🎤 Karaoke opens this dialog on the board's song. After **💾 Save words**,
+- **From the StoryBoard**: the **✎** beside 🎤 Karaoke opens this dialog on the board's song. After **💾 Save words**,
   every scene that already has a lyrics overlay gets it remade with the corrected words (and the new one replaces the
   old on the timeline's Karaoke layer).
 
@@ -570,7 +570,7 @@ H3, Wan 2.1 / 2.2 and LTX 2.3 / 2.5 - whatever the style says:
 The line under the switch says what it is deciding right now. Unticked, each style's own settings rule, as before.
 Generate takes the prompt docker's text; the chat's ⬇ To prompt / ▶ buttons and Enhance's **Generate** send theirs the
 same way (Enhance's Generate used to fail with an LTX style). The scene board's ▶ also uses the model, steps and CFG
-(its scenes keep their own seed rule from the video docker's ⚙). LTX models are distilled for 8 steps and CFG 1 - more
+(its scenes keep their own seed rule from the StoryBoard's ⚙). LTX models are distilled for 8 steps and CFG 1 - more
 steps or a higher CFG changes the look and takes longer.
 
 ## ✨ Effects and ◐ adjustment layers (2.409.0)
@@ -829,7 +829,7 @@ usual.
 
 ## 🥽 VR World (a performer inside a 360° / 180° picture)
 
-The video docker's **🥽 VR World** button opens the dialog.
+The StoryBoard's **🥽 VR World** button opens the dialog.
 
 1. **🌐 World:** choose a 360° or 180° picture, or drop one or an Image asset. The type is read from the name
    (`_360`, `_360_TB`, `_360_LR`, `_180_LR`, `SBS`, `TB`...) or the shape. Check the **Type** if the dialog says
@@ -911,7 +911,7 @@ log says so (swap the rest with a later start).
 
 **A whole movie — the Swap dialog**
 
-The Video docker's **⇄ Swap** button opens the character swap dialog, for
+The StoryBoard's **⇄ Swap** button opens the character swap dialog, for
 footage longer than one run (about 15 s):
 
 - **Left** — click the box to choose the picture of the new character (or drop
@@ -926,7 +926,7 @@ footage longer than one run (about 15 s):
   under it select a segment, **▶** swaps just that one, **✕** drops it.
 - **Right** — the result preview with **💾 Save** (a copy to the Video
   assets), **↻ Retry** (same window, new seed), **⏫ Upscale** (same window and
-  seed with the Video docker ⚙ upscaler) and **🎬 Compile**.
+  seed with the StoryBoard ⚙ upscaler) and **🎬 Compile**.
   Finished segments land in `projects/<name>/vidTemp`; **✓ Keep** moves one to
   `projects/<name>/vidSwap`; Compile joins the ticked kept segments in time
   order into one video in the Video assets (`<video>_swapped.mp4`).
@@ -1181,7 +1181,7 @@ motion). Then:
 - **F/L** (fl2va): the first frame performs it.
 - **t2va** is refused, because there is no one to animate.
 
-**On the scene board:** set the Video docker's *Workflow* to **H3_Viggle**.
+**On the scene board:** set the StoryBoard's *Workflow* to **H3_Viggle**.
 Each scene then shows a **🎬 Motion** slot. Choose… picks a video from the
 project, another scene's take, or a file; ✕ removes it. The scene's type
 picks the variant:
@@ -1252,7 +1252,7 @@ means every cut is sample-exact and cutting again never loses quality.
 
 ## Transitions between song segments (bridge scenes)
 
-On the video docker's song strip, tick **Transition** (before 💾), set its length in seconds (0.1 - 4) and a
+On the StoryBoard's song strip, tick **Transition** (before 💾), set its length in seconds (0.1 - 4) and a
 type, then press 💾. Every segment except the last gives up that many seconds at its end to a **bridge**
 scene, so each segment still starts on the cut you placed. The board then reads, for three segments:
 scene 1, bridge, scene 2, bridge, scene 3. The song's .seg file keeps your cuts unchanged.
@@ -1276,7 +1276,7 @@ Transition and saving removes the bridges.
 
 Board renders (▶ on a card, ↻ redo, Render selected - the native-audio music video included) are rendered at:
 
-1. the video docker's ⚙ **Resolution**, when it is set to 480p/540p/720p/1080p;
+1. the StoryBoard's ⚙ **Resolution**, when it is set to 480p/540p/720p/1080p;
 2. otherwise the left **Basic Settings** width x height (its Resolution/Aspect pickers, or the custom fields) -
    sent with every press and kept for the project, so queued and auto-started scenes use it too;
 3. otherwise the app default size (Settings).
@@ -1339,7 +1339,7 @@ position marker, or makes a new one there. Properties without keyframes stay as 
 
 ## Render size with H3
 
-H3 renders in steps of 32 pixels. In the video docker's ⚙, **H3 size** picks what happens to a size between steps:
+H3 renders in steps of 32 pixels. In the StoryBoard's ⚙, **H3 size** picks what happens to a size between steps:
 **704** rounds down (1280×720 renders as 1280×704), **736** renders 1280×736 and crops the take back to exactly
 1280×720 (about 4% slower). Takes rendered before 2.379.2 have a dark strip at the bottom; render them again.
 
@@ -1360,10 +1360,10 @@ place each take straight after the previous one instead, untick "Place each rend
   to overlap clips.
 - The arrows are left alone while you type in a field or while a dialog is open.
 
-## Override style and the video docker
+## Override style and the StoryBoard
 
-With **Override style** ticked in Basic Settings, the video docker's renders use Basic Settings' **Steps** and
-**CFG**. They take priority over the video docker's ⚙ and the workflow's own count. With it unticked, the ⚙ decides
+With **Override style** ticked in Basic Settings, the StoryBoard's renders use Basic Settings' **Steps** and
+**CFG**. They take priority over the StoryBoard's ⚙ and the workflow's own count. With it unticked, the ⚙ decides
 (blank = the workflow's own). A render's notes say which one it used. A Steps value of 0 ("auto") leaves the count
 to the ⚙ or the workflow.
 
@@ -1387,7 +1387,7 @@ to the ⚙ or the workflow.
 
 - **Lyrics file:** every song bitGen makes saves its lyrics as `lyrics/<song name>.txt` in the project folder.
   For a song you brought in yourself, put its lyrics in a txt with the same name in that folder.
-- **🎤 Karaoke** (video docker menu bar): when a scene finishes rendering, bitGen makes a second video for it.
+- **🎤 Karaoke** (StoryBoard menu bar): when a scene finishes rendering, bitGen makes a second video for it.
   That video has a transparent background and shows the scene's part of the song's lyrics: the current line turns
   from white to yellow as it's sung, the next line waits underneath, and a ball bounces onto each word. The
   scene's own video has no lyrics.
@@ -1403,13 +1403,13 @@ to the ⚙ or the workflow.
 - **🎤 in the timeline's menu bar** makes a karaoke overlay for any song: pick a sound clip on the timeline (or a sound
   asset), the whole song or the ruler selection, check the lyrics, then **Generate**. The overlay goes on the
   Karaoke layer, lined up with the song.
-- **🎤 Karaoke style** (in the video docker's ⚙ and the timeline's ⚙): font, font size, colours, opacity, outline,
+- **🎤 Karaoke style** (in the StoryBoard's ⚙ and the timeline's ⚙): font, font size, colours, opacity, outline,
   text shadow, a background band (colour, opacity, border, box shadow, height, position from the top) and the ball's
   size and colours. New overlays use it.
 
 ## Saving and opening a project
 
-- **💾 Save** keeps everything in the project: the video docker's song and scenes, the prompt, the prompt chat,
+- **💾 Save** keeps everything in the project: the StoryBoard's song and scenes, the prompt, the prompt chat,
   characters, environments, references, assets, the gallery, the timeline and each docker's fields (for example
   the music title and the enhanced prompt). Keep the name as it is to save in place.
 - **Save as**: type a new name in the same box. The whole project is copied under that name, and the app opens
@@ -2627,7 +2627,7 @@ video, a Video asset or an export) with ComfyUI's own SeedVR2 nodes:
 lands in the gallery as `<name>_seedvr2_<size>p.mp4`. Your choices are kept for
 the project.
 
-**For the scene board**: in the video docker's ⚙, set **Upscaler** to
+**For the scene board**: in the StoryBoard's ⚙, set **Upscaler** to
 **SeedVR2 (video)**. A scene's ⏫ then sends its take (the lossless master when
 there is one) through SeedVR2 at the ⚙'s **Upscale resolution**, and files it as
 the scene's upscaled take. This works for any video style. With **Upscale every
@@ -2696,7 +2696,7 @@ editor in Settings → Video.
 - **Queue**: a running job shows *step n of total · time*. A finished job has **ⓘ** — its seed, CFG, steps, sampler,
   model, LoRAs, size, render time and prompt; **♻ Use** puts its seed in Basic Settings.
 - **Preview dialog** (click a gallery picture or clip): the same details in a pane on the right (**ⓘ** hides it).
-- **Video docker ⚙ → Seed**: *Random for each scene* or *Same seed for every scene* (the seed box; blank = the last
+- **StoryBoard ⚙ → Seed**: *Random for each scene* or *Same seed for every scene* (the seed box; blank = the last
   seed used); **♻** sets the last seed used as the seed.
 - **Each scene card** has its own seed box (it wins over the ⚙); **♻** beside it reuses the seed its last take used.
   While a scene renders it shows *running step n of total*, a progress bar and the time; a finished one shows its
@@ -3097,7 +3097,7 @@ In **📍 As a location**:
 The House builder has a **🧍 Person** tool. Press where the person stands and drag the way they face. In the properties
 pick:
 
-- **Character** - one of the project's characters (the Video docker's cast), or none for "a person";
+- **Character** - one of the project's characters (the StoryBoard's cast), or none for "a person";
 - **Pose** - standing, sitting, walking or waving; their **height** and which way they face;
 - **LoRA** - optional, a character LoRA with its weight.
 
@@ -4133,7 +4133,7 @@ workflow ends with). It does three things:
 
 - The preview bar's **⚡ DLSS 5** button works on the video you are previewing. The panel says what it will make;
   **⚡ Enhance** queues it, and the result lands in the gallery with the original's sound.
-- In the video docker's ⚙, set **Upscaler → DLSS 5**. A scene's ⏫ then sends its take through DLSS 5, at the ⚙'s
+- In the StoryBoard's ⚙, set **Upscaler → DLSS 5**. A scene's ⏫ then sends its take through DLSS 5, at the ⚙'s
   Upscale resolution (720 = DLAA, 1080 = 1K, 1440 = 2K, 2160 = 4K). With "Upscale every render" ticked, each take is
   sent as it lands.
 
@@ -4156,7 +4156,7 @@ in front of the sampler.
 
 **Turning it on.**
 
-- **The scene board:** tick **Long video** in the video docker's ⚙. A scene then renders up to 30 seconds in one go.
+- **The scene board:** tick **Long video** in the StoryBoard's ⚙. A scene then renders up to 30 seconds in one go.
   With **Comfy Kitchen** also ticked, the kitchen attention goes in too.
 - **The prompt docker's Generate:** pick the **MiniMax H3 Long (30 s)** video style, or turn Long video on in any
   MiniMax H3 style (Settings → Video styles → Long video: On, or On + comfy kitchen attention). The plan line under
@@ -5571,6 +5571,20 @@ away, floats it again). Named dockers dock in named dockers too. ⚙ on a named 
 floats over the whole app) or **Confined to** a docker (the image editor, the timeline, another named docker … - it
 stays inside that docker and hides with it), Delete (what is in it goes back where it came from). Where everything is -
 floating, docked, sizes, names, tabs - is kept in **panel_layout.cfg** in the install folder.
+
+**▣ Docker - an empty docker the others drop into** (2.545.0): **▣ Docker** in the statusbar (after Queue) or
+**Ctrl+Alt+D** shows / hides it. Float a main docker with **⇱** in its title bar (Preview, Timeline, Image editor,
+ComfyUI, Music, Stems, SFX, Chat, Console; the StoryBoard has its own ⇱), then drag it by its title over ▣ Docker - an
+orange line shows where it will go - and let go.
+- **Side by side or stacked**: ⇆ in its title bar = side by side (horizontal), click = ⇅ stacked (vertical); ⚙ ▸ Layout
+  also has **Tabs** (one at a time, as named dockers always were). Every named docker can do this.
+- Side by side / stacked, each docker in it keeps a small title bar: drag it out (or ⇱) to float it, ⇲ puts it back in
+  the main window. Drag the bar between two to size them.
+- **Double-click the title** to rename it in place - Enter keeps it, Esc leaves it as it was.
+- What is in it, the order, the sizes, the layout and the name are kept in panel_layout.cfg.
+
+The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
+statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).
 
 **Dialogs and message boxes open in the middle of the screen**. Move one by its title and it opens where you left it
 next time (kept in **dialog_layout.cfg** in the install folder, by the dialog's name); if the window has become smaller

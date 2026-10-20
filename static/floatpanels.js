@@ -22,8 +22,15 @@
  *                  floating one too (the image editor's panel column): while a floating docker is dragged over it, an
  *                  orange line shows where it would go; drop = host.drop(id, zone key). placeAt(id, parent, before) = a
  *                  panel's new home (it goes there now and ⇲ brings it back there later).
- * Pure (Node: scripts/test-floatpanels.js): fit (a rect inside bounds), hitDocker (the docker under a point),
- * canDock (no docker inside itself), slug, columnZones (2.454.0: the zones above / below each part of a column).
+ *   LAYOUT         (2.545.0 - Tim: "an empty docker with dropzones for other dockers. should be able to be horizontal or
+ *                  vertical with a editable titlebar") a named docker lays its dockers out as TABS (as before), side by
+ *                  side (HORIZONTAL) or stacked (VERTICAL): ⇆ / ⇅ in its title bar switches, ⚙ has all three. In a
+ *                  row / column every docker in it shows, with its own small title bar (drag it out = it floats, ⇱),
+ *                  a splitter between two sizes them (kept); a floating docker dragged over it shows an orange line
+ *                  where it goes - drop = there. Double-click the title = edit it in place (Enter keeps, Esc drops).
+ * Pure (Node: scripts/test-panels.js, test-dockgroup545.js): fit (a rect inside bounds), hitDocker (the docker under a
+ * point), canDock (no docker inside itself), slug, columnZones (2.454.0: the zones above / below each part of a
+ * column), slotIn (2.545.0: where in a row / column a drop goes), LAYOUTS.
  */
 (function (root) {
   "use strict";
@@ -65,6 +72,22 @@
     if (col.bottom - last > 4) out.push({ key: "end", rect: { left: L, right: col.right, top: last, bottom: col.bottom }, line: { x: L, y: last, w: W, h: 4 } });
     return out;
   }
+  /** 2.545.0: where in a row (axis "x") / column ("y") of parts [{rect}] a drop at (x, y) goes -> {index, line {x, y, w, h}};
+   *  box = the docker's pane rect (the line spans it); before a part's middle = before it, after the last = the end */
+  function slotIn(parts, axis, x, y, box) {
+    const ps = (parts || []).filter((p) => p && p.rect);
+    const v = axis === "x" ? x : y;
+    let index = ps.length;
+    for (let i = 0; i < ps.length; i++) { const r = ps[i].rect, mid = axis === "x" ? (r.left + r.right) / 2 : (r.top + r.bottom) / 2; if (v < mid) { index = i; break; } }
+    const B = box || (ps.length ? { left: Math.min(...ps.map((p) => p.rect.left)), top: Math.min(...ps.map((p) => p.rect.top)), right: Math.max(...ps.map((p) => p.rect.right)), bottom: Math.max(...ps.map((p) => p.rect.bottom)) } : { left: x, top: y, right: x, bottom: y });
+    let at;
+    if (!ps.length) at = axis === "x" ? (B.left + B.right) / 2 : (B.top + B.bottom) / 2;
+    else if (index < ps.length) at = axis === "x" ? ps[index].rect.left : ps[index].rect.top;
+    else at = axis === "x" ? ps[ps.length - 1].rect.right : ps[ps.length - 1].rect.bottom;
+    const line = axis === "x" ? { x: at - 2, y: B.top, w: 4, h: B.bottom - B.top } : { x: B.left, y: at - 2, w: B.right - B.left, h: 4 };
+    return { index, line };
+  }
+  const LAYOUTS = ["tabs", "row", "col"];
   const inRect = (r, x, y) => !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
   const slug = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "docker";
 
@@ -81,6 +104,11 @@
     + ".h3fd{flex:1;display:flex;flex-direction:column;min-height:0}.h3fd-tabs{display:flex;flex:none;overflow-x:auto;border-bottom:1px solid var(--line,var(--pc-line,#3a342a));background:var(--ink,var(--pc-bg,#14120f))}"
     + ".h3fd-tab{display:flex;align-items:center;gap:2px;padding:3px 8px;font-size:11px;cursor:pointer;white-space:nowrap;border-right:1px solid var(--line,var(--pc-line,#3a342a));user-select:none}.h3fd-tab.on{background:var(--panel,var(--pc-panel,#1c1915));color:var(--tiger,#f59e2c)}"
     + ".h3fd-tab button{border:0;background:none;color:inherit;cursor:pointer;font-size:11px;padding:0 2px}.h3fd-pane{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto}"
+    + ".h3fd.lay-row>.h3fd-tabs,.h3fd.lay-col>.h3fd-tabs{display:none}.h3fd.lay-row>.h3fd-pane{flex-direction:row}.h3fd.lay-col>.h3fd-pane{flex-direction:column}"
+    + ".h3fd.lay-row>.h3fd-pane>.h3fp.in,.h3fd.lay-col>.h3fd-pane>.h3fp.in{flex:var(--g,1) 1 0;min-width:80px;min-height:60px;overflow:hidden}.h3fd.lay-row>.h3fd-pane>.h3fp.in.hid,.h3fd.lay-col>.h3fd-pane>.h3fp.in.hid{display:flex}"
+    + ".h3fd.lay-row>.h3fd-pane>.h3fp.in>.h3fp-t,.h3fd.lay-col>.h3fd-pane>.h3fp.in>.h3fp-t{display:flex;height:20px;font-size:11px;cursor:grab}"
+    + ".h3fd-split{flex:0 0 5px;background:var(--line,#3a342a);cursor:col-resize}.h3fd.lay-col .h3fd-split{cursor:row-resize}.h3fd-split:hover{background:var(--tiger,#f59e2c)}"
+    + ".h3fp-n input{width:100%;font:inherit;font-weight:600;background:var(--ink,#14120f);color:inherit;border:1px solid var(--tiger,#f59e2c);border-radius:3px;padding:0 4px}"
     + ".h3fd-empty{margin:auto;padding:12px;color:var(--dim,var(--pc-dim,#9a917f));font-size:12px;text-align:center}.h3fp.drop{outline:2px solid var(--tiger,#f59e2c);outline-offset:-2px}.h3fp.drop .h3fd-pane{background:rgba(245,158,44,.08)}"
     + ".h3fp-menu{position:fixed;z-index:9400;background:var(--panel,#1c1915);border:1px solid var(--line,#3a342a);border-radius:6px;padding:4px 0;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:180px}"
     + ".h3fp-menu div{padding:4px 12px;cursor:pointer;white-space:nowrap}.h3fp-menu div:hover{background:var(--ui-hover,#2f2a21)}.h3fp-menu div.on::before{content:'✓ '}.h3fp-menu hr{border:0;border-top:1px solid var(--line,#3a342a);margin:4px 0}.h3fp-menu .h{color:var(--dim,#9a917f);cursor:default}";
@@ -122,42 +150,55 @@
     css();
     const w = root.document.createElement("div");
     w.className = "h3fp off"; w.dataset.fp = r.id; w.setAttribute("role", "dialog"); w.setAttribute("aria-label", r.title); w.dataset.noLayout = "";
-    w.innerHTML = `<div class="h3fp-t"><span class="h3fp-n"></span>${r.kind === "docker" ? '<button type="button" class="h3fp-cfg" title="Rename, main docker or confined to a docker, delete">⚙</button>' : ""}`
+    w.innerHTML = `<div class="h3fp-t"><span class="h3fp-n"></span>${r.kind === "docker" ? '<button type="button" class="h3fp-lay"></button><button type="button" class="h3fp-cfg" title="Rename, layout (tabs / horizontal / vertical), main docker or confined to a docker, delete">⚙</button>' : ""}`
+      + `${r.kind === "panel" ? '<button type="button" class="h3fp-out" title="Float it (out of the docker it is in)">⇱</button>' : ""}`
       + `${r.home ? '<button type="button" class="h3fp-home" title="Put it back where it was">⇲</button>' : ""}<button type="button" class="h3fp-x" title="Hide">✕</button></div><div class="h3fp-b"></div>`;
     w.querySelector(".h3fp-n").textContent = r.title;
     const body = w.querySelector(".h3fp-b");
-    if (r.kind === "docker") body.innerHTML = `<div class="h3fd"><div class="h3fd-tabs"></div><div class="h3fd-pane"><div class="h3fd-empty">Drag a floating docker here by its title</div></div></div>`;
+    if (r.kind === "docker") body.innerHTML = `<div class="h3fd"><div class="h3fd-tabs"></div><div class="h3fd-pane"><div class="h3fd-empty">Drag a floating docker here by its title bar - ⇱ on a docker's title floats it</div></div></div>`;
+    if (r.kind === "panel") { const o = w.querySelector(".h3fp-out"); o.style.display = "none"; o.onclick = () => { const b = w.getBoundingClientRect(); float(r.id, { x: b.left + 20, y: b.top + 20, w: Math.max(260, b.width), h: Math.max(200, b.height) }); }; }
     w.querySelector(".h3fp-x").onclick = () => (r.kind === "docker" ? show(r.id, false) : r.onClose ? r.onClose() : home(r.id));   // 2.514.0: a panel may close (onClose)
     if (r.home) w.querySelector(".h3fp-home").onclick = () => home(r.id);
     if (r.kind === "docker") {
       w.querySelector(".h3fp-cfg").onclick = (e) => cfgMenu(r.id, e.clientX, e.clientY);
-      w.querySelector(".h3fp-n").ondblclick = () => rename(r.id);
+      w.querySelector(".h3fp-n").ondblclick = () => editTitle(r.id);                 // 2.545.0: in place
+      w.querySelector(".h3fp-lay").onclick = () => setLayout(r.id, r.layout === "row" ? "col" : "row");
     }
     titleDrag(r, w.querySelector(".h3fp-t"));
     if (root.DockFloat && root.DockFloat.grips) root.DockFloat.grips(w, { mode: () => (r.state === "float" ? "float" : "none"), min: { w: 160, h: 100 }, onEnd: () => { keepRect(r); save(); } });
     r.win = w;
+    paintLay(r);                                       // 2.545.0: ▤ / ⇆ / ⇅
     return w;
   }
   function keepRect(r) { const b = r.win.getBoundingClientRect(); const f = fit({ x: b.left, y: b.top, w: b.width, h: b.height }, bounds(r)); Object.assign(r, f); setRect(r); }
   function setRect(r) { Object.assign(r.win.style, { left: r.x + "px", top: r.y + "px", width: r.w + "px", height: r.h + "px" }); }
   function titleDrag(r, bar) {
+    // 2.545.0: a docker shown in a row / column of a named docker - drag its little title bar = it floats again
+    bar.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0 || e.target.closest("button,input") || r.state !== "in") return;
+      const x0 = e.clientX, y0 = e.clientY;
+      const mv = (m) => { if (Math.hypot(m.clientX - x0, m.clientY - y0) > 24) { stop(); float(r.id, { x: m.clientX - 40, y: m.clientY - 12, w: r.w || 320, h: r.h || 360 }); } };
+      const stop = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", stop, true); };
+      root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", stop, true);
+    });
     bar.addEventListener("pointerdown", (e) => {
       if (e.button !== 0 || e.target.closest("button,input") || r.state !== "float") return;
       e.preventDefault();
       const b = r.win.getBoundingClientRect(), ox = e.clientX - b.left, oy = e.clientY - b.top;
-      let over = null, zone = null;
+      let over = null, zone = null, slot = null;
       const mv = (m) => {
         const f = fit({ x: m.clientX - ox, y: m.clientY - oy, w: b.width, h: b.height }, bounds(r));
         r.x = f.x; r.y = f.y; r.win.style.left = f.x + "px"; r.win.style.top = f.y + "px";
         const id = targetAt(r, m.clientX, m.clientY);
         if (id !== over) { if (over && R[over]) R[over].win.classList.remove("drop"); over = id; if (over) R[over].win.classList.add("drop"); }
         zone = over ? null : zoneAt(r, m.clientX, m.clientY);            // 2.454.0: a drop zone (the editor's panel column)
-        marker(zone && zone.zone.line);
+        slot = over ? slotOf(R[over], m.clientX, m.clientY) : null;      // 2.545.0: where in a row / column
+        marker(zone ? zone.zone.line : slot ? slot.line : null);
       };
       const up = () => {
         root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true);
         marker(null);
-        if (over && R[over]) { R[over].win.classList.remove("drop"); dockInto(r.id, over); }
+        if (over && R[over]) { R[over].win.classList.remove("drop"); dockInto(r.id, over, slot ? slot.index : undefined); }
         else if (zone) { try { zone.host.drop(r.id, zone.zone.key); } catch (e) { /* the host's */ } save(); }
         else save();
       };
@@ -206,6 +247,7 @@
     if (r.kind === "panel" && r.el.parentNode !== r.win.querySelector(".h3fp-b")) r.win.querySelector(".h3fp-b").appendChild(r.el);
     r.state = "float";
     r.win.classList.remove("in", "hid", "off");
+    { const ob = r.win.querySelector(".h3fp-out"); if (ob) ob.style.display = "none"; }
     const p = parentFor(r); if (r.win.parentNode !== p) p.appendChild(r.win);
     const B = bounds(r);
     if (at) Object.assign(r, at);
@@ -223,13 +265,21 @@
     if (r.onState) r.onState("home");
     save();
   }
-  function dockInto(id, into) {
+  /** 2.545.0: the slot a drop at (x, y) takes in docker d laid out as a row / column (null for tabs) */
+  function slotOf(d, x, y) {
+    if (!d || !d.layout || d.layout === "tabs") return null;
+    const pane = d.win.querySelector(".h3fd-pane");
+    const parts = (d.tabs || []).map((t) => (R[t] && R[t].win ? { rect: R[t].win.getBoundingClientRect() } : null)).filter((p) => p && p.rect.width > 0);
+    return slotIn(parts, d.layout === "row" ? "x" : "y", x, y, pane.getBoundingClientRect());
+  }
+  function dockInto(id, into, at) {
     const r = R[id], d = R[into]; if (!r || !d || !canDock(id, into, (k) => (R[k] ? R[k].docker : null))) return;
     if (!r.win) makeWin(r);
     if (r.docker) undock(r);
     if (r.kind === "panel" && r.el.parentNode !== r.win.querySelector(".h3fp-b")) r.win.querySelector(".h3fp-b").appendChild(r.el);
     r.docker = into; r.state = "in";
-    d.tabs = (d.tabs || []).filter((x) => x !== id).concat([id]); d.active = id;
+    const rest = (d.tabs || []).filter((x) => x !== id), k = at == null || !(at >= 0) ? rest.length : Math.min(rest.length, Math.round(at));   // 2.545.0: at = its place
+    d.tabs = rest.slice(0, k).concat([id], rest.slice(k)); d.active = id;
     r.win.classList.remove("off"); r.win.classList.add("in");
     d.win.querySelector(".h3fd-pane").appendChild(r.win);
     paintTabs(d);
@@ -244,6 +294,22 @@
   }
   function paintTabs(d) {
     const strip = d.win.querySelector(".h3fd-tabs"), pane = d.win.querySelector(".h3fd-pane");
+    paintLay(d);
+    if (d.layout === "row" || d.layout === "col") {                // 2.545.0: every docker in it shows, in order, splitters between
+      strip.innerHTML = "";
+      pane.querySelectorAll(":scope > .h3fd-split").forEach((s) => s.remove());
+      const empty0 = pane.querySelector(".h3fd-empty"); if (empty0) empty0.style.display = (d.tabs || []).length ? "none" : "";
+      const ms = (d.tabs || []).map((t) => R[t]).filter((m) => m && m.win);
+      ms.forEach((m, i) => {
+        m.win.classList.remove("hid"); m.win.style.setProperty("--g", String(m.grow > 0 ? m.grow : 1));
+        const ob = m.win.querySelector(".h3fp-out"); if (ob) ob.style.display = "";
+        pane.appendChild(m.win);
+        if (i < ms.length - 1) { const s = root.document.createElement("div"); s.className = "h3fd-split"; s.title = "Drag to size them"; pane.appendChild(s); splitter(d, s, m, ms[i + 1]); }
+      });
+      return;
+    }
+    for (const t of d.tabs || []) { const m = R[t]; if (m && m.win) { const ob = m.win.querySelector(".h3fp-out"); if (ob) ob.style.display = "none"; } }
+    pane.querySelectorAll(":scope > .h3fd-split").forEach((s) => s.remove());
     strip.innerHTML = (d.tabs || []).map((t) => `<div class="h3fd-tab${t === d.active ? " on" : ""}" data-t="${esc(t)}"><span>${esc(R[t] ? R[t].title : t)}</span><button type="button" title="Float it">⇱</button></div>`).join("");
     const empty = pane.querySelector(".h3fd-empty"); if (empty) empty.style.display = (d.tabs || []).length ? "none" : "";
     for (const t of d.tabs || []) if (R[t] && R[t].win) R[t].win.classList.toggle("hid", t !== d.active);
@@ -261,13 +327,54 @@
     });
   }
 
+  /* ---- 2.545.0: the layout of a named docker, its splitters, its title edited in place */
+  function paintLay(d) {
+    if (!d || d.kind !== "docker" || !d.win) return;
+    const L = LAYOUTS.includes(d.layout) ? d.layout : "tabs";
+    const fd = d.win.querySelector(".h3fd"); if (fd) { fd.classList.toggle("lay-row", L === "row"); fd.classList.toggle("lay-col", L === "col"); }
+    const b = d.win.querySelector(".h3fp-lay");
+    if (b) { b.textContent = L === "row" ? "⇆" : L === "col" ? "⇅" : "▤"; b.title = (L === "row" ? "Side by side" : L === "col" ? "Stacked" : "Tabs") + " - click: " + (L === "row" ? "stacked (vertical)" : "side by side (horizontal)"); }
+  }
+  function setLayout(id, L) {
+    const d = R[id]; if (!d || d.kind !== "docker" || !LAYOUTS.includes(L)) return;
+    d.layout = L; paintTabs(d); save();
+    if (root.H3TestEvent) { try { root.H3TestEvent("docker_layout", L); } catch (e) { /* the 🧪 list */ } }
+  }
+  function splitter(d, s, a, b) {
+    s.onpointerdown = (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      const ax = d.layout === "row", ra = a.win.getBoundingClientRect(), rb = b.win.getBoundingClientRect();
+      const sa = ax ? ra.width : ra.height, sb = ax ? rb.width : rb.height, ga = a.grow > 0 ? a.grow : 1, gb = b.grow > 0 ? b.grow : 1, v0 = ax ? e.clientX : e.clientY;
+      const mv = (m) => {
+        const dv = (ax ? m.clientX : m.clientY) - v0, na = Math.max(60, sa + dv), nb = Math.max(60, sb - dv), tot = ga + gb;
+        a.grow = Math.round((tot * na) / (na + nb) * 1000) / 1000; b.grow = Math.round((tot - a.grow) * 1000) / 1000;
+        a.win.style.setProperty("--g", String(a.grow)); b.win.style.setProperty("--g", String(b.grow));
+      };
+      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); save(); };
+      root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
+    };
+  }
+  function editTitle(id) {
+    const r = R[id]; if (!r || !r.win) return;
+    const n = r.win.querySelector(".h3fp-n"); if (n.querySelector("input")) return;
+    const inp = root.document.createElement("input"); inp.type = "text"; inp.value = r.title; inp.maxLength = 40; inp.setAttribute("aria-label", "The docker's name");
+    n.textContent = ""; n.appendChild(inp); inp.focus(); inp.select();
+    let done = false;
+    const end = (keep) => { if (done) return; done = true; const v = inp.value.trim(); n.textContent = r.title; if (keep && v && v !== r.title) rename(id, v); };
+    inp.onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); end(true); } else if (e.key === "Escape") { e.preventDefault(); end(false); } };
+    inp.onblur = () => end(true);
+    inp.onpointerdown = (e) => e.stopPropagation();
+  }
+
   /* ---- named dockers */
   function newDocker(o) {
     o = o || {};
     let id = o.id || "fd-" + slug(o.name) ; let k = 2; while (!o.id && R[id]) id = "fd-" + slug(o.name) + "-" + k++;
-    const r = R[id] = { id, kind: "docker", title: String(o.name || "Docker").slice(0, 40), confineId: o.confine || "", tabs: [], active: null, state: "float" };
-    makeWin(r);
     const lay = (LAY.dockers || {})[id];
+    const r = R[id] = { id, kind: "docker", title: String(o.name || "Docker").slice(0, 40), confineId: o.confine || "", tabs: [], active: null, state: "float",
+                        layout: LAYOUTS.includes(o.layout) ? o.layout : lay && LAYOUTS.includes(lay.layout) ? lay.layout : "tabs" };   // 2.545.0
+    makeWin(r);
     float(id, lay ? { x: lay.x, y: lay.y, w: lay.w, h: lay.h } : null);
     if (lay && lay.shown === false) r.win.classList.add("off");
     if (lay && lay.docker && R[lay.docker]) dockInto(id, lay.docker);
@@ -310,7 +417,9 @@
   function cfgMenu(id, x, y) {
     root.document.querySelectorAll(".h3fp-menu").forEach((m) => m.remove());
     const r = R[id], m = root.document.createElement("div"); m.className = "h3fp-menu";
-    const items = [["Rename…", () => rename(id)], ["-"], ["h", "Where it floats:"], [(r.confineId ? "" : "✓") + "Main docker (anywhere in the app)", () => confineTo(id, ""), !r.confineId]]
+    const L = r.layout || "tabs";
+    const items = [["Rename…", () => rename(id)], ["-"], ["h", "Layout:"], ["Tabs", () => setLayout(id, "tabs"), L === "tabs"], ["Horizontal (side by side)", () => setLayout(id, "row"), L === "row"], ["Vertical (stacked)", () => setLayout(id, "col"), L === "col"],   // 2.545.0
+      ["-"], ["h", "Where it floats:"], [(r.confineId ? "" : "✓") + "Main docker (anywhere in the app)", () => confineTo(id, ""), !r.confineId]]
       .concat(hosts().filter((h) => h.id !== id).map((h) => ["Confined to " + h.name, () => confineTo(id, h.id), r.confineId === h.id]))
       .concat([["-"], ["Delete this docker", () => remove(id)]]);
     m.innerHTML = items.map((it, i) => (it[0] === "-" ? "<hr>" : it[0] === "h" ? `<div class="h">${esc(it[1])}</div>` : `<div data-i="${i}"${it[2] ? ' class="on"' : ""}>${esc(String(it[0]).replace(/^✓/, ""))}</div>`)).join("");
@@ -328,9 +437,13 @@
     const r = R[o.id] = { id: o.id, kind: "panel", title: o.title || o.id, el: o.el, home: o.home || null, scope: o.scope || null, confine: o.confine || null, onState: o.onState || null, onClose: o.onClose || null, state: "home" };
     r.ready = load().then(() => {                       // where it was left (the file may still be loading)
       const lay = (LAY.panels || {})[o.id];
+      if (lay && lay.grow > 0) r.grow = lay.grow;                       // 2.545.0
       if (lay && lay.state === "float") float(o.id, { x: lay.x, y: lay.y, w: lay.w, h: lay.h });
       else if (lay && lay.state === "in" && R[lay.docker]) {
-        Object.assign(r, { x: lay.x, y: lay.y, w: lay.w, h: lay.h }); dockInto(o.id, lay.docker);
+        // 2.545.0: back in its place among the ones already there (they register in any order)
+        const want0 = (LAY.dockers[lay.docker] || {}).tabs || [], i0 = want0.indexOf(o.id), there = R[lay.docker].tabs || [];
+        const at = i0 < 0 ? undefined : there.filter((t) => { const j = want0.indexOf(t); return j >= 0 && j < i0; }).length;
+        Object.assign(r, { x: lay.x, y: lay.y, w: lay.w, h: lay.h }); dockInto(o.id, lay.docker, at);
         const want = (LAY.dockers[lay.docker] || {}).active; if (want && R[want] && R[want].docker === lay.docker) { R[lay.docker].active = want; paintTabs(R[lay.docker]); }
       }
       return r;
@@ -343,8 +456,9 @@
     const o = { panels: {}, dockers: {} };
     for (const r of Object.values(R)) {
       const s = { state: r.state, docker: r.docker || null, x: r.x, y: r.y, w: r.w, h: r.h };
+      if (r.grow > 0 && r.grow !== 1) s.grow = r.grow;                 // 2.545.0: its share of a row / column
       if (r.kind === "panel") o.panels[r.id] = s;
-      else o.dockers[r.id] = Object.assign(s, { name: r.title, confine: r.confineId || "", tabs: r.tabs || [], active: r.active || null, shown: !!r.win && !r.win.classList.contains("off") });
+      else o.dockers[r.id] = Object.assign(s, { name: r.title, layout: r.layout || "tabs", confine: r.confineId || "", tabs: r.tabs || [], active: r.active || null, shown: !!r.win && !r.win.classList.contains("off") });
     }
     // panels / dockers not on this page (another docker not loaded): keep what the file has
     for (const k of Object.keys(LAY.panels || {})) if (!o.panels[k]) o.panels[k] = LAY.panels[k];
@@ -353,8 +467,10 @@
   function save() {
     if (!loaded) return;
     clearTimeout(saveT);
-    saveT = setTimeout(() => { LAY = snapshot(); root.fetch("/api/layout/panel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ all: LAY }) }).catch(() => {}); }, 300);
+    // 2.545.0: one after another - two in flight could land out of order (the older layout last in the file)
+    saveT = setTimeout(() => { LAY = snapshot(); const body = JSON.stringify({ all: LAY }); saving = saving.then(() => root.fetch("/api/layout/panel", { method: "POST", headers: { "Content-Type": "application/json" }, body }).catch(() => {})); }, 300);
   }
+  let saving = Promise.resolve();
   let readyP = null;
   function load() {
     if (readyP) return readyP;
@@ -362,7 +478,7 @@
       LAY = { panels: (o && o.panels) || {}, dockers: (o && o.dockers) || {} };
       // the named dockers: the ones confined to another named docker after it
       const ids = Object.keys(LAY.dockers).sort((a, b) => (LAY.dockers[a].confine && LAY.dockers[a].confine.startsWith("fd-") ? 1 : 0) - (LAY.dockers[b].confine && LAY.dockers[b].confine.startsWith("fd-") ? 1 : 0));
-      for (const id of ids) { const d = LAY.dockers[id]; if (!R[id]) newDocker({ id, name: d.name, confine: d.confine }); }
+      for (const id of ids) { const d = LAY.dockers[id]; if (!R[id]) newDocker({ id, name: d.name, confine: d.confine, layout: d.layout }); }
       loaded = true;
       return LAY;
     });
@@ -385,7 +501,7 @@
     root.addEventListener("pointerdown", () => { down = true; }, true); root.addEventListener("pointerup", () => { down = false; }, true);
   }
 
-  const H3Panels = { ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+  const H3Panels = { slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;
   else { root.H3Panels = H3Panels; if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start(); }

@@ -33,9 +33,11 @@ The window, its dockers, the look of the app, projects and the files they hold.
 - **Floating prompt docker** — the prompt docker floats as its own window; drag, resize, collapse, or dock it above, below or beside another docker. *Where:* key P. *Since:* 2.389.0
 - **Floating Basic Settings and LLM tokens** — both are dockers of their own: float them, dock them as a tab in another docker, beside or inside a column, or in the left docker's list. *Where:* keys S and L. *Since:* 2.393.0
 - **Named dockers** — make an empty floating docker with your own name and dock floating panels into it as tabs; it can float over the whole app or stay confined to one docker. *Where:* Docker layout > New docker. *Since:* 2.438.0
+- **▣ Docker: an empty docker the others drop into** — show it with the statusbar's ▣ Docker or Ctrl+Alt+D, float main dockers with ⇱ and drag them in; an orange line shows where each lands, side by side or stacked, with splitters to size them. *Where:* the statusbar > ▣ Docker. *Since:* 2.545.0
+- **Named docker layouts and titles** — a named docker shows its dockers as tabs, side by side or stacked (⇆ / ⇅ in its title, or ⚙ > Layout); double-click the title to rename it in place. *Where:* a named docker's title bar. *Since:* 2.545.0
 - **Dialogs in the middle** — dialogs and message boxes open in the middle of the screen, or where you last moved them. *Where:* dialog_layout.cfg. *Since:* 2.438.0
 - **Panel layout file** — where every floating panel is, its size, name and tabs are kept in panel_layout.cfg. *Where:* the install folder. *Since:* 2.438.0
-- **The StoryBoard floats** — the video docker can become a window of its own, dock as a tab in a named docker, or go back under the timeline. *Where:* the StoryBoard header. *Since:* 2.456.0
+- **The StoryBoard floats** — the StoryBoard docker can become a window of its own, dock as a tab in a named docker, or go back under the timeline. *Where:* the StoryBoard header. *Since:* 2.456.0
 
 ### Themes and the look
 
@@ -149,7 +151,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 
 - **Three ways to render** — reference pictures (up to nine), first / last frame, or text alone, with native sound. *Where:* Basic Settings modes
 - **Long clips joined seamlessly** — a clip longer than one run is split and joined. *Where:* Seconds
-- **Long video: one run up to 30 s** — low-VRAM attention and chunked feed-forward let a MiniMax H3 clip of up to 30 seconds render in ONE generation instead of joined 15-second pieces. *Where:* the video docker's ⚙ (Long video), or the MiniMax H3 Long (30 s) video style. *Since:* 2.503.0
+- **Long video: one run up to 30 s** — low-VRAM attention and chunked feed-forward let a MiniMax H3 clip of up to 30 seconds render in ONE generation instead of joined 15-second pieces. *Where:* the StoryBoard's ⚙ (Long video), or the MiniMax H3 Long (30 s) video style. *Since:* 2.503.0
 - **More ComfyUI packs one click away** — install or update KJNodes, Yusu H3 Unified and RH DLSS 5. *Where:* Settings > ComfyUI > Video accelerators. *Since:* 2.503.0
 - **Veda sparse attention** — an optional MiniMax H3 accelerator in a video style (On / Quality): about 2-3x faster than stock attention at its trained sizes, with a one-click install and its predictor in the model catalog. *Where:* Settings > Video styles; Settings > ComfyUI > Video accelerators. *Since:* 2.536.0
 - **The model manager for hundreds of models** — pages that fit the docker, folder tabs (SDXL, Pony …), a 📌 This project tab, resizable cards, an info page per model with its example pictures and prompts, and Civitai details + thumbnails + examples for every model kept in one shared model_info folder. *Where:* 🧩 Models. *Since:* 2.537.0
@@ -250,7 +252,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 ### Upscaling and enhancing
 
 - **SeedVR2 upscaling** — upscale a video to 720p-4K or by a factor, with colour match, temporal split and denoise. *Where:* the preview bar. *Since:* 2.400.0
-- **DLSS 5 enhance, upscale and frame generation** — NVIDIA DLSS 5 neural rendering on a video (default / natural / cinematic), upscaling to 1x DLAA, 1.5x-3x or 1K-8K, and optional frame generation up to 6x the frame rate; RTX only. *Where:* the preview bar's ⚡ DLSS 5, and the video docker's ⚙ Upscaler on the board. *Since:* 2.504.0
+- **DLSS 5 enhance, upscale and frame generation** — NVIDIA DLSS 5 neural rendering on a video (default / natural / cinematic), upscaling to 1x DLAA, 1.5x-3x or 1K-8K, and optional frame generation up to 6x the frame rate; RTX only. *Where:* the preview bar's ⚡ DLSS 5, and the StoryBoard's ⚙ Upscaler on the board. *Since:* 2.504.0
 - **Enhance the selected video** — opens the upscaler for the last video you clicked. *Where:* the prompt docker. *Since:* 2.401.0
 - **Upscale on the board** — a take you like sent through the StoryBoard's upscaler, or SeedVR2 at the upscale resolution; optionally every render. *Where:* the StoryBoard settings
 

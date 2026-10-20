@@ -1274,7 +1274,7 @@
           scene — added on the board or written by a screenplay; a scene's own
           values always win. Blank = the workflow's exported default.</div>
         <div><label class="f">Steps</label><input id="ch_steps" type="number" min="1" max="100" placeholder="export default"></div>
-        <div><label class="f" title="Frames-precise override. When EMPTY, every scene uses the Video docker's Seconds (saved with the project); set a number here to pin frames exactly.">Length (frames)</label><input id="ch_length" type="number" min="8" max="600" placeholder="Video docker seconds"></div>
+        <div><label class="f" title="Frames-precise override. When EMPTY, every scene uses the StoryBoard's Seconds (saved with the project); set a number here to pin frames exactly.">Length (frames)</label><input id="ch_length" type="number" min="8" max="600" placeholder="StoryBoard seconds"></div>
         <div><label class="f">Continuation mode</label><input id="ch_mode" type="text" placeholder="export default"
                title="The export ships 'guide'. Values are the node's own vocabulary — spelled exactly as ComfyUI shows them."></div>
         <div><label class="f">Context length</label><input id="ch_ctx" type="number" min="0" max="200" placeholder="export default"></div>
@@ -1825,7 +1825,7 @@
   <button id="tAssets" title="Assets dock">Assets</button>
   <button id="tPv" title="Preview dock — the player above the timeline">Preview</button>
   <button id="tT" title="Timeline dock">Timeline</button>
-  <button id="tV" title="Video dock — cast, 360° environments and the scene board">Video</button>
+  <button id="tV" title="StoryBoard — the scenes with their storyboard pictures, the cast, 360° environments">StoryBoard</button>
   <button id="tMu" title="Music dock">Music</button>
   <button id="tSt" title="Stems dock">Stems</button>
   <button id="tSfx" title="Sound effects dock">SFX</button>
@@ -3288,6 +3288,7 @@
 <script src="/static/ueproject.js"></script>  <!-- 2.513.0: 🎮 Load UE project (routes/ueProject.js - the bridge plugin put in, Unreal restarted) -->
 <script src="/static/dlglayout.js"></script>  <!-- 2.438.0: dialogs in the middle of the screen / where they were left (dialog_layout.cfg) -->
 <script src="/static/floatpanels.js"></script>  <!-- 2.438.0: floating + named dockers (H3Panels, panel_layout.cfg) -->
+<script src="/static/dockgroup.js"></script>  <!-- 2.545.0: ▣ Docker (Ctrl+Alt+D) - an empty docker the others drop into; ⇱ on the main dockers -->
 <script src="/static/tlai.js"></script>  <!-- 2.420.0: 🤖 AI in the timeline maths (H3TlAi) -->
 <script src="/static/glcomp.js"></script>  <!-- 2.421.0: the GPU compositor (H3GLComp) -->
 <script src="/static/trprev.js"></script>  <!-- 2.415.0: a layer's entry / exit transition on the canvas (H3TrPrev) -->
@@ -13817,8 +13818,12 @@ function toggleCollapse(id) {
   const names = { promptdock: "Prompt", consoledock: "Console",
                   timelinedock: "Timeline", chatdock: "Prompt chat", musicdock: "Music",
                   imageeditdock: "Image editor", comfydock: "ComfyUI",
-                  previewdock: "Preview" };
+                  previewdock: "Preview", videodock: "StoryBoard" };
   const head = el.querySelector(".bhead");
+  /* 2.545.0 (Tim: "Storyboard docker changes it's name back to videodocker, keep it as storyboard throughout"): the
+     header keeps the title it HAS (a docker may rename itself - storyboard.js); the map is only the fallback, and the
+     id never shows (videodock was not in the map, so a collapse wrote "videodock") */
+  const had = [...head.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").replace(/[▾▸]/g, "").replace(/\s+/g, " ").trim();
   /* EVERY child comes back, not just the first button. This rewrites the head's
      text to swap ▾ for ▸, which destroys its children as a side effect — with
      one button per header that was invisible, and it broke the moment the chat
@@ -13828,7 +13833,7 @@ function toggleCollapse(id) {
   const pin = head.querySelector(":scope > .pinbtn");
   const kids = [...head.children].filter((k) => k !== pin);
   head.textContent = (el.classList.contains("collapsed") ? "▸ " : "▾ ")
-                   + (names[id] || id);
+                   + (had || names[id] || id);
   if (pin) head.insertBefore(pin, head.firstChild);
   kids.forEach((k) => head.appendChild(k));
   store.set("c." + id, el.classList.contains("collapsed") ? "1" : "0");
