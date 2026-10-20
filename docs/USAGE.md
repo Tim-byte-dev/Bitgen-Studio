@@ -3768,6 +3768,8 @@ box only shows a preview, because nothing is below V1. The cut-out is also what 
 - Type an exact **Width / Height** (4 to 4000 px) in the Layout section.
 - **Hide** it. In edit mode a hidden element shows faint with a dashed outline so you can pick it again; once you
   leave edit mode it is gone.
+- **Hidden in Expert mode** (2.544.0): the element is gone while Settings ▸ General ▸ Expert mode is on, and shown in
+  Basic mode. In edit mode with Expert mode on, it shows faint with a blue dashed outline so you can pick it again.
 - **Text**: change the words of a label or a plain-text button.
 - **↺ Layout** puts the size, the move, the hiding and the text back.
 

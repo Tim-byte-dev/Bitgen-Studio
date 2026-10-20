@@ -12048,6 +12048,14 @@ node scripts/test-imgop543.js > /tmp/op543.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui543-ui.js > /tmp/ui543.log 2>&1 \
   && ok "2.543.0 browser test: the editor minimized -> the references (Edit, 2 = Compose, Replace background, Refine, Compose), Fill / Remove gone and back; open -> the selected layer, 2 picked = Compose, a new layer each - or SKIP without playwright" \
   || { bad "2.543.0 image ops by source browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui543.log | head -14; }
+
+# ---- 2.544.0 (theme: hidden in Expert mode)
+node scripts/test-themeedit544.js > /tmp/te544.log 2>&1 \
+  && ok "theme hidden in Expert mode units (2.544.0: xhide kept, html.expert CSS, hide wins, never the page itself, the checkbox)" \
+  || { bad "2.544.0 theme xhide units"; grep -a "^FAIL" -A2 /tmp/te544.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui544-ui.js > /tmp/ui544.log 2>&1 \
+  && ok "2.544.0 browser test: ☐ hidden in Expert mode - gone with Expert on, shown in Basic, faint in edit mode, untick = back - or SKIP without playwright" \
+  || { bad "2.544.0 theme xhide browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui544.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -38,6 +38,10 @@
  *     Layout     ☐ hide (gone in live mode; in edit mode it shows faint and dashed so it can be picked again), its
  *                text (a plain-text element's words replaced - its icon kept), width / height (px; empty = its own),
  *                moved x / y (px, `translate` - the layout around it does not shift)
+ *                2.544.0 (Tim: "in theme edit mode, add a checkbox for visibility in expert mode to the properties
+ *                dialog. this will change the visibility of the element in expert mode but not in basic mode"): ☐ hidden
+ *                in Expert mode (xhide) - gone while Settings ▸ Expert mode is on (html.expert), shown in Basic mode;
+ *                in edit mode (Expert on) faint with a blue dashed outline so it can be picked again
  *     HANDLES    the picked element has 8 handles: drag one = its width / height (the left / top ones keep the
  *                opposite edge where it is); drag the element itself = move it (a click without moving still picks)
  *     LEAVING    🖌 / Esc with changes since edit mode began: a box - 💾 Save theme (themes/<name>.json), Save theme
@@ -110,6 +114,7 @@
     }
     // 2.514.0: layout - hide, its words, its size, moved
     if (o.hide === true) out.hide = true;
+    if (o.xhide === true) out.xhide = true;                         // 2.544.0: hidden only in Expert mode
     if (typeof o.text === "string") { const t = o.text.replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, 200); if (t.trim()) out.text = t; }
     for (const k of ["w", "h"]) { const v = num(o[k], 4, 4000); if (v != null && o[k] !== "" && o[k] != null) out[k] = Math.round(v); }
     for (const k of ["dx", "dy"]) { const v = num(o[k], -4000, 4000); if (v != null && o[k] !== "" && o[k] != null && Math.round(v) !== 0) out[k] = Math.round(v); }
@@ -129,7 +134,7 @@
   /** 2.540.6: the page itself (html / body / :root / *) - colours are fine, but never sized, moved or hidden.
    *  Tim: "when i try to edit the theme by dragging the handles the entire ui gets dragged to the left" */
   const isRootSel = (s) => /(?:^|[\s>+~])(?:html|body|:root|\*)(?:[.#:\[][^\s>+~]*)?$/i.test(String(s || "").trim());
-  const LAYOUT_KEYS = ["w", "h", "dx", "dy", "hide"];
+  const LAYOUT_KEYS = ["w", "h", "dx", "dy", "hide", "xhide"];
   function forSel(sel, r) { if (isRootSel(sel)) for (const k of LAYOUT_KEYS) delete r[k]; return r; }
   function cleanStyles(m) {
     const out = {}; if (!m || typeof m !== "object" || Array.isArray(m)) return out;
@@ -170,6 +175,10 @@
       if (r.hide) {                                                   // gone in live mode, faint in edit mode (so it can be picked)
         out.push(`body:not(.h3-thedit) ${at}{display:none !important}`);
         out.push(`body.h3-thedit ${at}{opacity:.35 !important;outline:1px dashed #ff3cac !important}`);
+      }
+      if (r.xhide && !r.hide) {                                       // 2.544.0: gone in Expert mode only (html.expert), Basic shows it
+        out.push(`html.expert body:not(.h3-thedit) ${at}{display:none !important}`);
+        out.push(`html.expert body.h3-thedit ${at}{opacity:.35 !important;outline:1px dashed #2680eb !important}`);
       }
       const ic = r.icon; if (!ic) continue;
       const dir = { left: "row", right: "row-reverse", top: "column", bottom: "column-reverse" }[ic.pos] || "row";
@@ -422,7 +431,8 @@
         <div class="rw"><span>Position</span><select id="teIcPos"><option value="">-</option>${ICON_POS.map((p) => `<option value="${p}"${ic.pos === p ? " selected" : ""}>${{ left: "left", right: "right", top: "above", bottom: "below", only: "icon only", hide: "hidden" }[p]}</option>`).join("")}</select> <span style="width:auto">Size</span>${n("teIcSize", ic.size, 6, 96, 1, "icon size (px)")}</div>
         <div class="rw"><span>Fill</span>${col("teIcFill", ic.fill, "the icon's colour (an emoji is tinted)")}</div>
         <h5>Layout</h5>
-        <div class="rw"><span>Hide</span><label title="Gone in live mode (faint and dashed in edit mode, so you can pick it again)"><input type="checkbox" id="teHide"${r.hide ? " checked" : ""}>hidden</label></div>
+        <div class="rw"><span>Hide</span><label title="Gone in live mode (faint and dashed in edit mode, so you can pick it again)"><input type="checkbox" id="teHide"${r.hide ? " checked" : ""}>hidden</label>
+          <label title="Gone while Expert mode is on (Settings ▸ General), shown in Basic mode - in edit mode it shows faint with a blue dashed outline"><input type="checkbox" id="teXHide"${r.xhide ? " checked" : ""}>hidden in Expert mode</label></div>
         <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(r.text || "")}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : "only for plain-text elements")}" style="flex:1"${plain ? "" : " disabled"} title="Its words (its icon stays) - empty = its own"></div>
         <div class="rw"><span>Size</span>W ${n("teW", r.w, 4, 4000, 1, "width (px) - empty = its own")} H ${n("teH", r.h, 4, 4000, 1, "height (px) - empty = its own")}<span class="hint" style="width:auto">px · or drag a handle</span></div>
         <div class="rw"><span>Move</span>X ${n("teDx", r.dx || "", -4000, 4000, 1, "moved right (px)")} Y ${n("teDy", r.dy || "", -4000, 4000, 1, "moved down (px)")}<button id="teLayRst" title="Its own size and place again">↺</button></div>
@@ -448,6 +458,7 @@
       if ($("teIcFillOn").checked) icn.fill = $("teIcFill").value;
       if (Object.keys(icn).length) o.icon = icn;
       if ($("teHide").checked) o.hide = true;                                    // 2.514.0: layout
+      if ($("teXHide") && $("teXHide").checked) o.xhide = true;                   // 2.544.0: Expert mode only
       if ($("teText").value) o.text = $("teText").value;
       for (const [id, k] of [["teW", "w"], ["teH", "h"], ["teDx", "dx"], ["teDy", "dy"]]) if ($(id).value !== "") o[k] = +$(id).value;
       return o;
