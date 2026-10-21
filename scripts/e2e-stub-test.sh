@@ -12291,6 +12291,14 @@ node scripts/test-update573.js > /tmp/up573.log 2>&1 && python3 scripts/test-fas
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui573-ui.js > /tmp/ui573.log 2>&1 \
   && ok "2.573.0 browser test: ✂ 29.9 re-cuts a 70 s song 29.9/29.9/10.2, remembered, 💾 saves it; FastH3 Omni in the Workflow list + its style; ⟳ ComfyUI updates under the status, ⤓ posts the channel; the startup check's chip + card, Later, the chip opens the ComfyUI tab, off = no look; Add-ons ▸ FastH3 Omni - or SKIP without playwright" \
   || { bad "2.573.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui573.log | head -14; }
+
+# ---- 2.574.0 (theme edit: a docker's title + any element's own words; step n of total for every generation)
+node scripts/test-steps574.js > /tmp/st574.log 2>&1 && python3 scripts/test-steps574.py > /tmp/st574p.log 2>&1 \
+  && ok "2.574.0 units (themeedit words / unwords on a title bar - caret + buttons kept, a collapse keeps it, cleared = back; H3Steps text / tag; the sd-cli bar in jobMeta; jobSteps; realrefs / sbgrid words; every display wired; image_worker's \\r split + comfy_progress queue_live / wait_live)" \
+  || { bad "2.574.0 units"; grep -a "^FAIL" -A2 /tmp/st574.log /tmp/st574p.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui574-ui.js > /tmp/ui574.log 2>&1 \
+  && ok "2.574.0 browser test: the StoryBoard's title bar picked - Text open, aimed at that docker; Music Video typed - ▾ Music Video, buttons kept, the Music docker untouched; collapse / open keep it; cleared = StoryBoard; H3Steps.watch + h3:jobtick on a stubbed running job - or SKIP without playwright" \
+  || { bad "2.574.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui574.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

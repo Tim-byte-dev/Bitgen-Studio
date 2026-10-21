@@ -26,7 +26,8 @@
   /** a scene's state word + mark */
   function state(r) {
     if (!r) return { mark: "", word: "" };
-    if (r.status === "running") return { mark: "⏳", word: "rendering" + (r.progress && r.progress.pct ? " " + Math.round(r.progress.pct) + "%" : "") };
+    // 2.574.0 (Tim: "show step number of steps for all generations"): "rendering · step n of total" (was a percentage)
+    if (r.status === "running") return { mark: "⏳", word: "rendering" + (r.progress && r.progress.total ? " · step " + r.progress.step + " of " + r.progress.total : "") };
     if (r.error && r.status !== "kept" && r.status !== "rendered") return { mark: "✕", word: "failed" };
     if (r.status === "kept") return { mark: "✔", word: "kept" };
     if (r.status === "rendered") return { mark: "●", word: "rendered" };

@@ -2555,7 +2555,10 @@ function mount(app) {
             && (!x.project || x.project === (req.query.project || core.getProject()))) || j;
         const pr = j && !j.finished ? jm.progress(j) : null;
         const qd = j && j.status === "queued";
-        return pr || qd ? { ...r, progress: pr || { queued: true } } : r;
+        // 2.574.0: the ⏫ upscale and the ✎ first-frame edit say their step too (lib/jobSteps)
+        const JS = require("../lib/jobSteps"), upr = JS.progressOf(r.upjob), qpr = r.qedit ? JS.progressOf(r.qedit.job) : null;
+        const r2 = upr || qpr ? { ...r, ...(upr ? { up_progress: upr } : {}), ...(qpr ? { qedit: { ...r.qedit, progress: qpr } } : {}) } : r;
+        return pr || qd ? { ...r2, progress: pr || { queued: true } } : r2;
       }) };
     } catch { /* the board still answers */ }
     res.json({ project: req.query.project || core.getProject(), ...st });

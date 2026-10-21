@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.574.0** — Theme Edit Renames Docker Titles + Any Words; Step N of Total for Every Generation
 - **2.573.0** — ✂ Song Cut Duration, ⤓ Update ComfyUI, Update Check on Startup, FASTH3 Omni
 - **2.572.0** — ✨ Auto Transition (Nothing Moves - Lip Sync Safe), 🔇 Video Sound
 - **2.571.0** — Multi-Select in Gallery / Assets / References, Drag Them All Onto the Timeline; ⛓ Sequential

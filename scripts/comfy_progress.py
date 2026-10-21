@@ -172,3 +172,40 @@ def run(cc, base, graph, say, label="rendering", timeout=7200):
         return pid, outputs
     finally:
         stop.set()
+
+
+# 2.574.0 (Tim: "show step number of steps for all generations(image,music,video) in all places that show it"): the same
+# live listener for callers that queue and wait in two places (image_worker's ControlNet stage hands a {queue, wait}
+# pair to scripts/cn_stage.py). queue_live starts the listener and queues; wait_live waits and stops it.
+_LIVE = {}
+
+
+def queue_live(cc, base, graph, say):
+    client = uuid.uuid4().hex
+    stop = threading.Event()
+    pidbox = {"pid": None}
+    seen = {"t": time.time()}
+    th = threading.Thread(target=listen, args=(base, client, stop, pidbox, graph, seen, say), daemon=True)
+    th.start()
+    try:
+        pid = cc.queue(base, graph, client_id=client)
+    except Exception:
+        stop.set()
+        raise
+    pidbox["pid"] = pid
+    _LIVE[pid] = (stop, seen)
+    say(f"[worker] queued as {pid}")
+    return pid
+
+
+def wait_live(cc, base, pid, say, label="rendering", timeout=7200):
+    stop, seen = _LIVE.pop(pid, (None, {"t": 0}))
+
+    def tick(el):
+        if el and el % 10 == 0 and time.time() - seen.get("t", 0) >= 9:
+            say(f"[worker] {label}... {el}s")
+    try:
+        return cc.wait(base, pid, on_tick=tick, timeout=timeout)
+    finally:
+        if stop is not None:
+            stop.set()

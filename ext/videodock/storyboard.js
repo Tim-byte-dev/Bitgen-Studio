@@ -158,6 +158,11 @@
         await new Promise((r) => setTimeout(r, i < 10 ? 500 : 2000));
         try { j = await (await fetch("/api/jobs/" + job.id)).json(); } catch { j = null; }
         if (j && /^(done|failed|error|cancelled|canceled)$/.test(j.status)) break;
+        // 2.574.0 (Tim: "show step number of steps for all generations"): the card's ⏳ says the picture's step
+        if (j && j.status === "running" && j.progress && j.progress.total && root.document) {
+          const w = root.document.querySelector(`[data-sbthumb="${n}"] .hint`);
+          if (w) w.textContent = `⏳ step ${j.progress.step} of ${j.progress.total}`;
+        }
       }
       if (!j || j.status !== "done") throw new Error(`the picture job ${j ? j.status : "did not answer"}`);
       const it = await post(`/api/storyboard/${n}/fromjob`, { job: job.id, style: st.name || style, prompt: plan.prompt });

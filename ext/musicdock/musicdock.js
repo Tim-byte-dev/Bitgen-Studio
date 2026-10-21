@@ -178,7 +178,8 @@ function muVariantJob(opts) {
         say("queued · job " + id);
         try { refreshJobs(); selectJob(id); } catch (e) { /* console shut: fine */ }
         awaitJob(id, function (jj) {
-          if (jj.status === "running") say(opts.doing + " · job " + id + (jj.progress ? " · " + jj.progress : ""));
+          // 2.574.0: progress is {step, total, …} (it read "[object Object]") - "step n of total" (static/stepstext.js)
+          if (jj.status === "running") say(opts.doing + " · job " + id + (window.H3Steps ? window.H3Steps.tag(jj.progress) : ""));
         }).then(function (st) {
           if (st !== "done") { say(st + " · job " + id + " — open the Console for the log"); return; }
           fetch("/api/jobs/" + id).then(function (r) { return r.json(); })

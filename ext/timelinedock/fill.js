@@ -185,7 +185,8 @@
     function blobOf(c) { return new Promise(function (ok) { c.toBlob(ok, "image/png"); }); }
     function imgOf(url) { return new Promise(function (ok, no) { var im = new Image(); im.onload = function () { ok(im); }; im.onerror = function () { no(new Error("could not load the result")); }; im.src = url; }); }
     function jobOut(id) { return fetch("/api/jobs/" + encodeURIComponent(id)).then(function (r) { return r.json(); }).then(function (j) { return (j.outputs && j.outputs[0]) || j.output || ""; }); }
-    function waitJob(id) { return typeof awaitJob === "function" ? awaitJob(id) : Promise.reject(new Error("the page's job poll is missing - reload")); }
+    // 2.574.0: base = the line's words - while the job runs it says base · step n of total
+    function waitJob(id, base) { return typeof awaitJob === "function" ? awaitJob(id, base && window.H3Steps ? function (jj) { if (jj.status === "running") say(base + window.H3Steps.tag(jj.progress)); } : undefined) : Promise.reject(new Error("the page's job poll is missing - reload")); }
     function upload(id, canvas) {
       return blobOf(canvas).then(function (b) {
         return fetch("/api/tlcanvas/layer?id=" + encodeURIComponent(id), { method: "POST", headers: { "Content-Type": "image/png" }, body: b });
@@ -240,7 +241,7 @@
       var id = (j.jobs && j.jobs[0] && j.jobs[0].id) || "";
       if (!id) throw new Error("no inpaint job");
       say("✨ image…");
-      var st = await waitJob(id);
+      var st = await waitJob(id, "✨ image");
       if (st !== "done") throw new Error("the inpaint " + st + " - see the job log");
       var out = await jobOut(id);
       var im = await imgOf("/outputs/" + encodeURIComponent(out) + "?v=" + Date.now());
@@ -283,7 +284,7 @@
           if (!r.ok) throw new Error(j.error || "the video was refused");
           if (typeof refreshJobs === "function") refreshJobs();
           say("✨ video…");
-          var st = await waitJob(j.id);
+          var st = await waitJob(j.id, "✨ video");
           if (st !== "done") throw new Error("the video " + st + " - see the job log");
           var out = await jobOut(j.id);
           var mr = await fetch("/api/tlcanvas/maskvideo", { method: "POST", headers: { "Content-Type": "application/json" },

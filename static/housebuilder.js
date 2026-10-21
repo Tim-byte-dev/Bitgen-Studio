@@ -1211,6 +1211,8 @@
         return fetch("/api/genimage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: $("hbPrompt").value || realPrompt(c), style_id: sid, images: imgs, width: sh.w, height: sh.h, extra_loras: loras }) }).then(function (x) { return x.json(); }).then(function (j) {
           if (j.error) { say("✨ " + j.error, "hbad"); return; }
           say("✨ queued (job " + (j.job && j.job.id || j.id || "") + ") with " + imgs.length + " picture" + (imgs.length > 1 ? "s" : "") + (left > 0 ? " - " + left + " picture(s) left out: " + (st.name || "this style") + " takes " + (st.slots || 1) + " (FLUX.2 Klein edit takes 3, Qwen Image 2.1 edit 8)" : "") + " - the photoreal picture lands in the gallery", left > 0 ? "" : "hok");
+          var jid = j.job && j.job.id || j.id;
+          if (jid && window.H3Steps && $("hbMsg")) window.H3Steps.watch($("hbMsg"), jid);   // 2.574.0: "… · step n of total" while it renders
         });
       });
     });

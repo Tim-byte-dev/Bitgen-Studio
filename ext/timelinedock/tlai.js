@@ -67,6 +67,7 @@
       .then(function (x) {
         if (typeof refreshJobs === "function") refreshJobs();
         if (typeof awaitJob !== "function") throw new Error("the page's job poll is missing - reload");
+        if (window.H3Steps && $("taiMsg")) window.H3Steps.watch($("taiMsg"), x.id);   // 2.574.0: "… · step n of total" (not into the log)
         return awaitJob(x.id).then(function (st) {
           if (st !== "done") throw new Error("the render " + st + " - see the job log");
           return fetch("/api/jobs/" + encodeURIComponent(x.id)).then(function (r) { return r.json(); });

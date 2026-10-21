@@ -3260,6 +3260,7 @@
 <script src="/static/uerig.js"></script>  <!-- 2.476.0: Unreal lights + fog (the image editor + the timeline) -->
 <script src="/static/jobmeta.js"></script>
 <script src="/static/genqueue.js"></script>
+<script src="/static/stepstext.js"></script>  <!-- 2.574.0: "step n of total" everywhere a generation runs (window.H3Steps) -->
 <script src="/static/queuerun.js"></script>
 <script src="/static/seedvr2panel.js"></script>
 <script src="/static/dlss5panel.js"></script>
@@ -3524,7 +3525,8 @@ async function refreshStats() {
     const el = s.running.started ? Math.round(Date.now() / 1000 - s.running.started) : 0;
     const mm = String(Math.floor(el / 60)); const ss = String(el % 60).padStart(2, "0");
     // 2.382.0 (Tim: "show the steps only not the full details"): the step count; the whole line is the tooltip
-    $("progdetail").textContent = m ? `${m[1]}/${m[2]}` : "…";
+    // 2.574.0 (Tim: "show step number of steps for all generations"): "step n/total" - the word says what the count is
+    $("progdetail").textContent = m ? `step ${m[1]}/${m[2]}` : "…";
     // 2.384.0: the queue's running row follows the same poll ("step n of total · m:ss")
     { const row = document.querySelector(`#jobs .job[data-id="${s.running.id}"] .st`);
       if (row && s.running.progress) row.textContent = jobRunText(s.running.progress);
@@ -5531,6 +5533,8 @@ async function awaitJob(id, onTick) {
     try { j = await (await fetch("/api/jobs/" + encodeURIComponent(id))).json(); }
     catch { continue; }                       // a blip is not an answer
     if (onTick) onTick(j);
+    // 2.574.0: every poll tells the page too ("h3:jobtick", the job) - a docker's card / tile shows its step from it
+    try { document.dispatchEvent(new CustomEvent("h3:jobtick", { detail: j })); } catch (e) { /* old browser */ }
     /* "running" and "queued" are the only states that are not an ending.
        Listing the terminal ones instead would mean a state added later is
        treated as still-running and the queue stalls forever. */
@@ -5670,20 +5674,7 @@ function paintQueue() {
   if (window.DockScroll) DockScroll.refresh($("qfbody"));
 }
 
-/** Wait for one queued job to reach a terminal state. Returns its final status. */
-async function awaitJob(id, onTick) {
-  for (;;) {
-    await new Promise((r) => setTimeout(r, 1200));
-    let j;
-    try { j = await (await fetch("/api/jobs/" + encodeURIComponent(id))).json(); }
-    catch { continue; }                       // a blip is not an answer
-    if (onTick) onTick(j);
-    /* "running" and "queued" are the only states that are not an ending.
-       Listing the terminal ones instead would mean a state added later is
-       treated as still-running and the queue stalls forever. */
-    if (j.status && j.status !== "running" && j.status !== "queued") return j.status;
-  }
-}
+/* 2.574.0: awaitJob is defined once (above, with the queue) - this was a second identical copy */
 
 /** Run one item through the worker its mode names. Resolves when it is DONE. */
 async function generateOne(gm, text, item) {
@@ -6238,6 +6229,8 @@ async function poll() {
     logNext = j.log_next;
   }
   $("cancelBtn").classList.toggle("hidden", !(j.status === "queued" || j.status === "running"));
+  // 2.574.0: the followed job's step ("job x · step n of total") beside Cancel
+  if ($("logStep")) $("logStep").textContent = j.status === "running" && window.H3Steps ? `${selJob} · ${H3Steps.text(j.progress) || "running"}` : "";
   $("copyCmd").classList.toggle("hidden", !j.command);
   $("copyCmd").onclick = () => navigator.clipboard.writeText(
     (j.command || []).map(a => /\s/.test(a) ? `"${a}"` : a).join(" "));
@@ -6250,7 +6243,7 @@ async function poll() {
     p.src = `/api/jobs/${selJob}/preview?v=${j.preview_version}`;
     pvImgHide();                                  // 2.214.0: the picture yields
     p.classList.remove("hidden");
-    $("vtitle").textContent = `preview · chunk ${j.chunk ? j.chunk.i + "/" + j.chunk.n : ""} (joins as it renders)`;
+    $("vtitle").textContent = `preview · chunk ${j.chunk ? j.chunk.i + "/" + j.chunk.n : ""} (joins as it renders)` + (window.H3Steps && j.progress && j.progress.total ? ` · step ${j.progress.step} of ${j.progress.total}` : "");
     // 2.562.0 (Tim: "don't automatically play videos or music"): loaded, not started - ▶ / Space plays it
   }
   if (j.status === "done" && j.output) {
@@ -8320,7 +8313,8 @@ async function startMusicJob(text) {
     const ab = document.querySelector('.gtabs button[data-gtab="audio"]');
     if (ab && galTab !== "audio") ab.onclick();
     // the status line follows the job to its end, so the console can stay shut
-    awaitJob(j.id, (jj) => { if (jj.status === "running") muStatus(`rendering · job ${j.id}` + (jj.progress ? ` · ${jj.progress}` : "")); })
+    // 2.574.0: progress is {step, total, …} - it read "[object Object]"; now "step n of total"
+    awaitJob(j.id, (jj) => { if (jj.status === "running") muStatus(`rendering · job ${j.id}` + (window.H3Steps ? H3Steps.tag(jj.progress) : "")); })
       .then((st) => muStatus(st === "done" ? `done · job ${j.id} — see the gallery's Audio tab`
                                            : `${st} · job ${j.id} — open the Console for the log`))
       .catch(() => {});

@@ -2511,7 +2511,7 @@
           if (!r || !r.jobs) return;
           ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;
           let applied = false;                                   // 2.569.0: opt.autoApply - the first result goes in by itself
-          const its = r.jobs.map((j, i) => E.pending.add({ seed: j.seed, mode, prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "",
+          const its = r.jobs.map((j, i) => E.pending.add({ job: j.id, seed: j.seed, mode, prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "",
                                                             info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
           say(`${mode}: ${its.length} render(s) queued in ⏳ Pending${r.edit_fill ? ` (${r.style_name || "the edit model"} - it sees the picture)` : r.helpers && r.helpers.length ? ` (the Krita AI way: ${r.helpers.join(" + ")})` : ""} - keep working, queue more`);
           await Promise.all(r.jobs.map(async (j, i) => {
@@ -2621,7 +2621,7 @@
         try {
           const r = await api.compose(creq, say);
           if (!r || !r.jobs) return;
-          const its = r.jobs.map((j, i) => E.pending.add({ seed: j.seed, mode: "compose", prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "", info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
+          const its = r.jobs.map((j, i) => E.pending.add({ job: j.id, seed: j.seed, mode: "compose", prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "", info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
           say(`compose: ${its.length} render(s) queued in ⏳ Pending - keep working, queue more`);
           await Promise.all(r.jobs.map(async (j, i) => { const url = await api.awaitResult(j.id, say); if (!url) { E.pending.fail(its[i]); return; } E.pending.ready(its[i], resultLayer(await imgOf(url), ctxInfo)); }));
         } catch (e) { say(`compose failed: ${e.message}`); }
@@ -2686,7 +2686,8 @@
     function renderResults() {
       const box = $("kxResults"); box.innerHTML = "";
       S.results.forEach((r, i) => {
-        if (!r.layer) { const w = doc.createElement("div"); w.className = "wait"; w.textContent = r.failed ? "✕" : "…"; w.title = r.failed ? "failed - see the job log" : "rendering"; box.appendChild(w); return; }
+        if (!r.layer) { const w = doc.createElement("div"); w.className = "wait"; w.textContent = r.failed ? "✕" : r.progress && r.progress.total ? `${r.progress.step}/${r.progress.total}` : "…";
+          w.title = r.failed ? "failed - see the job log" : "rendering" + (root.H3Steps ? root.H3Steps.tag(r.progress) : ""); if (r.id) w.dataset.job = r.id; box.appendChild(w); return; }
         const t = newCanvas(124, 124), g = ctx(t), b = r.info.box, k = Math.min(124 / b.w, 124 / b.h);
         g.drawImage(r.info.source || flatCache || cv, b.x, b.y, b.w, b.h, (124 - b.w * k) / 2, (124 - b.h * k) / 2, b.w * k, b.h * k);
         g.drawImage(r.layer, b.x, b.y, b.w, b.h, (124 - b.w * k) / 2, (124 - b.h * k) / 2, b.w * k, b.h * k);
@@ -2701,6 +2702,17 @@
       });
       $("kxResBtns").style.display = S.results.some((r) => r.layer) ? "" : "none";
     }
+    /* 2.574.0 (Tim: "show step number of steps for all generations"): a result still rendering shows its step (n/total;
+       the tooltip "rendering · step n of total") - from the page's job poll (awaitJob's "h3:jobtick") */
+    doc.addEventListener("h3:jobtick", (ev) => {
+      const j = (ev && ev.detail) || {}, r = S.results.find((x) => x.id && x.id === j.id);
+      if (!r || r.layer) return;
+      r.progress = j.status === "running" ? j.progress || null : null;
+      const box = $("kxResults"); if (!box) return;
+      const w = [...box.querySelectorAll(".wait")].find((x) => x.dataset.job === j.id); if (!w || !r.progress) return;
+      w.textContent = r.progress.total ? `${r.progress.step}/${r.progress.total}` : "…";
+      w.title = "rendering" + (root.H3Steps ? root.H3Steps.tag(r.progress) : "");
+    });
     function showResult(i) {
       const r = S.results[i]; if (!r || !r.layer) return;
       S.preview = r.layer; S.previewIndex = i; renderLayers(); renderResults();

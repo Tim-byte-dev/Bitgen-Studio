@@ -298,7 +298,7 @@
           cur.job = "";
           msg("✖ " + jb.status + (last ? ": " + last : ""), true);
           cur.q("go").disabled = false;
-        } else msg((jb.status === "queued" ? "queued…" : "rendering…") + (last ? "\n" + last : ""));
+        } else msg((jb.status === "queued" ? "queued…" : "rendering" + (window.H3Steps ? window.H3Steps.tag(jb.progress) || "…" : "…")) + (last ? "\n" + last : ""));   // 2.574.0: its step
       });
     }
     p.then(schedule, schedule);

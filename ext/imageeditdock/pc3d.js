@@ -452,7 +452,7 @@
         if (!r.ok) throw new Error(j.error || "refused");
         status("🖼 " + j.note + " - job " + j.edit);
         if (root.H3TestEvent) root.H3TestEvent("ie_realrefs", "blender");
-        const url = E.api && E.api.awaitResult ? await E.api.awaitResult(j.edit, say) : null;
+        const url = E.api && E.api.awaitResult ? await E.api.awaitResult(j.edit, say, (t) => status("🖼 " + j.note + " - job " + j.edit + (t ? " · " + t : ""))) : null;   // 2.574.0: its step
         if (!url) { status("🖼 no picture came back - see the job log"); return null; }
         const img = await new Promise((res, rej) => { const im = new root.Image(); im.crossOrigin = "anonymous"; im.onload = () => res(im); im.onerror = () => rej(new Error("the result did not load")); im.src = url; });
         E.addImageLayer(img, "✨ " + L.l3d.name + " real");

@@ -314,7 +314,10 @@
       if (lb && lb.textContent !== want) lb.textContent = want;
       return;
     }
-    if (el.children.length && !(el.children.length && [...el.children].every((c) => c.classList.contains("h3ic") || c.classList.contains("h3lb")))) return;   // only plain-text buttons
+    if (el.children.length && !(el.children.length && [...el.children].every((c) => c.classList.contains("h3ic") || c.classList.contains("h3lb")))) {
+      if (text != null) words(el, text);                                 // 2.573.1: a heading / label with buttons in it
+      return;                                                            // icons: only plain-text buttons
+    }
     const txt = el.textContent, sp = splitIcon(txt);
     el.dataset.h3orig = txt;
     el.textContent = "";
@@ -323,6 +326,29 @@
     if (sp.lead) el.appendChild(doc.createTextNode(sp.lead));
     el.appendChild(a); if (sp.gap) el.appendChild(doc.createTextNode(sp.gap)); el.appendChild(b);
     el.classList.add("h3icon");
+  }
+  /* 2.573.1 (Tim: "in theme edit mode, allow me to change the headings of dockers and all selected text"): an element
+     with words AND child elements (a docker's title bar "📌 ▾ StoryBoard ⛶", a label with its checkbox) - its OWN first
+     run of words is replaced in place; the children and the leading symbols (the ▾ / ▸ caret) stay. In place, as a text
+     node, because the app reads those nodes back (a docker's collapse rebuilds its title from them). The words it had
+     are kept in data-h3words; .h3words marks it so a cleared rule puts them back. */
+  function ownWords(el) { return [...el.childNodes].filter((n) => n.nodeType === 3 && n.nodeValue.trim()); }
+  function hasOwnWords(el) { return !!el && ownWords(el).length > 0; }
+  function words(el, text) {
+    const ns = ownWords(el); if (!ns.length) return;
+    const n = ns[0], v = n.nodeValue, sp = splitIcon(v), tail = (/\s*$/.exec(sp.label) || [""])[0];
+    const label = sp.label.slice(0, sp.label.length - tail.length);
+    if (el.dataset.h3words == null) el.dataset.h3words = label;
+    const want = sp.lead + sp.icon + (sp.icon ? (sp.gap || " ") : "") + text + tail;
+    if (v !== want) n.nodeValue = want;
+    el.classList.add("h3words");
+  }
+  function unwords(el) {
+    const t = el.dataset.h3words, ns = ownWords(el);
+    el.classList.remove("h3words"); delete el.dataset.h3words;
+    if (t == null || !ns.length) return;
+    const v = ns[0].nodeValue, sp = splitIcon(v), tail = (/\s*$/.exec(sp.label) || [""])[0];
+    ns[0].nodeValue = sp.lead + sp.icon + (sp.icon ? (sp.gap || " ") : "") + t + tail;
   }
   function unwrap(el) { const t = el.dataset.h3orig; el.classList.remove("h3icon"); delete el.dataset.h3orig; if (t != null && el.querySelector(":scope > .h3ic")) el.textContent = t; }
   let wrapping = false;
@@ -334,6 +360,7 @@
       for (const s of sels) { let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; } for (const el of list) { if (!hit.has(el) || styles[s].text) hit.set(el, styles[s].text != null ? styles[s].text : hit.get(el)); } }
       for (const [el, text] of hit) wrap(el, text);
       for (const el of doc.querySelectorAll(".h3icon")) if (!hit.has(el)) unwrap(el);
+      for (const el of doc.querySelectorAll(".h3words")) if (hit.get(el) == null) unwords(el);   // 2.573.1
       applyAlign();
     } finally { wrapping = false; }
   }
@@ -478,7 +505,10 @@
   function pick(el) {
     picked = el; ensureUi();
     const opts = selectorsFor(descOf(el));
-    if (!scope || !opts.some((o) => o.sel === scope)) scope = (opts.find((o) => o.sel === "#" + el.id) || opts[Math.min(1, opts.length - 1)] || opts[0]).sel;
+    if (!scope || !opts.some((o) => o.sel === scope)) scope = (opts.find((o) => o.sel === "#" + el.id)
+      // 2.573.1: a docker's title bar is aimed at THIS docker's (its panel's) - a new title must not rename them all
+      || (el.matches && el.matches(".bhead, .dockhead, .h3fp-t, .tsd-title") ? opts[0] : null)
+      || opts[Math.min(1, opts.length - 1)] || opts[0]).sel;
     renderPanel(opts);
     placeHi(el);
   }
@@ -493,6 +523,8 @@
     if (panel.parentNode !== host) host.appendChild(panel);
     const r = ruleNow(), ic = r.icon || {}, ts = r.tshadow, bs = r.bshadow;
     const plain = el.classList.contains("h3icon") || !el.children.length;          // 2.514.0: words can be changed on plain-text elements
+    const mixed = !plain && (el.classList.contains("h3words") || hasOwnWords(el));  // 2.573.1: + a docker's title bar, a label with a box
+    const ownNow = mixed ? (el.dataset.h3words != null ? el.dataset.h3words : splitIcon(ownWords(el)[0].nodeValue).label.trim()) : "";
     const n = (id, v, lo, hi2, step, t) => `<input type="number" id="${id}" value="${v == null ? "" : v}" min="${lo}" max="${hi2}" step="${step || 1}" title="${esc(t || "")}">`;
     const col = (id, v, t) => `<input type="color" id="${id}" value="${isHex(v) && v.length === 7 ? v : "#000000"}" title="${esc(t || "")}"><label title="use it"><input type="checkbox" id="${id}On"${v ? " checked" : ""}>✓</label>`;
     // 2.567.0: a row of radio buttons (– = none) and four side / corner boxes (= copies the first to all four)
@@ -527,7 +559,7 @@
         <h5>Layout</h5>
         <div class="rw"><span>Hide</span><label title="Gone in live mode (faint and dashed in edit mode, so you can pick it again)"><input type="checkbox" id="teHide"${r.hide ? " checked" : ""}>hidden</label>
           <label title="Gone while Expert mode is on (Settings ▸ General), shown in Basic mode - in edit mode it shows faint with a blue dashed outline"><input type="checkbox" id="teXHide"${r.xhide ? " checked" : ""}>hidden in Expert mode</label></div>
-        <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(r.text || "")}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : "only for plain-text elements")}" style="flex:1"${plain ? "" : " disabled"} title="Its words (its icon stays) - empty = its own"></div>
+        <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(r.text || "")}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : mixed ? ownNow.slice(0, 40) : "this element has no words of its own - pick the words themselves")}" style="flex:1"${plain || mixed ? "" : " disabled"} title="${plain ? "Its words (its icon stays) - empty = its own" : "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own"}"></div>
         <div class="rw"><span>Size</span>W ${n("teW", r.w, 4, 4000, 1, "width (px) - empty = its own")} H ${n("teH", r.h, 4, 4000, 1, "height (px) - empty = its own")}<span class="hint" style="width:auto">px · or drag a handle</span></div>
         <div class="rw"><span>Move</span>X ${n("teDx", r.dx || "", -4000, 4000, 1, "moved right (px)")} Y ${n("teDy", r.dy || "", -4000, 4000, 1, "moved down (px)")}<button id="teLayRst" title="Its own size and place again">↺</button></div>
         <div class="rw" style="margin-top:4px"><button id="teClear" title="Remove this rule">↺ Clear</button><span class="hint" id="teMsg" style="width:auto;flex:1"></span></div>
@@ -758,12 +790,12 @@
     }
     paintList();
     applyIcons();
-    try { new root.MutationObserver(() => { if (!wrapping && (iconSels().length || alignSels().length)) iconsSoon(); }).observe(doc.body, { childList: true, subtree: true, characterData: true }); } catch (e) { /* old */ }
+    try { new root.MutationObserver(() => { if (!wrapping && (iconSels().length || alignSels().length || doc.querySelector(".h3words"))) iconsSoon(); }).observe(doc.body, { childList: true, subtree: true, characterData: true }); } catch (e) { /* old */ }
   }
   if (doc) { if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start(); }
   if (root.addEventListener) root.addEventListener("keydown", hotkey, true);          // 2.515.0: Ctrl+Shift+Alt+E
 
-  const H3ThemeEdit = { ICON_POS, ALIGN, VALIGN, alignKind, alignCss, cleanSides, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, isRootSel, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, session: () => sesName,
+  const H3ThemeEdit = { ICON_POS, ALIGN, VALIGN, alignKind, alignCss, cleanSides, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, isRootSel, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, words: (el, t) => words(el, t), unwords: (el) => unwords(el), session: () => sesName,
     styles: () => JSON.parse(JSON.stringify(styles)), setStyles, setRule, toggle, isOn: () => on, dialogs: () => dlgs, saveAndLeave, pick: (el) => { if (!on) toggle(true); scope = ""; pick(el); }, scope: () => scope, applyIcons, start };
   if (typeof module !== "undefined" && module.exports) module.exports = H3ThemeEdit;
   else root.H3ThemeEdit = H3ThemeEdit;

@@ -40,6 +40,7 @@ function mount(app) {
       res.json(RR.start(spec));
     } catch (e) { fail(res, e); }
   });
-  app.get("/api/realrefs/:id", (req, res) => { try { res.json(RR.status(req.params.id)); } catch (e) { fail(res, e); } });
+  // 2.574.0: + the running job's progress (its step - lib/jobSteps)
+  app.get("/api/realrefs/:id", (req, res) => { try { const st = RR.status(req.params.id); const id = st && (st.state === "edit" ? st.edit : st.state === "real" ? st.real : ""); const pr = require("../lib/jobSteps").progressOf(id); res.json(pr ? { ...st, progress: pr } : st); } catch (e) { fail(res, e); } });
 }
 module.exports = { mount };

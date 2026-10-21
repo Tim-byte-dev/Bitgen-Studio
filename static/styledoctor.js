@@ -85,7 +85,8 @@
         if (S.stop) return jpost("/api/jobs/" + encodeURIComponent(j.id) + "/cancel", {}).then(function () { S.rows[st.id] = { id: st.id, name: st.name, status: "stopped", job: j.id }; });
         return jget("/api/jobs/" + encodeURIComponent(j.id)).then(function (d) {
           if (d.status === "queued" || d.status === "running") {
-            row.line = d.status === "queued" ? "waiting for the queue" : (d.progress && d.progress.pct != null ? Math.round(d.progress.pct) + " %" : "rendering") + " · " + fmtSecs((Date.now() - t0) / 1000);
+            // 2.574.0: "step n of total" (was a percentage)
+            row.line = d.status === "queued" ? "waiting for the queue" : (d.progress && d.progress.total ? "step " + d.progress.step + " of " + d.progress.total : "rendering") + " · " + fmtSecs((Date.now() - t0) / 1000);
             paint(); return wait(1500).then(poll);
           }
           var secs = d.finished && d.started ? d.finished - d.started : (Date.now() - t0) / 1000;

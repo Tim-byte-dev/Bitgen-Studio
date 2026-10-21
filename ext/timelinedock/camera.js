@@ -419,6 +419,7 @@
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "refused");
       if (typeof refreshJobs === "function") await refreshJobs();
+      if (window.H3Steps && $("cpPicSay")) window.H3Steps.watch($("cpPicSay"), j.job);   // 2.574.0: its step
       const st = typeof awaitJob === "function" ? await awaitJob(j.job) : "done";
       if (st !== "done") throw new Error("the depth job " + st + " - see its log (ComfyUI with comfyui_controlnet_aux?)");
       const jj = await (await fetch(`/api/jobs/${j.job}`)).json();

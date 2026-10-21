@@ -24,6 +24,7 @@ lib/imageArch.json catalogue. This file runs things; that file decides them.
 """
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -38,6 +39,7 @@ except Exception as _e:                                    # noqa: BLE001
 try:
     import comfy_image as _cimg
     import comfy_client as _comfy
+    import comfy_progress as _cprog       # 2.574.0: live "[comfy] step v/m" lines for pictures too
 except Exception as _e3:                                   # noqa: BLE001
     _cimg, _comfy, _comfy_err = None, None, _e3
 # THE one place that decides what a generated still is called. Imported rather
@@ -98,8 +100,21 @@ def run(argv, echo_cmd=True) -> int:
     env.update(RUN_ENV)
     CHILD = subprocess.Popen([str(a) for a in argv], stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT, env=env)
-    for raw in CHILD.stdout:
-        say(raw.decode("utf-8", "replace").rstrip("\r\n"))
+    # 2.574.0: sd-cli redraws its progress bar with \r ("|=====>   | 3/20 - 1.23s/it") - each redraw is a line, so
+    # the job's step (lib/jobMeta) follows the sampler instead of arriving all at once at the end
+    buf = b""
+    while True:
+        chunk = CHILD.stdout.read1(4096) if hasattr(CHILD.stdout, "read1") else CHILD.stdout.read(4096)
+        if not chunk:
+            break
+        buf += chunk
+        parts = re.split(rb"\r\n|\r|\n", buf)
+        buf = parts.pop()
+        for raw in parts:
+            if raw.strip():
+                say(raw.decode("utf-8", "replace"))
+    if buf.strip():
+        say(buf.decode("utf-8", "replace"))
     CHILD.stdout.close()
     rc = CHILD.wait()
     CHILD = None
@@ -202,10 +217,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
                         say(f"[worker] seed -> node {nid}.{k}")
         say("[worker] ===== chunk 1/1 (H3 look sheet)")
         _comfy.clear_before_gen(base, cfg, say)
-        pid = _comfy.queue(base, graph)
-        say(f"[worker] queued as {pid}")
-        outputs = _comfy.wait(base, pid, on_tick=lambda el: (
-            say(f"[worker] rendering... {el}s") if el and el % 10 == 0 else None))
+        pid, outputs = _cprog.run(_comfy, base, graph, say)          # 2.574.0: with its steps
         imgs = [it for it in _comfy.output_images(outputs)
                 if it.get("type", "output") == "output"]
         vids = [it for it in _comfy.output_videos(outputs)
@@ -305,10 +317,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
 
     say(f"[worker] ===== chunk 1/1")
     _comfy.clear_before_gen(base, cfg, say)   # empty card first (2.98.0)
-    pid = _comfy.queue(base, graph)
-    say(f"[worker] queued as {pid}")
-    outputs = _comfy.wait(base, pid, on_tick=lambda el: (
-        say(f"[worker] rendering... {el}s") if el and el % 10 == 0 else None))
+    pid, outputs = _cprog.run(_comfy, base, graph, say)              # 2.574.0: live "[comfy] step v/m" lines
 
     items = _comfy.output_images(outputs)
     if not items:
@@ -391,9 +400,8 @@ def run_controlnet(params, cfg, style, output_dir, first_files, seed):
                                "comfyui_controlnet_aux (Manager -> Install Missing Custom Nodes)")
         return g
     comfy = {"upload": lambda p: _comfy.upload_image(base, str(p)), "prepare": prepare,
-             "queue": lambda g: _comfy.queue(base, g),
-             "wait": lambda pid: _comfy.wait(base, pid, on_tick=lambda el: (
-                 say(f"[worker] rendering... {el}s") if el and el % 10 == 0 else None)),
+             "queue": lambda g: _cprog.queue_live(_comfy, base, g, say),      # 2.574.0: with its steps
+             "wait": lambda pid: _cprog.wait_live(_comfy, base, pid, say),
              "images": lambda outs: [it for it in _comfy.output_images(outs)
                                      if it.get("type", "output") == "output"],
              "download": lambda it, dest: _comfy.download(base, it, dest)}
@@ -459,8 +467,7 @@ def run_preprocess(params, cfg, output_dir, stem):
             fail("ComfyUI does not have " + ", ".join(miss) + " - install comfyui_controlnet_aux "
                  "(Manager -> Install Missing Custom Nodes)")
         say(f"[worker] ===== control layer from the picture: {typ} ({_cn.PRE_NODES.get(typ)})")
-        outs = _comfy.wait(base, _comfy.queue(base, g), on_tick=lambda el: (
-            say(f"[worker] preprocessing... {el}s") if el and el % 10 == 0 else None))
+        _pid, outs = _cprog.run(_comfy, base, g, say, label="preprocessing")   # 2.574.0
         items = [it for it in _comfy.output_images(outs) if it.get("type", "output") == "output"]
         if not items:
             fail("the preprocessor finished but saved no control map")

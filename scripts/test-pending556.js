@@ -32,8 +32,8 @@ check("apply: a new layer above the target inside ONE \"✨ changes: <layer>\" g
   /group = E\.makeLayer\(`✨ changes: \$\{owner\.name\}`, S\.w, S\.h, "group"\); group\.changesOf = owner\.id;/.test(PS) && /S\.layers = D\.insert\(S\.layers, group, owner\.id, false\);/.test(PS)
   && /S\.layers = D\.insert\(S\.layers, L, group\.id, true\);/.test(PS) && /E\.structOp\("apply AI result"/.test(PS) && /win\.PCGenFill\.placeOnto\(E, L, T0, into\.how\)/.test(PS) && /kx\.appendChild\(box\)/.test(PS));
 check("runAI / runCompose queue into Pending (never 'still working'), keep the target layer, each result a card; ext.json loads pcpending before imageedit.js",
-  /if \(S\.busy && !\(E\.pending && !E\.pending\.auto\)\) return say/.test(IE) && /const pend = !!\(E\.pending && !E\.pending\.auto\);/.test(IE) && /E\.pending\.add\(\{ seed: j\.seed, mode, prompt/.test(IE)
-  && /E\.pending\.ready\(its\[i\], resultLayer\(await imgOf\(url\), ctxInfo\)\)/.test(IE) && /E\.pending\.add\(\{ seed: j\.seed, mode: "compose"/.test(IE)
+  /if \(S\.busy && !\(E\.pending && !E\.pending\.auto\)\) return say/.test(IE) && /const pend = !!\(E\.pending && !E\.pending\.auto\);/.test(IE) && /E\.pending\.add\(\{ (job: j\.id, )?seed: j\.seed, mode, prompt/.test(IE)
+  && /E\.pending\.ready\(its\[i\], resultLayer\(await imgOf\(url\), ctxInfo\)\)/.test(IE) && /E\.pending\.add\(\{ (job: j\.id, )?seed: j\.seed, mode: "compose"/.test(IE)
   && JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts.indexOf("pcpending.js") === JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts.indexOf("imageedit.js") - 1);
 
 /* 2 references */

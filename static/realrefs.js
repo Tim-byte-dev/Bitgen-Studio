@@ -198,8 +198,10 @@
   /** a chain's status in words */
   function stepText(st) {
     if (!st) return "";
-    if (st.state === "edit") return "🖼 making the first frame real with " + (st.take || 0) + " reference picture(s) (job " + st.edit + ")…";
-    if (st.state === "real") return "🎬 3DREAL animates it (job " + st.real + ")…";
+    // 2.574.0: + "step n of total" while its job runs (the route adds progress)
+    var sx = st.progress && typeof root !== "undefined" && root.H3Steps ? " · " + root.H3Steps.text(st.progress) : st.progress && st.progress.total ? " · step " + st.progress.step + " of " + st.progress.total : "";
+    if (st.state === "edit") return "🖼 making the first frame real with " + (st.take || 0) + " reference picture(s) (job " + st.edit + ")" + (sx || "…");
+    if (st.state === "real") return "🎬 3DREAL animates it (job " + st.real + ")" + (sx || "…");
     if (st.state === "done") return st.kind === "video" ? "✓ done - the 3DREAL render is in the gallery (job " + st.real + ")" : "✓ done";
     if (st.state === "error") return "✗ " + (st.error || "failed");
     return "";

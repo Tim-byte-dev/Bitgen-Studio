@@ -5877,6 +5877,17 @@ orange line shows where it will go - and let go.
   Override style ▸ Model) gets its recipe automatically: sigma shift 12/3, VSA sparse attention, 8 steps, cfg 1, the
   base model's turbo LoRA taken out; Sage / Spectrum / Veda are skipped (they would replace VSA). Omni is a
   reference-to-video model - First / Cont / Trans (fl2va) scenes should stay on H3's own fl2va model.
+- 2.574.0: **theme edit mode ▸ Text on any words** - a docker's title bar (pick it: Text shows its title, aimed at that
+  docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
+  given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old
+  one back. Elements with no words of their own say so - pick the words themselves.
+- 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
+  only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
+  says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker
+  (they showed "[object Object]"), the image editor's result tiles and ⏳ Pending cards, From the picture, the 3D /
+  Unreal real pictures, the timeline's ✨ fill, 🤖 AI take, camera depth and karaoke overlay, the StoryBoard (grid cards,
+  the scene picker, ⏫ upscaling, ✎ First frame, storyboard pictures, the environment / character creators, sheet takes,
+  RefMod extraction), the swap dialog (takes and first frames), VR world, the style doctor and the house builder.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

@@ -15,7 +15,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const G = require(path.join(ROOT, "ext", "videodock", "sbgrid.js"));
 
 check("state: ⏳ rendering n% / ✕ failed / ✔ kept / ● rendered / nothing",
-  G.state({ status: "running", progress: { pct: 41.6 } }).word === "rendering 42%" && G.state({ status: "idle", error: "boom" }).mark === "✕" && G.state({ status: "kept" }).mark === "✔"
+  G.state({ status: "running", progress: { pct: 41.6, step: 5, total: 12 } }).word === "rendering · step 5 of 12" && G.state({ status: "idle", error: "boom" }).mark === "✕" && G.state({ status: "kept" }).mark === "✔"
   && G.state({ status: "rendered", error: "old" }).mark === "●" && G.state({ status: "idle" }).mark === "");
 check("text: the scene's lines without their [Shot n] heads", G.text({ prompt: ["[Shot 1] Mara runs.", "  ", "[Cam] Wide."] }) === "Mara runs. Wide.");
 const r = { n: 3, chapter: "act-1", prompt: ["[Shot 3] Mara <b>climbs</b>"], status: "rendered", output: "s3.mp4", updated: "t1" };

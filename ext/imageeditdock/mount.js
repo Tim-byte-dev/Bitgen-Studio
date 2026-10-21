@@ -74,7 +74,8 @@ function mountImageEditor() {
       const j = await r.json();
       if (!r.ok) { say(j.error || "refused"); return null; }
       await refreshJobs(); selectJob(j.job);
-      const st = await awaitJob(j.job);
+      // 2.574.0: the step while it runs
+      const st = await awaitJob(j.job, (jj) => { if (jj.status === "running" && window.H3Steps) say("⟲ " + type + " from the picture" + window.H3Steps.tag(jj.progress)); });
       if (st !== "done") { say("From image " + st + " - see the job log (comfyui_controlnet_aux installed?)"); return null; }
       const jj = await (await fetch(`/api/jobs/${j.job}`)).json();
       const out = (jj.outputs && jj.outputs[0]) || jj.output;
@@ -139,8 +140,9 @@ function mountImageEditor() {
       const tab = document.querySelector('#reftabs [data-rtab="img"]'); if (tab) tab.click();
       return n;
     },
-    awaitResult: async (id, say) => {
-      const st = await awaitJob(id);
+    // 2.574.0: onStep(text) - called with "step n of total" while the job runs (a docker's own line shows it)
+    awaitResult: async (id, say, onStep) => {
+      const st = await awaitJob(id, onStep && window.H3Steps ? (jj) => { if (jj.status === "running") onStep(window.H3Steps.text(jj.progress)); } : undefined);
       if (st !== "done") { say("a render " + st + " - see the job log"); return null; }
       const jj = await (await fetch(`/api/jobs/${id}`)).json();
       const out = (jj.outputs && jj.outputs[0]) || jj.output;

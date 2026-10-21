@@ -53,7 +53,8 @@
   function block(r) {
     var n = r.n, q = r.qedit || {}, chosen = q.chars || [];
     var cast = (info && info.cast) || [], edit = (info && info.edit) || [];
-    var st = q.status === "running" ? "⏳ making…" : q.status === "done" ? "✔ in the First slot" : q.status === "failed" ? "⚠ failed" : "";
+    // 2.574.0: + its step while the edit renders (the board's answer carries qedit.progress - lib/jobSteps)
+    var st = q.status === "running" ? "⏳ making" + (q.progress && q.progress.total ? " · step " + q.progress.step + " of " + q.progress.total : "…") : q.status === "done" ? "✔ in the First slot" : q.status === "failed" ? "⚠ failed" : "";
     return '<details class="scqe" data-qe="' + n + '"' + (open[n] ? " open" : "") + ' style="border:1px solid #2c3140;border-radius:4px;padding:2px 6px;margin-top:3px">'
       + '<summary style="cursor:pointer;font-size:.72rem" title="Make this scene\'s FIRST frame with the edit style picked below: Picture A kept as it is in a new place, the character(s) in a location with props, or the frame it continues from moved to a new location">'
       + "✎ First frame" + (st ? ' <span class="hint" data-qestat="' + n + '">' + st + "</span>" : "") + "</summary>"

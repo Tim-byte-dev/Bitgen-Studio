@@ -400,6 +400,7 @@
           $("kgGo").disabled = false; say("Rendering the overlay - it goes on the Karaoke layer when it is done.");
           if (typeof logLine === "function") logLine("[karaoke] " + ch.song + ": " + j.words + " word(s), " + j.how + " - rendering the overlay");
           if (typeof refreshJobs === "function") refreshJobs();
+          if (window.H3Steps && $("kgMsg")) window.H3Steps.watch($("kgMsg"), j.job, { base: "Rendering the overlay" });   // 2.574.0: its step
           var wait = typeof awaitJob === "function" ? awaitJob(j.job) : Promise.resolve("done");
           return wait.then(function (st) {
             if (st !== "done") { if (typeof appNote === "function") appNote("The karaoke overlay " + st + " - see the job log.", "Karaoke"); return; }

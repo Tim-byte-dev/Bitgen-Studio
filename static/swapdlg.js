@@ -667,7 +667,7 @@
       var cands = ff.cands || (ff.file ? [{ file: ff.file, label: ff.label, at: ff.at }] : []), making = (ff.jobs || []).length;
       var pic = ff.file && (ff.status === "done" || ff.status === "running")
         ? '<img alt="" class="ffMain" title="Double-click: see it big" src="/api/swapdlg/ff/' + encodeURIComponent(g.id) + "?v=" + encodeURIComponent(ff.file + (ff.at || "")) + '">'
-        : '<div class="ph">' + (ff.status === "running" ? "✎ making…" : ff.status === "failed" ? "⚠ " + esc(ff.error || "failed") : "no first frame") + "</div>";
+        : '<div class="ph">' + (ff.status === "running" ? "✎ making" + stepTag(ff.progress) : ff.status === "failed" ? "⚠ " + esc(ff.error || "failed") : "no first frame") + "</div>";
       // 2.348.0: every candidate - click = use it, double-click = see it big
       var strip = cands.length > 1 ? '<div class="ffcs">' + cands.map(function (c, k) {
         return '<img alt="" class="ffc' + (c.file === ff.file ? " on" : "") + '" data-file="' + esc(c.file) + '" title="' + esc((k + 1) + "/" + cands.length + " " + (c.label || c.file))
@@ -675,7 +675,7 @@
       }).join("") + "</div>" : "";
       card.innerHTML = "<div>#" + (i + 1) + " " + fmt(g.start) + (ff.label ? " · " + esc(ff.label) : "")
         + (cands.length > 1 ? " · " + (cands.findIndex(function (c) { return c.file === ff.file; }) + 1) + "/" + cands.length : "")
-        + (making && ff.file ? " · ✎ " + making + " more…" : "") + "</div>" + pic + strip
+        + (making && ff.file ? " · ✎ " + making + " more" + stepTag(ff.progress) : "") + "</div>" + pic + strip
         + '<div class="acts"><button type="button" data-ff="make" title="✎ Make more first frames with Qwen Image 2.1 (how many: ✎×N in the menubar) - each is kept, click the one to use">✎</button>'
         + '<button type="button" data-ff="edit"' + (ff.status === "done" ? "" : " disabled") + ' title="Touch it up in the Image editor (this dialog closes; 💾 Save there, then reopen ⇄ and press ⤓)">🖌</button>'
         + '<button type="button" data-ff="latest" title="Use the picture you saved last in the Image assets (a touch-up from the Image editor)">⤓</button>'
@@ -799,6 +799,9 @@
     return jpost("/api/swapdlg/set", { vr: patch }).then(function (j) { apply(j); look(); return j; });
   }
 
+  // 2.574.0: " · step n of total" (or "…") for a running first frame - the dialog's answer carries its progress
+  function stepTag(pr) { return pr && pr.total ? " · step " + pr.step + " of " + pr.total : "…"; }
+
   // ------------------------------------------------------------ right
   function rowFor(r, i) {
     var st = cur.st;
@@ -806,7 +809,7 @@
     var row = el("div", "swRow" + (cur.out && cur.out.id === r.id ? " cur" : ""));
     row.dataset.id = r.id;
     var label = (idx >= 0 ? "#" + (idx + 1) + " " : "") + fmt(r.start) + "–" + fmt(r.start + r.dur)
-      + (r.upscaled ? " ⏫" : "") + (r.file ? " · " + r.file : " · " + r.status)
+      + (r.upscaled ? " ⏫" : "") + (r.file ? " · " + r.file : " · " + r.status + (r.status === "running" && r.progress && r.progress.total ? " · step " + r.progress.step + " of " + r.progress.total : ""))
       + (r.status === "failed" && r.error ? " - " + r.error.replace(/^the render failed:\s*/, "") : "");      // 2.343.0
     var h = '<span class="swDot ' + r.status + '" title="' + esc(r.status + (r.error ? ": " + r.error : "")) + '"></span>';
     if (r.where === "keep") h += '<input type="checkbox" data-act="pick" title="Join this one with 🎬 Compile"' + (cur.compileSel[r.id] !== false ? " checked" : "") + ">";

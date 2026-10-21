@@ -134,7 +134,7 @@
         const tx = doc.createElement("div"); tx.className = "ppt";
         tx.innerHTML = `<span class="cap"></span><span class="sub"></span><span class="row"><button type="button" data-a="apply">✔ Apply</button><button type="button" data-a="del">🗑 Delete</button></span>`;
         tx.querySelector(".cap").textContent = caption(it); tx.querySelector(".cap").title = it.prompt || "";
-        tx.querySelector(".sub").textContent = it.failed ? "✕ failed - see the job log" : !it.layer ? "⏳ rendering…" : `→ above ${T ? T.name : it.targetName || "the selected layer"}`;
+        tx.querySelector(".sub").textContent = it.failed ? "✕ failed - see the job log" : !it.layer ? waitText(it) : `→ above ${T ? T.name : it.targetName || "the selected layer"}`;
         const ap = tx.querySelector('[data-a="apply"]'); ap.disabled = !it.layer; ap.title = "a new layer above that layer, in its ✨ changes group";
         ap.onclick = () => apply(it);
         tx.querySelector('[data-a="del"]').onclick = () => remove(it);
@@ -142,6 +142,16 @@
       }
       if (!box.classList.contains("off")) place();
     }
+    /* 2.574.0 (Tim: "show step number of steps for all generations"): a card still rendering says its step - its job
+       (it.job) is followed by the page's job poll ("h3:jobtick"); only that card's line changes, no re-render */
+    function waitText(it) { const pr = it.progress; return "⏳ rendering" + (pr && pr.total ? ` · step ${pr.step} of ${pr.total}` : pr ? " · loading the models" : "…"); }
+    doc.addEventListener("h3:jobtick", (ev) => {
+      const j = (ev && ev.detail) || {}, it = items.find((x) => x.job && x.job === j.id);
+      if (!it || it.layer || it.failed) return;
+      it.progress = j.status === "running" ? j.progress || null : null;
+      const card = $p("ppList") && $p("ppList").querySelector(`.ppc[data-pid="${it.pid}"] .sub`);
+      if (card) card.textContent = waitText(it);
+    });
     function add(o) {
       const it = Object.assign({ pid: ++uid, layer: null, failed: false }, o || {});
       items.push(it); show(); render(); tev("ie_pending_add", String(items.length));

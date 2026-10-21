@@ -51,7 +51,7 @@
           return j("/api/jobs/" + job.id).then(function (g) {
             if (g.status === "done") return g;
             if (g.status === "failed" || g.status === "cancelled") throw new Error("the compile of \"" + name + "\" " + g.status + (g.error ? ": " + g.error : ""));
-            if (n % 5 === 0) say("⧉ compiling \"" + name + "\"… " + (g.progress != null ? Math.round(g.progress * 100) + " %" : ""));
+            if (n % 5 === 0) say("⧉ compiling \"" + name + "\"… " + (g.progress && g.progress.pct != null ? g.progress.pct + " %" : window.H3Steps ? window.H3Steps.text(g.progress) : ""));   // 2.574.0: progress is an object (it read "NaN %")
             return sleep(1000).then(function () { return poll(n + 1); });
           });
         };

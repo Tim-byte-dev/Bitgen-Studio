@@ -297,7 +297,7 @@
       const label = `🔲 regional (${zs.length} box${zs.length > 1 ? "es" : ""})`, T = E.layer();
       const pend = E.pending && !E.pending.auto;
       const thumb = (() => { const k = Math.min(1, 160 / Math.max(S.w, S.h)), c = E.newCanvas(Math.max(1, Math.round(S.w * k)), Math.max(1, Math.round(S.h * k))); c.getContext("2d").drawImage(E.flatten(), 0, 0, c.width, c.height); return c; })();
-      const it = pend ? E.pending.add({ mode: "generate", prompt: body.prompt, label, target: T ? T.id : null, targetName: T ? T.name : "", info: { box: { x: 0, y: 0, w: S.w, h: S.h } }, base: thumb, n: 1, of: 1 }) : null;
+      const it = pend ? E.pending.add({ job: job.id, mode: "generate", prompt: body.prompt, label, target: T ? T.id : null, targetName: T ? T.name : "", info: { box: { x: 0, y: 0, w: S.w, h: S.h } }, base: thumb, n: 1, of: 1 }) : null;
       say(`▦ regional: ${zs.length} box(es) in one pass at ${sz.width}×${sz.height}…`);
       if (pend) E.pending.track();
       try {

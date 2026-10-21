@@ -206,6 +206,13 @@ const swapLoras = () => tempLoras.read(pdir(), "swap");
 function view(st) {
   const ceil = swap.ceiling(core.getConfig());
   const vi = videoInfo(st.video);
+  // 2.574.0 (Tim: "show step number of steps for all generations"): a running take / first frame carries its step
+  const JS = require("../lib/jobSteps");
+  const withPr = (x, id) => { const pr = JS.progressOf(id); return pr ? { ...x, progress: pr } : x; };
+  st = { ...st,
+    results: Array.isArray(st.results) ? st.results.map((r) => (r && r.status === "running" ? withPr(r, r.job) : r)) : st.results,
+    segments: Array.isArray(st.segments) ? st.segments.map((g) => (g && g.ff && g.ff.status === "running" && (g.ff.jobs || []).length
+      ? { ...g, ff: withPr(g.ff, (g.ff.jobs || []).find((id) => JS.progressOf(id)) || g.ff.jobs[0]) } : g)) : st.segments };
   return { ...st, ceiling: ceil, max_seconds: SS.maxSeconds(ceil), best_seconds: SS.bestSeconds(ceil), qualities: swap.QUALITIES,
            engines: RS.ENGINES,
            // 2.342.0: the ⚙ dialog - the video's own size, the size a render uses, the swap LoRAs

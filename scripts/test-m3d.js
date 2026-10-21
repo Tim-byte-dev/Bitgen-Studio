@@ -148,7 +148,7 @@ function send(port, method, u, body, type) {
   check("prompt docker: the steps line ABOVE Generate, the progress bar UNDER it",
     PD.indexOf('id="progdetail"') < PD.indexOf('id="go"') && PD.indexOf('id="go"') < PD.indexOf('id="progbar"') && /id="progbar" class="idle" role="progressbar"/.test(PD));
   check("...the line shows the steps only (the full details are its tooltip); the bar only while a job runs (a moving stripe before the steps start)",
-    H.includes('$("progdetail").textContent = m ? `${m[1]}/${m[2]}` : "…";') && H.includes('$("progbar").classList.remove("idle");')
+    H.includes('$("progdetail").textContent = m ? `step ${m[1]}/${m[2]}` : "…";') && H.includes('$("progbar").classList.remove("idle");')
     && H.includes('$("progbar").classList.add("idle");') && /#progbar\.idle \{ visibility: hidden; \}/.test(H) && /#progbar\.busy i/.test(H));
 
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

@@ -424,7 +424,7 @@
     var b = { idle: "", running: run, rendered: "🎞 rendered", kept: "✔ kept" }[r.status] || "";
     if ((r.status === "rendered" || r.status === "kept") && Number.isFinite(r.render_seconds)) b += " in " + scClock(r.render_seconds);
     if ((r.status === "rendered" || r.status === "kept") && r.seed_used != null) b += " · seed " + r.seed_used;
-    if (r.upjob) b += (b ? " · " : "") + "⏫ upscaling…";
+    if (r.upjob) b += (b ? " · " : "") + "⏫ upscaling" + (r.up_progress && window.H3Steps ? window.H3Steps.tag(r.up_progress) : "…");   // 2.574.0: its step
     else if (r.upscaled) b += (b ? " · " : "") + "⏫ upscaled";
     if ((scState.pending || []).indexOf(r.id) >= 0) b += (b ? " · " : "") + "⏳ queued";
     // a PROBED silent file says so (2.161.0) — audio === false is a real
@@ -1245,7 +1245,9 @@
     words = words.slice(0, 42);
     var mark = r.status === "running" ? "⏳ " : r.error && r.status !== "kept" && r.status !== "rendered" ? "✕ "
       : r.status === "kept" ? "✔ " : r.status === "rendered" ? "● " : "";
-    return mark + "Scene " + r.n + (words ? " · " + words : "");
+    // 2.574.0: a rendering scene's option says its step too
+    var stp = r.status === "running" && r.progress && r.progress.total ? " · step " + r.progress.step + " of " + r.progress.total : "";
+    return mark + "Scene " + r.n + stp + (words ? " · " + words : "");
   }
   function scPickApply() {
     var v = el("scPick") ? el("scPick").value : "";
@@ -2274,6 +2276,7 @@
             fetch("/api/jobs/" + encodeURIComponent(x.j.id))
               .then(function (r) { return r.json(); })
               .then(function (jj) {
+                if (jj.status === "running" && window.H3Steps) ecEl("ecStat").textContent = "rendering" + window.H3Steps.tag(jj.progress);   // 2.574.0
                 if (jj.status === "running" || jj.status === "queued") return;
                 clearInterval(ecPoll);
                 if (jj.status !== "done") { ecEl("ecStat").textContent = "render " + jj.status; return; }
@@ -2876,8 +2879,13 @@
       if (!chSheetJobs.length) { chSheetSay(""); return; }
       chSheetSay((c.done ? c.done + " take(s) ready" : "")
         + (c.done && c.going ? " · " : "")
-        + (c.going ? c.going + " generating…" : "")
+        + (c.going ? c.going + " generating" + chSheetStepTag() : "")
         + (c.done ? " — ✔ use as the sheet, 💾 save to Images assets, ✕ delete" : ""));
+    }
+    // 2.574.0: the running take's step on the status line (" · step n of total", the first running one)
+    function chSheetStepTag() {
+      var r = chSheetJobs.filter(function (j) { return j.status === "running" && j.progress; })[0];
+      return r && window.H3Steps ? window.H3Steps.tag(r.progress) : "…";
     }
     // Opens the EXISTING adopt flow on one take: the preview dialog with the
     // name box and ✔ Keep — one path into the cast, unchanged since 2.202.0.
@@ -3001,7 +3009,7 @@
           var wt = document.createElement("div");
           wt.className = "hint";
           wt.style.cssText = "width:100%;aspect-ratio:1664/944;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:6px";
-          wt.textContent = "⏳ " + (j.status || "queued") + "…";
+          wt.textContent = "⏳ " + (j.status || "queued") + (j.status === "running" && j.progress && window.H3Steps ? window.H3Steps.tag(j.progress) : "…");   // 2.574.0: its step
           t.appendChild(wt);
         }
         box.appendChild(t);
@@ -3035,8 +3043,9 @@
       pending.forEach(function (j) {
         fetch("/api/jobs/" + j.id).then(function (r) { return r.json(); })
           .then(function (d) {
-            var was = j.status;
+            var was = j.status, wasStep = j.progress && j.progress.step;
             j.status = d.status || j.status;
+            j.progress = d.status === "running" ? d.progress || null : null;   // 2.574.0: the take's step on its tile
             if (d.status === "done") {
               var outs = (d.outputs && d.outputs.length ? d.outputs
                           : d.output ? [d.output] : [])
@@ -3049,7 +3058,7 @@
               j.t = Date.now();
               if (!j.out) j.status = "failed";
             }
-            if (j.status !== was) { chSheetPaintStrip(); chSheetStatusLine(); }
+            if (j.status !== was || (j.progress && j.progress.step) !== wasStep) { chSheetPaintStrip(); chSheetStatusLine(); }
           }).catch(function () {});
       });
     }
@@ -3368,6 +3377,7 @@
             fetch("/api/jobs/" + encodeURIComponent(x.j.id))
               .then(function (r) { return r.json(); })
               .then(function (jj) {
+                if (jj.status === "running" && window.H3Steps) el("ccStat").textContent = "rendering" + window.H3Steps.tag(jj.progress);   // 2.574.0
                 if (jj.status === "running" || jj.status === "queued") return;
                 clearInterval(ccPoll);
                 if (jj.status !== "done") { el("ccStat").textContent = "render " + jj.status; return; }
@@ -4002,6 +4012,8 @@
             fetch("/api/jobs/" + encodeURIComponent(d.id))
               .then(function (r) { return r.json(); })
               .then(function (j) {
+                if (j.status === "running" && j.progress && j.progress.total) el("chDlgMsg").textContent = "extracting " + d.mod + " from "
+                  + d.pictures + " dataset picture(s) · step " + j.progress.step + " of " + j.progress.total + " (job " + d.id + ")";   // 2.574.0
                 if (j.status === "running" || j.status === "queued") return;
                 clearInterval(chRefmodPoll);
                 if (j.status !== "done") {
