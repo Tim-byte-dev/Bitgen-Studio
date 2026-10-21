@@ -58,7 +58,10 @@ check("basic.cfg: saved a moment after a change (by hand, or by the app - a 3 s 
   && /sendBeacon\("\/api\/layout\/basic"/.test(BS) && /ready && root\.H3_PROJECT_READY/.test(BS) && /JSON\.stringify\(\{ all: o \}\)/.test(BS));
 check("basic.cfg and folder_filters.cfg are this machine's - kept out of the zips and git",
   /! -name "basic\.cfg"/.test(rd("scripts", "make_zips.sh")) && /! -name "folder_filters\.cfg"/.test(rd("scripts", "make_zips.sh"))
-  && /^basic\.cfg$/m.test(rd(".gitignore")) && /^folder_filters\.cfg$/m.test(rd(".gitignore")) && rd(".gitignore") === rd("_gitignore"));
+  && /^basic\.cfg$/m.test(rd(".gitignore")) && /^folder_filters\.cfg$/m.test(rd(".gitignore"))
+  // 2.565.1: _gitignore (its copy for the zip - a dot file can be lost on the way) is only in the install zip, not in
+  // the GitHub repository: compared where it exists (CI failed on every push since 2.559.0 reading it)
+  && (!fs.existsSync(path.join(ROOT, "_gitignore")) || rd(".gitignore") === rd("_gitignore")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);
