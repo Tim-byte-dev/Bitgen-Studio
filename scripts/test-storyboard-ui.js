@@ -35,6 +35,7 @@ const api = async (u, b) => { const r = await fetch(BASE + u, b ? { method: "POS
   const st = ((styles.styles || []).find((s) => /^E2E Look$/.test(s.name)) || (styles.styles || []).find((s) => s.kind !== "music" && !s.chain && (s.engine === "sdcli"))) || null;
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1800, height: 1100 } });
+  await p.addInitScript(() => { try { localStorage.setItem("sb.view", "list"); } catch (e) { /* fine */ } });   // 2.565.0: these steps use the List view's cards (the grid is the default)
   const errs = [];
   p.on("pageerror", (e) => errs.push(e.message + " @ " + String(e.stack || "").split("\n").slice(1, 3).join(" | ")));
   p.on("dialog", (d) => d.accept().catch(() => {}));

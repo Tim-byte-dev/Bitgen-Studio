@@ -271,7 +271,7 @@ function mount(app) {
       const rr = await llmChat.complete(core, { messages: sceneEdit.llmMessages({ base: g.base, roles: pl.roles, prefix: (st.plan || {}).prompt_prefix,
         sceneText: (r.prompt || []).join(" "), notes }) });
       if (!rr || rr.ok === false) return res.status(502).json({ error: "the LLM did not answer - " + ((rr && rr.error) || "start one in Settings ▸ LLM") });
-      reply = llmChat.stripThinking(llmChat.readReply(rr));
+      reply = llmChat.stripThinking(rr.text || "");                 // 2.564.0: complete() already answers {ok, text} (2.563.0 read it twice: "[object Object]")
     } catch (e) { return res.status(502).json({ error: "the LLM did not answer - " + (e.message || e) }); }
     let text = sceneEdit.cleanWritten(reply, pl.images.length);
     if (!text) return res.status(502).json({ error: "the LLM answered nothing usable - try again, or write the direction yourself" });

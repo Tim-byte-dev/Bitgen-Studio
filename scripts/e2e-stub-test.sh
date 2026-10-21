@@ -12211,6 +12211,22 @@ node scripts/test-picturea563.js > /tmp/pa563.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui563-ui.js > /tmp/ui563.log 2>&1 \
   && ok "2.563.0 browser test: ＋📁 on scene 2 opens on 🎬 Scenes and adds scene 1's reference picture, 🅰 Picture A takes scene 1's First frame, 🤖 Write answers, ✎ queues the edit with <image1> = Picture A - or SKIP without playwright" \
   || { bad "2.563.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui563.log | head -14; }
+
+# ---- 2.564.0 (🎙 voice chat)
+node scripts/test-voice564.js > /tmp/v564.log 2>&1 \
+  && ok "2.564.0 units (vadStep start / end / drop / a pause / 25 s / the room's level, downsample + encodeWav, matchOption, DOCKS / MODES / SETTING_IDS, speakable, voiceAgent clean / parse a rude reply / messages, asrLive one process + stop + the one-shot fallback, the routes / page / asr_live.py wiring, no double readReply)" \
+  || { bad "2.564.0 units"; grep -a "^FAIL" -A2 /tmp/v564.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui564-ui.js > /tmp/ui564.log 2>&1 \
+  && ok "2.564.0 browser test: a fake microphone talks -> heard start + end -> a 16 kHz wav -> the live stand-in transcriber -> a stand-in llama-server's rude JSON -> the prompt written, Seconds 8, Generate = Image; typing works; ✕ stops the transcriber; ✎ 🤖 Write gets the LLM's words - or SKIP without playwright" \
+  || { bad "2.564.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui564.log | head -14; }
+
+# ---- 2.565.0 (the StoryBoard grid; 🎞 Write storyboard; ☑ Start on it)
+node scripts/test-sbgrid565.js > /tmp/g565.log 2>&1 \
+  && ok "2.565.0 units (state, text, cardHtml - picture / First / number, state, text, buttons - gridHtml with ➜ between, the grid / list wiring, the card buttons, Start on it + Ref -> First, Write storyboard, bgScenes.state)" \
+  || { bad "2.565.0 units"; grep -a "^FAIL" -A2 /tmp/g565.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui565-ui.js > /tmp/ui565.log 2>&1 \
+  && ok "2.565.0 browser test: the grid (3 cards, 2 ➜, the list hidden), a click opens scene 2's full card, ✕ closes, 🖼 on scene 1 = its picture + its First frame (Ref -> First), ☰ list, 🎞 Write storyboard with a stand-in LLM = the scenes + their pictures as First - or SKIP without playwright" \
+  || { bad "2.565.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui565.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

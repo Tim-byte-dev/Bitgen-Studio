@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.565.0** — The Storyboard Grid; 🎞 Write Storyboard; ☑ Start on It
+- **2.564.0** — 🎙 Voice Chat (Talk to the App, Hands-Free); 🤖 Write / The Phone Chat Fix
 - **2.563.0** — Pictures from Other Scenes; ✎ First Frame from 🅰 Picture a; 🤖 Write
 - **2.562.0** — A Resumed Job Comes Back to Its Storyboard Scene; Nothing Plays by Itself
 - **2.561.0** — A ▣ Docker as a Column of Its Own (Dropped Between Two Columns)

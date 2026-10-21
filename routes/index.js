@@ -183,6 +183,7 @@ function mount(app) {
   require("./stylesRestore").mount(app);   // 2.547.0: ↺ the built-in styles back (Krea 2 …)
   require("./refKeep").mount(app);         // 2.548.0: the reference docker kept as it changes (POST /api/projects/refs)
   require("./sceneedit").mount(app);   // 2.337.0: the scene cards' ✎ First frame (Qwen Image 2.1)
+  require("./voice").mount(app);       // 2.564.0: the 🎙 voice chat (lib/asrLive, lib/voiceAgent)
   require("./ltx").mount(app);         // 2.338.0: LTX 2.5 from the prompt docker (Tim's all-in-one canvas)
   require("./h3Viggle").mount(app);    // 2.352.0: the H3_Viggle style - each scene's 🎬 motion video
   require("./setup").mount(app);       // 2.341.0: the model catalog + the Hugging Face CLI inside the studio

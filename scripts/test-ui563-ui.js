@@ -43,6 +43,7 @@ const upload = async (u, field, file, extra) => {
   check("scene 1 holds a reference picture and a First frame (the fixture)", u1.ok && u2.ok, { u1, u2 });
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1800, height: 1100 } });
+  await p.addInitScript(() => { try { localStorage.setItem("sb.view", "list"); } catch (e) { /* fine */ } });   // 2.565.0: these steps use the List view's cards (the grid is the default)
   const errs = []; p.on("pageerror", (e) => errs.push(e.message));
   const ev = (f, a) => p.evaluate(f, a);
   let job = null;

@@ -5777,6 +5777,26 @@ orange line shows where it will go - and let go.
   A's own place. **🤖 Write** has the LLM write the instruction (it names the pictures as <image1>, <image2> …) - edit it
   if you like; ✎ Make first frame with Picture A and an empty direction writes it first. The edit style picked in the
   accordion makes the frame.
+- 2.564.0: **🎙 Voice chat - talk to the app.** Press **🎙 Voice** in the statusbar (or **Ctrl+Alt+V**) and just talk -
+  there is nothing to hold: it hears when you start and stop speaking, writes down what you said (faster-whisper on this
+  computer, kept loaded while you talk), and the local LLM answers out loud (your computer's own voices) and DOES what you
+  asked: write or change the prompt ("write me a prompt of a fox in the snow"), the negative prompt, pick a style,
+  change Basic Settings ("make it eight seconds", "720p", "16:9"), what Generate makes, the video mode, press Generate,
+  make a still, stop the running job, add or render a StoryBoard scene, show a docker. What it did is listed under its
+  answer. While it speaks it does not listen. ⏸ pauses listening, 🔈 / 🔇 its voice (and which voice), the box at the
+  bottom lets you type instead, ✕ (or saying goodbye) ends it. It needs faster-whisper (Settings ▸ Audio) and an LLM
+  (Settings ▸ LLM). 2.564.0 also fixes ✎ 🤖 Write (2.563.0) and the phone's chat, which showed "[object Object]"
+  instead of the LLM's words.
+- 2.565.0: **the StoryBoard is a storyboard**: ▦ (the new default) shows every scene as a card like the Model manager's -
+  its storyboard picture (else its First frame), "Scene n", its state and its text - in a grid with an ➜ from each scene
+  to the next. On a card: 🖼 makes its picture (↻ another), ▶ renders it, → First starts it on the picture. Click a card
+  and its full scene card opens under the grid with everything it had (the prompt, Ref / First / Cont / Trans, the
+  frames, its pictures, ✎ First frame, the filmstrip …); ✕ (or "All scenes" in the picker) closes it. ☰ shows the list as
+  before.
+- 2.565.0: **🎞 Write storyboard** (the StoryBoard bar): give it a brief - the LLM writes the scenes (your characters, the
+  ticked references) and every scene gets its storyboard picture, made with the bar's image model and references
+  (☑ Character sheets / Locations / Reference images). With **☑ Start on it** each picture becomes its scene's FIRST frame
+  (a Ref scene turns First) - change it with ↻ or the scene's First frame picker. The writer needs at least one character.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

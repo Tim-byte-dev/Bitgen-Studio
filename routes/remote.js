@@ -161,7 +161,7 @@ function mount(app) {
     try {
       const r = await llmChat.complete(core, { messages: msgs });
       if (!r || r.ok === false) return res.status(r?.status || 500).json({ error: r?.error || "llm failed" });
-      res.json({ reply: llmChat.stripThinking(llmChat.readReply(r)) });
+      res.json({ reply: llmChat.stripThinking(r.text || "") });       // 2.564.0: complete() already answers {ok, text}
     } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
   });
 
@@ -178,7 +178,7 @@ function mount(app) {
       const msgs = hist.concat([{ role: "user", content: text }]);
       const r = await llmChat.complete(core, { messages: msgs });
       const reply = (r && r.ok !== false)
-        ? llmChat.stripThinking(llmChat.readReply(r)) : "";
+        ? llmChat.stripThinking(r.text || "") : "";                 // 2.564.0: (was read twice - "[object Object]")
       res.json({ heard: text, reply });
     } catch (e) {
       if (f) fs.unlink(f.path, () => {});

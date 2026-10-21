@@ -43,6 +43,27 @@ def main():
         print(json.dumps(pair))
         return 0
 
+    if "asr_live" in helper:
+        # 2.564.0: the live transcriber's stand-in - "ready", then one answer per JSON line on stdin (the words say how
+        # long the wav was, so a test can tell its utterance arrived whole)
+        print(json.dumps({"ready": True, "device": "cpu", "model": job.get("model") or "base"}), flush=True)
+        for line in sys.stdin:
+            line = line.strip()
+            if not line:
+                continue
+            j = json.loads(line)
+            secs = 0.0
+            try:
+                with open(j.get("audio", ""), "rb") as fh:
+                    data = fh.read()
+                rate = struct.unpack("<I", data[24:28])[0] if data[:4] == b"RIFF" else 16000
+                secs = max(0.0, (len(data) - 44) / 2.0 / (rate or 16000))
+                text = "make the prompt a red fox in the snow" if secs > 0.3 else ""
+                print(json.dumps({"id": j.get("id"), "text": text, "language": "en", "device": "cpu", "secs": round(secs, 2), "rate": rate}), flush=True)
+            except OSError as e:
+                print(json.dumps({"id": j.get("id"), "error": f"stub: {e}"}), flush=True)
+        return 0
+
     if "asr_local" in helper:
         sys.stderr.write(f"[asr] loading {job.get('model')} on {job.get('device')}\n")
         segs = [{"start": 0.0, "end": 1.5, "text": "first line",

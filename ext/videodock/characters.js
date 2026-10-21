@@ -4089,5 +4089,6 @@
   else init();
   window.bgCharacters = { refresh: refresh, build: build, card: card };
   window.bgScenes = { refresh: scRefresh, maybeScreenplay: maybeScreenplay,
-                      select: scSelect };
+                      select: scSelect,
+                      state: function () { return scState; } };   // 2.565.0: the StoryBoard grid (sbgrid.js) reads the board
 })();

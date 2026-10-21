@@ -9,6 +9,7 @@
     "audioseg.js",
     "rendersettings.js",
     "karaoke.js",
-    "storyboard.js"
+    "storyboard.js",
+    "sbgrid.js"
   ]
 }

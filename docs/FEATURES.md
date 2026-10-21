@@ -631,6 +631,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **A ▣ docker as a column of its own** — dropped on the seam between two columns (or at the window's edge) it becomes a full-height column with its own splitter; kept across restarts. *Where:* drag a ▣ docker by its title bar. *Since:* 2.561.0
 - **Resumed jobs come back to their scene; nothing autoplays** — a StoryBoard scene interrupted by a restart takes its job back (running, its progress bar) when ▶ Resume is pressed in the Queue docker's Pending tab; videos and songs load paused until ▶ / Space. *Where:* the Queue docker's Pending tab; the StoryBoard; the player. *Since:* 2.562.0
 - **Pictures from other scenes; 🅰 Picture A first frames** — the scene pickers' 🎬 Scenes tab (every scene's own pictures) and 🎞 Clips (any take's frames); ✎ First frame starts from a chosen Picture A (style, composition, poses kept) in a new or the global prompt's location, the instruction written by the LLM (🤖 Write). *Where:* the StoryBoard scene cards. *Since:* 2.563.0
+- **🎙 Voice chat** — talk to the app hands-free, like a live chat: it hears you (faster-whisper, local, kept loaded), the local LLM answers out loud and does what you ask - the prompt, styles, Basic Settings, Generate, StoryBoard scenes, dockers. *Where:* the statusbar's 🎙 Voice (Ctrl+Alt+V). *Since:* 2.564.0
+- **The StoryBoard grid; 🎞 Write storyboard** — scenes as Model-manager-like cards in a grid with ➜ to the next, a click opens the full scene card; the LLM writes the scenes and every scene gets its storyboard picture as its starting (First) frame. *Where:* the StoryBoard (▦ / ☰, 🎞 Write storyboard, ☑ Start on it). *Since:* 2.565.0
 
 ### Selections
 

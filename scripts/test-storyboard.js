@@ -32,6 +32,6 @@ check("the client: → First / → Last post the scene's own slot with the story
 const IX = read("routes", "index.js"), RT = read("routes", "storyboard.js"), EXT = JSON.parse(read("ext", "videodock", "ext.json")), CL = read("ext", "videodock", "storyboard.js"), SRV = fs.existsSync(path.join(ROOT, "server.js")) ? read("server.js") : "";
 check("wiring: routes/storyboard.js mounted from routes/index.js (not server.js) - GET /api/storyboard, POST plan / fromjob / clear, GET thumb; the video docker extension is \"StoryBoard\" and loads storyboard.js; the client renames the header + status button, floats it through H3Panels (sb.dock), makes the picture with /api/genimage",
   /require\("\.\/storyboard"\)\.mount\(app\)/.test(IX) && !/storyboard/.test(SRV) && ["/api/storyboard/:n/plan", "/api/storyboard/:n/fromjob", "/api/storyboard/:n/clear", "/api/storyboard/:n/thumb"].every((u) => RT.includes(u))
-  && EXT.name === "StoryBoard" && EXT.scripts[EXT.scripts.length - 1] === "storyboard.js" && /b\.textContent = "StoryBoard"/.test(CL) && /P\.adopt\(\{ id: "sb\.dock"/.test(CL) && /post\("\/api\/genimage", body\)/.test(CL));
+  && EXT.name === "StoryBoard" && EXT.scripts.includes("storyboard.js") && EXT.scripts.indexOf("storyboard.js") < EXT.scripts.indexOf("sbgrid.js")   /* 2.565.0: the grid after it */ && /b\.textContent = "StoryBoard"/.test(CL) && /P\.adopt\(\{ id: "sb\.dock"/.test(CL) && /post\("\/api\/genimage", body\)/.test(CL));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

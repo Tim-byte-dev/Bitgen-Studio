@@ -15,6 +15,12 @@
  *   HOW          POST /api/storyboard/:n/plan (the prompt + the references adopted into Images assets) -> the ordinary
  *                /api/genimage job (the Queue shows it) -> polled -> POST /api/storyboard/:n/fromjob keeps it in
  *                projects/<p>/storyboard/. lib/storyboard.js, routes/storyboard.js.
+ *   2.565.0 (Tim: "can u make the llm generate a storyboard instead of just scenes - i give it reference images and it
+ *                creates pictures for the storyboard that i can use as the starting reference image - we can change this
+ *                image if needed"): 🎞 Write storyboard - a brief -> the LLM writes the scenes (the screenplay writer) ->
+ *                every scene's picture made with the bar's references; ☑ Start on it = each picture becomes its scene's
+ *                FIRST frame (a Ref scene turns First) - ↻ makes another, the First slot's own picker changes it.
+ *                The grid view: sbgrid.js.
  * Pure (Node: scripts/test-storyboard.js): slotBody, thumbHtml.
  */
 (function (root) {
@@ -40,7 +46,7 @@
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const store = { get: (k, d) => { try { const v = root.localStorage.getItem("sb." + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set: (k, v) => { try { root.localStorage.setItem("sb." + k, JSON.stringify(v)); } catch { /* private mode */ } } };
-  const opts = Object.assign({ sheets: true, locations: true, refs: true, style: "" }, store.get("opts", {}) || {});
+  const opts = Object.assign({ sheets: true, locations: true, refs: true, style: "", autoFirst: true }, store.get("opts", {}) || {});
   const items = new Map(), busy = new Set();
   let say = (t) => { const n = $("sbMsg"); if (n) n.textContent = t || ""; };
   const post = (url, body) => fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) }).then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; });
@@ -75,7 +81,10 @@
       + `<label class="chk" title="The character sheets of the characters a scene's prompt names ride as reference pictures"><input type="checkbox" id="sbSheets"${opts.sheets ? " checked" : ""}> Character sheets</label>`
       + `<label class="chk" title="The pictures of the locations a scene's prompt names ride as reference pictures"><input type="checkbox" id="sbLocs"${opts.locations ? " checked" : ""}> Locations</label>`
       + `<label class="chk" title="The scene's own reference pictures and the project's References ride as reference pictures"><input type="checkbox" id="sbRefs"${opts.refs ? " checked" : ""}> Reference images</label>`
-      + `<button class="ghost gbtn" id="sbAll" type="button" title="Make the storyboard picture of every scene that has none yet (one after another)">🖼 All missing</button><span class="hint" id="sbMsg" style="font-size:.7rem"></span>`;
+      + `<label class="chk" title="Each storyboard picture becomes its scene's FIRST frame - the render starts on it (a Ref scene turns First). Change it any time: ↻ makes another, or pick a picture in the scene's First slot"><input type="checkbox" id="sbAuto"${opts.autoFirst ? " checked" : ""}> Start on it</label>`
+      + `<button class="ghost gbtn" id="sbAll" type="button" title="Make the storyboard picture of every scene that has none yet (one after another)">🖼 All missing</button>`
+      + `<button class="ghost gbtn" id="sbWrite" type="button" title="The LLM writes the scenes from your brief, then every scene gets its storyboard picture (with the references ticked here: character sheets, locations, reference images)">🎞 Write storyboard</button>`
+      + `<span class="hint" id="sbMsg" style="font-size:.7rem"></span>`;
     pick.parentNode.insertBefore(row, pick);
     const q = (id) => row.querySelector("#" + id);
     const keep = () => store.set("opts", opts);
@@ -83,6 +92,8 @@
     q("sbLocs").onchange = () => { opts.locations = q("sbLocs").checked; keep(); };
     q("sbRefs").onchange = () => { opts.refs = q("sbRefs").checked; keep(); };
     q("sbStyle").onchange = () => { opts.style = q("sbStyle").value; keep(); };
+    q("sbAuto").onchange = () => { opts.autoFirst = q("sbAuto").checked; keep(); };
+    q("sbWrite").onclick = () => writeStoryboard();
     q("sbStyle").onfocus = paintStyles;
     q("sbAll").onclick = () => allMissing();
     paintStyles();
@@ -95,6 +106,7 @@
   }
   /* ---- the thumbnails on the scene cards (the board repaints #scList - added again each time) */
   function paintCards() {
+    if (H3Story.onPaint) { try { H3Story.onPaint(); } catch (e) { /* the grid's */ } }   // 2.565.0: the grid view too
     const list = $("scList"); if (!list) return;
     list.querySelectorAll(".sccard[data-sc]").forEach((c) => {
       const n = +c.dataset.sc, it = items.get(n) || null, key = (it ? it.at : "-") + (busy.has(n) ? "b" : "");
@@ -136,6 +148,7 @@
       if (!j || j.status !== "done") throw new Error(`the picture job ${j ? j.status : "did not answer"}`);
       const it = await post(`/api/storyboard/${n}/fromjob`, { job: job.id, style: st.name || style });
       items.set(n, it); say(`scene ${n}: storyboard picture ready`);
+      if (opts.autoFirst) await useAs(n, "first", { anchor: true, quiet: true });      // 2.565.0: the scene starts on it
     } catch (e) { say(`⚠ scene ${n}: ${e.message}`); }
     finally { busy.delete(n); paintCards(); }
   }
@@ -144,13 +157,40 @@
     if (!ns.length) return say("every scene has its storyboard picture");
     for (const n of ns) await make(n);
   }
-  async function useAs(n, slot) {
+  async function useAs(n, slot, o) {
     const it = items.get(n); if (!it) return;
     try {
       await post(`/api/scenes/${n}/fl`, slotBody(it, slot));
-      say(`scene ${n}: its storyboard picture is its ${slot} frame now`);
+      // 2.565.0: a Ref scene has no first frame - as its starting picture it turns First
+      if (slot === "first" && o && o.anchor) {
+        const st = root.bgScenes && root.bgScenes.state ? root.bgScenes.state() : null;
+        const row = st && (st.list || []).find((x) => x.n === n);
+        if (!row || !row.anchor || row.anchor === "reference") await post(`/api/scenes/${n}/anchor`, { anchor: "first" });
+      }
+      if (!(o && o.quiet)) say(`scene ${n}: its storyboard picture is its ${slot} frame now`);
       if (root.bgScenes && typeof root.bgScenes.refresh === "function") root.bgScenes.refresh();   // characters.js: the board again (the slot shows)
     } catch (e) { say("⚠ " + e.message); }
+  }
+  /** 2.565.0: 🎞 Write storyboard - the LLM writes the scenes from a brief, then every scene gets its picture */
+  async function writeStoryboard(brief0) {
+    let brief = brief0;
+    if (brief == null) {
+      const ask = typeof root.askText === "function" ? root.askText : (t, l, v) => Promise.resolve(root.prompt(l, v));
+      brief = await ask("🎞 Write storyboard", "What is the film about? (the LLM writes the scenes; each gets its storyboard picture made with the references ticked on the bar)", "");
+    }
+    brief = String(brief || "").trim(); if (!brief) return null;
+    if (!root.bgScenes || !root.bgScenes.maybeScreenplay) { say("the scene writer is not ready yet"); return null; }
+    say("🎞 the LLM is writing the scenes…");
+    let msg = null;
+    try { msg = await root.bgScenes.maybeScreenplay(/screenplay|storyboard|scenes/i.test(brief) ? brief : "create a screenplay: " + brief); }
+    catch (e) { say("⚠ " + (e.message || e)); return null; }
+    if (msg && /^⚠/.test(msg)) { say(msg); return msg; }
+    if (root.bgScenes.refresh) root.bgScenes.refresh();
+    await new Promise((r) => setTimeout(r, 1200));
+    await refresh();
+    say("🎞 scenes written - making their storyboard pictures…");
+    await allMissing();
+    return msg;
   }
   function start() {
     if (!$("videodock") || !$("scList")) return false;
@@ -160,6 +200,7 @@
     refresh();
     root.setInterval(refresh, 20000);
     H3Story.refresh = refresh; H3Story.make = make; H3Story.useAs = useAs; H3Story.items = () => [...items.values()]; H3Story.opts = opts; H3Story.allMissing = allMissing;
+    H3Story.write = writeStoryboard; H3Story.busy = (n) => busy.has(n); H3Story.say = (t) => say(t);
     return true;
   }
   const boot = () => { if (!start()) root.setTimeout(boot, 300); };
