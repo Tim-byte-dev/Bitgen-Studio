@@ -113,7 +113,7 @@
       const chans = (list, dir) => (list || []).map((c, i) => Object.assign({ id: c.id, name: c.name, w: c.w, h: c.h, file: c.data ? put(`${dir}channels/${i + 1}.u8`, c.data, true) : null }, c.spot ? { spot: clone(c.spot) } : {}));   // 2.467.0: + a spot channel's ink
       const sel = (a, dir) => (a && a.some((v) => v) ? put(`${dir}sel.u8`, a, true) : null);
       const m = { w: S.w, h: S.h, name: S.name || "", active: S.active, layers: [], paths: clone(S.paths || []), work: clone(S.work || null), ptarget: clone(S.ptarget || null),
-        channels: chans(S.channels, ""), sel: sel(S.sel, ""), guides: clone(S.guides || []), dimScale: clone(S.dimScale || null), marks: { samplers: clone(S.samplers || []), notes: clone(S.notes || []), counts: clone(S.counts || null) }, fileInfo: clone(S.fileInfo || null), imgMode: S.imgMode || "rgb", imgModeOpt: clone(S.imgModeOpt || null), comps: clone(S.comps || []), compOn: S.compOn || null, compSel: S.compSel || null, compLast: clone(S.compLast || null), smart: [], fields: [] };
+        channels: chans(S.channels, ""), sel: sel(S.sel, ""), guides: clone(S.guides || []), dimScale: clone(S.dimScale || null), marks: { samplers: clone(S.samplers || []), notes: clone(S.notes || []), counts: clone(S.counts || null), zones: clone(S.zones || []) }, fileInfo: clone(S.fileInfo || null), imgMode: S.imgMode || "rgb", imgModeOpt: clone(S.imgModeOpt || null), comps: clone(S.comps || []), compOn: S.compOn || null, compSel: S.compSel || null, compLast: clone(S.compLast || null), smart: [], fields: [] };
       for (const L of S.layers) m.layers.push(await layerRec(L, L.id, L.canvas, L.mask, L.fmask, null, ""));
       // the smart objects' contents (through smart objects inside smart objects) and the liquify fields they use
       const refs = refsOf(S.layers), done = new Set();
@@ -243,7 +243,7 @@
       S.channels = chansOf(files, m.channels);
       S.guides = Array.isArray(m.guides) ? m.guides : [];                    // 2.440.0
       S.dimScale = m.dimScale && m.dimScale.k > 0 ? m.dimScale : null;        // 2.441.0
-      const mk = m.marks || {}; S.samplers = Array.isArray(mk.samplers) ? mk.samplers : []; S.notes = Array.isArray(mk.notes) ? mk.notes : []; S.counts = mk.counts && Array.isArray(mk.counts.groups) ? mk.counts : null;   // 2.483.0 (pcmeasure.js)
+      const mk = m.marks || {}; S.samplers = Array.isArray(mk.samplers) ? mk.samplers : []; S.notes = Array.isArray(mk.notes) ? mk.notes : []; S.counts = mk.counts && Array.isArray(mk.counts.groups) ? mk.counts : null; S.zones = Array.isArray(mk.zones) ? mk.zones.filter((z) => z && Number.isFinite(z.x) && Number.isFinite(z.w)).slice(0, 8) : [];   // 2.569.0 (pczones.js)   // 2.483.0 (pcmeasure.js)
       S.fileInfo = m.fileInfo && typeof m.fileInfo === "object" ? m.fileInfo : null;   // 2.485.0 (pcfileplus.js)
       S.imgMode = /^(rgb|gray|bitmap|duotone|indexed|cmyk)$/.test(m.imgMode || "") ? m.imgMode : "rgb"; S.imgModeOpt = m.imgModeOpt && typeof m.imgModeOpt === "object" ? m.imgModeOpt : null;   // 2.487.0 (pcmode.js)
       S.comps = m.comps || []; S.compOn = m.compOn || null; S.compSel = m.compSel || null; S.compLast = m.compLast || null;

@@ -12251,6 +12251,14 @@ node scripts/test-storyboard568.js > /tmp/sb568.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui568-ui.js > /tmp/ui568.log 2>&1 \
   && ok "2.568.0 browser test: a stand-in LLM writes scene 1's picture (sheet + words) and scene 2's (scene 1's last frame from its take + the sheet - the frame checked red); the picture fills the 16:9 card, its prompt in the tooltip; 📁 -> the picker -> a project picture is its picture + First frame; a click opens the full card - or SKIP without playwright" \
   || { bad "2.568.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui568.log | head -14; }
+
+# ---- 2.569.0 (🔲 zones in the image editor: one box at a time / edit model / regional prompt)
+node scripts/test-zones569.js > /tmp/z569.log 2>&1 && python3 scripts/test-regions569.py > /tmp/r569.log 2>&1 \
+  && ok "2.569.0 units (pczones: normBox / hitZone / moveZone / rectMask / isBlank / instruction / regionsOf / renderSize; lib/regions.clean; comfy_regions: area_px, SDXL KSampler, FLUX.2 CFGGuider + a Primitive, BasicGuider + FluxGuidance copied, refusals, no regions = as before; the wiring)" \
+  || { bad "2.569.0 units"; grep -a "^FAIL" -A2 /tmp/z569.log /tmp/r569.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui569-ui.js > /tmp/ui569.log 2>&1 \
+  && ok "2.569.0 browser test: /api/genimage refuses regions for a non-ComfyUI style, keeps them in the job for one; boxes dragged with the mouse (colours, words, move, size, Delete) on the overlay; ▣ a Generate per box applied by itself inside its box; ✎ the outlined picture + the instruction to the Edit model; ▦ /api/genimage with the scene, ~1 MP and the boxes -> a layer; a new document has its own boxes - or SKIP without playwright" \
+  || { bad "2.569.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui569.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

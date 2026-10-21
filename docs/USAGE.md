@@ -5817,6 +5817,18 @@ orange line shows where it will go - and let go.
   scene, a frame of a take, any project picture or a file (with ☑ Start on it, it becomes the scene's First frame too).
   In the grid **the picture is the whole card**: the scene's name and two lines of its text over the bottom, the buttons
   on hover; the tooltip holds the full text and the picture's prompt; a click opens the scene's full card.
+- 2.569.0: **🔲 Zones in the image editor** - boxes on the canvas that say what the AI puts where ("a kite" here, "a dog"
+  there, "a bench" there). ✨ AI panel ▸ 🔲 Zones ▸ **🔲 Draw boxes** (the Zones tool, with the marquees): drag on the
+  canvas for a box (each gets its colour and number), drag a box to move it, its edges / corners to size it, Delete
+  removes the picked one; type what goes in each box in the list. Optional: the scene (the whole picture). Then pick
+  HOW and **✨ Generate zones**:
+  **▣ One box at a time** - a ✨ Generate (Add content) per box with the fill style, all queued at once into ⏳ Pending;
+  ☑ Apply as they come puts each box's first result in as its own layer. **✎ Edit model, one pass** - the picture with
+  the boxes outlined in their colours goes to the Edit model once ("Put a kite inside the red box …, remove the
+  outlines"): the light matches best, the place is looser. **▦ Regional prompt, one pass** - a NEW picture from the
+  boxes with a ComfyUI image style: the scene's words over the whole, each box's words only inside it (ComfyUI's area
+  conditioning - best with SDXL-type styles; FLUX / Qwen follow it more loosely). A picture starts on ▣, a blank canvas
+  on ▦. The boxes are kept with the document (and its .bgi) and are never painted into the picture.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

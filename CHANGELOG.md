@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.569.0** — 🔲 Zones in the Image Editor (One Box at a Time / Edit Model / Regional Prompt)
 - **2.568.0** — Storyboard Pictures Written by the LLM; The Scene Before's Last Frame; 📁 Change It; The Card Is the Picture
 - **2.567.0** — Theme Editor: Text Alignment, Padding / Margins, Corners
 - **2.566.0** — Moss-Image (a Model Type + Settings ▸ Add-Ons ▸ Moss-Image)

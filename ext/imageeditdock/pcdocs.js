@@ -29,13 +29,13 @@
     "picks", "zoom", "panX", "panY", "userView", "lastPaint", "viewMask", "cloneSrc", "cloneOff", "cloneMark", "savedTop",
     "comps", "compOn", "compSel", "compLast",                                      // 2.434.0: a document's layer comps (pccomps.js)
     "bgiName", "guides", "dimScale",
-    "samplers", "notes", "counts", "fileInfo", "imgMode", "imgModeOpt"];   // 2.487.0: Image ▸ Mode (pcmode.js; S.mode is the selection mode)                                                // 2.483.0: colour samplers, notes, count marks (pcmeasure.js)                                              // 2.441.0: its dimension scale (pcdims.js)                                                          // 2.440.0: its guidelines (pcguides.js)                                                                    // 2.436.0: the .bgi it was opened / saved as (pcbgi.js)
+    "samplers", "notes", "counts", "fileInfo", "imgMode", "imgModeOpt", "zones"];   // 2.569.0: 🔲 zones (pczones.js)   // 2.487.0: Image ▸ Mode (pcmode.js; S.mode is the selection mode)                                                // 2.483.0: colour samplers, notes, count marks (pcmeasure.js)                                              // 2.441.0: its dimension scale (pcdims.js)                                                          // 2.440.0: its guidelines (pcguides.js)                                                                    // 2.436.0: the .bgi it was opened / saved as (pcbgi.js)
   function blank() {
     return { w: 0, h: 0, name: "", layers: [], active: 0, sel: null, selVer: 0, selCount: 0, undo: [], redo: [], results: [], preview: null, previewIndex: 0,
       float: null, pts: [], maskEdit: false, fmaskEdit: false, qm: null, qmDirty: false, qmBefore: null, lastSel: null, histSrc: new Map(), paths: [], work: null,
       ptarget: null, channels: [], picks: [], zoom: 1, panX: 0, panY: 0, userView: false, lastPaint: null, viewMask: false, cloneSrc: null, cloneOff: null,
       cloneMark: null, savedTop: undefined, comps: [], compOn: null, compSel: null, compLast: null, bgiName: "", guides: [], dimScale: null,
-      samplers: [], notes: [], counts: null, fileInfo: null, imgMode: "rgb", imgModeOpt: null };
+      samplers: [], notes: [], counts: null, fileInfo: null, imgMode: "rgb", imgModeOpt: null, zones: [] };
   }
   /** the document part of a state (by reference) */
   function take(S) { const o = {}; for (const k of DOC_KEYS) o[k] = S[k]; return o; }

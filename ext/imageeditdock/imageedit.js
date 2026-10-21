@@ -2367,13 +2367,13 @@
       if (!S.w) return say("open a picture first");
       if (S.busy && !(E.pending && !E.pending.auto)) return say("still working on the last one");
       if (!api || !api.aiedit) return say("the AI is not connected (reload the page)");
-      const mode = S.aiMode;
+      const mode = opt.mode || S.aiMode;                                   // 2.569.0: 🔲 zones ask for a mode of their own
       if (mode === "compose") return E.runCompose ? E.runCompose() : say("Compose is not loaded (reload the page)");
       // 2.556.0: the editor never waits - every run queues into ⏳ Pending (pcpending.js); E.pending.auto = the old way
       const pend = !!(E.pending && !E.pending.auto);
       const source = opt.source && opt.source.width === S.w && opt.source.height === S.h ? opt.source : null;   // 2.541.0
-      if (!source) { if (E.beforeGenerate) E.beforeGenerate(mode); }   // 2.442.0: a closed shape active - into it (pcframes.js); 2.541.0: not for a source picture
-      let sel = hasSel() && !source ? Uint8Array.from(S.sel) : null;
+      if (!source && !opt.zone) { if (E.beforeGenerate) E.beforeGenerate(mode); }   // 2.442.0: a closed shape active - into it (pcframes.js); 2.541.0: not for a source picture
+      let sel = hasSel() && !source && !opt.zone ? Uint8Array.from(S.sel) : null;   // 2.569.0: a 🔲 zone brings its own box (opt.sel)
       // 2.553.0: opt.sel = a mask of the picture's size to work in instead (a layer's own pixels - an Edit of a layer with
       // transparent parts changes only those, Tim: "it redraws the entire layer and fills in the edges to fill the canvas");
       // opt.clip = the result keeps exactly that mask (no soft edge past it)
@@ -2418,7 +2418,7 @@
         : mode === "generate" || mode === "remove" || mode === "background" ? KB.context
         : P.contextRect(bb, S.w, S.h, S.context, 16);
       // Krita's fill kind (workflow.py detect_inpaint_mode: a selection across the whole picture = expand)
-      const fillKind = mode !== "generate" || whole ? mode : (bb.w >= S.w || bb.h >= S.h) ? "expand" : S.fillMode === "fill" ? "fill" : "add";
+      const fillKind = mode !== "generate" || whole ? mode : (bb.w >= S.w || bb.h >= S.h) ? "expand" : (opt.fillKind || S.fillMode) === "fill" ? "fill" : "add";
       const cropMask = P.cropMask(sel, S.w, box);
       const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
@@ -2508,6 +2508,7 @@
           const r = await api.aiedit(req, say);
           if (!r || !r.jobs) return;
           ctxInfo.soft = !!r.soft && !ctxInfo.into && !clip;
+          let applied = false;                                   // 2.569.0: opt.autoApply - the first result goes in by itself
           const its = r.jobs.map((j, i) => E.pending.add({ seed: j.seed, mode, prompt, label: opt.label || "", target: T ? T.id : null, targetName: T ? T.name : "",
                                                             info: ctxInfo, base, n: i + 1, of: r.jobs.length }));
           say(`${mode}: ${its.length} render(s) queued in ⏳ Pending${r.edit_fill ? ` (${r.style_name || "the edit model"} - it sees the picture)` : r.helpers && r.helpers.length ? ` (the Krita AI way: ${r.helpers.join(" + ")})` : ""} - keep working, queue more`);
@@ -2515,6 +2516,7 @@
             const url = await api.awaitResult(j.id, say);
             if (!url) { E.pending.fail(its[i]); return; }
             E.pending.ready(its[i], resultLayer(await imgOf(url), ctxInfo));
+            if (opt.autoApply && !applied) { applied = true; E.pending.apply(its[i]); }
           }));
         } catch (e) { say(`${mode} failed: ${e.message}`); }
         finally { E.pending.untrack(); }
@@ -2920,6 +2922,7 @@
     if (win.IEFilters2 && win.IEFilters2.install) win.IEFilters2.install(E); // 2.480.0: more adjustments (Shadows / Highlights, Selective Color, Color Lookup…) + Apply Image
     if (win.IEFilters3 && win.IEFilters3.install) win.IEFilters3.install(E); // 2.481.0: the Filter menu's round B (filters3.js + filters4.js) - the Custom filter's 5 x 5 kernel
     if (win.IEFilters5 && win.IEFilters5.install) win.IEFilters5.install(E); // 2.482.0: Filter ▸ Develop Filter… + Lens Correction… (filters5.js)
+    if (win.PCZones && win.PCZones.install) win.PCZones.install(E);       // 2.569.0: 🔲 zones - boxes that say what the AI puts where (pczones.js)
     if (win.PCMeasure && win.PCMeasure.install) win.PCMeasure.install(E);   // 2.483.0: Navigator / Histogram / Info / Notes, sampler, ruler, note, count, perspective crop, Grow / Similar / Focus Area, Matting
     if (win.IEBrushDyn && win.IEBrushDyn.install) win.IEBrushDyn.install(E); // 2.484.0: the 🖌 Brush tab - Brush Settings, presets, .abr brushes (brushdyn.js)
     if (win.PCFilePlus && win.PCFilePlus.install) win.PCFilePlus.install(E); // 2.485.0: BMP / TIFF / GIF / TGA / AVIF export, File Info, Print, Contact Sheet, Crop and Straighten Photos (pcfileplus.js)

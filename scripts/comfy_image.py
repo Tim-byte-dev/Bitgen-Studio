@@ -1084,6 +1084,16 @@ def patch(graph, style, params):
         report.append(f"LoRA node {nid}: bypassed (no LoRA in this slot)"
                       if how == "bypassed" else
                       f"LoRA node {nid}: {name} @ {w:g} ({how})")
+    # 2.569.0: 🔲 zones - one area-conditioned prompt per box (scripts/comfy_regions.py)
+    if params.get("regions"):
+        import comfy_regions
+        rr = roles(graph)
+        lat = _ins(graph.get(rr["latent"] or "", {}))
+        lit = lambda k: lat.get(k) if lat.get(k) is not None and not _is_link(lat.get(k)) else None   # noqa: E731
+        W = params.get("width") or lit("width") or style.get("width")
+        H = params.get("height") or lit("height") or style.get("height")
+        graph, zrep = comfy_regions.apply(graph, params.get("regions"), W, H)
+        report += zrep
     return graph, report
 
 

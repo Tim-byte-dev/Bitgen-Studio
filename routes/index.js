@@ -1852,6 +1852,12 @@ function mount(app) {
     if (b.sampler && typeof b.sampler === "string" && b.sampler.trim())
       p.sampler = b.sampler.trim().slice(0, 60);
     p.batch = Math.max(1, Math.min(8, styles.numOr(b.batch, 1)));
+    // 2.569.0: 🔲 zones - each box's words only inside it (lib/regions.js; scripts/comfy_regions.py adds them to the graph)
+    if (Array.isArray(b.regions) && b.regions.length) {
+      const rg = require("../lib/regions").clean(b.regions);
+      if (rg.length && (styled.engine || "comfy") !== "comfy") return res.status(400).json({ error: `regional prompting needs a ComfyUI image style - ${style.name} renders with ${styled.engine}` });
+      if (rg.length) p.regions = rg;
+    }
     // Reference images for an image-EDIT workflow, named from the project's
     // Images assets (the reference dock). Resolved to real paths here so the
     // worker only ever handles files it can open; the worker uploads them to
