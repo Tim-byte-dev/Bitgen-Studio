@@ -489,7 +489,9 @@
     /* 2.337.0: slot "qe_location" / "qe_prop" = the ✎ First frame
        accordion's location / prop pictures (routes/sceneedit.js) */
     var isQe = /^qe_/.test(slot), qeWhat = slot === "qe_location" ? "location" : slot === "qe_pica" ? "Picture A" : "prop";
-    ov.setAttribute("aria-label", isRef ? "Add reference pictures to scene " + n
+    /* 2.568.0: slot "sb" = scene n's STORYBOARD picture (routes/storyboard.js /set, /upload) - Tim: "this image can be changed" */
+    var isSb = slot === "sb";
+    ov.setAttribute("aria-label", isSb ? "Choose scene " + n + "'s storyboard picture" : isRef ? "Add reference pictures to scene " + n
       : isQe ? "Choose scene " + n + "'s " + qeWhat + " picture for its first frame"
       : "Choose scene " + n + "'s " + slot + " frame");
     ov.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;"
@@ -497,7 +499,7 @@
     ov.innerHTML = '<div style="background:#1b1e25;border:1px solid #333;border-radius:6px;'
       + 'padding:10px;width:min(720px,94vw);max-height:80vh;display:flex;flex-direction:column;gap:6px">'
       + '<div style="display:flex;gap:6px;align-items:center;font-weight:600">'
-      + '<span style="flex:1">Scene ' + n + (isRef ? " — add a reference picture"
+      + '<span style="flex:1">Scene ' + n + (isSb ? " — choose its STORYBOARD picture" : isRef ? " — add a reference picture"
           : isQe ? " — ✎ first frame: " + (qeWhat === "location" ? "choose the LOCATION picture" : qeWhat === "Picture A" ? "choose PICTURE A (its style, composition and poses are kept)" : "add a PROP picture")
           : " — choose the " + (slot === "first" ? "FIRST" : "LAST") + " frame") + "</span>"
       + '<button class="ghost gbtn" data-flclose type="button" aria-label="Close">✕</button></div>'
@@ -518,13 +520,14 @@
     var choose = function (payload) {
       payload.slot = slot;
       note.textContent = "setting…";
-      fetch("/api/scenes/" + n + (isRef ? "/refs/project" : isQe ? "/qedit/pic" : "/fl"), { method: "POST",
+      fetch(isSb ? "/api/storyboard/" + n + "/set" : "/api/scenes/" + n + (isRef ? "/refs/project" : isQe ? "/qedit/pic" : "/fl"), { method: "POST",
         headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
         .then(function (r2) { return r2.json(); })
         .then(function (d) {
           if (d.error) { note.textContent = "⚠ " + d.error; return; }
           el("scNotes").textContent = d.note || "";
           close();
+          if (isSb && window.H3Story && window.H3Story.picked) window.H3Story.picked(n, d);
           scRefresh();
         }).catch(function (e) { note.textContent = String(e); });
     };
@@ -627,11 +630,13 @@
           var fd = new FormData();
           if (isRef) fd.append("images", inp.files[0]);
           else { fd.append("slot", slot); fd.append("image", inp.files[0]); }
-          fetch("/api/scenes/" + n + (isRef ? "/refs" : isQe ? "/qedit/pic/upload" : "/fl/upload"), { method: "POST", body: fd })
+          fetch(isSb ? "/api/storyboard/" + n + "/upload" : "/api/scenes/" + n + (isRef ? "/refs" : isQe ? "/qedit/pic/upload" : "/fl/upload"), { method: "POST", body: fd })
             .then(function (r2) { return r2.json(); })
             .then(function (d) {
               if (d.error) { note.textContent = "⚠ " + d.error; return; }
-              close(); scRefresh();
+              close();
+              if (isSb && window.H3Story && window.H3Story.picked) window.H3Story.picked(n, d);
+              scRefresh();
             }).catch(function (e) { note.textContent = String(e); });
         });
         body.appendChild(inp);
@@ -4089,6 +4094,6 @@
   else init();
   window.bgCharacters = { refresh: refresh, build: build, card: card };
   window.bgScenes = { refresh: scRefresh, maybeScreenplay: maybeScreenplay,
-                      select: scSelect,
+                      select: scSelect, pickPicture: scFlPicker,   // 2.568.0: the StoryBoard's "change it" (slot "sb")
                       state: function () { return scState; } };   // 2.565.0: the StoryBoard grid (sbgrid.js) reads the board
 })();

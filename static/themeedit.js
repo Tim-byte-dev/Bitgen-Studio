@@ -59,6 +59,16 @@
  *     Ctrl+S            while edit mode is on (either way in): 💾 save the theme (themes/<name>.json; a theme with no
  *                       name yet asks for one) and leave edit mode - the app's own Ctrl+S does not run
  *     The file dialog the Style panel opens (🖼 a picture as the icon) still works as a dialog.
+ *
+ *   2.567.0 (Tim: "in theme editor add alignment options for text" / "add padding and margins for selected objects and
+ *   text, and rounded corners for objects"):
+ *     Text ▸ Align   ⇤ ↔ ⇥ ☰ (left / centre / right / justified) and ⤒ ↕ ⤓ (top / middle / bottom) - text-align and
+ *                    align-content; a flex box / grid / button is marked data-h3al (applyAlign: alignKind) and gets
+ *                    justify-content / align-items for its own direction (a button is made a flex box only for top /
+ *                    bottom - its words sit in the middle otherwise)
+ *     Text ▸ Padding / Margin   the words' own space (T R B L; plain-text elements - the words are wrapped in .h3lb)
+ *     Box ▸ Corners  each corner's radius (↖ ↗ ↘ ↙ - over Radius); Box ▸ Padding / Margin (T R B L); = copies the
+ *                    first value to all four. Padding / margins are never put on the page itself (html / body)
  * Pure (Node: scripts/test-themeedit.js; lib/themeStore.js uses cleanStyles): cleanSel, cleanRule, cleanStyles,
  * cssStr, compile, splitIcon, selectorsFor, ICON_POS, DYNAMIC, DIALOG_SEL, resizeBy.
  */
@@ -66,6 +76,8 @@
   "use strict";
   /* ================================ pure ================================ */
   const ICON_POS = ["left", "right", "top", "bottom", "only", "hide"];
+  const ALIGN = ["left", "center", "right", "justify"], VALIGN = ["top", "middle", "bottom"];   // 2.567.0
+  const SIDES = ["t", "r", "b", "l"], CORNERS = ["tl", "tr", "br", "bl"];
   /** 2.455.0: what theme edit mode leaves alone - dialogs (<dialog>, any *dlg box: the editor's, the file dialog,
    *  Liquify …, role=dialog except the floating dockers), popup menus */
   const DIALOG_SEL = 'dialog[open], [class*="dlg"], [role="dialog"]:not(.h3fp), [role="alertdialog"], .kxmenu, .h3fp-menu, .fd-menu, .m3dmenu, .agmenu, [role="menu"], [role="listbox"]';
@@ -118,7 +130,31 @@
     if (typeof o.text === "string") { const t = o.text.replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, 200); if (t.trim()) out.text = t; }
     for (const k of ["w", "h"]) { const v = num(o[k], 4, 4000); if (v != null && o[k] !== "" && o[k] != null) out[k] = Math.round(v); }
     for (const k of ["dx", "dy"]) { const v = num(o[k], -4000, 4000); if (v != null && o[k] !== "" && o[k] != null && Math.round(v) !== 0) out[k] = Math.round(v); }
+    // 2.567.0: text alignment, padding / margins (the element's and its words'), rounded corners one by one
+    if (ALIGN.includes(o.align)) out.align = o.align;
+    if (VALIGN.includes(o.valign)) out.valign = o.valign;
+    for (const [k, lo, hi] of [["pad", 0, 400], ["mar", -400, 400], ["tpad", 0, 200], ["tmar", -200, 200]]) { const v = cleanSides(o[k], SIDES, lo, hi); if (v) out[k] = v; }
+    const cn = cleanSides(o.corners, CORNERS, 0, 200); if (cn) out.corners = cn;
     return out;
+  }
+  /** 2.567.0: {t, r, b, l} (or {tl, tr, br, bl}) -> the sides given, whole px within lo..hi; none = null */
+  function cleanSides(o, keys, lo, hi) {
+    if (!o || typeof o !== "object" || Array.isArray(o)) return null;
+    const out = {};
+    for (const k of keys) { if (o[k] === "" || o[k] == null) continue; const v = num(o[k], lo, hi); if (v != null) out[k] = Math.round(v); }
+    return Object.keys(out).length ? out : null;
+  }
+  /** 2.567.0: how an element lines its contents up - its display / flex-direction / tag -> the kind its alignment CSS
+   *  is written for: row / rowr / col / colr (flex), grid, btn / btnb (a button made a flex box so its words can sit at
+   *  the top / bottom - only when a vertical alignment asks for it; it stays one while it does), "" (text-align and
+   *  align-content are enough) */
+  function alignKind(display, dir, tag, needV, was) {
+    const d = String(display || ""), f = String(dir || "");
+    if ((was === "btn" || was === "btnb") && needV) return was;
+    if (/flex/.test(d)) return (/column/.test(f) ? "col" : "row") + (/reverse/.test(f) ? "r" : "");
+    if (/grid/.test(d)) return "grid";
+    if (needV && /^button$/i.test(String(tag || ""))) return /^inline/.test(d) ? "btn" : "btnb";
+    return "";
   }
   /** 2.514.0: a handle dragged by (mx, my) from a box {w, h} moved {dx, dy} -> the new {w, h, dx, dy}; dir = n s e w ne nw se sw;
    *  the left / top handles keep the opposite edge where it was (min 4 px) */
@@ -134,7 +170,7 @@
   /** 2.540.6: the page itself (html / body / :root / *) - colours are fine, but never sized, moved or hidden.
    *  Tim: "when i try to edit the theme by dragging the handles the entire ui gets dragged to the left" */
   const isRootSel = (s) => /(?:^|[\s>+~])(?:html|body|:root|\*)(?:[.#:\[][^\s>+~]*)?$/i.test(String(s || "").trim());
-  const LAYOUT_KEYS = ["w", "h", "dx", "dy", "hide", "xhide"];
+  const LAYOUT_KEYS = ["w", "h", "dx", "dy", "hide", "xhide", "pad", "mar"];   // 2.567.0: + padding / margins
   function forSel(sel, r) { if (isRootSel(sel)) for (const k of LAYOUT_KEYS) delete r[k]; return r; }
   function cleanStyles(m) {
     const out = {}; if (!m || typeof m !== "object" || Array.isArray(m)) return out;
@@ -154,6 +190,24 @@
     return o + '"';
   }
   const shadowCss = (s, box) => `${box && s.inset ? "inset " : ""}${s.x}px ${s.y}px ${s.b}px ${box ? (s.s || 0) + "px " : ""}${s.c}`;
+  const SIDE_CSS = { t: "top", r: "right", b: "bottom", l: "left" }, CORNER_CSS = { tl: "top-left", tr: "top-right", br: "bottom-right", bl: "bottom-left" };
+  /** 2.567.0: the alignment for flex boxes / grids / buttons (data-h3al, set on the page by applyAlign - alignKind) -
+   *  the attribute twice so it wins over an icon rule's centring */
+  function alignCss(sel, H, V) {
+    const fs = { left: "flex-start", center: "center", right: "flex-end", justify: "space-between" }, fsR = { left: "flex-end", center: "center", right: "flex-start", justify: "space-between" };
+    const ai = { left: "flex-start", center: "center", right: "flex-end", justify: "stretch" }, gi = { left: "start", center: "center", right: "end", justify: "stretch" };
+    const vf = { top: "flex-start", middle: "center", bottom: "flex-end" }, vfR = { top: "flex-end", middle: "center", bottom: "flex-start" };
+    const row = [H && `justify-content:${fs[H]}`, V && `align-items:${vf[V]}`];
+    const kinds = {
+      row, rowr: [H && `justify-content:${fsR[H]}`, V && `align-items:${vf[V]}`],
+      col: [H && `align-items:${ai[H]}`, V && `justify-content:${vf[V]}`], colr: [H && `align-items:${ai[H]}`, V && `justify-content:${vfR[V]}`],
+      grid: [H && `justify-items:${gi[H]}`],
+      btn: V ? ["display:inline-flex", ...row] : [], btnb: V ? ["display:flex", ...row] : [],
+    };
+    const out = [];
+    for (const k of Object.keys(kinds)) { const d = kinds[k].filter(Boolean); if (d.length) out.push(`${sel}[data-h3al][data-h3al="${k}"]:not(#thEditPanel *){${d.map((x) => x + " !important").join(";")}}`); }
+    return out;
+  }
   /** the rules -> one stylesheet (each rule kept off the Style panel itself) */
   function compile(styles) {
     const S = cleanStyles(styles), out = [];
@@ -171,7 +225,20 @@
       if (r.w != null) d.push(`width:${r.w}px`, `min-width:${r.w}px`, `max-width:${r.w}px`, "flex-grow:0", "flex-shrink:0", "box-sizing:border-box");   // 2.514.0
       if (r.h != null) d.push(`height:${r.h}px`, `min-height:${r.h}px`, `max-height:${r.h}px`, "box-sizing:border-box");
       if (r.dx || r.dy) d.push(`translate:${r.dx || 0}px ${r.dy || 0}px`);
+      // 2.567.0: rounded corners one by one (over Radius), padding / margins, text alignment
+      if (r.corners) for (const k of CORNERS) if (r.corners[k] != null) d.push(`border-${CORNER_CSS[k]}-radius:${r.corners[k]}px`);
+      if (r.pad) for (const k of SIDES) if (r.pad[k] != null) d.push(`padding-${SIDE_CSS[k]}:${r.pad[k]}px`);
+      if (r.mar) for (const k of SIDES) if (r.mar[k] != null) d.push(`margin-${SIDE_CSS[k]}:${r.mar[k]}px`);
+      if (r.align) d.push(`text-align:${r.align}`);
+      if (r.valign) d.push(`align-content:${{ top: "start", middle: "center", bottom: "end" }[r.valign]}`);
       if (d.length) out.push(`${at}{${d.map((x) => x + " !important").join(";")}}`);
+      if (r.align || r.valign) out.push(...alignCss(sel, r.align, r.valign));
+      if (r.tpad || r.tmar) {                                         // 2.567.0: the words' own space (plain-text elements: .h3lb)
+        const t = ["display:inline-block"];
+        if (r.tpad) for (const k of SIDES) if (r.tpad[k] != null) t.push(`padding-${SIDE_CSS[k]}:${r.tpad[k]}px`);
+        if (r.tmar) for (const k of SIDES) if (r.tmar[k] != null) t.push(`margin-${SIDE_CSS[k]}:${r.tmar[k]}px`);
+        out.push(`${at} > .h3lb{${t.map((x) => x + " !important").join(";")}}`);
+      }
       if (r.hide) {                                                   // gone in live mode, faint in edit mode (so it can be picked)
         out.push(`body:not(.h3-thedit) ${at}{display:none !important}`);
         out.push(`body.h3-thedit ${at}{opacity:.35 !important;outline:1px dashed #ff3cac !important}`);
@@ -237,7 +304,8 @@
   }
   function applyCss() { const st = sheet(); if (st) st.textContent = compile(styles); }
   /* ---- icons: wrap the leading icon of what an icon rule aims at */
-  const iconSels = () => Object.keys(styles).filter((s) => styles[s].icon || styles[s].text);   // 2.514.0: + a new text
+  const iconSels = () => Object.keys(styles).filter((s) => styles[s].icon || styles[s].text || styles[s].tpad || styles[s].tmar);   // 2.514.0: + a new text; 2.567.0: + the words' padding / margins
+  const alignSels = () => Object.keys(styles).filter((s) => styles[s].align || styles[s].valign);       // 2.567.0
   function wrap(el, text) {
     if (!el || el.closest("#thEditPanel")) return;
     const kids = el.querySelector(":scope > .h3ic");
@@ -266,7 +334,19 @@
       for (const s of sels) { let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; } for (const el of list) { if (!hit.has(el) || styles[s].text) hit.set(el, styles[s].text != null ? styles[s].text : hit.get(el)); } }
       for (const [el, text] of hit) wrap(el, text);
       for (const el of doc.querySelectorAll(".h3icon")) if (!hit.has(el)) unwrap(el);
+      applyAlign();
     } finally { wrapping = false; }
+  }
+  /** 2.567.0: mark what an alignment rule aims at with how it lines its contents up (data-h3al - alignKind) */
+  function applyAlign() {
+    const hit = new Map();
+    for (const s of alignSels()) { let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; } for (const el of list) if (!el.closest("#thEditPanel")) hit.set(el, hit.get(el) || !!styles[s].valign); }
+    for (const el of doc.querySelectorAll("[data-h3al]")) if (!hit.has(el)) delete el.dataset.h3al;
+    for (const [el, needV] of hit) {
+      let cs = null; try { cs = root.getComputedStyle(el); } catch (e) { cs = null; }
+      const k = alignKind(cs && cs.display, cs && cs.flexDirection, el.tagName, needV, el.dataset.h3al);
+      if (k) { if (el.dataset.h3al !== k) el.dataset.h3al = k; } else if (el.dataset.h3al != null) delete el.dataset.h3al;
+    }
   }
   let iconTimer = 0;
   const iconsSoon = () => { if (iconTimer) return; iconTimer = root.setTimeout(() => { iconTimer = 0; applyIcons(); }, 60); };
@@ -309,6 +389,8 @@
         + "#thEditPanel input,#thEditPanel select{width:auto !important;min-width:0 !important;margin:0 !important;flex:none !important;height:auto}#thEditPanel input[type=number]{width:52px !important}"
         + "#thEditPanel input[type=color]{width:30px !important;height:22px !important}#thEditPanel #teScope,#thEditPanel #teFont{flex:1 1 0 !important}#thEditPanel input[type=checkbox]{width:auto !important}"
         + "#thEditPanel label{display:inline-flex;align-items:center;gap:2px;margin:0;font-size:12px;color:inherit;text-transform:none;letter-spacing:0;font-weight:400}"
+        + "#thEditPanel input.sd{width:42px !important}#thEditPanel .seg{display:inline-flex;border:1px solid #3a342a;border-radius:4px;overflow:hidden}#thEditPanel .seg label{padding:1px 6px;min-width:22px;justify-content:center;border-left:1px solid #3a342a;cursor:pointer}#thEditPanel .seg label:first-child{border-left:0}#thEditPanel .seg label *{cursor:pointer}#thEditPanel .seg input{display:none}#thEditPanel .seg label:hover{background:#2e2920}#thEditPanel .seg label:has(input:checked){background:#f59e2c;color:#1d1a15}"
+        + "#thEditPanel button.eq{padding:2px 5px}#thEditPanel input:disabled,#thEditPanel button:disabled{opacity:.45}"
         + "#thEditPanel h5{margin:4px 0 0;font-size:11px;color:#f59e2c;text-transform:uppercase;letter-spacing:.05em}#thEditPanel .hint{color:#9a917f}"
         + "#thEditHandles{position:fixed;left:0;top:0;width:0;height:0;z-index:2147483602;pointer-events:none}#thEditHandles .teh{position:fixed;width:9px;height:9px;margin:-5px 0 0 -5px;background:#fff;border:1.5px solid #ff3cac;border-radius:2px;pointer-events:auto;box-sizing:border-box}"
         + "#thEditHandles .teh[data-dir=n],#thEditHandles .teh[data-dir=s]{cursor:ns-resize}#thEditHandles .teh[data-dir=e],#thEditHandles .teh[data-dir=w]{cursor:ew-resize}#thEditHandles .teh[data-dir=ne],#thEditHandles .teh[data-dir=sw]{cursor:nesw-resize}#thEditHandles .teh[data-dir=nw],#thEditHandles .teh[data-dir=se]{cursor:nwse-resize}"
@@ -413,6 +495,12 @@
     const plain = el.classList.contains("h3icon") || !el.children.length;          // 2.514.0: words can be changed on plain-text elements
     const n = (id, v, lo, hi2, step, t) => `<input type="number" id="${id}" value="${v == null ? "" : v}" min="${lo}" max="${hi2}" step="${step || 1}" title="${esc(t || "")}">`;
     const col = (id, v, t) => `<input type="color" id="${id}" value="${isHex(v) && v.length === 7 ? v : "#000000"}" title="${esc(t || "")}"><label title="use it"><input type="checkbox" id="${id}On"${v ? " checked" : ""}>✓</label>`;
+    // 2.567.0: a row of radio buttons (– = none) and four side / corner boxes (= copies the first to all four)
+    const seg = (name, v, opts2) => `<span class="seg" id="${name}"><label title="none (its own)"><input type="radio" name="${name}" value=""${v ? "" : " checked"}>–</label>${opts2.map(([val, ic2, t]) => `<label title="${esc(t)}"><input type="radio" name="${name}" value="${val}"${v === val ? " checked" : ""}>${ic2}</label>`).join("")}</span>`;
+    const SIDE_PH = { t: "T", r: "R", b: "B", l: "L", tl: "↖", tr: "↗", br: "↘", bl: "↙" }, SIDE_T = { t: "top", r: "right", b: "bottom", l: "left", tl: "top left", tr: "top right", br: "bottom right", bl: "bottom left" };
+    const offT = (id) => /^teT(Pad|Mar)$/.test(id) && !plain;
+    const sides = (id, v, keys, lo, hi2, t) => keys.map((k) => `<input type="number" class="sd" id="${id}_${k}" value="${v && v[k] != null ? v[k] : ""}" min="${lo}" max="${hi2}" step="1" placeholder="${SIDE_PH[k]}" title="${esc(t)} - ${SIDE_T[k]}"${offT(id) ? " disabled" : ""}>`).join("")
+      + `<button class="eq" data-eq="${id}" title="The first value on all four"${offT(id) ? " disabled" : ""}>=</button>`;
     panel.innerHTML = `<div class="th" id="teHead"><b title="${esc(nameOf(el))}">🖌 ${esc(nameOf(el))}</b><button id="teUp" title="The element around it">⬆</button><button id="teClose" title="Close the panel (edit theme mode stays on)">✕</button></div>
       <div class="bd">
         <div class="rw"><span>Apply to</span><select id="teScope" style="flex:1;min-width:0">${opts.map((o) => `<option value="${esc(o.sel)}"${o.sel === scope ? " selected" : ""}>${esc(o.label)} · ${count(o.sel)}</option>`).join("")}</select></div>
@@ -420,10 +508,16 @@
         <div class="rw"><span>Font</span><select id="teFont">${fonts().map((f) => `<option${(r.font || "inherit") === f ? " selected" : ""}>${esc(f)}</option>`).join("")}${r.font && !fonts().includes(r.font) ? `<option selected>${esc(r.font)}</option>` : ""}</select></div>
         <div class="rw"><span>Size</span>${n("teSize", r.size, 6, 96, 1, "text size (px)")}px <span style="width:auto">Weight</span><select id="teWeight"><option value="">-</option>${[300, 400, 500, 600, 700, 800, 900].map((w) => `<option${r.weight === w ? " selected" : ""}>${w}</option>`).join("")}</select></div>
         <div class="rw"><span>Colour</span>${col("teColor", r.color, "text colour")}</div>
+        <div class="rw"><span>Align</span>${seg("teAl", r.align, [["left", "⇤", "left"], ["center", "↔", "centre"], ["right", "⇥", "right"], ["justify", "☰", "justified (both edges - text over more than one line)"]])} ${seg("teVa", r.valign, [["top", "⤒", "top"], ["middle", "↕", "middle"], ["bottom", "⤓", "bottom"]])}</div>
+        <div class="rw"><span>Padding</span>${sides("teTPad", r.tpad, SIDES, 0, 200, plain ? "space inside, around its words" : "only for plain-text elements - use the Box's padding")}</div>
+        <div class="rw"><span>Margin</span>${sides("teTMar", r.tmar, SIDES, -200, 200, plain ? "space outside its words (between the icon and the words …)" : "only for plain-text elements - use the Box's margin")}</div>
         <div class="rw"><span>Shadow</span><label><input type="checkbox" id="teTsOn"${ts ? " checked" : ""}>on</label>${n("teTsX", ts ? ts.x : 1, -50, 50, 1, "x")}${n("teTsY", ts ? ts.y : 1, -50, 50, 1, "y")}${n("teTsB", ts ? ts.b : 2, 0, 100, 1, "blur")}<input type="color" id="teTsC" value="${ts ? ts.c : "#000000"}"></div>
         <h5>Box</h5>
         <div class="rw"><span>Fill</span>${col("teBg", r.bg === "transparent" ? "" : r.bg, "background")}</div>
         <div class="rw"><span>Border</span>${col("teBorder", r.border, "border colour")} <span style="width:auto">Radius</span>${n("teRadius", r.radius, 0, 200, 1, "corner radius (px)")}</div>
+        <div class="rw"><span>Corners</span>${sides("teCr", r.corners, CORNERS, 0, 200, "rounded corners one by one (px) - over Radius; empty = Radius")}</div>
+        <div class="rw"><span>Padding</span>${sides("tePad", r.pad, SIDES, 0, 400, "space inside its edge (px)")}</div>
+        <div class="rw"><span>Margin</span>${sides("teMar", r.mar, SIDES, -400, 400, "space outside its edge (px)")}</div>
         <div class="rw"><span>Shadow</span><label><input type="checkbox" id="teBsOn"${bs ? " checked" : ""}>on</label><label><input type="checkbox" id="teBsIn"${bs && bs.inset ? " checked" : ""}>inset</label></div>
         <div class="rw"><span></span>${n("teBsX", bs ? bs.x : 0, -50, 50, 1, "x")}${n("teBsY", bs ? bs.y : 2, -50, 50, 1, "y")}${n("teBsB", bs ? bs.b : 6, 0, 100, 1, "blur")}${n("teBsS", bs ? bs.s : 0, -50, 50, 1, "spread")}<input type="color" id="teBsC" value="${bs ? bs.c : "#000000"}"></div>
         <h5>Icon</h5>
@@ -461,13 +555,20 @@
       if ($("teXHide") && $("teXHide").checked) o.xhide = true;                   // 2.544.0: Expert mode only
       if ($("teText").value) o.text = $("teText").value;
       for (const [id, k] of [["teW", "w"], ["teH", "h"], ["teDx", "dx"], ["teDy", "dy"]]) if ($(id).value !== "") o[k] = +$(id).value;
+      const radio = (n2) => { const x = panel.querySelector(`input[name=${n2}]:checked`); return x ? x.value : ""; };   // 2.567.0
+      if (radio("teAl")) o.align = radio("teAl");
+      if (radio("teVa")) o.valign = radio("teVa");
+      for (const [id, k, keys] of [["tePad", "pad", SIDES], ["teMar", "mar", SIDES], ["teTPad", "tpad", SIDES], ["teTMar", "tmar", SIDES], ["teCr", "corners", CORNERS]]) {
+        const v = {}; for (const s2 of keys) { const x = $(id + "_" + s2); if (x && !x.disabled && x.value !== "") v[s2] = +x.value; }
+        if (Object.keys(v).length) o[k] = v;
+      }
       return o;
     };
     const commit = () => { setRule(scope, read()); $("teMsg").textContent = `${count(scope)} element(s)`; placeHi(picked); };
     $("teText").addEventListener("keydown", (e) => e.stopPropagation());
     panel.querySelectorAll("input,select").forEach((x) => {
       if (x.id === "teScope" || x.id === "teIcImg") return;
-      x.addEventListener(x.type === "checkbox" || x.tagName === "SELECT" ? "change" : "input", () => {
+      x.addEventListener(x.type === "checkbox" || x.type === "radio" || x.tagName === "SELECT" ? "change" : "input", () => {
         // a colour changed = use it
         if (x.type === "color" && $(x.id + "On")) $(x.id + "On").checked = true;
         if (/^teTs[XYBC]$/.test(x.id)) $("teTsOn").checked = true;
@@ -476,6 +577,10 @@
       });
     });
     $("teScope").onchange = () => { scope = $("teScope").value; renderPanel(opts); };
+    panel.querySelectorAll("button[data-eq]").forEach((b) => { b.onclick = () => {                    // 2.567.0: = the first value on all four
+      const xs = [...panel.querySelectorAll(`input[id^="${b.dataset.eq}_"]`)], v = (xs.find((x) => x.value !== "") || {}).value;
+      if (v == null) return; xs.forEach((x) => { x.value = v; }); commit();
+    }; });
     $("teUp").onclick = () => { const p = picked.parentElement; if (p && p !== doc.body && p !== doc.documentElement) { scope = ""; pick(p); } };
     $("teClose").onclick = () => closePanel();
     $("teClear").onclick = () => { setRule(scope, {}); renderPanel(opts); };
@@ -653,12 +758,12 @@
     }
     paintList();
     applyIcons();
-    try { new root.MutationObserver(() => { if (!wrapping && iconSels().length) iconsSoon(); }).observe(doc.body, { childList: true, subtree: true, characterData: true }); } catch (e) { /* old */ }
+    try { new root.MutationObserver(() => { if (!wrapping && (iconSels().length || alignSels().length)) iconsSoon(); }).observe(doc.body, { childList: true, subtree: true, characterData: true }); } catch (e) { /* old */ }
   }
   if (doc) { if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start(); }
   if (root.addEventListener) root.addEventListener("keydown", hotkey, true);          // 2.515.0: Ctrl+Shift+Alt+E
 
-  const H3ThemeEdit = { ICON_POS, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, isRootSel, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, session: () => sesName,
+  const H3ThemeEdit = { ICON_POS, ALIGN, VALIGN, alignKind, alignCss, cleanSides, DYNAMIC, DIALOG_SEL, cleanSel, cleanRule, cleanStyles, isRootSel, cssStr, compile, splitIcon, selectorsFor, resizeBy, changed: changedSince, session: () => sesName,
     styles: () => JSON.parse(JSON.stringify(styles)), setStyles, setRule, toggle, isOn: () => on, dialogs: () => dlgs, saveAndLeave, pick: (el) => { if (!on) toggle(true); scope = ""; pick(el); }, scope: () => scope, applyIcons, start };
   if (typeof module !== "undefined" && module.exports) module.exports = H3ThemeEdit;
   else root.H3ThemeEdit = H3ThemeEdit;

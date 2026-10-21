@@ -18,9 +18,9 @@ const check = (n, cond, got) => (cond ? ok(n) : bad(n, got));
 const ws = () => fs.mkdtempSync(path.join(os.tmpdir(), "styles-"));
 
 // ------------------------------------------------------------- the catalogue
-check("the catalogue offers the five requested architectures (+ 2.502.0's FLUX 3 Klein, 2.516.0's Krea 2, 2.517.0's Anima - ComfyUI only)",
+check("the catalogue offers the five requested architectures (+ 2.502.0's FLUX 3 Klein, 2.516.0's Krea 2, 2.517.0's Anima, 2.566.0's MOSS-Image - ComfyUI only)",
   JSON.stringify(S.archIds().slice().sort())
-  === JSON.stringify(["anima", "flux", "flux2klein9b", "flux3klein", "krea2", "qwen-image", "sdxl", "z-image"]), S.archIds());
+  === JSON.stringify(["anima", "flux", "flux2klein9b", "flux3klein", "krea2", "moss", "qwen-image", "sdxl", "z-image"]), S.archIds());
 check("lib/styles.js and scripts/image_gen.py read the SAME catalogue file",
   fs.existsSync(path.join(__dirname, "..", "lib", "imageArch.json")), null);
 

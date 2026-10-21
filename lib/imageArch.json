@@ -90,6 +90,20 @@
       "note": "2.517.0: Anima (CircleStone Labs, 2B anime / illustration) renders through ComfyUI only. 30-50 steps, cfg 4-5 (er_sde), a negative prompt; start the prompt with 'masterpiece, best quality, score_7, safe, '. Aesthetic v1.1 or Base v1.0 (models/diffusion_models)."
     },
     {
+      "id": "moss",
+      "label": "MOSS-Image (SFT / Base - ComfyUI)",
+      "model_flag": "--diffusion-model",
+      "vae": { "flag": "--vae", "required": true, "hint": "flux2-vae_small.safetensors" },
+      "te": [
+        { "flag": "--llm", "label": "Qwen3.5 9B", "required": true, "hint": "qwen3.5_9b_w4a8_gptq.safetensors (CLIPLoader type moss_image)" }
+      ],
+      "extra": [],
+      "negative": true,
+      "comfy_only": true,
+      "defaults": { "steps": 25, "cfg": 2.5, "clip_skip": -1, "width": 1024, "height": 1024, "sampler": "euler" },
+      "note": "2.566.0: MOSS-Image (OpenMOSS, 5B, Apache-2.0) renders through ComfyUI only (16 Oct 2026 or later - the moss_image text encoder type). 25 steps, cfg 2.5, er_sde with skip layer guidance on layer 22 - ComfyUI's template (the official pipeline: 50 steps, cfg 3). SFT (instruction-tuned) or Base (for LoRAs); int8_convrot (5.4 GB) or bf16 in models/diffusion_models. Settings ▸ Add-ons ▸ MOSS-Image downloads them."
+    },
+    {
       "id": "sdxl",
       "label": "SDXL / SDXL-Turbo",
       "model_flag": "-m",

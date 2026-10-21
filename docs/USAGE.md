@@ -5797,6 +5797,26 @@ orange line shows where it will go - and let go.
   ticked references) and every scene gets its storyboard picture, made with the bar's image model and references
   (☑ Character sheets / Locations / Reference images). With **☑ Start on it** each picture becomes its scene's FIRST frame
   (a Ref scene turns First) - change it with ↻ or the scene's First frame picker. The writer needs at least one character.
+- 2.566.0: **MOSS-Image** (OpenMOSS's open 5B image model, Apache-2.0 - strong at text in pictures and layouts) is a model
+  type: the image styles **MOSS-Image** (SFT - the one to use) and **MOSS-Image Base** (for LoRAs). **Settings ▸ Add-ons ▸
+  MOSS-Image** downloads its files from Comfy-Org/MOSS-Image into ComfyUI's folders - tick SFT / Base (int8, 5.4 GB; bf16
+  for more precision), the text encoder (Qwen3.5 9B) and the VAE are always included - and puts the styles back if you
+  deleted them. It needs ComfyUI from 16 Oct 2026 or later (the add-on checks the running ComfyUI and tells you to update
+  it if it is older); about 14 GB of VRAM with the int8 files. 25 steps, cfg 2.5 (ComfyUI's own template).
+- 2.567.0: the **theme editor** (🖌 Edit theme mode ▸ the Style panel) can line text up and space things out:
+  **Text ▸ Align** ⇤ ↔ ⇥ ☰ (left / centre / right / justified) and ⤒ ↕ ⤓ (top / middle / bottom) - it works on buttons,
+  rows and columns of items and blocks of words alike; **Text ▸ Padding / Margin** = the space around the words themselves
+  (plain-text elements); **Box ▸ Corners** rounds each corner on its own (↖ ↗ ↘ ↙, over Radius); **Box ▸ Padding /
+  Margin** = the space inside / outside the element's edge. Four boxes each (top, right, bottom, left); **=** copies the
+  first value to all four; – (or an empty box) = its own. Saved with the theme like the rest.
+- 2.568.0: the **StoryBoard's pictures are written by the LLM**: 🖼 sends the scene back to the LLM, which writes the
+  picture's prompt - the scene's opening frame (who, what, where, framing, light), naming the reference pictures. The
+  references are the **character sheets** and the **last frame of the scene before** (when that scene has a rendered
+  take - the picture continues from that moment); with no take before it, it is the characters + the scene's words.
+  ☑ LLM writes it / ☑ Previous last frame on the StoryBoard bar (both on). **📁 changes a picture** - a picture of another
+  scene, a frame of a take, any project picture or a file (with ☑ Start on it, it becomes the scene's First frame too).
+  In the grid **the picture is the whole card**: the scene's name and two lines of its text over the bottom, the buttons
+  on hover; the tooltip holds the full text and the picture's prompt; a click opens the scene's full card.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

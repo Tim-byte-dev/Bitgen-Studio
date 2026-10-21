@@ -8,6 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.568.0** — Storyboard Pictures Written by the LLM; The Scene Before's Last Frame; 📁 Change It; The Card Is the Picture
+- **2.567.0** — Theme Editor: Text Alignment, Padding / Margins, Corners
+- **2.566.0** — Moss-Image (a Model Type + Settings ▸ Add-Ons ▸ Moss-Image)
 - **2.565.1** — The GitHub Ci Fix (test-basiccfg559 read _gitignore, which the repository does not have)
 - **2.565.0** — The Storyboard Grid; 🎞 Write Storyboard; ☑ Start on It
 - **2.564.0** — 🎙 Voice Chat (Talk to the App, Hands-Free); 🤖 Write / The Phone Chat Fix

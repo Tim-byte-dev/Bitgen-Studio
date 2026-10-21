@@ -60,7 +60,7 @@
       var hasItems = Array.isArray(a.items) && a.items.length;
       var acts = (a.actions || []).map(function (x) {
         if (hasItems) {                                   // 2.557.0: an add-on with a list - download what is ticked
-          return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Install the node pack (if missing) and download the ticked models")
+          return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Download the ticked models (and a node pack the add-on needs, if missing)")
             : x === "remove" ? btn("remove", "🗑 Remove models", "Delete its downloaded model files (the node pack stays in ComfyUI)") : "";
         }
         return x === "install" ? btn("install", "⤓ Install", a.external ? "Starts its installer - follow it in the Queue" : "Install " + a.label + " (" + a.size + ")")
@@ -68,9 +68,10 @@
           : x === "remove" ? btn("remove", "🗑 Remove", "Delete its folder (its venv and packages; the model cache stays)") : "";
       }).join("");
       var its = hasItems ? '<div class="its">' + a.items.map(function (it) {
-        var on = S.picks[a.id] ? S.picks[a.id].indexOf(it.id) >= 0 : (!it.present && it.dflt);
-        return '<label title="' + esc(it.for) + '"><input type="checkbox" data-aoi="' + esc(a.id) + '" value="' + esc(it.id) + '"' + (on ? " checked" : "") + (running || a.busy ? " disabled" : "") + "> "
-          + esc(it.label) + ' <span class="sz">' + esc(it.size) + "</span>" + (it.present ? ' <span class="ok">✓ downloaded</span>' : "") + "</label>";
+        // 2.566.0: an item every style needs (need) is always downloaded - ticked, not untickable
+        var on = it.need || (S.picks[a.id] ? S.picks[a.id].indexOf(it.id) >= 0 : (!it.present && it.dflt));
+        return '<label title="' + esc(it.for) + '"><input type="checkbox" data-aoi="' + esc(a.id) + '" value="' + esc(it.id) + '"' + (on ? " checked" : "") + (running || a.busy || it.need ? " disabled" : "") + "> "
+          + esc(it.label) + ' <span class="sz">' + esc(it.size) + "</span>" + (it.need ? ' <span class="sz">(needed)</span>' : "") + (it.present ? ' <span class="ok">✓ downloaded</span>' : "") + "</label>";
       }).join("") + "</div>" : "";
       return '<div class="ao" data-addon="' + esc(a.id) + '"><h4>' + esc(a.label) + " " + badge(a) + "</h4>"
         + '<div class="kv"><b>For</b> ' + esc(a.for) + "</div>"
@@ -105,7 +106,7 @@
     var hasItems = Array.isArray(a.items) && a.items.length;
     var picks = items || (hasItems ? picked(id) : null);
     if (hasItems && action === "install" && !picks.length) { if (typeof window.toast === "function") window.toast("tick the models to download first"); else alert("tick the models to download first"); return Promise.resolve(null); }
-    if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (the node pack stays)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
+    if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (a node pack and the styles stay)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
     if (hasItems && action === "install" && !items) {
       var sel = a.items.filter(function (it) { return picks.indexOf(it.id) >= 0; });
       if (!confirm("Download for " + (a.label || id) + "?\n\n" + sel.map(function (it) { return "• " + it.label + " - " + it.size + (it.present ? " (already there)" : ""); }).join("\n") + "\n\nNeeds: " + a.needs)) return Promise.resolve(null);

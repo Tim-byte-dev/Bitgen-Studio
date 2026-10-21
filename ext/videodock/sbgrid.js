@@ -12,6 +12,11 @@
  *   A CLICK      opens that scene's full card under the grid - every feature it had (the prompt editor, Ref / First /
  *                Cont / Trans, the First / Last frames, its pictures, ✎ First frame, the filmstrip, ⏫ …): the scene
  *                picker shows only that one; "All scenes" in it (or ✕ on the card) closes it.
+ *   2.568.0 (Tim: "make the entire card the thumbnail because we get the scene frame when we click the thumbnail anyway"):
+ *                the PICTURE IS THE CARD - it fills it; "Scene n" + chapter + two lines of its text over the bottom, its
+ *                number and state on top, the buttons over the picture (shown on hover / focus - always while it has no
+ *                picture): 🖼 / ↻ 🖼, 📁 change it (H3Story.change), ▶ / ↻ ▶, → First. Its whole text + the prompt the
+ *                picture was made from in the tooltip. No picture = its text on the empty card.
  *   Kept per browser (sb.view). Painted again whenever the board or the storyboard pictures change.
  * Pure (Node: scripts/test-sbgrid565.js): state, text, cardHtml, gridHtml.
  */
@@ -29,24 +34,27 @@
   }
   /** its words: the prompt lines without the [Shot n] heads */
   const text = (r) => ((r && r.prompt) || []).map((l) => String(l || "").replace(/^\s*\[[^\]]*\]\s*/, "").trim()).filter(Boolean).join(" ");
-  /** one card. r = the scene row, it = its storyboard picture (or null), o = {sel, busy, v} */
+  /** one card - 2.568.0: the picture is the whole card. r = the scene row, it = its storyboard picture (or null), o = {sel, busy} */
   function cardHtml(r, it, o) {
-    const x = o || {}, n = r.n, s = state(r);
+    const x = o || {}, n = r.n, s = state(r), words = text(r);
     const src = it ? `/api/storyboard/${n}/thumb?v=${encodeURIComponent(String(it.at || ""))}`
       : r.fl_first && r.fl_first.file ? `/api/scenes/${n}/fl/first?v=${encodeURIComponent(String(r.updated || ""))}` : "";
     const what = it ? "its storyboard picture" : src ? "its First frame" : "";
-    return `<div class="sbgcard${x.sel ? " sel" : ""}" data-sbg="${n}" role="button" tabindex="0" aria-label="Scene ${n}${s.word ? " - " + s.word : ""}: open its card">`
-      + `<div class="th"${src ? ` style="background-image:url('${src}')"` : ""} title="${esc(what ? "Scene " + n + ": " + what : "Scene " + n + " has no picture yet - 🖼 makes it")}">`
-      + (src ? "" : `<span>${x.busy ? "⏳" : n}</span>`)
+    const tip = `Scene ${n}${r.chapter ? " · " + r.chapter : ""}${s.word ? " - " + s.word : ""}\n${words || "no text"}`
+      + (it && it.prompt ? `\n\n🖼 the picture: ${it.prompt}` : !src ? "\n\n(no picture yet - 🖼 makes it, 📁 picks one)" : `\n\n(${what})`) + "\n\nClick = its full card";
+    return `<div class="sbgcard${x.sel ? " sel" : ""}" data-sbg="${n}"${src ? ' data-pic="1"' : ""} role="button" tabindex="0" aria-label="Scene ${n}${s.word ? " - " + s.word : ""}: open its card" title="${esc(tip)}">`
+      + `<div class="th"${src ? ` style="background-image:url('${src}')"` : ""}>`
+      + (src ? (x.busy ? `<span class="bz">⏳</span>` : "") : `<span>${x.busy ? "⏳" : n}</span>`)
       + `<span class="no">${n}</span>${s.mark ? `<span class="st st-${esc(s.word.split(" ")[0])}" title="${esc(s.word)}">${s.mark}</span>` : ""}</div>`
-      + `<div class="bd"><div class="nm">Scene ${n}${r.chapter ? ` <span class="ch">· ${esc(r.chapter)}</span>` : ""}</div>`
-      + `<div class="tx" title="${esc(text(r))}">${esc(text(r)) || '<span class="hint">no text</span>'}</div>`
+      + `<div class="cap"><div class="nm">Scene ${n}${r.chapter ? ` <span class="ch">· ${esc(r.chapter)}</span>` : ""}</div>`
+      + `<div class="tx">${esc(words) || '<span class="hint">no text</span>'}</div>`
       + (r.error && s.mark === "✕" ? `<div class="er" title="${esc(r.error)}">${esc(String(r.error).slice(0, 90))}</div>` : "")
-      + `<div class="bt">`
-      + `<button class="ghost gbtn" type="button" data-sbgmake="${n}"${x.busy ? " disabled" : ""} title="${it ? "Make another storyboard picture" : "Make its storyboard picture"} (the StoryBoard's image model + the references ticked on the bar)">${x.busy ? "⏳" : it ? "↻ 🖼" : "🖼"}</button>`
+      + `</div><div class="bt">`
+      + `<button class="ghost gbtn" type="button" data-sbgmake="${n}"${x.busy ? " disabled" : ""} title="${it ? "Make another storyboard picture" : "Make its storyboard picture"} (the LLM writes it from the scene; the StoryBoard's image model + the references ticked on the bar)">${x.busy ? "⏳" : it ? "↻ 🖼" : "🖼"}</button>`
+      + `<button class="ghost gbtn" type="button" data-sbgpick="${n}" title="Change its storyboard picture - a picture of another scene, a frame of a take, any picture of the project or a file">📁</button>`
       + `<button class="ghost gbtn" type="button" data-sbgplay="${n}"${r.status === "running" ? " disabled" : ""} title="${r.output ? "Redo - render a new take" : "Render this scene"}">${r.output ? "↻ ▶" : "▶"}</button>`
       + (it ? `<button class="ghost gbtn" type="button" data-sbgfirst="${n}" title="Start the scene on its storyboard picture (its FIRST frame)">→ First</button>` : "")
-      + `</div></div></div>`;
+      + `</div></div>`;
   }
   /** the grid: cards with an arrow from each scene to the next */
   function gridHtml(rows, items, o) {
@@ -66,14 +74,21 @@
     if ($("sbgCss")) return;
     const s = doc.createElement("style"); s.id = "sbgCss";
     s.textContent = "#sbGrid{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;padding:4px 2px}"
-      + "#sbGrid .sbgcard{position:relative;width:var(--sbw,186px);border:1px solid var(--line,#3a342a);border-radius:7px;overflow:hidden;cursor:pointer;background:var(--panel,#1b1814);display:flex;flex-direction:column}"
+      + "#sbGrid .sbgcard{position:relative;width:var(--sbw,224px);aspect-ratio:16/9;border:1px solid var(--line,#3a342a);border-radius:7px;overflow:hidden;cursor:pointer;background:var(--panel,#1b1814);flex:none}"
       + "#sbGrid .sbgcard:hover{border-color:var(--tiger-deep,#a35a1a)}#sbGrid .sbgcard.sel{border-color:var(--tiger,#f59e2c);box-shadow:0 0 0 1px var(--tiger,#f59e2c)}"
-      + "#sbGrid .th{position:relative;aspect-ratio:16/9;background:#111318 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--dim,#777);font-size:1.3rem;font-weight:600}"
+      + "#sbGrid .th{position:absolute;inset:0;background:#111318 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--dim,#777);font-size:1.3rem;font-weight:600}"
+      + "#sbGrid .sbgcard:not([data-pic]) .th{background:transparent;align-items:flex-start;padding-top:14%;opacity:.5}"
+      + "#sbGrid .th .bz{font-size:1.1rem;padding:2px 8px;border-radius:9px;background:rgba(0,0,0,.6)}"
       + "#sbGrid .th .no{position:absolute;left:4px;top:3px;font-size:.62rem;padding:0 5px;border-radius:7px;background:rgba(0,0,0,.65);color:#eee}"
       + "#sbGrid .th .st{position:absolute;right:4px;top:3px;font-size:.66rem;padding:0 5px;border-radius:7px;background:rgba(0,0,0,.65)}#sbGrid .th .st-failed{color:#e88}#sbGrid .th .st-rendering{color:var(--tiger,#f59e2c)}#sbGrid .th .st-kept,#sbGrid .th .st-rendered{color:#8d8}"
-      + "#sbGrid .bd{padding:4px 6px;display:flex;flex-direction:column;gap:3px;flex:1}#sbGrid .nm{font-weight:600;font-size:.74rem}#sbGrid .nm .ch{font-weight:400;color:var(--dim,#999)}"
-      + "#sbGrid .tx{font-size:.68rem;line-height:1.3;color:var(--text,#ddd);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:1}"
-      + "#sbGrid .er{font-size:.62rem;color:#e88;max-height:2.5em;overflow:hidden}#sbGrid .bt{display:flex;gap:3px;flex-wrap:wrap}#sbGrid .bt button{font-size:.64rem;padding:1px 5px}"
+      + "#sbGrid .cap{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 4px;display:flex;flex-direction:column;gap:1px;background:linear-gradient(transparent,rgba(0,0,0,.82) 45%);color:#f2efe8}"
+      + "#sbGrid .sbgcard:not([data-pic]) .cap{top:0;justify-content:flex-end;background:none;color:var(--text,#ddd)}"
+      + "#sbGrid .nm{font-weight:600;font-size:.72rem;text-shadow:0 1px 2px #000}#sbGrid .nm .ch{font-weight:400;opacity:.75}"
+      + "#sbGrid .tx{font-size:.64rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px #000}#sbGrid .sbgcard:not([data-pic]) .tx{-webkit-line-clamp:4;text-shadow:none}"
+      + "#sbGrid .er{font-size:.6rem;color:#f99;max-height:2.5em;overflow:hidden}"
+      + "#sbGrid .bt{position:absolute;top:20px;right:4px;display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 8px);opacity:0;transition:opacity .12s}"
+      + "#sbGrid .sbgcard:hover .bt,#sbGrid .sbgcard:focus-within .bt,#sbGrid .sbgcard:not([data-pic]) .bt{opacity:1}"
+      + "#sbGrid .bt button{font-size:.64rem;padding:1px 5px;background:rgba(20,18,15,.82)}"
       + "#sbGrid .sbgarr{align-self:center;color:var(--tiger,#f59e2c);font-size:1.05rem;flex:none;user-select:none}"
       + "#videodock.sb-grid #scList.sbg-none{display:none}#sbViewBtns{display:inline-flex;gap:2px}#sbViewBtns button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}"
       + "#sbBar #sbStyle{min-width:120px}"
@@ -112,6 +127,7 @@
       if (b) {
         e.stopPropagation();
         if (b.dataset.sbgmake && H.make) H.make(+b.dataset.sbgmake).then(() => { lastKey = ""; paint(); });
+        else if (b.dataset.sbgpick && H.change) H.change(+b.dataset.sbgpick);                  // 2.568.0: change it
         else if (b.dataset.sbgfirst && H.useAs) H.useAs(+b.dataset.sbgfirst, "first", { anchor: true });
         else if (b.dataset.sbgplay) { const p = doc.querySelector(`#scList [data-scplay="${b.dataset.sbgplay}"]`); if (p && !p.disabled) p.click(); else if (H.say) H.say(`scene ${b.dataset.sbgplay} cannot render right now`); }
         lastKey = ""; root.setTimeout(paint, 300);

@@ -61,7 +61,7 @@ const api = async (u, b) => { const r = await fetch(BASE + u, b ? { method: "POS
       const planReq = p.waitForRequest((r) => /\/api\/storyboard\/1\/plan$/.test(r.url()), { timeout: 15000 }).catch(() => null);
       await p.click('[data-sbgen="1"]');
       const pr = await planReq;
-      await p.waitForFunction(() => !!document.querySelector('#scList .sbthumb[data-sbthumb="1"] img'), null, { timeout: 120000 }).catch(() => {});
+      await p.waitForFunction(() => { const i = document.querySelector('#scList .sbthumb[data-sbthumb="1"] img'); return !!i && i.complete && i.naturalWidth > 0; }, null, { timeout: 120000 }).catch(() => {});   // 2.568.0: loaded, not only there
       const s2 = await ev(() => ({ img: !!document.querySelector('#scList .sbthumb[data-sbthumb="1"] img'), ok: (() => { const i = document.querySelector('#scList .sbthumb[data-sbthumb="1"] img'); return !!i && i.naturalWidth > 0; })(), msg: document.getElementById("sbMsg").textContent }));
       const srv = await api("/api/storyboard");
       await shot("2-made");

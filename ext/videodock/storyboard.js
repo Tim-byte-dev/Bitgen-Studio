@@ -21,6 +21,13 @@
  *                every scene's picture made with the bar's references; ☑ Start on it = each picture becomes its scene's
  *                FIRST frame (a Ref scene turns First) - ↻ makes another, the First slot's own picker changes it.
  *                The grid view: sbgrid.js.
+ *   2.568.0 (Tim: "in the scene editor send the scene created by the llm back to the llm to create an image for the scene
+ *                thumbnail - reference image will be character and last frame of previous video if the previous video
+ *                doesn't exist it will be of the character + scene description - this image can be changed"):
+ *                ☑ LLM writes it - the LLM writes each picture's prompt from its scene (lib/storyboardPlan.js);
+ *                ☑ Previous last frame - the scene before's last frame rides first (when that scene has a take; else the
+ *                character sheets + the scene's words); 📁 on a card / its thumbnail = change it (the scene picker's
+ *                🎬 Scenes / 🎞 Clips / 📁 Project / ⤒ File - slot "sb"); with ☑ Start on it the new one is its First frame.
  * Pure (Node: scripts/test-storyboard.js): slotBody, thumbHtml.
  */
 (function (root) {
@@ -37,6 +44,7 @@
       + `<button class="ghost gbtn" data-sbgen="${n}" type="button" ${busy ? "disabled " : ""}title="${item ? "Make scene " + n + "'s storyboard picture again" : "Make scene " + n + "'s storyboard picture"} with the StoryBoard's image model" aria-label="Storyboard picture for scene ${n}" style="font-size:.66rem;padding:1px 5px">${busy ? "⏳" : item ? "↻ 🖼" : "🖼 make"}</button>`
       + (item ? `<span style="display:flex;gap:2px"><button class="ghost gbtn" data-sbfirst="${n}" type="button" title="Use it as scene ${n}'s FIRST frame (the render starts on it)" aria-label="Use as the first frame of scene ${n}" style="font-size:.62rem;padding:1px 4px">→ First</button>`
         + `<button class="ghost gbtn" data-sblast="${n}" type="button" title="Use it as scene ${n}'s LAST frame (the render ends on it)" aria-label="Use as the last frame of scene ${n}" style="font-size:.62rem;padding:1px 4px">→ Last</button>`
+        + `<button class="ghost gbtn" data-sbpick="${n}" type="button" title="Change scene ${n}'s storyboard picture - a picture of another scene, a frame of a take, any picture of the project or a file" aria-label="Change the storyboard picture of scene ${n}" style="font-size:.62rem;padding:1px 4px">📁</button>`
         + `<button class="ghost gbtn" data-sbdel="${n}" type="button" title="Remove scene ${n}'s storyboard picture" aria-label="Remove the storyboard picture of scene ${n}" style="font-size:.62rem;padding:1px 4px">✕</button></span>` : "")
       + `</div></div>`;
   }
@@ -46,7 +54,7 @@
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const store = { get: (k, d) => { try { const v = root.localStorage.getItem("sb." + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set: (k, v) => { try { root.localStorage.setItem("sb." + k, JSON.stringify(v)); } catch { /* private mode */ } } };
-  const opts = Object.assign({ sheets: true, locations: true, refs: true, style: "", autoFirst: true }, store.get("opts", {}) || {});
+  const opts = Object.assign({ sheets: true, locations: true, refs: true, style: "", autoFirst: true, llm: true, prev: true }, store.get("opts", {}) || {});   // 2.568.0: + llm, prev
   const items = new Map(), busy = new Set();
   let say = (t) => { const n = $("sbMsg"); if (n) n.textContent = t || ""; };
   const post = (url, body) => fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) }).then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status); return j; });
@@ -81,6 +89,8 @@
       + `<label class="chk" title="The character sheets of the characters a scene's prompt names ride as reference pictures"><input type="checkbox" id="sbSheets"${opts.sheets ? " checked" : ""}> Character sheets</label>`
       + `<label class="chk" title="The pictures of the locations a scene's prompt names ride as reference pictures"><input type="checkbox" id="sbLocs"${opts.locations ? " checked" : ""}> Locations</label>`
       + `<label class="chk" title="The scene's own reference pictures and the project's References ride as reference pictures"><input type="checkbox" id="sbRefs"${opts.refs ? " checked" : ""}> Reference images</label>`
+      + `<label class="chk" title="The LLM writes each picture's prompt from its scene - the opening frame: who, what, where, the framing and light, the pictures named (off = the scene's own words)"><input type="checkbox" id="sbLlm"${opts.llm ? " checked" : ""}> LLM writes it</label>`
+      + `<label class="chk" title="The scene before's LAST FRAME rides first as a reference (the scene continues from it) - when that scene has a rendered take; without one it is the character sheets + the scene's words"><input type="checkbox" id="sbPrev"${opts.prev ? " checked" : ""}> Previous last frame</label>`
       + `<label class="chk" title="Each storyboard picture becomes its scene's FIRST frame - the render starts on it (a Ref scene turns First). Change it any time: ↻ makes another, or pick a picture in the scene's First slot"><input type="checkbox" id="sbAuto"${opts.autoFirst ? " checked" : ""}> Start on it</label>`
       + `<button class="ghost gbtn" id="sbAll" type="button" title="Make the storyboard picture of every scene that has none yet (one after another)">🖼 All missing</button>`
       + `<button class="ghost gbtn" id="sbWrite" type="button" title="The LLM writes the scenes from your brief, then every scene gets its storyboard picture (with the references ticked here: character sheets, locations, reference images)">🎞 Write storyboard</button>`
@@ -93,6 +103,8 @@
     q("sbRefs").onchange = () => { opts.refs = q("sbRefs").checked; keep(); };
     q("sbStyle").onchange = () => { opts.style = q("sbStyle").value; keep(); };
     q("sbAuto").onchange = () => { opts.autoFirst = q("sbAuto").checked; keep(); };
+    q("sbLlm").onchange = () => { opts.llm = q("sbLlm").checked; keep(); };
+    q("sbPrev").onchange = () => { opts.prev = q("sbPrev").checked; keep(); };
     q("sbWrite").onclick = () => writeStoryboard();
     q("sbStyle").onfocus = paintStyles;
     q("sbAll").onclick = () => allMissing();
@@ -119,6 +131,7 @@
       on("[data-sbgen]", () => make(n));
       on("[data-sbfirst]", () => useAs(n, "first"));
       on("[data-sblast]", () => useAs(n, "last"));
+      on("[data-sbpick]", () => change(n));
       on("[data-sbdel]", () => post(`/api/storyboard/${n}/clear`, {}).then(() => { items.delete(n); paintCards(); say(`scene ${n}'s storyboard picture removed`); }).catch((e) => say("⚠ " + e.message)));
     });
   }
@@ -134,11 +147,12 @@
     busy.add(n); paintCards(); say(`scene ${n}: making its storyboard picture with ${st.name || "the image model"}…`);
     try {
       if ((st.engine || "comfy") === "comfy" && typeof root.ensureComfyReady === "function" && !(await root.ensureComfyReady({ need: true }))) throw new Error("ComfyUI is not running");
-      const plan = await post(`/api/storyboard/${n}/plan`, { sheets: opts.sheets, locations: opts.locations, refs: opts.refs });
+      if (opts.llm) say(`scene ${n}: the LLM is writing its picture…`);
+      const plan = await post(`/api/storyboard/${n}/plan`, { sheets: opts.sheets, locations: opts.locations, refs: opts.refs, prev: opts.prev, llm: opts.llm, style_id: style });
       const body = { prompt: plan.prompt, style_id: style, batch: 1 };
       if (plan.images && plan.images.length) body.images = plan.images;
       const job = await post("/api/genimage", body);
-      say(`scene ${n}: queued (${plan.images.length} reference picture${plan.images.length === 1 ? "" : "s"}: ${plan.picked.map((p) => p.group).join(", ") || "none"})`);
+      say(`scene ${n}: queued (${plan.images.length} reference picture${plan.images.length === 1 ? "" : "s"}: ${plan.picked.map((p) => p.group).join(", ") || "none"})${plan.llm ? " - the LLM wrote its prompt" : ""}${plan.note ? " - " + plan.note : ""}`);
       let j = null;
       for (let i = 0; i < 1800; i++) {                  // up to an hour
         await new Promise((r) => setTimeout(r, i < 10 ? 500 : 2000));
@@ -146,11 +160,21 @@
         if (j && /^(done|failed|error|cancelled|canceled)$/.test(j.status)) break;
       }
       if (!j || j.status !== "done") throw new Error(`the picture job ${j ? j.status : "did not answer"}`);
-      const it = await post(`/api/storyboard/${n}/fromjob`, { job: job.id, style: st.name || style });
+      const it = await post(`/api/storyboard/${n}/fromjob`, { job: job.id, style: st.name || style, prompt: plan.prompt });
       items.set(n, it); say(`scene ${n}: storyboard picture ready`);
       if (opts.autoFirst) await useAs(n, "first", { anchor: true, quiet: true });      // 2.565.0: the scene starts on it
     } catch (e) { say(`⚠ scene ${n}: ${e.message}`); }
     finally { busy.delete(n); paintCards(); }
+  }
+  /** 2.568.0: change it - the scene picker (characters.js, slot "sb"); picked() lands here when one is chosen */
+  function change(n) {
+    if (root.bgScenes && typeof root.bgScenes.pickPicture === "function") root.bgScenes.pickPicture(n, "sb");
+    else say("the scene picker is not ready yet");
+  }
+  async function picked(n, it) {
+    if (it && it.file) items.set(n, it);
+    paintCards(); say(`scene ${n}: ${(it && it.note) || "its storyboard picture changed"}`);
+    if (opts.autoFirst) await useAs(n, "first", { anchor: true, quiet: true });
   }
   async function allMissing() {
     const ns = [...($("scList") || doc).querySelectorAll(".sccard[data-sc]")].map((c) => +c.dataset.sc).filter((n) => !items.has(n));
@@ -201,6 +225,7 @@
     root.setInterval(refresh, 20000);
     H3Story.refresh = refresh; H3Story.make = make; H3Story.useAs = useAs; H3Story.items = () => [...items.values()]; H3Story.opts = opts; H3Story.allMissing = allMissing;
     H3Story.write = writeStoryboard; H3Story.busy = (n) => busy.has(n); H3Story.say = (t) => say(t);
+    H3Story.change = change; H3Story.picked = picked;   // 2.568.0
     return true;
   }
   const boot = () => { if (!start()) root.setTimeout(boot, 300); };

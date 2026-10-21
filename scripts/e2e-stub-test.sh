@@ -12227,6 +12227,30 @@ node scripts/test-sbgrid565.js > /tmp/g565.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui565-ui.js > /tmp/ui565.log 2>&1 \
   && ok "2.565.0 browser test: the grid (3 cards, 2 ➜, the list hidden), a click opens scene 2's full card, ✕ closes, 🖼 on scene 1 = its picture + its First frame (Ref -> First), ☰ list, 🎞 Write storyboard with a stand-in LLM = the scenes + their pictures as First - or SKIP without playwright" \
   || { bad "2.565.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui565.log | head -14; }
+
+# ---- 2.566.0 (MOSS-Image: the styles + Settings ▸ Add-ons ▸ MOSS-Image)
+node scripts/test-moss566.js > /tmp/m566.log 2>&1 \
+  && ok "2.566.0 units (the two graphs from ComfyUI's template - SLG 22, er_sde, moss_image, EmptyFlux2LatentImage - filled by comfy_image.patch, the styles, imageArch moss, the model list group moss, the Model manager family, mossAddon wanted / status / install / remove / comfySupport, the Add-ons card)" \
+  || { bad "2.566.0 units"; grep -a "^FAIL" -A2 /tmp/m566.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui566-ui.js > /tmp/ui566.log 2>&1 \
+  && ok "2.566.0 browser test: the MOSS-Image styles listed; Settings ▸ Add-ons ▸ MOSS-Image - seven files with sizes, SFT + text encoder + VAE ticked, the two needed locked; ⤓ Download ticked posts the picks - or SKIP without playwright" \
+  || { bad "2.566.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui566.log | head -14; }
+
+# ---- 2.567.0 (the theme editor: text alignment, padding / margins, corners)
+node scripts/test-themeedit567.js > /tmp/te567.log 2>&1 \
+  && ok "2.567.0 units (cleanRule align / valign / pad / mar / tpad / tmar / corners - clamped, junk dropped, never padding / margins on html / body; compile: text-align, align-content, padding-* / margin-*, each corner over Radius, the words' .h3lb box, flex row / column / reversed / grid / button kinds; alignKind; the panel's controls)" \
+  || { bad "2.567.0 units"; grep -a "^FAIL" -A2 /tmp/te567.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui567-ui.js > /tmp/ui567.log 2>&1 \
+  && ok "2.567.0 browser test: the Style panel's Align / Padding / Margin / Corners; a button's words bottom right, centre top, its own again; padding (=), margin, two corners, the words' padding / margin; a flex row, a flex column, a block bottom right; marked again when re-drawn; kept in the saved theme - or SKIP without playwright" \
+  || { bad "2.567.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui567.log | head -14; }
+
+# ---- 2.568.0 (StoryBoard pictures written by the LLM; the previous scene's last frame; 📁 change it; the card is the picture)
+node scripts/test-storyboard568.js > /tmp/sb568.log 2>&1 \
+  && ok "2.568.0 units (roleOf / llmMessages with and without the scene before's frame / cleanPrompt; storyboardPlan.plan on a real board: the last frame first + the sheet, no take = sheet + words, both off, no LLM / JSON answer = the scene's words + a note; the card is the picture; the routes and the picker's slot sb)" \
+  || { bad "2.568.0 units"; grep -a "^FAIL" -A2 /tmp/sb568.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui568-ui.js > /tmp/ui568.log 2>&1 \
+  && ok "2.568.0 browser test: a stand-in LLM writes scene 1's picture (sheet + words) and scene 2's (scene 1's last frame from its take + the sheet - the frame checked red); the picture fills the 16:9 card, its prompt in the tooltip; 📁 -> the picker -> a project picture is its picture + First frame; a click opens the full card - or SKIP without playwright" \
+  || { bad "2.568.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui568.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
