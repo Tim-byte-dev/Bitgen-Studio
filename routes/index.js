@@ -1307,6 +1307,7 @@ function mount(app) {
       out[kind] = fs.readdirSync(core.pDir(kind)).map((f) => ({
         name: f,
         duration: kind === "images" ? null : core.probeDuration(path.join(core.pDir(kind), f)),
+        mtime: (() => { try { return Math.round(fs.statSync(path.join(core.pDir(kind), f)).mtimeMs) / 1000; } catch { return 0; } })(),   // 2.571.0: oldest first (multisel.js)
       }));
     }
     res.json(out);

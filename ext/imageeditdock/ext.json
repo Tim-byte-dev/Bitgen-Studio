@@ -79,6 +79,7 @@
     "pcsubject.js",
     "pcimgop.js",
     "pcblendlayer.js",
+    "pctablet.js",
     "pczones.js",
     "pcpending.js",
     "imageedit.js",

@@ -29,7 +29,7 @@
 
   const DYN_DEFAULT = () => ({
     tip: { angle: 0, roundness: 100, flipX: false, flipY: false },
-    shape: { on: false, sizeJitter: 0, minDiameter: 0, sizeControl: "off", fadeSteps: 25, angleJitter: 0, angleControl: "off", roundJitter: 0, minRound: 25, flipXJitter: false, flipYJitter: false },
+    shape: { on: false, sizeJitter: 0, minDiameter: 0, sizeControl: "off", fadeSteps: 25, angleJitter: 0, angleControl: "off", roundJitter: 0, minRound: 25, flipXJitter: false, flipYJitter: false, roundControl: "off" },
     scatter: { on: false, amount: 0, both: false, count: 1, countJitter: 0 },
     texture: { on: false, pattern: "noise", scale: 100, depth: 60, invert: false, mode: "multiply" },
     dual: { on: false, tip: "chalk", size: 40, scatter: 50, count: 2 },
@@ -44,7 +44,7 @@
       || (d.shape && d.shape.on) || (d.scatter && d.scatter.on) || (d.texture && d.texture.on) || (d.dual && d.dual.on) || (d.color && d.color.on) || (d.transfer && d.transfer.on));
   }
   /** one dab's dynamics: n = the dab's number in the stroke, dir = the stroke's direction (rad), pressure 0..1 */
-  function dynAt(dyn, rnd, n, dir, pressure) {
+  function dynAt(dyn, rnd, n, dir, pressure, tilt) {   // 2.570.0: tilt = {angle, amount} from the pen (pctablet.js), or null
     const d = Object.assign(DYN_DEFAULT(), dyn || {}), t = d.tip, sh = d.shape, sc = d.scatter, tr = d.transfer;
     const pr = pressure == null ? 1 : clamp01(pressure);
     let size = 1, angle = (t.angle || 0) * Math.PI / 180, round = (t.roundness == null ? 100 : t.roundness) / 100, flipX = !!t.flipX, flipY = !!t.flipY, alpha = 1, flow = 1, count = 1;
@@ -55,6 +55,8 @@
       if (sh.sizeJitter) size *= 1 - (sh.sizeJitter / 100) * rnd() * (1 - min);
       size = Math.max(min, size);
       if (sh.angleControl === "direction") angle += dir || 0; else if (sh.angleControl === "pressure") angle += pr * Math.PI * 2;
+      else if (sh.angleControl === "tilt" && tilt) angle += tilt.angle;                               // 2.570.0: no tilt (a mouse) = the tip as it is
+      if (sh.roundControl === "tilt" && tilt) round *= 1 - 0.75 * Math.max(0, Math.min(1, tilt.amount || 0));
       if (sh.angleJitter) angle += (rnd() - 0.5) * 2 * Math.PI * (sh.angleJitter / 100);
       if (sh.roundJitter) { const mr = (sh.minRound || 0) / 100; round = Math.max(mr, round * (1 - (sh.roundJitter / 100) * rnd())); }
       if (sh.flipXJitter && rnd() < 0.5) flipX = !flipX;
@@ -178,7 +180,7 @@
     const p = st.p, Bx = B(), doc = st.doc, d = Object.assign(DYN_DEFAULT(), p.dyn || {}), g = st.bg;
     const at = Bx.atPressure(p, st.size, st.flow, pressure);
     st.nDab = (st.nDab || 0) + 1;
-    const dy = dynAt(d, st.rnd, st.nDab, dir || 0, pressure == null ? 1 : pressure);
+    const dy = dynAt(d, st.rnd, st.nDab, dir || 0, pressure == null ? 1 : pressure, root.PCTablet && root.PCTablet.tilt ? root.PCTablet.tilt() : null);
     if (d.color.on && (!d.color.perTip ? !st.dynColor : true)) st.dynColor = jitterColor(st.color, getBg(), d.color, st.rnd);
     const color = d.color.on ? st.dynColor : st.color;
     const s = Math.max(1, at.size * dy.size), r = s / 2;
@@ -286,8 +288,8 @@
           ${R("Hardness (%)", "hardness", 0, 100, 1, Math.round((p.hardness == null ? 1 : p.hardness) * 100))}${R("Spacing (%)", "spacing", 1, 500, 1, Math.round((p.spacing || 0.1) * 100))}<div class="r"><span></span>${CHKR("Flip X", "dyn.tip.flipX", d.tip.flipX)}${CHKR("Flip Y", "dyn.tip.flipY", d.tip.flipY)}</div></div>`
         + sec("shape", "Shape Dynamics", R("Size jitter (%)", "dyn.shape.sizeJitter", 0, 100, 1, d.shape.sizeJitter) + R("Minimum diameter (%)", "dyn.shape.minDiameter", 0, 100, 1, d.shape.minDiameter)
           + SELR("Size control", "dyn.shape.sizeControl", [["off", "Off"], ["pressure", "Pen pressure"], ["fade", "Fade"]], d.shape.sizeControl) + R("Fade steps", "dyn.shape.fadeSteps", 1, 999, 1, d.shape.fadeSteps)
-          + R("Angle jitter (%)", "dyn.shape.angleJitter", 0, 100, 1, d.shape.angleJitter) + SELR("Angle control", "dyn.shape.angleControl", [["off", "Off"], ["direction", "Direction"], ["pressure", "Pen pressure"]], d.shape.angleControl)
-          + R("Roundness jitter (%)", "dyn.shape.roundJitter", 0, 100, 1, d.shape.roundJitter) + R("Minimum roundness (%)", "dyn.shape.minRound", 1, 100, 1, d.shape.minRound)
+          + R("Angle jitter (%)", "dyn.shape.angleJitter", 0, 100, 1, d.shape.angleJitter) + SELR("Angle control", "dyn.shape.angleControl", [["off", "Off"], ["direction", "Direction"], ["pressure", "Pen pressure"], ["tilt", "Pen tilt"]], d.shape.angleControl)
+          + R("Roundness jitter (%)", "dyn.shape.roundJitter", 0, 100, 1, d.shape.roundJitter) + R("Minimum roundness (%)", "dyn.shape.minRound", 1, 100, 1, d.shape.minRound) + SELR("Roundness control", "dyn.shape.roundControl", [["off", "Off"], ["tilt", "Pen tilt"]], d.shape.roundControl || "off")
           + `<div class="r"><span></span>${CHKR("Flip X jitter", "dyn.shape.flipXJitter", d.shape.flipXJitter)}${CHKR("Flip Y jitter", "dyn.shape.flipYJitter", d.shape.flipYJitter)}</div>`)
         + sec("scatter", "Scattering", R("Scatter (%)", "dyn.scatter.amount", 0, 1000, 1, d.scatter.amount) + `<div class="r"><span></span>${CHKR("Both axes", "dyn.scatter.both", d.scatter.both)}</div>` + R("Count", "dyn.scatter.count", 1, 16, 1, d.scatter.count) + R("Count jitter (%)", "dyn.scatter.countJitter", 0, 100, 1, d.scatter.countJitter))
         + sec("texture", "Texture", SELR("Texture", "dyn.texture.pattern", [["noise", "Noise"], ["canvas", "Canvas"], ["paper", "Paper"], ...pats.map((n) => ["pattern:" + n, "Pattern: " + n])], d.texture.pattern)

@@ -5829,6 +5829,24 @@ orange line shows where it will go - and let go.
   boxes with a ComfyUI image style: the scene's words over the whole, each box's words only inside it (ComfyUI's area
   conditioning - best with SDXL-type styles; FLUX / Qwen follow it more loosely). A picture starts on ▣, a blank canvas
   on ▦. The boxes are kept with the document (and its .bgi) and are never painted into the picture.
+- 2.570.0: **🖊 Pen tablet** (XP-Pen, Wacom, Huion … through Windows Ink) in the image editor - the **🖊 Pen** tab next to
+  🖌 Brush (Window ▸ Pen Tablet): a **test pad** that shows the pressure, the tilt, which end of the pen and the
+  **pressure levels** your pen sends (~8192 for an XP-Pen); the **pressure curve** like the driver's (Extra soft, Soft,
+  Linear, Firm, Extra firm, S-curve - or drag its points), **Lightest touch** and **Full pressure at**; ☐ **Pressure →
+  size** / ☐ **Pressure → opacity** for every brush (and its smallest size); ☑ the **eraser end** erases (the brush comes
+  back when you turn the pen round); the **side button** = Eyedropper; ☑ **tilt** turns the tip (🖌 Brush ▸ Shape
+  Dynamics ▸ Angle / Roundness control: Pen tilt); ☐ a mouse: pressure from speed. Seven **pen brushes** in the brush
+  presets ▾: G-pen, Mapping pen, Brush pen, Real pencil, Fineliner, Technical pen, Calligraphy (a 45° nib that turns
+  with the tilt). No pressure? XP-Pen's Pen Tablet settings ▸ tick **Windows Ink**, then restart the app.
+- 2.571.0: **select several clips and drag them all onto the timeline** - in the Gallery, the Assets dock and the
+  References tray: **Ctrl-click** adds / takes away one, **Shift-click** selects the range from the last one you clicked
+  (Ctrl + Shift adds a range); a plain click works as before (one tile; the Gallery opens it in the viewer). Drag any of
+  the selected and all of them go: dropped on the timeline (or the preview), they are laid down **oldest first** - the
+  oldest on the top layer, the newest at the bottom, each on its own layer, one after the other from where you dropped
+  them. **⛓ Sequential** on the timeline's bar (next to ripple) arranges every clip one after the other with no gap,
+  down the layers from the top (V1, the picture layers, the video layers), and keeps it that way while it is on: delete
+  a clip and the ones below close up; put in a layer with a clip and the ones below make room; trim a clip and they
+  follow. Sound layers, text, shapes and the karaoke layer stay where they are.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

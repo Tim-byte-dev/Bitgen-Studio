@@ -1683,7 +1683,8 @@
     }
 
     /* ---------------- pointer ---------------- */
-    const pressureOf = (e) => (e.pointerType === "mouse" || !e.pressure ? 1 : e.pressure);
+    // 2.570.0: the 🖊 Pen tab's pressure curve / levels / tilt (pctablet.js) when it is loaded
+    const pressureOf = (e) => (E.tablet ? E.tablet.pressure(e) : e.pointerType === "mouse" || !e.pressure ? 1 : e.pressure);
     function effectivePreset() {
       const p = B.byId(S.preset);
       if (S.tool !== "erase" && !(S.fgNone && S.tool === "paint")) return p;               // 2.430.0: ⊠ transparent paints transparency
@@ -1697,7 +1698,8 @@
       if (!L || !B || !canPaint(L)) return false;
       const which = whichOf(L);
       let preset = (opts && opts.preset) || effectivePreset(), color = (opts && opts.color) || S.fg;
-      if ((which === "mask" || which === "fmask") && S.tool === "erase") { preset = Object.assign({}, preset, { engine: "paint", blend: null, id: preset.id + "-maskerase" }); color = S.bg; }   // Photoshop: the eraser paints the background colour into a mask
+      if ((which === "mask" || which === "fmask") && S.tool === "erase") { preset = Object.assign({}, preset, { engine: "paint", blend: null, id: preset.id + "-maskerase" }); color = S.bg; }
+      if (E.tablet && E.tablet.preset) preset = E.tablet.preset(preset);   // 2.570.0: 🖊 Pen ▸ Pressure -> size / opacity for every brush   // Photoshop: the eraser paints the background colour into a mask
       const c = target(L), copy = beginPx(L, which);
       S.stroke = new B.Stroke(Object.assign({ doc, layer: c, preset, size: S.size, opacity: S.opacity, flow: S.flow, color, selCanvas: S.qm ? null : selCanvas() }, (opts && opts.stroke) || {}));
       S.strokeMask = which === "mask" || which === "fmask";
@@ -1728,7 +1730,7 @@
       if (E.ui.closeMenus) E.ui.closeMenus();
       const [fx, fy] = E.snapPos ? E.snapPos(e, pos(e)) : pos(e), x = Math.floor(fx), y = Math.floor(fy);   // 2.440.0: snapping (pcguides.js)
       if (e.button === 1 || S.space || S.tool === "hand") { S.drag = { pan: true, x: e.clientX, y: e.clientY, px: S.panX, py: S.panY }; stage.setPointerCapture(e.pointerId); return; }
-      if (e.button !== 0) return;
+      if (e.button !== 0 && !(e.pointerType === "pen" && e.button === 5 && E.tablet)) return;   // 2.570.0: the pen's eraser end draws too (pctablet.js turned the brush into the eraser)
       const T = E.tools[S.tool];
       if (T && T.down) { S.drag = { ext: T }; stage.setPointerCapture(e.pointerId); if (T.down(e, fx, fy) === false) S.drag = null; return; }
       const L = layer();
@@ -2925,6 +2927,7 @@
     if (win.PCZones && win.PCZones.install) win.PCZones.install(E);       // 2.569.0: 🔲 zones - boxes that say what the AI puts where (pczones.js)
     if (win.PCMeasure && win.PCMeasure.install) win.PCMeasure.install(E);   // 2.483.0: Navigator / Histogram / Info / Notes, sampler, ruler, note, count, perspective crop, Grow / Similar / Focus Area, Matting
     if (win.IEBrushDyn && win.IEBrushDyn.install) win.IEBrushDyn.install(E); // 2.484.0: the 🖌 Brush tab - Brush Settings, presets, .abr brushes (brushdyn.js)
+    if (win.PCTablet && win.PCTablet.install) win.PCTablet.install(E);   // 2.570.0: 🖊 the Pen tab - pressure curve, levels, tilt, the eraser end, the side button (pctablet.js)
     if (win.PCFilePlus && win.PCFilePlus.install) win.PCFilePlus.install(E); // 2.485.0: BMP / TIFF / GIF / TGA / AVIF export, File Info, Print, Contact Sheet, Crop and Straighten Photos (pcfileplus.js)
     if (win.PCMerge && win.PCMerge.install) win.PCMerge.install(E);       // 2.486.0: Auto-Align / Auto-Blend Layers, Photomerge, Merge to HDR (pcmerge.js)
     if (win.PCMode && win.PCMode.install) win.PCMode.install(E);         // 2.487.0: Image ▸ Mode, Proof Colors, Gamut Warning, CMYK TIFF (pcmode.js)

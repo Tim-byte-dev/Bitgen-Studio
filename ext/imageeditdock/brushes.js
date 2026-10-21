@@ -45,6 +45,17 @@
     { id: "blur",      name: "Blur",              icon: "◌", engine: "blur",   tip: "round",  size: 50,  opacity: 1,    flow: 0.5,  hardness: 0.2,  spacing: 0.15, pressure: { size: false, flow: true } },
     { id: "erase",     name: "Eraser hard",       icon: "⌫", engine: "erase",  tip: "round",  size: 30,  opacity: 1,    flow: 1,    hardness: 0.95, spacing: 0.06, pressure: { size: true, flow: false } },
     { id: "erasesoft", name: "Eraser soft",       icon: "⌦", engine: "erase",  tip: "round",  size: 80,  opacity: 1,    flow: 0.3,  hardness: 0,    spacing: 0.08, pressure: { size: false, flow: true } },
+    // 2.570.0 (Tim: "can we add pen tools like xp pen with levels of pressure for freehand drawing?") - the PEN brushes,
+    // made for a pen tablet (the 🖊 Pen tab's curve drives them): inking pens taper to a point, a pencil gets darker
+    // and wider, the calligraphy nib turns with the pen's tilt (fixed at 45° without one)
+    { id: "gpen",      name: "G-pen",             icon: "🖋", engine: "paint", tip: "round",   size: 10,  opacity: 1,    flow: 1,    hardness: 1,    spacing: 0.03, pressure: { size: true, flow: false }, minSize: 0.04, pen: true },
+    { id: "mapping",   name: "Mapping pen",       icon: "✑", engine: "paint", tip: "round",   size: 4,   opacity: 1,    flow: 1,    hardness: 1,    spacing: 0.03, pressure: { size: true, flow: false }, minSize: 0.08, pen: true },
+    { id: "brushpen",  name: "Brush pen",         icon: "〰", engine: "paint", tip: "round",   size: 18,  opacity: 1,    flow: 0.9,  hardness: 0.85, spacing: 0.04, pressure: { size: true, flow: true }, minSize: 0.02, pen: true },
+    { id: "realpencil", name: "Real pencil",      icon: "✏", engine: "paint", tip: "grain",   size: 5,   opacity: 0.95, flow: 0.7,  hardness: 0.85, spacing: 0.12, grain: 0.55, pressure: { size: true, flow: true }, minSize: 0.55, pen: true },
+    { id: "fineliner", name: "Fineliner",         icon: "╱", engine: "paint", tip: "round",   size: 3,   opacity: 1,    flow: 1,    hardness: 1,    spacing: 0.04, pressure: { size: false, flow: false }, pen: true },
+    { id: "techpen",   name: "Technical pen",     icon: "⌀", engine: "paint", tip: "round",   size: 2,   opacity: 1,    flow: 1,    hardness: 1,    spacing: 0.03, pressure: { size: true, flow: false }, minSize: 0.8, pen: true },
+    { id: "callig",    name: "Calligraphy",       icon: "✍", engine: "paint", tip: "round",   size: 22,  opacity: 1,    flow: 1,    hardness: 0.95, spacing: 0.03, pressure: { size: true, flow: false }, minSize: 0.3, pen: true,
+      dyn: { tip: { angle: 45, roundness: 22, flipX: false, flipY: false }, shape: { on: true, sizeJitter: 0, minDiameter: 0, sizeControl: "off", fadeSteps: 25, angleJitter: 0, angleControl: "tilt", roundJitter: 0, minRound: 25, flipXJitter: false, flipYJitter: false, roundControl: "off" } } },
   ];
   const byId = (id) => PRESETS.find((p) => p.id === id) || PRESETS[0];
 

@@ -1146,7 +1146,7 @@
     var dt = e.dataTransfer;
     if (!dt) return false;
     var ty = Array.prototype.slice.call(dt.types || []);
-    return ty.indexOf("Files") >= 0 || ty.indexOf("text/h3clip") >= 0 || (typeof dragPayload !== "undefined" && !!dragPayload);
+    return ty.indexOf("Files") >= 0 || ty.indexOf("text/h3clip") >= 0 || ty.indexOf("text/h3multi") >= 0 || (typeof dragPayload !== "undefined" && !!dragPayload);
   }
   wrap.addEventListener("dragover", function (e) { if (!wanted(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy"; wrap.classList.add("drop"); });
   wrap.addEventListener("dragleave", function () { wrap.classList.remove("drop"); });
@@ -1154,6 +1154,7 @@
     if (!wanted(e)) return;
     e.preventDefault(); wrap.classList.remove("drop");
     var p = toComp(e), t0 = fsnap(S.t);
+    if (window.H3Multi && H3Multi.has()) { H3Multi.dropAt(t0); return; }   // 2.571.0: several clips - oldest first, each on its own layer (static/multisel.js)
     var off = { x: Math.round(p.x - S.W / 2), y: Math.round(p.y - S.H / 2) };
     var payload = typeof dragPayload !== "undefined" ? dragPayload : null;
     var h3 = null; try { h3 = JSON.parse(e.dataTransfer.getData("text/h3clip") || "null"); } catch (x) { h3 = null; }

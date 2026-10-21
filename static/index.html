@@ -3290,7 +3290,9 @@
 <script src="/static/floatpanels.js"></script>  <!-- 2.438.0: floating + named dockers (H3Panels, panel_layout.cfg) -->
 <script src="/static/dockgroup.js"></script>
 <script src="/static/dgdock.js"></script>  <!-- 2.560.0: the ▣ docker docks (drop zones); Basic Settings / LLM tokens / the prompt docker go in it -->
-<script src="/static/voicechat.js"></script>  <!-- 2.564.0: 🎙 voice chat - talk to the app (routes/voice.js) -->
+<script src="/static/voicechat.js"></script>
+<script src="/static/multisel.js"></script>  <!-- 2.571.0: select several clips (Shift / Ctrl) in the Gallery, Assets, References - drag them all onto the timeline -->
+<script src="/static/tlseq.js"></script>  <!-- 2.571.0: ⛓ Sequential - the timeline's clips one after the other down the layers -->  <!-- 2.564.0: 🎙 voice chat - talk to the app (routes/voice.js) -->
 <script src="/static/stylerestore.js"></script>
 <script src="/static/folderfilter.js"></script>  <!-- 2.559.0: every folder filter dropdown keeps its folder (folder_filters.cfg) -->
 <script src="/static/basiccfg.js"></script>  <!-- 2.559.0: Basic Settings kept in basic.cfg -->
@@ -6552,6 +6554,7 @@ async function refreshGallery() {
     el.dataset.lbKind = "video";
     el.dataset.lbName = f.name;
     el.dataset.name = f.name;
+    el.dataset.mtime = f.mtime || ""; el.dataset.dur = f.duration || ""; el.dataset.where = f.where || "";   // 2.571.0: multi-select drags (static/multisel.js)
     const when = new Date(f.mtime * 1000).toLocaleString();
     const mb = (f.size / 1048576).toFixed(1);
     el.innerHTML = `<button class="gsave" type="button" title="Save as… - pick a folder and a name (it becomes the folder 💾 Save uses)" aria-label="Save as">💾</button><video preload="metadata" muted></video>
@@ -6635,6 +6638,7 @@ function paintImageTiles(box, files) {
     el.dataset.lbUrl = `/outputs/${encodeURIComponent(f.name)}`;
     el.dataset.lbKind = "image";
     el.dataset.lbName = f.name;
+    el.dataset.mtime = f.mtime || ""; el.dataset.dur = f.duration || ""; el.dataset.where = f.where || "";   // 2.571.0: multi-select drags (static/multisel.js)
     el.draggable = true;
     el.ondragstart = ev => {
       dragPayload = { type: "output", kind: "images", name: f.name, where: f.where };
@@ -6674,6 +6678,7 @@ function paintAudioTiles(box, files) {
     el.dataset.lbUrl = `/outputs/${encodeURIComponent(f.name)}`;
     el.dataset.lbKind = "audio";
     el.dataset.lbName = f.name;
+    el.dataset.mtime = f.mtime || ""; el.dataset.dur = f.duration || ""; el.dataset.where = f.where || "";   // 2.571.0: multi-select drags (static/multisel.js)
     el.draggable = true;
     el.ondragstart = ev => {
       dragPayload = { type: "output", kind: "sound", name: f.name, where: f.where };
@@ -11726,6 +11731,8 @@ function renderTimelineBody() {
     e.preventDefault();
     const rect = inner.getBoundingClientRect();
     const sec = Math.max(0, Math.round(((e.clientX - rect.left - LABW) / PXS) * 10) / 10);
+    // 2.571.0: several clips selected in the Gallery / Assets / References - oldest first, each on its own layer (multisel.js)
+    if (window.H3Multi && H3Multi.has()) { await H3Multi.dropAt(sec); return; }
     let data;
     try { data = JSON.parse(e.dataTransfer.getData("text/h3clip")); } catch {}
     // Files dragged straight from the OS onto the timeline: import them into
@@ -12095,6 +12102,7 @@ function assetItem(kind, a) {
   el.dataset.lbUrl = url;
   el.dataset.lbKind = kind === "images" ? "image" : kind === "video" ? "video" : "audio";
   el.dataset.lbName = a.name;
+  el.dataset.dur = a.duration || ""; el.dataset.mtime = a.mtime || "";   // 2.571.0: multi-select drags, oldest first (static/multisel.js)
   if (kind === "images") el.innerHTML = `<img src="${url}"><div class="an"><span>${a.name}</span></div>`;
   else if (kind === "video") el.innerHTML = `<video src="${url}" preload="metadata" muted></video><div class="an"><span>${a.name}</span><span style="flex:none">${(a.duration || 0).toFixed(1)}s</span></div>`;
   else el.innerHTML = `<div class="an">🔊 <span>${a.name}</span><span style="flex:none">${(a.duration || 0).toFixed(1)}s</span></div>`;

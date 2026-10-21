@@ -524,11 +524,11 @@
           ["cdMI", "item", "mitem", (v) => v], ["cdMS", "size", "msize", (v) => Math.max(2, +v || 2)], ["cdMG", "spacing", "mspace", (v) => Math.max(2, +v || 2)]];
         for (const [id, mk, sk, f] of map) { const x = o.querySelector("#" + id); if (x) x.onchange = () => { chgMedia(mk, sk, f(x.value)); if (id === "cdMM") E.renderOptions(); }; }
       },
-      down(e, fx, fy) { if (!S.w) return false; am = { pts: [[fx, fy, e.pointerType === "pen" ? e.pressure : 0.5]], t: performance.now() }; },
+      down(e, fx, fy) { if (!S.w) return false; am = { pts: [[fx, fy, e.pointerType === "pen" ? (E.tablet ? E.tablet.pressure(e) : e.pressure) : 0.5]], t: performance.now() }; },   // 2.570.0: the 🖊 Pen tab's curve
       move(e, fx, fy) {
         if (!am) return; const l = am.pts[am.pts.length - 1], d = Math.hypot(fx - l[0], fy - l[1]); if (d < 1.2 / (S.zoom || 1)) return;
         const now = performance.now(), sp = d / Math.max(1, now - am.t); am.t = now;
-        const pr = e.pointerType === "pen" && e.pressure > 0 ? e.pressure : Math.max(0.15, Math.min(1, 1.1 - sp * 0.35));   // a mouse: slower = wider
+        const pr = e.pointerType === "pen" && e.pressure > 0 ? (E.tablet ? E.tablet.pressure(e) : e.pressure) : Math.max(0.15, Math.min(1, 1.1 - sp * 0.35));   // a mouse: slower = wider
         am.pts.push([fx, fy, pr]); E.drawOverlay();
       },
       up() {

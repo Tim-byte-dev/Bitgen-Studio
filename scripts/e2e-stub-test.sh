@@ -12259,6 +12259,22 @@ node scripts/test-zones569.js > /tmp/z569.log 2>&1 && python3 scripts/test-regio
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui569-ui.js > /tmp/ui569.log 2>&1 \
   && ok "2.569.0 browser test: /api/genimage refuses regions for a non-ComfyUI style, keeps them in the job for one; boxes dragged with the mouse (colours, words, move, size, Delete) on the overlay; ▣ a Generate per box applied by itself inside its box; ✎ the outlined picture + the instruction to the Edit model; ▦ /api/genimage with the scene, ~1 MP and the boxes -> a layer; a new document has its own boxes - or SKIP without playwright" \
   || { bad "2.569.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui569.log | head -14; }
+
+# ---- 2.570.0 (🖊 pen tablet: pressure curve, levels, tilt, eraser end, side button, pen brushes)
+node scripts/test-tablet570.js > /tmp/t570.log 2>&1 \
+  && ok "2.570.0 units (curveAt / cleanCurve / mapPressure, levelsOf, tiltOf, isEraserEnd / isBarrel, mouseSpeedPressure, presetFor; the 7 pen brushes; Calligraphy's tilt in brushdyn.dynAt; the wiring)" \
+  || { bad "2.570.0 units"; grep -a "^FAIL" -A2 /tmp/t570.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui570-ui.js > /tmp/ui570.log 2>&1 \
+  && ok "2.570.0 browser test: real pen input (the DevTools protocol's pointerType pen + force + tilt): the Pen tab, the pad thin -> thick, ~8192 levels; a G-pen line follows the pressure, Extra soft widens a light touch, Lightest touch 40 %; Pressure -> size on the Marker; tilt reaches the brushes; the eraser end erases and gives the brush back; the side button picks the colour; the pen brushes listed - or SKIP without playwright" \
+  || { bad "2.570.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui570.log | head -14; }
+
+# ---- 2.571.0 (multi-select + multi-drag onto the timeline; ⛓ Sequential)
+node scripts/test-multisel571.js > /tmp/ms571.log 2>&1 \
+  && ok "2.571.0 units (pick: click / Shift range / Ctrl toggle / Ctrl+Shift add range; orderByDate; clipFor; tlseq rowsOf / arrange - V1, picture, video layers, delete closes up, a new layer makes room, the frame grid; the wiring)" \
+  || { bad "2.571.0 units"; grep -a "^FAIL" -A2 /tmp/ms571.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui571-ui.js > /tmp/ui571.log 2>&1 \
+  && ok "2.571.0 browser test: three dated videos in a project's gallery - Ctrl / Shift / Ctrl-click; dragged (a real DataTransfer) onto the tracks: oldest in V1, then V2, V3 one after the other; ⛓ Sequential from 0, a delete closes up, a layer put in makes room, a trim follows; Assets (Ctrl) onto the preview at the playhead; two reference pictures uploaded and laid down; a plain drag stays single - or SKIP without playwright" \
+  || { bad "2.571.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui571.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
