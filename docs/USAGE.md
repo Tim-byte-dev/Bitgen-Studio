@@ -5847,6 +5847,13 @@ orange line shows where it will go - and let go.
   down the layers from the top (V1, the picture layers, the video layers), and keeps it that way while it is on: delete
   a clip and the ones below close up; put in a layer with a clip and the ones below make room; trim a clip and they
   follow. Sound layers, text, shapes and the karaoke layer stay where they are.
+- 2.572.0: **✨ Auto transition [N] frames [type]** on the timeline's bar - at every cut between two video clips on
+  different layers the next clip comes in over N frames (dissolve, fade, wipes, slides, circle, zoom …) **without moving
+  anything**: every clip keeps its start, so the lip sync with the song stays frame-exact. The clip before the cut is
+  held underneath for those frames (its own frames past its end when the file has them, else its last frame held). On =
+  kept at every change (after ⛓ Sequential); off = plain cuts again; a transition you set yourself is left alone. Clips
+  that are all on V1 use V1's own join (Out), which overlaps them. **🔊 / 🔇 Video sound** mutes or unmutes V1 and every
+  video layer at once, so the full song on its sound layer plays with no cuts in it.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

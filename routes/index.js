@@ -2713,6 +2713,7 @@ const trap = require("../lib/trap");
         start: Math.max(0, +c.start || 0),
         opacity: Math.min(1, Math.max(0, c.opacity == null ? 1 : +c.opacity)),
         ...clipFx.clipKeys(c),                  // 2.406.0: fx (speed / reverse / ramp, grade + LUT, sound) + tl_len
+        ...tlKeys.tailKeys(c),                  // 2.572.0: ✨ Auto transition - held under the next clip
       })),
       video_role: clipFx.role(t.video_role, "voice"),   // 2.406.0: V1's sound in the mix (ducking)
       mix: clipFx.mixCfg(t.mix),                        // 2.406.0: ducking + loudness
@@ -2762,6 +2763,7 @@ const trap = require("../lib/trap");
           ...tlKeys.distKeys(c),                  // 2.505.0: 〰 its distortion maps (two grey videos)
           ...tlKeys.vbakeKeys(c),                 // 2.506.0: 🎞 baked whole by the page (rays, warps, 3D ...)
           ...tlKeys.cutKeys(c),                   // 2.515.0: 🧍 its cut-out (the subject with its alpha) in place of the clip
+          ...tlKeys.tailKeys(c),                  // 2.572.0: ✨ Auto transition - held under the next clip
           role: clipFx.role(L.role, "voice"),     // 2.406.0: the layer's sound in the mix
         })),
       })).filter((L) => L.clips.length),

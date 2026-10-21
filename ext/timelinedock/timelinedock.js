@@ -128,7 +128,8 @@ function exportBody(X, o) {
       video: (X.video || []).map(c => ({ name: c.name, src: c.src || "output", in: c.in, out: c.out < (c.dur || 1e9) - 0.05 ? c.out : null, opacity: c.opacity ?? 1, start: c.start || 0,
                                   dur: c.dur, fx: c.fx || undefined, split: c.split || undefined,   // 2.407.0: J / L cut
                                   ak: tlAnyKeys(c),                                     // 2.516.0: ◇ keyed colour / effect settings
-                                  soundOut: c.soundOut || undefined })),   // 2.414.0: its sound taken out (🔗, 2.412)
+                                  soundOut: c.soundOut || undefined,   // 2.414.0: its sound taken out (🔗, 2.412)
+                                  tail: c.tail > 0 ? c.tail : undefined })),   // 2.572.0: ✨ Auto transition - held under the next clip
       video_role: V1.role || "voice",                                   // 2.406.0: the mix (🎚 ducking)
       mix: X.mix || undefined,                                           // 2.406.0: ducking + loudness
       captions: X.captions && X.captions.visible !== false ? X.captions : undefined,   // 2.406.0: 💬 captions
@@ -159,7 +160,7 @@ function exportBody(X, o) {
                              out: c.out < (c.dur || 1e9) - 0.05 ? c.out : null,
                              opacity: c.opacity ?? 1, start: c.start || 0, ...tlTfKf(c), mbake: c.mbake && c.masks && c.masks.length ? c.mbake : undefined, cut: c.cut && c.cut.use === true && c.cut.file ? { file: c.cut.file, from: c.cut.from, to: c.cut.to, use: true } : undefined, pin: window.TlTrack && TlTrack.workerPin ? TlTrack.workerPin(c) : undefined, tm: window.TlTime && TlTime.clean ? TlTime.clean(c.tm) || undefined : undefined, dbake: c.dbake && window.TlDist && TlDist.live(c) ? c.dbake : undefined, vbake: c.vbake && window.TlVBake && TlVBake.needs(c) ? c.vbake : undefined,   // 2.498.0: ✒ its mask video; 2.499.0: ▢ its corner pin   // 2.495.0: a clip following a parent: its world keys
                              dur: c.dur, fx: c.fx || undefined, ak: tlAnyKeys(c),   // 2.516.0: ◇ keyed colour / effect settings
-                             split: c.split || undefined, soundOut: c.soundOut || undefined, ...tlLayerKeys(X, L) })),   // 2.491.0: blend + matte   // 2.414.0: J / L + 🔗 on V2+ (2.412) reach the compile
+                             split: c.split || undefined, soundOut: c.soundOut || undefined, tail: c.tail > 0 ? c.tail : undefined, ...tlLayerKeys(X, L) })),   // 2.572.0: tail = ✨ Auto transition   // 2.491.0: blend + matte   // 2.414.0: J / L + 🔗 on V2+ (2.412) reach the compile
         role: L.role || "voice",                                          // 2.406.0
       })),
       // audio/image tracks carry their layer's transitions, so they are sent

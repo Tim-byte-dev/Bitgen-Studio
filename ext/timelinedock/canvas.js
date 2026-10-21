@@ -189,14 +189,21 @@
     }, 80);
   }
   function clipEnd(c, kind) { return (c.start || 0) + (kind === "img" ? imgLen(c) : effDur(c)); }
-  function at(c, kind, t) { return t >= (c.start || 0) - 1e-6 && t < clipEnd(c, kind) - 1e-6; }
+  // 2.572.0: ✨ Auto transition - a clip with a tail stays on (its frames past its out point, else its last one) under the next
+  function tailOf(c, kind) { return kind !== "img" && c && +c.tail > 0 ? +c.tail : 0; }
+  function at(c, kind, t) { return t >= (c.start || 0) - 1e-6 && t < clipEnd(c, kind) + tailOf(c, kind) - 1e-6; }
   /* 2.406.0: a clip's 🎬 speed / reverse / ramp (static/clipfx.js - the compile's own segments). srcAt = the source
      second shown at timeline second t; a constant forward speed PLAYS at that rate, a reversed or ramped clip is
      SEEK-driven (paused, the frame chosen every paint) - browsers cannot play backwards */
   function FXm() { return window.H3ClipFx || null; }
   function retimed(c) { var F = FXm(); return !!(F && c && c.fx && F.retimed(c.fx)); }
   function srcAt(c, t) {
-    if (!retimed(c)) return (c.in || 0) + (t - (c.start || 0));
+    if (!retimed(c)) {
+      var s0 = (c.in || 0) + (t - (c.start || 0));
+      // 2.572.0: ✨ a transition tail past the file's end = its last frame (never a seek past the end - the frame would drop)
+      if (+c.tail > 0 && +c.dur > 0 && s0 > +c.dur - 1 / FPS) s0 = Math.max(c.in || 0, +c.dur - 1 / FPS);
+      return s0;
+    }
     return FXm().srcTime(Object.assign({}, c, { out: c.out != null ? c.out : c.dur }), t - (c.start || 0));
   }
   /** 2.515.0: the video element's own time for timeline time t (a cut-out's file starts later in the source) */

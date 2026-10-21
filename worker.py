@@ -63,6 +63,7 @@ except Exception as _e2:           # noqa: BLE001 - fall back to the base track
 # 2.406.0: a clip's speed / reverse / ramp, grade + LUT and sound clean-up (rendered once before the compile), the mix's
 # roles + ducking + loudness, and the caption track - each in its own module under scripts/
 import clipfx_render as _cfx      # noqa: E402
+import cliptail as _ctail          # noqa: E402  2.572.0: ✨ Auto transition - a clip held under the next one
 import mixfx as _mixfx            # noqa: E402
 import captions_ass as _caps      # noqa: E402
 import deliver as _dl             # noqa: E402
@@ -4918,6 +4919,14 @@ def main() -> None:
             fail(str(e))
         if _nfx:
             say(f"[worker] {_nfx} clip(s) rendered with their speed / colour / sound fx")
+        # 2.572.0: ✨ Auto transition - a clip with a tail stays under the next one for its transition (nothing moves)
+        try:
+            _ntl = _ctail.prepare(tl, Path.cwd(), say, run)
+        except Exception as e:                      # noqa: BLE001
+            _ntl = 0
+            say(f"[worker] transition tails skipped: {e}")
+        if _ntl:
+            say(f"[worker] {_ntl} clip(s) held under the next one for its transition")
         vids = tl["video"]
         caps = tl.get("captions") or {}
         caps_on = bool(caps.get("burn") and _caps.cues(caps))

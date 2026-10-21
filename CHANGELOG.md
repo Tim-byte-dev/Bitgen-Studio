@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.572.0** — ✨ Auto Transition (Nothing Moves - Lip Sync Safe), 🔇 Video Sound
 - **2.571.0** — Multi-Select in Gallery / Assets / References, Drag Them All Onto the Timeline; ⛓ Sequential
 - **2.570.0** — 🖊 Pen Tablet: Pressure Curve, Levels, Tilt, Eraser End, Side Button, Pen Brushes
 - **2.569.0** — 🔲 Zones in the Image Editor (One Box at a Time / Edit Model / Regional Prompt)

@@ -12275,6 +12275,14 @@ node scripts/test-multisel571.js > /tmp/ms571.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui571-ui.js > /tmp/ui571.log 2>&1 \
   && ok "2.571.0 browser test: three dated videos in a project's gallery - Ctrl / Shift / Ctrl-click; dragged (a real DataTransfer) onto the tracks: oldest in V1, then V2, V3 one after the other; ⛓ Sequential from 0, a delete closes up, a layer put in makes room, a trim follows; Assets (Ctrl) onto the preview at the playhead; two reference pictures uploaded and laid down; a plain drag stays single - or SKIP without playwright" \
   || { bad "2.571.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui571.log | head -14; }
+
+# ---- 2.572.0 (✨ Auto transition - nothing moves, the clip before held under the next one; 🔇 Video sound)
+node scripts/test-autotr572.js > /tmp/at572.log 2>&1 && python3 scripts/test-autotr572.py > /tmp/at572p.log 2>&1 \
+  && ok "2.572.0 units (cuts across layers, planTr - tail + In (Out when the next layer is under), half the next clip at most; tailKeys; cliptail plan / filters + a real tail render - own frames, then the last frame held, the start unchanged; the wiring)" \
+  || { bad "2.572.0 units"; grep -a "^FAIL" -A2 /tmp/at572.log /tmp/at572p.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui572-ui.js > /tmp/ui572.log 2>&1 \
+  && ok "2.572.0 browser test + a real compile: red V1 2 s, blue V2 from 2 s; ✨ 12 frames = a 0.5 s tail + a 0.5 s dissolve, nothing moved; the preview mixes both at 2.25 s; the compile is red to 2 s, blended, blue after - still 4 s; 🔇 mutes every video layer and back; a clip added later gets its tail, the user's wipe stays; off takes it all away - or SKIP without playwright" \
+  || { bad "2.572.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui572.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
