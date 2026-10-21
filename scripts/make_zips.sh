@@ -45,6 +45,7 @@ FILES=$(find . -type f \
   ! -name "custom.settings.bak" ! -name "default.settings.broken" \
   ! -name "dockers.json" ! -name "dockers.json.tmp" ! -name "docker_status.json" ! -name "docker_status.json.tmp" \
   ! -name "workspaces.json" ! -name "workspaces.json.tmp" \
+  ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
 # default.settings SHIPS (it is the authored default layer); custom.settings
 # never does — it is this machine's diff from the defaults (2.99.0).

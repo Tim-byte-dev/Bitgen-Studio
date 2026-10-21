@@ -287,7 +287,7 @@
     if (S.folder && !seen[S.folder]) S.folder = "";
     box.innerHTML = tabs.length ? '<button class="ghost' + (S.folder ? "" : " on") + '" data-mmfold="" type="button">All<i>' + list.length + "</i></button>"
       + tabs.map(function (t) { return '<button class="ghost' + (S.folder === t.id ? " on" : "") + '" data-mmfold="' + esc(t.id) + '" type="button" title="the ' + esc(t.label) + ' folder">' + esc(t.label) + "<i>" + t.n + "</i></button>"; }).join("") : "";
-    box.querySelectorAll("[data-mmfold]").forEach(function (b) { b.onclick = function () { S.folder = b.dataset.mmfold; S.page = 0; lsSet(); paint(); }; });
+    box.querySelectorAll("[data-mmfold]").forEach(function (b) { b.onclick = function () { S.folder = b.dataset.mmfold; S.page = 0; lsSet(); if (window.H3FolderMem) window.H3FolderMem.set("mm:" + S.tab, S.folder || null); paint(); }; });   // 2.559.0: kept per tab
   }
   function paintPager(pg, n) {
     var box = $("mmPager"); if (!box) return;
@@ -736,7 +736,7 @@
     return body;
   }
   function wire(body) {
-    body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); }; });
+    body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = (window.H3FolderMem && window.H3FolderMem.get("mm:" + S.tab)) || ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); }; });
     $("mmRescan").onclick = function () { load(true); if (S.tab === "used") loadUsed(); };
     $("mmFetch").onclick = function (e) { startFetch(e.shiftKey); };
     $("mmSync").onclick = function (e) { startSync(e.shiftKey); };

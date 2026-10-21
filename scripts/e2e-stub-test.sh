@@ -12168,6 +12168,22 @@ node scripts/test-dockgroup558.js > /tmp/d558.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui558-ui.js > /tmp/ui558.log 2>&1 \
   && ok "2.558.0 browser test: the ▣ docker at z 45 (48 when clicked), outlined while References is dragged in by its title, its column closed + a stand-in, ⇲ back in its own place - or SKIP without playwright" \
   || { bad "2.558.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui558.log | head -14; }
+
+# ---- 2.559.0 (folder filters remember their folder; Basic Settings in basic.cfg)
+node scripts/test-basiccfg559.js > /tmp/b559.log 2>&1 \
+  && ok "2.559.0 units (pick, keepable / valueOf / same, basic.cfg + folder_filters.cfg via lib/layoutCfg.js, the combo / 📁 browser / character LoRA / Model manager keys, the file over the browser copy, zips + git ignore them)" \
+  || { bad "2.559.0 units"; grep -a "^FAIL" -A2 /tmp/b559.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui559-ui.js > /tmp/ui559.log 2>&1 \
+  && ok "2.559.0 browser test: a model combo's folder kept in folder_filters.cfg and back after a rebuild + a reload (a stale browser copy loses to the file), the 📁 browser's too; basic.cfg written at the start, a Steps change saved, the file read back after a reload - or SKIP without playwright" \
+  || { bad "2.559.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui559.log | head -14; }
+
+# ---- 2.560.0 (the ▣ docker docks by drop zones; Basic Settings / LLM tokens / the prompt docker go in it)
+node scripts/test-dgdock560.js > /tmp/d560.log 2>&1 \
+  && ok "2.560.0 units (memberIdOf, wants, pickZone - edges only, side dockers top / bottom -, nearEdge, makePerm(place) measured before the window moves, unPerm / remove leave the row, the bubbling title-bar drag, members in / out / back, dockfloat skips the tab zone on a ▣ docker)" \
+  || { bad "2.560.0 units"; grep -a "^FAIL" -A2 /tmp/d560.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui560-ui.js > /tmp/ui560.log 2>&1 \
+  && ok "2.560.0 browser test: a ▣ docker docked above Preview by its title bar (the blue zone), Basic Settings and the prompt docker dragged in, all back after a reload, Basic Settings out by its small title bar, the ▣ docker torn out and docked beside Preview, 🗑 leaves the column whole - or SKIP without playwright" \
+  || { bad "2.560.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui560.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

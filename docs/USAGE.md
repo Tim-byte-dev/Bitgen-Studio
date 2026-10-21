@@ -5738,6 +5738,23 @@ orange line shows where it will go - and let go.
   not their ▾ / 📌) and the **StoryBoard** are dragged in by their title bar like the others. A side docker's column closes
   while it is in a ▣ docker, and **⇲** puts it back in its own place with its column open again. (The prompt docker,
   Basic Settings and LLM tokens dock with their own drop zones and do not go into a ▣ docker yet.)
+- 2.559.0: every **folder filter** remembers the folder you picked until you pick another - the ComfyUI model dropdowns'
+  folder filter (Settings, Basic Settings, the LoRA rows - each dropdown its own), the 📁 model browser, the character
+  dialogs' LoRA folder and the Model manager's folder tabs (each tab its own). Kept in **folder_filters.cfg** in the
+  install folder, so they survive closing and restarting the app.
+- 2.559.0: **Basic Settings are kept in basic.cfg** in the install folder: every change (by hand, or by a style or a project)
+  is written to it a moment later, and the app reads it back when it starts (after the open project's own settings), so you
+  start with the Basic Settings you last had. The style card's model dropdowns are not in it (they save into the style).
+  To start Basic Settings from scratch, close the app and delete basic.cfg.
+- 2.560.0: a ▣ docker **docks like the other dockers**: drag a floating ▣ docker by its title bar near the edge of a docker
+  - the same blue drop zone as Basic Settings shows ("Dock Docker above Preview") - and let go: it docks above / below a
+  docker, left / right of it (side by side), or at the top / bottom of a side docker (Settings, References, Assets, Queue,
+  Gallery). Its edge sizes it; drag its title bar away and it floats again (and can be dropped on another edge at once).
+  Where it is docked comes back at the next start.
+- 2.560.0: **Basic Settings, LLM tokens and the prompt docker go into a ▣ docker**: drag them by their title bar over a ▣
+  docker (floating or docked) - it is outlined and an orange line shows where they go - and let go. Drag their small title
+  bar (or their tab) out of the ▣ docker, or press ⇲, and they float on their own again. They come back in their ▣ docker
+  at the next start. (Near a docked ▣ docker's edge they dock beside it instead, as before.)
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

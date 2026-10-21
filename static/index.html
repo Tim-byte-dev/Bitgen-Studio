@@ -3289,7 +3289,10 @@
 <script src="/static/dlglayout.js"></script>  <!-- 2.438.0: dialogs in the middle of the screen / where they were left (dialog_layout.cfg) -->
 <script src="/static/floatpanels.js"></script>  <!-- 2.438.0: floating + named dockers (H3Panels, panel_layout.cfg) -->
 <script src="/static/dockgroup.js"></script>
+<script src="/static/dgdock.js"></script>  <!-- 2.560.0: the ▣ docker docks (drop zones); Basic Settings / LLM tokens / the prompt docker go in it -->
 <script src="/static/stylerestore.js"></script>
+<script src="/static/folderfilter.js"></script>  <!-- 2.559.0: every folder filter dropdown keeps its folder (folder_filters.cfg) -->
+<script src="/static/basiccfg.js"></script>  <!-- 2.559.0: Basic Settings kept in basic.cfg -->
 <script src="/static/refkeep.js"></script>  <!-- 2.548.0: the reference docker kept as it changes (POST /api/projects/refs) -->  <!-- 2.547.0: ↺ Built-in styles back (Settings ▸ Image / Video styles) -->  <!-- 2.545.0: ▣ Docker (Ctrl+Alt+D) - an empty docker the others drop into; ⇱ on the main dockers -->
 <script src="/static/tlai.js"></script>  <!-- 2.420.0: 🤖 AI in the timeline maths (H3TlAi) -->
 <script src="/static/glcomp.js"></script>  <!-- 2.421.0: the GPU compositor (H3GLComp) -->
@@ -6962,8 +6965,12 @@ function cmCombo(host, inp, cats, opts) {
   wrap.append(fsel, sel, btn);
   host.appendChild(wrap);
 
+  // 2.559.0 (Tim: "when user selects a folder to filter remember the folder selection until changed for all folder
+  // select dropdowns"): each combo's folder is kept (static/folderfilter.js, folder_filters.cfg) - its key is its field
+  const fkey = "cm:" + (inp.id || host.id || "") + ":" + cats.join(",");
   const paintFolders = () => {
-    const keep = fsel.value;
+    const FM = window.H3FolderMem, mem = FM && !fsel.dataset.picked ? FM.get(fkey) : null;
+    const keep = mem != null ? mem : fsel.value;
     fsel.innerHTML = `<option value="${CM_ALL}">All folders</option>`
       + cmFolderOptions(cats).map(f =>
           `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join("");
@@ -6998,8 +7005,9 @@ function cmCombo(host, inp, cats, opts) {
     sel.value = cur;
   };
   paintFolders(); paintFiles();
+  if (window.H3FolderMem) window.H3FolderMem.onReady(() => { if (!fsel.dataset.picked) { paintFolders(); paintFiles(); } });
 
-  fsel.onchange = paintFiles;
+  fsel.onchange = () => { fsel.dataset.picked = "1"; if (window.H3FolderMem) window.H3FolderMem.set(fkey, fsel.value === CM_ALL ? null : fsel.value); paintFiles(); };
   // 2.305.0: a combo outside the Image style editor says so with onChange,
   // so picking a ControlNet does not mark the image style unsaved
   const dirty = typeof o.onChange === "function" ? o.onChange : () => { styleDirty = true; };
@@ -7030,7 +7038,9 @@ function cmBrowse(cats, current, onPick, title) {
   const opts = cmFolderOptions(cats);
   $("cm_folder").innerHTML = `<option value="${CM_ALL}">All folders</option>`
     + opts.map(f => `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join("");
-  $("cm_folder").value = CM_ALL;
+  // 2.559.0: the browser's folder filter is kept too (one per kind of model)
+  const fm = window.H3FolderMem ? window.H3FolderMem.get("cmbrowse:" + cats.join(",")) : null;
+  $("cm_folder").value = fm != null && opts.some(f => f.value === fm) ? fm : CM_ALL;
   if ($("cm_folder").selectedIndex < 0) $("cm_folder").selectedIndex = 0;
   cmPaintList(current);
   if (!$("cmdlg").open) $("cmdlg").showModal();
@@ -7063,7 +7073,10 @@ function cmPaintList(current) {
   }
 }
 $("cm_find").addEventListener("input", () => cmPaintList(null));
-$("cm_folder").addEventListener("change", () => cmPaintList(null));
+$("cm_folder").addEventListener("change", () => {
+  if (window.H3FolderMem && cmPick) window.H3FolderMem.set("cmbrowse:" + cmPick.cats.join(","), $("cm_folder").value === CM_ALL ? null : $("cm_folder").value);   // 2.559.0
+  cmPaintList(null);
+});
 $("pf_close") && ($("pf_close").onclick = () => $("pfdlg").close());
 $("pf_copy") && ($("pf_copy").onclick = async () => {
   const t = $("pf_body").textContent;

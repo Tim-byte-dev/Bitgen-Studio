@@ -1,5 +1,5 @@
 // bitGen Studio — routes/layout.js (2.438.0): window positions (lib/layoutCfg.js). Mounted from routes/index.js.
-//   GET  /api/layout/:name          the object (name = dialog | panel)
+//   GET  /api/layout/:name          the object (name = dialog | panel | basic | folders - 2.559.0)
 //   POST /api/layout/:name          {set: {key: value | null}} merged, or {all: {...}} replaced -> the object
 "use strict";
 const store = require("../lib/layoutCfg");

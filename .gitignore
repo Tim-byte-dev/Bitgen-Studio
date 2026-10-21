@@ -92,3 +92,6 @@ workspaces.json
 workspaces.json.tmp
 model_info/
 model_folders.json
+# 2.559.0: Basic Settings and the folder filters' folders - this machine's choices (lib/layoutCfg.js)
+basic.cfg
+folder_filters.cfg

@@ -626,6 +626,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **References in every ✨ mode** — "picture N" in the prompt brings the References docker's picture to Edit, Generate, Fill, Remove, Refine (through the edit model); "ref N" in Compose. *Where:* the image editor's ✨ AI panel, the prompt docker. *Since:* 2.556.0
 - **AI fill models add-on** — the node pack + the Fooocus / MAT / inpainting ControlNet files for the Krita-way fill, ticked and downloaded from Settings ▸ Add-ons. *Where:* Settings ▸ Add-ons ▸ AI fill models. *Since:* 2.557.0
 - **▣ dockers take every docker** — in the floating band with the other floating dockers (not on top of all), outlined while a docker is dragged; Settings, References, Assets, Queue, Gallery and the StoryBoard drag in by their title bar. *Where:* the statusbar's ▣ Docker (Ctrl+Alt+D). *Since:* 2.558.0
+- **Folder filters remember their folder; Basic Settings in basic.cfg** — each folder filter dropdown keeps the folder you picked (folder_filters.cfg); Basic Settings are saved to basic.cfg when changed and read back at the start. *Where:* any model dropdown's folder filter, the 📁 browser, the Model manager; Basic Settings. *Since:* 2.559.0
+- **▣ dockers dock, and every docker goes in** — a floating ▣ docker dragged by its title bar docks above / below / beside a docker or in a side docker (the blue drop zones); Basic Settings, LLM tokens and the prompt docker drop into a ▣ docker and float out again. *Where:* the statusbar's ▣ Docker (Ctrl+Alt+D). *Since:* 2.560.0
 
 ### Selections
 

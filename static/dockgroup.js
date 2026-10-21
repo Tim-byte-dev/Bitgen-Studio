@@ -23,6 +23,10 @@
  *   everything; while a docker is dragged the ▣ dockers are outlined; the StoryBoard and the side dockers (Settings,
  *   References, Assets, Queue, Gallery) can be dragged in too (their column closes while they are out, a stand-in keeps the
  *   grid in order, ⇲ brings them back).
+ *   2.560.0 (Tim: "the new docker is now at the right z level but won't dock and won't allow other dockers to doc in it"):
+ *   static/dgdock.js - a floating ▣ docker dragged by its title bar docks above / below / beside a docker or in a side
+ *   docker (the drop zones Basic Settings has); makePerm(id, restoring, place) puts it there (place {to, side}), its
+ *   title bar dragged out floats it again; Basic Settings, LLM tokens and the prompt docker go IN a ▣ docker.
  * Pure (Node: scripts/test-dockgroup545.js, test-dockgroup549.js, test-dockgroup558.js): isToggleKey, titleOf, CANDIDATES,
  *   SIDE, Z, GROUP, isGroup, btnIdFor, nextGroupId, dragged. */
 (function (root) {
@@ -169,6 +173,7 @@
       if (!(await ask(`Delete the docker "${r.title}"? The dockers in it go back where they came from; its statusbar button goes too.`, "Delete docker"))) return false;
     }
     const d = $(permId(id));
+    if (d && d._dfPanel) d._dfPanel.unplace();                             // 2.560.0: docked beside a docker - the row goes
     if (r.perm && r.win && r.win.parentNode !== doc.body) doc.body.appendChild(r.win);
     p.remove(id);
     if (d) { const s = d.nextElementSibling; d.remove(); if (s && s.classList.contains("dgp-grip")) s.remove(); }
@@ -179,19 +184,21 @@
   }
 
   /* ---- 📌 Make permanent: a regular docker in the main column */
-  function makePerm(id, restoring) {
+  function makePerm(id, restoring, place) {
     const p = P(), r = p && p.get(id), main = $("maincol"); if (!r || !main || !r.win) return null;
     css();
     if (r.state === "in" && r.docker) p.float(id);                      // out of another docker first
-    let d = $(permId(id));
+    // 2.560.0: docked by its drop zones (static/dgdock.js) - above / below / beside a docker, in a side docker
+    const DD = root.H3DGDock;
+    const dock = DD ? (place || (restoring && r.perm && DD.wants(r.perm.dock) ? r.perm.dock : null)) : null;
+    // 2.550.0: where the window was - before the main docker under its middle (appended at the bottom it could sit below
+    // the room the column has, out of sight); restored = where it was kept (measured now: the window moves next)
+    const before = placeFor(r, main, restoring && r.perm && r.perm.before);
+    let d = $(permId(id)), grip = null;
     if (!d) {
       d = doc.createElement("div"); d.className = "bdock dgperm"; d.id = permId(id); d.dataset.dg = id;
       d.innerHTML = '<div class="bhead"></div><div class="bbody"></div>';
-      const grip = doc.createElement("div"); grip.className = "dgp-grip"; grip.title = "Drag to set its height";
-      // 2.550.0: where the window was - before the main docker under its middle (appended at the bottom it could sit
-      // below the room the column has, out of sight); restored = where it was kept
-      const before = placeFor(r, main, restoring && r.perm && r.perm.before);
-      main.insertBefore(d, before); main.insertBefore(grip, before);
+      grip = doc.createElement("div"); grip.className = "dgp-grip"; grip.title = "Drag to set its height";
       const head = d.querySelector(".bhead");
       head.dataset.collapse = d.id;
       head.appendChild(doc.createTextNode("▾ " + r.title));
@@ -203,15 +210,27 @@
       head.onclick = (e) => { if (e.target.closest("button, select, input")) return; if (typeof root.toggleCollapse === "function") { root.toggleCollapse(d.id); p.setPerm(id, { collapsed: d.classList.contains("collapsed") }); } };
       head.ondblclick = (e) => { if (e.target.closest("button")) return; p.rename(id).then(() => paint()); };
       head.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation(); menu(id, e.clientX, e.clientY); };   // 2.550.0
-      gripDrag(grip, d, id);
+      if (DD) DD.headOut(head, id);                                     // 2.560.0: its title bar dragged = it floats again
       try { if (root.H3GoneDocks) root.H3GoneDocks[btnIdFor(id)] = d.id; } catch (e) { /* fine */ }
     }
     d.querySelector(".bbody").appendChild(r.win);
     r.win.classList.add("dg-perm"); r.win.classList.remove("off");
     const keep = restoring && r.perm ? r.perm : {};
     p.setPerm(id, { h: keep.h > 80 ? keep.h : r.perm && r.perm.h > 80 ? r.perm.h : 320, hidden: !!keep.hidden, collapsed: !!keep.collapsed });
-    d.style.height = ""; d.style.flex = "1 1 " + r.perm.h + "px";   // 2.550.0: takes room but gives way when the column is full
-    p.setPerm(id, { before: (() => { const n = d.nextElementSibling && d.nextElementSibling.nextElementSibling; return n && n.id ? n.id : ""; })() });
+    if (dock && DD.place(id, d, dock, !!restoring && !place)) {
+      // docked where its drop zone said (its size: its own edge - static/dockfloat.js grips)
+    } else {
+      if (!d.parentNode || d.classList.contains("dg-docked")) {
+        if (d._dfPanel) d._dfPanel.unplace();
+        d.classList.remove("dg-docked");
+        if (!place && !restoring) p.setPerm(id, { dock: null });            // (restoring: its docker may come later - dgdock retries)
+        if (!grip) { grip = doc.createElement("div"); grip.className = "dgp-grip"; grip.title = "Drag to set its height"; }
+        main.insertBefore(d, before); main.insertBefore(grip, before);
+        gripDrag(grip, d, id);
+      }
+      d.style.height = ""; d.style.flex = "1 1 " + r.perm.h + "px";   // 2.550.0: takes room but gives way when the column is full
+      p.setPerm(id, { before: (() => { const n = d.nextElementSibling && d.nextElementSibling.nextElementSibling; return n && n.id ? n.id : ""; })() });
+    }
     d.classList.toggle("dockgone", !!r.perm.hidden);
     d.classList.toggle("collapsed", !!r.perm.collapsed);
     paint(); paintPerm(r);
@@ -233,13 +252,15 @@
     if (t && t.textContent !== want) t.textContent = want;
     else if (!t) head.insertBefore(doc.createTextNode(want), head.firstChild);
   }
-  function unPerm(id) {
+  /** at = {x, y, w, h} where it floats (2.560.0: dragged out by its title bar - under the pointer) */
+  function unPerm(id, at) {
     const p = P(), r = p && p.get(id); if (!r) return;
     const d = $(permId(id)), b = d ? d.getBoundingClientRect() : null;
     if (d && d.classList.contains("maxed") && typeof root.toggleMax === "function") root.toggleMax(d.id, false);
+    if (d && d._dfPanel) d._dfPanel.unplace();                             // 2.560.0: docked beside a docker - the row goes
     r.win.classList.remove("dg-perm"); doc.body.appendChild(r.win);
     p.setPerm(id, false);
-    p.float(id, b && b.width > 100 ? { x: b.left + 20, y: Math.max(50, b.top - 40), w: Math.min(b.width, root.innerWidth - 60), h: Math.max(260, b.height) } : null);
+    p.float(id, at || (b && b.width > 100 ? { x: b.left + 20, y: Math.max(50, b.top - 40), w: Math.min(b.width, root.innerWidth - 60), h: Math.max(260, b.height) } : null));
     if (d) { const s = d.nextElementSibling; d.remove(); if (s && s.classList.contains("dgp-grip")) s.remove(); }
     try { if (root.H3GoneDocks) delete root.H3GoneDocks[btnIdFor(id)]; } catch (e) { /* fine */ }
     paint(); try { root.dispatchEvent(new root.Event("resize")); } catch (e) { /* fine */ }
@@ -404,6 +425,6 @@
     adoptAll();
     root.setInterval(() => { try { watch(); paint(); markApp(); } catch (e) { /* fine */ } }, 1000);
   }
-  root.H3DockGroup = Object.assign(API, { menu, toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock, markApp });
+  root.H3DockGroup = Object.assign(API, { menu, toggle, shown, adoptDock, makePerm, unPerm, remove, groups: () => groups().map((r) => r.id), floatDock, markApp, permId, groupAt, paint });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

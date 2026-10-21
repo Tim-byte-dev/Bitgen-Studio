@@ -2016,7 +2016,9 @@
   function loraPaint(folderSel, fileSel) {
     var fo = el(folderSel), fi = el(fileSel);
     if (!fo || !fi) return;
-    var keep = fo.value || "*";
+    // 2.559.0: the folder picked last is kept (static/folderfilter.js) until it is changed
+    var FM = window.H3FolderMem, fkey = "lora:" + folderSel, mem = FM && !fo.dataset.picked ? FM.get(fkey) : null;
+    var keep = mem != null ? mem : (fo.value || "*");
     fo.innerHTML = "";
     var all = document.createElement("option");
     all.value = "*"; all.textContent = "all folders";
@@ -2209,6 +2211,7 @@
       });
     }
     ecEl("ecLoraFolder").addEventListener("change", function () {
+      var f0 = ecEl("ecLoraFolder"); f0.dataset.picked = "1"; if (window.H3FolderMem) window.H3FolderMem.set("lora:ecLoraFolder", f0.value === "*" ? null : f0.value);   // 2.559.0
       loraPaint("ecLoraFolder", "ecLoraSel");
     });
     ecEl("ecLoraAdd").addEventListener("click", function () {
@@ -3289,6 +3292,7 @@
       ccLoraPaint();
     });
     el("ccLoraFolder").addEventListener("change", function () {
+      var f0 = el("ccLoraFolder"); f0.dataset.picked = "1"; if (window.H3FolderMem) window.H3FolderMem.set("lora:ccLoraFolder", f0.value === "*" ? null : f0.value);   // 2.559.0
       loraPaint("ccLoraFolder", "ccLoraSel");
     });
     function ccStripPaint() {

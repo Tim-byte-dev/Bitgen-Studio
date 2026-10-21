@@ -328,7 +328,8 @@
       if (!t || t === el || el.contains(t) || t.classList.contains("dockgone")) return;
       const r = t.getBoundingClientRect(); if (r.width < 60 || r.height < 24) return;
       // its title bar (+ its tab strip): a panel dropped there goes INSIDE it, as a tab
-      const hd = headerOf(t), strip = t.querySelector(":scope > .dftabs");
+      // 2.560.0: a docked ▣ docker (.dgperm) takes the panels INTO itself (static/dgdock.js), not as a tab over it
+      const hd = t.classList.contains("dgperm") ? null : headerOf(t), strip = t.querySelector(":scope > .dftabs");
       const hr = hd ? hd.getBoundingClientRect() : null, sr = strip ? strip.getBoundingClientRect() : null;
       const head = hr ? { l: r.left, t: hr.top, r: r.right, b: Math.max(hr.bottom, sr ? sr.bottom : 0) } : null;
       out.push({ el: t, kind, l: r.left, t: r.top, r: r.right, b: r.bottom, head });
