@@ -417,7 +417,39 @@
     return ed;
   }
 
+  /* 2.573.0 (Tim: "add an input to the audio clip menu in storyboard to set
+     the cut duration"): the auto-cut on ANY grid, not only 15 s.
+     gridSpan(len, per) -> the durations that cut `len` seconds every `per`
+     seconds; a tail under the 1 s floor joins the segment before it.
+     regrid(S, per) -> a NEW map: every LOCKED segment stays exactly where it
+     is (the lock means the lock), and each run of open segments between the
+     locks is cut again on the grid from its own start. */
+  function gridSpan(len, per) {
+    per = +per;
+    if (!(len > 0)) return [];
+    if (!(per >= 1)) per = 15;
+    var out = [], t = 0;
+    while (len - t > per + 1e-6) { out.push(per); t += per; }
+    var rest = Math.round((len - t) * 1000) / 1000;
+    if (rest < 1 && out.length) out[out.length - 1] = Math.round((out[out.length - 1] + rest) * 1000) / 1000;
+    else out.push(rest);
+    return out;
+  }
+  function regrid(S, per) {
+    if (!S || !(S.total > 0)) return null;
+    var ds = [], man = [], open = 0, i;
+    var flush = function () { if (open > 0) gridSpan(open, per).forEach(function (d) { ds.push(d); man.push(false); }); open = 0; };
+    for (i = 0; i < S.durations.length; i++) {
+      if (S.manual && S.manual[i]) { flush(); ds.push(S.durations[i]); man.push(true); }
+      else open += S.durations[i];
+    }
+    flush();
+    if (!ds.length) { ds = gridSpan(S.total, per); man = ds.map(function () { return false; }); }
+    return from({ song: S.song, total: S.total, durations: ds, manual: man, file: S.file });
+  }
+
   var API = { from: from, recalc: recalc, windows: windows, segAt: segAt,
+              gridSpan: gridSpan, regrid: regrid,
               lineAt: lineAt, lineRefusal: lineRefusal, moveLine: moveLine,
               moveBody: moveBody, setManual: setManual, View: View,
               drawPeaks: drawPeaks, drawOverlay: drawOverlay,

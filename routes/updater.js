@@ -4,13 +4,24 @@
 //   POST /api/update/check           {current, latest, newer, behind, ahead, commits[], error}
 //   POST /api/update/start           -> {ok} | 409 {error}   (one at a time)
 //   GET  /api/update/job?from=N      {job: {state, from, to, restart, error}, lines[], next}
+//   GET/POST /api/update/settings    {auto_check} - 2.573.0: the check on startup (bitGen Studio + ComfyUI), on by default
 "use strict";
 const U = require("../lib/updater");
+const core = require("../lib/core");
 
 function mount(app) {
   app.get("/api/update/info", (_req, res) => res.json(U.info()));
   app.post("/api/update/check", async (_req, res) => {
     try { res.json(await U.check()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
+  });
+  // 2.573.0 (Tim: "do an autocheck on startup for latest version of bitgen and comfyui"): its on/off switch
+  app.get("/api/update/settings", (_req, res) => res.json({ auto_check: ((core.getConfig() || {}).update || {}).auto_check !== false }));
+  app.post("/api/update/settings", (req, res) => {
+    const b = req.body || {};
+    const c = core.getConfig();
+    c.update = Object.assign({}, c.update || {}, { auto_check: b.auto_check !== false });
+    core.setConfig(c);
+    res.json({ ok: true, auto_check: c.update.auto_check });
   });
   app.post("/api/update/start", (_req, res) => {
     const r = U.start();

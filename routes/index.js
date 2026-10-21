@@ -191,6 +191,7 @@ function mount(app) {
   require("./modelMgr").mount(app);     // 2.518.0: the 🧩 Model manager's cards + ✚ New style (lib/modelCards.js)
   require("./civitai").mount(app);      // 2.518.0: Civitai search / download into ComfyUI's folders (lib/civitai.js)
   require("./updater").mount(app);      // 2.540.5: ⟳ Update bitGen Studio from GitHub (lib/updater.js)
+  require("./comfyUpdate").mount(app);  // 2.573.0: ⤓ Update ComfyUI (lib/comfyUpdate.js)
   require("./addons").mount(app);       // 2.540.4: Settings ▸ Add-ons - optional engines (YuE2, Viggle native) installed in the app (lib/addons.js)
   require("./realRefs").mount(app);     // 2.540.0: Blender / Unreal renders made real with the reference docker's pictures (lib/realRefs.js)
   require("./modelFolders").mount(app); // 2.538.0: model_folders.json - where each model type's downloads go (lib/modelFolders.js)

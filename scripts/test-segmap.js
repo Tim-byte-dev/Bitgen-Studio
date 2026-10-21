@@ -329,7 +329,7 @@ const tick = (ms) => new Promise((r) => setTimeout(r, ms || 30));
     d && d.btnInBar === true && d.hidden0 === true, d);
   check("2.289.0 LIVE jsdom: a picked song uploads (/api/stems/upload), the strip opens with its waveform and the AUTO segment map (15 s grid: 15/15/10), said in words",
     d && d.uploaded && d.shown && d.name === "My Song.wav" && J(d.segs) === "[15,15,10]"
-    && d.peaks && /3 segment\(s\) auto-cut on the 15-second grid/.test(d.msg0), d);
+    && d.peaks && /3 segment\(s\) auto-cut every 15 s/.test(d.msg0), d);
   check("2.289.0 LIVE jsdom: ...and the loaded song becomes the board's song (POST /api/scenes/audio), shown in the Audio picker, the board told to repaint",
     d && d.boardSong === "My Song.wav" && d.option === "My Song.wav" && d.changed0 >= 1, d);
   check("2.289.0 LIVE jsdom: dragging a red line moves the cut (15 s -> 20 s) and says the map is unsaved",

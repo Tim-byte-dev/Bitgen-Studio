@@ -96,9 +96,12 @@
           + (res[1] && res[1].error ? " - " + res[1].error : ""));
         return;
       }
+      // 2.573.0: no .seg yet -> the auto-cut follows the ✂ cut input
+      var per = cutSecs();
+      if (!res[1].file && Math.abs(per - 15) > 1e-6) S = window.SegMap.regrid(S, per) || S;
       e.setSegs(S);
       say(S.durations.length + " segment(s) "
-        + (res[1].file ? "from " + res[1].file : "auto-cut on the 15-second grid")
+        + (res[1].file ? "from " + res[1].file : "auto-cut every " + per + " s")
         + " - drag a red line to move a cut, click a duration to lock it; "
         + "💾 saves the .seg and creates the scenes");
     });
@@ -217,6 +220,42 @@
   }
   gapSync();
 
+  /* ---- 2.573.0: ✂ cut duration (Tim: "add an input to the audio clip menu in
+     storyboard to set the cut duration"). The grid the song is auto-cut on;
+     a change re-cuts the open song at once (SegMap.regrid: locked segments
+     stay where they are, the open runs between them are cut again). The
+     value is remembered for the next song (this machine). */
+  var CUT_KEY = "h3.vd.segCut";
+  function clampCut(v) {
+    v = parseFloat(v);
+    if (!(v > 0)) return 15;
+    return Math.round(Math.min(60, Math.max(2, v)) * 10) / 10;
+  }
+  function cutSecs() { return clampCut(el("vdSegCut") ? el("vdSegCut").value : 15); }
+  function cutNote(per) {
+    return per > 29.95 ? " - a scene over 29.9 s is more than one Long video run (719 frames), so it renders as joined runs"
+         : per > 15.05 ? " - scenes over 15 s need ⚙ Long video (MiniMax H3) to render as one run" : "";
+  }
+  function recut() {
+    var per = cutSecs();
+    if (el("vdSegCut")) el("vdSegCut").value = per;
+    try { localStorage.setItem(CUT_KEY, String(per)); } catch (e) { /* a private window */ }
+    var S = ed && ed.segs();
+    if (!song || !S) { say("cut every " + per + " s - load a song to cut it"); return; }
+    var N = window.SegMap.regrid(S, per);
+    if (!N) return;
+    var locked = N.manual.filter(Boolean).length;
+    ed.setSegs(N);
+    dirty = true;
+    say("re-cut every " + per + " s: " + N.durations.length + " segment(s)"
+      + (locked ? " (" + locked + " locked one(s) kept)" : "") + cutNote(per)
+      + " - unsaved - 💾 writes the .seg and the scenes");
+  }
+  if (el("vdSegCut")) {
+    try { var c0 = localStorage.getItem(CUT_KEY); if (c0) el("vdSegCut").value = clampCut(c0); } catch (e) { /* default 15 */ }
+    el("vdSegCut").addEventListener("change", recut);
+  }
+
   // ---- the strip's buttons -------------------------------------------------
   if (el("vdWavePlay")) el("vdWavePlay").onclick = function () {
     if (!song) return;
@@ -309,7 +348,7 @@
   }
 
   // test/diagnostic handle - the state, never a second store
-  window.vdSongStrip = { load: loadSong, song: function () { return song; },
+  window.vdSongStrip = { load: loadSong, song: function () { return song; }, recut: recut, cut: cutSecs,
                          dirty: function () { return dirty; },
                          editor: function () { return ed; } };
 })();

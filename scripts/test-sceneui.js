@@ -1170,8 +1170,8 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
           // 2.323.0: an unknown / retired style paints the native flow
           && /el\("scStyleSel"\)\.value = scState\.style \|\| VD_FLOWS\[0\]\[0\]/.test(CODE13)
           && /app\.post\("\/api\/scenes\/style"/.test(RTS13));
-    check("2.227.0: H3_Video_Ref routes EVERY scene to queueRefScene — no prior-take gate, no extend branch",
-          /st\.style === extendVideo\.REF_STYLE/.test(RTS13)
+    check("2.227.0: H3_Video_Ref (2.573.0: and FastH3 Omni) routes EVERY scene to queueRefScene — no prior-take gate, no extend branch",
+          /extendVideo\.isRefFlow\(st\.style\)/.test(RTS13)
           && /return queueRefScene\(project, st, r\);/.test(RTS13)
           && !/refStyle/.test(RTS13));
     check("2.227.0: scene n>1 carries scene n-1's take as ref2va's OWN video reference; a missing prior is a NOTE, not a refusal",

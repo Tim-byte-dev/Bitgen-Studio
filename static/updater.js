@@ -2,7 +2,8 @@
  * Tim: "add an update button to update bitgen from github". The section shows this version and how it was installed
  * (a git clone, or the full zip), 🔍 Check for updates (the version on GitHub + the new commits), ⤓ Update now (asks
  * first; the log streams in), then ⟳ Restart now (the desktop app) - in a browser: start the app again.
- * A quiet check a little after start: when GitHub has a newer version, one toast says so (once per version).
+ * 2.573.0: the look on startup is static/startcheck.js (bitGen Studio AND ComfyUI, a status-bar chip + a card - the old
+ * quiet() only wrote to the console); its switch is the "Check for updates on startup" box here.
  * API: lib/updater.js via routes/updater.js. Exports H3Updater {check, update, restart, state}. */
 (function () {
   "use strict";
@@ -24,6 +25,7 @@
       + '<button type="button" class="ghost" id="upCheck" title="Ask GitHub for the newest version">🔍 Check for updates</button>'
       + '<button type="button" id="upGo" disabled title="Download the newest version from GitHub and put it in place (your projects, settings and models are not touched)">⤓ Update now</button>'
       + '<button type="button" class="ghost" id="upRestart" hidden title="Close and open bitGen Studio again with the new version">⟳ Restart now</button></div>'
+      + '<label class="kv" style="display:flex;gap:6px;align-items:center;cursor:pointer" title="A little after the app starts, look on GitHub for a newer bitGen Studio and a newer ComfyUI; a ⬆ in the status bar says so"><input type="checkbox" id="upAuto" checked> Check for updates on startup (bitGen Studio and ComfyUI)</label>'
       + '<div class="kv" id="upMsg"></div><ol id="upCommits" hidden></ol><div id="upJob"></div>';
     g.insertBefore(d, g.firstChild ? g.firstChild.nextSibling : null);
     $("upCheck").onclick = function () { check(); };
@@ -31,7 +33,11 @@
     $("upRestart").onclick = function () { restart(); };
     fetch("/api/update/info").then(j).then(function (i) { S.info = i; paintInfo(); }).catch(function () { /* offline */ });
     fetch("/api/update/job").then(j).then(function (r) { if (r.job) { S.job = r.job; if (r.job.state === "running") follow(); else { S.lines = r.lines || []; S.next = r.next; paintJob(); } } }).catch(function () {});
-    setTimeout(quiet, 25000);
+    fetch("/api/update/settings").then(j).then(function (r) { $("upAuto").checked = r.auto_check !== false; }).catch(function () {});
+    $("upAuto").onchange = function () {
+      var on = this.checked;
+      fetch("/api/update/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ auto_check: on }) }).catch(function () {});
+    };
   }
   function paintInfo() {
     var i = S.info; if (!i || !$("upInfo")) return;
@@ -69,7 +75,7 @@
       if (!r.job) return;
       S.lines = S.lines.concat(r.lines || []); S.next = r.next; S.job = r.job; paintJob();
       if (r.job.state === "running") S.timer = setTimeout(follow, 1200);
-      else { $("upCheck").disabled = false; fetch("/api/update/info").then(j).then(function (i) { S.info = i; paintInfo(); }); }
+      else { $("upCheck").disabled = false; if (window.H3StartCheck && r.job.state === "done") window.H3StartCheck.clear("bitgen"); fetch("/api/update/info").then(j).then(function (i) { S.info = i; paintInfo(); }); }
     }).catch(function () { S.timer = setTimeout(follow, 3000); });
   }
   function paintJob() {

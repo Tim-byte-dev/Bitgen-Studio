@@ -364,9 +364,9 @@ check("numOrNull rejects NaN", S.numOrNull("abc") === null, null);
     S.save(w, st);
   fs.writeFileSync(path.join(w, ".starters"), "2026-08-01T00:00:00.000Z\n");
   const made = S.seedStarters(w);
-  check("an install with the old date stamp gets ONLY the starters it never had (Music3 2.90.1, MiniMax H3 SS 2.116.0, minimaxH3-I 2.128.0, MM3_Characters 2.135.0, MM3H-Character-ref 2.143.0, H3_Video_Ref 2.223.16, YuE2 2.229.0, YuE2 ComfyUI 2.236.0, MMH3_NativeAudio_MV 2.284.0, mmh3_chr_swap 2.328.0, LTX 2.5 2.338.0, H3_Viggle 2.352.0, Wan 2.1 + Wan 2.2 2.368.0, LTX 2.3 2.402.0, MiniMax H3 Long (30 s) 2.503.0; the chain starters retired)",
+  check("an install with the old date stamp gets ONLY the starters it never had (Music3 2.90.1, MiniMax H3 SS 2.116.0, minimaxH3-I 2.128.0, MM3_Characters 2.135.0, MM3H-Character-ref 2.143.0, H3_Video_Ref 2.223.16, YuE2 2.229.0, YuE2 ComfyUI 2.236.0, MMH3_NativeAudio_MV 2.284.0, mmh3_chr_swap 2.328.0, LTX 2.5 2.338.0, H3_Viggle 2.352.0, Wan 2.1 + Wan 2.2 2.368.0, LTX 2.3 2.402.0, MiniMax H3 Long (30 s) 2.503.0, FastH3 Omni 2.573.0; the chain starters retired)",
     JSON.stringify(made.slice().sort())
-      === JSON.stringify(["MM3H-Character-ref", "MM3_Characters", "MiniMax H3 Long (30 s)", "MiniMax H3 SS", "MiniMax Music3", "minimaxH3-I", "H3_Video_Ref", "YuE2", "YuE2 ComfyUI", "MMH3_NativeAudio_MV", "mmh3_chr_swap", "LTX 2.5", "LTX 2.3", "H3_Viggle", "Wan 2.1", "Wan 2.2"].sort()), made);
+      === JSON.stringify(["MM3H-Character-ref", "MM3_Characters", "MiniMax H3 Long (30 s)", "MiniMax H3 SS", "MiniMax Music3", "minimaxH3-I", "H3_Video_Ref", "YuE2", "YuE2 ComfyUI", "MMH3_NativeAudio_MV", "mmh3_chr_swap", "LTX 2.5", "LTX 2.3", "H3_Viggle", "Wan 2.1", "Wan 2.2", "FastH3 Omni"].sort()), made);
   /* Tim: "for this style we will use the workflows paths because it is made
      specifically for comfyui". The starter must therefore name NO loader: the
      graph's own are the single source of truth, and an override here would

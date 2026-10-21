@@ -464,7 +464,7 @@ function queueScene(project, n, opts) {
     if (bridgeAi.error) return { status: 409, error: bridgeAi.error };
     r.anchor = "first"; r.cont_src = undefined; r.cont_time = undefined;
   }
-  if (!upscale && st.style === extendVideo.REF_STYLE)
+  if (!upscale && extendVideo.isRefFlow(st.style))   // 2.573.0: + FastH3 Omni
     return queueRefScene(project, st, r);
   // 2.338.0: the board's Workflow "LTX 2.5" - every scene one LTX clip
   if (ltxScenes.isLtxFlow(st.style)) {
@@ -1091,18 +1091,21 @@ function queueScene(project, n, opts) {
  */
 function queueRefScene(project, st, r) {
   const n = r.n;
+  // 2.573.0: H3_Video_Ref or FastH3 Omni - the same flow, each with its own style + graph
+  const flow = extendVideo.isRefFlow(st.style) ? st.style : extendVideo.REF_STYLE;
+  const wf = extendVideo.refWorkflow(flow);
   const backend = (core.getConfig().engine || {}).backend;
   if (backend !== "comfy") return { status: 400, error:
-    "H3_Video_Ref renders through ComfyUI (ref2va.json) - switch "
+    flow + " renders through ComfyUI (" + wf + ") - switch "
     + "Settings → ComfyUI → Engine to comfy, or pick the character chain" };
-  if (!fs.existsSync(wfPath(extendVideo.REF_WF))) return { status: 400, error:
-    "comfy_workflows/" + extendVideo.REF_WF + " is missing - restore it from "
-    + "the delivery zip, or pick the character chain" };
+  if (!fs.existsSync(wfPath(wf))) return { status: 400, error:
+    "comfy_workflows/" + wf + " is missing - restore it from "
+    + "the delivery zip, or pick another Workflow" };
   const style = styles.read(core.STYLES_DIR)
-    .find((x) => x.kind === "video" && x.name === extendVideo.REF_STYLE);
+    .find((x) => x.kind === "video" && x.name === flow);
   if (!style) return { status: 400, error:
-    "the H3_Video_Ref video style is missing - restore styles/video/"
-    + "H3_Video_Ref.json from the delivery zip" };
+    "the " + flow + " video style is missing - restore styles/video/"
+    + flow + ".json from the delivery zip" + (flow === extendVideo.FAST_STYLE ? " (or Settings ▸ Add-ons ▸ FastH3 Omni ▸ Install puts it back)" : "") };
   const extraV = tempLoras.read(core.projDir(project || core.getProject()), "video");
   const styled = extraV.length
     ? { ...style, loras: tempLoras.merge(style.loras, extraV) } : style;
@@ -1215,7 +1218,7 @@ function queueRefScene(project, st, r) {
     scene: { n: r.n, chapter: r.chapter, upscale: false, ref_style: true },
   });
   job.chunk = { i: 0, n: plan.chunks.length };
-  notes.push("H3_Video_Ref: scene " + n + " through ref2va - "
+  notes.push(flow + ": scene " + n + " through ref2va" + (flow === extendVideo.FAST_STYLE ? " (FastH3 Omni, 8 steps)" : "") + " - "
     + imgs.length + " picture(s)" + (wornN ? " (" + wornN + " clothing)" : "")
     + ", " + auds.length + " voice clip(s), "
     + frames + "f = " + (Math.round(frames / 24 * 10) / 10) + "s; "
@@ -3547,6 +3550,10 @@ function mount(app) {
       ? "LTX 2.5 - ▶ renders each scene through the LTX 2.5 all-in-one canvas: text, "
         + "the frame it starts on (First / Cont), first + last (Trans); with the board's song "
         + "the lip-synced versions on each scene's slice (✎ First frame makes the opening picture)"
+      : name === extendVideo.FAST_STYLE
+      ? "FastH3 Omni - ▶ renders every scene through ref2va on FastVideo's 8-step model "
+        + "(pictures + sheets + voices + global prompt); scene n carries scene n-1's take as its video reference "
+        + "(Settings ▸ Add-ons ▸ FastH3 Omni downloads the model)"
       : name === extendVideo.REF_STYLE
       ? "H3_Video_Ref - ▶ renders every scene through ref2va "
         + "(pictures + sheets + voices + global prompt); scene n "

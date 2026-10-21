@@ -384,6 +384,8 @@
   var scSel = null, scTimer = null;
   // 2.323.0: the ONLY board flows (the looping chains are retired)
   var VD_FLOWS = [["MMH3_NativeAudio_MV", "Native audio · ref2va / fl2va"], ["H3_Video_Ref", "H3_Video_Ref"],
+                  // 2.573.0: FastH3 Omni - the H3_Video_Ref flow on FastVideo's 8-step model (lib/extendVideo.REF_FLOWS)
+                  ["FastH3 Omni", "FastH3 Omni · ref2va 8-step"],
                   // 2.338.0: LTX 2.5 - Tim's all-in-one canvas (lib/ltxScenes.js)
                   ["LTX25", "LTX 2.5 · text / first-last / lipsync"],
                   // 2.352.0: H3_Viggle - each scene's 🎬 motion video, performed (lib/h3Viggle.js)

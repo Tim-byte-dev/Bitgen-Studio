@@ -113,6 +113,13 @@ try:
 except Exception:                  # noqa: BLE001 - the render says cfg was ignored
     _tc = None
 
+# 2.573.0 (Tim: "please add this workflow https://www.fasth3-omni.com/en, fasth3 omni"): a FastH3 diffusion model
+# gets its recipe (sigma shift, VSA sparse attention, 8 steps, cfg 1) in any H3 graph - scripts/fasth3.py.
+try:
+    import fasth3 as _f3
+except Exception:                  # noqa: BLE001 - the shipped FastH3 Omni graph carries the recipe itself
+    _f3 = None
+
 # 2.353.0 (Tim: "the h3_Video_ref workflow doesn't use video reference, can we
 # add video and sound slots when a reference video and/or sound is added"): an
 # H3 reference graph saved with pictures only gets its video / sound slots
@@ -1107,6 +1114,16 @@ SPECTRUM_PRESETS = {   # written onto the node; every OTHER knob = the node's
 }
 
 
+def _kitchen_attn(base):
+    """2.573.0: does this ComfyUI offer "comfy kitchen attention" in ModelAttentionBackend? True / False / None (unknown)"""
+    try:
+        info = _http_json(f"{base}/object_info/ModelAttentionBackend", timeout=10) or {}
+        spec = (((info.get("ModelAttentionBackend") or {}).get("input") or {}).get("required") or {}).get("attention")
+        return "comfy kitchen attention" in _combo_list(spec) if spec else None
+    except Exception:              # noqa: BLE001 - unknown: the graph keeps its value
+        return None
+
+
 def _accel_model_edge(g):
     """The FINAL model edge - where an accelerator belongs. (src, consumers):
     src = the link feeding a guider-like node's `model` (a node with both a
@@ -1157,6 +1174,17 @@ def apply_video_accel(g, accel):
         return g, []
     notes = []
     h3 = any("MiniMaxH3" in str(v.get("class_type") or "") for v in g.values())
+    # 2.573.0: FastH3 runs VSA sparse attention (BlockSparseAttention) and must keep it - nothing that replaces
+    # attention goes in front of it; Spectrum (step caching) is not for an 8-step distilled model either. Long video
+    # keeps only its chunked feed-forward (exact).
+    vsa = any((v or {}).get("class_type") == "BlockSparseAttention" for v in g.values())
+    if vsa:
+        off = [n for n, x in (("sage", sage), ("spectrum", spectrum), ("veda", veda)) if x not in ("", "off")]
+        if off:
+            notes.append("accel: " + ", ".join(off) + " skipped - this graph runs VSA sparse attention (FastH3), "
+                         "which must not be replaced")
+        sage = spectrum = veda = "off"
+        kitchen_attn = False
     if veda != "off" and not h3:
         notes.append("accel: Veda is MiniMax H3-only and this graph has no native MiniMaxH3 node - skipped")
         veda = "off"
@@ -1193,7 +1221,7 @@ def apply_video_accel(g, accel):
     prev = src
     if long:     # 2.503.0: the secret-sauce order - [attention backend] -> low-VRAM attention -> chunked feed-forward
         chain = ([("h3attnbe", ACCEL_ATTN_BACKEND)] if kitchen_attn else []) \
-            + [("h3lowvram", ACCEL_LOWVRAM), ("h3chunkff", ACCEL_CHUNKFF)]
+            + ([] if vsa else [("h3lowvram", ACCEL_LOWVRAM)]) + [("h3chunkff", ACCEL_CHUNKFF)]
         for nid, ct in chain:
             g[nid] = {"class_type": ct, "inputs": dict({"model": prev}, **LONG_PARAMS[ct])}
             prev = [nid, 0]
@@ -3195,6 +3223,14 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                             plan_seed=params.get("plan_seed"),
                             upscale=bool(params.get("upscale", True)) or bool(params.get("upscale_stage")))
         g = _apply_refmods(g, params.get("refmods"))   # 2.225.0: cast identity mods
+        if _f3 is not None and _f3.detect(g):  # 2.573.0: FastH3 Omni - its recipe, whatever graph carries it
+            g, f3notes = _f3.apply(g, explicit_steps=int(params.get("steps", 0) or 0),
+                                   kitchen=None if rp else _kitchen_attn(base))
+            for n in f3notes:
+                say(f"[comfy] {n}")
+            if float(cfg_val or 1) > 1:
+                say(f"[comfy] FastH3: cfg {cfg_val} -> 1 (the model is distilled with guidance built in)")
+                cfg_val = 1.0
         if params.get("upscale_stage"):        # 2.312.0: the video docker's upscaler
             if _us is None and params.get("upscale_take"):
                 raise RuntimeError("scripts/upscalestage.py did not load - the take cannot be upscaled")

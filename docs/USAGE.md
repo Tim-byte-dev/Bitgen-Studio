@@ -5854,6 +5854,29 @@ orange line shows where it will go - and let go.
   kept at every change (after ⛓ Sequential); off = plain cuts again; a transition you set yourself is left alone. Clips
   that are all on V1 use V1's own join (Out), which overlaps them. **🔊 / 🔇 Video sound** mutes or unmutes V1 and every
   video layer at once, so the full song on its sound layer plays with no cuts in it.
+- 2.573.0: **✂ cut duration** on the StoryBoard's song strip (the audio clip's menu bar, before Transition): the
+  seconds the song is auto-cut into (2-60, presets 10 / 15 / 20 / 29.9). A change re-cuts the open song at once -
+  segments you locked by typing a duration stay where they are - and the value is remembered for the next song; 💾
+  saves the .seg and the scenes as before. 29.9 keeps every scene inside ONE Long video run (⚙ Long video, MiniMax H3:
+  719 frames); 30.0 is 720 frames and would render as two joined runs.
+- 2.573.0: **⟳ ComfyUI updates** (Settings ▸ ComfyUI ▸ Engine, under ▶ Start / ■ Stop): this ComfyUI's version and kind
+  of install, the channel (Newest = master, what the portable build's update_comfyui.bat does - new models such as
+  FastH3 Omni arrive there first; Stable = the newest release), 🔍 Check and ⤓ Update ComfyUI. The portable build runs
+  ComfyUI's own update\update.py (it installs the new requirements itself); a git clone is fast-forwarded (or moved to
+  the newest release tag) and pip installs requirements.txt. A ComfyUI bitGen Studio started is stopped first and
+  started again; one started some other way has to be closed first. Node packs are not touched.
+- 2.573.0: **the update check on startup** - 20 s after the app starts it asks GitHub about bitGen Studio AND ComfyUI;
+  something newer puts a ⬆ in the status bar (a click opens the right Settings tab) and a small card once per new
+  version (Open / Later / Don't check on startup). Settings ▸ General ▸ ⟳ Updates ▸ "Check for updates on startup"
+  turns it off or on. Offline = nothing at all.
+- 2.573.0: **FastH3 Omni** - FastVideo's 8-step distillation of MiniMax H3's reference-to-video model (pictures, videos
+  and voices in, video with sound out, several times faster). Settings ▸ Add-ons ▸ FastH3 Omni downloads it (22 GB int8;
+  H3's text encoder and VAEs only when missing); ComfyUI 0.43 or later (⤓ Update ComfyUI, Newest). Use it as the video
+  style **FastH3 Omni**, or the StoryBoard's Workflow ▸ **FastH3 Omni · ref2va 8-step** (renders like H3_Video_Ref:
+  every scene ref2va, scene n carries scene n-1's take). Any H3 graph whose model is a FastH3 file (Basic Settings ▸
+  Override style ▸ Model) gets its recipe automatically: sigma shift 12/3, VSA sparse attention, 8 steps, cfg 1, the
+  base model's turbo LoRA taken out; Sage / Spectrum / Veda are skipped (they would replace VSA). Omni is a
+  reference-to-video model - First / Cont / Trans (fl2va) scenes should stay on H3's own fl2va model.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

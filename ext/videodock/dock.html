@@ -238,6 +238,14 @@
                 aria-label="Zoom out of the waveform">🔍−</button>
         <button class="ghost gbtn" id="vdZoomReset" type="button" title="Reset the view to the whole song"
                 aria-label="Reset the waveform view">⤢</button>
+        <!-- 2.573.0 (Tim: "add an input to the audio clip menu in storyboard to set the cut duration"):
+             the auto-cut grid in seconds - a change re-cuts the song on it (locked segments stay put);
+             remembered for the next song. 29.9 keeps every scene inside ONE Long video run (719 frames). -->
+        <label class="hint" for="vdSegCut" style="display:flex;gap:3px;align-items:center;white-space:nowrap"
+               title="Cut every … seconds: the song is re-cut on this grid (segments you locked by typing a duration stay where they are). 15 = the default. With Long video on (⚙), 29.9 keeps each scene one run - 30 s is 720 frames, one over the 719-frame run.">✂
+          <input type="number" id="vdSegCut" value="15" min="2" max="60" step="0.1" list="vdSegCutList"
+                 aria-label="Cut duration in seconds" style="width:52px;font-size:.7rem;padding:1px 3px">s</label>
+        <datalist id="vdSegCutList"><option value="10"><option value="15"><option value="20"><option value="29.9"></datalist>
         <!-- 2.358.0 (Tim: "add a transition checkbox to the song menubar before the save button, with a
              duration input"): ☐ Transition + seconds + type - 💾 then puts a BRIDGE scene of that length after
              every segment (carved from the segment's end): AI fl2va from the scene before's last frame to the
