@@ -12184,6 +12184,14 @@ node scripts/test-dgdock560.js > /tmp/d560.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui560-ui.js > /tmp/ui560.log 2>&1 \
   && ok "2.560.0 browser test: a ▣ docker docked above Preview by its title bar (the blue zone), Basic Settings and the prompt docker dragged in, all back after a reload, Basic Settings out by its small title bar, the ▣ docker torn out and docked beside Preview, 🗑 leaves the column whole - or SKIP without playwright" \
   || { bad "2.560.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui560.log | head -14; }
+
+# ---- 2.561.0 (a ▣ docker dropped between two columns = a column of its own)
+node scripts/test-dgdock561.js > /tmp/d561.log 2>&1 \
+  && ok "2.561.0 units (template = the stylesheet's own grid rebuilt from the children, + a ▣ column / folded / hidden / stand-ins; seamsOf / seamAt / seamLabel; wants col; the splitter sides; seams before edge zones; dockgroup gone / leaveCol)" \
+  || { bad "2.561.0 units"; grep -a "^FAIL" -A2 /tmp/d561.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui561-ui.js > /tmp/ui561.log 2>&1 \
+  && ok "2.561.0 browser test: a ▣ docker dropped on the References | Assets seam = a full-height 340 px column there, its splitter +100, Basic Settings in it, back after a reload, ▾ folds it, torn out onto the main column | Queue seam, dragged away = the app's own grid - or SKIP without playwright" \
+  || { bad "2.561.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui561.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -36,7 +36,7 @@ check("makePerm(id, restoring, place): measured where the window was BEFORE it m
 check("unPerm(id, at) / remove: a docked ▣ docker leaves its row first (DockFloat unplace)",
   /function unPerm\(id, at\)/.test(DG) && (DG.match(/if \(d && d\._dfPanel\) d\._dfPanel\.unplace\(\);/g) || []).length === 2);
 check("dgdock: a DockFloat panel around the docked ▣ docker (its own edge sizes it), kept as perm.dock; the column laid out first at the start, retried while its docker is not there",
-  /DF\(\)\.panel\(\{ id: "dg-" \+ id/.test(DD) && /P\(\)\.setPerm\(id, \{ dock: DF\(\)\.pure\.cleanState\(stateOf\(id\)\) \}\)/.test(DD) && /\(quiet && !layoutReady\(\)\)/.test(DD) && /retries\[id\]/.test(DD));
+  /DF\(\)\.panel\(\{ id: "dg-" \+ id/.test(DD) && /P\(\)\.setPerm\(id, \{ dock: s\.mode === "col" \? [^\n]*: DF\(\)\.pure\.cleanState\(s\) \}\)/.test(DD) && /\(quiet && !layoutReady\(\)\)/.test(DD) && /retries\[id\]/.test(DD));
 check("dgdock: one bubbling pointerdown for every ▣ docker's title bar (a new one works at once); over another ▣ docker floatpanels has it",
   /doc\.addEventListener\("pointerdown", \(e\) => \{/.test(DD) && /if \(!G\(\)\.isGroup\(id\)/.test(DD) && /doc\.querySelector\("\.h3fp\.drop"\)/.test(DD));
 check("dgdock: Basic Settings / LLM tokens / the prompt docker dragged (sf-drag / pf-dragging) over a ▣ docker go in after their own drop; out of it = they float on their own; back after a reload",

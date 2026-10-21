@@ -5755,6 +5755,11 @@ orange line shows where it will go - and let go.
   docker (floating or docked) - it is outlined and an orange line shows where they go - and let go. Drag their small title
   bar (or their tab) out of the ▣ docker, or press ⇲, and they float on their own again. They come back in their ▣ docker
   at the next start. (Near a docked ▣ docker's edge they dock beside it instead, as before.)
+- 2.561.0: a ▣ docker can become a **column of its own**: drag it by its title bar onto the seam **between two columns**
+  (Settings | References | Assets | the main column | Queue | Gallery - or the window's left / right edge). A tall blue strip
+  shows ("New column: Docker between References and Assets"); let go and it is a full-height column there, with its own
+  splitter to size its width. ▾ folds it to a narrow strip, its statusbar button hides it, and dragging its title bar away
+  floats it again. The column, its place and its width come back at the next start.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

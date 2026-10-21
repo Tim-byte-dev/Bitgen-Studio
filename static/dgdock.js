@@ -17,7 +17,16 @@
  *                        it goes - let go = in it (side by side / stacked / a tab, as the ▣ docker is laid out). Out
  *                        again: drag its small title bar (or its tab) out, or ⇲ - it floats where you let go. Kept in
  *                        panel_layout.cfg (panels sf.<id> / pf.promptdock), back in its ▣ docker at the next start.
- * Pure (Node: scripts/test-dgdock560.js): memberIdOf, wants, pickZone, nearEdge, EDGE. */
+ *   A NEW COLUMN (2.561.0 - Tim: "new docker docks, but allow it to also dock between vertical dockers so it becomes a new
+ *                        vertical docker"): dragged onto the seam BETWEEN two columns (Settings | References | Assets |
+ *                        the main column | Queue | Gallery - or the window's left / right edge) a tall blue strip shows
+ *                        ("New column between References and Assets") - let go = the ▣ docker is a column of its own,
+ *                        the full height, with its own splitter (drag it to size its width). #app's grid gets a track
+ *                        for it (gridTemplate). ▾ folds it to a narrow strip, its statusbar button hides it, its title
+ *                        bar dragged away floats it again. Kept as perm.dock {mode: "col", before: <the column after it>,
+ *                        dw}.
+ * Pure (Node: scripts/test-dgdock560.js, test-dgdock561.js): memberIdOf, wants, pickZone, nearEdge, EDGE, template,
+ *   seamsOf, seamAt, COLV, SPLV. */
 (function (root) {
   "use strict";
   const EDGE = 36;                                         // the edge band that docks (static/dockfloat.js EDGE)
@@ -29,8 +38,35 @@
     const cls = el.classList ? (el.classList.contains ? el.classList.contains("secfloat") : false) : false;
     return cls && /^sf-[\w-]+$/.test(el.id) ? "sf." + el.id.slice(3) : null;
   }
-  /** a kept dock place a ▣ docker can be put back in */
-  const wants = (d) => !!d && typeof d === "object" && d.mode === "dock" && typeof d.to === "string" && /^[A-Za-z][\w-]{0,40}$/.test(d.to) && SIDES.includes(d.side);
+  const ID = /^[A-Za-z][\w-]{0,40}$/;
+  /** a kept dock place a ▣ docker can be put back in: beside a docker {mode dock, to, side} or a column {mode col, before} */
+  const wants = (d) => !!d && typeof d === "object" && ((d.mode === "dock" && typeof d.to === "string" && ID.test(d.to) && SIDES.includes(d.side))
+    || (d.mode === "col" && (d.before === "" || d.before == null || (typeof d.before === "string" && ID.test(d.before)))));
+  /* 2.561.0: #app's columns - the track each child takes (the stylesheet's own vars, so its no-left / no-refs … still work) */
+  const COLV = { ldock: "var(--c1)", refsdock: "var(--c2)", assetsdock: "var(--c3)", maincol: "minmax(200px, 1fr)", qdock: "var(--c4)", rdock: "var(--c5)" };
+  const SPLV = { ldock: "var(--s1)", refs: "var(--s2)", assets: "var(--s3)", qdock: "var(--s5)", rdock: "var(--s4)" };
+  /** kids [{kind: col | split | dgcol | dgsplit | other, id, key, w, hidden}] -> grid-template-columns (hidden ones take none) */
+  function template(kids) {
+    return (kids || []).filter((k) => k && !k.hidden).map((k) => (k.kind === "col" ? COLV[k.id] || "auto" : k.kind === "split" ? SPLV[k.key] || "5px"
+      : k.kind === "dgcol" ? Math.max(34, Math.round(+k.w || 340)) + "px" : k.kind === "dgsplit" ? "5px" : "auto")).join(" ");
+  }
+  /** the seams a ▣ docker can become a column at: cols [{id, l, r, name}] left to right -> [{x, before, a, b}] (the window's
+   *  left edge, between each two, the right edge; before = the column after the seam, "" = the end) */
+  function seamsOf(cols) {
+    const c = (cols || []).filter((x) => x && x.r - x.l > 8).sort((a, b) => a.l - b.l), out = [];
+    if (!c.length) return out;
+    out.push({ x: c[0].l, before: c[0].id, a: "", b: c[0].name });
+    for (let i = 1; i < c.length; i++) out.push({ x: Math.round((c[i - 1].r + c[i].l) / 2), before: c[i].id, a: c[i - 1].name, b: c[i].name });
+    out.push({ x: c[c.length - 1].r, before: "", a: c[c.length - 1].name, b: "" });
+    return out;
+  }
+  /** the seam within band px of px (the nearest) */
+  function seamAt(px, seams, band) {
+    let best = null;
+    for (const s of seams || []) { const d = Math.abs(px - s.x); if (d <= (band == null ? 14 : band) && (!best || d < Math.abs(px - best.x))) best = s; }
+    return best;
+  }
+  const seamLabel = (title, s) => s.a && s.b ? `New column: ${title} between ${s.a} and ${s.b}` : s.b ? `New column: ${title} at the left, before ${s.b}` : `New column: ${title} at the right, after ${s.a}`;
   /** the drop zone for a ▣ docker at (px, py): targets [{key, kind: column | side, l, t, r, b}] - a side docker takes
    *  top / bottom, a column docker every edge; nothing "inside" (a ▣ docker is a docker itself) -> {key, side, r} | null */
   function pickZone(px, py, targets, DF, band) {
@@ -49,7 +85,7 @@
     const bw = band === "pf" ? Math.min(90, w * 0.3) : Math.min(band, w * 0.3), bh = band === "pf" ? Math.min(90, h * 0.3) : Math.min(band, h * 0.3);
     return px - r.left < bw || r.right - px < bw || py - r.top < bh || r.bottom - py < bh;
   }
-  const API = { EDGE, memberIdOf, wants, pickZone, nearEdge };
+  const API = { EDGE, memberIdOf, wants, pickZone, nearEdge, template, seamsOf, seamAt, seamLabel, COLV, SPLV };
   if (typeof module !== "undefined" && module.exports) { module.exports = API; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
@@ -69,6 +105,11 @@
       + ".bdock.dgperm.df-stack,.bdock.dgperm.df-side{flex:0 0 auto!important;border-top:1px solid var(--line,#3a342a)}"
       + ".bdock.dgperm.df-inrow{height:auto!important;align-self:stretch;min-width:220px!important;max-width:calc(100% - 160px);border-left:1px solid var(--line,#3a342a);border-right:1px solid var(--line,#3a342a)}"
       + ".bdock.dgperm.dg-docked.collapsed{height:30px!important;min-height:0!important;flex:0 0 30px!important}"
+      // 2.561.0: a ▣ docker as a column of #app - the full height, its splitter beside it
+      + "#app>.bdock.dgperm.dg-col{height:auto!important;min-height:0!important;flex:none!important;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--panel);border-left:1px solid var(--line,#3a342a);border-right:1px solid var(--line,#3a342a)}"
+      + "#app>.bdock.dgperm.dg-col>.bbody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}#app>.bdock.dgperm.dg-col>.bhead>.maxbtn{display:none}"
+      + "#app>.bdock.dgperm.dg-col.collapsed>.bbody{display:none}#app>.bdock.dgperm.dg-col.collapsed>.bhead{writing-mode:vertical-rl;height:100%;padding:8px 4px;white-space:nowrap}"
+      + "#app>.bdock.dgperm.dg-col.collapsed>.bhead>button{display:none}"
       // Basic Settings / LLM tokens / the prompt docker in a ▣ docker: they fill their place, its small title bar drags them
       + ".h3fp .secfloat.dg-in{position:relative!important;left:auto!important;top:auto!important;flex:1 1 auto;width:auto!important;height:auto!important;min-height:0;max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none}"
       + ".h3fp .secfloat.dg-in>.sfhead{display:none}.h3fp .secfloat.dg-in>.sfbody{flex:1 1 auto;min-height:0;overflow:auto}"
@@ -94,7 +135,11 @@
     if (!STATE[id]) { const r = P().get(id); STATE[id] = Object.assign({}, (r && r.perm && r.perm.dock) || {}); }
     return STATE[id];
   }
-  function saveOf(id) { const r = P().get(id); if (r && r.perm) P().setPerm(id, { dock: DF().pure.cleanState(stateOf(id)) }); }
+  function saveOf(id) {
+    const r = P().get(id); if (!r || !r.perm) return;
+    const s = stateOf(id);
+    P().setPerm(id, { dock: s.mode === "col" ? { mode: "col", before: s.before || "", dw: Math.round(s.dw || 340) } : DF().pure.cleanState(s) });
+  }
   function panelOf(id, d) {
     if (d._dfPanel) return d._dfPanel;
     const r = P().get(id);
@@ -107,12 +152,15 @@
   /** put ▣ docker id's docker element d where `dock` says ({to, side}); quiet = at the start (its docker may come later) */
   function place(id, d, dock, quiet) {
     if (!DF() || !DF().panel || !wants(dock)) return false;
+    if (dock.mode === "col") return placeCol(id, d, dock, quiet);
     const t = $(dock.to);
     if (!t || t === d || d.contains(t) || t.classList.contains("dockgone") || (quiet && !layoutReady())) {
       if (quiet && (retries[id] = (retries[id] || 0) + 1) < 30) root.setTimeout(() => { const r = P().get(id); if (r && r.perm && $(dock.to) && !$(dock.to).classList.contains("dockgone")) G().makePerm(id, false, dock); }, 700);
       return false;
     }
+    leaveCol(id, d);
     const pn = panelOf(id, d), s = stateOf(id);
+    if (s.mode === "col") { delete s.before; s.dw = 0; }
     Object.assign(s, { dh: dock.dh || s.dh || 320, dw: dock.dw || s.dw || 460 });
     const g = d.nextElementSibling; if (g && g.classList.contains("dgp-grip")) g.remove();
     d.style.flex = ""; d.style.height = "";
@@ -121,6 +169,81 @@
     saveOf(id); resize();
     tev("docker_group_docked", id + ">" + dock.to + ":" + dock.side);
     return true;
+  }
+  /* ---- 2.561.0: a column of its own between two columns of #app */
+  const isColKid = (k) => !!k && !k.classList.contains("vsplit") && !k.classList.contains("dgc-split");
+  function describe(k) {
+    const cs = root.getComputedStyle(k), off = cs.display === "none" || cs.position === "absolute" || cs.position === "fixed";
+    if (k.classList.contains("dgc-split")) { const d = $(G().permId(k.dataset.dgc)); return { kind: "dgsplit", hidden: !d || d.classList.contains("dockgone") || root.getComputedStyle(d).display === "none" }; }
+    if (k.classList.contains("dg-col")) return { kind: "dgcol", hidden: off, w: k.classList.contains("collapsed") ? 34 : +k.dataset.w || 340 };
+    if (k.classList.contains("vsplit")) return { kind: "split", key: k.dataset.resize, hidden: off };
+    if (/^dgph_/.test(k.id)) return { kind: "col", id: k.id.slice(5), hidden: off };
+    if (COLV[k.id]) return { kind: "col", id: k.id, hidden: off };
+    return { kind: "other", hidden: off };
+  }
+  /** #app's grid: a track for every child in order (the stylesheet's template when there is no ▣ column) */
+  function regrid() {
+    const app = $("app"); if (!app || !G()) return;
+    const kids = [...app.children];
+    if (!kids.some((k) => k.classList.contains("dg-col"))) { if (app.style.gridTemplateColumns) { app.style.gridTemplateColumns = ""; resize(); } return; }
+    const list = kids.map((k) => { const x = describe(k); if (k.classList.contains("dgc-split")) k.style.display = x.hidden ? "none" : ""; return x; });
+    const t = template(list);
+    if (app.style.gridTemplateColumns !== t) { app.style.gridTemplateColumns = t; resize(); }
+  }
+  const colName = (el) => (el.id === "maincol" ? "the main column" : el.classList.contains("dg-col") ? ((P().get(el.dataset.dg) || {}).title || "Docker") : /^dgph_/.test(el.id) ? "" : DF().dockName(el) || el.id);
+  function seamsNow(skip) {
+    const app = $("app"); if (!app) return [];
+    const cols = [...app.children].filter((k) => isColKid(k) && k !== skip && root.getComputedStyle(k).display !== "none" && root.getComputedStyle(k).position !== "fixed")
+      .map((k) => { const r = k.getBoundingClientRect(); return { id: k.id, l: r.left, r: r.right, name: colName(k) }; }).filter((c) => c.id);
+    return seamsOf(cols);
+  }
+  /** where the new column goes: left of the main column = the column then its splitter; right of it = the splitter first */
+  function colInsert(d, sp, before) {
+    const app = $("app"), main = $("maincol");
+    let B = before ? $(before) : null; if (B && B.parentElement !== app) B = null;
+    const kids = [...app.children], right = B ? kids.indexOf(B) > kids.indexOf(main) : true;
+    if (right) { let ref = B; if (B && B.previousElementSibling && B.previousElementSibling.matches(".vsplit, .dgc-split")) ref = B.previousElementSibling; app.insertBefore(sp, ref); app.insertBefore(d, ref); }
+    else { app.insertBefore(d, B); app.insertBefore(sp, B); }
+    d.dataset.dgSide = right ? "right" : "left";
+  }
+  function splitDrag(sp, id) {
+    sp.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      const d = $(G().permId(id)); if (!d) return;
+      const right = d.dataset.dgSide === "right", x0 = e.clientX, w0 = d.getBoundingClientRect().width;
+      sp.classList.add("drag");
+      const mv = (m) => { const w = Math.max(160, Math.min(900, Math.round(w0 + (right ? x0 - m.clientX : m.clientX - x0)))); d.dataset.w = w; stateOf(id).dw = w; regrid(); };
+      const up = () => { root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true); sp.classList.remove("drag"); saveOf(id); resize(); };
+      root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);
+    });
+  }
+  const watchedCols = new WeakSet();
+  function placeCol(id, d, dock, quiet) {
+    const app = $("app"); if (!app || !$("maincol")) return false;
+    if (quiet && (!layoutReady() || (dock.before && !$(dock.before)))) {
+      if ((retries[id] = (retries[id] || 0) + 1) < 30) root.setTimeout(() => { const r = P().get(id); if (r && r.perm && layoutReady()) G().makePerm(id, false, dock); }, 700);
+      return false;
+    }
+    if (d._dfPanel) d._dfPanel.unplace();
+    d.classList.remove("dg-docked");
+    const g = d.nextElementSibling; if (g && g.classList.contains("dgp-grip")) g.remove();
+    let sp = $("dgcs_" + id);
+    if (!sp) { sp = doc.createElement("div"); sp.className = "vsplit dgc-split"; sp.id = "dgcs_" + id; sp.dataset.dgc = id; sp.title = "Drag to size this column"; splitDrag(sp, id); }
+    const s = stateOf(id), w = Math.round(dock.dw || (s.mode === "col" ? s.dw : 0) || 340);
+    colInsert(d, sp, dock.before && $(dock.before) ? dock.before : "");
+    d.classList.add("dg-col"); d.style.flex = ""; d.style.height = ""; d.dataset.w = w;
+    STATE[id] = { mode: "col", before: dock.before && $(dock.before) ? dock.before : "", dw: w };
+    if (!watchedCols.has(d)) { watchedCols.add(d); try { new root.MutationObserver(regrid).observe(d, { attributes: true, attributeFilter: ["class"] }); } catch (e) { /* the 1 s look */ } }
+    saveOf(id); regrid(); resize();
+    tev("docker_group_column", id + ">" + (STATE[id].before || "end"));
+    return true;
+  }
+  /** out of being a column (it docks elsewhere / floats / goes): its splitter goes, the grid back */
+  function leaveCol(id, d) {
+    if (d) { d.classList.remove("dg-col"); delete d.dataset.w; delete d.dataset.dgSide; }
+    const sp = $("dgcs_" + id); if (sp) sp.remove();
+    regrid();
   }
   /** the docker targets a ▣ docker can dock by (the main column's dockers, the open side dockers) - not itself */
   function targetsOf(win) {
@@ -141,8 +264,12 @@
       z = null; into = null; slot = null;
       if (carry) { const g = G().groupAt(m.clientX, m.clientY, id); if (g && P().canDock(id, g.id, (k) => ((P().get(k) || {}).docker || null))) { into = g.id; slot = P().slotOf(g.id, m.clientX, m.clientY); } }
       else if (doc.querySelector(".h3fp.drop")) into = "-";                // floatpanels has it: into another ▣ docker
-      if (!into) z = pickZone(m.clientX, m.clientY, targetsOf(r.win), DF().pure, EDGE);
-      if (z) zone(z.r, DF().pure.zoneLabel(r.title, z.side, DF().dockName($(z.key))));
+      if (!into) {                                                  // 2.561.0: on a seam between two columns = a column of its own
+        const app = $("app"), ab = app ? app.getBoundingClientRect() : null, sm = ab && m.clientY >= ab.top && m.clientY <= ab.bottom ? seamAt(m.clientX, seamsNow(r.win), 8) : null;
+        if (sm) z = { col: true, before: sm.before, r: { l: sm.x - 40, t: ab.top, r: sm.x + 40, b: ab.bottom }, label: seamLabel(r.title, sm) };
+      }
+      if (!into && !z) z = pickZone(m.clientX, m.clientY, targetsOf(r.win), DF().pure, EDGE);
+      if (z) zone(z.r, z.label || DF().pure.zoneLabel(r.title, z.side, DF().dockName($(z.key))));
       else if (into && into !== "-") { const b = P().get(into).win.querySelector(".h3fd").getBoundingClientRect(); zone(slot ? slot.line : { l: b.left, t: b.top, r: b.right, b: b.bottom }, r.title + " → " + P().get(into).title, true); }
       else zone(null);
     };
@@ -152,7 +279,8 @@
       if (!on) return;
       eatClick();
       const r = P().get(id); if (!r) return;
-      if (z) G().makePerm(id, false, { mode: "dock", to: z.key, side: z.side });
+      if (z && z.col) G().makePerm(id, false, { mode: "col", before: z.before });
+      else if (z) G().makePerm(id, false, { mode: "dock", to: z.key, side: z.side });
       else if (carry && into) P().dockInto(id, into, slot ? slot.index : undefined);
       else if (carry) P().float(id, { x: r.x, y: r.y, w: r.w, h: r.h });
       G().paint();
@@ -287,6 +415,7 @@
   function look() {
     if (!P() || !G()) return;
     // a member taken out by its own system (a ⊞ layout, a workspace): the ▣ docker lets it go where it is
+    regrid();
     for (const r of P().list()) {
       if (!/^(sf|pf)\./.test(r.id) || r.state !== "in") continue;
       const rec = P().get(r.id), el = memberEl(r.id);
@@ -294,6 +423,6 @@
     }
   }
   function start() { css(); membersBack(0); root.setInterval(look, 1000); look(); }
-  root.H3DGDock = Object.assign(API, { place, headOut, track, takeIn, wantsDock: wants, members: () => P().list().filter((r) => /^(sf|pf)\./.test(r.id)).map((r) => ({ id: r.id, state: r.state, docker: r.docker })) });
+  root.H3DGDock = Object.assign(API, { place, leaveCol, gone: (id) => leaveCol(id, null), regrid, seams: () => seamsNow(null), headOut, track, takeIn, wantsDock: wants, members: () => P().list().filter((r) => /^(sf|pf)\./.test(r.id)).map((r) => ({ id: r.id, state: r.state, docker: r.docker })) });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

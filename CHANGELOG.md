@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.561.0** — A ▣ Docker as a Column of Its Own (Dropped Between Two Columns)
 - **2.560.0** — The ▣ Docker Docks by Drop Zones; Basic Settings / LLM Tokens / The Prompt Docker Go in It
 - **2.559.0** — Folder Filters Remember Their Folder (folder_filters.cfg); Basic Settings in basic.cfg
 - **2.558.0** — ▣ Dockers in the App's Floating Band (Not 9300); Side Dockers + The Storyboard Dragged in

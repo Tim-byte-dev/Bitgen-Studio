@@ -27,6 +27,7 @@
  *   static/dgdock.js - a floating ▣ docker dragged by its title bar docks above / below / beside a docker or in a side
  *   docker (the drop zones Basic Settings has); makePerm(id, restoring, place) puts it there (place {to, side}), its
  *   title bar dragged out floats it again; Basic Settings, LLM tokens and the prompt docker go IN a ▣ docker.
+ *   2.561.0: dropped on the seam between two columns it becomes a column of its own (place {mode: "col", before}).
  * Pure (Node: scripts/test-dockgroup545.js, test-dockgroup549.js, test-dockgroup558.js): isToggleKey, titleOf, CANDIDATES,
  *   SIDE, Z, GROUP, isGroup, btnIdFor, nextGroupId, dragged. */
 (function (root) {
@@ -177,6 +178,7 @@
     if (r.perm && r.win && r.win.parentNode !== doc.body) doc.body.appendChild(r.win);
     p.remove(id);
     if (d) { const s = d.nextElementSibling; d.remove(); if (s && s.classList.contains("dgp-grip")) s.remove(); }
+    if (root.H3DGDock && root.H3DGDock.gone) root.H3DGDock.gone(id);      // 2.561.0: a column's splitter, the grid back
     try { const G = root.H3GoneDocks; if (G) delete G[btnIdFor(id)]; } catch (e) { /* fine */ }
     paint(); tev("docker_group_deleted", id);
     try { root.dispatchEvent(new root.Event("resize")); } catch (e) { /* fine */ }
@@ -220,8 +222,9 @@
     if (dock && DD.place(id, d, dock, !!restoring && !place)) {
       // docked where its drop zone said (its size: its own edge - static/dockfloat.js grips)
     } else {
-      if (!d.parentNode || d.classList.contains("dg-docked")) {
+      if (!d.parentNode || d.classList.contains("dg-docked") || d.classList.contains("dg-col")) {
         if (d._dfPanel) d._dfPanel.unplace();
+        if (DD && DD.leaveCol) DD.leaveCol(id, d);                      // 2.561.0: no longer a column
         d.classList.remove("dg-docked");
         if (!place && !restoring) p.setPerm(id, { dock: null });            // (restoring: its docker may come later - dgdock retries)
         if (!grip) { grip = doc.createElement("div"); grip.className = "dgp-grip"; grip.title = "Drag to set its height"; }
@@ -262,6 +265,7 @@
     p.setPerm(id, false);
     p.float(id, at || (b && b.width > 100 ? { x: b.left + 20, y: Math.max(50, b.top - 40), w: Math.min(b.width, root.innerWidth - 60), h: Math.max(260, b.height) } : null));
     if (d) { const s = d.nextElementSibling; d.remove(); if (s && s.classList.contains("dgp-grip")) s.remove(); }
+    if (root.H3DGDock && root.H3DGDock.gone) root.H3DGDock.gone(id);      // 2.561.0: a column's splitter, the grid back
     try { if (root.H3GoneDocks) delete root.H3GoneDocks[btnIdFor(id)]; } catch (e) { /* fine */ }
     paint(); try { root.dispatchEvent(new root.Event("resize")); } catch (e) { /* fine */ }
   }
