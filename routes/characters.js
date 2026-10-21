@@ -36,6 +36,7 @@ const h3Long = require("../lib/h3Long");                     // 2.503.0: Long vi
 const tailFrames = require("../lib/tailFrames");           // 2.313.0: the take's last 2 s as PNGs
 const takeUpscale = require("../lib/takeUpscale");         // 2.315.0: ⏫ upscales the previewed take
 const seedvr2 = require("../lib/seedvr2");                 // 2.400.0: ⏫ with the ⚙ Upscaler on SeedVR2 (video)
+const sceneResume = require("../lib/sceneResume");         // 2.562.0: a job a restart took away comes back to its scene
 const dlss5 = require("../lib/dlss5");                     // 2.504.0: ⏫ with the ⚙ Upscaler on DLSS 5
 const sceneCount = require("../lib/sceneCount");           // 2.323.0: the Scenes field / scenes.txt
 const movies = require("../lib/movies");
@@ -316,8 +317,10 @@ function syncJobs(project) {
         // a failure carries its REASON onto the card — the worker's verdict
         // and ComfyUI's per-node culprits, never the shell's "exited with
         // code 2" shrug (scenes.reasonFromLog, pinned in test-scenes)
+        // 2.562.0: a job a restart took away - the scene keeps its id (row.lost) and says how to get it back; ↻ Resume
+        // in the Queue docker hands it back to this scene (lib/sceneResume.relink) with its progress bar
         const why = job ? scenes.reasonFromLog(job.log)
-                        : "the job vanished (server restarted?)";
+                        : sceneResume.lost(st.list.find((x) => x.n === r.n) || r, "job", r.job, sceneResume.resumable(core.projDir(project || core.getProject()), r.job));
         try {
           if (src) {
             // 2.358.0: an AI bridge is fitted to its gap before it is filed (lib/sceneBridge.fit)
@@ -362,6 +365,7 @@ function syncJobs(project) {
       if (!job || job.finished) {
         const src = job && job.status === "done" && job.output
           ? outputPath(job.output, project) : null;
+        if (!job) sceneResume.lost(st.list.find((x) => x.n === r.n) || r, "upjob", r.upjob, false);   // 2.562.0
         st = src ? scenes.recordUpscale(st, r.n, src, project).state
                  : scenes.upscaleFailed(st, r.n).state;
         dirty = true;
@@ -373,7 +377,8 @@ function syncJobs(project) {
   try {
     if (sceneEdit.harvest(st.list, { jobs: core.jobs, outputPath: (nm) => outputPath(nm, project),
         setFirst: (row, src, label) => sceneRefs.setSlot(project, row, "first", src, label),
-        reason: (job) => scenes.reasonFromLog(job.log) })) dirty = true;
+        reason: (job) => scenes.reasonFromLog(job.log),
+        resumable: (id) => sceneResume.resumable(core.projDir(project || core.getProject()), id) })) dirty = true;
   } catch { /* a harvest problem must never stall the board */ }
   if (dirty) scenes.save(st, project);
   try { require("../lib/karaoke").harvest(project); } catch { /* 2.373.0: overlays filed beside the board */ }
@@ -3326,7 +3331,7 @@ function mount(app) {
       src = projectMedia.resolve(b.project, b.rel);
       if (!src || projectMedia.kindOfFile(src) !== "images")
         return res.status(404).json({ error: `${b.rel} is not a picture in this project` });
-      label = `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(String(b.rel))}`;
+      label = b.label ? String(b.label).slice(0, 80) : `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(String(b.rel))}`;   // 2.563.0
     } else if (b.kind === "gallery" || b.kind === "asset") {
       src = sceneRefs.resolveImage(b.project, b.kind, b.name);
       if (!src) return res.status(404).json({ error:
@@ -3432,6 +3437,18 @@ function mount(app) {
     const st = scenes.load(b.project);
     const r = scenes.at(st, req.params.n);
     if (!r) return res.status(404).json({ error: `no scene ${req.params.n}` });
+    // 2.563.0 (Tim: "allow user to add reference images to each scene, include images from previous scenes"): a frame
+    // of ANY scene's take (the picker's 🎞 Clips tab) - the whole take's frames, not only the last one to the next scene
+    if (b.kind === "frame") {
+      const from = scenes.at(st, b.scene);
+      if (!from) return res.status(404).json({ error: `no scene ${b.scene}` });
+      if (!from.output) return res.status(400).json({ error: `scene ${from.n} has no rendered take yet` });
+      const t = b.time === undefined || b.time === null || b.time === "" ? null : +b.time;
+      const fo = sceneRefs.addFrame(b.project, r, takeOf(from), Number.isFinite(t) ? t : null, from.n);
+      if (!fo.added.length) return res.status(400).json({ error: (fo.skipped[0] || {}).why || "the frame was not added" });
+      scenes.save(st, b.project);
+      return res.json({ ok: true, n: r.n, refs: r.refs, added: fo.added, note: `${fo.label} added to scene ${r.n}'s pictures` });
+    }
     const src = projectMedia.resolve(b.project, b.rel);
     if (!src || projectMedia.kindOfFile(src) !== "images")
       return res.status(404).json({ error: `${b.rel} is not a picture in this project` });
@@ -3439,7 +3456,7 @@ function mount(app) {
     if (!out.added.length) return res.status(400).json({ error:
       (out.skipped[0] || {}).why || "the picture was not added" });
     const x = r.refs.find((y) => y.file === out.added[0]);
-    if (x) x.label = `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(src, path.extname(src))}`.slice(0, 60);
+    if (x) x.label = (b.label ? String(b.label) : `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(src, path.extname(src))}`).slice(0, 60);   // 2.563.0: the 🎬 tab's words
     scenes.save(st, b.project);
     res.json({ ok: true, n: r.n, refs: r.refs, added: out.added,
       note: `${path.basename(src)} added to scene ${r.n}'s pictures` });

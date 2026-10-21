@@ -913,8 +913,7 @@
       img.src = url; img.hidden = false;
     } else {
       img.hidden = true; img.removeAttribute("src");
-      v.src = url;
-      try { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+      v.src = url;                                   // 2.562.0: loaded, not started (Tim: "don't automatically play videos or music")
     }
     msg((kind === "img" ? "🖼 " : "▶ ") + label + " in the preview - ✕ (or Esc) goes back to the video");
   }

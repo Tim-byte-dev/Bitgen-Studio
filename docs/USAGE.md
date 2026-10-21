@@ -5760,6 +5760,23 @@ orange line shows where it will go - and let go.
   shows ("New column: Docker between References and Assets"); let go and it is a full-height column there, with its own
   splitter to size its width. ▾ folds it to a narrow strip, its statusbar button hides it, and dragging its title bar away
   floats it again. The column, its place and its width come back at the next start.
+- 2.562.0: a StoryBoard scene whose render (or ⏫ upscale, or ✎ First frame) job was **interrupted by a restart** now says
+  "interrupted by a restart - ↻ Resume it in the Queue docker (Pending tab) and it carries on here" and remembers the job.
+  Press **▶ Resume** on that job in the Queue docker's Pending tab and the scene takes it back: it shows as running again
+  with its progress bar, and the take lands in the scene when it finishes. (Discard the job instead and the scene says so.)
+- 2.562.0: **nothing plays by itself** - a finished job, a take opened from the Done tab or the timeline, the running
+  job's joined preview, the lightbox, the StoryBoard's Watch and the swap dialog's preview load their video or song paused;
+  press ▶ (or Space) to play.
+- 2.563.0: **a scene's pictures can come from the other scenes**: the picture picker (＋📁 on a scene, ✎ First frame's
+  🅰 / 📍 / 🧸, and the First / Last frame slots) opens on **🎬 Scenes** - every other scene's own pictures under its number
+  (its First / Last frames, its reference pictures, its ✎ pictures) - and **🎞 Clips** takes a frame of any rendered take,
+  for a scene's reference pictures too. A picked picture says where it came from ("scene 1 · First frame").
+- 2.563.0: **✎ First frame ▸ 🅰 Picture A**: pick the picture the scene starts from and set *Start from* to 🅰 Picture A.
+  Its style, composition, camera framing and the people's poses are kept exactly; the place is the 📍 location picture
+  if you pick one, else the location the scene (or the board's global prompt) names, with its view picture, else Picture
+  A's own place. **🤖 Write** has the LLM write the instruction (it names the pictures as <image1>, <image2> …) - edit it
+  if you like; ✎ Make first frame with Picture A and an empty direction writes it first. The edit style picked in the
+  accordion makes the frame.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).

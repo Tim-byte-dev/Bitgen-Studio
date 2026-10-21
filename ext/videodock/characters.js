@@ -488,7 +488,7 @@
     var isRef = slot === "ref";
     /* 2.337.0: slot "qe_location" / "qe_prop" = the ✎ First frame
        accordion's location / prop pictures (routes/sceneedit.js) */
-    var isQe = /^qe_/.test(slot), qeWhat = slot === "qe_location" ? "location" : "prop";
+    var isQe = /^qe_/.test(slot), qeWhat = slot === "qe_location" ? "location" : slot === "qe_pica" ? "Picture A" : "prop";
     ov.setAttribute("aria-label", isRef ? "Add reference pictures to scene " + n
       : isQe ? "Choose scene " + n + "'s " + qeWhat + " picture for its first frame"
       : "Choose scene " + n + "'s " + slot + " frame");
@@ -498,13 +498,15 @@
       + 'padding:10px;width:min(720px,94vw);max-height:80vh;display:flex;flex-direction:column;gap:6px">'
       + '<div style="display:flex;gap:6px;align-items:center;font-weight:600">'
       + '<span style="flex:1">Scene ' + n + (isRef ? " — add a reference picture"
-          : isQe ? " — ✎ first frame: " + (qeWhat === "location" ? "choose the LOCATION picture" : "add a PROP picture")
+          : isQe ? " — ✎ first frame: " + (qeWhat === "location" ? "choose the LOCATION picture" : qeWhat === "Picture A" ? "choose PICTURE A (its style, composition and poses are kept)" : "add a PROP picture")
           : " — choose the " + (slot === "first" ? "FIRST" : "LAST") + " frame") + "</span>"
       + '<button class="ghost gbtn" data-flclose type="button" aria-label="Close">✕</button></div>'
       + '<div style="display:flex;gap:4px">'
-      + (isRef ? ["project", "file"] : ["clips", "project", "file"]).map(function (t) {
+      /* 2.563.0 (Tim: "allow user to add reference images to each scene, include images from previous scenes"):
+         + 🎬 Scenes (every other scene's own pictures), and 🎞 Clips (any take's frames) for the reference pictures too */
+      + ["scenes", "clips", "project", "file"].map(function (t) {
           return '<button class="ghost gbtn" data-fltab="' + t + '" type="button" style="font-size:.72rem">'
-            + { clips: "🎞 Clips", project: "📁 Project", file: "⤒ File" }[t] + "</button>";
+            + { scenes: "🎬 Scenes", clips: "🎞 Clips", project: "📁 Project", file: "⤒ File" }[t] + "</button>";
         }).join("") + "</div>"
       + '<div data-flbody style="overflow:auto;display:flex;flex-wrap:wrap;gap:4px;min-height:80px"></div>'
       + '<div class="hint" data-flnote></div></div>';
@@ -535,6 +537,26 @@
       return img;
     };
     var tabs = {
+      /* 2.563.0: every other scene's own pictures - its First / Last frames, its reference pictures, its ✎ Picture A /
+         location / props - one heading per scene (lib/scenePictures; picked like a project picture, with its words) */
+      scenes: function () {
+        fetch("/api/scenes/pictures?except=" + n).then(function (r2) { return r2.json(); }).then(function (j) {
+          var sc = (j && j.scenes || []).filter(function (x) { return x.items.length; });
+          if (!sc.length) { body.innerHTML = '<span class="hint">no other scene has pictures yet - 🎞 Clips takes a frame of a rendered scene</span>'; return; }
+          sc.forEach(function (x) {
+            var h = document.createElement("div");
+            h.className = "hint"; h.setAttribute("data-flgroup", "scene " + x.n);
+            h.style.cssText = "flex-basis:100%;font-weight:600;margin-top:4px";
+            h.textContent = "Scene " + x.n + (x.chapter ? " · " + x.chapter : "");
+            body.appendChild(h);
+            x.items.forEach(function (it) {
+              var words = "scene " + x.n + " · " + it.label;
+              var im = thumb(it.url, words, function () { choose({ kind: "project", rel: it.rel, label: words }); });
+              im.setAttribute("data-flrel", it.rel);
+            });
+          });
+        }).catch(function () { note.textContent = "could not list the scenes' pictures"; });
+      },
       clips: function () {
         var done = (scState.list || []).filter(function (x) { return x.output && x.status !== "running"; });
         if (!done.length) { body.innerHTML = '<span class="hint">no rendered scenes yet</span>'; return; }
@@ -619,7 +641,7 @@
       b.addEventListener("click", function () { body.innerHTML = ""; note.textContent = "";
         tabs[b.dataset.fltab](); });
     });
-    (isRef ? tabs.project : tabs.clips)();
+    tabs.scenes();
     return ov;
   }
   function scNextOf(n) {
@@ -2712,7 +2734,7 @@
       var v = el("scWatchVid");
       if (v.getAttribute("data-src") !== src) { v.setAttribute("data-src", src); v.src = src; }
       try { el("scWatchDlg").showModal(); } catch (er) {}
-      try { v.play(); } catch (er) {}
+      // 2.562.0 (Tim: "don't automatically play videos or music"): the take opens paused - its ▶ plays it
     });
     el("scWatchClose").addEventListener("click", function () {
       var v = el("scWatchVid");

@@ -643,7 +643,10 @@ function mount(app) {
     if (e.state !== "pending" || !e.params) return res.status(400).json({ error: "only an interrupted pending job can be resumed" });
     // same id and folder, so its log/preview/reference files carry on
     const job = core.makeJob(e.params, e.id, path.join(core.JOBS_DIR, e.id));
-    res.json(core.jobDict(job));
+    // 2.562.0: the StoryBoard scene that lost this job to the restart takes it back - its progress bar, not the ⚠
+    let scenesBack = [];
+    try { scenesBack = require("../lib/sceneResume").relink(core.getProject(), e.id); } catch { /* the job runs anyway */ }
+    res.json(Object.assign(core.jobDict(job), scenesBack.length ? { scenes: scenesBack } : {}));
   });
   /* 2.260.0 ("add a clear button in the queue docker to clear the done
      queue"): one call empties the Done tab — this run's finished jobs
@@ -664,6 +667,7 @@ function mount(app) {
   app.delete("/api/jobs/history/:id", (req, res) => {
     const ok = jobsInfo.remove(core.projDir(core.getProject()), req.params.id);
     if (!ok) return res.status(404).json({ error: "no such job in jobs.info" });
+    try { require("../lib/sceneResume").forget(core.getProject(), req.params.id); } catch { /* 2.562.0: no scene waits for it */ }
     res.json({ removed: true });
   });
   app.get("/api/jobs/:id", (req, res) => {

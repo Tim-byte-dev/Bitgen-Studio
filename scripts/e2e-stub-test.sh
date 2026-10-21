@@ -12192,6 +12192,25 @@ node scripts/test-dgdock561.js > /tmp/d561.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui561-ui.js > /tmp/ui561.log 2>&1 \
   && ok "2.561.0 browser test: a ▣ docker dropped on the References | Assets seam = a full-height 340 px column there, its splitter +100, Basic Settings in it, back after a reload, ▾ folds it, torn out onto the main column | Queue seam, dragged away = the app's own grid - or SKIP without playwright" \
   || { bad "2.561.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui561.log | head -14; }
+
+# ---- 2.562.0 (a resumed job comes back to its StoryBoard scene; nothing plays by itself)
+node scripts/test-sceneresume562.js > /tmp/sr562.log 2>&1 \
+  && ok "2.562.0 units (safeLost / lost / relinkRows / forgetRows, scenes.safe keeps lost, the ✎ harvest, a real board relinked + saved, jobs.info resumable, the syncJobs / resume / discard wiring)" \
+  || { bad "2.562.0 units"; grep -a "^FAIL" -A2 /tmp/sr562.log | head -14; }
+node scripts/test-noautoplay562.js > /tmp/na562.log 2>&1 \
+  && ok "2.562.0 units (playVideo, the joined preview, the lightbox, Watch, the swap preview - loaded, never .play(); no autoplay tag anywhere)" \
+  || { bad "2.562.0 no-autoplay units"; grep -a "^FAIL" -A2 /tmp/na562.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui562-ui.js > /tmp/ui562.log 2>&1 \
+  && ok "2.562.0 browser test: a scene whose job a restart took away says ↻ Resume (not vanished), the Pending tab's ▶ Resume hands it back (running, no ⚠), a take opens paused - or SKIP without playwright" \
+  || { bad "2.562.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui562.log | head -14; }
+
+# ---- 2.563.0 (pictures from other scenes; ✎ 🅰 Picture A; 🤖 Write)
+node scripts/test-picturea563.js > /tmp/pa563.log 2>&1 \
+  && ok "2.563.0 units (BASES picture, safe / isBlank / resolveBase, plan with Picture A - a 📍 picture / the named place's view / its name / Picture A's own place, a tagged direction is the whole instruction, pickPlace, llmMessages, cleanWritten, setPic pica, scenePictures.list, the routes / picker / accordion wiring)" \
+  || { bad "2.563.0 units"; grep -a "^FAIL" -A2 /tmp/pa563.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui563-ui.js > /tmp/ui563.log 2>&1 \
+  && ok "2.563.0 browser test: ＋📁 on scene 2 opens on 🎬 Scenes and adds scene 1's reference picture, 🅰 Picture A takes scene 1's First frame, 🤖 Write answers, ✎ queues the edit with <image1> = Picture A - or SKIP without playwright" \
+  || { bad "2.563.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui563.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

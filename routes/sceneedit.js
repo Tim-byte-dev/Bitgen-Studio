@@ -11,6 +11,11 @@
 //   POST /api/scenes/:n/qedit/pic/delete  {slot, file}
 //   GET  /api/scenes/:n/qedit/pic/:file   a location / prop picture
 //   POST /api/scenes/:n/qedit/run         {width, height, seed} -> {job, prompt, roles, note}
+//   POST /api/scenes/:n/qedit/write       2.563.0 🤖 the LLM writes the instruction (the <imageN> tags) -> {prompt, roles}
+//   GET  /api/scenes/pictures?except=n    2.563.0 every scene's own pictures, by scene (lib/scenePictures) - the 🎬 tab
+// 2.563.0 (Tim: "... use a reference image as the start frame but keep location the same ..."): base "picture" =
+// Picture A (slot pica); with no 📍 location picture the place is the location the scene / the global prompt names
+// (lib/sceneEdit.pickPlace -> its view picture).
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -25,6 +30,8 @@ const styles = require("../lib/styles");
 const aiEdit = require("../lib/aiEdit");
 const imageSeed = require("../lib/imageSeed");
 const projectMedia = require("../lib/projectMedia");
+const envs = require("../lib/environments");
+const scenePictures = require("../lib/scenePictures");
 
 const upload = multer({ dest: path.join(require("os").tmpdir(), "bitgen-qedit"), limits: { fileSize: 64 * 1024 * 1024, files: 1 } });
 const takeOf = (row) => row && row.output
@@ -58,6 +65,45 @@ function load(b, n) {
   return { st, r };
 }
 const dirOf = (project, r) => sceneRefs.dir(project, r.id);
+
+/** 2.563.0: the place a Picture A frame keeps without a 📍 picture - {name, path?} or null */
+function placeFor(project, st, r) {
+  const env = sceneEdit.pickPlace(envs.list(project), (r.prompt || []).join(" "), (st.plan || {}).prompt_prefix);
+  if (!env) return null;
+  let p = env.view ? path.join(envs.envDir(env.name, project), env.view) : null;
+  if (!p && env.pano) { try { const v = envs.extractView(env.name, project); if (v && v.ok) p = v.view; } catch { p = null; } }
+  return { name: env.name, tag: env.tag, path: p && fs.existsSync(p) ? p : null };
+}
+
+/** what a ✎ frame of row r is made from (the run and 🤖 Write share it): {base, baseFile, baseLabel, tmp, picked, locationPath,
+ *  props, picAPath, picALabel, place} - tmp = a temp copy to delete after (not for "continue": that file is the board's) */
+function gather(project, st, r, q, cast) {
+  const d = dirOf(project, r);
+  let wanted = q.chars;
+  if (!wanted.length) {                // none ticked: the @tags the scene's prompt names
+    const txt = (r.prompt || []).join(" ").toLowerCase();
+    wanted = cast.filter((c) => txt.includes("@" + c.tag)).map((c) => c.name).slice(0, sceneEdit.MAX_CHARS);
+  }
+  const picked = wanted.map((nm) => cast.find((c) => c.name === nm)).filter(Boolean);
+  const locationPath = q.location ? sceneEdit.picPath(d, q.location.file) : null;
+  const picAPath = q.pica ? sceneEdit.picPath(d, q.pica.file) : null;
+  const props = q.props.map((p) => ({ path: sceneEdit.picPath(d, p.file), label: p.label })).filter((p) => p.path);
+  const firstSlot = sceneRefs.slotFor(project, r, "first");
+  const canContinue = ["first", "continue", "transition", "last"].includes(String(r.anchor || "")) && !!contSource(st, r);
+  const base = sceneEdit.resolveBase(q.base, { hasPicA: !!picAPath, canContinue, hasLocation: !!locationPath, hasFirst: !!firstSlot, nChars: picked.length });
+  let baseFile = null, baseLabel = "", tmp = null;
+  if (base === "continue") {
+    const cf = contFrame(project, st, r);
+    if (cf) { baseFile = cf.file; baseLabel = cf.label; }
+  } else if (base === "first" && firstSlot) {
+    // copied: the result REPLACES the First slot, so the job must not read the file it overwrites
+    tmp = path.join(core.tempDir(), `qedit_first_${Date.now()}${path.extname(firstSlot.file) || ".png"}`);
+    fs.copyFileSync(firstSlot.file, tmp);
+    baseFile = tmp; baseLabel = firstSlot.label;
+  } else if (base === "picture" && picAPath) baseLabel = "Picture A" + (q.pica.label ? ": " + q.pica.label : "");
+  const place = base === "picture" && !locationPath ? placeFor(project, st, r) : null;
+  return { base, baseFile, baseLabel, tmp, picked, locationPath, props, picAPath, picALabel: q.pica ? q.pica.label : "", place };
+}
 
 function mount(app) {
   app.get("/api/sceneedit/engines", (req, res) => {
@@ -101,7 +147,8 @@ function mount(app) {
       src = projectMedia.resolve(b.project, b.rel);
       if (!src || projectMedia.kindOfFile(src) !== "images")
         return res.status(404).json({ error: `${b.rel} is not a picture in this project` });
-      label = `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(String(b.rel))}`;
+      label = b.label ? String(b.label).slice(0, 80)            // 2.563.0: the 🎬 tab says what it is ("scene 2 · First frame")
+        : `${projectMedia.groupFor(b.project, b.rel)}: ${path.basename(String(b.rel))}`;
     } else if (b.kind === "gallery" || b.kind === "asset") {
       src = sceneRefs.resolveImage(b.project, b.kind, b.name);
       if (!src) return res.status(404).json({ error: `${b.name} is not a picture in the ${b.kind === "asset" ? "image assets" : "gallery"}` });
@@ -172,34 +219,15 @@ function mount(app) {
     if (!style) return res.status(400).json({ error: "no edit style - Settings -> Image styles needs \"Qwen Image 2.1 edit\" (restart the app to seed it) or another Qwen / Kontext edit style" });
     let eg;
     try { eg = aiEdit.editGraph(style, core.BASE); } catch (e) { return res.status(400).json({ error: e.message }); }
-    const d = dirOf(project, r);
     const cast = castSheets(project);
-    let wanted = q.chars;
-    if (!wanted.length) {                // none ticked: the @tags the scene's prompt names
-      const txt = (r.prompt || []).join(" ").toLowerCase();
-      wanted = cast.filter((c) => txt.includes("@" + c.tag)).map((c) => c.name).slice(0, sceneEdit.MAX_CHARS);
-    }
-    const picked = wanted.map((nm) => cast.find((c) => c.name === nm)).filter(Boolean);
-    const locationPath = q.location ? sceneEdit.picPath(d, q.location.file) : null;
-    const props = q.props.map((p) => ({ path: sceneEdit.picPath(d, p.file), label: p.label })).filter((p) => p.path);
-    const firstSlot = sceneRefs.slotFor(project, r, "first");
-    const canContinue = ["first", "continue", "transition", "last"].includes(String(r.anchor || "")) && !!contSource(st, r);
-    const base = sceneEdit.resolveBase(q.base, { canContinue, hasLocation: !!locationPath, hasFirst: !!firstSlot, nChars: picked.length });
-    let baseFile = null, baseLabel = "", tmp = null;
-    if (base === "continue") {
-      const cf = contFrame(project, st, r);
-      if (cf) { baseFile = tmp = cf.file; baseLabel = cf.label; }
-    } else if (base === "first" && firstSlot) {
-      // copied: the result REPLACES the First slot, so the job must not read the file it overwrites
-      tmp = path.join(core.tempDir(), `qedit_first_${Date.now()}${path.extname(firstSlot.file) || ".png"}`);
-      fs.copyFileSync(firstSlot.file, tmp);
-      baseFile = tmp; baseLabel = firstSlot.label;
-    }
+    const g = gather(project, st, r, q, cast);
+    const { base, baseLabel, tmp } = g;
     let pl;
     try {
-      pl = sceneEdit.plan({ base, baseFile, chars: picked, locationPath, props,
+      pl = sceneEdit.plan({ base, baseFile: g.baseFile, chars: g.picked, locationPath: g.locationPath, props: g.props,
+                            picAPath: g.picAPath, picALabel: g.picALabel, place: g.place,
                             text: q.prompt, sceneText: (r.prompt || []).join(" ") });
-    } catch (e) { if (tmp && base !== "continue") try { fs.unlinkSync(tmp); } catch {} return res.status(400).json({ error: e.message }); }
+    } catch (e) { if (tmp) try { fs.unlinkSync(tmp); } catch {} return res.status(400).json({ error: e.message }); }
     if (pl.images.length > (eg.slots || 0))
       return res.status(400).json({ error: `${style.name} has ${eg.slots || 0} picture slot(s) and this frame needs ${pl.images.length} - use Qwen Image 2.1 edit (8), or drop a prop / a character` });
     const cfg = core.getConfig();
@@ -216,8 +244,52 @@ function mount(app) {
     r.qedit = q;
     scenes.save(st, project);
     res.json({ ok: true, n: r.n, job: job.id, base, prompt: pl.prompt, roles: pl.roles, qedit: q,
-               note: `✎ scene ${r.n}: ${style.name} makes the first frame from ${pl.roles.join(" + ")} - it lands in the First slot` });
+               note: `✎ scene ${r.n}: ${style.name} makes the first frame from ${pl.roles.join(" + ")} - it lands in the First slot`
+                 + (g.place && !g.place.path ? ` (the place: ${g.place.name}, in words - it has no view picture)` : "") });
   }));
+
+  /* 2.563.0: 🤖 Write - the LLM writes this frame's instruction with the pictures' tags (it becomes the direction, editable) */
+  app.post("/api/scenes/:n/qedit/write", trap.guard(async (req, res) => {
+    const b = req.body || {};
+    const project = b.project;
+    const { st, r } = load(b, req.params.n);
+    if (!r) return res.status(404).json({ error: `no scene ${req.params.n}` });
+    const q = sceneEdit.safe(r.qedit);
+    if (b.base != null && sceneEdit.BASES.includes(b.base)) q.base = b.base;
+    if (Array.isArray(b.chars)) q.chars = b.chars.map(String).filter(Boolean).slice(0, sceneEdit.MAX_CHARS);
+    const g = gather(project, st, r, q, castSheets(project));
+    let pl;
+    try {
+      pl = sceneEdit.plan({ base: g.base, baseFile: g.baseFile, chars: g.picked, locationPath: g.locationPath, props: g.props,
+                            picAPath: g.picAPath, picALabel: g.picALabel, place: g.place, text: "", sceneText: (r.prompt || []).join(" ") });
+    } catch (e) { if (g.tmp) try { fs.unlinkSync(g.tmp); } catch {} return res.status(400).json({ error: e.message }); }
+    if (g.tmp) try { fs.unlinkSync(g.tmp); } catch {}
+    const notes = String(b.notes != null ? b.notes : (sceneEdit.isFull(q.prompt) ? "" : q.prompt) || "").trim();
+    const llmChat = require("../lib/llmChat");
+    let reply = "";
+    try {
+      const rr = await llmChat.complete(core, { messages: sceneEdit.llmMessages({ base: g.base, roles: pl.roles, prefix: (st.plan || {}).prompt_prefix,
+        sceneText: (r.prompt || []).join(" "), notes }) });
+      if (!rr || rr.ok === false) return res.status(502).json({ error: "the LLM did not answer - " + ((rr && rr.error) || "start one in Settings ▸ LLM") });
+      reply = llmChat.stripThinking(llmChat.readReply(rr));
+    } catch (e) { return res.status(502).json({ error: "the LLM did not answer - " + (e.message || e) }); }
+    let text = sceneEdit.cleanWritten(reply, pl.images.length);
+    if (!text) return res.status(502).json({ error: "the LLM answered nothing usable - try again, or write the direction yourself" });
+    if (!sceneEdit.isFull(text)) text = "<image1> " + text;      // (it must name the pictures: the start is <image1>)
+    const st2 = scenes.load(project), r2 = scenes.at(st2, r.n);  // (the board may have moved while the LLM wrote)
+    if (r2) { const q2 = sceneEdit.safe(r2.qedit); q2.prompt = text; if (b.base != null && sceneEdit.BASES.includes(b.base)) q2.base = b.base; r2.qedit = q2; scenes.save(st2, project); }
+    res.json({ ok: true, n: r.n, prompt: text, roles: pl.roles, base: g.base,
+               note: `🤖 scene ${r.n}: the LLM wrote the first frame's instruction (${pl.roles.length} picture(s)) - edit it, then ✎ Make first frame` });
+  }));
+
+  /* 2.563.0: every scene's own pictures, by scene - the pickers' 🎬 Scenes tab */
+  app.get("/api/scenes/pictures", (req, res) => {
+    try {
+      const project = req.query.project;
+      const st = scenes.load(project);
+      res.json({ scenes: scenePictures.list(project, st, parseInt(req.query.except, 10) || 0) });
+    } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
+  });
 }
 
 module.exports = { mount, contSource, castSheets };

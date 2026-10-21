@@ -629,6 +629,8 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Folder filters remember their folder; Basic Settings in basic.cfg** — each folder filter dropdown keeps the folder you picked (folder_filters.cfg); Basic Settings are saved to basic.cfg when changed and read back at the start. *Where:* any model dropdown's folder filter, the 📁 browser, the Model manager; Basic Settings. *Since:* 2.559.0
 - **▣ dockers dock, and every docker goes in** — a floating ▣ docker dragged by its title bar docks above / below / beside a docker or in a side docker (the blue drop zones); Basic Settings, LLM tokens and the prompt docker drop into a ▣ docker and float out again. *Where:* the statusbar's ▣ Docker (Ctrl+Alt+D). *Since:* 2.560.0
 - **A ▣ docker as a column of its own** — dropped on the seam between two columns (or at the window's edge) it becomes a full-height column with its own splitter; kept across restarts. *Where:* drag a ▣ docker by its title bar. *Since:* 2.561.0
+- **Resumed jobs come back to their scene; nothing autoplays** — a StoryBoard scene interrupted by a restart takes its job back (running, its progress bar) when ▶ Resume is pressed in the Queue docker's Pending tab; videos and songs load paused until ▶ / Space. *Where:* the Queue docker's Pending tab; the StoryBoard; the player. *Since:* 2.562.0
+- **Pictures from other scenes; 🅰 Picture A first frames** — the scene pickers' 🎬 Scenes tab (every scene's own pictures) and 🎞 Clips (any take's frames); ✎ First frame starts from a chosen Picture A (style, composition, poses kept) in a new or the global prompt's location, the instruction written by the LLM (🤖 Write). *Where:* the StoryBoard scene cards. *Since:* 2.563.0
 
 ### Selections
 

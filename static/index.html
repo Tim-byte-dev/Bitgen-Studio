@@ -6246,7 +6246,7 @@ async function poll() {
     pvImgHide();                                  // 2.214.0: the picture yields
     p.classList.remove("hidden");
     $("vtitle").textContent = `preview · chunk ${j.chunk ? j.chunk.i + "/" + j.chunk.n : ""} (joins as it renders)`;
-    p.play().catch(() => {});
+    // 2.562.0 (Tim: "don't automatically play videos or music"): loaded, not started - ▶ / Space plays it
   }
   if (j.status === "done" && j.output) {
     lastPreviewV = 0;
@@ -6381,7 +6381,8 @@ function playVideo(name) {
     $("vmeta").textContent = `${p.videoWidth}×${p.videoHeight} · ${p.duration.toFixed(1)}s`;
   };
   $("vtitle").textContent = name;
-  p.play().catch(() => {});
+  // 2.562.0 (Tim: "don't automatically play videos or music"): a finished job / an opened take is LOADED (its first
+  // frame shows), it plays when you press ▶ or Space - never by itself
   document.querySelectorAll(".thumb").forEach(t => t.classList.toggle("playing", t.dataset.name === name));
 }
 /* PLAYER → TIMELINE (Task C two-way sync, 2.93.0). When the player runs a
@@ -8611,7 +8612,7 @@ function lbShow() {
   for (const id of ["lb_in", "lb_out", "lb_fit"]) $(id).style.display = zoomable ? "" : "none";
   if (it.kind === "video") {
     const v = document.createElement("video");
-    v.src = it.url; v.controls = true; v.autoplay = true; v.playsInline = true;
+    v.src = it.url; v.controls = true; v.autoplay = false; v.playsInline = true;   // 2.562.0: ▶ plays it, not opening it
     // a codec the browser cannot decode is a blank rectangle otherwise
     v.onerror = () => { wrap.innerHTML =
       `<div class="lbaud"><span class="big">▶</span><span>${esc(it.name)}</span>` +
@@ -8621,7 +8622,7 @@ function lbShow() {
     wrap.innerHTML = `<div class="lbaud"><span class="big">🔊</span>` +
       `<span>${esc(it.name)}</span></div>`;
     const a = document.createElement("audio");
-    a.src = it.url; a.controls = true; a.autoplay = true;
+    a.src = it.url; a.controls = true; a.autoplay = false;   // 2.562.0: ▶ plays it, not opening it
     wrap.querySelector(".lbaud").appendChild(a);
   } else {
     const img = document.createElement("img");

@@ -172,8 +172,8 @@ check("the picker: qe_location / qe_prop go to /qedit/pic and /qedit/pic/upload"
     props: [{ file: "qe_prop_a_cup.png", label: "cup" }], status: "failed", error: "boom" } };
   doc.getElementById("scList").innerHTML = QE.block(row);
   const det = doc.querySelector('details.scqe[data-qe="2"]');
-  check("block: a closed <details> accordion titled ✎ First frame (Qwen 2.1), the failure said",
-    det && !det.open && /✎ First frame \(Qwen 2\.1\)/.test(det.querySelector("summary").textContent) && /⚠ failed/.test(det.textContent) && /boom/.test(det.textContent));
+  check("block: a closed <details> accordion titled ✎ First frame (2.563.0: the edit style picked below makes it - no model in the title), the failure said",
+    det && !det.open && /✎ First frame/.test(det.querySelector("summary").textContent) && !/Qwen/.test(det.querySelector("summary").textContent) && /⚠ failed/.test(det.textContent) && /boom/.test(det.textContent));
   check("block: Start from (the record's choice), the cast as checkboxes (Bo ticked), 📍 location + 🧸 prop thumbs, the direction, the edit styles (Qwen 2.1 picked), ✎ Make first frame",
     det.querySelector("[data-qebase]").value === "continue"
     && Array.from(det.querySelectorAll("[data-qechar]")).map((c) => c.value + ":" + c.checked).join() === "Ava:false,Bo:true"

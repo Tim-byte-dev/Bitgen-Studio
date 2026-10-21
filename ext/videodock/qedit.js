@@ -13,7 +13,13 @@
  * line of direction and the edit style (Qwen Image 2.1 edit by default). ✎
  * Make first frame queues an image job (routes/sceneedit.js); the finished
  * picture lands in the scene's First slot. The open / closed state and the
- * cast list live here, so the board's 4-second repaint keeps them. */
+ * cast list live here, so the board's 4-second repaint keeps them.
+ * 2.563.0 (Tim: "maybe we can use a reference image as the start frame but keep location the same - we use the llm to
+ * say, scene starts with "ref image we choose(picture a)", style, composition and pose is exactly the same as (picture
+ * a), and we add reference image for our new location, if location remains unchanged use the global prompts location"):
+ * 🅰 Picture A (any scene's pictures, a frame of any take, a project picture, a file) + Start from "🅰 Picture A";
+ * 🤖 Write = the LLM writes the instruction with the pictures' tags (editable); ✎ with Picture A and no direction
+ * writes it first. The model is the edit style picked in the accordion. */
 (function () {
   "use strict";
   var open = {};                      // scene n -> true while the accordion is open
@@ -31,14 +37,15 @@
       .catch(function () { return info || { edit: [], cast: [], default: "" }; });
   }
 
-  var BASES = [["auto", "Auto"], ["location", "📍 the location picture"], ["continue", "↪ the frame it continues from"], ["first", "🖼 its First picture"]];
+  var BASES = [["auto", "Auto"], ["picture", "🅰 Picture A (its style, composition, poses)"], ["location", "📍 the location picture"], ["continue", "↪ the frame it continues from"], ["first", "🖼 its First picture"]];
 
   function thumb(n, x, slot) {
+    var word = slot === "pica" ? "Picture A" : slot;
     return '<span style="position:relative;display:inline-block;flex:none">'
       + '<img src="/api/scenes/' + n + "/qedit/pic/" + encodeURIComponent(x.file) + '" alt="' + esc(x.label || x.file) + '" '
       + 'title="' + esc(x.label || x.file) + '" style="height:36px;border-radius:3px;display:block">'
       + '<button class="ghost" type="button" data-qedel="' + n + '" data-slot="' + slot + '" data-file="' + esc(x.file) + '" '
-      + 'title="Remove this ' + slot + ' picture" aria-label="Remove the ' + slot + ' picture ' + esc(x.label || x.file) + '" '
+      + 'title="Remove this ' + word + ' picture" aria-label="Remove the ' + word + ' picture ' + esc(x.label || x.file) + '" '
       + 'style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;padding:0;font-size:.6rem;line-height:1;border-radius:50%">✕</button></span>';
   }
 
@@ -48,8 +55,8 @@
     var cast = (info && info.cast) || [], edit = (info && info.edit) || [];
     var st = q.status === "running" ? "⏳ making…" : q.status === "done" ? "✔ in the First slot" : q.status === "failed" ? "⚠ failed" : "";
     return '<details class="scqe" data-qe="' + n + '"' + (open[n] ? " open" : "") + ' style="border:1px solid #2c3140;border-radius:4px;padding:2px 6px;margin-top:3px">'
-      + '<summary style="cursor:pointer;font-size:.72rem" title="Make this scene\'s FIRST frame with Qwen Image 2.1: the character(s) in a location with props, or the frame it continues from moved to a new location">'
-      + "✎ First frame (Qwen 2.1)" + (st ? ' <span class="hint" data-qestat="' + n + '">' + st + "</span>" : "") + "</summary>"
+      + '<summary style="cursor:pointer;font-size:.72rem" title="Make this scene\'s FIRST frame with the edit style picked below: Picture A kept as it is in a new place, the character(s) in a location with props, or the frame it continues from moved to a new location">'
+      + "✎ First frame" + (st ? ' <span class="hint" data-qestat="' + n + '">' + st + "</span>" : "") + "</summary>"
       + '<div style="display:flex;flex-direction:column;gap:4px;padding:4px 0">'
       + '<label class="hint" style="font-size:.68rem">Start from <select data-qebase="' + n + '" aria-label="What scene ' + n + '\'s first frame starts from">'
       + BASES.map(function (b) { return '<option value="' + b[0] + '"' + ((q.base || "auto") === b[0] ? " selected" : "") + ">" + b[1] + "</option>"; }).join("")
@@ -60,6 +67,14 @@
             + '<input type="checkbox" data-qechar="' + n + '" value="' + esc(c.name) + '"' + (chosen.indexOf(c.name) >= 0 ? " checked" : "") + ' style="margin:0">'
             + '<img src="' + esc(c.url) + '" alt="" style="height:24px;border-radius:2px">' + esc(c.name) + "</label>";
         }).join("") : '<span class="hint" style="font-size:.66rem">no cast sheets yet (none ticked = the @tags in the prompt)</span>')
+      + "</div>"
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+      + '<span class="hint" style="font-size:.68rem" title="The picture this scene starts from: its style, composition, camera framing and poses are kept exactly">🅰 Picture A</span>'
+      + (q.pica ? thumb(n, q.pica, "pica") : "")
+      + '<button class="ghost gbtn" type="button" data-qepick="' + n + '" data-slot="qe_pica" style="font-size:.66rem" '
+      + 'title="Picture A: a picture of any scene (its references, First / Last frames), a frame of any take, a project picture or a file" aria-label="Choose scene ' + n + '\'s Picture A">'
+      + (q.pica ? "change" : "choose…") + "</button>"
+      + '<span class="hint" style="font-size:.66rem">' + (q.pica && !q.location ? "the place: 📍 below, else the location the scene / the global prompt names" : "") + "</span>"
       + "</div>"
       + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
       + '<span class="hint" style="font-size:.68rem">📍 Location</span>'
@@ -80,6 +95,8 @@
       + (edit.length ? edit.map(function (e) { var sel = (q.style_id || info.default) === e.id; return '<option value="' + esc(e.id) + '"' + (sel ? " selected" : "") + ">" + esc(e.name) + "</option>"; }).join("")
           : '<option value="">(no edit style - Qwen Image 2.1 edit is seeded on restart)</option>')
       + "</select>"
+      + '<button class="ghost gbtn" type="button" data-qewrite="' + n + '" style="font-size:.68rem" '
+      + 'title="The LLM writes the instruction from the pictures (Picture A, the location, the cast, the props), the global prompt and this scene - edit it after" aria-label="Write scene ' + n + '\'s first-frame instruction with the LLM">🤖 Write</button>'
       + '<button class="gbtn" type="button" data-qerun="' + n + '"' + (q.status === "running" ? " disabled" : "")
       + ' title="Make the first frame now - it lands in the First slot (a Ref scene becomes First)">✎ Make first frame</button>'
       + (q.status === "failed" && q.error ? '<span class="hint" style="color:#e88;font-size:.66rem">' + esc(q.error) + "</span>" : "")
@@ -120,20 +137,46 @@
           .then(function (j) { if (j.error) ctx.note("⚠ " + j.error); ctx.refresh(); });
       });
     });
+    // 2.563.0: 🤖 Write - the LLM's instruction lands in the direction box (and is saved)
+    var write = function (n, notes) {
+      var d = root.querySelector('details[data-qe="' + n + '"]'), base = d && d.querySelector("[data-qebase]");
+      var names = Array.prototype.map.call(root.querySelectorAll('[data-qechar="' + n + '"]:checked'), function (x) { return x.value; });
+      ctx.note("🤖 scene " + n + ": the LLM is writing the first frame's instruction…");
+      return jpost("/api/scenes/" + n + "/qedit/write", { base: base ? base.value : undefined, chars: names, notes: notes })
+        .then(function (j) {
+          if (j.error) { ctx.note("⚠ " + j.error); return null; }
+          var t = d && d.querySelector("[data-qeprompt]"); if (t) t.value = j.prompt || "";
+          ctx.note(j.note || "🤖 written");
+          return j;
+        }, function (e) { ctx.note("⚠ " + (e && e.message || e)); return null; });
+    };
+    all("[data-qewrite]", function (b) {
+      b.addEventListener("click", function () {
+        var n = b.dataset.qewrite, d = root.querySelector('details[data-qe="' + n + '"]'), t = d && d.querySelector("[data-qeprompt]");
+        var notes = t && t.value && t.value.indexOf("<image1>") < 0 ? t.value : "";       // a typed direction = the LLM's notes
+        b.disabled = true;
+        write(n, notes).then(function () { b.disabled = false; });
+      });
+    });
     all("[data-qerun]", function (b) {
       b.addEventListener("click", function () {
         var n = b.dataset.qerun, d = root.querySelector('details[data-qe="' + n + '"]');
         var t = d && d.querySelector("[data-qeprompt]"), base = d && d.querySelector("[data-qebase]"), sty = d && d.querySelector("[data-qestyle]");
         var names = Array.prototype.map.call(root.querySelectorAll('[data-qechar="' + n + '"]:checked'), function (x) { return x.value; });
         b.disabled = true;
+        // 2.563.0: Picture A and no direction - the LLM writes it first (no LLM = the built-in wording)
+        var hasA = !!(d && d.querySelector('[data-qedel][data-slot="pica"]'));
+        var pre = (t && !t.value.trim() && base && (base.value === "picture" || (base.value === "auto" && hasA))) ? write(n, "") : Promise.resolve(null);
+        pre.then(function () {
         ctx.note("✎ scene " + n + ": making the first frame…");
-        jpost("/api/scenes/" + n + "/qedit/run", { prompt: t ? t.value : undefined, base: base ? base.value : undefined,
+        return jpost("/api/scenes/" + n + "/qedit/run", { prompt: t ? t.value : undefined, base: base ? base.value : undefined,
                                                     chars: names, style_id: sty ? sty.value : undefined })
           .then(function (j) {
             if (j.error) { b.disabled = false; ctx.note("⚠ " + j.error); return; }
             ctx.note(j.note || "✎ queued");
             ctx.refresh();
           }, function (e) { b.disabled = false; ctx.note("⚠ " + (e && e.message || e)); });
+        });
       });
     });
   }
