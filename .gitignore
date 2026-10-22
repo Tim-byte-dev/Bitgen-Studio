@@ -37,6 +37,8 @@ output/
 # starting state and a committed one would overwrite somebody's own.
 styles/
 graphs/
+# pose_sheets/ is the user's own pose sheets for the Character creator (2.577.0) - made on first use
+pose_sheets/
 
 # --- settings --------------------------------------------------------------
 # default.settings SHIPS: it is the authored default layer, and the app needs

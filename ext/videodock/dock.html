@@ -408,18 +408,15 @@
                 <option value="2.5d">2.5D</option>
                 <option value="anime">Anime</option>
               </select>
-              <label for="chOptPose">Pose</label>
-              <select id="chOptPose" aria-label="Pose template for the sheet"
-                      title="Which black-and-white line-drawing pose template anchors the sheet's panels and poses — Auto guesses from the kind and description">
-                <option value="">Auto pose</option>
-                <option value="human">Human</option>
-                <option value="horse">Horse</option>
-                <option value="dog">Dog</option>
-                <option value="cat">Cat</option>
-                <option value="mouse">Mouse</option>
-                <option value="quadruped">Quadruped</option>
-                <option value="none">No pose template</option>
-              </select>
+              <!-- 2.577.0 (Tim: "remove the pose dropdown and add a dialog with thumbnails of the pose sheets in the folder"):
+                   the button opens the pose sheets in <install>/pose_sheets/ (ext/videodock/posepick.js); the pick rides #chOptPose -->
+              <label for="chPoseBtn">Pose sheet</label>
+              <span style="display:flex;gap:6px;align-items:center;min-width:0">
+                <input type="hidden" id="chOptPose" value="">
+                <button class="ghost gbtn" id="chPoseBtn" type="button" style="flex:1;min-width:0;display:flex;gap:6px;align-items:center;justify-content:flex-start;overflow:hidden"
+                        title="Pick the pose sheet the character sheet copies its panels and poses from - your own pictures in the pose_sheets folder"
+                        aria-label="Pick a pose sheet"><span id="chPoseThumb" style="width:30px;height:22px;flex:none;border-radius:3px;background:#222 center/contain no-repeat;display:none"></span><span id="chPoseName" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧍 No pose sheet</span></button>
+              </span>
               <!-- 2.223.4 (by instruction): the render style is a dropdown the user can change -->
               <label for="chSheetStyleSel">Render style</label>
               <select id="chSheetStyleSel" aria-label="Sheet render style"

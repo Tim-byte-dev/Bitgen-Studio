@@ -35,6 +35,7 @@ FILES=$(find . -type f \
   ! -path "./music/*" \
   ! -name "MM3_Characters_upscale.json" \
   ! -path "./graphs/*" \
+  ! -path "./pose_sheets/*" \
   ! -path "./models/*" ! -path "./loras/*" ! -path "./llm-models/*" \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \
   ! -path "./comfy/*" \

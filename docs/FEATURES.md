@@ -653,6 +653,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Dockers restored as left** — ▣ docker membership, tab order, shown tab, hidden / collapsed, minimized floating panels, extension dockers - kept over a restart. *Since:* 2.575.0
 - **Civitai sync by SHA-256** — a model not found by its name is found by its file's content; the status bar shows reading n%. *Where:* 🧩 Model manager ▸ 🔄 Sync. *Since:* 2.576.0
 - **🧩 To model… / Ctrl+↓ thumbnail** — the viewer sends a picture / video / song to a model's files with its metadata; Ctrl+↓ makes a picture the model's thumbnail. *Where:* the viewer; 🧩 Model manager ▸ ⓘ. *Since:* 2.576.0
+- **Your own pose sheets** — the Character creator's 🧍 Pose sheet dialog shows thumbnails of the pictures in the pose_sheets folder; the picked one gives the character sheet its panels, poses and camera angles. *Where:* StoryBoard ▸ 🖼 NEW (Character creator) ▸ Sheet ▸ Pose sheet; the pose_sheets folder. *Since:* 2.577.0
 
 ### Selections
 

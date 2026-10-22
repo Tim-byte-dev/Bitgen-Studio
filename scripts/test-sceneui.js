@@ -998,13 +998,13 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
   {
     const CODE6 = require("fs").readFileSync(
       require("path").join(__dirname, "..", "ext", "videodock", "characters.js"), "utf8");
-    check("the mask dialog carries the pose-template dropdown (Auto/Human/Horse/Dog/Cat/Mouse/Quadruped/None)",
+    // 2.577.0: the dropdown is gone - a 🧍 Pose sheet button opens a dialog of the user's own pose sheets
+    // (pose_sheets/, ext/videodock/posepick.js); the pick rides the hidden #chOptPose
+    check("2.577.0: the mask dialog's pose dropdown became the 🧍 Pose sheet button (+ the hidden #chOptPose the options read)",
           d.getElementById("chOptPose")
-          && d.getElementById("chOptPose").tagName === "SELECT"
-          && /horse/.test(d.getElementById("chOptPose").innerHTML)
-          && /mouse/.test(d.getElementById("chOptPose").innerHTML)
-          && /No pose template/.test(d.getElementById("chOptPose").innerHTML)
-          && d.getElementById("chOptPose").options[0].value === "");
+          && d.getElementById("chOptPose").tagName === "INPUT" && d.getElementById("chOptPose").type === "hidden"
+          && !!d.getElementById("chPoseBtn")
+          && /posepick\.js/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "ext", "videodock", "ext.json"), "utf8")));
     check("2.223.4: the style LABEL became a DROPDOWN — capable styles listed with LoRA counts, refreshed each open",
           !!d.getElementById("chSheetStyleSel")
           && d.getElementById("chSheetStyleSel").tagName === "SELECT"

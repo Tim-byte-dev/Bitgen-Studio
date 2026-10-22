@@ -40,11 +40,11 @@ const scenes = require(path.join(ROOT, "lib", "scenes.js"));
   try {
     fs.mkdirSync(path.join(d, "characters", "mara"), { recursive: true });
     fs.writeFileSync(path.join(d, "characters", "mara", "Mara.profile"), "{}");
-    fs.copyFileSync(path.join(ROOT, "static", "pose-sheets", "human.png"), path.join(d, "characters", "mara", "sheet.png"));
+    fs.copyFileSync(path.join(ROOT, "scripts", "fixtures", "sample-person.png"), path.join(d, "characters", "mara", "sheet.png"));
     scenes.save(scenes.safe({ plan: { prompt_prefix: "A rainy noir." }, list: [{ n: 1, id: "c1", prompt: ["[Shot 1] Mara walks through the market"] }, { n: 2, id: "c2", prompt: ["[Shot 2] Mara climbs the fire escape"] }] }), P);
     const asked = [];
     const llm = (text) => async (m) => { asked.push(m); return { ok: true, text }; };
-    const grab = () => { const t = path.join(core.tempDir(), "zz568_" + Date.now() + ".png"); fs.copyFileSync(path.join(ROOT, "static", "pose-sheets", "dog.png"), t); return { file: t, label: "scene 1's last frame" }; };
+    const grab = () => { const t = path.join(core.tempDir(), "zz568_" + Date.now() + ".png"); fs.copyFileSync(path.join(ROOT, "scripts", "fixtures", "sample-animal.png"), t); return { file: t, label: "scene 1's last frame" }; };
     const a = await SP.plan(P, 2, {}, { contFrame: grab, complete: llm("Mara from Picture 2 climbs the fire escape seen in Picture 1, wet neon light, wide shot.") });
     const prevFile = path.join(d, "images", "sb_prev_c2.png");
     check("plan with a take before it: the scene before's LAST FRAME first (kept as images/sb_prev_<id>.png), then the character's sheet; the LLM's prompt (it knew both pictures and the scene before)",

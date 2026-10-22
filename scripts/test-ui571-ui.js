@@ -35,7 +35,7 @@ const api = async (u, b) => { const r = await fetch(BASE + u, b ? { method: "POS
     spawnSync("ffmpeg", ["-v", "error", "-y", "-f", "lavfi", "-i", `color=c=${col}:s=160x90:d=${d}`, "-pix_fmt", "yuv420p", f]);
     fs.utimesSync(f, now - age, now - age);
   }
-  for (const [n, age] of [["p_new.png", 50], ["q_old.png", 5000]]) { fs.copyFileSync(path.join(ROOT, "static", "pose-sheets", "dog.png"), path.join(img, n)); fs.utimesSync(path.join(img, n), now - age, now - age); }
+  for (const [n, age] of [["p_new.png", 50], ["q_old.png", 5000]]) { fs.copyFileSync(path.join(ROOT, "scripts", "fixtures", "sample-animal.png"), path.join(img, n)); fs.utimesSync(path.join(img, n), now - age, now - age); }
 
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1700, height: 1050 } });

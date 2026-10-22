@@ -2870,7 +2870,7 @@ curl -sf -X POST http://127.0.0.1:8311/api/scenes/style -H 'Content-Type: applic
   -d '{"name":"MMH3_Music_Video"}' > /dev/null
 # ref2va needs at least one reference image — a throwaway singer with a
 # sheet from the shipped pose art rides the queue and leaves in the restore
-curl -sf -F "file=@static/pose-sheets/human.png" \
+curl -sf -F "file=@scripts/fixtures/sample-person.png" \
   http://127.0.0.1:8311/api/characters/E2eSinger/asset > /dev/null
 MVAP=$(curl -s -X POST http://127.0.0.1:8311/api/screenplay/apply -H 'Content-Type: application/json' \
   -d '{"plan":{"shots":[{"id":"clip_01","scene":1,"prompt":"a singer on a midnight rooftop, city lights"}],"prompt_prefix":[]}}')
@@ -4123,7 +4123,7 @@ ffmpeg -y -loglevel error -f lavfi -i "testsrc=size=1280x720:rate=25:duration=6"
 SW0=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "video=e2e_swap_src.mp4" -F "prompt=x")
 echo "$SW0" | grep -q "ONE picture" \
   && ok "swap: Swap mode with no picture is refused in words" || bad "swap: no-picture refusal wrong: $SW0"
-SW1=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@static/pose-sheets/human.png" \
+SW1=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@scripts/fixtures/sample-person.png" \
   -F "video=e2e_swap_src.mp4" -F "prompt=she waves at the end" -F "start=1" -F "dur=3" -F "width=960" -F "height=544")
 SWID=$(echo "$SW1" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d['params']['mode']=='swap', d; print(d['id'])")
 SWS=$(swap_job "$SWID")
@@ -4221,7 +4221,7 @@ assert sys.argv[5] == '404', sys.argv[5]
 " "$RS0" "$RS1" "$RS2" "$RS3" "$RS4" "$NAP" > /tmp/refsel325.log 2>&1 \
   && ok "refvideo: a clicked video is described (fps / frames), Apply cuts EXACTLY the boxed frames (f26-f75 -> 50 frames), the cut reopens on its source with the box, the whole video is no cut, a missing one is a 404" \
   || { bad "refvideo: the selection routes are wrong"; tail -4 /tmp/refsel325.log; }
-SW3=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@static/pose-sheets/human.png" \
+SW3=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@scripts/fixtures/sample-person.png" \
   -F "video=e2e_swap_src_sel_f26-f75.mp4" -F "width=960" -F "height=544")
 SWID3=$(echo "$SW3" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" 2>/dev/null)
 [ "$(swap_job "$SWID3")" = "done" ] \
@@ -4303,11 +4303,11 @@ LSW=$(curl -s -X POST http://127.0.0.1:8311/api/styles -H 'Content-Type: applica
   -d '{"name":"E2E Swap Look","kind":"video","arch":"minimax-h3","role":"swap","workflows":{"ref2va":"comfy_workflows/MiniMax_H3_Swap.json"},"loras":[{"path":"e2e_look.safetensors","weight":0.5}]}' \
   | python3 -c "import json,sys; print(json.load(sys.stdin)['style']['id'])" 2>/dev/null)
 H3R=$(echo "$VSJ" | python3 -c "import json,sys; print([x['id'] for x in json.load(sys.stdin)['styles'] if x['name']=='H3_Video_Ref'][0])" 2>/dev/null)
-SW4=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@static/pose-sheets/human.png" \
+SW4=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@scripts/fixtures/sample-person.png" \
   -F "video=e2e_swap_src.mp4" -F "dur=1" -F "width=960" -F "height=544" -F "video_style_id=$LSW")
 SWID4=$(echo "$SW4" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" 2>/dev/null)
 SWS4=$(swap_job "$SWID4")
-SW5=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@static/pose-sheets/human.png" \
+SW5=$(curl -s -X POST http://127.0.0.1:8311/api/swap -F "image=@scripts/fixtures/sample-person.png" \
   -F "video=e2e_swap_src.mp4" -F "dur=1" -F "width=960" -F "height=544" -F "video_style_id=$H3R")
 SWID5=$(echo "$SW5" | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])" 2>/dev/null)
 [ "$SWS4" = "done" ] && python3 -c "
@@ -4344,7 +4344,7 @@ sys.exit(1 if any(r['status'] in ('queued','running') for r in d['results']) els
 PD="projects/$NAP"
 rm -rf "$PD/vidTemp" "$PD/vidSwap" "$PD/swap_dialog.json"
 SDJ set '{"video":"e2e_swap_src.mp4","max":2,"quality":"fast"}' > /dev/null
-curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@static/pose-sheets/human.png" > /dev/null
+curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@scripts/fixtures/sample-person.png" > /dev/null
 SDA=$(SDJ segments '{"op":"auto","max":2}')
 echo "$SDA" | python3 -c "
 import json,sys; d=json.load(sys.stdin); g=d['segments']
@@ -4429,7 +4429,7 @@ print(((g[0].get('ff') or {}).get('status') or 'none') if g else 'gone')")
 rm -rf "$PD/vidTemp" "$PD/vidSwap" "$PD/swap_dialog.json"
 # (2.343.0: this first pass is the check-first flow - ⚙ auto_render off)
 SDJ set '{"video":"e2e_swap_src.mp4","max":2,"engine":"ripple","text":"","settings":{"auto_render":false}}' > /dev/null
-curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@static/pose-sheets/human.png" > /dev/null
+curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@scripts/fixtures/sample-person.png" > /dev/null
 RPA=$(SDJ segments '{"op":"auto","max":2}')
 RPID=$(echo "$RPA" | python3 -c "import json,sys; print(json.load(sys.stdin)['segments'][0]['id'])")
 RP1=$(SDJ run "{\"ids\":[\"$RPID\"],\"width\":960,\"height\":544}")
@@ -4830,7 +4830,7 @@ assert d['vr']['mode']=='tb360' and d['detected']['sure'], d['vr']
   && ok "load: a movie picked in the app's file dialog is imported by PATH (no upload, any size) and its _360_TB name switches VR on; a 70 MB asset uploads (the old silent 64 MB limit is gone)" \
   || bad "load: import / big upload wrong: $(echo "$VI" | head -c 300) | $(echo "$VB" | head -c 200)"
 rm -f "$PD/video/e2e_big.mov" "$VRD/e2e_big.mov"
-curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@static/pose-sheets/human.png" > /dev/null
+curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@scripts/fixtures/sample-person.png" > /dev/null
 SDJ set '{"vr":{"yaw":45,"pitch":-2,"fov":90,"shape":"3:4"}}' > /dev/null
 VV=$(curl -s -o "$VRD/view.jpg" -w '%{http_code} %{content_type}' "http://127.0.0.1:8311/api/swapdlg/vrview?t=1")
 VR1=$(SDJ run '{"start":0.5,"dur":1.5,"width":960,"height":544}')
@@ -9079,7 +9079,7 @@ WPP=$(curl -sf http://127.0.0.1:8311/api/scenes | python3 -c "import json,sys; p
 mkdir -p "projects/$WPP/video"
 ffmpeg -y -loglevel error -f lavfi -i "testsrc=size=640x360:rate=24:duration=3" -c:v libx264 -pix_fmt yuv420p "projects/$WPP/video/e2e_wp_src.mp4"
 curl -s -X POST http://127.0.0.1:8311/api/swapdlg/set -H 'Content-Type: application/json' -d '{"video":"e2e_wp_src.mp4","text":""}' > /dev/null
-curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@static/pose-sheets/human.png" > /dev/null
+curl -s -X POST http://127.0.0.1:8311/api/swapdlg/picture -F "image=@scripts/fixtures/sample-person.png" > /dev/null
 NWP=$(ls /tmp/stub-llm-out/llm_request_*.json 2>/dev/null | wc -l)
 WP1=$(curl -s -X POST http://127.0.0.1:8311/api/swapdlg/writeprompt -H 'Content-Type: application/json' -d '{"t":1.5,"text":"keep his red cap"}')
 echo "$WP1" | python3 -c "
@@ -10172,7 +10172,9 @@ def png(p):
     open(p,'wb').write(raw+ch(b'IHDR',ihdr)+ch(b'IDAT',idat)+ch(b'IEND',b''))
 png('/tmp/e2e_face.png')
 "
-SG=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -F "image=@/tmp/e2e_face.png" -F "kind=animal" -F "style=photo" -F "gender=female" -F "description=a chestnut mare")
+# 2.577.0: pose sheets are the user's own files in pose_sheets/ - one is put there and picked by its file name
+mkdir -p pose_sheets && cp scripts/fixtures/sample-animal.png pose_sheets/e2e_horse.png
+SG=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -F "image=@/tmp/e2e_face.png" -F "kind=animal" -F "style=photo" -F "gender=female" -F "description=a chestnut mare" -F "pose=e2e_horse.png")
 # 2.206.0: the dropdown endpoint — E2E Klein must be listed as sheet-capable
 # (its t2i swaps to the edit sibling) carrying ZERO LoRAs.
 SS=$(curl -sf http://127.0.0.1:8311/api/characters/sheetstyles)
@@ -10209,11 +10211,11 @@ assert 'gender: female' in sp and 'a chestnut mare' in sp, sp
 # that will load — the E2E Klein style carries none, so NONE may load.
 assert d.get('style_name') == 'E2E Klein', ('the sheet must SAY which style renders it', d.get('style_name'))
 assert isinstance(d.get('loras'), list) and d['loras'] == [], ('a LoRA-less style must load NO LoRAs', d.get('loras'))
-# 2.207.0: kind=animal + 'a chestnut mare' guesses the HORSE pose template;
-# it rides SLOT 1 (the image being edited) so the render anchors to the line
-# drawing's poses, and the photo rides slot 2, identity only.
-assert d.get('pose_id') == 'horse' and d.get('pose_name') == 'Horse', (d.get('pose_id'), d.get('pose_note'))
-assert 'line-drawing pose template' in sp and 'pose, camera angle' in sp, sp
+# 2.577.0: the picked pose sheet (pose_sheets/e2e_horse.png) rides SLOT 1
+# (the image being edited) so the render anchors to its poses, and the photo
+# rides slot 2, identity only.
+assert d.get('pose_id') == 'e2e_horse.png' and d.get('pose_name') == 'e2e_horse', (d.get('pose_id'), d.get('pose_note'))
+assert 'The first picture is a pose sheet' in sp and 'pose, camera angle' in sp, sp
 # 2.211.0 (Tim: characters came out wearing hats/glasses/a harness he never
 # asked for): naming items as examples PRIMES the model into drawing them —
 # the prompts must keep the keep-what-is-there rule while naming NO item
@@ -10221,7 +10223,7 @@ assert 'nothing added, nothing removed, nothing substituted' in sp, sp
 assert 'wears and carries nothing' in sp and 'nothing else is ever added' in sp, sp
 assert 'saddle' not in sp and 'harness' not in sp and 'glasses' not in sp and 'bridle' not in sp, sp
 imgs = (d.get('params') or {}).get('images') or []
-assert len(imgs) == 2 and imgs[0].replace(chr(92), '/').endswith('pose-sheets/horse.png'), imgs
+assert len(imgs) == 2 and imgs[0].replace(chr(92), '/').endswith('pose_sheets/e2e_horse.png'), imgs
 assert imgs[1].replace(chr(92), '/').endswith(d.get('input','')), imgs
 " 2>/tmp/sheet1.err || { bad "sheetgen STEP-1 (submit asserts) failed: $(tail -c 400 /tmp/sheet1.err) ·· $(echo "$SG" | head -c 120)"; false; } \
   && { RG2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/sheetgen -H 'Content-Type: application/json' \
@@ -10234,10 +10236,10 @@ assert d.get('style_id') == '$KSID' and d.get('style_name') == 'E2E Klein', (d.g
 # 2.207.0: pose='none' switches the template OFF — one reference, the plain
 # prompt, and the response says no pose rode
 assert d.get('pose_id') is None, d.get('pose_id')
-assert 'natural, neutral standing stance' in d.get('sheet_prompt','') and 'line-drawing pose template' not in d.get('sheet_prompt',''), d.get('sheet_prompt')
+assert 'natural, neutral standing stance' in d.get('sheet_prompt','') and 'The first picture is a pose sheet' not in d.get('sheet_prompt',''), d.get('sheet_prompt')
 imgs=(d.get('params') or {}).get('images') or []
 assert len(imgs)==1, imgs
-" || { bad "sheetgen STEP-2 (regenerate) failed: $(echo "$RG2" | head -c 300)"; false; }; } \
+" || { bad "sheetgen STEP-2 (regenerate) failed: $(echo "$RG2" | head -c 300)"; false; }; rm -f pose_sheets/e2e_horse.png; } \
   && { AD2=$(curl -s -X POST http://127.0.0.1:8311/api/characters/adopt-sheet -H 'Content-Type: application/json' \
        -d "{\"name\":\"Sheet Guy\",\"file\":\"$SGOUT\"}"); echo "$AD2" | python3 -c "
 import json,sys; d=json.load(sys.stdin)
@@ -12323,6 +12325,14 @@ node scripts/test-tomodel576.js > /tmp/tm576.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui576-ui.js > /tmp/ui576.log 2>&1 \
   && ok "2.576.0 browser test: 🧩 To model… picks the model the picture was made with, copies it with its prompt / seed and makes it the thumbnail; Ctrl+↓ on a model's picture; Ctrl+↓ elsewhere opens the picker; reading 45% chip - or SKIP without playwright" \
   || { bad "2.576.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui576.log | head -14; }
+
+# ---- 2.577.0 (the user's own pose sheets: pose_sheets/ + the Character creator's 🧍 Pose sheet dialog)
+node scripts/test-posesheets.js > /tmp/ps577.log 2>&1 \
+  && ok "2.577.0 units (pose_sheets/ list / file / pick - sub-folders, no traversal; the built-in templates gone; posepick label / filter; /api/pose-sheets routes; sheetgen uses the pick; never zipped or committed)" \
+  || { bad "2.577.0 units"; grep -a "^FAIL" -A2 /tmp/ps577.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui577-ui.js > /tmp/ui577.log 2>&1 \
+  && ok "2.577.0 browser test: 🧍 Pose sheet - thumbnails of pose_sheets/ (sub-folders), ↻ Refresh, search, pick + ✔ Use -> #chOptPose + the button, remembered over a reload, No pose sheet by double click - or SKIP without playwright" \
+  || { bad "2.577.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui577.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

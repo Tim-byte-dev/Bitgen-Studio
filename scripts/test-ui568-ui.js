@@ -30,7 +30,7 @@ const api = async (u, b) => { const r = await fetch(BASE + u, b ? { method: "POS
   try { before = (await api("/api/projects/current")).name || null; } catch { before = null; }
   await api("/api/projects/new", { name: PRJ }); await api("/api/projects/load", { name: PRJ });
   await api("/api/characters", { name: "Mara" });
-  { const fd = new FormData(); fd.append("file", new Blob([fs.readFileSync(path.join(ROOT, "static", "pose-sheets", "human.png"))], { type: "image/png" }), "mara_sheet.png");
+  { const fd = new FormData(); fd.append("file", new Blob([fs.readFileSync(path.join(ROOT, "scripts", "fixtures", "sample-person.png"))], { type: "image/png" }), "mara_sheet.png");
     await fetch(BASE + "/api/characters/Mara/asset", { method: "POST", body: fd }); }
   await api("/api/scenes/add", { text: "Mara walks through the neon market at night, rain on the stalls" });
   await api("/api/scenes/add", { text: "Mara climbs the fire escape to the rooftop" });

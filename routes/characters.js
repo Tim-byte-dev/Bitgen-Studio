@@ -26,7 +26,7 @@ const tlspan = require("../lib/timelineSpan");
 const timelines = require("../lib/timelines");
 const chapterRefs = require("../lib/chapterRefs");
 const sheetStyles = require("../lib/sheetStyles");   // 2.206.0: wraps imageRefs for the sheet path
-const poseSheets = require("../lib/poseSheets");     // 2.207.0: B&W line-drawing pose templates
+const poseSheets = require("../lib/poseSheets");     // 2.577.0: the user's pose sheets (pose_sheets/)
 const clothing = require("../lib/clothing");         // 2.224.0: the scene-mention clothing resolver
 const refmods = require("../lib/refmods");           // 2.225.0: H3 identity mods from the dataset
 const imageSeed = require("../lib/imageSeed");
@@ -2850,14 +2850,14 @@ function mount(app) {
   // edited — the render anchors layout and poses to black line figures, and
   // the photo (slot 2) contributes IDENTITY ONLY. The prompt has to say all
   // of that out loud or the model happily edits the photo anyway.
-  const SHEET_PROMPT_POSED = "The first picture is a black-and-white "
-    + "line-drawing pose template for a character reference sheet: clean "
-    + "panels with a full-body front view, a full-body side view and a "
-    + "full-body back view, plus a close-up front portrait and a close-up "
-    + "side-profile portrait of the head. The second picture shows the "
-    + "subject. Redraw the template as a finished character reference sheet "
-    + "of that exact subject: keep the template's panel layout and the pose "
-    + "in every panel, but replace each line figure with the subject, fully "
+  // 2.577.0: the pose sheet is the user's own picture (any layout, any
+  // drawing style), so the prompt names no fixed panels.
+  const SHEET_PROMPT_POSED = "The first picture is a pose sheet for a "
+    + "character reference sheet: its panels, each with a figure in a pose "
+    + "and a camera angle. The second picture shows the subject. Redraw the "
+    + "pose sheet as a finished character reference sheet of that exact "
+    + "subject: keep the pose sheet's panel layout and the pose and camera "
+    + "angle in every panel, but replace each figure with the subject, fully "
     + "rendered. Take ONLY identity from the second picture — the same face "
     + "or markings, colors, fur and surface details, and EXACTLY what the "
     + "subject wears or carries in the second picture, if anything: nothing "
@@ -2865,7 +2865,7 @@ function mount(app) {
     + "carries nothing in the second picture, it wears and carries nothing "
     + "here either. Never take the second picture's "
     + "pose, camera angle, lighting, background or composition. Do not keep "
-    + "the line-drawing style, and do not carry any background or artifacts "
+    + "the pose sheet's drawing style or its figures' own looks, and do not carry any background or artifacts "
     + "from the second picture into the sheet. Identical subject in every "
     + "panel, consistent proportions, on a flat grey background.";
   // 2.206.0: the dialog's image-style dropdown. Every sheet-capable image
@@ -2971,9 +2971,9 @@ function mount(app) {
     const styleTxt = STYLES_TXT[String(b.style || "").toLowerCase()] || "";
     const gender = String(b.gender || "").trim().slice(0, 60);
     const desc = String(b.description || "").trim().slice(0, 300);
-    // 2.207.0: the pose template. b.pose: "" = auto (guessed from the kind
-    // plus the subject/description text), "none" = off, else a template id.
-    const pose = poseSheets.pick(b.pose, b.kind, `${subject} ${desc}`);
+    // 2.577.0: the pose sheet - the user's own picture in pose_sheets/, picked
+    // in the creator's 🧍 Pose sheet dialog (b.pose = its id); "" / "none" = none.
+    const pose = poseSheets.pick(b.pose);
     let images = pose ? [pose.file, photo] : [photo];
     // The template only helps when the render workflow can take BOTH
     // pictures; with fewer than two slots the photo keeps its ride
@@ -2983,7 +2983,7 @@ function mount(app) {
     let posed = !!pose;
     if (pose && (!rw || (rw.slots | 0) < 2)) {
       posed = false; images = [photo];
-      poseNote = `pose template "${pose.id}" skipped — the render workflow `
+      poseNote = `pose sheet "${pose.name}" skipped — the render workflow `
         + `has ${rw ? (rw.slots | 0) : 0} reference slot(s), two are needed`;
       rw = sheetStyles.probe(styled, core.BASE, 1);
     }

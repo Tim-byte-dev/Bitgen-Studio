@@ -112,6 +112,7 @@ function mount(app) {
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
+  require("./poseSheets").mount(app);  // 2.577.0: the Character creator's pose sheets - <install>/pose_sheets/ (lib/poseSheets.js)
   require("./swap").mount(app);        // 2.324.0: character swap (prompt docker Swap mode + a scene's ⇄)
   require("./refvideo").mount(app);    // 2.325.0: the reference dock's video selection dialog
   require("./filedialog").mount(app);  // 2.326.0: the Windows-11-style file / folder dialog

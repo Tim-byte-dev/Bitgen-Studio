@@ -113,12 +113,12 @@ const forget = async (ids) => { for (const id of ids) await api("/api/testplan/r
     /* ---- ✨ the preview follows its list */
     await ev(() => {
       const g = document.createElement("div"); g.id = "e2e534g"; g.setAttribute("data-lb-group", ""); g.style.cssText = "position:fixed;left:10px;top:200px;z-index:60;display:flex;gap:4px";
-      ["human", "cat"].forEach((n) => { const t = document.createElement("div"); t.className = "thumb"; t.dataset.lbUrl = "/static/pose-sheets/" + n + ".png"; t.dataset.lbKind = "image"; t.dataset.lbName = n + ".png"; t.style.cssText = "width:60px;height:60px;background:#444"; t.textContent = n; g.appendChild(t); });
+      ["human", "cat"].forEach((n) => { const t = document.createElement("div"); t.className = "thumb"; t.dataset.lbUrl = "/static/icon.png?" + n; t.dataset.lbKind = "image"; t.dataset.lbName = n + ".png"; t.style.cssText = "width:60px;height:60px;background:#444"; t.textContent = n; g.appendChild(t); });
       document.body.appendChild(g);
     });
     await p.click('#e2e534g [data-lb-name="cat.png"]'); await p.waitForTimeout(500);
     check("the preview opens on cat.png (2 of 2)", await ev(() => document.getElementById("lb").open && document.getElementById("lb_name").textContent === "cat.png" && document.getElementById("lb_pos").textContent === "2 / 2"));
-    await ev(() => { const t = document.createElement("div"); t.className = "thumb"; t.dataset.lbUrl = "/static/pose-sheets/dog.png"; t.dataset.lbKind = "image"; t.dataset.lbName = "dog.png"; t.textContent = "dog"; document.getElementById("e2e534g").prepend(t); });
+    await ev(() => { const t = document.createElement("div"); t.className = "thumb"; t.dataset.lbUrl = "/static/icon.png?dog"; t.dataset.lbKind = "image"; t.dataset.lbName = "dog.png"; t.textContent = "dog"; document.getElementById("e2e534g").prepend(t); });
     await p.waitForTimeout(500);
     const lbs = await ev(() => ({ n: lb.items.length, name: document.getElementById("lb_name").textContent, pos: document.getElementById("lb_pos").textContent, film: document.querySelectorAll("#lb_film .f").length, chip: (document.getElementById("lb_newc") || {}).textContent, vis: document.getElementById("lb_newc") && document.getElementById("lb_newc").style.display !== "none" }));
     check("✨ a new render in that list while the preview is open: it joins (3 in the strip), the picture on screen stays (cat.png, 3 / 3), '✨ 1 new'", lbs.n === 3 && lbs.name === "cat.png" && lbs.pos === "3 / 3" && lbs.film === 3 && lbs.vis && lbs.chip === "✨ 1 new", lbs);

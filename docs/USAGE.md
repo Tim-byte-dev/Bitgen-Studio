@@ -70,8 +70,8 @@ In the **Video** docker's **Characters** section:
   side / back picture) and optionally a **voice clip**. Its `@tag` (e.g.
   `@anna`) is how prompts and the screenplay refer to it.
 - **🖼 NEW** — make a character *from one picture*: upload a photo or a render
-  and a reference sheet is generated (pose template, photo or illustrated
-  style), then **Keep** it.
+  and a reference sheet is generated (your own pose sheet from the pose_sheets
+  folder, photo or illustrated style), then **Keep** it.
 - **🎭 Actors** — choose who is in the current scene; only they ride the
   references and the screenplay.
 - Each character keeps a dataset folder for **RefMod** (identity models),
@@ -5916,6 +5916,12 @@ orange line shows where it will go - and let go.
 - 2.576.0: **Ctrl+↓ = the model's thumbnail**: in the viewer on one of a model's own pictures (or a Civitai example)
   it becomes the thumbnail at once; on any other picture the 🧩 picker opens with the thumbnail box ticked. In the model
   manager's ⓘ page, click a picture / example, then Ctrl+↓.
+- 2.577.0: **Your own pose sheets**: the six built-in pose templates are gone. Save your pose sheets (PNG, JPG or WebP;
+  sub-folders are fine) in the **pose_sheets** folder of the install folder. In the Character creator, **🧍 Pose sheet**
+  (where the Pose dropdown was) opens their thumbnails: click one and **✔ Use** (or double-click it); **No pose sheet**
+  = a natural standing stance; **📂 Open folder** shows the folder, **↻ Refresh** reads it again after you save new
+  ones. The sheet keeps your pose sheet's panel layout and the pose and camera angle in each panel, with your
+  character in them. The pick is remembered. The folder is yours - it is never in a release zip or the repository.
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
   only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
   says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker

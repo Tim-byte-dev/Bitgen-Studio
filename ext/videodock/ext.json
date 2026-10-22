@@ -6,6 +6,7 @@
   "scripts": [
     "qedit.js",
     "characters.js",
+    "posepick.js",
     "audioseg.js",
     "rendersettings.js",
     "karaoke.js",
