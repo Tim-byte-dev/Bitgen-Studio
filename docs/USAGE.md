@@ -5886,6 +5886,36 @@ orange line shows where it will go - and let go.
   the picked element only: with a wider Apply to (All like it, Every <div>) the rest of the style goes wide but the
   words stay on that one element. A text rule that finds several titles, or a bare tag (div, button), never renames
   them - a theme where every docker took one name heals by itself; rename the docker you meant again.
+- 2.575.0: **Model manager - your own files of a model**: on a card's ⓘ page, **＋ Add…** pictures, videos or sounds
+  (or drop them there from the gallery / Assets). Each one keeps the prompt, negative, seed, cfg and steps it was made
+  with - read from this app's own render record, a PNG's ComfyUI graph or A1111 text, or a video's / song's tags - and
+  ✎ edits them. A click on any picture (yours, Civitai's examples, the hero thumbnail) opens it whole in the viewer;
+  **✎→** sends its prompt with its seed, cfg and steps to the prompt box and Basic Settings; **🖼** makes it the card's
+  thumbnail (or ✎ Edit ▸ Thumbnail ▸ 🖼 Change… a picture from disk; ↺ Its own goes back). Kept in model_info with the
+  model's page - the model folders are never touched.
+- 2.575.0: **✎ Edit card**: **Your rating** is five stars in half steps - hover to see, click (the left half of a star
+  = ½), ← → by halves, ✕ clears; **Model type** (Checkpoint, Diffusion model, LoRA, LyCORIS, VAE, Text encoder,
+  ControlNet, Upscaler, Embedding …); **NSFW** 🔞. The filter bar has **every model type** and **🔞 NSFW** (unticked =
+  NSFW cards hidden, remembered).
+- 2.575.0: **✎→ To prompt** on gallery pictures / videos / songs, Assets, References (pictures, videos, sounds) and in
+  the viewer's ⓘ details: the file's prompt with its seed, cfg and steps (an image: Basic Settings ▸ Image's steps /
+  cfg; a video: Basic Settings' steps / cfg; a song: the Music docker's lyrics and seed). A note at the bottom says
+  what was set.
+- 2.575.0: **The Civitai sync in the status bar**: "🔄 Civitai 12/80" while ⤓ Civitai info / 🔄 Sync runs (a click
+  opens the model manager), then "✓ Civitai synced: … found · … no match" for 30 s.
+- 2.575.0: **Dockers come back as they were left**: a docker put into a ▣ docker keeps its place, its tab order and
+  the shown tab, and its status (open / collapsed / hidden) over a restart; minimized floating panels stay minimized;
+  extension dockers reopen open or closed as left; a layout change made just before closing is saved; a saved ⊞
+  docker config no longer overrides the restored layout while the app starts.
+- 2.576.0: **🔄 Sync finds renamed Civitai models**: a model its file name does not find is looked up by its SHA-256
+  (the file's content - exact, whatever it is called). Reading a big file takes a while; the status bar says
+  "🔄 Civitai 3/9 · reading 45%". Models that were "no match" before are asked again on the next 🔄 Sync, once.
+- 2.576.0: **🧩 To model… in the viewer**: sends the picture, video or song you are looking at to a model's files
+  (model_info, with its prompt, seed, cfg and steps). The model it was made with is picked first; tick **Make it the
+  model's thumbnail** (ticked for you when the model has none).
+- 2.576.0: **Ctrl+↓ = the model's thumbnail**: in the viewer on one of a model's own pictures (or a Civitai example)
+  it becomes the thumbnail at once; on any other picture the 🧩 picker opens with the thumbnail box ticked. In the model
+  manager's ⓘ page, click a picture / example, then Ctrl+↓.
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
   only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
   says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker

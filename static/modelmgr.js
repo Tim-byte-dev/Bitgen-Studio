@@ -54,6 +54,8 @@
     return (cards || []).filter(function (c) {
       if (cat && c.category !== cat) return false;
       if (fam && c.family !== fam) return false;
+      if (f && f.nsfw === false && c.nsfw) return false;          // 2.575.0: 🔞 unticked = NSFW cards hidden
+      if (f && f.mtype && c.model_type !== f.mtype) return false; // 2.575.0: the model type
       if (!q) return true;
       var hay = [c.title, c.name, c.family_label, c.base_model, (c.keywords || []).join(" "), c.description].join(" ").toLowerCase();
       return q.split(/\s+/).every(function (w) { return hay.indexOf(w) >= 0; });
@@ -75,6 +77,20 @@
     if (r == null || !(r > 0)) return "";
     return "★ " + (Math.round(r * 10) / 10).toFixed(1) + (c.user_rating == null && c.rating_count ? " · " + c.rating_count : "");
   }
+  /* 2.575.0 (Tim: "make the rating input in model manager 5 stars increment by 0.5 stars use actual stars the user can
+     select, eg if user picks 4.5 stars show 4.5 fill stars like a ratings editor"): five stars, each filled 0 / half /
+     whole (pure) - the editor's (data-mmstar on each, a click on its left half = .5) and the cards' (read-only) */
+  function starBar(v, edit) {
+    var r = v == null || !(+v >= 0) ? 0 : Math.max(0, Math.min(5, Math.round(+v * 2) / 2)), out = "";
+    for (var i = 0; i < 5; i++) {
+      var f = Math.max(0, Math.min(1, r - i));
+      out += '<span class="mst"' + (edit ? ' data-mmstar="' + (i + 1) + '"' : "") + '><span class="mfill" style="width:' + (f * 100) + '%">★</span>★</span>';
+    }
+    return '<span class="mmstars' + (edit ? " edit" : "") + '"' + (edit ? ' role="slider" tabindex="0" aria-label="Your rating" aria-valuemin="0" aria-valuemax="5" aria-valuenow="' + r + '" aria-valuetext="' + r + ' stars"' : ' title="' + r + ' of 5"') + ">" + out + "</span>"
+      + (edit ? "" : '<span class="mmstxt" style="margin-left:3px;color:#e6c84a">' + r.toFixed(1) + "</span>");
+  }
+  /** the half-star a pointer at x (0..1 across star n, 1-based) picks (pure) */
+  function starAt(n, frac) { return Math.max(0.5, Math.min(5, (n - 1) + (frac < 0.5 ? 0.5 : 1))); }
   /** where the description card goes: right of the card, else left, else below; inside the window */
   function hoverPos(r, w, h, vw, vh) {
     var gap = 8, x, y = Math.max(4, Math.min(vh - h - 4, r.top));
@@ -91,7 +107,7 @@
     (sel || []).forEach(function (l) { var i = out.findIndex(function (x) { return x.path === l.path; }); if (i >= 0) out[i] = { path: l.path, weight: l.weight }; else out.push({ path: l.path, weight: l.weight }); });
     return out.slice(0, 12);
   }
-  function thumbUrl(c, v) { return c.remote ? (c.thumb ? "/api/civitai/img?u=" + encodeURIComponent(c.thumb) : "") : (c.thumb ? "/api/modelmgr/thumb?key=" + encodeURIComponent(c.key) + "&v=" + (v || 0) : ""); }
+  function thumbUrl(c, v) { return c.remote ? (c.thumb ? "/api/civitai/img?u=" + encodeURIComponent(c.thumb) : "") : (c.thumb ? "/api/modelmgr/thumb?key=" + encodeURIComponent(c.key) + "&v=" + (v || 0) + (c.thumb_v ? "-" + encodeURIComponent(c.thumb_v) : "") : ""); }
   /* 2.537.0: pages */
   /** one page of a list -> {items, page (clamped), pages, from, to} (pure) */
   function pageOf(list, page, per) {
@@ -117,7 +133,7 @@
   }
   /** a card in a folder tab ("" = all) (pure) */
   function inFolder(c, folder) { return !folder || String(c.folder || "").toLowerCase() === String(folder).toLowerCase(); }
-  var pure = { filterCards: filterCards, sortCards: sortCards, stars: stars, hoverPos: hoverPos, fmtSize: fmtSize, mergeLoras: mergeLoras, thumbUrl: thumbUrl,
+  var pure = { starBar: starBar, starAt: starAt, filterCards: filterCards, sortCards: sortCards, stars: stars, hoverPos: hoverPos, fmtSize: fmtSize, mergeLoras: mergeLoras, thumbUrl: thumbUrl,
     pageOf: pageOf, autoPer: autoPer, pagerModel: pagerModel, inFolder: inFolder };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
@@ -151,6 +167,15 @@
     + ".mmgr .mmcard .mt{display:flex;gap:4px;flex-wrap:wrap;color:var(--dim,#999);font-size:.66rem}"
     + ".mmgr .mmcard .tag{border:1px solid var(--line,#444);border-radius:8px;padding:0 5px;font-size:.62rem}"
     + ".mmgr .mmcard .tag.fam{color:var(--tiger,#f59e2c)}.mmgr .mmcard .rt{color:#e6c84a}"
+    // 2.575.0: the stars, NSFW, your media
+    + ".mmstars{display:inline-flex;gap:1px;line-height:1;vertical-align:middle}.mmstars .mst{position:relative;display:inline-block;color:rgba(255,255,255,.22)}"
+    + ".mmstars .mfill{position:absolute;left:0;top:0;overflow:hidden;color:#e6c84a;white-space:nowrap}.mmstars.edit{font-size:22px;cursor:pointer;outline:none}.mmstars.edit:focus{box-shadow:0 0 0 1px var(--tiger,#f59e2c);border-radius:4px}"
+    + ".mmgr .mmcard .nsfw{position:absolute;top:3px;right:3px;font-size:.6rem;padding:0 4px;border-radius:6px;background:rgba(170,30,30,.85);color:#fff}"
+    + ".mmgr .mmmediag{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px;margin:4px 0}.mmgr .mmmediag.drop{outline:2px dashed var(--tiger,#f59e2c)}"
+    + ".mmgr .mmmedia{position:relative;aspect-ratio:1/1;border:1px solid var(--line,#3a342a);border-radius:6px;overflow:hidden;background:#111 center/cover no-repeat;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.6rem}"
+    + ".mmgr .mmmedia.on{border-color:var(--tiger,#f59e2c)}.mmgr .mmmedia video{width:100%;height:100%;object-fit:cover;pointer-events:none}.mmgr .mmmedia .mk{position:absolute;top:2px;left:3px;font-size:.62rem;background:rgba(0,0,0,.6);border-radius:5px;padding:0 3px}"
+    + ".mmgr .mmmedia .mmthumbmark{position:absolute;top:2px;right:3px;font-size:.62rem;background:var(--tiger,#f59e2c);color:#111;border-radius:5px;padding:0 3px}"
+    + ".mmgr .mmmeta{display:grid;grid-template-columns:70px 1fr 70px 1fr;gap:3px 6px;align-items:center}.mmgr .mmmeta textarea{grid-column:2/5;min-height:54px}.mmgr .mmmeta input{width:100%}"
     + ".mmgr .mmcard .acts{position:absolute;top:3px;right:3px;display:flex;gap:2px;opacity:0;transition:opacity .12s}.mmgr .mmcard:hover .acts{opacity:1}"
     + ".mmgr .mmcard .acts button{padding:0 4px;font-size:.7rem;background:rgba(0,0,0,.6)}"
     + ".mmgr .mmcard .kw{display:flex;gap:3px;flex-wrap:wrap}.mmgr .kwc{font-size:.62rem;border-radius:8px;padding:0 5px;background:rgba(155,123,230,.18);color:#c9b8f2;cursor:copy}"
@@ -166,7 +191,7 @@
     + "#mmHover .ds{white-space:pre-wrap;color:var(--text,#ddd);max-height:30vh;overflow:hidden}#mmHover .kw{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}";
   var S = { tab: "models", data: null, q: "", category: "", family: "", sort: "name", sel: { model: null, loras: [] }, override: false,
             mine: [], prevOvr: null, prevCkpt: null, cv: { items: [], next: "", q: "", types: "", sort: "Highest Rated", base: "", open: null }, dl: [], v: 0, form: null,
-            folder: "", page: 0, per: "auto", cardW: 138, edit: false, info: null, infoData: null, exSel: 0, used: null, fetch: null, mf: {}, mfList: null, fold: false };
+            folder: "", page: 0, per: "auto", cardW: 138, nsfw: true, mtype: "", media: null, mSel: -1, mEdit: false, edit: false, info: null, infoData: null, exSel: 0, used: null, fetch: null, mf: {}, mfList: null, fold: false };
   var LS = "h3mm.sel.v1";
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -174,7 +199,7 @@
   function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
   function say(t, cls) { var m = $("mmMsg"); if (m) { m.textContent = t || ""; m.className = "mmmsg" + (cls ? " " + cls : ""); } }
   function lsGet() { try { return JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) { return null; } }
-  function lsSet() { try { localStorage.setItem(LS, JSON.stringify({ sel: S.sel, override: S.override, mine: S.mine, tab: S.tab, sort: S.sort, per: S.per, cardW: S.cardW, folder: S.folder })); } catch (e) { /* private window */ } }
+  function lsSet() { try { localStorage.setItem(LS, JSON.stringify({ sel: S.sel, override: S.override, mine: S.mine, tab: S.tab, sort: S.sort, per: S.per, cardW: S.cardW, folder: S.folder, nsfw: S.nsfw })); } catch (e) { /* private window */ } }
   function all() { return S.data ? S.data.models.concat(S.data.loras) : []; }
   function byKey(k) { return all().find(function (c) { return c.key === k; }) || null; }
 
@@ -190,7 +215,9 @@
   function paintFilters() {
     var fam = $("mmFam"); if (!fam || !S.data) return;
     var cur = fam.value;
-    fam.innerHTML = '<option value="">every type</option>' + S.data.families.map(function (f) { return '<option value="' + esc(f.id) + '">' + esc(f.label) + "</option>"; }).join("");
+    var mt = $("mmMType");
+    if (mt) { var cm = mt.value; mt.innerHTML = '<option value="">every model type</option>' + (S.data.model_types || []).map(function (t) { return '<option>' + esc(t) + "</option>"; }).join(""); mt.value = cm; }
+    fam.innerHTML = '<option value="">every family</option>' + S.data.families.map(function (f) { return '<option value="' + esc(f.id) + '">' + esc(f.label) + "</option>"; }).join("");
     fam.value = cur;
   }
   function cardHtml(c) {
@@ -202,10 +229,11 @@
       + (c.remote ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
       + '<div class="acts">' + (c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button>'
         + (c.civitai ? "" : '<button class="ghost" data-mmlook title="🔍 Look this file up on Civitai (reads its SHA-256 once)">🔍</button>')) + "</div>"
+      + (c.nsfw ? '<span class="nsfw" title="marked NSFW">🔞</span>' : "")
       + (c.remote ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
       + '<div class="bd"><div class="nm" title="' + esc(c.name || c.title) + '">' + esc(c.title) + "</div>"
-      + '<div class="mt"><span class="rt">' + esc(stars(c)) + "</span><span>" + esc(date) + "</span></div>"
-      + '<div class="mt"><span class="tag fam">' + esc(c.family_label) + '</span><span class="tag">' + esc(c.category) + "</span>" + (c.remote ? '<span class="tag">' + esc(c.type) + "</span>" : "") + "</div>"
+      + '<div class="mt">' + (c.remote ? '<span class="rt">' + esc(stars(c)) + "</span>" : (c.user_rating != null || c.rating ? starBar(c.user_rating != null ? c.user_rating : c.rating) : "")) + "<span>" + esc(date) + "</span></div>"
+      + '<div class="mt"><span class="tag fam">' + esc(c.family_label) + '</span><span class="tag">' + esc(c.category) + "</span>" + (c.remote ? '<span class="tag">' + esc(c.type) + "</span>" : c.model_type ? '<span class="tag">' + esc(c.model_type) + "</span>" : "") + "</div>"
       + (c.kind === "lora" && (c.keywords || []).length ? '<div class="kw">' + c.keywords.slice(0, 4).map(function (k) { return '<span class="kwc" data-kw="' + esc(k) + '" title="Put it in the prompt">' + esc(k) + "</span>"; }).join("") + "</div>" : "")
       + "</div></div>";
   }
@@ -236,6 +264,7 @@
     $("mmFolders").style.display = S.tab === "civitai" || S.info ? "none" : "";
     $("mmPager").style.display = "none";
     paintFetch();
+    if (S.form || S.info) { try { hideHover(); } catch (e) { /* fine */ } }   // 2.575.0: the hover card never sits over the editor / the info page
     if (S.form) { grid.innerHTML = S.form; bindForm(); return; }
     if (S.info) {
       var hadBack = document.activeElement && document.activeElement.id === "mmBack";
@@ -271,7 +300,7 @@
     return S.data.models;
   }
   function shownList(list) {
-    return sortCards(filterCards(list, { q: S.q, category: S.category, family: S.family }).filter(function (c) { return inFolder(c, S.folder); }), S.sort);
+    return sortCards(filterCards(list, { q: S.q, category: S.category, family: S.family, nsfw: S.nsfw, mtype: S.mtype }).filter(function (c) { return inFolder(c, S.folder); }), S.sort);
   }
   function perPage() {
     if (S.per !== "auto") return Math.max(1, +S.per || 48);
@@ -322,7 +351,7 @@
     jpost("/api/modelmgr/fetch", { keys: keys, force: !!force }).then(function (j) {
       if (j.error) { say(j.error, "bad"); return; }
       say("⤓ asking Civitai about " + j.queued + " model" + (j.queued === 1 ? "" : "s") + (j.skipped ? " (" + j.skipped + " already have their details - Shift+click fetches again)" : "") + " - kept in model_info for every project", "ok");
-      S.fetch = j.status; paintFetch(); pollFetch();
+      S.fetch = j.status; paintFetch(); pollFetch(); if (root.H3CivitaiSync) root.H3CivitaiSync.watch();   // 2.575.0
     });
   }
   function pollFetch() {
@@ -347,7 +376,8 @@
   function openInfo(key) {
     var c = byKey(key); if (!c) return;
     hideHover();
-    S.info = key; S.infoData = null; S.exSel = 0; S.form = null; paint();
+    S.info = key; S.infoData = null; S.exSel = 0; S.form = null; S.media = null; S.mSel = -1; S.mEdit = false; paint();
+    loadMedia(key);                                                       // 2.575.0: your files of it
     try { $("mmBack").focus({ preventScroll: true }); } catch (e) { /* fine */ }        // Esc = back (the card it was on is gone)
     jget("/api/modelmgr/info?key=" + encodeURIComponent(key)).then(function (d) { if (S.info !== key) return; S.infoData = d.error ? { error: d.error } : d; paint(); });
   }
@@ -363,11 +393,11 @@
     var kw = (c.keywords && c.keywords.length ? c.keywords : (ver && ver.trained_words) || []);
     var desc = (c.description || (ver && ver.description) || "");
     var e = ex[S.exSel], em = e ? e.meta || {} : null;
-    return '<div class="mminfo"><div class="ih"><button class="ghost" id="mmBack" type="button" title="Back to the cards (Esc)">‹ Back</button><b>' + esc(c.title) + '</b><span class="rt" style="color:#e6c84a">' + esc(stars(c)) + "</span>"
+    return '<div class="mminfo"><div class="ih"><button class="ghost" id="mmBack" type="button" title="Back to the cards (Esc)">‹ Back</button><b>' + esc(c.title) + '</b> ' + (c.user_rating != null || c.rating ? starBar(c.user_rating != null ? c.user_rating : c.rating) : "") + (c.nsfw ? ' <span title="marked NSFW">🔞</span>' : "")
       + '<span class="tag fam" style="color:var(--tiger)">' + esc(c.family_label) + "</span><span>" + esc(c.category) + "</span>" + (c.folder ? "<span style='color:var(--dim)'>📁 " + esc(c.folder) + "</span>" : "") + "</div>"
       + '<div class="ib"><div class="hero"' + (t ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? "" : esc((c.family_label || "?").slice(0, 2))) + "</div>"
       + '<div><div class="fg">' + row("Rating", stars(c) || "—") + row("Released", c.released || (c.file_date ? "— (file " + c.file_date + ")" : "")) + row("Base model", c.base_model || (ver && ver.base_model))
-      + row("Version", ver && ver.name) + row("Type", (ver && ver.model_type) || (c.kind === "lora" ? "LoRA" : c.cat)) + row("CFG", c.cfg == null ? "— (the style's)" : c.cfg) + row("Steps", c.steps == null ? "— (the style's)" : c.steps)
+      + row("Version", ver && ver.name) + row("Model type", c.model_type || (ver && ver.model_type) || (c.kind === "lora" ? "LoRA" : c.cat)) + row("NSFW", c.nsfw ? "yes 🔞" : "") + row("CFG", c.cfg == null ? "— (the style's)" : c.cfg) + row("Steps", c.steps == null ? "— (the style's)" : c.steps)
       + row("Sampler", c.sampler) + row("VAE", c.vae || "the workflow's own") + row("Text encoder", c.te || "the workflow's own") + row("Size", fmtSize(c.size)) + row("File", c.name) + "</div>"
       + '<div class="btns" style="margin-top:8px"><button type="button" id="mmIUse"' + (sel ? ' class="ghost"' : "") + ">" + (sel ? "✓ In use - click to remove" : c.kind === "lora" ? "✓ Add this LoRA" : "✓ Use this model") + "</button>"
       + '<button class="ghost" type="button" id="mmIEdit">✎ Edit card</button><button class="ghost" type="button" id="mmIFetch" title="Ask Civitai again for this file (Shift: even if it has details)">⤓ ' + (d && d.status === "found" ? "Again" : "Civitai info") + "</button>"
@@ -376,10 +406,11 @@
       + '<div class="st" style="margin-top:6px">' + stTxt + "</div></div></div>"
       + (kw.length ? '<div class="kw" style="display:flex;gap:3px;flex-wrap:wrap">' + kw.slice(0, 40).map(function (k) { return '<span class="kwc" data-kw="' + esc(k) + '" title="Put it in the prompt">' + esc(k) + "</span>"; }).join("") + "</div>" : "")
       + (desc ? '<div class="ds">' + esc(desc) + "</div>" : "")
-      + (ex.length ? "<b>Example pictures</b><div class=\"exg\">" + ex.map(function (x, i) { return '<div data-mmex="' + i + '" class="' + (i === S.exSel ? "on" : "") + '" style="background-image:url(&quot;/api/modelmgr/example?key=' + esc(encodeURIComponent(c.key)) + "&n=" + i + "&v=" + (d.fetched_at || 0) + '&quot;)" title="Its prompt + settings below (double-click: bigger)"></div>'; }).join("") + "</div>"
+      + mediaHtml(c)                                                      // 2.575.0: your pictures / videos / sounds
+      + (ex.length ? "<b>Civitai's example pictures</b><div class=\"exg\">" + ex.map(function (x, i) { return '<div data-mmex="' + i + '" class="' + (i === S.exSel ? "on" : "") + '" style="background-image:url(&quot;/api/modelmgr/example?key=' + esc(encodeURIComponent(c.key)) + "&n=" + i + "&v=" + (d.fetched_at || 0) + '&quot;)" title="Click: see it whole (its prompt + settings below) · then Ctrl+↓: the card\'s thumbnail"></div>'; }).join("") + "</div>"
         + (em ? '<div class="exm"><pre>' + esc(em.prompt || "(no prompt with this picture)") + "</pre>" + (em.negative ? "<pre style='color:var(--dim)'>Negative: " + esc(em.negative) + "</pre>" : "")
           + '<div style="color:var(--dim)">' + esc([em.cfg != null ? "cfg " + em.cfg : "", em.steps != null ? em.steps + " steps" : "", em.sampler, em.seed != null ? "seed " + em.seed : "", em.size].filter(Boolean).join(" · ")) + "</div>"
-          + (em.prompt ? '<div class="btns"><button class="ghost" type="button" id="mmIPrompt">Use this prompt</button></div>' : "") + "</div>" : "") : "")
+          + (em.prompt ? '<div class="btns"><button class="ghost" type="button" id="mmIPrompt" title="Its prompt with its seed, cfg and steps into the prompt box + Basic Settings">✎→ To prompt (prompt, seed, cfg, steps)</button></div>' : "") + "</div>" : "") : "")
       + "</div>";
   }
   function bindInfo() {
@@ -394,17 +425,23 @@
       void e;
     };
     var grid = $("mmGrid");
+    // 2.575.0 (Tim: "when user clicks one of the preview thumbs open the whole image in the dialog we currently use"):
+    // a click opens the viewer (and picks it - its prompt + settings show below when the viewer closes)
     grid.querySelectorAll("[data-mmex]").forEach(function (x) {
-      x.onclick = function () { S.exSel = +x.dataset.mmex; paint(); };
-      x.ondblclick = function () {
+      x.onclick = function () {
+        var n = +x.dataset.mmex;
         var items = ((S.infoData || {}).examples || []).map(function (e, i) { return { url: "/api/modelmgr/example?key=" + encodeURIComponent(key) + "&n=" + i + "&v=" + ((S.infoData || {}).fetched_at || 0), kind: "image", name: c.title + " · example " + (i + 1) }; });
-        if (typeof root.lbOpen === "function") root.lbOpen(items, +x.dataset.mmex);
+        S.exSel = n; S.lastPick = "ex"; paint();
+        if (typeof root.lbOpen === "function") root.lbOpen(items, n);
       };
     });
     if ($("mmIPrompt")) $("mmIPrompt").onclick = function () {
-      var e = ((S.infoData || {}).examples || [])[S.exSel], pr = $("prompt"); if (!e || !pr) return;
-      pr.value = (e.meta || {}).prompt || ""; pr.dispatchEvent(new Event("input", { bubbles: true })); say("the example's prompt is in the prompt box", "ok");
+      var e = ((S.infoData || {}).examples || [])[S.exSel]; if (!e) return;
+      useMeta(e.meta || {}, kindForCard(c));                               // 2.575.0: + its seed, cfg, steps
     };
+    var hero = $("mmGrid").querySelector(".mminfo .hero");
+    if (hero && thumbUrl(c, S.v)) { hero.style.cursor = "pointer"; hero.title = "Click: see it whole"; hero.onclick = function () { if (typeof root.lbOpen === "function") root.lbOpen([{ url: thumbUrl(c, S.v), kind: "image", name: c.title }], 0); }; }
+    bindMedia(c);                                                          // 2.575.0
   }
   function bindSel() {
     var box = $("mmSel");
@@ -499,6 +536,153 @@
       + '<div class="btns"><button type="button" class="ghost" id="mmfCancel">Cancel</button><button type="submit" id="mmfGo">✚ Create the style</button></div></form>';
     paint();
   }
+  /* ---- 2.575.0: the star editor - hover shows, a click sets (left half of a star = .5), ←/→ by half a star */
+  function bindStars(host) {
+    var w = host && host.querySelector(".mmstars.edit"), inp = $("mmeRate"), txt = $("mmeRateTxt"); if (!w || !inp) return;
+    var show = function (v) { var r = v == null || v === "" ? null : +v; w.querySelectorAll(".mst").forEach(function (st, i) { st.firstChild.style.width = (Math.max(0, Math.min(1, (r || 0) - i)) * 100) + "%"; }); };
+    var set = function (v) { inp.value = v == null ? "" : String(v); w.setAttribute("aria-valuenow", v == null ? 0 : v); w.setAttribute("aria-valuetext", v == null ? "not rated" : v + " stars"); if (txt) txt.textContent = v == null ? "not rated" : v + " / 5"; show(v); };
+    var at = function (e) { var st = e.target.closest && e.target.closest("[data-mmstar]"); if (!st) return null; var r = st.getBoundingClientRect(); return starAt(+st.dataset.mmstar, r.width ? (e.clientX - r.left) / r.width : 1); };
+    w.addEventListener("mousemove", function (e) { var v = at(e); if (v != null) { show(v); if (txt) txt.textContent = v + " / 5"; } });
+    w.addEventListener("mouseleave", function () { set(inp.value === "" ? null : +inp.value); });
+    w.addEventListener("click", function (e) { var v = at(e); if (v != null) set(v); });
+    w.addEventListener("keydown", function (e) {
+      var cur = inp.value === "" ? 0 : +inp.value;
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); e.stopPropagation(); set(Math.min(5, cur + 0.5)); }
+      else if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); e.stopPropagation(); set(cur - 0.5 <= 0 ? null : cur - 0.5); }
+      else if (/^[0-5]$/.test(e.key)) { e.preventDefault(); e.stopPropagation(); set(+e.key || null); }
+    });
+    if ($("mmeRateX")) $("mmeRateX").onclick = function () { set(null); };
+  }
+  /** the cards again, then the same view (the edit form / the info page) on the same card */
+  function reloadKeep(key, editing) {
+    return load(true).then(function () { if (editing) editForm(key); else if (S.info === key) openInfo(key); });
+  }
+  /** 🖼 a picture (a File) as the card's thumbnail, or {item: id} - one of its own pictures */
+  function setThumb(key, x) {
+    var p;
+    if (x && x.item) p = jpost("/api/modelmgr/thumb", { key: key, item: x.item });
+    else { var fd = new FormData(); fd.append("key", key); fd.append("file", x, x.name || "thumb.png"); p = fetch("/api/modelmgr/thumb", { method: "POST", body: fd }).then(function (r) { return r.json(); }); }
+    return p.then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("🖼 the card's thumbnail is set (kept in model_info - the model's folder is untouched)", "ok"); reloadKeep(key, !!S.form); });
+  }
+
+  /* ---- 2.575.0 (Tim: "allow user to change the thumbnail and add images,sound or video of the model and example prompts
+     or metadata from the image/video/music. when user clicks one of the preview thumbs open the whole image in the
+     dialog we currently use to view images/videos/music"): YOUR FILES of the model (lib/modelMedia) - ＋ Add (files,
+     or drop pictures / videos / songs from the gallery or Assets), a click opens the viewer (lbOpen), ✎→ its prompt +
+     seed / cfg / steps to the prompt, 🖼 as the thumbnail, ✎ its prompt + settings, 🗑 */
+  function mediaUrl(key, it) { return "/api/modelmgr/media/file?key=" + encodeURIComponent(key) + "&id=" + encodeURIComponent(it.id); }
+  function loadMedia(key) {
+    return jget("/api/modelmgr/media?key=" + encodeURIComponent(key)).then(function (d) { if (S.info !== key) return; S.media = d.error ? { items: [], thumb: "", error: d.error } : d; paint(); });
+  }
+  function kindForCard(c) { return c && c.category === "video" ? "video" : c && c.category === "music" ? "audio" : "image"; }
+  function mediaHtml(c) {
+    var m = S.media, items = (m && m.items) || [];
+    var tile = function (it, i) {
+      var u = esc(mediaUrl(c.key, it)), meta = it.meta || {};
+      var inner = it.kind === "image" ? "" : it.kind === "video" ? '<video src="' + u + '#t=0.1" preload="metadata" muted></video>' : "🔊";
+      return '<div class="mmmedia' + (i === S.mSel ? " on" : "") + '" data-mmm="' + i + '"' + (it.kind === "image" ? ' style="background-image:url(&quot;' + u + '&quot;)"' : "")
+        + ' title="' + esc(it.name + (meta.prompt ? "\n" + meta.prompt.slice(0, 200) : "") + "\nclick: see it whole · then Ctrl+↓: the card's thumbnail") + '">' + inner
+        + '<span class="mk">' + ({ image: "🖼", video: "🎬", audio: "🔊" }[it.kind] || "") + "</span>"
+        + (m.thumb && it.kind === "image" && m.thumb_of === it.id ? '<span class="mmthumbmark">thumb</span>' : "")
+        + '<span style="position:absolute;right:2px;bottom:2px;display:flex;gap:2px">'
+        + (meta.prompt || meta.seed != null ? '<button type="button" class="ghost" data-mmmuse="' + i + '" title="✎→ To prompt: its prompt with its seed, cfg and steps" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">✎→</button>' : "")
+        + (it.kind === "image" ? '<button type="button" class="ghost" data-mmmthumb="' + i + '" title="Use it as the card\'s thumbnail" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">🖼</button>' : "")
+        + '<button type="button" class="ghost" data-mmmedit="' + i + '" title="Its prompt + settings" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">✎</button>'
+        + '<button type="button" class="ghost" data-mmmdel="' + i + '" title="Delete it (from model_info)" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">🗑</button></span></div>';
+    };
+    var sel = items[S.mSel], sm = sel ? sel.meta || {} : null;
+    return '<div class="mmmine"><b>Your pictures, videos and sounds</b> <button type="button" class="ghost" id="mmMAdd" title="Add pictures, videos or sounds of this model - from this computer (or drop them here from the gallery / Assets)">＋ Add…</button>'
+      + '<input type="file" id="mmMFile" accept="image/*,video/*,audio/*" multiple hidden>'
+      + ' <span style="color:var(--dim);font-size:.7rem">' + (m ? (items.length ? items.length + " file(s) - click one to see it whole" : "none yet - ＋ Add, or drop pictures / videos / songs here from the gallery or Assets") : "reading…") + "</span>"
+      + '<div class="mmmediag" id="mmMGrid">' + items.map(tile).join("") + "</div>"
+      + (sel && S.mEdit ? '<form class="mmmeta" id="mmMMeta"><b style="grid-column:1/5">✎ ' + esc(sel.name) + (sm.from ? ' <small style="color:var(--dim)">(read from: ' + esc(sm.from) + ")</small>" : "") + "</b>"
+        + '<label for="mmMPrompt">Prompt</label><textarea id="mmMPrompt">' + esc(sm.prompt || "") + "</textarea>"
+        + '<label for="mmMNeg">Negative</label><textarea id="mmMNeg" style="min-height:30px">' + esc(sm.negative || "") + "</textarea>"
+        + '<label for="mmMSeed">Seed</label><input id="mmMSeed" type="number" value="' + esc(sm.seed == null ? "" : sm.seed) + '"><label for="mmMSteps">Steps</label><input id="mmMSteps" type="number" min="1" max="200" value="' + esc(sm.steps == null ? "" : sm.steps) + '">'
+        + '<label for="mmMCfg">CFG</label><input id="mmMCfg" type="number" step="0.1" min="0" max="30" value="' + esc(sm.cfg == null ? "" : sm.cfg) + '"><label for="mmMSampler">Sampler</label><input id="mmMSampler" value="' + esc(sm.sampler || "") + '">'
+        + '<div class="btns" style="grid-column:1/5;display:flex;gap:6px"><button type="button" class="ghost" id="mmMCancel">Close</button><button type="button" class="ghost" id="mmMUse">✎→ To prompt</button><button type="submit">💾 Save</button></div></form>' : "")
+      + "</div>";
+  }
+  function mediaMetaOf(it) { return (it && it.meta) || {}; }
+  function addMediaFiles(key, files) {
+    var list = [].slice.call(files || []);
+    if (!list.length) return Promise.resolve();
+    say("adding " + list.length + " file(s)…");
+    return list.reduce(function (p, file) {
+      return p.then(function () {
+        var fd = new FormData(); fd.append("key", key); fd.append("file", file, file.name);
+        return fetch("/api/modelmgr/media", { method: "POST", body: fd }).then(function (r) { return r.json(); }).then(function (j) { if (j.error) say(file.name + ": " + j.error, "bad"); return j; });
+      });
+    }, Promise.resolve()).then(function () { say("added - a click on one shows it whole; ✎ its prompt + settings", "ok"); return loadMedia(key).then(function () { reloadCardsQuiet(); }); });
+  }
+  function addMediaProject(key, src, name) {
+    say("adding " + name + "…");
+    return jpost("/api/modelmgr/media", { key: key, src: src, name: name }).then(function (j) {
+      if (j.error) { say(j.error, "bad"); return; }
+      var mm = (j.item && j.item.meta) || {};
+      say("added " + name + (mm.prompt ? " - with its prompt" + (mm.seed != null ? ", seed " + mm.seed : "") + (mm.steps != null ? ", " + mm.steps + " steps" : "") + (mm.cfg != null ? ", cfg " + mm.cfg : "") : " (no prompt in it - ✎ adds one)"), "ok");
+      return loadMedia(key).then(function () { reloadCardsQuiet(); });
+    });
+  }
+  function reloadCardsQuiet() { return jget("/api/modelmgr/cards?refresh=1").then(function (d) { if (!d.error) { S.data = d; S.v++; } }); }
+  function bindMedia(c) {
+    var key = c.key, items = (S.media && S.media.items) || [], grid = $("mmMGrid");
+    if ($("mmMAdd")) $("mmMAdd").onclick = function () { $("mmMFile").value = ""; $("mmMFile").click(); };
+    if ($("mmMFile")) $("mmMFile").onchange = function () { addMediaFiles(key, this.files); };
+    var box = grid ? grid.parentNode : null;
+    if (box) {
+      box.addEventListener("dragover", function (e) { e.preventDefault(); grid.classList.add("drop"); });
+      box.addEventListener("dragleave", function (e) { if (!box.contains(e.relatedTarget)) grid.classList.remove("drop"); });
+      box.addEventListener("drop", function (e) {
+        e.preventDefault(); grid.classList.remove("drop");
+        var dp = g("dragPayload");
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { addMediaFiles(key, e.dataTransfer.files); return; }
+        var multi = null; try { multi = JSON.parse(e.dataTransfer.getData("text/h3multi") || "null"); } catch (er) { multi = null; }
+        var list = multi && multi.length ? multi : dp ? [dp] : [];
+        if (!list.length) { var n = e.dataTransfer.getData("text/plain"); if (n) list = [{ type: "output", name: n }]; }
+        list.reduce(function (p, x) { return p.then(function () { var src = x.type === "asset" ? (x.kind === "images" || x.kind === "video" || x.kind === "sound" ? x.kind : "images") : "output"; return addMediaProject(key, src, x.name); }); }, Promise.resolve());
+      });
+    }
+    if (!grid) return;
+    grid.querySelectorAll("[data-mmm]").forEach(function (t) {
+      t.addEventListener("click", function (e) {
+        if (e.target.closest("button")) return;
+        var i = +t.dataset.mmm;
+        S.mSel = i; S.lastPick = "media";                                  // 2.576.0: Ctrl+↓ = this one as the thumbnail
+        grid.querySelectorAll("[data-mmm]").forEach(function (x) { x.classList.toggle("on", x === t); });
+        var lb = items.map(function (it) { return { url: mediaUrl(key, it), kind: it.kind, name: c.title + " · " + it.name }; });
+        if (typeof root.lbOpen === "function") root.lbOpen(lb, i);
+      });
+    });
+    var each = function (attr, fn) { grid.querySelectorAll("[" + attr + "]").forEach(function (b) { b.addEventListener("click", function (e) { e.stopPropagation(); fn(+b.getAttribute(attr)); }); }); };
+    each("data-mmmuse", function (i) { useMeta(mediaMetaOf(items[i]), items[i].kind === "audio" ? "audio" : items[i].kind); });
+    each("data-mmmthumb", function (i) { setThumb(key, { item: items[i].id }); });
+    each("data-mmmedit", function (i) { S.mSel = i; S.mEdit = true; paint(); });
+    each("data-mmmdel", function (i) {
+      var go = function () { jpost("/api/modelmgr/media/delete", { key: key, id: items[i].id }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } S.mSel = -1; S.mEdit = false; loadMedia(key); reloadCardsQuiet(); }); };
+      var cf = root.appConfirm ? root.appConfirm("Delete " + items[i].name + " from this model's files?") : Promise.resolve(root.confirm("Delete " + items[i].name + "?"));
+      Promise.resolve(cf).then(function (ok) { if (ok) go(); });
+    });
+    var f = $("mmMMeta");
+    if (f) {
+      var read = function () { var n = function (id) { var v = $(id).value; return v === "" ? null : +v; }; return { prompt: $("mmMPrompt").value, negative: $("mmMNeg").value, seed: n("mmMSeed"), steps: n("mmMSteps"), cfg: n("mmMCfg"), sampler: $("mmMSampler").value }; };
+      f.querySelectorAll("input,textarea").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
+      $("mmMCancel").onclick = function () { S.mEdit = false; paint(); };
+      $("mmMUse").onclick = function () { var it = items[S.mSel]; useMeta(read(), it && it.kind === "audio" ? "audio" : it ? it.kind : kindForCard(c)); };
+      f.onsubmit = function (e) {
+        e.preventDefault();
+        var it = items[S.mSel]; if (!it) return;
+        jpost("/api/modelmgr/media/update", { key: key, id: it.id, meta: Object.assign({}, it.meta || {}, read(), { from: "you" }) }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("saved its prompt + settings", "ok"); S.mEdit = false; loadMedia(key); });
+      };
+    }
+  }
+  /** ✎→ To prompt - static/usemeta.js (the prompt + seed / cfg / steps into the prompt box + Basic Settings) */
+  function useMeta(meta, kind) {
+    var U = root.H3UseMeta;
+    if (!U) { var pr = $("prompt"); if (pr && meta.prompt) { pr.value = meta.prompt; pr.dispatchEvent(new Event("input", { bubbles: true })); } return; }
+    var w = U.apply(meta || {}, kind || "image");
+    say(w ? "✎→ " + w : "no prompt or settings to use", w ? "ok" : "bad");
+  }
   function bindForm() {
     var f = $("mmForm"); if (!f) return;
     $("mmfCancel") && ($("mmfCancel").onclick = function () { S.form = null; paint(); });
@@ -514,10 +698,15 @@
         if (typeof rs === "function") try { rs(); } catch (er) { /* fine */ }
       });
     };
+    bindStars(f);
+    if ($("mmeThumb")) $("mmeThumb").onclick = function () { $("mmeThumbF").value = ""; $("mmeThumbF").click(); };
+    if ($("mmeThumbF")) $("mmeThumbF").onchange = function () { var x = this.files && this.files[0]; if (x) setThumb(f.dataset.key, x); };
+    if ($("mmeThumbX")) $("mmeThumbX").onclick = function () { jpost("/api/modelmgr/thumb/clear", { key: f.dataset.key }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("its own thumbnail again", "ok"); reloadKeep(f.dataset.key, true); }); };
     if ($("mmeSave")) f.onsubmit = function (e) {
       e.preventDefault();
       var key = f.dataset.key, v = function (id) { return $(id) ? $(id).value : ""; };
       var fields = { title: v("mmeTitle"), user_rating: v("mmeRate"), family: v("mmeFam"), category: v("mmeCat"), cfg: v("mmeCfg"), steps: v("mmeSteps"), vae: v("mmeVae"), te: v("mmeTe"),
+        model_type: v("mmeType"), nsfw: !!($("mmeNsfw") && $("mmeNsfw").checked),
         keywords: v("mmeKw"), released: v("mmeRel"), description: v("mmeDesc") };
       jpost("/api/modelmgr/card", { key: key, fields: fields }).then(function (j) {
         if (j.error) { say(j.error, "bad"); return; }
@@ -530,8 +719,18 @@
     var opt = function (list, cur, blank) { return (blank != null ? '<option value="">' + esc(blank) + "</option>" : "") + list.map(function (x) { var id = x.id != null ? x.id : x, lb = x.label != null ? x.label : x; return '<option value="' + esc(id) + '"' + (String(id) === String(cur) ? " selected" : "") + ">" + esc(lb) + "</option>"; }).join(""); };
     S.form = '<form class="mmform" id="mmForm" data-key="' + esc(key) + '" style="grid-column:1/-1"><b style="grid-column:1/3">✎ ' + esc(c.file) + "</b>"
       + '<label for="mmeTitle">Name</label><input id="mmeTitle" value="' + esc(c.title) + '">'
-      + '<label for="mmeRate">Your rating (0-5)</label><input id="mmeRate" type="number" min="0" max="5" step="0.5" value="' + esc(c.user_rating == null ? "" : c.user_rating) + '">'
-      + '<label for="mmeFam">Type</label><select id="mmeFam">' + opt(S.data.families, c.family) + "</select>"
+      // 2.575.0: the thumbnail (your picture - kept in model_info, the model's folder untouched)
+      + '<label>Thumbnail</label><span style="display:flex;gap:6px;align-items:center"><span class="mmethumb" style="width:56px;height:56px;border-radius:6px;background:#111 center/cover no-repeat' + (thumbUrl(c, S.v) ? ";background-image:url(&quot;" + esc(thumbUrl(c, S.v)) + "&quot;)" : "") + '"></span>'
+        + '<button type="button" class="ghost" id="mmeThumb" title="A picture from this computer as the card\'s thumbnail">🖼 Change…</button>'
+        + (c.thumb_v ? '<button type="button" class="ghost" id="mmeThumbX" title="Back to its own thumbnail (Civitai\'s / the one beside the file)">↺ Its own</button>' : "")
+        + '<input type="file" id="mmeThumbF" accept="image/png,image/jpeg,image/webp,image/gif" hidden></span>'
+      // 2.575.0 (Tim: "5 stars increment by 0.5 stars use actual stars the user can select"): the star editor
+      + '<label>Your rating</label><span style="display:flex;gap:8px;align-items:center">' + starBar(c.user_rating, true) + '<span id="mmeRateTxt" style="color:var(--dim)">' + (c.user_rating == null ? "not rated" : c.user_rating + " / 5") + '</span><button type="button" class="ghost" id="mmeRateX" title="No rating">✕</button>'
+        + '<input id="mmeRate" type="hidden" value="' + esc(c.user_rating == null ? "" : c.user_rating) + '"></span>'
+      // 2.575.0 (Tim: "also add model type(checkpoint/lora/etc) to modelmanager editor" / "add a nsfw checkbox to modelmanager editor")
+      + '<label for="mmeType">Model type</label><select id="mmeType">' + opt(S.data.model_types || [], c.model_type) + "</select>"
+      + '<label for="mmeNsfw">NSFW</label><label style="display:inline-flex;gap:4px;align-items:center"><input type="checkbox" id="mmeNsfw"' + (c.nsfw ? " checked" : "") + '> 🔞 this model makes adult content (the 🔞 filter hides it)</label>'
+      + '<label for="mmeFam">Family</label><select id="mmeFam">' + opt(S.data.families, c.family) + "</select>"
       + '<label for="mmeCat">Category</label><select id="mmeCat">' + opt(S.data.categories, c.category) + "</select>"
       + '<label for="mmeCfg">CFG</label><input id="mmeCfg" type="number" step="0.1" min="0" max="30" value="' + esc(c.cfg == null ? "" : c.cfg) + '">'
       + '<label for="mmeSteps">Steps</label><input id="mmeSteps" type="number" min="1" max="200" value="' + esc(c.steps == null ? "" : c.steps) + '">'
@@ -548,7 +747,7 @@
   function hoverHtml(c) {
     var row = function (k, v) { return v == null || v === "" ? "" : "<span>" + esc(k) + "</span><b>" + esc(v) + "</b>"; };
     var desc = String(c.description || "").slice(0, 1400);
-    return "<h4>" + esc(c.title) + "</h4><div style='color:var(--dim)'>" + esc([c.family_label, c.category, c.remote ? c.type : c.kind === "lora" ? "LoRA" : c.cat].filter(Boolean).join(" · ")) + "</div>"
+    return "<h4>" + esc(c.title) + "</h4><div style='color:var(--dim)'>" + esc([c.family_label, c.category, c.remote ? c.type : c.model_type || (c.kind === "lora" ? "LoRA" : c.cat), c.nsfw ? "🔞 NSFW" : ""].filter(Boolean).join(" · ")) + "</div>"
       + '<div class="g">' + row("Rating", stars(c) || "—") + row("Released", c.released || (c.file_date ? "— (file " + c.file_date + ")" : "")) + row("Base model", c.base_model)
       + row("CFG", c.cfg == null ? "— (the style's)" : c.cfg) + row("Steps", c.steps == null ? "— (the style's)" : c.steps) + row("Sampler", c.sampler)
       + row("VAE", c.remote ? "" : c.vae || "the workflow's own") + row("Text encoder", c.remote ? "" : c.te || "the workflow's own")
@@ -671,6 +870,7 @@
       if (j.error) { say(j.error, "bad"); return; }
       say("🔄 syncing " + j.queued + " model" + (j.queued === 1 ? "" : "s") + " with Civitai" + (j.skipped ? " (" + j.skipped + " up to date - Shift+click syncs them all again)" : "") + " - by version id, SHA-256 or the file name", "ok");
       S.fetch = j.status; paintFetch(); pollFetch();
+      if (root.H3CivitaiSync) root.H3CivitaiSync.watch();                 // 2.575.0: the status bar follows it
     });
   }
   var dlTimer = null;
@@ -724,7 +924,9 @@
       + '<div class="mmfold" id="mmFolders" aria-label="Folders"></div>'
       + '<div class="mmbar" id="mmLocalBar"><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
       + '<select id="mmCat" aria-label="Category"><option value="">every category</option><option value="image">image</option><option value="image edit">image edit</option><option value="video">video</option><option value="music">music</option></select>'
-      + '<select id="mmFam" aria-label="Type"><option value="">every type</option></select>'
+      + '<select id="mmFam" aria-label="Family"><option value="">every family</option></select>'
+      + '<select id="mmMType" aria-label="Model type" title="2.575.0: the kind of file - checkpoint, LoRA …"><option value="">every model type</option></select>'
+      + '<label class="mmnsfw" title="2.575.0: 🔞 ticked = NSFW cards shown; unticked = hidden (mark a card NSFW in ✎ Edit)" style="display:inline-flex;gap:3px;align-items:center;white-space:nowrap;font-size:.72rem"><input type="checkbox" id="mmNsfw">🔞 NSFW</label>'
       + '<select id="mmSort" aria-label="Sort"><option value="name">A-Z</option><option value="newest">newest</option><option value="rating">rating</option><option value="size">size</option></select>'
       + '<span id="mmSizeBox" style="display:none" title="Card size"> ⇲ <input type="range" id="mmSize" min="90" max="360" step="2" aria-label="Card size"></span></div>'
       + '<div class="mmbar" id="mmCvBar" style="display:none"><input type="search" id="mmCvQ" placeholder="Search Civitai…" aria-label="Search Civitai">'
@@ -747,6 +949,9 @@
     $("mmQ").oninput = function (e) { S.q = e.target.value; S.page = 0; paint(); };
     $("mmCat").onchange = function (e) { S.category = e.target.value; S.page = 0; paint(); };
     $("mmFam").onchange = function (e) { S.family = e.target.value; S.page = 0; paint(); };
+    $("mmMType").onchange = function (e) { S.mtype = e.target.value; S.page = 0; paint(); };
+    $("mmNsfw").checked = S.nsfw !== false;
+    $("mmNsfw").onchange = function (e) { S.nsfw = e.target.checked; S.page = 0; lsSet(); paint(); };
     $("mmSort").onchange = function (e) { S.sort = e.target.value; lsSet(); paint(); };
     $("mmSort").value = S.sort;
     $("mmCvGo").onclick = function () { cvSearch(false); };
@@ -768,6 +973,20 @@
     grid.addEventListener("keydown", function (e) {
       if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("mmcard")) { e.preventDefault(); e.target.click(); }
       else if ((e.key === "i" || e.key === "I") && e.target.classList.contains("mmcard") && S.tab !== "civitai") { e.preventDefault(); openInfo(e.target.dataset.key); }
+    });
+    // 2.576.0 (Tim: "when user clicks on an image and presses ctrl+ the down arrow to make this the primary thumbnail for
+    // the model"): on the info page, the picture last clicked (yours or a Civitai example) -> the card's thumbnail
+    // (in the viewer itself static/tomodel.js does the same)
+    document.addEventListener("keydown", function (e) {
+      if (!S.info || !(e.ctrlKey || e.metaKey) || e.key !== "ArrowDown") return;
+      if (document.getElementById("lb") && document.getElementById("lb").open) return;
+      var a = document.activeElement; if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+      var key = S.info, items = (S.media && S.media.items) || [];
+      if (S.lastPick === "media" && items[S.mSel] && items[S.mSel].kind === "image") { e.preventDefault(); setThumb(key, { item: items[S.mSel].id }); }
+      else if (S.lastPick === "ex" && ((S.infoData || {}).examples || [])[S.exSel]) {
+        e.preventDefault();
+        jpost("/api/modelmgr/thumb", { key: key, example: S.exSel }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("🖼 Civitai's example " + (S.exSel + 1) + " is the card's thumbnail now", "ok"); reloadKeep(key, false); });
+      }
     });
     document.addEventListener("keydown", function (e) {     // Esc on the info page = ‹ Back (focus in the docker, or nowhere)
       if (e.key !== "Escape" || !S.info) return;
@@ -829,7 +1048,7 @@
     if (!$("mmCss")) { var st = document.createElement("style"); st.id = "mmCss"; st.textContent = CSS; document.head.appendChild(st); }
     var saved = lsGet();
     if (saved) { S.sel = saved.sel && Array.isArray(saved.sel.loras) ? saved.sel : S.sel; S.override = !!saved.override; S.mine = saved.mine || []; S.tab = saved.tab || S.tab; S.sort = saved.sort || S.sort;
-      S.per = saved.per || "auto"; S.cardW = +saved.cardW || 138; S.folder = saved.folder || ""; }
+      S.per = saved.per || "auto"; S.cardW = +saved.cardW || 138; S.folder = saved.folder || ""; S.nsfw = saved.nsfw !== false; }
     var body = build();
     var hv = document.createElement("div"); hv.id = "mmHover"; hv.setAttribute("role", "tooltip"); document.body.appendChild(hv);
     hv.addEventListener("mouseenter", function () { clearTimeout(hoverT); });
@@ -848,7 +1067,7 @@
     paint();
     if (S.override) setTimeout(function () { load(false).then(function () { if (S.override) apply(); }); }, 2500);
   }
-  root.H3ModelMgr = Object.assign({ load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
+  root.H3ModelMgr = Object.assign({ reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
     show: function (on) { return window.SecFloat && SecFloat.show ? SecFloat.show("modelmgr", on) : false; }, apply: apply, search: cvSearch }, pure);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

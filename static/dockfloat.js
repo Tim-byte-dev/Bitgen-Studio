@@ -128,7 +128,7 @@
     const to = typeof o.to === "string" && /^[A-Za-z][\w-]{0,40}$/.test(o.to) ? o.to : "";
     const at = side === "inline" && typeof o.at === "string" && /^[A-Za-z][\w-]{0,40}$/.test(o.at) ? o.at : "";
     return { shown: o.shown === true, x: int(o.x, -4000, 20000, -1), y: int(o.y, -1, 20000, -1), w: int(o.w, 0, 4000, 0), h: int(o.h, 0, 4000, 0),
-             mode: mode !== "float" && !to ? "float" : mode, to, side, dw: int(o.dw, 0, 2000, 0), dh: int(o.dh, 0, 2000, 0), active: o.active === true, at };
+             mode: mode !== "float" && !to ? "float" : mode, to, side, dw: int(o.dw, 0, 2000, 0), dh: int(o.dh, 0, 2000, 0), active: o.active === true, at, min: o.min === true };   // 2.575.0: + min
   }
   const pure = { SIDES, HANDLES, snap, onScreen, zoneAt, zoneRect, resizeRect, edgeAt, planOf, zoneLabel, cleanState, gapAt, inlineLabel };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }

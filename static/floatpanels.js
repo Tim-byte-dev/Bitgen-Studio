@@ -34,6 +34,7 @@
  */
 (function (root) {
   "use strict";
+  let restoring = 0;                                     // 2.575.0: > 0 while the saved layout is being put back
   /* ================================ pure ================================ */
   /** r {x, y, w, h} moved (and shrunk if it must be) to lie inside B {left, top, right, bottom}; min {w, h} */
   function fit(r, B, min) {
@@ -378,8 +379,11 @@
     makeWin(r);
     float(id, lay ? { x: lay.x, y: lay.y, w: lay.w, h: lay.h } : null);
     if (lay && lay.shown === false) r.win.classList.add("off");
-    if (lay && lay.docker && R[lay.docker]) dockInto(id, lay.docker);
-    if (lay && Array.isArray(lay.tabs)) for (const t of lay.tabs) if (R[t] && !(R[t].docker === id)) dockInto(t, id);   // members registered before it
+    restoring++;                                         // 2.575.0: putting the saved layout back - not a user's move
+    try {
+      if (lay && lay.docker && R[lay.docker]) dockInto(id, lay.docker);
+      if (lay && Array.isArray(lay.tabs)) for (const t of lay.tabs) if (R[t] && !(R[t].docker === id)) dockInto(t, id);   // members registered before it
+    } finally { restoring--; }
     if (lay && lay.active && R[lay.active]) { r.active = lay.active; paintTabs(r); }
     save();
     return r;
@@ -446,6 +450,8 @@
     if (R[o.id]) { R[o.id].el = o.el; return R[o.id]; }
     const r = R[o.id] = { id: o.id, kind: "panel", title: o.title || o.id, el: o.el, home: o.home || null, scope: o.scope || null, confine: o.confine || null, onState: o.onState || null, onClose: o.onClose || null, state: "home" };
     r.ready = load().then(() => {                       // where it was left (the file may still be loading)
+      restoring++;                                      // 2.575.0: a re-dock at start is not a user's move (dockgroup onState)
+      try {
       const lay = (LAY.panels || {})[o.id];
       if (lay && lay.grow > 0) r.grow = lay.grow;                       // 2.545.0
       if (lay && lay.state === "float") float(o.id, { x: lay.x, y: lay.y, w: lay.w, h: lay.h });
@@ -456,20 +462,35 @@
         Object.assign(r, { x: lay.x, y: lay.y, w: lay.w, h: lay.h }); dockInto(o.id, lay.docker, at);
         const want = (LAY.dockers[lay.docker] || {}).active; if (want && R[want] && R[want].docker === lay.docker) { R[lay.docker].active = want; paintTabs(R[lay.docker]); }
       }
+      } finally { restoring--; }
       return r;
     });
     return r;
   }
 
   /* ---- kept in panel_layout.cfg */
+  /* 2.575.0 (Tim: "when a docker is placed in a new docker save it's position, when bitgen starts again maintain the last
+     position and status"): a ▣ docker's tab order and shown tab while some of its members have not registered yet (they
+     mount late - extension dockers, the image editor): the saved order keeps their places, the saved active tab stays
+     until it is here - a save in between used to drop them to the end and make the last one docked the shown tab (pure) */
+  function keepTabs(cur, saved, known) {
+    const out = [], has = (t) => (cur || []).indexOf(t) >= 0;
+    for (const t of saved || []) if (has(t) || !known(t)) out.push(t);
+    for (const t of cur || []) if (out.indexOf(t) < 0) out.push(t);
+    return out;
+  }
   function snapshot() {
     const o = { panels: {}, dockers: {} };
     for (const r of Object.values(R)) {
       const s = { state: r.state, docker: r.docker || null, x: r.x, y: r.y, w: r.w, h: r.h };
       if (r.grow > 0 && r.grow !== 1) s.grow = r.grow;                 // 2.545.0: its share of a row / column
       if (r.kind === "panel") o.panels[r.id] = s;
-      else o.dockers[r.id] = Object.assign(s, { name: r.title, layout: r.layout || "tabs", confine: r.confineId || "", tabs: r.tabs || [], active: r.active || null, shown: !!r.win && !r.win.classList.contains("off") },
+      else {
+        const was = (LAY.dockers || {})[r.id] || {}, known = (t) => !!R[t];
+        const active = was.active && !known(was.active) && (was.tabs || []).indexOf(was.active) >= 0 ? was.active : r.active || null;
+        o.dockers[r.id] = Object.assign(s, { name: r.title, layout: r.layout || "tabs", confine: r.confineId || "", tabs: keepTabs(r.tabs || [], was.tabs, known), active, shown: !!r.win && !r.win.classList.contains("off") },
         r.perm ? { perm: Object.assign({}, r.perm) } : {});   // 2.549.0: made a permanent docker in the main column (static/dockgroup.js)
+      }
     }
     // panels / dockers not on this page (another docker not loaded): keep what the file has
     for (const k of Object.keys(LAY.panels || {})) if (!o.panels[k]) o.panels[k] = LAY.panels[k];
@@ -479,7 +500,18 @@
     if (!loaded) return;
     clearTimeout(saveT);
     // 2.545.0: one after another - two in flight could land out of order (the older layout last in the file)
-    saveT = setTimeout(() => { LAY = snapshot(); const body = JSON.stringify({ all: LAY }); saving = saving.then(() => root.fetch("/api/layout/panel", { method: "POST", headers: { "Content-Type": "application/json" }, body }).catch(() => {})); }, 300);
+    pending = true;
+    saveT = setTimeout(() => { pending = false; LAY = snapshot(); const body = JSON.stringify({ all: LAY }); saving = saving.then(() => root.fetch("/api/layout/panel", { method: "POST", headers: { "Content-Type": "application/json" }, body }).catch(() => {})); }, 300);
+  }
+  /* 2.575.0: a save still waiting when the app closes goes out now (a docker dragged just before closing was lost) */
+  let pending = false;
+  function flush() {
+    if (!loaded || !pending) return false;
+    clearTimeout(saveT); pending = false; LAY = snapshot();
+    const body = JSON.stringify({ all: LAY });
+    try { if (root.navigator && root.navigator.sendBeacon && root.navigator.sendBeacon("/api/layout/panel", new root.Blob([body], { type: "application/json" }))) return true; } catch (e) { /* below */ }
+    try { root.fetch("/api/layout/panel", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {}); } catch (e) { /* closing */ }
+    return true;
   }
   let saving = Promise.resolve();
   let readyP = null;
@@ -513,7 +545,11 @@
   }
 
   const H3Panels = { setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+    restoring: () => restoring > 0, keepTabs, flush,   // 2.575.0
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;
-  else { root.H3Panels = H3Panels; if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start(); }
+  else {
+    root.H3Panels = H3Panels; if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start();
+    root.addEventListener("pagehide", flush); root.addEventListener("beforeunload", flush);   // 2.575.0
+  }
 })(typeof window !== "undefined" ? window : globalThis);

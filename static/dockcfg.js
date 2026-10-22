@@ -139,6 +139,9 @@
       if (key === lastKey) return;
       lastKey = key;
       paint();
+      // 2.575.0: at start the layout the app was closed with is put back (docker_status / panel_layout) - a saved docker
+      // config does not override it while the dockers settle; it applies again from the user's own opening / closing
+      if (Date.now() < bootUntil) return;
       if (CFG.auto !== false && key) apply(key, why);
     }
     function soon() { clearTimeout(timer); timer = setTimeout(function () { check("these dockers were opened together"); }, 180); }
@@ -258,6 +261,11 @@
       BOTTOM.forEach(function (id) { var el = $(id); if (el) mo.observe(el, { attributes: true, attributeFilter: ["class"] }); });
     }
     lastKey = null;
+    // 2.575.0: the boot's own settling (restored dockers, extension dockers mounting) is not "these dockers were opened
+    // together" - until the user's first press / key (or 8 s) a set change does not load a saved config over it
+    var bootUntil = Date.now() + 8000;
+    var userGo = function (e) { if (e && e.isTrusted === false) return; bootUntil = 0; document.removeEventListener("pointerdown", userGo, true); document.removeEventListener("keydown", userGo, true); };
+    document.addEventListener("pointerdown", userGo, true); document.addEventListener("keydown", userGo, true);
     check("at start");
     DockCfg.save = save; DockCfg.apply = apply; DockCfg.openSet = openSet; DockCfg.state = function () { return CFG; };
     DockCfg.openKey = function () { return keyOf(openIds()); }; DockCfg.check = check; DockCfg.paint = paint;

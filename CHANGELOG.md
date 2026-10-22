@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.576.0** — Civitai Sync by Sha-256; The Viewer's 🧩 to Model…; Ctrl+↓ = the Model's Thumbnail
+- **2.575.0** — Model Manager: Your Files + Metadata + Thumbnail, ½ Stars, Model Type, Nsfw; ✎→ to Prompt; Civitai Sync Chip; Dockers Restored
 - **2.574.1** — Theme Edit: "This Element Only" (Default); A New Title Never Renames Every Docker
 - **2.574.0** — Theme Edit Renames Docker Titles + Any Words; Step N of Total for Every Generation
 - **2.573.0** — ✂ Song Cut Duration, ⤓ Update ComfyUI, Update Check on Startup, FASTH3 Omni

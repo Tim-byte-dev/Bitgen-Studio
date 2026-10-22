@@ -212,6 +212,8 @@
     if (m && w.max) maximize(id, false);
     w.el.classList.toggle("sf-min", m);
     if (m && window.H3TestEvent) window.H3TestEvent("docker_min", id);
+    // 2.575.0 (Tim: "maintain the last position and status(open, minimized, closed) of all dockers"): minimized is kept
+    const f = rec()[id]; if (f && !!f.min !== m) { f.min = m; if (!w.restoringMin) save(id); }
     const b = w.el.querySelector(".sfmin"); b.textContent = m ? "▭" : "▁"; b.title = m ? "Open it again" : "Minimize - just the title bar (again: open it)";
     try { window.dispatchEvent(new Event("resize")); } catch (e) { /* jsdom */ }
     return m;
@@ -299,6 +301,8 @@
     const place = () => {
       if (!layoutReady() && tries++ < 150) { setTimeout(place, 80); return; }
       for (const id of Object.keys(W)) { W[id].panel.restore(); W[id].placed = true; }
+      // 2.575.0: minimized as it was left
+      for (const id of Object.keys(W)) if (rec()[id] && rec()[id].min) { W[id].restoringMin = true; try { minimize(id, true); } finally { W[id].restoringMin = false; } }
       // 2.401.4: a panel inline in the left docker ABOVE another panel - placed again once that one is in its list
       for (const id of Object.keys(W)) {
         const f = rec()[id];

@@ -327,7 +327,8 @@
     p.adopt({ id: "bd." + id, title: name, el: d, home: { parent: d.parentNode, before: d.nextElementSibling },
       onState: (s) => {
         d.classList.toggle("dg-floating", s !== "home");
-        if (s !== "home") d.classList.remove("dockgone", "collapsed");
+        // 2.575.0: a user's move shows it; the re-dock at start keeps the status it was left in (hidden / collapsed)
+        if (s !== "home" && !(p.restoring && p.restoring())) d.classList.remove("dockgone", "collapsed");
         if (SIDE[id]) sideState(id, d, s);                                // 2.558.0: its column closes while it is out
         markApp();
         if (typeof root.paintDockButtons === "function") { try { root.paintDockButtons(); } catch (er) { /* fine */ } }

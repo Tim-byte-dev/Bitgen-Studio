@@ -92,7 +92,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.click('.mmgr [data-mmtab="loras"]'); await p.waitForTimeout(300);
     const lo = await ev(() => [...document.querySelectorAll("#mmGrid .mmcard")].map((c) => ({ key: c.dataset.key, text: c.textContent, kw: [...c.querySelectorAll(".kwc")].map((k) => k.textContent) })));
     const lin = lo.find((c) => /anime_lineart/.test(c.key));
-    check("LoRAs tab: 2 cards; a Civitai-known one says Illustrious, ★ 4.5, 2026-03-14 and its keywords", lo.length === 2 && lin && /Illustrious/.test(lin.text) && /★ 4\.5/.test(lin.text) && /2026-03-14/.test(lin.text) && lin.kw.join(",") === "lineart,monochrome", lo);
+    check("LoRAs tab: 2 cards; a Civitai-known one says Illustrious, ★ 4.5, 2026-03-14 and its keywords", lo.length === 2 && lin && /Illustrious/.test(lin.text) && /4\.5/.test(lin.text) && /★★★★★/.test(lin.text) && /2026-03-14/.test(lin.text) && lin.kw.join(",") === "lineart,monochrome", lo);
     await ev(() => { const t = document.getElementById("prompt"); if (t) t.value = "a fox"; });
     await p.click(`#mmGrid .mmcard[data-key="${lin.key}"] .kwc`); await p.waitForTimeout(150);
     const pr = await ev(() => (document.getElementById("prompt") || {}).value);

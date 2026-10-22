@@ -90,12 +90,27 @@
     if (!box) return Promise.resolve(null);
     var my = ++paneSeq;
     box.innerHTML = '<div class="jmnone">…</div>';
+    // 2.575.0: a file this app did not render (or whose job is gone) - what its own metadata says (lib/mediaMeta:
+    // PNG text, container tags), from the gallery's folders, else the Assets folder of its kind
+    var asset = /\.(png|jpe?g|webp|gif)$/i.test(name || "") ? "images" : /\.(wav|mp3|flac|ogg|opus|m4a)$/i.test(name || "") ? "sound" : "video";
+    var mm = function (src) { return fetch("/api/media-meta?src=" + src + "&name=" + encodeURIComponent(name || "")).then(function (r) { return r.ok ? r.json() : null; }); };
     return fetch("/api/job-meta?name=" + encodeURIComponent(name || ""))
       .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return j && j.meta ? j : mm("output").then(function (x) { return x || mm(asset); }).catch(function () { return null; }); })
       .then(function (j) {
         if (my !== paneSeq) return null;                // the dialog moved on to another file
-        box.innerHTML = '<div class="jm-h">Render details</div>' + html(j && j.meta);
+        box.innerHTML = '<div class="jm-h">Render details' + (j && j.from && j.from !== "job" && j.source !== "job" ? " <small style='opacity:.7'>(from the file)</small>" : "") + "</div>" + html(j && j.meta);
         wireSeed(box);
+        // 2.575.0 (Tim: "add a button for the prompt from metadata to send to prompt - this will use the seed, cfg and
+        // steps"): ✎→ To prompt - the prompt + seed / cfg / steps (static/usemeta.js)
+        if (j && j.meta && window.H3UseMeta && (j.meta.prompt || j.meta.seed != null)) {
+          var b = window.H3UseMeta.button(function () {
+            var w = window.H3UseMeta.apply(j.meta, window.H3UseMeta.kindOf(name, j.meta));
+            window.H3UseMeta.say(w ? "✎→ " + w : "nothing to use");
+          });
+          b.textContent = "✎→ To prompt (prompt, seed, cfg, steps)"; b.style.margin = "6px 0";
+          box.appendChild(b);
+        }
         return j;
       })
       .catch(function () { if (my === paneSeq) box.innerHTML = html(null); return null; });

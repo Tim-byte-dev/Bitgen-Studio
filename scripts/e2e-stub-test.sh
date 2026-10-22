@@ -12307,6 +12307,22 @@ node scripts/test-themewords5741.js > /tmp/tw5741.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5741-ui.js > /tmp/ui5741.log 2>&1 \
   && ok "2.574.1 browser test: the StoryBoard renamed twice through All like it and Every <div> - only the StoryBoard changes; picked again: its words + This element only; an old theme renaming every docker heals - or SKIP without playwright" \
   || { bad "2.574.1 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5741.log | head -14; }
+
+# ---- 2.575.0 (model manager: your files + metadata + thumbnail, half stars, model type, NSFW; ✎→ To prompt; Civitai sync in the status bar; dockers restored as left)
+node scripts/test-modelmedia575.js > /tmp/mm575.log 2>&1 \
+  && ok "2.575.0 units (mediaMeta: A1111, ComfyUI graphs - KSampler / H3, tags, PNG chunks; modelMedia add / update / thumb / remove; halfStars, model types; starBar / starAt; NSFW + type filters; usemeta plan; civitaisync text; keepTabs; the layout fixes wired)" \
+  || { bad "2.575.0 units"; grep -a "^FAIL" -A2 /tmp/mm575.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui575-ui.js > /tmp/ui575.log 2>&1 \
+  && ok "2.575.0 browser test: ＋ Add a PNG - its ComfyUI prompt / seed / cfg / steps read; a click opens the viewer; ✎→ fills prompt + Basic Settings; 🖼 thumbnail; 3.5 stars by a click; model type + NSFW + the 🔞 filter; the gallery's ✎→; the Civitai chip; a hidden docker in a ▣ docker stays hidden over a reload - or SKIP without playwright" \
+  || { bad "2.575.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui575.log | head -14; }
+
+# ---- 2.576.0 (Civitai sync by SHA-256; the viewer's 🧩 To model…; Ctrl+↓ thumbnail)
+node scripts/test-tomodel576.js > /tmp/tm576.log 2>&1 \
+  && ok "2.576.0 units (sync by SHA-256 found / no match hashed; reading n%; sourceOf / modelOfUrl / rank; thumb from an example; modelmgr Ctrl+↓)" \
+  || { bad "2.576.0 units"; grep -a "^FAIL" -A2 /tmp/tm576.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui576-ui.js > /tmp/ui576.log 2>&1 \
+  && ok "2.576.0 browser test: 🧩 To model… picks the model the picture was made with, copies it with its prompt / seed and makes it the thumbnail; Ctrl+↓ on a model's picture; Ctrl+↓ elsewhere opens the picker; reading 45% chip - or SKIP without playwright" \
+  || { bad "2.576.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui576.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

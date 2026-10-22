@@ -3260,6 +3260,9 @@
 <script src="/static/uerig.js"></script>  <!-- 2.476.0: Unreal lights + fog (the image editor + the timeline) -->
 <script src="/static/jobmeta.js"></script>
 <script src="/static/genqueue.js"></script>
+<script src="/static/tomodel.js"></script>  <!-- 2.576.0: the viewer's 🧩 To model… + Ctrl+↓ = the model's thumbnail (window.H3ToModel) -->
+<script src="/static/civitaisync.js"></script>  <!-- 2.575.0: the Civitai sync in the status bar (window.H3CivitaiSync) -->
+<script src="/static/usemeta.js"></script>  <!-- 2.575.0: ✎→ To prompt - a file's prompt + seed / cfg / steps (window.H3UseMeta) -->
 <script src="/static/stepstext.js"></script>  <!-- 2.574.0: "step n of total" everywhere a generation runs (window.H3Steps) -->
 <script src="/static/queuerun.js"></script>
 <script src="/static/seedvr2panel.js"></script>
@@ -3658,6 +3661,8 @@ function renderTray() {
         <input class="roleother hidden" type="text" placeholder="e.g. horse, dog">
       </div>` : ""}`;
     s.querySelector(".tag").textContent = tag;
+    // 2.575.0: ✎→ - a reference picture's prompt + seed / cfg / steps (its PNG text, or the render it came from)
+    if (window.H3UseMeta && r.file) s.querySelector(".imgwrap").appendChild(H3UseMeta.button(() => H3UseMeta.sendBlob(r.file, r.file.name || "reference.png", "image")));
     // 2.539.0: a short description under every reference (static/refinfo.js) - the mapping lines, the chat, the house builder
     if (window.RefInfo) s.appendChild(RefInfo.descBox(r.desc || "", (v) => { r.desc = v; updateMapline(); }, "describe it (optional)"));
     if (fopTags) s.classList.toggle("fopoff", r !== fopT.pic);           // 2.395.0: not used by the Append / Prepend
@@ -6598,6 +6603,7 @@ async function refreshGallery() {
       if (curVideo === f.name) { curVideo = null; $("player").classList.add("hidden"); $("vtitle").textContent = ""; $("vmeta").textContent = ""; }
       refreshGallery();
     };
+    useMetaBtn(el.querySelector(".gmeta"), "output", f.name, el.querySelector(".gdel"));   // 2.575.0: ✎→ To prompt
     gallerySaveAs(el, f);                             // 2.359.0
     box.appendChild(el);
   }
@@ -6624,6 +6630,14 @@ function gallerySaveAs(el, f) {
   };
   b.onmousedown = (ev) => ev.stopPropagation();
   b.draggable = false;
+}
+/* 2.575.0 (Tim: "add a button for the prompt from metadata to send to prompt - this will use the seed, cfg and steps
+   of the image/video/music (do this for gallery,assets and reference too)"): ✎→ on a tile - its prompt + seed / cfg /
+   steps into the prompt box and Basic Settings (static/usemeta.js; the metadata: lib/mediaMeta.js) */
+function useMetaBtn(host, src, name, before) {
+  if (!host || !window.H3UseMeta || host.querySelector(":scope > .h3usemeta")) return;
+  const b = H3UseMeta.button(() => H3UseMeta.send(src, name));
+  if (before && before.parentNode === host) host.insertBefore(b, before); else host.appendChild(b);
 }
 function paintImageTiles(box, files) {
   for (const f of files) {
@@ -6655,6 +6669,7 @@ function paintImageTiles(box, files) {
     el.querySelector(".gdel").onclick = async () => {
       if (await galleryDelete(f.name)) refreshGallery();   // 2.223.15
     };
+    useMetaBtn(el.querySelector(".gmeta"), "output", f.name, el.querySelector(".gdel"));   // 2.575.0: ✎→ To prompt
     gallerySaveAs(el, f);                             // 2.359.0
     box.appendChild(el);
   }
@@ -6699,6 +6714,7 @@ function paintAudioTiles(box, files) {
     el.querySelector(".gdel").onclick = async () => {
       if (await galleryDelete(f.name)) refreshGallery();   // 2.223.15
     };
+    useMetaBtn(el.querySelector(".gmeta"), "output", f.name, el.querySelector(".gdel"));   // 2.575.0: ✎→ To prompt
     gallerySaveAs(el, f);                             // 2.359.0
     box.appendChild(el);
   }
@@ -12109,6 +12125,7 @@ function assetItem(kind, a) {
     ev.dataTransfer.setData("text/plain", a.name);
   };
   el.ondragend = () => setTimeout(() => (dragPayload = null), 50);
+  useMetaBtn(el.querySelector(".an"), kind, a.name);   // 2.575.0: ✎→ To prompt (its prompt + seed / cfg / steps)
   if (kind === "sound" || kind === "video") {
     // transcribe straight from the tray; video is demuxed server-side
     const bar = document.createElement("span");
@@ -12291,6 +12308,7 @@ function renderRefLists() {
       }; }
     el.querySelector(".an span").title = n;
     el.querySelector(".gdel").onclick = (e) => { e.stopPropagation(); refVids.splice(i, 1); const had = !!refVidOps[n]; delete refVidOps[n]; renderRefLists(); if (had) renderTray(); };
+    useMetaBtn(el.querySelector(".an"), "video", n, el.querySelector(".an .gdel"));   // 2.575.0: ✎→ To prompt
     el.querySelector(".pv").onclick = (e) => { e.stopPropagation(); previewRef("video", n, el.querySelector(".pv")); };
     if (window.RefInfo) el.appendChild(RefInfo.descBox(refNotes.videos[n] || "", (v) => { if (v) refNotes.videos[n] = v; else delete refNotes.videos[n]; }, "describe it - e.g. the dance, the camera move"));   // 2.539.0
     el.onclick = (e) => { if (!e.target.closest("button, select")) openRefSelect(i); };
@@ -12305,6 +12323,7 @@ function renderRefLists() {
     el.innerHTML = `<div class="an"><button class="pv" title="Preview">▶</button>`
       + `<span>${n}</span><button class="gdel">✕</button></div>`;
     el.querySelector(".gdel").onclick = () => { refAuds.splice(i, 1); renderRefLists(); };
+    useMetaBtn(el.querySelector(".an"), "sound", n, el.querySelector(".an .gdel"));   // 2.575.0: ✎→ To prompt
     el.querySelector(".pv").onclick = () => previewRef("sound", n, el.querySelector(".pv"));
     if (window.RefInfo) el.appendChild(RefInfo.descBox(refNotes.audio[n] || "", (v) => { if (v) refNotes.audio[n] = v; else delete refNotes.audio[n]; }, "describe it - e.g. her voice, calm and low"));   // 2.539.0
     ra.appendChild(el);
@@ -13472,7 +13491,8 @@ function layoutState() {
   }
   for (const [id, [v, cls]] of Object.entries(SIDE_DOCKS)) {
     const el = $(SIDE_EL[id]), e = dsEntry(id);
-    d[id] = { state: "open", hidden: $("app").classList.contains(cls),
+    // 2.575.0: a side docker taken into a ▣ docker / floated closes its column (#app.no-…) - that is not "hidden"
+    d[id] = { state: "open", hidden: $("app").classList.contains(cls) && !(el && el.classList.contains("dg-floating")),
               height: Math.round((el && el.offsetHeight) || e.height || 0), width: cssPx(v),
               max_height: 0, max_width: e.max_width || 0, maximized: false };
   }
@@ -13482,7 +13502,9 @@ let layoutTimer = null, layoutApplying = false;
 function saveLayout() {
   if (layoutApplying || !dsReady || typeof fetch !== "function") return;
   clearTimeout(layoutTimer);
+  layoutPending = true;
   layoutTimer = setTimeout(() => {
+    layoutPending = false;
     try {
       const docks = layoutState();
       for (const [id, e] of Object.entries(docks)) DS.docks[id] = { ...dsEntry(id), ...e };
@@ -13491,6 +13513,20 @@ function saveLayout() {
     } catch { /* offline / jsdom */ }
   }, 400);
 }
+/* 2.575.0 (Tim: "when bitgen starts again maintain the last position and status (open, minimized, closed) of all
+   dockers"): a layout save still waiting when the app closes goes out now (sendBeacon) */
+let layoutPending = false;
+function flushLayout() {
+  if (!layoutPending || !dsReady) return;
+  clearTimeout(layoutTimer); layoutPending = false;
+  try {
+    const docks = layoutState(), body = JSON.stringify({ docks });
+    if (!(navigator.sendBeacon && navigator.sendBeacon("/api/docker-status", new Blob([body], { type: "application/json" }))))
+      fetch("/api/docker-status", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {});
+  } catch { /* closing */ }
+}
+window.addEventListener("pagehide", flushLayout);
+window.addEventListener("beforeunload", flushLayout);
 /* an older-shaped entry (ui.docks / dockers.json: state open|closed|max|min|normal) read as a docker_status one */
 function dsShape(id, e) {
   if (!e || typeof e !== "object") return {};
@@ -14716,6 +14752,11 @@ async function startGraphJob() {
   toggleCollapse("consoledock");
   layoutApplying = true;   // nothing above is a user change: do not write it back
   ensureDockButtons();             // 2.386.0: a button for every docker, lit while it is on screen
+  // 2.575.0: an extension's docker (not in docker_status.json) comes back open / closed as it was left (store c.<id>)
+  document.querySelectorAll("#maincol > .bdock").forEach((d) => {
+    if (!d.id || STATUS_VARS[d.id] || !d.querySelector(":scope > .bhead")) return;
+    if ((store.get("c." + d.id, "0") === "1") !== d.classList.contains("collapsed")) { try { toggleCollapse(d.id); } catch { /* fine */ } }
+  });
   paintDockButtons();
   layoutApplying = false;
   if (window.mountImageEditor) window.mountImageEditor();                     // 2.108.0

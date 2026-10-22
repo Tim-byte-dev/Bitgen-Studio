@@ -646,6 +646,13 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Rename docker titles and any words in theme edit mode** — a docker's title bar and any element with words beside buttons / boxes get new words (caret and buttons kept, a collapse keeps them). *Where:* 🖌 theme edit mode ▸ pick ▸ Layout ▸ Text. *Since:* 2.574.0
 - **Step n of total everywhere** — pictures (ComfyUI and sd-cli), music and video report their sampler steps live, and every docker, dialog and card that shows a running generation says step n of total. *Since:* 2.574.0
 - **Theme edit ▸ Apply to: This element only (default)** — every pick starts on just that element; new words never spread to other dockers or elements. *Where:* 🖌 theme edit mode ▸ Apply to. *Since:* 2.574.1
+- **Model manager: your files, thumbnail, metadata** — pictures / videos / sounds of a model with their prompt + seed / cfg / steps (read from the file or the render), a click opens the viewer, ✎→ to the prompt, 🖼 as the thumbnail. *Where:* 🧩 Model manager ▸ ⓘ ▸ Your pictures, videos and sounds; ✎ Edit ▸ Thumbnail. *Since:* 2.575.0
+- **Model manager: half-star rating, model type, NSFW** — a five-star editor in half steps, the model type (checkpoint, LoRA …) and an NSFW flag; the filter bar filters by both. *Where:* 🧩 Model manager ▸ ✎ Edit; the filter bar. *Since:* 2.575.0
+- **✎→ To prompt from any file** — a file's prompt with its seed, cfg and steps to the prompt box + Basic Settings. *Where:* the gallery, Assets, References tiles; the viewer's ⓘ details. *Since:* 2.575.0
+- **Civitai sync in the status bar** — 🔄 Civitai n/total while it syncs, ✓ synced with the counts when it finishes. *Since:* 2.575.0
+- **Dockers restored as left** — ▣ docker membership, tab order, shown tab, hidden / collapsed, minimized floating panels, extension dockers - kept over a restart. *Since:* 2.575.0
+- **Civitai sync by SHA-256** — a model not found by its name is found by its file's content; the status bar shows reading n%. *Where:* 🧩 Model manager ▸ 🔄 Sync. *Since:* 2.576.0
+- **🧩 To model… / Ctrl+↓ thumbnail** — the viewer sends a picture / video / song to a model's files with its metadata; Ctrl+↓ makes a picture the model's thumbnail. *Where:* the viewer; 🧩 Model manager ▸ ⓘ. *Since:* 2.576.0
 
 ### Selections
 

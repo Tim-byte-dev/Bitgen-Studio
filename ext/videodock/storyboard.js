@@ -76,11 +76,12 @@
     css.textContent = ".h3fp #videodock{flex:1 1 auto!important;height:auto!important;min-height:0!important;display:flex;flex-direction:column}.h3fp #videodock > .bhead{display:none}"
       + ".h3fp #videodock > .bbody{flex:1 1 auto;min-height:0;overflow:auto}#videodock .sbbar select{max-width:170px}";
     doc.head.appendChild(css);
-    const b = doc.createElement("button"); b.className = "dgfloat"; b.id = "sbFloatBtn";   // 2.545.0: not .maxbtn (toggleMax re-labelled it ⛶); styled by static/dockgroup.js b.type = "button"; b.title = "Float the StoryBoard - a window of its own (⇲ in its title puts it back)"; b.textContent = "⇱";
+    const b = doc.createElement("button"); b.className = "dgfloat"; b.id = "sbFloatBtn";   // 2.545.0: not .maxbtn (toggleMax re-labelled it ⛶); styled by static/dockgroup.js
+    b.type = "button"; b.title = "Float the StoryBoard - a window of its own (⇲ in its title puts it back)"; b.textContent = "⇱";   // 2.575.0: a comment had eaten this line (the button was blank)
     b.onclick = (e) => { e.stopPropagation(); e.preventDefault(); if (d.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse("videodock"); P.float("sb.dock", (P.get("sb.dock") || {}).w ? null : { x: Math.max(20, root.innerWidth - 760), y: 70, w: 700, h: Math.min(720, root.innerHeight - 120) }); };
     const mx = [...h.querySelectorAll(":scope > .maxbtn")].pop(); if (mx) h.insertBefore(b, mx.nextSibling); else h.appendChild(b);
     P.adopt({ id: "sb.dock", title: "StoryBoard", el: d, home: { parent: d.parentNode, before: d.nextElementSibling },
-      onState: (s) => { d.classList.toggle("sb-floating", s !== "home"); if (s !== "home") d.classList.remove("dockgone", "collapsed"); try { root.dispatchEvent(new root.Event("resize")); } catch (er) { /* fine */ } } });
+      onState: (s) => { d.classList.toggle("sb-floating", s !== "home"); if (s !== "home" && !(P.restoring && P.restoring())) d.classList.remove("dockgone", "collapsed"); /* 2.575.0: the status it was left in at start */ try { root.dispatchEvent(new root.Event("resize")); } catch (er) { /* fine */ } } });
   }
   /* ---- the bar */
   function bar() {

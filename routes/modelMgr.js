@@ -10,6 +10,13 @@
 //   POST /api/modelmgr/fetch {keys | all, kind?, force?, sync?}   ⤓ details + thumbs + examples from Civitai (a queue)
 //   GET  /api/modelmgr/fetch                   the queue's progress;  POST /api/modelmgr/fetch/stop
 //   GET  /api/modelmgr/used                    {keys} - the models / LoRAs this project's jobs used
+//   2.575.0 (lib/modelMedia.js - your pictures / videos / sounds of a model, its thumbnail, their prompts):
+//   GET  /api/modelmgr/media?key=              {items, thumb}
+//   GET  /api/modelmgr/media/file?key=&id=     one of them
+//   POST /api/modelmgr/media                   multipart {key, file} | JSON {key, src: output|images|video|sound, name}
+//   POST /api/modelmgr/media/update {key, id, meta?, name?};  POST /api/modelmgr/media/delete {key, id}
+//   POST /api/modelmgr/thumb                   multipart {key, file} | JSON {key, item} | JSON {key, src, name} | JSON {key, example: n} (2.576.0)
+//   POST /api/modelmgr/thumb/clear {key}
 "use strict";
 const cards = require("../lib/modelCards");
 
@@ -23,6 +30,7 @@ function mount(app) {
       res.json(Object.assign({}, d, {
         families: Object.entries(cards.FAMILIES).map(([id, f]) => ({ id, label: f.label, category: f.category })),
         categories: cards.CATEGORIES,
+        model_types: cards.MODEL_TYPES,                                 // 2.575.0
         templates: all.filter((s) => !s.chain).map((s) => ({ id: s.id, name: s.name, kind: s.kind || "image", arch: s.arch || "" })),
       }));
     } catch (e) { fail(res, e); }
@@ -60,6 +68,55 @@ function mount(app) {
       const d = cards.list();
       res.json({ keys: cards.usedKeys(d.models.concat(d.loras), jobs), jobs: jobs.length });
     } catch (e) { fail(res, e); }
+  });
+  /* ---- 2.575.0: your media of a model (lib/modelMedia) */
+  const MM = require("../lib/modelMedia"), MED = require("../lib/mediaMeta");
+  const os = require("os"), fs = require("fs");
+  let up = null;
+  const upload = () => { if (!up) up = require("multer")({ dest: os.tmpdir(), limits: { fileSize: MM.MAX_BYTES, files: 1 } }).single("file"); return up; };
+  const cardOf = (key) => { const h = cards.find(String(key || "")); return h ? h.card : null; };
+  const done = (res, r) => { if (r && r.error) return res.status(400).json(r); try { cards.invalidate && cards.invalidate(); } catch { /* fine */ } res.json(r); };
+  // a file from the project (the gallery / Assets): the path is resolved here, never taken from the request
+  const fromProject = (b) => { const p = MED.resolve(String(b.src || ""), String(b.name || "")); if (!p) { const e = new Error(`${b.name || "that file"} is not in this project's ${b.src || "files"}`); e.status = 400; throw e; } return p; };
+  app.get("/api/modelmgr/media", (req, res) => {
+    try { const c = cardOf(req.query.key); if (!c) return res.status(404).json({ error: "no such model" }); res.json(MM.list(c)); } catch (e) { fail(res, e); }
+  });
+  app.get("/api/modelmgr/media/file", (req, res) => {
+    try { const c = cardOf(req.query.key); const f = c ? MM.filePath(c, String(req.query.id || "")) : null; if (!f) return res.status(404).end(); res.set("Cache-Control", "max-age=3600"); res.sendFile(f); } catch (e) { fail(res, e); }
+  });
+  const withUpload = (handler) => (req, res) => {
+    const go = () => { try { handler(req, res); } catch (e) { fail(res, e); } finally { if (req.file && req.file.path) fs.unlink(req.file.path, () => {}); } };
+    if (req.is("multipart/form-data")) upload()(req, res, (err) => { if (err) return res.status(400).json({ error: String(err.message || err) }); go(); });
+    else go();
+  };
+  app.post("/api/modelmgr/media", withUpload((req, res) => {
+    const b = req.body || {}, c = cardOf(b.key);
+    if (!c) return res.status(404).json({ error: "no such model" });
+    let meta = null; try { meta = b.meta ? (typeof b.meta === "string" ? JSON.parse(b.meta) : b.meta) : null; } catch { meta = null; }
+    if (req.file) return done(res, MM.add(c, { path: req.file.path, name: req.file.originalname, meta, src: "upload" }));
+    const p = fromProject(b);
+    // a render of this app: its job record knows more than the file (lib/mediaMeta.lookup)
+    if (!meta) { const hit = MED.lookup({ src: b.src, name: b.name }); if (hit) meta = hit.meta; }
+    done(res, MM.add(c, { path: p, name: require("path").basename(p), meta, src: String(b.src || "") }));
+  }));
+  app.post("/api/modelmgr/media/update", (req, res) => {
+    try { const b = req.body || {}, c = cardOf(b.key); if (!c) return res.status(404).json({ error: "no such model" }); done(res, MM.update(c, String(b.id || ""), b)); } catch (e) { fail(res, e); }
+  });
+  app.post("/api/modelmgr/media/delete", (req, res) => {
+    try { const b = req.body || {}, c = cardOf(b.key); if (!c) return res.status(404).json({ error: "no such model" }); done(res, MM.remove(c, String(b.id || ""))); } catch (e) { fail(res, e); }
+  });
+  app.post("/api/modelmgr/thumb", withUpload((req, res) => {
+    const b = req.body || {}, c = cardOf(b.key);
+    if (!c) return res.status(404).json({ error: "no such model" });
+    if (req.file) return done(res, MM.setThumb(c, { path: req.file.path, name: req.file.originalname }));
+    if (b.item) return done(res, MM.setThumb(c, { item: String(b.item) }));
+    // 2.576.0: one of Civitai's example pictures of it (Ctrl+↓ in the viewer)
+    if (b.example != null && b.example !== "") { const f = MI.examplePath(c, b.example); if (!f) return res.status(404).json({ error: "no such example picture" }); return done(res, MM.setThumb(c, { path: f, name: require("path").basename(f) })); }
+    const p = fromProject(b);
+    done(res, MM.setThumb(c, { path: p, name: require("path").basename(p) }));
+  }));
+  app.post("/api/modelmgr/thumb/clear", (req, res) => {
+    try { const c = cardOf((req.body || {}).key); if (!c) return res.status(404).json({ error: "no such model" }); done(res, MM.clearThumb(c)); } catch (e) { fail(res, e); }
   });
   app.post("/api/modelmgr/card", (req, res) => {
     try {
