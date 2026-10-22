@@ -67,7 +67,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       st.s === "done" && st.texts.some((t) => /^✨ image · step \d of 8$/.test(t)) && st.seen.length >= 1, st);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }
-  finally { try { await ev(() => window.H3ThemeEdit && window.H3ThemeEdit.setStyles({}, true)); } catch (e) { /* closed */ } await b.close(); }
+  finally {
+    try { await ev(() => window.H3ThemeEdit && window.H3ThemeEdit.setStyles({}, true)); } catch (e) { /* closed */ }
+    // the edit mode this test began left its working copy (themes/<name>.tmp) - the next edit mode would offer it back
+    try { await ev(() => Promise.all(["Untitled", (window.H3ThemeEdit && window.H3ThemeEdit.session && window.H3ThemeEdit.session()) || ""].filter(Boolean).map((n) => fetch("/api/themes/tmp/delete", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: n }) })))); } catch (e) { /* fine */ }
+    await b.close();
+  }
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

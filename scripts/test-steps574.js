@@ -33,9 +33,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   check("cleared: the title it had comes back (with the caret as it is now); a label with a checkbox gets its words, the box kept",
     own(head) === "▸ StoryBoard" && !head.classList.contains("h3words") && own(d.getElementById("lb")).trim() === "Bridge" && d.getElementById("cb"), [own(head), own(d.getElementById("lb"))]);
   const TS = rd("static", "themeedit.js");
-  check("the Style panel: Text is open for an element with words of its own (mixed), a title bar is aimed at ITS docker by default",
+  check("the Style panel: Text is open for an element with words of its own (mixed), every pick (a title bar too) starts on This element only",
     /const mixed = !plain && \(el\.classList\.contains\("h3words"\) \|\| hasOwnWords\(el\)\)/.test(TS) && /\$\{plain \|\| mixed \? "" : " disabled"\}/.test(TS)
-    && /el\.matches\("\.bhead, \.dockhead, \.h3fp-t, \.tsd-title"\) \? opts\[0\]/.test(TS));
+    && /scope = opts\[0\]\.sel;/.test(TS));   // 2.574.1: every pick starts on This element only
 
   /* 2 the words for a step */
   const H = require(path.join(ROOT, "static", "stepstext.js"));

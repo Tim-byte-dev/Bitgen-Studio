@@ -645,6 +645,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **FastH3 Omni** — MiniMax H3's reference-to-video in 8 steps (FastVideo): a video style, a StoryBoard Workflow, an add-on that downloads it, and its recipe (shift 12/3, VSA, 8 steps) on any H3 graph that loads it. *Where:* Settings ▸ Add-ons ▸ FastH3 Omni; StoryBoard ▸ Workflow ▸ FastH3 Omni. *Since:* 2.573.0
 - **Rename docker titles and any words in theme edit mode** — a docker's title bar and any element with words beside buttons / boxes get new words (caret and buttons kept, a collapse keeps them). *Where:* 🖌 theme edit mode ▸ pick ▸ Layout ▸ Text. *Since:* 2.574.0
 - **Step n of total everywhere** — pictures (ComfyUI and sd-cli), music and video report their sampler steps live, and every docker, dialog and card that shows a running generation says step n of total. *Since:* 2.574.0
+- **Theme edit ▸ Apply to: This element only (default)** — every pick starts on just that element; new words never spread to other dockers or elements. *Where:* 🖌 theme edit mode ▸ Apply to. *Since:* 2.574.1
 
 ### Selections
 

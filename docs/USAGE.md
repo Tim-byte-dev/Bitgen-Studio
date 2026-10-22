@@ -5881,6 +5881,11 @@ orange line shows where it will go - and let go.
   docker only) and any element that has words of its own beside buttons or boxes (a label with its checkbox) can be
   given new words; the ▾ / ▸ caret, the 📌 and the buttons stay, a collapse keeps the new title, ↺ Clear brings the old
   one back. Elements with no words of their own say so - pick the words themselves.
+- 2.574.1: **Apply to ▸ This element only** is the first choice for every element you pick in theme edit mode, and the
+  default - each pick starts on it (the panel no longer keeps the last element's Apply to). New words always belong to
+  the picked element only: with a wider Apply to (All like it, Every <div>) the rest of the style goes wide but the
+  words stay on that one element. A text rule that finds several titles, or a bare tag (div, button), never renames
+  them - a theme where every docker took one name heals by itself; rename the docker you meant again.
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
   only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
   says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker

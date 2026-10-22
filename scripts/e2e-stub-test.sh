@@ -12299,6 +12299,14 @@ node scripts/test-steps574.js > /tmp/st574.log 2>&1 && python3 scripts/test-step
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui574-ui.js > /tmp/ui574.log 2>&1 \
   && ok "2.574.0 browser test: the StoryBoard's title bar picked - Text open, aimed at that docker; Music Video typed - ▾ Music Video, buttons kept, the Music docker untouched; collapse / open keep it; cleared = StoryBoard; H3Steps.watch + h3:jobtick on a stubbed running job - or SKIP without playwright" \
   || { bad "2.574.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui574.log | head -14; }
+
+# ---- 2.574.1 (theme edit: This element only - the default; new words never spread to every docker)
+node scripts/test-themewords5741.js > /tmp/tw5741.log 2>&1 \
+  && ok "2.574.1 units (a text rule on every title bar / a bare tag renames nothing, one title bar renames just it, plain buttons through All like it as before; a new pick resets Apply to; This element only first + default; the words under the element's own selector; storyboard.js leaves a themed title)" \
+  || { bad "2.574.1 units"; grep -a "^FAIL" -A2 /tmp/tw5741.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5741-ui.js > /tmp/ui5741.log 2>&1 \
+  && ok "2.574.1 browser test: the StoryBoard renamed twice through All like it and Every <div> - only the StoryBoard changes; picked again: its words + This element only; an old theme renaming every docker heals - or SKIP without playwright" \
+  || { bad "2.574.1 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5741.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

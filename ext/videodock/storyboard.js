@@ -64,7 +64,8 @@
   function rename() {
     const d = $("videodock"); if (!d) return;
     const h = d.querySelector(":scope > .bhead");
-    if (h) for (const n of h.childNodes) if (n.nodeType === 3 && /Video/.test(n.textContent)) { n.textContent = n.textContent.replace(/Video/, "StoryBoard"); break; }
+    // 2.574.1: a title the theme gave it (themeedit words(): .h3words) stays as the theme says
+    if (h && !h.classList.contains("h3words")) for (const n of h.childNodes) if (n.nodeType === 3 && /Video/.test(n.textContent)) { n.textContent = n.textContent.replace(/Video/, "StoryBoard"); break; }
     const b = $("tV"); if (b) { b.textContent = "StoryBoard"; b.title = "StoryBoard - the scenes with their storyboard pictures, the cast, 360° environments"; }
   }
   /* ---- floating: the whole docker as a floatpanels panel */

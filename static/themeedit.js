@@ -332,6 +332,47 @@
      run of words is replaced in place; the children and the leading symbols (the ▾ / ▸ caret) stay. In place, as a text
      node, because the app reads those nodes back (a docker's collapse rebuilds its title from them). The words it had
      are kept in data-h3words; .h3words marks it so a cleared rule puts them back. */
+  /* 2.574.1 (Tim: "when i try to change the docker heading a second time, everything goes haywire" / "and all the
+     dockers take the same name"): new WORDS are for one element. The Style panel used to keep the "Apply to" of the
+     element picked before, so a title bar could be renamed through "Every <div>" or "All like it (div.bhead)" - every
+     docker took the name and every div with words of its own was rewritten. Now:
+       - the text a rule gives is used only where it can mean one thing: never through a bare tag (div, span, button),
+         and a heading / label with buttons in it (words() - mixed) only when the rule's selector finds that one element
+         (an old theme with such a rule heals itself: the titles come back);
+       - the panel writes the words under the picked element's own selector (oneSel - unique on the page), whatever
+         "Apply to" says for the rest of its style;
+       - each new pick starts with its own default "Apply to" (not the last element's). */
+  const BARE_TAG = /^[A-Za-z][A-Za-z0-9-]*$/;
+  function isMixed(el) { return !!(el && el.children && el.children.length && ![...el.children].every((c) => c.classList.contains("h3ic") || c.classList.contains("h3lb"))); }
+  function textFor(sel, el, n) {
+    const t = styles[sel] && styles[sel].text;
+    if (t == null) return undefined;
+    if (BARE_TAG.test(sel)) return undefined;
+    if (n > 1 && isMixed(el)) return undefined;
+    return t;
+  }
+  /** a selector that finds exactly this element: #id, else a path (descendant steps - cleanSel takes no ">") from the
+   *  nearest ancestor with an id, plain first ("#videodock div.bhead"), :nth-of-type only where it is needed */
+  function oneSel(el) {
+    if (!el || !doc) return "";
+    const ok = (s) => { if (!cleanSel(s)) return false; try { const l = doc.querySelectorAll(s); return l.length === 1 && l[0] === el; } catch (e) { return false; } };
+    if (el.id && IDENT.test(el.id) && ok("#" + el.id)) return "#" + el.id;
+    const plain = [], nth = []; let e = el;
+    while (e && e.nodeType === 1 && e !== doc.body && e !== doc.documentElement) {
+      if (e !== el && e.id && IDENT.test(e.id)) {
+        for (const c of ["#" + e.id + " " + plain.join(" "), "#" + e.id + " " + nth.join(" ")]) if (ok(c)) return c;
+      }
+      if (e !== el && e.id) break;
+      const tag = e.tagName.toLowerCase(), cls = [...e.classList].filter((c) => IDENT.test(c) && !DYNAMIC.has(c) && !/^h3/.test(c)).slice(0, 2);
+      let k = 1; for (let x = e.previousElementSibling; x; x = x.previousElementSibling) if (x.tagName === e.tagName) k++;
+      const b = tag + cls.map((c) => "." + c).join("");
+      plain.unshift(b); nth.unshift(b + ":nth-of-type(" + k + ")");
+      if (ok(plain.join(" "))) return plain.join(" ");
+      if (ok(nth.join(" ")) && nth.length > 1) return nth.join(" ");
+      e = e.parentElement;
+    }
+    return ok(nth.join(" ")) ? nth.join(" ") : "";
+  }
   function ownWords(el) { return [...el.childNodes].filter((n) => n.nodeType === 3 && n.nodeValue.trim()); }
   function hasOwnWords(el) { return !!el && ownWords(el).length > 0; }
   function words(el, text) {
@@ -357,7 +398,13 @@
     wrapping = true;
     try {
       const sels = iconSels(), hit = new Map();
-      for (const s of sels) { let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; } for (const el of list) { if (!hit.has(el) || styles[s].text) hit.set(el, styles[s].text != null ? styles[s].text : hit.get(el)); } }
+      for (const s of sels) {
+        let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; }
+        for (const el of list) {
+          const t = textFor(s, el, list.length);
+          if (!hit.has(el) || t != null) hit.set(el, t != null ? t : hit.get(el));
+        }
+      }
       for (const [el, text] of hit) wrap(el, text);
       for (const el of doc.querySelectorAll(".h3icon")) if (!hit.has(el)) unwrap(el);
       for (const el of doc.querySelectorAll(".h3words")) if (hit.get(el) == null) unwords(el);   // 2.573.1
@@ -502,17 +549,32 @@
     const base = ["inherit", "system-ui", "Arial", "Helvetica", "Segoe UI", "Verdana", "Tahoma", "Trebuchet MS", "Georgia", "Times New Roman", "Courier New", "Consolas", "Impact", "monospace", "serif", "sans-serif"];
     return base;
   }
-  function pick(el) {
-    picked = el; ensureUi();
+  /* 2.574.1 (Tim: "i think the apply to needs - This element only"): "Apply to" always starts with This element only -
+     #id when it has one, else a selector that finds just it on the page (oneSel) - then the wider choices */
+  function optsFor(el) {
     const opts = selectorsFor(descOf(el));
-    if (!scope || !opts.some((o) => o.sel === scope)) scope = (opts.find((o) => o.sel === "#" + el.id)
-      // 2.573.1: a docker's title bar is aimed at THIS docker's (its panel's) - a new title must not rename them all
-      || (el.matches && el.matches(".bhead, .dockhead, .h3fp-t, .tsd-title") ? opts[0] : null)
-      || opts[Math.min(1, opts.length - 1)] || opts[0]).sel;
+    if (el.id && opts.some((o) => o.sel === "#" + el.id)) { opts[0].label = "This element only (#" + el.id + ")"; return opts; }
+    const one = oneSel(el); if (!one) return opts;
+    const same = opts.find((o) => o.sel === one);
+    if (same) { same.label = "This element only (" + one + ")"; return [same].concat(opts.filter((o) => o !== same)); }
+    return [{ sel: one, label: "This element only (" + one + ")" }].concat(opts);
+  }
+  function pick(el) {
+    if (el !== picked) scope = "";                    // 2.574.1: a new pick starts with ITS default "Apply to"
+    picked = el; ensureUi();
+    const opts = optsFor(el);
+    // 2.574.1 (Tim: "set this element only as default"): every pick starts on This element only (opts[0])
+    if (!scope || !opts.some((o) => o.sel === scope)) scope = opts[0].sel;
     renderPanel(opts);
     placeHi(el);
   }
   function ruleNow() { return Object.assign({}, styles[scope] || {}); }
+  /** 2.574.1: the words the picked element has from a rule - its own selector's first, else the scope's when that is just it */
+  function textNow(el, r) {
+    const one = oneSel(el), own = one && styles[one] && styles[one].text;
+    if (own) return own;
+    return r && r.text && count(scope) === 1 && !BARE_TAG.test(scope) ? r.text : "";
+  }
   function renderPanel(opts) {
     const el = picked; if (!el) return;
     const host = hostOf(el);
@@ -559,7 +621,7 @@
         <h5>Layout</h5>
         <div class="rw"><span>Hide</span><label title="Gone in live mode (faint and dashed in edit mode, so you can pick it again)"><input type="checkbox" id="teHide"${r.hide ? " checked" : ""}>hidden</label>
           <label title="Gone while Expert mode is on (Settings ▸ General), shown in Basic mode - in edit mode it shows faint with a blue dashed outline"><input type="checkbox" id="teXHide"${r.xhide ? " checked" : ""}>hidden in Expert mode</label></div>
-        <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(r.text || "")}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : mixed ? ownNow.slice(0, 40) : "this element has no words of its own - pick the words themselves")}" style="flex:1"${plain || mixed ? "" : " disabled"} title="${plain ? "Its words (its icon stays) - empty = its own" : "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own"}"></div>
+        <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(textNow(el, r))}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : mixed ? ownNow.slice(0, 40) : "this element has no words of its own - pick the words themselves")}" style="flex:1"${plain || mixed ? "" : " disabled"} title="${plain ? "Its words (its icon stays) - empty = its own" : "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own"}"></div>
         <div class="rw"><span>Size</span>W ${n("teW", r.w, 4, 4000, 1, "width (px) - empty = its own")} H ${n("teH", r.h, 4, 4000, 1, "height (px) - empty = its own")}<span class="hint" style="width:auto">px · or drag a handle</span></div>
         <div class="rw"><span>Move</span>X ${n("teDx", r.dx || "", -4000, 4000, 1, "moved right (px)")} Y ${n("teDy", r.dy || "", -4000, 4000, 1, "moved down (px)")}<button id="teLayRst" title="Its own size and place again">↺</button></div>
         <div class="rw" style="margin-top:4px"><button id="teClear" title="Remove this rule">↺ Clear</button><span class="hint" id="teMsg" style="width:auto;flex:1"></span></div>
@@ -596,7 +658,21 @@
       }
       return o;
     };
-    const commit = () => { setRule(scope, read()); $("teMsg").textContent = `${count(scope)} element(s)`; placeHi(picked); };
+    const commit = () => {
+      const o = read(), one = oneSel(picked);
+      // 2.574.1: the words are THIS element's - kept under its own selector when "Apply to" finds more than it
+      if (one && one !== scope && (count(scope) > 1 || BARE_TAG.test(scope))) {
+        const txt = o.text; delete o.text;
+        const next = Object.assign({}, styles);
+        const own = Object.assign({}, next[one] || {}); if (txt) own.text = txt; else delete own.text;
+        if (Object.keys(own).length) next[one] = own; else delete next[one];
+        const sc = forSel(scope, cleanRule(o));
+        if (Object.keys(sc).length) next[scope] = sc; else delete next[scope];
+        setStyles(next);
+      } else setRule(scope, read());
+      $("teMsg").textContent = `${count(scope)} element(s)` + (one && one !== scope && $("teText").value ? " · its words: this one only" : "");
+      placeHi(picked);
+    };
     $("teText").addEventListener("keydown", (e) => e.stopPropagation());
     panel.querySelectorAll("input,select").forEach((x) => {
       if (x.id === "teScope" || x.id === "teIcImg") return;
