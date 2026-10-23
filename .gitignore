@@ -39,6 +39,8 @@ styles/
 graphs/
 # pose_sheets/ is the user's own pose sheets for the Character creator (2.577.0) - made on first use
 pose_sheets/
+# solidcraft/ is the SolidCraft add-on's browser build (2.578.0) - downloaded by the app, never committed
+solidcraft/
 
 # --- settings --------------------------------------------------------------
 # default.settings SHIPS: it is the authored default layer, and the app needs

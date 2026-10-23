@@ -113,6 +113,7 @@ function mount(app) {
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel
   require("./poseSheets").mount(app);  // 2.577.0: the Character creator's pose sheets - <install>/pose_sheets/ (lib/poseSheets.js)
+  require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
   require("./swap").mount(app);        // 2.324.0: character swap (prompt docker Swap mode + a scene's ⇄)
   require("./refvideo").mount(app);    // 2.325.0: the reference dock's video selection dialog
   require("./filedialog").mount(app);  // 2.326.0: the Windows-11-style file / folder dialog
@@ -190,6 +191,7 @@ function mount(app) {
   require("./setup").mount(app);       // 2.341.0: the model catalog + the Hugging Face CLI inside the studio
   require("./queuePresets").mount(app); // 2.518.0: the menu bar's ⏱ queue presets (lib/queuePresets.js)
   require("./modelMgr").mount(app);     // 2.518.0: the 🧩 Model manager's cards + ✚ New style (lib/modelCards.js)
+  require("./extraPaths").mount(app);   // 2.580.0: the Model manager's 📁 Model paths tab (extra_model_paths.yaml groups) + ⟳ Restart ComfyUI
   require("./civitai").mount(app);      // 2.518.0: Civitai search / download into ComfyUI's folders (lib/civitai.js)
   require("./updater").mount(app);      // 2.540.5: ⟳ Update bitGen Studio from GitHub (lib/updater.js)
   require("./comfyUpdate").mount(app);  // 2.573.0: ⤓ Update ComfyUI (lib/comfyUpdate.js)

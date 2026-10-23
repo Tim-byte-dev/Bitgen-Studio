@@ -91,7 +91,7 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
 
     // 2
     check("📌 is the FIRST thing in every dock's header (11 bottom docks + 5 side docks)",
-      await p.evaluate(() => [...document.querySelectorAll("#maincol .bdock")].every((d) => d.querySelector(".bhead").firstChild.classList.contains("pinbtn"))
+      await p.evaluate(() => [...document.querySelectorAll("#maincol .bdock")].filter((d) => ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "promptdock", "consoledock"].includes(d.id)).every((d) => d.querySelector(".bhead").firstChild.classList.contains("pinbtn"))   // 2.579.0: the 11 built-in ones (an extension docker, e.g. 📐 SolidCraft, is not in docker_status.json)
         // (a side dock's fold caret, static/sidecollapse.js, sits before it - the pin is the first thing after it)
         && ["ldock", "refsdock", "assetsdock", "qdock", "rdock"].every((id) => { const h = document.getElementById(id).querySelector(".dockhead"), f = h.firstElementChild; return f.classList.contains("pinbtn") || (f.classList.contains("sccaret") && f.nextElementSibling && f.nextElementSibling.classList.contains("pinbtn")); })
         && document.querySelectorAll(".pinbtn").length === 16));

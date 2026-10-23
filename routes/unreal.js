@@ -13,6 +13,8 @@
 //   GET  /api/unreal/job/:id           {state, frames, of, video, dur, error}
 //   POST /api/unreal/actors            2.540.0: {camera, level?, w, h} (the still's) -> {camera, objects: [{name, cls, box}]} the
 //                                      mesh actors in view (bitGen Bridge 1.3.0) - the 🖼 References lists
+//   POST /api/unreal/import            2.579.0: {model} a file in the project's 3D models -> a Static Mesh in /Game/bitGen/SolidCraft,
+//                                      placed in the open level (lib/ueImport.js - bitGen Bridge 1.4.0's import_mesh)
 "use strict";
 const express = require("express");
 const ue = require("../lib/unreal");
@@ -30,6 +32,8 @@ function mount(app) {
   app.get("/api/unreal/file/:name", (req, res) => { try { res.set("Cache-Control", "no-store").type("png").sendFile(ue.stillPath(req.params.name)); } catch (e) { fail(res, e); } });
   app.post("/api/unreal/render", express.json({ limit: "4mb" }), (req, res) => { let p; try { p = ue.render(req.body); } catch (e) { return fail(res, e); } p.then((j) => res.json(j), (e) => fail(res, e)); });
   app.post("/api/unreal/actors", express.json(), (req, res) => { let p; try { p = ue.actorsInView(req.body); } catch (e) { return fail(res, e); } p.then((j) => res.json(j), (e) => fail(res, e)); });   // 2.540.0
+  // 2.579.0: a model from the project's 3D models -> a Static Mesh in the open level (lib/ueImport.js, plugin 1.4.0)
+  app.post("/api/unreal/import", express.json(), (req, res) => { require("../lib/ueImport").send((req.body || {}).model).then((j) => res.json(j), (e) => fail(res, /unknown command/.test(e.message) ? Object.assign(e, { message: "the bitGen Bridge plugin in your Unreal project is older than 1.4.0 - update it (🎮 Load UE project updates it) to import meshes" }) : e)); });
   app.get("/api/unreal/job/:id", (req, res) => { ue.job(req.params.id).then((j) => res.json(j), (e) => fail(res, e)); });
 }
 

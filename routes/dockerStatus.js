@@ -7,6 +7,7 @@
 //                             max_width, maximized}}} (first run: folded in from ui.docks + dockers.json and written)
 //   POST /api/docker-status   {docks: {<id>: {...}}} - merged per dock (the dock just maximized wins), written
 //                             atomically, the whole record back
+//   GET  /api/docker-status/defaults   the shipped record (2.579.0: Settings ▸ Dockers ↺ Reset)
 //   page()                    routes/index.js serves "/" through it: the record goes into the page's <head> as
 //                             window.H3_DOCK_STATUS, so it is applied before anything else paints
 const dockerStatus = require("../lib/dockerStatus");
@@ -27,6 +28,8 @@ function page(html) {
 }
 
 function mount(app) {
+  // 2.579.0: the shipped layout (Settings ▸ Dockers ↺ Reset - static/dockreset.js)
+  app.get("/api/docker-status/defaults", (_req, res) => { try { res.json(dockerStatus.defaults()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); } });
   app.get("/api/docker-status", (_req, res) => {
     try { res.json(record()); } catch (e) { res.status(500).json({ error: String(e.message || e) }); }
   });

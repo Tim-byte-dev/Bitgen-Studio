@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 4,
-	"VersionName": "1.3.0",
+	"Version": 5,
+	"VersionName": "1.4.0",
 	"FriendlyName": "bitGen Bridge",
 	"Description": "Links this Unreal Editor to bitGen Studio on the same computer: bitGen lists the project's levels, sequences, cameras, MetaHumans and animations, takes stills from a camera and renders sequences with the Movie Render Queue for its image editor and timeline. Python only (Content/Python) - no build needed.",
 	"Category": "Editor",

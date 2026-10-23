@@ -15,6 +15,8 @@
 //                                          through its camera) -> the project's Video folder (lib/blenderScene.save);
 //                                          render=1 also queues LTX 2.3 "3D render -> real" (fal's 3DREAL IC-LoRA)
 //                                          -> {name, seconds, job: {id} | null, note}
+//   POST /api/blender/send {model}        2.579.0: Blender opens (its window) with a model from the project's 3D models,
+//                                          saved as projects/<p>/blender/solidcraft/<stem>.blend (lib/blenderSend.js)
 const blender = require("../lib/blender");
 const core = require("../lib/core");
 
@@ -33,6 +35,9 @@ function mount(app) {
   app.post("/api/blender/push", express.raw({ type: () => true, limit: 1024 * 1024 * 1024 }), (req, res) => {
     try { res.json({ ok: true, ...blender.push(req.query.name, req.body, req.query.layer === "1" || req.query.layer === "true") }); }
     catch (e) { fail(res, e); }
+  });
+  app.post("/api/blender/send", express.json(), (req, res) => {
+    try { const r = require("../lib/blenderSend").send((req.body || {}).model); res.status(r.error ? 400 : 200).json(r); } catch (e) { fail(res, e); }
   });
   app.get("/api/blender/inbox", (req, res) => { try { res.json(blender.inbox(req.query.since)); } catch (e) { fail(res, e); } });
   app.post("/api/blender/render", express.json({ limit: "64mb" }), (req, res) => {

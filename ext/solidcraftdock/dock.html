@@ -1,0 +1,66 @@
+    <div class="bdock" id="solidcraftdock">
+      <div class="bhead" data-collapse="solidcraftdock">▾ 📐 SolidCraft<button class="maxbtn" data-max="solidcraftdock" title="Maximize">⛶</button></div>
+      <div class="bbody" id="scBody" style="display:flex;flex-direction:column;gap:6px;min-height:0">
+        <!-- 2.578.0 (Tim: "yes, lets build a solidcraft bridge, but we will put it in it's own docker"): SolidCraft -
+             open-source parametric 3D CAD (MIT OR Apache-2.0, https://solidcraft.io) - runs in the frame below from
+             this app's own copy (Settings ▸ Add-ons ▸ SolidCraft, served at /solidcraft-app/). The bar is the bridge:
+             the project's designs, 🖼 → Image editor (a picture of the view), 🎞 → Timeline (a 3D layer), ✏ the image
+             editor's sketch layer into SolidCraft, ⤓ parts into the project. ext/solidcraftdock/scbridge.js + scdock.js,
+             routes/solidcraft.js, lib/solidcraftAddon.js, lib/solidcraftFiles.js. -->
+        <style>
+          /* 2.579.0 (Tim: "only show the docker is solidcraft is installed"): no SolidCraft = no docker, no status-bar button */
+          #solidcraftdock.sc-absent, #tX_solidcraftdock.sc-absent { display: none !important; }
+          #scBar .sc-tool[hidden] { display: none !important; }
+          #scBar, #scBar label, #scBar select, #scMsg, #scVer { font-size: 11px; }
+          #scBar select { max-width: 150px; }
+          #scBar .gbtn { white-space: nowrap; }
+        </style>
+        <div class="brow" id="scBar" style="gap:6px;align-items:center;flex-wrap:wrap">
+          <button class="ghost gbtn" id="scDesigns" type="button" title="The project's SolidCraft designs and parts (projects/&lt;project&gt;/solidcraft) - open one">📁 Designs ▾</button>
+          <button class="ghost gbtn" id="scSave" type="button" title="Save the open design into the project (projects/&lt;project&gt;/solidcraft/&lt;name&gt;.solidcraft)">💾 Save to project</button>
+          <span class="scSep" style="width:1px;height:18px;background:var(--line,#444)"></span>
+          <button class="ghost gbtn" id="scToEditor" type="button" title="A picture of the model from the View picked (transparent background) as a new layer in the image editor - Shift: SolidCraft's own render (slower, lit and shaded)">🖼 Send to Image editor</button>
+          <button class="ghost gbtn" id="scToTimeline" type="button" title="The model as a 3D layer on the timeline at the playhead (sent again, it updates the 3D layers that use it)">🎞 Send to Timeline</button>
+          <button class="ghost gbtn" id="scToHouse" type="button" title="The model into the House builder: a piece on this floor at its own size (metres), in the middle of the rooms - move, turn and size it there; it is in the 3D view, shots and the house's .obj / .glb (sent again, the same piece is updated)">🏠 Send to House builder</button>
+          <button class="ghost gbtn sc-tool" id="scToBlender" type="button" hidden title="Blender opens (its own window) with the model in a new scene - saved as projects/&lt;project&gt;/blender/solidcraft/&lt;name&gt;.blend; the model is also in the project's 3D models (the Blender add-on's ⬇ Get from bitGen)">🟠 Send to Blender</button>
+          <button class="ghost gbtn sc-tool" id="scToUnreal" type="button" hidden title="The model into your open Unreal project: a Static Mesh in /Game/bitGen/SolidCraft, placed in the level and selected (sent again, it is replaced where it stood) - needs the bitGen Bridge plugin 1.4.0 (🎮 Load UE project updates it)">🎮 Send to Unreal</button>
+          <button class="ghost gbtn" id="scSketchIn" type="button" title="The image editor's selected sketch layer into SolidCraft as a sketch (its lines, arcs and circles in mm) - then Extrude or Revolve it there">✏ Sketch → SolidCraft</button>
+          <button class="ghost gbtn" id="scExport" type="button" title="Save the model into the project as STEP, STL, OBJ or 3MF">⤓ Export ▾</button>
+          <label style="display:inline-flex;gap:4px;align-items:center" title="The view the pictures are taken from - picking one turns SolidCraft's view there. Your own angle: save it in SolidCraft as a Named View and pick it here">View
+            <select id="scView" aria-label="The pictures' view">
+              <option value="">Iso</option>
+              <option value="front">Front</option>
+              <option value="back">Back</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+            </select></label>
+          <label style="display:inline-flex;gap:4px;align-items:center" title="The picture's size for 🖼 → Image editor">Size
+            <select id="scSize" aria-label="Picture size">
+              <option value="doc">the editor's document</option>
+              <option value="1024x768">1024 × 768</option>
+              <option value="1920x1080">1920 × 1080</option>
+              <option value="2048x2048">2048 × 2048</option>
+              <option value="3840x2160">3840 × 2160</option>
+            </select></label>
+          <label style="display:inline-flex;gap:4px;align-items:center" title="Black edges on the picture (the CAD look)"><input type="checkbox" id="scEdges" checked> Edges</label>
+          <span id="scMsg" class="hint" style="flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" role="status"></span>
+          <span id="scVer" class="hint" style="white-space:nowrap"></span>
+        </div>
+        <div id="scProg" style="display:none;height:4px;background:var(--line,#333);border-radius:2px;overflow:hidden"><div id="scProgBar" style="height:100%;width:0;background:var(--tiger,#f59e2c)"></div></div>
+        <div id="scInstall" style="display:none;padding:14px;line-height:1.6;border:1px dashed var(--line,#555);border-radius:8px">
+          <b>SolidCraft is not installed.</b> It is open-source parametric 3D CAD (MIT OR Apache-2.0) that runs inside this
+          app - sketches with constraints, extrude, revolve, sweep, loft, fillets, shells, holes, threads, patterns, sheet
+          metal, assemblies with joints and motion, STEP / IGES / STL / OBJ / 3MF.<br>
+          <button class="ghost gbtn" id="scInstallBtn" type="button" title="Download SolidCraft's browser build from its GitHub releases (about 20 MB) - one time; after that it works offline">⤓ Install SolidCraft (about 20 MB)</button>
+          <button class="ghost gbtn" id="scInstallZip" type="button" title="Offline: pick a solidcraft-web-&lt;version&gt;.zip you downloaded from github.com/tangency-labs/solidcraft/releases">📦 Install from a zip…</button>
+          <input type="file" id="scZipFile" class="hidden" accept=".zip">
+          <pre id="scInstallLog" style="display:none;max-height:140px;overflow:auto;font-size:11px;margin:8px 0 0;white-space:pre-wrap"></pre>
+        </div>
+        <div id="scFrameHold" style="flex:1;min-height:420px;position:relative;border-radius:6px;overflow:hidden;background:#262a31">
+          <iframe id="scFrame" title="SolidCraft" style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block" allow="fullscreen; clipboard-read; clipboard-write"></iframe>
+        </div>
+        <div class="hint" style="font-size:10px;opacity:.7">SolidCraft © the SolidCraft contributors, MIT OR Apache-2.0 - an independent open-source project, served from this app's own copy.</div>
+      </div>
+    </div>

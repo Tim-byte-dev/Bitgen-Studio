@@ -227,7 +227,7 @@
     return '<div class="mmcard' + (sel ? " sel" : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
       + '<div class="th"' + (t ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? "" : init) + "</div>"
       + (c.remote ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
-      + '<div class="acts">' + (c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button>'
+      + '<div class="acts">' + (c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
         + (c.civitai ? "" : '<button class="ghost" data-mmlook title="🔍 Look this file up on Civitai (reads its SHA-256 once)">🔍</button>')) + "</div>"
       + (c.nsfw ? '<span class="nsfw" title="marked NSFW">🔞</span>' : "")
       + (c.remote ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
@@ -251,7 +251,13 @@
   }
   function paint() {
     var host = $("mmBody"); if (!host) return;
-    ["used", "models", "loras", "civitai"].forEach(function (t) { var b = document.querySelector('.mmgr [data-mmtab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); });
+    ["used", "models", "loras", "civitai", "paths"].forEach(function (t) { var b = document.querySelector('.mmgr [data-mmtab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); });
+    // 2.580.0: 📁 Model paths - every group of extra_model_paths.yaml (static/mmpaths.js, lib/extraPaths.js)
+    var paths = S.tab === "paths" && !S.info && !S.form;
+    ["mmSel", "mmGrid", "mmFolders"].forEach(function (id) { var e = $(id); if (e && paths) e.style.display = "none"; });
+    if ($("mmPaths")) $("mmPaths").style.display = paths ? "" : "none";
+    if (paths) { $("mmLocalBar").style.display = "none"; $("mmCvBar").style.display = "none"; $("mmPager").style.display = "none"; if (window.H3ModelPaths) window.H3ModelPaths.render($("mmPaths"), say); return; }
+    $("mmSel").style.display = ""; $("mmGrid").style.display = "";
     $("mmLocalBar").style.display = S.tab === "civitai" ? "none" : "";
     $("mmCvBar").style.display = S.tab === "civitai" ? "" : "none";
     $("mmSel").innerHTML = selHtml();
@@ -337,7 +343,7 @@
   }
   var refit = null;
   function onResize() {
-    if (S.per !== "auto" || S.info || S.form || S.tab === "civitai") return;
+    if (S.per !== "auto" || S.info || S.form || S.tab === "civitai" || S.tab === "paths") return;
     clearTimeout(refit); refit = setTimeout(function () { var first = S.page * (S.lastPer || perPage()); var p = perPage(); if (p !== S.lastPer) { S.page = Math.floor(first / p); S.lastPer = p; paint(); } }, 120);
   }
   function loadUsed() {
@@ -382,6 +388,33 @@
     jget("/api/modelmgr/info?key=" + encodeURIComponent(key)).then(function (d) { if (S.info !== key) return; S.infoData = d.error ? { error: d.error } : d; paint(); });
   }
   function closeInfo() { S.info = null; S.infoData = null; paint(); }
+  /* 2.579.0 (Tim: "allow user to delete models in model manager" + "when user deletes model in model manager, delete it from
+     the disk too"): 🗑 - what goes is listed first (the file, the files beside it, its model_info page, the styles that
+     use it), then the file is deleted from the disk for good (lib/modelDelete.js) */
+  function delModel(key) {
+    var c = byKey(key); if (!c) return Promise.resolve(null);
+    return jget("/api/modelmgr/delete?key=" + encodeURIComponent(key)).then(function (d) {
+      if (d.error) { say(d.error, "bad"); return null; }
+      var lines = ["Delete " + d.name + " (" + fmtSize(d.size) + ") from the disk?", "", "This removes for good (not the recycle bin):", "• " + d.abs];
+      if (d.sidecars.length) lines.push("• beside it: " + d.sidecars.join(", "));
+      if (d.info) lines.push("• its model_info page (Civitai details, examples, your pictures of it)");
+      if (d.styles.length) lines.push("", "⚠ Used by " + d.styles.length + " style(s): " + d.styles.slice(0, 8).join(", ") + (d.styles.length > 8 ? " …" : "") + " - they will miss it.");
+      var ask = typeof root.appConfirm === "function" ? root.appConfirm(lines.join("\n"), "Delete model") : Promise.resolve(root.confirm(lines.join("\n")));
+      return Promise.resolve(ask).then(function (ok) {
+        if (!ok) { say("not deleted"); return null; }
+        say("deleting " + d.name + "…");
+        return jpost("/api/modelmgr/delete", { key: key }).then(function (r) {
+          if (r.error) { say(r.error, "bad"); return null; }
+          if (S.sel.model === key) S.sel.model = "";
+          S.sel.loras = S.sel.loras.filter(function (l) { return l.key !== key; });
+          lsSet();
+          if (S.info === key) { S.info = null; S.infoData = null; }
+          S.form = null;
+          return load(true).then(function () { say("🗑 " + d.name + " deleted from the disk (" + fmtSize(r.freed) + " freed)", "ok"); return r; });
+        });
+      });
+    }).catch(function (e) { say("delete: " + e.message, "bad"); return null; });
+  }
   function infoHtml() {
     var c = byKey(S.info), d = S.infoData;
     if (!c) return '<div class="mminfo"><button class="ghost" id="mmBack" type="button">‹ Back</button> that card is gone</div>';
@@ -402,6 +435,7 @@
       + '<div class="btns" style="margin-top:8px"><button type="button" id="mmIUse"' + (sel ? ' class="ghost"' : "") + ">" + (sel ? "✓ In use - click to remove" : c.kind === "lora" ? "✓ Add this LoRA" : "✓ Use this model") + "</button>"
       + '<button class="ghost" type="button" id="mmIEdit">✎ Edit card</button><button class="ghost" type="button" id="mmIFetch" title="Ask Civitai again for this file (Shift: even if it has details)">⤓ ' + (d && d.status === "found" ? "Again" : "Civitai info") + "</button>"
       + '<button class="ghost" type="button" id="mmILook" title="Read the file\'s SHA-256 once and ask Civitai (exact)">🔍 By SHA-256</button>'
+      + '<button class="ghost" type="button" id="mmIDel" title="Delete this model from the disk - the file, its preview / info files beside it and its model_info page (asks first)">🗑 Delete</button>'
       + (d && d.url ? '<a class="ghost" href="' + esc(d.url) + '" target="_blank" rel="noopener" style="align-self:center">Civitai ↗</a>' : "") + "</div>"
       + '<div class="st" style="margin-top:6px">' + stTxt + "</div></div></div>"
       + (kw.length ? '<div class="kw" style="display:flex;gap:3px;flex-wrap:wrap">' + kw.slice(0, 40).map(function (k) { return '<span class="kwc" data-kw="' + esc(k) + '" title="Put it in the prompt">' + esc(k) + "</span>"; }).join("") + "</div>" : "")
@@ -419,6 +453,7 @@
     if (!c) return;
     if ($("mmIUse")) $("mmIUse").onclick = function () { pick(key); };
     if ($("mmIEdit")) $("mmIEdit").onclick = function () { S.info = null; editForm(key); };
+    if ($("mmIDel")) $("mmIDel").onclick = function () { delModel(key); };
     if ($("mmILook")) $("mmILook").onclick = function () { lookup(key); };
     if ($("mmIFetch")) $("mmIFetch").onclick = function (e) {
       jpost("/api/modelmgr/fetch", { keys: [key], force: true }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("⤓ asking Civitai about " + c.file + "…"); S.fetch = j.status; pollFetch(); var wait = function () { jget("/api/modelmgr/fetch").then(function (st) { if (st.running) setTimeout(wait, 1200); else load(true).then(function () { if (S.info === key) openInfo(key); }); }); }; setTimeout(wait, 1200); });
@@ -916,6 +951,7 @@
     var body = document.createElement("div"); body.className = "mmgr"; body.id = "mmBody";
     body.innerHTML = '<div class="mmtabs"><button class="ghost" data-mmtab="used" type="button" title="The models + LoRAs this project\'s jobs used">📌 This project</button><button class="ghost" data-mmtab="models" type="button">Models</button><button class="ghost" data-mmtab="loras" type="button">LoRAs</button>'
       + '<button class="ghost" data-mmtab="civitai" type="button" title="Search Civitai and download into ComfyUI\'s folders">Civitai</button>'
+      + '<button class="ghost" data-mmtab="paths" type="button" title="📁 ComfyUI\'s extra_model_paths.yaml - every group of paths: add a group (other_ui1 …), change a path, delete a group, ⟳ Restart ComfyUI">📁 Model paths</button>'
       + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓ Civitai info</button>'
       + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄 Sync</button>'
       + '<button class="ghost" id="mmFoldBtn" type="button" title="📁 The folder each model type downloads to (model_folders.json)">📁</button>'
@@ -933,12 +969,12 @@
       + '<select id="mmCvType" aria-label="Civitai type"><option value="">every type</option><option value="Checkpoint">Checkpoint</option><option value="LORA">LoRA</option><option value="LoCon">LoCon</option><option value="DoRA">DoRA</option><option value="VAE">VAE</option><option value="TextualInversion">Embedding</option><option value="Controlnet">ControlNet</option><option value="Upscaler">Upscaler</option></select>'
       + '<select id="mmCvSort" aria-label="Civitai sort"><option>Highest Rated</option><option>Most Downloaded</option><option>Most Liked</option><option>Newest</option></select>'
       + '<input id="mmCvBase" placeholder="base model e.g. Pony" style="width:120px" aria-label="Base model"><button class="ghost" id="mmCvGo" type="button">Search</button></div>'
-      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div>'
+      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div>'
       + '<div class="mmpager" id="mmPager" style="display:none"></div><div class="mmdl" id="mmDl" style="display:none"></div>';
     return body;
   }
   function wire(body) {
-    body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = (window.H3FolderMem && window.H3FolderMem.get("mm:" + S.tab)) || ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); }; });
+    body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = (window.H3FolderMem && window.H3FolderMem.get("mm:" + S.tab)) || ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); if (S.tab === "paths" && window.H3ModelPaths) window.H3ModelPaths.load(); }; });
     $("mmRescan").onclick = function () { load(true); if (S.tab === "used") loadUsed(); };
     $("mmFetch").onclick = function (e) { startFetch(e.shiftKey); };
     $("mmSync").onclick = function (e) { startSync(e.shiftKey); };
@@ -965,6 +1001,7 @@
       if (e.target.closest("[data-mmgrip]")) return;
       if (e.target.closest("[data-mminfo]")) { openInfo(card.dataset.key); return; }
       if (e.target.closest("[data-mmedit]")) { editForm(card.dataset.key); return; }
+      if (e.target.closest("[data-mmdel]")) { delModel(card.dataset.key); return; }       // 2.579.0
       if (e.target.closest("[data-mmlook]")) { lookup(card.dataset.key); return; }
       if (e.target.closest("[data-cvget]")) { cvQuick(card.dataset.key, e.shiftKey); return; }   // 2.538.0
       if (S.tab === "civitai") { S.cv.open = S.cv.items.find(function (x) { return x.key === card.dataset.key; }) || null; paint(); grid.scrollTop = 0; return; }
@@ -1067,7 +1104,7 @@
     paint();
     if (S.override) setTimeout(function () { load(false).then(function () { if (S.override) apply(); }); }, 2500);
   }
-  root.H3ModelMgr = Object.assign({ reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
+  root.H3ModelMgr = Object.assign({ delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
     show: function (on) { return window.SecFloat && SecFloat.show ? SecFloat.show("modelmgr", on) : false; }, apply: apply, search: cvSearch }, pure);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

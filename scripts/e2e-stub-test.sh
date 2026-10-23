@@ -12333,6 +12333,30 @@ node scripts/test-posesheets.js > /tmp/ps577.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui577-ui.js > /tmp/ui577.log 2>&1 \
   && ok "2.577.0 browser test: 🧍 Pose sheet - thumbnails of pose_sheets/ (sub-folders), ↻ Refresh, search, pick + ✔ Use -> #chOptPose + the button, remembered over a reload, No pose sheet by double click - or SKIP without playwright" \
   || { bad "2.577.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui577.log | head -14; }
+
+# ---- 2.578.0 (the 📐 SolidCraft docker: SolidCraft's browser build as an add-on + the bridge)
+node scripts/test-solidcraft578.js > /tmp/sc578.log 2>&1 \
+  && ok "2.578.0 units (the add-on: a web zip checked / unpacked / swapped, GitHub's newest release, offline fallback, no climbing paths; the project's solidcraft folder; SolidCraft's camera convention + the fitted frame; routes + docker wiring)" \
+  || { bad "2.578.0 units"; grep -a "^FAIL" -A2 /tmp/sc578.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui578-ui.js > /tmp/ui578.log 2>&1 \
+  && ok "2.578.0 browser test: SolidCraft in its docker (installed from a release zip), commands through the bridge, → image editor (view + Shift render), View presets + Named Views, Save to project + SolidCraft's Save synced, STEP export, → timeline (and again = updated), sketch layer → SolidCraft, Designs - or SKIP without playwright / a web zip" \
+  || { bad "2.578.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui578.log | head -14; }
+
+# ---- 2.579.0 (SolidCraft sends: House / Blender / Unreal; the docker only when installed; model delete; Settings ▸ Dockers)
+node scripts/test-send579.js > /tmp/sd579.log 2>&1 \
+  && ok "2.579.0 units (model delete from the disk: sidecars, model_info, no other model; dockers defaults + reset wiring; Blender send args + script; Unreal Y-up cm + import_mesh 1.4.0; House 3D model items: load / normalize / build; the docker's visibility + Add-ons zip)" \
+  || { bad "2.579.0 units"; grep -a "^FAIL" -A2 /tmp/sd579.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui579-ui.js > /tmp/ui579.log 2>&1 \
+  && ok "2.579.0 browser test: 🗑 a model from the model manager and the disk; SolidCraft docker hidden when not installed; Settings ▸ Dockers lists every docker incl. a new extension, ↺ Reset timeline / the extension / gallery / Basic Settings; Blender's script (headless) - or SKIP without playwright" \
+  || { bad "2.579.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui579.log | head -14; }
+
+# ---- 2.580.0 (the Model manager's 📁 Model paths tab: extra_model_paths.yaml groups + ⟳ Restart ComfyUI)
+node scripts/test-extrapaths580.js > /tmp/xp580.log 2>&1 \
+  && ok "2.580.0 units (extra_model_paths.yaml: every group read, ➕ other_ui<n> filled from its base, a group saved / renamed / deleted with the rest of the file byte for byte, .bak, 409 when changed on disk, read back by comfyModels + its scan; ⟳ restart: managed / not running / outside ComfyUI)" \
+  || { bad "2.580.0 units"; grep -a "^FAIL" -A2 /tmp/xp580.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui580-ui.js > /tmp/ui580.log 2>&1 \
+  && ok "2.580.0 browser test: 📁 Model paths lists the yaml's groups with ✓ / ✗, ➕ other_ui1 from a picked folder (its LoRA then in the cards), paths changed / removed / added with 📁 (relative inside the base) and 💾 saved, rename + is_default, 🗑 a group, a file changed on disk not overwritten, ⟳ Restart ComfyUI answers - or SKIP without playwright" \
+  || { bad "2.580.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui580.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

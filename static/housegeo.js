@@ -158,7 +158,38 @@
       C(-w / 2 + 0.12, -d / 2 + 0.8, 0, 0.66, 0.33, "rubber", { axis: "x", len: 0.24 }), C(w / 2 - 0.12, -d / 2 + 0.8, 0, 0.66, 0.33, "rubber", { axis: "x", len: 0.24 }),
       C(-w / 2 + 0.12, d / 2 - 0.8, 0, 0.66, 0.33, "rubber", { axis: "x", len: 0.24 }), C(w / 2 - 0.12, d / 2 - 0.8, 0, 0.66, 0.33, "rubber", { axis: "x", len: 0.24 })]; } },
     box: { label: "Box / block", cat: "Outside", w: 1, d: 1, h: 1, parts: function (w, d, h) { return [B(0, 0, 0, h, w, d, "concrete")]; } },
+    // 2.579.0: a 3D model sent in (the 📐 SolidCraft docker's "Send to House builder") - its mesh (MODELS[item.model]),
+    // a box of its size until that is loaded; never in the furniture list or the ✨ furnisher (hidden)
+    model: { label: "3D model", cat: "Imported", hidden: true, w: 1, d: 1, h: 1, color: "#b4bcc8", parts: function (w, d, h) { return [B(0, 0, 0, h, w, d, "paint")]; } },
   };
+  /* 2.579.0: the 3D models items use: name -> {pos, nrm (triangles, metres: x right, y back, z up, centred on x / y,
+     standing on z 0), size: [w, d, h]} - loadModel(name, objText) from an OBJ in millimetres with Z up (SolidCraft's) */
+  var MODELS = {};
+  function loadModel(name, text) {
+    var V = [], N = [], pos = [], nrm = [];
+    String(text || "").split(/\r?\n/).forEach(function (l) {
+      var t = l.trim().split(/\s+/);
+      if (t[0] === "v") V.push([+t[1] / 1000, +t[2] / 1000, +t[3] / 1000]);
+      else if (t[0] === "vn") N.push([+t[1], +t[2], +t[3]]);
+      else if (t[0] === "f" && t.length >= 4) {
+        var ix = t.slice(1).map(function (q) { var a = q.split("/"); var vi = parseInt(a[0], 10), ni = parseInt(a[2], 10); return [vi < 0 ? V.length + vi : vi - 1, ni ? (ni < 0 ? N.length + ni : ni - 1) : -1]; });
+        for (var k = 1; k + 1 < ix.length; k++) {
+          var tri = [ix[0], ix[k], ix[k + 1]], P = tri.map(function (q) { return V[q[0]]; });
+          if (P.some(function (p) { return !p; })) continue;
+          var fn = normalOf(P[0], P[1], P[2]);
+          tri.forEach(function (q, j) { pos.push(P[j][0], P[j][1], P[j][2]); var n = q[1] >= 0 && N[q[1]] ? N[q[1]] : fn; nrm.push(n[0], n[1], n[2]); });
+        }
+      }
+    });
+    if (!pos.length) return null;
+    var mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+    for (var i = 0; i < pos.length; i += 3) for (var j = 0; j < 3; j++) { mn[j] = Math.min(mn[j], pos[i + j]); mx[j] = Math.max(mx[j], pos[i + j]); }
+    var cx = (mn[0] + mx[0]) / 2, cy = (mn[1] + mx[1]) / 2;
+    for (var q = 0; q < pos.length; q += 3) { pos[q] -= cx; pos[q + 1] -= cy; pos[q + 2] -= mn[2]; }
+    var m = { pos: pos, nrm: nrm, size: [Math.max(1e-4, mx[0] - mn[0]), Math.max(1e-4, mx[1] - mn[1]), Math.max(1e-4, mx[2] - mn[2])] };
+    MODELS[String(name)] = m;
+    return m;
+  }
   var OPENINGS = {
     door: { label: "Door", w: 0.9, h: 2.1, sill: 0 }, window: { label: "Window", w: 1.2, h: 1.2, sill: 0.9 },
     slide: { label: "Glass sliding door", w: 2.4, h: 2.1, sill: 0 }, opening: { label: "Opening (no door)", w: 1.2, h: 2.1, sill: 0 },
@@ -241,7 +272,7 @@
       return { id: String(q.id || id("o")), wall: q.wall, kind: k, t: r3(num(q.t, L / 2, ww / 2, Math.max(ww / 2, L - ww / 2))), w: ww, h: hh, sill: sill };
     });
     var rooms = (o.rooms || []).slice(0, 500).filter(function (r) { return r && Array.isArray(r.poly) && r.poly.length >= 3; }).map(function (r) { var mat = MATERIALS[r.mat] ? r.mat : "oak"; return Object.assign({ id: String(r.id || id("r")), floor: fl(r.floor), name: String(r.name || "Room").slice(0, 40), poly: r.poly.slice(0, 64).map(pt), mat: mat, color: col(r.color, MATERIALS[mat].color), ceiling: r.ceiling !== false }, texOf(r)); });
-    var items = (o.items || []).slice(0, 3000).filter(function (it) { return it && CATALOGUE[it.type]; }).map(function (it) { var c = CATALOGUE[it.type]; return Object.assign({ id: String(it.id || id("i")), floor: fl(it.floor), type: it.type, x: r3(num(it.x, 0, -500, 500)), y: r3(num(it.y, 0, -500, 500)), rot: r3(((num(it.rot, 0) % 360) + 360) % 360), w: r3(num(it.w, c.w, 0.05, 20)), d: r3(num(it.d, c.d, 0.05, 20)), h: r3(num(it.h, c.h, 0.01, 6)), color: col(it.color, c.color || "") }, lookOf(it)); });
+    var items = (o.items || []).slice(0, 3000).filter(function (it) { return it && CATALOGUE[it.type] && (it.type !== "model" || modelName(it.model)); }).map(function (it) { var c = CATALOGUE[it.type]; return Object.assign({ id: String(it.id || id("i")), floor: fl(it.floor), type: it.type, x: r3(num(it.x, 0, -500, 500)), y: r3(num(it.y, 0, -500, 500)), rot: r3(((num(it.rot, 0) % 360) + 360) % 360), w: r3(num(it.w, c.w, 0.05, 20)), d: r3(num(it.d, c.d, 0.05, 20)), h: r3(num(it.h, c.h, 0.01, 6)), color: col(it.color, c.color || "") }, it.type === "model" ? { model: modelName(it.model) } : {}, lookOf(it)); });
     var stairs = (o.stairs || []).slice(0, 50).map(function (s) { return { id: String(s.id || id("s")), floor: fl(s.floor), x: r3(num(s.x, 0)), y: r3(num(s.y, 0)), rot: r3(((num(s.rot, 0) % 360) + 360) % 360), w: r3(num(s.w, 1, 0.6, 3)), len: r3(num(s.len, 3.6, 1.5, 8)) }; });
     var people = (o.people || []).slice(0, 60).map(function (q) { return { id: String(q.id || id("p")), floor: fl(q.floor), x: r3(num(q.x, 0)), y: r3(num(q.y, 0)), rot: r3(((num(q.rot, 90) % 360) + 360) % 360),
       pose: POSES[q.pose] ? q.pose : "stand", h: r3(num(q.h, 1.75, 0.9, 2.3)), char: /^[A-Za-z0-9_-]{1,40}$/.test(String(q.char || "")) ? String(q.char) : "", name: String(q.name || "").slice(0, 40), color: col(q.color, ""),
@@ -258,6 +289,8 @@
     return { v: 1, name: String(o.name || "My house").slice(0, 60), floors: floors, walls: walls, openings: openings, rooms: rooms, items: items, stairs: stairs, cameras: cameras, people: people, lights: lights, refs: refs, roof: roof, trace: trace,
       light: { hour: r3(num(L.hour, 14, 0, 24)), north: r3(num(L.north, 0, -360, 360)), sun: L.sun !== false, lamps: !!L.lamps, ambient: r3(num(L.ambient, 0.55, 0, 2)) } };
   }
+  /** a 3D model item's file: a plain name in the project's 3D models (models3d) or "" (pure) */
+  function modelName(n) { var s2 = String(n == null ? "" : n); return /^[\w .()+,&'-]{1,120}\.(obj)$/i.test(s2) && s2.indexOf("..") < 0 ? s2 : ""; }
   function col(c, d) { var s = String(c || ""); return /^#[0-9a-f]{6}$/i.test(s) ? s.toLowerCase() : d; }
   /* 2.532.0: how high a walking camera goes (Tim: "shift button raises cameras elevation to maximum 3m over the roof,
      alt button drops camera elevation to min. ground floor floor") -> {min, max, top} absolute (the ground floor = 0) */
@@ -410,6 +443,19 @@
     m.items.forEach(function (it) {
       if (!show(it.floor)) return;
       var c = CATALOGUE[it.type], y = E[it.floor], H = m.floors[it.floor].height, a = it.rot * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+      // 2.579.0: a 3D model's own mesh, sized to the item (plan x / y, height up); a box of its size while it loads
+      var md = it.type === "model" ? MODELS[it.model] : null;
+      if (md) {
+        var mesh0 = acc.get("paint", it.color || c.color), b0 = mesh0.pos.length / 3, kx = it.w / md.size[0], ky = it.d / md.size[1], kz = it.h / md.size[2];
+        for (var vi = 0; vi < md.pos.length; vi += 3) {
+          var lx = md.pos[vi] * kx, ly = md.pos[vi + 1] * ky, lz = md.pos[vi + 2] * kz, nx = md.nrm[vi], ny = md.nrm[vi + 1], nz = md.nrm[vi + 2];
+          mesh0.pos.push(it.x + lx * ca - ly * sa, y + lz, it.y + lx * sa + ly * ca);
+          mesh0.nrm.push(nx * ca - ny * sa, nz, nx * sa + ny * ca); mesh0.uv.push(lx, lz);
+        }
+        // plan (x, y, up) -> world (x, up, y) mirrors - the triangles turn the other way round to face out
+        for (var ti = 0; ti < md.pos.length / 3; ti += 3) mesh0.idx.push(b0 + ti, b0 + ti + 2, b0 + ti + 1);
+        return;
+      }
       var parts = c.parts(it.w, it.d, it.h), main = parts[0] && parts[0].mat;
       parts.forEach(function (p) {
         var wx = it.x + p.x * ca - p.y * sa, wz = it.y + p.x * sa + p.y * ca;
@@ -590,7 +636,7 @@
     return normalize(m);
   }
 
-  var api = { REF_KINDS: REF_KINDS, ROOFS: ROOFS, roofParts: roofParts, POSES: POSES, personParts: personParts, SLAB: SLAB, MATERIALS: MATERIALS, CATALOGUE: CATALOGUE, OPENINGS: OPENINGS, normalize: normalize, elevations: elevations, heightRange: heightRange, camAt: camAt, area: area, centroid: centroid, inside: inside, triangulate: triangulate,
+  var api = { MODELS: MODELS, loadModel: loadModel, modelName: modelName, REF_KINDS: REF_KINDS, ROOFS: ROOFS, roofParts: roofParts, POSES: POSES, personParts: personParts, SLAB: SLAB, MATERIALS: MATERIALS, CATALOGUE: CATALOGUE, OPENINGS: OPENINGS, normalize: normalize, elevations: elevations, heightRange: heightRange, camAt: camAt, area: area, centroid: centroid, inside: inside, triangulate: triangulate,
     wallPieces: wallPieces, build: build, rectOf: rectOf, itemRect: itemRect, describe: describe, colourName: colourName, roomOf: roomOf, uncovered: uncovered, addRoom: addRoom, nearestWall: nearestWall,
     sun: sun, toObj: toObj, example: example, dist: dist, newId: id };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

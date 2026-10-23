@@ -37,7 +37,7 @@
   /** is p on the item (its rotated footprint)? */
   function hitItem(it, p) { var a = -it.rot * Math.PI / 180, dx = p[0] - it.x, dy = p[1] - it.y, lx = dx * Math.cos(a) - dy * Math.sin(a), ly = dx * Math.sin(a) + dy * Math.cos(a); return Math.abs(lx) <= it.w / 2 + 0.05 && Math.abs(ly) <= it.d / 2 + 0.05; }
   /** the library grouped by category (pure) */
-  function paletteFor(cat) { var out = {}; Object.keys(cat).forEach(function (k) { (out[cat[k].cat] = out[cat[k].cat] || []).push({ type: k, label: cat[k].label, w: cat[k].w, d: cat[k].d }); }); return out; }
+  function paletteFor(cat) { var out = {}; Object.keys(cat).forEach(function (k) { if (cat[k].hidden) return; (out[cat[k].cat] = out[cat[k].cat] || []).push({ type: k, label: cat[k].label, w: cat[k].w, d: cat[k].d }); }); return out; }
   function segX(a, b, c, d) {             // where segment ab crosses segment cd -> [t on ab, u on cd] | null
     var r0 = b[0] - a[0], r1 = b[1] - a[1], s0 = d[0] - c[0], s1 = d[1] - c[1], den = r0 * s1 - r1 * s0;
     if (Math.abs(den) < 1e-9) return null;
@@ -217,7 +217,7 @@
       x.strokeStyle = isSel("item", it.id) ? "#f59e2c" : (print ? "#444" : "#c9bfa9"); x.lineWidth = isSel("item", it.id) ? 2 : 1; x.stroke();
       var a = it.rot * Math.PI / 180, fr = toS([it.x - Math.sin(a) * it.d / 2 * 0.8, it.y + Math.cos(a) * it.d / 2 * 0.8]);   // its front
       x.fillStyle = print ? "#444" : "#e9dfc8"; x.beginPath(); x.arc(fr[0], fr[1], 2, 0, 7); x.fill();
-      if (S.zoom * Math.min(it.w, it.d) > 26) label(x, c.label.replace(/ \(.*\)$/, ""), toS([it.x, it.y])[0], toS([it.x, it.y])[1], print ? "#222" : "#f2ead8", 9);
+      if (S.zoom * Math.min(it.w, it.d) > 26) label(x, it.type === "model" ? "📐 " + String(it.model || "").replace(/\.obj$/i, "").replace(/^sc_/, "") : c.label.replace(/ \(.*\)$/, ""), toS([it.x, it.y])[0], toS([it.x, it.y])[1], print ? "#222" : "#f2ead8", 9);
     });
     // room labels
     // 2.539.0: 🖼 a wall / an item / a light wearing a reference picture
@@ -787,7 +787,9 @@
         + fld("Width", numIn("w", o.w, 0.05, 0.3, 10)) + fld("Height", numIn("h", o.h, 0.05, 0.3, 6)) + fld("Sill", numIn("sill", o.sill, 0.05, 0, 4)) + fld("From the wall's end", numIn("t", o.t, 0.05, 0, 100)) + "</div>";
     } else if (k === "item") {
       var c = G.CATALOGUE[o.type];
-      h = "<h5>" + esc(c.label) + "</h5><div class=\"hf\">" + fld("Width", numIn("w", o.w, 0.05, 0.05, 20)) + fld("Depth", numIn("d", o.d, 0.05, 0.05, 20)) + fld("Height", numIn("h", o.h, 0.05, 0.01, 6))
+      h = "<h5>" + esc(o.type === "model" ? "📐 " + (o.model || "3D model") : c.label) + "</h5>"
+        + (o.type === "model" ? '<div class="hnote">a 3D model sent in (the project\'s 3D models) - Width / Depth / Height stretch it' + (G.MODELS[o.model] ? ' · its own size ' + G.MODELS[o.model].size.map(function (v) { return Math.round(v * 1000) / 1000; }).join(" × ") + " m" : "") + "</div>" : "")
+        + "<div class=\"hf\">" + fld("Width", numIn("w", o.w, 0.05, 0.05, 20)) + fld("Depth", numIn("d", o.d, 0.05, 0.05, 20)) + fld("Height", numIn("h", o.h, 0.05, 0.01, 6))
         + fld("Turn (°)", numIn("rot", o.rot, 15, 0, 359)) + fld("Colour", '<input type="color" data-k="color" value="' + (o.color || "#8c8070") + '">') + "</div>"
         + '<div class="hbar" style="margin-top:4px"><button type="button" class="ghost" id="hbDup">⧉ Copy</button><button type="button" class="ghost" id="hbDel">🗑</button></div>';
     } else if (k === "stairs") {
@@ -956,7 +958,40 @@
   }
   function size3d() { var t = S.three; if (!t) return; var r = t.host.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return; t.R.setPixelRatio(window.devicePixelRatio || 1); t.R.setSize(r.width, r.height, false); t.cam.aspect = r.width / r.height; t.cam.updateProjectionMatrix(); }
   var rb = null;
+  /* 2.579.0: the 3D models the house's items use - read from the project's 3D models once (G.MODELS), then redrawn */
+  var modelLoads = {};
+  function ensureModels() {
+    var need = ((S.m && S.m.items) || []).filter(function (it) { return it.type === "model" && it.model && !G.MODELS[it.model] && !modelLoads[it.model]; });
+    if (!need.length) return Promise.resolve(0);
+    return Promise.all(need.map(function (it) {
+      var n = it.model;
+      modelLoads[n] = fetch("/api/tlcanvas/model/" + encodeURIComponent(n)).then(function (r) { if (!r.ok) throw new Error(n + " is not in the project's 3D models"); return r.text(); })
+        .then(function (t) { if (!G.loadModel(n, t)) throw new Error(n + " has no faces"); return 1; })
+        .catch(function (e) { say(String(e.message || e), "hbad"); return 0; });
+      return modelLoads[n];
+    })).then(function (r) { var k = r.filter(Boolean).length; if (k) { paint(); paintSide(); rebuild3d(); } return k; });
+  }
+  /** a 3D model from the project's 3D models (models3d/<name>.obj, millimetres, Z up) as an item on this floor, at its
+   *  own size, in the middle of the plan's rooms (the 📐 SolidCraft docker's "Send to House builder") -> the item */
+  function addModel(name) {
+    if (!G.modelName(name)) return Promise.reject(new Error("an .obj from the project's 3D models"));
+    if (!S.m) S.m = fresh();
+    delete modelLoads[name]; delete G.MODELS[name];
+    return fetch("/api/tlcanvas/model/" + encodeURIComponent(name)).then(function (r) { if (!r.ok) throw new Error(name + " is not in the project's 3D models"); return r.text(); }).then(function (t) {
+      var md = G.loadModel(name, t); if (!md) throw new Error(name + " has no faces");
+      var rooms = S.m.rooms.filter(function (r) { return r.floor === S.floor; }), at = [0, 0];
+      if (rooms.length) { var c = rooms.reduce(function (a, r) { var q = G.centroid(r.poly); return [a[0] + q[0], a[1] + q[1]]; }, [0, 0]); at = [c[0] / rooms.length, c[1] / rooms.length]; }
+      var cl = function (v, lo, hi) { return Math.round(Math.max(lo, Math.min(hi, v)) * 1000) / 1000; };
+      var old = S.m.items.find(function (it) { return it.type === "model" && it.model === name && it.floor === S.floor; });
+      snapshot();
+      if (old) { old.w = cl(md.size[0], 0.05, 20); old.d = cl(md.size[1], 0.05, 20); old.h = cl(md.size[2], 0.01, 6); S.sel = { kind: "item", id: old.id }; changed(); return old; }
+      var it = { id: G.newId("i"), floor: S.floor, type: "model", model: name, x: Math.round(at[0] * 100) / 100, y: Math.round(at[1] * 100) / 100, rot: 0, w: cl(md.size[0], 0.05, 20), d: cl(md.size[1], 0.05, 20), h: cl(md.size[2], 0.01, 6), color: "" };
+      S.m.items.push(it); S.sel = { kind: "item", id: it.id }; changed();
+      return S.m.items.find(function (x) { return x.id === it.id; }) || it;
+    });
+  }
   function rebuild3d() {
+    ensureModels();
     if (S.view === "plan" || !$("hb3d")) return;
     clearTimeout(rb); rb = setTimeout(function () {
       ensure3d().then(function (t) {
@@ -1347,7 +1382,7 @@
     // 2.527.0: already shown at start (a layout put it back) - fill it as onShow would (the list, the styles)
     setTimeout(function () { if (SecFloat.state("house").shown) { loadList(); loadStyles(); loadChars(); loadLoras(); fillLook(); rebuild3d(); } }, 300);
   }
-  root.H3House = Object.assign({ furnish: furnish, shotList: shotList, loadTrace: loadTrace, state: function () { return S; }, open: open, save: save, renderShot: renderShot, renderPano: renderPano, doPano: doPano, doShot: doShot, doReal: doReal, realPrompt: realPrompt,
+  root.H3House = Object.assign({ addModel: addModel, ensureModels: ensureModels, furnish: furnish, shotList: shotList, loadTrace: loadTrace, state: function () { return S; }, open: open, save: save, renderShot: renderShot, renderPano: renderPano, doPano: doPano, doShot: doShot, doReal: doReal, realPrompt: realPrompt,
     frameOf: frameOf, handles: handles, reachOf: reachOf, pick: pick, attachRef: attachRef, useRef: useRef, fromDock: fromDock, refPicker: refPicker, scaleTo: scaleTo, turnTo: turnTo, rotObj: rotObj, boxPick: boxPick, walkStep: walkStep, walkCam: walkCam, glide: glide, stopGlide: stopGlide, turnSel: turnSel, delSel: delSel, applyLook: applyLook,
     setTool: setTool, setView: setView, show: function (on) { return root.SecFloat && SecFloat.show ? SecFloat.show("house", on) : false; }, model: function () { return S.m; }, load: function (m) { S.m = G.normalize(m); S.slug = ""; fit(); paintFloors(); paintSide(); fillLook(); rebuild3d(); } }, pure);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

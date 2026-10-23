@@ -54,6 +54,13 @@ function start(port) {
     focus_at: (a) => ({ hit: true, focus: Math.round(300 + 400 * Math.abs((a.u || 0.5) - 0.5)), at: [0, 0, 100] }),
 
     // 2.540.0: the level's mesh actors + their bounds, through the camera asked (a car in front, a sofa left, a lamp right)
+    // 2.579.0 (plugin 1.4.0): a mesh file -> /Game/bitGen/<folder>/<name> (the stub checks the file is there and remembers it)
+    import_mesh: (a) => {
+      if (!a.file || !require("fs").existsSync(a.file)) throw new Error("no such file: " + a.file);
+      const name = String(a.name || require("path").basename(a.file).replace(/\.[^.]+$/, "")).replace(/[^A-Za-z0-9_]/g, "_");
+      st.imported = (st.imported || []).concat([{ file: a.file, name, folder: a.folder || "SolidCraft", text: require("fs").readFileSync(a.file, "utf8").slice(0, 400) }]);
+      return { assets: ["/Game/bitGen/" + (a.folder || "SolidCraft") + "/" + name + "." + name], actor: a.place === false ? undefined : name };
+    },
     actors_in_view: (a) => {
       const cam = a.camera && a.camera.loc ? { loc: a.camera.loc, rot: a.camera.rot || [0, 0, 0], fov: a.camera.fov || 60 } : a.camera && a.camera.name === "CineCam_Close" ? { loc: [-180, 30, 160], rot: [0, 0, -8], fov: 25 } : { loc: [-600, 0, 170], rot: [0, -5, 0], fov: 40 };
       return { camera: cam, actors: [

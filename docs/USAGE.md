@@ -3647,7 +3647,8 @@ cost adds its share of it for the time it ran (a 30-minute job carries 1/48 of a
 **🧩 The Model manager** (🧩 Models in the statusbar) is a floating docker: float it, or dock it beside or inside
 another docker.
 
-- **Tabs**: Models (ComfyUI's checkpoints and diffusion_models folders, with extra_model_paths.yaml), LoRAs, Civitai.
+- **Tabs**: Models (ComfyUI's checkpoints and diffusion_models folders, with extra_model_paths.yaml), LoRAs, Civitai,
+  📁 Model paths (2.580.0, below).
 - **Filters**: search (name, type, keywords), category, type, sort (A-Z, newest, rating, size). ⟳ reads the folders
   again.
 - **A card** shows the thumbnail, name, ★ rating, release date, the model type (SDXL, Pony, Illustrious, Flux, Qwen,
@@ -5922,6 +5923,54 @@ orange line shows where it will go - and let go.
   = a natural standing stance; **📂 Open folder** shows the folder, **↻ Refresh** reads it again after you save new
   ones. The sheet keeps your pose sheet's panel layout and the pose and camera angle in each panel, with your
   character in them. The pick is remembered. The folder is yours - it is never in a release zip or the repository.
+- 2.578.0: **📐 SolidCraft docker** - SolidCraft (open-source parametric 3D CAD, MIT OR Apache-2.0, solidcraft.io) runs
+  inside the app in its own docker (the 📐 SolidCraft button in the status bar), all of it: sketches with constraints,
+  extrude, revolve, sweep, loft, fillets, chamfers, shells, holes, threads, patterns, sheet metal, plastic parts,
+  assemblies with joints and motion studies, parameters, STEP / IGES / STL / OBJ / 3MF / glTF. **Install** it once in
+  the docker (⤓ Install, about 20 MB from SolidCraft's GitHub releases) or Settings ▸ Add-ons ▸ SolidCraft; offline:
+  download solidcraft-web-<version>.zip from its releases page and use **📦 Install from a zip…**. After that it works
+  offline; a newer SolidCraft shows **⤓ Update** in the bar. The bar connects it to the app:
+  **📁 Designs** opens the project's designs and parts (projects/<project>/solidcraft) or one from the computer;
+  **💾 Save to project** keeps the design there - after that SolidCraft's own Save (Ctrl+S) keeps the project's copy
+  current; **🖼 → Image editor** puts a picture of the model (transparent background, the **Size** you pick, **Edges**
+  on or off) into the image editor at once - **Shift**+click for SolidCraft's own lit render (slower, the bar shows its
+  progress); **View** picks the angle (Iso, Front … Bottom, or a Named View you saved in SolidCraft - the way to
+  picture your own angle); **🎞 → Timeline** adds the model as a 3D layer at the playhead (sent again, it updates);
+  **✏ Sketch → SolidCraft** turns the image editor's selected sketch layer into a SolidCraft sketch to extrude or
+  revolve; **⤓ Export** saves STEP, STL, OBJ or 3MF into the project.
+- 2.579.0: **The 📐 SolidCraft docker shows only when SolidCraft is installed** (its status-bar button too) - install it
+  in Settings ▸ Add-ons ▸ SolidCraft (**⤓ Install**, or **📦 Install from a zip…** offline) and the docker appears.
+  **Send** buttons in its bar: **🖼 Send to Image editor**, **🎞 Send to Timeline**, **🏠 Send to House builder** (the part
+  as a piece on the current floor at its own size in metres, in the middle of the rooms - move, turn and stretch it;
+  it is in the 3D view, shots and the house's .obj / .glb; sent again, the same piece updates), **🟠 Send to Blender**
+  (only when Blender is found: Blender opens in its own window with the part in metres, Z up, saved as
+  projects/<project>/blender/solidcraft/<name>.blend) and **🎮 Send to Unreal** (only when an Unreal project or editor is
+  set: the part is imported as a Static Mesh into /Game/bitGen/SolidCraft and placed in the open level - sent again it is
+  replaced where it stood; it needs the bitGen Bridge plugin **1.4.0** - 🎮 Load UE project updates it, or unzip
+  **bitgen-ue-bridge-1.4.0.zip** into the project's Plugins folder).
+- 2.579.0: **🗑 Delete a model** in the 🧩 Model manager - 🗑 on a card or **🗑 Delete** on its ⓘ page. A confirmation
+  lists what goes: the model file (deleted from the disk for good - not the recycle bin), the files beside it with its
+  name (preview pictures, .civitai.info, .bitgen.json, its .yaml …) and its model_info page, and warns which styles use
+  it.
+- 2.579.0: **Settings ▸ Dockers**: every docker - the main column's, the side dockers, the floating windows (Basic
+  Settings, Model manager, House builder …) and every extension docker, including ones you add later - with where it is
+  now and **↺ Reset**: back at its default place and size (out of a floating window or a ▣ docker, not maximized, shown
+  and open, its first height / width; a window at its first place and size). **↺ Reset all** does every one.
+- 2.580.0: **🧩 Model manager ▸ 📁 Model paths**: every group of paths in ComfyUI's **extra_model_paths.yaml** (the file
+  it reads - shown at the top), each with its base_path, is_default and one row per path (folder type + path, ✓ the
+  folder is there / ✗ it is not).
+  - **➕ New group (other_ui1)**: pick the base folder (another UI's install, a model drive …); the group is named
+    other_ui1, other_ui2 … (the first free number) and filled with the model folders found under it (models/checkpoints,
+    models/loras, models/vae … - an A1111 / Forge install's models/Stable-diffusion and models/Lora too).
+  - **Change a path**: type in it, or **📁** to pick the folder (inside the base it is written relative to it); **+ path**
+    adds a row, **🗑** removes one; rename the group or tick is_default; **💾 Save** writes that group (**↶** forgets the
+    changes). Several paths for one folder type are written as a list.
+  - **🗑 Delete group** removes the group from the file (the folders and models stay on the disk).
+  - Only the group you save changes - every other group, comment and blank line of the file stays as it was; the
+    previous file is kept as extra_model_paths.yaml.bak. If the file was changed elsewhere since the tab read it, the save
+    is refused and the tab reads it again.
+  - **⟳ Restart ComfyUI**: ComfyUI reads the file only when it starts - this stops the ComfyUI bitGen Studio started and
+    starts it again (not running: starts it; started by someone else: left alone, and it says so).
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
   only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
   says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker

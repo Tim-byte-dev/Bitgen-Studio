@@ -1,8 +1,10 @@
-bitGen Bridge for Unreal Engine 5.8 - 1.3.0 (bitGen Studio 2.540.0)
+bitGen Bridge for Unreal Engine 5.8 - 1.4.0 (bitGen Studio 2.579.0)
 
 Links the Unreal Editor to bitGen Studio on the same computer. bitGen lists your project's levels, Level Sequences,
 cameras, MetaHumans and animations, takes stills from a camera for its image editor (Unreal and MetaHuman layers) and
 renders sequences with the Movie Render Queue for its timeline (Unreal, MetaHuman and Unreal camera layers).
+1.4.0: bitGen's 📐 SolidCraft docker sends a part with "Send to Unreal" - it is imported as a Static Mesh into
+/Game/bitGen/SolidCraft and placed in the open level (sent again, it replaces the one it placed).
 
 Install - the easy way (bitGen Studio 2.513.0 and later)
   In bitGen Studio press 🎮 (Load UE project) in the menu bar, pick your project's folder and press Select. bitGen puts

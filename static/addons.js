@@ -78,13 +78,29 @@
         + '<div class="kv"><b>Needs</b> ' + esc(a.needs) + "</div>"
         + '<div class="kv"><b>Size</b> ' + esc(a.size) + "</div>"
         + (a.note ? '<div class="kv"><b>State</b> ' + esc(a.note) + "</div>" : "")
-        + its + '<div class="btns">' + acts + "</div></div>";
+        + its + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
     }).join("") || "No add-ons.";
     Array.prototype.forEach.call(L.querySelectorAll("[data-aoi]"), function (el) {
       el.onchange = function () { S.picks[el.dataset.aoi] = picked(el.dataset.aoi); };
     });
     Array.prototype.forEach.call(L.querySelectorAll("[data-ao]"), function (el) {
       el.onclick = function () { act(el.dataset.ao, el.dataset.act); };
+    });
+    // 2.579.0: an add-on that installs from a zip you downloaded (SolidCraft's web build) - {zip: {url, accept, hint}}
+    Array.prototype.forEach.call(L.querySelectorAll("[data-aozip]"), function (el) {
+      el.onclick = function () {
+        var a = S.list.find(function (x) { return x.id === el.dataset.aozip; }); if (!a || !a.zip) return;
+        var f = document.createElement("input"); f.type = "file"; f.accept = a.zip.accept || ".zip";
+        f.onchange = function () {
+          var file = f.files && f.files[0]; if (!file) return;
+          S.lines = ["[..] sending " + file.name]; S.next = 0; S.job = { id: a.id, action: "install", state: "running" }; paintJob();
+          fetch(a.zip.url, { method: "POST", headers: { "Content-Type": "application/zip" }, body: file }).then(j).then(function (r) {
+            if (r.error) { S.job.state = "error"; S.job.error = r.error; paintJob(); return; }
+            follow();
+          }).catch(function (e) { S.job.state = "error"; S.job.error = e.message; paintJob(); });
+        };
+        f.click();
+      };
     });
     paintJob();
   }
@@ -128,7 +144,11 @@
       S.lines = S.lines.concat(r.lines || []); S.next = r.next; S.job = Object.assign({}, S.job || {}, r.job);
       paintJob();
       if (r.job.state === "running") S.timer = setTimeout(follow, 1200);
-      else refresh();
+      else {
+        refresh();
+        // 2.579.0: an install / remove finished - who shows only with an add-on (the 📐 SolidCraft docker) looks again
+        try { window.dispatchEvent(new CustomEvent("h3:addons-changed", { detail: { id: r.job.id, action: r.job.action, state: r.job.state } })); } catch (e) { /* old browser */ }
+      }
     }).catch(function () { S.timer = setTimeout(follow, 3000); });
   }
   function open() {

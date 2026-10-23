@@ -1,0 +1,10 @@
+{
+  "id": "solidcraftdock",
+  "name": "SolidCraft",
+  "order": 95,
+  "html": "dock.html",
+  "scripts": [
+    "scbridge.js",
+    "scdock.js"
+  ]
+}

@@ -17,6 +17,9 @@
 //   POST /api/modelmgr/media/update {key, id, meta?, name?};  POST /api/modelmgr/media/delete {key, id}
 //   POST /api/modelmgr/thumb                   multipart {key, file} | JSON {key, item} | JSON {key, src, name} | JSON {key, example: n} (2.576.0)
 //   POST /api/modelmgr/thumb/clear {key}
+//   2.579.0 (lib/modelDelete.js - Tim: "allow user to delete models in model manager ... delete it from the disk too"):
+//   GET  /api/modelmgr/delete?key=             what a delete removes {name, size, sidecars, info, styles}
+//   POST /api/modelmgr/delete {key}            the model file + its sidecars + its model_info page, from the disk
 "use strict";
 const cards = require("../lib/modelCards");
 
@@ -117,6 +120,16 @@ function mount(app) {
   }));
   app.post("/api/modelmgr/thumb/clear", (req, res) => {
     try { const c = cardOf((req.body || {}).key); if (!c) return res.status(404).json({ error: "no such model" }); done(res, MM.clearThumb(c)); } catch (e) { fail(res, e); }
+  });
+  app.get("/api/modelmgr/delete", (req, res) => {
+    try { const r = require("../lib/modelDelete").check(String(req.query.key || "")); res.status(r.error ? 404 : 200).json(r); } catch (e) { fail(res, e); }
+  });
+  app.post("/api/modelmgr/delete", (req, res) => {
+    try {
+      const r = require("../lib/modelDelete").remove(String((req.body || {}).key || ""));
+      if (r.error) return res.status(/no such/.test(r.error) ? 404 : 409).json(r);
+      res.json(r);
+    } catch (e) { fail(res, e); }
   });
   app.post("/api/modelmgr/card", (req, res) => {
     try {

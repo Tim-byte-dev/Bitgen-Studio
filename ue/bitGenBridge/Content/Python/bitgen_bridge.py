@@ -35,10 +35,11 @@ import time
 import traceback
 import uuid
 import math
+import re
 
 import unreal
 
-VERSION = "1.2.0"
+VERSION = "1.4.0"
 PORT = int(os.environ.get("BITGEN_UE_PORT", "30020"))
 _jobs = {}
 _queue = []
@@ -652,8 +653,52 @@ def cmd_actors_in_view(a):
     return {"camera": {"loc": _vec(loc), "rot": _rot(rot), "fov": fov}, "actors": out[:300]}
 
 
+def cmd_import_mesh(a):
+    """2.579.0 (plugin 1.4.0): a mesh file bitGen made (the 📐 SolidCraft docker's "Send to Unreal" - an OBJ in
+    centimetres, Y up, as Unreal's OBJ import expects) -> a Static Mesh in /Game/bitGen/<folder>/, placed in the open
+    level (an actor with the same label is replaced where it stood) and selected.
+    a = {file (absolute), name?, folder? (default SolidCraft), place? (default true)}"""
+    path = a.get("file") or ""
+    if not path or not os.path.isfile(path):
+        raise ValueError("no such file: %s" % path)
+    name = re.sub(r"[^A-Za-z0-9_]", "_", a.get("name") or os.path.splitext(os.path.basename(path))[0])[:60] or "bitGen_mesh"
+    folder = re.sub(r"[^A-Za-z0-9_/]", "_", a.get("folder") or "SolidCraft").strip("/") or "SolidCraft"
+    task = unreal.AssetImportTask()
+    task.set_editor_property("filename", path)
+    task.set_editor_property("destination_path", "/Game/bitGen/" + folder)
+    task.set_editor_property("destination_name", name)
+    task.set_editor_property("automated", True)
+    task.set_editor_property("replace_existing", True)
+    task.set_editor_property("save", True)
+    unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
+    paths = [str(p) for p in (task.get_editor_property("imported_object_paths") or [])]
+    if not paths:
+        raise RuntimeError("Unreal imported nothing from %s - see the Output Log" % os.path.basename(path))
+    out = {"assets": paths}
+    if a.get("place", True):
+        mesh = None
+        for p in paths:
+            asset = unreal.load_asset(p)
+            if isinstance(asset, unreal.StaticMesh):
+                mesh = asset
+                break
+        if mesh:
+            sub = _subsys(unreal.EditorActorSubsystem)
+            loc, rot = unreal.Vector(0, 0, 0), unreal.Rotator(0, 0, 0)
+            for act in sub.get_all_level_actors():
+                if act.get_actor_label() == name:            # sent again: the new mesh where the old one stood
+                    loc, rot = act.get_actor_location(), act.get_actor_rotation()
+                    sub.destroy_actor(act)
+            act = sub.spawn_actor_from_object(mesh, loc, rot)
+            act.set_actor_label(name)
+            sub.set_selected_level_actors([act])
+            out["actor"] = name
+    return out
+
+
 COMMANDS = {"actors_in_view": cmd_actors_in_view, "set_viewport": cmd_set_viewport, "focus_at": cmd_focus_at, "ping": cmd_ping, "levels": cmd_levels, "sequences": cmd_sequences, "metahumans": cmd_metahumans, "anims": cmd_anims, "cameras": cmd_cameras,
-            "viewport": cmd_viewport, "open_level": cmd_open_level, "still": cmd_still, "render": cmd_render, "job": cmd_job}
+            "viewport": cmd_viewport, "open_level": cmd_open_level, "still": cmd_still, "render": cmd_render, "job": cmd_job,
+            "import_mesh": cmd_import_mesh}
 
 
 # ---------------------------------------------------------------- the editor's thread does the work
