@@ -125,8 +125,34 @@ bitGen Studio window (Electron, or http://127.0.0.1:8311 in a browser)
 
 The browser libraries in `static/vendor/` keep their own licences, which sit beside them. One of them, OpenCascade (`static/vendor/replicad/`), is LGPL-2.1. NOTICE.md explains how it is shipped.
 
+**✨ Generate in the 📐 SolidCraft docker uses [cadrille](https://github.com/col14m/cadrille)** (Kolodiazhnyi et al.,
+ICLR 2026 - [paper](https://huggingface.co/papers/2505.22914), [weights](https://huggingface.co/maksimko123/cadrille)): an
+open 2B model that writes [CadQuery](https://github.com/CadQuery/cadquery) code for a part from a description or a
+picture; bitGen Studio runs that code and rebuilds the part as SolidCraft's own editable sketches and extrudes.
+cadrille's **code is Apache-2.0**, but its **weights are CC BY-NC 4.0 - non-commercial use only**. They are not part of
+this repository: Settings ▸ Add-ons ▸ CAD generate downloads them from Hugging Face to your machine, and you accept their
+licence when you do. Without cadrille, the app's own local LLM writes the code instead. See [NOTICE.md](NOTICE.md).
+
 **Model weights have their own licences.** MiniMax H3, FLUX.2, SDXL, the voice models and others each come with their own terms, and several are non-commercial. Read the licence of the model that rendered your output.
+
+## Links: the software bitGen Studio bridges to
+
+| Software | Link | What bitGen Studio does with it |
+|---|---|---|
+| ComfyUI | [github.com/Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | The generation engine: every image, video and music style runs as a ComfyUI graph. The app starts it, installs its node packs, reads its model folders and edits its extra_model_paths.yaml. |
+| llama.cpp | [github.com/ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) | The local LLM (`llama-server`) behind ✨ Enhance, the prompt chat, screenplays and ✨ Generate's code. |
+| Blender | [blender.org](https://www.blender.org) | The bitGen Blender add-on: scenes and renders both ways, a .blend opened in the preview canvas, ✨ Build a scene with AI, and Send to Blender from SolidCraft. |
+| Unreal Engine | [unrealengine.com](https://www.unrealengine.com) | The bitGen Bridge plugin: Unreal / MetaHuman layers in the image editor and timeline, renders from a camera, and SolidCraft parts imported as Static Meshes. |
+| Daz Studio | [daz3d.com](https://www.daz3d.com) | The bitGen Daz bridge: renders, pictures, scenes (open / merge) and figures. |
+| SolidCraft | [solidcraft.io](https://solidcraft.io) ([source](https://github.com/tangency-labs/solidcraft)) | Open-source parametric CAD in its own 📐 docker: designs in the project, pictures to the image editor, 3D layers to the timeline, parts to the House builder, Blender and Unreal. |
+| cadrille + CadQuery | [cadrille](https://github.com/col14m/cadrille) · [CadQuery](https://github.com/CadQuery/cadquery) | ✨ Generate in SolidCraft: a description or a picture becomes CadQuery code, rebuilt as editable SolidCraft features. cadrille's weights are CC BY-NC 4.0 (non-commercial). |
+| Civitai | [civitai.com](https://civitai.com) | The 🧩 Model manager: details, trigger words, thumbnails, example pictures and videos for your models, plus search and download. |
+| Hugging Face | [huggingface.co](https://huggingface.co) | Where the model files come from (Settings ▸ Models, Add-ons, the Model manager's downloads). |
+| Final Cut Pro, DaVinci Resolve and other editors | [OpenTimelineIO](https://opentimeline.io) · [DaVinci Resolve](https://www.blackmagicdesign.com/products/davinciresolve) · [Final Cut Pro](https://www.apple.com/final-cut-pro/) | The timeline out and in as FCP 7 XML, FCPXML, EDL and OTIO. |
+| Krita AI Diffusion | [github.com/Acly/krita-ai-diffusion](https://github.com/Acly/krita-ai-diffusion) | The image editor's selection Generate / Fill / Remove follows its technique per model family. |
+| RunPod (or any remote GPU) | [runpod.io](https://www.runpod.io) | Settings ▸ Remote GPU: render on a ComfyUI on another machine or a cloud GPU. |
+| FFmpeg | [ffmpeg.org](https://ffmpeg.org) | Compiles, exports, proxies and the audio / video conversions. |
 
 ## Acknowledgements
 
-[ComfyUI](https://github.com/Comfy-Org/ComfyUI) · [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) · [LTX-Video](https://github.com/Lightricks/LTX-Video) · [Wan](https://github.com/Wan-Video) · [llama.cpp](https://github.com/ggml-org/llama.cpp) · [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) · [three.js](https://threejs.org) · [replicad](https://replicad.xyz) + [OpenCascade](https://dev.opencascade.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [pdf-lib](https://pdf-lib.js.org) · [ag-psd](https://github.com/Agamnentzar/ag-psd) · [fontkit](https://github.com/foliojs/fontkit) · and the ComfyUI node packs listed in [NOTICE.md](NOTICE.md).
+[ComfyUI](https://github.com/Comfy-Org/ComfyUI) · [cadrille](https://github.com/col14m/cadrille) + [CadQuery](https://github.com/CadQuery/cadquery) · [SolidCraft](https://solidcraft.io) · [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) · [LTX-Video](https://github.com/Lightricks/LTX-Video) · [Wan](https://github.com/Wan-Video) · [llama.cpp](https://github.com/ggml-org/llama.cpp) · [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) · [three.js](https://threejs.org) · [replicad](https://replicad.xyz) + [OpenCascade](https://dev.opencascade.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [pdf-lib](https://pdf-lib.js.org) · [ag-psd](https://github.com/Agamnentzar/ag-psd) · [fontkit](https://github.com/foliojs/fontkit) · and the ComfyUI node packs listed in [NOTICE.md](NOTICE.md).

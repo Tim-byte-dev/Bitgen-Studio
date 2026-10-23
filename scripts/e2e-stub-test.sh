@@ -12357,6 +12357,42 @@ node scripts/test-extrapaths580.js > /tmp/xp580.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui580-ui.js > /tmp/ui580.log 2>&1 \
   && ok "2.580.0 browser test: 📁 Model paths lists the yaml's groups with ✓ / ✗, ➕ other_ui1 from a picked folder (its LoRA then in the cards), paths changed / removed / added with 📁 (relative inside the base) and 💾 saved, rename + is_default, 🗑 a group, a file changed on disk not overwritten, ⟳ Restart ComfyUI answers - or SKIP without playwright" \
   || { bad "2.580.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui580.log | head -14; }
+
+# ---- 2.581.0 (Civitai videos + animated thumbs; the selected LoRAs' keywords in LLM prompts; ✨ Generate in SolidCraft)
+node scripts/test-civitaimedia581.js > /tmp/cm581.log 2>&1 \
+  && ok "2.581.0 units (Civitai examples: videos + GIFs kept, extensions by the CDN's answer, a 60 MB cap, thumb.mp4 as it is, media_v - 🔄 Sync fetches the media of old entries by version id; a video thumbnail)" \
+  || { bad "2.581.0 Civitai media units"; grep -a "^FAIL" -A2 /tmp/cm581.log | head -14; }
+node scripts/test-lorawords581.js > /tmp/lw581.log 2>&1 \
+  && ok "2.581.0 units (the selected LoRAs' keywords: matched by path / name / stem, 5 each, the LLM's rule, missing ones added as whole words; Enhance + chat wiring)" \
+  || { bad "2.581.0 LoRA keyword units"; grep -a "^FAIL" -A2 /tmp/lw581.log | head -14; }
+node scripts/test-cadgen581.js > /tmp/cg581.log 2>&1 \
+  && ok "2.581.0 units (✨ Generate: the LLM's code repaired with its error, cadrille -> the LLM on a model failure (Auto), a picture described first, the files, the add-on, the docker's replay + volume check)" \
+  || { bad "2.581.0 CAD generate units"; grep -a "^FAIL" -A2 /tmp/cg581.log | head -14; }
+"${CADGEN_PY:-python3}" scripts/test-cadworker581.py > /tmp/cw581.log 2>&1 \
+  && ok "2.581.0 cad_worker.py (the code check, the plan; with CadQuery (CADGEN_PY): boxes, sketches with arcs, holes, cut-through-all, spheres, fillets, chamfers recorded as SolidCraft commands, revolve / shell named)" \
+  || { bad "2.581.0 cad_worker.py"; grep -a "^FAIL" -A2 /tmp/cw581.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui581-ui.js > /tmp/ui581.log 2>&1 \
+  && ok "2.581.0 browser test: a video thumbnail / examples / viewer; ✨ Enhance + chat told the picked LoRA's keywords, the missing one added; ✨ Generate (stub LLM, broken code repaired) -> SolidCraft features with CadQuery's volume, a revolve as one solid, a just-written STEP opened (dropped) - or SKIP / NOTE without playwright / SolidCraft zip / CadQuery (CADGEN_VENV)" \
+  || { bad "2.581.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui581.log | head -14; }
+
+# ---- 2.582.0 (Fibo 2.0 in the edit tools: the styles, ✨ Edit, <image_n>, Settings ▸ Add-ons ▸ Fibo 2.0; README links)
+node scripts/test-fibo582.js > /tmp/fb582.log 2>&1 \
+  && ok "2.582.0 units (Fibo 2.0: the two styles + graphs, ✨ Edit takes them, <image_n> wording + the dock's tags, the catalogue, the add-on: w4a8 default, GGUF -> ComfyUI-GGUF, shared encoder / VAE kept on remove; families; the doctor)" \
+  || { bad "2.582.0 Fibo units"; grep -a "^FAIL" -A2 /tmp/fb582.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui582-ui.js > /tmp/ui582.log 2>&1 \
+  && ok "2.582.0 browser test: the Fibo 2.0 styles; ✨ AI ▸ Edit offers them; Settings ▸ Add-ons ▸ Fibo 2.0 (nine files, the defaults, needed ones locked, licence) posts the picks - or SKIP without playwright" \
+  || { bad "2.582.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui582.log | head -14; }
+
+# ---- 2.583.0 (Team ▸ the render farm: the team folder, daily keys, access from - to / unrestricted, 🖥 Render on)
+node scripts/test-team583.js > /tmp/tm583.log 2>&1 \
+  && ok "2.583.0 units (the team: create / join / approve / remove, daily keys, signed requests and every forgery refused - replay, clock, another day / team / signer, a stolen key file, a changed team.json; access unrestricted / from - to, revoke, deny, never carried to another team; paths between PCs; ⚡ Spread)" \
+  || { bad "2.583.0 team units"; grep -a "^FAIL" -A2 /tmp/tm583.log | head -14; }
+node scripts/test-farm583.js > /tmp/fm583.log 2>&1 \
+  && ok "2.583.0 two studios + a team folder: Tim asks, Sam allows from - to, Tim's job renders on Sam's PC into the same project; refused without a key / outside the time / revoked / not sharing; back to This PC" \
+  || { bad "2.583.0 render farm (two studios)"; grep -a "^FAIL" -A2 /tmp/fm583.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui583-ui.js > /tmp/ui583.log 2>&1 \
+  && ok "2.583.0 browser test: Settings ▸ Team (create, approve, share, a member's ask -> from - to / revoke / unrestricted, leave) + the 🖥 Render on chip - or SKIP without playwright" \
+  || { bad "2.583.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui583.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -5971,6 +5971,69 @@ orange line shows where it will go - and let go.
     is refused and the tab reads it again.
   - **⟳ Restart ComfyUI**: ComfyUI reads the file only when it starts - this stops the ComfyUI bitGen Studio started and
     starts it again (not running: starts it; started by someone else: left alone, and it says so).
+- 2.581.0: **🔄 Sync and ⤓ Civitai info keep a model's videos and animated pictures too** (a video model's examples are
+  usually clips): its examples come in Civitai's order - videos (at 512 px, at most 60 MB each), GIFs and stills - and the
+  card's thumbnail is the first one as it is, so a video thumbnail plays on the card (muted, looping) and on its ⓘ page;
+  the examples show the video playing, GIFs marked GIF, and the viewer opens a video as a video. Models synced before
+  are fetched again by their Civitai version id on the next 🔄 Sync. A video can be the card's thumbnail (✎ Edit card,
+  Ctrl+↓ on a picked example or one of your files, 🧩 To model…).
+- 2.581.0: **The selected LoRAs' keywords go into what the LLM writes**: ✨ Enhance and the prompt chat tell the LLM the
+  keywords (trigger words) of the selected LoRAs - Basic Settings' LoRA rows for the Generate mode, where the 🧩 Model
+  manager's ✓ picks land, and the Model manager's own picks - and ✨ Enhance puts a keyword the LLM left out in anyway (at
+  the end; the console says which). The keywords are the card's (yours from ✎ Edit, else Civitai's trained words, else the
+  LoRA file's most used tags), up to 5 per LoRA.
+- 2.581.0: **✨ Generate in the 📐 SolidCraft docker**: describe a part (and/or give a picture), and it comes into
+  SolidCraft as its own editable features - sketches (lines, arcs, circles), extrudes, cuts, holes, fillets and chamfers in
+  its timeline, each one you can change.
+  - Install it once: Settings ▸ Add-ons ▸ **CAD generate** - CadQuery (needed: it runs the part's code) and **cadrille**
+    (ticked: an open 2B model that writes the part from text or a picture; best with an NVIDIA GPU; its weights are
+    CC BY-NC 4.0 - non-commercial use - downloaded from Hugging Face on the install).
+  - **Engine**: Auto (cadrille when it is installed, else the app's local LLM), cadrille, or the local LLM (a picture is
+    described by the vision model first). Code that fails to run goes back to the LLM with the error, up to 2 times.
+    cadrille takes a description or a picture (a picture wins when both are given); it learned from clean renders of
+    parts, so a render or drawing of the part works much better than a photo.
+  - **into the open design** off (the default): a new design; on: added to the open one.
+  - The rebuild is checked: SolidCraft's volume must be CadQuery's. A step it cannot rebuild yet (revolve, loft, sweep,
+    shell, mirror …) or a rebuild that does not match = the part goes in as one solid (the STEP) instead, and it says why.
+  - The part's STEP + OBJ are in the project's solidcraft folder, its code in solidcraft/ai/. **✎ The code**: edit it and
+    **▶ Run again**. Ctrl+Enter in the description generates.
+- 2.582.0: **Fibo 2.0 in the edit tools** (Bria AI's 8B model; its weights are CC BY-NC 4.0 - non-commercial use only).
+  Two image styles: **Fibo 2.0 Edit Turbo** edits a picture from an instruction in 4 steps, and **Fibo 2.0 Dev** makes
+  pictures from text and edits them in 30 steps. Both are in the image editor's ✨ AI ▸ Edit (the selection's picture is
+  `<image_1>`), and both take up to 4 reference pictures (`<image_1>`..`<image_4>`) - the reference dock's `<Picture n>`
+  tags and "picture 2" in the prompt are written that way for you.
+  - **Low VRAM**: the styles load the w4a8 ConvRot files (6.6 GB) with the int8 Qwen3-VL 4B text encoder - about an 8 GB
+    card, ComfyUI moving the rest to RAM. GGUF Q4_0 / Q5_0 / Q8_0 work too: pick the .gguf as the style's Model in
+    Settings ▸ Image (the loader follows the file; it needs the ComfyUI-GGUF node pack).
+  - **Install**: Settings ▸ Add-ons ▸ **Fibo 2.0** - tick the files (Edit Turbo w4a8, the text encoder and the VAE are
+    ticked; a GGUF installs ComfyUI-GGUF too). Fibo 2.0 needs ComfyUI from 21 Oct 2026 or later.
+- 2.583.0: **Team ▸ the render farm** - team members open the same project and render on each other's PCs, with the
+  owner's permission. Settings ▸ **Team** (after Remote GPU):
+  - **The team folder** is a folder on the NAS every PC can open (`\\nas\bitgen-team` or a mapped drive). The leader
+    picks it, types the team's name and their own name and presses **➕ Create the team**; everyone else types their name
+    and presses **⇥ Join**. The leader sees the request and presses **✓ Approve**; **🗑 Remove** takes someone out (their
+    key stops working at once). **⇤ Leave the team** on any PC.
+  - **Daily keys**: the leader's bitGen writes every approved member a new key in the team folder each day (it does this by
+    itself while it runs; **↻ Issue today's keys** does it now). A key is valid until midnight and only works together
+    with the private key that stays on the member's own PC - copying the key file gives nobody access. If the leader's
+    bitGen does not run on a day, nobody gets that day's key (the farm waits for it).
+  - **The same project**: **Use the team's projects folder** makes this PC open the projects in the team folder (restart
+    bitGen); every member does this once.
+  - **🔌 Share this PC for team renders** opens the render port (8312 by default) - only while bitGen runs and the switch
+    is on, and only the render-farm calls are on it (the app itself stays on this PC). Same network: nothing else to set;
+    over **Tailscale**, type this PC's Tailscale name or 100.x address in *This PC's address for the team*.
+  - **Access** is the owner's: a member's **🔒 Ask for access** shows under *Asks for access* - **Unrestricted** (any time
+    bitGen runs here), **from - to** (two dates and times; outside them the PC refuses the job) or **Deny**. *Access
+    given* lists who may render here; **↺ Revoke** takes it back.
+  - **🖥 Render on** (the status bar): **This PC**, a team member's PC (✓ with your access and its time; 🔒 Ask; greyed
+    when it is offline or not sharing) or **⚡ Spread** (each new render to the least busy of this PC and the PCs you may
+    use). The menu also shows every render the team's PCs are doing, with its progress. Generation jobs go (pictures,
+    videos, songs, graphs, swaps, upscales …); installs, downloads, training, the movie export and the quick ffmpeg jobs
+    always run here. A job on another PC shows in your queue as usual (its log comes back), and the finished file is in
+    the shared project - it lands in your assets like any render. A job the other PC refuses (no access, outside its
+    time, not sharing, a file outside the team's projects folder) fails with the reason in its log.
+- 2.581.0 fix: **📁 Designs ▸ open and 📂 Open from the computer** in the 📐 SolidCraft docker opened nothing (SolidCraft
+  reads its file storage only when it starts) - a design or part now goes in as if dropped on it.
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they
   only said "rendering… Ns" before), sd-cli pictures and videos too; and every place that shows a running generation
   says it: the status bar (step n/total), the queue, the Console beside Cancel, the Song tab and the Music docker

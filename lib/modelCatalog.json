@@ -30,6 +30,10 @@
       "label": "Images - MOSS-Image (the MOSS-Image styles; Settings ▸ Add-ons ▸ MOSS-Image picks what to download)"
     },
     {
+      "id": "fibo",
+      "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
+    },
+    {
       "id": "fasth3",
       "label": "Video - FastH3 Omni (the FastH3 Omni style / board Workflow; Settings ▸ Add-ons ▸ FastH3 Omni picks what to download)"
     },
@@ -1093,6 +1097,99 @@
       "dest": "comfy/vae",
       "size": 250000000,
       "for": "every MOSS-Image style"
+    },
+    {
+      "id": "fibo_edit_w4a8",
+      "group": "fibo",
+      "label": "Fibo 2.0 Edit Turbo (w4a8 ConvRot - the lowest VRAM, ComfyUI's own loader)",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_edit_turbo_w4a8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 6590000000,
+      "for": "the Fibo 2.0 Edit Turbo style (its default file)"
+    },
+    {
+      "id": "fibo_edit_q4",
+      "group": "fibo",
+      "label": "Fibo 2.0 Edit Turbo GGUF Q4_0 (low VRAM, needs ComfyUI-GGUF)",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_edit_turbo-Q4_0.gguf",
+      "dest": "comfy/unet",
+      "size": 6590000000,
+      "for": "Fibo 2.0 Edit Turbo as GGUF (set it as the style's Model)"
+    },
+    {
+      "id": "fibo_edit_q5",
+      "group": "fibo",
+      "label": "Fibo 2.0 Edit Turbo GGUF Q5_0",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_edit_turbo-Q5_0.gguf",
+      "dest": "comfy/unet",
+      "size": 7450000000,
+      "for": "Fibo 2.0 Edit Turbo as GGUF, a little better than Q4_0"
+    },
+    {
+      "id": "fibo_edit_q8",
+      "group": "fibo",
+      "label": "Fibo 2.0 Edit Turbo GGUF Q8_0 (near full quality)",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_edit_turbo-Q8_0.gguf",
+      "dest": "comfy/unet",
+      "size": 10000000000,
+      "for": "Fibo 2.0 Edit Turbo as GGUF, close to bf16"
+    },
+    {
+      "id": "fibo_edit_int8",
+      "group": "fibo",
+      "label": "Fibo 2.0 Edit Turbo (int8 ConvRot - Comfy-Org's)",
+      "repo": "Comfy-Org/Fibo-2.0",
+      "file": "diffusion_models/fibo2_edit_turbo_int8_convrot.safetensors",
+      "as": "fibo2_edit_turbo_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 8410000000,
+      "for": "Fibo 2.0 Edit Turbo, Comfy-Org's official int8 file (more VRAM than w4a8)"
+    },
+    {
+      "id": "fibo_dev_w4a8",
+      "group": "fibo",
+      "label": "Fibo 2.0 Dev (w4a8 ConvRot - text to image + edit)",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_dev_w4a8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 6590000000,
+      "for": "the Fibo 2.0 Dev style (its default file)"
+    },
+    {
+      "id": "fibo_dev_q4",
+      "group": "fibo",
+      "label": "Fibo 2.0 Dev GGUF Q4_0 (needs ComfyUI-GGUF)",
+      "repo": "realrebelai/Fibo-2.0_GGUFs",
+      "file": "fibo2_dev-Q4_0.gguf",
+      "dest": "comfy/unet",
+      "size": 6590000000,
+      "for": "Fibo 2.0 Dev as GGUF (set it as the style's Model)"
+    },
+    {
+      "id": "fibo_te",
+      "group": "fibo",
+      "label": "Fibo 2.0 text encoder (Qwen3-VL 4B int8)",
+      "repo": "Comfy-Org/Fibo-2.0",
+      "file": "text_encoders/qwen3vl_4b_int8_convrot.safetensors",
+      "as": "qwen3vl_4b_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 4860000000,
+      "for": "every Fibo 2.0 style (CLIPLoader type fibo2)"
+    },
+    {
+      "id": "fibo_vae",
+      "group": "fibo",
+      "label": "Fibo 2.0 VAE (FLUX.2 VAE)",
+      "repo": "Comfy-Org/Fibo-2.0",
+      "file": "vae/flux2-vae.safetensors",
+      "as": "flux2-vae.safetensors",
+      "dest": "comfy/vae",
+      "size": 336211292,
+      "for": "every Fibo 2.0 style"
     },
     {
       "id": "fasth3_omni_int8",

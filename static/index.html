@@ -3315,6 +3315,8 @@
 <script src="/static/queuepresets.js"></script>  <!-- 2.518.0: the menu bar's ⏱ queue presets (H3QueuePresets - lib/queuePresets.js) -->
 <script src="/static/modelmgr.js"></script>  <!-- 2.518.0: 🧩 the Model + LoRA manager docker, Civitai downloads (H3ModelMgr - lib/modelCards.js, lib/civitai.js) -->
 <script src="/static/mmpaths.js"></script>  <!-- 2.580.0: the Model manager's 📁 Model paths tab - extra_model_paths.yaml groups + ⟳ Restart ComfyUI (H3ModelPaths - lib/extraPaths.js) -->
+<script src="/static/lorasel.js"></script>  <!-- 2.581.0: the selected LoRAs for ✨ Enhance + the prompt chat (H3LoraSel - lib/loraWords.js) -->
+<script src="/static/team.js"></script>  <!-- 2.583.0: Settings ▸ Team + 🖥 Render on - the render farm (H3Team - routes/team.js, lib/team.js, lib/farm.js, lib/farmNode.js) -->
 <script src="/static/testdock.js"></script>
 <script src="/static/testcoach.js"></script>  <!-- 2.534.0: 🧪 Test mode - suggests the next test where you are, asks whether it worked -->
 <script src="/static/lbfollow.js"></script>  <!-- 2.534.0: a render finishing while the preview is open joins it -->
@@ -6076,6 +6078,7 @@ async function enhancePrompt() {
         ref_notes: window.RefInfo ? RefInfo.notesFor(refVids, refAuds, refNotes) : undefined,   // 2.539.0
         // 2.354.0: the dock's videos + sounds -> <Video n> / <Audio n> (lib/refContext.js)
         ref_videos: refVids.slice(0, 3), ref_audios: refAuds.slice(0, 3),
+        loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: their keywords go into the prompt (lib/loraWords.js)
       }),
     });
     const j = await res.json();
@@ -9325,6 +9328,7 @@ async function chatSend(text) {
       image_style_id: $("styleSel") ? $("styleSel").value : "",
       music_style_id: $("musicSel") ? $("musicSel").value : "",
       video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",   // 2.419.0: the video guide for THIS model (LTX / Wan / H3)
+      loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: the selected LoRAs - their keywords in the prompts it writes
     };
     const chatLlm = $("llmSel") ? $("llmSel").value : "";
     /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides

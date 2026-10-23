@@ -158,7 +158,9 @@
     if (!tabs || $("stab-dockers")) return !!tabs;
     var st = doc.createElement("style"); st.textContent = CSS; doc.head.appendChild(st);
     var b = doc.createElement("button"); b.dataset.stab = "dockers"; b.textContent = "Dockers"; b.type = "button";
-    var ext = tabs.querySelector('[data-stab="extensions"]'); if (ext) ext.after(b); else tabs.appendChild(b);
+    // 2.581.0: after Add-ons (Add-ons stays right after Extensions - test-ui5404-ui), else after Extensions
+    var ao = tabs.querySelector('[data-stab="addons"]'), ext = tabs.querySelector('[data-stab="extensions"]');
+    if (ao) ao.after(b); else if (ext) ext.after(b); else tabs.appendChild(b);
     var pane = doc.createElement("div"); pane.className = "stab"; pane.id = "stab-dockers";
     pane.innerHTML = '<p class="hint help" style="margin:0 0 8px">Every docker and floating window, where it is now, and ↺ Reset: back at its default place and size '
       + "(out of a floating window or a ▣ docker, not maximized, shown and open, its first height / width). Dockers you add later (extensions) are listed too.</p>"

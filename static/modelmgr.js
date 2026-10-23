@@ -107,6 +107,8 @@
     (sel || []).forEach(function (l) { var i = out.findIndex(function (x) { return x.path === l.path; }); if (i >= 0) out[i] = { path: l.path, weight: l.weight }; else out.push({ path: l.path, weight: l.weight }); });
     return out.slice(0, 12);
   }
+  /** 2.581.0: a video thumbnail / example fills its box as a looping muted video (a GIF / WebP moves on its own) */
+  function vidFill(u) { return '<video class="mmvid" src="' + esc(u) + '" muted loop autoplay playsinline preload="metadata" aria-hidden="true"></video>'; }
   function thumbUrl(c, v) { return c.remote ? (c.thumb ? "/api/civitai/img?u=" + encodeURIComponent(c.thumb) : "") : (c.thumb ? "/api/modelmgr/thumb?key=" + encodeURIComponent(c.key) + "&v=" + (v || 0) + (c.thumb_v ? "-" + encodeURIComponent(c.thumb_v) : "") : ""); }
   /* 2.537.0: pages */
   /** one page of a list -> {items, page (clamped), pages, from, to} (pure) */
@@ -140,6 +142,9 @@
   /* ================================ page ================================ */
   var CSS = ""
     + ".mmgr{display:flex;flex-direction:column;gap:6px;height:100%;min-height:0;font-size:.76rem}"
+    // 2.581.0: a video thumbnail / example fills its box
+    + ".mmgr .mmcard .th,.mmgr .mminfo .hero,.mmgr .mminfo .exg div{position:relative;overflow:hidden}.mmgr video.mmvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none}"
+    + ".mmgr .mmanim{position:absolute;right:3px;bottom:3px;font-size:.55rem;padding:0 3px;border-radius:4px;background:rgba(0,0,0,.6);color:#ddd}"
     + ".mmgr .mmtabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center}.mmgr .mmtabs button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}"
     + ".mmgr .mmbar{display:flex;gap:4px;flex-wrap:wrap;align-items:center}.mmgr .mmbar input[type=search]{flex:1;min-width:120px}.mmgr .mmbar select{max-width:140px}"
     + ".mmgr .mmsel{border:1px solid var(--line,#3a342a);border-radius:6px;padding:5px 6px;display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.02)}"
@@ -225,7 +230,7 @@
     var t = thumbUrl(c, S.v), init = esc((c.family_label || "?").slice(0, 2));
     var date = c.released ? c.released : c.file_date ? "file " + c.file_date : "";
     return '<div class="mmcard' + (sel ? " sel" : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
-      + '<div class="th"' + (t ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? "" : init) + "</div>"
+      + '<div class="th"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? (c.thumb_kind === "video" ? vidFill(t) : "") : init) + "</div>"
       + (c.remote ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
       + '<div class="acts">' + (c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
         + (c.civitai ? "" : '<button class="ghost" data-mmlook title="🔍 Look this file up on Civitai (reads its SHA-256 once)">🔍</button>')) + "</div>"
@@ -428,7 +433,7 @@
     var e = ex[S.exSel], em = e ? e.meta || {} : null;
     return '<div class="mminfo"><div class="ih"><button class="ghost" id="mmBack" type="button" title="Back to the cards (Esc)">‹ Back</button><b>' + esc(c.title) + '</b> ' + (c.user_rating != null || c.rating ? starBar(c.user_rating != null ? c.user_rating : c.rating) : "") + (c.nsfw ? ' <span title="marked NSFW">🔞</span>' : "")
       + '<span class="tag fam" style="color:var(--tiger)">' + esc(c.family_label) + "</span><span>" + esc(c.category) + "</span>" + (c.folder ? "<span style='color:var(--dim)'>📁 " + esc(c.folder) + "</span>" : "") + "</div>"
-      + '<div class="ib"><div class="hero"' + (t ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? "" : esc((c.family_label || "?").slice(0, 2))) + "</div>"
+      + '<div class="ib"><div class="hero"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? (c.thumb_kind === "video" ? vidFill(t) : "") : esc((c.family_label || "?").slice(0, 2))) + "</div>"
       + '<div><div class="fg">' + row("Rating", stars(c) || "—") + row("Released", c.released || (c.file_date ? "— (file " + c.file_date + ")" : "")) + row("Base model", c.base_model || (ver && ver.base_model))
       + row("Version", ver && ver.name) + row("Model type", c.model_type || (ver && ver.model_type) || (c.kind === "lora" ? "LoRA" : c.cat)) + row("NSFW", c.nsfw ? "yes 🔞" : "") + row("CFG", c.cfg == null ? "— (the style's)" : c.cfg) + row("Steps", c.steps == null ? "— (the style's)" : c.steps)
       + row("Sampler", c.sampler) + row("VAE", c.vae || "the workflow's own") + row("Text encoder", c.te || "the workflow's own") + row("Size", fmtSize(c.size)) + row("File", c.name) + "</div>"
@@ -441,7 +446,7 @@
       + (kw.length ? '<div class="kw" style="display:flex;gap:3px;flex-wrap:wrap">' + kw.slice(0, 40).map(function (k) { return '<span class="kwc" data-kw="' + esc(k) + '" title="Put it in the prompt">' + esc(k) + "</span>"; }).join("") + "</div>" : "")
       + (desc ? '<div class="ds">' + esc(desc) + "</div>" : "")
       + mediaHtml(c)                                                      // 2.575.0: your pictures / videos / sounds
-      + (ex.length ? "<b>Civitai's example pictures</b><div class=\"exg\">" + ex.map(function (x, i) { return '<div data-mmex="' + i + '" class="' + (i === S.exSel ? "on" : "") + '" style="background-image:url(&quot;/api/modelmgr/example?key=' + esc(encodeURIComponent(c.key)) + "&n=" + i + "&v=" + (d.fetched_at || 0) + '&quot;)" title="Click: see it whole (its prompt + settings below) · then Ctrl+↓: the card\'s thumbnail"></div>'; }).join("") + "</div>"
+      + (ex.length ? "<b>Civitai's examples</b><div class=\"exg\">" + ex.map(function (x, i) { var exu = "/api/modelmgr/example?key=" + encodeURIComponent(c.key) + "&n=" + i + "&v=" + (d.fetched_at || 0); return '<div data-mmex="' + i + '" data-media="' + esc(x.media || "image") + '" class="' + (i === S.exSel ? "on" : "") + '"' + (x.media === "video" ? "" : ' style="background-image:url(&quot;' + esc(exu) + '&quot;)"') + ' title="Click: see it whole (its prompt + settings below) · then Ctrl+↓: the card\'s thumbnail">' + (x.media === "video" ? vidFill(exu) : x.media === "animated" ? '<span class="mmanim">GIF</span>' : "") + "</div>"; }).join("") + "</div>"
         + (em ? '<div class="exm"><pre>' + esc(em.prompt || "(no prompt with this picture)") + "</pre>" + (em.negative ? "<pre style='color:var(--dim)'>Negative: " + esc(em.negative) + "</pre>" : "")
           + '<div style="color:var(--dim)">' + esc([em.cfg != null ? "cfg " + em.cfg : "", em.steps != null ? em.steps + " steps" : "", em.sampler, em.seed != null ? "seed " + em.seed : "", em.size].filter(Boolean).join(" · ")) + "</div>"
           + (em.prompt ? '<div class="btns"><button class="ghost" type="button" id="mmIPrompt" title="Its prompt with its seed, cfg and steps into the prompt box + Basic Settings">✎→ To prompt (prompt, seed, cfg, steps)</button></div>' : "") + "</div>" : "") : "")
@@ -465,7 +470,7 @@
     grid.querySelectorAll("[data-mmex]").forEach(function (x) {
       x.onclick = function () {
         var n = +x.dataset.mmex;
-        var items = ((S.infoData || {}).examples || []).map(function (e, i) { return { url: "/api/modelmgr/example?key=" + encodeURIComponent(key) + "&n=" + i + "&v=" + ((S.infoData || {}).fetched_at || 0), kind: "image", name: c.title + " · example " + (i + 1) }; });
+        var items = ((S.infoData || {}).examples || []).map(function (e, i) { return { url: "/api/modelmgr/example?key=" + encodeURIComponent(key) + "&n=" + i + "&v=" + ((S.infoData || {}).fetched_at || 0), kind: e.media === "video" ? "video" : "image", name: c.title + " · example " + (i + 1) }; });
         S.exSel = n; S.lastPick = "ex"; paint();
         if (typeof root.lbOpen === "function") root.lbOpen(items, n);
       };
@@ -475,7 +480,7 @@
       useMeta(e.meta || {}, kindForCard(c));                               // 2.575.0: + its seed, cfg, steps
     };
     var hero = $("mmGrid").querySelector(".mminfo .hero");
-    if (hero && thumbUrl(c, S.v)) { hero.style.cursor = "pointer"; hero.title = "Click: see it whole"; hero.onclick = function () { if (typeof root.lbOpen === "function") root.lbOpen([{ url: thumbUrl(c, S.v), kind: "image", name: c.title }], 0); }; }
+    if (hero && thumbUrl(c, S.v)) { hero.style.cursor = "pointer"; hero.title = "Click: see it whole"; hero.onclick = function () { if (typeof root.lbOpen === "function") root.lbOpen([{ url: thumbUrl(c, S.v), kind: c.thumb_kind === "video" ? "video" : "image", name: c.title }], 0); }; }
     bindMedia(c);                                                          // 2.575.0
   }
   function bindSel() {
@@ -618,10 +623,10 @@
       return '<div class="mmmedia' + (i === S.mSel ? " on" : "") + '" data-mmm="' + i + '"' + (it.kind === "image" ? ' style="background-image:url(&quot;' + u + '&quot;)"' : "")
         + ' title="' + esc(it.name + (meta.prompt ? "\n" + meta.prompt.slice(0, 200) : "") + "\nclick: see it whole · then Ctrl+↓: the card's thumbnail") + '">' + inner
         + '<span class="mk">' + ({ image: "🖼", video: "🎬", audio: "🔊" }[it.kind] || "") + "</span>"
-        + (m.thumb && it.kind === "image" && m.thumb_of === it.id ? '<span class="mmthumbmark">thumb</span>' : "")
+        + (m.thumb && (it.kind === "image" || it.kind === "video") && m.thumb_of === it.id ? '<span class="mmthumbmark">thumb</span>' : "")
         + '<span style="position:absolute;right:2px;bottom:2px;display:flex;gap:2px">'
         + (meta.prompt || meta.seed != null ? '<button type="button" class="ghost" data-mmmuse="' + i + '" title="✎→ To prompt: its prompt with its seed, cfg and steps" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">✎→</button>' : "")
-        + (it.kind === "image" ? '<button type="button" class="ghost" data-mmmthumb="' + i + '" title="Use it as the card\'s thumbnail" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">🖼</button>' : "")
+        + (it.kind === "image" || it.kind === "video" ? '<button type="button" class="ghost" data-mmmthumb="' + i + '" title="Use it as the card\'s thumbnail" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">🖼</button>' : "")
         + '<button type="button" class="ghost" data-mmmedit="' + i + '" title="Its prompt + settings" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">✎</button>'
         + '<button type="button" class="ghost" data-mmmdel="' + i + '" title="Delete it (from model_info)" style="padding:0 3px;font-size:11px;background:rgba(20,18,15,.8)">🗑</button></span></div>';
     };
@@ -755,7 +760,7 @@
     S.form = '<form class="mmform" id="mmForm" data-key="' + esc(key) + '" style="grid-column:1/-1"><b style="grid-column:1/3">✎ ' + esc(c.file) + "</b>"
       + '<label for="mmeTitle">Name</label><input id="mmeTitle" value="' + esc(c.title) + '">'
       // 2.575.0: the thumbnail (your picture - kept in model_info, the model's folder untouched)
-      + '<label>Thumbnail</label><span style="display:flex;gap:6px;align-items:center"><span class="mmethumb" style="width:56px;height:56px;border-radius:6px;background:#111 center/cover no-repeat' + (thumbUrl(c, S.v) ? ";background-image:url(&quot;" + esc(thumbUrl(c, S.v)) + "&quot;)" : "") + '"></span>'
+      + '<label>Thumbnail</label><span style="display:flex;gap:6px;align-items:center"><span class="mmethumb" style="position:relative;overflow:hidden;width:56px;height:56px;border-radius:6px;background:#111 center/cover no-repeat' + (thumbUrl(c, S.v) && c.thumb_kind !== "video" ? ";background-image:url(&quot;" + esc(thumbUrl(c, S.v)) + "&quot;)" : "") + '">' + (thumbUrl(c, S.v) && c.thumb_kind === "video" ? vidFill(thumbUrl(c, S.v)) : "") + '</span>'
         + '<button type="button" class="ghost" id="mmeThumb" title="A picture from this computer as the card\'s thumbnail">🖼 Change…</button>'
         + (c.thumb_v ? '<button type="button" class="ghost" id="mmeThumbX" title="Back to its own thumbnail (Civitai\'s / the one beside the file)">↺ Its own</button>' : "")
         + '<input type="file" id="mmeThumbF" accept="image/png,image/jpeg,image/webp,image/gif" hidden></span>'
@@ -1019,7 +1024,7 @@
       if (document.getElementById("lb") && document.getElementById("lb").open) return;
       var a = document.activeElement; if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
       var key = S.info, items = (S.media && S.media.items) || [];
-      if (S.lastPick === "media" && items[S.mSel] && items[S.mSel].kind === "image") { e.preventDefault(); setThumb(key, { item: items[S.mSel].id }); }
+      if (S.lastPick === "media" && items[S.mSel] && (items[S.mSel].kind === "image" || items[S.mSel].kind === "video")) { e.preventDefault(); setThumb(key, { item: items[S.mSel].id }); }
       else if (S.lastPick === "ex" && ((S.infoData || {}).examples || [])[S.exSel]) {
         e.preventDefault();
         jpost("/api/modelmgr/thumb", { key: key, example: S.exSel }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } say("🖼 Civitai's example " + (S.exSel + 1) + " is the card's thumbnail now", "ok"); reloadKeep(key, false); });

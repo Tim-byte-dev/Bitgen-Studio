@@ -135,7 +135,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check("…and the actors match the references by name (SM_Car_01 = the car, Sofa = the chesterfield, FloorLamp = the lamp)", mt.find((x) => x.object === "SM_Car_01").ref === 4 && mt.find((x) => x.object === "Sofa").ref === 1 && mt.find((x) => x.object === "FloorLamp").ref === 3, mt);
   } finally { await S0.close(); const c = core.getConfig(); if (cfg0) c.unreal = cfg0; else delete c.unreal; core.setConfig(c); }
   const py = read("ue", "bitGenBridge", "Content", "Python", "bitgen_bridge.py");
-  check("the bridge 1.3.0: cmd actors_in_view (mesh actors' bounds + the camera; hidden / bitGen_* / landscape / lights / cameras out)", /def cmd_actors_in_view\(a\):/.test(py) && /"actors_in_view": cmd_actors_in_view/.test(py) && /get_actor_bounds/.test(py) && /"VersionName": "1\.3\.0"/.test(read("ue", "bitGenBridge", "bitGenBridge.uplugin")));
+  check("the bridge 1.3.0+ (2.582.0: 1.4.0 since 2.579.0): cmd actors_in_view (mesh actors' bounds + the camera; hidden / bitGen_* / landscape / lights / cameras out)", /def cmd_actors_in_view\(a\):/.test(py) && /"actors_in_view": cmd_actors_in_view/.test(py) && /get_actor_bounds/.test(py) && /"VersionName": "1\.([3-9]|\d\d)\.\d+"/.test(read("ue", "bitGenBridge", "bitGenBridge.uplugin")));
   try { execFileSync("python3", ["-c", "import ast,sys;ast.parse(open(sys.argv[1]).read())", path.join(ROOT, "ue", "bitGenBridge", "Content", "Python", "bitgen_bridge.py")]); check("…bitgen_bridge.py parses", true); } catch (e) { check("…bitgen_bridge.py parses", false, String(e.stderr || e.message)); }
 
   /* ---- the pages + routes */
@@ -148,7 +148,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   check("the timeline's UNREAL ▸ Render to Real (🔍, the dropdowns, 3DREAL) -> /api/realrefs/start kind video with the clip", /label: "Render to Real"/.test(tu) && /video_asset: s\.c\.name/.test(tu) && /kind: "video", source: "unreal"/.test(tu));
   check("index.html loads static/realrefs.js", /<script src="\/static\/realrefs\.js"><\/script>/.test(read("static", "index.html")));
   const tp = JSON.parse(read("lib", "testPlan.json"));
-  check("lib/testPlan.json: 2.540.0, g540 first", tp.version === "2.540.0" && tp.groups[0].id === "g540" && /"ie_realrefs"\]/.test(read("lib", "testPlan.js")));
+  check("lib/testPlan.json: the 2.540.0 group g540 is there (later releases put theirs first)", tp.groups.some((g) => g.id === "g540") && /"ie_realrefs"\]/.test(read("lib", "testPlan.js")));
 
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

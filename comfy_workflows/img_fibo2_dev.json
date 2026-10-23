@@ -1,0 +1,170 @@
+{
+ "_comment": {
+  "about": "2.582.0 Fibo 2.0 Dev (Bria, 8B, CC BY-NC 4.0 - non-commercial; ComfyUI's native Fibo 2.0 support from 21 Oct 2026: CLIPLoader type fibo2 + TextEncodeFibo2). The layout of the realrebelai/Fibo-2.0_GGUFs workflow: UNETLoader -> KSampler (30 steps, cfg 5, euler / simple - text to image, or an edit with pictures) <- TextEncodeFibo2 (positive 0 / negative 1 / latent 2). Up to 4 pictures, LoadImage 21..24 = images.image_1..4 = <image_1>..<image_4> in the prompt (image_1 = the picture being edited); unused slots are removed by scripts/comfy_image.apply_images. Low VRAM: the w4a8 ConvRot file (6.6 GB, Comfy Kitchen) or the GGUF Q4_0 (6.6 GB, ComfyUI-GGUF) with the int8 Qwen3-VL 4B text encoder."
+ },
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "fibo2_dev_w4a8_convrot.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "Fibo 2.0 model (a .gguf here becomes UnetLoaderGGUF - scripts/comfy_image.match_loader)"
+  }
+ },
+ "2": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+   "type": "fibo2",
+   "device": "default"
+  },
+  "_meta": {
+   "title": "Qwen3-VL 4B (type fibo2)"
+  }
+ },
+ "3": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "flux2-vae.safetensors"
+  },
+  "_meta": {
+   "title": "FLUX.2 VAE"
+  }
+ },
+ "9": {
+  "class_type": "PrimitiveStringMultiline",
+  "inputs": {
+   "value": "a red vintage car on a coastal road at golden hour"
+  },
+  "_meta": {
+   "title": "Prompt"
+  }
+ },
+ "10": {
+  "class_type": "TextEncodeFibo2",
+  "inputs": {
+   "clip": [
+    "2",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ],
+   "prompt": [
+    "9",
+    0
+   ],
+   "negative_prompt": "",
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1,
+   "images.image_1": [
+    "21",
+    0
+   ],
+   "images.image_2": [
+    "22",
+    0
+   ],
+   "images.image_3": [
+    "23",
+    0
+   ],
+   "images.image_4": [
+    "24",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Fibo 2.0 encode (the pictures <image_1>..<image_4> + the instruction; the latent)"
+  }
+ },
+ "13": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "positive": [
+    "10",
+    0
+   ],
+   "negative": [
+    "10",
+    1
+   ],
+   "latent_image": [
+    "10",
+    2
+   ],
+   "seed": 0,
+   "steps": 30,
+   "cfg": 5,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1
+  }
+ },
+ "14": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "13",
+    0
+   ],
+   "vae": [
+    "3",
+    0
+   ]
+  }
+ },
+ "15": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "14",
+    0
+   ],
+   "filename_prefix": "fibo2_dev"
+  }
+ },
+ "21": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "<image_1>"
+  }
+ },
+ "22": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "<image_2>"
+  }
+ },
+ "23": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "<image_3>"
+  }
+ },
+ "24": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "example.png"
+  },
+  "_meta": {
+   "title": "<image_4>"
+  }
+ }
+}

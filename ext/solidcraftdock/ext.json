@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "scbridge.js",
-    "scdock.js"
+    "scdock.js",
+    "scgen.js"
   ]
 }

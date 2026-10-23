@@ -68,7 +68,7 @@
       if (!j || j.error || !j.item) throw new Error((j && j.error) || "not added");
       var m = j.item.meta || {};
       var words = "added to the model's files" + (m.prompt ? " - with its prompt" + (m.seed != null ? ", seed " + m.seed : "") + (m.steps != null ? ", " + m.steps + " steps" : "") + (m.cfg != null ? ", cfg " + m.cfg : "") : "");
-      if (thumb && j.item.kind === "image") return jpost("/api/modelmgr/thumb", { key: key, item: j.item.id }).then(function (t) { say("🧩 " + words + (t.error ? " (thumbnail: " + t.error + ")" : " and made its thumbnail")); refreshMM(key); return j.item; });
+      if (thumb && (j.item.kind === "image" || j.item.kind === "video")) return jpost("/api/modelmgr/thumb", { key: key, item: j.item.id }).then(function (t) { say("🧩 " + words + (t.error ? " (thumbnail: " + t.error + ")" : " and made its thumbnail")); refreshMM(key); return j.item; });
       say("🧩 " + words); refreshMM(key); return j.item;
     }).catch(function (e) { say("🧩 " + e.message); return null; });
   }
@@ -109,7 +109,7 @@
     L.innerHTML = list.length ? list.map(function (c) {
       var t = c.thumb ? "/api/modelmgr/thumb?key=" + encodeURIComponent(c.key) + (c.thumb_v ? "&v=" + encodeURIComponent(c.thumb_v) : "") : "";
       var hit = P.want && String(c.file || "").toLowerCase().replace(/\.[a-z0-9]+$/i, "") === String(P.want).toLowerCase().split(/[\\/]/).pop().replace(/\.[a-z0-9]+$/i, "");
-      return '<label><input type="radio" name="tmPick" value="' + esc(c.key) + '"' + (c.key === chosen ? " checked" : "") + '><span class="th"' + (t ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + "></span>"
+      return '<label><input type="radio" name="tmPick" value="' + esc(c.key) + '"' + (c.key === chosen ? " checked" : "") + '><span class="th"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : t ? ' style="position:relative;overflow:hidden"' : "") + ">" + (t && c.thumb_kind === "video" ? '<video src="' + esc(t) + '" muted loop autoplay playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>' : "") + "</span>"
         + "<span><b>" + esc(c.title) + '</b><br><span class="sub">' + esc([c.model_type || (c.kind === "lora" ? "LoRA" : "model"), c.family_label, c.file].filter(Boolean).join(" · ")) + "</span>"
         + (hit ? ' <span class="hit">· the file was made with it</span>' : "") + (c.thumb ? "" : ' <span class="sub">· no thumbnail yet</span>') + "</span></label>";
     }).join("") : '<div class="sub" style="padding:8px">no model matches</div>';
@@ -118,7 +118,7 @@
   function go() {
     var r = $("tmList").querySelector("input[name=tmPick]:checked");
     if (!r) { say("pick the model first"); return; }
-    var it = P.item, key = r.value, thumb = $("tmThumb").checked && it.kind === "image";
+    var it = P.item, key = r.value, thumb = $("tmThumb").checked && (it.kind === "image" || it.kind === "video");   // 2.581.0: + a video
     $("tmDlg").close();
     send(it, key, thumb);
   }
@@ -142,7 +142,7 @@
       paintList();
       // the model it was made with, picked for you - no thumbnail yet: tick "Make it the model's thumbnail"
       var r0 = $("tmList").querySelector("input[name=tmPick]:checked"), c0 = r0 && P.cards.find(function (x) { return x.key === r0.value; });
-      if (c0 && !c0.thumb && it.kind === "image") $("tmThumb").checked = true;
+      if (c0 && !c0.thumb && (it.kind === "image" || it.kind === "video")) $("tmThumb").checked = true;
       return P;
     });
   }

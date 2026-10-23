@@ -8,6 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.583.0** — Team ▸ the Render Farm (Nas Team Folder, Daily Signed Keys, Owner's Access from - To / Unrestricted, 🖥 Render on)
+- **2.582.0** — Fibo 2.0 in the Edit Tools (Low VRAM: w4a8 / Gguf); Readme ▸ Links: The Software We Bridge to
+- **2.581.0** — ✨ Generate a Part in Solidcraft (Cadrille / The Local LLM -> Editable Features); Civitai Videos + Animated Thumbs; LoRA Keywords in LLM Prompts
 - **2.580.0** — 🧩 Model Manager ▸ 📁 Model Paths: Every extra_model_paths.yaml Group (➕ other_ui<n>, Edit, 🗑) + ⟳ Restart ComfyUI
 - **2.579.0** — Solidcraft Sends (Image Editor / Timeline / House / Blender / Unreal); Docker Only When Installed; 🗑 Models; Settings ▸ Dockers
 - **2.578.0** — The 📐 Solidcraft Docker: Solidcraft (Open-Source Parametric CAD) in Its Own Docker + The Bridge

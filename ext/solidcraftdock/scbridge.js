@@ -115,10 +115,47 @@
   }
   function del(name) { return opfs().then(function (d) { return d.removeEntry(name); }).catch(function () { /* gone already */ }); }
 
-  /** a design / part into SolidCraft (a new tab there) */
+  /* 2.581.0 - FOUND: SolidCraft 0.17.0 lists its private file storage ONCE, when it starts: a file this page writes
+     there afterwards is "no such file in this browser" to doc.open / file.insert_step (the files SolidCraft writes
+     itself it knows). What it does take at any time is a file DROPPED on it - a design opens, a STEP / mesh joins the
+     open design (it keeps it as /upload/<name>). So a file goes in by its path when SolidCraft knows it, else dropped. */
+  var notKnown = function (e) { return /no such file in this browser/i.test(String((e && e.message) || e)); };
+  /** the file dropped on SolidCraft's canvas, as a user would; answered when the design changed (pure DOM) */
+  function drop(name, blob, ms) {
+    var f = frame(), w = f && f.contentWindow, d = w && w.document;
+    if (!d) return Promise.reject(new Error("SolidCraft is not open"));
+    var target = d.querySelector("canvas") || d.body;
+    var before = null;
+    return exec("document.inspect", {}).then(function (r) { before = r; }, function () { before = {}; }).then(function () {
+      var dt = new w.DataTransfer();
+      dt.items.add(new w.File([blob], name));
+      var r = target.getBoundingClientRect(), o = { bubbles: true, cancelable: true, dataTransfer: dt, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
+      ["dragenter", "dragover", "drop"].forEach(function (t) { target.dispatchEvent(new w.DragEvent(t, o)); });
+      var t0 = Date.now(), lim = ms || 120000;
+      var nb = function (x) { return ((x && x.bodies) || []).length; };
+      return (function poll() {
+        return sleep(300).then(function () { return exec("document.inspect", {}).catch(function () { return null; }); }).then(function (now) {
+          if (now && ((now.path || "") !== (before.path || "") || nb(now) > nb(before) || /\/upload\//.test(now.path || "") && String(now.path).indexOf(name) >= 0 && now.path !== before.path)) return now;
+          if (Date.now() - t0 > lim) throw new Error(name + " was not taken by SolidCraft (dropped)");
+          return poll();
+        });
+      })();
+    });
+  }
+  /** a design / part into SolidCraft: a design opens in its own tab, a part (STEP, STL …) opens as a new design */
   function openFile(name, blob) {
     var n = String(name).split(/[\\/]/).pop();
-    return put(n, blob).then(function () { return exec("doc.open", { path: "/opfs/" + n }, 180000); });
+    return put(n, blob).then(function () { return exec("doc.open", { path: "/opfs/" + n }, 180000); }).catch(function (e) {
+      if (!notKnown(e)) throw e;
+      var design = /\.solidcraft$/i.test(n);
+      return (design ? Promise.resolve() : exec("file.new", { name: stemOf(n) })).then(function () { return drop(n, blob); });
+    });
+  }
+  /** a STEP / mesh INTO the open design (its bodies join it) */
+  function insertFile(name, blob) {
+    var n = String(name).split(/[\\/]/).pop(), mesh = /\.(stl|obj|3mf|glb|gltf)$/i.test(n);
+    return put(n, blob).then(function () { return exec(mesh ? "file.insert_mesh" : "file.insert_step", { path: "/opfs/" + n, name: stemOf(n) }, 180000); })
+      .catch(function (e) { if (!notKnown(e)) throw e; return drop(n, blob); });
   }
   /** the design as <stem>.solidcraft (SolidCraft's own Save then keeps going to the same file) */
   function saveDesign(stem) {
@@ -218,5 +255,5 @@
   function sketchIn(dxf) { return exec("sketch.insert_dxf", { text: String(dxf || "") }); }
 
   root.H3SolidCraft = Object.assign({ frame: frame, api: api, ready: ready, exec: exec, inspect: inspect, put: put, get: get, del: del,
-    openFile: openFile, saveDesign: saveDesign, exportPart: exportPart, view: view, views: views, ISO: ISO, snapshot: snapshot, render: render, sketchIn: sketchIn }, PURE);
+    openFile: openFile, insertFile: insertFile, drop: drop, saveDesign: saveDesign, exportPart: exportPart, view: view, views: views, ISO: ISO, snapshot: snapshot, render: render, sketchIn: sketchIn }, PURE);
 })(typeof window !== "undefined" ? window : globalThis);

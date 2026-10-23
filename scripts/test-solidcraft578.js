@@ -97,8 +97,8 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-9);
     && /require\("\.\/solidcraft"\)\.mount\(app\)/.test(IX) && !/solidcraft/i.test(rd("server.js")));
   check("Settings ▸ Add-ons lists SolidCraft (install / reinstall / remove)", /id: "solidcraft", label: "SolidCraft \(parametric 3D CAD\)"/.test(AD) && /require\("\.\/solidcraftAddon"\)\.install\(log, opts \|\| \{\}\)/.test(AD));
   const EJ = JSON.parse(rd("ext", "solidcraftdock", "ext.json")), DH = rd("ext", "solidcraftdock", "dock.html"), DJ = rd("ext", "solidcraftdock", "scdock.js");
-  check("its own docker: ext/solidcraftdock (dock.html, scbridge.js then scdock.js); the frame, the bar, the install panel",
-    EJ.id === "solidcraftdock" && JSON.stringify(EJ.scripts) === '["scbridge.js","scdock.js"]' && /id="scFrame"/.test(DH) && ["scDesigns", "scSave", "scToEditor", "scToTimeline", "scSketchIn", "scExport", "scView", "scSize", "scEdges", "scInstallBtn", "scInstallZip"].every((id) => DH.indexOf('id="' + id + '"') >= 0));
+  check("its own docker: ext/solidcraftdock (dock.html, scbridge.js then scdock.js (+ 2.581.0 scgen.js)); the frame, the bar, the install panel",
+    EJ.id === "solidcraftdock" && JSON.stringify(EJ.scripts.slice(0, 2)) === '["scbridge.js","scdock.js"]' && /id="scFrame"/.test(DH) && ["scDesigns", "scSave", "scToEditor", "scToTimeline", "scSketchIn", "scExport", "scView", "scSize", "scEdges", "scInstallBtn", "scInstallZip"].every((id) => DH.indexOf('id="' + id + '"') >= 0));
   check("the docker: loads SolidCraft only once it is on screen; image editor E.load / timeline TlM3D.add + TlBody.reload / sketch exportText dxf; SolidCraft's Save synced",
     /\/solidcraft-app\/index\.html/.test(DJ) && /IntersectionObserver/.test(DJ) && /E\.load\(url/.test(DJ) && /TlM3D\.add\("model"/.test(DJ) && /TlBody\.reload\(saved\)/.test(DJ) && /exportText\(L, "dxf"/.test(DJ) && /setInterval\(sync, 4000\)/.test(DJ));
   const GI = rd(".gitignore"), MZ = rd("scripts", "make_zips.sh");

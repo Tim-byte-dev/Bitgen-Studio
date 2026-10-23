@@ -72,6 +72,9 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const rows = await ev(() => [...document.querySelectorAll("#drList tr td:first-child")].map((t) => t.textContent));
     const want = ["Timeline", "StoryBoard", "Image editor", "Prompt", "Settings", "Gallery", "E2E579 Dock", "Basic Settings"];
     check("Settings ▸ Dockers lists every docker - the main column, the side dockers, the floating windows and a NEW extension docker", want.every((w) => rows.some((r) => r.indexOf(w) === 0)), rows);
+    // 2.581.0: another extension docker that is open (the 📐 SolidCraft docker when SolidCraft is installed - its frame
+    // wants 420 px) takes the column's room, and the timeline's default height would not fit: collapsed for this check
+    await ev(() => { document.querySelectorAll("#maincol .bdock[id]").forEach((d) => { if (d.id !== "e2e579dock" && d.id === "solidcraftdock" && !d.classList.contains("collapsed") && window.toggleCollapse) window.toggleCollapse(d.id); }); });
     // move / size some, then ↺ Reset each
     await ev(() => { window.setVar("th", 420); const tl = document.getElementById("timelinedock"); if (!tl.classList.contains("collapsed")) window.toggleCollapse("timelinedock");
       const e = document.getElementById("e2e579dock"); e.style.height = "44px"; if (!e.classList.contains("collapsed")) window.toggleCollapse("e2e579dock");

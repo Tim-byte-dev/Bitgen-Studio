@@ -70,6 +70,8 @@ weights.
 | OpenAudio / fish-speech | text-to-speech | https://github.com/fishaudio/fish-speech |
 | OmniVoice | text-to-speech | its own project |
 | Electron | the optional desktop shell | https://github.com/electron/electron |
+| CadQuery | runs the part code for ✨ Generate in SolidCraft (Settings ▸ Add-ons ▸ CAD generate, its own venv) | https://github.com/CadQuery/cadquery |
+| cadrille | writes that part code from a description or a picture (optional; CAD generate's ticked item) | https://github.com/col14m/cadrille |
 
 ComfyUI is **GPL-3.0**; llama.cpp, stable-diffusion.cpp, faster-whisper and
 Electron are **MIT**. The remaining projects — and every custom node pack you
@@ -86,6 +88,36 @@ each come with their **own licence**, and several of the most useful ones are
 whatsoever about what you may do with the output of a model whose licence
 restricts it. If you intend to sell anything you render, read the licence of
 the specific checkpoint that rendered it.
+
+## ✨ Generate in SolidCraft: cadrille + CadQuery (2.581.0)
+
+**What it is for.** ✨ Generate in the 📐 SolidCraft docker turns a description or a picture of a mechanical part into
+CadQuery code, runs it, and rebuilds the part in SolidCraft as editable sketches, extrudes, holes and fillets (or inserts
+it as one STEP solid when a step cannot be rebuilt).
+
+- **[cadrille](https://github.com/col14m/cadrille)** - "cadrille: Multi-modal CAD Reconstruction with Reinforcement
+  Learning", Kolodiazhnyi et al., ICLR 2026 ([paper](https://huggingface.co/papers/2505.22914)). A 2B vision-language model
+  (built on Qwen2-VL-2B and CAD-Recode) that writes CadQuery from text, pictures or point clouds. bitGen Studio uses its
+  text and picture modes, the way its own `test.py` calls it.
+  - Its **code** (the GitHub repository) is **Apache-2.0**. bitGen Studio does not copy it; `cad_worker.py` loads the
+    weights with Hugging Face `transformers`.
+  - Its **weights** ([maksimko123/cadrille](https://huggingface.co/maksimko123/cadrille)) are **CC BY-NC 4.0**:
+    attribution, **non-commercial use only**. They are **not shipped** with bitGen Studio. Settings ▸ Add-ons ▸ CAD
+    generate downloads them (with the Qwen/Qwen2-VL-2B-Instruct processor files, Apache-2.0) from Hugging Face onto your
+    machine, and you accept their licence when you tick it. Do not use cadrille's output commercially. Untick it and the
+    app's local LLM writes the code instead (its own model licence applies).
+- **[CadQuery](https://github.com/CadQuery/cadquery)** (Apache-2.0, on OpenCascade OCCT: LGPL-2.1 with an exception) is
+  installed from PyPI into `<install>/cadgen/.venv` by the same add-on. It is a separate program, not redistributed.
+
+## Fibo 2.0 (2.582.0)
+
+The Fibo 2.0 styles use **Bria AI's Fibo 2.0** weights (Edit Turbo / Dev, 8B), released under **CC BY-NC 4.0 -
+non-commercial use only**; commercial use needs a licence from Bria AI. Settings ▸ Add-ons ▸ Fibo 2.0 downloads the
+files you tick from [Comfy-Org/Fibo-2.0](https://huggingface.co/Comfy-Org/Fibo-2.0) (the text encoder, the VAE, the
+official int8 file) and the community low-VRAM quantizations at
+[realrebelai/Fibo-2.0_GGUFs](https://huggingface.co/realrebelai/Fibo-2.0_GGUFs) (w4a8 ConvRot and GGUF, the same
+licence). Nothing of it ships with bitGen Studio. A GGUF file loads with [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF)
+(Apache-2.0), installed into ComfyUI by the add-on when a GGUF is ticked.
 
 ## Image-to-3D models (2.404.0)
 

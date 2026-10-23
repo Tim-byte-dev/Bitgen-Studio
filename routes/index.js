@@ -80,6 +80,7 @@ const refGroups = require("../lib/refGroups");
 const projectRefs = require("../lib/projectRefs");   // 2.101.0: reference media per project
 const uiLayout = require("../lib/uiLayout");        // 2.103.0: dock layout in the settings file
 const promptGuides = require("../lib/promptGuides"); // 2.104.0: how to prompt each model
+const loraWords = require("../lib/loraWords");          // 2.581.0: the selected LoRAs' keywords in what the LLM writes
 const imageRefs = require("../lib/imageRefs");       // 2.105.0: Klein 9B renders with the reference dock
 const qwenRefs = require("../lib/qwenRefs");         // 2.340.0: the dock's pictures as Qwen Image 2.1's <imageN>
 const timelines = require("../lib/timelines");     // 2.107.0: named timelines in the project folder
@@ -114,6 +115,8 @@ function mount(app) {
   require("./characters").mount(app);  // the Video docker's character panel
   require("./poseSheets").mount(app);  // 2.577.0: the Character creator's pose sheets - <install>/pose_sheets/ (lib/poseSheets.js)
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
+  require("./cadGen").mount(app);      // 2.581.0: ✨ Generate in the 📐 SolidCraft docker - a part from a description / picture (lib/cadGen.js, cad_worker.py)
+  require("./team").mount(app);        // 2.583.0: Settings ▸ Team + 🖥 Render on - the render farm (lib/team.js, lib/farm.js, lib/farmNode.js)
   require("./swap").mount(app);        // 2.324.0: character swap (prompt docker Swap mode + a scene's ⇄)
   require("./refvideo").mount(app);    // 2.325.0: the reference dock's video selection dialog
   require("./filedialog").mount(app);  // 2.326.0: the Windows-11-style file / folder dialog
@@ -687,6 +690,7 @@ function mount(app) {
     if (!job) return res.status(404).json({ error: "no such job" });
     job.status = "cancelled";
     core.killTree(job);
+    if (job.remote) { try { require("../lib/farm").cancel(job); } catch { /* the remote job ends with its machine */ } }   // 2.583.0
     core.recordJob(job);
     res.json(core.jobDict(job));
   });
@@ -1886,9 +1890,10 @@ function mount(app) {
         if (p.images.length > rw.slots) p.images = p.images.slice(0, rw.slots);
       } else if (rw.note) p.workflow_note = [p.workflow_note, rw.note].filter(Boolean).join(" · ");
     }
-    // 2.340.0: Qwen Image 2.1 reads the dock's pictures as <image1..N>
-    if (qwenRefs.isQwen21Style(styled, core.BASE)) {
-      const q = qwenRefs.prompt(p.prompt, (p.images || []).length, Array.isArray(b.image_roles) ? b.image_roles.map(String) : []);
+    // 2.340.0: Qwen Image 2.1 reads the dock's pictures as <image1..N>; 2.582.0: Fibo 2.0 as <image_1..N>
+    const refFmt = qwenRefs.refFormat(styled, core.BASE);
+    if (refFmt) {
+      const q = qwenRefs.prompt(p.prompt, (p.images || []).length, Array.isArray(b.image_roles) ? b.image_roles.map(String) : [], refFmt);
       p.prompt = q.prompt;
       if (q.note) p.workflow_note = [p.workflow_note, q.note].filter(Boolean).join(" · ");
     }
@@ -2920,6 +2925,7 @@ const trap = require("../lib/trap");
 
   app.post("/api/enhance", async (req, res) => {
     const config = core.getConfig();
+    const eLoras = loraWords.forPaths((req.body || {}).loras);
     const { prompt, refs } = req.body || {};
     let { mode } = req.body || {};
     if (!prompt || !prompt.trim()) return res.status(400).json({ error: "prompt is required" });
@@ -2957,7 +2963,9 @@ const trap = require("../lib/trap");
       // 2.118.0 (Tim): "sbs vr" in the rough prompt pulls the VR stereo-pair
       // addendum in — the enhanced prompt must never mirror the right eye
       promptGuides.addendaFor(core.STYLES_DIR, "video", prompt),
-    ].filter(Boolean).join("\n");
+    ].filter(Boolean).join("\n")
+      // 2.581.0 (Tim: "make the llm add the selected loras keywords to the prompt"): the selected LoRAs' keywords (lib/loraWords.js)
+      + loraWords.systemNote(eLoras);
     // 2.354.0: the dock's videos + sounds (and picture names) - lib/refContext.js
     const eb = req.body || {};
     let eFrame = "";
@@ -2982,7 +2990,12 @@ const trap = require("../lib/trap");
     const vs = require("../lib/voiceStyle");
     // 2.365.0: the whole H3 shape, not only the quotes (lib/voiceStyle.formatSpeech)
     const ms = vs.formatSpeech(tagged, { audioNames: eDock.audios.map((a) => a.name) });
-    res.json({ text: ms.text, ...(ms.changes.length ? { note: "formatted for MiniMax H3: " + ms.changes.join("; ") } : {}) });
+    // 2.581.0: a LoRA keyword the LLM left out goes in anyway - the LoRA only works with it
+    const lw = loraWords.ensure(ms.text, eLoras);
+    const notes = ms.changes.length ? ["formatted for MiniMax H3: " + ms.changes.join("; ")] : [];
+    if (lw.added.length) notes.push("LoRA keywords added: " + lw.added.join(", "));
+    res.json({ text: lw.text, ...(notes.length ? { note: notes.join(" · ") } : {}),
+               ...(eLoras.length ? { loras: eLoras.map((l) => ({ title: l.title, words: l.words })) } : {}) });
   });
 
   /* ------------------------------------------------- the prompt chat (2.85.0)
@@ -3213,6 +3226,7 @@ const trap = require("../lib/trap");
         + tmpRag
         + refBlock
         + (songAsk ? songwriter.FORMAT_NOTE : "")
+        + loraWords.systemNote(loraWords.forPaths((b.context || {}).loras))   // 2.581.0: the selected LoRAs' keywords
         + visionNote }];
     for (const m of recalled) messages.push({ role: m.role, content: m.text });
     const out = await llmChat.complete(core, {

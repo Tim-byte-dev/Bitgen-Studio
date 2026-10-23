@@ -888,6 +888,21 @@ check("qwen 2.1: 2 pictures fill image_1 / image_2; the 6 unused slots and their
       and sum(1 for v in _g.values() if v.get("class_type") == "LoadImage") == 2
       and all(str(v[0]) in _g for v in _enc.values() if isinstance(v, list)), sorted(_enc))
 
+# 2.582.0: Fibo 2.0 (TextEncodeFibo2: images.image_N straight from LoadImage, one encoder = positive + negative + latent)
+_fb = C.load_workflow(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "comfy_workflows", "img_fibo2_edit.json"))
+_r = C.roles(_fb)
+check("fibo 2.0: 4 slots, the prompt on the Primitive, the latent + size from the encoder, no separate negative",
+      _r["image_slots"] == ["21", "22", "23", "24"] and _r["positive"] == "9" and _r["negative"] is None and _r["latent"] == "10" and _r["size_nodes"] == ["10"], _r)
+_out = C.patch(_fb, {"name": "Fibo 2.0 Edit Turbo", "model": "fibo2_edit_turbo-Q4_0.gguf", "steps": 4, "cfg": 1, "negative": ""},
+               {"prompt": "make <image_1> snowy", "width": 832, "height": 1216, "seed": 7})
+_g = _out[0] if isinstance(_out, tuple) else _out
+_e = _g["10"]["inputs"]
+check("fibo 2.0: a .gguf as the style's Model loads with UnetLoaderGGUF (low VRAM); the size on the encoder; no picture = every slot gone",
+      _g["1"]["class_type"] == "UnetLoaderGGUF" and _g["1"]["inputs"]["unet_name"] == "fibo2_edit_turbo-Q4_0.gguf" and (_e["width"], _e["height"]) == (832, 1216)
+      and not any(k.startswith("images.") for k in _e) and _g["9"]["inputs"]["value"] == "make <image_1> snowy" and _g["13"]["inputs"]["seed"] == 7, (_g["1"], _e))
+_g2, _rep = C.apply_images(copy.deepcopy(_fb), ["crop.png"], _r)
+check("fibo 2.0: the crop fills image_1, the three unused slots are gone", sorted(k for k in _g2["10"]["inputs"] if k.startswith("images.")) == ["images.image_1"] and _g2["21"]["inputs"]["image"] == "crop.png")
+
 print("=======================")
 print(f"RESULT: {PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

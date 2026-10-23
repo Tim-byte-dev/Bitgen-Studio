@@ -52,7 +52,7 @@ const MI = require("../lib/modelInfo.js"), MC = require("../lib/modelCards.js"),
   check("…nothing that close = NO match (a wrong page is worse than none)", MI.matchVersion(items, "totally_different.safetensors", 123) === null && MI.matchVersion([], "x", 1) === null);
   const ex = MI.examplesOf([{ url: "https://image.civitai.com/a/width=450/1.jpeg", type: "image", nsfwLevel: 1, width: 832, height: 1216, meta: { prompt: "a cat", negativePrompt: "blur", cfgScale: 5, steps: 30, sampler: "DPM++ 2M", seed: 42 } },
     { url: "https://image.civitai.com/b.mp4", type: "video" }, { url: "https://image.civitai.com/c.jpeg", type: "image", nsfwLevel: 8 }], false, 8);
-  check("examplesOf: stills only, safe-for-work unless mature, with their prompt / negative / cfg / steps / sampler / seed", ex.length === 1 && ex[0].meta.prompt === "a cat" && ex[0].meta.cfg === 5 && ex[0].meta.seed === 42 && ex[0].meta.negative === "blur"
+  check("examplesOf: pictures + (2.581.0) videos, safe-for-work unless mature, with their prompt / negative / cfg / steps / sampler / seed", ex.length === 2 && ex[1].media === "video" && ex[0].media === "image" && ex[0].meta.prompt === "a cat" && ex[0].meta.cfg === 5 && ex[0].meta.seed === 42 && ex[0].meta.negative === "blur"
     && MI.examplesOf([{ url: "u", type: "image", nsfwLevel: 8 }], true).length === 1, ex);
   check("dirName / isStale: a safe folder name per file stem; a 'nomatch' is asked again after 30 days", MI.dirName("SDXL/juggernaut:x.safetensors") === "juggernaut_x" && MI.isStale({ status: "nomatch", fetched_at: 0 }, 31 * 864e5) && !MI.isStale({ status: "nomatch", fetched_at: 0 }, 5 * 864e5) && !MI.isStale({ status: "found", fetched_at: 0 }, 99 * 864e5));
 
