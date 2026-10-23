@@ -42,10 +42,10 @@ check("lorasel merge: Basic Settings' rows + the Model manager's picks, once eac
 const ix = fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8");
 const html = fs.readFileSync(path.join(__dirname, "..", "static", "index.html"), "utf8");
 check("/api/enhance: the LoRAs' rule in the system prompt, the missing keywords added to the answer, said in the note",
-  /const eLoras = loraWords\.forPaths\(\(req\.body \|\| \{\}\)\.loras\)/.test(ix) && /\+ loraWords\.systemNote\(eLoras\)/.test(ix) && /loraWords\.ensure\(ms\.text, eLoras\)/.test(ix) && /LoRA keywords added: /.test(ix));
-check("the prompt chat: the LoRAs' rule in its system prompt (context.loras)", /loraWords\.systemNote\(loraWords\.forPaths\(\(b\.context \|\| \{\}\)\.loras\)\)/.test(ix));
-check("the page sends them: ✨ Enhance's body + the chat's context, lorasel.js loaded",
-  /loras: window\.H3LoraSel \? H3LoraSel\.paths\(\) : \[\],\s+\/\/ 2\.581\.0: their keywords/.test(html) && /loras: window\.H3LoraSel \? H3LoraSel\.paths\(\) : \[\],\s+\/\/ 2\.581\.0: the selected LoRAs/.test(html) && /src="\/static\/lorasel\.js"/.test(html));
+  /const eLoras = loraWords\.forPaths\(loraWords\.pathsFor\(req\.body \|\| \{\}, core\.STYLES_DIR\)\)/.test(ix) && /\+ loraWords\.systemNote\(eLoras\)/.test(ix) && /loraWords\.ensure\(ms\.text, eLoras\)/.test(ix) && /LoRA keywords added: /.test(ix));
+check("the prompt chat: the LoRAs' rule in its system prompt (context.loras)", /loraWords\.systemNote\(loraWords\.forPaths\(loraWords\.pathsFor\(b\.context \|\| \{\}, core\.STYLES_DIR\)\)\)/.test(ix));
+check("the page sends them: ✨ Enhance's body + the chat's context ({lora_override, loras} - 2.585.0), lorasel.js loaded",
+  /\.\.\.\(window\.H3LoraSel && H3LoraSel\.ctx \? H3LoraSel\.ctx\(\) : \{ loras: \[\] \}\),/.test(html) && /Object\.assign\(chatCtx, window\.H3LoraSel && H3LoraSel\.ctx \? H3LoraSel\.ctx\(chatCtx\.gen_mode\)/.test(html)   /* 2.585.0: ctx, not every LoRA */ && /src="\/static\/lorasel\.js"/.test(html));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

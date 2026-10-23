@@ -6078,7 +6078,12 @@ async function enhancePrompt() {
         ref_notes: window.RefInfo ? RefInfo.notesFor(refVids, refAuds, refNotes) : undefined,   // 2.539.0
         // 2.354.0: the dock's videos + sounds -> <Video n> / <Audio n> (lib/refContext.js)
         ref_videos: refVids.slice(0, 3), ref_audios: refAuds.slice(0, 3),
-        loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: their keywords go into the prompt (lib/loraWords.js)
+        // 2.581.0 / 2.585.0: the LoRAs in use - their keywords go into the prompt (lib/loraWords.js): Override style on =
+        // Basic Settings' temporary LoRAs, off = the selected style's (the server reads the style)
+        ...(window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx() : { loras: [] }),
+        gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
+        image_style_id: $("styleSel") ? $("styleSel").value : "",
+        video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",
       }),
     });
     const j = await res.json();
@@ -9299,6 +9304,90 @@ async function loadChat() {
    writes the message to the project's transcript BEFORE calling the model, so
    what you typed is on disk and on screen in the log even if the LLM never
    answers. ⬇ puts a reply back into the box. */
+/* 2.584.0: ONE CHAT CALL - the selection's context, the docker's pictures, POST /api/chat - shared by chatSend and the
+   prompt docker's 🔁 Compare LLMs (ext/promptdock/llmarena.js: the same question to each LLM, `arena` = {id, n} so
+   the reply joins the round instead of the chat). -> {r, j} */
+async function chatPost(t, chatLlm, arena) {
+  /* the current selection, so the assistant writes prompts for the model
+     that will actually run — the server looks the ids up in the styles
+     folder and appends the details to its system prompt (2.92.0) */
+  const chatCtx = {
+    gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
+    image_style_id: $("styleSel") ? $("styleSel").value : "",
+    music_style_id: $("musicSel") ? $("musicSel").value : "",
+    video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",   // 2.419.0: the video guide for THIS model (LTX / Wan / H3)
+  };
+  // 2.581.0 / 2.585.0: the LoRAs in use - Override style on = Basic Settings' temporary LoRAs, off = the selected style's
+  // (lib/loraWords.pathsFor reads the style) - never every LoRA in the app
+  Object.assign(chatCtx, window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx(chatCtx.gen_mode) : { loras: [] });
+  /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
+     with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
+     server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */
+  // 2.395.0: an Append / Prepend video = fl2va - the server describes its frame (<Picture 1>), the picture used is <Picture 2>
+  const chatFop = chatCtx.gen_mode === "video" ? curFrameOp() : null;
+  const dockPics = chatFop ? chatFop.refs.slice() : chatCtx.gen_mode === "video" && mode === "ref2va" ? refs.slice(0, 9) : [];
+  if (chatFop) chatCtx.ref_video_op = chatFop.op;
+  if (chatCtx.gen_mode === "video") {
+    if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
+    if (refVids.length) chatCtx.ref_videos = refVids.slice(0, 3);
+    if (refAuds.length) chatCtx.ref_audios = refAuds.slice(0, 3);
+    if ((refVids.length || refAuds.length) && window.RefInfo) chatCtx.ref_notes = RefInfo.notesFor(refVids, refAuds, refNotes);   // 2.539.0
+  }
+  /* 2.233.0: attached pictures ride the SAME send as multipart. The
+     promptdock EXTENSION owns the attachments — window.pdChatForm builds
+     the FormData (text + context + describe flag + files) and clears its
+     chips; without the extension, or with nothing attached, this is the
+     JSON call it always was (the 2.223.14 hybrid contract: the shared
+     send stays core, the docker's private feature stays in ext/). */
+  let pdForm = (typeof window.pdChatForm === "function")
+    ? window.pdChatForm(t, chatCtx, chatLlm) : null;
+  if (dockPics.length) {                  // 2.354.0: the dock's pictures, to be described (cached server-side)
+    if (!pdForm) {
+      pdForm = new FormData();
+      pdForm.append("text", t);
+      pdForm.append("llm_file", chatLlm || "");
+      pdForm.append("context", JSON.stringify(chatCtx));
+      pdForm.append("describe", $("pdDescribe") && !$("pdDescribe").checked ? "0" : "1");
+    }
+    dockPics.forEach((r) => { if (r.file) pdForm.append("ref_images", r.file, r.file.name || "picture.png"); });
+  }
+  if (pdForm && arena) pdForm.append("arena", JSON.stringify(arena));
+  const r = pdForm
+    ? await fetch("/api/chat", { method: "POST", body: pdForm })
+    : await fetch("/api/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(arena ? { text: t, llm_file: chatLlm, context: chatCtx, arena } : { text: t, llm_file: chatLlm, context: chatCtx }),
+      });
+  const j = await r.json().catch(() => ({ error: "the server answered something that is not JSON" }));
+  return { r, j };
+}
+window.chatPost = chatPost;
+/** what a reply does besides showing (read aloud, ```image / ```video fences, a song into the Music dock) - also for
+ *  the reply picked in 🔁 Compare LLMs (2.584.0) */
+function chatApplyReply(j) {
+  readAloud(j.reply);
+  chatApplyKind(j.reply);            // 2.114.0: ```image / ```video fences drive the mode
+  // 2.244.0 (by instruction): a "create a song" ask whose reply parsed
+  // pours into the music dock — lyrics → Lyrics, style → the style
+  // caption, title → Title. Guarded per field (a layout without the
+  // music dock just shows the chat reply), and said in the chat so the
+  // hand-off is visible.
+  if (j.song) {
+    if ($("muTitle")) $("muTitle").value = j.song.title || "";
+    if ($("muCaption")) $("muCaption").value = j.song.style || "";
+    if ($("muLyrics")) $("muLyrics").value = j.song.lyrics || "";
+    if (typeof updateMusicBtn === "function") updateMusicBtn();
+    if ($("muTitle") || $("muLyrics")) {
+      chatAdd("assistant", "🎵 sent to the Music dock — title, style and "
+        + "lyrics are in; pick a music style and press Generate.");
+    }
+  }
+}
+window.chatApplyReply = chatApplyReply;
+/* 2.584.0: 🔁 Compare LLMs holds the chat while its round runs */
+window.chatBusyNow = () => chatBusy;
+window.chatSetBusy = (v) => { chatBusy = !!v; };
+
 async function chatSend(text) {
   const box = $("prompt");
   const t = String(text == null ? box.value : text).trim();
@@ -9320,55 +9409,7 @@ async function chatSend(text) {
       const sp = await window.bgScenes.maybeScreenplay(t);
       if (sp != null) { think.remove(); chatAdd("assistant", sp); return; }
     }
-    /* the current selection, so the assistant writes prompts for the model
-       that will actually run — the server looks the ids up in the styles
-       folder and appends the details to its system prompt (2.92.0) */
-    const chatCtx = {
-      gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
-      image_style_id: $("styleSel") ? $("styleSel").value : "",
-      music_style_id: $("musicSel") ? $("musicSel").value : "",
-      video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",   // 2.419.0: the video guide for THIS model (LTX / Wan / H3)
-      loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: the selected LoRAs - their keywords in the prompts it writes
-    };
-    const chatLlm = $("llmSel") ? $("llmSel").value : "";
-    /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
-       with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
-       server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */
-    // 2.395.0: an Append / Prepend video = fl2va - the server describes its frame (<Picture 1>), the picture used is <Picture 2>
-    const chatFop = chatCtx.gen_mode === "video" ? curFrameOp() : null;
-    const dockPics = chatFop ? chatFop.refs.slice() : chatCtx.gen_mode === "video" && mode === "ref2va" ? refs.slice(0, 9) : [];
-    if (chatFop) chatCtx.ref_video_op = chatFop.op;
-    if (chatCtx.gen_mode === "video") {
-      if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
-      if (refVids.length) chatCtx.ref_videos = refVids.slice(0, 3);
-      if (refAuds.length) chatCtx.ref_audios = refAuds.slice(0, 3);
-      if ((refVids.length || refAuds.length) && window.RefInfo) chatCtx.ref_notes = RefInfo.notesFor(refVids, refAuds, refNotes);   // 2.539.0
-    }
-    /* 2.233.0: attached pictures ride the SAME send as multipart. The
-       promptdock EXTENSION owns the attachments — window.pdChatForm builds
-       the FormData (text + context + describe flag + files) and clears its
-       chips; without the extension, or with nothing attached, this is the
-       JSON call it always was (the 2.223.14 hybrid contract: the shared
-       send stays core, the docker's private feature stays in ext/). */
-    let pdForm = (typeof window.pdChatForm === "function")
-      ? window.pdChatForm(t, chatCtx, chatLlm) : null;
-    if (dockPics.length) {                  // 2.354.0: the dock's pictures, to be described (cached server-side)
-      if (!pdForm) {
-        pdForm = new FormData();
-        pdForm.append("text", t);
-        pdForm.append("llm_file", chatLlm || "");
-        pdForm.append("context", JSON.stringify(chatCtx));
-        pdForm.append("describe", $("pdDescribe") && !$("pdDescribe").checked ? "0" : "1");
-      }
-      dockPics.forEach((r) => { if (r.file) pdForm.append("ref_images", r.file, r.file.name || "picture.png"); });
-    }
-    const r = pdForm
-      ? await fetch("/api/chat", { method: "POST", body: pdForm })
-      : await fetch("/api/chat", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: t, llm_file: chatLlm, context: chatCtx }),
-        });
-    const j = await r.json();
+    const { r, j } = await chatPost(t, $("llmSel") ? $("llmSel").value : "", null);
     think.remove();
     if (!r.ok) {
       /* THE MESSAGE IS ALREADY SAVED when this happens — the server writes it
@@ -9377,23 +9418,7 @@ async function chatSend(text) {
       chatAdd("assistant", "⚠ " + (j.error || "the LLM did not answer"));
     } else {
       chatAdd("assistant", j.reply);
-      readAloud(j.reply);
-      chatApplyKind(j.reply);            // 2.114.0: ```image / ```video fences drive the mode
-      // 2.244.0 (by instruction): a "create a song" ask whose reply parsed
-      // pours into the music dock — lyrics → Lyrics, style → the style
-      // caption, title → Title. Guarded per field (a layout without the
-      // music dock just shows the chat reply), and said in the chat so the
-      // hand-off is visible.
-      if (j.song) {
-        if ($("muTitle")) $("muTitle").value = j.song.title || "";
-        if ($("muCaption")) $("muCaption").value = j.song.style || "";
-        if ($("muLyrics")) $("muLyrics").value = j.song.lyrics || "";
-        if (typeof updateMusicBtn === "function") updateMusicBtn();
-        if ($("muTitle") || $("muLyrics")) {
-          chatAdd("assistant", "🎵 sent to the Music dock — title, style and "
-            + "lyrics are in; pick a music style and press Generate.");
-        }
-      }
+      chatApplyReply(j);
     }
   } catch (e) {
     think.remove();

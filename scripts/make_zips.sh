@@ -37,7 +37,7 @@ FILES=$(find . -type f \
   ! -path "./graphs/*" \
   ! -path "./pose_sheets/*" \
   ! -path "./solidcraft/*" \
-  ! -path "./team/*" \
+  ! -path "./team/*" ! -path "./llm_arena/*" \
   ! -path "./models/*" ! -path "./loras/*" ! -path "./llm-models/*" \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \
   ! -path "./comfy/*" \

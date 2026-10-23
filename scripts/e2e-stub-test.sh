@@ -12393,6 +12393,33 @@ node scripts/test-farm583.js > /tmp/fm583.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui583-ui.js > /tmp/ui583.log 2>&1 \
   && ok "2.583.0 browser test: Settings ▸ Team (create, approve, share, a member's ask -> from - to / revoke / unrestricted, leave) + the 🖥 Render on chip - or SKIP without playwright" \
   || { bad "2.583.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui583.log | head -14; }
+
+# ---- 2.584.0 (🔁 Compare LLMs: every LLM answers, the user picks, the record + 🏆 the best LLM for the job)
+node scripts/test-llmarena584.js > /tmp/la584.log 2>&1 \
+  && ok "2.584.0 units (🔁 Compare LLMs: the job of a request, a round + every reply / failure, the pick, scores per job - wins, win %, time, none, not-picked rounds left out; the CSV; an old llama-server answering for every model refused; the chat route's arena field; the line-up)" \
+  || { bad "2.584.0 Compare LLMs units"; grep -a "^FAIL" -A2 /tmp/la584.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui584-ui.js > /tmp/ui584.log 2>&1 \
+  && ok "2.584.0 browser test: 🔁 Compare LLMs with stand-in llama-servers (3 models + a projector): each reply under its name, a failure said, ✓ Use = the chat's answer, 🏆 scores + rounds + Use + CSV, ▾ untick, ✗ None, ⏹ Stop - or SKIP without playwright" \
+  || { bad "2.584.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui584.log | head -14; }
+
+# ---- 2.585.0 (train an LLM on the 🔁 picks: the full prompt, 🏆 ▸ 🎓 to the trainer, SFT / DPO / ORPO; LoRA keywords from the LoRAs in use)
+node scripts/test-ftpref585.js > /tmp/fp585.log 2>&1 \
+  && ok "2.585.0 units (the full prompt per round, the training set - examples + picked-vs-not pairs, by job, with / without bitGen's instructions; prefs.jsonl; Learn from SFT / DPO / ORPO + Beta + the smaller rate; LoRA keywords: temporary LoRAs with Override style, else the style's)" \
+  || { bad "2.585.0 units"; grep -a "^FAIL" -A2 /tmp/fp585.log | head -14; }
+${FTPREF_PY:-python3} scripts/test-ftpref585.py > /tmp/fp585py.log 2>&1 \
+  && ok "2.585.0 ft_unsloth.py preference training: load_prefs, pref_rows, the Max length guard (SFT + pairs), TRL's real DPOTrainer + ORPOTrainer 2 steps on a tiny model on the CPU - or SKIP without torch / trl (FTPREF_PY = a Python that has them)" \
+  || { bad "2.585.0 ft_unsloth.py preference training"; grep -a "^FAIL\\|Error" -A2 /tmp/fp585py.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui585-ui.js > /tmp/ui585.log 2>&1 \
+  && ok "2.585.0 browser test: a round keeps the full prompt; 🏆 ▸ 🎓 makes a trainer LLM job with 1 example + 1 pair (not doubled when sent again); the trainer's Learn from SFT / DPO / ORPO, Beta, the rate, the pairs counted - or SKIP without playwright" \
+  || { bad "2.585.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui585.log | head -14; }
+
+# ---- 2.586.0 (Settings ▸ Add-ons ▸ LLM: the LLMs as one dropdown; the trainer's Qwen3.8 27B QLoRA base, Gemma 4 12B)
+node scripts/test-llmaddon586.js > /tmp/la586.log 2>&1 \
+  && ok "2.586.0 units (Add-ons ▸ LLM: 9 items = catalog files with the repos' names, ★ Qwen3.8 27B default, into the LLM folder, one pick, delete; the dropdown UI; the trainer's Qwen3.8 27B 4-bit QLoRA + Gemma 4 12B, Qwen3.5 4B still first)" \
+  || { bad "2.586.0 units"; grep -a "^FAIL" -A2 /tmp/la586.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui586-ui.js > /tmp/ui586.log 2>&1 \
+  && ok "2.586.0 browser test: Settings ▸ Add-ons ▸ LLM - the dropdown (★ Qwen3.8 27B picked), what it is for, ⤓ Download posts the pick, a file there = ✓ + 🗑 Delete it - or SKIP without playwright" \
+  || { bad "2.586.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui586.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
