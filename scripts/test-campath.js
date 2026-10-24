@@ -115,11 +115,11 @@ const near = (a, b, e) => Math.abs(a - b) <= (e == null ? 1e-3 : e);
 
   // ---- 3 the wiring
   const R = read("routes", "index.js"), RL = read("routes", "ltx.js"), W = read("lib", "wan.js"), I = read("static", "index.html"),
-        WW = read("wan_worker.py"), LW = read("ltx_worker.py"), WG = read("scripts", "wan_graph.py"), LG = read("scripts", "ltx_graph.py"),
+        WW = read("misc/wan_worker.py"), LW = read("misc/ltx_worker.py"), WG = read("scripts", "wan_graph.py"), LG = read("scripts", "ltx_graph.py"),
         EX = JSON.parse(read("ext", "timelinedock", "ext.json")), CJ = read("ext", "timelinedock", "camera.js"), SF = read("static", "secfloat.js"), DS = read("lib", "dockerStatus.js");
   check("routes: routes/camPath.js mounted from routes/index.js (frame, encode, plan, models); nothing in server.js",
     /require\("\.\/camPath"\)\.mount\(app\)/.test(R) && ["/api/campath/frame", "/api/campath/encode", "/api/campath/plan", "/api/campath/models"].every((u) => read("routes", "camPath.js").includes(u))
-    && !/campath|camPlan|camGuide/i.test(read("server.js")));
+    && !/campath|camPlan|camGuide/i.test(read("misc/server.js")));
   check("/api/generate: the camera parsed BEFORE the prompt is taken as typed; Wan -> forWan (+ camera on the Wan job), else forH3 (its sentence, the guide added to ref_videos); notes in the job log",
     R.indexOf("camPlan.parse(f.camera)") > 0 && R.indexOf("camPlan.parse(f.camera)") < R.indexOf("const askedMode = mode, typedPrompt = prompt;")
     && /camWan = w\.camera/.test(R) && /f\.ref_videos = JSON\.stringify\(vids\.concat\(\[h\.addVideo\]\)\)/.test(R) && /cfg: bo && bo\.cfg != null \? bo\.cfg : styles\.numOr\(f\.cfg, 0\),\s+cfgExact: !!\(bo && bo\.cfg != null\), camera: camWan \}\)/.test(R)

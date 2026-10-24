@@ -114,7 +114,7 @@ const PB = require(path.join(ROOT, "ext", "imageeditdock", "pcbgi.js"));
 
   /* ---- the wiring */
   const IDX = read("routes", "index.js"), IE = read("ext", "imageeditdock", "imageedit.js"), EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts, TEXT = JSON.parse(read("ext", "timelinedock", "ext.json")).scripts, IX = read("static", "index.html");
-  check("routes/bgfiles.js + routes/bgp.js mounted from routes/index.js (server.js untouched)", /require\("\.\/bgfiles"\)\.mount\(app\)/.test(IDX) && /require\("\.\/bgp"\)\.mount\(app\)/.test(IDX) && !/bgFiles|bgProject|bgVideo|bgfiles|bgp"/.test(read("server.js")));
+  check("routes/bgfiles.js + routes/bgp.js mounted from routes/index.js (server.js untouched)", /require\("\.\/bgfiles"\)\.mount\(app\)/.test(IDX) && /require\("\.\/bgp"\)\.mount\(app\)/.test(IDX) && !/bgFiles|bgProject|bgVideo|bgfiles|bgp"/.test(read("misc/server.js")));
   check("pcbgi after pccomps (2.468.0: pcactionsx.js between), installed; File ▸ Open Project (.bgi)… / Open Project from Project… / Save Project (.bgi) Alt+Ctrl+S / Save Project As; Open… (Ctrl+O) takes a .bgi; the name kept per document (DOC_KEYS bgiName)",
     EXT.indexOf("pcbgi.js") === EXT.indexOf("pccomps.js") + 2 && EXT[EXT.indexOf("pccomps.js") + 1] === "pcactionsx.js" && /PCBgi\.install\(E\)/.test(IE) && /"file\.openbgi", "Open Project \(\.bgi\)…"/.test(read("ext", "imageeditdock", "pcbgi.js")) && /"file\.savebgi", "Save Project \(\.bgi\)", "Alt\+Ctrl\+S"/.test(read("ext", "imageeditdock", "pcbgi.js"))
     && /ief\.accept = "image\/\*,\.bgi"/.test(read("ext", "imageeditdock", "pcbgi.js")) && require(path.join(ROOT, "ext", "imageeditdock", "pcdocs.js")).DOC_KEYS.includes("bgiName"));

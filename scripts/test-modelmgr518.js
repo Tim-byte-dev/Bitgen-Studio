@@ -131,7 +131,7 @@ check("thumbUrl: a local card -> /api/modelmgr/thumb; a Civitai one -> the /api/
 
 /* ---- wiring */
 const IDX = read("routes", "index.js"), HT = read("static", "index.html"), RM = read("routes", "modelMgr.js"), RC = read("routes", "civitai.js"), CVS = read("lib", "civitai.js");
-const SRV = (() => { try { return read("server.js"); } catch { return ""; } })();
+const SRV = (() => { try { return read("misc/server.js"); } catch { return ""; } })();
 check("routes mounted from routes/index.js: /api/modelmgr/cards|thumb|card|style, /api/civitai/test|search|download|downloads|lookup|img; server.js untouched",
   /require\("\.\/modelMgr"\)\.mount\(app\)/.test(IDX) && /require\("\.\/civitai"\)\.mount\(app\)/.test(IDX) && ["cards", "thumb", "card", "style"].every((x) => RM.includes('"/api/modelmgr/' + x + '"'))
   && ["test", "search", "download", "downloads", "lookup", "img"].every((x) => RC.includes('"/api/civitai/' + x + '"')) && !/modelCards|civitai/.test(SRV));

@@ -120,7 +120,7 @@ const ff = (args) => execFileSync("ffmpeg", ["-y", "-v", "error", ...args]);
     && /const fop = curFrameOp\(\);/.test(I) && /ref_video_op: curFrameOp\(\)\.op/.test(I) && /picture: 2, name:/.test(I)
     && /if \(chatFop\) chatCtx\.ref_video_op = chatFop\.op;/.test(I) && /renderRefLists\(\); renderTray\(\);/.test(I));
   check("the stub LLMs echo FRAMEOP_TEST (what the LLM was told)", /"FRAMEOP_TEST" in alltext/.test(SL) && /"FRAMEOP_TEST" in alltext/.test(ST) && /FRAMEOP-ECHO/.test(SL + ST));
-  check("nothing added to server.js", !/frameOp|refContext/.test(read("server.js")));
+  check("nothing added to server.js", !/frameOp|refContext/.test(read("misc/server.js")));
 
   // ---- 5 LIVE
   let where = null;

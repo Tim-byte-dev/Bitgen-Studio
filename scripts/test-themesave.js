@@ -55,7 +55,7 @@ check("readNames: not a font = null", FF.readNames(Buffer.from("hello world, not
 
 /* ---- the wiring */
 const IDX = read("routes", "index.js"), PDF = read("ext", "imageeditdock", "pcpdf.js"), IX = read("static", "index.html");
-check("routes/themes.js + routes/fonts.js mounted from routes/index.js (server.js untouched)", /require\("\.\/themes"\)\.mount\(app\)/.test(IDX) && /require\("\.\/fonts"\)\.mount\(app\)/.test(IDX) && !/themeStore|fontFiles/.test(read("server.js")));
+check("routes/themes.js + routes/fonts.js mounted from routes/index.js (server.js untouched)", /require\("\.\/themes"\)\.mount\(app\)/.test(IDX) && /require\("\.\/fonts"\)\.mount\(app\)/.test(IDX) && !/themeStore|fontFiles/.test(read("misc/server.js")));
 check("fontkit vendored (MIT) - no internet", fs.existsSync(path.join(ROOT, "static", "vendor", "fontkit.umd.min.js")) && /MIT License/.test(read("static", "vendor", "LICENSE-fontkit.txt")) && /loadScript\("\/static\/vendor\/fontkit\.umd\.min\.js"/.test(PDF));
 check("pcpdf: the Save dialog (Save PDF… / Save as New PDF…) with Embed fonts (kept: pdf.embed); toBytes(opts.embed) embeds the font (subset) when it has every letter, else the standard font / the picture",
   /function saveDialog\(asNew\)/.test(PDF) && /id="pfEmb"/.test(PDF) && /store\.set\("pdf\.embed", e\)/.test(PDF) && /(out|target)\.registerFontkit\(fk\)/.test(PDF) && /(out|target)\.embedFont\(new Uint8Array\(await r\.arrayBuffer\(\)\), \{ subset: true \}\)/.test(PDF) && /if \(cf && covers\(cf, L\.text\.str\)\)/.test(PDF));

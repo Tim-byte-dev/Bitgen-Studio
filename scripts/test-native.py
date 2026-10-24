@@ -96,7 +96,7 @@ if shutil.which("ffmpeg") and shutil.which("node"):
         out = tmp / "out"
         (wd / "job.json").write_text(json.dumps({"params": params, "config": c or cfg, "app_dir": str(ROOT), "models_dir": str(ROOT / "models"),
                                                  "output_dir": str(out)}))
-        r = subprocess.run([sys.executable, str(ROOT / worker), "job.json"], cwd=wd, capture_output=True, text=True, timeout=600)
+        r = subprocess.run([sys.executable, str(ROOT / "misc" / worker), "job.json"], cwd=wd, capture_output=True, text=True, timeout=600)
         name = next((ln[6:].strip() for ln in r.stdout.splitlines() if ln.startswith("@@OUT ")), "")
         return r.returncode, r.stdout, (out / name if name else None)
     src = tmp / "movie.mp4"

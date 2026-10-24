@@ -94,7 +94,7 @@ check("seedFor: fixed = the settings' seed, random = drawn", RS.seedFor({ seed_m
 }
 
 // ---- 3. the wiring
-const R = read("routes", "swapdlg.js"), W = read("ltx_worker.py"), G = read("scripts", "ltx_graph.py");
+const R = read("routes", "swapdlg.js"), W = read("misc/ltx_worker.py"), G = read("scripts", "ltx_graph.py");
 check("routes/swapdlg: the first-frame endpoints", ['app.post("/api/swapdlg/firstframe"', 'app.post("/api/swapdlg/firstframe/put"',
   'app.post("/api/swapdlg/firstframe/clear"', 'app.get("/api/swapdlg/ff/:id"'].every((k) => R.includes(k)));
 check("routes/swapdlg: /set takes the engine; the view lists the engines",

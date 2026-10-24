@@ -84,7 +84,7 @@ check("the tiles' look: dashed, tiger on hover / focus / a file over it", /\.add
 const DC = read("static/dockcfg.js");
 check("Docker configs: the menu bar button is the icon only (⊞), named by its tooltip and aria-label",
   /aria-label="Docker configs" aria-haspopup="true" aria-expanded="false">⊞<\/button>/.test(DC) && !/>⊞ Docker configs<\/button>/.test(DC) && /title="Docker configs - /.test(DC));
-check("nothing added to server.js", !/addtile|AddTile/.test(read("server.js")));
+check("nothing added to server.js", !/addtile|AddTile/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

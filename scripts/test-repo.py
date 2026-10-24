@@ -18,13 +18,13 @@ def read(p):
     p = os.path.join(ROOT, p)
     return open(p, encoding="utf-8").read() if os.path.exists(p) else ""
 ver = json.load(open(os.path.join(ROOT, "package.json"), encoding="utf-8"))["version"]
-PAGES = ["README.md", "LICENSE", "NOTICE.md", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md", "docs/BETA.md", "docs/INSTALL.md", "docs/USAGE.md"]
+PAGES = ["README.md", "LICENSE", "misc/NOTICE.md", "misc/CHANGELOG.md", "misc/CONTRIBUTING.md", "misc/SECURITY.md", "docs/BETA.md", "docs/INSTALL.md", "docs/USAGE.md"]
 missing = [p for p in PAGES if not read(p).strip()]
 check("the repository's pages are there: README, LICENSE, NOTICE, CHANGELOG, CONTRIBUTING, SECURITY, docs/BETA, INSTALL, USAGE", not missing, missing)
 check("LICENSE is MIT", "MIT License" in read("LICENSE") or "Permission is hereby granted, free of charge" in read("LICENSE"))
 # relative links
 bad = []
-for p in ["README.md", "CONTRIBUTING.md", "docs/BETA.md", "CHANGELOG.md", "SECURITY.md"]:
+for p in ["README.md", "misc/CONTRIBUTING.md", "docs/BETA.md", "misc/CHANGELOG.md", "misc/SECURITY.md"]:
     s = read(p); base = os.path.dirname(os.path.join(ROOT, p))
     links = re.findall(r"\]\(([^)\s]+)\)", s) + re.findall(r'(?:href|src)="([^"]+)"', s)
     for l in links:
@@ -39,7 +39,7 @@ check("docs/BETA.md: what is experimental (the Unreal bridge untested in a real 
       "public beta" in read("docs/BETA.md") and "not inside a real Unreal Editor" in read("docs/BETA.md") and "Daz" in read("docs/BETA.md") and "Bug report" in read("docs/BETA.md"))
 # the changelog
 spec = importlib.util.spec_from_file_location("chlog", os.path.join(ROOT, "scripts", "make_changelog.py")); C = importlib.util.module_from_spec(spec); spec.loader.exec_module(C)
-ch = read("CHANGELOG.md")
+ch = read("misc/CHANGELOG.md")
 first = re.search(r"^- \*\*(\d+\.\d+\.\d+)\*\*", ch, re.M)
 check(f"CHANGELOG.md starts at this version ({ver}) and lists 300+ releases", first and first.group(1) == ver and len(re.findall(r"^- \*\*\d", ch, re.M)) >= 300, first and first.group(1))
 check("make_changelog: other products' names become plain words; how a release came about is left to the notes",
@@ -49,11 +49,11 @@ tc = C.title_case("THE EDITOR'S PEN, PATHS + LUTS FOR PSDS, .BGI FILES, IN / OUT
 check("make_changelog: title case keeps acronyms and names (LUTs, PSDs, .bgi, SeedVR2) and lower-case asides", tc == "The Editor's Pen, Paths + LUTs for PSDs, .bgi Files, In / Out, SeedVR2 Upscaling (the gap tracked)", tc)
 check("make_changelog: parse takes the first heading per version, newest first in render", list(C.parse("## 1.2.0 — B\n## 1.10.0 — A\n## 1.2.0 — OLD\n").items()) == [("1.2.0", "B"), ("1.10.0", "A")]
       and C.render({"1.2.0": "B", "1.10.0": "A"}).index("1.10.0") < C.render({"1.2.0": "B", "1.10.0": "A"}).index("1.2.0"))
-if read("HANDOVER.md"):
+if read("misc/HANDOVER.md"):
     r = subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "make_changelog.py"), "--check"], capture_output=True, text=True)
     check("CHANGELOG.md is up to date with the release notes (python3 scripts/make_changelog.py)", r.returncode == 0, r.stdout.strip())
 # notices
-nt = read("NOTICE.md")
+nt = read("misc/NOTICE.md")
 lic = sorted(os.path.relpath(os.path.join(dp, f), os.path.join(ROOT, "static", "vendor")).replace(os.sep, "/") for dp, _, fs in os.walk(os.path.join(ROOT, "static", "vendor")) for f in fs if f.startswith("LICENSE"))
 check("NOTICE.md names every licence file in static/vendor and says how the LGPL OpenCascade files ship", lic and all(l in nt for l in lic) and "LGPL-2.1" in nt and "unmodified" in nt and "github.com/sgenoud/replicad" in nt, [l for l in lic if l not in nt])
 # GitHub
@@ -68,7 +68,7 @@ gi = read(".gitignore")
 check(".gitignore keeps this machine's files out (custom.settings, models, projects, node_modules, venvs)", all(re.search(r"^" + re.escape(w) + r"\s*$", gi, re.M) for w in ["custom.settings", "models/", "projects/", "node_modules/", "venvs/"]))
 # no other products' names in what a visitor reads first
 RX = re.compile(r"CorelDRAW|Corel|Adobe|Photoshop|Illustrator|Premiere|After Effects|InDesign|Lightroom|Acrobat|Audition|PowerClip|Fusion 360|Autodesk")
-hits = [f"{p}: {m}" for p in ["README.md", "CHANGELOG.md", "CONTRIBUTING.md", "SECURITY.md", "docs/BETA.md", ".github/ISSUE_TEMPLATE/bug_report.md", ".github/ISSUE_TEMPLATE/feature_request.md"] for m in RX.findall(read(p))]
+hits = [f"{p}: {m}" for p in ["README.md", "misc/CHANGELOG.md", "misc/CONTRIBUTING.md", "misc/SECURITY.md", "docs/BETA.md", ".github/ISSUE_TEMPLATE/bug_report.md", ".github/ISSUE_TEMPLATE/feature_request.md"] for m in RX.findall(read(p))]
 check("README, CHANGELOG, CONTRIBUTING, SECURITY, BETA and the templates name no other products", not hits, hits[:6])
 print(f"\nRESULT: {npass} passed, {nfail} failed")
 sys.exit(1 if nfail else 0)

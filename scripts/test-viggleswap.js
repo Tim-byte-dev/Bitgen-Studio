@@ -43,8 +43,8 @@ check("⚙: viggle_steps 3 / viggle_strength 1 by default, clamped", RS.settings
 check("2.346.0: the Sol-Attn speed patch is OFF unless ⚙ ticks it (it aborted ComfyUI on Tim's run)",
   RS.settingsBlank().viggle_solattn === false && RS.settingsSafe({ viggle_solattn: "yes" }).viggle_solattn === false && RS.settingsSafe({ viggle_solattn: true }).viggle_solattn === true
   && VS.jobParams({ workflow: "w", frames: 48 }).speed_patch === false && VS.jobParams({ workflow: "w", frames: 48, solattn: true }).speed_patch === true);
-check("...the worker steps over SolAttnPatch unless asked, and says so", read("viggle_worker.py").includes('if not params.get("speed_patch") and "SolAttnPatch" not in skip and "SolAttnPatch" in info:')
-  && read("viggle_worker.py").includes("the Sol-Attn speed patch is off"));
+check("...the worker steps over SolAttnPatch unless asked, and says so", read("misc/viggle_worker.py").includes('if not params.get("speed_patch") and "SolAttnPatch" not in skip and "SolAttnPatch" in info:')
+  && read("misc/viggle_worker.py").includes("the Sol-Attn speed patch is off"));
 
 // ---- 1b. 2.350.0 (Tim: "the Viggle render came back ALL BLACK ... this was with viggle")
 const SS = require(path.join(ROOT, "lib", "swapSession"));
@@ -61,7 +61,7 @@ check("2.350.0 ⚙ viggle_safe: off by default, only true is true; the job carri
 }
 
 // ---- 2. the wiring
-const R = read("routes", "swapdlg.js"), CORE = read("lib", "core.js"), W = read("viggle_worker.py");
+const R = read("routes", "swapdlg.js"), CORE = read("lib", "core.js"), W = read("misc/viggle_worker.py");
 check("2.350.0 routes: jobOf reads the worker's \"safe mode fixed it\"; current() then switches ⚙ Viggle safe mode on",
   R.includes("safe: j.status === \"done\" && (j.log || []).some((l) => /\\[worker\\] safe mode fixed it/.test(String(l)))")
   && R.includes("if (s.safe && s.state.settings.viggle_safe !== true) s.state.settings = RS.settingsSafe({ ...s.state.settings, viggle_safe: true });"));

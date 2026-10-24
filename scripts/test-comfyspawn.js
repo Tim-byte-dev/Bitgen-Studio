@@ -107,13 +107,13 @@ check("lib/comfy.js exports relaunchConsole and the stop() kills the tail with t
   /relaunchConsole/.test(SRC) && /state\.stopTail/.test(SRC.slice(SRC.indexOf("function stop()"))), null);
 check("the relaunch route exists — POST /api/comfy/relaunch-console — and is not in server.js",
   /app\.post\("\/api\/comfy\/relaunch-console"/.test(fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8"))
-  && !/relaunch-console/.test(fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8")), null);
+  && !/relaunch-console/.test(fs.readFileSync(path.join(__dirname, "..", "misc", "server.js"), "utf8")), null);
 {
   const HTML = PAGE;
   check("Settings -> ComfyUI has the stdio choice and the relaunch button, and the Save payload carries it",
     /id="s_cstdio"/.test(HTML) && /id="s_cconsole"/.test(HTML) && /stdio: \$\("s_cstdio"\)/.test(HTML)
     && /\/api\/comfy\/relaunch-console/.test(HTML), null);
-  const DEF = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "default.settings"), "utf8"));
+  const DEF = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "misc", "default.settings"), "utf8"));
   const CORE = require(path.join(__dirname, "..", "lib", "core.js"));
   check("the shipped default is 'file' in BOTH layers (default.settings and DEFAULT_CONFIG)",
     DEF.engine.comfy.stdio === "file" && CORE.DEFAULT_CONFIG.engine.comfy.stdio === "file", [DEF.engine.comfy.stdio, CORE.DEFAULT_CONFIG.engine.comfy.stdio]);
@@ -209,7 +209,7 @@ check("...with a probe, not a signal, on an unref'd timer",
     /free_before_gen: cfg\.freeBeforeGen/.test(src) && /vram: up \? await vram\(cfg\.url\) : \[\]/.test(src), null);
   check("the route exists — POST /api/comfy/free — and is not in server.js",
     /app\.post\("\/api\/comfy\/free"/.test(routes)
-    && !/comfy\/free/.test(fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8")), null);
+    && !/comfy\/free/.test(fs.readFileSync(path.join(__dirname, "..", "misc", "server.js"), "utf8")), null);
   check("...answering 503, not 200, when ComfyUI could not be asked",
     /res\.status\(j\.ok \? 200 : 503\)\.json\(j\)/.test(routes), null);
   check("fmtVram prints GB to one decimal and 'unknown' for nothing",
@@ -271,7 +271,7 @@ check("...with a probe, not a signal, on an unref'd timer",
     /if exist "%~dp0comfy\\ComfyUI\\main\.py"/.test(BAT)
     && !/\[y\/N\]/.test(BAT), null);
 
-  const PS = fs.readFileSync(path.join(__dirname, "..", "get-comfy.ps1"), "utf8");
+  const PS = fs.readFileSync(path.join(__dirname, "..", "misc", "get-comfy.ps1"), "utf8");
   check("get-comfy.ps1: the OFFICIAL manual-install clone URL; Manager via requiredNodes()",
     /\$comfyRepo = "https:\/\/github\.com\/Comfy-Org\/ComfyUI\.git"/.test(PS)
     && /docs\.comfy\.org\/installation\/manual_install/.test(PS)

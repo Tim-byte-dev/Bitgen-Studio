@@ -134,7 +134,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   }
 
   /* ---- the routes, the docker */
-  const ri = read("routes", "index.js"), rf = read("routes", "modelFolders.js"), sv = read("server.js");
+  const ri = read("routes", "index.js"), rf = read("routes", "modelFolders.js"), sv = read("misc/server.js");
   check("routes/modelFolders.js mounted from routes/index.js (never server.js): GET /api/modelfolders, POST /api/modelfolders, POST /api/modelfolders/resolve",
     /require\("\.\/modelFolders"\)\.mount\(app\)/.test(ri) && /app\.get\("\/api\/modelfolders"/.test(rf) && /app\.post\("\/api\/modelfolders"/.test(rf) && /\/api\/modelfolders\/resolve/.test(rf) && !/modelfolders|modelFolders/i.test(sv));
   const mm = read("static", "modelmgr.js");

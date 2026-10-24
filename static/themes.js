@@ -194,7 +194,7 @@
   try { const c = current(); apply(c.theme, c.accent, c.vars); } catch (e) { /* no DOM (Node) */ }
   if (root.document) { if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start(); }
 
-  const H3Theme = { THEMES, ORDER, VARS, LABELS, shade, varsFor, clampScale, effective, fromSaved, apply, choose, current, start, refresh, saveAs, load, remove, importFile, snapshot, saved: () => saved };
+  const H3Theme = { THEMES, ORDER, VARS, LABELS, shade, varsFor, clampScale, effective, fromSaved, apply, choose, current, start, refresh, saveAs, load, remove, importFile, snapshot, use: useRecord, saved: () => saved };   // 2.587.0: + use (a layout brings its theme - static/layouts.js)
   if (typeof module !== "undefined" && module.exports) module.exports = H3Theme;
   else root.H3Theme = H3Theme;
 })(typeof window !== "undefined" ? window : globalThis);

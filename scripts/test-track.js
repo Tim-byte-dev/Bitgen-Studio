@@ -53,7 +53,7 @@ try {
 finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 
 /* ---- wiring */
-const TT = read("ext", "timelinedock", "tltrack.js"), CV = read("ext", "timelinedock", "canvas.js"), TD = read("ext", "timelinedock", "timelinedock.js"), PA = read("ext", "timelinedock", "tlparent.js"), RT = read("routes", "index.js"), W = read("worker.py");
+const TT = read("ext", "timelinedock", "tltrack.js"), CV = read("ext", "timelinedock", "canvas.js"), TD = read("ext", "timelinedock", "timelinedock.js"), PA = read("ext", "timelinedock", "tlparent.js"), RT = read("routes", "index.js"), W = read("misc/worker.py");
 check("routes: /api/track/points (routes/trackpts.js, mounted from routes/index.js); the video layer's corner pin passed (tlKeys.pinKeys)", /require\("\.\/trackpts"\)\.mount\(app\);/.test(RT) && /app\.post\("\/api\/track\/points"/.test(read("routes", "trackpts.js")) && /\.\.\.tlKeys\.pinKeys\(c\),/.test(RT));
 check("tltrack: 🎯 Track (mode, ◎ Place, size, ▶ Track, Apply to), the points tool, ▢ Corner pin (on, ✥ Edit corners), apply = position keys / scale + rotation / a pin", /id="tlpTkMode"/.test(TT) && /id="tlpTkPlace"/.test(TT) && /id="tlpTkRun"/.test(TT) && /id="tlpTkApply"/.test(TT) && /id="tlpPinOn"/.test(TT) && /id: "trackpts"/.test(TT) && /id: "pinedit"/.test(TT) && /target\.pin = \{ on: true, keys: keys \}/.test(TT) && /W\.rot = base\.rot \+ turn/.test(TT));
 check("canvas: a pinned layer drawn through TlTrack.drawPin (both paths), never on the GPU path; srcAt / opac exported", (CV.match(/TlTrack\.drawPin\(/g) || []).length === 2 && /return \(c\.masks && c\.masks\.length\) \|\| c\.pin(?: \|\| c\.\w+)*;/.test(CV) && /srcAt: srcAt/.test(CV) && /opac: opac/.test(CV));

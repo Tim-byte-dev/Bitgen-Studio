@@ -50,7 +50,7 @@ check("index.html: a mode change no longer pops pictures; extra ones faded (.unu
   !/while \(refs\.length > CAP\[mode\]\) URL\.revokeObjectURL\(refs\.pop\(\)\.url\);/.test(IX) && /s\.classList\.add\("unused"\)/.test(IX) && /kept for Ref \/ F\/L/.test(IX) && /src="\/static\/refkeep\.js"/.test(IX));
 check("the project save takes up to MAX_IMAGES pictures through lib/refKeep's multer and lib/projectRefs.store; the dock's route is its own file (server.js untouched)",
   /require\("\.\.\/lib\/refKeep"\)\.upload\(\)\.array\("ref_images", projectRefs\.MAX_IMAGES\)/.test(RI) && /projectRefs\.store\(pdir, data\.references/.test(RI) && /require\("\.\/refKeep"\)\.mount\(app\)/.test(RI)
-  && /app\.post\("\/api\/projects\/refs"/.test(RT) && !/refKeep/.test(rd("server.js")));
+  && /app\.post\("\/api\/projects\/refs"/.test(RT) && !/refKeep/.test(rd("misc/server.js")));
 check("refkeep.js: waits for the project's references to load, sends only the new pictures, flushes on close / before another project, adopts the server's names",
   /loading\+\+/.test(KS) && /!onServer\.has\(r\.file\)/.test(KS) && /addEventListener\("beforeunload"/.test(KS) && /root\.saveLeavingState = w/.test(KS) && /imgs\[i\]\.file !== r\.file\.name/.test(KS));
 check("the storyboard's shared prompt: kept as it is typed (input 1.5 s, change, close), never painted over while it differs",

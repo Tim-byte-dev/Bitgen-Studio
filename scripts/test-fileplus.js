@@ -117,7 +117,7 @@ for (const [name, enc, ext, fmt] of [["BMP", F.encodeBMP, "bmp", "BMP"], ["TIFF"
 // --- the wiring
 {
   const ext = JSON.parse(read("ext/imageeditdock/ext.json")).scripts, idx = read("routes/index.js"), ie = read("ext/imageeditdock/imageedit.js"), ui = read("ext/imageeditdock/pcui.js"), pd = read("ext/imageeditdock/pcdocs.js"), bgi = read("ext/imageeditdock/pcbgi.js");
-  check("the wiring: pcfileplus.js before imageedit.js and installed; routes/imgconvert.js mounted from routes/index.js (not server.js)", ext.indexOf("pcfileplus.js") > 0 && ext.indexOf("pcfileplus.js") < ext.indexOf("imageedit.js") && /win\.PCFilePlus\.install\(E\)/.test(ie) && /require\("\.\/imgconvert"\)\.mount\(app\)/.test(idx) && !/imgconvert/.test(read("server.js")));
+  check("the wiring: pcfileplus.js before imageedit.js and installed; routes/imgconvert.js mounted from routes/index.js (not server.js)", ext.indexOf("pcfileplus.js") > 0 && ext.indexOf("pcfileplus.js") < ext.indexOf("imageedit.js") && /win\.PCFilePlus\.install\(E\)/.test(ie) && /require\("\.\/imgconvert"\)\.mount\(app\)/.test(idx) && !/imgconvert/.test(read("misc/server.js")));
   check("the wiring: Export As builds its formats from one list others add to; the file info goes into the exported file; kept per document and in .bgi", /E\.exportFormats = \[/.test(ui) && /E\.fileInfoBlob/.test(ui) && /"fileInfo"/.test(pd) && /fileInfo: clone\(S\.fileInfo/.test(bgi) && /S\.fileInfo = m\.fileInfo/.test(bgi));
   const files = read("ext/imageeditdock/pcfileplus.js") + read("lib/imgConvert.js") + read("routes/imgconvert.js");
   check("no product names in what users read", !/Photoshop|Adobe|Corel|Illustrator|Lightroom|Acrobat/.test(files.replace(/ns\.adobe\.com|adobe:ns:meta/g, "")));

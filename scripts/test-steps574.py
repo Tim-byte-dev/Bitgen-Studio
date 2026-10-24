@@ -11,7 +11,7 @@ import contextlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-sys.path.insert(0, ROOT)
+sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "misc"))
 import image_worker as IW                                 # noqa: E402
 import comfy_progress as CP                               # noqa: E402
 

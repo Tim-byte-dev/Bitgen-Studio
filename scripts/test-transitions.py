@@ -173,7 +173,7 @@ except ValueError:
     check("fade: a bogus direction is rejected", True)
 
 # The worker's wrappers must never take an export down over a transition.
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "misc"))
 import worker as _w
 check("worker: _fade returns empty for a cut rather than raising",
       _w._fade({"type": "none"}, "in", 0, 10) == "")

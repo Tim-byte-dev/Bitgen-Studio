@@ -119,8 +119,8 @@ def parse(text):
 def render(entries):
     vs = sorted(entries, key=vkey, reverse=True)
     lines = ["# Changelog", "",
-             "Every bitGen Studio release, newest first. The [Feature Reference](docs/bitGen-Studio-Features.pdf) says what each",
-             "feature does and the version it arrived in; [docs/USAGE.md](docs/USAGE.md) has the step-by-step guide.", "",
+             "Every bitGen Studio release, newest first. The [Feature Reference](../docs/bitGen-Studio-Features.pdf) says what each",
+             "feature does and the version it arrived in; [docs/USAGE.md](../docs/USAGE.md) has the step-by-step guide.", "",
              "Made by `python3 scripts/make_changelog.py` from the release notes.", ""]
     group = None
     for v in vs:
@@ -137,7 +137,7 @@ def render(entries):
 def collect():
     text = ""
     for f in ("HANDOVER.md", "HANDOVER-ARCHIVE.md"):
-        p = os.path.join(ROOT, f)
+        p = os.path.join(ROOT, "misc", f)   # 2.591.0: misc/
         if os.path.exists(p):
             text += open(p, encoding="utf-8").read() + "\n"
     return parse(text)
@@ -145,7 +145,7 @@ def collect():
 
 if __name__ == "__main__":
     entries = collect()
-    out = os.path.join(ROOT, "CHANGELOG.md")
+    out = os.path.join(ROOT, "misc", "CHANGELOG.md")
     if "--check" in sys.argv:
         if not entries:
             print("make_changelog: no release notes here (a repository checkout) - nothing to check"); sys.exit(0)

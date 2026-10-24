@@ -119,7 +119,7 @@ check("lib/aaf.js job: frames at the fps, V1's sound as a track, a still left ou
   && aj.audio[1].items[0].start === 25 && aj.audio[1].items[0].path === "/x/s.wav" && /p\.png/.test(aj.skipped.join()), aj);
 check("the ⇄ Exchange: AAF in the formats, fetched as a file; /api/interchange/export format aaf; pyaaf2 in requirements.txt",
   /\["aaf", "AAF - Avid Media Composer, Pro Tools/.test(read("ext", "timelinedock", "interchange.js")) && /\/api\/interchange\/file\//.test(read("ext", "timelinedock", "interchange.js"))
-  && /fmt === "aaf"/.test(read("routes", "interchange.js")) && /^pyaaf2/m.test(read("requirements.txt")));
+  && /fmt === "aaf"/.test(read("routes", "interchange.js")) && /^pyaaf2/m.test(read("misc/requirements.txt")));
 
 /* ---- 3. the sound of a reversed / ramped clip */
 ff(["-f", "lavfi", "-i", "sine=f=440:d=2,apad=pad_dur=2", "-f", "lavfi", "-i", "testsrc=s=160x120:r=25:d=4", "-c:a", "aac", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-shortest", "-t", "4", path.join(TMP, "tone.mp4")]);

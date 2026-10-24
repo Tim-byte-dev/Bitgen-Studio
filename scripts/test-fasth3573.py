@@ -10,7 +10,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-sys.path.insert(0, ROOT)
+sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "misc"))
 import fasth3 as F                                        # noqa: E402
 import worker                                             # noqa: E402
 
@@ -121,7 +121,7 @@ check("...an H3 graph without VSA keeps the whole Long video chain (low-VRAM att
       worker.ACCEL_LOWVRAM in [v.get("class_type") for v in gb.values()])
 
 # 7 the worker hook is wired after the refmods, before the upscale stage, and drops cfg to 1
-src = open(os.path.join(ROOT, "worker.py"), encoding="utf-8").read()
+src = open(os.path.join(ROOT, "misc", "worker.py"), encoding="utf-8").read()
 i_ref, i_f3, i_us = src.find("g = _apply_refmods(g, params.get(\"refmods\"))"), src.find("_f3.apply(g, explicit_steps="), src.find("if params.get(\"upscale_stage\"):        # 2.312.0")
 check("worker.py: import fasth3 guarded; the hook after _apply_refmods and before the upscale stage; cfg -> 1; kitchen asked of ComfyUI",
       "import fasth3 as _f3" in src and 0 < i_ref < i_f3 < i_us and "cfg_val = 1.0" in src[i_f3:i_us] and "def _kitchen_attn(base)" in src)

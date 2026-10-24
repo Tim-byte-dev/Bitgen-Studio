@@ -44,7 +44,7 @@ fs.rmSync(tmp, { recursive: true, force: true });
 
 /* ---- the wiring */
 const IX = read("static", "index.html"), IDX = read("routes", "index.js"), UI = read("ext", "imageeditdock", "pcui.js"), IE = read("ext", "imageeditdock", "imageedit.js"), EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts;
-check("routes/layout.js mounted from routes/index.js (server.js untouched); the page loads dlglayout.js + floatpanels.js", /require\("\.\/layout"\)\.mount\(app\)/.test(IDX) && !/layoutCfg|floatpanels/.test(read("server.js"))
+check("routes/layout.js mounted from routes/index.js (server.js untouched); the page loads dlglayout.js + floatpanels.js", /require\("\.\/layout"\)\.mount\(app\)/.test(IDX) && !/layoutCfg|floatpanels/.test(read("misc/server.js"))
   && IX.includes('<script src="/static/dlglayout.js"></script>') && IX.includes('<script src="/static/floatpanels.js"></script>'));
 check("the editor: pcpanels after pcpattern, installed; its dialogs fixed in the middle of the screen (dragged in screen coordinates)", EXT.indexOf("pcpanels.js") === EXT.indexOf("pcpattern.js") + 1 && /PCPanels\.install\(E\)/.test(IE)
   && /\.kxdlg\{position:fixed;z-index:10060;left:50%;top:50%;transform:translate\(-50%,-50%\)/.test(IE) && /const fixed = win\.getComputedStyle\(d\)\.position === "fixed"/.test(UI));

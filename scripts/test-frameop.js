@@ -84,7 +84,7 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
       && JSON.stringify(RR.setOp({ "a.mp4": "append" }, "a.mp4", "")) === "{}");
 
     // ---- 3
-    const R = read("routes", "index.js"), W = read("worker.py"), WW = read("wan_worker.py"), I = read("static", "index.html");
+    const R = read("routes", "index.js"), W = read("misc/worker.py"), WW = read("misc/wan_worker.py"), I = read("static", "index.html");
     check("routes/index.js: lib/frameOp on ref_video_op, fl2va forced, the frames re-ordered, the op video not a reference, the size, frame_op on H3 + Wan",
       /require\("\.\.\/lib\/frameOp"\)\.build\(\{ raw: f\.ref_video_op/.test(R) && /mode = "fl2va";/.test(R)
       && /referenceFiles\.splice\(0, referenceFiles\.length, \.\.\.frameOp\.files\)/.test(R) && /refVideos = refVideos\.filter\(\(p\) => p !== frameOp\.video\)/.test(R)
@@ -103,7 +103,7 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
     // ---- 4
     const py = execFileSync("python3", ["-c", [
-      "import sys, json, copy; sys.path.insert(0, 'scripts'); sys.path.insert(0, '.')",
+      "import sys, json, copy; sys.path.insert(0, 'scripts'); sys.path.insert(0, '.'); sys.path.insert(0, 'misc')",
       "import worker",
       "said = []; worker.say = said.append",
       "g = json.load(open('comfy_workflows/fl2va.json'))",

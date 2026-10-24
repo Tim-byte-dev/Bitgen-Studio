@@ -1,4 +1,4 @@
-bitGen Bridge for Unreal Engine 5.8 - 1.4.0 (bitGen Studio 2.579.0)
+bitGen Bridge for Unreal Engine 5.8 - 1.5.0 (bitGen Studio 2.590.0)
 
 Links the Unreal Editor to bitGen Studio on the same computer. bitGen lists your project's levels, Level Sequences,
 cameras, MetaHumans and animations, takes stills from a camera for its image editor (Unreal and MetaHuman layers) and
@@ -60,3 +60,14 @@ bitGen shows Unreal's error - please send that back so it can be fixed.
   - "actors_in_view": the level's mesh actors (their bounds) and the camera - bitGen puts each on the picture and gives
     it a picture from its reference docker (the image editor's 🖼 References / ✨ Make it real, the timeline's
     UNREAL ▸ Render to Real). Hidden, bitGen_*, landscape / sky / light / camera / fog actors are left out.
+
+1.5.0 (bitGen 2.590.0): the 📺 Unreal View
+  - "frame": a small live picture of what a layer's camera sees, for bitGen's 📺 Unreal View (the image editor and the
+    timeline show it while an Unreal / MetaHuman layer or clip is selected). A sequence clip shows the frame under
+    bitGen's playhead: the Level Sequence is opened in Sequencer at that time and the viewport is locked to its camera
+    cut while the view is on.
+  - "keep_fast": bitGen's ⚡ Keep Unreal fast switch turns off Editor Preferences > General > Performance > "Use Less
+    CPU when in Background", so the editor keeps full speed behind bitGen (on, it slows to a few frames a second when
+    it is not the window in front - the live view and stills slow down with it).
+  - The Unreal Editor must be running with the project open (the bridge lives inside it). It does not have to be in
+    front or on screen: minimize it, or keep it behind bitGen.

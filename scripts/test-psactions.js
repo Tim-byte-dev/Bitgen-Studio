@@ -56,7 +56,7 @@ check("fileName: the picture's name + the suffix + the format's extension, odd c
 
   /* ---- 3 */
   const idx = read("routes", "index.js"), rt = read("routes", "batch.js"), IE = read("ext", "imageeditdock", "imageedit.js"), EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts, AJ = read("ext", "imageeditdock", "pcactions.js");
-  check("routes/batch.js mounted from routes/index.js (server.js untouched): save (raw), runs, list, file", /require\("\.\/batch"\)\.mount\(app\)/.test(idx) && !/batch/.test(read("server.js").match(/require\([^)]*\)/g).join())
+  check("routes/batch.js mounted from routes/index.js (server.js untouched): save (raw), runs, list, file", /require\("\.\/batch"\)\.mount\(app\)/.test(idx) && !/batch/.test(read("misc/server.js").match(/require\([^)]*\)/g).join())
     && /app\.post\("\/api\/batch\/save", express\.raw/.test(rt) && /app\.get\("\/api\/batch\/runs"/.test(rt) && /app\.get\("\/api\/batch\/list"/.test(rt) && /app\.get\("\/api\/batch\/file\/:run\/:name"/.test(rt));
   check("pcui: run() tells the recorder (onRun / onRunDone); dialogs tell it when they open, OK, Cancel; the Actions tab",
     /if \(E\.ui\.onRun\) \{ try \{ E\.ui\.onRun\(id\); \}/.test(UIJ) && /if \(E\.ui\.onDialog\) \{ try \{ E\.ui\.onDialog\(d, title\); \}/.test(UIJ) && /if \(E\.ui\.onDialogOk\) E\.ui\.onDialogOk\(d, title\);/.test(UIJ) && /if \(E\.ui\.onDialogCancel\) E\.ui\.onDialogCancel\(d, title\);/.test(UIJ)

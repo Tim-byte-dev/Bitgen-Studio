@@ -120,13 +120,13 @@ fi
 
 # ---- Python packages for the app (Hugging Face downloads, the VR stereo eye) -
 if [ -z "${BITGEN_SKIP_PIP:-}" ]; then
-  say "pip install -r requirements.txt"
-  "$PY" -m pip install --upgrade --quiet -r requirements.txt || say "WARNING: some Python packages did not install - see above"
+  say "pip install -r misc/requirements.txt"
+  "$PY" -m pip install --upgrade --quiet -r misc/requirements.txt || say "WARNING: some Python packages did not install - see above"
 fi
 
 # ---- settings: THIS python; setup still to do --------------------------------
 "$NODE" scripts/setup-cli.js --bootstrap "$PY" || die "could not write the settings"
-chmod +x "$ROOT/bitgen-studio.sh" "$ROOT"/scripts/*.sh 2>/dev/null
+chmod +x "$ROOT/misc/bitgen-studio.sh" "$ROOT"/scripts/*.sh 2>/dev/null
 
 # ---- a launcher where people look for apps -----------------------------------
 if [ "$OS" = Linux ]; then
@@ -137,7 +137,7 @@ if [ "$OS" = Linux ]; then
 Type=Application
 Name=bitGen Studio
 Comment=Local AI film studio
-Exec="$ROOT/bitgen-studio.sh"
+Exec="$ROOT/misc/bitgen-studio.sh"
 Icon=$ROOT/static/icon.png
 Terminal=false
 Categories=AudioVideo;Video;Graphics;
@@ -158,11 +158,11 @@ else
 <key>CFBundlePackageType</key><string>APPL</string>
 </dict></plist>
 EOF
-  printf '#!/bin/sh\nexec "%s/bitgen-studio.sh"\n' "$ROOT" > "$APP/Contents/MacOS/bitgen-studio"
+  printf '#!/bin/sh\nexec "%s/misc/bitgen-studio.sh"\n' "$ROOT" > "$APP/Contents/MacOS/bitgen-studio"
   chmod +x "$APP/Contents/MacOS/bitgen-studio"
   say "launcher: $APP"
 fi
 
 say "bootstrap done - opening the setup wizard"
-[ "$LAUNCH" = 1 ] && exec "$ROOT/bitgen-studio.sh"
+[ "$LAUNCH" = 1 ] && exec "$ROOT/misc/bitgen-studio.sh"
 exit 0

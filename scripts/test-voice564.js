@@ -77,7 +77,7 @@ const A = require(path.join(ROOT, "lib", "voiceAgent.js"));
   const RV = rd("routes", "voice.js"), RI = rd("routes", "index.js"), IX = rd("static", "index.html"), VC = rd("static", "voicechat.js"), PY = rd("scripts", "asr_live.py");
   check("routes: hear (multipart wav -> asrLive) / turn (voiceAgent.messages -> the LLM -> parse) / status / stop, mounted from routes/index.js - nothing in server.js",
     /app\.post\("\/api\/voice\/hear", upload\.single\("audio"\)/.test(RV) && /voiceAgent\.messages\(\{ text, history: b\.history, state: b\.state \}\)/.test(RV) && /voiceAgent\.parse\(/.test(RV)
-    && /require\("\.\/voice"\)\.mount\(app\);/.test(RI) && !/voice/.test(rd("server.js")));
+    && /require\("\.\/voice"\)\.mount\(app\);/.test(RI) && !/voice/.test(rd("misc/server.js")));
   check("the page: voicechat.js loaded; 🎙 Voice in the statusbar + Ctrl+Alt+V; the mic with echo cancelling; it does not listen while it speaks; actions shown as they run",
     /<script src="\/static\/voicechat\.js"><\/script>/.test(IX) && /b\.id = "tVoice"/.test(VC) && /e\.ctrlKey && e\.altKey/.test(VC) && /echoCancellation: true/.test(VC)
     && /if \(!S\.listen \|\| S\.busy \|\| S\.speaking\)/.test(VC) && /bubble\("did", did\)/.test(VC));

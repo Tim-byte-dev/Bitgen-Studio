@@ -11,7 +11,7 @@ const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 900))); } };
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
-const py = (code) => execFileSync("python3", ["-c", "import sys,json,copy; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(path.join(ROOT, "scripts")) + ")\n" + code], { encoding: "utf8", cwd: ROOT });
+const py = (code) => execFileSync("python3", ["-c", "import sys,json,copy; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(require("path").join(ROOT, "misc")) + "); sys.path.insert(0, " + JSON.stringify(path.join(ROOT, "scripts")) + ")\n" + code], { encoding: "utf8", cwd: ROOT });
 
 const L = require(path.join(ROOT, "lib", "h3Long.js")), F = require(path.join(ROOT, "lib", "framePlan.js"));
 check("h3Long.on: a MiniMax H3 (or arch-less) video style with accel.long on; never LTX / Wan / an image style",

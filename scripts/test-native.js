@@ -112,16 +112,16 @@ check("the Viggle view: ready / missing / note / size / where each part comes fr
   && "note" in rv.body && Array.isArray(rv.body.sources) && rv.body.sources.every((s) => "how" in s));
 
 // ---- 3. the wiring
-const CORE = read("lib", "core.js"), W = read("worker.py"), SW = read("routes", "swapdlg.js");
+const CORE = read("lib", "core.js"), W = read("misc/worker.py"), SW = read("routes", "swapdlg.js");
 check("core: DEFAULT_CONFIG.native (no video switch), install_native a tool mode, the sources refreshed before a Viggle (native) job",
   core.DEFAULT_CONFIG.native && core.DEFAULT_CONFIG.native.port === 8199 && !("video" in core.DEFAULT_CONFIG.native) && CORE.includes('"install_native"];')
   && CORE.includes('if ((job.params || {}).mode === "viggle_native") {') && !("viggle_native" in core.DEFAULT_CONFIG));
 check("worker.py: H3 video stays on ComfyUI (no native branch); the installer builds venvs/native + fetches what is missing",
   !W.includes("native_video") && !W.includes('engine = "native"') && W.includes('"install_viggle", "install_native"):')
-  && W.includes('fetch = Path(__file__).resolve().parent / "scripts" / "native" / "fetch.py"') && W.includes('+ (["torchvision"] if which == "native" else [])'));
+  && W.includes('fetch = Path(__file__).resolve().parent.parent / "scripts" / "native" / "fetch.py"') && W.includes('+ (["torchvision"] if which == "native" else [])'));
 check("comfy_client: a ComfyUI job makes a loaded native Viggle engine hand back RAM + VRAM", read("scripts", "comfy_client.py").includes("_nc.free_for_comfy(cfg, say)"));
 check("viggle_native_worker: ComfyUI's models freed first, then the resident server (the model stays loaded)",
-  read("viggle_native_worker.py").includes("NC.free_comfy(job[\"config\"], say)") && read("viggle_native_worker.py").includes('fin = NC.run(base, "viggle", body, say)'));
+  read("misc/viggle_native_worker.py").includes("NC.free_comfy(job[\"config\"], say)") && read("misc/viggle_native_worker.py").includes('fin = NC.run(base, "viggle", body, say)'));
 check("rippleSwap: Viggle (native) an engine; vn_steps / vn_shift only", RS.engineOf("viggle_native") === "viggle_native"
   && JSON.stringify(RS.settingsSafe({ vn_steps: 6, vn_offload: "gpu" })).includes('"vn_steps":6,"vn_shift":3}') && !("vn_offload" in RS.settingsBlank()));
 check("routes/swapdlg: readiness from the native engine; no ComfyUI needed for a native render with its frames",

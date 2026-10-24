@@ -39,8 +39,9 @@ const scene = (w, h, alpha, k, ev, rig) => {
   });
 };
 
-function start(port) {
+function start(port, opts) {
   const st = { level: "/Game/Maps/Studio", jobs: {}, seq: 0 };
+  const legacy = !!(opts && opts.legacy);                 // 2.590.0: a 1.4.0 bridge (no frame / keep_fast)
   const calls = [];
   const C = {
     ping: () => ({ bridge: "1.0.0", engine: "5.8.1-stub", project: "C:/Unreal/StubProject/StubProject.uproject", level: st.level + ".Studio", port }),
@@ -93,6 +94,13 @@ function start(port) {
       }, 100);
       return { job: id, sequence: seqPath };
     },
+    // 1.5.0 (bitGen 2.590.0): one live frame for the 📺 Unreal View (a still that settles one frame; a sequence at a time)
+    frame: (a) => {
+      st.frames = (st.frames || 0) + 1;
+      if (a.sequence) { st.seqAt = { sequence: a.sequence, time: +a.time || 0 }; a = Object.assign({}, a, { camera: { viewport: true }, w: a.w, h: a.h }); }
+      return C.still(Object.assign({}, a, { w: Math.min(1920, a.w || 640), h: Math.min(1080, a.h || 360) }));
+    },
+    keep_fast: (a) => { const was = st.throttled !== false; st.throttled = a.on === false; return { was_throttled: was, throttled: st.throttled }; },
     job: (a) => { const j = st.jobs[a.id]; if (!j) throw new Error("no such job"); return { state: j.state, error: j.error, frames: fs.readdirSync(j.out).length, sequence: "" }; },
   };
   const srv = http.createServer((req, res) => {
@@ -102,7 +110,7 @@ function start(port) {
     req.on("end", () => {
       let q; try { q = JSON.parse(body || "{}"); } catch (e) { return send(400, { ok: false, error: "not JSON" }); }
       calls.push(q);
-      const f = C[q.cmd]; if (!f) return send(422, { ok: false, error: "unknown command " + q.cmd });
+      const f = legacy && (q.cmd === "frame" || q.cmd === "keep_fast") ? null : C[q.cmd]; if (!f) return send(422, { ok: false, error: "unknown command " + q.cmd });
       try { send(200, Object.assign({ ok: true }, f(q.args || {}))); } catch (e) { send(422, { ok: false, error: e.message }); }
     });
   });

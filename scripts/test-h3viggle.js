@@ -109,7 +109,7 @@ Object.assign(scenes, { load: so.load, save: so.save }); core.pDir = so.pDir; co
 fs.rmSync(tmp, { recursive: true, force: true });
 
 // ---- 4. the wiring
-const IDX = read("routes", "index.js"), CH = read("routes", "characters.js"), W = read("worker.py"), VD = read("ext", "videodock", "characters.js");
+const IDX = read("routes", "index.js"), CH = read("routes", "characters.js"), W = read("misc/worker.py"), VD = read("ext", "videodock", "characters.js");
 check("routes/index: mounted; /api/generate asks lib/h3Viggle before queueing an H3_Viggle render",
   IDX.includes('require("./h3Viggle").mount(app);') && IDX.includes('const hvWhy = require("../lib/h3Viggle").generateError(vs, mode, refVideos, files.length);'));
 check("routes/characters: the board's Workflow H3_Viggle queues through lib/h3Viggle.queue (⏫ refused); its style note",

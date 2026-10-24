@@ -79,7 +79,7 @@ check("pctools: Image Size scales the box / indents (PCType.scale); the paragrap
 check("pctype: the Type tool's drag makes paragraph text; Convert to Paragraph / Point Text; Window ▸ Character / Paragraph; styles kept with the app",
   /TT\.down = function \(e, fx, fy\)/.test(TY) && /TT\.up = function \(\)/.test(TY) && /C\("type\.para", "Type: Convert to Paragraph Text"/.test(TY) && /C\("type\.point", "Type: Convert to Point Text"/.test(TY)
   && /C\("win\.pcChar", "Character"/.test(TY) && /C\("win\.pcPara", "Paragraph"/.test(TY) && /store\.get\("t\.cstyles", \[\]\)/.test(TY) && /store\.get\("t\.pstyles", \[\]\)/.test(TY));
-check("server.js untouched", !/pctype|cstyles/.test(read("server.js")));
+check("server.js untouched", !/pctype|cstyles/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -259,6 +259,7 @@
         { id: "u_again", label: "Render Again", icon: "⟳", run: again, enabled: function () { return !!sel(); } }] },
       { label: "Real", show: 1, items: [{ id: "u_real", label: "Render to Real", icon: "🎬", run: realDialog, enabled: function () { return !!sel(); } }] },   // 2.540.0
       { label: "Lights", show: 1, items: [{ id: "u_lights", label: "Lights & Fog…", icon: "💡", run: lightsDialog, enabled: function () { return !!sel(); } }] },
+      { label: "View", show: 1, items: [{ id: "u_live", label: "📺 Unreal View", icon: "📺", run: function () { if (window.TlUELive) C.say(window.TlUELive.toggle() ? "📺 the Unreal View - the selected Unreal clip at the playhead, live" : "📺 Unreal View hidden"); else C.say("📺 the Unreal View is not loaded (reload the page)"); } }] },   // 2.590.0 (tluelive.js)
       { label: "Bridge", show: 1, items: [{ id: "u_set", label: "Unreal Settings", icon: "⚙", run: function () { if (window.Settings3D) window.Settings3D.open(); } },
         { id: "u_st", label: "Check the Link", icon: "🔗", run: function () { U.status().then(function (s) { C.say(s.connected ? "🎮 Unreal " + s.engine + ": " + s.project + " · " + s.level : "🎮 Unreal: " + s.error); }); } }] },
     ] });

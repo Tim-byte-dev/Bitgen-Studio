@@ -16,7 +16,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..")
-sys.path.insert(0, ROOT)
+sys.path.insert(0, ROOT); sys.path.insert(0, os.path.join(ROOT, "misc"))
 sys.path.insert(0, HERE)
 import worker                                                # noqa: E402
 import comfy_client as CC                                    # noqa: E402
@@ -179,7 +179,7 @@ finally:
     pr.terminate()
     worker.fail = real_fail
 
-src = open(os.path.join(ROOT, "worker.py"), encoding="utf-8").read()
+src = open(os.path.join(ROOT, "misc", "worker.py"), encoding="utf-8").read()
 check("the render calls _veda_resolve right after the accelerators go in", "_veda_resolve(base, g)          # 2.536.0" in src
       and src.index("_veda_resolve(base, g)          # 2.536.0") > src.index("g, anotes = apply_video_accel(g, vstyle.get(\"accel\"))"))
 

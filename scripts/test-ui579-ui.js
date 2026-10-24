@@ -69,7 +69,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     /* 3 Settings ▸ Dockers */
     await ev(() => window.H3DockReset.open());
     await p.waitForSelector("#stab-dockers.active #drList table", { timeout: 10000 });
-    const rows = await ev(() => [...document.querySelectorAll("#drList tr td:first-child")].map((t) => t.textContent));
+    const rows = await ev(() => [...document.querySelectorAll("#drList tr td:first-child")].map((t) => t.textContent.replace(/^(👁|🚫)/u, "")));   // 2.587.0: the 👁 / 🚫 switch before the name
     const want = ["Timeline", "StoryBoard", "Image editor", "Prompt", "Settings", "Gallery", "E2E579 Dock", "Basic Settings"];
     check("Settings ▸ Dockers lists every docker - the main column, the side dockers, the floating windows and a NEW extension docker", want.every((w) => rows.some((r) => r.indexOf(w) === 0)), rows);
     // 2.581.0: another extension docker that is open (the 📐 SolidCraft docker when SolidCraft is installed - its frame

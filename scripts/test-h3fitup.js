@@ -34,7 +34,7 @@ check("...the ⚙ preview says what renders: 736 + crop, or 704", up.h3_fit === 
   && dn.notes.some((n) => /H3 size: 1280x704/.test(n)), [up.notes, dn.notes]);
 
 // 2
-const CORE = read("lib", "core.js"), W = read("worker.py");
+const CORE = read("lib", "core.js"), W = read("misc/worker.py");
 check("core: job.json carries the project's h3_fit (renderSettings); the worker reads it into params",
   /h3_fit: job\.params\.h3_fit \|\| \(\(\) => \{\s*try \{ return require\("\.\/renderSettings"\)\.read\(projDir\(job\.project \|\| currentProject\)\)\.h3_fit;/.test(CORE)
   && /if job\.get\("h3_fit"\) and not params\.get\("h3_fit"\):\s*# 2\.380\.0[^\n]*\n\s*params\["h3_fit"\] = job\["h3_fit"\]/.test(W));
@@ -49,7 +49,7 @@ ff(["-f", "lavfi", "-i", "color=c=gray:s=1280x736:r=24:d=1", "-f", "lavfi", "-i"
     "[0:v]drawbox=x=0:y=720:w=1280:h=16:color=blue:t=fill[v]", "-map", "[v]", "-map", "1:a", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", path.join(tmp, "chunk_01.mp4")]);
 ff(["-f", "lavfi", "-i", "color=c=gray:s=1280x736:r=24:d=1", "-c:v", "ffv1", "-level", "3", path.join(tmp, "chunk_01.raw.avi")]);
 const out = execFileSync("python3", ["-c", [
-  "import sys, json, os; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); import worker",
+  "import sys, json, os; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(require("path").join(ROOT, "misc")) + "); import worker",
   "os.chdir(" + JSON.stringify(tmp) + ")",
   "h3 = {'40': {'class_type': 'MiniMaxH3ImageToVideo', 'inputs': {}}}",
   "a = worker._h3_size(h3, 1280, 720, 'up'); b = worker._h3_size(h3, 1280, 704, 'up')",

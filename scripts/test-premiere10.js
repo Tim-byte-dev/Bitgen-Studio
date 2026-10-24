@@ -38,7 +38,7 @@ check("mixfx: an unpanned input untouched, panned ones through pan=stereo with t
   pj.labs.join() === "[a],[pan1],[pan2]" && pj.p[0] === "[b]aformat=channel_layouts=stereo,pan=stereo|c0=0.5000*c0|c1=1.0000*c1[pan1]" && /c0=1\.0000\*c0\|c1=0\.0000\*c1/.test(pj.p[1])
   && pj.m === "[amaster]" && pj.q[0] === "[aout]volume=0.5000[amaster]" && pj.none === "[aout]", pj);
 check("mixfx.panned: a pan anywhere (V1, a layer, a sound clip) or the master moved -> the compile's full sound pass", !pj.pan1 && pj.pan2 && pj.pan3 && pj.pan4 && near(pj.g[0], 0.75), pj);
-const W = read("worker.py"), RI = read("routes", "index.js"), TLD = read("ext", "timelinedock", "timelinedock.js"), CV = read("ext", "timelinedock", "canvas.js"), MJ = read("ext", "timelinedock", "mixer.js");
+const W = read("misc/worker.py"), RI = read("routes", "index.js"), TLD = read("ext", "timelinedock", "timelinedock.js"), CV = read("ext", "timelinedock", "canvas.js"), MJ = read("ext", "timelinedock", "mixer.js");
 check("the worker: pans gathered with the mix inputs (V1, layers, sound clips), panned before the ducking / amix, the master after; post includes panned()",
   /pans\.append\(tl\.get\("video_pan"\) or 0\)/.test(W) && /pans\.append\(c\.get\("lpan"\) or 0\)/.test(W) && /pans\.append\(c\.get\("pan"\) or 0\)/.test(W)
   && /mix_in = _mixfx\.pan_inputs\(parts, mix_in, pans, say\)/.test(W) && /aout_lbl = _mixfx\.master_out\(parts, aout_lbl, tl\.get\("master"\), say\)/.test(W) && /or _mixfx\.panned\(tl\)/.test(W));
@@ -117,7 +117,7 @@ check("boundary_chain: a wipe in + an iris out = xfade against a see-through cop
   check("...rendered: a quarter way into the wipe the right side is there, the left still see-through; the middle whole; near the end only the centre (the iris closing)",
     m(150, 45) > 200 && m(10, 45) < 30 && mid(10, 45) > 200 && end(80, 45) > 200 && end(3, 3) < 30, { q: [m(150, 45), m(10, 45)], mid: mid(10, 45), end: [end(80, 45), end(3, 3)] });
 }
-const WK = read("worker.py");
+const WK = read("misc/worker.py");
 check("the worker: video and picture layers' boundaries through _shape (their alpha fade only for what is not a shape)",
   // 2.519.0: 2.498.0 / 2.505.0 route the video layer's input through src_v (its own picture, or the masked /
   // displaced one) before the same _shape call

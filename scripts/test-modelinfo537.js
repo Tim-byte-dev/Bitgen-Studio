@@ -107,7 +107,7 @@ const MI = require("../lib/modelInfo.js"), MC = require("../lib/modelCards.js"),
   const mc = read("lib/modelCards.js"), rt = read("routes/modelMgr.js"), mm = read("static/modelmgr.js");
   check("modelCards: the library is a layer of the card (above other tools, below your sidecar), its thumb a fallback, info_status / examples / folder on the card",
     /library && library\.status === "found"/.test(mc) && /require\("\.\/modelInfo"\)\.thumbPath\(h\.card\)/.test(mc) && /card\.info_status =/.test(mc) && /card\.folder = folderOf\(f\.name\)/.test(mc));
-  check("routes/modelMgr.js (not server.js): info, example, fetch (+ status / stop), used", ["/api/modelmgr/info", "/api/modelmgr/example", "/api/modelmgr/fetch", "/api/modelmgr/fetch/stop", "/api/modelmgr/used"].every((u) => rt.includes(u)) && !read("server.js").includes("modelmgr/fetch"));
+  check("routes/modelMgr.js (not server.js): info, example, fetch (+ status / stop), used", ["/api/modelmgr/info", "/api/modelmgr/example", "/api/modelmgr/fetch", "/api/modelmgr/fetch/stop", "/api/modelmgr/used"].every((u) => rt.includes(u)) && !read("misc/server.js").includes("modelmgr/fetch"));
   check("the docker: 📌 This project tab, folder tabs, a pager with 'auto (fit)', ⇲ Edit + a card corner grip + size slider, ⤓ Civitai info, the info page",
     /data-mmtab="used"/.test(mm) && /id="mmFolders"/.test(mm) && /auto \(fit\)/.test(mm) && /data-mmgrip/.test(mm) && /id="mmSize"/.test(mm) && /id="mmFetch"/.test(mm) && /function infoHtml\(\)/.test(mm));
   check("…the hover card is clickable (it stays while the pointer moves onto it) and opens the info page; a card click still selects",

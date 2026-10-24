@@ -38,11 +38,11 @@ check("not there, but an LTX 2.5 transformer is -> the closest of that kind",
 check("...never another model family (an LTX 2.3 file is not an LTX 2.5 one)", MM.best(["ltx-2.3-22b-dev.safetensors", "wan.safetensors"], W, UNET) == (None, ""))
 check("no pattern -> only the same file counts", MM.best(["other.safetensors"], W) == (None, ""))
 check("no list to check (an old ComfyUI) -> the workflow's own name, unchanged", MM.best([], W, UNET) == (W, "unlisted"))
-R = (ROOT / "ripple_worker.py").read_text(encoding="utf-8")
+R = (ROOT / "misc" / "ripple_worker.py").read_text(encoding="utf-8")
 check("ripple_worker: every model loader (UNETLoader / VAELoader / VAELoaderKJ / CLIPLoader) matched, said, or refused in words",
       all(c in R for c in ('"UNETLoader": ("unet_name"', '"VAELoader": ("vae_name"', '"VAELoaderKJ": ("vae_name"', '"CLIPLoader": ("clip_name"'))
       and "name, how = MM.best(listed, want, pat)" in R and "as your ComfyUI lists it" in R and "nothing like it is in" in R)
-V = (ROOT / "viggle_worker.py").read_text(encoding="utf-8")
+V = (ROOT / "misc" / "viggle_worker.py").read_text(encoding="utf-8")
 check("viggle_worker.pick uses the same matcher", "return MM.best(names, want, pattern)[0]" in V)
 print(f"RESULT: {P} passed, {F} failed")
 sys.exit(1 if F else 0)

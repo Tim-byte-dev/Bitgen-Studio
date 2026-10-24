@@ -133,7 +133,7 @@ try:
            "config": {"engine": {"backend": "comfy", "comfy": {"url": f"http://127.0.0.1:{port}"}}},
            "output_dir": str(jd / "out"), "app_dir": str(ROOT)}
     (jd / "job.json").write_text(json.dumps(job))
-    r = subprocess.run([sys.executable, "-u", str(ROOT / "vr_world_worker.py"), str(jd / "job.json")], cwd=str(jd),
+    r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "vr_world_worker.py"), str(jd / "job.json")], cwd=str(jd),
                        capture_output=True, text=True, timeout=300)
     outs = [x[6:] for x in r.stdout.splitlines() if x.startswith("@@OUT ")]
     vid = jd / "out" / outs[0] if outs else None
@@ -161,7 +161,7 @@ try:
     bad = dict(job)
     bad["params"] = dict(job["params"], vr_mode="cube")
     (jd / "bad.json").write_text(json.dumps(bad))
-    r = subprocess.run([sys.executable, "-u", str(ROOT / "vr_world_worker.py"), str(jd / "bad.json")], cwd=str(jd),
+    r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "vr_world_worker.py"), str(jd / "bad.json")], cwd=str(jd),
                        capture_output=True, text=True, timeout=60)
     check("an unknown VR type: refused in words", r.returncode != 0 and "unknown VR type 'cube'" in r.stdout, r.stdout[-300:])
 finally:

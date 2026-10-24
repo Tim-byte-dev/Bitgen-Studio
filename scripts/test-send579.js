@@ -87,8 +87,8 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-6);
       r.ok && asked.cmd === "import_mesh" && asked.a.name === "sc_part" && asked.a.folder === "SolidCraft" && asked.a.place === true && /v 0 5 -10/.test(fs.readFileSync(asked.a.file, "utf8")) && r.actor === "sc_part", { r, asked });
   } finally { fs.rmSync(U, { recursive: true, force: true }); }
   const BP = rd("ue", "bitGenBridge", "Content", "Python", "bitgen_bridge.py"), UP = JSON.parse(rd("ue", "bitGenBridge", "bitGenBridge.uplugin"));
-  check("the plugin 1.4.0: import_mesh (AssetImportTask automated, /Game/bitGen/<folder>, replace + save; placed in the level, replaced where it stood, selected)",
-    /VERSION = "1\.4\.0"/.test(BP) && UP.VersionName === "1.4.0" && /"import_mesh": cmd_import_mesh/.test(BP) && /AssetImportTask\(\)/.test(BP) && /"automated", True/.test(BP) && /spawn_actor_from_object\(mesh, loc, rot\)/.test(BP) && /set_selected_level_actors/.test(BP));
+  check("the plugin 1.4.0+ (2.590.0: 1.5.0): import_mesh (AssetImportTask automated, /Game/bitGen/<folder>, replace + save; placed in the level, replaced where it stood, selected)",
+    /VERSION = "1\.([4-9]|\d\d)\.\d+"/.test(BP) && /^1\.([4-9]|\d\d)\.\d+$/.test(UP.VersionName) && /"import_mesh": cmd_import_mesh/.test(BP) && /AssetImportTask\(\)/.test(BP) && /"automated", True/.test(BP) && /spawn_actor_from_object\(mesh, loc, rot\)/.test(BP) && /set_selected_level_actors/.test(BP));
   check("routes: POST /api/unreal/import {model}; the test stub knows import_mesh", /app\.post\("\/api\/unreal\/import"/.test(rd("routes", "unreal.js")) && /import_mesh: \(a\) =>/.test(rd("scripts", "ue-stub.js")));
 
   /* 5 🏠 House builder: 3D model items */

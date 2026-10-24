@@ -51,7 +51,7 @@ setTimeout(() => { const s = P.stats(), e = P.since(m); console.log(JSON.stringi
 try { fs.rmSync(T, { recursive: true, force: true }); } catch { /* fine */ }
 
 /* ---- wiring */
-const CORE = read("lib", "core.js"), JI = read("lib", "jobsInfo.js"), IDX = read("routes", "index.js"), HT = read("static", "index.html"), SRV = (() => { try { return read("server.js"); } catch { return ""; } })();
+const CORE = read("lib", "core.js"), JI = read("lib", "jobsInfo.js"), IDX = read("routes", "index.js"), HT = read("static", "index.html"), SRV = (() => { try { return read("misc/server.js"); } catch { return ""; } })();
 check("core.js: a job's energy marked when it starts, counted when it ends (done / failed / cancelled), logged [power], on its record + /api/jobs",
   /job\._energy0 = require\("\.\/power"\)\.mark\(\)/.test(CORE) && /pw\.since\(job\._energy0\)/.test(CORE) && /log\(job, `\[power\] \$\{pw\.words\(e(, pw\.priceOf\(config\))?\)\}`\)/.test(CORE) && /energy: job\.energy \|\| null/.test(CORE) && /if \(job\.energy\) e\.energy = job\.energy;/.test(JI));
 check("/api/stats has power (lib/power.js stats); server.js untouched", /power: \(\(\) => \{ try \{ return require\("\.\.\/lib\/power"\)\.stats\(\); \}/.test(IDX) && !/lib\/power|powerstats/.test(SRV));

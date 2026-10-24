@@ -13,6 +13,9 @@
 //   GET  /api/unreal/job/:id           {state, frames, of, video, dur, error}
 //   POST /api/unreal/actors            2.540.0: {camera, level?, w, h} (the still's) -> {camera, objects: [{name, cls, box}]} the
 //                                      mesh actors in view (bitGen Bridge 1.3.0) - the 🖼 References lists
+//   POST /api/unreal/frame             2.590.0: a still's request (+ client, sequence / time) -> the live frame (PNG) for the 📺
+//                                      Unreal View (lib/ueLive.js - bridge 1.5.0 "frame", an older one: its "still")
+//   POST /api/unreal/keepfast          2.590.0: {on} - the editor keeps full speed behind bitGen (bridge 1.5.0 "keep_fast")
 //   POST /api/unreal/import            2.579.0: {model} a file in the project's 3D models -> a Static Mesh in /Game/bitGen/SolidCraft,
 //                                      placed in the open level (lib/ueImport.js - bitGen Bridge 1.4.0's import_mesh)
 "use strict";
@@ -34,6 +37,12 @@ function mount(app) {
   app.post("/api/unreal/actors", express.json(), (req, res) => { let p; try { p = ue.actorsInView(req.body); } catch (e) { return fail(res, e); } p.then((j) => res.json(j), (e) => fail(res, e)); });   // 2.540.0
   // 2.579.0: a model from the project's 3D models -> a Static Mesh in the open level (lib/ueImport.js, plugin 1.4.0)
   app.post("/api/unreal/import", express.json(), (req, res) => { require("../lib/ueImport").send((req.body || {}).model).then((j) => res.json(j), (e) => fail(res, /unknown command/.test(e.message) ? Object.assign(e, { message: "the bitGen Bridge plugin in your Unreal project is older than 1.4.0 - update it (🎮 Load UE project updates it) to import meshes" }) : e)); });
+  // 2.590.0: 📺 the Unreal View - one live frame (the PNG itself), and keep the editor fast behind bitGen (lib/ueLive.js)
+  app.post("/api/unreal/frame", express.json(), (req, res) => {
+    let p; try { p = require("../lib/ueLive").frame(req.body || {}); } catch (e) { return fail(res, e); }
+    p.then((j) => { res.set({ "Cache-Control": "no-store", "X-UE-Ms": String(j.ms), "X-UE-Legacy": j.legacy ? "1" : "0" }).type("png").sendFile(j.file); }, (e) => fail(res, e));
+  });
+  app.post("/api/unreal/keepfast", express.json(), (req, res) => { require("../lib/ueLive").keepFast((req.body || {}).on !== false).then((j) => res.json(j), (e) => fail(res, e)); });
   app.get("/api/unreal/job/:id", (req, res) => { ue.job(req.params.id).then((j) => res.json(j), (e) => fail(res, e)); });
 }
 

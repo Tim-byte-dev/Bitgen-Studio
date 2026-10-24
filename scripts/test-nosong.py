@@ -65,7 +65,7 @@ check("ref2va shape: the song slot dropped, the voices renumbered ref_audio_0 / 
 check("...no lock -> untouched, silent; the input graph is never mutated",
       ns.unlock({"1": {"class_type": "SaveVideo", "inputs": {}}}) == ({"1": {"class_type": "SaveVideo", "inputs": {}}}, [])
       and R2["40"]["inputs"]["ref_audios.ref_audio_0"] == ["31", 0])
-W = (ROOT / "worker.py").read_text()
+W = (ROOT / "misc" / "worker.py").read_text()
 check("worker: a no_song job takes the lock out right after the graph loads - BEFORE any upload / loader fill",
       'if params.get("no_song"):' in W and "g, nsnotes = _ns.unlock(g)" in W
       and W.index("g, nsnotes = _ns.unlock(g)") < W.index("srcs, snotes = _frame_sources(g, seg_mode, refs, first_frame, last_frame)"))

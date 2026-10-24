@@ -37,7 +37,7 @@ FILES=$(find . -type f \
   ! -path "./graphs/*" \
   ! -path "./pose_sheets/*" \
   ! -path "./solidcraft/*" \
-  ! -path "./team/*" \
+  ! -path "./team/*" ! -path "./llm_arena/*" ! -path "./refmod/*" \
   ! -path "./models/*" ! -path "./loras/*" ! -path "./llm-models/*" \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \
   ! -path "./comfy/*" \
@@ -50,9 +50,15 @@ FILES=$(find . -type f \
   ! -name "workspaces.json" ! -name "workspaces.json.tmp" \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
+# 2.589.0 (Tim: "remove this from bitgen and give it as an additional addon with notes saying this may trigger virus
+# checkers"): OPTIONAL extensions (ext.json "optional": true - the Team render farm, ext/teamdock) are in NO install
+# zip (full / repo / flat) - only their own bitgen-ext-<id>-v<ver>.zip, built below from ALLFILES
+ALLFILES="$FILES"
+OPTIONAL_EXTS=$(for d in ext/*/; do [ -f "$d/ext.json" ] && grep -q '"optional": *true' "$d/ext.json" && basename "$d"; done 2>/dev/null || true)
+for o in $OPTIONAL_EXTS; do FILES=$(echo "$FILES" | grep -v "^ext/${o}/" || true); done
 # default.settings SHIPS (it is the authored default layer); custom.settings
 # never does — it is this machine's diff from the defaults (2.99.0).
-[ -f default.settings ] || { echo "default.settings is missing — run the server once (it writes it) or restore it"; exit 1; }
+[ -f misc/default.settings ] || { echo "misc/default.settings is missing — run the server once (it writes it) or restore it"; exit 1; }
 
 FULL="$OUT/bitgen-studio-v${VER}-full.zip"
 rm -f "$FULL"
@@ -66,7 +72,7 @@ MAN="$STAGE/_MANIFEST.txt"
 {
   echo "bitGen Studio v${VER} — flat CORE delivery ($(date -u +%F))"
   echo "Files named a__b.ext belong at a/b.ext. Restore the tree with:"
-  echo "  powershell -ExecutionPolicy Bypass -File unflatten.ps1   (Windows)"
+  echo "  powershell -ExecutionPolicy Bypass -File misc__unflatten.ps1   (Windows)"
   echo "  python3 scripts__unflatten.py                            (anywhere)"
   echo
   echo "ext/ IS NOT IN THIS ZIP (2.217.0): each docker extension ships as its"
@@ -122,7 +128,7 @@ if [ -d ext ]; then
     if [ -n "${EXTS:-}" ] && [[ "$EXTS_SEL" != *" $id "* ]]; then continue; fi
     EZ="$OUT/bitgen-ext-${id}-v${VER}.zip"
     rm -f "$EZ"
-    echo "$FILES" | grep "^ext/${id}/" | zip -q "$EZ" -@
+    echo "$ALLFILES" | grep "^ext/${id}/" | zip -q "$EZ" -@
     echo "built $EZ"
   done
 fi

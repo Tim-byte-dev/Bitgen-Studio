@@ -130,11 +130,11 @@ const until = async (id) => { for (let i = 0; i < 200; i++) { const j = CG.job(i
 
   /* the wiring */
   const R = path.join(__dirname, "..");
-  const ix = fs.readFileSync(path.join(R, "routes", "index.js"), "utf8"), sv = fs.readFileSync(path.join(R, "server.js"), "utf8");
+  const ix = fs.readFileSync(path.join(R, "routes", "index.js"), "utf8"), sv = fs.readFileSync(path.join(R, "misc", "server.js"), "utf8");
   const ext = JSON.parse(fs.readFileSync(path.join(R, "ext", "solidcraftdock", "ext.json"), "utf8"));
   const g = fs.readFileSync(path.join(R, "ext", "solidcraftdock", "scgen.js"), "utf8");
   check("wired: routes/cadGen mounted in routes/index.js (not server.js), scgen.js in the docker's scripts, cad_worker.py beside the other workers",
-    /require\("\.\/cadGen"\)\.mount\(app\)/.test(ix) && !/cadGen/.test(sv) && ext.scripts.indexOf("scgen.js") > ext.scripts.indexOf("scbridge.js") && fs.existsSync(path.join(R, "cad_worker.py")));
+    /require\("\.\/cadGen"\)\.mount\(app\)/.test(ix) && !/cadGen/.test(sv) && ext.scripts.indexOf("scgen.js") > ext.scripts.indexOf("scbridge.js") && fs.existsSync(path.join(R, "misc", "cad_worker.py")));
   check("the docker: the replay checks SolidCraft's volume and falls back to the STEP (file.insert_step) at the checkpoint",
     /edit\.checkpoint/.test(g) && /edit\.restore_checkpoint/.test(g) && /sc\.insertFile\(r\.step/.test(g) && /volumeOk\(got, r\.volume\)/.test(g) && /inspect\.measure/.test(g));
   check("routes/cadGen extOf: png / jpeg / webp only", require("../routes/cadGen").extOf("image/png") === "png" && require("../routes/cadGen").extOf("image/jpg") === "jpeg" && require("../routes/cadGen").extOf("image/gif") === "");

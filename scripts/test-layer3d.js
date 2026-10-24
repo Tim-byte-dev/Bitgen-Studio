@@ -41,7 +41,7 @@ check("sizeFor: a quick view's long side 640", JSON.stringify(L3.sizeFor(1920, 1
 
 // wiring
 const rd = (...f) => fs.readFileSync(path.join(__dirname, "..", ...f), "utf8");
-const ext = JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts, IE = rd("ext", "imageeditdock", "imageedit.js"), DOC = rd("ext", "imageeditdock", "pcdoc.js"), RI = rd("routes", "index.js"), SV = rd("server.js"), PY = rd("scripts", "blend_layer3d.py");
+const ext = JSON.parse(rd("ext", "imageeditdock", "ext.json")).scripts, IE = rd("ext", "imageeditdock", "imageedit.js"), DOC = rd("ext", "imageeditdock", "pcdoc.js"), RI = rd("routes", "index.js"), SV = rd("misc/server.js"), PY = rd("scripts", "blend_layer3d.py");
 check("wiring: pc3d.js after pcdimauto.js, before pchandles.js; installed before PCHandles (its drag wins)", ext.indexOf("pc3d.js") === ext.indexOf("pcdimauto.js") + 1 && ext.indexOf("pchandles.js") === ext.indexOf("pc3d.js") + 5 && IE.indexOf("PC3D.install(E)") < IE.indexOf("PCHandles.install(E)") && IE.indexOf("PC3D.install(E)") > IE.indexOf("PCDimAuto.install(E)"));
 check("...undo keeps L.l3d (pcdoc DEEP)", /"dimPart", "l3d"[\],]/.test(DOC));
 check("...routes/layer3d.js mounted from routes/index.js (not server.js)", /require\("\.\/layer3d"\)\.mount\(app\)/.test(RI) && !/layer3d/.test(SV));

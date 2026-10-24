@@ -56,7 +56,7 @@ check("the docker's words: ✓ ✗ – ·, '3 ✓ · 1 ✗ · 5 to do (of 9)'", 
 
 /* ---- wiring */
 const IDX = read("routes", "index.js"), HT = read("static", "index.html"), RT = read("routes", "testPlan.js"), TDS = read("static", "testdock.js"), MMR = read("routes", "modelMgr.js"), CVS = read("lib", "civitai.js");
-const SRV = (() => { try { return read("server.js"); } catch { return ""; } })();
+const SRV = (() => { try { return read("misc/server.js"); } catch { return ""; } })();
 check("routes: /api/testplan, /mark, /clear, /report (a download: Content-Disposition attachment) mounted from routes/index.js; server.js untouched",
   /require\("\.\/testPlan"\)\.mount\(app\)/.test(IDX) && /"\/api\/testplan"/.test(RT) && /"\/api\/testplan\/mark"/.test(RT) && /"\/api\/testplan\/clear"/.test(RT) && /Content-Disposition", `attachment; filename=/.test(RT) && !/testPlan|testdock/.test(SRV));
 check("the app tells it what happened: ✚ New style, ✎ card edits, Civitai searches / downloads (with the folder) / look-ups",

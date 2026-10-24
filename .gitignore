@@ -33,6 +33,12 @@ workspace/
 projects/
 # team/ is this PC's render-farm identity (2.583.0): its PRIVATE keys, the pinned team, who may render here
 team/
+# llm_arena/ is this PC's 🔁 Compare LLMs record (2.584.0): the requests, every LLM's reply, which one was picked
+llm_arena/
+# refmod/ is this PC's RefMod library (2.588.0): the datasets + mods every project uses (🎓 ▸ 🧬 RefMods)
+refmod/
+# ext/teamdock/ is the OPTIONAL Team render farm (2.589.0) - it ships only as its own zip (bitgen-ext-teamdock-v<ver>.zip)
+ext/teamdock/
 output/
 # styles/ and graphs/ are USER CONTENT: the app seeds the starter styles in
 # code (lib/styles.js STARTER_STYLES), so an empty folder is the correct

@@ -36,7 +36,7 @@ check("...the next clip's layer drawn UNDER the one before: the one before goes 
 
 /* 2 the export keys */
 check("tailKeys: a tail (0..4 s) goes to the compile, none = nothing", JSON.stringify(K.tailKeys({ tail: 0.5 })) === '{"tail":0.5}' && JSON.stringify(K.tailKeys({ tail: 9 })) === '{"tail":4}' && JSON.stringify(K.tailKeys({})) === "{}");
-const RI = rd("routes", "index.js"), TD = rd("ext", "timelinedock", "timelinedock.js"), CV = rd("ext", "timelinedock", "canvas.js"), WK = rd("worker.py"), SQ = rd("static", "tlseq.js");
+const RI = rd("routes", "index.js"), TD = rd("ext", "timelinedock", "timelinedock.js"), CV = rd("ext", "timelinedock", "canvas.js"), WK = rd("misc/worker.py"), SQ = rd("static", "tlseq.js");
 check("the tail reaches the compile: the page sends it for V1 and the video layers, the route keeps it for both, the worker renders the tails right after the clip fx",
   (TD.match(/tail: c\.tail > 0 \? c\.tail : undefined/g) || []).length === 2 && (RI.match(/\.\.\.tlKeys\.tailKeys\(c\)/g) || []).length === 2
   && /import cliptail as _ctail/.test(WK) && WK.indexOf("_ctail.prepare(tl") > WK.indexOf("_cfx.prepare(tl") && WK.indexOf("_ctail.prepare(tl") < WK.indexOf('vids = tl["video"]'));

@@ -81,11 +81,11 @@ function send(port, method, u, body) {
   check("comfy_client.graph_meta: the graph's literal seed, steps, cfg, sampler, model files, LoRAs (+ weight); a linked seed is not a seed",
     gm.seed === 42 && gm.steps === 8 && gm.cfg === 1.5 && gm.sampler === "euler" && gm.models[0] === "klein.safetensors"
     && gm.loras[0].name === "grain.safetensors" && gm.loras[0].weight === 0.8 && !gm.seeds, gm);
-  const CC = read("scripts", "comfy_client.py"), W = read("worker.py");
+  const CC = read("scripts", "comfy_client.py"), W = read("misc/worker.py");
   check("...printed as '[meta] {...}' before every queue (comfy_client.queue + the video worker's own submit)",
     /def queue\(base, graph, client_id=None\):\n    print_meta\(graph\)/.test(CC) && /_cc\.print_meta\(graph\)\s*\n\s*resp = _http_json\(base \+ "\/prompt"/.test(W));
   const wk = execFileSync("python3", ["-c", [
-    "import sys, json; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); import worker",
+    "import sys, json; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(require("path").join(ROOT, "misc")) + "); import worker",
     "said = []; worker.say = lambda s: said.append(s)",
     "def g(): return {'9': {'class_type': 'ChainCurrent', 'inputs': {}},",
     "   '1': {'class_type': 'MiniMaxH3ImageToVideo', 'inputs': {'prompt': 'x', 'seed': ['9', 1], 'width': 64, 'height': 64}},",
@@ -186,7 +186,7 @@ function send(port, method, u, body) {
     && /b \+= " in " \+ scClock\(r\.render_seconds\)/.test(VC) && /b \+= " · seed " \+ r\.seed_used/.test(VC));
   check("routes/jobMeta mounted from routes/index.js (never server.js); /api/stats' running job carries its progress",
     /require\("\.\/jobMeta"\)\.mount\(app\)/.test(read("routes", "index.js")) && /progress: require\("\.\.\/lib\/jobMeta"\)\.progress\(running\)/.test(read("routes", "index.js"))
-    && !/jobMeta/.test(read("server.js")));
+    && !/jobMeta/.test(read("misc/server.js")));
 
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

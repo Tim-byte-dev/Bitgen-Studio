@@ -51,7 +51,7 @@ try {
 
 // the wiring
 const I = read("static", "index.html"), SF = read("static", "secfloat.js"), IE = read("ext", "imageeditdock", "imageedit.js"), UI = read("ext", "imageeditdock", "pcui.js");
-check("the page loads static/secfloat.js (after dockcfg.js; 2.398.0 dockfloat.js just before it); nothing in server.js", /dockcfg\.js"><\/script>\n<!--[^\n]*-->\n<script src="\/static\/dockfloat\.js"><\/script>[^\n]*\n<script src="\/static\/secfloat\.js"><\/script>/.test(I) && !/secfloat/.test(read("server.js")));
+check("the page loads static/secfloat.js (after dockcfg.js; 2.398.0 dockfloat.js just before it); nothing in server.js", /dockcfg\.js"><\/script>\n<!--[^\n]*-->\n<script src="\/static\/dockfloat\.js"><\/script>[^\n]*\n<script src="\/static\/secfloat\.js"><\/script>/.test(I) && !/secfloat/.test(read("misc/server.js")));
 check("the sections move whole (their ids kept): #sec-basic and #sec-llmtok into the windows, a launcher row in the left docker", /\$\("sec-" \+ spec\.id\)/.test(SF) && /body\.appendChild\(body0\)/.test(SF) && /sfLaunch/.test(SF) && /\/api\/docker-status/.test(SF));
 check("the editor: a bitGen theme (the app's colours - 2.432.0: the app's variables, so it follows Settings ▸ Themes), the default and moved to once; Window ▸ Theme lists it first",
   /\.kx\[data-theme=bitgen\]\{--pc-bg:var\(--th-ink,#14120f\);--pc-panel:var\(--th-panel,#1d1a15\);--pc-panel2:var\(--th-panel-2,#26221b\);[^}]*--pc-accent:var\(--th-tiger,#f59e2c\)/.test(IE) && /data-theme="\$\{store\.get\("theme", "bitgen"\)\}"/.test(IE)

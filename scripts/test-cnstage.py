@@ -259,7 +259,7 @@ with tempfile.TemporaryDirectory() as td:
           or any("gen_20260926-2_s9.png" in x for x in log2), log2)
 
 # ---- 5. the worker ------------------------------------------------------------------------------------------
-W = (ROOT / "image_worker.py").read_text()
+W = (ROOT / "misc" / "image_worker.py").read_text()
 check("image_worker: run_comfy takes a graph hook (after the patch + combo spelling, before the schema fill)",
       "def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None):" in W
       and W.index("graph = graph_hook(graph)") > W.index("_comfy.canonicalise_combos(base, graph)")

@@ -54,7 +54,7 @@ V.register("x", (q) => !!q.fx1); V.register("bad", () => { throw new Error("no")
 check("TlVBake: needs = any registered effect (a throwing one says no); the signature leaves out the bake fields",
   V.needs({ fx1: 1 }) && !V.needs({}) && V.sig({ a: 1, vbake: "x", vbakeSig: "y", bake: "z" }) === V.sig({ a: 1 }) && V.sig({ a: 1 }) !== V.sig({ a: 2 }));
 const CV = read("ext", "timelinedock", "canvas.js"), TP = read("ext", "timelinedock", "tlparent.js"), TD = read("ext", "timelinedock", "timelinedock.js"), TK = read("lib", "tlKeys.js"),
-  RI = read("routes", "index.js"), W = read("worker.py"), TG = read("ext", "timelinedock", "tlgen.js"), TR = read("ext", "timelinedock", "tlrays.js"), TV = read("ext", "timelinedock", "tlvbake.js");
+  RI = read("routes", "index.js"), W = read("misc/worker.py"), TG = read("ext", "timelinedock", "tlgen.js"), TR = read("ext", "timelinedock", "tlrays.js"), TV = read("ext", "timelinedock", "tlvbake.js");
 check("canvas: rays after the masks in both paths; a picture bigger than its box (_ow) drawn that much bigger, centred; never on the GPU path",
   /TlRays\.apply\(pic, c, t - \(c\.start \|\| 0\), false\)/.test(CV) && /TlRays\.apply\(pic, c, t - \(c\.start \|\| 0\), S\.playing\)/.test(CV)
   && /g\.drawImage\(pic, -b\.w \* ow \/ 2, -b\.h \* ow \/ 2, b\.w \* ow, b\.h \* ow\)/.test(CV) && /tg\.drawImage\(pic, -b\.w \* pow \/ 2, -b\.h \* pow \/ 2, b\.w \* pow, b\.h \* pow\)/.test(CV) && /c\.gen \|\| c\.rays(?: \|\| c\.\w+)*; \}/.test(CV));

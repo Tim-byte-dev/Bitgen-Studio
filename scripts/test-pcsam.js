@@ -297,7 +297,7 @@ print(json.dumps({"slots": sl, "imgs": [g2[s]["inputs"]["image"] for s in sl], "
       ext.indexOf("pcsam.js") > ext.indexOf("pcui.js") && ext.indexOf("pcpsd.js") > ext.indexOf("pcsam.js") && ext.indexOf("imageedit.js") > ext.indexOf("pcpsd.js")
       && IE.indexOf("win.PCSam.install(E)") > IE.indexOf("win.PCUI.install(E)") && /\["objsel", "Object Selection Tool \(Segment Anything\)"\]/.test(UI) && /E\.togglePick\(Ly\)/.test(UI)
       && /\["compose", "Compose"/.test(IE) && /compose: async \(req, say\)/.test(MT) && /toRefs: \(items\)/.test(MT)
-      && /require\("\.\/segment"\)\.mount\(app\)/.test(RI) && /require\("\.\/psd"\)\.mount\(app\)/.test(RI) && !/segment|psd/i.test(read("server.js"))
+      && /require\("\.\/segment"\)\.mount\(app\)/.test(RI) && /require\("\.\/psd"\)\.mount\(app\)/.test(RI) && !/segment|psd/i.test(read("misc/server.js"))
       && fs.existsSync(path.join(ROOT, "static", "vendor", "ag-psd.js")) && /MIT License/.test(read("static", "vendor", "LICENSE-ag-psd.txt")));
   } catch (e) {
     check("the run finished", false, String(e && e.stack || e).slice(0, 900));

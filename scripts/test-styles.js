@@ -790,7 +790,7 @@ console.log("=======================");
     (S.musicArchById("minimax-music3") || {}).engine === "comfy"
     && S.musicArchIds().length === 3
     && (S.musicArchById("yue2-comfy") || {}).engine === "comfy");
-  const MW = fs.readFileSync(path.join(__dirname, "..", "music_worker.py"), "utf8");
+  const MW = fs.readFileSync(path.join(__dirname, "..", "misc", "music_worker.py"), "utf8");
   check("music_worker dispatches BY ARCH (ENGINE_FOR) — comfy path untouched, yue2 shells the pinned venv CLI",
     /ENGINE_FOR = \{"yue2": "yue2"\}/.test(MW)
     && /def run_yue2\(/.test(MW)
@@ -803,7 +803,7 @@ console.log("=======================");
     && MW.includes('ext=".flac"')
     && MW.includes("install it in Settings > Add-ons"));   // 2.540.4: the in-app installer (lib/addons.js)
   check("get-yue2.ps1 ships, PINNED to yue2-v0.1.6, venv-local, and says the first-run download + VRAM truth",
-    (() => { const p = fs.readFileSync(path.join(__dirname, "..", "get-yue2.ps1"), "utf8");
+    (() => { const p = fs.readFileSync(path.join(__dirname, "..", "misc", "get-yue2.ps1"), "utf8");
              return /\$Tag = "yue2-v0\.1\.6"/.test(p)
                  && /yue2-infer @ https:\/\/github\.com\/multimodal-art-projection\/YuE\/archive\/refs\/tags\/\$Tag\.zip/.test(p)   // 2.540.4: the release zip, torch from the CUDA index first
                  && /torch==2\.10\.0" --index-url https:\/\/download\.pytorch\.org\/whl\/cu130/.test(p)

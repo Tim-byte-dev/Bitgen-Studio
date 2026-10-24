@@ -96,7 +96,7 @@ try {
   // ---- 2. wiring
   const IX = read("static", "index.html"), RI = read("routes", "index.js"), RF = read("routes", "filedialog.js");
   check("routes/index.js mounts routes/filedialog.js; server.js untouched",
-    /require\("\.\/filedialog"\)\.mount\(app\)/.test(RI) && !/filedialog|fdlg/.test(read("server.js")));
+    /require\("\.\/filedialog"\)\.mount\(app\)/.test(RI) && !/filedialog|fdlg/.test(read("misc/server.js")));
   check("the routes: places / list / search / stat / thumb / file / mkdir / rename, behind the loopback guard",
     ["/api/fdlg/places", "/api/fdlg/list", "/api/fdlg/search", "/api/fdlg/stat", "/api/fdlg/thumb", "/api/fdlg/file",
      "/api/fdlg/mkdir", "/api/fdlg/rename"].every((r) => RF.includes('"' + r + '"'))
@@ -110,7 +110,7 @@ try {
   check("Settings -> General: the built-in dialogs switch (ui.builtin_dialogs, default ON in core + default.settings)",
     IX.includes('id="s_fdlg" checked') && IX.includes("body: JSON.stringify({ ui: { builtin_dialogs: on } })")
     && IX.includes("window.FileDialog.enabled = on;") && /builtin_dialogs: true/.test(read("lib", "core.js"))
-    && JSON.parse(read("default.settings")).ui.builtin_dialogs === true);
+    && JSON.parse(read("misc/default.settings")).ui.builtin_dialogs === true);
 
   // ---- 3. the dialog in jsdom
   (async () => {

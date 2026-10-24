@@ -107,7 +107,7 @@ const GRAPH = { "3": { class_type: "KSampler", inputs: { seed: 4242, steps: 26, 
   const RM = rd("routes", "modelMgr.js"), RI = rd("routes", "index.js");
   check("routes: /api/modelmgr/media (+ /file, /update, /delete), /api/modelmgr/thumb (+ /clear), /api/media-meta - mounted from routes/index.js",
     ["/api/modelmgr/media\"", "/api/modelmgr/media/file", "/api/modelmgr/media/update", "/api/modelmgr/media/delete", "app.post(\"/api/modelmgr/thumb\"", "/api/modelmgr/thumb/clear"].every((x) => RM.includes(x))
-    && /require\("\.\/mediaMeta"\)\.mount\(app\)/.test(RI) && !/mediaMeta/.test(rd("server.js")));
+    && /require\("\.\/mediaMeta"\)\.mount\(app\)/.test(RI) && !/mediaMeta/.test(rd("misc/server.js")));
 
   /* 5 the Civitai sync in the status bar */
   const CS = require(path.join(ROOT, "static", "civitaisync.js"));

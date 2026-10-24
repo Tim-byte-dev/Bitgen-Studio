@@ -94,7 +94,7 @@ try {
 
 // ---- 2. wiring
 check("routes/index.js mounts routes/refvideo.js (server.js untouched)",
-  /require\("\.\/refvideo"\)\.mount\(app\)/.test(read("routes", "index.js")) && !/refvideo/.test(read("server.js")));
+  /require\("\.\/refvideo"\)\.mount\(app\)/.test(read("routes", "index.js")) && !/refvideo/.test(read("misc/server.js")));
 const rv = read("routes", "refvideo.js");
 check("routes/refvideo.js: GET + POST /api/refvideo/select over lib/refSelect",
   rv.includes('app.get("/api/refvideo/select"') && rv.includes('app.post("/api/refvideo/select"')

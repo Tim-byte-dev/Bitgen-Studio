@@ -76,7 +76,7 @@ const scenes = require(path.join(ROOT, "lib", "scenes.js"));
   const RS = rd("routes", "storyboard.js"), ST = rd("ext", "videodock", "storyboard.js"), CH = rd("ext", "videodock", "characters.js");
   check("routes: plan = lib/storyboardPlan (async); /set (a project picture / a take's frame) and /upload (a file) change it; fromjob keeps the prompt; nothing in server.js",
     /await sbPlan\.plan\(b\.project, req\.params\.n, \{ sheets: b\.sheets, locations: b\.locations, refs: b\.refs, prev: b\.prev, llm: b\.llm, style_id: b\.style_id \}\)/.test(RS)
-    && /app\.post\("\/api\/storyboard\/:n\/set"/.test(RS) && /app\.post\("\/api\/storyboard\/:n\/upload", upload\.single\("image"\)/.test(RS) && /b\.style, b\.prompt\)/.test(RS) && !/storyboardPlan/.test(rd("server.js")));
+    && /app\.post\("\/api\/storyboard\/:n\/set"/.test(RS) && /app\.post\("\/api\/storyboard\/:n\/upload", upload\.single\("image"\)/.test(RS) && /b\.style, b\.prompt\)/.test(RS) && !/storyboardPlan/.test(rd("misc/server.js")));
   check("the StoryBoard bar: ☑ LLM writes it, ☑ Previous last frame (both on by default) sent with the image model; the prompt kept; 📁 = the scene picker's slot sb (its 🎬 / 🎞 / 📁 / ⤒ tabs post to /api/storyboard) -> picked() (Start on it = its First frame)",
     /llm: true, prev: true/.test(ST) && /prev: opts\.prev, llm: opts\.llm, style_id: style/.test(ST) && /prompt: plan\.prompt \}/.test(ST) && /root\.bgScenes\.pickPicture\(n, "sb"\)/.test(ST)
     && /var isSb = slot === "sb"/.test(CH) && /isSb \? "\/api\/storyboard\/" \+ n \+ "\/set"/.test(CH) && /isSb \? "\/api\/storyboard\/" \+ n \+ "\/upload"/.test(CH) && /pickPicture: scFlPicker/.test(CH)

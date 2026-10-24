@@ -451,18 +451,18 @@ t("lib/comfyGraphs.js reuses fileStem from styles.js rather than copying it", ()
   assert.ok(!/function fileStem/.test(src), "fileStem was re-implemented");
 });
 t("graph_worker.py exists and refuses any mode but graph", () => {
-  const src = fs.readFileSync(path.join(ROOT, "graph_worker.py"), "utf8");
+  const src = fs.readFileSync(path.join(ROOT, "misc", "graph_worker.py"), "utf8");
   assert.ok(/mode=graph/.test(src));
   assert.ok(/only runs mode=graph/.test(src));
 });
 t("THE CONTROL MODEL IS NOT DUPLICATED IN PYTHON", () => {
-  const src = fs.readFileSync(path.join(ROOT, "graph_worker.py"), "utf8");
+  const src = fs.readFileSync(path.join(ROOT, "misc", "graph_worker.py"), "utf8");
   for (const word of ["normalizeControl", "def coerce", "\"slider\"", "'slider'"]) {
     assert.ok(!src.includes(word), `graph_worker.py mentions ${word} — the control model must live only in lib/comfyGraphs.js`);
   }
 });
 t("THE UPLOAD IS THE WORKER'S ONLY JOB HERE", () => {
-  const src = fs.readFileSync(path.join(ROOT, "graph_worker.py"), "utf8");
+  const src = fs.readFileSync(path.join(ROOT, "misc", "graph_worker.py"), "utf8");
   assert.ok(/graph_uploads/.test(src), "the worker does not upload the dock's files");
   assert.ok(/upload_image/.test(src));
   // The class names are the tell: a worker that knows what a LoadImage is has

@@ -119,7 +119,7 @@ print(json.dumps(res))
 
 // ---- worker, client, route, catalogue, starter ---------------------------
 {
-  const W = read("music_worker.py");
+  const W = read("misc/music_worker.py");
   check("worker: the cover's reference uploads to ComfyUI before queueing",
     W.includes('p["ref_audio"] = _comfy.upload_image(base, str(rp))'));
   check("worker: want=abc collects the PreviewAny text and writes the .abc as THE output",
@@ -191,7 +191,7 @@ print(json.dumps(res))
 
 // ---- 2.238.0: "add a filetype to save the song to" — flac / mp3 / wav ----
 {
-  const W38 = read("music_worker.py");
+  const W38 = read("misc/music_worker.py");
   check("2.238.0: to_format converts AFTER the render from lossless flac (lame V0 mp3, 16-bit wav), keeps the flac on any ffmpeg trouble, and BOTH engines call it",
     W38.includes("def to_format(path, fmt")
     && W38.includes('"mp3": ["-c:a", "libmp3lame", "-q:a", "0"]')
@@ -204,7 +204,7 @@ print(json.dumps(res))
 import importlib.util, subprocess, sys, tempfile, os
 from pathlib import Path
 sys.path.insert(0, "scripts")
-spec = importlib.util.spec_from_file_location("mw", "music_worker.py")
+spec = importlib.util.spec_from_file_location("mw", "misc/music_worker.py")
 mw = importlib.util.module_from_spec(spec)
 try: spec.loader.exec_module(mw)
 except SystemExit: pass
@@ -357,7 +357,7 @@ print("@@FMT " + str(ok_w and ok_m and ok_k and ok_n))`;
       const py = `
 import importlib.util, sys
 sys.path.insert(0, "scripts")
-spec = importlib.util.spec_from_file_location("mw", "music_worker.py")
+spec = importlib.util.spec_from_file_location("mw", "misc/music_worker.py")
 mw = importlib.util.module_from_spec(spec)
 try: spec.loader.exec_module(mw)
 except SystemExit: pass
@@ -365,7 +365,7 @@ print("@@T " + mw.title_lead("Neon Nights!") + "|" + mw.title_lead("../evil") + 
       const out = require("child_process").execFileSync("python3", ["-c", py],
         { cwd: path.join(__dirname, ".."), encoding: "utf8", timeout: 30000 });
       const l = (out.split("\n").find((x) => x.startsWith("@@T ")) || "").slice(4).split("|");
-      const W = read("music_worker.py");
+      const W = read("misc/music_worker.py");
       return l[0] === "Neon-Nights" && l[1] && !/[^A-Za-z0-9_.-]/.test(l[1]) && l[2] === ""
         && W.includes('stem = title_lead(title) + "_" + stem');
     })());
@@ -504,7 +504,7 @@ print("@@T " + mw.title_lead("Neon Nights!") + "|" + mw.title_lead("../evil") + 
       const py = `
 import importlib.util, sys, json
 sys.path.insert(0, "scripts")
-spec = importlib.util.spec_from_file_location("mw", "music_worker.py")
+spec = importlib.util.spec_from_file_location("mw", "misc/music_worker.py")
 mw = importlib.util.module_from_spec(spec)
 try: spec.loader.exec_module(mw)
 except SystemExit: pass
@@ -1035,7 +1035,7 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
     && !C64.includes("install_openaudio")
     && R64.includes('which must be omnivoice, whisper or demucs')   // 2.269.0: demucs joined
     && !R64.includes('app.get("/api/tts/checkpoint"')
-    && read("worker.py").includes('if mode in ("install_whisper", "install_omnivoice", "install_demucs", "install_viggle", "install_native"):'));
+    && read("misc/worker.py").includes('if mode in ("install_whisper", "install_omnivoice", "install_demucs", "install_viggle", "install_native"):'));
   check("2.264.0: the settings panel is OmniVoice — fixed engine select, Device + CUDA build live in the Omni box, no checkpoint/venv/install-openaudio fields, the save pins engine omnivoice",
     (() => {
       const H = read("static", "index.html");
@@ -1225,7 +1225,7 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
    worker now pins scene_range from the job's OWN scene.n on the very graph
    it submits — no rebuild can race it. */
 {
-  const W = read("worker.py");
+  const W = read("misc/worker.py");
   check("the worker pins scene_range from job scene.n just before submit", (() => {
     const i = W.indexOf("scene pin: the queued graph said scene_range");
     return i > 0
@@ -1331,7 +1331,7 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
       && H.includes('("vocals", "_vocals"), ("no_vocals", "_instrumental")')
       && H.includes("demucs.separate");
   })());
-  const W = read("worker.py");
+  const W = read("misc/worker.py");
   check("installer: demucs joins the venv modes and VERIFIES ITS OWN import (the 2.264 fish-speech leftover is gone)", (() => {
     return W.includes('"install_whisper", "install_omnivoice", "install_demucs"')
       && W.includes('pkgs = ["demucs", "soundfile"]')
@@ -1357,7 +1357,7 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
   })());
   const C = read("lib", "core.js");
   check("stems config: DEFAULT_CONFIG + default.settings agree on the htdemucs shape", (() => {
-    const ds = JSON.parse(read("default.settings"));
+    const ds = JSON.parse(read("misc/default.settings"));
     return C.includes('stems: { venv: "", model: "htdemucs", device: "auto"')
       && ds.stems && ds.stems.model === "htdemucs" && ds.stems.device === "auto";
   })());
@@ -2136,7 +2136,7 @@ setTimeout(() => {
 // downstream: sampler, decodes, SegmentSave, Review, LoopEnd, Assemble.
 // The stub accepted the sink-less graph, so the gate never saw it.) ------
 {
-  const W = read(".", "worker.py");
+  const W = read("misc", "worker.py");
   check("2.279.0: a MiniMaxH3Chain* node whose input link points at a dead node DROPS THE KEY and runs on its default (the pack's mode B) instead of dying — Scheduled*References keep dying with their own loader (2.144.0)",
     // 2.291.0: the OBVPM "(obvpm)"/H3* exemption left with its workflow
     W.includes('if "MiniMaxH3Chain" in ct:')
@@ -2208,7 +2208,7 @@ print("@@SO ok" if ok else "@@SO FAIL " + no[:120] + " | " + yes[:120])
   check("2.280.0 LIVE: worker._schema_sync fills ON THE NODE (an inputs:{} loader and a node with NO inputs key both land their fills — the falsy-{} orphan is dead) and understands array-COMBO, object-COMBO and object-form defaults",
     (() => {
       const probe = `
-import sys; sys.path.insert(0, ".")
+import sys; sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 INFO = {
   "KSamplerSelect": {"input": {"required": {"sampler_name": ["COMBO", {"options": ["res_multistep"]}]}}},
@@ -2302,14 +2302,14 @@ print("@@SY ok" if ok else "@@SY FAIL " + repr(g))
 // pack terminals are all gone; the store hides an adopted entry --------
 {
   const RC = read("routes", "characters.js");
-  const W = read(".", "worker.py");
+  const W = read("misc", "worker.py");
   const SC = read("scripts", "stub-comfy.py");
   check("2.291.0: OBVPM_Timeline is GONE - no shipped export, no CONVERT entry, no worker/stub special cases, no NOTICE section, and REMOVED_STYLES hides an adopted store entry",
     !fs.existsSync(path.join(__dirname, "..", "comfy_workflows", "OBVPM_Timeline.ui.json"))
     && !RC.includes("OBVPM_Timeline: {") && RC.includes("OBVPM_Timeline REMOVED (2.291.0")
     && !W.includes("LoadImagesCompose (obvpm)") && !W.includes('"(obvpm)" in ct')
     && !SC.includes("H3TrimAndSaveVideoWithMCtx")
-    && !read(".", "NOTICE.md").includes("comfyui-obvpm-timeline")
+    && !read("misc", "NOTICE.md").includes("comfyui-obvpm-timeline")
     && require("../lib/styles").REMOVED_STYLES.includes("OBVPM_Timeline")
     && read("lib", "styles.js").includes('if (style.kind === "video" && REMOVED_STYLES.includes(style.name)) continue;')
     && RC.includes('const ch = CONVERT_STYLES[String(styleName || "")] || chainFor(styleName);'));
@@ -2384,7 +2384,7 @@ print("@@SY ok" if ok else "@@SY FAIL " + repr(g))
     && RC.includes('base: "MMH3_NativeAudio_MV.json", ui: "MMH3_NativeAudio_MV.ui.json",')
     && RC.includes("ComfyUI-H3-NativeAudioLock (from the ")
     && read("lib", "styles.js").includes('fl2va: "comfy_workflows/MMH3_NativeAudio_MV_fl2va.json"')
-    && read(".", "NOTICE.md").includes("MiniMax-H3-NativeAudio-MusicVideo-Workflow"));
+    && read("misc", "NOTICE.md").includes("MiniMax-H3-NativeAudio-MusicVideo-Workflow"));
   check("2.284.0: visual_context_source DRIVES THE RENDER opportunistically - the source resolves BY ID on the rows, a rendered take donates its final frame as the sole reference (fl2va only when the style brings one), and a missing take falls back to the sheets WITH A NOTE, never a refusal (boards render out of order)",
     RC.includes('let queueMode = "ref2va";')
     && RC.includes("let srcId = shot && shot.visual_context_source;")
@@ -2607,7 +2607,7 @@ print('@@EX ok')
   const RC = read("routes", "characters.js");
   const RI = read("routes", "index.js");
   const VD = read("ext/videodock", "characters.js");
-  const W = read(".", "worker.py");
+  const W = read("misc", "worker.py");
   check("2.288.0 LIVE: the .seg file now states the WINDOW (a to b) and still round-trips, and fromPlan CARRIES the user's audio window/anchor/picked frame across a plan rewrite",
     (() => {
       const probe = `

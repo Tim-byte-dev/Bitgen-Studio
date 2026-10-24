@@ -12,7 +12,8 @@
  *   the prompt    floating at its first place (its default)
  *   a window      not maximized / minimized, floating at its first place at its first size (shown or not as it was)
  * ↺ Reset all does every row. A docker that is not installed (the 📐 SolidCraft docker without SolidCraft) is not
- * listed. Pure: nameOf(text) (scripts/test-send579.js). */
+ * listed. 2.587.0: 👁 / 🚫 beside each name turns the docker (and its status-bar button) off and on - static/layouts.js,
+ * which also adds the 🗂 Layouts box below the list. Pure: nameOf(text) (scripts/test-send579.js). */
 (function (root) {
   "use strict";
   var MAIN = [["previewdock", "Preview"], ["timelinedock", "Timeline"], ["videodock", "StoryBoard"], ["imageeditdock", "Image editor"], ["comfydock", "ComfyUI"],
@@ -137,10 +138,21 @@
       var rows = all.filter(function (d) { return d.kind === g[0]; });
       if (!rows.length) return "";
       return "<h4>" + esc(g[1]) + '</h4><table><tr><th style="width:30%">Docker</th><th>Now</th><th style="width:90px"></th></tr>' + rows.map(function (d) {
-        return '<tr><td>' + esc(d.name) + ' <span class="k">' + esc(d.id) + '</span></td><td class="w">' + esc(where(d)) + '</td><td><button type="button" class="ghost" data-drreset="' + esc(d.kind + ":" + d.id) + '" title="Put ' + esc(d.name) + ' back at its default place and size">↺ Reset</button></td></tr>';
+        // 2.587.0 (Tim: "in dockers add a visible icon next to the dockers name ... if hidden hide the docker and the statusbar
+        // button for the docker"): 👁 on / 🚫 off (static/layouts.js H3Layouts)
+        var L = root.H3Layouts, off = L ? L.isOff(d) : false;
+        var vis = L ? '<button type="button" class="ghost drvis' + (off ? " off" : "") + '" data-drvis="' + esc(d.kind + ":" + d.id) + '" aria-pressed="' + (off ? "false" : "true") + '" title="' + (off ? "Off: " + esc(d.name) + " and its status-bar button are hidden - click to bring them back" : "Shown - click to hide " + esc(d.name) + " and its status-bar button") + '">' + (off ? "🚫" : "👁") + "</button>" : "";
+        return '<tr><td>' + vis + esc(d.name) + ' <span class="k">' + esc(d.id) + '</span></td><td class="w">' + esc(off ? "off (hidden, no status-bar button)" : where(d)) + '</td><td><button type="button" class="ghost" data-drreset="' + esc(d.kind + ":" + d.id) + '" title="Put ' + esc(d.name) + ' back at its default place and size">↺ Reset</button></td></tr>';
       }).join("") + "</table>";
     }).join("");
     $("drMsg").textContent = msg || "";
+    host.querySelectorAll("[data-drvis]").forEach(function (b) {
+      b.onclick = function () {
+        var k = b.dataset.drvis, d = list().find(function (x) { return x.kind + ":" + x.id === k; }); if (!d || !root.H3Layouts) return;
+        var off = root.H3Layouts.set(d, !root.H3Layouts.isOff(d));
+        setTimeout(function () { paint((off ? "🚫 " + d.name + " is off - it and its status-bar button are hidden" : "👁 " + d.name + " is back")); }, 200);
+      };
+    });
     host.querySelectorAll("[data-drreset]").forEach(function (b) {
       b.onclick = function () {
         var k = b.dataset.drreset, d = list().find(function (x) { return x.kind + ":" + x.id === k; }); if (!d) return;

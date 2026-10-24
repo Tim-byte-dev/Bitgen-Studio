@@ -92,7 +92,7 @@ try {
 const core = read("lib", "core.js");
 check("core: mode swap runs swap_worker.py (its own worker, WORKER_FOR)", /swap: "swap_worker\.py"/.test(core));
 check("routes/index.js mounts routes/swap.js; server.js is untouched",
-  /require\("\.\/swap"\)\.mount\(app\)/.test(read("routes", "index.js")) && !/swap/.test(read("server.js")));
+  /require\("\.\/swap"\)\.mount\(app\)/.test(read("routes", "index.js")) && !/swap/.test(read("misc/server.js")));
 const rs = read("routes", "swap.js");
 check("routes/swap.js: GET /api/swap/cast, POST /api/swap, POST /api/scenes/:n/swap",
   rs.includes('app.get("/api/swap/cast"') && rs.includes('app.post("/api/swap"')
@@ -105,8 +105,8 @@ check("the workflow ships as API json (+ Tim's UI export beside it)",
   cls.includes("MiniMaxH3ReferenceToVideo") && cls.includes("VHS_LoadVideo") && cls.includes("LoadImage")
   && fs.existsSync(path.join(ROOT, "comfy_workflows", "MiniMax_H3_Swap.ui.json")));
 check("swap_worker.py: cuts, patches, renders, puts the original audio back",
-  /SG\.trim_args/.test(read("swap_worker.py")) && /SG\.patch/.test(read("swap_worker.py"))
-  && /SG\.mux_args/.test(read("swap_worker.py")));
+  /SG\.trim_args/.test(read("misc/swap_worker.py")) && /SG\.patch/.test(read("misc/swap_worker.py"))
+  && /SG\.mux_args/.test(read("misc/swap_worker.py")));
 
 // ---- 2b. the mmh3_chr_swap STYLE (2.328.0, Tim: "is there a style for this
 // workflow, if not can you make one mmh3_chr_swap")
@@ -154,8 +154,8 @@ check("routes: both swap routes pick the style (resolveStyle); /api/styles lists
   (rs.match(/const ps = pickStyle\(b\.video_style_id\);/g) || []).length === 2 && /swap\.resolveStyle\(/.test(rs)
   && /swap_styles: Object\.fromEntries/.test(ri) && /is a character-swap style - it only runs in Swap mode/.test(ri));
 check("swap_worker.py: the style's overrides through worker.py's apply_video_style + apply_video_accel",
-  /_W\.apply_video_style\(graph, style\)/.test(read("swap_worker.py")) && /_W\.apply_video_accel\(/.test(read("swap_worker.py"))
-  && /apply_style\(graph, params\.get\("video_style"\)\)/.test(read("swap_worker.py")));
+  /_W\.apply_video_style\(graph, style\)/.test(read("misc/swap_worker.py")) && /_W\.apply_video_accel\(/.test(read("misc/swap_worker.py"))
+  && /apply_style\(graph, params\.get\("video_style"\)\)/.test(read("misc/swap_worker.py")));
 
 // ---- 3. the UI
 const html = read("static", "index.html");

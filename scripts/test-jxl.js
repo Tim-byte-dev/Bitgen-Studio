@@ -82,7 +82,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   if (py.error) console.log("SKIP: python3 is not here - scripts/jxl_png.py not run");
   else { const lines = py.stdout.trim().split("\n"); check("jxl_png.png_for (Python): a .jxl -> its PNG path; anything else as it was", lines.length === 2 && /\.png$/.test(lines[0]) && fs.existsSync(lines[0]) && lines[1] === "a.png", [py.stdout, py.stderr]); }
   // the wiring
-  const core = read("lib/core.js"), idx = read("routes/index.js"), html = read("static/index.html"), w0 = read("worker.py"), cc = read("scripts/comfy_client.py"), fd = read("scripts/fdlg_helper.py"), ui = read("ext/imageeditdock/pcui.js");
+  const core = read("lib/core.js"), idx = read("routes/index.js"), html = read("static/index.html"), w0 = read("misc/worker.py"), cc = read("scripts/comfy_client.py"), fd = read("scripts/fdlg_helper.py"), ui = read("ext/imageeditdock/pcui.js");
   check("the project's pictures take .jxl; workers get BITGEN_NODE; routes/jxl.js mounted first after json; index.html loads static/jxl.js before the other scripts",
     /images: \[[^\]]*"\.jxl"/.test(core) && /BITGEN_NODE: process\.execPath/.test(core) && /express\.json\(\)\);\n\s*require\("\.\/jxl"\)\.mount\(app\)/.test(idx)
     && html.indexOf('/static/jxl.js"') > 0 && html.indexOf('/static/jxl.js"') < html.indexOf('/static/selsearch.js"'));
@@ -91,7 +91,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   check("the file dialog, Add, the timeline's files and the editor's pickers know .jxl; Export As offers JPEG XL + Lossless",
     /"\.svg", "\.jxl"\]/.test(read("lib/fileDialog.js")) && /"image\/jxl": \[".jxl"\]/.test(read("static/filedialog.js")) && /"\.bmp", "\.jxl"\]/.test(read("static/addtile.js")) && /tiff\?\|jxl/.test(read("lib/bgVideo.js"))
     && /accept="image\/\*,\.jxl"/.test(read("ext/imageeditdock/imageedit.js")) && /\["jxl", "JPEG XL", "image\/jxl", "jxl", true\]/.test(ui) && /id="pdL"/.test(ui));
-  const vd = path.join(ROOT, "static", "vendor", "jxl"), notice = read("NOTICE.md");
+  const vd = path.join(ROOT, "static", "vendor", "jxl"), notice = read("misc/NOTICE.md");
   check("the codecs + their licence files are shipped and named in NOTICE.md", ["jxl_oxide_wasm.js", "jxl_oxide_wasm_bg.wasm", "jxl_enc.js", "jxl_enc.wasm", "LICENSE-jxl-oxide.txt", "LICENSE-jsquash-jxl.txt", "LICENSE-libjxl.txt", "package.json"].every((x) => fs.existsSync(path.join(vd, x)))
     && /jxl\/LICENSE-jxl-oxide\.txt/.test(notice) && /jxl\/LICENSE-libjxl\.txt/.test(notice));
   fs.rmSync(tmp, { recursive: true, force: true });

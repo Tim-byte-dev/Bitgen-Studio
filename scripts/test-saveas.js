@@ -226,7 +226,7 @@ try {
     && IX.includes("if (window.SaveAs) SaveAs.saveAs({ url: `/outputs/${encodeURIComponent(f.name)}`, name: f.name });"));
   check("static/saveas.js loads after the file dialog; routes/saveAs mounted from routes/index.js (never server.js)",
     IX.indexOf('<script src="/static/saveas.js"></script>') > IX.indexOf('<script src="/static/filedialog.js"></script>')
-    && RI.includes('require("./saveAs").mount(app);') && !read("server.js").includes("saveAs"));
+    && RI.includes('require("./saveAs").mount(app);') && !read("misc/server.js").includes("saveAs"));
 } catch (e) {
   fail++; console.log("FAIL: the test crashed :: " + (e && e.stack || e));
 } finally {

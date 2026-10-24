@@ -109,7 +109,7 @@ finally:
 # the error when it is nowhere names every list it was looked for in
 src = open(os.path.join(HERE, "comfy_client.py"), encoding="utf-8").read()
 check("the 'not in list' message says it is in no list - checkpoints, diffusion_models, unet - and where to put it", "It is not in Load Checkpoint's list (models/checkpoints)" in src and "ComfyUI/models/diffusion_models" in src)
-iw = open(os.path.join(HERE, "..", "image_worker.py"), encoding="utf-8").read()
+iw = open(os.path.join(HERE, "..", "misc", "image_worker.py"), encoding="utf-8").read()
 check("the image worker logs the change ('-> as ComfyUI lists it')", iw.count("as ComfyUI lists it") == 2)
 
 print(f"\n{PASS} passed, {FAIL} failed")

@@ -150,7 +150,7 @@ else:
 
 # ---- 2.328.0: the mmh3_chr_swap STYLE's overrides in swap_worker.apply_style
 import signal  # noqa: E402
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "misc"))
 _argv = sys.argv
 sys.argv = ["swap_worker.py"]
 import swap_worker as SWK  # noqa: E402
@@ -223,7 +223,7 @@ check("add_swap_lora: no Power Lora Loader = a LoraLoaderModelOnly after the mod
       gu2["h3swaplora"]["inputs"]["model"] == ["1", 0] and gu2["2"]["inputs"]["model"] == ["h3swaplora", 0]
       and gu2["3"]["inputs"]["model"] == ["h3swaplora", 0])
 check("add_swap_lora: no loader at all = skipped, said", "skipped" in SG.add_swap_lora({}, SWL)[1])
-wsrc = (ROOT / "swap_worker.py").read_text(encoding="utf-8")
+wsrc = (ROOT / "misc" / "swap_worker.py").read_text(encoding="utf-8")
 check("swap_worker: the swap LoRA is looked up + stacked after the style, ref_image_size passed, long runs warned",
       "graph = swap_lora(base, graph" in wsrc and "ref_image_size=params.get(\"ref_image_size\")" in wsrc
       and "SG.BEST_FRAMES" in wsrc)

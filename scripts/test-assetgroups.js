@@ -85,7 +85,7 @@ try {
 // ---- 2. the wiring
 const idx = read("routes", "index.js"), rt = read("routes", "assets.js");
 check("routes/assets.js is mounted from routes/index.js (not server.js)",
-  /require\("\.\/assets"\)\.mount\(app\)/.test(idx) && !/assetGroups|routes\/assets/.test(read("server.js")));
+  /require\("\.\/assets"\)\.mount\(app\)/.test(idx) && !/assetGroups|routes\/assets/.test(read("misc/server.js")));
 check("routes: GET/POST groups, usage, recycle",
   rt.includes('app.get("/api/passets/groups"') && rt.includes('app.post("/api/passets/groups"')
   && rt.includes('app.post("/api/passets/usage"') && rt.includes('app.post("/api/passets/recycle"'));

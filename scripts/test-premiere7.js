@@ -57,7 +57,7 @@ check("...without the alpha passes: ProRes 4444 opaque (yuv444p10le)", /-profile
 check("VAAPI: listed last for H.264 / H.265 / 10-bit / AV1; frames uploaded (format=nv12,hwupload), CQP, -vaapi_device before the input",
   D.hw.h264[3] === "h264_vaapi" && D.hw.h265_10.includes("hevc_vaapi") && D.hw.av1.includes("av1_vaapi") && /format=nv12,hwupload\[v\]/.test(D.va) && /-c:v hevc_vaapi -rc_mode CQP -qp 24/.test(D.va)
   && JSON.stringify(D.pre) === '["-vaapi_device","/dev/dri/renderD128"]' && D.pre2.length === 0, D);
-const DP = read("scripts", "deliver.py"), WK = read("worker.py");
+const DP = read("scripts", "deliver.py"), WK = read("misc/worker.py");
 check("deliver.py alpha_passes: the export job run twice more (bg black / white, crf 10, out_name beside the master, no deliverables, no .srt), removed after",
   /def alpha_passes\(final, say\)/.test(DP) && /pr\.update\(\{"bg": bg, "crf": 10, "out_name": f"\{final\.stem\}__alpha_\{bg\}\.mp4"\}\)/.test(DP) && /tl\["deliver"\] = \[\]/.test(DP)
   && /caps\["srt"\] = False/.test(DP) && /Path\(f\)\.unlink\(missing_ok=True\)/.test(DP));
@@ -124,8 +124,8 @@ check("the route: J / L on the layers (forLayers), a sound clip from a video fil
 check("worker.py: a layer clip's amute silences its sound there; a J / L of a retimed clip plays at its speed (atempo chain) / backwards (areverse)",
   /amx = \(",volume=volume=0:enable='"/.test(WK) && /def _atempo\(s\):/.test(WK) && /pre \+= "areverse,"/.test(WK));
 const AT = JSON.parse(py(`import importlib.util
-spec = importlib.util.spec_from_file_location("w", "worker.py")
-src = open("worker.py", encoding="utf-8").read()
+spec = importlib.util.spec_from_file_location("w", "misc/worker.py")
+src = open("misc/worker.py", encoding="utf-8").read()
 i = src.index("def _atempo(s):"); j = src.index("def _fade_any(c):")
 ns = {}; exec(src[i:j], ns)
 print(json.dumps([ns["_atempo"](4), ns["_atempo"](0.2), ns["_atempo"](1.5)]))`));
@@ -218,7 +218,7 @@ check("📤 dialog: drop-frame (tdlDrop) + the overlay pack (ProRes 4444); ⇄ d
   && /id="tixDrop"/.test(read("ext", "timelinedock", "interchange.js")));
 const SC = JSON.parse(read("docs", "shortcuts.json"));
 check("docs/shortcuts.json: Ctrl+Shift+M", SC.groups.some((gg) => gg.rows.some((r) => r[0] === "Ctrl+Shift+M")));
-check("server.js untouched; package.json 2.412.0 or later", !/tltargets|splitEdit|alpha_passes/.test(read("server.js")) && JSON.parse(read("package.json")).version.localeCompare("2.412.0", undefined, { numeric: true }) >= 0);
+check("server.js untouched; package.json 2.412.0 or later", !/tltargets|splitEdit|alpha_passes/.test(read("misc/server.js")) && JSON.parse(read("package.json")).version.localeCompare("2.412.0", undefined, { numeric: true }) >= 0);
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

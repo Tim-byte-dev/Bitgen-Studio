@@ -48,9 +48,9 @@ const near = (a, b, t) => Math.abs(a - b) <= (t || 1e-9);
 }
 // --- the wiring
 {
-  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), w = read("worker.py"), idx = read("routes/index.js"), ext = JSON.parse(read("ext/timelinedock/ext.json")).scripts, src = read("ext/timelinedock/tlparent.js");
+  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), w = read("misc/worker.py"), idx = read("routes/index.js"), ext = JSON.parse(read("ext/timelinedock/ext.json")).scripts, src = read("ext/timelinedock/tlparent.js");
   check("canvas.js: box() uses the world transform for a parented clip; nulls never drawn; a move drag is turned into the parent's space; drawClip for the bake; bakes before export", /TlParent\.world\(c, t\)/.test(cv) && /if \(c\.nul\) return;/.test(cv) && /TlParent\.localDelta/.test(cv) && /function drawClip\(g, c, Ly, t\)/.test(cv) && /TlParent\.bakeAll\(\)/.test(cv));
-  check("the export: nulls left out, a parented clip goes as its bake; routes/layerBake.js mounted from routes/index.js (not server.js)", /filter\(c => !c\.nul/.test(tlx) && /bake: \(?c\.parent/.test(tlx) && /&& c\.bake \? c\.bake : undefined/.test(tlx) && /require\("\.\/layerBake"\)\.mount\(app\)/.test(idx) && !/layerBake/.test(read("server.js")));
+  check("the export: nulls left out, a parented clip goes as its bake; routes/layerBake.js mounted from routes/index.js (not server.js)", /filter\(c => !c\.nul/.test(tlx) && /bake: \(?c\.parent/.test(tlx) && /&& c\.bake \? c\.bake : undefined/.test(tlx) && /require\("\.\/layerBake"\)\.mount\(app\)/.test(idx) && !/layerBake/.test(read("misc/server.js")));
   check("worker.py: a baked clip read with its transparency (libvpx-vp9) and overlaid as it is", /if c\.get\("baked"\) and Path\(c\["baked"\]\)\.exists\(\):/.test(w) && /args \+= \["-c:v", "libvpx-vp9", "-i", c\["baked"\]\]/.test(w) && /a baked layer \(it follows its parent\)/.test(w));
   check("tlparent.js loads after tlgraph.js; no product names", ext.indexOf("tlparent.js") > ext.indexOf("tlgraph.js") && !/After Effects|Adobe/.test(src.replace(/^\s*\*.*$/gm, "")));
 }

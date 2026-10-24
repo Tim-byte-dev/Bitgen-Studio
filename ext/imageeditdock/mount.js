@@ -96,7 +96,7 @@ function mountImageEditor() {
       for (const k of ["mode", "prompt", "style_id", "strength", "count", "width", "height"]) fd.append(k, String(req[k] == null ? "" : req[k]));
       // 2.556.0: the editor's 2.552-2.555 settings - they never left the browser before (this list did not carry them):
       // Krita's mask sizes, no selection, fill with the edit model + its style + the fill kind
-      for (const k of ["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind"]) if (req[k] != null && req[k] !== "") fd.append(k, String(req[k]));
+      for (const k of ["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind", "live", "live_id", "live_steps", "seed"]) if (req[k] != null && req[k] !== "") fd.append(k, String(req[k]));
       if (req.mode !== "remove" && window.H3Neg && H3Neg.get()) fd.append("negative", H3Neg.get());   // 2.419.0: ⊖ the negative docker
       // 2.333.0: the ◈ control layers - one picture each + their settings
       if (req.controls && req.controls.length) {
@@ -106,6 +106,7 @@ function mountImageEditor() {
       const r = await fetch("/api/aiedit", { method: "POST", body: fd });
       const j = await r.json();
       if (!r.ok) { say(j.error || "refused"); return null; }
+      if (req.live) return j;                                          // 2.588.0: ⚡ live - not in the queue docker, no job picked
       say(`${j.mode}: ${j.jobs.length} render(s) queued (${String(j.workflow).split("/").pop()})…`);
       await refreshJobs(); if (j.jobs[0]) selectJob(j.jobs[0].id);
       return j;

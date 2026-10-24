@@ -104,7 +104,7 @@ with tempfile.TemporaryDirectory() as d:
 
 # ------------------------------------------------- the callers actually use it
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-w = open(os.path.join(root, "image_worker.py"), encoding="utf-8").read()
+w = open(os.path.join(root, "misc", "image_worker.py"), encoding="utf-8").read()
 check("image_worker.py names files through this module, not by hand",
       "_iname.image_name(" in w and "_iname.reserve(" in w, None)
 check("...on BOTH engines, so a comfy still and an sd-cli still are named alike",

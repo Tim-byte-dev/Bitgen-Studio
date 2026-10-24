@@ -18,7 +18,7 @@ const RS = require(path.join(ROOT, "lib", "renderSettings.js"));
 const FX = require(path.join(ROOT, "static", "clipfx.js"));
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
-const py = (code) => execFileSync("python3", ["-c", "import sys,json; sys.path.insert(0, " + JSON.stringify(path.join(ROOT, "scripts")) + "); sys.path.insert(0, " + JSON.stringify(ROOT) + ")\n" + code], { encoding: "utf8" });
+const py = (code) => execFileSync("python3", ["-c", "import sys,json; sys.path.insert(0, " + JSON.stringify(path.join(ROOT, "scripts")) + "); sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(path.join(ROOT, "misc")) + ")\n" + code], { encoding: "utf8" });
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
 
 /* ---- 1. the override */
@@ -81,14 +81,14 @@ g={"1":{"class_type":"UNETLoader","inputs":{"unet_name":"a.safetensors","weight_
 g2,notes=Wk.apply_video_style(g,{"phases":[{"model":"h3-q4.gguf"}]})
 print(json.dumps({"cls":g2["1"]["class_type"],"in":g2["1"]["inputs"],"notes":notes}))`));
 check("worker.py: a .gguf model on a UNETLoader -> UnetLoaderGGUF (said)", gg.cls === "UnetLoaderGGUF" && gg.in.unet_name === "h3-q4.gguf" && gg.notes.some((x) => /GGUF/.test(x)), gg);
-check("wan_graph: a .gguf model gets UnetLoaderGGUF", /UnetLoaderGGUF/.test(read("scripts", "wan_graph.py")) && /basic_model/.test(read("wan_worker.py")));
+check("wan_graph: a .gguf model gets UnetLoaderGGUF", /UnetLoaderGGUF/.test(read("scripts", "wan_graph.py")) && /basic_model/.test(read("misc/wan_worker.py")));
 const H = read("static", "index.html");
 check("the page: every video render sends `basic` (prompt docker + LTX), the Model box, the summary line, basicset.js loaded",
   (H.match(/fd\.append\("basic", H3Basic\.json\(\)\)/g) || []).length === 2 && /id="vidModel" list="vidModelList"/.test(H) && /id="ovrSummary"/.test(H) && /<script src="\/static\/basicset\.js">/.test(H));
 check("the page: Enhance's Generate goes through the same dispatch (LTX / Wan / swap / H3), not /api/generate", /\$\("enhGenerate"\)\.onclick = \(\) => \{[\s\S]{0,600}generateFrom\(gm, text\);/.test(H) && !/submitJob\(finalPrompt\(\$\("enhancedText"\)/.test(H));
 check("the board ▶ sends Basic Settings' model", /out\.model = md \? md\.value\.trim\(\) : ""/.test(read("ext", "videodock", "characters.js")));
 check("the routes read it: /api/generate (H3 + Wan), /api/ltx, the board's LTX scenes", /basicOverride\.parse\(f\.basic\)/.test(read("routes", "index.js")) && /basicOverride\.parse\(b\.basic\)/.test(read("routes", "ltx.js"))
-  && /basic: rs\.basic/.test(read("routes", "characters.js")) && /_BA\.apply\(graph, params\.get\("basic"\)\)/.test(read("ltx_worker.py")));
+  && /basic: rs\.basic/.test(read("routes", "characters.js")) && /_BA\.apply\(graph, params\.get\("basic"\)\)/.test(read("misc/ltx_worker.py")));
 
 /* ---- 2. effects + adjustment layers */
 const v1 = FX.normalize({ vfx: { blur: 80, sharpen: 1, key: { color: "#00FF00", similarity: 0.9 }, crop: { l: 60, t: 5 }, glow: 0, stabilise: 1 } });
@@ -120,7 +120,7 @@ check("the adjustment placeholder is a valid 16x16 PNG", png.slice(1, 4).toStrin
 const IX = require(path.join(ROOT, "lib", "interchange.js"));
 const it = IX.items({ video: [{ name: "a.mp4", start: 0, in: 0, out: 2, dur: 2 }], v1: {}, images: [{ clips: [{ name: "adjustment.png", start: 0, len: 2, adjust: true }, { name: "logo.png", start: 0, len: 2 }] }] });
 check("the XML / EDL / OTIO leave adjustment layers out (no picture)", it.video[1].items.length === 1 && it.video[1].items[0].name === "logo.png");
-check("worker.py applies an adjustment at its place in the picture layers (enable while on)", /c\.get\("adjust"\) is not None/.test(read("worker.py")) && /enable=f"between\(t,\{s0:\.3f\},\{s1:\.3f\}\)"/.test(read("worker.py")));
+check("worker.py applies an adjustment at its place in the picture layers (enable while on)", /c\.get\("adjust"\) is not None/.test(read("misc/worker.py")) && /enable=f"between\(t,\{s0:\.3f\},\{s1:\.3f\}\)"/.test(read("misc/worker.py")));
 check("the page: vfxgl.js loaded, the canvas draws a clip's look (key / crop -> grade -> the rest) and an adjustment over what is under it",
   /<script src="\/static\/vfxgl\.js">/.test(H) && /function look\(src, c(, t)?\)/.test(read("ext", "timelinedock", "canvas.js")) && /function adjust\(pg, c, Ly, t\)/.test(read("ext", "timelinedock", "canvas.js")));
 

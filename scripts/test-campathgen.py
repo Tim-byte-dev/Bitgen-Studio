@@ -112,7 +112,7 @@ try:
         job = {"params": params, "config": {"engine": {"backend": "comfy", "comfy": {"url": f"http://127.0.0.1:{port}"}}},
                "output_dir": str(jd / "out"), "app_dir": str(ROOT)}
         (jd / "job.json").write_text(json.dumps(job))
-        r = subprocess.run([sys.executable, "-u", str(ROOT / "wan_worker.py"), str(jd / "job.json")], cwd=str(jd),
+        r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "wan_worker.py"), str(jd / "job.json")], cwd=str(jd),
                            capture_output=True, text=True, timeout=180)
         q = json.loads((jd / "wan_queued.json").read_text()) if (jd / "wan_queued.json").exists() else {}
         return r, jd, q

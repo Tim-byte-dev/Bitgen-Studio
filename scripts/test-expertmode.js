@@ -32,7 +32,7 @@ const MARKUP = IX.slice(0, IX.indexOf("<script src=\"/static/dockscroll.js\">"))
   const core = read("lib", "core.js");
   check("core DEFAULT_CONFIG: ui.expert ships false",
     core.includes('ui: { confirm_delete: false, expert: false, builtin_dialogs: true, docks: require("./uiLayout").defaults() },'));
-  const ds = JSON.parse(read("default.settings"));
+  const ds = JSON.parse(read("misc/default.settings"));
   check("default.settings: ui.expert is false", ds.ui && ds.ui.expert === false, ds.ui && ds.ui.expert);
   const gen = MARKUP.slice(MARKUP.indexOf('id="stab-general"'), MARKUP.indexOf('class="stab" id="stab-', MARKUP.indexOf('id="stab-general"') + 10));
   check("the Expert mode checkbox is in Settings -> General, with a tooltip",

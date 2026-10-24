@@ -7,6 +7,8 @@
  * render using their hardware ... have levels of access - time limit and unrestricted, time limit will set time from -
  * time to". Against the running app (H3_URL); the team folder is a temp folder. No Playwright = SKIP. */
 "use strict";
+// 2.589.0: the render farm is the OPTIONAL Team extension (ext/teamdock - its own zip); not installed here = SKIP
+if (!require("fs").existsSync(require("path").join(__dirname, "..", "ext", "teamdock", "ext.json"))) { console.log("SKIP: the Team render farm extension (ext/teamdock) is not installed here"); console.log("RESULT: PASS"); process.exit(0); }
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -18,7 +20,7 @@ for (const p of ["playwright", (() => { try { return path.join(execSync("npm roo
 }
 if (!chromium) { console.log("SKIP: playwright is not installed here - the 2.583.0 browser test did not run"); process.exit(0); }
 const URL_ = process.env.H3_URL || "http://127.0.0.1:8311/";
-const T = require("../lib/team");
+const T = require("../ext/teamdock/server/team");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 900))); } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

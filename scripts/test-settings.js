@@ -135,7 +135,7 @@ const rj = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
 
 // ---- the shipped default.settings really is complete for every feature
 {
-  const shipped = path.join(__dirname, "..", "default.settings");
+  const shipped = path.join(__dirname, "..", "misc", "default.settings");
   check("default.settings ships with the app", fs.existsSync(shipped));
   const d = rj(shipped);
   check("...engine is ComfyUI (video, stills AND music run on it)", d.engine.backend === "comfy", d.engine.backend);
@@ -207,7 +207,7 @@ const rj = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
 
 // 2.101.1: the root-cause record ships and says the decisive things
 {
-  const t = (() => { try { return fs.readFileSync(path.join(__dirname, "..", "minimax-fixed.txt"), "utf8"); } catch { return ""; } })();
+  const t = (() => { try { return fs.readFileSync(path.join(__dirname, "..", "misc", "minimax-fixed.txt"), "utf8"); } catch { return ""; } })();
   check("minimax-fixed.txt ships with the torch/cu130 root cause and the ComfyUI install checklist",
     /cu130/.test(t) && /DynamicVRAM support detected and enabled/.test(t) && /'disabled': False/.test(t)
     && /int8_linear/.test(t) && /--highvram/.test(t), t.length);

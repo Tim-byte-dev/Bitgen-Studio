@@ -198,7 +198,7 @@ if ($el -and (Test-Path $el)) { Say "app window: $el" } else { $el = $null; Say 
 
 # ---- 7. Python packages for the app ------------------------------------------------
 Say "pip install -r requirements.txt"
-& $py -m pip install --upgrade --quiet -r (Join-Path $root "requirements.txt") 2>&1 | ForEach-Object { "$_" }
+& $py -m pip install --upgrade --quiet -r (Join-Path $root "misc\requirements.txt") 2>&1 | ForEach-Object { "$_" }
 if ($LASTEXITCODE -ne 0) { Say "WARNING: some Python packages did not install - see above" }
 
 # ---- 8. settings: this python; the wizard opens on the first start ---------------

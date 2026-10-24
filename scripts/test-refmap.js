@@ -107,13 +107,13 @@ const RM = require("../lib/refMap");
     && Object.keys(gr.inputs).filter((k) => /^ref_audios\.ref_audio_\d$/.test(k)).length === 3
     && !(out.unknown || []).length, Object.keys(gr.inputs));
   check("NOTICE.md says the export is now MODIFIED (nine picture + three audio loaders)",
-    read("NOTICE.md").includes("2.290.0 modification"));
+    read("misc/NOTICE.md").includes("2.290.0 modification"));
 }
 
 // ---- 3. the wiring ---------------------------------------------------------------
 {
   const RC = read("routes", "characters.js");
-  const W = read("worker.py");
+  const W = read("misc/worker.py");
   check("the board RENDERS a board convert style's own graph (no fall-through to the character chain); ref2va pinned to the converted base, fl2va to its twin (2.292.0)",
     RC.includes("board: true, follow: true,")
     && RC.includes('const convName = (CONVERT_STYLES[st.style] || {}).board ? st.style : "";')

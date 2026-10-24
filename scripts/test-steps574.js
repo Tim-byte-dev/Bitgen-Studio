@@ -85,7 +85,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   check("VR world, style doctor (was a %), house builder say step n of total",
     /"rendering" \+ \(window\.H3Steps \? window\.H3Steps\.tag\(jb\.progress\)/.test(rd("static", "vrworld.js")) && /"step " \+ d\.progress\.step \+ " of " \+ d\.progress\.total/.test(rd("static", "styledoctor.js"))
     && /H3Steps\.watch\(\$\("hbMsg"\), jid\)/.test(rd("static", "housebuilder.js")));
-  const IW = rd("image_worker.py");
+  const IW = rd("misc/image_worker.py");
   check("image_worker.py: pictures through ComfyUI print live steps (scripts/comfy_progress run / queue_live + wait_live); sd-cli's \\r bar split into lines",
     (IW.match(/_cprog\.run\(_comfy, base/g) || []).length >= 3 && /_cprog\.queue_live\(_comfy, base, g, say\)/.test(IW) && /re\.split\(rb"\\r\\n\|\\r\|\\n", buf\)/.test(IW) && /^import re$/m.test(IW));
 

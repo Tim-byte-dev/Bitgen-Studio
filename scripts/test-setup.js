@@ -71,7 +71,7 @@ async function main() {
   check("detect() with no nvidia-smi is an answer, not a throw", Gpu.detect(() => "").cuda === false || process.platform === "darwin");
 
   // ================================================================ TUNE
-  const def = JSON.parse(fs.readFileSync(path.join(APP, "default.settings"), "utf8"));
+  const def = JSON.parse(fs.readFileSync(path.join(APP, "misc", "default.settings"), "utf8"));
   const leaves = (o, pre) => Object.entries(o).flatMap(([k, v]) => (v && typeof v === "object" && !Array.isArray(v) ? leaves(v, pre + k + ".") : [pre + k]));
   const has = (p) => p.split(".").reduce((x, k) => (x && typeof x === "object" && k in x ? x[k] : undefined), def) !== undefined;
   const pt = Tune.patch(pMax, { when: "t", python: "/py" });
@@ -404,7 +404,7 @@ async function main() {
     // the launcher, browser mode: runtime/ on PATH, the server comes up
     const port = 18400 + Math.floor(Math.random() * 400);
     const { spawn } = require("child_process");
-    const lp = spawn("sh", [path.join(B, "bitgen-studio.sh")], { env: Object.assign({}, process.env, { H3_NO_SHELL: "1", H3_PORT: String(port), PORT: String(port), HOME, DISPLAY: "" }), stdio: "ignore", detached: true });
+    const lp = spawn("sh", [path.join(B, "misc", "bitgen-studio.sh")], { env: Object.assign({}, process.env, { H3_NO_SHELL: "1", H3_PORT: String(port), PORT: String(port), HOME, DISPLAY: "" }), stdio: "ignore", detached: true });
     let up = false;
     for (let i = 0; i < 60 && !up; i++) {
       await new Promise((r) => setTimeout(r, 500));

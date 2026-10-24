@@ -17,7 +17,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-blend-"));
   const py = [
-    "import sys, json, subprocess; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+    "import sys, json, subprocess; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "parts = ['color=c=0x208030:s=320x180:r=24:d=1[base]', 'color=c=0x808080:s=80x60:r=24:d=1,format=rgba,trim=end_frame=1[ov1]',",
     "         'color=c=blue:s=100x100:r=24:d=1,format=rgba[ov3]', 'color=c=black@0:s=60x60:r=24:d=1,format=rgba,geq=r=255:g=0:b=0:a=255*lt(hypot(X-30\\,Y-30)\\,28)[ov2]',",
     "         'color=c=0x808080:s=80x60:r=24:d=1,format=rgba[ov4]']",
@@ -46,7 +46,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 }
 // --- the wiring
 {
-  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), idx = read("routes/index.js"), w = read("worker.py"), ext = JSON.parse(read("ext/timelinedock/ext.json")).scripts, src = read("ext/timelinedock/tlblend.js");
+  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), idx = read("routes/index.js"), w = read("misc/worker.py"), ext = JSON.parse(read("ext/timelinedock/ext.json")).scripts, src = read("ext/timelinedock/tlblend.js");
   check("canvas.js: layers drawn by drawLayer; a blended / matted layer on its own picture; the matte layer not drawn; the GPU path stands aside", /function drawLayer\(tg, Ly, t\)/.test(cv) && /function applyMatte\(lg, mLy, mode, t\)/.test(cv) && /if \(usedAsMatte\[k\]\) return;/.test(cv) && /!blendOn && tl\.glComp/.test(cv));
   check("the export: tlLayerKeys on video and picture layers (a hidden matte layer still sent); the route's layerKeys on both", /function tlLayerKeys\(X, L\)/.test(tlx) && (tlx.match(/\.\.\.tlLayerKeys\(X, L\)/g) || []).length === 2 && /live\(L\) \|\| tlIsMatte\(X, L\)/.test(tlx) && (idx.match(/\.\.\.tlKeys\.layerKeys\(c\)/g) || []).length === 2);
   check("worker.py: every layer clip composited through _composite_ops in order (adjustment layers too)", /vprev = _composite_ops\(parts, ops, vprev, fw, fh, span, say\)/.test(w) && /ops\.append\(\{"fn": _adj_op\}\)/.test(w) && !/parts\.append\(f"\[\{vprev\}\]\[im\{i\}\]overlay/.test(w));

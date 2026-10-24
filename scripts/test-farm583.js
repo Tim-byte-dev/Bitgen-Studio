@@ -10,6 +10,8 @@
  *   hardware ... only while bitgen is running on that machine and access has been granted - have levels of access - time
  *   limit and unrestricted, time limit will set time from - time to". Needs node + python3 + ffmpeg. */
 "use strict";
+// 2.589.0: the render farm is the OPTIONAL Team extension (ext/teamdock - its own zip); not installed here = SKIP
+if (!require("fs").existsSync(require("path").join(__dirname, "..", "ext", "teamdock", "ext.json"))) { console.log("SKIP: the Team render farm extension (ext/teamdock) is not installed here"); console.log("RESULT: PASS"); process.exit(0); }
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -40,7 +42,7 @@ function copyApp(dst) {
 async function start(k) {
   if (procs[k]) { procs[k].kill(); await new Promise((r) => procs[k].once("exit", r)); }
   const log = fs.openSync(path.join(tmp, k + ".log"), "a");
-  procs[k] = spawn("node", ["server.js"], { cwd: dirs[k], env: Object.assign({}, process.env, { H3_E2E: "1", H3_PORT: String(P[k]) }), stdio: ["ignore", log, log] });
+  procs[k] = spawn("node", ["misc/server.js"], { cwd: dirs[k], env: Object.assign({}, process.env, { H3_E2E: "1", H3_PORT: String(P[k]) }), stdio: ["ignore", log, log] });
   for (let i = 0; i < 80; i++) { try { const r = await fetch(`http://127.0.0.1:${P[k]}/api/health`); if (r.ok) return; } catch { /* not yet */ } await sleep(250); }
   throw new Error(k + " did not start: " + fs.readFileSync(path.join(tmp, k + ".log"), "utf8").slice(-1500));
 }

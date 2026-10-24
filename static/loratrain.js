@@ -118,7 +118,13 @@
     if ($("ltInstall")) $("ltInstall").onclick = function () { var en = ft ? "unsloth" : "aitoolkit"; jsend("POST", "/api/loratrain/install", { engine: en }).then(function (j) { say(j.error || "⚙ installing " + (ft ? "Unsloth" : "ai-toolkit") + " - follow it in the Queue (it takes a while)", j.error ? "lbad" : "lok"); }); };
     paintTabs(); paintForm(); paintRun();
   }
+  /** 2.585.0: the preference pairs' line (Dataset) - the count and whether this job learns from them */
+  function paintPrefInfo() {
+    var pj = cur(); if (!$("ltPrefInfo") || !pj) return;
+    $("ltPrefInfo").textContent = (pj.prefs || 0) + " pairs" + (pj.settings.objective && pj.settings.objective !== "sft" ? " - this job learns from them (" + pj.settings.objective.toUpperCase() + ")" : " - Job ▸ Learn from ▸ Preferences uses them");
+  }
   function paintTabs() {
+    paintPrefInfo();
     ["job", "dataset", "run"].forEach(function (t) { var b = document.querySelector('.ltd [data-ltab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); var p = $("ltP_" + t); if (p) p.classList.toggle("on", S.tab === t); });
     var b = document.querySelector('.ltd [data-ltab="dataset"]'); if (b) b.textContent = "Dataset (" + (kindOf(cur()) === "llm" ? S.chat.length : S.ds.length) + ")";
     // the picture tools vs the chat tools
@@ -190,6 +196,11 @@
       + '<span></span><span class="lnote ' + (S.st.gpu && S.st.gpu.vram_gb >= pre.vram_gb ? "lok" : "lwarn") + '" style="grid-column:2/-1">' + esc(fitText(pre, S.st.gpu)) + " · " + esc(pre.licence || "") + (pre.note ? "<br>" + esc(pre.note) : "") + "</span>"
       + '<label for="ltPath">Model path</label><input id="ltPath" class="wide" placeholder="' + esc(pre.model) + ' (blank = this; a Hugging Face repo or a local folder)" value="' + esc(s.model_path) + '">'
       + '<label for="ltMethod">Method</label><select id="ltMethod" class="wide">' + opt(pre.methods.map(function (m) { return { id: m, label: mlab[m] || m }; }), s.method) + "</select>"
+      // 2.585.0: what an LLM learns from - the answers you want (SFT) or your choices "this, not that" (DPO / ORPO)
+      + (k === "llm" ? '<label for="ltObj">Learn from</label><select id="ltObj" class="wide" title="Examples = the chats in Dataset; Preferences = the pairs from 🔁 Compare LLMs (the reply you picked vs each one you did not)">'
+        + opt([{ id: "sft", label: "Examples - the answers you want (SFT)" }, { id: "dpo", label: "Preferences - this, not that (DPO)" }, { id: "orpo", label: "Preferences - ORPO (no reference model, less VRAM)" }], s.objective || "sft") + "</select>"
+        + (s.objective && s.objective !== "sft" ? '<label for="ltBeta">Beta</label><input id="ltBeta" type="number" min="0.01" max="1" step="0.01" value="' + (s.beta || 0.1) + '" title="how far it may move from the base model to prefer the picked replies - 0.1 is the usual; higher = stays closer to the base">'
+          + '<span class="lnote" style="grid-column:3/5">' + (cur() && cur().prefs ? cur().prefs + " pairs" : "no pairs yet") + " - Dataset ▸ ⤒ From 🔁 Compare LLMs</span>" : "") : "")
       + (full ? "" : '<label for="ltRank">LoRA rank</label><input id="ltRank" type="number" min="1" max="256" value="' + s.rank + '"><label for="ltAlpha">Alpha</label><input id="ltAlpha" type="number" min="1" max="512" value="' + s.alpha + '">')
       + "<h5>Training</h5>"
       + '<label for="ltEpochs">Epochs</label><input id="ltEpochs" type="number" min="1" max="100" value="' + (s.epochs || 2) + '" title="times through every example">'
@@ -209,6 +220,7 @@
       + "</div>" + cfgBar(j, "📄 Config", "Unsloth's run as JSON (scripts/ft_unsloth.py) - edit any value");
     wireForm(host);
     $("ltMethod").onchange = function () { save().then(function () { paint(); }); };
+    if ($("ltObj")) $("ltObj").onchange = function () { save().then(function () { paint(); paintRun(); }); };
   }
   function cfgBar(j, label, hint) {
     return '<div class="lbar" style="margin-top:8px"><button type="button" id="ltSaveBtn">💾 Save</button><button type="button" class="ghost" id="ltYamlBtn">' + label + (j.custom_yaml ? " (yours)" : "") + "</button></div>"
@@ -235,7 +247,8 @@
     if (isFt(k)) {
       return { name: j.name, kind: k, preset: v("ltPre"), model_path: v("ltPath"), method: v("ltMethod"), rank: $("ltRank") ? +v("ltRank") : j.settings.rank, alpha: $("ltAlpha") ? +v("ltAlpha") : j.settings.alpha,
         epochs: +v("ltEpochs"), max_steps: +v("ltMax"), lr: +v("ltLr"), batch: +v("ltBatch"), grad_accum: +v("ltAcc"), max_seq: +v("ltSeq"), warmup: +v("ltWarm"),
-        save_every: +v("ltSaveE"), instruction: $("ltInstr") ? v("ltInstr") : "", system: v("ltSys"), quant: v("ltQ"), notes: v("ltNotes") };
+        save_every: +v("ltSaveE"), instruction: $("ltInstr") ? v("ltInstr") : "", system: v("ltSys"), quant: v("ltQ"), notes: v("ltNotes"),
+        objective: $("ltObj") ? v("ltObj") : j.settings.objective, beta: $("ltBeta") ? +v("ltBeta") : j.settings.beta };
     }
     return { name: j.name, kind: k, preset: v("ltPre"), model_path: v("ltPath"), trigger: v("ltTrig"), trigger_in_captions: $("ltTic").checked,
       rank: $("ltRank") ? +v("ltRank") : j.settings.rank, alpha: $("ltAlpha") ? +v("ltAlpha") : j.settings.alpha, steps: +v("ltSteps"), lr: +v("ltLr"), batch: +v("ltBatch"), optimizer: v("ltOpt"),
@@ -249,7 +262,7 @@
     var s = formSettings(); if (!s) return Promise.resolve(null);
     // a new base model starts from its own steps / learning rate
     var j = cur(); if (j && s.preset !== j.settings.preset) { s.steps = 0; s.lr = 0; s.method = ""; }
-    if (j && isFt(s.kind) && s.method !== j.settings.method) s.lr = 0;
+    if (j && isFt(s.kind) && (s.method !== j.settings.method || (s.objective || "sft") !== (j.settings.objective || "sft"))) s.lr = 0;   // 2.585.0: preferences want a smaller rate
     return postSettings(s);
   }
   function newJob() {
@@ -281,6 +294,7 @@
       : '<div class="lnote">No examples yet - ＋ Example, or ⤒ Import a JSONL / CSV.</div>';
     var n = S.chat.length, turns = S.chat.reduce(function (a, c) { return a + c.messages.filter(function (m) { return m.role === "assistant"; }).length; }, 0);
     if ($("ltChatInfo")) $("ltChatInfo").textContent = n + " examples · " + turns + " answers";
+    paintPrefInfo();
     if ($("ltChatDl")) $("ltChatDl").href = "data:application/x-ndjson;charset=utf-8," + encodeURIComponent(chatToJsonl(S.chat));
   }
   function saveChat() {
@@ -349,8 +363,9 @@
     var j = cur();
     if (!j) { host.innerHTML = '<div class="lnote">Pick or make a job first.</div>'; return; }
     var r = j.run || {}, k = kindOf(j), ft = isFt(k), rj = S.runJob;
-    var a = ft ? (S.st.unsloth || {}) : S.st.aitk, have = k === "lora" || k === "ckpt" ? j.images : j.examples;
-    var eng = ft ? "Unsloth" : "ai-toolkit", what = k === "llm" ? "chats" : k === "vision" ? "pictures with an answer" : "pictures";
+    var pref = k === "llm" && j.settings.objective && j.settings.objective !== "sft";    // 2.585.0: DPO / ORPO learn from the pairs
+    var a = ft ? (S.st.unsloth || {}) : S.st.aitk, have = k === "lora" || k === "ckpt" ? j.images : pref ? (j.prefs || 0) : j.examples;
+    var eng = ft ? "Unsloth" : "ai-toolkit", what = pref ? "preference pairs (" + j.settings.objective.toUpperCase() + ")" : k === "llm" ? "chats" : k === "vision" ? "pictures with an answer" : "pictures";
     var live = rj && (rj.status === "running" || rj.status === "queued");
     var lines = rj ? (rj.log || []).slice(-14) : [];
     var prog = rj && rj.progress ? rj.progress : null;
@@ -423,7 +438,11 @@
       + '<div id="ltDsChat" style="display:none"><div class="lbar"><button type="button" id="ltChatAdd">＋ Example</button><button type="button" class="ghost" id="ltChatImp" title="JSONL / JSON ({messages}, ShareGPT conversations, instruction / output, prompt / completion, question / answer) or a CSV with a header row">⤒ Import…</button>'
       + '<input type="file" id="ltChatFile" accept=".jsonl,.json,.csv,.txt" hidden><label class="lnote"><input type="checkbox" id="ltChatRep"> replace what is here</label>'
       + '<a class="ghost" id="ltChatDl" download="chat.jsonl" style="text-decoration:none;padding:3px 8px;border:1px solid var(--line,#444);border-radius:5px;color:inherit">⤓ chat.jsonl</a><span class="lnote" id="ltChatInfo"></span></div>'
-      + '<div class="lnote" style="margin:2px 0 6px">Each example is a short conversation: what someone asks and the answer you want the assistant to give. 100+ good examples teach a style or a task; a few thousand teach knowledge.</div><div id="ltChatList"></div></div></div>'
+      // 2.585.0: the preference pairs (DPO / ORPO) - 🔁 Compare LLMs: the reply picked vs each one not picked
+      + '<div class="lbar" style="margin:4px 0;border:1px solid var(--line,#3a342a);border-radius:7px;padding:5px 6px"><b style="font-size:.72rem">🔁 Preference pairs</b><span class="lnote" id="ltPrefInfo"></span>'
+      + '<button type="button" class="ghost" id="ltPrefFrom" title="Every decided round of 🔁 Compare LLMs: the picked reply as an example (chat) + one pair per reply not picked - with the full prompt the LLMs were sent">⤒ From 🔁 Compare LLMs</button>'
+      + '<button type="button" class="ghost" id="ltPrefDl" title="the pairs as prefs.jsonl ({prompt, chosen, rejected})">⤓ prefs.jsonl</button><button type="button" class="ghost" id="ltPrefClr">🗑 Clear the pairs</button></div>'
+      + '<div class="lnote" style="margin:2px 0 6px">Each example is a short conversation: what someone asks and the answer you want the assistant to give. 100+ good examples teach a style or a task; a few thousand teach knowledge. Preference pairs (Job ▸ Learn from ▸ Preferences) teach your taste: a few hundred picks.</div><div id="ltChatList"></div></div></div>'
       + '<div class="lpane" id="ltP_run"></div>';
     return body;
   }
@@ -451,6 +470,28 @@
     // 2.521.0: the chat editor
     $("ltChatAdd").onclick = function () { if (!S.job) return; S.chat.unshift({ messages: [{ role: "user", content: "" }, { role: "assistant", content: "" }] }); paintChat(); var t = document.querySelector('#ltChatList textarea'); if (t) t.focus(); };
     $("ltChatImp").onclick = function () { if (S.job) $("ltChatFile").click(); };
+    // 2.585.0: the preference pairs
+    $("ltPrefFrom").onclick = function () {
+      if (!S.job) return;
+      jsend("POST", "/api/llmarena/to-trainer", { job: S.job, what: "both", include_system: true }).then(function (r) {
+        if (r.error) { say(r.error, "lbad"); return; }
+        say("⤒ from " + r.rounds + " decided round(s): +" + r.chats_added + " examples, +" + r.prefs_added + " pairs" + (r.longest_tokens > (r.max_seq || 0) ? " - the longest is ≈" + r.longest_tokens + " tokens: raise Job ▸ Max length (longer ones are left out)" : ""), "lok");
+        load();
+      });
+    };
+    $("ltPrefDl").onclick = function () {
+      if (!S.job) return;
+      jget("/api/loratrain/prefs/" + E(S.job)).then(function (l) {
+        var a = document.createElement("a"); a.download = "prefs.jsonl";
+        a.href = "data:application/x-ndjson;charset=utf-8," + encodeURIComponent((Array.isArray(l) ? l : []).map(function (x) { return JSON.stringify(x); }).join("\n") + "\n");
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+    };
+    $("ltPrefClr").onclick = function () {
+      if (!S.job) return;
+      var c = root.appConfirm ? root.appConfirm("Delete every preference pair of " + S.job + "? (🔁 Compare LLMs keeps its rounds - ⤒ brings them back)") : Promise.resolve(window.confirm("Clear the pairs?"));
+      Promise.resolve(c).then(function (ok) { if (ok) jsend("DELETE", "/api/loratrain/prefs/" + E(S.job)).then(function () { say("🗑 the pairs are cleared"); load(); }); });
+    };
     $("ltChatFile").onchange = function (e) {
       var f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
       say("importing " + f.name + "…");

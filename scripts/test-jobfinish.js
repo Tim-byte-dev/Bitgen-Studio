@@ -25,7 +25,7 @@ function check(name, ok, extra) {
 }
 const ROOT = path.join(__dirname, "..");
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
-const CO = read("lib", "core.js"), RC = read("routes", "characters.js"), W = read("worker.py");
+const CO = read("lib", "core.js"), RC = read("routes", "characters.js"), W = read("misc/worker.py");
 
 // a "worker" that starts a long-lived grandchild holding its stdout, then exits
 // 2.338.0: the grandchildren are killed by the PID they print - never by a

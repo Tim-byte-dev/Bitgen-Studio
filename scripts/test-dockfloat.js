@@ -76,7 +76,7 @@ check("Basic Settings / LLM tokens are DockFloat panels (no resize:both, no own 
 check("dockfloat.js: tabs (a strip after the title bar, the docker's own + each panel, drag a tab out), rows share pf-row (the column code knows them)",
   /function tabsPaint\(host\)/.test(DF) && /hd\.after\(strip\)/.test(DF) && /p\.wireDrag\(b, true\)/.test(DF) && /row\.className = "pf-row df-row"/.test(DF)
   && /\.df-host\.df-guest-on > :not\(\.bhead\):not\(\.dockhead\)/.test(DF));
-check("nothing added to server.js", !/dockfloat|DockFloat/.test(read("server.js")));
+check("nothing added to server.js", !/dockfloat|DockFloat/.test(read("misc/server.js")));
 
 // ---- 2.401.4 (Tim: "add dropzones to the left docker so the basic settings and llm info can be docked inside the left docker")
 const gaps = [{ key: "sec-system", y: 100 }, { key: "sfLaunch", y: 260 }, { key: "", y: 400 }];

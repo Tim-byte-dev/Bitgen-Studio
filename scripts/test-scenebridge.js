@@ -155,7 +155,7 @@ try {
   const job = path.join(tmp, "job.json");
   fs.writeFileSync(job, J({ params: { mode: "bridge", scene: { n: 2 }, bridge: { xfade: "wipeleft", label: "Wipe left",
     seconds: 0.5, prev_take: A, next_take: Bv, song: S, start: 2, fps: 24 } }, output_dir: path.join(tmp, "out") }));
-  const log = execFileSync("python3", [path.join(ROOT, "bridge_worker.py"), job], { cwd: tmp, encoding: "utf8" });
+  const log = execFileSync("python3", [path.join(ROOT, "misc", "bridge_worker.py"), job], { cwd: tmp, encoding: "utf8" });
   const name = (/@@OUT (\S+)/.exec(log) || [])[1];
   const out = name ? path.join(tmp, "out", name) : "";
   const s = out ? probeV(out) : [];
@@ -215,7 +215,7 @@ check("a standard-transition bridge needs no ComfyUI: ▶ / ↻ / Render selecte
   && RC.includes("if (!ffmpegOnly(b.project, b.scenes || [])) {"));
 check("from-segments passes the strip's gap to the ONE staging path; routes/sceneBridge mounted from routes/index.js (never server.js); core runs bridge_worker.py",
   RC.includes("b.gap !== undefined ? { gap: b.gap, gap_type: b.gap_type } : undefined);")
-  && RI.includes('require("./sceneBridge").mount(app);') && !read("server.js").includes("sceneBridge")
+  && RI.includes('require("./sceneBridge").mount(app);') && !read("misc/server.js").includes("sceneBridge")
   && CORE.includes('bridge: "bridge_worker.py"') && SBd.includes("function stage(song, project, opts)"));
 
 // ---- jsdom: the strip and the card

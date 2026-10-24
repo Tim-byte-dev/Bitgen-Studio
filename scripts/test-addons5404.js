@@ -92,9 +92,9 @@ function fakeRun(o) {
     const R = fs.readFileSync(path.join(ROOT, "routes", "addons.js"), "utf8"), IX = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8");
     check("routes/addons.js: GET /api/addons, POST /api/addons/:id/install | remove (409 while one runs), GET /api/addons/job?from=N; mounted in routes/index.js (not server.js)",
       /app\.get\("\/api\/addons"/.test(R) && /\/api\/addons\/:id\/install/.test(R) && /\/api\/addons\/:id\/remove/.test(R) && /\/api\/addons\/job/.test(R) && /409/.test(R) && /require\("\.\/addons"\)\.mount\(app\)/.test(IX)
-      && !/addons/.test(fs.readFileSync(path.join(ROOT, "server.js"), "utf8")));
+      && !/addons/.test(fs.readFileSync(path.join(ROOT, "misc", "server.js"), "utf8")));
     check("the page loads static/addons.js (Settings ▸ Add-ons)", /<script src="\/static\/addons\.js"><\/script>/.test(fs.readFileSync(path.join(ROOT, "static", "index.html"), "utf8")));
-    const MW = fs.readFileSync(path.join(ROOT, "music_worker.py"), "utf8");
+    const MW = fs.readFileSync(path.join(ROOT, "misc", "music_worker.py"), "utf8");
     check("music_worker.py: `yue2 generate --model M --request FILE --output DIR` (the real CLI), PYTHONUTF8=1, the song at <output>/<id>/audio.flac, and 'not installed' points to Settings > Add-ons",
       /cmd = (?:\[str\(cli\), |head \+ \[)"generate", "--model", model, "--request", str\(req_file\),/.test(MW) && /"PYTHONUTF8": "1"/.test(MW) && /flac = out_dir \/ req\["id"\] \/ "audio\.flac"/.test(MW)
       && /install it in Settings > Add-ons/.test(MW) && !/"--input", str\(req_file\)/.test(MW));

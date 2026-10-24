@@ -27,6 +27,6 @@ check("H3OnGenerated: only while the editor is on screen; the job's pictures (pn
 check("the project keeps the mode the user picked (window.ieModeKept), not the editor's Image; a reload with the editor still open (this browser switched it) = Image again",
   /chat: \{ mode: \(typeof window\.ieModeKept === "function" && window\.ieModeKept\(\)\) \|\| fieldVal\("genModeSel"\) \}/.test(IX) && /window\.ieModeKept = function \(\)/.test(M) && /if \(open && was0 !== null && sel\.value !== "image"\)/.test(M));
 check("the chip beside the mode: → ▦ canvas", /c\.textContent = "→ ▦ canvas";/.test(M));
-check("server.js untouched", !/H3OnGenerated|ieFollowMode/.test(read("server.js")));
+check("server.js untouched", !/H3OnGenerated|ieFollowMode/.test(read("misc/server.js")));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

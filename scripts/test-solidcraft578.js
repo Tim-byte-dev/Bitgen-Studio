@@ -94,7 +94,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-9);
   const RS = rd("routes", "solidcraft.js"), IX = rd("routes", "index.js"), AD = rd("lib", "addons.js");
   check("routes: /solidcraft-app (the build, same origin), status, latest, install, install-zip, files / file / save / delete - mounted from routes/index.js, not server.js",
     /app\.use\("\/solidcraft-app"/.test(RS) && ["/api/solidcraft/status", "/api/solidcraft/latest", "/api/solidcraft/install", "/api/solidcraft/install-zip", "/api/solidcraft/files", "/api/solidcraft/file/:name", "/api/solidcraft/save"].every((u) => RS.indexOf('"' + u + '"') >= 0)
-    && /require\("\.\/solidcraft"\)\.mount\(app\)/.test(IX) && !/solidcraft/i.test(rd("server.js")));
+    && /require\("\.\/solidcraft"\)\.mount\(app\)/.test(IX) && !/solidcraft/i.test(rd("misc/server.js")));
   check("Settings ▸ Add-ons lists SolidCraft (install / reinstall / remove)", /id: "solidcraft", label: "SolidCraft \(parametric 3D CAD\)"/.test(AD) && /require\("\.\/solidcraftAddon"\)\.install\(log, opts \|\| \{\}\)/.test(AD));
   const EJ = JSON.parse(rd("ext", "solidcraftdock", "ext.json")), DH = rd("ext", "solidcraftdock", "dock.html"), DJ = rd("ext", "solidcraftdock", "scdock.js");
   check("its own docker: ext/solidcraftdock (dock.html, scbridge.js then scdock.js (+ 2.581.0 scgen.js)); the frame, the bar, the install panel",
@@ -102,7 +102,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-9);
   check("the docker: loads SolidCraft only once it is on screen; image editor E.load / timeline TlM3D.add + TlBody.reload / sketch exportText dxf; SolidCraft's Save synced",
     /\/solidcraft-app\/index\.html/.test(DJ) && /IntersectionObserver/.test(DJ) && /E\.load\(url/.test(DJ) && /TlM3D\.add\("model"/.test(DJ) && /TlBody\.reload\(saved\)/.test(DJ) && /exportText\(L, "dxf"/.test(DJ) && /setInterval\(sync, 4000\)/.test(DJ));
   const GI = rd(".gitignore"), MZ = rd("scripts", "make_zips.sh");
-  check("<install>/solidcraft (the downloaded build) is never committed or zipped", /^solidcraft\/$/m.test(GI) && /! -path "\.\/solidcraft\/\*"/.test(MZ) && (!fs.existsSync(path.join(ROOT, "_gitignore")) || rd("_gitignore") === GI));
+  check("<install>/solidcraft (the downloaded build) is never committed or zipped", /^solidcraft\/$/m.test(GI) && /! -path "\.\/solidcraft\/\*"/.test(MZ) && (!fs.existsSync(path.join(ROOT, "misc", "_gitignore")) || rd("misc/_gitignore") === GI));
 
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

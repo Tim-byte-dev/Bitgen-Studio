@@ -50,6 +50,7 @@
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const liveGen = require("../lib/liveGen");                         // 2.588.0: ⚡ the image editor's live mode
 const core = require("../lib/core");
 const styles = require("../lib/styles");
 const imageSeed = require("../lib/imageSeed");
@@ -223,7 +224,13 @@ function mount(app) {
     if (plan.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
     const imgs = editMask ? [names.crop, names.mask].concat(names.refs)
       : names.refs.length ? [names.crop].concat(names.refs) : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
-    const n = aiEdit.count(b.count);
+    const live = b.live === "1";                                     // 2.588.0: ⚡ live mode (lib/liveGen.js) - one render, at the head of the queue
+    const n = live ? 1 : aiEdit.count(b.count);
+    if (live) {
+      const st = parseInt(b.live_steps, 10);
+      if (st >= 1 && st <= 60 && !plan.selfContained) styled = Object.assign({}, styled, { steps: st });
+      liveGen.supersede(core, b.live_id);
+    }
     const first = imageSeed.forRequest(styles.numOrNull(b.seed));
     const jobs = [];
     const ctlNote = controls.length ? ` + ${controls.length} control layer(s): ${controls.map((c) => `${c.type} ${c.strength}`).join(", ")}` : "";
@@ -237,8 +244,13 @@ function mount(app) {
       if (plan.negative) p.negative = String(plan.negative).slice(0, 2000);
       if (plan.denoise != null) p.denoise = plan.denoise;
       p.seed = (first.seed + i) % 4294967296; p.seed_random = first.random;
-      const job = core.makeJob(p);
+      if (live) {
+        p.live = true; p.workflow_note = "⚡ live: " + p.workflow_note;
+        p.live_inputs = [names.crop, names.mask, names.rgba].concat(names.refs).filter(Boolean).map((x) => path.join(dir, x)).concat(controls.map((c) => c.image));
+      }
+      const job = live ? core.makeJob(p, null, null, { front: true, local: true }) : core.makeJob(p);
       job.chunk = { i: 0, n: 1 };
+      if (live) liveGen.track(b.live_id, job);
       jobs.push({ id: job.id, seed: p.seed });
     }
     // soft: the graph kept everything outside the (grown, feathered) selection - the editor blends past the edge (Krita)

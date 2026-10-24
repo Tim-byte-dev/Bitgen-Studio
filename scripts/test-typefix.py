@@ -106,7 +106,7 @@ check("the official ref2va.json: all three ref videos split, the audio splits it
       and off["136"]["inputs"]["ref_video_audios.ref_video_audio_0"] == ["170", 1], notes)
 
 # ---- 4. the worker ----------------------------------------------------------------------
-W = (ROOT / "worker.py").read_text()
+W = (ROOT / "misc" / "worker.py").read_text()
 check("worker: imports the helper, repairs ONCE per job and re-queues, else reports as before",
       "import comfy_typefix as _tf" in W
       and 'typefix = {"done": False}' in W

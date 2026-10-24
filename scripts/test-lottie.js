@@ -65,7 +65,7 @@ check("native(): a plain moving picture / text = a real layer; masks, effects, a
   && TL.native({}, { transitionIn: { type: "fade" } }) === "an entry / exit transition" && TL.native({}, { transitionIn: { type: "none", dur: 0.5 } }) === null && TL.native({ kf: [{ at: 0, x: 0, to: [5, 5] }] }) === "a curved motion path" && TL.native({ warp: {} }) === "effects" && TL.native({ d3: { on: true } }) === "effects");
 const RI = read("routes", "index.js"), RL = read("routes", "lottie.js"), DJ = read("ext", "timelinedock", "deliver.js");
 check("the route: POST /api/lottie/export (mounted from routes/index.js, not server.js), the pictures read from images/; 📤 Export has ⤓ Lottie (JSON)",
-  /require\("\.\/lottie"\)\.mount\(app\);/.test(RI) && /app\.post\("\/api\/lottie\/export"/.test(RL) && /core\.pDir\("images"\)/.test(RL) && !/lottie/.test(read("server.js")) && /id="tdlLottie"/.test(DJ) && /TlLottie\.export\(/.test(DJ));
+  /require\("\.\/lottie"\)\.mount\(app\);/.test(RI) && /app\.post\("\/api\/lottie\/export"/.test(RL) && /core\.pDir\("images"\)/.test(RL) && !/lottie/.test(read("misc/server.js")) && /id="tdlLottie"/.test(DJ) && /TlLottie\.export\(/.test(DJ));
 const EXT = JSON.parse(read("ext", "timelinedock", "ext.json")).scripts;
 check("wiring: tllottie.js in the timeline extension", EXT.indexOf("tllottie.js") > EXT.indexOf("tldata.js") && EXT.indexOf("tldata.js") > 0);
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

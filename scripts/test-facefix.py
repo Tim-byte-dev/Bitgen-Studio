@@ -66,7 +66,7 @@ g0, n0 = ff.apply({"1": {"class_type": "SaveImage", "inputs": {"images": ["2", 0
                    "2": {"class_type": "LoadImage", "inputs": {"image": "x"}}}, {"denoise": 0.4})
 check("a graph with no decoded render is left alone, said; no spec -> untouched",
       fd_of(g0) is None and "skipped" in n0[0] and ff.apply(SDXL, None) == (SDXL, []), n0)
-W = (ROOT / "image_worker.py").read_text()
+W = (ROOT / "misc" / "image_worker.py").read_text()
 check("worker: a plain render gets the face fix hook (not when ControlNet runs - the final does); the ControlNet final composes both hooks",
       'ff = None if params.get("controlnet") else face_fix_hook(params, cfg, seed)' in W
       and "produced = run_comfy(params, cfg, stored, output_dir, stem, batch, seed, graph_hook=ff)" in W

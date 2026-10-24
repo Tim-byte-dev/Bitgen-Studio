@@ -60,7 +60,7 @@ check("the three ways: ▣ a ✨ Generate per box (all queued at once), ✎ the 
   && /mode: "edit", source: c, prompt: instruction\(zs, scene, blankNow\(\)\)/.test(PZ) && /regions: regionsOf\(zs, S\.w, S\.h\)/.test(PZ) && /win\.fetch\("\/api\/genimage"/.test(PZ));
 check("/api/genimage: regions cleaned (lib/regions.js) into the job - a ComfyUI style only; comfy_image.patch hands them to comfy_regions.apply; nothing in server.js",
   /const rg = require\("\.\.\/lib\/regions"\)\.clean\(b\.regions\);/.test(RI) && /regional prompting needs a ComfyUI image style/.test(RI) && /if \(rg\.length\) p\.regions = rg;/.test(RI)
-  && /graph, zrep = comfy_regions\.apply\(graph, params\.get\("regions"\), W, H\)/.test(CI) && !/regions/.test(rd("server.js")));
+  && /graph, zrep = comfy_regions\.apply\(graph, params\.get\("regions"\), W, H\)/.test(CI) && !/regions/.test(rd("misc/server.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

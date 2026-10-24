@@ -100,7 +100,7 @@ console.log("@@RM " + JSON.stringify(out));`;
 
 // ---- 3. wiring -------------------------------------------------------------------
 {
-  const RC = read("routes", "characters.js"), CO = read("lib", "core.js"), W = read("worker.py");
+  const RC = read("routes", "characters.js"), CO = read("lib", "core.js"), W = read("misc/worker.py");
   const NA = read("lib", "nativeAudio.js");
   check("scene renders ask for the master (not an upscale); the job carries raw_dir = projects/<p>/raw",
     RC.includes("raw_master: !upscale && !bridgeFit,") && RC.includes("raw_master: true,                  // 2.301.0")

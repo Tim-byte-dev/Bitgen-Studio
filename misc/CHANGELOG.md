@@ -1,0 +1,528 @@
+# Changelog
+
+Every bitGen Studio release, newest first. The [Feature Reference](../docs/bitGen-Studio-Features.pdf) says what each
+feature does and the version it arrived in; [docs/USAGE.md](../docs/USAGE.md) has the step-by-step guide.
+
+Made by `python3 scripts/make_changelog.py` from the release notes.
+
+
+## 2.500–2.599
+
+- **2.591.0** — The App Root Keeps start.bat: Everything Else in misc/ (lib/miscMigrate tidies an updated install)
+- **2.590.0** — 📺 Unreal View (Bridge 1.5.0) in the Image Editor + Timeline; Every Image Editor Tab a Docker; 🎨 Artist Mode
+- **2.589.0** — The Team Render Farm Leaves the Core: An Optional Extension (ext/teamdock) + Add-On, "May Trigger Virus Checkers"
+- **2.588.0** — ⚡ Live Generation + ⬚ Focus Mode (Image Editor); 🧬 the Refmod Library (🎓 Docker); Solarrenderer
+- **2.587.0** — ⤒ Import & Check a ComfyUI Workflow (Inputs, Output, Missing Nodes, Test Run, the Graph Drawn); 👁 Dockers Off; 🗂 Layouts + The Default
+- **2.586.0** — Settings ▸ Add-Ons ▸ LLM (a Dropdown; ★ QWEN3.8 27B = the Base for Our Checkpoint)
+- **2.585.0** — Train an LLM on the 🔁 Picks (Full Prompt, 🏆 ▸ 🎓, Sft / Dpo / Orpo); LoRA Keywords Only from the LoRAs in Use
+- **2.584.0** — 🔁 Compare LLMs in the Prompt Docker (Every LLM Answers, the User Picks, 🏆 the Best LLM for the Job)
+- **2.583.0** — Team ▸ the Render Farm (Nas Team Folder, Daily Signed Keys, Owner's Access from - To / Unrestricted, 🖥 Render on)
+- **2.582.0** — Fibo 2.0 in the Edit Tools (Low VRAM: w4a8 / Gguf); Readme ▸ Links: The Software We Bridge to
+- **2.581.0** — ✨ Generate a Part in Solidcraft (Cadrille / The Local LLM -> Editable Features); Civitai Videos + Animated Thumbs; LoRA Keywords in LLM Prompts
+- **2.580.0** — 🧩 Model Manager ▸ 📁 Model Paths: Every extra_model_paths.yaml Group (➕ other_ui<n>, Edit, 🗑) + ⟳ Restart ComfyUI
+- **2.579.0** — Solidcraft Sends (Image Editor / Timeline / House / Blender / Unreal); Docker Only When Installed; 🗑 Models; Settings ▸ Dockers
+- **2.578.0** — The 📐 Solidcraft Docker: Solidcraft (Open-Source Parametric CAD) in Its Own Docker + The Bridge
+- **2.577.0** — Your Own Pose Sheets: The Pose_sheets Folder + The Character Creator's 🧍 Pose Sheet Dialog
+- **2.576.0** — Civitai Sync by Sha-256; The Viewer's 🧩 to Model…; Ctrl+↓ = the Model's Thumbnail
+- **2.575.0** — Model Manager: Your Files + Metadata + Thumbnail, ½ Stars, Model Type, Nsfw; ✎→ to Prompt; Civitai Sync Chip; Dockers Restored
+- **2.574.1** — Theme Edit: "This Element Only" (Default); A New Title Never Renames Every Docker
+- **2.574.0** — Theme Edit Renames Docker Titles + Any Words; Step N of Total for Every Generation
+- **2.573.0** — ✂ Song Cut Duration, ⤓ Update ComfyUI, Update Check on Startup, FASTH3 Omni
+- **2.572.0** — ✨ Auto Transition (Nothing Moves - Lip Sync Safe), 🔇 Video Sound
+- **2.571.0** — Multi-Select in Gallery / Assets / References, Drag Them All Onto the Timeline; ⛓ Sequential
+- **2.570.0** — 🖊 Pen Tablet: Pressure Curve, Levels, Tilt, Eraser End, Side Button, Pen Brushes
+- **2.569.0** — 🔲 Zones in the Image Editor (One Box at a Time / Edit Model / Regional Prompt)
+- **2.568.0** — Storyboard Pictures Written by the LLM; The Scene Before's Last Frame; 📁 Change It; The Card Is the Picture
+- **2.567.0** — Theme Editor: Text Alignment, Padding / Margins, Corners
+- **2.566.0** — Moss-Image (a Model Type + Settings ▸ Add-Ons ▸ Moss-Image)
+- **2.565.1** — The GitHub Ci Fix (test-basiccfg559 read _gitignore, which the repository does not have)
+- **2.565.0** — The Storyboard Grid; 🎞 Write Storyboard; ☑ Start on It
+- **2.564.0** — 🎙 Voice Chat (Talk to the App, Hands-Free); 🤖 Write / The Phone Chat Fix
+- **2.563.0** — Pictures from Other Scenes; ✎ First Frame from 🅰 Picture a; 🤖 Write
+- **2.562.0** — A Resumed Job Comes Back to Its Storyboard Scene; Nothing Plays by Itself
+- **2.561.0** — A ▣ Docker as a Column of Its Own (Dropped Between Two Columns)
+- **2.560.0** — The ▣ Docker Docks by Drop Zones; Basic Settings / LLM Tokens / The Prompt Docker Go in It
+- **2.559.0** — Folder Filters Remember Their Folder (folder_filters.cfg); Basic Settings in basic.cfg
+- **2.558.0** — ▣ Dockers in the App's Floating Band (Not 9300); Side Dockers + The Storyboard Dragged in
+- **2.557.0** — Settings ▸ Add-Ons ▸ AI Fill Models (the Krita-Way Fill's Node Pack + Models)
+- **2.556.0** — ⏳ Pending (Queue + Apply into a Changes Group); References in Every ✨ Mode; Mount.js Sends the Editor's Settings
+- **2.555.0** — The Krita AI Plugin's Fill per Model Family (Fooocus / Inpaint ControlNets / Mat), Krita's Bounds + Fill Modes
+- **2.554.0** — A Style That Cannot See Around a Selection Draws at the Selection's Size
+- **2.553.0** — Fill with the Edit Model (Green + Krita's Instruction); Edit Keeps to the Selection / The Layer's Pixels
+- **2.552.0** — The Fill and Edit in a Selection from the Krita AI Plugin's Own Code
+- **2.551.0** — Middle Handles Skew; The Fill Closer to the Krita AI Plugin (Context, Pre-Fill, Soft Mask, 0.9)
+- **2.550.0** — Seamless Fill (Any Style's Own Graph), Rigged Figures Picked by the Rig, Move / Paste / Ctrl+t Skew, Docker Menu
+- **2.549.0** — ▣ Docker: Drag in by Title, 📌 Permanent, 🗑 Delete; Krea 2 Listed; Generate = New Layer; Ctrl+g; Drop Asks
+- **2.548.0** — The Reference Docker Kept (Close / Save), All Its Pictures, the Shared Prompt Kept as Typed
+- **2.547.0** — Picked Layers: 🗑 Deletes All, Ctrl+g Groups / Ungroups; The Krea 2 Styles Back (↺ Built-In)
+- **2.546.0** — 🟧 Blender Scene + The References Docker's Pictures, Zoom, No Player in the Editor
+- **2.545.0** — ▣ Docker: An Empty Docker the Others Drop into (Side by Side / Stacked), Storyboard Everywhere
+- **2.544.0** — 🖌 Theme: ☐ Hidden in Expert Mode
+- **2.543.0** — ▾ References (Editor Closed) or Layers (Open), 🧩 Compose in the ▾, the ✨ AI Panel's Tabs Gone
+- **2.542.0** — 🟧 a Blender Layer: The Timeline's Scene Tools in the Image Editor; Edit from the Scene = a New Layer
+- **2.541.0** — ▾ Generate / Edit / Refine / Fill / Replace Background / Remove in the Prompt Docker + 🟧 Blender Mode (the Model)
+- **2.540.9** — ⤴ Push-To-Github.bat: The Right Folder + "Detected Dubious Ownership"
+- **2.540.8** — ✅ Github's Unit Tests on Node 22 (the First Public Runs Failed on Node 20)
+- **2.540.7** — 🎵 YuE2 Without Flashattention (the Windows Pytorch Wheels)
+- **2.540.6** — 🖌 Theme Edit Handles No Longer Drag the Whole UI + reset-layout.bat + 🎵 YuE2 Without Symlink Rights
+- **2.540.5** — ⟳ Update bitGen Studio from GitHub (Settings ▸ General ▸ Updates)
+- **2.540.4** — 🧩 Settings ▸ Add-Ons (YuE2 Installed in the App) + The YuE2 Call Fixed
+- **2.540.3** — 🖼 a Checkpoint Override Only Where It Fits the Style; Installing from the Repo ✅
+- **2.540.2** — 🧩 the Setup Never Stops on a Node Pack (Timeouts, No Git Prompts, Safe Temp Cleanup)
+- **2.540.1** — 📦 the Clean Public Repo, Screenshots + The Beta Testing Status; Four Unit Tests Fixed
+- **2.540.0** — 🎬 Blender / Unreal Renders Made Real with the Reference Docker's Pictures (+ 3DREAL)
+- **2.539.0** — 🖼 Reference Descriptions + Wall / Floor / Furniture / Light, References in the House Builder and the Image Editor
+- **2.538.0** — 🧩 ⤓ Civitai into Each Type's Folder (model_folders.json), 🔄 Sync, 🏠 ◯ Lights, ⛶ Beside the Side Dockers
+- **2.537.0** — 🧩 Models for 400+ Models: Pages, Folder Tabs, Card Size, the Info Page, the Shared model_info Library
+- **2.536.0** — Veda Sparse Attention: An Optional Video Accelerator (MiniMax H3)
+- **2.535.0** — FLUX 3 Klein: A ComfyUI Without CLIPLoader Type flux3 Is Named as Too Old; The Real File Names
+- **2.534.0** — 🧪 Test Mode (Suggests Where You Are, Asks "Did It Work?" + A Suggestion), the Preview Follows New Renders
+- **2.533.0** — A Dropdown's Search List Inside a Dialog Opens in Front of It
+- **2.532.0** — Tests Tick Themselves (Kept), ▁ ⛶ ✕ Docker Title Bars, House: Select / Turn / Size, Walk a Camera
+- **2.531.0** — Anima: Every Loader File Found by Name, a Missing One Names Its Catalog Download
+- **2.530.0** — 🔍 the Ctrl+k Command Palette + 📖 Help (Find Any Docker, Setting, Button, Style, Guide Section)
+- **2.529.0** — House Builder Extras (⌂ Roof, 🖼 Trace a Plan, 🪄 Furnish, ⤓ .glb, 🎬 Shot List)
+- **2.528.0** — 🧍 Characters in House Shots (a Mannequin the ✨ Make It Real Swaps for the Character)
+- **2.527.0** — 🩺 the Style Doctor (a Test Picture per Image Style, Why the Others Fail)
+- **2.526.0** — The Workspace Dropdown (Basic / Image Editing / Video Editing / Music Video / Expert)
+- **2.525.0** — A Model Comfyui's Loader Does Not List Is Found Where It Is Listed (Krea / Anima)
+- **2.524.0** — 🏠 the House Builder Docker - A Floor Plan You Can Use as a Location
+- **2.523.0** — The Diffusion-Model Loader Follows the File (.gguf / .Safetensors)
+- **2.522.0** — 🐞 the Bug Report Docker (Ctrl+alt+shift+b) - One .zip to Send
+- **2.521.0** — Fine-Tunes in the Trainer: Checkpoint (AI-Toolkit Full), LLM + Vision (Unsloth), ⧉ Bake a LoRA
+- **2.520.0** — LoRA Trainer (AI-Toolkit), Peak / Off-Peak Pricing + Usage Log, Remote GPU, In-App Packages + Upgrade, Grouped Downloads
+- **2.519.0** — Setup Asks Your Hardware + Packages (Editor / Small / Mid-Size AI / Everything); Daily Supply Charge; The Red Tests Fixed
+- **2.518.0** — Queue Presets, Model + LoRA Manager, Civitai Downloads, Energy Cost, Testing Docker
+- **2.517.0** — Power Draw + Clock Speeds in the System Stats, a Job's Energy; Anima Workflows
+- **2.516.0** — Keyframes on Any Property (the Gap List's Last Row) + Krea 2 Workflows (Gguf + Safetensors)
+- **2.515.0** — Step 8: AI Cut-Out Through a Shot + 3D Camera Tracker + Content-Aware Fill for Video; Theme Edit Ctrl+shift+alt+e / Ctrl+s
+- **2.514.0** — Edit Theme Mode Layout (Resize / Move / Hide / Text) + Save on Leaving + Folding Dockers
+- **2.513.0** — Load UE Project + The Timeline's Frame Size Bar + CAD Buttons Hidden
+- **2.512.0** — Lottie (JSON) Export
+- **2.511.0** — Variable Mask Feather + Data-Driven Animation + Template Fields
+- **2.510.0** — 2D Layers in 3D (Cards, a 3D Camera, Depth of Field, Light Shadows)
+- **2.509.0** — Motion Sketch + Wiggler + Smoother
+- **2.508.0** — Audio → Keys + Waveform / Spectrum Layers + ƒx audio()
+- **2.507.0** — Puppet Pins + Mesh Warp
+- **2.506.0** — Particles + Light Rays + A Video Layer Baked Whole by the Page
+- **2.505.0** — Generator Layers + Distort (Fractal Noise, Gradient Ramp, Turbulent Displace, Displacement Map)
+- **2.504.0** — Dlss 5 Enhance / Upscale / Frame Generation
+- **2.503.0** — MiniMax H3 Long Video (One Run Up to 30 S)
+- **2.502.0** — FLUX 3 Image Klein, Edit Image Mode's Dropdown
+- **2.501.0** — Time Remapping on a Curve
+- **2.500.0** — Motion Blur, Posterize Time, Echo
+
+## 2.400–2.499
+
+- **2.499.0** — Tracking + Corner Pin
+- **2.498.0** — Bézier Masks
+- **2.497.0** — Expressions
+- **2.496.0** — Merge Paths, Freehand Shape Paths, Text on a Path, Roving Keyframes
+- **2.495.0** — Colour Blend Modes + Video Layers Following a Parent
+- **2.494.0** — The CAD Workings Refined (Tim's CAD List)
+- **2.493.0** — The pro Gap, Item 5: Text Animators (Tim's 1, 2, 4, 5, 6 All Done)
+- **2.492.0** — The pro Gap, Item 4: Shape Layers + Operators
+- **2.491.0** — The pro Gap, Item 6: Blend Modes + Track Mattes
+- **2.490.0** — The pro Gap, Item 2: Parenting + Null Objects (+ the Page's Layer Bake)
+- **2.489.0** — The pro Gap, Item 1: Graph Editor, Easy Ease, Anchor Point, Curved Motion Paths
+- **2.488.0** — The Image Editor's Gap, Round H: PDF Pages, Select Subject Without a Download
+- **2.487.0** — The Image Editor's Gap, Round G: Image ▸ Mode, Proof Colours, Gamut Warning, CMYK TIFF
+- **2.486.0** — The Image Editor's Gap, Round F (Part 2): Auto-Align / Auto-Blend Layers, Photomerge, Merge to HDR
+- **2.485.0** — The Image Editor's Gap, Round F (Part 1): File Types, File Info, Print, Contact Sheet, Crop and Straighten
+- **2.484.0** — The Image Editor's Gap, Round E: Brush Settings, Presets, .abr
+- **2.483.0** — The Image Editor's Gap, Round D: Panels + Measuring Tools
+- **2.482.0** — The Image Editor's Gap, Round C: The Develop Filter + Lens Correction
+- **2.481.0** — The Image Editor's Gap, Round B: 44 Filters
+- **2.480.0** — The Image Editor's Gap, Round a: More Adjustments + Apply Image
+- **2.479.0** — JPEG Xl (.jxl) Pictures
+- **2.478.0** — Search in Every Dropdown List (+ the pro gap written down)
+- **2.477.0** — The Public Beta: The GitHub Repository (Readme, Changelog, Contributing, Ci)
+- **2.476.0** — Unreal Lights, Volumetric Lights and Fog (image editor + timeline)
+- **2.475.0** — The Unreal Camera in the Image Editor (move it, lens, f-stop, exposure, presets)
+- **2.474.0** — No Tool, the Selection Box, Several Layers Picked, DEL
+- **2.473.0** — The Feature Reference PDF
+- **2.472.0** — The Unreal Engine 5.8 Bridge (Unreal / MetaHuman layers, the Unreal camera)
+- **2.471.0** — Parametric 3D Bodies (OpenCascade in the page + Blender, Settings ▸ 3D)
+- **2.470.0** — Picking Like a Drawing / CAD Program, the CAD Toolbar (image editor + timeline)
+- **2.469.0** — Linked Smart Objects, PSD Smart Objects Kept, .atn Actions
+- **2.468.0** — Actions: Strokes + Selections Recorded, Conditionals, Image Processor, Droplets
+- **2.467.0** — Single Colour Channels; Spot Channels
+- **2.466.0** — OpenType, Optical Kerning, Type to Outlines, Text in a Shape, Round Corners
+- **2.465.0** — Puppet Pin Depth + Rotation; Patch Content-Aware
+- **2.464.0** — Sketch Layers: Typed Sizes, Measure, Units, DXF / SVG
+- **2.463.0** — Sketch Modify Tools
+- **2.462.0** — Sketch Layers (a CAD Sketch with Constraints + Dimensions)
+- **2.461.0** — Poses on the Timeline + The Experimental Daz Live Link (Full Gate)
+- **2.460.0** — 3D Layers: A Daz / Blender Scene in the Image Editor
+- **2.459.0** — No Other Products' Names in What the User Sees
+- **2.458.0** — Auto, Floorplan and Chain Dimensions
+- **2.457.0** — Dimension Groups (Every Part Its Own Layer)
+- **2.456.0** — The Storyboard (the Video Docker, Floating, with a Picture per Scene)
+- **2.455.0** — Edit Theme Mode Leaves Dialogs Working
+- **2.454.0** — The Editor's Panel Column Is a Docker (Drop Zones, Width); Every Tab Group Floats
+- **2.453.0** — Frames: Locked Contents, Right-Click Edit / Finish
+- **2.452.0** — Move Tool: Scale / Rotate Handles, Transform Options
+- **2.451.0** — The Edit / Generate Tabs Really Drive the Prompt Docker, DEL, Quick Prompts
+- **2.450.0** — Warp Grid + Split Lines, Liquify: Smooth, Push Left, Face-Aware
+- **2.449.0** — Per-Character Type (Styled Ranges Inside One Text Layer)
+- **2.448.0** — The Content-Aware Fill Workspace
+- **2.447.0** — Artboards
+- **2.446.0** — Rulers, Guidelines and Snapping on the Timeline's Preview Canvas
+- **2.445.0** — Grid Buttons (Editor + Timeline Preview), the Grids & Guides Settings Tabs
+- **2.444.0** — The Editor's ✨ Edit / Generate Run from the Prompt Docker, ⚙ Editor Settings
+- **2.443.0** — Edit Theme Mode: Style Any Element on Screen (🖌)
+- **2.442.0** — Frames: Layers Inside a Closed Shape, Edit / Finish, Contents Follow, Generate into a Shape
+- **2.441.0** — CAD Dimensions: Exact Points, Live Ends (Ctrl / Shift), a Scale per Picture
+- **2.440.0** — Rulers in Units, Guidelines, Snapping
+- **2.439.0** — The Property Bar (X Y W H + 🔒, Corner Radii, Outline Width / Line Style), Draw Modes into a Shape
+- **2.438.0** — Floating Panel Groups, Named Dockers, Dialogs in the Middle (dialog_layout.cfg), 🧰 Confined, Shift+del
+- **2.437.0** — ✨ Generate Fill in a Shape / In a Mask, the Pattern Library
+- **2.436.0** — Project Files: .bgi (image editor, zip), .bgv (timeline, XML), .bgp (whole project, XML)
+- **2.435.0** — Saved Themes (themes/<name>.json), Embed Fonts in the PDF Save Dialog
+- **2.434.0** — The Gradient Editor, Layer Comps, Smart Filter Blend Modes (the Gap List)
+- **2.433.0** — 🎤 Karaoke: Word Nudges, the Line Under the Marker
+- **2.432.0** — Themes + The UI Size, ⊞ Docker Layout Keeps What Is on Screen and the Floating Panels
+- **2.431.0** — The Image Editor and the Prompt Docker: Image Mode, Generated Pictures Onto the Canvas
+- **2.430.0** — Documents (Floating Windows / Tabs), Colour Palette, ⊠ Transparent, Auto-Fill
+- **2.429.0** — Dockers: Transform, Shaping, Align and Distribute, Object Properties
+- **2.428.0** — Drawing Tools: Shapes (F6), Artistic Media (F5), Dimensions + Connectors (F8)
+- **2.427.0** — Actions (Record / Play / Edit) + File ▸ Automate ▸ Batch
+- **2.426.0** — Character / Paragraph Panels, Paragraph (Area) Text, Character / Paragraph Styles
+- **2.425.0** — Bézier / Curve Tools (F5), Shape Tool (F10), Outline Pen (F12), Vector Line <-> Path; Curvature Pen, Rubber Band, Path Align
+- **2.424.0** — PDF Files in the Image Editor: Open, Edit, Save
+- **2.423.0** — Select and Mask, Magnetic Lasso, Quick Selection, Sky, Channels; Patch, Content-Aware Move / Fill, Red Eye, Mixer Brush, Background / Magic Eraser, Poisson Healing
+- **2.422.0** — Smart Objects + Smart Filters, Skew / Distort / Perspective / Warp, Puppet Warp, Content-Aware Scale, Liquify
+- **2.421.0** — The Image Editor's Pen, Paths, Vector Masks and Custom Shapes
+- **2.420.0** — 🤖 AI Inside the Timeline (New Takes, Extend, B-Roll, Cut to the Beat) + The GPU Compositor
+- **2.419.0** — One Prompt Docker + The ⊖ Negative Prompt Docker (key 2)
+- **2.418.0** — Real-Time Playback: The Render Bar, ⚡ Render Previews, ⏱ Late Frames, Playback Resolution
+- **2.417.0** — Bigger Editing Features (2): HDR Output, AAF, the Sound of Reversed / Ramped Clips, Motion Graphics Templates
+- **2.416.0** — Bigger Editing Features (1): Masks / Power Windows + Tracking, Multi-Camera, Proxies
+- **2.415.0** — More Editing Features (2): The Track Mixer with Live Meters + Pan, Distort Effects, the Transitions Library, Colour Match
+- **2.414.0** — More Editing Features (1): Nested Sequences, the XML Carrying Moves / Keyframes / The Grade / Captions, FCPXML for Final Cut Pro X, Whole-Sequence Transcripts
+- **2.413.0** — Partly-Done Editing Features Finished: Reversed / Ramped Edits Frame-Exact, Retimed Transcript Cuts, Smart Reframe, XML Speed Convention, Vidstab + Steady Preview, Bevel Profile Contours
+- **2.412.0** — Smaller Editing Features: Drop-Frame, ProRes 4444 Alpha, H.264 10-Bit, VAAPI, Marker Ranges + Clip Markers, J / L Everywhere, Track Targets + Linked Sound, EQ / Multiband / Reverb, Hue Curves, Effect Keyframes
+- **2.411.0** — 🅰 Text Effect Presets from PSDs (Live as You Type, Timeline + Image Editor, ＋ Import); Editing Extras: J / K / L, AV1, H.265 10-Bit, the Graphics Card's Encoder
+- **2.410.0** — 🎤 Karaoke + 🧰 Tools Dock Beside the Canvas; Space Pauses Anywhere; Editing Round 5: Keys, Markers, In / Out Export, Frames
+- **2.409.0** — Override Style for Every Video Model (LTX Included); Editing Round 4: ✨ Effects, Keyer, ◐ Adjustment Layers
+- **2.408.0** — Karaoke Words Corrected; Editing Round 3: Edit by Transcript, Pauses / Fillers, Scene Cuts
+- **2.407.0** — Editing Round 2: Edit Tools, Colour Panel, Export Queue, Exchange (+ the gap tracked)
+- **2.406.0** — Pro Editing: Speed Ramps / Reverse, Colour Grade + LUTs, Captions, Sound Clean-Up + Mix
+- **2.405.0** — Daz Studio → bitGen Bridge (+ the Merge Dialog); The GPU Allocation Tab Removed
+- **2.404.0** — ✨ the LLM Lays Out a Scene Blender Builds + 🧊 Image to 3D (Hunyuan3D 2.1 / TRELLIS.2)
+- **2.403.0** — A .Blend in the Preview Canvas: Look, Edit, Key, Save, Render a Segment to Real
+- **2.402.1** — The Audio Latent's Batch (a Multi-Type Widget); Conversion = Comfyui's Own Frontend
+- **2.402.0** — LTX 2.3 Style (Comfy-Org's Templates) + Fal's 3DREAL: A Blender Layout Rendered Photoreal
+- **2.401.5** — LTX 2.5 on Comfy-Org's Own Templates + V3 Dynamic Combos in the Converter
+- **2.401.4** — Basic Settings / LLM Tokens Docked Inside the Left Docker's List (Drop Zones Between Its Sections)
+- **2.401.3** — Wan (and Every Newer Worker) Shows Comfyui's Steps; LTX: No Mediamixer (FinalFrameSelector)
+- **2.401.2** — Comfymath Is Gone: The LTX Canvas's Math on Comfyui's Core Math Expression
+- **2.401.1** — The Shipped Workflows' Default Media Cleaned (Before the Repo Goes Public)
+- **2.401.0** — Basic Settings' Video Style Card (Quick Model Change); ⏫ Enhance = SeedVR2 on the Selected Video
+- **2.400.0** — The Queue's One Running Card; ⏫ SeedVR2 Video Upscaling
+
+## 2.300–2.399
+
+- **2.399.0** — The Timeline's 🎥 Camera Path (Pan / Tilt / Roll / Dolly / Height / Lens / A 3D Path) and What H3 / Wan / LTX Are Told
+- **2.398.0** — The Prompt Docker's Height; Basic Settings / LLM Tokens as Dockers (Beside / Inside Another Docker)
+- **2.397.0** — Image Editor: Text Along a Path, Vertical / Warped / 3D Text, More Layer Styles, Lens Flare / Swirl / Drop Shadow / 3D Extrude
+- **2.396.0** — Image Editor: New in the Background Colour, Swap Repaints a Plain Background, the Paint Bucket (Fg / Bg / Gradient)
+- **2.395.0** — Append / Prepend Always FL2VA; The Image Tab's Picture = <Picture 2>; The LLM Is Told
+- **2.394.0** — "+ Add" Tiles (References Video / Sound, Assets Image / Video / Sound); ⊞ Icon Only
+- **2.393.0** — Basic Settings (S) and LLM Tokens (L) Float; The Image Editor in Bitgen's Look
+- **2.392.0** — Docker Configs (docker.cfg); The Guide in the Bitgen Theme; The Brochure
+- **2.391.1** — The PDF Guide; The Scenes Dropdown; "Rendering Step n of Total"
+- **2.391.0** — The Video Docker Trimmed + Its Info Line; The Mask Shown While It Is Painted
+- **2.390.0** — Segment Anything in the Editor; ✨ Compose (Layers as References); → References; PSD Files
+- **2.389.0** — The Image Editor's New Layout and Features; The Floating Prompt Docker
+- **2.388.0** — Append / Prepend a Reference Video from Generate; Refmods on FL2VA
+- **2.387.0** — Path Layers: Subjects Generated on Their Own, See-Through, Following a Drawn Path
+- **2.386.0** — A Statusbar Button for Every Docker (Lit While on Screen), the 3D Toolbar
+- **2.385.0** — Floating Tools & Properties, ◆ Drag / Remove, 3D Widgets, Lights, Materials, the Blender Bridge
+- **2.384.1** — A Pinned Dock Can Be Sized; 📌 Again = Any Height, 📌 Once More = the New Max
+- **2.384.0** — Render Details (Seed / Cfg / Steps / Model / LoRAs), Step n of Total, Seeds to Reuse, Pins Reversed
+- **2.383.0** — The Red Marker Drags at Will, Double-Click a Time to Play, Layer Colours, Selected Layer, No Tl Transport
+- **2.382.1** — The Menu Bar Under the Title Bar; Layer Names Editable in Place
+- **2.382.0** — 🧊 3D Layers (3D Text, FBX / OBJ Models) on the Timeline Canvas; Generate: Steps Above, Bar Below
+- **2.381.0** — docker_status.json (the dock layout), 📌 Pins, Maximize Keeps the Others Open, No Queue Boxes
+- **2.380.0** — H3 Size 736 Option, a Clean Timeline + ❔ Help, ⬚/🖌 + ✨ Fill, 🎤 Karaoke Generator + Karaoke Style
+- **2.379.2** — H3 Renders in 32-Px Steps: 1280x720 Is Asked as 1280x704 (the 16-px strip at the bottom of takes)
+- **2.379.1** — H3 fl2va: The First / Last Frame Is Fitted to the Video's 32-Px Size
+- **2.379.0** — ◆ Keyframes Tween on the Timeline Canvas and in the Compile (position / scale / rotation / opacity / colour)
+- **2.378.0** — ↺ Reset Project Really Makes a New Project (jobs stopped, queue + job caches cleared, folder moved aside)
+- **2.377.1** — The Sung Words Are for the Lips, Never on Screen (a subtitle-like bar at the bottom of takes)
+- **2.377.0** — Timeline Preview Canvas (Toolbar | Canvas | Layers) + Scenes at Their Song Time
+- **2.376.0** — Timeline ⚙ Settings Dialog + ← / → Clip Nudge by Frames
+- **2.375.1** — Basic Settings' Steps No Longer Resets to Auto on a Page Load (Generate)
+- **2.375.0** — Basic Settings' Override Style Reaches the Video Docker's Renders
+- **2.374.0** — 🗑 Recycle Bin Dialog + ↺ Reset Project (Left Dock Menubar)
+- **2.373.0** — Song Lyrics File + 🎤 Karaoke Overlays (Bouncing Ball) on a Karaoke Layer
+- **2.372.0** — Save Project Keeps Everything; Save as Copies It; Open Brings It All Back
+- **2.371.0** — A New Project Starts Fresh in Every Docker
+- **2.370.0** — The Prompt Chat: 💾 Save as "<Subject Summary> - <Date>", 🧹 Clear
+- **2.369.0** — The Character Creator Dialog, Tidied
+- **2.368.1** — The Left Dock's Overlay (an ID Clash)
+- **2.368.0** — 🥽 VR World (a Performer Inside a 360 / 180 Picture) + Wan 2.1 / Wan 2.2 Styles
+- **2.367.0** — 📷 Screenshot + ⏺ Screen Record in the Left Dock's Menu Bar
+- **2.366.0** — Cfg Above 1 Reaches the H3 Graphs (True Cfg)
+- **2.365.0** — The LLM Is Taught the H3 Prompt Shape, and Its Output Is Put into It
+- **2.364.0** — The Prompt Docker's Speech Is Marked Whatever the LLM Writes
+- **2.363.0** — Speech with Emotion in the Voice's Timbre, Never Its Words (no-song native board)
+- **2.362.0** — The Gallery Tile's Save as Is Icon Only
+- **2.361.0** — SFX: A Fixed-Duration Selection Box + Every Cut in the Gallery's Audio Tab
+- **2.360.0** — The SFX Dock (ext/sfxdock, New extension - ships as bitgen-ext-sfxdock-vX.zip)
+- **2.359.0** — Save / Save as (the preview dialog's 💾 Save, the gallery tiles' 💾 Save as)
+- **2.358.0** — Bridge Scenes Between the Song's Segments (☐ Transition on the song strip)
+- **2.357.0** — Board Renders Use the Left Basic Settings' Size
+- **2.356.0** — Lip Sync from the Song's Timed Transcript (music-video board)
+- **2.355.0** — The Setup Wizard Offers Viggle (Native); components.txt 0 / 1 / 2 (Setup Changed -> installers zip)
+- **2.354.0** — The Reference Dock for the Prompt LLM (tags, not file names)
+- **2.353.0** — components.txt: Viggle (Native) Installed on Start, with the ComfyUI Workflow's Models
+- **2.352.0** — Viggle (Native) on a Resident INT8 Engine + The H3_Viggle Style (ComfyUI stays)
+- **2.351.0** — Viggle (Native): Our Own Engine, No ComfyUI; The 17n+5 Frame Fix
+- **2.350.0** — Viggle: A Black Take Is Re-Rendered in Safe Mode
+- **2.349.0** — ✎ First Frames Always Makes Another One; No Empty Cards
+- **2.348.0** — Several ✎ First Frames per Segment; A Black Take Fails in Words
+- **2.347.0** — The Swap Dialog's Big Preview Shows What Was Made
+- **2.346.0** — The Queue Dock's 🧹 Clear, on Both Tabs
+- **2.345.0** — Tim's First Real Ripple Run: Model Names, the Whole Reason, VR Left on
+- **2.344.0** — Viggle (H3): The Swap Dialog's Third Engine
+- **2.343.0** — LTX Ripple Renders as Soon as Its First Frame Is Made; A Failed
+- **2.342.0** — LTX Ripple on Tim's Own Workflow + The Swap Dialog's ⚙ Settings
+- **2.341.0** — The Model Catalog Inside the Studio + The Hugging Face Cli Downloader
+- **2.340.0** — The Dock's First / Last Frame Types + Qwen Image 2.1 Reads the Dock (qwen2_1, 10 pictures)
+- **2.339.0** — ⇄ Swap Engine Dropdown: MiniMax H3 / LTX Ripple
+- **2.338.0** — LTX 2.5 as an Engine
+- **2.337.0** — ✎ First Frame (Qwen Image 2.1) on Every Scene Card
+- **2.336.0** — ⇄ Swap Quality: The Swap LoRA'S Own Settings (no turbo, 20 / 28 steps)
+- **2.335.0** — ✎ Write Prompt in the Swap Dialog (the vision model describes, the LLM writes)
+- **2.334.0** — ⇄ Character Swap: The Picture Is Used Again (<Picture 1>, max size, swap LoRA, 5 s pieces)
+- **2.333.0** — ◈ Control Layers (Krita AI Diffusion's, Ours) + 🎚 Adjust / ✦ Filter (24 of Them)
+- **2.332.0** — The Image Editor, Krita-Style: Selection First, 20 Brushes, Layers, ✨ AI (Regenerate / Refine / Remove / Qwen Edit / Kontext)
+- **2.331.0** — The Installers (Windows Setup.exe, Linux .sh, macOS .command) + The Setup Wizard
+- **2.330.0** — Character Swap in VR (360 mono, 360 stereo TB, 180 stereo Sbs) + Big Movies Load
+- **2.329.0** — The Character Swap Dialog (a whole movie, segment by segment)
+- **2.328.0** — The mmh3_chr_swap Video Style (the character swap's own style)
+- **2.327.0** — Asset Groups + Delete to the Recycle Bin (the Assets dock)
+- **2.326.0** — The Windows-11-Style File / Folder Dialog (every OS)
+- **2.325.1** — The GitHub Repo: Readme, Install + Usage Guides, Screenshots
+- **2.325.0** — The Reference Video Selection Dialog
+- **2.324.0** — Character Swap (MiniMax_H3_Swap: a reference video + a picture)
+- **2.323.0** — Native Audio Only (the looping chains leave the pickers)
+- **2.322.0** — Face Fix (FaceDetailer) + Pose Face Points
+- **2.321.0** — ControlNet: The Second Model's Own Prompt, Strength, End
+- **2.320.0** — ControlNet "Final Image Only"
+- **2.319.0** — ControlNet: The Preprocessor's Optional Switches
+- **2.318.0** — ControlNet Fix: The Dropdowns Were Empty
+- **2.317.0** — ControlNet: The Preprocessor Is the ControlNet, the Model Is
+- **2.316.0** — Basic Settings -> ControlNet (first image -> map -> final)
+- **2.315.0** — ⏫ Upscales the Take You Previewed + ⏫ Selected
+- **2.314.0** — SeedVR2 7B Upscales the Tail PNGs
+- **2.313.0** — The Take's Last 2 Seconds as High-Res PNGs (the next scene starts from them)
+- **2.312.0** — The Video Docker's ⚙ Render Settings + The MMH3 Upscaler
+- **2.311.0** — Timeline: Marker Grabbable When Scrolled, Icon Transport
+- **2.310.0** — The Video Dock's Segment Cuts Snap to Whole Seconds
+- **2.309.0** — Scenes Land on the Timeline End to End
+- **2.308.0** — A Finished Render Always Leaves "Running"
+- **2.307.0** — ↻ Redo on a Rendered Scene, Takes Filed as scene_<n>_<x>
+- **2.306.0** — A Later Ref / Cont Scene No Longer Fails at /prompt
+- **2.305.0** — ControlNet Types + Input / Output Model Pickers
+- **2.304.0** — Expert Mode + the LLM tokens section's type
+- **2.303.0** — Per-Phase Load Precision (8-bit loading for bf16 models)
+- **2.302.0** — "Trim First Frame" per Scene (a seamless join)
+- **2.301.0** — Lossless Scene Masters (projects/<p>/raw/<take>.avi)
+- **2.300.1** — The Scene Filmstrip: ◀ ▶, No Scrollbar
+- **2.300.0** — A Timeline Clip's Start Time, Typed
+
+## 2.200–2.299
+
+- **2.299.2** — The Scene Type Radios Work (scene_<n>_type_group)
+- **2.299.1** — The Stems Dock Resizes Like the Others; One Unclosed Tag
+- **2.299.0** — No Chapter Dropdown, 📂 Load Menu, Locations in the Global
+- **2.298.0** — The Project's Media in Every Dropdown
+- **2.297.0** — Insert a Scene, Chosen First/Last Frames, Rippled Timing
+- **2.296.0** — Cont: Open on the Frame, Keep the Character (Tim: "is it
+- **2.295.0** — The Scene Card (Tim: "after the scene renders put the
+- **2.294.0** — The Music-Video Writer Rules (Tim: "can we teach the llm how
+- **2.293.0** — ▶ as Written: Scenes Render While the Writer Writes (Tim
+- **2.292.0** — Native-Audio REF2VA + FL2VA Modes + The Render Fix
+- **2.291.0** — Obvpm Removed + Every Fresh Scene Onto a New Timeline Layer
+- **2.290.0** — Nine Pictures + Three Audios on MMH3_NativeAudio_MV (Tim
+- **2.289.0** — Load Audio in the Video Docker (Tim: "when we are making a
+- **2.288.0** — The Trim Pivot (Tim: "we don't need to segment the file
+- **2.287.0** — Segment Export + Send-To-Video (Tim: "save the segments
+- **2.286.0** — Zoom + Manual Durations (Tim: "allow user to zoom in/zoom
+- **2.285.0** — The Segment Editor + Segment-Driven Writer (Tim: "add a
+- **2.284.0** — The Per-Scene Pivot (Tim: "lets scrap the continuous
+- **2.283.0** — The Writer's Three Music-Video Misses (Tim's field report
+- **2.282.0** — OBVPM_Timeline as a Style Option + The Timeline-Parity Plan
+- **2.281.0** — The Sheetless Tag (Tim's field report: the pack's own
+- **2.280.0** — Empty Loaders: Three Schema-Shape Bugs (Tim's field report
+- **2.279.0** — The Cascade Beheading (Tim's field report: "⚠ rejected
+- **2.278.0** — Errors with an Address + The MMH3 Gate Hole Closed (Tim's
+- **2.277.0** — The Inline Volume Slider + The Windows Lock Fix (Tim's field
+- **2.276.0** — Waveform Region Volume / Flatten (Tim: "the vocal separation
+- **2.275.0** — The Music-Video Ask Wires the Whole Flow (Tim: "when i ask
+- **2.274.0** — Install Auto-Hide + The Animated Separate (Tim: "check to
+- **2.273.0** — Three Waveforms in the Stems Dock (Tim: "add 3 waveforms, 1
+- **2.272.0** — Songs from Anywhere (Tim: "add a folder select button after
+- **2.271.0** — Teach the LLM How to Lipsync (Tim: "using the music video
+- **2.270.0** — The Music-Video Segment Split (Tim: "add a music video button
+- **2.269.0** — Demucs Stem Separation, the Stems Dock (Tim: "is there any
+- **2.267.0** — The Last-Moment Scene Pin (Tim verbatim: "when i selected
+- **2.266.0** — Chapter Sound References / Lipsync (Tim verbatim: "can we
+- **2.265.0** — chDlg Titlebar + The Dataset Tab (Tim verbatim: "add a
+- **2.264.0** — Omnivoice Is the Engine, Openaudio Removed (Tim verbatim
+- **2.263.0** — 10px Between the Last Dock and the Statusbar (Tim verbatim
+- **2.262.0** — Pause/Resume on the Queue + Regenerate (Tim verbatim: "add a
+- **2.261.0** — The Picked Models Survive Any Restart (Tim verbatim: "on
+- **2.260.0** — The Queue's Own Controls (Tim verbatim: "add a clear button
+- **2.259.0** — Eject Everything + Start-LLM + The Wider Generate (Tim
+- **2.258.0** — No VRAM Stacking + The Second-GPU Keep Rule (Tim verbatim
+- **2.257.0** — The Vertical Prompt Toolbar (Tim verbatim: "create a vertical
+- **2.256.0** — Tokens Accordion + Override-Style Switch + Unclipped Console
+- **2.255.0** — The Role Swap: The Preview Owns Its Height (Tim verbatim
+- **2.254.0** — Maximize Fills + The Seam Cascades (Tim verbatim: "the
+- **2.253.0** — The Visualiser Sizes Itself (Tim: "the visualizer got even
+- **2.252.0** — The Visualiser Is the Dock (Tim verbatim: "the preview screen
+- **2.251.0** — The Preview Fills the Dock (Tim verbatim: "expand the preview
+- **2.250.0** — The Render Record (Tim verbatim: "the play button in load
+- **2.249.0** — Dark Media Chrome (Tim verbatim: "make the audio preview in
+- **2.248.0** — ▶ Finds the Render (Tim: "in the load song docker make the
+- **2.247.0** — The Tabs Wear the Theme (Tim verbatim: "make the song, cover
+- **2.246.0** — Separate Save & Load Dialogs, ▶ Play (Tim verbatim: "make a
+- **2.245.0** — The Dead Buttons, Actually Fixed (Tim: "the save, load and
+- **2.244.0** — "Create a Song" in the Chat (Tim verbatim: "when i prompt
+- **2.243.0** — The Song's Title (Tim verbatim: "add a title input for the
+- **2.242.0** — Version-Stamped Assets (Tim: "the load, new and save buttons
+- **2.241.0** — The Song as a File (Tim verbatim: "add a save button to the
+- **2.240.0** — The Music Dock's Menubar (Tim verbatim: "create a menubar in
+- **2.239.0** — Updates Must Arrive (Tim: "the save as type is not in the music
+- **2.238.0** — Save the Song as… (Tim verbatim: "in the music docker add a
+- **2.237.0** — The Vision Log (Tim verbatim: "the vision model is not creating
+- **2.236.0** — YuE2 in the Music Dock: The Song Is a Score First (Tim: "can we
+- **2.235.0** — A GPU of the Vision Model's Own (Tim verbatim: "a 3090 external
+- **2.234.0** — The Vision Model Grows a Status, a GPU, and a Memory (Tim
+- **2.233.8** — The Vision-Dropdown Saga's Root Cause, Found and Executed
+- **2.233.7** — 🔎 Scan Folder in Settings (Tim verbatim: "add a scan folder
+- **2.233.6** — Path Hygiene Ends the Vision-Dropdown Saga's Server Side (Tim
+- **2.233.5** — Remove All Filters (Tim verbatim: "it is still not listing
+- **2.233.4** — Scan for All Models (Tim verbatim: "don't only scan for
+- **2.233.3** — The Vision Folder Is Picked, Not Guessed (Tim verbatim: "it is
+- **2.233.2** — Subfolders List, and an Empty Dropdown Diagnoses Itself (Tim
+- **2.233.1** — The Mmproj Scan Was Blind to Its Own Installer (Tim verbatim
+- **2.233.0** — Pictures in the Prompt (Tim verbatim: "is it possible for us to
+- **2.232.0** — Folder-Filtered LoRA Dropdowns (Tim verbatim: "in character
+- **2.231.0** — 🎬 Create Video in the Music Docker (Tim verbatim: "in the
+- **2.230.0** — The Chat's Screenplay Ask Rides the Global Prompt (Tim
+- **2.229.0** — YuE2 in the Music Docker (Tim verbatim: "can we add this to
+- **2.228.0** — The Dataset Buttons (Tim verbatim: "add a create dataset
+- **2.227.0** — The Extend Removal (Tim verbatim: "remove the extend workflow
+- **2.226.0** — The Writer Knows the Cast's Mods + The No-Invention Rule
+- **2.225.0** — Character Refmods (by instruction: "now proceed with the refmod")
+- **2.224.0** — Multi-Sheet + Clothing + The Dataset Folder
+- **2.223.17** — The Run Tmp: Every Comfy Render Queues <stem>_tmp.json
+- **2.223.16** — H3_video_ref: ref2va Scene 1, Extend the Rest
+- **2.223.15** — Confirm Delete + Recycle Bin + Clear Gallery
+- **2.223.14** — Extension True Split, Round 1
+- **2.223.13** — Extend Video (the checkbox, Tim's h3_video_extend.json)
+- **2.223.12** — H3-Character_creator: Tim's H3 Look-Sheet Workflow
+- **2.223.11** — Settings → ComfyUI → Folders (extra_model_paths.yaml)
+- **2.223.10** — The Location Dialog: Upload or Generate, 360° Preview
+- **2.223.9** — Creator Pane: Style Settings Loaded, Same Size as Sheet
+- **2.223.8** — 🖼 New Opens the Dialog; The Picker Lives Inside It
+- **2.223.7** — Character Creator Tab in the Sheet Dialog
+- **2.223.6** — No Preview in the Video Docker
+- **2.223.5** — Tim's Ladder: Scene N Gets +(N−1) Seconds
+- **2.223.4** — Sheet Dialog: Double Size + Style Dropdown
+- **2.223.3** — The Context Window Is Spent Out of the Frame Budget
+- **2.223.2** — The Video Docker's Seconds Is the Scene Duration
+- **2.223.1** — Field Fix: Empty Space Below the Dockers
+- **2.223.0** — Bottom-Edge Dock Resize, Llama in Setup, Preview at Start
+- **2.222.1** — Field Fix: "comfy is not installing, i can't see the log"
+- **2.222.0** — Windows-11 Setup Wizard, Zero Questions
+- **2.221.0** — Git-Based ComfyUI Install + Settings Adoption
+- **2.220.0** — Windows-11 Setup Window
+- **2.219.0** — start.bat: "Install ComfyUI y/N"
+- **2.218.0** — Settings → Extensions: Install from a Folder
+- **2.217.0** — Extensions: Every Docker Is ext/<id>/
+- **2.216.1** — 💾 Save in the Preview
+- **2.216.0** — Actors: IDs, ID Folders, Persona/Backstory, the 🎭 Cast, Chapter Memory
+- **2.215.0** — The Join Container Follows the Segments' Codecs
+- **2.214.0** — A Picture Loads into the Preview Tab, EXR/HDR Included
+- **2.213.0** — EXR / Radiance-HDR 360 Panos for Locations
+- **2.212.0** — Multi-Take Sheets + Drag-Anything into the Character Editor
+- **2.211.0** — Prompts Name No Items: The Priming Lesson
+- **2.210.0** — The Klein Family Loads the Verified Model Name
+- **2.209.0** — The Klein Edit Workflow Renders on Tim's Machine
+- **2.208.0** — Accessories / Tack / Gear Are Identity
+- **2.207.0** — Line-Drawing Pose Templates + Style from the Prompt Dock
+- **2.206.0** — Sheet Style Made Visible: The Hybrid-Horse LoRAs
+- **2.205.0** — No More Furries + Generate-Only + Autostarts
+- **2.204.0** — Picture Numbers Never Shift
+- **2.203.0** — The Subject Mask
+- **2.202.0** — The Sheet Previews in a Dialog
+- **2.201.0** — The Sheet Works for Animals Too
+- **2.200.0** — Temp LoRAs Ride the Character Chain
+
+## 2.100–2.199
+
+- **2.199.0** — A Character from One Picture
+- **2.198.0** — Four UI Asks in One Card
+- **2.197.0** — RunPod Serverless Rendering, Shipped (Tim: "something we
+- **2.196.0** — Continuity Points Backward + The ♻ Workflow Button
+- **2.195.0** — The Movie Saves Everything
+- **2.194.0** — The Three Tag Kinds
+- **2.193.0** — The 118-GB 13B
+- **2.192.0** — The Shared Prompt Is Read, Not Replaced
+- **2.191.0** — Reference Pictures Ride the Shared Prompt
+- **2.190.0** — All the Scenes Were Identical
+- **2.189.0** — Context Lengths on the Pack's Lattice (ChainPlan's card, verbatim)
+- **2.188.0** — The Retry That Alternates
+- **2.187.0** — The Speaker Lines Models Actually Write
+- **2.186.0** — Iterative by Default + Save-As-It-Writes
+- **2.185.0** — Placeholder Numbers Repaired + The Button in the Right Dock
+- **2.184.0** — Icon-Only Start-Comfy in the Prompt Docker
+- **2.183.0** — The Reference Dialog
+- **2.182.0** — The Iterative Writer + Thinking Add + Per-Scene Files
+- **2.181.0** — The Dead Ref Button (the guard was the bug)
+- **2.180.0** — Chapter Reference Images
+- **2.179.0** — Hardware Confirmation + The Scene Edit Dialog
+- **2.178.0** — The 5.9-Second Stomp (writePlan's override-less normalize)
+- **2.177.0** — User Node Bypass
+- **2.176.0** — The Optional-Widget Tell + Audio Census (same card, twice)
+- **2.175.0** — The Pack-Update Tell + widget_overrides (LoopStart audio policy)
+- **2.174.0** — The Screenplay Learns the Conversation
+- **2.173.0** — Source_reference Is a Switch, Not a Shot ID
+- **2.172.0** — The Continuity Preflight (not-a-continuous-scene)
+- **2.171.0** — One Duration for Every Scene (per-card durations removed)
+- **2.170.0** — The Render-Aware Harvest (first-scene-six-times)
+- **2.169.0** — Chat Recall (the second-ask-forgets-the-cast bug)
+- **2.168.0** — Shooting-Script Guide + The Stitch + Clothing
+- **2.167.0** — The Sceneprompteditor Bypass
+- **2.166.1** — v2.166.0 Confirmed: Video and Sound (docs-only)
+- **2.166.0** — The Detailed Character Sheet
+- **2.165.0** — Default Duration Applies to All + The Harvest Names Its File
+- **2.164.0** — Menubars for Prompt + Chat, Chat Save/Load
+- **2.163.1** — v2.162.0 Confirmed Working (docs-only)
+- **2.163.0** — Delete Selected + Clear + Default Duration
+- **2.162.0** — Chat Verbs for the Board
+- **2.161.0** — Picture C-Labels + The Silent-File Badge
+- **2.160.0** — Save, Not Add, While Editing
+- **2.159.0** — dockers.json: The Global Dock Layout
+- **2.158.0** — The Console Follows the Render
+- **2.157.0** — Repair Round Hardened + Settings Restart the LLM
+- **2.156.0** — H3-Valid Lengths (the pack's own rule, verbatim)
+- **2.155.0** — [Language] Self-Repair + ▶ Carries Unsaved Edits
+- **2.154.0** — The Repair Round (supergemma4's "would not render")
+- **2.153.0** — Preflight Details + Scene Duration + Thumbnail Cast
+- **2.152.0** — Every Model Writes Screenplays
+- **2.151.0** — The Movie File Menu
+- **2.150.0** — The Chain Answers to You (by instruction, six parts)
+- **2.149.0** — Render Selected
+- **2.148.0** — Preview Dock + LLM Token Budget + Hybrid Offload
+- **2.147.0** — The Chain Pipeline Survives Whole
+- **2.146.0** — The Editable Scene Board
+- **2.145.0** — Stable Tags + The Selected LLM
+- **2.144.0** — The Voice Loaders Were Never Managed
+- **2.143.1** — The Honest Execution-Error Verdict

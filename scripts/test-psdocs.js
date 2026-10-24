@@ -61,7 +61,7 @@ check("the batch closes each picture's document when it is done (never one that 
 check("⊠ transparent: the brush erases (effectivePreset), the bucket and Edit ▸ Fill clear, setFgNone", /S\.fgNone && S\.tool === "paint"/.test(IE) && /if \(S\.fgNone\) return clearSelectionArea\(\);/.test(IE) && /S\.fgNone && plan\.source !== "gradient"/.test(FILL) && /function setFgNone\(\)/.test(IE));
 check("auto-fill: new curves / F6 shapes (newLine), the Pen's and the Shape tool's shapes take the colour picked last; ▨ on by default",
   /const af = auto\(\);/.test(VL) && /S\.vlFillOn = !!store\.get\("vl\.autofill", true\);/.test(VL) && /E\.autoFill\(true\)/.test(PEN) && /E\.autoFill\(true\)/.test(TOOLS));
-check("server.js untouched", !/pcdocs|pcpalette/.test(read("server.js")));
+check("server.js untouched", !/pcdocs|pcpalette/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

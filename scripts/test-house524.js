@@ -116,7 +116,7 @@ const srv = app.listen(0, "127.0.0.1", async () => {
   srv.close(); fs.rmSync(T, { recursive: true, force: true });
   /* pins */
   const idx = fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8"), html = fs.readFileSync(path.join(__dirname, "..", "static", "index.html"), "utf8");
-  check("pins: routes/house.js mounted from routes/index.js (not server.js)", /require\("\.\/house"\)\.mount\(app\)/.test(idx) && !/house/.test(fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8")));
+  check("pins: routes/house.js mounted from routes/index.js (not server.js)", /require\("\.\/house"\)\.mount\(app\)/.test(idx) && !/house/.test(fs.readFileSync(path.join(__dirname, "..", "misc", "server.js"), "utf8")));
   check("pins: index.html loads housegeo.js before housebuilder.js", html.indexOf("/static/housegeo.js") > 0 && html.indexOf("/static/housegeo.js") < html.indexOf("/static/housebuilder.js"));
   const tp = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "lib", "testPlan.json"), "utf8"));
   check("pins: the 🧪 checklist has the 2.524 group", (tp.groups || []).some((g) => g.id === "g524"));

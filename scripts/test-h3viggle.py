@@ -131,7 +131,7 @@ else:
         (wd / "job.json").write_text(json.dumps({"params": params, "config": cfg, "app_dir": str(ROOT), "models_dir": str(ROOT / "models"),
                                                  "output_dir": str(out)}))
         env = dict(os.environ, H3_ENGINE="comfy")
-        r = subprocess.run([sys.executable, str(ROOT / "worker.py"), "job.json"], cwd=wd, capture_output=True, text=True, timeout=900, env=env)
+        r = subprocess.run([sys.executable, str(ROOT / "misc" / "worker.py"), "job.json"], cwd=wd, capture_output=True, text=True, timeout=900, env=env)
         name = next((ln[6:].strip() for ln in r.stdout.splitlines() if ln.startswith("@@OUT ")), "")
         (tmp / f"log_{wd.name}.txt").write_text(r.stdout + r.stderr)
         return r.returncode, r.stdout, (out / name if name else None)

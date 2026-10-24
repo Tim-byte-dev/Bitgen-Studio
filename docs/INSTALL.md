@@ -140,7 +140,7 @@ Double-click **`start.bat`**. It:
 
 1. checks Node.js and Python,
 2. installs the Node dependencies (`npm install`) and the Python ones
-   (`pip install -r requirements.txt`),
+   (`pip install -r misc\requirements.txt`),
 3. downloads the **app window** (Electron, ~150 MB, once) — set the
    environment variable `H3_NO_SHELL=1` if you would rather use your browser,
 4. starts the server and opens the app.
@@ -161,7 +161,7 @@ Keep the black console window open — closing it stops the server.
 > (default `http://127.0.0.1:8188`). Declined by mistake? Delete
 > `comfy\.declined` and restart.
 >
-> **Browser mode:** run `powershell -ExecutionPolicy Bypass -File get-comfy.ps1`
+> **Browser mode:** run `powershell -ExecutionPolicy Bypass -File misc\get-comfy.ps1`
 > yourself, then open <http://127.0.0.1:8311>.
 
 ## 4. The MiniMax H3 models
@@ -197,7 +197,7 @@ link, including the optional 4-step turbo LoRA some workflows use.
 
 > The `fp8_scaled` diffusion files are the fallback if `int8_convrot` will not
 > load on your setup. The GGUF files in **Settings → Models** /
-> `download-models.ps1` are for the older **sd-cli** engine only; ComfyUI mode
+> `misc\download-models.ps1` are for the older **sd-cli** engine only; ComfyUI mode
 > does not need them.
 
 ## 5. ComfyUI node packs
@@ -226,13 +226,13 @@ The screenplay writer, the prompt chat and ✨ Enhance run a local model through
 **llama.cpp**:
 
 1. **Settings → LLM → ⬇ Install engine** (or run
-   `powershell -ExecutionPolicy Bypass -File get-llama.ps1`). It downloads the
+   `powershell -ExecutionPolicy Bypass -File misc\get-llama.ps1`). It downloads the
    newest Windows CUDA build of `llama-server` into `llama-cpp\`.
 2. Put a chat model (`.gguf`, any instruct model your VRAM allows) into
    `llm-models\`.
 3. Pick it in the **LLM** dropdown under the prompt box.
 
-For *Describe image* (the vision model), run `get-qwen3vl.ps1` — it adds
+For *Describe image* (the vision model), run `misc\get-qwen3vl.ps1` — it adds
 Qwen3-VL and its projector next to the same llama.cpp.
 
 With two GPUs, **Settings → LLM → Device** puts the LLM on the other card
@@ -246,9 +246,9 @@ video model or unload it before long renders.
 | OmniVoice (voice cloning / TTS) | Settings → Audio → **Install OmniVoice** | voice clones, TTS, Read replies |
 | faster-whisper (speech-to-text) | Settings → Audio → **Install faster-whisper** | transcription, 🎤 Speak |
 | demucs (stems) | the Stems docker's **⚙ Install** | stem separation |
-| YuE2 (songs) | Settings ▸ Add-ons ▸ YuE2 music (or `get-yue2.ps1`) | Music docker → YuE2 |
+| YuE2 (songs) | Settings ▸ Add-ons ▸ YuE2 music (or `misc\get-yue2.ps1`) | Music docker → YuE2 |
 | MiniMax Music3 (songs) | ComfyUI workflow `audio_minimax_music3.json` | Music docker → MiniMax |
-| sd-cli (legacy engine) | `get-sd-cli.ps1` | only when Settings → ComfyUI → Engine is *sd-cli* |
+| sd-cli (legacy engine) | `misc\get-sd-cli.ps1` | only when Settings → ComfyUI → Engine is *sd-cli* |
 
 Each engine gets its own venv / folder under the app; nothing is installed
 globally.
@@ -275,7 +275,7 @@ models and the engines are all ignored by Git, so a pull never touches them.
 | `You need pytorch with cu130` in the ComfyUI console | RTX 50-series: update the driver and reinstall ComfyUI's torch (see `minimax-fixed.txt`). |
 | No sound on a take | the take's badge says whether the file has an audio stream; a native-audio scene always has one. |
 | The app window never appears | run with `H3_NO_SHELL=1` and use the browser at <http://127.0.0.1:8311>. |
-| A black or frozen app window, or the UI dragged off the screen | close bitGen Studio and run `reset-layout.bat` in the app folder: it puts back the default layout and theme and clears the desktop app's caches (projects, settings and models are kept; what it resets goes to `backups\layout-<time>\`). In a browser, the same reset is the line the bat prints for the F12 console. |
+| A black or frozen app window, or the UI dragged off the screen | close bitGen Studio and run `misc\reset-layout.bat` in the app folder: it puts back the default layout and theme and clears the desktop app's caches (projects, settings and models are kept; what it resets goes to `backups\layout-<time>\`). In a browser, the same reset is the line the bat prints for the F12 console. |
 
 Still stuck? Open an issue with the **Console** docker's output and the failing
 job's log from the **Queue** docker.

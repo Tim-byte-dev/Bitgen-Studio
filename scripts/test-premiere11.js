@@ -63,7 +63,7 @@ check("...a keyed clip: the key on the whole picture first, the mask times its a
 const nm = JSON.parse(py(`import vfx_filters as V
 p=[]; V.build(p, "[0:v]", "[v]", {}, 320, 180, mask={"shape": "ellipse"}); print(json.dumps(p))`));
 check("...a mask with no look (no grade, no effects): nothing to mask - the picture as it is", nm.length === 1 && /null\[v\]$/.test(nm[0]), nm);
-const W = read("worker.py"), CR = read("scripts", "clipfx_render.py"), CF = read("lib", "clipFx.js"), CV = read("ext", "timelinedock", "canvas.js"), CP = read("ext", "timelinedock", "colourpanel.js");
+const W = read("misc/worker.py"), CR = read("scripts", "clipfx_render.py"), CF = read("lib", "clipFx.js"), CV = read("ext", "timelinedock", "canvas.js"), CP = read("ext", "timelinedock", "colourpanel.js");
 check("the compile passes fx.mask (a clip: clipfx_render; an adjustment layer: the worker, its track from its start); the canvas masks the look the same way",
   /mask=fx\.get\("mask"\)/.test(CR) && /mask=adj\.get\("mask"\)/.test(W) && /if \(fx\.mask\) out\.mask = fx\.mask;/.test(CF)
   && /pic = masked\(pre, pic, fx\.mask, \(t \|\| 0\) - \(\+c\.start \|\| 0\)\)/.test(CV) && /F\.maskAlpha\(m, \(x \+ 0\.5\) \* w \/ mw/.test(CV));

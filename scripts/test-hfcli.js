@@ -179,7 +179,7 @@ console.log(out);
     && CLI.includes("S.download(ids, o.token, show, { engine: o.downloader })"));
   check("the studio: Settings -> Models -> ⤓ Model catalog (static/modelsdlg.js); routes/setup mounted from routes/index.js",
     IH.includes('id="mm_catalog"') && IH.includes('<script src="/static/modelsdlg.js"></script>') && RI.includes('require("./setup").mount(app);')
-    && !read("server.js").includes("setup"));
+    && !read("misc/server.js").includes("setup"));
 
   // ---- 5. the dialog (jsdom)
   let JSDOM;

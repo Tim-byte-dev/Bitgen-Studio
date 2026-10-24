@@ -143,7 +143,7 @@ XP.setDeps({ where: () => ({ file: Y, also: [] }), parse: CM.parseExtraPaths, ch
   check("⟳ start fails: the reason comes back", !rr.ok && /ComfyUI folder/.test(rr.error), rr);
 
   /* the wiring */
-  const ix = fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8"), sv = fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8");
+  const ix = fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8"), sv = fs.readFileSync(path.join(__dirname, "..", "misc", "server.js"), "utf8");
   const mm = fs.readFileSync(path.join(__dirname, "..", "static", "modelmgr.js"), "utf8"), html = fs.readFileSync(path.join(__dirname, "..", "static", "index.html"), "utf8");
   check("wired: routes/extraPaths mounted in routes/index.js (not server.js), the tab in modelmgr.js, mmpaths.js in the page",
     /require\("\.\/extraPaths"\)\.mount\(app\)/.test(ix) && !/extraPaths|comfyRestart/.test(sv) && /data-mmtab="paths"/.test(mm) && /id="mmPaths"/.test(mm) && /H3ModelPaths\.render/.test(mm) && /src="\/static\/mmpaths\.js"/.test(html));

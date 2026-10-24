@@ -188,9 +188,9 @@ check("compileArgs (VR): H.265 + moov at the END (no faststart) so the spherical
 
 // ---- 2. the wiring
 const idx = read("routes", "index.js"), rt = read("routes", "swapdlg.js"), core = read("lib", "core.js"),
-      wk = read("swap_worker.py"), vd = read("ext", "videodock", "dock.html"), html = read("static", "index.html");
+      wk = read("misc/swap_worker.py"), vd = read("ext", "videodock", "dock.html"), html = read("static", "index.html");
 check("routes/swapdlg.js is mounted from routes/index.js (server.js untouched)",
-  /require\("\.\/swapdlg"\)\.mount\(app\)/.test(idx) && !/swapdlg/.test(read("server.js")));
+  /require\("\.\/swapdlg"\)\.mount\(app\)/.test(idx) && !/swapdlg/.test(read("misc/server.js")));
 check("routes: every endpoint the dialog uses",
   ["app.get(\"/api/swapdlg\"", "\"/api/swapdlg/set\"", "\"/api/swapdlg/picture\"", "\"/api/swapdlg/segments\"",
    "\"/api/swapdlg/run\"", "\"/api/swapdlg/retry\"", "\"/api/swapdlg/upscale\"", "\"/api/swapdlg/keep\"",
@@ -213,7 +213,7 @@ check("the asset upload streams to disk, any size, and says why in JSON (it was 
 check("swap_worker: a VR job cuts the virtual camera, then vr_finish (other eye, paste, tag)",
   /VR\.cut_args\(src, clip,/.test(wk) && /vr_finish\(src, raw, work, output_dir, vr, view, win, sw, sh, has_a, seed\)/.test(wk)
   && /VR\.right_eye_file\(/.test(wk) && /VR\.paste_args\(/.test(wk) && /VR\.inject\(dest, mode\)/.test(wk));
-check("requirements.txt: numpy + OpenCV for the stereo eye", /^numpy$/m.test(read("requirements.txt")) && /^opencv-python-headless$/m.test(read("requirements.txt")));
+check("requirements.txt: numpy + OpenCV for the stereo eye", /^numpy$/m.test(read("misc/requirements.txt")) && /^opencv-python-headless$/m.test(read("misc/requirements.txt")));
 check("core: a no_assets job is not auto-added to the Video assets",
   /if \(job\.params && job\.params\.no_assets\) produced\.length = 0;/.test(core));
 check("swap_worker: the upscale stage (scripts/upscalestage.apply) after the style, a failure is fatal",

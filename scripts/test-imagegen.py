@@ -336,7 +336,7 @@ check("...and telling the user to clear ComfyUI FIRST (2.83.1)",
 # instruction: it reads as a broken install.
 check("...and that file actually ships",
       os.path.exists(os.path.join(os.path.dirname(os.path.dirname(
-          os.path.abspath(__file__))), "clear-comfy.bat")), None)
+          os.path.abspath(__file__))), "misc", "clear-comfy.bat")), None)
 check("an ordinary error gets NO speculation appended",
       CC.explain_execution_error([["execution_error",
         {"exception_type": "ValueError", "exception_message": "boom"}]]) == "", None)

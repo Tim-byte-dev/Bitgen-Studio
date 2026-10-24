@@ -139,7 +139,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   try { execFileSync("python3", ["-c", "import ast,sys;ast.parse(open(sys.argv[1]).read())", path.join(ROOT, "ue", "bitGenBridge", "Content", "Python", "bitgen_bridge.py")]); check("…bitgen_bridge.py parses", true); } catch (e) { check("…bitgen_bridge.py parses", false, String(e.stderr || e.message)); }
 
   /* ---- the pages + routes */
-  const ri = read("routes", "index.js"), rr = read("routes", "realRefs.js"), sv = read("server.js");
+  const ri = read("routes", "index.js"), rr = read("routes", "realRefs.js"), sv = read("misc/server.js");
   check("routes/realRefs.js mounted from routes/index.js (never server.js): styles, upload, start, status", /require\("\.\/realRefs"\)\.mount\(app\)/.test(ri) && /\/api\/realrefs\/styles/.test(rr) && /\/api\/realrefs\/upload/.test(rr) && /\/api\/realrefs\/start/.test(rr) && /\/api\/realrefs\/:id/.test(rr) && !/realrefs|realRefs/i.test(sv));
   check("/api/unreal/actors (routes/unreal.js) + UEBridge.actors", /\/api\/unreal\/actors/.test(read("routes", "unreal.js")) && /const actors = \(o\) => api\("\/api\/unreal\/actors", o\)/.test(read("static", "unreal.js")));
   const bv = read("ext", "timelinedock", "blendview.js"), pc = read("ext", "imageeditdock", "pc3d.js"), pu = read("ext", "imageeditdock", "pcunreal.js"), tu = read("ext", "timelinedock", "tlunreal.js");

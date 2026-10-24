@@ -32,7 +32,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   check("routes/index.js /api/genimage: the override goes in only when modelFit.fit(...).ok; otherwise the note rides as workflow_note (and the later notes join it, not replace it)",
     /const modelFit = require\("\.\.\/lib\/modelFit"\)/.test(R) && /const mf = modelFit\.fit\(styled, b\.model\.trim\(\)\);\s*if \(mf\.ok\) styled = Object\.assign\(\{\}, styled, \{ model: b\.model\.trim\(\)\.slice\(0, 300\), model_override: true \}\);\s*else overrideNote = modelFit\.note/.test(R)
     && /if \(overrideNote\) p\.workflow_note = overrideNote;/.test(R) && !/p\.workflow_note = rw\.note;/.test(R));
-  check("image_worker.py prints workflow_note in the log", /if params\.get\("workflow_note"\):\s*\n\s*say\(f"\[worker\] \{params\['workflow_note'\]\}"\)/.test(fs.readFileSync(path.join(ROOT, "image_worker.py"), "utf8")));
+  check("image_worker.py prints workflow_note in the log", /if params\.get\("workflow_note"\):\s*\n\s*say\(f"\[worker\] \{params\['workflow_note'\]\}"\)/.test(fs.readFileSync(path.join(ROOT, "misc", "image_worker.py"), "utf8")));
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

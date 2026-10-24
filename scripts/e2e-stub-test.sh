@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 node server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes
+H3_E2E=1 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -47,8 +47,8 @@ P=$(curl -sf "http://127.0.0.1:8311/api/plan?seconds=15&pipeline=auto&segment_se
 
 # path browser: default lists the app dir; models/ filtered to .gguf
 FB=$(curl -sf "http://127.0.0.1:8311/api/fsbrowse")
-echo "$FB" | python3 -c "import json,sys;d=json.load(sys.stdin);exit(0 if any(f['name']=='server.js' for f in d['files']) and 'models' in d['dirs'] else 1)" \
-  && ok "fsbrowse: app dir listed (server.js + models/)" || bad "fsbrowse default: $FB"
+echo "$FB" | python3 -c "import json,sys;d=json.load(sys.stdin);exit(0 if any(f['name']=='start.bat' for f in d['files']) and 'models' in d['dirs'] and 'misc' in d['dirs'] else 1)" \
+  && ok "fsbrowse: app dir listed (start.bat + models/ + misc/)" || bad "fsbrowse default: $FB"
 FB=$(curl -sf "http://127.0.0.1:8311/api/fsbrowse?dir=models&exts=.gguf")
 echo "$FB" | python3 -c "import json,sys;d=json.load(sys.stdin);ns=[f['name'] for f in d['files']];exit(0 if 'stub-fl2va.gguf' in ns and not any(n.endswith('.safetensors') for n in ns) else 1)" \
   && ok "fsbrowse: models/ ext filter works" || bad "fsbrowse filter: $FB"
@@ -310,7 +310,7 @@ O3L=$(curl -sf "http://127.0.0.1:8311/api/jobs/$O3ID?log_from=0")
 # say() must survive cp1252 consoles (the \u26a1 crash)
 PYTHONIOENCODING=cp1252 python3 - << 'PY' && ok "worker say(): cp1252-safe" || bad "worker say(): cp1252 crash"
 import importlib.util as u
-spec = u.spec_from_file_location("w", "worker.py")
+spec = u.spec_from_file_location("w", "misc/worker.py")
 w = u.module_from_spec(spec)
 try:
     spec.loader.exec_module(w)
@@ -338,7 +338,7 @@ done
 # regexes are exercised in Python against the real names from GitHub.
 python3 - <<'PYEOF'
 import re
-src = open("get-llama.ps1").read()
+src = open("misc/get-llama.ps1").read()
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))
 assert "releases?per_page=" in code and "/releases/latest" not in code, "still trusts /releases/latest"
 assert '-Cuda' in src and 'ValidateSet("13", "12")' in src, "no CUDA generation choice"
@@ -355,7 +355,7 @@ for maj, want in (("13", "13.3"), ("12", "12.4")):
 html = '<a href="/ggml-org/llama.cpp/releases/download/b10456/llama-b10456-bin-win-cuda-13.3-x64.zip">'
 m = re.search(r"/ggml-org/llama\.cpp/releases/download/(b\d+)/llama-\1-bin-win-cuda-(13\.\d+)-x64\.zip", html)
 assert m and m.groups() == ("b10456", "13.3")
-w = open("worker.py").read()
+w = open("misc/worker.py").read()
 assert '"-Cuda", cuda' in w and "CUDA Version:" in w, "worker does not pass the driver's CUDA generation"
 PYEOF
 [ $? = 0 ] && ok "get-llama.ps1: scans bNNNNN builds, picks the x64 CUDA 13/12 zip + its cudart, HTML fallback, driver-aware" \
@@ -555,7 +555,7 @@ P2=$(curl -sf "http://127.0.0.1:8311/api/plan?seconds=20&pipeline=auto&segment_s
 curl -sf -X POST http://127.0.0.1:8311/api/config -H 'Content-Type: application/json' \
   -d '{"engine":{"backend":"sdcli"}}' > /dev/null
 python3 -c "
-import sys; sys.path.insert(0,'.')
+import sys; sys.path.insert(0,'.'); sys.path.insert(0,'misc')
 import worker
 assert worker.plan_chunks(360, 120)['chunks'] == [361], worker.plan_chunks(360, 120)
 assert worker.plan_chunks(360, 120, grid='17k5')['chunks'] == [362]
@@ -1750,7 +1750,7 @@ curl -sf -X POST http://127.0.0.1:8311/api/projects/load -H 'Content-Type: appli
 # ---- 4-step LoRA toggle: patcher keeps the LoRA and flips its enable switch
 python3 - <<'PYEOF'
 import copy, json, sys
-sys.path.insert(0, ".")
+sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 NAT = json.load(open("comfy_workflows/ref2va.json"))
 P = dict(prompt="p", seed=1, frames=121, width=960, height=544, steps=4)
@@ -2056,7 +2056,7 @@ assert '362f' in c['vram_ceiling_note'] and '243f' in c['vram_ceiling_note'], c[
     || bad "comfy: ceiling not saved: $(curl -sf http://127.0.0.1:8311/api/config | jget "['engine']['comfy']['vram_ceiling']")"
 grep -q '"vram_ceiling": 243' custom.settings && ok "settings: ...and it landed in custom.settings, not default.settings" \
   || bad "settings: the learned ceiling is not in custom.settings"
-grep -q '"vram_ceiling"' default.settings && grep -q '"vram_ceiling": 0' default.settings \
+grep -q '"vram_ceiling"' misc/default.settings && grep -q '"vram_ceiling": 0' misc/default.settings \
   && ok "settings: default.settings is untouched by saves (still 0)" \
   || bad "settings: default.settings was WRITTEN by a save"
 # the next 4 s plan goes straight to two chunks; a 2 s one is still ONE run
@@ -6525,7 +6525,7 @@ import re, sys
 src = open("lib/core.js", encoding="utf-8").read()
 assert "WORKER_FOR" in src and "image_worker.py" in src, "no worker mapping"
 assert "path.join(BASE, \"worker.py\")" not in src, "worker.py is still hardcoded at the spawn site"
-w = open("worker.py", encoding="utf-8").read()
+w = open("misc/worker.py", encoding="utf-8").read()
 assert 'mode == "image"' not in w, "image handling leaked into the VIDEO worker"
 PYEOF
 [ $? = 0 ] && ok "images: run by image_worker.py; worker.py is untouched by the feature" \
@@ -6540,7 +6540,7 @@ PYEOF
 #     tens of GB of downloads and the user's own pictures.
 python3 - <<'PYEOF'
 import re, sys
-raw = open("clear-comfy.bat", encoding="utf-8", errors="replace").read()
+raw = open("misc/clear-comfy.bat", encoding="utf-8", errors="replace").read()
 assert "comfyui" in raw.lower(), "does not mention ComfyUI at all"
 assert "pause" in raw.lower(), "a double-clicked .bat that closes instantly tells the user nothing"
 # READ THE CODE, NOT THE PROSE. The first version of this check failed on the
@@ -7072,7 +7072,7 @@ python3 scripts/test-comfyimage.py > /tmp/comfyimg.log 2>&1 \
 
 # ---- /prompt 400 must surface node_errors (not a raw HTTPError traceback)
 python3 - <<'PYEOF' > /tmp/reject.log 2>&1
-import sys; sys.path.insert(0, ".")
+import sys; sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 r = worker._http_json("http://127.0.0.1:8388/prompt",
                       {"prompt": {"1": {"class_type": "E2E_Reject", "inputs": {}}},
@@ -7091,7 +7091,7 @@ grep -q "reject body parsed" /tmp/reject.log \
 # beside the image style; applied to the graph by the worker.
 python3 - <<'PYEOF'
 import copy, json, sys
-sys.path.insert(0, ".")
+sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 NAT = json.load(open("comfy_workflows/ref2va.json"))
 st = {"name": "H3 custom", "phases": [{"model": "my_h3.safetensors", "steps": 12, "cfg": 1.0}],
@@ -12393,6 +12393,73 @@ node scripts/test-farm583.js > /tmp/fm583.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui583-ui.js > /tmp/ui583.log 2>&1 \
   && ok "2.583.0 browser test: Settings ▸ Team (create, approve, share, a member's ask -> from - to / revoke / unrestricted, leave) + the 🖥 Render on chip - or SKIP without playwright" \
   || { bad "2.583.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui583.log | head -14; }
+
+# ---- 2.584.0 (🔁 Compare LLMs: every LLM answers, the user picks, the record + 🏆 the best LLM for the job)
+node scripts/test-llmarena584.js > /tmp/la584.log 2>&1 \
+  && ok "2.584.0 units (🔁 Compare LLMs: the job of a request, a round + every reply / failure, the pick, scores per job - wins, win %, time, none, not-picked rounds left out; the CSV; an old llama-server answering for every model refused; the chat route's arena field; the line-up)" \
+  || { bad "2.584.0 Compare LLMs units"; grep -a "^FAIL" -A2 /tmp/la584.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui584-ui.js > /tmp/ui584.log 2>&1 \
+  && ok "2.584.0 browser test: 🔁 Compare LLMs with stand-in llama-servers (3 models + a projector): each reply under its name, a failure said, ✓ Use = the chat's answer, 🏆 scores + rounds + Use + CSV, ▾ untick, ✗ None, ⏹ Stop - or SKIP without playwright" \
+  || { bad "2.584.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui584.log | head -14; }
+
+# ---- 2.585.0 (train an LLM on the 🔁 picks: the full prompt, 🏆 ▸ 🎓 to the trainer, SFT / DPO / ORPO; LoRA keywords from the LoRAs in use)
+node scripts/test-ftpref585.js > /tmp/fp585.log 2>&1 \
+  && ok "2.585.0 units (the full prompt per round, the training set - examples + picked-vs-not pairs, by job, with / without bitGen's instructions; prefs.jsonl; Learn from SFT / DPO / ORPO + Beta + the smaller rate; LoRA keywords: temporary LoRAs with Override style, else the style's)" \
+  || { bad "2.585.0 units"; grep -a "^FAIL" -A2 /tmp/fp585.log | head -14; }
+${FTPREF_PY:-python3} scripts/test-ftpref585.py > /tmp/fp585py.log 2>&1 \
+  && ok "2.585.0 ft_unsloth.py preference training: load_prefs, pref_rows, the Max length guard (SFT + pairs), TRL's real DPOTrainer + ORPOTrainer 2 steps on a tiny model on the CPU - or SKIP without torch / trl (FTPREF_PY = a Python that has them)" \
+  || { bad "2.585.0 ft_unsloth.py preference training"; grep -a "^FAIL\\|Error" -A2 /tmp/fp585py.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui585-ui.js > /tmp/ui585.log 2>&1 \
+  && ok "2.585.0 browser test: a round keeps the full prompt; 🏆 ▸ 🎓 makes a trainer LLM job with 1 example + 1 pair (not doubled when sent again); the trainer's Learn from SFT / DPO / ORPO, Beta, the rate, the pairs counted - or SKIP without playwright" \
+  || { bad "2.585.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui585.log | head -14; }
+
+# ---- 2.586.0 (Settings ▸ Add-ons ▸ LLM: the LLMs as one dropdown; the trainer's Qwen3.8 27B QLoRA base, Gemma 4 12B)
+node scripts/test-llmaddon586.js > /tmp/la586.log 2>&1 \
+  && ok "2.586.0 units (Add-ons ▸ LLM: 9 items = catalog files with the repos' names, ★ Qwen3.8 27B default, into the LLM folder, one pick, delete; the dropdown UI; the trainer's Qwen3.8 27B 4-bit QLoRA + Gemma 4 12B, Qwen3.5 4B still first)" \
+  || { bad "2.586.0 units"; grep -a "^FAIL" -A2 /tmp/la586.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui586-ui.js > /tmp/ui586.log 2>&1 \
+  && ok "2.586.0 browser test: Settings ▸ Add-ons ▸ LLM - the dropdown (★ Qwen3.8 27B picked), what it is for, ⤓ Download posts the pick, a file there = ✓ + 🗑 Delete it - or SKIP without playwright" \
+  || { bad "2.586.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui586.log | head -14; }
+
+# ---- 2.587.0 (⤒ Import & check a ComfyUI workflow + its graph drawn; 👁 dockers off; 🗂 layouts + the default)
+node scripts/test-graphcheck587.js > /tmp/gc587.log 2>&1 \
+  && ok "2.587.0 graph check units (inputs counted either format, preview -> save, pack savers / OUTPUT_NODE, missing nodes / model files, the controls wired with their sources, fillSources, the view - UI layout / API by depth, placeholders)" \
+  || { bad "2.587.0 graph check units"; grep -a "^FAIL" -A2 /tmp/gc587.log | head -14; }
+node scripts/test-layouts587.js > /tmp/ly587.log 2>&1 \
+  && ok "2.587.0 layout units (save / apply - files back, a missing one removed, saves held off / export-import / the default seeds a fresh install; the page's docker memory; 👁 off list)" \
+  || { bad "2.587.0 layout units"; grep -a "^FAIL" -A2 /tmp/ly587.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui587-ui.js > /tmp/ui587.log 2>&1 \
+  && ok "2.587.0 browser test: ⤒ Import & check (🖼 2, preview -> save, the graph drawn) -> ▶ Test run -> saved + picked; a refused workflow -> its error, not saved; ↻ Load shows a workflow's inputs + graph; 👁 SFX off / on; 🗂 Save / Apply / Import / ★ default - or SKIP without playwright" \
+  || { bad "2.587.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui587.log | head -14; }
+
+# ---- 2.588.0 (⚡ live generation + ⬚ focus mode in the image editor; 🧬 the RefMod library; SolarRenderer)
+node scripts/test-live588.js > /tmp/lv588.log 2>&1 \
+  && ok "2.588.0 live + focus units (the loop - settle / one at a time / paused; render size; what counts as a change; latest wins + the head of the queue + the prune; no VRAM clear; Ctrl+P / Ctrl+B / Ctrl+Esc; hsv <-> hex)" \
+  || { bad "2.588.0 live + focus units"; grep -a "^FAIL" -A2 /tmp/lv588.log | head -14; }
+node scripts/test-refmodlib588.js > /tmp/rm588.log 2>&1 \
+  && ok "2.588.0 RefMod library + SolarRenderer units (7 types, upload sorted + .txt captions, autocaption pictures / video frames, extract 16 slots, adopt, @tags; the add-on - pull request #3, the LoRAs, the workflows)" \
+  || { bad "2.588.0 RefMod library + SolarRenderer units"; grep -a "^FAIL" -A2 /tmp/rm588.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui588-ui.js > /tmp/ui588.log 2>&1 \
+  && ok "2.588.0 browser test: ⚡ live through the real /api/aiedit (stub ComfyUI) - render, a change renders again, ▣, ✔ Apply; ⬚ focus - canvas only, Ctrl+P palette, Ctrl+B brushes, Ctrl+Esc; 🧬 RefMods - new, type, media sorted, caption, ＠, 🧬 Extract -> kept; SolarRenderer add-on + ☀ row - or SKIP without playwright" \
+  || { bad "2.588.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui588.log | head -14; }
+
+# ---- 2.589.0 (the Team render farm leaves the core: the optional extension ext/teamdock + its add-on)
+node scripts/test-teamext589.js > /tmp/te589.log 2>&1 \
+  && ok "2.589.0 Team extension units (no team code in the core, the farm hook, an extension's server part mounted / a broken one skipped, install from the zip - only ext/teamdock, remove, the newest zip found, the add-on's virus-checker note, kept out of the install zips)" \
+  || { bad "2.589.0 Team extension units"; grep -a "^FAIL" -A2 /tmp/te589.log | head -14; }
+
+# ---- 2.590.0 (📺 Unreal View + bridge 1.5.0; every image editor tab a docker; 🎨 Artist mode)
+node scripts/test-uelive590.js > /tmp/uv590.log 2>&1 \
+  && ok "2.590.0 Unreal View + docker tabs units (frame size / back-off, a clip at the playhead - camera keys / sequence / MetaHuman, the layer's request, frame + keep_fast against the stand-in 1.5.0 and a 1.4.0 one, the plugin; drop targets, the kept layout, Artist mode)" \
+  || { bad "2.590.0 Unreal View + docker tabs units"; grep -a "^FAIL" -A2 /tmp/uv590.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui590-ui.js > /tmp/ui590.log 2>&1 \
+  && ok "2.590.0 browser test: 🎨 Artist mode on screen; a tab dragged out floats, dropped on it = a tab, ⠿ onto a docker = joined, at a column edge = its own docker, kept, reset; 📺 an Unreal layer streams from the stand-in, another stops it; the timeline's camera clip at the playhead - or SKIP without playwright" \
+  || { bad "2.590.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui590.log | head -14; }
+
+# ---- 2.591.0 (the app root keeps start.bat; the rest in misc/)
+node scripts/test-misc591.js > /tmp/misc591.log 2>&1 \
+  && ok "2.591.0 misc/ layout units (the root keeps start.bat + package.json / README / LICENSE; the server, workers, installers, launchers point into misc/; miscMigrate tidies an updated install's old copies, keeps the user's quick prompts, touches nothing else)" \
+  || { bad "2.591.0 misc/ layout units"; grep -a "^FAIL" -A2 /tmp/misc591.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

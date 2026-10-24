@@ -6,7 +6,7 @@
 > **Public beta — still in testing.** bitGen Studio is a beta and is still being tested. Expect rough edges and the odd
 > bug. **Bug reports and improvements are very welcome**: open an issue (the *Bug report* and *Feature request*
 > templates are there to help), or send a pull request. See **[docs/BETA.md](docs/BETA.md)** for how to report a
-> problem and **[CONTRIBUTING.md](CONTRIBUTING.md)** for how to help.
+> problem and **[CONTRIBUTING.md](misc/CONTRIBUTING.md)** for how to help.
 
 ### Where testing is up to
 
@@ -31,7 +31,7 @@ If you try one of the ⚠️ or 🧪 areas, your reports are especially useful.
   <a href="docs/USAGE.md"><b>User guide</b></a> ·
   <a href="docs/bitGen-Studio-Features.pdf"><b>Feature reference (PDF)</b></a> ·
   <a href="docs/bitGen-Studio-Guide.pdf">Guide + shortcut keys (PDF)</a> ·
-  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="misc/CHANGELOG.md">Changelog</a> ·
   <a href="docs/REFERENCE.md">Technical reference</a> ·
   <a href="LICENSE">MIT licence</a>
 </p>
@@ -82,10 +82,10 @@ models, so nothing in them was generated.*
 
 ## Quick start
 
-1. **Install**: download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
+1. **Install**: download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `misc/bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
 2. **Make something**: type a prompt and press **Generate**, or ask the assistant to *create a screenplay* and render the scenes on the board. The **[user guide](docs/USAGE.md)** (also as a [PDF](docs/bitGen-Studio-Guide.pdf)) walks through every docker.
 3. **Found a bug or have an idea?** Please open an issue. This is a beta, and every report helps.
-4. **UI dragged off the screen, or a black window?** Close bitGen Studio and run `reset-layout.bat` (in the app folder). It puts back the default layout and theme, and clears the desktop app's caches. Your projects, settings and models are kept, and everything it resets is copied to `backups\layout-<time>\` first.
+4. **UI dragged off the screen, or a black window?** Close bitGen Studio and run `misc\reset-layout.bat` (in the app folder). It puts back the default layout and theme, and clears the desktop app's caches. Your projects, settings and models are kept, and everything it resets is copied to `backups\layout-<time>\` first.
 
 **Optional bridges** (each in its own folder):
 - `blender/bitgen_bridge`: the Blender add-on.
@@ -106,22 +106,23 @@ models, so nothing in them was generated.*
 ```
 bitGen Studio window (Electron, or http://127.0.0.1:8311 in a browser)
    │
-   server.js ── routes/ + lib/          Node: the API, projects, the job queue (server.js stays minimal)
+   start.bat → misc/server.js ── routes/ + lib/   Node: the API, projects, the job queue (server.js stays minimal)
    │
    ├─ ext/<id>/          the dockers (timeline, image editor, video, music…) - each an extension
    ├─ static/            the page, shared modules, vendored libraries (three.js, pdf.js, OpenCascade…)
-   ├─ *_worker.py        Python workers, one per kind of job, each driving ComfyUI over its API
+   ├─ misc/              server.js, the Python workers (*_worker.py - one per kind of job, each driving ComfyUI over
+   │                     its API), default.settings, the setup scripts (get-*.ps1, reset-layout.bat …) and the notes
    ├─ llama.cpp          the local LLM: screenplay writer, chat, ✨ Enhance
    └─ bridges            Blender (blender/), Daz Studio (daz/), Unreal Engine 5.8 (ue/)
 ```
 
 ## Tests
 
-`bash scripts/e2e-stub-test.sh` runs the whole suite: 1,400+ legs of unit and real-browser tests. It runs against stub ComfyUI, LLM and Unreal servers, so no GPU or models are needed. GitHub Actions runs a quick subset on every push (`scripts/ci-units.sh`). See [CONTRIBUTING.md](CONTRIBUTING.md).
+`bash scripts/e2e-stub-test.sh` runs the whole suite: 1,400+ legs of unit and real-browser tests. It runs against stub ComfyUI, LLM and Unreal servers, so no GPU or models are needed. GitHub Actions runs a quick subset on every push (`scripts/ci-units.sh`). See [CONTRIBUTING.md](misc/CONTRIBUTING.md).
 
 ## Licence
 
-**MIT**: see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md). Generation software (ComfyUI, llama.cpp, the audio engines) runs as separate programs that the app downloads from their own projects.
+**MIT**: see [LICENSE](LICENSE) and [NOTICE.md](misc/NOTICE.md). Generation software (ComfyUI, llama.cpp, the audio engines) runs as separate programs that the app downloads from their own projects.
 
 The browser libraries in `static/vendor/` keep their own licences, which sit beside them. One of them, OpenCascade (`static/vendor/replicad/`), is LGPL-2.1. NOTICE.md explains how it is shipped.
 
@@ -131,7 +132,7 @@ open 2B model that writes [CadQuery](https://github.com/CadQuery/cadquery) code 
 picture; bitGen Studio runs that code and rebuilds the part as SolidCraft's own editable sketches and extrudes.
 cadrille's **code is Apache-2.0**, but its **weights are CC BY-NC 4.0 - non-commercial use only**. They are not part of
 this repository: Settings ▸ Add-ons ▸ CAD generate downloads them from Hugging Face to your machine, and you accept their
-licence when you do. Without cadrille, the app's own local LLM writes the code instead. See [NOTICE.md](NOTICE.md).
+licence when you do. Without cadrille, the app's own local LLM writes the code instead. See [NOTICE.md](misc/NOTICE.md).
 
 **Model weights have their own licences.** MiniMax H3, FLUX.2, SDXL, the voice models and others each come with their own terms, and several are non-commercial. Read the licence of the model that rendered your output.
 
@@ -155,4 +156,4 @@ licence when you do. Without cadrille, the app's own local LLM writes the code i
 
 ## Acknowledgements
 
-[ComfyUI](https://github.com/Comfy-Org/ComfyUI) · [cadrille](https://github.com/col14m/cadrille) + [CadQuery](https://github.com/CadQuery/cadquery) · [SolidCraft](https://solidcraft.io) · [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) · [LTX-Video](https://github.com/Lightricks/LTX-Video) · [Wan](https://github.com/Wan-Video) · [llama.cpp](https://github.com/ggml-org/llama.cpp) · [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) · [three.js](https://threejs.org) · [replicad](https://replicad.xyz) + [OpenCascade](https://dev.opencascade.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [pdf-lib](https://pdf-lib.js.org) · [ag-psd](https://github.com/Agamnentzar/ag-psd) · [fontkit](https://github.com/foliojs/fontkit) · and the ComfyUI node packs listed in [NOTICE.md](NOTICE.md).
+[ComfyUI](https://github.com/Comfy-Org/ComfyUI) · [cadrille](https://github.com/col14m/cadrille) + [CadQuery](https://github.com/CadQuery/cadquery) · [SolidCraft](https://solidcraft.io) · [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) · [LTX-Video](https://github.com/Lightricks/LTX-Video) · [Wan](https://github.com/Wan-Video) · [llama.cpp](https://github.com/ggml-org/llama.cpp) · [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) · [three.js](https://threejs.org) · [replicad](https://replicad.xyz) + [OpenCascade](https://dev.opencascade.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [pdf-lib](https://pdf-lib.js.org) · [ag-psd](https://github.com/Agamnentzar/ag-psd) · [fontkit](https://github.com/foliojs/fontkit) · and the ComfyUI node packs listed in [NOTICE.md](misc/NOTICE.md).

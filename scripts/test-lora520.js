@@ -97,14 +97,14 @@ const out = path.join(tmp, "output", "me"), loras = path.join(tmp, "loras"), jd 
 fs.mkdirSync(path.join(out, "samples"), { recursive: true }); fs.mkdirSync(jd);
 fs.writeFileSync(path.join(out, "me_000000250.safetensors"), "a"); fs.writeFileSync(path.join(out, "me.safetensors"), "final");
 fs.writeFileSync(path.join(out, "samples", "1_000000250_0.jpg"), "jpg");
-const fin = spawnSync(PY, ["-c", `import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]); import lora_worker as w; print(w.finish(json.loads(sys.argv[2])))`, ROOT,
+const fin = spawnSync(PY, ["-c", `import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[1] + '/misc'); import lora_worker as w; print(w.finish(json.loads(sys.argv[2])))`, ROOT,
   JSON.stringify({ output: out, name: "me", loras_dir: loras, job_dir: jd, trigger: "t1m", family: "SDXL", base: "SDXL 1.0", images: 12, steps: 1200 })]);
 const tdir = path.join(loras, "trained");
 check("lora_worker.finish: me.safetensors (the final one) copied to loras/trained", fin.status === 0 && fs.existsSync(path.join(tdir, "me.safetensors")) && fs.readFileSync(path.join(tdir, "me.safetensors"), "utf8") === "final", fin.stdout.toString() + fin.stderr.toString());
 let card = {}; try { card = JSON.parse(fs.readFileSync(path.join(tdir, "me.bitgen.json"), "utf8")); } catch { /* */ }
 check("…with its Model manager card: title, family, the trigger as its keyword, a description", card.v === 1 && card.user && card.user.title === "me" && card.user.family === "SDXL" && card.user.keywords[0] === "t1m" && /12 pictures, 1200 steps/.test(card.user.description), card);
 check("…the last sample as its preview (.jpg -> .preview.jpeg) and installed.json in the job", fs.existsSync(path.join(tdir, "me.preview.jpeg")) && fs.existsSync(path.join(jd, "installed.json")));
-const nof = spawnSync(PY, ["-c", `import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]); import lora_worker as w; print(w.train(json.loads(sys.argv[2])))`, ROOT, JSON.stringify({ python: "/nope/python", aitk_dir: "/nope", name: "x", config: "c" })]);
+const nof = spawnSync(PY, ["-c", `import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[1] + '/misc'); import lora_worker as w; print(w.train(json.loads(sys.argv[2])))`, ROOT, JSON.stringify({ python: "/nope/python", aitk_dir: "/nope", name: "x", config: "c" })]);
 check("lora_worker.train without ai-toolkit: says to install it, exit 1", /Install ai-toolkit/.test(nof.stdout.toString()) && /\n1\s*$/.test(nof.stdout.toString()), nof.stdout.toString());
 
 /* ---- the docker's pure parts */
@@ -112,7 +112,7 @@ check("fitText: fits / does not / no NVIDIA card", /✓/.test(UI.fitText({ vram_
 check("stepText + lossOf", UI.stepText({ step: 250, total: 1000 }) === "step 250 / 1000 (25 %)" && UI.stepText(null) === "" && UI.lossOf(["[lora] step 1/9 loss 0.5", "x", "[lora] step 2/9 loss 0.25", "done"]) === 0.25 && UI.lossOf([]) === null);
 
 /* ---- wiring */
-const CORE = read("lib", "core.js"), IDX = read("routes", "index.js"), SRV = read("server.js"), HTML = read("static", "index.html"), R = read("routes", "loraTrain.js");
+const CORE = read("lib", "core.js"), IDX = read("routes", "index.js"), SRV = read("misc/server.js"), HTML = read("static", "index.html"), R = read("routes", "loraTrain.js");
 check("core: lora_train + install_aitoolkit are tool modes run by lora_worker.py; installs skip the pump's preset wait",
   /"install_aitoolkit", "lora_train"/.test(CORE) && /lora_train: "lora_worker\.py", install_aitoolkit: "lora_worker\.py"/.test(CORE) && /"install_aitoolkit"(, "install_unsloth")?\]\.includes/.test(CORE));
 check("routes/index mounts loraTrain (not server.js)", /require\("\.\/loraTrain"\)/.test(IDX) && !/loraTrain/.test(SRV));
@@ -121,7 +121,7 @@ check("routes: list, job save/delete, dataset add/from/caption/remove, autocapti
   ["/api/loratrain", "/api/loratrain/job", "/api/loratrain/dataset/:name/add", "/api/loratrain/dataset/:name/from", "/api/loratrain/dataset/:name/autocaption", "/api/loratrain/yaml/:name", "/api/loratrain/start", "/api/loratrain/install", "/api/loratrain/export/:name"].filter((u) => !R.includes('"' + u)));
 check("the page loads static/loratrain.js (statusbar 🎓 LoRA)", /<script src="\/static\/loratrain\.js/.test(HTML) && /ltBtn/.test(read("static", "loratrain.js")));
 check("job folders can't escape the project (cleanName on every name)", (() => { try { LT.jobDir("../../x"); return path.basename(LT.jobDir("../../x")) === "x"; } catch { return false; } })());
-const IGN = fs.existsSync(path.join(ROOT, "_gitignore")) ? read("_gitignore") : fs.existsSync(path.join(ROOT, ".gitignore")) ? read(".gitignore") : "ai-toolkit/";
+const IGN = fs.existsSync(path.join(ROOT, "misc", "_gitignore")) ? read("misc/_gitignore") : fs.existsSync(path.join(ROOT, ".gitignore")) ? read(".gitignore") : "ai-toolkit/";
 check("ai-toolkit/ is not shipped (ignored)", /^\/?ai-toolkit\/?$/m.test(IGN), IGN.slice(0, 200));
 
 fs.rmSync(tmp, { recursive: true, force: true });

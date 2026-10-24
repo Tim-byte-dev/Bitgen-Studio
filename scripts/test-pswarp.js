@@ -112,7 +112,7 @@ check("the menus: Layer ▸ Smart Objects (convert, via copy, edit / replace / e
 check("smart filters: Filter / Adjustments / Ctrl+F on a smart object ADD a filter (E.openFilter / repeatFilter / applyFilter wrapped), each with on / off, settings, opacity (2.434.0: + a blend mode - Blending Options), order, delete, one filter mask",
   /E\.openFilter = function \(id, again\) \{ const L = smartTarget\(\); if \(L\) return smartFilter\(L, id, again\);/.test(SMJ) && /E\.repeatFilter = function/.test(SMJ) && /E\.applyFilter = function/.test(SMJ)
   && /Smart filter mask - click to paint on it/.test(SMJ) && /"delete smart filter"/.test(SMJ) && /"smart filter order"/.test(SMJ) && /"smart filter (opacity|blending)"/.test(SMJ));
-check("server.js untouched", !/pcsmart|pcwarp|pcmesh/.test(read("server.js")));
+check("server.js untouched", !/pcsmart|pcwarp|pcmesh/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

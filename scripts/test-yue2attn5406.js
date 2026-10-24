@@ -53,7 +53,7 @@ try {
       + "req = json.load(open(a[a.index('--request') + 1], encoding='utf-8'))\nd = os.path.join(a[a.index('--output') + 1], req['id']); os.makedirs(d, exist_ok=True)\nopen(os.path.join(d, 'audio.flac'), 'wb').write(b'fLaC-test')\n");
     fs.chmodSync(cliPath, 0o755);
     const drv = path.join(T, "drv.py");
-    fs.writeFileSync(drv, "import sys, json\nsys.path.insert(0, sys.argv[1])\nimport music_worker as M\nout = sys.argv[3]\nimport os\nos.makedirs(out, exist_ok=True)\n"
+    fs.writeFileSync(drv, "import sys, json\nsys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[1] + '/misc')\nimport music_worker as M\nout = sys.argv[3]\nimport os\nos.makedirs(out, exist_ok=True)\n"
       + "r = M.run_yue2({'prompt': '[verse]\\nla la'}, {'_app_dir': sys.argv[2]}, {'caption': 'pop'}, __import__('pathlib').Path(out), 'song', 1, 7)\nprint('PRODUCED ' + json.dumps(r))\n");
     const song = (mode, log) => { const r = spawnSync(py, [drv, ROOT, app, path.join(T, "out")], { encoding: "utf8", env: Object.assign({}, process.env, { FAKE_MODE: mode, FAKE_LOG: log }) });
       return { out: r.stdout + r.stderr, status: r.status, tried: fs.existsSync(log) ? fs.readFileSync(log, "utf8").trim().split("\n") : [] }; };

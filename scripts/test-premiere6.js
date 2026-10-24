@@ -82,7 +82,7 @@ check("routes/index.js passes deliver_hw (only true counts); the 📤 dialog has
 
 /* ---- 5. wiring: text effect presets */
 const IDX = read("routes", "index.js");
-check("routes/textfx.js mounted from routes/index.js; server.js untouched", /require\("\.\/textfx"\)\.mount\(app\)/.test(IDX) && !/textfx|deliver_hw|shuttle/.test(read("server.js")));
+check("routes/textfx.js mounted from routes/index.js; server.js untouched", /require\("\.\/textfx"\)\.mount\(app\)/.test(IDX) && !/textfx|deliver_hw|shuttle/.test(read("misc/server.js")));
 check("static/index.html loads /static/textfx.js; the timeline ext lists textfx.js before tlfloat.js",
   /<script src="\/static\/textfx\.js"><\/script>/.test(read("static", "index.html")) && (() => { const e = JSON.parse(read("ext", "timelinedock", "ext.json")); const f = e.scripts || e.files || e.js || []; return f.indexOf("textfx.js") >= 0 && f.indexOf("textfx.js") < f.indexOf("tlfloat.js"); })());
 check("the two built-in presets ship (textfx/*.json, ids psd:...)", ["arena-gold-3d", "trend-candy-3d"].every((s) => { try { return JSON.parse(read("textfx", s + ".json")).id === "psd:" + s; } catch { return false; } }));

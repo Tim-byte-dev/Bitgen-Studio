@@ -42,7 +42,7 @@ const near = (a, b, t) => Math.abs(a - b) <= (t || 1e-9);
   const js = cases.map((c) => [K.value(c.kf, c.at, "x", -1), K.value(c.kf, c.at, "y", -1), K.value(c.kf, c.at, "ax", 0)]);
   const tmp = path.join(os.tmpdir(), "h3aeg_" + process.pid + ".json"); fs.writeFileSync(tmp, JSON.stringify(cases));
   const py = execFileSync("python3", ["-c", [
-    "import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+    "import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "cases = json.load(open(" + JSON.stringify(tmp) + "))",
     "def if_(c, a, b): return a if c else b",
     "def lt(a, b): return 1 if a < b else 0",
@@ -60,14 +60,14 @@ const near = (a, b, t) => Math.abs(a - b) <= (t || 1e-9);
   check("worker._kf_value = static/keyframes.js on 160 cases with Bézier eases, holds, motion-path handles and the anchor", bad.length === 0, bad.slice(0, 2));
   const far = PY.map((r, i) => Math.abs(r[3] - js[i][1])).reduce((a, b) => Math.max(a, b), 0);
   check(`...and the ffmpeg expression follows the curve (32 straight pieces per Bézier ease: within 1.5 px, worst ${far.toFixed(3)})`, far < 1.5, far);
-  const out = execFileSync("python3", ["-c", ["import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+  const out = execFileSync("python3", ["-c", ["import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "print(json.dumps([worker._tf_chain({'x': 100, 'y': 50, 'scale': 2, 'rot': 90, 'ax': 10, 'ay': 0}), worker._tf_chain({'x': 100, 'y': 50}), worker._kf_perspective([{'at': 0, 'x': 0, 'y': 0}, {'at': 1, 'x': 10, 'y': 0}], {'ax': 7, 'ay': -3}, 640, 360), worker._kf_moves([{'at': 0, 'ax': 3}, {'at': 1, 'ax': 5}])]))"].join("\n")], { cwd: ROOT, encoding: "utf8" }).trim().split("\n").pop();
   const [tc, plain, persp, mv] = JSON.parse(out);
   check("compile, still layer: the anchor moves the box's centre by -R·scale·anchor (90°, x2, anchor 10 → centre 20 px up)", /\+\(100\.00\)/.test(tc[1]) && /\+\(30\.00\)/.test(tc[2]) && plain[1] === "+(100.00)" && plain[2] === "+(50.00)", [tc[1], tc[2]]);
   check("compile, moving layer: the corners pivot on the anchor; a keyed anchor counts as movement", /\(\(-1\*W\/2-\(7\.000000\)\)\*/.test(persp) && /\(\(-1\*H\/2-\(-3\.000000\)\)\*/.test(persp) && mv === true, persp.slice(0, 260));
 }
 {
-  const out = execFileSync("python3", ["-c", ["import sys, json, os, tempfile; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+  const out = execFileSync("python3", ["-c", ["import sys, json, os, tempfile; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "d = tempfile.mkdtemp(); os.chdir(d)", "a = worker._fc_args('null'); b = worker._fc_args('x' * 70000)", "print(json.dumps([a, b, open(b[-1]).read() == 'x' * 70000]))"].join("\n")], { cwd: ROOT, encoding: "utf8" }).trim().split("\n").pop();
   const [a, b, same] = JSON.parse(out);
   check("a long filter graph (big Bézier expressions) goes to ffmpeg from a file, a short one as an argument", a[0] === "-filter_complex" && a[1] === "null" && /^(-\/filter_complex|-filter_complex_script)$/.test(b[0]) && same, [a, b[0]]);

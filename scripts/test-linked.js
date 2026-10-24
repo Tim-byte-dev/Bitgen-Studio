@@ -21,7 +21,7 @@ check("linkedStore: PNG / JPEG only, safe names in the folder", LS.kindOf(Buffer
 let err = ""; try { LS.file("../server.js"); } catch (e) { err = String(e.status); }
 check("linkedStore.file refuses names that are no linked picture (404)", err === "404");
 
-const IDX = fs.readFileSync(path.join(ROOT, "routes/index.js"), "utf8"), RT = fs.readFileSync(path.join(ROOT, "routes/linked.js"), "utf8"), SV = fs.readFileSync(path.join(ROOT, "server.js"), "utf8");
+const IDX = fs.readFileSync(path.join(ROOT, "routes/index.js"), "utf8"), RT = fs.readFileSync(path.join(ROOT, "routes/linked.js"), "utf8"), SV = fs.readFileSync(path.join(ROOT, "misc", "server.js"), "utf8");
 const IE = fs.readFileSync(path.join(ROOT, "ext/imageeditdock/imageedit.js"), "utf8"), PS = fs.readFileSync(path.join(ROOT, "ext/imageeditdock/pcpsd.js"), "utf8"), LK = fs.readFileSync(path.join(ROOT, "ext/imageeditdock/pclinked.js"), "utf8");
 const ext = JSON.parse(fs.readFileSync(path.join(ROOT, "ext/imageeditdock/ext.json"), "utf8")).scripts;
 check("wiring: routes/linked.js (save / list / stat / file) mounted from routes/index.js with lib/linkedStore.js - not server.js", /require\("\.\/linked"\)\.mount\(app\)/.test(IDX) && ["/api/linked/save", "/api/linked/list", "/api/linked/stat", "/api/linked/file/:name"].every((u) => RT.includes(u)) && /require\("\.\.\/lib\/linkedStore"\)/.test(RT) && !/linkedStore|api\/linked/.test(SV));

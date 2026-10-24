@@ -79,7 +79,7 @@ function check(name, cond, extra) {
   check("🗑 Clear sits in the gallery dockhead and posts /api/outputs/clear",
     /id="gClear"/.test(H) && /fetch\("\/api\/outputs\/clear", \{ method: "POST" \}\)/.test(H), null);
 
-  const D = JSON.parse(fs.readFileSync("default.settings", "utf8"));
+  const D = JSON.parse(fs.readFileSync(require("path").join(__dirname, "..", "misc", "default.settings"), "utf8"));
   check("default.settings ships confirm_delete OFF — deletes are recoverable out of the box",
     D.ui && D.ui.confirm_delete === false, D.ui && D.ui.confirm_delete);
 }

@@ -53,7 +53,7 @@ const BUNDLED = JSON.parse(read("ue", "bitGenBridge", "bitGenBridge.uplugin")).V
   check("framesize: normalize = even, 64 .. 8192; nothing / junk = Auto (null)", JSON.stringify(F.normalize({ w: 1921, h: 1079 })) === '{"w":1922,"h":1080}' && F.normalize({ w: 99999, h: 10 }) === null && F.normalize({ w: 99999, h: 100 }).w === 8192 && F.normalize(null) === null);
   check("framesize: the aspect keeps the other side (16:9 at 1280 = 720, 9:16 at 1920 high = 1080 wide); the aspect / preset of a size",
     F.heightFor(1280, 16 / 9) === 720 && F.widthFor(1920, 9 / 16) === 1080 && F.aspectOf(1080, 1350) === "4:5" && F.aspectOf(1000, 333) === "free" && F.presetOf(1080, 1920) === "vfhd" && F.presetOf(1000, 1000) === "");
-  const CV = read("ext", "timelinedock", "canvas.js"), TD = read("ext", "timelinedock", "timelinedock.js"), RI = read("routes", "index.js"), W = read("worker.py"), SB = read("ext", "timelinedock", "tlsizebar.js");
+  const CV = read("ext", "timelinedock", "canvas.js"), TD = read("ext", "timelinedock", "timelinedock.js"), RI = read("routes", "index.js"), W = read("misc/worker.py"), SB = read("ext", "timelinedock", "tlsizebar.js");
   check("the frame size reaches everything: the canvas (tl.frame over V1's size), ⚙ Compile's body, the route (normalized), the worker (V1 fitted in, centred on black)",
     /var fr = window\.H3FrameSize && tl\.frame \? H3FrameSize\.normalize\(tl\.frame\) : null;/.test(CV) && /frame: X\.frame && X\.frame\.w && X\.frame\.h \? \{ w: X\.frame\.w, h: X\.frame\.h \} : undefined/.test(TD)
     && /frame: frameSize\.normalize\(t\.frame\) \|\| undefined/.test(RI) && /allv = _fit_frame\(allv, tl\.get\("frame"\), run, say\)/.test(W) && /force_original_aspect_ratio=decrease/.test(W) && /pad=\{w\}:\{h\}:\(ow-iw\)\/2:\(oh-ih\)\/2:color=black/.test(W));
@@ -64,7 +64,7 @@ const BUNDLED = JSON.parse(read("ue", "bitGenBridge", "bitGenBridge.uplugin")).V
   const RU = read("routes", "ueProject.js"), SU = read("static", "ueproject.js"), IX = read("static", "index.html");
   check("🎮 in the menu bar -> the folder dialog (Select) -> /api/ue/project/load at once; routes mounted from routes/index.js, not server.js",
     /b\.id = "projUe"/.test(SU) && /mode: "dir", title: "Select your Unreal project's folder", okLabel: "Select"/.test(SU) && /return go\(\{\}\);/.test(SU) && /\/api\/ue\/project\/load/.test(SU)
-    && /app\.post\("\/api\/ue\/project\/load"/.test(RU) && /require\("\.\/ueProject"\)\.mount\(app\);/.test(RI) && !/ueProject/.test(read("server.js")) && /static\/ueproject\.js/.test(IX) && /static\/framesize\.js/.test(IX));
+    && /app\.post\("\/api\/ue\/project\/load"/.test(RU) && /require\("\.\/ueProject"\)\.mount\(app\);/.test(RI) && !/ueProject/.test(read("misc/server.js")) && /static\/ueproject\.js/.test(IX) && /static\/framesize\.js/.test(IX));
   const EXT = JSON.parse(read("ext", "timelinedock", "ext.json")).scripts;
   check("wiring: tlsizebar.js in the timeline extension", EXT.includes("tlsizebar.js"));
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

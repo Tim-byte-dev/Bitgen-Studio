@@ -106,7 +106,7 @@ const sum = (a) => Math.round(a.reduce((s, x) => s + x, 0) * 1000) / 1000;
   const RC = rd("routes", "comfyUpdate.js"), RI = rd("routes", "index.js"), RU = rd("routes", "updater.js"), IX = rd("static", "index.html");
   check("routes/comfyUpdate.js: info / check / start / job / channel - mounted from routes/index.js (not server.js)",
     ["/api/comfy/update/info", "/api/comfy/update/check", "/api/comfy/update/start", "/api/comfy/update/job", "/api/comfy/update/channel"].every((u) => RC.includes(u))
-    && /require\("\.\/comfyUpdate"\)\.mount\(app\)/.test(RI) && !/comfyUpdate/.test(rd("server.js")));
+    && /require\("\.\/comfyUpdate"\)\.mount\(app\)/.test(RI) && !/comfyUpdate/.test(rd("misc/server.js")));
   check("routes/updater.js: GET/POST /api/update/settings (the startup check's switch, on by default)", /app\.get\("\/api\/update\/settings"/.test(RU) && /auto_check: b\.auto_check !== false/.test(RU));
   const CS = rd("static", "comfyupdate.js"), SC = rd("static", "startcheck.js"), UP = rd("static", "updater.js");
   check("Settings ▸ ComfyUI ▸ Engine: ⟳ ComfyUI updates under ▶ Start / ■ Stop - channel, 🔍 Check, ⤓ Update ComfyUI, the log",

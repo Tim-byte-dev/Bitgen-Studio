@@ -95,7 +95,7 @@ function send(port, method, u, body) {
     const I = read("static", "index.html"), R = read("routes", "index.js"), RS = read("routes", "dockerStatus.js");
     check("the wiring: the page loads static/dockcfg.js, starts it after the docker_status boot, the route mounted in routes/index.js (not server.js), docker.cfg in the page head",
       /<script src="\/static\/dockcfg\.js"><\/script>/.test(I) && /window\.DockCfg\.start\(\)/.test(I) && /window\.H3GoneDocks = GONE_DOCKS/.test(I)
-      && /require\("\.\/dockerCfg"\)\.mount\(app\)/.test(R) && !/dockerCfg|docker\.cfg/.test(read("server.js")) && /dc\.inject\(out, dc\.load\(core\.BASE\)\)/.test(RS));
+      && /require\("\.\/dockerCfg"\)\.mount\(app\)/.test(R) && !/dockerCfg|docker\.cfg/.test(read("misc/server.js")) && /dc\.inject\(out, dc\.load\(core\.BASE\)\)/.test(RS));
   } catch (e) {
     check("the run finished", false, String(e && e.stack || e).slice(0, 900));
   } finally {

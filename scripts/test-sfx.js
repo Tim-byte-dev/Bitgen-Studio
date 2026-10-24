@@ -258,7 +258,7 @@ try {
     /accept="[^"]*\.mov[^"]*\.wav[^"]*"/.test(DH) && !DH.includes("/*"));
   check("the layout remembers it (lib/dockers + lib/uiLayout); routes/sfx mounted from routes/index.js (never server.js)",
     read("lib", "dockers.js").includes('"stemsdock", "sfxdock",') && read("lib", "uiLayout.js").includes("sfxdock: 220")
-    && RI.includes('require("./sfx").mount(app);') && !read("server.js").includes("sfx"));
+    && RI.includes('require("./sfx").mount(app);') && !read("misc/server.js").includes("sfx"));
 } catch (e) {
   fail++; console.log("FAIL: the test crashed :: " + (e && e.stack || e));
 } finally {

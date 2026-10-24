@@ -35,7 +35,7 @@ check("test mode OFF: no auto tick at all - your own ✓ stays", off.rows[0].sta
 const tps = read("lib/testPlan.js");
 check("OFF: event() keeps nothing, clientEvent answers {off}, status() / report() neither evaluate nor keep", /if \(t\.on !== true\) return;/.test(tps) && /if \(!isOn\(\)\) return \{ ok: true, off: true \};/.test(tps)
   && (tps.match(/summarize\(flatten\(p\), ctx, rec\(\)\.marks, \{ auto: on \}\);\n  if \(on\) remember\(sum\);/g) || []).length === 2);
-check("…↺ Clear keeps the switch as it was; POST /api/testplan/mode in routes/testPlan.js (not server.js)", /const on = !!\(c\.testlog && c\.testlog\.on === true\); c\.testlog = \{ on,/.test(tps) && /\/api\/testplan\/mode/.test(read("routes/testPlan.js")) && !/testplan\/mode/.test(read("server.js")));
+check("…↺ Clear keeps the switch as it was; POST /api/testplan/mode in routes/testPlan.js (not server.js)", /const on = !!\(c\.testlog && c\.testlog\.on === true\); c\.testlog = \{ on,/.test(tps) && /\/api\/testplan\/mode/.test(read("routes/testPlan.js")) && !/testplan\/mode/.test(read("misc/server.js")));
 
 /* ---- pending + suggestions */
 const kept = TP.summarize(its, { events: [] }, { a: { state: "pass", auto: true, how: "ie_action: paint", at: 5 } });

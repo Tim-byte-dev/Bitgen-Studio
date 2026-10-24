@@ -53,7 +53,7 @@ check("pcmultisel: E.deleteLayer = every picked layer (else the old one), E.grou
   && /\$\("kxLDel"\)\.onclick = \(\) => E\.deleteLayer\(\);/.test(IE));
 check("the route is its own file, mounted from routes/index.js (server.js untouched); stylerestore.js loaded",
   /require\("\.\/stylesRestore"\)\.mount\(app\)/.test(RI) && /app\.get\("\/api\/styles\/missing"/.test(RR) && /app\.post\("\/api\/styles\/restore"/.test(RR) && /src="\/static\/stylerestore\.js"/.test(IX)
-  && !/stylesRestore/.test(rd("server.js")));
+  && !/stylesRestore/.test(rd("misc/server.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

@@ -93,7 +93,7 @@ const X = require(path.join(ROOT, "ext", "imageeditdock", "pcpdf.js"));
     && /pdfjs-dist@3\.11|3\.11\.174/.test(read("static", "vendor", "pdf.min.js").slice(0, 3000) + read("static", "vendor", "pdf.min.js").match(/version\s*[=:]\s*"[\d.]+"|"3\.11\.\d+"/)));
 
   /* ---- 4 */
-  const idx = read("routes", "index.js"), srv = read("server.js"), rt = read("routes", "pdf.js");
+  const idx = read("routes", "index.js"), srv = read("misc/server.js"), rt = read("routes", "pdf.js");
   check("routes/pdf.js mounted from routes/index.js (server.js untouched): save (raw bytes), list, file", /require\("\.\/pdf"\)\.mount\(app\)/.test(idx) && !/pdf/i.test(srv.match(/require\([^)]*pdf[^)]*\)/g) || "")
     && /app\.post\("\/api\/pdf\/save", express\.raw/.test(rt) && /app\.get\("\/api\/pdf\/list"/.test(rt) && /app\.get\("\/api\/pdf\/file\/:name"/.test(rt));
   const EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts, ie = read("ext", "imageeditdock", "imageedit.js"), src = read("ext", "imageeditdock", "pcpdf.js");

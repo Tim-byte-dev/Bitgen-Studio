@@ -31,7 +31,7 @@ function Step($m) { Write-Host "`n== $m" -ForegroundColor Cyan }
 # --- 1. sanity -------------------------------------------------------------
 Set-Location (Join-Path $PSScriptRoot "..")
 if (-not (Test-Path "package.json")) { Fail "run this from the bitGen Studio project root" }
-if (-not (Test-Path "server.js"))    { Fail "this does not look like the project root (no server.js)" }
+if (-not (Test-Path "misc\server.js")) { Fail "this does not look like the project root (no misc\server.js)" }
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Fail "git is not installed. Get it from https://git-scm.com/download/win and run this again."
 }

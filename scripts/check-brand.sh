@@ -35,13 +35,13 @@ SKIP='--exclude-dir=node_modules --exclude-dir=.git --exclude-dir=venvs
 #   HANDOVER-ARCHIVE.md  - (2.295.0) the older half of that same record, split
 #                          out when project knowledge hit its size limit
 hits=$(grep -rl $SKIP -e "H3 Studio" -e "h3-studio" . 2>/dev/null \
-       | grep -v "^./clear-comfy.bat$" \
+       | grep -v "^./misc/clear-comfy.bat$" \
        | grep -v "^./scripts/check-brand.sh$" \
-       | grep -v "^./HANDOVER.md$" \
-       | grep -v "^./HANDOVER-ARCHIVE.md$" || true)
+       | grep -v "^./misc/HANDOVER.md$" \
+       | grep -v "^./misc/HANDOVER-ARCHIVE.md$" || true)
 [ -n "$hits" ] && note "the old product name survives in: $(echo "$hits" | tr '\n' ' ')"
-grep -q "h3-studio" clear-comfy.bat \
-  || note "clear-comfy.bat no longer excludes an install still in an h3-studio folder"
+grep -q "h3-studio" misc/clear-comfy.bat \
+  || note "misc/clear-comfy.bat no longer excludes an install still in an h3-studio folder"
 
 # --- the MODEL is intact ---------------------------------------------------
 for needle in "MiniMax H3" "ComfyUI-Spectrum-MiniMax-H3" "H3-only" "minimax-h3"; do
@@ -54,7 +54,7 @@ grep -rq $SKIP -e "github.com/xmarre/ComfyUI-Spectrum-MiniMax-H3" . 2>/dev/null 
 # --- the licence -----------------------------------------------------------
 [ -f LICENSE ] || note "there is no LICENSE file"
 grep -q "MIT License" LICENSE 2>/dev/null || note "LICENSE is not the MIT text"
-[ -f NOTICE.md ] || note "there is no NOTICE.md explaining the third-party position"
+[ -f misc/NOTICE.md ] || note "there is no misc/NOTICE.md explaining the third-party position"
 node -e 'process.exit(require("./package.json").license === "MIT" ? 0 : 1)' \
   || note "package.json does not declare the MIT licence"
 node -e 'process.exit(require("./electron/package.json").license === "MIT" ? 0 : 1)' \

@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "misc"))
 import viggle_graph as VG  # noqa: E402
 
 P = F = 0
@@ -150,7 +150,7 @@ import black_check as BC  # noqa: E402
 check("the reason: black in safe mode too -> the model files / ComfyUI (not 'retry with a new seed')",
       "in safe mode too" in BC.reason("Viggle", safe=True) and "Retry with a new seed" not in BC.reason("Viggle", safe=True)
       and "Retry with a new seed" in BC.reason("Viggle"))
-Wsrc = (ROOT / "viggle_worker.py").read_text(encoding="utf-8")
+Wsrc = (ROOT / "misc" / "viggle_worker.py").read_text(encoding="utf-8")
 check("worker: fp16 accumulation follows ⚙ speed patches; ⚙ safe mode up front; a black take -> ONE safe-mode render (same seed), black again -> the safe reason",
       'VG.fp16_accumulation(graph, bool(params.get("speed_patch")))' in Wsrc and 'if params.get("safe"):' in Wsrc
       and 'raw = render(g2, "_safe", "chunk 1/1 (safe mode)")' in Wsrc and 'fail(BC.reason("Viggle", safe=True))' in Wsrc

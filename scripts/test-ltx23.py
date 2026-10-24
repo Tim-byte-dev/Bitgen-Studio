@@ -229,7 +229,7 @@ def run_job(lmode, images, name, video=None):
            "config": {"engine": {"backend": "comfy", "comfy": {"url": base}}}, "output_dir": str(jd / "out"),
            "app_dir": str(ROOT), "node_exe": shutil.which("node")}
     (jd / "job.json").write_text(json.dumps(job))
-    r = subprocess.run([sys.executable, "-u", str(ROOT / "ltx_worker.py"), str(jd / "job.json")], cwd=str(jd),
+    r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "ltx_worker.py"), str(jd / "job.json")], cwd=str(jd),
                        capture_output=True, text=True, timeout=240)
     q = json.loads((jd / "ltx_queued.json").read_text()) if (jd / "ltx_queued.json").is_file() else {}
     return r, q

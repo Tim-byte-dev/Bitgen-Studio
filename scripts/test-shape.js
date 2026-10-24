@@ -45,7 +45,7 @@ const ext = (pts) => [Math.min(...pts.map((p) => p[0])), Math.max(...pts.map((p)
   check("keyable numbers: trim, repeater, offsets, sizes (the 'sh_' keys)", ["tend", "rcopies", "rrot", "oamt", "pamt", "tangle", "zsize", "wsize", "rrad", "w", "h"].every((k) => S.NUMS.includes(k)));
 }
 {
-  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), tp = read("ext/timelinedock/tlparent.js"), w = read("worker.py"), extl = JSON.parse(read("ext/timelinedock/ext.json")).scripts, g = read("ext/timelinedock/tlgraph.js"), src = read("ext/timelinedock/tlshape.js");
+  const cv = read("ext/timelinedock/canvas.js"), tlx = read("ext/timelinedock/timelinedock.js"), tp = read("ext/timelinedock/tlparent.js"), w = read("misc/worker.py"), extl = JSON.parse(read("ext/timelinedock/ext.json")).scripts, g = read("ext/timelinedock/tlgraph.js"), src = read("ext/timelinedock/tlshape.js");
   check("the wiring: the canvas draws a shape's picture (its own size); a shape is baked before the compile (TlParent's bake); an unbaked shape never reaches the compile", /c\.shape && window\.TlShape/.test(cv) && /x\.c\.parent \|\| x\.c\.shape/.test(tp) && /bake: \(c\.parent \|\| c\.shape/.test(tlx) && /&& c\.bake \? c\.bake : undefined/.test(tlx) && /!\(c\.shape && !c\.bake\)/.test(tlx));
   check("the compile checks a baked clip's file (not its picture's); the Graph Editor takes the shape's keys", /require\("image", c\["baked"\] if c\.get\("baked"\) else c\["path"\]\)/.test(w) && /addProp: addProp/.test(g) && extl.indexOf("tlshape.js") > extl.indexOf("tlparent.js"));
   check("no product names", !/After Effects|Adobe/.test(src.replace(/^\s*\*.*$/gm, "")));

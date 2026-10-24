@@ -14,7 +14,9 @@ Python worker builds, validates and runs each sd-cli job. No accounts, no
 cloud, nothing leaves the machine.
 
 ```
-browser ── server.js (minimal entry — logic lives in lib/ + routes/)
+browser ── misc/server.js (minimal entry — logic lives in lib/ + routes/; 2.591.0: the app root keeps start.bat,
+              package.json, README, LICENSE - the entry point, the workers, default.settings, the setup scripts
+              and the notes are in misc/)
               ├─ spawns: python -u worker.py <job.json>          (VIDEO)
               │             └─ spawns: sd-cli … (streams log lines back up)
               ├─ spawns: python -u image_worker.py <job.json>    (IMAGES)
@@ -332,7 +334,7 @@ the int8_convrot safetensors directly if your build loads it.
 - **sd-cli** (stable-diffusion.cpp, Aug 2026+ CUDA build) — three ways in:
   **Settings → Paths → "⬇ Install sd-cli"** (runs as a queued job, full log in
   the console — the easiest retry if it ever fails), `start.bat`'s prompt, or
-  `get-sd-cli.ps1` (right-click → Run with PowerShell; double-click opens
+  `misc\get-sd-cli.ps1` (right-click → Run with PowerShell; double-click opens
   Notepad). Manual fallback: from
   github.com/leejet/stable-diffusion.cpp/releases grab the
   `…win-cuda12-x64.zip` **and** the `cudart…cu12-x64.zip`, extract BOTH into
@@ -344,7 +346,7 @@ the int8_convrot safetensors directly if your build loads it.
 ## 2. Models
 
 Either drop your existing GGUF set into `models\` (unsloth Q6_K defaults are
-pre-wired in Settings), run `download-models.ps1`, or use
+pre-wired in Settings), run `misc\download-models.ps1`, or use
 **Settings → Models** to pull files straight from the ComfyUI repo and
 generate your own GGUF quantizations. Licence note: H3 uses the MiniMax H3
 Community License — read it once before shipping anything built on outputs.
@@ -353,10 +355,10 @@ Community License — read it once before shipping anything built on outputs.
 
 Double-click **`start.bat`** (checks Node/Python, installs deps, starts the
 server, opens http://127.0.0.1:8311). Manual: `npm install` +
-`pip install -r requirements.txt` + `npm start`. Confirm paths in Settings —
+`pip install -r misc/requirements.txt` + `npm start`. Confirm paths in Settings —
 the health dot goes green when everything is found. Outputs land in
 `projects\<name>\output\`; every job's `job.json` in `workspace\jobs\<id>\` is
-replayable: `python worker.py workspace\jobs\<id>\job.json`.
+replayable: `python misc\worker.py workspace\jobs\<id>\job.json`.
 
 ## 4. Reference mode
 
@@ -2027,7 +2029,7 @@ in the job log with the wheel link.
 * **2.104.1** — **Install LLM engine works again.** GitHub's `/releases/latest`
   for llama.cpp now points at the semver notes tag (`v0.3.0`) which ships no
   binaries; the Windows CUDA zips live on the rolling `bNNNNN` builds.
-  `get-llama.ps1` now scans recent releases for the newest one with a
+  `misc\get-llama.ps1` now scans recent releases for the newest one with a
   Windows x64 CUDA build, prefers CUDA 13 (`-Cuda 12` for older drivers —
   the worker reads the driver's CUDA version from nvidia-smi and passes it),
   downloads the matching cudart DLL pack, falls back to reading the releases
@@ -2258,7 +2260,7 @@ in the job log with the wheel link.
   settings to defaults** drops the custom layer (kept as
   `custom.settings.bak`) and keeps the open project; the General tab shows both
   paths and what is customised. A pre-2.99 `config.json` is migrated on first
-  boot (kept as `config.json.migrated`), `clear-comfy.bat` reads the new files
+  boot (kept as `config.json.migrated`), `misc\clear-comfy.bat` reads the new files
   first, and zips ship `default.settings` but never `custom.settings`. New:
   `lib/settings.js` (path-parameterised, 37 checks in
   `scripts/test-settings.js` incl. the framePlan mirror), `POST
@@ -2639,7 +2641,7 @@ in the job log with the wheel link.
   the status bar shows *ComfyUI: not running / starting… / running* beside the
   job and LLM indicators, and clicking it when it is down starts it. And a
   launch that **dies because something already holds port 8188** — almost always
-  a ComfyUI left running by a previous session — now runs `clear-comfy.bat` and
+  a ComfyUI left running by a previous session — now runs `misc\clear-comfy.bat` and
   starts again by itself, at most once every five minutes, and only when the
   launch died within a minute.
 
@@ -2703,13 +2705,13 @@ in the job log with the wheel link.
   remains: leave the file where it is and hard-link it into `diffusion_models`
   from Settings → Image. This changes the workflow; that changes the folder.
 
-* **2.83.1** — **`clear-comfy.bat`, so recovering does not mean rebooting.**
+* **2.83.1** — **`misc\clear-comfy.bat`, so recovering does not mean rebooting.**
   Kills every ComfyUI process (matched on its *command line*, so bitGen Studio's own
   render worker and any other Python you are running survive), frees port 8188,
   empties ComfyUI's node cache, `temp/`, `__pycache__` and the ComfyUI-Manager
   registry cache, then offers to relaunch ComfyUI **in a real console window**.
   Models, output, input, saved workflows and settings are never touched.
-  Usage: `clear-comfy.bat [path\to\ComfyUI] [/start|/nostart] [/quiet]`; with no
+  Usage: `misc\clear-comfy.bat [path\to\ComfyUI] [/start|/nostart] [/quiet]`; with no
   arguments it reads the folder from `config.json`. The `[Errno 22]` message in
   the worker log now points at it, because a "restarted" ComfyUI has often been
   the *old* one still holding the port.
@@ -3752,7 +3754,7 @@ in the job log with the wheel link.
   releases ship **no postinstall script at all**, so npm "succeeds" in a couple
   of seconds having downloaded nothing and `dist\electron.exe` is never
   created. `start.bat` then found no binary and fell through to the browser.
-  `get-electron.ps1` now runs `install.js` itself when the runtime is missing
+  `misc\get-electron.ps1` now runs `install.js` itself when the runtime is missing
   instead of trusting npm's exit code, and reports a proxy/GitHub-blocked
   failure explicitly. Detection no longer hardcodes `dist\electron.exe` either:
   `start.bat` asks node via `require("electron")`, which reads the package's own
@@ -4389,7 +4391,7 @@ in the job log with the wheel link.
 
 * **2.2.0** — sd-cli installer fixes: **⬇ Install sd-cli** button in
   Settings → Paths (queued job, log in console, found/missing status line),
-  hardened `get-sd-cli.ps1` (TLS 1.2, cuda12 preference, API-rate-limit
+  hardened `misc\get-sd-cli.ps1` (TLS 1.2, cuda12 preference, API-rate-limit
   redirect fallback, clearer manual steps), `start.bat` now reports installer
   failure instead of continuing silently.
 

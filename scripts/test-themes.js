@@ -53,7 +53,7 @@ check("the page: Save layout snapshots vis + floats (SecFloat.states) + panels (
   /return \{ open: openIds\(\), window: winSize\(\), col: \{ h: colH\(\) \}, docks: docks, vis: vis, floats: floats, panels: panels, cols: cols,/.test(DC) && /applyPanels\(p\.variant\);/.test(DC)
   && /if \(vis && vis\.side && typeof vis\.side\[id\] === "boolean"\)/.test(DC) && /var inSet = want\.indexOf\(id\) >= 0, keepHead = !inSet && !!\(vb\[id\] && !vb\[id\]\.gone\);/.test(DC) && /💾 Save layout/.test(DC) && /Docker layout/.test(DC));
 check("...SecFloat.states / applyStates; TlStageDock panels' state / apply + colW", /const states = \(\) =>/.test(SF) && /function applyStates\(m\)/.test(SF) && /function state\(\) \{ return \{ shown: shown\(\), side: side, x: x, y: y, w: w, h: h \}; \}/.test(SD) && /function colW\(s, v\)/.test(SD));
-check("server.js untouched", !/themes\.js|applyStates|vis\.side/.test(read("server.js")));
+check("server.js untouched", !/themes\.js|applyStates|vis\.side/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

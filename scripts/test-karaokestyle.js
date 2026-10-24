@@ -122,7 +122,7 @@ print(json.dumps({"sing": [l for l in sty if l.startswith("Style: Sing")][0], "b
     style: { bg_opacity: 50, bg_color: "#0000ff", bg_border_width: 4, bg_border_color: "#ff0000", position_top: 60, bg_height: 60, box_shadow: 10, font_size: 24 } } },
     output_dir: tmp };
   fs.writeFileSync(path.join(tmp, "job.json"), JSON.stringify(job));
-  const run = spawnSync("python3", [path.join(ROOT, "karaoke_worker.py"), path.join(tmp, "job.json")], { cwd: tmp, encoding: "utf8" });
+  const run = spawnSync("python3", [path.join(ROOT, "misc", "karaoke_worker.py"), path.join(tmp, "job.json")], { cwd: tmp, encoding: "utf8" });
   const out = fs.readdirSync(tmp).find((f) => f.endsWith(".webm"));
   let px = null;
   if (out) {

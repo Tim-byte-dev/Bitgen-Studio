@@ -89,7 +89,7 @@ try {
 
 /* ---- wiring */
 const CV = read("ext", "timelinedock", "canvas.js"), TP = read("ext", "timelinedock", "tlparent.js"), TD = read("ext", "timelinedock", "timelinedock.js"), RI = read("routes", "index.js"),
-  TK = read("lib", "tlKeys.js"), LB = read("lib", "layerBake.js"), WK = read("worker.py"), TG = read("ext", "timelinedock", "tlgen.js"), TS = read("ext", "timelinedock", "tldist.js");
+  TK = read("lib", "tlKeys.js"), LB = read("lib", "layerBake.js"), WK = read("misc/worker.py"), TG = read("ext", "timelinedock", "tlgen.js"), TS = read("ext", "timelinedock", "tldist.js");
 check("canvas: a generator layer's picture (the frame's size); 〰 applied in both paths (full size for the bake, smaller while playing); never on the GPU path",
   /else if \(c\.gen && window\.TlGen && TlGen\.picture\) \{[\s\S]{0,260}w = S\.W; h = S\.H;/.test(CV) && /TlDist\.apply\(pic, c, t - \(c\.start \|\| 0\), false\)/.test(CV) && /TlDist\.apply\(pic, c, t - \(c\.start \|\| 0\), S\.playing\)/.test(CV)
   && /c\.pin \|\| c\.tm \|\| c\.dist \|\| c\.gen(?: \|\| c\.\w+)*; \}/.test(CV));

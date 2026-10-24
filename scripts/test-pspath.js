@@ -144,7 +144,7 @@ check("P belongs to the image editor while the pointer / focus is in it (its Pen
   && /closest\(OWN\)/.test(read("ext", "promptdock", "pfloat.js")));
 check("docs/shortcuts.json: P, A, U rows for the editor; P over the editor is its Pen", /"P  \(Shift\+P cycles\)",\s*"Pen · Freeform Pen · (Curvature Pen · )?Add Anchor Point · Delete Anchor Point · Convert Point"/.test(read("docs", "shortcuts.json"))
   && /over the image editor P is its Pen/.test(read("docs", "shortcuts.json")) && /"A  \(Shift\+A cycles\)"/.test(read("docs", "shortcuts.json")));
-check("server.js untouched", !/pcpath|pcpen|vmask/.test(read("server.js")));
+check("server.js untouched", !/pcpath|pcpen|vmask/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

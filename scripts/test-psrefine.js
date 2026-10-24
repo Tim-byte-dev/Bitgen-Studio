@@ -78,7 +78,7 @@ check("the menus: Select and Mask (Alt+Ctrl+R), Sky, Save / Load Selection, Chan
 check("the core: channels (saved selections) undo with the layers and clear on open; a tool's after(stroke) hook (the healing brush's Poisson pass); pctools' dab helpers shared",
   /channels: \(S\.channels \|\| \[\]\)\.map/.test(IE) && /S\.channels = \[\];/.test(IE) && /if \(TT && TT\.after\) \{ try \{ TT\.after\(L, d, rect, px\); \}/.test(IE) && /E\.dab = \{ dabTool, pixelDab, weights, rangeOpt, bindRange/.test(TL) && /T\.heal\.after = healAfter/.test(HL));
 check("the Channels tab between Paths and History", /tab\("layers", "pcPaths", "Paths"\)\}\$\{tab\("layers", "pcChannels", "Channels"\)\}\$\{tab\("layers", "pcHistory", "History"\)\}/.test(IE));
-check("server.js untouched", !/pcselect|pcretouch|pcrefine|pcheal/.test(read("server.js")));
+check("server.js untouched", !/pcselect|pcretouch|pcrefine|pcheal/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

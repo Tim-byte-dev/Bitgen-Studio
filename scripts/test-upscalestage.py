@@ -97,7 +97,7 @@ check("a graph with no sampler feeding a VAEDecode is left alone, said",
 check("no stage asked for: untouched, silent", us.apply(copy.deepcopy(FL), None) == (FL, []))
 
 # ---- 5. the worker ----------------------------------------------------------------------------
-W = (ROOT / "worker.py").read_text()
+W = (ROOT / "misc" / "worker.py").read_text()
 check("worker: imports the stage helper; keeps an export's stage when the job asks for an upscale; applies it after the patch",
       "import upscalestage as _us" in W
       and 'upscale=bool(params.get("upscale", True)) or bool(params.get("upscale_stage")))' in W

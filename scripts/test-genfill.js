@@ -74,6 +74,6 @@ check("runAI keeps the target (S.genInto -> the result's info, no feather), ✔ 
 check("pcui: the layer right-click menu takes modules' items (E.ui.layerCtxItems), Properties their rows (E.ui.propsExtra); a fill layer's Pattern kind; Edit ▸ Fill ▸ Pattern",
   /E\.ui\.layerCtxItems/.test(UI) && /E\.ui\.propsExtra/.test(UI) && /<option value="pattern"/.test(UI) && /id="ppFPat"/.test(UI) && /<option value="pat">Pattern<\/option>/.test(UI) && /E\.patterns\.fillWith/.test(UI));
 check("pcdoc drawFill draws kind pattern (PCPattern.scaled), pcstyles' Pattern Overlay a user:<name>", /f\.kind === "pattern"/.test(read("ext", "imageeditdock", "pcdoc.js")) && /\^user:/.test(read("ext", "imageeditdock", "pcstyles.js")));
-check("routes/patterns.js mounted from routes/index.js (server.js untouched); .bgi carries the patterns it uses", /require\("\.\/patterns"\)\.mount\(app\)/.test(IDX) && !/patternStore|pcgenfill/.test(read("server.js")) && /m\.patterns = \[\]/.test(read("ext", "imageeditdock", "pcbgi.js")));
+check("routes/patterns.js mounted from routes/index.js (server.js untouched); .bgi carries the patterns it uses", /require\("\.\/patterns"\)\.mount\(app\)/.test(IDX) && !/patternStore|pcgenfill/.test(read("misc/server.js")) && /m\.patterns = \[\]/.test(read("ext", "imageeditdock", "pcbgi.js")));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

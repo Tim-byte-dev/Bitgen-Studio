@@ -125,7 +125,7 @@ check("a graph with no BasicGuider: said (its own cfg input already got the valu
       any("no BasicGuider" in n for n in n9))
 
 # 8
-W = (ROOT / "worker.py").read_text()
+W = (ROOT / "misc" / "worker.py").read_text()
 check("worker: truecfg is imported like the other stage helpers, None when it cannot load",
       "    import truecfg as _tc\n" in W and "    _tc = None\n" in W)
 check("worker: applied AFTER the upscale stage (it reads the guider's conditioning) with cfg_val, use_lora, the negative",

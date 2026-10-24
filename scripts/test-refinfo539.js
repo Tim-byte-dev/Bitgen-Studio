@@ -105,7 +105,7 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
   } finally { try { H.remove(hname, true); } catch { /* gone */ } }
   const rh = read("routes", "house.js");
   check("routes/house.js: POST /api/house/:name/ref, GET /api/house/:name/ref/:file, POST /api/house/refasset (mounted from routes/index.js)",
-    /app\.post\("\/api\/house\/:name\/ref"/.test(rh) && /app\.get\("\/api\/house\/:name\/ref\/:file"/.test(rh) && /app\.post\("\/api\/house\/refasset"/.test(rh) && !/house\/refasset|house\/:name\/ref/.test(read("server.js")));
+    /app\.post\("\/api\/house\/:name\/ref"/.test(rh) && /app\.get\("\/api\/house\/:name\/ref\/:file"/.test(rh) && /app\.post\("\/api\/house\/refasset"/.test(rh) && !/house\/refasset|house\/:name\/ref/.test(read("misc/server.js")));
 
   /* ---- the image editor */
   const AE = require("../lib/aiEdit.js");

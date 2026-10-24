@@ -43,7 +43,7 @@ else:
     print("(no ffmpeg - skipped)")
 check("the words: all black, NaNs, retry, restart ComfyUI", all(x in BC.reason("Viggle") for x in ("Viggle render came back ALL BLACK", "NaNs", "Retry with a new seed", "restart ComfyUI")))
 for w in ("ripple_worker.py", "viggle_worker.py"):
-    s = (ROOT / w).read_text(encoding="utf-8")
+    s = (ROOT / "misc" / w).read_text(encoding="utf-8")
     check(f"{w}: a black take fails in words before it is filed", "if BC.all_black(raw):" in s and "fail(BC.reason(" in s)
 print(f"RESULT: {P} passed, {F} failed")
 sys.exit(1 if F else 0)

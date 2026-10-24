@@ -108,7 +108,7 @@ check("reflowOrder: the UNPINNED docks other than the one just opened; else ever
   const IDX = read("routes", "index.js"), H = read("static", "index.html");
   check("wiring: routes/dockerStatus mounted from routes/index.js (never server.js); the page loads static/dockstatus.js",
     /require\("\.\/dockerStatus"\)\.mount\(app\)/.test(IDX) && /require\("\.\/dockerStatus"\)\.page\(extensions\.pageHtml\(\)\)/.test(IDX)
-    && !/dockerStatus/.test(read("server.js")) && H.includes('<script src="/static/dockstatus.js"></script>'));
+    && !/dockerStatus/.test(read("misc/server.js")) && H.includes('<script src="/static/dockstatus.js"></script>'));
   check("the packages leave docker_status.json out (user state, like dockers.json)",
     /! -name "docker_status\.json"/.test(read("scripts", "make_zips.sh")) && /^docker_status\.json$/m.test(read(".gitignore")));
   fs.rmSync(tmp, { recursive: true, force: true });

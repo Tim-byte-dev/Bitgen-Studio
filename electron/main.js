@@ -30,7 +30,7 @@ function startServer() {
   return fetch(`http://127.0.0.1:${PORT}/api/health`).then(
     () => { console.log("[electron] reusing the server already on " + PORT); },
     () => new Promise((resolve, reject) => {
-      server = spawn(process.execPath, [path.join(ROOT, "server.js")], {
+      server = spawn(process.execPath, [path.join(ROOT, "misc", "server.js")], {
         cwd: ROOT,
         // H3_PARENT_PID lets the server notice this process VANISHING — a crash
         // or a task-manager kill never fires before-quit, and on Windows a

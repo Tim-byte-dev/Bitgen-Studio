@@ -84,7 +84,7 @@ try {
 const RS = rd("routes", "sceneedit.js"), RC = rd("routes", "characters.js"), CH = rd("ext", "videodock", "characters.js"), QE = rd("ext", "videodock", "qedit.js");
 check("routes: gather() shared by ✎ run and 🤖 Write (Picture A, the place without a 📍 picture); POST qedit/write asks the LLM, keeps the tags, saves the direction; GET /api/scenes/pictures",
   /function gather\(project, st, r, q, cast\)/.test(RS) && (RS.match(/gather\(project, st, r, q, /g) || []).length === 3 && /const place = base === "picture" && !locationPath \? placeFor\(project, st, r\) : null;/.test(RS)
-  && /app\.post\("\/api\/scenes\/:n\/qedit\/write", trap\.guard\(async/.test(RS) && /sceneEdit\.llmMessages\(/.test(RS) && /app\.get\("\/api\/scenes\/pictures"/.test(RS) && !/scenePictures|qedit\/write/.test(rd("server.js")));
+  && /app\.post\("\/api\/scenes\/:n\/qedit\/write", trap\.guard\(async/.test(RS) && /sceneEdit\.llmMessages\(/.test(RS) && /app\.get\("\/api\/scenes\/pictures"/.test(RS) && !/scenePictures|qedit\/write/.test(rd("misc/server.js")));
 check("a picked picture keeps the 🎬 tab's words (label) in the ✎, reference and First / Last routes; references take a frame of ANY take (kind frame)",
   /label = b\.label \? String\(b\.label\)\.slice\(0, 80\)/.test(RS) && /if \(b\.kind === "frame"\) \{\s*const from = scenes\.at\(st, b\.scene\);[\s\S]{0,400}sceneRefs\.addFrame\(b\.project, r, takeOf\(from\)/.test(RC)
   && /x\.label = \(b\.label \? String\(b\.label\)/.test(RC) && /label = b\.label \? String\(b\.label\)\.slice\(0, 80\) : `\$\{projectMedia\.groupFor/.test(RC));

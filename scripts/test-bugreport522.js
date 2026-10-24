@@ -90,13 +90,13 @@ const B = require("../lib/bugReport.js"), AL = require("../lib/appLog.js"), UI =
   check("preview: system, the settings scrubbed, each log's line count + its last lines, the severities", pv.system.version === "9.9.9" && pv.settings.hf.token === "•••" && pv.logs["comfyui.txt"].lines === 2 && /Total VRAM/.test(pv.logs["comfyui.txt"].tail) && pv.severities.length === 5);
 
   /* ---- wiring */
-  const IDX = read("routes", "index.js"), SRV = read("server.js"), R = read("routes", "bugReport.js"), HTML = read("static", "index.html");
+  const IDX = read("routes", "index.js"), SRV = read("misc/server.js"), R = read("routes", "bugReport.js"), HTML = read("static", "index.html");
   check("routes/index mounts bugReport (not server.js) and starts the console ring before anything else", /require\("\.\/bugReport"\)\.mount\(app\)/.test(IDX) && IDX.indexOf('require("../lib/appLog").start()') < IDX.indexOf("app.use(express.json())") && !/bugReport|appLog/.test(SRV));
   check("routes: preview, list, save (TEXT body - the screenshot is big), zip, shot, delete", ["/api/bugreport/preview", "app.get(\"/api/bugreport\"", "app.post(\"/api/bugreport\"", "/api/bugreport/zip/:id", "/api/bugreport/shot/:id", "app.delete(\"/api/bugreport/:id\""].every((u) => R.includes(u)) && /express\.text\(\{ type: \(\) => true, limit: "40mb" \}\)/.test(R));
   check("the page loads static/bugreport.js; Settings -> General has 🐞 Report a bug…", /<script src="\/static\/bugreport\.js/.test(HTML) && /id="s_bug"/.test(HTML));
   const SC = JSON.parse(read("docs", "shortcuts.json"));
   check("docs/shortcuts.json lists Ctrl+Alt+Shift+B (the Guide's shortcut page)", SC.groups[0].rows.some((x) => x[0] === "Ctrl+Alt+Shift+B"));
-  const IGN = fs.existsSync(path.join(ROOT, "_gitignore")) ? read("_gitignore") : "/bug-reports/";
+  const IGN = fs.existsSync(path.join(ROOT, "misc", "_gitignore")) ? read("misc/_gitignore") : "/bug-reports/";
   check("bug-reports/ is not shipped (ignored)", /^\/bug-reports\/$/m.test(IGN));
   const TP = JSON.parse(read("lib", "testPlan.json"));
   const g522 = TP.groups.find((g) => g.id === "g522");   /* 2.523.0: a newer release's group is first now */

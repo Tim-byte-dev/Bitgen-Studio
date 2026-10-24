@@ -77,7 +77,7 @@ try:
                       "frames": 17, "seed": 3, "images": {}, "video_style": {"name": "Wan 2.2", "phases": [{}, {}]}},
            "config": {"engine": {"backend": "comfy", "comfy": {"url": base}}}, "output_dir": str(jd / "out"), "app_dir": str(ROOT)}
     (jd / "job.json").write_text(json.dumps(job))
-    r = subprocess.run([sys.executable, "-u", str(ROOT / "wan_worker.py"), str(jd / "job.json")], cwd=str(jd),
+    r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "wan_worker.py"), str(jd / "job.json")], cwd=str(jd),
                        capture_output=True, text=True, timeout=180)
     check("wan_worker LIVE: '[comfy] step v/m' lines in its log now (the job's 'step n of total'), done",
           r.returncode == 0 and "@@OUT " in r.stdout and re.search(r"^\[comfy\] step \d+/\d+", r.stdout, re.M)
@@ -88,12 +88,12 @@ finally:
     shutil.rmtree(T, ignore_errors=True)
 
 # 4
-uses = {f: (ROOT / f).read_text(encoding="utf-8") for f in ("wan_worker.py", "ltx_worker.py", "ripple_worker.py", "seedvr2_worker.py",
+uses = {f: (ROOT / "misc" / f).read_text(encoding="utf-8") for f in ("wan_worker.py", "ltx_worker.py", "ripple_worker.py", "seedvr2_worker.py",
                                                              "swap_worker.py", "viggle_worker.py", "graph_worker.py", "music_worker.py")}
 check("every ComfyUI video / graph / music worker queues through comfy_progress.run (none polls blind)",
       all("import comfy_progress as _CP" in t and "_CP.run(_comfy, base," in t and "pid = _comfy.queue(base" not in t for t in uses.values()),
       [f for f, t in uses.items() if "_CP.run(" not in t])
-w = (ROOT / "worker.py").read_text(encoding="utf-8")
+w = (ROOT / "misc" / "worker.py").read_text(encoding="utf-8")
 check("worker.py's listener delegates to the shared one", "_cp.listen(base, client_id, stop, pidbox, g, seen, say)" in w)
 
 print(f"\nRESULT: {len(FAILED)} failed")

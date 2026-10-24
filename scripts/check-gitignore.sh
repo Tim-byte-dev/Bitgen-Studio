@@ -47,7 +47,7 @@ done
 # The one file that must NOT be ignored: without it the app has no defaults.
 grep -qxF "default.settings" .gitignore \
   && note "default.settings is ignored — it is the authored default layer and MUST ship"
-[ -f default.settings ] || note "default.settings is missing from the tree"
+[ -f misc/default.settings ] || note "misc/default.settings is missing from the tree"
 
 # The zip must not carry the repository either - a release zip with somebody's
 # whole git history in it is both enormous and a leak.

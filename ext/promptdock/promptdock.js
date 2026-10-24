@@ -158,7 +158,7 @@
     sel.innerHTML = "";
     if (!models.length) {
       const o = document.createElement("option");
-      o.value = ""; o.textContent = "(no vision models - run get-qwen3vl.ps1)";
+      o.value = ""; o.textContent = "(no vision models - run misc\\get-qwen3vl.ps1)";
       sel.appendChild(o);
       // 2.233.2: the WHY rides the tooltip and the browser console — every
       // scanned folder with its .gguf/mmproj census, straight from the

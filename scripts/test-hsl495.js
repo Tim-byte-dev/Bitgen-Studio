@@ -24,7 +24,7 @@ check("hue: blue's hue on a red base keeps red's brightness + strength (now blui
 check("saturation: grey's (none) strength on red = red's grey; red's strength on grey = grey (no direction)", (() => { const o = mixYUV("saturation", ...R, ...G); return Math.abs(o[0] - o[1]) <= 1 && Math.abs(o[1] - o[2]) <= 1; })() && mixYUV("saturation", ...G, ...R).join() === "128,128,128");
 
 /* ---- the compile's graph = the canvas's sums */
-const sys = "import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); import worker\n";
+const sys = "import sys, json; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker\n";
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "hsl495-"));
 try {
   const A = path.join(tmp, "a.png"), B = path.join(tmp, "b.png");
@@ -44,7 +44,7 @@ try {
     Object.values(res).every((r) => r.mean < 1.5 && r.big < 2), res);
 } catch (e) { check("the colour modes through ffmpeg", false, String(e.message).slice(0, 400)); }
 finally { fs.rmSync(tmp, { recursive: true, force: true }); }
-const W = read("worker.py");
+const W = read("misc/worker.py");
 check("worker: the colour modes go through _hsl_blend (not ffmpeg's blend, which has none), labelled hz… (no clash with the graph's own labels)", /_HSL = \("hue", "saturation", "color", "luminosity"\)/.test(W)
   && /if blend in _HSL:\n\s+_hsl_blend\(parts, f"bA\{i\}", f"fp\{i\}", blend, f"bx\{i\}", i\)/.test(W) && /f"\[hz\{l\}\{i\}\]"/.test(W));
 

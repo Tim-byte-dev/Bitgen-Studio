@@ -57,7 +57,7 @@ check("posepick filter(): every search word in the folder / name",
 const RS = rd("routes", "poseSheets.js"), IX = rd("routes", "index.js"), RC = rd("routes", "characters.js");
 check("routes/poseSheets.js: GET /api/pose-sheets, /file, POST /open - mounted from routes/index.js (not server.js)",
   /app\.get\("\/api\/pose-sheets"/.test(RS) && /app\.get\("\/api\/pose-sheets\/file"/.test(RS) && /app\.post\("\/api\/pose-sheets\/open"/.test(RS)
-  && /require\("\.\/poseSheets"\)\.mount\(app\)/.test(IX) && !/poseSheets/.test(rd("server.js")));
+  && /require\("\.\/poseSheets"\)\.mount\(app\)/.test(IX) && !/poseSheets/.test(rd("misc/server.js")));
 check("sheetgen: the creator's pick (b.pose) is the pose sheet; the prompt names no fixed panels",
   /const pose = poseSheets\.pick\(b\.pose\);/.test(RC) && /The first picture is a pose sheet/.test(RC) && !/line-drawing pose template/.test(RC));
 const DH = rd("ext", "videodock", "dock.html"), EJ = JSON.parse(rd("ext", "videodock", "ext.json"));

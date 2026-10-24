@@ -153,7 +153,7 @@ function deps(o) {
   const R = read("routes", "swapdlg.js");
   check("route: POST /api/swapdlg/writeprompt in routes/swapdlg.js (never server.js), one at a time, the answer saved as st.text",
     R.includes('app.post("/api/swapdlg/writeprompt"') && R.includes("swapPrompt.write(") && R.includes("fresh.text = out.prompt")
-    && R.includes("if (writing) return res.status(409)") && !read("server.js").includes("writeprompt"));
+    && R.includes("if (writing) return res.status(409)") && !read("misc/server.js").includes("writeprompt"));
   check("route: the real models - captioner.describe + llmChat.complete + the swap guide from styles/",
     R.includes("describe: (files) => captioner.describe(core, files)") && R.includes("complete: (o) => llmChat.complete(core, o)")
     && R.includes("guide: swapPrompt.guide(core.STYLES_DIR)"));

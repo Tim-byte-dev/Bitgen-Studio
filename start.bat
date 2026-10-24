@@ -51,10 +51,10 @@ if exist node_modules\express (
 :: download-models.ps1 to fetch the model files; numpy + OpenCV by the
 :: character swap in stereo VR video (2.330.0, scripts\vr_swap.py).
 echo [..] Installing Python dependencies ^(huggingface_hub, numpy, OpenCV^)...
-%PY% -m pip install --upgrade --quiet -r requirements.txt
+%PY% -m pip install --upgrade --quiet -r misc\requirements.txt
 if errorlevel 1 (
     echo [WARN] pip install failed. The app will still run, but
-    echo        download-models.ps1 needs huggingface_hub to fetch models.
+    echo        misc\download-models.ps1 needs huggingface_hub to fetch models.
 )
 
 :: ---------- 5. sd-cli check ----------
@@ -64,7 +64,7 @@ if exist "%~dp0sd-cpp\sd-cli.exe" (
     echo.
     echo [note] sd-cli.exe not found in sd-cpp\ - only needed for the sd-cli
     echo        engine. Install it from Settings ^> Paths ^> "Install sd-cli",
-    echo        or run get-sd-cli.ps1. ComfyUI mode does not need it.
+    echo        or run misc\get-sd-cli.ps1. ComfyUI mode does not need it.
 )
 
 :: ---------- 5b. ComfyUI ----------
@@ -76,7 +76,7 @@ if exist "%~dp0comfy\ComfyUI\main.py" (
     echo [ok] ComfyUI found in comfy\
 ) else (
     echo [note] ComfyUI is not installed yet - the setup window will handle it
-    echo        at launch ^(browser mode: run get-comfy.ps1 yourself^).
+    echo        at launch ^(browser mode: run misc\get-comfy.ps1 yourself^).
     echo        Declined it before? Delete comfy\.declined to see setup again.
 )
 
@@ -85,7 +85,7 @@ if not exist "%~dp0models\minimax_h3_ref2va_pruned-Q6_K.gguf" (
     echo.
     echo [note] No model files found in the models\ folder yet.
     echo        To download the model set now ^(~50 GB^), run:
-    echo            powershell -ExecutionPolicy Bypass -File download-models.ps1
+    echo            powershell -ExecutionPolicy Bypass -File misc\download-models.ps1
     echo        Or drop your .gguf/.safetensors files into models\ yourself,
     echo        or point Settings at wherever they already live.
     echo.
@@ -103,7 +103,7 @@ echo.
 echo [..] Installing the app shell (Electron, ~150 MB, one time)...
 echo      This runs once; later starts go straight to the app window.
 echo      Set H3_NO_SHELL=1 to skip it and use your browser instead.
-powershell -ExecutionPolicy Bypass -File "%~dp0get-electron.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0misc\get-electron.ps1"
 call :findelectron
 if not defined ELEXE (
     echo [WARN] App shell not available - falling back to the browser.
@@ -122,7 +122,7 @@ echo [..] Starting bitGen Studio at http://127.0.0.1:8311
 echo      ^(keep this window open; close it or press Ctrl+C to stop^)
 echo.
 start "" "http://127.0.0.1:8311"
-node server.js
+node misc\server.js
 
 :done
 

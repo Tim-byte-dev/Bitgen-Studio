@@ -79,7 +79,7 @@ function req(port, method, u, body, type) {
   const tmp = path.join(require("os").tmpdir(), "h3kf_" + process.pid + ".json");
   fs.writeFileSync(tmp, JSON.stringify(cases));
   const py = execFileSync("python3", ["-c", [
-    "import sys, json, re; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+    "import sys, json, re; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "cases = json.load(open(sys.argv[-1] if False else " + JSON.stringify(tmp) + "))",
     "out = []",
     "def if_(c, a, b): return a if c else b",
@@ -97,7 +97,7 @@ function req(port, method, u, body, type) {
   check("...and worker._kf_expr (the ffmpeg expression) draws the same curve", bad.length === 0);
 
   const cmdOut = execFileSync("python3", ["-c", [
-    "import sys, json, tempfile, os; sys.argv=['x']; sys.path.insert(0, '.'); import worker",
+    "import sys, json, tempfile, os; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker",
     "d = tempfile.mkdtemp(); p = os.path.join(d, 'kf3.cmd')",
     "kf = [{'at': 0, 'op': 1, 'color': '#ffffff'}, {'at': 1, 'op': 0, 'color': '#ff0000'}]",
     "f = worker._kf_cmd(kf, 'kf3', 4.0, 1.0, 0.5, '#ffffff', p)",
@@ -154,7 +154,7 @@ function req(port, method, u, body, type) {
   srv.close();
 
   // 4: the wiring
-  const H = read("static", "index.html"), C = read("ext", "timelinedock", "canvas.js"), D = read("ext", "timelinedock", "timelinedock.js"), W = read("worker.py");
+  const H = read("static", "index.html"), C = read("ext", "timelinedock", "canvas.js"), D = read("ext", "timelinedock", "timelinedock.js"), W = read("misc/worker.py");
   check("the page loads static/keyframes.js before its own script; kfValue uses it",
     H.indexOf('<script src="/static/keyframes.js">') > 0 && H.indexOf('<script src="/static/keyframes.js">') < H.indexOf("function kfValue(")
     && /function kfValue\(c, at, prop, fb\) \{\s*return window\.H3Keyframes \? H3Keyframes\.value\(c && c\.kf, at, prop, fb\) : fb;/.test(H));

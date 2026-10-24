@@ -8,16 +8,18 @@
  * words. Tim: "send api keys out to each team member daily from the team leader so there is no unauthorized access ...
  * have levels of access - time limit and unrestricted, time limit will set time from - time to". No network. */
 "use strict";
+// 2.589.0: the render farm is the OPTIONAL Team extension (ext/teamdock - its own zip); not installed here = SKIP
+if (!require("fs").existsSync(require("path").join(__dirname, "..", "ext", "teamdock", "ext.json"))) { console.log("SKIP: the Team render farm extension (ext/teamdock) is not installed here"); console.log("RESULT: PASS"); process.exit(0); }
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 900))); } };
 
-const T = require("../lib/team");
-const N = require("../lib/farmNode");
-const F = require("../lib/farm");
-const W = require("../static/team.js");
+const T = require("../ext/teamdock/server/team");
+const N = require("../ext/teamdock/server/farmNode");
+const F = require("../ext/teamdock/server/farm");
+const W = require("../ext/teamdock/team.js");
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-team583-"));
 const NAS = path.join(tmp, "nas", "bitgen-team");

@@ -67,7 +67,7 @@ check("syncJobs: a vanished render job is kept on the CURRENT row (st reassigned
   /sceneResume\.lost\(st\.list\.find\(\(x\) => x\.n === r\.n\) \|\| r, "job", r\.job, sceneResume\.resumable\(/.test(RC) && /sceneResume\.lost\(st\.list\.find\(\(x\) => x\.n === r\.n\) \|\| r, "upjob", r\.upjob, false\)/.test(RC)
   && /resumable: \(id\) => sceneResume\.resumable\(/.test(RC));
 check("↻ Resume (POST /api/jobs/history/:id/resume) relinks the scenes; Discard forgets them; nothing in server.js",
-  /require\("\.\.\/lib\/sceneResume"\)\.relink\(core\.getProject\(\), e\.id\)/.test(RI) && /require\("\.\.\/lib\/sceneResume"\)\.forget\(core\.getProject\(\), req\.params\.id\)/.test(RI) && !/sceneResume/.test(rd("server.js")));
+  /require\("\.\.\/lib\/sceneResume"\)\.relink\(core\.getProject\(\), e\.id\)/.test(RI) && /require\("\.\.\/lib\/sceneResume"\)\.forget\(core\.getProject\(\), req\.params\.id\)/.test(RI) && !/sceneResume/.test(rd("misc/server.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

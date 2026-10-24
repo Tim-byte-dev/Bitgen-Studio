@@ -64,6 +64,6 @@ check("ext.json: pcgrad after pcpalette, pccomps after pcactions; installed", EX
 check("the Gradient tool: Colours ▸ Custom + the gradient button (the editor); gradStops reads the custom one; the bucket too", /\["custom", "Custom \(Gradient Editor\)"\]/.test(T) && /id="ptGEdit"/.test(T) && /if \(kind === "custom" && custom && root\.PCGrad\) st = root\.PCGrad\.toCanvas\(custom, fg, bg\);/.test(T) && /S\.gradCustom\)/.test(read("ext", "imageeditdock", "pcfill.js")));
 check("a Gradient fill layer: Properties ▸ #ppFEdit; pcdoc draws its stops; Object Properties ▸ #dkFE", /id="ppFEdit"/.test(UI) && /gradStopsInto\(grd, f\.stops\)/.test(DOC) && /id="dkFE"/.test(DK));
 check("the Comps tab (Window ▸ Layer Comps); a document's comps are its own (DOC_KEYS)", /\$\{tab\("layers", "pcComps", "Comps"\)\}/.test(IE) && /\["pcComps", "Layer Comps"\]/.test(UI) && /"comps", "compOn", "compSel", "compLast"[\],]/.test(DOCS));
-check("server.js untouched", !/pcgrad|pccomps|blendInto/.test(read("server.js")));
+check("server.js untouched", !/pcgrad|pccomps|blendInto/.test(read("misc/server.js")));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

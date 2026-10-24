@@ -32,7 +32,7 @@ check("the record keeps the ⚙ settings (defaults on an old record)", JSON.stri
 check("a \"swap\" temporary LoRA list (projects/<p>/swap-loras-temp.json)", TL.KINDS.includes("swap") && /swap-loras-temp\.json$/.test(TL.file("/p", "swap")));
 
 // ---- 2. the wiring
-const R = read("routes", "swapdlg.js"), CORE = read("lib", "core.js"), W = read("ripple_worker.py");
+const R = read("routes", "swapdlg.js"), CORE = read("lib", "core.js"), W = read("misc/ripple_worker.py");
 check("view: the video's own size, the size a render uses, the swap LoRAs", R.includes('video_info: vi, render_size: (RS.isViggle(st.engine) ? VS : RS).sizeFor(st.settings, vi && vi.width, vi && vi.height), loras: swapLoras(),'));
 check("/set merges {settings}", R.includes("if (b.settings && typeof b.settings === \"object\") st.settings = RS.settingsSafe({ ...st.settings, ...b.settings });"));
 check("H3 takes the fixed seed and a set size", R.includes("RS.seedFor(st.settings, () => crypto.randomInt(0, 2 ** 31))")

@@ -35,6 +35,6 @@ check("ext.json: kgnudge.js right before karaokegen.js", EXT.indexOf("kgnudge.js
 check("karaokegen: ◀ ▶ on every word (data-nd), the nudge + larger nudge boxes kept (kg.nudge / kg.nudgeBig), the click's plan with its direction",
   /data-nd="-1"/.test(KG) && /data-nd="1"/.test(KG) && /id="kgNudge"/.test(KG) && /id="kgNudgeBig"/.test(KG) && /sset\(id === "kgNudge" \? "kg\.nudge" : "kg\.nudgeBig"/.test(KG) && /KGN\(\)\.plan\(e, dir,/.test(KG));
 check("...the line under the marker lit (.nowln on all its words) and the 👁 draft draws the same line", /classList\.add\("nowln"\)/.test(KG) && /var la = KGN\(\) \? KGN\(\)\.lineAt\(ws, st\) : null;/.test(KG));
-check("server.js untouched", !/kgnudge|nowln/.test(read("server.js")));
+check("server.js untouched", !/kgnudge|nowln/.test(read("misc/server.js")));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

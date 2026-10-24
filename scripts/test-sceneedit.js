@@ -128,7 +128,7 @@ check("comfy_image: an unused slot that fed an OPTIONAL autogrow input (images.i
 // ---- 4. wiring
 const R = read("routes", "sceneedit.js"), IDX = read("routes", "index.js"), CH = read("routes", "characters.js");
 check("routes/sceneedit.js is mounted from routes/index.js (never server.js)",
-  IDX.includes('require("./sceneedit").mount(app);') && !read("server.js").includes("sceneedit"));
+  IDX.includes('require("./sceneedit").mount(app);') && !read("misc/server.js").includes("sceneedit"));
 check("route: the endpoints", ["/api/sceneedit/engines", "/api/scenes/:n/qedit\"", "/api/scenes/:n/qedit/pic\"", "/api/scenes/:n/qedit/pic/upload",
   "/api/scenes/:n/qedit/pic/delete", "/api/scenes/:n/qedit/pic/:file", "/api/scenes/:n/qedit/run"].every((e) => R.includes(e)));
 check("route: Qwen 2.1 first among the edit styles; a job already running is refused (409); the canvas from canvasFor; no_assets",

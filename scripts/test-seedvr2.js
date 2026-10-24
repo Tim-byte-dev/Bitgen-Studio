@@ -85,7 +85,7 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
     /seedvr2: "seedvr2_worker\.py"/.test(core) && /require\("\.\/seedvr2"\)\.mount\(app\)/.test(idx)
     && /seedvr2\.isUpscaler\(renderSettings\.read[^\n]*\n\s*return seedvr2\.queueTake\(project, n\)/.test(ch) && /seedvr2\.onTake\(project, r\.n\)/.test(ch)
     && sharp && sharp.file === "diffusion_models/seedvr2_7b_sharp_fp16.safetensors" && sharp.repo === "Comfy-Org/SeedVR2"
-    && cat.models.some((m) => m.id === "seedvr2_3b") && fs.existsSync(path.join(ROOT, "seedvr2_worker.py")));
+    && cat.models.some((m) => m.id === "seedvr2_3b") && fs.existsSync(path.join(ROOT, "misc", "seedvr2_worker.py")));
   check("wiring: the merged card (queuerun.js loaded, paint in paintQueue + refreshJobs + the stats poll, the job list skips it); the preview ⏫ SeedVR2; the ⚙ option",
     /<script src="\/static\/queuerun\.js"><\/script>/.test(html) && (html.match(/QueueRun\.paint\(/g) || []).length === 3
     && /!\(j\.id === merged && PENDING_ST\(j\.status\)\)/.test(html)

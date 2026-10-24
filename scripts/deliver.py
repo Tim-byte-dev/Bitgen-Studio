@@ -354,7 +354,7 @@ def alpha_passes(final, say):
         job = json.loads(Path(JOB).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
-    worker = Path(__file__).resolve().parent.parent / "worker.py"
+    worker = Path(__file__).resolve().parent.parent / "misc" / "worker.py"
     made = []
     for bg in ("black", "white"):
         j = json.loads(json.dumps(job))

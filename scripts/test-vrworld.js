@@ -237,7 +237,7 @@ try {
 
   // ---- 4 wiring
   const IDX = read("routes", "index.js"), H = read("static", "index.html"), DOCK = read("ext", "videodock", "dock.html");
-  check("routes/index.js mounts ./vrWorld (never server.js)", /require\("\.\/vrWorld"\)\.mount\(app\)/.test(IDX) && !/vrWorld/i.test(read("server.js")));
+  check("routes/index.js mounts ./vrWorld (never server.js)", /require\("\.\/vrWorld"\)\.mount\(app\)/.test(IDX) && !/vrWorld/i.test(read("misc/server.js")));
   check("static/index.html loads vrworld.js and installs it with the drag payload + the gallery refresh",
     H.includes('<script src="/static/vrworld.js"></script>') && /window\.VrWorld\.install\(\{\s*drag: \(\) => dragPayload/.test(H));
   check("the video docker has the 🥽 VR World button (#vdVrWorld) beside ⇄ Swap", /id="vdVrWorld"[\s\S]{0,300}🥽 VR World/.test(DOCK)

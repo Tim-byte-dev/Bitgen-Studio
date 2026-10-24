@@ -164,7 +164,7 @@ print(json.dumps({"words": len(sing), "rows": len(rows), "overlap": overlap, "ba
   check("ASS: the ball moves (\\move) without a gap and LANDS on every word as it starts", a.move === true && a.maxgap < 0.011 && a.lands === 14, a);
 
   // 6: wiring
-  const CORE = read("lib", "core.js"), W = read("worker.py"), KW = read("karaoke_worker.py"), IDX = read("routes", "index.js"),
+  const CORE = read("lib", "core.js"), W = read("misc/worker.py"), KW = read("misc/karaoke_worker.py"), IDX = read("routes", "index.js"),
         CH = read("routes", "characters.js"), DOCK = read("ext", "videodock", "dock.html"), H = read("static", "index.html");
   check("core: the karaoke worker, no VRAM hand-over for it, the song's lyrics saved as lyrics/<sound asset>.txt",
     /karaoke: "karaoke_worker\.py"/.test(CORE) && /\["export", "karaoke"\]\.includes/.test(CORE)

@@ -57,7 +57,7 @@ const py = (code) => execFileSync("python3", ["-c", "import sys,json; sys.path.i
   const CH = read("routes", "characters.js"), CO = read("lib", "core.js"), IX = read("routes", "index.js");
   check("wiring: worker map dlss5 -> dlss5_worker.py; /api/dlss5 mounted; the scene ⏫ branch and the harvest's onTake",
     /dlss5: "dlss5_worker\.py"/.test(CO) && /require\("\.\/dlss5"\)\.mount\(app\)/.test(IX) && /if \(upscale && dlss5\.isUpscaler\([\s\S]{0,90}\)\)\s*return dlss5\.queueTake\(project, n\);/.test(CH)
-    && /dlss5\.onTake\(project, r\.n\)/.test(CH) && fs.existsSync(path.join(ROOT, "dlss5_worker.py")));
+    && /dlss5\.onTake\(project, r\.n\)/.test(CH) && fs.existsSync(path.join(ROOT, "misc", "dlss5_worker.py")));
 
   /* 4. a REAL worker run against the stub ComfyUI */
   let haveFf = true;
@@ -76,7 +76,7 @@ const py = (code) => execFileSync("python3", ["-c", "import sys,json; sys.path.i
                     config: { engine: { comfy: { url: `http://127.0.0.1:${port}` } } }, output_dir: out };
       fs.writeFileSync(path.join(work, "job.json"), JSON.stringify(job));
       let log = "", code = 0;
-      try { log = execFileSync("python3", [path.join(ROOT, "dlss5_worker.py"), path.join(work, "job.json")], { cwd: work, encoding: "utf8", timeout: 120000 }); }
+      try { log = execFileSync("python3", [path.join(ROOT, "misc", "dlss5_worker.py"), path.join(work, "job.json")], { cwd: work, encoding: "utf8", timeout: 120000 }); }
       catch (e) { code = e.status; log = String(e.stdout || "") + String(e.stderr || ""); }
       const outFile = path.join(out, "clip_dlss5.mp4");
       let pr = "";
@@ -92,7 +92,7 @@ const py = (code) => execFileSync("python3", ["-c", "import sys,json; sys.path.i
       job2.params.source = T2;
       fs.writeFileSync(path.join(work, "job2.json"), JSON.stringify(job2));
       let log2 = "";
-      try { execFileSync("python3", [path.join(ROOT, "dlss5_worker.py"), path.join(work, "job2.json")], { cwd: work, encoding: "utf8" }); } catch (e) { log2 = String(e.stdout || ""); }
+      try { execFileSync("python3", [path.join(ROOT, "misc", "dlss5_worker.py"), path.join(work, "job2.json")], { cwd: work, encoding: "utf8" }); } catch (e) { log2 = String(e.stdout || ""); }
       check("worker: a size DLSS cannot reach (180p -> 4K) is refused in words before anything is queued", /cannot reach 4K/.test(log2), log2.slice(-300));
     } finally {
       stub.kill();

@@ -30,9 +30,9 @@ try {
     check("…BITGEN_HF_SYMLINKS=1 keeps the hub's own choice (and on Linux / macOS nothing changes by default)", jb.symlinks === true && b.status === 7, jb);
     if (process.platform !== "win32") { const c = run({}); check("…this OS (not Windows), no flag: untouched", JSON.parse(c.stdout.trim().split("\n").pop()).symlinks === true); }
   }
-  const MW = fs.readFileSync(path.join(ROOT, "music_worker.py"), "utf8");
+  const MW = fs.readFileSync(path.join(ROOT, "misc", "music_worker.py"), "utf8");
   check("music_worker.py: the venv's python runs scripts/yue2_run.py generate … (the plain yue2 CLI only when that python is missing)",
-    /vpy = cli\.parent \/ \("python\.exe" if os\.name == "nt" else "python"\)/.test(MW) && /runner = Path\(__file__\)\.resolve\(\)\.parent \/ "scripts" \/ "yue2_run\.py"/.test(MW)
+    /vpy = cli\.parent \/ \("python\.exe" if os\.name == "nt" else "python"\)/.test(MW) && /runner = Path\(__file__\)\.resolve\(\)\.parent\.parent \/ "scripts" \/ "yue2_run\.py"/.test(MW)
     && /head = \[str\(vpy\), str\(runner\)\] if vpy\.exists\(\) and runner\.exists\(\) else \[str\(cli\)\]/.test(MW) && /cmd = head \+ \["generate", "--model", model, "--request", str\(req_file\),/.test(MW));
 } catch (e) { check("crashed: " + (e.stack || e), false); }
 finally { try { fs.rmSync(T, { recursive: true, force: true }); } catch { /* fine */ } }

@@ -77,7 +77,7 @@ check("/api/generate: a Wan style is handed to lib/wan.fromGenerate with the mod
   /const askedMode = mode, typedPrompt = prompt;/.test(IDX) && /wan\.fromGenerate\(\{ style: (?:vs|basicOverride\.withStyle\(vs, bo, \{ loras: true \}\)), mode: frameOp \? "fl2va" : askedMode, prompt: typedPrompt/.test(IDX)   // 2.388.0: Append / Prepend = fl2va; 2.409.0: the style through Basic Settings' override
   && IDX.indexOf("const askedMode") < IDX.indexOf("vs.formatSpeech(prompt"));
 check("/api/musicvideo refuses a Wan style in words", /is a Wan style - Wan renders from the prompt docker/.test(IDX));
-check("server.js untouched", !/wan/i.test(read("server.js").replace(/warn/gi, "")));
+check("server.js untouched", !/wan/i.test(read("misc/server.js").replace(/warn/gi, "")));
 
 fs.rmSync(T, { recursive: true, force: true });
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

@@ -1966,7 +1966,7 @@ overlays in a PSD are still left out.
 - **Crop (C):** drag a box, pick a ratio, Enter crops (Esc cancels).
 - **Free Transform (Ctrl+T, or ⤡ Transform on the Move tool's bar):** drag inside to move. A corner scales and keeps
   the proportions; Shift-drag a corner to scale freely. Drag outside the box
-  to rotate (Shift for 15° steps). 2.551.0: a **middle handle skews** it like Photoshop (the cursor turns into a slanted
+  to rotate (Shift for 15° steps). 2.551.0: a **middle handle skews** it (the cursor turns into a slanted
   arrow; top / bottom = sideways, left / right = up and down); **Shift or Alt + a middle handle** stretches that side. You can also type X, Y, W, H, the angle and the two skews (⇋ ⇵) in the options bar. Enter applies it.
   With a selection that holds none of the layer's pixels, the whole layer is transformed.
 - **Move (V) and Paste (2.550.0):** Ctrl+V puts the picture in the middle as a new layer and drops the selection (it sat
@@ -5005,7 +5005,7 @@ repeated with Ctrl+F, used as a smart filter or recorded in an action:
   graphics card, what you did and what happened (a screenshot or a short recording), and the Console docker's last
   lines. For the Unreal bridge, add the `[bitGen Bridge]` lines from Unreal's Output Log. **Never** post your
   custom.settings (it has your folders and tokens).
-- **Updating**: download a newer release, or `git pull`, then run start.bat / bitgen-studio.sh again. Your projects,
+- **Updating**: download a newer release, or `git pull`, then run start.bat / misc/bitgen-studio.sh again. Your projects,
   settings, models and styles are not in the repository, so an update leaves them alone.
 - **Contributing**: CONTRIBUTING.md has the set-up, where code goes (routes/ + lib/, each docker an extension in
   ext/), the tests (`bash scripts/ci-units.sh` - what GitHub runs on every push) and the docs to update.
@@ -6007,7 +6007,7 @@ orange line shows where it will go - and let go.
     Settings ▸ Image (the loader follows the file; it needs the ComfyUI-GGUF node pack).
   - **Install**: Settings ▸ Add-ons ▸ **Fibo 2.0** - tick the files (Edit Turbo w4a8, the text encoder and the VAE are
     ticked; a GGUF installs ComfyUI-GGUF too). Fibo 2.0 needs ComfyUI from 21 Oct 2026 or later.
-- 2.583.0: **Team ▸ the render farm** - team members open the same project and render on each other's PCs, with the
+- 2.583.0: **Team ▸ the render farm** (2.589.0: an optional add-on - Settings ▸ Add-ons ▸ Team render farm) - team members open the same project and render on each other's PCs, with the
   owner's permission. Settings ▸ **Team** (after Remote GPU):
   - **The team folder** is a folder on the NAS every PC can open (`\\nas\bitgen-team` or a mapped drive). The leader
     picks it, types the team's name and their own name and presses **➕ Create the team**; everyone else types their name
@@ -6032,6 +6032,174 @@ orange line shows where it will go - and let go.
     always run here. A job on another PC shows in your queue as usual (its log comes back), and the finished file is in
     the shared project - it lands in your assets like any render. A job the other PC refuses (no access, outside its
     time, not sharing, a file outside the team's projects folder) fails with the reason in its log.
+- 2.584.0: **🔁 Compare LLMs** (the prompt docker's menubar) - type a prompt and press 🔁: every ticked LLM answers it in
+  turn (the one in the LLM dropdown first - it is loaded already; each of the others loads when its turn comes, so a
+  round takes as long as loading them). Each reply shows in the Prompt chat under its LLM's name and time; press
+  **✓ Use this one** on the reply you like - it becomes the chat's answer (stored in the chat, read aloud, a song goes to
+  the Music dock, an image / video fence sets the mode) and the others fold away (show / hide). **✗ None of them**
+  records that none was good; **⏹ Stop** skips the LLMs not asked yet. The replies use everything a normal chat turn
+  does (the styles, the LoRA keywords, the reference dock, the conversation so far).
+  - **▾** picks which LLMs take part (vision projectors are never in the list). With an external LLM endpoint set
+    (Settings ▸ LLM) there is only one LLM, so 🔁 is off.
+  - **🏆** shows the best LLM for each job - screenplay, music video, song, image prompt, video prompt, chat (the job is
+    read from the prompt's words, the same ones the 🎬 🖼 📹 🎵 🎤 buttons add) or every job: how often each LLM was picked,
+    how often it took part, its win %, its average time, how often it failed. **Use** makes that LLM the chat LLM. Below:
+    every round with the request and every reply (🗑 one, 🗑 Clear all), **⤓ Export CSV** for a spreadsheet.
+  - The record is kept in **llm_arena/** in the install folder (one file per round) - this PC's own, never in a zip.
+  - If an old llama-server is still running on the LLM port, it would answer for every model; such a reply is refused
+    and said ("the LLM port answered as …") instead of being recorded under the wrong name.
+- 2.585.0: **train an LLM on your 🔁 Compare LLMs picks** - the picks become a training set for the 🎓 LoRA trainer's
+  LLM fine-tune, which writes a new .gguf into the LLM folder.
+  - Each round now keeps the **full prompt** the LLMs were sent (bitGen's instructions - styles, guides, LoRA keywords,
+    references - the conversation so far and the request), so a model trained on it learns to answer the way bitGen
+    asks. 🏆 ▸ a round's details show it. Rounds from before 2.585.0 have only the request.
+  - **🏆 ▸ 🎓 Train an LLM on your picks** says what your decided rounds give - the replies you picked as **examples**
+    and one **preference pair** (picked vs not picked) per reply you did not pick - for the job chosen at the top or
+    every job. Pick the trainer's LLM job (or type a name for a new one), examples + pairs / only one of them, with or
+    without bitGen's instructions, and **⤒ Send to the trainer**. Sending again adds only what is new. The longest
+    example is said in tokens: the job's **Max length** must fit it (a longer one is left out of the run and said in
+    its log - never cut, which would lose the answer).
+  - In the 🎓 trainer (an LLM job): **Job ▸ Learn from** - **Examples (SFT)**, the answers you want; **Preferences
+    (DPO)**, "this, not that" against the base model; **Preferences (ORPO)**, the same without a reference model (less
+    VRAM). Preferences use a much smaller learning rate (set for you) and **Beta** (0.1 - higher keeps it closer to the
+    base). **Dataset ▸ 🔁 Preference pairs**: the count, ⤒ From 🔁 Compare LLMs, ⤓ prefs.jsonl, 🗑 Clear the pairs.
+    ▶ Start counts the pairs for DPO / ORPO; the log shows how often the picked answer already wins.
+  - A useful run needs a few hundred picks, ideally of one job (screenplays, say). Training starts from the base
+    model's original (Hugging Face) files - a .gguf cannot be trained - and the result is a new .gguf. Check the
+    licence of each model whose replies you train on: some do not allow their output to train other models.
+- 2.585.0: **which LoRAs' keywords the LLM writes into prompts** (✨ Enhance and the prompt chat): with **Override
+  style** on in Basic Settings, only the **temporary LoRAs** there (of the Generate mode - image or video); with it off,
+  only the **selected style's LoRAs** (the image style for Image, the video style for Video and Chat). LoRAs picked in
+  the 🧩 Model manager no longer count by themselves.
+- 2.586.0: **Settings ▸ Add-ons ▸ LLM** - the chat / writing LLMs in one dropdown: pick one and **⤓ Download** - the
+  .gguf goes into the LLM folder (Settings ▸ LLM) and shows in the prompt docker's LLM dropdown and in 🔁 Compare LLMs.
+  ✓ marks the ones you have; **🗑 Delete it** removes the picked one (not the one running).
+  - **★ Qwen3.8 27B** (Alibaba, August 2026, Apache 2.0) is the base we recommend for **your own checkpoint**: UD-Q4_K_XL
+    (17.6 GB) runs on a 24 GB card, Q5_K_XL / Q8_0 for more quality. In the 🎓 trainer its base model trains as a 4-bit
+    QLoRA on a 32 GB card (Unsloth's 4-bit checkpoint; a 16-bit LoRA needs more than 36 GB).
+  - **Gemma 4 31B** (Google, Apache 2.0) - the other strong writer, the same class; **Gemma 4 12B** (QAT, 6.7 GB) - fast,
+    the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
+  - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
+  - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.591.0: **A tidy app folder.** The bitGen Studio folder now shows only **start.bat** (plus package.json /
+  package-lock.json, which npm needs beside node_modules, and README.md / LICENSE for the GitHub page). Everything else
+  that sat beside them - server.js, the Python workers, default.settings, quick_prompts.json, requirements.txt, the
+  setup scripts (get-comfy.ps1, get-llama.ps1, get-sd-cli.ps1, get-yue2.ps1, get-qwen3vl.ps1, get-electron.ps1,
+  download-models.ps1), clear-comfy.bat, reset-layout.bat, **push-to-github.bat** and the notes - is in **misc\**.
+  - Start as before: double-click **start.bat**.
+  - Updating from a zip over the old folder: the old copies left in the folder are tidied away by themselves the first
+    time bitGen starts (your own quick prompts are kept - they move into misc\).
+  - push-to-github.bat: run it from misc\ (or drop the repo zip on it there) - it still pushes the whole app folder.
+  - The folders and files bitGen makes while it runs (projects, styles, models, custom.settings, the layout files …)
+    stay where they were.
+- 2.590.0: **🎨 Artist mode** is the new name of the full-screen canvas (2.588.0's ⬚ focus mode): a labelled
+  **🎨 Artist mode** button right after the image editor's menus (File … Help), View ▸ Artist Mode, Ctrl+Shift+F. Only
+  the canvas shows; Ctrl+P colours, Ctrl+B brushes, Ctrl+Esc back. The editor's menu bar now wraps onto a second line
+  when the editor is narrow, so no button is cut off any more.
+- 2.590.0: **Every tab of the image editor is a docker.** Drag a tab (Layers, Color, ✨ AI, 🎮 Unreal, 🖌 Brush …) by its
+  name:
+  - **onto another docker** (its tabs or its content, in the panel column or floating) - it becomes a **tab** of it (the
+    docker lights up orange);
+  - **onto the panel column at the top or bottom edge of a docker** (or below the last) - a docker of its own there (an
+    orange line shows where);
+  - **anywhere else in the editor** - it **floats**: drag it by the empty part of its tab strip, size it by its corner,
+    ⇲ puts it in the panel column, ✕ hides it.
+  - **⠿** at the start of a docker's tabs drags the WHOLE docker the same way (onto another = all its tabs join it).
+  - A click on a tab still just opens it. Where every tab is, is kept. **Window ▸ Show All Dockers** shows the hidden
+    ones, **Window ▸ Reset Docker Tabs** puts every tab back where it started.
+- 2.590.0: **📺 Unreal View** - what the selected Unreal / MetaHuman layer's camera sees in Unreal, live (a few frames a
+  second):
+  - **Image editor**: a floating docker that opens when you pick an Unreal / MetaHuman layer (☑ show it when an Unreal
+    layer is selected) and follows the layer's camera as the 🎥 camera tool, the 🎮 Unreal tab, the lens and the lights
+    change it. Picking another layer stops it. It is a tab like the others - drag it onto a docker to keep it there.
+  - **Timeline**: a window over the preview row that opens when you pick an Unreal clip (UNREAL ▸ View ▸ 📺 Unreal View
+    shows / hides it): the clip at the **playhead** - an Unreal camera between its keys, a MetaHuman in its pose, a Level
+    Sequence at that frame (Sequencer opens it there).
+  - Its bar: ● live · frames a second, the size (S / M / L - smaller is faster), ⏸, and **⚡ Keep Unreal fast**.
+  - **Do you have to keep Unreal open?** The Unreal Editor must be RUNNING with your project open (the bitGen Bridge
+    lives inside it) - but it does not have to be in front or on screen: minimize it or keep it behind bitGen. By
+    default Unreal slows to a few frames a second when it is not the window in front; **⚡ Keep Unreal fast** turns
+    that off (Editor Preferences ▸ General ▸ Performance ▸ Use Less CPU when in Background), so stills, renders and
+    the live view stay quick.
+  - Needs the **bitGen Bridge plugin 1.5.0** - 🎮 Load UE project updates it (the 1.4.0 plugin shows the view more
+    slowly, and not for sequence clips).
+- 2.589.0: **The Team render farm is now an optional add-on** (it is no longer part of bitGen). It comes as its own zip,
+  **bitgen-ext-teamdock-v<version>.zip** - the install, repo and flat zips do not carry it. **⚠ It may trigger virus
+  checkers**: it makes signing keys, listens for the team's PCs on a network port and writes to the team folder every
+  15 s, which Malwarebytes has flagged as ransomware. Install it only on the PCs that render for each other:
+  - **Settings ▸ Add-ons ▸ Team render farm ▸ 📦 Install from a zip…** (pick the zip), or put the zip in the app folder
+    or Downloads and press **Install**. **Restart bitGen** - Settings ▸ Team and the status bar's 🖥 Render on appear.
+  - **Remove** takes it out again (restart). This PC's team identity and keys stay in the app's team/ folder - delete
+    that folder to forget the team. If your antivirus stops it, allow bitGen's folder or remove the add-on.
+  - Without it every job renders on this PC; a projects folder already pointed at the team's NAS folder keeps working.
+- 2.588.0: **⚡ Live generation in the image editor** (Krita's live mode) - ⚡ in the editor's menu bar (beside ⛶) or
+  View ▸ ⚡ Live Generation opens the **⚡ Live** docker. Paint: every change (a stroke, an undo, a layer shown / hidden or
+  added, the prompt, a setting) is rendered again a moment later - the whole picture as a Refine at the live strength.
+  - **One render at a time**; changes made while it renders are rendered next (the newest change wins - a waiting live
+    render is dropped when a newer one comes). The model stays loaded between live renders (no VRAM clear) and live
+    renders go to the front of the queue; they never show in the queue docker, the gallery or the assets.
+  - The docker: the result (hold it = full size on the canvas), the **style** (a fast one feels live: turbo / lightning /
+    LCM / FLUX schnell / Z-Image Turbo at 4-8 steps), **strength** (30-50 % keeps your drawing), **steps** (0 = the
+    style's own), **size** (MP - smaller is faster), **🔒 seed** (the same seed = the result only changes where you
+    paint; 🎲 a new one), **▣ on canvas** (the result over the picture with a mix), ⏸ pause, ↻ render now,
+    **✔ Apply as layer** (one undo step), ✕ live off.
+  - The prompt is the ✨ AI panel's box, or the main prompt box when that is empty.
+- 2.588.0: **⬚ Focus mode in the image editor** (2.590.0: called 🎨 Artist mode) - ⬚ in the menu bar (or View ▸ Focus Mode, Ctrl+Shift+F): only the canvas,
+  full screen and frameless - bitGen's bars and the editor's menus, tools, panels, rulers and dockers are hidden.
+  Painting, [ ], zoom, Space-pan and undo work as always.
+  - **Ctrl+P** - the colour palette at the pointer: a saturation / brightness square and a hue strip (drag), the
+    foreground / background colours (⇄ swaps), the hex value, the palette's chips and your recent colours - left click =
+    foreground, right click = background. Ctrl+P again, Esc or a click outside closes it.
+  - **Ctrl+B** - the brushes at the pointer: every brush preset (click = paint with it) + size, opacity and flow.
+  - **Ctrl+Esc** - back to normal (Ctrl+Shift+F too - some Windows keyboards keep Ctrl+Esc for the Start menu). The
+    browser's own Esc only leaves the browser's full screen; the canvas stays frameless until Ctrl+Esc.
+- 2.588.0: **🎓 docker ▸ 🧬 RefMods** - the top of the LoRA & fine-tune trainer docker switches between 🎓 Training and
+  🧬 RefMods: MiniMax H3 reference mods (no training) kept in the app's **refmod/<name>/** folder, so **every project**
+  uses them.
+  - **＋ New RefMod**, then its **type**: 🧑 Character reference · 🏞 Location · 🚗 Vehicle · 📦 Object · 🪄 Prop · 🌿 Flora ·
+    🐾 Animal, and a short description.
+  - **＋ Media…** (or drop files): pictures go into images/, videos into videos/, sounds into audio/ - each with its
+    caption box (a picture.txt uploaded next to a picture is its caption) and ✕.
+  - **✨ Autocaption** - the vision model writes the empty captions (✨ all = every one again); a video's caption comes
+    from one of its frames; sounds keep the caption you type.
+  - **🧬 Extract RefMod** - a queue job through ComfyUI (the ComfyUI-MiniMaxH3Mod pack): the pictures, then frames spread
+    over each video (16 in all) -> <mod>.safetensors, kept in the RefMod's folder (and copied back into ComfyUI's
+    models/refmods whenever a render needs it). Sounds stay with the dataset - the RefMod node takes pictures.
+  - **＠ Use in the prompt** puts **@name** in the prompt box: a MiniMax H3 render (References / First-last frame) loads
+    the mod before the sampler; the @ is taken out of the words the model reads.
+- 2.588.0: **Settings ▸ Add-ons ▸ SolarRenderer** - render a STRUCTURE video (grey boxes, a semantic map, skeletons,
+  depth, normals, a body mesh, a sketch) plus an optional first frame and a six-part prompt into the finished clip in 4
+  steps (Enderfga's control + four-step LoRAs on MiniMax H3; a causal pair for long clips). The add-on puts the
+  SolarRenderer node pack into ComfyUI's custom_nodes and downloads the LoRAs you tick; it renders on MiniMax H3's ref2va
+  model, text encoder and VAE (Settings ▸ Setup). Then **Settings ▸ ComfyUI ▸ Graphs ▸ ☀ SolarRenderer** imports the
+  pack's workflows through ⤒ Import & check (inputs counted, missing files said, a test run, saved when it works).
+  The weights carry the MiniMax H3 Community License - the EU, the UK, South Korea and the US are excluded territories.
+- 2.587.0: **Settings ▸ ComfyUI ▸ Graphs ▸ ⤒ Import & check** - bring in any ComfyUI workflow (a saved workflow or an
+  API export) and bitGen checks it, draws it, test-runs it and keeps it when it works:
+  - **The inputs it takes** - 🖼 pictures · 🎞 videos · 🔊 sounds (its Load Image / Load Video / Load Audio nodes); the
+    reference dock fills them in order, and a loader with nothing in the dock is bypassed for that render.
+  - **The output** - a Preview node is made a Save node (a preview writes no file), a video combine that does not save is
+    turned on; a workflow that saves nothing is refused.
+  - **Missing nodes** (ComfyUI does not have them - install the node pack, restart ComfyUI, import again) and **missing
+    model files** (a loader names a file ComfyUI does not list) are reported. A saved (UI) workflow needs ComfyUI running
+    to be read.
+  - **The controls it gets**, already wired: Prompt (empty = the prompt box), Negative (empty = the negative prompt),
+    Seed (bitGen's), Steps, CFG, Width / Height, Length - shown in Basic Settings when the graph is picked.
+  - **The graph is drawn** below: every node and link, the inputs, the output, missing nodes and model files coloured;
+    the mouse wheel zooms, dragging pans, ⤢ Fit shows it all. A workflow loaded in the tab (↻ Load, 📁 File, a graph
+    picked) shows its inputs and its graph the same way.
+  - **▶ Test run** queues it once through ComfyUI with a test picture / sound / video in every input. **It worked** = it
+    is saved into comfy_workflows/ and as a graph (picked in the tab - Generate ▸ ⚙ Graph runs it; the test picture is
+    in the gallery). **It failed** = ComfyUI's errors are listed and nothing is saved. A workflow that needs a real face
+    or a particular picture may fail on the test pattern - add it by hand with 📁 File then.
+- 2.587.0: **Settings ▸ Dockers ▸ 👁** beside each docker's name turns it **off**: the docker and its status-bar button
+  are hidden (so it cannot be opened by accident) - 🚫 shows it is off, a click brings both back. Floating windows too.
+- 2.587.0: **Settings ▸ Dockers ▸ 🗂 Layouts** - a layout is the whole docker arrangement (where each docker is, its size,
+  shown / hidden / off, the docker configs, the floating windows, the workspaces) + the theme: **💾 Save layout**
+  (layouts/<name>.json in the install folder), **↺ Apply** (the page reloads into it), **⤓ Export**, **⤒ Import**, ✕.
+  **★ Save as the default** writes layouts/default.json and themes/default.json - copy both into the repo: a fresh
+  install starts with that layout, and a browser that never picked a theme takes that theme. (Themes keep their own
+  💾 Save / ⤓ Export / ⤒ Import in Settings ▸ Themes - themes/<name>.json.)
 - 2.581.0 fix: **📁 Designs ▸ open and 📂 Open from the computer** in the 📐 SolidCraft docker opened nothing (SolidCraft
   reads its file storage only when it starts) - a design or part now goes in as if dropped on it.
 - 2.574.0: **step n of total for every generation** - pictures through ComfyUI now report their sampler steps live (they

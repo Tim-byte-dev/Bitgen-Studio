@@ -59,7 +59,7 @@ check("the page's payload is ONE builder (TlExportBody): V2+ clips send split + 
   /window\.TlExportBody = exportBody/.test(tld) && /split: c\.split \|\| undefined, soundOut: c\.soundOut \|\| undefined(, \.\.\.tlLayerKeys\(X, L\))? \}\)\),/.test(tld)   /* 2.519.0: 2.491.0 spreads the layer's blend + matte keys after them */ && /src: c\.src \|\| undefined,/.test(tld)
   && /deliver: o\.nest( \|\| o\.preview)? \? undefined/.test(tld) && /body: JSON\.stringify\(exportBody\(tl\)\)/.test(tld));
 check("/api/export: nest -> out_name nest_<name>_<hash>.mp4 (routes/nest.js mounted from routes/index.js, not server.js)",
-  /nestLib\.outName\(t\.nest, nestLib\.hashOf\(/.test(rix) && /out_name: nestOut/.test(rix) && /require\("\.\/nest"\)\.mount\(app, core\)/.test(rix) && !/nest/.test(read("server.js")));
+  /nestLib\.outName\(t\.nest, nestLib\.hashOf\(/.test(rix) && /out_name: nestOut/.test(rix) && /require\("\.\/nest"\)\.mount\(app, core\)/.test(rix) && !/nest/.test(read("misc/server.js")));
 const ej = JSON.parse(read("ext", "timelinedock", "ext.json"));
 check("the timeline dock loads nest.js (⧉, the ↻ badge, Re-render / Open in Properties)", JSON.stringify(ej).includes("nest.js") && /tlNestBtn/.test(nx) && /tlpNestRe/.test(nx) && /tlpNestOpen/.test(nx) && /out of date/.test(nx));
 

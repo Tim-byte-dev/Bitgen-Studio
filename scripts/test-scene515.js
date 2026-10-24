@@ -59,7 +59,7 @@ const ST = require("../lib/sceneTools"), TK = require("../lib/tlKeys");
 const cp = ST.cleanPrompts([{ t: 1, pts: [[2, -1, 0], [0.5, 0.5]], box: [0, 0, 2, 1] }, { t: 2 }, "x"]);
 check("lib/sceneTools cleanPrompts: clicks kept to 0..1 (1 = the subject unless 0), a box, an empty prompt dropped", cp.length === 1 && JSON.stringify(cp[0].pts) === "[[1,0,0],[0.5,0.5,1]]" && JSON.stringify(cp[0].box) === "[0,0,1,1]", cp);
 check("lib/tlKeys cutKeys: nothing without a cut-out / when not used / not one of ours", JSON.stringify(TK.cutKeys({})) === "{}" && JSON.stringify(TK.cutKeys({ cut: { file: "cut_a.webm", use: false } })) === "{}" && JSON.stringify(TK.cutKeys({ cut: { file: "../x.webm", from: 0, to: 5 } })) === "{}");
-const IDX = read("routes", "index.js"), SRV = (() => { try { return read("server.js"); } catch { return ""; } })();
+const IDX = read("routes", "index.js"), SRV = (() => { try { return read("misc/server.js"); } catch { return ""; } })();
 check("routes/scene.js mounted from routes/index.js; the compile's video layers take cutKeys; server.js untouched", /require\("\.\/scene"\)\.mount\(app\)/.test(IDX) && /\.\.\.tlKeys\.cutKeys\(c\)/.test(IDX) && !/sceneTools|routes\/scene/.test(SRV));
 check("the page sends a used cut-out to the compile (timelinedock.js exportBody: cut {file, from, to})", /cut: c\.cut && c\.cut\.use === true && c\.cut\.file \? \{ file: c\.cut\.file, from: c\.cut\.from, to: c\.cut\.to, use: true \}/.test(read("ext", "timelinedock", "timelinedock.js")));
 const RT = read("routes", "scene.js");

@@ -61,7 +61,7 @@ function iou(m, W, H, truth) { let a = 0, u = 0; for (let y = 0; y < H; y++) for
   } else console.log("SKIP: Pillow is not here");
   // --- the wiring
   const ext = JSON.parse(read("ext/imageeditdock/ext.json")).scripts, ie = read("ext/imageeditdock/imageedit.js"), idx = read("routes/index.js"), rt = read("routes/subject.js"), src = read("ext/imageeditdock/pcsubject.js") + read("lib/subjectMatte.js") + rt;
-  check("the wiring: pcsubject.js before imageedit.js and installed; routes/subject.js mounted from routes/index.js (not server.js); the stand-in only with H3_E2E", ext.indexOf("pcsubject.js") > 0 && ext.indexOf("pcsubject.js") < ext.indexOf("imageedit.js") && /win\.PCSubject\.install\(E\)/.test(ie) && /require\("\.\/subject"\)\.mount\(app\)/.test(idx) && !/subject/.test(read("server.js")) && /process\.env\.H3_E2E === "1"/.test(rt) && /modelsDir \}/.test(read("lib/matte.js")));
+  check("the wiring: pcsubject.js before imageedit.js and installed; routes/subject.js mounted from routes/index.js (not server.js); the stand-in only with H3_E2E", ext.indexOf("pcsubject.js") > 0 && ext.indexOf("pcsubject.js") < ext.indexOf("imageedit.js") && /win\.PCSubject\.install\(E\)/.test(ie) && /require\("\.\/subject"\)\.mount\(app\)/.test(idx) && !/subject/.test(read("misc/server.js")) && /process\.env\.H3_E2E === "1"/.test(rt) && /modelsDir \}/.test(read("lib/matte.js")));
   check("no product names in what users read", !/Photoshop|Adobe|Corel|Illustrator|Lightroom/.test(src));
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

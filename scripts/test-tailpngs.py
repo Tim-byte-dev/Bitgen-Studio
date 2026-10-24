@@ -154,7 +154,7 @@ finally:
     shutil.rmtree(tmp, ignore_errors=True)
 
 # ---- 4. the worker ----------------------------------------------------------------------------
-W = (ROOT / "worker.py").read_text()
+W = (ROOT / "misc" / "worker.py").read_text()
 check("worker: the tail runs after the take (and its master) are final, before 'render complete', from the master when there is one",
       "import tailpngs as _tp" in W and "_tail_pngs(params, cfg, final, raw_dir)       # 2.313.0" in W
       and W.index("_tail_pngs(params, cfg, final, raw_dir)       # 2.313.0") < W.index("render complete: {final.name}")

@@ -61,7 +61,7 @@ check("basic.cfg and folder_filters.cfg are this machine's - kept out of the zip
   && /^basic\.cfg$/m.test(rd(".gitignore")) && /^folder_filters\.cfg$/m.test(rd(".gitignore"))
   // 2.565.1: _gitignore (its copy for the zip - a dot file can be lost on the way) is only in the install zip, not in
   // the GitHub repository: compared where it exists (CI failed on every push since 2.559.0 reading it)
-  && (!fs.existsSync(path.join(ROOT, "_gitignore")) || rd(".gitignore") === rd("_gitignore")));
+  && (!fs.existsSync(path.join(ROOT, "misc", "_gitignore")) || rd(".gitignore") === rd("misc/_gitignore")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

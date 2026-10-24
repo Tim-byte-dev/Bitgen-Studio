@@ -1,0 +1,8 @@
+{
+  "3": { "class_type": "LoadImage", "inputs": { "image": "placeholder.png" } },
+  "7": { "class_type": "RHMiniMaxH3VideoGen",
+         "inputs": { "prompt": "", "seed": 0, "duration_seconds": 1.0,
+                     "width": 0, "height": 0, "steps": 8,
+                     "first_frame": ["3", 0] } },
+  "9": { "class_type": "SaveVideo", "inputs": { "video": ["7", 0] } }
+}

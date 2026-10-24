@@ -74,7 +74,7 @@ const w2 = G2A.convert(small(), { ...base, GetImageRangeFromBatch: info.GetImage
 check("graphToApi: no MediaMixer + KJNodes -> GetImageRangeFromBatch(-1, 1), said; MediaMixer installed -> as exported; the worker's hint names KJNodes",
   w1.graph && w1.graph["2"].class_type === "GetImageRangeFromBatch" && w1.graph["2"].inputs.start_index === -1 && /FinalFrameSelector - not in this ComfyUI\) run as KJNodes/.test(w1.warnings.join(" "))
   && w2.graph && w2.graph["2"].class_type === "FinalFrameSelector"
-  && /"GetImageRangeFromBatch": "ComfyUI-KJNodes/.test(fs.readFileSync(path.join(ROOT, "ltx_worker.py"), "utf8")), { w1, w2: w2.graph });
+  && /"GetImageRangeFromBatch": "ComfyUI-KJNodes/.test(fs.readFileSync(path.join(ROOT, "misc", "ltx_worker.py"), "utf8")), { w1, w2: w2.graph });
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

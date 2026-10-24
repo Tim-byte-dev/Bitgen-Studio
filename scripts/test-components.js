@@ -205,7 +205,7 @@ const RN = require(path.join(ROOT, "routes", "native"));
   const IDX = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8");
   const GI = fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8");
   check("wiring: routes/components mounted from routes/index.js (not server.js); components.txt is per machine (.gitignore)",
-    IDX.includes('require("./components").mount(app);') && !fs.readFileSync(path.join(ROOT, "server.js"), "utf8").includes("components")
+    IDX.includes('require("./components").mount(app);') && !fs.readFileSync(path.join(ROOT, "misc", "server.js"), "utf8").includes("components")
     && /\ncomponents\.txt\n/.test(GI));
   console.log(`RESULT: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

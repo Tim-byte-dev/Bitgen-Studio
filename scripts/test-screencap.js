@@ -300,7 +300,7 @@ try {
   const IDX = read("routes", "index.js"), H = read("static", "index.html");
   const MAIN = read("electron", "main.js"), PRE = read("electron", "preload.js");
   check("routes/index.js mounts ./screenCap (never server.js)",
-    /require\("\.\/screenCap"\)\.mount\(app\)/.test(IDX) && !/screenCap|screencap/.test(read("server.js")));
+    /require\("\.\/screenCap"\)\.mount\(app\)/.test(IDX) && !/screenCap|screencap/.test(read("misc/server.js")));
   check("static/index.html loads /static/screencap.js", H.includes('<script src="/static/screencap.js"></script>'));
   check("electron/main.js registers ./capture with session, desktopCapturer, screen and the window",
     /require\("\.\/capture"\)\.register\(\{ ipcMain, session, desktopCapturer, screen, getWin: \(\) => win \}\)/.test(MAIN)

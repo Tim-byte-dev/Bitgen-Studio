@@ -86,7 +86,7 @@ const srv = app.listen(0, "127.0.0.1", async () => {
   } catch (e) { check("the routes ran", false, String(e && e.stack || e)); }
   srv.close(); fs.rmSync(T, { recursive: true, force: true });
   const root = path.join(__dirname, "..");
-  check("pins: routes/styleDoctor.js mounted from routes/index.js (not server.js)", /require\("\.\/styleDoctor"\)\.mount\(app\)/.test(fs.readFileSync(path.join(root, "routes", "index.js"), "utf8")) && !/styleDoctor/.test(fs.readFileSync(path.join(root, "server.js"), "utf8")));
+  check("pins: routes/styleDoctor.js mounted from routes/index.js (not server.js)", /require\("\.\/styleDoctor"\)\.mount\(app\)/.test(fs.readFileSync(path.join(root, "routes", "index.js"), "utf8")) && !/styleDoctor/.test(fs.readFileSync(path.join(root, "misc", "server.js"), "utf8")));
   check("pins: index.html loads static/styledoctor.js", fs.readFileSync(path.join(root, "static", "index.html"), "utf8").includes('<script src="/static/styledoctor.js"></script>'));
   check("pins: the 🧪 checklist has the 2.527 group", JSON.parse(fs.readFileSync(path.join(root, "lib", "testPlan.json"), "utf8")).groups.some((g) => g.id === "g527"));
   console.log(`\n${pass} passed, ${fail} failed`);

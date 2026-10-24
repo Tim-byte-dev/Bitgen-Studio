@@ -122,7 +122,7 @@ check("the hand-off starts the server then the app window, then closes setup",
 /* ---- start.bat hands the console prompt to the window ---- */
 check("start.bat: question-free — the wizard owns setup; browser mode is pointed at the ps1",
   !/set \/p/.test(BAT) && /setup window will handle it/.test(BAT)
-  && /run get-comfy\.ps1 yourself/.test(BAT));
+  && /run (misc\\)?get-comfy\.ps1 yourself/.test(BAT));
 
 console.log("=======================");
 console.log(`RESULT: ${pass} passed, ${fail} failed`);

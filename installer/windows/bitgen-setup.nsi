@@ -127,6 +127,7 @@ keep:
   RMDir /r "$INSTDIR\installer"
   RMDir /r "$INSTDIR\ext"
   RMDir /r "$INSTDIR\docs"
+  RMDir /r "$INSTDIR\misc"                ; 2.591.0: the entry point, workers, helpers and notes
   Delete "$INSTDIR\*.js"
   Delete "$INSTDIR\*.py"
   Delete "$INSTDIR\*.bat"

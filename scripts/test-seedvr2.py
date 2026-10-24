@@ -142,7 +142,7 @@ try:
                "config": {"engine": {"backend": "comfy", "comfy": {"url": f"http://127.0.0.1:{port}"}}},
                "output_dir": str(jd / "out"), "app_dir": str(ROOT)}
         (jd / "job.json").write_text(json.dumps(job))
-        r = subprocess.run([sys.executable, "-u", str(ROOT / "seedvr2_worker.py"), str(jd / "job.json")], cwd=str(jd),
+        r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "seedvr2_worker.py"), str(jd / "job.json")], cwd=str(jd),
                            capture_output=True, text=True, timeout=180)
         q = json.loads((jd / "seedvr2_queued.json").read_text()) if (jd / "seedvr2_queued.json").exists() else {}
         outs = sorted((jd / "out").glob("*.mp4")) if (jd / "out").exists() else []

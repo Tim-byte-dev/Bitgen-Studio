@@ -125,7 +125,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---- 3. the render -------------------------------------------------------------------
 {
-  const RC = read("routes", "characters.js"), W = read("worker.py");
+  const RC = read("routes", "characters.js"), W = read("misc/worker.py");
   check("the render: only a scene that STARTS on a frame (First / Cont / Trans) and not an upscale",
     RC.includes('const trimHead = r.trim_first === true && !upscale\n    && ["first", "continue", "transition", "last"].includes(String(r.anchor || ""));'));
   check("...renders ONE more frame, starts its song window 1/24 s earlier, and tells the worker to drop 1 head frame",

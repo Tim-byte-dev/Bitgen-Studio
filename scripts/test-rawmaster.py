@@ -108,7 +108,7 @@ else:
               len(rgb_md5s(pb)) == len(m_md5))
         # ---- 2.302.0: "trim first frame" (worker._trim_head) - the master
         # loses its first frame losslessly, the take is re-encoded ONCE from it
-        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "misc"))
         import worker as W                                   # noqa: E402
         W.say = lambda *a, **k: None
         tm = d / "t.avi"; shutil.copyfile(m, tm)

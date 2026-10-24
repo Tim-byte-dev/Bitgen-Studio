@@ -75,7 +75,7 @@ const KF = require(path.join(ROOT, "static", "keyframes.js"));
   /* wiring */
   const RI = read("routes", "index.js"), RA = read("routes", "audioAnalyze.js"), TG = read("ext", "timelinedock", "tlgen.js"), TA = read("ext", "timelinedock", "tlaudio.js"), TE = read("ext", "timelinedock", "tlexpr.js");
   check("the route: GET /api/audio/analyze (a clip named, never pathed), mounted from routes/index.js (not server.js)",
-    /require\("\.\/audioAnalyze"\)\.mount\(app\);/.test(RI) && /app\.get\("\/api\/audio\/analyze"/.test(RA) && /frames\.resolveMedia\(/.test(RA) && !/audioAnalyze/.test(read("server.js")));
+    /require\("\.\/audioAnalyze"\)\.mount\(app\);/.test(RI) && /app\.get\("\/api\/audio\/analyze"/.test(RA) && /frames\.resolveMedia\(/.test(RA) && !/audioAnalyze/.test(read("misc/server.js")));
   check("the page: the 🌫 tool's Alt+click = a Waveform, Alt+Shift+click = a Spectrum; the kind list has both; drawn from the sound at the moment (cache keyed by the analysis' version)",
     /d\.alt && Math\.hypot/.test(TG) && />Waveform<\/option>/.test(TG) && />Spectrum<\/option>/.test(TG) && /TlAudio\.draw\(ag, o, \(c\.start \|\| 0\) \+ tau, W, H\)/.test(TG) && /TlAudio\.version\(\)/.test(TG));
   check("♪ Audio → keys in the Properties (sound, loudness / bass / mids / treble, the property, quiet / loud, smooth); the bake waits for the sound; ƒx audio() reads the mix",

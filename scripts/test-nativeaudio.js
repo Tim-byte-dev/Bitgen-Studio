@@ -154,14 +154,14 @@ const touch = (n) => { const p = path.join(tmp, n); fs.writeFileSync(p, "x"); re
   check("...and an OLD export that left the linked value out still maps by the unlinked names",
     n2.inputs.ref_image_size === "max" && n2.inputs.height === 720 && n2.inputs.length === 124, n2.inputs);
 
-  const W = read("worker.py");
+  const W = read("misc/worker.py");
   check("worker schema sync repairs an EMPTY combo value (server default, else first choice) and says so",
     W.includes("schema sync: {ct}.{name} was EMPTY (not a choice) -> "));
   // the REAL _schema_sync against Tim's live schema shapes (his log): the
   // V3 dynamic combo SaveVideo.format and the '' ref_image_size
   const pySync = `
 import json, sys
-sys.path.insert(0, ".")
+sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 worker.say = lambda *a, **k: None
 CODEC = ['COMFY_DYNAMICCOMBO_V3', {'options': [{'key': 'auto', 'inputs': {'required': {}}},
@@ -212,7 +212,7 @@ print('@@SY ' + json.dumps({k: g[k]['inputs'] for k in g}))`;
     && JSON.stringify(G["40"].inputs.last_frame) === '["21",0]');
   const py = `
 import json, sys
-sys.path.insert(0, ".")
+sys.path.insert(0, "."); sys.path.insert(0, "misc")
 import worker
 worker.say = lambda *a, **k: None
 g = json.load(open("comfy_workflows/MMH3_NativeAudio_MV_fl2va.json"))
@@ -237,7 +237,7 @@ print("@@PY " + json.dumps({
     && d.lock === "MiniMaxH3NativeAudioLock", d);
   check("worker: Transition wires frame -> first_frame and the location still -> last_frame",
     d && d.b20 === "first.png" && d.b21 === "rooftop.png", d);
-  const W = read("worker.py");
+  const W = read("misc/worker.py");
   check("worker uploads the song (and video refs) for an fl2va graph that LOADS audio - before 2.292 only ref2va did, which would starve the song loader",
     W.includes('_fl_takes_av = seg_mode == "fl2va" and (any(')   // 2.353.0: or an H3 reference graph (scripts/refslots.py)
     && W.includes('if seg_mode == "ref2va" or _fl_takes_av:'));

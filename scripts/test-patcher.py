@@ -10,7 +10,7 @@ grid planner. Run from repo root: python3 scripts/test-patcher.py"""
 import copy, json, sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "misc"))
 import worker  # noqa: E402  (import is side-effect-safe; main() is guarded)
 
 TPL = json.loads(Path("comfy_workflows/ref2va_rh_example.json").read_text())
@@ -1450,8 +1450,8 @@ for _f in (_tmp, _t2):
     try: _f.unlink()
     except FileNotFoundError: pass
 check("run tmp: every queue attempt writes it - the worker's _attempt calls the writer before /prompt",
-      "_write_run_tmp(wf_src, graph)" in Path("worker.py").read_text()
-      and "run graph written" in Path("worker.py").read_text())
+      "_write_run_tmp(wf_src, graph)" in Path("misc/worker.py").read_text()
+      and "run graph written" in Path("misc/worker.py").read_text())
 
 
 # ---- Part E (2.225.0): _apply_refmods - Load H3 RefMods + Apply H3 RefMod
@@ -1497,7 +1497,7 @@ check("refmods: a ninth mod stays out - the loader's 8 slots are the cap, said o
       _g9["refmod_loader"]["inputs"]["mod_8"] == "m7"
       and "m8" not in json.dumps(_g9["refmod_loader"]["inputs"]))
 check("refmods: the worker calls the splice right after the patcher (schema sync can then canonicalise it)",
-      '_apply_refmods(g, params.get("refmods"))' in Path("worker.py").read_text())
+      '_apply_refmods(g, params.get("refmods"))' in Path("misc/worker.py").read_text())
 
 print("=" * 30)
 print(f"{'ALL PASS' if not FAILED else 'FAILED: ' + ', '.join(FAILED)}")

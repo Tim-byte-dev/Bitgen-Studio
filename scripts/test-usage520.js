@@ -76,12 +76,12 @@ check("rangeOf: today / 7 days / this month / last month / all", UD.rangeOf("tod
 check("kwh + hours", UD.kwh(125) === "0.13" && UD.kwh(50) === "0.050" && UD.kwh(1250) === "1.25" && UD.kwh(12500) === "12.5" && UD.hours(5400) === "1.5" && UD.hours(36000 * 2) === "20");
 
 /* ---- wiring */
-const CORE = read("lib", "core.js"), IDX = read("routes", "index.js"), SRV = read("server.js"), HTML = read("static", "index.html"), PS = read("static", "powerstats.js");
+const CORE = read("lib", "core.js"), IDX = read("routes", "index.js"), SRV = read("misc/server.js"), HTML = read("static", "index.html"), PS = read("static", "powerstats.js");
 check("core files every finished job in the usage log", /require\("\.\/usageLog"\)\.recordJob\(job\)/.test(CORE));
 check("routes/index mounts usage (not server.js)", /require\("\.\/usage"\)/.test(IDX) && !/usageLog|routes\/usage/.test(SRV));
 check("Settings -> Energy cost: peak price, ＋ Peak times, 📊 Usage…, the windows editor", ["s_peak", "s_peakadd", "s_usage", "s_peakwin"].every((i) => HTML.includes('id="' + i + '"')) && /s_peakwin/.test(PS));
 check("the page loads static/usagedock.js; the ⚡ statusbar figure opens it", /<script src="\/static\/usagedock\.js/.test(HTML) && /#statEnergy/.test(read("static", "usagedock.js")));
-const IGN = fs.existsSync(path.join(ROOT, "_gitignore")) ? read("_gitignore") : "usage/";
+const IGN = fs.existsSync(path.join(ROOT, "misc", "_gitignore")) ? read("misc/_gitignore") : "usage/";
 check("usage/ is not shipped (ignored)", /^\/?usage\/?$/m.test(IGN));
 
 console.log(`RESULT: ${pass} passed, ${fail} failed`);

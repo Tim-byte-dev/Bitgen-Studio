@@ -138,7 +138,7 @@ check("official_finish: the .gguf on UnetLoaderGGUF, two LoRAs chained behind it
 
 
 # 2b which jobs go to the templates
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "misc"))
 import ltx_worker as LWK  # noqa: E402
 wf = ROOT / "comfy_workflows" / "LTX25_All_In_One.json"
 pick = lambda lm, **p: LWK.official_template({"app_dir": str(ROOT)}, p, wf, lm, p.pop("_rp", None))  # noqa: E731
@@ -187,7 +187,7 @@ def run_job(base, lmode, images, name):
            "config": {"engine": {"backend": "comfy", "comfy": {"url": base}}}, "output_dir": str(jd / "out"),
            "app_dir": str(ROOT), "node_exe": shutil.which("node")}
     (jd / "job.json").write_text(json.dumps(job))
-    r = subprocess.run([sys.executable, "-u", str(ROOT / "ltx_worker.py"), str(jd / "job.json")], cwd=str(jd),
+    r = subprocess.run([sys.executable, "-u", str(ROOT / "misc" / "ltx_worker.py"), str(jd / "job.json")], cwd=str(jd),
                        capture_output=True, text=True, timeout=240)
     q = json.loads((jd / "ltx_queued.json").read_text()) if (jd / "ltx_queued.json").is_file() else {}
     return r, q

@@ -28,7 +28,7 @@ ff(["-f", "lavfi", "-i", "color=c=red:s=640x720", "-f", "lavfi", "-i", "color=c=
 ff(["-f", "lavfi", "-i", "color=c=green:s=1280x704", "-frames:v", "1", path.join(tmp, "take_last.png")]);
 ff(["-f", "lavfi", "-i", "color=c=white:s=900x900", "-frames:v", "1", path.join(tmp, "square.png")]);
 const out = execFileSync("python3", ["-c", [
-  "import sys, json, os; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); import worker",
+  "import sys, json, os; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(require("path").join(ROOT, "misc")) + "); import worker",
   "os.chdir(" + JSON.stringify(tmp) + ")",
   "r = [worker._fit_keyframe('first.png', 1280, 720), worker._fit_keyframe('take_last.png', 1280, 720), worker._fit_keyframe('square.png', 960, 544)]",
   "print(json.dumps([[a, b, worker._image_wh(a)] for a, b in r]))"].join("\n")], { encoding: "utf8" }).trim().split("\n").pop();
@@ -39,14 +39,14 @@ const px = execFileSync("ffmpeg", ["-loglevel", "error", "-i", path.join(tmp, "k
 check("...scaled to cover + centre-cropped (the left edge is still the red half, nothing stretched)", px[0] > 200 && px[2] < 60, [...px]);
 check("a take's last frame already at the video's size is sent as it is (Cont)", R[1][0] === "take_last.png" && R[1][1] === null, R[1]);
 check("another aspect (a square picture for 960x544) is cropped to 960x544", JSON.stringify(R[2][2]) === "[960,544]", R[2]);
-const W = fs.readFileSync(path.join(ROOT, "worker.py"), "utf8");
+const W = fs.readFileSync(path.join(ROOT, "misc", "worker.py"), "utf8");
 check("comfy_generate fits the first / last frame (not ref2va references) before the upload",
   /if seg_mode != "ref2va" and _frame_slot_loaders\(g\):\s*keyset = \{str\(x\) for x in \(first_frame, last_frame\) if x\}/.test(W)
   && /x, fnote = _fit_keyframe\(x, params\["width"\], params\["height"\]\)/.test(W)
   && W.indexOf("x, fnote = _fit_keyframe(") < W.indexOf("say(f\"[comfy] uploading {Path(x).name}\")\n            uploads.append(_up(x))"));
 // 2.379.2: the render size itself (Tim: "it is rendering at 1280x720 ... 16px vignette at the bottom of the video")
 const sz = JSON.parse(execFileSync("python3", ["-c", [
-  "import sys, json; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); import worker",
+  "import sys, json; sys.argv=['x']; sys.path.insert(0, " + JSON.stringify(ROOT) + "); sys.path.insert(0, " + JSON.stringify(require("path").join(ROOT, "misc")) + "); import worker",
   "h3 = {'40': {'class_type': 'MiniMaxH3ImageToVideo', 'inputs': {}}}",
   "other = {'1': {'class_type': 'WanImageToVideo', 'inputs': {}}}",
   "print(json.dumps([worker._h3_size(h3, 1280, 720), worker._h3_size(h3, 960, 544), worker._h3_size(h3, 720, 1280), worker._h3_size(other, 1280, 720)]))"].join("\n")],

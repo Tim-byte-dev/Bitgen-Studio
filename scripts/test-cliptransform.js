@@ -80,7 +80,7 @@ function req(port, method, u, body, type) {
   // 3
   let py = "";
   try {
-    py = execFileSync("python3", ["-c", "import sys,json; sys.argv=['x']; sys.path.insert(0, '.'); import worker; "
+    py = execFileSync("python3", ["-c", "import sys,json; sys.argv=['x']; sys.path.insert(0, '.'); sys.path.insert(0, 'misc'); import worker; "
       + "print(json.dumps([worker._tf_chain({'x':-150,'y':60,'scale':0.75,'rot':30}), worker._tf_chain(None), worker._tf_chain({'x':0,'y':0,'scale':1,'rot':0})]))"],
       { cwd: ROOT, encoding: "utf8" }).trim().split("\n").pop();
   } catch (e) { py = "[]"; }
@@ -89,7 +89,7 @@ function req(port, method, u, body, type) {
     W[0] && /scale=w='max\(2,trunc\(iw\*0\.75000\/2\)\*2\)'/.test(W[0][0]) && /rotate=a=30\.0000\*PI\/180:c=none:ow='rotw\(30\.0000\*PI\/180\)':oh='roth/.test(W[0][0])
     && W[0][1] === "+(-150.00)" && W[0][2] === "+(60.00)", W[0]);
   check("...no transform = nothing added", W[1] && W[1].join("") === "" && W[2] && W[2].join("") === "", W);
-  const WK = read("worker.py");
+  const WK = read("misc/worker.py");
   check("worker: the video layers and the image layers both use it in the composite",
     /tfv, tx, ty = _tf_chain\(c\.get\("tf"\)\)/.test(WK) && /tfi, tx, ty = _tf_chain\(c\.get\("tf"\)\)/.test(WK)
     // 2.519.0: since 2.491.0 the layers are queued as ops ({"src": "ov<i>"/"im<i>", "x": ..{tx}, "y": ..{ty}}) and laid

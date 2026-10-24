@@ -94,7 +94,7 @@ if (/-pl/.test(a)) { ${allow ? 'console.log("Power limit for GPU 00000000:01:00.
 
   /* ---- wiring */
   const CORE = read("lib", "core.js"), IDX = read("routes", "index.js"), HT = read("static", "index.html"), RT = read("routes", "queuePresets.js");
-  const SRV = (() => { try { return read("server.js"); } catch { return ""; } })();
+  const SRV = (() => { try { return read("misc/server.js"); } catch { return ""; } })();
   check("core.pump asks the preset first (ffmpeg-only jobs never wait), re-pumps on a timer; a job's end starts the rest",
     /require\("\.\/queuePresets"\)\.check\(\)/.test(CORE) && /pumpTimer = setTimeout\(\(\) => \{ pumpTimer = null; pump\(\); \}, g\.wait\)/.test(CORE) && /\["export", "karaoke"(, "install_aitoolkit")?(, "install_unsloth")?\]\.includes\(\(queue\[0\]\.params \|\| \{\}\)\.mode\)/.test(CORE)
     && /require\("\.\/queuePresets"\)\.finished\(\)/.test(CORE) && /require\("\.\/queuePresets"\)\.takeNote\(\)/.test(CORE));

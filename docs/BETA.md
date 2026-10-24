@@ -13,7 +13,7 @@ improvements are welcome**: an issue, a pull request, or just an idea.
   and real projects will still find things the tests do not.
 - **Your projects are yours.** Everything lives in `projects/<name>/` on your disk. Keep a copy of anything that matters
   before you update, because a beta can change a file format. Every change so far has been backwards compatible.
-- **Updates**: download a newer release or `git pull`, then run `start.bat` / `bitgen-studio.sh` again. Your `custom.settings`,
+- **Updates**: download a newer release or `git pull`, then run `start.bat` / `misc/bitgen-studio.sh` again. Your `custom.settings`,
   projects, models and styles are never in the repository, so an update does not touch them.
 
 ## Tested on real hardware

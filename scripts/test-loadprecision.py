@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "misc"))
 import worker as W  # noqa: E402
 
 P = F = 0

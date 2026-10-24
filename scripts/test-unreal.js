@@ -86,7 +86,7 @@ function done() {
   const cmds = ["ping", "levels", "sequences", "metahumans", "anims", "cameras", "viewport", "open_level", "still", "render", "job"];
   const stubCmds = read("scripts", "ue-stub.js");
   check("the plugin answers every command the stand-in does (and lib/unreal.js uses), on 127.0.0.1 only, the work on the editor's thread (a Slate tick), stills wait for the capture frames",
-    cmds.every((c) => new RegExp('"' + c + '": cmd_' + c).test(PY) && new RegExp("\\b" + c + ": \\(").test(stubCmds)) && /ThreadingHTTPServer\(\("127\.0\.0\.1", PORT\)/.test(PY) && /register_slate_post_tick_callback\(_on_tick\)/.test(PY) && /for _ in range\(3\):[\s\S]{0,120}yield/.test(PY));
+    cmds.every((c) => new RegExp('"' + c + '": cmd_' + c).test(PY) && new RegExp("\\b" + c + ": \\(").test(stubCmds)) && /ThreadingHTTPServer\(\("127\.0\.0\.1", PORT\)/.test(PY) && /register_slate_post_tick_callback\(_on_tick\)/.test(PY) && /for _ in range\((3|max\(1, int\(a\.get\("settle"\) or 3\)\))\):[\s\S]{0,140}yield/.test(PY));   // 2.590.0: a live frame settles 1
   check("the plugin: the Movie Render Queue (PNG frames f_00000…, the output folder bitGen gives) + a Level Sequence for bitGen's camera keys / a MetaHuman", /MoviePipelineQueueSubsystem/.test(PY) && /MoviePipelineImageSequenceOutput_PNG/.test(PY) && /"f_\{frame_number\}"/.test(PY) && /MovieSceneCameraCutTrack/.test(PY) && /MovieSceneSkeletalAnimationTrack/.test(PY) && /MoviePipelinePIEExecutor/.test(PY));
   check("the plugin's README: install into <Project>/Plugins, the alpha setting, what it changes in the project", /Plugins\\bitGenBridge/.test(read("ue", "README.txt")) && /alpha channel support/.test(read("ue", "README.txt")));
   // wiring

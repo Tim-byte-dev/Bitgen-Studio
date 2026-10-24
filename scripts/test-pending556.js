@@ -57,7 +57,7 @@ check("route: ref0 + ref1 + ref_nums + ref_descs; with an Edit or a run through 
   /\{ name: "ref1", maxCount: 1 \}/.test(RA) && /aiEdit\.composePlan\(style, 1 \+ nr, core\.BASE\)/.test(RA) && /refWords\.withRefs\(plan\.prompt, refNums, wording, refDescs\)/.test(RA)
   && /\(b\.mode !== "refine" \|\| refFiles\.length\)/.test(RA) && /editMask \? \[names\.crop, names\.mask\]\.concat\(names\.refs\)/.test(RA));
 check("mount.js: the editor's settings now reach the server (mask_grow, mask_feather, whole, fill_edit, edit_style_id, fill_kind) + the references (ref0.., ref_nums, ref_descs)",
-  /for \(const k of \["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind"\]\)/.test(MT) && /fd\.append\(`ref\$\{i\}`, b, `ref\$\{i\}\.png`\)/.test(MT) && /fd\.append\("ref_nums"/.test(MT));
+  /for \(const k of \["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind"(, "live", "live_id", "live_steps", "seed")?\]\)/.test(MT) && /fd\.append\(`ref\$\{i\}`, b, `ref\$\{i\}\.png`\)/.test(MT) && /fd\.append\("ref_nums"/.test(MT));
 check("editor: references named with Generate / Fill / Remove / Background / Refine go through the edit model (wantRefs); without an edit model their descriptions go in the prompt; Compose adds \"Ref N\"",
   /\|\| \(wantRefs && \(mode === "generate" \|\| mode === "remove" \|\| mode === "background" \|\| mode === "refine"\)\)/.test(IE) && /its description goes in the prompt instead/.test(IE) && /refNames\.push\(`Ref \$\{n\}`\)/.test(IE));
 console.log(`\n${pass} passed, ${fail} failed`);

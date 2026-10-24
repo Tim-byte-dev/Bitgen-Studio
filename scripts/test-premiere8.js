@@ -187,7 +187,7 @@ check("the page: stabilise.js before canvas.js; canvas vidUrl plays the steady f
   EXT.indexOf("stabilise.js") >= 0 && EXT.indexOf("stabilise.js") < EXT.indexOf("canvas.js") && /TlStab\.url\(c\)/.test(CV) && /ET\.trimEdge\(c, "l"/.test(IH) && /ET\.trimEdge\(c, "r"/.test(IH)
   && /app\.post\("\/api\/clipfx\/stabilise"/.test(RC) && /app\.get\("\/api\/clipfx\/stabilised\/:file"/.test(RC));
 check("clipfx.js: smoothing + locked beside stabilise, the steady preview's state", /id="tfxStabS"/.test(read("ext", "timelinedock", "clipfx.js")) && /id="tfxStabL"/.test(read("ext", "timelinedock", "clipfx.js")) && /tfxStabState/.test(read("ext", "timelinedock", "clipfx.js")));
-check("server.js untouched; package.json 2.413.0 or later", !/stabilise|reframe|trimEdge/.test(read("server.js")) && JSON.parse(read("package.json")).version.localeCompare("2.413.0", undefined, { numeric: true }) >= 0);
+check("server.js untouched; package.json 2.413.0 or later", !/stabilise|reframe|trimEdge/.test(read("misc/server.js")) && JSON.parse(read("package.json")).version.localeCompare("2.413.0", undefined, { numeric: true }) >= 0);
 
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(`\nRESULT: ${pass} passed, ${fail} failed` + (skip ? `, ${skip} skipped` : ""));

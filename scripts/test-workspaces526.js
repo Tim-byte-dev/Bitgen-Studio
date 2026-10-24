@@ -64,7 +64,7 @@ const srv = app.listen(0, "127.0.0.1", async () => {
   srv.close(); fs.rmSync(T, { recursive: true, force: true });
   const root = path.join(__dirname, "..");
   const idx = fs.readFileSync(path.join(root, "routes", "index.js"), "utf8"), html = fs.readFileSync(path.join(root, "static", "index.html"), "utf8");
-  check("pins: routes/workspaces.js mounted from routes/index.js (not server.js)", /require\("\.\/workspaces"\)\.mount\(app\)/.test(idx) && !/workspaces/.test(fs.readFileSync(path.join(root, "server.js"), "utf8")));
+  check("pins: routes/workspaces.js mounted from routes/index.js (not server.js)", /require\("\.\/workspaces"\)\.mount\(app\)/.test(idx) && !/workspaces/.test(fs.readFileSync(path.join(root, "misc", "server.js"), "utf8")));
   check("pins: index.html loads static/workspaces.js", html.includes('<script src="/static/workspaces.js"></script>'));
   check("pins: a statusbar hide / a collapse updates the docker_status record at once (⊞ Docker layout re-showed hidden dockers)", html.includes('dsEntry(id).hidden = hide;') && html.includes('if (STATUS_VARS[id]) dsEntry(id).state ='));
   check("pins: workspaces.json is user state - .gitignore + make_zips.sh", /^workspaces\.json$/m.test(fs.readFileSync(path.join(root, ".gitignore"), "utf8")) && fs.readFileSync(path.join(root, "scripts", "make_zips.sh"), "utf8").includes('! -name "workspaces.json"'));

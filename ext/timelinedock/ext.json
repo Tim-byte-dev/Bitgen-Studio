@@ -50,6 +50,7 @@
     "tlcadbar.js",
     "tlbody.js",
     "tlunreal.js",
+    "tluelive.js",
     "tlgraph.js",
     "tlparent.js",
     "tlblend.js",
@@ -60,9 +61,21 @@
     "tltrack.js",
     "tltime.js",
     "tlvbake.js",
-    "tlparticles.js", "tlaudio.js",
+    "tlparticles.js",
+    "tlaudio.js",
     "tlgen.js",
     "tldist.js",
-    "tlrays.js", "tlwarp.js", "tlmotion.js", "tl3d.js", "tldata.js", "tllottie.js", "tlsizebar.js", "tlscene.js", "tlcutout.js", "tlcamtrack.js", "tlvfill.js", "tlanykey.js"
+    "tlrays.js",
+    "tlwarp.js",
+    "tlmotion.js",
+    "tl3d.js",
+    "tldata.js",
+    "tllottie.js",
+    "tlsizebar.js",
+    "tlscene.js",
+    "tlcutout.js",
+    "tlcamtrack.js",
+    "tlvfill.js",
+    "tlanykey.js"
   ]
 }

@@ -133,7 +133,7 @@ check("docs/shortcuts.json: T cycles the three type tools", /"T  \(Shift\+T cycl
 check("a filter with a centre (Lens Flare, Swirl, Radial Blur): a click on the picture places it - before the tools see the click, removed on OK / Cancel",
   /f\.params\.some\(\(q\) => q\.id === "cx"\) && f\.params\.some\(\(q\) => q\.id === "cy"\)/.test(IE) && /win\.addEventListener\("pointerdown", pick, true\)/.test(IE)
   && /const cancel = \(\) => \{ unpick\(\);/.test(IE) && /\.onclick = \(\) => \{\n\s+unpick\(\);/.test(IE) && F.byId("radial").params.some((q) => q.id === "cx"));
-check("nothing added to server.js", !/pctext|pcstyles|lensflare/.test(read("server.js")));
+check("nothing added to server.js", !/pctext|pcstyles|lensflare/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -105,7 +105,7 @@ else:
         wd = Path(tempfile.mkdtemp(prefix="wj_", dir=tmp))
         (wd / "job.json").write_text(json.dumps({"params": params, "config": cfg, "app_dir": str(ROOT), "models_dir": str(ROOT / "models"),
                                                  "output_dir": str(tmp / "out")}))
-        r = subprocess.run([sys.executable, str(ROOT / "worker.py"), "job.json"], cwd=wd, capture_output=True, text=True, timeout=600,
+        r = subprocess.run([sys.executable, str(ROOT / "misc" / "worker.py"), "job.json"], cwd=wd, capture_output=True, text=True, timeout=600,
                            env=dict(os.environ, H3_ENGINE="comfy"))
         run = json.loads((tmp / "bare_tmp.json").read_text()) if (tmp / "bare_tmp.json").exists() else {}
         return r.returncode, r.stdout, run
@@ -129,7 +129,7 @@ IDX = (ROOT / "routes" / "index.js").read_text(encoding="utf-8")
 check("routes/index: Text mode with a reference video / sound goes through ref2va (said on the job); Reference mode needs a picture, video or sound",
       'if (mode === "t2va" && hasAv) {' in IDX and 'mode = "ref2va";' in IDX
       and '"ref2va needs at least one reference image, video or sound"' in IDX and 'const notes = [modeNote, speechNote, frameOp && frameOp.note, ...camNotes].filter(Boolean).join(" · ");' in IDX)   # 2.399.0: + the camera notes   # 2.388.0: + the Append / Prepend note   # 2.364.0: + the speech note
-W = (ROOT / "worker.py").read_text(encoding="utf-8")
+W = (ROOT / "misc" / "worker.py").read_text(encoding="utf-8")
 check("worker.py: the slots are added before the fill; an fl2va render on a reference graph uploads its video / sound too",
       "for n in _rs.add_missing(g, len(videos), len(audios), {c: k[0] for c, k in LOADER_KINDS.items()}):" in W and "or (_rs is not None and _rs.takes_av(g or {})))" in W)
 print(f"RESULT: {P} passed, {F} failed")

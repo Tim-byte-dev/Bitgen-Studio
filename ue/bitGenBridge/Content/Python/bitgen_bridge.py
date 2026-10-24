@@ -20,6 +20,11 @@
 #   job {id}                  {"state": queued | running | done | error, "error"}
 #   set_viewport {loc, rot}   (2.475.0) the level viewport looks through bitGen's camera
 #   focus_at {camera, u, v}   (2.475.0) the distance to what is under (u, v) of the camera's picture (click to focus)
+#   frame {...}               (1.5.0, bitGen 2.590.0) ONE LIVE FRAME for bitGen's 📺 Unreal View: a still at a small size
+#                             that waits one editor frame instead of three; + {sequence, time}: the Level Sequence
+#                             opened at that time, seen through its camera cut (the timeline's sequence clips)
+#   keep_fast {on}            (1.5.0) the editor keeps full speed when it is not the window in front (Editor
+#                             Preferences > General > Performance > "Use Less CPU when in Background" off) -> {was}
 # A still / render may carry a LENS (2.475.0): {focal, sensor, fstop, focus, exposure} - depth of field + exposure.
 # ... and a RIG (2.476.0): {lights: [{type point|spot|rect|directional|sky, loc, rot, color, temperature, intensity, radius,
 #     source, inner, outer, width, height, volumetric, shadows, on}], fog: {on, density, falloff, color, start, volumetric,
@@ -39,7 +44,7 @@ import re
 
 import unreal
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 PORT = int(os.environ.get("BITGEN_UE_PORT", "30020"))
 _jobs = {}
 _queue = []
@@ -453,7 +458,7 @@ def cmd_still(a):
             comp.set_editor_property("primitive_render_mode", unreal.SceneCapturePrimitiveRenderMode.PRM_USE_SHOW_ONLY_LIST)
             comp.set_editor_property("show_only_actors", [mh])
         comp.capture_scene()
-        for _ in range(3):                 # the capture is drawn with the next frames of the editor
+        for _ in range(max(1, int(a.get("settle") or 3))):   # the capture is drawn with the next frames of the editor (a live frame: 1)
             yield
         d, f = os.path.dirname(out), os.path.basename(out)
         os.makedirs(d, exist_ok=True)
@@ -696,9 +701,62 @@ def cmd_import_mesh(a):
     return out
 
 
+def cmd_frame(a):
+    """1.5.0: one live frame for bitGen's Unreal View - a still at a small size, one editor frame to settle. With a
+    sequence + time the Level Sequence is opened at that time and seen through its camera cut (the viewport is locked
+    to it), so a timeline clip of a sequence shows the frame under bitGen's playhead."""
+    b = dict(a)
+    b["w"] = max(16, min(1920, int(a.get("w") or 640)))
+    b["h"] = max(16, min(1080, int(a.get("h") or 360)))
+    b["settle"] = 1
+    if a.get("sequence"):
+        les = unreal.LevelSequenceEditorBlueprintLibrary
+        seq = unreal.load_asset(_object_path(a["sequence"]))
+        if not seq:
+            raise ValueError("no Level Sequence " + str(a["sequence"]))
+        cur = None
+        try:
+            cur = les.get_current_level_sequence()
+        except Exception:
+            cur = None
+        if not cur or cur.get_path_name() != seq.get_path_name():
+            les.open_level_sequence(seq)
+            yield
+        fps = seq.get_display_rate()
+        frame = int(round(float(a.get("time") or 0) * float(fps.numerator) / max(1.0, float(fps.denominator))))
+        try:
+            frame += int(seq.get_playback_start())      # the clip's time counts from the sequence's playback start
+        except Exception:
+            pass
+        try:
+            les.set_lock_camera_cut_to_viewport(True)
+        except Exception:
+            pass
+        les.set_current_time(frame)
+        yield                                   # the viewport moves to the camera cut with the next frame
+        b["camera"] = {"viewport": True, "fov": float((a.get("camera") or {}).get("fov") or 60)}
+    return (yield from cmd_still(b))
+
+
+def cmd_keep_fast(a):
+    """1.5.0: Editor Preferences > General > Performance > "Use Less CPU when in Background" - off while bitGen works
+    with the editor behind it (on = the editor slows to a few frames a second when it is not in front)."""
+    try:
+        perf = unreal.get_default_object(unreal.EditorPerformanceSettings)
+    except Exception:
+        perf = unreal.EditorPerformanceSettings.get_default_object()
+    was = bool(perf.get_editor_property("throttle_cpu_when_not_foreground"))
+    perf.set_editor_property("throttle_cpu_when_not_foreground", not bool(a.get("on", True)))
+    try:
+        perf.save_config()
+    except Exception:
+        pass
+    return {"was_throttled": was, "throttled": bool(perf.get_editor_property("throttle_cpu_when_not_foreground"))}
+
+
 COMMANDS = {"actors_in_view": cmd_actors_in_view, "set_viewport": cmd_set_viewport, "focus_at": cmd_focus_at, "ping": cmd_ping, "levels": cmd_levels, "sequences": cmd_sequences, "metahumans": cmd_metahumans, "anims": cmd_anims, "cameras": cmd_cameras,
             "viewport": cmd_viewport, "open_level": cmd_open_level, "still": cmd_still, "render": cmd_render, "job": cmd_job,
-            "import_mesh": cmd_import_mesh}
+            "import_mesh": cmd_import_mesh, "frame": cmd_frame, "keep_fast": cmd_keep_fast}
 
 
 # ---------------------------------------------------------------- the editor's thread does the work

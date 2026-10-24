@@ -133,7 +133,7 @@ check("...the promoted widget the instance lists no input for (sampler_name) rea
 
 // ---- 5. wiring
 const IDX = read("routes", "index.js"), CH = read("routes", "characters.js"), CORE = read("lib", "core.js");
-check("routes/ltx.js mounted from routes/index.js (never server.js)", IDX.includes('require("./ltx").mount(app);') && !read("server.js").includes("ltx"));
+check("routes/ltx.js mounted from routes/index.js (never server.js)", IDX.includes('require("./ltx").mount(app);') && !read("misc/server.js").includes("ltx"));
 check("/api/generate and /api/musicvideo refuse an LTX style in words", (IDX.match(/isLtxStyle\(/g) || []).length >= 2
   && IDX.includes("is an LTX style - it renders through the LTX modes") && IDX.includes("LTX music videos run on the scene board"));   // 2.402.0: 2.5 or 2.3
 check("queueScene: the board's LTX 2.5 flow -> queueLtxScene (upscale refused in words)", CH.includes("if (ltxScenes.isLtxFlow(st.style)) {")

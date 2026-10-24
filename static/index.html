@@ -2385,7 +2385,7 @@
        pane is gone; config.gpu stays as it was (the sd-cli engine still reads it) and is sent back unchanged on Save -->
 
   <div class="stab" id="stab-llm">
-    <p class="hint help">The ✨ Enhance LLM. Install the engine once with <code>get-llama.ps1</code> (downloads llama-server, CUDA build, into <code>llama-cpp\</code>), drop .gguf models into the LLM folder, then pick one in the dropdown under the prompt. bitGen Studio starts and switches llama-server for you. Leave the external endpoint empty unless you run your own server (e.g. LM Studio or bitGen).</p>
+    <p class="hint help">The ✨ Enhance LLM. Install the engine once with <code>misc\get-llama.ps1</code> (downloads llama-server, CUDA build, into <code>llama-cpp\</code>), drop .gguf models into the LLM folder, then pick one in the dropdown under the prompt. bitGen Studio starts and switches llama-server for you. Leave the external endpoint empty unless you run your own server (e.g. LM Studio or bitGen).</p>
     <div class="grid2">
       <div><label class="f">LLM folder (.gguf models)</label><input type="text" id="s_llmdir"></div>
       <!-- 2.233.3 (Tim verbatim: "add another input (folder picker) in
@@ -3258,6 +3258,7 @@
 <script src="/static/startcheck.js"></script>  <!-- 2.573.0: the update check on startup - bitGen Studio + ComfyUI -->
 <script src="/static/selsearch.js"></script>  <!-- 2.478.0: a search box in every long dropdown list (SelSearch) -->
 <script src="/static/unreal.js"></script>  <!-- 2.472.0: the Unreal Engine 5.8 bridge (the page side) -->
+<script src="/static/uelive.js"></script>  <!-- 2.590.0: 📺 the Unreal View - a layer's / clip's camera live (UELive - lib/ueLive.js, bridge 1.5.0 frame) -->
 <script src="/static/uerig.js"></script>  <!-- 2.476.0: Unreal lights + fog (the image editor + the timeline) -->
 <script src="/static/jobmeta.js"></script>
 <script src="/static/genqueue.js"></script>
@@ -3316,11 +3317,13 @@
 <script src="/static/modelmgr.js"></script>  <!-- 2.518.0: 🧩 the Model + LoRA manager docker, Civitai downloads (H3ModelMgr - lib/modelCards.js, lib/civitai.js) -->
 <script src="/static/mmpaths.js"></script>  <!-- 2.580.0: the Model manager's 📁 Model paths tab - extra_model_paths.yaml groups + ⟳ Restart ComfyUI (H3ModelPaths - lib/extraPaths.js) -->
 <script src="/static/lorasel.js"></script>  <!-- 2.581.0: the selected LoRAs for ✨ Enhance + the prompt chat (H3LoraSel - lib/loraWords.js) -->
-<script src="/static/team.js"></script>  <!-- 2.583.0: Settings ▸ Team + 🖥 Render on - the render farm (H3Team - routes/team.js, lib/team.js, lib/farm.js, lib/farmNode.js) -->
+<script src="/static/graphcheck.js"></script>  <!-- 2.587.0: Settings ▸ ComfyUI ▸ Graphs ▸ ⤒ Import & check + the inputs it takes + the picture of the graph (H3GraphCheck - routes/graphCheck.js, lib/graphCheck.js) -->
+<script src="/static/layouts.js"></script>  <!-- 2.587.0: Settings ▸ Dockers ▸ 👁 a docker off (and its status-bar button) + 🗂 Layouts (layouts/, the default) (H3Layouts - routes/layouts.js, lib/layouts.js) -->
 <script src="/static/testdock.js"></script>
 <script src="/static/testcoach.js"></script>  <!-- 2.534.0: 🧪 Test mode - suggests the next test where you are, asks whether it worked -->
 <script src="/static/lbfollow.js"></script>  <!-- 2.534.0: a render finishing while the preview is open joins it -->
 <script src="/static/loratrain.js"></script>  <!-- 2.520.0: 🎓 the LoRA trainer docker (H3LoraTrain - lib/loraTrain.js, ai-toolkit) -->
+<script src="/static/refmodmgr.js"></script>  <!-- 2.588.0: 🧬 RefMods in the 🎓 docker (H3RefMods - lib/refmodLib.js, refmod/<name>/) -->
 <script src="/static/usagedock.js"></script>  <!-- 2.520.0: 📊 the energy usage docker (H3Usage - lib/usageLog.js) -->
 <script src="/static/remotegpu.js"></script>  <!-- 2.520.0: Settings -> Remote GPU (H3RemoteGpu - lib/remoteGpu.js) -->
 <script src="/static/bugreport.js"></script>  <!-- 2.522.0: 🐞 the Bug report docker, Ctrl+Alt+Shift+B (H3BugReport - lib/bugReport.js) -->
@@ -5235,7 +5238,7 @@ $("s_cdir") && $("s_cdir").addEventListener("change", () => { try { refreshComfy
 async function refreshLlmStatus() {
   try {
     const j = await (await fetch("/api/llms")).json();
-    $("s_llmstatus").textContent = (j.engine_found ? "engine: found" : "engine: NOT FOUND — run get-llama.ps1") +
+    $("s_llmstatus").textContent = (j.engine_found ? "engine: found" : "engine: NOT FOUND — run misc\\get-llama.ps1") +
       ` · models: ${j.files.length}` +
       (j.running ? ` · running: ${j.running.file}${j.running.ready ? "" : " (loading)"}` : "");
   } catch {}
@@ -5343,7 +5346,7 @@ async function ensureComfyReady(opts) {
       if (st.reachable) return true;
       if (!st.starting && !st.managed) {
         /* A launch that lost a fight for the port exits in seconds, and
-           lib/comfy.js answers that by running clear-comfy.bat and starting
+           lib/comfy.js answers that by running misc\clear-comfy.bat and starting
            again — so a single dead reading is not the end. Two in a row is. */
         if (++deadFor < 8) continue;
         alert("ComfyUI exited during startup — see the console for its output.");
@@ -5897,7 +5900,7 @@ async function refreshLlms() {
       ? `serving ${j.running.file}${j.running.ready ? " — ready" : " — loading…"}`
       : j.engine_found ? "server not running" : "engine not installed";
   if (!j.files.length) {
-    sel.innerHTML = `<option value="">${j.engine_found ? "drop .gguf files into llm-models\\" : "run get-llama.ps1 first"}</option>`;
+    sel.innerHTML = `<option value="">${j.engine_found ? "drop .gguf files into llm-models\\" : "run misc\\get-llama.ps1 first"}</option>`;
     return;
   }
   for (const f of j.files) {
@@ -6078,7 +6081,12 @@ async function enhancePrompt() {
         ref_notes: window.RefInfo ? RefInfo.notesFor(refVids, refAuds, refNotes) : undefined,   // 2.539.0
         // 2.354.0: the dock's videos + sounds -> <Video n> / <Audio n> (lib/refContext.js)
         ref_videos: refVids.slice(0, 3), ref_audios: refAuds.slice(0, 3),
-        loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: their keywords go into the prompt (lib/loraWords.js)
+        // 2.581.0 / 2.585.0: the LoRAs in use - their keywords go into the prompt (lib/loraWords.js): Override style on =
+        // Basic Settings' temporary LoRAs, off = the selected style's (the server reads the style)
+        ...(window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx() : { loras: [] }),
+        gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
+        image_style_id: $("styleSel") ? $("styleSel").value : "",
+        video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",
       }),
     });
     const j = await res.json();
@@ -9299,6 +9307,90 @@ async function loadChat() {
    writes the message to the project's transcript BEFORE calling the model, so
    what you typed is on disk and on screen in the log even if the LLM never
    answers. ⬇ puts a reply back into the box. */
+/* 2.584.0: ONE CHAT CALL - the selection's context, the docker's pictures, POST /api/chat - shared by chatSend and the
+   prompt docker's 🔁 Compare LLMs (ext/promptdock/llmarena.js: the same question to each LLM, `arena` = {id, n} so
+   the reply joins the round instead of the chat). -> {r, j} */
+async function chatPost(t, chatLlm, arena) {
+  /* the current selection, so the assistant writes prompts for the model
+     that will actually run — the server looks the ids up in the styles
+     folder and appends the details to its system prompt (2.92.0) */
+  const chatCtx = {
+    gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
+    image_style_id: $("styleSel") ? $("styleSel").value : "",
+    music_style_id: $("musicSel") ? $("musicSel").value : "",
+    video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",   // 2.419.0: the video guide for THIS model (LTX / Wan / H3)
+  };
+  // 2.581.0 / 2.585.0: the LoRAs in use - Override style on = Basic Settings' temporary LoRAs, off = the selected style's
+  // (lib/loraWords.pathsFor reads the style) - never every LoRA in the app
+  Object.assign(chatCtx, window.H3LoraSel && H3LoraSel.ctx ? H3LoraSel.ctx(chatCtx.gen_mode) : { loras: [] });
+  /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
+     with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
+     server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */
+  // 2.395.0: an Append / Prepend video = fl2va - the server describes its frame (<Picture 1>), the picture used is <Picture 2>
+  const chatFop = chatCtx.gen_mode === "video" ? curFrameOp() : null;
+  const dockPics = chatFop ? chatFop.refs.slice() : chatCtx.gen_mode === "video" && mode === "ref2va" ? refs.slice(0, 9) : [];
+  if (chatFop) chatCtx.ref_video_op = chatFop.op;
+  if (chatCtx.gen_mode === "video") {
+    if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
+    if (refVids.length) chatCtx.ref_videos = refVids.slice(0, 3);
+    if (refAuds.length) chatCtx.ref_audios = refAuds.slice(0, 3);
+    if ((refVids.length || refAuds.length) && window.RefInfo) chatCtx.ref_notes = RefInfo.notesFor(refVids, refAuds, refNotes);   // 2.539.0
+  }
+  /* 2.233.0: attached pictures ride the SAME send as multipart. The
+     promptdock EXTENSION owns the attachments — window.pdChatForm builds
+     the FormData (text + context + describe flag + files) and clears its
+     chips; without the extension, or with nothing attached, this is the
+     JSON call it always was (the 2.223.14 hybrid contract: the shared
+     send stays core, the docker's private feature stays in ext/). */
+  let pdForm = (typeof window.pdChatForm === "function")
+    ? window.pdChatForm(t, chatCtx, chatLlm) : null;
+  if (dockPics.length) {                  // 2.354.0: the dock's pictures, to be described (cached server-side)
+    if (!pdForm) {
+      pdForm = new FormData();
+      pdForm.append("text", t);
+      pdForm.append("llm_file", chatLlm || "");
+      pdForm.append("context", JSON.stringify(chatCtx));
+      pdForm.append("describe", $("pdDescribe") && !$("pdDescribe").checked ? "0" : "1");
+    }
+    dockPics.forEach((r) => { if (r.file) pdForm.append("ref_images", r.file, r.file.name || "picture.png"); });
+  }
+  if (pdForm && arena) pdForm.append("arena", JSON.stringify(arena));
+  const r = pdForm
+    ? await fetch("/api/chat", { method: "POST", body: pdForm })
+    : await fetch("/api/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(arena ? { text: t, llm_file: chatLlm, context: chatCtx, arena } : { text: t, llm_file: chatLlm, context: chatCtx }),
+      });
+  const j = await r.json().catch(() => ({ error: "the server answered something that is not JSON" }));
+  return { r, j };
+}
+window.chatPost = chatPost;
+/** what a reply does besides showing (read aloud, ```image / ```video fences, a song into the Music dock) - also for
+ *  the reply picked in 🔁 Compare LLMs (2.584.0) */
+function chatApplyReply(j) {
+  readAloud(j.reply);
+  chatApplyKind(j.reply);            // 2.114.0: ```image / ```video fences drive the mode
+  // 2.244.0 (by instruction): a "create a song" ask whose reply parsed
+  // pours into the music dock — lyrics → Lyrics, style → the style
+  // caption, title → Title. Guarded per field (a layout without the
+  // music dock just shows the chat reply), and said in the chat so the
+  // hand-off is visible.
+  if (j.song) {
+    if ($("muTitle")) $("muTitle").value = j.song.title || "";
+    if ($("muCaption")) $("muCaption").value = j.song.style || "";
+    if ($("muLyrics")) $("muLyrics").value = j.song.lyrics || "";
+    if (typeof updateMusicBtn === "function") updateMusicBtn();
+    if ($("muTitle") || $("muLyrics")) {
+      chatAdd("assistant", "🎵 sent to the Music dock — title, style and "
+        + "lyrics are in; pick a music style and press Generate.");
+    }
+  }
+}
+window.chatApplyReply = chatApplyReply;
+/* 2.584.0: 🔁 Compare LLMs holds the chat while its round runs */
+window.chatBusyNow = () => chatBusy;
+window.chatSetBusy = (v) => { chatBusy = !!v; };
+
 async function chatSend(text) {
   const box = $("prompt");
   const t = String(text == null ? box.value : text).trim();
@@ -9320,55 +9412,7 @@ async function chatSend(text) {
       const sp = await window.bgScenes.maybeScreenplay(t);
       if (sp != null) { think.remove(); chatAdd("assistant", sp); return; }
     }
-    /* the current selection, so the assistant writes prompts for the model
-       that will actually run — the server looks the ids up in the styles
-       folder and appends the details to its system prompt (2.92.0) */
-    const chatCtx = {
-      gen_mode: $("genModeSel") ? $("genModeSel").value : "video",
-      image_style_id: $("styleSel") ? $("styleSel").value : "",
-      music_style_id: $("musicSel") ? $("musicSel").value : "",
-      video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",   // 2.419.0: the video guide for THIS model (LTX / Wan / H3)
-      loras: window.H3LoraSel ? H3LoraSel.paths() : [],      // 2.581.0: the selected LoRAs - their keywords in the prompts it writes
-    };
-    const chatLlm = $("llmSel") ? $("llmSel").value : "";
-    /* 2.354.0 (Tim: "the llm now returns <filename.ext> instead of <picture 1>"): the reference dock rides
-       with a VIDEO chat - the pictures in tray order (Reference mode), the videos, the sounds - so the
-       server can describe the pictures and teach <Picture n> / <Video n> / <Audio n> (lib/refContext.js) */
-    // 2.395.0: an Append / Prepend video = fl2va - the server describes its frame (<Picture 1>), the picture used is <Picture 2>
-    const chatFop = chatCtx.gen_mode === "video" ? curFrameOp() : null;
-    const dockPics = chatFop ? chatFop.refs.slice() : chatCtx.gen_mode === "video" && mode === "ref2va" ? refs.slice(0, 9) : [];
-    if (chatFop) chatCtx.ref_video_op = chatFop.op;
-    if (chatCtx.gen_mode === "video") {
-      if (dockPics.length) chatCtx.refs = dockPics.map((r) => ({ name: (r.file && r.file.name) || "", subject: r.subject, role: roleOf(r), note: r.desc || "" }));
-      if (refVids.length) chatCtx.ref_videos = refVids.slice(0, 3);
-      if (refAuds.length) chatCtx.ref_audios = refAuds.slice(0, 3);
-      if ((refVids.length || refAuds.length) && window.RefInfo) chatCtx.ref_notes = RefInfo.notesFor(refVids, refAuds, refNotes);   // 2.539.0
-    }
-    /* 2.233.0: attached pictures ride the SAME send as multipart. The
-       promptdock EXTENSION owns the attachments — window.pdChatForm builds
-       the FormData (text + context + describe flag + files) and clears its
-       chips; without the extension, or with nothing attached, this is the
-       JSON call it always was (the 2.223.14 hybrid contract: the shared
-       send stays core, the docker's private feature stays in ext/). */
-    let pdForm = (typeof window.pdChatForm === "function")
-      ? window.pdChatForm(t, chatCtx, chatLlm) : null;
-    if (dockPics.length) {                  // 2.354.0: the dock's pictures, to be described (cached server-side)
-      if (!pdForm) {
-        pdForm = new FormData();
-        pdForm.append("text", t);
-        pdForm.append("llm_file", chatLlm || "");
-        pdForm.append("context", JSON.stringify(chatCtx));
-        pdForm.append("describe", $("pdDescribe") && !$("pdDescribe").checked ? "0" : "1");
-      }
-      dockPics.forEach((r) => { if (r.file) pdForm.append("ref_images", r.file, r.file.name || "picture.png"); });
-    }
-    const r = pdForm
-      ? await fetch("/api/chat", { method: "POST", body: pdForm })
-      : await fetch("/api/chat", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: t, llm_file: chatLlm, context: chatCtx }),
-        });
-    const j = await r.json();
+    const { r, j } = await chatPost(t, $("llmSel") ? $("llmSel").value : "", null);
     think.remove();
     if (!r.ok) {
       /* THE MESSAGE IS ALREADY SAVED when this happens — the server writes it
@@ -9377,23 +9421,7 @@ async function chatSend(text) {
       chatAdd("assistant", "⚠ " + (j.error || "the LLM did not answer"));
     } else {
       chatAdd("assistant", j.reply);
-      readAloud(j.reply);
-      chatApplyKind(j.reply);            // 2.114.0: ```image / ```video fences drive the mode
-      // 2.244.0 (by instruction): a "create a song" ask whose reply parsed
-      // pours into the music dock — lyrics → Lyrics, style → the style
-      // caption, title → Title. Guarded per field (a layout without the
-      // music dock just shows the chat reply), and said in the chat so the
-      // hand-off is visible.
-      if (j.song) {
-        if ($("muTitle")) $("muTitle").value = j.song.title || "";
-        if ($("muCaption")) $("muCaption").value = j.song.style || "";
-        if ($("muLyrics")) $("muLyrics").value = j.song.lyrics || "";
-        if (typeof updateMusicBtn === "function") updateMusicBtn();
-        if ($("muTitle") || $("muLyrics")) {
-          chatAdd("assistant", "🎵 sent to the Music dock — title, style and "
-            + "lyrics are in; pick a music style and press Generate.");
-        }
-      }
+      chatApplyReply(j);
     }
   } catch (e) {
     think.remove();
@@ -14395,6 +14423,8 @@ async function gAnalyze(body) {
   const j = await r.json();
   if (!r.ok) { gMsg(j.error || "that workflow could not be read", true); return; }
   gAnalysis = j;
+  // 2.587.0: the inputs it takes + the picture of the graph (static/graphcheck.js)
+  try { window.dispatchEvent(new CustomEvent("h3:graph-analyzed", { detail: { file: j.file || body.file || "", analysis: j } })); } catch { /* old browser */ }
   gGraph = body.graph || null;
   if (j.file && gBind) gBind.file = j.file;
   if ($("g_fmt")) {
@@ -14637,6 +14667,8 @@ async function startGraphJob() {
   }
   const r = await fetch("/api/graphs/run", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id, values: gsValues, seed: $("seed") ? $("seed").value : -1,
+                           // 2.587.0: an imported workflow's Prompt / Negative controls take these when left empty
+                           prompt: $("prompt") ? $("prompt").value : "", negative: $("negPrompt") ? $("negPrompt").value : "",
                            images, videos: refVids.slice(), audio: refAuds.slice() }) });
   const j = await r.json();
   if (!r.ok) { alert(j.error || "could not start that graph"); return null; }

@@ -187,7 +187,7 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
     const fsx = require("fs"), px = require("path");
     const SRCB = fsx.readFileSync(px.join(__dirname, "..", "ext", "videodock", "characters.js"), "utf8");
     const RTS = fsx.readFileSync(px.join(__dirname, "..", "routes", "characters.js"), "utf8");
-    const IW = fsx.readFileSync(px.join(__dirname, "..", "image_worker.py"), "utf8");
+    const IW = fsx.readFileSync(px.join(__dirname, "..", "misc", "image_worker.py"), "utf8");
     const CC = fsx.readFileSync(px.join(__dirname, "..", "scripts", "comfy_client.py"), "utf8");
     check("2.223.12: the workflow ships and IS Tim's export (both LoadImages, SaveImage + SaveVideo, LookSheets nodes)",
           (() => { const g = JSON.parse(fsx.readFileSync(px.join(__dirname, "..",
@@ -1271,7 +1271,7 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
           })());
     check("2.233.0: ...its empty option says what to run",
           (d.getElementById("visionSel") || { textContent: "" }).textContent
-            .includes("(no vision models - run get-qwen3vl.ps1)"));
+            .includes("(no vision models - run misc\\get-qwen3vl.ps1)"));
     check("2.233.0: the \uFF0B attach button and its hidden multi-image picker exist beside the prompt input",
           (() => {
             const b = d.getElementById("pdAttachBtn");

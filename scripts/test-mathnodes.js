@@ -133,8 +133,8 @@ check("graphToApi: a ComfyUI WITHOUT ComfyMath -> the core Math Expression (expr
 // 5
 const NP = JSON.parse(read("lib", "nodePacks.json")).packs;
 check("lib/nodePacks.json: ComfyMath gone (the setup no longer clones a repo that is not there); the LTX worker's hint names the core node",
-  !NP.some((p) => /ComfyMath/i.test(p.folder || "") || /ComfyMath/i.test(p.url || "")) && /"ComfyMathExpression": "a core ComfyUI node/.test(read("ltx_worker.py"))
-  && !/"CM_IntToFloat": "ComfyMath"/.test(read("ltx_worker.py")));
+  !NP.some((p) => /ComfyMath/i.test(p.folder || "") || /ComfyMath/i.test(p.url || "")) && /"ComfyMathExpression": "a core ComfyUI node/.test(read("misc/ltx_worker.py"))
+  && !/"CM_IntToFloat": "ComfyMath"/.test(read("misc/ltx_worker.py")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

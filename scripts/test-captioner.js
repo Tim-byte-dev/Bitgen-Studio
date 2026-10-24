@@ -192,7 +192,7 @@ check("2.233.1: the scan covers qwen3vl/, THE LLM FOLDER'S vision/ SUBFOLDER, an
         && H2.includes('"scanned " + d.dir + " - " + d.files + " - files"')
         && H2.includes('"scanned " + d.dir + " - (missing)"');
     })());
-  const DS = JSON.parse(read("default.settings"));
+  const DS = JSON.parse(read("misc/default.settings"));
   check("2.233.3: captioner.dir ships in default.settings (the tts lesson, again)",
     typeof (DS.captioner || {}).dir === "string");
 }
@@ -314,7 +314,7 @@ check("2.258.0: the vision launcher DRAINS the old model's card before the new o
         && H35.includes('device: $("s_visdev").value')
         && H35.includes('Default (same as LLM)');
     })());
-  const DS35 = JSON.parse(read("default.settings"));
+  const DS35 = JSON.parse(read("misc/default.settings"));
   check("2.235.0: captioner.device ships in default.settings (the tts lesson)",
     typeof (DS35.captioner || {}).device === "string");
 }
@@ -384,7 +384,7 @@ async function refusal(cfg) {
 (async () => {
   let m = await refusal({ captioner: {} });
   check("no selection: the refusal names the Vision dropdown AND get-qwen3vl.ps1",
-    /Vision dropdown/.test(m) && /run get-qwen3vl\.ps1/.test(m), m);
+    /Vision dropdown/.test(m) && /run (misc\\)?get-qwen3vl\.ps1/.test(m), m);
   m = await refusal({ captioner: { model: "/x/a.gguf", mmproj: "/x/mm.gguf" } });
   check("no llama-server binary: the refusal names get-llama.ps1",
     /get-llama\.ps1/.test(m), m);
@@ -418,7 +418,7 @@ async function refusal(cfg) {
     R.includes(", described by the local vision model: "));
   check("captioner failure falls back IN WORDS — never a dead chat",
     R.includes("picture(s) attached but not described — ")
-    && R.includes("the vision model is not installed - run get-qwen3vl.ps1"));
+    && R.includes("the vision model is not installed - run misc\\\\get-qwen3vl.ps1"));
   check("describe OFF: the plain not-described note, captioner never started",
     R.includes(" picture(s) attached, not described"));
   check("non-picture uploads are refused in words, png/jpg/webp pass",
@@ -468,7 +468,7 @@ async function refusal(cfg) {
   check("the vision selection SAVES as config captioner.model/mmproj",
     P.includes("captioner: { model: sel.value") && P.includes("dataset.mmproj"));
   check("an empty scan says what to run, and the server's why-note rides the tooltip + console (2.233.2)",
-    P.includes("(no vision models - run get-qwen3vl.ps1)")
+    P.includes("(no vision models - run misc\\\\get-qwen3vl.ps1)")
     && P.includes("sel.title = note")
     && P.includes('console.log("[vision] " + note)')
     && P.includes('server v'));
@@ -483,7 +483,7 @@ async function refusal(cfg) {
     Array.isArray(E.scripts) && E.scripts.includes("promptdock.js"));
 
   // ---- the installer -------------------------------------------------------
-  const G = read("get-qwen3vl.ps1");
+  const G = read("misc/get-qwen3vl.ps1");
   check("get-qwen3vl.ps1: pinned Q4_K_M default, model AND mandatory mmproj, ~6 GB truth",
     /\$Quant\s*=\s*"Q4_K_M"/.test(G) && /mmproj/i.test(G)
     && /MANDATORY/.test(G) && /6 GB/.test(G));

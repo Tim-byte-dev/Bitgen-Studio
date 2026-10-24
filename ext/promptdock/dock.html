@@ -81,9 +81,9 @@
                    (only .gguf files with an mmproj beside them; a model without
                    its projector cannot see and is not listed). Selection
                    persists as config captioner.model/mmproj. -->
-              <label style="margin-left:8px" title="Vision model used to describe attached pictures — install one with get-qwen3vl.ps1">Vision</label>
+              <label style="margin-left:8px" title="Vision model used to describe attached pictures — install one with misc\get-qwen3vl.ps1">Vision</label>
               <select id="visionSel" title="Vision model for 🖼 Describe image — every .gguf model (an mmproj beside it lets it see pictures), from the Settings → LLM vision folder when set, else qwen3vl/, the LLM folder's vision/ subfolder, and the LLM folder">
-                <option value="">(no vision models - run get-qwen3vl.ps1)</option>
+                <option value="">(no vision models - run misc\get-qwen3vl.ps1)</option>
               </select>
               <label style="margin-left:8px">Voice</label>
               <select id="voiceSel" title="Voice used by the Speech button — clones are saved in Settings → Audio">

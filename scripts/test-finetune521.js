@@ -15,7 +15,7 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
 const FTM = require("../lib/fineTune.js"), LT = require("../lib/loraTrain.js"), UI = require("../static/loratrain.js");
 const PY = process.platform === "win32" ? "python" : "python3";
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "ft521-"));
-const py = (code, ...args) => spawnSync(PY, ["-c", "import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]);\n" + code, ROOT, ...args], { encoding: "utf8" });
+const py = (code, ...args) => spawnSync(PY, ["-c", "import sys,json; sys.dont_write_bytecode = True; sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[1] + '/misc');\n" + code, ROOT, ...args], { encoding: "utf8" });
 
 (async () => {
   /* ---- the base models */
@@ -224,7 +224,7 @@ print(d.hex())
   const lf = path.join(T, "loras", "trained", "me.safetensors"); fs.mkdirSync(path.dirname(lf), { recursive: true }); fs.writeFileSync(lf, "lora"); fs.writeFileSync(lf.replace(/\.safetensors$/, ".preview.png"), "png");
   const BF = { name: "me", out: "me_merged", cat: "checkpoints", base: "sdxl/base.safetensors", lora: "trained/me.safetensors", lora_file: lf, strength: 0.8, prefix: "bitgen_bake/me_merged",
     graph: FTM.mergeGraph({ cat: "checkpoints", base: "sdxl/base.safetensors", lora: "trained/me.safetensors", strength: 0.8, prefix: "bitgen_bake/me_merged" }), comfy_url: "http://127.0.0.1:" + srv.address().port, comfy_outputs: [outDir], dest_dir: path.join(T, "ckpt", "trained"), job_dir: T, trigger: "zz", family: "sdxl" };
-  const bk = await new Promise((res) => { const p = require("child_process").spawn(PY, ["-c", "import sys,json; sys.dont_write_bytecode=True; sys.path.insert(0, sys.argv[1]); import finetune_worker as w; print(w.bake(json.loads(sys.argv[2])))", ROOT, JSON.stringify(BF)]); let o = ""; p.stdout.on("data", (d) => { o += d; }); p.stderr.on("data", (d) => { o += d; }); p.on("close", (code) => res({ code, o })); });
+  const bk = await new Promise((res) => { const p = require("child_process").spawn(PY, ["-c", "import sys,json; sys.dont_write_bytecode=True; sys.path.insert(0, sys.argv[1]); sys.path.insert(0, sys.argv[1] + '/misc'); import finetune_worker as w; print(w.bake(json.loads(sys.argv[2])))", ROOT, JSON.stringify(BF)]); let o = ""; p.stdout.on("data", (d) => { o += d; }); p.stderr.on("data", (d) => { o += d; }); p.on("close", (code) => res({ code, o })); });
   srv.close();
   let bcard = null; try { bcard = JSON.parse(fs.readFileSync(path.join(T, "ckpt", "trained", "me_merged.bitgen.json"), "utf8")); } catch { bcard = null; }
   check("bake: ComfyUI gets the graph; finished on history status (CheckpointSave has no outputs); the file moved into checkpoints/trained/me_merged.safetensors",
@@ -233,13 +233,13 @@ print(d.hex())
     && fs.existsSync(path.join(T, "ckpt", "trained", "me_merged.preview.png")) && JSON.parse(fs.readFileSync(path.join(T, "baked.json"), "utf8")).length === 1, bcard);
 
   /* ---- wiring */
-  const CORE = read("lib", "core.js"), R = read("routes", "loraTrain.js"), SRV = read("server.js"), U = read("lib", "usageLog.js");
+  const CORE = read("lib", "core.js"), R = read("routes", "loraTrain.js"), SRV = read("misc/server.js"), U = read("lib", "usageLog.js");
   check("core: install_unsloth / ft_llm / ft_vision / lora_merge are tool modes run by finetune_worker.py; the Unsloth install skips the preset wait",
     /"install_unsloth", "ft_llm", "ft_vision", "lora_merge"\]/.test(CORE) && /install_unsloth: "finetune_worker\.py", ft_llm: "finetune_worker\.py", ft_vision: "finetune_worker\.py", lora_merge: "finetune_worker\.py"/.test(CORE) && /"install_aitoolkit", "install_unsloth"\]\.includes/.test(CORE));
   check("routes: chat get / import, bases, merge, install {engine}; not server.js", ["/api/loratrain/chat/:name\"", "/api/loratrain/chat/:name/import", "/api/loratrain/bases", "/api/loratrain/merge/:name"].every((u) => R.includes(u)) && /LT\.install\(String\(\(req\.body \|\| \{\}\)\.engine/.test(R) && !/fineTune/.test(SRV));
   check("the import route reads TEXT (not the 100 kb JSON parser) - big chat files fit", /express\.text\(\{ type: \(\) => true, limit: "64mb" \}\)/.test(R));
   check("the usage log names them (Fine-tune / Bake)", /"Fine-tune "/.test(U) && /"Bake "/.test(U));
-  const IGN = fs.existsSync(path.join(ROOT, "_gitignore")) ? read("_gitignore") : "tools/";
+  const IGN = fs.existsSync(path.join(ROOT, "misc", "_gitignore")) ? read("misc/_gitignore") : "tools/";
   check("tools/ (llama.cpp's source) is not shipped (ignored)", /^\/?tools\/?$/m.test(IGN));
   const TP = JSON.parse(read("lib", "testPlan.json"));
   const g521 = TP.groups.find((g) => g.id === "g521");   /* 2.522.0: a newer release's group is first now */

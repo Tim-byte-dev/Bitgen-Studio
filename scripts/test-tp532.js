@@ -57,7 +57,7 @@ const tps = read("lib/testPlan.js");
 check("status() and report() keep what they saw (remember), and a note on a kept tick keeps the tick (mark)", (tps.match(/remember\(sum\);/g) || []).length === 2 && /was && was\.auto/.test(tps));
 check("clientEvent takes only CLIENT_EVENTS", TP.clientEvent("rm_rf", "x").error && /palette_run/.test(TP.clientEvent("rm_rf").error));
 check("context(): a job's pictures (basenames) for the image autos", /images: \[\]\.concat\(p\.images/.test(tps));
-check("POST /api/testplan/event (routes/testPlan.js, not server.js)", /\/api\/testplan\/event/.test(read("routes/testPlan.js")) && !/testplan\/event/.test(read("server.js")));
+check("POST /api/testplan/event (routes/testPlan.js, not server.js)", /\/api\/testplan\/event/.test(read("routes/testPlan.js")) && !/testplan\/event/.test(read("misc/server.js")));
 const td = read("static/testdock.js");
 check("the page's H3TestEvent: once per event a session; the docker shows 'auto ✓' for a kept tick", /root\.H3TestEvent = function/.test(td) && /told\[key\]/.test(td) && /r\.kept \? " ✓"/.test(td));
 
