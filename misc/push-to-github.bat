@@ -121,6 +121,8 @@ echo  The files of %ZVER% are in place.
 cd /d "%REPO%"
 set "VER="
 for /f "usebackq delims=" %%v in (`powershell -NoProfile -Command "(Get-Content -Raw package.json | ConvertFrom-Json).version"`) do set "VER=%%v"
+rem 2.591.0 moved the app's files into misc\ - an old copy left in the folder by an unzip over it goes, so GitHub gets the new layout
+if exist "lib\miscMigrate.js" node -e "require('./lib/miscMigrate').run(process.cwd(), {repo: true})"
 git add -A
 rem never in the public repo: the private notes and tools (the same list as the release's repo zip)
 git rm -r -q --cached --ignore-unmatch HANDOVER.md HANDOVER-ARCHIVE.md CONTINUATION-NOTES-2_137_1.md WORKING-VERSIONS.md FOLDER-STRUCTURE.md unflatten.ps1 scripts/unflatten.py _gitignore g_kf.cmd t_kf.cmd CONTINUE.md misc/HANDOVER.md misc/HANDOVER-ARCHIVE.md misc/CONTINUATION-NOTES-2_137_1.md misc/WORKING-VERSIONS.md misc/FOLDER-STRUCTURE.md misc/unflatten.ps1 misc/_gitignore misc/CONTINUE.md docs/PHOTOSHOP-GAP.md docs/PREMIERE-GAP.md docs/AFTER-EFFECTS-GAP.md >nul

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.591.1** — GitHub Ci: Old Root Copies in a Checkout Are Not an Error; push-to-github.bat Tidies Them
 - **2.591.0** — The App Root Keeps start.bat: Everything Else in misc/ (lib/miscMigrate tidies an updated install)
 - **2.590.0** — 📺 Unreal View (Bridge 1.5.0) in the Image Editor + Timeline; Every Image Editor Tab a Docker; 🎨 Artist Mode
 - **2.589.0** — The Team Render Farm Leaves the Core: An Optional Extension (ext/teamdock) + Add-On, "May Trigger Virus Checkers"

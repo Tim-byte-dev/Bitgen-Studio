@@ -6081,6 +6081,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.591.1: **GitHub's tests after the misc\ move.** A repository updated by unzipping over it (or by an upload
+  that only adds files) still had the old root copies, and GitHub's tests stopped on them. Now those copies are not
+  an error, and **misc\push-to-github.bat** removes them before it commits, so GitHub gets the new layout.
 - 2.591.0: **A tidy app folder.** The bitGen Studio folder now shows only **start.bat** (plus package.json /
   package-lock.json, which npm needs beside node_modules, and README.md / LICENSE for the GitHub page). Everything else
   that sat beside them - server.js, the Python workers, default.settings, quick_prompts.json, requirements.txt, the

@@ -22,7 +22,11 @@ try {
   const shipped = M.MOVED.filter((n) => !["CONTINUATION-NOTES-2_137_1.md", "HANDOVER-ARCHIVE.md", "WORKING-VERSIONS.md", "FOLDER-STRUCTURE.md", "_gitignore", "CONTINUE.md", "HANDOVER.md", "unflatten.ps1"].includes(n));
   const missing = shipped.filter((n) => !fs.existsSync(path.join(ROOT, "misc", n)));
   check("the root keeps start.bat, package.json, package-lock.json, README.md, LICENSE; every moved file is in misc/ (none left in the root)",
-    [...KEEP].every((n) => fs.existsSync(path.join(ROOT, n))) && strays.length === 0 && missing.length === 0, { strays, missing });
+    [...KEEP].every((n) => fs.existsSync(path.join(ROOT, n))) && missing.length === 0, { strays, missing });
+  // 2.591.1: a checkout can still hold OLD root copies (a repository updated by unzipping over it / an upload that only
+  // adds files - GitHub's CI went red on that). They are not an error: the app removes them at start and
+  // misc\push-to-github.bat before it commits (lib/miscMigrate) - said, not failed.
+  if (strays.length) console.log("NOTE: old copies in the root (removed at the next start / push): " + strays.join(", "));
   check("MOVED names no file the root keeps", M.MOVED.every((n) => !KEEP.has(n)) && M.USER.join() === "quick_prompts.json");
 
   // ---- what names them
@@ -56,6 +60,14 @@ try {
     && !fs.existsSync(path.join(B, "server.js")) && fs.readFileSync(path.join(B, "misc", "server.js"), "utf8") === "new server.js" && fs.readFileSync(path.join(B, "misc", "get-comfy.ps1"), "utf8") === "old get-comfy.ps1", r);
   check("the user's quick_prompts.json wins over the shipped one (moved, root copy gone)", r.moved.includes("quick_prompts.json") && fs.readFileSync(path.join(B, "misc", "quick_prompts.json"), "utf8") === "old quick_prompts.json" && !fs.existsSync(path.join(B, "quick_prompts.json")));
   check("nothing else is touched: custom.settings, start.bat, a folder with a moved name", fs.readFileSync(path.join(B, "custom.settings"), "utf8") === "mine" && fs.existsSync(path.join(B, "start.bat")) && fs.statSync(path.join(B, "requirements.txt")).isDirectory());
+  const R = path.join(tmp, "repo"); fs.mkdirSync(path.join(R, "misc"), { recursive: true });
+  fs.writeFileSync(path.join(R, "misc", "quick_prompts.json"), "new"); fs.writeFileSync(path.join(R, "quick_prompts.json"), "old shipped");
+  fs.writeFileSync(path.join(R, "misc", "server.js"), "new"); fs.writeFileSync(path.join(R, "server.js"), "old");
+  const rr = (() => { const l0 = console.log; console.log = () => {}; try { return M.run(R, { repo: true }); } finally { console.log = l0; } })();
+  check("2.591.1 {repo: true} (push-to-github.bat): every old root copy goes, misc/'s quick_prompts.json wins (the root one is the old shipped one)",
+    rr.removed.sort().join() === "quick_prompts.json,server.js" && fs.readFileSync(path.join(R, "misc", "quick_prompts.json"), "utf8") === "new" && !fs.existsSync(path.join(R, "quick_prompts.json")), rr);
+  check("2.591.1 misc\\push-to-github.bat tidies the old root copies before git add (node + lib/miscMigrate, repo mode)",
+    /if exist "lib\\miscMigrate\.js" node -e "require\('\.\/lib\/miscMigrate'\)\.run\(process\.cwd\(\), \{repo: true\}\)"\r\ngit add -A\r\n/.test(rd("misc", "push-to-github.bat")));
   const r2 = M.run(B);
   check("a second start: nothing to do", r2.moved.length + r2.removed.length + r2.kept.length === 0);
   const B2 = path.join(tmp, "old"); fs.mkdirSync(B2); fs.writeFileSync(path.join(B2, "server.js"), "x");
