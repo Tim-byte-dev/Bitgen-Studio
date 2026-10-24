@@ -14,7 +14,6 @@
 //   GET    /api/loratrain/export/:name           the job as a .zip (config.yaml + dataset) for another machine
 //   2.521.0 FINE-TUNES (lib/fineTune.js): POST /api/loratrain/install {engine: "unsloth"} · GET/POST /api/loratrain/chat/:name
 //   [{messages}] (an LLM job's examples) · POST /api/loratrain/chat/:name/import?file=&replace=1  body = JSONL / JSON / CSV text
-//   · 2.585.0 GET / DELETE /api/loratrain/prefs/:name  an LLM job's preference pairs (DPO / ORPO)
 //   · GET /api/loratrain/bases  ComfyUI's checkpoints + diffusion models · POST /api/loratrain/merge/:name {cat, base, strength, out}
 "use strict";
 const fs = require("fs");
@@ -79,9 +78,6 @@ function mount(app) {
     const d = LT.jobDir(req.params.name); if (!fs.existsSync(d)) return res.status(404).json({ error: "no such job" });
     res.json(Object.assign({ ok: true }, FTM.importChat(d, typeof req.body === "string" ? req.body : "", String(req.query.file || ""), req.query.replace === "1")));
   }));
-  // 2.585.0: an LLM job's PREFERENCE PAIRS (dataset/prefs.jsonl - DPO / ORPO; 🔁 Compare LLMs fills them)
-  app.get("/api/loratrain/prefs/:name", wrap((req, res) => res.json(FTM.readPrefs(LT.jobDir(req.params.name)))));
-  app.delete("/api/loratrain/prefs/:name", wrap((req, res) => res.json({ ok: true, prefs: FTM.writePrefs(LT.jobDir(req.params.name), []) })));
   app.get("/api/loratrain/bases", wrap((_req, res) => res.json(FTM.bases())));
   app.post("/api/loratrain/merge/:name", wrap((req, res) => {
     const n = LT.cleanName(req.params.name), d = LT.jobDir(n);

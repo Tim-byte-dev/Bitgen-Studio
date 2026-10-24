@@ -100,7 +100,6 @@ const camera = require("../lib/camera");
 const comfyGraphs = require("../lib/comfyGraphs");   // 2.120.0: a ComfyUI graph wired to H3 inputs
 const graphToApi = require("../lib/graphToApi");     // 2.120.0: UI export -> API prompt, via /object_info
 const llmChat = require("../lib/llmChat");
-const llmArena = require("../lib/llmArena");   // 2.584.0: 🔁 Compare LLMs - a chat call may be one reply of a round
 const captioner = require("../lib/captioner"); // 2.233.0: pictures in the prompt
 const { planChunks, framesForSeconds, resolveAuto, FPS, MAX_SINGLE_RUN,
         GRIDS, gridFor, planShots, splitSong,
@@ -118,7 +117,6 @@ function mount(app) {
   require("./solidcraft").mount(app);  // 2.578.0: the 📐 SolidCraft docker - its browser build at /solidcraft-app/ + the project's solidcraft folder
   require("./cadGen").mount(app);      // 2.581.0: ✨ Generate in the 📐 SolidCraft docker - a part from a description / picture (lib/cadGen.js, cad_worker.py)
   require("./team").mount(app);        // 2.583.0: Settings ▸ Team + 🖥 Render on - the render farm (lib/team.js, lib/farm.js, lib/farmNode.js)
-  require("./llmArena").mount(app);    // 2.584.0: the prompt docker's 🔁 Compare LLMs - every LLM answers, the user picks (lib/llmArena.js)
   require("./swap").mount(app);        // 2.324.0: character swap (prompt docker Swap mode + a scene's ⇄)
   require("./refvideo").mount(app);    // 2.325.0: the reference dock's video selection dialog
   require("./filedialog").mount(app);  // 2.326.0: the Windows-11-style file / folder dialog
@@ -2927,7 +2925,7 @@ const trap = require("../lib/trap");
 
   app.post("/api/enhance", async (req, res) => {
     const config = core.getConfig();
-    const eLoras = loraWords.forPaths(loraWords.pathsFor(req.body || {}, core.STYLES_DIR));   // 2.585.0: override -> temporary LoRAs, else the style's
+    const eLoras = loraWords.forPaths((req.body || {}).loras);
     const { prompt, refs } = req.body || {};
     let { mode } = req.body || {};
     if (!prompt || !prompt.trim()) return res.status(400).json({ error: "prompt is required" });
@@ -3083,13 +3081,10 @@ const trap = require("../lib/trap");
     }
     const dir = chatDir();
     const session = chatStore.currentSession(dir);
-    // 2.584.0: 🔁 Compare LLMs (lib/llmArena.js) - one reply of a round: the question is written once (the first LLM's
-    // call), the replies go to the round, not the chat - the one the user picks is written by /api/llmarena/pick
-    const arena = llmArena.parseArena(b.arena);
     // WRITTEN BEFORE THE MODEL IS CALLED. If the LLM is down, what you typed is
     // still on disk — losing the user's own words to somebody else's 502 is not
     // a trade worth making.
-    if (!arena || arena.n === 0) chatStore.append(dir, session, "user", text);
+    chatStore.append(dir, session, "user", text);
     let visionNote = "";                            // rides the system context
     const attached = ((req.files || {}).images) || [];
     const images = attached.filter((f) =>
@@ -3231,32 +3226,18 @@ const trap = require("../lib/trap");
         + tmpRag
         + refBlock
         + (songAsk ? songwriter.FORMAT_NOTE : "")
-        + loraWords.systemNote(loraWords.forPaths(loraWords.pathsFor(b.context || {}, core.STYLES_DIR)))   // 2.581.0 / 2.585.0: the LoRAs in use - override -> temporary, else the style's
+        + loraWords.systemNote(loraWords.forPaths((b.context || {}).loras))   // 2.581.0: the selected LoRAs' keywords
         + visionNote }];
     for (const m of recalled) messages.push({ role: m.role, content: m.text });
-    if (arena) { try { await llmArena.setPrompt(core, arena.id, llmChat.alternate(messages)); } catch { /* the reply still joins */ } }   // 2.585.0: the full prompt - the training set's input
-    const t0 = Date.now();
     const out = await llmChat.complete(core, {
       messages, temperature: 0.8, max_tokens: 700, llm_file: b.llm_file });
-    if (!out.ok) {
-      if (arena) await llmArena.addCandidate(core, arena, { llm: b.llm_file, error: out.error, secs: (Date.now() - t0) / 1000 });
-      return res.status(out.status || 502).json({ error: out.error, session });
-    }
+    if (!out.ok) return res.status(out.status || 502).json({ error: out.error, session });
     // 2.354.0: a file name written as a tag -> its <Picture n> / <Video n> / <Audio n>; <sound n> -> <Audio n>
     out.text = refContext.retag(out.text, refDock).text;
+    chatStore.append(dir, session, "assistant", out.text);
     // a song ask whose reply parses carries the song; one that does not is
     // a chat reply like any other — never an error
     const song = songAsk ? songwriter.parse(out.text) : null;
-    if (arena) {
-      const wrong = await llmArena.checkServed(core, b.llm_file);     // an old llama-server answering for every model
-      if (wrong) {
-        await llmArena.addCandidate(core, arena, { llm: b.llm_file, error: wrong, secs: (Date.now() - t0) / 1000 });
-        return res.status(409).json({ error: wrong, session });
-      }
-      const cand = await llmArena.addCandidate(core, arena, { llm: b.llm_file, reply: out.text, secs: (Date.now() - t0) / 1000, song });
-      return res.json({ session, reply: out.text, context: prior.length, song, arena: cand ? { n: cand.n, llm: cand.llm, secs: cand.secs } : null });
-    }
-    chatStore.append(dir, session, "assistant", out.text);
     res.json(song ? { session, reply: out.text, context: prior.length, song }
                   : { session, reply: out.text, context: prior.length });
   });

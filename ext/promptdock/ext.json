@@ -6,7 +6,6 @@
   "scripts": [
     "promptdock.js",
     "quickprompts.js",
-    "pfloat.js",
-    "llmarena.js"
+    "pfloat.js"
   ]
 }

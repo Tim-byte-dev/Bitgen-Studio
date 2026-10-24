@@ -109,14 +109,6 @@ it as one STEP solid when a step cannot be rebuilt).
 - **[CadQuery](https://github.com/CadQuery/cadquery)** (Apache-2.0, on OpenCascade OCCT: LGPL-2.1 with an exception) is
   installed from PyPI into `<install>/cadgen/.venv` by the same add-on. It is a separate program, not redistributed.
 
-## The LLMs in Settings ▸ Add-ons ▸ LLM (2.586.0)
-
-Downloaded on request from Hugging Face into the LLM folder - none ships with bitGen Studio: **Qwen3.8 27B** (Alibaba
-Qwen, Apache 2.0; GGUF from [unsloth/Qwen3.8-27B-GGUF](https://huggingface.co/unsloth/Qwen3.8-27B-GGUF)), **Gemma 4 31B
-/ 12B** (Google, Apache 2.0; [unsloth/gemma-4-31B-it-GGUF](https://huggingface.co/unsloth/gemma-4-31B-it-GGUF),
-[unsloth/gemma-4-12B-it-qat-GGUF](https://huggingface.co/unsloth/gemma-4-12B-it-qat-GGUF)), **Qwen3.5 9B** and **Qwen3
-4B / 8B / 14B** (Apache 2.0, unsloth's GGUFs). A model you fine-tune from one of them carries its licence.
-
 ## Fibo 2.0 (2.582.0)
 
 The Fibo 2.0 styles use **Bria AI's Fibo 2.0** weights (Edit Turbo / Dev, 8B), released under **CC BY-NC 4.0 -

@@ -58,14 +58,7 @@
     L.innerHTML = S.list.map(function (a) {
       var btn = function (act, label, title) { return '<button type="button" class="ghost" data-ao="' + esc(a.id) + '" data-act="' + act + '"' + (running || a.busy ? " disabled" : "") + ' title="' + esc(title) + '">' + label + "</button>"; };
       var hasItems = Array.isArray(a.items) && a.items.length;
-      var sel = hasItems && a.select;                     // 2.586.0: a dropdown add-on (LLM) - one file at a time
-      var cur = sel ? (S.picks[a.id] && S.picks[a.id][0]) || (a.items.find(function (it) { return it.dflt; }) || a.items[0]).id : "";
-      var curIt = sel ? a.items.find(function (it) { return it.id === cur; }) || a.items[0] : null;
-      var acts = (a.actions || []).concat(sel && a.actions.indexOf("remove") < 0 ? ["remove"] : []).map(function (x) {
-        if (sel) {
-          return x === "install" || x === "reinstall" ? btn("install", curIt && curIt.present ? "⟳ Download again" : "⤓ Download", "Download the picked one into the LLM folder")
-            : x === "remove" ? (curIt && curIt.present ? btn("remove", "🗑 Delete it", "Delete the picked one from the LLM folder") : "") : "";
-        }
+      var acts = (a.actions || []).map(function (x) {
         if (hasItems) {                                   // 2.557.0: an add-on with a list - download what is ticked
           return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Download the ticked models (and a node pack the add-on needs, if missing)")
             : x === "remove" ? btn("remove", "🗑 Remove models", "Delete its downloaded model files (the node pack stays in ComfyUI)") : "";
@@ -74,10 +67,7 @@
           : x === "reinstall" ? btn("install", "⟳ Reinstall", "Install it again over the top (the same pinned versions)")
           : x === "remove" ? btn("remove", "🗑 Remove", "Delete its folder (its venv and packages; the model cache stays)") : "";
       }).join("");
-      var its = sel ? '<div class="its"><label style="display:flex;gap:6px;align-items:center"><b style="font-size:11.5px">' + esc(a.label) + '</b><select data-aosel="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' style="max-width:520px">'
-          + a.items.map(function (it) { return '<option value="' + esc(it.id) + '"' + (it.id === cur ? " selected" : "") + ">" + esc(it.label) + (it.present ? " ✓" : "") + "</option>"; }).join("") + "</select></label>"
-          + (curIt ? '<div class="kv">' + esc(curIt.for) + ' <span class="sz">' + esc(curIt.size) + "</span>" + (curIt.present ? ' <span class="ok">✓ in the LLM folder</span>' : "") + "</div>" : "") + "</div>"
-        : hasItems ? '<div class="its">' + a.items.map(function (it) {
+      var its = hasItems ? '<div class="its">' + a.items.map(function (it) {
         // 2.566.0: an item every style needs (need) is always downloaded - ticked, not untickable
         var on = it.need || (S.picks[a.id] ? S.picks[a.id].indexOf(it.id) >= 0 : (!it.present && it.dflt));
         return '<label title="' + esc(it.for) + '"><input type="checkbox" data-aoi="' + esc(a.id) + '" value="' + esc(it.id) + '"' + (on ? " checked" : "") + (running || a.busy || it.need ? " disabled" : "") + "> "
@@ -90,9 +80,6 @@
         + (a.note ? '<div class="kv"><b>State</b> ' + esc(a.note) + "</div>" : "")
         + its + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
     }).join("") || "No add-ons.";
-    Array.prototype.forEach.call(L.querySelectorAll("[data-aosel]"), function (el) {
-      el.onchange = function () { S.picks[el.dataset.aosel] = [el.value]; paint(); };
-    });
     Array.prototype.forEach.call(L.querySelectorAll("[data-aoi]"), function (el) {
       el.onchange = function () { S.picks[el.dataset.aoi] = picked(el.dataset.aoi); };
     });
@@ -128,7 +115,6 @@
   /** the ticked items of an add-on with a list */
   function picked(id) {
     var L = $("aoList"); if (!L) return [];
-    var sel = L.querySelector('[data-aosel="' + id + '"]'); if (sel) return [sel.value];      // 2.586.0: the dropdown
     return Array.prototype.filter.call(L.querySelectorAll('[data-aoi="' + id + '"]'), function (c) { return c.checked; }).map(function (c) { return c.value; });
   }
   function act(id, action, items) {
@@ -136,17 +122,14 @@
     var hasItems = Array.isArray(a.items) && a.items.length;
     var picks = items || (hasItems ? picked(id) : null);
     if (hasItems && action === "install" && !picks.length) { if (typeof window.toast === "function") window.toast("tick the models to download first"); else alert("tick the models to download first"); return Promise.resolve(null); }
-    if (action === "remove" && a.select) {               // 2.586.0: delete the picked LLM file
-      var it0 = a.items.find(function (it) { return it.id === picks[0]; }) || {};
-      if (!confirm("Delete " + (it0.label || picks[0]) + " from the LLM folder?")) return Promise.resolve(null);
-    } else if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (a node pack and the styles stay)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
+    if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (a node pack and the styles stay)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
     if (hasItems && action === "install" && !items) {
       var sel = a.items.filter(function (it) { return picks.indexOf(it.id) >= 0; });
       if (!confirm("Download for " + (a.label || id) + "?\n\n" + sel.map(function (it) { return "• " + it.label + " - " + it.size + (it.present ? " (already there)" : ""); }).join("\n") + "\n\nNeeds: " + a.needs)) return Promise.resolve(null);
     } else if (action === "install" && !a.external && !a.installed && !hasItems && !confirm("Install " + (a.label || id) + "?\n\nSize: " + a.size + "\nNeeds: " + a.needs)) return Promise.resolve(null);
     S.lines = []; S.next = 0;
     var opt = { method: "POST" };
-    if (hasItems && (action === "install" || a.select)) { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ items: picks }); }
+    if (hasItems && action === "install") { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ items: picks }); }
     return fetch("/api/addons/" + encodeURIComponent(id) + "/" + action, opt).then(j).then(function (r) {
       if (r.error) { if (typeof window.toast === "function") window.toast(r.error); else alert(r.error); return r; }
       if (window.H3TestEvent) window.H3TestEvent("addon_" + action, id);

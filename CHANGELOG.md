@@ -8,9 +8,6 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
-- **2.586.0** — Settings ▸ Add-Ons ▸ LLM (a Dropdown; ★ QWEN3.8 27B = the Base for Our Checkpoint)
-- **2.585.0** — Train an LLM on the 🔁 Picks (Full Prompt, 🏆 ▸ 🎓, Sft / Dpo / Orpo); LoRA Keywords Only from the LoRAs in Use
-- **2.584.0** — 🔁 Compare LLMs in the Prompt Docker (Every LLM Answers, the User Picks, 🏆 the Best LLM for the Job)
 - **2.583.0** — Team ▸ the Render Farm (Nas Team Folder, Daily Signed Keys, Owner's Access from - To / Unrestricted, 🖥 Render on)
 - **2.582.0** — Fibo 2.0 in the Edit Tools (Low VRAM: w4a8 / Gguf); Readme ▸ Links: The Software We Bridge to
 - **2.581.0** — ✨ Generate a Part in Solidcraft (Cadrille / The Local LLM -> Editable Features); Civitai Videos + Animated Thumbs; LoRA Keywords in LLM Prompts

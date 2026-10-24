@@ -100,11 +100,10 @@ function stubLlm() {
     check("...a click on the video example opens the viewer with it as a VIDEO", lb && lb.items[0].kind === "video" && lb.items[1].kind === "image", lb);
     await ev(() => window.H3ModelMgr.closeInfo());
 
-    /* 2 the LoRAs' keywords - 2.585.0: Basic Settings' temporary LoRAs when Override style is on, else the selected style's
-       (never every LoRA picked anywhere) */
-    const ovr0 = await ev(() => { const o = document.getElementById("ovrStyle"); const was = o ? o.checked : null; if (o) o.checked = true; addTempLora("video", { path: "anime_lineart.safetensors", weight: 1 }); return was; });
-    const lc = await ev(() => window.H3LoraSel.ctx("video"));
-    check("H3LoraSel.ctx: Override style on = Basic Settings' temporary LoRAs (the lineart row)", lc.lora_override === true && lc.loras.some((x) => /anime_lineart/.test(x)), lc);
+    /* 2 the selected LoRAs' keywords */
+    await ev((k) => { const s = window.H3ModelMgr.state(); if (!s.sel.loras.some((l) => l.key === k)) window.H3ModelMgr.pick(k); }, LINE);
+    const paths = await ev(() => window.H3LoraSel.paths());
+    check("H3LoraSel: the LoRA picked in the Model manager is a selected LoRA", paths.some((x) => /anime_lineart/.test(x)), paths);
     seen.length = 0;
     await ev(() => { document.getElementById("prompt").value = "a dancer at night"; return enhancePrompt(); });
     await p.waitForFunction(() => document.getElementById("enhancedText") && document.getElementById("enhancedText").value, null, { timeout: 30000 });
@@ -113,14 +112,9 @@ function stubLlm() {
     check("✨ Enhance: the LLM is told the LoRA and its keywords (exactly as written)", /LoRAs IN USE/.test(eSys) && /- Anime Lineart[^:\n]*: lineart, monochrome/.test(eSys), eSys.slice(-400));
     check("...the keyword the LLM left out (monochrome) is in the enhanced prompt anyway, the one it wrote is not doubled", /monochrome/.test(enh) && (enh.match(/lineart/gi) || []).length === 1, enh);
     seen.length = 0;
-    const ch = await api("/api/chat", { text: "write me a prompt for a dancer", context: { gen_mode: "image", lora_override: true, loras: lc.loras } });
-    check("the prompt chat: the LLM is told the temporary LoRAs' keywords too", !ch.error && seen.some((x) => /LoRAs IN USE/.test(x.sys) && /lineart, monochrome/.test(x.sys)), ch.error || seen.map((x) => x.sys.slice(-200)));
-    await ev(() => { document.getElementById("ovrStyle").checked = false; });
-    const lc2 = await ev(() => window.H3LoraSel.ctx("video"));
-    seen.length = 0;
-    const ch2 = await api("/api/chat", { text: "write me a prompt for a dancer", context: Object.assign({ gen_mode: "video", video_style_id: "" }, lc2) });
-    check("Override style off: the temporary LoRAs (and the Model manager's picks) are NOT sent - only the selected style's LoRAs count (none here)", lc2.lora_override === false && !lc2.loras.length && !ch2.error && !seen.some((x) => /LoRAs IN USE/.test(x.sys)), [lc2, ch2.error]);
-    await ev((was) => { const box = document.getElementById("tlvRows"); [...box.querySelectorAll(".lorarow")].forEach((r) => { if (/anime_lineart/.test(r.querySelector("input").value)) { r.remove(); } }); saveTempLoras("video"); const o = document.getElementById("ovrStyle"); if (o && was != null) o.checked = was; }, ovr0);
+    const ch = await api("/api/chat", { text: "write me a prompt for a dancer", context: { gen_mode: "image", loras: paths } });
+    check("the prompt chat: the LLM is told the selected LoRAs' keywords too", !ch.error && seen.some((x) => /LoRAs IN USE/.test(x.sys) && /lineart, monochrome/.test(x.sys)), ch.error || seen.map((x) => x.sys.slice(-200)));
+    await ev((k) => { const s = window.H3ModelMgr.state(); if (s.sel.loras.some((l) => l.key === k)) window.H3ModelMgr.pick(k); }, LINE);
     await ev(() => { try { window.SecFloat.show("modelmgr", false); } catch (e) { /* fine */ } });
 
     /* 3 ✨ Generate in SolidCraft - SolidCraft from its release zip when it is not installed (removed after, as
