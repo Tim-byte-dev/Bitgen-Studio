@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.592.1** — The Repo's Install Steps + The Expert Workspace Screenshot (Readme, docs/INSTALL.md)
+- **2.592.0** — Nougan Nodes: 🎭 Regional Character LoRAs in 🔲 Zones + ⏱ Prompt Relay for LTX (Settings ▸ Add-Ons)
 - **2.591.3** — GitHub Ci: The Crlf Check in a Checkout; .gitattributes (*.bat / *.cmd eol=crlf)
 - **2.591.2** — push-to-github.bat Back in the App Folder, Never in the Repo
 - **2.591.1** — GitHub Ci: Old Root Copies in a Checkout Are Not an Error; push-to-github.bat Tidies Them

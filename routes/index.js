@@ -1883,6 +1883,8 @@ function mount(app) {
     if (Array.isArray(b.regions) && b.regions.length) {
       const rg = require("../lib/regions").clean(b.regions);
       if (rg.length && (styled.engine || "comfy") !== "comfy") return res.status(400).json({ error: `regional prompting needs a ComfyUI image style - ${style.name} renders with ${styled.engine}` });
+      if (require("../lib/regions").loras(rg).length > require("../lib/regions").LORAS_MAX)
+        return res.status(400).json({ error: "🎭 two different character LoRAs at most in one picture (the Regional Character LoRA node has LoRA A and B) - give the other boxes one of those two, or none" });
       if (rg.length) p.regions = rg;
     }
     // Reference images for an image-EDIT workflow, named from the project's

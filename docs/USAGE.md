@@ -6081,6 +6081,30 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.592.0: **🎭 Two characters, each with their own LoRA, in one picture** (from Winnougan's Nougan Nodes - Settings ▸
+  Add-ons ▸ **Nougan Nodes** installs it into ComfyUI; restart ComfyUI after). In the image editor's ✨ AI panel ▸ 🔲 Zones
+  ▸ **▦ Regional prompt**, every box line has a **🎭** button: pick the character's LoRA from ComfyUI's loras and its
+  strength. Each LoRA works only inside its own box(es), so two people keep their own faces instead of blending into
+  one; the scene's words still cover the whole picture, and boxes without a 🎭 work as before.
+  - Two different character LoRAs at most per picture (a third is refused before anything renders). Two boxes may use
+    the same LoRA.
+  - Best on FLUX.2 / Krea 2 / Qwen Image styles, with LoRAs trained for that model. On Qwen Image **Edit** the picture
+    stays the model's own input: the LoRAs keep to their boxes and the boxes' words become area prompts.
+- 2.592.0: **⏱ Timed lines in an LTX prompt (Prompt Relay)** - give each stretch of an LTX 2.3 / 2.5 clip its own words
+  in ONE render. Lines without a time are about the whole clip; a line that starts with a time is about that stretch:
+
+      a red fox in the snow, cinematic
+      [0-2s] the fox sniffs the ground
+      [2-4s] the fox looks up at the camera
+      [4s] it runs off to the left
+
+  - Each line runs until the next one starts (the first from 0 s, the last to the end of the clip). Times are seconds:
+    `[2s]`, `[2-4s]`, `[2.5 - 4 s]`, `[2 to 4]`.
+  - **⏱** beside the LTX mode in the prompt docker adds the next line (2 s each). It works the same in a scene on the
+    StoryBoard and in the timeline's AI clip.
+  - Needs Settings ▸ Add-ons ▸ **Nougan Nodes** (Kijai's ComfyUI-PromptRelay works too). Without it the clip renders
+    all the lines as one prompt, and the job's log says so. The timing is set in the first pass; the template's second
+    (detail) pass keeps the whole-clip words.
 - 2.591.3: **GitHub's tests are green again.** Git on Windows can store .bat files with Linux line endings, and
   a new test read them as they were checked out and failed. A .gitattributes file now makes every .bat / .cmd
   check out with Windows line endings, and inside a git checkout the test checks that rule instead of the bytes.

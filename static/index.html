@@ -3258,6 +3258,7 @@
 <script src="/static/startcheck.js"></script>  <!-- 2.573.0: the update check on startup - bitGen Studio + ComfyUI -->
 <script src="/static/selsearch.js"></script>  <!-- 2.478.0: a search box in every long dropdown list (SelSearch) -->
 <script src="/static/unreal.js"></script>  <!-- 2.472.0: the Unreal Engine 5.8 bridge (the page side) -->
+<script src="/static/promptrelay.js"></script>  <!-- 2.592.0: ⏱ timed lines in an LTX prompt = Prompt Relay (H3Relay - scripts/prompt_relay.py) -->
 <script src="/static/uelive.js"></script>  <!-- 2.590.0: 📺 the Unreal View - a layer's / clip's camera live (UELive - lib/ueLive.js, bridge 1.5.0 frame) -->
 <script src="/static/uerig.js"></script>  <!-- 2.476.0: Unreal lights + fog (the image editor + the timeline) -->
 <script src="/static/jobmeta.js"></script>
@@ -5478,6 +5479,7 @@ function ltxModePaint() {
     if (sel.selectedOptions[0] && sel.selectedOptions[0].hidden) sel.value = "auto";
   }
   if ($("ltxTransSel")) $("ltxTransSel").hidden = !on || is23;
+  if ($("ltxRelayBtn")) { $("ltxRelayBtn").hidden = !on; if (window.H3Relay) H3Relay.wire(); }   // 2.592.0: ⏱ timed lines (Prompt Relay)
   if ($("ltx3dSel")) $("ltx3dSel").hidden = !is23 || !["auto", "3dreal"].includes(sel ? sel.value : "auto");
 }
 window.ltxModePaint = ltxModePaint;

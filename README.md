@@ -80,9 +80,40 @@ models, so nothing in them was generated.*
   </tr>
 </table>
 
+## Install from GitHub (Windows)
+
+1. **Install Git** - [git-scm.com](https://git-scm.com/download/win) (or `winget install Git.Git`).
+2. **Install Node.js** - [nodejs.org](https://nodejs.org), the LTS version (18 or newer).
+3. **Get bitGen Studio** - open a terminal in the folder you want it in (a big, fast drive is best: ComfyUI and the
+   models need about 100 GB) and run:
+   ```
+   git clone https://github.com/Tim-byte-dev/Bitgen-Studio
+   ```
+4. **Run `start.bat`** in the new `Bitgen-Studio` folder. Start installs bitGen Studio if it is not installed yet and
+   runs it if it is - so from now on, `start.bat` is also how you open the studio. The first time it:
+   - checks for **Python** (3.10 or newer). If it is not found, start says so: install it from
+     [python.org](https://www.python.org/downloads/) with **Add python.exe to PATH** ticked, then run `start.bat` again;
+   - installs the Node and Python packages and the app window (about 150 MB, once), then opens the **setup window**.
+5. **Choose the version you want installed** - the setup window shows what your computer can run and recommends one:
+   **Editor** (no AI), **Editor + small AI** (6-12 GB graphics card), **Editor + mid-size AI** (12-20 GB) or
+   **Everything** (20 GB+).
+6. **ComfyUI** - if you already have ComfyUI, pick **Use a ComfyUI I already have** and select its folder; if you do
+   not, the setup window installs ComfyUI for you. Either way it adds the node packs and downloads the models for the
+   version you chose, then opens the studio.
+
+Keep the black console window open while you use bitGen Studio - closing it stops the studio.
+
+![bitGen Studio - the Expert workspace](docs/images/expert-workspace.png)
+<sub><b>The Expert workspace.</b> Basic Settings on the left, the References docker with a picture as &lt;Picture 1&gt;, the
+prompt chat turning "horse in picture 1 trotting" into a full shot, the prompt ready to Generate, and the queue and
+gallery with the finished renders on the right.</sub>
+
+[docs/INSTALL.md](docs/INSTALL.md) has every step in detail, the one-file installers, the local LLM set-up and
+troubleshooting.
+
 ## Quick start
 
-1. **Install**: download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `misc/bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
+1. **Install**: follow **[Install from GitHub](#install-from-github-windows)** above, or download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `misc/bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
 2. **Make something**: type a prompt and press **Generate**, or ask the assistant to *create a screenplay* and render the scenes on the board. The **[user guide](docs/USAGE.md)** (also as a [PDF](docs/bitGen-Studio-Guide.pdf)) walks through every docker.
 3. **Found a bug or have an idea?** Please open an issue. This is a beta, and every report helps.
 4. **UI dragged off the screen, or a black window?** Close bitGen Studio and run `misc\reset-layout.bat` (in the app folder). It puts back the default layout and theme, and clears the desktop app's caches. Your projects, settings and models are kept, and everything it resets is copied to `backups\layout-<time>\` first.

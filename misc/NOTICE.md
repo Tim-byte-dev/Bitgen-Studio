@@ -118,6 +118,14 @@ the **MiniMax H3 Community License**, including its territorial restrictions (th
 the US are excluded) and its Acceptable Use Policy; the four-step LoRA is fine-tuned from DMAD under the same licence.
 Nothing of it ships with bitGen Studio.
 
+## Nougan Nodes (2.592.0)
+
+Settings ▸ Add-ons ▸ Nougan Nodes clones [Winnougan/Nougan_Nodes](https://github.com/Winnougan/Nougan_Nodes) (MIT) into
+ComfyUI's custom_nodes. bitGen Studio builds graphs with two of its nodes - NouganRegionalCharacterLoRA (🔲 Zones ▸ 🎭)
+and PromptRelayEncode (⏱ timed lines in an LTX prompt; Nougan's Prompt Relay is a rewrite of Kijai's
+[ComfyUI-PromptRelay](https://github.com/kijai/ComfyUI-PromptRelay), which provides the same node). Nothing of either
+pack ships with bitGen Studio.
+
 ## The LLMs in Settings ▸ Add-ons ▸ LLM (2.586.0)
 
 Downloaded on request from Hugging Face into the LLM folder - none ships with bitGen Studio: **Qwen3.8 27B** (Alibaba

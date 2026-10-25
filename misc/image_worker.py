@@ -310,6 +310,10 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
 
     # A missing node pack named up front beats a validation 400 listing ids.
     missing = _comfy.missing_classes(base, graph)
+    if "NouganRegionalCharacterLoRA" in missing:        # 2.592.0: 🎭 a zone's character LoRA
+        fail("🎭 a zone carries a character LoRA, and this ComfyUI does not have the Regional Character LoRA node "
+             "(NouganRegionalCharacterLoRA) - Settings ▸ Add-ons ▸ Nougan Nodes installs it (then restart ComfyUI), "
+             "or clear the zones' 🎭 LoRAs")
     if missing:
         fail("ComfyUI does not have these node types: " + ", ".join(missing)
              + ". Install the node pack that provides them (Manager -> Install "

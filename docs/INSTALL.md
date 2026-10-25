@@ -136,17 +136,23 @@ still need Git installed for the ComfyUI step.
 
 ## 3. First launch (start.bat)
 
-Double-click **`start.bat`**. It:
+Double-click **`start.bat`**. Start installs bitGen Studio when it is not installed yet and runs it when it is - it is
+also how you open the studio every day. The first time, it:
 
-1. checks Node.js and Python,
+1. checks Node.js and Python (Python 3.10+: if it is not found, start says so - install it from python.org with
+   **Add python.exe to PATH** ticked and run `start.bat` again),
 2. installs the Node dependencies (`npm install`) and the Python ones
    (`pip install -r misc\requirements.txt`),
 3. downloads the **app window** (Electron, ~150 MB, once) — set the
    environment variable `H3_NO_SHELL=1` if you would rather use your browser,
 4. starts the server and opens the app.
 
-On the first run the **setup window** offers to install **ComfyUI**: choose a
-folder (default `comfy\` inside the app) and it will
+On the first run the **setup window** opens. It shows what your computer can run and
+asks which version to install - **Editor** (no AI), **Editor + small AI** (6-12 GB
+card), **Editor + mid-size AI** (12-20 GB) or **Everything** (20 GB+), with one
+recommended for your graphics card. Then **ComfyUI**: pick **Use a ComfyUI I already
+have** and select its folder, or let it install a new one - choose a folder (default
+`comfy\` inside the app) and it will
 
 - `git clone` ComfyUI and create its **own** Python venv with CUDA PyTorch,
 - write `comfy\ComfyUI\run.bat` (what the app uses to launch it),
@@ -155,8 +161,8 @@ folder (default `comfy\` inside the app) and it will
 
 Keep the black console window open — closing it stops the server.
 
-> **Already have ComfyUI?** Decline the setup window, then in
-> **Settings → ComfyUI** set *ComfyUI folder* to your install (the folder with
+> **Already have ComfyUI?** Pick **Use a ComfyUI I already have** in the setup window -
+> or decline it, then in **Settings → ComfyUI** set *ComfyUI folder* to your install (the folder with
 > `main.py`, `run_nvidia_gpu.bat` or a `run.bat`) and the *ComfyUI URL*
 > (default `http://127.0.0.1:8188`). Declined by mistake? Delete
 > `comfy\.declined` and restart.

@@ -12460,6 +12460,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui590-ui.js > /tmp/ui590.log 2>&
 node scripts/test-misc591.js > /tmp/misc591.log 2>&1 \
   && ok "2.591.0 misc/ layout units (the root keeps start.bat + package.json / README / LICENSE; the server, workers, installers, launchers point into misc/; miscMigrate tidies an updated install's old copies, keeps the user's quick prompts, touches nothing else)" \
   || { bad "2.591.0 misc/ layout units"; grep -a "^FAIL" -A2 /tmp/misc591.log | head -14; }
+
+# ---- 2.592.0 (Nougan Nodes: 🎭 regional character LoRAs in 🔲 Zones, ⏱ Prompt Relay for LTX)
+node scripts/test-nougan592.js > /tmp/ng592.log 2>&1 \
+  && ok "2.592.0 Nougan Nodes units (a zone's 🎭 LoRA through regions.clean / pczones, the third refused, the ⏱ parser + next line, the prompt docker's button, the add-on: install / status / Kijai's pack / refusals)" \
+  || { bad "2.592.0 Nougan Nodes units"; grep -a "^FAIL" -A2 /tmp/ng592.log | head -14; }
+python3 scripts/test-nougan592.py > /tmp/ngpy592.log 2>&1 \
+  && ok "2.592.0 Nougan graph units (NouganRegionalCharacterLoRA wired into FLUX.2 / FLUX.2 edit / Krea 2 / FLUX.3 / SDXL, Qwen Edit keeps its picture; Prompt Relay on Comfy-Org's two-stage LTX templates - first pass only - and Tim's canvas shape; the worker's fallback to one prompt)" \
+  || { bad "2.592.0 Nougan graph units"; grep -a "^FAIL" -A2 /tmp/ngpy592.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui592-ui.js > /tmp/ui592.log 2>&1 \
+  && ok "2.592.0 browser test: 🎭 on the zones in ▦ Regional, ComfyUI's LoRA list, two LoRAs -> one NouganRegionalCharacterLoRA job through the stub, a third refused; ⏱ with an LTX style adds [0-2s] / [2-4s], the LTX job runs Prompt Relay - or SKIP without playwright" \
+  || { bad "2.592.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui592.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

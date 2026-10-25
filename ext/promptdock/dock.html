@@ -113,6 +113,10 @@
                 <option value="v2v">Video to video (style transfer, video + picture 1)</option>
                 <option value="3dreal">3D render → real (3DREAL: the video = the render, picture 1 = optional real first frame)</option>
               </select>
+              <!-- 2.592.0: ⏱ the next timed line for Prompt Relay (static/promptrelay.js) -->
+              <button id="ltxRelayBtn" class="ghost" type="button" hidden style="margin-left:4px"
+                title="⏱ Timed lines (Prompt Relay): adds the next line, e.g. [0-2s] … - each stretch of the clip gets its own words in one render; lines without a time are over the whole clip. Needs Settings ▸ Add-ons ▸ Nougan Nodes (without it the lines render as one prompt)"
+                aria-label="Add a timed line">⏱</button>
               <!-- 2.402.0: LTX 2.3's 3DREAL IC-LoRA variant (fal/LTX-2.3-3DREAL-LoRA) -->
               <select id="ltx3dSel" hidden style="margin-left:4px;max-width:170px"
                 title="fal's 3DREAL LoRA (render -> photoreal): strong-v2 = newest (multi-scene, audio, faces), strong = a harder photoreal push, light = faithful / gentle. Auto = the newest one in ComfyUI's loras"

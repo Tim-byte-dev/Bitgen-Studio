@@ -19,8 +19,13 @@
  *                           box's words act only inside it (scripts/comfy_regions.py: ConditioningSetArea) with the
  *                           scene's words over the whole; best with SDXL-type styles, FLUX / Qwen follow it more loosely
  *   The method starts on ▦ Regional for a blank canvas, ▣ One box at a time for a picture.
- * Pure (Node: scripts/test-zones569.js): COLORS, METHODS, normBox, hitZone, moveZone, rectMask, isBlank, instruction,
- * regionsOf, renderSize, defaultMethod.
+ * 2.592.0 🎭 A BOX CAN CARRY A CHARACTER LoRA (Tim: "lets just add the regional character lora and prompt relay" - from
+ * Nougan_Nodes, Settings ▸ Add-ons ▸ Nougan Nodes): in ▦ Regional each box line has 🎭 - a LoRA from ComfyUI's loras +
+ * its strength. Two different LoRAs at most per picture (LoRA A / LoRA B), each only inside its boxes, so two characters
+ * keep their own faces (scripts/comfy_regions.py: NouganRegionalCharacterLoRA). Best on FLUX.2 / Krea 2 / Qwen Image
+ * styles with LoRAs made for that model.
+ * Pure (Node: scripts/test-zones569.js, test-nougan592.js): COLORS, METHODS, normBox, hitZone, moveZone, rectMask,
+ * isBlank, instruction, regionsOf, renderSize, defaultMethod, charLoras, LORAS_MAX.
  */
 (function (root) {
   "use strict";
@@ -89,10 +94,21 @@
       + ` Each thing fills its box and sits naturally in the scene - its light, shadows and perspective match.`
       + ` Remove every coloured box outline completely; ${blank ? "nothing of the outlines is left" : "everything outside the boxes stays exactly the same"}.`;
   }
-  /** the boxes for /api/genimage: fractions of the picture */
+  /** the boxes for /api/genimage: fractions of the picture (2.592.0 + a box's 🎭 character LoRA and its strength) */
   function regionsOf(zones, W, H) {
     const k = (v) => Math.round(v * 10000) / 10000;
-    return (zones || []).filter((z) => words(z.text) && z.w > 0 && z.h > 0).map((z) => ({ x: k(z.x / W), y: k(z.y / H), w: k(z.w / W), h: k(z.h / H), text: words(z.text) }));
+    return (zones || []).filter((z) => words(z.text) && z.w > 0 && z.h > 0).map((z) => {
+      const o = { x: k(z.x / W), y: k(z.y / H), w: k(z.w / W), h: k(z.h / H), text: words(z.text) };
+      if (z.lora && String(z.lora).trim()) { o.lora = String(z.lora).trim(); o.lora_strength = Number.isFinite(+z.lora_w) ? +z.lora_w : 1; }
+      return o;
+    });
+  }
+  /** 2.592.0: the different 🎭 character LoRAs of the boxes that have words (either slash, in order) */
+  const LORAS_MAX = 2;
+  function charLoras(zones) {
+    const out = [];
+    for (const z of zones || []) { const l = z && words(z.text) && z.lora ? String(z.lora).trim().replace(/\\/g, "/") : ""; if (l && !out.includes(l)) out.push(l); }
+    return out;
   }
   /** the picture's shape at about one megapixel, on a 16-px grid */
   function renderSize(W, H, mp) {
@@ -100,7 +116,7 @@
     return { width: r16(Math.sqrt(area * a)), height: r16(Math.sqrt(area / a)) };
   }
   const defaultMethod = (blank) => (blank ? "regional" : "boxes");
-  const pure = { COLORS, MAX, METHODS, normBox, hitZone, moveZone, rectMask, isBlank, instruction, regionsOf, renderSize, defaultMethod };
+  const pure = { COLORS, MAX, METHODS, normBox, hitZone, moveZone, rectMask, isBlank, instruction, regionsOf, renderSize, defaultMethod, charLoras, LORAS_MAX };
 
   /* ---------------- the tool in the tool column (before the editor starts) ---------------- */
   const UI = root.PCUI;
@@ -142,7 +158,8 @@
     css.textContent = ".kxzones{margin-top:6px;border:1px solid var(--pc-line,#3a3a3a);border-radius:5px;padding:2px 6px}.kxzones>summary{cursor:pointer;font-weight:600;padding:2px 0}.kxzones .pzn{font-weight:400;color:var(--pc-dim,#999)}"
       + ".kxzones .pzb{display:flex;flex-direction:column;gap:4px;padding:4px 0}.kxzones .pzrow{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.kxzones .pzlist{display:flex;flex-direction:column;gap:3px}"
       + ".kxzones .pzz{display:flex;gap:4px;align-items:center}.kxzones .pzz.on{outline:1px solid var(--pc-acc,#f59e2c);border-radius:3px}.kxzones .pzz .sw{flex:none;width:20px;height:18px;border-radius:3px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 1px #000;cursor:pointer}"
-      + ".kxzones .pzz input{flex:1;min-width:0}.kxzones .pzhint{font-size:11px;color:var(--pc-dim,#999)}";
+      + ".kxzones .pzz input{flex:1;min-width:0}.kxzones .pzhint{font-size:11px;color:var(--pc-dim,#999)}"
+      + ".kxzones .pzl.on{color:var(--pc-acc,#f59e2c)}.kxzones .pzlr{display:flex;gap:4px;align-items:center;margin:0 0 2px 24px}.kxzones .pzlr .pzlc{flex:1;min-width:0}.kxzones .pzlr .pzlc select{max-width:100%}.kxzones .pzlr input[type=number]{width:52px;flex:none}";
     doc.head.appendChild(css);
     const q = (id) => box.querySelector("#" + id);
     // the image styles (/api/styles - the page's own list holds only the prompt docker's current kind)
@@ -162,9 +179,10 @@
       const m = q("pzMethod").value, blank = blankNow();
       q("pzStyle").style.display = m === "regional" ? "" : "none";
       q("pzAutoL").style.display = m === "boxes" ? "" : "none";
+      box.querySelectorAll(".pzl,.pzlr").forEach((el) => { el.style.display = m === "regional" ? "" : "none"; });
       q("pzHint").textContent = m === "boxes" ? (blank ? "a blank canvas: each thing is drawn into white - ▦ Regional or ✎ Edit makes the whole scene" : "each box = one ✨ Generate (Add content) with the fill style above; all queued at once into ⏳ Pending")
         : m === "edit" ? `one render by the Edit model (${($("ieEditStyle") && $("ieEditStyle").selectedOptions[0] ? $("ieEditStyle").selectedOptions[0].textContent : "pick one above")}): the boxes are drawn on a copy of the picture and it is told what goes in each colour`
-        : "a NEW picture from the boxes in one ComfyUI pass - the scene over the whole, each box's words only inside it (best with SDXL-type styles); it lands as a layer";
+        : "a NEW picture from the boxes in one ComfyUI pass - the scene over the whole, each box's words only inside it (best with SDXL-type styles); it lands as a layer. 🎭 on a box = a character LoRA only inside it (two different ones at most - Settings ▸ Add-ons ▸ Nougan Nodes)";
     }
     function paintList() {
       const zs = zones();
@@ -172,7 +190,25 @@
       if (!zs.length) { q("pzList").innerHTML = `<span class="pzhint">no boxes yet - 🔲 Draw boxes, then drag on the canvas</span>`; return; }
       q("pzList").innerHTML = zs.map((z, i) => `<div class="pzz${i === picked ? " on" : ""}" data-z="${i}"><span class="sw" style="background:${hex(z.color)}" title="Box ${i + 1} (${z.color}) - click to pick it">${i + 1}</span>`
         + `<input type="text" data-zt="${i}" value="${esc(z.text || "")}" placeholder="what goes in box ${i + 1} - e.g. a red kite" aria-label="What goes in box ${i + 1}">`
-        + `<button class="ghost" type="button" data-zx="${i}" title="Remove box ${i + 1}">✕</button></div>`).join("");
+        + `<button class="ghost pzl${z.lora ? " on" : ""}" type="button" data-zl="${i}" title="🎭 a character LoRA only inside box ${i + 1}${z.lora ? " - now: " + esc(z.lora) : ""} (▦ Regional; two different LoRAs at most - Settings ▸ Add-ons ▸ Nougan Nodes)">🎭</button>`
+        + `<button class="ghost" type="button" data-zx="${i}" title="Remove box ${i + 1}">✕</button></div>`
+        + (z._lo ? `<div class="pzlr" data-zlr="${i}"><span class="pzlc" id="pzLc${i}"></span><input type="text" id="pzLi${i}" value="${esc(z.lora || "")}" placeholder="loras\\character.safetensors" aria-label="Box ${i + 1}'s character LoRA" style="flex:1;min-width:0">`
+          + `<input type="number" data-zlw="${i}" min="-4" max="4" step="0.05" value="${Number.isFinite(+z.lora_w) ? +z.lora_w : 1}" title="The LoRA's strength in this box (1 = as trained)" aria-label="Box ${i + 1}'s LoRA strength"></div>` : "")).join("");
+      // 2.592.0: the 🎭 rows - ComfyUI's LoRA list (the page's model combo) when it is there, else the typed name
+      zs.forEach((z, i) => {
+        if (!z._lo) return;
+        const host = q("pzLc" + i), inp = q("pzLi" + i);
+        const set = () => { z.lora = inp.value.trim(); const b = box.querySelector(`[data-zl="${i}"]`); if (b) b.classList.toggle("on", !!z.lora); paintHint(); };
+        if (typeof win.cmCombo === "function") { try { win.cmCombo(host, inp, ["loras"], { blank: "— no character LoRA —", title: "Box " + (i + 1) + "'s character LoRA", onChange: set }); inp.style.display = "none"; } catch (e) { host.style.display = "none"; } }
+        else host.style.display = "none";
+        inp.addEventListener("input", set);
+        inp.addEventListener("keydown", (e) => e.stopPropagation());
+      });
+      q("pzList").querySelectorAll("[data-zlw]").forEach((inp) => {
+        inp.addEventListener("input", () => { const z = zones()[+inp.dataset.zlw]; if (z) z.lora_w = parseFloat(inp.value); });
+        inp.addEventListener("keydown", (e) => e.stopPropagation());
+      });
+      q("pzList").querySelectorAll("[data-zl]").forEach((b) => { b.onclick = () => { const z = zones()[+b.dataset.zl]; if (z) { z._lo = !z._lo; paintList(); paintHint(); } }; });
       q("pzList").querySelectorAll("[data-zt]").forEach((inp) => {
         inp.addEventListener("input", () => { const z = zones()[+inp.dataset.zt]; if (z) { z.text = inp.value.slice(0, 400); E.drawOverlay(); } });
         inp.addEventListener("keydown", (e) => e.stopPropagation());
@@ -285,6 +321,8 @@
       if (!styleCache) await loadStyles(); else paintStyles();
       const style = q("pzStyle").value;
       if (!style) return say("▦ Regional needs a ComfyUI image style (Settings ▸ Image) - pick it beside the method");
+      const cl = charLoras(zs);
+      if (cl.length > LORAS_MAX) return say(`🎭 ${LORAS_MAX} different character LoRAs at most in one picture (LoRA A and LoRA B) - these boxes have ${cl.length}`);
       const sz = renderSize(S.w, S.h, 1);
       const body = { prompt: scene || zs.map((z) => words(z.text)).join(", "), style_id: style, width: sz.width, height: sz.height, batch: 1, regions: regionsOf(zs, S.w, S.h) };
       if (win.H3Neg && win.H3Neg.get && win.H3Neg.get()) body.negative = win.H3Neg.get();
@@ -298,7 +336,7 @@
       const pend = E.pending && !E.pending.auto;
       const thumb = (() => { const k = Math.min(1, 160 / Math.max(S.w, S.h)), c = E.newCanvas(Math.max(1, Math.round(S.w * k)), Math.max(1, Math.round(S.h * k))); c.getContext("2d").drawImage(E.flatten(), 0, 0, c.width, c.height); return c; })();
       const it = pend ? E.pending.add({ job: job.id, mode: "generate", prompt: body.prompt, label, target: T ? T.id : null, targetName: T ? T.name : "", info: { box: { x: 0, y: 0, w: S.w, h: S.h } }, base: thumb, n: 1, of: 1 }) : null;
-      say(`▦ regional: ${zs.length} box(es) in one pass at ${sz.width}×${sz.height}…`);
+      say(`▦ regional: ${zs.length} box(es) in one pass at ${sz.width}×${sz.height}${cl.length ? ` - 🎭 ${cl.length} character LoRA${cl.length > 1 ? "s" : ""}` : ""}…`);
       if (pend) E.pending.track();
       try {
         const url = await E.api.awaitResult(job.id, say);

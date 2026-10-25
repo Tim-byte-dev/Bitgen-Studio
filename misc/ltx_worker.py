@@ -55,6 +55,7 @@ import comfy_progress as _CP          # 2.401.3: live step lines from ComfyUI's 
 import ltx_graph as LG
 import basic_apply as _BA             # 2.409.0: Basic Settings' Override style - steps + cfg into the graph
 import swap_graph as SG
+import prompt_relay as _PR          # 2.592.0: ⏱ timed lines in the prompt = Prompt Relay (Nougan_Nodes / Kijai)
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -234,7 +235,7 @@ def _listed(base, ct, key):
     return [str(x) for x in (SG.combo_list(spec) or [])] if spec is not None else []
 
 
-def run_official(job, params, cfg, base, lmode, style, images, tpl, work, output_dir, family="ltx25", vd=None):
+def run_official(job, params, cfg, base, lmode, style, images, tpl, work, output_dir, family="ltx25", vd=None, relay=(None, None)):
     """One clip on Comfy-Org's LTX template. True when done; False hands an LTX 2.5 job to the canvas (this ComfyUI
     lacks a core node / a file the template needs); fail() on anything else (LTX 2.3 always fails in words)."""
     fam = "LTX 2.3" if family == "ltx23" else "LTX 2.5"
@@ -320,6 +321,7 @@ def run_official(job, params, cfg, base, lmode, style, images, tpl, work, output
         say(f"[worker] {n}")
     for n in _BA.apply(graph, params.get("basic")):      # 2.409.0: Override style ON = Basic Settings' steps / cfg
         say(f"[worker] {n}")
+    graph = relay_apply(graph, relay[0], relay[1], params)   # 2.592.0: ⏱ Prompt Relay
     (work / "ltx_queued.json").write_text(json.dumps(graph, indent=1), encoding="utf-8")
     for nid, key, _old, new in _comfy.canonicalise_combos(base, graph):
         say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")
@@ -341,6 +343,49 @@ def run_official(job, params, cfg, base, lmode, style, images, tpl, work, output
     say("@@OUT " + name)
     say("[worker] ltx complete")
     return True
+
+
+def relay_prepare(base, params):
+    """2.592.0: timed lines in the prompt ([0-2s] ...) -> Prompt Relay when ComfyUI has PromptRelayEncode (Settings ▸
+    Add-ons ▸ Nougan Nodes); the prompt the graph gets = the global lines (the node encodes the timed ones), or - without
+    the node - one prompt from all of them. -> the parsed prompt + the node's object_info (None = not installed)."""
+    rel = _PR.parse(params.get("prompt") or "")
+    if not rel:
+        return None, None
+    try:
+        spec = ((_comfy.object_info(base, _PR.NODE) or {}).get(_PR.NODE))
+    except Exception:                                      # noqa: BLE001
+        spec = None
+    if not spec:
+        params["prompt"] = _PR.flat(rel)
+        say(f"[worker] ⏱ {len(rel['segments'])} timed line(s) in the prompt, but this ComfyUI has no Prompt Relay "
+            f"({_PR.NODE} - Settings ▸ Add-ons ▸ Nougan Nodes, then restart ComfyUI): the clip renders them as ONE prompt")
+        return None, None
+    params["prompt"] = rel["global"] or _PR.flat(rel)
+    return rel, spec
+
+
+def relay_apply(graph, rel, spec, params):
+    """2.592.0: wire Prompt Relay into the built graph; on a graph it cannot go into, the one-prompt fallback."""
+    if not rel:
+        return graph
+    try:
+        g2, notes = _PR.splice(graph, rel, params.get("seconds") or 5, params.get("fps") or 24, spec,
+                               params.get("relay_epsilon"))
+        for n in notes:
+            say(f"[worker] {n}")
+        if any(isinstance(v, dict) and v.get("class_type") in LG.OUTPUT_CLASSES for v in g2.values()):
+            LG.prune(g2)                                   # the positive's own encoder is left with no reader
+        return g2
+    except ValueError as e:
+        one = _PR.flat(rel)
+        for n in graph.values():                           # the prompt's words where the graph holds them (an encoder,
+            ins = n.get("inputs") or {}                    # a Primitive the template promoted it to ...)
+            for k in ("text", "value", "prompt"):
+                if isinstance(ins.get(k), str) and ins.get(k) == params.get("prompt"):
+                    ins[k] = one
+        say(f"[worker] ⏱ Prompt Relay could not be wired into this graph ({e}) - the timed lines render as ONE prompt")
+        return graph
 
 
 def main():
@@ -371,6 +416,8 @@ def main():
         _comfy.preflight(base)
     except _comfy.ComfyError as e:
         fail(str(e))
+
+    relay, relay_spec = relay_prepare(base, params)       # 2.592.0: ⏱ timed lines -> Prompt Relay
 
     # 1. uploads
     def up(p, what):
@@ -425,10 +472,10 @@ def main():
         if rp:
             fail("LTX Ripple runs on LTX 2.5 - pick the LTX 2.5 style for the swap")
         run_official(job, params, cfg, base, lmode, style, images, official_template23(job, wf, lmode), work,
-                     output_dir, family, vd)
+                     output_dir, family, vd, relay=(relay, relay_spec))
         return
     tpl = official_template(job, params, wf, lmode, rp)
-    if tpl and run_official(job, params, cfg, base, lmode, style, images, tpl, work, output_dir):
+    if tpl and run_official(job, params, cfg, base, lmode, style, images, tpl, work, output_dir, relay=(relay, relay_spec)):
         return
 
     # 2. the mode's classes, asked one by one
@@ -497,6 +544,7 @@ def main():
         say(f"[worker] {n}")
     for n in _BA.apply(graph, params.get("basic")):      # 2.409.0: Override style ON = Basic Settings' steps / cfg
         say(f"[worker] {n}")
+    graph = relay_apply(graph, relay, relay_spec, params)   # 2.592.0: ⏱ Prompt Relay
     (work / "ltx_queued.json").write_text(json.dumps(graph, indent=1), encoding="utf-8")
     for nid, key, _old, new in _comfy.canonicalise_combos(base, graph):
         say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")
