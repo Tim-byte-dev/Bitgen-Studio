@@ -95,6 +95,8 @@ docker_status.json.tmp
 /usage/
 # 2.521.0: llama.cpp's source (the fine-tunes' GGUF converter)
 /tools/
+# 2.591.2 (Tim: "move push to github to the root folder and it must not be in the repo") - it sits in the app folder
+/push-to-github.bat
 # 2.522.0: the 🐞 bug reports (lib/bugReport.js)
 /bug-reports/
 # 2.540.5: ⟳ Update - copies of the app files you changed (lib/updater.js)

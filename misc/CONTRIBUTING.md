@@ -2,7 +2,7 @@
 
 ## Pushing (maintainer)
 
-`misc\push-to-github.bat` (Windows): double-click it to commit what changed in this folder and push it to `origin` /
+`push-to-github.bat` (Windows; in the app folder beside start.bat - never in the repository itself, it comes with the flat zip): double-click it to commit what changed in this folder and push it to `origin` /
 `main`, or drag a `bitgen-studio-v<version>-repo.zip` onto it to replace the repo files with that release first. It
 never force-pushes and never commits the private release notes.
 

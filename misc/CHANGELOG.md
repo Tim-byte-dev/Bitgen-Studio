@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.591.3** — GitHub Ci: The Crlf Check in a Checkout; .gitattributes (*.bat / *.cmd eol=crlf)
+- **2.591.2** — push-to-github.bat Back in the App Folder, Never in the Repo
 - **2.591.1** — GitHub Ci: Old Root Copies in a Checkout Are Not an Error; push-to-github.bat Tidies Them
 - **2.591.0** — The App Root Keeps start.bat: Everything Else in misc/ (lib/miscMigrate tidies an updated install)
 - **2.590.0** — 📺 Unreal View (Bridge 1.5.0) in the Image Editor + Timeline; Every Image Editor Tab a Docker; 🎨 Artist Mode

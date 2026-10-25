@@ -6081,18 +6081,25 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.591.3: **GitHub's tests are green again.** Git on Windows can store .bat files with Linux line endings, and
+  a new test read them as they were checked out and failed. A .gitattributes file now makes every .bat / .cmd
+  check out with Windows line endings, and inside a git checkout the test checks that rule instead of the bytes.
+- 2.591.2: **push-to-github.bat is back in the app folder** (beside start.bat) and it is **never in the
+  repository**: GitHub does not get a copy (it is ignored and left out of the repo zip). It comes with the flat zip.
+  Dropping the repo zip on it no longer deletes it from the folder. A copy left in misc\ by 2.591.0 / 2.591.1 moves
+  back up by itself the next time bitGen starts.
 - 2.591.1: **GitHub's tests after the misc\ move.** A repository updated by unzipping over it (or by an upload
   that only adds files) still had the old root copies, and GitHub's tests stopped on them. Now those copies are not
-  an error, and **misc\push-to-github.bat** removes them before it commits, so GitHub gets the new layout.
+  an error, and **push-to-github.bat** removes them before it commits, so GitHub gets the new layout.
 - 2.591.0: **A tidy app folder.** The bitGen Studio folder now shows only **start.bat** (plus package.json /
   package-lock.json, which npm needs beside node_modules, and README.md / LICENSE for the GitHub page). Everything else
   that sat beside them - server.js, the Python workers, default.settings, quick_prompts.json, requirements.txt, the
   setup scripts (get-comfy.ps1, get-llama.ps1, get-sd-cli.ps1, get-yue2.ps1, get-qwen3vl.ps1, get-electron.ps1,
-  download-models.ps1), clear-comfy.bat, reset-layout.bat, **push-to-github.bat** and the notes - is in **misc\**.
+  download-models.ps1), clear-comfy.bat, reset-layout.bat and the notes - is in **misc\**.
   - Start as before: double-click **start.bat**.
   - Updating from a zip over the old folder: the old copies left in the folder are tidied away by themselves the first
     time bitGen starts (your own quick prompts are kept - they move into misc\).
-  - push-to-github.bat: run it from misc\ (or drop the repo zip on it there) - it still pushes the whole app folder.
+  - push-to-github.bat: (2.591.2: back in the app folder, beside start.bat, and never in the repo.)
   - The folders and files bitGen makes while it runs (projects, styles, models, custom.settings, the layout files …)
     stay where they were.
 - 2.590.0: **🎨 Artist mode** is the new name of the full-screen canvas (2.588.0's ⬚ focus mode): a labelled

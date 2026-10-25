@@ -10,7 +10,18 @@ const fs = require("fs"), os = require("os"), path = require("path"), { execFile
 const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 600))); } };
-const raw = fs.readFileSync(path.join(ROOT, "misc", "push-to-github.bat"), "utf8");
+// 2.591.2 (Tim: "move push to github to the root folder and it must not be in the repo"): in the app folder, never in
+// the repository - a git checkout (GitHub's CI) has no copy, so there this test only checks it is kept out
+const BAT = path.join(ROOT, "push-to-github.bat");
+const GI = fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8");
+check("2.591.2 never in the repo: .gitignore ignores /push-to-github.bat (and the release leaves it out of the repo zip)", /^\/push-to-github\.bat$/m.test(GI)
+  && (!fs.existsSync(path.join(ROOT, "tools", "bg_release.py")) || /"push-to-github\.bat"\}/.test(fs.readFileSync(path.join(ROOT, "tools", "bg_release.py"), "utf8"))));
+if (!fs.existsSync(BAT)) {
+  console.log("SKIP: push-to-github.bat is not here (a repository checkout - it is never in the repo)");
+  console.log(`\n${pass} passed, ${fail} failed`); console.log(fail ? "RESULT: FAIL" : "RESULT: PASS"); process.exit(fail ? 1 : 0);
+}
+check("2.591.2 in the app folder, not misc\\", !fs.existsSync(path.join(ROOT, "misc", "push-to-github.bat")));
+const raw = fs.readFileSync(BAT, "utf8");
 check("CRLF line ends throughout", /\r\n/.test(raw) && !/[^\r]\n/.test(raw));
 const L = raw.split("\r\n");
 const labels = new Set(L.filter((l) => /^:\w/.test(l)).map((l) => l.slice(1).trim().toLowerCase()));
@@ -25,10 +36,11 @@ for (const l of L) {
   for (const c of body) { if (c === "(") depth++; else if (c === ")") depth = Math.max(0, depth - 1); }
 }
 check("no bare ( ) in a rem / echo inside a ( ) block", bad.length === 0, bad);
-check("a dropped zip: the bat copies itself to TEMP and runs from there (without call), with --from-temp (2.591.0: the folder above misc\\)", /copy \/Y "%~f0" "%TEMP%\\bitgen-push\.bat"/.test(raw) && /^"%TEMP%\\bitgen-push\.bat" "%~f1" --from-temp "%~dp0(\.\.\\)?"\r?$/m.test(raw) && /if \/i "%~2"=="--from-temp" goto :fromtemp/.test(raw));
+check("a dropped zip: the bat copies itself to TEMP and runs from there (without call), with --from-temp (2.591.2: this folder)", /copy \/Y "%~f0" "%TEMP%\\bitgen-push\.bat"/.test(raw) && /^"%TEMP%\\bitgen-push\.bat" "%~f1" --from-temp "%~dp0"\r?$/m.test(raw) && /if \/i "%~2"=="--from-temp" goto :fromtemp/.test(raw));
 check("only tracked files are removed (git rm -r -f), the zip is copied in with robocopy (no purge), nothing deletes the folder", /git rm -r -q -f --ignore-unmatch -- \./.test(raw) && /robocopy "%SRC%" "%REPO%\." \/E /.test(raw) && !/\/MIR|\/PURGE/i.test(raw) && !/rmdir [^\r\n]*%REPO%/i.test(raw) && !/\bdel\b/i.test(raw));
-const drop = ["HANDOVER.md", "HANDOVER-ARCHIVE.md", "CONTINUATION-NOTES-2_137_1.md", "WORKING-VERSIONS.md", "FOLDER-STRUCTURE.md", "unflatten.ps1", "scripts/unflatten.py", "_gitignore", "g_kf.cmd", "t_kf.cmd", "CONTINUE.md", "docs/PHOTOSHOP-GAP.md", "docs/PREMIERE-GAP.md", "docs/AFTER-EFFECTS-GAP.md"];
+const drop = ["HANDOVER.md", "HANDOVER-ARCHIVE.md", "CONTINUATION-NOTES-2_137_1.md", "WORKING-VERSIONS.md", "FOLDER-STRUCTURE.md", "unflatten.ps1", "scripts/unflatten.py", "_gitignore", "g_kf.cmd", "t_kf.cmd", "CONTINUE.md", "docs/PHOTOSHOP-GAP.md", "docs/PREMIERE-GAP.md", "docs/AFTER-EFFECTS-GAP.md", "push-to-github.bat", "misc/push-to-github.bat"];
 const rmLine = L.find((l) => /git rm -r -q --cached --ignore-unmatch/.test(l)) || "";
+check("2.591.2 a dropped zip: the bat is untracked BEFORE the tracked files are removed - it stays on disk, out of the repo", /git rm -q --cached --ignore-unmatch -- push-to-github\.bat >nul\r\ngit rm -r -q -f --ignore-unmatch -- \. >nul/.test(raw));
 check("the private notes are never committed (the release's public drop list)", drop.every((f) => rmLine.includes(" " + f)), rmLine);
 check("never a force push; pushes HEAD to main; brings GitHub's changes in with a rebase (aborted on a clash)", !/--force|push -f\b|\+HEAD/.test(raw) && /git push -u origin HEAD:%BRANCH%/.test(raw) && /git pull -q --rebase origin %BRANCH%/.test(raw) && /git rebase --abort/.test(raw));
 check("the full zip (with the private notes) is refused; asks before replacing and before pushing (+ 2.540.9: before making a non-app folder the repository)", /FOLDER-STRUCTURE\.md" goto :fullzip/.test(raw) && (raw.match(/choice \/C YN/g) || []).length === 3);

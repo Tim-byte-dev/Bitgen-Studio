@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 rem ===========================================================================
-rem  bitGen Studio - push the app folder to GitHub (2.540.6, 2.540.9; 2.591.0: this file is in misc\, it pushes the folder above)
+rem  bitGen Studio - push this folder to GitHub (2.540.6, 2.540.9; 2.591.2: in the app folder, never in the repo itself)
 rem
 rem  DOUBLE-CLICK: commits everything that changed in this folder and pushes
 rem  it to GitHub (origin, branch main).
@@ -23,12 +23,11 @@ title bitGen Studio - push to GitHub
 
 rem -- with a zip: run from a copy in TEMP (the zip step replaces this file too)
 if /i "%~2"=="--from-temp" goto :fromtemp
-rem 2.591.0: this file is in misc\ - the repository is the folder above it
-set "REPO=%~dp0..\"
+set "REPO=%~dp0"
 set "ZIP="
 if "%~1"=="" goto :start
 copy /Y "%~f0" "%TEMP%\bitgen-push.bat" >nul
-"%TEMP%\bitgen-push.bat" "%~f1" --from-temp "%~dp0..\"
+"%TEMP%\bitgen-push.bat" "%~f1" --from-temp "%~dp0"
 exit /b
 
 :fromtemp
@@ -111,6 +110,8 @@ echo  The zip holds bitGen Studio %ZVER%.
 choice /C YN /M " Replace this folder's repo files with it"
 if errorlevel 2 goto :stopped
 rem only the files git tracks are removed - then the zip's are copied in
+rem 2.591.2: this file stays in the folder but out of the repo - untracked first, so the next line leaves it on disk
+git rm -q --cached --ignore-unmatch -- push-to-github.bat >nul
 git rm -r -q -f --ignore-unmatch -- . >nul
 robocopy "%SRC%" "%REPO%." /E /NFL /NDL /NJH /NJS /NP >nul
 if errorlevel 8 goto :copyfail
@@ -125,7 +126,7 @@ rem 2.591.0 moved the app's files into misc\ - an old copy left in the folder by
 if exist "lib\miscMigrate.js" node -e "require('./lib/miscMigrate').run(process.cwd(), {repo: true})"
 git add -A
 rem never in the public repo: the private notes and tools (the same list as the release's repo zip)
-git rm -r -q --cached --ignore-unmatch HANDOVER.md HANDOVER-ARCHIVE.md CONTINUATION-NOTES-2_137_1.md WORKING-VERSIONS.md FOLDER-STRUCTURE.md unflatten.ps1 scripts/unflatten.py _gitignore g_kf.cmd t_kf.cmd CONTINUE.md misc/HANDOVER.md misc/HANDOVER-ARCHIVE.md misc/CONTINUATION-NOTES-2_137_1.md misc/WORKING-VERSIONS.md misc/FOLDER-STRUCTURE.md misc/unflatten.ps1 misc/_gitignore misc/CONTINUE.md docs/PHOTOSHOP-GAP.md docs/PREMIERE-GAP.md docs/AFTER-EFFECTS-GAP.md >nul
+git rm -r -q --cached --ignore-unmatch HANDOVER.md HANDOVER-ARCHIVE.md CONTINUATION-NOTES-2_137_1.md WORKING-VERSIONS.md FOLDER-STRUCTURE.md unflatten.ps1 scripts/unflatten.py _gitignore g_kf.cmd t_kf.cmd CONTINUE.md misc/HANDOVER.md misc/HANDOVER-ARCHIVE.md misc/CONTINUATION-NOTES-2_137_1.md misc/WORKING-VERSIONS.md misc/FOLDER-STRUCTURE.md misc/unflatten.ps1 misc/_gitignore misc/CONTINUE.md misc/push-to-github.bat push-to-github.bat docs/PHOTOSHOP-GAP.md docs/PREMIERE-GAP.md docs/AFTER-EFFECTS-GAP.md >nul
 git diff --cached --quiet
 if not errorlevel 1 goto :nochange
 
