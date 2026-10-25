@@ -295,9 +295,9 @@ async function main() {
   // ================================================================ the catalog vs the workflows
   const C = Models.CATALOG;
   const gids = new Set(C.groups.map((x) => x.id));
-  check("catalog: unique ids, known groups, a repo and a destination each",
+  check("catalog: unique ids, known groups, a repo and a destination each (2.593.0: + comfynodes/ - the ControlNet preprocessors' models in custom_nodes)",
     new Set(C.models.map((m) => m.id)).size === C.models.length
-    && C.models.every((m) => gids.has(m.group) && /^[^/]+\/[^/]+$/.test(m.repo) && /^(comfy\/|app\/|hf-cache$)/.test(m.dest) && (m.file || m.dest === "hf-cache")),
+    && C.models.every((m) => gids.has(m.group) && /^[^/]+\/[^/]+$/.test(m.repo) && /^(comfy\/|comfynodes\/|app\/|hf-cache$)/.test(m.dest) && (m.file || m.dest === "hf-cache")),
     C.models.filter((m) => !gids.has(m.group) || !(m.file || m.dest === "hf-cache")).map((m) => m.id));
   check("catalog: every 'with' partner exists", C.models.filter((m) => m.with).every((m) => ids.has(m.with)));
   // 2.502.0: + FLUX 3 Image Klein (black-forest-labs/flux-3-image-klein-comfy - its three files, all gated)

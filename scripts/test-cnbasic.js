@@ -122,7 +122,7 @@ const TL = require(path.join(ROOT, "lib", "tempLoras"));
     RI.includes('cnet: tempLoras.read(pdir, "cnet") });          // 2.316.0')
     && RI.includes('cnet: tempLoras.read(pdir, "cnet") };   // 2.111.0 (+ 2.316.0 ControlNet)'));
   check("/api/genimage attaches the pass only when the request asks - 2.318.0: with the panel's settings sent inline (always on), or true = the saved record",
-    RI.includes('if (b.controlnet === true || (b.controlnet && typeof b.controlnet === "object")) {')
+    RI.includes('if (featOn("controlnet") && (b.controlnet === true || (b.controlnet && typeof b.controlnet === "object"))) {')   // 2.593.0: + only while the add-on is on
     && RI.includes('? cnBasics.normalize({ ...b.controlnet, v: 2, enabled: true }) : cnBasics.read(pdir);')
     && RI.includes("const cn = cnBasics.jobSpec(rec, tempLoras.read(pdir, \"cnet\"),")
     && RI.includes('styles.read(core.STYLES_DIR, "image"), core.BASE);')

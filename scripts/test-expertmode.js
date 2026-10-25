@@ -53,7 +53,7 @@ const MARKUP = IX.slice(0, IX.indexOf("<script src=\"/static/dockscroll.js\">"))
   check("every help paragraph in the page carries .help (ids = live status lines, left alone)",
     untagged.length === 0, untagged);
   const nHelp = (MARKUP.match(/class="(hint|modehint|dim) help"/g) || []).length;
-  check("…that is the whole inventory (55 in the page: 51 plain + the mode hint + the character drop note + the ControlNet type hint (2.305.0) + the Face fix pack note (2.322.0) + the Swap row note (2.324.0), static help with ids; 2.341.0: + the Model catalog line; 2.405.0: - the GPU allocation tab's note, the tab is gone; 2.432.0: the UI size note moved to Themes + General's pointer to it; 2.518.0: + General's Civitai and Energy cost notes; 2.520.0: + the peak / off-peak note)", nHelp === 60, nHelp);
+  check("…that is the whole inventory (55 in the page: 51 plain + the mode hint + the character drop note + the ControlNet type hint (2.305.0) + the Face fix pack note (2.322.0) + the Swap row note (2.324.0), static help with ids; 2.341.0: + the Model catalog line; 2.405.0: - the GPU allocation tab's note, the tab is gone; 2.432.0: the UI size note moved to Themes + General's pointer to it; 2.518.0: + General's Civitai and Energy cost notes; 2.520.0: + the peak / off-peak note; 2.593.0: + General's Add-ons in the studio note)", nHelp === 61, nHelp);
   const MU = read("ext", "musicdock", "dock.html"), VD = read("ext", "videodock", "dock.html");
   check("the mode hint and the character drop note are help too, ids and all",
     MARKUP.includes('<div class="modehint help" id="modehint">') && MARKUP.includes('<div class="hint help" id="chDropNote"'));

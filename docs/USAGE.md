@@ -1724,11 +1724,11 @@ Set the Generate dropdown to **🖼 Image** and pick an image style (FLUX.2
 Klein, SDXL, Z-Image, Qwen-Image…; manage them in **Settings → Image**).
 In Basic Settings:
 
-- **ControlNet** — renders a first picture, turns it into a control image
+- **ControlNet** (2.593.0: an add-on - switch it on in Settings ▸ General) — renders a first picture, turns it into a control image
   (lineart, depth, pose…) and renders the final with a **second model**
   (e.g. a photoreal SDXL or Klein), with its own prompt, strength and end.
   *Final image only* hides the intermediate pictures.
-- **Face fix** — FaceDetailer re-draws each face of the final picture.
+- **Face fix** (2.593.0: an add-on - switch it on in Settings ▸ General) — FaceDetailer re-draws each face of the final picture.
 - The **Image editor** docker edits pictures with AI; see the next section.
 - **Qwen Image 2.1 reads the reference dock** (2.340.0). With **qwen2_1**
   (up to 10 pictures) or **Qwen Image 2.1 edit** (8), Generate Image sends the
@@ -6081,6 +6081,22 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.593.0: **Face fix and ControlNet are add-ons now.** Switch them on in **Settings ▸ General ▸ Add-ons in the
+  studio** (both start off).
+  - **Off**: Basic Settings hides the Face fix / ControlNet section (ControlNet also hides its Settings tab), Settings ▸
+    Add-ons hides its card, and no render uses it.
+  - **On**: they show again, and bitGen checks everything the add-on needs and downloads whatever is missing into the
+    right ComfyUI folder by itself - right away, and again every time it starts while the add-on is on. Settings ▸
+    Add-ons shows the progress.
+  - **Face fix** needs the ComfyUI-Impact-Pack and ComfyUI-Impact-Subpack node packs and the face detector
+    face_yolov8m.pt (models/ultralytics/bbox).
+  - **ControlNet** needs comfyui_controlnet_aux, its four preprocessors' models (DWPose, PiDiNet, Lineart, Depth
+    Anything V2 - in custom_nodes/comfyui_controlnet_aux/ckpts) and the SDXL ControlNets (xinsir Union ProMax for every
+    type, plus OpenPose, Scribble and Depth - in models/controlnet, about 10 GB). They are for an SDXL / Pony /
+    Illustrious second model.
+  - Each card in **Settings ▸ Add-ons** lists every download link (the GitHub node packs and the Hugging Face files,
+    with the folder each one goes in), so you can also fetch them yourself.
+  - After a node pack is added, restart ComfyUI once.
 - 2.592.0: **🎭 Two characters, each with their own LoRA, in one picture** (from Winnougan's Nougan Nodes - Settings ▸
   Add-ons ▸ **Nougan Nodes** installs it into ComfyUI; restart ComfyUI after). In the image editor's ✨ AI panel ▸ 🔲 Zones
   ▸ **▦ Regional prompt**, every box line has a **🎭** button: pick the character's LoRA from ComfyUI's loras and its

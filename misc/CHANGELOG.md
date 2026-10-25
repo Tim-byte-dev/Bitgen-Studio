@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.593.0** — Face Fix + ControlNet as Add-Ons: Settings ▸ General Switches, the Download Links, What Is Missing Downloads
 - **2.592.1** — The Repo's Install Steps + The Expert Workspace Screenshot (Readme, docs/INSTALL.md)
 - **2.592.0** — Nougan Nodes: 🎭 Regional Character LoRAs in 🔲 Zones + ⏱ Prompt Relay for LTX (Settings ▸ Add-Ons)
 - **2.591.3** — GitHub Ci: The Crlf Check in a Checkout; .gitattributes (*.bat / *.cmd eol=crlf)

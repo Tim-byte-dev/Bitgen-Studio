@@ -5,6 +5,9 @@
  * API: GET /api/addons, POST /api/addons/:id/install|remove, GET /api/addons/job?from=N (routes/addons.js).
  * 2.557.0: an add-on with a list (AI fill models - lib/aiFillAddon.js) shows its items with checkboxes, sizes and ✓
  * downloaded; ⤓ Download ticked sends {items} and 🗑 Remove models deletes the files.
+ * 2.593.0: an add-on with links (Face fix, ControlNet - lib/featureAddons.js) lists every download: the node packs
+ * (GitHub) and each model file (Hugging Face) with the folder it goes in. Those two show only while Settings ▸ General
+ * switches them on (the server leaves them out of the list otherwise).
  * Exports H3Addons {open, refresh, act, state}. */
 (function () {
   "use strict";
@@ -21,7 +24,8 @@
     + "#aoLog{max-height:260px;overflow:auto;font:11px ui-monospace,monospace;background:var(--bg,#151310);border:1px solid var(--line,#3a352e);border-radius:4px;padding:6px;white-space:pre-wrap;margin:6px 0 0}"
     + "#aoLog .e{color:#e88}"
     + "#stab-addons .ao .its{display:grid;gap:3px;margin:6px 0 0;font-size:11.5px}#stab-addons .ao .its label{display:flex;gap:6px;align-items:baseline;cursor:pointer}"
-    + "#stab-addons .ao .its .sz{color:var(--dim,#999)}#stab-addons .ao .its .ok{color:#7fd17f}";
+    + "#stab-addons .ao .its .sz{color:var(--dim,#999)}#stab-addons .ao .its .ok{color:#7fd17f}"
+    + "#stab-addons .ao .lnk{margin:6px 0 0;font-size:11.5px}#stab-addons .ao .lnk summary{cursor:pointer;color:var(--dim,#aaa)}#stab-addons .ao .lnk ul{margin:4px 0 0 16px;padding:0}#stab-addons .ao .lnk li{margin:1px 0}#stab-addons .ao .lnk .to{color:var(--dim,#999);font-family:ui-monospace,monospace;font-size:10.5px}";
   function boot() {
     var dlg = $("settings"), tabs = dlg && dlg.querySelector(".stabs");
     if (!tabs || $("stab-addons")) return;
@@ -88,7 +92,9 @@
         + '<div class="kv"><b>Needs</b> ' + esc(a.needs) + "</div>"
         + '<div class="kv"><b>Size</b> ' + esc(a.size) + "</div>"
         + (a.note ? '<div class="kv"><b>State</b> ' + esc(a.note) + "</div>" : "")
-        + its + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
+        + its + (Array.isArray(a.links) && a.links.length ? '<details class="lnk" data-aolinks="' + esc(a.id) + '"><summary>⤓ Download links (' + a.links.length + ") - downloaded for you while it is on; or get them yourself</summary><ul>"
+          + a.links.map(function (l) { return '<li>' + (l.kind === "pack" ? "📦 " : "🧠 ") + '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + '</a> <span class="to">→ ' + esc(l.dest) + "</span></li>"; }).join("") + "</ul></details>" : "")
+        + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
     }).join("") || "No add-ons.";
     Array.prototype.forEach.call(L.querySelectorAll("[data-aosel]"), function (el) {
       el.onchange = function () { S.picks[el.dataset.aosel] = [el.value]; paint(); };

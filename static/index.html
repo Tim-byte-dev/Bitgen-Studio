@@ -1488,7 +1488,8 @@
           <label class="f" title="An Ultralytics face detector from ComfyUI models/ultralytics (bbox/face_yolov8m.pt by default)">Face detector</label>
           <div id="ffDetCombo"></div><input type="text" id="ffDet" class="hidden">
           <div class="hint help" style="margin-top:4px">Needs ComfyUI-Impact-Pack + ComfyUI-Impact-Subpack and a face detector such as
-            face_yolov8m.pt in models/ultralytics/bbox. Missing pack = the render runs without the fix (the log says so).</div>
+            face_yolov8m.pt in models/ultralytics/bbox - Settings ▸ Add-ons ▸ Face fix downloads them (by itself while Face fix is on in
+            Settings ▸ General). Missing pack = the render runs without the fix (the log says so).</div>
           <div class="hint" id="ffMsg"></div>
         </div>
       </div><!-- /iset -->
@@ -1984,6 +1985,18 @@
       Use bitGen Studio's file dialogs (Windows 11 style, every OS)</label>
     <p class="hint help" style="margin-top:4px">Every explanation paragraph in the docks, Settings
       and dialogs disappears; hovering a control still shows its tooltip. Saved immediately.</p>
+    <!-- 2.593.0 (Tim: "make facefix and controlnet into addons and put the links to dl in addons tab. only show if they
+         are enabled in the general tab. if they are enabled check for all the models and download them into the
+         correct folder if they do not exist"): static/features.js, routes/features.js, lib/featureAddons.js -->
+    <label class="f" style="margin-top:14px">Add-ons in the studio</label>
+    <label class="chk" style="margin-top:4px" title="Basic Settings ▸ Face fix: every face of the final picture re-drawn and pasted back (ComfyUI-Impact-Pack's FaceDetailer)"><input type="checkbox" id="s_feat_facefix">
+      Face fix — re-draw the faces of the final picture</label>
+    <label class="chk" style="margin-top:4px" title="Basic Settings ▸ ControlNet and Settings ▸ ControlNet: a second model renders the final picture from the first one's pose / scribble / lineart / depth"><input type="checkbox" id="s_feat_controlnet">
+      ControlNet — a second model follows the first picture</label>
+    <p class="hint help" style="margin-top:4px">Off = hidden everywhere and never used. On = Basic Settings shows it,
+      Settings ▸ Add-ons lists its download links, and whatever it is missing (node packs, models) downloads into
+      ComfyUI's folders by itself - now, and again at every start while it is on.</p>
+    <div class="hint" id="s_feat_msg"></div>
 
 
     <label class="f" style="margin-top:14px">HuggingFace token</label>
@@ -3251,7 +3264,8 @@
 <script src="/static/body3d.js"></script>  <!-- 2.471.0: parametric 3D bodies - the shared core -->
 <script src="/static/body3docc.js"></script>  <!-- 2.471.0: their OpenCascade engine (the WebAssembly loads on first use) -->
 <script src="/static/settings3d.js"></script>  <!-- 2.471.0: Settings ▸ 3D -->
-<script src="/static/addons.js"></script>  <!-- 2.540.4: Settings ▸ Add-ons (YuE2, Viggle native) -->
+<script src="/static/addons.js"></script>
+<script src="/static/features.js"></script>  <!-- 2.593.0: Settings ▸ General ▸ Face fix / ControlNet on + hidden when off (H3Features) -->  <!-- 2.540.4: Settings ▸ Add-ons (YuE2, Viggle native) -->
 <script src="/static/dockreset.js"></script>  <!-- 2.579.0: Settings ▸ Dockers - every docker + ↺ Reset (H3DockReset) -->
 <script src="/static/updater.js"></script>  <!-- 2.540.5: Settings ▸ General ▸ ⟳ Updates (from GitHub) -->
 <script src="/static/comfyupdate.js"></script>  <!-- 2.573.0: Settings ▸ ComfyUI ▸ ⟳ ComfyUI updates (lib/comfyUpdate.js) -->
@@ -8969,9 +8983,9 @@ async function startImageJob(text) {
   // 2.316.0: Basic Settings -> ControlNet (first image -> control map -> final)
   // 2.318.0: the settings ride WITH the request (a Generate pressed inside
   // the save's 250 ms debounce must still get what the panel shows)
-  if ($("cnUse") && $("cnUse").checked) body.controlnet = cnBasicRead();
+  if ($("cnUse") && $("cnUse").checked && (!window.H3Features || H3Features.on("controlnet"))) body.controlnet = cnBasicRead();   // 2.593.0: an add-on
   // 2.322.0: Face fix on the final picture
-  if ($("ffUse") && $("ffUse").checked) body.face_fix = ffRead();
+  if ($("ffUse") && $("ffUse").checked && (!window.H3Features || H3Features.on("facefix"))) body.face_fix = ffRead();   // 2.593.0: an add-on
   const b = $("goImg");
   b.disabled = true;
   try {

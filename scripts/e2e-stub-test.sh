@@ -9609,6 +9609,20 @@ t = json.load(open(newest, encoding="utf-8"))
 assert "e2e_tmp_img.safetensors" in t.get("_loras", []), t.get("_loras")
 PYEOF
 [ $? = 0 ] && ok "temp loras: the image render's graph carries the temporary LoRA (built LoraLoader)" || bad "temp loras: image LoRA missing from the graph"
+# 2.593.0: Face fix and ControlNet are add-ons (Settings ▸ General) - off, a request that asks for them renders without
+# them; the legs below switch both on (download:false - the gate never fetches the real models) and off again after
+for f in facefix controlnet; do curl -s -X POST http://127.0.0.1:8311/api/features -H 'Content-Type: application/json' -d "{\"id\":\"$f\",\"on\":false}" > /dev/null; done
+OFFJ=$(curl -s -X POST http://127.0.0.1:8311/api/genimage -H 'Content-Type: application/json' \
+  -d "{\"prompt\":\"a barn\",\"style_id\":\"$CSID\",\"controlnet\":{\"type\":\"pose\"},\"face_fix\":{\"denoise\":0.4}}")
+OFFID=$(echo "$OFFJ" | jget "['id']" 2>/dev/null)
+FON=$(for f in facefix controlnet; do curl -s -X POST http://127.0.0.1:8311/api/features -H 'Content-Type: application/json' -d "{\"id\":\"$f\",\"on\":true,\"download\":false}"; done)
+[ -n "$OFFID" ] && curl -sf "http://127.0.0.1:8311/api/jobs/$OFFID" | python3 -c "
+import json,sys; j=json.load(sys.stdin); p=j['params']
+assert 'controlnet' not in p and 'face_fix' not in p, p" \
+  && echo "$FON" | grep -q '"controlnet":true' && curl -sf http://127.0.0.1:8311/api/features | grep -q '"facefix":true' \
+  && ok "add-ons (2.593.0): Face fix + ControlNet off = a render that asks for them runs without them; switched on (no download) from Settings ▸ General" \
+  || bad "add-ons: off not honoured / not switched on: ${OFFJ:0:200} ${FON:0:200}"
+[ -n "$OFFID" ] && curl -s -X POST "http://127.0.0.1:8311/api/jobs/$OFFID/cancel" > /dev/null
 # 2.316.0 (Tim: "add controlnet accordian menuitem to basic settings in left
 # docker ... show the first image generated, the controlnet preprocessor gen
 # and the final generation in the gallery"): the per-project record, the
@@ -9745,6 +9759,7 @@ PYEOF
 curl -s -X POST http://127.0.0.1:8311/api/controlnet/basic -H 'Content-Type: application/json' \
   -d '{"settings":{"v":2,"enabled":false,"final_only":false,"controlnet":"","model":"","model_cat":"","steps":null,"cfg":null,"use_main_prompt":true,"prompt":"","negative":"","strength":1,"end":1}}' > /dev/null
 curl -s -X POST http://127.0.0.1:8311/api/temploras/cnet -H 'Content-Type: application/json' -d '{"loras":[]}' > /dev/null
+for f in facefix controlnet; do curl -s -X POST http://127.0.0.1:8311/api/features -H 'Content-Type: application/json' -d "{\"id\":\"$f\",\"on\":false}" > /dev/null; done   # 2.593.0: back off
 # video: no video style selected -> a synthetic style carries only the LoRAs
 VJ2=$(curl -sf -X POST http://127.0.0.1:8311/api/generate -F prompt="temp lora video" -F width=192 -F height=108 -F steps=0 -F seed=3 \
   -F mode=t2va -F frames=22 -F pipeline=single -F format=webm -F 'extra_loras=[{"path":"e2e_tmp_vid.safetensors","weight":0.8}]' | jget "['id']")
@@ -12471,6 +12486,14 @@ python3 scripts/test-nougan592.py > /tmp/ngpy592.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui592-ui.js > /tmp/ui592.log 2>&1 \
   && ok "2.592.0 browser test: 🎭 on the zones in ▦ Regional, ComfyUI's LoRA list, two LoRAs -> one NouganRegionalCharacterLoRA job through the stub, a third refused; ⏱ with an LTX style adds [0-2s] / [2-4s], the LTX job runs Prompt Relay - or SKIP without playwright" \
   || { bad "2.592.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui592.log | head -14; }
+
+# ---- 2.593.0 (Face fix + ControlNet as add-ons: Settings ▸ General switches, the links, what is missing downloads)
+node scripts/test-features593.js > /tmp/ft593.log 2>&1 \
+  && ok "2.593.0 add-on units (the switches in config.features, the Add-ons cards only while on + their links, status / install of only what is missing into models/ultralytics/bbox, custom_nodes/comfyui_controlnet_aux/ckpts/<repo>, models/controlnet; the automatic check one at a time; the render ignores them while off)" \
+  || { bad "2.593.0 add-on units"; grep -a "^FAIL" -A2 /tmp/ft593.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui593-ui.js > /tmp/ui593.log 2>&1 \
+  && ok "2.593.0 browser test: both off = Basic Settings' Face fix / ControlNet, the ControlNet tab and the cards hidden; Face fix on = its section + card with 3 links; ControlNet on = its section, tab and 11 links; off again hidden - or SKIP without playwright" \
+  || { bad "2.593.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui593.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

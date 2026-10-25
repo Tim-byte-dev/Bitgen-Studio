@@ -44,7 +44,7 @@ check("cnBasics pose_face: OFF by default, a real tick only, carried to the job"
 const RI = read("routes", "index.js"), MD = read("lib", "comfyModels.js");
 check("routes: GET/POST /api/facefix; genimage takes the panel's settings inline (only the prompt's Generate sends them)",
   RI.includes('app.get("/api/facefix"') && RI.includes('app.post("/api/facefix"')
-  && RI.includes('if (b.face_fix && typeof b.face_fix === "object") {')
+  && RI.includes('if (featOn("facefix") && b.face_fix && typeof b.face_fix === "object") {')   // 2.593.0: + only while the add-on is on
   && RI.includes("const ff = faceFix.jobSpec({ ...b.face_fix, enabled: true });")
   && RI.includes("if (ff) p.face_fix = ff;"));
 check("the models scan knows ComfyUI's ultralytics folder + Impact-Subpack's detector combo",

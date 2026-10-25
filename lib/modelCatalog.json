@@ -54,6 +54,10 @@
       "label": "Face fix"
     },
     {
+      "id": "controlnet",
+      "label": "ControlNet (Basic Settings ▸ ControlNet with an SDXL second model - the preprocessors' models + the SDXL ControlNets; Settings ▸ Add-ons ▸ ControlNet)"
+    },
+    {
       "id": "music",
       "label": "Music"
     },
@@ -774,6 +778,110 @@
       "dest": "comfy/ultralytics/bbox",
       "size": 52000000,
       "for": "face fix"
+    },
+    {
+      "id": "cn_ann_dwpose_det",
+      "group": "controlnet",
+      "label": "DWPose body detector (YOLOX-L)",
+      "repo": "yzd-v/DWPose",
+      "file": "yolox_l.onnx",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/yzd-v/DWPose",
+      "size": 216746733,
+      "for": "Pose: finds the people (DWPreprocessor's default detector)"
+    },
+    {
+      "id": "cn_ann_dwpose_pose",
+      "group": "controlnet",
+      "label": "DWPose pose estimator (TorchScript)",
+      "repo": "hr16/DWPose-TorchScript-BatchSize5",
+      "file": "dw-ll_ucoco_384_bs5.torchscript.pt",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/hr16/DWPose-TorchScript-BatchSize5",
+      "size": 135000000,
+      "for": "Pose: the body, hand and face points (DWPreprocessor's default)"
+    },
+    {
+      "id": "cn_ann_pidinet",
+      "group": "controlnet",
+      "label": "PiDiNet scribble preprocessor",
+      "repo": "lllyasviel/Annotators",
+      "file": "table5_pidinet.pth",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/lllyasviel/Annotators",
+      "size": 2900000,
+      "for": "Scribble: the control map"
+    },
+    {
+      "id": "cn_ann_lineart",
+      "group": "controlnet",
+      "label": "Lineart preprocessor",
+      "repo": "lllyasviel/Annotators",
+      "file": "sk_model.pth",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/lllyasviel/Annotators",
+      "size": 17200000,
+      "for": "Lineart: the control map"
+    },
+    {
+      "id": "cn_ann_lineart2",
+      "group": "controlnet",
+      "label": "Lineart preprocessor (coarse)",
+      "repo": "lllyasviel/Annotators",
+      "file": "sk_model2.pth",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/lllyasviel/Annotators",
+      "size": 4400000,
+      "for": "Lineart: the coarse control map"
+    },
+    {
+      "id": "cn_ann_depth",
+      "group": "controlnet",
+      "label": "Depth Anything V2 (Large)",
+      "repo": "depth-anything/Depth-Anything-V2-Large",
+      "file": "depth_anything_v2_vitl.pth",
+      "dest": "comfynodes/comfyui_controlnet_aux/ckpts/depth-anything/Depth-Anything-V2-Large",
+      "size": 1340000000,
+      "for": "Depth: the control map (DepthAnythingV2Preprocessor's default)"
+    },
+    {
+      "id": "cn_sdxl_union",
+      "group": "controlnet",
+      "label": "SDXL ControlNet Union ProMax (xinsir)",
+      "repo": "xinsir/controlnet-union-sdxl-1.0",
+      "file": "diffusion_pytorch_model_promax.safetensors",
+      "as": "xinsir-union-promax-sdxl.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 2510000000,
+      "for": "every type (pose, scribble, lineart, depth) for an SDXL / Pony / Illustrious second model"
+    },
+    {
+      "id": "cn_sdxl_openpose",
+      "group": "controlnet",
+      "label": "SDXL OpenPose ControlNet (xinsir)",
+      "repo": "xinsir/controlnet-openpose-sdxl-1.0",
+      "file": "diffusion_pytorch_model.safetensors",
+      "as": "xinsir-openpose-sdxl.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 2500000000,
+      "for": "Pose with an SDXL second model"
+    },
+    {
+      "id": "cn_sdxl_scribble",
+      "group": "controlnet",
+      "label": "SDXL Scribble ControlNet (xinsir)",
+      "repo": "xinsir/controlnet-scribble-sdxl-1.0",
+      "file": "diffusion_pytorch_model.safetensors",
+      "as": "xinsir-scribble-sdxl.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 2500000000,
+      "for": "Scribble with an SDXL second model"
+    },
+    {
+      "id": "cn_sdxl_depth",
+      "group": "controlnet",
+      "label": "SDXL Depth ControlNet (xinsir)",
+      "repo": "xinsir/controlnet-depth-sdxl-1.0",
+      "file": "diffusion_pytorch_model.safetensors",
+      "as": "xinsir-depth-sdxl.safetensors",
+      "dest": "comfy/controlnet",
+      "size": 2500000000,
+      "for": "Depth with an SDXL second model"
     },
     {
       "id": "music3_dit",

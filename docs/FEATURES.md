@@ -321,7 +321,8 @@ Still pictures from text and references, ControlNet guidance, face fixing and AI
 
 - **ControlNet** — renders a first picture, turns it into a control image (lineart, depth, pose) and renders the final with a second model. *Where:* Basic Settings
 - **ControlNet chain styles** — a two-stage style saved by name. *Where:* Settings > ControlNet. *Since:* 2.97.0
-- **Face fix** — re-draws each face of the final picture. *Where:* Basic Settings
+- **Face fix** — re-draws each face of the final picture; an add-on since 2.593.0 (Settings ▸ General switches it on, its models download by themselves). *Where:* Basic Settings
+- **Add-ons in the studio** — Face fix and ControlNet switched on or off in Settings ▸ General: off = hidden and never used; on = shown, and whatever they miss (node packs, models) downloads into the right ComfyUI folder by itself - also at every start; their Add-ons cards list every download link. *Where:* Settings ▸ General / Settings ▸ Add-ons. *Since:* 2.593.0
 
 ### Pictures onto the image editor
 

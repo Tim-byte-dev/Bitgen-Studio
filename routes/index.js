@@ -208,6 +208,7 @@ function mount(app) {
   require("./comfyUpdate").mount(app);  // 2.573.0: ⤓ Update ComfyUI (lib/comfyUpdate.js)
   require("./mediaMeta").mount(app);    // 2.575.0: a file's prompt / seed / cfg / steps (lib/mediaMeta.js)
   require("./addons").mount(app);       // 2.540.4: Settings ▸ Add-ons - optional engines (YuE2, Viggle native) installed in the app (lib/addons.js)
+  require("./features").mount(app);     // 2.593.0: Settings ▸ General ▸ Face fix / ControlNet on + their downloads (lib/featureAddons.js)
   require("./realRefs").mount(app);     // 2.540.0: Blender / Unreal renders made real with the reference docker's pictures (lib/realRefs.js)
   require("./modelFolders").mount(app); // 2.538.0: model_folders.json - where each model type's downloads go (lib/modelFolders.js)
   require("./testPlan").mount(app);     // 2.518.0: the 🧪 Testing docker's checklist + the log to upload (lib/testPlan.js)
@@ -1845,7 +1846,9 @@ function mount(app) {
        (image_worker.run_controlnet, scripts/cn_stage.py). Only the prompt's
        Generate Image asks for it (b.controlnet) - the character creator and
        the other image callers never pick it up by accident */
-    if (b.controlnet === true || (b.controlnet && typeof b.controlnet === "object")) {
+    // 2.593.0: Face fix and ControlNet are add-ons - only while Settings ▸ General switches them on
+    const featOn = (id) => require("../lib/featureAddons").enabled(id);
+    if (featOn("controlnet") && (b.controlnet === true || (b.controlnet && typeof b.controlnet === "object"))) {
       const pdir = core.projDir(core.getProject());
       // 2.318.0: the panel's settings as sent (always "on" - the client only
       // sends them while Use ControlNet is ticked); `true` = the saved record
@@ -1864,7 +1867,7 @@ function mount(app) {
       if (cn) p.controlnet = cn; }
     /* 2.322.0: Face fix - the panel's settings ride inline (only the prompt's
        Generate Image sends them); FaceDetailer on the FINAL image */
-    if (b.face_fix && typeof b.face_fix === "object") {
+    if (featOn("facefix") && b.face_fix && typeof b.face_fix === "object") {
       const ff = faceFix.jobSpec({ ...b.face_fix, enabled: true });
       if (ff) p.face_fix = ff;
     }
