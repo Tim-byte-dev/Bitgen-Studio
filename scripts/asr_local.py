@@ -42,6 +42,32 @@ def add_cuda_dll_dirs():
     return found
 
 
+def load_audio(path):
+    """The clip as faster-whisper's own input - 16 kHz mono float32 - WITHOUT PyAV (2.600.1).
+
+    faster-whisper decodes a FILE with PyAV: av.open(..., metadata_errors="ignore"). PyAV 19 removed that argument, and
+    faster-whisper (1.2.1, the newest) still passes it, so every transcription in a venv that pulled the newest PyAV
+    died with "open() got an unexpected keyword argument 'metadata_errors'" (Tim, cloning a voice). The app hands this
+    script a 16 kHz mono PCM WAV (lib/asr.js toWav16k), so the standard library reads it; anything else goes through
+    ffmpeg. An ndarray skips PyAV entirely, whatever version is installed."""
+    import numpy as np
+    import wave
+    try:
+        with wave.open(str(path), "rb") as w:
+            if w.getsampwidth() == 2 and w.getframerate() == 16000 and w.getcomptype() == "NONE":
+                a = np.frombuffer(w.readframes(w.getnframes()), dtype="<i2").astype(np.float32) / 32768.0
+                ch = w.getnchannels()
+                return a.reshape(-1, ch).mean(axis=1) if ch > 1 else a
+    except (wave.Error, EOFError, OSError):
+        pass
+    import subprocess
+    r = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
+                       capture_output=True)
+    if r.returncode != 0:
+        raise RuntimeError("could not read the audio: " + (r.stderr.decode("utf-8", "replace").strip().splitlines() or ["ffmpeg failed"])[-1])
+    return np.frombuffer(r.stdout, dtype="<i2").astype(np.float32) / 32768.0
+
+
 CUDA_HINT = (
     "the CUDA libraries CTranslate2 needs are missing. Install them into the "
     "whisper venv with:  pip install nvidia-cublas-cu12 nvidia-cudnn-cu12  "
@@ -80,6 +106,12 @@ def main():
         # a song is not conversation: stop whisper collapsing repeated choruses
         kw.update(temperature=0.0, condition_on_previous_text=False)
 
+    try:
+        audio = load_audio(job["audio"])
+    except Exception as e:                                   # noqa: BLE001
+        print(json.dumps({"error": f"transcription failed: {e}"}))
+        return 1
+
     def attempt(dev, comp):
         """Load, transcribe AND drain the generator on one device.
 
@@ -94,7 +126,7 @@ def main():
         sys.stderr.flush()
         model = WhisperModel(model_name, device=dev, compute_type=comp,
                              download_root=job.get("model_dir") or None)
-        segments, info = model.transcribe(job["audio"], **kw)
+        segments, info = model.transcribe(audio, **kw)   # 2.600.1: an array (load_audio), never PyAV
         rows = []
         total = float(getattr(info, "duration", 0) or 0)
         for seg in segments:

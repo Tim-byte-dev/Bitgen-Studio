@@ -49,7 +49,8 @@ const modelFit = require("../lib/modelFit");   // 2.540.3: a checkpoint override
 const h3Long = require("../lib/h3Long");                 // 2.503.0: MiniMax H3 long single runs (up to 30 s)
 const swapLib = require("../lib/swap");   // 2.328.0: swap styles (mmh3_chr_swap)
 const imageSeed = require("../lib/imageSeed");
-const seedPick = require("../lib/seedPick");      // 2.598.0: Basic Settings' seed / the style's fixed seed / random
+const seedPick = require("../lib/seedPick");
+const socialFormat = require("../lib/socialFormat");   // 2.600.0: Basic Settings ▸ Format ▸ social media      // 2.598.0: Basic Settings' seed / the style's fixed seed / random
 const projects = require("../lib/projects");
 const clipTransform = require("../lib/clipTransform");   // 2.377.0: the timeline canvas's layer transforms
 const keyframes = require("../lib/keyframes");           // 2.379.0: ◆ keyframes + tweens (static/keyframes.js)
@@ -571,6 +572,7 @@ function mount(app) {
           if (wp.error) return res.status(400).json({ error: wp.error });
           if (frameOp) wp.frame_op = Object.assign({}, frameOp.frame_op, { width: wp.width, height: wp.height });   // 2.388.0
           if (bo && bo.model) wp.basic_model = bo.model;      // 2.409.0: wan_worker uses it as it is (pick_models matches by name)
+          Object.assign(wp, socialFormat.forJob(f.format).social ? { social: socialFormat.forJob(f.format).social } : {});   // 2.600.0
           const wjob = core.makeJob(wp, id, dir);
           wjob.chunk = { i: 0, n: 1 };
           const wnote = wan.summary(wp) + (frameOp ? " · " + frameOp.note : "") + (camNotes.length ? " · " + camNotes.join(" · ") : "");
@@ -620,7 +622,7 @@ function mount(app) {
       cfg: Math.max(0.5, Math.min(15, bo && bo.cfg != null ? bo.cfg : styles.numOr(f.cfg, 1))),
       seed: seedPick.pick(bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1), videoStyle, { override: !!bo, max: 2 ** 31 - 1 }),   // 2.598.0: + the style's fixed seed (lib/seedPick.js)
       // 2.102.1: mp4 is the default (webm does not share over Messenger)
-      format: ["mp4", "webm", "avi"].includes(f.format) ? f.format : "mp4",
+      ...socialFormat.forJob(f.format),   // 2.600.0: mp4 | webm | avi, or a social choice (mp4 + social: made ready for the sites when done)
       speed: ["quality", "balanced", "fast", "turbo"].includes(f.speed) ? f.speed : "quality",
       segment_frames: maxChunk,
       pipeline, requested_pipeline: requested, plan,
@@ -1451,7 +1453,7 @@ function mount(app) {
                     : { id: null, name: "(temporary LoRAs)", kind: "video", engine: "comfy", arch: "minimax-h3", workflow: "", workflows: {}, phases: [{}], te: [""], vae: "", loras: extra, negative: "", synthetic: true };
       })(),
       seed: Number.isFinite(parseInt(b.seed, 10)) ? parseInt(b.seed, 10) : -1,
-      format: ["mp4", "webm", "avi"].includes(b.format) ? b.format : "mp4",
+      ...socialFormat.forJob(b.format),   // 2.600.0: + the social choices (lib/socialFormat.js)
       speed: "quality",
       pipeline: "chunked", trim_exact: true,
       segment_frames: GRIDS[grid].ceiling,

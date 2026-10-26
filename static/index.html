@@ -1366,7 +1366,11 @@
           </div>
           <span id="seedLastV" class="dim mono" style="font-size:.62rem"></span></div>
         <div><label class="f">Format</label>
-          <select id="format" title="mp4 (H.264/AAC) plays and shares everywhere — Messenger, WhatsApp, phones. webm is smaller but many apps refuse it."><option value="mp4">mp4</option><option value="webm">webm</option><option value="avi">avi</option></select>
+          <select id="format" title="mp4 (H.264/AAC) plays and shares everywhere — Messenger, WhatsApp, phones. webm is smaller but many apps refuse it."><option value="mp4">mp4</option><option value="webm">webm</option><option value="avi">avi</option>
+            <!-- 2.600.0 (Tim: "please ad the social media video presets to the basic settings dropdown as well for quick
+                 access"): lib/socialFormat.js makes the finished MP4 ready for the sites; static/socialfmt.js sets Aspect -->
+            <optgroup label="📱 Social media (Facebook / Instagram / TikTok)"><option value="social_9x16">mp4 · Reels / Stories 9:16</option><option value="social_4x5">mp4 · Facebook feed 4:5</option><option value="social_1x1">mp4 · Square 1:1</option><option value="social_16x9">mp4 · Landscape 16:9</option><option value="social">mp4 · social, the render's own shape</option></optgroup></select>
+          <div id="formatSocial" class="planline" hidden></div>
         </div>
       </div>
       <!-- 2.409.0: the video model for EVERY video style while Override style is on (blank = the style's own) -->
@@ -3191,7 +3195,7 @@
   <div class="grid3">
     <div><label class="f" title="0 = auto (LoRA count / 20 base)">Steps</label><input type="number" id="mv_steps" min="0" max="50"></div>
     <div><label class="f">Default reference group</label><select id="mv_group"></select></div>
-    <div><label class="f">Format</label><select id="mv_format"><option>mp4</option><option>webm</option><option>avi</option></select></div>
+    <div><label class="f">Format</label><select id="mv_format"><option>mp4</option><option>webm</option><option>avi</option><optgroup label="📱 Social media (Facebook / Instagram / TikTok)"><option value="social_9x16">mp4 · Reels / Stories 9:16</option><option value="social_4x5">mp4 · Facebook feed 4:5</option><option value="social_1x1">mp4 · Square 1:1</option><option value="social_16x9">mp4 · Landscape 16:9</option><option value="social">mp4 · social, the render's own shape</option></optgroup></select></div>
   </div>
   <div class="rowbtns" style="margin-top:8px">
     <button class="ghost" id="mv_build" type="button">↻ Build shot list from the song</button>
@@ -3415,6 +3419,7 @@
 <script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
 <script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
 <script src="/static/seedctl.js"></script>  <!-- 2.598.0: the seed's 🎲 Random / 📌 Fixed toggle - Basic Settings + the style editors (H3Seed) -->
+<script src="/static/socialfmt.js"></script>  <!-- 2.600.0: Basic Settings ▸ Format ▸ social media - Aspect follows, the line under it says what happens (H3SocialFmt) -->
 <!-- ext:scripts -->
 
 <script>
@@ -5560,6 +5565,7 @@ async function submitLtx(text) {
   if ($("ltx3dSel")) fd.append("ic_lora", $("ltx3dSel").value);                     // 2.402.0: 3DREAL variant ("" = auto)
   fd.append("seconds", String(Math.max(1, Math.min(30, Math.round(parseFloat($("seconds").value || 5))))));
   for (const k of ["width", "height", "seed"]) fd.append(k, $(k).value);
+  fd.append("format", $("format").value);   // 2.600.0: a social media Format makes the LTX clip ready for the sites too
   // 2.409.0: Override style ON -> Basic Settings' steps / cfg / seed / model / LoRAs for LTX 2.3 / 2.5 too
   if (window.H3Basic) fd.append("basic", H3Basic.json());
   fd.append("video_style_id", $("videoStyleSel").value);

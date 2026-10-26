@@ -6,6 +6,11 @@ feature does and the version it arrived in; [docs/USAGE.md](../docs/USAGE.md) ha
 Made by `python3 scripts/make_changelog.py` from the release notes.
 
 
+## 2.600–2.699
+
+- **2.600.1** — Transcription Without Pyav ("open() got an unexpected keyword argument 'metadata_errors'")
+- **2.600.0** — Basic Settings ▸ Format ▸ 📱 Social Media (the Finished MP4 Made Ready for the Sites)
+
 ## 2.500–2.599
 
 - **2.599.0** — The "Resetting Project..." Lock Screen

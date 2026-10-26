@@ -15,7 +15,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from asr_local import add_cuda_dll_dirs, CUDA_HINT  # noqa: E402
+from asr_local import add_cuda_dll_dirs, CUDA_HINT, load_audio  # noqa: E402  (2.600.1: load_audio - no PyAV)
 
 
 def say(obj):
@@ -53,7 +53,7 @@ def main():
         return m
 
     def run(m, audio, lang):
-        segs, info = m.transcribe(audio, language=lang, vad_filter=True, beam_size=1,
+        segs, info = m.transcribe(load_audio(audio), language=lang, vad_filter=True, beam_size=1,
                                   condition_on_previous_text=False, word_timestamps=False)
         text = " ".join(str(s.text).strip() for s in segs).strip()       # drained here: a GPU failure surfaces now
         return text, getattr(info, "language", None) or lang or ""

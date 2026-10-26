@@ -4827,7 +4827,9 @@ def main() -> None:
             # These wheels ship those DLLs; scripts/asr_local.py then adds
             # site-packages/nvidia/*/bin to the search path. Skipped for a CPU
             # device, where they are ~600 MB of dead weight.
-            pkgs = ["faster-whisper"]
+            # 2.600.1: PyAV 19 dropped av.open(metadata_errors=...), which faster-whisper (1.2.1) still passes - the
+            # scripts read the audio themselves now (asr_local.load_audio), and the venv keeps a PyAV that has it
+            pkgs = ["faster-whisper", "av<19"]
             if not str(params.get("device") or "").startswith("cpu"):
                 pkgs += ["nvidia-cublas-cu12", "nvidia-cudnn-cu12"]
         elif which == "omnivoice":

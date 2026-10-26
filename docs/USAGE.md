@@ -6081,6 +6081,21 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.600.1: **Fixed: "transcription failed: open() got an unexpected keyword argument 'metadata_errors'"** - when a
+  voice clone's transcript (or any faster-whisper transcription) was made. A new version of PyAV (the video / audio
+  reader faster-whisper uses) dropped an option faster-whisper still passes. bitGen now reads the audio itself and hands
+  faster-whisper the sound directly, so it works whichever PyAV is installed - nothing to reinstall. A new install of
+  faster-whisper also keeps a PyAV that still has the option.
+- 2.600.0: **📱 Social media in Basic Settings ▸ Format** - for quick access, without the timeline's Export. The
+  Format dropdown has a **📱 Social media** group: **Reels / Stories 9:16**, **Facebook feed 4:5**, **Square 1:1**,
+  **Landscape 16:9** and **the render's own shape**.
+  - Picking one sets **Aspect** to match, so the model renders that shape (the feed's 4:5 renders 3:4 and is cut to
+    4:5). The line under Format says what will happen.
+  - When the render finishes, and before it lands in the gallery and assets, the MP4 is made ready for the sites with
+    the same settings as **📤 Export ▸ MP4 · Social media**: H.264, AAC sound at 48 kHz stereo (a silent track if it
+    has none), a steady frame rate, faststart, at most 1080 on the short side. The job's log says "ready for Facebook /
+    Instagram / TikTok", or what is wrong. If it cannot be converted, the plain MP4 is kept and the log says why.
+  - Works for MiniMax H3, Wan and LTX renders and the music video.
 - 2.599.0: **↺ Reset project shows a lock screen.** After you confirm, a cover over the whole window says
   **"Resetting Project..."** - a spinning ring, the dots running, the step it is on (stopping jobs, deleting and
   creating the folder again, reopening) and the seconds. Nothing behind it can be clicked or typed into. It stays

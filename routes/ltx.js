@@ -90,6 +90,7 @@ function mount(app) {
       if (ltxMode === "v2v" && cam.depth) p.raw_guide = true;
       p.camera_notes = cam.notes;
     }
+    { const sf = require("../lib/socialFormat").forJob(b.format); if (sf.social) p.social = sf.social; }   // 2.600.0: Format ▸ social media
     const job = core.makeJob(p, id, dir);
     for (const n of (cam && cam.notes) || []) try { job.log.push("[camera] " + n); } catch { /* fine */ }
     if (bo) try { job.log.push("[bitgen-studio] " + basicOverride.note(bo, "LTX")); } catch { /* fine */ }

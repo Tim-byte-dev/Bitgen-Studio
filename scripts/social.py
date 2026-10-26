@@ -161,3 +161,66 @@ def verdict(pr, size, faststart, aspect="source"):
 def check(path, aspect="source"):
     p = Path(path)
     return verdict(probe(p), p.stat().st_size if p.exists() else 0, atoms_faststart(p), aspect)
+
+
+# ---------------------------------------------------------------- 2.600.0: one file made social-ready (Basic Settings' Format)
+def even(v):
+    return max(2, int(round(v / 2.0)) * 2)
+
+
+def target(w, h, aspect="source", short_max=1080):
+    """the frame for a render of w x h: the biggest frame of the aspect asked for (or its own) INSIDE the render (a crop,
+    never an upscale), then the short side at most 1080"""
+    ar = (lambda p: float(p[0]) / float(p[1]))(aspect.split(":")) if aspect and aspect != "source" else w / float(h or 1)
+    if ar >= w / float(h or 1):
+        tw, th = float(w), w / ar
+    else:
+        tw, th = h * ar, float(h)
+    k = min(1.0, short_max / min(tw, th))
+    return even(tw * k), even(th * k)
+
+
+def vchain(w, h, tw, th, fit="crop"):
+    """scale + crop (fill the frame - the middle kept) or a blurred copy behind (nothing cut)"""
+    if (tw, th) == (w, h):
+        return "[0:v]setsar=1"
+    if fit == "blur":
+        return (f"[0:v]split=2[bg0][fg0];[bg0]scale={tw}:{th}:force_original_aspect_ratio=increase,crop={tw}:{th},boxblur=20:2[bg];"
+                f"[fg0]scale={tw}:{th}:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1")
+    return f"[0:v]scale={tw}:{th}:force_original_aspect_ratio=increase,crop={tw}:{th},setsar=1"
+
+
+def _info(src):
+    pr = probe(src)
+    v = next((x for x in pr.get("streams") or [] if x.get("codec_type") == "video"), {})
+    a = any(x.get("codec_type") == "audio" for x in pr.get("streams") or [])
+    return int(v.get("width") or 0), int(v.get("height") or 0), _rate(v.get("r_frame_rate")) or 30.0, a
+
+
+def convert(src, dst, aspect="source", fit="crop", q=1):
+    """src -> dst, social-ready (args above); -> {ok, w, h, check} | {error}"""
+    w, h, fps, has_a = _info(src)
+    if not w or not h:
+        return {"error": "no video in " + Path(src).name}
+    tw, th = target(w, h, aspect)
+    f = fps_for("source", fps)
+    ins = ["-i", str(src)] + ([] if has_a else ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"])
+    cmd = (["ffmpeg", "-y", "-loglevel", "error"] + ins + ["-filter_complex", vchain(w, h, tw, th, fit) + "[v]", "-map", "[v]"]
+           + args(tw, th, f, q, has_a, fps_mode_flag()) + [str(dst)])
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0 or not Path(dst).exists():
+        return {"error": "ffmpeg: " + ((r.stderr or "").strip().splitlines() or ["failed"])[-1][:300]}
+    ck = check(dst, aspect)
+    return {"ok": True, "w": tw, "h": th, "fps": f, "from": [w, h], "check": {"ok": ck["ok"], "summary": ck["summary"], "notes": ck["notes"]}}
+
+
+if __name__ == "__main__":
+    import sys
+    a = sys.argv[1:]
+    if len(a) >= 3 and a[0] == "--convert":
+        asp = a[a.index("--aspect") + 1] if "--aspect" in a else "source"
+        fit_ = a[a.index("--fit") + 1] if "--fit" in a else "crop"
+        print(json.dumps(convert(a[1], a[2], asp, fit_)))
+        sys.exit(0)
+    print(json.dumps({"error": "usage: social.py --convert <src> <dst> [--aspect 9:16|4:5|1:1|16:9|source] [--fit crop|blur]"}))
+    sys.exit(2)

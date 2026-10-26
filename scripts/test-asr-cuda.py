@@ -53,11 +53,21 @@ def check(name, cond, got=""):
         fails += 1
         print(f"FAIL: {name}\n      got {got}")
 
+def make_wav(td):
+    """2.600.1: asr_local.py reads the clip itself (load_audio - no PyAV), so the job points at a REAL wav: 1 s of
+    16 kHz mono silence written with the standard library"""
+    import wave
+    p = Path(td) / "x.wav"
+    with wave.open(str(p), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(16000); w.writeframes(b"\0\0" * 16000)
+    return str(p)
+
+
 def run_case(fail_at):
     with tempfile.TemporaryDirectory() as td:
         (Path(td) / "faster_whisper.py").write_text(FAKE % fail_at)
         job = Path(td) / "job.json"
-        job.write_text(json.dumps({"audio": "x.wav", "model": "base",
+        job.write_text(json.dumps({"audio": make_wav(td), "model": "base",
                                    "device": "auto", "mode": "speech"}))
         env = dict(os.environ, PYTHONPATH=td)
         r = subprocess.run([sys.executable, str(ROOT / "scripts" / "asr_local.py"), str(job)],
@@ -86,7 +96,7 @@ check("the log names the missing CUDA libraries and how to fix them",
 with tempfile.TemporaryDirectory() as td:
     (Path(td) / "faster_whisper.py").write_text(FAKE % "load")
     job = Path(td) / "job.json"
-    job.write_text(json.dumps({"audio": "x.wav", "model": "base",
+    job.write_text(json.dumps({"audio": make_wav(td), "model": "base",
                                "device": "cpu", "mode": "speech"}))
     env = dict(os.environ, PYTHONPATH=td)
     r2 = subprocess.run([sys.executable, str(ROOT / "scripts" / "asr_local.py"), str(job)],

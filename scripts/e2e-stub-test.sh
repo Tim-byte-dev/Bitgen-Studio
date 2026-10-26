@@ -12550,6 +12550,25 @@ node scripts/test-lock599.js > /tmp/lk599.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui599-ui.js > /tmp/ui599.log 2>&1 \
   && ok "2.599.0 browser test: ↺ Reset on a throwaway project - the cover at once (whole window, on top, animated dots, nothing reachable), through the reset and the reload, ✓ Project reset when the project is back, then gone; a refused reset takes it down - or SKIP without playwright" \
   || { bad "2.599.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui599.log | head -14; }
+# ---- 2.600.0 (Basic Settings ▸ Format ▸ 📱 social media - the finished MP4 made ready for the sites)
+node scripts/test-socialfmt600.js > /tmp/sf600.log 2>&1 \
+  && ok "2.600.0 social Format units (forJob, a REAL in-place conversion: 9:16 cut, H.264 High, AAC 48 kHz stereo from silence, faststart; a broken file kept; core converts before filing; the routes; the page)" \
+  || { bad "2.600.0 social Format units"; grep -a "^FAIL" -A2 /tmp/sf600.log | head -14; }
+SF600=$(curl -sf -X POST http://127.0.0.1:8311/api/generate -F prompt="e2e social format" -F width=384 -F height=216 -F steps=4 -F seed=31 -F mode=t2va -F frames=48 -F pipeline=single -F format=social_9x16 | jget "['id']" 2>/dev/null)
+for i in $(seq 1 180); do SFST=$(curl -sf "http://127.0.0.1:8311/api/jobs/$SF600" | jget "['status']" 2>/dev/null); [ "$SFST" = done ] || [ "$SFST" = failed ] && break; sleep 1; done
+SFJ=$(curl -sf "http://127.0.0.1:8311/api/jobs/$SF600?log_from=0")
+SFOUT="$(curl -sf http://127.0.0.1:8311/api/outputs/where | jget "['dir']")/$(echo "$SFJ" | jget "['output']")"
+[ "$SFST" = done ] && ffprobe -v error -show_entries stream=codec_name,profile,width,height,sample_rate,channels -of csv=p=0 "$SFOUT" | tr '\n' ' ' | grep -q "h264,High,122,216 aac,LC,48000,2" \
+  && echo "$SFJ" | grep -q "ready for Facebook / Instagram / TikTok" \
+  && ok "2.600.0 LIVE: a render with Format = Reels / Stories 9:16 comes out 122x216 H.264 High + AAC 48 kHz stereo (cut from the 384x216 render, converted before it is filed), the log says ready" \
+  || { bad "2.600.0 LIVE social Format: $SFST"; ffprobe -v error -show_entries stream=codec_name,profile,width,height,sample_rate,channels -of csv=p=0 "$SFOUT"; echo "$SFJ" | jget "['log']" | tail -4; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui600-ui.js > /tmp/ui600.log 2>&1 \
+  && ok "2.600.0 browser test: Basic Settings ▸ Format's 📱 Social media group - 9:16 / 4:5 set Aspect, own shape leaves it, the line says what happens, Generate sends the choice - or SKIP without playwright" \
+  || { bad "2.600.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui600.log | head -14; }
+# ---- 2.600.1 (transcription without PyAV - "open() got an unexpected keyword argument 'metadata_errors'")
+python3 scripts/test-asrav601.py > /tmp/av601.log 2>&1 \
+  && ok "2.600.1 transcription without PyAV (load_audio: WAV by the standard library, anything else by ffmpeg; asr_local / asr_live hand faster-whisper an array; the installer pins av<19)" \
+  || { bad "2.600.1 transcription without PyAV"; grep -a "^FAIL" -A2 /tmp/av601.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
