@@ -29,12 +29,13 @@ import subprocess
 from pathlib import Path
 
 import hdr as _hdr                    # 2.417.0: HDR10 / HLG / Rec.2020 deliverables (scripts/hdr.py)
+import social as _social              # 2.597.0: MP4 · Social media - what Facebook / Instagram / TikTok take (scripts/social.py)
 
 PRESETS = {p["id"]: p for p in json.loads((Path(__file__).resolve().parent.parent / "lib" / "exportPresets.json")
                                           .read_text(encoding="utf-8"))["presets"]}
 CRF = {"h264": (16, 20, 26), "h265": (18, 23, 28), "webm": (24, 32, 40), "av1": (24, 32, 40), "h265_10": (18, 23, 28), "h264_10": (16, 20, 26)}
 ENC = {"h264": "libx264", "h265": "libx265", "h265_10": "libx265", "av1": "libsvtav1", "prores": "prores_ks", "dnxhr": "dnxhd", "webm": "libvpx-vp9", "gif": "gif",
-       "wav": "pcm_s24le", "mp3": "libmp3lame", "h264_10": "libx264", "prores4444": "prores_ks"}
+       "wav": "pcm_s24le", "mp3": "libmp3lame", "h264_10": "libx264", "prores4444": "prores_ks", "social": "libx264"}
 # the presets that carry a start timecode (MP4 / MOV)
 TC_PRESETS = ("h264", "h265", "h265_10", "h264_10", "av1", "prores", "prores4444", "dnxhr")
 JOB = None          # 2.412.0: worker.py sets the export job's file here - the ProRes 4444 alpha passes re-run it
@@ -177,6 +178,12 @@ def args_for(d, info, tc, enc=None, alpha=False):
     q = {"high": 0, "standard": 1, "small": 2}.get(d.get("quality") or "standard", 1)
     a = []
     p = PRESETS[pid]
+    if pid == "social":                                                    # 2.597.0: scripts/social.py's settings
+        d = social_deliverable(d, info)
+        fps = _social.fps_for(d.get("fps"), info.get("fps"))
+        chain, tw, th = vfilter(dict(d, fps="source"), info)
+        return (["-filter_complex", chain + "[v]", "-map", "[v]"]
+                + _social.args(tw, th, fps, q, info["audio"], _social.fps_mode_flag())), (tw, th)
     if p["video"]:
         chain, tw, th = vfilter(d, info)
         if pid == "prores4444" and alpha:                       # 2.412.0: the difference matte (black vs white pass)
@@ -240,6 +247,13 @@ def args_for(d, info, tc, enc=None, alpha=False):
     a += ["-vn", "-map", "0:a"]
     a += ["-c:a", "pcm_s24le", "-ar", "48000"] if pid == "wav" else ["-c:a", "libmp3lame", "-b:a", "320k"]
     return a, None
+
+
+def social_deliverable(d, info):
+    """2.597.0: the social preset keeps the short side at 1080 at most ("source size" on a 4K master = 1080)"""
+    size = d.get("size") or "source"
+    short = min(info["w"], info["h"]) if size == "source" else int(size)
+    return dict(d, size="1080") if short > 1080 else d
 
 
 def out_path(final, d, rng=None):
@@ -437,6 +451,8 @@ def finish(final, tl, say, run):
             + (f" ({d.get('aspect')} {d.get('fit')})" if (d.get("aspect") or "source") != "source" else "") + f" -> {out.name}")
         cut = ["-ss", f"{rng[0]:.4f}", "-t", f"{rng[1] - rng[0]:.4f}"] if rng else []      # 2.410.0: In / Out only
         ins = (cut[:2] + ["-i", str(passes[0])] + cut[:2] + ["-i", str(passes[1])]) if alpha else (cut[:2] + ["-i", str(final)])
+        if d["preset"] == "social" and not info["audio"]:                  # 2.597.0: a silent track for a movie with no sound
+            ins += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]
         if alpha:
             say(f"[worker] export {i}/{len(dl)} {p['label']}: the alpha from the black / white passes (see-through where nothing is drawn)")
         rc = run(["ffmpeg", "-y", "-loglevel", "error"] + pre_for(enc) + ins + cut[2:] + a + [str(out)], echo_cmd=False)
@@ -444,6 +460,14 @@ def finish(final, tl, say, run):
             say(f"[worker] export {i}/{len(dl)} {p['label']}: ffmpeg failed - skipped")
             continue
         made.append(out.name)
+        if d["preset"] == "social":                                        # 2.597.0: what the sites look at, checked
+            try:
+                ck = _social.check(out, d.get("aspect") or "source")
+                say(f"[worker] export {i}/{len(dl)} social check: {ck['summary']} - " + "; ".join(("ok " if x else "NO ") + t for x, t in ck["lines"]))
+                for n_ in ck["notes"]:
+                    say(f"[worker] export {i}/{len(dl)} note: {n_}")
+            except Exception as e:  # noqa: BLE001 - the file is made; the check is advice
+                say(f"[worker] export {i}/{len(dl)} social check could not run: {e}")
         if srt.exists() and p["video"] and d["preset"] != "gif":
             txt = srt.read_text(encoding="utf-8")
             out.with_suffix(".srt").write_text(srt_cut(txt, rng[0], rng[1]) if rng else txt, encoding="utf-8")

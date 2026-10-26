@@ -1,7 +1,9 @@
 # Downloads a llama.cpp Windows CUDA build (llama-server.exe) into
 # <app>\llama-cpp\ — used by bitGen Studio's ✨ Enhance and the prompt chat.
 #
-#   powershell -ExecutionPolicy Bypass -File get-llama.ps1 [-Cuda 13|12] [-Tag b10456]
+#   powershell -ExecutionPolicy Bypass -File get-llama.ps1 [-Cuda 13|12] [-Tag b10456] [-Dest <engine folder>]
+#
+# 2.596.0: -Dest = the engine folder Settings > LLM points at (Update llama.cpp there); default <app>\llama-cpp.
 #
 # 2.104.1: GitHub's /releases/latest for ggml-org/llama.cpp now points at the
 # semver tag (v0.3.0, v0.2.x …), which is a RELEASE-NOTES tag with no binaries.
@@ -14,12 +16,13 @@
 
 param(
     [ValidateSet("13", "12")] [string] $Cuda = "13",
-    [string] $Tag = ""
+    [string] $Tag = "",
+    [string] $Dest = ""
 )
 
 $ErrorActionPreference = "Stop"
 $AppRoot = Split-Path -Parent $PSScriptRoot   # 2.591.0: this script is in misc\ - the app folder is its parent
-$dest = Join-Path $AppRoot "llama-cpp"
+$dest = if ($Dest) { $Dest } else { Join-Path $AppRoot "llama-cpp" }
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 $hdr = @{ "User-Agent" = "bitgen-studio" }
 

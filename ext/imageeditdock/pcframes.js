@@ -371,6 +371,8 @@
       else if (F && hasKids(F)) items.push("frame.edit", "frame.extract", "frame.lock");
       else items.push("frame.place");
       items.push(sep, "layer.dup", "layer.del");
+      const more = E.ui.stageCtxItems || [];                       // 2.594.0: modules' items (static/mesh3dctx.js: 🧊 Convert to 3D)
+      if (more.length) items.push(sep, ...more);
       const kr = (kx || E.stage).getBoundingClientRect();
       E.ui.menuAt(items, e.clientX - kr.left, e.clientY - kr.top, 0);
     });

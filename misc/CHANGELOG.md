@@ -8,6 +8,10 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.500–2.599
 
+- **2.597.0** — 📤 Export ▸ MP4 · Social Media (Facebook / Instagram / Tiktok), Checked After
+- **2.596.0** — Settings ▸ LLM ▸ ⟳ Update Llama.cpp + Buttons That Show What They Are Doing
+- **2.595.0** — Settings ▸ Add-Ons ▸ Wevisone-Vl into the User's Vision Folder
+- **2.594.0** — 🧊 Convert to 3D by Right-Click (-> Image Editor / Solidcraft) + Ming-3.0 TTS + Bark 3.0 STT
 - **2.593.0** — Face Fix + ControlNet as Add-Ons: Settings ▸ General Switches, the Download Links, What Is Missing Downloads
 - **2.592.1** — The Repo's Install Steps + The Expert Workspace Screenshot (Readme, docs/INSTALL.md)
 - **2.592.0** — Nougan Nodes: 🎭 Regional Character LoRAs in 🔲 Zones + ⏱ Prompt Relay for LTX (Settings ▸ Add-Ons)

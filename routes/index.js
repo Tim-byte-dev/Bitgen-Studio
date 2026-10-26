@@ -208,6 +208,8 @@ function mount(app) {
   require("./comfyUpdate").mount(app);  // 2.573.0: ⤓ Update ComfyUI (lib/comfyUpdate.js)
   require("./mediaMeta").mount(app);    // 2.575.0: a file's prompt / seed / cfg / steps (lib/mediaMeta.js)
   require("./addons").mount(app);       // 2.540.4: Settings ▸ Add-ons - optional engines (YuE2, Viggle native) installed in the app (lib/addons.js)
+  require("./llamaEngine").mount(app);  // 2.596.0: Settings ▸ LLM ▸ llama.cpp version, Install / ⟳ Update with progress (lib/llamaEngine.js)
+  require("./to3d").mount(app);         // 2.594.0: 🧊 Convert to 3D a picture the page sends (reference dock, image editor) - lib/to3d.js
   require("./features").mount(app);     // 2.593.0: Settings ▸ General ▸ Face fix / ControlNet on + their downloads (lib/featureAddons.js)
   require("./realRefs").mount(app);     // 2.540.0: Blender / Unreal renders made real with the reference docker's pictures (lib/realRefs.js)
   require("./modelFolders").mount(app); // 2.538.0: model_folders.json - where each model type's downloads go (lib/modelFolders.js)

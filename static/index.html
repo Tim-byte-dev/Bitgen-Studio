@@ -2398,7 +2398,7 @@
        pane is gone; config.gpu stays as it was (the sd-cli engine still reads it) and is sent back unchanged on Save -->
 
   <div class="stab" id="stab-llm">
-    <p class="hint help">The ✨ Enhance LLM. Install the engine once with <code>misc\get-llama.ps1</code> (downloads llama-server, CUDA build, into <code>llama-cpp\</code>), drop .gguf models into the LLM folder, then pick one in the dropdown under the prompt. bitGen Studio starts and switches llama-server for you. Leave the external endpoint empty unless you run your own server (e.g. LM Studio or bitGen).</p>
+    <p class="hint help">The ✨ Enhance LLM. Install the engine once with <b>⬇ Install engine</b> below (llama-server, the CUDA build, into the engine folder) and keep it current with <b>⟳ Update llama.cpp</b> (new models such as Qwen3.8, Gemma 4 or WeVisOne-VL need a recent one), drop .gguf models into the LLM folder, then pick one in the dropdown under the prompt. bitGen Studio starts and switches llama-server for you. Leave the external endpoint empty unless you run your own server (e.g. LM Studio or bitGen).</p>
     <div class="grid2">
       <div><label class="f">LLM folder (.gguf models)</label><input type="text" id="s_llmdir"></div>
       <!-- 2.233.3 (Tim verbatim: "add another input (folder picker) in
@@ -2450,10 +2450,16 @@
     </div>
     <div class="rowbtns" style="margin-top:6px">
       <button class="ghost" id="s_llminstall" style="border-color:var(--tiger);color:var(--tiger)">⬇ Install engine (llama.cpp)</button>
+      <!-- 2.596.0 (Tim: "add update llama in llm tab in settings. when updating, loading saving, onlclick show the action is
+           being done"): static/llmtab.js (routes/llamaEngine.js, lib/llamaEngine.js); every button here shows what it is
+           doing while it does it (static/busy.js) -->
+      <button class="ghost" id="s_llmupdate" type="button" title="Stops the LLM and vision servers, then puts the newest llama.cpp build over the engine folder - your models and settings stay">⟳ Update llama.cpp</button>
       <button class="ghost" id="s_llmstart" type="button"
         style="border-color:var(--ok);color:var(--ok)">▶ Start server</button>
       <button class="ghost" id="s_llmstop" type="button">■ Stop server</button>
     </div>
+    <div id="s_llmengver" class="hint" style="margin-top:6px">llama.cpp: not checked yet</div>
+    <pre id="s_llmenglog" class="hint" style="display:none;margin:4px 0 0;max-height:120px;overflow:auto;white-space:pre-wrap;font-size:11px"></pre>
     <div id="s_llmstatus2" class="hint" style="margin-top:6px">server not running</div>
     <div id="s_llmstatus" class="hint" style="margin-top:8px"></div>
   </div>
@@ -2465,8 +2471,9 @@
       <!-- 2.264.0 (by instruction): OmniVoice IS the speech engine — the
            openaudio option and its whole panel are gone. -->
       <div style="grid-column:1/3"><label class="f">Speech engine (used by the chat 🗣, the Speech dock and Test voice)</label>
-        <select id="s_ttsengine" disabled title="OmniVoice speaks — it clones from a reference clip + transcript and can DESIGN a voice from a description">
+        <select id="s_ttsengine" title="OmniVoice clones from a reference clip + transcript and can DESIGN a voice from a description; 2.594.0: or Ming-3.0 TTS (an add-on)">
           <option value="omnivoice" selected>OmniVoice (k2-fsa) — fast, 600+ languages, cloning + voice design</option>
+          <option value="ming">Ming-3.0 TTS (inclusionAI) — 44.1 kHz, cloning + voice design (add-on)</option>
         </select></div>
       <div><span id="s_ttsenginehint" class="hint"></span></div>
     </div>
@@ -2499,6 +2506,20 @@
       <div class="hint help" style="margin-top:4px">Its own venv (it pins torch 2.8+). The weights (~few GB) download from
         Hugging Face on the first speak. Reference clips of <b>3–10 s</b> clone best here — longer degrades it.
         A cloned voice is encoded once and cached beside the voice as <code>.omnivoice.pt</code>.</div>
+    </div>
+    <!-- 2.594.0 (Tim: "can you add https://nomorecoding.github.io/Ming-3.0-tts/ as an option for tts"): static/speechengines.js -->
+    <div id="s_ming" style="border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:10px;display:none">
+      <div class="grid3" style="align-items:end">
+        <div><label class="f">Ming language</label>
+          <select id="s_minglang" title="Ming-3.0 TTS's --language_id"><option value="English">English</option><option value="Chinese">Chinese</option><option value="">(let it decide)</option></select></div>
+        <div style="grid-column:2/4" class="rowbtns">
+          <button class="ghost" id="s_minginstall" type="button" style="border-color:var(--tiger);color:var(--tiger)">Install Ming-3.0 TTS…</button>
+          <span id="s_mingstatus" class="hint">not checked yet</span></div>
+      </div>
+      <div class="hint help" style="margin-top:4px">An add-on (Settings ▸ Add-ons ▸ Ming-3.0 TTS): its code, its own venv and the
+        0.5B model in <code>ming-tts/</code>. A <b>cloned</b> voice needs its clip AND the exact transcript; a <b>designed</b> voice
+        uses Ming's voice-design task. Its authors test on Linux with CUDA 12.4 — on Windows it is new ground (an RTX 50-series
+        gets the CUDA 12.8 wheels). Without the text normaliser (pynini) write numbers as words.</div>
     </div>
 
     <h3 style="margin:14px 0 4px;font-family:var(--disp);font-size:.78rem;color:var(--tiger)">Voice clones</h3>
@@ -2570,6 +2591,16 @@
       The pip package is code only; the model weights are a separate download.</div>
 
     <h3 style="margin:16px 0 4px;font-family:var(--disp);font-size:.78rem;color:var(--tiger)">Speech to text / lyrics</h3>
+    <!-- 2.594.0 (Tim: "add option to use https://underdog.ai/bark as stt engine"): static/speechengines.js -->
+    <div class="grid3" style="align-items:end;margin-bottom:6px">
+      <div style="grid-column:1/3"><label class="f">Speech-to-text engine (🎤 Transcribe, voice clone transcripts, the 🎙 voice chat, the phone remote)</label>
+        <select id="s_asrengine" title="Bark 3.0 is English only with no word times: lyrics, captions and other timed work always use faster-whisper">
+          <option value="whisper">faster-whisper — every language, word times</option>
+          <option value="bark">Bark 3.0 (Underdog) — English only, no word times (add-on)</option>
+        </select></div>
+      <div class="rowbtns" id="s_barkrow" style="display:none"><button class="ghost" id="s_barkinstall" type="button" style="border-color:var(--tiger);color:var(--tiger)">Install Bark 3.0…</button></div>
+    </div>
+    <div id="s_barkstatus" class="hint" style="display:none;margin-bottom:6px"></div>
     <div class="grid3" style="align-items:end">
       <div><label class="f">Model</label>
         <select id="s_asrmodel">
@@ -3366,6 +3397,10 @@
 <script src="/static/realrefs.js"></script>
 <script src="/static/modelsdlg.js"></script>  <!-- 2.341.0: Settings -> Models -> ⤓ Model catalog (routes/setup.js) -->  <!-- 2.340.0: the dock's First / Last frame types -> fl2va / ref2va, LTX order, Qwen roles -->
 <script src="/static/mesh3dsend.js"></script>  <!-- 2.404.0: 🧊 on a Gallery / Assets picture -> a 3D model (routes/sceneAI.js /api/mesh3d) -->
+<script src="/static/mesh3dctx.js"></script>  <!-- 2.594.0: right-click 🧊 Convert to 3D (Gallery, Assets, References, the image editor) -> the image editor / SolidCraft (H3To3D) -->
+<script src="/static/speechengines.js"></script>  <!-- 2.594.0: Settings ▸ Audio engine picks - Ming-3.0 TTS, Bark 3.0 STT (H3Speech) -->
+<script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
+<script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
 <!-- ext:scripts -->
 
 <script>
@@ -4364,6 +4399,7 @@ async function refreshAsr(quiet) {
   setIf("s_asrvenv", j.venv || "");
   if ($("s_asrmodel")) $("s_asrmodel").value = j.model || "base";
   if ($("s_asrdev")) $("s_asrdev").value = j.device || "auto";
+  if (window.H3Speech) H3Speech.paintAsr(j);                        // 2.594.0: the engine pick + Bark's line
   if (!quiet && $("s_asrstatus"))
     $("s_asrstatus").textContent = j.installed
       ? `installed · model ${j.model} on ${j.device} · ${j.transcripts.length} transcript(s)`
@@ -4372,6 +4408,7 @@ async function refreshAsr(quiet) {
 async function saveAsrCfg() {
   await fetch("/api/config", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ asr: {
+      engine: $("s_asrengine") && $("s_asrengine").value === "bark" ? "bark" : "whisper",   // 2.594.0: + Bark 3.0
       model: $("s_asrmodel").value, device: $("s_asrdev").value,
       language: $("s_asrlang").value.trim(), venv: $("s_asrvenv").value.trim(),
       model_dir: $("s_asrmdir").value.trim() } }) });
@@ -4642,6 +4679,7 @@ async function refreshTts(quiet) {
   }
   if ($("s_ttsenginehint")) $("s_ttsenginehint").textContent =
     (j.omnivoice && j.omnivoice.installed) ? "ready" : "OmniVoice is not installed";
+  if (window.H3Speech) H3Speech.paintTts(j);                        // 2.594.0: the engine pick + the Ming panel
   // both voice pickers are filled from one place so they cannot disagree
   for (const id of ["ttsVoice", "voiceSel", "s_ttstestvoice"]) {
     const sel = $(id);
@@ -4673,7 +4711,8 @@ async function refreshTts(quiet) {
 async function saveTtsCfg() {
   await fetch("/api/config", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ tts: {
-      engine: "omnivoice",                          // 2.264.0: the only engine
+      engine: $("s_ttsengine") && $("s_ttsengine").value === "ming" ? "ming" : "omnivoice",   // 2.594.0: + Ming-3.0 TTS
+      ming: { language: $("s_minglang") ? $("s_minglang").value : "English" },
       device: $("s_ttsdev").value,
       omnivoice: { model: $("s_omnimodel") ? $("s_omnimodel").value.trim() : "",
                    venv: $("s_omnivenv") ? $("s_omnivenv").value.trim() : "",

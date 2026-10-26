@@ -760,15 +760,15 @@ check("the save failure path is the in-page note (alert() is rebound in-page any
   /appNote\(j\.error \|\| "save failed"\)/.test(CODE) && /window\.alert = \(msg\) => \{ appNote\(msg\); \}/.test(CODE), null);
 
 // ===== OmniVoice IS the engine (2.264.0 — openaudio removed) ================
-check("2.264.0: Settings -> Audio shows ONE engine — OmniVoice, fixed (disabled select, single option); the openaudio option, panel, checkpoint doctor and installer are gone",
-  /<select id="s_ttsengine" disabled/.test(HTML) && /value="omnivoice" selected/.test(HTML)
+check("2.264.0 / 2.594.0: Settings -> Audio engines OmniVoice (default) + Ming-3.0 TTS; the openaudio option, panel, checkpoint doctor and installer are gone",
+  /<select id="s_ttsengine" title=/.test(HTML) && /value="omnivoice" selected/.test(HTML) && /<option value="ming">/.test(HTML)
   && !/value="openaudio"/.test(HTML) && !/id="s_ttsckpt"/.test(HTML)
   && !/id="s_ttsinstall"/.test(HTML) && !/id="s_ttsckcheck"/.test(HTML), null);
 check("...OmniVoice's own fields + Install button + designed-voice form",
   /id="s_omnimodel"/.test(HTML) && /id="s_omnivenv"/.test(HTML) && /id="s_omnisteps"/.test(HTML)
   && /id="s_omniinstall"/.test(HTML) && /id="s_vdname"/.test(HTML) && /id="s_vdinstruct"/.test(HTML) && /id="s_vdsave"/.test(HTML), null);
-check("2.264.0: the payload pins engine omnivoice and nests omnivoice under tts (Device rides along; the legacy checkpoint/venv fields are gone from the save)",
-  /engine: "omnivoice",/.test(CODE)
+check("2.264.0 / 2.594.0: the payload sends the picked engine (omnivoice unless ming) and nests omnivoice under tts (Device rides along; the legacy checkpoint/venv fields are gone from the save)",
+  /engine: \$\("s_ttsengine"\) && \$\("s_ttsengine"\)\.value === "ming" \? "ming" : "omnivoice",/.test(CODE)
   && /omnivoice: \{ model: \$\("s_omnimodel"\)/.test(CODE)
   && !/checkpoint: \$\("s_ttsckpt"\)/.test(CODE), null);
 check("...Install OmniVoice goes through the shared install path",

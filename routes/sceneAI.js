@@ -45,12 +45,7 @@ function mount(app) {
     try {
       const pic = pictureOf(b.name, b.where);
       if (!pic) return res.status(404).json({ error: "that picture is not in this project: " + String(b.name || "") });
-      const jp = mesh3d.jobParams({ picture: pic, name: b.model_name || path.basename(pic).replace(/\.[^.]+$/, ""),
-        engine: b.engine, seed: b.seed, models_dir: require("../lib/m3d").dir() });
-      if (jp.error) return res.status(400).json({ error: jp.error });
-      const job = core.makeJob(jp.params);
-      job.chunk = { i: 0, n: 1 };
-      res.json({ ...core.jobDict(job), model: jp.params.name + ".glb" });
+      res.json(require("../lib/to3d").queue(pic, { engine: b.engine, seed: b.seed, model_name: b.model_name }));   // 2.594.0: one queue (lib/to3d.js)
     } catch (e) { fail(res, e); }
   });
   app.get("/api/mesh3d/info", (_req, res) => res.json({ engines: mesh3d.ENGINES, names: mesh3d.ENGINE_NAME, files: mesh3d.FILES }));

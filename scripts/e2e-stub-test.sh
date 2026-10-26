@@ -12494,6 +12494,45 @@ node scripts/test-features593.js > /tmp/ft593.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui593-ui.js > /tmp/ui593.log 2>&1 \
   && ok "2.593.0 browser test: both off = Basic Settings' Face fix / ControlNet, the ControlNet tab and the cards hidden; Face fix on = its section + card with 3 links; ControlNet on = its section, tab and 11 links; off again hidden - or SKIP without playwright" \
   || { bad "2.593.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui593.log | head -14; }
+# ---- 2.594.0 (Ming-3.0 TTS + Bark 3.0 STT engines as add-ons; right-click 🧊 Convert to 3D -> the image editor / SolidCraft)
+node scripts/test-speech594.js > /tmp/sp594.log 2>&1 \
+  && ok "2.594.0 speech engine units (the Ming-3.0 TTS / Bark 3.0 installers step by step - torch from the card's CUDA index, CPU without one, requirements without torch, the models, Bark's missing modules; the add-on cards; tts engine ming through ming_local.py + a fake infer.py: clone / design flags; asr engine bark through bark_local.py: plain transcripts in <= 30 s pieces, lyrics / word times / other languages stay on faster-whisper; the live transcriber on Bark; the Settings ▸ Audio picks)" \
+  || { bad "2.594.0 speech engine units"; grep -a "^FAIL" -A2 /tmp/sp594.log | head -14; }
+node scripts/test-to3d594.js > /tmp/t3d594.log 2>&1 \
+  && ok "2.594.0 Convert to 3D units (a sent picture: PNG / JPEG / WebP only, kept in images/ under a new name; POST /api/to3d/picture refuses text; a model opens as a 3D layer - Blender imports it framed + lit (or SKIP without Blender); the menu)" \
+  || { bad "2.594.0 Convert to 3D units"; grep -a "^FAIL" -A2 /tmp/t3d594.log | head -14; }
+python3 -c "import base64,sys;sys.stdout.buffer.write(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='))" > /tmp/t594.png
+T594=$(curl -s -X POST "http://127.0.0.1:8311/api/to3d/picture?name=e2e%20ref%20594.png&engine=auto" -H 'Content-Type: image/png' --data-binary @/tmp/t594.png)
+T594ID=$(echo "$T594" | python3 -c "import json,sys;print(json.load(sys.stdin).get('id',''))" 2>/dev/null)
+[ -n "$T594ID" ] && curl -s -X POST "http://127.0.0.1:8311/api/jobs/$T594ID/cancel" > /dev/null
+echo "$T594" | python3 -c "import json,sys;d=json.load(sys.stdin);import re;m=re.match(r'^(e2e_ref_594(?:-\\d+)?)\\.png$',d.get('picture',''));sys.exit(0 if d.get('id') and m and d.get('model')==m.group(1)+'.glb' and d.get('params',{}).get('mode')=='mesh3d' else 1)" \
+  && [ "$(curl -s -o /dev/null -w '%{http_code}' -X POST 'http://127.0.0.1:8311/api/to3d/picture?name=x' --data-binary 'text')" = "400" ] \
+  && curl -s http://127.0.0.1:8311/api/asr | python3 -c "import json,sys;d=json.load(sys.stdin);sys.exit(0 if d['engines']==['whisper','bark'] and 'bark' in d else 1)" \
+  && curl -s http://127.0.0.1:8311/api/tts | python3 -c "import json,sys;d=json.load(sys.stdin);sys.exit(0 if 'ming' in d['engines'] and 'ming' in d else 1)" \
+  && curl -s http://127.0.0.1:8311/api/addons | python3 -c "import json,sys;d=json.load(sys.stdin);ids=[a['id'] for a in d['addons']];sys.exit(0 if 'ming' in ids and 'bark' in ids else 1)" \
+  && ok "2.594.0 API: a sent picture (POST /api/to3d/picture) is kept as images/e2e_ref_594.png and queues the mesh3d job -> models3d/e2e_ref_594.glb (cancelled here); text = 400; /api/asr + /api/tts list Bark / Ming; Settings ▸ Add-ons has both cards" \
+  || { bad "2.594.0 API"; echo "$T594" | head -c 600; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui594-ui.js > /tmp/ui594.log 2>&1 \
+  && ok "2.594.0 browser test: right-click a Gallery / Assets / References picture or the image editor's canvas = 🧊 Convert to 3D (engine + where), names to /api/mesh3d, pictures sent as PNG, the job followed, the .glb into the image editor's 3D layer or SolidCraft; Settings ▸ Audio Ming-3.0 TTS / Bark 3.0 picks + Install… - or SKIP without playwright" \
+  || { bad "2.594.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui594.log | head -14; }
+# ---- 2.595.0 (Settings ▸ Add-ons ▸ WeVisOne-VL into the user's vision folder)
+node scripts/test-vision595.js > /tmp/vs595.log 2>&1 \
+  && ok "2.595.0 WeVisOne-VL units (the vision folder: Settings ▸ LLM's, else <LLM folder>/vision; the dropdown of five; the model + its projector into WeVisOne-VL-<size>/, only what is missing; the vision scan pairs each with its own size's projector; remove keeps a projector another model needs; the card)" \
+  || { bad "2.595.0 WeVisOne-VL units"; grep -a "^FAIL" -A2 /tmp/vs595.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui595-ui.js > /tmp/ui595.log 2>&1 \
+  && ok "2.595.0 browser test: Settings ▸ Add-ons ▸ WeVisOne-VL - a dropdown of five (★ 4B Q4_K_M), the vision folder in its words, the ⤓ links, Download starts the job with the picked one - or SKIP without playwright" \
+  || { bad "2.595.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui595.log | head -14; }
+# ---- 2.596.0 (Settings ▸ LLM ▸ ⟳ Update llama.cpp; buttons show what they are doing)
+node scripts/test-llamaengine596.js > /tmp/le596.log 2>&1 \
+  && ok "2.596.0 llama.cpp engine units (the version from VERSION.txt / --version, the newest release with a build for this computer, Install refused when there, Update stops the servers first then the newest over the engine folder, one at a time, setupLlama force + dest with a real zip, the routes, the page's words)" \
+  || { bad "2.596.0 llama.cpp engine units"; grep -a "^FAIL" -A2 /tmp/le596.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui596-ui.js > /tmp/ui596.log 2>&1 \
+  && ok "2.596.0 browser test: Settings ▸ LLM - the engine line (b10456, b10601 newer), ⟳ Update busy with the job's lines then ✓ (the window stays open), ▶ Start: Starting… Loading <model>… ✓ Model loaded, ■ Stop: Stopping…, Save: Saving… - or SKIP without playwright" \
+  || { bad "2.596.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui596.log | head -14; }
+# ---- 2.597.0 (📤 Export ▸ MP4 · Social media - what Facebook / Instagram / TikTok take, checked after)
+python3 scripts/test-social597.py > /tmp/so597.log 2>&1 \
+  && ok "2.597.0 social media preset (REAL encodes: a 75 fps 4K 4:4:4 master -> 9:16 / 4:5 / 1:1 / 16:9 H.264 High 8-bit, 1080 short side at most, 30 fps steady, AAC 48 kHz stereo, faststart, no timecode track, the check says ready; a silent track for a movie without sound; the pure rules)" \
+  || { bad "2.597.0 social media preset"; grep -a "^FAIL" -A2 /tmp/so597.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

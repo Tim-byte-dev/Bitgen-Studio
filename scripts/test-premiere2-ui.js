@@ -148,21 +148,21 @@ ff(["-f", "lavfi", "-i", "testsrc=size=320x180:rate=25:duration=6", "-f", "lavfi
       const f = document.getElementById("tdlFps"); f.value = "25"; f.dispatchEvent(new Event("change"));
     });
     const dq = await p.evaluate(() => ({ rows: document.querySelectorAll("#tdlRows [data-i]").length, list: tl.deliver, tc: tl.tc }));
-    check("📤 the social pack: three rows (9:16 blur, 1:1 crop, 16:9 pad), the timecode stored", dq.rows === 3 && dq.list.map((d) => d.aspect).join() === "9:16,1:1,16:9" && dq.tc.start === "01:00:00:00" && dq.tc.fps === 25, dq);
+    check("📤 the social pack (2.597.0: the MP4 · Social media preset): four rows (9:16 blur, 4:5 crop, 1:1 crop, 16:9 pad), the timecode stored", dq.rows === 4 && dq.list.map((d) => d.aspect).join() === "9:16,4:5,1:1,16:9" && dq.list.every((d) => d.preset === "social") && dq.tc.start === "01:00:00:00" && dq.tc.fps === 25, dq);
     let sent = null;
     await p.route("**/api/export", async (route) => { sent = JSON.parse(route.request().postData() || "{}"); await route.continue(); });
     const answered = p.waitForResponse((r) => /\/api\/export$/.test(r.url()), { timeout: 20000 }).catch(() => null);
     await p.click("#tdlGo");
     const ar = await answered;
     const job = ar ? await ar.json().catch(() => null) : null;
-    check("⚙ Compile + export sends the queue, the timecode and the J cut", sent && sent.deliver && sent.deliver.length === 3 && sent.tc.start === "01:00:00:00" && sent.video[1].split.lead === 0.5, sent && { deliver: sent.deliver, tc: sent.tc });
+    check("⚙ Compile + export sends the queue, the timecode and the J cut", sent && sent.deliver && sent.deliver.length === 4 && sent.tc.start === "01:00:00:00" && sent.video[1].split.lead === 0.5, sent && { deliver: sent.deliver, tc: sent.tc });
     let st = "";
     for (let i = 0; i < 240 && job; i++) { const gj = await api("/api/jobs/" + job.id); st = gj.status; if (st === "done" || st === "failed") break; await new Promise((r) => setTimeout(r, 1000)); }
     check("... the compile finishes", st === "done", st);
     await p.click("#tdlRefresh");
     await p.waitForTimeout(800);
     const files = await p.evaluate(() => [...document.querySelectorAll("#tdlFiles a")].map((a) => a.textContent));
-    check("📤 Delivered lists the master + the three", files.length >= 4 && files.some((f) => /_h264_9x16_1080p\.mp4$/.test(f)) && files.some((f) => /_h264_1x1_1080p\.mp4$/.test(f)), files);
+    check("📤 Delivered lists the master + the four", files.length >= 5 && files.some((f) => /_social_9x16_1080p\.mp4$/.test(f)) && files.some((f) => /_social_4x5_1080p\.mp4$/.test(f)) && files.some((f) => /_social_1x1_1080p\.mp4$/.test(f)), files);
     await p.click("#tdlDone");
 
     /* ---- 5. exchange */

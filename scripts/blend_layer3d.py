@@ -20,6 +20,9 @@ Run by lib/layer3d.js (blender -b --factory-startup -P this -- <cmd> ...):
       Every job starts from the file's own pose (kept at load), so poses never pile up. Prints "H3L ready",
       "H3L done <png> <ms>", "H3L error <message>".
   render <scene.blend> <job.json>          one job, then exit (the same as serve's)
+  import <model> <scene.blend>             2.594.0: a .glb / .gltf / .obj / .fbx / .stl (🧊 Convert to 3D's model) into an
+                                           empty scene + a sun, a mid grey world and a camera framed on it from the front,
+                                           a little above (40 degrees), 1024 x 1024 - saved as the 3D layer's scene
 """
 import json
 import math
@@ -102,6 +105,53 @@ def inspect(src, out):
             "objects": [obj_info(o) for o in sc.objects][:400]}
     with open(out, "w", encoding="utf-8") as fh:
         json.dump(info, fh)
+    say("H3L done " + out)
+
+
+# ---------------------------------------------------------------- 2.594.0: a model -> a scene
+def import_model(src, out):
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    ext = os.path.splitext(src)[1].lower()
+    ops = bpy.ops
+    if ext in (".glb", ".gltf"):
+        ops.import_scene.gltf(filepath=src)
+    elif ext == ".obj":
+        (ops.wm.obj_import if hasattr(ops.wm, "obj_import") else ops.import_scene.obj)(filepath=src)
+    elif ext == ".fbx":
+        ops.import_scene.fbx(filepath=src)
+    elif ext == ".stl":
+        (ops.wm.stl_import if hasattr(ops.wm, "stl_import") else ops.import_mesh.stl)(filepath=src)
+    else:
+        raise RuntimeError("not a model Blender can import here: " + os.path.basename(src))
+    sc = bpy.context.scene
+    if not any(o.type in ("MESH", "CURVE", "SURFACE", "META", "FONT") for o in sc.objects):
+        raise RuntimeError("the model has no mesh in it: " + os.path.basename(src))
+    center, radius = scene_box()
+    cd = bpy.data.cameras.new("Camera")
+    cd.angle = math.radians(40.0)
+    cd.clip_start, cd.clip_end = max(0.001, radius * 0.01), radius * 100.0
+    cam = bpy.data.objects.new("Camera", cd)
+    sc.collection.objects.link(cam)
+    dist = radius / math.tan(cd.angle / 2.0) * 1.15
+    yaw, pitch = math.radians(-90.0), math.radians(12.0)
+    cam.location = center + Vector((math.cos(pitch) * math.cos(yaw), math.cos(pitch) * math.sin(yaw), math.sin(pitch))) * dist
+    cam.rotation_euler = (center - cam.location).to_track_quat("-Z", "Y").to_euler()
+    sc.camera = cam
+    sun = bpy.data.lights.new("Key", "SUN")
+    sun.energy = 4.0
+    so = bpy.data.objects.new("Key", sun)
+    so.rotation_euler = (math.radians(50.0), 0.0, math.radians(30.0))
+    sc.collection.objects.link(so)
+    if not sc.world:
+        sc.world = bpy.data.worlds.new("World")
+    sc.world.use_nodes = True
+    bg = sc.world.node_tree.nodes.get("Background")
+    if bg:
+        bg.inputs[0].default_value = (0.35, 0.35, 0.37, 1.0)
+        bg.inputs[1].default_value = 1.0
+    sc.render.resolution_x = sc.render.resolution_y = 1024
+    sc.render.resolution_percentage = 100
+    bpy.ops.wm.save_as_mainfile(filepath=out)
     say("H3L done " + out)
 
 
@@ -278,6 +328,8 @@ def main():
             inspect(argv[1], argv[2])
         elif cmd == "serve":
             serve(argv[1])
+        elif cmd == "import":
+            import_model(argv[1], argv[2])
         elif cmd == "render":
             open_file(argv[1])
             keep_pose()

@@ -67,8 +67,8 @@
       var curIt = sel ? a.items.find(function (it) { return it.id === cur; }) || a.items[0] : null;
       var acts = (a.actions || []).concat(sel && a.actions.indexOf("remove") < 0 ? ["remove"] : []).map(function (x) {
         if (sel) {
-          return x === "install" || x === "reinstall" ? btn("install", curIt && curIt.present ? "⟳ Download again" : "⤓ Download", "Download the picked one into the LLM folder")
-            : x === "remove" ? (curIt && curIt.present ? btn("remove", "🗑 Delete it", "Delete the picked one from the LLM folder") : "") : "";
+          return x === "install" || x === "reinstall" ? btn("install", curIt && curIt.present ? "⟳ Download again" : "⤓ Download", "Download the picked one into " + (a.folder || "the LLM folder"))
+            : x === "remove" ? (curIt && curIt.present ? btn("remove", "🗑 Delete it", "Delete the picked one from " + (a.folder || "the LLM folder")) : "") : "";
         }
         if (hasItems) {                                   // 2.557.0: an add-on with a list - download what is ticked
           return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Download the ticked models (and a node pack the add-on needs, if missing)")
@@ -80,7 +80,7 @@
       }).join("");
       var its = sel ? '<div class="its"><label style="display:flex;gap:6px;align-items:center"><b style="font-size:11.5px">' + esc(a.label) + '</b><select data-aosel="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' style="max-width:520px">'
           + a.items.map(function (it) { return '<option value="' + esc(it.id) + '"' + (it.id === cur ? " selected" : "") + ">" + esc(it.label) + (it.present ? " ✓" : "") + "</option>"; }).join("") + "</select></label>"
-          + (curIt ? '<div class="kv">' + esc(curIt.for) + ' <span class="sz">' + esc(curIt.size) + "</span>" + (curIt.present ? ' <span class="ok">✓ in the LLM folder</span>' : "") + "</div>" : "") + "</div>"
+          + (curIt ? '<div class="kv">' + esc(curIt.for) + ' <span class="sz">' + esc(curIt.size) + "</span>" + (curIt.present ? ' <span class="ok">✓ in ' + esc(a.folder || "the LLM folder") + "</span>" : "") + "</div>" : "") + "</div>"
         : hasItems ? '<div class="its">' + a.items.map(function (it) {
         // 2.566.0: an item every style needs (need) is always downloaded - ticked, not untickable
         var on = it.need || (S.picks[a.id] ? S.picks[a.id].indexOf(it.id) >= 0 : (!it.present && it.dflt));
@@ -92,7 +92,7 @@
         + '<div class="kv"><b>Needs</b> ' + esc(a.needs) + "</div>"
         + '<div class="kv"><b>Size</b> ' + esc(a.size) + "</div>"
         + (a.note ? '<div class="kv"><b>State</b> ' + esc(a.note) + "</div>" : "")
-        + its + (Array.isArray(a.links) && a.links.length ? '<details class="lnk" data-aolinks="' + esc(a.id) + '"><summary>⤓ Download links (' + a.links.length + ") - downloaded for you while it is on; or get them yourself</summary><ul>"
+        + its + (Array.isArray(a.links) && a.links.length ? '<details class="lnk" data-aolinks="' + esc(a.id) + '"><summary>⤓ Download links (' + a.links.length + ") - " + (a.feature ? "downloaded for you while it is on; or get them yourself" : "Install gets them for you; or see them yourself") + "</summary><ul>"
           + a.links.map(function (l) { return '<li>' + (l.kind === "pack" ? "📦 " : "🧠 ") + '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + '</a> <span class="to">→ ' + esc(l.dest) + "</span></li>"; }).join("") + "</ul></details>" : "")
         + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
     }).join("") || "No add-ons.";
@@ -144,7 +144,7 @@
     if (hasItems && action === "install" && !picks.length) { if (typeof window.toast === "function") window.toast("tick the models to download first"); else alert("tick the models to download first"); return Promise.resolve(null); }
     if (action === "remove" && a.select) {               // 2.586.0: delete the picked LLM file
       var it0 = a.items.find(function (it) { return it.id === picks[0]; }) || {};
-      if (!confirm("Delete " + (it0.label || picks[0]) + " from the LLM folder?")) return Promise.resolve(null);
+      if (!confirm("Delete " + (it0.label || picks[0]) + " from " + (a.folder || "the LLM folder") + "?")) return Promise.resolve(null);
     } else if (action === "remove" && !confirm(hasItems ? "Remove the downloaded " + (a.label || id) + "? The model files are deleted (a node pack and the styles stay)." : "Remove " + (a.label || id) + "? Its folder (venv + packages) is deleted; you can install it again later.")) return Promise.resolve(null);
     if (hasItems && action === "install" && !items) {
       var sel = a.items.filter(function (it) { return picks.indexOf(it.id) >= 0; });

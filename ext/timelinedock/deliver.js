@@ -16,7 +16,10 @@
   var P = null, dlg = null, once = false;
   var FPS = ["23.976", "24", "25", "29.97", "30", "50", "59.94", "60"];
   var PACKS = {
-    "social": [{ preset: "h264", aspect: "9:16", size: "1080", fit: "blur" }, { preset: "h264", aspect: "1:1", size: "1080", fit: "crop" }, { preset: "h264", aspect: "16:9", size: "1080", fit: "pad" }],
+    // 2.597.0 (Tim: "our mp4 and avi files are rejected" - "yes please build the preset"): the MP4 · Social media preset
+    // (scripts/social.py - what Facebook / Instagram / TikTok take, checked after): Reels 9:16, the Facebook feed 4:5, 1:1, 16:9
+    "social": [{ preset: "social", aspect: "9:16", size: "1080", fit: "blur" }, { preset: "social", aspect: "4:5", size: "1080", fit: "crop" },
+               { preset: "social", aspect: "1:1", size: "1080", fit: "crop" }, { preset: "social", aspect: "16:9", size: "1080", fit: "pad" }],
     "edit": [{ preset: "prores", size: "source" }, { preset: "wav" }],
     "web": [{ preset: "h265", size: "1080" }, { preset: "webm", size: "1080" }, { preset: "gif", size: "480" }],
     "small": [{ preset: "av1", size: "1080" }, { preset: "av1", size: "720", quality: "small" }],                   // 2.411.0
@@ -38,7 +41,7 @@
           + '<select data-k="aspect" title="Reframe">' + opt(P.aspects, d.aspect || "source", P.aspects.map(function (a) { return a === "source" ? "as is" : a; })) + "</select>"
           + '<select data-k="fit" title="How a reframe fills: crop the middle, pad with black, a blurred copy behind, or follow - the crop follows the subject (faces, people, what stands out)"' + ((d.aspect || "source") === "source" ? " disabled" : "") + ">" + opt(P.fits, d.fit || "crop") + "</select>"
           + '<select data-k="fps" title="Frame rate">' + opt(P.fps, d.fps || "source", P.fps.map(function (f) { return f === "source" ? "same fps" : f + " fps"; })) + "</select>"
-          + (/^(h264|h264_10|h265|h265_10|av1|webm)$/.test(d.preset) ? '<select data-k="quality">' + opt(P.qualities, d.quality || "standard") + "</select>" : "")
+          + (/^(h264|h264_10|h265|h265_10|av1|webm|social)$/.test(d.preset) ? '<select data-k="quality">' + opt(P.qualities, d.quality || "standard") + "</select>" : "")
           // 2.417.0: the colour - HDR10 (PQ), HLG or Rec.2020 SDR on the 10-bit presets (scripts/hdr.py)
           + (pr.wide && P.colours ? '<select data-k="colour" title="The colour it is made in: Rec.709 SDR as graded, or placed into HDR10 / HLG (BT.2020, 10-bit, the master\'s white at 203 nits) or Rec.2020 SDR (wide gamut)">'
              + opt(P.colours, d.colour || "sdr", P.colours.map(function (c) { return (P.colourLabels || {})[c] || c; })) + "</select>" : ""))
@@ -62,7 +65,7 @@
   function paint() {
     var tc = tl.tc || { start: "00:00:00:00", fps: 25 };
     dlg.body.innerHTML = '<fieldset><legend>Formats <button class="ghost" type="button" id="tdlAdd">＋</button>'
-      + ' <select id="tdlPack"><option value="">＋ a pack…</option><option value="social">social (9:16 · 1:1 · 16:9)</option><option value="edit">for editing (ProRes + WAV)</option><option value="web">web (H.265 · WebM · GIF)</option><option value="small">smallest (AV1 1080 + 720)</option><option value="overlay">overlay (ProRes 4444 with alpha)</option><option value="hdr">HDR (HDR10 + HLG)</option></select></legend>'
+      + ' <select id="tdlPack"><option value="">＋ a pack…</option><option value="social">social media (9:16 Reels · 4:5 feed · 1:1 · 16:9)</option><option value="edit">for editing (ProRes + WAV)</option><option value="web">web (H.265 · WebM · GIF)</option><option value="small">smallest (AV1 1080 + 720)</option><option value="overlay">overlay (ProRes 4444 with alpha)</option><option value="hdr">HDR (HDR10 + HLG)</option></select></legend>'
       + '<div id="tdlRows"></div>'
       + '<div class="fx-row"><label><input type="checkbox" id="tdlOn"' + (tl.deliverOn !== false ? " checked" : "") + "> make them on every ⚙ Compile</label>"
       + '<label title="NVENC (NVIDIA), Quick Sync (Intel), AMF (AMD) for H.264 / H.265 / AV1 - each is tried first; none that works = the software encoder (the log says which)"><input type="checkbox" id="tdlHw"'

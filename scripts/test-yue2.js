@@ -1019,16 +1019,17 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
     ["lib/openaudio.js", "scripts/tts_local.py", "scripts/openaudio_checkpoint.py", "scripts/test-tts-engine.py"]
       .every((f) => !fs64.existsSync(path.join(__dirname, "..", f)))
     && !R64.includes('require("../lib/openaudio")'));
-  check("2.264.0: tts.js is OmniVoice-only — ENGINES has one entry, cfg pins the engine (legacy keys read over), engineRuntime has no branch, the speak job is the omnivoice shape",
-    T64.includes('const ENGINES = ["omnivoice"];')
-    && T64.includes('const engine = "omnivoice";')
+  // 2.594.0: + "ming" (Ming-3.0 TTS, an add-on); a legacy "openaudio" still runs OmniVoice
+  check("2.264.0 / 2.594.0: tts.js speaks with OmniVoice or Ming-3.0 TTS — ENGINES omnivoice + ming, anything else (legacy openaudio) = OmniVoice, the speak job is the omnivoice shape unless ming",
+    T64.includes('const ENGINES = ["omnivoice", "ming"];')
+    && T64.includes('const engine = c.engine === "ming" ? "ming" : "omnivoice";')
     && T64.includes("legacy openaudio keys c.venv / c.checkpoint are ignored")
     && !T64.includes("tts_local.py")
     && T64.includes("OmniVoice speaks clones AND designs"));
-  check("2.264.0 LIVE: tts.status() reports engine omnivoice with the omnivoice venv and NO openaudio block",
+  check("2.264.0 LIVE (2.594.0: + ming): the engines are omnivoice and ming, no openaudio",
     (() => {
       const t = require(path.join(__dirname, "..", "lib", "tts"));
-      return t.ENGINES.length === 1 && t.ENGINES[0] === "omnivoice";
+      return t.ENGINES.join() === "omnivoice,ming" && !t.ENGINES.includes("openaudio");
     })());
   check("2.264.0: the installers know one speech venv — core TOOL_MODES and worker.py dropped install_openaudio, the routes validator says omnivoice or whisper, the doctor endpoints are gone",
     C64.includes('"install_whisper", "install_omnivoice",')
@@ -1036,13 +1037,13 @@ console.log("@@PT " + (same && one.trim() === "create screenplay"
     && R64.includes('which must be omnivoice, whisper or demucs')   // 2.269.0: demucs joined
     && !R64.includes('app.get("/api/tts/checkpoint"')
     && read("misc/worker.py").includes('if mode in ("install_whisper", "install_omnivoice", "install_demucs", "install_viggle", "install_native"):'));
-  check("2.264.0: the settings panel is OmniVoice — fixed engine select, Device + CUDA build live in the Omni box, no checkpoint/venv/install-openaudio fields, the save pins engine omnivoice",
+  check("2.264.0 / 2.594.0: the settings panel - the engine select (OmniVoice / Ming-3.0 TTS), Device + CUDA build in the Omni box, no checkpoint/venv/install-openaudio fields, the save sends the picked engine",
     (() => {
       const H = read("static", "index.html");
-      return H.includes('<select id="s_ttsengine" disabled')
+      return H.includes('<select id="s_ttsengine" title=') && H.includes('<option value="ming">')
         && !H.includes('value="openaudio"')
         && !H.includes('id="s_ttsckpt"') && !H.includes('id="s_ttsinstall"')
-        && H.includes('engine: "omnivoice",');
+        && H.includes('engine: $("s_ttsengine") && $("s_ttsengine").value === "ming" ? "ming" : "omnivoice",');
     })());
 }
 

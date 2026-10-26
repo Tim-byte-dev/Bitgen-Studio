@@ -328,6 +328,7 @@ Still pictures from text and references, ControlNet guidance, face fixing and AI
 
 - **Generated pictures onto the canvas** — with the image editor open, Generate makes pictures and each lands as a new layer on the document in front. *Where:* the prompt docker. *Since:* 2.431.0
 - **3D models from pictures** — every picture in the Gallery and Assets can become a 3D model (Hunyuan3D 2.1 or TRELLIS.2). *Where:* the 3D button on each picture. *Since:* 2.404.0
+- **🧊 Convert to 3D (right-click)** — right-click a picture in the Gallery, Assets or References, or the image editor's canvas (the whole picture or the picked layer, also Layer ▸ Convert Layer to 3D), pick Hunyuan3D 2.1 or TRELLIS.2 and where the model goes: the image editor (a 3D layer you can orbit, render and generate from), the SolidCraft docker, or just the project's 3D models. *Where:* right-click a picture. *Since:* 2.594.0
 
 ## Music, voices and sound
 
@@ -349,12 +350,18 @@ Songs, stems, voices and the words in them.
 
 - **Voice cloning** — clone a voice from a short clip or a waveform region. *Where:* the Voice / Stems docker
 - **Text to speech** — speak a line in a cloned voice; OpenAudio or OmniVoice (600+ languages, voice design). *Where:* Settings > Audio. *Since:* 2.102.0
+- **Ming-3.0 TTS** — a second speech engine (inclusionAI, 0.5B, 44.1 kHz): cloned voices from a clip and its transcript, and designed voices. Installed from Settings ▸ Add-ons. *Where:* Settings > Audio > Speech engine. *Since:* 2.594.0
 - **Speech from the prompt** — Generate with the speech mode. *Where:* the Generate dropdown
 
 ### Transcription and lyrics
 
 - **Speech to text** — transcribe speech or extract timed lyrics from any sound or video, saved as .txt, .srt and .lrc. *Where:* the asset tray. *Since:* 2.38.0
 - **Local transcription** — faster-whisper runs on this computer and each file is transcribed once. *Where:* Settings > Audio
+- **Bark 3.0 speech-to-text** — Underdog's Bark 3.0 (163 MB, English only) for plain transcripts, voice clone transcripts, the phone remote and the 🎙 voice chat; lyrics, captions and other timed work stay on faster-whisper. Installed from Settings ▸ Add-ons. *Where:* Settings > Audio > Speech-to-text engine. *Since:* 2.594.0
+- **WeVisOne-VL vision model** — Tencent's WeVisOne-VL (built on Qwen3-VL) as the prompt docker's vision model: it reads text in pictures, counts and finds things, and describes them for the LLM. Pick 4B or 2B in a dropdown; it downloads into your vision models folder. *Where:* Settings > Add-ons > WeVisOne-VL. *Since:* 2.595.0
+- **⟳ Update llama.cpp** — see which llama.cpp build is installed and whether a newer one is out, and update it in place (the LLM and vision servers stop first; models and settings stay); the progress shows right there. *Where:* Settings > LLM. *Since:* 2.596.0
+- **MP4 · Social media export** — a file Facebook, Instagram and TikTok take as it is: H.264 High 8-bit, AAC 48 kHz stereo, a steady frame rate, faststart, 1080 on the short side at most, no timecode track; checked after the encode (each point ok or not, plus a note when a 9:16 is longer than 90 s). The social pack makes 9:16 Reels, the 4:5 feed, 1:1 and 16:9 at once. *Where:* the timeline's 📤 Export. *Since:* 2.597.0
+- **Buttons show what they are doing** — Install, Update, Start (then Loading the model), Stop, Rescan, Scan folder and Save turn into a spinning "…ing" with the seconds, then ✓ or ✗ with the reason. *Where:* Settings > LLM and Save. *Since:* 2.596.0
 
 ### Karaoke
 
@@ -1005,6 +1012,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 ### 3D layers in the image editor
 
 - **3D layers** — a Daz or Blender scene in a picture, drawn again by Blender whenever its view changes; masks, filters and blend modes work. *Where:* Layer > New 3D Layer. *Since:* 2.460.0
+- **A 3D model as a 3D layer** — a .glb / .gltf / .obj / .fbx / .stl from the project's 3D models opens as a 3D layer: Blender puts it in a lit scene with a camera framed on it. *Where:* Layer > New 3D Layer, or 🧊 Convert to 3D. *Since:* 2.594.0
 - **Camera** — the scene camera, front, back, left, right or top, or turn, tilt, distance and lens; drag on the canvas to orbit, pan and zoom. *Where:* the 3D tab. *Since:* 2.460.0
 - **Pose** — pick a figure and bone and turn it on top of its pose. *Where:* the 3D tab. *Since:* 2.460.0
 - **Frame and render** — pick a frame of an animated scene; render it Quick, EEVEE or Cycles, with a transparent background. *Where:* the 3D tab. *Since:* 2.460.0

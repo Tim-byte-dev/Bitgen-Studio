@@ -47,7 +47,7 @@ check("deliver.py tc_plus: drop-frame stays drop-frame at the real rate (60 s ->
 check("tc_for: a drop-frame start on a 25 fps file goes in as non-drop (ffmpeg refuses ';' there), on 29.97 as it is", D.for25 === "01:00:00:00" && D.for30 === "01:00:00;00");
 
 /* ---- 2. ProRes 4444 alpha, H.264 10-bit, VAAPI */
-check("presets: + MOV · ProRes 4444 (alpha), MP4 · H.264 10-bit (12); both carry the timecode", D.ids.length === 12 && D.ids.includes("prores4444") && D.ids.includes("h264_10")
+check("presets: + MOV · ProRes 4444 (alpha), MP4 · H.264 10-bit (12; 2.597.0: + MP4 · Social media = 13); both carry the timecode", D.ids.length === 13 && D.ids.includes("social") && !D.tcp.includes("social") && D.ids.includes("prores4444") && D.ids.includes("h264_10")
   && D.tcp.includes("prores4444") && D.tcp.includes("h264_10"), D.ids);
 check("H.264 10-bit: libx264 High 10, yuv420p10le, crf 16 (high), AAC 320k, the timecode", /-c:v libx264 .*-crf 16 -profile:v high10 -pix_fmt yuv420p10le/.test(D.h10) && /-b:a 320k/.test(D.h10) && /-timecode 01:00:00;00/.test(D.h10), D.h10);
 check("ProRes 4444 with the alpha: the black / white difference matte (blend difference -> negate -> unpremultiply -> alphamerge), profile 4, yuva444p10le, 16-bit alpha, PCM",

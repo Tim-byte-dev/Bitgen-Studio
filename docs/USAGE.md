@@ -6081,6 +6081,58 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.597.0: **MP4 · Social media** in the timeline's **📤 Export** - for Facebook, Instagram and TikTok. Pick it as a
+  format, or **＋ a pack… ▸ social media** for four at once: **9:16** (Reels / Stories, a blurred fill), **4:5** (the
+  Facebook feed), **1:1** and **16:9**, each 1080 on the short side.
+  - It is made the way the sites want it: H.264 (High, 8-bit), AAC sound at 48 kHz stereo, a steady frame rate (a
+    movie above 60 fps comes out at 30), the index at the front of the file (faststart), no timecode track, at most
+    1080 on the short side, with a bitrate ceiling so files stay a sensible size. A movie with no sound gets a silent
+    track (some uploaders refuse a video without one).
+  - After it is made, the file is checked and the log says "ready for Facebook / Instagram / TikTok" - or which point
+    is wrong. A 9:16 longer than 90 seconds gets a note: it may post as a plain video instead of a Reel.
+  - Why other files were refused: AVI (an old video codec with uncompressed sound) is not for social media; the 10-bit,
+    H.265 and AV1 MP4s are for editing and newer players; and the plain MP4 · H.264 export adds a timecode track when
+    the timeline has a start timecode. Use MP4 · Social media for anything you upload.
+- 2.596.0: **⟳ Update llama.cpp** in **Settings ▸ LLM**. The line under the buttons says which llama.cpp you have and
+  whether a newer build is out ("llama.cpp b10456 · the newest is b10601 - ⟳ Update available").
+  - **⟳ Update llama.cpp** stops the LLM server and the vision model, then puts the newest build over the engine folder
+    set above (Windows: the CUDA build your driver supports). Your models and settings stay. Its progress shows in the
+    small log right there and the Settings window stays open. **⬇ Install engine** shows instead while none is
+    installed.
+  - Every button in the LLM tab shows what it is doing while it does it: **▶ Start server** says "Starting the
+    server…", then "Loading <the model>…" until the model is ready, then "✓ Model loaded"; **■ Stop**, **↻ Rescan**,
+    **🔎 Scan folder** and Settings' **Save** say "Stopping / Scanning / Saving…" and then ✓ - or ✗ with the reason.
+- 2.595.0: **WeVisOne-VL** (Tencent, built on Qwen3-VL) as a vision model. **Settings ▸ Add-ons ▸ WeVisOne-VL** has a
+  dropdown: **★ 4B Q4_K_M** (recommended), 4B Q6_K, 4B Q8_0, 2B Q8_0 and 2B Q4_K_M - each with its projector.
+  - It downloads into **your vision models folder** (the one set in Settings ▸ LLM; without one, the LLM folder's
+    vision subfolder), in its own WeVisOne-VL-4B or WeVisOne-VL-2B folder, so it pairs with the right projector.
+  - Then pick it in the prompt docker's vision dropdown: 📎 pictures in the prompt are read and described for the LLM.
+    It is good at text in pictures, counting and saying where things are.
+  - It needs a recent llama.cpp (misc\get-llama.ps1). Its segmentation and matting are not part of the GGUF files -
+    in bitGen it reads and describes pictures.
+- 2.594.0: **🧊 Convert to 3D from the right-click menu.** Right-click a picture in the **Gallery**, **Assets** or
+  **References**, or the **image editor's canvas** (it adds 🧊 Convert Picture to 3D… / 🧊 Convert Layer to 3D… to its
+  menu; the Layers panel and the Layer menu have Convert Layer to 3D… too).
+  - Pick the engine: **Hunyuan3D 2.1** (the shape, quick) or **TRELLIS.2** (shape + texture, slower). Both run in
+    ComfyUI, as the 🧊 buttons do.
+  - Pick where the model goes: **Image editor** (a 3D layer - Blender puts the model in a lit scene with a camera framed
+    on it; orbit it, render it and generate from it in the 🧊 3D tab - needs Blender), **SolidCraft docker** (opens as a
+    new design) or **Just save it** (the project's models3d/ folder).
+  - The job runs in the queue; when it is done the model opens where you said. A References or editor picture is kept
+    in the project's images first.
+- 2.594.0: **Ming-3.0 TTS** - a second speech engine. Install it in **Settings ▸ Add-ons ▸ Ming-3.0 TTS** (its code,
+  its own Python and the 0.5B model, in the ming-tts folder), then pick it in **Settings ▸ Audio ▸ Speech engine**.
+  - A cloned voice needs its clip **and** the exact transcript; a designed voice (a description) uses Ming's voice
+    design. The chat 🗣, the Speech dock and Test voice all use the picked engine.
+  - Its authors test it on Linux with CUDA 12.4. On Windows it is new ground: an RTX 50-series gets the CUDA 12.8 build
+    of PyTorch. Without the text normaliser (pynini, usually missing on Windows) write numbers as words.
+- 2.594.0: **Bark 3.0 speech-to-text** (Underdog). Install it in **Settings ▸ Add-ons ▸ Bark 3.0 speech-to-text**, then
+  pick it in **Settings ▸ Audio ▸ Speech-to-text engine**.
+  - It is **English only** and gives **no word times**, so it does the plain transcripts: the 🎤 Transcribe button,
+    voice clone transcripts, the phone remote and the 🎙 voice chat. Lyrics, captions, word times and other languages
+    always use faster-whisper (keep it installed for those).
+  - Long files are cut into pieces of up to 30 seconds at quiet moments, so a transcript still has rough times.
+  - License CC-BY-4.0 (its NOTICE file stays beside the model).
 - 2.593.0: **Face fix and ControlNet are add-ons now.** Switch them on in **Settings ▸ General ▸ Add-ons in the
   studio** (both start off).
   - **Off**: Basic Settings hides the Face fix / ControlNet section (ControlNet also hides its Settings tab), Settings ▸
