@@ -12569,6 +12569,22 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui600-ui.js > /tmp/ui600.log 2>&
 python3 scripts/test-asrav601.py > /tmp/av601.log 2>&1 \
   && ok "2.600.1 transcription without PyAV (load_audio: WAV by the standard library, anything else by ffmpeg; asr_local / asr_live hand faster-whisper an array; the installer pins av<19)" \
   || { bad "2.600.1 transcription without PyAV"; grep -a "^FAIL" -A2 /tmp/av601.log | head -14; }
+# ---- 2.601.0 (Tim: "in settings - audio tab , change play selection to play - play the clip if no selection or play the selection if there is a selection")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui6002-ui.js > /tmp/ui6002.log 2>&1 \
+  && ok "2.601.0 browser test: Settings ▸ Audio ▸ ▶ Play - the whole clip with no selection, only the selection when there is one; ■ Stop; a playhead; a click clears the selection - or SKIP without playwright" \
+  || { bad "2.601.0 ▶ Play browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui6002.log | head -14; }
+# ---- 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall" + "when installing an
+# addon - let the user know the status next to the button and disable the button when download/install starts. do this
+# with all buttons so user knows whats happening" + Ming-3.0 TTS "TorchCodec is required for load_with_torchcodec")
+node scripts/test-install601.js > /tmp/inst601.log 2>&1 \
+  && ok "2.601.0 ⟳ Reinstall really reinstalls (a downloaded file fetched again with force / inside a reinstall, add-ons {reinstall}), the ComfyUI install verdict, the label helper, 17 install places wired" \
+  || { bad "2.601.0 reinstall + install status"; grep -a "^FAIL" -A2 /tmp/inst601.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui601-ui.js > /tmp/ui601.log 2>&1 \
+  && ok "2.601.0 browser test: Add-ons ⟳ Reinstall + its status beside the disabled buttons, faster-whisper ⟳ Reinstall following its job, sd-cli ⟳ Reinstall, the model catalog's ⟳ Download again with Downloading 1 of 1 · 50 % - or SKIP without playwright" \
+  || { bad "2.601.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui601.log | head -14; }
+python3 scripts/test-tacompat601.py > /tmp/ta601.log 2>&1 \
+  && ok "2.601.0 torchaudio without TorchCodec: Ming-3.0 TTS's infer.py runs through ta_compat (load / save by soundfile, wave or ffmpeg on torchaudio 2.9+), OmniVoice patched too" \
+  || { bad "2.601.0 torchaudio without TorchCodec"; grep -a "^FAIL" -A2 /tmp/ta601.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

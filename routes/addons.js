@@ -16,7 +16,8 @@ function mount(app) {
   const go = (action) => (req, res) => {
     // 2.557.0: {items: [ids]} - what to download (AI fill models)
     const items = Array.isArray((req.body || {}).items) ? req.body.items.map(String).slice(0, 20) : undefined;
-    const r = A.start(String(req.params.id || ""), action, { items });
+    const reinstall = (req.body || {}).reinstall === true;   // 2.601.0: ⟳ Reinstall - fetch what is already there again
+    const r = A.start(String(req.params.id || ""), action, { items, reinstall });
     if (r.error) return res.status(/already/.test(r.error) ? 409 : 400).json(r);
     const j = A.job();
     res.json({ ok: true, external: !!r.external, job: r.external ? null : { id: j.id, action: j.action, state: j.state } });

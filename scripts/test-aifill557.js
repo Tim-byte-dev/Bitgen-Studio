@@ -56,7 +56,7 @@ const A = require(path.join(ROOT, "lib", "addons.js"));
   A._reset();
   const RA = rd("routes", "addons.js"), SA = rd("static", "addons.js"), KI = require(path.join(ROOT, "lib", "kritaInpaint.js"));
   check("route: POST /api/addons/:id/install passes {items}; the tab draws the items with checkboxes + ✓ downloaded and sends the ticked ones; the editor's 'missing' says where to get them",
-    /A\.start\(String\(req\.params\.id \|\| ""\), action, \{ items \}\)/.test(RA) && /data-aoi=/.test(SA) && /✓ downloaded/.test(SA) && /opt\.body = JSON\.stringify\(\{ items: picks \}\)/.test(SA) && /⤓ Download ticked/.test(SA)
+    /A\.start\(String\(req\.params\.id \|\| ""\), action, \{ items, reinstall \}\)/.test(RA) && /data-aoi=/.test(SA) && /✓ downloaded/.test(SA) && /opt\.body = JSON\.stringify\(\{ items: picks, reinstall: again \}\)/.test(SA) && /⤓ Download ticked/.test(SA)
     && KI.missing({ online: true, cn: {} }).every((m) => /Settings ▸ Add-ons ▸ AI fill models/.test(m)) && typeof KI.reset === "function");
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

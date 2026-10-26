@@ -113,9 +113,26 @@
     var ic = { lora: "🎨", ckpt: "🧱", llm: "💬", vision: "👁" };
     $("ltJob").innerHTML = (st.jobs.length ? "" : '<option value="">- no jobs yet -</option>') + st.jobs.map(function (j) { var k = kindOf(j); return '<option value="' + esc(j.name) + '"' + (j.name === S.job ? " selected" : "") + ">" + (ic[k] || "") + " " + esc(j.name) + " (" + (k === "llm" ? (j.examples || 0) + " chats" : j.images + " pictures") + ")</option>"; }).join("");
     var a = st.aitk, u = st.unsloth || {}, ft = isFt(kindOf(cur()));
-    $("ltAitk").innerHTML = ft ? (u.ready ? '<span class="lok">Unsloth ✓</span>' + (u.convert ? "" : ' <span class="lwarn">(no GGUF converter - ⚙ install again)</span>') : '<span class="lwarn">Unsloth is not installed</span> <button class="ghost" id="ltInstall" type="button" title="A queue job: Unsloth in its own Python (uv, PyTorch for your card) + llama.cpp\'s GGUF converter (~8 GB)">⚙ Install Unsloth</button>')
-      : (a.ready ? '<span class="lok">ai-toolkit ✓</span>' : '<span class="lwarn">ai-toolkit is not installed</span> <button class="ghost" id="ltInstall" type="button" title="A queue job: the ai-toolkit repo, its own Python with PyTorch for your card, its requirements (~10 GB)">⚙ Install ai-toolkit</button>');
-    if ($("ltInstall")) $("ltInstall").onclick = function () { var en = ft ? "unsloth" : "aitoolkit"; jsend("POST", "/api/loratrain/install", { engine: en }).then(function (j) { say(j.error || "⚙ installing " + (ft ? "Unsloth" : "ai-toolkit") + " - follow it in the Queue (it takes a while)", j.error ? "lbad" : "lok"); }); };
+    // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall" + "let the user know
+    // the status next to the button and disable the button when download/install starts"): installed = ⟳ Reinstall;
+    // while the install job runs the button is disabled with its status beside it (and this line is left alone)
+    var eng = ft ? "Unsloth" : "ai-toolkit", ready = ft ? u.ready : a.ready;
+    if (!(S.inst && S.inst.eng === eng && $("ltInstall"))) {
+      $("ltAitk").innerHTML = (ready ? '<span class="lok">' + eng + " ✓</span>" + (ft && !u.convert ? ' <span class="lwarn">(no GGUF converter - ⟳ Reinstall)</span>' : "") : '<span class="lwarn">' + eng + " is not installed</span>")
+        + ' <button class="ghost" id="ltInstall" type="button" title="' + (ft ? "A queue job: Unsloth in its own Python (uv, PyTorch for your card) + llama.cpp\'s GGUF converter (~8 GB)" : "A queue job: the ai-toolkit repo, its own Python with PyTorch for your card, its requirements (~10 GB)") + '">⚙ Install ' + eng + "</button>";
+      if (window.H3Install) window.H3Install.set($("ltInstall"), !!ready);
+      $("ltInstall").onclick = function () {
+        var b = $("ltInstall"), en = ft ? "unsloth" : "aitoolkit";
+        if (window.H3Install) window.H3Install.start(b, "Starting the " + eng + " install…"); else b.disabled = true;
+        jsend("POST", "/api/loratrain/install", { engine: en }).then(function (j) {
+          var id = j && (j.job && j.job.id || j.id);
+          if (j.error || !id) { if (window.H3Install) window.H3Install.end(b, false, j.error || "could not start"); else b.disabled = false; say(j.error || "could not start", "lbad"); return; }
+          say("⚙ installing " + eng + " - the full log is in the Queue (it takes a while)", "lok");
+          S.inst = { eng: eng, id: id };
+          if (window.H3Install) window.H3Install.job(b, id, { doing: "Installing " + eng + "…", done: eng + " installed", after: function () { S.inst = null; load(); } });
+        });
+      };
+    }
     paintTabs(); paintForm(); paintRun();
   }
   /** 2.585.0: the preference pairs' line (Dataset) - the count and whether this job learns from them */

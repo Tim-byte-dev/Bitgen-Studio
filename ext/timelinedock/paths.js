@@ -348,8 +348,12 @@
         + '<div class="tlp-row"><label title="AI matte (BiRefNet) keeps fur, hair and soft edges; chroma key needs nothing installed">Cut out <select id="ppMatte">'
         + '<option value="auto"' + (s.matte === "auto" ? " selected" : "") + ">auto" + (mi.ai ? " (AI)" : " (chroma key)") + '</option><option value="ai"' + (s.matte === "ai" ? " selected" : "") + ">AI matte</option>"
         + '<option value="key"' + (s.matte === "key" ? " selected" : "") + ">chroma key</option></select></label>"
-        + (mi.ai ? '<select id="ppModel" title="The matting model">' + (mi.models || []).map(function (m) { return "<option" + (m === s.model ? " selected" : "") + ">" + esc(m) + "</option>"; }).join("") + "</select>"
-          : '<button class="ghost" id="ppInstall" title="rembg + BiRefNet in their own venv (venvs/matte, ~1.5 GB with the model)">⬇ Install AI matte</button>') + "</div>"
+        + (mi.ai ? '<select id="ppModel" title="The matting model">' + (mi.models || []).map(function (m) { return "<option" + (m === s.model ? " selected" : "") + ">" + esc(m) + "</option>"; }).join("") + "</select>" : "")
+        // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall" + "let the user know
+        // the status next to the button and disable the button when download/install starts"): ⟳ Reinstall when it is
+        // there; disabled while it installs, its status beside it
+        + '<button class="ghost" id="ppInstall" title="' + (mi.ai ? "Installed - install rembg + BiRefNet again over the top (repairs a broken install)" : "rembg + BiRefNet in their own venv (venvs/matte, ~1.5 GB with the model)") + '"'
+        + (matteRun(mi) ? ' disabled aria-busy="true"' : "") + ">" + (mi.ai ? "⟳ Reinstall AI matte" : "⬇ Install AI matte") + "</button>" + matteChip(mi) + "</div>"
         + '<div class="tlp-row"><button class="ghost pp-go" id="ppGo">✨ Generate</button>'
         + '<button class="ghost" id="ppPlace" title="Rebuild the clips from the path as it is now - no new render"' + (P.gen && !ati ? "" : " disabled") + ">⟲ Place again</button>"
         + '<button class="ghost" id="ppClear" title="Remove the path\'s points">✕ Points</button>'
@@ -379,15 +383,32 @@
       $("ppPlace").addEventListener("click", function () { place(L); });
       $("ppClear").addEventListener("click", function () { P.pts = []; changed(L); });
       var ins = $("ppInstall");
+      if (ins && window.H3Install && !matteRun(mi)) window.H3Install.set(ins, !!mi.ai, { install: "⬇ Install AI matte", reinstall: "⟳ Reinstall AI matte", title: ins.title });   // 2.601.0: its look
       if (ins) ins.addEventListener("click", function () {
+        if (window.H3Install) window.H3Install.start(ins, "Starting the AI matte install…"); else ins.disabled = true;
         fetch("/api/pathgen/matte/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
-          .then(function (r) { return r.json(); }).then(function (j) { matteInfo = j; watchInstall(); paintState(L); });
+          .then(function (r) { return r.json(); }).then(function (j) { matteInfo = j; watchInstall(); paintState(L); },
+            function (e) { if (window.H3Install) window.H3Install.end(ins, false, "could not start: " + e.message); else ins.disabled = false; });
       });
       paintState(L);
+    }
+    /* 2.601.0: the AI matte install's status beside its button */
+    function matteRun(mi) { return !!(mi && mi.installing && mi.installing.state === "running"); }
+    function matteWords(mi) {
+      var i = mi.installing, last = i && (i.log || []).slice(-1)[0] || "";
+      return !i ? "" : i.state === "running" ? "Installing the AI matte…" + (last ? " " + String(last).replace(/^\[[^\]]{1,20}\]\s*/, "").slice(0, 70) : "")
+        : i.state === "done" ? "✓ AI matte installed" : "✗ " + (i.error || "the install failed");
+    }
+    function matteChip(mi) {
+      if (!mi || !mi.installing) return "";
+      var c = matteRun(mi) ? "run" : mi.installing.state === "done" ? "ok" : "bad";
+      return '<span class="h3inst ' + c + '" role="status">' + esc(matteWords(mi)) + "</span>";
     }
     function watchInstall() {
       setTimeout(function () {
         matteStatus().then(function (j) {
+          var b = $("ppInstall"), H = window.H3Install;
+          if (b && H && j && j.installing) { if (matteRun(j)) { if (!H.busy(b)) H.start(b, matteWords(j)); else H.step(b, matteWords(j)); } }
           var L = selPath(); if (L) paintState(L);
           if (j && j.installing && j.installing.state === "running") watchInstall();
           else { panel._for = null; paint(); }

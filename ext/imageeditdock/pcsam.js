@@ -255,23 +255,45 @@
         <div class="kxrow"><span>State</span><b id="ssState">${st.ready ? "ready" : st.venv_ready ? "installed - the model file is missing" : "not installed"}${st.server && st.server.running ? ` · running on ${esc(st.server.device || "…")}` : ""}</b></div>
         <div class="kxrow"><span>Model</span><select id="ssModel">${models}</select></div>
         <div class="kxrow"><span title="A SAM .pth you already have (ComfyUI's models/sams is looked in by itself)">Checkpoint</span><input type="text" id="ssCk" value="${esc(st.checkpoint_found ? st.checkpoint : "")}" placeholder="${esc(st.checkpoint)}" style="flex:1"></div>
-        <div class="kxrow"><button class="ghost" id="ssInstall">⬇ Install / repair</button><label><input type="checkbox" id="ssCpu"> CPU only</label></div>
+        <div class="kxrow"><button class="ghost" id="ssInstall"${st.installing && st.installing.state === "running" ? ' disabled aria-busy="true"' : ""} title="${st.ready ? "Installed - install it again over the top (repairs a broken install)" : "Download and install Segment Anything + CLIPSeg"}">${st.ready || st.venv_ready ? "⟳ Reinstall / repair" : "⬇ Install"}</button><b id="ssInst" role="status" style="margin:0 6px"></b><label><input type="checkbox" id="ssCpu"> CPU only</label></div>
         <pre id="ssLog" style="max-height:160px;overflow:auto;font-size:11px;white-space:pre-wrap;margin:4px 0">${esc(((st.installing || {}).log || []).join("\n"))}</pre>`,
         (dd) => {
           const body = { model: dd.querySelector("#ssModel").value, checkpoint: dd.querySelector("#ssCk").value.trim() };
           win.fetch("/api/segment/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
             .then((r) => r.json()).then((j) => say(j.error ? j.error : `Segment Anything: ${j.models[j.model].label}${j.ready ? " ready" : " - not ready yet (⬇ Install)"}`));
         }, { okLabel: "Save", wide: true, cancel: () => { clearInterval(poll); poll = null; } });
-      const paint = (s) => { d.querySelector("#ssLog").textContent = ((s.installing || {}).log || []).join("\n"); d.querySelector("#ssState").textContent = s.ready ? "ready" : (s.installing && s.installing.state === "running") ? "installing…" : s.installing && s.installing.state === "error" ? "the install failed: " + s.installing.error : "not installed"; };
-      d.querySelector("#ssInstall").onclick = async () => {
-        const r = await win.fetch("/api/segment/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: d.querySelector("#ssModel").value, device: d.querySelector("#ssCpu").checked ? "cpu" : "auto" }) });
-        paint(await r.json());
+      // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+      // starts" + "if … installed change the button to reinstall"): disabled while it installs, "⏳ installing… <its last
+      // line> 40 s" beside it, then ✓ / ✗; installed = ⟳ Reinstall / repair
+      const ib = d.querySelector("#ssInstall"), chip = d.querySelector("#ssInst");
+      let t0 = 0;
+      const paint = (s) => {
+        const run = !!(s.installing && s.installing.state === "running"), lg = (s.installing || {}).log || [];
+        d.querySelector("#ssLog").textContent = lg.join("\n");
+        d.querySelector("#ssState").textContent = s.ready ? "ready" : run ? "installing…" : s.installing && s.installing.state === "error" ? "the install failed: " + s.installing.error : "not installed";
+        const sec = t0 ? Math.floor((Date.now() - t0) / 1000) : 0, last = String(lg.slice(-1)[0] || "").slice(0, 60);
+        chip.textContent = run ? "⏳ installing…" + (last ? " " + last : "") + (sec >= 2 ? " · " + sec + " s" : "") : s.installing && s.installing.state === "error" ? "✗ " + (s.installing.error || "failed") : s.installing && s.installing.state === "done" ? (s.ready ? "✓ installed" : "✓ installed - the model file is still missing") : "";
+        ib.disabled = run; if (run) ib.setAttribute("aria-busy", "true"); else ib.removeAttribute("aria-busy");
+        if (!run) ib.textContent = s.ready || s.venv_ready ? "⟳ Reinstall / repair" : "⬇ Install";
+      };
+      const follow = () => {
         clearInterval(poll);
         poll = setInterval(async () => {
           if (!d.isConnected) { clearInterval(poll); poll = null; return; }
           let s = null; try { s = await (await win.fetch("/api/segment/status")).json(); } catch { return; }
           paint(s); if (!s.installing || s.installing.state !== "running") { clearInterval(poll); poll = null; }
         }, 2000);
+      };
+      if (st.installing && st.installing.state === "running") { t0 = Date.now(); paint(st); follow(); }
+      ib.onclick = async () => {
+        ib.disabled = true; ib.setAttribute("aria-busy", "true"); chip.textContent = "⏳ starting the install…"; t0 = Date.now();
+        try {
+          const r = await win.fetch("/api/segment/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: d.querySelector("#ssModel").value, device: d.querySelector("#ssCpu").checked ? "cpu" : "auto" }) });
+          const j = await r.json();
+          if (j.error) { ib.disabled = false; ib.removeAttribute("aria-busy"); chip.textContent = "✗ " + j.error; return; }
+          paint(j);
+        } catch (e) { ib.disabled = false; ib.removeAttribute("aria-busy"); chip.textContent = "✗ " + e.message; return; }
+        follow();
       };
       return d;
     }

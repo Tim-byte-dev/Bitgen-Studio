@@ -1756,8 +1756,9 @@ setTimeout(() => {
 {
   const J = read("ext", "stemsdock", "stemsdock.js");
   const D = read("ext", "stemsdock", "dock.html");
-  check("2.274.0: status() hides ⚙ Install exactly when /api/stems says installed — and ⟳ re-checks so the button leaves after the install job",
-    J.includes('el("stInstall").classList.toggle("hidden", !!j.installed);')
+  // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): no longer hidden - ⟳ Reinstall
+  check("2.274.0 → 2.601.0: status() turns ⚙ Install into ⟳ Reinstall exactly when /api/stems says installed (it was hidden) — and ⟳ re-checks",
+    J.includes('else ib.textContent = j.installed ? "⟳ Reinstall" : "⚙ Install";') && J.includes('window.H3Install.set(ib, !!j.installed, { install: "⚙ Install" });')
     && J.includes('el("stRefresh").onclick = function () { loadSongs(); status(); };'));
   check("2.274.0: the Separate button animates 'separating' with a walking dot (400ms interval), restores its EXACT dock label on BOTH the success and failure paths, and the interval is always cleared",
     J.includes('var SEP_LABEL = "✂🎤 Separate";')
@@ -1767,7 +1768,7 @@ setTimeout(() => {
     && J.includes("if (sepTimer) { clearInterval(sepTimer); sepTimer = null; }")
     && J.includes("sepAnimStop(b);\n        if (j.error)")
     && J.includes('.catch(function (e) { b.disabled = false; sepAnimStop(b); say("separation failed: '));
-  check("2.274.0 LIVE jsdom: installed:true HIDES ⚙, pressing ✂🎤 walks the dots while the separate is in flight, and the label returns on completion",
+  check("2.274.0 LIVE jsdom: installed:true = ⟳ Reinstall (2.601.0, was hidden), pressing ✂🎤 walks the dots while the separate is in flight, and the label returns on completion",
     (() => {
       const probe = `
 const { JSDOM } = require("jsdom");
@@ -1799,7 +1800,7 @@ eval(fs.readFileSync("ext/stemsdock/stemsdock.js", "utf8"));
 setTimeout(() => {
   const inst = w.document.getElementById("stInstall");
   const go = w.document.getElementById("stGo");
-  const hidden = inst.classList.contains("hidden");
+  const hidden = !inst.classList.contains("hidden") && inst.textContent === "⟳ Reinstall";   // 2.601.0
   go.onclick();
   const atPress = go.textContent;
   setTimeout(() => {

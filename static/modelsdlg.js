@@ -88,11 +88,11 @@
     r = r || {};
     msg("mHfMsg", r.found ? "Hugging Face CLI ready (huggingface_hub " + (r.version || "?") + ") - big files come down faster and resume by themselves."
       : "The Hugging Face CLI is not installed - Install hf CLI adds it to the studio's Python (" + (r.python || "?") + "), or keep the built-in downloader.", r.found ? "ok" : "");
-    $("mHf").textContent = r.found ? "Update hf CLI" : "Install hf CLI";
+    $("mHf").textContent = r.found ? "⟳ Reinstall / update hf CLI" : "Install hf CLI";   // 2.601.0
   }
   function installHf() {
     $("mHf").disabled = true;
-    msg("mHfMsg", "Installing huggingface_hub…");
+    msg("mHfMsg", "⏳ Installing huggingface_hub…");
     return jpost("/api/setup/hfcli/install", {}).then(function (r) {
       if (r.error) { $("mHf").disabled = false; msg("mHfMsg", r.error, "bad"); return r; }
       poll();
@@ -113,10 +113,12 @@
         var can = by[g.id].filter(function (m) { return m.available && !m.present; }), gsz = can.reduce(function (a, m) { return a + (m.size || 0); }, 0);
         return '<div class="mGrp"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-grp="' + esc(g.id) + '"' + (can.length ? "" : " disabled")
           + ' title="Tick / untick the whole group">' + esc(g.label) + ' <span class="sz" data-grpsz="' + esc(g.id) + '" style="margin-left:auto;font-weight:400">' + (can.length ? can.length + " to get · " + gbs(gsz) : "nothing to get") + "</span></label></div>" + by[g.id].map(function (m) {
-          var ok = m.available && !m.present;
+          // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): a downloaded
+          // one can be ticked too - ⤓ Download becomes ⟳ Download again (fetched again); the group box leaves it alone
+          var ok = m.available;
           var tags = (m.recommended ? '<span class="tag rec">for your GPU</span>' : "") + (m.present ? '<span class="tag have">downloaded</span>' : "")
             + (m.gated ? '<span class="tag gate">gated</span>' : "");
-          return '<label class="mItem' + (ok ? "" : " off") + '" data-id="' + esc(m.id) + '"><input type="checkbox" data-id="' + esc(m.id) + '" data-in="' + esc(g.id) + '"' + (ok ? "" : " disabled") + ">"
+          return '<label class="mItem' + (ok ? "" : " off") + '" data-id="' + esc(m.id) + '"><input type="checkbox" data-id="' + esc(m.id) + '" data-in="' + esc(g.id) + '"' + (m.present ? ' data-have="1" title="Already downloaded - tick it to download it again"' : "") + (ok ? "" : " disabled") + ">"
             + '<span class="nm">' + esc(m.label) + tags + '</span><span class="sz">' + gbs(m.size) + "</span>"
             + '<span class="why' + (m.available ? "" : " bad") + '">' + esc(m.available ? (m.for || "") : m.why) + "</span>"
             + '<div class="mBar"><div></div></div></label>';
@@ -125,7 +127,7 @@
       Array.prototype.forEach.call(cur.dlg.querySelectorAll(".mList input[data-id]"), function (c) { c.onchange = totals; });
       Array.prototype.forEach.call(cur.dlg.querySelectorAll(".mList input[data-grp]"), function (c) {
         c.onchange = function () {
-          Array.prototype.forEach.call(cur.dlg.querySelectorAll('.mList input[data-in="' + c.dataset.grp + '"]:not(:disabled)'), function (x) { x.checked = c.checked; });
+          Array.prototype.forEach.call(cur.dlg.querySelectorAll('.mList input[data-in="' + c.dataset.grp + '"]:not(:disabled):not([data-have])'), function (x) { x.checked = c.checked; });
           totals();
         };
       });
@@ -139,21 +141,27 @@
     var ids = ticked();
     // each group's box: ticked when all its files are, half when some are (2.520.0)
     Array.prototype.forEach.call(cur.dlg.querySelectorAll(".mList input[data-grp]"), function (g) {
-      var all = cur.dlg.querySelectorAll('.mList input[data-in="' + g.dataset.grp + '"]:not(:disabled)'), on = 0;
+      var all = cur.dlg.querySelectorAll('.mList input[data-in="' + g.dataset.grp + '"]:not(:disabled):not([data-have])'), on = 0;
       Array.prototype.forEach.call(all, function (x) { if (x.checked) on++; });
       g.checked = all.length > 0 && on === all.length; g.indeterminate = on > 0 && on < all.length;
     });
     var sum = cur.rows.filter(function (r) { return ids.indexOf(r.id) >= 0; }).reduce(function (a, r) { return a + (r.size || 0); }, 0);
     $("mTot").textContent = ids.length + " file(s), " + (gbs(sum) || "0 B") + (cur.free ? " · " + gbs(cur.free) + " free on the models drive" : "")
       + (cur.free && sum > cur.free ? " - NOT ENOUGH SPACE" : "");
-    $("mGo").disabled = !ids.length;
+    $("mGo").disabled = !ids.length || !!(window.H3Install && window.H3Install.busy($("mGo")));   // 2.601.0: not while it downloads
+    // 2.601.0: ticked ones already downloaded are fetched again - the button says so
+    var again = again_(ids);
+    $("mGo").textContent = ids.length && again === ids.length ? "⟳ Download again" : again ? "⤓ Download · ⟳ " + again + " again" : "⤓ Download";
+    $("mGo").classList.toggle("h3re", !!ids.length && again === ids.length);
   }
+  function again_(ids) { return cur.rows.filter(function (r) { return r.present && ids.indexOf(r.id) >= 0; }).length; }
   function go() {
     var ids = ticked();
     if (!ids.length) return Promise.resolve(null);
     $("mGo").disabled = true;
-    return jpost("/api/setup/download", { ids: ids, token: cur.token, engine: $("mEng").value }).then(function (r) {
-      if (r.error) { $("mGo").disabled = false; paintLog([{ line: "[error] " + r.error, err: true }]); return r; }
+    if (window.H3Install) window.H3Install.start($("mGo"), "Starting " + ids.length + " download(s)…");   // 2.601.0
+    return jpost("/api/setup/download", { ids: ids, token: cur.token, engine: $("mEng").value, force: again_(ids) > 0 }).then(function (r) {
+      if (r.error) { if (window.H3Install) window.H3Install.end($("mGo"), false, r.error); $("mGo").disabled = false; paintLog([{ line: "[error] " + r.error, err: true }]); return r; }
       poll();
       return r;
     });
@@ -177,6 +185,17 @@
         else if (f.state === "wait") why.textContent = "waiting…";
       });
       if (s.hf && s.what === "hfcli" && !s.busy) { $("mHf").disabled = false; hfPaint(s.hf); }
+      // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+      // starts"): beside ⤓ Download - "⏳ Downloading 2 of 5 · 43 %", then "✓ 5 downloaded" / "✗ 1 of 5 failed"
+      if (window.H3Install && s.what === "download") {
+        var F = s.files || {}, fid = Object.keys(F), nOk = fid.filter(function (k) { return F[k].state === "ok"; }).length,
+          nBad = fid.filter(function (k) { return F[k].state === "err"; }).length, rid = fid.filter(function (k) { return F[k].state === "run"; })[0], fr = rid && F[rid];
+        if (s.busy) {
+          if (!window.H3Install.busy($("mGo"))) window.H3Install.start($("mGo"), "Downloading…");
+          window.H3Install.step($("mGo"), "Downloading " + Math.min(fid.length, nOk + nBad + 1) + " of " + fid.length + (fr && fr.total ? " · " + Math.round(100 * fr.got / fr.total) + " %" : ""));
+        } else if (window.H3Install.busy($("mGo")) && s.result) window.H3Install.end($("mGo"), !nBad, nBad ? nBad + " of " + fid.length + " failed - see the log" : nOk + " downloaded");
+      }
+      if (s.what === "hfcli") $("mHf").setAttribute("aria-busy", s.busy ? "true" : "false");
       if (s.busy) { $("mGo").disabled = true; if (cur.dlg.open) cur.poll = setTimeout(poll, 1000); }
       else if (s.what === "download" && s.result && cur.seenRun !== s.started) {
         // a run just ended: the list again (what is downloaded now) - once per run

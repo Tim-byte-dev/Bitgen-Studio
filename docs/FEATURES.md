@@ -163,6 +163,7 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 - **References in the image editor** — a dropped reference becomes a layer; ✨ Edit can take a reference as Picture 2. *Where:* 🖼 Image editor. *Since:* 2.539.0
 - **Renders made real with references** — each Blender / Unreal object is matched to a reference picture, by its name or by hand. The first frame is made real with those pictures by an edit model, then LTX 2.3 3DREAL animates it along the render. *Where:* 🟧 Timeline Blender scene / UNREAL ▸ Render to Real, 🖼 image editor 3D and Unreal layers. *Since:* 2.540.0
 - **Add-ons** — Settings ▸ Add-ons lists the optional engines (YuE2 music, Viggle native): what each is for, needs and size, and whether it is installed; ⤓ Install / ⟳ Reinstall / 🗑 Remove with the log in the tab. *Where:* Settings ▸ Add-ons. *Since:* 2.540.4
+- **⟳ Reinstall and the install status** — anything already installed says ⟳ Reinstall (a downloaded model ⟳ Download again) and fetches everything again; while an install or download runs its button is disabled and a status beside it shows the step, the percentage and the seconds, then ✓ or ✗ with the reason. *Where:* Settings (Add-ons, Audio, ComfyUI, Models, Extensions), the model catalog, Civitai, the LoRA trainer and the dockers' install buttons. *Since:* 2.601.0
 - **Update from GitHub** — Settings ▸ General ▸ ⟳ Updates: check GitHub for a newer version (the new commits listed), ⤓ Update now (a git clone moves to GitHub's branch with your changed files backed up; a zip install gets the changed files), npm / pip when their lists changed, ⟳ Restart now; a quiet check after start. *Where:* Settings ▸ General. *Since:* 2.540.5
 - **A tidy app folder** — the app folder holds start.bat (+ package.json, README, LICENSE); the server, the workers, the settings defaults, the setup scripts and the notes are in misc\; an install updated from a zip tidies its old copies away at the first start (quick prompts kept). *Where:* the app folder. *Since:* 2.591.0
 - **House builder lights** — ◯ place a light, drag its reach; move, size, colour and brightness; lit in 3D, shots and panoramas. *Where:* 🏠 House. *Since:* 2.538.0
@@ -349,6 +350,7 @@ Songs, stems, voices and the words in them.
 ### Voices and speech
 
 - **Voice cloning** — clone a voice from a short clip or a waveform region. *Where:* the Voice / Stems docker
+- **▶ Play in the voice clone's waveform** — plays the selection, or the whole clip when nothing is selected; ■ Stop, a playhead on the wave, a click clears the selection. *Where:* Settings > Audio > voice clone. *Since:* 2.601.0
 - **Text to speech** — speak a line in a cloned voice; OpenAudio or OmniVoice (600+ languages, voice design). *Where:* Settings > Audio. *Since:* 2.102.0
 - **Ming-3.0 TTS** — a second speech engine (inclusionAI, 0.5B, 44.1 kHz): cloned voices from a clip and its transcript, and designed voices. Installed from Settings ▸ Add-ons. *Where:* Settings > Audio > Speech engine. *Since:* 2.594.0
 - **Speech from the prompt** — Generate with the speech mode. *Where:* the Generate dropdown

@@ -3386,13 +3386,15 @@ const trap = require("../lib/trap");
     try { res.json(comfy.accelStatus()); }
     catch (e) { res.json({ error: String(e.message || e), gpus: [], notes: [] }); }
   });
-  app.post("/api/comfy/accel/install", (_req, res) => {
-    try { res.json(comfy.accelInstall()); }
+  app.post("/api/comfy/accel/install", (req, res) => {
+    try { res.json(comfy.accelInstall({ reinstall: (req.body || {}).reinstall === true })); }   // 2.601.0
     catch (e) { res.status(500).json({ error: String(e.message || e) }); }
   });
   // VIDEO ACCELERATORS (2.116.0): sage wheel + KJNodes + Spectrum for the
   // MiniMax H3 video styles. Status probes ComfyUI's python and custom_nodes;
   // install streams pip/git output into the app console (lib/comfy.js).
+  // 2.601.0: the ComfyUI install running now (Comfy Kitchen / Sage / a node pack) - for the status beside its button
+  app.get("/api/comfy/install-state", (_req, res) => res.json(comfy.installState()));
   app.get("/api/comfy/vaccel", (_req, res) => {
     try { res.json(comfy.videoAccelStatus()); }
     catch (e) { res.status(500).json({ error: String(e.message || e) }); }

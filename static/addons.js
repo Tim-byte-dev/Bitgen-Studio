@@ -46,7 +46,7 @@
   }
   function refresh() {
     return fetch("/api/addons").then(j).then(function (r) {
-      S.list = r.addons || []; S.job = r.job;
+      S.list = r.addons || []; S.job = r.job || (S.job && S.job.note ? S.job : null);   // 2.601.0: keep the "in the Queue" word
       paint();
       if (S.job && S.job.state === "running") follow();
       return r;
@@ -71,7 +71,9 @@
             : x === "remove" ? (curIt && curIt.present ? btn("remove", "🗑 Delete it", "Delete the picked one from " + (a.folder || "the LLM folder")) : "") : "";
         }
         if (hasItems) {                                   // 2.557.0: an add-on with a list - download what is ticked
-          return x === "install" || x === "reinstall" ? btn("install", "⤓ Download ticked", "Download the ticked models (and a node pack the add-on needs, if missing)")
+          // 2.601.0: every ticked one already downloaded = ⟳ Download again (they are fetched again)
+          var again = itemsAgain(a, S.picks[a.id] || defaultPicks(a));
+          return x === "install" || x === "reinstall" ? btn("install", again ? "⟳ Download again" : "⤓ Download ticked", again ? "Every ticked model is already downloaded - download them again (repairs a broken file)" : "Download the ticked models (and a node pack the add-on needs, if missing)")
             : x === "remove" ? btn("remove", "🗑 Remove models", "Delete its downloaded model files (the node pack stays in ComfyUI)") : "";
         }
         return x === "install" ? btn("install", "⤓ Install", a.external ? "Starts its installer - follow it in the Queue" : "Install " + a.label + " (" + a.size + ")")
@@ -96,11 +98,17 @@
           + a.links.map(function (l) { return '<li>' + (l.kind === "pack" ? "📦 " : "🧠 ") + '<a href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label) + '</a> <span class="to">→ ' + esc(l.dest) + "</span></li>"; }).join("") + "</ul></details>" : "")
         + '<div class="btns">' + acts + (a.zip ? '<button type="button" class="ghost" data-aozip="' + esc(a.id) + '"' + (running || a.busy ? " disabled" : "") + ' title="Offline: ' + esc(a.zip.hint || "a zip you downloaded") + '">📦 Install from a zip…</button>' : "") + "</div></div>";
     }).join("") || "No add-ons.";
+    chipPaint();                                          // 2.601.0: the running / last job's status beside its card's buttons
     Array.prototype.forEach.call(L.querySelectorAll("[data-aosel]"), function (el) {
       el.onchange = function () { S.picks[el.dataset.aosel] = [el.value]; paint(); };
     });
     Array.prototype.forEach.call(L.querySelectorAll("[data-aoi]"), function (el) {
-      el.onchange = function () { S.picks[el.dataset.aoi] = picked(el.dataset.aoi); };
+      el.onchange = function () {
+        S.picks[el.dataset.aoi] = picked(el.dataset.aoi);
+        // 2.601.0: the button follows the ticks - ⟳ Download again when every ticked one is already there
+        var a = S.list.find(function (x) { return x.id === el.dataset.aoi; }), b = L.querySelector('[data-ao="' + el.dataset.aoi + '"][data-act="install"]');
+        if (a && b) b.textContent = itemsAgain(a, S.picks[a.id]) ? "⟳ Download again" : "⤓ Download ticked";
+      };
     });
     Array.prototype.forEach.call(L.querySelectorAll("[data-ao]"), function (el) {
       el.onclick = function () { act(el.dataset.ao, el.dataset.act); };
@@ -123,13 +131,38 @@
     });
     paintJob();
   }
+  /* 2.601.0 (Tim: "when installing an addon - let the user know the status next to the button and disable the button
+     when download/install starts"): the card's own status beside its buttons - "⏳ Installing… <the last log line> 12 s",
+     then "✓ installed" / "✗ <why>"; its buttons are disabled while it runs (the full log stays under the list) */
+  function chipPaint() {
+    var L = $("aoList"); if (!L || !S.job) return;
+    var card = L.querySelector('[data-addon="' + S.job.id + '"]'), b = card && card.querySelector(".btns button");
+    if (!b) return;
+    var c = window.H3Install ? window.H3Install.chip(b) : null;
+    if (!c) return;
+    var run = S.job.state === "running", t = S.t0 ? Math.floor((Date.now() - S.t0) / 1000) : 0;
+    var last = window.H3Install ? window.H3Install.lastLine(S.lines.map(function (l) { return l.charAt(0) === "!" ? l.slice(2) : l; })) : "";
+    c.classList.toggle("run", run); c.classList.toggle("ok", S.job.state === "done"); c.classList.toggle("bad", !run && S.job.state !== "done");
+    c.textContent = run ? (S.job.action === "remove" ? "Removing…" : "Installing…") + (last ? " " + last : "") + (t >= 2 ? " · " + t + " s" : "")
+      : S.job.state === "done" ? "✓ " + (S.job.note || (S.job.action === "remove" ? "removed" : "installed")) : "✗ " + (S.job.error || "failed - see the log below");
+    c.title = c.textContent;
+    Array.prototype.forEach.call(card.querySelectorAll("button"), function (x) { if (run) { x.disabled = true; x.setAttribute("aria-busy", "true"); } else x.removeAttribute("aria-busy"); });
+  }
   function paintJob() {
+    chipPaint();
     var J = $("aoJob"); if (!J) return;
     if (!S.job) { J.innerHTML = ""; return; }
     var head = S.job.state === "running" ? "⏳ " + S.job.action + "ing " + S.job.id + "…" : S.job.state === "done" ? "✓ " + S.job.id + " " + (S.job.action === "remove" ? "removed" : "installed") : "✗ " + S.job.id + ": " + (S.job.error || "failed");
     J.innerHTML = '<div class="kv" id="aoHead" style="margin-top:6px"><b>' + esc(head) + "</b></div>"
       + '<div id="aoLog">' + S.lines.map(function (l) { return l.charAt(0) === "!" ? '<span class="e">' + esc(l.slice(2)) + "</span>" : esc(l); }).join("\n") + "</div>";
     var lg = $("aoLog"); if (lg) lg.scrollTop = lg.scrollHeight;
+  }
+  /** 2.601.0: the items ticked before any click (the needed ones + the defaults not downloaded yet) */
+  function defaultPicks(a) { return (a.items || []).filter(function (it) { return it.need || (!it.present && it.dflt); }).map(function (it) { return it.id; }); }
+  /** 2.601.0: every one of these picks is already downloaded (so the button is ⟳ Download again) */
+  function itemsAgain(a, picks) {
+    var sel = (a.items || []).filter(function (it) { return (picks || []).indexOf(it.id) >= 0; });
+    return sel.length > 0 && sel.every(function (it) { return it.present; });
   }
   /** the ticked items of an add-on with a list */
   function picked(id) {
@@ -150,13 +183,18 @@
       var sel = a.items.filter(function (it) { return picks.indexOf(it.id) >= 0; });
       if (!confirm("Download for " + (a.label || id) + "?\n\n" + sel.map(function (it) { return "• " + it.label + " - " + it.size + (it.present ? " (already there)" : ""); }).join("\n") + "\n\nNeeds: " + a.needs)) return Promise.resolve(null);
     } else if (action === "install" && !a.external && !a.installed && !hasItems && !confirm("Install " + (a.label || id) + "?\n\nSize: " + a.size + "\nNeeds: " + a.needs)) return Promise.resolve(null);
-    S.lines = []; S.next = 0;
+    S.lines = []; S.next = 0; S.t0 = Date.now();
+    // 2.601.0: at once - the card's buttons off and "⏳ Starting…" beside them (before the server answers)
+    S.job = { id: id, action: action, state: "running" }; chipPaint();
     var opt = { method: "POST" };
-    if (hasItems && (action === "install" || a.select)) { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ items: picks }); }
+    // 2.601.0: ⟳ Reinstall / ⟳ Download again - the server fetches what is already there again ({reinstall: true})
+    var again = action === "install" && !a.external && (hasItems ? itemsAgain(a, picks) : !!a.installed);
+    if (hasItems && (action === "install" || a.select)) { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ items: picks, reinstall: again }); }
+    else if (again) { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ reinstall: true }); }
     return fetch("/api/addons/" + encodeURIComponent(id) + "/" + action, opt).then(j).then(function (r) {
-      if (r.error) { if (typeof window.toast === "function") window.toast(r.error); else alert(r.error); return r; }
+      if (r.error) { S.job = { id: id, action: action, state: "error", error: r.error }; paint(); chipPaint(); if (typeof window.toast === "function") window.toast(r.error); else alert(r.error); return r; }
       if (window.H3TestEvent) window.H3TestEvent("addon_" + action, id);
-      if (r.external) { if (typeof window.toast === "function") window.toast(a.label + ": its install is in the Queue"); return refresh(); }
+      if (r.external) { S.job = { id: id, action: action, state: "done", note: "started - its install is in the Queue" }; if (typeof window.toast === "function") window.toast(a.label + ": its install is in the Queue"); return refresh(); }
       S.job = r.job; paint(); follow(); return r;
     });
   }

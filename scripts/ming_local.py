@@ -25,6 +25,8 @@ import subprocess
 import sys
 import time
 
+TA_COMPAT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ta_compat.py")   # 2.601.0: torchaudio without TorchCodec
+
 DESIGN_FLAGS = ("--instruct", "--instruction", "--caption", "--voice_description", "--description", "--prompt_instruct")
 OUT_FLAGS = ("--output", "--output_path", "--out", "--save_path")
 
@@ -159,7 +161,9 @@ def speak(job):
     t0 = time.time()
     log("Ming-3.0 TTS: %s%s" % ("voice design" if job.get("instruct") else "clone" if job.get("ref_audio") else "default voice",
                                 "" if norm else " (no text normalisation - pynini is not installed)"))
-    p = subprocess.Popen([sys.executable] + args, cwd=src, env=env_for(job.get("device")),
+    # 2.601.0: through ta_compat - torchaudio 2.9+ without TorchCodec reads / writes audio anyway (it stopped with
+    # "TorchCodec is required for load_with_torchcodec")
+    p = subprocess.Popen([sys.executable, TA_COMPAT] + args, cwd=src, env=env_for(job.get("device")),
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
     tail = []
     for line in p.stdout:

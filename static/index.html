@@ -2558,7 +2558,9 @@
         border:1px solid var(--line);border-radius:6px;background:var(--ink);cursor:crosshair"></canvas>
       <div class="rowbtns" style="margin-top:4px">
         <span id="s_vcsel" class="hint" style="flex:1">drag across the waveform to choose the region</span>
-        <button class="ghost" id="s_vcplay" type="button">▶ Play selection</button>
+        <!-- 2.601.0 (Tim: "change play selection to play - play the clip if no selection or play the selection if there
+             is a selection"): ▶ Play / ■ Stop, a playhead on the waveform; a click (no drag) clears the selection -->
+        <button class="ghost" id="s_vcplay" type="button" title="Plays the selection - or the whole clip when nothing is selected (a click on the waveform clears the selection). Again = stop">▶ Play</button>
         <button class="ghost" id="s_vcsaveclip" type="button"
           style="border-color:var(--tiger);color:var(--tiger)">Save selection as voice</button>
       </div>
@@ -3415,6 +3417,7 @@
 <script src="/static/modelsdlg.js"></script>  <!-- 2.341.0: Settings -> Models -> ⤓ Model catalog (routes/setup.js) -->  <!-- 2.340.0: the dock's First / Last frame types -> fl2va / ref2va, LTX order, Qwen roles -->
 <script src="/static/mesh3dsend.js"></script>  <!-- 2.404.0: 🧊 on a Gallery / Assets picture -> a 3D model (routes/sceneAI.js /api/mesh3d) -->
 <script src="/static/mesh3dctx.js"></script>  <!-- 2.594.0: right-click 🧊 Convert to 3D (Gallery, Assets, References, the image editor) -> the image editor / SolidCraft (H3To3D) -->
+<script src="/static/installbtn.js"></script>  <!-- 2.601.0: install buttons - ⟳ Reinstall when installed; disabled + a live status beside them while they run (H3Install) -->
 <script src="/static/speechengines.js"></script>  <!-- 2.594.0: Settings ▸ Audio engine picks - Ming-3.0 TTS, Bark 3.0 STT (H3Speech) -->
 <script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
 <script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
@@ -3989,23 +3992,27 @@ async function refreshKitchen() {
   for (const n of (j.notes || [])) lines.push("— " + n);
   if (j.error) lines.push("probe error: " + j.error);
   box.textContent = lines.join("\n");
-  btn.disabled = !j.installable || !!j.kitchen;
-  btn.textContent = j.kitchen ? "✓ already installed"
-    : j.installable ? `⬇ Install ${j.extra} into ComfyUI` : "⬇ Install (no usable kernels for this GPU)";
+  // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): installed = ⟳ Reinstall
+  btn.disabled = (window.H3Install && H3Install.busy(btn)) || (!j.installable && !j.kitchen);
+  const kInst = j.installable || j.kitchen ? `⬇ Install ${j.extra || "comfy-kitchen"} into ComfyUI` : "⬇ Install (no usable kernels for this GPU)";
+  if (window.H3Reinstall) H3Reinstall.set(btn, !!j.kitchen, { install: kInst }); else btn.textContent = j.kitchen ? "⟳ Reinstall" : kInst;
 }
 $("s_kcheck") && ($("s_kcheck").onclick = refreshKitchen);
 $("s_kinstall") && ($("s_kinstall").onclick = async () => {
-  if (!(await appConfirm("Install Comfy Kitchen into ComfyUI's python environment?\n\n"
+  const kAgain = $("s_kinstall").dataset.installed === "1";   // 2.601.0: ⟳ Reinstall
+  if (!(await appConfirm((kAgain ? "Reinstall" : "Install") + " Comfy Kitchen into ComfyUI's python environment?\n\n"
     + "This changes YOUR ComfyUI install (pip install). Output streams to the "
     + "app console. Restart ComfyUI afterwards. Undo with: pip uninstall comfy-kitchen")))
     return;
-  $("s_kinstall").disabled = true;
+  const kb = $("s_kinstall");
+  if (window.H3Install) H3Install.start(kb, (kAgain ? "Reinstalling" : "Installing") + " Comfy Kitchen…"); else kb.disabled = true;
   try {
-    const j = await (await fetch("/api/comfy/accel/install", { method: "POST" })).json();
-    if (!j.started) { alert(j.reason || "could not start"); return; }
+    const j = await (await fetch("/api/comfy/accel/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reinstall: kAgain }) })).json();
+    if (!j.started) { if (window.H3Install) H3Install.end(kb, false, j.reason || "could not start"); else alert(j.reason || "could not start"); return; }
     followComfy();                       // stream pip output into the console
-    $("settings").close();
-  } finally { setTimeout(refreshKitchen, 1500); }
+    // 2.601.0: Settings stays open - "⏳ <pip's last line>" beside the button until it ends
+    comfyInstallFollow(kb, "Installing Comfy Kitchen…", refreshKitchen);
+  } finally { if (!window.H3Install) setTimeout(refreshKitchen, 1500); }
 });
 
 /* -------- Video accelerators (2.116.0): Sage attention + Spectrum ---------
@@ -4041,15 +4048,17 @@ async function refreshVideoAccel() {
     : j.sage ? "⚠ wheel installed, KJNodes missing"
     : kj ? "⚠ KJNodes present, sageattention wheel missing"
     : "✗ not installed";
-  if ($("s_vasage")) $("s_vasage").textContent = sageFull ? "↻ Reinstall Sage" : "⬇ Install Sage";
+  if ($("s_vasage") && !(window.H3Install && H3Install.busy($("s_vasage")))) { if (window.H3Install) H3Install.set($("s_vasage"), sageFull, { install: "⬇ Install Sage" }); else $("s_vasage").textContent = sageFull ? "⟳ Reinstall Sage" : "⬇ Install Sage"; }
   if (plbl) plbl.textContent = sp ? "✓ installed" : "✗ not installed";
-  if ($("s_vaspectrum")) $("s_vaspectrum").textContent = sp ? "↻ Reinstall Spectrum" : "⬇ Install Spectrum";
+  if ($("s_vaspectrum") && !(window.H3Install && H3Install.busy($("s_vaspectrum")))) { if (window.H3Install) H3Install.set($("s_vaspectrum"), sp, { install: "⬇ Install Spectrum" }); else $("s_vaspectrum").textContent = sp ? "⟳ Reinstall Spectrum" : "⬇ Install Spectrum"; }
   // 2.503.0: KJNodes (Long video), Yusu H3 Unified, RH DLSS 5
   for (const k of ["kjnodes", "yusu", "veda", "dlss5"]) {
     const on = ((j.repos || {})[k] || {}).installed, lb = $("s_vapacklbl_" + k);
     if (lb) lb.textContent = on ? "✓ installed" : "✗ not installed";
     const bt = $("s_vapack_" + k);
-    if (bt) bt.textContent = (on ? "↻ Update " : "⬇ Install ") + { kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5" }[k];
+    const nm = { kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5" }[k];
+    // 2.601.0: installed = ⟳ Reinstall / update (git pull) - and never relabelled while it runs
+    if (bt && !(window.H3Install && H3Install.busy(bt))) { if (window.H3Install) H3Install.set(bt, !!on, { install: "⬇ Install " + nm, reinstall: "⟳ Reinstall / update " + nm, title: "Installed - git pull updates it (and its requirements)" }); else bt.textContent = (on ? "⟳ Reinstall / update " : "⬇ Install ") + nm; }
   }
   const lines = [];
   lines.push(`python: ${j.python} (${j.python_how})` + (j.torch ? ` · torch ${j.torch}` : "")
@@ -4060,32 +4069,43 @@ async function refreshVideoAccel() {
   if (j.error) lines.push("probe error: " + j.error);
   box.textContent = lines.join("\n");
 }
-async function vaInstall(what, blurb) {
+/* 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+   starts. do this with all buttons"): a ComfyUI install (Comfy Kitchen / Sage / Spectrum / a node pack) - the button
+   is disabled and "⏳ <its last console line>" sits beside it; "✓ Installed - restart ComfyUI" / "✗ <why>" at the end */
+function comfyInstallFollow(btn, doing, after) {
+  if (!window.H3Install || !btn) return;
+  H3Install.poll(btn, () => fetch("/api/comfy/install-state").then((r) => r.json()).then((s) =>
+    s.running ? { running: true, text: doing + (s.text ? " - " + s.text : "") } : s), { doing, after: () => { if (after) after(); } });
+}
+async function vaInstall(what, blurb, btn) {
   if (!(await appConfirm(blurb + "\n\nThis changes YOUR ComfyUI install. Output streams to the "
     + "app console. Restart ComfyUI afterwards."))) return;
+  const name = { sage: "Sage", spectrum: "Spectrum", kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5" }[what] || what;
+  if (btn && window.H3Install) H3Install.start(btn, "Starting " + name + "…");
   try {
     const j = await (await fetch("/api/comfy/vaccel/install", { method: "POST",
       headers: { "Content-Type": "application/json" }, body: JSON.stringify({ what }) })).json();
-    if (!j.started) { alert(j.reason || "could not start"); return; }
+    if (!j.started) { if (btn && window.H3Install) H3Install.end(btn, false, j.reason || "could not start"); else alert(j.reason || "could not start"); return; }
     followComfy();                       // stream pip/git output into the console
-    $("settings").close();
-  } finally { setTimeout(refreshVideoAccel, 1500); }
+    if (btn && window.H3Install) comfyInstallFollow(btn, "Installing " + name + "…", refreshVideoAccel);   // 2.601.0: Settings stays open
+    else $("settings").close();
+  } finally { if (!(btn && window.H3Install)) setTimeout(refreshVideoAccel, 1500); }
 }
 $("s_vacheck") && ($("s_vacheck").onclick = refreshVideoAccel);
-$("s_vasage") && ($("s_vasage").onclick = () =>
+$("s_vasage") && ($("s_vasage").onclick = (e) =>
   vaInstall("sage", "Install Sage into ComfyUI?\n"
     + "• sageattention wheel matching ComfyUI's own torch/CUDA (+ triton-windows)\n"
     + "• ComfyUI-KJNodes clone/update (the nodes that apply it)\n"
-    + "Undo with: pip uninstall sageattention"));
+    + "Undo with: pip uninstall sageattention", e.currentTarget));
 for (const k of ["kjnodes", "yusu", "veda", "dlss5"])              // 2.503.0 (+ veda 2.536.0)
-  $("s_vapack_" + k) && ($("s_vapack_" + k).onclick = () => vaInstall(k, {
+  $("s_vapack_" + k) && ($("s_vapack_" + k).onclick = (e) => vaInstall(k, {
     kjnodes: "git clone / update ComfyUI-KJNodes into custom_nodes?\nLong video needs its MiniMax low-VRAM attention + chunked feed-forward nodes.",
     yusu: "git clone / update ComfyUI-Yusu-MiniMaxH3-Unified into custom_nodes?\nFor imported workflows that use its one-node H3 front end.",
     veda: "git clone / update Veda-on-ComfyUI into custom_nodes, then pip install its requirements into ComfyUI's python (triton-windows on Windows)?\nVeda sparse attention for MiniMax H3 - needs ComfyUI 0.38 or newer. Then download its predictor: Settings -> Models -> Model catalog -> Veda predictor (MiniMax H3).",
-    dlss5: "git clone / update ComfyUI-RH-DLSS5 into custom_nodes?\nNVIDIA RTX only. Copy NVIDIA's DLLs (_nvngx.dll, nvngx_dlssnr.dll, nvngx_dlss.dll) into ComfyUI/models/dlss5/ yourself - the pack never downloads them." }[k]));
-$("s_vaspectrum") && ($("s_vaspectrum").onclick = () =>
+    dlss5: "git clone / update ComfyUI-RH-DLSS5 into custom_nodes?\nNVIDIA RTX only. Copy NVIDIA's DLLs (_nvngx.dll, nvngx_dlssnr.dll, nvngx_dlss.dll) into ComfyUI/models/dlss5/ yourself - the pack never downloads them." }[k], e.currentTarget));
+$("s_vaspectrum") && ($("s_vaspectrum").onclick = (e) =>
   vaInstall("spectrum", "git clone / update ComfyUI-Spectrum-MiniMax-H3 into custom_nodes?\n"
-    + "Spectrum is APPROXIMATE: ~30% fewer H3 transformer steps, fast motion can drift."));
+    + "Spectrum is APPROXIMATE: ~30% fewer H3 transformer steps, fast motion can drift.", e.currentTarget));
 
 /* ================= config ================= */
 function fillSettings() {
@@ -4447,6 +4467,7 @@ if ($("s_asrinstall")) $("s_asrinstall").onclick = async () => {
    is done server-side with ffmpeg so the saved reference is never a re-encode
    of a re-encode. */
 let vcBuf = null, vcName = "", vcSel = null, vcSrc = null, vcFile = null;
+let vcPlay = null;                            // 2.601.0: ▶ Play running - {ctx, src, a, b, t0, raf}
 // project clips that can be used as a clone source (sound first, then video)
 function vcFillAssets() {
   const sel = $("s_vcasset");
@@ -4465,6 +4486,7 @@ function vcFillAssets() {
 async function vcShow(arrayBuf, label) {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   vcBuf = await ctx.decodeAudioData(arrayBuf);
+  vcStop();                                   // 2.601.0: a new clip stops the old one playing
   vcSel = null;
   $("s_vcwavewrap").style.display = "block";
   drawWave();
@@ -4530,6 +4552,12 @@ function drawWave() {
     g.strokeStyle = "#f59e2c";
     g.beginPath(); g.moveTo(x0, 0); g.lineTo(x0, h); g.moveTo(x1, 0); g.lineTo(x1, h); g.stroke();
   }
+  if (vcPlay) {                               // 2.601.0: the playhead while ▶ Play runs
+    const t = Math.min(vcPlay.b, vcPlay.a + (vcPlay.ctx.currentTime - vcPlay.t0));
+    const x = t / vcBuf.duration * w;
+    g.strokeStyle = "#fff"; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); g.lineWidth = 1;
+  }
 }
 if ($("s_vcwave")) $("s_vcwave").addEventListener("pointerdown", e => {
   if (!vcBuf) return;
@@ -4537,8 +4565,11 @@ if ($("s_vcwave")) $("s_vcwave").addEventListener("pointerdown", e => {
   const at = ev => Math.max(0, Math.min(vcBuf.duration,
     (ev.clientX - r.left) / r.width * vcBuf.duration));
   const t0 = at(e);
+  let moved = false;                          // 2.601.0: a click without a drag clears the selection
   const mv = ev => {
     const t1 = at(ev);
+    if (!moved && Math.abs(ev.clientX - e.clientX) < 3) return;
+    moved = true;
     vcSel = { a: Math.min(t0, t1), b: Math.max(t0, t1) };
     drawWave();
     $("s_vcsel").textContent = `${vcSel.a.toFixed(2)}s → ${vcSel.b.toFixed(2)}s `
@@ -4548,17 +4579,42 @@ if ($("s_vcwave")) $("s_vcwave").addEventListener("pointerdown", e => {
   const up = () => {
     window.removeEventListener("pointermove", mv);
     window.removeEventListener("pointerup", up);
+    if (!moved && vcSel) {
+      vcSel = null; drawWave();
+      $("s_vcsel").textContent = "no selection - ▶ Play plays the whole clip; drag across the waveform to choose a region";
+    }
   };
   window.addEventListener("pointermove", mv);
   window.addEventListener("pointerup", up);
 });
+/* ▶ PLAY (2.601.0, Tim: "change play selection to play - play the clip if no selection or play the selection if
+   there is a selection"): the selection when there is one, else the whole clip; pressed again (■ Stop) it stops;
+   a white playhead runs across the waveform; the button comes back when it ends. vcPlayRange is pure. */
+function vcPlayRange(sel, dur) {
+  return sel && sel.b - sel.a >= 0.05 ? { a: sel.a, b: sel.b, whole: false } : { a: 0, b: dur, whole: true };
+}
+function vcStop() {
+  if (!vcPlay) return;
+  const p = vcPlay; vcPlay = null;
+  try { p.src.onended = null; p.src.stop(); } catch { /* ended */ }
+  try { cancelAnimationFrame(p.raf); p.ctx.close(); } catch { /* fine */ }
+  if ($("s_vcplay")) { $("s_vcplay").textContent = "▶ Play"; $("s_vcplay").setAttribute("aria-pressed", "false"); }
+  drawWave();
+}
 if ($("s_vcplay")) $("s_vcplay").onclick = () => {
-  if (!vcBuf || !vcSel) return;
+  if (vcPlay) { vcStop(); return; }
+  if (!vcBuf) { $("s_vchint").textContent = "load a clip first"; return; }
+  const r = vcPlayRange(vcSel, vcBuf.duration);
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const src = ctx.createBufferSource();
   src.buffer = vcBuf; src.connect(ctx.destination);
-  src.start(0, vcSel.a, Math.max(0.05, vcSel.b - vcSel.a));
+  src.start(0, r.a, Math.max(0.05, r.b - r.a));
   vcSrc = src;
+  vcPlay = { ctx, src, a: r.a, b: r.b, t0: ctx.currentTime, raf: 0, whole: r.whole };
+  src.onended = () => { if (vcPlay && vcPlay.src === src) vcStop(); };
+  $("s_vcplay").textContent = "■ Stop"; $("s_vcplay").setAttribute("aria-pressed", "true");
+  const tick = () => { if (!vcPlay || vcPlay.src !== src) return; drawWave(); vcPlay.raf = requestAnimationFrame(tick); };
+  tick();
 };
 if ($("s_vctranscribe")) $("s_vctranscribe").onclick = async () => {
   // works off the waveform selection when there is one, otherwise a saved voice
@@ -4738,8 +4794,11 @@ async function saveTtsCfg() {
                    num_step: $("s_omnisteps") ? parseInt($("s_omnisteps").value, 10) || 32 : 32 } } }) });
 }
 async function installAudio(which, btn, torchIdx) {
-  btn.disabled = true;
+  // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+  // starts"): the button stays disabled with "⏳ Installing … <the job's last line>" beside it until the job ends
+  const name = which === "omnivoice" ? "OmniVoice" : which === "demucs" ? "demucs" : "faster-whisper";
   const stat = which === "omnivoice" ? $("s_omnistatus") : $("s_asrstatus");   // 2.264.0
+  if (window.H3Install) H3Install.start(btn, "Queuing the " + name + " install…"); else btn.disabled = true;
   stat.textContent = "queuing install…";
   try {
     const r = await fetch("/api/audio/install", { method: "POST",
@@ -4747,10 +4806,12 @@ async function installAudio(which, btn, torchIdx) {
       body: JSON.stringify({ which, torch_index: torchIdx || "" }) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || "HTTP " + r.status);
-    stat.textContent = `installing into ${j.venv} — watch the job console`;
+    stat.textContent = `installing into ${j.venv} — the full log is in the job console`;
     refreshJobs();
-  } catch (e) { stat.textContent = e.message; }
-  finally { btn.disabled = false; }
+    if (window.H3Install) H3Install.job(btn, j.id, { doing: "Installing " + name + "…", done: name + " installed",
+      after: () => { if (which === "omnivoice") refreshTts(); else refreshAsr(); } });
+    else btn.disabled = false;
+  } catch (e) { stat.textContent = e.message; if (window.H3Install) H3Install.end(btn, false, e.message); else btn.disabled = false; }
 }
 // 2.264.0: the Install-OpenAudio handler left with the engine
 /* 2.102.0: OmniVoice — the engine switch saves at once so the chat's next 🗣
@@ -5036,14 +5097,18 @@ async function paintExtensions() {
 $("x_install").onclick = async () => {
   const dir = $("x_dir").value.trim();
   if (!dir) { $("x_hint").textContent = "pick the folder that holds the zips first"; return; }
+  // 2.601.0 (Tim: "disable the button when download/install starts" + the status next to it)
+  const xb = $("x_install");
+  if (window.H3Install) H3Install.start(xb, "Installing the extensions…"); else xb.disabled = true;
   $("x_hint").textContent = "installing\u2026";
   let j;
   try {
     const r = await fetch("/api/extensions/install", { method: "POST",
       headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dir }) });
     j = await r.json();
-    if (!r.ok) { $("x_hint").textContent = j.error || "install failed"; return; }
-  } catch (e) { $("x_hint").textContent = "install failed: " + e.message; return; }
+    if (!r.ok) { $("x_hint").textContent = j.error || "install failed"; if (window.H3Install) H3Install.end(xb, false, j.error || "install failed"); else xb.disabled = false; return; }
+  } catch (e) { $("x_hint").textContent = "install failed: " + e.message; if (window.H3Install) H3Install.end(xb, false, e.message); else xb.disabled = false; return; }
+  if (window.H3Install) H3Install.end(xb, (j.installed || []).length > 0, (j.installed || []).length ? (j.installed || []).length + " installed" : "nothing installed"); else xb.disabled = false;
   const done = (j.installed || []).map((i) => `${i.ids.join("+")} (${i.zip}, ${i.files} files)`);
   const skip = (j.skipped || []).map((sk) => `${sk.zip}: ${sk.why}`);
   $("x_hint").textContent =
@@ -5064,12 +5129,16 @@ $("s_llminstall") && ($("s_llminstall").onclick = async () => {
   selectJob(j.id);
 });
 $("s_sdinstall") && ($("s_sdinstall").onclick = async () => {
+  const b = $("s_sdinstall");
+  if (window.H3Install && H3Install.busy(b)) return;
+  if (window.H3Install) H3Install.start(b, "Starting the sd-cli install…");
   const res = await fetch("/api/sdcli/install", { method: "POST" });
   const j = await res.json();
-  if (!res.ok) { alert(j.error || "install failed to start"); return; }
-  $("settings").close();
+  if (!res.ok) { if (window.H3Install) H3Install.end(b, false, j.error || "install failed to start"); else alert(j.error || "install failed to start"); return; }
   await refreshJobs();
-  selectJob(j.id);   // watch the installer's full log in the console
+  selectJob(j.id);   // the installer's full log in the console
+  // 2.601.0: Settings stays open - the button is disabled with the install's status beside it until it ends
+  if (window.H3Install) H3Install.job(b, j.id, { doing: "Installing sd-cli…", done: "sd-cli installed", after: refreshSdStatus });
 });
 async function refreshSdStatus() {
   try {
@@ -5078,6 +5147,7 @@ async function refreshSdStatus() {
       ? "✓ sd-cli found at the path above"
       : "✗ not found — install it or fix the path";
     $("s_sdstatus").style.color = h.sd_cli ? "var(--ok)" : "var(--warn, #e0a030)";
+    if (window.H3Reinstall) H3Reinstall.set($("s_sdinstall"), !!h.sd_cli);   // 2.601.0: installed = ⟳ Reinstall
   } catch {}
 }
 /* ---- ComfyUI launcher (Start button under Generate + Settings tab) ---- */

@@ -145,13 +145,29 @@
           return res;
         }).catch(function (e) { C.paintProps(); say("🧍 " + e.message); return null; });
     }
+    /* 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall" + "let the user know
+       the status next to the button and disable the button when download/install starts"): ⬇ SAM 2 / ⟳ SAM 2 (installed),
+       disabled while it installs with "⏳ installing SAM 2… <its last line> 40 s" beside it, then ✓ / ✗ */
+    var samT0 = 0;
+    function samPaint(sam) {
+      var b = document.getElementById("tlpCutSam"), c = document.getElementById("tlpCutSamSt"); if (!b) return;
+      var i = sam && sam.installing, run = !!(i && i.state === "running"), sec = samT0 ? Math.floor((Date.now() - samT0) / 1000) : 0;
+      var last = i && (i.log || []).length ? String(i.log[i.log.length - 1]).replace(/^\[[^\]]{1,20}\]\s*/, "").slice(0, 60) : "";
+      b.disabled = run; if (run) b.setAttribute("aria-busy", "true"); else b.removeAttribute("aria-busy");
+      b.textContent = sam && sam.ready ? "⟳ SAM 2" : "⬇ SAM 2";
+      b.title = sam && sam.ready ? "SAM 2 is installed - install it again over the top (repairs a broken install)" : "Install Segment Anything 2 (torch + sam2 + its checkpoint, ~1-3 GB) into the AI matte's venv";
+      if (c) c.textContent = run ? "⏳ installing SAM 2…" + (last ? " " + last : "") + (sec >= 2 ? " · " + sec + " s" : "") : i && i.state === "error" ? "✗ " + (i.error || "the install failed") : i && i.state === "done" ? (sam.ready ? "✓ SAM 2 installed" : "✗ installed, but it does not load - see the log") : "";
+    }
     function sam2Install(btn) {
+      if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); }
+      var c0 = document.getElementById("tlpCutSamSt"); if (c0) c0.textContent = "⏳ starting the SAM 2 install…";
+      samT0 = Date.now();
       fetch("/api/scene/sam2/install", { method: "POST" }).then(function (r) { return r.json(); }).then(function (j) {
-        if (j.error) { say("🧍 " + j.error); return; }
+        if (j.error) { say("🧍 " + j.error); if (btn) { btn.disabled = false; btn.removeAttribute("aria-busy"); } var c1 = document.getElementById("tlpCutSamSt"); if (c1) c1.textContent = "✗ " + j.error; return; }
         say("🧍 installing SAM 2 (torch + sam2 + the checkpoint) - this takes a while…");
-        var tick = function () { S.status(true).then(function (st) { var i = st.cutout.sam2 && st.cutout.sam2.installing; if (btn) btn.textContent = i && i.state === "running" ? "⏳ SAM 2…" : st.cutout.sam2.ready ? "✓ SAM 2" : "⬇ SAM 2"; if (i && i.state === "running") setTimeout(tick, 3000); else { say(st.cutout.sam2.ready ? "🧍 SAM 2 is ready" : "🧍 SAM 2: " + ((i && i.error) || "not installed")); C.paintProps(); } }); };
+        var tick = function () { S.status(true).then(function (st) { var sam = st.cutout.sam2 || {}, i = sam.installing; samPaint(sam); if (i && i.state === "running") setTimeout(tick, 2000); else { say(sam.ready ? "🧍 SAM 2 is ready" : "🧍 SAM 2: " + ((i && i.error) || "not installed")); C.paintProps(); setTimeout(function () { samPaint(sam); }, 0); } }); };
         tick();
-      });
+      }, function (e) { if (btn) { btn.disabled = false; btn.removeAttribute("aria-busy"); } var c2 = document.getElementById("tlpCutSamSt"); if (c2) c2.textContent = "✗ " + e.message; });
     }
 
     C.onProps(function (Pn, c, s) {
@@ -164,7 +180,7 @@
         + '<button class="ghost" data-cut="exc" title="Click what is NOT the subject"' + (C.state.tool === "cutpts" && MODE === "exc" ? ' style="border-color:#ff4d5e"' : "") + ">✖ Not it</button>"
         + '<button class="ghost" data-cut="box" title="Drag a box round the subject"' + (C.state.tool === "cutpts" && MODE === "box" ? ' style="border-color:#50dcff"' : "") + ">▭ Box</button>"
         + '<select id="tlpCutWay" title="How the subject is followed"><option value="auto">Auto (the best installed)</option><option value="sam2">SAM 2 (Segment Anything 2)</option><option value="ai">AI matte (BiRefNet)</option><option value="flow">Built in (OpenCV)</option></select>'
-        + '<button class="ghost" id="tlpCutSam" title="Install Segment Anything 2 (torch + sam2 + its checkpoint, ~1-3 GB) into the AI matte\'s venv">⬇ SAM 2</button></div>';
+        + '<button class="ghost" id="tlpCutSam" title="Install Segment Anything 2 (torch + sam2 + its checkpoint, ~1-3 GB) into the AI matte\'s venv">⬇ SAM 2</button><span class="tlp-none" id="tlpCutSamSt" role="status"></span></div>';
       var ps = k.prompts || [];
       h += '<div class="tlp-row" style="flex-wrap:wrap">' + (ps.length ? ps.map(function (p, i) { var ni = (p.pts || []).filter(function (q) { return q[2]; }).length, no = (p.pts || []).length - ni;
         return '<span class="tlp-none" style="white-space:nowrap"><a href="#" data-cutgo="' + i + '" title="Go there">' + (+p.t).toFixed(2) + " s</a>: " + (ni ? ni + " ✚" : "") + (no ? " " + no + " ✖" : "") + (p.box ? " ▭" : "") + ' <button class="ghost" data-cutdel="' + i + '" style="padding:0 3px" title="Take these marks away">✕</button></span>'; }).join(" ")
@@ -189,7 +205,7 @@
       S.status().then(function (st) {
         var have = (st.cutout && st.cutout.methods) || [];
         [].forEach.call(q("tlpCutWay").options, function (op) { if (op.value !== "auto" && have.indexOf(op.value) < 0) op.textContent += " - not installed"; });
-        var sb = q("tlpCutSam"); if (sb) { if (st.cutout.sam2 && st.cutout.sam2.ready) sb.style.display = "none"; else if (st.cutout.sam2 && st.cutout.sam2.installing && st.cutout.sam2.installing.state === "running") sb.textContent = "⏳ SAM 2…"; }
+        samPaint(st.cutout && st.cutout.sam2);   // 2.601.0: ⟳ SAM 2 when installed (it was hidden), the install's status beside it
       });
       d.querySelectorAll("[data-cut]").forEach(function (el) { el.addEventListener("click", function () { MODE = el.getAttribute("data-cut"); cutOf(c); C.setTool("cutpts"); C.paintProps(); say({ inc: "🧍 click the subject on the picture", exc: "🧍 click what is NOT the subject", box: "🧍 drag a box round the subject" }[MODE] + " - a click on a mark takes it away"); }); });
       q("tlpCutWay").addEventListener("change", function () { cutOf(c).method = q("tlpCutWay").value; save(c, true); });

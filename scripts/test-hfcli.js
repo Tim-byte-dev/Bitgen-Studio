@@ -169,7 +169,7 @@ console.log(out);
   const RUN = read("lib", "setupRun.js"), MAIN = read("electron", "main.js"), PRE = read("electron", "installer-preload.js");
   const WIZ = read("electron", "installer.html"), CLI = read("scripts", "setup-cli.js"), IH = read("static", "index.html"), RI = read("routes", "index.js");
   check("setupRun: download(ids, token, emit, {engine}), hfCli, hfCliInstall, freeSpace", /async function download\(ids, token, emit, opts\)/.test(RUN)
-    && RUN.includes("engine, dirs: runtimeDirs(),") && /hfCli, hfCliInstall, freeSpace \};/.test(RUN));
+    && RUN.includes("engine, force, dirs: runtimeDirs(),") && /hfCli, hfCliInstall, freeSpace \};/.test(RUN));
   check("the wizard: IPC setup:hfcli / setup:hfcli-install, the engine rides setup:download; the disk check is setupRun.freeSpace",
     MAIN.includes('ipcMain.handle("setup:hfcli", () => Setup().hfCli());') && MAIN.includes('Setup().download(ids, t, setupEmit, o)')
     && MAIN.includes('ipcMain.handle("setup:disk", () => Setup().freeSpace());') && PRE.includes('hfcliInstall: () => ipcRenderer.invoke("setup:hfcli-install")'));
@@ -226,7 +226,7 @@ console.log(out);
   await w.ModelsDialog._api.go();
   await new Promise((res) => setTimeout(res, 30));
   const dp = posts.filter((p) => p.url === "/api/setup/download").pop();
-  check("⤓ Download: the ticked ids, the token, the engine", dp && JSON.stringify(dp.body) === JSON.stringify({ ids: ["ltx23_omninft"], token: "hf_good", engine: "hf" }));
+  check("⤓ Download: the ticked ids, the token, the engine", dp && JSON.stringify(dp.body) === JSON.stringify({ ids: ["ltx23_omninft"], token: "hf_good", engine: "hf", force: false }), dp && dp.body);
   check("...the progress shows on its row (bytes of total)", /300 MB of 617 MB/.test(dlg.querySelector('.mItem[data-id="ltx23_omninft"] .why').textContent));
   dlg.querySelector(".mClose").click();
   done();

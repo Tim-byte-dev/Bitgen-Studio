@@ -50,12 +50,14 @@
         say(j.installed
           ? "demucs ready (" + (j.model || "htdemucs") + " on " + (j.device || "auto") + ")"
           : "demucs is not installed — press ⚙ Install (its own venv, ~2 GB with torch)");
-        // 2.274.0 (by instruction): an installed demucs needs no Install
-        // button — hide it; it comes back if the venv ever disappears.
-        // ⟳ re-checks, so pressing it after the install job finishes
-        // makes the button leave. A failed status fetch changes nothing.
-        if (el("stInstall"))
-          el("stInstall").classList.toggle("hidden", !!j.installed);
+        // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): an installed
+        // demucs shows ⟳ Reinstall (it was hidden since 2.274.0); never relabelled while its install runs
+        var ib = el("stInstall");
+        if (ib && !(window.H3Install && window.H3Install.busy(ib))) {
+          ib.classList.remove("hidden");
+          if (window.H3Install) window.H3Install.set(ib, !!j.installed, { install: "⚙ Install" });
+          else ib.textContent = j.installed ? "⟳ Reinstall" : "⚙ Install";
+        }
       }).catch(function () {});
   }
 
@@ -767,19 +769,24 @@
       .catch(function (e) { b.disabled = false; sepAnimStop(b); say("separation failed: " + e.message); });
   };
 
+  // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+  // starts"): disabled + "⏳ Installing demucs… <the job's last line>" beside it until the job ends, then ✓ / ✗
   if (el("stInstall")) el("stInstall").onclick = function () {
-    var b = el("stInstall"); b.disabled = true;
-    say("queueing the demucs install — follow it in the job queue/console…");
+    var b = el("stInstall"), H = window.H3Install;
+    if (H && H.busy(b)) return;
+    if (H) H.start(b, "Queuing the demucs install…"); else b.disabled = true;
+    say("queueing the demucs install — the full log is in the job queue/console…");
     fetch("/api/audio/install", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ which: "demucs" }) })
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        b.disabled = false;
-        say(j.error ? j.error : "install queued into " + (j.venv || "venvs/demucs")
-          + " — press ⟳ when it finishes");
+        if (j.error || !j.id) { if (H) H.end(b, false, j.error || "could not queue"); else b.disabled = false; say(j.error || "could not queue the install"); return; }
+        say("installing into " + (j.venv || "venvs/demucs") + " — the button says when it is done");
+        if (H) H.job(b, j.id, { doing: "Installing demucs…", done: "demucs installed", after: function () { status(); } });
+        else b.disabled = false;
       })
-      .catch(function (e) { b.disabled = false; say("install failed to queue: " + e.message); });
+      .catch(function (e) { if (H) H.end(b, false, "could not queue: " + e.message); else b.disabled = false; say("install failed to queue: " + e.message); });
   };
 
   loadSongs(); status();

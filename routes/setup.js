@@ -13,7 +13,7 @@
 //   GET  /api/setup/hfcli                    -> {found, how, version, python}
 //   POST /api/setup/hfcli/install            pip install huggingface_hub[hf_xet]
 //                                            (in the background - GET /state)
-//   POST /api/setup/download       {ids, token, engine: auto|hf|builtin}
+//   POST /api/setup/download       {ids, token, engine: auto|hf|builtin, force: true = fetch a downloaded one again (2.601.0)}
 //                                            one run at a time, in the background
 //   GET  /api/setup/state                    {busy, what, files{id:{state,got,total,error}},
 //                                             log[], result, hf}
@@ -81,7 +81,7 @@ function mount(app) {
     const engine = ["auto", "hf", "builtin"].includes(b.engine) ? b.engine : "auto";
     begin("download");
     for (const id of ids) state.files[id] = { state: "wait", got: 0, total: 0, error: "" };
-    S().download(ids, String(b.token || "").trim(), emit, { engine })
+    S().download(ids, String(b.token || "").trim(), emit, { engine, force: b.force === true })   // 2.601.0: ⟳ Download again
       .catch((e) => { emit({ type: "log", line: "[error] " + (e && e.message || e), err: true }); state.result = { ok: false, done: [], failed: [{ id: "*", error: String(e && e.message || e) }] }; })
       .finally(() => { state.busy = false; });
     res.json({ ok: true, ...view() });

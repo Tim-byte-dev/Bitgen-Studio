@@ -591,10 +591,15 @@
     var g = d.g, job = s.job || {};
     var busy = job.status === "queued" || job.status === "running";
     g("ssVnState").textContent = s.ready ? "✓ installed - " + s.root
-      : busy ? "⤓ installing… (follow it in the queue) " + String(job.last || "").slice(0, 90)
+      : busy ? "⏳ installing… (the full log is in the queue) " + String(job.last || "").slice(0, 90)
       : (s.venv_ready ? "the Python environment is ready; " : "") + (s.weights_ready ? "the weights are in place" : "missing: " + (s.missing || []).join(", ") + " (~" + (s.download_gb || 0) + " GB)") + " - ⤓ Install";
     g("ssVnInst").disabled = busy;
-    g("ssVnInst").textContent = s.ready ? "⤓ Reinstall" : "⤓ Install";
+    if (busy) g("ssVnInst").setAttribute("aria-busy", "true"); else g("ssVnInst").removeAttribute("aria-busy");
+    g("ssVnInst").textContent = s.ready ? "⟳ Reinstall" : "⤓ Install";
+    // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+    // starts"): while it installs the state line beside the button follows the queue job every 2 s, until it ends
+    clearTimeout(cur.vnTimer);
+    if (busy && d.dlg && d.dlg.open) cur.vnTimer = setTimeout(vnState, 2000);
     var HOW = { comfy: "your ComfyUI file", official: "downloaded", missing: "missing", unchecked: "ComfyUI file found - 🔍 to use it" };
     g("ssVnSrc").textContent = (s.sources || []).filter(function (x) { return x.id !== "base" && x.id !== "viggle_assets"; }).map(function (x) {
       // 2.353.0: a file Tim's ComfyUI workflow names - used, not downloaded (checked once the venv is there)
@@ -622,10 +627,12 @@
   function vnInstall() {
     var S = setDlg();
     var dir = S.g("ssVnDir").value.trim();
+    S.g("ssVnInst").disabled = true; S.g("ssVnInst").setAttribute("aria-busy", "true");          // 2.601.0: at once
+    S.g("ssVnState").textContent = "⏳ starting the Viggle (native) install…";
     return jpost("/api/viggle-native/config", { dir: dir }).then(function () {
       return jpost("/api/viggle-native/install", {});
     }).then(function (j) {
-      if (j.error) { S.g("ssNote").textContent = "⚠ " + j.error; return j; }
+      if (j.error) { S.g("ssNote").textContent = "⚠ " + j.error; S.g("ssVnInst").disabled = false; S.g("ssVnInst").removeAttribute("aria-busy"); S.g("ssVnState").textContent = "✗ " + j.error; return j; }
       vnPaint(j);
       msg("⤓ Viggle (native) is installing - the native engine's Python environment, then " + ((j.components || []).join(", ") || "no downloads") + " (follow it in the queue; it resumes if it stops)");
       return j;

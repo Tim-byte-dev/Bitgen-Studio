@@ -93,6 +93,12 @@ def synth(job):
 
     import torch
     import soundfile as sf
+    try:                                     # 2.601.0: torchaudio 2.9+ without a working TorchCodec reads the reference anyway
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import ta_compat
+        ta_compat.patch()
+    except Exception:  # noqa: BLE001 - the engine's own error says what is wrong
+        pass
     from omnivoice import OmniVoice
 
     t0 = time.time()

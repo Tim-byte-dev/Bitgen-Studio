@@ -6081,6 +6081,20 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.601.0: **⟳ Reinstall, and every install button says what it is doing** - an add-on, package or model that is
+  already installed shows **⟳ Reinstall** (a downloaded model: **⟳ Download again**), and pressing it really fetches
+  everything again instead of skipping what is "already there". The moment an install or download starts its button is
+  disabled and a status right beside it says what is happening - the step it is on, a percentage, the seconds - then
+  **✓ installed** or **✗ why**. Settings stays open while it runs. This covers Settings ▸ Add-ons, faster-whisper,
+  OmniVoice, sd-cli, Comfy Kitchen, Sage / Spectrum / the node packs, the model catalog, Civitai downloads, the LoRA
+  trainer, Viggle (native), the package upgrade, extensions from a folder, and in the dockers demucs (Stems), the AI
+  matte, SAM 2, Select ▸ Subject and Segment Anything.
+- 2.601.0: **Settings ▸ Audio ▸ voice clone: ▶ Play** (was "Play selection") - plays the selection when there is one,
+  the whole clip when there is none; it turns into ■ Stop while it plays and a white line follows on the waveform. A
+  click on the waveform (no drag) clears the selection.
+- 2.601.0: **Fixed: Ming-3.0 TTS "TorchCodec is required for load_with_torchcodec"** - a new torchaudio hands audio
+  reading to a separate package (TorchCodec) that also needs FFmpeg's libraries. bitGen now reads and writes the voice
+  clips for Ming-3.0 TTS (and OmniVoice) itself, so nothing needs reinstalling.
 - 2.600.1: **Fixed: "transcription failed: open() got an unexpected keyword argument 'metadata_errors'"** - when a
   voice clone's transcript (or any faster-whisper transcription) was made. A new version of PyAV (the video / audio
   reader faster-whisper uses) dropped an option faster-whisper still passes. bitGen now reads the audio itself and hands

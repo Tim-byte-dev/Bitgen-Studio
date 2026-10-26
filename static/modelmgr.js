@@ -864,8 +864,11 @@
     return jpost("/api/modelfolders/resolve", { base_model: v.base_model, name: (it.title || "") + " " + (f.name || ""), cat: f.cat, type: it.type }).then(function (r) {
       if (r.error) { say(r.error, "bad"); return; }
       var go = function () {
+        // 2.601.0 (Tim: "disable the button when download/install starts" + its status next to it): the file's ⤓ button
+        var fb = cvBtn(v.id, f.id), H = window.H3Install;
+        if (fb && H) H.start(fb, "Starting the download…");
         return jpost("/api/civitai/download", { version_id: v.id, file_id: f.id, folder: r.key, subfolder: sub || "", title: it.title }).then(function (j) {
-          if (j.error) { say(j.error, "bad"); return; }
+          if (j.error) { if (fb && H) H.end(fb, false, j.error); say(j.error, "bad"); return; }
           say("⤓ " + f.name + " → " + r.label + " (" + r.dir + ")" + (shift ? "" : " · Shift+click changes the folder"), "ok"); pollDl();
         });
       };
@@ -925,7 +928,20 @@
       else if (was) load(true);
     }).catch(function () { /* offline */ });
   }
+  /** 2.601.0: a Civitai file's ⤓ button in the open model's versions */
+  function cvBtn(vid, fid) { return document.querySelector('.mmgr [data-cvdl="' + vid + '"][data-file="' + fid + '"]'); }
+  /** 2.601.0: each download's state beside its own ⤓ button (disabled while it runs) */
+  function paintDlButtons() {
+    var H = window.H3Install; if (!H) return;
+    (S.dl || []).forEach(function (d) {
+      var b = d.file_id != null ? cvBtn(d.version_id, d.file_id) : null; if (!b) return;
+      var pct = d.total ? Math.min(100, Math.round(d.got / d.total * 100)) : 0;
+      if (d.status !== "done" && d.status !== "failed") { if (!H.busy(b)) H.start(b, "Downloading…"); H.step(b, d.status === "queued" ? "Waiting to download…" : "Downloading… " + pct + " %"); }
+      else if (H.busy(b) || !b.nextElementSibling || !b.nextElementSibling.classList.contains("h3inst")) H.end(b, d.status === "done", d.status === "done" ? "downloaded" : (d.error || "failed"));
+    });
+  }
   function paintDl() {
+    paintDlButtons();
     var box = $("mmDl"); if (!box) return;
     box.style.display = S.dl.length ? "" : "none";
     box.innerHTML = S.dl.slice(0, 8).map(function (d) {

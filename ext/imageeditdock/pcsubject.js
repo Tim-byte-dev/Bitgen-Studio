@@ -191,16 +191,42 @@
       E.lastSubject = { method: r.method, n: count(r.mask) };
       say(`background hidden by a layer mask (${r.method === "ai" ? "AI matte" : "built in"}) - paint the mask to fix it`);
     });
+    // 2.601.0: the AI matte install's state in words
+    const sbRun = (s) => !!(s && s.installing && s.installing.state === "running");
+    const sbWords = (s) => {
+      const i = s && s.installing, last = i && (i.log || []).slice(-1)[0] ? String(i.log.slice(-1)[0]).replace(/^\[[^\]]{1,20}\]\s*/, "").slice(0, 70) : "";
+      return sbRun(s) ? "⏳ installing…" + (last ? " " + last : "") : i && i.state === "error" ? "✗ " + (i.error || "the install failed") : s && s.ai ? "✓ installed" : "not installed";
+    };
     async function settings() {
       const st = await status(), m = store.get("subject.method", "auto"), model = store.get("subject.model", "birefnet-general");
       const d = E.ui.dialog("Select Subject Settings", `
         <div class="kxrow"><span>Method</span><select id="sbM"><option value="auto"${m === "auto" ? " selected" : ""}>Auto (the AI matte when installed)</option><option value="builtin"${m === "builtin" ? " selected" : ""}>Built in (no download)</option><option value="ai"${m === "ai" ? " selected" : ""}>AI matte (BiRefNet on this computer)</option></select></div>
         <div class="kxrow"><span>AI model</span><select id="sbModel">${(st.models || ["birefnet-general"]).map((x) => `<option${x === model ? " selected" : ""}>${esc(x)}</option>`).join("")}</select></div>
-        <div class="kxrow"><span>AI matte</span><b id="sbState">${st.ai ? "installed" : st.installing ? "installing… " + esc(st.installing.state || "") : "not installed"}</b><button class="ghost" id="sbInstall">⬇ Install</button></div>
+        <div class="kxrow"><span>AI matte</span><button class="ghost" id="sbInstall"${sbRun(st) ? ' disabled aria-busy="true"' : ""} title="${st.ai ? "Installed - install it again over the top (repairs a broken install)" : "rembg + BiRefNet in venvs/matte (about 1 GB once)"}">${st.ai ? "⟳ Reinstall" : "⬇ Install"}</button><b id="sbState" role="status" style="margin-left:6px">${esc(sbWords(st))}</b></div>
         <div class="kxrow" style="color:var(--pc-dim)">The AI matte is the one the path layers use (rembg + BiRefNet in venvs/matte, about 1 GB once). Built in needs nothing and suits a clear subject on a plainer background.</div>`,
         (dd) => { store.set("subject.method", dd.querySelector("#sbM").value); store.set("subject.model", dd.querySelector("#sbModel").value); say("Select Subject: " + dd.querySelector("#sbM").selectedOptions[0].textContent); }, { okLabel: "OK" });
       const b = d && d.querySelector ? d.querySelector("#sbInstall") : null;
-      if (b) b.onclick = async () => { try { const r = await win.fetch("/api/subject/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); const j = await r.json(); d.querySelector("#sbState").textContent = j.error ? j.error : "installing… (it runs in the background)"; } catch (e) { say("install failed: " + e.message); } };
+      // 2.601.0 (Tim: "let the user know the status next to the button and disable the button when download/install
+      // starts"): the button is disabled and "⏳ installing… <its last line>" sits beside it until it ends (✓ / ✗);
+      // installed = ⟳ Reinstall
+      const stEl = d && d.querySelector ? d.querySelector("#sbState") : null;
+      const follow = () => setTimeout(async () => {
+        const s = await status();
+        if (!b.isConnected) return;
+        if (stEl) stEl.textContent = sbWords(s);
+        if (sbRun(s)) { follow(); return; }
+        b.disabled = false; b.removeAttribute("aria-busy"); b.textContent = s.ai ? "⟳ Reinstall" : "⬇ Install";
+        say(s.ai ? "the AI matte is installed" : "the AI matte install did not finish - " + sbWords(s));
+      }, 1500);
+      if (b && sbRun(st)) follow();
+      if (b) b.onclick = async () => {
+        b.disabled = true; b.setAttribute("aria-busy", "true"); if (stEl) stEl.textContent = "⏳ starting the install…";
+        try {
+          const r = await win.fetch("/api/subject/install", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); const j = await r.json();
+          if (j.error) { b.disabled = false; b.removeAttribute("aria-busy"); if (stEl) stEl.textContent = "✗ " + j.error; return; }
+          follow();
+        } catch (e) { b.disabled = false; b.removeAttribute("aria-busy"); if (stEl) stEl.textContent = "✗ " + e.message; say("install failed: " + e.message); }
+      };
       return d;
     }
     const C = E.ui.addCmd, docOpen = () => !!S.w;

@@ -78,7 +78,9 @@
     var ok = typeof appConfirm === "function" ? appConfirm("Upgrade to " + k + "? It installs what the package adds and downloads its models in the background - it can take a long time.") : Promise.resolve(true);
     Promise.resolve(ok).then(function (y) {
       if (!y) return;
-      post("/api/setup/upgrade", { package: k }).then(function (r) { if (r.error) { $("hwMsg").textContent = r.error; return; } follow(); });
+      // 2.601.0 (Tim: "disable the button when download/install starts" + the status next to it): at once
+      var b = $("hwUp"); if (b) { b.disabled = true; b.setAttribute("aria-busy", "true"); } if ($("hwMsg")) $("hwMsg").textContent = "⏳ starting the upgrade…";
+      post("/api/setup/upgrade", { package: k }).then(function (r) { if (r.error) { if (b) { b.disabled = false; b.removeAttribute("aria-busy"); } $("hwMsg").textContent = "✗ " + r.error; return; } follow(); });
     });
   }
   function follow() {
@@ -86,7 +88,8 @@
     fetch("/api/setup/state").then(function (r) { return r.json(); }).then(function (st) {
       var log = $("hwLog"); if (log) { log.style.display = ""; log.textContent = (st.log || []).slice(-30).map(function (l) { return l.line; }).join("\n"); log.scrollTop = log.scrollHeight; }
       var files = Object.values(st.files || {}), done = files.filter(function (f) { return f.state === "ok"; }).length;
-      if ($("hwMsg")) $("hwMsg").textContent = st.busy ? "⬆ upgrading… " + (files.length ? done + " / " + files.length + " model files" : "") : st.result ? (st.result.ok ? "✓ upgraded" : "upgrade finished with problems - the log says what") : "";
+      if ($("hwMsg")) $("hwMsg").textContent = st.busy ? "⏳ upgrading… " + (files.length ? done + " / " + files.length + " model files" : "") : st.result ? (st.result.ok ? "✓ upgraded" : "✗ upgrade finished with problems - the log says what") : "";
+      var ub = $("hwUp"); if (ub && st.busy) { ub.disabled = true; ub.setAttribute("aria-busy", "true"); }   // 2.601.0
       if (st.busy) S.timer = setTimeout(follow, 2000); else load();
     });
   }

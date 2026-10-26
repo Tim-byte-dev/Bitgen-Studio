@@ -14,6 +14,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var focused = function (el) { return el && document.activeElement === el; };
   function show(el, on) { if (el) el.style.display = on ? "" : "none"; }
+  // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): static/installbtn.js
+  function re(el, on, words) { if (!el) return; if (window.H3Reinstall) window.H3Reinstall.set(el, !!on, { install: words }); else el.textContent = (on ? "⟳ Reinstall " : "") + words.replace(/^Install /, on ? "" : "Install "); }
 
   function paintTts(j) {
     if (!j) return;
@@ -24,7 +26,8 @@
     show($("s_omni"), eng !== "ming");
     if ($("s_minglang") && !focused($("s_minglang"))) $("s_minglang").value = m.language == null ? "English" : m.language;
     if ($("s_mingstatus")) $("s_mingstatus").textContent = m.installed ? "installed · " + (m.dir || "") : (m.note || "not installed") + " — Install Ming-3.0 TTS… (Settings ▸ Add-ons)";
-    if ($("s_minginstall")) $("s_minginstall").textContent = m.installed ? "Reinstall Ming-3.0 TTS…" : "Install Ming-3.0 TTS…";
+    re($("s_minginstall"), m.installed, "Install Ming-3.0 TTS…");
+    re($("s_omniinstall"), j.omnivoice && j.omnivoice.installed, "Install OmniVoice");   // 2.601.0
     if (eng === "ming" && $("s_ttsenginehint")) $("s_ttsenginehint").textContent = m.installed ? "ready" : "Ming-3.0 TTS is not installed";
   }
   function paintAsr(j) {
@@ -37,7 +40,8 @@
     show(st, eng === "bark");
     if (st) st.textContent = (b.installed ? "Bark 3.0 installed · " + (b.dir || "") : "Bark 3.0 is not installed — Install Bark 3.0… (Settings ▸ Add-ons)")
       + ". Lyrics, captions, word times and other languages stay on faster-whisper" + (j.installed ? "." : " — install faster-whisper below for those.");
-    if ($("s_barkinstall")) $("s_barkinstall").textContent = b.installed ? "Reinstall Bark 3.0…" : "Install Bark 3.0…";
+    re($("s_barkinstall"), b.installed, "Install Bark 3.0…");
+    re($("s_asrinstall"), j.installed, "Install faster-whisper");                       // 2.601.0
   }
 
   /** Settings ▸ Add-ons on that card; its Install (the add-on's own confirm) */

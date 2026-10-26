@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.601.0** — ⟳ Reinstall, the Install Status Beside Every Button, ▶ Play, Torchaudio Without Torchcodec
 - **2.600.1** — Transcription Without Pyav ("open() got an unexpected keyword argument 'metadata_errors'")
 - **2.600.0** — Basic Settings ▸ Format ▸ 📱 Social Media (the Finished MP4 Made Ready for the Sites)
 
