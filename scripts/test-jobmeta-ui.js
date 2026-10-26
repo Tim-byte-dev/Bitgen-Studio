@@ -111,11 +111,12 @@ const META = { seed: 424242, cfg: 4, steps: 8, sampler: "euler", models: ["klein
 
     // 4 (2.393.0: Basic Settings floats - S shows it)
     await p.evaluate(() => window.SecFloat && window.SecFloat.show && window.SecFloat.show("basic", true)); await p.waitForTimeout(200);
-    await p.click("#seedRand");
+    // 2.598.0: the 🎲 Random / 📌 Fixed toggle (static/seedctl.js) - Random = -1; ♻ = the last seed used, Fixed
+    await p.evaluate(() => { document.getElementById("seed").value = "123"; document.getElementById("seedMode").click(); });
     const r1 = await p.evaluate(() => document.getElementById("seed").value);
-    await p.click("#seedLast");
-    const r2 = await p.evaluate(() => [document.getElementById("seed").value, document.getElementById("seedLastV").textContent]);
-    check("Basic Settings: 🎲 = -1 (random), ♻ = the last seed used (shown under the box)", r1 === "-1" && r2[0] === "424242" && /last seed used: 424242/.test(r2[1]), [r1, r2]);
+    await p.evaluate(() => document.getElementById("seedLast").click());
+    const r2 = await p.evaluate(() => [document.getElementById("seed").value, document.getElementById("seedLastV").textContent, document.getElementById("seedMode").textContent]);
+    check("Basic Settings: 🎲 Random = -1, ♻ = the last seed used (shown under the box) and Fixed", r1 === "-1" && r2[0] === "424242" && /last seed used: 424242/.test(r2[1]) && /Fixed/.test(r2[2]), [r1, r2]);
     await p.evaluate(() => window.SecFloat && window.SecFloat.show && window.SecFloat.show("basic", false));
 
     // 5

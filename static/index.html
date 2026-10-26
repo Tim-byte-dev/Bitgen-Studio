@@ -1174,6 +1174,7 @@
 </style>
 </head>
 <body>
+<script src="/static/locklayer.js"></script>  <!-- 2.599.0: the lock screen (H3Lock) - first, so a reset's reload is covered before anything paints -->
 <!-- Frameless-shell title bar. Hidden in a normal browser (the browser already
      has one); shown only when the Electron preload is present. -->
 <div id="titlebar" class="hidden">
@@ -1352,12 +1353,16 @@
       <div class="grid3">
         <!-- 2.384.0 (Tim: "add a seed input in the basic settings so user can reuse seed, use custom seed or use random
              seed"): -1 = random; any number = that seed; 🎲 back to random; ♻ = the last seed used (shown below) -->
-        <div style="grid-column:1 / span 2"><label class="f" for="seed">Seed</label>
-          <div style="display:flex;gap:3px;align-items:center">
-            <input type="number" id="seed" value="-1" style="flex:1;min-width:0"
-                   title="-1 = a random seed every render; any other number = that seed (the same picture again with the same settings)">
-            <button class="ghost" id="seedRand" type="button" title="Random seed (-1)" aria-label="Random seed">🎲</button>
-            <button class="ghost" id="seedLast" type="button" title="Reuse the last seed used" aria-label="Reuse the last seed" disabled>♻</button>
+        <!-- 2.598.0 (Tim: "add seed input in basic settings docker and in the styles - have a toggle button for
+             random/fixed"): 🎲 Random / 📌 Fixed toggle + the number (static/seedctl.js); the hidden #seed keeps -1 / n -->
+        <div style="grid-column:1 / span 2"><label class="f" for="seedNum">Seed</label>
+          <div class="seedctl" id="seedCtl">
+            <button class="ghost seedmode" id="seedMode" type="button" aria-pressed="false"
+                    title="Random: every render a new seed. Fixed: the number beside it every render (the same picture again with the same settings). With Override style off, a style's own Fixed seed is used while this is Random">🎲 Random</button>
+            <input type="number" id="seedNum" min="0" max="2147483647" step="1" placeholder="random" style="flex:1;min-width:0"
+                   title="The seed - typing one makes it Fixed">
+            <input type="hidden" id="seed" value="-1">
+            <button class="ghost" id="seedLast" type="button" title="Use the last seed used (Fixed)" aria-label="Reuse the last seed" disabled>♻</button>
           </div>
           <span id="seedLastV" class="dim mono" style="font-size:.62rem"></span></div>
         <div><label class="f">Format</label>
@@ -1401,6 +1406,14 @@
         <input type="range" id="imgSteps" min="1" max="60" step="1">
         <label class="f">CFG <b id="imgCfgV" style="font-family:var(--mono)"></b></label>
         <input type="range" id="imgCfg" min="0" max="15" step="0.1">
+        <!-- 2.598.0: the image seed - 🎲 Random / 📌 Fixed (static/seedctl.js); sent while Override style is on -->
+        <label class="f" for="imgSeedNum" title="Random: every picture a new seed. Fixed: the same seed every render. Sent while Override style is on; off = the style's own (its Fixed seed, else random)">Seed</label>
+        <div class="seedctl" id="imgSeedCtl">
+          <button class="ghost seedmode" id="imgSeedMode" type="button" aria-pressed="false" title="Random: every picture a new seed. Fixed: the number beside it every render">🎲 Random</button>
+          <input type="number" id="imgSeedNum" min="0" max="4294967295" step="1" placeholder="random" style="flex:1;min-width:0" title="The seed - typing one makes it Fixed">
+          <input type="hidden" id="imgSeed" value="-1">
+          <button class="ghost" id="imgSeedLast" type="button" title="Use the last seed used (Fixed)" aria-label="Use the last seed">♻</button>
+        </div>
         <label class="f">LoRAs — the selected style's; weights apply to the next render</label>
         <div id="imgLoras" class="planline">— pick an image style —</div>
         <label class="f" style="margin-top:8px" title="Try another checkpoint without editing the style: this replaces the style's checkpoint for every image render until set back to the style's own. Remembered per browser.">Checkpoint (overrides the style's)</label>
@@ -3401,6 +3414,7 @@
 <script src="/static/speechengines.js"></script>  <!-- 2.594.0: Settings ▸ Audio engine picks - Ming-3.0 TTS, Bark 3.0 STT (H3Speech) -->
 <script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
 <script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
+<script src="/static/seedctl.js"></script>  <!-- 2.598.0: the seed's 🎲 Random / 📌 Fixed toggle - Basic Settings + the style editors (H3Seed) -->
 <!-- ext:scripts -->
 
 <script>
@@ -7949,6 +7963,7 @@ function imgBasicsBody(body) {
   if (wh) { body.width = wh.width; body.height = wh.height; }
   if ($("imgSteps").value !== "") body.steps = parseInt($("imgSteps").value, 10);
   if ($("imgCfg").value !== "") body.cfg = parseFloat($("imgCfg").value);
+  if ($("imgSeed")) body.seed = parseInt($("imgSeed").value, 10);   // 2.598.0: -1 = random (static/seedctl.js)
   if (imgTouched.loras) {
     const m = {};
     $("imgLoras").querySelectorAll("input[data-lora]").forEach(r => {

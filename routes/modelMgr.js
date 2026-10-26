@@ -26,8 +26,12 @@ const cards = require("../lib/modelCards");
 function mount(app) {
   const core = require("../lib/core"), styles = require("../lib/styles");
   const fail = (res, e) => res.status(e.status || 500).json({ error: String((e && e.message) || e) });
-  app.get("/api/modelmgr/cards", (req, res) => {
+  app.get("/api/modelmgr/cards", async (req, res) => {
     try {
+      // 2.598.0: ask the running ComfyUI where its model folders are + what its dropdowns hold (lib/comfyFolders.js) -
+      // a ComfyUI whose models are not under Settings ▸ ComfyUI ▸ Folder showed models in the dropdowns, none here
+      const cc = (core.getConfig().engine || {}).comfy || {};
+      await require("../lib/comfyFolders").refresh((cc.url || "http://127.0.0.1:8188").replace(/\/$/, ""), { force: req.query.refresh === "1" });
       const d = cards.list({ refresh: req.query.refresh === "1" });
       const all = styles.read(core.STYLES_DIR);
       res.json(Object.assign({}, d, {

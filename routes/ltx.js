@@ -79,7 +79,7 @@ function mount(app) {
       prompt, images, negative: require("../static/negprompt.js").clean(b.negative),   // 2.419.0: ⊖ the negative docker (empty = the style's)
       audio: a0 ? { path: path.join(core.pDir("sound"), path.basename(a0)), start: +b.audio_start || 0 } : null,
       video: vid,
-      seconds: b.seconds, width: b.width, height: b.height, seed: bo ? bo.seed : b.seed, basic: bo,
+      seconds: b.seconds, width: b.width, height: b.height, seed: require("../lib/seedPick").pick(bo ? bo.seed : b.seed, style, { override: !!bo, max: 2 ** 31 - 1 }), basic: bo,   // 2.598.0: + the style's fixed seed
       transition: b.transition === "on" ? true : b.transition === "off" ? false : null,
       engine: b.ltx_engine === "canvas" ? "canvas" : "",
       ic_lora: b.ic_lora, ic_strength: b.ic_strength,           // 2.402.0: 3DREAL (LTX 2.3)

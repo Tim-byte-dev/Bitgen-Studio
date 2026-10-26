@@ -173,8 +173,8 @@ function send(port, method, u, body) {
   check("the preview dialog: a right pane with the render details (ⓘ hides / shows it)",
     /<aside class="lbmeta" id="lb_meta"/.test(H) && /H3JobMeta\.pane\(\$\("lb_meta"\), it\.name\)/.test(H) && /id="lb_info"/.test(H)
     && H.includes('<script src="/static/jobmeta.js"></script>') && /fetch\("\/api\/job-meta\?name="/.test(JS) && /♻ Use/.test(JS));
-  check("Basic Settings' Seed: the box (-1 random / any number), 🎲 random, ♻ the last seed used (shown)",
-    /id="seed" value="-1"/.test(H) && /id="seedRand"/.test(H) && /id="seedLast"/.test(H) && /id="seedLastV"/.test(H) && /fetch\("\/api\/job-meta\/last-seed"\)/.test(H));
+  check("Basic Settings' Seed (2.598.0: the 🎲 Random / 📌 Fixed toggle + the number; #seed the hidden -1 / n), ♻ the last seed used (shown)",
+    /id="seed" value="-1"/.test(H) && /id="seedMode"/.test(H) && /id="seedNum"/.test(H) && /id="seedLast"/.test(H) && /id="seedLastV"/.test(H) && /fetch\("\/api\/job-meta\/last-seed"\)/.test(H));
   check("video docker ⚙: Seed - Random for each scene / Same seed for every scene, the seed, ♻ the last seed used",
     /id="vdSetSeedMode"/.test(VD) && /<option value="same">Same seed for every scene/.test(VD) && /id="vdSetSeed"/.test(VD) && /id="vdSetSeedUse"/.test(VD)
     && /seed_mode: el\("vdSetSeedMode"\)/.test(VR) && /"last seed used: " \+ lastSeed/.test(VR));

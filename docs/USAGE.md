@@ -6081,6 +6081,25 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.599.0: **↺ Reset project shows a lock screen.** After you confirm, a cover over the whole window says
+  **"Resetting Project..."** - a spinning ring, the dots running, the step it is on (stopping jobs, deleting and
+  creating the folder again, reopening) and the seconds. Nothing behind it can be clicked or typed into. It stays
+  through the page reload and goes only when the empty project is open (**✓ Project reset**). If the reset is refused,
+  the cover goes and the reason is shown.
+- 2.598.0: **The seed has a 🎲 Random / 📌 Fixed toggle** - in Basic Settings (video and image) and in every style
+  editor (image, video, music).
+  - **🎲 Random**: every render gets a new seed (the number box is greyed). **📌 Fixed**: every render uses the number
+    beside it - the same picture again with the same settings. Typing a number, or ♻ (the last seed used), makes it
+    Fixed; switching back to Random keeps the number for next time.
+  - **In a style**: Fixed means that style always renders with its own seed. Which seed a render uses: Basic Settings'
+    Fixed seed first; with **Override style** on, Basic Settings' Random stays random; otherwise a style's Fixed seed;
+    otherwise a random one. Styles saved before have Random (their old seed is not used, as before).
+  - The image settings' seed is sent while Override style is on.
+- 2.598.0: **The 🧩 Model manager finds the models and LoRAs the running ComfyUI has**, also when they are not in the
+  ComfyUI folder set in Settings ▸ ComfyUI (the ComfyUI Desktop app keeps them in its own folder, or a yaml is given on
+  ComfyUI's command line). It asks ComfyUI for its model folders and for the names in its dropdowns; a model ComfyUI
+  lists whose file this computer cannot open still gets a card (its size says so). Press ↻ in the manager after
+  starting ComfyUI.
 - 2.597.0: **MP4 · Social media** in the timeline's **📤 Export** - for Facebook, Instagram and TikTok. Pick it as a
   format, or **＋ a pack… ▸ social media** for four at once: **9:16** (Reels / Stories, a blurred fill), **4:5** (the
   Facebook feed), **1:1** and **16:9**, each 1080 on the short side.

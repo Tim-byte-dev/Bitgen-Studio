@@ -109,7 +109,7 @@ const F = (f) => Math.round(f * 1000) / 1000;
     await p.evaluate(() => window.SecFloat && window.SecFloat.show && window.SecFloat.show("basic", true));   // 2.393.0: Basic Settings floats (S)
     // 2.431.0: with the image editor on screen the prompt docker is in Image mode (Basic Settings shows no seed) - Video for this
     await p.evaluate(() => { const s = document.getElementById("genModeSel"); if (s && s.value !== "video") { s.value = "video"; if (s.onchange) s.onchange(); } });
-    await p.focus("#seed");
+    await p.focus("#seconds");                                       // 2.598.0: #seed is the hidden value of the seed toggle now
     await p.keyboard.press("ArrowRight");
     check("typing in an input: the arrows are the input's", await startOf("v1_b.mp4") === before);
     await p.evaluate(() => window.SecFloat && window.SecFloat.show && window.SecFloat.show("basic", false));

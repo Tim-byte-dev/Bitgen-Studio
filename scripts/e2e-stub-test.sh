@@ -12533,6 +12533,23 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui596-ui.js > /tmp/ui596.log 2>&
 python3 scripts/test-social597.py > /tmp/so597.log 2>&1 \
   && ok "2.597.0 social media preset (REAL encodes: a 75 fps 4K 4:4:4 master -> 9:16 / 4:5 / 1:1 / 16:9 H.264 High 8-bit, 1080 short side at most, 30 fps steady, AAC 48 kHz stereo, faststart, no timecode track, the check says ready; a silent track for a movie without sound; the pure rules)" \
   || { bad "2.597.0 social media preset"; grep -a "^FAIL" -A2 /tmp/so597.log | head -14; }
+# ---- 2.598.0 (the seed's 🎲 Random / 📌 Fixed toggle in Basic Settings + the styles; the 🧩 Model manager asks the running ComfyUI)
+node scripts/test-seed598.js > /tmp/sd598.log 2>&1 \
+  && ok "2.598.0 seed units (lib/seedPick: Basic Settings' fixed seed > Override's Random > the style's fixed seed > random; styles keep seed_mode + seed; the routes use it; seedctl's pure rules; the page)" \
+  || { bad "2.598.0 seed units"; grep -a "^FAIL" -A2 /tmp/sd598.log | head -14; }
+node scripts/test-modelmgr598.js > /tmp/mm598.log 2>&1 \
+  && ok "2.598.0 model manager units (a running ComfyUI's own folders via /internal/folder_paths + its dropdown names -> cards with no ComfyUI folder set; name-only cards; scan extraRoots)" \
+  || { bad "2.598.0 model manager units"; grep -a "^FAIL" -A2 /tmp/mm598.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui598-ui.js > /tmp/ui598.log 2>&1 \
+  && ok "2.598.0 browser test: Basic Settings' seed toggle (Random -1 / Fixed n, back and forth, set from elsewhere), the image settings' seed sent, the style editors' Seed rows read / paint / save - or SKIP without playwright" \
+  || { bad "2.598.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui598.log | head -14; }
+# ---- 2.599.0 (the "Resetting Project..." lock screen)
+node scripts/test-lock599.js > /tmp/lk599.log 2>&1 \
+  && ok "2.599.0 lock screen units (the dots, the seconds, loaded first in <body>, the cover's guards, the reset's steps, carried over the reload)" \
+  || { bad "2.599.0 lock screen units"; grep -a "^FAIL" -A2 /tmp/lk599.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui599-ui.js > /tmp/ui599.log 2>&1 \
+  && ok "2.599.0 browser test: ↺ Reset on a throwaway project - the cover at once (whole window, on top, animated dots, nothing reachable), through the reset and the reload, ✓ Project reset when the project is back, then gone; a refused reset takes it down - or SKIP without playwright" \
+  || { bad "2.599.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui599.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

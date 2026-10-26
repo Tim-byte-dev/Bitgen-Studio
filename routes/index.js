@@ -49,6 +49,7 @@ const modelFit = require("../lib/modelFit");   // 2.540.3: a checkpoint override
 const h3Long = require("../lib/h3Long");                 // 2.503.0: MiniMax H3 long single runs (up to 30 s)
 const swapLib = require("../lib/swap");   // 2.328.0: swap styles (mmh3_chr_swap)
 const imageSeed = require("../lib/imageSeed");
+const seedPick = require("../lib/seedPick");      // 2.598.0: Basic Settings' seed / the style's fixed seed / random
 const projects = require("../lib/projects");
 const clipTransform = require("../lib/clipTransform");   // 2.377.0: the timeline canvas's layer transforms
 const keyframes = require("../lib/keyframes");           // 2.379.0: ◆ keyframes + tweens (static/keyframes.js)
@@ -564,7 +565,7 @@ function mount(app) {
             negative: negOf(f),                                  // 2.419.0: ⊖ the negative docker
             refAudios, frames: clamp("frames", d.frames, 1, 5760),
             width: frameOp ? frameOp.width : clamp("width", d.width, 128, 2048),
-            height: frameOp ? frameOp.height : clamp("height", d.height, 128, 2048), seed: bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1),
+            height: frameOp ? frameOp.height : clamp("height", d.height, 128, 2048), seed: seedPick.pick(bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1), vs, { override: !!bo, max: 2 ** 31 - 1 }),   // 2.598.0: + the style's fixed seed
             steps: bo ? bo.steps : clamp("steps", 0, 0, 100), cfg: bo && bo.cfg != null ? bo.cfg : styles.numOr(f.cfg, 0),
             cfgExact: !!(bo && bo.cfg != null), camera: camWan });
           if (wp.error) return res.status(400).json({ error: wp.error });
@@ -617,7 +618,7 @@ function mount(app) {
       // value (distilled); absent means exactly that, so old clients change
       // nothing. numOr, not ||: a numeric field never goes through truthiness.
       cfg: Math.max(0.5, Math.min(15, bo && bo.cfg != null ? bo.cfg : styles.numOr(f.cfg, 1))),
-      seed: bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1),
+      seed: seedPick.pick(bo ? bo.seed : clamp("seed", -1, -1, 2 ** 31 - 1), videoStyle, { override: !!bo, max: 2 ** 31 - 1 }),   // 2.598.0: + the style's fixed seed (lib/seedPick.js)
       // 2.102.1: mp4 is the default (webm does not share over Messenger)
       format: ["mp4", "webm", "avi"].includes(f.format) ? f.format : "mp4",
       speed: ["quality", "balanced", "fast", "turbo"].includes(f.speed) ? f.speed : "quality",
@@ -1788,7 +1789,7 @@ function mount(app) {
                 workflow: wf.workflow, workflow_note: wf.note, infill: true, infill_input: wf.input,
                 images: imgs.map((n) => path.join(core.pDir("images"), n)) };
     if (b.negative) p.negative = String(b.negative).slice(0, 2000);
-    const rolled = imageSeed.forRequest(styles.numOrNull(b.seed));
+    const rolled = imageSeed.forRequest(b.seed === undefined || b.seed === null || b.seed === "" ? seedPick.pick(null, style) : styles.numOrNull(b.seed));   // 2.598.0
     p.seed = rolled.seed; p.seed_random = rolled.random;
     const job = core.makeJob(p);
     job.chunk = { i: 0, n: 1 };
@@ -1929,7 +1930,8 @@ function mount(app) {
     // worker log, and into the name of every file the render produces, so a
     // picture worth keeping can be made again by typing its own filename back
     // in. A seed the caller pinned is obeyed; see lib/imageSeed.js.
-    const rolled = imageSeed.forRequest(p.seed);
+    // 2.598.0: no seed asked for (Override style off) -> the style's FIXED seed, when it has one (lib/seedPick.js)
+    const rolled = imageSeed.forRequest(b.seed === undefined || b.seed === null || b.seed === "" ? seedPick.pick(p.seed, style) : p.seed);
     p.seed = rolled.seed;
     p.seed_random = rolled.random;
 
@@ -2026,7 +2028,7 @@ function mount(app) {
     p.batch = p.want === "abc" ? 1 : Math.max(1, Math.min(4, styles.numOr(b.batch, 1)));
     // ONE PRESS = ONE FRESH SEED, the same rule as images (lib/imageSeed.js):
     // the number goes into job.json, the log and the filename.
-    const rolled = imageSeed.forRequest(p.seed);
+    const rolled = imageSeed.forRequest(seedPick.pick(p.seed, style));   // 2.598.0: blank = the style's fixed seed, else random
     p.seed = rolled.seed;
     p.seed_random = rolled.random;
 

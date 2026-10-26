@@ -274,9 +274,15 @@
       .then(function (ok) {
         if (!ok) return;
         resetBusy(true);
+        // 2.599.0 (Tim: "when resetting a project put a lock screen at the front and say "Resetting Project..." but
+        // animate it until the project resets"): static/locklayer.js - over everything until the empty project is open
+        var L = window.H3Lock;
+        if (L) L.show("Resetting Project...", busy ? "Stopping " + busy + " job" + (busy === 1 ? "" : "s") + " and letting go of open files" : "Letting go of open files");
         releaseMedia();
+        if (L) L.step("Deleting \"" + name + "\" and creating it again, empty");
         return post("/api/projects/reset", { name: name }).then(function (j) {
           if (!j._ok) {
+            if (L) L.hide();
             resetBusy(false);
             if (typeof window.appNote === "function") window.appNote(j.error || "the reset failed", "Reset project");
             else window.alert(j.error || "the reset failed");
@@ -286,9 +292,11 @@
             sessionStorage.setItem("h3.resetInfo", JSON.stringify({ name: j.name, stopped: j.stopped || 0,
               jobs_cleared: j.jobs_cleared || 0, leftover: j.leftover || [] }));
           } catch (e) { /* the note only */ }
+          if (L) { L.step("Reopening the empty project"); L.carry("Resetting Project...", { sub2: "Opening \"" + j.name + "\" - every docker empty", done: "Project reset" }); }
           if (typeof window.freshReload === "function") window.freshReload(j.name, "reset");
           else location.reload();
         }, function (e) {
+          if (L) L.hide();
           resetBusy(false);
           if (typeof window.appNote === "function") window.appNote("the reset failed: " + (e && e.message || e), "Reset project");
         });
