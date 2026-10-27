@@ -215,7 +215,15 @@
     if (root.PCType && root.PCType.owns(t)) return root.PCType.box(t, g);    // 2.426.0: scales, indents, paragraph text (pctype.js)
     const lines = String(t.str || "").split("\n"), lh = t.size * (t.leading || 1.2);
     let w = 0;
-    for (const ln of lines) w = Math.max(w, g ? g.measureText(ln).width : ln.length * t.size * 0.55);
+    // 2.602.0 (Tim: "make the select tool fit the text that is typed dynamically"): measured in the TEXT'S font and
+    // tracking - the layer's context still had the canvas default (10px sans-serif), so every box (the typing frame, the
+    // Move tool's handles, Align, a click's hit test) was far too narrow for the letters
+    if (g && g.measureText) {
+      g.save(); g.font = fontCss(t);
+      if ("letterSpacing" in g) g.letterSpacing = ((t.tracking || 0) / 1000 * t.size).toFixed(2) + "px";
+      for (const ln of lines) w = Math.max(w, g.measureText(ln).width);
+      g.restore();
+    } else for (const ln of lines) w = Math.max(w, ln.length * t.size * (0.55 + (t.tracking || 0) / 1000));
     const x = t.align === "center" ? t.x - w / 2 : t.align === "right" ? t.x - w : t.x;
     return { x, y: t.y, w: Math.max(1, w), h: Math.max(lh, lines.length * lh) };
   }

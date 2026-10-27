@@ -12585,6 +12585,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui601-ui.js > /tmp/ui601.log 2>&
 python3 scripts/test-tacompat601.py > /tmp/ta601.log 2>&1 \
   && ok "2.601.0 torchaudio without TorchCodec: Ming-3.0 TTS's infer.py runs through ta_compat (load / save by soundfile, wave or ffmpeg on torchaudio 2.9+), OmniVoice patched too; 2.601.1 complex bfloat16 maths lifted to float32 (BComplex32)" \
   || { bad "2.601.0 torchaudio without TorchCodec"; grep -a "^FAIL" -A2 /tmp/ta601.log | head -14; }
+# ---- 2.602.0 (Tim: "in image-editor text tool make the select tool fit the text that is typed dynamically. change the
+# cursor to a edit text cursor when hover over text, on click edit text from the position of the click")
+node scripts/test-pccaret.js > /tmp/caret602.log 2>&1 \
+  && ok "2.602.0 where a click puts the caret (point / centred / right / wrapped / turned text), the text box measured in its own font + tracking, the type tool wiring" \
+  || { bad "2.602.0 the caret + text box"; grep -a "^FAIL" -A2 /tmp/caret602.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui602-ui.js > /tmp/ui602.log 2>&1 \
+  && ok "2.602.0 browser test: the typing frame hugs the letters and grows with them, the edit-text cursor over a text, a click edits from the click (point, inside the box, paragraph text) - or SKIP without playwright" \
+  || { bad "2.602.0 type tool browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui602.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

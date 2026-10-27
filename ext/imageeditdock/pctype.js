@@ -634,7 +634,8 @@
       C("win.pcPara", "Paragraph", "", () => E.ui.showTab && E.ui.showTab("pcPara"), {}, ["Window", "win.pcChar"]);
     }
     E.ui.typePanels = () => { try { paintChar(); paintPara(); } catch (e) { /* a panel is not open */ } };
-    E.type = { layout: (t) => layout(t, canvasMeasure(t, ctx(E.cv))), toParagraph, toPoint, paint, applyStyle, cstyles, pstyles, toShape, outlinesOf: (t) => outlinesOf(t, ctx(E.cv)), textInShape, areaOfShape };
+    // 2.602.0: + measure (pccaret.js - where a click puts the caret in a paragraph text)
+    E.type = { layout: (t) => layout(t, canvasMeasure(t, ctx(E.cv))), measure: (t) => canvasMeasure(t, ctx(E.cv)), toParagraph, toPoint, paint, applyStyle, cstyles, pstyles, toShape, outlinesOf: (t) => outlinesOf(t, ctx(E.cv)), textInShape, areaOfShape };
   }
 
   const api = { CHAR_KEYS, PARA_KEYS, wants, owns, pctextOnly, runs, measureOf, wrapLine, layout, draw, drawAt, box, scale, pick, matches, install,

@@ -390,6 +390,7 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **Drop to add** — drop videos, pictures or sounds on the canvas; each lands on a new layer at the position marker. *Where:* the preview canvas
 - **Move tool** — select, move, scale by a corner and rotate by the top handle; Shift for 15-degree steps or one axis. *Where:* key V
 - **Text tool** — click to add a text layer with font, size, colour, bold, italic, outline, shadow and alignment. *Where:* key T
+- **Typing that fits, editing at the click** — the frame round the text being typed hugs the letters and grows with each key; over a text the pointer is the text I-beam (elsewhere the new-text cursor); a click edits from between the letters where you clicked, also on wrapped paragraph text. *Where:* the image editor's Type tool (T). *Since:* 2.602.0
 - **Hand and Zoom** — pan, zoom and fit the picture. *Where:* keys H, Z
 - **Fill a selection** — draw a box or paint a mask, then generate a picture or video that blends into it. *Where:* keys M and B, and Fill in the Layers panel. *Since:* 2.380.0
 - **Play with sound** — every layer plays together with sound; loop the ruler selection. *Where:* under the canvas

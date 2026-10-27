@@ -6081,6 +6081,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.602.0: **Image editor ▸ Type tool** - the dashed frame round the text you are typing now fits the letters
+  exactly and grows with every key (centred text grows both ways). With the Type tool the pointer is the text I-beam over
+  a text and the new-text cursor (an I-beam in a dotted box) elsewhere. A click on a text starts editing right where you
+  clicked - between the two letters nearest the click - instead of selecting it all; a click inside the text you are
+  typing moves the caret there. The text's box for the Move tool's handles, Align and clicking is now as wide as the
+  letters (it was measured too small).
 - 2.601.1: **Fixed: Ming-3.0 TTS "\"mul_cuda\" not implemented for 'BComplex32'"** - Ming runs its whole model in
   bfloat16, and the last step that turns its output into sound does maths with complex numbers, which PyTorch cannot do
   in bfloat16. bitGen now does that one step in full precision (float32), the rest stays as fast as before. Nothing to

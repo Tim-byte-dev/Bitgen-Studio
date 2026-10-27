@@ -626,7 +626,8 @@
   .kx.rulers .pcruler{display:block}
   .pcruler.h{left:0;right:0;top:0;height:16px;border-bottom:1px solid var(--pc-line)}
   .pcruler.v{left:0;top:0;bottom:0;width:16px;border-right:1px solid var(--pc-line)}
-  .pctext{position:absolute;z-index:6;background:transparent;border:1px dashed var(--pc-accent);outline:none;resize:none;overflow:hidden;white-space:pre;padding:0;margin:0;transform-origin:0 0;color:transparent;caret-color:var(--pc-accent)}
+  .pctext,.kx textarea.pctext{position:absolute;z-index:6;background:transparent;border:1px dashed var(--pc-accent);border-radius:0;outline:none;resize:none;overflow:hidden;white-space:pre;padding:0;margin:0;transform-origin:0 0;color:transparent;caret-color:var(--pc-accent);box-sizing:content-box;cursor:text}
+  .kx textarea.pctext:not(.pcshaped)::selection{background:rgba(245,158,44,.35);color:transparent}
   .kxside{flex:none;width:300px;border-left:1px solid var(--pc-line);overflow:auto;display:flex;flex-direction:column;background:var(--pc-bg);gap:4px;padding:4px 0}
   .pcgrp{background:var(--pc-panel);border-top:1px solid var(--pc-line);border-bottom:1px solid var(--pc-line);display:flex;flex-direction:column;min-height:0}
   .pcgrp.off{display:none}

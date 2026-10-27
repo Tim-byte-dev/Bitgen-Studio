@@ -483,6 +483,8 @@
         return;
       }
       ta.classList.remove("pcshaped");
+      const trk = ((+t.tracking || 0) / 1000 * t.size * S.zoom).toFixed(2) + "px";   // 2.602.0: the canvas's tracking, so the caret sits on the letters
+      ta.style.letterSpacing = trk;
       if (t.box) {                                                             // 2.426.0: paragraph text - the textarea IS the box
         ta.style.left = (S.panX + t.x * S.zoom) + "px"; ta.style.top = (S.panY + t.y * S.zoom) + "px";
         ta.style.width = Math.max(20, t.box.w * S.zoom) + "px"; ta.style.height = Math.max(20, t.box.h * S.zoom) + "px";
@@ -491,15 +493,42 @@
         return;
       }
       ta.style.whiteSpace = ""; ta.style.paddingLeft = ""; ta.style.paddingRight = ""; ta.style.textIndent = "";
-      ta.style.left = (S.panX + b.x * S.zoom) + "px"; ta.style.top = (S.panY + t.y * S.zoom) + "px";
-      ta.style.width = Math.max(40, (b.w + t.size) * S.zoom) + "px"; ta.style.height = Math.max(t.size * S.zoom, b.h * S.zoom + 4) + "px";
+      // 2.602.0 (Tim: "make the select tool fit the text that is typed dynamically"): the dashed frame HUGS the letters -
+      // as wide as the typed text (measured in its own font now) plus room for the caret, grown on the side the text
+      // grows (left aligned: right, centred: both, right aligned: left), as tall as its lines; follows every key
+      const room = Math.max(6, t.size * S.zoom * 0.12), empty = !String(t.str || "");
+      const wPx = (empty ? 0 : b.w * S.zoom) + room, shift = t.align === "center" ? room / 2 : t.align === "right" ? room : 0;
+      ta.style.left = (S.panX + b.x * S.zoom - shift - 1) + "px"; ta.style.top = (S.panY + t.y * S.zoom - 1) + "px";   // -1: the 1 px dashed border sits outside the letters
+      ta.style.width = wPx + "px"; ta.style.height = Math.max(t.size * (t.leading || 1.2) * S.zoom, b.h * S.zoom) + "px";
       ta.style.font = D.fontCss(Object.assign({}, t, { size: t.size * S.zoom })); ta.style.lineHeight = (t.leading || 1.2);
       ta.style.textAlign = t.align;
+      ta.scrollLeft = 0; ta.scrollTop = 0;
     }
-    function editText(L) {
+    /* 2.602.0 (Tim: "on click edit text from the position of the click"): the caret goes where the click was - between
+       the two letters nearest it (pccaret.js) - not the whole text selected */
+    function caretAt(L, fx, fy) {
+      const C = root.PCCaret, t = L && L.text; if (!C || !t) return null;
+      const str = String(t.str || ""), g = ctx(L.canvas);
+      try {
+        if (root.PCText && root.PCText.wants(t) && !(root.PCRuns && root.PCRuns.owns(t))) return str.length;   // path / warp / vertical / 3D: the end
+        const [ux, uy] = C.unturn(t, D.textBox0 ? D.textBox0(t, g) : D.textBox(t, g), fx, fy);
+        if (root.PCType && root.PCType.owns(t) && E.type && E.type.layout && E.type.measure) {
+          const lay = E.type.layout(t);
+          return C.layoutIndex(str, lay.lines, ux, uy, lay.lh, E.type.measure(t));
+        }
+        const m = (s) => { g.save(); g.font = D.fontCss(t); if ("letterSpacing" in g) g.letterSpacing = ((+t.tracking || 0) / 1000 * t.size).toFixed(2) + "px"; const w = g.measureText(s).width; g.restore(); return w; };
+        return C.plainIndex(t, ux, uy, m);
+      } catch (e) { return str.length; }
+    }
+    E.caretAt = caretAt;
+    function editText(L, at) {
       endText();
       taLayer = L;
       ta = doc.createElement("textarea"); ta.className = "pctext"; ta.spellcheck = false; ta.value = L.text.str;
+      // 2.602.0: a click INSIDE the text being typed moves the caret there (the browser's own) - it no longer reaches the
+      // stage, which ended the typing
+      ta.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+      ta.addEventListener("mousedown", (ev) => ev.stopPropagation());
       E.stage.appendChild(ta); placeTa();
       ta.oninput = () => { E.liveSet(L, (x) => { if (x.text.runs && root.PCRuns) x.text.runs = root.PCRuns.shiftRuns(x.text.runs, String(x.text.str || ""), ta.value); x.text.str = ta.value; }); placeTa(); };   // 2.449.0: the per-letter ranges follow the typing
       ta.onkeydown = (ev) => {
@@ -507,8 +536,14 @@
         if (ev.key === "Escape" || (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey))) { ev.preventDefault(); endText(); }
       };
       ta.onblur = () => setTimeout(() => { if (ta && doc.activeElement !== ta && !(E.keepTyping && E.keepTyping(doc.activeElement))) endText(); }, 120);   // 2.449.0: the options bar / Character panel keep it open
-      setTimeout(() => { ta.focus(); ta.select(); }, 0);
-      say("typing - Ctrl+Enter or Esc commits; the options bar changes font, size, colour");
+      const pos = at && isFinite(at.x) && isFinite(at.y) ? caretAt(L, at.x, at.y) : null;
+      setTimeout(() => {
+        if (!ta) return;
+        ta.focus();
+        if (pos == null) ta.select();                                          // a NEW text / ✎ Edit: as before
+        else { ta.setSelectionRange(pos, pos); ta.scrollLeft = 0; }
+      }, 0);
+      say(pos == null ? "typing - Ctrl+Enter or Esc commits; the options bar changes font, size, colour" : "editing at the click - Ctrl+Enter or Esc commits; Ctrl+A selects all");
     }
     function endText() {
       if (!ta) return;
@@ -562,9 +597,17 @@
           onPick: (id) => { S.typeFx = id || ""; if (store.set) store.set("t.fx", S.typeFx); if (isT) E.setLayer(L, "text effect preset", (x) => { if (id) x.text.fx = id; else delete x.text.fx; }); } }));
       },
       down(e, fx, fy) {
-        if (ta) { endText(); return false; }
+        if (ta) {
+          // 2.602.0: a click on the letters of the text being typed (a shaped text types in a box above them) moves the
+          // caret; on another text it is edited from there; anywhere else commits, as before
+          const j = textAt(fx, fy);
+          if (j >= 0 && S.layers[j] === taLayer) { const k = caretAt(taLayer, fx, fy); if (k != null) { ta.focus(); ta.setSelectionRange(k, k); } return false; }
+          endText();
+          if (j >= 0 && S.layers[j] && S.layers[j].type === "text") { const jj = S.layers.indexOf(S.layers[j]); E.setActive(jj); E.renderOptions(); editText(S.layers[jj], { x: fx, y: fy }); }
+          return false;
+        }
         const i = textAt(fx, fy);
-        if (i >= 0) { E.setActive(i); E.renderOptions(); editText(S.layers[i]); return false; }
+        if (i >= 0) { E.setActive(i); E.renderOptions(); editText(S.layers[i], { x: fx, y: fy }); return false; }
         const L = E.makeLayer("Text", S.w, S.h, "text");
         L.text = Object.assign({}, D.TEXT_DEFAULT, typeSettings(), { str: "", x: Math.round(fx), y: Math.round(fy - S.typeSize * 0.15) });
         D.rasterize(L);
@@ -574,6 +617,22 @@
       },
       leave() { endText(); },
     };
+    /* 2.602.0 (Tim: "change the cursor to a edit text cursor when hover over text"): with the Type tools the pointer is
+       the I-beam over a text (a click edits it there) and the NEW-TEXT cursor (an I-beam in a dotted box) elsewhere */
+    const NEW_TEXT_CURSOR = 'url("data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect x="2.5" y="2.5" width="19" height="19" fill="none" stroke="#000" stroke-width="3" stroke-dasharray="2 2"/><rect x="2.5" y="2.5" width="19" height="19" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="2 2"/><path d="M9 6h6M12 6v12M9 18h6" stroke="#fff" stroke-width="3"/><path d="M9 6h6M12 6v12M9 18h6" stroke="#000" stroke-width="1.3"/></svg>') + '") 12 12, crosshair';
+    E.textCursorAt = (fx, fy, vertical) => (textAt(fx, fy) >= 0 ? (vertical ? "vertical-text" : "text") : NEW_TEXT_CURSOR);
+    let curRaf = 0, curAt = null;
+    E.stage.addEventListener("pointermove", (ev) => {
+      if (!(S.tool === "type" || S.tool === "vtype") || S.drag || S.space || !S.w) return;
+      curAt = ev;
+      if (curRaf) return;
+      curRaf = root.requestAnimationFrame ? root.requestAnimationFrame(() => {
+        curRaf = 0; const e2 = curAt; if (!e2 || !(S.tool === "type" || S.tool === "vtype")) return;
+        const r = E.stage.getBoundingClientRect(), fx = (e2.clientX - r.left - S.panX) / S.zoom, fy = (e2.clientY - r.top - S.panY) / S.zoom;
+        const c = E.textCursorAt(fx, fy, S.tool === "vtype");
+        if (E.stage.style.cursor !== c) E.stage.style.cursor = c;
+      }) : 0;
+    });
     // the textarea follows zoom / pan
     const prevApply = E.ui.rulers;
     E.overlayHooks.push(() => { if (ta) placeTa(); });
