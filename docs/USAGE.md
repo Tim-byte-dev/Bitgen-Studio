@@ -6081,6 +6081,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.601.1: **Fixed: Ming-3.0 TTS "\"mul_cuda\" not implemented for 'BComplex32'"** - Ming runs its whole model in
+  bfloat16, and the last step that turns its output into sound does maths with complex numbers, which PyTorch cannot do
+  in bfloat16. bitGen now does that one step in full precision (float32), the rest stays as fast as before. Nothing to
+  reinstall.
 - 2.601.0: **⟳ Reinstall, and every install button says what it is doing** - an add-on, package or model that is
   already installed shows **⟳ Reinstall** (a downloaded model: **⟳ Download again**), and pressing it really fetches
   everything again instead of skipping what is "already there". The moment an install or download starts its button is

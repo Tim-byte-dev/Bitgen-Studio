@@ -12583,7 +12583,7 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui601-ui.js > /tmp/ui601.log 2>&
   && ok "2.601.0 browser test: Add-ons ⟳ Reinstall + its status beside the disabled buttons, faster-whisper ⟳ Reinstall following its job, sd-cli ⟳ Reinstall, the model catalog's ⟳ Download again with Downloading 1 of 1 · 50 % - or SKIP without playwright" \
   || { bad "2.601.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui601.log | head -14; }
 python3 scripts/test-tacompat601.py > /tmp/ta601.log 2>&1 \
-  && ok "2.601.0 torchaudio without TorchCodec: Ming-3.0 TTS's infer.py runs through ta_compat (load / save by soundfile, wave or ffmpeg on torchaudio 2.9+), OmniVoice patched too" \
+  && ok "2.601.0 torchaudio without TorchCodec: Ming-3.0 TTS's infer.py runs through ta_compat (load / save by soundfile, wave or ffmpeg on torchaudio 2.9+), OmniVoice patched too; 2.601.1 complex bfloat16 maths lifted to float32 (BComplex32)" \
   || { bad "2.601.0 torchaudio without TorchCodec"; grep -a "^FAIL" -A2 /tmp/ta601.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \

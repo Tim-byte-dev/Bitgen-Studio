@@ -12,6 +12,8 @@ TorchCodec does not import and torchaudio is 2.9 or newer (an older torchaudio k
 
   python ta_compat.py <script.py> [args...]   runs the script as __main__ with the patch in place (its folder first on
                                               sys.path, like running it directly) - scripts/ming_local.py runs infer.py so
+2.601.1: patch_complex_half() - a bfloat16 / half tensor meeting a Python complex number (Ming's vocoder: mag * (x + 1j * y))
+is lifted to float32 first: PyTorch has no "BComplex32" maths ('"mul_cuda" not implemented for 'BComplex32'').
 Pure: version_tuple(s), needs_patch(ver, has_codec), pcm_to_float(raw, width), float_to_pcm16(samples).
 """
 import os
@@ -146,6 +148,69 @@ def patch(verbose=True):
     return True
 
 
+# ---------------------------------------------------------------- 2.601.1: complex numbers in bfloat16
+# Tim: 'Ming-3.0 TTS stopped (1): S = mag * (x + 1j * y) | ~~~^~~ | NotImplementedError: "mul_cuda" not implemented for
+# 'BComplex32''. Ming casts the WHOLE model to bfloat16, its vocoder head (audio_tokenizer/istft.py ISTFTHead) builds the
+# spectrum as mag * (cos + 1j * sin) - and a bfloat16 tensor times a Python complex is a complex-bfloat16 ("BComplex32"),
+# which PyTorch has (almost) no maths for: mul / add fail on CUDA and CPU alike. patch_complex_half() makes those
+# operators do that one step in float32 (complex64): a half / bfloat16 tensor meeting a Python complex number - or a
+# tensor that is already complex-half - is lifted first. Everything else goes straight through unchanged.
+_CPLX_OPS = ("__mul__", "__rmul__", "__add__", "__radd__", "__sub__", "__rsub__", "__truediv__", "__rtruediv__")
+
+
+def _is_chalf(t):
+    try:
+        return bool(t.is_complex()) and t.element_size() <= 4
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def patch_complex_half(verbose=True):
+    """-> True when the operators were wrapped (once per process)"""
+    try:
+        import torch
+    except Exception:  # noqa: BLE001
+        return False
+    try:
+        T = torch.Tensor
+        if getattr(T, "_h3_chalf", False):
+            return False
+        half = (torch.bfloat16, torch.float16)
+        orig_ops = [getattr(T, n) for n in _CPLX_OPS]
+    except Exception:  # noqa: BLE001 - an odd torch: leave it exactly as it is
+        return False
+    del orig_ops
+    said = []
+
+    def lift(t):
+        if isinstance(t, torch.Tensor):
+            if t.dtype in half:
+                return t.float()
+            if _is_chalf(t):
+                return t.to(torch.complex64)
+        return t
+
+    def wrap(name):
+        orig = getattr(T, name)
+
+        def op(self, other):
+            if (isinstance(other, complex) and getattr(self, "dtype", None) in half) or _is_chalf(self) \
+                    or (isinstance(other, torch.Tensor) and _is_chalf(other)):
+                if verbose and not said:
+                    said.append(1)
+                    print("[h3] complex maths in %s done in float32 (the vocoder's spectrum) - PyTorch has no complex-%s kernels"
+                          % (str(getattr(self, "dtype", "half")).replace("torch.", ""), "bfloat16"), flush=True)
+                return orig(lift(self), lift(other))
+            return orig(self, other)
+        op.__name__ = name
+        return op
+
+    for n in _CPLX_OPS:
+        setattr(T, n, wrap(n))
+    T._h3_chalf = True
+    return True
+
+
 def _has(mod):
     try:
         __import__(mod)
@@ -160,6 +225,7 @@ def run(argv):
     sys.argv = [script] + list(argv[1:])
     sys.path[0] = os.path.dirname(script)    # its own folder first - never this one (scripts/ names must not shadow its modules)
     patch()
+    patch_complex_half()                     # 2.601.1: "mul_cuda" not implemented for 'BComplex32'
     runpy.run_path(script, run_name="__main__")
 
 

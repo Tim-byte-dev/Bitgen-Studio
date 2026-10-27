@@ -10,6 +10,8 @@ torchcodec to use this function.'
               imports a module from ITS OWN folder (not scripts/), and gets __main__ + its argv; without the shim the same
               script stops with the TorchCodec error; a torchaudio 2.8 is left alone
   wiring      ming_local.py runs infer.py through ta_compat.py; omnivoice_local.py patches before it imports OmniVoice
+  2.601.1     complex maths in bfloat16 (Ming's vocoder: mag * (x + 1j * y)) - fails without the shim ('BComplex32'),
+              complex64 -> float32 audio through it (needs PyTorch: this python, or H3_TORCH_PYTHON; else SKIP)
 No numpy here = the LIVE legs SKIP (the pure ones run).
 """
 import os
@@ -122,6 +124,40 @@ print(json.dumps({"name": __name__, "argv": sys.argv[1:], "shape": list(w.shape)
     ta("2.8.0")
     r3 = subprocess.run([sys.executable, os.path.join(HERE, "ta_compat.py"), "infer.py", wav, out], cwd=prog, env=env, capture_output=True, text=True)
     check("a torchaudio 2.8 is left alone (its own backends)", r3.returncode != 0 and "TorchCodec is required" in (r3.stderr or "") and "without TorchCodec" not in (r3.stdout or ""))
+
+# ---- 2.601.1: complex maths in bfloat16 ('"mul_cuda" not implemented for 'BComplex32'')
+TA = open(os.path.join(HERE, "ta_compat.py"), encoding="utf-8").read()
+check("2.601.1: run() lifts complex-bfloat16 maths too (patch_complex_half after patch, before the script)",
+      TA.index("    patch()\n    patch_complex_half()") < TA.index('runpy.run_path(script, run_name="__main__")'))
+tpy = os.environ.get("H3_TORCH_PYTHON") or ""
+if not tpy:
+    try:
+        import torch  # noqa: F401
+        tpy = sys.executable
+    except ImportError:
+        tpy = ""
+if not tpy:
+    print("SKIP: no PyTorch here (set H3_TORCH_PYTHON to a python that has it) - the 2.601.1 LIVE legs did not run")
+else:
+    tmp2 = tempfile.mkdtemp(prefix="bg-chalf601-")
+    voc = os.path.join(tmp2, "voc.py")
+    with open(voc, "w") as fh:     # the vocoder head's spectrum, as Ming's audio_tokenizer/istft.py builds it (all bfloat16)
+        fh.write('''import torch
+m = torch.randn(1, 961, 12).to(torch.bfloat16); p = torch.randn(1, 961, 12).to(torch.bfloat16)
+mag = torch.clip(torch.exp(m), max=1e2)
+x = torch.cos(p)
+y = torch.sin(p)
+S = mag * (x + 1j * y)
+a = torch.fft.irfft(S, 1920, dim=1, norm="backward")
+r = torch.randn(4).to(torch.bfloat16) * 2 + 1
+print("VOC", S.dtype, a.dtype, tuple(a.shape), bool(torch.isfinite(a).all()), r.dtype)
+''')
+    r1 = subprocess.run([tpy, voc], cwd=tmp2, capture_output=True, text=True)
+    check("2.601.1 LIVE: without the shim the vocoder's spectrum fails like Tim's (not implemented for 'BComplex32')", r1.returncode != 0 and "BComplex32" in (r1.stderr or ""), (r1.stderr or "")[-300:])
+    r2 = subprocess.run([tpy, os.path.join(HERE, "ta_compat.py"), voc], cwd=tmp2, capture_output=True, text=True)
+    out2 = [l for l in (r2.stdout or "").splitlines() if l.startswith("VOC")]
+    check("2.601.1 LIVE: through ta_compat it is complex64 -> float32 audio, finite; plain bfloat16 maths stays bfloat16; the log says so",
+          r2.returncode == 0 and out2 and out2[0] == "VOC torch.complex64 torch.float32 (1, 1920, 12) True torch.bfloat16" and "done in float32" in r2.stdout, (r2.stdout or "")[-300:] + (r2.stderr or "")[-300:])
 
 print("\n%d passed, %d failed" % (P, F))
 print("RESULT: FAIL" if F else "RESULT: PASS")
