@@ -176,12 +176,19 @@
       } else if (L.type === "text" && L.text) {
         // 2.452.0: type TURNS too (t.rot) - its centre goes where the matrix takes it, its size by the matrix's scale
         const t = L.text, b0 = (D.textBox0 || D.textBox)(t, ctx(L.canvas)), cx = b0.x + b0.w / 2, cy = b0.y + b0.h / 2, k = Math.sqrt(Math.abs(m[0] * m[3] - m[1] * m[2])) || 1;
-        const turn = Math.atan2(m[1], m[0]) * 180 / Math.PI, sx = Math.hypot(m[0], m[1]), sy = Math.hypot(m[2], m[3]), skew = Math.abs(m[0] * m[2] + m[1] * m[3]) / (sx * sy || 1) > 0.02;
         if (Math.abs(k - 1) > 1e-6) { t.size = Math.max(1, t.size * k); if (root.PCRuns) root.PCRuns.scale(t, k); if (root.PCType && root.PCType.scale && t.box) root.PCType.scale(t, k, k); }   // 2.449.0: + the per-letter sizes
-        if (Math.abs(turn) > 1e-6) { let a = ((+t.rot || 0) + turn) % 360; if (a > 180) a -= 360; if (a <= -180) a += 360; if (Math.abs(a) < 1e-6) delete t.rot; else t.rot = Math.round(a * 1000) / 1000; }
+        // 2.604.0 (Tim: "fix the skew tool"): what is left after the even size - the turn and a SKEW / stretch / flip - stays
+        // TYPE: T' = (A / k) · R(rot) · X  ->  rot' = its angle, t.xm = R(-rot') · T' (gone when it is plain)
+        const R = (deg) => { const r = deg * Math.PI / 180; return [Math.cos(r), Math.sin(r), -Math.sin(r), Math.cos(r)]; };
+        const mul2 = (P, Q2) => [P[0] * Q2[0] + P[2] * Q2[1], P[1] * Q2[0] + P[3] * Q2[1], P[0] * Q2[2] + P[2] * Q2[3], P[1] * Q2[2] + P[3] * Q2[3]];
+        const X0 = Array.isArray(t.xm) && t.xm.length === 4 ? t.xm.map(Number) : [1, 0, 0, 1];
+        const Tn = mul2([m[0] / k, m[1] / k, m[2] / k, m[3] / k], mul2(R(+t.rot || 0), X0));
+        let a = Math.atan2(Tn[1], Tn[0]) * 180 / Math.PI; a = Math.round(a * 1000) / 1000;
+        if (Math.abs(a) < 1e-6) delete t.rot; else t.rot = a;
+        const X1 = mul2(R(-a), Tn).map((v) => Math.round(v * 1e6) / 1e6);
+        if (Math.abs(X1[0] - 1) < 1e-4 && Math.abs(X1[1]) < 1e-4 && Math.abs(X1[2]) < 1e-4 && Math.abs(X1[3] - 1) < 1e-4) delete t.xm; else t.xm = X1;
         const b1 = (D.textBox0 || D.textBox)(t, ctx(L.canvas)), [nx, ny] = apply(m, cx, cy);
         t.x += nx - (b1.x + b1.w / 2); t.y += ny - (b1.y + b1.h / 2);
-        if (skew || Math.abs(sx - sy) > 0.02 * Math.max(sx, sy)) say("type is moved, turned and sized evenly - Layer ▸ Rasterize first to skew / stretch its pixels");
         D.rasterize(L);
       } else if (L.type === "pixel") {
         const draw = (which) => {

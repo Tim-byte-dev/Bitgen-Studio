@@ -12605,6 +12605,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui603-ui.js > /tmp/ui603.log 2>&
 node scripts/test-comfyboot603.js > /tmp/cb603.log 2>&1 \
   && ok "2.603.0 a ComfyUI left running at startup is ended and started by the app (only on this computer, with a folder, the setting on)" \
   || { bad "2.603.0 ComfyUI restart at startup"; grep -a "^FAIL" -A2 /tmp/cb603.log | head -14; }
+# ---- 2.604.0 (Tim: "remove the thick bounding box when text or element is selected in timeline and image-editor add a
+# rightclick context menu with rasterize text. fix the skew tool" + "when user clicks save to images in image-editor, save
+# all the visible the file as a tmp file then flatten the file and save as the image format selected, load it in
+# gallery and assets")
+node scripts/test-imagesave604.js > /tmp/is604.log 2>&1 \
+  && ok "2.604.0 💾 Save to Images (a temp copy, the format picked, Images + Gallery, a PNG twin for a format the Gallery does not list), the skew handles (the opposite side stays), type that skews, Rasterize Text" \
+  || { bad "2.604.0 save / skew / rasterize units"; grep -a "^FAIL" -A2 /tmp/is604.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui604-ui.js > /tmp/ui604.log 2>&1 \
+  && ok "2.604.0 browser test: skew (pixels + type), no thick box, right-click ▸ Rasterize Text (image editor + timeline, undoable), 💾 as JPEG on white into the Gallery and Images - or SKIP without playwright" \
+  || { bad "2.604.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui604.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

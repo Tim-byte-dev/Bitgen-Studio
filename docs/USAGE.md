@@ -6081,6 +6081,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.604.0: **Image editor ▸ 💾 Save to Images** - pick the format beside 💾 (PNG, JPEG, WebP, JPEG XL, AVIF, GIF,
+  TIFF, BMP, TGA). Saving first keeps a temp copy of everything visible, then flattens it (JPEG / BMP on white - not
+  black) and saves it in that format into the project's Images (Assets) AND the Gallery (a format the Gallery does not
+  list - WebP, JPEG XL, ... - shows there as a PNG of the same picture). Your layers stay as they are.
+- 2.604.0: **Skew fixed** - with the Move tool, double-click for the rotate handles and drag a side handle: that side
+  slants and the opposite side stays put (it used to swing the other way). Alt slants round the centre. Text skews too
+  and stays editable text.
+- 2.604.0: **Right-click ▸ Rasterize Text** - on a text layer in the image editor and on a text on the timeline's
+  preview canvas: the text becomes a picture (undo brings it back).
+- 2.604.0: **No thick box round a picked object** - the image editor shows only the thin handle frame; the timeline
+  canvas a thin dashed frame with small handles.
 - 2.603.0: **Timeline: a range on one layer** - drag the red position marker to where the range starts, then
   Shift+click on a layer where it ends (on a clip or between them; Shift+drag lets the end follow the pointer). The
   range is drawn on that layer's row and the layer is highlighted. **✂ Cut** then removes the whole range from that layer

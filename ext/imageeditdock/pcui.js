@@ -270,6 +270,8 @@
     cmd("layer.back", "Send to Back", "Shift+Ctrl+[", () => E.moveLayerEnd(-1), { enabled: hasL });
     cmd("layer.lock", "Lock All", "Ctrl+/", () => E.structOp("lock", () => { const x = L(); x.locks = Object.assign({}, x.locks || {}, { all: !(x.locks && x.locks.all) }); }), { enabled: hasL, checked: () => hasL() && !!(L().locks && L().locks.all) });
     cmd("layer.rasterize", "Layer", "", () => E.rasterizeLayer(false), { enabled: () => hasL() && /^(text|shape|fill|smart)$/.test(L().type) });
+    // 2.604.0 (Tim: "add a rightclick context menu with rasterize text"): the canvas's right-click menu on a text layer
+    cmd("layer.rasterizetext", "Rasterize Text", "", () => { if (E.endText) E.endText(); E.rasterizeLayer(false); }, { enabled: () => hasL() && L().type === "text" });
     cmd("layer.rasterizestyle", "Layer Style", "", () => E.rasterizeLayer(true), { enabled: () => hasL() && D.hasStyles(L()) });
     cmd("layer.mergedown", "Merge Down", "Ctrl+E", () => E.mergeDown(), { enabled: hasL });
     cmd("layer.mergevisible", "Merge Visible", "Shift+Ctrl+E", () => E.mergeVisible(false), { enabled: docOpen });

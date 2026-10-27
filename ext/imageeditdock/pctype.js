@@ -291,10 +291,11 @@
       if (t.strike && ln.text) subs.push(rect(ln.x, top + es * 0.52, w, th));
     }
     let path = { subs };
-    const a = +t.rot || 0;
-    if (a && g && D && D.textBox0) {
-      const b = D.textBox0(t, g), cx = b.x + b.w / 2, cy = b.y + b.h / 2, c = Math.cos(a * Math.PI / 180), s = Math.sin(a * Math.PI / 180);
-      const rot = (X, Y) => [cx + (X - cx) * c - (Y - cy) * s, cy + (X - cx) * s + (Y - cy) * c];
+    // 2.604.0: turned AND skewed / stretched (pcdoc textMat - t.rot + t.xm)
+    const M = D && D.textMat ? D.textMat(t) : (+t.rot ? (() => { const r = +t.rot * Math.PI / 180; return [Math.cos(r), Math.sin(r), -Math.sin(r), Math.cos(r)]; })() : null);
+    if (M && g && D && D.textBox0) {
+      const b = D.textBox0(t, g), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+      const rot = (X, Y) => [cx + M[0] * (X - cx) + M[2] * (Y - cy), cy + M[1] * (X - cx) + M[3] * (Y - cy)];
       path = { subs: subs.map((sb) => Object.assign({}, sb, { pts: sb.pts.map((q) => { const [x, y] = rot(q.x, q.y), [ix, iy] = rot(q.ix, q.iy), [ox, oy] = rot(q.ox, q.oy); return Object.assign({}, q, { x, y, ix, iy, ox, oy }); }) })) };
     }
     if (Q && Q.normalize) path = Q.normalize(path);

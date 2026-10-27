@@ -47,6 +47,22 @@ function mountImageEditor() {
       if (d.type === "refimg" && refs[d.refIndex]) return { url: refs[d.refIndex].url, name: (refs[d.refIndex].desc || "").trim() || (refs[d.refIndex].file || {}).name || "reference", asLayer: true };
       return null;
     },
+    // 2.604.0: 💾 Save to Images - the temp copy (all visible layers, PNG), then the flattened picture in the format
+    // picked -> Images (Assets) + the Gallery (routes/imageSave.js)
+    saveFlat: async (tmpBlob, blob, name, ext) => {
+      try {
+        let tmp = "";
+        if (tmpBlob) {
+          const t = await (await fetch("/api/imagesave/tmp?name=" + encodeURIComponent(name), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: tmpBlob })).json();
+          if (t.error) return { error: "the temp copy: " + t.error };
+          tmp = t.tmp;
+        }
+        const r = await fetch("/api/imagesave?name=" + encodeURIComponent(name) + "&ext=" + encodeURIComponent(ext || "png") + (tmp ? "&tmp=" + encodeURIComponent(tmp) : ""), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: blob });
+        const j = await r.json();
+        refreshAssets(); refreshGallery();
+        return j;
+      } catch (e) { return { error: e.message }; }
+    },
     save: async (blob, name) => {
       const fd = new FormData(); fd.append("file", blob, name); fd.append("hint", "images");
       try {

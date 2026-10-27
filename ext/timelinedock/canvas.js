@@ -502,11 +502,15 @@
       var b2 = box(sel.c, sel.Ly.kind);
       if (b2) {
         var cs = corners(b2).map(function (p) { return toScreen(p.x, p.y); });
-        ctx.strokeStyle = "#f59e2c"; ctx.lineWidth = 1.5;
+        // 2.604.0 (Tim: "remove the thick bounding box when text or element is selected in timeline"): a thin dashed frame
+        // and small hollow handles - not a solid box with big filled squares
+        ctx.save(); ctx.strokeStyle = "rgba(245,158,44,.9)"; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
         ctx.beginPath(); cs.forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.closePath(); ctx.stroke();
+        ctx.restore();
         if (sel.Ly.kind !== "v1") {
+          ctx.fillStyle = "#fff"; ctx.strokeStyle = "#f59e2c"; ctx.lineWidth = 1;
+          cs.forEach(function (p) { ctx.fillRect(p.x - 3, p.y - 3, 6, 6); ctx.strokeRect(p.x - 3, p.y - 3, 6, 6); });
           ctx.fillStyle = "#f59e2c";
-          cs.forEach(function (p) { ctx.fillRect(p.x - 4, p.y - 4, 8, 8); });
           var rh = rotHandle(b2), rs = toScreen(rh.x, rh.y), top = toScreen((corners(b2)[0].x + corners(b2)[1].x) / 2, (corners(b2)[0].y + corners(b2)[1].y) / 2);
           ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(rs.x, rs.y); ctx.stroke();
           ctx.beginPath(); ctx.arc(rs.x, rs.y, 5, 0, Math.PI * 2); ctx.fill();

@@ -52,10 +52,18 @@
     if (fy > (+L[L.length - 1].y || 0) + lh) li = L.length - 1;
     return Math.min(s.length, starts[li] + lineCaret(L[li].text, +L[li].x || 0, fx, measure));
   }
-  function unturn(t, box, fx, fy) {
+  /** M (2.604.0): the text's whole matrix [a, b, c, d] (pcdoc textMat - turned, skewed, stretched); none = t.rot */
+  function unturn(t, box, fx, fy, M) {
+    if (!box) return [fx, fy];
+    const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+    if (M && M.length === 4) {
+      const det = M[0] * M[3] - M[1] * M[2]; if (Math.abs(det) < 1e-9) return [fx, fy];
+      const dx = fx - cx, dy = fy - cy;
+      return [cx + (M[3] * dx - M[2] * dy) / det, cy + (-M[1] * dx + M[0] * dy) / det];
+    }
     const a = +(t && t.rot) || 0;
-    if (!a || !box) return [fx, fy];
-    const r = -a * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r), cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+    if (!a) return [fx, fy];
+    const r = -a * Math.PI / 180, c = Math.cos(r), sn = Math.sin(r);
     return [cx + (fx - cx) * c - (fy - cy) * sn, cy + (fx - cx) * sn + (fy - cy) * c];
   }
   const PCCaret = { nearest, prefixes, plainIndex, layoutIndex, unturn };

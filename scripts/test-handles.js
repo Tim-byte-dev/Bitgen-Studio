@@ -24,12 +24,13 @@ const r1 = H.matrixFor("rotate", "ne", b, [200, 100], [210, 140], { shift: true 
 const ang = Math.atan2(r1[1], r1[0]) * 180 / Math.PI;
 check("rotate: a corner turns round the centre (the centre stays), Shift = 15° steps", JSON.stringify(ap(r1, 150, 125)) === "[150,125]" && Math.abs(ang / 15 - Math.round(ang / 15)) < 1e-9 && ang > 0, ang);
 const k1 = H.matrixFor("rotate", "n", b, [150, 100], [170, 100], {}), k2 = H.matrixFor("rotate", "e", b, [200, 125], [200, 145], {});
-check("skew: the top side slides the top sideways (bottom the other way, centre still); the right side slides it up / down",
-  JSON.stringify(ap(k1, 150, 100)) === "[170,100]" && JSON.stringify(ap(k1, 150, 150)) === "[130,150]" && JSON.stringify(ap(k2, 200, 125)) === "[200,145]" && JSON.stringify(ap(k2, 150, 125)) === "[150,125]");
+// 2.604.0 (Tim: "fix the skew tool"): the OPPOSITE side stays put now (it ran the other way round the centre)
+check("skew: the top side slides the top sideways (the bottom stays put); the right side slides it up / down (the left stays)",
+  JSON.stringify(ap(k1, 150, 100)) === "[170,100]" && JSON.stringify(ap(k1, 150, 150)) === "[150,150]" && JSON.stringify(ap(k2, 200, 125)) === "[200,145]" && JSON.stringify(ap(k2, 100, 125)) === "[100,125]");
 check("turnAbout / scaleAbout / isIdentity", JSON.stringify(ap(H.turnAbout(90, 0, 0), 1, 0)) === "[0,1]" && JSON.stringify(ap(H.scaleAbout(2, 3, 10, 10), 11, 11)) === "[12,13]" && H.isIdentity([1, 0, 0, 1, 0, 0]) && !H.isIdentity([1, 0, 0, 1, 1, 0]));
 const DOC = read("ext", "imageeditdock", "pcdoc.js"), DK = read("ext", "imageeditdock", "pcdockers.js"), IE = read("ext", "imageeditdock", "imageedit.js"), ext = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts;
-check("type turns: pcdoc draws a text with t.rot turned round its centre, textBox = the turned box (textBox0 the straight one); pcdockers turns type (t.rot) and moves a smart object's quad (PCSmart.mapT)",
-  /const a = \+L\.text\.rot \|\| 0;/.test(DOC) && /function textBox0\(t, g\)/.test(DOC) && /textBox, textBox0, drawText/.test(DOC) && /t\.rot = Math\.round\(a \* 1000\) \/ 1000/.test(DK) && /root\.PCSmart\.mapT\(L\.smart\.t, m\)/.test(DK));
+check("type turns (2.604.0: and skews - textMat = t.rot + t.xm): pcdoc draws a text with t.rot turned round its centre, textBox = the turned box (textBox0 the straight one); pcdockers turns type (t.rot) and moves a smart object's quad (PCSmart.mapT)",
+  /const M = textMat\(L\.text\);/.test(DOC) && /function textBox0\(t, g\)/.test(DOC) && /textBox, textBox0, textMat, drawText/.test(DOC) && /if \(Math\.abs\(a\) < 1e-6\) delete t\.rot; else t\.rot = a;/.test(DK) && /root\.PCSmart\.mapT\(L\.smart\.t, m\)/.test(DK));
 check("wiring: pchandles.js after pccafill.js (2.457.0 - 2.464.0: pcdimgroup / pcdimauto / pc3d / pcsketch / pcsketchtools / pcsketchcad / pcsketchcadui between them), installed after PCCaFill", ext.indexOf("pchandles.js") === ext.indexOf("pccafill.js") + 8 && ext.indexOf("pcdimgroup.js") === ext.indexOf("pccafill.js") + 1 && IE.indexOf("PCHandles.install(E)") > IE.indexOf("PCCaFill.install(E)"));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -511,7 +511,7 @@
       const str = String(t.str || ""), g = ctx(L.canvas);
       try {
         if (root.PCText && root.PCText.wants(t) && !(root.PCRuns && root.PCRuns.owns(t))) return str.length;   // path / warp / vertical / 3D: the end
-        const [ux, uy] = C.unturn(t, D.textBox0 ? D.textBox0(t, g) : D.textBox(t, g), fx, fy);
+        const [ux, uy] = C.unturn(t, D.textBox0 ? D.textBox0(t, g) : D.textBox(t, g), fx, fy, D.textMat ? D.textMat(t) : null);   // 2.604.0: + skewed text
         if (root.PCType && root.PCType.owns(t) && E.type && E.type.layout && E.type.measure) {
           const lay = E.type.layout(t);
           return C.layoutIndex(str, lay.lines, ux, uy, lay.lh, E.type.measure(t));

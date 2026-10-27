@@ -33,7 +33,7 @@
     if (!stage || !E.overlayHooks || !E.layerAt || !E.dockers || !E.dockers.boxOf) return;
     if (S.objSel == null) S.objSel = true;
     let hover = null, lastActive = S.active, boxCache = new Map();
-    const boxOf = (L) => { const k = L.id + ":" + (L.ver || 0) + ":" + S.w + "x" + S.h + ":" + JSON.stringify([L.text && [L.text.x, L.text.y, L.text.rot], L.smart && L.smart.t, L.shape && L.shape.x]); const c = boxCache.get(L.id); if (c && c.k === k) return c.b; const b = E.dockers.boxOf(L); boxCache.set(L.id, { k, b }); return b; };
+    const boxOf = (L) => { const k = L.id + ":" + (L.ver || 0) + ":" + S.w + "x" + S.h + ":" + JSON.stringify([L.text && [L.text.x, L.text.y, L.text.rot, L.text.xm], L.smart && L.smart.t, L.shape && L.shape.x]); const c = boxCache.get(L.id); if (c && c.k === k) return c.b; const b = E.dockers.boxOf(L); boxCache.set(L.id, { k, b }); return b; };
     const objectAt = (x, y) => {
       const i = E.layerAt(Math.floor(x), Math.floor(y)); if (i < 0) return null;
       const L = S.layers[i]; if (!pickable(L) || isBackground(L, S.layers, boxOf(L), S.w, S.h)) return null;
@@ -60,7 +60,9 @@
       if ((S.tool !== "move" && S.tool !== "none") || !S.w || S.drag) return;   // 2.474.0: + no tool (pcmultisel.js)
       const A = E.layer(), sel = S.objSel !== false && pickable(A) && !isBackground(A, S.layers, boxOf(A), S.w, S.h) ? A : null;
       if (hover && hover !== sel && S.layers.includes(hover)) outline(g, hover, px, COLORS.hover, 1.6);
-      if (sel) outline(g, sel, px, COLORS.selected, 2);
+      // 2.604.0 (Tim: "remove the thick bounding box when text or element is selected"): with the Move tool the picked
+      // object shows only its handles' thin frame (pchandles.js) - no orange box on top; with no tool a 1 px outline
+      if (sel && S.tool !== "move") outline(g, sel, px, COLORS.selected, 1);
     });
     stage.addEventListener("pointermove", (e) => {
       if ((S.tool !== "move" && S.tool !== "none") || !S.w || S.drag || e.buttons) { if (hover && S.tool !== "move" && S.tool !== "none") { hover = null; } return; }

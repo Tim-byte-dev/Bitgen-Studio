@@ -199,12 +199,22 @@
     Impact: "Impact, 'Arial Black', sans-serif", "Trebuchet MS": "'Trebuchet MS', sans-serif", "Segoe UI": "'Segoe UI', system-ui, sans-serif",
     "Comic Sans MS": "'Comic Sans MS', cursive", serif: "serif", "sans-serif": "sans-serif", monospace: "monospace" };
   const fontCss = (t) => `${t.italic ? "italic " : ""}${t.weight || 400} ${Math.max(1, t.size)}px ${FONT_STACK[t.font] || `'${String(t.font || "Arial").replace(/'/g, "")}', sans-serif`}`;
-  /** 2.452.0: a TURNED text (t.rot, degrees - the Move tool's rotate handles) - the box round its turned corners */
+  /** 2.604.0: a text's own 2 x 2 matrix [a, b, c, d] (canvas order) round its centre - turned (t.rot, degrees) then the
+   *  rest of a transform type keeps as type: t.xm (a skew / a stretch / a flip, the Move tool's side handles) - or null */
+  function textMat(t) {
+    const a = +(t && t.rot) || 0, X = t && Array.isArray(t.xm) && t.xm.length === 4 && t.xm.every((v) => isFinite(+v)) ? t.xm.map(Number) : null;
+    if (!a && !X) return null;
+    const r = a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r), R = [c, s, -s, c];
+    if (!X) return R;
+    return [R[0] * X[0] + R[2] * X[1], R[1] * X[0] + R[3] * X[1], R[0] * X[2] + R[2] * X[3], R[1] * X[2] + R[3] * X[3]];
+  }
+  /** 2.452.0: a TURNED text (t.rot, degrees - the Move tool's rotate handles) - the box round its turned corners
+   *  (2.604.0: and skewed / stretched - textMat) */
   function textBox(t, g) {
-    const b = textBox0(t, g), a = +(t && t.rot) || 0;
-    if (!a) return b;
-    const r = a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r), cx = b.x + b.w / 2, cy = b.y + b.h / 2;
-    const pts = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([x, y]) => [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c]);
+    const b = textBox0(t, g), M = textMat(t);
+    if (!M) return b;
+    const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    const pts = [[b.x, b.y], [b.x + b.w, b.y], [b.x + b.w, b.y + b.h], [b.x, b.y + b.h]].map(([x, y]) => [cx + M[0] * (x - cx) + M[2] * (y - cy), cy + M[1] * (x - cx) + M[3] * (y - cy)]);
     const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys);
     return { x: x0, y: y0, w: Math.max(...xs) - x0, h: Math.max(...ys) - y0 };
   }
@@ -301,12 +311,13 @@
       else if (root.PCType && root.PCType.owns(L.text)) root.PCType.draw(g, L.text);   // 2.426.0: Character / Paragraph panels, paragraph text (pctype.js)
       else drawText(g, L.text);
       // 2.452.0: a turned text (the Move tool's rotate handles): drawn straight, then turned round its own centre
-      const a = +L.text.rot || 0;
-      if (a) {
+      // 2.604.0: + skewed / stretched / flipped (t.xm - the side handles) - textMat, still type
+      const M = textMat(L.text);
+      if (M) {
         const b = textBox0(L.text, g), cx = b.x + b.w / 2, cy = b.y + b.h / 2, d = c.ownerDocument;
         const t = d ? d.createElement("canvas") : new root.OffscreenCanvas(c.width, c.height); t.width = c.width; t.height = c.height;
         t.getContext("2d").drawImage(c, 0, 0);
-        g.save(); g.clearRect(0, 0, c.width, c.height); g.translate(cx, cy); g.rotate(a * Math.PI / 180); g.translate(-cx, -cy); g.imageSmoothingQuality = "high"; g.drawImage(t, 0, 0); g.restore();
+        g.save(); g.clearRect(0, 0, c.width, c.height); g.translate(cx, cy); g.transform(M[0], M[1], M[2], M[3], 0, 0); g.translate(-cx, -cy); g.imageSmoothingQuality = "high"; g.drawImage(t, 0, 0); g.restore();
       }
     }
     else if (L.type === "shape" && L.shape) { if (L.shape.kind === "path" && root.PCPath) root.PCPath.fitShape(L.shape); drawShape(g, L.shape); }
@@ -533,7 +544,7 @@
 
   const api = { ADJ_KINDS, STYLE_KINDS, STYLE_DEFAULTS, LABELS, LABEL_HEX, TEXT_DEFAULT, SHAPE_DEFAULT, FONT_STACK,
                 toTree, fromTree, normalize, findNode, descendants, depth, move, moveEnd, insert, group, ungroup, remove, shown,
-                snapLayer, putLayer, clone, isLive, fontCss, textBox, textBox0, drawText, drawShape, drawFill, shapePath, rasterize,
+                snapLayer, putLayer, clone, isLive, fontCss, textBox, textBox0, textMat, drawText, drawShape, drawFill, shapePath, rasterize,
                 maskAlpha, styled, applyAdjust, render, renderLayer, hasStyles };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCDoc = api;

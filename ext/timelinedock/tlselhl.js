@@ -33,8 +33,8 @@
       var cs = corners(b).map(function (p) { return C.toScreen(p.x, p.y); });
       ctx.save();
       ctx.beginPath(); cs.forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.closePath();
-      ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 3.5; ctx.stroke();
-      ctx.strokeStyle = HOVER; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,.45)"; ctx.lineWidth = 2; ctx.stroke();   // 2.604.0: thin (was 3.5 + 1.6)
+      ctx.strokeStyle = HOVER; ctx.lineWidth = 1; ctx.stroke();
       ctx.restore();
     });
     window.TlSelHl = { HOVER: HOVER, hover: function () { return hover; } };

@@ -64,7 +64,9 @@ const check = (n, cond, got) => {
     await p.waitForTimeout(250);
     s = await st();
     const o1 = await ovCount();
-    check("on mouse-up after drawing: the Move tool, the new rectangle picked - its outline orange", s.tool === "move" && s.type === "shape" && o1.orange > 200, { s: [s.tool, s.type, s.n], o1 });
+    // 2.604.0 (Tim: "remove the thick bounding box when text or element is selected"): picked with the Move tool = its
+    // handles' thin (blue, dashed) frame only - no orange outline on top
+    check("on mouse-up after drawing: the Move tool, the new rectangle picked - its handles' thin frame, no thick orange box (2.604.0)", s.tool === "move" && s.type === "shape" && o1.orange < 20 && o1.blue > 30, { s: [s.tool, s.type, s.n], o1 });
     await click(450, 330); await p.waitForTimeout(150);
     const o2 = await ovCount(), sel2 = await ev(() => window.imageEditorInstance.state.objSel);
     check("a click on empty canvas: nothing picked - no orange outline, no handles", sel2 === false && o2.orange < 20, { sel2, o2 });

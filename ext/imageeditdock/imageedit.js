@@ -762,7 +762,8 @@
             <button class="ghost" id="kxFit" title="Fit on screen (Ctrl+0)">⤢</button>
             <button class="ghost" id="kx100" title="100 % (Ctrl+1)">1:1</button>
             <button class="ghost" id="ieOpen" title="Open a picture (Ctrl+O; or drop one onto the canvas; Shift+drop adds it as a layer)">📂</button>
-            <button class="ghost" id="ieSave" title="Save the picture (all visible layers) into the project's Images (Ctrl+S)">💾</button>
+            <button class="ghost" id="ieSave" title="Save the picture (all visible layers, flattened) into the project's Images and the Gallery, in the format beside it (Ctrl+S)">💾</button>
+            <select id="ieSaveFmt" title="The format 💾 Save to Images saves in" style="max-width:76px"><option value="png">PNG</option></select>
             <button class="ghost" id="kxFull" title="Full screen editor (F; Esc leaves)">⛶</button>
             <button class="ghost" id="kxPanel" title="Show / hide the panels (Tab)">▤</button>
           </span>
@@ -1959,14 +1960,60 @@
     $("kxFit").onclick = () => { S.userView = false; fitView(); }; $("kx100").onclick = () => zoomAt(1 / S.zoom);
     $("ieOpen").onclick = () => { $("ieFile").dataset.layer = ""; $("ieFile").click(); };
     $("ieFile").onchange = (e) => { const f = e.target.files[0]; if (f) load(URL.createObjectURL(f), f.name, !!$("ieFile").dataset.layer); e.target.value = ""; };
+    /* 2.604.0 (Tim: "when user clicks save to images in image-editor, save all the visible the file as a tmp file then
+       flatten the file and save as the image format selected, load it in gallery and assets"):
+         1. the typing (if any) is committed and the pictures still being drawn are waited for
+         2. ALL VISIBLE layers -> a lossless PNG TEMP copy on the server (projects/<p>/temp - kept until the save is done)
+         3. FLATTENED: one picture; a format without see-through (JPEG, BMP) on white - not the black a browser gives it
+         4. encoded in the format picked beside 💾 (PNG / JPEG / WebP / JPEG XL / AVIF / GIF / TIFF / BMP / TGA)
+         5. -> the project's Images (Assets) AND the Gallery (a format the Gallery does not list gets a PNG twin there);
+            both refreshed. The editor's layers stay as they are (the document is not flattened). */
+    const NO_ALPHA = /^(jpeg|bmp|tiffcmyk)$/;
+    const fmtRow = (id) => { const L = E.exportFormats || [["png", "PNG", "image/png", "png", false]]; return L.find((x) => x[0] === id) || L[0]; };
+    const blobOf2 = (c, type, q) => new Promise((r) => c.toBlob((b) => r(b), type, q));
+    const frames = (n) => new Promise((r) => { let k = 0; const f = () => (++k >= n ? r() : root.requestAnimationFrame(f)); root.requestAnimationFrame ? root.requestAnimationFrame(f) : root.setTimeout(r, 40); });
+    function paintSaveFmt() {
+      const sel = $("ieSaveFmt"); if (!sel) return;
+      const L = E.exportFormats || [], cur = store.get("save.fmt", "png");
+      if (L.length && sel.options.length !== L.length) sel.innerHTML = L.map((x) => `<option value="${x[0]}">${x[1]}</option>`).join("");
+      sel.value = L.some((x) => x[0] === cur) ? cur : "png";
+    }
     async function saveToImages(blob, name) {
       if (!S.w) { say("nothing to save"); return null; }
-      blob = blob || await new Promise((r) => flatten().toBlob(r, "image/png"));
-      name = name || (S.name || "edited").replace(/\.[a-z0-9]+$/i, "") + "-edit-" + Date.now().toString(36) + ".png";
-      if (api && api.save) { const saved = await api.save(blob, name); say(saved ? `saved as ${saved}` : "save failed"); return saved; }
+      const stem = (S.name || "edited").replace(/\.[a-z0-9]+$/i, "");
+      if (blob) {                                   // an already encoded picture (Export As, an action): Assets + Gallery
+        const ext = (String(name || "").match(/\.([a-z0-9]+)$/i) || [0, "png"])[1];
+        if (api && api.saveFlat) { const j = await api.saveFlat(null, blob, name || stem + ".png", ext); say(j && j.name ? `saved as ${j.name} - in Images and the Gallery` : "save failed" + (j && j.error ? ": " + j.error : "")); return j && j.name; }
+        if (api && api.save) { const saved = await api.save(blob, name); say(saved ? `saved as ${saved}` : "save failed"); return saved; }
+        return null;
+      }
+      if (E.endText) E.endText();
+      await frames(2);
+      const F = fmtRow(($("ieSaveFmt") && $("ieSaveFmt").value) || store.get("save.fmt", "png"));
+      say("💾 saving - the visible layers to a temp copy…");
+      const comp = flatten();
+      const tmpBlob = await blobOf2(comp, "image/png");
+      let flat = comp;
+      if (NO_ALPHA.test(F[0])) { flat = newCanvas(S.w, S.h); const g = ctx(flat); g.fillStyle = "#ffffff"; g.fillRect(0, 0, S.w, S.h); g.drawImage(comp, 0, 0); }
+      const out = await blobOf2(flat, F[2], F[4] ? 0.92 : undefined);
+      if (!out || !tmpBlob) { say("save failed - the picture could not be encoded as " + F[1]); return null; }
+      const nm = stem + "-edit-" + Date.now().toString(36) + "." + F[3];
+      if (api && api.saveFlat) {
+        const j = await api.saveFlat(tmpBlob, out, nm, F[3]);
+        if (!j || !j.name) { say("save failed" + (j && j.error ? ": " + j.error : "")); return null; }
+        say(`saved ${j.name} (${F[1]}) - in the project's Images and the Gallery` + (j.gallery && j.gallery !== j.name ? ` (the Gallery shows ${j.gallery})` : ""));
+        if (typeof root.H3TestEvent === "function") root.H3TestEvent("ie_save", j.name);
+        return j.name;
+      }
+      if (api && api.save) { const saved = await api.save(out, nm); say(saved ? `saved as ${saved}` : "save failed"); return saved; }
       return null;
     }
     $("ieSave").onclick = () => saveToImages();
+    if ($("ieSaveFmt")) {
+      $("ieSaveFmt").onchange = () => { store.set("save.fmt", $("ieSaveFmt").value); say("💾 saves as " + fmtRow($("ieSaveFmt").value)[1]); };
+      $("ieSaveFmt").onfocus = paintSaveFmt; $("ieSaveFmt").onmousedown = paintSaveFmt;
+      root.setTimeout(paintSaveFmt, 500);
+    }
     $("kxLAdd").onclick = () => { if (S.w) newLayer(); };
     $("kxLDup").onclick = () => { if (S.w) duplicateLayer(); };
     $("kxLCopy").onclick = () => layerFromSelection();

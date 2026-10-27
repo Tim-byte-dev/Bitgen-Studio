@@ -7,7 +7,7 @@
  *   SCALE      (a single click on the canvas) eight square handles round the active layer: a corner scales both ways
  *              from the opposite corner (Shift = keeps its proportions, Alt = from the centre), a side handle one way.
  *   ROTATE     (a double click) curved corner handles turn it round its centre (Shift = 15° steps); the side handles
- *              skew it (↔ / ↕).
+ *              skew it (↔ / ↕) - 2.604.0: the opposite side stays put (Alt = round the centre); type skews too (t.xm).
  *   While dragging, the layer is shown where it will go; letting go applies it - ONE undo step. Pixel layers are redrawn
  *   once (smooth), shapes / lines stay vector, type stays editable (turned - pcdoc t.rot), smart objects keep their
  *   contents (their quad), a group = all of its layers. A drag anywhere else still MOVES the layer, as before.
@@ -44,9 +44,14 @@
         if (opt.shift) a = Math.round(a / 15) * 15;
         return turnAbout(a, cx, cy);
       }
-      // a side: skew round the centre (top / bottom slide sideways, left / right up and down)
-      if (h === "n" || h === "s") { const k = (p[0] - p0[0]) / (b.h / 2 || 1) * (h === "n" ? -1 : 1); return about([1, 0, k, 1, 0, 0], cx, cy); }
-      const k = (p[1] - p0[1]) / (b.w / 2 || 1) * (h === "w" ? -1 : 1); return about([1, k, 0, 1, 0, 0], cx, cy);
+      // a side: SKEW. 2.604.0 (Tim: "fix the skew tool"): the dragged side slides and the OPPOSITE side stays put (as in
+      // Photoshop / CorelDRAW) - it used to turn round the centre, so the far side ran the other way. Alt = round the centre
+      if (h === "n" || h === "s") {
+        const ay = opt.alt ? cy : (h === "n" ? b.y + b.h : b.y), k = (p[0] - p0[0]) / ((P[h][1] - ay) || 1);
+        return about([1, 0, k, 1, 0, 0], cx, ay);
+      }
+      const ax = opt.alt ? cx : (h === "w" ? b.x + b.w : b.x), k = (p[1] - p0[1]) / ((P[h][0] - ax) || 1);
+      return about([1, k, 0, 1, 0, 0], ax, cy);
     }
     const H = P[h], anchor = opt.alt ? [cx, cy] : P[{ nw: "se", n: "s", ne: "sw", e: "w", se: "nw", s: "n", sw: "ne", w: "e" }[h]];
     const ax = anchor[0], ay = anchor[1], useX = h !== "n" && h !== "s", useY = h !== "e" && h !== "w";
@@ -77,7 +82,7 @@
       return L;
     }
     function boxNow(L) {
-      const key = L.id + ":" + (L.ver || 0) + ":" + S.layers.length + ":" + (L.type === "group" ? leavesOf(L).map((x) => x.id + "." + (x.ver || 0)).join(",") : "") + ":" + S.w + "x" + S.h + ":" + (L.text ? JSON.stringify([L.text.x, L.text.y, L.text.size, L.text.rot]) : "");
+      const key = L.id + ":" + (L.ver || 0) + ":" + S.layers.length + ":" + (L.type === "group" ? leavesOf(L).map((x) => x.id + "." + (x.ver || 0)).join(",") : "") + ":" + S.w + "x" + S.h + ":" + (L.text ? JSON.stringify([L.text.x, L.text.y, L.text.size, L.text.rot, L.text.xm]) : "");
       if (st.cache && st.cache.key === key) return st.cache.b;
       const b = E.dockers.boxOf(L);
       st.cache = { key, b };

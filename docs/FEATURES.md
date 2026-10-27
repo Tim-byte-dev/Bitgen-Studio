@@ -392,6 +392,9 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **Drop to add** — drop videos, pictures or sounds on the canvas; each lands on a new layer at the position marker. *Where:* the preview canvas
 - **Move tool** — select, move, scale by a corner and rotate by the top handle; Shift for 15-degree steps or one axis. *Where:* key V
 - **Text tool** — click to add a text layer with font, size, colour, bold, italic, outline, shadow and alignment. *Where:* key T
+- **Rasterize Text from the right-click menu** — a text layer (image editor) or a timeline text becomes a picture; undo brings the text back. *Where:* right-click the text. *Since:* 2.604.0
+- **Skew that keeps the far side** — the side handles slant from the opposite side (Alt: round the centre); text skews and stays text. *Where:* the image editor's Move tool, double-click for the rotate / skew handles. *Since:* 2.604.0
+- **💾 Save to Images in any format** — the visible layers kept as a temp copy, flattened (JPEG / BMP on white) and saved in the format picked beside 💾 into Images and the Gallery. *Where:* the image editor's menu bar (Ctrl+S). *Since:* 2.604.0
 - **Typing that fits, editing at the click** — the frame round the text being typed hugs the letters and grows with each key; over a text the pointer is the text I-beam (elsewhere the new-text cursor); a click edits from between the letters where you clicked, also on wrapped paragraph text. *Where:* the image editor's Type tool (T). *Since:* 2.602.0
 - **Hand and Zoom** — pan, zoom and fit the picture. *Where:* keys H, Z
 - **Fill a selection** — draw a box or paint a mask, then generate a picture or video that blends into it. *Where:* keys M and B, and Fill in the Layers panel. *Since:* 2.380.0
