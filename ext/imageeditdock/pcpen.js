@@ -24,7 +24,9 @@
     }
     S.paths = S.paths || []; S.work = S.work || null; S.ptarget = S.ptarget || null;
     S.penMode = store.get("pen.mode", "shape"); S.penOp = store.get("pen.op", "new"); S.penFit = +store.get("pen.fit", 2) || 2;
-    S.penAuto = store.get("pen.auto", true) !== false; S.penRubber = store.get("pen.rubber", true) !== false;   // 2.425.0: Photoshop's Rubber Band option S.cshape = store.get("pen.cshape", "heart"); S.shapeOp = store.get("pen.shapeop", "new");
+    S.penAuto = store.get("pen.auto", true) !== false; S.penRubber = store.get("pen.rubber", true) !== false;   // 2.425.0: Photoshop's Rubber Band option
+    // 2.605.0: these two were inside the comment above (never set) - the Custom Shape remembered, the shape Ops ("new")
+    S.cshape = store.get("pen.cshape", "heart"); S.shapeOp = store.get("pen.shapeop", "new");
     let uid = 0;
     const nid = () => { uid = Math.max(uid, ...S.paths.map((p) => p.id || 0)) + 1; return uid; };
     const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -520,18 +522,21 @@
       T.shape.options = function () { return `<span title="New layer, or a component of the active shape layer">Ops</span>` + opButtons(S.shapeOp, true, "data-pnshop") + `<span class="sep"></span>` + bo.call(this); };
       T.shape.bindOptions = function (o) { bb.call(this, o); bindCommon(o, "data-pnshop", "shapeOp"); };
       T.shape.up = function (e, fx, fy) {
-        const A = E.layer(), into = S.shapeOp !== "new" && A && A.type === "shape" ? A : null;
+        // 2.605.0: no Ops picked yet (S.shapeOp unset) = a NEW layer - it used to merge into the picked shape and throw
+        // ("toLowerCase" of an undefined op), so a second shape drawn while one was picked was lost
+        const op = S.shapeOp && Q.OP_NAMES && Q.OP_NAMES[S.shapeOp] ? S.shapeOp : "new";
+        const A = E.layer(), into = op !== "new" && A && A.type === "shape" ? A : null;
         if (!into) return bu.call(this, e, fx, fy);
         const before = E.snapStruct(), n0 = S.undo.length;
         bu.call(this, e, fx, fy);
         const L = E.layer(); if (S.undo.length === n0 || !L || L === into || L.type !== "shape") return;
         S.undo.pop();
-        const add = Q.fromShape(L.shape, S.shapeOp);
+        const add = Q.fromShape(L.shape, op);
         if (L.shape.kind === "line") add.subs.forEach((s) => { s.op = "add"; });
         S.layers.splice(S.layers.indexOf(L), 1); S.active = S.layers.indexOf(into);
         if (into.shape.kind !== "path") into.shape = Q.toPathShape(into.shape);
         into.shape.path.subs.push(...add.subs); Q.syncShape(into.shape); D.rasterize(into);
-        E.push({ t: "struct", before, after: E.snapStruct(), label: Q.OP_NAMES[S.shapeOp].toLowerCase() });
+        E.push({ t: "struct", before, after: E.snapStruct(), label: Q.OP_NAMES[op].toLowerCase() });
         E.refresh(); E.renderLayersPanel(); E.renderOptions();
       };
     }

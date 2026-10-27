@@ -60,7 +60,7 @@ try {
   const W = {
     "💾: the temp copy, flattened (white under JPEG / BMP), the format beside it, Assets + Gallery": /api\.saveFlat\(tmpBlob, out, nm, F\[3\]\)/.test(IE) && /NO_ALPHA\.test\(F\[0\]\)/.test(IE) && /id="ieSaveFmt"/.test(IE) && /\/api\/imagesave\/tmp/.test(fs.readFileSync(path.join(ROOT, "ext", "imageeditdock", "mount.js"), "utf8")),
     "the image editor's right-click: Rasterize Text first on a text layer": /items\.push\("layer\.rasterizetext", sep\)/.test(PF) && /cmd\("layer\.rasterizetext", "Rasterize Text"/.test(PU),
-    "no thick box: the picked object's orange outline gone with the Move tool (its handles' thin frame stays)": /if \(sel && S\.tool !== "move"\) outline\(g, sel, px, COLORS\.selected, 1\)/.test(SL),
+    "no thick box: the picked object's orange outline gone with the Move tool (its handles' thin frame stays; 2.605.0: the same frame for hover)": /if \(sel && S\.tool !== "move"\) frame\(g, sel, px\)/.test(SL),
     "the timeline canvas: a thin dashed frame, small hollow handles; tlctx.js loaded after canvas.js": /ctx\.setLineDash\(\[4, 3\]\)/.test(CV) && /ctx\.fillRect\(p\.x - 3, p\.y - 3, 6, 6\)/.test(CV) && EXT.indexOf("tlctx.js") === EXT.indexOf("canvas.js") + 1,
   };
   const miss = Object.keys(W).filter((k) => !W[k]);

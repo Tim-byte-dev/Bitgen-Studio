@@ -6081,6 +6081,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.605.0: **Hover shows the Move tool's thin frame** - in the image editor and on the timeline's preview canvas, an
+  object under the pointer (a text, a shape, a picture layer...) shows the same thin dashed frame the Move tool uses,
+  not a thick outline - with the Move tool and also with the drawing tools (and the Type tools over a text). A **click**
+  on an object with a drawing tool picks it and switches to the Move tool; a **drag** still draws a new one. A text is
+  picked anywhere in its box, also between its letters.
+- 2.605.0: **Fixed: a second shape lost** - drawing a shape while another shape was picked did nothing (an error); it
+  now draws a new shape (the Ops buttons still combine shapes when you pick one).
 - 2.604.0: **Image editor ▸ 💾 Save to Images** - pick the format beside 💾 (PNG, JPEG, WebP, JPEG XL, AVIF, GIF,
   TIFF, BMP, TGA). Saving first keeps a temp copy of everything visible, then flattens it (JPEG / BMP on white - not
   black) and saves it in that format into the project's Images (Assets) AND the Gallery (a format the Gallery does not

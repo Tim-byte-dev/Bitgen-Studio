@@ -12615,6 +12615,14 @@ node scripts/test-imagesave604.js > /tmp/is604.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui604-ui.js > /tmp/ui604.log 2>&1 \
   && ok "2.604.0 browser test: skew (pixels + type), no thick box, right-click ▸ Rasterize Text (image editor + timeline, undoable), 💾 as JPEG on white into the Gallery and Images - or SKIP without playwright" \
   || { bad "2.604.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui604.log | head -14; }
+# ---- 2.605.0 (Tim: "when user hovers over text don't show the thick bounding box,do this with all drawing objects show the
+# same one as the move tool, if user clicks on the element select it and automatically go to the move tool.")
+node scripts/test-selhl605.js > /tmp/sh605.log 2>&1 \
+  && ok "2.605.0 hover = the Move tool's thin frame, a click with a drawing tool picks + the Move tool (image editor + timeline), the shape Ops defaults - the pure part + the wiring" \
+  || { bad "2.605.0 hover / pick units"; grep -a "^FAIL" -A2 /tmp/sh605.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui605-ui.js > /tmp/ui605.log 2>&1 \
+  && ok "2.605.0 browser test: the thin frame on hover (Move / Rectangle / Type tools), a click picks + Move, a drag still draws (image editor + timeline canvas) - or SKIP without playwright" \
+  || { bad "2.605.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui605.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -47,7 +47,8 @@ const check = (n, cond, got) => {
     const count = (x0, y0, x1, y1, f) => ev(([a, b2, c, d, fs]) => { const s = window.imageEditorInstance.state, L = s.layers[s.active]; const D = L.canvas.getContext("2d").getImageData(a, b2, c - a, d - b2).data; const fn = new Function("r", "g", "b", "a", "return " + fs); let n = 0; for (let i = 0; i < D.length; i += 4) if (fn(D[i], D[i + 1], D[i + 2], D[i + 3])) n++; return n; }, [x0, y0, x1, y1, f]);
     const layerData = () => ev(() => { const s = window.imageEditorInstance.state, L = s.layers[s.active]; return Array.from(L.canvas.getContext("2d").getImageData(0, 0, s.w, s.h).data); });
     const ovCount = () => ev(() => { const E = window.imageEditorInstance.E; E.drawOverlay(); const c = E.ov, D = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let o = 0, b = 0;
-      for (let i = 0; i < D.length; i += 4) { const r = D[i], g = D[i + 1], bl = D[i + 2], a = D[i + 3]; if (a < 200) continue; if (r > 225 && g > 110 && g < 165 && bl < 70) o++; else if (r < 100 && g > 130 && g < 190 && bl > 220) b++; } return { orange: o, blue: b }; });
+      let f = 0;   // 2.605.0: the Move tool's thin dashed frame (#2680eb) - the hover shows it now
+      for (let i = 0; i < D.length; i += 4) { const r = D[i], g = D[i + 1], bl = D[i + 2], a = D[i + 3]; if (a < 200) continue; if (r > 225 && g > 110 && g < 165 && bl < 70) o++; else if (r < 100 && g > 130 && g < 190 && bl > 220) b++; else if (r < 80 && g > 105 && g < 150 && bl > 200) f++; } return { orange: o, blue: b, frame: f }; });
     const tab = async (sel, t) => { await p.click(`${sel} .cbtab[data-tab="${t}"]`); await p.waitForTimeout(120); };
     // the toolbar along the top, over the tool options
     // 2.494.0: the toolbar shows only while a sketch / body is picked - or pinned with the ⌬ CAD button in the tool column
@@ -72,10 +73,11 @@ const check = (n, cond, got) => {
     check("a click on empty canvas: nothing picked - no orange outline, no handles", sel2 === false && o2.orange < 20, { sel2, o2 });
     const [hx, hy] = await T(180, 160); await p.mouse.move(hx, hy, { steps: 4 }); await p.waitForTimeout(150);
     const o3 = await ovCount(), hov = await ev(() => { const h = window.imageEditorInstance.E.selHl.hover(); return h && h.type; });
-    check("the pointer over the rectangle: its outline blue (it can be picked)", hov === "shape" && o3.blue > 200 && o3.orange < 20, { hov, o3 });
+    // 2.605.0 (Tim: "when user hovers over text don't show the thick bounding box ... show the same one as the move tool")
+    check("the pointer over the rectangle: the Move tool's thin dashed frame (it can be picked) - no thick outline", hov === "shape" && o3.frame > 50 && o3.blue < 20 && o3.orange < 20, { hov, o3 });
     const [ex, ey] = await T(500, 50); await p.mouse.move(ex, ey, { steps: 3 }); await p.waitForTimeout(120);
     const o3b = await ovCount();
-    check("off it again: no outline", o3b.blue < 20, o3b);
+    check("off it again: no outline", o3b.blue < 20 && o3b.frame < 20, o3b);
     const box0 = await ev(() => { const E = window.imageEditorInstance.E, L = E.layer(); return E.dockers.boxOf(L); });
     await drag(180, 160, 230, 190); await p.waitForTimeout(200);
     const box1 = await ev(() => { const E = window.imageEditorInstance.E, L = E.layer(); return { b: E.dockers.boxOf(L), sel: E.S.objSel, type: L.type }; });

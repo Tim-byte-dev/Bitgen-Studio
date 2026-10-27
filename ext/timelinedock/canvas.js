@@ -1604,7 +1604,8 @@
     return L;
   }
   window.TlCanvas = { state: S, play: play, pause: pause, stop: stop, go: go, shuttle: shuttle, step: step, draw: draw, addText: addText, renderText: renderText,
-                      addTool: addTool, onDraw: function (fn) { drawHooks.push(fn); mark(); }, mark: mark,
+                      addTool: addTool, extTool: function (id) { return extTools[id] || null; },   // 2.605.0: tlselhl.js starts a held-back drawing
+                      onDraw: function (fn) { drawHooks.push(fn); mark(); }, mark: mark,
                       onComp: function (fn) { compHooks.push(fn); mark(); }, srcAt: srcAt, vidAt: vidAt,   // 2.406.0 toComp: toComp,
                       toScreen: toScreen, paintComp: paintComp, newLayer: newLayer, say: say,
                       box: box, stack: stack, hit: hit, select: select, setTool: setTool, fit: fit, paintLayers: paintLayers,
