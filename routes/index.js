@@ -3463,11 +3463,15 @@ const trap = require("../lib/trap");
   // says so — ComfyUI (Settings → ComfyUI) and llama-server with the Prompt
   // dock dropdown's model (Settings → LLM). Fire-and-forget: a machine that
   // cannot start an engine still boots the studio; failures land in the log.
+  // 2.603.0 (Tim: "check if comfyui is open onstart if it is then restart comfyui"): FIRST a ComfyUI left running
+  // (not started by this app) is ended and started again by bitGen Studio (lib/comfyBoot.js), then the autostart
   setTimeout(() => {
-    autostart.run(core.getConfig(),
-      { comfy: () => comfy.start(),
-        llm: (f) => core.ensureLlama(f) },
-      (m) => console.log(m)).catch(() => {});
+    const say = (m) => { console.log(m); try { if (comfy.clog) comfy.clog(m); } catch { /* the log only */ } };
+    require("../lib/comfyBoot").run(core.getConfig(), null, say).catch(() => null)
+      .then(() => autostart.run(core.getConfig(),
+        { comfy: () => comfy.start(),
+          llm: (f) => core.ensureLlama(f) },
+        (m) => console.log(m))).catch(() => {});
   }, 1500);
   // 2.378.0: LAST - an error under /api answers JSON, never Express's HTML page (the page's r.json() read
   // "<!DOCTYPE ..." as "Unexpected token '<'"); an /api address that does not exist answers a JSON 404

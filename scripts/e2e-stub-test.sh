@@ -12593,6 +12593,18 @@ node scripts/test-pccaret.js > /tmp/caret602.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui602-ui.js > /tmp/ui602.log 2>&1 \
   && ok "2.602.0 browser test: the typing frame hugs the letters and grows with them, the edit-text cursor over a text, a click edits from the click (point, inside the box, paragraph text) - or SKIP without playwright" \
   || { bad "2.602.0 type tool browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui602.log | head -14; }
+# ---- 2.603.0 (Tim: "selecting range in timeline is not intuitive. lets drag the timeline marker to the start of the range
+# then shift+click on a different part of the layer ... cut will remove the range in the selected layer only completely
+# (must be able to undo)" + "check if comfyui is open onstart if it is then restart comfyui")
+node scripts/test-tlrange603.js > /tmp/tlr603.log 2>&1 \
+  && ok "2.603.0 the layer range (the marker to a Shift+click) + the timeline undo history - the pure part + the wiring" \
+  || { bad "2.603.0 layer range units"; grep -a "^FAIL" -A2 /tmp/tlr603.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui603-ui.js > /tmp/ui603.log 2>&1 \
+  && ok "2.603.0 browser test: the marker, Shift+click on a layer = its range; ✂ Cut removes all of it from that layer only (ripple or not), Ctrl+Z / Ctrl+Shift+Z / ↶ - or SKIP without playwright" \
+  || { bad "2.603.0 layer range browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui603.log | head -14; }
+node scripts/test-comfyboot603.js > /tmp/cb603.log 2>&1 \
+  && ok "2.603.0 a ComfyUI left running at startup is ended and started by the app (only on this computer, with a folder, the setting on)" \
+  || { bad "2.603.0 ComfyUI restart at startup"; grep -a "^FAIL" -A2 /tmp/cb603.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

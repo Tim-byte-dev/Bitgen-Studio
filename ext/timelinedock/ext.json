@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "timelinedock.js",
+    "tlrange.js",
     "tlsettings.js",
     "stabilise.js",
     "retimesound.js",

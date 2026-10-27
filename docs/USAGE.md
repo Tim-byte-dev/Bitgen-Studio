@@ -6081,6 +6081,16 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.603.0: **Timeline: a range on one layer** - drag the red position marker to where the range starts, then
+  Shift+click on a layer where it ends (on a clip or between them; Shift+drag lets the end follow the pointer). The
+  range is drawn on that layer's row and the layer is highlighted. **✂ Cut** then removes the whole range from that layer
+  only - the other layers are untouched (with ripple the gap closes on that layer). A drag across the ruler is still a
+  plain selection.
+- 2.603.0: **Timeline undo** - ↶ / ↷ in the timeline's menu bar, Ctrl+Z / Ctrl+Shift+Z (or Ctrl+Y) with the pointer
+  over the layers. Every edit is a step (a drag is one step); the selection is not.
+- 2.603.0: **ComfyUI left running is restarted** - if a ComfyUI on this computer is already running when the app
+  starts (left from before, or started by hand), the app ends it and starts it again itself, so its console, ⟳ Restart
+  and memory are the app's. Settings ▸ ComfyUI ▸ "Restart a ComfyUI left running when the app starts" (on).
 - 2.602.0: **Image editor ▸ Type tool** - the dashed frame round the text you are typing now fits the letters
   exactly and grows with every key (centred text grows both ways). With the Type tool the pointer is the text I-beam over
   a text and the new-text cursor (an I-beam in a dotted box) elsewhere. A click on a text starts editing right where you

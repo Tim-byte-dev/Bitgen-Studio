@@ -2155,6 +2155,8 @@
       <div style="grid-column:2/4"><label class="f">ComfyUI URL</label>
         <input type="text" id="s_curl" placeholder="http://127.0.0.1:8188"></div>
       <div><label class="f" title="Start ComfyUI with the app (the launcher below must be configured)"><input type="checkbox" id="s_cauto"> Start on startup</label></div>
+      <!-- 2.603.0 (Tim: "check if comfyui is open onstart if it is then restart comfyui"): lib/comfyBoot.js -->
+      <div><label class="f" title="When the app starts and a ComfyUI on this computer is already running (left from before, or started by hand), end it and start it again from bitGen Studio - so its console, restart and memory are the app's. Needs the ComfyUI folder or launch command below"><input type="checkbox" id="s_crestart" checked> Restart a ComfyUI left running when the app starts</label></div>
     </div>
     <p class="hint help">Generation goes through whichever <b>Engine</b> is selected above —
       setting a folder or starting ComfyUI alone does not switch it. ComfyUI mode drives
@@ -4137,6 +4139,7 @@ function fillSettings() {
   $("s_engine").value = eng.backend || "sdcli";
   $("s_curl").value = (eng.comfy || {}).url || "http://127.0.0.1:8188";
   $("s_cauto").checked = !!(eng.comfy || {}).autostart;
+  if ($("s_crestart")) $("s_crestart").checked = (eng.comfy || {}).restart_on_start !== false;   // 2.603.0: default ON
   $("s_lauto").checked = !!(cfg.llm || {}).autostart;
   $("s_cdir").value = (eng.comfy || {}).dir || "";
   $("s_claunch").value = (eng.comfy || {}).launch || "";
@@ -5412,6 +5415,7 @@ $("s_save").onclick = async () => {
                          vram_ceiling: undefined, vram_ceiling_note: undefined,
                          url: $("s_curl").value.trim() || "http://127.0.0.1:8188",
                          autostart: $("s_cauto").checked,
+                         restart_on_start: $("s_crestart") ? $("s_crestart").checked : true,   // 2.603.0
                          dir: $("s_cdir").value.trim(),
                          launch: $("s_claunch").value.trim(),
                          keep_alive: $("s_ckeep").checked,
@@ -10491,7 +10495,9 @@ async function applySel(op) {
   const ripple = $("tlRipple").checked;
   // Task B (2.95.0): scope "clip" edits only the clip under the middle of the
   // selection; the server ignores compact for that scope on purpose
-  const scope = ($("tlScope") && $("tlScope").value) === "clip" ? "clip" : "layer";
+  // 2.603.0 (Tim: "cut will remove the range in the selected layer only completely"): a LAYER RANGE (the marker, then
+  // Shift+click on the layer - ext/timelinedock/tlrange.js) is edited on that layer, all of it, whatever the scope box says
+  const scope = tl.sel.layer ? "layer" : ($("tlScope") && $("tlScope").value) === "clip" ? "clip" : "layer";
   let j;
   try {
     const r = await fetch("/api/timeline/edit", {

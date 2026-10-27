@@ -265,6 +265,8 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 
 - **Add sounds and videos** — audio files and the sound of video files, kept as 48 kHz WAV. *Where:* the SFX dock
 - **Cut sounds** — select on the waveform, set a fixed duration box, keep or delete the selection with click-free fades, undo. *Where:* the SFX dock
+- **A range on one layer** — the position marker at the start, Shift+click on the layer at the end: the range on that layer; ✂ Cut removes all of it from that layer only, ↶ / Ctrl+Z undoes. *Where:* the timeline's layers. *Since:* 2.603.0
+- **Timeline undo / redo** — every edit to the timeline is a step: ↶ / ↷ in its menu bar, Ctrl+Z / Ctrl+Shift+Z over the layers. *Where:* the timeline. *Since:* 2.603.0
 - **To the gallery and assets** — every cut is copied to the gallery; send it to the Sound assets. *Where:* the SFX dock
 
 ## Images
