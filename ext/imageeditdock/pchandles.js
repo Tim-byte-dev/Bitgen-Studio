@@ -176,6 +176,7 @@
     stage.addEventListener("dblclick", () => {
       if (S.tool !== "move" || !shown()) return;
       st.mode = st.mode === "rotate" ? "scale" : "rotate"; E.drawOverlay();
+      { const mb = doc.getElementById("xhMode"); if (mb) { mb.classList.toggle("on", st.mode === "rotate"); mb.textContent = st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"; } }
       say(st.mode === "rotate" ? "rotate: drag a corner to turn (Shift = 15° steps), a side to skew - click once for the scale handles" : "scale: drag a handle (Shift keeps the proportions, Alt from the centre) - double-click to rotate");
     });
 
@@ -209,7 +210,9 @@
         + `<label title="Scale width (%)">W <input type="number" id="xhSW" min="1" max="1000" value="${opt.sw}" style="width:52px">%</label>`
         + `<button class="ghost${opt.link ? " on" : ""}" id="xhLink" title="Width and height together">🔗</button>`
         + `<label title="Scale height (%)">H <input type="number" id="xhSH" min="1" max="1000" value="${opt.sh}" style="width:52px">%</label><button class="ghost" id="xhSc" title="Scale by W % x H %">⤡</button>`
-        + `<span style="color:var(--pc-dim);font-size:11px" title="On the canvas">· handles: click = scale, double-click = rotate</span>`;
+        // 2.606.0: a double-click INSIDE a text edits it now (pctools.js) - this switches the handles too, for any layer
+        + `<button class="ghost${st.mode === "rotate" ? " on" : ""}" id="xhMode" title="The handles: scale (square) or rotate / skew (curved corners, sides skew) - a double-click on the canvas (on a text: on one of its handles) switches them too">${st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"}</button>`
+        + `<span style="color:var(--pc-dim);font-size:11px" title="On the canvas">· handles: click = scale, double-click = rotate / skew (a text: double-click a handle; inside it edits)</span>`;
       o.appendChild(box);
       const q = (id) => box.querySelector("#" + id), keep = () => store.set("xh.opt", opt);
       q("xhAng").onchange = () => { opt.ang = +q("xhAng").value || 0; keep(); };
@@ -220,6 +223,7 @@
       q("xhSW").onchange = () => { opt.sw = Math.max(1, +q("xhSW").value || 100); if (opt.link) { opt.sh = opt.sw; q("xhSH").value = opt.sw; } keep(); };
       q("xhSH").onchange = () => { opt.sh = Math.max(1, +q("xhSH").value || 100); if (opt.link) { opt.sw = opt.sh; q("xhSW").value = opt.sh; } keep(); };
       q("xhSc").onclick = () => byOptions("scale", opt.sw, opt.sh);
+      q("xhMode").onclick = () => { st.mode = st.mode === "rotate" ? "scale" : "rotate"; q("xhMode").classList.toggle("on", st.mode === "rotate"); q("xhMode").textContent = st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"; E.drawOverlay(); };
       box.querySelectorAll("input").forEach((x) => x.addEventListener("keydown", (ev) => ev.stopPropagation()));
     }
     const ob = doc.getElementById("kxOpts");

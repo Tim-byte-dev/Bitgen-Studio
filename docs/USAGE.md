@@ -6081,6 +6081,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.606.0: **A click on a text picks it and switches to the Move tool** - also with the Type tool in hand (it used
+  to open the text for typing). **Double-click** a text to edit it - the caret goes where you double-clicked. Picking a
+  layer in the Layers panel with a drawing or Type tool in hand also switches to the Move tool. The rotate / skew
+  handles: the new ⤡ Scale / ↻ Rotate / skew button in the Move tool's options bar, or double-click on one of the
+  handles (double-clicking inside a text now edits it).
 - 2.605.0: **Hover shows the Move tool's thin frame** - in the image editor and on the timeline's preview canvas, an
   object under the pointer (a text, a shape, a picture layer...) shows the same thin dashed frame the Move tool uses,
   not a thick outline - with the Move tool and also with the drawing tools (and the Type tools over a text). A **click**

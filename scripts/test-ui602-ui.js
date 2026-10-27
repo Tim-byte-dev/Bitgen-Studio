@@ -66,12 +66,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const cOff = await ev(() => document.getElementById("ieStage").style.cursor);
     check("the Type tool over a text = the edit-text I-beam; elsewhere the new-text cursor (an I-beam in a dotted box)", cOn === "text" && /^url\("data:image\/svg\+xml/.test(cOff) && /crosshair$/.test(cOff), { cOn, cOff: cOff.slice(0, 40) });
 
-    /* 3 a click edits from the click */
+    /* 3 2.606.0 (Tim: "the click on element in this case text layer is not auto selecting the move tool"): a CLICK on the
+       text with the Type tool picks it + the Move tool; a DOUBLE-click edits it from the click (2.602.0's caret) */
     const xAfterWide = await ev(() => { const L = window.imageEditorInstance.E.layer(), g = L.canvas.getContext("2d"); g.save(); g.font = window.PCDoc.fontCss(L.text); const w = g.measureText("Hello wide").width; g.restore(); return L.text.x + w; });
     await p.mouse.click(...(await T(xAfterWide + 1, 72))); await p.waitForTimeout(250);
+    const k0 = await ev(() => ({ tool: window.imageEditorInstance.state.tool, type: window.imageEditorInstance.E.layer().type, typing: !!document.querySelector(".kx textarea.pctext") }));
+    check("2.606.0: a click on a text with the Type tool = the text PICKED and the Move tool on (no typing box)", k0.tool === "move" && k0.type === "text" && !k0.typing, k0);
+    await p.mouse.dblclick(...(await T(xAfterWide + 1, 72))); await p.waitForTimeout(250);
     const c1 = await frame();
     await p.keyboard.type("XYZ"); await p.waitForTimeout(150);
-    check("a click on the text between 'wide' and ' World': the caret lands THERE (nothing selected) and typing goes in there", c1 && c1.sel[0] === 10 && c1.sel[1] === 10 && (await layerText()) === "Hello wideXYZ World", { sel: c1 && c1.sel, str: await layerText() });
+    check("a DOUBLE-click on the text between 'wide' and ' World': editing, the caret THERE (nothing selected), typing goes in there", c1 && c1.sel[0] === 10 && c1.sel[1] === 10 && (await layerText()) === "Hello wideXYZ World", { sel: c1 && c1.sel, str: await layerText() });
     await p.mouse.click(...(await T(36, 72))); await p.waitForTimeout(200);
     const c2 = await frame();
     await p.keyboard.type("_"); await p.waitForTimeout(100);
@@ -79,7 +83,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.keyboard.press("Control+Enter"); await p.waitForTimeout(200);
 
     /* 4 centred text grows both ways and stays round its letters */
-    await ev(() => { const S = window.imageEditorInstance.state; S.typeAlign = "center"; });
+    await ev(() => { const S = window.imageEditorInstance.state; S.typeAlign = "center"; window.imageEditorInstance.E.setTool("type"); });
     await p.mouse.click(...(await T(250, 160))); await p.waitForSelector(".kx textarea.pctext");
     await p.keyboard.type("Centred words"); await p.waitForTimeout(150);
     const f3 = await frame(), k3 = await ink();
@@ -87,16 +91,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.keyboard.press("Control+Enter"); await p.waitForTimeout(200);
 
     /* 5 a paragraph text: a click on its second line */
-    await ev(() => { const S = window.imageEditorInstance.state; S.typeAlign = "left"; });
+    await ev(() => { const S = window.imageEditorInstance.state; S.typeAlign = "left"; window.imageEditorInstance.E.setTool("type"); });
     await p.mouse.move(...(await T(30, 200))); await p.mouse.down(); await p.mouse.move(...(await T(140, 290)), { steps: 5 }); await p.mouse.up();
     await p.waitForSelector(".kx textarea.pctext");
     await p.keyboard.type("alpha beta gamma delta"); await p.keyboard.press("Control+Enter"); await p.waitForTimeout(250);
     const lay = await ev(() => { const E = window.imageEditorInstance.E; return E.type.layout(E.layer().text).lines.map((l) => ({ text: l.text, x: l.x, y: l.y })); });
     const l2 = lay[1];
     const x2 = await ev((l2) => { const E = window.imageEditorInstance.E, m = E.type.measure(E.layer().text); return l2.x + m(l2.text.slice(0, 2)); }, l2);
-    await p.mouse.click(...(await T(x2 + 1, l2.y + 8))); await p.waitForTimeout(250);
+    await p.mouse.dblclick(...(await T(x2 + 1, l2.y + 8))); await p.waitForTimeout(250);
     const c5 = await frame(), want = "alpha beta gamma delta".indexOf(l2.text) + 2;
-    check("a paragraph (wrapped) text: a click on its SECOND line puts the caret in that line", lay.length >= 2 && c5 && c5.sel[0] === want && c5.sel[1] === want, { lay, sel: c5 && c5.sel, want });
+    check("a paragraph (wrapped) text: a double-click on its SECOND line puts the caret in that line", lay.length >= 2 && c5 && c5.sel[0] === want && c5.sel[1] === want, { lay, sel: c5 && c5.sel, want });
     await p.keyboard.press("Escape");
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }

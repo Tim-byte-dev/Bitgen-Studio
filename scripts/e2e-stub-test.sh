@@ -12591,7 +12591,7 @@ node scripts/test-pccaret.js > /tmp/caret602.log 2>&1 \
   && ok "2.602.0 where a click puts the caret (point / centred / right / wrapped / turned text), the text box measured in its own font + tracking, the type tool wiring" \
   || { bad "2.602.0 the caret + text box"; grep -a "^FAIL" -A2 /tmp/caret602.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui602-ui.js > /tmp/ui602.log 2>&1 \
-  && ok "2.602.0 browser test: the typing frame hugs the letters and grows with them, the edit-text cursor over a text, a click edits from the click (point, inside the box, paragraph text) - or SKIP without playwright" \
+  && ok "2.602.0 browser test: the typing frame hugs the letters and grows with them, the edit-text cursor over a text, a double-click edits from the click (point, inside the box, paragraph text), 2.606.0 a click picks + the Move tool - or SKIP without playwright" \
   || { bad "2.602.0 type tool browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui602.log | head -14; }
 # ---- 2.603.0 (Tim: "selecting range in timeline is not intuitive. lets drag the timeline marker to the start of the range
 # then shift+click on a different part of the layer ... cut will remove the range in the selected layer only completely
@@ -12623,6 +12623,11 @@ node scripts/test-selhl605.js > /tmp/sh605.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui605-ui.js > /tmp/ui605.log 2>&1 \
   && ok "2.605.0 browser test: the thin frame on hover (Move / Rectangle / Type tools), a click picks + Move, a drag still draws (image editor + timeline canvas) - or SKIP without playwright" \
   || { bad "2.605.0 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui605.log | head -14; }
+# ---- 2.606.0 (Tim: "the click on element in this case text layer is not auto selecting the move tool") - the browser
+# side is the 2.602.0 test (test-ui602-ui.js: click = picked + Move, double-click = edit at the click)
+node scripts/test-typepick606.js > /tmp/tp606.log 2>&1 \
+  && ok "2.606.0 a click on a text with the Type tool picks it + the Move tool, a double-click edits it at the click, the Layers panel pick, the rotate / skew handles button" \
+  || { bad "2.606.0 text pick"; grep -a "^FAIL" -A2 /tmp/tp606.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

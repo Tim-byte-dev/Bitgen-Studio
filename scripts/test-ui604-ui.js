@@ -53,7 +53,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.mouse.click(...(await T(60, 30))); await p.waitForSelector(".kx textarea.pctext"); await p.keyboard.type("IIII"); await p.keyboard.press("Control+Enter"); await p.waitForTimeout(250);
     await ev(() => window.imageEditorInstance.E.setTool("move"));
     await p.mouse.click(...(await T(80, 50))); await p.waitForTimeout(150);
-    await p.mouse.dblclick(...(await T(80, 50))); await p.waitForTimeout(150);
+    // 2.606.0: a double-click INSIDE a text edits it - on one of its handles it switches to the rotate / skew handles
+    const tb0 = await ev(() => window.imageEditorInstance.E.handles.box());
+    await p.mouse.dblclick(...(await T(tb0.x + tb0.w, tb0.y + tb0.h / 2))); await p.waitForTimeout(150);
     const tb = await ev(() => window.imageEditorInstance.E.handles.box());
     const r0 = await rows([Math.round(tb.y + 6), Math.round(tb.y + tb.h - 6)]);
     const [tx, ty] = await T(tb.x + tb.w / 2, tb.y);

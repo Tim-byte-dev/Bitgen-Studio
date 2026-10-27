@@ -521,6 +521,23 @@
       } catch (e) { return str.length; }
     }
     E.caretAt = caretAt;
+    /** 2.606.0: a text picked with the Type tool -> the Move tool, the text picked (its handles) */
+    function pickText(i) {
+      E.setActive(i); S.objSel = true;
+      E.setTool("move"); E.renderOptions(); E.drawOverlay();
+      say(`${S.layers[i].name || "the text"} picked - the Move tool (double-click the text to edit it there)`);
+    }
+    /* 2.606.0: a DOUBLE-click inside a text with the Move tool edits it from the click (Photoshop's). On one of the text's
+       handles it still switches the rotate / skew handles (pchandles.js) */
+    E.stage.addEventListener("dblclick", (ev) => {
+      if (S.tool !== "move" || !S.w || ta) return;
+      const [fx, fy] = E.pos(ev), i = textAt(fx, fy); if (i < 0) return;
+      const H = root.PCHandles, b = E.handles && E.handles.box ? E.handles.box() : null;
+      if (H && b && E.layer() === S.layers[i] && H.hitHandle(b, fx, fy, 7 / (S.zoom || 1))) return;   // on a handle: the handles' own double-click
+      ev.stopImmediatePropagation(); ev.preventDefault();
+      E.setActive(i); E.setTool(S.layers[i].text && S.layers[i].text.vertical ? "vtype" : "type"); E.renderOptions();
+      editText(S.layers[i], { x: fx, y: fy });
+    }, true);
     function editText(L, at) {
       endText();
       taLayer = L;
@@ -599,15 +616,18 @@
       down(e, fx, fy) {
         if (ta) {
           // 2.602.0: a click on the letters of the text being typed (a shaped text types in a box above them) moves the
-          // caret; on another text it is edited from there; anywhere else commits, as before
+          // caret; anywhere else commits, as before (2.606.0: on another text = that one picked + the Move tool, below)
           const j = textAt(fx, fy);
           if (j >= 0 && S.layers[j] === taLayer) { const k = caretAt(taLayer, fx, fy); if (k != null) { ta.focus(); ta.setSelectionRange(k, k); } return false; }
           endText();
-          if (j >= 0 && S.layers[j] && S.layers[j].type === "text") { const jj = S.layers.indexOf(S.layers[j]); E.setActive(jj); E.renderOptions(); editText(S.layers[jj], { x: fx, y: fy }); }
+          if (j >= 0 && S.layers[j] && S.layers[j].type === "text") pickText(j);
           return false;
         }
+        // 2.606.0 (Tim: "the click on element in this case text layer is not auto selecting the move tool"): a click on a
+        // text that is not being typed = it is PICKED and the Move tool is on (move it, its handles); a DOUBLE-click on it
+        // (with the Move tool) edits it from where you clicked
         const i = textAt(fx, fy);
-        if (i >= 0) { E.setActive(i); E.renderOptions(); editText(S.layers[i], { x: fx, y: fy }); return false; }
+        if (i >= 0) { pickText(i); return false; }
         const L = E.makeLayer("Text", S.w, S.h, "text");
         L.text = Object.assign({}, D.TEXT_DEFAULT, typeSettings(), { str: "", x: Math.round(fx), y: Math.round(fy - S.typeSize * 0.15) });
         D.rasterize(L);

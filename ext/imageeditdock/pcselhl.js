@@ -104,7 +104,8 @@
     const keyBase = E.ui.key;
     E.ui.key = (e) => { if (S.tool === "move" && !S.drag && e.key === "Escape" && !e.ctrlKey && !e.metaKey && S.objSel !== false) { S.objSel = false; E.drawOverlay(); return true; } return keyBase ? keyBase(e) : false; };
     // a click on a layer in the Layers panel picks it (also the one already active)
-    E.doc.addEventListener("pointerdown", (e) => { const row = e.target && e.target.closest && e.target.closest(".kxlayer"); if (row && E.host && E.host.contains(row)) { S.objSel = true; root.setTimeout(() => { lastActive = S.active; E.drawOverlay(); }, 0); } }, true);
+    // 2.606.0: …and with a drawing / Type tool in hand, the Move tool comes on (a row's buttons - eye, lock… - are not a pick)
+    E.doc.addEventListener("pointerdown", (e) => { const row = e.target && e.target.closest && e.target.closest(".kxlayer"); if (row && E.host && E.host.contains(row)) { const sw = (AUTO_MOVE.includes(S.tool) || TYPE_TOOLS.includes(S.tool)) && !(e.target.closest && e.target.closest("button, input, .eye, .tw, .fx")); S.objSel = true; root.setTimeout(() => { if (sw && E.endText) E.endText(); if (sw) E.setTool("move"); lastActive = S.active; E.drawOverlay(); }, 0); } }, true);
     // after a shape is drawn: the Move tool, the new shape picked
     let drawing = null, held = false;                 // held: switched off for now (not saved) - E.selHl.hold(true)
     stage.addEventListener("pointerdown", (e) => {

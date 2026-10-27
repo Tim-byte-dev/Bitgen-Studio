@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.606.0** — A Click on a Text Picks It + The Move Tool; Double-Click Edits
 - **2.605.0** — Hover = the Move Tool's Thin Frame; A Click with a Drawing Tool Picks + The Move Tool
 - **2.604.0** — Save to Images (Temp Copy, Format, Gallery + Assets), Skew Fixed, Rasterize Text Menu, No Thick Box
 - **2.603.0** — Timeline: A Range on One Layer (Marker + Shift+click), Cut on That Layer Only, Undo; ComfyUI Restart at Startup
