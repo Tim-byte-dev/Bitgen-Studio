@@ -485,6 +485,18 @@ selection a frame (Shift: its end) - exact at any zoom. **Del** (or ⌫) removes
 and closes the gap (always, whatever the ripple box says); ↶ / Ctrl+Z puts them back; Esc drops the selection.
 Clips don't move while ▯ Frame is on - press V for ▸ Select.
 
+**A cut clip stays one clip.** When ✂ Cut (or Del on frames) goes through the middle of a clip with ripple on, the part
+before and the part after the cut are joined into ONE continuous clip again: a video (or a sound) is made into one new
+file - "<name>-join1.mp4" in the project's Video assets (a sound: "-join1.flac" in Sound) - with the cut part gone,
+frame-exact; a picture just gets shorter. The cut shows at once and the join follows a moment later (a few seconds for a
+long video); one ↶ undoes both. Left as two clips (the status line says why): a retimed clip (speed / reverse / ramp), a
+cut-out, a text / shape / 3D / generated clip, and a cut with ripple off (the gap stays). The preview also loads the next
+clip a second before it starts, so a cut between two clips no longer flashes black.
+
+**✂ to new layer** (the checkbox in the timeline's menu bar, kept): ✂ Cut, Del on frames and Ctrl+K split put the part
+AFTER the cut on a new layer right above ("<layer> ✂"; V1's goes on the first video layer). The part before stays where
+it is. One ↶ undoes it.
+
 **J / L cuts** (V1): in a V1 clip's 🎧 Sound, *J … s early* starts its sound before its picture, *L … s late* runs it on
 after; the neighbour's own sound is silenced for that stretch.
 
@@ -6089,6 +6101,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.612.0: **A cut clip stays one clip / ✂ to new layer** - ✂ Cut and Del on frames join the parts before and after the
+  cut into one continuous clip again (a video or sound: one new "-join" file; a picture: just shorter), one ↶ undoes it.
+  The new "✂ to new layer" box puts the part after a cut (or a Ctrl+K split) on a new layer right above. The preview
+  loads the next clip a second early - no black frame at a cut.
 - 2.611.0: **▯ Frame - click a frame, Del removes it** - the ▯ tool beside ▸ ⇤ ⇹ ⇆ ↔ on the timeline (or F over the
   layers): a click on a layer selects the one frame under the pointer on that layer, a drag several, Shift+click up to
   here, ← / → a frame on / back. Del / ⌫ cuts them out of that layer and closes the gap; ↶ puts them back.

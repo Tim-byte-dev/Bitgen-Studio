@@ -81,6 +81,7 @@
     "tlanykey.js",
     "tltextfill.js",
     "tlmorph.js",
-    "tlframe.js"
+    "tlframe.js",
+    "tljoin.js"
   ]
 }

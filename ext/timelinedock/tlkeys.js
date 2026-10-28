@@ -91,17 +91,20 @@
     try { sel = TlCanvas.selClip && TlCanvas.selClip(); } catch (e) { sel = null; }
     var jobs = [];
     var lk = sel && sel.c ? lkOf(sel) : null;
-    if (lk) jobs.push({ ly: layerList(lk), c: sel.c });
+    if (lk) jobs.push({ ly: layerList(lk), c: sel.c, lk: lk });
     else {
       // 2.412.0: no clip selected - every ◎ targeted layer (none targeted = the highlighted layer)
       var lks = window.TlTargets ? TlTargets.targeted() : [tl.selLayer || "v1"];
       lks.forEach(function (k) {
-        var ly = layerList(k) || (lks.length === 1 ? layerList("v1") : null);
-        if (ly) ly.get().forEach(function (c) { var s0 = +c.start || 0; if (t > s0 && t < s0 + lenOf(c, ly.kind)) jobs.push({ ly: ly, c: c }); });
+        var ly = layerList(k), lk2 = k;
+        if (!ly && lks.length === 1) { ly = layerList("v1"); lk2 = "v1"; }
+        if (ly) ly.get().forEach(function (c) { var s0 = +c.start || 0; if (t > s0 && t < s0 + lenOf(c, ly.kind)) jobs.push({ ly: ly, c: c, lk: lk2 }); });
       });
     }
     if (!jobs.length) { say("✂ Nothing to split at " + t.toFixed(2) + " s - select a clip under the position marker (or highlight its layer)."); return false; }
-    var done = 0, why = "";
+    var done = 0, why = "", newL = [], toNew = !!(window.TlJoin && TlJoin.toNew && TlJoin.toNew());
+    // 2.612.0: "✂ to new layer" ticked - the part after the split goes on a new layer right above (tljoin.js)
+    var after = {};
     jobs.forEach(function (j) {
       if (!j.ly) return;
       try {
@@ -109,15 +112,18 @@
         var parts = H3Marks.splitClip(j.c, t, j.ly.kind, 1 / ((tl.tc && +tl.tc.fps) || 25));
         var list = j.ly.get(), i = list.indexOf(j.c);
         if (i < 0) return;
-        j.ly.set(list.slice(0, i).concat(parts, list.slice(i + 1)));
+        if (toNew && j.lk && parts.length === 2) { j.ly.set(list.slice(0, i).concat([parts[0]], list.slice(i + 1))); (after[j.lk] = after[j.lk] || []).push(parts[1]); }
+        else j.ly.set(list.slice(0, i).concat(parts, list.slice(i + 1)));
         done++;
       } catch (e) { why = e.message || String(e); }
     });
     if (!done) { say("✂ " + (why || "nothing split")); return false; }
+    // the layers made from the bottom one up, so each key still names its layer when it is made
+    Object.keys(after).sort(function (x, y) { return (+(y.split(":")[1]) || 0) - (+(x.split(":")[1]) || 0); }).forEach(function (k) { var nk = TlJoin.toNewLayer(k, after[k]); if (nk) newL.push(nk); });
     if (typeof tlSave === "function") tlSave();
     if (typeof renderTimeline === "function") renderTimeline();
     TlCanvas.mark();
-    say("✂ Split " + done + " clip(s) at " + t.toFixed(2) + " s.");
+    say("✂ Split " + done + " clip(s) at " + t.toFixed(2) + " s." + (newL.length ? " The part after it is on a new layer." : ""));
     log("split " + done + " clip(s) at " + t.toFixed(2) + " s");
     return true;
   }

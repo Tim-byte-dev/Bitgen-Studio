@@ -12668,6 +12668,14 @@ node scripts/test-frame611.js > /tmp/fr611.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui611-ui.js > /tmp/ui611.log 2>&1 \
   && ok "2.611.0 browser test: ▯ Frame (F), a click selects one frame on that layer, Del removes it and the rest moves up (ripple box untouched), ↶, a drag / Shift+click several, ← / → zoomed out, V1, Esc, ▸ Select still drags - or SKIP without playwright" \
   || { bad "2.611.0 frame browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui611.log | head -14; }
+# ---- 2.612.0 (Tim: "can we merge the before cut and after cut portion of the layer so it is 1 continuous clip - add a
+# checkbox to the timeline to cut to new layer - then put the after cut portion on a new layer")
+node scripts/test-join612.js > /tmp/jo612.log 2>&1 \
+  && ok "2.612.0 a cut clip joined into one (the parts, the file name, the ffmpeg filter, when it stays two, the merged clip, where the new layer goes) - the pure part + the wiring" \
+  || { bad "2.612.0 join units"; grep -a "^FAIL" -A2 /tmp/jo612.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui612-ui.js > /tmp/ui612.log 2>&1 \
+  && ok "2.612.0 browser test: ✂ Cut through a video = one clip + a -join file (the cut second gone, frame-exact), one ↶; a picture; Del on frames; retimed / ripple off stay two; ✂ to new layer (a video layer, V1, Ctrl+K), kept - or SKIP without playwright" \
+  || { bad "2.612.0 join browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui612.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -195,6 +195,8 @@
     var cut = $("tlCutSel"); if (cut) cut.title = "Cut the selection out. A layer range (the marker, then Shift+click on the layer) is cut from that layer only, completely; a ruler selection follows the scope box. Ctrl+Z undoes";
     paintRow();
   }
-  root.TlRange = { rangeOf: rangeOf, Hist: Hist, undo: undo, redo: redo, sizes: function () { return H.sizes(); }, paintRow: paintRow };
+  /** 2.612.0: the next save belongs to the step before it (a cut's join, seconds later, is the cut's own ↶ step) */
+  function glue() { lastAt = Date.now(); }
+  root.TlRange = { rangeOf: rangeOf, Hist: Hist, undo: undo, redo: redo, glue: glue, sizes: function () { return H.sizes(); }, paintRow: paintRow };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

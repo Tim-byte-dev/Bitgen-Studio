@@ -812,6 +812,7 @@
     return { a: 0, b: Math.max(endT(), 0.1) };
   }
   function keepAudio() { var k = $("tlKeepA"); return !k || k.checked; }
+  var PREROLL = 1.0;                                   // 2.612.0: seconds ahead a clip's video is made ready
   function syncMedia(t, play) {
     if (window.TlRender) TlRender.sync(t, play && S.playing, S.rate);   // 2.418.0: ⚡ the rendered preview kept in step
     stack().forEach(function (Ly) {
@@ -821,7 +822,17 @@
         if (c.m3d) return;                             // 2.382.0: a 3D layer is drawn, not played
         var v = vids.get(c);
         var on = live && at(c, Ly.kind, t);
-        if (!on) { if (v && !v.paused) v.pause(); if (window.TlRetimeSound) TlRetimeSound.stop(c); return; }
+        if (!on) {
+          if (v && !v.paused) v.pause(); if (window.TlRetimeSound) TlRetimeSound.stop(c);
+          // 2.612.0: a clip starting within the next second is loaded and parked on its first frame NOW - it used to be
+          // made / seeked as it began, so a cut showed a black frame while it caught up
+          var ahead = (+c.start || 0) - t;
+          if (play && live && (S.rate || 1) > 0 && ahead > 0 && ahead <= PREROLL) {
+            v = video(c); var w0 = vidAt(c, +c.start || 0);
+            if (!v.seeking && Math.abs((v.currentTime || 0) - w0) > 0.5 / FPS) { try { v.currentTime = w0; } catch (e) { /* not ready */ } }
+          }
+          return;
+        }
         v = video(c);
         var want = vidAt(c, t);
         v.muted = !play || !keepAudio() || !!Ly.L.muted || seekDriven(c) || (S.rate || 1) < 0 || !!c.soundOut;   // 2.412.0: its sound is a clip of its own   // 2.406.0: a reversed / ramped clip's own file is silent here (2.417.0: TlRetimeSound plays its rendered sound)

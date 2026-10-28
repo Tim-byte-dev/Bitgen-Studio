@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.612.0** — A Cut Clip Stays One Clip; ✂ to New Layer
 - **2.611.0** — ▯ Frame: Click a Frame to Select It, DEL Removes It
 - **2.610.0** — 🧬 Morph on the Timeline (Character 1 → Character 2 Between Two Layers)
 - **2.609.0** — Any Floating Docker Docks in the Image Editor's Panel Column (Pending Too), Kept, Inside Its Parent
