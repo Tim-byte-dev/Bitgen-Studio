@@ -79,6 +79,8 @@
     "tlcamtrack.js",
     "tlvfill.js",
     "tlanykey.js",
-    "tltextfill.js"
+    "tltextfill.js",
+    "tlmorph.js",
+    "tlframe.js"
   ]
 }

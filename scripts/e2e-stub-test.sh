@@ -12644,6 +12644,30 @@ node scripts/test-warp608.js > /tmp/w608.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui608-ui.js > /tmp/ui608.log 2>&1 \
   && ok "2.608.0 browser test: the 5 new warps, ⌗ Warp Grid on a text (re-typed, undo) and a shape, 🅰 Fill Shape with Text (repeat / flow / stretch), the timeline's Text fill, 🔤 In a shape, ⌇ warp Preset, each font's name in its own font - or SKIP without playwright" \
   || { bad "2.608.0 warps / text fill browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui608.log | head -14; }
+# ---- 2.609.0 (Tim: "add docker dropzones to the image-editor panel where layers are in so user can add floating dockers to
+# that panel. pending docker should be able to dock in that panel" + "also keep the dockers status and parent dockers
+# saved . when the parent docker is visible keep all child dockers within the parent")
+node scripts/test-coldock609.js > /tmp/cd609.log 2>&1 \
+  && ok "2.609.0 the image editor's panel column takes any floating docker (zone hosts, kept in panel_layout.cfg), Pending docks there - the pure part + the wiring" \
+  || { bad "2.609.0 column docking units"; grep -a "^FAIL" -A2 /tmp/cd609.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui609-ui.js > /tmp/ui609.log 2>&1 \
+  && ok "2.609.0 browser test: Assets (floated), a ▣ docker, Basic Settings, the prompt docker and ⏳ Pending dragged into the image editor's panel column; fold / move / out; hidden with the editor; back after a reload - or SKIP without playwright" \
+  || { bad "2.609.0 column docking browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui609.log | head -14; }
+# ---- 2.610.0 (Tim: "lets automate the morph - add a morph tab to the properties docker, properties will be, character 1,
+# character 2 , layer 1, layer 2 ... create the movie and insert the clip on a morph layer between the 2 layers")
+node scripts/test-morph610.js > /tmp/mo610.log 2>&1 \
+  && ok "2.610.0 🧬 Morph - the clips picked, the prompt written, where the morph and layer 2 go, the layer between - the pure part + the wiring" \
+  || { bad "2.610.0 morph units"; grep -a "^FAIL" -A2 /tmp/mo610.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui610-ui.js > /tmp/ui610.log 2>&1 \
+  && ok "2.610.0 browser test: the 🧬 Morph tab, the prompt written, the two frames as shown, ONE first + last frame render, the 🧬 Morph layer from the end of layer 1, layer 2 moved after it, ↶ - or SKIP without playwright" \
+  || { bad "2.610.0 morph browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui610.log | head -14; }
+# ---- 2.611.0 (Tim: "can we add a click frame to select frame and del button deletes it")
+node scripts/test-frame611.js > /tmp/fr611.log 2>&1 \
+  && ok "2.611.0 ▯ Frame - the frame under a time, a span of frames, the label; the click / Del / Esc / arrows wiring - the pure part + the wiring" \
+  || { bad "2.611.0 frame units"; grep -a "^FAIL" -A2 /tmp/fr611.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui611-ui.js > /tmp/ui611.log 2>&1 \
+  && ok "2.611.0 browser test: ▯ Frame (F), a click selects one frame on that layer, Del removes it and the rest moves up (ripple box untouched), ↶, a drag / Shift+click several, ← / → zoomed out, V1, Esc, ▸ Select still drags - or SKIP without playwright" \
+  || { bad "2.611.0 frame browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui611.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

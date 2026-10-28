@@ -82,16 +82,20 @@
       box.style.left = pos.x + "px"; box.style.top = pos.y + "px";
     };
     // drag by the title (inside the editor only)
+    // 2.609.0: over the panel column = its drop line, let go there = docked in the column (pccoldock.js); docked, its
+    // column bar moves it (this title is just a title there)
     $p("ppHead").addEventListener("pointerdown", (e) => {
-      if (e.target.closest("button")) return;
+      if (e.target.closest("button") || box.closest(".pcfd")) return;
       e.preventDefault();
       const sx = e.clientX, sy = e.clientY, p0 = Object.assign({}, pos);
-      const mv = (ev) => { pos = { x: p0.x + ev.clientX - sx, y: p0.y + ev.clientY - sy }; place(); };
-      const up = () => { win.removeEventListener("pointermove", mv); win.removeEventListener("pointerup", up); store.set("pending.pos", pos); };
+      const mv = (ev) => { pos = { x: p0.x + ev.clientX - sx, y: p0.y + ev.clientY - sy }; place(); if (E.coldock) E.coldock.hover(ev.clientX, ev.clientY); };
+      const up = (ev) => { win.removeEventListener("pointermove", mv); win.removeEventListener("pointerup", up); store.set("pending.pos", pos); if (E.coldock && ev) E.coldock.drop(ev.clientX, ev.clientY); };
       win.addEventListener("pointermove", mv); win.addEventListener("pointerup", up);
     });
     win.addEventListener("resize", () => { if (!box.classList.contains("off")) place(); });
-    function show() { box.classList.remove("off"); place(); }
+    function show() { box.classList.remove("off"); if (!box.closest(".pcfd")) place(); }
+    /** 2.609.0: out of the panel column, floating at (at.x, at.y) on the screen */
+    function moveTo(at) { if (!at) return; const kr = kx.getBoundingClientRect(); pos = { x: Math.round(at.x - kr.left), y: Math.round(at.y - kr.top) }; place(); store.set("pending.pos", pos); }
     function hide() { box.classList.add("off"); if (previewing) unpreview(); }
     $p("ppHide").onclick = hide;
     $p("ppAll").onclick = () => applyAll();
@@ -140,7 +144,7 @@
         tx.querySelector('[data-a="del"]').onclick = () => remove(it);
         card.appendChild(t); card.appendChild(tx); list.appendChild(card);
       }
-      if (!box.classList.contains("off")) place();
+      if (!box.classList.contains("off") && !box.closest(".pcfd")) place();
     }
     /* 2.574.0 (Tim: "show step number of steps for all generations"): a card still rendering says its step - its job
        (it.job) is followed by the page's job poll ("h3:jobtick"); only that card's line changes, no re-render */
@@ -202,7 +206,7 @@
       return L;
     }
     function applyAll() { let n = 0; for (const it of items.slice()) if (it.layer && apply(it)) n++; E.say(n ? `${n} result(s) applied` : "nothing finished yet"); return n; }
-    E.pending = { auto: !!win.__H3_PENDING_AUTO, items, add, ready, fail, apply, remove, clear, applyAll, show, hide, render,
+    E.pending = { auto: !!win.__H3_PENDING_AUTO, items, add, ready, fail, apply, remove, clear, applyAll, show, hide, render, moveTo,
                   track: () => { running++; render(); }, untrack: () => { running = Math.max(0, running - 1); render(); }, running: () => running, panel: box };
     render();
   }

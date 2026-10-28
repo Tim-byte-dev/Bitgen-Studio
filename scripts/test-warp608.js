@@ -81,7 +81,7 @@ check("wiring - image editor: pcdoc warps a live layer first + fills a shape wit
   && /id="ptSTextFill"/.test(read("ext/imageeditdock/pctextfill.js")) && /PCTextFill\.install\(E\)/.test(read("ext/imageeditdock/imageedit.js")));
 const ej = JSON.parse(read("ext/imageeditdock/ext.json")).scripts, tj = JSON.parse(read("ext/timelinedock/ext.json")).scripts, ix = read("static/index.html");
 check("ext.json / index.html: pctextfill + pclivewarp after pcfxshape; tltextfill last; warpstyles.js + textfill.js in the page",
-  ej.indexOf("pctextfill.js") === ej.indexOf("pcfxshape.js") + 1 && ej.indexOf("pclivewarp.js") === ej.indexOf("pctextfill.js") + 1 && tj[tj.length - 1] === "tltextfill.js"
+  ej.indexOf("pctextfill.js") === ej.indexOf("pcfxshape.js") + 1 && ej.indexOf("pclivewarp.js") === ej.indexOf("pctextfill.js") + 1 && tj.indexOf("tltextfill.js") > tj.indexOf("tlanykey.js")
   && /<script src="\/static\/warpstyles\.js"><\/script>/.test(ix) && /<script src="\/static\/textfill\.js"><\/script>/.test(ix));
 check("wiring - timeline: canvas draws a text in a shape (TlTextFill.picture), the bake takes it (and its shape), tlshape's 🅰 Text fill, tlwarp's ⌇ Preset",
   /TlTextFill\.picture\(c,/.test(read("ext/timelinedock/canvas.js")) && /TlTextFill && TlTextFill\.live\(c\)/.test(read("ext/timelinedock/tlparent.js")) && /inshape: ins\.shape/.test(read("ext/timelinedock/tlparent.js"))

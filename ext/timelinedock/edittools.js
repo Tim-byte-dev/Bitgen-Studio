@@ -12,7 +12,9 @@
   var MODES = [["select", "▸", "Select: drag to move, edges to trim (as before)"], ["ripple", "⇤", "Ripple: drag an edge - trim it and move everything after it"],
                ["roll", "⇹", "Roll: drag the edge between two touching clips - the cut moves, the total stays"],
                ["slip", "⇆", "Slip: drag a clip - other frames of its source, same place and length"],
-               ["slide", "↔", "Slide: drag a clip between its neighbours - they give and take"]];
+               ["slide", "↔", "Slide: drag a clip between its neighbours - they give and take"],
+               // 2.611.0 (Tim: "can we add a click frame to select frame and del button deletes it") - tlframe.js does the work
+               ["frame", "▯", "Frame (F): click a frame on a layer to select it - drag for several, Shift+click up to here; Del removes it and closes the gap (Ctrl+Z undoes)"]];
   var mode = "select", tip = null;
   function log(t) { if (typeof logLine === "function") logLine("[edit] " + t); }
 
@@ -80,7 +82,7 @@
   }
 
   function onDown(e) {
-    if (mode === "select" || e.button !== 0) return;
+    if (mode === "select" || mode === "frame" || e.button !== 0) return;   // ▯ Frame: tlframe.js
     var el = e.target.closest && e.target.closest(".clip");
     if (!el || !el._clip || e.target.closest(".cx")) return;
     var edge = e.target.classList && e.target.classList.contains("h") ? (e.target.classList.contains("l") ? "l" : "r") : null;

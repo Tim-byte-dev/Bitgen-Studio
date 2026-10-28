@@ -8,6 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.611.0** — ▯ Frame: Click a Frame to Select It, DEL Removes It
+- **2.610.0** — 🧬 Morph on the Timeline (Character 1 → Character 2 Between Two Layers)
+- **2.609.0** — Any Floating Docker Docks in the Image Editor's Panel Column (Pending Too), Kept, Inside Its Parent
 - **2.608.0** — Shapes Filled with Text (Flow / Stretch / Repeat), 5 More Warp Presets, a Warp Grid on Text + Shapes, Font Previews
 - **2.607.0** — Text Presets Through Shapes + 3D, Presets in More Text Tools, Every Font on This Computer
 - **2.606.0** — A Click on a Text Picks It + The Move Tool; Double-Click Edits

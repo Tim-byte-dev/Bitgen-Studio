@@ -262,6 +262,9 @@
         r.x = p.x; r.y = p.y; r.win.style.left = p.x + "px"; r.win.style.top = p.y + "px";
       }
       z = null; into = null; slot = null;
+      // 2.609.0: over a zone host (the image editor's panel column) - floatpanels.js docks it there; nothing here
+      if (P().zoneAt && P().zoneAt(r, m.clientX, m.clientY)) { zone(null); if (carry) { const zh = P().zoneAt(r, m.clientX, m.clientY); P().zoneMark(zh.zone.line); r.__zh = zh; } return; }
+      if (carry) { r.__zh = null; P().zoneMark(null); }
       if (carry) { const g = G().groupAt(m.clientX, m.clientY, id); if (g && P().canDock(id, g.id, (k) => ((P().get(k) || {}).docker || null))) { into = g.id; slot = P().slotOf(g.id, m.clientX, m.clientY); } }
       else if (doc.querySelector(".h3fp.drop")) into = "-";                // floatpanels has it: into another ▣ docker
       if (!into) {                                                  // 2.561.0: on a seam between two columns = a column of its own
@@ -279,6 +282,8 @@
       if (!on) return;
       eatClick();
       const r = P().get(id); if (!r) return;
+      if (carry && r.__zh) { const zh = r.__zh; r.__zh = null; P().zoneMark(null); P().zoneInto(id, zh.host.id, zh.zone.key); G().paint(); return; }   // 2.609.0
+      if (r.state === "zone") { G().paint(); return; }                                                   // 2.609.0: floatpanels docked it in a zone
       if (z && z.col) G().makePerm(id, false, { mode: "col", before: z.before });
       else if (z) G().makePerm(id, false, { mode: "dock", to: z.key, side: z.side });
       else if (carry && into) P().dockInto(id, into, slot ? slot.index : undefined);
@@ -337,7 +342,7 @@
   }
   function memberState(id, s) {
     const el = memberEl(id), r = P().get(id); if (!el || !r) return;
-    if (s === "in") {
+    if (s === "in" || s === "zone") {                       // 2.609.0: + in a zone host (the image editor's panel column)
       unplaceMember(id, el);
       el.classList.add("dg-in"); LASTIN[id] = r.docker;
       resize(); return;
@@ -374,6 +379,13 @@
     });
   }
   /** the ▣ docker under (x, y) a floating docker goes into - a docked one's edges stay the other dockers' drop zones */
+  /** 2.609.0: into a zone host (the image editor's panel column): out of its own system, adopted, there */
+  function takeInZone(id, zh) {
+    const el = memberEl(id); if (!el) return;
+    unplaceMember(id, el);
+    const r = adoptMember(id);
+    Promise.resolve(r && r.ready).then(() => { P().zoneInto(id, zh.host.id, zh.zone.key); G().paint(); tev("docker_member_zone", id + ">" + zh.host.id); });
+  }
   function groupUnder(x, y, id) {
     const g = G().groupAt(x, y); if (!g) return null;
     if (g.perm) { const d = $(G().permId(g.id)); if (d && nearEdge(x, y, d.getBoundingClientRect(), id === "pf.promptdock" ? "pf" : EDGE)) return null; }
@@ -385,6 +397,13 @@
     if (!el) { if (cur) { cur = null; zone(null); outline(false); } return; }
     const id = memberIdOf(el); if (!id || !G()) return;
     if (!cur) outline(true);
+    const zh = P().zoneAt ? P().zoneAt({}, m.clientX, m.clientY) : null;      // 2.609.0: the image editor's panel column
+    if (zh) {
+      ["dfZone", "pfZone"].forEach((z) => { const e = $(z); if (e) e.style.display = "none"; });
+      cur = { id, g: null, zh };
+      const L = zh.zone.line; zone({ l: L.x, t: L.y - 3, r: L.x + L.w, b: L.y + Math.max(6, L.h) + 3 }, memberTitle(id) + " → the editor's panels", true);
+      return;
+    }
     const g = groupUnder(m.clientX, m.clientY, id);
     cur = { id, g: g ? g.id : null, slot: g ? P().slotOf(g.id, m.clientX, m.clientY) : null };
     if (g) {
@@ -396,7 +415,8 @@
   function drop() {
     if (!cur) return;
     const c = cur; cur = null; zone(null); outline(false);
-    if (c.g) root.setTimeout(() => takeIn(c.id, c.g, c.slot), 0);   // after its own system's drop (it may have docked it under)
+    if (c.zh) root.setTimeout(() => takeInZone(c.id, c.zh), 0);    // 2.609.0
+    else if (c.g) root.setTimeout(() => takeIn(c.id, c.g, c.slot), 0);   // after its own system's drop (it may have docked it under)
   }
   // bubbling: after the dragged docker's own handlers (window capture) - they move it / show their zone first
   root.addEventListener("pointermove", hover, false);
@@ -409,7 +429,7 @@
     if (!ready) { if ((tries || 0) < 150) root.setTimeout(() => membersBack((tries || 0) + 1), 200); return; }
     root.setTimeout(() => P().load().then(() => {
       const lay = P().snapshot().panels || {};
-      for (const id of Object.keys(lay)) if (/^(sf|pf)\./.test(id) && lay[id] && lay[id].state === "in" && lay[id].docker && P().get(lay[id].docker) && memberEl(id)) adoptMember(id);
+      for (const id of Object.keys(lay)) if (/^(sf|pf)\./.test(id) && lay[id] && ((lay[id].state === "in" && lay[id].docker && P().get(lay[id].docker)) || (lay[id].state === "zone" && lay[id].zone)) && memberEl(id)) adoptMember(id);   // 2.609.0: + in a zone host
     }).catch(() => {}), 600);
   }
   function look() {
@@ -417,8 +437,9 @@
     // a member taken out by its own system (a ⊞ layout, a workspace): the ▣ docker lets it go where it is
     regrid();
     for (const r of P().list()) {
-      if (!/^(sf|pf)\./.test(r.id) || r.state !== "in") continue;
+      if (!/^(sf|pf)\./.test(r.id) || (r.state !== "in" && r.state !== "zone")) continue;
       const rec = P().get(r.id), el = memberEl(r.id);
+      if (rec && el && rec.state === "zone") { if (!el.closest(".pcfd")) { rec.home = { parent: el.parentNode || doc.body, before: el.nextSibling }; QUIET[r.id] = true; P().home(r.id); rec.home = { parent: doc.body, before: null }; } continue; }   // 2.609.0
       if (rec && el && rec.win && !rec.win.contains(el)) { rec.home = { parent: el.parentNode || doc.body, before: el.nextSibling }; QUIET[r.id] = true; P().home(r.id); rec.home = { parent: doc.body, before: null }; }
     }
   }

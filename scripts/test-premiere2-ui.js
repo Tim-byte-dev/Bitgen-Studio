@@ -83,7 +83,7 @@ ff(["-f", "lavfi", "-i", "testsrc=size=320x180:rate=25:duration=6", "-f", "lavfi
 
     /* ---- 1. edit tools */
     const modes = await p.evaluate(() => [...document.querySelectorAll("#tlEditModes button")].map((x) => x.textContent));
-    check("the timeline's edit modes: ▸ ⇤ ⇹ ⇆ ↔", modes.join("") === "▸⇤⇹⇆↔", modes);
+    check("the timeline's edit modes: ▸ ⇤ ⇹ ⇆ ↔ (+ 2.611.0 ▯ Frame)", modes.join("") === "▸⇤⇹⇆↔▯", modes);
     await p.click("#tlEdit_slip");
     await drag(await box("uiB.webm"), -1);
     let s = await A();

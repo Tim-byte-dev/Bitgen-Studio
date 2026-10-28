@@ -22,7 +22,8 @@
   function ready() { try { return !!(window.H3Marks && window.TlCanvas && window.TlMarks && $("tlinner")); } catch (e) { return false; } }
   var KEYS = [
     ["V", "▸ Select tool (drag clips, trim edges)"], ["B", "⇤ Ripple edit tool"], ["N", "⇹ Roll edit tool"],
-    ["Y", "⇆ Slip tool"], ["U", "↔ Slide tool"],
+    ["Y", "⇆ Slip tool"], ["U", "↔ Slide tool"], ["F", "▯ Frame tool: click a frame on a layer to select it (drag = several, Shift+click = up to here)"],
+    ["Del / ⌫", "With frames selected (▯ Frame tool): remove them from their layer, the gap closes - ← / → move the selection a frame"],
     ["I", "In: the ruler selection starts at the position marker"], ["O", "Out: the ruler selection ends at the position marker"],
     ["Ctrl+K", "Split at the position marker (the selected clip, else the highlighted layer's clip under it)"],
     ["↑ / ↓", "Previous / next edit point (a clip's start or end on any layer)"], ["Home / End", "The start / end of the timeline"],
@@ -32,7 +33,7 @@
     ["J / K / L", "Shuttle: backwards / stop / forwards - J or L again: 2x, 4x, 8x"], ["K + J / K + L", "One frame back / on (hold K)"],
     ["Space", "Play / pause the preview (anywhere, unless typing in a box)"]
   ];
-  var MODES = { v: "select", b: "ripple", n: "roll", y: "slip", u: "slide" };
+  var MODES = { v: "select", b: "ripple", n: "roll", y: "slip", u: "slide", f: "frame" };   // 2.611.0: F = ▯ Frame (tlframe.js)
   function log(t) { if (typeof logLine === "function") logLine("[keys] " + t); }
   function say(t) { try { if (TlCanvas.say) TlCanvas.say(t); } catch (e) { /* fine */ } if ($("sblog")) $("sblog").textContent = t; }
   function ph() { try { return typeof playhead === "number" && isFinite(playhead) ? playhead : (TlCanvas.state.t || 0); } catch (e) { return 0; } }

@@ -478,6 +478,13 @@ everything after it on that layer), **⇹ Roll** (drag the edge between two touc
 moves, the clips either side give and take). A tip beside the pointer shows what the drag will do. Zoom in so each edge
 has its own handle. A reversed clip can't be edited with these (its edges run backwards).
 
+**▯ Frame** (F over the layers) picks single frames: click a layer's track (on a clip or between clips) and the frame
+under the pointer on THAT layer is selected - the position marker jumps to it and the frame is outlined on its row. Drag
+across for several frames, Shift+click to select from the selected frame up to the one clicked, ← / → move the
+selection a frame (Shift: its end) - exact at any zoom. **Del** (or ⌫) removes the selected frame(s) from that layer
+and closes the gap (always, whatever the ripple box says); ↶ / Ctrl+Z puts them back; Esc drops the selection.
+Clips don't move while ▯ Frame is on - press V for ▸ Select.
+
 **J / L cuts** (V1): in a V1 clip's 🎧 Sound, *J … s early* starts its sound before its picture, *L … s late* runs it on
 after; the neighbour's own sound is silenced for that stretch.
 
@@ -628,7 +635,8 @@ With the pointer over the timeline's **layers** (the canvas keeps its own keys):
 
 | Key | Does |
 |---|---|
-| V / B / N / Y / U | ▸ Select / ⇤ Ripple / ⇹ Roll / ⇆ Slip / ↔ Slide |
+| V / B / N / Y / U / F | ▸ Select / ⇤ Ripple / ⇹ Roll / ⇆ Slip / ↔ Slide / ▯ Frame |
+| Del / ⌫ | (▯ Frame) remove the selected frame(s) from their layer - the gap closes |
 | I / O | In / Out of the ruler selection at the position marker |
 | Ctrl+K | split at the position marker (the selected clip, else the highlighted layer's) |
 | ↑ / ↓ | previous / next edit point |
@@ -6081,6 +6089,23 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.611.0: **▯ Frame - click a frame, Del removes it** - the ▯ tool beside ▸ ⇤ ⇹ ⇆ ↔ on the timeline (or F over the
+  layers): a click on a layer selects the one frame under the pointer on that layer, a drag several, Shift+click up to
+  here, ← / → a frame on / back. Del / ⌫ cuts them out of that layer and closes the gap; ↶ puts them back.
+- 2.610.0: **🧬 Morph on the timeline** - the 🧬 Morph tab beside Properties (the timeline's layers panel): write
+  Character 1 (what it starts as, e.g. "a monkey") and Character 2 (what it turns into, e.g. "a man"), pick Layer 1 (the
+  clip it starts from - its LAST frame) and Layer 2 (the clip it ends on - its FIRST frame), the length (1 - 10 s). The
+  prompt is written for you (edit it if you like - ↺ writes it again). 🧬 Make the morph renders it with the video
+  style picked in the toolbar from those two frames (as the canvas shows them), puts it on a new 🧬 Morph layer between
+  the two layers starting where layer 1's clip ends, and moves layer 2's clip to start where the morph ends. Its sound
+  is off unless you tick "keep its sound". ↶ undoes it all. Works best with the two characters in a similar framing.
+- 2.609.0: **Dock any floating docker in the image editor's panel column** - drag a floating docker by its title over
+  the column where Layers is: an orange line shows where it goes (above / below each docker there, or at the end); let
+  go = it is docked there. Works for a main docker floated with ⇱ (Assets, Gallery, References, Queue, Preview …), a ▣
+  docker, Basic Settings, LLM tokens, the Camera panel, the prompt docker and ⏳ Pending. Docked, each has a slim bar:
+  ⠿ drag it to another place in the column or out of it (it floats again), ▾ folds it, ⇱ floats it, ⚙ (a ▣ docker) its
+  menu; its bottom edge sizes it. Where each one is docked, the order, its height and fold are kept and come back at the
+  next start; docked in the editor they hide and show with it.
 - 2.608.0: **Font lists show each font in itself** - every font dropdown writes each font's name in that font (type
   to search as before), and the closed list shows the picked font in its own lettering.
 - 2.608.0: **Fill a shape with text** - image editor: right-click a shape layer (or the Shape tool's bar, or Layer ▸

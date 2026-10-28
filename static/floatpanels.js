@@ -101,6 +101,7 @@
     + ".h3fp.off{display:none}.h3fp-t{display:flex;align-items:center;gap:4px;height:26px;flex:none;padding:0 4px 0 8px;cursor:move;user-select:none;background:var(--panel-2,var(--pc-bg,#26221b));border-bottom:1px solid var(--line,var(--pc-line,#3a342a));font-size:12px}"
     + ".h3fp-n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.h3fp-t button{border:0;background:none;color:inherit;cursor:pointer;padding:0 4px;font-size:13px;line-height:24px}.h3fp-t button:hover{color:var(--tiger,#f59e2c)}"
     + ".h3fp-b{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto}.h3fp-b>*{flex:1 1 auto;min-height:0}"
+    + ".h3fp.h3fp-zoned{position:relative!important;left:auto!important;top:auto!important;width:auto!important;height:auto!important;flex:1 1 auto;min-height:0;border:0;border-radius:0;box-shadow:none;z-index:auto}.h3fp.h3fp-zoned>.h3fp-t{display:none}"   // 2.609.0
     + ".h3fp.in{position:static!important;width:auto!important;height:auto!important;flex:1;min-height:0;border:0;border-radius:0;box-shadow:none}.h3fp.in>.h3fp-t{display:none}.h3fp.in.hid{display:none}"
     + ".h3fd{flex:1;display:flex;flex-direction:column;min-height:0}.h3fd-tabs{display:flex;flex:none;overflow-x:auto;border-bottom:1px solid var(--line,var(--pc-line,#3a342a));background:var(--ink,var(--pc-bg,#14120f))}"
     + ".h3fd-tab{display:flex;align-items:center;gap:2px;padding:3px 8px;font-size:11px;cursor:pointer;white-space:nowrap;border-right:1px solid var(--line,var(--pc-line,#3a342a));user-select:none}.h3fd-tab.on{background:var(--panel,var(--pc-panel,#1c1915));color:var(--tiger,#f59e2c)}"
@@ -208,7 +209,49 @@
   }
   /* ---- 2.454.0: drop zones (hosts that are not named dockers) */
   const ZONES = [];
-  function zoneHost(o) { if (o && o.id && o.el && o.zones && o.drop) { const i = ZONES.findIndex((z) => z.id === o.id); if (i >= 0) ZONES.splice(i, 1); ZONES.push(o); } return o; }
+  function zoneHost(o) {
+    if (o && o.id && o.el && o.zones && o.drop) {
+      const i = ZONES.findIndex((z) => z.id === o.id); if (i >= 0) ZONES.splice(i, 1); ZONES.push(o);
+      // 2.609.0: the dockers kept in this host (panel_layout.cfg state "zone") that were waiting for it to load
+      if (o.slot && ZQ[o.id] && ZQ[o.id].length) { const q = ZQ[o.id].splice(0); restoring++; try { for (const [id, key] of q) if (R[id] && R[id].zoneWant) zoneInto(id, o.id, key); } finally { restoring--; } }
+    }
+    return o;
+  }
+  /* 2.609.0 - Tim (verbatim): "add docker dropzones to the image-editor panel where layers are in so user can add floating
+     dockers to that panel. pending docker should be able to dock in that panel" + "also keep the dockers status and parent
+     dockers saved . when the parent docker is visible keep all child dockers within the parent".
+     A ZONE HOST with slot(id, key, r) -> an element (and free(id), keyOf(id)) takes ANY floating docker - a panel (a main
+     docker floated with ⇱, Basic Settings / LLM tokens / the prompt docker, ⏳ Pending ...) or a named ▣ docker - INTO
+     itself: state "zone", {host, key} kept in panel_layout.cfg and put back at the next start (queued until the host is
+     there: an extension docker mounts late). It lives inside its parent there, so it shows and hides with it. */
+  const ZQ = {};
+  function zoneInto(id, hostId, key) {
+    const r = R[id]; if (!r) return false;
+    const h = ZONES.find((z) => z.id === hostId);
+    if (!h || !h.slot) { r.zoneWant = { host: hostId, key: key || "end" }; (ZQ[hostId] = ZQ[hostId] || []).push([id, key]); save(); return false; }
+    if (r.docker) undock(r);
+    if (r.state === "zone" && r.zone && r.zone.host !== hostId) leaveZone(r);
+    const body = h.slot(id, key, r); if (!body) return false;
+    if (r.kind === "panel") { body.appendChild(r.el); if (r.win) r.win.classList.add("off"); }
+    else { if (!r.win) makeWin(r); r.win.classList.remove("off", "in", "hid"); r.win.classList.add("h3fp-zoned"); body.appendChild(r.win); }
+    r.state = "zone"; r.zone = { host: hostId, key: key || "end" }; delete r.zoneWant;
+    if (r.onState) r.onState("zone");
+    save();
+    if (root.H3TestEvent) { try { root.H3TestEvent("docker_zone_in", id + ">" + hostId); } catch (e) { /* the 🧪 list */ } }
+    return true;
+  }
+  function leaveZone(r) {
+    const h = r.zone ? ZONES.find((z) => z.id === r.zone.host) : null;
+    if (r.win) r.win.classList.remove("h3fp-zoned");
+    r.zone = null;
+    if (h && h.free) { try { h.free(r.id); } catch (e) { /* the host's */ } }
+  }
+  /** 2.609.0: out of its zone host: a panel that floats on its own (floatOut) does that, the rest float as windows */
+  function zoneOut(id, at) {
+    const r = R[id]; if (!r) return;
+    if (r.floatOut) { if (r.state === "zone") leaveZone(r); r.floatOut(at); return; }
+    float(id, at);
+  }
   function zoneAt(r, x, y) {
     for (const h of ZONES) {
       const el = h.el(); if (!el || !el.isConnected || (r.scope && r.scope() && !r.scope().contains(el))) continue;
@@ -244,6 +287,8 @@
   function float(id, at) {
     const r = R[id]; if (!r) return;
     if (!r.win) makeWin(r);
+    if (r.state === "zone") leaveZone(r);               // 2.609.0
+    delete r.zoneWant;
     if (r.docker) undock(r);
     if (r.kind === "panel" && r.el.parentNode !== r.win.querySelector(".h3fp-b")) r.win.querySelector(".h3fp-b").appendChild(r.el);
     r.state = "float";
@@ -260,6 +305,8 @@
   }
   function home(id) {
     const r = R[id]; if (!r || r.kind !== "panel" || !r.home) return;
+    if (r.state === "zone") leaveZone(r);               // 2.609.0
+    delete r.zoneWant;
     if (r.docker) undock(r);
     const h = r.home; h.parent.insertBefore(r.el, h.before && h.before.parentNode === h.parent ? h.before : null);
     r.state = "home"; if (r.win) r.win.classList.add("off");
@@ -276,6 +323,8 @@
   function dockInto(id, into, at) {
     const r = R[id], d = R[into]; if (!r || !d || !canDock(id, into, (k) => (R[k] ? R[k].docker : null))) return;
     if (!r.win) makeWin(r);
+    if (r.state === "zone") leaveZone(r);               // 2.609.0
+    delete r.zoneWant;
     if (r.docker) undock(r);
     if (r.kind === "panel" && r.el.parentNode !== r.win.querySelector(".h3fp-b")) r.win.querySelector(".h3fp-b").appendChild(r.el);
     r.docker = into; r.state = "in";
@@ -385,10 +434,11 @@
       if (lay && Array.isArray(lay.tabs)) for (const t of lay.tabs) if (R[t] && !(R[t].docker === id)) dockInto(t, id);   // members registered before it
     } finally { restoring--; }
     if (lay && lay.active && R[lay.active]) { r.active = lay.active; paintTabs(r); }
+    if (lay && lay.state === "zone" && lay.zone && lay.zone.host) { restoring++; try { zoneInto(id, lay.zone.host, lay.zone.key); } finally { restoring--; } }   // 2.609.0
     save();
     return r;
   }
-  function show(id, on) { const r = R[id]; if (!r || !r.win) return; if (on && r.state !== "in") { r.win.classList.remove("off"); keepRect(r); } else if (!on) r.win.classList.add("off"); save(); }
+  function show(id, on) { const r = R[id]; if (!r || !r.win) return; if (on && r.state === "zone") { r.win.classList.remove("off"); save(); return; } if (on && r.state !== "in") { r.win.classList.remove("off"); keepRect(r); } else if (!on) r.win.classList.add("off"); save(); }
   /** the app's own text box (askText, index.html) - centred like every dialog; the browser's prompt without it */
   function ask(title, label, value) {
     if (typeof root.askText === "function") return Promise.resolve(root.askText(title, label, value));
@@ -455,6 +505,7 @@
       const lay = (LAY.panels || {})[o.id];
       if (lay && lay.grow > 0) r.grow = lay.grow;                       // 2.545.0
       if (lay && lay.state === "float") float(o.id, { x: lay.x, y: lay.y, w: lay.w, h: lay.h });
+      else if (lay && lay.state === "zone" && lay.zone && lay.zone.host) { Object.assign(r, { x: lay.x, y: lay.y, w: lay.w, h: lay.h }); zoneInto(o.id, lay.zone.host, lay.zone.key); }   // 2.609.0
       else if (lay && lay.state === "in" && R[lay.docker]) {
         // 2.545.0: back in its place among the ones already there (they register in any order)
         const want0 = (LAY.dockers[lay.docker] || {}).tabs || [], i0 = want0.indexOf(o.id), there = R[lay.docker].tabs || [];
@@ -483,6 +534,9 @@
     const o = { panels: {}, dockers: {} };
     for (const r of Object.values(R)) {
       const s = { state: r.state, docker: r.docker || null, x: r.x, y: r.y, w: r.w, h: r.h };
+      // 2.609.0: in a zone host - which, and where (its place now); still waiting for its host = what it was
+      if (r.state === "zone" && r.zone) { const h = ZONES.find((z) => z.id === r.zone.host); s.zone = { host: r.zone.host, key: (h && h.keyOf ? h.keyOf(r.id) : null) || r.zone.key || "end" }; }
+      else if (r.zoneWant) { s.state = "zone"; s.zone = Object.assign({}, r.zoneWant); }
       if (r.grow > 0 && r.grow !== 1) s.grow = r.grow;                 // 2.545.0: its share of a row / column
       if (r.kind === "panel") o.panels[r.id] = s;
       else {
@@ -544,7 +598,7 @@
     root.addEventListener("pointerdown", () => { down = true; }, true); root.addEventListener("pointerup", () => { down = false; }, true);
   }
 
-  const H3Panels = { setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+  const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     restoring: () => restoring > 0, keepTabs, flush,   // 2.575.0
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;

@@ -2999,6 +2999,7 @@
     if (win.PCSubject && win.PCSubject.install) win.PCSubject.install(E);   // 2.488.0: Select ▸ Subject (built in / AI matte), Layer ▸ Remove Background (pcsubject.js)
     if (win.PCUELive && win.PCUELive.install) win.PCUELive.install(E);   // 2.590.0: 📺 the Unreal View - the active Unreal layer's camera, live (pcuelive.js)
     if (win.PCTabDock && win.PCTabDock.install) win.PCTabDock.install(E); // 2.590.0: every tab is a docker - drag it out to float, onto a docker to tab it (pctabdock.js) - LAST: every tab exists
+    if (win.PCColDock && win.PCColDock.install) win.PCColDock.install(E); // 2.609.0: the panel column takes ANY floating docker (main dockers, ▣ dockers, Basic Settings, the prompt docker, ⏳ Pending) - kept
     if (win.PCUELive && win.PCUELive.placeFirst) win.PCUELive.placeFirst(E);
 
     paintCtlTypes();

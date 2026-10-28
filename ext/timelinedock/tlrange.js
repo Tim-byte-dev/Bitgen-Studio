@@ -67,7 +67,8 @@
     var d = document.createElement("div"); d.className = "tlrsel";
     d.style.left = (labw() + s.a * pxs()) + "px"; d.style.width = Math.max(2, (s.b - s.a) * pxs()) + "px";
     d.innerHTML = '<span class="lab"></span>';
-    d.querySelector(".lab").textContent = label(T.selLayer) + " " + (s.b - s.a).toFixed(2) + " s";
+    d.querySelector(".lab").textContent = label(T.selLayer) + " " + (s.frame && root.TlFrame ? "▯ " + TlFrame.describe(s, fps()) : (s.b - s.a).toFixed(2) + " s");
+    if (s.frame) d.classList.add("tlfsel");
     d.title = "The range on " + label(T.selLayer) + " - ✂ Cut removes it from this layer only (Ctrl+Z undoes)";
     tr.appendChild(d);
   }
@@ -80,6 +81,7 @@
   var drag = null, fresh = false;
   function onDown(e) {
     if (!e.shiftKey || e.button !== 0) return;
+    if (root.TlEdit && TlEdit.mode && TlEdit.mode() === "frame") return;   // 2.611.0: ▯ Frame's own Shift+click (tlframe.js)
     var inner = e.target && e.target.closest && e.target.closest("#tlinner"); if (!inner) return;
     var tr = e.target.closest(".tltrack[data-lk]");
     if (!tr || e.target.closest(".tlab, button, input, select, [contenteditable], .cx, .sh, #playhead, #playcursor, .mchip, .tlruler")) return;   // a clip's trim handles too (a narrow clip is all handles)
