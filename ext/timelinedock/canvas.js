@@ -409,7 +409,9 @@
       var vv = video(c); src = vv; w = vv.videoWidth || S.W; h = vv.videoHeight || S.H;
     } else if (c.text) {
       // the SIZE comes from the static text (a colour tween never changes it); the picture from the colour at t
-      if (window.TlTextAnim && TlTextAnim.live(c)) {   // 2.493.0: TEXT ANIMATORS - each letter drawn on its own (tltextanim.js)
+      if (window.TlTextFill && TlTextFill.ready && TlTextFill.live(c)) {   // 2.608.0: 🔤 in a shape - stretched / flowed in its outline (tltextfill.js)
+        src = TlTextFill.picture(c, Math.max(0, (t == null ? S.t : t) - (c.start || 0))); w = src.width; h = src.height;
+      } else if (window.TlTextAnim && TlTextAnim.live(c)) {   // 2.493.0: TEXT ANIMATORS - each letter drawn on its own (tltextanim.js)
         src = TlTextAnim.picture(c, Math.max(0, (t == null ? S.t : t) - (c.start || 0))); w = src.width; h = src.height;
       } else {
       var base = renderText(c.text); src = renderText(textAt(c, t));

@@ -20,11 +20,15 @@
   "use strict";
 
   /* ================================ pure ================================ */
-  const WARPS = [["none", "None"], ["arc", "Arc"], ["arcLower", "Arc Lower"], ["arcUpper", "Arc Upper"], ["arch", "Arch"], ["bulge", "Bulge"],
-    ["flag", "Flag"], ["wave", "Wave"], ["fish", "Fish"], ["rise", "Rise"], ["squeeze", "Squeeze"], ["inflate", "Inflate"]];
+  // 2.608.0: the warp styles live in static/warpstyles.js (H3Warps - the timeline uses them too): + Shell Lower, Shell Upper,
+  // Fisheye, Twist, Wedge. Fisheye / Twist / the shells move sideways too: drawn through a triangle mesh
+  const H3W = root.H3Warps || (typeof require === "function" ? (() => { try { return require("../../static/warpstyles.js"); } catch (e) { return null; } })() : null);
+  const WARPS = [["none", "None"]].concat(H3W ? H3W.STYLES : [["arc", "Arc"], ["arcLower", "Arc Lower"], ["arcUpper", "Arc Upper"], ["arch", "Arch"], ["bulge", "Bulge"],
+    ["flag", "Flag"], ["wave", "Wave"], ["fish", "Fish"], ["rise", "Rise"], ["squeeze", "Squeeze"], ["inflate", "Inflate"]]);
   /** a column at u (-1 left .. 1 right) of a warped block: [top, bottom] moves as fractions of the block's height
    *  (negative = up). bend -100 .. 100 */
   function warpColumn(style, bend, u) {
+    if (H3W) return H3W.column(style, bend, u);
     const b = Math.max(-100, Math.min(100, +bend || 0)) / 100, c = 1 - u * u, s = Math.sin(u * Math.PI);
     switch (style) {
       case "arc": return [-b * c * 0.5, -b * c * 0.5];
@@ -41,11 +45,12 @@
       default: return [0, 0];
     }
   }
-  /** how far a warp reaches above / below the block (fractions of its height) */
-  function warpExtent(style, bend) {
+  /** how far a warp reaches above / below the block (fractions of its height) - 2.608.0: + left / right (the 2D styles) */
+  function warpExtent(style, bend, asp) {
+    if (H3W && !H3W.isColumn(style)) return H3W.extent(style, bend, asp);
     let up = 0, down = 0;
     for (let i = 0; i <= 40; i++) { const [a, b] = warpColumn(style, bend, -1 + i / 20); up = Math.min(up, a, b); down = Math.max(down, a, b); }
-    return { up: -up, down };
+    return { up: -up, down, left: 0, right: 0 };
   }
   /** a smooth line through the points (Catmull-Rom), `steps` per span */
   function catmull(pts, steps) {
@@ -138,8 +143,11 @@
   const strOf = (t) => (t.caps ? String(t.str || "").toUpperCase() : String(t.str || ""));
   const warpOn = (t) => !!(t.warp && t.warp.style && t.warp.style !== "none" && +t.warp.bend);
   const extOn = (t) => !!(t.extrude && t.extrude.on && +t.extrude.depth > 0);
+  /** 2.608.0: STRETCHED INTO A SHAPE - t.env.poly (the outline, relative to t.x / t.y): static/textfill.js */
+  const envOn = (t) => !!(t && t.env && Array.isArray(t.env.poly) && t.env.poly.length > 2);
+  const envPoly = (t) => t.env.poly.map(([x, y]) => [t.x + x, t.y + y]);
   /** does this text need pctext.js to draw it? */
-  function wants(t) { return !!t && !!(t.caps || t.underline || t.strike || t.vertical || warpOn(t) || polyOf(t) || extOn(t)); }
+  function wants(t) { return !!t && !!(t.caps || t.underline || t.strike || t.vertical || warpOn(t) || polyOf(t) || extOn(t) || envOn(t)); }
   function scalePath(t, kx, ky) {
     const p = t.path; if (!p) return;
     if (p.kind === "curve" && Array.isArray(p.pts)) p.pts = p.pts.map((q) => [q[0] * kx, q[1] * ky]);
@@ -185,8 +193,9 @@
   /** the box a text covers in picture px (path, warp, vertical, 3D included) */
   function box(t, g) {
     let b;
-    const pp = pathPlaces(t, g);
-    if (pp) {
+    const pp = envOn(t) ? null : pathPlaces(t, g);
+    if (envOn(t)) { const F = root.H3TextFill || (typeof require === "function" ? require("../../static/textfill.js") : null); b = F.polyBox(envPoly(t)); }
+    else if (pp) {
       let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
       const asc = t.size * 0.85, desc = t.size * 0.25;
       for (const p of pp.places) {
@@ -201,7 +210,7 @@
     } else if (t.vertical) b = verticalBox(t);
     else {
       b = straightBox(t, g);
-      if (warpOn(t)) { const e = warpExtent(t.warp.style, t.warp.bend); b = { x: b.x, y: b.y - e.up * b.h, w: b.w, h: b.h * (1 + e.up + e.down) }; }
+      if (warpOn(t)) { const e = warpExtent(t.warp.style, t.warp.bend, b.w / Math.max(1, b.h)); b = { x: b.x - e.left * b.w, y: b.y - e.up * b.h, w: b.w * (1 + e.left + e.right), h: b.h * (1 + e.up + e.down) }; }
     }
     if (extOn(t)) {
       const s = extrudeSteps(t.extrude.depth, t.extrude.angle, 0)[0];
@@ -261,6 +270,14 @@
     const tg = T.getContext("2d");
     drawBlock(tg, t, t.x - b.x + m, m);
     const H = T.height;
+    if (H3W && !H3W.isColumn(t.warp.style) && H3W.mesh) {        // 2.608.0: Fisheye / Twist / the shells - through a mesh
+      const asp = b.w / Math.max(1, b.h), st = t.warp.style, bend = t.warp.bend;
+      H3W.mesh(g, T, 0, 0, T.width, H, 40, (u, v) => {
+        const x = u * T.width - m, y = v * H - m, d = H3W.point(st, bend, x / Math.max(1, b.w) * 2 - 1, y / Math.max(1, b.h), asp);
+        return [b.x + x + d[0] * b.w, b.y + y + d[1] * b.h];
+      });
+      return;
+    }
     for (let x = 0; x < T.width; x++) {
       const u = Math.max(-1, Math.min(1, ((x - m) / Math.max(1, b.w)) * 2 - 1)), [a, c] = warpColumn(t.warp.style, t.warp.bend, u);
       const top = b.y - m + a * b.h, bot = b.y - m + H + c * b.h;
@@ -268,8 +285,20 @@
     }
   }
   /** the face (no 3D) into g */
+  /** 2.608.0: the straight block stretched into the outline, column by column (its ink fills it top to bottom) */
+  function drawEnvelope(g, t) {
+    const F = root.H3TextFill, flat = Object.assign({}, t, { env: null });
+    const b = straightBox(flat, g), m = Math.ceil(t.size * 0.4), T = newCanvas(b.w + 2 * m, b.h + 2 * m); if (!T || !F) return drawBlock(g, flat, t.x, t.y);
+    drawBlock(T.getContext("2d"), flat, t.x - b.x + m, m);
+    const d = T.getContext("2d").getImageData(0, 0, T.width, T.height).data, W = T.width;
+    let x0 = W, y0 = T.height, x1 = -1, y1 = -1;
+    for (let i = 3; i < d.length; i += 4) if (d[i] > 8) { const k = (i - 3) / 4, x = k % W, y = (k - x) / W; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return;
+    F.drawEnvelope(g, T, { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 }, envPoly(t));
+  }
   function drawFace(g, t) {
-    if (polyOf(t)) drawPath(g, t);
+    if (envOn(t)) drawEnvelope(g, t);
+    else if (polyOf(t)) drawPath(g, t);
     else if (t.vertical) drawVertical(g, t);
     else if (warpOn(t)) drawWarped(g, t);
     else drawBlock(g, t, t.x, t.y);
@@ -317,7 +346,8 @@
     T.type.options = function () {
       const L = curText(), t = L ? L.text : null;
       return baseOpt.call(this) + `<span class="sep"></span>` + TOG.map(([k, lab, tip]) => `<button class="ghost pttog${(t ? t[k] : S["type_" + k]) ? " on" : ""}" data-tg="${k}" title="${tip}">${lab}</button>`).join("")
-        + `<button class="ghost" id="ptShape" title="Warp the text, put it round a circle or along a path, make it 3D">⌒ Shape / 3D…</button>`;
+        + `<button class="ghost" id="ptShape" title="Warp the text, put it round a circle or along a path, make it 3D">⌒ Shape / 3D…</button>`
+        + (L ? `<button class="ghost" id="ptWarpGrid" title="⌗ Warp Grid - drag the grid's points to bend the text by hand (it stays text); 16 presets">⌗ Warp Grid</button>` : "");   // 2.608.0
     };
     T.type.bindOptions = function (o) {
       baseBind.call(this, o);
@@ -327,6 +357,7 @@
         E.renderOptions();
       }; });
       const sh = o.querySelector("#ptShape"); if (sh) sh.onclick = () => shapeDialog();
+      const wg = o.querySelector("#ptWarpGrid"); if (wg) wg.onclick = () => { if (E.endText) E.endText(); if (E.quadTransform) E.quadTransform("warp"); };
     };
     // new text picks up the toggles
     const baseDown = T.type.down;
@@ -464,6 +495,7 @@
             const tt = y.text, m = q("tsMode").value, sb = straightBox(Object.assign({}, tt, { path: null, warp: null, extrude: null }), ctx(y.canvas));
             const wasCircle = tt.path && tt.path.kind === "circle";
             tt.warp = m === "warp" ? { style: q("tsWS").value, bend: +q("tsWBn").value || 0 } : null;
+            if (m !== "none" && tt.env) tt.env = null;      // 2.608.0: a warp / circle / path replaces the stretch into a shape
             if (m === "circle") {
               const r = Math.max(10, +q("tsCRn").value || 160);
               if (!wasCircle) { tt.align = "center"; tt.x = Math.round(sb.x + sb.w / 2); tt.y = Math.round(sb.y + r + tt.size); }
@@ -496,7 +528,7 @@
     void store; void $;
   }
 
-  const api = { WARPS, warpColumn, warpExtent, catmull, circlePoly, arcTable, pointAt, layoutPath, polyOf, simplify, extrudeSteps, wants, scalePath,
+  const api = { envOn, WARPS, warpColumn, warpExtent, catmull, circlePoly, arcTable, pointAt, layoutPath, polyOf, simplify, extrudeSteps, wants, scalePath,
     box, straightBox, draw, install, darker, hit };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.PCText = api;

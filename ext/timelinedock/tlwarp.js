@@ -35,7 +35,16 @@
       var id = Math.round(nm(p.id, 0, 0, 1e6)); while (seen[id]) id++; seen[id] = 1;
       pins.push({ id: id, x: nm(p.x, 0.5, -1, 2), y: nm(p.y, 0.5, -1, 2), dx: nm(p.dx, 0, -3, 3), dy: nm(p.dy, 0, -3, 3) });
     });
-    return { on: w.on !== false, cols: cols, rows: rows, mesh: mesh, pins: pins, detail: Math.round(nm(w.detail, 24, 4, 48)), falloff: nm(w.falloff, 1.5, 0.5, 4) };
+    var o = { on: w.on !== false, cols: cols, rows: rows, mesh: mesh, pins: pins, detail: Math.round(nm(w.detail, 24, 4, 48)), falloff: nm(w.falloff, 1.5, 0.5, 4) };
+    if (typeof w.ps === "string" && /^[a-zA-Z]{2,20}$/.test(w.ps)) { o.ps = w.ps; o.pb = nm(w.pb, 50, -100, 100); }   // 2.608.0: the preset it came from
+    return o;
+  }
+  /** 2.608.0 (Tim: "5 more preset warps and an interactive warp grid for text and shapes"): a WARP PRESET as the mesh -
+   *  each grid point where the style (static/warpstyles.js point()) sends it; asp = the picture's width / height */
+  function presetMesh(W3, style, bend, cols, rows, asp) {
+    var m = [];
+    for (var j = 0; j <= rows; j++) for (var i = 0; i <= cols; i++) { var d = W3.point(style, bend, i / cols * 2 - 1, j / rows, asp); m.push([r5(d[0]), r5(d[1])]); }
+    return m;
   }
   var live = function (c) { var o = clean(c && c.warp); return !!(o && o.on && (o.pins.length || o.mesh)); };
   var nextId = function (o) { return o.pins.reduce(function (m, p) { return Math.max(m, p.id + 1); }, 1); };
@@ -112,7 +121,7 @@
     if (fu + fv <= 1) T = [A, B, C, fu, fv]; else T = [D, C, B, 1 - fu, 1 - fv];
     return [T[0][0] + (T[1][0] - T[0][0]) * T[3] + (T[2][0] - T[0][0]) * T[4], T[0][1] + (T[1][1] - T[0][1]) * T[3] + (T[2][1] - T[0][1]) * T[4]];
   }
-  var pure = { DEFAULTS: DEFAULTS, clean: clean, live: live, nextId: nextId, stateAt: stateAt, mls: mls, meshOff: meshOff, deform: deform, overscan: overscan, affine: affine, mapPoint: mapPoint, r5: r5 };
+  var pure = { presetMesh: presetMesh, DEFAULTS: DEFAULTS, clean: clean, live: live, nextId: nextId, stateAt: stateAt, mls: mls, meshOff: meshOff, deform: deform, overscan: overscan, affine: affine, mapPoint: mapPoint, r5: r5 };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   /* ---------------- the page ---------------- */
@@ -260,8 +269,27 @@
           + '<div class="tlp-row"><label><input type="checkbox" id="tlpWpMesh"' + (o.mesh ? " checked" : "") + "> ⌗ Mesh warp</label>"
           + (o.mesh ? '<label>columns <input type="number" data-wp="cols" value="' + o.cols + '" min="1" max="8" style="width:40px"></label><label>rows <input type="number" data-wp="rows" value="' + o.rows + '" min="1" max="8" style="width:40px"></label><button class="ghost" id="tlpWpReset" title="Put every mesh point back">reset</button>' : "") + "</div>";
       }
+      // 2.608.0: a warp PRESET (16 - Arc … Shell, Fisheye, Twist, Wedge) as an editable mesh grid
+      var W3 = window.H3Warps;
+      if (W3) h += '<div class="tlp-row" style="flex-wrap:wrap"><span title="Bend the layer by a preset - its points then drag with 📌 (the grid stays editable)">⌇ Preset</span><select id="tlpWpPs"><option value="">' + (o && o.ps ? "" : "(pick one)") + "</option>"
+        + W3.STYLES.map(function (st) { return '<option value="' + st[0] + '"' + (o && o.ps === st[0] ? " selected" : "") + ">" + st[1] + "</option>"; }).join("") + "</select>"
+        + '<label>bend <input type="number" id="tlpWpPb" value="' + (o && o.ps ? o.pb : 50) + '" min="-100" max="100" step="5" style="width:52px"> %</label></div>';
       d.innerHTML = h; Pn.appendChild(d);
       var q = function (id) { return d.querySelector("#" + id); };
+      if (q("tlpWpPs")) {
+        var applyPs = function () {
+          var st = q("tlpWpPs").value; if (!st) return;
+          var b = C.box(c, s.Ly.kind, C.state.t), asp = b && b.h ? b.w / b.h : 1, bend = Math.max(-100, Math.min(100, +q("tlpWpPb").value || 0));
+          var w = clean(c.warp) || clean(DEFAULTS); w.cols = 8; w.rows = 4; w = clean(w);
+          w.mesh = presetMesh(W3, st, bend, w.cols, w.rows, asp); w.ps = st; w.pb = bend; w.on = true;
+          dropKeys(c, /^wm\d+[xy]$/); c.warp = w; C.setTool("puppet");
+          say("⌇ " + (W3.STYLES.filter(function (x) { return x[0] === st; })[0] || [0, st])[1] + " " + bend + " % - drag the grid's points with 📌 to shape it further");
+          changed(c, true);
+        };
+        q("tlpWpPs").addEventListener("change", applyPs);
+        q("tlpWpPb").addEventListener("change", applyPs);
+        q("tlpWpPb").addEventListener("keydown", function (e) { e.stopPropagation(); });
+      }
       if (q("tlpWpTool")) q("tlpWpTool").addEventListener("click", function () { C.setTool("puppet"); say("📌 Puppet: click on the layer for pins, drag a pin to bend it"); });
       if (q("tlpWpOn")) q("tlpWpOn").addEventListener("change", function () { c.warp.on = q("tlpWpOn").checked; changed(c, false); });
       var flat = function (w) { var n = (w.cols + 1) * (w.rows + 1), m = []; for (var k = 0; k < n; k++) m.push([0, 0]); return m; };

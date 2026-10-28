@@ -344,6 +344,8 @@
             if (s.grad) { var gr = g.createLinearGradient(-s.w / 2, 0, s.w / 2, 0); gr.addColorStop(0, s.fill); gr.addColorStop(1, s.fill2); g.fillStyle = gr; } else g.fillStyle = s.fill;
             var ga = g.globalAlpha; g.globalAlpha = ga * Math.max(0, Math.min(1, s.fillOp / 100)); g.fill("evenodd"); g.globalAlpha = ga;
           }
+          // 2.608.0 (Tim: "can we fill shapes with text"): 🅰 the text repeated in rows inside the shape (static/textfill.js)
+          if (s.tfill && s.tfill.on && G.closed && window.H3TextFill) { g.save(); g.clip("evenodd"); H3TextFill.repeatAt(g, s.tfill, 0, 0, Math.max(s.w, s.h, R)); g.restore(); }
           if (s.strokeW > 0) { g.lineWidth = s.strokeW / Math.max(0.01, cp.scale); g.strokeStyle = s.stroke; g.lineCap = s.cap || "round"; g.lineJoin = "round"; g.stroke(); }
         });
         g.restore();
@@ -420,6 +422,11 @@
       var h = '<div class="tlp-t">◆ Shape</div><div class="tlp-row" style="flex-wrap:wrap"><select id="tlpShKind">' + [["rect", "Rectangle"], ["ellipse", "Ellipse"], ["star", "Star"], ["polygon", "Polygon"]].concat(s.kind === "path" ? [["path", "Freehand path"]] : []).map(function (k) { return '<option value="' + k[0] + '"' + (s.kind === k[0] ? " selected" : "") + ">" + k[1] + "</option>"; }).join("") + "</select>"
         + numRow(c, tau, "w", "W", s) + numRow(c, tau, "h", "H", s) + (s.kind === "rect" ? numRow(c, tau, "radius", "radius", s) : "") + (s.kind === "star" || s.kind === "polygon" ? numRow(c, tau, "points", "points", s) : "") + (s.kind === "star" ? numRow(c, tau, "inner", "inner", s) : "") + "</div>"
         + '<div class="tlp-row" style="flex-wrap:wrap"><span>Fill</span><input type="color" data-shc="fill" value="' + esc(s.fill) + '"><label><input type="checkbox" data-shb="grad"' + (s.grad ? " checked" : "") + '> gradient</label><input type="color" data-shc="fill2" value="' + esc(s.fill2) + '">' + numRow(c, tau, "fillOp", "%", s) + "</div>"
+        // 2.608.0: 🅰 the shape filled with text (rows)
+        + (function () { var tf = s.tfill || {}; return '<div class="tlp-row" style="flex-wrap:wrap"><label title="Fill the shape with the text repeated in rows (on top of its colour - set the fill % to 0 for text only)"><input type="checkbox" id="tlpShTf"' + (tf.on ? " checked" : "") + "> 🅰 Text fill</label>"
+          + (tf.on ? '<input type="text" data-shtf="str" value="' + esc(tf.str || "TEXT") + '" style="width:110px" title="The text"><select data-shtf="font" class="h3-font" title="Font">' + ["Arial", "Arial Black", "Impact", "Georgia", "Times New Roman", "Verdana", "Trebuchet MS", "Courier New"].concat(["Arial", "Arial Black", "Impact", "Georgia", "Times New Roman", "Verdana", "Trebuchet MS", "Courier New"].indexOf(tf.font || "Arial") < 0 ? [tf.font] : []).map(function (f) { return "<option" + (f === (tf.font || "Arial") ? " selected" : "") + ">" + esc(f) + "</option>"; }).join("") + "</select>"
+            + '<label>size <input type="number" data-shtf="size" value="' + (tf.size || 24) + '" min="4" max="400" style="width:50px"></label><input type="color" data-shtf="color" value="' + esc(tf.color || "#ffffff") + '" title="Text colour">'
+            + '<label>angle <input type="number" data-shtf="angle" value="' + (+tf.angle || 0) + '" min="-90" max="90" style="width:46px"></label><label><input type="checkbox" data-shtf="bold"' + (tf.bold !== false ? " checked" : "") + "> bold</label>" : "") + "</div>"; })()
         + '<div class="tlp-row" style="flex-wrap:wrap"><span>Stroke</span><input type="color" data-shc="stroke" value="' + esc(s.stroke) + '">' + numRow(c, tau, "strokeW", "px", s) + '<select data-shs="cap"><option value="round"' + (s.cap === "round" ? " selected" : "") + '>round ends</option><option value="butt"' + (s.cap === "butt" ? " selected" : "") + '>flat ends</option><option value="square"' + (s.cap === "square" ? " selected" : "") + ">square ends</option></select></div>";
       // 2.496.0: ⧉ more paths in this layer + ⊕ Merge Paths
       var KINDS = [["rect", "Rectangle"], ["ellipse", "Ellipse"], ["star", "Star"], ["polygon", "Polygon"], ["path", "Freehand"]], more = Array.isArray(c.shape.more) ? c.shape.more : [];
@@ -438,6 +445,15 @@
       d.innerHTML = h; P.appendChild(d);
       var save = function (repaint) { delete c.bakeSig; if (typeof tlSave === "function") tlSave(); C.mark(); if (repaint) C.paintProps(); };
       var setNum = function (k, v) { if (!Number.isFinite(v)) return; if (KF.has(c.kf, "sh_" + k)) { var o = {}; o["sh_" + k] = v; c.kf = KF.set(c.kf, C.tauOf(c, sel.Ly.kind), o, FPS); } else c.shape[k] = v; };
+      // 2.608.0: 🅰 text fill
+      d.querySelector("#tlpShTf").addEventListener("change", function (e) { c.shape.tfill = Object.assign({ str: "TEXT", font: "Arial", size: 24, color: "#ffffff", angle: 0, bold: true }, c.shape.tfill || {}, { on: e.target.checked }); save(true); });
+      d.querySelectorAll("[data-shtf]").forEach(function (el) {
+        el.addEventListener("keydown", function (e) { e.stopPropagation(); });
+        el.addEventListener(el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input", function () {
+          var k = el.dataset.shtf, v = el.type === "checkbox" ? el.checked : el.type === "number" ? +el.value : el.value; if (el.type === "number" && !Number.isFinite(v)) return;
+          c.shape.tfill = Object.assign({}, c.shape.tfill || {}); c.shape.tfill[k] = v; save(false);
+        });
+      });
       d.querySelector("#tlpShKind").addEventListener("change", function (e) { c.shape.kind = e.target.value; if (e.target.value !== "path") lastKind = e.target.value; save(true); });
       d.querySelector("#tlpShPAdd").addEventListener("click", function () { var k = d.querySelector("#tlpShPk").value, n = (c.shape.more = c.shape.more || []).length; c.shape.more.push({ kind: k, w: 100, h: 100, x: 60 + 20 * n, y: 20 * n, rot: 0, mode: "add", points: 5, inner: 0.45 }); save(true); say("⧉ path " + (n + 2) + " - its size, place and mode below; ⊕ Merge Paths combines them"); });
       d.querySelectorAll("[data-shp]").forEach(function (el) { el.addEventListener("input", function () { var nk = el.dataset.shp.split(":"), q = c.shape.more[+nk[0]], v = +el.value; if (!q || !Number.isFinite(v)) return; if ((nk[1] === "w" || nk[1] === "h") && q.kind === "path") { /* a freehand path keeps its own drawing - pw / ph stay */ } q[nk[1]] = v; save(false); }); });

@@ -78,6 +78,7 @@
     "tlcutout.js",
     "tlcamtrack.js",
     "tlvfill.js",
-    "tlanykey.js"
+    "tlanykey.js",
+    "tltextfill.js"
   ]
 }

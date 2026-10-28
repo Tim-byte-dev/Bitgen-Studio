@@ -12636,6 +12636,14 @@ node scripts/test-fx607.js > /tmp/fx607.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui607-ui.js > /tmp/ui607.log 2>&1 \
   && ok "2.607.0 browser test: a Gold text stays gold warped / 3D / round a circle / vertical (image editor), the font lists have every font here, timeline New text ▸ Preset, animators + on a path keep the preset, 3D text with a preset - or SKIP without playwright" \
   || { bad "2.607.0 presets / fonts browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui607.log | head -14; }
+# ---- 2.608.0 (Tim: "can we fill shapes with text, please add 5 more preset warps and an interactive warp grid for text and
+# shapes")
+node scripts/test-warp608.js > /tmp/w608.log 2>&1 \
+  && ok "2.608.0 16 warp presets, the warp grid on text / shape layers, shapes filled with text (flow / stretch / repeat) - the pure part + the wiring" \
+  || { bad "2.608.0 warps / text fill units"; grep -a "^FAIL" -A2 /tmp/w608.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui608-ui.js > /tmp/ui608.log 2>&1 \
+  && ok "2.608.0 browser test: the 5 new warps, ⌗ Warp Grid on a text (re-typed, undo) and a shape, 🅰 Fill Shape with Text (repeat / flow / stretch), the timeline's Text fill, 🔤 In a shape, ⌇ warp Preset, each font's name in its own font - or SKIP without playwright" \
+  || { bad "2.608.0 warps / text fill browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui608.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

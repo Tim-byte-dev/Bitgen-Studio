@@ -17,7 +17,7 @@ const near = (a, b, t) => Math.abs(a - b) <= (t == null ? 1e-6 : t);
 const T = X("pctext.js"), P = X("pcstyles.js"), F = X("filters.js"), D = X("pcdoc.js");
 
 /* ---------------- 1. text: warp ---------------- */
-check("warp: 11 styles + None (Photoshop's list)", T.WARPS.length === 12 && T.WARPS.map(([k]) => k).join() === "none,arc,arcLower,arcUpper,arch,bulge,flag,wave,fish,rise,squeeze,inflate");
+check("warp: 16 styles + None (Photoshop's list + 2.608.0's Shell Lower / Upper, Fisheye, Twist, Wedge)", T.WARPS.length === 17 && T.WARPS.map(([k]) => k).join() === "none,arc,arcLower,arcUpper,arch,bulge,shellLower,shellUpper,flag,wave,fish,rise,fisheye,inflate,squeeze,twist,wedge");
 check("warpColumn: Arc lifts the middle half a height at bend 100, the ends stay; bend 0 / None = no move; bend clamps",
   T.warpColumn("arc", 100, 0).every((v) => near(v, -0.5)) && T.warpColumn("arc", 100, 1).every((v) => near(v, 0)) && T.warpColumn("arc", 0, 0).every((v) => near(v, 0))
   && T.warpColumn("none", 100, 0).every((v) => near(v, 0)) && near(T.warpColumn("arc", 500, 0)[0], -0.5));

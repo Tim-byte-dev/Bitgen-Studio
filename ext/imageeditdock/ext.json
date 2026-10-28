@@ -25,6 +25,8 @@
     "pcotype.js",
     "pcruns.js",
     "pcfxshape.js",
+    "pctextfill.js",
+    "pclivewarp.js",
     "pcpen.js",
     "pcvline.js",
     "pcdraw.js",

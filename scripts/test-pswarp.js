@@ -32,7 +32,7 @@ check("patchFromQuad: on a parallelogram the patch IS the quad (every point), on
   && [[0, 0], [1, 0], [1, 1], [0, 1]].every((u, i) => nearP(X.patchPoint(X.patchFromQuad(Q4), u[0], u[1]), Q4[i], 1e-9)));
 const arc = X.patchPreset(X.rectQuad(0, 0, 300, 100), "arc", 50), flat = X.patchPreset(X.rectQuad(0, 0, 300, 100), "custom", 0);
 check("warp presets: Arc 50 lifts the top middle by a quarter of the height and keeps the corners; Custom = the quad", near(X.patchPoint(arc, 0.5, 0)[1], -18.75, 1e-6) === false && X.patchPoint(arc, 0.5, 0)[1] < -15
-  && nearP(X.patchPoint(arc, 0, 0), [0, 0], 1e-9) && nearP(X.patchPoint(arc, 1, 1), [300, 100], 1e-9) && nearP(X.patchPoint(flat, 0.5, 0.5), [150, 50], 1e-9) && X.WARP_STYLES.length === 12,
+  && nearP(X.patchPoint(arc, 0, 0), [0, 0], 1e-9) && nearP(X.patchPoint(arc, 1, 1), [300, 100], 1e-9) && nearP(X.patchPoint(flat, 0.5, 0.5), [150, 50], 1e-9) && X.WARP_STYLES.length === 17,
   X.patchPoint(arc, 0.5, 0));
 const mq = X.quadMesh(Q4, 8), mp = X.patchMesh(arc, 10);
 check("meshes: (n+1)² points, src in 0..1, dst through the quad / the patch", mq.src.length === 81 && mp.dst.length === 121 && nearP(mq.dst[80], Q4[2], 1e-6) && nearP(mq.src[40], [0.5, 0.5]));

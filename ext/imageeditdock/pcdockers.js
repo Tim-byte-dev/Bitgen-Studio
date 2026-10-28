@@ -149,6 +149,7 @@
     const leaves = (L) => (L.type === "group" ? D.descendants(S.layers, L.id).filter((x) => x.type !== "group" && !(root.PCFrames && root.PCFrames.underFrame(S.layers, x, L.id))) : [L]);
     function boxOf(L) {
       if (L.type === "group") { const bs = leaves(L).map(boxOf).filter(Boolean); return bs.length ? union(bs) : null; }
+      if (L.type === "shape" && L.shape && L.shape.mesh && L.shape._wbox) return L.shape._wbox;   // 2.608.0: a warp grid's bounds
       if (L.type === "shape" && L.shape) { if (L.shape.kind === "path") return Q.bbox(L.shape.path); const s = L.shape; return { x: Math.min(s.x, s.x + s.w), y: Math.min(s.y, s.y + s.h), w: Math.abs(s.w), h: Math.abs(s.h) }; }
       if (L.type === "text" && L.text) return D.textBox(L.text, ctx(L.canvas));
       if (L.type === "pixel" || L.type === "smart" || L.type === "sketch") { const b = E.alphaBox(L.canvas); return b && b.w > 0 && b.h > 0 ? b : null; }

@@ -75,15 +75,25 @@
   }
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   /** a <select> of fonts: its own options stay as "Common", every family on this computer goes below them */
+  /* 2.608.0 - Tim (verbatim): "can you make the font in the fonts dropdown the same font as the name for easy preview".
+     Each font's name is written IN that font - the list's rows (static/selsearch.js reads an option's font-family), the
+     plain dropdown's options, and the closed list shows the picked one in its own font. */
+  var GEN_STACK = { serif: "serif", "sans-serif": "sans-serif", monospace: "monospace", cursive: "cursive", fantasy: "fantasy", "system-ui": "system-ui" };
+  function familyCss(f) { f = String(f || ""); return GEN_STACK[f.toLowerCase()] || ('"' + f.replace(/["\\]/g, "") + '", sans-serif'); }
+  function preview(sel) {
+    [].forEach.call(sel.options, function (o) { if (o.value) o.style.fontFamily = familyCss(o.value); });
+    sel.style.fontFamily = sel.value ? familyCss(sel.value) : "";
+  }
   function enhance(sel) {
     if (!sel || sel.tagName !== "SELECT" || sel.dataset.h3fontsDone) return;
-    sel.dataset.h3fontsDone = "1";
-    sel.addEventListener("change", function () { ensure(sel.value); });
+    sel.dataset.h3fontsDone = "1"; sel.dataset.fontPreview = "1";
+    preview(sel);
+    sel.addEventListener("change", function () { ensure(sel.value); sel.style.fontFamily = sel.value ? familyCss(sel.value) : ""; });
     load().then(function (fams) {
       if (!sel.isConnected || sel.querySelector("optgroup.h3f-more")) return;
       var cur = sel.value, own = [].map.call(sel.options, function (o) { return o.value; });
       var m = merge(own, fams);
-      if (!m.more.length) return;
+      if (!m.more.length) { preview(sel); return; }
       // the select's own options into a "Common" group (their text / values unchanged), the computer's below
       var g0 = doc.createElement("optgroup"); g0.label = "Common"; g0.className = "h3f-common";
       [].slice.call(sel.children).forEach(function (o) { if (o.tagName === "OPTION" && o.value !== "") g0.appendChild(o); });
@@ -94,6 +104,7 @@
       sel.value = cur;
       if (sel.value !== cur && cur) { var o = doc.createElement("option"); o.value = cur; o.textContent = cur; g0.appendChild(o); sel.value = cur; }
       sel.title = (sel.title ? sel.title.replace(/ - \d+ fonts.*$/, "") + " - " : "") + (m.common.length + m.more.length) + " fonts (every font installed on this computer)";
+      preview(sel);
       if (cur) ensure(cur);
     });
   }
@@ -106,7 +117,7 @@
     new root.MutationObserver(soon).observe(doc.body, { childList: true, subtree: true });
     load();
   }
-  Object.assign(api, { load: load, ensure: ensure, enhance: enhance, drawable: drawable, families: function () { return list || []; } });
+  Object.assign(api, { familyCss: familyCss, preview: preview, load: load, ensure: ensure, enhance: enhance, drawable: drawable, families: function () { return list || []; } });
   root.H3Fonts = api;
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

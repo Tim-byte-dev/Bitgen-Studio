@@ -165,6 +165,8 @@
       var chain = [], p = x.c, n = 0;
       while (p && n++ < 33) { chain.push({ rays: p.rays || null, warp: p.warp || null, d3: p.d3 || null, gen: p.gen || null, dist: p.dist || null, tm: p.tm || null, pin: p.pin || null, masks: p.masks || null, expr: p.expr || null, tf: p.tf || null, kf: p.kf || null, start: p.start, len: p.len, text: p.text || null, name: p.name, op: p.opacity, fx: p.fx || null, shape: p.shape || null }); p = parentOf(p); }
       var scene = window.Tl3D && Tl3D.sceneSig ? Tl3D.sceneSig(x.c) : null;   // 2.510.0: a 3D card hangs on the camera / light / other cards
+      var ins = x.c.text && x.c.text.inshape ? byUid(x.c.text.inshape.uid) : null;   // 2.608.0: a text in a shape changes with that shape
+      if (ins) chain.push({ inshape: ins.shape || null, itf: ins.tf || null, ikf: ins.kf || null });
       return JSON.stringify(scene ? [chain, x.L.opacity, C.state.W, C.state.H, scene] : [chain, x.L.opacity, C.state.W, C.state.H]);
     }
     function bake(x, onProgress) {
@@ -195,7 +197,7 @@
     function bakeAll() {
       // 2.492.0: shape layers (tlshape.js) are baked the same way
       // 2.493.0: + text layers with text animators (tltextanim.js)
-      var anim = function (c) { return !!(window.TlTextAnim && TlTextAnim.live(c)); };
+      var anim = function (c) { return !!((window.TlTextAnim && TlTextAnim.live(c)) || (window.TlTextFill && TlTextFill.live(c))); };   // 2.608.0: + 🔤 text in a shape
       // 2.498.0: + picture / text layers with ✒ masks (tlmask.js)
       var masked = function (c) { return !!((window.TlMask && TlMask.live && TlMask.live(c)) || (c.pin && c.pin.on !== false) || (window.TlTime && TlTime.on && TlTime.on(c))
         || (window.TlGen && TlGen.live && TlGen.live(c)) || (window.TlDist && TlDist.live && TlDist.live(c)) || (window.TlRays && TlRays.live && TlRays.live(c)) || (window.TlWarp && TlWarp.live && TlWarp.live(c)) || (window.Tl3D && Tl3D.live && Tl3D.live(c))

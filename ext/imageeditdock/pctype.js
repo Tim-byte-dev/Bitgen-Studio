@@ -34,7 +34,7 @@
       || !!(root.PCOType && root.PCOType.engineOn(t)));                   // 2.466.0: OpenType features / optical kerning (pcotype.js)
   }
   /** a text pctext draws (path, vertical, warp, 3D) is not ours */
-  const pctextOnly = (t) => !!(t && (t.vertical || (t.path && t.path.kind) || (t.warp && t.warp.style && t.warp.style !== "none" && t.warp.bend) || (t.extrude && t.extrude.on)));
+  const pctextOnly = (t) => !!(t && ((t.env && Array.isArray(t.env.poly) && t.env.poly.length > 2) || t.vertical || (t.path && t.path.kind) || (t.warp && t.warp.style && t.warp.style !== "none" && t.warp.bend) || (t.extrude && t.extrude.on)));
   const owns = (t) => wants(t) && !pctextOnly(t);
   const effSize = (t) => Math.max(1, (+t.size || 48) * (t.pos ? SUPER : 1));
   const strOf = (t) => (t.caps ? String(t.str || "").toUpperCase() : String(t.str || ""));

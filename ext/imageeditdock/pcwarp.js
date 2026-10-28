@@ -54,6 +54,19 @@
       const L = E.layer(); if (!L) return say("open a picture first");
       if (L.locks && (L.locks.pos || L.locks.all)) return say("the layer's position is locked");
       if (Q) { setMode(mode); return; }
+      // 2.608.0 (Tim: "an interactive warp grid for text and shapes"): a TEXT / SHAPE layer is warped LIVE - it stays text /
+      // a shape (pclivewarp.js keeps the grid on the layer); only the warp (the Move tool turns / scales / skews them)
+      const LW = root.PCLiveWarp;
+      if (LW && LW.can(L)) {
+        const before = E.snapStruct(), o = LW.base(L); if (!o) return say("nothing to warp - the layer is empty");
+        const h = LW.holder(L), b = o.box, G = h.mesh && h.mesh.G && h.mesh.G.c ? clone(h.mesh.G) : null;
+        Q = { L, live: true, before, box: b, quad: X.rectQuad(b.x, b.y, b.w, b.h), warp: h.mesh ? LW.toAbs(h.mesh.P, b) : null, wgrid: G, warpUsed: !!h.mesh, prev: S.tool, mode: "warp" };
+        if (!Q.warp) { Q.warp = X.patchFromQuad(Q.quad); Q.wgrid = null; }
+        Q.quad0 = clone(Q.quad); Q.warp0 = clone(Q.warp);
+        E.setTool("qxform"); setMode("warp");
+        say(`⌗ Warp Grid on ${L.name || "the layer"} - it stays ${L.type === "text" ? "text (type into it any time)" : "a shape"}: drag a point or inside the grid, presets and Grid in the bar · Enter applies, Esc cancels`);
+        return;
+      }
       if (isSmart(L)) {
         const s0 = SM.STORE.get(L.smart.src); if (!s0) return say("the smart object's contents are gone");
         Q = { L, smart: true, src: s0.canvas, before: E.snapStruct(), quad: clone(L.smart.t.quad), warp: L.smart.t.warp ? clone(L.smart.t.warp) : null, wgrid: L.smart.t.warp && L.smart.t.wgrid ? clone(L.smart.t.wgrid) : null, warpUsed: !!L.smart.t.warp, prev: S.tool, mode: "free" };
@@ -74,6 +87,7 @@
     }
     function setMode(m) {
       if (!Q) return;
+      if (Q.live && m !== "warp") { say("a text / shape layer keeps its warp grid live - turn, scale or skew it with the Move tool"); m = "warp"; }
       if (Q.mode === "warp" && m !== "warp" && Q.warp) Q.quad = X.latCorners(Q.warp, Q.wgrid);   // 2.450.0: a gridded warp's outer corners   // the handles go round the warped corners
       Q.mode = m;
       if (m === "warp" && !Q.warp) { Q.warp = X.patchFromQuad(Q.quad); Q.wgrid = null; }
@@ -85,6 +99,7 @@
       if (!Q) return;
       const w = Q.mode === "warp" || (Q.warp && Q.warpUsed) ? Q.warp : null;
       const t = Object.assign({ quad: w ? X.latCorners(w, Q.wgrid) : Q.quad, warp: w }, w && Q.wgrid ? { wgrid: Q.wgrid } : {});
+      if (Q.live) { root.PCLiveWarp.set(Q.L, Q.warp, Q.wgrid, Q.box); D.rasterize(Q.L); E.renderSoon(); return; }   // 2.608.0
       if (Q.smart) { Q.L.smart.t = clone(t); Q.L._fast = !!fast; SM.render(Q.L); E.renderSoon(); return; }
       const g = ctx(Q.pc); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, S.w, S.h);
       SM.drawSource(g, Q.src, t); E.renderSoon();
@@ -92,7 +107,10 @@
     function finishQ(ok) {
       if (!Q) return;
       const q = Q; Q = null; qd = null;
-      if (q.smart) {
+      if (q.live) {                                       // 2.608.0: one undo step; a flat grid = no warp
+        if (ok) { root.PCLiveWarp.tidy(q.L); D.rasterize(q.L); E.push({ t: "struct", before: q.before, after: E.snapStruct(), label: "warp grid" }); }
+        else E.putStruct(q.before);
+      } else if (q.smart) {
         q.L._fast = false; q.L._skey = null;
         if (ok) { SM.render(q.L); E.push({ t: "struct", before: q.before, after: E.snapStruct(), label: "transform smart object" }); }
         else E.putStruct(q.before);
@@ -141,7 +159,7 @@
       id: "qxform", name: "Transform", cursor: "default",
       options() {
         if (!Q) return `<span style="color:var(--pc-dim)">Edit ▸ Transform ▸ Skew / Distort / Perspective / Warp</span>`;
-        return MODES.map(([m, n, ic]) => `<button class="ghost xfm${Q.mode === m ? " on" : ""}" data-xfm="${m}" title="${n}">${ic} ${n}</button>`).join("")
+        return MODES.filter(([m]) => !Q.live || m === "warp").map(([m, n, ic]) => `<button class="ghost xfm${Q.mode === m ? " on" : ""}" data-xfm="${m}" title="${n}">${ic} ${n}</button>`).join("")
           + (Q.mode === "warp" ? `<span class="sep"></span><label>Warp <select id="xfWS">${X.WARP_STYLES.map(([v, l]) => `<option value="${v}"${v === (Q.style || "custom") ? " selected" : ""}>${l}</option>`).join("")}</select></label>`
             + `<label title="Bend (%)">Bend <input type="number" id="xfWB" min="-100" max="100" value="${Q.bend == null ? 50 : Q.bend}"></label>`
             + (() => { const g = X.gridOf(Q.wgrid), cur = g.c === g.r && [1, 3, 4, 5].includes(g.c) && g.us.every((k, i) => Math.abs(k - i / g.c) < 1e-4) && g.vs.every((k, i) => Math.abs(k - i / g.r) < 1e-4) ? String(g.c) : "custom";
@@ -152,10 +170,20 @@
       },
       bindOptions(o) {
         o.querySelectorAll("[data-xfm]").forEach((b) => { b.onclick = () => setMode(b.dataset.xfm); });
+        // 2.608.0: Enter / Esc work from the bar too (after picking a preset the focus is on its list)
+        o.onkeydown = (e) => { if (!Q || (e.key !== "Enter" && e.key !== "Escape")) return; e.preventDefault(); e.stopPropagation(); if (e.target && e.target.blur) e.target.blur(); finishQ(e.key === "Enter"); };
         const ok = o.querySelector("#xfOk"); if (ok) ok.onclick = () => finishQ(true);
         const no = o.querySelector("#xfNo"); if (no) no.onclick = () => finishQ(false);
         const ws = o.querySelector("#xfWS"), wb = o.querySelector("#xfWB");
-        const preset = () => { if (!Q) return; Q.style = ws.value; Q.bend = +wb.value || 0; if (Q.wgrid) Q.quad = X.latCorners(Q.warp, Q.wgrid); Q.warp = X.patchPreset(Q.quad, Q.style, Q.bend); Q.wgrid = null; Q.warpUsed = true; drawQ(); E.renderOptions(); E.drawOverlay(); };
+        const preset = () => {
+          if (!Q) return; Q.style = ws.value; Q.bend = +wb.value || 0; if (Q.wgrid && !Q.live) Q.quad = X.latCorners(Q.warp, Q.wgrid);
+          // 2.608.0: the sideways styles (Shell, Fisheye, Twist) on a 3 x 3 grid - closer than one patch
+          const H3W = root.H3Warps;
+          if (H3W && X.latPreset && Q.style !== "custom" && !H3W.isColumn(Q.style)) { const o = X.latPreset(Q.quad, Q.style, Q.bend, 3, 3); Q.warp = o.P; Q.wgrid = o.G; }
+          else { Q.warp = X.patchPreset(Q.quad, Q.style, Q.bend); Q.wgrid = null; }
+          Q.warpUsed = true; drawQ(); E.renderOptions(); E.drawOverlay();
+          try { E.stage.focus({ preventScroll: true }); } catch (e) { /* fine */ }   // 2.608.0: Enter applies straight after picking a preset
+        };
         if (ws) { ws.onchange = preset; wb.onchange = preset; }
         // 2.450.0: the grid and the split lines
         const wg = o.querySelector("#xfWG"), gc = o.querySelector("#xfGC"), gr = o.querySelector("#xfGR");
@@ -624,10 +652,16 @@
     /* ---------------- commands ---------------- */
     if (E.ui.addCmd) {
       const C = E.ui.addCmd, can = () => { const L = E.layer(); return !!(S.w && L && (L.type === "pixel" || isSmart(L))); };
+      const canW = () => { const L = E.layer(); return !!(S.w && L && (L.type === "pixel" || isSmart(L) || (root.PCLiveWarp && root.PCLiveWarp.can(L)))); };   // 2.608.0: + text / shape (live)
       C("xf.skew", "Transform: Skew", "", () => startQ("skew"), { enabled: can }, ["Edit", "edit.transform"]);
       C("xf.distort", "Transform: Distort", "", () => startQ("distort"), { enabled: can }, ["Edit", "xf.skew"]);
       C("xf.perspective", "Transform: Perspective", "", () => startQ("perspective"), { enabled: can }, ["Edit", "xf.distort"]);
-      C("xf.warp", "Transform: Warp", "", () => startQ("warp"), { enabled: can }, ["Edit", "xf.perspective"]);
+      C("xf.warp", "Transform: Warp", "", () => startQ("warp"), { enabled: canW }, ["Edit", "xf.perspective"]);
+      // 2.608.0: the warp grid on a text / shape layer (it stays live) + taking it off
+      const LWon = () => !!(root.PCLiveWarp && root.PCLiveWarp.on(E.layer()));
+      C("xf.warpgrid", "⌗ Warp Grid (text / shape stays live)", "", () => startQ("warp"), { enabled: () => !!(S.w && root.PCLiveWarp && root.PCLiveWarp.can(E.layer())) }, ["Layer", null, true]);
+      C("xf.warpoff", "Remove Warp Grid", "", () => { const L = E.layer(); E.setLayer(L, "remove warp grid", (x) => { const h = root.PCLiveWarp.holder(x); if (h) delete h.mesh; }); }, { enabled: LWon }, ["Layer", "xf.warpgrid"]);
+      if (Array.isArray(E.ui.stageCtxItems)) E.ui.stageCtxItems.push("xf.warpgrid"); else E.ui.stageCtxItems = ["xf.warpgrid"];
       C("xf.puppet", "Puppet Warp", "", () => startPuppet(), { enabled: can }, ["Edit", "xf.warp"]);
       C("xf.cas", "Content-Aware Scale…", "Alt+Shift+Ctrl+C", cas, { enabled: () => !!(S.w && E.layer() && E.layer().type === "pixel") }, ["Edit", "xf.puppet"]);
       C("flt.liquify", "Liquify…", "Shift+Ctrl+X", () => liquify(), { enabled: can }, ["Filter", "so.smartfilters"]);

@@ -211,6 +211,7 @@
   /** 2.452.0: a TURNED text (t.rot, degrees - the Move tool's rotate handles) - the box round its turned corners
    *  (2.604.0: and skewed / stretched - textMat) */
   function textBox(t, g) {
+    if (t && t.mesh && t._wbox) return t._wbox;                // 2.608.0: a warp grid's bounds (pclivewarp.js)
     const b = textBox0(t, g), M = textMat(t);
     if (!M) return b;
     const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
@@ -260,6 +261,10 @@
     else g.rect(x, y, w, h);
   }
   function drawShape(g, s) {
+    drawShape0(g, s);
+    if (s.tfill && s.tfill.on && root.PCTextFill) root.PCTextFill.fillShape(g, s, drawShape0);   // 2.608.0: the shape filled with text (pctextfill.js)
+  }
+  function drawShape0(g, s) {
     if (s.kind === "path") { if (root.PCPath) { g.save(); root.PCPath.drawPathShape(g, s); g.restore(); } return; }
     g.save(); shapePath(g, s);
     if (s.kind !== "line" && s.fillOn !== false) { g.fillStyle = s.fill || "#000"; g.fill(); }
@@ -301,9 +306,15 @@
   function rasterize(L) {
     const c = L.canvas, g = c && c.getContext ? c.getContext("2d") : null; if (!g) return;
     if (L.type === "smart") { if (L.smart && root.PCSmart) root.PCSmart.render(L); return; }   // 2.422.0: from its source (cached)
+    // 2.608.0: a WARP GRID on a text / shape layer (pclivewarp.js): its plain picture (painted only when it changed) warped
+    if (root.PCLiveWarp && root.PCLiveWarp.on(L) && root.PCLiveWarp.draw(L, () => paint(L, g, c))) { L.ver = (L.ver || 0) + 1; return; }
+    paint(L, g, c);
+    L.ver = (L.ver || 0) + 1;
+  }
+  function paint(L, g, c) {
     g.clearRect(0, 0, c.width, c.height);
     if (L.type === "text" && L.text) {
-      const fxDone = () => { rasterize(L); try { root.dispatchEvent(new root.CustomEvent("h3textfx", { detail: { id: L.id } })); } catch (e) { /* jsdom */ } };
+      const fxDone = () => { if (root.PCLiveWarp) root.PCLiveWarp.dirty(L); rasterize(L); try { root.dispatchEvent(new root.CustomEvent("h3textfx", { detail: { id: L.id } })); } catch (e) { /* jsdom */ } };
       // 2.607.0: a preset on a WARPED / 3D / circle / path / vertical / panel-styled text - kept (pcfxshape.js)
       if (L.text.fx && root.PCFxShape && root.PCFxShape.shaped(L.text) && root.PCFxShape.draw(g, L.text, "pc:" + L.id, fxDone)) { /* drawn */ }
       else if (root.PCRuns && root.PCRuns.owns(L.text)) root.PCRuns.draw(g, L.text);   // 2.449.0: per-letter settings (pcruns.js)
@@ -325,7 +336,6 @@
     else if (L.type === "shape" && L.shape) { if (L.shape.kind === "path" && root.PCPath) root.PCPath.fitShape(L.shape); drawShape(g, L.shape); }
     else if (L.type === "fill") drawFill(g, L.fill, c.width, c.height);
     else if (L.type === "sketch" && L.sketch && root.PCSketch) root.PCSketch.draw(g, L.sketch);   // 2.462.0: a sketch layer
-    L.ver = (L.ver || 0) + 1;
   }
 
   /* ================================ the compositor ================================ */

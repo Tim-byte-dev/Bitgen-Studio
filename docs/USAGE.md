@@ -6081,6 +6081,20 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.608.0: **Font lists show each font in itself** - every font dropdown writes each font's name in that font (type
+  to search as before), and the closed list shows the picked font in its own lettering.
+- 2.608.0: **Fill a shape with text** - image editor: right-click a shape layer (or the Shape tool's bar, or Layer ▸
+  🅰 Fill Shape with Text…) and pick how: **Flow inside** (a text layer whose lines wrap inside the outline; Fit = the
+  biggest size that fits), **Stretch to fill** (the letters bend and stretch to fill the outline - a heart, a circle, a
+  star) or **Repeat as fill** (the shape's fill becomes rows of the text, at an angle - it stays a shape). Flow / Stretch
+  take a text preset and stay text you can type into. Timeline: a shape layer's ◆ Shape ▸ 🅰 Text fill (rows), and a
+  text layer's 🔤 In a shape (Stretch to fill / Flow inside a shape layer; ⌖ Place on it).
+- 2.608.0: **5 more warp presets** - Shell Lower, Shell Upper, Fisheye, Twist and Wedge, next to Arc … Squeeze: in ⌒
+  Shape / 3D…, Edit ▸ Transform ▸ Warp and the timeline's 📌 Warp ▸ ⌇ Preset.
+- 2.608.0: **A warp grid on text and shapes** - ⌗ Warp Grid (the Type and Shape tools' bars, right-click, Edit ▸
+  Transform ▸ Warp): drag the grid's points or anywhere inside, pick a preset, Grid 3 x 3 / 4 x 4 / 5 x 5, split lines -
+  Enter applies. The layer stays text (type into it - the warp follows) or a shape (change its colour - still warped);
+  Layer ▸ Remove Warp Grid takes it off. Timeline: 📌 Warp ▸ ⌇ Preset turns into a mesh you drag with 📌 (Shift+W).
 - 2.607.0: **Text presets stay on through shapes and 3D** - a text with a preset (Gold, Chrome, a PSD text effect ...)
   keeps it when you warp it, put it round a circle or along a path, make it vertical or 3D (image editor ▸ ⌒ Shape /
   3D…); the 3D sides take the preset's colour, darker (or the side colour you set). On the timeline a preset text now

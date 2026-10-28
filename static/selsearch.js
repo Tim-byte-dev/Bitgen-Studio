@@ -67,7 +67,8 @@
     const opts = sel && sel.options ? Array.from(sel.options) : [];
     opts.forEach((o, i) => {
       const g = o.parentNode && o.parentNode.tagName === "OPTGROUP" ? o.parentNode.label || "" : (o.group || "");
-      out.push({ i, value: o.value, text: (o.label || o.text || "").trim(), group: g, disabled: !!(o.disabled || (o.parentNode && o.parentNode.disabled)), title: o.title || "", hidden: !!o.hidden });
+      out.push({ i, value: o.value, text: (o.label || o.text || "").trim(), group: g, disabled: !!(o.disabled || (o.parentNode && o.parentNode.disabled)), title: o.title || "", hidden: !!o.hidden,
+        ...(o.style && o.style.fontFamily ? { font: o.style.fontFamily } : {}) });   // 2.608.0: a font list's row is written in its own font (static/fontlist.js)
     });
     return out.filter((x) => !x.hidden);
   }
@@ -134,7 +135,7 @@
       const grouped = !q.trim() && all.some((x) => x.group);
       shown.slice(0, MAX_ROWS).forEach((x, k) => {
         if (grouped && x.group !== lastG) { lastG = x.group; if (x.group) html += `<div class="ssgrp">${esc(x.group)}</div>`; }
-        html += `<div class="ssrow${x.disabled ? " dis" : ""}${x.i === cur ? " cur" : ""}" data-k="${k}" data-i="${x.i}"${x.title ? ` title="${esc(x.title)}"` : ""}><span class="t">${lit(x.text || x.value || "—", x.hits)}</span>${!grouped && x.group ? `<span class="g">${esc(x.group)}</span>` : ""}</div>`;
+        html += `<div class="ssrow${x.disabled ? " dis" : ""}${x.i === cur ? " cur" : ""}" data-k="${k}" data-i="${x.i}"${x.title ? ` title="${esc(x.title)}"` : ""}><span class="t"${x.font ? ` style="font-family:${esc(x.font)};font-size:13.5px"` : ""}>${lit(x.text || x.value || "—", x.hits)}</span>${!grouped && x.group ? `<span class="g">${esc(x.group)}</span>` : ""}</div>`;
       });
       if (!shown.length) html = `<div class="ssnone">Nothing matches "${esc(q)}"</div>`;
       else if (shown.length > MAX_ROWS) html += `<div class="ssmore">… ${shown.length - MAX_ROWS} more - type to narrow the list</div>`;

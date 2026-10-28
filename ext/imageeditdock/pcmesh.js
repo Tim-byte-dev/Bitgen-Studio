@@ -81,9 +81,12 @@
     return P;
   }
   // Photoshop's warp styles (our own curves): the [top, bottom] move of a column u (-1..1) as fractions of the height
-  const WARP_STYLES = [["custom", "Custom"], ["arc", "Arc"], ["arcLower", "Arc Lower"], ["arcUpper", "Arc Upper"], ["arch", "Arch"], ["bulge", "Bulge"],
-    ["flag", "Flag"], ["wave", "Wave"], ["fish", "Fish"], ["rise", "Rise"], ["inflate", "Inflate"], ["squeeze", "Squeeze"]];
+  // 2.608.0: the styles come from static/warpstyles.js (H3Warps) - + Shell Lower, Shell Upper, Fisheye, Twist, Wedge
+  const H3W = root.H3Warps || (typeof require === "function" ? (() => { try { return require("../../static/warpstyles.js"); } catch (e) { return null; } })() : null);
+  const WARP_STYLES = [["custom", "Custom"]].concat(H3W ? H3W.STYLES : [["arc", "Arc"], ["arcLower", "Arc Lower"], ["arcUpper", "Arc Upper"], ["arch", "Arch"], ["bulge", "Bulge"],
+    ["flag", "Flag"], ["wave", "Wave"], ["fish", "Fish"], ["rise", "Rise"], ["inflate", "Inflate"], ["squeeze", "Squeeze"]]);
   function column(style, bend, u) {
+    if (H3W) return H3W.column(style, bend, u);
     const b = Math.max(-100, Math.min(100, +bend || 0)) / 100, c = 1 - u * u, s = Math.sin(u * Math.PI);
     switch (style) {
       case "arc": return [-b * c * 0.5, -b * c * 0.5];
@@ -104,13 +107,27 @@
   function patchPreset(q, style, bend) {
     if (!style || style === "custom") return patchFromQuad(q);
     const P = patchFromQuad(q), b = quadBox(q);
+    if (H3W && !H3W.isColumn(style)) {                   // 2.608.0: the sideways styles - each control point moved
+      const asp = b.w / Math.max(1e-6, b.h);
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) { const d = H3W.point(style, bend, -1 + 2 * i / 3, j / 3, asp); P[j * 4 + i] = [P[j * 4 + i][0] + d[0] * b.w, P[j * 4 + i][1] + d[1] * b.h]; }
+      return P;
+    }
     for (let i = 0; i < 4; i++) {
       const [t, d] = column(style, bend, -1 + 2 * i / 3);
       for (let j = 0; j < 4; j++) { const f = j / 3; P[j * 4 + i] = [P[j * 4 + i][0], P[j * 4 + i][1] + (t * (1 - f) + d * f) * b.h]; }
     }
     return P;
   }
-
+  /** 2.608.0: a preset on a c x r LATTICE (more points = the twist / fisheye follow closer): each anchor where the style
+   *  sends it, its handles a third of the way to its neighbours */
+  function latPreset(q, style, bend, c, r) {
+    const b = quadBox(q), asp = b.w / Math.max(1e-6, b.h), G = { c, r, us: [], vs: [] };
+    for (let i = 0; i <= c; i++) G.us.push(i / c); for (let j = 0; j <= r; j++) G.vs.push(j / r);
+    const W = 3 * c + 1, Hh = 3 * r + 1, P = [];
+    const at = (u, v) => { const d = H3W ? H3W.point(style, bend, u * 2 - 1, v, asp) : [0, 0]; return [b.x + (u + d[0]) * b.w, b.y + (v + d[1]) * b.h]; };
+    for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) P.push(at(x / (W - 1), y / (Hh - 1)));
+    return { P, G };
+  }
   /* ================================ 2.450.0: the warp's GRID and SPLIT LINES ================================
    * Photoshop's warp grid (Default / 3 x 3 / 4 x 4 / 5 x 5 / custom) and split lines (cross / vertical / horizontal):
    * the warp becomes a LATTICE of c x r bicubic patches sharing their edges - (3c + 1) x (3r + 1) control points,
@@ -517,7 +534,7 @@
   const fieldIn = (o) => ({ w: o.w, h: o.h, dx: Float32Array.from(o.dx), dy: Float32Array.from(o.dy) });
 
   const api = { solve, homography, applyH, invertH, UNIT, isAffineQuad, affineOfQuad, rectQuad, quadBox, bern, patchPoint, patchFromQuad, WARP_STYLES, column,
-    patchPreset, gridMesh, quadMesh, patchMesh, meshOf, affineTri, drawMesh, mlsRigid, puppetMesh, energy, seam, transpose, carveW, carve, field, sampleF, liq,
+    patchPreset, latPreset, gridMesh, quadMesh, patchMesh, meshOf, affineTri, drawMesh, mlsRigid, puppetMesh, energy, seam, transpose, carveW, carve, field, sampleF, liq,
     applyField, fieldOut, fieldIn,
     gridOf, latW, latH, knotAt, patchAt, latPoint, latCorners, splitCubic, latSplit, latUnsplit, latGrid, latNear, latWeights, latMesh, faceField, FACE_KEYS, faceGuess,   // 2.450.0
     pinControls, pinDepth, meshTris };   // 2.465.0: puppet pin rotation + depth

@@ -1066,7 +1066,7 @@
     function renderSoon() { if (rafPending) return; rafPending = true; (win.requestAnimationFrame || ((f) => setTimeout(f, 16)))(() => { rafPending = false; renderLayers(); drawOverlay(); }); }
     win.addEventListener("h3textfx", () => renderSoon());                    // 2.411.0: a text effect preset's sharper picture is in
     // 2.607.0: a font loaded from its file (static/fontlist.js) - the texts using it drawn again
-    win.addEventListener("h3fontload", (e) => { const f = e && e.detail && e.detail.family; (S.layers || []).forEach((L) => { if (L.type === "text" && L.text && (!f || L.text.font === f)) D.rasterize(L); }); renderSoon(); });
+    win.addEventListener("h3fontload", (e) => { const f = e && e.detail && e.detail.family; (S.layers || []).forEach((L) => { if (L.type === "text" && L.text && (!f || L.text.font === f)) { if (win.PCLiveWarp) win.PCLiveWarp.dirty(L); D.rasterize(L); } }); renderSoon(); });
     let scratch = null, scratchM = null;
     /** the active layer's pixels as they are DURING a stroke / a move / a transform */
     function liveSrc(L) {
@@ -2940,6 +2940,7 @@
     if (win.PCText && win.PCText.install) win.PCText.install(E);   // 2.397.0: Type on a Path, Vertical Type, warp / circle / 3D text
     if (win.PCType && win.PCType.install) win.PCType.install(E);   // 2.426.0: Character / Paragraph panels + styles, paragraph text
     if (win.PCRuns && win.PCRuns.install) win.PCRuns.install(E);   // 2.449.0: per-letter settings inside one text layer
+    if (win.PCTextFill && win.PCTextFill.install) win.PCTextFill.install(E);   // 2.608.0: 🅰 Fill Shape with Text (flow / stretch / repeat)
     if (win.PCPen && win.PCPen.install) win.PCPen.install(E);      // 2.421.0: Pen, paths, vector masks, custom shapes
     if (win.PCVLine && win.PCVLine.install) win.PCVLine.install(E);
     if (win.PCDraw && win.PCDraw.install) win.PCDraw.install(E);
