@@ -12676,6 +12676,14 @@ node scripts/test-join612.js > /tmp/jo612.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui612-ui.js > /tmp/ui612.log 2>&1 \
   && ok "2.612.0 browser test: ✂ Cut through a video = one clip + a -join file (the cut second gone, frame-exact), one ↶; a picture; Del on frames; retimed / ripple off stay two; ✂ to new layer (a video layer, V1, Ctrl+K), kept - or SKIP without playwright" \
   || { bad "2.612.0 join browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui612.log | head -14; }
+# ---- 2.613.0 (Tim: "if user presses ctrl while the clip is playing add an upsidedown triangle at the time marker ... add
+# option to cut all the ranges. add 2x,4x,8x,0.5x,0.25,0.125 playback options. can i speed up a range in my clip")
+node scripts/test-ranges613.js > /tmp/rg613.log 2>&1 \
+  && ok "2.613.0 ▼ ranges - whole frames, colours, merged from the end, a range sped up (split, faster, moved up), the hover text; the Ctrl tap / cut all / speed / setRate wiring - the pure part + the wiring" \
+  || { bad "2.613.0 ranges units"; grep -a "^FAIL" -A2 /tmp/rg613.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui613-ui.js > /tmp/ui613.log 2>&1 \
+  && ok "2.613.0 browser test: Ctrl taps while it plays = ▼ ranges (it keeps playing), colours, a ▼ dragged shows its frame, right-click removes, the hover time, 2× / 0.125× playback, ✂ Cut all (one joined clip) + ↶, ⏩ 4× - or SKIP without playwright" \
+  || { bad "2.613.0 ranges browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui613.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

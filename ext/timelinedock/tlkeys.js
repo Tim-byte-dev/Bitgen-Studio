@@ -31,7 +31,8 @@
     ["Ctrl+Shift+E", "Export the frame at the position marker as a PNG"],
     ["Ctrl+Shift+M", "A clip marker on the selected clip at the position marker"],
     ["J / K / L", "Shuttle: backwards / stop / forwards - J or L again: 2x, 4x, 8x"], ["K + J / K + L", "One frame back / on (hold K)"],
-    ["Space", "Play / pause the preview (anywhere, unless typing in a box)"]
+    ["Space", "Play / pause the preview (anywhere, unless typing in a box)"],
+    ["Ctrl (tap)", "While it plays: ▼ a range starts at the position marker on the highlighted layer - tap again where it ends (tlranges.js)"]
   ];
   var MODES = { v: "select", b: "ripple", n: "roll", y: "slip", u: "slide", f: "frame" };   // 2.611.0: F = ▯ Frame (tlframe.js)
   function log(t) { if (typeof logLine === "function") logLine("[keys] " + t); }

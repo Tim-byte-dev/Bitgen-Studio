@@ -59,7 +59,7 @@ ff(["-f", "lavfi", "-i", "color=c=white:s=64x64", "-frames:v", "1", path.join(T,
     const S = () => ev(() => ({ v1: tl.video.map((c) => [c.name, c.start, c.in, c.out]), vl: tl.vlayers.map((L) => [L.name, L.clips.map((c) => [c.name, c.start, c.in, c.out])]), img: tl.images.map((L) => [L.name, L.clips.map((c) => [c.start, c.len])]), log: (document.getElementById("sblog") || {}).textContent || "" }));
 
     /* the box */
-    const bx = await ev(() => { const l = document.getElementById("tlCutNewL"), sel = document.getElementById("tlSelGrp"); return { txt: l.textContent.trim(), before: l.nextElementSibling === sel, title: l.title }; });
+    const bx = await ev(() => { const l = document.getElementById("tlCutNewL"), sel = document.getElementById("tlSelGrp"); return { txt: l.textContent.trim(), before: l.nextElementSibling === sel || (l.nextElementSibling.id === "tlRangeGrp" && l.nextElementSibling.nextElementSibling === sel),   /* 2.613.0: the ▼ ranges group between */ title: l.title }; });
     check("the \"✂ to new layer\" box is in the timeline's menu bar (beside the selection tools, always there)", bx.txt === "✂ to new layer" && bx.before && /new layer right above/.test(bx.title), bx);
 
     /* ✂ Cut through a video = one clip, a joined file */

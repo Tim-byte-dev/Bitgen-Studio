@@ -82,6 +82,7 @@
     "tltextfill.js",
     "tlmorph.js",
     "tlframe.js",
-    "tljoin.js"
+    "tljoin.js",
+    "tlranges.js"
   ]
 }

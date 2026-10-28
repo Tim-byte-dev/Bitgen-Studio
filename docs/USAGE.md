@@ -493,6 +493,20 @@ long video); one ↶ undoes both. Left as two clips (the status line says why): 
 cut-out, a text / shape / 3D / generated clip, and a cut with ripple off (the gap stays). The preview also loads the next
 clip a second before it starts, so a cut between two clips no longer flashes black.
 
+**▼ Ranges with Ctrl while it plays.** Highlight a layer, play the preview and TAP Ctrl (press and let go) where a
+range should start - a ▼ appears in the time ruler at the position marker - and tap Ctrl again where it ends (a second
+▼). Playback carries on, so you can mark as many ranges as you like in one pass; each gets its own colour, with a band
+on its layer's row. Paused, a Ctrl tap with the pointer on the timeline works the same. Esc forgets a started range.
+Drag a ▼ to move that end (whole frames) - the preview shows the frame under it; a click shows it too; right-click a ▼
+(or Del with it picked) removes its range. The ▼ group in the timeline's menu bar: the count, **✂ Cut all** (every
+range out of its layer - ripple as its box says; a clip cut several times becomes one clip again), **⏩ Speed up** with
+2× / 4× / 8× / 10× (each range on a video layer plays that much faster - like fast-forwarding through a render you don't
+want to wait for; what follows moves up with ripple) and ✕ (remove all the markers). Ctrl+Z undoes any of these.
+
+**Hover time and playback speed.** Hovering over the timeline shows the time under the pointer in a small box
+(timecode · seconds · frame). The speed list beside 🔁 under the preview plays at 0.125×, 0.25×, 0.5×, 1×, 2×, 4× or 8×
+(▶ and Space use it; changed while playing it applies at once; it is kept). J / K / L still shuttle.
+
 **✂ to new layer** (the checkbox in the timeline's menu bar, kept): ✂ Cut, Del on frames and Ctrl+K split put the part
 AFTER the cut on a new layer right above ("<layer> ✂"; V1's goes on the first video layer). The part before stays where
 it is. One ↶ undoes it.
@@ -649,6 +663,7 @@ With the pointer over the timeline's **layers** (the canvas keeps its own keys):
 |---|---|
 | V / B / N / Y / U / F | ▸ Select / ⇤ Ripple / ⇹ Roll / ⇆ Slip / ↔ Slide / ▯ Frame |
 | Del / ⌫ | (▯ Frame) remove the selected frame(s) from their layer - the gap closes |
+| Ctrl (tap) | while it plays: ▼ a range starts at the position marker on the highlighted layer - tap again where it ends |
 | I / O | In / Out of the ruler selection at the position marker |
 | Ctrl+K | split at the position marker (the selected clip, else the highlighted layer's) |
 | ↑ / ↓ | previous / next edit point |
@@ -6101,6 +6116,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.613.0: **▼ Ranges with Ctrl while it plays, ✂ Cut all / ⏩ Speed up, hover time, playback speed** - tap Ctrl while
+  the preview plays to mark a range's start and again for its end (as many as you like, each its own colour, on the
+  highlighted layer); drag a ▼ to move it (the preview shows that frame), right-click removes it. ✂ Cut all cuts every
+  range; ⏩ Speed up plays them 2× - 10× faster (fast-forward a render). The time under the pointer shows in a small box;
+  the preview plays at 0.125× - 8×.
 - 2.612.0: **A cut clip stays one clip / ✂ to new layer** - ✂ Cut and Del on frames join the parts before and after the
   cut into one continuous clip again (a video or sound: one new "-join" file; a picture: just shorter), one ↶ undoes it.
   The new "✂ to new layer" box puts the part after a cut (or a Ctrl+K split) on a new layer right above. The preview

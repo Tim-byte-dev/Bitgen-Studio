@@ -127,24 +127,30 @@
     };
     w._tljoin = true; root.applySel = w; return true;
   }
-  async function joinOne(lk, kind, h, t) {
-    var how = joinKind(h, t, kind, fps());
+  async function joinOne(lk, kind, h, t) { return joinChain(lk, kind, [h, t]); }
+  /** 2.613.0: two parts OR MORE of one clip (✂ Cut all ranges) - one file for all of them */
+  async function joinChain(lk, kind, ps) {
+    var hows = [];
+    for (var q = 0; q + 1 < ps.length; q++) hows.push(joinKind(ps[q], ps[q + 1], kind, fps()));
+    var bad = hows.filter(function (w) { return w !== "extend" && w !== "file"; })[0];
+    var how = bad || (hows.indexOf("file") >= 0 ? "file" : "extend");
     root.TlJoin.last = how;                             // what the last cut did (the status line can be overwritten)
-    if (how !== "extend" && how !== "file") { say("✂ Cut - kept as two clips: " + how); return false; }
-    var file = null;
+    if (bad) { say("✂ Cut - kept as " + ps.length + " clips: " + bad); return false; }
+    var file = null, h = ps[0], t = ps[ps.length - 1];
     if (how === "file") {
-      say("✂ Cut - joining the two parts into one clip …");
+      say("✂ Cut - joining the " + ps.length + " parts into one clip …");
       try {
         var res = await fetch("/api/timeline/join", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kind: kind === "audio" ? "audio" : "video", name: h.name, src: h.src || "", parts: [[+h.in || 0, +h.out], [+t.in || 0, +t.out]] }) });
+          body: JSON.stringify({ kind: kind === "audio" ? "audio" : "video", name: h.name, src: h.src || "", parts: ps.map(function (c) { return [+c.in || 0, +c.out]; }) }) });
         file = await res.json();
         if (!res.ok || !file || !file.name) throw new Error((file && file.error) || "HTTP " + res.status);
-      } catch (e) { say("✂ Cut - kept as two clips (the join did not work: " + (e.message || e) + ")"); log("join failed: " + (e.message || e)); return false; }
+      } catch (e) { say("✂ Cut - kept as " + ps.length + " clips (the join did not work: " + (e.message || e) + ")"); log("join failed: " + (e.message || e)); return false; }
     }
-    var list = lkClips(lk) || [], hi = list.indexOf(h), ti = list.indexOf(t);
-    if (hi < 0 || ti < 0) { say("✂ Cut - the layer changed meanwhile, the parts stay two clips"); return false; }
-    var one = merged(h, t, kind === "image" ? "image" : kind, file);
-    var out = list.slice(); out[hi] = one; out.splice(out.indexOf(t), 1);
+    var list = lkClips(lk) || [];
+    if (ps.some(function (c) { return list.indexOf(c) < 0; })) { say("✂ Cut - the layer changed meanwhile, the parts stay apart"); return false; }
+    var one = kind === "image" && !file ? Object.assign(merged(h, t, "image", null), { len: Math.round(ps.reduce(function (a, c) { return a + lenOf(c, "image"); }, 0) * 1e6) / 1e6 }) : merged(h, t, kind === "image" ? "image" : kind, file);
+    var out = list.slice(); out[out.indexOf(h)] = one;
+    out = out.filter(function (c) { return ps.indexOf(c) < 1; });
     lkSet(lk, out);
     if (lk === "v1" && typeof resolveOverlaps === "function") resolveOverlaps();
     glue(); save(); paint();
@@ -170,6 +176,6 @@
     if (typeof g("applySel") !== "function" || !$("tlSelGrp") || typeof g("tlSave") !== "function") { setTimeout(boot, 150); return; }
     box(); wrapCut();
   }
-  root.TlJoin = Object.assign({ toNew: toNew, toNewLayer: toNewLayer, joinOne: joinOne }, api);
+  root.TlJoin = Object.assign({ toNew: toNew, toNewLayer: toNewLayer, joinOne: joinOne, joinChain: joinChain }, api);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

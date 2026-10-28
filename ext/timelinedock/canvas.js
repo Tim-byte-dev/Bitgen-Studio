@@ -888,7 +888,7 @@
   function play(rate) {
     if (S.playing) return;
     try { if (typeof pv === "object" && pv.on && typeof pvStop === "function") pvStop(); } catch (e) { /* fine */ }
-    S.rate = typeof rate === "number" && rate ? rate : 1;
+    S.rate = typeof rate === "number" && rate ? rate : (S.prate || 1);   // 2.613.0: ▶ / Space play at the speed picked (tlranges.js)
     var r = range();
     var t = (typeof playhead === "number" && isFinite(playhead)) ? playhead : r.a;
     if (S.rate > 0 && (t >= r.b - 1e-3 || t < r.a - 1e-3)) t = r.a;
@@ -906,6 +906,13 @@
     S.base = S.t; S.t0 = performance.now(); S.rate = next;
     syncMedia(S.t, true); paintTransport();
     return next;
+  }
+  /** 2.613.0: the playback speed ▶ / Space use (0.125x .. 8x); playing forwards, it changes now (from where it is) */
+  function setRate(r) {
+    r = Math.max(0.0625, Math.min(16, +r || 1)); S.prate = r;
+    if (S.playing && (S.rate || 1) > 0) { S.base = S.t; S.t0 = performance.now(); S.rate = r; syncMedia(S.t, true); }
+    paintTransport();
+    return r;
   }
   /** one frame forwards / backwards (K + L / K + J), paused */
   function step(n) { pause(); go(fsnap(S.t + (n || 1) / FPS)); return S.t; }
@@ -1621,7 +1628,7 @@
     select(c, { lk: (kind === "video" ? "vl:" : "i:") + (arr.length - 1) });
     return L;
   }
-  window.TlCanvas = { state: S, play: play, pause: pause, stop: stop, go: go, shuttle: shuttle, step: step, draw: draw, addText: addText, renderText: renderText,
+  window.TlCanvas = { state: S, play: play, pause: pause, stop: stop, go: go, shuttle: shuttle, step: step, setRate: setRate, draw: draw, addText: addText, renderText: renderText,
                       addTool: addTool, extTool: function (id) { return extTools[id] || null; },   // 2.605.0: tlselhl.js starts a held-back drawing
                       onDraw: function (fn) { drawHooks.push(fn); mark(); }, mark: mark,
                       onComp: function (fn) { compHooks.push(fn); mark(); }, srcAt: srcAt, vidAt: vidAt,   // 2.406.0 toComp: toComp,

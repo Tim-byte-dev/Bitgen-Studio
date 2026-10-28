@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.613.0** — ▼ Ranges with Ctrl While It Plays; ✂ Cut All / ⏩ Speed Up; Hover Time; Playback Speed
 - **2.612.0** — A Cut Clip Stays One Clip; ✂ to New Layer
 - **2.611.0** — ▯ Frame: Click a Frame to Select It, DEL Removes It
 - **2.610.0** — 🧬 Morph on the Timeline (Character 1 → Character 2 Between Two Layers)
