@@ -303,11 +303,13 @@
     if (L.type === "smart") { if (L.smart && root.PCSmart) root.PCSmart.render(L); return; }   // 2.422.0: from its source (cached)
     g.clearRect(0, 0, c.width, c.height);
     if (L.type === "text" && L.text) {
-      if (root.PCRuns && root.PCRuns.owns(L.text)) root.PCRuns.draw(g, L.text);   // 2.449.0: per-letter settings (pcruns.js)
+      const fxDone = () => { rasterize(L); try { root.dispatchEvent(new root.CustomEvent("h3textfx", { detail: { id: L.id } })); } catch (e) { /* jsdom */ } };
+      // 2.607.0: a preset on a WARPED / 3D / circle / path / vertical / panel-styled text - kept (pcfxshape.js)
+      if (L.text.fx && root.PCFxShape && root.PCFxShape.shaped(L.text) && root.PCFxShape.draw(g, L.text, "pc:" + L.id, fxDone)) { /* drawn */ }
+      else if (root.PCRuns && root.PCRuns.owns(L.text)) root.PCRuns.draw(g, L.text);   // 2.449.0: per-letter settings (pcruns.js)
       else if (root.PCText && root.PCText.wants(L.text)) root.PCText.draw(g, L.text);
       // 2.411.0: a TEXT EFFECT PRESET (static/textfx.js) - live: a quick picture now, the sharp one when typing pauses
-      else if (L.text.fx && root.H3TextFx && root.H3TextFx.drawText(g, L.text, "pc:" + L.id, () => {
-        rasterize(L); try { root.dispatchEvent(new root.CustomEvent("h3textfx", { detail: { id: L.id } })); } catch (e) { /* jsdom */ } })) { /* drawn */ }
+      else if (L.text.fx && root.H3TextFx && root.H3TextFx.drawText(g, L.text, "pc:" + L.id, fxDone)) { /* drawn */ }
       else if (root.PCType && root.PCType.owns(L.text)) root.PCType.draw(g, L.text);   // 2.426.0: Character / Paragraph panels, paragraph text (pctype.js)
       else drawText(g, L.text);
       // 2.452.0: a turned text (the Move tool's rotate handles): drawn straight, then turned round its own centre

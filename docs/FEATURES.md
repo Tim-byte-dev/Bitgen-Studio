@@ -392,6 +392,7 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **Drop to add** — drop videos, pictures or sounds on the canvas; each lands on a new layer at the position marker. *Where:* the preview canvas
 - **Move tool** — select, move, scale by a corner and rotate by the top handle; Shift for 15-degree steps or one axis. *Where:* key V
 - **Text tool** — click to add a text layer with font, size, colour, bold, italic, outline, shadow and alignment. *Where:* key T
+- **Every font on this computer** — each font list has the usual fonts under Common and every installed font under This computer (N); a font only in the app's fonts folder loads from its file. *Where:* the image editor's and the timeline's font lists, captions, karaoke style. *Since:* 2.607.0
 - **Rasterize Text from the right-click menu** — a text layer (image editor) or a timeline text becomes a picture; undo brings the text back. *Where:* right-click the text. *Since:* 2.604.0
 - **Skew that keeps the far side** — the side handles slant from the opposite side (Alt: round the centre); text skews and stays text. *Where:* the image editor's Move tool, double-click for the rotate / skew handles. *Since:* 2.604.0
 - **💾 Save to Images in any format** — the visible layers kept as a temp copy, flattened (JPEG / BMP on white) and saved in the format picked beside 💾 into Images and the Gallery. *Where:* the image editor's menu bar (Ctrl+S). *Since:* 2.604.0
@@ -588,6 +589,8 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 ### Text and templates
 
 - **Text effect presets** — layered 3D text looks drawn live as you type; import your own from a PSD. *Where:* a text layer's Properties. *Since:* 2.411.0
+- **Presets on animated, on-a-path and 3D text** — a text with a preset keeps it with ✨ Text Animators and 〰 On a path; 3D text takes a preset as its front face (sides in its colour). *Where:* a text's Properties, a 3D text's Properties. *Since:* 2.607.0
+- **New text with your preset** — the T tool's new text starts with the preset last picked; nothing selected = Properties ▸ New text ▸ Preset. *Where:* the timeline. *Since:* 2.607.0
 - **Motion graphics templates** — lower third, title card, end card and corner tag, or save your own. *Where:* the timeline menu bar. *Since:* 2.417.0
 
 ### Tools and the CAD toolbar on the timeline
@@ -804,6 +807,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Type to outlines** — convert text to a shape layer of its outlines, or create a work path from it. *Where:* Layer > Type. *Since:* 2.466.0
 - **Text in a shape** — click inside a shape with the Type tool and the text flows inside its outline. *Where:* the Type tool. *Since:* 2.466.0
 - **Text effect presets** — the same layered 3D text presets as the timeline, drawn live. *Where:* the Type options bar, a text layer's Properties. *Since:* 2.411.0
+- **Presets through every shape** — warp, round a circle, along a path, vertical and 3D keep the text's preset (3D sides in its colour, darker). *Where:* ⌒ Shape / 3D… *Since:* 2.607.0
 
 ### Pen, paths and vector masks
 

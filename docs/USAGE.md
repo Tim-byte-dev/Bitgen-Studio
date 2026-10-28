@@ -6081,6 +6081,16 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.607.0: **Text presets stay on through shapes and 3D** - a text with a preset (Gold, Chrome, a PSD text effect ...)
+  keeps it when you warp it, put it round a circle or along a path, make it vertical or 3D (image editor ▸ ⌒ Shape /
+  3D…); the 3D sides take the preset's colour, darker (or the side colour you set). On the timeline a preset text now
+  gets ✨ Text Animators and 〰 On a path too, and 3D text (🧊 ▸ 3D text) has its own Preset ▾ - the preset's look is
+  the front face, the sides its colour.
+- 2.607.0: **New text starts with your preset** - on the timeline, with nothing selected Properties shows New text ▸
+  Preset; the T tool's next text starts with it (picking a preset on any text sets it too).
+- 2.607.0: **Every font on your computer** - each font list (image editor Type tool, Properties, Character panel;
+  timeline text, 3D text, captions; karaoke style) keeps the usual fonts at the top under "Common" and lists every font
+  installed on this computer under "This computer (N)".
 - 2.606.0: **A click on a text picks it and switches to the Move tool** - also with the Type tool in hand (it used
   to open the text for typing). **Double-click** a text to edit it - the caret goes where you double-clicked. Picking a
   layer in the Layers panel with a drawing or Type tool in hand also switches to the Move tool. The rotate / skew

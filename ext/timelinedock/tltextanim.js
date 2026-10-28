@@ -157,10 +157,13 @@
       var OP = onPath(c) ? pathAt(c, tau) : null, OL = OP ? shapeOutline(OP, tau) : null;
       var sig = JSON.stringify([t, As, OP, OL ? OL.length + ":" + OL[0] : 0]), was = cache.get(c);
       if (was && was.sig === sig) return was.cv;
+      // 2.607.0: a TEXT PRESET (t.fx) is kept: the letters drawn bare (its stack brings the outline and shadows), then the
+      // preset laid over the animated / on-a-path letters (static/textfx.js faceLive - quick while it changes, sharp after)
+      var FX = t.fx && window.H3TextFx && H3TextFx.faceLive ? t.fx : null;
       var size = Math.max(4, Math.min(1000, +t.size || 48)), font = (t.italic ? "italic " : "") + (t.bold ? "bold " : "") + size + "px \"" + (t.font || "Arial") + "\", sans-serif";
-      var cv = (was && was.cv) || document.createElement("canvas"), g = cv.getContext("2d");
+      var cv = (!FX && was && !was.fx && was.cv) || document.createElement("canvas"), g = cv.getContext("2d");
       g.font = font;
-      var s = String(t.content == null ? "" : t.content), lines = s.split("\n"), sw = Math.max(0, +t.strokeW || 0), sh = t.shadow ? Math.max(2, Math.round(size * 0.06)) : 0;
+      var s = String(t.content == null ? "" : t.content), lines = s.split("\n"), sw = FX ? 0 : Math.max(0, +t.strokeW || 0), sh = !FX && t.shadow ? Math.max(2, Math.round(size * 0.06)) : 0;
       var lh = Math.round(size * 1.22), pad = Math.ceil(sw + sh + size * 0.15);
       // each letter's selection, by its unit, for every animator
       var U = {}, per = [];
@@ -177,7 +180,7 @@
       });
       var M = 0; per.forEach(function (o) { M = Math.max(M, Math.abs(o.x) + Math.abs(o.y) + size * Math.max(0, o.scale - 1) + o.blur * 2); });
       M = Math.ceil(M);
-      if (OP) { onPathPicture(cv, g, font, t, s, layout, per, size, lh, pad, M, sw, sh, OP, OL, c, wmax); cache.set(c, { sig: sig, cv: cv }); return cv; }
+      if (OP) { onPathPicture(cv, g, font, t, s, layout, per, size, lh, pad, M, sw, sh, OP, OL, c, wmax); return FX ? withPreset(c, t, FX, cv, sig, size) : (cache.set(c, { sig: sig, cv: cv }), cv); }
       cv.width = Math.max(2, Math.ceil(wmax + 2 * (pad + M))); cv.height = Math.max(2, Math.ceil(lh * lines.length + 2 * (pad + M)));
       g.clearRect(0, 0, cv.width, cv.height); g.font = font; g.textBaseline = "middle"; g.textAlign = "center"; g.lineJoin = "round";
       var align = t.align === "left" || t.align === "right" ? t.align : "center";
@@ -195,8 +198,23 @@
           g.restore();
         }
       });
+      if (FX) return withPreset(c, t, FX, cv, sig, size);
       cache.set(c, { sig: sig, cv: cv });
       return cv;
+    }
+    /** 2.607.0: the preset over the bare letters; the picture grown the same on every side (its centre stays where the
+     *  layer's position puts it). A quick picture is not kept (the sharp one replaces it and the canvas redraws) */
+    function withPreset(c, t, fx, face, sig, size) {
+      var spec = { text: t.content, font: t.font || "Arial", size: size, weight: t.bold ? 700 : 400, italic: !!t.italic, leading: 1.22 };
+      var r = H3TextFx.faceLive("ta:" + (c.tid || c.uid || ""), sig, fx, function () { return { canvas: face, hRef: H3TextFx.inkHeight(spec), color: t.color || "#ffffff" }; },
+        function () { try { C.mark(); } catch (e) { /* fine */ } });
+      if (!r) return face;
+      var W = face.width, Hh = face.height, x0 = Math.floor(r.x), y0 = Math.floor(r.y);
+      var E = Math.max(0, -x0, -y0, Math.ceil(x0 + r.canvas.width - W), Math.ceil(y0 + r.canvas.height - Hh));
+      var out = document.createElement("canvas"); out.width = W + 2 * E; out.height = Hh + 2 * E;
+      out.getContext("2d").drawImage(r.canvas, r.x + E, r.y + E);
+      if (!r.fast) cache.set(c, { sig: sig, cv: out, fx: true });
+      return out;
     }
     /** 2.496.0: the letters along the path: each at its distance along it, turned to it, standing on it (the next lines
      *  below it); the animators' x runs along the path, y across it */
@@ -236,7 +254,7 @@
       return n;
     }
     C.onProps(function (Pn, c, sel) {
-      if (!c || !c.text || !Pn || c.text.fx) return;
+      if (!c || !c.text || !Pn) return;               // 2.607.0: a text with a preset gets animators / a path too (the preset is kept)
       var tau = C.tauOf(c, sel.Ly.kind), anims = c.text.anim || [], d = document.createElement("div"); d.className = "tlp-tanim";
       var h = '<div class="tlp-t">✨ Text Animators</div><div class="tlp-row"><select id="tlpTaPreset"><option value="">Custom</option>'
         + Object.keys(PRESETS(2)).map(function (k) { return '<option value="' + k + '">' + esc(PRESETS(2)[k].name) + "</option>"; }).join("") + '</select><button class="ghost" id="tlpTaAdd" title="A new animator (a preset comes with its keys)">＋ Animator</button></div>';

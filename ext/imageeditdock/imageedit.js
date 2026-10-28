@@ -1065,6 +1065,8 @@
     function refresh() { renderLayers(); drawOverlay(); info(); }
     function renderSoon() { if (rafPending) return; rafPending = true; (win.requestAnimationFrame || ((f) => setTimeout(f, 16)))(() => { rafPending = false; renderLayers(); drawOverlay(); }); }
     win.addEventListener("h3textfx", () => renderSoon());                    // 2.411.0: a text effect preset's sharper picture is in
+    // 2.607.0: a font loaded from its file (static/fontlist.js) - the texts using it drawn again
+    win.addEventListener("h3fontload", (e) => { const f = e && e.detail && e.detail.family; (S.layers || []).forEach((L) => { if (L.type === "text" && L.text && (!f || L.text.font === f)) D.rasterize(L); }); renderSoon(); });
     let scratch = null, scratchM = null;
     /** the active layer's pixels as they are DURING a stroke / a move / a transform */
     function liveSrc(L) {

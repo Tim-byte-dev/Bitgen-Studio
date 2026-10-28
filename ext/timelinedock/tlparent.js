@@ -174,7 +174,9 @@
       var frameBlob = function (i) {
         var t = (c.start || 0) + Math.min(len - 1e-4, i / fps);
         g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = "source-over"; g.clearRect(0, 0, cv.width, cv.height);
-        C.drawClip(g, c, Ly, t);
+        var X = window.H3TextFx && H3TextFx.setSharp ? H3TextFx : null;   // 2.607.0: a text preset baked SHARP (never the quick picture)
+        if (X) X.setSharp(true);
+        try { C.drawClip(g, c, Ly, t); } finally { if (X) X.setSharp(false); }
         return new Promise(function (ok) { cv.toBlob(ok, "image/png"); });
       };
       var send = function (i) {
@@ -183,7 +185,8 @@
       };
       var i = 0;
       var step = function () { if (i >= n) return Promise.resolve(); var k = i++; return send(k).then(function () { if (onProgress) onProgress(i, n); return step(); }); };
-      return step().then(function () {
+      var pre = window.H3TextFx && H3TextFx.load ? Promise.resolve(H3TextFx.load()).catch(function () { /* plain then */ }) : Promise.resolve();
+      return pre.then(step).then(function () {
         return fetch("/api/tlbake/encode", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id, fps: fps, frames: n }) })
           .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
       }).then(function (j) { c.bake = j.name; c.bakeSig = sigOf(x); if (typeof tlSave === "function") tlSave(); return j; });

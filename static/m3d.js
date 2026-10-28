@@ -185,6 +185,41 @@
       .catch(function (e) { fonts[k] = { ready: true, error: String(e.message || e) }; changed(); });
     return fonts[k];
   }
+  /* ---- 2.607.0 (Tim: "keep the text presets when ... shape tools like 3d ... are used"): a TEXT PRESET (m.fx -
+     static/textfx.js) on 3D text - the preset's picture of the same words is the FRONT face (mapped onto the letters'
+     outlines), the sides in the preset's own colour, darker. {ready, tex, side} | {ready, error} */
+  var fxTexs = {};
+  function fxFace(m) {
+    if (!m.fx || !window.H3TextFx || !H3TextFx.full) return null;
+    var k = JSON.stringify([m.fx, m.text, m.font, m.bold, m.italic]);
+    if (fxTexs[k]) return fxTexs[k];
+    var e = fxTexs[k] = { ready: false };
+    var spec = { text: String(m.text == null ? "" : m.text) || " ", font: m.font || "Arial", size: 200, weight: m.bold ? 700 : 400, italic: !!m.italic, align: "left", leading: 1.22, color: m.color || "#ffffff" };
+    H3TextFx.full(spec, m.fx).then(function (r) {
+      if (!r) { fxTexs[k] = { ready: true, error: "preset" }; changed(); return; }
+      var ink = r.ink, cv = document.createElement("canvas");
+      cv.width = Math.max(2, Math.round(ink.w)); cv.height = Math.max(2, Math.round(ink.h));
+      cv.getContext("2d").drawImage(r.canvas, ink.x, ink.y, ink.w, ink.h, 0, 0, cv.width, cv.height);
+      var t = new T.CanvasTexture(cv); t.colorSpace = T.SRGBColorSpace; t.wrapS = t.wrapT = T.ClampToEdgeWrapping; t.anisotropy = 4;
+      var avg = H3TextFx.avgColor ? H3TextFx.avgColor(cv) : null;
+      fxTexs[k] = { ready: true, tex: t, side: avg ? darken(avg, 0.62) : null };
+      changed();
+    }, function () { fxTexs[k] = { ready: true, error: "preset" }; changed(); });
+    return e;
+  }
+  function darken(hex, f) {
+    var v = parseInt(String(hex).slice(1), 16) || 0, h = function (x) { return Math.max(0, Math.min(255, Math.round(x * f))).toString(16).padStart(2, "0"); };
+    return "#" + h((v >> 16) & 255) + h((v >> 8) & 255) + h(v & 255);
+  }
+  /** the front face: the preset picture stretched over the letters' outline box (the caps' UVs are their x / y) */
+  function fxMats(m, f, text, fx) {
+    var sh = new T.ShapeGeometry(f.font.generateShapes(text, 1)); sh.computeBoundingBox();
+    var b = sh.boundingBox, w = Math.max(1e-6, b.max.x - b.min.x), h = Math.max(1e-6, b.max.y - b.min.y); sh.dispose();
+    var t = fx.tex.clone(); t.needsUpdate = true; t.repeat.set(1 / w, 1 / h); t.offset.set(-b.min.x / w, -b.min.y / h);
+    var face = new T.MeshBasicMaterial({ map: t });
+    var side = physical(Object.assign(matSpec(m), fx.side ? { color: fx.side } : {}));
+    return [face, side];
+  }
   function model(name) {
     if (models[name]) return models[name];
     models[name] = { ready: false };
@@ -218,7 +253,10 @@
   function object(c) {
     var m = c.m3d || {}, k;
     if (m.type === "text") {
-      k = JSON.stringify(["t", m.text, m.font, m.bold, m.italic, m.depth, m.bevel, matSpec(m), !!texReady(m)]);
+      var fx = fxFace(m);
+      if (fx && !fx.ready) return null;                 // 2.607.0: the preset's face is being drawn
+      if (fx && fx.error) fx = null;                    // (a preset that cannot draw: the plain material)
+      k = JSON.stringify(["t", m.text, m.font, m.bold, m.italic, m.depth, m.bevel, matSpec(m), !!texReady(m), fx ? m.fx : ""]);
       var f = font(m);
       if (!f.ready) return null;
       if (f.error) return { error: "font: " + f.error };
@@ -227,7 +265,7 @@
         var g = new T.TextGeometry(String(m.text == null ? "" : m.text) || " ", { font: f.font, size: 1, depth: Math.max(0.001, num(m.depth, 0.25)),
           curveSegments: 10, bevelEnabled: num(m.bevel, 0) > 0, bevelThickness: num(m.bevel, 0), bevelSize: num(m.bevel, 0) * 0.6, bevelSegments: 3 });
         g.computeBoundingBox(); g.center();
-        var mesh = new T.Mesh(g, mat(m));
+        var mesh = new T.Mesh(g, fx ? fxMats(m, f, String(m.text == null ? "" : m.text) || " ", fx) : mat(m));
         var root = new T.Group(); root.add(mesh);
         var bb = g.boundingBox, sz = new T.Vector3(); bb.getSize(sz);
         hit = objs[k] = { root: root, box: sz, fit: "box" };

@@ -451,7 +451,7 @@
         <div class="rw"><span>Side colour</span><input type="color" id="ts3C" value="${esc(x.color || darker(t.color || "#000000", 0.55))}"></div>
         <div class="kxrow" style="margin-top:6px"><b>Letters</b></div>
         <div class="kxrow">${TOG.map(([k, lab, tip]) => `<label title="${tip}"><input type="checkbox" data-tsk="${k}" ${t[k] ? "checked" : ""}> ${tip.replace(/ \(.*/, "")}</label>`).join(" ")}</div>
-        <div style="color:var(--pc-dim);font-size:11px;margin-top:4px">Tip: Layer ▸ Layer Style ▸ Bevel & Emboss rounds the face of 3D text; the Styles list has Gold, Chrome, Neon…</div>`;
+        <div style="color:var(--pc-dim);font-size:11px;margin-top:4px">Tip: a text effect preset (Preset ▾) stays on through every shape and 3D (2.607.0); Layer ▸ Layer Style ▸ Bevel & Emboss rounds the face of 3D text; the Styles list has Gold, Chrome, Neon…</div>`;
       ui.dialog("Text Shape / 3D", html, () => { E.commitLive("text shape"); }, { wide: true, cancel: () => E.cancelLive(), init(d) {
         const q = (id) => d.querySelector("#" + id), body = d.querySelector(".pcdb");
         if (body) { body.style.maxHeight = "min(68vh, 600px)"; body.style.overflow = "auto"; }   // a short editor still reaches OK

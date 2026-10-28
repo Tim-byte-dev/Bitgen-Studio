@@ -52,6 +52,8 @@
     drag: null, spaceHand: false, over: false, color: "#ffffff", dirty: true,
   };
   var vids = new WeakMap(), auds = new WeakMap(), imgs = new Map(), texts = new Map();
+  // 2.607.0: a font loaded from its file (static/fontlist.js): the text pictures drawn with the stand-in go
+  window.addEventListener("h3fontload", function () { texts.clear(); try { (tl.images || []).forEach(function (L) { (L.clips || []).forEach(function (c) { if (c.text) saveTextPng(c); }); }); } catch (e) { /* no timeline yet */ } mark(); });
   var pending = {};            // text id -> timer (PNG upload)
 
   /* ------------------------------------------------------------------ the stage's own CSS */
@@ -273,8 +275,10 @@
   /* ------------------------------------------------------------------ TEXT: drawn here, saved as a PNG */
   var FONTS = ["Arial", "Arial Black", "Impact", "Georgia", "Times New Roman", "Verdana", "Trebuchet MS", "Courier New", "Comic Sans MS"];
   function textDefaults() {
-    return { content: "Your text", font: "Arial", size: Math.max(12, Math.round(S.H * 0.08)), color: S.color || "#ffffff",
+    var d = { content: "Your text", font: "Arial", size: Math.max(12, Math.round(S.H * 0.08)), color: S.color || "#ffffff",
              bold: true, italic: false, stroke: "#000000", strokeW: Math.max(0, Math.round(S.H * 0.004)), shadow: true, align: "center" };
+    try { var fx = window.TlTextFx && TlTextFx.newFx ? TlTextFx.newFx() : ""; if (fx) d.fx = fx; } catch (e) { /* plain */ }   // 2.607.0: the last preset picked
+    return d;
   }
   /* 2.411.0: a TEXT EFFECT PRESET (t.fx - static/textfx.js): drawn through the PSD effect's stack, LIVE - a quick picture
      while typing, the sharp one when typing pauses (then the canvas redraws); ⚙ Compile always gets the sharp one */
@@ -1381,6 +1385,7 @@
       if (!valuesOnly) P.innerHTML = '<div class="tlp-t">Properties</div><div class="tlp-none">Select a clip on the canvas or a layer above.'
         + (sel && sel.Ly.kind === "aud" ? " A sound layer has no picture - its volume is on the timeline." : "") + "</div>";
       P._for = null;
+      if (!sel && !valuesOnly && window.TlTextFx && TlTextFx.newTextRow) { try { TlTextFx.newTextRow(P); } catch (e) { /* fine */ } }   // 2.607.0: New text ▸ Preset
       // 2.406.0: a sound clip still gets the hooks (🎧 its clean-up, 🗣 its role in the mix - ext/timelinedock/clipfx.js)
       if (sel && !valuesOnly) propHooks.forEach(function (fn) { try { fn(P, sel.c, sel); } catch (e) { log("[canvas] properties: " + (e.message || e)); } });
       return;

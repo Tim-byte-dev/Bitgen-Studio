@@ -190,7 +190,8 @@
           + '<label><input type="checkbox" id="tlp3Bold"' + (m.bold ? " checked" : "") + "><b>B</b></label>"
           + '<label><input type="checkbox" id="tlp3Ital"' + (m.italic ? " checked" : "") + "><i>I</i></label></div>"
           + '<div class="tlp-row"><label>Depth <input type="number" id="tlp3Depth" min="0" max="5" step="0.05" value="' + num(m.depth, 0.25) + '" style="width:58px"></label>'
-          + '<label>Bevel <input type="number" id="tlp3Bevel" min="0" max="0.5" step="0.01" value="' + num(m.bevel, 0) + '" style="width:58px"></label></div>';
+          + '<label>Bevel <input type="number" id="tlp3Bevel" min="0" max="0.5" step="0.01" value="' + num(m.bevel, 0) + '" style="width:58px"></label></div>'
+          + (window.H3TextFx ? '<div class="tlp-row" id="tlp3FxRow"><span style="font-size:.72rem" title="A text effect preset on the 3D text: its look is the front face, the sides take its colour">Preset</span></div>' : "");   // 2.607.0
       } else {
         h += '<div class="tlp-row"><select id="tlp3Model" title="The model file (projects/&lt;p&gt;/models3d)">'
           + (models.some(function (x) { return x.name === m.model; }) || !m.model ? "" : '<option selected>' + esc(m.model) + "</option>")
@@ -220,6 +221,9 @@
         if (typeof C.paintLayers === "function") C.paintLayers();
       };
       var on = function (id, ev, fn) { var el = $(id); if (el) el.addEventListener(ev, function () { fn(el); touched(); }); };
+      // 2.607.0: a text effect preset on 3D text (static/m3d.js draws its picture on the front face)
+      if ($("tlp3FxRow") && window.H3TextFx) $("tlp3FxRow").appendChild(H3TextFx.picker({ current: m.fx || "", say: function (t) { try { C.say(t); } catch (e) { /* fine */ } },
+        onPick: function (id) { if (id) m.fx = id; else delete m.fx; touched(); } }));
       on("tlp3Text", "input", function (el) { m.text = el.value; });
       on("tlp3Font", "change", function (el) { m.font = el.value; });
       on("tlp3Bold", "change", function (el) { m.bold = el.checked; });

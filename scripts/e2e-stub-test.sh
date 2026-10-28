@@ -12628,6 +12628,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui605-ui.js > /tmp/ui605.log 2>&
 node scripts/test-typepick606.js > /tmp/tp606.log 2>&1 \
   && ok "2.606.0 a click on a text with the Type tool picks it + the Move tool, a double-click edits it at the click, the Layers panel pick, the rotate / skew handles button" \
   || { bad "2.606.0 text pick"; grep -a "^FAIL" -A2 /tmp/tp606.log | head -14; }
+# ---- 2.607.0 (Tim: "is it possible to keep the text presets when operations when shape tools like 3d , warp etc are used.
+# Use all the fonts that are installed in the os. add text presets to timeline and other text tools as well")
+node scripts/test-fx607.js > /tmp/fx607.log 2>&1 \
+  && ok "2.607.0 text presets through shapes / 3D, presets on animated / 3D / new timeline text, every OS font in the font lists - the pure part + the wiring" \
+  || { bad "2.607.0 presets / fonts units"; grep -a "^FAIL" -A2 /tmp/fx607.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui607-ui.js > /tmp/ui607.log 2>&1 \
+  && ok "2.607.0 browser test: a Gold text stays gold warped / 3D / round a circle / vertical (image editor), the font lists have every font here, timeline New text ▸ Preset, animators + on a path keep the preset, 3D text with a preset - or SKIP without playwright" \
+  || { bad "2.607.0 presets / fonts browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui607.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

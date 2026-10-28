@@ -19,6 +19,7 @@
       current: c.text.fx || "", say,
       onPick: function (id) {
         if (id) c.text.fx = id; else delete c.text.fx;
+        setNewFx(id || "");                              // 2.607.0: the next new text gets it too
         TlCanvas.saveTextPng(c); TlCanvas.mark();
         if (typeof tlSave === "function") tlSave();
         note();
@@ -36,7 +37,20 @@
     row.parentNode.insertBefore(n, row.nextSibling);
     note();
   }
-  function boot() { if (!ready()) { setTimeout(boot, 120); return; } TlCanvas.onProps(hook); H3TextFx.load(); }
-  window.TlTextFx = { hook };
+  /* 2.607.0 - Tim (verbatim): "add text presets to timeline and other text tools as well". The T tool's NEW text starts
+     with the preset last picked (here, or in Properties ▸ Preset of any text); with nothing selected, Properties shows
+     "New text ▸ Preset" to pick it before clicking the canvas. Kept in the browser (localStorage h3.tl.newTextFx). */
+  var NEW_KEY = "h3.tl.newTextFx";
+  function newFx() { try { var v = localStorage.getItem(NEW_KEY) || ""; return v && (!window.H3TextFx || !H3TextFx.list().length || H3TextFx.byId(v)) ? v : ""; } catch (e) { return ""; } }
+  function setNewFx(id) { try { if (id) localStorage.setItem(NEW_KEY, id); else localStorage.removeItem(NEW_KEY); } catch (e) { /* private window */ } }
+  function newTextRow(P) {
+    if (!P || !window.H3TextFx || $("tlpNewFx")) return;
+    var d = document.createElement("div"); d.id = "tlpNewFx"; d.style.cssText = "margin-top:8px";
+    d.innerHTML = '<div class="tlp-t">New text (T tool)</div><div class="tlp-row" id="tlpNewFxRow"><span style="font-size:.72rem" title="The text effect preset a new text starts with (the T tool)">Preset</span></div>';
+    d.querySelector("#tlpNewFxRow").appendChild(H3TextFx.picker({ current: newFx(), say: say, onPick: function (id) { setNewFx(id || ""); say(id ? "new text will use the preset " + ((H3TextFx.byId(id) || {}).name || id) : "new text: no preset"); } }));
+    P.appendChild(d);
+  }
+  function boot() { if (!ready()) { setTimeout(boot, 120); return; } TlCanvas.onProps(hook); H3TextFx.load(); try { TlCanvas.paintProps(); } catch (e) { /* fine */ } }
+  window.TlTextFx = { hook: hook, newFx: newFx, setNewFx: setNewFx, newTextRow: newTextRow };
   boot();
 })();

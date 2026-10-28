@@ -29,6 +29,10 @@
  *   drawText(g, t, slot, onFull) the image editor's text layer through its preset (false = not ready: draw it plain)
  *   list() / load() / byId(id) / importFile(file) / remove(id) / picker({current, onPick})  the presets + the dropdown
  * The ten classic looks (Gold, Chrome, Neon ...: pcstyles.js) are presets here too ("style:<name>").
+ * 2.607.0 (Tim: "keep the text presets when ... shape tools like 3d , warp etc are used"): stack() is shared - renderFace(face,
+ * preset, {box, hRef, color, fast}) lays a preset over ANY drawing of the words (warped, round a circle, 3D, vertical,
+ * animated letter by letter); faceLive / faceFull its live / sharp versions; setSharp(on) while a bake draws frames
+ * (never the quick picture); inkHeight(spec), avgColor(canvas) (3D sides / faces in the preset's colours).
  */
 (function (root) {
   "use strict";
@@ -298,30 +302,49 @@
     const cap = o.fast ? (o.cap || 150) : (o.cap || 900);
     let q = 1;
     if (L0.ink.h > cap) { q = cap / L0.ink.h; L0 = layout(spec, size * q) || L0; if (L0 === null) return null; }
-    const inkW = L0.ink.w, inkH = L0.ink.h, k = inkH / P.ref.inkH;
-    // the margin: the copies' moves + the effects at every depth
-    let mv = 0, lev = [];
-    (function walk(ns, d) {
-      for (const n of ns) {
-        lev[d] = Math.max(lev[d] || 0, extent(n.styles) * k);
-        if (n.type === "group") walk(n.kids, d + 1);
-        else mv = Math.max(mv, (Math.abs(n.t.dx) + Math.abs(n.t.dy) + Math.abs(n.t.ey) * 2) * inkH + Math.abs(n.t.ex) * 2 * inkH);
-      }
-    })(P.nodes, 0);
-    const m = Math.ceil(mv + lev.reduce((a, b) => a + (b || 0), 0) + 4);
+    const inkW = L0.ink.w, inkH = L0.ink.h, m = marginOf(P, inkH);
     const W = inkW + m * 2, H = inkH + m * 2;
     const sil = newCanvas(W, H), sg = sil.getContext("2d");
     sg.drawImage(L0.canvas, m - L0.ink.x, m - L0.ink.y);
     sg.globalCompositeOperation = "source-in"; sg.fillStyle = P.fill || spec.color || "#ffffff"; sg.fillRect(0, 0, W, H);
+    // the stroke of the word itself: drawn from its outlines (pcdoc.js asks; anything else it dilates)
+    const dilate = (r, col) => { const c = newCanvas(W, H), g = c.getContext("2d"); g.translate(m - L0.ink.x, m - L0.ink.y); L0.outline(g, r, col || "#000"); return c; };
+    let out = stack(P, sil, W, H, m, inkW, inkH, inkH, dilate);
+    let anchor = { x: m - L0.ink.x + L0.ax, y: m - L0.ink.y + L0.ay }, ink = { x: m, y: m, w: inkW, h: inkH };
+    if (q < 1) {
+      out = scaleUp(out, q); anchor = { x: anchor.x / q, y: anchor.y / q }; ink = { x: m / q, y: m / q, w: inkW / q, h: inkH / q };
+    }
+    return { canvas: out, anchor, ink, fast: q < 1, q };
+  }
+  function scaleUp(c, q) {
+    const up = newCanvas(c.width / q, c.height / q), ug = up.getContext("2d");
+    ug.imageSmoothingQuality = "high"; ug.drawImage(c, 0, 0, up.width, up.height);
+    return up;
+  }
+  /** the margin round the ink the copies' moves + the effects at every depth need (hRef = the letters' height) */
+  function marginOf(P, hRef) {
+    const k = hRef / P.ref.inkH;
+    let mv = 0; const lev = [];
+    (function walk(ns, d) {
+      for (const n of ns) {
+        lev[d] = Math.max(lev[d] || 0, extent(n.styles) * k);
+        if (n.type === "group") walk(n.kids, d + 1);
+        else mv = Math.max(mv, (Math.abs(n.t.dx) + Math.abs(n.t.dy) + Math.abs(n.t.ey) * 2) * hRef + Math.abs(n.t.ex) * 2 * hRef);
+      }
+    })(P.nodes, 0);
+    return Math.ceil(mv + lev.reduce((a, b) => a + (b || 0), 0) + 4);
+  }
+  /**
+   * THE PRESET'S STACK on a silhouette (2.607.0 - shared by the straight word and a SHAPED one): sil is W x H with the
+   * ink box (inkW x inkH) at (m, m); hRef = the letters' height (what the effects and the copies' moves scale with - the
+   * ink height for a straight word; for a warped / 3D / path text the height its straight words would have)
+   * dilate(r, col) -> a canvas | null (null = pcdoc.js dilates the silhouette itself)
+   */
+  function stack(P, sil, W, H, m, inkW, inkH, hRef, dilate) {
+    const k = hRef / P.ref.inkH;
     const cx = m + inkW / 2, cy = m + inkH / 2;
     const env = { newCanvas, srcFor: (L) => L.canvas, compositeOf, maskSrc: null,
-      // the stroke of the word itself: drawn from its outlines (pcdoc.js asks; anything else it dilates)
-      dilate: (content, r, col) => {
-        if (content !== sil) return null;
-        const c = newCanvas(W, H), g = c.getContext("2d");
-        g.translate(m - L0.ink.x, m - L0.ink.y); L0.outline(g, r, col || "#000");
-        return c;
-      } };
+      dilate: (content, r, col) => (content === sil && dilate ? dilate(r, col) : null) };
     const baked = new Map();
     const bake = (n) => {
       const st = scaleStyles(n.styles, k), fo = n.fillOpacity == null ? 1 : n.fillOpacity;
@@ -329,7 +352,7 @@
       if (!baked.has(key)) baked.set(key, root.PCDoc.styled(env, { id: "tfx:" + P.id + ":" + baked.size, styles: st, fillOpacity: fo }, sil, W, H));
       return baked.get(key);
     };
-    const tfOf = (n) => ({ sx: 1 + 2 * n.t.ex * inkH / inkW, sy: 1 + 2 * n.t.ey, tx: n.t.dx * inkH, ty: n.t.dy * inkH });
+    const tfOf = (n) => ({ sx: 1 + 2 * n.t.ex * hRef / Math.max(1, inkW), sy: 1 + 2 * n.t.ey * hRef / Math.max(1, inkH), tx: n.t.dx * hRef, ty: n.t.dy * hRef });
     const layers = [];
     let nid = 0;
     const emit = (ns, parent) => {
@@ -361,14 +384,60 @@
     // PCDoc wants the flat list bottom-to-top with a group's children right below it
     const flat = [], kidsOf = (pid) => layers.filter((L) => L.parent === pid);
     (function put(pid) { for (const L of kidsOf(pid)) { if (L.type === "group") put(L.id); flat.push(L); } })(null);
-    let out = root.PCDoc.render({ w: W, h: H, layers: flat }, env);
-    let anchor = { x: m - L0.ink.x + L0.ax, y: m - L0.ink.y + L0.ay }, ink = { x: m, y: m, w: inkW, h: inkH };
-    if (q < 1) {
-      const up = newCanvas(W / q, H / q), ug = up.getContext("2d");
-      ug.imageSmoothingQuality = "high"; ug.drawImage(out, 0, 0, up.width, up.height);
-      out = up; anchor = { x: anchor.x / q, y: anchor.y / q }; ink = { x: m / q, y: m / q, w: inkW / q, h: inkH / q };
-    }
-    return { canvas: out, anchor, ink, fast: q < 1, q };
+    return root.PCDoc.render({ w: W, h: H, layers: flat }, env);
+  }
+  /** the ink box (alpha > 8) of a canvas inside box {x, y, w, h} (clamped) -> {x, y, w, h} | null */
+  function inkOf(c, box) {
+    const b = box || { x: 0, y: 0, w: c.width, h: c.height };
+    const x0 = Math.max(0, Math.floor(b.x)), y0 = Math.max(0, Math.floor(b.y));
+    const x1 = Math.min(c.width, Math.ceil(b.x + b.w)), y1 = Math.min(c.height, Math.ceil(b.y + b.h));
+    const w = x1 - x0, h = y1 - y0; if (w <= 0 || h <= 0) return null;
+    const d = c.getContext("2d").getImageData(x0, y0, w, h).data;
+    let a = w, t = h, r = -1, btm = -1;
+    for (let y = 0; y < h; y++) { const row = y * w * 4; for (let x = 0; x < w; x++) if (d[row + x * 4 + 3] > 8) { if (x < a) a = x; if (x > r) r = x; if (y < t) t = y; if (y > btm) btm = y; } }
+    return r < 0 ? null : { x: x0 + a, y: y0 + t, w: r - a + 1, h: btm - t + 1 };
+  }
+  /** the height a straight block of these words has (what render() scales the effects by) - measured, no pixels */
+  function inkHeight(spec) {
+    const size = Math.max(2, num(spec.size, 48)), lines = String(spec.text == null ? "" : spec.text).split("\n");
+    const g = newCanvas(4, 4).getContext("2d"); g.font = fontCss(Object.assign({}, spec, { size })); g.textBaseline = "alphabetic";
+    const m0 = g.measureText(lines[0] || "H"), m1 = g.measureText(lines[lines.length - 1] || "H");
+    const asc = m0.actualBoundingBoxAscent, desc = m1.actualBoundingBoxDescent;
+    const one = Number.isFinite(asc) && Number.isFinite(desc) && asc + desc > 0 ? asc + desc : size * 0.75;
+    return Math.max(2, one + (lines.length - 1) * size * (spec.leading || 1.22));
+  }
+  /**
+   * 2.607.0 - Tim (verbatim): "is it possible to keep the text presets when operations when shape tools like 3d , warp etc
+   * are used". A preset on ANY drawing of the words: `face` is a canvas with the text drawn plainly (warped, round a
+   * circle, along a path, vertical, letter by letter, animated ...), o = {box (where to look for it), hRef (the letters'
+   * height - inkHeight(spec)), color, fast, cap}. -> {canvas, x, y (where it goes in face's coordinates), fast} | null
+   */
+  function renderFace(face, preset, opts) {
+    const P = typeof preset === "string" ? byId(preset) : preset;
+    if (!P || !root.PCDoc || !root.PCStyles || !face) return null;
+    const o = opts || {}, ink = inkOf(face, o.box);
+    if (!ink) return null;
+    const hRef0 = Math.max(2, num(o.hRef, ink.h)), cap = o.fast ? (o.cap || 150) : (o.cap || 900);
+    const q = hRef0 > cap ? cap / hRef0 : 1;
+    const inkW = Math.max(1, Math.round(ink.w * q)), inkH = Math.max(1, Math.round(ink.h * q)), hRef = hRef0 * q, m = marginOf(P, hRef);
+    const W = inkW + m * 2, H = inkH + m * 2;
+    const sil = newCanvas(W, H), sg = sil.getContext("2d");
+    sg.imageSmoothingQuality = "high"; sg.drawImage(face, ink.x, ink.y, ink.w, ink.h, m, m, inkW, inkH);
+    sg.globalCompositeOperation = "source-in"; sg.fillStyle = P.fill || o.color || "#ffffff"; sg.fillRect(0, 0, W, H);
+    let out = stack(P, sil, W, H, m, inkW, inkH, hRef, null);
+    if (q < 1) out = scaleUp(out, q);
+    const kx = ink.w / inkW, ky = ink.h / inkH;
+    return { canvas: out, x: ink.x - m * kx, y: ink.y - m * ky, ink, fast: q < 1, q };
+  }
+  /** the average colour of a picture's solid pixels ("#rrggbb") - the sides of a 3D text in its preset's colours */
+  function avgColor(c) {
+    if (!c || !c.width) return null;
+    const s = newCanvas(32, 32), g = s.getContext("2d"); g.drawImage(c, 0, 0, 32, 32);
+    const d = g.getImageData(0, 0, 32, 32).data; let r = 0, gg = 0, b = 0, n = 0;
+    for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 200) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; n++; }
+    if (!n) return null;
+    const h = (v) => Math.round(v / n).toString(16).padStart(2, "0");
+    return "#" + h(r) + h(gg) + h(b);
   }
 
   /* ---- live: the best picture now, the full one once typing pauses.
@@ -378,19 +447,24 @@
   const results = new Map(), timers = new Map(), cost = new Map(), lastAt = new Map(), latest = new Map();
   const keyOf = (spec, id) => id + "|" + JSON.stringify([spec.text, spec.font, spec.size, spec.weight, spec.italic, spec.align, spec.leading, spec.tracking, spec.color]);
   function remember(key, r) { results.set(key, r); if (results.size > 80) results.delete(results.keys().next().value); }
-  function quick(spec, id) {
-    const c = cost.get(id) || { cap: 150, ms: 0 }, t0 = Date.now();
-    const r = render(spec, id, { fast: true, cap: c.cap });
+  // 2.607.0: SHARP mode (a bake / an export draws frame after frame - each must be the full picture, never a quick one)
+  let sharp = 0;
+  function setSharp(on) { sharp = Math.max(0, sharp + (on ? 1 : -1)); return sharp > 0; }
+  /** a job = {key, id, run(opts) -> result}: render() of a spec, or renderFace() of a shaped drawing (2.607.0) */
+  function quick(job) {
+    const id = job.id, c = cost.get(id) || { cap: 150, ms: 0 }, t0 = Date.now();
+    const r = job.run({ fast: true, cap: c.cap });
     const ms = Date.now() - t0;
     if (r && r.fast) { c.ms = ms; c.cap = Math.round(clamp(c.cap * Math.sqrt(BUDGET / Math.max(1, ms)), 60, 150)); cost.set(id, c); }
     if (r) r.ms = ms;
     return r;
   }
   /** onUpdate(result) - called when a newer / sharper picture for this slot is ready (draw again) */
-  function live(slot, spec, id, onUpdate) {
-    const key = keyOf(spec, id), hit = results.get(key);
+  function liveJob(slot, job, onUpdate) {
+    const key = job.key, id = job.id, hit = results.get(key);
     if (hit && !hit.fast) return hit;
-    if (!ready() || !byId(id)) { load().then(() => { if (byId(id) && onUpdate) { const r = quick(spec, id); if (r) { remember(key, r); latest.set(slot, r); onUpdate(r); later(slot, spec, id, onUpdate); } } }); return null; }
+    if (!ready() || !byId(id)) { load().then(() => { if (byId(id) && onUpdate) { const r = quick(job); if (r) { remember(key, r); latest.set(slot, r); onUpdate(r); later(slot, job, onUpdate); } } }); return null; }
+    if (sharp) { const f = job.run({ fast: false }); if (f) { remember(key, f); latest.set(slot, f); } return f; }
     let r = hit;
     if (!r) {
       const c = cost.get(id), since = Date.now() - (lastAt.get(slot) || 0);
@@ -398,31 +472,33 @@
         // typing faster than this machine draws it: keep the last picture, draw the newest one in a moment
         clearTimeout(timers.get(slot + ":q"));
         timers.set(slot + ":q", setTimeout(() => {
-          const r2 = results.get(key) || quick(spec, id);
+          const r2 = results.get(key) || quick(job);
           if (r2) { remember(key, r2); latest.set(slot, r2); lastAt.set(slot, Date.now()); if (onUpdate) onUpdate(r2); }
         }, Math.max(16, c.ms * 1.5 - since)));
-        later(slot, spec, id, onUpdate);
+        later(slot, job, onUpdate);
         return latest.get(slot);
       }
-      r = quick(spec, id);
+      r = quick(job);
       if (!r) return null;
       remember(key, r);
       lastAt.set(slot, Date.now());
     }
     latest.set(slot, r);
-    if (r.fast) later(slot, spec, id, onUpdate);
+    if (r.fast) later(slot, job, onUpdate);
     return r;
   }
   /** the sharp picture ~0.35 s after the last change */
-  function later(slot, spec, id, onUpdate) {
+  function later(slot, job, onUpdate) {
     clearTimeout(timers.get(slot));
     timers.set(slot, setTimeout(() => {
       timers.delete(slot);
-      const key = keyOf(spec, id);
-      const f = results.get(key) && !results.get(key).fast ? results.get(key) : render(spec, id, { fast: false });
+      const key = job.key;
+      const f = results.get(key) && !results.get(key).fast ? results.get(key) : job.run({ fast: false });
       if (f) { remember(key, f); latest.set(slot, f); if (onUpdate) onUpdate(f); }
     }, 350));
   }
+  const specJob = (spec, id) => ({ key: keyOf(spec, id), id, run: (o) => render(spec, id, o) });
+  function live(slot, spec, id, onUpdate) { return liveJob(slot, specJob(spec, id), onUpdate); }
   /** the full-quality picture (the export) */
   function full(spec, id) {
     return load().then(() => {
@@ -430,6 +506,22 @@
       if (hit && !hit.fast) return hit;
       const r = render(spec, id, { fast: false });
       if (r) remember(key, r);
+      return r;
+    });
+  }
+  /**
+   * 2.607.0: a SHAPED text, live: key = everything its drawing depends on (+ the preset id), make() -> {canvas (the
+   * words drawn plainly), box, hRef, color} | null. -> renderFace()'s result (x / y in make()'s canvas) | null
+   */
+  function faceLive(slot, key, id, make, onUpdate) {
+    return liveJob(slot, { key: "face|" + id + "|" + key, id, run: (o) => { const f = make(); return f ? renderFace(f.canvas, id, Object.assign({}, f, o)) : null; } }, onUpdate);
+  }
+  function faceFull(key, id, make) {
+    return load().then(() => {
+      const k = "face|" + id + "|" + key, hit = results.get(k);
+      if (hit && !hit.fast) return hit;
+      const f = make(); const r = f ? renderFace(f.canvas, id, Object.assign({}, f, { fast: false })) : null;
+      if (r) remember(k, r);
       return r;
     });
   }
@@ -534,7 +626,7 @@
     box.refresh = (id) => { cur = id || ""; paint(); };
     return box;
   }
-  Object.assign(api, { ensure, ready, load, list: () => list || [], byId, onList, render, live, full, drawText, costOf: (id) => cost.get(id) || null, importFile, remove, rename, picker, layout, _results: results });
+  Object.assign(api, { ensure, ready, load, list: () => list || [], byId, onList, render, live, full, drawText, renderFace, faceLive, faceFull, inkOf, inkHeight, avgColor, setSharp, isSharp: () => sharp > 0, fontCss, costOf: (id) => cost.get(id) || null, importFile, remove, rename, picker, layout, _results: results });
   root.H3TextFx = api;
   if (typeof fetch === "function") load();
 })(typeof window !== "undefined" ? window : globalThis);
