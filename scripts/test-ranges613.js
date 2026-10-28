@@ -38,7 +38,7 @@ check("hoverText: timecode · seconds · frame", G.hoverText(2.04, 24, "00:00:02
 
 const S = read("ext/timelinedock/tlranges.js");
 check("the page: a Ctrl TAP (pressed + let go alone, any other key / press cancels) while it plays or over the timeline; ▼ in the ruler + a band on the layer; drag shows the frame (TlCanvas.go); right-click / Del removes",
-  /if \(e\.key === "Control"\) \{ if \(!e\.repeat\) armed = performance\.now\(\); return; \}/.test(S) && /if \(!playing\(\) && !overTl\(\)\) return;/.test(S) && /ruler\.appendChild\(mark\(r, i, side\)\)/.test(S) && /tlrband/.test(S)
+  /if \(e\.key === "Control"\) \{ if \(!e\.repeat \|\| !armed\) armed = performance\.now\(\); return; \}/.test(S) && /if \(!playing\(\) && !overTl\(\)\) return;/.test(S) && /ruler\.appendChild\(mark\(r, i, side\)\)/.test(S) && /tlrband/.test(S)
   && /if \(t !== r\[side\]\) \{ r\[side\] = t; paint\(\); show\(t\); \}/.test(S) && /addEventListener\("contextmenu"/.test(S) && /hsla\(/.test(S));
 check("✂ Cut all: /api/timeline/edit per range from the end, the pieces of a clip cut more than once joined (TlJoin.joinChain); ⏩ Speed up: speedRange with H3Marks.splitClip; tl.ranges kept with the timeline",
   /fetch\("\/api\/timeline\/edit"/.test(S) && /TlJoin\.joinChain\(/.test(S) && /H3Marks\.splitClip\(c, t,/.test(S) && /T\.ranges = \[\]/.test(S) && /h3\.tl\.prate/.test(S));

@@ -10,6 +10,12 @@
  * options. can i speed up a range in my clip, so if a file is rendering in the video can make it look like fast forward
  * instead of waiting for the entire render time".
  *
+ *   2.614.0 (Tim: "if a range or ranges are selected and user clicks cut then cut the selected ranges ... they are only
+ *            working when i drag the timeline and press ctrl not while the clip is playing"): a click on a ▼ PICKS its
+ *            range (Ctrl / Shift + click: more); ✂ Cut (the ▼ group's, or the selection bar's) cuts the picked ones, none
+ *            picked = all; ⏩ / ✕ likewise; Esc unpicks; Del removes the picked markers. Ctrl taps now count with a list,
+ *            a ticked box, the zoom slider or a button focused (only a box you type in holds them back), held up to
+ *            1.2 s, and while the preview docker's player plays a clip that is on the timeline (its time on the timeline).
  *   CTRL (a tap - pressed and let go alone)  while the preview plays (or with the pointer on the timeline): a ▼ in the
  *            time ruler at the position marker = a range's START on the highlighted layer; Ctrl again = its END (a second
  *            ▼). Playback carries on. As many ranges as you like - each its own colour, its band drawn on its layer's row.
@@ -82,13 +88,37 @@
   function label(lk) { try { return typeof lkLabel === "function" ? lkLabel(lk) : lk; } catch (e) { return lk; } }
   function exists(lk) { try { return typeof lkExists === "function" ? lkExists(lk) : false; } catch (e) { return false; } }
   function typing() { var a = document.activeElement; return !!(a && a !== document.body && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))); }
-  function playing() { try { return !!(TlCanvas.state && TlCanvas.state.playing) || (typeof pv === "object" && pv && pv.on && !pv.paused); } catch (e) { return false; } }
-  function now() { try { if (TlCanvas.state && TlCanvas.state.playing) return TlCanvas.state.t; } catch (e) { /* fine */ } try { return typeof playhead === "number" && isFinite(playhead) ? playhead : 0; } catch (e) { return 0; } }
+  /** 2.614.0: the preview docker's player playing a clip that is on the timeline (a click on a clip plays it there):
+   *  {t: the timeline time, lk} - the clip on the highlighted layer first */
+  function playerAt() {
+    var p = $("player"); if (!p || p.paused || p.ended || p.classList.contains("hidden")) return null;
+    var name = ""; try { name = typeof curVideo === "string" ? curVideo : ""; } catch (e) { name = ""; }
+    if (!name) { try { name = decodeURIComponent(String(p.currentSrc || p.src).split("?")[0].split("/").pop()); } catch (e) { return null; } }
+    var ct = +p.currentTime || 0, T = tlObj(); if (!T) return null;
+    var lks = ["v1"].concat((T.vlayers || []).map(function (_, i) { return "vl:" + i; }));
+    if (T.selLayer && lks.indexOf(T.selLayer) > 0) { lks.splice(lks.indexOf(T.selLayer), 1); lks.unshift(T.selLayer); } else if (T.selLayer === "v1") { /* first already */ }
+    for (var i = 0; i < lks.length; i++) {
+      var cl = lkClips(lks[i]) || [];
+      for (var j = 0; j < cl.length; j++) { var c = cl[j]; if (c.name === name && ct >= (+c.in || 0) - 1e-3 && ct <= (c.out != null ? +c.out : 1e9) + 1e-3) return { t: (+c.start || 0) + ct - (+c.in || 0), lk: lks[i] }; }
+    }
+    return null;
+  }
+  function playing() { try { return !!(TlCanvas.state && TlCanvas.state.playing) || (typeof pv === "object" && pv && pv.on && !pv.paused) || !!playerAt(); } catch (e) { return false; } }
+  function now() {
+    try { if (TlCanvas.state && TlCanvas.state.playing) return TlCanvas.state.t; } catch (e) { /* fine */ }
+    try { if (!(typeof pv === "object" && pv && pv.on)) { var pa = playerAt(); if (pa) return pa.t; } } catch (e) { /* fine */ }
+    try { return typeof playhead === "number" && isFinite(playhead) ? playhead : 0; } catch (e) { return 0; }
+  }
+  /** 2.614.0: only a box you TYPE in holds Ctrl back (a ticked box, a list, the zoom slider or a button focused do not) */
+  function texting() { var a = document.activeElement; if (!a || a === document.body) return false; if (a.isContentEditable || a.tagName === "TEXTAREA") return true;
+    return a.tagName === "INPUT" && /^(text|search|number|email|url|password|tel|)$/i.test(a.type || ""); }
   function col(h, a) { return "hsla(" + h + ",88%,60%," + (a == null ? 1 : a) + ")"; }
   function list() { var T = tlObj(); if (!T) return []; if (!Array.isArray(T.ranges)) T.ranges = []; return T.ranges; }
   function save() { if (typeof tlSave === "function") tlSave(); }
 
-  var pend = null, pick = -1;
+  var pend = null, chosen = [];                       // 2.614.0: the ranges picked (a click on a ▼; Ctrl / Shift + click adds)
+  function picked() { var R = list(); chosen = chosen.filter(function (r) { return R.indexOf(r) >= 0; }); return chosen; }
+  function isPicked(r) { return chosen.indexOf(r) >= 0; }
 
   /* ---------------- painting: ▼ in the ruler, the band on its layer's row */
   var CSS = ".tlrm{position:absolute;top:0;width:13px;margin-left:-6.5px;height:16px;line-height:15px;text-align:center;font-size:12px;z-index:5;cursor:ew-resize;user-select:none;text-shadow:0 1px 2px #000}"
@@ -108,21 +138,25 @@
     R.forEach(function (r, i) {
       if (ruler) ["a", "b"].forEach(function (side) { ruler.appendChild(mark(r, i, side)); });
       var tr = trackOf(r.lk); if (!tr) return;
-      var d = document.createElement("div"); d.className = "tlrband" + (i === pick ? " pick" : "");
+      var d = document.createElement("div"); d.className = "tlrband" + (isPicked(r) ? " pick" : "");
       d.style.left = (labw() + r.a * pxs()) + "px"; d.style.width = Math.max(2, (r.b - r.a) * pxs()) + "px";
       d.style.background = col(r.hue, 0.22); d.style.borderColor = col(r.hue);
-      d.innerHTML = '<span class="lab"></span>'; d.querySelector(".lab").textContent = (i + 1) + " · " + (r.b - r.a).toFixed(2) + " s";
+      d.innerHTML = '<span class="lab"></span>'; d.querySelector(".lab").textContent = (isPicked(r) ? "✓ " : "") + (i + 1) + " · " + (r.b - r.a).toFixed(2) + " s";
       tr.appendChild(d);
     });
     if (pend && ruler) { var m = mark({ a: pend.a, hue: pend.hue, lk: pend.lk }, -1, "a"); m.classList.add("pend"); m.title = "A range starts here on " + label(pend.lk) + " - Ctrl again ends it, Esc forgets it"; ruler.appendChild(m); }
     var n = $("tlRangeN"); if (n) n.textContent = String(R.length);
     var g = $("tlRangeGrp"); if (g) g.classList.toggle("none", !R.length);
+    var P = picked(), cb = $("tlRangeCut"), fb = $("tlRangeFast"), xb = $("tlRangeClr");
+    if (cb) { cb.textContent = P.length ? "✂ Cut " + P.length + " picked" : "✂ Cut all"; }
+    if (fb) { fb.textContent = P.length ? "⏩ Speed up " + P.length : "⏩ Speed up"; }
+    if (xb) xb.title = P.length ? "Remove the picked range markers (the clips stay as they are)" : "Remove every range marker (the clips stay as they are)";
   }
   function mark(r, i, side) {
-    var m = document.createElement("div"); m.className = "tlrm" + (i === pick && i >= 0 ? " pick" : ""); m.textContent = "▼";
+    var m = document.createElement("div"); m.className = "tlrm" + (i >= 0 && isPicked(r) ? " pick" : ""); m.textContent = "▼";
     m.dataset.i = i; m.dataset.side = side; m.style.color = col(r.hue);
     m.style.left = (labw() + r[side] * pxs()) + "px";
-    m.title = "Range " + (i + 1) + (side === "a" ? " start " : " end ") + (+r[side]).toFixed(2) + " s on " + label(r.lk) + " - drag to move (the preview shows the frame), right-click removes the range";
+    m.title = "Range " + (i + 1) + (side === "a" ? " start " : " end ") + (+r[side]).toFixed(2) + " s on " + label(r.lk) + " - click picks it (Ctrl / Shift + click: more), ✂ Cut cuts the picked ones; drag to move (the preview shows the frame); right-click removes the range";
     if (i >= 0) { m.addEventListener("pointerdown", drag); m.addEventListener("contextmenu", function (e) { e.preventDefault(); e.stopPropagation(); remove(i); }); }
     else m.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
     return m;
@@ -131,8 +165,12 @@
     if (e.button !== 0) return;
     e.preventDefault(); e.stopPropagation();
     var i = +e.currentTarget.dataset.i, side = e.currentTarget.dataset.side, r = list()[i]; if (!r) return;
+    if (e.ctrlKey || e.shiftKey || e.metaKey) {                    // 2.614.0: one more picked / taken out of the pick
+      if (isPicked(r)) chosen.splice(chosen.indexOf(r), 1); else chosen.push(r);
+      paint(); say("▼ " + picked().length + " range(s) picked - ✂ Cut cuts them"); return;
+    }
     if (playing()) { try { TlCanvas.pause(); } catch (x) { /* fine */ } }
-    pick = i;
+    if (!isPicked(r)) chosen = [r];
     var inner = $("tlinner"), rect = inner.getBoundingClientRect(), F = fps(), moved = false, x0 = e.clientX;
     var show = function (t) { try { TlCanvas.go(t); } catch (x) { /* fine */ } };
     var mv = function (ev) {
@@ -153,17 +191,22 @@
   }
   function remove(i) {
     var R = list(); if (!R[i]) return;
-    R.splice(i, 1); pick = -1; save(); paint();
+    var gone = R.splice(i, 1)[0]; if (isPicked(gone)) chosen.splice(chosen.indexOf(gone), 1); save(); paint();
     say("▼ Range " + (i + 1) + " removed - " + R.length + " left");
   }
-  function clearAll() { var T = tlObj(); if (!T) return; T.ranges = []; pend = null; pick = -1; save(); paint(); say("▼ Ranges cleared"); }
+  function clearAll() {
+    var T = tlObj(); if (!T) return; var P = picked();
+    if (P.length) { T.ranges = list().filter(function (r) { return P.indexOf(r) < 0; }); chosen = []; save(); paint(); say("▼ " + P.length + " range marker(s) removed"); return; }
+    T.ranges = []; pend = null; chosen = []; save(); paint(); say("▼ Ranges cleared");
+  }
 
   /* ---------------- Ctrl: start / end at the position marker */
   function tap() {
     var T = tlObj(); if (!T) return null;
     var t = Math.round(now() * fps()) / fps();
     if (!pend) {
-      var lk = exists(T.selLayer) ? T.selLayer : "v1";
+      var pa = TlCanvas.state && TlCanvas.state.playing ? null : playerAt();
+      var lk = exists(T.selLayer) ? T.selLayer : pa ? pa.lk : "v1";
       T.rangeN = (+T.rangeN || 0) + 1;
       pend = { a: t, lk: lk, hue: hueOf(T.rangeN) };
       paint();
@@ -174,7 +217,7 @@
     var r = rangeOf(pend.a, t, fps());
     if (!r) { say("▼ The range's end is on its start - let it play on, then press Ctrl"); return null; }
     var o = { a: r.a, b: r.b, lk: pend.lk, hue: pend.hue };
-    list().push(o); pend = null; pick = list().length - 1;
+    list().push(o); pend = null;
     save(); paint();
     say("▼ Range " + list().length + ": " + o.a.toFixed(2) + " – " + o.b.toFixed(2) + " s on " + label(o.lk) + " - ✂ Cut all / ⏩ Speed up in the menu bar");
     log("range " + o.a.toFixed(2) + "-" + o.b.toFixed(2) + " on " + o.lk);
@@ -190,28 +233,32 @@
     return !!(el && el.closest && el.closest("#timelinedock"));
   }
   function onKeyDown(e) {
-    if (e.key === "Control") { if (!e.repeat) armed = performance.now(); return; }
+    if (e.key === "Control") { if (!e.repeat || !armed) armed = performance.now(); return; }
     armed = 0;
     if (e.key === "Escape" && pend && !typing()) { pend = null; paint(); say("▼ The started range is forgotten"); return; }
-    if ((e.key === "Delete" || e.key === "Backspace") && pick >= 0 && list()[pick] && !typing() && overTl() && !document.querySelector("dialog[open]")) {
+    if (e.key === "Escape" && picked().length && !typing()) { chosen = []; paint(); return; }
+    if ((e.key === "Delete" || e.key === "Backspace") && picked().length && !typing() && overTl() && !document.querySelector("dialog[open]")) {
       var T = tlObj(); if (T && T.sel && T.sel.frame) return;                    // ▯ Frame's own Del
-      e.preventDefault(); e.stopImmediatePropagation(); remove(pick);
+      e.preventDefault(); e.stopImmediatePropagation(); clearAll();
     }
   }
   function onKeyUp(e) {
     if (e.key !== "Control") return;
-    var ok = armed && performance.now() - armed < 600; armed = 0;
-    if (!ok || typing() || document.querySelector("dialog[open]") || !docked()) return;
+    var ok = armed && performance.now() - armed < 1200; armed = 0;
+    if (!ok || texting() || document.querySelector("dialog[open]") || !docked()) return;
     if (!playing() && !overTl()) return;
     tap();
   }
 
   /* ---------------- ✂ Cut all / ⏩ Speed up */
-  function byLayer() {
-    var m = {}; list().forEach(function (r) { if (exists(r.lk)) (m[r.lk] = m[r.lk] || []).push(r); }); return m;
+  /** the ranges an action works on: the picked ones, else all - by layer */
+  function byLayer(only) {
+    var src = only && only.length ? only : list(), m = {}; src.forEach(function (r) { if (exists(r.lk)) (m[r.lk] = m[r.lk] || []).push(r); }); return m;
   }
-  async function cutAll() {
-    var M = byLayer(), lks = Object.keys(M); if (!lks.length) { say("▼ No ranges to cut - press Ctrl while it plays to mark one"); return false; }
+  function used(M, only) { var all = []; Object.keys(M).forEach(function (k) { all = all.concat(M[k]); }); return all; }
+  async function cutAll(only) {
+    if (!Array.isArray(only)) only = picked().slice();
+    var M = byLayer(only), lks = Object.keys(M), U0 = used(M); if (!lks.length) { say("▼ No ranges to cut - tap Ctrl while it plays to mark one"); return false; }
     var ripple = !!($("tlRipple") && $("tlRipple").checked), F = fps(), done = 0, base = "r" + Date.now() + "_", joins = [];
     for (var li = 0; li < lks.length; li++) {
       var lk = lks[li], kind = typeof lkKind === "function" ? lkKind(lk) : "video", U = union(M[lk]);
@@ -233,7 +280,7 @@
       (lkClips(lk) || []).forEach(function (c) { if (c._tlj) { (G[c._tlj] = G[c._tlj] || []).push(c); delete c._tlj; } });
       if (ripple && !(root.TlJoin && TlJoin.toNew && TlJoin.toNew())) Object.keys(G).forEach(function (id) { var p = G[id].sort(function (x, y) { return (+x.start || 0) - (+y.start || 0); }); if (p.length > 1) joins.push([lk, kind, p]); });
     }
-    var T = tlObj(); T.ranges = list().filter(function (r) { return !M[r.lk]; }); pick = -1; T.sel = null;
+    var T = tlObj(); T.ranges = list().filter(function (r) { return U0.indexOf(r) < 0; }); chosen = []; T.sel = null;
     save(); if (typeof renderTimeline === "function") renderTimeline();
     say("✂ Cut " + done + " range(s)" + (ripple ? " - the gaps closed" : "") + " · Ctrl+Z undoes");
     log("cut all: " + done + " range(s) on " + lks.join(", "));
@@ -241,8 +288,9 @@
     if (typeof root.H3TestEvent === "function") root.H3TestEvent("tl_ranges_cut", done);
     return done;
   }
-  function speedAll(k) {
-    var M = byLayer(), lks = Object.keys(M); if (!lks.length) { say("▼ No ranges to speed up - press Ctrl while it plays to mark one"); return false; }
+  function speedAll(k, only) {
+    if (!Array.isArray(only)) only = picked().slice();
+    var M = byLayer(only), lks = Object.keys(M), U0 = used(M); if (!lks.length) { say("▼ No ranges to speed up - tap Ctrl while it plays to mark one"); return false; }
     var ripple = !!($("tlRipple") && $("tlRipple").checked), done = 0, why = "", saved = 0;
     lks.forEach(function (lk) {
       var kind = typeof lkKind === "function" ? lkKind(lk) : "video";
@@ -257,7 +305,7 @@
       if (lk === "v1" && typeof resolveOverlaps === "function") resolveOverlaps();
     });
     if (!done) { say("⏩ Nothing sped up" + (why ? ": " + why : "")); return false; }
-    var T = tlObj(); T.ranges = list().filter(function (r) { return !M[r.lk] || (typeof lkKind === "function" && lkKind(r.lk) !== "video"); }); pick = -1;
+    var T = tlObj(); T.ranges = list().filter(function (r) { return U0.indexOf(r) < 0 || (typeof lkKind === "function" && lkKind(r.lk) !== "video"); }); chosen = [];
     save(); if (typeof renderTimeline === "function") renderTimeline();
     say("⏩ " + done + " range(s) play " + k + "× faster - " + saved.toFixed(2) + " s shorter" + (why ? " (" + why + ")" : "") + " · Ctrl+Z undoes");
     log("speed " + k + "x: " + done + " range(s)");
@@ -311,6 +359,17 @@
     });
     sc.addEventListener("pointerleave", function () { box.style.display = "none"; });
   }
+  /** 2.614.0 (Tim: "if a range or ranges are selected and user clicks cut then cut the selected ranges"): ✂ Cut with ▼
+   *  ranges picked cuts THEM (a frame picked with ▯ Frame is still its own) */
+  function wrapCut() {
+    var f = root.applySel; if (typeof f !== "function" || f._tlranges) return;
+    var w = async function (op) {
+      var T = tlObj();
+      if (op === "cut" && picked().length && !(T && T.sel && T.sel.frame)) return cutAll(picked().slice());
+      return f.apply(this, arguments);
+    };
+    w._tlranges = true; w._tljoin = f._tljoin; root.applySel = w;
+  }
   function wrapRender() {
     var f = root.renderTimeline; if (typeof f !== "function" || f._tlranges) return;
     var w = function () { var r = f.apply(this, arguments); try { paint(); } catch (e) { /* the timeline still works */ } return r; };
@@ -318,7 +377,7 @@
   }
   function boot() {
     if (typeof root.renderTimeline !== "function" || !$("tlinner") || !$("tlSelGrp") || !root.TlCanvas || !$("tlCLoop") || !$("tlCutNewL")) { setTimeout(boot, 150); return; }
-    css(); bar(); speedSel(); hoverBox(); wrapRender();
+    css(); bar(); speedSel(); hoverBox(); wrapRender(); wrapCut();
     window.addEventListener("pointerover", function (e) { over = e.target; }, true);
     window.addEventListener("pointermove", function (e) { px = e.clientX; py = e.clientY; }, true);
     window.addEventListener("pointerdown", function () { armed = 0; }, true);
@@ -329,6 +388,7 @@
     paint();
   }
   root.TlRanges = Object.assign({ tap: tap, paint: paint, cutAll: cutAll, speedAll: speedAll, clear: clearAll, remove: remove,
-    pending: function () { return pend; }, picked: function () { return pick; } }, api);
+    pending: function () { return pend; }, picked: function () { return picked().map(function (r) { return list().indexOf(r); }); },
+    pick: function (idx) { var R = list(); chosen = (idx || []).map(function (i) { return R[i]; }).filter(Boolean); paint(); return chosen.length; } }, api);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

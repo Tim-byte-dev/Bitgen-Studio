@@ -81,7 +81,7 @@ execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "testsr
     const x15 = await pos(1.5 + 0.01);
     await p.mouse.move(m1.x, m1.y); await p.mouse.down(); await p.mouse.move((m1.x + x15) / 2, m1.y, { steps: 3 }); await p.mouse.move(x15, m1.y, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300);
     const d1 = await ev(() => ({ b: tl.ranges[0].b, t: TlCanvas.state.t, ph: playhead, pick: TlRanges.picked(), playing: TlCanvas.state.playing }));
-    check("a ▼ dragged: that end moves (whole frames) and the preview shows its frame (the marker there)", Math.abs(d1.b - 1.5) < 1e-6 && Math.abs(d1.t - 1.5) < 1e-6 && Math.abs(d1.ph - 1.5) < 1e-6 && d1.pick === 0 && !d1.playing, d1);
+    check("a ▼ dragged: that end moves (whole frames) and the preview shows its frame (the marker there)", Math.abs(d1.b - 1.5) < 1e-6 && Math.abs(d1.t - 1.5) < 1e-6 && Math.abs(d1.ph - 1.5) < 1e-6 && JSON.stringify(d1.pick) === "[0]" && !d1.playing, d1);
 
     /* right-click removes; Ctrl with the pointer on the timeline (paused) */
     const m2 = await ev(() => { const r = document.querySelector('.tlruler .tlrm[data-i="1"][data-side="a"]').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
@@ -113,6 +113,7 @@ execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "testsr
     const rs = await ev(() => tl.ranges.map((r) => [r.a, r.b]));
     const gone = rs.reduce((s, r) => s + r[1] - r[0], 0);
     await p.waitForTimeout(450);
+    await ev(() => TlRanges.pick([]));            // 2.614.0: none picked = ✂ Cut all
     await p.click("#tlRangeCut");
     await p.waitForFunction(() => tl.vlayers[0].clips.length === 1 && /-join1\.webm$/.test(tl.vlayers[0].clips[0].name), null, { timeout: 60000 });
     const c1 = await ev(() => ({ c: tl.vlayers[0].clips.map((c) => [c.name, c.start, c.in, c.out]), R: tl.ranges.length, n: document.getElementById("tlRangeN").textContent }));

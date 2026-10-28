@@ -12684,6 +12684,14 @@ node scripts/test-ranges613.js > /tmp/rg613.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui613-ui.js > /tmp/ui613.log 2>&1 \
   && ok "2.613.0 browser test: Ctrl taps while it plays = ▼ ranges (it keeps playing), colours, a ▼ dragged shows its frame, right-click removes, the hover time, 2× / 0.125× playback, ✂ Cut all (one joined clip) + ↶, ⏩ 4× - or SKIP without playwright" \
   || { bad "2.613.0 ranges browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui613.log | head -14; }
+# ---- 2.614.0 (Tim: "if a range or ranges are selected and user clicks cut then cut the selected ranges ... they are only
+# working when i drag the timeline and press ctrl not while the clip is playing")
+node scripts/test-pick614.js > /tmp/pk614.log 2>&1 \
+  && ok "2.614.0 ▼ ranges picked + cut by ✂ Cut; Ctrl taps held back only by a text box, the preview player counts - the wiring" \
+  || { bad "2.614.0 pick units"; grep -a "^FAIL" -A2 /tmp/pk614.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui614-ui.js > /tmp/ui614.log 2>&1 \
+  && ok "2.614.0 browser test: Ctrl taps while it plays with the speed list / ripple box / ▶ focused (a slow tap too), not in a text box, while the preview player plays a timeline clip; pick + Ctrl-pick, ✂ Cut the picked (and the selection bar's), Esc, Del - or SKIP without playwright" \
+  || { bad "2.614.0 pick browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui614.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

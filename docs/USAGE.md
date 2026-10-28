@@ -497,11 +497,16 @@ clip a second before it starts, so a cut between two clips no longer flashes bla
 range should start - a ▼ appears in the time ruler at the position marker - and tap Ctrl again where it ends (a second
 ▼). Playback carries on, so you can mark as many ranges as you like in one pass; each gets its own colour, with a band
 on its layer's row. Paused, a Ctrl tap with the pointer on the timeline works the same. Esc forgets a started range.
-Drag a ▼ to move that end (whole frames) - the preview shows the frame under it; a click shows it too; right-click a ▼
-(or Del with it picked) removes its range. The ▼ group in the timeline's menu bar: the count, **✂ Cut all** (every
-range out of its layer - ripple as its box says; a clip cut several times becomes one clip again), **⏩ Speed up** with
-2× / 4× / 8× / 10× (each range on a video layer plays that much faster - like fast-forwarding through a render you don't
-want to wait for; what follows moves up with ripple) and ✕ (remove all the markers). Ctrl+Z undoes any of these.
+Ctrl taps count whatever is focused (▶, the speed list, a ticked box, the zoom slider) - only a box you type in holds
+them back - and also while the preview docker's player plays a clip that is on the timeline (the range lands at that
+moment of the clip on the timeline).
+Drag a ▼ to move that end (whole frames) - the preview shows the frame under it. A click on a ▼ PICKS its range
+(Ctrl+click or Shift+click picks more; Esc unpicks); right-click a ▼ removes its range, Del removes the picked ones'
+markers. The ▼ group in the timeline's menu bar: the count, **✂ Cut** (the picked ranges - "✂ Cut 2 picked" - or, none
+picked, every range: out of its layer, ripple as its box says; a clip cut several times becomes one clip again; the
+selection bar's ✂ Cut also cuts the picked ranges), **⏩ Speed up** with 2× / 4× / 8× / 10× (the picked ranges, or all, on
+video layers play that much faster - like fast-forwarding through a render you don't want to wait for; what follows
+moves up with ripple) and ✕ (remove the picked markers, or all). Ctrl+Z undoes any of these.
 
 **Hover time and playback speed.** Hovering over the timeline shows the time under the pointer in a small box
 (timecode · seconds · frame). The speed list beside 🔁 under the preview plays at 0.125×, 0.25×, 0.5×, 1×, 2×, 4× or 8×
@@ -6116,6 +6121,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.614.0: **Pick ▼ ranges, ✂ Cut cuts them; Ctrl taps while it plays always count** - a click on a ▼ picks its range
+  (Ctrl / Shift + click: more) and ✂ Cut cuts the picked ones (none picked: all). Ctrl taps while the preview plays now
+  count with ▶, the speed list or a ticked box focused, and while the preview docker's player plays a timeline clip.
 - 2.613.0: **▼ Ranges with Ctrl while it plays, ✂ Cut all / ⏩ Speed up, hover time, playback speed** - tap Ctrl while
   the preview plays to mark a range's start and again for its end (as many as you like, each its own colour, on the
   highlighted layer); drag a ▼ to move it (the preview shows that frame), right-click removes it. ✂ Cut all cuts every
