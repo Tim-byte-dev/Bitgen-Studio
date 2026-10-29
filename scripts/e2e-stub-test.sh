@@ -12692,6 +12692,14 @@ node scripts/test-pick614.js > /tmp/pk614.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui614-ui.js > /tmp/ui614.log 2>&1 \
   && ok "2.614.0 browser test: Ctrl taps while it plays with the speed list / ripple box / ▶ focused (a slow tap too), not in a text box, while the preview player plays a timeline clip; pick + Ctrl-pick, ✂ Cut the picked (and the selection bar's), Esc, Del - or SKIP without playwright" \
   || { bad "2.614.0 pick browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui614.log | head -14; }
+# ---- 2.615.0 (Tim: "when user changes a style anywhere in bitgen, save the all basic settings+style name in basic settings
+# docker to misc\basic_settings.tmp ... load the basic settings on start with the last style used ... and when style changes")
+node scripts/test-stylebasic615.js > /tmp/sb615.log 2>&1 \
+  && ok "2.615.0 Basic Settings per style - misc/basic_settings.tmp made / saved / read (a broken one heals), video vs image fields, the before / after onchange wrap, the route, git + zips leave it out - the pure part + the wiring" \
+  || { bad "2.615.0 style settings units"; grep -a "^FAIL" -A2 /tmp/sb615.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui615-ui.js > /tmp/ui615.log 2>&1 \
+  && ok "2.615.0 browser test: the file made at the start; A's settings kept before switching to B (not B's), back to A from the style card = A's settings, image styles keep the image set, reopened = the last styles + settings - or SKIP without playwright" \
+  || { bad "2.615.0 style settings browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui615.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

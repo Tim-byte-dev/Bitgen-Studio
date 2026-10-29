@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.615.0** — Basic Settings Follow the Style (misc/basic_settings.tmp)
 - **2.614.0** — Pick ▼ Ranges, ✂ Cut Cuts Them; Ctrl Taps While It Plays Always Count
 - **2.613.0** — ▼ Ranges with Ctrl While It Plays; ✂ Cut All / ⏩ Speed Up; Hover Time; Playback Speed
 - **2.612.0** — A Cut Clip Stays One Clip; ✂ to New Layer

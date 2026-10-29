@@ -7,6 +7,7 @@
 //   GET  /api/frames                frame-exact strip for a clip range (lib/frames)
 //   GET  /framecache/:key/:file     a single extracted frame jpeg
 //   POST /api/timeline/edit         keep/cut a selection on one layer (lib/timelineEdit)
+//   GET/POST /api/basic-settings/styles  Basic Settings per style - misc/basic_settings.tmp (routes/basicTmp.js)
 //   POST /api/timeline/join         a cut clip's parts joined into one file (routes/tlJoin.js, lib/tlJoin.js)
 //   GET  /api/transitions           the transition catalogue (lib/transitions.json)
 //   POST /api/projects/new          create + switch to a new project (lib/projects)
@@ -186,6 +187,7 @@ function mount(app) {
   require("./brushes").mount(app);     // 2.484.0: the image editor's brush presets - brushes/<name>.json (lib/brushStore.js)
   require("./imgconvert").mount(app);
   require("./subject").mount(app);
+  require("./basicTmp").mount(app);    // 2.615.0: Basic Settings kept per style in misc/basic_settings.tmp (lib/basicTmp.js)
   require("./tlJoin").mount(app);      // 2.612.0: a cut clip's two parts joined into one file (lib/tlJoin.js)
   require("./layerBake").mount(app);   // 2.490.0: baked timeline layers - a parented layer drawn by the page (lib/layerBake.js)     // 2.488.0: Select ▸ Subject with the AI matte - one still (lib/subjectMatte.js)  // 2.485.0: Export As ▸ AVIF - made with ffmpeg on this computer (lib/imgConvert.js)
   require("./quickprompts").mount(app);   // 2.451.0: the prompt docker's quick prompts - quick_prompts.json

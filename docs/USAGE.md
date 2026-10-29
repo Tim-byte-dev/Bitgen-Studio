@@ -6121,6 +6121,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.615.0: **Basic Settings follow the style** - each style remembers its own Basic Settings in
+  misc/basic_settings.tmp. Changing the style anywhere (the prompt docker, Basic Settings' style card, a board …) first
+  saves every Basic Settings field + the style's name for the style you are leaving, then puts back what you last had
+  for the new one. The app starts on the last session's styles with their settings.
 - 2.614.0: **Pick ▼ ranges, ✂ Cut cuts them; Ctrl taps while it plays always count** - a click on a ▼ picks its range
   (Ctrl / Shift + click: more) and ✂ Cut cuts the picked ones (none picked: all). Ctrl taps while the preview plays now
   count with ▶, the speed list or a ticked box focused, and while the preview docker's player plays a timeline clip.

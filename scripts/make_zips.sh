@@ -49,6 +49,7 @@ FILES=$(find . -type f \
   ! -name "dockers.json" ! -name "dockers.json.tmp" ! -name "docker_status.json" ! -name "docker_status.json.tmp" \
   ! -name "workspaces.json" ! -name "workspaces.json.tmp" \
   ! -name "basic.cfg" ! -name "folder_filters.cfg" \
+  ! -name "basic_settings.tmp" ! -name "basic_settings.tmp.part" \
   ! -name "*.zip" | sed 's|^\./||' | sort)
 # 2.589.0 (Tim: "remove this from bitgen and give it as an additional addon with notes saying this may trigger virus
 # checkers"): OPTIONAL extensions (ext.json "optional": true - the Team render farm, ext/teamdock) are in NO install
