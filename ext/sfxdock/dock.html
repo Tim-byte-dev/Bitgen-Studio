@@ -46,6 +46,58 @@
           <button class="ghost gbtn" id="sfxUndo" type="button" title="Undo the last cut of this sound">↶ Undo</button>
         </div>
         <div class="hint" id="sfxMsg" style="margin-top:6px">—</div>
+        <!-- 2.621.0 (Tim: "in the sfx docker can you add an input that the user can copy/paste text, or get input from the llm or
+             type custom text to create speech/dialog user can choose the voice/voices and the text will be read with emotion
+             using omnivoice or ming voices. save formats will be wav or mp3 to save the read voice into assets-audio. The name
+             of the file will be an input above the speech input, description will be below - it would be great if we can
+             save the date,time,description and text in the files metadata"): ext/sfxdock/sfxspeech.js + routes/speechDialog.js
+             + lib/speechDialog.js. -->
+        <style>
+          #spBox { margin-top: 10px; border-top: 1px solid var(--line, #444); padding-top: 6px; }
+          #spBox summary { cursor: pointer; font-weight: 600; margin-bottom: 6px; }
+          #spBox .brow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 4px 0; }
+          #spBox label.sp { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+          #spText { width: 100%; min-height: 120px; resize: vertical; font: 12px/1.45 var(--mono, monospace); box-sizing: border-box; }
+          #spCast { display: grid; grid-template-columns: minmax(70px, auto) 1fr 1fr; gap: 3px 6px; align-items: center; font-size: 11px; margin: 4px 0; }
+          #spCast .h { color: var(--dim, #999); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+          #spCast select { font-size: 11px; }
+          #spMeta { white-space: pre-wrap; font-size: 11px; margin-top: 4px; }
+        </style>
+        <details id="spBox" open>
+          <summary title="Text read aloud with emotion by OmniVoice or Ming-3.0 TTS - one voice or a cast - saved into the Audio assets">🗣 Speech &amp; dialog</summary>
+          <label class="sp">File name
+            <input type="text" id="spName" placeholder="e.g. intro_dialog" maxlength="80" title="The file's name in the Audio assets (.wav / .mp3 is added; an existing file is never overwritten - _2 is added)"></label>
+          <div class="brow">
+            <button class="ghost gbtn" id="spPaste" type="button" title="Paste the clipboard's text into the box (Ctrl+V in the box works too)">📋 Paste</button>
+            <input type="text" id="spBrief" placeholder="✨ what should the LLM write? (e.g. two friends meet after years)" style="flex:1;min-width:160px" title="A short brief for the LLM - the speakers come from the Cast below, or it picks names">
+            <button class="ghost gbtn" id="spWrite" type="button" title="The LLM writes the lines (Name (emotion): words) - it replaces the box's text (Ctrl+Z in the box brings it back)">✨ Write</button>
+            <select id="spTag" title="Put a sound tag where the cursor is - OmniVoice reads them as sounds" aria-label="Sound tag"><option value="">＋ tag</option></select>
+            <select id="spMode" title="Dialog: lines like  Anna (happy): Hello  are spoken by each speaker's voice. One voice: the whole text in the chosen voice" aria-label="How to read it">
+              <option value="dialog">Dialog (Name: line)</option><option value="single">One voice reads it all</option></select>
+            <button class="ghost gbtn" id="spClear" type="button" title="Empty the name, text and description">🧹</button>
+          </div>
+          <textarea id="spText" spellcheck="true" aria-label="The text to read" placeholder="Type, paste or ✨ write the words. A dialog - one line each:
+Anna (happy): We made it! [laughter]
+Ben (surprised): Already?
+(sad) A line on its own takes an emotion like this. A blank line = a longer pause."></textarea>
+          <label class="sp">Description
+            <input type="text" id="spDesc" placeholder="what this is for - saved in the file's metadata" maxlength="2000"></label>
+          <div class="brow">
+            <label class="sp">Engine <select id="spEngine" aria-label="Speech engine"></select></label>
+            <label class="sp">Voice <select id="spVoice" aria-label="Voice" title="The voice for a text without speakers, and for a speaker with no voice of their own"></select></label>
+            <label class="sp">Emotion <select id="spEmo" aria-label="Emotion" title="The mood for lines that name none"></select></label>
+            <label class="sp">Save as <select id="spFmt" aria-label="Format"><option value="wav">WAV</option><option value="mp3">MP3</option></select></label>
+            <label class="sp">Pause (s) <input type="number" id="spPause" min="0" max="5" step="0.05" value="0.35" style="width:60px" title="Silence between lines (a blank line doubles it)"></label>
+          </div>
+          <div id="spCast" aria-label="The cast"></div>
+          <div class="brow">
+            <button id="spGo" type="button" title="Read it and save it into the project's Audio assets, with the date, time, description and text in the file">🗣 Read &amp; save to Audio</button>
+            <span class="hint" id="spProg"></span>
+          </div>
+          <audio id="spPlay" controls preload="none" style="display:none;width:100%;margin-top:4px"></audio>
+          <div class="hint" id="spMsg">—</div>
+          <div class="hint" id="spMeta"></div>
+        </details>
       </div>
     </div>
     <!-- the sfxdock's BOTTOM resize handle - drag it and THIS docker follows the mouse -->

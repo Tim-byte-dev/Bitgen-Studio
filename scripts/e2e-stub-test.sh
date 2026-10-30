@@ -12712,6 +12712,40 @@ node scripts/test-textfxzip617.js > /tmp/tz617.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui617-ui.js > /tmp/ui617.log 2>&1 \
   && ok "2.617.0 browser test: a pack zip (2 PSDs in a folder, a preset .json, a font, junk, a broken PSD) -> 3 presets + the font, the broken one named; a zip + a PSD at once; every picker takes zips - or SKIP without playwright" \
   || { bad "2.617.0 text effect zip browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui617.log | head -14; }
+# ---- 2.618.0 (Tim: "when the blender or unreal or daz layer is deleted or made "hidden" or deleted then close the bridge and
+# don't show the scene in image editor or timeline")
+node scripts/test-bridgeoff618.js > /tmp/bo618.log 2>&1 \
+  && ok "2.618.0 a bridge layer deleted / hidden - the shown layers' scenes, what dropped out, Daz's queue cleared; the Blender / Unreal / Daz wiring - the pure part + the wiring" \
+  || { bad "2.618.0 bridge off units"; grep -a "^FAIL" -A2 /tmp/bo618.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui618-ui.js > /tmp/ui618.log 2>&1 \
+  && ok "2.618.0 browser test: an Unreal layer hidden / deleted (📺 closed, no frames), a 3D layer deleted (its Blender + Daz queue closed), a Blender layer hidden with the tools open (closed, no new layer, the scene + the timeline preview closed), a timeline Unreal clip's layer hidden / the clip deleted - or SKIP without playwright" \
+  || { bad "2.618.0 bridge off browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui618.log | head -14; }
+# ---- 2.619.0 (Tim: "can we add a final docker, i feel this one will complete bitgen ... looks like a sketchup made for linux"
+# - picked: our own push/pull docker)
+node scripts/test-pushpull619.js > /tmp/pp619.log 2>&1 \
+  && ok "2.619.0 📏 PushPull - push/pull (solid, stretch, pocket, boss, hole through, step after a split), offset walls, copy / rotate / scale / erase / groups, the Measurements box, .glb / .obj / .stl, the project's models, the wiring - the pure part + the wiring" \
+  || { bad "2.619.0 pushpull units"; grep -a "^FAIL" -A2 /tmp/pp619.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui619-ui.js > /tmp/ui619.log 2>&1 \
+  && ok "2.619.0 browser test (WebGL, the mouse): R + \"3,2\", P + \"2.5\" a box, stretched, a pocket, a hole through, undo, offset walls, a copy, a group, paint, erase, circle sides, a split, tape, rotate, kept + opened, .glb, import, → timeline, → image editor; P / 2 stay in the docker - or SKIP without playwright" \
+  || { bad "2.619.0 pushpull browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui619.log | head -14; }
+# ---- 2.620.0 (Tim: "add architectural tools like floor, walls,windows, ceiling,roof etc. rooms will be able to be dragged,
+# their walls can snap to another room and share the wall, door or window etc. add lights ... when maximized it takes bitgens
+# full window minus the titlebar, it has it's own file menu. send to image editor button and send to time line button")
+node scripts/test-arch620.js > /tmp/arch620.log 2>&1 \
+  && ok "2.620.0 📏 PushPull builds - rooms (centre line, inside, mitred walls), the walls of a storey as one solid (shared walls), the snap that shares a wall, doors / windows through a shared wall, roofs (gable / hip / shed / flat), stairs, floors, lights following their room, duplicate / rotate / delete, the file, glass + glTF lights, the wiring - the pure part + the wiring" \
+  || { bad "2.620.0 pushpull building units"; grep -a "^FAIL" -A2 /tmp/arch620.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui620-ui.js > /tmp/ui620.log 2>&1 \
+  && ok "2.620.0 browser test (WebGL, the mouse): ⛶ = the window under the title bar, U rooms, a room dragged onto another = one shared wall, D a door through it (dragged along), I a window, X pendant + chandelier on the ceilings, K, Y + Shift, 🌙 / ⌂, the panel (height -> its light follows), Delete + Ctrl+Z, W, V, J, the Build keys stay in the docker, Esc back, ☰ File (Save as / Rename, reopened), 🎞 / 🖼 buttons, .glb with glTF lights - or SKIP without playwright" \
+  || { bad "2.620.0 pushpull building browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui620.log | head -14; }
+# ---- 2.621.0 (Tim: "in the sfx docker can you add an input that the user can copy/paste text, or get input from the llm or
+# type custom text to create speech/dialog ... read with emotion using omnivoice or ming voices ... wav or mp3 ... assets-audio
+# ... save the date,time,description and text in the files metadata")
+node scripts/test-speech621.js > /tmp/sp621.log 2>&1 \
+  && ok "2.621.0 🗣 speech & dialog - the script (speakers, emotions, tags, pauses, long lines), the cast + mood voices, OmniVoice in one batch / Ming's EMOTION task, one .wav / .mp3 in the Sound assets (never over a file) with the title, date + time, description, text and voices in it, the LLM's lines, the wiring - the pure part + a stand-in engine" \
+  || { bad "2.621.0 speech & dialog units"; grep -a "^FAIL" -A2 /tmp/sp621.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui621-ui.js > /tmp/ui621.log 2>&1 \
+  && ok "2.621.0 browser test: the SFX docker's name / text / description, typed dialog -> the cast, ＋ tag, 📋 Paste, 🗣 Read & save (.wav: each speaker's voice + mood, the metadata), .mp3 one voice, Ming not installed, ✨ Write (+ Ctrl+Z), the draft kept - or SKIP without playwright" \
+  || { bad "2.621.0 speech & dialog browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui621.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

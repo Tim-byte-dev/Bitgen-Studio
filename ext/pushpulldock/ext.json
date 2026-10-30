@@ -1,0 +1,17 @@
+{
+  "id": "pushpulldock",
+  "name": "PushPull",
+  "order": 96,
+  "html": "dock.html",
+  "scripts": [
+    "ppgeo.js",
+    "ppglb.js",
+    "ppview.js",
+    "pparch.js",
+    "pparchview.js",
+    "pparchtools.js",
+    "pptools.js",
+    "ppdock.js",
+    "ppframe.js"
+  ]
+}

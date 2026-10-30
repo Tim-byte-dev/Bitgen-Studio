@@ -911,6 +911,99 @@
           "Pan the canvas"
         ]
       ]
+    },
+    {
+      "title": "PushPull - over the docker",
+      "rows": [
+        [
+          "Space",
+          "Select"
+        ],
+        [
+          "L / R / C / N",
+          "Line / Rectangle / Circle / Polygon"
+        ],
+        [
+          "P",
+          "Push/Pull"
+        ],
+        [
+          "M / Q / S",
+          "Move (Ctrl: a copy) / Rotate / Scale"
+        ],
+        [
+          "F",
+          "Offset"
+        ],
+        [
+          "T / B / E",
+          "Tape / Paint / Eraser"
+        ],
+        [
+          "O / H",
+          "Orbit / Pan (the middle / right button always)"
+        ],
+        [
+          "→ ← ↑ / ↓",
+          "Keep the red / green / blue axis / let it go (Shift: the axis shown)"
+        ],
+        [
+          "G",
+          "Group what is picked (a group picked: explode it)"
+        ],
+        [
+          "Shift+Z",
+          "Everything in view"
+        ],
+        [
+          "U / W",
+          "Room / Wall"
+        ],
+        [
+          "D / I",
+          "Door / Window (on a wall)"
+        ],
+        [
+          "J / K",
+          "Floor / Ceiling on-off"
+        ],
+        [
+          "Y",
+          "Roof (Shift+click: more rooms under it)"
+        ],
+        [
+          "X",
+          "Light (the type in the panel)"
+        ],
+        [
+          "V",
+          "Stairs"
+        ],
+        [
+          "Drag a room (Select)",
+          "Its wall snaps onto a neighbour's - one shared wall"
+        ],
+        [
+          "Delete",
+          "Erase what is picked"
+        ],
+        [
+          "Esc",
+          "Stop the tool / let go / restore the maximized docker"
+        ],
+        [
+          "a number",
+          "Into the Measurements box - Enter applies it (3,2 · 150cm · 36s)"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y / Ctrl+S",
+          "Undo / redo / save"
+        ],
+        [
+          "Esc",
+          "Cancel the tool / leave the group"
+        ]
+      ]
     }
   ]
 }

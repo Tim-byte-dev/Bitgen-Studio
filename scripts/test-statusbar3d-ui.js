@@ -54,7 +54,7 @@ const api = async (u, body) => {
       const side = Object.values(SIDE_DOCKS).map(([, cls, bt]) => ({ bt, ok: !!document.getElementById(bt), lit: document.getElementById(bt).classList.contains("on"), hidden: document.getElementById("app").classList.contains(cls) }));
       return { col, side };
     });
-    check("every docker in the column (+ the floating prompt) has a statusbar button (11)", all.col.length === 11 && all.col.every((x) => x.btn), all.col);
+    check("every docker in the column (+ the floating prompt) has a statusbar button (12 - 2.619.0: + 📏 PushPull)", all.col.length === 12 && all.col.every((x) => x.btn), all.col);
     check("...lit exactly while it is on screen", all.col.every((x) => x.lit === !x.gone) && all.side.every((x) => x.ok && x.lit === !x.hidden), all);
     // 2
     const two = await p.evaluate(() => {

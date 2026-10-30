@@ -161,6 +161,8 @@
       say("🟧 the Blender scene tools: 📂 Open a .blend (or the open scene), drag = orbit · right-drag = pan · wheel / Alt+drag = zoom · ⌖ (Z) zoom to the object · click an object, G / R / S - ✕ or Esc keeps the view as a layer");
       const p = tb.attach(host).then((st) => {
         if (st && st.stem) { if (target && target.bscene && target.bscene.stem !== st.stem && target.bscene.source) return tb.open(target.bscene.source).then(afterLoad); afterLoad(); }
+        // 2.618.0: the scene was closed (its layer hidden / deleted, then shown / undone) - this layer's scene opens again
+        else if (target && target.bscene && target.bscene.source) return tb.open(target.bscene.source).then(afterLoad);
         return st;
       }).catch((e) => { status("Blender: " + (e.message || e)); });
       // a scene opened INSIDE the tools (📂 Open / ✨ Build) -> its layer as soon as the view can draw it
@@ -172,10 +174,12 @@
       const info = sceneInfo(); if (!info || !open) return;
       root.setTimeout(() => { if (open && (!target || !S.layers.includes(target))) keepView("new Blender layer"); paint(); status(`scene ${info.stem} - the layer follows the view when the tools close`); }, 400);
     }
-    function leave(fromTools, taken) {
+    function leave(fromTools, taken, drop) {
       if (!open) return;
       open = false; root.clearInterval(watch);
       const tb = TB();
+      // 2.618.0 drop: the layer was deleted / hidden - nothing is kept (keeping the view would make a NEW layer)
+      if (drop) { target = null; wrap.style.display = "none"; if (tb && tb.host && tb.host()) tb.detach(); paint(); E.refresh(); return; }
       try { if (tb && sceneInfo()) keepView("Blender view"); } catch (e) { status("Blender: " + (e.message || e)); }
       wrap.style.display = "none";
       if (tb && !taken && tb.host && tb.host()) tb.detach();
@@ -264,7 +268,7 @@
     const prevShow = E.ui.showTab;
     E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "kbl") paint(); return r; };
     paint();
-    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, isOpen: () => open, keepView, editFromScene, reference, paint, wrap };
+    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, isOpen: () => open, keepView, editFromScene, reference, paint, wrap, target: () => target };
   }
 
   const PCBlendLayer = { REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, install };

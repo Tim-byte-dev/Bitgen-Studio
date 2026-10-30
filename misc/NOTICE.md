@@ -40,6 +40,7 @@ one's licence file sits beside it, unchanged.
 | `pdf-lib.min.js` | pdf-lib | MIT | `LICENSE-pdf-lib.txt` |
 | `fontkit.umd.min.js` | @pdf-lib/fontkit (a fork of foliojs/fontkit) | MIT | `LICENSE-fontkit.txt` |
 | `ag-psd.js` | ag-psd | MIT | `LICENSE-ag-psd.txt` |
+| `polygon-clipping.umd.min.js` | polygon-clipping (with splaytree and robust-predicates) - the 📏 PushPull docker's walls (2.620.0) | MIT (robust-predicates: Unlicense) | `LICENSE-polygon-clipping.txt` |
 | `replicad/replicad.umd.js` | replicad | MIT | `replicad/LICENSE-replicad.txt` |
 | `jxl/jxl_oxide_wasm.js`, `jxl/jxl_oxide_wasm_bg.wasm` | jxl-oxide (the JPEG XL decoder, 2.479.0) | MIT (dual MIT / Apache-2.0) | `jxl/LICENSE-jxl-oxide.txt` |
 | `jxl/jxl_enc.js`, `jxl/jxl_enc.wasm` | the JPEG XL encoder: libjxl compiled by @jsquash/jxl (2.479.0) | Apache-2.0 (the wrapper) + BSD-3-Clause (libjxl) | `jxl/LICENSE-jsquash-jxl.txt`, `jxl/LICENSE-libjxl.txt` |

@@ -13,6 +13,7 @@ installed yet, start with [INSTALL.md](INSTALL.md).
 - [Images, ControlNet and face fix](#images-controlnet-and-face-fix)
 - [Music, stems and voices](#music-stems-and-voices)
 - [Timeline and export](#timeline-and-export)
+- [📏 PushPull - 3D modelling](#-pushpull---3d-modelling-26190)
 - [Projects, queue and gallery](#projects-queue-and-gallery)
 - [The file dialog](#the-file-dialog)
 - [Tips](#tips)
@@ -406,6 +407,54 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
+
+## 📏 PushPull - 3D modelling (2.619.0)
+
+The **PushPull** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
+draw a shape on the ground or on a face, then push or pull it into a solid. Its ❔ has the whole list.
+
+1. **R** (Rectangle), click a corner on the ground, move, and type `4,3` + Enter - a 4 × 3 m face.
+2. **P** (Push/Pull), click the face, move up, type `2.7` + Enter - a box 2.7 m high.
+3. Draw a rectangle **on** the box's side and push it in - a window opening; push it all the way through - a hole.
+4. Or: **F** (Offset) on a floor face, 0.2 + Enter, then push the ring up - four walls round a room.
+
+Sizes are typed at any moment (no need to click the box): lengths (`1.5`, `150cm`, `1500mm`, `5'`), two values
+(`3,2`), sides (`36s`), degrees. The marker shows what the point snaps to (Endpoint, Midpoint, On Edge, On Face,
+On Ground) and a dotted line when you are on the red / green / blue axis - **Shift** or **→ ← ↑** keep that axis.
+Middle drag orbits, right drag pans, the wheel zooms, **Shift+Z** shows everything.
+
+Other tools: **L** Line (a line across a face splits it), **C** Circle, **N** Polygon, **M** Move (**Ctrl** = a
+copy, type `x,y,z`), **Q** Rotate, **S** Scale, **T** Tape, **B** Paint, **E** Eraser, **Space** Select (double-click
+a group to edit inside it, **G** makes a group). Models are kept in the project (projects/<project>/pushpull) and save
+themselves; **↶ ↷** undo / redo. **➜ Send** puts the model in the image editor (a picture of the view), on the
+timeline (a 3D layer), in the House builder, Blender or Unreal; **⤓ Export** writes .glb / .obj / .stl;
+**⤒ Import** brings a project 3D model in as a group.
+
+### Building: rooms, shared walls, doors, windows, roofs, lights (2.620.0)
+
+The **Build** tools under the modelling tools make a building that stays editable:
+
+1. **U** (Room), click a corner, type `4,3` + Enter - a 4 × 3 m room with walls, a floor and a ceiling.
+2. Draw a second room a little way off, then with **Space** (Select) press on it and drag it toward the first. When its
+   wall comes near the first room's wall it snaps onto it - the two rooms now have **one shared wall** (and their
+   corners line up).
+3. **D** (Door), click on the shared wall - the door goes right through it. **I** (Window), click on an outside wall.
+   Drag a door or window along its wall with Select; its size, style and sill are in the panel on the right.
+4. **X** (Light), pick the type in the panel - downlight, ceiling-mounted, pendant, chandelier, spot, wall light, floor
+   or table lamp - and click in a room: it goes on that room's ceiling (the middle of the room snaps). **🌙 Night**
+   turns the sun down so the lights light the rooms.
+5. **Y** (Roof), click a room - a gable roof over it; **Shift+click** the other room to put it under the same roof.
+   Gable, hip, shed or flat, with its pitch and overhang, in the panel. **⌂ Cut-away** hides roofs and ceilings.
+
+Also: **W** Wall (free-standing walls; click the start again for a room), **J** Floor (a floor without walls), **K**
+Ceiling (a room's ceiling on / off), **V** Stairs. Click anything built for its settings - a room's size, wall height
+and thickness, its colours inside, ⟳ 90°, ⧉ Duplicate. **B** paints walls / floors / ceilings / doors / roofs, **E**
+or **Delete** erases. Everything is saved, undone, exported and sent with the model (the lights go to Blender and
+Unreal as glTF lights).
+
+**⛶** (the docker's title bar) fills the whole bitGen window under the title bar; **🗗** or **Esc** puts it back.
+**☰ File** has New, Open, Save, Save as, Rename, Import (a project 3D model or a file from this computer), Export,
+Send, Delete and Close; **🖼 → Image editor** and **🎞 → Timeline** are buttons on the bar.
 
 ## Editing on the timeline: speed, colour, sound, mix and captions (2.406.0)
 
@@ -1280,6 +1329,31 @@ means every cut is sample-exact and cutting again never loses quality.
   last cut. Tick **as a new file** to write name_keep.wav or name_cut.wav and leave the original alone.
 - **→ 🔊** copies the sound effect into the Sound assets, where the timeline and the references can use
   it. **🗑** deletes the file.
+
+### 🗣 Speech & dialog (2.621.0)
+
+Under the sound effects, the SFX dock reads text aloud - one voice, or a dialog with a voice per speaker - with emotion,
+using OmniVoice or Ming-3.0 TTS, and saves it into the **Audio assets** (projects/<project>/sound).
+
+1. **File name** (the box above the text) - the file is saved as that name .wav or .mp3; a name already there is
+   never written over (_2 is added).
+2. **The text** - type it, **📋 Paste** it (or Ctrl+V), or write a brief and press **✨ Write** for the LLM to write
+   the lines (Ctrl+Z in the box brings the old text back). **＋ tag** puts a sound such as `[laughter]` or `[sigh]`
+   where the cursor is.
+3. **Description** (the box below the text) - what it is for.
+4. A dialog is one line per line: `Anna (happy): We made it!` - `Ben: Already?` - `(sad) It is over.` A line with no
+   name goes on with the speaker above; a blank line is a longer pause. The **Cast** lists the speakers found - give
+   each a voice (from Settings ▸ Audio ▸ Voices) and an emotion for the lines that name none. **One voice reads it
+   all** reads the whole text in the chosen **Voice**.
+5. Pick the **Engine**, **Emotion**, **WAV / MP3** and the **Pause** between lines, then **🗣 Read & save to Audio**.
+   A player under it plays the result.
+
+Emotions: neutral, happy, sad, angry, fearful, disgusted, surprised. **Ming-3.0 TTS** reads each line with its EMOTION
+task (with a cloned voice too). **OmniVoice** has no emotion switch: the emotion moves the pace a little, a voice saved
+as `Anna.happy` (Anna recorded happy) is used for Anna's happy lines, and the sound tags are read as sounds.
+
+The file carries its own **metadata**: the title, the date and time it was made, the description, the whole text and
+the voices (WAV: the INFO list; MP3: ID3 - the text as its lyrics).
 
 ## Save and Save as (preview dialog and gallery)
 
@@ -6125,6 +6199,23 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.621.0: **🗣 Speech & dialog in the SFX dock** - text typed, pasted or written by the LLM, read with emotion by
+  OmniVoice or Ming-3.0 TTS in one voice or a voice per speaker, saved as .wav / .mp3 into the Audio assets with the
+  date, time, description and text in the file's metadata.
+- 2.620.0: **📏 PushPull builds** - rooms with walls, floors and ceilings that snap together and share a wall when
+  dragged, doors and windows through any wall, roofs (gable, hip, shed, flat), stairs, floors, and lights (downlights,
+  ceiling lights, pendants, chandeliers, spots, wall lights, floor and table lamps) with a 🌙 night view; the docker
+  maximizes to the whole window, has its own ☰ File menu and 🖼 / 🎞 buttons.
+- 2.619.0: **📏 PushPull** - a new docker for quick 3D modelling: draw a shape, push / pull it into a solid (pockets,
+  holes through, walls from an offset), exact sizes typed in, snapping to corners / edges / faces / the axes, groups,
+  paint, undo; models kept in the project; sent on to the image editor, the timeline, the House builder, Blender and
+  Unreal, or exported as .glb / .obj / .stl.
+- 2.618.0: **A bridge layer deleted or hidden closes its bridge** - in the image editor: a 🟧 Blender layer hidden or
+  deleted closes the scene tools (no new layer is made) and the scene itself (the timeline's 🟧 preview of it too); a
+  🧊 3D (Daz / Blender) layer ends its scene's Blender and drops what was waiting for Daz's live link; an Unreal /
+  MetaHuman layer stops the 📺 Unreal View, clears its picture and hides it. In the timeline: an Unreal clip whose layer
+  is hidden (👁) or that is deleted closes its 📺 window. Shown again (or undone), the layer still has its picture -
+  pick it to open its scene / view again.
 - 2.617.0: **Text effects from a zip** - Presets ▾ ＋ Import PSD text effects or a zip… takes a zip of text effects
   (every PSD in it becomes a preset, the fonts in it are added to the studio) or several PSDs at once.
 - 2.616.0: **Install with one file** - `install_all.bat` (Windows), `install_all.sh` (Linux) or `install_all.command`

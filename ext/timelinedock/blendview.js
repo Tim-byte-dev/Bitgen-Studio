@@ -910,7 +910,26 @@
       });
     }
 
+    /** 2.618.0 (Tim: "when the blender or unreal or daz layer is deleted or made hidden then close the bridge and don't
+     *  show the scene in image editor or timeline"): the scene closed - off the screen (the timeline's overlay, a borrowing
+     *  docker's tools), out of the view, the server's open scene forgotten (POST /api/blendview/close). stem: only when
+     *  that scene is the open one. -> true when one was closed */
+    function closeScene(stem) {
+      if (stem && S.st && S.st.stem !== stem) return false;
+      var had = !!S.st;
+      if (ext) detach(); else if (S.on) show(false);
+      stop();
+      if (root && scene) { try { scene.remove(root); } catch (e) { /* fine */ } }
+      root = null; mixer = null; S.st = null; S.sel = null; S.meta = {}; S.E = { objects: {} };
+      try { if (tc) tc.detach(); } catch (e) { /* fine */ }
+      fetch("/api/blendview/close", { method: "POST" }).catch(function () { /* fine */ });
+      if (had) log("the scene is closed (its layer was deleted or hidden)");
+      try { if (window.H3TestEvent) window.H3TestEvent("blend_closed", stem || ""); } catch (e) { /* the 🧪 list */ }
+      return had;
+    }
+
     window.TlBlend = {
+      close: closeScene,
       attach: attach, detach: detach, openUi: openUi, snapshot: viewPicture, still: stillReal, host: function () { return ext; },
       open: openPath, show: show, state: S, select: select, setTrs: setSelTrs, key: keyNow, unkey: unkeyNow, dup: dup, del: del,
       hide: hide, reset: resetObj, undo: undo, goto: goto, setRange: setRange, setView: setView, setGizmo: setGizmo, save: save,

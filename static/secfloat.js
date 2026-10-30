@@ -320,6 +320,8 @@
       // 2.411.0: over the timeline docker (or a docker beside its canvas) L is the J / K / L shuttle's (ext/timelinedock/tlkeys.js)
       const tlOwn = !!((lastOver && lastOver.closest && lastOver.closest(TL_OWNS)) || (a && a.closest && a.closest(TL_OWNS)));
       const dlg = !!document.querySelector("dialog[open]");
+      // 2.619.0: over the 📏 PushPull docker every key is its own (the tools' letters, numbers for the Measurements box)
+      if ((lastOver && lastOver.closest && lastOver.closest("#pushpulldock")) || (a && a.closest && a.closest("#pushpulldock"))) return;
       for (const id of Object.keys(W)) {
         const sp = W[id].spec;
         // 2.419.0: a key no tool there owns (2 = the negative prompt) works over the image editor / timeline canvas too;

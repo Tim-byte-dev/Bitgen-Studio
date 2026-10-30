@@ -268,6 +268,9 @@ From a single prompt to a whole film: the prompt docker, the video models, refer
 - **A range on one layer** — the position marker at the start, Shift+click on the layer at the end: the range on that layer; ✂ Cut removes all of it from that layer only, ↶ / Ctrl+Z undoes. *Where:* the timeline's layers. *Since:* 2.603.0
 - **Timeline undo / redo** — every edit to the timeline is a step: ↶ / ↷ in its menu bar, Ctrl+Z / Ctrl+Shift+Z over the layers. *Where:* the timeline. *Since:* 2.603.0
 - **To the gallery and assets** — every cut is copied to the gallery; send it to the Sound assets. *Where:* the SFX dock
+- **Speech and dialog** — text typed, pasted or written by the LLM read aloud by OmniVoice or Ming-3.0 TTS, one voice or a cast (a voice and an emotion per speaker, from "Name (emotion): line"), sound tags, pauses; saved as WAV or MP3 into the Audio assets. *Where:* the SFX dock ▸ 🗣 Speech & dialog. *Since:* 2.621.0
+- **Speech with emotion** — neutral, happy, sad, angry, fearful, disgusted, surprised: Ming-3.0 TTS's emotion task (with cloned voices too); with OmniVoice the pace, a voice recorded in that mood ("Name.happy") and the sound tags. *Where:* the SFX dock ▸ 🗣 Speech & dialog. *Since:* 2.621.0
+- **Metadata in the speech file** — the title, the date and time, the description, the text and the voices written into the WAV (INFO) or MP3 (ID3). *Where:* the SFX dock ▸ 🗣 Read & save. *Since:* 2.621.0
 
 ## Images
 
@@ -600,6 +603,7 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **Basic Settings per style** — every style keeps the Basic Settings you last used with it (misc/basic_settings.tmp): a style change saves the settings for the style you leave first, then puts back the new style's; the app opens on the last styles with their settings. A video style carries everything but the image set; an image style the image set. *Where:* any style list (the prompt docker, Basic Settings' style card). *Since:* 2.615.0
 - **Install with one file** — install_all.bat / install_all.sh / install_all.command: Git and Node.js installed when missing (Windows: Python too), the repository cloned next to it, then the studio starts (the first start installs the rest). *Where:* the repository's root - download just that file. *Since:* 2.616.0
 - **Text effects from a zip** — a zip of PSD text effects (a pack) installs every effect in it as a preset in one go, with the fonts it carries; several PSDs can be picked at once too. *Where:* a text layer's Properties / the image editor's Type tool ▸ Presets ▾ ＋ Import PSD text effects or a zip…. *Since:* 2.617.0
+- **Hidden / deleted bridge layers close their bridge** — a Blender, 3D (Daz / Blender) or Unreal layer that is hidden or deleted closes its scene / live view in the image editor and the timeline (the Blender process ends, the Unreal View stops, Daz's waiting commands are dropped). *Where:* the image editor's Layers (👁 / delete), the timeline's layers. *Since:* 2.618.0
 - **✂ Cut all ranges / ⏩ Speed up ranges** — cut every marked range at once (a clip cut several times stays one clip), or play each 2× - 10× faster to fast-forward a render. *Where:* the timeline's menu bar ▸ ▼ group. *Since:* 2.613.0
 - **Hover time + playback speed** — the time under the pointer in a small box over the timeline; the preview plays at 0.125× - 8×. *Where:* the timeline; the speed list under the preview. *Since:* 2.613.0
 - **✂ to new layer** — a checkbox that puts the part after a cut or a Ctrl+K split on a new layer right above. *Where:* the timeline's menu bar. *Since:* 2.612.0
@@ -1063,6 +1067,23 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 
 - **Image to 3D** — Hunyuan3D 2.1 (shape) or TRELLIS.2 (shape and texture) make a .glb from any picture. *Where:* the 3D button on Gallery and Assets pictures. *Since:* 2.404.0
 - **Build a scene with AI** — the local LLM plans a 3D scene from 58 kinds of object, a camera path and 3D models for the rest; Blender builds it. *Where:* the Blender preview's Build button. *Since:* 2.404.0
+
+### PushPull modelling
+
+- **📏 PushPull docker** — quick 3D modelling in bitGen: draw shapes on the ground or on faces and push / pull them into solids; models kept in the project, saved as you work, undo / redo. *Where:* the status bar's PushPull button (it starts hidden). *Since:* 2.619.0
+- **Push / pull** — a face becomes a solid; the top of a box makes it taller; a shape drawn on a face goes in (a pocket) or out (a boss); pushed to the far side, a hole through; a line across a face splits it. *Where:* PushPull ▸ P. *Since:* 2.619.0
+- **Exact sizes and snapping** — type lengths (m, cm, mm, feet, inches), two sizes, sides or degrees at any moment; the pointer snaps to corners, midpoints, edges, faces, the origin and the red / green / blue axes (arrows or Shift keep one). *Where:* PushPull ▸ the Measurements box. *Since:* 2.619.0
+- **Lines, rectangles, circles, polygons, offset** — the drawing tools; Offset makes a loop inside a face (walls round a room, frames). *Where:* PushPull ▸ L / R / C / N / F. *Since:* 2.619.0
+- **Move, copy, rotate, scale, groups, paint, erase, tape** — the editing tools; Ctrl+Move copies; groups are picked as one and edited inside with a double-click. *Where:* PushPull ▸ M / Q / S / G / B / E / T. *Since:* 2.619.0
+- **Views and styles** — Iso / Top / Front / Right / Back / Left, perspective or parallel, everything in view, shaded / monochrome / X-ray / wireframe, shadows. *Where:* PushPull's bar. *Since:* 2.619.0
+- **PushPull into bitGen** — a picture of the view into the image editor, a 3D layer on the timeline, a piece in the House builder, a scene in Blender, a mesh in Unreal; .glb / .obj / .stl export; project 3D models imported as groups. *Where:* PushPull ▸ Send / Export / Import. *Since:* 2.619.0
+- **Rooms that share walls** — a room is drawn with two clicks (walls, floor, ceiling); dragged near another room its wall snaps onto the other's and the two share one wall; each wall face takes the colour of the room it faces. *Where:* PushPull ▸ Build ▸ U Room, then Select + drag. *Since:* 2.620.0
+- **Walls, floors, ceilings, stairs** — free-standing walls (closed into a room when they meet their start), floors without walls, a room's ceiling on / off, straight stairs. *Where:* PushPull ▸ Build ▸ W / J / K / V. *Since:* 2.620.0
+- **Doors and windows** — single, double, sliding and glass doors or a plain opening; one-pane, two-pane and sliding windows with a sill; a click on any wall (through a shared wall too), dragged along it, sized in the panel. *Where:* PushPull ▸ Build ▸ D / I. *Since:* 2.620.0
+- **Roofs** — gable, hip, shed or flat over one room or several, with pitch, overhang and thickness; the gable ends walled up. *Where:* PushPull ▸ Build ▸ Y Room roof (Shift+click adds rooms). *Since:* 2.620.0
+- **Lights** — downlights, ceiling-mounted lights, pendants, chandeliers, spots, wall lights, floor and table lamps, each a real light with its fixture, colour (warm to cool) and brightness; 🌙 Night shows what they light; exported as glTF lights. *Where:* PushPull ▸ Build ▸ X Light, the bar's 🌙 Night. *Since:* 2.620.0
+- **The building's panel** — whatever is picked, or the next one the tool makes: sizes, heights, styles, colours, duplicate, turn, roof, delete. *Where:* PushPull ▸ the panel on the right. *Since:* 2.620.0
+- **PushPull's own window and File menu** — ⛶ fills the whole bitGen window under the title bar; ☰ File: new, open, save, save as, rename, import, export, send, delete, close; 🖼 → Image editor and 🎞 → Timeline buttons; ⌂ Cut-away. *Where:* PushPull's title bar and bar. *Since:* 2.620.0
 
 ## Bridges
 

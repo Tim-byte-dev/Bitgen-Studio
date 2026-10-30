@@ -13,6 +13,7 @@
 //   GET  /api/daz/live                  {connected, last, info: {figure, bones, camera}, queued}   the page's status
 //   POST /api/daz/live/cmd   {type: view | pose | reset, ...}                                    the page queues one
 //   POST /api/daz/live/poll  {since, info}  -> {seq, cmds}                                        Daz asks (about 1 / s)
+//   POST /api/daz/live/clear  -> {dropped}   (2.618.0) the commands still waiting dropped - their 3D layer was deleted / hidden
 "use strict";
 const daz = require("../lib/dazBridge");
 const live = require("../lib/dazLive");
@@ -42,6 +43,7 @@ function mount(app) {
   app.get("/api/daz/live", (_req, res) => res.json(live.status()));
   app.post("/api/daz/live/cmd", J, (req, res) => { try { res.json({ ok: true, ...live.push(req.body || {}) }); } catch (e) { fail(res, e); } });
   app.post("/api/daz/live/poll", J, (req, res) => res.json(live.poll(req.body || {})));
+  app.post("/api/daz/live/clear", (_req, res) => res.json({ ok: true, dropped: live.clear() }));   // 2.618.0: a 3D layer deleted / hidden
 }
 
 module.exports = { mount };

@@ -8,6 +8,10 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.621.0** — 🗣 Speech & Dialog in the SFX Docker
+- **2.620.0** — 📏 Pushpull Builds: Rooms, Shared Walls, Doors, Windows, Roofs, Lights
+- **2.619.0** — 📏 Pushpull: 3D Modelling in Its Own Docker
+- **2.618.0** — A Bridge Layer Deleted or Hidden Closes Its Bridge
 - **2.617.0** — Text Effects from a ZIP (Several in One)
 - **2.616.0** — Install with One File (install_all.bat / .sh / .command)
 - **2.615.0** — Basic Settings Follow the Style (misc/basic_settings.tmp)

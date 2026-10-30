@@ -13,7 +13,9 @@ It drives the repository's own CLI (src/infer.py) so the model is used exactly t
 infer.py's own output goes to stderr (the app shows it as progress); ONE JSON line on stdout is the answer.
 
   python ming_local.py <job.json>        job = {op: "speak" | "check", src, model, text, out, ref_audio, ref_text,
-                                                instruct, language, device}
+                                                instruct, language, device, emotion (高兴 …), emotion_en (happy …)}
+  2.621.0 an emotion: --task EMOTION + --emotion (or --controls '{"emotion": …}') - with a cloned voice too; a designed
+          voice + an emotion: --task FREEFORM + one instruction; a build with neither reads it plainly (and says so)
   python ming_local.py --check <src> <model>     the install's check (no speech)
 Pure (tests): parse_flags(help_text), pick(flags, *names), build_cmd(job, flags, normalize).
 """
@@ -27,6 +29,8 @@ import time
 
 TA_COMPAT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ta_compat.py")   # 2.601.0: torchaudio without TorchCodec
 
+EMOTION_FLAGS = ("--emotion", "--emo", "--emotion_label")     # 2.621.0: the EMOTION task's value (高兴 悲伤 愤怒 恐惧 厌恶 惊讶 中性)
+FREEFORM_FLAGS = ("--instruction", "--instruct", "--prompt_instruct")
 DESIGN_FLAGS = ("--instruct", "--instruction", "--caption", "--voice_description", "--description", "--prompt_instruct")
 OUT_FLAGS = ("--output", "--output_path", "--out", "--save_path")
 
@@ -93,8 +97,14 @@ def build_cmd(job, flags, normalize):
         raise ValueError("nothing to say")
     args = ["infer.py", "--model_path", str(job.get("model") or "")]
     ref, instruct = job.get("ref_audio"), str(job.get("instruct") or "").strip()
+    emo, emo_en = str(job.get("emotion") or "").strip(), str(job.get("emotion_en") or "").strip()
     task = "TTS"
-    if instruct:
+    if emo and instruct and pick(flags, *FREEFORM_FLAGS) and "--task" in flags:
+        # 2.621.0: a designed voice + an emotion = one free-form instruction (EMOTION and VOICE_DESIGN do not mix)
+        task = "FREEFORM"
+        args += [pick(flags, *FREEFORM_FLAGS), "%s. Speak with a %s emotion." % (instruct.rstrip(". "), emo_en or emo)]
+        instruct = ""
+    elif instruct:
         f = pick(flags, *DESIGN_FLAGS)
         if not f:
             raise ValueError("this Ming-3.0 TTS build has no voice-design option (infer.py --help names none) - use a cloned voice")
@@ -107,6 +117,15 @@ def build_cmd(job, flags, normalize):
         args += ["--prompt_wav_path", str(ref), "--prompt_text", rt]
         if "--use_spk_emb" in flags:
             args.append("--use_spk_emb")
+    if emo and task == "TTS":
+        # 2.621.0: the EMOTION task (with a cloned voice too); a build without an emotion option speaks it plainly
+        ef = pick(flags, *EMOTION_FLAGS)
+        if ef:
+            task = "EMOTION"
+            args += [ef, emo]
+        elif "--controls" in flags:
+            task = "EMOTION"
+            args += ["--controls", json.dumps({"emotion": emo}, ensure_ascii=False)]
     if "--task" in flags:
         args += ["--task", task]
     lang = str(job.get("language") or "").strip()
@@ -159,6 +178,8 @@ def speak(job):
         return {"error": str(e)}
     os.makedirs(os.path.dirname(os.path.abspath(dest)), exist_ok=True)
     t0 = time.time()
+    if job.get("emotion") and not (pick(flags, *EMOTION_FLAGS) or "--controls" in flags or (job.get("instruct") and pick(flags, *FREEFORM_FLAGS))):
+        log("this Ming-3.0 TTS build's infer.py has no emotion option - read plainly")
     log("Ming-3.0 TTS: %s%s" % ("voice design" if job.get("instruct") else "clone" if job.get("ref_audio") else "default voice",
                                 "" if norm else " (no text normalisation - pynini is not installed)"))
     # 2.601.0: through ta_compat - torchaudio 2.9+ without TorchCodec reads / writes audio anyway (it stopped with

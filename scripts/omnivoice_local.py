@@ -15,6 +15,7 @@ contract, so lib/tts.js can switch between them with one setting:
       "prompt_cache": "/abs/voice.omnivoice.pt" | null,       # optional
       "num_step": 32, "speed": 1.0,
       "op": "check"                           # optional: import test only
+      "op": "batch", "items": [{text, out, ref_audio, ...}]   # 2.621.0: many lines, one model load
     }
     stdout: {"out": ..., "engine": "omnivoice", "seconds": ..., "mode": ...}
             or {"error": "..."}
@@ -75,24 +76,11 @@ def check():
             "omnivoice": getattr(m, "__version__", "?")}
 
 
-def synth(job):
-    text = str(job.get("text") or "").strip()
-    if not text:
-        raise ValueError("no text")
-    out = job.get("out")
-    if not out:
-        raise ValueError("no output path")
+def load(job):
+    """the model, once (2.621.0: a batch of lines shares it)"""
     model_id = job.get("model") or "k2-fsa/OmniVoice"
     device = str(job.get("device") or "cuda")
-    ref_audio = job.get("ref_audio") or None
-    ref_text = str(job.get("ref_text") or "").strip()
-    instruct = str(job.get("instruct") or "").strip()
-    cache = job.get("prompt_cache") or None
-    num_step = int(job.get("num_step") or 32)
-    speed = float(job.get("speed") or 1.0)
-
     import torch
-    import soundfile as sf
     try:                                     # 2.601.0: torchaudio 2.9+ without a working TorchCodec reads the reference anyway
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import ta_compat
@@ -107,6 +95,26 @@ def synth(job):
     model = OmniVoice.from_pretrained(model_id, **_fits(
         OmniVoice.from_pretrained, {"device_map": device, "dtype": dtype, "torch_dtype": dtype}))
     say(f"model ready in {time.time() - t0:.1f}s")
+    return model
+
+
+def synth(job, model=None):
+    text = str(job.get("text") or "").strip()
+    if not text:
+        raise ValueError("no text")
+    out = job.get("out")
+    if not out:
+        raise ValueError("no output path")
+    ref_audio = job.get("ref_audio") or None
+    ref_text = str(job.get("ref_text") or "").strip()
+    instruct = str(job.get("instruct") or "").strip()
+    cache = job.get("prompt_cache") or None
+    num_step = int(job.get("num_step") or 32)
+    speed = float(job.get("speed") or 1.0)
+
+    import soundfile as sf
+    if model is None:
+        model = load(job)
 
     gen = {"text": text, "num_step": num_step, "speed": speed}
     mode = "auto"
@@ -163,6 +171,28 @@ def synth(job):
             "rate": rate, "mode": mode}
 
 
+def batch(job):
+    """2.621.0 (the SFX docker's speech / dialog): many lines, the model loaded ONCE.
+    job = {op: "batch", model, device, num_step, items: [{text, out, ref_audio, ref_text, instruct, prompt_cache, speed}]}
+    -> {outs: [...], seconds} ; a line that fails stops the batch with its number in the error"""
+    items = job.get("items") or []
+    if not items:
+        raise ValueError("no lines")
+    model = load(job)
+    outs, total = [], 0.0
+    for i, it in enumerate(items):
+        say(f"line {i + 1}/{len(items)}")
+        one = dict(it)
+        one.setdefault("num_step", job.get("num_step") or 32)
+        try:
+            r = synth(one, model)
+        except Exception as e:  # noqa: BLE001
+            raise RuntimeError(f"line {i + 1}: {e}")
+        outs.append(r["out"])
+        total += float(r.get("seconds") or 0)
+    return {"outs": outs, "engine": "omnivoice", "seconds": round(total, 2), "lines": len(outs)}
+
+
 def main():
     if len(sys.argv) < 2:
         print(json.dumps({"error": "usage: omnivoice_local.py <job.json>"}))
@@ -172,6 +202,9 @@ def main():
     try:
         if job.get("op") == "check":
             print(json.dumps(check()))
+            return 0
+        if job.get("op") == "batch":
+            print(json.dumps(batch(job)))
             return 0
         print(json.dumps(synth(job)))
         return 0

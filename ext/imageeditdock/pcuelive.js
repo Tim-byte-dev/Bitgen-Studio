@@ -36,12 +36,23 @@
     auto.checked = store.get("uelive.auto", true) !== false;
     auto.onchange = () => store.set("uelive.auto", auto.checked);
     const P = () => root.PCUnreal, U = () => root.UEBridge;
-    const req = () => requestOf(E.layer && E.layer(), P() && P().stillRequest, U() && U().framing);
+    // 2.618.0: a hidden Unreal layer (or one in a hidden group) is not shown - nothing is asked of Unreal for it
+    const shownL = (L) => !!L && (!E.D || !E.D.shown || E.D.shown(E.S.layers, L));
+    const req = () => { const L = E.layer && E.layer(); return shownL(L) ? requestOf(L, P() && P().stillRequest, U() && U().framing) : null; };
     const V = root.UELive.view(body.querySelector("#kueLiveView"), { request: req });
     const visible = () => body.classList.contains("on") && body.offsetParent !== null;
-    let lastL = null, wasUE = false, revealed = false;
+    let lastL = null, wasUE = false, revealed = false, ueL = null;
     function tick() {
-      const L = E.layer && E.layer(), ue = !!(L && L.smart && L.smart.ue);
+      const L = E.layer && E.layer(), ue = !!(L && L.smart && L.smart.ue) && shownL(L);
+      // 2.618.0 (Tim: "when the ... unreal ... layer is deleted or made hidden then close the bridge and don't show the
+      // scene"): the Unreal layer it showed is gone or hidden -> the live view closes, its picture goes, the tab hides
+      if (ueL && (!E.S.layers.includes(ueL) || !shownL(ueL))) {
+        V.clear(E.S.layers.includes(ueL) ? "the Unreal layer is hidden - its view is closed" : "the Unreal layer was deleted - its view is closed");
+        if (E.tabdock) { const g = E.tabdock.groupOfTab("kuelive"); if (g && E.tabdock.floating(g) && E.tabdock.tabsIn(g).length === 1) E.tabdock.hideOf("kuelive"); }
+        revealed = false; ueL = null;
+        if (root.H3TestEvent) { try { root.H3TestEvent("ue_view_closed", "editor"); } catch (e) { /* the 🧪 list */ } }
+      }
+      if (ue) ueL = L;
       if (L !== lastL || ue !== wasUE) {
         lastL = L;
         if (ue && !wasUE && auto.checked && E.tabdock) {

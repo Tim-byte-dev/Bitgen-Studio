@@ -107,11 +107,13 @@ const post = async (p, b) => (await fetch(URL_ + p, { method: "POST", headers: {
       const C = window.TlCanvas; if (!C || !window.TlUELive) return { missing: true };
       window.__sel0 = C.selClip;
       const clip = { start: 0, in: 0, ue: { kind: "camera", dur: 4, w: 640, h: 360, keys: [{ t: 0, loc: [0, 0, 100], rot: [0, 0, 0], fov: 50 }, { t: 4, loc: [400, 0, 100], rot: [0, 0, 90], fov: 30 }] } };
+      tl.vlayers.push(mkLayer("UE test", [clip]));   // 2.618.0: an Unreal clip shows only while it is on a (shown) layer
       C.selClip = () => ({ c: clip });
       try { playhead = 2; } catch (e) { C.state.t = 2; }   // the timeline's playhead (S.t follows it)
       for (let i = 0; i < 80 && window.TlUELive.view.frames() < 2; i++) await new Promise((r) => setTimeout(r, 150));
       const shown = window.TlUELive.box.shown(), frames = window.TlUELive.view.frames();
       C.selClip = window.__sel0;
+      tl.vlayers = tl.vlayers.filter((L) => L.name !== "UE test");
       await new Promise((r) => setTimeout(r, 900));
       return { shown, frames, after: window.TlUELive.box.shown() };
     });

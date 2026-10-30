@@ -1,0 +1,59 @@
+<h1>📏 PushPull</h1>
+<p>Model in 3D the quick way: draw a shape on the ground or on a face, then push or pull it into a solid. Sizes are typed
+at any moment into the <b>Measurements</b> box (bottom right) - no need to click there, just type and press Enter.</p>
+
+<h3>The tools (the letter is the key, with the pointer over the docker)</h3>
+<ul>
+  <li><b>Space ⬚ Select</b> - click a face or a line, Shift+click adds / takes out, Ctrl+A everything. A face of a group picks the whole group; <b>double-click</b> a group to edit inside it (the rest dims), <b>Esc</b> leaves. Delete erases what is picked.</li>
+  <li><b>L ╱ Line</b> - click, click … A closed flat loop becomes a face. A line from one border of a face to another <b>splits</b> it in two (then push / pull one half).</li>
+  <li><b>R ▭ Rectangle</b> - two opposite corners. Start it on a face and it lies in that face. Type <code>3,2</code> for 3 m × 2 m.</li>
+  <li><b>C ◯ Circle</b> / <b>N ⬠ Polygon</b> - the centre, then the radius. Type the radius, or <code>36s</code> for 36 sides.</li>
+  <li><b>P ⇧ Push/Pull</b> - click a face, move, click (or drag). Type the distance. On its own a face becomes a solid; the top of a box makes the box taller; a shape drawn on a face goes in as a <b>pocket</b> or out as a <b>boss</b>; push a pocket's floor to the far side for a <b>hole through</b>. Just after a push, type a new distance to change it. Double-click a face = the last distance again.</li>
+  <li><b>M ✥ Move</b> - pick something (or press on it), click a base point, click where it goes. <b>Ctrl</b> = a copy. Type the distance, or <code>x,y,z</code>.</li>
+  <li><b>Q ⟳ Rotate</b> - pick, then click the centre, the start and the end (round the vertical axis, 15° steps). Type the angle.</li>
+  <li><b>S ⤡ Scale</b> - pick, click a point and move away from / toward the middle. Type the factor.</li>
+  <li><b>F ⧈ Offset</b> - click a face and move inside it: a loop that far in. Offset a floor and pull the ring up = <b>walls</b>.</li>
+  <li><b>T 📏 Tape</b> - two points: their distance (and how far along each axis).</li>
+  <li><b>B 🪣 Paint</b> - click faces (a group: all of it). Alt+click takes a face's colour. The colours are at the bottom.</li>
+  <li><b>E ⌫ Eraser</b> - click or drag over lines and faces. A line that borders faces takes them with it.</li>
+  <li><b>O 🔄 Orbit</b>, <b>H ✋ Pan</b> - in any tool the middle button orbits, the right button pans and the wheel zooms (toward the pointer). <b>Shift+Z</b> = everything in view.</li>
+</ul>
+
+<h3>Building - rooms, walls, doors, windows, roofs, lights</h3>
+<p>The <b>Build</b> tools under the modelling tools draw a building that stays editable: rooms keep their walls, floors and ceilings, and doors, windows and lights stay where they are when a room moves.</p>
+<ul>
+  <li><b>U ⌂ Room</b> - two opposite corners (or type <code>4,3</code>): walls, a floor and a ceiling. Its corners snap to other rooms' corners and wall middles. The panel on the right sets the next room's wall height, thickness, floor level and ceiling.</li>
+  <li><b>W ▮ Wall</b> - click, click … a free-standing wall. Click its start again and it closes into a room. Double-click or Esc ends it. Type a length for the next piece.</li>
+  <li><b>D 🚪 Door</b> - click on a wall: single, double, sliding glass, glass panel, or an opening without a door. Its middle snaps to the middle of the wall. Type <code>0.9,2.1</code> for its width and height.</li>
+  <li><b>I 🪟 Window</b> - click on a wall: one pane, two panes or sliding, with its sill height. Type <code>1.2,1.2</code>.</li>
+  <li><b>J ▦ Floor</b> - two corners: a floor without walls (a deck, a patio, a storey's floor plate), at the height and thickness in the panel.</li>
+  <li><b>K ⌓ Ceiling</b> - click a room: its ceiling on or off.</li>
+  <li><b>Y △ Roof</b> - click a room: a roof over it (gable, hip, shed or flat, its pitch and overhang in the panel). <b>Shift+click</b> more rooms to put them under the same roof, or <b>Roof the whole storey</b>. Type a pitch in degrees.</li>
+  <li><b>X 💡 Light</b> - pick the type in the panel: <b>downlight</b> (recessed), <b>ceiling-mounted</b>, <b>pendant</b>, <b>chandelier</b>, <b>spot</b>, <b>wall light</b>, <b>floor lamp</b>, <b>table lamp</b>; its colour (warm white to cool) and brightness in lumens. A click puts it on the ceiling of the room under the pointer (the room's middle snaps); a wall light goes on the wall you point at.</li>
+  <li><b>V ▟ Stairs</b> - click the foot, then the direction and length (or type it). The height and width are in the panel.</li>
+</ul>
+<p><b>Rooms share walls.</b> With <b>Select</b>, press on a room and drag it: when one of its walls comes near another room's wall it snaps onto it, and the two rooms then have <b>one wall</b> between them. A door or window in that wall goes right through it. The corners line up too. Shift keeps the drag straight.</p>
+<p>Drag a door or window along its wall (or onto another wall); drag a light, the stairs or a floor. Click anything built and the panel shows its settings - a room's size, wall height and thickness, the colours of its walls inside, its floor and ceiling, and of all the outside walls; ⟳ 90°, ⧉ Duplicate (a copy beside it that shares the wall), △ Roof. <b>Delete</b> erases what is picked; <b>E</b> Eraser erases with a click; <b>B</b> Paint paints a room's walls, a floor, a ceiling, a door or a roof.</p>
+<p><b>🌙 Night</b> turns the sun and sky down so the lights light the rooms (they are dark by day - a light here shines through walls, so by day it would light the outside too). <b>⌂ Cut-away</b> hides every roof and ceiling to look in from above.</p>
+
+<h3>Inference - where the pointer snaps</h3>
+<ul>
+  <li>The marker and its words show what the point is on: <b>Endpoint</b>, <b>Midpoint</b>, <b>Origin</b>, <b>On Edge</b>, <b>On Face</b>, <b>On Ground</b>.</li>
+  <li>From the last point, a dotted line shows when you are <b>on the red / green / blue axis</b>. Hold <b>Shift</b> to keep that axis, or press <b>→</b> red, <b>←</b> green, <b>↑</b> blue (<b>↓</b> lets it go).</li>
+  <li>Push / Pull snaps to the height of a corner, an edge or another face the pointer is over.</li>
+  <li>Lengths can be typed as <code>1.5</code> (m), <code>150cm</code>, <code>1500mm</code>, <code>5'</code>, <code>10"</code>.</li>
+</ul>
+
+<h3>The bar</h3>
+<ul>
+  <li><b>☰ File ▾</b> - New, Open, Save (Ctrl+S), Save as, Rename, bring in a 3D model of the project or a file from this computer (.pp3d, .glb, .gltf, .obj), Export, send to the image editor / the timeline / elsewhere, Delete, Maximize, Close.</li>
+  <li><b>The name</b> and <b>💾</b> - models are kept in the project and save themselves a moment after each change. <b>↶ ↷</b> (Ctrl+Z / Ctrl+Y).</li>
+  <li><b>View ▾</b> Iso / Top / Front / Right / Back / Left, <b>Persp / Parallel</b>, <b>⤢</b> everything in view, face style (shaded + edges, shaded, monochrome, X-ray, wireframe), <b>☀</b> shadows.</li>
+  <li><b>▣ Group</b> (G) what is picked; with a group picked it explodes it.</li>
+  <li><b>🌙 Night</b> and <b>⌂ Cut-away</b> (see Building).</li>
+  <li><b>🖼 → Image editor</b> - a picture of the view as you see it (day or night). <b>🎞 → Timeline</b> - the model as a 3D layer.</li>
+  <li><b>➜ Send ▾</b>: a picture of the view to the <b>image editor</b> (with or without the background), a <b>3D layer on the timeline</b> (sent again, its layers update), the <b>House builder</b>, <b>Blender</b>, <b>Unreal</b>.</li>
+  <li><b>⤓ Export ▾</b>: .glb (with or without the lights - glTF lights, which Blender and Unreal bring in) or .obj into the project's 3D models; .glb, .obj or .stl (millimetres, for 3D printing) to this computer. <b>⤒ Import ▾</b>: a 3D model of the project as a group.</li>
+</ul>
+<p><b>⛶ Maximize</b> (its title bar) fills the whole bitGen window under the title bar; 🗗 or Esc (when nothing else is going) puts it back.</p>
+<p>The docker starts hidden - the <b>PushPull</b> button in the status bar shows it.</p>

@@ -76,6 +76,16 @@ def main():
     if "omnivoice_local" in helper:
         if job.get("op") == "check":
             print(json.dumps({"ok": True, "torch": "stub", "cuda": False, "omnivoice": "stub"})); return 0
+        if job.get("op") == "batch":                      # 2.621.0: the SFX docker's speech / dialog - one load, many lines
+            outs = []
+            for i, it in enumerate(job.get("items") or []):
+                sys.stderr.write(f"[tts] line {i + 1}/{len(job['items'])}\n")
+                with open(it["out"], "wb") as fh:
+                    fh.write(wav_bytes(seconds=0.4 + 0.02 * len(it.get("text", "")), rate=24000))
+                outs.append(it["out"])
+                sys.stderr.write(f"STUBOMNI line={i + 1} speed={it.get('speed')} clone={bool(it.get('ref_audio'))} instruct={it.get('instruct','')!r}\n")
+            print(json.dumps({"outs": outs, "engine": "omnivoice", "lines": len(outs)}))
+            return 0
         if not job.get("text"):
             print(json.dumps({"error": "no text"})); return 1
         with open(job["out"], "wb") as fh:

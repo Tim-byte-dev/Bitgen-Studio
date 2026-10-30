@@ -1,0 +1,102 @@
+    <div class="bdock" id="pushpulldock" data-own-space="1">
+      <div class="bhead" data-collapse="pushpulldock">▾ 📏 PushPull<button class="ghost" type="button" title="Help - the tools, the keys, the Measurements box" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('pushpull')" style="margin-left:auto;padding:0 6px">❔</button><button class="maxbtn" data-max="pushpulldock" title="Maximize">⛶</button></div>
+      <div class="bbody" id="ppBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.619.0 (Tim: "can we add a final docker, i feel this one will complete bitgen ... looks like a sketchup made for
+             linux" - asked: our own SketchUp-style docker): push/pull 3D modelling in bitGen itself - ext/pushpulldock/
+             ppgeo.js (the model: faces, push/pull, offset, split), ppview.js (three.js: the view, picking, inference),
+             pptools.js (the tools + the Measurements box), ppglb.js (.glb / .obj / .stl), ppdock.js (this bar, files, the
+             hand-overs to the timeline / image editor / House builder / Blender / Unreal); routes/pushPull.js +
+             lib/pushPull.js keep the models in projects/<project>/pushpull/.
+             2.620.0 (Tim: "add architectural tools like floor, walls,windows, ceiling,roof etc. rooms will be able to be dragged,
+             their walls can snap to another room and share the wall, door or window etc. add lights, downlights, pendant
+             lights, chandelier lights, ceiling mounted lights etc. when maximized it takes bitgens full window minus the
+             titlebar, it has it's own file menu. send to image editor button and send to time line button"): pparch.js (rooms,
+             shared walls, doors, windows, roofs, stairs, floors, lights), pparchview.js (them in the view + the lights),
+             pparchtools.js (the tools + the panel #ppProps), ppframe.js (☰ File, maximize, 🖼 / 🎞, 🌙, ⌂). -->
+        <style>
+          #ppBar, #ppFoot { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; font-size: 11px; }
+          #ppBar select, #ppBar input[type=text] { font-size: 11px; width: auto; flex: none; }
+          #ppBar button, #ppFoot button, #ppFoot label { flex: none; }
+          #ppBar .sep { width: 1px; height: 18px; background: var(--line, #444); margin: 0 2px; }
+          #ppMain { flex: 1; display: flex; min-height: 430px; gap: 4px; position: relative; }
+          #pushpulldock.ppnarrow #ppProps { position: absolute; right: 0; top: 0; bottom: 0; z-index: 6; background: var(--panel, #1f1c17); box-shadow: -6px 0 18px #0006; max-width: 100%; }
+          #ppProps .pptog { display: none; }
+          #pushpulldock.ppnarrow #ppProps .pptog { display: block; float: right; font-size: 11px; padding: 0 5px; margin: 0 0 2px 4px; }
+          #pushpulldock.ppnarrow #ppProps:not(.open) { width: auto; bottom: auto; padding: 2px; border-radius: 0 0 0 6px; }
+          #pushpulldock.ppnarrow #ppProps:not(.open) > :not(.pptog) { display: none; }
+          #ppTools { display: grid; grid-template-columns: 32px 32px; grid-auto-rows: 28px; gap: 2px; width: 68px; flex: none; overflow-y: auto; align-content: start; }
+          #ppTools button { width: 32px; height: 28px; padding: 0; font-size: 15px; line-height: 26px; }
+          #ppTools .pptsep { grid-column: 1 / -1; height: 16px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim, #999); display: flex; align-items: end; border-bottom: 1px solid var(--line, #444); }
+          #ppProps { width: 214px; flex: none; overflow-y: auto; font-size: 11px; border-left: 1px solid var(--line, #444); padding: 2px 4px 6px 6px; display: none; }
+          #ppProps .pph { font-weight: 600; margin: 2px 0 6px; color: var(--tiger, #f59e2c); }
+          #ppProps .ppr { display: grid; grid-template-columns: 1fr 92px; gap: 4px; align-items: center; margin: 3px 0; }
+          #ppProps .ppr input[type=number], #ppProps .ppr input[type=text], #ppProps .ppr select { width: 92px; font-size: 11px; padding: 1px 3px; }
+          #ppProps .ppr input[type=color] { width: 40px; height: 20px; padding: 0; border: 0; }
+          #ppProps .ppr input[type=checkbox] { justify-self: start; }
+          #ppProps .ppbtns { display: flex; flex-wrap: wrap; gap: 3px; margin: 8px 0 4px; }
+          #ppProps .ppbtns button { font-size: 11px; padding: 2px 6px; }
+          #ppProps .pphint { color: var(--dim, #999); margin-top: 6px; line-height: 1.35; }
+          #ppBar button.on { color: var(--tiger, #f59e2c); border-color: var(--tiger, #f59e2c); }
+          /* 2.620.0: maximized = the whole bitGen window but its title bar */
+          #pushpulldock.maxed { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: var(--pp-top, 0px) !important; width: auto !important; height: auto !important; max-height: none !important; margin: 0 !important; z-index: 9000; border-radius: 0; display: flex; flex-direction: column; }
+          #pushpulldock.maxed > .bbody { flex: 1 1 auto; min-height: 0; max-height: none !important; height: auto !important; overflow: hidden; }
+          #pushpulldock.maxed #ppMain { min-height: 0; }
+          .ppask { position: fixed; inset: 0; z-index: 10080; background: #0006; display: flex; align-items: center; justify-content: center; }
+          .ppask > div { background: var(--panel, #1f1c17); border: 1px solid var(--line, #444); border-radius: 8px; padding: 12px; min-width: 300px; font-size: 12px; box-shadow: 0 8px 28px #0008; }
+          .ppask input { width: 100%; margin: 6px 0 10px; }
+          .ppask .r { display: flex; gap: 6px; justify-content: flex-end; }
+          #ppTools button.on { background: var(--tiger, #f59e2c); color: #14120f; border-color: var(--tiger, #f59e2c); }
+          #ppView { flex: 1; position: relative; min-width: 0; border-radius: 6px; overflow: hidden; background: #eef0f2; }
+          #ppGrp { position: absolute; left: 8px; top: 8px; z-index: 4; background: #1d4ed8; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; display: none; }
+          #ppSw { display: inline-flex; gap: 2px; align-items: center; }
+          #ppSw button { width: 16px; height: 16px; padding: 0; border: 1px solid #0006; border-radius: 3px; }
+          #ppSw button.on { outline: 2px solid var(--tiger, #f59e2c); outline-offset: 1px; }
+          #ppVcb { width: 120px; font: 12px var(--mono, monospace); }
+          #ppMsg { flex: 1; min-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .ppmenu { position: fixed; z-index: 10070; background: var(--panel, #1f1c17); border: 1px solid var(--line, #444); border-radius: 6px; padding: 4px 0; min-width: 220px; max-height: 60vh; overflow: auto; box-shadow: 0 8px 28px #0008; font-size: 12px; }
+          .ppmenu div { padding: 4px 12px; cursor: pointer; white-space: nowrap; }
+          .ppmenu div:hover { background: var(--tiger, #f59e2c); color: #14120f; }
+          .ppmenu .h { color: var(--dim, #999); cursor: default; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+          .ppmenu .h:hover { background: none; color: var(--dim, #999); }
+        </style>
+        <div id="ppBar">
+          <button class="ghost gbtn" id="ppFile" type="button" title="The model's files: new, open, save, save as, rename, duplicate, import, export, send, delete">☰ File ▾</button>
+          <input type="text" id="ppName" value="model 1" title="The model's name - it is kept in the project (projects/&lt;project&gt;/pushpull/&lt;name&gt;.pp3d), saved as you work" style="width:110px" aria-label="Model name">
+          <button class="ghost gbtn" id="ppSave" type="button" title="Save now (Ctrl+S) - it also saves itself a moment after each change">💾</button>
+          <span class="sep"></span>
+          <button class="ghost gbtn" id="ppUndo" type="button" title="Undo (Ctrl+Z)">↶</button>
+          <button class="ghost gbtn" id="ppRedo" type="button" title="Redo (Ctrl+Y / Ctrl+Shift+Z)">↷</button>
+          <span class="sep"></span>
+          <select id="ppViewSel" title="Standard views" aria-label="View">
+            <option value="">View ▾</option><option value="iso">Iso</option><option value="top">Top</option><option value="front">Front</option><option value="right">Right</option><option value="back">Back</option><option value="left">Left</option>
+          </select>
+          <button class="ghost gbtn" id="ppOrtho" type="button" title="Perspective / Parallel projection">⬛ Persp</button>
+          <button class="ghost gbtn" id="ppExt" type="button" title="Zoom extents - everything in view (Shift+Z)">⤢</button>
+          <select id="ppStyle" title="Face style" aria-label="Face style">
+            <option value="edges">Shaded + edges</option><option value="shaded">Shaded</option><option value="mono">Monochrome</option><option value="xray">X-ray</option><option value="wire">Wireframe</option>
+          </select>
+          <label title="The sun's shadows"><input type="checkbox" id="ppShadow"> ☀</label>
+          <button class="ghost gbtn" id="ppNight" type="button" title="Night: the sun and sky turned down - the rooms' lights light them (on again: day)">🌙 Night</button>
+          <button class="ghost gbtn" id="ppCut" type="button" title="Cut-away: the roofs and ceilings hidden - look into the rooms from above">⌂ Cut-away</button>
+          <span class="sep"></span>
+          <button class="ghost gbtn" id="ppGroup" type="button" title="Make a group of what is picked (G) - picked as one, double-click it to edit inside; with a group picked: explode it">▣ Group</button>
+          <span class="sep"></span>
+          <button class="ghost gbtn" id="ppToIE" type="button" title="Send a picture of the view (as you see it - day or night) to the image editor">🖼 → Image editor</button>
+          <button class="ghost gbtn" id="ppToTL" type="button" title="Send the model to the timeline as a 3D layer (sent again: its layers update)">🎞 → Timeline</button>
+          <button class="ghost gbtn" id="ppSend" type="button" title="Send the model on: a picture to the image editor, a 3D layer on the timeline, the House builder, Blender, Unreal">➜ Send ▾</button>
+          <button class="ghost gbtn" id="ppExport" type="button" title="Save the model as .glb / .obj / .stl - into the project's 3D models or to this computer">⤓ Export ▾</button>
+          <button class="ghost gbtn" id="ppImport" type="button" title="A 3D model of the project (.glb / .gltf / .obj / .fbx) into this model as a group">⤒ Import ▾</button>
+        </div>
+        <div id="ppMain">
+          <div id="ppTools" role="toolbar" aria-label="PushPull tools"></div>
+          <div id="ppView" tabindex="-1"><div id="ppGrp"></div><div id="ppLoad" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#666;font-size:12px">loading the 3D view…</div></div>
+          <div id="ppProps" aria-label="Properties"></div>
+        </div>
+        <div id="ppFoot">
+          <span id="ppMsg" class="hint" role="status"></span>
+          <span id="ppInfo" class="hint"></span>
+          <span id="ppSw" title="The paint colour (B = Paint)"></span><input type="color" id="ppCol" value="#c8a882" title="Another colour" style="width:22px;height:18px;padding:0;border:0">
+          <label id="ppVcbL" for="ppVcb" style="margin-left:6px">Length</label><input type="text" id="ppVcb" autocomplete="off" spellcheck="false" title="The Measurements box: type while a tool is going - a length (1.5 · 150cm · 1500mm · 5'), two (3,2), sides (24s), degrees - Enter" aria-label="Measurements">
+        </div>
+      </div>
+    </div>

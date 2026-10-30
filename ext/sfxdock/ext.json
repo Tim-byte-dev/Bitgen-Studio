@@ -4,6 +4,7 @@
   "order": 66,
   "html": "dock.html",
   "scripts": [
-    "sfxdock.js"
+    "sfxdock.js",
+    "sfxspeech.js"
   ]
 }

@@ -127,6 +127,8 @@
       el,
       start() { if (running) return; running = true; n = 0; t0 = Date.now(); say("connecting…", "wait"); loop(); },
       stop() { running = false; clearTimeout(timer); if (!paused) say("stopped", ""); },
+      /** 2.618.0: stopped AND the picture gone (its layer / clip was deleted or hidden - the scene is not shown) */
+      clear(why) { running = false; clearTimeout(timer); last = ""; const pic = q("pic"); pic.innerHTML = '<div class="e"></div>'; pic.firstChild.textContent = why || "📺 the Unreal View shows what the selected layer's camera sees"; if (url) { URL.revokeObjectURL(url); url = ""; } say(why || "closed", ""); },
       running: () => running && !paused,
       refresh() { if (running && !paused && !busy) { clearTimeout(timer); loop(); } },
       frames: () => n,
