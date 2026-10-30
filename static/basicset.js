@@ -49,10 +49,13 @@
     fetch("/api/comfymodels").then(function (r) { return r.json(); }).then(function (j) {
       var cats = j.categories || {}, names = [];
       (j.model_categories || ["checkpoints", "diffusers", "diffusion_models"]).concat(["unet", "unet_gguf"]).forEach(function (k) {
-        (cats[k] || []).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+        // 2.622.0: a category is {files: [{name}]} (lib/comfyModels.js) - read as a plain list it threw, and the list stayed EMPTY
+        var c = cats[k], L = Array.isArray(c) ? c : ((c && c.files) || []).map(function (f) { return f && f.name; });
+        L.forEach(function (n) { if (n && names.indexOf(n) < 0) names.push(n); });
       });
       var dl = $("vidModelList"); if (!dl) return;
       dl.innerHTML = names.map(function (n) { return '<option value="' + String(n).replace(/"/g, "&quot;") + '"></option>'; }).join("");
+      listed = names.length > 0;                  // nothing yet (ComfyUI not found) - the next focus asks again
     }).catch(function () { listed = false; });
   }
 

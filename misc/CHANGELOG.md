@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.622.0** — The Installed Comfyui's Models in the Lists
 - **2.621.0** — 🗣 Speech & Dialog in the SFX Docker
 - **2.620.0** — 📏 Pushpull Builds: Rooms, Shared Walls, Doors, Windows, Roofs, Lights
 - **2.619.0** — 📏 Pushpull: 3D Modelling in Its Own Docker

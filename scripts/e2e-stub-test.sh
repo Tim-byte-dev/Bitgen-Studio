@@ -12746,6 +12746,14 @@ node scripts/test-speech621.js > /tmp/sp621.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui621-ui.js > /tmp/ui621.log 2>&1 \
   && ok "2.621.0 browser test: the SFX docker's name / text / description, typed dialog -> the cast, ＋ tag, 📋 Paste, 🗣 Read & save (.wav: each speaker's voice + mood, the metadata), .mp3 one voice, Ming not installed, ✨ Write (+ Ctrl+Z), the draft kept - or SKIP without playwright" \
   || { bad "2.621.0 speech & dialog browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui621.log | head -14; }
+# ---- 2.622.0 (Tim: "if comfyui is installed add the diffusion models and checkpoint folder models to our model list in basic
+# settings and the model manager")
+node scripts/test-comfydetect622.js > /tmp/cd622.log 2>&1 \
+  && ok "2.622.0 the installed ComfyUI found (a folder, a portable build, ComfyUI Desktop; Settings' folder wins), its checkpoints + diffusion models scanned for the lists and the Model manager's cards, the wiring - the pure part + fixtures" \
+  || { bad "2.622.0 comfy detect units"; grep -a "^FAIL" -A2 /tmp/cd622.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui622-ui.js > /tmp/ui622.log 2>&1 \
+  && ok "2.622.0 browser test: no ComfyUI folder set, one on the computer -> Basic Settings' checkpoint + video Model lists and the 🧩 Model manager hold its checkpoints and diffusion models, Settings ▸ ComfyUI says where + Use this folder - or SKIP without playwright" \
+  || { bad "2.622.0 comfy detect browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui622.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

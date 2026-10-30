@@ -3791,6 +3791,12 @@ another docker.
   (its workflow, text encoder, VAE, sampler and negative), or another you pick; the model, the LoRAs and the card's
   cfg, steps, VAE and text encoder replace those. A video model makes a video style, with the model in its first
   sampler phase.
+- **A ComfyUI that is installed but not set in Settings** (2.622.0): when Settings ▸ ComfyUI ▸ Folder is empty, bitGen
+  looks for a ComfyUI on this computer - $COMFYUI_PATH, beside bitGen Studio, your home folder (ComfyUI, the portable
+  build, Documents, Desktop, Downloads), Pinokio, Stability Matrix, the top of each drive, ComfyUI Desktop - and its
+  **checkpoints** and **diffusion models** (and unet) fill the Model manager, Basic Settings' checkpoint list and the
+  video Model list. The status line says where it was found; Settings ▸ ComfyUI ▸ Folder shows it with **Use this
+  folder** to set it for good.
 
 **Civitai** (Settings ▸ General ▸ Civitai, then the Model manager's Civitai tab):
 
@@ -6199,6 +6205,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.622.0: **ComfyUI found by itself** - an installed ComfyUI that Settings does not name yet is found, and its
+  checkpoints and diffusion models are in the Model manager and Basic Settings' model lists (the video Model list
+  had stayed empty - it read the list the wrong way; fixed). Settings ▸ ComfyUI ▸ Folder offers Use this folder.
 - 2.621.0: **🗣 Speech & dialog in the SFX dock** - text typed, pasted or written by the LLM, read with emotion by
   OmniVoice or Ming-3.0 TTS in one voice or a voice per speaker, saved as .wav / .mp3 into the Audio assets with the
   date, time, description and text in the file's metadata.
