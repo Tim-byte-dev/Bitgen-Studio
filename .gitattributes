@@ -3,3 +3,5 @@
 # core.autocrlf did to them.
 *.bat text eol=crlf
 *.cmd text eol=crlf
+# 2.616.0: install_all.bat is downloaded on its own too (GitHub's raw file) - kept with CRLF in the repo itself
+install_all.bat -text

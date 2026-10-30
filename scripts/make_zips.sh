@@ -41,6 +41,7 @@ FILES=$(find . -type f \
   ! -path "./models/*" ! -path "./loras/*" ! -path "./llm-models/*" \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \
   ! -path "./comfy/*" \
+  ! -path "./fonts/*" ! -path "./textfx/user/*" \
   ! -path "./venvs/*" ! -path "./checkpoints/*" \
   ! -path "*/__pycache__/*" ! -name "*.pyc" ! -name "*.log" \
   ! -name "config.json" ! -name "config.json.migrated" ! -name "custom.settings" \

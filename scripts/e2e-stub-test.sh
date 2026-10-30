@@ -12700,6 +12700,18 @@ node scripts/test-stylebasic615.js > /tmp/sb615.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui615-ui.js > /tmp/ui615.log 2>&1 \
   && ok "2.615.0 browser test: the file made at the start; A's settings kept before switching to B (not B's), back to A from the style card = A's settings, image styles keep the image set, reopened = the last styles + settings - or SKIP without playwright" \
   || { bad "2.615.0 style settings browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui615.log | head -14; }
+# ---- 2.616.0 (Tim: "is it possible to create an install_all file that will install git and nodejs if they are not
+# installed then run start for all our supported os?" + "so user can use this file only, it will also clone our repo")
+node scripts/test-installall616.js > /tmp/ia616.log 2>&1 \
+  && ok "2.616.0 install_all - the .sh run against stand-in git / node / apt-get / bootstrap (on its own: clone + first start; installed: start; no Git: the package manager; inside an app folder: no clone), .command = .sh, the .bat's steps + CRLF" \
+  || { bad "2.616.0 install_all units"; grep -a "^FAIL" -A2 /tmp/ia616.log | head -14; }
+# ---- 2.617.0 (Tim: "can we install text preset effects from a zip, multiple effects can be in a single zip")
+node scripts/test-textfxzip617.js > /tmp/tz617.log 2>&1 \
+  && ok "2.617.0 text effects from a zip - the zip read in place (stored / deflate, folders, macOS junk, Zip64 / password refused), fonts into <install>/fonts, the importZip / picker / font list wiring - the pure part + the wiring" \
+  || { bad "2.617.0 text effect zip units"; grep -a "^FAIL" -A2 /tmp/tz617.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui617-ui.js > /tmp/ui617.log 2>&1 \
+  && ok "2.617.0 browser test: a pack zip (2 PSDs in a folder, a preset .json, a font, junk, a broken PSD) -> 3 presets + the font, the broken one named; a zip + a PSD at once; every picker takes zips - or SKIP without playwright" \
+  || { bad "2.617.0 text effect zip browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui617.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

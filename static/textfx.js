@@ -28,6 +28,8 @@
  *   full(spec, id) -> Promise   the full picture (the timeline's export)
  *   drawText(g, t, slot, onFull) the image editor's text layer through its preset (false = not ready: draw it plain)
  *   list() / load() / byId(id) / importFile(file) / remove(id) / picker({current, onPick})  the presets + the dropdown
+ *   importZip(file, {onStep}) (2.617.0) a zip of text effects: every PSD / PSB in it, bitGen preset .json files, and the
+ *                              fonts it carries (into <install>/fonts) - {added, failed, fonts, skipped}
  * The ten classic looks (Gold, Chrome, Neon ...: pcstyles.js) are presets here too ("style:<name>").
  * 2.607.0 (Tim: "keep the text presets when ... shape tools like 3d , warp etc are used"): stack() is shared - renderFace(face,
  * preset, {box, hRef, color, fast}) lays a preset over ANY drawing of the words (warped, round a circle, 3D, vertical,
@@ -542,21 +544,79 @@
     return ag;
   }
   function pcpsd() { return root.PCPsd ? Promise.resolve(root.PCPsd) : loadScript("/ext/imageeditdock/pcpsd.js").then(() => root.PCPsd); }
-  /** a PSD file -> a saved preset (the server keeps it in textfx/user/) */
-  function importFile(file) {
-    const name = String(file && file.name || "PSD text effect").replace(/^[0-9a-f]{8}-/i, "").replace(/\.ps[db]$/i, "")
+  /** a PSD file's name -> a preset name ("gold-3d-text-effect-psd.psd" -> "Gold 3d") */
+  function prettyName(fileName) {
+    const name = String(fileName || "PSD text effect").split(/[\\/]/).pop().replace(/^[0-9a-f]{8}-/i, "").replace(/\.ps[db]$/i, "")
       .replace(/[-_]+/g, " ").replace(/\b(psd|text|style|effect|font|editable|\d{3,})\b/gi, " ").replace(/\s+/g, " ").trim() || "PSD text effect";
-    const pretty = name.replace(/\b\w/g, (c) => c.toUpperCase()).slice(0, 60);
+    return name.replace(/\b\w/g, (c) => c.toUpperCase()).slice(0, 60);
+  }
+  function savePreset(p, reload) {
+    return fetch("/api/textfx/presets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: p }) })
+      .then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || r.status); return j; }))
+      .then((j) => (reload === false ? j.preset : load(true).then(() => byId(j.id) || j.preset)));
+  }
+  /** a PSD file -> a saved preset (the server keeps it in textfx/user/). o.reload false: the list is read again later */
+  function importFile(file, o) {
+    if (/\.zip$/i.test(String(file && file.name || ""))) return importZip(file, o).then((r) => { if (!r.added.length) throw new Error(r.failed.length ? r.failed[0].name + ": " + r.failed[0].error : "no PSD text effects in that zip"); return r.added[0]; });
+    const pretty = prettyName(file && file.name);
     return Promise.all([agPsd(), pcpsd(), ensure(), file.arrayBuffer()]).then(([A, PP, ok, buf]) => {
       if (!A || !PP) throw new Error("the PSD reader did not load");
       const psd = A.readPsd(buf, { skipLayerImageData: true, skipCompositeImageData: true, skipThumbnail: true });
       const p = fromPsd(psd, { effectsToStyles: PP.effectsToStyles, blendIn: PP.blendIn, rgbToHex: PP.rgbToHex,
         readPsd: (d) => A.readPsd(d, { skipLayerImageData: true, skipCompositeImageData: true, skipThumbnail: true }) }, pretty);
       p.source = String(file.name || "").slice(0, 120);
-      return fetch("/api/textfx/presets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ preset: p }) })
-        .then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || r.status); return j; }))
-        .then((j) => load(true).then(() => byId(j.id) || j.preset));
+      return savePreset(p, !(o && o.reload === false));
     });
+  }
+  /* 2.617.0 (Tim: "can we install text preset effects from a zip, multiple effects can be in a single zip"): a ZIP of
+     text effects - every PSD / PSB in it (folders too) becomes a preset, a bitGen preset .json is added as it is, the
+     fonts it carries (.ttf / .otf) go into the studio's font folder first (POST /api/fonts/install - every font list
+     then knows them). Read from the file in place (static/zipread.js), one PSD at a time. A PSD that is not a text
+     effect is named in the result, the rest still go in.
+     importZip(file, {onStep(text, done, total)}) -> {added: [preset], failed: [{name, error}], fonts: [{name, family}], skipped} */
+  function zipReader() { return root.H3Zip ? Promise.resolve(root.H3Zip) : loadScript("/static/zipread.js").then(() => root.H3Zip); }
+  async function importZip(file, o) {
+    const step = (o && o.onStep) || (() => {});
+    const Z = await zipReader();
+    if (!Z) throw new Error("the zip reader did not load");
+    const all = await Z.entries(file);
+    const want = all.map((e) => ({ e, k: Z.kind(e.name) })).filter((x) => x.k);
+    const fonts = want.filter((x) => x.k === "font"), work = want.filter((x) => x.k !== "font");
+    const res = { added: [], failed: [], fonts: [], skipped: all.length - want.length };
+    if (!work.length) throw new Error("no PSD text effects (.psd / .psb) in " + file.name);
+    for (const x of fonts) {
+      const nm = x.e.name.split("/").pop();
+      try {
+        step("font " + nm, 0, work.length);
+        const r = await fetch("/api/fonts/install?name=" + encodeURIComponent(nm), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: await Z.read(file, x.e) });
+        const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status);
+        res.fonts.push({ name: j.name, family: j.family, existed: !!j.existed });
+      } catch (e) { res.failed.push({ name: nm, error: String(e.message || e) }); }
+    }
+    if (res.fonts.some((f) => !f.existed) && root.H3Fonts && root.H3Fonts.reload) { try { await root.H3Fonts.reload(); } catch (e) { /* the lists catch up at the next start */ } }
+    let i = 0;
+    for (const x of work) {
+      const nm = x.e.name.split("/").pop();
+      step(nm, i++, work.length);
+      try {
+        const u8 = await Z.read(file, x.e);
+        let p;
+        if (x.k === "json") {
+          const raw = JSON.parse(new TextDecoder("utf-8").decode(u8));
+          if (!normalize(raw)) throw new Error("not a text effect preset");
+          raw.source = raw.source || (file.name + " / " + nm).slice(0, 120);
+          p = await savePreset(raw, false);
+        } else {
+          const blob = new Blob([u8]);
+          p = await importFile({ name: nm, arrayBuffer: () => blob.arrayBuffer() }, { reload: false });
+        }
+        res.added.push(p);
+      } catch (e) { res.failed.push({ name: nm, error: String(e.message || e) }); }
+    }
+    step("done", work.length, work.length);
+    await load(true);
+    res.added = res.added.map((p) => byId(p.id) || p);
+    return res;
   }
   function remove(id) {
     return fetch("/api/textfx/presets/" + encodeURIComponent(id), { method: "DELETE" }).then((r) => r.json()).then(() => load(true));
@@ -572,7 +632,7 @@
     const L = list || [], grp = (title, xs) => (xs.length ? `<optgroup label="${esc(title)}">` + xs.map((p) => `<option value="${esc(p.id)}"${p.id === current ? " selected" : ""}>${esc(p.name)}</option>`).join("") + "</optgroup>" : "");
     return `<option value=""${!current ? " selected" : ""}>— no preset —</option>`
       + grp("PSD text effects", L.filter((p) => p.builtin && !p.classic)) + grp("Your imports", L.filter((p) => !p.builtin))
-      + grp("Classic", L.filter((p) => p.classic)) + `<option value="__import">＋ Import a PSD text effect…</option>`;
+      + grp("Classic", L.filter((p) => p.classic)) + `<option value="__import">＋ Import PSD text effects or a zip…</option>`;
   }
   const previews = new Map();
   /** -> an element: <select> + a little preview + 🗑 (your imports). o = {current, onPick(id), say(text)} */
@@ -582,7 +642,7 @@
     box.innerHTML = `<select class="tfx-sel" title="Text effect presets - from PSD text effects (＋ imports your own), live as you type" aria-label="Text effect preset" style="max-width:170px"></select>`
       + `<canvas class="tfx-pv" width="120" height="34" title="How the preset looks" style="width:120px;height:34px;border-radius:4px;background:#2a2622"></canvas>`
       + `<button type="button" class="ghost tfx-del" title="Delete this imported preset" style="display:none;padding:0 5px">🗑</button>`
-      + `<input type="file" class="tfx-file" accept=".psd,.psb" hidden>`;
+      + `<input type="file" class="tfx-file" accept=".psd,.psb,.zip" multiple hidden>`;
     const sel = box.querySelector(".tfx-sel"), pv = box.querySelector(".tfx-pv"), del = box.querySelector(".tfx-del"), file = box.querySelector(".tfx-file");
     let cur = o.current || "";
     const say = (t) => { if (o.say) o.say(t); };
@@ -605,7 +665,9 @@
     });
     sel.addEventListener("keydown", (e) => e.stopPropagation());
     file.addEventListener("change", () => {
-      const f = file.files && file.files[0]; if (!f) return;
+      const fs = [].slice.call(file.files || []); if (!fs.length) return;
+      if (fs.length > 1 || /\.zip$/i.test(fs[0].name)) { importMany(fs); return; }
+      const f = fs[0];
       say("Reading " + f.name + "…");
       importFile(f).then((p) => {
         cur = p.id; paint(); if (o.onPick) o.onPick(cur);
@@ -617,6 +679,26 @@
         say("＋ " + p.name + " added" + (bits.length ? " (" + bits.join("; ") + ")" : ""));
       }).catch((e) => say("That PSD was not added: " + (e.message || e)));
     });
+    /* 2.617.0: zips and / or several PSDs at once - each zip's effects (and fonts) go in, one line says what happened */
+    async function importMany(fs) {
+      const added = [], failed = [], fonts = [];
+      for (const f of fs) {
+        try {
+          if (/\.zip$/i.test(f.name)) {
+            const r = await importZip(f, { onStep: (t, d, n) => say("Reading " + f.name + ": " + (t === "done" ? "done" : (d + 1) + " / " + n + " - " + t) + "…") });
+            added.push(...r.added); failed.push(...r.failed); fonts.push(...r.fonts.filter((x) => !x.existed));
+          } else { say("Reading " + f.name + "…"); added.push(await importFile(f, { reload: false })); }
+        } catch (e) { failed.push({ name: f.name, error: String(e.message || e) }); }
+      }
+      await load(true);
+      if (added.length) { cur = added[0].id; paint(); if (o.onPick) o.onPick(cur); }
+      say((added.length ? "＋ " + added.length + " text effect" + (added.length > 1 ? "s" : "") + " added (" + added.slice(0, 4).map((p) => p.name).join(", ") + (added.length > 4 ? " …" : "") + ")" : "No text effects added")
+        + (fonts.length ? " · " + fonts.length + " font(s) added: " + fonts.map((x) => x.family || x.name).slice(0, 4).join(", ") : "")
+        + (failed.length ? " · not added: " + failed.slice(0, 3).map((x) => x.name + " (" + x.error + ")").join("; ") + (failed.length > 3 ? " …" : "") : ""));
+      if (typeof root.H3TestEvent === "function") root.H3TestEvent("textfx_zip", String(added.length));
+      return { added, failed, fonts };
+    }
+    box.importMany = importMany;
     del.addEventListener("click", () => {
       const p = byId(cur); if (!p || p.builtin) return;
       remove(p.id).then(() => { cur = ""; paint(); if (o.onPick) o.onPick(null); say("🗑 " + p.name + " deleted"); });
@@ -626,7 +708,7 @@
     box.refresh = (id) => { cur = id || ""; paint(); };
     return box;
   }
-  Object.assign(api, { ensure, ready, load, list: () => list || [], byId, onList, render, live, full, drawText, renderFace, faceLive, faceFull, inkOf, inkHeight, avgColor, setSharp, isSharp: () => sharp > 0, fontCss, costOf: (id) => cost.get(id) || null, importFile, remove, rename, picker, layout, _results: results });
+  Object.assign(api, { ensure, ready, load, list: () => list || [], byId, onList, render, live, full, drawText, renderFace, faceLive, faceFull, inkOf, inkHeight, avgColor, setSharp, isSharp: () => sharp > 0, fontCss, costOf: (id) => cost.get(id) || null, importFile, importZip, prettyName, remove, rename, picker, layout, _results: results });
   root.H3TextFx = api;
   if (typeof fetch === "function") load();
 })(typeof window !== "undefined" ? window : globalThis);

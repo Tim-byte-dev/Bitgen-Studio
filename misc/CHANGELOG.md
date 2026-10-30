@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.617.0** — Text Effects from a ZIP (Several in One)
+- **2.616.0** — Install with One File (install_all.bat / .sh / .command)
 - **2.615.0** — Basic Settings Follow the Style (misc/basic_settings.tmp)
 - **2.614.0** — Pick ▼ Ranges, ✂ Cut Cuts Them; Ctrl Taps While It Plays Always Count
 - **2.613.0** — ▼ Ranges with Ctrl While It Plays; ✂ Cut All / ⏩ Speed Up; Hover Time; Playback Speed

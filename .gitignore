@@ -112,3 +112,6 @@ folder_filters.cfg
 # 2.615.0: Basic Settings per style (lib/basicTmp.js) - this machine's
 basic_settings.tmp
 basic_settings.tmp.part
+# 2.617.0: fonts added to the studio (text effect zips - lib/fontInstall.js) and your imported text effects - this machine's
+fonts/
+textfx/user/

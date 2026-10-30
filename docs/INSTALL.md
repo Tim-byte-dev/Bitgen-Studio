@@ -8,6 +8,17 @@ with PyTorch is several GB, the MiniMax H3 models about 70 GB).
 
 The manual route (sections 1-9) is still here for anyone who wants it.
 
+**One file (2.616.0):** `install_all.bat` (Windows), `install_all.sh` (Linux) or `install_all.command` (macOS) is
+enough on its own - put it in the folder you want bitGen Studio in and run it. It installs **Git** when it is missing
+(Windows: winget, else the newest Git for Windows; Linux: apt / dnf / yum / pacman / zypper / apk with sudo; macOS:
+Homebrew, else Apple's Command Line Tools) and **Node.js 18+** (Windows: winget Node.js LTS, else the LTS .msi;
+Linux / macOS: the first start puts Node.js LTS inside the app folder, `runtime/node`, no sudo) - on Windows also
+**Python 3.10+** (start.bat needs it). Then it clones this repository into `Bitgen-Studio` next to it (or uses the
+folder it is in, when that is a bitGen Studio folder) and starts the studio: `start.bat` on Windows,
+`installer/bootstrap.sh` the first time on Linux / macOS (Python 3.12, ffmpeg, the packages, the app window, a launcher,
+the setup window) and `misc/bitgen-studio.sh` after that. `BITGEN_NO_START=1` installs without opening it;
+`BITGEN_REPO` clones another URL.
+
 - [The installer](#the-installer)
 - [1. Prerequisites](#1-prerequisites)
 - [2. Get bitGen Studio](#2-get-bitgen-studio)

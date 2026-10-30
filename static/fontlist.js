@@ -117,7 +117,22 @@
     new root.MutationObserver(soon).observe(doc.body, { childList: true, subtree: true });
     load();
   }
-  Object.assign(api, { familyCss: familyCss, preview: preview, load: load, ensure: ensure, enhance: enhance, drawable: drawable, families: function () { return list || []; } });
+  /** 2.617.0: fonts were added (a text effect zip brought its fonts into <install>/fonts) - every font list asks again */
+  function reload() {
+    list = null; loading = null; tried = {};
+    return load().then(function (fams) {
+      [].forEach.call(doc.querySelectorAll("optgroup.h3f-more"), function (g) {
+        var sel = g.parentNode; if (!sel) return;
+        var cur = sel.value, own = [].filter.call(sel.options, function (o) { return o.parentNode !== g && o.value; }).map(function (o) { return o.value; });
+        var m = merge(own, fams);
+        g.label = "This computer (" + m.more.length + ")";
+        g.innerHTML = m.more.map(function (f) { return '<option value="' + esc(f) + '">' + esc(f) + "</option>"; }).join("");
+        sel.value = cur; preview(sel);
+      });
+      return fams;
+    });
+  }
+  Object.assign(api, { familyCss: familyCss, preview: preview, load: load, reload: reload, ensure: ensure, enhance: enhance, drawable: drawable, families: function () { return list || []; } });
   root.H3Fonts = api;
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

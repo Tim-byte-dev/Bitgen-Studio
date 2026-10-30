@@ -691,9 +691,13 @@ frame** saves the picture at the position marker as `<project>_frame_HHhMMmSSsFF
 A text layer's Properties (timeline) and the image editor's Type tool / text Properties have **Preset**: text effects
 made from layered PSD text effects - **Arena Gold 3D** and **Trend Candy 3D** come with the app - plus the classic
 looks. The words are drawn with the preset **live as you type** (a quick picture while they change, the sharp one when
-you stop); ⚙ Compile always uses the sharp one. **＋ Import a PSD text effect…** turns your own PSD (the word as a smart
-object with layer effects) into a preset; backgrounds and decorations are left out. Fonts are not inside a PSD: the note
-under Preset names the one it used. From the command line: `node scripts/textfx_build.js <file.psd> "<Name>"` writes a
+you stop); ⚙ Compile always uses the sharp one. **＋ Import PSD text effects or a zip…** turns your own PSD (the word as
+a smart object with layer effects) into a preset; backgrounds and decorations are left out. Pick several PSDs at once,
+or a **zip** of them (a text effect pack): every .psd / .psb in it - in any folder - becomes a preset, a bitGen preset
+.json in it is added as it is, and the fonts it carries (.ttf / .otf) go into the studio's own font folder (`fonts\`
+in the install folder - every font list then shows them). Previews, read-me files and macOS's `__MACOSX` copies are
+left out; a PSD that is not a text effect is named in the line that says what went in, the rest still go in. Fonts are
+not inside a PSD itself: the note under Preset names the one it used. From the command line: `node scripts/textfx_build.js <file.psd> "<Name>"` writes a
 built-in preset to `textfx/`.
 
 ## ⏯ J / K / L, AV1, 10-bit, the graphics card (2.411.0)
@@ -6121,6 +6125,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.617.0: **Text effects from a zip** - Presets ▾ ＋ Import PSD text effects or a zip… takes a zip of text effects
+  (every PSD in it becomes a preset, the fonts in it are added to the studio) or several PSDs at once.
+- 2.616.0: **Install with one file** - `install_all.bat` (Windows), `install_all.sh` (Linux) or `install_all.command`
+  (macOS) on its own installs Git and Node.js when they are missing (Windows: Python too), clones the repository next
+  to it and starts the studio (the first start installs the rest). Run it again any time to open the studio.
 - 2.615.0: **Basic Settings follow the style** - each style remembers its own Basic Settings in
   misc/basic_settings.tmp. Changing the style anywhere (the prompt docker, Basic Settings' style card, a board …) first
   saves every Basic Settings field + the style's name for the style you are leaving, then puts back what you last had

@@ -79,7 +79,7 @@ fs.writeFileSync(FIX, A.writePsdBuffer({ width: 400, height: 300, linkedFiles: [
     const groups = await ev(() => [...document.querySelectorAll("#tlpFxRow .tfx-sel optgroup")].map((g) => g.label));
     check("timeline text Properties: Presets ▾ - no preset, the PSD text effects (Arena Gold 3D, Trend Candy 3D), the classic looks, ＋ Import a PSD",
       opts[0] === "=— no preset —" && opts.includes("psd:arena-gold-3d=Arena Gold 3D") && opts.includes("psd:trend-candy-3d=Trend Candy 3D") && opts.includes("style:gold=Gold")
-      && opts[opts.length - 1] === "__import=＋ Import a PSD text effect…" && groups.join() === "PSD text effects,Classic", { opts, groups });
+      && opts[opts.length - 1] === "__import=＋ Import PSD text effects or a zip…"   /* 2.617.0: + zips */ && groups.join() === "PSD text effects,Classic", { opts, groups });
     const gold = () => ev(() => new Promise((res) => {
       const im = new Image(); im.onload = () => { const c = document.createElement("canvas"); c.width = im.width; c.height = im.height; const g = c.getContext("2d"); g.drawImage(im, 0, 0);
         const d = g.getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] > 200 && d[i + 1] > 100 && d[i + 1] < 215 && d[i + 2] < 90) n++; res(n); };

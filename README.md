@@ -80,6 +80,19 @@ models, so nothing in them was generated.*
   </tr>
 </table>
 
+## Install with one file (Windows, Linux, macOS)
+
+Download **one** file from this repository into the folder you want bitGen Studio in (a big, fast drive - ComfyUI and
+the models need about 100 GB) and run it. It installs Git and Node.js when they are missing (Windows: Python too),
+clones this repository next to it into `Bitgen-Studio`, and starts the studio - the first start installs everything
+else and opens the setup window. Run the same file any time later to open the studio.
+
+| System | File | How to run it |
+|---|---|---|
+| Windows 10 / 11 | [`install_all.bat`](install_all.bat) | double-click (say Yes when Windows asks to install Git / Node.js) |
+| Linux | [`install_all.sh`](install_all.sh) | `sh install_all.sh` (asks for your password once if Git has to be installed) |
+| macOS | [`install_all.command`](install_all.command) | `sh install_all.command` in Terminal (or `chmod +x` it once, then double-click) |
+
 ## Install from GitHub (Windows)
 
 1. **Install Git** - [git-scm.com](https://git-scm.com/download/win) (or `winget install Git.Git`).
