@@ -29,8 +29,18 @@
     const V = { T, host, M: null, sel: { f: [], e: [] }, hover: null, group: null, styleName: "edges", isOrtho: false };
     host.style.position = host.style.position || "relative";
     const R = new T.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: false });
+    // 2.624.0 (Tim: "in push/pull docker make it the same theme colors as bitgen"): the sky, the grid and the tip take the theme's
+    // colours (--ink / --panel / --line / --dim / --text / --tiger) - read again when the theme changes (h3theme)
+    const css = (k, d) => { try { const v = getComputedStyle(document.documentElement).getPropertyValue(k).trim(); return v || d; } catch (e) { return d; } };
+    const hexOf = (c, d) => { try { const x = new T.Color(c); return "#" + x.getHexString(); } catch (e) { return d; } };
+    function themeCols() {
+      const bg = hexOf(css("--ink", css("--bg", "#14120f")), "#14120f"), pan = hexOf(css("--panel-2", "#26221b"), "#26221b");
+      const line = hexOf(css("--line", "#3a342a"), "#3a342a"), dim = hexOf(css("--dim", "#9a917f"), "#9a917f");
+      return { bg, pan, line, dim, text: hexOf(css("--text", "#e8e2d6"), "#e8e2d6"), accent: hexOf(css("--tiger", "#f59e2c"), "#f59e2c") };
+    }
+    V.theme = themeCols();
     R.setPixelRatio(Math.min(2, root.devicePixelRatio || 1));
-    R.setClearColor(0xeef0f2, 1);
+    R.setClearColor(new T.Color(V.theme.bg), 1); V.clear = new T.Color(V.theme.bg).getHex();
     R.shadowMap.enabled = false; R.shadowMap.type = T.PCFSoftShadowMap;
     R.domElement.style.cssText = "display:block;width:100%;height:100%;outline:none;touch-action:none";
     R.domElement.tabIndex = 0;
@@ -47,7 +57,7 @@
     const sun = new T.DirectionalLight(0xffffff, 1.6); sun.position.set(8, -6, 14); scene.add(sun); scene.add(sun.target);
     sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = -30; sun.shadow.camera.right = 30; sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30; sun.shadow.camera.far = 200;
     // the ground grid on the XY plane + the axes (solid on the + side, dotted on the - side)
-    const grid = new T.GridHelper(40, 40, 0xc3c7cd, 0xd9dce0); grid.rotation.x = Math.PI / 2; grid.position.z = -0.0005; scene.add(grid);
+    const grid = new T.GridHelper(40, 40, new T.Color(V.theme.dim), new T.Color(V.theme.line)); grid.rotation.x = Math.PI / 2; grid.position.z = -0.0005; scene.add(grid);
     // 2.620.0: the grid is drawn first and writes no depth - a floor on the ground always covers it (no lines through floors)
     (Array.isArray(grid.material) ? grid.material : [grid.material]).forEach((m) => { m.depthWrite = false; }); grid.renderOrder = -1;
     const axes = new T.Group(); scene.add(axes);
@@ -60,9 +70,17 @@
     const ground = new T.Mesh(new T.PlaneGeometry(400, 400), new T.ShadowMaterial({ opacity: 0.18 })); ground.receiveShadow = true; ground.position.z = -0.001; ground.visible = false; scene.add(ground);
     const model = new T.Group(); scene.add(model);
     const over = new T.Group(); scene.add(over);              // selection / hover
-    const prev = new T.Group(); scene.add(prev);              // the tool's rubber band
+    const prev = new T.Group(); prev.name = "pp-preview"; scene.add(prev);              // the tool's rubber band
     const tip = document.createElement("div");
-    tip.style.cssText = "position:absolute;pointer-events:none;font:11px var(--mono,monospace);padding:1px 6px;border-radius:3px;background:#fffbe6;color:#222;border:1px solid #c9b458;display:none;white-space:nowrap;z-index:3";
+    tip.style.cssText = "position:absolute;pointer-events:none;font:11px var(--mono,monospace);padding:1px 6px;border-radius:3px;background:var(--panel-2,#26221b);color:var(--text,#e8e2d6);border:1px solid var(--tiger,#f59e2c);display:none;white-space:nowrap;z-index:3";
+    function retheme() {
+      V.theme = themeCols();
+      const gm = Array.isArray(grid.material) ? grid.material : [grid.material];
+      if (gm[0] && gm[0].color) gm[0].color.set(V.theme.dim); if (gm[1] && gm[1].color) gm[1].color.set(V.theme.line);
+      if (!V.nightOn) { V.clear = new T.Color(V.theme.bg).getHex(); R.setClearColor(V.clear, 1); }
+      draw();
+    }
+    root.addEventListener("h3theme", () => setTimeout(retheme, 30));
     host.appendChild(tip);
     let faceMeshes = [], edges = [], dirty = true, raf = 0;
 
@@ -139,23 +157,23 @@
         const geo = new T.BufferGeometry(); geo.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
         over.add(new T.Mesh(geo, new T.MeshBasicMaterial({ color, transparent: true, opacity, side: T.DoubleSide, depthTest: true, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 })));
       };
-      add(fs, 0x2563eb, 0.35);
-      if (hov && hov.face && !fs.has(hov.face)) add(new Set([hov.face]), 0xf59e2c, 0.22);
+      add(fs, new T.Color(V.theme.accent).getHex(), 0.35);   // 2.624.0: the theme's accent
+      if (hov && hov.face && !fs.has(hov.face)) add(new Set([hov.face]), new T.Color(V.theme.text).getHex(), 0.18);
       const lp = [];
       M.f.forEach((F) => { if (fs.has(F.id)) F.loops.forEach((l) => G().loopEdges(l).forEach(([a, b]) => { const A = M.v[a], B = M.v[b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); })); });
       M.e.forEach((E) => { if (es.has(E.id)) { const A = M.v[E.a], B = M.v[E.b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); } });
       if (hov && hov.edge) { const E = edges.find((x) => x.key === hov.edge); if (E) { const A = M.v[E.a], B = M.v[E.b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); } }
-      if (lp.length) { const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(lp, 3)); over.add(new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false }))); }
+      if (lp.length) { const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(lp, 3)); over.add(new T.LineSegments(lg, new T.LineBasicMaterial({ color: new T.Color(V.theme.accent).getHex(), depthTest: false }))); }
     }
 
     /* ---- the mouse in the scene */
     const rc = new T.Raycaster();
     function ndc(ev) { const r = R.domElement.getBoundingClientRect(); return new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); }
-    function ray(ev) { rc.setFromCamera(ndc(ev), cam); const o = rc.ray.origin, d = rc.ray.direction; return { o: [o.x, o.y, o.z], d: [d.x, d.y, d.z] }; }
-    function screen(p) { const r = R.domElement.getBoundingClientRect(), v = new T.Vector3(p[0], p[1], p[2]).project(cam); return [(v.x + 1) / 2 * r.width, (1 - v.y) / 2 * r.height, v.z]; }
+    function ray(ev) { cam.updateMatrixWorld(); rc.setFromCamera(ndc(ev), cam); const o = rc.ray.origin, d = rc.ray.direction; return { o: [o.x, o.y, o.z], d: [d.x, d.y, d.z] }; }
+    function screen(p) { cam.updateMatrixWorld(); const r = R.domElement.getBoundingClientRect(), v = new T.Vector3(p[0], p[1], p[2]).project(cam); return [(v.x + 1) / 2 * r.width, (1 - v.y) / 2 * r.height, v.z]; }
     function mouse(ev) { const r = R.domElement.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; }
     function hitFace(ev, grp) {
-      rc.setFromCamera(ndc(ev), cam);
+      cam.updateMatrixWorld(); rc.setFromCamera(ndc(ev), cam);      // 2.624.0: a camera moved since the last frame (not drawn yet) is picked where it is now
       const hits = rc.intersectObjects(faceMeshes.filter((m) => m.visible || V.styleName === "wire"), false);
       for (const h of hits) {
         const fid = h.object.userData.tri2f[h.faceIndex]; const F = G().face(V.M, fid); if (!F) continue;
@@ -291,7 +309,7 @@
       if (o && o.transparent) R.setClearColor(0x000000, 0);
       R.render(scene, cam);
       const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(R.domElement, 0, 0, w, h);
-      R.setClearColor(V.clear != null ? V.clear : 0xeef0f2, 1); grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true; hid.forEach((x) => { x.visible = true; });
+      R.setClearColor(V.clear != null ? V.clear : new T.Color(V.theme.bg).getHex(), 1); grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true; hid.forEach((x) => { x.visible = true; });
       persp.aspect = pa; ortho.left = ol[0]; ortho.right = ol[1];
       R.setSize(keep.x, keep.y, false); size();
       return c;

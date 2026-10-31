@@ -124,7 +124,7 @@
       // the rooms' lights light at night - by day the sun does (no light shines through a wall here: it would by day too)
       fix.traverse((o) => { if (o.isLight) o.visible = A.isNight; });
       if (sun) sun.intensity = A.isNight ? 0 : 1.6;
-      const bg = A.isNight ? 0x1a1d24 : 0xeef0f2; V.R.setClearColor(bg, 1); V.clear = bg;
+      const bg = A.isNight ? 0x0b0d12 : new T.Color((V.theme && V.theme.bg) || "#14120f").getHex(); V.R.setClearColor(bg, 1); V.clear = bg; V.nightOn = A.isNight;   // 2.624.0: the theme's sky by day
       V.draw();
     }
     function setNight(on) { A.isNight = !!on; layers(); }
@@ -134,7 +134,7 @@
     const rc = new T.Raycaster();
     function pick(ev) {
       const r = V.canvas.getBoundingClientRect();
-      rc.setFromCamera(new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), V.cam());
+      V.cam().updateMatrixWorld(); rc.setFromCamera(new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), V.cam());
       const objs = A.meshes.filter((m) => m.visible || V.styleName === "wire").concat(fix.children);
       const hits = rc.intersectObjects(objs, true);
       for (const h of hits) {
@@ -153,16 +153,25 @@
       if (!hit) return null;
       const t = hit.tag, Ar = V.M.arch;
       if (t.ak !== "wall") return { ak: t.ak, id: t.id, part: t.part || null };
-      if (t.room) return { ak: "room", id: t.room, part: "wall" };
-      const w = P().nearestWall(Ar, [hit.point[0] - hit.n[0] * 0.05, hit.point[1] - hit.n[1] * 0.05], 0.6, hit.point[2]);
-      return w ? { ak: "room", id: w.room, part: "wall" } : null;
+      const at = [hit.point[0] - hit.n[0] * 0.05, hit.point[1] - hit.n[1] * 0.05];
+      if (t.room) {                                                     // 2.624.0: + which of its walls
+        const R = P().room(Ar, t.room); let edge = t.edge != null ? t.edge : null;
+        if (R && edge == null) { let bd = Infinity; P().edgesOf(R).forEach((e) => { const d = P().segDist(at, e.a, e.b).d; if (d < bd) { bd = d; edge = e.i; } }); }
+        return { ak: "room", id: t.room, part: "wall", edge };
+      }
+      const w = P().nearestWall(Ar, at, 0.6, hit.point[2]);
+      return w ? { ak: "room", id: w.room, part: "wall", edge: w.edge } : null;
     }
     /* ---- the outline of what is picked */
     function outline(t, color, out) {
       const Ar = V.M && V.M.arch; if (!t || !Ar) return;
       const segs = [];
       const loop = (pts, z) => pts.forEach((p, i) => { const q = pts[(i + 1) % pts.length]; segs.push([[p[0], p[1], z], [q[0], q[1], z]]); });
-      if (t.ak === "room") {
+      if (t.ak === "wpt" || t.ak === "wtop") {                         // 2.624.0: a cut / a top edge of a wall
+        const pts = P().topPoints(Ar, t.room, t.edge); const R = P().room(Ar, t.room); if (!pts.length || !R) return;
+        if (t.ak === "wpt") { const q = pts[t.k]; if (!q) return; segs.push([[q[0], q[1], R.z], q]); const d = 0.12; segs.push([[q[0] - d, q[1], q[2]], [q[0] + d, q[1], q[2]]], [[q[0], q[1] - d, q[2]], [q[0], q[1] + d, q[2]]], [[q[0], q[1], q[2] - d], [q[0], q[1], q[2] + d]]); }
+        else { const a = pts[t.k], b = pts[t.k + 1]; if (!a || !b) return; segs.push([a, b], [[a[0], a[1], a[2] + 0.02], [b[0], b[1], b[2] + 0.02]]); }
+      } else if (t.ak === "room") {
         const R = P().room(Ar, t.id); if (!R) return;
         const Q = P().wallQuads(R);
         Q.forEach((q) => { [R.z, R.z + R.h].forEach((z) => loop(q.quad, z)); });
@@ -183,8 +192,8 @@
       const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
       const ls = new T.LineSegments(g, new T.LineBasicMaterial({ color, depthTest: false, transparent: true, opacity: 0.95 })); ls.renderOrder = 12; out.add(ls);
     }
-    function paintSel() { clear(selG); outline(A.sel, 0x2563eb, selG); if (A.hover && !(A.sel && A.hover.ak === A.sel.ak && A.hover.id === A.sel.id)) outline(A.hover, 0xf59e2c, selG); V.draw(); }
-    function setSel(t) { A.sel = t || null; paintSel(); }
+    function paintSel() { clear(selG); const th = V.theme || {}; outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
+    function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }
 
     /* ---- out: the model's files */

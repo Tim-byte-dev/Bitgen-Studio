@@ -11,6 +11,6 @@ const S = T.DIALOG_SEL || "";
 check("DIALOG_SEL: <dialog>, every *dlg box (the editor's .kxdlg, the file dialog .fdlg, Liquify …), role=dialog except the floating dockers (.h3fp), the popup menus",
   ["dialog[open]", '[class*="dlg"]', '[role="dialog"]:not(.h3fp)', ".kxmenu", ".h3fp-menu", ".fd-menu", '[role="menu"]'].every((x) => S.includes(x)), S);
 check("theme edit mode treats them as its own: no outline, their clicks / keys reach them, never picked; Esc inside one is the dialog's",
-  /: el\.closest\(DIALOG_SEL\)\)\)\);   \/\/ 2\.455\.0/.test(SRC) && /t\.closest\("#thEditPanel"\) \|\| t\.closest\("#thExitBox"\) \|\| \(!dlgs && t\.closest\(DIALOG_SEL\)\)/.test(SRC) && /DIALOG_SEL, cleanSel/.test(SRC));
+  /: el\.closest\(DIALOG_SEL\)\)\)\);   \/\/ 2\.455\.0/.test(SRC) && /t\.closest\("#thEditPanel"\) \|\| t\.closest\("#thExitBox"\) \|\| (t\.closest\("#thInline"\) \|\| )?\(!dlgs && t\.closest\(DIALOG_SEL\)\)/.test(SRC) && /DIALOG_SEL, cleanSel/.test(SRC));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

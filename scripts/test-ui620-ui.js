@@ -175,8 +175,8 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     /* ☰ File */
     await p.click("#ppFile"); await p.waitForTimeout(150);
     const items = await ev(() => [...document.querySelectorAll(".ppmenu div")].map((d) => d.textContent));
-    check("☰ File: New, Open, Save, Save as, Rename, import (project / this computer), Export, → image editor / timeline, Send, Restore, Delete, Close",
-      ["＋ New", "📂 Open…", "💾 Save as…", "✎ Rename…", "⤒ A 3D model of the project…", "⤓ Export…", "🖼 → the image editor", "🎞 → the timeline", "🗗 Restore the docker", "🗑 Delete this model…", "✕ Close the docker"].every((t) => items.some((x) => x.startsWith(t))), items);
+    check("☰ File: New, Open, Save, Save as, Rename, import (project / this computer), Export, → image editor / timeline, Send, Dock (2.624.0: was Restore), Delete, Close",
+      ["＋ New", "📂 Open…", "💾 Save as…", "✎ Rename…", "⤒ A 3D model of the project…", "⤓ Export…", "🖼 → the image editor", "🎞 → the timeline", "⇲ Dock - back in its place", "🗑 Delete this model…", "✕ Close the docker"].every((t) => items.some((x) => x.startsWith(t))), items);
     await ev(() => [...document.querySelectorAll(".ppmenu div")].find((d) => d.textContent.startsWith("💾 Save as…")).click()); await p.waitForTimeout(200);
     await p.fill(".ppask input", "House A"); await p.keyboard.press("Enter"); await p.waitForTimeout(600);
     let list = await api("/api/pushpull"), saved = await api("/api/pushpull/" + encodeURIComponent("House A"));

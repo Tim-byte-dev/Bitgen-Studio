@@ -270,7 +270,7 @@
     const one = ([id, icon, label, key], hint) => {
       const b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "ppT_" + id; b.textContent = icon;
       b.title = label + " (" + (key === " " ? "Space" : key.toUpperCase()) + ") - " + hint; b.setAttribute("aria-label", label);
-      b.onclick = () => { S.T.use(id); S.V.canvas.focus(); };
+      b.onclick = () => { S.T.use(id); S.V.canvas.focus({ preventScroll: true }); };
       box.appendChild(b);
     };
     root.PPTools.TOOLS.forEach((t) => one(t, root.PPTools.HINT[t[0]]));
@@ -301,7 +301,7 @@
     });
     toolbar(); S.T.use("select");
     const cv = S.V.canvas;
-    cv.addEventListener("pointerdown", (e) => { cv.focus(); if (e.button === 0) { try { cv.setPointerCapture(e.pointerId); } catch (x) { /* fine */ } S.T.down(e); } });
+    cv.addEventListener("pointerdown", (e) => { cv.focus({ preventScroll: true }); if (e.button === 0) { try { cv.setPointerCapture(e.pointerId); } catch (x) { /* fine */ } S.T.down(e); } });
     cv.addEventListener("pointermove", (e) => S.T.move(e));
     cv.addEventListener("pointerup", (e) => S.T.up(e));
     cv.addEventListener("dblclick", (e) => S.T.dbl(e));
@@ -333,8 +333,8 @@
     $("ppName").addEventListener("change", () => { const was = S.name; S.name = nameNow(); if (S.name !== was && S.M) save(false); });
     $("ppVcb").addEventListener("keydown", (e) => {
       e.stopPropagation();
-      if (e.key === "Enter") { e.preventDefault(); if (S.T && S.T.vcb($("ppVcb").value)) { $("ppVcb").value = ""; S.V.canvas.focus(); } }
-      if (e.key === "Escape") { $("ppVcb").value = ""; S.V.canvas.focus(); }
+      if (e.key === "Enter") { e.preventDefault(); if (S.T && S.T.vcb($("ppVcb").value)) { $("ppVcb").value = ""; S.V.canvas.focus({ preventScroll: true }); } }
+      if (e.key === "Escape") { $("ppVcb").value = ""; S.V.canvas.focus({ preventScroll: true }); }
     });
     // the keys, over the docker (not while typing in its name box)
     doc.addEventListener("keydown", (e) => {
@@ -352,8 +352,9 @@
       if (!ctl && k === "Z" && e.shiftKey) { done(); S.V.extents(); return; }
       if (!ctl && (k === "g" || k === "G") && !e.altKey) { done(); groupBtn(); return; }
       // a number (or a unit) typed with a tool going: into the Measurements box
-      if (!ctl && !e.altKey && /^[0-9.,\-;'"]$/.test(k)) { done(); const v = $("ppVcb"); v.value = k; v.focus(); return; }
+      if (!ctl && !e.altKey && /^[0-9.,\-;'"]$/.test(k)) { done(); const v = $("ppVcb"); v.value = k; v.focus({ preventScroll: true }); return; }
       if (S.T.key(e)) done();
+      else if (k === " " && (a === S.V.canvas || !inDock)) e.preventDefault();      // Space never scrolls the page under the docker
     }, true);
     doc.addEventListener("keyup", (e) => { if (S.T) S.T.keyUp(e); }, true);
     setInterval(() => { if (!S.booted) boot(); }, 700);

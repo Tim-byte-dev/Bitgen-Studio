@@ -18,6 +18,18 @@
  *   onto theirs; a door / window drags along its wall (and onto another); a light, stairs, a floor drag too. Delete erases.
  *   B Paint on a wall paints that room's walls (outside: all the outside walls), a floor, a ceiling, a door, a roof …
  *   E Eraser on any of them erases it.
+ * 2.624.0 (Tim: "when user creates walls add offset input to offset wall from edge of floor, allow user to drag walls but show
+ * snap regions on floor and allow user to snap wall to floor edge, when user double clicks the the top of a wall cut the face
+ * allow the use to drag that edge up and down and delete the edge when the del button is pressed and edge is selected. allow
+ * user to select edges on the wall to change slope of the wall. in ceiling options add flat ceiling, follow slope of walls,
+ * with roof follow slope of walls add eaves width input"):
+ *   Room / Wall: "Offset from floor edge" - drawn along a floor's (J) edge, the wall's outside face sits that far in; points
+ *   snap onto floors' edges ("On Floor Edge"). Select: press a WALL and drag = that wall moves out / in (the room
+ *   stretches; a free wall moves whole); press the floor / ceiling = the room moves - the floors' snap regions show (the
+ *   band where a wall's outside face snaps to the edge, offset in) and the wall snaps there (or onto another room's wall).
+ *   Double-click the TOP of a wall = a cut there (a line down the wall); press the cut / a top edge and drag up / down = the
+ *   wall's top slopes (a corner moves the wall beside it too); Delete = the cut goes (a top edge: its cuts go). Ceiling:
+ *   none / flat / follow the walls' slope; Roof "Follow the walls' slope" with its eaves width.
  * create(ctx) -> {owns(tool), use, down / move / up / dbl, vcb, key, selectDown / selectMove / selectUp, eraseAt, paintAt,
  *   sel(), setSel(), props(), summary()} - wired into pptools.js; ctx = the docker (ppdock.js) */
 (function (root) {
@@ -37,7 +49,7 @@
     stairs: "Click the foot of the stairs, click the direction + length (or type it) - the height in the panel",
   };
   const VCB = { room: "Width,Depth", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length" };
-  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true }, wall: { h: 2.7, t: 0.15, z: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
+  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0 }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
     floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 } };
 
   function create(ctx) {
@@ -56,6 +68,12 @@
       const s = V.snap(ev, { from: from ? [from[0], from[1], z] : null, plane: { n: [0, 0, 1], p: [0, 0, z] }, extra: P().snapPoints(AR(), z), group: ctx.group() });
       let p = [s.p[0], s.p[1], z];
       if ((s.kind === "On Face" || s.kind === "On Edge") && Math.abs(s.p[2] - z) > 1e-3) { const q = planeAt(ev, z); if (q) p = q; }
+      // 2.624.0: onto a floor's edge (On Floor Edge) when nothing stronger caught the pointer
+      if (!/Endpoint|Midpoint|Origin|Axis/.test(s.kind)) {
+        const tol = pxTol(p); let best = null;
+        P().slabEdges(AR()).forEach((e) => { const sd = P().segDist([p[0], p[1]], e.a, e.b); if (sd.d < tol && (!best || sd.d < best.d)) best = { d: sd.d, q: [e.a[0] + (e.b[0] - e.a[0]) * sd.t, e.a[1] + (e.b[1] - e.a[1]) * sd.t] }; });
+        if (best) { p = [best.q[0], best.q[1], z]; return { p, s: Object.assign({}, s, { p, kind: "On Floor Edge", label: "On Floor Edge", color: "#f59e2c" }) }; }
+      }
       return { p, s };
     }
     function pxTol(p) { const a = V.screen(p), b = V.screen([p[0] + 1, p[1], p[2]]), c = V.screen([p[0], p[1] + 1, p[2]]); const ppm = Math.max(Math.hypot(b[0] - a[0], b[1] - a[1]), Math.hypot(c[0] - a[0], c[1] - a[1]), 1); return Math.min(1.2, Math.max(0.03, 14 / ppm)); }
@@ -207,11 +225,13 @@
     function finishRoom(a, b) {
       const w = Math.abs(b[0] - a[0]), d = Math.abs(b[1] - a[1]);
       if (w < 0.3 || d < 0.3) { ctx.status("a room 30 cm across at least"); return; }
-      const bf = before(), R = P().addRoom(AR(), P().rectPts(a, b), { z: O.room.z, h: O.room.h, t: O.room.t, ceilOn: O.room.ceilOn });
+      const of = P().offsetOnFloor(AR(), P().rectPts(a, b), true, O.room.t, O.room.off);       // 2.624.0: off a floor's edge
+      const bf = before(), R = P().addRoom(AR(), of.pts, { z: O.room.z, h: O.room.h, t: O.room.t, ceilOn: O.room.ceilOn });
       st = {}; V.preview({});
+      if (!R) { ctx.status("that room is too small"); return; }
       done("room", bf, { ak: "room", id: R.id });
       const shared = sharedWith(R);
-      ctx.status("⌂ " + R.name + " " + fmt(w) + " × " + fmt(d) + (shared.length ? " - sharing a wall with " + shared.join(", ") : "") + " · drag it (Select), doors D, windows I");
+      ctx.status("⌂ " + R.name + " " + fmt(w) + " × " + fmt(d) + (shared.length ? " - sharing a wall with " + shared.join(", ") : "") + (of.moved ? " · " + of.moved + " wall(s) " + fmt(O.room.off) + " in from the floor's edge" : "") + " · drag it (Select), doors D, windows I");
     }
     function sharedWith(R) {
       const A = AR(), out = [];
@@ -226,9 +246,10 @@
     function finishWall(closed) {
       const pts = (st.pts || []).map((p) => [p[0], p[1]]); st = {}; V.preview({});
       if (pts.length < (closed ? 3 : 2)) return;
-      const bf = before(), R = P().addRoom(AR(), pts, { closed, z: O.wall.z, h: O.wall.h, t: O.wall.t });
+      const of = P().offsetOnFloor(AR(), pts, closed, O.wall.t, O.wall.off);                     // 2.624.0: off a floor's edge
+      const bf = before(), R = P().addRoom(AR(), of.pts, { closed, z: O.wall.z, h: O.wall.h, t: O.wall.t });
       if (!R) { ctx.status("that wall is too small"); return; }
-      done(closed ? "room" : "wall", bf, { ak: "room", id: R.id }); ctx.status(closed ? "⌂ the walls closed round " + R.name : "▮ " + R.name + " - doors and windows go in it too");
+      done(closed ? "room" : "wall", bf, { ak: "room", id: R.id }); ctx.status((closed ? "⌂ the walls closed round " + R.name : "▮ " + R.name + " - doors and windows go in it too") + (of.moved ? " · " + of.moved + " run(s) " + fmt(O.wall.off) + " in from the floor's edge" : ""));
     }
     function stairOf(a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); if (L < 0.3) return null; return { id: 0, x: a[0], y: a[1], ang: Math.atan2(dy, dx) * 180 / Math.PI, w: O.stairs.w, len: L, rise: O.stairs.rise, z: 0, col: P().DEF.stair }; }
     function finishStairs(a, b) {
@@ -279,12 +300,31 @@
       const r = V.ray(ev), d = Math.hypot(mp.point[0] - r.o[0], mp.point[1] - r.o[1], mp.point[2] - r.o[2]);
       return h.dist <= d + 1e-3;
     }
+    /** 2.624.0: the top of a wall under the pointer -> topHit (a cut / an end within reach, else the top edge there) */
+    function topUnder(h) {
+      if (!h || (h.tag.ak !== "wall")) return null;
+      const tol = Math.max(0.06, pxTol(h.point) * 0.7);
+      return P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol);
+    }
     function selectDown(ev) {
       const h = AV() && AV().pick(ev);
       if (!h || !nearerThanModel(ev, h)) { if (asel) setSel(null); return false; }
+      // a view straight down (Top) sees only the walls' tops - there a press moves the wall; the slopes are edited from the side
+      const th = Math.abs(V.ray(ev).d[2]) > 0.85 ? null : topUnder(h);
+      if (th) {                                                        // 2.624.0: a cut / a top edge: dragged up / down
+        const sel = th.k >= 0 ? { ak: "wpt", room: th.room, edge: th.edge, k: th.k } : { ak: "wtop", room: th.room, edge: th.edge, k: th.seg };
+        ctx.setSel({ f: [], e: [], k: [] }); setSel(sel);
+        st.drag = { t: sel, mode: "top", p0: h.point, z0: h.point[2], x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
+        return true;
+      }
       const t = AV().resolve(h); if (!t) return false;
       ctx.setSel({ f: [], e: [], k: [] }); setSel(t);
       const A = AR(), x = P().find(A, t.ak, t.id);
+      if (t.ak === "room" && t.part === "wall" && t.edge != null && x && x.closed) {      // 2.624.0: one wall of the room
+        const start = planeAt(ev, x.z);
+        if (start) st.drag = { t, mode: "edge", z: x.z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
+        return true;
+      }
       const z = t.ak === "room" ? x.z : t.ak === "light" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" ? x.z : h.point[2];
       const start = planeAt(ev, z);
       if (t.ak !== "roof" && start) st.drag = { t, z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
@@ -293,20 +333,27 @@
     function selectMove(ev) {
       const D = st.drag;
       if (!D) {
-        const h = AV() && AV().pick(ev); AV() && AV().setHover(h && nearerThanModel(ev, h) ? AV().resolve(h) : null);
+        const h = AV() && AV().pick(ev), near = h && nearerThanModel(ev, h), th = near ? topUnder(h) : null;
+        AV() && AV().setHover(th ? (th.k >= 0 ? { ak: "wpt", room: th.room, edge: th.edge, k: th.k } : { ak: "wtop", room: th.room, edge: th.edge, k: th.seg }) : near ? AV().resolve(h) : null);   // 2.624.0: a wall's top shows what a press takes
         return false;
       }
-      if (!(ev.buttons & 1)) { st.drag = null; return false; }
+      if (!(ev.buttons & 1)) { st.drag = null; V.preview({}); return false; }
       if (!D.moved && Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) < 4) return true;
       D.moved = true;
+      if (D.mode === "top") return dragTop(ev, D);
       const cur = planeAt(ev, D.z); if (!cur) return true;
+      if (D.mode === "edge") return dragEdge(ev, D, cur);
       let d = [cur[0] - D.start[0], cur[1] - D.start[1]];
       if (ev.shiftKey) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, t = D.t, x = P().find(A, t.ak, t.id); if (!x) return true;
       if (t.ak === "room") {
-        const s = P().snapMove(A, [t.id], d, pxTol(cur)); P().moveRooms(A, [t.id], s.d);
+        const tol = pxTol(cur), off = (x.closed ? O.room.off : O.wall.off) || 0;
+        let s = P().snapMove(A, [t.id], d, tol), fl = null;
+        if (!s.hit) { fl = P().snapToFloor(A, [t.id], d, tol, off); if (fl.hit) s = { d: fl.d, hit: null }; }    // 2.624.0: onto a floor's edge
+        P().moveRooms(A, [t.id], s.d);
+        regions(A, x.z, tol, off, fl && fl.hit);
         const Q = s.hit && P().room(A, s.hit.room);
-        ctx.status(Q ? "⌂ " + x.name + " shares a wall with " + Q.name + (s.hit.kind === "corner" ? " · corners in line" : "") : "⌂ " + x.name + " moved " + fmt(Math.hypot(s.d[0], s.d[1])));
+        ctx.status(Q ? "⌂ " + x.name + " shares a wall with " + Q.name + (s.hit.kind === "corner" ? " · corners in line" : "") : fl && fl.hit ? "⌂ " + x.name + " - its wall " + fmt(off) + " in from the floor's edge" : "⌂ " + x.name + " moved " + fmt(Math.hypot(s.d[0], s.d[1])));
       } else if (t.ak === "op") {
         const w = P().nearestWall(A, [cur[0], cur[1]], 1.0, null);
         if (w) { x.room = w.room; x.edge = w.edge; x.at = w.at; ctx.status((x.kind === "window" ? "🪟 " : "🚪 ") + w.R.name + " · " + fmt(Math.max(0, w.at - x.w / 2)) + " from the corner"); }
@@ -323,8 +370,59 @@
     }
     function selectUp() {
       const D = st.drag; if (!D) return false;
-      st.drag = null;
-      if (D.moved) { ctx.commit("move", D.before); props(); }
+      st.drag = null; V.preview({});
+      if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : "move", D.before); props(); }
+      return true;
+    }
+    /** 2.624.0: the floors' snap regions on the floor - the band where a wall's outside face is caught, the line it goes to
+        (`off` in from the edge); the edge snapped to drawn in the accent colour */
+    function regions(A, z, tol, off, hit) {
+      const faces = [], dashed = [], lines = [], zz = z + 0.004;
+      P().slabEdges(A).forEach((e) => {
+        const L = (k) => [e.a[0] + e.n[0] * k, e.a[1] + e.n[1] * k], Lb = (k) => [e.b[0] + e.n[0] * k, e.b[1] + e.n[1] * k];
+        const a0 = L(off - tol), a1 = L(off + tol), b0 = Lb(off - tol), b1 = Lb(off + tol), P3 = (q) => [q[0], q[1], zz];
+        faces.push([P3(a0), P3(b0), P3(b1)], [P3(a0), P3(b1), P3(a1)]);
+        const on = hit && Math.abs(hit.a[0] - e.a[0]) < 1e-9 && Math.abs(hit.a[1] - e.a[1]) < 1e-9 && Math.abs(hit.b[0] - e.b[0]) < 1e-9 && Math.abs(hit.b[1] - e.b[1]) < 1e-9;
+        (on ? lines : dashed).push(on ? [P3(L(off)), P3(Lb(off))] : { seg: [P3(L(off)), P3(Lb(off))], color: "#f59e2c" });
+      });
+      V.preview({ faces, faceColor: 0xf59e2c, dashed, lines, color: 0xf59e2c });
+    }
+    /** 2.624.0: one wall of a room dragged out / in - onto another room's wall or a floor's edge */
+    function dragEdge(ev, D, cur) {
+      const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, R = P().room(A, D.t.id); if (!R) return true;
+      const e = P().edgesOf(R)[D.t.edge]; if (!e) return true;
+      const out = [e.u[1], -e.u[0]], tol = ev.shiftKey ? 0 : pxTol(cur), off = O.room.off || 0;
+      const sn = P().snapEdge(A, R.id, D.t.edge, (cur[0] - D.start[0]) * out[0] + (cur[1] - D.start[1]) * out[1], tol, off);
+      P().moveEdge(A, R.id, D.t.edge, sn.dist);
+      AV().rebuild(); AV().setSel(D.t);
+      regions(A, R.z, tol, off, sn.hit && sn.hit.kind === "floor" ? sn.hit : null);
+      ctx.status("▮ " + R.name + "'s wall " + (sn.dist >= 0 ? "out " : "in ") + fmt(Math.abs(sn.dist)) + (sn.hit ? sn.hit.kind === "floor" ? " · on the floor's edge" + (off ? " (" + fmt(off) + " in)" : "") : " · on " + (P().room(A, sn.hit.room) || {}).name + "'s wall" : "") + " · Shift = no snap");
+      return true;
+    }
+    /** 2.624.0: a cut / a top edge of a wall dragged up / down (its height on the vertical line through where it was pressed) */
+    function dragTop(ev, D) {
+      const r = V.ray(ev), c = G().linesClosest(D.p0, [0, 0, 1], r.o, r.d);
+      let dz = c.point[2] - D.z0;
+      const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, t = D.t, R = P().room(A, t.room); if (!R) return true;
+      const prof = P().profile(R, t.edge);
+      if (t.ak === "wpt") {
+        let h = prof[t.k][1] + dz; if (Math.abs(h - R.h) < 0.04) h = R.h; h = Math.round(h * 1000) / 1000;      // the room's height catches it
+        P().moveTopPoint(A, t.room, t.edge, t.k, h); ctx.status("▮ the wall's top here: " + fmt(h) + " · Delete = the cut goes");
+      } else {
+        const lo = Math.min(prof[t.k][1], prof[t.k + 1][1]); if (Math.abs(lo + dz - R.h) < 0.04) dz = R.h - lo;
+        P().moveTopSeg(A, t.room, t.edge, t.k, Math.round(dz * 1000) / 1000, prof); ctx.status("▮ the wall's top edge " + (dz >= 0 ? "up " : "down ") + fmt(Math.abs(dz)) + " · Delete = its cuts go");
+      }
+      AV().rebuild(); AV().setSel(t);
+      return true;
+    }
+    /** 2.624.0: double-click the top of a wall = a cut there (Select) */
+    function selectDbl(ev) {
+      const h = AV() && AV().pick(ev); if (!h || !nearerThanModel(ev, h) || h.tag.ak !== "wall") return false;
+      const tol = Math.max(0.12, pxTol(h.point) * 1.2);
+      const th = P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol); if (!th) return false;
+      const b = before(), k = P().cutTop(AR(), th.room, th.edge, th.t); if (k < 0) return false;
+      done("cut", b, { ak: "wpt", room: th.room, edge: th.edge, k });
+      ctx.status("✂ a cut in " + th.R.name + "'s wall - drag it up / down (a slope), Delete takes it away");
       return true;
     }
     function eraseAt(ev) {
@@ -347,11 +445,17 @@
     }
     function eraseSel() {
       if (!asel) return;
-      const b = before(), t = asel; if (P().remove(AR(), t.ak, t.id)) { asel = null; done("erase", b, null); ctx.status("⌫ erased the " + nameOf(t)); }
+      const b = before(), t = asel;
+      if (t.ak === "wpt" || t.ak === "wtop") {                          // 2.624.0: Delete on a cut / a top edge
+        const ok = t.ak === "wpt" ? P().removeTopPoint(AR(), t.room, t.edge, t.k) : P().removeTopSeg(AR(), t.room, t.edge, t.k);
+        if (ok) { asel = null; done("erase", b, null); ctx.status(t.ak === "wpt" ? "⌫ the cut is gone" : "⌫ that top edge is straight again"); }
+        return;
+      }
+      if (P().remove(AR(), t.ak, t.id)) { asel = null; done("erase", b, null); ctx.status("⌫ erased the " + nameOf(t)); }
     }
     function nameOf(t) { const x = t.id != null ? P().find(AR(), t.ak, t.id) : null; return { room: x ? x.name : "room", op: x ? (x.kind === "opening" ? "opening" : x.kind) : "door / window", light: "light", roof: "roof", stair: "stairs", slab: "floor" }[t.ak] || t.ak; }
     function setSel(t, quiet) {
-      asel = t && t.ak ? { ak: t.ak, id: t.id } : null;
+      asel = t && t.ak ? Object.assign({ ak: t.ak, id: t.id }, t.edge != null ? { edge: t.edge } : {}, t.room != null ? { room: t.room } : {}, t.k != null ? { k: t.k } : {}, t.part ? { part: t.part } : {}) : null;
       if (AV()) AV().setSel(asel);
       if (!quiet) props();
       if (ctx.onSel) ctx.onSel();
@@ -362,7 +466,7 @@
       const box = root.document && root.document.getElementById("ppProps"); if (!box) return;
       box.innerHTML = "";
       const A = ctx.model() ? AR() : null;
-      const x = asel && A ? P().find(A, asel.ak, asel.id) : null;
+      const x = asel && A ? (asel.ak === "wpt" || asel.ak === "wtop" ? P().room(A, asel.room) : P().find(A, asel.ak, asel.id)) : null;
       if (asel && !x) asel = null;
       if (!tool && !x) { box.style.display = "none"; ctx.resized && ctx.resized(); return; }
       box.style.display = "block";
@@ -384,11 +488,14 @@
       if (tool) {
         head({ room: "⌂ Room", wall: "▮ Wall", door: "🚪 Door", window: "🪟 Window", floor: "▦ Floor", ceiling: "⌓ Ceiling", roof: "△ Roof", light: "💡 Light", stairs: "▟ Stairs" }[tool] + " - the next one");
         const o = O[tool];
-        if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); numIn("Wall thickness", o.t, opt("t"), 0.01, 0.02, 2, "m"); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m"); if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn")); }
+        if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); numIn("Wall thickness", o.t, opt("t"), 0.01, 0.02, 2, "m"); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m");
+          numIn("Offset from floor edge", o.off || 0, opt("off"), 0.01, -5, 5, "m");      // 2.624.0
+          if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn"));
+          box.appendChild(el("div", "pphint", "Drawn along a floor's (J) edge, the wall's outside face sits the offset in from it. Corners snap to floors' edges.")); }
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
         if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Sill height", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
-        if (tool === "roof") { selIn("Type", o.type, P().ROOFS.map((r) => [r, r[0].toUpperCase() + r.slice(1)]), opt("type")); numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn("Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
+        if (tool === "roof") { selIn("Type", o.type, ROOF_OPTS(), opt("type")); if (o.type !== "follow") numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
         if (tool === "light") { selIn("Type", o.type, Object.keys(P().LIGHTS).map((k) => [k, P().LIGHTS[k].label]), opt("type")); kel(o.col, opt("col")); numIn("Brightness (0 = usual)", o.lm, opt("lm"), 50, 0, 100000, "lm"); }
         if (tool === "stairs") { numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height (up)", o.rise, opt("rise"), 0.05, 0.1, 20, "m"); }
@@ -396,6 +503,15 @@
         ctx.resized && ctx.resized(); return;
       }
       // what is picked
+      if (asel.ak === "wpt" || asel.ak === "wtop") {                   // 2.624.0: a cut / a top edge of a wall
+        const R = x, prof = P().profile(R, asel.edge), e = P().edgesOf(R)[asel.edge];
+        head("▮ " + R.name + " · " + (asel.ak === "wpt" ? (asel.k === 0 || asel.k === prof.length - 1 ? "a corner of the wall's top" : "a cut in the wall's top") : "a top edge of the wall"));
+        if (asel.ak === "wpt") { numIn("Height", prof[asel.k][1], ch((v) => { P().moveTopPoint(AR(), R.id, asel.edge, asel.k, v); }), 0.05, 0.05, 50, "m"); if (e) box.appendChild(el("div", "pphint", fmt(prof[asel.k][0] * e.L) + " along the wall")); }
+        else { numIn("Start height", prof[asel.k][1], ch((v) => { P().moveTopPoint(AR(), R.id, asel.edge, asel.k, v); }), 0.05, 0.05, 50, "m"); numIn("End height", prof[asel.k + 1][1], ch((v) => { P().moveTopPoint(AR(), R.id, asel.edge, asel.k + 1, v); }), 0.05, 0.05, 50, "m"); }
+        btns([["🗑 Delete", eraseSel, asel.ak === "wpt" ? "The cut goes (a corner: back to the room's height)" : "Its cuts go - one straight top again"]]);
+        box.appendChild(el("div", "pphint", "Drag it up / down (Select) to slope the wall. Double-click the top of a wall for another cut."));
+        ctx.resized && ctx.resized(); return;
+      }
       if (asel.ak === "room") {
         const R = x, rect = R.closed && R.pts.length === 4 && isRect(R);
         head((R.closed ? "⌂ " : "▮ ") + R.name + (R.closed ? " · " + (+P().roomArea(R).toFixed(2)) + " m²" : ""));
@@ -405,7 +521,7 @@
         numIn("Wall thickness", R.t, ch((v) => P().setRoom(AR(), R.id, { t: v })), 0.01, 0.02, 2, "m");
         numIn("Floor level", R.z, ch((v) => P().setRoom(AR(), R.id, { z: v })), 0.05, -100, 1000, "m");
         colIn(R.closed ? "Walls inside" : "Wall", R.wall, ch((v) => { R.wall = v; }));
-        if (R.closed) { colIn("Floor", R.floor, ch((v) => { R.floor = v; })); colIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); chkIn("Has a ceiling", R.ceilOn, ch((v) => { R.ceilOn = v; })); }
+        if (R.closed) { colIn("Floor", R.floor, ch((v) => { R.floor = v; })); colIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
         colIn("Outside walls (all)", AR().ext, ch((v) => { AR().ext = v; }));
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
           ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
@@ -437,8 +553,9 @@
       } else if (asel.ak === "roof") {
         const rf = x;
         head("△ Roof · " + rf.rooms.length + " room" + (rf.rooms.length > 1 ? "s" : ""));
-        selIn("Type", rf.type, P().ROOFS.map((r) => [r, r[0].toUpperCase() + r.slice(1)]), ch((v) => { rf.type = v; }));
-        numIn("Pitch", rf.pitch, ch((v) => { rf.pitch = v; }), 1, 0, 75, "°"); numIn("Overhang", rf.over, ch((v) => { rf.over = v; }), 0.05, 0, 5, "m"); numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
+        selIn("Type", rf.type, ROOF_OPTS(), ch((v) => { rf.type = v; }));
+        if (rf.type !== "follow") numIn("Pitch", rf.pitch, ch((v) => { rf.pitch = v; }), 1, 0, 75, "°");
+        numIn(rf.type === "follow" ? "Eaves width" : "Overhang", rf.over, ch((v) => { rf.over = v; }), 0.05, 0, 5, "m"); numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
         colIn("Colour", rf.col, ch((v) => { rf.col = v; }));
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
@@ -454,6 +571,7 @@
       }
       ctx.resized && ctx.resized();
     }
+    function ROOF_OPTS() { return P().ROOFS.map((r) => [r, r === "follow" ? "Follows the walls' slope" : r[0].toUpperCase() + r.slice(1)]); }
     function isRect(R) { const e = P().edgesOf(R); return e.length === 4 && e.every((a, i) => Math.abs(a.u[0] * e[(i + 1) % 4].u[0] + a.u[1] * e[(i + 1) % 4].u[1]) < 1e-6); }
     function dupRoom(id) {
       const A = AR(), R = P().room(A, id); if (!R) return;
@@ -472,7 +590,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

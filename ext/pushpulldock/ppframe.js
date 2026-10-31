@@ -2,7 +2,7 @@
  *
  * Tim (verbatim): "when maximized it takes bitgens full window minus the titlebar, it has it's own file menu. send to image
  * editor button and send to time line button - this goes in our new sketchup docker"
- *   ⛶ (its title bar, the usual maximize - toggleMax) -> #pushpulldock.maxed is fixed over the whole window under the title
+ *   ⛶ / ✕ in its title bar (2.624.0: ⛶ reads "⇲ Dock" while maximized; ✕ closes it) - the usual maximize (toggleMax) -> #pushpulldock.maxed is fixed over the whole window under the title
  *     bar (--pp-top = the title bar's bottom; none in a browser = the very top); 🗗 / Esc (nothing else to cancel) restores
  *   ☰ File ▾  New · Open… · Save (Ctrl+S) · Save as… · Rename… · Import (a project 3D model / from this computer: .pp3d .glb
  *     .gltf .obj) · Export… · 🖼 → the image editor · 🎞 → the timeline · ➜ Send to… · Delete… · Maximize / Restore · Close
@@ -63,7 +63,21 @@
     i.click();
   }
   const maxed = () => dock.classList.contains("maxed");
-  function toggleMaxed() { if (typeof root.toggleMax === "function") root.toggleMax("pushpulldock"); }
+  // 2.624.0: the title bar's ⛶ / ✕ - ⛶ is "⇲ Dock" while maximized; a docker the app cannot maximize (not a .bdock) does it itself
+  function toggleMaxed(force) {
+    const on = force != null ? !!force : !maxed();
+    if (dock.classList.contains("bdock") && typeof root.toggleMax === "function") root.toggleMax("pushpulldock", on);
+    else dock.classList.toggle("maxed", on);
+    paintMax();
+  }
+  function paintMax() {
+    const b = $("ppMaxBtn"); if (!b) return;
+    const m = maxed(), t = m ? "⇲ Dock" : "⛶";
+    if (b.textContent !== t) b.textContent = t;
+    b.title = m ? "Dock - put it back in its place (Esc)" : "Maximize - the whole window under the title bar";
+    b.setAttribute("aria-label", m ? "Dock" : "Maximize");
+  }
+  function close() { if (maxed()) toggleMaxed(false); if (typeof root.toggleDockGone === "function") root.toggleDockGone("pushpulldock", "tX_pushpulldock"); }
   function fileMenu() {
     const h = H(), at = $("ppFile"); if (!h) return;
     const g = (what, fn) => () => h.guard(what, fn);
@@ -83,9 +97,9 @@
       { label: "🎞 → the timeline (a 3D layer)", run: g("→ Timeline", h.toTimeline) },
       { label: "➜ Send to… (House builder · Blender · Unreal)", run: () => h.sendMenu(at) },
       { head: "" },
-      { label: maxed() ? "🗗 Restore the docker" : "⛶ Maximize - the whole window", run: toggleMaxed },
+      { label: maxed() ? "⇲ Dock - back in its place" : "⛶ Maximize - the whole window", run: () => toggleMaxed() },
       { label: "🗑 Delete this model…", run: g("Delete", del) },
-      { label: "✕ Close the docker", run: () => { if (maxed()) toggleMaxed(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("pushpulldock", "tX_pushpulldock"); } },
+      { label: "✕ Close the docker", run: close },
     ]);
   }
 
@@ -93,6 +107,7 @@
   function top() { const tb = $("titlebar"); return tb && !tb.classList.contains("hidden") && tb.offsetHeight ? Math.round(tb.getBoundingClientRect().bottom) : 0; }
   function fit() {
     if (maxed()) dock.style.setProperty("--pp-top", top() + "px"); else dock.style.removeProperty("--pp-top");
+    paintMax();
     const h = H(); if (h && h.state.V) setTimeout(() => { h.state.V.size(); }, 30);
   }
   try { new root.MutationObserver(fit).observe(dock, { attributes: true, attributeFilter: ["class"] }); } catch (e) { /* jsdom */ }
@@ -102,5 +117,10 @@
   root.addEventListener("resize", () => { if (maxed()) fit(); });
 
   const fb = $("ppFile"); if (fb) fb.onclick = fileMenu;
-  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, toggleMaxed, maxed, top };
+  const mb = $("ppMaxBtn"); if (mb) mb.onclick = (e) => { e.stopPropagation(); toggleMaxed(); };
+  const cb = $("ppCloseBtn"); if (cb) cb.onclick = (e) => { e.stopPropagation(); close(); };
+  // Esc (one the 3D view did not use): a docker maximized by itself goes back (the app's Esc does a .bdock's)
+  doc.addEventListener("keydown", (e) => { if (e.key === "Escape" && maxed() && !dock.classList.contains("bdock") && !doc.querySelector("dialog[open]")) toggleMaxed(false); });
+  paintMax();
+  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, toggleMaxed, maxed, top, close, paintMax };
 })(typeof window !== "undefined" ? window : globalThis);

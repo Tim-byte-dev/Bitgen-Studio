@@ -69,6 +69,14 @@
  *     Text ▸ Padding / Margin   the words' own space (T R B L; plain-text elements - the words are wrapped in .h3lb)
  *     Box ▸ Corners  each corner's radius (↖ ↗ ↘ ↙ - over Radius); Box ▸ Padding / Margin (T R B L); = copies the
  *                    first value to all four. Padding / margins are never put on the page itself (html / body)
+ *   2.623.0 (Tim: "when in theme edit mode make all the docker and panel buttons and ui buttons and text editable"):
+ *     PANELS        the floating tool panels (the timeline's stage panels .tsd, DLSS 5, SeedVR2, the voice chat) are
+ *                   picked and styled like the dockers - they are panels, not dialogs (DIALOG_SEL leaves them out)
+ *     DOUBLE-CLICK  any words (a button, a docker's title, a tab, a label, a heading, a hint) = change them right there:
+ *                   a box over it, Enter keeps them (empty = its own words), Esc does not
+ *     DROPDOWNS     a picked <select>: its Options - every option's words changed (#sel option[value="…"])
+ *     PLACEHOLDER / TOOLTIP   the words in an empty box (placeholder) and the hover help (title) of any element (ph / tip)
+ *     ALT+CLICK     the app gets the click - open a section, a tab, a docker, a menu - without leaving edit mode
  * Pure (Node: scripts/test-themeedit.js; lib/themeStore.js uses cleanStyles): cleanSel, cleanRule, cleanStyles,
  * cssStr, compile, splitIcon, selectorsFor, ICON_POS, DYNAMIC, DIALOG_SEL, resizeBy.
  */
@@ -80,7 +88,8 @@
   const SIDES = ["t", "r", "b", "l"], CORNERS = ["tl", "tr", "br", "bl"];
   /** 2.455.0: what theme edit mode leaves alone - dialogs (<dialog>, any *dlg box: the editor's, the file dialog,
    *  Liquify …, role=dialog except the floating dockers), popup menus */
-  const DIALOG_SEL = 'dialog[open], [class*="dlg"], [role="dialog"]:not(.h3fp), [role="alertdialog"], .kxmenu, .h3fp-menu, .fd-menu, .m3dmenu, .agmenu, [role="menu"], [role="listbox"]';
+  // 2.623.0: the floating tool PANELS (.tsd stage panels, #dlPanel, #svPanel, #vcPanel) are edited like the dockers
+  const DIALOG_SEL = 'dialog[open], [class*="dlg"], [role="dialog"]:not(.h3fp):not(.tsd):not(#dlPanel):not(#svPanel):not(#vcPanel), [role="alertdialog"], .kxmenu, .h3fp-menu, .fd-menu, .m3dmenu, .agmenu, [role="menu"], [role="listbox"]';
   const DYNAMIC = new Set(["on", "off", "hover", "active", "sel", "pick", "drop-in", "drop-top", "drop-bottom", "chg", "open", "focus", "disabled", "busy", "lit", "h3icon", "collapsed", "dockgone", "dragging", "thedit-hi"]);
   const MAX_RULES = 300, MAX_IMG = 60000;
   const isHex = (c) => typeof c === "string" && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(c);
@@ -128,6 +137,8 @@
     if (o.hide === true) out.hide = true;
     if (o.xhide === true) out.xhide = true;                         // 2.544.0: hidden only in Expert mode
     if (typeof o.text === "string") { const t = o.text.replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, 200); if (t.trim()) out.text = t; }
+    // 2.623.0: the placeholder (an empty box's words) and the tooltip (title)
+    for (const k of ["ph", "tip"]) if (typeof o[k] === "string") { const t = o[k].replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, " ").slice(0, 300); if (t.trim()) out[k] = t; }
     for (const k of ["w", "h"]) { const v = num(o[k], 4, 4000); if (v != null && o[k] !== "" && o[k] != null) out[k] = Math.round(v); }
     for (const k of ["dx", "dy"]) { const v = num(o[k], -4000, 4000); if (v != null && o[k] !== "" && o[k] != null && Math.round(v) !== 0) out[k] = Math.round(v); }
     // 2.567.0: text alignment, padding / margins (the element's and its words'), rounded corners one by one
@@ -304,10 +315,16 @@
   }
   function applyCss() { const st = sheet(); if (st) st.textContent = compile(styles); }
   /* ---- icons: wrap the leading icon of what an icon rule aims at */
-  const iconSels = () => Object.keys(styles).filter((s) => styles[s].icon || styles[s].text || styles[s].tpad || styles[s].tmar);   // 2.514.0: + a new text; 2.567.0: + the words' padding / margins
+  const iconSels = () => Object.keys(styles).filter((s) => styles[s].icon || styles[s].text || styles[s].tpad || styles[s].tmar || styles[s].ph || styles[s].tip);   // 2.514.0: + a new text; 2.567.0: + the words' padding / margins
   const alignSels = () => Object.keys(styles).filter((s) => styles[s].align || styles[s].valign);       // 2.567.0
   function wrap(el, text) {
     if (!el || el.closest("#thEditPanel")) return;
+    if (el.tagName === "OPTION") {                                     // 2.623.0: an option shows its text only - set as is
+      if (text == null) return;
+      if (el.dataset.h3orig == null) el.dataset.h3orig = el.textContent;
+      if (el.textContent !== text) el.textContent = text;
+      el.classList.add("h3opt"); return;
+    }
     const kids = el.querySelector(":scope > .h3ic");
     if (el.classList.contains("h3icon") && kids) {                     // already wrapped: its words as the rules say now
       const lb = el.querySelector(":scope > .h3lb"), want = text != null ? text : splitIcon(el.dataset.h3orig || "").label;
@@ -407,9 +424,31 @@
       }
       for (const [el, text] of hit) wrap(el, text);
       for (const el of doc.querySelectorAll(".h3icon")) if (!hit.has(el)) unwrap(el);
+      for (const el of doc.querySelectorAll("option.h3opt")) if (hit.get(el) == null) { if (el.dataset.h3orig != null) el.textContent = el.dataset.h3orig; delete el.dataset.h3orig; el.classList.remove("h3opt"); }   // 2.623.0
+      applyAttrs(sels);
       for (const el of doc.querySelectorAll(".h3words")) if (hit.get(el) == null) unwords(el);   // 2.573.1
       applyAlign();
     } finally { wrapping = false; }
+  }
+  /** 2.623.0: the placeholder / tooltip a rule gives (never through a bare tag); the element's own kept in data-h3ph / data-h3tip */
+  const ATTRS = [["ph", "placeholder", "h3ph"], ["tip", "title", "h3tip"]];
+  function applyAttrs(sels) {
+    const want = new Map();
+    for (const s of sels) {
+      const r = styles[s]; if (!r || !(r.ph || r.tip) || BARE_TAG.test(s)) continue;
+      let list = []; try { list = doc.querySelectorAll(s); } catch (e) { list = []; }
+      for (const el of list) { if (el.closest("#thEditPanel")) continue; const w = want.get(el) || {}; if (r.ph) w.ph = r.ph; if (r.tip) w.tip = r.tip; want.set(el, w); }
+    }
+    for (const [el, w] of want) for (const [k, attr, key] of ATTRS) {
+      if (w[k] == null) continue;
+      if (el.dataset[key] == null) el.dataset[key] = el.getAttribute(attr) == null ? "\u0000" : el.getAttribute(attr);
+      if (el.getAttribute(attr) !== w[k]) el.setAttribute(attr, w[k]);
+    }
+    for (const el of doc.querySelectorAll("[data-h3ph], [data-h3tip]")) for (const [k, attr, key] of ATTRS) {
+      if (el.dataset[key] == null || ((want.get(el) || {})[k] != null)) continue;
+      const v = el.dataset[key]; delete el.dataset[key];
+      if (v === "\u0000") el.removeAttribute(attr); else el.setAttribute(attr, v);
+    }
   }
   /** 2.567.0: mark what an alignment rule aims at with how it lines its contents up (data-h3al - alignKind) */
   function applyAlign() {
@@ -444,7 +483,7 @@
   /* ---- EDIT THEME MODE */
   let on = false, picked = null, hi = null, panel = null, scope = "", dlgs = false;   // 2.515.0: dlgs = Ctrl+Shift+Alt+E (the dialogs are edited too)
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const ours = (el) => !!(el && el.closest && (el.closest("#thEditPanel, #thEditHi, #thEditBtn, #s_thedit, #thEditHandles, #thExitBox")
+  const ours = (el) => !!(el && el.closest && (el.closest("#thEditPanel, #thEditHi, #thEditBtn, #s_thedit, #thEditHandles, #thExitBox, #thInline")
     || (dlgs ? (panel && el.closest(".fdlg")) : el.closest(DIALOG_SEL))));   // 2.455.0: + dialogs / menus work as usual; 2.515.0: not with Ctrl+Shift+Alt+E (the panel's file dialog still works)
   /** 2.515.0: the topmost open MODAL dialog (what is not inside it cannot be clicked) */
   const topModal = () => { let m = null; try { m = [...doc.querySelectorAll("dialog[open]")].filter((d) => d.matches(":modal")).pop() || null; } catch (e) { m = null; } return m; };
@@ -587,6 +626,9 @@
     const plain = el.classList.contains("h3icon") || !el.children.length;          // 2.514.0: words can be changed on plain-text elements
     const mixed = !plain && (el.classList.contains("h3words") || hasOwnWords(el));  // 2.573.1: + a docker's title bar, a label with a box
     const ownNow = mixed ? (el.dataset.h3words != null ? el.dataset.h3words : splitIcon(ownWords(el)[0].nodeValue).label.trim()) : "";
+    // 2.623.0: a placeholder for boxes; the placeholder / tooltip a rule gives (under its own selector first)
+    const phAble = (/^(INPUT|TEXTAREA)$/.test(el.tagName) && !/^(checkbox|radio|range|color|file|button|submit|reset|hidden|image)$/i.test(el.type || "")) || el.hasAttribute("placeholder");
+    const ownNow2 = (k) => { const one = oneSel(el); return (one && styles[one] && styles[one][k]) || (r[k] && count(scope) === 1 ? r[k] : ""); };
     const n = (id, v, lo, hi2, step, t) => `<input type="number" id="${id}" value="${v == null ? "" : v}" min="${lo}" max="${hi2}" step="${step || 1}" title="${esc(t || "")}">`;
     const col = (id, v, t) => `<input type="color" id="${id}" value="${isHex(v) && v.length === 7 ? v : "#000000"}" title="${esc(t || "")}"><label title="use it"><input type="checkbox" id="${id}On"${v ? " checked" : ""}>✓</label>`;
     // 2.567.0: a row of radio buttons (– = none) and four side / corner boxes (= copies the first to all four)
@@ -622,6 +664,9 @@
         <div class="rw"><span>Hide</span><label title="Gone in live mode (faint and dashed in edit mode, so you can pick it again)"><input type="checkbox" id="teHide"${r.hide ? " checked" : ""}>hidden</label>
           <label title="Gone while Expert mode is on (Settings ▸ General), shown in Basic mode - in edit mode it shows faint with a blue dashed outline"><input type="checkbox" id="teXHide"${r.xhide ? " checked" : ""}>hidden in Expert mode</label></div>
         <div class="rw"><span>Text</span><input type="text" id="teText" value="${esc(textNow(el, r))}" placeholder="${esc(plain ? (splitIcon(el.dataset.h3orig != null ? el.dataset.h3orig : el.textContent).label || "").slice(0, 40) : mixed ? ownNow.slice(0, 40) : "this element has no words of its own - pick the words themselves")}" style="flex:1"${plain || mixed ? "" : " disabled"} title="${plain ? "Its words (its icon stays) - empty = its own" : "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own"}"></div>
+        ${phAble ? `<div class="rw"><span>Placeholder</span><input type="text" id="tePh" value="${esc(ownNow2("ph"))}" placeholder="${esc((el.dataset.h3ph != null && el.dataset.h3ph !== "\u0000" ? el.dataset.h3ph : el.getAttribute("placeholder") || "").slice(0, 60))}" style="flex:1" title="The words shown in the empty box - empty = its own"></div>` : ""}
+        <div class="rw"><span>Tooltip</span><input type="text" id="teTip" value="${esc(ownNow2("tip"))}" placeholder="${esc((el.dataset.h3tip != null && el.dataset.h3tip !== "\u0000" ? el.dataset.h3tip : el.getAttribute("title") || "(none)").slice(0, 60))}" style="flex:1" title="The help shown when the pointer rests on it - empty = its own"></div>
+        ${el.tagName === "SELECT" ? `<h5>Options</h5><div id="teOpts" class="teopts">${[...el.options].slice(0, 60).map((o, i) => `<div class="rw"><span title="${esc(o.value)}">${i + 1}</span><input type="text" data-opt="${i}" value="${esc(o.dataset.h3orig != null ? o.textContent : "")}" placeholder="${esc((o.dataset.h3orig != null ? o.dataset.h3orig : o.textContent).slice(0, 60))}" style="flex:1" title="This option's words - empty = its own"></div>`).join("")}${el.options.length > 60 ? `<div class="hint">the first 60 of ${el.options.length}</div>` : ""}</div>` : ""}
         <div class="rw"><span>Size</span>W ${n("teW", r.w, 4, 4000, 1, "width (px) - empty = its own")} H ${n("teH", r.h, 4, 4000, 1, "height (px) - empty = its own")}<span class="hint" style="width:auto">px · or drag a handle</span></div>
         <div class="rw"><span>Move</span>X ${n("teDx", r.dx || "", -4000, 4000, 1, "moved right (px)")} Y ${n("teDy", r.dy || "", -4000, 4000, 1, "moved down (px)")}<button id="teLayRst" title="Its own size and place again">↺</button></div>
         <div class="rw" style="margin-top:4px"><button id="teClear" title="Remove this rule">↺ Clear</button><span class="hint" id="teMsg" style="width:auto;flex:1"></span></div>
@@ -648,6 +693,8 @@
       if ($("teHide").checked) o.hide = true;                                    // 2.514.0: layout
       if ($("teXHide") && $("teXHide").checked) o.xhide = true;                   // 2.544.0: Expert mode only
       if ($("teText").value) o.text = $("teText").value;
+      if ($("tePh") && $("tePh").value) o.ph = $("tePh").value;                   // 2.623.0
+      if ($("teTip").value) o.tip = $("teTip").value;
       for (const [id, k] of [["teW", "w"], ["teH", "h"], ["teDx", "dx"], ["teDy", "dy"]]) if ($(id).value !== "") o[k] = +$(id).value;
       const radio = (n2) => { const x = panel.querySelector(`input[name=${n2}]:checked`); return x ? x.value : ""; };   // 2.567.0
       if (radio("teAl")) o.align = radio("teAl");
@@ -662,9 +709,9 @@
       const o = read(), one = oneSel(picked);
       // 2.574.1: the words are THIS element's - kept under its own selector when "Apply to" finds more than it
       if (one && one !== scope && (count(scope) > 1 || BARE_TAG.test(scope))) {
-        const txt = o.text; delete o.text;
+        const mine = {}; for (const k of OWN_KEYS) { mine[k] = o[k]; delete o[k]; }   // 2.623.0: + the placeholder / tooltip
         const next = Object.assign({}, styles);
-        const own = Object.assign({}, next[one] || {}); if (txt) own.text = txt; else delete own.text;
+        const own = Object.assign({}, next[one] || {}); for (const k of OWN_KEYS) { if (mine[k]) own[k] = mine[k]; else delete own[k]; }
         if (Object.keys(own).length) next[one] = own; else delete next[one];
         const sc = forSel(scope, cleanRule(o));
         if (Object.keys(sc).length) next[scope] = sc; else delete next[scope];
@@ -674,6 +721,11 @@
       placeHi(picked);
     };
     $("teText").addEventListener("keydown", (e) => e.stopPropagation());
+    // 2.623.0: a dropdown's options - each one's words under its own selector
+    panel.querySelectorAll("#teOpts input[data-opt]").forEach((x) => {
+      x.addEventListener("keydown", (e) => e.stopPropagation());
+      x.addEventListener("change", () => { const o = el.options[+x.dataset.opt]; if (o) setText(o, x.value); });
+    });
     panel.querySelectorAll("input,select").forEach((x) => {
       if (x.id === "teScope" || x.id === "teIcImg") return;
       x.addEventListener(x.type === "checkbox" || x.type === "radio" || x.tagName === "SELECT" ? "change" : "input", () => {
@@ -717,13 +769,58 @@
       let y = Math.max(8, Math.min(er.top, root.innerHeight - H - 8));
       panel.style.left = x + "px"; panel.style.top = y + "px";
     }
-    $("teMsg").textContent = `${count(scope)} element(s)`;
+    $("teMsg").textContent = `${count(scope)} element(s) · double-click words to change them · Alt+click = the app's click`;
   }
   function closePanel() { if (panel) { panel.remove(); panel = null; } picked = null; placeHi(null); }
+  const OWN_KEYS = ["text", "ph", "tip"];
+  /** 2.623.0: an option's selector - by its value when that is plain (#sel option[value="…"]), else its place */
+  function optSel(o) {
+    const s = o.parentElement && o.parentElement.closest("select"); if (!s) return oneSel(o);
+    const host = s.id && IDENT.test(s.id) ? "#" + s.id : oneSel(s); if (!host) return "";
+    const v = String(o.value);
+    if (/^[\w .:-]{1,80}$/.test(v)) { const c = host + ' option[value="' + v + '"]'; if (cleanSel(c) && count(c) === 1) return c; }
+    let k = 1; for (let x = o.previousElementSibling; x; x = x.previousElementSibling) if (x.tagName === "OPTION") k++;
+    return host + " option:nth-of-type(" + k + ")";
+  }
+  /** 2.623.0: one element's words (empty = its own again) - under its own selector, its other settings kept */
+  function setText(el, text) {
+    const one = el.tagName === "OPTION" ? optSel(el) : oneSel(el); if (!one) return false;
+    const r = Object.assign({}, styles[one] || {}), t = String(text || "").trim();
+    if (t) r.text = t; else delete r.text;
+    setRule(one, r); return true;
+  }
+  /** 2.623.0: double-click any words = change them right there (a box over them; Enter keeps, Esc does not) */
+  function wordsOf(el) {
+    for (let e = el, i = 0; e && i < 4 && e !== doc.body; e = e.parentElement, i++) {
+      if (e.tagName === "SELECT" || e.tagName === "INPUT" || e.tagName === "TEXTAREA" || ours(e)) return null;
+      if (e.classList.contains("h3icon") || (!e.children.length && (e.textContent || "").trim()) || hasOwnWords(e) || e.classList.contains("h3words")) return e;
+    }
+    return null;
+  }
+  function inlineEdit(target) {
+    const el = wordsOf(target); if (!el) return false;
+    const old = doc.getElementById("thInline"); if (old) old.remove();
+    const plain = el.classList.contains("h3icon") || !el.children.length;
+    const cur = plain ? (el.classList.contains("h3icon") ? (el.querySelector(":scope > .h3lb") || el).textContent : splitIcon(el.textContent).label)
+      : (ownWords(el)[0] ? splitIcon(ownWords(el)[0].nodeValue).label : "");
+    const r0 = el.getBoundingClientRect(), host = hostOf(el);
+    const inp = doc.createElement("input"); inp.id = "thInline"; inp.type = "text"; inp.value = String(cur).trim();
+    inp.title = "Its new words - Enter keeps them (empty = its own), Esc leaves them";
+    inp.style.cssText = "position:fixed;z-index:2147483646;left:" + Math.max(2, r0.left) + "px;top:" + Math.max(2, r0.top) + "px;width:" + Math.max(120, r0.width + 40) + "px;height:" + Math.max(22, r0.height) + "px;font:inherit;font-size:13px;padding:1px 6px;border:2px solid #f59e2c;border-radius:4px;background:#14120f;color:#fff;box-shadow:0 4px 16px #0008";
+    let done = false;
+    const finish = (keep) => { if (done) return; done = true; const v = inp.value; inp.remove(); if (keep) { setText(el, v); if (picked === el) pick(el); } };
+    inp.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); finish(true); } if (e.key === "Escape") { e.preventDefault(); finish(false); } });
+    for (const t of ["pointerdown", "mousedown", "click", "dblclick"]) inp.addEventListener(t, (e) => e.stopPropagation());
+    inp.addEventListener("blur", () => finish(true));
+    host.appendChild(inp); inp.focus(); inp.select();
+    return true;
+  }
   const isPage = (el) => !el || el === doc.documentElement || el === doc.body;   // 2.540.6: the page itself is never picked
   const over = (e) => { if (!on || ours(e.target) || isPage(e.target)) { if (on && !picked) placeHi(null); return; } if (!picked) placeHi(e.target); };
   const block = (e) => {
     if (!on || ours(e.target)) return;
+    if (e.altKey && !e.ctrlKey && !e.metaKey && !sizing && !(moving && moving.up)) return;   // 2.623.0: Alt+click = the app's (a section, a tab, a menu)
+    if (e.type === "dblclick") { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); inlineEdit(e.target); return; }   // 2.623.0
     e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     if (e.type === "pointerdown") swallowClick = false;                                         // 2.540.6: a new press - the last drag's click is history
     if (e.type === "pointerup" && sizing) { sizing(); return; }                                   // 2.540.6
@@ -734,7 +831,7 @@
   // 2.455.0: Esc anywhere but in the Style panel (it handles its own) or a dialog / menu (theirs) - the 🖌 button focused too
   const keys = (e) => {
     const t = e.target;
-    if (!on || e.key !== "Escape" || (t && t.closest && (t.closest("#thEditPanel") || t.closest("#thExitBox") || (!dlgs && t.closest(DIALOG_SEL))))) return;
+    if (!on || e.key !== "Escape" || (t && t.closest && (t.closest("#thEditPanel") || t.closest("#thExitBox") || t.closest("#thInline") || (!dlgs && t.closest(DIALOG_SEL))))) return;
     e.preventDefault(); e.stopPropagation(); if (picked) closePanel(); else toggle(false);
   };
   /** 2.515.0: Ctrl+Shift+Alt+E - edit theme mode with the dialogs (always listened for) */
@@ -848,7 +945,7 @@
     const gear = doc.getElementById("openSettings");
     if (gear && !doc.getElementById("thEditBtn")) {
       const b = doc.createElement("button"); b.className = "ghost"; b.id = "thEditBtn"; b.type = "button"; b.textContent = "🖌";
-      b.title = "Edit theme mode: click anything on screen to style it (font, size, colours, shadows, its icon) - click 🖌 again for live mode. Ctrl+Shift+Alt+E = the same with the dialogs too (Settings …); Ctrl+S saves the theme and leaves";
+      b.title = "Edit theme mode: click anything on screen to style it (font, size, colours, shadows, its icon) - double-click any words to change them, Alt+click uses the app (open a section / a tab) - click 🖌 again for live mode. Ctrl+Shift+Alt+E = the same with the dialogs too (Settings …); Ctrl+S saves the theme and leaves";
       b.setAttribute("aria-pressed", "false"); b.onclick = (e) => { e.stopPropagation(); toggle(); };
       gear.insertAdjacentElement("afterend", b);
     }

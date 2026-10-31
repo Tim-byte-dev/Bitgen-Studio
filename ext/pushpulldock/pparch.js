@@ -23,6 +23,20 @@
  *
  *   build(A) -> {polys: [{rings, n, col, alpha, tag, layer}], lines: [[p, q] ...], lights: [...]}   planar polygons in 3D
  *           (Z up, metres; rings[0] the outline, the rest holes) for the view (ppview / pparchview) to triangulate
+ * 2.621.x -> 2.624.0 (Tim: "when user creates walls add offset input to offset wall from edge of floor, allow user to drag walls
+ * but show snap regions on floor and allow user to snap wall to floor edge, when user double clicks the the top of a wall cut
+ * the face allow the use to drag that edge up and down and delete the edge when the del button is pressed and edge is
+ * selected. allow user to select edges on the wall to change slope of the wall. in ceiling options add flat ceiling, follow
+ * slope of walls, with roof follow slope of walls add eaves width input"):
+ *   WALL TOPS   room.tops = {edge: [[t, h] ...]} - the top of a wall along it (t 0..1, h above its floor); none = flat at h.
+ *               cutTop (a point where it is double-clicked), moveTopPoint / moveTopSeg (dragged up / down - a corner moves
+ *               the wall beside it too), removeTopPoint / removeTopSeg (Delete). The walls' bands stand to each wall's
+ *               lowest top; above it a wall's own piece follows its profile.
+ *   CEILING     room.ceil "flat" (at h) | "follow" (a rectangle room: the surface between its two opposite walls' tops)
+ *   ROOF        type "follow": the same surface over the walls' outer tops, out past them by the eaves (rf.over)
+ *   FLOOR EDGE  slabEdges, snapToFloor (a wall's outside face onto a floor's edge, `off` in from it), offsetOnFloor (a wall
+ *               drawn along a floor's edge moved in so its outside face is `off` from the edge), moveEdge (one wall of a
+ *               room dragged out / in)
  * Pure (Node: scripts/test-arch620.js - with globalThis.polygonClipping = require(static/vendor/polygon-clipping.umd.min.js)). */
 (function (root) {
   "use strict";
@@ -31,7 +45,7 @@
   const DEF = { h: 2.7, t: 0.15, wall: "#f4f1ea", floor: "#c8a882", ceil: "#fbfbf8", ext: "#e9e3d7", door: "#8b5a2b", frame: "#f4f4f4", glass: "#9ec5e8", roof: "#8a4f3d", stair: "#b08a62", slab: "#bdb7ab", top: "#d9d3c7" };
   const OPS = { door: { w: 0.9, h: 2.1, sill: 0, style: "single" }, window: { w: 1.2, h: 1.2, sill: 0.9, style: "double" }, opening: { w: 1.0, h: 2.1, sill: 0, style: "plain" } };
   const STYLES = { door: ["single", "double", "sliding", "glass"], window: ["single", "double", "slider"], opening: ["plain"] };
-  const ROOFS = ["gable", "hip", "shed", "flat"];
+  const ROOFS = ["gable", "hip", "shed", "flat", "follow"];        // 2.624.0: follow = on the walls' tops (their slope)
   // the lights: their usual brightness (lumens) + the fixture's sizes
   const LIGHTS = {
     downlight: { label: "Downlight (recessed)", lm: 650, ang: 50, mount: "ceil" },
@@ -52,6 +66,7 @@
   const left = (u) => [-u[1], u[0]];
   const r6 = (x) => Math.round(x * 1e6) / 1e6;
   function area2(P) { let s = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; s += a[0] * b[1] - b[0] * a[1]; } return s / 2; }
+  function segDistPoly(p, P) { let d = Infinity; P.forEach((a, i) => { d = Math.min(d, segDist(p, a, P[(i + 1) % P.length]).d); }); return d; }
   function inPoly(p, P) {
     let c = false;
     for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; }
@@ -78,7 +93,8 @@
       if (pts.length < (closed ? 3 : 2)) return null;
       if (closed && area2(pts) < 0) pts.reverse();
       return { id: id(R.id), name: String(R.name || (closed ? "Room" : "Wall")).slice(0, 60), pts, closed, z: num(R.z, 0, -100, 1000), h: num(R.h, DEF.h, 0.1, 50), t: num(R.t, DEF.t, 0.02, 2),
-        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false };
+        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false,
+        ceil: R.ceil === "follow" ? "follow" : "flat", tops: cleanTops(R.tops, closed ? pts.length : pts.length - 1) };
     }).filter(Boolean);
     const rid = new Set(A.rooms.map((R) => R.id));
     A.ops = (Array.isArray(o.ops) ? o.ops : []).map((x) => {
@@ -106,6 +122,19 @@
     A.n = mx;
     return A;
   }
+  /** 2.624.0: the wall tops, checked - {edge: [[t, h] ...]} sorted, the two ends there, a flat one dropped */
+  function cleanTops(o, nEdges) {
+    const out = {};
+    if (!o || typeof o !== "object") return out;
+    Object.keys(o).forEach((k) => {
+      const i = +k; if (!Number.isInteger(i) || i < 0 || i >= nEdges || !Array.isArray(o[k])) return;
+      const P = o[k].filter((p) => Array.isArray(p) && Number.isFinite(+p[0]) && Number.isFinite(+p[1])).map((p) => [Math.min(1, Math.max(0, +p[0])), Math.min(50, Math.max(0.05, +p[1]))]).sort((a, b) => a[0] - b[0]);
+      const Q = []; P.forEach((p) => { if (!Q.length || p[0] - Q[Q.length - 1][0] > 1e-4) Q.push(p); });
+      if (Q.length < 2 || Q[0][0] > 1e-6 || Q[Q.length - 1][0] < 1 - 1e-6) return;
+      out[i] = Q;
+    });
+    return out;
+  }
   const nid = (A) => A.n++;
   const room = (A, id) => A.rooms.find((R) => R.id === id) || null;
   const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
@@ -117,7 +146,7 @@
     if (closed && Math.abs(area2(p)) < 0.01) return null;
     if (closed && area2(p) < 0) p.reverse();
     const n = A.rooms.filter((R) => R.closed === closed).length + 1;
-    const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true }, o || {}, { pts: p, closed });
+    const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true, ceil: "flat" }, o || {}, { pts: p, closed });
     A.rooms.push(R); return R;
   }
   function rectPts(a, b) { const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]); return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
@@ -156,6 +185,193 @@
     }
     return out;
   }
+  /* ---------------- 2.624.0: the wall tops */
+  function profile(R, i) { const P = R.tops && R.tops[i]; return P && P.length >= 2 ? P : [[0, R.h], [1, R.h]]; }
+  function topAt(R, i, t) {
+    const P = profile(R, i);
+    if (t <= P[0][0]) return P[0][1] + (P.length > 1 && t < 0 ? (P[1][1] - P[0][1]) / Math.max(1e-6, P[1][0] - P[0][0]) * t : 0);
+    for (let k = 0; k + 1 < P.length; k++) { const a = P[k], b = P[k + 1]; if (t <= b[0] + 1e-12) return a[1] + (b[1] - a[1]) * (t - a[0]) / Math.max(1e-9, b[0] - a[0]); }
+    const a = P[P.length - 2], b = P[P.length - 1];
+    return b[1] + (b[1] - a[1]) / Math.max(1e-6, b[0] - a[0]) * (t - b[0]);
+  }
+  const flatTop = (R, i) => profile(R, i).every((p) => Math.abs(p[1] - R.h) < 1e-6) ;
+  const minTop = (R, i) => Math.min(...profile(R, i).map((p) => p[1]));
+  function putProfile(R, i, P) { if (!R.tops) R.tops = {}; const Q = cleanTops({ [i]: P }, 1e9)[i]; if (!Q || (Q.length === 2 && Q.every((p) => Math.abs(p[1] - R.h) < 1e-6))) delete R.tops[i]; else R.tops[i] = Q; }
+  /** the wall beside an end of edge i (i's start = the previous edge's end) -> [edge, end 0 | 1] | null */
+  function besideEnd(R, i, end) { const n = R.closed ? R.pts.length : R.pts.length - 1; if (end === 0) { const j = i - 1; return j >= 0 ? [j, 1] : R.closed ? [n - 1, 1] : null; } const j = i + 1; return j < n ? [j, 0] : R.closed ? [0, 0] : null; }
+  function setEnd(R, i, end, h) { const P = profile(R, i).map((p) => p.slice()); P[end === 0 ? 0 : P.length - 1][1] = h; putProfile(R, i, P); }
+  /** a cut in the top of wall i at t (where it was double-clicked) -> the point's index */
+  function cutTop(A, id, i, t) {
+    const R = room(A, id); if (!R) return -1;
+    const e = edgesOf(R)[i]; if (!e) return -1;
+    const tt = Math.min(1 - 0.02 / Math.max(e.L, 0.05), Math.max(0.02 / Math.max(e.L, 0.05), t));
+    const P = profile(R, i).map((p) => p.slice());
+    const near = P.findIndex((p) => Math.abs(p[0] - tt) * e.L < 0.03); if (near >= 0) return near;
+    P.push([tt, topAt(R, i, tt)]); P.sort((a, b) => a[0] - b[0]);
+    if (!R.tops) R.tops = {}; R.tops[i] = P;           // kept even while flat (the cut is there to be dragged)
+    return P.findIndex((p) => p[0] === tt);
+  }
+  function moveTopPoint(A, id, i, k, h) {
+    const R = room(A, id); if (!R) return false;
+    const P = profile(R, i).map((p) => p.slice()); if (!P[k]) return false;
+    const hh = Math.min(50, Math.max(0.05, h)); P[k][1] = hh;
+    if (!R.tops) R.tops = {}; R.tops[i] = P;
+    if (k === 0 || k === P.length - 1) { const b = besideEnd(R, i, k === 0 ? 0 : 1); if (b) setEnd(R, b[0], b[1], hh); }
+    return true;
+  }
+  function moveTopSeg(A, id, i, k, dh, base) {
+    const R = room(A, id); if (!R) return false;
+    const P = (base || profile(R, i)).map((p) => p.slice()); if (!P[k] || !P[k + 1]) return false;
+    moveTopPoint(A, id, i, k, P[k][1] + dh); moveTopPoint(A, id, i, k + 1, P[k + 1][1] + dh);
+    return true;
+  }
+  /** Delete on a cut: it goes (an end goes back to the room's height, the wall beside it too) */
+  function removeTopPoint(A, id, i, k) {
+    const R = room(A, id); if (!R) return false;
+    const P = profile(R, i).map((p) => p.slice()); if (!P[k]) return false;
+    if (k === 0 || k === P.length - 1) { moveTopPoint(A, id, i, k, R.h); putProfile(R, i, profile(R, i)); return true; }
+    P.splice(k, 1); putProfile(R, i, P); return true;
+  }
+  /** Delete on a top edge: its cuts go (it is one straight top again); an edge from corner to corner goes flat */
+  function removeTopSeg(A, id, i, k) {
+    const R = room(A, id); if (!R) return false;
+    const P = profile(R, i).map((p) => p.slice()); if (!P[k] || !P[k + 1]) return false;
+    const inner = [k, k + 1].filter((x) => x > 0 && x < P.length - 1);
+    if (inner.length) { const Q = P.filter((_, x) => !inner.includes(x)); putProfile(R, i, Q); return true; }
+    moveTopPoint(A, id, i, 0, R.h); moveTopPoint(A, id, i, P.length - 1, R.h); putProfile(R, i, profile(R, i)); return true;
+  }
+  /** where a point on a wall (plan + z) is on its top: {room, edge, t, s, h (its top there), k (a cut / end within tol), seg} */
+  function topHit(A, p, z, tol) {
+    const w = nearestWall(A, p, 0.6, null); if (!w) return null;
+    const R = w.R, e = w.e, t = Math.max(0, Math.min(1, w.at / e.L)), h = R.z + topAt(R, w.edge, t);
+    if (Math.abs(z - h) > Math.max(tol, 0.04)) return null;
+    const P = profile(R, w.edge);
+    let k = -1, best = Infinity; P.forEach((q, x) => { const d = Math.abs(q[0] - t) * e.L; if (d < tol && d < best) { best = d; k = x; } });
+    let seg = 0; for (let x = 0; x + 1 < P.length; x++) if (t >= P[x][0] - 1e-9 && t <= P[x + 1][0] + 1e-9) { seg = x; break; }
+    return { room: R.id, edge: w.edge, t, s: w.at, h, k, seg, R, e };
+  }
+  /** the 3D points of a wall's top (its centre line) - for the outline of what is picked */
+  function topPoints(A, id, i) {
+    const R = room(A, id); if (!R) return [];
+    const e = edgesOf(R)[i]; if (!e) return [];
+    return profile(R, i).map(([t, h]) => [e.a[0] + (e.b[0] - e.a[0]) * t, e.a[1] + (e.b[1] - e.a[1]) * t, R.z + h]);
+  }
+  /** a wall's piece above its lowest top, following its profile (the bands stand to the lowest top) */
+  function upperPiece(R, q, out, ext) {
+    const P = profile(R, q.i), z0 = R.z + minTop(R, q.i), [lS, lE, rE, rS] = q.quad, tag = { ak: "wall", room: R.closed ? R.id : null, edge: q.i, part: "top" };
+    const at = (A2, B2, t, h) => [A2[0] + (B2[0] - A2[0]) * t, A2[1] + (B2[1] - A2[1]) * t, R.z + h];
+    const IN = P.map(([t, h]) => at(lS, lE, t, h)), OUT = P.map(([t, h]) => at(rS, rE, t, h));
+    const inCol = R.closed ? R.wall : ext, nl = q.nl, n = P.length;
+    const base = (A2) => [A2[0], A2[1], z0];
+    out.polys.push({ rings: [[base(lS)].concat(IN, [base(lE)])], n: [nl[0], nl[1], 0], col: inCol, tag, layer: "main" });
+    out.polys.push({ rings: [[base(rS)].concat(OUT, [base(rE)])], n: [-nl[0], -nl[1], 0], col: ext, tag, layer: "main" });
+    for (let k = 0; k + 1 < n; k++) {
+      const a = IN[k], b = IN[k + 1], c = OUT[k + 1], d = OUT[k], du = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], dv = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+      let nn = [du[1] * dv[2] - du[2] * dv[1], du[2] * dv[0] - du[0] * dv[2], du[0] * dv[1] - du[1] * dv[0]]; if (nn[2] < 0) nn = nn.map((x) => -x);
+      out.polys.push({ rings: [[a, b, c, d]], n: nn, col: DEF.top, tag, layer: "main" });
+      out.lines.push([a, b], [d, c]);
+    }
+    [[0, lS, rS, [-q.u[0], -q.u[1], 0]], [n - 1, lE, rE, [q.u[0], q.u[1], 0]]].forEach(([k, L1, R1, nn]) => {
+      if (P[k][1] + R.z <= z0 + 1e-6) return;
+      out.polys.push({ rings: [[base(L1), base(R1), OUT[k], IN[k]]], n: nn, col: ext, tag, layer: "main" });
+    });
+    P.forEach((_, k) => { out.lines.push([IN[k], OUT[k]]); if (IN[k][2] > z0 + 1e-6) out.lines.push([base(k === 0 ? lS : k === n - 1 ? lE : IN[k]), IN[k]], [base(k === 0 ? rS : k === n - 1 ? rE : OUT[k]), OUT[k]]); });
+    return { quad: q.quad, z: z0 };
+  }
+  /** 2.624.0: the surface between a rectangle room's two opposite walls' tops (inner faces for a ceiling, outer + eaves for a
+      roof) -> rows of points [[p3 ...] per t] across [A_ext?, A, C, C_ext?] | null (not a rectangle) */
+  function followGrid(R, outer, eaves) {
+    if (!R.closed || R.pts.length !== 4) return null;
+    const Q = wallQuads(R); if (Q.length !== 4) return null;
+    const sloped = (i) => !flatTop(R, i) || !flatTop(R, (i + 2) % 4);
+    const a = sloped(0) || !sloped(1) ? 0 : 1, c = a + 2, qa = Q[a], qc = Q[c];
+    const lineA = outer ? [qa.quad[3], qa.quad[2]] : [qa.quad[0], qa.quad[1]], lineC = outer ? [qc.quad[3], qc.quad[2]] : [qc.quad[0], qc.quad[1]];
+    const ts = new Set([0, 1]); profile(R, a).forEach((p) => ts.add(r6(p[0]))); profile(R, c).forEach((p) => ts.add(r6(1 - p[0])));
+    const e = eaves || 0, La = len(sub(lineA[1], lineA[0])) || 1;
+    let T = [...ts].sort((x, y) => x - y); if (e > 0) T = [-e / La].concat(T, [1 + e / La]);
+    const at = (L, t) => [L[0][0] + (L[1][0] - L[0][0]) * t, L[0][1] + (L[1][1] - L[0][1]) * t];
+    const rows = T.map((t) => {
+      const pa = at(lineA, t), pc = at(lineC, 1 - t), za = R.z + topAt(R, a, t), zc = R.z + topAt(R, c, 1 - t);
+      const row = [[pa[0], pa[1], za], [pc[0], pc[1], zc]];
+      if (e > 0) {
+        const dir = norm(sub(pa, pc)), D = len(sub(pa, pc)) || 1, sl = (za - zc) / D;
+        row.unshift([pa[0] + dir[0] * e, pa[1] + dir[1] * e, za + sl * e]); row.push([pc[0] - dir[0] * e, pc[1] - dir[1] * e, zc - sl * e]);
+      }
+      return row;
+    });
+    return { rows, a, c };
+  }
+  const tri = (a, b, c, up) => { const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]; const l = Math.hypot(n[0], n[1], n[2]) || 1; n = n.map((x) => x / l); if ((n[2] < 0) === up) n = n.map((x) => -x); return n; };
+  function gridPolys(rows, dz, up, col, tag, layer, out, lines) {
+    for (let r = 0; r + 1 < rows.length; r++) for (let k = 0; k + 1 < rows[r].length; k++) {
+      const a = rows[r][k], b = rows[r + 1][k], c = rows[r + 1][k + 1], d = rows[r][k + 1], sh = (p) => [p[0], p[1], p[2] + dz];
+      [[a, b, c], [a, c, d]].forEach((t) => { const tt = t.map(sh); out.polys.push({ rings: [tt], n: tri(tt[0], tt[1], tt[2], up), col, tag, layer }); });
+      if (lines) { lines.push([sh(a), sh(b)]); if (r === 0) lines.push([sh(a), sh(d)]); if (r + 2 === rows.length) lines.push([sh(b), sh(c)]); if (k + 2 === rows[r].length) lines.push([sh(d), sh(c)]); }
+    }
+  }
+  /* ---------------- 2.624.0: floors' edges - a wall's outside face onto them */
+  function slabEdges(A) {
+    const out = [];
+    A.slabs.forEach((sl) => sl.pts.forEach((a, i) => { const b = sl.pts[(i + 1) % sl.pts.length], u = norm(sub(b, a)); if (len(sub(b, a)) > EPS) out.push({ a, b, u, n: left(u), slab: sl.id, z: sl.z }); }));
+    return out;
+  }
+  /** a wall's outside-face line (closed room: the right side; a free wall: both) for edge e of R moved by d */
+  function faceLines(R, e, d) { const nl = left(e.u), h = R.t / 2, a = add(e.a, d); return (R.closed ? [-1] : [-1, 1]).map((sg) => ({ p: add(a, mul(nl, sg * h)), sg })); }
+  /** rooms ids moved by d: a wall's outside face within tol of a floor edge's line (`off` in from it) is put there */
+  function snapToFloor(A, ids, d, tol, off, only) {
+    const E = slabEdges(A); if (!E.length) return { d, hit: null };
+    let best = null;
+    A.rooms.forEach((R) => { if (!ids.includes(R.id)) return; edgesOf(R).forEach((e) => {
+      if (e.L < EPS || (only != null && e.i !== only)) return;
+      faceLines(R, e, d).forEach((f) => E.forEach((s) => {
+        if (Math.abs(crs(e.u, s.u)) > 0.02) return;
+        const dist = dot(sub(f.p, s.a), s.n), want = off || 0, diff = want - dist;
+        if (Math.abs(diff) > tol) return;
+        const s0 = dot(add(e.a, d), s.u), s1 = dot(add(e.b, d), s.u), t0 = dot(s.a, s.u), t1 = dot(s.b, s.u);
+        if (Math.min(Math.max(s0, s1), Math.max(t0, t1)) - Math.max(Math.min(s0, s1), Math.min(t0, t1)) < -tol) return;
+        if (!best || Math.abs(diff) < Math.abs(best.diff)) best = { diff, s, room: R.id, edge: e.i };
+      }));
+    }); });
+    if (!best) return { d, hit: null };
+    return { d: add(d, mul(best.s.n, best.diff)), hit: { slab: best.s.slab, a: best.s.a, b: best.s.b, n: best.s.n, room: best.room, edge: best.edge } };
+  }
+  /** a wall drawn along a floor's edge: moved in so its outside face is `off` from that edge -> {pts, moved} */
+  function offsetOnFloor(A, pts, closed, t, off) {
+    const E = slabEdges(A), n = pts.length, segs = closed ? n : n - 1, sh = [];
+    let moved = 0;
+    for (let i = 0; i < segs; i++) {
+      const a = pts[i], b = pts[(i + 1) % n], u = norm(sub(b, a));
+      const s = E.find((x) => Math.abs(crs(u, x.u)) < 0.02 && segDist(a, x.a, x.b).d < 1e-3 && segDist(b, x.a, x.b).d < 1e-3);
+      sh.push(s ? mul(s.n, (off || 0) + t / 2) : [0, 0]); if (s) moved++;
+    }
+    if (!moved) return { pts: pts.map((p) => [p[0], p[1]]), moved: 0 };
+    const L = (i) => { const a = pts[i], b = pts[(i + 1) % n]; return { p: add(a, sh[i]), u: norm(sub(b, a)) }; };
+    const out = pts.map((p, j) => {
+      const prev = j - 1 >= 0 ? j - 1 : closed ? segs - 1 : -1, next = j < segs ? j : -1;
+      if (prev < 0) return add(p, sh[next]); if (next < 0) return add(p, sh[prev]);
+      const l0 = L(prev), l1 = L(next), x = lineX(l0.p, l0.u, l1.p, l1.u);
+      return x || add(p, sh[next]);
+    });
+    return { pts: out.map((p) => [r6(p[0]), r6(p[1])]), moved };
+  }
+  /** one wall of a room moved out (+) / in (-) by dist, square to itself - the room stretches */
+  function moveEdge(A, id, i, dist) {
+    const R = room(A, id); if (!R) return false;
+    const e = edgesOf(R)[i]; if (!e) return false;
+    const m = mul(left(e.u), -dist), n = R.pts.length;          // + = out (the right side of a counter-clockwise room)
+    R.pts[i] = add(R.pts[i], m); R.pts[(i + 1) % n] = add(R.pts[(i + 1) % n], m);
+    return true;
+  }
+  /** one wall's line moved by dist: snapped onto a parallel wall of another room / a floor's edge (outside face, off) */
+  function snapEdge(A, id, i, dist, tol, off) {
+    const R = room(A, id); if (!R) return { dist, hit: null };
+    const e = edgesOf(R)[i]; if (!e) return { dist, hit: null };
+    const out = mul(left(e.u), -1), a = add(e.a, mul(out, dist));
+    let best = null;
+    A.rooms.forEach((Q) => { if (Q === R || Math.abs(Q.z - R.z) > 0.01) return; edgesOf(Q).forEach((f) => { if (f.L < EPS || Math.abs(crs(f.u, e.u)) > 0.02) return; const d2 = dot(sub(f.a, a), out); if (Math.abs(d2) < tol && (!best || Math.abs(d2) < Math.abs(best.d))) best = { d: d2, kind: "wall", room: Q.id }; }); });
+    slabEdges(A).forEach((s) => { if (Math.abs(crs(s.u, e.u)) > 0.02) return; const face = add(a, mul(out, R.t / 2)), dd = (off || 0) - dot(sub(face, s.a), s.n), along = dd * dot(s.n, out); if (Math.abs(dd) < tol && (!best || Math.abs(dd) < Math.abs(best.d))) best = { d: along, kind: "floor", slab: s.slab, a: s.a, b: s.b, n: s.n }; });
+    return best ? { dist: dist + best.d, hit: best } : { dist, hit: null };
+  }
   const centroid = (P) => { let x = 0, y = 0; P.forEach((p) => { x += p[0]; y += p[1]; }); return [x / P.length, y / P.length]; };
   const roomArea = (R) => (R.closed ? Math.abs(area2(interior(R))) : 0);
 
@@ -184,7 +400,9 @@
       if (!R.closed) return;
       const inn = interior(R); if (!inn || Math.abs(area2(inn)) < 1e-4) return;
       if (R.floorOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + 0.002])], n: [0, 0, 1], col: R.floor, tag: { ak: "room", id: R.id, part: "floor" }, layer: "main" });
-      if (R.ceilOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + R.h - 0.003]).reverse()], n: [0, 0, -1], col: R.ceilCol, tag: { ak: "room", id: R.id, part: "ceil" }, layer: "ceil" });
+      const fg = R.ceilOn && R.ceil === "follow" ? followGrid(R, false, 0) : null;          // 2.624.0: the walls' slope
+      if (fg) gridPolys(fg.rows, -0.003, false, R.ceilCol, { ak: "room", id: R.id, part: "ceil" }, "ceil", out, null);
+      else if (R.ceilOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + R.h - 0.003]).reverse()], n: [0, 0, -1], col: R.ceilCol, tag: { ak: "room", id: R.id, part: "ceil" }, layer: "ceil" });
     });
     A.ops.forEach((op) => { const I = opInfo(A, op); if (I) fixture(I, out); });
     A.roofs.forEach((rf) => roof(A, rf, out));
@@ -198,7 +416,8 @@
    * the walls standing through it minus the openings cut through it */
   function walls(A, out) {
     const W = [];
-    A.rooms.forEach((R) => wallQuads(R).forEach((q) => W.push({ poly: q.quad, z0: R.z, z1: R.z + R.h, R })));
+    const U = [];      // 2.624.0: the walls whose top is not flat stand to their lowest top; their own piece goes above
+    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { const flat = flatTop(R, q.i); W.push({ poly: q.quad, z0: R.z, z1: R.z + (flat ? R.h : minTop(R, q.i)), R }); if (!flat) U.push({ R, q }); }));
     if (!W.length) return;
     const O = A.ops.map((op) => opInfo(A, op)).filter((I) => I && I.z1 > I.z0 + 1e-4);
     const zs = [...new Set(W.flatMap((w) => [w.z0, w.z1]).concat(O.flatMap((I) => [I.z0, I.z1])).map(r6))].sort((a, b) => a - b);
@@ -215,6 +434,11 @@
       } catch (e) { U = ws.map((w) => [ring(area2(w.poly) < 0 ? w.poly.slice().reverse() : w.poly)]); }   // a union that fails: the walls one by one
       F.push(U);
     }
+    const pieces = U.map(({ R, q }) => upperPiece(R, q, out, A.ext));
+    // 2.624.0: a cut in a wall's top shows as a line down both its faces (to its floor)
+    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { const P = profile(R, q.i); if (P.length < 3) return; const [lS, lE, rE, rS] = q.quad;
+      P.slice(1, -1).forEach(([t, h]) => { [[lS, lE], [rS, rE]].forEach(([A2, B2]) => { const x = A2[0] + (B2[0] - A2[0]) * t, y = A2[1] + (B2[1] - A2[1]) * t; out.lines.push([[x, y, R.z], [x, y, R.z + Math.min(h, minTop(R, q.i))]]); }); }); }));
+    const underPiece = (p, q2, z) => pieces.some((pc) => Math.abs(pc.z - z) < 1e-6 && [p, q2, [(p[0] + q2[0]) / 2, (p[1] + q2[1]) / 2]].every((x) => inPoly(x, pc.quad) || segDistPoly(x, pc.quad) < 1e-4));
     const inner = A.rooms.filter((R) => R.closed).map((R) => ({ R, P: interior(R) }));
     const colOf = (p, z) => { const hit = inner.find((x) => z > x.R.z - EPS && z < x.R.z + x.R.h + EPS && inPoly(p, x.P)); return hit ? hit.R : null; };
     for (let k = 0; k < F.length; k++) {
@@ -238,7 +462,7 @@
       top.forEach((poly) => out.polys.push({ rings: poly.map((rg) => rg.slice(0, -1).map((p) => [p[0], p[1], z])), n: [0, 0, 1], col: DEF.top, tag: { ak: "wall", room: null }, layer: "main" }));
       bot.forEach((poly) => out.polys.push({ rings: poly.map((rg) => rg.slice(0, -1).map((p) => [p[0], p[1], z]).reverse()), n: [0, 0, -1], col: A.ext, tag: { ak: "wall", room: null }, layer: "main" }));
       const crease = below.length && above.length ? pc.xor(below, above) : below.length ? below : above;
-      crease.forEach((poly) => poly.forEach((rg) => { for (let j = 0; j + 1 < rg.length; j++) out.lines.push([[rg[j][0], rg[j][1], z], [rg[j + 1][0], rg[j + 1][1], z]]); }));
+      crease.forEach((poly) => poly.forEach((rg) => { for (let j = 0; j + 1 < rg.length; j++) { if (pieces.length && underPiece(rg[j], rg[j + 1], z)) continue; out.lines.push([[rg[j][0], rg[j][1], z], [rg[j + 1][0], rg[j + 1][1], z]]); } }));
     }
   }
   /** an oriented box: o + u·x + n·y + z, x0..x1 × y0..y1 × z0..z1 - six quads + twelve lines */
@@ -327,6 +551,18 @@
     return { o, U, V: Vv, W, D, top, t };
   }
   function roof(A, rf, out) {
+    if (rf.type === "follow") {       // 2.624.0: each rectangle room's walls' tops, out past them by the eaves
+      const tag = { ak: "roof", id: rf.id };
+      rf.rooms.map((id) => room(A, id)).filter(Boolean).forEach((R) => {
+        const fg = followGrid(R, true, rf.over); if (!fg) return;
+        gridPolys(fg.rows, rf.th, true, rf.col, tag, "roof", out, out.roofLines);
+        gridPolys(fg.rows, 0, false, rf.col, tag, "roof", out, null);
+        const rows = fg.rows, ring2 = rows.map((r) => r[0]).concat(rows[rows.length - 1].slice(1), rows.map((r) => r[r.length - 1]).reverse().slice(1), rows[0].slice(1, -1).reverse());
+        ring2.forEach((p, k) => { const q = ring2[(k + 1) % ring2.length], up = (x) => [x[0], x[1], x[2] + rf.th], c = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], ctr = centroid(R.pts), dv = norm(sub(c, ctr));
+          out.polys.push({ rings: [[p, q, up(q), up(p)]], n: [dv[0], dv[1], 0], col: rf.col, tag, layer: "roof" }); out.roofLines.push([p, q]); });
+      });
+      return;
+    }
     const F = roofFrame(A, rf); if (!F) return;
     const { o, U, V, W, D, top, t } = F, ov = rf.over, tp = Math.tan(rf.pitch * Math.PI / 180), tag = { ak: "roof", id: rf.id }, col = rf.col;
     const P = (x, y, z) => [o[0] + U[0] * x + V[0] * y, o[1] + U[1] * x + V[1] * y, z];
@@ -495,11 +731,13 @@
   /** plan points worth snapping to (corners + wall middles) */
   function snapPoints(A, z) {
     const out = [];
+    A.slabs.forEach((sl) => sl.pts.forEach((p, i) => { const q = sl.pts[(i + 1) % sl.pts.length]; out.push({ p: [p[0], p[1], z != null ? z : sl.z], kind: "Endpoint" }, { p: [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2, z != null ? z : sl.z], kind: "Midpoint" }); }));   // 2.624.0: a floor's corners
     A.rooms.forEach((R) => { if (z != null && Math.abs(R.z - z) > 0.01) return; R.pts.forEach((p) => out.push({ p: [p[0], p[1], R.z], kind: "Endpoint" })); edgesOf(R).forEach((e) => out.push({ p: [(e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2, R.z], kind: "Midpoint" })); });
     return out;
   }
 
-  const api = { DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
+  const api = { profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
+    DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;

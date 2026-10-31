@@ -1,5 +1,5 @@
     <div class="bdock" id="pushpulldock" data-own-space="1">
-      <div class="bhead" data-collapse="pushpulldock">▾ 📏 PushPull<button class="ghost" type="button" title="Help - the tools, the keys, the Measurements box" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('pushpull')" style="margin-left:auto;padding:0 6px">❔</button><button class="maxbtn" data-max="pushpulldock" title="Maximize">⛶</button></div>
+      <div class="bhead" data-collapse="pushpulldock">▾ 📏 PushPull<button class="ghost" type="button" title="Help - the tools, the keys, the Measurements box" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('pushpull')" style="margin-left:auto;padding:0 6px">❔</button><button id="ppMaxBtn" class="maxbtn" data-max="pushpulldock" type="button" title="Maximize - the whole window under the title bar" aria-label="Maximize">⛶</button><button id="ppCloseBtn" class="ghost" type="button" title="Close the docker (the 📏 button in the dock bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
       <div class="bbody" id="ppBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
         <!-- 2.619.0 (Tim: "can we add a final docker, i feel this one will complete bitgen ... looks like a sketchup made for
              linux" - asked: our own SketchUp-style docker): push/pull 3D modelling in bitGen itself - ext/pushpulldock/
@@ -41,13 +41,15 @@
           #pushpulldock.maxed { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: var(--pp-top, 0px) !important; width: auto !important; height: auto !important; max-height: none !important; margin: 0 !important; z-index: 9000; border-radius: 0; display: flex; flex-direction: column; }
           #pushpulldock.maxed > .bbody { flex: 1 1 auto; min-height: 0; max-height: none !important; height: auto !important; overflow: hidden; }
           #pushpulldock.maxed #ppMain { min-height: 0; }
+          #pushpulldock > .bhead > #ppMaxBtn { display: inline-block !important; }      /* 2.624.0: ⛶ / ⇲ Dock shown in a side column too */
+          #pushpulldock.maxed > .bhead > #ppMaxBtn { padding: 0 8px; }
           .ppask { position: fixed; inset: 0; z-index: 10080; background: #0006; display: flex; align-items: center; justify-content: center; }
           .ppask > div { background: var(--panel, #1f1c17); border: 1px solid var(--line, #444); border-radius: 8px; padding: 12px; min-width: 300px; font-size: 12px; box-shadow: 0 8px 28px #0008; }
           .ppask input { width: 100%; margin: 6px 0 10px; }
           .ppask .r { display: flex; gap: 6px; justify-content: flex-end; }
           #ppTools button.on { background: var(--tiger, #f59e2c); color: #14120f; border-color: var(--tiger, #f59e2c); }
-          #ppView { flex: 1; position: relative; min-width: 0; border-radius: 6px; overflow: hidden; background: #eef0f2; }
-          #ppGrp { position: absolute; left: 8px; top: 8px; z-index: 4; background: #1d4ed8; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; display: none; }
+          #ppView { flex: 1; position: relative; min-width: 0; border-radius: 6px; overflow: hidden; background: var(--ink, #14120f); border: 1px solid var(--line, #3a342a); }   /* 2.624.0: bitGen's theme */
+          #ppGrp { position: absolute; left: 8px; top: 8px; z-index: 4; background: var(--tiger, #f59e2c); color: var(--ink, #14120f); font-size: 11px; padding: 2px 8px; border-radius: 4px; display: none; }
           #ppSw { display: inline-flex; gap: 2px; align-items: center; }
           #ppSw button { width: 16px; height: 16px; padding: 0; border: 1px solid #0006; border-radius: 3px; }
           #ppSw button.on { outline: 2px solid var(--tiger, #f59e2c); outline-offset: 1px; }
@@ -89,7 +91,7 @@
         </div>
         <div id="ppMain">
           <div id="ppTools" role="toolbar" aria-label="PushPull tools"></div>
-          <div id="ppView" tabindex="-1"><div id="ppGrp"></div><div id="ppLoad" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#666;font-size:12px">loading the 3D view…</div></div>
+          <div id="ppView" tabindex="-1"><div id="ppGrp"></div><div id="ppLoad" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim,#9a917f);font-size:12px">loading the 3D view…</div></div>
           <div id="ppProps" aria-label="Properties"></div>
         </div>
         <div id="ppFoot">

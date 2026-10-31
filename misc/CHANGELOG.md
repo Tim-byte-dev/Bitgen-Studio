@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.624.0** — Pushpull: Theme Colours, Walls on a Floor's Edge, Sloped Wall Tops, Follow Ceiling / Roof, ⛶ / ⇲ Dock + ✕
+- **2.623.0** — Edit Theme Mode: Every Docker / Panel / UI Button and Its Words
 - **2.622.0** — The Installed Comfyui's Models in the Lists
 - **2.621.0** — 🗣 Speech & Dialog in the SFX Docker
 - **2.620.0** — 📏 Pushpull Builds: Rooms, Shared Walls, Doors, Windows, Roofs, Lights

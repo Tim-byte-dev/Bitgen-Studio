@@ -12754,6 +12754,19 @@ node scripts/test-comfydetect622.js > /tmp/cd622.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui622-ui.js > /tmp/ui622.log 2>&1 \
   && ok "2.622.0 browser test: no ComfyUI folder set, one on the computer -> Basic Settings' checkpoint + video Model lists and the 🧩 Model manager hold its checkpoints and diffusion models, Settings ▸ ComfyUI says where + Use this folder - or SKIP without playwright" \
   || { bad "2.622.0 comfy detect browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui622.log | head -14; }
+# ---- 2.623.0 (Tim: "when in theme edit mode make all the docker and panel buttons and ui buttons and text editable")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui623-ui.js > /tmp/ui623.log 2>&1 \
+  && ok "2.623.0 browser test: edit theme mode - a floating stage panel picked, double-click a docker's title / a button = new words (Enter keeps, Esc not, icons kept), a dropdown's option renamed, a placeholder + tooltip, Alt+click = the app's click, kept after a reload, ↺ puts every word back - or SKIP without playwright" \
+  || { bad "2.623.0 theme edit words browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui623.log | head -14; }
+# ---- 2.624.0 (Tim: "in push/pull docker make it the same theme colors as bitgen. when user creates walls add offset input ...
+# when user double clicks empty space deselect everything ang go into orbit mode" + "add a maximize and close button to the
+# puss pull dockers titlebar change maximize button to dock button when maximized")
+node scripts/test-arch624.js > /tmp/arch624.log 2>&1 \
+  && ok "2.624.0 PushPull: a wall's offset from a floor's edge, rooms / one wall snapped onto it, cut + sloped wall tops (Delete), the follow ceiling + roof with eaves, the wiring (theme colours, ⛶ / ⇲ Dock, ✕, double-click empty = Orbit) - the pure part" \
+  || { bad "2.624.0 pushpull walls units"; grep -a "^FAIL" -A2 /tmp/arch624.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui624-ui.js > /tmp/ui624.log 2>&1 \
+  && ok "2.624.0 browser test: ⛶ -> ⇲ Dock -> ⛶, ✕; the theme's colours in the 3D view; a room with the floor-edge offset; a wall dragged onto the floor's edge (snap regions); a wall's top cut, raised, deleted; an edge's slope; Ceiling Follows; a follow roof with eaves; double-click empty = Orbit - or SKIP without playwright" \
+  || { bad "2.624.0 pushpull walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui624.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

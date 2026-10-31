@@ -247,7 +247,14 @@
       if (tool === "pushpull" && st.F && st.pressed) { st.pressed = false; if (Math.hypot(ev.clientX - st.x0, ev.clientY - st.y0) > 4) finishPP(); }
     }
     function dbl(ev) {
+      // 2.624.0 (Tim: "when user double clicks empty space deselect everything ang go into orbit mode")
+      const busy = Object.keys(st).length || (AT && AT.owns(tool) && Object.keys(AT.state()).filter((k) => k !== "roof" && k !== "last").length);
+      if (!busy && !V.pick(ev, {}) && !(AT && ctx.archView && ctx.archView() && ctx.archView().pick(ev))) {
+        ctx.setSel({ f: [], e: [], k: [] }); if (AT) AT.setSel(null); if (ctx.group()) ctx.enterGroup(null, true);
+        use("orbit"); ctx.status("🔄 Orbit - nothing picked · drag to turn the view · Space = Select"); return;
+      }
       if (AT && AT.owns(tool)) { AT.dbl(ev); return; }
+      if (tool === "select" && AT && AT.selectDbl(ev)) return;            // 2.624.0: the top of a wall = a cut
       if (tool === "select") {
         const p = V.pick(ev, { group: ctx.group() });
         if (p && p.grp && p.grp !== ctx.group()) { ctx.enterGroup(p.grp); return; }

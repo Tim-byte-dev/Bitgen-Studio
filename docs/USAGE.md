@@ -452,9 +452,26 @@ and thickness, its colours inside, ⟳ 90°, ⧉ Duplicate. **B** paints walls /
 or **Delete** erases. Everything is saved, undone, exported and sent with the model (the lights go to Blender and
 Unreal as glTF lights).
 
-**⛶** (the docker's title bar) fills the whole bitGen window under the title bar; **🗗** or **Esc** puts it back.
+**⛶** (the docker's title bar) fills the whole bitGen window under the title bar; it is then **⇲ Dock** - that or
+**Esc** puts it back. **✕** beside it closes the docker (2.624.0).
 **☰ File** has New, Open, Save, Save as, Rename, Import (a project 3D model or a file from this computer), Export,
 Send, Delete and Close; **🖼 → Image editor** and **🎞 → Timeline** are buttons on the bar.
+
+### Walls on a floor, sloped walls, follow ceilings and roofs (2.624.0)
+
+- **bitGen's theme colours**: the docker, its 3D view's background, grid and selection take the theme's colours (and
+  change with it).
+- **Offset from floor edge** (the Room and Wall tools' panel): a room or wall drawn along a floor's (J) edge has its
+  walls' outside face that far in from the edge (0 = on the edge).
+- **Drag one wall** (Select, press on a wall of a room): it moves square to itself and the room stretches. The floors'
+  edges show their **snap regions** while you drag; let go in one and the wall's outside face is on the edge (with the
+  offset). A dragged room snaps to a floor's edge too. Shift = no snap.
+- **Double-click the top of a wall** = a cut there; drag the cut up / down and the top slopes to it from both corners (a
+  gable end). Click a **top edge** and drag it (or type its ends' heights in the panel) to slope the wall - a corner
+  takes the wall beside it along. A picked cut or edge + **Delete** takes it away.
+- A room's **Ceiling**: None, **Flat** or **Follows the walls' slope**. The **Roof** tool's type **Follows the walls'
+  slope** sits on the sloped tops, with an **Eaves width**.
+- **Double-click empty space**: everything is deselected and the tool is **🔄 Orbit** (Space = Select again).
 
 ## Editing on the timeline: speed, colour, sound, mix and captions (2.406.0)
 
@@ -4020,6 +4037,21 @@ box only shows a preview, because nothing is below V1. The cut-out is also what 
   with no name yet asks for one.
 - Ctrl+Shift+Alt+E again leaves, with the usual box when there are changes.
 
+## Edit theme mode: every button and its words (2.623.0)
+
+In edit theme mode (🖌) every docker, panel and button can be picked and its words changed:
+- **Double-click any words** - a button, a docker's title, a tab, a label, a heading, a hint - and a box opens over them:
+  type the new words and press Enter (an empty box = its own words again), or Esc to leave them. A button keeps its
+  icon, a docker's title keeps its ▾ and its buttons.
+- **Dropdowns**: click one and the Style panel lists its **Options** - rename any of them (what it does stays the same).
+- **Placeholder and Tooltip**: the Style panel changes the words shown in an empty box and the help shown when the
+  pointer rests on anything.
+- **The floating tool panels** (the timeline's stage panels, DLSS 5, SeedVR2, the voice chat) are picked and styled
+  like the dockers.
+- **Alt+click** gives the click to the app - open a collapsed section, a tab, a docker or a menu - without leaving edit
+  theme mode, so the parts inside can be reached and edited too.
+All of it is kept with the theme (💾 Save theme), and ↺ Clear element styles puts every word back.
+
 ## Edit theme mode: resize, move, hide, rename; leaving saves; folding dockers (2.514.0)
 
 **Edit theme mode (🖌) can now change the layout.** Pick an element as before, then:
@@ -6205,6 +6237,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.624.0: **PushPull: walls on a floor, sloped walls** - bitGen's theme colours; Offset from floor edge; drag one wall,
+  the floor's snap regions, onto its edge; double-click a wall's top = a cut to drag up / down, a top edge's slope,
+  Delete; Ceiling Flat / Follows the walls' slope; a roof that follows them with an Eaves width; double-click empty =
+  Orbit; ⛶ / ⇲ Dock and ✕ in its title bar.
+- 2.623.0: **Edit theme mode: every button and its words** - double-click any words to change them, dropdown options,
+  placeholders and tooltips, the floating tool panels, Alt+click to use the app without leaving the mode.
 - 2.622.0: **ComfyUI found by itself** - an installed ComfyUI that Settings does not name yet is found, and its
   checkpoints and diffusion models are in the Model manager and Basic Settings' model lists (the video Model list
   had stayed empty - it read the list the wrong way; fixed). Settings ▸ ComfyUI ▸ Folder offers Use this folder.
