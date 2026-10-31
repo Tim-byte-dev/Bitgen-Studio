@@ -1,0 +1,229 @@
+{
+  "30": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "weight_dtype": "default",
+      "unet_name": "diffusion_pytorch_inpaintmodel.fp16.safetensors"
+    }
+  },
+  "29": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "dreamshaperXL10_alpha2Xl10.safetensors"
+    }
+  },
+  "20": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    }
+  },
+  "26": {
+    "class_type": "VAEEncodeForInpaint",
+    "inputs": {
+      "grow_mask_by": 20,
+      "pixels": [
+        "20",
+        0
+      ],
+      "vae": [
+        "29",
+        2
+      ],
+      "mask": [
+        "20",
+        1
+      ]
+    }
+  },
+  "37": {
+    "class_type": "CLIPTextEncodeSDXL",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": 1024,
+      "target_height": 1024,
+      "text_g": "ZipRealism_Neg, AC_Neg1, AC_Neg2,",
+      "text_l": "ZipRealism_Neg, AC_Neg1, AC_Neg2,",
+      "clip": [
+        "29",
+        1
+      ]
+    }
+  },
+  "51": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_refiner_1.0_0.9vae.safetensors"
+    }
+  },
+  "52": {
+    "class_type": "CLIPTextEncodeSDXLRefiner",
+    "inputs": {
+      "ascore": 6,
+      "width": 1024,
+      "height": 1024,
+      "text": "ZipRealism_Neg, AC_Neg1, AC_Neg2,",
+      "clip": [
+        "51",
+        1
+      ]
+    }
+  },
+  "50": {
+    "class_type": "CLIPTextEncodeSDXLRefiner",
+    "inputs": {
+      "ascore": 6,
+      "width": 1024,
+      "height": 1024,
+      "text": "man fishing, ZipRealism, Zip2D",
+      "clip": [
+        "51",
+        1
+      ]
+    }
+  },
+  "34": {
+    "class_type": "CLIPTextEncodeSDXL",
+    "inputs": {
+      "width": [
+        "33",
+        0
+      ],
+      "height": [
+        "33",
+        1
+      ],
+      "crop_w": 0,
+      "crop_h": 0,
+      "target_width": [
+        "33",
+        0
+      ],
+      "target_height": [
+        "33",
+        1
+      ],
+      "text_g": "man fishing, ZipRealism, Zip2D",
+      "text_l": "man fishing, ZipRealism, Zip2D",
+      "clip": [
+        "29",
+        1
+      ]
+    }
+  },
+  "54": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "add_noise": "enable",
+      "noise_seed": 0,
+      "steps": 20,
+      "cfg": 6,
+      "sampler_name": "dpmpp_sde",
+      "scheduler": "karras",
+      "start_at_step": 16,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable",
+      "model": [
+        "51",
+        0
+      ],
+      "positive": [
+        "50",
+        0
+      ],
+      "negative": [
+        "52",
+        0
+      ],
+      "latent_image": [
+        "3",
+        0
+      ]
+    }
+  },
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 996231241255407,
+      "steps": 16,
+      "cfg": 6,
+      "sampler_name": "dpmpp_sde",
+      "scheduler": "karras",
+      "denoise": 1,
+      "model": [
+        "30",
+        0
+      ],
+      "positive": [
+        "34",
+        0
+      ],
+      "negative": [
+        "37",
+        0
+      ],
+      "latent_image": [
+        "26",
+        0
+      ]
+    }
+  },
+  "55": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "54",
+        0
+      ],
+      "vae": [
+        "51",
+        2
+      ]
+    }
+  },
+  "33": {
+    "class_type": "Get image size",
+    "inputs": {
+      "image": [
+        "20",
+        0
+      ]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "29",
+        2
+      ]
+    }
+  },
+  "56": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "h3_infill",
+      "images": [
+        "55",
+        0
+      ]
+    }
+  },
+  "57": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ]
+    }
+  },
+  "_comment": "Tim's SDXL inpaint export (2.108.1), converted from the UI workflow by scripts/ui_to_api.py with the all-Off LoraStackLoader_PoP bypassed. dreamshaperXL supplies CLIP+VAE, the SDXL inpaint UNet (diffusion_pytorch_inpaintmodel) samples, then the SDXL refiner finishes from step 16. ONE LoadImage: the mask is the picture's ALPHA (transparent = fill), which is what the image editor sends. The infill route runs it SELF-CONTAINED: the style's model/vae/loras/steps/cfg are not written into it, only the prompt, negative, seed and the picture."
+}

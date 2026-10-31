@@ -1,0 +1,182 @@
+{
+  "9": {
+    "inputs": {
+      "filename_prefix": "h3_infill",
+      "images": [
+        "47:8",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "17": {
+    "inputs": {
+      "image": "example.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "47:34": {
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5xxl_fp16.safetensors",
+      "type": "flux",
+      "device": "default"
+    },
+    "class_type": "DualCLIPLoader",
+    "_meta": {
+      "title": "Load CLIP (Dual)"
+    }
+  },
+  "47:26": {
+    "inputs": {
+      "guidance": 30,
+      "conditioning": [
+        "47:23",
+        0
+      ]
+    },
+    "class_type": "FluxGuidance",
+    "_meta": {
+      "title": "FluxGuidance"
+    }
+  },
+  "47:32": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "47:31": {
+    "inputs": {
+      "unet_name": "flux1-dev-kontext_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "47:46": {
+    "inputs": {
+      "conditioning": [
+        "47:23",
+        0
+      ]
+    },
+    "class_type": "ConditioningZeroOut",
+    "_meta": {
+      "title": "Conditioning Zero Out"
+    }
+  },
+  "47:23": {
+    "inputs": {
+      "text": "green eye",
+      "clip": [
+        "47:34",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "47:39": {
+    "inputs": {
+      "strength": 1,
+      "model": [
+        "47:31",
+        0
+      ]
+    },
+    "class_type": "DifferentialDiffusion",
+    "_meta": {
+      "title": "Differential Diffusion"
+    }
+  },
+  "47:8": {
+    "inputs": {
+      "samples": [
+        "47:3",
+        0
+      ],
+      "vae": [
+        "47:32",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "47:38": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "47:26",
+        0
+      ],
+      "negative": [
+        "47:46",
+        0
+      ],
+      "vae": [
+        "47:32",
+        0
+      ],
+      "pixels": [
+        "17",
+        0
+      ],
+      "mask": [
+        "17",
+        1
+      ]
+    },
+    "class_type": "InpaintModelConditioning",
+    "_meta": {
+      "title": "InpaintModelConditioning"
+    }
+  },
+  "47:3": {
+    "inputs": {
+      "seed": 290305569087476,
+      "steps": 20,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "47:39",
+        0
+      ],
+      "positive": [
+        "47:38",
+        0
+      ],
+      "negative": [
+        "47:38",
+        1
+      ],
+      "latent_image": [
+        "47:38",
+        2
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "_comment": "Tim's FLUX inpaint export (2.109.0): FLUX.1 dev-kontext fp8 UNet -> DifferentialDiffusion -> KSampler, prompt through FluxGuidance 30 with ConditioningZeroOut as the negative, InpaintModelConditioning fed by ONE LoadImage whose alpha is the hole. The built-in style 'FLUX Fill inpaint' uses it for the image editor's Infill; the style's model (unet_name) and LoRAs ARE applied (one model loader = overridable), steps/cfg come from the template unless the style sets them."
+}

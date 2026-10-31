@@ -10,6 +10,15 @@
       "title": "H3 TEXT ENCODER"
     }
   },
+  "5": {
+    "inputs": {
+      "image": "example.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "CHARACTER REF — @shahzaib"
+    }
+  },
   "6": {
     "inputs": {
       "sampler_name": "euler"
@@ -345,6 +354,10 @@
         "8",
         0
       ],
+      "reference_schedule": [
+        "5220",
+        0
+      ],
       "state": [
         "21",
         0
@@ -353,6 +366,20 @@
     "class_type": "MiniMaxH3ScheduledReferenceToVideo",
     "_meta": {
       "title": "SCHEDULED REF2VA — COMPILES @TAGS PER SCENE"
+    }
+  },
+  "40": {
+    "inputs": {
+      "tag": "shahzaib",
+      "scenes": "all",
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ScheduledPictureReference",
+    "_meta": {
+      "title": "@shahzaib — IMAGE REF / ALL SCENES"
     }
   },
   "43": {
@@ -743,6 +770,33 @@
       "title": "Model Preview Override"
     }
   },
+  "5124": {
+    "inputs": {
+      "image": "example.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "CHARACTER REF — @Jinx"
+    }
+  },
+  "5125": {
+    "inputs": {
+      "tag": "jinx",
+      "scenes": "all",
+      "image": [
+        "5124",
+        0
+      ],
+      "previous": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ScheduledPictureReference",
+    "_meta": {
+      "title": "@steff — IMAGE REF / ALL SCENES"
+    }
+  },
   "5126": {
     "inputs": {
       "sage_attention": "auto",
@@ -755,6 +809,64 @@
     "class_type": "PathchSageAttentionKJ",
     "_meta": {
       "title": "Patch Sage Attention KJ"
+    }
+  },
+  "5220": {
+    "inputs": {
+      "tag": "shazaib voice",
+      "scenes": "all",
+      "audio": [
+        "5225",
+        0
+      ],
+      "previous": [
+        "5224",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ScheduledAudioReference",
+    "_meta": {
+      "title": "MiniMax H3 Scheduled Audio Ref"
+    }
+  },
+  "5223": {
+    "inputs": {
+      "audio": "0",
+      "start_time": 0,
+      "duration": 30
+    },
+    "class_type": "VHS_LoadAudioUpload",
+    "_meta": {
+      "title": "Shahzaib ( audio )"
+    }
+  },
+  "5224": {
+    "inputs": {
+      "tag": "jinx voice",
+      "scenes": "all",
+      "audio": [
+        "5223",
+        0
+      ],
+      "previous": [
+        "5125",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ScheduledAudioReference",
+    "_meta": {
+      "title": "MiniMax H3 Scheduled Audio Ref"
+    }
+  },
+  "5225": {
+    "inputs": {
+      "audio": "0",
+      "start_time": 0,
+      "duration": 30
+    },
+    "class_type": "VHS_LoadAudioUpload",
+    "_meta": {
+      "title": "Shahzaib ( audio )"
     }
   },
   "5226": {

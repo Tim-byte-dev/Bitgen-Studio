@@ -1,0 +1,307 @@
+{
+  "last_node_id": 5,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        60,
+        80
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ],
+      "title": "Reference image"
+    },
+    {
+      "id": 2,
+      "type": "LoadAudio",
+      "pos": [
+        60,
+        440
+      ],
+      "size": [
+        320,
+        130
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadAudio"
+      },
+      "widgets_values": [
+        "0"
+      ],
+      "title": "Reference audio"
+    },
+    {
+      "id": 3,
+      "type": "RHMiniMaxH3RefGen",
+      "pos": [
+        440,
+        120
+      ],
+      "size": [
+        420,
+        500
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_0",
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "name": "video_0",
+          "type": "VIDEO",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "audio_0",
+          "type": "AUDIO",
+          "link": 5
+        },
+        {
+          "name": "sampler_config",
+          "type": "MINIMAX_H3_SAMPLER_CONFIG",
+          "link": null,
+          "shape": 7
+        },
+        {
+          "name": "h3_model",
+          "type": "MINIMAX_H3_DIRECT_MODEL",
+          "link": null,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            2
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "links": [],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3RefGen"
+      },
+      "widgets_values": {
+        "prompt": "图1中的人物随音频1的节奏说话，镜头缓慢推近。",
+        "model_root": "MiniMax-H3",
+        "aspect_ratio": "auto",
+        "duration_seconds": 0.0,
+        "seed": 42,
+        "sigma_points": 21,
+        "video_shift": 12.0,
+        "audio_shift": 3.0,
+        "sampler_mode": "res_multistep",
+        "accel": "off",
+        "width": 832,
+        "height": 480,
+        "allow_accel_with_res_multistep": false,
+        "dtype": "auto",
+        "ref_image_size": "match"
+      },
+      "title": "MiniMax H3 Ref Gen"
+    },
+    {
+      "id": 4,
+      "type": "CreateVideo",
+      "pos": [
+        1180,
+        200
+      ],
+      "size": [
+        300,
+        110
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        },
+        {
+          "name": "fps",
+          "type": "FLOAT",
+          "link": null,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        24,
+        8
+      ],
+      "title": "Create Video"
+    },
+    {
+      "id": 5,
+      "type": "SaveVideo",
+      "pos": [
+        1180,
+        360
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveVideo"
+      },
+      "widgets_values": [
+        "minimax_h3/refgen",
+        "auto",
+        "auto"
+      ],
+      "title": "Save Video"
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      1,
+      4,
+      1,
+      "AUDIO"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "VIDEO"
+    ],
+    [
+      4,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      2,
+      0,
+      3,
+      2,
+      "AUDIO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.8,
+      "offset": [
+        20,
+        30
+      ]
+    },
+    "workflow_note": "全能参考：image_0=图1、audio_0=音频1；duration=0 从唯一音频推导时长。"
+  },
+  "version": 0.4
+}

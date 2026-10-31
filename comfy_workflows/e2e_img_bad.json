@@ -1,0 +1,5 @@
+{
+  "1": { "class_type": "CLIPTextEncode", "inputs": { "text": "one" } },
+  "2": { "class_type": "CLIPTextEncode", "inputs": { "text": "two" } },
+  "3": { "class_type": "SaveImage", "inputs": { "filename_prefix": "x", "images": ["1", 0] } }
+}

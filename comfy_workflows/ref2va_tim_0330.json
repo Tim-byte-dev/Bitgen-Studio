@@ -1,0 +1,268 @@
+{
+  "115": {
+    "inputs": {
+      "aspect_ratio": "16:9 (Widescreen)",
+      "megapixels": 1,
+      "multiple": 32
+    },
+    "class_type": "ResolutionSelector",
+    "_meta": {
+      "title": "Resolution Selector (Size)"
+    }
+  },
+  "119": {
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "120": {
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "121": {
+    "inputs": {
+      "samples": [
+        "125",
+        0
+      ],
+      "vae": [
+        "120",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeAudio",
+    "_meta": {
+      "title": "VAE Decode Audio"
+    }
+  },
+  "122": {
+    "inputs": {
+      "samples": [
+        "125",
+        0
+      ],
+      "vae": [
+        "119",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "123": {
+    "inputs": {
+      "sampler_name": "res_multistep"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "124": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": 20,
+      "denoise": 1,
+      "model": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "125": {
+    "inputs": {
+      "noise": [
+        "129",
+        0
+      ],
+      "guider": [
+        "126",
+        0
+      ],
+      "sampler": [
+        "123",
+        0
+      ],
+      "sigmas": [
+        "124",
+        0
+      ],
+      "latent_image": [
+        "136",
+        1
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "126": {
+    "inputs": {
+      "model": [
+        "127",
+        0
+      ],
+      "conditioning": [
+        "136",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "Basic Guider"
+    }
+  },
+  "127": {
+    "inputs": {
+      "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "128": {
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "129": {
+    "inputs": {
+      "noise_seed": 696620044300874
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "131": {
+    "inputs": {
+      "expression": "max(5, round(a * 24)) + (5 - (max(5, round(a * 24)) % 17)) % 17",
+      "values.a": [
+        "132",
+        0
+      ]
+    },
+    "class_type": "ComfyMathExpression",
+    "_meta": {
+      "title": "Math Expression"
+    }
+  },
+  "132": {
+    "inputs": {
+      "value": 5
+    },
+    "class_type": "PrimitiveFloat",
+    "_meta": {
+      "title": "Float (Duration)"
+    }
+  },
+  "136": {
+    "inputs": {
+      "prompt": [
+        "138",
+        0
+      ],
+      "width": [
+        "115",
+        0
+      ],
+      "height": [
+        "115",
+        1
+      ],
+      "length": [
+        "131",
+        1
+      ],
+      "ref_image_size": "max",
+      "clip": [
+        "128",
+        0
+      ],
+      "vae": [
+        "119",
+        0
+      ],
+      "audio_vae": [
+        "120",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "137",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "_meta": {
+      "title": "MiniMax H3 Reference to Video"
+    }
+  },
+  "137": {
+    "inputs": {
+      "image": "example.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "138": {
+    "inputs": {
+      "value": "Use <Picture 1> as the facial-identity reference for the same adult East Asian woman, around 25 years old. Fully preserve her slim facial structure, feature proportions, light warm skin, bold blue square glasses, and waist-length straight two-tone hair with one broad white front section on her own right side, viewer-left in the frontal reference, and vivid sky-blue hair everywhere else. Generate the target outfit and accessories from the shared description below. Only one instance of her may appear.\nPhotorealistic live-action fashion-film look in a bright modern living room, with clear morning daylight and a restrained palette of pale oak, ivory linen, and warm gray. The character is explicitly an adult woman with realistic skin, hair, clothing, and accessory materials. No anime rendering or plastic skin.\n\nShe must wear the same bold blue square glasses and the same blue-and-silver beaded necklace with a blue heart pendant throughout. Preserve her waist-length straight two-tone hair: vivid sky blue across most of the hair, with one broad clean white front section on her own right side, viewer-left in a frontal view. Preserve the complete outfit: vivid blue spaghetti-strap crop top, pale-blue high-waisted pleated mini skirt with a large front ribbon belt, and loose chunky sky-blue cardigan hanging naturally off both shoulders. The outfit structure, hair-color regions, glasses, and pendant must never change.\n\nSingle-shot timeline:\n[0s-1.2s] Begin in a 40mm medium-wide view from her rear-right three-quarter side, framing her from the top of her head to below the knees. She faces a narrow wooden table beside a floor-to-ceiling window. Her right hand lightly steadies a transparent cylindrical vase while her left hand adjusts one stem among exactly seven white tulips. Clearly show the large sky-blue field of hair down her back, the edge of the white front section, the chunky cardigan hanging outside both shoulders, the pleated skirt, and the front ribbon belt. Soft morning light reveals realistic hair edges and knit texture.\n\n[1.2s-4.2s] The camera performs one smooth continuous horizontal arc of approximately 100 degrees around her right side, moving from the rear-right position to a front-right three-quarter position. Maintain nearly constant camera height, 40mm focal length, distance, and subject size. Window frames, linen curtains, and the wooden table create real parallax. She only rotates the vase by about one quarter turn and naturally turns her head and upper torso toward camera right as the lens comes around. Reveal her back hair, strict right profile, front-right three-quarter face, and the front of the blue glasses in sequence. Her long hair has realistic weight with only slight delayed sway. The blue and white hair regions never swap, blend together, or suddenly shorten. The glasses never disappear, deform, or change color.\n\n[4.2s-5s] She stops rotating the vase, releases the glass with her right hand, and raises her gaze toward trees outside on camera right. The camera completes the arc and settles. Hold the final approximately 0.5 seconds with her front-right three-quarter face, glasses, heart pendant, blue top, cardigan, ribbon belt, and white tulips all clearly readable.\n\nCamera and transitions: one continuous shot only. Use only the specified stable arc. No cuts, focus jump, sudden push-in, handheld shake, transition, or slow motion.\n\nAudio: quiet natural stereo home ambience. Add one soft vase-base friction sound on wood, two or three delicate stem-on-glass taps, and extremely light friction from the cardigan and long hair. Keep only faint distant city ambience and one or two birds. No dialogue and no music. Synchronize every contact sound with visible motion.\n\nConstraints: exactly one adult woman. No Character Sheet panels, group layout, duplicated person, second face, repeated limbs, extra vase, extra glasses, extra necklace, outfit replacement, swapped hair colors, hair passing through the body, glasses intersecting the face, fingers passing through the vase, text, subtitles, logos, or watermarks."
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Input Text (Prompt)"
+    }
+  },
+  "141": {
+    "inputs": {
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "MiniMax_H3",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_metadata": true,
+      "trim_to_audio": false,
+      "pingpong": false,
+      "save_output": true,
+      "images": [
+        "122",
+        0
+      ],
+      "audio": [
+        "121",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine 🎥🅥🅗🅢"
+    }
+  }
+}

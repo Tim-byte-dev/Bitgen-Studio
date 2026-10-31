@@ -1,0 +1,842 @@
+{
+  "last_node_id": 16,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "RHMiniMaxH3DirectTextEncoderLoader",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        380,
+        106
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "h3_text_encoder",
+          "type": "MINIMAX_H3_TEXT_ENCODER",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3DirectTextEncoderLoader"
+      },
+      "widgets_values": [
+        "MiniMax-H3",
+        "auto",
+        "qwen3-vl-32b-int8_convrot.safetensors"
+      ],
+      "title": "Direct Qwen3-VL Loader"
+    },
+    {
+      "id": 2,
+      "type": "RHMiniMaxH3DirectModelLoader",
+      "pos": [
+        40,
+        190
+      ],
+      "size": [
+        380,
+        106
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "h3_model",
+          "type": "MINIMAX_H3_DIRECT_MODEL",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3DirectModelLoader"
+      },
+      "widgets_values": [
+        "MiniMax-H3",
+        "auto",
+        "MiniMax-H3-FL2VA-int8_convrot.safetensors"
+      ],
+      "title": "Direct DiT Loader"
+    },
+    {
+      "id": 3,
+      "type": "RHMiniMaxH3DirectVAELoader",
+      "pos": [
+        40,
+        340
+      ],
+      "size": [
+        380,
+        106
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "h3_vae_bundle",
+          "type": "MINIMAX_H3_VAE_BUNDLE",
+          "links": [
+            6,
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3DirectVAELoader"
+      },
+      "widgets_values": [
+        "MiniMax-H3",
+        "MiniMax-H3-video_vae.safetensors",
+        "MiniMax-H3-audio_vae.safetensors"
+      ],
+      "title": "Direct Dual VAE Loader"
+    },
+    {
+      "id": 4,
+      "type": "LoadVideo",
+      "pos": [
+        40,
+        490
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadVideo"
+      },
+      "widgets_values": [
+        "0",
+        true,
+        "0"
+      ],
+      "title": "Load source video"
+    },
+    {
+      "id": 5,
+      "type": "GetVideoComponents",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [],
+          "slot_index": 1
+        },
+        {
+          "name": "fps",
+          "type": "FLOAT",
+          "links": [],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GetVideoComponents"
+      },
+      "widgets_values": [],
+      "title": "Video -> frames"
+    },
+    {
+      "id": 6,
+      "type": "ImageScale",
+      "pos": [
+        40,
+        790
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        576,
+        "center"
+      ],
+      "title": "Scale frames to target"
+    },
+    {
+      "id": 7,
+      "type": "RHMiniMaxH3FrameRate",
+      "pos": [
+        470,
+        190
+      ],
+      "size": [
+        380,
+        250
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "h3_model",
+          "type": "MINIMAX_H3_DIRECT_MODEL",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "h3_model",
+          "type": "MINIMAX_H3_DIRECT_MODEL",
+          "links": [
+            9
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3FrameRate"
+      },
+      "widgets_values": [
+        24.0,
+        true,
+        false,
+        1.0,
+        16,
+        "hard",
+        "constant",
+        0.0
+      ],
+      "title": "Frame Rate (experimental)"
+    },
+    {
+      "id": 8,
+      "type": "RHMiniMaxH3T2VATarget",
+      "pos": [
+        470,
+        480
+      ],
+      "size": [
+        380,
+        130
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "target",
+          "type": "MINIMAX_H3_TARGET",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "shape_info",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3T2VATarget"
+      },
+      "widgets_values": [
+        "16:9",
+        5.0,
+        1024,
+        576
+      ],
+      "title": "T2VA Target"
+    },
+    {
+      "id": 9,
+      "type": "RHMiniMaxH3T2VATextEncode",
+      "pos": [
+        470,
+        650
+      ],
+      "size": [
+        380,
+        200
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "h3_text_encoder",
+          "type": "MINIMAX_H3_TEXT_ENCODER",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "conditioning",
+          "type": "MINIMAX_H3_CONDITIONING",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3T2VATextEncode"
+      },
+      "widgets_values": [
+        "A quiet street at night, footsteps and distant traffic."
+      ],
+      "title": "T2VA Text Encode"
+    },
+    {
+      "id": 10,
+      "type": "RHMiniMaxH3EmptyAVLatent",
+      "pos": [
+        900,
+        480
+      ],
+      "size": [
+        300,
+        60
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "target",
+          "type": "MINIMAX_H3_TARGET",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3EmptyAVLatent"
+      },
+      "widgets_values": [],
+      "title": "Empty AV Latent"
+    },
+    {
+      "id": 11,
+      "type": "RHMiniMaxH3EncodeVideoAVLatent",
+      "pos": [
+        900,
+        580
+      ],
+      "size": [
+        340,
+        130
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "h3_vae_bundle",
+          "type": "MINIMAX_H3_VAE_BUNDLE",
+          "link": 6
+        },
+        {
+          "name": "av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "link": 7
+        },
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3EncodeVideoAVLatent"
+      },
+      "widgets_values": [
+        42,
+        "fixed"
+      ],
+      "title": "Encode Video -> AV Latent"
+    },
+    {
+      "id": 12,
+      "type": "RHMiniMaxH3SamplerConfig",
+      "pos": [
+        1300,
+        190
+      ],
+      "size": [
+        340,
+        180
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "sampler_config",
+          "type": "MINIMAX_H3_SAMPLER_CONFIG",
+          "links": [
+            12
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3SamplerConfig"
+      },
+      "widgets_values": [
+        false,
+        1.2,
+        0.2,
+        0.9,
+        4096,
+        "",
+        false,
+        false,
+        75.0
+      ],
+      "title": "Sampler Config"
+    },
+    {
+      "id": 13,
+      "type": "RHMiniMaxH3DualSigmaSampler",
+      "pos": [
+        1300,
+        420
+      ],
+      "size": [
+        380,
+        380
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "h3_model",
+          "type": "MINIMAX_H3_DIRECT_MODEL",
+          "link": 9
+        },
+        {
+          "name": "conditioning",
+          "type": "MINIMAX_H3_CONDITIONING",
+          "link": 10
+        },
+        {
+          "name": "av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "link": 11
+        },
+        {
+          "name": "sampler_config",
+          "type": "MINIMAX_H3_SAMPLER_CONFIG",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "sampled_av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3DualSigmaSampler"
+      },
+      "widgets_values": [
+        42,
+        "fixed",
+        21,
+        12.0,
+        3.0,
+        "off",
+        false,
+        0.12,
+        2,
+        4,
+        4,
+        "res_multistep",
+        false
+      ],
+      "title": "Dual Sigma Sampler (V2A)"
+    },
+    {
+      "id": 14,
+      "type": "RHMiniMaxH3DecodeAV",
+      "pos": [
+        1720,
+        620
+      ],
+      "size": [
+        340,
+        90
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "h3_vae_bundle",
+          "type": "MINIMAX_H3_VAE_BUNDLE",
+          "link": 13
+        },
+        {
+          "name": "sampled_av_latent",
+          "type": "MINIMAX_H3_AV_LATENT",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            16
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RHMiniMaxH3DecodeAV"
+      },
+      "widgets_values": [],
+      "title": "Decode AV"
+    },
+    {
+      "id": 15,
+      "type": "CreateVideo",
+      "pos": [
+        1720,
+        760
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 16
+        },
+        {
+          "name": "fps",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            17
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CreateVideo"
+      },
+      "widgets_values": [
+        24,
+        8
+      ],
+      "title": "Create Video"
+    },
+    {
+      "id": 16,
+      "type": "SaveVideo",
+      "pos": [
+        1720,
+        900
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveVideo"
+      },
+      "widgets_values": [
+        "minimax_h3/v2a_all_options",
+        "auto",
+        "auto"
+      ],
+      "title": "Save Video"
+    }
+  ],
+  "links": [
+    [
+      1,
+      4,
+      0,
+      5,
+      0,
+      "VIDEO"
+    ],
+    [
+      2,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      7,
+      0,
+      "MINIMAX_H3_DIRECT_MODEL"
+    ],
+    [
+      4,
+      1,
+      0,
+      9,
+      0,
+      "MINIMAX_H3_TEXT_ENCODER"
+    ],
+    [
+      5,
+      8,
+      0,
+      10,
+      0,
+      "MINIMAX_H3_TARGET"
+    ],
+    [
+      6,
+      3,
+      0,
+      11,
+      0,
+      "MINIMAX_H3_VAE_BUNDLE"
+    ],
+    [
+      7,
+      10,
+      0,
+      11,
+      1,
+      "MINIMAX_H3_AV_LATENT"
+    ],
+    [
+      8,
+      6,
+      0,
+      11,
+      2,
+      "IMAGE"
+    ],
+    [
+      9,
+      7,
+      0,
+      13,
+      0,
+      "MINIMAX_H3_DIRECT_MODEL"
+    ],
+    [
+      10,
+      9,
+      0,
+      13,
+      1,
+      "MINIMAX_H3_CONDITIONING"
+    ],
+    [
+      11,
+      11,
+      0,
+      13,
+      2,
+      "MINIMAX_H3_AV_LATENT"
+    ],
+    [
+      12,
+      12,
+      0,
+      13,
+      3,
+      "MINIMAX_H3_SAMPLER_CONFIG"
+    ],
+    [
+      13,
+      3,
+      0,
+      14,
+      0,
+      "MINIMAX_H3_VAE_BUNDLE"
+    ],
+    [
+      14,
+      13,
+      0,
+      14,
+      1,
+      "MINIMAX_H3_AV_LATENT"
+    ],
+    [
+      15,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      14,
+      1,
+      15,
+      1,
+      "AUDIO"
+    ],
+    [
+      17,
+      15,
+      0,
+      16,
+      0,
+      "VIDEO"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.55,
+      "offset": [
+        20,
+        30
+      ]
+    },
+    "workflow_note": "V2A（给现有视频配音）+ 全部可选节点。\n\n【换素材必看】Target 时长受源视频长度限制，两条硬约束：\n1) 帧数：target 的 frame_count 必须 ≤ 源视频帧数。frame_count 会向上对齐到 17n+5，所以填“和源视频一样长”必然失败——例如源视频 241 帧（10.04s），填 10s 会得到 243 帧，差 2 帧报错；这里最大只能填到 226 帧（9.42s）。稳妥做法是比源视频短 1 秒以上。本示例填 5s（124 帧）。\n2) 尺寸：Encode 是直接裁剪不缩放，源视频大于 target 只会取左上角。所以中间接了 ImageScale 先把帧缩放到 1024×576。\n\n【数据流】Encode Video→AV Latent 把源视频编码进 latent 作干净视觉条件，Sampler 的 denoise_video=False 冻结视频流、只生成音频。\n\n注意 denoise_video=False 的含义是「视频不被去噪」，不是「视频不进采样器」：视频 latent 会转成 visual condition rows 留在打包序列里，DiT 每一步都要看着它才知道配什么声音，只是数值一步都不改。\n\n【为什么没有 Separate/Combine】那两个节点在单采样器流程里必然是恒等的（拆开再合回，结果不变），放进来只会让人以为这步是必需的。它们的真实用途是把上一次生成结果的视频 latent 拆出来当作本次 V2A 的视觉条件，省掉一次 VAE 解码再编码——那需要两段采样串联，不在本示例范围内。\n\nFrame Rate 是实验性帧率调制（PR#15210，非官方）；Sampler Config 的 sparse_attention 默认关闭，打开约省 40% 去噪时间。"
+  },
+  "version": 0.4
+}
