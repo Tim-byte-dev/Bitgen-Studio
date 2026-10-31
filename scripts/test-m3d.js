@@ -137,7 +137,7 @@ function send(port, method, u, body, type) {
     && /return Promise\.all\(\[flushText\(\), window\.TlM3D \? TlM3D\.bakeAll\(\) : true\]\)(;|\.then\()/.test(CV)
     && /try \{ await TlCanvas\.beforeExport\(\); \}/.test(TD) && TD.indexOf("await TlCanvas.beforeExport()") < TD.indexOf('fetch("/api/export"'));
   check("a 3D layer is a video-layer clip {name m3d_<id>.webm, src video, m3d}; .fbx / .obj drops become 3D layers; the 🧊 menu",
-    /var c = \{ name: "m3d_" \+ id \+ "\.webm", src: "video", mid: id,/.test(XM) && /C\.newLayer\("video", c, "3D" \+ n\)/.test(XM)
+    /var c = \{ name: "m3d_" \+ id \+ "\.webm", src: "video", mid: id,/.test(XM) && /C\.newLayer\("video", c, (label \? String\(label\)\.slice\(0, 80\) : )?"3D" \+ n\)/.test(XM)
     && /if \(files && window\.TlM3D && TlM3D\.takeDrop\(files, t0, off\)\) return;/.test(CV)
     && /🔤 3D text/.test(XM) && /📦 3D model file…/.test(XM) && JSON.parse(read("ext", "timelinedock", "ext.json")).scripts.includes("m3d.js"));
   check("◇ Key keys the 3D rotation (rx / ry / rz) and the renderer tweens it under the spin",

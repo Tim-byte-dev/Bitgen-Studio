@@ -53,7 +53,7 @@
       const f = i.files && i.files[0], h = H(); if (!f) return;
       try {
         if (/\.(pp3d|json)$/i.test(f.name)) {
-          const j = JSON.parse(await f.text()), model = j && (j.model || (Array.isArray(j.v) ? j : null)); if (!model) throw new Error("that is not a PushPull model");
+          const j = JSON.parse(await f.text()), model = j && (j.model || (Array.isArray(j.v) ? j : null)); if (!model) throw new Error("that is not a Sketcher model");
           const name = safe(f.name.replace(/\.(pp3d|json)$/i, "")) || "imported";
           await h.api("/api/pushpull/" + encodeURIComponent(name), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model, view: j.view || null }) });
           await h.open(name); h.msg("📂 " + name + " - from this computer, now kept in the project");

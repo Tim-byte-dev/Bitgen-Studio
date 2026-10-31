@@ -52,7 +52,7 @@
     });
     const bin = new Uint8Array(off); let p = 0; chunks.forEach((b) => { bin.set(b, p); p += b.length; });
     const nm = String(name || "model");
-    const json = { asset: { version: "2.0", generator: "bitGen Studio PushPull" }, scene: 0, scenes: [{ name: nm, nodes: [0] }], nodes: [{ name: nm, mesh: 0 }],
+    const json = { asset: { version: "2.0", generator: "bitGen Studio Sketcher" }, scene: 0, scenes: [{ name: nm, nodes: [0] }], nodes: [{ name: nm, mesh: 0 }],
       meshes: [{ name: nm, primitives }], materials, accessors, bufferViews: views, buffers: [{ byteLength: bin.length }] };
     const LL = (lights || []).filter((L) => L && Array.isArray(L.p));
     if (LL.length) {
@@ -71,7 +71,7 @@
   }
   function obj(list, name) {
     const nm = String(name || "model").replace(/[^\w-]+/g, "_");
-    let o = "# bitGen Studio PushPull\nmtllib " + nm + ".mtl\no " + nm + "\n", m = "", base = 1;
+    let o = "# bitGen Studio Sketcher\nmtllib " + nm + ".mtl\no " + nm + "\n", m = "", base = 1;
     (list || []).forEach((g) => {
       const mat = "pp_" + String(g.color).replace("#", ""), c = rgb(g.color);
       const al = g.alpha != null && g.alpha < 1 ? g.alpha : 1, mat2 = mat + (al < 1 ? "_glass" : "");
@@ -86,7 +86,7 @@
   function stl(list, name) {
     let n = 0; (list || []).forEach((g) => { n += g.idx.length / 3; });
     const out = new Uint8Array(84 + n * 50), dv = new DataView(out.buffer);
-    const head = new TextEncoder().encode(("bitGen Studio PushPull " + String(name || "")).slice(0, 79)); out.set(head, 0);
+    const head = new TextEncoder().encode(("bitGen Studio Sketcher " + String(name || "")).slice(0, 79)); out.set(head, 0);
     dv.setUint32(80, n, true);
     let p = 84;
     (list || []).forEach((g) => {

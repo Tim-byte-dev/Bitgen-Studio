@@ -13,7 +13,7 @@ installed yet, start with [INSTALL.md](INSTALL.md).
 - [Images, ControlNet and face fix](#images-controlnet-and-face-fix)
 - [Music, stems and voices](#music-stems-and-voices)
 - [Timeline and export](#timeline-and-export)
-- [📏 PushPull - 3D modelling](#-pushpull---3d-modelling-26190)
+- [📏 Sketcher - 3D modelling](#-pushpull---3d-modelling-26190)
 - [Projects, queue and gallery](#projects-queue-and-gallery)
 - [The file dialog](#the-file-dialog)
 - [Tips](#tips)
@@ -408,9 +408,9 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 PushPull - 3D modelling (2.619.0)
+## 📏 Sketcher - 3D modelling (2.619.0)
 
-The **PushPull** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
+The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid. Its ❔ has the whole list.
 
 1. **R** (Rectangle), click a corner on the ground, move, and type `4,3` + Enter - a 4 × 3 m face.
@@ -486,6 +486,19 @@ With **Select**:
   flat are split into triangles.
 - **A door or window**: grips on its sides, top and (not a door) bottom - drag them for the width, the height, the
   elevation; drag a window itself along the wall and up / down. A window's panel has **Elevation (height from floor)**.
+
+### A real photo of the model; Sketcher layers (2.626.0)
+
+The docker is called **Sketcher** now (it was PushPull; the **Push/Pull** tool keeps its name).
+- **With the prompt docker open** (and the image editor not on screen - it has its own Edit link - unless the Sketcher is
+  maximized): the prompt docker goes to **🖼 Image** with an **edit model** (Qwen Image Edit, FLUX Kontext, FLUX.2 Klein
+  edit ... - the one picked there when it edits, else the default), an empty prompt gets **create a real photo of the
+  model in view**, and its button reads **✏ Edit (Sketcher)**. Generate sends the Sketcher's view to that edit model and
+  the photo comes back as a **real image** - an ordinary picture in the project's **Image assets** (and a plain layer in
+  the image editor when it is open). Change the words for another look ("a rainy evening street, cinematic").
+  Closing the Sketcher puts the prompt docker's mode, style and words back.
+- **🖼 → Image editor** sends the view as a **📏 Sketcher layer** (named after the model); sent again, that layer is
+  updated instead of a new one. **🎞 → Timeline** puts the model in as a **📏 Sketcher layer** (3D).
 
 ## Editing on the timeline: speed, colour, sound, mix and captions (2.406.0)
 
@@ -6251,10 +6264,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
-- 2.625.0: **PushPull: faces, edges and corners edited** - a face's Extrude (+ / - a cut) and Twist, dragged like
+- 2.626.0: **PushPull is the Sketcher** - with the prompt docker: 🖼 Image + an edit model, "create a real photo of the
+  model in view", Generate = a real photo in the Image assets; → Image editor / → Timeline send a 📏 Sketcher layer.
+- 2.625.0: **Sketcher: faces, edges and corners edited** - a face's Extrude (+ / - a cut) and Twist, dragged like
   Blender, Ctrl+drag twists; edges moved, Length, Extrude edge, Fillet, Shift+click more, Ctrl+click the face's loop; a
   corner moved; doors and windows resized / moved by their grips, a window's Elevation; ⛶ keeps the status bar.
-- 2.624.0: **PushPull: walls on a floor, sloped walls** - bitGen's theme colours; Offset from floor edge; drag one wall,
+- 2.624.0: **Sketcher: walls on a floor, sloped walls** - bitGen's theme colours; Offset from floor edge; drag one wall,
   the floor's snap regions, onto its edge; double-click a wall's top = a cut to drag up / down, a top edge's slope,
   Delete; Ceiling Flat / Follows the walls' slope; a roof that follows them with an Eaves width; double-click empty =
   Orbit; ⛶ / ⇲ Dock and ✕ in its title bar.
@@ -6266,11 +6281,11 @@ orange line shows where it will go - and let go.
 - 2.621.0: **🗣 Speech & dialog in the SFX dock** - text typed, pasted or written by the LLM, read with emotion by
   OmniVoice or Ming-3.0 TTS in one voice or a voice per speaker, saved as .wav / .mp3 into the Audio assets with the
   date, time, description and text in the file's metadata.
-- 2.620.0: **📏 PushPull builds** - rooms with walls, floors and ceilings that snap together and share a wall when
+- 2.620.0: **📏 Sketcher builds** - rooms with walls, floors and ceilings that snap together and share a wall when
   dragged, doors and windows through any wall, roofs (gable, hip, shed, flat), stairs, floors, and lights (downlights,
   ceiling lights, pendants, chandeliers, spots, wall lights, floor and table lamps) with a 🌙 night view; the docker
   maximizes to the whole window, has its own ☰ File menu and 🖼 / 🎞 buttons.
-- 2.619.0: **📏 PushPull** - a new docker for quick 3D modelling: draw a shape, push / pull it into a solid (pockets,
+- 2.619.0: **📏 Sketcher** - a new docker for quick 3D modelling: draw a shape, push / pull it into a solid (pockets,
   holes through, walls from an offset), exact sizes typed in, snapping to corners / edges / faces / the axes, groups,
   paint, undo; models kept in the project; sent on to the image editor, the timeline, the House builder, Blender and
   Unreal, or exported as .glb / .obj / .stl.

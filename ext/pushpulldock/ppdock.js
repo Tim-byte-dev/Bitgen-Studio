@@ -158,7 +158,25 @@
     const c = S.V.shot(w, h, { clean: true, transparent: !!clear }); S.V.setSel(S.sel);
     return new Promise((ok) => c.toBlob(ok, "image/png")).then((blob) => {
       const url = URL.createObjectURL(blob);
-      return Promise.resolve(E.load(url, "📏 " + nameNow(), true)).then(() => { setTimeout(() => URL.revokeObjectURL(url), 60000); msg("🖼 " + nameNow() + " → the image editor (" + w + " × " + h + ")"); test("pp_to_editor", w + "x" + h); });
+      return sketcherLayer(E, url).then(() => { setTimeout(() => URL.revokeObjectURL(url), 60000); msg("🖼 " + nameNow() + " → the image editor - a 📏 Sketcher layer (" + w + " × " + h + "; sent again, that layer is updated)"); test("pp_to_editor", w + "x" + h); });
+    });
+  }
+  /** 2.626.0: the view in the image editor as a SKETCHER LAYER - its layer is tagged {sketcher: {model}}; sent again, the
+      same model's layer gets the new picture (no second layer) */
+  function sketcherLayer(E, url) {
+    const model = nameNow(), name = "📏 Sketcher · " + model;
+    return new Promise((ok, no) => { const img = new root.Image(); img.onload = () => ok(img); img.onerror = () => no(new Error("the picture did not load")); img.src = url; }).then((img) => {
+      const D = E.S;
+      if (!D.w) {                                                             // nothing open: a picture of its own, its one layer the Sketcher layer
+        E.openImage(img, name);
+        const L = D.layers[D.layers.length - 1]; if (L) { L.sketcher = { model }; L.name = name; }
+        E.renderLayersPanel(); return;
+      }
+      const draw = (L) => { const g = L.canvas.getContext("2d"); g.clearRect(0, 0, L.canvas.width, L.canvas.height); const k = Math.min(1, D.w / img.naturalWidth, D.h / img.naturalHeight), w = img.naturalWidth * k, h = img.naturalHeight * k; g.drawImage(img, (D.w - w) / 2, (D.h - h) / 2, w, h); };
+      const had = (D.layers || []).find((L) => L && L.sketcher && L.sketcher.model === model && L.canvas);
+      if (had) { draw(had); had.name = name; if (E.refresh) E.refresh(); E.renderLayersPanel(); return; }
+      const L = E.makeLayer(name, D.w, D.h); draw(L); L.sketcher = { model };
+      E.addLayer(L, "Sketcher layer", false);
     });
   }
   function toTimeline() {
@@ -167,7 +185,8 @@
       if (n) { msg(saved + " sent again - " + n + " 3D layer(s) on the timeline updated"); return; }
       showDock("timelinedock", "tTL");
       if (!root.TlM3D || !root.TlM3D.add) throw new Error("the model is in the project's 3D models (" + saved + ") - open the timeline docker to place it");
-      root.TlM3D.add("model", saved, { x: 0, y: 0 }); msg(saved + " → the timeline: a 3D layer at the playhead"); test("pp_to_timeline", saved);
+      const c = root.TlM3D.add("model", saved, { x: 0, y: 0 }, null, "📏 Sketcher · " + nameNow()); if (c) c.sketcher = { model: nameNow(), file: saved };   // 2.626.0: a Sketcher layer
+      msg(saved + " → the timeline: a 📏 Sketcher layer (3D) at the playhead"); test("pp_to_timeline", saved);
     });
   }
   function toHouse() {

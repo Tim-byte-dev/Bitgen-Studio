@@ -12776,6 +12776,15 @@ node scripts/test-mesh625.js > /tmp/mesh625.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui625-ui.js > /tmp/ui625.log 2>&1 \
   && ok "2.625.0 browser test: ⛶ between the title bar and the status bar; a window's Elevation, its grips (width / height / elevation), dragged along + up; a face's Extrude + / − (a cut), dragged, Ctrl+drag twist; edges: Shift+click, Ctrl+click loop, Length, drag, Extrude edge, Fillet; a corner's Z + drag - or SKIP without playwright" \
   || { bad "2.625.0 pushpull editing browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui625.log | head -14; }
+# ---- 2.626.0 (Tim: "change the name of push pull to Sketcher - when sketcher is open and prompt is open go to image mode in
+# prompt and edit - create a real photo of the model in view , when image is sent to timeline or image-editor send it as a
+# sketcher layer and when generated using prompt docker , make it a real image")
+node scripts/test-sketcher626.js > /tmp/sk626.log 2>&1 \
+  && ok "2.626.0 the Sketcher: when it links with the prompt docker, the edit model, the picture's size, the real photo's name, the name everywhere, the seams, the Sketcher layers - the pure part + wiring" \
+  || { bad "2.626.0 sketcher units"; grep -a "^FAIL" -A2 /tmp/sk626.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui626-ui.js > /tmp/ui626.log 2>&1 \
+  && ok "2.626.0 browser test: the docker is the Sketcher; with the prompt docker: 🖼 Image + an edit model + the words + ✏ Edit (Sketcher); Generate = an image edit job of the view, its photo a real image in the Image assets; → Image editor = one Sketcher layer (updated when sent again); closed = the prompt docker as it was; → Timeline = a Sketcher layer - or SKIP without playwright" \
+  || { bad "2.626.0 sketcher browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui626.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

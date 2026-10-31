@@ -112,7 +112,7 @@
     }
 
     /* ---- a new 3D layer at the playhead */
-    function add(type, modelName, at, t0) {
+    function add(type, modelName, at, t0, label) {      // 2.626.0: label - the layer's name (the Sketcher's "📏 Sketcher · <model>")
       var id = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       var spec = M.defaults(type, S.W, S.H);
       if (type === "model") spec.model = modelName || "";
@@ -120,7 +120,7 @@
       var c = { name: "m3d_" + id + ".webm", src: "video", mid: id, in: 0, out: 5, dur: 5, start: start, opacity: 1,
                 tf: { x: Math.round((at && at.x) || 0), y: Math.round((at && at.y) || 0), scale: 1, rot: 0 }, m3d: spec };
       var n = all3d().length + 1;
-      C.newLayer("video", c, "3D" + n);
+      C.newLayer("video", c, label ? String(label).slice(0, 80) : "3D" + n);
       M.load().catch(function (e) { C.say(String(e.message || e)); });
       schedule(c);
       log("[canvas] 🧊 3D " + (type === "text" ? "text" : "model " + (modelName || "")) + " layer at " + start.toFixed(2) + "s");
