@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.625.0** — Pushpull: Faces / Edges / Corners Edited, Doors + Windows by Hand, ⛶ Keeps the Status Bar
 - **2.624.0** — Pushpull: Theme Colours, Walls on a Floor's Edge, Sloped Wall Tops, Follow Ceiling / Roof, ⛶ / ⇲ Dock + ✕
 - **2.623.0** — Edit Theme Mode: Every Docker / Panel / UI Button and Its Words
 - **2.622.0** — The Installed Comfyui's Models in the Lists

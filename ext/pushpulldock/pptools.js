@@ -48,6 +48,7 @@
   function create(ctx) {
     const V = ctx.V, g = G(), v3 = g.v3;
     // 2.620.0: the architecture tools (pparchtools.js) - Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs
+    const ED = root.PPEdit ? root.PPEdit.create(ctx) : null; ctx.edit = () => ED;      // 2.625.0: faces / edges / corners edited (ppedit.js)
     const AT = root.PPArchTools && ctx.archView ? root.PPArchTools.create(ctx) : null;
     const ALL = AT ? TOOLS.concat(AT.TOOLS) : TOOLS;
     let tool = "select", st = {}, lock = null, lastPP = null, lastSnap = null, sides = { circle: 24, polygon: 6 };
@@ -67,7 +68,7 @@
       ctx.toolChanged(name);
       if ((name === "move" || name === "rotate" || name === "scale") && !hasSel()) ctx.status(HINT[name] + " - nothing is picked: press on what to " + name);
     }
-    const hasSel = () => { const s = ctx.sel(); return !!((s.f && s.f.length) || (s.e && s.e.length) || (s.k && s.k.length)); };
+    const hasSel = () => { const s = ctx.sel(); return !!((s.f && s.f.length) || (s.e && s.e.length) || (s.k && s.k.length) || (s.p && s.p.length)); };
     function snapAt(ev, o) { const s = V.snap(ev, Object.assign({ group: ctx.group(), lock }, o || {})); lastSnap = s; return s; }
     function show(s, o) {
       const p = o || {};
@@ -103,7 +104,7 @@
       if (ev.button !== 0) return;
       const m = M();
       if (AT && AT.owns(tool)) { AT.down(ev); return; }
-      if (tool === "select") { if (AT && AT.selectDown(ev)) return; pickSel(ev, ev.shiftKey); return; }
+      if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey); return; }
       if (tool === "orbit" || tool === "pan") return;
       if (tool === "line") {
         const s = snapAt(ev, { from: st.pts && st.pts[st.pts.length - 1] }); const p = s.p;
@@ -169,7 +170,7 @@
     function move(ev) {
       const m = M();
       if (AT && AT.owns(tool)) { AT.move(ev); return; }
-      if (tool === "select") { if (AT && AT.selectMove(ev)) return; const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face && !(p.grp && p.grp !== ctx.group()) ? p.face : null, edge: p.edge || null } : null); return; }
+      if (tool === "select") { if (AT && AT.selectMove(ev)) return; if (ED && ED.move(ev)) return; const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face && !(p.grp && p.grp !== ctx.group()) ? p.face : null, edge: p.edge || null } : null); return; }
       if (tool === "orbit" || tool === "pan") return;
       if (tool === "eraser") { if (st.erasing && ev.buttons & 1) eraseAt(ev); else { const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face || null, edge: p.edge || null } : null); } return; }
       if (tool === "paint") { const p = V.pick(ev, { group: ctx.group() }); V.setHover(p && p.face ? { face: p.face } : null); return; }
@@ -243,6 +244,7 @@
     function up(ev) {
       if (AT && AT.owns(tool)) { AT.up(ev); return; }
       if (tool === "select" && AT && AT.selectUp(ev)) return;
+      if (tool === "select" && ED && ED.up(ev)) return;
       if (tool === "eraser" && st.erasing) { const n = st.n; if (n) commit("erase", st.before); st = {}; if (n) ctx.status("⌫ erased " + n); return; }
       if (tool === "pushpull" && st.F && st.pressed) { st.pressed = false; if (Math.hypot(ev.clientX - st.x0, ev.clientY - st.y0) > 4) finishPP(); }
     }
@@ -365,6 +367,7 @@
       const P = g.parseVcb(text);
       if (!P) { ctx.status("the Measurements box takes a length (1.5, 150cm, 1500mm, 5'), two (3,2), a count of sides (24s)" + (tool === "rotate" ? " or degrees" : "")); return false; }
       const m = M();
+      if (tool === "select" && !P.sides && ED && ED.vcb(P)) return true;                // 2.625.0: a face picked - its extrusion
       if (P.sides) { if (tool === "circle" || tool === "polygon") { sides[tool] = P.sides; ctx.status((tool === "circle" ? "◯" : "⬠") + " " + P.sides + " sides"); return true; } return false; }
       const L = P.vals[0];
       if (tool === "line" && st.pts) {
@@ -421,7 +424,7 @@
     }
     function keyUp(e) { if (e.key === "Shift" && lock != null && lastSnap && lastSnap.axis === lock) { lock = null; } }
     use("select");
-    return { state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT };
+    return { state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED };
   }
   root.PPTools = { create, TOOLS, HINT, VCB };
 })(typeof window !== "undefined" ? window : globalThis);

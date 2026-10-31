@@ -125,12 +125,12 @@ check(".glb: glass is see-through (BLEND), the lights are glTF lights (KHR_light
 
 /* the wiring */
 const EJ = JSON.parse(read("ext/pushpulldock/ext.json")), DH = read("ext/pushpulldock/dock.html"), DK = read("ext/pushpulldock/ppdock.js"), FR = read("ext/pushpulldock/ppframe.js"), TL = read("ext/pushpulldock/pptools.js"), AV = read("ext/pushpulldock/pparchview.js");
-check("the extension loads the architecture before the tools, the file menu last", EJ.scripts.join() === "ppgeo.js,ppglb.js,ppview.js,pparch.js,pparchview.js,pparchtools.js,pptools.js,ppdock.js,ppframe.js");
+check("the extension loads the architecture before the tools, the file menu last", EJ.scripts.filter((x) => !/^pp(mesh|edit)\.js$/.test(x)).join() === "ppgeo.js,ppglb.js,ppview.js,pparch.js,pparchview.js,pparchtools.js,pptools.js,ppdock.js,ppframe.js");
 check("the bar: ☰ File, 🖼 → Image editor, 🎞 → Timeline, 🌙 Night, ⌂ Cut-away; the panel; the Build tools in the toolbar",
   /id="ppFile"/.test(DH) && /id="ppToIE"/.test(DH) && /id="ppToTL"/.test(DH) && /id="ppNight"/.test(DH) && /id="ppCut"/.test(DH) && /id="ppProps"/.test(DH)
   && /\$\("ppToIE"\)\.onclick = \(\) => guard\("→ Image editor", \(\) => toEditor\(false\)\)/.test(DK) && /\$\("ppToTL"\)\.onclick = \(\) => guard\("→ Timeline", toTimeline\)/.test(DK) && /pptsep/.test(DK));
 check("maximized = fixed over the whole window under the title bar (--pp-top from #titlebar); the usual ⛶ / Esc",
-  /#pushpulldock\.maxed \{ position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: var\(--pp-top, 0px\) !important/.test(DH) && /getElementById\("titlebar"\)|\$\("titlebar"\)/.test(FR) && /toggleMax\("pushpulldock"(, on)?\)/.test(FR) && /else if \(tool !== "select"\) \{ use\("select"\);[^\n]*else return false; return true;/.test(TL));
+  /#pushpulldock\.maxed \{ position: fixed !important; left: 0 !important; right: 0 !important; bottom: var\(--pp-bottom, 0px\) !important; top: var\(--pp-top, 0px\) !important/.test(DH) && /getElementById\("titlebar"\)|\$\("titlebar"\)/.test(FR) && /toggleMax\("pushpulldock"(, on)?\)/.test(FR) && /else if \(tool !== "select"\) \{ use\("select"\);[^\n]*else return false; return true;/.test(TL));
 check("☰ File: New, Open, Save, Save as, Rename, import (project / this computer), Export, → image editor / timeline, Send, Delete, Maximize, Close",
   ["＋ New", "📂 Open…", "💾 Save as…", "✎ Rename…", "From this computer", "⤓ Export…", "🖼 → the image editor", "🎞 → the timeline", "➜ Send to…", "🗑 Delete this model…", "✕ Close the docker"].every((t) => FR.includes(t)) && !/\bprompt\s*\(/.test(FR));
 check("the lights are real three.js lights (point / spot) at night; walls drawn from pparch's build; the arch hooks in pptools",

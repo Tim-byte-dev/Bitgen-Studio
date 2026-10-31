@@ -12767,6 +12767,15 @@ node scripts/test-arch624.js > /tmp/arch624.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui624-ui.js > /tmp/ui624.log 2>&1 \
   && ok "2.624.0 browser test: ⛶ -> ⇲ Dock -> ⛶, ✕; the theme's colours in the 3D view; a room with the floor-edge offset; a wall dragged onto the floor's edge (snap regions); a wall's top cut, raised, deleted; an edge's slope; Ceiling Follows; a follow roof with eaves; double-click empty = Orbit - or SKIP without playwright" \
   || { bad "2.624.0 pushpull walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui624.log | head -14; }
+# ---- 2.625.0 (Tim: "in window properties add window elevation (height from floor) input. if user clicks a placed window allow
+# the user to move and resized the window,door,etc interactively. if user clicks a face show extrude ... if user selects a
+# vertex move vertex." + "fix the miximize button to maximize to full screen but keeping the bitgen titlebar and statusbar")
+node scripts/test-mesh625.js > /tmp/mesh625.log 2>&1 \
+  && ok "2.625.0 PushPull: faces extruded (+ / − a cut / twisted) and turned, edges moved / stretched / extruded / filleted, edge loops, corners moved (closed solids), a window's grips + elevation, the wiring - the pure part" \
+  || { bad "2.625.0 pushpull editing units"; grep -a "^FAIL" -A2 /tmp/mesh625.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui625-ui.js > /tmp/ui625.log 2>&1 \
+  && ok "2.625.0 browser test: ⛶ between the title bar and the status bar; a window's Elevation, its grips (width / height / elevation), dragged along + up; a face's Extrude + / − (a cut), dragged, Ctrl+drag twist; edges: Shift+click, Ctrl+click loop, Length, drag, Extrude edge, Fillet; a corner's Z + drag - or SKIP without playwright" \
+  || { bad "2.625.0 pushpull editing browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui625.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

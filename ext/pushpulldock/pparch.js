@@ -736,7 +736,36 @@
     return out;
   }
 
-  const api = { profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
+  /* ---------------- 2.625.0: a door / window's grips */
+  /** l / r (its sides: the width), t (its top: the height), b (its bottom: the elevation - not a door) -> [{key, p (on the
+      wall's centre line), sides: [p on each face of the wall]}] */
+  function opHandles(A, op) {
+    const I = opInfo(A, op); if (!I) return [];
+    const zm = (I.z0 + I.z1) / 2, xm = (I.x0 + I.x1) / 2, k = I.T / 2 + 0.03;
+    const at = (x, z) => [I.o[0] + I.u[0] * x, I.o[1] + I.u[1] * x, z];
+    const H = [{ key: "l", p: at(I.x0, zm) }, { key: "r", p: at(I.x1, zm) }, { key: "t", p: at(xm, I.z1) }];
+    if (op.kind !== "door") H.push({ key: "b", p: at(xm, I.z0) });
+    H.forEach((h) => { h.sides = [-1, 1].map((sg) => [h.p[0] + I.nl[0] * k * sg, h.p[1] + I.nl[1] * k * sg, h.p[2]]); });
+    return H;
+  }
+  /** a grip dragged to `along` (metres from its wall's start) / `z` (height): the width / height / elevation */
+  function resizeOp(A, op, key, along, z) {
+    const I = opInfo(A, op); if (!I) return false;
+    const R = I.R, MIN = 0.2;
+    if (key === "l" || key === "r") {
+      let x0 = I.x0, x1 = I.x1;
+      if (key === "l") x0 = Math.min(x1 - MIN, Math.max(0, along)); else x1 = Math.max(x0 + MIN, Math.min(I.e.L, along));
+      op.w = r6(x1 - x0); op.at = r6((x0 + x1) / 2);
+    } else if (key === "t") op.h = r6(Math.max(MIN, Math.min(R.h - op.sill, z - R.z - op.sill)));
+    else if (key === "b") {
+      if (op.kind === "door") return false;
+      const top = op.sill + op.h, s0 = Math.max(0, Math.min(top - MIN, z - R.z));
+      op.sill = r6(s0); op.h = r6(top - s0);
+    } else return false;
+    return true;
+  }
+
+  const api = { opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

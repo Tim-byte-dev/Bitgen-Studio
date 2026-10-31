@@ -37,10 +37,11 @@
   function msg(t) { const m = $("ppMsg"); if (m) m.textContent = t || ""; }
   function info() {
     const el = $("ppInfo"); if (!el || !S.M) return;
-    const s = S.sel, M = S.M, nf = (s.f || []).length, ne = (s.e || []).length + (s.k || []).length;
+    const s = S.sel, M = S.M, nf = (s.f || []).length, ne = (s.e || []).length + (s.k || []).length, np = (s.p || []).length;
     let t = "";
     if (nf) { let a = 0; s.f.forEach((id) => { const F = G().face(M, id); if (F) a += G().faceArea(M, F); }); t = nf + " face" + (nf > 1 ? "s" : "") + " · " + (+a.toFixed(3)) + " m²"; }
     if (ne) t += (t ? " · " : "") + ne + " line" + (ne > 1 ? "s" : "");
+    if (np) t += (t ? " · " : "") + np + " corner" + (np > 1 ? "s" : "");
     const grp = nf && M.f.find((F) => F.id === s.f[0]); if (grp && grp.grp && !S.group) { const gg = M.g.find((x) => x.id === grp.grp); if (gg) t = "▣ " + gg.name + " · " + t; }
     const ar = S.T && S.T.arch ? S.T.arch.summary() : "";
     if (!t) t = (M.f.length || !ar ? M.f.length + " faces · " + M.e.length + " lines" + (M.g.length ? " · " + M.g.length + " groups" : "") : "") + (ar ? (M.f.length ? " · " : "") + ar : "");
@@ -53,7 +54,7 @@
   const snapshot = () => JSON.stringify(G().toJson(S.M));
   function setModel(M, keepSel) {
     S.M = M; if (!keepSel) S.sel = { f: [], e: [], k: [] };
-    S.sel.f = S.sel.f.filter((id) => G().face(M, id)); S.sel.e = S.sel.e.filter((id) => M.e.some((E) => E.id === id)); S.sel.k = [];
+    S.sel.f = S.sel.f.filter((id) => G().face(M, id)); S.sel.e = S.sel.e.filter((id) => M.e.some((E) => E.id === id)); S.sel.k = []; S.sel.p = [];
     if (S.group && !M.g.some((g) => g.id === S.group)) enterGroup(null, true);
     if (S.V) { S.V.setModel(M); S.V.setSel(S.sel); }
     info();
@@ -293,7 +294,7 @@
     catch (e) { S.A = null; msg("the architecture tools did not start: " + (e.message || e)); }
     S.M = G().newModel(); S.V.setModel(S.M);
     S.T = root.PPTools.create({
-      V: S.V, model: () => S.M, sel: () => S.sel, setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [] }, s); S.V.setSel(S.sel); info(); },
+      V: S.V, model: () => S.M, sel: () => S.sel, setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s); S.V.setSel(S.sel); info(); if (S.T && S.T.arch && !S.T.arch.sel()) S.T.arch.props(); },
       group: () => S.group, enterGroup, status: msg, vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },

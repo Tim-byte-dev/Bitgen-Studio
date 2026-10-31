@@ -63,6 +63,18 @@
     const owns = (n) => !!HINT[n];
 
     /* ---- the mouse on a level */
+    /** 2.625.0: the ray on a vertical plane (a wall's face) through p, square to n */
+    function wallAt(ev, p, n) { const r = V.ray(ev), den = r.d[0] * n[0] + r.d[1] * n[1]; if (Math.abs(den) < 0.12) return null; const t = ((p[0] - r.o[0]) * n[0] + (p[1] - r.o[1]) * n[1]) / den; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, r.o[2] + r.d[2] * t] : null; }
+    /** 2.625.0: the picked door / window's grip under the pointer (on the wall's face toward the camera) -> {key, n, p} | null */
+    function gripAt(ev) {
+      if (!asel || asel.ak !== "op") return null;
+      const A = AR(), op = A.ops.find((o) => o.id === asel.id), I = op && P().opInfo(A, op); if (!I) return null;
+      const r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top, cam = V.cam().position;
+      const side = (cam.x - I.c[0]) * I.nl[0] + (cam.y - I.c[1]) * I.nl[1] >= 0 ? 1 : 0;
+      let best = null;
+      P().opHandles(A, op).forEach((h) => { const q = V.screen(h.sides[side]); if (q[2] > 1) return; const d = Math.hypot(q[0] - mx, q[1] - my); if (d < 11 && (!best || d < best.d)) best = { d, key: h.key, p: h.sides[side], n: I.nl }; });
+      return best;
+    }
     function planeAt(ev, z) { const r = V.ray(ev); if (Math.abs(r.d[2]) < 1e-9) return null; const t = (z - r.o[2]) / r.d[2]; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, z] : null; }
     function snapPlan(ev, z, from) {
       const s = V.snap(ev, { from: from ? [from[0], from[1], z] : null, plane: { n: [0, 0, 1], p: [0, 0, z] }, extra: P().snapPoints(AR(), z), group: ctx.group() });
@@ -307,6 +319,8 @@
       return P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol);
     }
     function selectDown(ev) {
+      const gp = gripAt(ev);
+      if (gp) { st.drag = { t: asel, mode: "grip", key: gp.key, p: gp.p, n: gp.n, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false }; return true; }
       const h = AV() && AV().pick(ev);
       if (!h || !nearerThanModel(ev, h)) { if (asel) setSel(null); return false; }
       // a view straight down (Top) sees only the walls' tops - there a press moves the wall; the slopes are edited from the side
@@ -328,6 +342,7 @@
       const z = t.ak === "room" ? x.z : t.ak === "light" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" ? x.z : h.point[2];
       const start = planeAt(ev, z);
       if (t.ak !== "roof" && start) st.drag = { t, z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
+      if (t.ak === "op" && st.drag) { const I = P().opInfo(A, x); if (I) Object.assign(st.drag, { wp: h.point, wn: I.nl, along0: (h.point[0] - I.o[0]) * I.u[0] + (h.point[1] - I.o[1]) * I.u[1], at0: I.at, sill0: x.sill, room0: x.room, edge0: x.edge }); }   // 2.625.0: up / down too
       return true;
     }
     function selectMove(ev) {
@@ -341,9 +356,10 @@
       if (!D.moved && Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) < 4) return true;
       D.moved = true;
       if (D.mode === "top") return dragTop(ev, D);
-      const cur = planeAt(ev, D.z); if (!cur) return true;
+      if (D.mode === "grip") return dragGrip(ev, D);
+      const cur = planeAt(ev, D.z); if (!cur && !D.wp) return true;     // 2.625.0: a door / window drags on its wall's face
       if (D.mode === "edge") return dragEdge(ev, D, cur);
-      let d = [cur[0] - D.start[0], cur[1] - D.start[1]];
+      let d = cur ? [cur[0] - D.start[0], cur[1] - D.start[1]] : [0, 0];
       if (ev.shiftKey) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, t = D.t, x = P().find(A, t.ak, t.id); if (!x) return true;
       if (t.ak === "room") {
@@ -355,8 +371,15 @@
         const Q = s.hit && P().room(A, s.hit.room);
         ctx.status(Q ? "⌂ " + x.name + " shares a wall with " + Q.name + (s.hit.kind === "corner" ? " · corners in line" : "") : fl && fl.hit ? "⌂ " + x.name + " - its wall " + fmt(off) + " in from the floor's edge" : "⌂ " + x.name + " moved " + fmt(Math.hypot(s.d[0], s.d[1])));
       } else if (t.ak === "op") {
-        const w = P().nearestWall(A, [cur[0], cur[1]], 1.0, null);
-        if (w) { x.room = w.room; x.edge = w.edge; x.at = w.at; ctx.status((x.kind === "window" ? "🪟 " : "🚪 ") + w.R.name + " · " + fmt(Math.max(0, w.at - x.w / 2)) + " from the corner"); }
+        const w = cur ? P().nearestWall(A, [cur[0], cur[1]], 1.0, null) : null, q = D.wp && Math.abs(V.ray(ev).d[2]) < 0.85 ? wallAt(ev, D.wp, D.wn) : null;
+        const I0 = q ? P().opInfo(A, x) : null, al0 = I0 ? (q[0] - I0.o[0]) * I0.u[0] + (q[1] - I0.o[1]) * I0.u[1] : null;
+        if (I0 && al0 > -0.3 && al0 < I0.e.L + 0.3) {                                           // 2.625.0: on its own wall - along it and (a window) up / down
+          const I = I0, along = al0;
+          x.at = D.at0 + along - D.along0;
+          if (x.kind !== "door") { const R = P().room(A, x.room); x.sill = Math.round(Math.max(0, Math.min(R.h - x.h, D.sill0 + q[2] - D.wp[2])) * 1000) / 1000; }
+          const I2 = P().opInfo(A, x);
+          ctx.status((x.kind === "window" ? "🪟 " : x.kind === "door" ? "🚪 " : "▯ ") + I2.R.name + " · " + fmt(Math.max(0, I2.x0)) + " from the corner" + (x.kind !== "door" ? " · " + fmt(x.sill) + " up" : ""));
+        } else if (w) { x.room = w.room; x.edge = w.edge; x.at = w.at; ctx.status((x.kind === "window" ? "🪟 " : "🚪 ") + w.R.name + " · " + fmt(Math.max(0, w.at - x.w / 2)) + " from the corner"); }
       } else if (t.ak === "light") {
         x.x += d[0]; x.y += d[1];
         const def = P().LIGHTS[x.type];
@@ -368,10 +391,19 @@
       AV().rebuild();
       return true;
     }
+    function dragGrip(ev, D) {
+      const q = wallAt(ev, D.p, D.n); if (!q) return true;
+      const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, op = A.ops.find((o) => o.id === D.t.id); if (!op) return true;
+      const I = P().opInfo(A, op), along = (q[0] - I.o[0]) * I.u[0] + (q[1] - I.o[1]) * I.u[1];
+      P().resizeOp(A, op, D.key, along, q[2]);
+      ctx.status((op.kind === "door" ? "🚪 " : op.kind === "window" ? "🪟 " : "▯ ") + fmt(op.w) + " × " + fmt(op.h) + (op.kind !== "door" ? " · " + fmt(op.sill) + " up" : ""));
+      AV().rebuild();
+      return true;
+    }
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
-      if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : "move", D.before); props(); }
+      if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : "move", D.before); props(); }
       return true;
     }
     /** 2.624.0: the floors' snap regions on the floor - the band where a wall's outside face is caught, the line it goes to
@@ -468,7 +500,8 @@
       const A = ctx.model() ? AR() : null;
       const x = asel && A ? (asel.ak === "wpt" || asel.ak === "wtop" ? P().room(A, asel.room) : P().find(A, asel.ak, asel.id)) : null;
       if (asel && !x) asel = null;
-      if (!tool && !x) { box.style.display = "none"; ctx.resized && ctx.resized(); return; }
+      const ED = ctx.edit ? ctx.edit() : null, edit = !tool && !x && ED && ED.wants();     // 2.625.0: a face / edges / a corner of the model
+      if (!tool && !x && !edit) { box.style.display = "none"; ctx.resized && ctx.resized(); return; }
       box.style.display = "block";
       const el = (tag, cls, txt) => { const e = root.document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
       // a narrow docker: the panel folds to a ⚙ tab over the view (it would cover it) - a click opens / closes it
@@ -485,6 +518,7 @@
       const ch = (fn) => (v) => { const b = before(); fn(v); ctx.commit("edit", b); props(); };
       const kel = (val, on) => { const k = P().KELVIN.find((q) => q[1] === val); selIn("Colour", k ? k[1] : "custom", P().KELVIN.map((q) => [q[1], q[2]]).concat([["custom", "Another colour…"]]), (v) => { if (v !== "custom") on(v); else props(); }); colIn("", val, on); };
       const opt = (k) => (v) => { O[tool][k] = v; keepOpt(); props(); };
+      if (edit) { ED.panel({ box, el, head, row, numIn, selIn, chkIn, btns, refresh: props }); ctx.resized && ctx.resized(); return; }
       if (tool) {
         head({ room: "⌂ Room", wall: "▮ Wall", door: "🚪 Door", window: "🪟 Window", floor: "▦ Floor", ceiling: "⌓ Ceiling", roof: "△ Roof", light: "💡 Light", stairs: "▟ Stairs" }[tool] + " - the next one");
         const o = O[tool];
@@ -493,7 +527,7 @@
           if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn"));
           box.appendChild(el("div", "pphint", "Drawn along a floor's (J) edge, the wall's outside face sits the offset in from it. Corners snap to floors' edges.")); }
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
-        if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Sill height", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
+        if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Elevation (height from floor)", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
         if (tool === "roof") { selIn("Type", o.type, ROOF_OPTS(), opt("type")); if (o.type !== "follow") numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
@@ -532,12 +566,12 @@
         selIn("Kind", op.kind, [["door", "Door"], ["window", "Window"], ["opening", "Opening"]], ch((v) => { const d = P().OPS[v]; op.kind = v; op.style = d.style; op.sill = d.sill; if (v === "window") { op.h = Math.min(op.h, d.h); op.col = P().DEF.frame; } else op.col = v === "door" ? P().DEF.door : P().DEF.frame; }));
         if (op.kind !== "opening") selIn("Style", op.style, P().STYLES[op.kind].map((s) => [s, s[0].toUpperCase() + s.slice(1)]), ch((v) => { op.style = v; }));
         numIn("Width", op.w, ch((v) => { op.w = v; }), 0.05, 0.2, 20, "m"); numIn("Height", op.h, ch((v) => { op.h = v; }), 0.05, 0.2, 20, "m");
-        if (op.kind === "window") numIn("Sill height", op.sill, ch((v) => { op.sill = v; }), 0.05, 0, 20, "m");
+        if (op.kind !== "door") numIn("Elevation (height from floor)", op.sill, ch((v) => { op.sill = Math.max(0, v); }), 0.05, 0, 20, "m");   // 2.625.0
         if (I) numIn("From the corner", Math.max(0, I.x0), ch((v) => { op.at = v + op.w / 2; }), 0.05, 0, 500, "m");
         if (op.kind !== "opening") colIn(op.kind === "door" ? "Door" : "Frame", op.col, ch((v) => { op.col = v; }));
         if (op.kind === "door") chkIn("Handle on the other side", op.flip, ch((v) => { op.flip = v; }));
         btns([["🗑 Delete", eraseSel]]);
-        box.appendChild(el("div", "pphint", "Drag it (Select) along its wall, or onto another wall."));
+        box.appendChild(el("div", "pphint", "Drag it (Select) along its wall, onto another wall" + (op.kind !== "door" ? ", or up / down (its elevation)" : "") + ". Drag a grip (the small squares on its sides, top" + (op.kind !== "door" ? " and bottom" : "") + ") to resize it."));
       } else if (asel.ak === "light") {
         const L = x, def = P().LIGHTS[L.type];
         head("💡 " + def.label);

@@ -1,7 +1,0 @@
-# bitGen Studio — line endings (2.591.3). Windows' cmd needs CRLF in a .bat / .cmd (with LF a label or a goto can be
-# misread), so every checkout - Windows, Linux, GitHub's CI - gets them with CRLF, whatever the committing git's
-# core.autocrlf did to them.
-*.bat text eol=crlf
-*.cmd text eol=crlf
-# 2.616.0: install_all.bat is downloaded on its own too (GitHub's raw file) - kept with CRLF in the repo itself
-install_all.bat -text

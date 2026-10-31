@@ -163,6 +163,10 @@
       M.f.forEach((F) => { if (fs.has(F.id)) F.loops.forEach((l) => G().loopEdges(l).forEach(([a, b]) => { const A = M.v[a], B = M.v[b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); })); });
       M.e.forEach((E) => { if (es.has(E.id)) { const A = M.v[E.a], B = M.v[E.b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); } });
       if (hov && hov.edge) { const E = edges.find((x) => x.key === hov.edge); if (E) { const A = M.v[E.a], B = M.v[E.b]; lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); } }
+      (V.sel.k || []).forEach((k) => { const [a, b] = String(k).split("_").map(Number), A = M.v[a], B = M.v[b]; if (A && B) lp.push(A[0], A[1], A[2], B[0], B[1], B[2]); });   // 2.625.0: picked edges
+      const vp = []; (V.sel.p || []).forEach((i) => { const q = M.v[i]; if (q) vp.push(q[0], q[1], q[2]); });                                                        // picked corners
+      if (hov && hov.vertex != null && M.v[hov.vertex]) { const q = M.v[hov.vertex]; vp.push(q[0], q[1], q[2]); }
+      if (vp.length) { const pg = new T.BufferGeometry(); pg.setAttribute("position", new T.Float32BufferAttribute(vp, 3)); over.add(new T.Points(pg, new T.PointsMaterial({ color: new T.Color(V.theme.accent).getHex(), size: 9, sizeAttenuation: false, depthTest: false }))); }
       if (lp.length) { const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(lp, 3)); over.add(new T.LineSegments(lg, new T.LineBasicMaterial({ color: new T.Color(V.theme.accent).getHex(), depthTest: false }))); }
     }
 

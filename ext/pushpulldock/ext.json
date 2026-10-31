@@ -10,6 +10,8 @@
     "pparch.js",
     "pparchview.js",
     "pparchtools.js",
+    "ppmesh.js",
+    "ppedit.js",
     "pptools.js",
     "ppdock.js",
     "ppframe.js"

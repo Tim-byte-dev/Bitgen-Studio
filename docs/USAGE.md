@@ -452,8 +452,8 @@ and thickness, its colours inside, ⟳ 90°, ⧉ Duplicate. **B** paints walls /
 or **Delete** erases. Everything is saved, undone, exported and sent with the model (the lights go to Blender and
 Unreal as glTF lights).
 
-**⛶** (the docker's title bar) fills the whole bitGen window under the title bar; it is then **⇲ Dock** - that or
-**Esc** puts it back. **✕** beside it closes the docker (2.624.0).
+**⛶** (the docker's title bar) fills the whole bitGen window between its title bar and its status bar (2.625.0); it is
+then **⇲ Dock** - that or **Esc** puts it back. **✕** beside it closes the docker (2.624.0).
 **☰ File** has New, Open, Save, Save as, Rename, Import (a project 3D model or a file from this computer), Export,
 Send, Delete and Close; **🖼 → Image editor** and **🎞 → Timeline** are buttons on the bar.
 
@@ -472,6 +472,20 @@ Send, Delete and Close; **🖼 → Image editor** and **🎞 → Timeline** are 
 - A room's **Ceiling**: None, **Flat** or **Follows the walls' slope**. The **Roof** tool's type **Follows the walls'
   slope** sits on the sloped tops, with an **Eaves width**.
 - **Double-click empty space**: everything is deselected and the tool is **🔄 Orbit** (Space = Select again).
+
+### Editing faces, edges and corners; doors and windows by hand (2.625.0)
+
+With **Select**:
+- **A face**: the panel shows **Extrude** (+ out, - in = a cut into the object) and **Twist**. **Drag the face** to
+  extrude it with the pointer (like Blender); **Ctrl+drag** turns it round its normal - the face just extruded twists
+  its extrusion to match. Type a distance in the Measurements box to change the last extrusion.
+- **An edge**: drag it to move it (Shift: one axis). **Shift+click** picks more edges, **Ctrl+click** every edge of the
+  loop round its face. The panel: **Length**, **Extrude edge** (a new face - up, out from its face, along red / green),
+  **Fillet** (radius + pieces; an edge between two faces rounded).
+- **A corner**: click and drag it (Shift: one axis; it snaps onto another corner) or type X / Y / Z. Faces bent out of
+  flat are split into triangles.
+- **A door or window**: grips on its sides, top and (not a door) bottom - drag them for the width, the height, the
+  elevation; drag a window itself along the wall and up / down. A window's panel has **Elevation (height from floor)**.
 
 ## Editing on the timeline: speed, colour, sound, mix and captions (2.406.0)
 
@@ -6237,6 +6251,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.625.0: **PushPull: faces, edges and corners edited** - a face's Extrude (+ / - a cut) and Twist, dragged like
+  Blender, Ctrl+drag twists; edges moved, Length, Extrude edge, Fillet, Shift+click more, Ctrl+click the face's loop; a
+  corner moved; doors and windows resized / moved by their grips, a window's Elevation; ⛶ keeps the status bar.
 - 2.624.0: **PushPull: walls on a floor, sloped walls** - bitGen's theme colours; Offset from floor edge; drag one wall,
   the floor's snap regions, onto its edge; double-click a wall's top = a cut to drag up / down, a top edge's slope,
   Delete; Ceiling Flat / Follows the walls' slope; a roof that follows them with an Eaves width; double-click empty =

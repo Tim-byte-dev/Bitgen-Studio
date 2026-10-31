@@ -105,8 +105,11 @@
 
   /* ---- the full-window maximize */
   function top() { const tb = $("titlebar"); return tb && !tb.classList.contains("hidden") && tb.offsetHeight ? Math.round(tb.getBoundingClientRect().bottom) : 0; }
+  /** 2.625.0: the status bar stays too - the room under the maximized docker (0: no status bar shown) */
+  function bottom() { const sb = $("statusbar"); if (!sb || !sb.offsetHeight || getComputedStyle(sb).display === "none") return 0; return Math.max(0, Math.round(root.innerHeight - sb.getBoundingClientRect().top)); }
   function fit() {
-    if (maxed()) dock.style.setProperty("--pp-top", top() + "px"); else dock.style.removeProperty("--pp-top");
+    if (maxed()) { dock.style.setProperty("--pp-top", top() + "px"); dock.style.setProperty("--pp-bottom", bottom() + "px"); }
+    else { dock.style.removeProperty("--pp-top"); dock.style.removeProperty("--pp-bottom"); }
     paintMax();
     const h = H(); if (h && h.state.V) setTimeout(() => { h.state.V.size(); }, 30);
   }
@@ -122,5 +125,5 @@
   // Esc (one the 3D view did not use): a docker maximized by itself goes back (the app's Esc does a .bdock's)
   doc.addEventListener("keydown", (e) => { if (e.key === "Escape" && maxed() && !dock.classList.contains("bdock") && !doc.querySelector("dialog[open]")) toggleMaxed(false); });
   paintMax();
-  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, toggleMaxed, maxed, top, close, paintMax };
+  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, toggleMaxed, maxed, top, bottom, close, paintMax };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -179,6 +179,8 @@
       } else if (t.ak === "op") {
         const op = Ar.ops.find((x) => x.id === t.id), I = op && P().opInfo(Ar, op); if (!I) return;
         loop(I.rect, I.z0); loop(I.rect, I.z1); I.rect.forEach((p) => segs.push([[p[0], p[1], I.z0], [p[0], p[1], I.z1]]));
+        const g = 0.06;                                                 // 2.625.0: its grips - small squares on each face
+        P().opHandles(Ar, op).forEach((h) => h.sides.forEach((q) => { const c = [[-g, -g], [g, -g], [g, g], [-g, g]].map(([x, z]) => [q[0] + I.u[0] * x, q[1] + I.u[1] * x, q[2] + z]); c.forEach((p, i) => segs.push([p, c[(i + 1) % 4]])); }));
       } else {
         const box = new T.Box3();
         if (t.ak === "light") fix.children.forEach((g) => { if (g.userData.tag && g.userData.tag.id === t.id) box.expandByObject(g); });
