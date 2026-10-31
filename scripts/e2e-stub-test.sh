@@ -11880,9 +11880,7 @@ python3 scripts/test-loaderswap523.py > /tmp/ls5230.log 2>&1 \
 node scripts/test-house524.js > /tmp/hb5240.log 2>&1 \
   && ok "house builder units (2.524.0 rooms share walls, openings cut out, stair holes, the sun's path, the room description, .obj; the routes: save as text / list / renders -> assets / obj / delete ?assets=1)" \
   || { bad "2.524.0 house builder units"; grep -a "^FAIL" -A2 /tmp/hb5240.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui524-ui.js > /tmp/ui5240.log 2>&1 \
-  && ok "2.524.0 browser test: draw a room / door / window / sofa / camera / stairs, undo, save, 3D drawn, the 360° + shot point where the camera looks, 📍 a Location, 📷 assets, .obj, ✨ queued - or SKIP without playwright" \
-  || { bad "2.524.0 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5240.log | head -14; }
+# 2.630.0: scripts/test-ui524-ui.js - the House builder is gone (its browser test with it)
 
 # ---- 2.525.0 (a model ComfyUI's loader does not list is found where it is listed - comfy_client.relocate_model_loaders)
 python3 scripts/test-relocate525.py > /tmp/rl5250.log 2>&1 \
@@ -11909,17 +11907,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui527-ui.js > /tmp/ui5270.log 2>
 node scripts/test-people528.js > /tmp/pp5280.log 2>&1 \
   && ok "people units (2.528.0 the mannequin per pose + height + colour, who a camera sees - side / depth / walls / doors, charRef into the Image assets, ?assets=1 takes them, the route)" \
   || { bad "2.528.0 people units"; grep -a "^FAIL" -A2 /tmp/pp5280.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui528-ui.js > /tmp/ui5280.log 2>&1 \
-  && ok "2.528.0 browser test: 🧍 press + drag, the character + pose, the mannequin in the shot, the prompt names picture 2, ✨ queues the shot + the character's picture + their LoRA - or SKIP without playwright" \
-  || { bad "2.528.0 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5280.log | head -14; }
+# 2.630.0: scripts/test-ui528-ui.js - the House builder is gone (its browser test with it)
 
 # ---- 2.529.0 (House builder extras - roofs, trace, lib/houseFurnish.js, lib/houseGltf.js, the shot list)
 node scripts/test-houseextras529.js > /tmp/hx5290.log 2>&1 \
   && ok "house extras units (2.529.0 gable / hip / flat roofs, furnish - kinds, the LLM pick cleaned, placed inside / clear of the door / not overlapping, .glb read back, the trace picture, the routes)" \
   || { bad "2.529.0 house extras units"; grep -a "^FAIL" -A2 /tmp/hx5290.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui529-ui.js > /tmp/ui5290.log 2>&1 \
-  && ok "2.529.0 browser test: a hip roof in an outside shot, a plan picture + 📐 scale, 🪄 furnish + Ctrl+Z, the .glb through three.js's GLTFLoader, 🎬 StoryBoard scenes with first frames + the list - or SKIP without playwright" \
-  || { bad "2.529.0 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5290.log | head -14; }
+# 2.630.0: scripts/test-ui529-ui.js - the House builder is gone (its browser test with it)
 
 # ---- 2.530.0 (🔍 the Ctrl+K command palette + 📖 Help - static/palette.js, lib/helpDocs.js, routes/help.js)
 node scripts/test-palette530.js > /tmp/pal5300.log 2>&1 \
@@ -11938,9 +11932,7 @@ python3 scripts/test-anima531.py > /tmp/an5310.log 2>&1 \
 node scripts/test-tp532.js > /tmp/tp5320.log 2>&1 \
   && ok "self-ticking test list + title bar + walking camera units (2.532.0 keepAuto, the event autos, H3TestEvent, ▁ ⛶ ✕, heightRange / camAt)" \
   || { bad "2.532.0 units"; grep -a "^FAIL" -A2 /tmp/tp5320.log | head -14; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui532-ui.js > /tmp/ui5320.log 2>&1 \
-  && ok "2.532.0 browser test: sofa handles size / turn, box + R + Delete, Shift+click, a camera walked (3D follows, arrows, Shift to the roof + 3 m, Alt to the ground), ▁ ⛶ ✕, auto ✓ kept - or SKIP without playwright" \
-  || { bad "2.532.0 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui5320.log | head -14; }
+# 2.630.0: scripts/test-ui532-ui.js - the House builder is gone (its browser test with it)
 
 # ---- 2.533.0 (a dropdown's search list inside a modal dialog opens in front of it - the Select a LoRA folder list)
 H3_URL=http://127.0.0.1:8311/ node scripts/test-selsearch533-ui.js > /tmp/ss5330.log 2>&1 \
@@ -12785,6 +12777,34 @@ node scripts/test-sketcher626.js > /tmp/sk626.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui626-ui.js > /tmp/ui626.log 2>&1 \
   && ok "2.626.0 browser test: the docker is the Sketcher; with the prompt docker: 🖼 Image + an edit model + the words + ✏ Edit (Sketcher); Generate = an image edit job of the view, its photo a real image in the Image assets; → Image editor = one Sketcher layer (updated when sent again); closed = the prompt docker as it was; → Timeline = a Sketcher layer - or SKIP without playwright" \
   || { bad "2.626.0 sketcher browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui626.log | head -14; }
+# ---- 2.627.0 (Tim: "before generating the picture do a clean render + depth and prepend the prompt to convert image n with Turn
+# this 3D render into a photorealistic photograph of a building: real brick, timber, glass and concrete, natural daylight, soft
+# shadows, no outlines, DSLR photo.")
+node scripts/test-sketch627.js > /tmp/sk627.log 2>&1 \
+  && ok "2.627.0 the Sketcher's real photo: the lead prompt, {img1} / {img2} in the model's words, ref_raw, a clean render + its depth map - the pure part + wiring (the browser legs are in test-ui626-ui.js)" \
+  || { bad "2.627.0 sketcher photo units"; grep -a "^FAIL" -A2 /tmp/sk627.log | head -14; }
+# ---- 2.628.0 (Tim: "add the furniture pack and asset pack from homebuilder to sketcher and delete homeluilder ext and docker.
+# when maximized sketcher takes the full screen except for bitgen titlebar and statusbar, all the other dockers are closed")
+node scripts/test-furn628.js > /tmp/furn628.log 2>&1 \
+  && ok "2.628.0 the Sketcher's 🛋 furniture: the House builder's 39 pieces, make / footprint / clean, kept + erased with the building, the tool / panel / view wiring, maximize closes the others - the pure part" \
+  || { bad "2.628.0 sketcher furniture units"; grep -a "^FAIL" -A2 /tmp/furn628.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui628-ui.js > /tmp/ui628.log 2>&1 \
+  && ok "2.628.0 browser test: ⛶ closes every other docker, ⇲ Dock opens them again; 🛋 Furniture: categories + pieces, R, a bed on the room's floor (textured), picked, dragged, saved, deleted; 3D models: the project's model in as a group - or SKIP without playwright" \
+  || { bad "2.628.0 sketcher furniture browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui628.log | head -14; }
+# ---- 2.629.0 (the House builder into the Sketcher, step 2: materials, cameras + shots + 360° locations, Furnish)
+node scripts/test-cam629.js > /tmp/cam629.log 2>&1 \
+  && ok "2.629.0 the Sketcher's cameras (pose, glyph, names), materials (mat:<key> kept, hex, UVs), the tools / view wiring - the pure part" \
+  || { bad "2.629.0 sketcher cameras units"; grep -a "^FAIL" -A2 /tmp/cam629.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui629-ui.js > /tmp/ui629.log 2>&1 \
+  && ok "2.629.0 browser test: ▦ Materials (Brick on a face + a wall, textured, kept); 📷 a camera (two clicks), its panel, Look through, shot + depth + normal in the Image assets, a 360° panorama the right way round, a Location; 🪄 Furnish a room; the furniture exported - or SKIP without playwright" \
+  || { bad "2.629.0 sketcher cameras browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui629.log | head -14; }
+# ---- 2.630.0 (the House builder into the Sketcher, step 3: people, its houses imported - then it is deleted)
+node scripts/test-import630.js > /tmp/imp630.log 2>&1 \
+  && ok "2.630.0 people (poses, kept), a House builder house -> a Sketcher model (rooms, openings, pieces, people, cameras, lights, free walls, upper floors), the House builder gone, SolidCraft -> Sketcher - the pure part + wiring" \
+  || { bad "2.630.0 house import units"; grep -a "^FAIL" -A2 /tmp/imp630.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui630-ui.js > /tmp/ui630.log 2>&1 \
+  && ok "2.630.0 browser test: no House window / button; ☰ File ▸ 🏠 a saved house -> a Sketcher model (kept); 🛋 ▸ People: a waving mannequin on the floor, its panel - or SKIP without playwright" \
+  || { bad "2.630.0 house import browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui630.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

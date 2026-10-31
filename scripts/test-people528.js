@@ -8,7 +8,7 @@
 const fs = require("fs"), os = require("os"), path = require("path");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
-const G = require("../static/housegeo.js"), HB = require("../static/housebuilder.js");
+const G = require("../static/housegeo.js"), HB = null;
 
 /* ---- the mannequin */
 const tops = {};
@@ -29,20 +29,7 @@ check("build: the mannequins are meshes, a coloured one in its colour", b.meshes
 check("the .obj carries them", /mannequin/.test(G.toObj(b.meshes, "P").mtl));
 
 /* ---- who a camera sees */
-const cam = { floor: 0, x: 1, y: 2.5, yaw: 0, fov: 70 };
-let s = HB.seen(n, cam, 16 / 9);
-check("seen: the two in the room, left to right (a is up the plan = left when looking east)", s.map((w) => w.q.id).join() === "a,b,e" || s.map((w) => w.q.id).join() === "a,e,b", s.map((w) => [w.q.id, w.ndc]));
-check("…not the one behind the wall (the bedroom), not the one behind the camera", !s.some((w) => w.q.id === "c" || w.q.id === "d"));
-const nd = JSON.parse(JSON.stringify(n));
-const wall = nd.walls.find((w) => Math.abs(w.a[0] - 6) < 1e-6 && Math.abs(w.b[0] - 6) < 1e-6);
-nd.openings.push({ id: "o1", wall: wall.id, kind: "door", t: Math.abs(2.5 - wall.a[1]), w: 0.9, h: 2.1, sill: 0 });
-check("…a door in that wall lets the camera see into the bedroom", HB.seen(nd, cam, 16 / 9).some((w) => w.q.id === "c"));
-s = HB.seen(n, { floor: 0, x: 1, y: 2.5, yaw: 0, fov: 70 }, 16 / 9);
-const e = s.find((w) => w.q.id === "e"), a = s.find((w) => w.q.id === "a");
-check("…words for the prompt: straight ahead 2 m = 'in the middle, in the foreground'", e.side === "in the middle" && e.depth === "in the foreground", e);
-const wide = HB.seen({ walls: [], openings: [], people: [{ id: "x", floor: 0, x: 3, y: 0.5 }, { id: "y", floor: 0, x: 8, y: 2.5 }] }, { floor: 0, x: 1, y: 2.5, yaw: 0, fov: 70 }, 16 / 9);
-check("…off to the left = 'on the left'; 7 m away = 'in the background'", wide.find((w) => w.q.id === "x").side === "on the left" && wide.find((w) => w.q.id === "y").depth === "in the background", wide.map((w) => [w.q.id, w.side, w.depth]));
-check("…a narrow lens sees less", HB.seen({ walls: [], openings: [], people: [{ id: "x", floor: 0, x: 3, y: 0.5 }] }, { floor: 0, x: 1, y: 2.5, yaw: 0, fov: 25 }, 16 / 9).length === 0 && a);
+/* 2.630.0: seen() went with the House builder (static/housebuilder.js) */
 
 /* ---- the character's picture: lib/house.js charRef (stand-in core + characters) */
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "pp528-")), PROJ = path.join(T, "projects", "p1"), CH = path.join(PROJ, "characters", "c1");
@@ -74,10 +61,10 @@ const srv = app.listen(0, "127.0.0.1", async () => {
     check("…unknown = 404", y.status === 404);
   } catch (er) { check("the route ran", false, String(er && er.stack || er)); }
   srv.close(); fs.rmSync(T, { recursive: true, force: true });
-  const src = fs.readFileSync(path.join(__dirname, "..", "static", "housebuilder.js"), "utf8");
-  check("pins: the people's LoRAs ride along as extra_loras (like Basic Settings' temporary LoRAs)", /extra_loras: loras/.test(src) && /path: w\.q\.lora, weight: w\.q\.lw/.test(src));
-  check("pins: the 🧍 Person tool, the prompt names 'the person in picture N', the characters go with the shot (charref)", /\["person", "🧍"/.test(src) && /the person in picture " \+ \(ri \+ 2\)/.test(src) && /\/api\/house\/charref/.test(src));
-  check("pins: the 🧪 checklist has the 2.528 group", JSON.parse(fs.readFileSync(path.join(__dirname, "..", "lib", "testPlan.json"), "utf8")).groups.some((g) => g.id === "g528"));
+  const src = "";
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

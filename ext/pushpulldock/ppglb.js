@@ -32,7 +32,7 @@
     return [...by.values()].filter((g) => g.idx.length);
   }
   const lin = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
-  const rgb = (hex) => { const h = /^#[0-9a-f]{6}$/i.test(hex || "") ? hex : DEF; return [1, 3, 5].map((i) => parseInt(h.substr(i, 2), 16) / 255); };
+  const rgb = (hex0) => { const hex = root.PPFurn && root.PPFurn.hex ? root.PPFurn.hex(hex0) : hex0; const h = /^#[0-9a-f]{6}$/i.test(hex || "") ? hex : DEF; return [1, 3, 5].map((i) => parseInt(h.substr(i, 2), 16) / 255); };
   const yUp = (a) => { const o = new Float32Array(a.length); for (let i = 0; i < a.length; i += 3) { o[i] = a[i]; o[i + 1] = a[i + 2]; o[i + 2] = -a[i + 1]; } return o; };
   function glb(list, name, lights) {
     const views = [], accessors = [], materials = [], primitives = [], chunks = [];

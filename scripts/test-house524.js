@@ -10,7 +10,7 @@ let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
 const near = (a, b, e) => Math.abs(a - b) < (e || 1e-6);
 const G = require("../static/housegeo.js");
-const HB = require("../static/housebuilder.js");
+const HB = null;
 
 /* ---- geometry */
 const ex = G.example(), bx = G.build(ex, { ceilings: true });
@@ -59,10 +59,10 @@ check(".obj: vertices, faces that point at them, materials in the .mtl", vn > 10
 check("normalize keeps bad input sane (no NaN, a floor, the light)", (() => { const z = G.normalize({ walls: [{ a: ["x", 1], b: [2, 2] }], items: [{ type: "nope" }] }); return z.floors.length === 1 && z.light && !JSON.stringify(z).includes("NaN") && !z.items.length; })());
 check("the library: ~38 pieces, each with its size + parts", Object.keys(G.CATALOGUE).length >= 35 && Object.values(G.CATALOGUE).every((c) => c.w > 0 && c.d > 0 && c.h > 0 && typeof c.parts === "function" && c.parts(c.w, c.d, c.h).length));
 /* ---- the docker's pure helpers */
-check("snap (5 cm) / fmtLen / fmtArea", near(HB.snap(1.234), 1.25) && HB.fmtLen(3) === "3.00 m" && HB.fmtArea(-12.04) === "12.0 m²");
-check("hitItem: a turned piece", HB.hitItem({ x: 0, y: 0, rot: 90, w: 2, d: 0.5 }, [0, 0.9]) && !HB.hitItem({ x: 0, y: 0, rot: 0, w: 2, d: 0.5 }, [0, 0.9]));
-check("paletteFor: the library by category", (() => { const p = HB.paletteFor(G.CATALOGUE); return p.Living && p.Kitchen && p.Bedroom && p.Bathroom && p.Living.some((x) => x.type === "sofa"); })(), Object.keys(HB.paletteFor(G.CATALOGUE)));
-check("ptSegDist", near(HB.ptSegDist([1, 1], [0, 0], [2, 0]), 1) && near(HB.ptSegDist([3, 0], [0, 0], [2, 0]), 1));
+/* 2.630.0: the House builder is gone - this check went with it */
+/* 2.630.0: the House builder is gone - this check went with it */
+/* 2.630.0: the House builder is gone - this check went with it */
+/* 2.630.0: the House builder is gone - this check went with it */
 
 /* ---- lib/house.js + routes/house.js against a stand-in core */
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "h524-")), PROJ = path.join(T, "projects", "p1");
@@ -117,9 +117,9 @@ const srv = app.listen(0, "127.0.0.1", async () => {
   /* pins */
   const idx = fs.readFileSync(path.join(__dirname, "..", "routes", "index.js"), "utf8"), html = fs.readFileSync(path.join(__dirname, "..", "static", "index.html"), "utf8");
   check("pins: routes/house.js mounted from routes/index.js (not server.js)", /require\("\.\/house"\)\.mount\(app\)/.test(idx) && !/house/.test(fs.readFileSync(path.join(__dirname, "..", "misc", "server.js"), "utf8")));
-  check("pins: index.html loads housegeo.js before housebuilder.js", html.indexOf("/static/housegeo.js") > 0 && html.indexOf("/static/housegeo.js") < html.indexOf("/static/housebuilder.js"));
+  /* 2.630.0: the House builder is gone - this check went with it */
   const tp = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "lib", "testPlan.json"), "utf8"));
-  check("pins: the 🧪 checklist has the 2.524 group", (tp.groups || []).some((g) => g.id === "g524"));
+  /* 2.630.0: the House builder is gone - this check went with it */
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

@@ -144,16 +144,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   check(".gitignore keeps model_folders.json out (it is yours)", /^model_folders\.json$/m.test(read(".gitignore")));
 
   /* ---- ◯ lights */
-  const G = require("../static/housegeo.js"), HB = require("../static/housebuilder.js");
+  const G = require("../static/housegeo.js");
   const m = G.normalize({ floors: [{ name: "Ground", height: 2.7 }, { name: "Up", height: 2.5 }], lights: [{ x: 1, y: 2, floor: 1, reach: 99, intensity: -3, color: "bad" }, { x: 0, y: 0 }] });
   check("normalize: lights [{id, floor, name, x, y, z, intensity, color, reach}] - reach 0.5-30, brightness 0.1-5, a bad colour = warm white, z defaults under the ceiling",
     m.lights.length === 2 && m.lights[0].floor === 1 && m.lights[0].reach === 30 && m.lights[0].intensity === 0.1 && m.lights[0].color === "#ffd9a0" && Math.abs(m.lights[0].z - 2.2) < 1e-6 && m.lights[1].z === 2.4 && m.lights[1].reach === 4 && /^l/.test(m.lights[0].id) && m.lights[1].name === "Light 2", m.lights);
   const b = G.build(m), E = G.elevations(m), pl = b.lights.filter((L) => L.placed);
   check("build: a placed light is in the scene's lights (placed, its colour + reach), at its floor's elevation + its height", pl.length === 2 && pl[0].x === 1 && pl[0].z === 2 && Math.abs(pl[0].y - (E[1] + 2.2)) < 1e-6 && pl[0].reach === 30 && pl[0].color === "#ffd9a0", pl);
-  check("reachOf: the centre to the pointer, 0.5-30 m in 5 cm steps", HB.reachOf([0, 0], [3, 4]) === 5 && HB.reachOf([0, 0], [0.1, 0]) === 0.5 && HB.reachOf([0, 0], [100, 0]) === 30 && HB.reachOf([1, 1], [1, 3.0333]) === 2.05);
-  const hb = read("static", "housebuilder.js");
-  check("the toolbar has ◯ Light (press where it hangs, drag its reach); select / move / box / delete know a light; the 3D view lights placed ones always",
-    /\["light", "◯", "Light - press/.test(hb) && /light: S\.m\.lights/.test(hb) && /person: "people", light: "lights"/.test(hb) && /\["light", m\.lights \|\| \[\]\]/.test(hb) && /L\.placed/.test(hb) && /h: "reach"/.test(hb));
+  /* 2.630.0: the House builder is gone - its ◯ Light tool checks went with it (the lights in housegeo.js stay) */
 
   /* ---- ⛶ maximize between the side dockers */
   const SF = require("../static/secfloat.js");
@@ -166,8 +163,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   /* ---- the checklist */
   const tp = JSON.parse(read("lib", "testPlan.json")), g = tp.groups.find((x) => x.id === "g538");
-  check("lib/testPlan.json: 2.538.0, group g538 first (⤓ first / again / Shift, 📁, 🔄 Sync, ◯ light, ⛶ beside the side dockers)", /^2\.(5[3-9]\d|[6-9]\d\d)\.\d+$/.test(tp.version) && !!g && ["mf_first", "mf_again", "mf_shift", "mf_list", "mm_sync", "house_light", "max_sides"].every((id) => g.items.some((i) => i.id === id)));
-  check("…house_light is a client event the list takes", /"house_light"/.test(read("lib", "testPlan.js")));
+  check("lib/testPlan.json: 2.538.0, group g538 first (⤓ first / again / Shift, 📁, 🔄 Sync, ◯ light, ⛶ beside the side dockers)", /^2\.(5[3-9]\d|[6-9]\d\d)\.\d+$/.test(tp.version) && !!g && ["mf_first", "mf_again", "mf_shift", "mf_list", "mm_sync", "max_sides"].every((id) => g.items.some((i) => i.id === id)));
+  /* 2.630.0: the House builder is gone - this check went with it */
 
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

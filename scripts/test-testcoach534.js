@@ -20,7 +20,7 @@ check("2.534.0's group (newest first) + the image editor's everyday tools", plan
 const AREAS = new Set(TC.ORDER);
 check("nearly every item says WHERE it is tested (a known area)", items.filter((i) => i.where).length >= items.length - 10 && items.every((i) => !i.where || AREAS.has(i.where)), items.filter((i) => i.where && !AREAS.has(i.where)).map((i) => i.id));
 check("…Gaussian Blur is an image editor test that ticks from the editor's step name", by("ie_blur").where === "imageedit" && by("ie_blur").auto.event === "ie_action" && /Gaussian Blur/.test("Gaussian Blur") && new RegExp(by("ie_blur").auto.what).test("Gaussian Blur"));
-check("…house items -> house, LoRA -> lora, keyframes -> timeline, Remote GPU -> settings", by("hb_draw").where === "house" && by("lt_job").where === "lora" && by("kf_any").where === "timeline" && by("rg_url").where === "settings");
+check("…LoRA -> lora, keyframes -> timeline, Remote GPU -> settings (2.630.0: the house items went with the House builder)", by("lt_job").where === "lora" && by("kf_any").where === "timeline" && by("rg_url").where === "settings");
 
 /* ---- evaluate: an event's `what` */
 const ev = (w) => ({ events: [{ event: "ie_action", data: { what: w }, at: 1 }] });

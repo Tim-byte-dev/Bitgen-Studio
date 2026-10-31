@@ -27,6 +27,8 @@
     const geo = new T.Group(); geo.name = "pp-arch"; scene.add(geo);           // the built geometry (rebuilt)
     const fix = new T.Group(); fix.name = "pp-fixtures"; scene.add(fix);       // the lights' fixtures + lights
     const selG = new T.Group(); scene.add(selG);
+    const furn = new T.Group(); furn.name = "pp-furniture"; scene.add(furn);
+    const camsG = new T.Group(); camsG.name = "pp-cameras"; scene.add(camsG); V.hideOnShot = (V.hideOnShot || []).concat([camsG]);   // 2.629.0: 📷 (never in a picture)   // 2.628.0: 🛋 the furniture (ppfurn.js - geometry cached there, never disposed here)
     const A = { V, isNight: false, cutaway: false, meshes: [], tags: [], built: null, sel: null, hover: null };
     V.hideOnShot = (V.hideOnShot || []).concat([selG]);
     const mats = new Map();
@@ -34,8 +36,9 @@
     function mat(col, alpha, emissive) {
       const sty = V.styleName, k = col + "|" + alpha + "|" + (emissive || "") + "|" + sty;
       if (mats.has(k)) return mats.get(k);
-      const c = sty === "mono" && alpha >= 1 && !emissive ? "#f4f4f4" : col;
-      const m = new T.MeshStandardMaterial({ color: c, roughness: alpha < 1 ? 0.05 : 0.85, metalness: 0, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+      const lk = root.PPFurn && sty !== "mono" ? root.PPFurn.look(T, col) : { color: root.PPFurn ? root.PPFurn.hex(col) : col, map: null };   // 2.629.0: a material
+      const c = sty === "mono" && alpha >= 1 && !emissive ? "#f4f4f4" : lk.color;
+      const m = new T.MeshStandardMaterial({ color: c, map: lk.map || null, roughness: alpha < 1 ? 0.05 : 0.85, metalness: 0, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
         transparent: alpha < 1 || sty === "xray", opacity: sty === "xray" ? Math.min(alpha, 0.4) : alpha, depthWrite: !(alpha < 1 || sty === "xray"),
         emissive: emissive ? new T.Color(emissive) : new T.Color(0), emissiveIntensity: emissive ? 1 : 0 });
       mats.set(k, m); return m;
@@ -50,6 +53,17 @@
     }
     function rebuild() {
       clear(geo); clear(fix); A.meshes = []; A.tags = [];
+      while (furn.children.length) furn.remove(furn.children[0]);
+      clear(camsG);
+      ((V.M && V.M.arch && V.M.arch.cams) || []).forEach((c) => {
+        if (!root.PPCam) return;
+        const g = new T.Group(); g.userData.tag = { ak: "cam", id: c.id };
+        const body = new T.Mesh(new T.BoxGeometry(0.22, 0.22, 0.22), new T.MeshBasicMaterial({ color: 0x2563eb })); body.position.set(c.x, c.y, c.z); g.add(body);
+        const pos = []; root.PPCam.frustum(c, 0.6).forEach(([a, b]) => pos.push(a[0], a[1], a[2], b[0], b[1], b[2]));
+        const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); g.add(new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb })));
+        camsG.add(g);
+      });
+      ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
       mats.forEach((m) => m.dispose()); mats.clear();
       const M = V.M, Ar = M && M.arch;
       if (!Ar || !P().has(Ar)) { A.built = null; paintSel(); return; }
@@ -66,6 +80,7 @@
       by.forEach((b) => {
         if (!b.pos.length) return;
         const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(b.pos, 3)); g.computeVertexNormals();
+        if (root.PPFurn && root.PPFurn.isMat(b.col)) g.setAttribute("uv", new T.Float32BufferAttribute(root.PPFurn.uvs(b.pos), 2));   // 2.629.0: a material's texture
         const mesh = new T.Mesh(g, mat(b.col, b.alpha)); mesh.userData = { t2: b.t2, layer: b.layer, alpha: b.alpha };
         mesh.castShadow = b.alpha >= 1; mesh.receiveShadow = true; mesh.visible = sty !== "wire"; mesh.renderOrder = b.alpha < 1 ? 2 : 0;
         geo.add(mesh); A.meshes.push(mesh);
@@ -135,8 +150,12 @@
     function pick(ev) {
       const r = V.canvas.getBoundingClientRect();
       V.cam().updateMatrixWorld(); rc.setFromCamera(new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), V.cam());
-      const objs = A.meshes.filter((m) => m.visible || V.styleName === "wire").concat(fix.children);
-      const hits = rc.intersectObjects(objs, true);
+      const objs = A.meshes.filter((m) => m.visible || V.styleName === "wire").concat(fix.children, furn.children, camsG.children);
+      let hits = rc.intersectObjects(objs, true);
+      // 2.628.0: a piece of furniture under a ceiling / a roof is what a click means (from above the ceiling hides it)
+      const tagOf = (h) => { if (h.object.userData && h.object.userData.t2) return A.tags[h.object.userData.t2[h.faceIndex]]; let o = h.object; while (o && !(o.userData && o.userData.tag)) o = o.parent; return o && o.userData.tag; };
+      const firstTag = hits.length ? tagOf(hits[0]) : null;
+      if (firstTag && (firstTag.ak === "roof" || firstTag.part === "ceil")) { const it = hits.find((h) => { const t = tagOf(h); return t && t.ak === "item"; }); if (it) hits = [it].concat(hits); }
       for (const h of hits) {
         let tag = null;
         if (h.object.userData && h.object.userData.t2) tag = A.tags[h.object.userData.t2[h.faceIndex]];
@@ -184,6 +203,8 @@
       } else {
         const box = new T.Box3();
         if (t.ak === "light") fix.children.forEach((g) => { if (g.userData.tag && g.userData.tag.id === t.id) box.expandByObject(g); });
+        else if (t.ak === "item") furn.children.forEach((g) => { if (g.userData.tag.id === t.id) box.expandByObject(g); });
+        else if (t.ak === "cam") camsG.children.forEach((g) => { if (g.userData.tag.id === t.id) box.expandByObject(g); });
         else A.meshes.forEach((m) => { const pos = m.geometry.attributes.position, t2 = m.userData.t2, v = new T.Vector3(); for (let i = 0; i < t2.length; i++) { const tg = A.tags[t2[i]]; if (tg.ak === t.ak && tg.id === t.id) for (let k = 0; k < 3; k++) box.expandByPoint(v.fromBufferAttribute(pos, i * 3 + k)); } });
         if (box.isEmpty()) return; box.expandByScalar(0.03);
         const a = box.min, b = box.max, c = [[a.x, a.y], [b.x, a.y], [b.x, b.y], [a.x, b.y]];
@@ -213,6 +234,7 @@
       };
       A.meshes.forEach((m) => { if (m.visible) take(m, "#" + m.material.color.getHexString(), m.userData.alpha || 1); });
       fix.traverse((o) => { if (o.isMesh) take(o, "#" + o.material.color.getHexString(), 1); });
+      furn.traverse((o) => { if (o.isMesh) take(o, "#" + o.material.color.getHexString(), o.material.transparent ? o.material.opacity : 1); });   // 2.629.0: the furniture exported too
       return [...by.values()].filter((b) => b.idx.length);
     }
     function exportLights() {

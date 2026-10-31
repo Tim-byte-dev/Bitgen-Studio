@@ -143,7 +143,6 @@
       { label: "🖼 A picture → the image editor", title: "The view as it is now (no grid / axes), the size of the editor's picture (else 1920 × 1080)", run: () => guard("→ Image editor", toEditor) },
       { label: "🖼 A picture with a clear background → the image editor", run: () => guard("→ Image editor", () => toEditor(true)) },
       { label: "🎞 A 3D layer → the timeline", run: () => guard("→ Timeline", toTimeline) },
-      { label: "🏠 → the House builder", run: () => guard("→ House builder", toHouse) },
       { label: "🟠 → Blender (its own window) - with the lights", run: () => guard("→ Blender", () => toProject("glb", { lights: true }).then((saved) => api("/api/blender/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: saved }) }).then(() => msg("Blender is opening with " + saved)))) },
       { label: "🎮 → Unreal (the open project) - with the lights", run: () => guard("→ Unreal", () => toProject("glb", { lights: true }).then((saved) => { msg("importing " + saved + " into Unreal…"); return api("/api/unreal/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: saved }) }).then((j) => msg(saved + " → Unreal: " + ((j.assets || [])[0] || "imported"))); })) },
     ]);
@@ -189,14 +188,11 @@
       msg(saved + " → the timeline: a 📏 Sketcher layer (3D) at the playhead"); test("pp_to_timeline", saved);
     });
   }
-  function toHouse() {
-    if (!root.H3House || !root.H3House.addModel) throw new Error("the House builder is not loaded");
-    return toProject().then((saved) => { try { root.H3House.show(true); } catch (e) { /* fine */ } return root.H3House.addModel(saved).then((it) => msg(saved + " → the House builder (" + it.w + " × " + it.d + " × " + it.h + " m)")); });
-  }
+
   function exportMenu(at) {
     menu(anc(at, "ppExport"), [
       { head: "Into the project's 3D models" },
-      { label: ".glb (the timeline, Blender, Unreal, the House builder)", run: () => guard("Export", () => toProject("glb").then((n) => msg("⤓ " + n + " in the project's 3D models"))) },
+      { label: ".glb (the timeline, Blender, Unreal)", run: () => guard("Export", () => toProject("glb").then((n) => msg("⤓ " + n + " in the project's 3D models"))) },
       { label: ".glb with the lights (glTF lights - Blender, Unreal, other 3D apps)", run: () => guard("Export", () => toProject("glb", { lights: true }).then((n) => msg("⤓ " + n + " (with " + lightsOut().length + " lights) in the project's 3D models"))) },
       { label: ".obj + .mtl", run: () => guard("Export", () => toProject("obj").then((n) => msg("⤓ " + n + " in the project's 3D models"))) },
       { head: "To this computer" },
@@ -298,8 +294,10 @@
     const sw = $("ppSw");
     PALETTE.forEach((c) => { const b = doc.createElement("button"); b.type = "button"; b.style.background = c; b.title = c; b.dataset.c = c; b.onclick = () => setColor(c); sw.appendChild(b); });
     paintSw();
+    // 2.629.0: ▦ Materials - the House builder's materials (a colour "mat:<key>": its colour + texture on faces, walls, floors)
+    const mb = $("ppMatBtn"); if (mb && root.PPFurn) mb.onclick = () => menu(mb, [{ head: "Materials (Paint - B)" }].concat(root.PPFurn.materials().map((m) => ({ label: (m.tex ? "▦ " : "■ ") + m.label, run: () => { setColor("mat:" + m.key); msg("🪣 " + m.label + " - click faces, walls, floors"); } }))));
   }
-  function setColor(c) { S.color = c; $("ppCol").value = c; paintSw(); if (S.T && S.T.name() !== "paint") S.T.use("paint"); }
+  function setColor(c) { S.color = c; $("ppCol").value = root.PPFurn ? root.PPFurn.hex(c) : c; paintSw(); const mb = $("ppMatBtn"); if (mb) mb.classList.toggle("on", !!(root.PPFurn && root.PPFurn.isMat(c))); if (S.T && S.T.name() !== "paint") S.T.use("paint"); }
   function paintSw() { doc.querySelectorAll("#ppSw button").forEach((b) => b.classList.toggle("on", b.dataset.c === S.color)); }
   function visible() { const v = $("ppView"); return !!(v && v.offsetParent !== null && v.clientWidth > 20 && v.clientHeight > 20); }
   async function boot() {
@@ -318,6 +316,9 @@
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
       archView: S.A ? () => S.A : null, onSel: () => info(), resized: () => { if (S.V) S.V.size(); },
+      // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
+      models: () => api("/api/tlcanvas/models").then((j) => (j.models || []).filter((x) => /\.(glb|gltf|obj|fbx)$/i.test(x.name)).map((x) => x.name)),
+      importModel: (n) => guard("Import", () => importModel(n)),
     });
     toolbar(); S.T.use("select");
     const cv = S.V.canvas;

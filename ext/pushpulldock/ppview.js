@@ -54,7 +54,7 @@
     controls.mouseButtons = { LEFT: -1, MIDDLE: T.MOUSE.ROTATE, RIGHT: T.MOUSE.PAN };
     controls.target.set(0, 0, 0);
     const hemi = new T.HemisphereLight(0xffffff, 0x8a8f99, 0.9); scene.add(hemi);
-    const sun = new T.DirectionalLight(0xffffff, 1.6); sun.position.set(8, -6, 14); scene.add(sun); scene.add(sun.target);
+    const sun = new T.DirectionalLight(0xffffff, 1.6); sun.position.set(8, -6, 14); scene.add(sun); scene.add(sun.target); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sun.shadow.mapSize.set(2048, 2048);   // 2.627.0: no shadow acne (stripes) on the faces
     sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = -30; sun.shadow.camera.right = 30; sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30; sun.shadow.camera.far = 200;
     // the ground grid on the XY plane + the axes (solid on the + side, dotted on the - side)
     const grid = new T.GridHelper(40, 40, new T.Color(V.theme.dim), new T.Color(V.theme.line)); grid.rotation.x = Math.PI / 2; grid.position.z = -0.0005; scene.add(grid);
@@ -131,7 +131,9 @@
       M.e.forEach((E) => { const k = g.edgeKey(E.a, E.b); if (seen.has(k)) return; seen.add(k); edges.push({ a: E.a, b: E.b, key: k, line: E.id, grp: E.grp }); });
       by.forEach((b) => {
         const geo = new T.BufferGeometry(); geo.setAttribute("position", new T.Float32BufferAttribute(b.pos, 3)); geo.computeVertexNormals();
-        const mat = new T.MeshStandardMaterial({ color: b.col, roughness: 0.9, metalness: 0, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
+        const lk = root.PPFurn ? root.PPFurn.look(T, b.col) : { color: b.col, map: null, rough: 0.9 };      // 2.629.0: "mat:<key>" = the House builder's material
+        if (lk.map) geo.setAttribute("uv", new T.Float32BufferAttribute(root.PPFurn.uvs(b.pos), 2));
+        const mat = new T.MeshStandardMaterial({ color: lk.color, map: lk.map || null, roughness: lk.rough, metalness: 0, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1,
           transparent: sty === "xray" || b.dim, opacity: sty === "xray" ? 0.45 : b.dim ? 0.35 : 1, depthWrite: !(sty === "xray") });
         const mesh = new T.Mesh(geo, mat); mesh.userData.tri2f = b.tri2f; mesh.castShadow = true; mesh.receiveShadow = true;
         mesh.visible = sty !== "wire";
@@ -303,18 +305,69 @@
     function setStyle(s) { V.styleName = ["edges", "shaded", "wire", "xray", "mono"].includes(s) ? s : "edges"; rebuild(); }
     function shadows(on) { R.shadowMap.enabled = !!on; sun.castShadow = !!on; ground.visible = !!on; faceMeshes.forEach((m) => { m.material.needsUpdate = true; }); rebuild(); }
     function shot(w, h, o) {
+      o = o || {};
       const keep = new T.Vector2(); R.getSize(keep);
-      const showGrid = !(o && o.clean);
-      grid.visible = showGrid; axes.visible = showGrid; prev.visible = false; over.visible = !(o && o.clean);
-      const hid = (V.hideOnShot || []).filter((x) => x.visible); if (o && o.clean) hid.forEach((x) => { x.visible = false; });
+      const showGrid = !o.clean;
+      grid.visible = showGrid; axes.visible = showGrid; prev.visible = false; over.visible = !o.clean;
+      const hid = (V.hideOnShot || []).filter((x) => x.visible); if (o.clean) hid.forEach((x) => { x.visible = false; });
       const pa = persp.aspect, ol = [ortho.left, ortho.right];
       R.setSize(w, h, false); persp.aspect = w / h; persp.updateProjectionMatrix();
       const k = ortho.userData.k || 10; ortho.left = -k * w / h; ortho.right = k * w / h; ortho.updateProjectionMatrix();
-      if (o && o.transparent) R.setClearColor(0x000000, 0);
-      R.render(scene, cam);
+      // 2.629.0: o.camera - a camera of the model's (its own pose / lens), else the view's
+      const C = o.camera || cam; if (o.camera) { C.aspect = w / h; C.updateProjectionMatrix(); C.updateMatrixWorld(); }
+      if (o.transparent) R.setClearColor(0x000000, 0);
+      // 2.627.0: a PHOTO source (no lines, shadows, a daylight sky) / a DEPTH map (near = white, far = black) for the edit model
+      // 2.629.0: + a NORMAL map; o.camera's depth is linear (0.3 m .. the model's size) - the House builder's shader
+      const lines = [], hadSh = R.shadowMap.enabled, fit = { near: persp.near, far: persp.far };
+      if (o.photo) { if (!hadSh) shadows(true); R.setClearColor(0xc9dcec, 1); }      // (shadows() rebuilds - the lines are hidden after it)
+      if (o.photo || o.depth || o.normal) scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
+      const { c: bc, r: br } = fitBox();
+      if (o.depth) {
+        ground.visible = false; R.setClearColor(0x000000, 1);
+        if (o.camera) scene.overrideMaterial = new T.ShaderMaterial({ uniforms: { near: { value: 0.3 }, far: { value: Math.max(8, br * 2.4) } }, side: T.DoubleSide,
+          vertexShader: "varying float vZ; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }",
+          fragmentShader: "uniform float near; uniform float far; varying float vZ; void main(){ float d = clamp((vZ - near) / (far - near), 0.0, 1.0); float v = 1.0 - pow(d, 0.6); gl_FragColor = vec4(vec3(v), 1.0); }" });
+        else {
+          scene.overrideMaterial = new T.MeshDepthMaterial();
+          const d = cam.position.distanceTo(new T.Vector3(bc[0], bc[1], bc[2]));
+          if (cam === persp) { persp.near = Math.max(0.01, d - br * 1.05); persp.far = d + br * 1.05; persp.updateProjectionMatrix(); }
+        }
+      }
+      if (o.normal) { ground.visible = false; scene.overrideMaterial = new T.MeshNormalMaterial({ side: T.DoubleSide }); R.setClearColor(0x8080ff, 1); }
+      R.render(scene, C);
+      if (o.depth || o.normal) { scene.overrideMaterial = null; persp.near = fit.near; persp.far = fit.far; persp.updateProjectionMatrix(); ground.visible = R.shadowMap.enabled; }
+      if (o.photo && !hadSh) shadows(false);
+      lines.forEach((x) => { x.visible = true; });
       const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(R.domElement, 0, 0, w, h);
       R.setClearColor(V.clear != null ? V.clear : new T.Color(V.theme.bg).getHex(), 1); grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true; hid.forEach((x) => { x.visible = true; });
       persp.aspect = pa; ortho.left = ol[0]; ortho.right = ol[1];
+      R.setSize(keep.x, keep.y, false); size();
+      return c;
+    }
+    /** 2.629.0: a 360° panorama (equirectangular W × W/2) from p, its middle facing yaw (degrees, clockwise seen from above) -
+        the photo look (no lines, shadows, a daylight sky); the House builder's way (a cube camera + its shader), Z up */
+    function pano(p, yaw, W) {
+      W = W || 4096; const H = W / 2, keep = new T.Vector2(); R.getSize(keep);
+      grid.visible = false; axes.visible = false; prev.visible = false; over.visible = false;
+      const hid = (V.hideOnShot || []).filter((x) => x.visible); hid.forEach((x) => { x.visible = false; });
+      const hadSh = R.shadowMap.enabled; if (!hadSh) shadows(true);
+      const lines = []; scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
+      const bg0 = scene.background; scene.background = new T.Color(0xc9dcec);
+      const rt = new T.WebGLCubeRenderTarget(Math.min(2048, W / 4), { generateMipmaps: false }), cc = new T.CubeCamera(0.05, 500, rt);
+      cc.position.set(p[0], p[1], p[2]); scene.add(cc); cc.update(R, scene); scene.remove(cc);
+      const mat = new T.ShaderMaterial({ uniforms: { tCube: { value: rt.texture }, yaw: { value: (yaw || 0) * Math.PI / 180 } }, depthTest: false, depthWrite: false,
+        vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }",
+        fragmentShader: "uniform samplerCube tCube; uniform float yaw; varying vec2 vUv;"
+          + "vec3 toSRGB(vec3 c){ return mix(c * 12.92, 1.055 * pow(c, vec3(1.0/2.4)) - 0.055, step(vec3(0.0031308), c)); }"
+          + "void main(){ float lon = -yaw - (vUv.x - 0.5) * 6.28318530718; float lat = (vUv.y - 0.5) * 3.14159265359;"
+          + " vec3 d = vec3(cos(lat) * cos(lon), cos(lat) * sin(lon), sin(lat)); vec4 c = textureCube(tCube, d); gl_FragColor = vec4(toSRGB(c.rgb), 1.0); }" });
+      const quad = new T.Mesh(new T.PlaneGeometry(2, 2), mat), sc = new T.Scene(); sc.add(quad);
+      R.setSize(W, H, false); R.render(sc, new T.OrthographicCamera(-1, 1, 1, -1, 0, 1));
+      const c = document.createElement("canvas"); c.width = W; c.height = H; c.getContext("2d").drawImage(R.domElement, 0, 0, W, H);
+      rt.dispose(); mat.dispose(); quad.geometry.dispose(); scene.background = bg0;
+      if (!hadSh) shadows(false);
+      lines.forEach((x) => { x.visible = true; }); hid.forEach((x) => { x.visible = true; });
+      grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true;
       R.setSize(keep.x, keep.y, false); size();
       return c;
     }
@@ -328,7 +381,7 @@
 
     Object.assign(V, {
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground,
-      setModel(M) { V.M = M; rebuild(); }, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
+      setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
       ray, screen, pick, snap, preview, tri, view, extents, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });

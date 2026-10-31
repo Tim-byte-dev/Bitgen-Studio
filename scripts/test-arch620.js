@@ -125,7 +125,7 @@ check(".glb: glass is see-through (BLEND), the lights are glTF lights (KHR_light
 
 /* the wiring */
 const EJ = JSON.parse(read("ext/pushpulldock/ext.json")), DH = read("ext/pushpulldock/dock.html"), DK = read("ext/pushpulldock/ppdock.js"), FR = read("ext/pushpulldock/ppframe.js"), TL = read("ext/pushpulldock/pptools.js"), AV = read("ext/pushpulldock/pparchview.js");
-check("the extension loads the architecture before the tools, the file menu last", EJ.scripts.filter((x) => !/^pp(mesh|edit|real)\.js$/.test(x)).join() === "ppgeo.js,ppglb.js,ppview.js,pparch.js,pparchview.js,pparchtools.js,pptools.js,ppdock.js,ppframe.js");
+check("the extension loads the architecture before the tools, the file menu last", EJ.scripts.filter((x) => !/^pp(mesh|edit|real|furn|cam|import)\.js$/.test(x)).join() === "ppgeo.js,ppglb.js,ppview.js,pparch.js,pparchview.js,pparchtools.js,pptools.js,ppdock.js,ppframe.js");
 check("the bar: ☰ File, 🖼 → Image editor, 🎞 → Timeline, 🌙 Night, ⌂ Cut-away; the panel; the Build tools in the toolbar",
   /id="ppFile"/.test(DH) && /id="ppToIE"/.test(DH) && /id="ppToTL"/.test(DH) && /id="ppNight"/.test(DH) && /id="ppCut"/.test(DH) && /id="ppProps"/.test(DH)
   && /\$\("ppToIE"\)\.onclick = \(\) => guard\("→ Image editor", \(\) => toEditor\(false\)\)/.test(DK) && /\$\("ppToTL"\)\.onclick = \(\) => guard\("→ Timeline", toTimeline\)/.test(DK) && /pptsep/.test(DK));

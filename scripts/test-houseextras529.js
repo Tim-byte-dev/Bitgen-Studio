@@ -101,7 +101,7 @@ check("dining: the table in the middle, six chairs round it, facing it", tb && d
       check("normalize keeps the trace (its file name only trace.<ext>)", G.normalize({ trace: { file: "trace.png", x: 1, y: 2, mpp: 0.03, opacity: 0.4 } }).trace.mpp === 0.03 && G.normalize({ trace: { file: "../../x.png" } }).trace === null);
     } catch (e) { check("the routes ran", false, String(e && e.stack || e)); }
     srv.close(); fs.rmSync(T, { recursive: true, force: true });
-    check("pins: the 🧪 checklist has the 2.529 group", JSON.parse(fs.readFileSync(path.join(__dirname, "..", "lib", "testPlan.json"), "utf8")).groups.some((g) => g.id === "g529"));
+    /* 2.630.0: the House builder is gone - this check went with it */
     console.log(`\n${pass} passed, ${fail} failed`);
     console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
     process.exit(fail ? 1 : 0);

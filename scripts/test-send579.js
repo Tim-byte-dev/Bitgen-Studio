@@ -104,14 +104,13 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-6);
     b.meshes.length === 1 && mesh.idx.length === 18 && near(mx[1] - mn[1], 0.2) && near(mx[0] - mn[0], 0.3) && near(mx[2] - mn[2], 0.8) && near((mn[0] + mx[0]) / 2, 2) && near((mn[2] + mx[2]) / 2, 1), { mn, mx });
   delete G.MODELS["sc_box.obj"];
   check("...not loaded yet: a box of its size (so the plan, shots and exports never lose it)", G.build(H, {}).meshes.length === 1 && G.build(H, {}).meshes[0].idx.length === 36);
-  const HB = rd("static", "housebuilder.js"), HF = rd("lib", "houseFurnish.js"), HL = rd("lib", "house.js");
-  check("the House builder: addModel(name) (its own size, the rooms' middle; again = the same piece), models read from models3d before drawing; never in the furniture list or the ✨ furnisher; the .obj / .glb exports carry them",
-    /function addModel\(name\)/.test(HB) && /function ensureModels\(\)/.test(HB) && /if \(cat\[k\]\.hidden\) return;/.test(HB) && /G\.CATALOGUE\[t\]\.hidden/.test(HF) && /!G\.CATALOGUE\[k\]\.hidden/.test(HF) && /loadModels\(get\(name\)\)/.test(HL));
+  const HB = "", HF = rd("lib", "houseFurnish.js"), HL = rd("lib", "house.js");
+  /* 2.630.0: the House builder is gone - this check went with it */
 
   /* 6 the SolidCraft docker */
   const DH = rd("ext", "solidcraftdock", "dock.html"), SJ = rd("ext", "solidcraftdock", "scdock.js"), AO = rd("static", "addons.js"), AD = require(path.join(ROOT, "lib", "addons.js"));
-  check("the bar: Send to Image editor / Timeline / House builder / Blender / Unreal - Blender + Unreal hidden until found",
-    /🖼 Send to Image editor/.test(DH) && /🎞 Send to Timeline/.test(DH) && /id="scToHouse"/.test(DH) && /id="scToBlender" type="button" hidden/.test(DH) && /id="scToUnreal" type="button" hidden/.test(DH)
+  check("the bar: Send to Image editor / Timeline / Sketcher (2.630.0 - was the House builder) / Blender / Unreal - Blender + Unreal hidden until found",
+    /🖼 Send to Image editor/.test(DH) && /🎞 Send to Timeline/.test(DH) && /id="scToSketcher"/.test(DH) && /id="scToBlender" type="button" hidden/.test(DH) && /id="scToUnreal" type="button" hidden/.test(DH)
     && /\$\("scToBlender"\)\.hidden = !\(j && j\.found\)/.test(SJ) && /\$\("scToUnreal"\)\.hidden = !\(j && \(j\.current \|\| j\.editor/.test(SJ));
   check("no SolidCraft = no docker and no status-bar button (sc-absent); Settings ▸ Add-ons' install / zip tells it (h3:addons-changed)",
     /#solidcraftdock\.sc-absent, #tX_solidcraftdock\.sc-absent \{ display: none !important; \}/.test(DH) && /classList\.toggle\("sc-absent", off\)/.test(SJ) && /addEventListener\("h3:addons-changed"/.test(SJ) && /dispatchEvent\(new CustomEvent\("h3:addons-changed"/.test(AO));

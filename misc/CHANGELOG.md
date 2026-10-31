@@ -8,6 +8,10 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.630.0** — The House Builder Is Gone: Its Last Parts in the Sketcher (🧍 People, Its Saved Houses), Solidcraft -> Sketcher
+- **2.629.0** — The Sketcher: The House Builder's Materials, 📷 Cameras (Shots, Depth / Normal Maps, 360° Locations), 🪄 Furnish
+- **2.628.0** — The Sketcher's 🛋 Furniture + The Project's 3D Models; Maximized = Every Other Docker Closed
+- **2.627.0** — The Sketcher's Real Photo: A Clean Render + Its Depth Map, the Lead Prompt
 - **2.626.0** — Pushpull Is the 📏 Sketcher; A Real Photo of the Model; Sketcher Layers
 - **2.625.0** — Pushpull: Faces / Edges / Corners Edited, Doors + Windows by Hand, ⛶ Keeps the Status Bar
 - **2.624.0** — Pushpull: Theme Colours, Walls on a Floor's Edge, Sloped Wall Tops, Follow Ceiling / Roof, ⛶ / ⇲ Dock + ✕

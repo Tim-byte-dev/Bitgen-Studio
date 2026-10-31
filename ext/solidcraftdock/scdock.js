@@ -15,7 +15,7 @@
  *   ⤓ Export ▾           STEP / STL / OBJ / 3MF into the project's solidcraft folder
  *   2.579.0 (Tim: "add send to blender,send to unreal, send to homebuilder and send to image-editor buttons in soldicraft
  *   docker. only show the docker is solidcraft is installed. only show the blender and unreal buttons if they are
- *   installed too"): the model (OBJ, sc_<name>.obj in the project's 3D models) -> 🏠 House builder (H3House.addModel),
+ *   installed too"): the model (OBJ, sc_<name>.obj in the project's 3D models) -> 📏 the Sketcher (2.630.0 - a group; the House builder is gone),
  *   🟠 Blender (POST /api/blender/send - Blender opens with it; shown when Blender is found), 🎮 Unreal (POST
  *   /api/unreal/import - a Static Mesh placed in the open level; shown when an Unreal project / editor is set). No
  *   SolidCraft installed = the docker and its status-bar button are not shown (sc-absent) - Settings ▸ Add-ons installs
@@ -280,7 +280,7 @@
       });
     });
   }
-  /** the model as sc_<design>.obj in the project's 3D models (the timeline, the House builder, Blender, Unreal use it) -> its name */
+  /** the model as sc_<design>.obj in the project's 3D models (the timeline, the Sketcher, Blender, Unreal use it) -> its name */
   function modelToProject() {
     return B().inspect().then(function (ins) {
       var stem = B().stemOf((ins && ins.name) || "design"), name = "sc_" + stem.replace(/[^\w-]+/g, "_") + ".obj";
@@ -291,18 +291,21 @@
       });
     });
   }
-  function toHouse() {
-    return guard("🏠 Send to House builder", function () {
+  /* 2.630.0: the House builder is gone - 📏 Send to Sketcher: the part (OBJ in the project's 3D models) into the Sketcher as a
+     group (move / turn / scale / paint it there, put it in a room) */
+  function toSketcher() {
+    return guard("📏 Send to Sketcher", function () {
       needOpen();
-      if (!root.H3House || !root.H3House.addModel) throw new Error("the House builder is not loaded");
       return modelToProject().then(function (saved) {
-        try { root.H3House.show(true); } catch (e) { /* fine */ }
-        return root.H3House.addModel(saved).then(function (it) {
-          msg(saved + " → the House builder: on " + ((root.H3House.state().m.floors[it.floor] || {}).name || "this floor") + ", " + it.w + " × " + it.d + " × " + it.h + " m - move / turn / size it there");
-        });
+        var d = root.document.getElementById("pushpulldock"); if (!d || !root.H3PushPull) throw new Error("the Sketcher is not installed (its extension)");
+        if (d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("pushpulldock", "tX_pushpulldock");
+        if (d.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse("pushpulldock");
+        var wait = function (n) { return root.H3PushPull.state && root.H3PushPull.state.booted ? Promise.resolve() : n > 0 ? new Promise(function (ok) { setTimeout(ok, 250); }).then(function () { return wait(n - 1); }) : Promise.reject(new Error("the Sketcher did not start")); };
+        return wait(120).then(function () { return root.H3PushPull.importModel(saved); }).then(function () { msg(saved + " → the 📏 Sketcher: in as a group - move / turn / scale it there"); });
       });
     });
   }
+
   function toBlender() {
     return guard("🟠 Send to Blender", function () {
       needOpen();
@@ -384,7 +387,7 @@
     $("scSave").onclick = save;
     $("scToEditor").onclick = function (e) { toEditor(!!e.shiftKey); };
     $("scToTimeline").onclick = toTimeline;
-    $("scToHouse").onclick = toHouse;
+    $("scToSketcher").onclick = toSketcher;
     $("scToBlender").onclick = toBlender;
     $("scToUnreal").onclick = toUnreal;
     root.addEventListener("h3:addons-changed", function () { S.latest = null; status(); });
@@ -408,7 +411,7 @@
     status();
     return true;
   }
-  root.H3SolidCraftDock = { state: S, status: status, presence: presence, checkTools: checkTools, toHouse: toHouse, toBlender: toBlender, toUnreal: toUnreal, modelToProject: modelToProject, install: install, installZip: installZip, save: save, sync: sync, toEditor: toEditor, toTimeline: toTimeline,
+  root.H3SolidCraftDock = { state: S, status: status, presence: presence, checkTools: checkTools, toSketcher: toSketcher, toBlender: toBlender, toUnreal: toUnreal, modelToProject: modelToProject, install: install, installZip: installZip, save: save, sync: sync, toEditor: toEditor, toTimeline: toTimeline,
     sketchIn: sketchIn, exportAs: exportAs, openFromProject: openFromProject, designs: designs, reload: reload };
   if (!boot()) { var n = 0, t = setInterval(function () { if (boot() || ++n > 120) clearInterval(t); }, 500); }
 })(typeof window !== "undefined" ? window : globalThis);

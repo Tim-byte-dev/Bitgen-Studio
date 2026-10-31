@@ -74,15 +74,15 @@
   }
   function lineX(p, u, q, w) { const d = crs(u, w); if (Math.abs(d) < 1e-9) return null; const t = crs(sub(q, p), w) / d; return add(p, mul(u, t)); }
   function segDist(p, a, b) { const ab = sub(b, a), L = dot(ab, ab); let t = L ? dot(sub(p, a), ab) / L : 0; t = Math.max(0, Math.min(1, t)); return { d: len(sub(p, add(a, mul(ab, t)))), t, along: t * Math.sqrt(L) }; }
-  const hex = (c, d) => (typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : d);
+  const hex = (c, d) => (typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : typeof c === "string" && /^mat:[a-z_]{2,24}$/.test(c) ? c : d);
   const num = (x, d, lo, hi) => { x = +x; return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; };
   const pt2 = (p) => (Array.isArray(p) && p.length >= 2 && Number.isFinite(+p[0]) && Number.isFinite(+p[1]) ? [+p[0], +p[1]] : null);
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [] }; }
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [] }; }
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
-  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length));
+  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length));
   function clean(o) {
     const A = empty(); if (!o || typeof o !== "object") return A;
     A.ext = hex(o.ext, DEF.ext);
@@ -114,9 +114,14 @@
       return { id: id(x.id), type: x.type, x: num(x.x, 0, -1e5, 1e5), y: num(x.y, 0, -1e5, 1e5), z: num(x.z, 2.7, -100, 1000), room: rid.has(+x.room) ? +x.room : null, col: hex(x.col, KELVIN[0][1]),
         lm: num(x.lm, d.lm, 0, 100000), on: x.on !== false, drop: num(x.drop, d.drop || 0.6, 0.05, 10), ang: num(x.ang, d.ang || 40, 5, 85), dir: num(x.dir, 0, -720, 720) };
     }).filter(Boolean);
+    // 2.628.0: the 🛋 furniture (ext/pushpulldock/ppfurn.js - the House builder's library)
+    A.items = root.PPFurn ? root.PPFurn.clean(o.items) : (Array.isArray(o.items) ? o.items.filter((x) => x && typeof x.type === "string") : []);
+    A.items.forEach((x) => { x.id = id(x.id); });
+    A.cams = root.PPCam ? root.PPCam.clean(o.cams) : [];                 // 2.629.0: 📷 the cameras (ppcam.js)
+    A.cams.forEach((x) => { x.id = id(x.id); });
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
-    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights);
+    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams);
     all.forEach((x) => { mx = Math.max(mx, x.id + 1); });
     all.forEach((x) => { if (!x.id || seen.has(x.id)) x.id = mx++; seen.add(x.id); });
     A.n = mx;
@@ -137,7 +142,7 @@
   }
   const nid = (A) => A.n++;
   const room = (A, id) => A.rooms.find((R) => R.id === id) || null;
-  const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
+  const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights, item: A.items, cam: A.cams }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
 
   /* ---------------- rooms, walls */
   function addRoom(A, pts, o) {
@@ -669,7 +674,7 @@
   }
   function remove(A, ak, id) {
     if (ak === "room") { removeRoom(A, id); return true; }
-    const key = { op: "ops", roof: "roofs", slab: "slabs", stair: "stairs", light: "lights" }[ak]; if (!key) return false;
+    const key = { op: "ops", roof: "roofs", slab: "slabs", stair: "stairs", light: "lights", item: "items", cam: "cams" }[ak]; if (!key || !A[key]) return false;
     const n0 = A[key].length; A[key] = A[key].filter((x) => x.id !== id); return A[key].length < n0;
   }
   function duplicateRoom(A, id, d) {
@@ -723,6 +728,7 @@
     A.slabs.forEach((s) => s.pts.forEach((p) => pts.push([p[0], p[1], s.z])));
     A.stairs.forEach((s) => { pts.push([s.x, s.y, s.z], [s.x + Math.cos(s.ang * Math.PI / 180) * s.len, s.y + Math.sin(s.ang * Math.PI / 180) * s.len, s.z + s.rise]); });
     A.lights.forEach((L) => pts.push([L.x, L.y, L.z]));
+    (A.items || []).forEach((it) => { pts.push([it.x - it.w / 2, it.y - it.d / 2, it.z], [it.x + it.w / 2, it.y + it.d / 2, it.z + it.h]); });
     A.roofs.forEach((rf) => { const F = roofFrame(A, rf); if (F) pts.push([F.o[0], F.o[1], F.top + F.D / 2 * Math.tan(rf.pitch * Math.PI / 180)]); });
     if (!pts.length) return null;
     const mn = [0, 1, 2].map((k) => Math.min(...pts.map((p) => p[k]))), mx = [0, 1, 2].map((k) => Math.max(...pts.map((p) => p[k])));

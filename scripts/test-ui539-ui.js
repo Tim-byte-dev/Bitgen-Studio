@@ -34,7 +34,7 @@ const api = async (u, body, method) => (await fetch(URL_ + u.replace(/^\//, ""),
   let slug = "";
   try {
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
-    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3_PROJECT_READY && window.H3Refs && window.RefInfo && window.H3House && window.SecFloat && SecFloat.started, null, { timeout: 60000 });
+    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3_PROJECT_READY && window.H3Refs && window.RefInfo && window.SecFloat && SecFloat.started, null, { timeout: 60000 });
     await p.waitForTimeout(2500);                 // the boot's project (its references) is in
 
     /* ---- the References docker */
@@ -78,45 +78,7 @@ const api = async (u, body, method) => (await fetch(URL_ + u.replace(/^\//, ""),
     check("…opened again: the descriptions are back under the pictures", back[1] === "a green velvet chesterfield" && back[2] === "a brass floor lamp", back);
     await ev(() => { refVids.push("e2e539_dance.mp4"); refAuds.push("e2e539_voice.wav"); refNotes = RefInfo.notesIn({ notes: { videos: { "e2e539_dance.mp4": "a slow waltz" }, audio: { "e2e539_voice.wav": "her voice, calm and low" } } }); renderRefLists(); });
 
-    /* ---- 🏠 the house builder */
-    await p.click("#hbBtn"); await p.waitForTimeout(800);
-    await ev(() => SecFloat.float("house", 300, 70, 1100, 820)); await p.waitForTimeout(300);
-    slug = await ev(async () => {
-      const m = H3HouseGeo.example(); m.name = "E2E house 539"; m.refs = [];
-      H3House.load(m); const S = H3House.state(); S.zoom = 50; S.ox = 60; S.oy = 60; H3House.setView("plan"); H3House.setTool("select");
-      await H3House.save(true); return S.slug;
-    });
-    check("the house is saved (its reference pictures are kept with it)", !!slug, slug);
-    const wallId = await ev(() => H3House.state().m.walls[0].id);
-    await ev(async (wid) => { await H3House.fromDock({ kind: "wall", id: wid }, H3Refs.images()[0]); }, wallId);
-    await p.waitForTimeout(500);
-    const w1 = await ev((wid) => { const S = H3House.state(), w = S.m.walls.find((x) => x.id === wid); return { tex: w.tex, sc: w.texScale, refs: JSON.parse(JSON.stringify(S.m.refs)), side: document.getElementById("hbProps").textContent, img: (document.querySelector("#hbProps .hbref img") || {}).src || "" }; }, wallId);
-    check("a wall picture from the References docker on a wall: kept with the house (kind wall, its description), the wall wears it", w1.tex && w1.refs.length === 1 && w1.refs[0].kind === "wall" && w1.refs[0].desc === "red brick, white mortar" && w1.sc === 1, w1);
-    check("…the panel shows 🖼 Wall picture with its picture, description and Tile (m)", /Wall picture/.test(w1.side) && /Tile \(m\)/.test(w1.side) && /\/api\/house\/.+\/ref\//.test(w1.img), w1.side.slice(0, 200));
-    const got = await fetch(w1.img);
-    check("…GET /api/house/<house>/ref/<file> serves it", got.status === 200 && /image\/png/.test(got.headers.get("content-type") || ""), got.status);
-    const tm = await ev(() => H3HouseGeo.build(H3House.state().m).meshes.filter((x) => x.tex).map((x) => [x.mat, x.tex]));
-    check("…the build gives that wall its own textured mesh (the 3D view / the shots map the picture)", tm.length === 1 && tm[0][0] === "plaster", tm);
-    // drop the sofa picture on a piece of furniture on the plan
-    const it = await ev(() => { const S = H3House.state(), i = S.m.items.find((x) => x.floor === 0 && x.w * x.d > 0.6) || S.m.items[0], r = document.getElementById("hbPlan").getBoundingClientRect(); return { id: i.id, x: r.left + i.x * S.zoom + S.ox, y: r.top + i.y * S.zoom + S.oy, label: i.type }; });
-    await ev((at) => { const c = document.getElementById("hbPlan"), dt = new DataTransfer(); dt.setData("application/x-h3ref", "1"); dt.setData("text/plain", "ref");
-      c.dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, clientX: at.x, clientY: at.y, dataTransfer: dt }));
-      c.dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true, clientX: at.x, clientY: at.y, dataTransfer: dt })); }, it);
-    await p.waitForTimeout(700);
-    const i1 = await ev((iid) => { const S = H3House.state(), o = S.m.items.find((x) => x.id === iid); return { ref: o.ref, refs: S.m.refs.map((q) => [q.kind, q.desc]), sel: S.sel, side: document.getElementById("hbProps").textContent }; }, it.id);
-    check("a furniture picture DROPPED on a piece on the plan: it looks like it (🖼 Looks like), kept as furniture", !!i1.ref && i1.refs.some((q) => q[0] === "furniture" && q[1] === "a green velvet chesterfield") && i1.sel && i1.sel.id === it.id && /Looks like/.test(i1.side), i1);
-    // ✨ Make it real: a camera looking at it, a style that takes 4 pictures
-    const pr = await ev((iid) => {
-      const S = H3House.state(), o = S.m.items.find((x) => x.id === iid);
-      S.m.cameras.push({ id: "c539", floor: o.floor, name: "E2E 539", x: o.x - 2.5, y: o.y, z: 1.6, yaw: 0, pitch: 0, fov: 70 });
-      S.styles = [{ id: "stub539", name: "Stub edit", slots: 4 }]; const s = document.getElementById("hbStyle"); s.innerHTML = '<option value="stub539">Stub edit</option>'; s.value = "stub539";
-      return H3House.realPrompt(S.m.cameras[S.m.cameras.length - 1]);
-    }, it.id);
-    check("✨ Make it real's prompt: \"look exactly like the one in picture N (a green velvet chesterfield)\"", /look exactly like the one in picture \d \(a green velvet chesterfield\)/.test(pr), pr);
-    const shot = await ev(async () => { const S = H3House.state(); const c = S.m.cameras.find((x) => x.id === "c539"); const o = await H3House.renderShot(c, 320, 180, ["shot"]); return o && o.shot ? o.shot.size : 0; }).catch((e) => "error " + e.message);
-    check("…a 📷 shot renders with the textured wall (it waits for the picture)", typeof shot === "number" && shot > 1000, shot);
-    await ev(() => SecFloat.show("house", false));
-
+    /* 2.630.0: the House builder (its references on walls / pieces) is gone */
     /* ---- 🖼 the image editor */
     const ieOpen = async () => ev(() => { const d = document.getElementById("imageeditdock"); if (d.classList.contains("dockgone")) toggleDockGone("imageeditdock", "tIE"); if (d.classList.contains("collapsed")) toggleCollapse("imageeditdock"); });
     await ieOpen(); await p.waitForTimeout(500);

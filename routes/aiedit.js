@@ -38,6 +38,8 @@
 //                                  2.556.0: ref0 + ref1 + ref_nums + ref_descs - up to two References docker pictures with
 //                                  an Edit or any run through the edit model (fill_edit; Refine too): the prompt's docker
 //                                  numbers become the model's pictures 2 / 3 (lib/refWords.js withRefs)
+//                                  2.627.0: + ref_raw ("1"): the prompt names its pictures itself - {img1} / {img2} become the
+//                                  model's word (the Sketcher: picture 1 its clean render, picture 2 its depth map)
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -188,7 +190,9 @@ function mount(app) {
       try { const rp = aiEdit.composePlan(style, 1 + nr, core.BASE); plan = Object.assign({}, plan, { workflow: rp.workflow, note: plan.note + (nr > 1 ? ` + ${nr} reference pictures (pictures 2 and 3)` : " + a reference picture (Picture 2)") }); refGraph = rp.graph; }
       catch (e) { return res.status(400).json({ error: e.message }); }
       const wording = refWords.wordingFor(style, core.BASE);   // 2.546.0: the model's word
-      plan.prompt = refNums.length === nr ? refWords.withRefs(plan.prompt, refNums, wording, refDescs) : aiEdit.refPrompt(plan.prompt, b.ref_desc, wording);
+      // 2.627.0: ref_raw = the prompt names its pictures itself ({img1}, {img2} -> the model's word: <image1>, image 2, Picture 2)
+      if (b.ref_raw === "1") plan.prompt = String(plan.prompt || "").replace(/\{img(\d)\}/g, (_, n) => refWords.tag(n, wording));
+      else plan.prompt = refNums.length === nr ? refWords.withRefs(plan.prompt, refNums, wording, refDescs) : aiEdit.refPrompt(plan.prompt, b.ref_desc, wording);
     }
     if (plan.mode !== "edit") {
       if (!mask || !mask.buffer) return res.status(400).json({ error: "mask image missing (select an area first)" });

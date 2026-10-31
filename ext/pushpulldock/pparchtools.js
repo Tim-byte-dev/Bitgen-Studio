@@ -36,7 +36,7 @@
   "use strict";
   const P = () => root.PPArch, G = () => root.PPGeo;
   const TOOLS = [["room", "⌂", "Room", "u"], ["wall", "▮", "Wall", "w"], ["door", "🚪", "Door", "d"], ["window", "🪟", "Window", "i"], ["floor", "▦", "Floor", "j"],
-    ["ceiling", "⌓", "Ceiling", "k"], ["roof", "△", "Roof", "y"], ["light", "💡", "Light", "x"], ["stairs", "▟", "Stairs", "v"]];
+    ["ceiling", "⌓", "Ceiling", "k"], ["roof", "△", "Roof", "y"], ["light", "💡", "Light", "x"], ["stairs", "▟", "Stairs", "v"], ["furniture", "🛋", "Furniture", "a"], ["camera", "📷", "Camera", "z"]];
   const HINT = {
     room: "Click a corner, click the opposite corner (or type  4,3) - walls, a floor and a ceiling; corners snap to other rooms",
     wall: "Click, click … a free-standing wall · back on its start = a room · double-click or Esc ends it · type a length",
@@ -47,10 +47,12 @@
     roof: "Click a room - a roof over it · Shift+click more rooms - the same roof over them · type the pitch",
     light: "Click in a room - the light on its ceiling (the room's middle snaps) · a wall light: click a wall · the type in the panel",
     stairs: "Click the foot of the stairs, click the direction + length (or type it) - the height in the panel",
+    camera: "Click where the camera stands, click where it looks - then 📷 shot + depth + normal maps, 📍 a 360° location in its panel",
+    furniture: "Pick a piece in the panel, click on a floor to put it there · R turns it 90° · type degrees · Select drags it",
   };
-  const VCB = { room: "Width,Depth", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length" };
+  const VCB = { room: "Width,Depth", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length", furniture: "Turn°", camera: "Lens°" };
   const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0 }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
-    floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 } };
+    floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 }, furniture: { type: "sofa", cat: "Living", rot: 0, color: "" }, camera: { eye: 1.6, fov: 60 } };
 
   function create(ctx) {
     const V = ctx.V, v3 = () => G().v3;
@@ -74,6 +76,16 @@
       let best = null;
       P().opHandles(A, op).forEach((h) => { const q = V.screen(h.sides[side]); if (q[2] > 1) return; const d = Math.hypot(q[0] - mx, q[1] - my); if (d < 11 && (!best || d < best.d)) best = { d, key: h.key, p: h.sides[side], n: I.nl }; });
       return best;
+    }
+    /** 2.628.0: the floor under a plan point - a room's, else a floor slab's top, else the ground */
+    function floorAt(A, p) {
+      const R = P().roomAt(A, p, null); if (R) return R.z;
+      const sl = A.slabs.find((s) => P().inPoly(p, s.pts)); return sl ? sl.z : 0;
+    }
+    function furnAt(ev) {
+      const A = AR(), q = planeAt(ev, 0); if (!q) return null;
+      let z = floorAt(A, q), p = planeAt(ev, z) || q; z = floorAt(A, p);
+      return root.PPFurn ? root.PPFurn.make(O.furniture.type, p, z, O.furniture.rot, O.furniture.color, O.furniture.pose) : null;
     }
     function planeAt(ev, z) { const r = V.ray(ev); if (Math.abs(r.d[2]) < 1e-9) return null; const t = (z - r.o[2]) / r.d[2]; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, z] : null; }
     function snapPlan(ev, z, from) {
@@ -157,6 +169,19 @@
         const L = P().addLight(A, O.light.type, L0.p, { room: L0.room, col: O.light.col, lm: O.light.lm > 0 ? O.light.lm : d.lm, dir: L0.dir || 0 });
         done("light", b); ctx.status("💡 a " + d.label.toLowerCase() + (L0.room ? " in " + P().room(A, L0.room).name : "") + " · 🌙 Night shows what it lights"); void L; return;
       }
+      if (tool === "camera" && root.PPCam) {                             // 2.629.0: 📷 where it stands, then where it looks
+        const q = planeAt(ev, 0); if (!q) return;
+        const z = floorAt(A, q), p = planeAt(ev, z) || q;
+        if (!st.cp) { st.cp = [p[0], p[1]]; st.cz = floorAt(A, p); ctx.status("📷 now click where it looks"); return; }
+        const b = before(), c = root.PPCam.make(st.cp, [p[0], p[1]], st.cz, O.camera.eye, O.camera.fov, "Camera " + ((A.cams || []).length + 1));
+        if (!A.cams) A.cams = []; c.id = A.n++; A.cams.push(c); st = {};
+        done("camera", b, { ak: "cam", id: c.id }); ctx.status("📷 " + c.name + " - 👁 look through it, 📷 shots, 📍 a 360° location in its panel"); return;
+      }
+      if (tool === "furniture") {                                        // 2.628.0: 🛋 a piece on the floor under the click
+        const it = furnAt(ev); if (!it) return;
+        const b = before(); if (!A.items) A.items = []; it.id = A.n++; A.items.push(it);
+        done("furniture", b, { ak: "item", id: it.id }); ctx.status("🛋 " + root.PPFurn.label(it) + " · R turns the next one · Select drags it"); return;
+      }
       if (tool === "stairs") {
         const { p } = snapPlan(ev, 0, st.a);
         if (!st.a) { st.a = p; return; }
@@ -165,6 +190,20 @@
     }
     function move(ev) {
       const A = AR();
+      if (tool === "camera" && st.cp) {
+        const q = planeAt(ev, st.cz || 0); if (!q) return;
+        const e = [st.cp[0], st.cp[1], (st.cz || 0) + O.camera.eye];
+        V.preview({ lines: [[e, [q[0], q[1], e[2]]]], marker: { p: e, color: "#2563eb" }, tip: "📷 looking " + Math.round(((-Math.atan2(q[1] - e[1], q[0] - e[0]) * 180 / Math.PI) + 360) % 360) + "°", tipAt: e, color: 0x2563eb });
+        return;
+      }
+      if (tool === "furniture") {
+        const it = furnAt(ev); if (!it) { V.preview({}); return; }
+        const F = root.PPFurn.footprint(it), z = it.z + 0.01, lines = F.map((p, i) => { const q = F[(i + 1) % 4]; return [[p[0], p[1], z], [q[0], q[1], z]]; });
+        const fr = [(F[0][0] + F[1][0]) / 2, (F[0][1] + F[1][1]) / 2];
+        lines.push([[it.x, it.y, z], [it.x + (it.x - fr[0]) * 0.8, it.y + (it.y - fr[1]) * 0.8, z]]);      // its front
+        V.preview({ lines, tip: "🛋 " + root.PPFurn.label(it) + " · " + it.rot + "°", tipAt: [it.x, it.y, it.z + it.h], color: 0x2563eb });
+        return;
+      }
       if (tool === "room" || tool === "floor") {
         const z = tool === "room" ? O.room.z : O.floor.z, { p, s } = snapPlan(ev, z, st.a);
         if (!st.a) { show(s, { tip: tool === "room" ? "a room's corner" : "a floor's corner" }); return; }
@@ -271,6 +310,8 @@
     }
     function vcb(text) {
       const g = G().parseVcb(text), A = AR();
+      if (tool === "camera") { const deg = parseFloat(String(text).replace(/[^\d.]/g, "")); if (!(deg >= 10 && deg <= 140)) return false; O.camera.fov = deg; keepOpt(); props(); ctx.status("📷 lens " + deg + "°"); return true; }
+      if (tool === "furniture") { const deg = parseFloat(String(text).replace(/[^\d.-]/g, "")); if (!Number.isFinite(deg)) return false; O.furniture.rot = ((Math.round(deg) % 360) + 360) % 360; keepOpt(); props(); ctx.status("🛋 turned " + O.furniture.rot + "°"); return true; }
       if (tool === "roof") {
         const deg = parseFloat(String(text).replace(/[^\d.]/g, "")); if (!Number.isFinite(deg)) return false;
         O.roof.pitch = Math.max(0, Math.min(75, deg)); keepOpt();
@@ -302,6 +343,10 @@
         return false;
       }
       if (asel && (k === "Delete" || k === "Backspace") && (baseTool === "select" || owns(baseTool))) { eraseSel(); return true; }
+      if ((k === "r" || k === "R") && !e.ctrlKey && !e.metaKey && !e.altKey) {                      // 2.628.0: R turns the next piece / the picked one 90°
+        if (baseTool === "furniture") { O.furniture.rot = (O.furniture.rot + 90) % 360; keepOpt(); props(); ctx.status("🛋 " + O.furniture.rot + "°"); return true; }
+        if (asel && asel.ak === "item" && baseTool === "select") { const b = before(), it = P().find(AR(), "item", asel.id); if (it) { it.rot = (it.rot + 90) % 360; done("turn", b); } return true; }
+      }
       if (asel && k === "Escape" && !owns(baseTool)) { setSel(null); return true; }
       return false;
     }
@@ -339,7 +384,7 @@
         if (start) st.drag = { t, mode: "edge", z: x.z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
         return true;
       }
-      const z = t.ak === "room" ? x.z : t.ak === "light" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" ? x.z : h.point[2];
+      const z = t.ak === "room" ? x.z : t.ak === "light" || t.ak === "item" || t.ak === "cam" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" ? x.z : h.point[2];
       const start = planeAt(ev, z);
       if (t.ak !== "roof" && start) st.drag = { t, z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
       if (t.ak === "op" && st.drag) { const I = P().opInfo(A, x); if (I) Object.assign(st.drag, { wp: h.point, wn: I.nl, along0: (h.point[0] - I.o[0]) * I.u[0] + (h.point[1] - I.o[1]) * I.u[1], at0: I.at, sill0: x.sill, room0: x.room, edge0: x.edge }); }   // 2.625.0: up / down too
@@ -387,6 +432,8 @@
         else if (def.mount === "floor") { const R = P().roomAt(A, [x.x, x.y], x.z); x.room = R ? R.id : null; }
         ctx.status("💡 moved " + fmt(Math.hypot(d[0], d[1])));
       } else if (t.ak === "stair") { x.x += d[0]; x.y += d[1]; }
+      else if (t.ak === "cam") { x.x = Math.round((x.x + d[0]) * 1000) / 1000; x.y = Math.round((x.y + d[1]) * 1000) / 1000; ctx.status("📷 " + x.name + " moved"); }
+      else if (t.ak === "item") { x.x = Math.round((x.x + d[0]) * 1000) / 1000; x.y = Math.round((x.y + d[1]) * 1000) / 1000; x.z = floorAt(A, [x.x, x.y]); ctx.status("🛋 " + root.PPFurn.label(x) + " moved " + fmt(Math.hypot(d[0], d[1]))); }
       else if (t.ak === "slab") { x.pts = x.pts.map((p) => [p[0] + d[0], p[1] + d[1]]); }
       AV().rebuild();
       return true;
@@ -485,7 +532,42 @@
       }
       if (P().remove(AR(), t.ak, t.id)) { asel = null; done("erase", b, null); ctx.status("⌫ erased the " + nameOf(t)); }
     }
-    function nameOf(t) { const x = t.id != null ? P().find(AR(), t.ak, t.id) : null; return { room: x ? x.name : "room", op: x ? (x.kind === "opening" ? "opening" : x.kind) : "door / window", light: "light", roof: "roof", stair: "stairs", slab: "floor" }[t.ak] || t.ak; }
+    /* 2.629.0: 📷 a camera's view / pictures / 360° location */
+    function lookThrough(c) {
+      const d = root.PPCam.dir(c), cam = V.cam(); if (V.isOrtho) V.ortho(false);
+      V.cam().position.set(c.x, c.y, c.z); V.controls.target.set(c.x + d[0] * 2, c.y + d[1] * 2, c.z + d[2] * 2); V.controls.update(); V.draw(); void cam;
+      ctx.status("👁 through " + c.name + " - orbit to leave it");
+    }
+    const modelName = () => (root.H3PushPull && root.H3PushPull.nameNow ? root.H3PushPull.nameNow() : "model");
+    function camShots(c) {
+      const [w, h] = String(O.camera.size || "1920x1080").split("x").map(Number);
+      ctx.status("📷 rendering " + c.name + " …");
+      return root.PPCam.shots(V, c, modelName(), w, h).then((r) => { ctx.status("📷 " + r.shot + " + its depth and normal maps are in the Image assets"); last.shots = r; return r; })
+        .catch((e) => { ctx.status("📷 " + (e.message || e)); return null; });
+    }
+    function camLocation(c) {
+      ctx.status("📍 rendering the 360° panorama of " + c.name + " …");
+      return root.PPCam.location(V, c, modelName()).then((r) => { ctx.status("📍 the Location " + r.name + " (@" + r.tag + ") is ready - its 360° view is the model as built"); last.location = r; return r; })
+        .catch((e) => { ctx.status("📍 " + (e.message || e)); return null; });
+    }
+    const last = {};
+    /** 2.629.0: 🪄 the room as the House builder's model (plan y down) -> /api/house/furnish -> its pieces back in the Sketcher */
+    function furnishRoom(R, words) {
+      const A = AR(), inn = P().interior(R).map((p) => [p[0], -p[1]]), E = P().edgesOf(R);
+      const model = { name: "sketcher", floors: [{ id: "f0", name: "Ground", height: R.h }], rooms: [{ id: "r1", floor: 0, name: R.name, poly: inn }],
+        walls: E.map((e, i) => ({ id: "w" + i, floor: 0, a: [e.a[0], -e.a[1]], b: [e.b[0], -e.b[1]], thick: R.t })), openings: [], items: [], stairs: [], cameras: [], lights: [] };
+      ctx.status("🪄 furnishing " + R.name + " …");
+      return root.fetch("/api/house/furnish", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ model, room: "r1", prompt: String(words || "").trim() }) })
+        .then((r) => r.json()).then((j) => {
+          if (j.error) { ctx.status("🪄 " + j.error); return j; }
+          const b = before(), A2 = AR(); if (!A2.items) A2.items = [];
+          (j.items || []).forEach((it) => { const n = root.PPFurn.make(it.type, [it.x, -it.y], R.z, it.rot || 0, it.color || ""); if (!n) return; if (it.w) n.w = it.w; if (it.d) n.d = it.d; if (it.h) n.h = it.h; n.id = A2.n++; A2.items.push(n); });
+          done("furnish", b); last.furnish = j;
+          ctx.status("🪄 " + (j.items || []).length + " pieces in " + R.name + " (" + (j.by === "llm" ? "the LLM picked them" : "a " + j.kind + "'s set") + ") · Ctrl+Z takes them out");
+          return j;
+        }).catch((e) => { ctx.status("🪄 " + (e.message || e)); return null; });
+    }
+    function nameOf(t) { const x = t.id != null ? P().find(AR(), t.ak, t.id) : null; return { room: x ? x.name : "room", op: x ? (x.kind === "opening" ? "opening" : x.kind) : "door / window", light: "light", roof: "roof", stair: "stairs", slab: "floor", cam: x ? x.name : "camera", item: x && root.PPFurn ? root.PPFurn.label(x).toLowerCase() : "piece" }[t.ak] || t.ak; }
     function setSel(t, quiet) {
       asel = t && t.ak ? Object.assign({ ak: t.ak, id: t.id }, t.edge != null ? { edge: t.edge } : {}, t.room != null ? { room: t.room } : {}, t.k != null ? { k: t.k } : {}, t.part ? { part: t.part } : {}) : null;
       if (AV()) AV().setSel(asel);
@@ -519,8 +601,8 @@
       const kel = (val, on) => { const k = P().KELVIN.find((q) => q[1] === val); selIn("Colour", k ? k[1] : "custom", P().KELVIN.map((q) => [q[1], q[2]]).concat([["custom", "Another colour…"]]), (v) => { if (v !== "custom") on(v); else props(); }); colIn("", val, on); };
       const opt = (k) => (v) => { O[tool][k] = v; keepOpt(); props(); };
       if (edit) { ED.panel({ box, el, head, row, numIn, selIn, chkIn, btns, refresh: props }); ctx.resized && ctx.resized(); return; }
-      if (tool) {
-        head({ room: "⌂ Room", wall: "▮ Wall", door: "🚪 Door", window: "🪟 Window", floor: "▦ Floor", ceiling: "⌓ Ceiling", roof: "△ Roof", light: "💡 Light", stairs: "▟ Stairs" }[tool] + " - the next one");
+      if (tool && !(tool === "camera" && x && asel.ak === "cam")) {     // 2.629.0: a camera just placed shows ITS panel (its buttons)
+        head({ room: "⌂ Room", wall: "▮ Wall", door: "🚪 Door", window: "🪟 Window", floor: "▦ Floor", ceiling: "⌓ Ceiling", roof: "△ Roof", light: "💡 Light", stairs: "▟ Stairs", furniture: "🛋 Furniture", camera: "📷 Camera" }[tool] + " - the next one");
         const o = O[tool];
         if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); numIn("Wall thickness", o.t, opt("t"), 0.01, 0.02, 2, "m"); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m");
           numIn("Offset from floor edge", o.off || 0, opt("off"), 0.01, -5, 5, "m");      // 2.624.0
@@ -531,6 +613,34 @@
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
         if (tool === "roof") { selIn("Type", o.type, ROOF_OPTS(), opt("type")); if (o.type !== "follow") numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
+        if (tool === "camera") { numIn("Eye height", o.eye, opt("eye"), 0.05, 0.1, 20, "m"); numIn("Lens", o.fov, opt("fov"), 5, 10, 140, "°"); }
+        if (tool === "furniture" && root.PPFurn) {                       // 2.628.0: the House builder's library + the project's 3D models
+          const F = root.PPFurn, cats = F.categories().concat(["People", "3D models"]);       // 2.630.0: + 🧍 People
+          if (!cats.includes(o.cat)) o.cat = cats[0];
+          selIn("Category", o.cat, cats.map((c) => [c, c]), (v) => { o.cat = v; const first = F.pieces().find((p) => p.cat === v); if (first) o.type = first.type; keepOpt(); props(); });
+          if (o.cat === "People") {
+            if (o.type !== "person") { o.type = "person"; o.pose = o.pose || "stand"; }
+            const P0 = F.POSES(), grid = el("div", "ppfurn"); grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:4px 0";
+            Object.keys(P0).forEach((k) => { const b = el("button", "ghost", "🧍 " + P0[k]); b.type = "button"; b.dataset.pose = k; b.style.cssText = "font-size:11px;padding:2px 4px;text-align:left" + (k === o.pose ? ";outline:1px solid var(--tiger,#f59e2c)" : ""); b.onclick = () => { o.type = "person"; o.pose = k; keepOpt(); props(); ctx.status("🧍 " + P0[k] + " - click on a floor"); }; grid.appendChild(b); });
+            box.appendChild(grid);
+            numIn("Turn", o.rot, (v) => { o.rot = ((Math.round(v) % 360) + 360) % 360; keepOpt(); props(); }, 15, -360, 360, "°");
+            box.appendChild(el("div", "pphint", "A mannequin where someone stands - name them in their panel; a character's name helps ✨ the real photo"));
+          } else if (o.cat !== "3D models") {
+            const list = F.pieces().filter((p) => p.cat === o.cat);
+            if (!list.some((p) => p.type === o.type) && list[0]) o.type = list[0].type;
+            const grid = el("div", "ppfurn"); grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:4px 0";
+            list.forEach((p) => { const b = el("button", "ghost" + (p.type === o.type ? " on" : ""), p.label); b.type = "button"; b.dataset.type = p.type; b.title = p.w + " × " + p.d + " × " + p.h + " m"; b.style.cssText = "font-size:11px;padding:2px 4px;text-align:left" + (p.type === o.type ? ";outline:1px solid var(--tiger,#f59e2c)" : ""); b.onclick = () => { o.type = p.type; keepOpt(); props(); ctx.status("🛋 " + p.label + " - click on a floor"); }; grid.appendChild(b); });
+            box.appendChild(grid);
+            numIn("Turn", o.rot, (v) => { o.rot = ((Math.round(v) % 360) + 360) % 360; keepOpt(); props(); }, 15, -360, 360, "°");
+            chkIn("Own colour", !!o.color, (v) => { o.color = v ? "#8a8378" : ""; keepOpt(); props(); });
+            if (o.color) colIn("Colour", o.color, (v) => { o.color = v; keepOpt(); });
+          } else {
+            const pick = el("div", "pphint", "the project's 3D models (.glb / .obj - SolidCraft's, imported): one comes in as a group you can move, scale and paint");
+            box.appendChild(pick);
+            const lb = el("div", "ppbtns"); box.appendChild(lb);
+            if (ctx.models) ctx.models().then((names) => { lb.innerHTML = ""; if (!names.length) lb.appendChild(el("div", "pphint", "(no 3D models in the project yet)")); names.forEach((n) => { const b = el("button", "ghost", "⤒ " + n); b.type = "button"; b.dataset.model = n; b.onclick = () => ctx.importModel && ctx.importModel(n); lb.appendChild(b); }); }).catch(() => {});
+          }
+        }
         if (tool === "light") { selIn("Type", o.type, Object.keys(P().LIGHTS).map((k) => [k, P().LIGHTS[k].label]), opt("type")); kel(o.col, opt("col")); numIn("Brightness (0 = usual)", o.lm, opt("lm"), 50, 0, 100000, "lm"); }
         if (tool === "stairs") { numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height (up)", o.rise, opt("rise"), 0.05, 0.1, 20, "m"); }
         if (tool === "ceiling") box.appendChild(el("div", "pphint", "Click a room: its ceiling on / off. ⌂ Cut-away in the bar hides every ceiling and roof to look in from above."));
@@ -560,6 +670,10 @@
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
           ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
         box.appendChild(el("div", "pphint", "Drag it (Select) - a wall near another room's wall snaps onto it and they share it. Shift keeps the drag straight."));
+        if (R.closed && root.PPFurn) {                                    // 2.629.0: 🪄 Furnish (the House builder's - the LLM when one runs, else a room's set)
+          const wi = el("input"); wi.type = "text"; wi.placeholder = "e.g. a cosy reading corner"; wi.id = "ppFurnWords"; row("Furnish with", wi, "optional words - the LLM picks from the furniture library");
+          btns([["🪄 Furnish", () => furnishRoom(R, wi.value), "Fill the room with furniture (Ctrl+Z takes it out)"]]);
+        }
       } else if (asel.ak === "op") {
         const op = x, I = P().opInfo(AR(), op), R = P().room(AR(), op.room);
         head((op.kind === "door" ? "🚪 Door" : op.kind === "window" ? "🪟 Window" : "▯ Opening") + " · " + (R ? R.name : ""));
@@ -598,6 +712,28 @@
         numIn("Width", s.w, ch((v) => { s.w = v; }), 0.05, 0.3, 10, "m"); numIn("Length", s.len, ch((v) => { s.len = v; }), 0.05, 0.3, 50, "m"); numIn("Height (up)", s.rise, ch((v) => { s.rise = v; }), 0.05, 0.1, 20, "m");
         numIn("Starts at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); colIn("Colour", s.col, ch((v) => { s.col = v; }));
         btns([["⟳ 90°", ch(() => { s.ang += 90; })], ["🗑 Delete", eraseSel]]);
+      } else if (asel.ak === "cam" && root.PPCam) {                      // 2.629.0: 📷 a camera
+        const c = x; head("📷 " + c.name);
+        txtIn("Name", c.name, ch((v) => { c.name = v; }));
+        numIn("Eye height", Math.round((c.z - floorAt(AR(), [c.x, c.y])) * 1000) / 1000, ch((v) => { c.z = floorAt(AR(), [c.x, c.y]) + v; }), 0.05, 0.05, 50, "m");
+        numIn("Turn", c.yaw, ch((v) => { c.yaw = ((v % 360) + 360) % 360; }), 5, -720, 720, "°"); numIn("Tilt", c.pitch, ch((v) => { c.pitch = v; }), 2, -89, 89, "°"); numIn("Lens", c.fov, ch((v) => { c.fov = v; }), 5, 10, 140, "°");
+        const sz = el("select"); [["1920x1080", "1920 × 1080"], ["1280x720", "1280 × 720"], ["1080x1920", "1080 × 1920 (upright)"], ["1024x1024", "1024 × 1024"]].forEach(([v, t]) => { const q = el("option", "", t); q.value = v; sz.appendChild(q); }); sz.value = O.camera.size || "1920x1080"; sz.onchange = () => { O.camera.size = sz.value; keepOpt(); }; row("Shot size", sz);
+        btns([["👁 Look through", () => lookThrough(c)], ["📷 Shot + depth + normal", () => camShots(c)], ["📍 360° location", () => camLocation(c)], ["🗑 Delete", eraseSel]]);
+        box.appendChild(el("div", "pphint", "📷 the shot (the photo look) + its depth and normal maps go to the Image assets; 📍 a 360° panorama from it becomes a Location (its @tag, the prompt's location)."));
+      } else if (asel.ak === "item" && root.PPFurn) {                    // 2.628.0: a piece of furniture
+        const it = x; head((it.type === "person" ? "🧍 " : "🛋 ") + root.PPFurn.label(it));
+        if (it.type === "person") {                                       // 2.630.0: a person - name, pose, height
+          txtIn("Name", it.name || "", ch((v) => { it.name = v; }));
+          selIn("Pose", it.pose, Object.keys(root.PPFurn.POSES()).map((k) => [k, root.PPFurn.POSES()[k]]), ch((v) => { it.pose = v; }));
+          numIn("Height", it.h, ch((v) => { it.h = v; }), 0.05, 0.9, 2.3, "m");
+        } else {
+        numIn("Width", it.w, ch((v) => { it.w = v; }), 0.05, 0.02, 50, "m"); numIn("Depth", it.d, ch((v) => { it.d = v; }), 0.05, 0.02, 50, "m"); numIn("Height", it.h, ch((v) => { it.h = v; }), 0.05, 0.01, 50, "m"); }
+        numIn("Turn", it.rot, ch((v) => { it.rot = ((Math.round(v) % 360) + 360) % 360; }), 15, -360, 360, "°");
+        numIn("Up from the floor", it.z, ch((v) => { it.z = v; }), 0.05, -100, 1000, "m");
+        chkIn("Own colour", !!it.color, ch((v) => { it.color = v ? "#8a8378" : ""; }));
+        if (it.color) colIn("Colour", it.color, ch((v) => { it.color = v; }));
+        btns([["⟳ 90°", ch(() => { it.rot = (it.rot + 90) % 360; })], ["⧉ Duplicate", () => { const b = before(), A = AR(), c = Object.assign({}, it, { id: A.n++, x: it.x + it.w + 0.1 }); A.items.push(c); done("duplicate", b, { ak: "item", id: c.id }); }], ["🗑 Delete", eraseSel]]);
+        box.appendChild(el("div", "pphint", "Drag it (Select); R turns it 90°; Delete removes it."));
       } else if (asel.ak === "slab") {
         const s = x; head("▦ Floor · " + (+Math.abs(P().area2(s.pts)).toFixed(2)) + " m²");
         numIn("Top at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); numIn("Thickness", s.th, ch((v) => { s.th = v; }), 0.01, 0.01, 5, "m"); colIn("Colour", s.col, ch((v) => { s.col = v; }));
@@ -624,7 +760,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { furnishRoom, lookThrough, camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

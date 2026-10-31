@@ -55,7 +55,7 @@ const MFILE = path.join(ROOT, "model_folders.json");
   const dls = (n) => until(async () => posted.dl.length >= n);
   try {
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
-    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3ModelMgr && window.H3House && window.SecFloat && SecFloat.started && document.getElementById("mmBtn"), null, { timeout: 60000 });
+    await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3ModelMgr && window.SecFloat && SecFloat.started && document.getElementById("mmBtn"), null, { timeout: 60000 });
     await p.waitForTimeout(1000);
     // the folder dialog answers in the page: the next answer is window.__fdNext
     await ev(() => { window.__fd = []; window.FileDialog = window.FileDialog || {}; window.FileDialog.open = function (o) { window.__fd.push(o); return Promise.resolve(window.__fdNext ? { path: window.__fdNext } : null); }; });
@@ -113,36 +113,7 @@ const MFILE = path.join(ROOT, "model_folders.json");
     check("…it says how many", /syncing 7 models/.test(await ev(() => document.getElementById("mmMsg").textContent)));
     await ev(() => SecFloat.show("modelmgr", false));
 
-    /* ---- 🏠 ◯ lights */
-    await p.click("#hbBtn"); await p.waitForTimeout(800);
-    await ev(() => SecFloat.float("house", 300, 70, 1100, 800)); await p.waitForTimeout(300);
-    await ev(() => { const m = H3HouseGeo.example(); m.name = "E2E house 538"; m.lights = []; H3House.load(m); const S = H3House.state(); S.sel = null; S.zoom = 50; S.ox = 60; S.oy = 60; H3House.setView("plan"); });
-    const at = async (x, y) => ev(([x, y]) => { const S = H3House.state(), r = document.getElementById("hbPlan").getBoundingClientRect(); return [r.left + x * S.zoom + S.ox, r.top + y * S.zoom + S.oy]; }, [x, y]);
-    check("the toolbar has ◯ (Light)", await ev(() => !!document.querySelector('#hbBody .htools [data-tool="light"]') && document.querySelector('#hbBody .htools [data-tool="light"]').textContent.trim() === "◯"));
-    await p.click('#hbBody .htools [data-tool="light"]');
-    const c0 = [2, 2], a0 = await at(...c0), a1 = await at(5, 2);
-    await p.mouse.move(a0[0], a0[1]); await p.mouse.down(); await p.mouse.move(a1[0], a1[1], { steps: 8 }); await p.mouse.up(); await p.waitForTimeout(300);
-    const L1 = await ev(() => { const S = H3House.state(); return { lights: JSON.parse(JSON.stringify(S.m.lights)), sel: S.sel, side: document.getElementById("hbProps").textContent }; });
-    check("press + drag: a light where it was pressed, reaching as far as the drag (3 m) - selected, the panel shows it", L1.lights.length === 1 && Math.abs(L1.lights[0].x - 2) < 0.06 && Math.abs(L1.lights[0].reach - 3) < 0.11 && L1.sel && L1.sel.kind === "light" && /Light/.test(L1.side) && /Reach/.test(L1.side), L1);
-    const lit = await ev(() => { const b = H3HouseGeo.build(H3House.state().m); return b.lights.filter((L) => L.placed).length; });
-    check("…the 3D build lights it (placed, always on)", lit === 1);
-    await p.click('#hbBody .htools [data-tool="select"]');
-    const hd = await ev(() => { const S = H3House.state(), o = S.m.lights[0]; S.sel = { kind: "light", id: o.id }; return H3House.handles("light", o); });
-    check("⬚ a selected light has its ◦ reach handle on the circle", hd.length === 1 && hd[0].h === "reach", hd);
-    const h0 = await at(hd[0].p[0], hd[0].p[1]), h1 = await at(c0[0] + 4.5, c0[1]);
-    await p.mouse.move(h0[0], h0[1]); await p.mouse.down(); await p.mouse.move(h1[0], h1[1], { steps: 6 }); await p.mouse.up(); await p.waitForTimeout(250);
-    const r2 = await ev(() => H3House.state().m.lights[0].reach);
-    check("…dragging it sizes the reach (4.5 m)", Math.abs(r2 - 4.5) < 0.11, r2);
-    const m0 = await at(2, 2), m1 = await at(3, 3);
-    await p.mouse.move(m0[0], m0[1]); await p.mouse.down(); await p.mouse.move(m1[0], m1[1], { steps: 6 }); await p.mouse.up(); await p.waitForTimeout(250);
-    const mv = await ev(() => { const o = H3House.state().m.lights[0]; return [o.x, o.y]; });
-    check("…dragging its centre moves it", Math.abs(mv[0] - 3) < 0.06 && Math.abs(mv[1] - 3) < 0.06, mv);
-    await p.focus("#hbBody"); await p.keyboard.press("Delete"); await p.waitForTimeout(200);
-    check("…Delete removes it (Ctrl+Z brings it back)", (await ev(() => H3House.state().m.lights.length)) === 0);
-    await p.keyboard.press("Control+z"); await p.waitForTimeout(200);
-    check("…Ctrl+Z", (await ev(() => H3House.state().m.lights.length)) === 1);
-    await ev(() => SecFloat.show("house", false));
-
+    /* 2.630.0: the House builder (its ◯ lights) is gone */
     /* ---- ⛶ maximize between the side dockers */
     const cls0 = await ev(() => document.getElementById("app").className);
     await ev(() => { const a = document.getElementById("app"); ["no-left", "no-refs", "no-assets", "no-queue", "no-right"].forEach((c) => a.classList.remove(c)); window.dispatchEvent(new Event("resize")); });

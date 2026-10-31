@@ -117,12 +117,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const op = await ev(async () => { const i = await window.H3SolidCraft.inspect(); return { name: i.name, bodies: i.bodies.length, path: i.path, m: document.getElementById("scMsg").textContent }; });
     check("📁 Designs lists the project's designs and parts; a click opens the design in SolidCraft (its bodies back)",
       rows.indexOf("📐 " + NAME) >= 0 && rows.indexOf("🧱 " + NAME + ".step") >= 0 && op.name === NAME && op.bodies >= 2 && /opened/.test(op.m), { rows, op });
-    /* 2.579.0: 🏠 Send to House builder, 🟠 Blender, 🎮 Unreal */
-    await p.click("#scToHouse"); await idle(60000);
-    const hs = await ev(() => { const S = window.H3House.state(), it = (S.m.items || []).find((x) => x.type === "model" && x.model === "sc_e2e578_bracket.obj"); return { it, loaded: !!window.H3HouseGeo.MODELS["sc_e2e578_bracket.obj"], m: document.getElementById("scMsg").textContent, shown: window.SecFloat.state("house").shown }; });
-    check("2.579.0 🏠 Send to House builder: the House builder opens with the part as a piece at its own size in metres (its mesh loaded)",
-      hs.it && hs.loaded && Math.abs(hs.it.w - 0.06) < 0.002 && Math.abs(hs.it.h - 0.03) < 0.002 && hs.shown && /House builder/.test(hs.m), hs);
-    await ev(() => window.SecFloat.show("house", false));
+    /* 2.579.0: 📏 Send to Sketcher (2.630.0 - was the House builder), 🟠 Blender, 🎮 Unreal */
+    await p.click("#scToSketcher"); await idle(60000);
+    await p.waitForFunction(() => window.H3PushPull && H3PushPull.state && H3PushPull.state.M && H3PushPull.state.M.g.length > 0, null, { timeout: 30000 }).catch(() => {});
+    const hs = await ev(() => { const S = window.H3PushPull.state, d = document.getElementById("pushpulldock"); return { groups: S.M.g.length, faces: S.M.f.length, shown: !d.classList.contains("dockgone"), m: document.getElementById("scMsg") ? document.getElementById("scMsg").textContent : "" }; });
+    check("📏 Send to Sketcher (2.630.0): the Sketcher opens with the part in it as a group", hs.groups >= 1 && hs.faces > 4 && hs.shown, hs);
     let bl = ""; try { bl = execSync("command -v blender", { encoding: "utf8" }).trim(); } catch (e) { bl = ""; }
     await ev(() => window.H3SolidCraftDock.checkTools()); await sleep(1500);
     const tools = await ev(() => ({ blender: !document.getElementById("scToBlender").hidden, unreal: !document.getElementById("scToUnreal").hidden }));

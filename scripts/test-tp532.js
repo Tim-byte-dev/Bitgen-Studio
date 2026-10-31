@@ -17,14 +17,14 @@ const TP = require("../lib/testPlan.js"), G = require("../static/housegeo.js");
 /* ---- the plan */
 const plan = TP.plan(), items = TP.flatten(plan), byId = (id) => items.find((i) => i.id === id);
 const g532 = plan.groups.find((g) => g.id === "g532");
-check("the plan has 2.532.0's group (9 items), newest first", g532 && g532.items.length >= 8 && plan.groups.indexOf(g532) <= plan.groups.length - 1 && plan.groups[0].id >= "g532", plan.groups[0].id);
-const was = ["an_dl", "pal_open", "pal_set", "pal_help", "hx_roof", "hx_trace", "hx_furnish", "hx_glb", "hx_list", "pp_place", "pp_real", "sd_why", "sd_real", "ws_pick", "ws_expert", "ws_reset", "rl_none", "hb_open", "hb_real"];
-check("19 tick-by-hand items tick themselves now too (an auto) and keep their ✓ ✗ buttons (manual)", was.every((id) => byId(id) && byId(id).auto && byId(id).manual), was.filter((id) => !(byId(id) && byId(id).auto)));
+check("the plan has 2.532.0's group (2.630.0: its 4 House builder items gone), newest first", g532 && g532.items.length >= 4 && plan.groups.indexOf(g532) <= plan.groups.length - 1 && plan.groups[0].id >= "g532", plan.groups[0].id);
+const was = ["an_dl", "pal_open", "pal_set", "pal_help", "sd_why", "sd_real", "ws_pick", "ws_expert", "ws_reset", "rl_none"];
+check("the tick-by-hand items (2.630.0: less the House builder's) tick themselves now too (an auto) and keep their ✓ ✗ buttons (manual)", was.every((id) => byId(id) && byId(id).auto && byId(id).manual), was.filter((id) => !(byId(id) && byId(id).auto)));
 const evs = new Set(items.filter((i) => i.auto && i.auto.kind === "event").map((i) => i.auto.event));
 const srcAll = ["lib/house.js", "lib/houseFurnish.js", "lib/workspaces.js", "lib/styleDoctor.js", "routes/styleDoctor.js", "lib/bugReport.js", "lib/civitai.js", "routes/modelMgr.js"].map((f) => read(f)).join("\n");
 const missing = [...evs].filter((e) => !TP.CLIENT_EVENTS.includes(e) && !new RegExp("[\"']" + e + "[\"']|\"house_\" \\+ k").test(srcAll));
 check("every event an item waits for is told by the server (lib / routes) or is a page event the route takes (CLIENT_EVENTS)", missing.length === 0, missing);
-const pageSrc = ["static/palette.js", "static/housebuilder.js", "static/secfloat.js", "static/testcoach.js",
+const pageSrc = ["static/palette.js", "static/secfloat.js", "static/testcoach.js",
   "ext/imageeditdock/imageedit.js", "ext/imageeditdock/pc3d.js", "ext/imageeditdock/pcunreal.js"].map((f) => read(f)).join("\n");   // 2.539.0 ie_ref, 2.540.0 ie_realrefs: the image editor tells them
 const unsent = TP.CLIENT_EVENTS.filter((e) => !pageSrc.includes('"' + e + '"'));
 check("…and every page event is sent by the page (palette / House builder / docker title bar / the image editor)", unsent.length === 0, unsent);
@@ -33,7 +33,6 @@ check("…and every page event is sent by the page (palette / House builder / do
 const ctx = { jobs: [{ id: "j1", status: "done", mode: "image", style: "Qwen Image Edit", images: ["house-beach-living-room-shot.png", "house-beach-char-ana.png"], log: [] },
   { id: "j2", status: "failed", mode: "image", style: "Anima", images: [], log: ["x is not in Load Checkpoint's list (models/checkpoints)"] }], events: [{ event: "workspace_used", data: { cat: "video", what: "video" }, at: 1 }] };
 check("job + image: a finished job given a house shot ticks 'Make it real'", TP.evaluate({ auto: { kind: "job", mode: "image", image: "^house-" } }, ctx).state === "pass");
-check("…a character picture of the house (pp_real's regex)", TP.evaluate(byId("pp_real"), ctx).state === "pass" && TP.evaluate({ auto: byId("pp_real").auto }, { jobs: [{ id: "x", status: "done", mode: "image", images: ["house-a-cam-shot.png"] }] }).state === "");
 check("…a failed job never ticks it", TP.evaluate({ auto: { kind: "job", image: "^house-" } }, { jobs: [Object.assign({}, ctx.jobs[0], { status: "failed" })] }).state === "");
 check("any: the first way that is seen", TP.evaluate({ auto: { kind: "any", of: [{ kind: "event", event: "nope" }, { kind: "event", event: "workspace_used" }] } }, ctx).state === "pass"
   && TP.evaluate({ auto: { kind: "any", of: [{ kind: "event", event: "nope" }] } }, ctx).state === "");
@@ -81,9 +80,9 @@ check("…a flat roof: its parapet + 3 m", Math.abs(G.heightRange(fl).top - (top
 const two = G.normalize(Object.assign({}, m, { floors: [{ name: "Ground", height: 2.7 }, { name: "Upstairs", height: 2.6 }] })), E2 = G.elevations(two);
 check("camAt: an eye height -> the floor it is over + the height over that floor", G.camAt(two, 1.6).floor === 0 && G.camAt(two, E2[1] + 1.2).floor === 1 && Math.abs(G.camAt(two, E2[1] + 1.2).z - 1.2) < 1e-6 && G.camAt(two, 0.15).z === 0.15, [E2, G.camAt(two, E2[1] + 1.2)]);
 check("…high over the roof it is still the top floor's camera (z far over its ceiling - normalize keeps up to 40 m)", G.camAt(two, 12).floor === 1 && G.normalize(Object.assign({}, two, { cameras: [{ id: "c", floor: 1, x: 0, y: 0, z: 9.4, yaw: 0, pitch: 0, fov: 70 }] })).cameras[0].z === 9.4);
-const hb = read("static/housebuilder.js");
-check("House builder: hold Shift rises / Alt sinks 2 m a second within heightRange (walkStep), ← → yaw, ↑ ↓ pitch", /dir \* 2 \* dt/.test(hb) && /G\.heightRange\(m\)/.test(hb) && /wc\.yaw = deg360\(wc\.yaw - 3\)/.test(hb) && /wc\.pitch \+ \(e\.key === "ArrowUp" \? 2 : -2\)/.test(hb));
-check("…a box / Shift+click selects several, handles size and turn (frameOf / scaleTo / turnTo), the camera's drag looks through it", /boxPick\(d\.a, d\.b\)/.test(hb) && /function scaleTo\(F, hd, p, keep\)/.test(hb) && /k === "camera" && d\.moved\) \{ camTouched\(o\)/.test(hb));
+const hb = "";
+/* 2.630.0: the House builder is gone - this check went with it */
+/* 2.630.0: the House builder is gone - this check went with it */
 
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log("RESULT: " + (fail ? "FAIL" : "PASS") + ` (${pass} passed, ${fail} failed)`);

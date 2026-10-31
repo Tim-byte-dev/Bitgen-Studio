@@ -67,7 +67,7 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
   check("…✨ Enhance's mapping lines carry them too", /const note = String\(r\.note \|\| ""\)/.test(ri) && /ref_notes: eb\.ref_notes/.test(ri));
 
   /* ---- the house builder */
-  const G = require("../static/housegeo.js"), HB = require("../static/housebuilder.js");
+  const G = require("../static/housegeo.js"), HB = null;
   const m = G.normalize({ refs: [{ id: "x1", file: "sofa.png", kind: "furniture", desc: "green  velvet" }, { id: "x2", file: "brick.png", kind: "wall" }, { file: "../evil.png" }, { file: ".hidden" }],
     walls: [{ a: [0, 0], b: [6, 0], tex: "x2", texScale: 2 }, { a: [6, 0], b: [6, 5] }, { a: [6, 5], b: [0, 5] }, { a: [0, 5], b: [0, 0], tex: "nope" }],
     rooms: [{ name: "Lounge", poly: [[0, 0], [6, 0], [6, 5], [0, 5]], tex: "x2", texScale: 99 }],
@@ -77,15 +77,11 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
   check("…walls / rooms keep {tex, texScale 0.1-10} only for a picture the house has; items / lights keep {ref}", m.walls[0].tex === "x2" && m.walls[0].texScale === 2 && !("tex" in m.walls[3]) && m.rooms[0].texScale === 10 && m.items[0].ref === "x1" && !("ref" in m.items[2]) && m.lights[0].ref === "x1");
   const tm = G.build(m).meshes.filter((x) => x.tex);
   check("build: a textured wall / floor is its own mesh with the picture + its tile size (the 3D view maps it)", tm.length === 2 && tm.some((x) => x.mat === "plaster" && x.tex === "brick.png" && x.texScale === 2) && tm.some((x) => x.mat === "oak" && x.tex === "brick.png" && x.texScale === 10), tm.map((x) => x.key));
-  const ls = HB.looksSeen(m, m.cameras[0], 16 / 9);
-  check("looksSeen: the pieces / lights with a look in the camera's view, nearest first, once per picture; + the room's floor / walls", ls.length === 2 && ls[0].ref === "x1" && ls[0].what === "light" && ls[1].ref === "x2" && ls[1].kind === "floor", ls);
-  const pp = HB.picPlan(["c1"], ls, { slots: 2 }), pp2 = HB.picPlan(["c1", "c2"], ls, { swapped: true }), pp3 = HB.picPlan([], ls, {});
-  check("picPlan: the shot, the characters, then the looks - as many as the style takes (a Klein swap 3)", pp.chars.length === 1 && pp.looks.length === 0 && pp.left === 2 && pp2.chars.length === 2 && pp2.looks.length === 0 && HB.picPlan(["c"], ls, { slots: 4 }).looks.length === 2 && pp3.looks.length === 0, [pp, pp2]);
-  const hb = read("static", "housebuilder.js");
-  check("the panel: 🖼 Wall / Floor picture + Tile (m), 🖼 Looks like, From References… / From disk… / ✕; a drop on the plan (application/x-h3ref or a file)",
-    /refRowHtml\(k, o\)/.test(hb) && /From References…/.test(hb) && /From disk…/.test(hb) && /Tile \(m\)/.test(hb) && /c\.addEventListener\("drop", planDrop\)/.test(hb) && /application\/x-h3ref/.test(hb));
-  check("…the 3D view maps the picture (refTexture, repeat 1 / tile); a shot / panorama waits for it (built.ready)", /refTexture\(T, refUrl\(g\.tex\), g\.texScale, loads\)/.test(hb) && /return built\.ready\.then\(function \(\) \{ return shotOf/.test(hb) && /built0\.ready/.test(hb));
-  check("…✨ Make it real sends the looks (POST /api/house/refasset) with \"look exactly like the one in picture N (its description)\"", /\/api\/house\/refasset/.test(hb) && /look exactly like the one in picture/.test(hb));
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
+  /* 2.630.0: the House builder is gone - this check went with it */
 
   /* ---- lib/house.js: kept with the house */
   check("refFileName: the stem's safe letters + the picture's own extension", require("../lib/house.js").refFileName("My Sofa (1).JPG", ".jpg") === "My_Sofa_1.jpg" && require("../lib/house.js").refFileName("", ".png") === "ref.png");
@@ -119,8 +115,8 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
 
   /* ---- the checklist */
   const tp = JSON.parse(read("lib", "testPlan.json")), gg = tp.groups.find((x) => x.id === "g539");
-  check("lib/testPlan.json: 2.539.0, group g539 first", /^2\.(539|5[4-9]\d|[6-9]\d\d)\.\d+$/.test(tp.version) && !!gg && ["ref_desc", "ref_types", "house_tex", "house_look", "ie_ref_layer", "ie_ref_edit"].every((id) => gg.items.some((i) => i.id === id)));
-  check("…house_ref / ie_ref are client events the list takes", /"house_ref", "ie_ref"/.test(read("lib", "testPlan.js")));
+  check("lib/testPlan.json: 2.539.0, group g539 first", /^2\.(539|5[4-9]\d|[6-9]\d\d)\.\d+$/.test(tp.version) && !!gg && ["ref_desc", "ref_types", "ie_ref_layer", "ie_ref_edit"].every((id) => gg.items.some((i) => i.id === id)));
+  /* 2.630.0: the House builder is gone - this check went with it */
 
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

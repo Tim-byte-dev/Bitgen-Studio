@@ -10,13 +10,24 @@
  *            DEFAULT ("create a real photo of the model in view"), its button reads "✏ Edit (Sketcher)" (index.html
  *            goLabel asks window.H3GoLabel; runGenerate asks window.H3TakeGenerate - both chained, the image editor's kept).
  *            The mode and the style it had come back when the link ends (unless changed meanwhile).
- *   GENERATE the view (no selection outline, the theme's background) -> POST /api/aiedit (mode edit, the whole picture, the
- *            edit model) -> the job -> the photo is a REAL IMAGE: filed in the project's Image assets (POST /api/passets),
+ *   GENERATE 2.627.0: a CLEAN render of the view (no outlines / grid / axes, shadows, a daylight sky) as picture 1 + its
+ *            DEPTH map (near white, far black) as picture 2 -> POST /api/aiedit (mode edit, the whole picture, the edit
+ *            model, ref_raw: the prompt is LEAD + DEPTH + the user's words, {img1} / {img2} in the model's word) -> the job -> the photo is a REAL IMAGE: filed in the project's Image assets (POST /api/passets),
  *            and with the image editor on screen also a plain layer there.
  * Pure (Node: scripts/test-sketcher626.js): linkedNow, pickEditStyle, shotSize, realName. */
 (function (root) {
   "use strict";
   const DEFAULT = "create a real photo of the model in view";
+  /** 2.627.0 (Tim: "before generating the picture do a clean render + depth and prepend the prompt to convert image n with Turn
+      this 3D render into a photorealistic photograph of a building: real brick, timber, glass and concrete, natural daylight, soft
+      shadows, no outlines, DSLR photo.") - {img1} / {img2}: the server puts the edit model's own word (<image1>, image 2 ...) */
+  const LEAD = "Convert {img1}: Turn this 3D render into a photorealistic photograph of a building: real brick, timber, glass and concrete, natural daylight, soft shadows, no outlines, DSLR photo.";
+  const DEPTH = "{img2} is the depth map of {img1} (near = white, far = black): keep exactly the same shapes, layout, proportions and camera angle.";
+  /** the words sent: the lead + the depth line + the user's own (not the default words - the lead says it better) */
+  function promptFor(text) {
+    const t = String(text || "").trim();
+    return LEAD + " " + DEPTH + (t && t !== DEFAULT ? "\n" + t : "");
+  }
   /** s = {sketcher, prompt, editor, maxed} (on screen) */
   function linkedNow(s) { return !!(s && s.sketcher && s.prompt && (s.maxed || !s.editor)); }
   /** the style to run: the prompt docker's when it is an edit model, else the engines' default edit model, else the first */
@@ -34,7 +45,7 @@
   }
   const realName = (model) => "sketcher_real_" + String(model || "model").replace(/[^\w.-]+/g, "_").slice(0, 60) + ".png";
 
-  const api = { DEFAULT, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { DEFAULT, LEAD, DEPTH, promptFor, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -90,11 +101,14 @@
     try {
       const cv = V.canvas, sz = shotSize(cv.clientWidth, cv.clientHeight, 1024);
       V.setSel({ f: [], e: [], k: [] }); if (P.state.A && P.state.A.setSel) P.state.A.setSel(null);
-      const c = V.shot(sz.w, sz.h, { clean: true }); V.setSel(P.state.sel);
-      const blob = await new Promise((ok) => c.toBlob(ok, "image/png"));
+      // 2.627.0: a CLEAN render (no outlines / grid, shadows, a daylight sky) = picture 1, its DEPTH map = picture 2
+      const c = V.shot(sz.w, sz.h, { clean: true, photo: true }), dm = V.shot(sz.w, sz.h, { clean: true, depth: true }); V.setSel(P.state.sel);
+      const blob = await new Promise((ok) => c.toBlob(ok, "image/png")), dblob = await new Promise((ok) => dm.toBlob(ok, "image/png"));
+      S.shots = { photo: c, depth: dm };
       const fd = new FormData();
       fd.append("crop", blob, "sketcher.png");
-      const fields = { mode: "edit", prompt: String(text || DEFAULT).trim() || DEFAULT, style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
+      fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
+      const fields = { mode: "edit", prompt: promptFor(text), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
       Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
       if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
       say("📷 a real photo of the model - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
@@ -126,7 +140,7 @@
       try { if (root.H3TestEvent) root.H3TestEvent("sketcher_real", saved.name); } catch (e) { /* fine */ }
     } finally { S.busy = false; if (typeof root.paintGoLabel === "function") root.paintGoLabel(); }
   }
-  root.H3SketcherReal = Object.assign({ state, run, link, tick, last: () => S.last, linked: () => S.linked }, api);
+  root.H3SketcherReal = Object.assign({ state, run, link, tick, last: () => S.last, linked: () => S.linked, shots: () => S.shots }, api);
   setInterval(tick, 700);
   doc.addEventListener("DOMContentLoaded", tick);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -62,6 +62,26 @@
     };
     i.click();
   }
+  /* 2.630.0: the House builder is gone - its saved houses come in as Sketcher models (ppimport.js) */
+  function houseMenu(at) {
+    const h = H(); if (!h) return;
+    h.api("/api/house").then((L) => {
+      const list = Array.isArray(L) ? L : [];
+      h.menu(at, [{ head: list.length ? "The project's houses (the House builder's)" : "No houses in this project" }].concat(list.map((x) => ({ label: "🏠 " + x.name + " · " + x.rooms + " rooms · " + x.items + " pieces", run: () => importHouse(x.slug) }))));
+    }).catch((e) => h.msg("🏠 " + (e.message || e)));
+  }
+  async function importHouse(slug) {
+    const h = H(); if (!h || !root.PPImport) return null;
+    try {
+      const m = await h.api("/api/house/" + encodeURIComponent(slug)), r = root.PPImport.fromHouse(m);
+      const name = safe(r.name) || "house";
+      await h.api("/api/pushpull/" + encodeURIComponent(name), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: r.model, view: null }) });
+      await h.open(name);
+      if (h.state.V) h.state.V.extents();
+      h.msg("🏠 " + name + " - the House builder's house as a Sketcher model" + (r.notes.length ? " (not carried: " + r.notes.join(", ") + ")" : ""));
+      return name;
+    } catch (e) { h.msg("🏠 not brought in: " + (e.message || e)); return null; }
+  }
   const maxed = () => dock.classList.contains("maxed");
   // 2.624.0: the title bar's ⛶ / ✕ - ⛶ is "⇲ Dock" while maximized; a docker the app cannot maximize (not a .bdock) does it itself
   function toggleMaxed(force) {
@@ -91,6 +111,7 @@
       { head: "Bring in" },
       { label: "⤒ A 3D model of the project…", run: () => h.state.V && h.importMenu(at) },
       { label: "⤒ From this computer… (.pp3d · .glb · .gltf · .obj)", run: fromComputer },
+      { label: "🏠 A house from the House builder…", run: () => houseMenu(at) },
       { head: "Out" },
       { label: "⤓ Export… (.glb · .obj · .stl)", run: () => h.exportMenu(at) },
       { label: "🖼 → the image editor (a picture of the view)", run: g("→ Image editor", () => h.toEditor(false)) },
@@ -107,7 +128,22 @@
   function top() { const tb = $("titlebar"); return tb && !tb.classList.contains("hidden") && tb.offsetHeight ? Math.round(tb.getBoundingClientRect().bottom) : 0; }
   /** 2.625.0: the status bar stays too - the room under the maximized docker (0: no status bar shown) */
   function bottom() { const sb = $("statusbar"); if (!sb || !sb.offsetHeight || getComputedStyle(sb).display === "none") return 0; return Math.max(0, Math.round(root.innerHeight - sb.getBoundingClientRect().top)); }
+  /* 2.628.0 (Tim: "when maximized sketcher takes the full screen except for bitgen titlebar and statusbar, all the other
+     dockers are closed"): maximized = every other docker shown is closed (its status-bar button lit = on screen); ⇲ Dock /
+     Esc opens those same ones again */
+  let closedByMax = null;
+  function closeOthers() {
+    const Gd = root.H3GoneDocks || {}, out = [];
+    Object.keys(Gd).forEach((btn) => { const id = Gd[btn], b = $(btn); if (id === "pushpulldock" || !b || !b.classList.contains("on") || typeof root.toggleDockGone !== "function") return; try { root.toggleDockGone(id, btn); out.push([id, btn]); } catch (e) { /* fine */ } });
+    closedByMax = out;
+  }
+  function reopenOthers() {
+    const L = closedByMax || []; closedByMax = null;
+    L.forEach(([id, btn]) => { const b = $(btn); if (b && !b.classList.contains("on")) try { root.toggleDockGone(id, btn); } catch (e) { /* fine */ } });
+  }
+  let wasMax = false;
   function fit() {
+    if (maxed() !== wasMax) { wasMax = maxed(); if (wasMax) closeOthers(); else reopenOthers(); }
     if (maxed()) { dock.style.setProperty("--pp-top", top() + "px"); dock.style.setProperty("--pp-bottom", bottom() + "px"); }
     else { dock.style.removeProperty("--pp-top"); dock.style.removeProperty("--pp-bottom"); }
     paintMax();
@@ -125,5 +161,5 @@
   // Esc (one the 3D view did not use): a docker maximized by itself goes back (the app's Esc does a .bdock's)
   doc.addEventListener("keydown", (e) => { if (e.key === "Escape" && maxed() && !dock.classList.contains("bdock") && !doc.querySelector("dialog[open]")) toggleMaxed(false); });
   paintMax();
-  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, toggleMaxed, maxed, top, bottom, close, paintMax };
+  root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, houseMenu, importHouse, toggleMaxed, maxed, top, bottom, close, paintMax, closedByMax: () => closedByMax };
 })(typeof window !== "undefined" ? window : globalThis);

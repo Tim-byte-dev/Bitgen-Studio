@@ -382,7 +382,7 @@
     M.v = (Array.isArray(o.v) ? o.v : []).map((p) => clean(Array.isArray(p) ? p : [0, 0, 0]));
     const ok = (i) => Number.isInteger(i) && i >= 0 && i < M.v.length;
     M.f = (Array.isArray(o.f) ? o.f : []).filter((F) => F && Array.isArray(F.loops) && F.loops.length && F.loops.every((l) => Array.isArray(l) && l.length >= 3 && l.every(ok)))
-      .map((F) => ({ id: +F.id || 0, loops: F.loops.map((l) => l.slice()), mat: typeof F.mat === "string" && /^#[0-9a-f]{6}$/i.test(F.mat) ? F.mat : null, grp: +F.grp || null }));
+      .map((F) => ({ id: +F.id || 0, loops: F.loops.map((l) => l.slice()), mat: typeof F.mat === "string" && (/^#[0-9a-f]{6}$/i.test(F.mat) || /^mat:[a-z_]{2,24}$/.test(F.mat)) ? F.mat : null, grp: +F.grp || null }));
     M.e = (Array.isArray(o.e) ? o.e : []).filter((E) => E && ok(E.a) && ok(E.b) && E.a !== E.b).map((E) => ({ id: +E.id || 0, a: E.a, b: E.b, grp: +E.grp || null }));
     M.g = (Array.isArray(o.g) ? o.g : []).filter((g) => g && +g.id).map((g) => Object.assign({ id: +g.id, name: String(g.name || "Group").slice(0, 60) }, g.soft ? { soft: true } : {}));
     let mx = 0; M.f.concat(M.e).concat(M.g).forEach((x) => { mx = Math.max(mx, x.id || 0); }); M.n = Math.max(+o.n || 1, mx + 1);

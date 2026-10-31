@@ -93,22 +93,6 @@
           "manual": true
         },
         {
-          "id": "house_tex",
-          "title": "🏠 Drag a wall / floor picture from the References docker onto a wall or a room on the plan - the 3D view (and a 📷 shot) shows it; Tile (m) sizes it",
-          "where": "app",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_ref"
-          }
-        },
-        {
-          "id": "house_look",
-          "title": "🏠 A furniture / light picture on a piece (🖼 Looks like → From References…) - ✨ Make it real's prompt says \"look exactly like the one in picture N\" and sends it",
-          "where": "app",
-          "manual": true
-        },
-        {
           "id": "ie_ref_layer",
           "title": "🖼 Image editor: drag a reference picture onto an open picture - it comes in as a new layer named by its description",
           "where": "app",
@@ -170,16 +154,6 @@
           "auto": {
             "kind": "event",
             "event": "model_sync"
-          }
-        },
-        {
-          "id": "house_light",
-          "title": "🏠 ◯ Light tool: press where it hangs, drag its reach - the plan shows the circle, the 3D view lights it (height, brightness, colour in the panel)",
-          "where": "app",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_light"
           }
         },
         {
@@ -319,7 +293,7 @@
         },
         {
           "id": "tm_next",
-          "title": "In the image editor (or the House builder) a reminder says what to test next there; Later / Skip / ✕ move it along",
+          "title": "In the image editor a reminder says what to test next there; Later / Skip / ✕ move it along",
           "where": "app",
           "manual": true
         },
@@ -513,42 +487,6 @@
           "title": "✕ closes the docker (its button / key opens it again)",
           "manual": true,
           "where": "app"
-        },
-        {
-          "id": "hs_size",
-          "title": "🏠 ⬚ Select a sofa: drag a corner square to size it (Shift keeps its shape); the ↻ handle turns it (15° steps, Shift = free)",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_scale"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hs_box",
-          "title": "Drag on an empty spot: a box selects everything inside it; Shift+click adds / takes one off; drag one to move them all, R turns them, Delete removes them",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_select"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hs_walk",
-          "title": "Drag a 📷 camera through the plan: the 3D view looks through it as it moves",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_walk"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hs_keys",
-          "title": "A camera selected: ← → turn it, ↑ ↓ tilt it; hold Shift - it rises (3 m over the roof at most); hold Alt - it sinks (the ground floor)",
-          "manual": true,
-          "where": "house"
         }
       ]
     },
@@ -628,98 +566,6 @@
       ]
     },
     {
-      "id": "g529",
-      "title": "2.529.0 — House builder extras (roof, trace a plan, furnish, .glb, shot list)",
-      "items": [
-        {
-          "id": "hx_roof",
-          "title": "⌂ Roof (nothing picked -> the House panel): Gable / Hip / Flat - an outside camera's shot shows it",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_roof"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hx_trace",
-          "title": "🖼 Load a plan picture, 📐 set the scale with two points, draw the walls over it",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_trace"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hx_furnish",
-          "title": "🪄 Furnish this room (a room picked): the pieces against the walls, the door clear; with an LLM running it picks from the library",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_furnish"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hx_glb",
-          "title": "⤓ .glb opens in Blender / Unreal with its colours",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_glb"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hx_list",
-          "title": "🎬 Every camera: a StoryBoard scene per camera with the shot as its first frame + the list as .md",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_shotlist"
-          },
-          "where": "house"
-        }
-      ]
-    },
-    {
-      "id": "g528",
-      "title": "2.528.0 — 🧍 characters in House shots",
-      "items": [
-        {
-          "id": "pp_place",
-          "title": "🏠 House -> 🧍 Person: press where they stand, drag the way they face; pick the character + pose in the properties; a grey mannequin in 3D",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_people"
-          },
-          "where": "house"
-        },
-        {
-          "id": "pp_shot",
-          "title": "📷 Shot + maps: the mannequin is in the picture AND its depth map (for ControlNet)",
-          "auto": {
-            "kind": "event",
-            "event": "house_shot"
-          },
-          "where": "house"
-        },
-        {
-          "id": "pp_real",
-          "title": "✨ Make it real with FLUX.2 Klein edit (3 pictures) / Qwen Image 2.1 edit: the character replaces the mannequin, the room stays",
-          "manual": true,
-          "auto": {
-            "kind": "job",
-            "mode": "image",
-            "image": "^house-.*-char-"
-          },
-          "where": "house"
-        }
-      ]
-    },
-    {
       "id": "g527",
       "title": "2.527.0 — 🩺 the Style doctor",
       "items": [
@@ -778,7 +624,7 @@
         },
         {
           "id": "ws_keep",
-          "title": "Change a workspace (hide a docker, resize, open 🏠 House), go to another and back: it is as you left it",
+          "title": "Change a workspace (hide a docker, resize), go to another and back: it is as you left it",
           "manual": true,
           "where": "app"
         },
@@ -843,81 +689,6 @@
             "re": "not in Load Checkpoint.s list"
           },
           "where": "image"
-        }
-      ]
-    },
-    {
-      "id": "g524",
-      "title": "2.524.0 — 🏠 the House builder (a floor plan you can use as a Location)",
-      "items": [
-        {
-          "id": "hb_open",
-          "title": "🏠 House (statusbar) opens the House builder; 📋 Example shows a furnished house on the plan AND in 3D",
-          "manual": true,
-          "auto": {
-            "kind": "event",
-            "event": "house_example"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hb_draw",
-          "title": "Draw: ▭ drag a room (its walls come with it), 🚪 / 🪟 click onto a wall, 🛋 place a sofa (R turns it), ⇗ stairs after ＋ a floor; Ctrl+Z / Ctrl+Y",
-          "manual": true,
-          "where": "house"
-        },
-        {
-          "id": "hb_save",
-          "title": "💾 Save: the house is in the list (with its rooms + m²)",
-          "auto": {
-            "kind": "event",
-            "event": "house_saved"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hb_3d",
-          "title": "3D: orbit it; ☀ Time moves the sun (noon = north), Lamps on at night; 👁 a camera's view - drag in it to aim the camera",
-          "manual": true,
-          "where": "house"
-        },
-        {
-          "id": "hb_shot",
-          "title": "📷 Shot + maps: the picture + its depth + normal maps land in the Image assets",
-          "auto": {
-            "kind": "event",
-            "event": "house_shot"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hb_pano",
-          "title": "📍 360° location: a new Location with the room as its 360° view (Locations docker; its @tag works in the prompt)",
-          "auto": {
-            "kind": "event",
-            "event": "house_pano"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hb_real",
-          "title": "✨ Make it real (an edit style - Qwen Image Edit / Kontext / FLUX.2 Klein): a photoreal picture of the room, same layout",
-          "manual": true,
-          "auto": {
-            "kind": "job",
-            "mode": "image",
-            "image": "^house-"
-          },
-          "where": "house"
-        },
-        {
-          "id": "hb_obj",
-          "title": "⤓ .obj: the zip imports into Blender (Y up) / Unreal (scale 100) with its colours",
-          "auto": {
-            "kind": "event",
-            "event": "house_obj"
-          },
-          "where": "house"
         }
       ]
     },

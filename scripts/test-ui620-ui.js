@@ -59,7 +59,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const AR = () => ev(() => JSON.parse(JSON.stringify(H3PushPull.state.M.arch || {})));
     const msg = () => ev(() => document.getElementById("ppMsg").textContent);
     const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(15));
-    check("the Build tools under the modelling tools: Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs", tools.join() === "room,wall,door,window,floor,ceiling,roof,light,stairs", tools);
+    check("the Build tools under the modelling tools: Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs", tools.join() === "room,wall,door,window,floor,ceiling,roof,light,stairs,furniture,camera", tools);
 
     /* their keys stay in the docker */
     const docks0 = await ev(() => [...document.querySelectorAll(".bdock, .secfloat")].map((d) => d.id + ":" + d.className).join("|"));

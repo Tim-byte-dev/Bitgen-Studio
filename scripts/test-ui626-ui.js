@@ -60,8 +60,12 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.waitForFunction(() => /not made|Image assets/.test(document.getElementById("ppMsg").textContent), null, { timeout: 60000 }).catch(() => {});
     const jobs = await api("/api/jobs"), JL = Array.isArray(jobs) ? jobs : (jobs.jobs || []);
     const job = JL.length ? await api("/api/jobs/" + JL[JL.length - 1].id) : null, jp = job && job.params || {};
-    check("Generate (the prompt docker's button): the Sketcher's view goes to the EDIT model with the prompt (an image edit job, the view's shape)",
-      job && jp.prompt === "create a real photo of the model in view" && ln.style === (jp.style || {}).id && job.meta && job.meta.width % 16 === 0 && job.meta.height % 16 === 0, job && { prompt: jp.prompt, style: (jp.style || {}).name, w: job.meta && job.meta.width, h: job.meta && job.meta.height });
+    check("Generate (the prompt docker's button): a clean render + its depth map go to the EDIT model, the prompt led by \"Convert image 1: Turn this 3D render into a photorealistic photograph ...\" (the model's own picture words)",
+      job && /^Convert (<image1>|image 1|Picture 1|<image_1>): Turn this 3D render into a photorealistic photograph of a building/.test(jp.prompt) && /(<image2>|image 2|Picture 2|<image_2>) is the depth map/.test(jp.prompt) && !/\{img/.test(jp.prompt) && ln.style === (jp.style || {}).id && job.meta && job.meta.width % 16 === 0 && job.meta.height % 16 === 0, job && { prompt: jp.prompt, style: (jp.style || {}).name, w: job.meta && job.meta.width, h: job.meta && job.meta.height });
+    const sh = await ev(() => { const S = H3SketcherReal.shots && H3SketcherReal.shots(); if (!S) return null; const px = (c) => { const g = c.getContext("2d"), d = g.getImageData(0, 0, c.width, c.height).data; let dark = 0, white = 0, n = 0, sky = 0; for (let i = 0; i < d.length; i += 4 * 97) { n++; const l = (d[i] + d[i + 1] + d[i + 2]) / 3; if (l < 20) dark++; if (l > 235) white++; if (Math.abs(d[i] - 0xc9) < 6 && Math.abs(d[i + 1] - 0xdc) < 6 && Math.abs(d[i + 2] - 0xec) < 6) sky++; } return { dark: dark / n, white: white / n, sky: sky / n }; }; return { photo: px(S.photo), depth: px(S.depth), url: S.photo.toDataURL("image/png").slice(0, 30) }; });
+    check("…the clean render: a daylight sky, no black outlines; the depth map: black far away, light where the model is", sh && sh.photo.sky > 0.3 && sh.photo.dark < 0.02 && sh.depth.dark > 0.3 && sh.depth.dark < 0.98, sh);
+    await ev(() => { const S = H3SketcherReal.shots(); window.__sk = [S.photo.toDataURL("image/png"), S.depth.toDataURL("image/png")]; });
+    if (process.env.SK_SHOTS) { const u = await ev(() => window.__sk); require("fs").writeFileSync("/tmp/sk_photo.png", Buffer.from(u[0].split(",")[1], "base64")); require("fs").writeFileSync("/tmp/sk_depth.png", Buffer.from(u[1].split(",")[1], "base64")); }
     // 2) a render that comes back (the page's fetches answered here): the result is a REAL image - an Image asset
     let sent = null;
     await p.route("**/api/aiedit", async (rt) => { sent = rt.request().postData() || ""; await rt.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ jobs: [{ id: "zz626job", seed: 1 }], mode: "edit", workflow: "x" }) }); });
@@ -78,6 +82,14 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
       last.last && /^sketcher_real_/.test(last.last.asset) && names(assets1).length > names(assets0).length && /Image assets/.test(last.msg) && /name="crop"/.test(sent) && /name="mode"\r\n\r\nedit/.test(sent) && /name="whole"\r\n\r\n1/.test(sent), { last, a0: names(assets0), a1: names(assets1) });
     await p.unrouteAll({ behavior: "ignoreErrors" }).catch(() => {});
 
+    // the link ends when the Sketcher closes: the prompt docker as it was
+    await ev(() => { if (H3PushPullFrame.maxed()) H3PushPullFrame.toggleMaxed(false); toggleDockGone("pushpulldock", "tX_pushpulldock"); });
+    await p.waitForTimeout(1200);
+    const after = await ev(() => ({ linked: H3SketcherReal.linked(), mode: document.getElementById("genModeSel").value, style: document.getElementById("styleSel").value, prompt: document.getElementById("prompt").value }));
+    check("the Sketcher closed: the prompt docker's mode and style come back, the words it put there go", !after.linked && after.mode === before.mode && after.style === before.style && after.prompt === "", { before, after });
+
+    await ev(() => { toggleDockGone("pushpulldock", "tX_pushpulldock"); });
+    await p.waitForTimeout(500);
     // → image editor: a Sketcher layer; sent again = the same layer
     await ev(() => document.getElementById("ppToIE").click());
     await p.waitForFunction(() => window.imageEditorInstance && imageEditorInstance.E && imageEditorInstance.E.S.w > 0, null, { timeout: 20000 }).catch(() => {});
@@ -88,15 +100,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const sk = (L) => L.filter((x) => x.sk && /^📏 Sketcher · /.test(x.name));
     check("→ Image editor: the view as a 📏 Sketcher layer (tagged with its model); sent again, that layer is updated (no second one)", sk(L1).length === 1 && sk(L2).length === 1 && L2.length === L1.length, { L1, L2 });
 
-    // the link ends when the Sketcher closes: the prompt docker as it was
-    await ev(() => { if (H3PushPullFrame.maxed()) H3PushPullFrame.toggleMaxed(false); toggleDockGone("pushpulldock", "tX_pushpulldock"); });
-    await p.waitForTimeout(1200);
-    const after = await ev(() => ({ linked: H3SketcherReal.linked(), mode: document.getElementById("genModeSel").value, style: document.getElementById("styleSel").value, prompt: document.getElementById("prompt").value }));
-    check("the Sketcher closed: the prompt docker's mode and style come back, the words it put there go", !after.linked && after.mode === before.mode && after.style === before.style && after.prompt === "", { before, after });
-
     // → timeline: a Sketcher layer
-    await ev(() => { toggleDockGone("pushpulldock", "tX_pushpulldock"); });
-    await p.waitForTimeout(500);
     const tl = await ev(async () => { await H3PushPull.toTimeline(); await new Promise((r) => setTimeout(r, 1200)); const t = document.getElementById("timelinedock"); return { msg: document.getElementById("ppMsg").textContent, has: !!t && t.textContent.includes("📏 Sketcher · ") }; });
     check("→ Timeline: a 📏 Sketcher layer (the model in 3D)", /Sketcher layer/.test(tl.msg) && tl.has, tl);
     check("no page errors", errs.length === 0, errs);
