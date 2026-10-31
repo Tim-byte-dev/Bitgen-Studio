@@ -51,12 +51,12 @@
     furniture: "Pick a piece in the panel, click on a floor to put it there · R turns it 90° · type degrees · Select drags it",
   };
   const VCB = { room: "Width,Depth", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length", furniture: "Turn°", camera: "Lens°" };
-  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0 }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
+  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0, autoRoof: false, autoFloor: false }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
     floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 }, furniture: { type: "sofa", cat: "Living", rot: 0, color: "" }, camera: { eye: 1.6, fov: 60 } };
 
   function create(ctx) {
     const V = ctx.V, v3 = () => G().v3;
-    let tool = null, st = {}, asel = null;
+    let tool = null, st = {}, asel = null, through = null;      // through: 2.631.0 the camera the view looks through
     const O = JSON.parse(JSON.stringify(OPT0));
     try { const s = JSON.parse(root.localStorage.getItem("pp.archopt") || "{}"); Object.keys(O).forEach((k) => { if (s[k] && typeof s[k] === "object") Object.assign(O[k], s[k]); }); } catch (e) { /* fine */ }
     const keepOpt = () => { try { root.localStorage.setItem("pp.archopt", JSON.stringify(O)); } catch (e) { /* fine */ } };
@@ -68,6 +68,26 @@
     /** 2.625.0: the ray on a vertical plane (a wall's face) through p, square to n */
     function wallAt(ev, p, n) { const r = V.ray(ev), den = r.d[0] * n[0] + r.d[1] * n[1]; if (Math.abs(den) < 0.12) return null; const t = ((p[0] - r.o[0]) * n[0] + (p[1] - r.o[1]) * n[1]) / den; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, r.o[2] + r.d[2] * t] : null; }
     /** 2.625.0: the picked door / window's grip under the pointer (on the wall's face toward the camera) -> {key, n, p} | null */
+    /** 2.633.0: the rotate ring under the pointer (a picked camera / piece of furniture) -> {key, axis, c} | null */
+    function ringAt(ev) {
+      if (!asel || (asel.ak !== "cam" && asel.ak !== "item") || !root.PPCam) return null;
+      const o = P().find(AR(), asel.ak, asel.id); if (!o) return null;
+      const G0 = root.PPCam.rings(asel.ak, o), r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+      let best = null;
+      const cp = V.cam().position, vd = [G0.c[0] - cp.x, G0.c[1] - cp.y, G0.c[2] - cp.z], vl = Math.hypot(vd[0], vd[1], vd[2]) || 1;
+      G0.rings.forEach((rg) => {
+        // a ring seen edge-on is a line through the middle - it gives way to an open one (and turning it by dragging round would not read)
+        const open = Math.abs((rg.axis[0] * vd[0] + rg.axis[1] * vd[1] + rg.axis[2] * vd[2]) / vl); if (open < 0.08) return;
+        const S = rg.pts.map((p) => V.screen(p));
+        for (let i = 0; i < S.length; i++) {
+          const a = S[i], b = S[(i + 1) % S.length]; if (a[2] > 1 || b[2] > 1) continue;
+          const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((mx - a[0]) * dx + (my - a[1]) * dy) / L2));
+          const d = Math.hypot(mx - a[0] - dx * t, my - a[1] - dy * t) + (1 - open) * 4;
+          if (d < 8 && (!best || d < best.d)) best = { d, key: rg.key, axis: rg.axis, c: G0.c };
+        }
+      });
+      return best;
+    }
     function gripAt(ev) {
       if (!asel || asel.ak !== "op") return null;
       const A = AR(), op = A.ops.find((o) => o.id === asel.id), I = op && P().opInfo(A, op); if (!I) return null;
@@ -277,9 +297,10 @@
       const w = Math.abs(b[0] - a[0]), d = Math.abs(b[1] - a[1]);
       if (w < 0.3 || d < 0.3) { ctx.status("a room 30 cm across at least"); return; }
       const of = P().offsetOnFloor(AR(), P().rectPts(a, b), true, O.room.t, O.room.off);       // 2.624.0: off a floor's edge
-      const bf = before(), R = P().addRoom(AR(), of.pts, { z: O.room.z, h: O.room.h, t: O.room.t, ceilOn: O.room.ceilOn });
+      const bf = before(), R = P().addRoom(AR(), of.pts, { z: O.room.z, h: O.room.h, t: O.room.t, ceilOn: O.room.ceilOn, slab: !!O.room.autoFloor });
       st = {}; V.preview({});
       if (!R) { ctx.status("that room is too small"); return; }
+      if (O.room.autoRoof) P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over });   // 2.631.0: the auto roof
       done("room", bf, { ak: "room", id: R.id });
       const shared = sharedWith(R);
       ctx.status("⌂ " + R.name + " " + fmt(w) + " × " + fmt(d) + (shared.length ? " - sharing a wall with " + shared.join(", ") : "") + (of.moved ? " · " + of.moved + " wall(s) " + fmt(O.room.off) + " in from the floor's edge" : "") + " · drag it (Select), doors D, windows I");
@@ -310,7 +331,7 @@
     }
     function vcb(text) {
       const g = G().parseVcb(text), A = AR();
-      if (tool === "camera") { const deg = parseFloat(String(text).replace(/[^\d.]/g, "")); if (!(deg >= 10 && deg <= 140)) return false; O.camera.fov = deg; keepOpt(); props(); ctx.status("📷 lens " + deg + "°"); return true; }
+      if (tool === "camera") { const deg = parseFloat(String(text).replace(/[^\d.]/g, "")); if (!(deg >= 3 && deg <= 140)) return false; O.camera.fov = deg; keepOpt(); props(); ctx.status("📷 lens " + deg + "°"); return true; }
       if (tool === "furniture") { const deg = parseFloat(String(text).replace(/[^\d.-]/g, "")); if (!Number.isFinite(deg)) return false; O.furniture.rot = ((Math.round(deg) % 360) + 360) % 360; keepOpt(); props(); ctx.status("🛋 turned " + O.furniture.rot + "°"); return true; }
       if (tool === "roof") {
         const deg = parseFloat(String(text).replace(/[^\d.]/g, "")); if (!Number.isFinite(deg)) return false;
@@ -340,12 +361,15 @@
       if (owns(baseTool) && k === "Escape") {
         if (baseTool === "wall" && st.pts && st.pts.length >= 2) { finishWall(false); return true; }
         if (Object.keys(st).length) { st = {}; V.preview({}); ctx.status(HINT[baseTool]); return true; }
+        if (asel) { setSel(null); ctx.status("nothing picked - Esc again: ⬚ Select"); return true; }   // 2.632.0: Esc deselects with a Build tool too
         return false;
       }
       if (asel && (k === "Delete" || k === "Backspace") && (baseTool === "select" || owns(baseTool))) { eraseSel(); return true; }
       if ((k === "r" || k === "R") && !e.ctrlKey && !e.metaKey && !e.altKey) {                      // 2.628.0: R turns the next piece / the picked one 90°
         if (baseTool === "furniture") { O.furniture.rot = (O.furniture.rot + 90) % 360; keepOpt(); props(); ctx.status("🛋 " + O.furniture.rot + "°"); return true; }
-        if (asel && asel.ak === "item" && baseTool === "select") { const b = before(), it = P().find(AR(), "item", asel.id); if (it) { it.rot = (it.rot + 90) % 360; done("turn", b); } return true; }
+        if (asel && asel.ak === "item" && baseTool === "select") { const b = before(), it = P().find(AR(), "item", asel.id); if (it) { it.rot = (((it.rot + (e.shiftKey ? -90 : 90)) % 360) + 360) % 360; done("turn", b); } return true; }
+        // 2.632.0: R / Shift+R turn a picked camera 15° (clockwise / back)
+        if (asel && asel.ak === "cam" && (baseTool === "select" || baseTool === "camera")) { const b = before(), c = P().find(AR(), "cam", asel.id); if (c) { c.yaw = (((c.yaw + (e.shiftKey ? -15 : 15)) % 360) + 360) % 360; done("turn", b); ctx.status("📷 " + c.name + " turned to " + c.yaw + "° · R / Shift+R"); } return true; }
       }
       if (asel && k === "Escape" && !owns(baseTool)) { setSel(null); return true; }
       return false;
@@ -364,10 +388,18 @@
       return P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol);
     }
     function selectDown(ev) {
+      const rg = ringAt(ev);                                             // 2.633.0: a rotate ring - yaw / pitch / roll by dragging round it
+      if (rg) {
+        const r = V.canvas.getBoundingClientRect(), cs = V.screen(rg.c), cp = V.cam().position;
+        const toV = [cp.x - rg.c[0], cp.y - rg.c[1], cp.z - rg.c[2]], facing = rg.axis[0] * toV[0] + rg.axis[1] * toV[1] + rg.axis[2] * toV[2] >= 0 ? 1 : -1;
+        st.drag = { t: asel, mode: "spin", key: rg.key, cx: r.left + cs[0], cy: r.top + cs[1], a0: Math.atan2(ev.clientY - r.top - cs[1], ev.clientX - r.left - cs[0]), facing, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
+        const pa = ringAngle(ev, rg.c, rg.axis); if (pa !== null) Object.assign(st.drag, { pc: rg.c, pn: rg.axis, pa0: pa });   // the ring seen open enough: follow it in its own plane
+        return true;
+      }
       const gp = gripAt(ev);
       if (gp) { st.drag = { t: asel, mode: "grip", key: gp.key, p: gp.p, n: gp.n, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false }; return true; }
       const h = AV() && AV().pick(ev);
-      if (!h || !nearerThanModel(ev, h)) { if (asel) setSel(null); return false; }
+      if (!h || (h.tag.ak !== "cam" && !nearerThanModel(ev, h))) { if (asel) setSel(null); return false; }   // 2.632.0: a camera is always on top
       // a view straight down (Top) sees only the walls' tops - there a press moves the wall; the slopes are edited from the side
       const th = Math.abs(V.ray(ev).d[2]) > 0.85 ? null : topUnder(h);
       if (th) {                                                        // 2.624.0: a cut / a top edge: dragged up / down
@@ -402,6 +434,7 @@
       D.moved = true;
       if (D.mode === "top") return dragTop(ev, D);
       if (D.mode === "grip") return dragGrip(ev, D);
+      if (D.mode === "spin") return dragSpin(ev, D);
       const cur = planeAt(ev, D.z); if (!cur && !D.wp) return true;     // 2.625.0: a door / window drags on its wall's face
       if (D.mode === "edge") return dragEdge(ev, D, cur);
       let d = cur ? [cur[0] - D.start[0], cur[1] - D.start[1]] : [0, 0];
@@ -438,6 +471,28 @@
       AV().rebuild();
       return true;
     }
+    /** the angle (radians, right-handed about n) of where the pointer's ray meets the plane through c across n - null when that
+        plane is seen nearly edge-on */
+    function ringAngle(ev, c, n) {
+      const r = V.ray(ev), den = r.d[0] * n[0] + r.d[1] * n[1] + r.d[2] * n[2]; if (Math.abs(den) < 0.2) return null;
+      const t = ((c[0] - r.o[0]) * n[0] + (c[1] - r.o[1]) * n[1] + (c[2] - r.o[2]) * n[2]) / den; if (!(t > 0)) return null;
+      const q = [0, 1, 2].map((k) => r.o[k] + r.d[k] * t - c[k]), cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+      const t0 = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0]; let u = cr(n, t0); const l = Math.hypot(u[0], u[1], u[2]) || 1; u = u.map((x) => x / l); const v = cr(n, u);
+      return Math.atan2(q[0] * v[0] + q[1] * v[1] + q[2] * v[2], q[0] * u[0] + q[1] * u[1] + q[2] * u[2]);
+    }
+    function dragSpin(ev, D) {
+      let rh;
+      const pa = D.pn ? ringAngle(ev, D.pc, D.pn) : null;
+      if (pa !== null) { rh = (pa - D.pa0) * 180 / Math.PI; rh = ((rh + 540) % 360) - 180; }                   // 2.633.0: true to the ring (a ring seen at a slant is an ellipse on screen)
+      else { const a = Math.atan2(ev.clientY - D.cy, ev.clientX - D.cx); let deg = (a - D.a0) * 180 / Math.PI; deg = ((deg + 540) % 360) - 180; rh = -deg * D.facing; }  // screen-clockwise = a left-handed turn when the axis faces us
+      if (!ev.shiftKey) rh = Math.round(rh / 5) * 5;                                                            // 5° steps (Shift: free)
+      const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const o = P().find(M.arch, D.t.ak, D.t.id); if (!o) return true;
+      root.PPCam.turnBy(o, D.key, rh, D.t.ak);
+      ctx.status((D.t.ak === "cam" ? "📷 " + o.name : "🛋 " + root.PPFurn.label(o)) + " · " + { yaw: "turn", pitch: "pitch", roll: "roll" }[D.key] + " " + (D.key === "yaw" ? (D.t.ak === "cam" ? o.yaw : o.rot) : o[D.key]) + "° (5° steps - Shift: free)");
+      AV().rebuild(); AV().setSel(D.t);
+      if (through && D.t.ak === "cam" && through.id === o.id) lookThrough(o);
+      return true;
+    }
     function dragGrip(ev, D) {
       const q = wallAt(ev, D.p, D.n); if (!q) return true;
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, op = A.ops.find((o) => o.id === D.t.id); if (!op) return true;
@@ -450,7 +505,7 @@
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
-      if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : "move", D.before); props(); }
+      if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : D.mode === "spin" ? "turn" : "move", D.before); props(); }
       return true;
     }
     /** 2.624.0: the floors' snap regions on the floor - the band where a wall's outside face is caught, the line it goes to
@@ -533,11 +588,29 @@
       if (P().remove(AR(), t.ak, t.id)) { asel = null; done("erase", b, null); ctx.status("⌫ erased the " + nameOf(t)); }
     }
     /* 2.629.0: 📷 a camera's view / pictures / 360° location */
+    /** 👁 the view from a camera - its place, its way, its lens (2.631.0: and nothing of the camera itself in the way); the first
+        orbit / pan / zoom leaves it (the lens as it was, the cameras shown again) */
     function lookThrough(c) {
-      const d = root.PPCam.dir(c), cam = V.cam(); if (V.isOrtho) V.ortho(false);
-      V.cam().position.set(c.x, c.y, c.z); V.controls.target.set(c.x + d[0] * 2, c.y + d[1] * 2, c.z + d[2] * 2); V.controls.update(); V.draw(); void cam;
-      ctx.status("👁 through " + c.name + " - orbit to leave it");
+      if (!c) return;
+      const d = root.PPCam.dir(c); if (V.isOrtho) V.ortho(false);
+      const cam = V.cam();
+      if (!through) through = { fov: cam.fov };
+      through.id = c.id;
+      cam.fov = c.fov || 60; cam.updateProjectionMatrix();
+      cam.position.set(c.x, c.y, c.z); V.controls.target.set(c.x + d[0] * 2, c.y + d[1] * 2, c.z + d[2] * 2); V.controls.update();
+      if (c.roll) cam.rotateZ(-(c.roll * Math.PI / 180));               // 2.633.0: its roll (right-handed about the way it looks)
+      if (AV() && AV().camsShown) AV().camsShown(false);
+      V.draw();
+      ctx.status("👁 the view from " + c.name + " - orbit / pan / zoom to leave it");
+      if (ctx.onThrough) ctx.onThrough(c.id);
     }
+    function leaveThrough() {
+      if (!through) return;
+      const cam = V.cam(); cam.fov = through.fov; cam.updateProjectionMatrix(); through = null;
+      if (AV() && AV().camsShown) AV().camsShown(true);
+      V.draw(); if (ctx.onThrough) ctx.onThrough(null);
+    }
+    V.controls.addEventListener("start", () => { if (through) leaveThrough(); });   // the user's orbit / pan / zoom
     const modelName = () => (root.H3PushPull && root.H3PushPull.nameNow ? root.H3PushPull.nameNow() : "model");
     function camShots(c) {
       const [w, h] = String(O.camera.size || "1920x1080").split("x").map(Number);
@@ -606,6 +679,7 @@
         const o = O[tool];
         if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); numIn("Wall thickness", o.t, opt("t"), 0.01, 0.02, 2, "m"); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m");
           numIn("Offset from floor edge", o.off || 0, opt("off"), 0.01, -5, 5, "m");      // 2.624.0
+          if (tool === "room") { chkIn("Auto roof (the Roof tool's type)", !!o.autoRoof, opt("autoRoof")); chkIn("Auto floor (a slab under the walls)", !!o.autoFloor, opt("autoFloor")); }   // 2.631.0
           if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn"));
           box.appendChild(el("div", "pphint", "Drawn along a floor's (J) edge, the wall's outside face sits the offset in from it. Corners snap to floors' edges.")); }
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
@@ -613,7 +687,13 @@
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
         if (tool === "roof") { selIn("Type", o.type, ROOF_OPTS(), opt("type")); if (o.type !== "follow") numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
-        if (tool === "camera") { numIn("Eye height", o.eye, opt("eye"), 0.05, 0.1, 20, "m"); numIn("Lens", o.fov, opt("fov"), 5, 10, 140, "°"); }
+        if (tool === "camera") {
+          numIn("Eye height", o.eye, opt("eye"), 0.05, 0.1, 20, "m");
+          const C0 = root.PPCam;                                         // 2.633.0: the lens presets, focal length, field of view
+          if (C0) { selIn("Lens", C0.lensOf(C0.mmOf(o.fov)), C0.LENSES.map((l) => [l[0], l[1]]).concat([["custom", "Custom"]]), (v) => { const L = C0.LENSES.find((l) => l[0] === v); if (L) o.fov = C0.fovOf(L[2]); keepOpt(); props(); });
+            numIn("Focal length", C0.mmOf(o.fov), (v) => { o.fov = C0.fovOf(v); keepOpt(); props(); }, 1, 4.4, 2000, "mm"); }
+          numIn("Field of view", o.fov, opt("fov"), 1, 3, 140, "°");
+        }
         if (tool === "furniture" && root.PPFurn) {                       // 2.628.0: the House builder's library + the project's 3D models
           const F = root.PPFurn, cats = F.categories().concat(["People", "3D models"]);       // 2.630.0: + 🧍 People
           if (!cats.includes(o.cat)) o.cat = cats[0];
@@ -666,6 +746,11 @@
         numIn("Floor level", R.z, ch((v) => P().setRoom(AR(), R.id, { z: v })), 0.05, -100, 1000, "m");
         colIn(R.closed ? "Walls inside" : "Wall", R.wall, ch((v) => { R.wall = v; }));
         if (R.closed) { colIn("Floor", R.floor, ch((v) => { R.floor = v; })); colIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
+        if (R.closed) {                                                   // 2.631.0: the auto floor slab + the auto roof for this room
+          chkIn("Floor slab under the walls", !!R.slab, ch((v) => { R.slab = v; }));
+          const own = AR().roofs.find((rf) => rf.rooms.includes(R.id));
+          chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
+        }
         colIn("Outside walls (all)", AR().ext, ch((v) => { AR().ext = v; }));
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
           ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
@@ -684,6 +769,11 @@
         if (I) numIn("From the corner", Math.max(0, I.x0), ch((v) => { op.at = v + op.w / 2; }), 0.05, 0, 500, "m");
         if (op.kind !== "opening") colIn(op.kind === "door" ? "Door" : "Frame", op.col, ch((v) => { op.col = v; }));
         if (op.kind === "door") chkIn("Handle on the other side", op.flip, ch((v) => { op.flip = v; }));
+        if (op.kind !== "opening") {                                     // 2.631.0: how far it is open, which way
+          numIn("Open", op.open || 0, ch((v) => { op.open = Math.max(0, Math.min(100, Math.round(v))); }), 5, 0, 100, "%");
+          const sliding = op.style === "sliding" || op.style === "slider";
+          chkIn(sliding ? "The other pane slides" : op.kind === "door" ? "Opens outward" : "Opens inward", !!op.dir, ch((v) => { op.dir = v; }));
+        }
         btns([["🗑 Delete", eraseSel]]);
         box.appendChild(el("div", "pphint", "Drag it (Select) along its wall, onto another wall" + (op.kind !== "door" ? ", or up / down (its elevation)" : "") + ". Drag a grip (the small squares on its sides, top" + (op.kind !== "door" ? " and bottom" : "") + ") to resize it."));
       } else if (asel.ak === "light") {
@@ -714,9 +804,15 @@
         btns([["⟳ 90°", ch(() => { s.ang += 90; })], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "cam" && root.PPCam) {                      // 2.629.0: 📷 a camera
         const c = x; head("📷 " + c.name);
+        if (through && through.id === c.id) lookThrough(c);             // 2.631.0: looking through it - its new turn / tilt / lens / place shown
         txtIn("Name", c.name, ch((v) => { c.name = v; }));
         numIn("Eye height", Math.round((c.z - floorAt(AR(), [c.x, c.y])) * 1000) / 1000, ch((v) => { c.z = floorAt(AR(), [c.x, c.y]) + v; }), 0.05, 0.05, 50, "m");
-        numIn("Turn", c.yaw, ch((v) => { c.yaw = ((v % 360) + 360) % 360; }), 5, -720, 720, "°"); numIn("Tilt", c.pitch, ch((v) => { c.pitch = v; }), 2, -89, 89, "°"); numIn("Lens", c.fov, ch((v) => { c.fov = v; }), 5, 10, 140, "°");
+        numIn("Turn (yaw)", c.yaw, ch((v) => { c.yaw = ((v % 360) + 360) % 360; }), 5, -720, 720, "°"); numIn("Tilt (pitch)", c.pitch, ch((v) => { c.pitch = Math.max(-89, Math.min(89, v)); }), 2, -89, 89, "°");
+        numIn("Roll", c.roll || 0, ch((v) => { c.roll = Math.max(-180, Math.min(180, v)); }), 5, -180, 180, "°");      // 2.633.0
+        const C0 = root.PPCam, mm = C0.mmOf(c.fov);
+        selIn("Lens", C0.lensOf(mm), C0.LENSES.map((l) => [l[0], l[1]]).concat([["custom", "Custom"]]), ch((v) => { const L = C0.LENSES.find((l) => l[0] === v); if (L) c.fov = C0.fovOf(L[2]); }));
+        numIn("Focal length", mm, ch((v) => { c.fov = C0.fovOf(v); }), 1, 4.4, 2000, "mm");
+        numIn("Field of view", c.fov, ch((v) => { c.fov = Math.max(3, Math.min(140, v)); }), 1, 3, 140, "°");
         const sz = el("select"); [["1920x1080", "1920 × 1080"], ["1280x720", "1280 × 720"], ["1080x1920", "1080 × 1920 (upright)"], ["1024x1024", "1024 × 1024"]].forEach(([v, t]) => { const q = el("option", "", t); q.value = v; sz.appendChild(q); }); sz.value = O.camera.size || "1920x1080"; sz.onchange = () => { O.camera.size = sz.value; keepOpt(); }; row("Shot size", sz);
         btns([["👁 Look through", () => lookThrough(c)], ["📷 Shot + depth + normal", () => camShots(c)], ["📍 360° location", () => camLocation(c)], ["🗑 Delete", eraseSel]]);
         box.appendChild(el("div", "pphint", "📷 the shot (the photo look) + its depth and normal maps go to the Image assets; 📍 a 360° panorama from it becomes a Location (its @tag, the prompt's location)."));
@@ -728,7 +824,8 @@
           numIn("Height", it.h, ch((v) => { it.h = v; }), 0.05, 0.9, 2.3, "m");
         } else {
         numIn("Width", it.w, ch((v) => { it.w = v; }), 0.05, 0.02, 50, "m"); numIn("Depth", it.d, ch((v) => { it.d = v; }), 0.05, 0.02, 50, "m"); numIn("Height", it.h, ch((v) => { it.h = v; }), 0.05, 0.01, 50, "m"); }
-        numIn("Turn", it.rot, ch((v) => { it.rot = ((Math.round(v) % 360) + 360) % 360; }), 15, -360, 360, "°");
+        numIn("Turn (yaw)", it.rot, ch((v) => { it.rot = ((Math.round(v) % 360) + 360) % 360; }), 15, -360, 360, "°");
+        numIn("Pitch", it.pitch || 0, ch((v) => { it.pitch = Math.max(-180, Math.min(180, v)); }), 5, -180, 180, "°"); numIn("Roll", it.roll || 0, ch((v) => { it.roll = Math.max(-180, Math.min(180, v)); }), 5, -180, 180, "°");   // 2.633.0
         numIn("Up from the floor", it.z, ch((v) => { it.z = v; }), 0.05, -100, 1000, "m");
         chkIn("Own colour", !!it.color, ch((v) => { it.color = v ? "#8a8378" : ""; }));
         if (it.color) colIn("Colour", it.color, ch((v) => { it.color = v; }));
@@ -760,7 +857,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { furnishRoom, lookThrough, camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

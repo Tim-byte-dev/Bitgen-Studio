@@ -12805,6 +12805,27 @@ node scripts/test-import630.js > /tmp/imp630.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui630-ui.js > /tmp/ui630.log 2>&1 \
   && ok "2.630.0 browser test: no House window / button; ☰ File ▸ 🏠 a saved house -> a Sketcher model (kept); 🛋 ▸ People: a waving mannequin on the floor, its panel - or SKIP without playwright" \
   || { bad "2.630.0 house import browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui630.log | head -14; }
+# ---- 2.631.0 (Tim: "in sketcher view add camera n to the dropdown when a camera is added. show the view from the camera" + "add door
+# open and window open properties to door and window, create inputs for percentage open and a checkbox for direction. add an auto
+# roof and auto floor option")
+node scripts/test-open631.js > /tmp/op631.log 2>&1 && node scripts/test-camview631.js > /tmp/cv631.log 2>&1 \
+  && ok "2.631.0 doors / windows open (%, which way: a door's leaf in / out, sashes, sliding panes), the auto floor slab + auto roof, the View ▾ cameras wiring - the pure part" \
+  || { bad "2.631.0 open / camera view units"; grep -a "^FAIL" -A2 /tmp/op631.log /tmp/cv631.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui631-ui.js > /tmp/ui631.log 2>&1 \
+  && ok "2.631.0 browser test: View ▾ lists Camera 1 / 2 as they are made; picked = the view from it (its lens, glyph hidden), its panel's lens followed, an orbit leaves it; renamed / deleted; a door's Open % + Opens outward; the Room tool's Auto roof + Auto floor - or SKIP without playwright" \
+  || { bad "2.631.0 camera view browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui631.log | head -14; }
+# ---- 2.632.0 (Tim: "please check the camera select move rotate and deselect, double clicking on empty space or esc should deselect everything")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui632-ui.js > /tmp/ui632.log 2>&1 \
+  && ok "2.632.0 browser test: a camera inside a room picked (not the room), dragged, R / Shift+R; Esc / a double-click on empty space deselect (a camera, a face); Esc with the Camera tool: deselect, then Select - or SKIP without playwright" \
+  || { bad "2.632.0 camera select browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui632.log | head -14; }
+# ---- 2.633.0 (Tim: "can you add interactive rotate , roll,yaw,pitch for camera and furniture, add the inputs to it's properties,
+# include fov , lense, 35mm,50mm,200mm, fisheye,wide angle etc.")
+node scripts/test-rot633.js > /tmp/rot633.log 2>&1 \
+  && ok "2.633.0 rotate rings (yaw / pitch / roll) for cameras + furniture, lens presets, focal length <-> field of view, a camera's roll, zoom extents takes the cameras in - the pure part" \
+  || { bad "2.633.0 rotate rings units"; grep -a "^FAIL" -A2 /tmp/rot633.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui633-ui.js > /tmp/ui633.log 2>&1 \
+  && ok "2.633.0 browser test: a camera's panel (Turn / Tilt / Roll / Lens / Focal length / Field of view), 200 mm / fisheye / 35 mm, its yaw ring dragged half round = 180°; a piece's Pitch / Roll in 3D, its yaw ring dragged a quarter round = 90°, Ctrl+Z - or SKIP without playwright" \
+  || { bad "2.633.0 rotate rings browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui633.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

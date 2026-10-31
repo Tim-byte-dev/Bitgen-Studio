@@ -58,9 +58,10 @@
       ((V.M && V.M.arch && V.M.arch.cams) || []).forEach((c) => {
         if (!root.PPCam) return;
         const g = new T.Group(); g.userData.tag = { ak: "cam", id: c.id };
-        const body = new T.Mesh(new T.BoxGeometry(0.22, 0.22, 0.22), new T.MeshBasicMaterial({ color: 0x2563eb })); body.position.set(c.x, c.y, c.z); g.add(body);
+        // 2.632.0: a camera is a gizmo - drawn over everything (inside a room, through its walls / ceiling) and picked first
+        const body = new T.Mesh(new T.BoxGeometry(0.26, 0.26, 0.26), new T.MeshBasicMaterial({ color: 0x2563eb, depthTest: false, transparent: true, opacity: 0.9 })); body.position.set(c.x, c.y, c.z); body.renderOrder = 20; g.add(body);
         const pos = []; root.PPCam.frustum(c, 0.6).forEach(([a, b]) => pos.push(a[0], a[1], a[2], b[0], b[1], b[2]));
-        const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); g.add(new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb })));
+        const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); const ls = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false })); ls.renderOrder = 20; g.add(ls);
         camsG.add(g);
       });
       ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
@@ -156,6 +157,7 @@
       const tagOf = (h) => { if (h.object.userData && h.object.userData.t2) return A.tags[h.object.userData.t2[h.faceIndex]]; let o = h.object; while (o && !(o.userData && o.userData.tag)) o = o.parent; return o && o.userData.tag; };
       const firstTag = hits.length ? tagOf(hits[0]) : null;
       if (firstTag && (firstTag.ak === "roof" || firstTag.part === "ceil")) { const it = hits.find((h) => { const t = tagOf(h); return t && t.ak === "item"; }); if (it) hits = [it].concat(hits); }
+      const ch = hits.find((h) => { const t = tagOf(h); return t && t.ak === "cam"; }); if (ch) hits = [ch].concat(hits);   // 2.632.0: a camera is always on top
       for (const h of hits) {
         let tag = null;
         if (h.object.userData && h.object.userData.t2) tag = A.tags[h.object.userData.t2[h.faceIndex]];
@@ -215,7 +217,19 @@
       const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
       const ls = new T.LineSegments(g, new T.LineBasicMaterial({ color, depthTest: false, transparent: true, opacity: 0.95 })); ls.renderOrder = 12; out.add(ls);
     }
-    function paintSel() { clear(selG); const th = V.theme || {}; outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
+    /** 2.633.0: a picked camera / piece of furniture - its rotate rings (yaw blue, pitch red, roll green), over everything */
+    const RING_COL = { yaw: 0x3b82f6, pitch: 0xef4444, roll: 0x22c55e };
+    function rings(t, out) {
+      if (!t || (t.ak !== "cam" && t.ak !== "item") || !root.PPCam || !V.M || !V.M.arch) return;
+      const o = P().find(V.M.arch, t.ak, t.id); if (!o) return;
+      root.PPCam.rings(t.ak, o).rings.forEach((rg) => {
+        const pos = []; rg.pts.forEach((p) => pos.push(p[0], p[1], p[2]));
+        const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
+        const L = new T.LineLoop(g, new T.LineBasicMaterial({ color: RING_COL[rg.key], depthTest: false, transparent: true, opacity: A.ringHot === rg.key ? 1 : 0.85 }));
+        L.renderOrder = 30; L.userData.ring = rg.key; out.add(L);
+      });
+    }
+    function paintSel() { clear(selG); const th = V.theme || {}; outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
     function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }
 
@@ -237,6 +251,8 @@
       furn.traverse((o) => { if (o.isMesh) take(o, "#" + o.material.color.getHexString(), o.material.transparent ? o.material.opacity : 1); });   // 2.629.0: the furniture exported too
       return [...by.values()].filter((b) => b.idx.length);
     }
+    /** 2.631.0: the cameras' glyphs hidden while the view looks through one */
+    function camsShown(on) { camsG.visible = !!on; V.draw(); }
     function exportLights() {
       const B = A.built; if (!B) return [];
       return B.lights.filter((L) => L.on).map((L) => {
@@ -245,7 +261,7 @@
       });
     }
     function box() { const Ar = V.M && V.M.arch; return Ar && P().has(Ar) ? P().bbox(Ar) : null; }
-    Object.assign(A, { rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, box, layers, group: geo, fixtures: fix });
+    Object.assign(A, { rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
     return A;
   }
   root.PPArchView = { attach, loadPC, CD };

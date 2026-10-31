@@ -30,10 +30,10 @@
     const C = HG() ? HG().CATALOGUE : {};
     return (Array.isArray(list) ? list : []).map((o) => {
       const n = (v, d, lo, hi) => { const x = +v; return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : d; };
-      if (o && o.type === "person") return { id: o.id, type: "person", x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), w: 0.5, d: 0.35, h: n(o.h, 1.75, 0.9, 2.3),
+      if (o && o.type === "person") return { id: o.id, type: "person", x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), pitch: n(o.pitch, 0, -180, 180), roll: n(o.roll, 0, -180, 180), w: 0.5, d: 0.35, h: n(o.h, 1.75, 0.9, 2.3),
         color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "", pose: HG().POSES[o.pose] ? o.pose : "stand", name: String(o.name || "").slice(0, 40) };
       if (!o || !C[o.type] || C[o.type].hidden) return null;
-      return { id: o.id, type: o.type, x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), w: n(o.w, C[o.type].w, 0.02, 50), d: n(o.d, C[o.type].d, 0.02, 50), h: n(o.h, C[o.type].h, 0.01, 50), color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "" };
+      return { id: o.id, type: o.type, x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), pitch: n(o.pitch, 0, -180, 180), roll: n(o.roll, 0, -180, 180), w: n(o.w, C[o.type].w, 0.02, 50), d: n(o.d, C[o.type].d, 0.02, 50), h: n(o.h, C[o.type].h, 0.01, 50), color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "" };
     }).filter(Boolean);
   }
 
@@ -89,7 +89,9 @@
   function group(T, it) {
     const G3 = new T.Group(); G3.userData.tag = { ak: "item", id: it.id };
     parts(T, it).forEach((p) => { const me = new T.Mesh(p.g, matFor(T, p.mat, p.color)); me.castShadow = me.receiveShadow = true; G3.add(me); });
-    G3.position.set(it.x, it.y, it.z || 0); G3.rotation.z = -(it.rot || 0) * Math.PI / 180;
+    G3.position.set(it.x, it.y, it.z || 0);
+    G3.rotation.order = "ZXY"; G3.rotation.z = -(it.rot || 0) * Math.PI / 180;      // 2.633.0: + pitch (about its own side) and roll (about its front)
+    G3.rotation.x = (it.pitch || 0) * Math.PI / 180; G3.rotation.y = (it.roll || 0) * Math.PI / 180;
     return G3;
   }
   /* 2.629.0: the House builder's MATERIALS as paints - a colour "mat:<key>" on a face / a wall / a floor */

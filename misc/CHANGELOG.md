@@ -8,6 +8,9 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.633.0** — The Sketcher's Rotate Rings (Yaw / Pitch / Roll) for Cameras and Furniture, Lenses, Focal Length, Field of View
+- **2.632.0** — The Sketcher's Cameras: Picked Inside a Room, Moved, Turned; Esc / Double-Click Deselect Everything
+- **2.631.0** — The Sketcher: Cameras in View ▾ (the View from One), Open Doors / Windows, Auto Roof + Auto Floor
 - **2.630.0** — The House Builder Is Gone: Its Last Parts in the Sketcher (🧍 People, Its Saved Houses), Solidcraft -> Sketcher
 - **2.629.0** — The Sketcher: The House Builder's Materials, 📷 Cameras (Shots, Depth / Normal Maps, 360° Locations), 🪄 Furnish
 - **2.628.0** — The Sketcher's 🛋 Furniture + The Project's 3D Models; Maximized = Every Other Docker Closed

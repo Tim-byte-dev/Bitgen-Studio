@@ -35,7 +35,20 @@
   const S = { M: null, V: null, T: null, name: "model 1", undo: [], redo: [], sel: { f: [], e: [], k: [] }, group: null, color: "#c8a882", saveT: 0, booted: false, over: false, dirty: false };
 
   function msg(t) { const m = $("ppMsg"); if (m) m.textContent = t || ""; }
+  /** 2.631.0: the View ▾ dropdown lists the model's cameras ("📷 Camera 1" ...) - picked = the view from it */
+  function paintViewSel() {
+    const sel = $("ppViewSel"); if (!sel) return;
+    const cams = ((S.M && S.M.arch && S.M.arch.cams) || []), want = cams.map((c) => "cam:" + c.id + "|" + c.name).join(",");
+    if (sel.dataset.cams !== want) {
+      sel.querySelectorAll("optgroup[data-cams]").forEach((g) => g.remove());
+      if (cams.length) { const g = doc.createElement("optgroup"); g.label = "Cameras"; g.dataset.cams = "1"; cams.forEach((c) => { const o = doc.createElement("option"); o.value = "cam:" + c.id; o.textContent = "📷 " + c.name; g.appendChild(o); }); sel.appendChild(g); }
+      sel.dataset.cams = want;
+    }
+    const th = S.T && S.T.arch && S.T.arch.through ? S.T.arch.through() : null;
+    sel.value = th != null && cams.some((c) => c.id === th) ? "cam:" + th : "";
+  }
   function info() {
+    paintViewSel();
     const el = $("ppInfo"); if (!el || !S.M) return;
     const s = S.sel, M = S.M, nf = (s.f || []).length, ne = (s.e || []).length + (s.k || []).length, np = (s.p || []).length;
     let t = "";
@@ -315,7 +328,7 @@
       group: () => S.group, enterGroup, status: msg, vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
-      archView: S.A ? () => S.A : null, onSel: () => info(), resized: () => { if (S.V) S.V.size(); },
+      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), resized: () => { if (S.V) S.V.size(); },
       // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
       models: () => api("/api/tlcanvas/models").then((j) => (j.models || []).filter((x) => /\.(glb|gltf|obj|fbx)$/i.test(x.name)).map((x) => x.name)),
       importModel: (n) => guard("Import", () => importModel(n)),
@@ -343,7 +356,13 @@
     $("ppNight").onclick = () => { if (!S.A) return; S.A.setNight(!S.A.isNight); $("ppNight").classList.toggle("on", S.A.isNight); $("ppNight").textContent = S.A.isNight ? "☀ Day" : "🌙 Night"; msg(S.A.isNight ? "🌙 night - the rooms' lights light them (💡 X puts lights in)" : "☀ day"); };
     $("ppCut").onclick = () => { if (!S.A) return; S.A.cut(!S.A.cutaway); $("ppCut").classList.toggle("on", S.A.cutaway); msg(S.A.cutaway ? "⌂ cut-away - roofs and ceilings hidden" : "⌂ roofs and ceilings back"); };
     $("ppUndo").onclick = undo; $("ppRedo").onclick = redo;
-    $("ppViewSel").onchange = (e) => { if (e.target.value && S.V) S.V.view(e.target.value); e.target.value = ""; };
+    // 2.631.0 (Tim: "in sketcher view add camera n to the dropdown when a camera is added. show the view from the camera")
+    $("ppViewSel").onchange = (e) => {
+      const v = e.target.value; if (!v || !S.V) return;
+      if (v.startsWith("cam:")) { const A = S.M && S.M.arch, c = A && (A.cams || []).find((x) => String(x.id) === v.slice(4)); if (c && S.T && S.T.arch) S.T.arch.lookThrough(c); return; }
+      if (S.T && S.T.arch && S.T.arch.leaveThrough) S.T.arch.leaveThrough();
+      S.V.view(v); e.target.value = "";
+    };
     $("ppOrtho").onclick = () => { if (!S.V) return; S.V.ortho(!S.V.isOrtho); $("ppOrtho").textContent = S.V.isOrtho ? "⬛ Parallel" : "⬛ Persp"; };
     $("ppExt").onclick = () => S.V && S.V.extents();
     $("ppStyle").onchange = (e) => S.V && S.V.style(e.target.value);

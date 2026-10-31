@@ -93,7 +93,7 @@
       if (pts.length < (closed ? 3 : 2)) return null;
       if (closed && area2(pts) < 0) pts.reverse();
       return { id: id(R.id), name: String(R.name || (closed ? "Room" : "Wall")).slice(0, 60), pts, closed, z: num(R.z, 0, -100, 1000), h: num(R.h, DEF.h, 0.1, 50), t: num(R.t, DEF.t, 0.02, 2),
-        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false,
+        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false, slab: !!R.slab,
         ceil: R.ceil === "follow" ? "follow" : "flat", tops: cleanTops(R.tops, closed ? pts.length : pts.length - 1) };
     }).filter(Boolean);
     const rid = new Set(A.rooms.map((R) => R.id));
@@ -101,7 +101,8 @@
       if (!x || !OPS[x.kind] || !rid.has(+x.room)) return null;
       const d = OPS[x.kind];
       return { id: id(x.id), kind: x.kind, room: +x.room, edge: Math.max(0, Math.floor(+x.edge || 0)), at: num(x.at, 1, -1000, 1000), w: num(x.w, d.w, 0.2, 20), h: num(x.h, d.h, 0.2, 20), sill: num(x.sill, d.sill, 0, 20),
-        style: STYLES[x.kind].includes(x.style) ? x.style : d.style, col: hex(x.col, x.kind === "door" ? DEF.door : DEF.frame), flip: !!x.flip };
+        style: STYLES[x.kind].includes(x.style) ? x.style : d.style, col: hex(x.col, x.kind === "door" ? DEF.door : DEF.frame), flip: !!x.flip,
+        open: num(x.open, 0, 0, 100), dir: !!x.dir };              // 2.631.0: how far it is open (%), which way
     }).filter(Boolean);
     A.roofs = (Array.isArray(o.roofs) ? o.roofs : []).map((x) => {
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
@@ -180,6 +181,17 @@
     }).filter(Boolean);
   }
   /** the room's inside (the floor / ceiling): its centre line moved in by half the wall */
+  /** 2.631.0: the room's outside outline (the centre line moved out half a wall) - its auto floor slab */
+  function exterior(R) {
+    if (!R.closed) return null;
+    const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = -R.t / 2, out = [];
+    for (let k = 0; k < n; k++) {
+      const e0 = E[(k - 1 + n) % n], e1 = E[k];
+      const x = lineX(add(e0.a, mul(left(e0.u), h)), e0.u, add(e1.a, mul(left(e1.u), h)), e1.u);
+      out.push(x && len(sub(x, e1.a)) < 6 * -h + 1e-9 ? x : add(e1.a, mul(left(e1.u), h)));
+    }
+    return out;
+  }
   function interior(R) {
     if (!R.closed) return null;
     const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = R.t / 2, out = [];
@@ -412,6 +424,7 @@
     A.ops.forEach((op) => { const I = opInfo(A, op); if (I) fixture(I, out); });
     A.roofs.forEach((rf) => roof(A, rf, out));
     A.slabs.forEach((s) => prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out));
+    A.rooms.forEach((R) => { if (R.closed && R.slab) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
     A.stairs.forEach((s) => stair(s, out));
     A.lights.forEach((L) => out.lights.push(Object.assign({}, L, { p: [L.x, L.y, L.z], def: LIGHTS[L.type] })));
     void o;
@@ -487,17 +500,28 @@
       const fw = 0.05, d = T / 2 + 0.012, col = DEF.frame;
       box(o, u, n, x0, x0 + fw, -d, d, z0, z1, col, tag, out); box(o, u, n, x1 - fw, x1, -d, d, z0, z1, col, tag, out); box(o, u, n, x0, x1, -d, d, z1 - fw, z1, col, tag, out);
       const a = x0 + fw, b = x1 - fw, top = z1 - fw;
-      const handle = (hx) => { box(o, u, n, hx - 0.015, hx + 0.015, 0.02, 0.07, z0 + 0.98, z0 + 1.02, "#c0c0c0", tag, out, 1, true); box(o, u, n, hx - 0.015, hx + 0.015, -0.07, -0.02, z0 + 0.98, z0 + 1.02, "#c0c0c0", tag, out, 1, true); };
-      if (op.style === "single") { box(o, u, n, a, b, -0.02, 0.02, z0 + 0.005, top, op.col, tag, out); handle(op.flip ? a + 0.08 : b - 0.08); }
-      else if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, a, m - 0.002, -0.02, 0.02, z0 + 0.005, top, op.col, tag, out); box(o, u, n, m + 0.002, b, -0.02, 0.02, z0 + 0.005, top, op.col, tag, out); handle(m - 0.06); handle(m + 0.06); }
+      // 2.631.0: a leaf hinged at x = hx, its free end toward `way` (+1 = +u, -1 = -u), turned op.open % of 90° to the room's
+      // side (op.dir: the other side) - the leaf's own frame: x along it from the hinge, y across it
+      const ang = (op.open || 0) / 100 * Math.PI / 2, sgn = op.dir ? -1 : 1;
+      const leaf = (hx, way, L, draw) => {
+        const c = Math.cos(ang), s2 = Math.sin(ang) * sgn, lu = [u[0] * c * way + n[0] * s2, u[1] * c * way + n[1] * s2], ln = [n[0] * c - u[0] * s2 * way, n[1] * c - u[1] * s2 * way];
+        const lo = [o[0] + u[0] * hx, o[1] + u[1] * hx];
+        draw((x0b, x1b, y0, y1, za, zb, col, alpha, noLines) => box(lo, lu, ln, x0b, x1b, y0, y1, za, zb, col, tag, out, alpha, noLines), L);
+      };
+      const handleL = (B, hx) => { B(hx - 0.015, hx + 0.015, 0.02, 0.07, z0 + 0.98, z0 + 1.02, "#c0c0c0", 1, true); B(hx - 0.015, hx + 0.015, -0.07, -0.02, z0 + 0.98, z0 + 1.02, "#c0c0c0", 1, true); };
+      if (op.style === "single") leaf(op.flip ? b : a, op.flip ? -1 : 1, b - a, (B, L) => { B(0, L, -0.02, 0.02, z0 + 0.005, top, op.col); handleL(B, L - 0.08); });
+      else if (op.style === "double") { const L = (b - a) / 2 - 0.002; leaf(a, 1, L, (B) => { B(0, L, -0.02, 0.02, z0 + 0.005, top, op.col); handleL(B, L - 0.06); }); leaf(b, -1, L, (B) => { B(0, L, -0.02, 0.02, z0 + 0.005, top, op.col); handleL(B, L - 0.06); }); }
       else if (op.style === "glass") {
-        const s = 0.07; box(o, u, n, a, a + s, -0.02, 0.02, z0 + 0.005, top, op.col, tag, out); box(o, u, n, b - s, b, -0.02, 0.02, z0 + 0.005, top, op.col, tag, out);
-        box(o, u, n, a + s, b - s, -0.02, 0.02, z0 + 0.005, z0 + 0.15, op.col, tag, out); box(o, u, n, a + s, b - s, -0.02, 0.02, top - s, top, op.col, tag, out);
-        box(o, u, n, a + s, b - s, -0.005, 0.005, z0 + 0.15, top - s, DEF.glass, tag, out, 0.3, true); handle(op.flip ? a + 0.04 : b - 0.04);
-      } else {                                 // sliding: two glass panels, one in front of the other
-        const m = (a + b) / 2, pane = (p0, p1, y) => { box(o, u, n, p0, p1, y - 0.02, y + 0.02, z0 + 0.005, top, op.col, tag, out, 1, true); box(o, u, n, p0 + 0.05, p1 - 0.05, y - 0.006, y + 0.006, z0 + 0.06, top - 0.05, DEF.glass, tag, out, 0.3, true); };
-        pane(a, m + 0.04, -0.025); pane(m - 0.04, b, 0.025);
-        [[a, m + 0.04, -0.025], [m - 0.04, b, 0.025]].forEach(([p0, p1, y]) => { const P = (x, z) => [o[0] + u[0] * x + n[0] * y, o[1] + u[1] * x + n[1] * y, z]; out.lines.push([P(p0, z0), P(p1, z0)], [P(p1, z0), P(p1, top)], [P(p1, top), P(p0, top)], [P(p0, top), P(p0, z0)]); });
+        leaf(op.flip ? b : a, op.flip ? -1 : 1, b - a, (B, L) => {
+          const s = 0.07; B(0, s, -0.02, 0.02, z0 + 0.005, top, op.col); B(L - s, L, -0.02, 0.02, z0 + 0.005, top, op.col);
+          B(s, L - s, -0.02, 0.02, z0 + 0.005, z0 + 0.15, op.col); B(s, L - s, -0.02, 0.02, top - s, top, op.col);
+          B(s, L - s, -0.005, 0.005, z0 + 0.15, top - s, DEF.glass, 0.3, true); handleL(B, L - 0.04);
+        });
+      } else {                                 // sliding: two glass panels, one in front of the other (2.631.0: the front one slides open)
+        const m0 = (a + b) / 2, slide = (op.open || 0) / 100 * (m0 - a) * (op.dir ? -1 : 1), m = m0, pane = (p0, p1, y) => { box(o, u, n, p0, p1, y - 0.02, y + 0.02, z0 + 0.005, top, op.col, tag, out, 1, true); box(o, u, n, p0 + 0.05, p1 - 0.05, y - 0.006, y + 0.006, z0 + 0.06, top - 0.05, DEF.glass, tag, out, 0.3, true); };
+        const sa = op.dir ? 0 : slide, sb = op.dir ? slide : 0;         // the dir checkbox: the other pane slides
+        pane(a + sa, m + 0.04 + sa, -0.025); pane(m - 0.04 + sb, b + sb, 0.025);
+        [[a + sa, m + 0.04 + sa, -0.025], [m - 0.04 + sb, b + sb, 0.025]].forEach(([p0, p1, y]) => { const P = (x, z) => [o[0] + u[0] * x + n[0] * y, o[1] + u[1] * x + n[1] * y, z]; out.lines.push([P(p0, z0), P(p1, z0)], [P(p1, z0), P(p1, top)], [P(p1, top), P(p0, top)], [P(p0, top), P(p0, z0)]); });
       }
       return;
     }
@@ -508,9 +532,21 @@
     if (op.sill > 0.05) box(o, u, n, x0 - 0.04, x1 + 0.04, -(T / 2 + 0.05), -d, z0 - 0.035, z0, col, tag, out);
     const a = x0 + fw, b = x1 - fw, g0 = z0 + fw, g1 = z1 - fw;
     if (op.style === "slider") {
-      const m = (a + b) / 2;
-      box(o, u, n, a, m + 0.03, -0.03, -0.005, g0, g1, col, tag, out, 1, true); box(o, u, n, m - 0.03, b, 0.005, 0.03, g0, g1, col, tag, out, 1, true);
-      box(o, u, n, a + 0.04, m - 0.01, -0.02, -0.014, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true); box(o, u, n, m + 0.01, b - 0.04, 0.014, 0.02, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true);
+      const m = (a + b) / 2, sl = (op.open || 0) / 100 * (m - a), s1 = op.dir ? 0 : sl, s2 = op.dir ? -sl : 0;     // 2.631.0: a pane slid open
+      box(o, u, n, a + s1, m + 0.03 + s1, -0.03, -0.005, g0, g1, col, tag, out, 1, true); box(o, u, n, m - 0.03 + s2, b + s2, 0.005, 0.03, g0, g1, col, tag, out, 1, true);
+      box(o, u, n, a + 0.04 + s1, m - 0.01 + s1, -0.02, -0.014, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true); box(o, u, n, m + 0.01 + s2, b - 0.04 + s2, 0.014, 0.02, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true);
+      return;
+    }
+    if (op.open > 0) {                                                   // 2.631.0: casement sashes turned open (outside; dir: inside)
+      const ang = op.open / 100 * Math.PI / 2, sg = op.dir ? 1 : -1;
+      const sash = (hx, way, L) => {
+        const c = Math.cos(ang), s2 = Math.sin(ang) * sg, lu = [u[0] * c * way + n[0] * s2, u[1] * c * way + n[1] * s2], ln = [n[0] * c - u[0] * s2 * way, n[1] * c - u[1] * s2 * way], lo = [o[0] + u[0] * hx, o[1] + u[1] * hx];
+        const B = (x0b, x1b, y0, y1, za, zb, cl, al, nl) => box(lo, lu, ln, x0b, x1b, y0, y1, za, zb, cl, tag, out, al, nl);
+        const w = 0.035; B(0, w, -0.02, 0.02, g0, g1, col); B(L - w, L, -0.02, 0.02, g0, g1, col); B(w, L - w, -0.02, 0.02, g0, g0 + w, col); B(w, L - w, -0.02, 0.02, g1 - w, g1, col);
+        B(w, L - w, -0.005, 0.005, g0 + w, g1 - w, DEF.glass, 0.3, true);
+      };
+      if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, m - fw / 2, m + fw / 2, -d, d, g0, g1, col, tag, out); sash(a, 1, m - fw / 2 - a); sash(b, -1, b - m - fw / 2); }
+      else sash(a, 1, b - a);
       return;
     }
     if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, m - fw / 2, m + fw / 2, -d, d, g0, g1, col, tag, out); box(o, u, n, a, m - fw / 2, -0.005, 0.005, g0, g1, DEF.glass, tag, out, 0.3, true); box(o, u, n, m + fw / 2, b, -0.005, 0.005, g0, g1, DEF.glass, tag, out, 0.3, true); return; }
@@ -729,6 +765,7 @@
     A.stairs.forEach((s) => { pts.push([s.x, s.y, s.z], [s.x + Math.cos(s.ang * Math.PI / 180) * s.len, s.y + Math.sin(s.ang * Math.PI / 180) * s.len, s.z + s.rise]); });
     A.lights.forEach((L) => pts.push([L.x, L.y, L.z]));
     (A.items || []).forEach((it) => { pts.push([it.x - it.w / 2, it.y - it.d / 2, it.z], [it.x + it.w / 2, it.y + it.d / 2, it.z + it.h]); });
+    (A.cams || []).forEach((c) => pts.push([c.x - 0.5, c.y - 0.5, c.z - 0.5], [c.x + 0.5, c.y + 0.5, c.z + 0.5]));   // 2.633.0: zoom extents shows the cameras (+ their rings)
     A.roofs.forEach((rf) => { const F = roofFrame(A, rf); if (F) pts.push([F.o[0], F.o[1], F.top + F.D / 2 * Math.tan(rf.pitch * Math.PI / 180)]); });
     if (!pts.length) return null;
     const mn = [0, 1, 2].map((k) => Math.min(...pts.map((p) => p[k]))), mx = [0, 1, 2].map((k) => Math.max(...pts.map((p) => p[k])));
@@ -771,7 +808,7 @@
     return true;
   }
 
-  const api = { opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
+  const api = { exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

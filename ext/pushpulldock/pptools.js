@@ -45,6 +45,13 @@
   };
   const VCB = { line: "Length", rect: "Dimensions", circle: "Radius", polygon: "Radius", pushpull: "Distance", move: "Distance", rotate: "Angle", scale: "Scale", offset: "Distance", tape: "Length" };
 
+  /* 2.632.0 (Tim: "when in orbit mode use orbit icon not a hand"): two arrows round a dot - its middle is the hot spot */
+  const ORBIT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M4.5 9.5A8 8 0 0 1 18 6.5" stroke="#fff" stroke-width="4"/><path d="M19.5 14.5A8 8 0 0 1 6 17.5" stroke="#fff" stroke-width="4"/>'
+    + '<path d="M4.5 9.5A8 8 0 0 1 18 6.5" stroke="#111" stroke-width="1.8"/><path d="M19.5 14.5A8 8 0 0 1 6 17.5" stroke="#111" stroke-width="1.8"/>'
+    + '<path d="M14.5 4.5 18.5 6.5 17 10.5" stroke="#111" stroke-width="1.8"/><path d="M9.5 19.5 5.5 17.5 7 13.5" stroke="#111" stroke-width="1.8"/></g>'
+    + '<circle cx="12" cy="12" r="2.2" fill="#111" stroke="#fff" stroke-width="1"/></svg>';
+  const ORBIT_CURSOR = "url(\"data:image/svg+xml;utf8," + encodeURIComponent(ORBIT_SVG) + "\") 12 12, move";
   function create(ctx) {
     const V = ctx.V, g = G(), v3 = g.v3;
     // 2.620.0: the architecture tools (pparchtools.js) - Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs
@@ -63,7 +70,7 @@
       if (!HINT[name]) return;
       reset(); tool = name; if (AT) AT.use(null);
       V.leftDrag(name === "orbit" ? "orbit" : name === "pan" ? "pan" : "");
-      V.canvas.style.cursor = name === "orbit" || name === "pan" ? "grab" : name === "select" ? "default" : "crosshair";
+      V.canvas.style.cursor = name === "orbit" ? ORBIT_CURSOR : name === "pan" ? "grab" : name === "select" ? "default" : "crosshair";   // 2.632.0: Orbit = an orbit cursor, not the hand
       ctx.status(HINT[name]); ctx.vcbLabel(VCB[name] || "");
       ctx.toolChanged(name);
       if ((name === "move" || name === "rotate" || name === "scale") && !hasSel()) ctx.status(HINT[name] + " - nothing is picked: press on what to " + name);

@@ -487,6 +487,34 @@ With **Select**:
 - **A door or window**: grips on its sides, top and (not a door) bottom - drag them for the width, the height, the
   elevation; drag a window itself along the wall and up / down. A window's panel has **Elevation (height from floor)**.
 
+### Rotate rings, roll, lenses (2.633.0)
+
+- A picked camera or piece of furniture shows three rings: **blue** turns it (yaw), **red** tips it (pitch), **green** rolls it.
+  Drag round a ring: 5° steps, **Shift** for free turning, **Ctrl+Z** takes it back.
+- In numbers in its panel: a camera's **Turn (yaw)**, **Tilt (pitch)**, **Roll**; a piece's **Turn (yaw)**, **Pitch**, **Roll**.
+- A camera's **Lens**: Fisheye (8 mm), Ultra wide (14 mm), Wide angle (24 mm), 35 mm, 50 mm (normal), 85 mm (portrait), 135 mm,
+  200 mm (telephoto) or Custom; **Focal length** (mm, full frame) and **Field of view** (°) follow each other. The fisheye gives
+  its widest view (the curve itself isn't drawn). The Camera tool's panel has the same Lens / Focal length / Field of view.
+- **Zoom extents** takes the cameras in too.
+
+### Cameras picked, moved, turned; deselecting (2.632.0)
+
+- A camera is drawn over everything - one inside a room (under its ceiling and roof) is picked with a click, not the room.
+  Drag it to move it; **R** turns it 15°, **Shift+R** back (a piece of furniture: R 90°, Shift+R back).
+- **Esc** or a **double-click on empty space** deselects everything; with a Build tool going the first Esc deselects and the
+  next goes back to ⬚ Select.
+- **🔄 Orbit**'s pointer is an orbit cursor (two arrows round a dot), not the hand (✋ Pan keeps the hand).
+
+### Camera views, open doors and windows, auto roof + floor (2.631.0)
+
+- **View ▾** lists the model's cameras (📷 Camera 1, …) as they are added, renamed or deleted; pick one for the view from
+  it - its place, its way, its lens (its own glyph out of the way). Changing its turn / tilt / lens in its panel moves the
+  view with it; an orbit, pan or zoom (or a standard view) leaves it.
+- A door or window: **Open (%)** and a direction tick - a door swings into the room (**Opens outward**: out), a window's
+  sashes swing out (**Opens inward**: in), a sliding door / window slides a pane (**The other pane slides**).
+- The Room tool: **Auto roof** (the Roof tool's type) and **Auto floor** (a 20 cm slab under the walls) for each new room;
+  a room's panel: **Floor slab under the walls** and **Roof** on / off.
+
 ### People, the House builder's houses; the House builder is gone (2.630.0)
 
 - **🛋 ▸ People**: standing, sitting, walking or waving mannequins (the House builder's) - click on a floor; picked: Name,
@@ -6321,6 +6349,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.633.0: **Sketcher: rotate rings (yaw / pitch / roll) for cameras + furniture, roll, lens presets, focal length / field of view**.
+- 2.632.0: **Sketcher: cameras picked inside rooms, moved, turned (R); Esc / double-click deselect everything; the Orbit
+  cursor**.
+- 2.631.0: **Sketcher: camera views, open doors / windows, auto roof + floor** - View ▾ lists the cameras (the view from
+  one); a door / window's Open % + direction; the Room tool's Auto roof / Auto floor.
 - 2.630.0: **The House builder is gone** - its last parts in the Sketcher (🧍 people, ☰ File ▸ 🏠 its saved houses as
   Sketcher models); SolidCraft sends to the Sketcher.
 - 2.629.0: **Sketcher: materials, cameras, 360° locations, Furnish** - the House builder's materials with textures, 📷
