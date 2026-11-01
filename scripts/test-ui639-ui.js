@@ -80,6 +80,14 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     const off = await ev(() => document.getElementById("ppOutline").classList.contains("off"));
     await p.click("#ppOutlineBtn"); await p.waitForTimeout(150);
     check("🗂 Outline in the bar hides / shows the docker", off && await ev(() => !document.getElementById("ppOutline").classList.contains("off")));
+    // 2.639.2 (Tim: "it's still black, in fullscreen and normal view"): one bad number in the model no longer blacks the view
+    await ev(() => H3PushPullFrame.toggleMaxed(true)); await p.waitForTimeout(300);
+    const nan = await ev(async () => { const S = H3PushPull.state; S.M.arch.lights.push({ id: 777, type: "ceiling", x: 1, y: 1, z: NaN, room: null, col: "#ffffff", lm: 800, on: true, drop: 0.6, ang: 40, dir: 0 }); S.V.setModel(S.M); S.A.rebuild(); S.V.extents();
+      await new Promise((r) => setTimeout(r, 600));
+      const c = S.V.canvas, g = document.createElement("canvas"); g.width = 64; g.height = 64; const x = g.getContext("2d"); x.drawImage(c, 0, 0, 64, 64); const d = x.getImageData(0, 0, 64, 64).data; let mn = 999, mx = 0; for (let i = 0; i < d.length; i += 4) { const q = d[i] + d[i + 1] + d[i + 2]; mn = Math.min(mn, q); mx = Math.max(mx, q); }
+      const out = { spread: mx - mn, cam: S.V.cam().position.toArray().every(Number.isFinite), diag: (document.querySelector("#ppView .ppdiag") || {}).textContent || "" };
+      S.M.arch.lights = S.M.arch.lights.filter((L) => L.id !== 777); S.V.setModel(S.M); S.A.rebuild(); return out; });
+    check("2.639.2: a light with a bad height (not a number) - the view still draws (camera a number) and says what is wrong on the view", nan.spread > 5 && nan.cam && /3D view/.test(nan.diag), nan);
     // 2.639.1 (Tim: "everything is black in sketcher viewport"): docked in a narrow column the outline took the view's width
     await ev(() => { H3PushPullFrame.toggleMaxed(false); try { localStorage.removeItem("pp.outline"); } catch (e) {} const d = document.getElementById("pushpulldock"); d.style.width = "620px"; d.classList.add("ppnarrow"); });
     await p.waitForTimeout(400);

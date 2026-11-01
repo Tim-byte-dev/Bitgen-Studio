@@ -57,7 +57,7 @@
       clear(camsG);
       const hid = V.M && V.M.arch ? P().hiddenOf(V.M.arch) : () => false;     // 2.639.0: the 🗂 outline docker's hidden things
       ((V.M && V.M.arch && V.M.arch.cams) || []).forEach((c) => {
-        if (!root.PPCam || hid("cam:" + c.id)) return;
+        if (!root.PPCam || hid("cam:" + c.id) || ![c.x, c.y, c.z, c.yaw, c.pitch, c.fov].every(Number.isFinite)) return;
         const g = new T.Group(); g.userData.tag = { ak: "cam", id: c.id };
         // 2.632.0: a camera is a gizmo - drawn over everything (inside a room, through its walls / ceiling) and picked first
         const body = new T.Mesh(new T.BoxGeometry(0.26, 0.26, 0.26), new T.MeshBasicMaterial({ color: 0x2563eb, depthTest: false, transparent: true, opacity: 0.9 })); body.position.set(c.x, c.y, c.z); body.renderOrder = 20; g.add(body);
@@ -65,11 +65,17 @@
         const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); const ls = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false })); ls.renderOrder = 20; g.add(ls);
         camsG.add(g);
       });
-      ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn && !hid("item:" + it.id)) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
+      ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn && !hid("item:" + it.id) && [it.x, it.y, it.z, it.w, it.d, it.h].every(Number.isFinite)) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
       mats.forEach((m) => m.dispose()); mats.clear();
       const M = V.M, Ar = M && M.arch;
       if (!Ar || !P().has(Ar)) { A.built = null; paintSel(); return; }
       let B; try { B = P().build(Ar); } catch (e) { console.warn("PushPull architecture:", e); A.built = null; return; }
+      // 2.639.2: a piece with a corner that is not a number is left out (it blacked the whole view) - and said
+      const okP = (q) => Number.isFinite(q[0]) && Number.isFinite(q[1]) && Number.isFinite(q[2]);
+      const n0 = B.polys.length; B.polys = B.polys.filter((pl) => pl.rings.every((rg) => rg.every(okP)));
+      const l0 = B.lights.length; B.lights = B.lights.filter((L) => okP(L.p));
+      B.lines = (B.lines || []).filter((sg) => sg.every(okP)); B.roofLines = (B.roofLines || []).filter((sg) => sg.every(okP));
+      if ((n0 - B.polys.length || l0 - B.lights.length) && V.diag) V.diag((n0 - B.polys.length) + " face(s) and " + (l0 - B.lights.length) + " light(s) of the building had a bad number and are not drawn");
       A.built = B;
       const sty = V.styleName, by = new Map();
       B.polys.forEach((pl) => {

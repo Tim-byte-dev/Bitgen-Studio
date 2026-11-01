@@ -90,7 +90,35 @@
       const k = ortho.userData.k || 10; ortho.left = -k * w / h; ortho.right = k * w / h; ortho.top = k; ortho.bottom = -k; ortho.updateProjectionMatrix();
       draw();
     }
-    function draw() { if (raf) return; raf = root.requestAnimationFrame(() => { raf = 0; R.render(scene, cam); }); }
+    /* 2.639.2 (Tim: "it's still black, in fullscreen and normal view"): one bad number (a NaN in a corner, a light, a box)
+       turned the camera / the whole frame black and nothing said why. Now: a camera that is not a number is put back
+       (Iso, round what can be seen), a render that throws is caught, and the reason shows on the view itself (diag) */
+    const fin = (v) => Number.isFinite(v.x) && Number.isFinite(v.y) && Number.isFinite(v.z);
+    let diagEl = null, diagT = 0;
+    function diag(t) {
+      if (!diagEl) { diagEl = document.createElement("div"); diagEl.className = "ppdiag"; diagEl.style.cssText = "position:absolute;left:8px;bottom:8px;right:8px;z-index:5;font-size:11px;color:#fff;background:#b91c1cdd;border-radius:5px;padding:5px 8px;display:none;cursor:pointer"; diagEl.title = "click: hide"; diagEl.onclick = () => { diagEl.style.display = "none"; }; host.appendChild(diagEl); }
+      diagEl.textContent = "⚠ 3D view: " + t; diagEl.style.display = "";
+      clearTimeout(diagT); diagT = setTimeout(() => { if (diagEl) diagEl.style.display = "none"; }, 20000);
+      try { console.warn("Sketcher 3D view:", t); } catch (e) { /* fine */ }
+      V.lastProblem = t;
+    }
+    function safeCam() {
+      if (fin(cam.position) && fin(controls.target)) return true;
+      controls.target.set(0, 0, 0); [persp, ortho].forEach((k) => { k.position.set(9, -12, 8); k.lookAt(0, 0, 0); });
+      try { view("iso"); } catch (e) { /* the default place */ }
+      diag("the camera was not a number (a bad size somewhere in the model) - put back to Iso");
+      return fin(cam.position);
+    }
+    function draw() {
+      if (raf) return;
+      raf = root.requestAnimationFrame(() => {
+        raf = 0;
+        try { safeCam(); R.render(scene, cam); }
+        catch (e) { diag("could not draw - " + String((e && e.message) || e).slice(0, 200)); }
+      });
+    }
+    R.domElement.addEventListener("webglcontextlost", (e) => { e.preventDefault(); diag("the graphics card dropped the 3D view (WebGL context lost) - it comes back by itself; if not, close and open the Sketcher"); });
+    R.domElement.addEventListener("webglcontextrestored", () => { if (diagEl) diagEl.style.display = "none"; rebuild(); });
     controls.addEventListener("change", () => { if (cam === ortho) syncOrthoZoom(); draw(); });
     try { new root.ResizeObserver(size).observe(host); } catch (e) { root.addEventListener("resize", size); }
 
@@ -277,6 +305,7 @@
       let b = M && M.v.length ? G().bbox(M) : xb || { min: [-2, -2, 0], max: [2, 2, 2] };
       if (xb && M && M.v.length) b = { min: [0, 1, 2].map((k) => Math.min(b.min[k], xb.min[k])), max: [0, 1, 2].map((k) => Math.max(b.max[k], xb.max[k])) };
       const c = G().v3.mul(G().v3.add(b.min, b.max), 0.5), r = Math.max(1, G().v3.len(G().v3.sub(b.max, b.min)) / 2);
+      if (!c.every(Number.isFinite) || !Number.isFinite(r)) { diag("the model's size is not a number (a bad corner / light / piece) - framed round the origin instead"); return { c: [0, 0, 1], r: 6 }; }   // 2.639.2
       return { c, r };
     }
     function view(name) {
@@ -383,7 +412,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground,
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, extents, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, view, extents, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

@@ -6359,6 +6359,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.639.2: **Sketcher: the 3D view never goes black silently** - a bad number in a model (a corner, a light, a piece)
+  no longer blacks the whole view: that piece is left out, the camera is put back, and a red note at the bottom of the
+  view says what was wrong (a render error or a lost graphics context says so too).
 - 2.639.1: **Sketcher fix** - docked in a narrow column the new outline took the 3D view's width (it showed black);
   there the outline now starts off and 🗂 floats it over the view, and the view never gets narrower than 160 px.
 - 2.639.0: **Sketcher: 🗂 Outline docker** (rooms ▸ walls, floor, ceiling, skirting, cornice, doors, windows; 👁 hide /
