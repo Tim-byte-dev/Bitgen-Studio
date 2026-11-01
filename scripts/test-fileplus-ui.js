@@ -76,7 +76,7 @@ const check = (n, cond, got) => {
       return { info: E.S.fileInfo, png: s(p2).includes("iTXtTitle") && s(p2).includes("Harbour at dawn"), jpg: s(j2.slice(0, 2000)).includes("<rdf:li>boats</rdf:li>"), pngOk: !!(await createImageBitmap(new Blob([p2], { type: "image/png" }))) }; });
     check("File Info: kept with the document; written into PNG (text chunks) and JPEG (XMP) - the PNG still opens", fi.info && fi.info.title === "Harbour at dawn" && fi.info.author === "Tim" && fi.png && fi.jpg && fi.pngOk, fi);
     const menu = await E_(() => { const C = window.imageEditorInstance.E.ui.CMD; return ["file.info", "file.print", "auto.contact", "auto.cropstraighten"].map((k) => C.get(k) && C.get(k).key); });
-    check("File ▸ File Info (Alt+Shift+Ctrl+I), Print (Ctrl+P), Automate ▸ Contact Sheet / Crop and Straighten Photos", menu[0] === "Alt+Shift+Ctrl+I" && menu[1] === "Ctrl+P" && menu[2] !== undefined && menu[3] !== undefined, menu);
+    check("File ▸ File Info (Alt+Shift+Ctrl+I), Print (Ctrl+Shift+P - 2.645.0), Automate ▸ Contact Sheet / Crop and Straighten Photos", menu[0] === "Alt+Shift+Ctrl+I" && menu[1] === "Shift+Ctrl+P" && menu[2] !== undefined && menu[3] !== undefined, menu);
     // Print: the page put together (the system print dialog stubbed)
     await E_(() => { window.__printed = 0; const o = HTMLIFrameElement.prototype; const d = Object.getOwnPropertyDescriptor(o, "contentWindow"); Object.defineProperty(o, "contentWindow", { configurable: true, get() { const w = d.get.call(this); if (w) w.print = () => { window.__printed++; window.__printDoc = this.contentDocument.documentElement.outerHTML.slice(0, 600); }; return w; } }); });
     await E_(() => window.imageEditorInstance.E.ui.run("file.print")); await p.waitForTimeout(300);

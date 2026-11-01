@@ -12898,6 +12898,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui642-ui.js > /tmp/ui642.log 2>&
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui643-ui.js > /tmp/ui643.log 2>&1 \
   && ok "2.643.0 browser test: looking through the picked camera, ✥ Move / ⟳ Rotate show the widget in front of the view, the Y arrow moves it, the turn ring turns it (the view follows), Esc deselects (still maximized) - or SKIP without playwright" \
   || { bad "2.643.0 camera view widget browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui643.log | head -14; }
+# ---- 2.645.0 (Tim: "if user presses ctrl P bring the prompt docker to front")
+node scripts/test-promptfront645.js > /tmp/pf645.log 2>&1 \
+  && ok "2.645.0 Ctrl+P: the key (not Ctrl+Shift+P / AltGr), caught first, front() opens / unfolds / shows its ▣ docker / lifts it, the lift ends; Print -> Ctrl+Shift+P - pure + wiring" \
+  || { bad "2.645.0 Ctrl+P units"; grep -a "^FAIL" -A2 /tmp/pf645.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui645-ui.js > /tmp/ui645.log 2>&1 \
+  && ok "2.645.0 browser test: Ctrl+P - closed, folded, under a floating window, under a maximized docker, in a closed ▣ docker: seen + focused; typing in a box too; no print; Artist mode keeps it - or SKIP without playwright" \
+  || { bad "2.645.0 Ctrl+P browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui645.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

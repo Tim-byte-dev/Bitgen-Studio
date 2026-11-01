@@ -7,7 +7,7 @@
  *                 colour), TGA, AVIF (made by ffmpeg on this computer - routes/imgconvert.js)
  *   File ▸ File Info… (Alt+Shift+Ctrl+I)   title, author, description, keywords, copyright, URL - kept with the
  *                 document (.bgi) and written into exported PNG (text chunks) and JPEG (XMP) files
- *   File ▸ Print… (Ctrl+P)   scale to fit / a size in cm or inches at a resolution, centred, portrait / landscape,
+ *   File ▸ Print… (Ctrl+Shift+P - 2.645.0; Ctrl+P brings the prompt docker to the front)   scale to fit / a size in cm or inches at a resolution, centred, portrait / landscape,
  *                 the system's print dialog
  *   File ▸ Automate ▸ Contact Sheet…   pictures (files, or the open documents) in a grid on a new document: columns
  *                 x rows, page size, margins, captions with the file names - one layer per picture
@@ -335,7 +335,8 @@
     }
     const C = E.ui.addCmd, docOpen = () => !!S.w;
     C("file.info", "File Info…", "Alt+Shift+Ctrl+I", fileInfo, { enabled: docOpen }, ["File", "file.download"]);
-    C("file.print", "Print…", "Ctrl+P", print, { enabled: docOpen }, ["File", "file.info"]);
+    C("file.print", "Print…", "Shift+Ctrl+P", print,   // 2.645.0: Ctrl+P = the prompt docker to the front (static/promptfront.js)
+      { enabled: docOpen }, ["File", "file.info"]);
     C("auto.contact", "Automate: Contact Sheet…", "", () => contactSheet(), {}, ["File", "act.droplet"]);
     C("auto.cropstraighten", "Automate: Crop and Straighten Photos", "", cropStraighten, { enabled: docOpen }, ["File", "auto.contact"]);
     E.filePlus = { contactSheet, cropStraighten, fileInfo, print, findPhotos, pickFiles, imgOf, openDocs, dialog, addType: (t, fn) => { TYPES[String(t).toLowerCase()] = fn; } };   // 2.487.0: + addType (pcmode.js's CMYK TIFF)   // 2.486.0: pickers + dialog shared with pcmerge.js

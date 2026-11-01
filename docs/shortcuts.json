@@ -25,6 +25,10 @@
           "Show / hide the prompt docker (not while typing in a box; over the image editor P is its Pen)"
         ],
         [
+          "Ctrl+P",
+          "Bring the prompt docker to the front: opened, unfolded, over whatever covers it, the prompt box ready to type in (typing in a box too; in 🎨 Artist mode Ctrl+P stays its colour palette)"
+        ],
+        [
           "S",
           "Show / hide Basic Settings - a floating docker (not while typing; over the image editor S is its Clone Stamp)"
         ],

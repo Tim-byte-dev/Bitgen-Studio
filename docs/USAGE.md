@@ -5043,7 +5043,7 @@ Pictures need some detail in common. Plain sky or a blank wall gives them nothin
 - **File ▸ File Info…** (Alt+Shift+Ctrl+I): title, author, description, keywords, copyright and a source URL. It is
   kept with the document (and in its .bgi file) and written into exported PNG files (as text chunks) and JPEG
   files (as XMP), so other programs show it.
-- **File ▸ Print…** (Ctrl+P): scale to fit the page, a size in cm or inches, or a percentage; portrait, landscape
+- **File ▸ Print…** (Ctrl+Shift+P - Ctrl+P brings the prompt docker to the front): scale to fit the page, a size in cm or inches, or a percentage; portrait, landscape
   or as the picture. OK opens the system's print dialog, where you pick the printer, the paper and copies, or save
   as PDF.
 - **File ▸ Automate ▸ Contact Sheet…**: puts pictures in a grid on a new document. Choose files, or use the open
@@ -6297,6 +6297,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.645.0: **Ctrl+P brings the prompt docker to the front** - anywhere (typing in a box too): it opens, unfolds, comes
+  out of a closed ▣ docker and over a floating window or a maximized docker (the Sketcher, the timeline …), with the
+  prompt box ready to type in. 🎨 Artist mode keeps Ctrl+P for its colour palette; the image editor's **File ▸ Print**
+  moved to **Ctrl+Shift+P**.
 - 2.644.0: **The guides say Sketcher** - the README, this guide, the Feature Reference, the beta page, the help and the
   shortcut list no longer describe the House builder (the Sketcher replaced it in 2.630.0); the Sketcher section starts
   with what it does now; a new Sketcher screenshot.
