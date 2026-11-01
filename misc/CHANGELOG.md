@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.642.0** — Credits: Settings ▸ About and the Guide (Produced and Developed by Tim Paul, Programmer - Claude Opus 5.5)
 - **2.641.0** — The Sketcher's Camera: No Box, Move Arrows, Double-Click = Rotate Rings, Another Pick Unpicks It
 - **2.640.0** — The Sketcher: Each Part's Own Properties; Profiles for Skirting, Cornices, Door + Window Frames and Sills
 - **2.639.2** — The Sketcher's 3D View: No Silent Black Screen

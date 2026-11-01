@@ -17,6 +17,7 @@ installed yet, start with [INSTALL.md](INSTALL.md).
 - [Projects, queue and gallery](#projects-queue-and-gallery)
 - [The file dialog](#the-file-dialog)
 - [Tips](#tips)
+- [Credits](#credits)
 
 ---
 
@@ -6391,6 +6392,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.642.0: **Credits** - Settings ▸ **About** shows the version, "Produced and Developed by Tim Paul",
+  "Programmer - Claude Opus 5.5" and the credits to everyone whose code, models, tools and ideas bitGen Studio uses; the
+  same credits are the last section of this guide (and on its cover).
 - 2.641.0: **Sketcher: cameras picked, moved and turned like objects** - no box round a picked camera; it shows X / Y /
   Z move arrows (drag the camera or an arrow), a double-click swaps them for the rotate rings, and clicking anything else
   picks that instead.
@@ -7070,3 +7074,114 @@ dialogs** switches the *Choose file* buttons back to the browser's picker.
 - Hover anything — every button has a tooltip. Turn on *Expert mode* in
   Settings → General to hide the help paragraphs once you know your way around.
 - A failed render always says why on its scene card and in the Queue log.
+
+<!-- credits:start -->
+## Credits
+
+**Produced and Developed by Tim Paul**
+
+**Programmer - Claude Opus 5.5**
+
+bitGen Studio - a local AI video, image, music and editing studio. Everything runs on your own computer: no sign-ups, no cloud.
+
+bitGen Studio stands on the work of many people. Thank you to everyone below - the projects whose code, models, ideas and tools we use or learned from.
+
+### Generation engines
+
+- **[ComfyUI](https://github.com/Comfy-Org/ComfyUI)** (Comfy Org and comfyanonymous) - the generation engine - every image, video and music style runs as a ComfyUI graph; its own frontend's graph conversion is mirrored for workflows
+- **[comfy-kitchen](https://github.com/Comfy-Org)** (Comfy Org) - the int8 ConvRot weight layout, re-implemented in the native engine (Apache-2.0)
+- **[llama.cpp](https://github.com/ggml-org/llama.cpp)** (ggml-org) - the local LLM (llama-server) behind ✨ Enhance, the prompt chat, screenplays and the vision captioner
+- **[stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp)** (leejet) - the first image and video backend (sd-cli)
+- **[Hugging Face diffusers](https://github.com/huggingface/diffusers)** (Hugging Face) - the MiniMax H3 weight conversion and modular pipeline the native engine follows (Apache-2.0)
+- **[Hugging Face Hub](https://huggingface.co)** (Hugging Face) - where the model files come from
+- **[FFmpeg](https://ffmpeg.org)** - compiling, exporting, proxies and every audio / video conversion
+
+### Video models
+
+- **[MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3)** (MiniMax) - the main video model - text, references, first / last frame, native audio
+- **[Viggle-Animate](https://huggingface.co/Viggle/Viggle-Animate)** (Viggle AI) - character animation; its inference code (Apache-2.0) guided the native engine
+- **[LTX-Video](https://github.com/Lightricks/LTX-Video)** (Lightricks) - the LTX video styles and the official templates
+- **[Wan](https://github.com/Wan-Video)** (the Wan team) - the Wan video styles, camera paths (ATI) and VR worlds
+- **SeedVR2** (ByteDance Seed) - upscaling takes
+- **FastH3 Omni** - the FastH3 recipe for MiniMax H3 graphs
+- **Veda** - the optional sparse-attention accelerator for MiniMax H3
+- **[MiniMax-H3-NativeAudio-MusicVideo-Workflow](https://github.com/Shrek3OnVH5/MiniMax-H3-NativeAudio-MusicVideo-Workflow)** (Shrek3OnVH5) - the music-video lip-sync workflow the MMH3_NativeAudio_MV style is built from (MIT)
+
+### Image models
+
+- **Qwen Image and Qwen Image Edit** (the Qwen team, Alibaba) - picture styles, ✏ Edit, fills and the Sketcher's real photo
+- **FLUX.2 and FLUX 3 Klein** (Black Forest Labs) - picture styles, edits and LoRA training bases
+- **Krea 2** (Krea) - picture styles (Turbo and Raw)
+- **FIBO 2.0** (Bria) - the Fibo 2.0 Edit styles
+- **Anima, MOSS-Image, SDXL and Pony models** - more picture styles
+- **SAM 2 (Segment Anything)** (Meta) - Select Subject, cut-outs through a shot
+- **Hunyuan3D 2.1** (Tencent) - 🧊 picture to 3D (under its own community licence)
+- **TRELLIS.2** (Microsoft) - 🧊 picture to 3D
+- **[cadrille](https://github.com/col14m/cadrille)** (col14m) - ✨ Generate in SolidCraft writes part code from a description or a picture (weights CC BY-NC 4.0)
+- **[CadQuery](https://github.com/CadQuery/cadquery)** - runs that part code
+
+### Language, speech and music
+
+- **Qwen3, Qwen3.5, Qwen3.8 and Qwen3-VL** (the Qwen team, Alibaba) - the recommended local LLMs, the vision captioner and fine-tune bases
+- **Gemma 4** (Google) - local LLMs and fine-tune bases
+- **WeVisOne-VL** - the vision add-on
+- **[faster-whisper](https://github.com/SYSTRAN/faster-whisper)** (SYSTRAN) - transcription, karaoke words, edit by transcript, voice chat
+- **Whisper** (OpenAI) - the speech-recognition models faster-whisper runs
+- **OmniVoice** - text-to-speech and voice cloning
+- **[OpenAudio / fish-speech](https://github.com/fishaudio/fish-speech)** (Fish Audio) - the first text-to-speech engine
+- **Ming-3.0 and Bark** - the speech add-ons
+- **YuE** - song generation (YuE2), as its own engine and in ComfyUI
+- **[Demucs](https://github.com/facebookresearch/demucs)** (Meta) - stem separation (vocals / instrumental)
+
+### Training
+
+- **[ai-toolkit](https://github.com/ostris/ai-toolkit)** (Ostris) - the 🎓 LoRA and checkpoint trainer
+- **[Unsloth](https://github.com/unslothai/unsloth)** - LLM and vision fine-tunes
+
+### ComfyUI node packs
+
+- **[ComfyUI-KJNodes](https://github.com/kijai/ComfyUI-KJNodes)** (Kijai) - the MiniMax H3 long-video nodes and many helpers
+- **[ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF)** (city96) - GGUF model loading
+- **[ComfyUI-VideoHelperSuite](https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite)** (Kosinkadink) - loading and saving video and audio in graphs
+- **[comfyui-inpaint-nodes](https://github.com/Acly/comfyui-inpaint-nodes)** (Acly) - the image editor's selection fill
+- **[comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux)** (Fannovel16) - ControlNet preprocessors
+- **ComfyUI-MiniMaxH3Mod, Spectrum-MiniMax-H3, ComfyUI-H3-NativeAudioLock** - character RefMods, MiniMax H3 speed-ups, the song lock for music videos
+- **Nougan Nodes, RH DLSS 5, SolarRenderer** - regional character LoRAs and Prompt Relay, ⚡ DLSS 5, ☀ solar rendering
+
+### Built into the app
+
+- **[three.js](https://threejs.org)** - every 3D view (MIT)
+- **[opentype.js](https://github.com/opentypejs/opentype.js)** - 3D text (MIT)
+- **[pdf.js](https://mozilla.github.io/pdf.js/)** (Mozilla) - opening PDFs in the image editor (Apache-2.0)
+- **[pdf-lib and fontkit](https://pdf-lib.js.org)** - saving PDFs with embedded fonts (MIT)
+- **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)
+- **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - the Sketcher's walls (MIT; with splaytree and robust-predicates)
+- **[replicad and OpenCascade](https://replicad.xyz)** - parametric 3D bodies (MIT; OpenCascade LGPL-2.1)
+- **jxl-oxide, libjxl and @jsquash/jxl** - JPEG XL open and save (MIT / Apache-2.0 / BSD-3-Clause)
+- **[Node.js, Express and Multer](https://nodejs.org)** - the app's server
+- **[Electron](https://github.com/electron/electron)** - the desktop app
+- **Python, NumPy, OpenCV, soundfile and pyaaf2** - the workers, tracking, beats, sound and AAF export
+- **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
+- **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python
+- **ReportLab, pypdf, jsdom and Playwright** - the Guide PDFs and the test suite
+
+### Programs bitGen Studio works with
+
+- **[Blender](https://www.blender.org)** (the Blender Foundation) - the Blender add-on: scenes and renders both ways, 3D layers, poses
+- **[Unreal Engine and MetaHuman](https://www.unrealengine.com)** (Epic Games) - the bitGen Bridge plugin: Unreal layers, cameras, lights, the live view
+- **[Daz Studio](https://www.daz3d.com)** (Daz 3D) - the Daz bridge and the live link
+- **[SolidCraft](https://solidcraft.io)** (Tangency Labs) - open-source parametric CAD in its own docker
+- **[Civitai](https://civitai.com)** - model details, examples, search and download
+- **[RunPod](https://www.runpod.io)** - rendering on a remote GPU
+- **DaVinci Resolve and Final Cut Pro** - timelines out and back in
+
+### Ideas and inspiration
+
+- **[Krita AI Diffusion](https://github.com/Acly/krita-ai-diffusion)** (Acly) - the image editor's selection Generate / Fill / Remove follows its technique per model family
+- **Wan2GP and mmgp** (deepbeepmeep) - the idea of streaming model blocks to the GPU (no code used)
+- **The House builder's library** - the furniture, people and materials the Sketcher inherited
+- **The professional creative tools** - the photo editors, vector and drawing programs, video editors, motion-graphics tools, 3D modellers and parametric CAD programs whose ways of working the image editor, the timeline, the CAD tools and the Sketcher follow
+- **Everyone who tests bitGen Studio** - and reports what to fix
+
+bitGen Studio is MIT licensed. Each project above keeps its own licence - misc/NOTICE.md lists what ships, what is downloaded, and the model licences. Model weights are downloaded by you and carry their makers' terms.
+<!-- credits:end -->

@@ -303,6 +303,7 @@ def build(out_path):
     ver = json.load(open(os.path.join(ROOT, "package.json"), encoding="utf-8")).get("version", "")
     sc = json.load(open(os.path.join(ROOT, "docs", "shortcuts.json"), encoding="utf-8"))
     md = open(os.path.join(ROOT, "docs", "USAGE.md"), encoding="utf-8").read()
+    credits = json.load(open(os.path.join(ROOT, "lib", "credits.json"), encoding="utf-8")).get("credits", [])
     W, H = A4
     M = 16 * mm
     width = W - 2 * M
@@ -325,9 +326,13 @@ def build(out_path):
         c.setFont(FONT, 10); c.setFillColor(colors.HexColor("#b9ab95"))
         c.drawString(M, H * 0.58, f"Version {ver}  ·  {date.today().strftime('%d %B %Y')}")
         c.drawString(M, H * 0.56, "Local AI video, image, music and editing studio - ComfyUI, MiniMax H3, Wan, LTX, local LLMs")
-        c.setFont(FONT, 8.5)
-        y = H * 0.44
-        for line in ["Part 1  -  Shortcut keys at a glance", "Part 2  -  Instructions (every docker, step by step)"]:
+        # 2.642.0: the credit lines (lib/credits.json - the same as Settings ▸ About and the Credits section)
+        y = H * 0.515
+        for cr in credits:
+            c.setFont(BOLD, 11.5); c.setFillColor(colors.HexColor("#f2e7d6")); c.drawString(M, y, drawable(cr["role"] + cr.get("join", " ") + cr["name"])); y -= 17
+        c.setFont(FONT, 8.5); c.setFillColor(colors.HexColor("#b9ab95"))
+        y = H * 0.40
+        for line in ["Part 1  -  Shortcut keys at a glance", "Part 2  -  Instructions (every docker, step by step)", "Credits  -  at the end of Part 2"]:
             c.drawString(M, y, line); y -= 14
         c.restoreState()
 

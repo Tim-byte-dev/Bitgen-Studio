@@ -200,4 +200,7 @@ licence when you do. Without cadrille, the app's own local LLM writes the code i
 
 ## Acknowledgements
 
+**Produced and Developed by Tim Paul** · **Programmer - Claude Opus 5.5** - the full credits are in Settings ▸ About and at
+the end of the Guide ([lib/credits.json](lib/credits.json)).
+
 [ComfyUI](https://github.com/Comfy-Org/ComfyUI) · [cadrille](https://github.com/col14m/cadrille) + [CadQuery](https://github.com/CadQuery/cadquery) · [SolidCraft](https://solidcraft.io) · [MiniMax H3](https://huggingface.co/Comfy-Org/MiniMax-H3) · [LTX-Video](https://github.com/Lightricks/LTX-Video) · [Wan](https://github.com/Wan-Video) · [llama.cpp](https://github.com/ggml-org/llama.cpp) · [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) · [three.js](https://threejs.org) · [replicad](https://replicad.xyz) + [OpenCascade](https://dev.opencascade.org) · [pdf.js](https://mozilla.github.io/pdf.js/) · [pdf-lib](https://pdf-lib.js.org) · [ag-psd](https://github.com/Agamnentzar/ag-psd) · [fontkit](https://github.com/foliojs/fontkit) · and the ComfyUI node packs listed in [NOTICE.md](misc/NOTICE.md).

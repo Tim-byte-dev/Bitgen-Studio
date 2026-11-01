@@ -1,0 +1,427 @@
+{
+  "about": "bitGen Studio - a local AI video, image, music and editing studio. Everything runs on your own computer: no sign-ups, no cloud.",
+  "credits": [
+    {
+      "role": "Produced and Developed by",
+      "join": " ",
+      "name": "Tim Paul"
+    },
+    {
+      "role": "Programmer",
+      "join": " - ",
+      "name": "Claude Opus 5.5"
+    }
+  ],
+  "thanks": "bitGen Studio stands on the work of many people. Thank you to everyone below - the projects whose code, models, ideas and tools we use or learned from.",
+  "sections": [
+    {
+      "title": "Generation engines",
+      "items": [
+        {
+          "name": "ComfyUI",
+          "by": "Comfy Org and comfyanonymous",
+          "url": "https://github.com/Comfy-Org/ComfyUI",
+          "what": "the generation engine - every image, video and music style runs as a ComfyUI graph; its own frontend's graph conversion is mirrored for workflows"
+        },
+        {
+          "name": "comfy-kitchen",
+          "by": "Comfy Org",
+          "url": "https://github.com/Comfy-Org",
+          "what": "the int8 ConvRot weight layout, re-implemented in the native engine (Apache-2.0)"
+        },
+        {
+          "name": "llama.cpp",
+          "by": "ggml-org",
+          "url": "https://github.com/ggml-org/llama.cpp",
+          "what": "the local LLM (llama-server) behind ✨ Enhance, the prompt chat, screenplays and the vision captioner"
+        },
+        {
+          "name": "stable-diffusion.cpp",
+          "by": "leejet",
+          "url": "https://github.com/leejet/stable-diffusion.cpp",
+          "what": "the first image and video backend (sd-cli)"
+        },
+        {
+          "name": "Hugging Face diffusers",
+          "by": "Hugging Face",
+          "url": "https://github.com/huggingface/diffusers",
+          "what": "the MiniMax H3 weight conversion and modular pipeline the native engine follows (Apache-2.0)"
+        },
+        {
+          "name": "Hugging Face Hub",
+          "by": "Hugging Face",
+          "url": "https://huggingface.co",
+          "what": "where the model files come from"
+        },
+        {
+          "name": "FFmpeg",
+          "url": "https://ffmpeg.org",
+          "what": "compiling, exporting, proxies and every audio / video conversion"
+        }
+      ]
+    },
+    {
+      "title": "Video models",
+      "items": [
+        {
+          "name": "MiniMax H3",
+          "by": "MiniMax",
+          "url": "https://huggingface.co/Comfy-Org/MiniMax-H3",
+          "what": "the main video model - text, references, first / last frame, native audio"
+        },
+        {
+          "name": "Viggle-Animate",
+          "by": "Viggle AI",
+          "url": "https://huggingface.co/Viggle/Viggle-Animate",
+          "what": "character animation; its inference code (Apache-2.0) guided the native engine"
+        },
+        {
+          "name": "LTX-Video",
+          "by": "Lightricks",
+          "url": "https://github.com/Lightricks/LTX-Video",
+          "what": "the LTX video styles and the official templates"
+        },
+        {
+          "name": "Wan",
+          "by": "the Wan team",
+          "url": "https://github.com/Wan-Video",
+          "what": "the Wan video styles, camera paths (ATI) and VR worlds"
+        },
+        {
+          "name": "SeedVR2",
+          "by": "ByteDance Seed",
+          "what": "upscaling takes"
+        },
+        {
+          "name": "FastH3 Omni",
+          "what": "the FastH3 recipe for MiniMax H3 graphs"
+        },
+        {
+          "name": "Veda",
+          "what": "the optional sparse-attention accelerator for MiniMax H3"
+        },
+        {
+          "name": "MiniMax-H3-NativeAudio-MusicVideo-Workflow",
+          "by": "Shrek3OnVH5",
+          "url": "https://github.com/Shrek3OnVH5/MiniMax-H3-NativeAudio-MusicVideo-Workflow",
+          "what": "the music-video lip-sync workflow the MMH3_NativeAudio_MV style is built from (MIT)"
+        }
+      ]
+    },
+    {
+      "title": "Image models",
+      "items": [
+        {
+          "name": "Qwen Image and Qwen Image Edit",
+          "by": "the Qwen team, Alibaba",
+          "what": "picture styles, ✏ Edit, fills and the Sketcher's real photo"
+        },
+        {
+          "name": "FLUX.2 and FLUX 3 Klein",
+          "by": "Black Forest Labs",
+          "what": "picture styles, edits and LoRA training bases"
+        },
+        {
+          "name": "Krea 2",
+          "by": "Krea",
+          "what": "picture styles (Turbo and Raw)"
+        },
+        {
+          "name": "FIBO 2.0",
+          "by": "Bria",
+          "what": "the Fibo 2.0 Edit styles"
+        },
+        {
+          "name": "Anima, MOSS-Image, SDXL and Pony models",
+          "what": "more picture styles"
+        },
+        {
+          "name": "SAM 2 (Segment Anything)",
+          "by": "Meta",
+          "what": "Select Subject, cut-outs through a shot"
+        },
+        {
+          "name": "Hunyuan3D 2.1",
+          "by": "Tencent",
+          "what": "🧊 picture to 3D (under its own community licence)"
+        },
+        {
+          "name": "TRELLIS.2",
+          "by": "Microsoft",
+          "what": "🧊 picture to 3D"
+        },
+        {
+          "name": "cadrille",
+          "by": "col14m",
+          "url": "https://github.com/col14m/cadrille",
+          "what": "✨ Generate in SolidCraft writes part code from a description or a picture (weights CC BY-NC 4.0)"
+        },
+        {
+          "name": "CadQuery",
+          "url": "https://github.com/CadQuery/cadquery",
+          "what": "runs that part code"
+        }
+      ]
+    },
+    {
+      "title": "Language, speech and music",
+      "items": [
+        {
+          "name": "Qwen3, Qwen3.5, Qwen3.8 and Qwen3-VL",
+          "by": "the Qwen team, Alibaba",
+          "what": "the recommended local LLMs, the vision captioner and fine-tune bases"
+        },
+        {
+          "name": "Gemma 4",
+          "by": "Google",
+          "what": "local LLMs and fine-tune bases"
+        },
+        {
+          "name": "WeVisOne-VL",
+          "what": "the vision add-on"
+        },
+        {
+          "name": "faster-whisper",
+          "by": "SYSTRAN",
+          "url": "https://github.com/SYSTRAN/faster-whisper",
+          "what": "transcription, karaoke words, edit by transcript, voice chat"
+        },
+        {
+          "name": "Whisper",
+          "by": "OpenAI",
+          "what": "the speech-recognition models faster-whisper runs"
+        },
+        {
+          "name": "OmniVoice",
+          "what": "text-to-speech and voice cloning"
+        },
+        {
+          "name": "OpenAudio / fish-speech",
+          "by": "Fish Audio",
+          "url": "https://github.com/fishaudio/fish-speech",
+          "what": "the first text-to-speech engine"
+        },
+        {
+          "name": "Ming-3.0 and Bark",
+          "what": "the speech add-ons"
+        },
+        {
+          "name": "YuE",
+          "what": "song generation (YuE2), as its own engine and in ComfyUI"
+        },
+        {
+          "name": "Demucs",
+          "by": "Meta",
+          "url": "https://github.com/facebookresearch/demucs",
+          "what": "stem separation (vocals / instrumental)"
+        }
+      ]
+    },
+    {
+      "title": "Training",
+      "items": [
+        {
+          "name": "ai-toolkit",
+          "by": "Ostris",
+          "url": "https://github.com/ostris/ai-toolkit",
+          "what": "the 🎓 LoRA and checkpoint trainer"
+        },
+        {
+          "name": "Unsloth",
+          "url": "https://github.com/unslothai/unsloth",
+          "what": "LLM and vision fine-tunes"
+        }
+      ]
+    },
+    {
+      "title": "ComfyUI node packs",
+      "items": [
+        {
+          "name": "ComfyUI-KJNodes",
+          "by": "Kijai",
+          "url": "https://github.com/kijai/ComfyUI-KJNodes",
+          "what": "the MiniMax H3 long-video nodes and many helpers"
+        },
+        {
+          "name": "ComfyUI-GGUF",
+          "by": "city96",
+          "url": "https://github.com/city96/ComfyUI-GGUF",
+          "what": "GGUF model loading"
+        },
+        {
+          "name": "ComfyUI-VideoHelperSuite",
+          "by": "Kosinkadink",
+          "url": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite",
+          "what": "loading and saving video and audio in graphs"
+        },
+        {
+          "name": "comfyui-inpaint-nodes",
+          "by": "Acly",
+          "url": "https://github.com/Acly/comfyui-inpaint-nodes",
+          "what": "the image editor's selection fill"
+        },
+        {
+          "name": "comfyui_controlnet_aux",
+          "by": "Fannovel16",
+          "url": "https://github.com/Fannovel16/comfyui_controlnet_aux",
+          "what": "ControlNet preprocessors"
+        },
+        {
+          "name": "ComfyUI-MiniMaxH3Mod, Spectrum-MiniMax-H3, ComfyUI-H3-NativeAudioLock",
+          "what": "character RefMods, MiniMax H3 speed-ups, the song lock for music videos"
+        },
+        {
+          "name": "Nougan Nodes, RH DLSS 5, SolarRenderer",
+          "what": "regional character LoRAs and Prompt Relay, ⚡ DLSS 5, ☀ solar rendering"
+        }
+      ]
+    },
+    {
+      "title": "Built into the app",
+      "items": [
+        {
+          "name": "three.js",
+          "url": "https://threejs.org",
+          "what": "every 3D view (MIT)"
+        },
+        {
+          "name": "opentype.js",
+          "url": "https://github.com/opentypejs/opentype.js",
+          "what": "3D text (MIT)"
+        },
+        {
+          "name": "pdf.js",
+          "by": "Mozilla",
+          "url": "https://mozilla.github.io/pdf.js/",
+          "what": "opening PDFs in the image editor (Apache-2.0)"
+        },
+        {
+          "name": "pdf-lib and fontkit",
+          "url": "https://pdf-lib.js.org",
+          "what": "saving PDFs with embedded fonts (MIT)"
+        },
+        {
+          "name": "ag-psd",
+          "by": "Agamnentzar",
+          "url": "https://github.com/Agamnentzar/ag-psd",
+          "what": "PSD files and their text effects (MIT)"
+        },
+        {
+          "name": "polygon-clipping",
+          "url": "https://github.com/mfogel/polygon-clipping",
+          "what": "the Sketcher's walls (MIT; with splaytree and robust-predicates)"
+        },
+        {
+          "name": "replicad and OpenCascade",
+          "url": "https://replicad.xyz",
+          "what": "parametric 3D bodies (MIT; OpenCascade LGPL-2.1)"
+        },
+        {
+          "name": "jxl-oxide, libjxl and @jsquash/jxl",
+          "what": "JPEG XL open and save (MIT / Apache-2.0 / BSD-3-Clause)"
+        },
+        {
+          "name": "Node.js, Express and Multer",
+          "url": "https://nodejs.org",
+          "what": "the app's server"
+        },
+        {
+          "name": "Electron",
+          "url": "https://github.com/electron/electron",
+          "what": "the desktop app"
+        },
+        {
+          "name": "Python, NumPy, OpenCV, soundfile and pyaaf2",
+          "what": "the workers, tracking, beats, sound and AAF export"
+        },
+        {
+          "name": "OpenTimelineIO",
+          "url": "https://opentimeline.io",
+          "what": "timeline exchange (OTIO, FCP XML, EDL)"
+        },
+        {
+          "name": "uv",
+          "by": "Astral",
+          "url": "https://github.com/astral-sh/uv",
+          "what": "the setup's Python"
+        },
+        {
+          "name": "ReportLab, pypdf, jsdom and Playwright",
+          "what": "the Guide PDFs and the test suite"
+        }
+      ]
+    },
+    {
+      "title": "Programs bitGen Studio works with",
+      "items": [
+        {
+          "name": "Blender",
+          "by": "the Blender Foundation",
+          "url": "https://www.blender.org",
+          "what": "the Blender add-on: scenes and renders both ways, 3D layers, poses"
+        },
+        {
+          "name": "Unreal Engine and MetaHuman",
+          "by": "Epic Games",
+          "url": "https://www.unrealengine.com",
+          "what": "the bitGen Bridge plugin: Unreal layers, cameras, lights, the live view"
+        },
+        {
+          "name": "Daz Studio",
+          "by": "Daz 3D",
+          "url": "https://www.daz3d.com",
+          "what": "the Daz bridge and the live link"
+        },
+        {
+          "name": "SolidCraft",
+          "by": "Tangency Labs",
+          "url": "https://solidcraft.io",
+          "what": "open-source parametric CAD in its own docker"
+        },
+        {
+          "name": "Civitai",
+          "url": "https://civitai.com",
+          "what": "model details, examples, search and download"
+        },
+        {
+          "name": "RunPod",
+          "url": "https://www.runpod.io",
+          "what": "rendering on a remote GPU"
+        },
+        {
+          "name": "DaVinci Resolve and Final Cut Pro",
+          "what": "timelines out and back in"
+        }
+      ]
+    },
+    {
+      "title": "Ideas and inspiration",
+      "items": [
+        {
+          "name": "Krita AI Diffusion",
+          "by": "Acly",
+          "url": "https://github.com/Acly/krita-ai-diffusion",
+          "what": "the image editor's selection Generate / Fill / Remove follows its technique per model family"
+        },
+        {
+          "name": "Wan2GP and mmgp",
+          "by": "deepbeepmeep",
+          "what": "the idea of streaming model blocks to the GPU (no code used)"
+        },
+        {
+          "name": "The House builder's library",
+          "what": "the furniture, people and materials the Sketcher inherited"
+        },
+        {
+          "name": "The professional creative tools",
+          "what": "the photo editors, vector and drawing programs, video editors, motion-graphics tools, 3D modellers and parametric CAD programs whose ways of working the image editor, the timeline, the CAD tools and the Sketcher follow"
+        },
+        {
+          "name": "Everyone who tests bitGen Studio",
+          "what": "and reports what to fix"
+        }
+      ]
+    }
+  ],
+  "licence": "bitGen Studio is MIT licensed. Each project above keeps its own licence - misc/NOTICE.md lists what ships, what is downloaded, and the model licences. Model weights are downloaded by you and carry their makers' terms."
+}

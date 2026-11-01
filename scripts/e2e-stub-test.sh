@@ -12885,6 +12885,14 @@ node scripts/test-camwidget641.js > /tmp/cw641.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui641-ui.js > /tmp/ui641.log 2>&1 \
   && ok "2.641.0 browser test: a click picks the camera (lit, no box, the arrows), a drag moves it, the Z arrow lifts it, a double-click = rotate rings and back, another object picked unpicks it, a click beside its lines is not the camera - or SKIP without playwright" \
   || { bad "2.641.0 camera widget browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui641.log | head -14; }
+# ---- 2.642.0 (Tim: "I would like the credits to say, Produced and Developed by Tim Paul , Programmer - Claude Opus5.5 in both the
+# user guide and an about tab in settings and the rest of the details and credits to everyone whose work we used for inspiration or code")
+node scripts/test-credits642.js > /tmp/cr642.log 2>&1 \
+  && ok "2.642.0 the credits: lib/credits.json (Tim Paul / Claude Opus 5.5 + every project used), /api/about, the Guide's Credits section + cover, Settings ▸ About - pure + wiring" \
+  || { bad "2.642.0 credits units"; grep -a "^FAIL" -A2 /tmp/cr642.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui642-ui.js > /tmp/ui642.log 2>&1 \
+  && ok "2.642.0 browser test: Settings ▸ About (last tab) - the version, the two credit lines, 9 groups of credits, links open outside - or SKIP without playwright" \
+  || { bad "2.642.0 About tab browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui642.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }
