@@ -408,12 +408,15 @@
         st.drag = { t: sel, mode: "top", p0: h.point, z0: h.point[2], x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
         return true;
       }
-      const t = AV().resolve(h); if (!t) return false;
+      let t = AV().resolve(h); if (!t) return false;
+      if (ev.shiftKey && t.ak === "room") t = { ak: "room", id: t.id };                 // 2.639.0: Shift+click = the whole room (then a drag moves it)
       ctx.setSel({ f: [], e: [], k: [] }); setSel(t);
       const A = AR(), x = P().find(A, t.ak, t.id);
       if (t.ak === "room" && t.part === "wall" && t.edge != null && x && x.closed) {      // 2.624.0: one wall of the room
         const start = planeAt(ev, x.z);
-        if (start) st.drag = { t, mode: "edge", z: x.z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
+        // 2.639.0: a wall moves across its own line (the walls beside it stretch / shorten, the floor, ceiling, skirting and
+        // cornice follow); Alt+click = free (any way on the floor)
+        if (start) st.drag = { t, mode: "edge", z: x.z, start, free: !!ev.altKey, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
         return true;
       }
       const z = t.ak === "room" ? x.z : t.ak === "light" || t.ak === "item" || t.ak === "cam" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" ? x.z : h.point[2];
@@ -525,6 +528,14 @@
     function dragEdge(ev, D, cur) {
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, R = P().room(A, D.t.id); if (!R) return true;
       const e = P().edgesOf(R)[D.t.edge]; if (!e) return true;
+      if (D.free) {                                                                     // 2.639.0: Alt - free
+        const v = [cur[0] - D.start[0], cur[1] - D.start[1]];
+        if (!ev.shiftKey) { const g = 0.05; v[0] = Math.round(v[0] / g) * g; v[1] = Math.round(v[1] / g) * g; }
+        P().moveEdgeBy(A, R.id, D.t.edge, v);
+        AV().rebuild(); AV().setSel(D.t);
+        ctx.status("▮ " + R.name + "'s wall moved freely " + fmt(Math.hypot(v[0], v[1])) + " (Alt) · 5 cm steps, Shift = free steps");
+        return true;
+      }
       const out = [e.u[1], -e.u[0]], tol = ev.shiftKey ? 0 : pxTol(cur), off = O.room.off || 0;
       const sn = P().snapEdge(A, R.id, D.t.edge, (cur[0] - D.start[0]) * out[0] + (cur[1] - D.start[1]) * out[1], tol, off);
       P().moveEdge(A, R.id, D.t.edge, sn.dist);
@@ -748,6 +759,10 @@
         if (R.closed) { colIn("Floor", R.floor, ch((v) => { R.floor = v; })); colIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
         if (R.closed) {                                                   // 2.631.0: the auto floor slab + the auto roof for this room
           chkIn("Floor slab under the walls", !!R.slab, ch((v) => { R.slab = v; }));
+          // 2.639.0: skirting / trim at the floor, a cornice under the ceiling
+          chkIn("Skirting", !!R.skirtOn, ch((v) => { R.skirtOn = v; })); if (R.skirtOn) numIn("Skirting height", R.skirtH, ch((v) => { R.skirtH = v; }), 0.01, 0.02, 0.6, "m");
+          chkIn("Cornice", !!R.corniceOn, ch((v) => { R.corniceOn = v; })); if (R.corniceOn) numIn("Cornice size", R.corniceH, ch((v) => { R.corniceH = v; }), 0.01, 0.02, 0.6, "m");
+          if (R.skirtOn || R.corniceOn) colIn("Skirting / cornice", R.trim, ch((v) => { R.trim = v; }));
           const own = AR().roofs.find((rf) => rf.rooms.includes(R.id));
           chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
         }

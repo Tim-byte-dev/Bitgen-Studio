@@ -18,6 +18,7 @@
     "ppdock.js",
     "ppimport.js",
     "ppframe.js",
+    "ppoutline.js",
     "ppreal.js"
   ]
 }

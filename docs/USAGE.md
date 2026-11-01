@@ -487,6 +487,16 @@ With **Select**:
 - **A door or window**: grips on its sides, top and (not a door) bottom - drag them for the width, the height, the
   elevation; drag a window itself along the wall and up / down. A window's panel has **Elevation (height from floor)**.
 
+### The outline docker, skirting + cornice, walls dragged, room groups (2.639.0)
+
+- **🗂 Outline** (the Sketcher's bar) - a docker left of the view listing every object: Room groups, Rooms ▸ Room 1 ▸
+  Wall 1 … n, Floor 1, Ceiling 1, Skirting 1, Cornice 1, Floor slab 1, Door 1, Window 1 …; free-standing Walls, Roofs,
+  Floors, Stairs, Lights, Furniture, Cameras. A click picks; **👁** hides / shows (undo-able, saved with the model).
+- **Room groups** - ＋ makes one, ⊞ on a room puts it in (or out); a group's 👁 hides / shows all its rooms.
+- **Skirting and cornice** - new rooms have both; the room's panel switches them, sets their size and colour.
+- **Walls** - a dragged wall moves across its own line (the walls beside it stretch or shorten; the floor, ceiling,
+  skirting and cornice follow); **Alt+drag** moves it freely; **Shift+click** picks the whole room.
+
 ### Rotate rings, roll, lenses (2.633.0)
 
 - A picked camera or piece of furniture shows three rings: **blue** turns it (yaw), **red** tips it (pitch), **green** rolls it.
@@ -6349,6 +6359,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.639.0: **Sketcher: 🗂 Outline docker** (rooms ▸ walls, floor, ceiling, skirting, cornice, doors, windows; 👁 hide /
+  show; room groups), skirting + cornice, Alt+drag a wall freely, Shift+click = the whole room.
 - 2.638.0: **📐 SolidCraft maximized = the whole window** - ⛶ fills bitGen's window between the title bar and the
   status bar and closes every other docker; 🗗 (or Esc) puts the layout back exactly as it was (which dockers were
   open, which were folded, their sizes).

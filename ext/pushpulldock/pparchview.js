@@ -55,8 +55,9 @@
       clear(geo); clear(fix); A.meshes = []; A.tags = [];
       while (furn.children.length) furn.remove(furn.children[0]);
       clear(camsG);
+      const hid = V.M && V.M.arch ? P().hiddenOf(V.M.arch) : () => false;     // 2.639.0: the 🗂 outline docker's hidden things
       ((V.M && V.M.arch && V.M.arch.cams) || []).forEach((c) => {
-        if (!root.PPCam) return;
+        if (!root.PPCam || hid("cam:" + c.id)) return;
         const g = new T.Group(); g.userData.tag = { ak: "cam", id: c.id };
         // 2.632.0: a camera is a gizmo - drawn over everything (inside a room, through its walls / ceiling) and picked first
         const body = new T.Mesh(new T.BoxGeometry(0.26, 0.26, 0.26), new T.MeshBasicMaterial({ color: 0x2563eb, depthTest: false, transparent: true, opacity: 0.9 })); body.position.set(c.x, c.y, c.z); body.renderOrder = 20; g.add(body);
@@ -64,7 +65,7 @@
         const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); const ls = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false })); ls.renderOrder = 20; g.add(ls);
         camsG.add(g);
       });
-      ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
+      ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn && !hid("item:" + it.id)) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
       mats.forEach((m) => m.dispose()); mats.clear();
       const M = V.M, Ar = M && M.arch;
       if (!Ar || !P().has(Ar)) { A.built = null; paintSel(); return; }

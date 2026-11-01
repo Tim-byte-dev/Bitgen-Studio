@@ -42,7 +42,7 @@
   "use strict";
   const EPS = 1e-6;
   const PC = () => { const p = root.polygonClipping; if (!p) throw new Error("static/vendor/polygon-clipping.umd.min.js is not loaded"); return p; };
-  const DEF = { h: 2.7, t: 0.15, wall: "#f4f1ea", floor: "#c8a882", ceil: "#fbfbf8", ext: "#e9e3d7", door: "#8b5a2b", frame: "#f4f4f4", glass: "#9ec5e8", roof: "#8a4f3d", stair: "#b08a62", slab: "#bdb7ab", top: "#d9d3c7" };
+  const DEF = { h: 2.7, t: 0.15, wall: "#f4f1ea", floor: "#c8a882", ceil: "#fbfbf8", ext: "#e9e3d7", door: "#8b5a2b", frame: "#f4f4f4", glass: "#9ec5e8", roof: "#8a4f3d", stair: "#b08a62", slab: "#bdb7ab", top: "#d9d3c7", trim: "#f2efe8" };   // 2.639.0: + skirting / cornice
   const OPS = { door: { w: 0.9, h: 2.1, sill: 0, style: "single" }, window: { w: 1.2, h: 1.2, sill: 0.9, style: "double" }, opening: { w: 1.0, h: 2.1, sill: 0, style: "plain" } };
   const STYLES = { door: ["single", "double", "sliding", "glass"], window: ["single", "double", "slider"], opening: ["plain"] };
   const ROOFS = ["gable", "hip", "shed", "flat", "follow"];        // 2.624.0: follow = on the walls' tops (their slope)
@@ -80,7 +80,7 @@
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [] }; }
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [] }; }
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length));
   function clean(o) {
@@ -94,7 +94,9 @@
       if (closed && area2(pts) < 0) pts.reverse();
       return { id: id(R.id), name: String(R.name || (closed ? "Room" : "Wall")).slice(0, 60), pts, closed, z: num(R.z, 0, -100, 1000), h: num(R.h, DEF.h, 0.1, 50), t: num(R.t, DEF.t, 0.02, 2),
         wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false, slab: !!R.slab,
-        ceil: R.ceil === "follow" ? "follow" : "flat", tops: cleanTops(R.tops, closed ? pts.length : pts.length - 1) };
+        ceil: R.ceil === "follow" ? "follow" : "flat", tops: cleanTops(R.tops, closed ? pts.length : pts.length - 1),
+        // 2.639.0: skirting (at the floor) + cornice (under the ceiling) round the room's inside
+        skirtOn: closed && !!R.skirtOn, skirtH: num(R.skirtH, 0.1, 0.02, 0.6), corniceOn: closed && !!R.corniceOn, corniceH: num(R.corniceH, 0.08, 0.02, 0.6), trim: hex(R.trim, DEF.trim) };
     }).filter(Boolean);
     const rid = new Set(A.rooms.map((R) => R.id));
     A.ops = (Array.isArray(o.ops) ? o.ops : []).map((x) => {
@@ -120,9 +122,12 @@
     A.items.forEach((x) => { x.id = id(x.id); });
     A.cams = root.PPCam ? root.PPCam.clean(o.cams) : [];                 // 2.629.0: 📷 the cameras (ppcam.js)
     A.cams.forEach((x) => { x.id = id(x.id); });
+    // 2.639.0: the 🗂 outline docker's hidden things (keys - ppoutline.js) + the room groups
+    A.hide = [...new Set((Array.isArray(o.hide) ? o.hide : []).filter((k) => typeof k === "string" && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)))].slice(0, 5000);
+    A.groups = (Array.isArray(o.groups) ? o.groups : []).map((g) => (g && typeof g === "object" ? { id: id(g.id), name: String(g.name || "Group").slice(0, 60), rooms: [...new Set((Array.isArray(g.rooms) ? g.rooms : []).map(Number).filter((r) => rid.has(r)))], hidden: !!g.hidden, open: g.open !== false } : null)).filter(Boolean);
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
-    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams);
+    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups);
     all.forEach((x) => { mx = Math.max(mx, x.id + 1); });
     all.forEach((x) => { if (!x.id || seen.has(x.id)) x.id = mx++; seen.add(x.id); });
     A.n = mx;
@@ -152,7 +157,8 @@
     if (closed && Math.abs(area2(p)) < 0.01) return null;
     if (closed && area2(p) < 0) p.reverse();
     const n = A.rooms.filter((R) => R.closed === closed).length + 1;
-    const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true, ceil: "flat" }, o || {}, { pts: p, closed });
+    const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true, ceil: "flat",
+      skirtOn: closed, skirtH: 0.1, corniceOn: closed, corniceH: 0.08, trim: DEF.trim }, o || {}, { pts: p, closed });   // 2.639.0: a new room comes with skirting + cornice
     A.rooms.push(R); return R;
   }
   function rectPts(a, b) { const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]); return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
@@ -379,6 +385,52 @@
     R.pts[i] = add(R.pts[i], m); R.pts[(i + 1) % n] = add(R.pts[(i + 1) % n], m);
     return true;
   }
+  /** 2.639.0 (Alt+drag a wall): its line moved freely by v (plan) - the walls on either side stretch / shorten to it */
+  function moveEdgeBy(A, id, i, v) {
+    const R = room(A, id); if (!R || !v) return false;
+    const n = R.pts.length, j = R.closed ? (i + 1) % n : i + 1; if (!R.pts[i] || !R.pts[j]) return false;
+    R.pts[i] = add(R.pts[i], v); R.pts[j] = add(R.pts[j], v);
+    if (R.closed && area2(R.pts) < 0) { R.pts[i] = sub(R.pts[i], v); R.pts[j] = sub(R.pts[j], v); return false; }     // turned inside out: refused
+    return true;
+  }
+  /** 2.639.0: what the 🗂 outline docker hides -> hid(key): "room:3" (the whole room), "room:3:walls" / "room:3:wall:1",
+      "room:3:floor" / ":ceil" / ":skirt" / ":cornice" / ":slab", "op:5", "roof:7", "slab:8", "stair:9", "light:4", "item:6",
+      "cam:2"; a hidden group hides its rooms; a room hidden hides its doors / windows (and "room:3:doors" / ":windows") */
+  function hiddenOf(A) {
+    const S = new Set((A && A.hide) || []);
+    ((A && A.groups) || []).forEach((g) => { if (g.hidden) g.rooms.forEach((r) => S.add("room:" + r)); });
+    if (!S.size) return () => false;
+    const opOf = {}; ((A && A.ops) || []).forEach((o) => { opOf[o.id] = o; });
+    return (key) => {
+      if (S.has(key)) return true;
+      const m = /^room:(\d+):(\w+)(?::(\d+))?$/.exec(key);
+      if (m) return S.has("room:" + m[1]) || (m[2] === "wall" && S.has("room:" + m[1] + ":walls"));
+      const o = /^op:(\d+)$/.exec(key), op = o && opOf[o[1]];
+      if (op) return S.has("room:" + op.room) || S.has("room:" + op.room + ":" + (op.kind === "window" ? "windows" : "doors"));
+      return false;
+    };
+  }
+  /** 2.639.0: skirting at the floor + cornice under the ceiling, along the room's inner faces (a door leaves a gap in the skirting) */
+  function trims(A, R, out, hid) {
+    if (!R.closed || (!R.skirtOn && !R.corniceOn)) return;
+    const inn = interior(R); if (!inn) return;
+    const E = edgesOf(R).filter((e) => e.L > EPS), n = inn.length;
+    for (let k = 0; k < n; k++) {
+      const e = E[k]; if (!e) continue;
+      const a = inn[k], b = inn[(k + 1) % n], u = norm(sub(b, a)), L = len(sub(b, a)), w = left(u); if (L < 0.02) continue;
+      if (R.skirtOn && !hid("room:" + R.id + ":skirt")) {
+        const gaps = A.ops.filter((o) => o.room === R.id && o.edge === e.i && (o.kind === "door" || o.kind === "opening") && o.sill < 0.05).map((o) => { const I = opInfo(A, o); if (!I) return null; const c = add(e.a, mul(e.u, I.at)), sC = dot(sub(c, a), u); return [sC - o.w / 2, sC + o.w / 2]; }).filter(Boolean).sort((x, y) => x[0] - y[0]);
+        let x = 0; const runs = [];
+        gaps.forEach((g) => { if (g[0] > x) runs.push([x, Math.min(L, g[0])]); x = Math.max(x, g[1]); });
+        if (x < L) runs.push([x, L]);
+        runs.forEach(([x0, x1]) => { if (x1 - x0 > 0.01) box(a, u, w, x0, x1, 0, 0.015, R.z, R.z + R.skirtH, R.trim, { ak: "room", id: R.id, part: "skirt" }, out, 1, true); });
+      }
+      if (R.corniceOn && !hid("room:" + R.id + ":cornice") && R.ceilOn) {
+        const top = R.z + (flatTop(R, e.i) ? R.h : minTop(R, e.i)), d = R.corniceH * 0.75;
+        box(a, u, w, 0, L, 0, d, top - R.corniceH, top - 0.004, R.trim, { ak: "room", id: R.id, part: "cornice" }, out, 1, true);
+      }
+    }
+  }
   /** one wall's line moved by dist: snapped onto a parallel wall of another room / a floor's edge (outside face, off) */
   function snapEdge(A, id, i, dist, tol, off) {
     const R = room(A, id); if (!R) return { dist, hit: null };
@@ -411,31 +463,33 @@
   function build(A, opt) {
     const out = { polys: [], lines: [], roofLines: [], lights: [] };
     if (!A) return out;
-    const o = opt || {};
-    walls(A, out);
+    const o = opt || {}, hid = hiddenOf(A);           // 2.639.0: what the outline docker hides is not built
+    walls(A, out, hid);
     A.rooms.forEach((R) => {
       if (!R.closed) return;
       const inn = interior(R); if (!inn || Math.abs(area2(inn)) < 1e-4) return;
-      if (R.floorOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + 0.002])], n: [0, 0, 1], col: R.floor, tag: { ak: "room", id: R.id, part: "floor" }, layer: "main" });
-      const fg = R.ceilOn && R.ceil === "follow" ? followGrid(R, false, 0) : null;          // 2.624.0: the walls' slope
+      trims(A, R, out, hid);
+      if (R.floorOn && !hid("room:" + R.id + ":floor")) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + 0.002])], n: [0, 0, 1], col: R.floor, tag: { ak: "room", id: R.id, part: "floor" }, layer: "main" });
+      const ceilOn = R.ceilOn && !hid("room:" + R.id + ":ceil");
+      const fg = ceilOn && R.ceil === "follow" ? followGrid(R, false, 0) : null;          // 2.624.0: the walls' slope
       if (fg) gridPolys(fg.rows, -0.003, false, R.ceilCol, { ak: "room", id: R.id, part: "ceil" }, "ceil", out, null);
-      else if (R.ceilOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + R.h - 0.003]).reverse()], n: [0, 0, -1], col: R.ceilCol, tag: { ak: "room", id: R.id, part: "ceil" }, layer: "ceil" });
+      else if (ceilOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + R.h - 0.003]).reverse()], n: [0, 0, -1], col: R.ceilCol, tag: { ak: "room", id: R.id, part: "ceil" }, layer: "ceil" });
     });
-    A.ops.forEach((op) => { const I = opInfo(A, op); if (I) fixture(I, out); });
-    A.roofs.forEach((rf) => roof(A, rf, out));
-    A.slabs.forEach((s) => prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out));
-    A.rooms.forEach((R) => { if (R.closed && R.slab) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
-    A.stairs.forEach((s) => stair(s, out));
-    A.lights.forEach((L) => out.lights.push(Object.assign({}, L, { p: [L.x, L.y, L.z], def: LIGHTS[L.type] })));
+    A.ops.forEach((op) => { const I = opInfo(A, op); if (I && !hid("op:" + op.id)) fixture(I, out); });
+    A.roofs.forEach((rf) => { if (!hid("roof:" + rf.id)) roof(A, rf, out); });
+    A.slabs.forEach((s) => { if (!hid("slab:" + s.id)) prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out); });
+    A.rooms.forEach((R) => { if (R.closed && R.slab && !hid("room:" + R.id + ":slab")) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
+    A.stairs.forEach((s) => { if (!hid("stair:" + s.id)) stair(s, out); });
+    A.lights.forEach((L) => !hid("light:" + L.id) && out.lights.push(Object.assign({}, L, { p: [L.x, L.y, L.z], def: LIGHTS[L.type] })));
     void o;
     return out;
   }
   /** the walls of every storey as one solid: bands between the heights where something changes, each band's plan the union of
    * the walls standing through it minus the openings cut through it */
-  function walls(A, out) {
-    const W = [];
+  function walls(A, out, hid0) {
+    const W = [], hid = hid0 || (() => false);
     const U = [];      // 2.624.0: the walls whose top is not flat stand to their lowest top; their own piece goes above
-    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { const flat = flatTop(R, q.i); W.push({ poly: q.quad, z0: R.z, z1: R.z + (flat ? R.h : minTop(R, q.i)), R }); if (!flat) U.push({ R, q }); }));
+    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { if (hid("room:" + R.id + ":wall:" + q.i)) return; const flat = flatTop(R, q.i); W.push({ poly: q.quad, z0: R.z, z1: R.z + (flat ? R.h : minTop(R, q.i)), R }); if (!flat) U.push({ R, q }); }));
     if (!W.length) return;
     const O = A.ops.map((op) => opInfo(A, op)).filter((I) => I && I.z1 > I.z0 + 1e-4);
     const zs = [...new Set(W.flatMap((w) => [w.z0, w.z1]).concat(O.flatMap((I) => [I.z0, I.z1])).map(r6))].sort((a, b) => a - b);
@@ -454,7 +508,7 @@
     }
     const pieces = U.map(({ R, q }) => upperPiece(R, q, out, A.ext));
     // 2.624.0: a cut in a wall's top shows as a line down both its faces (to its floor)
-    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { const P = profile(R, q.i); if (P.length < 3) return; const [lS, lE, rE, rS] = q.quad;
+    A.rooms.forEach((R) => wallQuads(R).forEach((q) => { if (hid("room:" + R.id + ":wall:" + q.i)) return; const P = profile(R, q.i); if (P.length < 3) return; const [lS, lE, rE, rS] = q.quad;
       P.slice(1, -1).forEach(([t, h]) => { [[lS, lE], [rS, rE]].forEach(([A2, B2]) => { const x = A2[0] + (B2[0] - A2[0]) * t, y = A2[1] + (B2[1] - A2[1]) * t; out.lines.push([[x, y, R.z], [x, y, R.z + Math.min(h, minTop(R, q.i))]]); }); }); }));
     const underPiece = (p, q2, z) => pieces.some((pc) => Math.abs(pc.z - z) < 1e-6 && [p, q2, [(p[0] + q2[0]) / 2, (p[1] + q2[1]) / 2]].every((x) => inPoly(x, pc.quad) || segDistPoly(x, pc.quad) < 1e-4));
     const inner = A.rooms.filter((R) => R.closed).map((R) => ({ R, P: interior(R) }));
@@ -808,7 +862,7 @@
     return true;
   }
 
-  const api = { exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, snapEdge, cleanTops,
+  const api = { exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
