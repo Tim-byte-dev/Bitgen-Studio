@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>bitGen Studio v2</title>
 <script src="/static/themes.js"></script>  <!-- 2.432.0: Settings ▸ Themes - the kept theme on <html> before the page paints (H3Theme) -->
+<script src="/static/safetheme.js"></script>  <!-- 2.636.0: Ctrl+Alt+S = Settings; bitGen Default (Ctrl+Alt+Shift+T, ?theme=default) -->
 <script src="/static/jxl.js"></script>  <!-- 2.479.0: JPEG XL pictures in the page (BGJxl) - before anything loads a picture -->
 <script src="/static/themeedit.js"></script>
 <script src="/static/gridspec.js"></script>  <!-- 2.445.0: the grid / guides settings both canvases share (H3Grid) -->  <!-- 2.443.0: 🖌 edit theme mode - style any element; the kept element styles before the page paints (H3ThemeEdit) -->
@@ -989,6 +990,12 @@
     cursor: pointer; font-size: .6rem; line-height: 13px; text-align: center; color: #111; }
   .aitem:hover .agchk, #assetsdock.agselecting .aitem .agchk { display: block; }
   .aitem.snd .agchk { top: 50%; transform: translateY(-50%); }
+  /* 2.635.0: the Project | Global | All dropdown in the dock's head + a global asset's 🌐 */
+  #assetsdock .dockhead { display: flex; align-items: center; gap: 6px; }
+  #assetsdock .dockhead .agscope { margin-left: auto; font-size: .68rem; padding: 1px 4px; max-width: 110px; }
+  .aitem .agglob { position: absolute; right: 3px; top: 3px; z-index: 3; font-size: 11px; line-height: 1; pointer-events: none;
+    background: rgba(0,0,0,.55); border-radius: 8px; padding: 2px 3px; }
+  .aitem.snd .agglob { top: 50%; transform: translateY(-50%); right: 26px; }
   .aitem.snd .an { padding-left: 22px; }
   .aitem.agsel { border-color: var(--tiger); box-shadow: 0 0 0 1px var(--tiger); }
   .aitem.agsel .agchk { background: var(--tiger); border-color: var(--tiger); }
@@ -1923,6 +1930,12 @@
   <!-- 2.432.0 (Tim: "create a themes tab in the settings dialog - have a ui size slider to adjust the size of fonts and
        the ui"): the themes (static/themes.js), the accent, the UI size (moved here from General) -->
   <div class="stab" id="stab-themes">
+    <!-- 2.636.0 (Tim: "create a default theme that i can revert to in case a theme malfunctions"): static/safetheme.js -->
+    <div class="rowbtns" style="margin-bottom:8px;align-items:center">
+      <button class="ghost" id="s_thdefault" type="button" title="Everything about the look back to bitGen's own: Dark, its accent and colours, no element styles, UI size 100 % (Ctrl+Alt+Shift+T anywhere; ?theme=default in the address). The theme before is kept.">⟲ bitGen Default</button>
+      <button class="ghost" id="s_thbefore" type="button" style="display:none" title="The theme you had before the last ⟲ bitGen Default">↶ The theme before</button>
+      <span class="hint" style="flex:1">Ctrl+Alt+S opens Settings · Ctrl+Alt+Shift+T = bitGen Default</span>
+    </div>
     <label class="f">Theme</label>
     <div id="s_themes" class="thgrid" role="group" aria-label="Theme"></div>
     <label class="f" style="margin-top:14px">Accent colour</label>
@@ -12339,7 +12352,14 @@ function assetItem(kind, a) {
 }
 
 async function refreshAssets() {
-  try { assets = await (await fetch("/api/passets")).json(); } catch { return; }
+  // 2.635.0: `assets` is everything (the pickers elsewhere use it); the dock shows its Project | Global | All
+  // (static/assetgroups.js) - each item says its scope
+  let all;
+  try { all = await (await fetch("/api/passets?scope=all")).json(); } catch { return; }
+  if (!all || !Array.isArray(all.images)) return;
+  assets = all;
+  const scope = window.AssetGroups && window.AssetGroups.scope ? window.AssetGroups.scope() : "project";
+  const shown = (list) => (scope === "all" ? list : list.filter((a) => (a.scope || "project") === scope));
   // 2.327.0: the groups (folders in the dock) come with every refresh
   if (window.AssetGroups) await window.AssetGroups.load();
   for (const kind of ["images", "video", "sound"]) {
@@ -12348,10 +12368,10 @@ async function refreshAssets() {
     const outer = document.querySelector(`[data-apane="${kind}"]`);
     const pane = outer.querySelector(".dpane-items") || outer;
     assetAddTile(kind, outer, pane);   // 2.394.0: "+ add pictures / videos / sounds" above the list
-    if (window.AssetGroups) { window.AssetGroups.paint(kind, pane, assets[kind]); continue; }
+    if (window.AssetGroups) { window.AssetGroups.paint(kind, pane, shown(assets[kind])); continue; }
     pane.innerHTML = "";
-    if (!assets[kind].length) pane.innerHTML = '<span class="modehint">empty — drop files above</span>';
-    for (const a of assets[kind]) pane.appendChild(assetItem(kind, a));
+    if (!shown(assets[kind]).length) pane.innerHTML = '<span class="modehint">empty — drop files above</span>';
+    for (const a of shown(assets[kind])) pane.appendChild(assetItem(kind, a));
   }
   if (window.AssetGroups) window.AssetGroups.markSel();
 }
@@ -12397,7 +12417,9 @@ function assetAddTile(kind, outer, pane) {
 async function uploadAsset(file, quiet) {
   const fd = new FormData();
   fd.append("file", file, file.name);
-  const res = await fetch("/api/passets", { method: "POST", body: fd });
+  // 2.635.0: uploads land in the project's Assets folder - the global one while the dock shows Global
+  const glob = window.AssetGroups && window.AssetGroups.scope && window.AssetGroups.scope() === "global";
+  const res = await fetch("/api/passets" + (glob ? "?scope=global" : ""), { method: "POST", body: fd });
   const j = await res.json();
   // quiet: the caller is importing a batch and reports once at the end, rather
   // than firing one alert per rejected file

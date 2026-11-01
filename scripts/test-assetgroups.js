@@ -89,15 +89,15 @@ check("routes/assets.js is mounted from routes/index.js (not server.js)",
 check("routes: GET/POST groups, usage, recycle",
   rt.includes('app.get("/api/passets/groups"') && rt.includes('app.post("/api/passets/groups"')
   && rt.includes('app.post("/api/passets/usage"') && rt.includes('app.post("/api/passets/recycle"'));
-check("delete = lib/recycleBin (never a hard delete), then dropped from every group",
-  /recycleBin\.recycle\(/.test(rt) && /groups\.forget\(/.test(rt) && !/unlinkSync|rmSync/.test(rt));
+check("delete = lib/recycleBin (never a hard delete) - 2.635.0: through lib/assetLibrary (its Assets places unlinked)",
+  /recycleBin\.recycle\(/.test(rt) && /lib\.recycle\(c, it/.test(rt) && !/unlinkSync|rmSync/.test(rt));
 
 // ---- 3. the dock (jsdom)
 const html = read("static", "index.html");
 check("the page loads static/assetgroups.js after the file dialog",
   html.indexOf('<script src="/static/assetgroups.js"></script>') > html.indexOf('<script src="/static/filedialog.js"></script>'));
 check("refreshAssets loads the groups and paints through AssetGroups",
-  /await window\.AssetGroups\.load\(\)/.test(html) && /window\.AssetGroups\.paint\(kind, pane, assets\[kind\]\)/.test(html)
+  /await window\.AssetGroups\.load\(\)/.test(html) && /window\.AssetGroups\.paint\(kind, pane, shown\(assets\[kind\]\)\)/.test(html)
   && /window\.AssetGroups\.install\(\{/.test(html));
 
 (async () => {
@@ -114,6 +114,7 @@ check("refreshAssets loads the groups and paints through AssetGroups",
   let groups = [];
   let nextId = 1;
   w.fetch = async (url, o) => {
+    url = String(url).replace(/\?.*$/, "");                 // 2.635.0: ?scope=project
     const body = o && o.body ? JSON.parse(o.body) : null;
     calls.push({ url, body });
     if (url === "/api/passets/groups" && !body) return { json: async () => ({ groups }) };

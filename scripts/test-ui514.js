@@ -28,7 +28,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "th514-")); TS.setBase(tmp);
 const w = TS.saveTmp("My Look", { base: "dark", vars: {}, styles: { "#x": { hide: true } } });
 const rd = TS.readTmp("My Look");
 check("themes/<name>.tmp: written (even without colours yet), read back cleaned, never listed as a theme, removed", w.file === "My Look.tmp" && fs.existsSync(path.join(tmp, "themes", "My Look.tmp")) && rd.styles["#x"].hide === true
-  && TS.list().length === 0 && TS.removeTmp("My Look").removed && !fs.existsSync(path.join(tmp, "themes", "My Look.tmp")) && (() => { try { TS.readTmp("My Look"); return false; } catch (e) { return e.status === 404; } })());
+  && TS.list().filter((t) => !t.builtin).length === 0 && TS.removeTmp("My Look").removed && !fs.existsSync(path.join(tmp, "themes", "My Look.tmp")) && (() => { try { TS.readTmp("My Look"); return false; } catch (e) { return e.status === 404; } })());
 fs.rmSync(tmp, { recursive: true, force: true });
 const RT = read("routes", "themes.js"), TJ = read("static", "themeedit.js");
 check("routes: GET /api/themes/tmp/:name before GET /api/themes/:name; POST /api/themes/tmp and /tmp/delete", RT.indexOf('app.get("/api/themes/tmp/:name"') >= 0 && RT.indexOf('app.get("/api/themes/tmp/:name"') < RT.indexOf('app.get("/api/themes/:name"') && /app\.post\("\/api\/themes\/tmp"/.test(RT) && /app\.post\("\/api\/themes\/tmp\/delete"/.test(RT));

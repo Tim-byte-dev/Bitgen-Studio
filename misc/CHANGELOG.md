@@ -8,6 +8,8 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.636.0** — Ctrl+Alt+S Opens Settings; The Built-In "bitGen Default" Theme to Go Back to
+- **2.635.0** — Assets: 📁 Project | 🌐 Global | All; Real "Assets" Folders, a Folder = a Group; Move to Global
 - **2.634.0** — Setup in Colour (Done Green, Installing Light Green, Warnings Orange, Errors Red); It Never Looks Stalled
 - **2.633.0** — The Sketcher's Rotate Rings (Yaw / Pitch / Roll) for Cameras and Furniture, Lenses, Focal Length, Field of View
 - **2.632.0** — The Sketcher's Cameras: Picked Inside a Room, Moved, Turned; Esc / Double-Click Deselect Everything

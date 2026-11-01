@@ -114,11 +114,12 @@
     const doc = root.document, box = doc && doc.getElementById("s_thsaved"); if (!box) return;
     const c = current();
     box.innerHTML = saved.length ? saved.map((t) => { const e = effective(t.base, t.accent, t.vars);
-      return `<span class="thsaved${t.name === c.name ? " on" : ""}"><button type="button" class="ghost thcard" data-th-load="${esc(t.name)}" title="Load ${esc(t.name)} (themes/${esc(t.file || t.name + ".json")})" style="background:${e.panel};color:${e.text};border-color:${e.line}">`
+      return `<span class="thsaved${t.name === c.name ? " on" : ""}"><button type="button" class="ghost thcard" data-th-load="${esc(t.name)}"${t.builtin ? ' data-th-builtin="1"' : ""} title="${t.builtin ? "bitGen Default - built in: Dark, no element styles, UI size 100 % (Ctrl+Alt+Shift+T)" : `Load ${esc(t.name)} (themes/${esc(t.file || t.name + ".json")})`}" style="background:${e.panel};color:${e.text};border-color:${e.line}">`
         + `<span class="thsw" style="background:${e.ink}"></span><span class="thsw" style="background:${e["panel-2"]}"></span><span class="thsw" style="background:${e.tiger}"></span><span class="thn">${esc(t.name)}</span></button>`
-        + `<button type="button" class="ghost thx" data-th-del="${esc(t.name)}" title="Delete themes/${esc(t.name)}.json" aria-label="Delete ${esc(t.name)}">✕</button></span>`; }).join("")
+        + (t.builtin ? "" : `<button type="button" class="ghost thx" data-th-del="${esc(t.name)}" title="Delete themes/${esc(t.name)}.json" aria-label="Delete ${esc(t.name)}">✕</button>`) + `</span>`; }).join("")
       : `<span class="hint">No saved themes yet - change the colours, give it a name, 💾 Save theme.</span>`;
-    box.querySelectorAll("[data-th-load]").forEach((b) => { b.onclick = () => load(b.dataset.thLoad); });
+    // 2.636.0: the built-in bitGen Default = static/safetheme.js's reset (the theme before is kept)
+    box.querySelectorAll("[data-th-load]").forEach((b) => { b.onclick = () => (b.dataset.thBuiltin && root.H3SafeTheme ? root.H3SafeTheme.reset() : load(b.dataset.thLoad)); });
     box.querySelectorAll("[data-th-del]").forEach((b) => { b.onclick = () => remove(b.dataset.thDel); });
   }
   const say = (t) => { const m = root.document && root.document.getElementById("s_thmsg"); if (m) m.textContent = t || ""; };

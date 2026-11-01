@@ -6349,6 +6349,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.636.0: **Ctrl+Alt+S opens Settings; the bitGen Default theme** - Ctrl+Alt+Shift+T (or ⟲ bitGen Default in
+  Settings ▸ Themes, or `?theme=default` in the address) puts bitGen's own look back - Dark, its accent, no element
+  styles, UI size 100 %; ↶ The theme before undoes it. The built-in bitGen Default can't be overwritten or deleted.
+- 2.635.0: **Assets: Project | Global | All** - project assets in `projects/<name>/Assets`, global ones in
+  `projects/Assets`, a folder = a group; uploads go into Assets; right-click 🌐 Move to Global / 📁 Move to Project.
 - 2.634.0: **Setup in colour** - done green, installing light green, warnings orange, errors red; a quiet step says it
   is still working (and why it takes long) so setup never looks stalled - the setup window and the install scripts.
 - 2.633.0: **Sketcher: rotate rings (yaw / pitch / roll) for cameras + furniture, roll, lens presets, focal length / field of view**.
@@ -6900,6 +6905,19 @@ details). Under it: a progress bar, only while a job runs.
 
 ## Projects, queue and gallery
 
+- **When a theme goes wrong** (2.636.0) - **Ctrl+Alt+S** opens Settings from anywhere (even while typing, even when
+  the ⚙ is gone); **Ctrl+Alt+Shift+T** puts the built-in **bitGen Default** theme on (Dark, its own accent and
+  colours, no element styles, UI size 100 %), as does ⟲ bitGen Default in Settings ▸ Themes or opening the studio with
+  `?theme=default` after its address. The theme you had is kept: Settings ▸ Themes ▸ ↶ The theme before.
+- **Assets: 📁 Project | 🌐 Global | All** (2.635.0, the dropdown in the Assets dock's head) - project assets live in
+  `projects\<name>\Assets\`, global assets (every project has them) in `projects\Assets\` (next to your projects; it
+  is not a project itself). New uploads go into the project's Assets folder (the global one while the dock shows
+  Global). **A folder in an Assets folder is a group** - make one in Explorer or with 📁＋; ➜ Send to moves the file into
+  the folder, ＋ Add to puts a link there too, ⊖ puts it back, deleting a group moves its files back (nothing is
+  deleted). **Right-click a tile** (or the selection): 🌐 **Move to Global** / 📁 **Move to Project**, 🗂 New group, 🗑
+  Delete. Each asset is also linked into the project's `images\` / `video\` / `sound\` folder (a hard link - no
+  extra disk space), so everything that uses an asset by name keeps working; files that are only there (older
+  projects, renders) show as ungrouped project assets, and the old dock groups became folders.
 - **＋ New / 📂 / 💾** (the menu bar at the top of the window) — projects. Everything lives in
   `projects\<name>\` (`output\`, `video\`, `images\`, `sound\`, characters,
   scenes).

@@ -12831,6 +12831,22 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui633-ui.js > /tmp/ui633.log 2>&
 node scripts/test-setuptone634.js > /tmp/tone634.log 2>&1 \
   && ok "2.634.0 setup in colour: the wizard's steps / log / downloads (done green, running light green, warnings orange, errors red; stderr plain), the pulse line ('still working ... has not stalled', 10 min: where to look); tone.sh tone_of + busy run; tone.ps1 / bootstrap.ps1 / install_all.bat / start.bat as text" \
   || { bad "2.634.0 setup colours"; grep -a "^FAIL" -A2 /tmp/tone634.log | head -14; }
+# ---- 2.635.0 (Tim: "add a dropdown to the top of assets dialog, Global, Project or All, global assets will be kept in project
+# root/Assets, project assets will be kept in project name/Assets, folders in the assets folders will be a group")
+node scripts/test-assetlib635.js > /tmp/alib635.log 2>&1 \
+  && ok "2.635.0 the asset library: project / global Assets folders, a folder = a group (create / send = move / add = link / ungroup / rename / delete), linked into the type folders by name, old groups -> folders, Move to Global / Project, delete, uploads - the pure part + wiring" \
+  || { bad "2.635.0 asset library units"; grep -a "^FAIL" -A2 /tmp/alib635.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui635-ui.js > /tmp/ui635.log 2>&1 \
+  && ok "2.635.0 browser test: uploads into projects/<name>/Assets (Global view: projects/Assets), Assets is not a project; the dock's Project | Global | All; right-click 🌐 Move to Global; a global group = a folder - or SKIP without playwright" \
+  || { bad "2.635.0 assets scope browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui635.log | head -14; }
+# ---- 2.636.0 (Tim: "can you add ctrl+alt+s to open settings dialog, my settings button vanished. create a default theme that i
+# can revert to in case a theme malfunctions")
+node scripts/test-safetheme636.js > /tmp/st636.log 2>&1 \
+  && ok "2.636.0 Ctrl+Alt+S / Ctrl+Alt+Shift+T keys, ?theme=default, reset (the theme before kept) + restore, the built-in bitGen Default in themes/ (first, cannot be overwritten / deleted) - the pure part + wiring" \
+  || { bad "2.636.0 safe theme units"; grep -a "^FAIL" -A2 /tmp/st636.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui636-ui.js > /tmp/ui636.log 2>&1 \
+  && ok "2.636.0 browser test: a theme hides the ⚙ - Ctrl+Alt+S while typing opens Settings; Ctrl+Alt+Shift+T = bitGen Default; Settings ▸ Themes card + ↶ The theme before; ?theme=default - or SKIP without playwright" \
+  || { bad "2.636.0 safe theme browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui636.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

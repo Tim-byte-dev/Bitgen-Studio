@@ -1215,12 +1215,22 @@ function mount(app) {
      in place. That is silent data loss twice over: the old file is gone, and
      every timeline clip still referencing that name now plays different
      footage. Uniquify instead — an upload always adds, never replaces. */
-  function saveAssetFile(file) {
+  function saveAssetFile(file, scope) {
     const ext = path.extname(file.originalname || "").toLowerCase();
     const kind = core.kindOf(ext);
     if (!kind) { const e = new Error("unsupported file type " + ext);
                  e.status = 400; throw e; }
     const safe = path.basename(file.originalname).replace(/[^A-Za-z0-9._ -]+/g, "_");
+    /* 2.635.0 (Tim: "new uploads live in project name/assets"): an upload on disk goes into projects/<name>/Assets
+       (or <projects root>/Assets when the dock shows Global) and is linked into the type folder under the same name -
+       lib/assetLibrary.js. A buffer (the stems song) still goes straight into the type folder. */
+    if (file.path) {
+      const lib = require("../lib/assetLibrary");
+      try { core.ensureProject(core.getProject()); } catch { /* the folders are made below */ }
+      const r = lib.adoptUpload(lib.forCore(core), file.path, safe, scope === "global" ? "g" : "p");
+      const p0 = path.join(core.pDir(r.kind), r.name);
+      return { name: r.name, kind: r.kind, duration: r.kind === "images" ? null : core.probeDuration(p0), renamed: r.name !== safe ? safe : undefined, scope: scope === "global" ? "global" : "project" };
+    }
     const dir = core.pDir(kind);
     const sufx = path.extname(safe);
     const stem = path.basename(safe, sufx);
@@ -1253,7 +1263,7 @@ function mount(app) {
     assetUpload.single("file")(req, res, (err) => {
       if (err) return res.status(400).json({ error: "the upload failed: " + (err.message || err) });
       if (!req.file) return res.status(400).json({ error: "no file" });
-      try { res.json(saveAssetFile(req.file)); }
+      try { res.json(saveAssetFile(req.file, String(req.query.scope || (req.body || {}).scope || ""))); }
       catch (e) {
         try { if (req.file.path) fs.unlinkSync(req.file.path); } catch { /* already moved or gone */ }
         res.status(e.status || 500).json({ error: String(e.message || e) });
@@ -1342,14 +1352,27 @@ function mount(app) {
     if (!r.ok) return res.status(400).json({ error: r.error });
     res.json(r);
   });
-  app.get("/api/passets", (_req, res) => {
+  /* 2.635.0: ?scope=project | global | all (the Assets dock's dropdown; no scope = all, so every picker sees the global
+     assets too) - lib/assetLibrary.js lists the Assets folders (+ the type folders' own files for the project) and makes
+     sure each one is in the type folder under its working name, so a NAME from this list works everywhere. Each item:
+     {name, duration, mtime, scope: project | global, group, rel}. */
+  app.get("/api/passets", (req, res) => {
+    const lib = require("../lib/assetLibrary");
+    const scope = ["project", "global", "all"].includes(String(req.query.scope)) ? String(req.query.scope) : "all";
+    let lists;
+    try { core.ensureProject(core.getProject()); } catch { /* listing still works */ }
+    try { const c = lib.forCore(core); try { lib.migrate(c, core.projDir(core.getProject())); } catch { /* listed as they are */ } lists = lib.list(c, scope); }
+    catch (e) { return res.status(500).json({ error: String(e.message || e) }); }
     const out = {};
     for (const kind of ["images", "video", "sound"]) {
-      out[kind] = fs.readdirSync(core.pDir(kind)).map((f) => ({
-        name: f,
-        duration: kind === "images" ? null : core.probeDuration(path.join(core.pDir(kind), f)),
-        mtime: (() => { try { return Math.round(fs.statSync(path.join(core.pDir(kind), f)).mtimeMs) / 1000; } catch { return 0; } })(),   // 2.571.0: oldest first (multisel.js)
-      }));
+      out[kind] = lists[kind].map((a) => {
+        const p = path.join(core.pDir(kind), a.name);
+        return Object.assign({
+          name: a.name,
+          duration: kind === "images" ? null : core.probeDuration(p),
+          mtime: (() => { try { return Math.round(fs.statSync(p).mtimeMs) / 1000; } catch { return 0; } })(),   // 2.571.0: oldest first (multisel.js)
+        }, { scope: a.scope, group: a.group, rel: a.rel });
+      });
     }
     res.json(out);
   });
@@ -2057,7 +2080,7 @@ function mount(app) {
   app.get("/api/projects", (_req, res) => {
     fs.mkdirSync(core.PROJECTS_DIR, { recursive: true });
     const names = fs.readdirSync(core.PROJECTS_DIR).filter((d) =>
-      fs.statSync(path.join(core.PROJECTS_DIR, d)).isDirectory());
+      d.toLowerCase() !== "assets" && fs.statSync(path.join(core.PROJECTS_DIR, d)).isDirectory());   // 2.635.0: Assets = the global assets
     res.json({ current: core.getProject(), projects: names });
   });
   app.get("/api/outputs/where", (_req, res) => {

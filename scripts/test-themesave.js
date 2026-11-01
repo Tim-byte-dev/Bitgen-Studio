@@ -27,9 +27,9 @@ const onDisk = JSON.parse(fs.readFileSync(path.join(tmp, "themes", "My Dark.json
 check("save -> themes/<name>.json (pretty JSON), the record back", sv.file === "My Dark.json" && onDisk.base === "slate" && onDisk.vars.panel === "#112233" && onDisk.accent === "#ff0000" && onDisk.scale === 120);
 TS.save("A light one", { base: "light", vars: { panel: "#ffffff" } });
 fs.writeFileSync(path.join(tmp, "themes", "broken.json"), "{nope");
-check("list: by name, the broken file skipped", TS.list().map((t) => t.name).join() === "A light one,My Dark");
-check("read / the same name replaces / remove", TS.read("My Dark").vars.ink === "#000000" && TS.save("My Dark", { vars: { ink: "#111111" } }).vars.ink === "#111111" && TS.list().length === 2
-  && TS.remove("My Dark").removed === true && TS.remove("My Dark").removed === false && TS.list().length === 1);
+check("list: the built-in bitGen Default first (2.636.0), then by name, the broken file skipped", TS.list().map((t) => t.name).join() === "bitGen Default,A light one,My Dark");
+check("read / the same name replaces / remove", TS.read("My Dark").vars.ink === "#000000" && TS.save("My Dark", { vars: { ink: "#111111" } }).vars.ink === "#111111" && TS.list().length === 3
+  && TS.remove("My Dark").removed === true && TS.remove("My Dark").removed === false && TS.list().length === 2);
 let threw = ""; try { TS.save("", { vars: { ink: "#000000" } }); } catch (e) { threw += e.status; } try { TS.save("x", { vars: {} }); } catch (e) { threw += "," + e.status; } try { TS.read("none"); } catch (e) { threw += "," + e.status; }
 check("...no name / no colours = 400, a missing one = 404", threw === "400,400,404", threw);
 fs.rmSync(tmp, { recursive: true, force: true });

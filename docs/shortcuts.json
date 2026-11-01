@@ -13,6 +13,14 @@
           "Show / hide ▣ Docker - an empty docker the others drop into (side by side or stacked; ⇱ on a docker's title floats it, then drag it in by its title)"
         ],
         [
+          "Ctrl+Alt+S",
+          "Open Settings (works while typing too - also when a theme hid the ⚙ button)"
+        ],
+        [
+          "Ctrl+Alt+Shift+T",
+          "Back to the bitGen Default theme (Dark, no element styles, UI size 100 %); Settings ▸ Themes ▸ ↶ The theme before undoes it. ?theme=default in the address does it before the page paints"
+        ],
+        [
           "P",
           "Show / hide the prompt docker (not while typing in a box; over the image editor P is its Pen)"
         ],

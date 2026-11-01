@@ -66,7 +66,9 @@ The window, its dockers, the look of the app, projects and the files they hold.
 ### Assets, references, gallery and queue
 
 - **Assets dock** — the project's images, videos and sounds; drop files on it to import them. *Where:* the Assets dock
-- **Asset groups** — sort files into groups that live in the dock only; an asset can sit in several groups and the files never move. *Where:* the Assets dock
+- **Asset groups** — (2.635.0: a group is a FOLDER of the Assets folder) sort files into groups; Send moves the file into the folder, Add links it there too. *Where:* the Assets dock
+- **bitGen Default theme + Ctrl+Alt+S** — Ctrl+Alt+S opens Settings from anywhere; Ctrl+Alt+Shift+T, ⟲ bitGen Default or ?theme=default puts the built-in default theme back (Dark, no element styles, UI size 100 %), ↶ The theme before undoes it; the built-in theme can't be overwritten or deleted. *Where:* anywhere; Settings ▸ Themes. *Since:* 2.636.0
+- **Global and project assets** — 📁 Project | 🌐 Global | All in the Assets dock; project assets in projects/<name>/Assets, global ones (every project) in projects/Assets; uploads go into Assets; right-click 🌐 Move to Global / 📁 Move to Project. *Where:* the Assets dock. *Since:* 2.635.0
 - **Select and delete assets** — tick, Ctrl-click or Shift-click tiles; delete moves them to the recycle bin, never a hard delete. *Where:* the Assets dock
 - **Add tiles** — dashed add tiles open the file dialog to add pictures, videos or sounds, several at once. *Where:* References and Assets. *Since:* 2.394.0
 - **References dock** — pictures, videos and sounds that ride the next generation; drag them in from the Assets or the Gallery. *Where:* the References dock
