@@ -80,6 +80,15 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     const off = await ev(() => document.getElementById("ppOutline").classList.contains("off"));
     await p.click("#ppOutlineBtn"); await p.waitForTimeout(150);
     check("🗂 Outline in the bar hides / shows the docker", off && await ev(() => !document.getElementById("ppOutline").classList.contains("off")));
+    // 2.639.1 (Tim: "everything is black in sketcher viewport"): docked in a narrow column the outline took the view's width
+    await ev(() => { H3PushPullFrame.toggleMaxed(false); try { localStorage.removeItem("pp.outline"); } catch (e) {} const d = document.getElementById("pushpulldock"); d.style.width = "620px"; d.classList.add("ppnarrow"); });
+    await p.waitForTimeout(400);
+    const dk = await ev(() => { const o = document.getElementById("ppOutline"), v = document.getElementById("ppView").getBoundingClientRect(), c = H3PushPull.state.V.canvas; return { off: o.classList.contains("off"), pos: getComputedStyle(o).position, vw: Math.round(v.width), cw: c.width }; });
+    check("2.639.1: in a narrow docker the outline starts off (🗂 floats it over the view) - the view keeps its width (never squeezed black)", dk.off && dk.vw >= 160 && dk.cw > 100, dk);
+    await p.click("#ppOutlineBtn"); await p.waitForTimeout(300);
+    const dk2 = await ev(() => ({ pos: getComputedStyle(document.getElementById("ppOutline")).position, vw: Math.round(document.getElementById("ppView").getBoundingClientRect().width) }));
+    check("…opened there it floats (absolute) and the view stays as wide", dk2.pos === "absolute" && Math.abs(dk2.vw - dk.vw) <= 2, dk2);
+    await ev(() => { const d = document.getElementById("pushpulldock"); d.style.width = ""; try { localStorage.removeItem("pp.outline"); } catch (e) {} });
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e.stack || e)); }
   finally {

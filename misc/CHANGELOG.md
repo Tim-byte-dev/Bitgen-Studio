@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.639.1** — Fix: The Sketcher's View Black When Docked (the outline took its width)
 - **2.639.0** — The Sketcher's 🗂 Outline Docker; Skirting + Cornice; Walls Dragged (Alt: Free); Shift+click = the Room; Room Groups
 - **2.638.0** — The 📐 Solidcraft Docker Maximized = the Whole Window, the Others Closed; Restore = the Layout Before
 - **2.637.0** — Shift+right-Click Leaves 🎨 Artist Mode

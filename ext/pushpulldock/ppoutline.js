@@ -99,7 +99,12 @@
   }
   function selNow() { const h = H(); const t = h && h.state && h.state.T && h.state.T.arch ? h.state.T.arch.sel() : null; return t; }
   const sameSel = (a, b) => !!a && !!b && a.ak === b.ak && a.id === b.id && (a.part || "") === (b.part || "") && (a.edge == null ? null : a.edge) === (b.edge == null ? null : b.edge);
-  function shown() { return ls.get("pp.outline") !== "0"; }
+  /* 2.639.1: a narrow docker (a side column) keeps the view - there the outline is off until 🗂 opens it, and then it floats
+     over the view's left side instead of taking its width (Tim: "everything is black in sketcher viewport" - the 200 px
+     panel left the view no width) */
+  const narrow = () => { const d = $("pushpulldock"); return !!(d && d.classList.contains("ppnarrow")); };
+  function shown() { const v = ls.get("pp.outline"); return v == null ? !narrow() : v === "1"; }
+  function resized() { const h = H(); if (h && h.state && h.state.V) setTimeout(() => { try { h.state.V.size(); } catch (e) { /* fine */ } }, 30); }
   function mount() {
     const main = $("ppMain"), view = $("ppView"); if (!main || !view) return null;
     let box = $("ppOutline");
@@ -107,7 +112,7 @@
       box = doc.createElement("div"); box.id = "ppOutline"; box.setAttribute("aria-label", "Outline");
       main.insertBefore(box, view);
       const st = doc.createElement("style"); st.textContent = "#ppOutline{width:200px;flex:none;overflow:auto;font-size:11px;border-right:1px solid var(--line,#444);padding:2px 2px 8px 2px;user-select:none}"
-        + "#ppOutline.off{display:none}#ppOutline .orow{display:flex;align-items:center;gap:3px;padding:1px 2px;border-radius:3px;cursor:default;white-space:nowrap}"
+        + "#ppOutline.off{display:none}#pushpulldock.ppnarrow #ppOutline{position:absolute;left:72px;top:0;bottom:0;z-index:6;background:var(--panel,#1f1c17);box-shadow:6px 0 18px #0006;max-width:60%}#ppOutline .orow{display:flex;align-items:center;gap:3px;padding:1px 2px;border-radius:3px;cursor:default;white-space:nowrap}"
         + "#ppOutline .orow:hover{background:var(--ui-hover,#2f2a21)}#ppOutline .orow.on{background:var(--ui-on,#4a3414);color:var(--tiger,#f59e2c)}"
         + "#ppOutline .orow.dim .olab{opacity:.45}#ppOutline .ocar{width:11px;text-align:center;color:var(--dim,#999)}#ppOutline .olab{flex:1;overflow:hidden;text-overflow:ellipsis}"
         + "#ppOutline .osec{font-weight:600;color:var(--dim,#9a917f);margin-top:4px}#ppOutline button{background:none;border:0;color:inherit;padding:0 2px;cursor:pointer;font-size:11px;line-height:1}"
@@ -118,16 +123,19 @@
       if (bar && !$("ppOutlineBtn")) {
         const b = doc.createElement("button"); b.className = "ghost gbtn"; b.id = "ppOutlineBtn"; b.type = "button"; b.textContent = "🗂 Outline";
         b.title = "The outline docker: every room with its walls, floor, ceiling, skirting, cornice, doors and windows; room groups; 👁 hide / show";
-        b.onclick = () => { ls.set("pp.outline", shown() ? "0" : "1"); paint(); const h = H(); if (h && h.state.V) setTimeout(() => h.state.V.size(), 30); };
+        b.onclick = () => { ls.set("pp.outline", shown() ? "0" : "1"); paint(); resized(); };
         if (cut && cut.parentNode === bar) cut.after(b); else bar.appendChild(b);
       }
+      // the docker narrowed / widened (ppframe.js sets ppnarrow): the outline's place changes - the view is sized again
+      try { new root.MutationObserver(() => { paint(); resized(); }).observe($("pushpulldock"), { attributes: true, attributeFilter: ["class"] }); } catch (e) { /* old */ }
+      resized();
     }
     return box;
   }
   let nodesByKey = {};
   function paint() {
     const box = mount(); if (!box) return;
-    const on = shown(); box.classList.toggle("off", !on);
+    const on = shown(); if (box.classList.contains("off") === on) { box.classList.toggle("off", !on); resized(); }
     const btn = $("ppOutlineBtn"); if (btn) btn.classList.toggle("on", on);
     if (!on) return;
     const A = arch() || P().empty(), hid = P().hiddenOf(A), sel = selNow(), T = tree(A), rows = [];
