@@ -2980,7 +2980,7 @@
     if (win.PCMultiSel && win.PCMultiSel.install) win.PCMultiSel.install(E);
     if (win.PCPending && win.PCPending.install) win.PCPending.install(E);   // 2.556.0: ⏳ Pending - the queued AI results, ✔ Apply into a changes group   // 2.474.0: Esc = no tool, the selection box, several layers picked, Del
     if (win.PCLive && win.PCLive.install) win.PCLive.install(E);         // 2.588.0: ⚡ live generation (pclive.js - Krita's live mode)
-    if (win.PCFocus && win.PCFocus.install) win.PCFocus.install(E);       // 2.588.0: ⬚ focus mode - the canvas alone; Ctrl+P colours, Ctrl+B brushes, Ctrl+Esc back
+    if (win.PCFocus && win.PCFocus.install) win.PCFocus.install(E);       // 2.588.0: ⬚ focus mode - the canvas alone; Alt+P colours (2.646.0), Ctrl+B brushes, Ctrl+Esc back
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab

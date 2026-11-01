@@ -12903,8 +12903,15 @@ node scripts/test-promptfront645.js > /tmp/pf645.log 2>&1 \
   && ok "2.645.0 Ctrl+P: the key (not Ctrl+Shift+P / AltGr), caught first, front() opens / unfolds / shows its ▣ docker / lifts it, the lift ends; Print -> Ctrl+Shift+P - pure + wiring" \
   || { bad "2.645.0 Ctrl+P units"; grep -a "^FAIL" -A2 /tmp/pf645.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui645-ui.js > /tmp/ui645.log 2>&1 \
-  && ok "2.645.0 browser test: Ctrl+P - closed, folded, under a floating window, under a maximized docker, in a closed ▣ docker: seen + focused; typing in a box too; no print; Artist mode keeps it - or SKIP without playwright" \
+  && ok "2.645.0 browser test: Ctrl+P - closed, folded, under a floating window, under a maximized docker, in a closed ▣ docker: seen + focused; typing in a box too; no print - or SKIP without playwright" \
   || { bad "2.645.0 Ctrl+P browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui645.log | head -14; }
+# ---- 2.646.0 (Tim: "change artist mode colour pallet to alt P, and let user press ctrl P for artist mode, alt G will open the layers panel and pending docker in artist mode ...")
+node scripts/test-artist646.js > /tmp/art646.log 2>&1 \
+  && ok "2.646.0 Artist mode keys: Alt+P palette, Alt+G Layers + Pending (shown / put back), Ctrl+P the prompt docker over the canvas, the panels column back as it was; the docs - wiring" \
+  || { bad "2.646.0 Artist mode units"; grep -a "^FAIL" -A2 /tmp/art646.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui646-ui.js > /tmp/ui646.log 2>&1 \
+  && ok "2.646.0 browser test: Artist mode - Alt+P palette, Alt+G Layers + Pending over the full canvas, a layer picked, Ctrl+P the prompt docker on top, ▾ Edit -> the result in Pending, still Artist mode; off = as before - or SKIP without playwright" \
+  || { bad "2.646.0 Artist mode browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui646.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

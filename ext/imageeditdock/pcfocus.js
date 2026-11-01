@@ -7,9 +7,15 @@
  *   🎨 Artist mode (the menu bar, right after Help) / View ▸ Artist Mode / Ctrl+Shift+F   the whole screen is the canvas: bitGen's bars, the
  *                editor's menus, tools, panels, rulers, dockers and document tabs are all hidden (the browser goes full
  *                screen too). Painting, the brush keys ([ ]), zoom (wheel / Ctrl+-+), Space-pan, undo all work as before.
- *   Ctrl+P       the COLOUR PALETTE at the pointer: a hue strip + a saturation / brightness square (drag), the
+ *   Alt+P        the COLOUR PALETTE at the pointer: a hue strip + a saturation / brightness square (drag), the
  *                foreground / background colours (⇄ swaps), the hex value, the palette's chips and the recent colours
- *                (left click = foreground, right click = background). Ctrl+P / Esc / a click outside closes it.
+ *                (left click = foreground, right click = background). Alt+P / Esc / a click outside closes it.
+ *                (Ctrl+P until 2.645.0 - 2.646.0, Tim: "change artist mode colour pallet to alt P, and let user press ctrl P
+ *                for artist mode": Ctrl+P brings the PROMPT DOCKER over the canvas here too - static/promptfront.js)
+ *   Alt+G        2.646.0 (Tim: "alt G will open the layers panel and pending docker in artist mode so user can still generate
+ *                an image from the layer they are working on in artist mode"): the LAYERS panel (on the right, over the
+ *                canvas) and the ⏳ PENDING docker shown / hidden - pick a layer, Ctrl+P for the prompt docker, Generate /
+ *                Edit, apply the result from Pending, all without leaving artist mode.
  *   Ctrl+B       the BRUSHES at the pointer: every brush preset (click = paint with it) + size, opacity and flow.
  *   Ctrl+Esc     back to normal (Ctrl+Shift+F too - Windows keeps Ctrl+Esc for its Start menu on some keyboards).
  *                The browser's own Esc only leaves the browser's full screen - the canvas stays frameless until Ctrl+Esc.
@@ -20,14 +26,15 @@
 (function (root) {
   "use strict";
   const RECENT_MAX = 16;
-  /** what a key press does in focus mode -> "palette" | "brushes" | "exit" | "close" | null */
+  /** what a key press does in focus mode -> "palette" | "brushes" | "side" | "exit" | "close" | null */
   function keyAction(e, st) {
     const s = st || {};
     if (!s.on || !e) return null;
     const c = !!(e.ctrlKey || e.metaKey), k = String(e.key || "").toLowerCase(), code = String(e.code || "");
     if (c && (k === "escape" || code === "Escape")) return "exit";
     if (c && e.shiftKey && !e.altKey && (k === "f" || code === "KeyF")) return "exit";
-    if (c && !e.shiftKey && !e.altKey && (k === "p" || code === "KeyP")) return "palette";
+    if (e.altKey && !c && !e.shiftKey && (k === "p" || code === "KeyP")) return "palette";        // 2.646.0: Alt+P (was Ctrl+P)
+    if (e.altKey && !c && !e.shiftKey && (k === "g" || code === "KeyG")) return "side";           // 2.646.0: Layers + ⏳ Pending
     if (c && !e.shiftKey && !e.altKey && (k === "b" || code === "KeyB")) return "brushes";
     if (!c && k === "escape" && s.pop) return "close";
     return null;
@@ -82,10 +89,13 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
 .pcfocuspop .fchips{display:grid;grid-template-columns:repeat(12,16px);gap:3px;margin-top:6px}.pcfocuspop .fchips i{width:16px;height:16px;border-radius:3px;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
 .pcfocuspop .fbr{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-height:260px;overflow:auto}.pcfocuspop .fbr button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 2px;min-width:0}
 .pcfocuspop .fbr button span:first-child{font-size:18px;line-height:20px}.pcfocuspop .fbr button span:last-child{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+body.ie-focus.ie-focus-side #pcPanels.pcfocus-side{display:flex!important;flex-direction:column;position:absolute!important;right:8px;top:8px;bottom:8px;width:300px!important;max-width:40vw;z-index:30;background:var(--pc-panel,#2d2d2d);border:1px solid var(--pc-sep,#555);border-radius:8px;box-shadow:0 10px 34px rgba(0,0,0,.6);overflow:auto}
+body.ie-focus.ie-focus-side #pcPanels.pcfocus-side>.pcfocus-sidehide{display:none!important}
+body.ie-focus.ie-focus-side #ieKx>#pcPend{z-index:40;left:auto!important;right:318px!important;top:8px!important}
 .pcfocuspop .frow{display:grid;grid-template-columns:56px 1fr 42px;gap:6px;align-items:center;margin-top:6px}.pcfocuspop .frow input[type=range]{width:100%}`;
       doc.head.appendChild(st);
     }
-    let on = false, pop = null, popKind = "", px = (win.innerWidth || 800) / 2, py = (win.innerHeight || 600) / 2, marked = [], fsOurs = false;
+    let sideOff0 = null, on = false, pop = null, popKind = "", px = (win.innerWidth || 800) / 2, py = (win.innerHeight || 600) / 2, marked = [], fsOurs = false;
     doc.addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; }, true);
 
     /* ---------------- on / off */
@@ -99,7 +109,32 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
         n = n.parentNode;
       }
     }
-    function unmark() { for (const [el, c] of marked) el.classList.remove(c); marked = []; }
+    function unmark() { setSide(false); for (const [el, c] of marked) el.classList.remove(c); marked = []; }
+    /* 2.646.0: Alt+G - the Layers panel + ⏳ Pending over the canvas (their hidden ancestors shown, the column's other groups not) */
+    let side = false, sideMarks = [];
+    function setSide(v) {
+      v = !!v && on;
+      if (v === side) return;
+      side = v;
+      if (side) {
+        const col = doc.getElementById("pcPanels"), lay = doc.getElementById("pcLayers"), pend = doc.getElementById("pcPend");
+        const unhide = (el) => { for (let n = el; n && n !== doc.body; n = n.parentElement) if (n.classList.contains("pcfocus-hide")) { n.classList.remove("pcfocus-hide"); sideMarks.push([n, "pcfocus-hide", true]); } };
+        if (col) {
+          unhide(col); col.classList.add("pcfocus-side"); sideMarks.push([col, "pcfocus-side", false]);
+          for (const g of col.children) if (!(lay && g.contains(lay)) && !(pend && g.contains(pend))) { g.classList.add("pcfocus-sidehide"); sideMarks.push([g, "pcfocus-sidehide", false]); }
+          const t = col.querySelector('button[data-tab="pcLayers"]'); if (t && !t.classList.contains("on")) t.click();   // the Layers tab of its group
+        }
+        if (pend) { unhide(pend); if (E.pending && E.pending.show) E.pending.show(); else pend.classList.remove("off"); }
+        doc.body.classList.add("ie-focus-side");
+        say("🎨 Layers + ⏳ Pending - pick a layer, Ctrl+P = the prompt docker (Generate / Edit), Alt+G hides them");
+      } else {
+        doc.body.classList.remove("ie-focus-side");
+        for (const [el, c, add] of sideMarks) { if (add) el.classList.add(c); else el.classList.remove(c); }
+        sideMarks = [];
+        if (on) try { E.stage.focus({ preventScroll: true }); } catch (e) { /* fine */ }
+      }
+      tev("ie_focus_side", side ? "1" : "0");
+    }
     function setFocus(v) {
       v = !!v;
       if (v === on) return;
@@ -109,17 +144,22 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
         const dk = doc.getElementById("imageeditdock");
         if (dk && dk.classList.contains("collapsed") && typeof win.toggleCollapse === "function") win.toggleCollapse("imageeditdock");
         if (E.setFull && doc.body.classList.contains("ie-full")) E.setFull(false);
+        const kx0 = doc.getElementById("ieKx"); sideOff0 = kx0 ? kx0.classList.contains("side-off") : null;   // 2.646.0: the column shown / hidden as it was
         markChain();
         doc.body.classList.add("ie-focus");
         const de = doc.documentElement;
         if (!doc.fullscreenElement && de.requestFullscreen) { try { de.requestFullscreen().then(() => { fsOurs = true; }, () => { fsOurs = false; }); } catch (e) { /* jsdom */ } }
         try { E.stage.focus({ preventScroll: true }); } catch (e) { /* fine */ }
-        say("🎨 artist mode - Ctrl+P colours, Ctrl+B brushes, Shift+right-click (or Ctrl+Esc) back");
+        say("🎨 artist mode - Alt+P colours, Ctrl+B brushes, Alt+G layers + pending, Ctrl+P the prompt docker, Shift+right-click (or Ctrl+Esc) back");
       } else {
         doc.body.classList.remove("ie-focus");
         unmark();
         if (doc.fullscreenElement && fsOurs && doc.exitFullscreen) { try { doc.exitFullscreen().catch(() => {}); } catch (e) { /* jsdom */ } }
         fsOurs = false;
+        // 2.646.0: the full-screen canvas is wide - a narrow dock reads as newly narrow on the way back and hides the panels
+        // column; it is put back as it was before artist mode (after the dock's own layout watchers have run)
+        const was = sideOff0; sideOff0 = null;
+        if (was !== null) win.setTimeout(() => { if (on) return; const kx = doc.getElementById("ieKx"); if (!kx) return; kx.classList.toggle("side-off", was); const pb = $("kxPanel"); if (pb) pb.classList.toggle("on", !was); }, 260);
       }
       const b = $("kxFocus"); if (b) b.classList.toggle("on", on);
       win.setTimeout(() => { if (S.w && E.fitView) E.fitView(); try { win.dispatchEvent(new win.Event("resize")); } catch (e) { /* jsdom */ } }, 120);
@@ -154,7 +194,7 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
       let hsv = hexToHsv(S.fg || "#000000");
       const chips = (() => { let a = []; try { a = E.palette && E.palette.colours ? E.palette.colours() : []; } catch (e) { a = []; }
         if (!a || !a.length) a = (root.PCPalette && root.PCPalette.DEFAULT) || []; return a.filter((c) => /^#[0-9a-f]{6}$/i.test(c)).slice(0, 48); })();
-      el.innerHTML = `<div class="fph"><b>🎨 Colour</b><span class="k">Ctrl+P / Esc closes · right click = background</span></div>
+      el.innerHTML = `<div class="fph"><b>🎨 Colour</b><span class="k">Alt+P / Esc closes · right click = background</span></div>
         <canvas class="fsv" width="${SV}" height="${SV}"></canvas><canvas class="fhue" width="${HUE}" height="14"></canvas>
         <div class="fcol"><span class="fsw" data-w="fg" title="Foreground"></span><span class="fsw" data-w="bg" title="Background (click = make it the foreground)"></span>
           <button type="button" data-a="swap" title="Swap (X)">⇄</button><input type="text" data-a="hex" maxlength="7" spellcheck="false" title="The foreground colour (#rrggbb)"></div>
@@ -222,7 +262,7 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
     }
     function toggle(kind) { if (pop && popKind === kind) closePop(); else if (kind === "palette") palette(); else brushes(); }
 
-    // the keys - first, before the editor and the browser (Ctrl+P = print, Ctrl+B = bookmarks otherwise)
+    // the keys - first, before the editor and the browser (Ctrl+B = bookmarks otherwise; Alt+P / Alt+G - 2.646.0)
     doc.addEventListener("keydown", (e) => {
       const a = keyAction(e, { on, pop: !!pop });
       if (!a) return;
@@ -231,6 +271,7 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
       e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
       if (a === "exit") setFocus(false);
       else if (a === "close") closePop();
+      else if (a === "side") setSide(!side);
       else toggle(a);
     }, true);
 
@@ -256,13 +297,13 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
     const menus = $("pcMenus"), full = $("kxFull");
     if ((menus && menus.parentNode) || (full && full.parentNode)) {
       const b = doc.createElement("button"); b.className = "ghost pcartist"; b.id = "kxFocus"; b.type = "button"; b.innerHTML = "🎨 <span>Artist mode</span>";
-      b.title = "Artist mode - only the canvas, full screen, no frame (Ctrl+Shift+F). Ctrl+P colours · Ctrl+B brushes · Shift+right-click (or Ctrl+Esc) back";
+      b.title = "Artist mode - only the canvas, full screen, no frame (Ctrl+Shift+F). Alt+P colours · Ctrl+B brushes · Alt+G layers + pending · Ctrl+P the prompt docker · Shift+right-click (or Ctrl+Esc) back";
       b.onclick = () => setFocus(!on);
       if (menus && menus.parentNode) menus.after(b); else full.parentNode.insertBefore(b, full);
       if (!doc.getElementById("pcArtistCss")) { const st = doc.createElement("style"); st.id = "pcArtistCss"; st.textContent = ".pcmenu .pcartist{margin-left:8px;flex:none;white-space:nowrap;border:1px solid var(--pc-accent,#2680eb)!important;border-radius:4px;padding:1px 8px!important;font-size:11px;color:var(--pc-text,#ddd)}.pcmenu .pcartist:hover,.pcmenu .pcartist.on{background:var(--pc-accent,#2680eb);color:#fff}.kx .pcmenu{flex-wrap:wrap;height:auto!important;min-height:26px}.kx[data-theme=bitgen] .pcmenu{min-height:var(--mbar,36px)}.kx .pcmenu .mr{flex-wrap:wrap;justify-content:flex-end}"; doc.head.appendChild(st); }
     }
     if (E.ui && E.ui.addCmd) E.ui.addCmd("view.focus", "🎨 Artist Mode (canvas only)", "Shift+Ctrl+F", () => setFocus(!on), { checked: () => on }, ["View", "view.full"]);
-    E.focus = { on: () => on, set: setFocus, palette: () => toggle("palette"), brushes: () => toggle("brushes"), close: closePop, pop: () => popKind };
+    E.focus = { on: () => on, set: setFocus, palette: () => toggle("palette"), brushes: () => toggle("brushes"), close: closePop, pop: () => popKind, side: () => side, setSide };   // 2.646.0: + Alt+G
   }
 
   const PCFocus = { RECENT_MAX, keyAction, mouseAction, hsvToHex, hexToHsv, clampPop, install };

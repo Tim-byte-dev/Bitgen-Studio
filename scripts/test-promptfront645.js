@@ -17,7 +17,7 @@ check("H3PromptFront loads (front, isKey, coveredBy, unlift)", F && ["front", "i
 check("isKey: Ctrl+P, Cmd+P, a layout where P is another letter (code KeyP)", [{ ctrlKey: true, key: "p" }, { ctrlKey: true, key: "P" }, { metaKey: true, key: "p" }, { ctrlKey: true, key: "з", code: "KeyP" }].every((e) => F.isKey(e)));
 check("…not Ctrl+Shift+P (the image editor's Print), Ctrl+Alt+P (AltGr), P alone, nothing", ![{ ctrlKey: true, shiftKey: true, key: "P" }, { ctrlKey: true, altKey: true, key: "p" }, { key: "p" }, null].some((e) => F.isKey(e)));
 check("lifted over a maximized docker (the Sketcher's 9000) - under menus / dialogs", F.FRONT_Z > 9000 && F.FRONT_Z < 10000);
-check("the key is caught first (capture) - never the browser's print; Artist mode and a modal dialog left alone",
+check("the key is caught first (capture) - never the browser's print; a modal dialog left alone; over 🎨 Artist mode's canvas (2.646.0)",
   /root\.addEventListener\("keydown", \(e\) => \{[\s\S]*?\}, true\);/.test(SRC) && /ie-focus/.test(SRC) && /matches\(":modal"\)/.test(SRC) && /e\.preventDefault\(\)/.test(SRC));
 check("front(): closed -> opened, folded -> unfolded, a closed ▣ docker shown + its tab, covered -> lifted (after layout), focused",
   /toggleDockGone\("promptdock", "tP"\)/.test(SRC) && /toggleCollapse\("promptdock"\)/.test(SRC) && /G\.toggle\(true, rec\.docker\)/.test(SRC) && /\.h3fd-tab\[data-t="pf\.promptdock"\]/.test(SRC) && /requestAnimationFrame/.test(SRC) && /b\.focus\(/.test(SRC));

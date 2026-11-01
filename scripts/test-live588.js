@@ -74,10 +74,10 @@ try {
   // ---- ⬚ focus mode
   const on = { on: true, pop: false };
   const K = (o) => FO.keyAction(Object.assign({ key: "", code: "", ctrlKey: false, shiftKey: false, altKey: false, metaKey: false }, o), on);
-  check("focus keys: Ctrl+P = the colour palette, Ctrl+B = the brushes, Ctrl+Esc = back (Ctrl+Shift+F too); nothing when focus is off; plain P / B are the editor's",
-    K({ key: "p", ctrlKey: true }) === "palette" && K({ key: "b", ctrlKey: true }) === "brushes" && K({ key: "Escape", ctrlKey: true }) === "exit" && K({ key: "F", code: "KeyF", ctrlKey: true, shiftKey: true }) === "exit"
+  check("focus keys: Alt+P = the colour palette (2.646.0 - Ctrl+P is the prompt docker), Alt+G = Layers + Pending, Ctrl+B = the brushes, Ctrl+Esc = back (Ctrl+Shift+F too); nothing when focus is off; plain P / B are the editor's",
+    K({ key: "p", altKey: true }) === "palette" && K({ key: "π", code: "KeyP", altKey: true }) === "palette" && K({ key: "g", altKey: true }) === "side" && K({ key: "p", ctrlKey: true }) === null && K({ key: "b", ctrlKey: true }) === "brushes" && K({ key: "Escape", ctrlKey: true }) === "exit" && K({ key: "F", code: "KeyF", ctrlKey: true, shiftKey: true }) === "exit"
     && K({ key: "p" }) === null && K({ key: "b" }) === null && K({ key: "P", ctrlKey: true, shiftKey: true }) === null
-    && FO.keyAction({ key: "p", ctrlKey: true }, { on: false }) === null && FO.keyAction({ key: "Escape" }, { on: true, pop: true }) === "close" && FO.keyAction({ key: "Escape" }, { on: true, pop: false }) === null);
+    && FO.keyAction({ key: "p", altKey: true }, { on: false }) === null && FO.keyAction({ key: "Escape" }, { on: true, pop: true }) === "close" && FO.keyAction({ key: "Escape" }, { on: true, pop: false }) === null);
   const hx = ["#ff0000", "#00ff00", "#0000ff", "#808080", "#123456", "#ffffff", "#000000", "#c0ffee"];
   check("hsv <-> hex round trip (the palette's square + hue strip)", hx.every((h) => { const v = FO.hexToHsv(h); return FO.hsvToHex(v.h, v.s, v.v) === h; })
     && FO.hsvToHex(0, 1, 1) === "#ff0000" && FO.hsvToHex(120, 1, 1) === "#00ff00" && FO.hsvToHex(240, 1, 1) === "#0000ff", hx.map((h) => { const v = FO.hexToHsv(h); return FO.hsvToHex(v.h, v.s, v.v); }));
@@ -86,7 +86,7 @@ try {
   check("wiring: pclive.js + pcfocus.js loaded before the editor and installed; ⚡ and ⬚ in the menu bar beside ⛶; View ▸ ⚡ Live Generation / 🎨 Artist Mode (Shift+Ctrl+F, 2.590.0: a labelled button right after the menus)",
     EXT.indexOf("pclive.js") > 0 && EXT.indexOf("pcfocus.js") > 0 && EXT.indexOf("pcfocus.js") < EXT.indexOf("imageedit.js") && /win\.PCLive\.install\(E\)/.test(IE) && /win\.PCFocus\.install\(E\)/.test(IE)
     && /b\.id = "kxLive"/.test(PL) && /b\.id = "kxFocus"/.test(PF) && /insertBefore\(b, full\)/.test(PL) && /"view\.live", "⚡ Live Generation"/.test(PL) && /"view\.focus", "🎨 Artist Mode \(canvas only\)", "Shift\+Ctrl\+F"/.test(PF) && /menus\.after\(b\)/.test(PF));
-  check("focus: the keys are caught first (capture) so Ctrl+P / Ctrl+B never reach the browser's print / bookmarks; the chain to the canvas is kept, every sibling hidden",
+  check("focus: the keys are caught first (capture) so Ctrl+B never reaches the browser's bookmarks (Alt+P / Alt+G too); the chain to the canvas is kept, every sibling hidden",
     /doc\.addEventListener\("keydown", \(e\) => \{\s*const a = keyAction/.test(PF) && /\}, true\);\s*\n\s*\/\/ 2\.590\.0 \(Tim: "i can't find the full screen canvas button/.test(PF) && /pcfocus-hide/.test(PF) && /pcfocus-chain/.test(PF) && /requestFullscreen/.test(PF));
 } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }
 console.log(`\n${pass} passed, ${fail} failed`);

@@ -6297,10 +6297,19 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.646.0: **🎨 Artist mode: Alt+P colours, Ctrl+P the prompt docker, Alt+G layers + pending** - generate from the
+  layer you are painting on without leaving Artist mode.
+  - **Alt+P** - the colour palette at the pointer (it was Ctrl+P). Alt+P again closes it.
+  - **Ctrl+P** - the prompt docker over the full-screen canvas, its prompt box ready to type in (the same key as
+    everywhere else in the app).
+  - **Alt+G** - the Layers panel on the right and ⏳ Pending beside it, over the canvas (the canvas keeps its size, the
+    other panels stay hidden). Pick the layer, Ctrl+P, write the prompt, ▾ Edit (or Generate): the picture comes back
+    to ⏳ Pending - keep it as a layer from there. Alt+G again hides them.
+  - Leaving Artist mode puts the editor's panels column back as it was (a narrow editor used to lose it).
 - 2.645.0: **Ctrl+P brings the prompt docker to the front** - anywhere (typing in a box too): it opens, unfolds, comes
   out of a closed ▣ docker and over a floating window or a maximized docker (the Sketcher, the timeline …), with the
-  prompt box ready to type in. 🎨 Artist mode keeps Ctrl+P for its colour palette; the image editor's **File ▸ Print**
-  moved to **Ctrl+Shift+P**.
+  prompt box ready to type in. (2.646.0: in 🎨 Artist mode too - its colour palette moved to Alt+P.) The image
+  editor's **File ▸ Print** moved to **Ctrl+Shift+P**.
 - 2.644.0: **The guides say Sketcher** - the README, this guide, the Feature Reference, the beta page, the help and the
   shortcut list no longer describe the House builder (the Sketcher replaced it in 2.630.0); the Sketcher section starts
   with what it does now; a new Sketcher screenshot.
@@ -6646,7 +6655,7 @@ orange line shows where it will go - and let go.
     stay where they were.
 - 2.590.0: **🎨 Artist mode** is the new name of the full-screen canvas (2.588.0's ⬚ focus mode): a labelled
   **🎨 Artist mode** button right after the image editor's menus (File … Help), View ▸ Artist Mode, Ctrl+Shift+F. Only
-  the canvas shows; Ctrl+P colours, Ctrl+B brushes, Ctrl+Esc back. The editor's menu bar now wraps onto a second line
+  the canvas shows; Ctrl+P colours (2.646.0: Alt+P), Ctrl+B brushes, Ctrl+Esc back. The editor's menu bar now wraps onto a second line
   when the editor is narrow, so no button is cut off any more.
 - 2.590.0: **Every tab of the image editor is a docker.** Drag a tab (Layers, Color, ✨ AI, 🎮 Unreal, 🖌 Brush …) by its
   name:
@@ -6699,9 +6708,10 @@ orange line shows where it will go - and let go.
 - 2.588.0: **⬚ Focus mode in the image editor** (2.590.0: called 🎨 Artist mode) - ⬚ in the menu bar (or View ▸ Focus Mode, Ctrl+Shift+F): only the canvas,
   full screen and frameless - bitGen's bars and the editor's menus, tools, panels, rulers and dockers are hidden.
   Painting, [ ], zoom, Space-pan and undo work as always.
-  - **Ctrl+P** - the colour palette at the pointer: a saturation / brightness square and a hue strip (drag), the
+  - **Alt+P** (Ctrl+P until 2.646.0) - the colour palette at the pointer: a saturation / brightness square and a hue strip (drag), the
     foreground / background colours (⇄ swaps), the hex value, the palette's chips and your recent colours - left click =
-    foreground, right click = background. Ctrl+P again, Esc or a click outside closes it.
+    foreground, right click = background. Alt+P again, Esc or a click outside closes it.
+  - **Alt+G** (2.646.0) - the Layers panel + ⏳ Pending over the canvas; **Ctrl+P** (2.646.0) - the prompt docker.
   - **Ctrl+B** - the brushes at the pointer: every brush preset (click = paint with it) + size, opacity and flow.
   - **Ctrl+Esc** - back to normal (Ctrl+Shift+F too - some Windows keyboards keep Ctrl+Esc for the Start menu). The
     browser's own Esc only leaves the browser's full screen; the canvas stays frameless until Ctrl+Esc.

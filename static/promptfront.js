@@ -1,7 +1,7 @@
 /* bitGen Studio — static/promptfront.js (2.645.0): Ctrl+P BRINGS THE PROMPT DOCKER TO THE FRONT (window.H3PromptFront).
  * Tim (verbatim): "if user presses ctrl P bring the prompt docker to front".
- * Anywhere in the app, typing in a box too - except in 🎨 Artist mode (Ctrl+P = its colour palette) and while a modal dialog
- * is open. The browser's own Ctrl+P (print) never opens. The image editor's File ▸ Print moved to Ctrl+Shift+P.
+ * Anywhere in the app, typing in a box too - 🎨 Artist mode too (2.646.0: its colour palette moved to Alt+P; the prompt docker
+ * comes over the full-screen canvas) - not while a modal dialog is open. The browser's own Ctrl+P (print) never opens. The image editor's File ▸ Print moved to Ctrl+Shift+P.
  * front() makes the prompt docker seen, whatever hides it:
  *   closed (dockgone) -> opened;  folded (collapsed) -> unfolded;  in a ▣ docker / a floating window -> that window shown and
  *   raised;  under another floating window or a maximized docker (the Sketcher, SolidCraft, the timeline ...) -> lifted over
@@ -18,6 +18,8 @@
     return String(e.key || "").toLowerCase() === "p" || e.code === "KeyP";
   }
   const FRONT_Z = 9500;                                  // over a maximized docker (the Sketcher's 9000), under menus / dialogs
+  const ARTIST_Z = 2147483300;                           // 2.646.0: over 🎨 Artist mode's canvas (2147483000), under its popups (…600)
+  const zNow = () => (doc.body.classList.contains("ie-focus") ? ARTIST_Z : FRONT_Z);
   const box = () => $("prompt");
   /** the element over the middle of the prompt box (null = the box itself / inside the prompt docker is on top) */
   function coveredBy() {
@@ -46,7 +48,7 @@
     if (lifted && lifted !== el) unlift();
     if (!el.dataset.pfZ) el.dataset.pfZ = el.style.zIndex || "";
     if (root.getComputedStyle(el).position === "static") { el.dataset.pfPos = el.style.position || ""; el.style.position = "relative"; }
-    el.style.zIndex = String(FRONT_Z); el.classList.add("pf-front"); lifted = el;
+    el.style.zIndex = String(zNow()); el.classList.add("pf-front"); lifted = el;
   }
   function unlift() {
     const el = lifted; lifted = null; if (!el) return;
@@ -105,10 +107,9 @@
   }
   root.addEventListener("keydown", (e) => {
     if (!isKey(e) || e.repeat) return;
-    if (doc.body.classList.contains("ie-focus")) return;                  // 🎨 Artist mode: Ctrl+P = its colour palette
     const modal = doc.querySelector("dialog[open]"); if (modal && modal.matches(":modal")) { e.preventDefault(); return; }   // never the print dialog
     e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     front();
   }, true);
-  root.H3PromptFront = { front, isKey, coveredBy, unlift, FRONT_Z };
+  root.H3PromptFront = { front, isKey, coveredBy, unlift, FRONT_Z, ARTIST_Z };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -70,12 +70,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     s0 = await st(); s = await ctrlP(); await p.waitForTimeout(500); s = await st();
     check("in a ▣ docker that is closed -> Ctrl+P shows that docker, the prompt focused", inG === "in" && !s0.seen && s.seen && s.focus === "prompt" && await ev((g) => H3DockGroup.shown(g), gid), { inG, s0, s });
 
-    // 🎨 Artist mode keeps Ctrl+P for its colour palette
-    await ev(() => document.body.classList.add("ie-focus"));
-    await ev(() => { document.activeElement && document.activeElement.blur(); toggleCollapse("promptdock"); });
-    await p.keyboard.press("Control+p"); await p.waitForTimeout(400);
-    check("🎨 Artist mode: Ctrl+P is left to its colour palette (the prompt docker untouched)", await ev(() => document.getElementById("promptdock").classList.contains("collapsed")));
-    await ev(() => { document.body.classList.remove("ie-focus"); toggleCollapse("promptdock"); });
+    // 2.646.0: 🎨 Artist mode - Ctrl+P brings the prompt docker too (its palette moved to Alt+P); 2.646.0's own test does the real one
     // the image editor's Print
     const pk = await ev(() => { const E = window.imageEditorInstance && window.imageEditorInstance.E; const c = E && E.ui && E.ui.CMD && E.ui.CMD.get("file.print"); return c ? c.key : "(no editor)"; });
     check("the image editor's File ▸ Print is Ctrl+Shift+P now", pk === "Shift+Ctrl+P" || pk === "(no editor)", pk);

@@ -26,7 +26,7 @@
         ],
         [
           "Ctrl+P",
-          "Bring the prompt docker to the front: opened, unfolded, over whatever covers it, the prompt box ready to type in (typing in a box too; in 🎨 Artist mode Ctrl+P stays its colour palette)"
+          "Bring the prompt docker to the front: opened, unfolded, over whatever covers it, the prompt box ready to type in (typing in a box too; in 🎨 Artist mode too - over the full-screen canvas)"
         ],
         [
           "S",
@@ -872,6 +872,18 @@
         [
           "Shift+right-click",
           "In 🎨 Artist mode: back to normal (Ctrl+Esc / Ctrl+Shift+F too - on Windows Ctrl+Esc can open the Start menu); no context menu opens"
+        ],
+        [
+          "Alt+P",
+          "In 🎨 Artist mode: the colour palette at the pointer (Alt+P again closes it)"
+        ],
+        [
+          "Ctrl+B",
+          "In 🎨 Artist mode: the brushes at the pointer"
+        ],
+        [
+          "Alt+G",
+          "In 🎨 Artist mode: the Layers panel + ⏳ Pending over the canvas - pick a layer, Ctrl+P for the prompt docker, Generate / ▾ Edit; Alt+G again hides them"
         ]
       ]
     },

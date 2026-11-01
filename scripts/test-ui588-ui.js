@@ -103,18 +103,18 @@ fs.writeFileSync(TXT, "a red bike, front view");
     check("⬚ focus: only the canvas - no menus, tools, property bar or panels; the stage fills the window (bitGen's bars covered)",
       fo.cls && !fo.menu && !fo.tools && !fo.panels && !fo.bar && fo.stage && fo.w >= fo.W - 4 && fo.h >= fo.H - 4 && fo.bottomIn && fo.topIn, fo);
     await p.mouse.move(700, 450);
-    await p.keyboard.press("Control+p");
+    await p.keyboard.press("Alt+p");                                  // 2.646.0: Alt+P (Ctrl+P = the prompt docker)
     await p.waitForTimeout(200);
     const pal = await ev(() => { const el = document.getElementById("pcFocusPal"); const r = el && el.getBoundingClientRect(); return { open: !!el, chips: el ? el.querySelectorAll("[data-c]").length : 0, sv: !!(el && el.querySelector(".fsv")), x: r && r.x, y: r && r.y, w: r && r.width }; });
-    check("Ctrl+P: the colour palette at the pointer (a saturation / brightness square, the hue strip, the palette's chips)", pal.open && pal.chips >= 8 && pal.sv && Math.abs(pal.x + pal.w / 2 - 700) < 30, pal);
+    check("Alt+P: the colour palette at the pointer (a saturation / brightness square, the hue strip, the palette's chips)", pal.open && pal.chips >= 8 && pal.sv && Math.abs(pal.x + pal.w / 2 - 700) < 30, pal);
     const chip = await ev(() => { const c = [...document.querySelectorAll("#pcFocusPal [data-c]")].find((x) => x.dataset.c.toLowerCase() !== window.imageEditorInstance.E.S.fg.toLowerCase()); const r = c.getBoundingClientRect(); return { c: c.dataset.c, x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
     await p.mouse.click(chip.x, chip.y);
     const sv = await p.locator("#pcFocusPal .fsv").boundingBox();
     await p.mouse.click(sv.x + sv.width - 3, sv.y + 3);
     const fg = await ev((c) => ({ fg: window.imageEditorInstance.E.S.fg, chip: c }), chip.c);
     check("a chip = the foreground colour; a click in the square picks a bright saturated colour", /^#[0-9a-f]{6}$/i.test(fg.fg) && fg.fg.toLowerCase() !== "#000000", fg);
-    await p.keyboard.press("Control+p");
-    check("Ctrl+P again closes it", await ev(() => !document.getElementById("pcFocusPal")));
+    await p.keyboard.press("Alt+p");
+    check("Alt+P again closes it", await ev(() => !document.getElementById("pcFocusPal")));
     await p.keyboard.press("Control+b");
     await p.waitForTimeout(200);
     const br = await ev(() => { const el = document.getElementById("pcFocusBr"); return { open: !!el, n: el ? el.querySelectorAll("[data-p]").length : 0, size: !!(el && el.querySelector('[data-a="size"]')) }; });
