@@ -12,7 +12,7 @@ const DK = read("ext/pushpulldock/ppdock.js"), TL = read("ext/pushpulldock/pparc
 check("View ▾: an optgroup Cameras - 📷 <name> per camera (value cam:<id>), painted with the model's info (added / renamed / deleted)", /function paintViewSel/.test(DK) && /g\.label = "Cameras"/.test(DK) && /"cam:" \+ c\.id/.test(DK) && /function info\(\) \{\n    paintViewSel\(\);/.test(DK));
 check("picked: lookThrough - its place, its way, its lens; the cameras' glyphs hidden; the dropdown shows it", /v\.startsWith\("cam:"\)/.test(DK) && /cam\.fov = c\.fov \|\| 60/.test(TL) && /camsShown\(false\)/.test(TL) && /function camsShown/.test(AV) && /onThrough: \(\) => paintViewSel\(\)/.test(DK));
 check("left by the user's orbit / pan / zoom (controls start) or a standard view: the lens back, the glyphs shown", /function leaveThrough/.test(TL) && /V\.controls\.addEventListener\("start"/.test(TL) && /S\.T\.arch\.leaveThrough\(\)/.test(DK));
-check("its panel's changes while looking through it: the view follows", /if \(through && through\.id === c\.id\) lookThrough\(c\)/.test(TL));
+check("its panel's changes while looking through it: the view follows", /if \(through && through\.id === c\.id\) lookThrough\(c(, true)?\)/.test(TL));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log("RESULT: " + fail + " failed");
 process.exit(fail ? 1 : 0);

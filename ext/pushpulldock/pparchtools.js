@@ -70,11 +70,13 @@
     function wallAt(ev, p, n) { const r = V.ray(ev), den = r.d[0] * n[0] + r.d[1] * n[1]; if (Math.abs(den) < 0.12) return null; const t = ((p[0] - r.o[0]) * n[0] + (p[1] - r.o[1]) * n[1]) / den; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, r.o[2] + r.d[2] * t] : null; }
     /** 2.625.0: the picked door / window's grip under the pointer (on the wall's face toward the camera) -> {key, n, p} | null */
     /** 2.633.0: the rotate ring under the pointer (a picked camera / piece of furniture) -> {key, axis, c} | null */
+    /** 2.643.0: the picked camera's widget place - ahead of the eye when the view looks through it, else null (at the eye) */
+    const widgetOf = (o) => (through && asel && asel.ak === "cam" && through.id === asel.id && root.PPCam ? root.PPCam.widgetAt(o) : null);
     function ringAt(ev) {
       if (!asel || (asel.ak !== "cam" && asel.ak !== "item") || !root.PPCam) return null;
       if (asel.ak === "cam" && gizmo !== "rotate") return null;                         // 2.641.0: a camera's rings after a double-click
       const o = P().find(AR(), asel.ak, asel.id); if (!o) return null;
-      const G0 = root.PPCam.rings(asel.ak, o), r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+      const G0 = root.PPCam.rings(asel.ak, o, asel.ak === "cam" ? widgetOf(o) : null), r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       let best = null;
       const cp = V.cam().position, vd = [G0.c[0] - cp.x, G0.c[1] - cp.y, G0.c[2] - cp.z], vl = Math.hypot(vd[0], vd[1], vd[2]) || 1;
       G0.rings.forEach((rg) => {
@@ -94,15 +96,15 @@
     function axisAt(ev) {
       if (!asel || asel.ak !== "cam" || gizmo !== "move" || !root.PPCam) return null;
       const o = P().find(AR(), "cam", asel.id); if (!o) return null;
-      const W = root.PPCam.moveAxes(o), r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
-      const eye = V.screen(W.c); if (eye[2] < 1 && Math.hypot(eye[0] - mx, eye[1] - my) < 14) return null;   // on the camera itself: a free move, not an arrow
+      const wa = widgetOf(o), W = root.PPCam.moveAxes(o, wa), r = V.canvas.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+      const eye = V.screen(W.c); if (!wa && eye[2] < 1 && Math.hypot(eye[0] - mx, eye[1] - my) < 14) return null;   // on the camera itself: a free move, not an arrow
       let best = null;
       W.axes.forEach((ax) => {
         const a = V.screen(W.c.map((v, k) => v + ax.dir[k] * 0.1)), b = V.screen(W.c.map((v, k) => v + ax.dir[k] * (W.len + 0.12)));
         if (a[2] > 1 || b[2] > 1) return;
         const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy; if (L2 < 100) return;          // seen end-on: not grabbable
         const t = Math.max(0, Math.min(1, ((mx - a[0]) * dx + (my - a[1]) * dy) / L2)), d = Math.hypot(mx - a[0] - dx * t, my - a[1] - dy * t);
-        if (d < 9 && (!best || d < best.d)) best = { d, key: ax.key, dir: ax.dir, c: W.c };
+        if (d < 9 && (!best || d < best.d)) best = { d, key: ax.key, dir: ax.dir, c: W.c, sa: a, sb: b, len: W.len + 0.02 };
       });
       return best;
     }
@@ -411,13 +413,17 @@
         const r = V.canvas.getBoundingClientRect(), cs = V.screen(rg.c), cp = V.cam().position;
         const toV = [cp.x - rg.c[0], cp.y - rg.c[1], cp.z - rg.c[2]], facing = rg.axis[0] * toV[0] + rg.axis[1] * toV[1] + rg.axis[2] * toV[2] >= 0 ? 1 : -1;
         st.drag = { t: asel, mode: "spin", key: rg.key, cx: r.left + cs[0], cy: r.top + cs[1], a0: Math.atan2(ev.clientY - r.top - cs[1], ev.clientX - r.left - cs[0]), facing, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
-        const pa = ringAngle(ev, rg.c, rg.axis); if (pa !== null) Object.assign(st.drag, { pc: rg.c, pn: rg.axis, pa0: pa });   // the ring seen open enough: follow it in its own plane
+        const pa = through && asel && through.id === asel.id ? null : ringAngle(ev, rg.c, rg.axis); if (pa !== null) Object.assign(st.drag, { pc: rg.c, pn: rg.axis, pa0: pa });   // the ring seen open enough: follow it in its own plane (2.643.0: not through it - the view turns with it: round its middle on screen)
         return true;
       }
       const ax = axisAt(ev);                                             // 2.641.0: a move arrow - along that axis only
       if (ax) {
         const r = V.ray(ev), cl = G().linesClosest(ax.c, ax.dir, r.o, r.d), s0 = (cl.point[0] - ax.c[0]) * ax.dir[0] + (cl.point[1] - ax.c[1]) * ax.dir[1] + (cl.point[2] - ax.c[2]) * ax.dir[2];
         st.drag = { t: asel, mode: "axis", key: ax.key, dir: ax.dir, p0: ax.c.slice(), s0, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
+        if (through && through.id === asel.id) {                         // 2.643.0: seen through it the view moves with it - the drag follows the screen
+          const ux = ax.sb[0] - ax.sa[0], uy = ax.sb[1] - ax.sa[1], L = Math.hypot(ux, uy) || 1;
+          st.drag.scr = { ux: ux / L, uy: uy / L, ppm: L / ax.len };
+        }
         return true;
       }
       const gp = gripAt(ev);
@@ -522,20 +528,21 @@
       root.PPCam.turnBy(o, D.key, rh, D.t.ak);
       ctx.status((D.t.ak === "cam" ? "📷 " + o.name : "🛋 " + root.PPFurn.label(o)) + " · " + { yaw: "turn", pitch: "pitch", roll: "roll" }[D.key] + " " + (D.key === "yaw" ? (D.t.ak === "cam" ? o.yaw : o.rot) : o[D.key]) + "° (5° steps - Shift: free)");
       AV().rebuild(); AV().setSel(D.t);
-      if (through && D.t.ak === "cam" && through.id === o.id) lookThrough(o);
+      if (through && D.t.ak === "cam" && through.id === o.id) lookThrough(o, true);
       return true;
     }
     /** 2.641.0: a camera dragged by a move arrow - along that axis (1 cm steps, Shift free) */
     function dragAxis(ev, D) {
-      const r = V.ray(ev), cl = G().linesClosest(D.p0, D.dir, r.o, r.d);
-      let d = (cl.point[0] - D.p0[0]) * D.dir[0] + (cl.point[1] - D.p0[1]) * D.dir[1] + (cl.point[2] - D.p0[2]) * D.dir[2] - D.s0;
+      let d;
+      if (D.scr) d = ((ev.clientX - D.x0) * D.scr.ux + (ev.clientY - D.y0) * D.scr.uy) / D.scr.ppm;   // 2.643.0: through it - along the arrow on screen
+      else { const r = V.ray(ev), cl = G().linesClosest(D.p0, D.dir, r.o, r.d); d = (cl.point[0] - D.p0[0]) * D.dir[0] + (cl.point[1] - D.p0[1]) * D.dir[1] + (cl.point[2] - D.p0[2]) * D.dir[2] - D.s0; }
       if (!Number.isFinite(d)) return true;
       d = ev.shiftKey ? Math.round(d * 1000) / 1000 : Math.round(d * 100) / 100;
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const o = P().find(M.arch, "cam", D.t.id); if (!o) return true;
       const k = { x: "x", y: "y", z: "z" }[D.key]; o[k] = Math.round((o[k] + d) * 1000) / 1000;
       ctx.status("📷 " + o.name + " · " + D.key.toUpperCase() + " " + (d >= 0 ? "+" : "−") + fmt(Math.abs(d)) + " (1 cm steps - Shift: free)");
       AV().rebuild(); AV().setSel(D.t);
-      if (through && through.id === o.id) lookThrough(o);
+      if (through && through.id === o.id) lookThrough(o, true);
       return true;
     }
     function dragGrip(ev, D) {
@@ -659,23 +666,25 @@
     /* 2.629.0: 📷 a camera's view / pictures / 360° location */
     /** 👁 the view from a camera - its place, its way, its lens (2.631.0: and nothing of the camera itself in the way); the first
         orbit / pan / zoom leaves it (the lens as it was, the cameras shown again) */
-    function lookThrough(c) {
+    function lookThrough(c, quiet) {
       if (!c) return;
       const d = root.PPCam.dir(c); if (V.isOrtho) V.ortho(false);
       const cam = V.cam();
       if (!through) through = { fov: cam.fov };
       through.id = c.id;
       cam.fov = c.fov || 60; cam.updateProjectionMatrix();
+      if (AV() && AV().setThrough) AV().setThrough(c.id);              // 2.643.0: its widget drawn ahead of the eye
       cam.position.set(c.x, c.y, c.z); V.controls.target.set(c.x + d[0] * 2, c.y + d[1] * 2, c.z + d[2] * 2); V.controls.update();
       if (c.roll) cam.rotateZ(-(c.roll * Math.PI / 180));               // 2.633.0: its roll (right-handed about the way it looks)
       if (AV() && AV().camsShown) AV().camsShown(false);
       V.draw();
-      ctx.status("👁 the view from " + c.name + " - orbit / pan / zoom to leave it");
+      if (!quiet) ctx.status("👁 the view from " + c.name + " - orbit / pan / zoom to leave it · ✥ Move / ⟳ Rotate in its panel: its widget in front of you");
       if (ctx.onThrough) ctx.onThrough(c.id);
     }
     function leaveThrough() {
       if (!through) return;
       const cam = V.cam(); cam.fov = through.fov; cam.updateProjectionMatrix(); through = null;
+      if (AV() && AV().setThrough) AV().setThrough(null);
       if (AV() && AV().camsShown) AV().camsShown(true);
       V.draw(); if (ctx.onThrough) ctx.onThrough(null);
     }
@@ -966,7 +975,7 @@
         btns([["⟳ 90°", ch(() => { s.ang += 90; })], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "cam" && root.PPCam) {                      // 2.629.0: 📷 a camera
         const c = x; head("📷 " + c.name);
-        if (through && through.id === c.id) lookThrough(c);             // 2.631.0: looking through it - its new turn / tilt / lens / place shown
+        if (through && through.id === c.id) lookThrough(c, true);       // 2.631.0: looking through it - its new turn / tilt / lens / place shown
         txtIn("Name", c.name, ch((v) => { c.name = v; }));
         numIn("Eye height", Math.round((c.z - floorAt(AR(), [c.x, c.y])) * 1000) / 1000, ch((v) => { c.z = floorAt(AR(), [c.x, c.y]) + v; }), 0.05, 0.05, 50, "m");
         numIn("Turn (yaw)", c.yaw, ch((v) => { c.yaw = ((v % 360) + 360) % 360; }), 5, -720, 720, "°"); numIn("Tilt (pitch)", c.pitch, ch((v) => { c.pitch = Math.max(-89, Math.min(89, v)); }), 2, -89, 89, "°");

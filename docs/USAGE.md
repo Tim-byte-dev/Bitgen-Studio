@@ -507,6 +507,9 @@ With **Select**:
   again for the arrows. Its panel has ✥ Move / ⟳ Rotate too.
 - A click on any other object picks that one and lets the camera go; a click just beside a camera's lines picks what is
   there (they used to catch clicks up to a metre away).
+- **Looking through the camera** (2.643.0) - with the picked camera's 👁 Look through on, ✥ Move / ⟳ Rotate in its panel
+  show the widget in front of you (lower right): drag an arrow or a ring and the camera - and the view - move or turn
+  with it. **Esc** deselects the camera (the view stays as it is).
 
 ### Each part's own properties; profiles for skirting, cornices, frames and sills (2.640.0)
 
@@ -6392,6 +6395,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.643.0: **Sketcher: move / turn a camera while looking through it** - ✥ Move / ⟳ Rotate in the camera's panel show
+  its widget in front of the view; Esc deselects it.
 - 2.642.0: **Credits** - Settings ▸ **About** shows the version, "Produced and Developed by Tim Paul",
   "Programmer - Claude Opus 5.5" and the credits to everyone whose code, models, tools and ideas bitGen Studio uses; the
   same credits are the last section of this guide (and on its cover).

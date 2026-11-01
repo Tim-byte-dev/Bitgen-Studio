@@ -23,6 +23,14 @@ check("tools: a double-click on the camera (or its widget) = move <-> rotate", /
 check("tools: another thing picked = the widget back to move", /if \(!same\) gizmo = "move";/.test(AT));
 check("tools: a camera's rings only in rotate mode", /if \(asel\.ak === "cam" && gizmo !== "rotate"\) return null;/.test(AT));
 
+// 2.643.0: looking through the picked camera - its widget ahead of the eye (not in it), drags that follow the screen
+const cw = { x: 0, y: 0, z: 1.6, yaw: 0, pitch: 0, roll: 0, fov: 60 }, wa = C.widgetAt(cw), dd = C.dir(cw);
+const rel = [wa.c[0] - cw.x, wa.c[1] - cw.y, wa.c[2] - cw.z], ahead = rel[0] * dd[0] + rel[1] * dd[1] + rel[2] * dd[2];
+check("2.643.0 widgetAt: 1.6 m ahead of the eye, a little below and to the right (no ring seen edge-on), smaller", Math.abs(ahead - 1.6) < 1e-9 && rel[2] < -0.3 && Math.abs(rel[1]) > 0.2 && wa.r < 0.5 && wa.len < 0.6, wa);
+check("2.643.0 moveAxes / rings take that place", JSON.stringify(C.moveAxes(cw, wa).c) === JSON.stringify(wa.c) && JSON.stringify(C.rings("cam", cw, wa).c) === JSON.stringify(wa.c) && C.rings("cam", cw, wa).r === wa.r);
+check("2.643.0 wiring: the view draws it there while looking through (setThrough), the tools hit-test it there, screen-based axis drags, no ray-plane turn",
+  /function setThrough\(id\)/.test(AV) && /A\.through === t\.id \? root\.PPCam\.widgetAt\(o\)/.test(AV) && /const widgetOf = \(o\) =>/.test(AT) && /st\.drag\.scr = \{ ux/.test(AT) && /AV\(\)\.setThrough\(c\.id\)/.test(AT) && /AV\(\)\.setThrough\(null\)/.test(AT));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log("RESULT: " + fail + " failed");
 process.exit(fail ? 1 : 0);

@@ -247,7 +247,7 @@
       if (!t || (t.ak !== "cam" && t.ak !== "item") || !root.PPCam || !V.M || !V.M.arch) return;
       if (t.ak === "cam" && A.gizmo !== "rotate") return;               // 2.641.0: a camera shows its rings after a double-click
       const o = P().find(V.M.arch, t.ak, t.id); if (!o) return;
-      root.PPCam.rings(t.ak, o).rings.forEach((rg) => {
+      root.PPCam.rings(t.ak, o, t.ak === "cam" && A.through === t.id ? root.PPCam.widgetAt(o) : null).rings.forEach((rg) => {   // 2.643.0: seen through it - ahead
         const pos = []; rg.pts.forEach((p) => pos.push(p[0], p[1], p[2]));
         const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
         const L = new T.LineLoop(g, new T.LineBasicMaterial({ color: RING_COL[rg.key], depthTest: false, transparent: true, opacity: A.ringHot === rg.key ? 1 : 0.85 }));
@@ -259,7 +259,7 @@
     function moveWidget(t, out) {
       if (!t || t.ak !== "cam" || A.gizmo === "rotate" || !root.PPCam || !V.M || !V.M.arch) return;
       const o = P().find(V.M.arch, "cam", t.id); if (!o) return;
-      const W = root.PPCam.moveAxes(o);
+      const W = root.PPCam.moveAxes(o, A.through === t.id ? root.PPCam.widgetAt(o) : null);   // 2.643.0: seen through it - ahead of the eye
       W.axes.forEach((ax) => {
         const col = A.axisHot === ax.key ? 0xfacc15 : AXIS_COL[ax.key], a = W.c.map((v, k) => v + ax.dir[k] * 0.1), b = W.c.map((v, k) => v + ax.dir[k] * W.len);
         const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(a.concat(b), 3));
@@ -275,6 +275,8 @@
       const th = V.theme || {}, acc = new T.Color(th.accent || "#f59e2c").getHex();
       camsG.children.forEach((g) => { const id = g.userData.tag.id, on = A.sel && A.sel.ak === "cam" && A.sel.id === id, hv = A.hover && A.hover.ak === "cam" && A.hover.id === id; const col = on ? acc : hv ? 0x60a5fa : 0x2563eb; g.children.forEach((m) => { if (m.material && m.material.color) m.material.color.setHex(col); }); });
     }
+    /** 2.643.0: the camera the view looks through (its widget is drawn ahead of the eye) - null = none */
+    function setThrough(id) { A.through = id == null ? null : id; paintSel(); }
     function setGizmo(m) { A.gizmo = m === "rotate" ? "rotate" : "move"; paintSel(); }
     function setAxisHot(k) { if ((A.axisHot || null) === (k || null)) return; A.axisHot = k || null; paintSel(); }
     function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
@@ -309,7 +311,7 @@
       });
     }
     function box() { const Ar = V.M && V.M.arch; return Ar && P().has(Ar) ? P().bbox(Ar) : null; }
-    Object.assign(A, { setGizmo, setAxisHot, rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
+    Object.assign(A, { setThrough, setGizmo, setAxisHot, rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
     return A;
   }
   root.PPArchView = { attach, loadPC, CD };

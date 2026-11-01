@@ -84,9 +84,9 @@
   }
   /** 2.633.0: the rotate rings of a picked camera / piece of furniture: {c (the middle), r, rings: [{key yaw | pitch | roll, axis,
       pts (a circle round axis)}]} - a camera's pitch ring turns about its right, roll about its looking way */
-  function rings(kind, o) {
+  function rings(kind, o, at) {
     let c, r, ax;
-    if (kind === "cam") { const f = frame(o); c = [o.x, o.y, o.z]; r = 0.5; ax = { yaw: [0, 0, 1], pitch: f.rt, roll: f.d }; }
+    if (kind === "cam") { const f = frame(o); c = at ? at.c : [o.x, o.y, o.z]; r = at ? at.r : 0.5; ax = { yaw: [0, 0, 1], pitch: f.rt, roll: f.d }; }   // 2.643.0: at = widgetAt (seen through it)
     else { const a = -rad(o.rot || 0); c = [o.x, o.y, (o.z || 0) + (o.h || 1) / 2]; r = Math.max(o.w || 1, o.d || 1, o.h || 1) / 2 + 0.15; ax = { yaw: [0, 0, 1], pitch: [Math.cos(a), Math.sin(a), 0], roll: [-Math.sin(a), Math.cos(a), 0] }; }
     const circle = (n) => {
       const t0 = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0], cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
@@ -98,7 +98,11 @@
   }
   /** 2.641.0 (Tim: "click and drag on the camera moves the camera show 3d move widget"): a picked camera's move arrows -
       {c (its eye), len, axes: [{key x | y | z, dir}]} along the model's axes (x red, y green, z = up blue) */
-  function moveAxes(o) { return { c: [o.x, o.y, o.z], len: 0.6, axes: [{ key: "x", dir: [1, 0, 0] }, { key: "y", dir: [0, 1, 0] }, { key: "z", dir: [0, 0, 1] }] }; }
+  /** 2.643.0 (Tim: "if user selects the camera and is in camera view, when user clicks rotate or move in properties then show the right
+      transform widget and let the user move or rotate the camera with the widget"): seen THROUGH the camera its widget would sit in
+      the eye - it is drawn 1.6 m ahead and a little below (so the turn ring and the arrows are not seen edge-on) -> {c, r, len} */
+  function widgetAt(o) { const f = frame(o); return { c: [0, 1, 2].map((k) => [o.x, o.y, o.z][k] + f.d[k] * 1.6 - f.up[k] * 0.42 + f.rt[k] * 0.32), r: 0.34, len: 0.42 }; }   // + to the right: no ring plane through the eye
+  function moveAxes(o, at) { if (at) return { c: at.c, len: at.len, axes: [{ key: "x", dir: [1, 0, 0] }, { key: "y", dir: [0, 1, 0] }, { key: "z", dir: [0, 0, 1] }] }; return { c: [o.x, o.y, o.z], len: 0.6, axes: [{ key: "x", dir: [1, 0, 0] }, { key: "y", dir: [0, 1, 0] }, { key: "z", dir: [0, 0, 1] }] }; }
   /** a turn of `deg` right-handed about a ring's axis -> the new yaw / pitch / roll (yaw is clockwise seen from above) */
   function turnBy(o, key, deg, kind) {
     const w = (x) => Math.round((((x % 360) + 540) % 360 - 180) * 10) / 10;
@@ -107,7 +111,7 @@
     else o.roll = w((o.roll || 0) + deg);
     return o;
   }
-  const api = { LENSES, fovOf, mmOf, lensOf, frame, rings, moveAxes, turnBy, make, dir, frustum, clean, fileName, envName, threeCam, shots, location };
+  const api = { LENSES, fovOf, mmOf, lensOf, frame, rings, moveAxes, widgetAt, turnBy, make, dir, frustum, clean, fileName, envName, threeCam, shots, location };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPCam = api;
 })(typeof window !== "undefined" ? window : globalThis);
