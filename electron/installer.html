@@ -23,7 +23,13 @@
      + mid-size AI / Everything, the recommended one picked, what this computer can use with it (✓ ~ ✗, add later) and
      the download - Install (or Install anyway) or Back. The Editor package installs no ComfyUI and no models.
      window.h3setup (electron/installer-preload.js) - the same engine as
-     scripts/setup-cli.js. -->
+     scripts/setup-cli.js.
+     2.634.0 (Tim: "in the setup file report completed in green, currently installing in a lighter green, warnings in
+     orange and errors in red. when waiting installing, let the user know so they don't think the setup stalled"):
+     steps, log lines and downloads are toned (tone()): done green, running light green, warnings orange, errors red -
+     a program's stderr is not an error by itself (pip / git print their progress there); the running step shows its
+     time, and the pulse line under the bar says what is being installed and, when it goes quiet, that it is still
+     working (and why it can take long) - after 10 min of silence it says where to look. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -32,7 +38,7 @@
   :root {
     --ink: #100e0b; --card: #1c1915; --card2: #231f1a; --line: #332d25;
     --text: #ece7df; --dim: #a89f92; --tiger: #ff8b3d; --tiger-deep: #b35a1f;
-    --ok: #6fce7e; --bad: #e06c5a; --warn: #e8b64a;
+    --ok: #45c35e; --run: #aef2b9; --bad: #ef4f43; --warn: #ff9a3c;   /* 2.634.0: done green, running light green, warnings orange, errors red */
   }
   * { box-sizing: border-box; margin: 0; }
   html, body { height: 100%; }
@@ -97,14 +103,22 @@
   .slist { list-style: none; margin: 4px 0 10px; }
   .slist li { display: flex; gap: 10px; align-items: center; padding: 4px 0; color: var(--dim); }
   .slist li .ic { width: 18px; text-align: center; }
-  .slist li.run { color: var(--text); } .slist li.ok .ic { color: var(--ok); }
-  .slist li.err .ic { color: var(--bad); } .slist li.warn .ic { color: var(--warn); }
-  .slist li .sub2 { font-size: 11.5px; color: var(--dim); margin-left: auto; }
+  .slist li.ok { color: var(--ok); } .slist li.run { color: var(--run); font-weight: 600; }
+  .slist li.err { color: var(--bad); } .slist li.warn { color: var(--warn); }
+  .slist li .sub2 { font-size: 11.5px; color: var(--dim); margin-left: auto; font-weight: 400; }
+  .slist li.run .sub2 { color: var(--run); } .slist li.err .sub2 { color: var(--bad); } .slist li.warn .sub2 { color: var(--warn); }
+  .slist li.run .ic { display: inline-block; animation: h3spin 1.1s linear infinite; }
+  @keyframes h3spin { to { transform: rotate(360deg); } }
+  @keyframes h3blink { 50% { opacity: .25; } }
+  .pulse { min-height: 17px; margin-top: 7px; font-size: 12px; color: var(--run); line-height: 1.4; }
+  .pulse .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--run); margin-right: 7px; vertical-align: 1px; animation: h3blink 1.2s ease-in-out infinite; }
+  .pulse .quiet { color: var(--dim); }
+  .pulse.long .quiet { color: var(--warn); }
   .bar { height: 4px; border-radius: 2px; background: var(--card2); overflow: hidden; flex: none; }
   .bar > div { height: 100%; width: 0%; background: var(--tiger); transition: width .3s ease; }
   .log { height: 150px; flex: none; background: #0c0a08; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px;
     margin-top: 10px; overflow-y: auto; font: 11px Consolas, Menlo, monospace; color: var(--dim); white-space: pre-wrap; user-select: text; }
-  .log .err { color: var(--bad); }
+  .log .err { color: var(--bad); } .log .warn { color: var(--warn); } .log .ok { color: var(--ok); } .log .run { color: var(--run); }
 
   .tok { display: flex; gap: 8px; align-items: center; }
   .tokmsg { font-size: 12px; margin-top: 5px; color: var(--dim); }
@@ -119,6 +133,11 @@
   .mrow .why { grid-column: 2 / 4; font-size: 11.5px; color: var(--dim); }
   .mrow .why.bad { color: var(--warn); }
   .mrow.off .nm { color: var(--dim); }
+  .mrow.run .nm, .mrow.run .ic, .mrow.run .why { color: var(--run); } .mrow.run .ic { display: inline-block; animation: h3spin 1.1s linear infinite; }
+  .mrow.okd .nm, .mrow.okd .ic, .mrow.okd .why { color: var(--ok); }
+  .mrow.errd .nm, .mrow.errd .ic, .mrow.errd .why { color: var(--bad); }
+  .mrow.run .mbar > div { background: var(--run); } .mrow.okd .mbar > div { background: var(--ok); }
+  #done_list li { color: var(--warn); } #done_list.err li { color: var(--bad); }
   .tag { font-size: 10.5px; border: 1px solid var(--line); border-radius: 8px; padding: 0 6px; margin-left: 6px; color: var(--dim); }
   .tag.rec { border-color: rgba(255,139,61,.5); color: var(--tiger); }
   .tag.have { border-color: rgba(111,206,126,.5); color: var(--ok); }
@@ -240,6 +259,7 @@
       <div class="sub">This takes a while the first time (ComfyUI and PyTorch are several GB). You can leave it running.</div></div></div>
     <ul class="slist" id="slist"></ul>
     <div class="bar"><div id="ibar"></div></div>
+    <div class="pulse" id="ipulse"></div>
     <div class="log" id="ilog"></div>
   </div>
 
@@ -277,6 +297,7 @@
       <div class="sub" id="dl_sub">A stopped download continues where it left off the next time.</div></div></div>
     <div class="scroll" id="dlist"></div>
     <div class="bar"><div id="dbar"></div></div>
+    <div class="pulse" id="dpulse"></div>
     <div class="log" id="dlog" style="height:90px"></div>
   </div>
 
@@ -299,9 +320,22 @@
     const n = PAGES.indexOf(id);
     [...$("steps").children].forEach((s, i) => s.classList.toggle("on", i <= n));
   }
+  /* 2.634.0: a log line's tone - "err" red, "warn" orange, "ok" green, "run" light green (working), "" plain. Our own lines
+     carry [ok] / [..] / [warn] / [skip] / [error]; a program's stderr (err) is NOT an error by itself - pip and git print
+     their progress there - only words that say so make it red */
+  function tone(line, err) {
+    const l = String(line == null ? "" : line);
+    if (/^\s*\[(warn|warning|skip|note)\]/i.test(l) || /^\s*(WARNING|WARN)\b/.test(l) || /\bdeprecat/i.test(l)) return "warn";
+    if (/^\s*\[(error|err|fail|failed)\]/i.test(l) || /^\s*(ERROR|FATAL|fatal:|error:)/.test(l) || /\bTraceback \(most recent call last\)|Exception:|\bENOENT\b|\bEACCES\b|permission denied|exit code [1-9]|\bfailed\b|could not|cannot /i.test(l)) return "err";
+    if (/^\s*\[(ok|done)\]/i.test(l) || /^\s*(✓|Successfully (installed|built)|Requirement already satisfied|Done\b)/i.test(l)) return "ok";
+    if (/^\s*(\[\.\.\]|> )/.test(l) || /^\s*(Collecting|Downloading|Installing|Cloning|Building|Fetching|Receiving|Resolving|Preparing|Unpacking|Extracting|Using cached)\b/i.test(l)) return "run";
+    return "";                                                     // stderr alone: plain
+  }
+  /** 2.634.0: "3m 05s" */
+  const dur = (ms) => { const t = Math.max(0, Math.round(ms / 1000)); return t < 60 ? t + " s" : Math.floor(t / 60) + "m " + String(t % 60).padStart(2, "0") + "s"; };
   function logTo(el, line, err) {
     const s = document.createElement("span");
-    if (err) s.className = "err";
+    const t = tone(line, err); if (t) s.className = t;
     s.textContent = String(line).replace(/\s+$/, "") + "\n";
     el.appendChild(s);
     while (el.childNodes.length > 800) el.removeChild(el.firstChild);
@@ -446,6 +480,40 @@
   const STEPS = { python: "Python", comfy: "ComfyUI", packs: "Custom node packs", settings: "Settings for your hardware",
                   omnivoice: "OmniVoice", whisper: "faster-whisper", llama: "The assistant's engine", check: "Checking ComfyUI loads everything" };
   const ICON = { wait: "○", run: "◐", ok: "✓", err: "✕", warn: "!" };
+  /* 2.634.0: why a step can go quiet for a long time - said when it does, so nobody thinks setup stalled */
+  const SLOW = { python: "Setting up Python and its packages can take a few minutes.",
+    comfy: "ComfyUI and PyTorch are several GB - usually the longest step (often 5-20 min, longer on a slow connection).",
+    packs: "Each node pack is downloaded and its Python packages installed - some are large.",
+    settings: "Writing the settings for your hardware.", omnivoice: "OmniVoice downloads its Python packages (a few GB).",
+    whisper: "faster-whisper downloads its packages.", llama: "The assistant's engine is a large download.",
+    check: "ComfyUI is started once to check every node loads - this can take a minute or two." };
+  /* the pulse under the bar: what is running, for how long, and - when it goes quiet - that it is still working */
+  const PULSE = { step: null, t0: 0, last: Date.now(), timer: null, dl: null, dlT0: 0, dlLast: 0 };
+  function pulseStart() { if (!PULSE.timer) PULSE.timer = setInterval(pulseTick, 1000); pulseTick(); }
+  function pulseStop() { if (PULSE.timer) clearInterval(PULSE.timer); PULSE.timer = null; for (const id of ["ipulse", "dpulse"]) if ($(id)) { $(id).innerHTML = ""; $(id).classList.remove("long"); } }
+  /** the pulse text - pure enough to test: what (label), how long it has run, how long since the last output */
+  function pulseText(what, ran, quiet, hint, kind) {
+    let q = "";
+    if (quiet >= 600000) q = `No new output for ${dur(quiet)} - if it stays like this, check your internet connection and setup.log in the app folder (run setup again and it continues where it stopped).`;
+    else if (quiet >= 15000) q = kind === "dl" ? `Still downloading - no new data for ${dur(quiet)}. Big files can pause while Hugging Face prepares them; it has not stalled.`
+      : `Still working - no new output for ${dur(quiet)}. ${hint ? hint + " " : ""}Setup has not stalled.`;
+    return { html: `<span class="dot"></span>${esc(what)} · ${dur(ran)}` + (q ? ` - <span class="quiet">${esc(q)}</span>` : ""), long: quiet >= 600000 };
+  }
+  function pulseTick() {
+    const now = Date.now();
+    if (curPage() === "pg_install" && $("ipulse")) {
+      const id = PULSE.step, li = id && $("st_" + id);
+      const what = li ? (kind(li) + (li.dataset.sub ? " - " + li.dataset.sub : "")) : "Working";
+      const P = pulseText((li ? "Installing " : "") + what + "…", now - (PULSE.t0 || now), now - PULSE.last, id && SLOW[id], "step");
+      $("ipulse").innerHTML = P.html; $("ipulse").classList.toggle("long", P.long);
+      if (li) li.querySelector(".sub2").textContent = (li.dataset.sub ? li.dataset.sub + " · " : "") + dur(now - PULSE.t0);
+    } else if (curPage() === "pg_dl" && $("dpulse")) {
+      const row = PULSE.dl && $("d_" + PULSE.dl), nm = row ? row.querySelector(".nm").textContent : "the models";
+      const P = pulseText("Downloading " + nm + "…", now - (PULSE.dlT0 || now), now - (PULSE.dlLast || now), "", "dl");
+      $("dpulse").innerHTML = P.html; $("dpulse").classList.toggle("long", P.long);
+    }
+  }
+  const kind = (li) => STEPS[li.id.replace(/^st_/, "")] || "";
   let planIds = [], doneSteps = 0, warnings = [];
   $("b_install").onclick = async () => {
     const editorOnly = PKG === "editor";                // 2.519.0: no ComfyUI, no models
@@ -462,11 +530,14 @@
       plan.llama ? ["llama"] : [], editorOnly ? [] : ["check"]);
     $("slist").innerHTML = planIds.map((id) => `<li id="st_${id}" class="wait"><span class="ic">${ICON.wait}</span>${esc(STEPS[id])}<span class="sub2"></span></li>`).join("");
     page("pg_install");
+    PULSE.last = Date.now(); PULSE.t0 = Date.now(); pulseStart();                    // 2.634.0
     const r = await h3setup.install(plan);
+    PULSE.step = null;
     warnings = r.warnings || [];
     if (!r.ok && ((r.steps.python && !r.steps.python.ok) || (r.steps.comfy && !r.steps.comfy.ok))) {
       $("done_h").textContent = "Setup stopped";
       $("done_sub").textContent = "Something needed failed - the log explains it (also in setup.log in the app folder). Fix it and run setup again - it continues where it stopped.";
+      pulseStop(); $("done_list").classList.add("err");
       $("done_card").style.display = ""; $("done_list").innerHTML = Object.entries(r.steps).filter(([, s]) => s && s.error).map(([k, s]) => `<li>${esc(STEPS[k] || k)}: ${esc(s.error)}</li>`).join("");
       $("b_launch").textContent = "Close"; noAuto = true; stopped = true;
       return page("pg_done");
@@ -475,13 +546,16 @@
     page("pg_models"); loadModels("");
   };
   h3setup.onEvent((e) => {
+    PULSE.last = Date.now();
     if (e.type === "log") return logTo(PAGES.indexOf(curPage()) >= PAGES.indexOf("pg_dl") ? $("dlog") : $("ilog"), e.line, e.err);
     if (e.type === "step") {
       const li = $("st_" + e.id); if (!li) return;
       li.className = e.state; li.querySelector(".ic").textContent = ICON[e.state] || "•";
+      if (e.state === "run") { PULSE.step = e.id; PULSE.t0 = Date.now(); delete li.dataset.sub; }
+      else if (PULSE.step === e.id) PULSE.step = null;
       if (e.state !== "run") { doneSteps++; $("ibar").style.width = Math.round(100 * doneSteps / planIds.length) + "%"; li.querySelector(".sub2").textContent = e.error || ""; }
     }
-    if (e.type === "sub") { const li = $("st_" + e.id); if (li) li.querySelector(".sub2").textContent = e.label; }
+    if (e.type === "sub") { const li = $("st_" + e.id); if (li) { li.dataset.sub = e.label || ""; li.querySelector(".sub2").textContent = e.label; } }
     if (e.type === "file") fileEvent(e);
   });
   const curPage = () => (document.querySelector(".page.on") || {}).id;
@@ -558,6 +632,7 @@
       <span class="nm">${esc(m.label)}</span><span class="sz">${m.size ? gbs(m.size) : ""}</span><span class="why"></span>
       <div class="mbar"><div></div></div></div>`).join("");
     page("pg_dl");
+    PULSE.dlT0 = PULSE.dlLast = Date.now(); pulseStart();                           // 2.634.0
     dlTotal = rows.filter((r) => ids.includes(r.id)).reduce((a, r) => a + (r.size || 0), 0) || 1;
     const r = await h3setup.download(ids, token, { engine: $("dl_engine").value });
     for (const f of r.failed || []) warnings.push(`${(rows.find((x) => x.id === f.id) || {}).label || f.id}: ${f.error}`);
@@ -567,12 +642,15 @@
   function fileEvent(e) {
     const row = $("d_" + e.id); if (!row) return;
     const ic = row.querySelector(".ic"), bar = row.querySelector(".mbar > div"), why = row.querySelector(".why");
+    PULSE.dlLast = Date.now();
+    row.classList.remove("run", "okd", "errd"); row.classList.add(e.state === "run" ? "run" : e.state === "ok" ? "okd" : "errd");   // 2.634.0
+    if (e.state === "run") { if (PULSE.dl !== e.id) { PULSE.dl = e.id; PULSE.dlT0 = Date.now(); } } else if (PULSE.dl === e.id) PULSE.dl = null;
     if (e.state === "run") {
       ic.textContent = "◐";
       if (e.total) { bar.style.width = Math.round(100 * e.got / e.total) + "%"; why.textContent = `${gbs(e.got)} of ${gbs(e.total)}`; dlGot[e.id] = e.got; }
-    } else if (e.state === "ok") { ic.textContent = "✓"; ic.style.color = "var(--ok)"; bar.style.width = "100%"; why.textContent = "done";
+    } else if (e.state === "ok") { ic.textContent = "✓"; bar.style.width = "100%"; why.textContent = "done";
       const r = rows.find((x) => x.id === e.id); dlGot[e.id] = (r && r.size) || dlGot[e.id] || 0; }
-    else if (e.state === "err") { ic.textContent = "✕"; ic.style.color = "var(--bad)"; why.textContent = e.error || "failed"; why.classList.add("bad"); }
+    else if (e.state === "err") { ic.textContent = "✕"; why.textContent = e.error || "failed"; why.classList.add("bad"); }
     const got = Object.values(dlGot).reduce((a, b) => a + b, 0);
     $("dbar").style.width = Math.min(100, Math.round(100 * got / dlTotal)) + "%";
   }
@@ -580,6 +658,7 @@
   // ---------------------------------------------------------------- page 5
   let noAuto = false; // eslint-disable-line
   function finish() {
+    pulseStop();                                                                     // 2.634.0
     if (warnings.length) {
       $("done_card").style.display = "";
       $("done_list").innerHTML = warnings.map((w) => `<li>${esc(w)}</li>`).join("");

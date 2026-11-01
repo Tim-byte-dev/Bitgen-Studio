@@ -12,8 +12,21 @@
 ::   4. the app      this folder when it is a bitGen Studio folder; otherwise git clone into .\Bitgen-Studio
 ::   5. start.bat    installs the rest the first time (packages, the app window, the setup wizard) and starts it
 :: Windows may ask "allow this app to make changes" for Git / Node.js - say Yes.
-:: Switches: set BITGEN_REPO=<another clone URL>   set BITGEN_NO_START=1 (install, do not start)
+:: Switches: set BITGEN_REPO=<another clone URL>   set BITGEN_NO_START=1 (install, do not start)   set NO_COLOR=1 (plain text)
 setlocal EnableExtensions
+
+:: 2.634.0 (Tim: "report completed in green, currently installing in a lighter green, warnings in orange and errors in
+:: red. when waiting installing, let the user know so they don't think the setup stalled"): VT colours (Windows 10+);
+:: set NO_COLOR=1 for plain text
+set "C_OK=" & set "C_RUN=" & set "C_WARN=" & set "C_ERR=" & set "C_0=" & set "ESC="
+for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do set "ESC=%%b"
+if not defined NO_COLOR if defined ESC (
+    set "C_OK=%ESC%[38;5;40m"
+    set "C_RUN=%ESC%[38;5;157m"
+    set "C_WARN=%ESC%[38;5;208m"
+    set "C_ERR=%ESC%[38;5;196m"
+    set "C_0=%ESC%[0m"
+)
 title bitGen Studio - install all
 pushd "%~dp0"
 set "REPO=https://github.com/Tim-byte-dev/Bitgen-Studio"
@@ -30,7 +43,8 @@ echo.
 :: ---------- 1. Git ----------
 call :refresh
 where git >nul 2>nul && goto :gitok
-echo [..] Git is not installed - installing it
+echo %C_RUN%[..] Git is not installed - installing it%C_0%
+call :long "a minute or two - Windows may ask to allow it"
 if defined WG (
     winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements --silent
 ) else (
@@ -38,15 +52,16 @@ if defined WG (
 )
 call :refresh
 where git >nul 2>nul || (
-    echo [ERROR] Git did not install. Install it from https://git-scm.com/download/win and run this file again.
+    echo %C_ERR%[ERROR] Git did not install. Install it from https://git-scm.com/download/win and run this file again.%C_0%
     goto :fail
 )
 :gitok
-for /f "delims=" %%v in ('git --version') do echo [ok] %%v
+for /f "delims=" %%v in ('git --version') do echo %C_OK%[ok] %%v%C_0%
 
 :: ---------- 2. Node.js 18+ ----------
 call :nodeok && goto :nodeok2
-echo [..] Node.js 18+ is not installed - installing Node.js LTS
+echo %C_RUN%[..] Node.js 18+ is not installed - installing Node.js LTS%C_0%
+call :long "a minute or two - Windows may ask to allow it"
 if defined WG (
     winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements --silent
 ) else (
@@ -54,15 +69,16 @@ if defined WG (
 )
 call :refresh
 call :nodeok || (
-    echo [ERROR] Node.js did not install. Install the LTS version from https://nodejs.org and run this file again.
+    echo %C_ERR%[ERROR] Node.js did not install. Install the LTS version from https://nodejs.org and run this file again.%C_0%
     goto :fail
 )
 :nodeok2
-for /f "delims=" %%v in ('node --version') do echo [ok] Node.js %%v
+for /f "delims=" %%v in ('node --version') do echo %C_OK%[ok] Node.js %%v%C_0%
 
 :: ---------- 3. Python 3.10+ (start.bat needs it) ----------
 call :pyok && goto :pyok2
-echo [..] Python 3.10+ is not installed - installing Python 3.12
+echo %C_RUN%[..] Python 3.10+ is not installed - installing Python 3.12%C_0%
+call :long "a minute or two"
 if defined WG (
     winget install --id Python.Python.3.12 -e --source winget --scope user --accept-package-agreements --accept-source-agreements --silent
 ) else (
@@ -70,36 +86,38 @@ if defined WG (
 )
 call :refresh
 call :pyok || (
-    echo [ERROR] Python did not install. Install Python 3.12 from https://www.python.org/downloads/
-    echo         with "Add python.exe to PATH" ticked, then run this file again.
+    echo %C_ERR%[ERROR] Python did not install. Install Python 3.12 from https://www.python.org/downloads/%C_0%
+    echo %C_ERR%        with "Add python.exe to PATH" ticked, then run this file again.%C_0%
     goto :fail
 )
 :pyok2
-echo [ok] Python found
+echo %C_OK%[ok] Python found%C_0%
 
 :: ---------- 4. The app: this folder, or a clone next to this file ----------
 set "APP=%~dp0"
 if exist "%~dp0misc\server.js" goto :haveapp
 set "APP=%~dp0Bitgen-Studio\"
 if not exist "%APP%misc\server.js" goto :clone
-echo [ok] bitGen Studio found in "%APP%"
+echo %C_OK%[ok] bitGen Studio found in "%APP%"%C_0%
 goto :haveapp
 :clone
-echo [..] Getting bitGen Studio: git clone %REPO%
+echo %C_RUN%[..] Getting bitGen Studio: git clone %REPO%%C_0%
+call :long "a few minutes on a slow connection"
 git clone "%REPO%" "%~dp0Bitgen-Studio"
 if errorlevel 1 (
-    echo [ERROR] git clone failed - check your internet connection and run this file again.
+    echo %C_ERR%[ERROR] git clone failed - check your internet connection and run this file again.%C_0%
     goto :fail
 )
 :haveapp
 
 :: ---------- 5. Start (start.bat installs the rest the first time) ----------
 if not defined BITGEN_NO_START goto :start
-echo [ok] Installed in "%APP%" - run start.bat there to open bitGen Studio.
+echo %C_OK%[ok] Installed in "%APP%" - run start.bat there to open bitGen Studio.%C_0%
 popd
 exit /b 0
 :start
-echo [..] Running start.bat in "%APP%"
+echo %C_RUN%[..] Running start.bat in "%APP%"%C_0%
+echo %C_RUN%     The first start installs the rest - it takes a while; each step says when it is done.%C_0%
 echo.
 popd
 cd /d "%APP%"
@@ -107,6 +125,11 @@ call "%APP%start.bat"
 exit /b %errorlevel%
 
 :: ---------- helpers ----------
+:long
+:: 2.634.0: a long, quiet step - say so, so nobody thinks setup stalled
+echo %C_RUN%     This can take %~1. The window may look still while it works - it has not stalled.%C_0%
+exit /b 0
+
 :refresh
 :: the PATH as Windows has it now (an installer just changed it) + where Git / Node.js / Python usually land
 for /f "usebackq delims=" %%P in (`powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')"`) do set "PATH=%%P;%PATH%"

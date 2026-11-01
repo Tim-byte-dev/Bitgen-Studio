@@ -12826,6 +12826,11 @@ node scripts/test-rot633.js > /tmp/rot633.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui633-ui.js > /tmp/ui633.log 2>&1 \
   && ok "2.633.0 browser test: a camera's panel (Turn / Tilt / Roll / Lens / Focal length / Field of view), 200 mm / fisheye / 35 mm, its yaw ring dragged half round = 180°; a piece's Pitch / Roll in 3D, its yaw ring dragged a quarter round = 90°, Ctrl+Z - or SKIP without playwright" \
   || { bad "2.633.0 rotate rings browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui633.log | head -14; }
+# ---- 2.634.0 (Tim: "in the setup file report completed in green, currently installing in a lighter green, warnings in orange and
+# errors in red. when waiting installing, let the user know so they don't think the setup stalled")
+node scripts/test-setuptone634.js > /tmp/tone634.log 2>&1 \
+  && ok "2.634.0 setup in colour: the wizard's steps / log / downloads (done green, running light green, warnings orange, errors red; stderr plain), the pulse line ('still working ... has not stalled', 10 min: where to look); tone.sh tone_of + busy run; tone.ps1 / bootstrap.ps1 / install_all.bat / start.bat as text" \
+  || { bad "2.634.0 setup colours"; grep -a "^FAIL" -A2 /tmp/tone634.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

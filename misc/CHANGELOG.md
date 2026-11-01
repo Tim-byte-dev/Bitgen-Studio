@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.634.0** — Setup in Colour (Done Green, Installing Light Green, Warnings Orange, Errors Red); It Never Looks Stalled
 - **2.633.0** — The Sketcher's Rotate Rings (Yaw / Pitch / Roll) for Cameras and Furniture, Lenses, Focal Length, Field of View
 - **2.632.0** — The Sketcher's Cameras: Picked Inside a Room, Moved, Turned; Esc / Double-Click Deselect Everything
 - **2.631.0** — The Sketcher: Cameras in View ▾ (the View from One), Open Doors / Windows, Auto Roof + Auto Floor

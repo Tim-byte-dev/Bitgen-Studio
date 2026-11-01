@@ -6349,6 +6349,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.634.0: **Setup in colour** - done green, installing light green, warnings orange, errors red; a quiet step says it
+  is still working (and why it takes long) so setup never looks stalled - the setup window and the install scripts.
 - 2.633.0: **Sketcher: rotate rings (yaw / pitch / roll) for cameras + furniture, roll, lens presets, focal length / field of view**.
 - 2.632.0: **Sketcher: cameras picked inside rooms, moved, turned (R); Esc / double-click deselect everything; the Orbit
   cursor**.

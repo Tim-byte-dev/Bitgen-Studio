@@ -32,8 +32,10 @@ RT="$ROOT/runtime"
 LAUNCH=1
 for a in "$@"; do [ "$a" = "--no-launch" ] && LAUNCH=0; done
 OS="$(uname -s)"; ARCH="$(uname -m)"
-say() { printf '%s\n' "[bitgen] $*"; }
-die() { printf '%s\n' "[bitgen] ERROR: $*" >&2; exit 1; }
+# 2.634.0: colours (done green, working light green, warnings orange, errors red) + "still working" lines - installer/tone.sh
+if [ -f "$HERE/tone.sh" ]; then . "$HERE/tone.sh"; else C_ERR=""; C_0=""; tone_of() { :; }; busy() { shift; "$@"; }; fi
+say() { printf '%s\n' "$(tone_of "$*")[bitgen] $*${C_0}"; }
+die() { printf '%s\n' "${C_ERR}[bitgen] ERROR: $*${C_0}" >&2; exit 1; }
 mkdir -p "$RT"
 
 fetch() {  # fetch URL FILE
@@ -53,7 +55,7 @@ if [ -n "${BITGEN_USE_SYSTEM:-}" ]; then
   NODE="$(command -v node)"; NPM="$(command -v npm)"
   [ -n "$NODE" ] || die "BITGEN_USE_SYSTEM: no node on PATH"
 elif [ -x "$RT/node/bin/node" ]; then
-  say "Node.js already in runtime/node"
+  say "[ok] Node.js already in runtime/node"
 else
   URL="${BITGEN_NODE_URL:-}"
   if [ -z "$URL" ]; then
@@ -62,45 +64,47 @@ else
     [ -n "$VER" ] || VER="v22.20.0"
     URL="https://nodejs.org/dist/$VER/node-$VER-$NODE_OS-$NODE_ARCH.tar.gz"
   fi
-  say "Node.js: $URL"
-  fetch "$URL" "$RT/node.tgz" || die "could not download Node.js"
+  say "[..] downloading Node.js: $URL"
+  busy "downloading Node.js" fetch "$URL" "$RT/node.tgz" || die "could not download Node.js"
   mkdir -p "$RT/node" && tar -xzf "$RT/node.tgz" -C "$RT/node" --strip-components=1 && rm -f "$RT/node.tgz"
 fi
 if [ -z "${BITGEN_USE_SYSTEM:-}" ]; then NODE="$RT/node/bin/node"; NPM="$RT/node/bin/npm"; PATH="$RT/node/bin:$PATH"; export PATH; fi
-say "node $("$NODE" --version)"
+say "[ok] node $("$NODE" --version)"
 
 # ---- Python 3.12 (through uv) ------------------------------------------------
 if [ -n "${BITGEN_USE_SYSTEM:-}" ]; then
   PY="$(command -v python3)"
   [ -n "$PY" ] || die "BITGEN_USE_SYSTEM: no python3 on PATH"
 elif [ -x "$RT/python/bin/python" ]; then
-  PY="$RT/python/bin/python"; say "Python already in runtime/python"
+  PY="$RT/python/bin/python"; say "[ok] Python already in runtime/python"
 else
   URL="${BITGEN_UV_URL:-https://github.com/astral-sh/uv/releases/latest/download/uv-$UV_T.tar.gz}"
-  say "uv: $URL"
-  fetch "$URL" "$RT/uv.tgz" || die "could not download uv"
+  say "[..] downloading uv (it fetches Python 3.12): $URL"
+  busy "downloading uv" fetch "$URL" "$RT/uv.tgz" || die "could not download uv"
   mkdir -p "$RT/uv" && tar -xzf "$RT/uv.tgz" -C "$RT/uv" --strip-components=1 && rm -f "$RT/uv.tgz"
-  UV_PYTHON_INSTALL_DIR="$RT/pythons" "$RT/uv/uv" venv "$RT/python" --python "${BITGEN_PY_VERSION:-3.12}" --seed || die "uv could not set up Python 3.12"
+  say "[..] setting up Python 3.12 (a minute or two)"
+  busy "setting up Python" env UV_PYTHON_INSTALL_DIR="$RT/pythons" "$RT/uv/uv" venv "$RT/python" --python "${BITGEN_PY_VERSION:-3.12}" --seed || die "uv could not set up Python 3.12"
   PY="$RT/python/bin/python"
 fi
-say "$("$PY" --version 2>&1)"
+say "[ok] $("$PY" --version 2>&1)"
 
 # ---- ffmpeg ------------------------------------------------------------------
 if command -v ffmpeg >/dev/null 2>&1 && command -v ffprobe >/dev/null 2>&1; then
-  say "ffmpeg: $(command -v ffmpeg)"
+  say "[ok] ffmpeg: $(command -v ffmpeg)"
 elif [ -x "$RT/ffmpeg/ffmpeg" ]; then
-  say "ffmpeg already in runtime/ffmpeg"
+  say "[ok] ffmpeg already in runtime/ffmpeg"
 elif [ -z "${BITGEN_USE_SYSTEM:-}" ]; then
   mkdir -p "$RT/ffmpeg"
   if [ "$OS" = Linux ]; then
     URL="${BITGEN_FFMPEG_URL:-https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-$( [ "$NODE_ARCH" = arm64 ] && echo arm64 || echo amd64 )-static.tar.xz}"
-    say "ffmpeg: $URL"
-    if fetch "$URL" "$RT/ffmpeg.txz"; then
+    say "[..] downloading ffmpeg (~40 MB): $URL"
+    if busy "downloading ffmpeg" fetch "$URL" "$RT/ffmpeg.txz"; then
       tar -xJf "$RT/ffmpeg.txz" -C "$RT/ffmpeg" --strip-components=1 && rm -f "$RT/ffmpeg.txz"
     else say "WARNING: no ffmpeg - install it (sudo apt install ffmpeg) for video features"; fi
   else
     for T in ffmpeg ffprobe; do
-      if fetch "https://evermeet.cx/ffmpeg/getrelease/$T/zip" "$RT/$T.zip"; then
+      say "[..] downloading $T"
+      if busy "downloading $T" fetch "https://evermeet.cx/ffmpeg/getrelease/$T/zip" "$RT/$T.zip"; then
         (cd "$RT/ffmpeg" && unzip -oq "$RT/$T.zip") && rm -f "$RT/$T.zip"
       else say "WARNING: could not download $T - brew install ffmpeg"; fi
     done
@@ -109,19 +113,19 @@ fi
 
 # ---- the app's Node packages + the Electron window ----------------------------
 cd "$ROOT" || die "no app folder"
-say "npm install (express, multer, jsdom)"
-"$NPM" install --no-audit --no-fund --loglevel=error || die "npm install failed"
+say "[..] npm install (express, multer, jsdom) - a minute or two"
+busy "installing the Node packages" "$NPM" install --no-audit --no-fund --loglevel=error || die "npm install failed"
 if [ -z "${BITGEN_NO_ELECTRON:-}" ]; then
-  say "the app window (Electron, ~150 MB, one time)"
-  "$NPM" install electron --no-save --no-audit --no-fund --loglevel=error || say "WARNING: Electron did not install - the studio opens in your browser instead"
+  say "[..] the app window (Electron, ~150 MB, one time) - a few minutes on a slow connection"
+  busy "installing the app window (Electron)" "$NPM" install electron --no-save --no-audit --no-fund --loglevel=error || say "WARNING: Electron did not install - the studio opens in your browser instead"
   EL="$("$NODE" -e "try{process.stdout.write(require('electron'))}catch(e){}" 2>/dev/null)"
   if [ -z "$EL" ] || [ ! -e "$EL" ]; then "$NODE" node_modules/electron/install.js >/dev/null 2>&1 || true; fi
 fi
 
 # ---- Python packages for the app (Hugging Face downloads, the VR stereo eye) -
 if [ -z "${BITGEN_SKIP_PIP:-}" ]; then
-  say "pip install -r misc/requirements.txt"
-  "$PY" -m pip install --upgrade --quiet -r misc/requirements.txt || say "WARNING: some Python packages did not install - see above"
+  say "[..] pip install -r misc/requirements.txt (quiet - a few minutes, nothing is printed while it works)"
+  busy "installing the Python packages" "$PY" -m pip install --upgrade --quiet -r misc/requirements.txt || say "WARNING: some Python packages did not install - see above"
 fi
 
 # ---- settings: THIS python; setup still to do --------------------------------

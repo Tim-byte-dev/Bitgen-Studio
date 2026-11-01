@@ -102,7 +102,7 @@ async function main() {
 
   // ================================================================ PACKS
   const L = Packs.LIST;
-  check("21 node packs (2.338.0: + the LTX canvas's five; 2.342.0: + LTXVideo, RES4LYF for Ripple; 2.344.0: + Viggle-Animate-H3; 2.401.2: - ComfyMath, gone from GitHub), unique ids and folders", L.length === 21 && new Set(L.map((p) => p.id)).size === 21 && new Set(L.map((p) => p.folder.toLowerCase())).size === 21, L.length);
+  check("22 node packs (2.338.0: + the LTX canvas's five; 2.342.0: + LTXVideo, RES4LYF for Ripple; 2.344.0: + Viggle-Animate-H3; 2.401.2: - ComfyMath, gone from GitHub; + comfyui-inpaint-nodes), unique ids and folders", L.length === 22 && new Set(L.map((p) => p.id)).size === 22 && new Set(L.map((p) => p.folder.toLowerCase())).size === 22, L.length);
   check("every pack is a GitHub repo", L.every((p) => Packs.ghRepo(p.url)), L.filter((p) => !Packs.ghRepo(p.url)).map((p) => p.url));
   check("NativeAudioLock is a SUBFOLDER of its workflow repo", (L.find((p) => p.id === "nativeaudio") || {}).subdir === "custom_nodes/ComfyUI-H3-NativeAudioLock");
   check("comfy.js requiredNodes() reads the same list", require("../lib/comfy").requiredNodes().length === L.length);
@@ -136,7 +136,7 @@ async function main() {
   check("status: found by folder name (any case)", S("kjnodes").present && S("kjnodes").where === "comfyui-kjnodes");
   check("status: found by git remote (ssh form)", S("vhs").present && S("vhs").where === "my-vhs");
   check("status: a .disabled pack is flagged, not present", !S("rgthree").present && S("rgthree").disabled);
-  check("missing() is the rest", Packs.missing(cn).length === 19);   // 21 packs - 2 found
+  check("missing() is the rest", Packs.missing(cn).length === 20);   // 22 packs - 2 found
   check("status of a folder that does not exist: everything missing", Packs.status(path.join(TMP, "nope")).every((p) => !p.present));
 
   // local git repos stand in for GitHub for the rest of the test
@@ -498,8 +498,8 @@ async function main() {
   $("dir_ex").value = "E:\\nothing"; await $("dir_ex").onchange(); await tick();
   check("existing ComfyUI: a wrong folder says so", /not a ComfyUI folder/.test($("ex_note").textContent));
   $("dir_ex").value = "D:\\ComfyUI"; await $("dir_ex").onchange(); await tick();
-  check("existing ComfyUI: every pack shown, the 11 missing marked to install (2.338.0: + the LTX canvas's five; 2.342.0: + LTXVideo, RES4LYF; 2.344.0: + Viggle; 2.401.2: - ComfyMath)",
-    $("packs").children.length === 21 && w.document.querySelectorAll("#packs .chip.miss").length === 11 && /11 of the 21/.test($("packs_note").textContent), $("packs_note").textContent);
+  check("existing ComfyUI: every pack shown, the 12 missing marked to install (2.338.0: + the LTX canvas's five; 2.342.0: + LTXVideo, RES4LYF; 2.344.0: + Viggle; 2.401.2: - ComfyMath)",
+    $("packs").children.length === 22 && w.document.querySelectorAll("#packs .chip.miss").length === 12 && /12 of the 22/.test($("packs_note").textContent), $("packs_note").textContent);
   await $("b_ex").onclick(); await tick();
   check("the Browse button (folder select) fills the box and re-inspects", $("dir_ex").value === "D:\\picked" && calls.includes("inspect:D:\\picked"));
   $("dir_ex").value = "D:\\ComfyUI"; await $("dir_ex").onchange(); await tick();

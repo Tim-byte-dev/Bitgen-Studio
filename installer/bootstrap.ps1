@@ -36,8 +36,10 @@ New-Item -ItemType Directory -Force -Path $rt | Out-Null
 Set-Location $root
 $arm = ($env:PROCESSOR_ARCHITECTURE -eq "ARM64")
 
-function Say($m) { Write-Host "[bitgen] $m" }
-function Fail($m) { Write-Host "[bitgen] ERROR: $m"; exit 1 }
+# 2.634.0: Say / Fail in colour - done green, working light green, warnings orange, errors red (installer\tone.ps1)
+$tonePs = Join-Path $PSScriptRoot "tone.ps1"
+if (Test-Path $tonePs) { . $tonePs }
+else { function Say($m) { Write-Host "[bitgen] $m" }; function Fail($m) { Write-Host "[bitgen] ERROR: $m"; exit 1 } }
 
 function Get-File($url, $out) {
     for ($i = 1; $i -le 3; $i++) {
@@ -64,7 +66,8 @@ function Expand-Zip($zip, $dest) {
 # unpack a zip whose content sits in ONE top folder into $dest itself
 function Install-Zip($url, $dest, $label) {
     $zip = Join-Path $rt "$label.zip"
-    Say "$label : $url"
+    Say "[..] downloading $label : $url"
+    Say "     (no output while it downloads - it has not stalled)"
     if (-not (Get-File $url $zip)) { return $false }
     $tmp = Join-Path $rt "_x_$label"
     if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
@@ -91,7 +94,7 @@ function Find-Git {
 
 # ---- 1. Node.js ----------------------------------------------------------------
 $node = Join-Path $rt "node\node.exe"
-if (Test-Path $node) { Say "Node.js already in runtime\node" }
+if (Test-Path $node) { Say "[ok] Node.js already in runtime\node" }
 else {
     $url = $env:BITGEN_NODE_URL
     if (-not $url) {
@@ -108,11 +111,11 @@ else {
 }
 $env:Path = (Join-Path $rt "node") + ";" + $env:Path
 $npm = Join-Path $rt "node\npm.cmd"
-Say ("node " + (& $node --version))
+Say ("[ok] node " + (& $node --version))
 
 # ---- 2. Python 3.12 through uv -------------------------------------------------
 $py = Join-Path $rt "python\Scripts\python.exe"
-if (Test-Path $py) { Say "Python already in runtime\python" }
+if (Test-Path $py) { Say "[ok] Python already in runtime\python" }
 else {
     $uv = Join-Path $rt "uv\uv.exe"
     if (-not (Test-Path $uv)) {
@@ -120,7 +123,7 @@ else {
         $url = $env:BITGEN_UV_URL
         if (-not $url) { $url = "https://github.com/astral-sh/uv/releases/latest/download/uv-$t.zip" }
         $zip = Join-Path $rt "uv.zip"
-        Say "uv : $url"
+        Say "[..] downloading uv (it fetches Python 3.12): $url"
         if (-not (Get-File $url $zip)) { Fail "could not download uv" }
         Expand-Zip $zip (Join-Path $rt "uv")
         Remove-Item $zip -Force
@@ -132,14 +135,15 @@ else {
     }
     $env:UV_PYTHON_INSTALL_DIR = Join-Path $rt "pythons"
     $pyv = if ($env:BITGEN_PY_VERSION) { $env:BITGEN_PY_VERSION } else { "3.12" }
+    Say "[..] setting up Python $pyv (a minute or two - it has not stalled while it works)"
     & $uv venv (Join-Path $rt "python") --python $pyv --seed 2>&1 | ForEach-Object { "$_" }
     if (-not (Test-Path $py)) { Fail "uv could not set up Python 3.12" }
 }
-Say (& $py --version 2>&1)
+Say ("[ok] " + (& $py --version 2>&1))
 
 # ---- 3. git (ComfyUI and the node packs are git clones; zips are the fallback)
 $git = Find-Git
-if ($git) { Say "git: $git" }
+if ($git) { Say "[ok] git: $git" }
 else {
     $url = $env:BITGEN_GIT_URL
     if (-not $url) {
@@ -152,17 +156,18 @@ else {
     }
     if ($url) {
         $zip = Join-Path $rt "git.zip"
-        Say "MinGit : $url"
+        Say "[..] downloading MinGit : $url"
+        Say "     (no output while it downloads - it has not stalled)"
         if (Get-File $url $zip) { Expand-Zip $zip (Join-Path $rt "git"); Remove-Item $zip -Force }
     }
-    if (Test-Path (Join-Path $rt "git\cmd\git.exe")) { Say "git: runtime\git" }
+    if (Test-Path (Join-Path $rt "git\cmd\git.exe")) { Say "[ok] git: runtime\git" }
     else { Say "WARNING: no git - ComfyUI and the node packs will be fetched as zips" }
 }
 
 # ---- 4. ffmpeg -------------------------------------------------------------------
 $ff = Get-Command ffmpeg -ErrorAction SilentlyContinue
-if ($ff) { Say "ffmpeg: $($ff.Source)" }
-elseif (Test-Path (Join-Path $rt "ffmpeg\bin\ffmpeg.exe")) { Say "ffmpeg already in runtime\ffmpeg" }
+if ($ff) { Say "[ok] ffmpeg: $($ff.Source)" }
+elseif (Test-Path (Join-Path $rt "ffmpeg\bin\ffmpeg.exe")) { Say "[ok] ffmpeg already in runtime\ffmpeg" }
 else {
     $url = $env:BITGEN_FFMPEG_URL
     if (-not $url) {
@@ -175,18 +180,19 @@ else {
 # ---- 5. the Visual C++ runtime (PyTorch and ComfyUI need it) ----------------------
 if (-not (Test-Path "$env:SystemRoot\System32\vcruntime140_1.dll")) {
     $vc = Join-Path $env:TEMP "vc_redist.x64.exe"
-    Say "Microsoft Visual C++ Redistributable (Windows asks for permission once)"
+    Say "[..] Microsoft Visual C++ Redistributable (Windows asks for permission once)"
     if (Get-File "https://aka.ms/vs/17/release/vc_redist.x64.exe" $vc) {
         $p = Start-Process -FilePath $vc -ArgumentList "/install", "/passive", "/norestart" -Verb RunAs -Wait -PassThru -ErrorAction SilentlyContinue
-        if ($p) { Say "VC++ redistributable: exit $($p.ExitCode)" } else { Say "WARNING: VC++ redistributable was not installed" }
+        if ($p -and $p.ExitCode -eq 0) { Say "[ok] VC++ redistributable installed" } elseif ($p) { Say "WARNING: VC++ redistributable: exit $($p.ExitCode)" } else { Say "WARNING: VC++ redistributable was not installed" }
     }
 }
 
 # ---- 6. Node packages + the app window ---------------------------------------------
-Say "npm install (express, multer, jsdom)"
+Say "[..] npm install (express, multer, jsdom) - a minute or two"
 & $npm install --no-audit --no-fund --loglevel=error 2>&1 | ForEach-Object { "$_" }
 if (-not (Test-Path (Join-Path $root "node_modules\express"))) { Fail "npm install failed" }
-Say "the app window (Electron, ~150 MB, one time)"
+Say "[ok] Node packages installed"
+Say "[..] the app window (Electron, ~150 MB, one time) - a few minutes on a slow connection; it has not stalled"
 & $npm install electron --no-save --no-audit --no-fund --loglevel=error 2>&1 | ForEach-Object { "$_" }
 $el = $null
 try { $el = & $node -e "try{process.stdout.write(require('electron'))}catch(e){}" } catch {}
@@ -194,12 +200,13 @@ if (-not $el -or -not (Test-Path $el)) {
     & $node (Join-Path $root "node_modules\electron\install.js") 2>&1 | ForEach-Object { "$_" }
     try { $el = & $node -e "try{process.stdout.write(require('electron'))}catch(e){}" } catch {}
 }
-if ($el -and (Test-Path $el)) { Say "app window: $el" } else { $el = $null; Say "WARNING: Electron did not install - the shortcut opens start.bat (browser)" }
+if ($el -and (Test-Path $el)) { Say "[ok] app window: $el" } else { $el = $null; Say "WARNING: Electron did not install - the shortcut opens start.bat (browser)" }
 
 # ---- 7. Python packages for the app ------------------------------------------------
-Say "pip install -r requirements.txt"
+Say "[..] pip install -r requirements.txt"
+Say "     (quiet - a few minutes with no output while it works; it has not stalled)"
 & $py -m pip install --upgrade --quiet -r (Join-Path $root "misc\requirements.txt") 2>&1 | ForEach-Object { "$_" }
-if ($LASTEXITCODE -ne 0) { Say "WARNING: some Python packages did not install - see above" }
+if ($LASTEXITCODE -ne 0) { Say "WARNING: some Python packages did not install - see above" } else { Say "[ok] Python packages installed" }
 
 # ---- 8. settings: this python; the wizard opens on the first start ---------------
 & $node (Join-Path $root "scripts\setup-cli.js") --bootstrap $py
@@ -219,9 +226,9 @@ if (-not $NoShortcuts) {
         $lnk.IconLocation = "$ico,0"
         $lnk.Description = "bitGen Studio"
         $lnk.Save()
-        Say "shortcut: $dir\bitGen Studio.lnk"
+        Say "[ok] shortcut: $dir\bitGen Studio.lnk"
     }
 }
 
-Say "bootstrap done"
+Say "[ok] bootstrap done"
 exit 0

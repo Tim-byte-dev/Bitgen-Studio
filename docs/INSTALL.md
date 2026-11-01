@@ -92,6 +92,14 @@ from `apt install nsis` or `choco install nsis`).
    on big files, resumes by itself; **Install hf CLI** puts it in the studio's
    Python) or the built-in downloader. The default uses the CLI when it is
    installed.
+   **Colours and "still working"** (2.634.0): finished steps are **green**, the one installing now is a **lighter
+   green** (its icon turns, its time counts up), warnings are **orange** and errors **red** - in the step list, the
+   log and the model list alike. A program's own progress (git, pip) is not shown as an error. The line under the
+   bar says what is installing and for how long; when it goes quiet for 15 s it says it is still working, why that
+   step can take long (ComfyUI + PyTorch are several GB) and that setup has not stalled - after 10 minutes of
+   silence it says to check the connection and `setup.log`. `install_all`, `start.bat` and the first-start
+   installers colour their lines the same way (`NO_COLOR=1` for plain text) and say so before a long, quiet step;
+   on Linux / macOS a line every 20 s shows it is still going.
 4. **Done.** With nothing to report, the studio opens by itself 8 seconds later
    - ComfyUI starts with it and you can generate right away. Anything that
    needs your attention is listed instead (and in `setup.log`).
