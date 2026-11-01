@@ -55,6 +55,12 @@ const post = async (p, b) => (await fetch(URL_ + p, { method: "POST", headers: {
     const on = await ev(() => document.body.classList.contains("ie-focus") && !document.getElementById("pcMenu").offsetWidth);
     await p.keyboard.press("Control+Escape"); await p.waitForTimeout(300);
     check("Artist mode on = only the canvas; Ctrl+Esc = back", on && await ev(() => !document.body.classList.contains("ie-focus") && !!document.getElementById("pcMenu").offsetWidth));
+    // 2.637.0 (Tim: "when in artist mode add a shift+right click to exit artist mode - the current shortcut does a windows operation")
+    await p.click("#kxFocus"); await p.waitForTimeout(300);
+    const on2 = await ev(() => document.body.classList.contains("ie-focus"));
+    { const vw = await ev(() => [innerWidth / 2, innerHeight / 2]); await p.keyboard.down("Shift"); await p.mouse.click(vw[0], vw[1], { button: "right" }); await p.keyboard.up("Shift"); }
+    await p.waitForTimeout(300);
+    check("2.637.0: Shift+right-click on the canvas = back from Artist mode (no context menu)", on2 && await ev(() => !document.body.classList.contains("ie-focus") && !!document.getElementById("pcMenu").offsetWidth && !document.querySelector(".pcctx:not([hidden]), .ctxmenu.open")));
     // the rest wants the editor wide (its panel column on screen): full screen with bitGen's bars
     await ev(() => window.imageEditorInstance.E.setFull(true)); await p.waitForTimeout(600);
 

@@ -6349,6 +6349,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.638.0: **📐 SolidCraft maximized = the whole window** - ⛶ fills bitGen's window between the title bar and the
+  status bar and closes every other docker; 🗗 (or Esc) puts the layout back exactly as it was (which dockers were
+  open, which were folded, their sizes).
+- 2.637.0: **Shift+right-click leaves 🎨 Artist mode** - anywhere on screen, no context menu (Ctrl+Esc opens the
+  Start menu on Windows; Ctrl+Esc and Ctrl+Shift+F still work).
 - 2.636.0: **Ctrl+Alt+S opens Settings; the bitGen Default theme** - Ctrl+Alt+Shift+T (or ⟲ bitGen Default in
   Settings ▸ Themes, or `?theme=default` in the address) puts bitGen's own look back - Dark, its accent, no element
   styles, UI size 100 %; ↶ The theme before undoes it. The built-in bitGen Default can't be overwritten or deleted.
@@ -6727,6 +6732,8 @@ orange line shows where it will go - and let go.
   - **Ctrl+B** - the brushes at the pointer: every brush preset (click = paint with it) + size, opacity and flow.
   - **Ctrl+Esc** - back to normal (Ctrl+Shift+F too - some Windows keyboards keep Ctrl+Esc for the Start menu). The
     browser's own Esc only leaves the browser's full screen; the canvas stays frameless until Ctrl+Esc.
+  - **Shift+right-click** (2.637.0) - back to normal too, anywhere on screen (Windows uses Ctrl+Esc for its Start menu);
+    no context menu opens.
 - 2.588.0: **🎓 docker ▸ 🧬 RefMods** - the top of the LoRA & fine-tune trainer docker switches between 🎓 Training and
   🧬 RefMods: MiniMax H3 reference mods (no training) kept in the app's **refmod/<name>/** folder, so **every project**
   uses them.

@@ -13,7 +13,9 @@
  *   Ctrl+B       the BRUSHES at the pointer: every brush preset (click = paint with it) + size, opacity and flow.
  *   Ctrl+Esc     back to normal (Ctrl+Shift+F too - Windows keeps Ctrl+Esc for its Start menu on some keyboards).
  *                The browser's own Esc only leaves the browser's full screen - the canvas stays frameless until Ctrl+Esc.
- * Pure (Node: scripts/test-live588.js): keyAction, hsvToHex, hexToHsv, clampPop, RECENT_MAX.
+ *   Shift+right-click  back to normal too (2.637.0, Tim: "when in artist mode add a shift+right click to exit artist mode -
+ *                the current shortcut does a windows operation") - anywhere on screen; no context menu opens.
+ * Pure (Node: scripts/test-live588.js, scripts/test-artistexit637.js): keyAction, mouseAction, hsvToHex, hexToHsv, clampPop, RECENT_MAX.
  */
 (function (root) {
   "use strict";
@@ -29,6 +31,12 @@
     if (c && !e.shiftKey && !e.altKey && (k === "b" || code === "KeyB")) return "brushes";
     if (!c && k === "escape" && s.pop) return "close";
     return null;
+  }
+  /** 2.637.0: what a mouse press does in artist mode -> "exit" (Shift + the right button, no Ctrl / Alt / Meta) | null */
+  function mouseAction(e, st) {
+    const s = st || {};
+    if (!s.on || !e) return null;
+    return e.button === 2 && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey ? "exit" : null;
   }
   const h2 = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
   function hsvToHex(h, s, v) {
@@ -106,7 +114,7 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
         const de = doc.documentElement;
         if (!doc.fullscreenElement && de.requestFullscreen) { try { de.requestFullscreen().then(() => { fsOurs = true; }, () => { fsOurs = false; }); } catch (e) { /* jsdom */ } }
         try { E.stage.focus({ preventScroll: true }); } catch (e) { /* fine */ }
-        say("🎨 artist mode - Ctrl+P colours, Ctrl+B brushes, Ctrl+Esc back");
+        say("🎨 artist mode - Ctrl+P colours, Ctrl+B brushes, Shift+right-click (or Ctrl+Esc) back");
       } else {
         doc.body.classList.remove("ie-focus");
         unmark();
@@ -226,13 +234,29 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
       else toggle(a);
     }, true);
 
+    // 2.637.0: Shift+right-click leaves artist mode (Ctrl+Esc opens the Start menu on Windows) - caught first, so the
+    // editor never paints with it and no context menu opens (the contextmenu that follows the press is swallowed too)
+    let eatMenu = false;
+    doc.addEventListener("pointerdown", (e) => {
+      if (mouseAction(e, { on }) !== "exit") return;
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      eatMenu = true; setTimeout(() => { eatMenu = false; }, 600);
+      setFocus(false);
+    }, true);
+    doc.addEventListener("contextmenu", (e) => {
+      if (!eatMenu && mouseAction(e, { on }) !== "exit") return;
+      eatMenu = false;
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      if (on) setFocus(false);
+    }, true);
+
     // 2.590.0 (Tim: "i can't find the full screen canvas button (lets call the full screen canvas button artist mode)"):
     // 🎨 ARTIST MODE - a labelled button right after the menus (File … Help), where it is always seen (the ⛶ group on the
     // right is cut off when the editor is narrow - the menu bar now wraps onto a second line instead) + View ▸ Artist Mode (Ctrl+Shift+F)
     const menus = $("pcMenus"), full = $("kxFull");
     if ((menus && menus.parentNode) || (full && full.parentNode)) {
       const b = doc.createElement("button"); b.className = "ghost pcartist"; b.id = "kxFocus"; b.type = "button"; b.innerHTML = "🎨 <span>Artist mode</span>";
-      b.title = "Artist mode - only the canvas, full screen, no frame (Ctrl+Shift+F). Ctrl+P colours · Ctrl+B brushes · Ctrl+Esc back";
+      b.title = "Artist mode - only the canvas, full screen, no frame (Ctrl+Shift+F). Ctrl+P colours · Ctrl+B brushes · Shift+right-click (or Ctrl+Esc) back";
       b.onclick = () => setFocus(!on);
       if (menus && menus.parentNode) menus.after(b); else full.parentNode.insertBefore(b, full);
       if (!doc.getElementById("pcArtistCss")) { const st = doc.createElement("style"); st.id = "pcArtistCss"; st.textContent = ".pcmenu .pcartist{margin-left:8px;flex:none;white-space:nowrap;border:1px solid var(--pc-accent,#2680eb)!important;border-radius:4px;padding:1px 8px!important;font-size:11px;color:var(--pc-text,#ddd)}.pcmenu .pcartist:hover,.pcmenu .pcartist.on{background:var(--pc-accent,#2680eb);color:#fff}.kx .pcmenu{flex-wrap:wrap;height:auto!important;min-height:26px}.kx[data-theme=bitgen] .pcmenu{min-height:var(--mbar,36px)}.kx .pcmenu .mr{flex-wrap:wrap;justify-content:flex-end}"; doc.head.appendChild(st); }
@@ -241,7 +265,7 @@ body.ie-focus .kxstage .pcruler,body.ie-focus .kxstage .kxhint{display:none!impo
     E.focus = { on: () => on, set: setFocus, palette: () => toggle("palette"), brushes: () => toggle("brushes"), close: closePop, pop: () => popKind };
   }
 
-  const PCFocus = { RECENT_MAX, keyAction, hsvToHex, hexToHsv, clampPop, install };
+  const PCFocus = { RECENT_MAX, keyAction, mouseAction, hsvToHex, hexToHsv, clampPop, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCFocus;
   else root.PCFocus = PCFocus;
 })(typeof window !== "undefined" ? window : globalThis);

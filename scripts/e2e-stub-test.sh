@@ -12847,6 +12847,18 @@ node scripts/test-safetheme636.js > /tmp/st636.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui636-ui.js > /tmp/ui636.log 2>&1 \
   && ok "2.636.0 browser test: a theme hides the ⚙ - Ctrl+Alt+S while typing opens Settings; Ctrl+Alt+Shift+T = bitGen Default; Settings ▸ Themes card + ↶ The theme before; ?theme=default - or SKIP without playwright" \
   || { bad "2.636.0 safe theme browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui636.log | head -14; }
+# ---- 2.637.0 (Tim: "when in artist mode add a shift+right click to exit artist mode - the current shortcut does a windows operation")
+node scripts/test-artistexit637.js > /tmp/ae637.log 2>&1 \
+  && ok "2.637.0 Shift+right-click leaves Artist mode (first - the editor never sees the press; no context menu), only in Artist mode; Ctrl+Esc / Ctrl+Shift+F still - pure + jsdom" \
+  || { bad "2.637.0 artist mode exit units"; grep -a "^FAIL" -A2 /tmp/ae637.log | head -14; }
+# ---- 2.638.0 (Tim: "make the solidcraft docker full screen and close the other dockers on maximize, on restore go back to the
+# layout it was in before maximized")
+node scripts/test-dockfull638.js > /tmp/df638.log 2>&1 \
+  && ok "2.638.0 static/dockfull.js: the layout snapshot (shown / folded / size + the docker memory, not its own), the restore plan; the SolidCraft docker uses it - pure + wiring" \
+  || { bad "2.638.0 dock full units"; grep -a "^FAIL" -A2 /tmp/df638.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui638-ui.js > /tmp/ui638.log 2>&1 \
+  && ok "2.638.0 browser test: SolidCraft ⛶ = the whole window between the title and status bars, the others closed; 🗗 / Esc = the same dockers open, folded, sized as before - or SKIP without playwright" \
+  || { bad "2.638.0 SolidCraft maximize browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui638.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

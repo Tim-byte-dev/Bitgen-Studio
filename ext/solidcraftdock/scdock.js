@@ -407,6 +407,10 @@
     if (root.MutationObserver) new root.MutationObserver(look).observe(dock, { attributes: true, attributeFilter: ["class", "style"] });
     setInterval(look, 1500);
     look();
+    /* 2.638.0 (Tim: "make the solidcraft docker full screen and close the other dockers on maximize, on restore go back to
+       the layout it was in before maximized"): ⛶ = the whole window (title + status bar stay), the others closed; 🗗 / Esc =
+       the layout before - static/dockfull.js */
+    (function full(n) { if (root.H3DockFull) root.H3DockFull.attach("solidcraftdock", { onFit: function () { setTimeout(look, 60); } }); else if (n < 40) setTimeout(function () { full(n + 1); }, 250); })(0);
     S.timer = setInterval(sync, 4000);
     status();
     return true;

@@ -917,6 +917,10 @@
         [
           "Middle-drag",
           "Pan the canvas"
+        ],
+        [
+          "Shift+right-click",
+          "In 🎨 Artist mode: back to normal (Ctrl+Esc / Ctrl+Shift+F too - on Windows Ctrl+Esc can open the Start menu); no context menu opens"
         ]
       ]
     },

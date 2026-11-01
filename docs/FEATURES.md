@@ -67,6 +67,8 @@ The window, its dockers, the look of the app, projects and the files they hold.
 
 - **Assets dock** — the project's images, videos and sounds; drop files on it to import them. *Where:* the Assets dock
 - **Asset groups** — (2.635.0: a group is a FOLDER of the Assets folder) sort files into groups; Send moves the file into the folder, Add links it there too. *Where:* the Assets dock
+- **SolidCraft full window** — ⛶ on the SolidCraft docker fills the whole window (title bar and status bar stay) and closes the other dockers; 🗗 / Esc brings the layout back as it was. *Where:* the 📐 SolidCraft docker. *Since:* 2.638.0
+- **Shift+right-click leaves Artist mode** — out of the image editor's canvas-only Artist mode with Shift+right-click anywhere (no context menu); Ctrl+Esc / Ctrl+Shift+F still work. *Where:* the image editor ▸ 🎨 Artist mode. *Since:* 2.637.0
 - **bitGen Default theme + Ctrl+Alt+S** — Ctrl+Alt+S opens Settings from anywhere; Ctrl+Alt+Shift+T, ⟲ bitGen Default or ?theme=default puts the built-in default theme back (Dark, no element styles, UI size 100 %), ↶ The theme before undoes it; the built-in theme can't be overwritten or deleted. *Where:* anywhere; Settings ▸ Themes. *Since:* 2.636.0
 - **Global and project assets** — 📁 Project | 🌐 Global | All in the Assets dock; project assets in projects/<name>/Assets, global ones (every project) in projects/Assets; uploads go into Assets; right-click 🌐 Move to Global / 📁 Move to Project. *Where:* the Assets dock. *Since:* 2.635.0
 - **Select and delete assets** — tick, Ctrl-click or Shift-click tiles; delete moves them to the recycle bin, never a hard delete. *Where:* the Assets dock
