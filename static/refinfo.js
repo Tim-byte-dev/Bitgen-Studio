@@ -53,7 +53,7 @@
     var el = document.createElement("input");
     el.type = "text"; el.className = "refdesc"; el.maxLength = MAX; el.value = clean(value);
     el.placeholder = placeholder || "describe it (optional)";
-    el.title = "A short description - it goes into the mapping lines, the prompt chat / ✨ Enhance, the house builder and the image editor (kept with the project)";
+    el.title = "A short description - it goes into the mapping lines, the prompt chat / ✨ Enhance, the Sketcher and the image editor (kept with the project)";
     el.setAttribute("aria-label", "Reference description");
     el.addEventListener("keydown", function (e) { e.stopPropagation(); });
     el.addEventListener("click", function (e) { e.stopPropagation(); });

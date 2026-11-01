@@ -267,59 +267,6 @@
       ]
     },
     {
-      "title": "House builder (the plan has the focus)",
-      "rows": [
-        [
-          "V",
-          "⬚ Select: drag a piece, its corner squares size it (Shift keeps its shape), its ↻ handle turns it; drag on an empty spot for a box, Shift+click adds one"
-        ],
-        [
-          "R / Shift+R",
-          "Turn the picked piece / stairs / camera 15° - several picked: about their middle (with 🛋 or ⇗ chosen: turn what you are about to place 90°)"
-        ],
-        [
-          "Arrows",
-          "Nudge the picked thing(s) 5 cm - a picked 📷 camera: ← → turn it, ↑ ↓ tilt it"
-        ],
-        [
-          "Hold Shift / hold Alt",
-          "A picked 📷 camera rises (3 m over the roof at most) / sinks (down to the ground floor) - the 3D view looks through it"
-        ],
-        [
-          "Delete / Backspace",
-          "Remove the picked thing(s) (a wall takes its doors and windows)"
-        ],
-        [
-          "Ctrl+Z / Ctrl+Y (Ctrl+Shift+Z)",
-          "Undo / redo"
-        ],
-        [
-          "Ctrl+S",
-          "💾 Save the house (+ its plan picture)"
-        ],
-        [
-          "Enter / double-click / Esc",
-          "Finish a wall run or a polygon room (Esc also clears the selection)"
-        ],
-        [
-          "Shift (drawing walls)",
-          "Any angle (otherwise walls snap straight within 8°)"
-        ],
-        [
-          "Alt (drawing)",
-          "Don't snap to the wall corners"
-        ],
-        [
-          "Wheel / right-drag",
-          "Zoom / pan the plan"
-        ],
-        [
-          "Drag in a camera's own 3D view",
-          "Aim that camera"
-        ]
-      ]
-    },
-    {
       "title": "Image editor - tools",
       "rows": [
         [

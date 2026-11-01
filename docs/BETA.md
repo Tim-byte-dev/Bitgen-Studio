@@ -8,12 +8,12 @@ Thank you for trying bitGen Studio. This page says what to expect from the beta 
 improvements are welcome**: an issue, a pull request, or just an idea.
 
 - **Built and covered by tests, lightly travelled.** Every feature in the [Feature Reference](bitGen-Studio-Features.pdf)
-  is built and covered by the automated suite: more than 1,500 unit and real-browser tests
+  is built and covered by the automated suite: more than 1,700 unit and real-browser tests
   (`bash scripts/e2e-stub-test.sh`), run against stand-in ComfyUI, LLM and Unreal servers. Real hardware, real models
   and real projects will still find things the tests do not.
 - **Your projects are yours.** Everything lives in `projects/<name>/` on your disk. Keep a copy of anything that matters
   before you update, because a beta can change a file format. Every change so far has been backwards compatible.
-- **Updates**: download a newer release or `git pull`, then run `start.bat` / `misc/bitgen-studio.sh` again. Your `custom.settings`,
+- **Updates**: Settings ▸ General ▸ **⟳ Updates** (🔍 Check for updates, ⤓ Update now) in the app, or `git pull`, then run `start.bat` / `misc/bitgen-studio.sh` again. Your `custom.settings`,
   projects, models and styles are never in the repository, so an update does not touch them.
 
 ## Tested on real hardware
@@ -39,14 +39,14 @@ here help the most:
 | **🖌️ The image editor** | Layers, masks, selections, painting, type, paths, filters, PSD / PDF / .bgi files, ✨ AI generate / fill / edit |
 | **🎞️ The timeline** | Cutting and trimming, keyframes, effects and grading, masks and tracking, captions, exports (FCP7 XML, FCPXML, AAF) |
 | **📐 CAD** | Sketches with constraints, DXF / SVG, parametric 3D bodies (OpenCascade in the browser, or Blender) |
-| **🏠 The house builder** | Plans, furniture, the 3D view, camera shots and 360° locations, ✨ Make it real |
+| **📏 The Sketcher** | Modelling, rooms and walls, doors and windows, roofs, the 🗂 outline and each part's properties, skirting / cornice / frame / sill profiles, furniture and materials, cameras (move, rotate, look through), shots and 360° locations, the real photo |
 | **🧊 Blender layers and the Blender bridge** | 3D layers, the add-on, renders made real with the reference docker's pictures |
 
 ## Experimental: please report what you see
 
 | Area | Why it is experimental |
 |---|---|
-| **Unreal Engine 5.8 bridge** (`ue/bitGenBridge`, plugin 1.3.0) | It was written from Unreal 5.8's Python API and tested against a stand-in server, **not inside a real Unreal Editor**. Stills, MRQ renders, MetaHumans, the camera (lens, f-stop, exposure) and the lights and fog may need fixes for your project. If a command fails, send us the `[bitGen Bridge]` lines from Unreal's Output Log. |
+| **Unreal Engine 5.8 bridge** (`ue/bitGenBridge`, plugin 1.5.0) | It was written from Unreal 5.8's Python API and tested against a stand-in server, **not inside a real Unreal Editor**. Stills, MRQ renders, MetaHumans, the camera (lens, f-stop, exposure) and the lights and fog may need fixes for your project. If a command fails, send us the `[bitGen Bridge]` lines from Unreal's Output Log. |
 | **Daz Studio live link** | Its script was written from Daz's scripting documentation and has had little real use. |
 | **Transparent Unreal renders** | These need *Enable alpha channel support in post processing* in your Unreal project. Some projects give inverted alpha; Settings ▸ 3D ▸ "alpha is inverted" fixes that. |
 | **macOS** | The studio runs, but MiniMax H3 video needs NVIDIA CUDA. |

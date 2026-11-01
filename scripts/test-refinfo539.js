@@ -29,7 +29,7 @@ const PNG = Buffer.from("89504e470d0a1a0a0000000d4948445200000002000000020802000
 
   /* ---- the page */
   const ix = read("static", "index.html");
-  check("the Type dropdown has wall · floor · furniture · light", ["wall", "floor", "furniture", "light"].every((t) => ix.includes(`<option value="${t}" title="2.539.0`)));
+  check("the Type dropdown has wall · floor · furniture · light", ["wall", "floor", "furniture", "light"].every((t) => ix.includes(`<option value="${t}" title="`)));   // 2.644.0: the tooltips no longer start with the version
   check("every tray picture, video and sound gets a description box (RefInfo.descBox) bound to r.desc / refNotes",
     /RefInfo\.descBox\(r\.desc \|\| ""/.test(ix) && /RefInfo\.descBox\(refNotes\.videos\[n\]/.test(ix) && /RefInfo\.descBox\(refNotes\.audio\[n\]/.test(ix) && /<script src="\/static\/refinfo\.js"><\/script>/.test(ix));
   check("…kept with the project (images[].desc + notes) and a saved group, read back on open; into the mapping lines, ✨ Enhance and the chat (note / ref_notes)",

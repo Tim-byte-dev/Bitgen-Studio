@@ -116,7 +116,7 @@
       { label: "⤓ Export… (.glb · .obj · .stl)", run: () => h.exportMenu(at) },
       { label: "🖼 → the image editor (a picture of the view)", run: g("→ Image editor", () => h.toEditor(false)) },
       { label: "🎞 → the timeline (a 3D layer)", run: g("→ Timeline", h.toTimeline) },
-      { label: "➜ Send to… (House builder · Blender · Unreal)", run: () => h.sendMenu(at) },
+      { label: "➜ Send to… (image editor · timeline · Blender · Unreal)", run: () => h.sendMenu(at) },
       { head: "" },
       { label: maxed() ? "⇲ Dock - back in its place" : "⛶ Maximize - the whole window", run: () => toggleMaxed() },
       { label: "🗑 Delete this model…", run: g("Delete", del) },

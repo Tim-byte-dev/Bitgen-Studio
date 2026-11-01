@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.644.0** — The Guides Say Sketcher: The House Builder Gone from the Readme, the Guide, the Features, Beta, Help, Shortcuts
 - **2.643.0** — The Sketcher: Move / Turn a Camera While Looking Through It; Esc Deselects It
 - **2.642.0** — Credits: Settings ▸ About and the Guide (Produced and Developed by Tim Paul, Programmer - Claude Opus 5.5)
 - **2.641.0** — The Sketcher's Camera: No Box, Move Arrows, Double-Click = Rotate Rings, Another Pick Unpicks It

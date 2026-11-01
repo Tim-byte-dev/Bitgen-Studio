@@ -1,6 +1,6 @@
 # bitGen Studio
 
-**A local, self-hosted AI film and design studio.** Write a screenplay with a local LLM, render scenes with MiniMax H3, LTX and Wan through **ComfyUI**, cut them on a full **timeline**, paint and compose in a layered **image editor**, sketch and model in **CAD** (constrained sketches and parametric 3D bodies), and bring in scenes from **Blender**, **Daz Studio** and **Unreal Engine 5.8**. All of it runs on your own GPU, with no accounts and no cloud, and nothing leaves your machine.
+**A local, self-hosted AI film and design studio.** Write a screenplay with a local LLM, render scenes with MiniMax H3, LTX and Wan through **ComfyUI**, cut them on a full **timeline**, paint and compose in a layered **image editor**, sketch and model in **CAD** (constrained sketches and parametric 3D bodies), build rooms and sets in the 3D **Sketcher**, and bring in scenes from **Blender**, **Daz Studio** and **Unreal Engine 5.8**. All of it runs on your own GPU, with no accounts and no cloud, and nothing leaves your machine.
 
 > [!WARNING]
 > **Public beta — still in testing.** bitGen Studio is a beta and is still being tested. Expect rough edges and the odd
@@ -19,7 +19,7 @@
 | 💬 **Local LLM** (chat, screenplays, ✨ Enhance) | ✅ Tested on real hardware - works |
 | 📦 **Installing from this repository** (Windows, the setup wizard: ComfyUI, PyTorch, the node packs) | ✅ Tested on a fresh install - works |
 | 🖌️ **The editors** (image editor, timeline, CAD sketches and 3D bodies) | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
-| 🏠 **House builder** | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
+| 📏 **Sketcher** (3D modelling, rooms, profiles, cameras) | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
 | 🎮 **Unreal Engine and Daz Studio bridges** | 🧪 Experimental - tested only against stand-in servers, not inside the real programs |
 
 If you try one of the ⚠️ or 🧪 areas, your reports are especially useful.
@@ -40,7 +40,7 @@ If you try one of the ⚠️ or 🧪 areas, your reports are especially useful.
 
 ## What it does
 
-The **[Feature Reference](docs/bitGen-Studio-Features.pdf)** lists every feature (700+), what it does, where to find it and the version it arrived in. In short:
+The **[Feature Reference](docs/bitGen-Studio-Features.pdf)** lists every feature (900+), what it does, where to find it and the version it arrived in. In short:
 
 | | |
 |---|---|
@@ -50,6 +50,7 @@ The **[Feature Reference](docs/bitGen-Studio-Features.pdf)** lists every feature
 | 🖌️ **Image editor** | Layers, masks, smart objects with smart filters, and adjustment and fill layers. Selections, painting and retouching, warps (puppet, liquify, perspective) and type with OpenType features. It also has paths and vector shapes, drawing tools, frames, artboards, dimensions, channels, actions (.atn too), documents, PSD and PDF, and ✨ AI generate / fill / edit. |
 | 📐 **CAD** | Sketch layers with real constraints and dimensions: trim, extend, fillet, offset, patterns, DXF / SVG in and out, and measure. A **parametric 3D body** layer supports extrude, revolve, fillet, chamfer, shell and split body, with named parameters. It is built by **OpenCascade** in the browser or by **Blender**, and exports STL, glTF and STEP. A CAD ribbon runs along the top of the image editor and the timeline. |
 | 🎮 **Unreal Engine 5.8** | A plugin links the Unreal Editor. You get Unreal layers and **MetaHuman** layers in the image editor, and Unreal, MetaHuman and **Unreal camera** layers on the timeline (rendered by the Movie Render Queue). You can move the camera (orbit, look, pan, dolly, roll) and set its lens, f-stop, focus and exposure. You can add **lights, volumetric lights and volumetric fog**, all from inside bitGen. |
+| 📏 **Sketcher** | 3D modelling the quick way (draw, push / pull, offset, groups) and whole rooms and houses: shared walls, doors and windows, roofs, stairs, lights, an outline of every part with its own properties, skirting / cornice / door and window frame / sill profiles you can draw, furniture, people and materials. Cameras you move and turn with on-screen widgets give shots with depth and normal maps, 360° locations for the video renders and a ✨ real photo of the model. |
 | 🧊 **3D, Blender and Daz** | 3D layers on the timeline (models, 3D text, materials, lights, bakes), a Blender add-on and render bake, Daz Studio scenes as 3D layers with a live camera and pose link, and image-to-3D. |
 | 🖼️ **Images** | Named image styles (FLUX.2, SDXL, Z-Image, Qwen-Image…), LoRA stacks, ControlNet, face fix and SeedVR2 upscaling. |
 | 🎵 **Music and sound** | Songs (MiniMax Music3, YuE2), stems, voice cloning and TTS, speech-to-text, karaoke with a bouncing ball, and SFX. |
@@ -76,7 +77,7 @@ models, so nothing in them was generated.*
     <td colspan="2"><img src="docs/images/image-editor.png" alt="The image editor"><br><sub><b>🖌️ Image editor</b> (Image editing workspace, full screen). Layers, masks, adjustments, selections, paint and retouch tools, type, paths, CAD sketches and 3D layers, plus ✨ AI generate / fill / edit. Here a picture has a cut-out layer on top of it. <i>Beta: needs more real-world testing.</i></sub></td>
   </tr>
   <tr>
-    <td colspan="2"><img src="docs/images/house-builder.png" alt="The house builder"><br><sub><b>🏠 House builder.</b> Draw walls, rooms, doors and windows on a plan, furnish them from a library, see the house in 3D, then place cameras for shots and 360° locations that the video renders can use. <i>Beta: needs more real-world testing.</i></sub></td>
+    <td colspan="2"><img src="docs/images/sketcher.png" alt="The Sketcher"><br><sub><b>📏 Sketcher</b> (maximized). A room drawn with the Build tools, its parts listed in the 🗂 outline, the skirting picked with its own properties and its profile chosen from pictures. Cameras placed here give shots, depth maps and 360° locations the video renders can use. <i>Beta: needs more real-world testing.</i></sub></td>
   </tr>
 </table>
 
@@ -126,7 +127,7 @@ troubleshooting.
 
 ## Quick start
 
-1. **Install**: follow **[Install from GitHub](#install-from-github-windows)** above, or download the latest release from the **Releases** page. Unzip `bitgen-studio-v<version>-full.zip` and run `start.bat` (Windows) or `misc/bitgen-studio.sh` (Linux / macOS). You can also **clone** this repository and run the same script. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
+1. **Install**: use a **[one-file installer](#install-with-one-file-windows-linux-macos)** or follow **[Install from GitHub](#install-from-github-windows)** above: **clone** this repository and run `start.bat` (Windows) or `misc/bitgen-studio.sh` (Linux / macOS). Later, Settings ▸ General ▸ **⟳ Updates** ▸ ⤓ Update now (or `git pull`) brings the newest version. Either way you need Node.js 18+, Python 3.10+ and Git. On first start it installs its Node packages and Python environment; Settings ▸ ComfyUI and the setup wizard bring in ComfyUI, its node packs and the models. To build the one-file installers yourself (they bring their own Node.js, Python, git and ffmpeg), use `scripts/build-installers.sh`. [docs/INSTALL.md](docs/INSTALL.md) has every step, the LLM set-up and troubleshooting.
 2. **Make something**: type a prompt and press **Generate**, or ask the assistant to *create a screenplay* and render the scenes on the board. The **[user guide](docs/USAGE.md)** (also as a [PDF](docs/bitGen-Studio-Guide.pdf)) walks through every docker.
 3. **Found a bug or have an idea?** Please open an issue. This is a beta, and every report helps.
 4. **UI dragged off the screen, or a black window?** Close bitGen Studio and run `misc\reset-layout.bat` (in the app folder). It puts back the default layout and theme, and clears the desktop app's caches. Your projects, settings and models are kept, and everything it resets is copied to `backups\layout-<time>\` first.
@@ -162,7 +163,7 @@ bitGen Studio window (Electron, or http://127.0.0.1:8311 in a browser)
 
 ## Tests
 
-`bash scripts/e2e-stub-test.sh` runs the whole suite: 1,400+ legs of unit and real-browser tests. It runs against stub ComfyUI, LLM and Unreal servers, so no GPU or models are needed. GitHub Actions runs a quick subset on every push (`scripts/ci-units.sh`). See [CONTRIBUTING.md](misc/CONTRIBUTING.md).
+`bash scripts/e2e-stub-test.sh` runs the whole suite: 1,700+ legs of unit and real-browser tests. It runs against stub ComfyUI, LLM and Unreal servers, so no GPU or models are needed. GitHub Actions runs a quick subset on every push (`scripts/ci-units.sh`). See [CONTRIBUTING.md](misc/CONTRIBUTING.md).
 
 ## Licence
 
@@ -189,7 +190,7 @@ licence when you do. Without cadrille, the app's own local LLM writes the code i
 | Blender | [blender.org](https://www.blender.org) | The bitGen Blender add-on: scenes and renders both ways, a .blend opened in the preview canvas, ✨ Build a scene with AI, and Send to Blender from SolidCraft. |
 | Unreal Engine | [unrealengine.com](https://www.unrealengine.com) | The bitGen Bridge plugin: Unreal / MetaHuman layers in the image editor and timeline, renders from a camera, and SolidCraft parts imported as Static Meshes. |
 | Daz Studio | [daz3d.com](https://www.daz3d.com) | The bitGen Daz bridge: renders, pictures, scenes (open / merge) and figures. |
-| SolidCraft | [solidcraft.io](https://solidcraft.io) ([source](https://github.com/tangency-labs/solidcraft)) | Open-source parametric CAD in its own 📐 docker: designs in the project, pictures to the image editor, 3D layers to the timeline, parts to the House builder, Blender and Unreal. |
+| SolidCraft | [solidcraft.io](https://solidcraft.io) ([source](https://github.com/tangency-labs/solidcraft)) | Open-source parametric CAD in its own 📐 docker: designs in the project, pictures to the image editor, 3D layers to the timeline, parts to the Sketcher, Blender and Unreal. |
 | cadrille + CadQuery | [cadrille](https://github.com/col14m/cadrille) · [CadQuery](https://github.com/CadQuery/cadquery) | ✨ Generate in SolidCraft: a description or a picture becomes CadQuery code, rebuilt as editable SolidCraft features. cadrille's weights are CC BY-NC 4.0 (non-commercial). |
 | Civitai | [civitai.com](https://civitai.com) | The 🧩 Model manager: details, trigger words, thumbnails, example pictures and videos for your models, plus search and download. |
 | Hugging Face | [huggingface.co](https://huggingface.co) | Where the model files come from (Settings ▸ Models, Add-ons, the Model manager's downloads). |

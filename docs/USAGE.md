@@ -13,7 +13,7 @@ installed yet, start with [INSTALL.md](INSTALL.md).
 - [Images, ControlNet and face fix](#images-controlnet-and-face-fix)
 - [Music, stems and voices](#music-stems-and-voices)
 - [Timeline and export](#timeline-and-export)
-- [📏 Sketcher - 3D modelling](#-pushpull---3d-modelling-26190)
+- [📏 Sketcher - 3D modelling, rooms and cameras](#-sketcher---3d-modelling-rooms-and-cameras-2619---2643)
 - [Projects, queue and gallery](#projects-queue-and-gallery)
 - [The file dialog](#the-file-dialog)
 - [Tips](#tips)
@@ -409,10 +409,31 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling (2.619.0)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.643)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
-draw a shape on the ground or on a face, then push or pull it into a solid. Its ❔ has the whole list.
+draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
+to use as film sets. It replaces the House builder of older versions. Its ❔ has the whole list.
+
+**What it does, in short:**
+
+- **Modelling**: lines, rectangles, circles, polygons, push / pull, offset, move / rotate / scale (copies too), groups,
+  faces extruded or twisted, edges moved, extruded or filleted, exact sizes typed at any time.
+- **Building** (the Build tools): rooms with shared walls, free-standing walls, doors and windows (open or shut),
+  floors, ceilings (flat or following sloped walls), roofs, stairs and lights (day / 🌙 night); walls dragged across
+  their line or freely, sloped wall tops.
+- **🗂 Outline**: every room and its parts (walls, floor, ceiling, skirting, cornice, doors, windows) listed, hidden
+  or shown, rooms in groups. A part clicked in the view or the outline shows **its own properties** (a wall's length,
+  height and colour; the ceiling's type; the skirting's profile).
+- **Profiles**: skirting, cornices, door frames, window frames and window sills from a picture dropdown, or drawn in
+  the **✎ Profiles** dialog and kept in the project.
+- **Furnishing**: the 🛋 furniture library and people, materials with textures, 🪄 Furnish (the LLM fills a room), the
+  project's 3D models.
+- **📷 Cameras**: picked, moved (arrows) and turned (rings, double-click), lens / focal length / field of view, 👁 Look
+  through (and move or turn it from its own view), shots with depth and normal maps, 📍 360° locations for the
+  video renders.
+- **Out**: ✨ a real photo of the model through the prompt docker, a picture or a 3D layer to the image editor and the
+  timeline, Blender, Unreal, .glb / .obj / .stl.
 
 1. **R** (Rectangle), click a corner on the ground, move, and type `4,3` + Enter - a 4 × 3 m face.
 2. **P** (Push/Pull), click the face, move up, type `2.7` + Enter - a box 2.7 m high.
@@ -428,7 +449,7 @@ Other tools: **L** Line (a line across a face splits it), **C** Circle, **N** Po
 copy, type `x,y,z`), **Q** Rotate, **S** Scale, **T** Tape, **B** Paint, **E** Eraser, **Space** Select (double-click
 a group to edit inside it, **G** makes a group). Models are kept in the project (projects/<project>/pushpull) and save
 themselves; **↶ ↷** undo / redo. **➜ Send** puts the model in the image editor (a picture of the view), on the
-timeline (a 3D layer), in the House builder, Blender or Unreal; **⤓ Export** writes .glb / .obj / .stl;
+timeline (a 3D layer), in Blender or Unreal; **⤓ Export** writes .glb / .obj / .stl;
 **⤒ Import** brings a project 3D model in as a group.
 
 ### Building: rooms, shared walls, doors, windows, roofs, lights (2.620.0)
@@ -561,19 +582,19 @@ With **Select**:
 - The Room tool: **Auto roof** (the Roof tool's type) and **Auto floor** (a 20 cm slab under the walls) for each new room;
   a room's panel: **Floor slab under the walls** and **Roof** on / off.
 
-### People, the House builder's houses; the House builder is gone (2.630.0)
+### People; houses from older versions (2.630.0)
 
-- **🛋 ▸ People**: standing, sitting, walking or waving mannequins (the House builder's) - click on a floor; picked: Name,
+- **🛋 ▸ People**: standing, sitting, walking or waving mannequins - click on a floor; picked: Name,
   Pose, Height, Turn.
-- **☰ File ▸ 🏠 A house from the House builder…**: a house it saved becomes a Sketcher model - rooms (each floor at its
+- **☰ File ▸ 🏠 A house from the House builder…**: a house saved by the House builder of older versions becomes a Sketcher model - rooms (each floor at its
   height), doors, windows, furniture, people, cameras, lights, stairs; the not-carried parts (a 3D-model piece, the roof)
   are named in the status line.
-- **The 🏠 House builder is gone** - its window, its status-bar button and its code. SolidCraft's **📏 Send to Sketcher**
-  replaces its "Send to House builder" (the part comes in as a group).
+- The **Sketcher replaces the House builder** of older versions. SolidCraft's **📏 Send to Sketcher** brings a part in as
+  a group.
 
 ### Materials, cameras + 360° locations, Furnish (2.629.0)
 
-- **▦ Materials ▾** (beside the colours): the House builder's materials - brick, stone, concrete, oak / walnut floors, tiles,
+- **▦ Materials ▾** (beside the colours): materials - brick, stone, concrete, oak / walnut floors, tiles,
   marble, carpet, grass … with their textures; pick one and paint (B) faces, walls and floors.
 - **Z 📷 Camera**: click where it stands, click where it looks (eye height + lens in the panel). Picked: **👁 Look through**,
   **📷 Shot + depth + normal** (three pictures in the Image assets) and **📍 360° location** (a panorama from it becomes a
@@ -584,17 +605,15 @@ With **Select**:
 
 ### Furniture and the project's 3D models; maximized = alone (2.628.0)
 
-- **A 🛋 Furniture** (the Build tools): the House builder's furniture library in the Sketcher - pick a **Category** (Living,
+- **A 🛋 Furniture** (the Build tools): the furniture library - pick a **Category** (Living,
   Dining, Kitchen, Bedroom, Bathroom, Lights, Outside) and a piece, click on a floor to put it there (it stands on the
-  room's floor, with the House builder's materials and textures). **R** turns the next piece 90° (or type degrees). With
+  room's floor, with its materials and textures). **R** turns the next piece 90° (or type degrees). With
   **Select**: drag a piece, R turns it; its panel has Width / Depth / Height, Turn, Up from the floor, its own colour,
   ⧉ Duplicate, 🗑 Delete. The pieces are saved with the model.
 - The **3D models** category lists the project's 3D models (.glb / .obj - SolidCraft's, imported); a click brings one in
   as a group (move, scale, paint it).
 - **⛶ Maximize** now closes every other docker (the title bar and the status bar stay); **⇲ Dock** / Esc opens the same
   dockers again.
-- The House builder's other parts (cameras, shots + depth / normal maps, 360° locations, ✨ Furnish, people, floors,
-  materials for faces) come to the Sketcher next; then the House builder goes.
 
 ### A real photo of the model; Sketcher layers (2.626.0)
 
@@ -3319,23 +3338,14 @@ Each object in a Blender or Unreal scene can be matched to a picture in the Refe
   first frame is made real, and 3DREAL follows the clip.
 - Unreal needs **bitGen Bridge 1.3.0** (🎮 Load UE project updates it).
 
-## 🖼 Reference descriptions, the house types, references in the house builder and the image editor (2.539.0)
+## 🖼 Reference descriptions, the wall / floor / furniture / light types, references in the image editor (2.539.0)
 
-> **2.630.0: the House builder is gone.** Its furniture, materials, cameras (shots, depth / normal maps, 360° locations),
-> 🪄 Furnish and people are in the 📏 Sketcher; ☰ File ▸ 🏠 A house from the House builder… brings a saved house in.
 
 - **A description for every reference** - a short box under each picture in the References docker's Image tab, each
   video and each sound ("a green velvet chesterfield", "a slow waltz", "her voice, calm and low"). It is saved with the
   project and with a reference group, it goes into the mapping lines ("<subject 2> furniture is in <Picture 2> (a green
   velvet chesterfield)"), and the prompt chat and ✨ Enhance use it (it beats the vision model's guess).
-- **New picture types**: wall, floor, furniture and light in the Type dropdown.
-- **🏠 House builder** - drag a picture from the References docker onto the plan:
-  - on a **wall** or a **room** it becomes that wall's / that floor's picture: the 3D view, the 📷 shots and the 360°
-    panoramas show it. **Tile (m)** in the panel says how many metres one copy covers.
-  - on a **piece of furniture** or a **◯ light** it is what the piece really looks like: the 3D view keeps the simple
-    shape, and **✨ Make it real** sends the picture along with "make the sofa look exactly like the one in picture N".
-  - Or select the wall / room / piece and use **🖼 From References…** (wall / floor / furniture / light pictures first)
-    or **From disk…** in its panel; ✕ takes it off. The pictures are kept with the house.
+- **New picture types**: wall, floor, furniture and light in the Type dropdown (✨ Make it real uses them).
 - **🖼 Image editor**
   - drop a reference picture on an open picture: it comes in as a **new layer**, named by its description.
   - ✨ AI → **Edit** has a **reference** dropdown: the edit model gets that picture as Picture 2 ("put the lamp from
@@ -3359,16 +3369,6 @@ Each object in a Blender or Unreal scene can be matched to a picture in the Refe
   (all tabs) that has none yet or is out of date. A model Civitai already named (a .civitai.info, .metadata.json or our
   card) is asked for exactly by its version id, then by SHA-256, then by the file name. Shift+click syncs all of them
   again.
-
-## 🏠 ◯ Lights in the house builder (2.538.0)
-
-> **2.630.0: the House builder is gone.** Its furniture, materials, cameras (shots, depth / normal maps, 360° locations),
-> 🪄 Furnish and people are in the 📏 Sketcher; ☰ File ▸ 🏠 A house from the House builder… brings a saved house in.
-
-- **◯ Light** on the toolbar: press where the light hangs and drag out how far it reaches - the plan shows its circle.
-- **⬚ Select** moves it; the dot on its circle sizes the reach; Delete removes it. The panel: name, height over the
-  floor, reach, brightness, colour, ⧉ Copy.
-- Placed lights are always lit in the 3D view, the shots and the panoramas (the 💡 lamps tick is for the furniture's lamps).
 
 ## ⛶ Maximize beside the side dockers (2.538.0)
 
@@ -3423,7 +3423,7 @@ under its real file names (`flux3-image-klein-int8-convrot`, `flux3-image-klein-
 **🧪 Test mode** (Settings -> General, under Testing - or the box at the top of the 🧪 Testing docker). While it is on:
 
 - a small **🧪 Try next** box (bottom right) suggests the next test *where you are* - in the image editor it starts
-  with Gaussian Blur, then the brush, the eraser, selections, layers …; in the 🏠 House builder the house tests; in
+  with Gaussian Blur, then the brush, the eraser, selections, layers …; in
   Settings the Settings ones. **✓ Tried it** asks whether it worked, **– Skip** marks it not tested, **Later** shows the
   next one, **✕** stops the reminders in that area for this session;
 - when the app sees a test work by itself (you applied the blur, a job of that style finished, you picked a workspace …)
@@ -3444,9 +3444,7 @@ A long dropdown opens its own list with a search box (Settings -> General -> Dro
 and takes the mouse and the keyboard; before, it opened behind it. An open list also no longer closes by itself while a
 video preview plays or the log scrolls.
 
-## Tests tick themselves, docker title bars, selecting and walking a camera in the House builder (2.532.0)
-
-> **2.630.0:** the House builder parts of this section are gone with it (see the 📏 Sketcher).
+## Tests tick themselves, docker title bars (2.532.0)
 
 **🧪 The test list ticks itself.** When the app sees something on the list work - a job of that style finishing, a
 workspace picked, the palette used, a room furnished, a docker minimized - its line is ticked and the tick is **kept**
@@ -3455,14 +3453,7 @@ workspace picked, the palette used, a room furnished, a docker minimized - its l
 **▁ ⛶ ✕ on every floating docker.** ▁ shrinks it to its title bar (▭ or a double-click on the title opens it again),
 ⛶ fills the window between the menu bar and the statusbar (🗗 puts it back where it was, docked or floating), ✕ closes it.
 
-**🏠 ⬚ Select in the House builder.** Click a piece: drag it; its corner squares size it (Shift keeps its shape); its ↻
-handle turns it in 15° steps (Shift = free). Drag on an empty spot for a box that selects everything inside; Shift+click
-adds or takes one off. Several selected: drag one to move them all, R / Shift+R turns them about their middle, the arrow
-keys nudge them, Delete removes them (Ctrl+Z brings anything back).
-
-**📷 Walk a camera.** Drag a camera through the plan - the 3D view looks through it as it moves. With it selected (or
-while the 3D view looks through it): ← → turn it, ↑ ↓ tilt it, hold **Shift** to rise (at most 3 m over the roof), hold
-**Alt** to sink (down to the ground floor). Its floor follows its height.
+In the 📏 Sketcher, cameras are picked, moved and turned with their own widgets - see *Picking, moving and turning a camera (2.641.0)*.
 
 ## A missing model file says where to get it (2.531.0)
 
@@ -3476,7 +3467,7 @@ when the app's **model catalog** has it: *Settings -> Models -> ⤓ Model catalo
 
 Press **Ctrl+K** (or **🔍** in the menu bar) and type what you are looking for - words in any order:
 
-- every **docker** (a hidden one comes back on screen) and every **floating window** (🏠 House, 🎓 LoRA, 🩺 Style
+- every **docker** (a hidden one comes back on screen) and every **floating window** (🎓 LoRA, 🩺 Style
   doctor …);
 - every **button** of the menu bar and the statusbar, even those the current workspace hides;
 - every **Settings field** - the dialog opens on its tab with the field lit;
@@ -3486,55 +3477,6 @@ Press **Ctrl+K** (or **🔍** in the menu bar) and type what you are looking for
 
 ↑ ↓ pick, **Enter** runs it, **Esc** closes. What you run often comes first next time. Over the timeline's layers Ctrl+K
 still splits a clip, and in the image editor it is the editor's own palette.
-
-## House builder extras - roof, trace a plan, furnish, .glb, shot list (2.529.0)
-
-> **2.630.0: the House builder is gone.** Its furniture, materials, cameras (shots, depth / normal maps, 360° locations),
-> 🪄 Furnish and people are in the 📏 Sketcher; ☰ File ▸ 🏠 A house from the House builder… brings a saved house in.
-
-With nothing picked, the House panel has two new parts:
-
-- **⌂ Roof** - none, flat, gable or hip over the top floor, with its pitch, overhang, material and colour. The shots,
-  360°s and exports always have it; the **roof** box at the top shows it in the orbit view (untick it to see in).
-- **🖼 Plan picture to trace** - load a drawn or photographed floor plan; it sits under your walls. **📐 Set the scale**:
-  click two points you know the distance between and type it (metres). **✋ Move it** drags it into place, **🗑** takes
-  it away.
-
-Pick a room for **🪄 Furnish this room**. Type what should go in (or leave it blank). When an LLM is running it picks the
-pieces from the furniture library; without one, the room gets the usual set for its kind (bedroom, kitchen, bathroom,
-living, dining, office, laundry, garage) plus any piece you name ("a piano", "plants"). The pieces go against the walls,
-clear of the doors, never on top of each other. Ctrl+Z takes them out again.
-
-In **📍 As a location**:
-
-- **⤓ .glb** - the house as one binary glTF file with its materials, for Blender, Unreal, Godot and most 3D viewers.
-- **🎬 Every camera** - a shot and depth map per camera in the Image assets, and (ticked) a StoryBoard scene per camera
-  with the shot as its first frame and the room as its prompt. **⤓ the list** downloads the shot list as .md.
-
-## 🧍 Characters in House shots (2.528.0)
-
-> **2.630.0: the House builder is gone.** Its furniture, materials, cameras (shots, depth / normal maps, 360° locations),
-> 🪄 Furnish and people are in the 📏 Sketcher; ☰ File ▸ 🏠 A house from the House builder… brings a saved house in.
-
-The House builder has a **🧍 Person** tool. Press where the person stands and drag the way they face. In the properties
-pick:
-
-- **Character** - one of the project's characters (the StoryBoard's cast), or none for "a person";
-- **Pose** - standing, sitting, walking or waving; their **height** and which way they face;
-- **LoRA** - optional, a character LoRA with its weight.
-
-A grey mannequin stands in for them in the 3D view, the 📷 shots, the depth and normal maps (for ControlNet) and the 360°
-Location.
-
-**✨ Make it real** then puts the real person in: the shot goes first, each character the camera sees goes with it as the
-next picture (picture 2, 3 …), and the prompt says which mannequin is who - for example "the mannequin in the middle in
-the foreground is the person in picture 2 (Mira, 29, red coat), sitting". A person behind a wall is left out; a door or
-an opening lets the camera see through. Their LoRAs ride along like Basic Settings' temporary LoRAs - a LoRA must be
-made for the ✨ style's model family.
-
-Use a style that takes several pictures for people: **FLUX.2 Klein edit** takes 3 (the shot + 2 characters), **Qwen
-Image 2.1 edit** takes 8. With a style that takes fewer, the extra characters' pictures are left out and the message
-says so.
 
 ## 🩺 The Style doctor - which styles work, and why the others don't (2.527.0)
 
@@ -3569,7 +3511,7 @@ work needs and hides the statusbar and menu-bar buttons it doesn't. Nothing is d
 | 🎵 Music video | Preview, Timeline, StoryBoard, Music, Stems, Prompt | (unchanged) |
 | ◆ Expert | Every docker and every button | (unchanged) |
 
-**Your changes are kept per workspace.** Hide a docker, resize one, open 🏠 House or Basic Settings - when you go to
+**Your changes are kept per workspace.** Hide a docker, resize one, open the Sketcher or Basic Settings - when you go to
 another workspace and come back, it is as you left it. The first time you leave Expert, the layout you had becomes
 Expert's, so nothing you set up before is lost. **↺** next to the dropdown puts the current workspace back to its default.
 The app starts in the workspace you were last in.
@@ -3589,44 +3531,6 @@ Before a job is sent, the app now asks ComfyUI which list really holds the style
 The job log says so: `node 70.unet_name: Krea2/… -> as ComfyUI lists it: … loaded by Load Checkpoint`. If the file is in
 no list at all, the error says so and tells you where to put it (`ComfyUI/models/diffusion_models`, a subfolder is fine,
 or a folder added to extra_model_paths.yaml - then restart ComfyUI).
-
-## 🏠 The House builder - a floor plan you can use as a Location (2.524.0)
-
-> **2.630.0: the House builder is gone.** Its furniture, materials, cameras (shots, depth / normal maps, 360° locations),
-> 🪄 Furnish and people are in the 📏 Sketcher; ☰ File ▸ 🏠 A house from the House builder… brings a saved house in.
-
-**🏠 House** on the statusbar opens a floating docker with a floor plan on the left, a 3D view in the middle and the
-properties on the right. Everything is in **metres** on a 5 cm grid. Houses are saved in the project.
-
-**Drawing**
-
-- **▭ Room** - drag a rectangle; its walls come with it (two rooms side by side share one wall). **⬠ Polygon room** -
-  click the corners, then click the first corner again (or Enter).
-- **╱ Wall** - click, click, click…; Enter, double-click or Esc ends it. Walls snap straight; hold Shift for any angle.
-- **🚪 Door, 🪟 Window, ⇋ Glass sliding door, ▢ Opening, 🚗 Garage door** - click on a wall.
-- **🛋 Furniture** - pick a piece from the library (living, dining, kitchen, bedroom, bathroom, office, lights, outside),
-  click to place it; **R** turns it. Its colour and size are in the properties.
-- **⇗ Stairs** - add a floor above first (**＋** next to the floor tabs); the stairs cut their hole in the floor above.
-- **📷 Camera** - press where it stands and drag where it looks. Its eye height, tilt and lens are in the properties.
-- **⬚ Select** - drag to move (drag a wall's end to move the corner), **R** turns, arrows nudge 5 cm, **Delete** removes,
-  **Ctrl+Z / Ctrl+Y** undo / redo, **Ctrl+S** saves.
-
-**Materials and light** - pick a room to set its floor (oak, walnut, tiles, marble, carpet, concrete…) and 🎨 its walls;
-pick a wall for brick, stone, wood, paint… ☀ **Time** moves the sun (it stands in the north at noon - the southern
-hemisphere), **North** turns the house, **Lamps** switches the ceiling and floor lamps on (always on at night).
-
-**3D** - orbit with the mouse, or pick a camera in the view menu (👁) to see what it sees; drag in that view to aim it.
-
-**Using it as a location** (pick the camera in 📍 As a location):
-
-- **📍 360° location** - renders a 4096 × 2048 panorama from the camera and makes it a **Location** (the Locations docker,
-  its @tag in the prompt, its view starting where the camera looks).
-- **📷 Shot + maps** - the camera's picture plus its **depth map** (white = near) and **normal map** go into the Image
-  assets, for the reference docker and ControlNet.
-- **✨ Make it real** - sends the shot to an image style that takes a picture (Qwen Image Edit, FLUX.1 Kontext, FLUX.2
-  Klein…) with a prompt written from the room ("a living room (27 m², 6.0 × 4.5 m, 2.7 m ceiling), tan oak floor, …").
-  Edit the prompt first if you like.
-- **⤓ .obj for Blender / Unreal** - house.obj + house.mtl in a zip (metres, Y up; in Unreal import at scale 100).
 
 ## A style's model can be a .gguf or a .safetensors (2.523.0)
 
@@ -6254,9 +6158,7 @@ orange line shows where it will go - and let go.
   revolve; **⤓ Export** saves STEP, STL, OBJ or 3MF into the project.
 - 2.579.0: **The 📐 SolidCraft docker shows only when SolidCraft is installed** (its status-bar button too) - install it
   in Settings ▸ Add-ons ▸ SolidCraft (**⤓ Install**, or **📦 Install from a zip…** offline) and the docker appears.
-  **Send** buttons in its bar: **🖼 Send to Image editor**, **🎞 Send to Timeline**, **🏠 Send to House builder** (the part
-  as a piece on the current floor at its own size in metres, in the middle of the rooms - move, turn and stretch it;
-  it is in the 3D view, shots and the house's .obj / .glb; sent again, the same piece updates), **🟠 Send to Blender**
+  **Send** buttons in its bar: **🖼 Send to Image editor**, **🎞 Send to Timeline**, **📏 Send to Sketcher** (since 2.630.0 - the part comes into the Sketcher as a group), **🟠 Send to Blender**
   (only when Blender is found: Blender opens in its own window with the part in metres, Z up, saved as
   projects/<project>/blender/solidcraft/<name>.blend) and **🎮 Send to Unreal** (only when an Unreal project or editor is
   set: the part is imported as a Static Mesh into /Game/bitGen/SolidCraft and placed in the open level - sent again it is
@@ -6267,7 +6169,7 @@ orange line shows where it will go - and let go.
   name (preview pictures, .civitai.info, .bitgen.json, its .yaml …) and its model_info page, and warns which styles use
   it.
 - 2.579.0: **Settings ▸ Dockers**: every docker - the main column's, the side dockers, the floating windows (Basic
-  Settings, Model manager, House builder …) and every extension docker, including ones you add later - with where it is
+  Settings, Model manager …) and every extension docker, including ones you add later - with where it is
   now and **↺ Reset**: back at its default place and size (out of a floating window or a ▣ docker, not maximized, shown
   and open, its first height / width; a window at its first place and size). **↺ Reset all** does every one.
 - 2.580.0: **🧩 Model manager ▸ 📁 Model paths**: every group of paths in ComfyUI's **extra_model_paths.yaml** (the file
@@ -6395,6 +6297,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.644.0: **The guides say Sketcher** - the README, this guide, the Feature Reference, the beta page, the help and the
+  shortcut list no longer describe the House builder (the Sketcher replaced it in 2.630.0); the Sketcher section starts
+  with what it does now; a new Sketcher screenshot.
 - 2.643.0: **Sketcher: move / turn a camera while looking through it** - ✥ Move / ⟳ Rotate in the camera's panel show
   its widget in front of the view; Esc deselects it.
 - 2.642.0: **Credits** - Settings ▸ **About** shows the version, "Produced and Developed by Tim Paul",
@@ -6461,7 +6366,7 @@ orange line shows where it will go - and let go.
   maximizes to the whole window, has its own ☰ File menu and 🖼 / 🎞 buttons.
 - 2.619.0: **📏 Sketcher** - a new docker for quick 3D modelling: draw a shape, push / pull it into a solid (pockets,
   holes through, walls from an offset), exact sizes typed in, snapping to corners / edges / faces / the axes, groups,
-  paint, undo; models kept in the project; sent on to the image editor, the timeline, the House builder, Blender and
+  paint, undo; models kept in the project; sent on to the image editor, the timeline, Blender and
   Unreal, or exported as .glb / .obj / .stl.
 - 2.618.0: **A bridge layer deleted or hidden closes its bridge** - in the image editor: a 🟧 Blender layer hidden or
   deleted closes the scene tools (no new layer is made) and the scene itself (the timeline's 🟧 preview of it too); a
@@ -6853,7 +6758,7 @@ orange line shows where it will go - and let go.
   (they showed "[object Object]"), the image editor's result tiles and ⏳ Pending cards, From the picture, the 3D /
   Unreal real pictures, the timeline's ✨ fill, 🤖 AI take, camera depth and karaoke overlay, the StoryBoard (grid cards,
   the scene picker, ⏫ upscaling, ✎ First frame, storyboard pictures, the environment / character creators, sheet takes,
-  RefMod extraction), the swap dialog (takes and first frames), VR world, the style doctor and the house builder.
+  RefMod extraction), the swap dialog (takes and first frames), VR world, the style doctor and the Sketcher.
 
 The StoryBoard (the docker under the timeline with the scenes) is called the StoryBoard everywhere - its title, its
 statusbar button, Docker configs, the messages - and collapsing it keeps the name (2.545.0).
@@ -7184,7 +7089,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 
 - **[Krita AI Diffusion](https://github.com/Acly/krita-ai-diffusion)** (Acly) - the image editor's selection Generate / Fill / Remove follows its technique per model family
 - **Wan2GP and mmgp** (deepbeepmeep) - the idea of streaming model blocks to the GPU (no code used)
-- **The House builder's library** - the furniture, people and materials the Sketcher inherited
+- **The Sketcher's furniture library** - the furniture, people and materials - first made for the House builder of earlier versions
 - **The professional creative tools** - the photo editors, vector and drawing programs, video editors, motion-graphics tools, 3D modellers and parametric CAD programs whose ways of working the image editor, the timeline, the CAD tools and the Sketcher follow
 - **Everyone who tests bitGen Studio** - and reports what to fix
 

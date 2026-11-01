@@ -2,7 +2,7 @@
 
 ## Pushing (maintainer)
 
-`push-to-github.bat` (Windows; in the app folder beside start.bat - never in the repository itself, it comes with the flat zip): double-click it to commit what changed in this folder and push it to `origin` /
+`push-to-github.bat` (Windows; in the app folder beside start.bat - never in the repository itself): double-click it to commit what changed in this folder and push it to `origin` /
 `main`, or drag a `bitgen-studio-v<version>-repo.zip` onto it to replace the repo files with that release first. It
 never force-pushes and never commits the private release notes.
 
@@ -13,7 +13,7 @@ happens. **Bug reports and improvements are welcome.**
 
 - **Found a bug?** Open an issue with the **Bug report** template and attach the app's 🐞 bug report zip
   (Ctrl+Alt+Shift+B). [docs/BETA.md](../docs/BETA.md#reporting-a-problem) says what to include.
-- **The areas that need testing most** are the image editor, the timeline, CAD and the house builder (built and passing
+- **The areas that need testing most** are the image editor, the timeline, CAD and the Sketcher (built and passing
   the automated tests, but little real-world use yet), and the Unreal and Daz bridges (experimental).
 - **Have an idea?** Use the **Feature request** template.
 - **Want to fix something?** Pull requests are welcome; the rest of this page explains how the code and tests work.
