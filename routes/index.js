@@ -8,6 +8,7 @@
 //   GET  /framecache/:key/:file     a single extracted frame jpeg
 //   POST /api/timeline/edit         keep/cut a selection on one layer (lib/timelineEdit)
 //   GET/POST/DELETE /api/pushpull[/:name]  the 📏 PushPull docker's models (routes/pushPull.js)
+//   GET/POST/DELETE /api/pushpull-profiles[/:id]  the Sketcher's own profiles (routes/ppProfiles.js)
 //   GET/POST /api/basic-settings/styles  Basic Settings per style - misc/basic_settings.tmp (routes/basicTmp.js)
 //   POST /api/timeline/join         a cut clip's parts joined into one file (routes/tlJoin.js, lib/tlJoin.js)
 //   GET  /api/transitions           the transition catalogue (lib/transitions.json)
@@ -189,6 +190,7 @@ function mount(app) {
   require("./imgconvert").mount(app);
   require("./subject").mount(app);
   require("./pushPull").mount(app);    // 2.619.0: the 📏 PushPull docker's models (lib/pushPull.js)
+  require("./ppProfiles").mount(app);  // 2.640.0: the Sketcher's own profiles - skirting, cornice, frames, sills (lib/ppProfiles.js)
   require("./speechDialog").mount(app);
   require("./comfyDetect").mount(app);    // 2.622.0: the ComfyUI installed here, when Settings has no folder (lib/comfyDetect.js)   // 2.621.0: the SFX docker's speech / dialog (lib/speechDialog.js)
   require("./basicTmp").mount(app);    // 2.615.0: Basic Settings kept per style in misc/basic_settings.tmp (lib/basicTmp.js)

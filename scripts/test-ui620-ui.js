@@ -138,6 +138,11 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
 
     /* the panel: a room's wall height - its ceiling light follows; Delete, undo */
     await view("top"); await p.keyboard.press(" "); await ev(() => H3PushPull.state.A.cut(true)); await click([1, 2.5, 0]);
+    // 2.640.0: a floor clicked = ITS panel (Floor 1); ⌂ Room 1's settings = the whole room's
+    const pf = await ev(() => ({ sel: H3PushPull.state.T.arch.sel(), head: (document.querySelector("#ppProps .pph") || {}).textContent || "" }));
+    check("2.640.0: a floor clicked shows ITS panel (▦ Floor 1), not the room's", pf.sel && pf.sel.part === "floor" && /^▦ Floor 1/.test(pf.head), pf);
+    await ev(() => [...document.querySelectorAll("#ppProps .ppbtns button")].find((b) => /^⌂ .*'s settings$/.test(b.textContent)).click());
+    await p.waitForTimeout(150);
     const ps = await ev(() => ({ sel: H3PushPull.state.T.arch.sel(), txt: document.getElementById("ppProps").innerText }));
     await ev(() => { const r = [...document.querySelectorAll("#ppProps label")].find((l) => /^Wall height/.test(l.textContent)); const i = r.querySelector("input"); i.value = "3"; i.dispatchEvent(new Event("change")); });
     A = await AR();

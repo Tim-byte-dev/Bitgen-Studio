@@ -130,8 +130,20 @@ def render(entries):
             group = g
             lo = b // 100 * 100
             lines += ["", f"## {a}.{lo}–{a}.{lo + 99}" if b >= 100 else f"## {a}.0–{a}.99", ""]
-        lines.append(f"- **{v}** — {title_case(clean(entries[v]))}")
+        t = entries[v]
+        lines.append(f"- **{v}** — {t if isinstance(t, Kept) else title_case(clean(t))}")
     return "\n".join(lines).rstrip() + "\n"
+
+
+class Kept(str):
+    """2.640.0: a line already in CHANGELOG.md whose release notes are not here any more (moved to an archive this copy does
+    not have) - kept exactly as it was written."""
+
+
+def kept(path):
+    if not os.path.exists(path):
+        return {}
+    return {m.group(1): Kept(m.group(2)) for m in re.finditer(r"^- \*\*(\d+\.\d+\.\d+)\*\* — (.+)$", open(path, encoding="utf-8").read(), re.M)}
 
 
 def collect():
@@ -144,8 +156,10 @@ def collect():
 
 
 if __name__ == "__main__":
-    entries = collect()
     out = os.path.join(ROOT, "misc", "CHANGELOG.md")
+    entries = collect()
+    if entries:                        # 2.640.0: versions only CHANGELOG.md still has (their notes archived) are kept
+        entries = dict(kept(out), **entries)
     if "--check" in sys.argv:
         if not entries:
             print("make_changelog: no release notes here (a repository checkout) - nothing to check"); sys.exit(0)

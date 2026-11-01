@@ -96,6 +96,9 @@
     };
     return { c, r, rings: ["yaw", "pitch", "roll"].map((key) => ({ key, axis: ax[key], pts: circle(ax[key]) })) };
   }
+  /** 2.641.0 (Tim: "click and drag on the camera moves the camera show 3d move widget"): a picked camera's move arrows -
+      {c (its eye), len, axes: [{key x | y | z, dir}]} along the model's axes (x red, y green, z = up blue) */
+  function moveAxes(o) { return { c: [o.x, o.y, o.z], len: 0.6, axes: [{ key: "x", dir: [1, 0, 0] }, { key: "y", dir: [0, 1, 0] }, { key: "z", dir: [0, 0, 1] }] }; }
   /** a turn of `deg` right-handed about a ring's axis -> the new yaw / pitch / roll (yaw is clockwise seen from above) */
   function turnBy(o, key, deg, kind) {
     const w = (x) => Math.round((((x % 360) + 540) % 360 - 180) * 10) / 10;
@@ -104,7 +107,7 @@
     else o.roll = w((o.roll || 0) + deg);
     return o;
   }
-  const api = { LENSES, fovOf, mmOf, lensOf, frame, rings, turnBy, make, dir, frustum, clean, fileName, envName, threeCam, shots, location };
+  const api = { LENSES, fovOf, mmOf, lensOf, frame, rings, moveAxes, turnBy, make, dir, frustum, clean, fileName, envName, threeCam, shots, location };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPCam = api;
 })(typeof window !== "undefined" ? window : globalThis);

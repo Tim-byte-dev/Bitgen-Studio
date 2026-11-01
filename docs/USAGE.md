@@ -497,6 +497,38 @@ With **Select**:
 - **Walls** - a dragged wall moves across its own line (the walls beside it stretch or shorten; the floor, ceiling,
   skirting and cornice follow); **Alt+drag** moves it freely; **Shift+click** picks the whole room.
 
+### Picking, moving and turning a camera (2.641.0)
+
+- A click on a camera picks it: it lights up (no box round it) and shows the **move arrows** - red X, green Y, blue Z.
+- **Drag the camera** to move it at its height; **drag an arrow** to move it along that axis only (the blue one lifts /
+  lowers it); 1 cm steps, Shift = free. The arrow under the pointer turns yellow.
+- **Double-click the camera** for the **rotate rings** (blue turn, red tilt, green roll - as in 2.633.0); double-click
+  again for the arrows. Its panel has ✥ Move / ⟳ Rotate too.
+- A click on any other object picks that one and lets the camera go; a click just beside a camera's lines picks what is
+  there (they used to catch clicks up to a metre away).
+
+### Each part's own properties; profiles for skirting, cornices, frames and sills (2.640.0)
+
+- **A part picked = its own panel** - click a wall, floor, ceiling, skirting or cornice in the view (or its row in 🗂
+  Outline) and the panel shows just that part:
+  - **Wall n** - Length (a rectangle room keeps its shape), Height (only this wall), Thickness (the room's walls), its own
+    **Inside colour** (↺ back to the room's), 👁 Shown, the doors / windows in it.
+  - **Floor n** - On, Colour, Level, Floor slab; **Ceiling n** - None / Flat / Follows the walls, Colour, Height.
+  - **Skirting n / Cornice n** - On, **Profile**, Height / Size, Colour, ✎ Profiles…; **Floor slab n** - On.
+  - ⌂ *Room*'s settings goes back to the whole room. **Delete** on a part turns it off (a wall: hidden) - the room stays.
+- **Profiles** - a picture dropdown (each profile drawn as its cross-section): 7 skirting (Square, Pencil round,
+  Bullnose, Chamfered, Ogee, Torus, Lamb's tongue), 6 cornices (Square, Cove, Quadrant, Ogee, Stepped, Cove + band),
+  6 door frames and 6 window frames (Flat, Bullnose, Chamfered, Splayed, Colonial, Lamb's tongue), 5 window sills
+  (Square, Bullnose, Round nosing, Chamfered, With an apron), then **This project**'s own.
+  - Skirting is swept round the room with mitred corners and stops at a door's frame; a cornice runs under the ceiling.
+  - A door's or window's panel: **Door frame** / **Window frame** (an architrave round the opening - a door on both faces,
+    a window on the room's side) and **Window sill** (under the window, reaching back to its frame), None to start, and
+    a Frame / sill colour.
+- **✎ Profiles…** (the dropdown's last row, or the part's button) - the profiles of a kind down the side; draw on the
+  canvas: a click adds a point on the nearest side, drag moves it, Delete / right-click removes it (1 mm grid, Shift =
+  free); type a Width / Height to scale it; **＋ New** copies the one shown. **💾 Save** keeps it in the project
+  (projects/<project>/pushpull/profiles.json) and uses it; a model keeps a copy of every profile it uses.
+
 ### Rotate rings, roll, lenses (2.633.0)
 
 - A picked camera or piece of furniture shows three rings: **blue** turns it (yaw), **red** tips it (pitch), **green** rolls it.
@@ -6359,6 +6391,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.641.0: **Sketcher: cameras picked, moved and turned like objects** - no box round a picked camera; it shows X / Y /
+  Z move arrows (drag the camera or an arrow), a double-click swaps them for the rotate rings, and clicking anything else
+  picks that instead.
+- 2.640.0: **Sketcher: each part's own properties, and profiles** - a clicked wall / floor / ceiling / skirting /
+  cornice (view or outline) shows its own panel (a wall's length, height and inside colour); skirting, cornices, door
+  frames, window frames and window sills take a profile from a picture dropdown, and ✎ Profiles… draws your own.
 - 2.639.2: **Sketcher: the 3D view never goes black silently** - a bad number in a model (a corner, a light, a piece)
   no longer blacks the whole view: that piece is left out, the camera is put back, and a red note at the bottom of the
   view says what was wrong (a render error or a lost graphics context says so too).

@@ -9,6 +9,8 @@
     "ppview.js",
     "ppfurn.js",
     "ppcam.js",
+    "ppprofile.js",
+    "ppprofiledlg.js",
     "pparch.js",
     "pparchview.js",
     "pparchtools.js",

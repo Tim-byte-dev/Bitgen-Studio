@@ -1014,6 +1014,10 @@
         [
           "Esc",
           "Cancel the tool / leave the group"
+        ],
+        [
+          "Double-click a picked camera",
+          "Move arrows ⇄ rotate rings"
         ]
       ]
     }

@@ -62,7 +62,8 @@
         // 2.632.0: a camera is a gizmo - drawn over everything (inside a room, through its walls / ceiling) and picked first
         const body = new T.Mesh(new T.BoxGeometry(0.26, 0.26, 0.26), new T.MeshBasicMaterial({ color: 0x2563eb, depthTest: false, transparent: true, opacity: 0.9 })); body.position.set(c.x, c.y, c.z); body.renderOrder = 20; g.add(body);
         const pos = []; root.PPCam.frustum(c, 0.6).forEach(([a, b]) => pos.push(a[0], a[1], a[2], b[0], b[1], b[2]));
-        const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); const ls = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false })); ls.renderOrder = 20; g.add(ls);
+        const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); const ls = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x2563eb, depthTest: false })); ls.renderOrder = 20; ls.raycast = () => {}; g.add(ls);   // 2.641.0: its lines are never picked (a line picks within 1 m - it took clicks meant for what was near it)
+        body.userData.camBody = true; g.userData.pos = [c.x, c.y, c.z];
         camsG.add(g);
       });
       ((V.M && V.M.arch && V.M.arch.items) || []).forEach((it) => { if (root.PPFurn && !hid("item:" + it.id) && [it.x, it.y, it.z, it.w, it.d, it.h].every(Number.isFinite)) try { furn.add(root.PPFurn.group(T, it)); } catch (e) { console.warn("Sketcher furniture:", e); } });
@@ -157,6 +158,12 @@
     const rc = new T.Raycaster();
     function pick(ev) {
       const r = V.canvas.getBoundingClientRect();
+      // 2.641.0: a camera is picked where its eye is on screen (within 14 px - drawn over everything, so picked over everything)
+      if (camsG.visible) {
+        let best = null;
+        camsG.children.forEach((g) => { const p = g.userData.pos; if (!p) return; const s = V.screen(p); if (!(s[2] < 1)) return; const d = Math.hypot(s[0] - (ev.clientX - r.left), s[1] - (ev.clientY - r.top)); if (d < 14 && (!best || d < best.d)) best = { d, g, p }; });
+        if (best) { const cp = V.cam().position; return { tag: best.g.userData.tag, point: best.p.slice(), n: [0, 0, 1], dist: Math.hypot(cp.x - best.p[0], cp.y - best.p[1], cp.z - best.p[2]) }; }
+      }
       V.cam().updateMatrixWorld(); rc.setFromCamera(new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), V.cam());
       const objs = A.meshes.filter((m) => m.visible || V.styleName === "wire").concat(fix.children, furn.children, camsG.children);
       let hits = rc.intersectObjects(objs, true);
@@ -180,7 +187,7 @@
     function resolve(hit) {
       if (!hit) return null;
       const t = hit.tag, Ar = V.M.arch;
-      if (t.ak !== "wall") return { ak: t.ak, id: t.id, part: t.part || null };
+      if (t.ak !== "wall") return { ak: t.ak, id: t.id, part: t.ak === "room" ? t.part || null : null };   // 2.640.0: a door's frame = the door
       const at = [hit.point[0] - hit.n[0] * 0.05, hit.point[1] - hit.n[1] * 0.05];
       if (t.room) {                                                     // 2.624.0: + which of its walls
         const R = P().room(Ar, t.room); let edge = t.edge != null ? t.edge : null;
@@ -199,6 +206,16 @@
         const pts = P().topPoints(Ar, t.room, t.edge); const R = P().room(Ar, t.room); if (!pts.length || !R) return;
         if (t.ak === "wpt") { const q = pts[t.k]; if (!q) return; segs.push([[q[0], q[1], R.z], q]); const d = 0.12; segs.push([[q[0] - d, q[1], q[2]], [q[0] + d, q[1], q[2]]], [[q[0], q[1] - d, q[2]], [q[0], q[1] + d, q[2]]], [[q[0], q[1], q[2] - d], [q[0], q[1], q[2] + d]]); }
         else { const a = pts[t.k], b = pts[t.k + 1]; if (!a || !b) return; segs.push([a, b], [[a[0], a[1], a[2] + 0.02], [b[0], b[1], b[2] + 0.02]]); }
+      } else if (t.ak === "room" && t.part === "wall" && t.edge != null) {   // 2.640.0: one wall - its own box
+        const R = P().room(Ar, t.id), q = R && P().wallQuads(R).find((w) => w.i === t.edge); if (!q) return;
+        const top = R.z + Math.max(...P().profile(R, t.edge).map((p) => p[1]));
+        loop(q.quad, R.z); loop(q.quad, top); q.quad.forEach((p) => segs.push([[p[0], p[1], R.z], [p[0], p[1], top]]));
+      } else if (t.ak === "room" && t.part) {                            // 2.640.0: a floor / ceiling / skirting / cornice / slab - round its own faces
+        const box = new T.Box3(), v = new T.Vector3();
+        A.meshes.forEach((m) => { const pos = m.geometry.attributes.position, t2 = m.userData.t2; for (let i = 0; i < t2.length; i++) { const tg = A.tags[t2[i]]; if (tg.ak === "room" && tg.id === t.id && tg.part === t.part) for (let k = 0; k < 3; k++) box.expandByPoint(v.fromBufferAttribute(pos, i * 3 + k)); } });
+        if (box.isEmpty()) return; box.expandByScalar(0.02);
+        const a = box.min, b = box.max, c = [[a.x, a.y], [b.x, a.y], [b.x, b.y], [a.x, b.y]];
+        loop(c, a.z); loop(c, b.z); c.forEach((p) => segs.push([[p[0], p[1], a.z], [p[0], p[1], b.z]]));
       } else if (t.ak === "room") {
         const R = P().room(Ar, t.id); if (!R) return;
         const Q = P().wallQuads(R);
@@ -213,7 +230,7 @@
         const box = new T.Box3();
         if (t.ak === "light") fix.children.forEach((g) => { if (g.userData.tag && g.userData.tag.id === t.id) box.expandByObject(g); });
         else if (t.ak === "item") furn.children.forEach((g) => { if (g.userData.tag.id === t.id) box.expandByObject(g); });
-        else if (t.ak === "cam") camsG.children.forEach((g) => { if (g.userData.tag.id === t.id) box.expandByObject(g); });
+        else if (t.ak === "cam") return;                                // 2.641.0: no box round a camera - it lights up itself (+ its move arrows / rotate rings)
         else A.meshes.forEach((m) => { const pos = m.geometry.attributes.position, t2 = m.userData.t2, v = new T.Vector3(); for (let i = 0; i < t2.length; i++) { const tg = A.tags[t2[i]]; if (tg.ak === t.ak && tg.id === t.id) for (let k = 0; k < 3; k++) box.expandByPoint(v.fromBufferAttribute(pos, i * 3 + k)); } });
         if (box.isEmpty()) return; box.expandByScalar(0.03);
         const a = box.min, b = box.max, c = [[a.x, a.y], [b.x, a.y], [b.x, b.y], [a.x, b.y]];
@@ -228,6 +245,7 @@
     const RING_COL = { yaw: 0x3b82f6, pitch: 0xef4444, roll: 0x22c55e };
     function rings(t, out) {
       if (!t || (t.ak !== "cam" && t.ak !== "item") || !root.PPCam || !V.M || !V.M.arch) return;
+      if (t.ak === "cam" && A.gizmo !== "rotate") return;               // 2.641.0: a camera shows its rings after a double-click
       const o = P().find(V.M.arch, t.ak, t.id); if (!o) return;
       root.PPCam.rings(t.ak, o).rings.forEach((rg) => {
         const pos = []; rg.pts.forEach((p) => pos.push(p[0], p[1], p[2]));
@@ -236,7 +254,30 @@
         L.renderOrder = 30; L.userData.ring = rg.key; out.add(L);
       });
     }
-    function paintSel() { clear(selG); const th = V.theme || {}; outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
+    /** 2.641.0: a picked camera's 3D move arrows (x red, y green, z blue; the one under the pointer yellow) - over everything */
+    const AXIS_COL = { x: 0xef4444, y: 0x22c55e, z: 0x3b82f6 };
+    function moveWidget(t, out) {
+      if (!t || t.ak !== "cam" || A.gizmo === "rotate" || !root.PPCam || !V.M || !V.M.arch) return;
+      const o = P().find(V.M.arch, "cam", t.id); if (!o) return;
+      const W = root.PPCam.moveAxes(o);
+      W.axes.forEach((ax) => {
+        const col = A.axisHot === ax.key ? 0xfacc15 : AXIS_COL[ax.key], a = W.c.map((v, k) => v + ax.dir[k] * 0.1), b = W.c.map((v, k) => v + ax.dir[k] * W.len);
+        const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(a.concat(b), 3));
+        const L = new T.LineSegments(g, new T.LineBasicMaterial({ color: col, depthTest: false, transparent: true })); L.renderOrder = 31; L.raycast = () => {}; L.userData.axis = ax.key; out.add(L);
+        const cone = new T.Mesh(new T.ConeGeometry(0.035, 0.11, 12), new T.MeshBasicMaterial({ color: col, depthTest: false, transparent: true }));
+        cone.position.set(b[0] + ax.dir[0] * 0.05, b[1] + ax.dir[1] * 0.05, b[2] + ax.dir[2] * 0.05);
+        cone.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), new T.Vector3(ax.dir[0], ax.dir[1], ax.dir[2]));
+        cone.renderOrder = 31; cone.raycast = () => {}; cone.userData.axis = ax.key; out.add(cone);
+      });
+    }
+    /** 2.641.0: the camera bodies lit - picked = the accent, under the pointer = lighter */
+    function camColours() {
+      const th = V.theme || {}, acc = new T.Color(th.accent || "#f59e2c").getHex();
+      camsG.children.forEach((g) => { const id = g.userData.tag.id, on = A.sel && A.sel.ak === "cam" && A.sel.id === id, hv = A.hover && A.hover.ak === "cam" && A.hover.id === id; const col = on ? acc : hv ? 0x60a5fa : 0x2563eb; g.children.forEach((m) => { if (m.material && m.material.color) m.material.color.setHex(col); }); });
+    }
+    function setGizmo(m) { A.gizmo = m === "rotate" ? "rotate" : "move"; paintSel(); }
+    function setAxisHot(k) { if ((A.axisHot || null) === (k || null)) return; A.axisHot = k || null; paintSel(); }
+    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
     function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }
 
@@ -268,7 +309,7 @@
       });
     }
     function box() { const Ar = V.M && V.M.arch; return Ar && P().has(Ar) ? P().bbox(Ar) : null; }
-    Object.assign(A, { rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
+    Object.assign(A, { setGizmo, setAxisHot, rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
     return A;
   }
   root.PPArchView = { attach, loadPC, CD };

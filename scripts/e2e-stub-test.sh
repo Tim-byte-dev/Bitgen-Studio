@@ -12867,6 +12867,24 @@ node scripts/test-outline639.js > /tmp/ol639.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui639-ui.js > /tmp/ui639.log 2>&1 \
   && ok "2.639.0 browser test: 🗂 Outline rows, a row picks, 👁 Ceiling 1 off + Ctrl+Z, a group's 👁 hides its rooms, a wall dragged across its line, Alt+drag freely, Shift+click = the room, the bar button - or SKIP without playwright" \
   || { bad "2.639.0 sketcher outline browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui639.log | head -14; }
+# ---- 2.640.0 (Tim: "when user clicks an object like a wall or selects it from the objects docker then show that objects properties
+# in the properties panel. create a dialog to create profiles for skirting and cornices ... do the same for door frames, window
+# frames and window sills.")
+node scripts/test-profile640.js > /tmp/pf640.log 2>&1 \
+  && ok "2.640.0 the Sketcher's profiles (30 built in, clean, svg pictures, the mitred sweep), swept skirting / cornice, door + window frames, sills, a wall's length / height / colour, lib/ppProfiles - the pure part + wiring" \
+  || { bad "2.640.0 sketcher profile units"; grep -a "^FAIL" -A2 /tmp/pf640.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui640-ui.js > /tmp/ui640.log 2>&1 \
+  && ok "2.640.0 browser test: a wall / floor / ceiling / skirting / cornice clicked (view + outline) = its own panel, the picture dropdowns, ✎ the profile dialog saves to the project, door frame / window frame / sill, Delete on a part - or SKIP without playwright" \
+  || { bad "2.640.0 sketcher profiles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui640.log | head -14; }
+# ---- 2.641.0 (Tim: "dont show camera bounding box, single click on camera selects camera ,click and drag on the camera moves the
+# camera show 3d move widget , double click changes to 3d rotate widget, clicking on ANOTHER object deselects the camera and selects
+# the new object")
+node scripts/test-camwidget641.js > /tmp/cw641.log 2>&1 \
+  && ok "2.641.0 the Sketcher's camera: no box, picked by its eye, the move arrows (moveAxes), a double-click = the rings, another pick resets it - pure + wiring" \
+  || { bad "2.641.0 camera widget units"; grep -a "^FAIL" -A2 /tmp/cw641.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui641-ui.js > /tmp/ui641.log 2>&1 \
+  && ok "2.641.0 browser test: a click picks the camera (lit, no box, the arrows), a drag moves it, the Z arrow lifts it, a double-click = rotate rings and back, another object picked unpicks it, a click beside its lines is not the camera - or SKIP without playwright" \
+  || { bad "2.641.0 camera widget browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui641.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

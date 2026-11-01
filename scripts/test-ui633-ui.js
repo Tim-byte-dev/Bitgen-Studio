@@ -58,7 +58,13 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     /* the rings: drag the yaw ring a quarter round (top view) */
     await ev(() => H3PushPull.state.T.arch.setSel({ ak: "cam", id: 50 }));
     await p.waitForTimeout(150);
-    const ringsShown = await ev(() => { let n = 0; H3PushPull.state.V.scene.traverse((o) => { if (o.userData && o.userData.ring) n++; }); return n; });
+    // 2.641.0: picked = the move arrows; a double-click on it = the rotate rings
+    const widget = () => ev(() => { let ring = 0, axis = 0; H3PushPull.state.V.scene.traverse((o) => { if (o.userData && o.userData.ring) ring++; if (o.userData && o.userData.axis) axis++; }); return { ring, axis }; });
+    const w0 = await widget(); const c0 = await cam(), eye = await scr([c0.x, c0.y, c0.z]);
+    await p.mouse.dblclick(eye[0], eye[1]); await p.waitForTimeout(250);
+    const w1 = await widget();
+    check("2.641.0: a picked camera shows its move arrows (no rings); a double-click on it - the rotate rings", w0.axis === 6 && w0.ring === 0 && w1.ring === 3 && w1.axis === 0, { w0, w1 });
+    const ringsShown = w1.ring;
     const R0 = await ev(() => PPCam.rings("cam", H3PushPull.state.M.arch.cams[0]));
     const yawRing = R0.rings.find((r) => r.key === "yaw");
     const pA = await scr(yawRing.pts[6]), pB = await scr(yawRing.pts[18]), pC = await scr(yawRing.pts[30]);
