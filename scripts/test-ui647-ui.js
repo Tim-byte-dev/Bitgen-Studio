@@ -55,13 +55,15 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     // ---- 📐 on
     await p.click("#ppPlan"); await p.waitForTimeout(600);
     const on = await ev(() => { const S = H3PushPull.state, V = S.V, c = V.cam(), d = new V.T.Vector3(); c.getWorldDirection(d); const sc = V.scene;
-      return { on: S.P.on(), btn: document.getElementById("ppPlan").classList.contains("on"), ortho: V.isOrtho, down: d.z, hidden: ["pp-arch", "pp-fixtures", "pp-furniture"].every((n) => !sc.getObjectByName(n).visible), last: S.P.last(), kids: S.P.group.children.length, clear: V.clear.toString(16) }; });
-    check("📐 Plan: straight down, parallel, the 3D building hidden, the plan drawn (fills, lines, labels), on paper", on.on && on.btn && on.ortho && on.down < -0.999 && on.hidden && on.last && on.last.fills >= 5 && on.last.lines >= 20 && on.last.texts >= 6 && on.clear === "f7f5f0", on);
+      return { on: S.P.on(), btn: document.getElementById("ppPlan").classList.contains("on"), ortho: V.isOrtho, down: d.z, hidden: ["pp-arch", "pp-fixtures", "pp-furniture"].every((n) => !sc.getObjectByName(n).visible), last: S.P.last(), kids: S.P.group.children.length, clear: V.clear.toString(16), bg: new V.T.Color(V.theme.bg).getHexString() }; });
+    check("📐 Plan: straight down, parallel, the 3D building hidden, the plan drawn (fills, lines, labels), in the theme's colours (2.649.0 - its background)", on.on && on.btn && on.ortho && on.down < -0.999 && on.hidden && on.last && on.last.fills >= 5 && on.last.lines >= 20 && on.last.texts >= 6 && on.clear === on.bg, on);
     if (process.env.H3_SHOT) { const fs = require("fs"); const png = await ev(() => H3PushPull.state.V.canvas.toDataURL("image/png")); fs.writeFileSync(path.join(process.env.H3_SHOT, "plan647.png"), Buffer.from(png.split(",")[1], "base64")); }
-    const wallPx = await px([2.5, 4, 0]), floorPx = await px([3.5, 2.2, 0]), outPx = await px([-1.5, 2, 0]);
-    check("…walls solid dark, a room's floor light, paper outside", lum(wallPx) < 80 && lum(floorPx) > 180 && lum(outPx) > 200, { wallPx, floorPx, outPx });
+    const wallPx = await px([2.5, 4, 0]), floorPx = await px([3.5, 2.2, 0]), outPx = await px([-1.45, 2.45, 0]);
+    const thc = await ev(() => { const t = H3PushPull.state.V.theme, c = (h) => { const n = parseInt(String(h).replace("#", ""), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }; return { text: c(t.text), bg: c(t.bg) }; });
+    const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+    check("…in the theme's colours: walls in its text colour, outside its background, a room's floor neither", dist(wallPx, thc.text) < 40 && dist(outPx, thc.bg) < 30 && dist(floorPx, thc.bg) > 6 && dist(floorPx, thc.text) > 60, { wallPx, floorPx, outPx, thc });
     const doorGap = await px([2, 0, 0]);
-    check("…a door is a gap in the wall (not solid)", lum(doorGap) > 150, doorGap);
+    check("…a door is a gap in the wall (not solid)", dist(doorGap, thc.text) > 60, doorGap);
 
     // ---- picking on the plan
     let [x, y] = await scr([1.9, 0.5, 0]); await p.mouse.click(x, y); await p.waitForTimeout(250);
@@ -91,7 +93,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const dr = await ev(() => ({ n: H3PushPull.state.M.arch.ops.length, gap: null }));
     check("Door tool: a click on the new room's wall in the plan puts a door in it", dr.n === o0 + 1, dr);
     const gap2 = await px(mid);
-    check("…drawn as a plan door (a gap in the wall)", lum(gap2) > 150, gap2);
+    check("…drawn as a plan door (a gap in the wall)", dist(gap2, (await ev(() => { const t = H3PushPull.state.V.theme, n = parseInt(t.text.replace("#", ""), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }))) > 60, gap2);
 
     // ---- Esc: no tool, nothing picked, Orbit - on the plan
     await ev(() => H3PushPull.tool("wall")); [x, y] = await scr([2, 7, 0]); await p.mouse.click(x, y); await p.waitForTimeout(100);

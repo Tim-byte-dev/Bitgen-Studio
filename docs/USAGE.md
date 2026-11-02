@@ -422,7 +422,7 @@ to use as film sets. It replaces the House builder of older versions. Its ❔ ha
 - **Building** (the Build tools): rooms with shared walls, free-standing walls, doors and windows (open or shut),
   floors, ceilings (flat or following sloped walls), roofs, stairs and lights (day / 🌙 night); walls dragged across
   their line or freely, sloped wall tops.
-- **📐 Floorplan** (2.647.0): the view straight down on paper, one storey at a time - walls cut solid, doors with their
+- **📐 Floorplan** (2.647.0): the view straight down in the app's theme colours (2.649.0), one storey at a time - walls cut solid, doors with their
   swing, windows, stairs, furniture and lights as plan symbols, each room's name, Width × Length and area. Every tool
   draws as in 3D; a click picks a symbol. **Esc** anywhere: no tool, nothing picked, 🔄 Orbit.
 - **🗂 Outline**: every room and its parts (walls, floor, ceiling, skirting, cornice, doors, windows) listed, hidden
@@ -6300,6 +6300,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.649.0: **The Sketcher's 📐 floorplan keeps the app's theme colours** - the background is the theme's (no more white
+  paper), the walls, doors, stairs and labels are drawn in the theme's text colour, the floors in its panel colour (with a
+  touch of each room's floor colour), glass and lights in its accent, the grid in its line colour. Changing the theme
+  repaints the plan.
 - 2.648.0: **Zoom with Shift + right-drag, ⊡ Zoom to selection and the pointer** - in the Sketcher, the timeline's canvas
   and the image editor. **The Sketcher's Esc and Ctrl+click.**
   - **Shift + right-drag**: forward (up) zooms in, back (down) zooms out, round the point you pressed. The plain right

@@ -75,6 +75,11 @@ check("pick: a wall (its room + which wall) - away from the door", JSON.stringif
 check("pick: inside a room = the room; the loft on its own storey", pk(4, 3.5)?.ak === "room" && pk(4, 3.5).id === K.id && pk(4, 3.5, 2.85)?.id === up.id, [pk(4, 3.5), pk(4, 3.5, 2.85)]);
 check("pick: nothing outside", pk(20, 20) === null);
 check("tint: a floor colour 72 % paper; a material / nothing = a light grey", PL.tint("#c8a882") === "#eadfd1" && PL.tint("mat:oak") === "#ece8df", [PL.tint("#c8a882"), PL.tint("mat:oak")]);
+const TC = PL.themeCols({ bg: "#14120f", pan: "#26221b", line: "#3a342a", dim: "#9a917f", text: "#e8e2d6", accent: "#f59e2c" });
+check("2.649.0 the theme's colours: walls / doors / labels its text, glass + lights its accent, the grid its line, floors its panel (a touch of the room's)",
+  TC.wall === "#e8e2d6" && TC.door === "#e8e2d6" && TC.text === "#e8e2d6" && TC.glass === "#f59e2c" && TC.light === "#f59e2c" && TC.grid === "#3a342a" && PL.tint("#c8a882", null, TC.floorBase, 0.82) === "#433a2e" && JSON.stringify(PL.themeCols(null)) === "{}", { TC, f: PL.tint("#c8a882", null, TC.floorBase, 0.82) });
+const S3 = PL.symbols(A, 0, { col: TC, footprint: fp });
+check("…symbols() draws with them", S3.fills.some((f) => f.k === "wall" && f.col === "#e8e2d6") && S3.lines.some((l) => l.col === "#f59e2c") && S3.texts.some((t) => t.col === "#e8e2d6") && S3.fills.some((f) => f.k === "furn" && f.col === TC.fill));
 
 // ---- the wiring
 const D = "ext/pushpulldock/", T = read(D + "pptools.js"), AT = read(D + "pparchtools.js"), AV = read(D + "pparchview.js"), PD = read(D + "ppdock.js"), H = read(D + "dock.html"), PS = read(D + "ppplan.js"), EJ = JSON.parse(read(D + "ext.json"));

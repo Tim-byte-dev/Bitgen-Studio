@@ -4,7 +4,8 @@
  * symbols in floorplan mode. esc deselects all tools and changes to orbit mode in all views, rooms will have width and length
  * properties"
  *
- * 📐 Floorplan (the toolbar button, View ▾ Floorplan): the view looks straight down (parallel), on paper, one storey at a time,
+ * 📐 Floorplan (the toolbar button, View ▾ Floorplan): the view looks straight down (parallel), in the app's theme colours
+ *   (2.649.0 - it was on paper), one storey at a time,
  * and the building is drawn as a plan - cut through the walls:
  *   walls       solid (poché) - every room's walls on that storey as one shape, the doors / windows / openings cut out of it
  *   rooms       a light floor + the room's name, its Width × Length and its area in the middle
@@ -26,7 +27,7 @@
   const P = () => root.PPArch || (typeof require === "function" ? require("./pparch.js") : null);
   const PC = () => root.polygonClipping || null;
   const EPS = 1e-6;
-  const COL = { paper: "#f7f5f0", wall: "#2b2c30", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
+  const COL0 = { fill: "#ffffff", grid: "#e3ded2", floorBase: "", paper: "#f7f5f0", wall: "#2b2c30", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
   const sameZ = (a, b) => Math.abs(a - b) < 0.01;
   const r4 = (x) => Math.round(x * 1e4) / 1e4;
 
@@ -36,8 +37,12 @@
     ((A && A.rooms) || []).forEach((R) => { if (Number.isFinite(R.z) && !zs.some((z) => sameZ(z, R.z))) zs.push(R.z); });
     return zs.sort((a, b) => a - b);
   }
-  /** a light floor colour from the room's (a material / #rgb / #rrggbb) - 72 % paper */
-  function tint(c, hex) {
+  const rgbOf = (h) => { let m = /^#?([0-9a-f]{6})$/i.exec(String(h || "")); if (!m) { const s3 = /^#?([0-9a-f]{3})$/i.exec(String(h || "")); if (s3) m = [0, s3[1].split("").map((x) => x + x).join("")]; } if (!m) return null; const n = parseInt(m[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+  /** a floor colour from the room's (a material / #rgb / #rrggbb) - mostly the base (default paper 72 %; 2.649.0: the floorplan
+   *  passes the theme's panel colour) */
+  function tint(c, hex, base, k) {
+    const B = rgbOf(base || "#f7f5f0") || [247, 245, 240], K = k == null ? 0.72 : k;
+    if (base) { const f = rgbOf(hex ? hex(c) : c) || B; return "#" + f.map((v, i) => Math.round(v * (1 - K) + B[i] * K).toString(16).padStart(2, "0")).join(""); }
     let h = hex ? hex(c) : c; if (typeof h !== "string") h = "";
     let m = /^#?([0-9a-f]{6})$/i.exec(h); if (!m) { const s = /^#?([0-9a-f]{3})$/i.exec(h); if (s) m = [0, s[1].split("").map((x) => x + x).join("")]; }
     if (!m) return "#ece8df";
@@ -57,6 +62,7 @@
     o = o || {};
     const out = { fills: [], lines: [], texts: [] };
     if (!A || !A.rooms) return out;
+    const COL = Object.assign({}, COL0, o.col || {});                    // 2.649.0: the theme's colours (attach passes them)
     const Q = P(), hid = Q.hiddenOf(A);
     const rooms = A.rooms.filter((R) => sameZ(R.z, z) && !hid("room:" + R.id));
     const ids = new Set(rooms.map((R) => R.id));
@@ -77,7 +83,7 @@
     rooms.forEach((R) => {
       if (!R.closed) return;
       const I = Q.interior(R); if (!I || I.length < 3) return;
-      if (!hid("room:" + R.id + ":floor")) out.fills.push({ rings: [ring(I)], col: tint(R.floor, o.hex), k: "floor", tag: { ak: "room", id: R.id } });
+      if (!hid("room:" + R.id + ":floor")) out.fills.push({ rings: [ring(I)], col: tint(R.floor, o.hex, COL.floorBase || null, COL.floorBase ? 0.82 : null), k: "floor", tag: { ak: "room", id: R.id } });
       const c = labelAt(I), S = Q.roomSize(R), ar = Q.roomArea(R);
       out.texts.push({ p: c, t: R.name || "Room", h: 0.24, col: COL.text, bold: true });
       if (S) out.texts.push({ p: [c[0], c[1] - 0.3], t: fmtM(S.w) + " × " + fmtM(S.l) + " m", h: 0.17, col: COL.dim });
@@ -133,7 +139,7 @@
       if (!sameZ(s.z, z) || hid("stair:" + s.id)) return;
       const a = s.ang * Math.PI / 180, u = [Math.cos(a), Math.sin(a)], v = [-u[1], u[0]], n = Math.max(2, Math.round(s.rise / 0.18)), g = s.len / n;
       const oo = [s.x - v[0] * s.w / 2, s.y - v[1] * s.w / 2], Pt = (x, y) => [oo[0] + u[0] * x + v[0] * y, oo[1] + u[1] * x + v[1] * y];
-      out.fills.push({ rings: [ring([Pt(0, 0), Pt(s.len, 0), Pt(s.len, s.w), Pt(0, s.w)])], col: "#ffffff", k: "furn", tag: { ak: "stair", id: s.id } });
+      out.fills.push({ rings: [ring([Pt(0, 0), Pt(s.len, 0), Pt(s.len, s.w), Pt(0, s.w)])], col: COL.fill, k: "furn", tag: { ak: "stair", id: s.id } });
       L([Pt(0, 0), Pt(s.len, 0), Pt(s.len, s.w), Pt(0, s.w), Pt(0, 0)], COL.stair, "sym");
       for (let i = 1; i < n; i++) L([Pt(i * g, 0), Pt(i * g, s.w)], COL.stair, "sym");
       L([Pt(Math.min(0.15, s.len / 4), s.w / 2), Pt(s.len - 0.12, s.w / 2)], COL.ink, "sym");
@@ -146,7 +152,7 @@
     (A.items || []).forEach((it) => {
       if (hid("item:" + it.id) || !(Math.abs((it.z || 0) - z) < 0.3)) return;
       const F = o.footprint ? o.footprint(it) : null; if (!F || F.length < 3) return;
-      out.fills.push({ rings: [ring(F)], col: "#ffffff", k: "furn", tag: { ak: "item", id: it.id } });
+      out.fills.push({ rings: [ring(F)], col: COL.fill, k: "furn", tag: { ak: "item", id: it.id } });
       L(ring(F), COL.furn, "furn");
       const c = [(F[0][0] + F[2][0]) / 2, (F[0][1] + F[2][1]) / 2], t = o.label ? o.label(it) : it.type || "";
       const underLabel = out.texts.some((x) => Q.inPoly(x.p, F) || Q.inPoly([x.p[0], x.p[1] - 0.55], F));   // a room's name there: the piece unnamed
@@ -225,7 +231,7 @@
       if (!plan.isOn) return;
       const A = V.M && V.M.arch; if (!A || !P().has(A)) { V.draw(); return; }
       const F = root.PPFurn;
-      let S; try { S = symbols(A, plan.z, { hex: F ? (c) => F.hex(c) : null, footprint: F ? (it) => F.footprint(it) : null, label: F ? (it) => F.label(it) : null }); }
+      let S; try { S = symbols(A, plan.z, { col: themeCols(V.theme), hex: F ? (c) => F.hex(c) : null, footprint: F ? (it) => F.footprint(it) : null, label: F ? (it) => F.label(it) : null }); }
       catch (e) { console.warn("Sketcher floorplan:", e); V.draw(); return; }
       const zc = plan.z + 1.0;                                            // the cut, a metre above the floor
       S.fills.forEach((f) => {
@@ -240,19 +246,18 @@
         if (l.dash) ln.computeLineDistances(); ln.renderOrder = (ORDER[l.k] || 6) + 0.5; ln.raycast = () => {}; G.add(ln);
       });
       S.texts.forEach((t) => { const sp = textSprite(t); sp.position.set(t.p[0], t.p[1], zc); G.add(sp); });
-      // the paper's 1 m grid (light; the view's own grid is hidden - dark on paper) round what is drawn, 10 m past it
+      // the plan's 1 m grid in the theme's line colour (the view's own grid is hidden) round what is drawn, 10 m past it
       const bb = P().bbox(A), x0 = Math.floor(Math.min(bb ? bb.min[0] : -10, -2) - 10), x1 = Math.ceil(Math.max(bb ? bb.max[0] : 10, 2) + 10), y0 = Math.floor(Math.min(bb ? bb.min[1] : -10, -2) - 10), y1 = Math.ceil(Math.max(bb ? bb.max[1] : 10, 2) + 10);
       const gp = []; for (let x = x0; x <= x1; x++) gp.push(x, y0, zc, x, y1, zc); for (let y = y0; y <= y1; y++) gp.push(x0, y, zc, x1, y, zc);
       const gg = new T.BufferGeometry(); gg.setAttribute("position", new T.Float32BufferAttribute(gp, 3));
-      const gl = new T.LineSegments(gg, new T.LineBasicMaterial({ color: new T.Color("#e3ded2"), depthTest: false, depthWrite: false })); gl.renderOrder = 1; gl.raycast = () => {}; G.add(gl);
+      const gl = new T.LineSegments(gg, new T.LineBasicMaterial({ color: new T.Color(themeCols(V.theme).grid || COL0.grid), depthTest: false, depthWrite: false })); gl.renderOrder = 1; gl.raycast = () => {}; G.add(gl);
       plan.last = { fills: S.fills.length, lines: S.lines.length, texts: S.texts.length };
       V.draw();
     }
     let grid0 = null, polar0 = null;
-    function paper() {
-      if (!plan.isOn) return;
-      V.clear = new T.Color(COL.paper).getHex(); V.R.setClearColor(V.clear, 1);
-    }
+    function paper() { /* 2.649.0: the theme's background stays (the floorplan keeps the app's colours) */ }
+    // a theme changed (Settings ▸ Themes): the plan in its colours (ppview's retheme runs first)
+    if (root.addEventListener) root.addEventListener("h3theme", () => setTimeout(() => { if (plan.isOn) rebuild(); }, 80));
     function set(v, noRestore) {
       v = !!v; if (v === plan.isOn) { if (v) rebuild(); return plan; }
       const c = V.controls;
@@ -298,7 +303,18 @@
     return { on: () => plan.isOn, set, level: () => plan.z, setLevel, levels: () => levels(V.M && V.M.arch), rebuild, last: () => plan.last || null, group: G };
   }
 
-  const api = { levels, symbols, pickAt, tint, attach, COL };
+  /** 2.649.0 (Tim: "when in floorplan mode keep the theme colors of the app"): the plan's colours from the view's theme
+   *  {bg, pan, line, dim, text, accent} - walls / lines in the theme's text colour, floors its panel, the accent for glass and
+   *  lights, the grid its line colour; the background stays the theme's */
+  function themeCols(th) {
+    const t = th || {};
+    if (!t.text || !t.bg) return {};
+    const mix = (a, b, k) => { const A = rgbOf(a), B = rgbOf(b); return A && B ? "#" + A.map((v, i) => Math.round(v * (1 - k) + B[i] * k).toString(16).padStart(2, "0")).join("") : a; };
+    return { wall: t.text, ink: t.text, door: t.text, text: t.text, dim: t.dim || t.text, stair: t.dim || t.text, furn: t.dim || t.text, slab: t.dim || t.text,
+      glass: t.accent || t.text, light: t.accent || t.text, fill: mix(t.pan || t.bg, t.bg, 0.35), floorBase: t.pan || t.bg, grid: t.line || mix(t.bg, t.text, 0.15), paper: t.bg };
+  }
+  const COL = COL0;
+  const api = { levels, symbols, pickAt, tint, themeCols, attach, COL };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);
