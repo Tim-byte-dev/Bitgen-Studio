@@ -53,6 +53,7 @@
     }
     function rebuild() {
       clear(geo); clear(fix); A.meshes = []; A.tags = [];
+      if (A.onRebuild) try { A.onRebuild(); } catch (e) { console.warn("Sketcher floorplan:", e); }   // 2.647.0: 📐 the floorplan (ppplan.js)
       while (furn.children.length) furn.remove(furn.children[0]);
       clear(camsG);
       const hid = V.M && V.M.arch ? P().hiddenOf(V.M.arch) : () => false;     // 2.639.0: the 🗂 outline docker's hidden things
@@ -149,6 +150,7 @@
       fix.traverse((o) => { if (o.isLight) o.visible = A.isNight; });
       if (sun) sun.intensity = A.isNight ? 0 : 1.6;
       const bg = A.isNight ? 0x0b0d12 : new T.Color((V.theme && V.theme.bg) || "#14120f").getHex(); V.R.setClearColor(bg, 1); V.clear = bg; V.nightOn = A.isNight;   // 2.624.0: the theme's sky by day
+      if (A.onLayers) A.onLayers();                                       // 2.647.0: the floorplan keeps its paper
       V.draw();
     }
     function setNight(on) { A.isNight = !!on; layers(); }
@@ -164,6 +166,7 @@
         camsG.children.forEach((g) => { const p = g.userData.pos; if (!p) return; const s = V.screen(p); if (!(s[2] < 1)) return; const d = Math.hypot(s[0] - (ev.clientX - r.left), s[1] - (ev.clientY - r.top)); if (d < 14 && (!best || d < best.d)) best = { d, g, p }; });
         if (best) { const cp = V.cam().position; return { tag: best.g.userData.tag, point: best.p.slice(), n: [0, 0, 1], dist: Math.hypot(cp.x - best.p[0], cp.y - best.p[1], cp.z - best.p[2]) }; }
       }
+      if (A.planPick) { const h = A.planPick(ev); if (h !== undefined) return h; }   // 2.647.0: 📐 a click on the floorplan picks its symbol
       V.cam().updateMatrixWorld(); rc.setFromCamera(new T.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), V.cam());
       const objs = A.meshes.filter((m) => m.visible || V.styleName === "wire").concat(fix.children, furn.children, camsG.children);
       let hits = rc.intersectObjects(objs, true);
@@ -279,7 +282,7 @@
     function setThrough(id) { A.through = id == null ? null : id; paintSel(); }
     function setGizmo(m) { A.gizmo = m === "rotate" ? "rotate" : "move"; paintSel(); }
     function setAxisHot(k) { if ((A.axisHot || null) === (k || null)) return; A.axisHot = k || null; paintSel(); }
-    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, new T.Color(th.text || "#e8e2d6").getHex(), selG); V.draw(); }   // 2.624.0: the theme's accent / text
+    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, A.planOnNow && A.planOnNow() ? 0x2563eb : new T.Color(th.text || "#e8e2d6").getHex(), selG); if (A.onPaint) A.onPaint(selG); V.draw(); }   // 2.647.0: on the floorplan: blue hover, drawn over the plan   // 2.624.0: the theme's accent / text
     function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }
 

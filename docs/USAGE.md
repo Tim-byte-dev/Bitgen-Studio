@@ -409,7 +409,7 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.643)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.647)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
@@ -422,6 +422,9 @@ to use as film sets. It replaces the House builder of older versions. Its ❔ ha
 - **Building** (the Build tools): rooms with shared walls, free-standing walls, doors and windows (open or shut),
   floors, ceilings (flat or following sloped walls), roofs, stairs and lights (day / 🌙 night); walls dragged across
   their line or freely, sloped wall tops.
+- **📐 Floorplan** (2.647.0): the view straight down on paper, one storey at a time - walls cut solid, doors with their
+  swing, windows, stairs, furniture and lights as plan symbols, each room's name, Width × Length and area. Every tool
+  draws as in 3D; a click picks a symbol. **Esc** anywhere: no tool, nothing picked, 🔄 Orbit.
 - **🗂 Outline**: every room and its parts (walls, floor, ceiling, skirting, cornice, doors, windows) listed, hidden
   or shown, rooms in groups. A part clicked in the view or the outline shows **its own properties** (a wall's length,
   height and colour; the ceiling's type; the skirting's profile).
@@ -568,8 +571,7 @@ With **Select**:
 
 - A camera is drawn over everything - one inside a room (under its ceiling and roof) is picked with a click, not the room.
   Drag it to move it; **R** turns it 15°, **Shift+R** back (a piece of furniture: R 90°, Shift+R back).
-- **Esc** or a **double-click on empty space** deselects everything; with a Build tool going the first Esc deselects and the
-  next goes back to ⬚ Select.
+- **Esc** or a **double-click on empty space** deselects everything (2.647.0: one Esc also drops the tool - 🔄 Orbit).
 - **🔄 Orbit**'s pointer is an orbit cursor (two arrows round a dot), not the hand (✋ Pan keeps the hand).
 
 ### Camera views, open doors and windows, auto roof + floor (2.631.0)
@@ -6297,6 +6299,19 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.647.0: **The Sketcher's 📐 Floorplan view, Esc = Orbit, a room's Width and Length.**
+  - **📐 Plan** (the toolbar, or View ▾ 📐 Floorplan): the view looks straight down, on paper, one storey at a time (a
+    list picks the storey when there are more). The walls are cut through and drawn solid; doors show their leaf and
+    swing (single, double, sliding; an opening is dashed), windows their glass and sill, stairs every tread with the
+    walking line and UP, furniture its outline and name, lights a circle and a cross, and every room its name, Width ×
+    Length and area. The building's tools work as in 3D - a room, a wall, a door … drawn on the plan is drawn with
+    these symbols - and a click picks a door, a light, a piece, the stairs, a wall or a room. Orbit turns the plan
+    round (it stays flat). 📐 again, another view or a camera's view: the 3D view back as it was.
+  - **Esc**: one press drops the tool and what is picked and goes to **🔄 Orbit** - in the 3D view, the floorplan and a
+    camera's view (a wall being drawn is kept). With nothing left to drop it puts a maximized docker back.
+  - **Width and Length** for every room: its panel has them (along its first wall and across it); a rectangle keeps its
+    corner, any other shape is stretched (its doors and windows stay in place along the walls). The Room tool has a
+    Width and a Length too: set both and one click puts a room that size; 0 = draw it with two corners as before.
 - 2.646.0: **🎨 Artist mode: Alt+P colours, Ctrl+P the prompt docker, Alt+G layers + pending** - generate from the
   layer you are painting on without leaving Artist mode.
   - **Alt+P** - the colour palette at the pointer (it was Ctrl+P). Alt+P again closes it.

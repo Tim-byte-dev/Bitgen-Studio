@@ -12912,6 +12912,13 @@ node scripts/test-artist646.js > /tmp/art646.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui646-ui.js > /tmp/ui646.log 2>&1 \
   && ok "2.646.0 browser test: Artist mode - Alt+P palette, Alt+G Layers + Pending over the full canvas, a layer picked, Ctrl+P the prompt docker on top, ▾ Edit -> the result in Pending, still Artist mode; off = as before - or SKIP without playwright" \
   || { bad "2.646.0 Artist mode browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui646.log | head -14; }
+# ---- 2.647.0 (Tim: "add floorplan view to sketcher, the buttons will still draw what they are set too but with floorplan symbols in floorplan mode. esc deselects all tools and changes to orbit mode in all views, rooms will have width and length properties")
+node scripts/test-plan647.js > /tmp/plan647.log 2>&1 \
+  && ok "2.647.0 Sketcher floorplan: storeys, the plan's symbols (walls cut, door swings, windows, stairs, furniture, lights, labels clear of them), picking on the plan, a room's Width × Length (any shape), Esc = Orbit - pure + wiring" \
+  || { bad "2.647.0 floorplan units"; grep -a "^FAIL" -A2 /tmp/plan647.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui647-ui.js > /tmp/ui647.log 2>&1 \
+  && ok "2.647.0 browser test: 📐 Plan - straight down on paper, walls dark / floors light / door gaps, picks a door / a room, Width / Length, the Room tool's one click, the Door tool on the plan, Esc = Orbit (plan, 3D, a camera's view), Orbit keeps it flat, Iso / 📐 again = 3D as it was - or SKIP without playwright" \
+  || { bad "2.647.0 floorplan browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui647.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

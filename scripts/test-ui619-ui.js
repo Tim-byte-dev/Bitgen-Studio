@@ -138,7 +138,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await hover([0, 0, 0]); await p.keyboard.press("r"); await click([0, 0, 0]); await hover([4, 2, 0]); await vcb("4,2"); await fit();
     await ev(() => H3PushPull.state.V.view("top"));
     await p.keyboard.press("l"); await click([2, 0, 0]); await click([2, 2, 0]);
-    const sp = await S(); await p.keyboard.press("Escape");   // 2.620.0: Esc in a tool with nothing going = back to Select
+    const sp = await S(); await p.keyboard.press("Escape");   // Esc = no tool, 🔄 Orbit (2.647.0; it was Select)
     check("L Line from the middle of one edge to the middle of the other (Midpoint inference) = the face split in two", sp.f === 2 && /split/.test(sp.msg), sp);
     await p.keyboard.press("t"); await click([0, 0, 0]); await click([4, 0, 0]);
     const tape = await S();

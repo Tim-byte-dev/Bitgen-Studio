@@ -409,7 +409,7 @@
     function leftDrag(mode) { controls.mouseButtons.LEFT = mode === "orbit" ? T.MOUSE.ROTATE : mode === "pan" ? T.MOUSE.PAN : -1; }
 
     Object.assign(V, {
-      R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground,
+      R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
       ray, screen, pick, snap, preview, tri, view, extents, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,

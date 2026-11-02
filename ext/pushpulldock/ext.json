@@ -13,6 +13,7 @@
     "ppprofiledlg.js",
     "pparch.js",
     "pparchview.js",
+    "ppplan.js",
     "pparchtools.js",
     "ppmesh.js",
     "ppedit.js",

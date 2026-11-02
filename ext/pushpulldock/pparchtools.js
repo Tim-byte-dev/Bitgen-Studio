@@ -50,8 +50,8 @@
     camera: "Click where the camera stands, click where it looks - then 📷 shot + depth + normal maps, 📍 a 360° location in its panel",
     furniture: "Pick a piece in the panel, click on a floor to put it there · R turns it 90° · type degrees · Select drags it",
   };
-  const VCB = { room: "Width,Depth", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length", furniture: "Turn°", camera: "Lens°" };
-  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0, autoRoof: false, autoFloor: false }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
+  const VCB = { room: "Width,Length", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length", furniture: "Turn°", camera: "Lens°" };
+  const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0, autoRoof: false, autoFloor: false, w: 0, l: 0 }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
     floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 }, furniture: { type: "sofa", cat: "Living", rot: 0, color: "" }, camera: { eye: 1.6, fov: 60 } };
 
   function create(ctx) {
@@ -166,6 +166,7 @@
       if (tool) setSel(null, true);
       props();
     }
+    const fixedSize = () => O.room.w > 0.05 && O.room.l > 0.05;            // 2.647.0: the Room tool's Width + Length set
     function rectTool(ev, z, finish) {
       const { p, s } = snapPlan(ev, z, st.a);
       if (!st.a) { st.a = p; return; }
@@ -174,6 +175,7 @@
     function down(ev) {
       if (ev.button !== 0) return;
       const A = AR();
+      if (tool === "room" && fixedSize()) { const { p } = snapPlan(ev, O.room.z); finishRoom(p, [p[0] + O.room.w, p[1] + O.room.l]); return; }   // 2.647.0: a set size = one click
       if (tool === "room") return rectTool(ev, O.room.z, (a, b) => finishRoom(a, b));
       if (tool === "floor") return rectTool(ev, O.floor.z, (a, b) => finishSlab(a, b));
       if (tool === "wall") {
@@ -245,12 +247,13 @@
         return;
       }
       if (tool === "room" || tool === "floor") {
-        const z = tool === "room" ? O.room.z : O.floor.z, { p, s } = snapPlan(ev, z, st.a);
-        if (!st.a) { show(s, { tip: tool === "room" ? "a room's corner" : "a floor's corner" }); return; }
-        st.cur = p; const R = P().rectPts(st.a, p), w = Math.abs(p[0] - st.a[0]), d = Math.abs(p[1] - st.a[1]);
+        const z = tool === "room" ? O.room.z : O.floor.z, { p, s } = snapPlan(ev, z, st.a), fix = tool === "room" && fixedSize();
+        if (!st.a && !fix) { show(s, { tip: tool === "room" ? "a room's corner" : "a floor's corner" }); return; }
+        const a0 = fix ? p : st.a, p2 = fix ? [p[0] + O.room.w, p[1] + O.room.l, p[2]] : p;   // 2.647.0: a set size - the room at the pointer
+        if (!fix) st.cur = p; const R = P().rectPts(a0, p2), w = Math.abs(p2[0] - a0[0]), d = Math.abs(p2[1] - a0[1]);
         const lines = loop3(R, z); if (tool === "room") { loop3(R, z + O.room.h).forEach((x) => lines.push(x)); R.forEach((q) => lines.push([[q[0], q[1], z], [q[0], q[1], z + O.room.h]])); }
-        show(s, { from: st.a, lines, faces: [[[R[0][0], R[0][1], z], [R[1][0], R[1][1], z], [R[2][0], R[2][1], z]], [[R[0][0], R[0][1], z], [R[2][0], R[2][1], z], [R[3][0], R[3][1], z]]], tip: fmt(w) + " × " + fmt(d) });
-        ctx.vcbValue((+w.toFixed(3)) + "," + (+d.toFixed(3))); return;
+        show(s, { from: fix ? null : st.a, lines, faces: [[[R[0][0], R[0][1], z], [R[1][0], R[1][1], z], [R[2][0], R[2][1], z]], [[R[0][0], R[0][1], z], [R[2][0], R[2][1], z], [R[3][0], R[3][1], z]]], tip: fmt(w) + " × " + fmt(d) });
+        if (!fix) ctx.vcbValue((+w.toFixed(3)) + "," + (+d.toFixed(3))); return;
       }
       if (tool === "wall") {
         const from = st.pts && st.pts[st.pts.length - 1], { p, s } = snapPlan(ev, O.wall.z, from);
@@ -375,6 +378,16 @@
         props(); ctx.status((tool === "door" ? "🚪 " : "🪟 ") + fmt(o.w) + " × " + fmt(o.h)); return true;
       }
       return false;
+    }
+    /** 2.647.0 (Tim: "esc deselects all tools and changes to orbit mode in all views"): a wall run of 2+ points is kept, any
+     *  other step dropped, nothing picked - true when there was something to drop (pptools then goes to 🔄 Orbit) */
+    function escape(baseTool) {
+      let did = false;
+      if (owns(baseTool) && baseTool === "wall" && st.pts && st.pts.length >= 2) { finishWall(false); did = "kept"; }
+      if (Object.keys(st).length) { st = {}; V.preview({}); did = did || true; }
+      if (asel) { setSel(null, true); did = did || true; }
+      if (AV()) AV().setHover(null);
+      return did;
     }
     function key(e, baseTool) {
       const k = e.key;
@@ -668,6 +681,7 @@
         orbit / pan / zoom leaves it (the lens as it was, the cameras shown again) */
     function lookThrough(c, quiet) {
       if (!c) return;
+      if (ctx.leavePlan) ctx.leavePlan();                                 // 2.647.0: a camera's view ends the 📐 floorplan
       const d = root.PPCam.dir(c); if (V.isOrtho) V.ortho(false);
       const cam = V.cam();
       if (!through) through = { fov: cam.fov };
@@ -841,6 +855,8 @@
           numIn("Offset from floor edge", o.off || 0, opt("off"), 0.01, -5, 5, "m");      // 2.624.0
           if (tool === "room") { chkIn("Auto roof (the Roof tool's type)", !!o.autoRoof, opt("autoRoof")); chkIn("Auto floor (a slab under the walls)", !!o.autoFloor, opt("autoFloor")); }   // 2.631.0
           if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn"));
+          if (tool === "room") { numIn("Width", o.w || 0, opt("w"), 0.05, 0, 500, "m"); numIn("Length", o.l || 0, opt("l"), 0.05, 0, 500, "m");   // 2.647.0
+            box.appendChild(el("div", "pphint", fixedSize() ? "Width × Length set: one click puts the room there (its corner at the pointer). 0 = draw it with two clicks." : "Width and Length 0: draw the room with two corners - or set both for a room that size in one click.")); }
           box.appendChild(el("div", "pphint", "Drawn along a floor's (J) edge, the wall's outside face sits the offset in from it. Corners snap to floors' edges.")); }
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
         if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Elevation (height from floor)", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
@@ -901,7 +917,12 @@
         const R = x, rect = R.closed && R.pts.length === 4 && isRect(R);
         head((R.closed ? "⌂ " : "▮ ") + R.name + (R.closed ? " · " + (+P().roomArea(R).toFixed(2)) + " m²" : ""));
         txtIn("Name", R.name, ch((v) => { R.name = v; }));
-        if (rect) { const e = P().edgesOf(R); numIn("Width", e[0].L, ch((v) => P().resizeRect(AR(), R.id, v, e[1].L)), 0.05, 0.3, 500, "m"); numIn("Depth", e[1].L, ch((v) => P().resizeRect(AR(), R.id, e[0].L, v)), 0.05, 0.3, 500, "m"); }
+        // 2.647.0 (Tim: "rooms will have width and length properties"): Width (along its first wall) and Length (across it) -
+        // any closed room (a rectangle keeps its corner; another shape is stretched from its box's corner)
+        const sz = R.closed ? P().roomSize(R) : null;
+        if (sz) { numIn("Width", sz.w, ch((v) => { if (!P().resizeRoom(AR(), R.id, v, P().roomSize(P().room(AR(), R.id)).l)) ctx.status("⌂ that width does not fit"); }), 0.05, 0.3, 500, "m");
+          numIn("Length", sz.l, ch((v) => { if (!P().resizeRoom(AR(), R.id, P().roomSize(P().room(AR(), R.id)).w, v)) ctx.status("⌂ that length does not fit"); }), 0.05, 0.3, 500, "m");
+          if (!rect) box.appendChild(el("div", "pphint", "Not a rectangle: Width / Length stretch it from the corner of its box (its doors and windows keep their place along the walls).")); }
         numIn("Wall height", R.h, ch((v) => P().setRoom(AR(), R.id, { h: v })), 0.05, 0.1, 50, "m");
         numIn("Wall thickness", R.t, ch((v) => P().setRoom(AR(), R.id, { t: v })), 0.01, 0.02, 2, "m");
         numIn("Floor level", R.z, ch((v) => P().setRoom(AR(), R.id, { z: v })), 0.05, -100, 1000, "m");
@@ -1029,7 +1050,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { escape, gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -55,24 +55,25 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await p.keyboard.press("Escape"); await p.waitForTimeout(150);
     s = await st();
     check("Esc: nothing picked", none(s), s);
-    // a model face + then Esc; an edge + Esc
+    // a model face + then Esc; an edge + Esc (2.647.0: Esc also leaves the tool - Space = Select again)
+    await p.keyboard.press(" "); await p.waitForTimeout(80);
     [x, y] = await scr([8.5, 0.5, 1]); await p.mouse.click(x, y); await p.waitForTimeout(150);
     const f1 = (await st()).msel.f.length;
     await p.keyboard.press("Escape"); await p.waitForTimeout(150);
     check("a face picked + Esc: nothing picked", f1 === 1 && none(await st()), f1);
     // double-click on empty space after picking the camera
+    await p.keyboard.press(" "); await p.waitForTimeout(80);
     [x, y] = await scr([3, 2.5, 1.6]); await p.mouse.click(x, y); await p.waitForTimeout(150);
     const was = (await st()).asel;
     const [ex, ey] = await empty(); await p.mouse.dblclick(ex, ey); await p.waitForTimeout(250);
     s = await st();
     check("the camera picked + a double-click on empty space: nothing picked (and the Orbit tool)", was && was.ak === "cam" && none(s) && s.tool === "orbit", { was, s });
-    // Esc with a Build tool going: first deselects, then Select
+    // Esc with a Build tool going (2.647.0, Tim: "esc deselects all tools and changes to orbit mode in all views"): ONE Esc -
+    // nothing picked AND no tool (🔄 Orbit)
     await ev(() => { const S = H3PushPull.state; S.T.use("camera"); S.T.arch.setSel({ ak: "cam", id: 50 }); });
     await p.keyboard.press("Escape"); await p.waitForTimeout(120);
     const s1 = await st();
-    await p.keyboard.press("Escape"); await p.waitForTimeout(120);
-    const s2 = await st();
-    check("Esc with a Build tool (📷 Camera) and a camera picked: nothing picked, then ⬚ Select", !s1.asel && s1.tool === "camera" && s2.tool === "select", { s1: { t: s1.tool, a: s1.asel }, s2: s2.tool });
+    check("Esc with a Build tool (📷 Camera) and a camera picked: nothing picked and 🔄 Orbit at once", !s1.asel && s1.tool === "orbit", { t: s1.tool, a: s1.asel });
     // 2.632.0 (Tim: "when in orbit mode use orbit icon not a hand")
     const cur = await ev(() => { const S = H3PushPull.state; S.T.use("orbit"); const o = getComputedStyle(S.V.canvas).cursor; S.T.use("pan"); const pn = getComputedStyle(S.V.canvas).cursor; S.T.use("select"); return { o, pn }; });
     check("🔄 Orbit: the pointer is an orbit cursor (two arrows round a dot), not the hand (✋ Pan keeps the hand)", /data:image\/svg\+xml/.test(cur.o) && !/grab/.test(cur.o) && /grab/.test(cur.pn), cur.o.slice(0, 60) + " | " + cur.pn);

@@ -964,7 +964,7 @@
         ],
         [
           "Esc",
-          "Stop the tool / let go / restore the maximized docker"
+          "No tool and nothing picked - 🔄 Orbit, in the 3D view, the 📐 floorplan and a camera's view (a wall run is kept); again (nothing to drop): restore the maximized docker"
         ],
         [
           "a number",
@@ -973,10 +973,6 @@
         [
           "Ctrl+Z / Ctrl+Y / Ctrl+S",
           "Undo / redo / save"
-        ],
-        [
-          "Esc",
-          "Cancel the tool / leave the group"
         ],
         [
           "Double-click a picked camera",

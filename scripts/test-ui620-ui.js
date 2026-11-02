@@ -161,7 +161,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await click([0, -1, 0]); await click([3, -1, 0]); await click([3, -2, 0]); await p.keyboard.press("Escape");
     A = await AR();
     const wl = A.rooms.find((R) => R.closed === false);
-    check("W Wall: click, click, click, Esc = a free-standing wall (two runs)", wl && wl.pts.length === 3 && /Wall 1/.test(await msg()), A.rooms.map((R) => [R.closed, R.pts.length]));
+    check("W Wall: click, click, click, Esc = a free-standing wall (two runs)", wl && wl.pts.length === 3 && /Wall 1/.test(await msg()), { rooms: A.rooms.map((R) => [R.closed, R.pts.length, R.name]), msg: await msg() });
     await p.keyboard.press("v"); await click([-2, 0, 0]); await hover([-2, 2, 0]); await vcb("3.6");
     await p.keyboard.press("j"); await click([4, -1.5, 0]); await hover([5, -0.5, 0]); await vcb("2,3");
     A = await AR();

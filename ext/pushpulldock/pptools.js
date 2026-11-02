@@ -412,12 +412,25 @@
       ctx.status("start the tool first, then type"); return false;
     }
 
+    /* 2.647.0 (Tim: "esc deselects all tools and changes to orbit mode in all views"): ONE Esc - the tool's step ends (a wall
+       run of 2+ points is kept), the group edit is left, nothing is picked, the tool is 🔄 Orbit - in the 3D view, the
+       floorplan and a camera's view alike. Already in Orbit with nothing to drop: not ours (a maximized docker is restored). */
+    function escape() {
+      let did = false, kept = "";
+      const r = AT && AT.escape ? AT.escape(tool) : false; if (r) did = true; if (r === "kept" && ctx.statusText) kept = ctx.statusText();   // a wall run kept: its own words first
+      if (Object.keys(st).length) { reset(); did = true; }
+      if (ED && ED.cancel) ED.cancel();
+      if (ctx.group()) { ctx.enterGroup(null); did = true; }
+      if (hasSel()) { ctx.setSel({ f: [], e: [], k: [] }); did = true; }
+      if (tool !== "orbit") { use("orbit"); did = true; }
+      if (!did) return false;
+      ctx.status((kept ? kept + " · " : "") + "🔄 Orbit - no tool, nothing picked (Esc) · drag to turn the view" + (V.planOn && V.planOn() ? " (the floorplan turns flat)" : "") + " · Space = Select");
+      return true;
+    }
     function key(e) {
       const k = e.key;
+      if (k === "Escape") return escape();
       if (AT && AT.key(e, tool)) return true;
-      // Esc: stop the tool's step / leave the group / let go / back to Select - in Select with nothing picked it is not ours
-      // (a maximized docker is restored by it)
-      if (k === "Escape") { if (Object.keys(st).length) { reset(); ctx.status(HINT[tool] || ""); } else if (ctx.group()) ctx.enterGroup(null); else if (hasSel()) ctx.setSel({ f: [], e: [], k: [] }); else if (tool !== "select") { use("select"); ctx.status("⬚ Select"); } else return false; return true; }
       if (k === "ArrowRight" || k === "ArrowLeft" || k === "ArrowUp") { lock = k === "ArrowRight" ? 0 : k === "ArrowLeft" ? 1 : 2; ctx.status("keeping the " + ["red", "green", "blue"][lock] + " axis (↓ lets it go)"); return true; }
       if (k === "ArrowDown") { lock = null; ctx.status(HINT[tool]); return true; }
       if (k === "Shift" && lastSnap && lastSnap.axis != null && !e.repeat) { lock = lastSnap.axis; return true; }
@@ -431,7 +444,7 @@
     }
     function keyUp(e) { if (e.key === "Shift" && lock != null && lastSnap && lastSnap.axis === lock) { lock = null; } }
     use("select");
-    return { state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED };
+    return { escape, state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED };
   }
   root.PPTools = { create, TOOLS, HINT, VCB };
 })(typeof window !== "undefined" ? window : globalThis);

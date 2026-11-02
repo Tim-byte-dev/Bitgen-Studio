@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.647.0** — The Sketcher's Floorplan View, Esc = Orbit, a Room's Width and Length
 - **2.646.0** — Artist Mode: Alt+P Colours, Ctrl+P the Prompt Docker, Alt+G Layers + Pending
 - **2.645.0** — Ctrl+P Brings the Prompt Docker to the Front
 - **2.644.0** — The Guides Say Sketcher: The House Builder Gone from the Readme, the Guide, the Features, Beta, Help, Shortcuts

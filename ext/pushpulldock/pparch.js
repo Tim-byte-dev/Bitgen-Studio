@@ -851,6 +851,30 @@
     R.pts = [p0, add(p0, mul(u, w)), add(add(p0, mul(u, w)), mul(v, d)), add(p0, mul(v, d))].map((p) => [r6(p[0]), r6(p[1])]);
     return true;
   }
+  /** 2.647.0 (Tim: "rooms will have width and length properties"): a room's size along its first wall (width) and across it
+   *  (length) - the box round its centre line in that wall's frame. Any closed room, not only a rectangle. */
+  function roomSize(R) {
+    if (!R || !R.pts || R.pts.length < 2) return null;
+    const e = edgesOf(R).find((x) => x.L > EPS); if (!e) return null;
+    const u = e.u, v = left(u), p0 = R.pts[0];
+    let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
+    R.pts.forEach((p) => { const d = sub(p, p0), a = dot(d, u), b = dot(d, v); u0 = Math.min(u0, a); u1 = Math.max(u1, a); v0 = Math.min(v0, b); v1 = Math.max(v1, b); });
+    return { w: r6(u1 - u0), l: r6(v1 - v0), u, v, o: p0, u0, v0 };
+  }
+  /** 2.647.0: a room made w wide (along its first wall) and l long (across it) - a rectangle keeps its corner; any other shape
+   *  is stretched from its box's corner, its doors / windows kept at the same place along their walls (in proportion) */
+  function resizeRoom(A, id, w, l) {
+    const R = room(A, id); if (!R || !R.closed || !(w > 0.05) || !(l > 0.05)) return false;
+    const e = edgesOf(R);
+    const rect = e.length === 4 && e.every((a, i) => Math.abs(dot(a.u, e[(i + 1) % 4].u)) < 1e-6);
+    if (rect) return resizeRect(A, id, w, l);
+    const S = roomSize(R); if (!S || S.w < EPS || S.l < EPS) return false;
+    const kw = w / S.w, kl = l / S.l, L0 = e.map((x) => x.L);
+    R.pts = R.pts.map((p) => { const d = sub(p, S.o), a = S.u0 + (dot(d, S.u) - S.u0) * kw, b = S.v0 + (dot(d, S.v) - S.v0) * kl; const q = add(add(S.o, mul(S.u, a)), mul(S.v, b)); return [r6(q[0]), r6(q[1])]; });
+    const L1 = edgesOf(R).map((x) => x.L);
+    A.ops.forEach((op) => { if (op.room === id && L0[op.edge] > EPS && L1[op.edge] != null) op.at = r6(op.at * L1[op.edge] / L0[op.edge]); });
+    return true;
+  }
   function removeRoom(A, id) {
     A.rooms = A.rooms.filter((R) => R.id !== id);
     A.ops = A.ops.filter((x) => x.room !== id);
@@ -959,7 +983,7 @@
 
   const api = { frames, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);

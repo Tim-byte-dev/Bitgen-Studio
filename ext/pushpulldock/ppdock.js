@@ -311,6 +311,25 @@
     // 2.629.0: ▦ Materials - the House builder's materials (a colour "mat:<key>": its colour + texture on faces, walls, floors)
     const mb = $("ppMatBtn"); if (mb && root.PPFurn) mb.onclick = () => menu(mb, [{ head: "Materials (Paint - B)" }].concat(root.PPFurn.materials().map((m) => ({ label: (m.tex ? "▦ " : "■ ") + m.label, run: () => { setColor("mat:" + m.key); msg("🪣 " + m.label + " - click faces, walls, floors"); } }))));
   }
+  /* 2.647.0 (Tim: "add floorplan view to sketcher, the buttons will still draw what they are set too but with floorplan symbols
+     in floorplan mode"): 📐 on / off - noRestore: another view takes over (the 3D camera is not put back) */
+  function setPlan(on, noRestore) {
+    if (!S.P || !S.V) return;
+    if (on && S.T && S.T.arch && S.T.arch.through && S.T.arch.through() != null && S.T.arch.leaveThrough) S.T.arch.leaveThrough();
+    S.P.set(!!on, noRestore);
+    $("ppPlan").classList.toggle("on", S.P.on());
+    $("ppOrtho").textContent = S.V.isOrtho ? "⬛ Parallel" : "⬛ Persp";
+    planLevels();
+    test("pp_plan", S.P.on() ? "1" : "0");
+    msg(S.P.on() ? "📐 floorplan - every tool draws as in 3D, shown as plan symbols · Orbit turns the plan · Esc: no tool, Orbit · 📐 again: 3D" : "📐 the 3D view back");
+  }
+  function planLevels() {
+    const sel = $("ppPlanLvl"); if (!sel || !S.P) return;
+    const zs = S.P.on() ? S.P.levels() : [];
+    sel.style.display = zs.length > 1 ? "" : "none";
+    sel.innerHTML = zs.map((z, i) => '<option value="' + z + '">' + (i === 0 ? "Ground " : "Storey " + (i + 1) + " ") + G().fmtLen(z) + "</option>").join("");
+    sel.value = String(S.P.level());
+  }
   function setColor(c) { S.color = c; $("ppCol").value = root.PPFurn ? root.PPFurn.hex(c) : c; paintSw(); const mb = $("ppMatBtn"); if (mb) mb.classList.toggle("on", !!(root.PPFurn && root.PPFurn.isMat(c))); if (S.T && S.T.name() !== "paint") S.T.use("paint"); }
   function paintSw() { doc.querySelectorAll("#ppSw button").forEach((b) => b.classList.toggle("on", b.dataset.c === S.color)); }
   function visible() { const v = $("ppView"); return !!(v && v.offsetParent !== null && v.clientWidth > 20 && v.clientHeight > 20); }
@@ -323,13 +342,14 @@
     $("ppLoad").remove();
     try { S.A = await root.PPArchView.attach(S.V); S.V.after = () => S.A.rebuild(); S.V.extraBox = () => S.A.box(); }
     catch (e) { S.A = null; msg("the architecture tools did not start: " + (e.message || e)); }
+    S.P = root.PPPlan && S.A ? root.PPPlan.attach(S.V, S.A) : null;        // 2.647.0: 📐 the floorplan view
     S.M = G().newModel(); S.V.setModel(S.M);
     S.T = root.PPTools.create({
       V: S.V, model: () => S.M, sel: () => S.sel, setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s); S.V.setSel(S.sel); info(); if (S.T && S.T.arch && !S.T.arch.sel()) S.T.arch.props(); },
-      group: () => S.group, enterGroup, status: msg, vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
+      group: () => S.group, enterGroup, status: msg, statusText: () => ($("ppMsg") || {}).textContent || "", vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
-      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), resized: () => { if (S.V) S.V.size(); },
+      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, resized: () => { if (S.V) S.V.size(); },
       // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
       models: () => api("/api/tlcanvas/models").then((j) => (j.models || []).filter((x) => /\.(glb|gltf|obj|fbx)$/i.test(x.name)).map((x) => x.name)),
       importModel: (n) => guard("Import", () => importModel(n)),
@@ -360,10 +380,14 @@
     // 2.631.0 (Tim: "in sketcher view add camera n to the dropdown when a camera is added. show the view from the camera")
     $("ppViewSel").onchange = (e) => {
       const v = e.target.value; if (!v || !S.V) return;
+      if (v === "plan") { e.target.value = ""; setPlan(true); return; }      // 2.647.0
+      if (S.P && S.P.on()) setPlan(false, true);                             // another view / a camera's: the floorplan ends
       if (v.startsWith("cam:")) { const A = S.M && S.M.arch, c = A && (A.cams || []).find((x) => String(x.id) === v.slice(4)); if (c && S.T && S.T.arch) S.T.arch.lookThrough(c); return; }
       if (S.T && S.T.arch && S.T.arch.leaveThrough) S.T.arch.leaveThrough();
       S.V.view(v); e.target.value = "";
     };
+    $("ppPlan").onclick = () => { if (S.P) setPlan(!S.P.on()); };
+    $("ppPlanLvl").onchange = (e) => { if (S.P) { S.P.setLevel(+e.target.value); msg("📐 the floorplan of the storey at " + G().fmtLen(+e.target.value)); } };
     $("ppOrtho").onclick = () => { if (!S.V) return; S.V.ortho(!S.V.isOrtho); $("ppOrtho").textContent = S.V.isOrtho ? "⬛ Parallel" : "⬛ Persp"; };
     $("ppExt").onclick = () => S.V && S.V.extents();
     $("ppStyle").onchange = (e) => S.V && S.V.style(e.target.value);
@@ -375,7 +399,7 @@
     $("ppVcb").addEventListener("keydown", (e) => {
       e.stopPropagation();
       if (e.key === "Enter") { e.preventDefault(); if (S.T && S.T.vcb($("ppVcb").value)) { $("ppVcb").value = ""; S.V.canvas.focus({ preventScroll: true }); } }
-      if (e.key === "Escape") { $("ppVcb").value = ""; S.V.canvas.focus({ preventScroll: true }); }
+      if (e.key === "Escape") { $("ppVcb").value = ""; S.V.canvas.focus({ preventScroll: true }); if (S.T && S.T.escape) S.T.escape(); }   // 2.647.0: Esc = no tool, Orbit
     });
     // the keys, over the docker (not while typing in its name box)
     doc.addEventListener("keydown", (e) => {
