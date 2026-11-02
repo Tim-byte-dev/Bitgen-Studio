@@ -12926,6 +12926,13 @@ node scripts/test-zoom648.js > /tmp/zoom648.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui648-ui.js > /tmp/ui648.log 2>&1 \
   && ok "2.648.0 browser test: Shift + right-drag zooms in / out round the point (Sketcher, floorplan, image editor, Artist mode, timeline), ⊡ in all three, the pointer icons, Esc Select -> Orbit -> Select (never docks it), Ctrl+click picks two rooms, drags / deletes them together - or SKIP without playwright" \
   || { bad "2.648.0 zoom / pick browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui648.log | head -14; }
+# ---- 2.650.0 (Tim: "when an object is selected like a wall etc, highlight it so user knows they have selected the object same in floorplan view, hover over object highlights the object in a different color unless it is selected")
+node scripts/test-hl650.js > /tmp/hl650.log 2>&1 \
+  && ok "2.650.0 Sketcher highlight: the floorplan's shapes (a wall, a room, its floor, a free wall, a door, stairs, a piece, a light), the accent / blue rules - pure + wiring" \
+  || { bad "2.650.0 highlight units"; grep -a "^FAIL" -A2 /tmp/hl650.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui650-ui.js > /tmp/ui650.log 2>&1 \
+  && ok "2.650.0 browser test: 3D - the hovered wall blue, the picked wall accent (its colour moves), no blue over a picked one, furniture tinted; the floorplan - picked accent, hovered blue, none when nothing - or SKIP without playwright" \
+  || { bad "2.650.0 highlight browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui650.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -32,6 +32,7 @@
     const A = { V, isNight: false, cutaway: false, meshes: [], tags: [], built: null, sel: null, hover: null };
     V.hideOnShot = (V.hideOnShot || []).concat([selG]);
     const mats = new Map();
+    function clear2(g) { while (g.children.length) { const c = g.children.pop(); c.traverse((o) => { if (o.geometry && !o.userData.shared) o.geometry.dispose(); if (o.material && o.material.dispose) o.material.dispose(); }); } }   // 2.650.0: tints share the pieces' geometry
     function clear(g) { while (g.children.length) { const c = g.children.pop(); c.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.isLight && o.dispose) o.dispose(); }); } }
     function mat(col, alpha, emissive) {
       const sty = V.styleName, k = col + "|" + alpha + "|" + (emissive || "") + "|" + sty;
@@ -244,6 +245,40 @@
       const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
       const ls = new T.LineSegments(g, new T.LineBasicMaterial({ color, depthTest: false, transparent: true, opacity: 0.95 })); ls.renderOrder = 12; out.add(ls);
     }
+    /* 2.650.0 (Tim: "when an object is selected like a wall etc, highlight it so user knows they have selected the object same
+       in floorplan view, hover over object highlights the object in a different color unless it is selected"): the picked
+       thing's own faces tinted (the accent), the one under the pointer tinted blue - over the faces they sit on (no depth
+       write, pulled forward); a wall = the faces inside its own footprint, a room = its walls + its floor / ceiling ... */
+    const HOVER = 0x3b82f6;
+    function tagMatch(t) {
+      const Ar = V.M && V.M.arch; if (!t || !Ar) return null;
+      const inQ = (q, R) => (tg, c) => tg.ak === "wall" && c[2] >= R.z - 0.02 && c[2] <= R.z + R.h + 3 && (P().inPoly([c[0], c[1]], q) || P().segDist([c[0], c[1]], q[0], q[1]).d < 0.03 || P().segDist([c[0], c[1]], q[2], q[3]).d < 0.03);
+      if (t.ak === "room" && t.part === "wall" && t.edge != null) { const R = P().room(Ar, t.id), q = R && P().wallQuads(R).find((w) => w.i === t.edge); return q ? inQ(q.quad, R) : null; }
+      if (t.ak === "room" && t.part) return (tg) => tg.ak === "room" && tg.id === t.id && tg.part === t.part;
+      if (t.ak === "room") { const R = P().room(Ar, t.id); if (!R) return null; const W = P().wallQuads(R).map((q) => inQ(q.quad, R)); return (tg, c) => (tg.ak === "room" && tg.id === t.id) || W.some((f) => f(tg, c)); }
+      if (t.ak === "wpt" || t.ak === "wtop" || t.ak === "cam") return null;
+      return (tg) => tg.ak === t.ak && tg.id === t.id;
+    }
+    function tint(t, color, opacity, out) {
+      if (!t) return;
+      const mat = new T.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+      if (t.ak === "item" || t.ak === "light") {                       // a piece / a light: its own meshes, tinted
+        (t.ak === "item" ? furn : fix).children.forEach((g) => { if (!g.userData.tag || g.userData.tag.id !== t.id) return; g.updateMatrixWorld(true); g.traverse((o) => { if (!o.isMesh || !o.geometry) return; const m = new T.Mesh(o.geometry, mat); m.matrixAutoUpdate = false; m.matrix.copy(o.matrixWorld); m.renderOrder = 11; m.raycast = () => {}; m.userData.shared = true; out.add(m); }); });
+        return;
+      }
+      const ok = tagMatch(t); if (!ok) return;
+      const pos = [];
+      A.meshes.forEach((m) => {
+        const a = m.geometry.attributes.position.array, t2 = m.userData.t2;
+        for (let i = 0; i < t2.length; i++) {
+          const tg = A.tags[t2[i]], o = i * 9, c = [(a[o] + a[o + 3] + a[o + 6]) / 3, (a[o + 1] + a[o + 4] + a[o + 7]) / 3, (a[o + 2] + a[o + 5] + a[o + 8]) / 3];
+          if (tg && ok(tg, c)) for (let k = 0; k < 9; k++) pos.push(a[o + k]);
+        }
+      });
+      if (!pos.length) return;
+      const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
+      const mesh = new T.Mesh(g, mat); mesh.renderOrder = 11; mesh.raycast = () => {}; out.add(mesh);
+    }
     /** 2.633.0: a picked camera / piece of furniture - its rotate rings (yaw blue, pitch red, roll green), over everything */
     const RING_COL = { yaw: 0x3b82f6, pitch: 0xef4444, roll: 0x22c55e };
     function rings(t, out) {
@@ -282,7 +317,16 @@
     function setThrough(id) { A.through = id == null ? null : id; paintSel(); }
     function setGizmo(m) { A.gizmo = m === "rotate" ? "rotate" : "move"; paintSel(); }
     function setAxisHot(k) { if ((A.axisHot || null) === (k || null)) return; A.axisHot = k || null; paintSel(); }
-    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); (A.more || []).forEach((t) => outline(t, new T.Color(th.accent || "#f59e2c").getHex(), selG)); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, A.planOnNow && A.planOnNow() ? 0x2563eb : new T.Color(th.text || "#e8e2d6").getHex(), selG); if (A.onPaint) A.onPaint(selG); V.draw(); }   // 2.647.0: on the floorplan: blue hover, drawn over the plan   // 2.624.0: the theme's accent / text
+    function paintSel() {
+      clear2(selG); const th = V.theme || {}; camColours();
+      const acc = new T.Color(th.accent || "#f59e2c").getHex(), plan = !!(A.planOnNow && A.planOnNow());
+      const key = (t) => [t.ak, t.id, t.room, t.part || null, t.edge == null ? null : t.edge, t.k == null ? null : t.k].join("|");   // field order does not matter
+      const picked = [A.sel].concat(A.more || []).filter(Boolean), isPicked = (t) => picked.some((p) => key(p) === key(t));
+      const hov = A.hover && !isPicked(A.hover) ? A.hover : null;     // 2.650.0: no hover colour over what is picked
+      if (!plan) { picked.forEach((t) => tint(t, acc, 0.38, selG)); if (hov) tint(hov, HOVER, 0.3, selG); }   // 2.650.0: the floorplan highlights its own symbols
+      outline(A.sel, acc, selG); (A.more || []).forEach((t) => outline(t, acc, selG)); rings(A.sel, selG); moveWidget(A.sel, selG);
+      if (hov) outline(hov, HOVER, selG);
+      if (A.onPaint) A.onPaint(selG, { sel: A.sel, more: A.more || [], hover: hov, accent: th.accent || "#f59e2c", hoverCol: "#3b82f6" }); V.draw(); }   // 2.624.0: the theme's accent; 2.650.0: blue hover, tints
     function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
     function setMore(list) { A.more = (list || []).map((t) => Object.assign({}, t)); paintSel(); }   // 2.648.0: Ctrl+click - the others picked
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }

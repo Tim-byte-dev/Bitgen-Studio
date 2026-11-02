@@ -92,7 +92,7 @@ check("…Esc in the Measurements box too", /if \(S\.T && S\.T\.escape\) S\.T\.e
 check("the 📐 Plan button, View ▾ Floorplan, the storey list", /id="ppPlan"/.test(H) && /<option value="plan">📐 Floorplan<\/option>/.test(H) && /id="ppPlanLvl"/.test(H) && /\$\("ppPlan"\)\.onclick/.test(PD) && /if \(v === "plan"\)/.test(PD));
 check("another view or a camera's view ends the floorplan", /if \(S\.P && S\.P\.on\(\)\) setPlan\(false, true\);/.test(PD) && /if \(ctx\.leavePlan\) ctx\.leavePlan\(\);/.test(AT));
 check("the 3D view's hooks: the plan's own picking, rebuilt with the building, its paper kept, the outline over it",
-  /if \(A\.planPick\) \{ const h = A\.planPick\(ev\); if \(h !== undefined\) return h; \}/.test(AV) && /if \(A\.onRebuild\)/.test(AV) && /if \(A\.onLayers\) A\.onLayers\(\);/.test(AV) && /if \(A\.onPaint\) A\.onPaint\(selG\);/.test(AV));
+  /if \(A\.planPick\) \{ const h = A\.planPick\(ev\); if \(h !== undefined\) return h; \}/.test(AV) && /if \(A\.onRebuild\)/.test(AV) && /if \(A\.onLayers\) A\.onLayers\(\);/.test(AV) && /if \(A\.onPaint\) A\.onPaint\(selG[,)]/.test(AV));
 check("the plan view: straight down, parallel, flat (orbit only turns it), the 3D building hidden, back as it was",
   /V\.view\("top"\)/.test(PS) && /c\.maxPolarAngle = 1e-3/.test(PS) && /HIDE = \["pp-arch", "pp-fixtures", "pp-furniture"\]/.test(PS) && /V\.restore\(plan\.keep\)/.test(PS));
 check("a room's panel: Width + Length for any room; the Room tool: Width + Length = one click",

@@ -201,11 +201,40 @@
     return sl ? { ak: "slab", id: sl.id } : null;
   }
 
+  /** 2.650.0 (Tim: "when an object is selected like a wall etc, highlight it so user knows they have selected the object same in
+   *  floorplan view, hover over object highlights the object in a different color unless it is selected"): the plan shape of
+   *  a picked / hovered thing -> [ring ...] (2D, closed): a wall = its quad, a room = its outside outline (a free wall: its
+   *  quads), a room's floor / ceiling ... = its inside, a door / window = its cut, stairs / a piece / a floor = their outline, a
+   *  light / camera = a small disc */
+  function hlShapes(A, t, z, o) {
+    if (!A || !t) return [];
+    const Q = P(), out = [], disc = (x, y, r) => { const c = arc([x, y], r, 0, 2 * Math.PI, 18); c.pop(); return ring(c); };
+    const rid = t.ak === "room" ? t.id : t.ak === "wall" || t.ak === "wpt" || t.ak === "wtop" ? t.room : null;
+    if (rid != null) {
+      const R = Q.room(A, rid); if (!R || !sameZ(R.z, z)) return [];
+      const e = t.edge != null && (t.part === "wall" || t.ak !== "room") ? t.edge : null;
+      if (e != null) { const q = Q.wallQuads(R).find((w) => w.i === e); if (q) out.push(ring(q.quad)); return out; }
+      if (t.part && R.closed) { const I = Q.interior(R); if (I) out.push(ring(I)); return out; }
+      if (R.closed) { const X = Q.exterior(R); if (X) out.push(ring(X)); } else Q.wallQuads(R).forEach((q) => out.push(ring(q.quad)));
+      return out;
+    }
+    const x = Q.find(A, t.ak, t.id); if (!x) return [];
+    if (t.ak === "op") { const I = Q.opInfo(A, x); if (I && sameZ(I.R.z, z)) out.push(ring(I.rect)); }
+    else if (t.ak === "stair") { if (!sameZ(x.z, z)) return []; const a = x.ang * Math.PI / 180, u = [Math.cos(a), Math.sin(a)], v = [-u[1], u[0]], q = [x.x - v[0] * x.w / 2, x.y - v[1] * x.w / 2]; out.push(ring([q, [q[0] + u[0] * x.len, q[1] + u[1] * x.len], [q[0] + u[0] * x.len + v[0] * x.w, q[1] + u[1] * x.len + v[1] * x.w], [q[0] + v[0] * x.w, q[1] + v[1] * x.w]])); }
+    else if (t.ak === "item") { const F = o && o.footprint ? o.footprint(x) : null; if (F && F.length >= 3) out.push(ring(F)); }
+    else if (t.ak === "slab") { if (x.pts) out.push(ring(x.pts)); }
+    else if (t.ak === "light") out.push(disc(x.x, x.y, 0.24));
+    else if (t.ak === "cam") out.push(disc(x.x, x.y, 0.3));
+    else if (t.ak === "roof") (x.rooms || []).forEach((id) => { const R = Q.room(A, id); const X = R && Q.exterior(R); if (X && sameZ(R.z, z)) out.push(ring(X)); });
+    return out;
+  }
   /* ---------------- three.js: the plan in the Sketcher's view */
   const ORDER = { floor: 3, furn: 4, wall: 5, sym: 6, label: 7 };
   function attach(V, AV) {
     const T = V.T, scene = V.scene;
     const G = new T.Group(); G.name = "pp-plan"; G.visible = false; scene.add(G);
+    const HL = new T.Group(); HL.name = "pp-plan-hl"; scene.add(HL);           // 2.650.0: the picked / hovered highlight on the plan
+    function clearHL() { while (HL.children.length) { const c = HL.children.pop(); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); } plan.hl = 0; }
     const plan = { isOn: false, z: 0, keep: null };
     const named = (n) => scene.getObjectByName(n);
     const HIDE = ["pp-arch", "pp-fixtures", "pp-furniture"];
@@ -271,7 +300,7 @@
         grid0 = [V.grid.visible, V.axes ? V.axes.visible : true]; V.grid.visible = false; if (V.axes) V.axes.visible = false;   // the plan's own light grid instead
         G.visible = true; paper(); rebuild();
       } else {
-        plan.isOn = false; G.visible = false; clear();
+        plan.isOn = false; G.visible = false; clear(); clearHL();
         HIDE.forEach((n) => { const o = named(n); if (o) o.visible = true; });
         if (polar0) { c.minPolarAngle = polar0[0]; c.maxPolarAngle = polar0[1]; c.update(); }
         if (grid0) { V.grid.visible = grid0[0]; if (V.axes) V.axes.visible = grid0[1]; }
@@ -297,10 +326,26 @@
       AV.onRebuild = () => { if (plan.isOn) rebuild(); };
       AV.onLayers = () => { if (plan.isOn) { HIDE.forEach((n) => { const o = named(n); if (o) o.visible = false; }); paper(); } };
       // the picked / hovered outline over the plan
-      AV.onPaint = (g) => { if (!plan.isOn) return; g.traverse((x) => { x.renderOrder = 8; if (x.material) [].concat(x.material).forEach((m) => { m.depthTest = false; }); }); };
+      AV.onPaint = (g, st) => {
+        clearHL();
+        if (!plan.isOn) return;
+        g.traverse((x) => { x.renderOrder = 8.5; if (x.material) [].concat(x.material).forEach((m) => { m.depthTest = false; }); });
+        // 2.650.0: the picked things filled in the accent, the one under the pointer in blue (not when it is picked)
+        const A = V.M && V.M.arch, F = root.PPFurn, o = { footprint: F ? (it) => F.footprint(it) : null }; if (!A || !st) return;
+        const zc = plan.z + 1.0, put = (t, col, op) => hlShapes(A, t, plan.z, o).forEach((rg) => {
+          if (rg.length < 4) return; const sh = new T.Shape(rg.slice(0, -1).map((p) => new T.Vector2(p[0], p[1])));
+          const m = new T.Mesh(new T.ShapeGeometry(sh), new T.MeshBasicMaterial({ color: new T.Color(col), transparent: true, opacity: op, side: T.DoubleSide, depthTest: false, depthWrite: false }));
+          m.position.z = zc; m.renderOrder = 8; m.raycast = () => {}; HL.add(m);
+          const ln = new T.LineLoop(new T.BufferGeometry().setFromPoints(rg.slice(0, -1).map((p) => new T.Vector3(p[0], p[1], zc))), new T.LineBasicMaterial({ color: new T.Color(col), depthTest: false, depthWrite: false }));
+          ln.renderOrder = 8.6; ln.raycast = () => {}; HL.add(ln);
+        });
+        [st.sel].concat(st.more || []).filter(Boolean).forEach((t) => put(t, st.accent, 0.42));
+        if (st.hover) put(st.hover, st.hoverCol, 0.32);
+        plan.hl = HL.children.length;
+      };
     }
     V.planOn = () => plan.isOn;
-    return { on: () => plan.isOn, set, level: () => plan.z, setLevel, levels: () => levels(V.M && V.M.arch), rebuild, last: () => plan.last || null, group: G };
+    return { hl: () => plan.hl || 0, on: () => plan.isOn, set, level: () => plan.z, setLevel, levels: () => levels(V.M && V.M.arch), rebuild, last: () => plan.last || null, group: G };
   }
 
   /** 2.649.0 (Tim: "when in floorplan mode keep the theme colors of the app"): the plan's colours from the view's theme
@@ -314,7 +359,7 @@
       glass: t.accent || t.text, light: t.accent || t.text, fill: mix(t.pan || t.bg, t.bg, 0.35), floorBase: t.pan || t.bg, grid: t.line || mix(t.bg, t.text, 0.15), paper: t.bg };
   }
   const COL = COL0;
-  const api = { levels, symbols, pickAt, tint, themeCols, attach, COL };
+  const api = { levels, symbols, pickAt, tint, themeCols, hlShapes, attach, COL };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPPlan = api;
 })(typeof window !== "undefined" ? window : globalThis);

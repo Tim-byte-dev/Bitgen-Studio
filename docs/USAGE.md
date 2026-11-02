@@ -6300,6 +6300,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.650.0: **The Sketcher highlights what is picked and what is under the pointer** - the picked thing (a wall, a room,
+  a door, a piece of furniture …, or several with Ctrl+click) is tinted in the theme's accent colour, and the thing under
+  the pointer is tinted blue - unless it is already picked. On the 📐 floorplan the same: the picked symbol is filled in
+  the accent, the hovered one in blue.
 - 2.649.0: **The Sketcher's 📐 floorplan keeps the app's theme colours** - the background is the theme's (no more white
   paper), the walls, doors, stairs and labels are drawn in the theme's text colour, the floors in its panel colour (with a
   touch of each room's floor colour), glass and lights in its accent, the grid in its line colour. Changing the theme

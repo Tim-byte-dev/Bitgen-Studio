@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.650.0** — The Sketcher Highlights What Is Picked and What Is Under the Pointer
 - **2.649.0** — The Sketcher's Floorplan in the App's Theme Colours
 - **2.648.0** — Shift + Right-Drag Zoom, Zoom to Selection, the Pointer; The Sketcher's Esc and Ctrl+click
 - **2.647.0** — The Sketcher's Floorplan View, Esc = Orbit, a Room's Width and Length
