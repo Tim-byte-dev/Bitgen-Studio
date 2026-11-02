@@ -158,8 +158,10 @@
   const fb = $("ppFile"); if (fb) fb.onclick = fileMenu;
   const mb = $("ppMaxBtn"); if (mb) mb.onclick = (e) => { e.stopPropagation(); toggleMaxed(); };
   const cb = $("ppCloseBtn"); if (cb) cb.onclick = (e) => { e.stopPropagation(); close(); };
-  // Esc (one the 3D view did not use): a docker maximized by itself goes back (the app's Esc does a .bdock's)
-  doc.addEventListener("keydown", (e) => { if (e.key === "Escape" && maxed() && !dock.classList.contains("bdock") && !doc.querySelector("dialog[open]")) toggleMaxed(false); });
+  // 2.648.0 (Tim: "do not dock the maximized docker when esc is pressed"): Esc never docks the maximized Sketcher - its
+  // own Esc (no tool / Orbit / Select, ppdock.js) has it; ⇲ Dock / ⛶ do. An Esc in one of its boxes stops at the docker
+  // (the app's Esc would restore it)
+  dock.addEventListener("keydown", (e) => { if (e.key === "Escape" && maxed()) e.stopPropagation(); });
   paintMax();
   root.H3PushPullFrame = { fileMenu, ask, saveAs, rename, del, fromComputer, houseMenu, importHouse, toggleMaxed, maxed, top, bottom, close, paintMax, closedByMax: () => closedByMax };
 })(typeof window !== "undefined" ? window : globalThis);

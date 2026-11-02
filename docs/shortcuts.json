@@ -181,6 +181,10 @@
         [
           "Z (Blender view)",
           "Zoom to the picked object (nothing picked = the whole scene)"
+        ],
+        [
+          "Shift + right-drag",
+          "Zoom - forward (up) in, back (down) out, round the point pressed"
         ]
       ]
     },
@@ -721,6 +725,10 @@
         [
           "F",
           "Full Screen Mode"
+        ],
+        [
+          "Ctrl+Alt+0",
+          "Zoom to Selection"
         ]
       ]
     },
@@ -884,6 +892,10 @@
         [
           "Alt+G",
           "In 🎨 Artist mode: the Layers panel + ⏳ Pending over the canvas - pick a layer, Ctrl+P for the prompt docker, Generate / ▾ Edit; Alt+G again hides them"
+        ],
+        [
+          "Shift + right-drag",
+          "Zoom - forward (up) in, back (down) out, round the point pressed (🎨 Artist mode too; a Shift+right-CLICK leaves Artist mode)"
         ]
       ]
     },
@@ -964,7 +976,7 @@
         ],
         [
           "Esc",
-          "No tool and nothing picked - 🔄 Orbit, in the 3D view, the 📐 floorplan and a camera's view (a wall run is kept); again (nothing to drop): restore the maximized docker"
+          "No tool and nothing picked - 🔄 Orbit, in the 3D view, the 📐 floorplan and a camera's view (a wall run is kept); in Orbit: ➤ Select. Never docks the maximized Sketcher"
         ],
         [
           "a number",
@@ -977,6 +989,14 @@
         [
           "Double-click a picked camera",
           "Move arrows ⇄ rotate rings"
+        ],
+        [
+          "Shift + right-drag",
+          "Zoom - forward (up) in, back (down) out, round the point pressed (the floorplan too)"
+        ],
+        [
+          "Ctrl+click",
+          "➤ Select: add to what is picked - faces, lines and building parts (a picked part: takes it out); drag one of them to move them all, Delete erases them all"
         ]
       ]
     }

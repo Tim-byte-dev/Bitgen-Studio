@@ -1,7 +1,7 @@
 /* bitGen Studio — ext/pushpulldock/pptools.js (2.619.0): THE PUSH/PULL TOOLS (window.PPTools) - SketchUp's way of working:
  * click - move - click, the inference marker + its words, exact sizes typed into the Measurements box (VCB) at any time.
  *
- *   Space Select   click a face / line (Shift: add / take out); a face of a group picks the group; double-click a group =
+ *   Space Select   (➤ 2.648.0) click = one thing; Ctrl+click adds more (building parts too), Shift+click: in / out; a face of a group picks the group; double-click a group =
  *                  edit inside it (the rest dims; Esc leaves); Delete erases what is picked
  *   L Line         click, click … - a closed flat loop becomes a face; a line across a face from border to border splits it
  *   R Rectangle    two corners (on a face: in its plane) - VCB "3,2" = 3 m × 2 m
@@ -28,7 +28,7 @@
     ["tape", "📏", "Tape measure", "t"], ["paint", "🪣", "Paint", "b"], ["eraser", "⌫", "Eraser", "e"], ["orbit", "🔄", "Orbit", "o"], ["pan", "✋", "Pan", "h"],
   ];
   const HINT = {
-    select: "Click a face or a line (Shift: add / take out) · double-click a group to edit inside it · Delete erases",
+    select: "➤ Click one thing to pick it · Ctrl+click adds more (Shift+click: in / out) · double-click a group to edit inside it · Delete erases · Shift + right-drag zooms",
     line: "Click where the line starts, click where it ends … close the loop for a face · Esc ends · type a length",
     rect: "Click a corner, click the opposite corner · type  width,depth  (e.g. 3,2)",
     circle: "Click the centre, click the radius · type the radius, or  36s  for 36 sides",
@@ -88,12 +88,12 @@
     function commit(label, before) { ctx.commit(label, before); }
 
     /* ---- the selection */
-    function pickSel(ev, add) {
+    function pickSel(ev, add, only) {     // add: to what is picked (Shift: in / out); only: Ctrl - only adds (2.648.0)
       const p = V.pick(ev, { group: ctx.group() });
       const s = add ? Object.assign({ f: [], e: [], k: [] }, JSON.parse(JSON.stringify(ctx.sel()))) : { f: [], e: [], k: [] };
       if (!p) { if (!add) ctx.setSel(s); return null; }
       const grp = p.grp && p.grp !== ctx.group() ? p.grp : null;
-      const tog = (arr, x) => { const i = arr.indexOf(x); if (i >= 0) arr.splice(i, 1); else arr.push(x); };
+      const tog = (arr, x) => { const i = arr.indexOf(x); if (i >= 0) { if (!only) arr.splice(i, 1); } else arr.push(x); };
       if (grp) { M().f.forEach((F) => { if (F.grp === grp) tog(s.f, F.id); }); M().e.forEach((E) => { if (E.grp === grp) tog(s.e, E.id); }); }
       else if (p.face) tog(s.f, p.face);
       else if (p.line) tog(s.e, p.line);
@@ -111,7 +111,7 @@
       if (ev.button !== 0) return;
       const m = M();
       if (AT && AT.owns(tool)) { AT.down(ev); return; }
-      if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey); return; }
+      if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey || ev.ctrlKey || ev.metaKey, (ev.ctrlKey || ev.metaKey) && !ev.shiftKey); return; }   // 2.648.0: Ctrl+click adds
       if (tool === "orbit" || tool === "pan") return;
       if (tool === "line") {
         const s = snapAt(ev, { from: st.pts && st.pts[st.pts.length - 1] }); const p = s.p;
@@ -415,16 +415,19 @@
     /* 2.647.0 (Tim: "esc deselects all tools and changes to orbit mode in all views"): ONE Esc - the tool's step ends (a wall
        run of 2+ points is kept), the group edit is left, nothing is picked, the tool is 🔄 Orbit - in the 3D view, the
        floorplan and a camera's view alike. Already in Orbit with nothing to drop: not ours (a maximized docker is restored). */
+    /* 2.648.0 (Tim: "if in orbit mode and the user press esc go to select, esc any other time will go to orbit mode - do
+       not dock the maximized docker when esc is pressed"): in 🔄 Orbit, Esc = ➤ Select; any other time = 🔄 Orbit - and
+       always ours (a maximized Sketcher is never docked by Esc) */
     function escape() {
-      let did = false, kept = "";
-      const r = AT && AT.escape ? AT.escape(tool) : false; if (r) did = true; if (r === "kept" && ctx.statusText) kept = ctx.statusText();   // a wall run kept: its own words first
-      if (Object.keys(st).length) { reset(); did = true; }
+      const wasOrbit = tool === "orbit";
+      let kept = "";
+      const r = AT && AT.escape ? AT.escape(tool) : false; if (r === "kept" && ctx.statusText) kept = ctx.statusText();   // a wall run kept: its own words first
+      if (Object.keys(st).length) reset();
       if (ED && ED.cancel) ED.cancel();
-      if (ctx.group()) { ctx.enterGroup(null); did = true; }
-      if (hasSel()) { ctx.setSel({ f: [], e: [], k: [] }); did = true; }
-      if (tool !== "orbit") { use("orbit"); did = true; }
-      if (!did) return false;
-      ctx.status((kept ? kept + " · " : "") + "🔄 Orbit - no tool, nothing picked (Esc) · drag to turn the view" + (V.planOn && V.planOn() ? " (the floorplan turns flat)" : "") + " · Space = Select");
+      if (ctx.group()) ctx.enterGroup(null);
+      if (hasSel()) ctx.setSel({ f: [], e: [], k: [] });
+      if (wasOrbit) { use("select"); ctx.status((kept ? kept + " · " : "") + "➤ Select (Esc in Orbit) · Esc again: 🔄 Orbit"); }
+      else { use("orbit"); ctx.status((kept ? kept + " · " : "") + "🔄 Orbit - no tool, nothing picked (Esc) · drag to turn the view" + (V.planOn && V.planOn() ? " (the floorplan turns flat)" : "") + " · Esc again: ➤ Select"); }
       return true;
     }
     function key(e) {

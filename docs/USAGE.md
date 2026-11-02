@@ -409,7 +409,7 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.647)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.648)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
@@ -571,7 +571,8 @@ With **Select**:
 
 - A camera is drawn over everything - one inside a room (under its ceiling and roof) is picked with a click, not the room.
   Drag it to move it; **R** turns it 15°, **Shift+R** back (a piece of furniture: R 90°, Shift+R back).
-- **Esc** or a **double-click on empty space** deselects everything (2.647.0: one Esc also drops the tool - 🔄 Orbit).
+- **Esc** or a **double-click on empty space** deselects everything (2.647.0: one Esc also drops the tool - 🔄 Orbit;
+  2.648.0: Esc in Orbit = ➤ Select, and Ctrl+click picks several things).
 - **🔄 Orbit**'s pointer is an orbit cursor (two arrows round a dot), not the hand (✋ Pan keeps the hand).
 
 ### Camera views, open doors and windows, auto roof + floor (2.631.0)
@@ -6299,6 +6300,20 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.648.0: **Zoom with Shift + right-drag, ⊡ Zoom to selection and the pointer** - in the Sketcher, the timeline's canvas
+  and the image editor. **The Sketcher's Esc and Ctrl+click.**
+  - **Shift + right-drag**: forward (up) zooms in, back (down) zooms out, round the point you pressed. The plain right
+    drag still pans in the Sketcher; a right-click with no drag still opens the menus. In 🎨 Artist mode the drag zooms
+    and a Shift+right-**click** (no drag) still takes you out.
+  - **⊡ Zoom to selection**: the Sketcher (beside ⤢ - what is picked: faces, a room, a wall, a door, a piece, a camera …,
+    or several), the timeline (beside ⤢ - the picked layer) and the image editor (under 🔍 on the tool column, View ▸
+    Zoom to Selection, Ctrl+Alt+0 - the selection, or else the picked layer's pixels).
+  - **The pointer**: the Sketcher's Select and the timeline's and image editor's Move tools are drawn as a pointer arrow.
+  - **Sketcher Esc**: in 🔄 Orbit, Esc goes to ➤ Select; any other time it drops the tool and the pick and goes to Orbit.
+    It never docks the maximized Sketcher any more (⇲ Dock / ⛶ do).
+  - **Sketcher pick**: a click picks one thing; **Ctrl+click** adds more - faces and lines, and building parts (rooms,
+    walls, doors, furniture, lights, cameras …; Ctrl+click a picked part takes it out). Drag one of them and they all
+    move (one undo), Delete erases them all, ⊡ zooms to them; a click on one of them keeps just that one.
 - 2.647.0: **The Sketcher's 📐 Floorplan view, Esc = Orbit, a room's Width and Length.**
   - **📐 Plan** (the toolbar, or View ▾ 📐 Floorplan): the view looks straight down, on paper, one storey at a time (a
     list picks the storey when there are more). The walls are cut through and drawn solid; doors show their leaf and

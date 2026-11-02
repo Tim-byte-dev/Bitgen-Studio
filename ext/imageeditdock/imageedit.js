@@ -1203,6 +1203,20 @@
       S.panX = (stage.clientWidth - S.w * S.zoom) / 2; S.panY = (stage.clientHeight - S.h * S.zoom) / 2;
       applyView();
     }
+    /** 2.648.0: ⊡ Zoom to Selection - the selection's box fills the view (no selection: the picked layer's pixels, an
+        empty layer: the whole picture); -> the box, or null */
+    function zoomToSel() {
+      if (!S.w) return null;
+      let b = hasSel() ? P.bbox(S.sel, S.w, S.h) : null, what = "the selection";
+      if (!b) { const L = layer(); if (L && L.canvas && L.type !== "adjust" && L.type !== "group") { try { b = L.type === "text" && D.textBox ? D.textBox(L.text, ctx(L.canvas)) : alphaBox(L.canvas); } catch (e) { b = null; } what = "the layer " + (L.name || ""); } }
+      if (!b || !(b.w > 0) || !(b.h > 0)) { b = { x: 0, y: 0, w: S.w, h: S.h }; what = "the picture"; }
+      const aw = Math.max(50, stage.clientWidth - 48), ah = Math.max(50, stage.clientHeight - 48);
+      S.zoom = Math.max(0.02, Math.min(32, aw / b.w, ah / b.h));
+      S.panX = stage.clientWidth / 2 - (b.x + b.w / 2) * S.zoom; S.panY = stage.clientHeight / 2 - (b.y + b.h / 2) * S.zoom;
+      S.userView = true; applyView();
+      say("⊡ zoomed to " + what.trim() + " (" + Math.round(S.zoom * 100) + " %)");
+      return b;
+    }
     function zoomAt(f, cx, cy) {
       const z = Math.max(0.02, Math.min(32, S.zoom * f));
       const px = cx == null ? stage.clientWidth / 2 : cx, py = cy == null ? stage.clientHeight / 2 : cy;
@@ -1853,6 +1867,10 @@
       const r = stage.getBoundingClientRect();
       zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
     }, { passive: false });
+    // 2.648.0 (Tim: "add zoom control, shift + drag foward = zoom in, shift + drag back = zoom out"): Shift + right-drag -
+    // forward (up) zooms in, back (down) out, round the point pressed (static/zoomdrag.js); a plain Shift+right-click is
+    // left to Artist mode (it leaves it)
+    if (win.H3ZoomDrag) win.H3ZoomDrag.attach(stage, { enabled: () => !!S.w, zoom: (f, x, y) => zoomAt(f, x, y) });
     function closePoly() { const pts = S.pts; S.pts = []; applyShape(featherShape(P.polygonMask(pts, S.w, S.h)), S.mode, "polygon select"); }
     function selBrushAt(x, y, erase) {
       const r = S.selBrush / 2, shape = P.ellipseMask(x, y, r, r, S.w, S.h);
@@ -2922,7 +2940,7 @@
     // the shared surface the tools (pctools.js) and the UI (pcui.js) build on
     Object.assign(E, {
       makeLayer, newMask, target, onMask, whichOf, canPaint, snapStruct, putStruct, snapDoc, putDoc, push, undo, redo, historyTo, beginPx, endPx, pxOp,
-      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, zoomAt, pos,
+      setSel, changeSel, applyShape, selCanvas, refresh, renderSoon, renderLayers, drawOverlay, info, sizeCanvases, applyView, fitView, zoomAt, zoomToSel, pos,
       openDoc, openImage, load, blankDoc, setFgNone, addLayer, addImageLayer, flatten, flattenCache, renderLayersPanel, structOp, setActive, newLayer, duplicateLayer,
       deleteLayer, moveLayer, moveLayerEnd, dropLayer, groupActive, newGroup, ungroupActive, toggleClip, mergeDown, mergeVisible, rasterizeLayer,
       layerFromSelection, addMask, deleteMask, toggleMask, selectFrom, newAdjust, newFill, liveSet, commitLive, cancelLive, setLayer, setTool, renderOptions,

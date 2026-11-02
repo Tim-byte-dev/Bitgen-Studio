@@ -277,18 +277,26 @@ body.ie-focus.ie-focus-side #ieKx>#pcPend{z-index:40;left:auto!important;right:3
 
     // 2.637.0: Shift+right-click leaves artist mode (Ctrl+Esc opens the Start menu on Windows) - caught first, so the
     // editor never paints with it and no context menu opens (the contextmenu that follows the press is swallowed too)
-    let eatMenu = false;
+    // 2.648.0: a Shift + right-DRAG zooms (static/zoomdrag.js on the canvas) - so artist mode is left when the button comes
+    // up without the pointer having moved (a click), not on the press
+    let eatMenu = false, exitPress = null;
     doc.addEventListener("pointerdown", (e) => {
       if (mouseAction(e, { on }) !== "exit") return;
-      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      eatMenu = true; setTimeout(() => { eatMenu = false; }, 600);
-      setFocus(false);
+      e.preventDefault();
+      exitPress = { id: e.pointerId, x: e.clientX, y: e.clientY, far: 0 };
+      eatMenu = true; setTimeout(() => { eatMenu = false; }, 1500);
+      if (!(win.H3ZoomDrag && E.stage && E.stage.contains(e.target))) { e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); }   // off the canvas: nothing else hears it
+    }, true);
+    doc.addEventListener("pointermove", (e) => { if (exitPress && e.pointerId === exitPress.id) exitPress.far = Math.max(exitPress.far, Math.hypot(e.clientX - exitPress.x, e.clientY - exitPress.y)); }, true);
+    doc.addEventListener("pointerup", (e) => {
+      if (!exitPress || e.pointerId !== exitPress.id) return;
+      const far = Math.max(exitPress.far, Math.hypot(e.clientX - exitPress.x, e.clientY - exitPress.y)); exitPress = null;
+      if (far <= 4 && on) setFocus(false);
     }, true);
     doc.addEventListener("contextmenu", (e) => {
       if (!eatMenu && mouseAction(e, { on }) !== "exit") return;
       eatMenu = false;
       e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      if (on) setFocus(false);
     }, true);
 
     // 2.590.0 (Tim: "i can't find the full screen canvas button (lets call the full screen canvas button artist mode)"):

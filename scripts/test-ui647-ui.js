@@ -123,7 +123,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const ln = await ev(() => ({ t: H3PushPull.state.T.name(), st: Object.keys(H3PushPull.state.T.state()) }));
     check("…a Line half way: Esc ends it - 🔄 Orbit", ln.t === "orbit" && !ln.st.length, ln);
     const e2 = await ev(() => { const S = H3PushPull.state; return { r: S.T.escape(), t: S.T.name(), sel: S.sel, a: S.T.arch.sel(), g: S.group }; });
-    check("…in Orbit with nothing to drop, Esc is not the Sketcher's (it can restore a maximized docker)", e2.r === false, e2);
+    check("…Esc in Orbit (2.648.0): ➤ Select - still the Sketcher's (it never docks a maximized Sketcher)", e2.r === true && e2.t === "select", e2);
 
     // ---- a camera's view ends the floorplan; Esc there = Orbit too
     await ev(() => { const S = H3PushPull.state, b0 = H3PushPull.snapshot(), A = S.M.arch; A.cams = A.cams || []; A.cams.push({ id: A.n++, name: "Camera 1", x: 2, y: -3, z: 1.6, yaw: 0, pitch: 0, roll: 0, fov: 60 }); H3PushPull.commit("camera", b0); });

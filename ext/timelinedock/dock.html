@@ -8,12 +8,13 @@
              shows / hides the whole row, the bar under it resizes it -->
         <div id="tlStage">
           <div id="tlTools" role="toolbar" aria-orientation="vertical" aria-label="Canvas tools">
-            <button class="ghost on" id="tlTool_move" type="button" title="Move (V) - select, drag, the corners scale, the top handle rotates" aria-label="Move tool">✥</button>
+            <button class="ghost on" id="tlTool_move" type="button" title="Move (V) - select, drag, the corners scale, the top handle rotates" aria-label="Move tool">➤</button>
             <button class="ghost" id="tlTool_text" type="button" title="Text (T) - click to add a text layer, click a text layer to edit it" aria-label="Text tool"><b style="font-family:Georgia,serif">T</b></button>
             <button class="ghost" id="tlTool_hand" type="button" title="Hand (H, or hold Space) - pan the view" aria-label="Hand tool">✋</button>
-            <button class="ghost" id="tlTool_zoom" type="button" title="Zoom (Z) - click to zoom in, Alt-click to zoom out (Ctrl + wheel too)" aria-label="Zoom tool">🔍</button>
+            <button class="ghost" id="tlTool_zoom" type="button" title="Zoom (Z) - click to zoom in, Alt-click to zoom out (Ctrl + wheel too; Shift + right-drag anywhere: forward in, back out)" aria-label="Zoom tool">🔍</button>
             <span class="tlt-sep"></span>
             <button class="ghost" id="tlTool_fit" type="button" title="Fit the picture in the view" aria-label="Fit to view">⤢</button>
+            <button class="ghost" id="tlTool_zsel" type="button" title="Zoom to selection - the picked layer fills the view (nothing picked: fit) · Shift + right-drag: forward zooms in, back zooms out" aria-label="Zoom to selection">⊡</button>
             <span class="tlt-sep"></span>
             <input type="color" id="tlTool_color" value="#ffffff" title="Text colour (new text layers, and the selected one)" aria-label="Text colour">
           </div>

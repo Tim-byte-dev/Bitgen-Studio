@@ -299,6 +299,7 @@
     const AT = root.PPArchTools;
     const one = ([id, icon, label, key], hint) => {
       const b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "ppT_" + id; b.textContent = icon;
+      if (id === "select" && root.H3PointerIcon) root.H3PointerIcon.apply(b, { size: 17 });   // 2.648.0 (Tim: "change the selection icon to a pointer")
       b.title = label + " (" + (key === " " ? "Space" : key.toUpperCase()) + ") - " + hint; b.setAttribute("aria-label", label);
       b.onclick = () => { S.T.use(id); S.V.canvas.focus({ preventScroll: true }); };
       box.appendChild(b);
@@ -310,6 +311,24 @@
     paintSw();
     // 2.629.0: ▦ Materials - the House builder's materials (a colour "mat:<key>": its colour + texture on faces, walls, floors)
     const mb = $("ppMatBtn"); if (mb && root.PPFurn) mb.onclick = () => menu(mb, [{ head: "Materials (Paint - B)" }].concat(root.PPFurn.materials().map((m) => ({ label: (m.tex ? "▦ " : "■ ") + m.label, run: () => { setColor("mat:" + m.key); msg("🪣 " + m.label + " - click faces, walls, floors"); } }))));
+  }
+  /* 2.648.0 (Tim: "add a zoom to selection tool"): ⊡ - the picked faces / lines / corners, or the picked part of the building
+     (a room, a wall, a door, the stairs, a piece, a light, a camera ...) fills the view; nothing picked = ⤢ everything */
+  function zoomSel() {
+    if (!S.V) return null;
+    let b = null, what = "";
+    const s = S.sel || {}, vids = (s.f && s.f.length) || (s.e && s.e.length) || (s.k && s.k.length) ? G().selVerts(S.M, s) : [];
+    if (vids && vids.length) { const bb = G().bbox(S.M, vids); if (bb) { b = { min: bb.min, max: bb.max }; what = "what is picked"; } }
+    const at = S.T && S.T.arch && S.T.arch.sel ? S.T.arch.sel() : null, all = at && S.T.arch.picked ? S.T.arch.picked() : at ? [at] : [];
+    if (!b && all.length && root.PPArch && S.M && S.M.arch) {           // every picked part (Ctrl+click picks several)
+      const bs = all.map((t) => root.PPArch.selBox(S.M.arch, t)).filter(Boolean);
+      if (bs.length) { b = { min: [0, 1, 2].map((k) => Math.min(...bs.map((q) => q.min[k]))), max: [0, 1, 2].map((k) => Math.max(...bs.map((q) => q.max[k]))) }; what = all.length > 1 ? all.length + " picked" : "the picked " + (at.part || { op: "door / window", stair: "stairs", item: "piece", cam: "camera" }[at.ak] || at.ak); }
+    }
+    if (S.T && S.T.arch && S.T.arch.leaveThrough && S.T.arch.through && S.T.arch.through() != null) S.T.arch.leaveThrough();
+    if (!b) { S.V.extents(); msg("⊡ nothing picked - everything in view"); return null; }
+    S.V.frameBox(b); msg("⊡ zoomed to " + what + " · Shift + right-drag: forward zooms in, back zooms out");
+    test("pp_zoomsel", "1");
+    return b;
   }
   /* 2.647.0 (Tim: "add floorplan view to sketcher, the buttons will still draw what they are set too but with floorplan symbols
      in floorplan mode"): 📐 on / off - noRestore: another view takes over (the 3D camera is not put back) */
@@ -349,7 +368,7 @@
       group: () => S.group, enterGroup, status: msg, statusText: () => ($("ppMsg") || {}).textContent || "", vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
-      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, resized: () => { if (S.V) S.V.size(); },
+      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, zoomPicked: () => zoomSel(), resized: () => { if (S.V) S.V.size(); },
       // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
       models: () => api("/api/tlcanvas/models").then((j) => (j.models || []).filter((x) => /\.(glb|gltf|obj|fbx)$/i.test(x.name)).map((x) => x.name)),
       importModel: (n) => guard("Import", () => importModel(n)),
@@ -361,6 +380,9 @@
     cv.addEventListener("pointerup", (e) => S.T.up(e));
     cv.addEventListener("dblclick", (e) => S.T.dbl(e));
     cv.addEventListener("contextmenu", (e) => e.preventDefault());
+    // 2.648.0 (Tim: "shift + drag foward = zoom in, shift + drag back = zoom out"): Shift + right-drag (the plain right
+    // drag still pans); a camera's view is left as with the wheel
+    if (root.H3ZoomDrag) root.H3ZoomDrag.attach(cv, { start: () => { try { S.V.controls.dispatchEvent({ type: "start" }); S.V.controls.dispatchEvent({ type: "end" }); } catch (e) { /* fine */ } }, zoom: (f, x, y) => S.V.zoomAt(f, x, y) });
     $("pushpulldock").addEventListener("pointerenter", () => { S.over = true; });
     $("pushpulldock").addEventListener("pointerleave", () => { S.over = false; });
     let last = null; try { last = root.localStorage.getItem("pp.last"); } catch (e) { last = null; }
@@ -390,6 +412,7 @@
     $("ppPlanLvl").onchange = (e) => { if (S.P) { S.P.setLevel(+e.target.value); msg("📐 the floorplan of the storey at " + G().fmtLen(+e.target.value)); } };
     $("ppOrtho").onclick = () => { if (!S.V) return; S.V.ortho(!S.V.isOrtho); $("ppOrtho").textContent = S.V.isOrtho ? "⬛ Parallel" : "⬛ Persp"; };
     $("ppExt").onclick = () => S.V && S.V.extents();
+    $("ppZoomSel").onclick = () => zoomSel();                                    // 2.648.0
     $("ppStyle").onchange = (e) => S.V && S.V.style(e.target.value);
     $("ppShadow").onchange = (e) => S.V && S.V.shadows(e.target.checked);
     $("ppGroup").onclick = () => S.M && groupBtn();
@@ -405,6 +428,11 @@
     doc.addEventListener("keydown", (e) => {
       if (!S.T || !S.booted) return;
       const a = doc.activeElement, inDock = a && a.closest && a.closest("#pushpulldock");
+      // 2.648.0: maximized, Esc is always the Sketcher's (never the app's "restore the maximized docker")
+      if (e.key === "Escape" && $("pushpulldock").classList.contains("maxed") && !doc.querySelector("dialog[open]")) {
+        if (a && inDock && a !== S.V.canvas && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;   // its box has it (stopped at the docker)
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); S.T.escape(); return;
+      }
       if (!(S.over || inDock || $("pushpulldock").matches(":hover"))) return;
       if (a && a !== S.V.canvas && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
       if (doc.querySelector("dialog[open]")) return;
@@ -427,5 +455,5 @@
   }
   wire();
   root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, tool: (n) => S.T && S.T.use(n), boot, setColor,
-    menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot };   // 2.639.0: + commit / snapshot (ppoutline.js)
+    zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot };   // 2.639.0: + commit / snapshot (ppoutline.js)
 })(typeof window !== "undefined" ? window : globalThis);

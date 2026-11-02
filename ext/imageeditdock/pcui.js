@@ -24,7 +24,7 @@
 
   /* ================================ tools ================================ */
   const ICON = {
-    move: '<path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>',
+    move: root.H3PointerIcon ? '<path d="' + root.H3PointerIcon.PATH + '"/>' : '<path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>',   // 2.648.0: a pointer (H3PointerIcon)
     artboard: '<rect x="6" y="6" width="12" height="12"/><path d="M6 2v4M18 2v4M6 18v4M18 18v4M2 6h4M2 18h4M18 6h4M18 18h4"/>',   // 2.447.0 (pcartboards.js)
     rect: '<rect x="4" y="5" width="16" height="14" stroke-dasharray="3 2"/>',
     ellipse: '<ellipse cx="12" cy="12" rx="8.5" ry="6.5" stroke-dasharray="3 2"/>',
@@ -297,6 +297,7 @@
     cmd("view.zoomout", "Zoom Out", "Ctrl+-", () => E.zoomAt(0.8), { enabled: docOpen });
     cmd("view.fit", "Fit on Screen", "Ctrl+0", () => { S.userView = false; E.fitView(); }, { enabled: docOpen });
     cmd("view.100", "100%", "Ctrl+1", () => E.zoomAt(1 / S.zoom), { enabled: docOpen });
+    cmd("view.zoomsel", "Zoom to Selection", "Ctrl+Alt+0", () => E.zoomToSel(), { enabled: docOpen });   // 2.648.0
     cmd("view.rulers", "Rulers", "Ctrl+R", () => { kx.classList.toggle("rulers"); store.set("rulers", kx.classList.contains("rulers")); rulers(); }, { checked: () => kx.classList.contains("rulers") });
     cmd("view.grid", "Grid", "Ctrl+'", () => { S.grid = !S.grid; store.set("grid", S.grid); E.drawOverlay(); }, { checked: () => !!S.grid });
     cmd("view.full", "Full Screen Mode", "F", () => E.toggleFull());
@@ -338,7 +339,7 @@
       ["Select", ["sel.all", "sel.none", "sel.reselect", "sel.inverse", sep, "sel.range", sep, sub("Modify", ["sel.border", "sel.smooth", "sel.expand", "sel.contract", "sel.feather"]), sep,
         "sel.loadlayer", "sel.loadmask", sep, "sel.qm"]],
       ["Filter", filterMenu()],
-      ["View", ["view.zoomin", "view.zoomout", "view.fit", "view.100", sep, "view.rulers", "view.grid", "view.maskov", sep, "view.full"]],
+      ["View", ["view.zoomin", "view.zoomout", "view.fit", "view.100", "view.zoomsel", sep, "view.rulers", "view.grid", "view.maskov", sep, "view.full"]],
       ["Window", [...TABS.map(([id]) => "win." + id), sep, "win.tools", "win.options", "win.panels", sep, sub("Theme", ["theme.bitgen", "theme.pro", "theme.studio", "theme.classic"]), "win.reset"]],
       ["Help", ["help.guide", "help.keys", "help.palette", "help.about"]],
     ];
@@ -444,6 +445,12 @@
       g.paint = paint;
       toolsBox.insertBefore(b, swatch);
     });
+    // 2.648.0: ⊡ Zoom to Selection on the tool column (under 🔍 Zoom's group)
+    const zsBtn = doc.createElement("button"); zsBtn.className = "ghost ietool"; zsBtn.id = "pcZoomSel"; zsBtn.type = "button";
+    zsBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="3"/><path d="M14.2 14.2 18 18"/></svg>';
+    zsBtn.title = "Zoom to Selection (Ctrl+Alt+0) - the selection fills the view (no selection: the picked layer) · Shift + right-drag: forward zooms in, back zooms out";
+    zsBtn.setAttribute("aria-label", "Zoom to selection"); zsBtn.onclick = () => E.zoomToSel();
+    const zgrp = toolsBox.querySelector('.ietool[data-group="z"]'); toolsBox.insertBefore(zsBtn, zgrp ? zgrp.nextSibling : swatch);
     const qmBtn = doc.createElement("button"); qmBtn.className = "ghost qm"; qmBtn.id = "pcQm"; qmBtn.textContent = "◘"; qmBtn.title = "Edit in Quick Mask mode (Q)";
     qmBtn.onclick = () => E.quickMask(); toolsBox.appendChild(qmBtn);
     E.ui.qm = (on) => qmBtn.classList.toggle("on", on);

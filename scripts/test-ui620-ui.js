@@ -167,14 +167,14 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     A = await AR();
     check("V Stairs: the foot + \"3.6\" = a flight 3.6 m long; J Floor: two corners + \"2,3\" = a 2 × 3 m floor", A.stairs.length === 1 && Math.abs(A.stairs[0].len - 3.6) < 1e-6 && A.slabs.length === 1 && JSON.stringify(A.slabs[0].pts.map((q) => q.map((c) => +c.toFixed(6)))) === "[[4,-1.5],[6,-1.5],[6,1.5],[4,1.5]]", { st: A.stairs, sl: A.slabs });
 
-    /* Esc puts the maximized docker back */
+    /* 2.648.0 (Tim: "do not dock the maximized docker when esc is pressed"): Esc lets go, then Orbit / Select - never docks it */
     await p.keyboard.press(" "); await hover([3, 1.5, 0]);
     const picked = await ev(() => !!H3PushPull.state.T.arch.sel());
     await p.keyboard.press("Escape"); await p.waitForTimeout(150);
     const still = await ev(() => document.getElementById("pushpulldock").classList.contains("maxed") && !H3PushPull.state.T.arch.sel());
     await p.keyboard.press("Escape"); await p.waitForTimeout(300);
     const unmax = await ev(() => { const d = document.getElementById("pushpulldock"); return { maxed: d.classList.contains("maxed"), pos: getComputedStyle(d).position }; });
-    check("Esc lets go of what is picked first (still maximized); Esc again (nothing else going) puts the maximized docker back", picked && still && !unmax.maxed && unmax.pos !== "fixed", { picked, still, unmax });
+    check("Esc lets go of what is picked (still maximized); Esc again (in Orbit) = Select - the docker stays maximized", picked && still && unmax.maxed && await ev(() => H3PushPull.state.T.name() === "select"), { picked, still, unmax });
     await ev(() => toggleMax("pushpulldock", true)); await p.waitForTimeout(300);
 
     /* ☰ File */

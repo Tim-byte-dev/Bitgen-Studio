@@ -5,7 +5,7 @@ at any moment into the <b>Measurements</b> box (bottom right) - no need to click
 <h3>The tools (the letter is the key, with the pointer over the docker)</h3>
 <ul>
   <li><b>Double-click empty space</b> (with nothing going) - everything is deselected and the tool is <b>🔄 Orbit</b>; Space goes back to Select.</li>
-  <li><b>Space ⬚ Select</b> - click a face or a line, Shift+click adds / takes out, Ctrl+A everything. A face of a group picks the whole group; <b>double-click</b> a group to edit inside it (the rest dims), <b>Esc</b> leaves. Delete erases what is picked.</li>
+  <li><b>Space ➤ Select</b> (the pointer) - a click picks ONE thing (a face, a line, a room, a door, a piece …); <b>Ctrl+click</b> adds more (Ctrl+click a picked part takes it out) - drag one of them and they all move, Delete erases them all; Shift+click adds / takes out faces and lines, Ctrl+A everything. A face of a group picks the whole group; <b>double-click</b> a group to edit inside it (the rest dims), <b>Esc</b> leaves. Delete erases what is picked.</li>
   <li><b>Editing with Select</b> (2.625.0):
     <ul>
       <li><b>A face</b>: the panel shows <b>Extrude</b> (+ out, − in = a <b>cut</b> into the object) and <b>Twist</b>. <b>Drag the face</b> to extrude it with the pointer, like Blender; <b>Ctrl+drag</b> turns it round its normal - the face just extruded twists its extrusion to match. Type a distance (Measurements) to change the last extrusion.</li>
@@ -69,7 +69,8 @@ at any moment into the <b>Measurements</b> box (bottom right) - no need to click
   <li><b>☰ File ▾</b> - New, Open, Save (Ctrl+S), Save as, Rename, bring in a 3D model of the project or a file from this computer (.pp3d, .glb, .gltf, .obj), Export, send to the image editor / the timeline / elsewhere, Delete, Maximize, Close.</li>
   <li><b>The name</b> and <b>💾</b> - models are kept in the project and save themselves a moment after each change. <b>↶ ↷</b> (Ctrl+Z / Ctrl+Y).</li>
   <li><b>📐 Plan</b> (or View ▾ 📐 Floorplan) - the floorplan: straight down on paper, one storey at a time (a list picks it). Walls cut solid, doors with their leaf and swing, windows with their glass and sill, stairs with every tread and UP, furniture outlined and named, lights as a circle and a cross, each room's name, Width × Length and area. Every tool draws on it as in 3D; a click picks a symbol; Orbit turns the plan (it stays flat). 📐 again or another view: the 3D view back.</li>
-  <li><b>Esc</b> - no tool, nothing picked, 🔄 Orbit - in the 3D view, the floorplan and a camera's view (a wall being drawn is kept). Esc again with nothing to drop puts a maximized docker back.</li>
+  <li><b>Esc</b> - no tool, nothing picked, 🔄 Orbit - in the 3D view, the floorplan and a camera's view (a wall being drawn is kept). <b>In Orbit, Esc = ➤ Select.</b> Esc never docks the maximized Sketcher (⇲ Dock does).</li>
+  <li><b>Zoom</b>: <kbd>Shift</kbd> + right-drag - forward (up) in, back (down) out, round the point pressed (the floorplan too; the wheel as before). <b>⊡</b> (beside ⤢) zooms to what is picked - faces, a room, a wall, a door, a piece, a camera …; nothing picked = everything.</li>
   <li><b>View ▾</b> Iso / Top / Front / Right / Back / Left, <b>Persp / Parallel</b>, <b>⤢</b> everything in view, face style (shaded + edges, shaded, monochrome, X-ray, wireframe), <b>☀</b> shadows.</li>
   <li><b>▣ Group</b> (G) what is picked; with a group picked it explodes it.</li>
   <li><b>🌙 Night</b> and <b>⌂ Cut-away</b> (see Building).</li>

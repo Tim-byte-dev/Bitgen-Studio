@@ -12919,6 +12919,13 @@ node scripts/test-plan647.js > /tmp/plan647.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui647-ui.js > /tmp/ui647.log 2>&1 \
   && ok "2.647.0 browser test: 📐 Plan - straight down on paper, walls dark / floors light / door gaps, picks a door / a room, Width / Length, the Room tool's one click, the Door tool on the plan, Esc = Orbit (plan, 3D, a camera's view), Orbit keeps it flat, Iso / 📐 again = 3D as it was - or SKIP without playwright" \
   || { bad "2.647.0 floorplan browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui647.log | head -14; }
+# ---- 2.648.0 (Tim: "add zoom control, shift + drag foward = zoom in, shift + drag back = zoom out, add a zoom to selection tool, change the selection icon to a pointer. do these changes for sketcher,timeline and image editor" + "if in orbit mode and the user press esc go to select, esc any other time will go to orbit mode - do not dock the maximized docker when esc is pressed" + "pick tool to select a single object, ctrl+click will add to the selection")
+node scripts/test-zoom648.js > /tmp/zoom648.log 2>&1 \
+  && ok "2.648.0 Shift + right-drag zoom (factor, the press, no menu after), the pointer icon, the Sketcher's part boxes + moving several, the wiring in all three editors, Esc Orbit <-> Select, Ctrl+click - pure + wiring" \
+  || { bad "2.648.0 zoom / pick units"; grep -a "^FAIL" -A2 /tmp/zoom648.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui648-ui.js > /tmp/ui648.log 2>&1 \
+  && ok "2.648.0 browser test: Shift + right-drag zooms in / out round the point (Sketcher, floorplan, image editor, Artist mode, timeline), ⊡ in all three, the pointer icons, Esc Select -> Orbit -> Select (never docks it), Ctrl+click picks two rooms, drags / deletes them together - or SKIP without playwright" \
+  || { bad "2.648.0 zoom / pick browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui648.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

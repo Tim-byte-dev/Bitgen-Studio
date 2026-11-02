@@ -79,8 +79,8 @@ check("tint: a floor colour 72 % paper; a material / nothing = a light grey", PL
 // ---- the wiring
 const D = "ext/pushpulldock/", T = read(D + "pptools.js"), AT = read(D + "pparchtools.js"), AV = read(D + "pparchview.js"), PD = read(D + "ppdock.js"), H = read(D + "dock.html"), PS = read(D + "ppplan.js"), EJ = JSON.parse(read(D + "ext.json"));
 check("ppplan.js loaded after pparchview.js", EJ.scripts.indexOf("ppplan.js") === EJ.scripts.indexOf("pparchview.js") + 1);
-check("Esc: ONE press - the step ends (a wall run kept), the group left, nothing picked, 🔄 Orbit; not ours when there is nothing (a maximized docker)",
-  /if \(k === "Escape"\) return escape\(\);\s*\n\s*if \(AT && AT\.key\(e, tool\)\) return true;/.test(T) && /if \(tool !== "orbit"\) \{ use\("orbit"\); did = true; \}/.test(T) && /if \(!did\) return false;/.test(T)
+check("Esc: ONE press - the step ends (a wall run kept), the group left, nothing picked, 🔄 Orbit (2.648.0: in Orbit = ➤ Select)",
+  /if \(k === "Escape"\) return escape\(\);\s*\n\s*if \(AT && AT\.key\(e, tool\)\) return true;/.test(T) && /if \(wasOrbit\) \{ use\("select"\);/.test(T) && /else \{ use\("orbit"\);/.test(T)
   && /baseTool === "wall" && st\.pts && st\.pts\.length >= 2\) \{ finishWall\(false\); did = "kept"; \}/.test(AT) && /if \(asel\) \{ setSel\(null, true\); did = did \|\| true; \}/.test(AT)
   && /if \(r === "kept" && ctx\.statusText\) kept = ctx\.statusText\(\);/.test(T));
 check("…Esc in the Measurements box too", /if \(S\.T && S\.T\.escape\) S\.T\.escape\(\);/.test(PD));

@@ -282,8 +282,9 @@
     function setThrough(id) { A.through = id == null ? null : id; paintSel(); }
     function setGizmo(m) { A.gizmo = m === "rotate" ? "rotate" : "move"; paintSel(); }
     function setAxisHot(k) { if ((A.axisHot || null) === (k || null)) return; A.axisHot = k || null; paintSel(); }
-    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, A.planOnNow && A.planOnNow() ? 0x2563eb : new T.Color(th.text || "#e8e2d6").getHex(), selG); if (A.onPaint) A.onPaint(selG); V.draw(); }   // 2.647.0: on the floorplan: blue hover, drawn over the plan   // 2.624.0: the theme's accent / text
+    function paintSel() { clear(selG); const th = V.theme || {}; camColours(); outline(A.sel, new T.Color(th.accent || "#f59e2c").getHex(), selG); (A.more || []).forEach((t) => outline(t, new T.Color(th.accent || "#f59e2c").getHex(), selG)); rings(A.sel, selG); moveWidget(A.sel, selG); if (A.hover && JSON.stringify(A.hover) !== JSON.stringify(A.sel)) outline(A.hover, A.planOnNow && A.planOnNow() ? 0x2563eb : new T.Color(th.text || "#e8e2d6").getHex(), selG); if (A.onPaint) A.onPaint(selG); V.draw(); }   // 2.647.0: on the floorplan: blue hover, drawn over the plan   // 2.624.0: the theme's accent / text
     function setSel(t) { A.sel = t ? Object.assign({}, t) : null; paintSel(); }
+    function setMore(list) { A.more = (list || []).map((t) => Object.assign({}, t)); paintSel(); }   // 2.648.0: Ctrl+click - the others picked
     function setHover(t) { const k = JSON.stringify(t || null); if (k === JSON.stringify(A.hover)) return; A.hover = t || null; paintSel(); }
 
     /* ---- out: the model's files */
@@ -314,7 +315,7 @@
       });
     }
     function box() { const Ar = V.M && V.M.arch; return Ar && P().has(Ar) ? P().bbox(Ar) : null; }
-    Object.assign(A, { setThrough, setGizmo, setAxisHot, rebuild, pick, resolve, setSel, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
+    Object.assign(A, { setThrough, setGizmo, setAxisHot, rebuild, pick, resolve, setSel, setMore, setHover, setNight, cut, exportMeshes, exportLights, camsShown, box, layers, group: geo, fixtures: fix });
     return A;
   }
   root.PPArchView = { attach, loadPC, CD };

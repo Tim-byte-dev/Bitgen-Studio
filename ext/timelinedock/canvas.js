@@ -1020,6 +1020,20 @@
     mark();
   }
   function fit() { S.view.fit = true; mark(); }
+  /* 2.648.0 (Tim: "add a zoom to selection tool"): ⊡ - the picked layer's box (turned as it is) fills the view; nothing
+     picked = ⤢ fit. -> the box in picture px, or null */
+  function zoomToSel() {
+    var sel = selClip(), b = sel ? box(sel.c, sel.Ly.kind) : null;
+    if (!b || !(b.w > 0) || !(b.h > 0)) { fit(); say(""); return null; }
+    var cs = corners(b), x0 = Math.min.apply(null, cs.map(function (p) { return p.x; })), x1 = Math.max.apply(null, cs.map(function (p) { return p.x; }));
+    var y0 = Math.min.apply(null, cs.map(function (p) { return p.y; })), y1 = Math.max.apply(null, cs.map(function (p) { return p.y; }));
+    var r = cv.getBoundingClientRect(), z = Math.max(0.02, Math.min(16, (r.width - 48) / Math.max(1, x1 - x0), (r.height - 48) / Math.max(1, y1 - y0)));
+    S.view.fit = false; S.view.z = z; S.view.ox = r.width / 2 - (x0 + x1) / 2 * z; S.view.oy = r.height / 2 - (y0 + y1) / 2 * z;
+    mark();
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  // 2.648.0 (Tim: "shift + drag foward = zoom in, shift + drag back = zoom out"): Shift + right-drag, round where it was pressed
+  if (window.H3ZoomDrag) window.H3ZoomDrag.attach(cv, { zoom: function (f, x, y) { zoomAt(f, x, y); } });
   function handleAt(sel, ev) {
     var b = box(sel.c, sel.Ly.kind);
     if (!b) return null;
@@ -1555,6 +1569,8 @@
   $("tlTool_hand").addEventListener("click", function () { setTool("hand"); });
   $("tlTool_zoom").addEventListener("click", function () { setTool("zoom"); });
   $("tlTool_fit").addEventListener("click", fit);
+  if ($("tlTool_zsel")) $("tlTool_zsel").addEventListener("click", function () { zoomToSel(); });   // 2.648.0
+  if (window.H3PointerIcon && $("tlTool_move")) window.H3PointerIcon.apply($("tlTool_move"), { size: 15 });   // 2.648.0: Move = a pointer
   $("tlTool_color").addEventListener("input", function () {
     S.color = $("tlTool_color").value; storeSet("tlc.color", S.color);
     var sel = selClip();
@@ -1633,7 +1649,7 @@
                       onDraw: function (fn) { drawHooks.push(fn); mark(); }, mark: mark,
                       onComp: function (fn) { compHooks.push(fn); mark(); }, srcAt: srcAt, vidAt: vidAt,   // 2.406.0 toComp: toComp,
                       toScreen: toScreen, paintComp: paintComp, newLayer: newLayer, say: say,
-                      box: box, stack: stack, hit: hit, select: select, setTool: setTool, fit: fit, paintLayers: paintLayers,
+                      box: box, stack: stack, hit: hit, select: select, setTool: setTool, fit: fit, zoomToSel: zoomToSel, zoomAt: zoomAt, view: function () { return { z: S.view.z, ox: S.view.ox, oy: S.view.oy, fit: S.view.fit }; }, paintLayers: paintLayers,
                       flushText: flushText, uploadText: uploadText, saveTextPng: saveTextPng, fxSpec: fxSpec, snapshot: snapshot,
                       tfAt: tfAt, textAt: textAt, keysChanged: keysChanged, writeTf: writeTf,
                       // 2.382.0 the 3D layers (ext/timelinedock/m3d.js)

@@ -317,8 +317,38 @@
       ortho.userData.k = r * 1.3 / Math.min(1, persp.aspect); ortho.zoom = 1; size();
       controls.update(); draw();
     }
-    function extents() {
-      const { c, r } = fitBox(), dir = G().v3.norm(G().v3.sub([cam.position.x, cam.position.y, cam.position.z], [controls.target.x, controls.target.y, controls.target.z]));
+    /** 2.648.0: ⊡ the box {min, max} fills the view (the way it looks now kept) */
+    function frameBox(b) {
+      if (!b || !b.min || !b.max) return extents();
+      const c = G().v3.mul(G().v3.add(b.min, b.max), 0.5), r = Math.max(0.4, G().v3.len(G().v3.sub(b.max, b.min)) / 2);
+      if (!c.every(Number.isFinite) || !Number.isFinite(r)) return extents();
+      return extents({ c, r });
+    }
+    /** 2.648.0 (Tim: "shift + drag foward = zoom in, shift + drag back = zoom out"): f > 1 = closer, round the screen point
+        (sx, sy px from the view's top-left) - it stays under the pointer (perspective: the eye moves toward it; parallel /
+        the floorplan: the zoom) */
+    function zoomAt(f, sx, sy) {
+      if (!(f > 0) || !Number.isFinite(f)) return;
+      const r = R.domElement.getBoundingClientRect(), x = sx == null ? r.width / 2 : sx, y = sy == null ? r.height / 2 : sy;
+      cam.updateMatrixWorld(); rc.setFromCamera(new T.Vector2(x / r.width * 2 - 1, -(y / r.height) * 2 + 1), cam);
+      const dir = new T.Vector3(); cam.getWorldDirection(dir);
+      const t0 = controls.target.clone(), den = rc.ray.direction.dot(dir);
+      let P = t0.clone();
+      if (Math.abs(den) > 1e-6) { const k = t0.clone().sub(rc.ray.origin).dot(dir) / den; if (k > 0) P = rc.ray.origin.clone().add(rc.ray.direction.clone().multiplyScalar(k)); }
+      if (cam === persp) {
+        const d0 = cam.position.distanceTo(t0), d1 = d0 / f;
+        if ((f > 1 && d1 < 0.05) || (f < 1 && d1 > 5000)) return;                          // not through the target, not lost in the sky
+      } else {
+        const z1 = cam.zoom * f; if (z1 < 0.002 || z1 > 2000) return;
+        ortho.zoom = z1; ortho.updateProjectionMatrix();
+      }
+      const toP = (v) => v.sub(P).multiplyScalar(1 / f).add(P);
+      if (cam === persp) { toP(cam.position); toP(controls.target); }
+      else { const d = controls.target.clone(); toP(controls.target); cam.position.add(controls.target.clone().sub(d)); }
+      controls.update(); draw();
+    }
+    function extents(fixed) {
+      const { c, r } = fixed || fitBox(), dir = G().v3.norm(G().v3.sub([cam.position.x, cam.position.y, cam.position.z], [controls.target.x, controls.target.y, controls.target.z]));
       const vf = persp.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * persp.aspect);   // a narrow docker: its width decides
       const D = r / Math.sin(Math.min(vf, hf) / 2) * 1.15;
       controls.target.set(c[0], c[1], c[2]);
@@ -412,7 +442,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, extents, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, view, extents: () => extents(), frameBox, zoomAt, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

@@ -26,13 +26,17 @@ const E = { stage: d.getElementById("stage"), S: { fg: "#000000", bg: "#ffffff",
   kx: d.getElementById("imageeditdock"), $: (id) => d.getElementById(id), store: { get: () => null, set: () => {} }, win: w, doc: d };
 FO.install(E);
 const setOn = () => E.focus && E.focus.set(true);
-const press = (o) => { const e = new w.MouseEvent("pointerdown", Object.assign({ bubbles: true, cancelable: true, button: 2 }, o)); d.getElementById("stage").dispatchEvent(e); const c = new w.MouseEvent("contextmenu", Object.assign({ bubbles: true, cancelable: true, button: 2 }, o)); d.getElementById("stage").dispatchEvent(c); };
+// 2.648.0: the press, its context menu, then the release (artist mode is left on the RELEASE - a Shift + right-DRAG zooms)
+const press = (o, dy) => { const st = d.getElementById("stage"), ev = (t, x) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 2, clientX: 100, clientY: 100 + (x || 0) }, o));
+  st.dispatchEvent(ev("pointerdown")); st.dispatchEvent(ev("contextmenu")); if (dy) st.dispatchEvent(ev("pointermove", dy)); st.dispatchEvent(ev("pointerup", dy || 0)); };
 if (!E.focus) { check("installed in a page", false, "E.focus missing - install needs another context"); }
 else {
   setOn();
   check("artist mode on", E.focus.on() && d.body.classList.contains("ie-focus"));
   press({ shiftKey: false });
   check("a plain right click in artist mode: still in it (the editor gets it)", E.focus.on() && editorSaw === 1);
+  press({ shiftKey: true }, 60);
+  check("Shift + right-DRAG (2.648.0 - it zooms): still in artist mode, no context menu", E.focus.on() && editorSaw === 1 && menuShown === 1, { on: E.focus.on(), editorSaw, menuShown });
   press({ shiftKey: true });
   check("Shift+right-click: out of artist mode, the editor never saw the press, no context menu", !E.focus.on() && !d.body.classList.contains("ie-focus") && editorSaw === 1 && menuShown === 1, { on: E.focus.on(), editorSaw, menuShown });
   press({ shiftKey: true });

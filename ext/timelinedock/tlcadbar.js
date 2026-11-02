@@ -64,8 +64,8 @@
           { id: "c_text3d", label: "3D Text", icon: "🔤", run: function () { add3d("text"); } },
           { id: "c_model", label: "3D Model…", icon: "🧊", run: function () { if (window.TlM3D && window.TlM3D.openMenu) window.TlM3D.openMenu(); } }] },
         { label: "Camera", show: 2, items: [tool("camera", "Camera", "🎥"), tool("path", "Path", "⤳", "Shift+P")] },
-        { label: "Select", show: 4, items: [tool("move", "Move", "✥", "V"), tool("hand", "Hand", "✋", "H"), tool("zoom", "Zoom", "🔍", "Z"),
-          { id: "c_fit", label: "Fit", icon: "⤢", run: click("#tlTool_fit") }, { sep: true }, tool("select", "Select", "⬚", "M"), tool("mask", "Mask", "🖌", "B")] },
+        { label: "Select", show: 4, items: [tool("move", "Move", window.H3PointerIcon ? window.H3PointerIcon.svg({ size: 16 }) : "➤", "V"), tool("hand", "Hand", "✋", "H"), tool("zoom", "Zoom", "🔍", "Z"),
+          { id: "c_fit", label: "Fit", icon: "⤢", run: click("#tlTool_fit") }, { id: "c_zsel", label: "Zoom to selection", icon: "⊡", run: click("#tlTool_zsel") }, { sep: true }, tool("select", "Select", "⬚", "M"), tool("mask", "Mask", "🖌", "B")] },
       ] },
       { id: "3d", label: "3D", groups: [
         { label: "Widget", inline: true, items: [["move", "✥", "Move (G)"], ["rotate", "⟲", "Rotate (R)"], ["scale", "⤡", "Scale (S)"], ["off", "○", "No widget"]].map(function (m) {

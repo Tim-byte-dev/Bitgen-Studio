@@ -56,7 +56,8 @@
 
   function create(ctx) {
     const V = ctx.V, v3 = () => G().v3;
-    let tool = null, st = {}, asel = null, through = null;      // through: 2.631.0 the camera the view looks through
+    let tool = null, st = {}, asel = null, through = null;
+    let amore = [];                                                    // 2.648.0: Ctrl+click - the others picked with asel      // through: 2.631.0 the camera the view looks through
     let gizmo = "move";                                           // 2.641.0: a picked camera's widget - "move" (arrows) | "rotate" (rings, a double-click)
     const O = JSON.parse(JSON.stringify(OPT0));
     try { const s = JSON.parse(root.localStorage.getItem("pp.archopt") || "{}"); Object.keys(O).forEach((k) => { if (s[k] && typeof s[k] === "object") Object.assign(O[k], s[k]); }); } catch (e) { /* fine */ }
@@ -453,6 +454,23 @@
       }
       let t = AV().resolve(h); if (!t) return false;
       if (ev.shiftKey && t.ak === "room") t = { ak: "room", id: t.id };                 // 2.639.0: Shift+click = the whole room (then a drag moves it)
+      // 2.648.0 (Tim: "pick tool to select a single object, ctrl+click will add to the selection"): a click = that one thing;
+      // Ctrl+click = added to what is picked (Ctrl+click a picked one = taken out); a press on one of several picked = a drag
+      // moves them all (let go without moving: only that one stays picked)
+      const ctrl = ev.ctrlKey || ev.metaKey, all = picked(), inAll = all.some((x) => sameTag(x, t));
+      if (ctrl || (inAll && all.length > 1)) {
+        let list = all;
+        if (ctrl) list = inAll ? all.filter((x) => !sameTag(x, t)) : all.concat([t]);
+        const prim = ctrl ? (inAll ? list[list.length - 1] || null : t) : t, rest = list.filter((x) => !sameTag(x, prim));
+        if (!prim) { setSel(null); ctx.status("nothing picked"); return true; }
+        setSel(prim, true); setMore(rest); props();
+        const A0 = AR(), x0 = P().find(A0, prim.ak === "wall" ? "room" : prim.ak, prim.ak === "wall" ? prim.room : prim.id);
+        const z0 = x0 && Number.isFinite(x0.z) ? x0.z : h.point[2], start = planeAt(ev, z0);
+        if (start && rest.length && (!ctrl || !inAll)) st.drag = { many: [prim].concat(rest), single: ctrl ? null : t, z: z0, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A0), moved: false };
+        ctx.status((rest.length + 1) + " picked · Ctrl+click adds (a picked one: takes it out) · drag moves them all · Delete erases them · Esc lets go");
+        return true;
+      }
+      if (amore.length) setMore([]);
       ctx.setSel({ f: [], e: [], k: [] }); setSel(t);
       const A = AR(), x = P().find(A, t.ak, t.id);
       if (t.ak === "room" && t.part === "wall" && t.edge != null && x && x.closed) {      // 2.624.0: one wall of the room
@@ -481,6 +499,15 @@
       if (!(ev.buttons & 1)) { st.drag = null; V.preview({}); return false; }
       if (!D.moved && Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) < 4) return true;
       D.moved = true;
+      if (D.many) {                                                     // 2.648.0: several picked - moved together (Shift: straight)
+        const cur = planeAt(ev, D.z); if (!cur) return true;
+        let d = [cur[0] - D.start[0], cur[1] - D.start[1]];
+        if (ev.shiftKey) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }
+        const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); P().moveMany(M.arch, D.many, d);
+        AV().rebuild(); AV().setSel(asel); if (AV().setMore) AV().setMore(amore);
+        ctx.status(D.many.length + " picked moved " + fmt(Math.hypot(d[0], d[1])));
+        return true;
+      }
       if (D.mode === "top") return dragTop(ev, D);
       if (D.mode === "grip") return dragGrip(ev, D);
       if (D.mode === "spin") return dragSpin(ev, D);
@@ -570,6 +597,7 @@
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
+      if (D.many && !D.moved && D.single) { setMore([]); setSel(D.single); return true; }   // 2.648.0: a click on one of several = that one
       if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : D.mode === "spin" ? "turn" : "move", D.before); props(); }
       else if (D.t && D.t.ak === "cam" && D.mode !== "axis" && D.mode !== "spin") ctx.status("📷 " + ((P().find(AR(), "cam", D.t.id) || {}).name || "camera") + " · drag it or an arrow to move it · double-click = rotate rings" + (gizmo === "rotate" ? " (now: rotate - double-click again for the arrows)" : ""));
       return true;
@@ -662,6 +690,16 @@
     }
     function eraseSel() {
       if (!asel) return;
+      if (amore.length) {                                               // 2.648.0: several picked - all of them, one undo step
+        const b = before(), A = AR(), list = picked(); let n = 0;
+        list.forEach((t) => {
+          if (t.ak === "room" && t.part) { const R = P().room(A, t.id); if (!R) return; const key = { floor: "floorOn", ceil: "ceilOn", skirt: "skirtOn", cornice: "corniceOn", slab: "slab" }[t.part]; if (key) { R[key] = false; n++; } else if (t.part === "wall" && t.edge != null) { const k = "room:" + R.id + ":wall:" + t.edge; A.hide = (A.hide || []).filter((q) => q !== k).concat([k]); n++; } return; }
+          if (t.ak === "wpt" || t.ak === "wtop") return;
+          if (P().remove(A, t.ak, t.id)) n++;
+        });
+        amore = []; asel = null; if (AV() && AV().setMore) AV().setMore([]);
+        done("erase", b, null); ctx.status("⌫ erased " + n + " picked"); return;
+      }
       const b = before(), t = asel;
       if (t.ak === "wpt" || t.ak === "wtop") {                          // 2.624.0: Delete on a cut / a top edge
         const ok = t.ak === "wpt" ? P().removeTopPoint(AR(), t.room, t.edge, t.k) : P().removeTopSeg(AR(), t.room, t.edge, t.k);
@@ -732,8 +770,12 @@
           return j;
         }).catch((e) => { ctx.status("🪄 " + (e.message || e)); return null; });
     }
-    function nameOf(t) { const x = t.id != null ? P().find(AR(), t.ak, t.id) : null; return { room: x ? x.name : "room", op: x ? (x.kind === "opening" ? "opening" : x.kind) : "door / window", light: "light", roof: "roof", stair: "stairs", slab: "floor", cam: x ? x.name : "camera", item: x && root.PPFurn ? root.PPFurn.label(x).toLowerCase() : "piece" }[t.ak] || t.ak; }
+    function nameOf(t) { const x = t.id != null ? P().find(AR(), t.ak, t.id) : null; return { room: x ? x.name : "room", op: x ? (x.kind === "opening" ? "opening" : x.kind) : "door / window", light: "light", roof: "roof", stair: "stairs", slab: "floor", cam: x ? x.name : "camera", item: x && t.ak === "item" && root.PPFurn ? String(root.PPFurn.label(x) || "piece").toLowerCase() : "piece" }[t.ak] || t.ak; }
+    const sameTag = (a, b) => !!(a && b && a.ak === b.ak && a.id === b.id && (a.part || null) === (b.part || null) && (a.edge == null ? null : a.edge) === (b.edge == null ? null : b.edge) && (a.room == null ? null : a.room) === (b.room == null ? null : b.room));
+    const picked = () => (asel ? [asel] : []).concat(amore);
+    function setMore(list) { amore = list || []; if (AV() && AV().setMore) AV().setMore(amore); }
     function setSel(t, quiet) {
+      if (!t && amore.length) setMore([]);                             // nothing picked = none of the others either
       const same = !!(asel && t && asel.ak === t.ak && asel.id === t.id);
       if (!same) gizmo = "move";                                        // 2.641.0: another thing picked = the camera's widget back to move
       if (AV() && AV().setGizmo && AV().gizmo !== gizmo) AV().setGizmo(gizmo);
@@ -912,6 +954,13 @@
         box.appendChild(el("div", "pphint", "Drag it up / down (Select) to slope the wall. Double-click the top of a wall for another cut."));
         ctx.resized && ctx.resized(); return;
       }
+      if (amore.length) {                                               // 2.648.0: several picked
+        head("➤ " + (amore.length + 1) + " picked");
+        const ul = el("div", "pphint", picked().map((t) => "• " + nameOf(t) + (t.part ? " (" + t.part + ")" : "")).join("\n")); ul.style.whiteSpace = "pre-line"; box.appendChild(ul);
+        btns([["🗑 Delete them", eraseSel, "Erase every picked part (one undo)"], ["⊡ Zoom to them", () => { if (ctx.zoomPicked) ctx.zoomPicked(); }, "Fill the view with them"]]);
+        box.appendChild(el("div", "pphint", "Ctrl+click adds another (a picked one: takes it out) · drag one of them: they all move · a click: only that one · Esc: nothing picked."));
+        ctx.resized && ctx.resized(); return;
+      }
       if (asel.ak === "room" && asel.part && partPanel(x, asel)) { ctx.resized && ctx.resized(); return; }
       if (asel.ak === "room") {
         const R = x, rect = R.closed && R.pts.length === 4 && isRect(R);
@@ -1050,7 +1099,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { escape, gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { escape, picked, setMore, gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

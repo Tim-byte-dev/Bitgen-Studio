@@ -875,6 +875,46 @@
     A.ops.forEach((op) => { if (op.room === id && L0[op.edge] > EPS && L1[op.edge] != null) op.at = r6(op.at * L1[op.edge] / L0[op.edge]); });
     return true;
   }
+  /** 2.648.0 (Tim: "pick tool to select a single object, ctrl+click will add to the selection"): several picked parts moved
+   *  together by d [dx, dy] - a room (or one of its walls / parts) moves the whole room (its doors, windows and lights with
+   *  it); furniture, lights, stairs, cameras and floors move by themselves; a door / window alone stays on its wall */
+  function moveMany(A, tags, d) {
+    if (!A || !tags || !d || (Math.abs(d[0]) < 1e-12 && Math.abs(d[1]) < 1e-12)) return;
+    const ids = [...new Set(tags.filter((t) => t && (t.ak === "room" || ((t.ak === "wall" || t.ak === "wpt" || t.ak === "wtop") && t.room != null))).map((t) => (t.ak === "room" ? t.id : t.room)))];
+    moveRooms(A, ids, d);
+    const seen = new Set();
+    tags.forEach((t) => {
+      if (!t || seen.has(t.ak + ":" + t.id)) return; seen.add(t.ak + ":" + t.id);
+      const x = ["item", "light", "stair", "cam", "slab"].includes(t.ak) ? find(A, t.ak, t.id) : null; if (!x) return;
+      if (t.ak === "slab") { x.pts = x.pts.map((p) => [r6(p[0] + d[0]), r6(p[1] + d[1])]); return; }
+      if (t.ak === "light" && ids.includes(x.room)) return;                 // moved with its room
+      x.x = r6(x.x + d[0]); x.y = r6(x.y + d[1]);
+    });
+  }
+  /** 2.648.0 (Tim: "add a zoom to selection tool"): the box round a picked part of the building {min, max} (3D, metres) |
+   *  null - t = the Sketcher's pick {ak, id, part?, edge?, room?} (a room's wall: that wall; a roof: its rooms + its pitch) */
+  function selBox(A, t) {
+    if (!A || !t) return null;
+    const P3 = []; const box = () => { if (!P3.length) return null; const mn = [0, 1, 2].map((k) => Math.min(...P3.map((p) => p[k]))), mx = [0, 1, 2].map((k) => Math.max(...P3.map((p) => p[k]))); return [...mn, ...mx].every(Number.isFinite) ? { min: mn, max: mx } : null; };
+    const flat = (pts, z0, z1) => pts.forEach((p) => { P3.push([p[0], p[1], z0], [p[0], p[1], z1]); });
+    const x = t.id != null ? find(A, t.ak, t.id) : null;
+    if (t.ak === "room" || t.ak === "wall" || t.ak === "wpt" || t.ak === "wtop") {
+      const R = room(A, t.ak === "room" ? t.id : (t.room != null ? t.room : t.id)); if (!R) return null;
+      const e = t.edge != null ? edgesOf(R)[t.edge] : null;
+      if (e && (t.part === "wall" || t.ak !== "room")) flat([e.a, e.b], R.z, R.z + R.h); else flat(R.pts, R.z, R.z + R.h);
+      return box();
+    }
+    if (!x) return null;
+    if (t.ak === "op") { const I = opInfo(A, x); if (!I) return null; flat(I.rect, I.z0, I.z1); return box(); }
+    if (t.ak === "roof") { (x.rooms || []).forEach((id) => { const R = room(A, id); if (R) flat(R.pts, R.z, R.z + R.h + Math.max(1, (x.over || 0) + 2.5)); }); return box(); }
+    if (t.ak === "slab") { flat(x.pts || [], (x.z || 0) - (x.th || 0.2), x.z || 0); return box(); }
+    if (t.ak === "stair") { const a = x.ang * Math.PI / 180, u = [Math.cos(a), Math.sin(a)], v = [-u[1], u[0]], o = [x.x - v[0] * x.w / 2, x.y - v[1] * x.w / 2];
+      flat([o, [o[0] + u[0] * x.len, o[1] + u[1] * x.len], [o[0] + u[0] * x.len + v[0] * x.w, o[1] + u[1] * x.len + v[1] * x.w], [o[0] + v[0] * x.w, o[1] + v[1] * x.w]], x.z, x.z + x.rise); return box(); }
+    if (t.ak === "item") { const r = Math.hypot(x.w || 0.5, x.d || 0.5) / 2; flat([[x.x - r, x.y - r], [x.x + r, x.y + r]], x.z || 0, (x.z || 0) + (x.h || 1)); return box(); }
+    if (t.ak === "light") { flat([[x.x - 0.3, x.y - 0.3], [x.x + 0.3, x.y + 0.3]], x.z - 0.3, x.z + 0.3); return box(); }
+    if (t.ak === "cam") { flat([[x.x - 0.6, x.y - 0.6], [x.x + 0.6, x.y + 0.6]], x.z - 0.6, x.z + 0.6); return box(); }
+    return null;
+  }
   function removeRoom(A, id) {
     A.rooms = A.rooms.filter((R) => R.id !== id);
     A.ops = A.ops.filter((x) => x.room !== id);
@@ -983,7 +1023,7 @@
 
   const api = { frames, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);
