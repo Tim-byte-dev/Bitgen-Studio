@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.651.0** — The Sketcher's Material Tools: Each Wall's Inside / Outside, Glass, Picture Textures, Backdrop / 360° Sky
 - **2.650.0** — The Sketcher Highlights What Is Picked and What Is Under the Pointer
 - **2.649.0** — The Sketcher's Floorplan in the App's Theme Colours
 - **2.648.0** — Shift + Right-Drag Zoom, Zoom to Selection, the Pointer; The Sketcher's Esc and Ctrl+click

@@ -12933,6 +12933,13 @@ node scripts/test-hl650.js > /tmp/hl650.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui650-ui.js > /tmp/ui650.log 2>&1 \
   && ok "2.650.0 browser test: 3D - the hovered wall blue, the picked wall accent (its colour moves), no blue over a picked one, furniture tinted; the floorplan - picked accent, hovered blue, none when nothing - or SKIP without playwright" \
   || { bad "2.650.0 highlight browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui650.log | head -14; }
+# ---- 2.651.0 (Tim: "can we add material tools to sketcher, so wall_1 interior, wall_1 exterior, windows, etc, and use reference images for the texture, background etc.")
+node scripts/test-mat651.js > /tmp/mat651.log 2>&1 \
+  && ok "2.651.0 Sketcher materials: each wall's inside / outside, glass, picture materials (A.tex), the background (A.bg), the build's outside faces, PPFurn tex, the picker's pure parts, the wiring" \
+  || { bad "2.651.0 materials units"; grep -a "^FAIL" -A2 /tmp/mat651.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui651-ui.js > /tmp/ui651.log 2>&1 \
+  && ok "2.651.0 browser test: a wall's Inside / Outside picker, a material on one outside, a picture from a file as a texture (saved, served, sized), glass, the paint bucket on one wall side / Shift all, 🖼 backdrop / 360° sky / undo / none, saved - or SKIP without playwright" \
+  || { bad "2.651.0 materials browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui651.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

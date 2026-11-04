@@ -45,7 +45,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.mouse.click(wx, wy); await p.waitForTimeout(250);
     const s1 = await ev(() => H3PushPull.state.T.arch.sel());
     const h1 = await head();
-    check("a wall clicked in the view: ▮ Wall n · Room 1 panel (Length / Height / Thickness / Inside colour / 👁) - not the room's", s1 && s1.part === "wall" && /^▮ Wall \d · Room 1/.test(h1) && await ev(() => ["Length (m)", "Height (m)", "Inside colour", "👁 Shown"].every((l) => [...document.querySelectorAll("#ppProps .ppr span")].some((s) => s.textContent.startsWith(l)))), { s1, h1 });
+    check("a wall clicked in the view: ▮ Wall n · Room 1 panel (Length / Height / Thickness / Inside colour / 👁) - not the room's", s1 && s1.part === "wall" && /^▮ Wall \d · Room 1/.test(h1) && await ev(() => ["Length (m)", "Height (m)", "Inside", "Outside", "👁 Shown"].every((l) => [...document.querySelectorAll("#ppProps .ppr span")].some((s) => s.textContent.startsWith(l)))), { s1, h1 });
     // the outline picks its parts
     await row("Wall 2"); await p.waitForTimeout(200);
     const lenIn = await ev(() => { const r = [...document.querySelectorAll("#ppProps .ppr")].find((x) => x.querySelector("span").textContent === "Length (m)"); return r ? +r.querySelector("input").value : null; });
@@ -54,7 +54,9 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.waitForTimeout(200);
     const r1 = await R0();
     check("…Length 3.5: the rectangle room keeps its shape (depth 3.5)", Math.abs(r1.pts[2][1] - 3.5) < 1e-6 && Math.abs(r1.pts[3][1] - 3.5) < 1e-6, r1.pts);
-    await ev(() => { const r = [...document.querySelectorAll("#ppProps .ppr")].find((x) => x.querySelector("span").textContent === "Inside colour"); const i = r.querySelector("input"); i.value = "#336699"; i.dispatchEvent(new Event("change")); });
+    // 2.651.0: Inside is a material button (ppmatpick.js) - its colour box + "Use this colour"
+    await ev(() => { const r = [...document.querySelectorAll("#ppProps .ppr")].find((x) => x.querySelector("span").textContent === "Inside"); r.querySelector("button.ppmatbtn").click(); });
+    await ev(() => { const i = document.querySelector("#ppMatPick input[type=color]"); i.value = "#336699"; [...document.querySelectorAll("#ppMatPick button")].find((b) => /Use this colour/.test(b.textContent)).click(); });
     await p.waitForTimeout(200);
     const wc = await ev(() => ({ w: H3PushPull.state.M.arch.rooms[0].wcol, faces: H3PushPull.state.A.built.polys.filter((x) => x.tag.ak === "wall" && x.col === "#336699").length }));
     check("…its own inside colour: only that wall's inside faces", wc.w && wc.w[1] === "#336699" && wc.faces >= 1, wc);

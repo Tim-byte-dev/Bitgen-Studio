@@ -141,6 +141,7 @@
     function rebuild() {
       clear(model); faceMeshes = []; edges = [];
       const M = V.M; if (!M) { draw(); return; }
+      if (root.PPFurn && root.PPFurn.setTex && M.arch) root.PPFurn.setTex(M.arch.tex);   // 2.651.0: a face painted with a picture
       const g = G(), by = new Map(), seen = new Set();
       const sty = V.styleName;
       // an imported group (soft) draws no line between two flat neighbours (its triangles read as one surface)

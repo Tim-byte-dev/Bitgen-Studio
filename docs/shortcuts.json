@@ -997,6 +997,10 @@
         [
           "Ctrl+click",
           "➤ Select: add to what is picked - faces, lines and building parts (a picked part: takes it out); drag one of them to move them all, Delete erases them all"
+        ],
+        [
+          "Shift+click",
+          "🪣 Paint: every wall on that side (a room's insides / every outside wall) - a click paints the one wall side"
         ]
       ]
     }

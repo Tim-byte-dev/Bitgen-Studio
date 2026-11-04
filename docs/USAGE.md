@@ -409,7 +409,7 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.648)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.651)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
@@ -6300,6 +6300,18 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.651.0: **The Sketcher's material tools** - every part of the building its own material, pictures as textures, a
+  picture as the background.
+  - **A wall's inside and outside**: a wall's panel has **Inside** and **Outside**; a window has **Frame** and **Glass**;
+    floors, ceilings, skirting, cornices, roofs, stairs and floors-without-walls have theirs. Each opens the **material
+    picker**: a colour, a built-in material (brick, stone, timber floors, tiles, marble, carpet …) or a **picture**.
+  - **Pictures as textures**: from the 🖼 Refs docker's pictures, the project's images or a file. The picture is saved in
+    the project and repeats every **Size** metres (turn it with **Turn °**). The same pictures can paint faces you drew.
+  - **The paint bucket** (B, the Materials button opens the same picker) now paints **one wall's side** - the inside or the
+    outside you click; **Shift+click** paints every wall on that side (a room's insides / all the outsides). Glass takes
+    its own paint.
+  - **🖼 Background** (the toolbar): **Backdrop** - a picture behind the model, filling the view without stretching - or
+    **360° sky** - a panorama picture round the scene (turn it); None = the theme's.
 - 2.650.0: **The Sketcher highlights what is picked and what is under the pointer** - the picked thing (a wall, a room,
   a door, a piece of furniture …, or several with Ctrl+click) is tinted in the theme's accent colour, and the thing under
   the pointer is tinted blue - unless it is already picked. On the 📐 floorplan the same: the picked symbol is filled in

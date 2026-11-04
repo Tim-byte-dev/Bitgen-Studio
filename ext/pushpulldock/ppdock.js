@@ -310,7 +310,28 @@
     PALETTE.forEach((c) => { const b = doc.createElement("button"); b.type = "button"; b.style.background = c; b.title = c; b.dataset.c = c; b.onclick = () => setColor(c); sw.appendChild(b); });
     paintSw();
     // 2.629.0: ▦ Materials - the House builder's materials (a colour "mat:<key>": its colour + texture on faces, walls, floors)
-    const mb = $("ppMatBtn"); if (mb && root.PPFurn) mb.onclick = () => menu(mb, [{ head: "Materials (Paint - B)" }].concat(root.PPFurn.materials().map((m) => ({ label: (m.tex ? "▦ " : "■ ") + m.label, run: () => { setColor("mat:" + m.key); msg("🪣 " + m.label + " - click faces, walls, floors"); } }))));
+    const mb = $("ppMatBtn"); if (mb && root.PPFurn) mb.onclick = () => {
+      // 2.651.0: the material picker - a colour, a material, a picture (the 🖼 Refs docker / the project / a file) as the paint
+      if (root.PPMatPick && S.M) { const A = root.PPArch.of(S.M); return root.PPMatPick.open(mb, { A, value: S.color, title: "Paint (B) - click a wall's inside or outside, a floor, glass …",
+        onPick: (v, add) => { if (add) { const b0 = snapshot(); A.tex = (A.tex || []).concat([add]); commit("picture", b0); } setColor(v); if (S.T && S.T.name() !== "paint") S.T.use("paint"); msg("🪣 click a wall's inside or outside (Shift: every wall on that side), a floor, a ceiling, glass, a face …"); },
+        onTex: (id, q) => { const b0 = snapshot(), t = (A.tex || []).find((x) => x.id === id); if (t) Object.assign(t, q); commit("picture", b0); } }); }
+      menu(mb, [{ head: "Materials (Paint - B)" }].concat(root.PPFurn.materials().map((m) => ({ label: (m.tex ? "▦ " : "■ ") + m.label, run: () => { setColor("mat:" + m.key); msg("🪣 " + m.label + " - click faces, walls, floors"); } }))));
+    };
+    // 2.651.0 (Tim: "use reference images for the texture, background etc."): 🖼 Background - a backdrop or a 360° sky
+    const bgb = $("ppBgBtn"); if (bgb) bgb.onclick = () => bgPop(bgb);
+  }
+  /* 2.651.0: the 🖼 Background popup (ppmatpick.js bgPanel) - one undo step a change */
+  let bgBox = null;
+  function bgPop(anchor) {
+    if (bgBox) { bgBox.remove(); bgBox = null; return; }
+    if (!root.PPMatPick || !S.M) return;
+    bgBox = doc.createElement("div"); bgBox.className = "ppmp"; bgBox.id = "ppBgPop"; bgBox.style.cssText += ";position:fixed;z-index:2147483100;width:330px;padding:8px";
+    const paint = () => { bgBox.innerHTML = ""; const h = doc.createElement("b"); h.textContent = "🖼 Background"; bgBox.appendChild(h);
+      const x = doc.createElement("button"); x.className = "ghost"; x.type = "button"; x.textContent = "✕"; x.style.float = "right"; x.onclick = () => { bgBox.remove(); bgBox = null; }; bgBox.appendChild(x);
+      root.PPMatPick.bgPanel(bgBox, { A: root.PPArch.of(S.M), edit: (fn) => { const b0 = snapshot(); fn(root.PPArch.of(S.M)); commit("background", b0); root.PPMatPick.applyBg(S.V, S.M.arch); paint(); } }); };
+    if (!doc.getElementById("ppMatPickCss")) { root.PPMatPick.open(anchor, {}); root.PPMatPick.close(); }   // its styles
+    paint(); doc.body.appendChild(bgBox);
+    const r = anchor.getBoundingClientRect(); bgBox.style.left = Math.max(8, Math.min(innerWidth - 350, r.left)) + "px"; bgBox.style.top = (r.bottom + 4) + "px";
   }
   /* 2.648.0 (Tim: "add a zoom to selection tool"): ⊡ - the picked faces / lines / corners, or the picked part of the building
      (a room, a wall, a door, the stairs, a piece, a light, a camera ...) fills the view; nothing picked = ⤢ everything */
@@ -362,6 +383,8 @@
     try { S.A = await root.PPArchView.attach(S.V); S.V.after = () => S.A.rebuild(); S.V.extraBox = () => S.A.box(); }
     catch (e) { S.A = null; msg("the architecture tools did not start: " + (e.message || e)); }
     S.P = root.PPPlan && S.A ? root.PPPlan.attach(S.V, S.A) : null;        // 2.647.0: 📐 the floorplan view
+    if (S.A && root.PPMatPick) S.A.onBg = () => root.PPMatPick.applyBg(S.V, S.M && S.M.arch);   // 2.651.0: the background with the building
+    if (root.PPFurn && root.PPFurn.onTexLoad) root.PPFurn.onTexLoad(() => S.V && S.V.draw());   // a picture texture arrived
     S.M = G().newModel(); S.V.setModel(S.M);
     S.T = root.PPTools.create({
       V: S.V, model: () => S.M, sel: () => S.sel, setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s); S.V.setSel(S.sel); info(); if (S.T && S.T.arch && !S.T.arch.sel()) S.T.arch.props(); },

@@ -679,13 +679,23 @@
     function paintAt(ev, col, pickOnly) {
       const h = AV() && AV().pick(ev); if (!h || !nearerThanModel(ev, h)) return null;
       const A = AR(), tg = h.tag;
-      let get, set;
-      if (tg.ak === "wall") { const R = tg.room ? P().room(A, tg.room) : null; get = () => (R ? R.wall : A.ext); set = (c) => { if (R) R.wall = c; else A.ext = c; }; }
+      let get, set, paintWhat = "";
+      /* 2.651.0 (Tim: "wall_1 interior, wall_1 exterior"): ONE wall's inside / outside - Shift: every wall on that side
+         (the room's insides / the building's outsides) */
+      if (tg.ak === "wall") {
+        const R = tg.room ? P().room(A, tg.room) : null, pin = [h.point[0] - h.n[0] * 0.03, h.point[1] - h.n[1] * 0.03];
+        if (R) { let bi = 0, bd = Infinity; P().edgesOf(R).forEach((e) => { const d = P().segDist([h.point[0], h.point[1]], e.a, e.b).d; if (d < bd) { bd = d; bi = e.i; } });
+          if (ev.shiftKey) { get = () => R.wall; set = (c) => { R.wall = c; R.wcol = {}; }; } else { get = () => P().wallCol(R, bi); set = (c) => { R.wcol = Object.assign({}, R.wcol || {}); R.wcol[bi] = c; }; }
+          paintWhat = ev.shiftKey ? R.name + "'s walls (inside)" : R.name + "'s wall " + (bi + 1) + " (inside)"; }
+        else { const w = P().wallOwner(A, pin, h.point[2]);
+          if (ev.shiftKey || !w) { get = () => A.ext; set = (c) => { A.ext = c; A.rooms.forEach((Q) => { Q.wext = {}; }); }; paintWhat = "every outside wall"; }
+          else { get = () => P().wallExt(A, w.R, w.i); set = (c) => { w.R.wext = Object.assign({}, w.R.wext || {}); w.R.wext[w.i] = c; }; paintWhat = w.R.name + "'s wall " + (w.i + 1) + " (outside)"; } }
+      }
       else if (tg.ak === "room") { const R = P().room(A, tg.id); if (!R) return null; const k = { ceil: "ceilCol", skirt: "skirtCol", cornice: "cornCol" }[tg.part] || "floor"; get = () => R[k]; set = (c) => { R[k] = c; }; }   // 2.640.0: + skirting / cornice
-      else { const x = P().find(A, tg.ak, tg.id); if (!x) return null; const k = tg.ak === "op" && (tg.part === "frame" || tg.part === "sill") ? "trimCol" : "col"; get = () => x[k]; set = (c) => { x[k] = c; }; }   // 2.640.0: a frame / sill keeps its own
+      else { const x = P().find(A, tg.ak, tg.id); if (!x) return null; const k = tg.ak === "op" && tg.part === "glass" ? "glass" : tg.ak === "op" && (tg.part === "frame" || tg.part === "sill") ? "trimCol" : "col"; get = () => x[k]; set = (c) => { x[k] = c; }; }   // 2.640.0: a frame / sill keeps its own   // 2.651.0: + its glass
       if (pickOnly) return get();
       const b = before(); set(col); done("paint", b);
-      ctx.status("🪣 " + (tg.ak === "wall" ? (tg.room ? P().room(A, tg.room).name + "'s walls" : "the outside walls") : tg.ak === "room" ? ({ ceil: "the ceiling", skirt: "the skirting", cornice: "the cornice" }[tg.part] || "the floor") : "the " + nameOf({ ak: tg.ak })) + " painted");
+      ctx.status("🪣 " + (tg.ak === "wall" ? paintWhat + (ev.shiftKey ? "" : " · Shift+click: every wall on that side") : tg.ak === "op" && tg.part === "glass" ? "the glass" : tg.ak === "room" ? ({ ceil: "the ceiling", skirt: "the skirting", cornice: "the cornice" }[tg.part] || "the floor") : "the " + nameOf({ ak: tg.ak })) + " painted");
       return col;
     }
     function eraseSel() {
@@ -804,6 +814,20 @@
       const numIn = (label, val, on, step, min, max, unit) => { const i = el("input"); i.type = "number"; i.step = step || 0.01; if (min != null) i.min = min; if (max != null) i.max = max; i.value = +(+val).toFixed(3); i.onchange = () => { const v = parseFloat(i.value); if (Number.isFinite(v)) on(Math.min(max != null ? max : Infinity, Math.max(min != null ? min : -Infinity, v))); }; return row(label + (unit ? " (" + unit + ")" : ""), i); };
       const selIn = (label, val, opts, on) => { const s = el("select"); opts.forEach(([v, t]) => { const o = el("option", "", t); o.value = v; if (String(v) === String(val)) o.selected = true; s.appendChild(o); }); s.onchange = () => on(s.value); return row(label, s); };
       const colIn = (label, val, on) => { const i = el("input"); i.type = "color"; i.value = val; i.onchange = () => on(i.value); return row(label, i); };
+      /* 2.651.0 (Tim: "material tools ... wall_1 interior, wall_1 exterior, windows, etc, and use reference images for the
+         texture"): a material button - a colour, a built-in material or a picture (ppmatpick.js); a new picture joins A.tex */
+      const PM = root.PPMatPick;
+      const matName = (v) => (typeof v === "string" && v.startsWith("tex:") ? ((AR().tex || []).find((t) => t.id === v.slice(4)) || { name: "picture" }).name
+        : typeof v === "string" && v.startsWith("mat:") && root.PPFurn ? ((root.PPFurn.materials().find((m) => "mat:" + m.key === v) || { label: v.slice(4) }).label) : String(v || ""));
+      const matIn = (label, val, on) => {
+        if (!PM) return colIn(label, colOk(val), on);
+        const b = el("button", "ghost ppmatbtn"); b.type = "button"; b.appendChild(PM.swatch(val, 18, AR())); b.appendChild(el("span", "", " " + matName(val)));
+        b.title = label + " - a colour, a material (brick, timber, tiles …) or a picture from the 🖼 Refs docker / the project / a file";
+        b.onclick = () => PM.open(b, { A: AR(), value: val, title: label,
+          onPick: (v, add) => { if (add) AR().tex = (AR().tex || []).concat([add]); on(v); },
+          onTex: (id, q) => { const bf = before(), t = (AR().tex || []).find((x) => x.id === id); if (t) Object.assign(t, q); ctx.commit("material", bf); props(); } });
+        return row(label, b);
+      };
       const chkIn = (label, val, on) => { const i = el("input"); i.type = "checkbox"; i.checked = !!val; i.onchange = () => on(i.checked); return row(label, i); };
       const txtIn = (label, val, on) => { const i = el("input"); i.type = "text"; i.value = val; i.onchange = () => on(i.value.trim().slice(0, 60) || val); return row(label, i); };
       const btns = (list) => { const r = el("div", "ppbtns"); list.forEach(([t, fn, tip]) => { const b = el("button", "ghost", t); b.type = "button"; if (tip) b.title = tip; b.onclick = fn; r.appendChild(b); }); box.appendChild(r); };
@@ -835,9 +859,10 @@
           else { numIn("Start height", prof[0][1], ch((v) => P().moveTopPoint(AR(), id, i, 0, v)), 0.05, 0.05, 50, "m"); numIn("End height", prof[prof.length - 1][1], ch((v) => P().moveTopPoint(AR(), id, i, prof.length - 1, v)), 0.05, 0.05, 50, "m"); box.appendChild(el("div", "pphint", "Its top slopes (" + (prof.length - 2) + " cut" + (prof.length === 3 ? "" : "s") + ") - drag its top in the view to change the cuts")); }
           numIn("Thickness (all " + R.name + "'s walls)", R.t, ch((v) => P().setRoom(AR(), id, { t: v })), 0.01, 0.02, 2, "m");
           if (R.closed) {
-            colIn("Inside colour", colOk(P().wallCol(R, i)), ch((v) => { const Q = rm(AR()); Q.wcol = Object.assign({}, Q.wcol || {}); Q.wcol[i] = v; }));
+            matIn("Inside", P().wallCol(R, i), ch((v) => { const Q = rm(AR()); Q.wcol = Object.assign({}, Q.wcol || {}); Q.wcol[i] = v; }));
+            matIn("Outside", P().wallExt(AR(), R, i), ch((v) => { const Q = rm(AR()); Q.wext = Object.assign({}, Q.wext || {}); Q.wext[i] = v; }));   // 2.651.0
             if (R.wcol && R.wcol[i]) btns([["↺ Same as the room's walls", ch(() => { const Q = rm(AR()); delete Q.wcol[i]; })]]);
-          } else colIn("Colour", colOk(R.wall), ch((v) => { R.wall = v; }));
+          } else matIn("Colour", R.wall, ch((v) => { R.wall = v; }));
           shownIn("room:" + id + ":wall:" + i);
           const ops = A.ops.filter((o) => o.room === id && o.edge === i);
           if (ops.length) { box.appendChild(el("div", "pphint", "In this wall:")); btns(ops.map((o) => [(o.kind === "door" ? "🚪 " : o.kind === "window" ? "🪟 " : "▯ ") + (o.kind[0].toUpperCase() + o.kind.slice(1)) + " " + fmt(o.w) + " × " + fmt(o.h), () => setSel({ ak: "op", id: o.id })])); }
@@ -849,7 +874,7 @@
         if (t.part === "floor") {
           head("▦ Floor " + n + " · " + R.name + " · " + (+P().roomArea(R).toFixed(2)) + " m²");
           chkIn("On", R.floorOn, ch((v) => { rm(AR()).floorOn = v; }));
-          colIn("Colour", colOk(R.floor), ch((v) => { rm(AR()).floor = v; }));
+          matIn("Colour", R.floor, ch((v) => { rm(AR()).floor = v; }));
           numIn("Level", R.z, ch((v) => P().setRoom(AR(), id, { z: v })), 0.05, -100, 1000, "m");
           chkIn("Floor slab under the walls", !!R.slab, ch((v) => { rm(AR()).slab = v; }));
           shownIn("room:" + id + ":floor");
@@ -857,7 +882,7 @@
         } else if (t.part === "ceil") {
           head("⌓ Ceiling " + n + " · " + R.name);
           selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { const Q = rm(AR()); Q.ceilOn = v !== "none"; Q.ceil = v === "follow" ? "follow" : "flat"; }));
-          colIn("Colour", colOk(R.ceilCol), ch((v) => { rm(AR()).ceilCol = v; }));
+          matIn("Colour", R.ceilCol, ch((v) => { rm(AR()).ceilCol = v; }));
           numIn("Height (= the walls)", R.h, ch((v) => P().setRoom(AR(), id, { h: v })), 0.05, 0.1, 50, "m");
           shownIn("room:" + id + ":ceil");
           box.appendChild(el("div", "pphint", "⌂ Cut-away (in the bar) hides every ceiling and roof to look in from above."));
@@ -866,7 +891,7 @@
           chkIn("On", !!R.skirtOn, ch((v) => { rm(AR()).skirtOn = v; }));
           profRow("Profile", "skirt", R.skirtP, rm, "skirtP");
           numIn("Height", R.skirtH, ch((v) => { rm(AR()).skirtH = v; }), 0.005, 0.02, 0.6, "m");
-          colIn("Colour", colOk(R.skirtCol || R.trim), ch((v) => { rm(AR()).skirtCol = v; }));
+          matIn("Colour", R.skirtCol || R.trim, ch((v) => { rm(AR()).skirtCol = v; }));
           shownIn("room:" + id + ":skirt");
           btns([["✎ Profiles…", () => PD && PD.open({ kind: "skirt", id: R.skirtP, A: AR(), onSave: (pp) => { const b = before(), A2 = AR(); PL.keep(A2, pp); rm(A2).skirtP = pp.id; ctx.commit("profile", b); props(); } }), "Draw your own skirting profile"]]);
           box.appendChild(el("div", "pphint", "The profile is drawn to the height (its depth stays); it stops at doors and their frames."));
@@ -875,7 +900,7 @@
           chkIn("On", !!R.corniceOn, ch((v) => { rm(AR()).corniceOn = v; }));
           profRow("Profile", "cornice", R.cornP, rm, "cornP");
           numIn("Size", R.corniceH, ch((v) => { rm(AR()).corniceH = v; }), 0.005, 0.02, 0.6, "m");
-          colIn("Colour", colOk(R.cornCol || R.trim), ch((v) => { rm(AR()).cornCol = v; }));
+          matIn("Colour", R.cornCol || R.trim, ch((v) => { rm(AR()).cornCol = v; }));
           shownIn("room:" + id + ":cornice");
           btns([["✎ Profiles…", () => PD && PD.open({ kind: "cornice", id: R.cornP, A: AR(), onSave: (pp) => { const b = before(), A2 = AR(); PL.keep(A2, pp); rm(A2).cornP = pp.id; ctx.commit("profile", b); props(); } }), "Draw your own cornice profile"]]);
           if (!R.ceilOn) box.appendChild(el("div", "pphint", "The room has no ceiling - a cornice shows with one."));
@@ -975,18 +1000,18 @@
         numIn("Wall height", R.h, ch((v) => P().setRoom(AR(), R.id, { h: v })), 0.05, 0.1, 50, "m");
         numIn("Wall thickness", R.t, ch((v) => P().setRoom(AR(), R.id, { t: v })), 0.01, 0.02, 2, "m");
         numIn("Floor level", R.z, ch((v) => P().setRoom(AR(), R.id, { z: v })), 0.05, -100, 1000, "m");
-        colIn(R.closed ? "Walls inside" : "Wall", R.wall, ch((v) => { R.wall = v; }));
-        if (R.closed) { colIn("Floor", R.floor, ch((v) => { R.floor = v; })); colIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
+        matIn(R.closed ? "Walls inside" : "Wall", R.wall, ch((v) => { R.wall = v; }));
+        if (R.closed) { matIn("Floor", R.floor, ch((v) => { R.floor = v; })); matIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
         if (R.closed) {                                                   // 2.631.0: the auto floor slab + the auto roof for this room
           chkIn("Floor slab under the walls", !!R.slab, ch((v) => { R.slab = v; }));
           // 2.639.0: skirting / trim at the floor, a cornice under the ceiling
           chkIn("Skirting", !!R.skirtOn, ch((v) => { R.skirtOn = v; })); if (R.skirtOn) { profRow("Skirting profile", "skirt", R.skirtP, (A2) => P().room(A2, R.id), "skirtP"); numIn("Skirting height", R.skirtH, ch((v) => { R.skirtH = v; }), 0.01, 0.02, 0.6, "m"); }
           chkIn("Cornice", !!R.corniceOn, ch((v) => { R.corniceOn = v; })); if (R.corniceOn) { profRow("Cornice profile", "cornice", R.cornP, (A2) => P().room(A2, R.id), "cornP"); numIn("Cornice size", R.corniceH, ch((v) => { R.corniceH = v; }), 0.01, 0.02, 0.6, "m"); }
-          if (R.skirtOn || R.corniceOn) colIn("Skirting / cornice", colOk(R.skirtCol || R.trim), ch((v) => { R.trim = v; R.skirtCol = v; R.cornCol = v; }));   // 2.640.0: both (each part has its own)
+          if (R.skirtOn || R.corniceOn) matIn("Skirting / cornice", R.skirtCol || R.trim, ch((v) => { R.trim = v; R.skirtCol = v; R.cornCol = v; }));   // 2.640.0: both (each part has its own)
           const own = AR().roofs.find((rf) => rf.rooms.includes(R.id));
           chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
         }
-        colIn("Outside walls (all)", AR().ext, ch((v) => { AR().ext = v; }));
+        matIn("Outside walls (all)", AR().ext, ch((v) => { const A2 = AR(); A2.ext = v; A2.rooms.forEach((Q) => { Q.wext = {}; }); }));   // 2.651.0: every wall's own outside too
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
           ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
         box.appendChild(el("div", "pphint", "Drag it (Select) - a wall near another room's wall snaps onto it and they share it. Shift keeps the drag straight."));
@@ -1002,13 +1027,14 @@
         numIn("Width", op.w, ch((v) => { op.w = v; }), 0.05, 0.2, 20, "m"); numIn("Height", op.h, ch((v) => { op.h = v; }), 0.05, 0.2, 20, "m");
         if (op.kind !== "door") numIn("Elevation (height from floor)", op.sill, ch((v) => { op.sill = Math.max(0, v); }), 0.05, 0, 20, "m");   // 2.625.0
         if (I) numIn("From the corner", Math.max(0, I.x0), ch((v) => { op.at = v + op.w / 2; }), 0.05, 0, 500, "m");
-        if (op.kind !== "opening") colIn(op.kind === "door" ? "Door" : "Frame", op.col, ch((v) => { op.col = v; }));
+        if (op.kind !== "opening") matIn(op.kind === "door" ? "Door" : "Frame", op.col, ch((v) => { op.col = v; }));
+        if (op.kind === "window" || op.style === "glass" || op.style === "sliding") matIn("Glass", op.glass || "#9ec5e8", ch((v) => { op.glass = v; }));   // 2.651.0
         if (op.kind === "door") chkIn("Handle on the other side", op.flip, ch((v) => { op.flip = v; }));
         if (op.kind !== "opening") {                                     // 2.640.0: its frame (architrave) + a window's sill, as profiles
           const findOp = (A2) => A2.ops.find((q) => q.id === op.id);
           profRow(op.kind === "door" ? "Door frame" : "Window frame", op.kind === "door" ? "doorframe" : "windowframe", op.frameP, findOp, "frameP", true);
           if (op.kind === "window") profRow("Window sill", "sill", op.sillP, findOp, "sillP", true);
-          if (op.frameP || op.sillP) colIn(op.kind === "door" ? "Frame colour" : "Frame / sill colour", colOk(op.trimCol), ch((v) => { op.trimCol = v; }));
+          if (op.frameP || op.sillP) matIn(op.kind === "door" ? "Frame colour" : "Frame / sill colour", op.trimCol, ch((v) => { op.trimCol = v; }));
         }
         if (op.kind !== "opening") {                                     // 2.631.0: how far it is open, which way
           numIn("Open", op.open || 0, ch((v) => { op.open = Math.max(0, Math.min(100, Math.round(v))); }), 5, 0, 100, "%");
@@ -1036,12 +1062,12 @@
         if (rf.type !== "follow") numIn("Pitch", rf.pitch, ch((v) => { rf.pitch = v; }), 1, 0, 75, "°");
         numIn(rf.type === "follow" ? "Eaves width" : "Overhang", rf.over, ch((v) => { rf.over = v; }), 0.05, 0, 5, "m"); numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
-        colIn("Colour", rf.col, ch((v) => { rf.col = v; }));
+        matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "stair") {
         const s = x; head("▟ Stairs · " + Math.max(2, Math.round(s.rise / 0.18)) + " steps");
         numIn("Width", s.w, ch((v) => { s.w = v; }), 0.05, 0.3, 10, "m"); numIn("Length", s.len, ch((v) => { s.len = v; }), 0.05, 0.3, 50, "m"); numIn("Height (up)", s.rise, ch((v) => { s.rise = v; }), 0.05, 0.1, 20, "m");
-        numIn("Starts at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); colIn("Colour", s.col, ch((v) => { s.col = v; }));
+        numIn("Starts at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); matIn("Colour", s.col, ch((v) => { s.col = v; }));
         btns([["⟳ 90°", ch(() => { s.ang += 90; })], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "cam" && root.PPCam) {                      // 2.629.0: 📷 a camera
         const c = x; head("📷 " + c.name);
@@ -1075,7 +1101,7 @@
         box.appendChild(el("div", "pphint", "Drag it (Select); R turns it 90°; Delete removes it."));
       } else if (asel.ak === "slab") {
         const s = x; head("▦ Floor · " + (+Math.abs(P().area2(s.pts)).toFixed(2)) + " m²");
-        numIn("Top at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); numIn("Thickness", s.th, ch((v) => { s.th = v; }), 0.01, 0.01, 5, "m"); colIn("Colour", s.col, ch((v) => { s.col = v; }));
+        numIn("Top at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); numIn("Thickness", s.th, ch((v) => { s.th = v; }), 0.01, 0.01, 5, "m"); matIn("Colour", s.col, ch((v) => { s.col = v; }));
         btns([["🗑 Delete", eraseSel]]);
       }
       ctx.resized && ctx.resized();

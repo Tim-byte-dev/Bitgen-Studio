@@ -44,8 +44,9 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await ev(() => { const S = H3PushPull.state; const M = PPGeo.newModel(); const F = PPGeo.addFace(M, PPGeo.rectPts([0, 0, 0], [2, 1, 0], [0, 0, 1])); PPGeo.pushPull(M, F.id, 1); M.arch = PPArch.empty(); PPArch.addRoom(M.arch, [[4, 0], [8, 0], [8, 4], [4, 4]]); S.M = M; S.V.setModel(M); S.V.view("iso"); S.V.extents(); });
     await p.waitForTimeout(300);
     await p.click("#ppMatBtn"); await p.waitForTimeout(200);
-    const items = await ev(() => [...document.querySelectorAll(".ppmenu div")].map((d) => d.textContent));
-    await ev(() => { const x = [...document.querySelectorAll(".ppmenu div")].find((d) => /Brick/.test(d.textContent)); x.click(); });
+    // 2.651.0: Materials opens the material picker (ppmatpick.js) - the materials as swatches (their names as titles)
+    const items = await ev(() => [...document.querySelectorAll("#ppMatPick .g .it")].map((d) => d.title));
+    await ev(() => { const x = [...document.querySelectorAll("#ppMatPick .g .it")].find((d) => /Brick/.test(d.title)); x.click(); });
     await p.waitForTimeout(150);
     const col = await ev(() => H3PushPull.state.color);
     check("▦ Materials ▾: the House builder's materials (Brick, Stone, Oak floor, Tiles, Marble, Carpet …) - Brick = the paint", items.some((t) => /Brick/.test(t)) && items.some((t) => /Oak floor/.test(t)) && items.some((t) => /Marble/.test(t)) && col === "mat:brick", { items: items.slice(0, 8), col });
@@ -54,7 +55,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     check("…a face painted Brick: textured (metre UVs)", fm.has && fm.tex, fm);
     await ev(() => { const x = H3PushPull.state; x.T.use("paint"); });
     await click([6, 0, 1.2]);
-    const wc = await ev(() => H3PushPull.state.M.arch.rooms[0].wall + "|" + H3PushPull.state.M.arch.ext);
+    const wc = await ev(() => JSON.stringify(H3PushPull.state.M.arch.rooms[0]) + "|" + H3PushPull.state.M.arch.ext);   // 2.651.0: one wall's side (wcol / wext)
     check("…a wall painted with it too (the building keeps \"mat:brick\")", /mat:brick/.test(wc), wc);
     const kept = await ev(() => { const j = PPGeo.toJson(H3PushPull.state.M), m = PPGeo.fromJson(JSON.parse(JSON.stringify(j))); return { f: m.f.some((F) => F.mat === "mat:brick"), a: /mat:brick/.test(JSON.stringify(m.arch)) }; });
     check("…kept when saved and opened again", kept.f && kept.a, kept);

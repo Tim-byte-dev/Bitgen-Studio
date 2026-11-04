@@ -96,12 +96,24 @@
   }
   /* 2.629.0: the House builder's MATERIALS as paints - a colour "mat:<key>" on a face / a wall / a floor */
   function materials() { const M = HG().MATERIALS; return Object.keys(M).filter((k) => !/^(light|glass|black|chrome|metal|rubber|soil|paint_car)$/.test(k)).map((k) => ({ key: k, label: M[k].label || k, color: M[k].color, tex: M[k].tex || null })); }
-  const isMat = (col) => typeof col === "string" && col.startsWith("mat:");
-  /** a colour -> a plain hex (a material's own colour) - exports, the swatches */
-  function hex(col) { if (!isMat(col)) return col; const m = HG().MATERIALS[col.slice(4)]; return m ? m.color : "#cccccc"; }
-  /** a colour -> {color, map, rough} for a three.js material (a material: its colour + procedural texture) */
+  /* 2.651.0 (Tim: "use reference images for the texture"): a PICTURE material "tex:<id>" - the model's A.tex list registered
+     here (setTex) by the views; its texture loads once (onTexLoad redraws), repeats every size metres, turned rot° */
+  const PTEX = new Map(); let onTexLoad = () => {};
+  function texApply(e) { if (!e.tex) return; const k = 1 / (e.t.size || 1); e.tex.repeat.set(k, k); e.tex.rotation = (e.t.rot || 0) * Math.PI / 180; e.tex.needsUpdate = true; }
+  function setTex(list) { (list || []).forEach((t) => { if (!t || !t.id) return; const e = PTEX.get(t.id); if (e && e.t.src === t.src) { e.t = Object.assign({}, t); texApply(e); } else PTEX.set(t.id, { t: Object.assign({}, t), tex: null }); }); }
+  function texOf(T, id) {
+    const e = PTEX.get(id); if (!e || !T || !T.TextureLoader) return null;
+    if (!e.tex) { e.tex = new T.TextureLoader().load(e.t.src, () => { try { onTexLoad(); } catch (x) { /* fine */ } }); e.tex.wrapS = e.tex.wrapT = T.RepeatWrapping; if (T.SRGBColorSpace) e.tex.colorSpace = T.SRGBColorSpace; e.tex.anisotropy = 4; texApply(e); }
+    return e.tex;
+  }
+  const isTex = (col) => typeof col === "string" && col.startsWith("tex:");
+  const isMat = (col) => typeof col === "string" && (col.startsWith("mat:") || col.startsWith("tex:"));
+  /** a colour -> a plain hex (a material's own colour; a picture: its average) - exports, the swatches */
+  function hex(col) { if (!isMat(col)) return col; if (isTex(col)) { const e = PTEX.get(col.slice(4)); return e ? e.t.avg || "#999999" : "#999999"; } const m = HG().MATERIALS[col.slice(4)]; return m ? m.color : "#cccccc"; }
+  /** a colour -> {color, map, rough} for a three.js material (a material: its colour + procedural texture; a picture: it) */
   function look(T, col) {
     if (!isMat(col)) return { color: col, map: null, rough: 0.9 };
+    if (isTex(col)) { const map = texOf(T, col.slice(4)); return { color: map ? "#ffffff" : hex(col), map, rough: 0.85 }; }
     const m = HG().MATERIALS[col.slice(4)] || {};
     return { color: m.color || "#cccccc", map: m.tex ? texture(T, m.tex) : null, rough: m.rough != null ? m.rough : 0.9 };
   }
@@ -117,7 +129,7 @@
     }
     return out;
   }
-  const api = { POSES, pieces, categories, make, footprint, label, clean, group, parts, materials, isMat, hex, look, uvs, texture };
+  const api = { POSES, pieces, categories, make, footprint, label, clean, group, parts, materials, isMat, isTex, hex, look, uvs, texture, setTex, texOf, texInfo: (id) => { const e = PTEX.get(id); return e ? Object.assign({}, e.t) : null; }, onTexLoad: (fn) => { onTexLoad = typeof fn === "function" ? fn : () => {}; } };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPFurn = api;
 })(typeof window !== "undefined" ? window : globalThis);

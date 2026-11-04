@@ -54,6 +54,8 @@
     }
     function rebuild() {
       clear(geo); clear(fix); A.meshes = []; A.tags = [];
+      if (root.PPFurn && root.PPFurn.setTex && V.M && V.M.arch) root.PPFurn.setTex(V.M.arch.tex);   // 2.651.0: the picture materials
+      if (A.onBg) try { A.onBg(); } catch (e) { /* fine */ }              // 2.651.0: the background (ppmatpick.js)
       if (A.onRebuild) try { A.onRebuild(); } catch (e) { console.warn("Sketcher floorplan:", e); }   // 2.647.0: 📐 the floorplan (ppplan.js)
       while (furn.children.length) furn.remove(furn.children[0]);
       clear(camsG);

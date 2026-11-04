@@ -74,7 +74,23 @@
   }
   function lineX(p, u, q, w) { const d = crs(u, w); if (Math.abs(d) < 1e-9) return null; const t = crs(sub(q, p), w) / d; return add(p, mul(u, t)); }
   function segDist(p, a, b) { const ab = sub(b, a), L = dot(ab, ab); let t = L ? dot(sub(p, a), ab) / L : 0; t = Math.max(0, Math.min(1, t)); return { d: len(sub(p, add(a, mul(ab, t)))), t, along: t * Math.sqrt(L) }; }
-  const hex = (c, d) => (typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : typeof c === "string" && /^mat:[a-z_]{2,24}$/.test(c) ? c : d);
+  const hex = (c, d) => (typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : typeof c === "string" && /^(mat:[a-z_]{2,24}|tex:[a-z0-9_]{1,24})$/.test(c) ? c : d);   // 2.651.0: + "tex:<id>" - a picture (A.tex)
+  /* 2.651.0 (Tim: "can we add material tools to sketcher, so wall_1 interior, wall_1 exterior, windows, etc, and use reference
+     images for the texture, background etc."): the model's PICTURE MATERIALS A.tex [{id, name, src, size (m a repeat), rot (°),
+     avg (its average colour)}] - src a project image (/passets/images/<name>) - and its BACKGROUND A.bg {kind: "backdrop" |
+     "sky", src, name, rot (°, the sky turned)} */
+  const okSrc = (s) => typeof s === "string" && (/^\/passets\/images\/[^?#]{1,240}$/.test(s) || (/^data:image\/(png|jpeg|webp);base64,/.test(s) && s.length < 4e6));
+  function cleanTex(list) {
+    const seen = new Set();
+    return (Array.isArray(list) ? list : []).map((t) => {
+      if (!t || typeof t !== "object" || !/^[a-z0-9_]{1,24}$/.test(String(t.id)) || seen.has(String(t.id)) || !okSrc(t.src)) return null; seen.add(String(t.id));
+      return { id: String(t.id), name: String(t.name || "Picture").slice(0, 80), src: t.src, size: num(t.size, 1, 0.05, 100), rot: num(t.rot, 0, -360, 360), avg: /^#[0-9a-f]{6}$/i.test(t.avg) ? t.avg.toLowerCase() : "#999999" };
+    }).filter(Boolean).slice(0, 200);
+  }
+  function cleanBg(b) {
+    if (!b || typeof b !== "object" || !["backdrop", "sky"].includes(b.kind) || !okSrc(b.src)) return null;
+    return { kind: b.kind, src: b.src, name: String(b.name || "Background").slice(0, 80), rot: num(b.rot, 0, -360, 360) };
+  }
   const num = (x, d, lo, hi) => { x = +x; return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; };
   const pt2 = (p) => (Array.isArray(p) && p.length >= 2 && Number.isFinite(+p[0]) && Number.isFinite(+p[1]) ? [+p[0], +p[1]] : null);
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
@@ -98,7 +114,8 @@
         // 2.639.0: skirting (at the floor) + cornice (under the ceiling) round the room's inside
         skirtOn: closed && !!R.skirtOn, skirtH: num(R.skirtH, 0.1, 0.02, 0.6), corniceOn: closed && !!R.corniceOn, corniceH: num(R.corniceH, 0.08, 0.02, 0.6), trim: hex(R.trim, DEF.trim),
         // 2.640.0: the profiles they are swept with (ppprofile.js ids - "" = the kind's default), their own colours, one wall's own inside colour
-        skirtP: pid(R.skirtP), cornP: pid(R.cornP), skirtCol: hex(R.skirtCol, hex(R.trim, DEF.trim)), cornCol: hex(R.cornCol, hex(R.trim, DEF.trim)), wcol: cleanWcol(R.wcol, closed ? pts.length : pts.length - 1) };
+        skirtP: pid(R.skirtP), cornP: pid(R.cornP), skirtCol: hex(R.skirtCol, hex(R.trim, DEF.trim)), cornCol: hex(R.cornCol, hex(R.trim, DEF.trim)), wcol: cleanWcol(R.wcol, closed ? pts.length : pts.length - 1),
+        wext: cleanWcol(R.wext, closed ? pts.length : pts.length - 1) };   // 2.651.0: each wall's OUTSIDE (none = the building's outside colour A.ext)
     }).filter(Boolean);
     const rid = new Set(A.rooms.map((R) => R.id));
     A.ops = (Array.isArray(o.ops) ? o.ops : []).map((x) => {
@@ -107,7 +124,7 @@
       return { id: id(x.id), kind: x.kind, room: +x.room, edge: Math.max(0, Math.floor(+x.edge || 0)), at: num(x.at, 1, -1000, 1000), w: num(x.w, d.w, 0.2, 20), h: num(x.h, d.h, 0.2, 20), sill: num(x.sill, d.sill, 0, 20),
         style: STYLES[x.kind].includes(x.style) ? x.style : d.style, col: hex(x.col, x.kind === "door" ? DEF.door : DEF.frame), flip: !!x.flip,
         open: num(x.open, 0, 0, 100), dir: !!x.dir,               // 2.631.0: how far it is open (%), which way
-        frameP: pid(x.frameP), sillP: x.kind === "window" ? pid(x.sillP) : "", trimCol: hex(x.trimCol, DEF.trim) };   // 2.640.0: its frame (architrave) + sill profiles ("" = none)
+        frameP: pid(x.frameP), sillP: x.kind === "window" ? pid(x.sillP) : "", trimCol: hex(x.trimCol, DEF.trim), glass: hex(x.glass, DEF.glass) };   // 2.651.0: + its glass; 2.640.0: its frame (architrave) + sill profiles ("" = none)
     }).filter(Boolean);
     A.roofs = (Array.isArray(o.roofs) ? o.roofs : []).map((x) => {
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
@@ -129,6 +146,7 @@
     A.hide = [...new Set((Array.isArray(o.hide) ? o.hide : []).filter((k) => typeof k === "string" && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)))].slice(0, 5000);
     A.groups = (Array.isArray(o.groups) ? o.groups : []).map((g) => (g && typeof g === "object" ? { id: id(g.id), name: String(g.name || "Group").slice(0, 60), rooms: [...new Set((Array.isArray(g.rooms) ? g.rooms : []).map(Number).filter((r) => rid.has(r)))], hidden: !!g.hidden, open: g.open !== false } : null)).filter(Boolean);
     A.profiles = root.PPProfile ? root.PPProfile.cleanList(o.profiles) : (Array.isArray(o.profiles) ? o.profiles : []);   // 2.640.0: the profiles the model uses
+    A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);                       // 2.651.0: the picture materials + the background
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
     const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups);
@@ -165,7 +183,7 @@
     if (closed && area2(p) < 0) p.reverse();
     const n = A.rooms.filter((R) => R.closed === closed).length + 1;
     const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true, ceil: "flat",
-      skirtOn: closed, skirtH: 0.1, corniceOn: closed, corniceH: 0.08, trim: DEF.trim, skirtP: "", cornP: "", skirtCol: DEF.trim, cornCol: DEF.trim, wcol: {} }, o || {}, { pts: p, closed });   // 2.639.0: a new room comes with skirting + cornice
+      skirtOn: closed, skirtH: 0.1, corniceOn: closed, corniceH: 0.08, trim: DEF.trim, skirtP: "", cornP: "", skirtCol: DEF.trim, cornCol: DEF.trim, wcol: {}, wext: {} }, o || {}, { pts: p, closed });   // 2.639.0: a new room comes with skirting + cornice
     A.rooms.push(R); return R;
   }
   function rectPts(a, b) { const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]); return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
@@ -488,6 +506,13 @@
   }
   /** 2.640.0: one wall's colour inside (its own, else the room's) */
   const wallCol = (R, i) => (R.wcol && R.wcol[i]) || R.wall;
+  const wallExt = (A, R, i) => (R.wext && R.wext[i]) || A.ext;             // 2.651.0: a wall's outside
+  /** 2.651.0: the wall a point (x, y) at height z lies in - {R, i} (the room's wall quads, the closest) | null */
+  function wallOwner(A, p, z) {
+    let best = null;
+    (A.rooms || []).forEach((R) => { if (z != null && (z < R.z - 0.05 || z > R.z + R.h + 3)) return; wallQuads(R).forEach((q) => { if (inPoly([p[0], p[1]], q.quad)) { const e = edgesOf(R)[q.i], d = e ? segDist([p[0], p[1]], e.a, e.b).d : 0; if (!best || d < best.d) best = { R, i: q.i, d }; } }); });
+    return best ? { R: best.R, i: best.i } : null;
+  }
   /** 2.640.0: one wall's own height (the walls beside it keep theirs) */
   function setWallHeight(A, id, i, h) { const R = room(A, id); if (!R || !edgesOf(R)[i]) return false; putProfile(R, i, [[0, num(h, R.h, 0.05, 50)], [1, num(h, R.h, 0.05, 50)]]); return true; }
   /** 2.640.0: one wall's length - a rectangle room keeps its shape (resized), else the wall's end corner moves along it */
@@ -585,6 +610,8 @@
     const underPiece = (p, q2, z) => pieces.some((pc) => Math.abs(pc.z - z) < 1e-6 && [p, q2, [(p[0] + q2[0]) / 2, (p[1] + q2[1]) / 2]].every((x) => inPoly(x, pc.quad) || segDistPoly(x, pc.quad) < 1e-4));
     const inner = A.rooms.filter((R) => R.closed).map((R) => ({ R, P: interior(R) }));
     const faceCol = (R, m) => { if (!R.wcol || !Object.keys(R.wcol).length) return R.wall; let bi = 0, bd = Infinity; edgesOf(R).forEach((e) => { const d = segDist(m, e.a, e.b).d; if (d < bd) { bd = d; bi = e.i; } }); return wallCol(R, bi); };   // 2.640.0
+    // 2.651.0: an OUTSIDE face's own wall - the room whose wall it is part of (just inside the face), that wall's outside material
+    const extCol = (p, q, nO, z) => { const m = mul(add(p, q), 0.5), pin = sub(m, mul(nO, 0.03)), w = wallOwner(A, pin, z); return w && w.R.wext && w.R.wext[w.i] ? w.R.wext[w.i] : A.ext; };
     const colOf = (p, z) => { const hit = inner.find((x) => z > x.R.z - EPS && z < x.R.z + x.R.h + EPS && inPoly(p, x.P)); return hit ? hit.R : null; };
     for (let k = 0; k < F.length; k++) {
       const a = zs[k], b = zs[k + 1], zm = (a + b) / 2;
@@ -592,7 +619,7 @@
         for (let j = 0; j + 1 < rg.length; j++) {
           const p = rg[j], q = rg[j + 1], d = sub(q, p), L = len(d); if (L < 1e-7) continue;
           const nO = [d[1] / L, -d[0] / L], R = colOf(add(mul(add(p, q), 0.5), mul(nO, 0.03)), zm);
-          out.polys.push({ rings: [[[p[0], p[1], a], [q[0], q[1], a], [q[0], q[1], b], [p[0], p[1], b]]], n: [nO[0], nO[1], 0], col: R ? faceCol(R, mul(add(p, q), 0.5)) : A.ext, tag: { ak: "wall", room: R ? R.id : null }, layer: "main" });
+          out.polys.push({ rings: [[[p[0], p[1], a], [q[0], q[1], a], [q[0], q[1], b], [p[0], p[1], b]]], n: [nO[0], nO[1], 0], col: R ? faceCol(R, mul(add(p, q), 0.5)) : extCol(p, q, nO, zm), tag: { ak: "wall", room: R ? R.id : null }, layer: "main" });
           // a vertical line at a real corner
           const pr = rg[j === 0 ? rg.length - 2 : j - 1], din = norm(sub(p, pr)), dout = norm(d);
           if (Math.abs(crs(din, dout)) > 0.02 || dot(din, dout) < 0) out.lines.push([[p[0], p[1], a], [p[0], p[1], b]]);
@@ -642,10 +669,10 @@
         leaf(op.flip ? b : a, op.flip ? -1 : 1, b - a, (B, L) => {
           const s = 0.07; B(0, s, -0.02, 0.02, z0 + 0.005, top, op.col); B(L - s, L, -0.02, 0.02, z0 + 0.005, top, op.col);
           B(s, L - s, -0.02, 0.02, z0 + 0.005, z0 + 0.15, op.col); B(s, L - s, -0.02, 0.02, top - s, top, op.col);
-          B(s, L - s, -0.005, 0.005, z0 + 0.15, top - s, DEF.glass, 0.3, true); handleL(B, L - 0.04);
+          B(s, L - s, -0.005, 0.005, z0 + 0.15, top - s, (op.glass || DEF.glass), 0.3, true); handleL(B, L - 0.04);
         });
       } else {                                 // sliding: two glass panels, one in front of the other (2.631.0: the front one slides open)
-        const m0 = (a + b) / 2, slide = (op.open || 0) / 100 * (m0 - a) * (op.dir ? -1 : 1), m = m0, pane = (p0, p1, y) => { box(o, u, n, p0, p1, y - 0.02, y + 0.02, z0 + 0.005, top, op.col, tag, out, 1, true); box(o, u, n, p0 + 0.05, p1 - 0.05, y - 0.006, y + 0.006, z0 + 0.06, top - 0.05, DEF.glass, tag, out, 0.3, true); };
+        const m0 = (a + b) / 2, slide = (op.open || 0) / 100 * (m0 - a) * (op.dir ? -1 : 1), m = m0, pane = (p0, p1, y) => { box(o, u, n, p0, p1, y - 0.02, y + 0.02, z0 + 0.005, top, op.col, tag, out, 1, true); box(o, u, n, p0 + 0.05, p1 - 0.05, y - 0.006, y + 0.006, z0 + 0.06, top - 0.05, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true); };
         const sa = op.dir ? 0 : slide, sb = op.dir ? slide : 0;         // the dir checkbox: the other pane slides
         pane(a + sa, m + 0.04 + sa, -0.025); pane(m - 0.04 + sb, b + sb, 0.025);
         [[a + sa, m + 0.04 + sa, -0.025], [m - 0.04 + sb, b + sb, 0.025]].forEach(([p0, p1, y]) => { const P = (x, z) => [o[0] + u[0] * x + n[0] * y, o[1] + u[1] * x + n[1] * y, z]; out.lines.push([P(p0, z0), P(p1, z0)], [P(p1, z0), P(p1, top)], [P(p1, top), P(p0, top)], [P(p0, top), P(p0, z0)]); });
@@ -661,7 +688,7 @@
     if (op.style === "slider") {
       const m = (a + b) / 2, sl = (op.open || 0) / 100 * (m - a), s1 = op.dir ? 0 : sl, s2 = op.dir ? -sl : 0;     // 2.631.0: a pane slid open
       box(o, u, n, a + s1, m + 0.03 + s1, -0.03, -0.005, g0, g1, col, tag, out, 1, true); box(o, u, n, m - 0.03 + s2, b + s2, 0.005, 0.03, g0, g1, col, tag, out, 1, true);
-      box(o, u, n, a + 0.04 + s1, m - 0.01 + s1, -0.02, -0.014, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true); box(o, u, n, m + 0.01 + s2, b - 0.04 + s2, 0.014, 0.02, g0 + 0.04, g1 - 0.04, DEF.glass, tag, out, 0.3, true);
+      box(o, u, n, a + 0.04 + s1, m - 0.01 + s1, -0.02, -0.014, g0 + 0.04, g1 - 0.04, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true); box(o, u, n, m + 0.01 + s2, b - 0.04 + s2, 0.014, 0.02, g0 + 0.04, g1 - 0.04, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true);
       return;
     }
     if (op.open > 0) {                                                   // 2.631.0: casement sashes turned open (outside; dir: inside)
@@ -670,14 +697,14 @@
         const c = Math.cos(ang), s2 = Math.sin(ang) * sg, lu = [u[0] * c * way + n[0] * s2, u[1] * c * way + n[1] * s2], ln = [n[0] * c - u[0] * s2 * way, n[1] * c - u[1] * s2 * way], lo = [o[0] + u[0] * hx, o[1] + u[1] * hx];
         const B = (x0b, x1b, y0, y1, za, zb, cl, al, nl) => box(lo, lu, ln, x0b, x1b, y0, y1, za, zb, cl, tag, out, al, nl);
         const w = 0.035; B(0, w, -0.02, 0.02, g0, g1, col); B(L - w, L, -0.02, 0.02, g0, g1, col); B(w, L - w, -0.02, 0.02, g0, g0 + w, col); B(w, L - w, -0.02, 0.02, g1 - w, g1, col);
-        B(w, L - w, -0.005, 0.005, g0 + w, g1 - w, DEF.glass, 0.3, true);
+        B(w, L - w, -0.005, 0.005, g0 + w, g1 - w, (op.glass || DEF.glass), 0.3, true);
       };
       if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, m - fw / 2, m + fw / 2, -d, d, g0, g1, col, tag, out); sash(a, 1, m - fw / 2 - a); sash(b, -1, b - m - fw / 2); }
       else sash(a, 1, b - a);
       return;
     }
-    if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, m - fw / 2, m + fw / 2, -d, d, g0, g1, col, tag, out); box(o, u, n, a, m - fw / 2, -0.005, 0.005, g0, g1, DEF.glass, tag, out, 0.3, true); box(o, u, n, m + fw / 2, b, -0.005, 0.005, g0, g1, DEF.glass, tag, out, 0.3, true); return; }
-    box(o, u, n, a, b, -0.005, 0.005, g0, g1, DEF.glass, tag, out, 0.3, true);
+    if (op.style === "double") { const m = (a + b) / 2; box(o, u, n, m - fw / 2, m + fw / 2, -d, d, g0, g1, col, tag, out); box(o, u, n, a, m - fw / 2, -0.005, 0.005, g0, g1, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true); box(o, u, n, m + fw / 2, b, -0.005, 0.005, g0, g1, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true); return; }
+    box(o, u, n, a, b, -0.005, 0.005, g0, g1, (op.glass || DEF.glass), Object.assign({}, tag, { part: "glass" }), out, 0.3, true);
   }
   /** 2.640.0: a door / window's frame (architrave - its profile swept round the opening; a door: both faces, a window: the
       room's side) and a window's sill (its profile under the window inside, reaching back into the opening) */
@@ -1023,7 +1050,7 @@
 
   const api = { frames, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);
