@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.654.0: **🩹 Restore / fix a photo** - a button in the prompt docker's left column (under 🎤).
+  - One click: Generate mode **🖼 Image**, the ▾ operation **✏ Edit**, and the restore instruction leads the prompt -
+    scratches, dust, spots, stains, creases and tears taken out, noise and grain reduced, faded colours and contrast
+    fixed, soft detail sharpened, the same people, faces, clothes, pose and framing kept. Words you type after it are
+    added ("her dress was dark green"). A second click adds nothing.
+  - **Shift+click**: the same, and the photo colourised (for a black-and-white photo).
+  - The photo: with the image editor closed, put it in the **🖼 References docker** (one picture - more are used
+    together); with the editor open, the **selected layer** (or the selection on it). A note beside the button says
+    which it will use. Then press **✏ Edit** - the result lands in the gallery (the editor: ⏳ Pending).
+  - The edit model is the prompt docker's image style - an edit-capable one (Qwen Image Edit, FLUX.2 / FLUX 3 Klein)
+    is picked for you while the editor is on screen.
 - 2.653.0: **⛰ Terrain in the Sketcher** - the ground the building stands on, with hills, slopes and contour lines.
   - **⛰ Terrain** is under *Ground* in the Sketcher's tools (**Alt+G** - G is Group). The first click on a model without
     ground makes one: 40 m square or 10 m past the building, a height every 0.5 m, just under the lowest floor, grass.

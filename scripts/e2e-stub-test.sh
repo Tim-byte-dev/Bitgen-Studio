@@ -12954,6 +12954,13 @@ node scripts/test-terrain653.js > /tmp/terrain653.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui653-ui.js > /tmp/ui653.log 2>&1 \
   && ok "2.653.0 browser test: ⛰ Terrain (Alt+G) makes the ground, raise / Shift lower / undo, Alt+click flatten height, contour lines drawn closed + open and the ground shaped, a line picked / re-levelled / deleted, Esc, a heightmap, level under rooms, the floorplan's contours, saved, .glb, removed + undone - or SKIP without playwright" \
   || { bad "2.653.0 terrain browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui653.log | head -14; }
+# ---- 2.654.0 (Tim: "please a a button to the shortcut buttons on the left of the prompt docker to restore/fix photo")
+node scripts/test-restore654.js > /tmp/restore654.log 2>&1 \
+  && ok "2.654.0 🩹 restore / fix a photo: the instruction (once, + colourise), the note for each source, the wiring" \
+  || { bad "2.654.0 restore photo units"; grep -a "^FAIL" -A2 /tmp/restore654.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui654-ui.js > /tmp/ui654.log 2>&1 \
+  && ok "2.654.0 browser test (stubbed AI): 🩹 in the left column, Image + ✏ Edit + the instruction, once, Shift colourise, the notes (none / References / the editor's layer), ✏ Edit sends the photo with the instruction - or SKIP without playwright" \
+  || { bad "2.654.0 restore photo browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui654.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

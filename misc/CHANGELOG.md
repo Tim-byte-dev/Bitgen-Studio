@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.654.0** — 🩹 Restore / Fix a Photo: A Button in the Prompt Docker's Left Column (✏ Edit + the Restore Instruction)
 - **2.653.0** — ⛰ Terrain in the Sketcher: A Sculpt Brush, Contour Lines the Ground Follows, a Heightmap Picture, Level Under the Rooms
 - **2.652.0** — The Real Photo Uses the Model's Materials (a Labelled Material Board) + ✨ Photo
 - **2.651.0** — The Sketcher's Material Tools: Each Wall's Inside / Outside, Glass, Picture Textures, Backdrop / 360° Sky
