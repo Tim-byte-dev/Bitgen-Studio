@@ -12940,6 +12940,13 @@ node scripts/test-mat651.js > /tmp/mat651.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui651-ui.js > /tmp/ui651.log 2>&1 \
   && ok "2.651.0 browser test: a wall's Inside / Outside picker, a material on one outside, a picture from a file as a texture (saved, served, sized), glass, the paint bucket on one wall side / Shift all, 🖼 backdrop / 360° sky / undo / none, saved - or SKIP without playwright" \
   || { bad "2.651.0 materials browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui651.log | head -14; }
+# ---- 2.652.0 (Tim: "... use reference images for the texture, background etc. and use our ai editor to create the scene?")
+node scripts/test-real652.js > /tmp/real652.log 2>&1 \
+  && ok "2.652.0 the real photo's material board: which pictures are used where, the captions, the prompt ({img3}), the run's board + fallback, the shot's backdrop, ✨ Photo - pure + wiring" \
+  || { bad "2.652.0 real photo board units"; grep -a "^FAIL" -A2 /tmp/real652.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui652-ui.js > /tmp/ui652.log 2>&1 \
+  && ok "2.652.0 browser test (stubbed AI): ✨ Photo sends render + depth + the board (2 captioned tiles), the backdrop in the render not the depth, a two-picture model gets it again without the board, no pictures = no board - or SKIP without playwright" \
+  || { bad "2.652.0 real photo board browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui652.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

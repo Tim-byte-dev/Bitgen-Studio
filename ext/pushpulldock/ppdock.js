@@ -319,6 +319,8 @@
     };
     // 2.651.0 (Tim: "use reference images for the texture, background etc."): 🖼 Background - a backdrop or a 360° sky
     const bgb = $("ppBgBtn"); if (bgb) bgb.onclick = () => bgPop(bgb);
+    // 2.652.0 (Tim: "use our ai editor to create the scene"): ✨ Photo - the real photo from here (ppreal.js), the prompt box's words added
+    const rb = $("ppReal"); if (rb) rb.onclick = () => { if (!root.H3SketcherReal) return msg("✨ the real photo is not loaded"); const t = ($("prompt") || {}).value || ""; Promise.resolve(root.H3SketcherReal.run(t)).catch((e) => msg("✨ " + (e.message || e))); };
   }
   /* 2.651.0: the 🖼 Background popup (ppmatpick.js bgPanel) - one undo step a change */
   let bgBox = null;

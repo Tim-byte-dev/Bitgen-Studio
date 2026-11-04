@@ -379,6 +379,8 @@
       // 2.627.0: a PHOTO source (no lines, shadows, a daylight sky) / a DEPTH map (near = white, far = black) for the edit model
       // 2.629.0: + a NORMAL map; o.camera's depth is linear (0.3 m .. the model's size) - the House builder's shader
       const lines = [], hadSh = R.shadowMap.enabled, fit = { near: persp.near, far: persp.far };
+      // 2.652.0: the model's backdrop / 360° sky (ppmatpick.js) - in the photo (fitted to the shot's shape), never in a depth / normal map
+      const bg0 = scene.background; if (o.depth || o.normal) scene.background = null; else if (bg0 && V.bgFit) V.bgFit(w / h);
       if (o.photo) { if (!hadSh) shadows(true); R.setClearColor(0xc9dcec, 1); }      // (shadows() rebuilds - the lines are hidden after it)
       if (o.photo || o.depth || o.normal) scene.traverse((x) => { if ((x.isLine || x.isLineSegments || x.isPoints || x.isSprite) && x.visible) { lines.push(x); x.visible = false; } });
       const { c: bc, r: br } = fitBox();
@@ -397,6 +399,7 @@
       R.render(scene, C);
       if (o.depth || o.normal) { scene.overrideMaterial = null; persp.near = fit.near; persp.far = fit.far; persp.updateProjectionMatrix(); ground.visible = R.shadowMap.enabled; }
       if (o.photo && !hadSh) shadows(false);
+      scene.background = bg0; if (bg0 && V.bgFit) V.bgFit();
       lines.forEach((x) => { x.visible = true; });
       const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(R.domElement, 0, 0, w, h);
       R.setClearColor(V.clear != null ? V.clear : new T.Color(V.theme.bg).getHex(), 1); grid.visible = true; axes.visible = true; prev.visible = true; over.visible = true; hid.forEach((x) => { x.visible = true; });

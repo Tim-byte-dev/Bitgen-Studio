@@ -409,7 +409,7 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.651)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.652)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
@@ -6300,6 +6300,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.652.0: **The real photo uses your materials** - **✨ Photo** in the Sketcher's toolbar (or the prompt docker's ✏ Edit
+  with the Sketcher linked) sends the edit model the clean render (your backdrop / sky in it), its depth map and a
+  **material board**: one labelled tile for every picture the model uses ("Kitchen floor, Bed wall 1 outside", "outside
+  walls", "Background (backdrop)") - the words tell the model to use exactly those materials there and keep the background.
+  The prompt box's words are added. Edit models that take only two pictures get it without the board (the message says
+  so - Qwen Image Edit 2511 / FLUX.2 Klein take three). The photo goes to the project's images (and the image editor when
+  it is open).
 - 2.651.0: **The Sketcher's material tools** - every part of the building its own material, pictures as textures, a
   picture as the background.
   - **A wall's inside and outside**: a wall's panel has **Inside** and **Outside**; a window has **Frame** and **Glass**;

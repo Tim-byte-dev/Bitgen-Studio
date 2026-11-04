@@ -157,6 +157,8 @@
       bgCache.set(key, tex); if (bgCache.size > 12) bgCache.delete(bgCache.keys().next().value);
     }
     sc.background = tex; sc.userData.ppBg = key;
+    // 2.652.0: a shot of another shape (the ✨ real photo) fits the backdrop to it; no argument = the view's again
+    V.bgFit = (asp) => { const t = sc.background; if (!t || !t.image || !t.image.width || !String(sc.userData.ppBg || "").startsWith("backdrop|")) return; const c = V.canvas, q = coverRepeat(t.image.width / t.image.height, asp || c.clientWidth / Math.max(1, c.clientHeight)); t.repeat.set(q.rx, q.ry); t.offset.set(q.ox, q.oy); };
     if (b.kind === "sky" && sc.backgroundRotation) sc.backgroundRotation.set(Math.PI / 2, (b.rot || 0) * Math.PI / 180, 0);   // Z up: the panorama's horizon on the ground
     fit();
     if (!V._ppBgResize && root.addEventListener) { V._ppBgResize = true; root.addEventListener("resize", () => { const t = sc.background; if (t && sc.userData.ppBg && sc.userData.ppBg.startsWith("backdrop|") && t.image && t.image.width) { const c = V.canvas, q = coverRepeat(t.image.width / t.image.height, c.clientWidth / Math.max(1, c.clientHeight)); t.repeat.set(q.rx, q.ry); t.offset.set(q.ox, q.oy); V.draw && V.draw(); } }); }

@@ -24,10 +24,37 @@
   const LEAD = "Convert {img1}: Turn this 3D render into a photorealistic photograph of a building: real brick, timber, glass and concrete, natural daylight, soft shadows, no outlines, DSLR photo.";
   const DEPTH = "{img2} is the depth map of {img1} (near = white, far = black): keep exactly the same shapes, layout, proportions and camera angle.";
   /** the words sent: the lead + the depth line + the user's own (not the default words - the lead says it better) */
-  function promptFor(text) {
+  /* 2.652.0 (Tim: "use reference images for the texture, background etc. and use our ai editor to create the scene"): the
+     model's PICTURE materials and its backdrop go to the edit model too - the edit models take 3 pictures (the render, its
+     depth, one more), so they ride as ONE labelled MATERIAL BOARD (picture 3): a tile each, where it is used written under it */
+  const BOARD = "{img3} is a material board: each tile is a real material or picture, with where it goes written under it - use exactly those materials, textures and colours on those parts of the building";
+  const BOARD_BG = "; the tile marked Background is what surrounds the building (keep it as the scene's background)";
+  function promptFor(text, board) {
     const t = String(text || "").trim();
-    return LEAD + " " + DEPTH + (t && t !== DEFAULT ? "\n" + t : "");
+    return LEAD + " " + DEPTH + (board ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
   }
+  /** the pictures the model uses and where (pure): [{id, src, name, where: [...]}] (+ {bg} the backdrop / sky) - faces = the
+   *  model's own faces' materials (M.f) */
+  function usedPictures(A, faces) {
+    if (!A) return { tiles: [], bg: null };
+    const tex = new Map((A.tex || []).map((t) => [t.id, t])), used = new Map();
+    const use = (v, where) => { if (typeof v !== "string" || !v.startsWith("tex:")) return; const t = tex.get(v.slice(4)); if (!t) return; if (!used.has(t.id)) used.set(t.id, { id: t.id, src: t.src, name: t.name, where: [] }); const u = used.get(t.id); if (!u.where.includes(where)) u.where.push(where); };
+    use(A.ext, "outside walls");
+    (A.rooms || []).forEach((R) => {
+      const nm = R.name || "Room", n = (R.pts || []).length - (R.closed === false ? 1 : 0);
+      use(R.wall, nm + " walls (inside)");
+      for (let i = 0; i < n; i++) { if (R.wcol && R.wcol[i]) use(R.wcol[i], nm + " wall " + (i + 1) + " inside"); if (R.wext && R.wext[i]) use(R.wext[i], nm + " wall " + (i + 1) + " outside"); }
+      if (R.closed !== false) { if (R.floorOn !== false) use(R.floor, nm + " floor"); if (R.ceilOn !== false) use(R.ceilCol, nm + " ceiling"); if (R.skirtOn) use(R.skirtCol, nm + " skirting"); if (R.corniceOn) use(R.cornCol, nm + " cornice"); }
+    });
+    (A.ops || []).forEach((o) => { const k = o.kind === "door" ? "door" : o.kind === "window" ? "window" : "opening"; use(o.col, k + (o.kind === "door" ? "" : " frame")); use(o.trimCol, k + " trim"); use(o.glass, k + " glass"); });
+    (A.roofs || []).forEach((r) => use(r.col, "roof")); (A.stairs || []).forEach((x) => use(x.col, "stairs")); (A.slabs || []).forEach((x) => use(x.col, "floor slab"));
+    (faces || []).forEach((F) => use(F && F.mat, "drawn shapes"));
+    const tiles = [...used.values()].map((u) => Object.assign(u, { where: u.where.slice(0, 6) }));
+    const bg = A.bg ? { src: A.bg.src, name: A.bg.name, kind: A.bg.kind } : null;
+    return { tiles, bg };
+  }
+  /** the board's tile captions (pure): "Kitchen floor, Bed floor" … the background last */
+  function boardCaptions(u) { return u.tiles.map((t) => t.where.join(", ")).concat(u.bg ? ["Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")"] : []); }
   /** s = {sketcher, prompt, editor, maxed} (on screen) */
   function linkedNow(s) { return !!(s && s.sketcher && s.prompt && (s.maxed || !s.editor)); }
   /** the style to run: the prompt docker's when it is an edit model, else the engines' default edit model, else the first */
@@ -45,7 +72,26 @@
   }
   const realName = (model) => "sketcher_real_" + String(model || "model").replace(/[^\w.-]+/g, "_").slice(0, 60) + ".png";
 
-  const api = { DEFAULT, LEAD, DEPTH, promptFor, linkedNow, pickEditStyle, shotSize, realName };
+  /** 2.652.0: the material board picture (a canvas): up to 6 tiles, 3 a row, each picture cover-fitted + its caption */
+  async function boardPic(u) {
+    const items = u.tiles.map((t) => ({ src: t.src, cap: t.where.join(", ") })).concat(u.bg ? [{ src: u.bg.src, cap: "Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")" }] : []).slice(0, 6);
+    if (!items.length) return null;
+    const url = (src) => String(src).replace(/^\/passets\/images\/(.*)$/, (m, n) => "/passets/images/" + encodeURIComponent(n));
+    const imgs = await Promise.all(items.map((it) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = url(it.src); })));
+    const cols = Math.min(3, items.length), rows = Math.ceil(items.length / cols), T = 320, CAP = 44, G = 8;
+    const c = root.document.createElement("canvas"); c.width = cols * T + (cols + 1) * G; c.height = rows * (T + CAP) + (rows + 1) * G;
+    const g = c.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, c.width, c.height);
+    items.forEach((it, i) => {
+      const x = G + (i % cols) * (T + G), y = G + Math.floor(i / cols) * (T + CAP + G), im = imgs[i];
+      if (im) { const s = Math.max(T / im.width, T / im.height), sw = T / s, sh = T / s; g.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, x, y, T, T); }
+      else { g.fillStyle = "#cccccc"; g.fillRect(x, y, T, T); }
+      g.fillStyle = "#111111"; g.font = "600 17px sans-serif"; g.textBaseline = "top";
+      let t = it.cap; while (g.measureText(t).width > T - 4 && t.length > 4) t = t.slice(0, -2); if (t !== it.cap) t = t.slice(0, -1) + "…";
+      g.fillText(t, x + 2, y + T + 10);
+    });
+    return c;
+  }
+  const api = { DEFAULT, LEAD, DEPTH, BOARD, promptFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -105,14 +151,27 @@
       const c = V.shot(sz.w, sz.h, { clean: true, photo: true }), dm = V.shot(sz.w, sz.h, { clean: true, depth: true }); V.setSel(P.state.sel);
       const blob = await new Promise((ok) => c.toBlob(ok, "image/png")), dblob = await new Promise((ok) => dm.toBlob(ok, "image/png"));
       S.shots = { photo: c, depth: dm };
-      const fd = new FormData();
-      fd.append("crop", blob, "sketcher.png");
-      fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
-      const fields = { mode: "edit", prompt: promptFor(text), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
-      Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
-      if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
-      say("📷 a real photo of the model - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
-      const r = await root.fetch("/api/aiedit", { method: "POST", body: fd }), j = await r.json();
+      // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3
+      const used = usedPictures(P.state.M.arch, P.state.M.f), bc = used.tiles.length || used.bg ? await boardPic(used) : null;
+      const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
+      S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
+      const send = async (withBoard) => {
+        const fd = new FormData();
+        fd.append("crop", blob, "sketcher.png");
+        fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
+        if (withBoard) fd.append("ref1", bblob, "sketcher_materials.png");
+        const fields = { mode: "edit", prompt: promptFor(text, withBoard ? used : null), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
+        Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
+        if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
+        S.sent = { prompt: fields.prompt, board: !!withBoard };
+        const r = await root.fetch("/api/aiedit", { method: "POST", body: fd }); return { r, j: await r.json() };
+      };
+      say("📷 a real photo of the model" + (bblob ? " (+ its materials board)" : "") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");
+      let { r, j } = await send(!!bblob);
+      if (!r.ok && bblob && /picture\(s\)|takes \d|at most/i.test(j.error || "")) {   // this edit model takes two pictures: without the board
+        ({ r, j } = await send(false));
+        if (r.ok) say("📷 queued without the materials board - this edit model takes two pictures (Qwen Image Edit 2511 / FLUX.2 Klein take three)");
+      }
       if (!r.ok) throw new Error(j.error || "refused");
       if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }
       const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
