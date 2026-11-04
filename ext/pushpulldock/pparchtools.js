@@ -803,6 +803,7 @@
       const x = asel && A ? (asel.ak === "wpt" || asel.ak === "wtop" ? P().room(A, asel.room) : P().find(A, asel.ak, asel.id)) : null;
       if (asel && !x) asel = null;
       const ED = ctx.edit ? ctx.edit() : null, edit = !tool && !x && ED && ED.wants();     // 2.625.0: a face / edges / a corner of the model
+      if (!tool && !x && !edit && ctx.otherPanel && ctx.otherPanel()) return;   // 2.653.0: the ⛰ Terrain tool's own panel
       if (!tool && !x && !edit) { box.style.display = "none"; ctx.resized && ctx.resized(); return; }
       box.style.display = "block";
       const el = (tag, cls, txt) => { const e = root.document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };

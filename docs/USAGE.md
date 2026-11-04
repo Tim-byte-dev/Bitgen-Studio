@@ -13,7 +13,7 @@ installed yet, start with [INSTALL.md](INSTALL.md).
 - [Images, ControlNet and face fix](#images-controlnet-and-face-fix)
 - [Music, stems and voices](#music-stems-and-voices)
 - [Timeline and export](#timeline-and-export)
-- [📏 Sketcher - 3D modelling, rooms and cameras](#-sketcher---3d-modelling-rooms-and-cameras-2619---2643)
+- [📏 Sketcher - 3D modelling, rooms and cameras](#-sketcher---3d-modelling-rooms-and-cameras-2619---2653)
 - [Projects, queue and gallery](#projects-queue-and-gallery)
 - [The file dialog](#the-file-dialog)
 - [Tips](#tips)
@@ -409,7 +409,7 @@ a "Daz" collection in the open .blend. Daz animation is respaced to the scene's 
 The 3D sends need Blender (bitGen finds it; *🟧 Blender settings* has its path). The bridge sends only the paths of the
 files Daz wrote, so Daz and bitGen must run on the same computer. It uses curl, which Windows 10+ and macOS include.
 
-## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.652)
+## 📏 Sketcher - 3D modelling, rooms and cameras (2.619 - 2.653)
 
 The **Sketcher** docker (its button is in the status bar - it starts hidden) is for modelling in 3D the quick way:
 draw a shape on the ground or on a face, then push or pull it into a solid - and for building rooms and whole houses
@@ -430,6 +430,9 @@ to use as film sets. It replaces the House builder of older versions. Its ❔ ha
   height and colour; the ceiling's type; the skirting's profile).
 - **Profiles**: skirting, cornices, door frames, window frames and window sills from a picture dropdown, or drawn in
   the **✎ Profiles** dialog and kept in the project.
+- **⛰ Terrain** (2.653.0): the ground round the building - raised, lowered, smoothed and flattened with a brush, shaped
+  to 〰 contour lines you draw at their heights, made from a heightmap picture, levelled under the rooms; its contour
+  lines on the ground and on the floorplan.
 - **Furnishing**: the 🛋 furniture library and people, materials with textures, 🪄 Furnish (the LLM fills a room), the
   project's 3D models.
 - **📷 Cameras**: picked, moved (arrows) and turned (rings, double-click), lens / focal length / field of view, 👁 Look
@@ -6300,6 +6303,25 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.653.0: **⛰ Terrain in the Sketcher** - the ground the building stands on, with hills, slopes and contour lines.
+  - **⛰ Terrain** is under *Ground* in the Sketcher's tools (**Alt+G** - G is Group). The first click on a model without
+    ground makes one: 40 m square or 10 m past the building, a height every 0.5 m, just under the lowest floor, grass.
+  - The panel picks what a press does: **⬆ Raise** / **⬇ Lower** (press and drag; **Shift** the other way), **≈ Smooth**,
+    **▬ Flatten** (toward the Flatten height - **Alt+click** the ground takes it). **Brush size** and **Strength**; **[ / ]**
+    make the brush smaller / bigger, or type a size. Each stroke is one ↶ step.
+  - **〰 Contour**: set the **Elevation**, click, click … a contour line (it is drawn at its height); click back on its
+    start to close it, or double-click / Enter to end an open one. With **Shape the ground after each line** on (the
+    default) the ground follows every line drawn: each line's points held at its height and a smooth slope between them;
+    the next line's elevation goes up by **Next line +**. A click on a drawn line picks it - change its elevation, open /
+    close it, **Delete** erases it. **⛰ Shape to the contours** does it any time; **Clear the lines** keeps the shape.
+    Tip: in the 📐 floorplan the lines are drawn straight down on the plan.
+  - **🖼 Heightmap picture…**: a grey picture - black = **Lowest**, white = **Highest**, its top the north (+Y) edge.
+  - **⌂ Level under the rooms**: the ground under every room just below its floor, blended back over the **Level
+    margin**. **⊙ Centre on the building**, **Width / Length / Detail** (its shape kept), its **Material** (a colour, a
+    material or a picture), the **Contour interval** and every-n-th darker line, **Contour lines on the ground**, **Earth
+    sides**, **▬ Flatten all**, **🗑 Remove the ground**.
+  - The ground is saved with the model, goes to .glb / Blender / Unreal / the image editor with it, is in the real photo,
+    and the 📐 floorplan draws its contour lines (the darker ones labelled) on the lowest storey.
 - 2.652.0: **The real photo uses your materials** - **✨ Photo** in the Sketcher's toolbar (or the prompt docker's ✏ Edit
   with the Sketcher linked) sends the edit model the clean render (your backdrop / sky in it), its depth map and a
   **material board**: one labelled tile for every picture the model uses ("Kitchen floor, Bed wall 1 outside", "outside

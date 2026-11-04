@@ -167,6 +167,13 @@
       L(arc(c, r, 0, 2 * Math.PI, 20), COL.light, "sym");
       L([[c[0] - q, c[1] - q], [c[0] + q, c[1] + q]], COL.light, "sym"); L([[c[0] - q, c[1] + q], [c[0] + q, c[1] - q]], COL.light, "sym");
     });
+    // 2.653.0: ⛰ the ground's contour lines (the majors labelled) + the drawn ones - on the lowest storey, under everything
+    const zs = levels(A);
+    if (A.terrain && root.PPTerrain && (!zs.length || sameZ(z, zs[0]))) {
+      const G = root.PPTerrain.planLines(A.terrain, { minor: COL.dim, major: COL.text, drawn: COL.glass })   // the grid is COL.grid - the lines stand out of it;
+      G.lines.forEach((l) => out.lines.push({ pts: l.pts.map((p) => [r4(p[0]), r4(p[1])]), col: l.col, k: "contour", dash: false }));
+      G.texts.forEach((t) => out.texts.push(t));
+    }
     return out;
   }
 
@@ -229,7 +236,7 @@
     return out;
   }
   /* ---------------- three.js: the plan in the Sketcher's view */
-  const ORDER = { floor: 3, furn: 4, wall: 5, sym: 6, label: 7 };
+  const ORDER = { contour: 2, floor: 3, furn: 4, wall: 5, sym: 6, label: 7 };
   function attach(V, AV) {
     const T = V.T, scene = V.scene;
     const G = new T.Group(); G.name = "pp-plan"; G.visible = false; scene.add(G);
@@ -237,7 +244,7 @@
     function clearHL() { while (HL.children.length) { const c = HL.children.pop(); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); } plan.hl = 0; }
     const plan = { isOn: false, z: 0, keep: null };
     const named = (n) => scene.getObjectByName(n);
-    const HIDE = ["pp-arch", "pp-fixtures", "pp-furniture"];
+    const HIDE = ["pp-arch", "pp-fixtures", "pp-furniture", "pp-terrain"];   // 2.653.0: the ground - its contours are drawn on the plan
     const texCache = new Map();
     function clear() { while (G.children.length) { const c = G.children.pop(); c.traverse((x) => { if (x.geometry) x.geometry.dispose(); if (x.material) { if (x.material.map && !x.material.map.userData.cached) x.material.map.dispose(); x.material.dispose(); } }); } }
     function mat(col) { return new T.MeshBasicMaterial({ color: new T.Color(col), side: T.DoubleSide, depthTest: false, depthWrite: false }); }

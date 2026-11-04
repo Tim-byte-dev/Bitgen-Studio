@@ -57,12 +57,20 @@
     // 2.620.0: the architecture tools (pparchtools.js) - Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs
     const ED = root.PPEdit ? root.PPEdit.create(ctx) : null; ctx.edit = () => ED;      // 2.625.0: faces / edges / corners edited (ppedit.js)
     const AT = root.PPArchTools && ctx.archView ? root.PPArchTools.create(ctx) : null;
-    const ALL = AT ? TOOLS.concat(AT.TOOLS) : TOOLS;
+    // 2.653.0: ⛰ the ground (ppterraintools.js) - its own panel when its tool is on
+    const TT = root.PPTerrainTools && ctx.terrainView ? root.PPTerrainTools.create(ctx) : null;
+    if (TT) ctx.otherPanel = () => (TT.active() ? (TT.props(), true) : false);
+    const ALL = (AT ? TOOLS.concat(AT.TOOLS) : TOOLS).concat(TT ? TT.TOOLS : []);
     let tool = "select", st = {}, lock = null, lastPP = null, lastSnap = null, sides = { circle: 24, polygon: 6 };
     const M = () => ctx.model();
     const grpOpt = () => (ctx.group() ? { grp: ctx.group() } : {});
     function reset() { st = {}; lock = null; V.preview({}); V.setHover(null); ctx.vcbValue(""); }
     function use(name) {
+      if (TT && TT.owns(name)) {                                         // 2.653.0
+        reset(); tool = name; if (AT) AT.use(null); V.leftDrag(""); V.canvas.style.cursor = "crosshair";
+        ctx.vcbLabel(TT.VCB[name] || ""); ctx.toolChanged(name); TT.use(name); return;
+      }
+      if (TT) TT.use(null);
       if (AT && AT.owns(name)) {
         reset(); tool = name; V.leftDrag(""); V.canvas.style.cursor = "crosshair";
         ctx.status(AT.HINT[name]); ctx.vcbLabel(AT.VCB[name] || ""); ctx.toolChanged(name); AT.use(name); return;
@@ -110,6 +118,7 @@
     function down(ev) {
       if (ev.button !== 0) return;
       const m = M();
+      if (TT && TT.owns(tool)) { TT.down(ev); return; }
       if (AT && AT.owns(tool)) { AT.down(ev); return; }
       if (tool === "select") { if (AT && AT.selectDown(ev)) return; if (ED && ED.down(ev)) return; pickSel(ev, ev.shiftKey || ev.ctrlKey || ev.metaKey, (ev.ctrlKey || ev.metaKey) && !ev.shiftKey); return; }   // 2.648.0: Ctrl+click adds
       if (tool === "orbit" || tool === "pan") return;
@@ -176,6 +185,7 @@
     }
     function move(ev) {
       const m = M();
+      if (TT && TT.owns(tool)) { TT.move(ev); return; }
       if (AT && AT.owns(tool)) { AT.move(ev); return; }
       if (tool === "select") { if (AT && AT.selectMove(ev)) return; if (ED && ED.move(ev)) return; const p = V.pick(ev, { group: ctx.group() }); V.setHover(p ? { face: p.face && !(p.grp && p.grp !== ctx.group()) ? p.face : null, edge: p.edge || null } : null); return; }
       if (tool === "orbit" || tool === "pan") return;
@@ -249,6 +259,7 @@
       }
     }
     function up(ev) {
+      if (TT && TT.owns(tool)) { TT.up(ev); return; }
       if (AT && AT.owns(tool)) { AT.up(ev); return; }
       if (tool === "select" && AT && AT.selectUp(ev)) return;
       if (tool === "select" && ED && ED.up(ev)) return;
@@ -257,6 +268,7 @@
     }
     function dbl(ev) {
       // 2.624.0 (Tim: "when user double clicks empty space deselect everything ang go into orbit mode")
+      if (TT && TT.owns(tool)) { TT.dbl(ev); return; }                  // 2.653.0: a contour line ends (never Orbit)
       const busy = Object.keys(st).length || (AT && AT.owns(tool) && Object.keys(AT.state()).filter((k) => k !== "roof" && k !== "last").length);
       if (!busy && !V.pick(ev, {}) && !(AT && ctx.archView && ctx.archView() && ctx.archView().pick(ev))) {
         ctx.setSel({ f: [], e: [], k: [] }); if (AT) AT.setSel(null); if (ctx.group()) ctx.enterGroup(null, true);
@@ -370,6 +382,7 @@
 
     /* ---- the Measurements box */
     function vcb(text) {
+      if (TT && TT.owns(tool)) { const ok = TT.vcb(text); if (!ok) ctx.status("the Measurements box takes the brush size in metres, or a contour's elevation"); return ok; }
       if (AT && AT.owns(tool)) { const ok = AT.vcb(text); if (!ok) ctx.status("the Measurements box takes " + (AT.VCB[tool] || "a length").toLowerCase() + " here"); return ok; }
       const P = g.parseVcb(text);
       if (!P) { ctx.status("the Measurements box takes a length (1.5, 150cm, 1500mm, 5'), two (3,2), a count of sides (24s)" + (tool === "rotate" ? " or degrees" : "")); return false; }
@@ -421,6 +434,7 @@
     function escape() {
       const wasOrbit = tool === "orbit";
       let kept = "";
+      if (TT) TT.escape();                                                // 2.653.0: a contour line being drawn is dropped
       const r = AT && AT.escape ? AT.escape(tool) : false; if (r === "kept" && ctx.statusText) kept = ctx.statusText();   // a wall run kept: its own words first
       if (Object.keys(st).length) reset();
       if (ED && ED.cancel) ED.cancel();
@@ -433,6 +447,7 @@
     function key(e) {
       const k = e.key;
       if (k === "Escape") return escape();
+      if (TT && TT.owns(tool) && TT.key(e)) return true;
       if (AT && AT.key(e, tool)) return true;
       if (k === "ArrowRight" || k === "ArrowLeft" || k === "ArrowUp") { lock = k === "ArrowRight" ? 0 : k === "ArrowLeft" ? 1 : 2; ctx.status("keeping the " + ["red", "green", "blue"][lock] + " axis (↓ lets it go)"); return true; }
       if (k === "ArrowDown") { lock = null; ctx.status(HINT[tool]); return true; }
@@ -447,7 +462,7 @@
     }
     function keyUp(e) { if (e.key === "Shift" && lock != null && lastSnap && lastSnap.axis === lock) { lock = null; } }
     use("select");
-    return { escape, state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED };
+    return { escape, state: () => st, use, name: () => tool, cancel: reset, key, keyUp, vcb, down, move, up, dbl, TOOLS: ALL, HINT, sides: () => sides, arch: AT, edit: ED, terrain: TT };
   }
   root.PPTools = { create, TOOLS, HINT, VCB };
 })(typeof window !== "undefined" ? window : globalThis);

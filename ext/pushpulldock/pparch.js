@@ -96,9 +96,9 @@
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [] }; }
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null }; }   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
-  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length));
+  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain));   // 2.653.0: a model of only ground has something too
   function clean(o) {
     const A = empty(); if (!o || typeof o !== "object") return A;
     A.ext = hex(o.ext, DEF.ext);
@@ -146,7 +146,9 @@
     A.hide = [...new Set((Array.isArray(o.hide) ? o.hide : []).filter((k) => typeof k === "string" && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)))].slice(0, 5000);
     A.groups = (Array.isArray(o.groups) ? o.groups : []).map((g) => (g && typeof g === "object" ? { id: id(g.id), name: String(g.name || "Group").slice(0, 60), rooms: [...new Set((Array.isArray(g.rooms) ? g.rooms : []).map(Number).filter((r) => rid.has(r)))], hidden: !!g.hidden, open: g.open !== false } : null)).filter(Boolean);
     A.profiles = root.PPProfile ? root.PPProfile.cleanList(o.profiles) : (Array.isArray(o.profiles) ? o.profiles : []);   // 2.640.0: the profiles the model uses
-    A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);                       // 2.651.0: the picture materials + the background
+    A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);
+    // 2.653.0 (Tim: "terrain elevation tools like contour lines and shape the ground to match the contours"): ⛰ the ground (ppterrain.js)
+    A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);                       // 2.651.0: the picture materials + the background
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
     const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups);
@@ -1007,6 +1009,7 @@
     (A.items || []).forEach((it) => { pts.push([it.x - it.w / 2, it.y - it.d / 2, it.z], [it.x + it.w / 2, it.y + it.d / 2, it.z + it.h]); });
     (A.cams || []).forEach((c) => pts.push([c.x - 0.5, c.y - 0.5, c.z - 0.5], [c.x + 0.5, c.y + 0.5, c.z + 0.5]));   // 2.633.0: zoom extents shows the cameras (+ their rings)
     A.roofs.forEach((rf) => { const F = roofFrame(A, rf); if (F) pts.push([F.o[0], F.o[1], F.top + F.D / 2 * Math.tan(rf.pitch * Math.PI / 180)]); });
+    if (A.terrain && root.PPTerrain) { const tb = root.PPTerrain.bounds(A.terrain); pts.push(tb.min, tb.max); }   // 2.653.0: the ground
     if (!pts.length) return null;
     const mn = [0, 1, 2].map((k) => Math.min(...pts.map((p) => p[k]))), mx = [0, 1, 2].map((k) => Math.max(...pts.map((p) => p[k])));
     return { min: mn, max: mx };

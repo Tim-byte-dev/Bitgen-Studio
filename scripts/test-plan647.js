@@ -85,7 +85,7 @@ check("…symbols() draws with them", S3.fills.some((f) => f.k === "wall" && f.c
 const D = "ext/pushpulldock/", T = read(D + "pptools.js"), AT = read(D + "pparchtools.js"), AV = read(D + "pparchview.js"), PD = read(D + "ppdock.js"), H = read(D + "dock.html"), PS = read(D + "ppplan.js"), EJ = JSON.parse(read(D + "ext.json"));
 check("ppplan.js loaded after pparchview.js", EJ.scripts.indexOf("ppplan.js") === EJ.scripts.indexOf("pparchview.js") + 1);
 check("Esc: ONE press - the step ends (a wall run kept), the group left, nothing picked, 🔄 Orbit (2.648.0: in Orbit = ➤ Select)",
-  /if \(k === "Escape"\) return escape\(\);\s*\n\s*if \(AT && AT\.key\(e, tool\)\) return true;/.test(T) && /if \(wasOrbit\) \{ use\("select"\);/.test(T) && /else \{ use\("orbit"\);/.test(T)
+  /if \(k === "Escape"\) return escape\(\);\s*\n(\s*if \(TT && TT\.owns\(tool\) && TT\.key\(e\)\) return true;\s*\n)?\s*if \(AT && AT\.key\(e, tool\)\) return true;/.test(T) && /if \(wasOrbit\) \{ use\("select"\);/.test(T) && /else \{ use\("orbit"\);/.test(T)
   && /baseTool === "wall" && st\.pts && st\.pts\.length >= 2\) \{ finishWall\(false\); did = "kept"; \}/.test(AT) && /if \(asel\) \{ setSel\(null, true\); did = did \|\| true; \}/.test(AT)
   && /if \(r === "kept" && ctx\.statusText\) kept = ctx\.statusText\(\);/.test(T));
 check("…Esc in the Measurements box too", /if \(S\.T && S\.T\.escape\) S\.T\.escape\(\);/.test(PD));
@@ -94,7 +94,7 @@ check("another view or a camera's view ends the floorplan", /if \(S\.P && S\.P\.
 check("the 3D view's hooks: the plan's own picking, rebuilt with the building, its paper kept, the outline over it",
   /if \(A\.planPick\) \{ const h = A\.planPick\(ev\); if \(h !== undefined\) return h; \}/.test(AV) && /if \(A\.onRebuild\)/.test(AV) && /if \(A\.onLayers\) A\.onLayers\(\);/.test(AV) && /if \(A\.onPaint\) A\.onPaint\(selG[,)]/.test(AV));
 check("the plan view: straight down, parallel, flat (orbit only turns it), the 3D building hidden, back as it was",
-  /V\.view\("top"\)/.test(PS) && /c\.maxPolarAngle = 1e-3/.test(PS) && /HIDE = \["pp-arch", "pp-fixtures", "pp-furniture"\]/.test(PS) && /V\.restore\(plan\.keep\)/.test(PS));
+  /V\.view\("top"\)/.test(PS) && /c\.maxPolarAngle = 1e-3/.test(PS) && /HIDE = \["pp-arch", "pp-fixtures", "pp-furniture"(, "pp-terrain")?\]/.test(PS) && /V\.restore\(plan\.keep\)/.test(PS));
 check("a room's panel: Width + Length for any room; the Room tool: Width + Length = one click",
   /numIn\("Width", sz\.w/.test(AT) && /numIn\("Length", sz\.l/.test(AT) && /numIn\("Length", o\.l \|\| 0, opt\("l"\)/.test(AT) && /finishRoom\(p, \[p\[0\] \+ O\.room\.w, p\[1\] \+ O\.room\.l\]\)/.test(AT) && /room: "Width,Length"/.test(AT));
 

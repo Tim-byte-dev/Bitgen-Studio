@@ -12947,6 +12947,13 @@ node scripts/test-real652.js > /tmp/real652.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui652-ui.js > /tmp/ui652.log 2>&1 \
   && ok "2.652.0 browser test (stubbed AI): ✨ Photo sends render + depth + the board (2 captioned tiles), the backdrop in the render not the depth, a two-picture model gets it again without the board, no pictures = no board - or SKIP without playwright" \
   || { bad "2.652.0 real photo board browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui652.log | head -14; }
+# ---- 2.653.0 (Tim: "... and terrain elevation tools like contour lines and shape the ground to match the contours.")
+node scripts/test-terrain653.js > /tmp/terrain653.log 2>&1 \
+  && ok "2.653.0 the Sketcher's terrain: the ground kept with the model, made round the building, the brush, shaped to contour lines (harmonic), levelled under rooms, a heightmap, resized, marching-squares contours, the mesh, a ray onto it, the floorplan's contours, the wiring" \
+  || { bad "2.653.0 terrain units"; grep -a "^FAIL" -A2 /tmp/terrain653.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui653-ui.js > /tmp/ui653.log 2>&1 \
+  && ok "2.653.0 browser test: ⛰ Terrain (Alt+G) makes the ground, raise / Shift lower / undo, Alt+click flatten height, contour lines drawn closed + open and the ground shaped, a line picked / re-levelled / deleted, Esc, a heightmap, level under rooms, the floorplan's contours, saved, .glb, removed + undone - or SKIP without playwright" \
+  || { bad "2.653.0 terrain browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui653.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

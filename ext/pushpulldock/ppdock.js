@@ -300,12 +300,14 @@
     const one = ([id, icon, label, key], hint) => {
       const b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "ppT_" + id; b.textContent = icon;
       if (id === "select" && root.H3PointerIcon) root.H3PointerIcon.apply(b, { size: 17 });   // 2.648.0 (Tim: "change the selection icon to a pointer")
-      b.title = label + " (" + (key === " " ? "Space" : key.toUpperCase()) + ") - " + hint; b.setAttribute("aria-label", label);
+      b.title = label + " (" + (key === " " ? "Space" : key.length > 1 ? key : key.toUpperCase()) + ") - " + hint; b.setAttribute("aria-label", label);
       b.onclick = () => { S.T.use(id); S.V.canvas.focus({ preventScroll: true }); };
       box.appendChild(b);
     };
     root.PPTools.TOOLS.forEach((t) => one(t, root.PPTools.HINT[t[0]]));
     if (AT && S.A) { const sep = doc.createElement("div"); sep.className = "pptsep"; sep.textContent = "Build"; box.appendChild(sep); AT.TOOLS.forEach((t) => one(t, AT.HINT[t[0]])); }
+    const TT = root.PPTerrainTools;                                      // 2.653.0: ⛰ the ground
+    if (TT && S.TV) { const sep = doc.createElement("div"); sep.className = "pptsep"; sep.textContent = "Ground"; box.appendChild(sep); TT.TOOLS.forEach((t) => one(t, TT.HINT[t[0]])); }
     const sw = $("ppSw");
     PALETTE.forEach((c) => { const b = doc.createElement("button"); b.type = "button"; b.style.background = c; b.title = c; b.dataset.c = c; b.onclick = () => setColor(c); sw.appendChild(b); });
     paintSw();
@@ -385,6 +387,7 @@
     try { S.A = await root.PPArchView.attach(S.V); S.V.after = () => S.A.rebuild(); S.V.extraBox = () => S.A.box(); }
     catch (e) { S.A = null; msg("the architecture tools did not start: " + (e.message || e)); }
     S.P = root.PPPlan && S.A ? root.PPPlan.attach(S.V, S.A) : null;        // 2.647.0: 📐 the floorplan view
+    S.TV = root.PPTerrain && S.A ? root.PPTerrain.attach(S.V, S.A) : null;  // 2.653.0: ⛰ the ground (after the plan: it chains its rebuild)
     if (S.A && root.PPMatPick) S.A.onBg = () => root.PPMatPick.applyBg(S.V, S.M && S.M.arch);   // 2.651.0: the background with the building
     if (root.PPFurn && root.PPFurn.onTexLoad) root.PPFurn.onTexLoad(() => S.V && S.V.draw());   // a picture texture arrived
     S.M = G().newModel(); S.V.setModel(S.M);
@@ -393,7 +396,7 @@
       group: () => S.group, enterGroup, status: msg, statusText: () => ($("ppMsg") || {}).textContent || "", vcbLabel: (t) => { $("ppVcbL").textContent = t || "Measurements"; }, vcbValue: (t) => { if (doc.activeElement !== $("ppVcb")) $("ppVcb").value = t || ""; },
       snapshot, commit, restore, redraw: () => { S.V.rebuild(); }, color: () => S.color, setColor, erase,
       toolChanged: (n) => { doc.querySelectorAll("#ppTools button").forEach((b) => b.classList.toggle("on", b.id === "ppT_" + n)); },
-      archView: S.A ? () => S.A : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, zoomPicked: () => zoomSel(), resized: () => { if (S.V) S.V.size(); },
+      archView: S.A ? () => S.A : null, terrainView: S.TV ? () => S.TV : null, onSel: () => info(), onThrough: () => paintViewSel(), leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); }, zoomPicked: () => zoomSel(), resized: () => { if (S.V) S.V.size(); },
       // 2.628.0: the 🛋 Furniture tool's "3D models" - the project's models (as a group, like ⤒ Import)
       models: () => api("/api/tlcanvas/models").then((j) => (j.models || []).filter((x) => /\.(glb|gltf|obj|fbx)$/i.test(x.name)).map((x) => x.name)),
       importModel: (n) => guard("Import", () => importModel(n)),
@@ -469,6 +472,7 @@
       if (ctl && (k === "a" || k === "A")) { done(); const s = { f: S.M.f.filter((F) => !S.group || F.grp === S.group).map((F) => F.id), e: S.M.e.filter((E) => !S.group || E.grp === S.group).map((E) => E.id), k: [] }; S.sel = s; S.V.setSel(s); info(); return; }
       if (!ctl && k === "Z" && e.shiftKey) { done(); S.V.extents(); return; }
       if (!ctl && (k === "g" || k === "G") && !e.altKey) { done(); groupBtn(); return; }
+      if (!ctl && e.altKey && e.code === "KeyG" && S.T.terrain) { done(); S.T.use("terrain"); return; }   // 2.653.0: ⛰ Terrain (G is Group; e.code - Alt+G types © on a Mac)
       // a number (or a unit) typed with a tool going: into the Measurements box
       if (!ctl && !e.altKey && /^[0-9.,\-;'"]$/.test(k)) { done(); const v = $("ppVcb"); v.value = k; v.focus({ preventScroll: true }); return; }
       if (S.T.key(e)) done();

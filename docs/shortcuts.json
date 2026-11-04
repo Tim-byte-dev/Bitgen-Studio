@@ -967,6 +967,14 @@
           "Stairs"
         ],
         [
+          "Alt+G",
+          "⛰ Terrain - the ground: Raise / Lower / Smooth / Flatten with a brush, or draw 〰 contour lines the ground follows (the mode in the panel)"
+        ],
+        [
+          "[ / ] (Terrain)",
+          "The brush smaller / bigger; Shift+drag: the other way (raise ⇄ lower); Alt+click (Flatten): take the height there"
+        ],
+        [
           "Drag a room (Select)",
           "Its wall snaps onto a neighbour's - one shared wall"
         ],
