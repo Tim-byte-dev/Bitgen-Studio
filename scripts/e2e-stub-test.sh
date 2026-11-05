@@ -13092,6 +13092,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui681-ui.js > /tmp/ui681ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui682-ui.js > /tmp/ui682ui.log 2>&1 \
   && ok "2.682.0 browser test: edit theme mode - a click picks, Shift+click (and Alt+click) runs the button, Ctrl+Shift+click picks - or SKIP without playwright" \
   || { bad "2.682.0 Shift+click in edit theme mode browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui682ui.log | head -14; }
+# ---- 2.683.0 (Tim: "the model toggle button in prompt docker is not working")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui683-ui.js > /tmp/ui683ui.log 2>&1 \
+  && ok "2.683.0 browser test: ⇄ after the app's own style change (Basic Settings refilled first), Override values back, — template — counts, a press with nothing says so - or SKIP without playwright" \
+  || { bad "2.683.0 ⇄ toggle browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui683ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

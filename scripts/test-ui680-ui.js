@@ -36,7 +36,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("⇄ beside the image style dropdown and the video style dropdown", place.next && place.video && place.text === "⇄", place);
     await ev(() => { const o = document.getElementById("ovrStyle"); if (o.checked) { o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); } });
     await pick(opts[0]); await p.waitForTimeout(150); await pick(opts[1]); await p.waitForTimeout(150);
-    const t1 = await ev(() => ({ dis: document.getElementById("swap_image").disabled, title: document.getElementById("swap_image").title }));
+    const t1 = await ev(() => ({ dis: document.getElementById("swap_image").getAttribute("aria-disabled") === "true", title: document.getElementById("swap_image").title }));
     check("two styles picked one after the other: ⇄ ready, its tooltip names the first", !t1.dis && /^⇄ Back to /.test(t1.title), t1);
     await ev(() => document.getElementById("swap_image").click()); await p.waitForTimeout(250);
     check("⇄: the first style back", (await ev(() => document.getElementById("styleSel").value)) === opts[0]);
@@ -57,7 +57,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const file = await api("/api/model-settings");
     check("model_settings.tmp holds it: the current (with its values + LoRA) and the previous", file.image.cur && file.image.cur.style === opts[1] && file.image.cur.ovr && file.image.cur.loras.length === 1 && file.image.prev && file.image.prev.style === opts[2], file.image);
     await p.reload({ waitUntil: "domcontentloaded" }); await boot(); await p.waitForTimeout(3500);
-    const after = await ev(() => ({ dis: document.getElementById("swap_image").disabled, prev: H3ModelSwap.state().data.image.prev && H3ModelSwap.state().data.image.prev.style }));
+    const after = await ev(() => ({ dis: document.getElementById("swap_image").getAttribute("aria-disabled") === "true", prev: H3ModelSwap.state().data.image.prev && H3ModelSwap.state().data.image.prev.style }));
     check("after a reload: the previous setting still there (⇄ ready)", !after.dis && after.prev === opts[2], after);
     check("no page errors", errs.length === 0, errs);
     await ev(() => { paintTempLoras({ image: [], video: tempLoras("video"), cnet: tempLoras("cnet") }); saveTempLoras("image"); const o = document.getElementById("ovrStyle"); o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); });

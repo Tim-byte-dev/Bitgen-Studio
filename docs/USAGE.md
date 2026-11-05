@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.683.0: **⇄ works again**: picking another image or video style now always makes the one before it the previous
+  setting, so ⇄ can take you back (before, Basic Settings filling in for the new style hid the old one and ⇄ stayed
+  greyed out). **— none —** and **— template —** count as settings too. With nothing to go back to yet, ⇄ is dimmed and
+  a press says so beside it.
 - 2.682.0: **Shift+click runs a button in edit theme mode**: with 🖌 on, hold Shift and click a button and it does
   what it does (Alt+click still works the same way). A plain click still picks it to style.
 - 2.681.0: **The look stays picked**: in the image preview the looks are now a dropdown (📷 Photoreal, 🧸 Pixar, 🧊 2.5D,

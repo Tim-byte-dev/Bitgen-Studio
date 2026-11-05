@@ -21,13 +21,18 @@ const core = require(path.join(ROOT, "lib", "core.js")), was = core.BASE; core.B
 const MS = require(path.join(ROOT, "lib", "modelSettings.js"));
 check("no file yet: empty current / previous for image and video", JSON.stringify(MS.read()) === JSON.stringify({ image: { cur: null, prev: null }, video: { cur: null, prev: null } }));
 const w = MS.write({ image: { cur: { style: "st_a", name: "A", ovr: true, fields: { iSteps: "30", "bad key!": 1, iCfg: 5.5 }, loras: [{ path: "loras/x.safetensors", weight: 0.7 }, { path: "" }], at: 5 },
-  prev: { style: "st_b", name: "B", ovr: false, fields: { iSteps: "9" }, loras: [{ path: "y" }] } }, video: { cur: { style: "" } } });
-check("written to <app>/model_settings.tmp: Override on = its values + temporary LoRAs; Override off = the style only; bad ids / empty LoRAs / no style dropped",
+  prev: { style: "st_b", name: "B", ovr: false, fields: { iSteps: "9" }, loras: [{ path: "y" }] } }, video: { cur: { style: "" }, prev: { name: "no style" } } });
+check("written to <app>/model_settings.tmp: Override on = its values + temporary LoRAs; Override off = the style only; bad ids / empty LoRAs / no style string dropped (2.683.0: an empty style = — template — kept)",
   path.basename(MS.file()) === "model_settings.tmp" && fs.existsSync(path.join(tmp, "model_settings.tmp")) && w.image.cur.fields.iSteps === "30" && w.image.cur.fields.iCfg === 5.5 && !("bad key!" in w.image.cur.fields)
-  && w.image.cur.loras.length === 1 && w.image.cur.loras[0].weight === 0.7 && JSON.stringify(w.image.prev.fields) === "{}" && w.image.prev.loras.length === 0 && w.video.cur === null, w);
+  && w.image.cur.loras.length === 1 && w.image.cur.loras[0].weight === 0.7 && JSON.stringify(w.image.prev.fields) === "{}" && w.image.prev.loras.length === 0 && w.video.cur && w.video.cur.style === "" && w.video.prev === null, w);
 check("…read back the same", JSON.stringify(MS.read()) === JSON.stringify(w));
 fs.writeFileSync(path.join(tmp, "model_settings.tmp"), "{broken");
 check("a broken file = empty (never an error)", MS.read().image.cur === null);
+// 2.683.0: next(cur, now) - a different style always makes the current one the previous (also when Basic Settings' refill
+// reported the new style first), the same style only updates the current
+const A = { style: "st_a" }, B = { style: "st_b" }, A2 = { style: "st_a", fields: { x: "2" } }, T = { style: "" };
+check("2.683.0 next(): another style = new current + the old one as previous; the same style = the current follows; none = unchanged; \"\" (— template —) counts",
+  W.next(A, B).cur === B && W.next(A, B).prev === A && W.next(A, A2).cur === A2 && !("prev" in W.next(A, A2)) && W.next(A, null).cur === A && !W.next(A, null).prev && W.next(T, B).prev === T && W.next(null, B).cur === B && !W.next(null, B).prev);
 core.BASE = was; fs.rmSync(tmp, { recursive: true, force: true });
 const IX = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8"), H = fs.readFileSync(path.join(ROOT, "static", "index.html"), "utf8"), GI = fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8");
 check("wired: routes/modelSettings.js mounted (GET / POST /api/model-settings - never server.js), modelswap.js on the page, the .tmp not in git",
