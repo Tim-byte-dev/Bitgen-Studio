@@ -23,7 +23,7 @@
 (function (root) {
   "use strict";
   const PT = () => root.PPTerrain, P = () => root.PPArch;
-  const TOOLS = [["terrain", "⛰", "Terrain", "Alt+G"]];          // every letter is a tool already (G = Group) - Alt+G (ppdock.js)
+  const TOOLS = [["terrain", "⛰", "Terrain", "Alt+G"], ["pool", "🏊", "Pool", ""]];   // 2.657.0: + 🏊 Pool (no key - every letter is taken)          // every letter is a tool already (G = Group) - Alt+G (ppdock.js)
   const MODES = [["raise", "⬆", "Raise"], ["lower", "⬇", "Lower"], ["smooth", "≈", "Smooth"], ["flatten", "▬", "Flatten"], ["contour", "〰", "Contour"], ["pad", "✂", "Cut / fill"]];   // 2.656.0: + cut / fill pads
   const HINTS = {
     raise: "⛰ Raise - press and drag on the ground (Shift: lower) · [ / ] the brush size · type a size in metres",
@@ -33,9 +33,11 @@
     contour: "〰 Contour - click, click … a line at its elevation (type one) · back on its start = closed · double-click / Enter ends · click a line to pick it",
     pad: "✂ Cut / fill - click the corners of a level pad on the ground · back on the first (or double-click / Enter) = cut and filled · click a pad to pick it · type its level",
   };
-  const HINT = { terrain: "Shape the ground - raise, lower, smooth, flatten with a brush, or draw contour lines and the ground follows them" };
-  const VCB = { terrain: "Size / Elevation" };
-  const OPT0 = { mode: "raise", r: 3, s: 0.15, target: 0, cz: 0, cstep: 0.5, auto: true, margin: 2, lo: 0, hi: 10, padAuto: true, padZ: 0, batter: 2, padMode: "both" };
+  const HINT = { terrain: "Shape the ground - raise, lower, smooth, flatten with a brush, or draw contour lines and the ground follows them",
+    pool: "🏊 Pool - click a corner, click the opposite corner (or type  8,4) - a pool with edge tiles or decking; Free shape: click its corners, back on the first" };
+  const VCB = { terrain: "Size / Elevation", pool: "Length,Width" };
+  const OPT0 = { mode: "raise", r: 3, s: 0.15, target: 0, cz: 0, cstep: 0.5, auto: true, margin: 2, lo: 0, hi: 10, padAuto: true, padZ: 0, batter: 2, padMode: "both",
+    poolShape: "rect", poolAuto: true, poolZ: 0, shallow: 1.0, deep: 1.8, edge: "tiles", edgeW: 0.35, deckW: 1.5, poolLevel: true };   // 2.657.0
 
   function create(ctx) {
     const V = ctx.V;
@@ -44,7 +46,8 @@
     try { const s = JSON.parse(root.localStorage.getItem("pp.terrainopt") || "{}"); Object.keys(OPT0).forEach((k) => { if (typeof s[k] === typeof OPT0[k]) O[k] = s[k]; }); } catch (e) { /* fine */ }
     const keepOpt = () => { try { root.localStorage.setItem("pp.terrainopt", JSON.stringify(O)); } catch (e) { /* fine */ } };
     const AR = () => P().of(ctx.model()), TR = () => AR().terrain || null, TV = () => (ctx.terrainView ? ctx.terrainView() : null);
-    const owns = (n) => n === "terrain";
+    const owns = (n) => n === "terrain" || n === "pool";
+    let tname = null;                                                    // 2.657.0: which of them is on
     const fmt = (m) => (root.PPGeo && root.PPGeo.fmtLen ? root.PPGeo.fmtLen(m) : (+m).toFixed(2) + " m");
     const hint = () => HINTS[O.mode] || HINT.terrain;
     const before = () => ctx.snapshot();
@@ -59,8 +62,10 @@
     }
     function use(name) {
       const was = on; on = owns(name);
-      if (!on) { if (was) { drop(); const tv = TV(); if (tv) tv.ring(null); } return; }
-      st = {}; picked = null; props();
+      if (!on) { tname = null; if (was) { drop(); const tv = TV(); if (tv) tv.ring(null); } return; }
+      if (was && tname !== name) drop();
+      tname = name; st = {}; picked = null; props();
+      if (name === "pool") { const tv = TV(); if (tv) tv.ring(null); ctx.status(HINT.pool); return; }
       ctx.status(TR() ? hint() : "⛰ Terrain - click anywhere to make the ground (round the building), then shape it · " + hint());
     }
     function drop() { const had = !!(st.draft || st.stroke || picked || pickedPad); st = {}; picked = null; pickedPad = null; const tv = TV(); if (tv) tv.draft(null); return had; }
@@ -86,6 +91,7 @@
       return PT().brush(t, mode, p[0], p[1], O.r, s, O.target);
     }
     function down(ev) {
+      if (tname === "pool") return poolDown(ev);
       if (!TR()) { ensure(); return; }
       if (O.mode === "contour") return contourDown(ev);
       if (O.mode === "pad") return padDown(ev);
@@ -97,6 +103,7 @@
     }
     function move(ev) {
       const tv = TV(); if (!tv) return;
+      if (tname === "pool") { if (st.draft) { const p = groundAt(ev); if (p) { st.draft.at = p; tv.draft(O.poolShape === "rect" ? rectRing(st.draft.pts[0], p) : st.draft.pts.concat([p, st.draft.pts[0]]), st.draft.z); } } return; }
       if (O.mode === "contour") {
         if (st.draft) { const p = planeAt(ev, st.draft.z); if (p) { st.draft.at = p; tv.draft(st.draft.pts.concat([p]), st.draft.z); } }
         return;
@@ -144,7 +151,7 @@
       O.cz = Math.round((D.z + O.cstep) * 1000) / 1000; keepOpt(); picked = null; props();
       ctx.status("〰 the " + PT().fmtZ(C.z) + " contour" + (closed ? " (closed)" : "") + (shaped && shaped.held ? " - the ground shaped to " + t.contours.length + " contour" + (t.contours.length > 1 ? "s" : "") : "") + " · the next one at " + PT().fmtZ(O.cz));
     }
-    function dbl() { if (O.mode === "contour" && st.draft) finish(false); else if (O.mode === "pad" && st.draft) finishPad(); }
+    function dbl() { if (tname === "pool") { if (st.draft && O.poolShape === "free") finishPool(st.draft.pts); return; } if (O.mode === "contour" && st.draft) finish(false); else if (O.mode === "pad" && st.draft) finishPad(); }
 
     /* ---- 2.656.0: cut / fill pads (Tim: "can you add a cut/fill landscaping tool to sketcher") */
     /** a pad's corner: where the pointer meets the ground (else the plane at 0) */
@@ -178,10 +185,61 @@
       const b = before(); fn(q); PT().applyPad(t, q); ctx.commit("cut fill", b); props();
       ctx.status("✂ " + q.name + " at " + PT().fmtZ(q.z) + " - cut " + PT().fmtV(q.cut) + ", fill " + PT().fmtV(q.fill));
     }
+    /* ---- 2.657.0: 🏊 pools (Tim: "a swimming pool creator(with edge tiles or decking)") - ppsite.js */
+    const rectRing = (a, b) => { const R = root.PPSite.rect(a, b); return R.concat([R[0]]); };
+    function poolDown(ev) {
+      if (!root.PPSite) return;
+      const p = groundAt(ev); if (!p) return;
+      const t = TR(), zg = t ? PT().at(t, p[0], p[1]) : (O.poolAuto ? 0 : O.poolZ);
+      if (!st.draft) { st.draft = { kind: "pool", z: zg + 0.05, pts: [p] }; const tv = TV(); if (tv) tv.draft([p, p], st.draft.z); ctx.status(O.poolShape === "rect" ? "🏊 click the opposite corner (or type  length,width)" : "🏊 click its corners … back on the first (or double-click / Enter)"); return; }
+      if (O.poolShape === "rect") { const a = st.draft.pts[0]; if (Math.abs(p[0] - a[0]) < 0.3 || Math.abs(p[1] - a[1]) < 0.3) { ctx.status("🏊 too small - click further away"); return; } st.draft = null; finishPool(root.PPSite.rect(a, p)); return; }
+      const P0 = st.draft.pts[0], last = st.draft.pts[st.draft.pts.length - 1];
+      if (st.draft.pts.length >= 3 && Math.hypot(p[0] - P0[0], p[1] - P0[1]) <= pxTol(P0, st.draft.z)) { finishPool(st.draft.pts); return; }
+      if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 1e-3) return;
+      st.draft.pts.push(p); const tv = TV(); if (tv) tv.draft(st.draft.pts.concat([p, P0]), st.draft.z);
+    }
+    function finishPool(pts) {
+      st.draft = null; const tv = TV(); if (tv) tv.draft(null);
+      const P = (pts || []).filter((p, i, L) => i === 0 || Math.hypot(p[0] - L[i - 1][0], p[1] - L[i - 1][1]) > 1e-3);
+      if (P.length < 3) { ctx.status("🏊 a pool needs three corners at least"); return; }
+      const A = AR(), t = TR(), b = before();
+      let cx = 0, cy = 0; P.forEach((p) => { cx += p[0]; cy += p[1]; }); cx /= P.length; cy /= P.length;
+      const z = t && O.poolAuto ? Math.round(PT().at(t, cx, cy) * 1000) / 1000 : O.poolAuto ? 0 : O.poolZ;
+      const q = root.PPSite.make(A, P, { z, shallow: O.shallow, deep: Math.max(O.shallow, O.deep), edge: O.edge, edgeW: O.edgeW, deckW: O.deckW });
+      if (!q) { ctx.status("🏊 that shape is too small"); return; }
+      let pad = null;
+      if (t && O.poolLevel) { pad = PT().addPad(t, root.PPSite.outer(q), { z: q.z - 0.03, batter: 2, mode: "both" }); if (pad) pad.name = q.name + " surround"; }   // the ground levelled round it
+      ctx.commit("pool", b);
+      const AT = ctx.arch ? ctx.arch() : null; if (AT && AT.setSel) AT.setSel({ ak: "pool", id: q.id });
+      props();
+      const S = root.PPSite.size(q);
+      ctx.status("🏊 " + q.name + " - " + fmt(S.l) + " × " + fmt(S.w) + ", " + root.PPSite.volume(q) + " m³ of water" + (pad ? ", the ground levelled round it (cut " + PT().fmtV(pad.cut) + ", fill " + PT().fmtV(pad.fill) + ")" : "") + " · its settings: ➤ Select it · ↶ undoes it");
+    }
+    function poolProps(kit) {
+      const { head, numIn, chkIn, btns, el, box, opt, row } = kit;
+      const selIn = (label, val, opts, fn, id) => { const sl = el("select"); if (id) sl.id = id; opts.forEach(([v, tx]) => { const o2 = el("option", "", tx); o2.value = v; if (v === val) o2.selected = true; sl.appendChild(o2); }); sl.onchange = () => fn(sl.value); return row(label, sl); };
+      head("🏊 Pool");
+      selIn("Shape", O.poolShape, [["rect", "Rectangle (two corners)"], ["free", "Free shape (its corners)"]], (v) => { st.draft = null; const tv = TV(); if (tv) tv.draft(null); opt("poolShape")(v); }, "ppPoolShape");
+      numIn("Shallow end (m)", O.shallow, opt("shallow"), 0.1, 0.2, 6, "ppPoolShallow");
+      numIn("Deep end (m)", O.deep, opt("deep"), 0.1, 0.2, 6, "ppPoolDeep");
+      selIn("Edge", O.edge, root.PPSite.EDGES, opt("edge"), "ppPoolEdge");
+      if (O.edge === "tiles" || O.edge === "both") numIn("Edge tiles' width (m)", O.edgeW, opt("edgeW"), 0.05, 0.05, 2, "ppPoolEdgeW");
+      if (O.edge === "deck" || O.edge === "both") numIn("Decking's width (m)", O.deckW, opt("deckW"), 0.1, 0.1, 10, "ppPoolDeckW");
+      chkIn("Water's edge = the ground at its middle", O.poolAuto, opt("poolAuto"), "ppPoolAuto");
+      if (!O.poolAuto) numIn("Water's edge at (m)", O.poolZ, opt("poolZ"), 0.05, -100, 1000, "ppPoolZ");
+      chkIn("Level the ground round it", O.poolLevel, opt("poolLevel"), "ppPoolLevel");
+      const n = (AR().pools || []).length;
+      box.appendChild(el("div", "pphint", HINT.pool + (n ? " · " + n + " pool" + (n > 1 ? "s" : "") + " - ➤ Select one for its own settings (size, depths, materials, water)" : "")));
+      void btns;
+    }
     function forgetPad(id) { const t = TR(); if (!t) return; const b = before(); t.pads = (t.pads || []).filter((x) => x.id !== id); pickedPad = null; ctx.commit("cut fill", b); props(); ctx.status("✂ the pad's outline is gone - the ground keeps its shape (↶ brings it back)"); }
 
     /* ---- the keys and the box */
     function vcb(text) {
+      if (tname === "pool") {                                            // 2.657.0: "8,4" = a pool that size from the first corner (or the view's middle)
+        const m = String(text).split(/[;, x]+/).map((x) => parseFloat(x)).filter(Number.isFinite); if (m.length < 2 || m[0] <= 0 || m[1] <= 0) return false;
+        const a = st.draft ? st.draft.pts[0] : [0, 0]; st.draft = null; finishPool([[a[0], a[1]], [a[0] + m[0], a[1]], [a[0] + m[0], a[1] + m[1]], [a[0], a[1] + m[1]]]); return true;
+      }
       const v = parseFloat(String(text).replace(",", ".")); if (!Number.isFinite(v)) return false;
       if (O.mode === "pad") { if (pickedPad != null && !st.draft) { rePad((q) => { q.z = v; }); return true; } O.padZ = v; O.padAuto = false; keepOpt(); props(); ctx.status("✂ the next pad's level: " + PT().fmtZ(v)); return true; }
       if (O.mode === "contour") {
@@ -193,6 +251,7 @@
     }
     function key(e) {
       if (!on) return false;
+      if (e.key === "Enter" && st.draft && st.draft.kind === "pool") { if (O.poolShape === "free") finishPool(st.draft.pts); return true; }
       if (e.key === "Enter" && st.draft) { if (st.draft.kind === "pad") finishPad(); else finish(false); return true; }
       if ((e.key === "Delete" || e.key === "Backspace") && pickedPad != null) { forgetPad(pickedPad); return true; }
       if ((e.key === "Delete" || e.key === "Backspace") && picked != null) { delContour(picked); return true; }
@@ -230,6 +289,7 @@
       const btns = (list) => { const r = el("div", "ppbtns"); list.forEach(([t, fn, tip, id]) => { const b = el("button", "ghost", t); b.type = "button"; if (tip) b.title = tip; if (id) b.id = id; b.onclick = fn; r.appendChild(b); }); box.appendChild(r); return r; };
       const opt = (k) => (v) => { O[k] = v; keepOpt(); props(); };
       const edit = (label, fn) => () => { const t = TR(); if (!t) return; const b = before(); const msg = fn(t); ctx.commit(label, b); props(); if (msg) ctx.status(msg); };
+      if (tname === "pool") { poolProps({ head, numIn, chkIn, btns, el, box, opt, row }); if (ctx.resized) ctx.resized(); return; }
       const t = TR();
       head("⛰ Terrain");
       if (!t) {
@@ -310,7 +370,7 @@
       box.appendChild(el("div", "pphint", hint()));
       if (ctx.resized) ctx.resized();
     }
-    return { owns, use, down, move, up, dbl, vcb, key, escape, props, active: () => on, state: () => st, picked: () => picked, opts: O, finish, TOOLS, HINT, VCB, MODES };
+    return { owns, use, down, move, up, dbl, vcb, key, escape, props, tool: () => tname, finishPool, active: () => on, state: () => st, picked: () => picked, opts: O, finish, TOOLS, HINT, VCB, MODES };
   }
   root.PPTerrainTools = { create, TOOLS, HINT, VCB, MODES, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

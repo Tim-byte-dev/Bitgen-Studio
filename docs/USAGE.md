@@ -6303,6 +6303,15 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.657.0: **🏊 Pool** in the Sketcher - under *Ground*, beside ⛰ Terrain (no key - every letter is taken).
+  - Click a corner and the opposite corner (or type `8,4` + Enter) - a rectangle pool; **Shape: Free shape** = click its
+    corners, back on the first (double-click / Enter). Its panel: **Shallow end** / **Deep end** (the floor slopes between
+    them along its length), **Edge**: edge tiles (coping), decking, edge tiles + decking or none, their widths, the
+    water's edge level (the ground at its middle, or typed) and **Level the ground round it**.
+  - On ⛰ ground the ground is cut away under it and levelled round it (a cut / fill pad named "Pool 1 surround").
+  - ➤ Select a pool for its own panel: Length / Width, the level, the depths, ⇄ swap the deep end, the edge and its
+    materials (tiles, timber … or a picture), the lining, the water and its colour, the m³ of water; drag it, Delete it.
+  - The 📐 floorplan draws the water, the edge, its name, size and depths.
 - 2.656.0: **✂ Cut / fill** in the Sketcher's ⛰ Terrain - a level pad cut into / filled onto the ground.
   - ⛰ Terrain ▸ **✂ Cut / fill**: click the pad's corners on the ground, back on the first (or double-click / Enter).
     Inside, the ground is flat at the pad's **level** - the ground's mean inside it (balanced cut and fill), or untick

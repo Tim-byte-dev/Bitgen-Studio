@@ -321,8 +321,9 @@
 
   /* ---------------- the mesh */
   /** the ground's triangles (+ its edges down to a metre under its lowest point, when T.sides) - pos / nrm / uv (metres) / idx */
-  function mesh(T) {
+  function mesh(T, holes) {
     const W = T.nx + 1, H = T.ny + 1, pos = [], nrm = [], uv = [], idx = [];
+    const HO = (holes || []).filter((P) => P && P.length >= 3), inHole = (x, y) => HO.some((P) => inPoly([x, y], P));   // 2.657.0: the ground cut away under a pool
     for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
       const x = xOf(T, i), y = yOf(T, j), z = T.h[j * W + i];
       const hx = T.h[j * W + Math.min(W - 1, i + 1)] - T.h[j * W + Math.max(0, i - 1)], hy = T.h[Math.min(H - 1, j + 1) * W + i] - T.h[Math.max(0, j - 1) * W + i];
@@ -330,7 +331,12 @@
       const n = [-hx / dx, -hy / dy, 1], l = Math.hypot(n[0], n[1], n[2]);
       pos.push(x, y, z); nrm.push(n[0] / l, n[1] / l, n[2] / l); uv.push(x, y);
     }
-    for (let j = 0; j < H - 1; j++) for (let i = 0; i < W - 1; i++) { const a = j * W + i, b = a + 1, c = a + W + 1, d = a + W; idx.push(a, b, c, a, c, d); }
+    for (let j = 0; j < H - 1; j++) for (let i = 0; i < W - 1; i++) {
+      const a = j * W + i, b = a + 1, c = a + W + 1, d = a + W, x = xOf(T, i), y = yOf(T, j), h2 = T.cell;
+      if (!HO.length) { idx.push(a, b, c, a, c, d); continue; }
+      if (!inHole(x + h2 * 0.67, y + h2 * 0.33)) idx.push(a, b, c);
+      if (!inHole(x + h2 * 0.33, y + h2 * 0.67)) idx.push(a, c, d);
+    }
     if (T.sides) {
       const zb = bounds(T).min[2] - 1;
       const side = (P, n) => {                                         // P: the edge's grid points in order (outside on the right)
@@ -404,7 +410,9 @@
     }
     function contourGeo(t) {
       const pos = [], col = [], cMinor = new T3.Color("#3b2f22"), cMajor = new T3.Color("#1d160f");
+      const HO = root.PPSite && V.M && V.M.arch ? root.PPSite.holes(V.M.arch) : [];
       lines(t).forEach((Lv) => Lv.segs.forEach((s) => {
+        if (HO.length && HO.some((P) => inPoly([(s[0] + s[2]) / 2, (s[1] + s[3]) / 2], P))) return;   // 2.657.0: not across a pool
         const c = Lv.major ? cMajor : cMinor;
         pos.push(s[0], s[1], Lv.z + 0.012, s[2], s[3], Lv.z + 0.012); col.push(c.r, c.g, c.b, c.r, c.g, c.b);
       }));
@@ -420,10 +428,11 @@
       [TV.mesh, TV.lines, TV.drawn].forEach(disposeOf); TV.mesh = TV.lines = TV.drawn = null;
       const t = T(); TV.key = "";
       if (!t) { V.draw && V.draw(); return; }
-      const m = mesh(t), g = new T3.BufferGeometry();
+      const holes = root.PPSite && V.M && V.M.arch ? root.PPSite.holes(V.M.arch) : [];
+      const m = mesh(t, holes), g = new T3.BufferGeometry();
       g.setAttribute("position", new T3.Float32BufferAttribute(m.pos, 3)); g.setAttribute("normal", new T3.Float32BufferAttribute(m.nrm, 3)); g.setAttribute("uv", new T3.Float32BufferAttribute(m.uv, 2)); g.setIndex(m.idx);
       TV.mesh = new T3.Mesh(g, mat(t.col)); TV.mesh.receiveShadow = true; TV.mesh.castShadow = true; TV.mesh.userData.tag = { ak: "terrain" }; TV.mesh.raycast = () => {}; G.add(TV.mesh);
-      TV.key = t.nx + "x" + t.ny + "|" + t.sides;
+      TV.key = t.nx + "x" + t.ny + "|" + t.sides + "|" + JSON.stringify(holes);
       TV.lines = new T3.LineSegments(t.show ? contourGeo(t) : new T3.BufferGeometry(), new T3.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false })); TV.lines.raycast = () => {}; TV.lines.renderOrder = 2; G.add(TV.lines);
       TV.drawn = new T3.LineSegments(drawnGeo(t), new T3.LineBasicMaterial({ color: 0xe07a1f, depthTest: false, transparent: true })); TV.drawn.raycast = () => {}; TV.drawn.renderOrder = 12; G.add(TV.drawn);
       V.draw && V.draw();
@@ -431,7 +440,7 @@
     /** after a dab: the same grid - its heights / normals / contours redrawn in place (no new mesh) */
     let pend = 0;
     function update() {
-      const t = T(); if (!t || !TV.mesh || TV.key !== t.nx + "x" + t.ny + "|" + t.sides) { rebuild(); return; }
+      const t = T(); if (!t || !TV.mesh || TV.key !== t.nx + "x" + t.ny + "|" + t.sides + "|" + JSON.stringify(root.PPSite && V.M && V.M.arch ? root.PPSite.holes(V.M.arch) : [])) { rebuild(); return; }
       const m = mesh(t), g = TV.mesh.geometry;
       g.attributes.position.array.set(m.pos); g.attributes.position.needsUpdate = true; g.attributes.normal.array.set(m.nrm); g.attributes.normal.needsUpdate = true;
       g.computeBoundingSphere(); g.computeBoundingBox();
@@ -463,7 +472,7 @@
       const ex = AV.exportMeshes;                                        // the .glb takes the ground too
       if (ex) AV.exportMeshes = function () {
         const out = ex.apply(this, arguments), t = T(); if (!t || !TV.mesh) return out;
-        const m = mesh(t), F = root.PPFurn, pos = [], nrm = [], idx = [];
+        const m = mesh(t, root.PPSite && V.M && V.M.arch ? root.PPSite.holes(V.M.arch) : []), F = root.PPFurn, pos = [], nrm = [], idx = [];
         for (let q = 0; q < m.idx.length; q += 3) [m.idx[q], m.idx[q + 1], m.idx[q + 2]].forEach((v) => { pos.push(m.pos[v * 3], m.pos[v * 3 + 1], m.pos[v * 3 + 2]); nrm.push(m.nrm[v * 3], m.nrm[v * 3 + 1], m.nrm[v * 3 + 2]); idx.push(idx.length); });
         out.push({ color: F ? F.hex(t.col) : t.col, alpha: 1, pos, nrm, idx, name: "Ground" }); return out;
       };

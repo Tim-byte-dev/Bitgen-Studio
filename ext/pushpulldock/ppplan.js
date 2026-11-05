@@ -167,6 +167,18 @@
       L(arc(c, r, 0, 2 * Math.PI, 20), COL.light, "sym");
       L([[c[0] - q, c[1] - q], [c[0] + q, c[1] + q]], COL.light, "sym"); L([[c[0] - q, c[1] + q], [c[0] + q, c[1] - q]], COL.light, "sym");
     });
+    // 2.657.0: 🏊 the pools - the water, the edge tiles / decking round it, its name and size
+    const lv0 = levels(A);
+    if (root.PPSite && (!lv0.length || sameZ(z, lv0[0]))) (A.pools || []).forEach((q) => {      // on the lowest storey
+      if (hid("pool:" + q.id)) return;
+      const O = root.PPSite.outer(q);
+      if (O !== q.pts && root.PPSite.outerW(q) > 0) out.fills.push({ rings: [ring(O), ring(q.pts.slice().reverse())], col: tint(q.edge === "tiles" ? q.edgeCol : q.deckCol, o.hex, COL.floorBase || null, COL.floorBase ? 0.6 : null), k: "floor", tag: { ak: "pool", id: q.id } });
+      out.fills.push({ rings: [ring(q.pts)], col: COL.glass, k: "floor", tag: { ak: "pool", id: q.id } });
+      L(q.pts.concat([q.pts[0]]), COL.wall, "wall"); if (root.PPSite.outerW(q) > 0) L(O.concat([O[0]]), COL.dim, "sym");
+      let cx = 0, cy = 0; q.pts.forEach((p) => { cx += p[0]; cy += p[1]; }); cx /= q.pts.length; cy /= q.pts.length;
+      const S = root.PPSite.size(q);
+      out.texts.push({ p: [cx, cy + 0.15], t: q.name, h: 0.24, col: COL.fill, bold: true }, { p: [cx, cy - 0.2], t: fmtM(S.l) + " × " + fmtM(S.w) + " m · " + fmtM(q.shallow) + "-" + fmtM(q.deep) + " m deep", h: 0.17, col: COL.fill });
+    });
     // 2.653.0: ⛰ the ground's contour lines (the majors labelled) + the drawn ones - on the lowest storey, under everything
     const zs = levels(A);
     if (A.terrain && root.PPTerrain && (!zs.length || sameZ(z, zs[0]))) {
@@ -185,6 +197,8 @@
     const lt = (A.lights || []).filter((Lt) => !hid("light:" + Lt.id) && (Lt.room != null ? ids.has(Lt.room) : Lt.z >= z - 0.05 && Lt.z <= z + 4))
       .map((Lt) => ({ Lt, d: Math.hypot(Lt.x - p[0], Lt.y - p[1]) })).filter((x) => x.d < 0.22).sort((a, b) => a.d - b.d)[0];
     if (lt) return { ak: "light", id: lt.Lt.id };
+    const pool = (A.pools || []).find((q) => !hid("pool:" + q.id) && Q.inPoly(p, root.PPSite ? root.PPSite.outer(q) : q.pts));   // 2.657.0
+    if (pool) return { ak: "pool", id: pool.id };
     for (const op of A.ops || []) {
       if (!ids.has(op.room) || hid("op:" + op.id)) continue;
       const I = Q.opInfo(A, op); if (!I) continue;

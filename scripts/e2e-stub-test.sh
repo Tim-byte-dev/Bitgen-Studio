@@ -12989,6 +12989,13 @@ node scripts/test-pad656.js > /tmp/pad656.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui656-ui.js > /tmp/ui656ui.log 2>&1 \
   && ok "2.656.0 browser test: ✂ Cut / fill - a pad drawn on a slope (one ↶ step), flat at the mean, cut + filled, re-levelled, the floorplan, picked, Delete forgets the outline - or SKIP without playwright" \
   || { bad "2.656.0 cut / fill browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui656ui.log | head -14; }
+# ---- 2.657.0 (Tim: "... and a swimming pool creator(with edge tiles or decking)")
+node scripts/test-pool657.js > /tmp/pool657.log 2>&1 \
+  && ok "2.657.0 the Sketcher's pools: offset, depth slope, volume, size / resize, the shell / water / tiles / decking built, kept by clean, the ground cut away, the floorplan, the wiring" \
+  || { bad "2.657.0 pool units"; grep -a "^FAIL" -A2 /tmp/pool657.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui657-ui.js > /tmp/ui657ui.log 2>&1 \
+  && ok "2.657.0 browser test: 🏊 Pool - two corners on the ground (one ↶ step), the ground levelled round it and cut away, its Select panel (deep end, decking), the floorplan, Delete - or SKIP without playwright" \
+  || { bad "2.657.0 pool browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui657ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

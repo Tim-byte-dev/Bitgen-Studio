@@ -60,6 +60,7 @@
     // 2.653.0: ⛰ the ground (ppterraintools.js) - its own panel when its tool is on
     const TT = root.PPTerrainTools && ctx.terrainView ? root.PPTerrainTools.create(ctx) : null;
     if (TT) ctx.otherPanel = () => (TT.active() ? (TT.props(), true) : false);
+    ctx.arch = () => AT;                                                  // 2.657.0: the Pool tool picks the pool it made
     const ALL = (AT ? TOOLS.concat(AT.TOOLS) : TOOLS).concat(TT ? TT.TOOLS : []);
     let tool = "select", st = {}, lock = null, lastPP = null, lastSnap = null, sides = { circle: 24, polygon: 6 };
     const M = () => ctx.model();

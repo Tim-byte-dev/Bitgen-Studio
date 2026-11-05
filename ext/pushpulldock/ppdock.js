@@ -300,7 +300,7 @@
     const one = ([id, icon, label, key], hint) => {
       const b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "ppT_" + id; b.textContent = icon;
       if (id === "select" && root.H3PointerIcon) root.H3PointerIcon.apply(b, { size: 17 });   // 2.648.0 (Tim: "change the selection icon to a pointer")
-      b.title = label + " (" + (key === " " ? "Space" : key.length > 1 ? key : key.toUpperCase()) + ") - " + hint; b.setAttribute("aria-label", label);
+      b.title = label + (key ? " (" + (key === " " ? "Space" : key.length > 1 ? key : key.toUpperCase()) + ")" : "") + " - " + hint;   // 2.657.0: a tool without a key b.setAttribute("aria-label", label);
       b.onclick = () => { S.T.use(id); S.V.canvas.focus({ preventScroll: true }); };
       box.appendChild(b);
     };

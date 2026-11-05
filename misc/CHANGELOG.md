@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.657.0** — 🏊 Pools in the Sketcher (Edge Tiles or Decking, Shallow / Deep End, the Ground Cut and Levelled Round It)
 - **2.656.0** — ✂ Cut / Fill Pads in the Sketcher's Terrain (Level, Batters, Cut and Fill Volumes)
 - **2.655.0** — 🩹 Ctrl+Click Starts the Restore, Shift+Click Starts the Colourising Restore
 - **2.654.0** — 🩹 Restore / Fix a Photo: A Button in the Prompt Docker's Left Column (✏ Edit + the Restore Instruction)
