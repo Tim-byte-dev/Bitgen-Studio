@@ -230,6 +230,10 @@ function mount(app) {
     // 2.676.0: Basic Settings' Override style (the preview's 🎨 Style sends it as ovr) - lib/imgOverride.js
     const ovr = require("../lib/imgOverride").parse(b.ovr), ov = ovr && !plan.selfContained ? require("../lib/imgOverride").apply(style, ovr) : null;
     if (ov) styled = ov.styled;
+    // 2.685.0: what Override did, for the caller - applied (in words), a checkpoint that did not fit, or not used at all
+    const IO = require("../lib/imgOverride");
+    const ovInfo = ovr ? (plan.selfContained ? { applied: "", note: "this style's graph runs as exported - Basic Settings' Override is not applied" }
+      : { applied: IO.summary(ov, require("../lib/tempLoras").normalize(ovr.extra_loras).length), note: (ov && ov.note) || "" }) : null;
     if (plan.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
     const imgs = editMask ? [names.crop, names.mask].concat(names.refs)
       : names.refs.length ? [names.crop].concat(names.refs) : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
@@ -267,7 +271,7 @@ function mount(app) {
     res.json({ jobs, workflow: plan.workflow, note: plan.note, input: plan.input, mode: plan.mode, soft: !!(editMask || (plan.graph && plan.mode !== "edit")),
                edit_fill: plan.editFill || null, style_name: style.name, helpers: plan.helpers || [],
                denoise: plan.denoise, crop: names.crop, controls: controls.map((c) => ({ type: c.type, model: c.model, strength: c.strength, start: c.start, end: c.end })),
-               ignored_controls: plan.mode === "edit" && !!b.controls });
+               ignored_controls: plan.mode === "edit" && !!b.controls, override: ovInfo });
   });
 }
 

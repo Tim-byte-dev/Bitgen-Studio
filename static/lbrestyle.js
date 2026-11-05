@@ -22,6 +22,8 @@
  *               style button next to it each time"): the looks are a DROPDOWN (#lb_rslook - the one picked is kept,
  *               localStorage h3.restyle.look) + 🎨 Change style (#lb_restyle) beside it renders the picked look each press;
  *   2.684.0      the dropdown as wide as its words (it filled the bar) - the bar's buttons' height, font and corners;
+ *   2.685.0      Override style reaches a whole-picture refine with a checkpoint style (lib/infill.js whole - image to image
+ *                with the style's own graph); the bar says what Override applied, or why not (j.override)
  *               the old menu is gone (its "With <style>" is the button's tooltip)
  * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js): LOOKS, promptFor(look, how, orig),
  * fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look). */
@@ -195,7 +197,11 @@
       if (!r.ok) throw new Error(j.error || "refused");
       const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
       if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }
-      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : ", refine " + L.strength + " %") + ")…");
+      // 2.685.0: what Basic Settings' Override put on it (or why not) - said, not only in the job log
+      const oi = j.override, ovw = oi ? (oi.applied ? " · Override: " + oi.applied : oi.note ? "" : " · Override: the style's own values") + (oi.note ? " · " + oi.note : "") : "";
+      S.override = oi || null;
+      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : ", refine " + L.strength + " %") + ")" + ovw + "…");
+      if (ovw) { const m = $("lb_rsmsg"); if (m) m.title = ovw.replace(/^ · /, ""); }
       bar({ status: "queued" }, L.label);
       try { if (root.H3TestEvent) root.H3TestEvent("restyle_queued", id); } catch (e) { /* fine */ }
       let jj = null;
@@ -203,7 +209,7 @@
         await new Promise((ok) => setTimeout(ok, 1200));
         try { jj = await (await fetch("/api/jobs/" + encodeURIComponent(id))).json(); } catch (e) { continue; }
         bar(jj, L.label);                                                   // 2.677.0: the bar under the picture
-        if (jj.status === "running") say("");                             // the bar under the picture says it (2.677.0)
+        if (jj.status === "running") say(ovw ? "🎨" + ovw.replace(/^ · /, " ") : "");   // the bar under the picture says the rest (2.677.0); 2.685.0: Override's words stay
         if (jj.status && jj.status !== "running" && jj.status !== "queued") break;
       }
       if (!jj || jj.status !== "done") { bar(jj || { status: "failed" }, L.label); throw new Error("the render " + ((jj && jj.status) || "did not finish") + " - see the job log"); }

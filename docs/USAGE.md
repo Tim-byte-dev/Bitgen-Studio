@@ -6303,6 +6303,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.685.0: **🎨 Change style uses Override style**: with an SDXL, Pony or Illustrious style in the prompt, Change style
+  now remakes the whole picture with that style's own workflow (picture to picture). So the style's own checkpoint and
+  LoRAs are used, and with Basic Settings ▸ Override style on, its steps, CFG, checkpoint and temporary LoRAs too.
+  Before, these styles ran a fixed SDXL inpaint workflow that ignored all of it. While it renders, the bar beside the
+  button says what Override put on the picture (for example "Override: steps 30, CFG 6, checkpoint …"), or why a value
+  was left out (an SDXL checkpoint can't run inside an edit model such as FLUX.2 Klein).
 - 2.684.0: **A tidy look dropdown**: in the image preview the look dropdown beside 🎨 Change style is now only as wide
   as its words and the same height as the buttons, so the preview's bar stays on one line.
 - 2.683.0: **⇄ works again**: picking another image or video style now always makes the one before it the previous
