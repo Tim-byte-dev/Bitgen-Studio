@@ -264,7 +264,7 @@ check("...with a probe, not a signal, on an unref'd timer",
   fs.rmSync(b, { recursive: true, force: true });
 
   check("comfyCfg: an EXPLICIT Settings folder always beats discovery",
-    /dir: c\.dir \|\| discoveredDir\(\),/.test(SRC), null);
+    /dir: c\.dir \|\| discoveredDir\(\)/.test(SRC), null);   // 2.674.0: then detectedDir()
 
   const BAT = fs.readFileSync(path.join(__dirname, "..", "start.bat"), "utf8");
   check("2.222.0 start.bat: an installed comfy\\ is noted; a missing one defers to the wizard, no prompt",

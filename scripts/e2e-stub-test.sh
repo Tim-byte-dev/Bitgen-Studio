@@ -13084,6 +13084,10 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.674.0 (Tim: "when installing i set the comfyui folder to "" instead of comfy/ ... the new location comfyui/")
+node scripts/test-comfydir674.js > /tmp/comfydir674.log 2>&1 \
+  && ok "2.674.0 one ComfyUI folder: ComfyUI\\ / comfy\\ / the portable build beside the app (the newest), then comfyDetect; the add-ons, the model catalog, the lists all take comfyCfg's" \
+  || { bad "2.674.0 ComfyUI folder units"; grep -a "^FAIL" -A2 /tmp/comfydir674.log | head -14; }
 # ---- 2.673.0 (Tim: "in sketcher add a road tool like Sim City's road tool ... offer a tunnel or cut the terrain ... autoplace traffic lights and signs etc")
 node scripts/test-roads673.js > /tmp/roads673.log 2>&1 \
   && ok "2.673.0 roads: six types, on the ground / too steep, cut + fill to an even grade, tunnel + portals / bridge + piers, junctions (lights, stop, give way, one-way), markings left / right, pparch keeps them, snapping" \

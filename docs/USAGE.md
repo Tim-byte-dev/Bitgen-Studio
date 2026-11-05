@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.674.0: **One ComfyUI folder for everything**: with Settings ▸ ComfyUI ▸ Folder empty, bitGen Studio now looks for
+  ComfyUI in comfy\, ComfyUI\ and ComfyUI_windows_portable\ beside the app (more than one: the most recently updated),
+  then wherever the model lists find it - and the launcher, every add-on download (MOSS-Image, FIBO, AI Fill …), the model
+  catalog and the ComfyUI clear all use that same folder. Before, an empty folder made downloads go to comfy\ComfyUI\models
+  while a ComfyUI in ComfyUI\ was the one in use. Setting the folder (or 🔎 *Use this folder*) still decides it.
 - 2.673.0: **🛤 Road tool** in the Sketcher (Ground ▸ 🛤 Road): pick a type - **Dirt road**, **Street**, **Road**,
   **One-way road**, **Avenue** (4 lanes, a planted median) or **Highway** (6 lanes, a barrier, guard rails) - and click
   along the way; double-click or Enter ends the road. It follows the ground (levelled across). Clicking near a road's end
