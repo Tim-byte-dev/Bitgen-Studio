@@ -13073,6 +13073,10 @@ node scripts/test-eaves668.js > /tmp/eaves668.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui668-ui.js > /tmp/ui668ui.log 2>&1 \
   && ok "2.668.0 browser test: the eave pictures, a new roof boxed + fascia + quad gutters + downpipes, open / closed, half-round gutters, fascia off + undo - or SKIP without playwright" \
   || { bad "2.668.0 eaves browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui668ui.log | head -14; }
+# ---- 2.669.0 (Tim: "when in settings-comfyui update run the misc\clear-comfy script ... when bitgen exits run that script, clear all bitgen process and close the terminal window")
+node scripts/test-exit669.js > /tmp/exit669.log 2>&1 \
+  && ok "2.669.0 clear-comfy before an update + on exit: the .bat run hidden (/nostart /nopause), Linux's own clear (a real ComfyUI process ended), the exit sweep's targets (a real worker ended), the setting, the wiring (shutdown route, exit hooks, Electron waits, start.bat exit)" \
+  || { bad "2.669.0 exit / clear-comfy units"; grep -a "^FAIL" -A2 /tmp/exit669.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

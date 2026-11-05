@@ -144,7 +144,9 @@ node misc\server.js
 :done
 
 popd
-exit /b 0
+:: 2.669.0 (Tim: "when bitgen exits ... close the terminal window"): the app has gone (it cleared ComfyUI and ended its own
+:: processes on the way out - lib\exitSweep.js), so this window closes too: exit, not exit /b
+exit 0
 
 :long
 :: 2.634.0: a long, quiet step - say so, so nobody thinks setup stalled

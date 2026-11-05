@@ -222,15 +222,27 @@ app.on("before-quit", (e) => {
   if (quitting) return;                      // second pass: really quit
   quitting = true;
   e.preventDefault();
+  let finished = false;
   const done = () => {
+    if (finished) return; finished = true;
     if (server) { try { server.kill(); } catch {} }   // no-op if already gone
     app.quit();
+  };
+  /* 2.669.0 (Tim: "when bitgen exits run that script, clear all bitgen process and close the terminal window"): the
+     server now also runs misc\clear-comfy.bat and ends bitGen Studio's own processes (lib/exitSweep.js) - that takes
+     several seconds, so wait for OUR server to exit (at most 60 s) instead of 1.5 s; a server we did not start (a
+     browser-mode start.bat window) gets the old 1.5 s. start.bat then reaches its last line, `exit`, and the window goes. */
+  const settle = () => {
+    if (server && server.exitCode == null && !server.killed) {
+      server.once("exit", done);
+      setTimeout(done, 60000);
+    } else setTimeout(done, 1500);
   };
   try {
     const req = require("http").request(
       { host: "127.0.0.1", port: PORT, path: "/api/shutdown", method: "POST",
         timeout: 4000 },
-      () => setTimeout(done, 1500));         // let the sweep run
+      settle);                               // let the sweep run
     req.on("error", done);
     req.on("timeout", () => { try { req.destroy(); } catch {} done(); });
     req.end();

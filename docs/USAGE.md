@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.669.0: **ComfyUI cleared completely - before an update and when bitGen Studio exits.**
+  - **⤓ Update ComfyUI** (Settings ▸ ComfyUI) first runs `misc\clear-comfy.bat`: every ComfyUI process is stopped (one
+    you started yourself too - its Python holds the packages the update replaces), port 8188 is freed, and ComfyUI's
+    `temp\`, `__pycache__` folders and ComfyUI-Manager's cache are emptied - never your models, output, input, workflows
+    or settings. Its lines show in the update's log. A ComfyUI that bitGen Studio started is started again afterwards.
+  - **When bitGen Studio exits** (the app window closed, its console window closed / Ctrl+C, or the app crashing):
+    `misc\clear-comfy.bat` runs, every bitGen Studio process still running from its folder (render / music / LLM
+    workers, llama-server, ffmpeg …) is ended, and the terminal window `start.bat` opened closes by itself.
+  - Settings ▸ ComfyUI ▸ **Clear ComfyUI completely when bitGen Studio exits** (on by default) - it outranks *Leave
+    ComfyUI running*; turn it off to keep ComfyUI running between sessions as before.
+  - `misc\clear-comfy.bat` gained `/nopause` (no "press any key" at the end) for this; run by hand it works as before.
 - 2.668.0: **Eaves, fascias and gutters** in the Sketcher: the Roof panel (the tool's and a picked roof's) shows the eave as
   four pictures - **Simple** (just the overhang), **Open** (the rafter tails show under the overhang, 600 mm apart),
   **Boxed** (a flat soffit from the fascia back to the wall) and **Closed** (a lining under the rafters, on the roof's

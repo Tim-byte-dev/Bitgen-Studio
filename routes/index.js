@@ -3399,7 +3399,9 @@ const trap = require("../lib/trap");
   app.post("/api/shutdown", (_req, res) => {
     res.json({ ok: true, stopping: true });
     setTimeout(() => {
-      try { comfy.shutdownAll("app quit"); } catch { /* dying anyway */ }
+      // 2.669.0 (Tim: "when bitgen exits run that script, clear all bitgen process and close the terminal window"):
+      // ComfyUI cleared (misc\clear-comfy.bat) and every bitGen Studio process ended - lib/exitSweep.js
+      try { require("../lib/exitSweep").run("app quit"); } catch { try { comfy.shutdownAll("app quit"); } catch { /* dying anyway */ } }
       process.exit(0);
     }, 60);
   });

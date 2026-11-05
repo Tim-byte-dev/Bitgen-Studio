@@ -33,16 +33,21 @@ REM    /start     start ComfyUI afterwards without asking
 REM    /nostart   clear only, never ask
 REM    /quiet     when starting, also set TQDM_DISABLE=1 (the 2.81.2
 REM               workaround). LEAVE IT OFF for the decisive test below.
+REM    /nopause   no "press any key" at the end (2.669.0: bitGen Studio runs
+REM               it itself before a ComfyUI update and when it exits -
+REM               lib/clearComfy.js)
 REM ===================================================================
 
 set "COMFY="
 set "WANTSTART=ask"
 set "QUIET=0"
+set "NOPAUSE=0"
 
 for %%A in (%*) do (
   if /i "%%~A"=="/start"   ( set "WANTSTART=yes"
   ) else if /i "%%~A"=="/nostart" ( set "WANTSTART=no"
   ) else if /i "%%~A"=="/quiet"   ( set "QUIET=1"
+  ) else if /i "%%~A"=="/nopause" ( set "NOPAUSE=1"
   ) else ( set "COMFY=%%~A" )
 )
 
@@ -183,5 +188,5 @@ echo.
 echo ============================================================
 if /i not "!WANTSTART!"=="no" echo Leave that window OPEN while you render.
 echo.
-pause
+if "!NOPAUSE!"=="0" pause
 endlocal

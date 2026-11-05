@@ -67,18 +67,25 @@ const sum = (a) => Math.round(a.reduce((s, x) => s + x, 0) * 1000) / 1000;
     const ev = [];
     const comfy = { status: async () => ({ reachable: true, managed: true }), stop: () => { ev.push("stop"); return { stopped: true }; }, start: async () => { ev.push("start"); return {}; } };
     CU._reset();
-    CU.start({ where: W, run, comfy, settle: 0, channel: "stable" });
+    const cl = []; const clear = { run: async (o) => { cl.push(o.dir); o.log("[1/4] stopping ComfyUI processes..."); return { ok: true, code: 0, lines: [] }; } };   // 2.669.0
+    CU.start({ where: W, run, comfy, settle: 0, channel: "stable", clear });
     await wait(() => CU.job().state !== "running");
     const J = CU.job();
     check("portable update: ComfyUI's own update.py <ComfyUI> --stable, again with --skip_self_update after it updated itself (update_new.py -> update.py)",
       J.state === "done" && calls.length === 2 && calls[0][1].includes("--stable") && calls[1][1].includes("--skip_self_update")
       && !fs.existsSync(path.join(P, "update", "update_new.py")) && fs.readFileSync(path.join(P, "update", "update.py"), "utf8") === "# new\n", { J, calls });
+    check("2.669.0: misc\\clear-comfy.bat runs first (ComfyUI cleared completely - its folder passed, its lines in the job)", cl.length === 1 && cl[0] === W.main && J.lines.some((l) => /clearing ComfyUI completely/.test(l)) && J.lines.some((l) => /stopping ComfyUI processes/.test(l)), { cl, lines: J.lines.slice(0, 6) });
     check("...the ComfyUI bitGen Studio started is stopped first and started again; the job says 0.42.0 -> 0.44.0",
       ev.join(",") === "stop,start" && J.from === "0.42.0" && J.to === "0.44.0" && J.restarted, { ev, J: { from: J.from, to: J.to } });
     CU._reset();
-    CU.start({ where: W, run, comfy: { status: async () => ({ reachable: true, managed: false }), stop: () => {}, start: async () => {} }, settle: 0 });
+    let up = true; const ext = { status: async () => ({ reachable: up, managed: false }), stop: () => {}, start: async () => { ev.push("start2"); } };
+    CU.start({ where: W, run, comfy: ext, settle: 0, clear: { run: async () => { up = false; return { ok: true, code: 0 }; } } });
     await wait(() => CU.job().state !== "running");
-    check("a ComfyUI running outside bitGen Studio: refused - close it first (pip cannot replace the packages it holds)", CU.job().state === "error" && /did not start it - close its window first/.test(CU.job().error), CU.job());
+    check("2.669.0: a ComfyUI running outside bitGen Studio: the clear stops it, the update runs (not started again - it was not ours)", CU.job().state === "done" && CU.job().lines.some((l) => /started outside bitGen Studio is stopped/.test(l)) && !ev.includes("start2"), CU.job());
+    CU._reset(); up = true;
+    CU.start({ where: W, run, comfy: ext, settle: 0, clear: { run: async () => ({ ok: false, code: 1, error: "access denied" }) } });
+    await wait(() => CU.job().state !== "running");
+    check("...the clear could not stop it: refused - close it first (pip cannot replace the packages it holds)", CU.job().state === "error" && /could not stop it - close its window first/.test(CU.job().error), CU.job());
     CU._reset();
     // a git clone
     const G = path.join(T, "ComfyUI");
@@ -94,7 +101,7 @@ const sum = (a) => Math.round(a.reduce((s, x) => s + x, 0) * 1000) / 1000;
       if (/pip install -r/.test(a.join(" "))) fs.writeFileSync(path.join(G, "comfyui_version.py"), '__version__ = "0.44.0"\n');
       return 0;
     };
-    CU.start({ where: WG, run: grun, git: "git", comfy: { status: async () => ({ reachable: false, managed: false }) }, settle: 0, channel: "latest" });
+    CU.start({ where: WG, run: grun, git: "git", comfy: { status: async () => ({ reachable: false, managed: false }) }, settle: 0, channel: "latest", clear: { run: async () => ({ ok: true, code: 0 }) } });
     await wait(() => CU.job().state !== "running");
     check("git clone, Newest: fetch --tags, fast-forward master (merge --ff-only origin/master), then pip install -r requirements.txt with ComfyUI's venv",
       CU.job().state === "done" && gc.some((x) => /fetch --tags origin/.test(x)) && gc.some((x) => /merge --ff-only origin\/master/.test(x)) && gc.some((x) => /-s -m pip install -r .*requirements\.txt/.test(x))

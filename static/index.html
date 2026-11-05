@@ -2197,6 +2197,8 @@
       models, so it is left running when you close the studio (or its console window) and
       is still there next time. Turn this off to have the studio shut ComfyUI down on
       exit. The <b>Stop</b> button below always works regardless.</div>
+    <label class="chk" style="margin-top:6px" title="misc\clear-comfy.bat when bitGen Studio exits: every ComfyUI process stopped, port 8188 freed, ComfyUI's temp / __pycache__ / ComfyUI-Manager cache emptied (never models, output, input or settings); bitGen Studio's own processes ended and its terminal window closed. It also runs before ⤓ Update ComfyUI"><input type="checkbox" id="s_cclear" checked>
+      Clear ComfyUI completely when bitGen Studio exits (misc\clear-comfy.bat - it outranks the box above)</label>
     <label class="chk" style="margin-top:10px"><input type="checkbox" id="s_cfree" checked>
       Free VRAM before every generation (unload ComfyUI's models + empty its cache)</label>
     <div class="hint help" style="margin:2px 0 4px">ComfyUI keeps every model it has used on
@@ -4166,6 +4168,7 @@ function fillSettings() {
   $("s_curl").value = (eng.comfy || {}).url || "http://127.0.0.1:8188";
   $("s_cauto").checked = !!(eng.comfy || {}).autostart;
   if ($("s_crestart")) $("s_crestart").checked = (eng.comfy || {}).restart_on_start !== false;   // 2.603.0: default ON
+  if ($("s_cclear")) $("s_cclear").checked = (eng.comfy || {}).clear_on_exit !== false;        // 2.669.0: default ON
   $("s_lauto").checked = !!(cfg.llm || {}).autostart;
   $("s_cdir").value = (eng.comfy || {}).dir || "";
   $("s_claunch").value = (eng.comfy || {}).launch || "";
@@ -5445,6 +5448,7 @@ $("s_save").onclick = async () => {
                          dir: $("s_cdir").value.trim(),
                          launch: $("s_claunch").value.trim(),
                          keep_alive: $("s_ckeep").checked,
+                         clear_on_exit: $("s_cclear") ? $("s_cclear").checked : true,   // 2.669.0
                          free_before_gen: $("s_cfree").checked,
                          clip_device: $("s_ccpuclip").checked ? "cpu" : "default",
                          chunk_on_oom: $("s_cchunk").checked,
