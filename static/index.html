@@ -3451,6 +3451,7 @@
 <script src="/static/comfydetect.js"></script>  <!-- 2.622.0: Settings ▸ ComfyUI ▸ Folder - the ComfyUI found on this computer (lib/comfyDetect.js) -->
 <script src="/static/busy.js"></script>  <!-- 2.596.0: a button shows what it is doing while it does it (H3Busy) -->
 <script src="/static/llmtab.js"></script>  <!-- 2.596.0: Settings ▸ LLM - llama.cpp version, Install / ⟳ Update with progress, busy buttons (H3LlmTab) -->
+<script src="/static/pinmenu.js"></script>  <!-- 2.675.0: right-click a 📌 pin ▸ ↺ Reset pin / 📌 Pin at this size (H3PinMenu) -->
 <script src="/static/seedctl.js"></script>  <!-- 2.598.0: the seed's 🎲 Random / 📌 Fixed toggle - Basic Settings + the style editors (H3Seed) -->
 <script src="/static/socialfmt.js"></script>  <!-- 2.600.0: Basic Settings ▸ Format ▸ social media - Aspect follows, the line under it says what happens (H3SocialFmt) -->
 <!-- ext:scripts -->
@@ -13781,7 +13782,7 @@ function paintPins() {
     if (b) {
       const on = side ? e.max_width > 0 : e.max_height > 0;
       b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false");
-      b.title = DSR() ? DSR().pinTitle(e, side) : "📌";
+      b.title = (DSR() ? DSR().pinTitle(e, side) : "📌") + (on ? " · right-click: ↺ Reset pin" : "");   // 2.675.0
     }
   };
   for (const id of Object.keys(STATUS_VARS)) { const el = $(id); paint(id, el, el && el.querySelector(".bhead"), false); }
@@ -13805,6 +13806,16 @@ function togglePin(id) {
   saveLayout();
   reflowSoon();
 }
+/* 2.675.0: right-click a 📌 ▸ ↺ Reset pin (static/pinmenu.js) - the ONE way a pin is cleared besides clicking it */
+function resetPin(id) {
+  const side = !!SIDE_DOCKS[id], e = dsEntry(id), k = side ? "max_width" : "max_height";
+  if (!((e[k] || 0) > 0)) return false;
+  e[k] = 0;
+  paintPins();
+  saveLayout();
+  reflowSoon();
+  return true;
+}
 /* "when a docker is open resize other open dockers to their max height": the pinned ones go to their 📌 height,
    then the column is re-fitted taking the room from the UNPINNED docks first, never from the one just opened */
 function dsOpened(id) {
@@ -13818,11 +13829,14 @@ function dsOpened(id) {
   }
   reflowSoon(id);
 }
-function applyLayout(docks) {
+function applyLayout(docks, withPins) {
   if (!docks || typeof docks !== "object") return;
   layoutApplying = true;
   try {
-    for (const [id, e] of Object.entries(docks)) if (STATUS_VARS[id] || SIDE_DOCKS[id]) DS.docks[id] = { ...dsEntry(id), ...dsShape(id, e) };
+    // 2.675.0 (Tim: "the red pins are resetting everytime i switch layout, they should only reset if i right click and
+    // click reset in a context menu"): a layout (⊞ Docker configs, a workspace, ↺ Reset in Settings ▸ Dockers) never
+    // changes a 📌 pin - only the pin itself (click) or its right-click ▸ ↺ Reset pin (resetPin) do
+    for (const [id, e] of Object.entries(docks)) if (STATUS_VARS[id] || SIDE_DOCKS[id]) { const was = dsEntry(id); DS.docks[id] = withPins ? { ...was, ...dsShape(id, e) } : { ...was, ...dsShape(id, e), max_height: was.max_height || 0, max_width: was.max_width || 0 }; }   // withPins: the start-up restore of docker_status.json only
     // sizes first, so a dock that opens next opens at its remembered height
     for (const [id, v] of Object.entries(STATUS_VARS)) {
       const h = docks[id] && DS.docks[id].height;
@@ -13868,7 +13882,7 @@ async function dsBoot() {
   if (!rec || !rec.docks) {
     try { rec = await (await fetch("/api/docker-status")).json(); } catch { rec = null; }
   }
-  if (rec && rec.docks) applyLayout(rec.docks); else paintPins();
+  if (rec && rec.docks) applyLayout(rec.docks, true); else paintPins();   // 2.675.0: the saved record's own pins
   /* 2.223.0 "fix the preview docker size on start", re-aimed by 2.255.0: stored heights that (no longer) fit this
      window must not squeeze the elastic video dock to its floor - if the open fixed docks leave it less than a
      quarter of the column, the UNPINNED ones are scaled down proportionally, once */

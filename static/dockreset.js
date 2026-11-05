@@ -8,7 +8,7 @@
  *   the floating windows        Basic Settings, LLM tokens, Model manager, House builder … (SecFloat)
  * each with where it is (in its place / floating / in a ▣ docker / maximized / closed / hidden) and ↺ Reset:
  *   a docker      back in its home spot (out of a floating window or a ▣ docker), not maximized, shown and open, its
- *                 shipped height / width (GET /api/docker-status/defaults - lib/dockerStatus.js), no 📌 pin
+ *                 shipped height / width (GET /api/docker-status/defaults - lib/dockerStatus.js); 2.675.0: its 📌 pin KEPT (right-click the pin ▸ ↺ Reset pin)
  *   the prompt    floating at its first place (its default)
  *   a window      not maximized / minimized, floating at its first place at its first size (shown or not as it was)
  * ↺ Reset all does every row. A docker that is not installed (the 📐 SolidCraft docker without SolidCraft) is not

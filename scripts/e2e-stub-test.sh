@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.675.0 (Tim: "the red pins are resetting everytime i switch layout, they should only reset if i right click and click reset in a context menu")
+node scripts/test-pins675.js > /tmp/pins675.log 2>&1 \
+  && ok "2.675.0 pins: the menu's rows, a 🗂 Layout keeps the pins in use, applyLayout keeps them (start-up restore takes the saved ones), resetPin" \
+  || { bad "2.675.0 pin units"; grep -a "^FAIL" -A2 /tmp/pins675.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui675-ui.js > /tmp/ui675ui.log 2>&1 \
+  && ok "2.675.0 browser test: a pinned docker keeps its pin through a layout switch; right-click ▸ ↺ Reset pin / 📌 Pin at this size; saved - or SKIP without playwright" \
+  || { bad "2.675.0 pin browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui675ui.log | head -14; }
 # ---- 2.674.0 (Tim: "when installing i set the comfyui folder to "" instead of comfy/ ... the new location comfyui/")
 node scripts/test-comfydir674.js > /tmp/comfydir674.log 2>&1 \
   && ok "2.674.0 one ComfyUI folder: ComfyUI\\ / comfy\\ / the portable build beside the app (the newest), then comfyDetect; the add-ons, the model catalog, the lists all take comfyCfg's" \

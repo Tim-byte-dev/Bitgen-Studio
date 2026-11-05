@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.675.0: **📌 Pins stay put**: a docker's 📌 pin (its fixed height, or width for a side docker) is no longer cleared when
+  the layout changes - ⊞ Docker configs loading the sizes for the dockers you opened, switching 🗂 workspace, applying a
+  🗂 Layout, or ↺ Reset in Settings ▸ Dockers. Click the pin to pin / unpin as before; **right-click it** for a small menu:
+  *📌 Pinned at … px* and **↺ Reset pin** (any size again), or *📌 Pin at this size* when it is not pinned.
 - 2.674.0: **One ComfyUI folder for everything**: with Settings ▸ ComfyUI ▸ Folder empty, bitGen Studio now looks for
   ComfyUI in comfy\, ComfyUI\ and ComfyUI_windows_portable\ beside the app (more than one: the most recently updated),
   then wherever the model lists find it - and the launcher, every add-on download (MOSS-Image, FIBO, AI Fill …), the model
