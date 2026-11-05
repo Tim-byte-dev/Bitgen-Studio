@@ -14,6 +14,8 @@
  *   clean(o) -> terrain | null        make(A, o) a flat ground round the building (its lowest floor, a little under it)
  *   at(T, x, y) the height there (bilinear; clamped to the edge)       hit(T, o, d) where a ray meets it -> [x, y, z] | null
  *   brush(T, mode, x, y, r, s, target)  raise | lower | smooth | flatten - a soft round brush (r metres, s metres a dab)
+ *   2.656.0 pads: T.pads [{id, name, pts, z, batter (1 : n), mode both | cut | fill, cut, fill (m³)}] - addPad(T, pts, o)
+ *                 (level = o.z or the ground's mean inside), applyPad(T, q) (flat inside, batters out to the ground), padAt
  *   fit(T)        THE GROUND SHAPED TO THE CONTOURS: the drawn lines' heights held, the rest a smooth (harmonic) surface between
  *                 them (over-relaxed Gauss-Seidel; the edges free)
  *   level(T, A, margin)  the ground under every room levelled to just below its floor, blended out over `margin` metres
@@ -49,8 +51,19 @@
     }).filter(Boolean);
     contours.forEach((c) => { cn = Math.max(cn, c.id + 1); });
     contours.forEach((c) => { if (!c.id || seen.has(c.id)) c.id = cn++; seen.add(c.id); });
+    // 2.656.0: the cut / fill pads (their outline, level, batter and the volumes moved when last applied)
+    const pads = (Array.isArray(o.pads) ? o.pads : []).slice(0, 200).map((q) => {
+      if (!q || !Array.isArray(q.pts)) return null;
+      const pts = q.pts.slice(0, 500).filter((p) => Array.isArray(p) && Number.isFinite(+p[0]) && Number.isFinite(+p[1])).map((p) => [r3(+p[0]), r3(+p[1])]);
+      if (pts.length < 3) return null;
+      let id = Number.isInteger(+q.id) && +q.id > 0 ? +q.id : 0;
+      return { id, pts, z: r3(num(q.z, 0, -1000, 5000)), batter: num(q.batter, 2, 0.2, 20), mode: ["both", "cut", "fill"].includes(q.mode) ? q.mode : "both",
+        cut: r3(num(q.cut, 0, 0, 1e9)), fill: r3(num(q.fill, 0, 0, 1e9)), name: String(q.name || "Pad").slice(0, 60) };
+    }).filter(Boolean);
+    pads.forEach((q) => { cn = Math.max(cn, q.id + 1); });
+    pads.forEach((q) => { if (!q.id || seen.has(q.id)) q.id = cn++; seen.add(q.id); });
     return { x0: r3(num(o.x0, -20, -1e5, 1e5)), y0: r3(num(o.y0, -20, -1e5, 1e5)), cell, nx, ny, h, col: colOk(o.col, COL),
-      step: num(o.step, 0.5, 0.05, 100), major: Math.round(num(o.major, 5, 1, 20)), show: o.show !== false, sides: o.sides !== false, contours, cn };
+      step: num(o.step, 0.5, 0.05, 100), major: Math.round(num(o.major, 5, 1, 20)), show: o.show !== false, sides: o.sides !== false, contours, pads, cn };
   }
   /** a flat ground round what the model has (40 m at least, 10 m past it), its height just under the lowest floor */
   function make(A, o) {
@@ -220,6 +233,54 @@
     return clean(N);
   }
 
+  /* ---------------- 2.656.0: cut / fill pads (Tim: "can you add a cut/fill landscaping tool to sketcher") */
+  function inPoly(p, P) { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
+  function edgeDist(p, P) {
+    let d = Infinity;
+    for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], ab = [b[0] - a[0], b[1] - a[1]], L = ab[0] * ab[0] + ab[1] * ab[1];
+      const t = L ? Math.max(0, Math.min(1, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / L)) : 0; d = Math.min(d, Math.hypot(p[0] - a[0] - ab[0] * t, p[1] - a[1] - ab[1] * t)); }
+    return d;
+  }
+  /** the ground's mean height inside an outline (a level that roughly balances cut and fill) */
+  function meanIn(T, P) {
+    let s = 0, n = 0;
+    for (let j = 0; j <= T.ny; j++) for (let i = 0; i <= T.nx; i++) if (inPoly([xOf(T, i), yOf(T, j)], P)) { s += T.h[K(T, i, j)]; n++; }
+    if (!n) { P.forEach((p) => { s += at(T, p[0], p[1]); n++; }); }
+    return r3(s / n);
+  }
+  /** a pad cut / filled into the ground: inside flat at q.z; outside, batters at 1 : q.batter (metres across per metre up)
+      cut down to it (mode both / cut) and filled up to it (both / fill) -> {cut, fill} m³ (also kept on the pad) */
+  function applyPad(T, q) {
+    if (!T || !q || !q.pts || q.pts.length < 3) return { cut: 0, fill: 0 };
+    const r = Math.max(0.2, +q.batter || 2), A = T.cell * T.cell; let cut = 0, fill = 0;
+    for (let j = 0; j <= T.ny; j++) for (let i = 0; i <= T.nx; i++) {
+      const p = [xOf(T, i), yOf(T, j)], k = K(T, i, j), h0 = T.h[k];
+      const d = inPoly(p, q.pts) ? 0 : edgeDist(p, q.pts);
+      let h = h0;
+      if (q.mode !== "fill") h = Math.min(h, q.z + d / r);
+      if (q.mode !== "cut") h = Math.max(h, q.z - d / r);
+      h = r3(h);
+      if (h !== h0) { if (h < h0) cut += (h0 - h) * A; else fill += (h - h0) * A; T.h[k] = h; }
+    }
+    q.cut = r3(cut); q.fill = r3(fill);
+    return { cut: q.cut, fill: q.fill };
+  }
+  function addPad(T, pts, o) {
+    if (!T || !Array.isArray(pts) || pts.length < 3) return null;
+    o = o || {};
+    const P = pts.map((p) => [r3(p[0]), r3(p[1])]);
+    const q = { id: T.cn++, pts: P, z: r3(o.z != null && Number.isFinite(+o.z) ? +o.z : meanIn(T, P)), batter: num(o.batter, 2, 0.2, 20), mode: ["both", "cut", "fill"].includes(o.mode) ? o.mode : "both", cut: 0, fill: 0, name: "Pad " + ((T.pads || []).length + 1) };
+    if (!T.pads) T.pads = [];
+    T.pads.push(q); applyPad(T, q); return q;
+  }
+  /** the pad whose outline (or inside) is at a plan point -> the pad | null */
+  function padAt(T, p, tol) {
+    let best = null;
+    ((T && T.pads) || []).forEach((q) => { const d = inPoly(p, q.pts) ? 0 : edgeDist(p, q.pts); if (d <= tol && (!best || d < best.d)) best = { q, d }; });
+    return best ? best.q : null;
+  }
+  const fmtV = (v) => (v >= 100 ? Math.round(v) : +v.toFixed(1)) + " m³";
+
   /* ---------------- the contour lines (marching squares) */
   /** -> [{z, major, segs: [[x1, y1, x2, y2] ...]}] - one level every `step` (fewer when there would be more than 300) */
   function lines(T, step) {
@@ -315,6 +376,12 @@
       if (Lv.major) { let b = null; Lv.segs.forEach((s) => { const L = Math.hypot(s[2] - s[0], s[3] - s[1]); if (!b || L > b.L) b = { s, L }; }); if (b) out.texts.push({ p: [(b.s[0] + b.s[2]) / 2, (b.s[1] + b.s[3]) / 2], t: fmtZ(Lv.z), h: 0.3, col: c.major || "#7a6a52" }); }
     });
     (T.contours || []).forEach((C) => out.lines.push({ pts: C.closed ? C.pts.concat([C.pts[0]]) : C.pts, col: c.drawn || "#e07a1f", k: "contour" }));
+    (T.pads || []).forEach((q) => {                                     // 2.656.0: the pads - outline, level, cut / fill
+      out.lines.push({ pts: q.pts.concat([q.pts[0]]), col: c.pad || "#c0392b", k: "contour", dash: true });
+      let cx = 0, cy = 0; q.pts.forEach((p) => { cx += p[0]; cy += p[1]; }); cx /= q.pts.length; cy /= q.pts.length;
+      out.texts.push({ p: [cx, cy + 0.2], t: q.name + " " + fmtZ(q.z), h: 0.3, col: c.pad || "#c0392b", bold: true });
+      out.texts.push({ p: [cx, cy - 0.25], t: "cut " + fmtV(q.cut) + " · fill " + fmtV(q.fill), h: 0.24, col: c.pad || "#c0392b" });
+    });
     return out;
   }
   const fmtZ = (z) => (+z.toFixed(2)) + " m";
@@ -346,6 +413,7 @@
     function drawnGeo(t) {
       const pos = [];
       (t.contours || []).forEach((C) => { const P = C.closed ? C.pts.concat([C.pts[0]]) : C.pts; for (let s = 0; s + 1 < P.length; s++) pos.push(P[s][0], P[s][1], C.z + 0.02, P[s + 1][0], P[s + 1][1], C.z + 0.02); });
+      (t.pads || []).forEach((q) => { const P = q.pts.concat([q.pts[0]]); for (let s = 0; s + 1 < P.length; s++) pos.push(P[s][0], P[s][1], q.z + 0.03, P[s + 1][0], P[s + 1][1], q.z + 0.03); });   // 2.656.0: the pads' outlines
       const g = new T3.BufferGeometry(); g.setAttribute("position", new T3.Float32BufferAttribute(pos, 3)); return g;
     }
     function rebuild() {
@@ -405,7 +473,7 @@
     return TV;
   }
 
-  const api = { MAXN, COL, clean, make, at, hit, bounds, brush, held, fit, level, fromImage, resample, lines, mesh, contourAt, addContour, planLines, fmtZ, attach };
+  const api = { MAXN, COL, clean, make, at, hit, bounds, brush, held, fit, level, fromImage, resample, lines, mesh, contourAt, addContour, planLines, fmtZ, fmtV, inPoly, edgeDist, meanIn, applyPad, addPad, padAt, attach };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPTerrain = api;
 })(typeof window !== "undefined" ? window : globalThis);

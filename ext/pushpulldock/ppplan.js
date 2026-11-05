@@ -170,8 +170,8 @@
     // 2.653.0: ⛰ the ground's contour lines (the majors labelled) + the drawn ones - on the lowest storey, under everything
     const zs = levels(A);
     if (A.terrain && root.PPTerrain && (!zs.length || sameZ(z, zs[0]))) {
-      const G = root.PPTerrain.planLines(A.terrain, { minor: COL.dim, major: COL.text, drawn: COL.glass })   // the grid is COL.grid - the lines stand out of it;
-      G.lines.forEach((l) => out.lines.push({ pts: l.pts.map((p) => [r4(p[0]), r4(p[1])]), col: l.col, k: "contour", dash: false }));
+      const G = root.PPTerrain.planLines(A.terrain, { minor: COL.dim, major: COL.text, drawn: COL.glass, pad: COL.light })   // the grid is COL.grid - the lines stand out of it;
+      G.lines.forEach((l) => out.lines.push({ pts: l.pts.map((p) => [r4(p[0]), r4(p[1])]), col: l.col, k: "contour", dash: !!l.dash }));   // 2.656.0: a pad's outline dashed
       G.texts.forEach((t) => out.texts.push(t));
     }
     return out;

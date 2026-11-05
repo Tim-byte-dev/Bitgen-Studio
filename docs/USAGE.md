@@ -6303,6 +6303,15 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.656.0: **✂ Cut / fill** in the Sketcher's ⛰ Terrain - a level pad cut into / filled onto the ground.
+  - ⛰ Terrain ▸ **✂ Cut / fill**: click the pad's corners on the ground, back on the first (or double-click / Enter).
+    Inside, the ground is flat at the pad's **level** - the ground's mean inside it (balanced cut and fill), or untick
+    *Level = the ground's mean inside* and type one. Outside, **batters** slope back to the natural ground at **1 : n**
+    (metres across for each metre up / down). **Earthworks**: cut and fill, cut only or fill only.
+  - The status line and the panel give the **cut** and **fill** in m³ and the net to take away / bring in.
+  - Click a pad to pick it: change its level, batter or earthworks (cut and filled again), **⟳ Apply again** after
+    sculpting, **🗑 Forget** / Delete removes its outline (the ground keeps its shape). Type a level in the box.
+  - The 📐 floorplan shows each pad's dashed outline, name, level and cut / fill.
 - 2.655.0: **🩹 starts by itself** - **Ctrl+click** the 🩹 button: the restore is set up AND started (✏ Edit pressed for
   you a moment later); **Shift+click** (or Ctrl+Shift+click): the restore that also **colourises** a black-and-white
   photo, started the same way. A plain click still only sets it up. With no photo to take (the References docker empty

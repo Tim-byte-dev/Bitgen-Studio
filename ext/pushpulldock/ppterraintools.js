@@ -12,6 +12,9 @@
  *                            closed line · double-click / Enter ends an open one · the ground is shaped to the contours
  *                            (☑ Shape the ground after each line) and the next line's elevation goes up by Next +
  *                            a click on a drawn line picks it: its elevation / closed / 🗑 in the panel, Delete erases it
+ *        ✂ Cut / fill (2.656.0) click a pad's corners on the ground, back on the first / double-click / Enter: inside flat at
+ *                            its level (the ground's mean inside, or typed), batters out at 1 : n - cut down, filled up (or
+ *                            one only); the cut / fill m³; a click picks a pad (level / batter / earthworks re-applied)
  *      [ / ] the brush smaller / bigger;  Esc drops a line being drawn (and, like every tool, goes to 🔄 Orbit)
  *   The panel also: ⛰ Shape the ground to the contours, 🖼 Heightmap picture… (grey: black = Lowest, white = Highest),
  *   ⌂ Level under the rooms (blended out over a margin), the ground's size / cell / place (its shape kept), its material,
@@ -21,21 +24,22 @@
   "use strict";
   const PT = () => root.PPTerrain, P = () => root.PPArch;
   const TOOLS = [["terrain", "⛰", "Terrain", "Alt+G"]];          // every letter is a tool already (G = Group) - Alt+G (ppdock.js)
-  const MODES = [["raise", "⬆", "Raise"], ["lower", "⬇", "Lower"], ["smooth", "≈", "Smooth"], ["flatten", "▬", "Flatten"], ["contour", "〰", "Contour"]];
+  const MODES = [["raise", "⬆", "Raise"], ["lower", "⬇", "Lower"], ["smooth", "≈", "Smooth"], ["flatten", "▬", "Flatten"], ["contour", "〰", "Contour"], ["pad", "✂", "Cut / fill"]];   // 2.656.0: + cut / fill pads
   const HINTS = {
     raise: "⛰ Raise - press and drag on the ground (Shift: lower) · [ / ] the brush size · type a size in metres",
     lower: "⛰ Lower - press and drag on the ground (Shift: raise) · [ / ] the brush size · type a size in metres",
     smooth: "⛰ Smooth - drag over the ground to ease its bumps · [ / ] the brush size",
     flatten: "⛰ Flatten - drag toward the Flatten height (Alt+click the ground: take its height) · [ / ] the brush size",
     contour: "〰 Contour - click, click … a line at its elevation (type one) · back on its start = closed · double-click / Enter ends · click a line to pick it",
+    pad: "✂ Cut / fill - click the corners of a level pad on the ground · back on the first (or double-click / Enter) = cut and filled · click a pad to pick it · type its level",
   };
   const HINT = { terrain: "Shape the ground - raise, lower, smooth, flatten with a brush, or draw contour lines and the ground follows them" };
   const VCB = { terrain: "Size / Elevation" };
-  const OPT0 = { mode: "raise", r: 3, s: 0.15, target: 0, cz: 0, cstep: 0.5, auto: true, margin: 2, lo: 0, hi: 10 };
+  const OPT0 = { mode: "raise", r: 3, s: 0.15, target: 0, cz: 0, cstep: 0.5, auto: true, margin: 2, lo: 0, hi: 10, padAuto: true, padZ: 0, batter: 2, padMode: "both" };
 
   function create(ctx) {
     const V = ctx.V;
-    let on = false, st = {}, picked = null;
+    let on = false, st = {}, picked = null, pickedPad = null;            // pickedPad: 2.656.0
     const O = Object.assign({}, OPT0);
     try { const s = JSON.parse(root.localStorage.getItem("pp.terrainopt") || "{}"); Object.keys(OPT0).forEach((k) => { if (typeof s[k] === typeof OPT0[k]) O[k] = s[k]; }); } catch (e) { /* fine */ }
     const keepOpt = () => { try { root.localStorage.setItem("pp.terrainopt", JSON.stringify(O)); } catch (e) { /* fine */ } };
@@ -59,7 +63,7 @@
       st = {}; picked = null; props();
       ctx.status(TR() ? hint() : "⛰ Terrain - click anywhere to make the ground (round the building), then shape it · " + hint());
     }
-    function drop() { const had = !!(st.draft || st.stroke || picked); st = {}; picked = null; const tv = TV(); if (tv) tv.draft(null); return had; }
+    function drop() { const had = !!(st.draft || st.stroke || picked || pickedPad); st = {}; picked = null; pickedPad = null; const tv = TV(); if (tv) tv.draft(null); return had; }
 
     /* ---- where the pointer is */
     /** a contour's point: the ray on the plane at the line's height (the floorplan and the 3D view alike) */
@@ -84,6 +88,7 @@
     function down(ev) {
       if (!TR()) { ensure(); return; }
       if (O.mode === "contour") return contourDown(ev);
+      if (O.mode === "pad") return padDown(ev);
       const tv = TV(), h = tv && tv.hit(ev);
       if (!h) { ctx.status("⛰ press on the ground (it is " + fmt(TR().nx * TR().cell) + " × " + fmt(TR().ny * TR().cell) + " - its size in the panel)"); return; }
       if (O.mode === "flatten" && ev.altKey) { O.target = Math.round(h[2] * 1000) / 1000; keepOpt(); props(); ctx.status("▬ the Flatten height is " + fmt(O.target) + " - drag to flatten toward it"); return; }
@@ -96,6 +101,7 @@
         if (st.draft) { const p = planeAt(ev, st.draft.z); if (p) { st.draft.at = p; tv.draft(st.draft.pts.concat([p]), st.draft.z); } }
         return;
       }
+      if (O.mode === "pad") { if (st.draft) { const p = groundAt(ev); if (p) { st.draft.at = p; tv.draft(st.draft.pts.concat([p, st.draft.pts[0]]), st.draft.z); } } return; }
       const h = tv.hit(ev); tv.ring(h, O.r);
       if (!st.stroke || !(ev.buttons & 1) || !h) return;
       const a = st.stroke.last, L = Math.hypot(h[0] - a[0], h[1] - a[1]), gap = Math.max(0.05, O.r * 0.25);
@@ -138,11 +144,46 @@
       O.cz = Math.round((D.z + O.cstep) * 1000) / 1000; keepOpt(); picked = null; props();
       ctx.status("〰 the " + PT().fmtZ(C.z) + " contour" + (closed ? " (closed)" : "") + (shaped && shaped.held ? " - the ground shaped to " + t.contours.length + " contour" + (t.contours.length > 1 ? "s" : "") : "") + " · the next one at " + PT().fmtZ(O.cz));
     }
-    function dbl() { if (O.mode === "contour" && st.draft) finish(false); }
+    function dbl() { if (O.mode === "contour" && st.draft) finish(false); else if (O.mode === "pad" && st.draft) finishPad(); }
+
+    /* ---- 2.656.0: cut / fill pads (Tim: "can you add a cut/fill landscaping tool to sketcher") */
+    /** a pad's corner: where the pointer meets the ground (else the plane at 0) */
+    function groundAt(ev) { const tv = TV(), h = tv && tv.hit(ev); if (h) return [h[0], h[1]]; return planeAt(ev, 0); }
+    function padDown(ev) {
+      const tv = TV(), t = TR(), p = groundAt(ev); if (!p) return;
+      if (!st.draft) {
+        const q = !ev.altKey && PT().padAt(t, p, pxTol(p, PT().at(t, p[0], p[1])));
+        if (q) { pickedPad = q.id; props(); ctx.status("✂ " + q.name + " at " + PT().fmtZ(q.z) + " - cut " + PT().fmtV(q.cut) + ", fill " + PT().fmtV(q.fill) + " · its level / batter in the panel · Delete forgets the outline · Alt+click starts a new pad on it"); return; }
+        pickedPad = null; st.draft = { kind: "pad", z: PT().at(t, p[0], p[1]) + 0.05, pts: [p] }; tv.draft([p, p], st.draft.z); props();
+        ctx.status("✂ click the pad's corners … back on the first (or double-click / Enter) cuts and fills it · " + (O.padAuto ? "its level: the ground's mean inside" : "level " + PT().fmtZ(O.padZ)));
+        return;
+      }
+      const P0 = st.draft.pts[0], last = st.draft.pts[st.draft.pts.length - 1];
+      if (st.draft.pts.length >= 3 && Math.hypot(p[0] - P0[0], p[1] - P0[1]) <= pxTol(P0, st.draft.z)) { finishPad(); return; }
+      if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 1e-3) return;
+      st.draft.pts.push(p); tv.draft(st.draft.pts.concat([p, P0]), st.draft.z);
+    }
+    function finishPad() {
+      const D = st.draft; st.draft = null; const tv = TV(); if (tv) tv.draft(null);
+      if (!D) return;
+      const pts = D.pts.filter((p, i) => i === 0 || Math.hypot(p[0] - D.pts[i - 1][0], p[1] - D.pts[i - 1][1]) > 1e-3);
+      if (pts.length < 3) { ctx.status("✂ a pad needs three corners at least"); return; }
+      const b = before(), q = PT().addPad(TR(), pts, { z: O.padAuto ? null : O.padZ, batter: O.batter, mode: O.padMode });
+      ctx.commit("cut fill", b); pickedPad = q.id; props();
+      ctx.status("✂ " + q.name + " at " + PT().fmtZ(q.z) + " - cut " + PT().fmtV(q.cut) + ", fill " + PT().fmtV(q.fill) + " (net " + PT().fmtV(Math.abs(q.cut - q.fill)) + (q.cut >= q.fill ? " to take away" : " to bring in") + ") · ↶ undoes it");
+    }
+    /** the picked pad levelled / sloped again on the ground as it is now */
+    function rePad(fn) {
+      const t = TR(), q = t && (t.pads || []).find((x) => x.id === pickedPad); if (!q) return;
+      const b = before(); fn(q); PT().applyPad(t, q); ctx.commit("cut fill", b); props();
+      ctx.status("✂ " + q.name + " at " + PT().fmtZ(q.z) + " - cut " + PT().fmtV(q.cut) + ", fill " + PT().fmtV(q.fill));
+    }
+    function forgetPad(id) { const t = TR(); if (!t) return; const b = before(); t.pads = (t.pads || []).filter((x) => x.id !== id); pickedPad = null; ctx.commit("cut fill", b); props(); ctx.status("✂ the pad's outline is gone - the ground keeps its shape (↶ brings it back)"); }
 
     /* ---- the keys and the box */
     function vcb(text) {
       const v = parseFloat(String(text).replace(",", ".")); if (!Number.isFinite(v)) return false;
+      if (O.mode === "pad") { if (pickedPad != null && !st.draft) { rePad((q) => { q.z = v; }); return true; } O.padZ = v; O.padAuto = false; keepOpt(); props(); ctx.status("✂ the next pad's level: " + PT().fmtZ(v)); return true; }
       if (O.mode === "contour") {
         if (st.draft) { st.draft.z = v; const tv = TV(); if (tv) tv.draft(st.draft.pts.concat(st.draft.at ? [st.draft.at] : []), v); }
         O.cz = v; keepOpt(); props(); ctx.status("〰 elevation " + PT().fmtZ(v)); return true;
@@ -152,7 +193,8 @@
     }
     function key(e) {
       if (!on) return false;
-      if (e.key === "Enter" && st.draft) { finish(false); return true; }
+      if (e.key === "Enter" && st.draft) { if (st.draft.kind === "pad") finishPad(); else finish(false); return true; }
+      if ((e.key === "Delete" || e.key === "Backspace") && pickedPad != null) { forgetPad(pickedPad); return true; }
       if ((e.key === "Delete" || e.key === "Backspace") && picked != null) { delContour(picked); return true; }
       if (e.key === "[" || e.key === "]") { O.r = Math.max(0.2, Math.min(100, Math.round(O.r * (e.key === "]" ? 1.25 : 0.8) * 100) / 100)); keepOpt(); props(); ctx.status("⛰ the brush: " + fmt(O.r)); return true; }
       return false;
@@ -197,9 +239,27 @@
       }
       // what a press does
       const mr = el("div", "ppbtns"); mr.id = "ppTerModes";
-      MODES.forEach(([m, ic, lb]) => { const b = el("button", "ghost" + (O.mode === m ? " on" : ""), ic + " " + lb); b.type = "button"; b.dataset.mode = m; b.onclick = () => { if (st.draft) finish(false); O.mode = m; keepOpt(); props(); ctx.status(hint()); const tv = TV(); if (tv && m === "contour") tv.ring(null); }; mr.appendChild(b); });
+      MODES.forEach(([m, ic, lb]) => { const b = el("button", "ghost" + (O.mode === m ? " on" : ""), ic + " " + lb); b.type = "button"; b.dataset.mode = m; b.onclick = () => { if (st.draft) { if (st.draft.kind === "pad") { st.draft = null; const tv0 = TV(); if (tv0) tv0.draft(null); } else finish(false); } O.mode = m; keepOpt(); props(); ctx.status(hint()); const tv = TV(); if (tv && (m === "contour" || m === "pad")) tv.ring(null); }; mr.appendChild(b); });
       box.appendChild(mr);
-      if (O.mode !== "contour") {
+      if (O.mode === "pad") {                                            // 2.656.0
+        const selIn = (label, val, opts, fn, id) => { const sl = el("select"); if (id) sl.id = id; opts.forEach(([v, tx]) => { const o2 = el("option", "", tx); o2.value = v; if (v === val) o2.selected = true; sl.appendChild(o2); }); sl.onchange = () => fn(sl.value); return row(label, sl); };
+        const Q = pickedPad != null ? (t.pads || []).find((x) => x.id === pickedPad) : null;
+        if (Q) {
+          head("✂ " + Q.name);
+          numIn("Level (m)", Q.z, (v) => rePad((q) => { q.z = v; }), 0.05, -1000, 5000, "ppPadZ");
+          numIn("Batter 1 : (m across a m)", Q.batter, (v) => rePad((q) => { q.batter = v; }), 0.5, 0.2, 20, "ppPadBatter");
+          selIn("Earthworks", Q.mode, [["both", "Cut and fill"], ["cut", "Cut only"], ["fill", "Fill only"]], (v) => rePad((q) => { q.mode = v; }), "ppPadMode");
+          box.appendChild(el("div", "pphint", "Cut " + PT().fmtV(Q.cut) + " · fill " + PT().fmtV(Q.fill) + " · net " + PT().fmtV(Math.abs(Q.cut - Q.fill)) + (Q.cut >= Q.fill ? " to take away" : " to bring in") + " (the last time it was applied)"));
+          btns([["⟳ Apply again", () => rePad(() => {}), "Cut and fill it again on the ground as it is now", "ppPadAgain"], ["🗑 Forget", () => forgetPad(Q.id), "Remove the pad's outline - the ground keeps its shape (Delete)", "ppPadForget"], ["Done", () => { pickedPad = null; props(); }]]);
+          head("✂ New pads");
+        }
+        chkIn("Level = the ground's mean inside", O.padAuto, opt("padAuto"), "ppPadAuto");
+        if (!O.padAuto) numIn("Level (m)", O.padZ, opt("padZ"), 0.05, -1000, 5000, "ppPadNewZ");
+        numIn("Batter 1 : (m across a m)", O.batter, opt("batter"), 0.5, 0.2, 20, "ppPadNewBatter");
+        selIn("Earthworks", O.padMode, [["both", "Cut and fill"], ["cut", "Cut only"], ["fill", "Fill only"]], opt("padMode"), "ppPadNewMode");
+        const P = t.pads || []; let c = 0, f = 0; P.forEach((q) => { c += q.cut; f += q.fill; });
+        box.appendChild(el("div", "pphint", P.length + " pad" + (P.length === 1 ? "" : "s") + (P.length ? " · cut " + PT().fmtV(c) + " · fill " + PT().fmtV(f) + " in all" : "")));
+      } else if (O.mode !== "contour") {
         numIn("Brush size (m)", O.r, opt("r"), 0.5, 0.2, 100, "ppTerR");
         numIn(O.mode === "raise" || O.mode === "lower" ? "Strength (m)" : "Strength (0-1)", O.mode === "raise" || O.mode === "lower" ? O.s : Math.min(1, O.s * 3), (v) => opt("s")(O.mode === "raise" || O.mode === "lower" ? v : v / 3), 0.05, 0.01, O.mode === "raise" || O.mode === "lower" ? 5 : 1, "ppTerS");
         if (O.mode === "flatten") numIn("Flatten height (m)", O.target, opt("target"), 0.1, -1000, 5000, "ppTerTarget");

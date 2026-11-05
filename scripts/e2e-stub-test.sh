@@ -12982,6 +12982,13 @@ node scripts/test-blendview-ui.js > /tmp/blendviewui4030.log 2>&1 \
 node scripts/test-queueclear-ui.js > /tmp/qclear.log 2>&1 \
   && ok "queue: 🧹 Clear on both tabs, labelled with the finished count; a click empties the Done list (server + page), GET /api/jobs still answers - or SKIP without playwright" \
   || { bad "queue: 🧹 Clear browser test"; grep -a "FAIL\|Error" /tmp/qclear.log | head -12; }
+# ---- 2.656.0 (Tim: "can you add a cut/fill landscaping tool to sketcher")
+node scripts/test-pad656.js > /tmp/pad656.log 2>&1 \
+  && ok "2.656.0 the Sketcher's cut / fill pads: the mean level, flat inside, batters, cut / fill only, volumes, re-applied, picked, kept by clean, on the floorplan, the wiring" \
+  || { bad "2.656.0 cut / fill units"; grep -a "^FAIL" -A2 /tmp/pad656.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui656-ui.js > /tmp/ui656ui.log 2>&1 \
+  && ok "2.656.0 browser test: ✂ Cut / fill - a pad drawn on a slope (one ↶ step), flat at the mean, cut + filled, re-levelled, the floorplan, picked, Delete forgets the outline - or SKIP without playwright" \
+  || { bad "2.656.0 cut / fill browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui656ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
