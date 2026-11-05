@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.677.0: **The restyle's progress under the picture**: while a 🎨 Style ▾ render runs, a thin bar under the picture
+  (above the preview's buttons) shows it - a moving stripe while it is queued and the models load, then the bar filling
+  with the sampler's steps ("🧸 Pixar · step 12 of 25 · 48 %"); green when it is done (it fades as the result opens), red
+  if it failed.
 - 2.676.0: **🎨 Style ▾ in the image preview**: open any picture (the gallery, the assets …) and press **🎨 Style ▾**
   beside 💾 Save - **📷 Photoreal**, **🧸 Pixar**, **🧊 2.5D**, **🌸 Anime** or **🖍 Cartoon**. The picture is made again
   with the image style picked in the prompt: an edit model (FLUX.2 Klein, Qwen Image Edit, FLUX Kontext …) is told to

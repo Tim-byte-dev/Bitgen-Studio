@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.677.0 (Tim: "show the progress of the generation with a small bar below the picture")
+node scripts/test-restyle677.js > /tmp/restyle677.log 2>&1 \
+  && ok "2.677.0 restyle progress bar: queued / loading = a stripe, steps = the fill + 'step n of N · %', done / failed" \
+  || { bad "2.677.0 progress bar units"; grep -a "^FAIL" -A2 /tmp/restyle677.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui677-ui.js > /tmp/ui677ui.log 2>&1 \
+  && ok "2.677.0 browser test: the bar under the picture - queued, loading, 20 % / 80 %, done green then gone - or SKIP without playwright" \
+  || { bad "2.677.0 progress bar browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui677ui.log | head -14; }
 # ---- 2.676.0 (Tim: "in the image preview dialog, add a button with a dropdown to change the style of the picture, photoreal, pixar, 2.5D, anime,cartoon ...")
 node scripts/test-restyle676.js > /tmp/restyle676.log 2>&1 \
   && ok "2.676.0 restyle: the five looks, edit instruction / refine words + the picture's prompt, ~1 MP size, edit / refine / none, Override style (lib/imgOverride.js) through /api/aiedit" \

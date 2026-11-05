@@ -10,7 +10,11 @@
  *               (its look's words + the picture's own prompt, a strength that changes the look but keeps the layout);
  *               a style that can do neither = said (pick an edit model or an SDXL / FLUX style in the prompt)
  *   the result  an ordinary image job (the queue, the gallery, the log); when it is done it opens in this preview
- * Pure (Node: scripts/test-restyle676.js): LOOKS, promptFor(look, how, orig), fit(w, h), pickHow(styleId, engines). */
+ *   2.677.0 (Tim: "show the progress of the generation with a small bar below the picture"): #lb_rsbar under the picture
+ *               (above the preview's bar) - queued / loading the models = a moving stripe, the sampler's steps = the bar
+ *               filling ("🧸 Pixar · step 12 of 25 · 48 %"), done = full + green (it fades), failed = red
+ * Pure (Node: scripts/test-restyle676.js, test-restyle677.js): LOOKS, promptFor(look, how, orig), fit(w, h),
+ * pickHow(styleId, engines), barState(job, label). */
 (function (root) {
   "use strict";
   const KEEP = "Keep the same picture: the composition, framing, subjects, their faces, poses, clothes and the background - change only the rendering style.";
@@ -50,7 +54,19 @@
     if ((E.inpaint || []).some((x) => x.id === id && x.refine !== false)) return "refine";
     return null;
   }
-  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow }; return; }
+  /** 2.677.0: the bar for a job record (GET /api/jobs/:id) -> {pct (0-100) | null (a moving stripe), text, kind} (pure) */
+  function barState(j, label) {
+    const L = label ? label + " · " : "", st = j && j.status, pr = (j && j.progress) || null;
+    if (!j || st === "queued" || !st) return { pct: null, text: L + "queued", kind: "wait" };
+    if (st === "done") return { pct: 100, text: L + "done", kind: "done" };
+    if (st !== "running") return { pct: 100, text: L + (st === "cancelled" ? "cancelled" : "failed - see the job log"), kind: "fail" };
+    let pct = null;
+    if (pr && pr.total > 0) pct = Math.max(0, Math.min(100, Math.round(100 * Math.min(+pr.step || 0, +pr.total) / pr.total)));
+    else if (pr && Number.isFinite(+pr.pct) && +pr.pct > 0) pct = Math.max(0, Math.min(100, Math.round(+pr.pct)));
+    const words = pr && pr.total > 0 ? "step " + Math.max(0, Math.min(+pr.step || 0, +pr.total)) + " of " + pr.total + " · " + pct + " %" : "loading the models";
+    return { pct, text: L + words, kind: pct == null ? "wait" : "run" };
+  }
+  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, barState }; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const S = { busy: false, menu: null };
@@ -61,7 +77,14 @@
     const st = doc.createElement("style"); st.id = "lbrsCss";
     st.textContent = "#lb_rsmenu{position:fixed;z-index:9400;background:var(--panel,#1c1915);border:1px solid var(--line,#3a342a);border-radius:6px;padding:4px 0;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:230px}"
       + "#lb_rsmenu .it{padding:6px 12px;cursor:pointer;white-space:nowrap}#lb_rsmenu .it:hover{background:#ffffff14}#lb_rsmenu .hd{padding:4px 12px 6px;opacity:.7;font-size:11px;white-space:normal;max-width:300px;border-bottom:1px solid var(--line,#3a342a);margin-bottom:3px}"
-      + "#lb_rsmsg{font-size:11px;opacity:.85;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}";
+      + "#lb_rsmsg{font-size:11px;opacity:.85;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
+      // 2.677.0: the progress bar under the picture
+      + "#lb_rsbar{display:none;align-items:center;gap:8px;padding:3px 12px 2px;font-size:11px;transition:opacity .6s}#lb_rsbar.on{display:flex}#lb_rsbar.fade{opacity:0}"
+      + "#lb_rsbar .tr{flex:1;height:5px;border-radius:3px;background:#ffffff1a;overflow:hidden;position:relative}"
+      + "#lb_rsbar .fl{height:100%;width:0;background:var(--tiger,#f59e2c);border-radius:3px;transition:width .4s}"
+      + "#lb_rsbar.wait .fl{width:30%;position:absolute;animation:lbrsSlide 1.3s ease-in-out infinite}#lb_rsbar.done .fl{background:#3fb950}#lb_rsbar.fail .fl{background:#d0383e}"
+      + "#lb_rsbar .tx{white-space:nowrap;opacity:.85;min-width:0;overflow:hidden;text-overflow:ellipsis;max-width:46%}"
+      + "@keyframes lbrsSlide{0%{left:-30%}100%{left:100%}}";
     doc.head.appendChild(st);
   }
   function styleNow() {
@@ -76,6 +99,19 @@
     return { ovr: o, seed: b.seed };
   }
   function close() { if (S.menu) { S.menu.remove(); S.menu = null; } }
+  /** 2.677.0: paint the bar under the picture from a job record (null = hide it) */
+  function bar(j, label) {
+    const B = $("lb_rsbar"); if (!B) return;
+    clearTimeout(S.fadeT); clearTimeout(S.hideT);
+    if (j === null) { B.className = ""; return; }
+    const b = barState(j, label);
+    B.className = "on " + b.kind; B.dataset.kind = b.kind;
+    B.querySelector(".fl").style.width = b.pct == null ? "" : b.pct + "%";
+    B.querySelector(".tx").textContent = b.text; B.title = b.text;
+    B.setAttribute("aria-valuenow", b.pct == null ? "" : String(b.pct));
+    if (b.kind === "done") { S.fadeT = setTimeout(() => { B.classList.add("fade"); }, 2500); S.hideT = setTimeout(() => { B.className = ""; }, 3200); }
+    if (b.kind === "fail") S.hideT = setTimeout(() => { B.className = ""; }, 12000);
+  }
   function openMenu(btn) {
     close(); css();
     const it = cur(); if (!it || it.kind !== "image") { say("🎨 pictures only"); return; }
@@ -117,15 +153,17 @@
       const id = j.jobs && j.jobs[0] && j.jobs[0].id; if (!id) throw new Error("no job");
       if (typeof root.refreshJobs === "function") try { root.refreshJobs(); } catch (e) { /* fine */ }
       say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : ", refine " + L.strength + " %") + ")…");
+      bar({ status: "queued" }, L.label);
       try { if (root.H3TestEvent) root.H3TestEvent("restyle_queued", id); } catch (e) { /* fine */ }
       let jj = null;
       for (let n = 0; n < 3600; n++) {
         await new Promise((ok) => setTimeout(ok, 1200));
         try { jj = await (await fetch("/api/jobs/" + encodeURIComponent(id))).json(); } catch (e) { continue; }
-        if (jj.status === "running" && root.H3Steps && jj.progress) say("🎨 " + L.label + " - " + root.H3Steps.text(jj.progress));
+        bar(jj, L.label);                                                   // 2.677.0: the bar under the picture
+        if (jj.status === "running") say("");                             // the bar under the picture says it (2.677.0)
         if (jj.status && jj.status !== "running" && jj.status !== "queued") break;
       }
-      if (!jj || jj.status !== "done") throw new Error("the render " + ((jj && jj.status) || "did not finish") + " - see the job log");
+      if (!jj || jj.status !== "done") { bar(jj || { status: "failed" }, L.label); throw new Error("the render " + ((jj && jj.status) || "did not finish") + " - see the job log"); }
       const out = (jj.outputs && jj.outputs[0]) || jj.output; if (!out) throw new Error("the render made nothing");
       const item = { url: "/outputs/" + encodeURIComponent(out), kind: "image", name: out };
       if ($("lb").open) { lb.items.splice(lb.i + 1, 0, item); lb.i += 1; if (typeof lbFilm === "function") lbFilm(); if (typeof lbShow === "function") lbShow(); }   // eslint-disable-line no-undef
@@ -142,10 +180,14 @@
     b.onclick = (e) => { e.stopPropagation(); if (S.menu) close(); else openMenu(b); };
     const msg = doc.createElement("span"); msg.id = "lb_rsmsg";
     save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(msg, save);
+    // 2.677.0: the progress bar - under the picture, above the preview's bar
+    const pb = doc.createElement("div"); pb.id = "lb_rsbar"; pb.setAttribute("role", "progressbar"); pb.setAttribute("aria-valuemin", "0"); pb.setAttribute("aria-valuemax", "100");
+    pb.innerHTML = '<div class="tr"><div class="fl"></div></div><span class="tx"></span>';
+    const lbbar = save.closest(".lbbar"); if (lbbar && lbbar.parentNode) lbbar.parentNode.insertBefore(pb, lbbar);
     doc.addEventListener("pointerdown", (e) => { if (S.menu && !S.menu.contains(e.target) && e.target !== b) close(); }, true);
     // only for pictures: hidden while a video / sound is shown
     const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(); b.style.display = it && it.kind !== "image" ? "none" : ""; close(); }).observe(nm, { childList: true, characterData: true, subtree: true });
   }
-  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, run, open: openMenu, close, state: () => S };
+  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, bar, run, open: openMenu, close, state: () => S };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);
