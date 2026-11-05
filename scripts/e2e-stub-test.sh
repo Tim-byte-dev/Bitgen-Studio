@@ -13045,6 +13045,13 @@ node scripts/test-mannequin664.js > /tmp/mannequin664.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui664-ui.js > /tmp/ui664ui.log 2>&1 \
   && ok "2.664.0 browser test: Settings ▸ About credits dimasalcalde / zahers; Furniture ▸ People ▸ mannequin (model) placed, built from the model at the person's height - or SKIP without playwright" \
   || { bad "2.664.0 mannequin browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui664ui.log | head -14; }
+# ---- 2.665.0 (Tim: "add a button in sketcher top toolstrip to create building plans ... save it to a pdf ... A4, A3, A2, A1 ... a title block and dimensions")
+node scripts/test-sheets665.js > /tmp/sheets665.log 2>&1 \
+  && ok "2.665.0 the Sketcher's building plans: options, views, scales that fit, dimensions, elevations, title block, one sheet / one view per page, the PDF read back" \
+  || { bad "2.665.0 building plans units"; grep -a "^FAIL" -A2 /tmp/sheets665.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui665-ui.js > /tmp/ui665ui.log 2>&1 \
+  && ok "2.665.0 browser test: 📄 Plans opens the dialog (title bar drags it), sheet / scale / pages / dimensions change the preview, 💾 Save PDF into the project's pdf folder + downloaded - or SKIP without playwright" \
+  || { bad "2.665.0 building plans browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui665ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

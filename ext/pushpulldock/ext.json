@@ -17,6 +17,7 @@
     "pparch.js",
     "pparchview.js",
     "ppplan.js",
+    "ppsheets.js",
     "ppmatpick.js",
     "pparchtools.js",
     "ppterraintools.js",
@@ -28,6 +29,7 @@
     "ppimport.js",
     "ppframe.js",
     "ppoutline.js",
-    "ppreal.js"
+    "ppreal.js",
+    "ppsheetsdlg.js"
   ]
 }

@@ -6303,6 +6303,20 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.665.0: **📄 Building plans** in the Sketcher: **📄 Plans** on its bar (after ✨ Photo) opens the *Building plans*
+  dialog - drag it by its title bar. Pick:
+  - **Sheet** A4 / A3 / A2 / A1, landscape or portrait, and the **scale** - *Auto (fits)* (the largest standard scale the
+    views fit at) or 1:20 - 1:500.
+  - **Pages** - *All views on one sheet* (one scale for all, e.g. everything on one A1) or *One view per page* (each page
+    its own scale on Auto).
+  - **Views** - a floor plan for every storey, the four elevations (north, east, south, west - north is up on the plan) and a
+    roof / site plan (roofs, pools, driveways, the ground's contours).
+  - **Show** - dimensions + levels (each outside wall face, the doors / windows along it, the overall size, in mm; FFL marks
+    and the height on the elevations), room names / sizes / areas, furniture, coloured (the materials' colours).
+  - **Title block** - project, drawing, drawn by, date, revision and notes; it also has a north arrow, a scale bar and
+    *Sheet n of m*.
+  The preview shows each page (◀ ▶). **💾 Save PDF** (Ctrl+Enter) writes it into the project's pdf folder (the image editor's
+  File ▸ Open PDF from Project lists it) and, with *Download too* ticked, to your downloads. The dialog keeps your choices.
 - 2.664.0: **🧍 Mannequin model** in the Sketcher: Furniture (🛋) ▸ Category *People* ▸ **mannequin (model)**, then click
   where it stands - a modelled female mannequin, as tall as the person's Height. Its panel's Pose switches between it and the
   posed House-builder figures. The model is by dimasalcalde and zahers on CGTrader (Settings ▸ About ▸ 3D models). Its file
