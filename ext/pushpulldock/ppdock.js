@@ -50,6 +50,7 @@
   function info() {
     paintViewSel();
     if (root.PPOutline && root.PPOutline.paint) try { root.PPOutline.paint(); } catch (e) { console.warn("Sketcher outline:", e); }   // 2.639.0: the 🗂 outline docker
+    if (root.PPWallType && root.PPWallType.paint) try { root.PPWallType.paint(); } catch (e) { console.warn("Sketcher wall types:", e); }   // 2.661.0: the 🧱 wall types docker
     const el = $("ppInfo"); if (!el || !S.M) return;
     const s = S.sel, M = S.M, nf = (s.f || []).length, ne = (s.e || []).length + (s.k || []).length, np = (s.p || []).length;
     let t = "";

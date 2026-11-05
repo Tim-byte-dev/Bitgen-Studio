@@ -96,13 +96,16 @@
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [] }; }   // 2.653.0: + the ground (ppterrain.js)
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], wtypes: [] }; }   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
     const A = empty(); if (!o || typeof o !== "object") return A;
     A.ext = hex(o.ext, DEF.ext);
     const id = (x) => (Number.isInteger(+x) && +x > 0 ? +x : 0);
+    const WT = root.PPWallType;                                       // 2.661.0: the wall types (ppwalltype.js) - before the rooms that use them
+    A.wtypes = WT ? WT.cleanTypes(o.wtypes) : [];
+    const wtIds = new Set(WT ? WT.list(A).map((T) => T.id) : []);
     A.rooms = (Array.isArray(o.rooms) ? o.rooms : []).map((R) => {
       if (!R || !Array.isArray(R.pts)) return null;
       const closed = R.closed !== false, pts = R.pts.map(pt2).filter(Boolean);
@@ -117,8 +120,10 @@
         skirtP: pid(R.skirtP), cornP: pid(R.cornP), skirtCol: hex(R.skirtCol, hex(R.trim, DEF.trim)), cornCol: hex(R.cornCol, hex(R.trim, DEF.trim)), wcol: cleanWcol(R.wcol, closed ? pts.length : pts.length - 1),
         wext: cleanWcol(R.wext, closed ? pts.length : pts.length - 1),   // 2.651.0: each wall's OUTSIDE (none = the building's outside colour A.ext)
         // 2.660.0: the walls taken out (edge numbers - the floor / ceiling stay, the side open) + each wall's interior / exterior (none = auto)
-        gone: cleanGone(R.gone, closed ? pts.length : pts.length - 1), wkind: cleanKind(R.wkind, closed ? pts.length : pts.length - 1) };
+        gone: cleanGone(R.gone, closed ? pts.length : pts.length - 1), wkind: cleanKind(R.wkind, closed ? pts.length : pts.length - 1),
+        wt: WT ? WT.cleanWt(R.wt, closed ? pts.length : pts.length - 1, wtIds) : {}, tw: {} };   // 2.661.0: each wall's type (tw: its thickness - sync below)
     }).filter(Boolean);
+    if (WT) WT.sync(A);
     const rid = new Set(A.rooms.map((R) => R.id));
     A.ops = (Array.isArray(o.ops) ? o.ops : []).map((x) => {
       if (!x || !OPS[x.kind] || !rid.has(+x.room)) return null;
@@ -205,21 +210,24 @@
   }
   /** each edge's wall as a mitred quad [left start, left end, right end, right start] (left = inside for a counter-clockwise room) */
   const isGone = (R, i) => !!(R && R.gone && R.gone.length && R.gone.indexOf(i) !== -1);   // 2.660.0
+  /** 2.661.0: one wall's thickness - its wall type's layers (R.tw, kept by clean / PPWallType.sync) else the room's */
+  const tw = (R, i) => (R && R.tw && R.tw[i] > 0 ? R.tw[i] : R.t);
   function wallQuads(R) {
-    const E = edgesOf(R), h = R.t / 2, n = E.length, G = (e) => (e && isGone(R, e.i) ? null : e);
-    const corner = (e0, e1, s, at) => {        // the corner of side s (1 left / -1 right) between e0 and e1, at the vertex at
-      const perp = add(at, mul(left(e1 ? e1.u : e0.u), s * h));
-      if (!e0 || !e1 || e0.L < EPS || e1.L < EPS) return e1 ? add(at, mul(left(e1.u), s * h)) : add(at, mul(left(e0.u), s * h));
-      const x = lineX(add(e0.a, mul(left(e0.u), s * h)), e0.u, add(e1.a, mul(left(e1.u), s * h)), e1.u);
-      if (!x || len(sub(x, at)) > 6 * h + 1e-9) return perp;          // parallel / too sharp: square
+    const E = edgesOf(R), n = E.length, G = (e) => (e && isGone(R, e.i) ? null : e), hw = (e) => tw(R, e.i) / 2;
+    const corner = (e0, e1, s, at, own) => {   // the corner of side s (1 left / -1 right) between e0 and e1, at the vertex at (own: the wall it is for)
+      const h0 = hw(e0), h1 = hw(e1), o = own || e1, perp = add(at, mul(left(o.u), s * hw(o)));
+      if (e0.L < EPS || e1.L < EPS) return perp;
+      const x = lineX(add(e0.a, mul(left(e0.u), s * h0)), e0.u, add(e1.a, mul(left(e1.u), s * h1)), e1.u);
+      if (!x || len(sub(x, at)) > 6 * Math.max(h0, h1) + 1e-9) return perp;          // parallel / too sharp: square
       return x;
     };
+    const cornerE = (e, next, s) => corner(e, next, s, e.b, e);
     return E.map((e, k) => {
       if (e.L < EPS || isGone(R, e.i)) return null;                   // 2.660.0: a wall taken out - none (the ones beside it end square)
       const prev = G(R.closed ? E[(k - 1 + n) % n] : E[k - 1]), next = G(R.closed ? E[(k + 1) % n] : E[k + 1]);
-      const nl = left(e.u);
-      const lS = prev ? corner(prev, e, 1, e.a) : add(e.a, mul(nl, h)), rS = prev ? corner(prev, e, -1, e.a) : add(e.a, mul(nl, -h));
-      const lE = next ? corner(e, next, 1, e.b) : add(e.b, mul(nl, h)), rE = next ? corner(e, next, -1, e.b) : add(e.b, mul(nl, -h));
+      const nl = left(e.u), h = hw(e);
+      const lS = prev ? corner(prev, e, 1, e.a, e) : add(e.a, mul(nl, h)), rS = prev ? corner(prev, e, -1, e.a, e) : add(e.a, mul(nl, -h));
+      const lE = next ? cornerE(e, next, 1) : add(e.b, mul(nl, h)), rE = next ? cornerE(e, next, -1) : add(e.b, mul(nl, -h));
       return Object.assign({}, e, { nl, quad: [lS, lE, rE, rS] });
     }).filter(Boolean);
   }
@@ -227,21 +235,21 @@
   /** 2.631.0: the room's outside outline (the centre line moved out half a wall) - its auto floor slab */
   function exterior(R) {
     if (!R.closed) return null;
-    const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = -R.t / 2, out = [];
+    const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = -R.t / 2, out = [], hh = (e) => -tw(R, e.i) / 2;   // 2.661.0: each wall's own
     for (let k = 0; k < n; k++) {
-      const e0 = E[(k - 1 + n) % n], e1 = E[k];
-      const x = lineX(add(e0.a, mul(left(e0.u), h)), e0.u, add(e1.a, mul(left(e1.u), h)), e1.u);
-      out.push(x && len(sub(x, e1.a)) < 6 * -h + 1e-9 ? x : add(e1.a, mul(left(e1.u), h)));
+      const e0 = E[(k - 1 + n) % n], e1 = E[k], h0 = hh(e0), h1 = hh(e1);
+      const x = lineX(add(e0.a, mul(left(e0.u), h0)), e0.u, add(e1.a, mul(left(e1.u), h1)), e1.u);
+      out.push(x && len(sub(x, e1.a)) < 6 * -Math.min(h, h0, h1) + 1e-9 ? x : add(e1.a, mul(left(e1.u), h1)));
     }
     return out;
   }
   function interior(R) {
     if (!R.closed) return null;
-    const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = R.t / 2, out = [], hh = (e) => (isGone(R, e.i) ? 0 : h);   // 2.660.0: an open side - to the line
+    const E = edgesOf(R).filter((e) => e.L > EPS), n = E.length, h = R.t / 2, out = [], hh = (e) => (isGone(R, e.i) ? 0 : tw(R, e.i) / 2);   // 2.660.0: an open side - to the line; 2.661.0: each wall's own
     for (let k = 0; k < n; k++) {
       const e0 = E[(k - 1 + n) % n], e1 = E[k], h0 = hh(e0), h1 = hh(e1);
       const x = lineX(add(e0.a, mul(left(e0.u), h0)), e0.u, add(e1.a, mul(left(e1.u), h1)), e1.u);
-      out.push(x && len(sub(x, e1.a)) < 6 * h + 1e-9 ? x : add(e1.a, mul(left(e1.u), h1)));
+      out.push(x && len(sub(x, e1.a)) < 6 * Math.max(h, h0, h1) + 1e-9 ? x : add(e1.a, mul(left(e1.u), h1)));
     }
     return out;
   }
@@ -376,7 +384,7 @@
     return out;
   }
   /** a wall's outside-face line (closed room: the right side; a free wall: both) for edge e of R moved by d */
-  function faceLines(R, e, d) { const nl = left(e.u), h = R.t / 2, a = add(e.a, d); return (R.closed ? [-1] : [-1, 1]).map((sg) => ({ p: add(a, mul(nl, sg * h)), sg })); }
+  function faceLines(R, e, d) { const nl = left(e.u), h = tw(R, e.i) / 2, a = add(e.a, d); return (R.closed ? [-1] : [-1, 1]).map((sg) => ({ p: add(a, mul(nl, sg * h)), sg })); }
   /** rooms ids moved by d: a wall's outside face within tol of a floor edge's line (`off` in from it) is put there */
   function snapToFloor(A, ids, d, tol, off, only) {
     const E = slabEdges(A); if (!E.length) return { d, hit: null };
@@ -557,12 +565,12 @@
   function opInfo(A, op) {
     const R = room(A, op.room); if (!R) return null;
     const e = edgesOf(R)[op.edge]; if (!e || e.L < EPS) return null;
-    const m = R.t / 2 + 0.03, lo = op.w / 2 + m, hi = e.L - op.w / 2 - m;
+    const m = tw(R, op.edge) / 2 + 0.03, lo = op.w / 2 + m, hi = e.L - op.w / 2 - m;
     const at = hi >= lo ? Math.min(hi, Math.max(lo, op.at)) : e.L / 2;
     const c = add(e.a, mul(e.u, at)), nl = left(e.u);
     // the thickest wall on this line (a shared wall): the cut goes right through it
-    let T = R.t;
-    A.rooms.forEach((Q) => { if (Q === R || Math.abs(Q.z - R.z) > 0.01) return; edgesOf(Q).forEach((f) => { if (Math.abs(crs(f.u, e.u)) < 0.02 && segDist(c, f.a, f.b).d < 0.01) T = Math.max(T, Q.t); }); });
+    let T = tw(R, op.edge);
+    A.rooms.forEach((Q) => { if (Q === R || Math.abs(Q.z - R.z) > 0.01) return; edgesOf(Q).forEach((f) => { if (Math.abs(crs(f.u, e.u)) < 0.02 && segDist(c, f.a, f.b).d < 0.01) T = Math.max(T, tw(Q, f.i)); }); });
     const x0 = at - op.w / 2, x1 = at + op.w / 2, k = T / 2 + 0.03;
     const P = (x, y) => add(add(e.a, mul(e.u, x)), mul(nl, y));
     return { op, R, e, at, c, u: e.u, nl, T, x0, x1, o: e.a, z0: R.z + op.sill, z1: R.z + Math.min(op.sill + op.h, R.h), rect: [P(x0, -k), P(x1, -k), P(x1, k), P(x0, k)] };
@@ -625,7 +633,12 @@
     const faceCol = (R, m) => { if (!R.wcol || !Object.keys(R.wcol).length) return R.wall; let bi = 0, bd = Infinity; edgesOf(R).forEach((e) => { const d = segDist(m, e.a, e.b).d; if (d < bd) { bd = d; bi = e.i; } }); return wallCol(R, bi); };   // 2.640.0
     // 2.651.0: an OUTSIDE face's own wall - the room whose wall it is part of (just inside the face), that wall's outside material
     const extCol = (p, q, nO, z) => { const m = mul(add(p, q), 0.5), pin = sub(m, mul(nO, 0.03)), w = wallOwner(A, pin, z); if (w && w.R.wext && w.R.wext[w.i]) return w.R.wext[w.i];
-      return w && w.R.wkind && w.R.wkind[w.i] === "int" ? wallCol(w.R, w.i) : A.ext; };   // 2.660.0: a wall set to interior - its inside colour both sides
+      if (w && w.R.wkind && w.R.wkind[w.i] === "int") return wallCol(w.R, w.i);   // 2.660.0: a wall set to interior - its inside colour both sides
+      const T = w && w.R.wt && w.R.wt[w.i] && root.PPWallType ? root.PPWallType.find(A, w.R.wt[w.i]) : null, oc = T && root.PPWallType.outerCol(T);   // 2.661.0: its type's outside layer
+      return oc || A.ext; };
+    // 2.661.0: a typed wall's layer seams on its top (a flat top)
+    if (root.PPWallType) A.rooms.forEach((R) => { if (!R.wt) return; wallQuads(R).forEach((q) => { const id = R.wt[q.i]; if (!id || hid("room:" + R.id + ":wall:" + q.i) || !flatTop(R, q.i)) return; const T = root.PPWallType.find(A, id); if (!T) return;
+      root.PPWallType.seams(T, q.quad).forEach(([a, b]) => out.lines.push([[a[0], a[1], R.z + R.h + 0.002], [b[0], b[1], R.z + R.h + 0.002]])); }); });
     const colOf = (p, z) => { const hit = inner.find((x) => z > x.R.z - EPS && z < x.R.z + x.R.h + EPS && inPoly(p, x.P)); return hit ? hit.R : null; };
     for (let k = 0; k < F.length; k++) {
       const a = zs[k], b = zs[k + 1], zm = (a + b) / 2;
@@ -985,7 +998,7 @@
     let best = null;
     A.rooms.forEach((R) => {
       if (z != null && (z < R.z - 0.05 || z > R.z + R.h + 0.05)) return;
-      edgesOf(R).forEach((e) => { if (e.L < EPS || isGone(R, e.i)) return; const s = segDist(p, e.a, e.b); if (s.d <= Math.max(maxD, R.t / 2 + 0.02) && (!best || s.d < best.d)) best = { R, room: R.id, edge: e.i, at: s.along, d: s.d, e, side: dot(sub(p, e.a), left(e.u)) >= 0 ? 1 : -1 }; });
+      edgesOf(R).forEach((e) => { if (e.L < EPS || isGone(R, e.i)) return; const s = segDist(p, e.a, e.b); if (s.d <= Math.max(maxD, tw(R, e.i) / 2 + 0.02) && (!best || s.d < best.d)) best = { R, room: R.id, edge: e.i, at: s.along, d: s.d, e, side: dot(sub(p, e.a), left(e.u)) >= 0 ? 1 : -1 }; });
     });
     return best;
   }
@@ -1071,7 +1084,7 @@
     const e = edgesOf(R)[i], out = []; if (!e || e.L < EPS) return out;
     (A.rooms || []).forEach((Q) => { if (Q === R || Q.z > R.z + R.h - 0.05 || Q.z + Q.h < R.z + 0.05) return; edgesOf(Q).forEach((f) => {
       if (f.L < EPS || isGone(Q, f.i) || Math.abs(crs(e.u, f.u)) > 0.02) return;
-      const tol = (R.t + Q.t) / 2 + 0.01, d1 = segDist(f.a, e.a, e.b), d2 = segDist(f.b, e.a, e.b), m = segDist(mul(add(e.a, e.b), 0.5), f.a, f.b);
+      const tol = (tw(R, i) + tw(Q, f.i)) / 2 + 0.01, d1 = segDist(f.a, e.a, e.b), d2 = segDist(f.b, e.a, e.b), m = segDist(mul(add(e.a, e.b), 0.5), f.a, f.b);
       const off = Math.abs(dot(sub(f.a, e.a), left(e.u))); if (off > tol) return;
       const s0 = dot(sub(f.a, e.a), e.u), s1 = dot(sub(f.b, e.a), e.u), over = Math.min(e.L, Math.max(s0, s1)) - Math.max(0, Math.min(s0, s1));
       if (over > 0.1 && (d1.d < tol || d2.d < tol || m.d < tol)) out.push({ R: Q, i: f.i });
@@ -1100,7 +1113,7 @@
   }
   function autoKind(A, R, i) {
     const e = edgesOf(R)[i]; if (!e) return "ext";
-    const m = mul(add(e.a, e.b), 0.5), n = left(e.u), d = R.t / 2 + 0.08, z = R.z + 0.5;
+    const m = mul(add(e.a, e.b), 0.5), n = left(e.u), d = tw(R, i) / 2 + 0.08, z = R.z + 0.5;
     const probes = R.closed ? [sub(m, mul(n, d))] : [sub(m, mul(n, d)), add(m, mul(n, d))];
     const inRoom = (p) => (A.rooms || []).some((Q) => Q !== R && Q.closed && z > Q.z - 0.05 && z < Q.z + Q.h && inPoly(p, interior(Q) || []));
     return probes.some(inRoom) ? "int" : "ext";
@@ -1113,7 +1126,7 @@
     return true;
   }
 
-  const api = { frames, isGone, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
+  const api = { frames, tw, isGone, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

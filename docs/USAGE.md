@@ -6303,6 +6303,18 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.661.0: **🧱 Wall types** docker in the Sketcher (its button in the bar).
+  - It lists the model's wall types - Brick veneer, Double brick, Timber frame (weatherboard / fibre cement), Rendered block,
+    Interior stud, Interior steel stud and Wet-area stud to start with - each with its thickness and how many walls use it.
+  - Pick one to see its cut drawn to scale and its **layers from the outside to the inside**: brick, air gap / cavity,
+    wrap / sarking, timber or steel frame (tick *batts* for insulation between the studs), insulation board, plasterboard
+    (gyprock), render, weatherboard, fibre cement, block, concrete, stone, tiles ... Change a layer's kind or thickness (mm),
+    ↑ ↓ to move it, ✕ to take it out, *＋ Add a layer*. **Wall thickness** adds the layers up.
+  - **Use it for**: the picked wall, the picked room's walls, every exterior wall, every interior wall (✕ None = the room's
+    own thickness again). ＋ / ⧉ / ✕ at the top make, copy and delete types.
+  - The walls are built as thick as their type, round their centre line, and follow when you edit the type; the outside
+    layer (brick, render, cladding ...) colours the wall's outside face, and the layers' seams show on the wall's top and on
+    the 📐 floorplan. A wall's own panel has **Wall type** too.
 - 2.660.0: **One wall out of a room** and **interior / exterior walls** in the Sketcher.
   - **⌫ Eraser** on a wall (or **Delete** with the wall picked, or **🗑 Take this wall out** in its panel) takes out just
     that wall - the floor and ceiling stay and that side is open. Its doors / windows go with it. A wall two rooms share goes

@@ -13,6 +13,7 @@
     "ppprofiledlg.js",
     "ppterrain.js",
     "ppsite.js",
+    "ppwalltype.js",
     "pparch.js",
     "pparchview.js",
     "ppplan.js",

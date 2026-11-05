@@ -869,6 +869,12 @@
           if (flat) numIn("Height", prof[0][1], ch((v) => P().setWallHeight(AR(), id, i, v)), 0.05, 0.05, 50, "m");
           else { numIn("Start height", prof[0][1], ch((v) => P().moveTopPoint(AR(), id, i, 0, v)), 0.05, 0.05, 50, "m"); numIn("End height", prof[prof.length - 1][1], ch((v) => P().moveTopPoint(AR(), id, i, prof.length - 1, v)), 0.05, 0.05, 50, "m"); box.appendChild(el("div", "pphint", "Its top slopes (" + (prof.length - 2) + " cut" + (prof.length === 3 ? "" : "s") + ") - drag its top in the view to change the cuts")); }
           numIn("Thickness (all " + R.name + "'s walls)", R.t, ch((v) => P().setRoom(AR(), id, { t: v })), 0.01, 0.02, 2, "m");
+          const WT = root.PPWallType;                                      // 2.661.0: its wall type (its layers = its thickness)
+          if (WT) {
+            const wt = (R.wt && R.wt[i]) || "";
+            selIn("Wall type", wt, [["", "None (" + Math.round(R.t * 1000) + " mm)"]].concat(WT.list(AR()).map((T) => [T.id, T.name + " · " + Math.round(WT.total(T) * 1000) + " mm"])), ch((v) => { WT.assign(AR(), [{ R: rm(AR()), i }], v || null); }));
+            btns([["🧱 Wall types…", () => { WT.toggle(true); if (wt) WT.pick(wt); }, "The wall types docker: their layers (brick, air gap, frame, insulation, plasterboard …) and thickness"]]);
+          }
           if (R.closed) {
             matIn("Inside", P().wallCol(R, i), ch((v) => { const Q = rm(AR()); Q.wcol = Object.assign({}, Q.wcol || {}); Q.wcol[i] = v; }));
             matIn("Outside", P().wallExt(AR(), R, i), ch((v) => { const Q = rm(AR()); Q.wext = Object.assign({}, Q.wext || {}); Q.wext[i] = v; }));   // 2.651.0

@@ -27,7 +27,7 @@
   const P = () => root.PPArch || (typeof require === "function" ? require("./pparch.js") : null);
   const PC = () => root.polygonClipping || null;
   const EPS = 1e-6;
-  const COL0 = { fill: "#ffffff", grid: "#e3ded2", floorBase: "", paper: "#f7f5f0", wall: "#2b2c30", wallIn: "#7d7f86", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
+  const COL0 = { fill: "#ffffff", grid: "#e3ded2", floorBase: "", paper: "#f7f5f0", wall: "#2b2c30", wallIn: "#7d7f86", seam: "#a3a5ab", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
   const sameZ = (a, b) => Math.abs(a - b) < 0.01;
   const r4 = (x) => Math.round(x * 1e4) / 1e4;
 
@@ -108,6 +108,9 @@
       else if (inQ.length && pc) UI = U;
       U.forEach((poly) => out.fills.push({ rings: poly, col: COL.wall, k: "wall" }));
       if (UI) UI.forEach((poly) => out.fills.push({ rings: poly, col: COL.wallIn || COL.dim, k: "wall", int: true }));
+      // 2.661.0: a typed wall's layer seams (ppwalltype.js) - thin lines across its fill
+      const WT = root.PPWallType;
+      if (WT) rooms.forEach((R) => { if (!R.wt) return; Q.wallQuads(R).forEach((q) => { const T = R.wt[q.i] && !hid("room:" + R.id + ":wall:" + q.i) ? WT.find(A, R.wt[q.i]) : null; if (T) WT.seams(T, q.quad).forEach((sg) => L(sg, COL.seam || COL.dim, "seam")); }); });
     }
     // the doors, windows and openings
     ops.forEach((I) => {
@@ -264,7 +267,7 @@
     return out;
   }
   /* ---------------- three.js: the plan in the Sketcher's view */
-  const ORDER = { contour: 2, floor: 3, furn: 4, wall: 5, sym: 6, label: 7 };
+  const ORDER = { contour: 2, floor: 3, furn: 4, wall: 5, seam: 5, sym: 6, label: 7 };   // 2.661.0: + a wall's layer seams (over its fill)
   function attach(V, AV) {
     const T = V.T, scene = V.scene;
     const G = new T.Group(); G.name = "pp-plan"; G.visible = false; scene.add(G);
@@ -390,7 +393,7 @@
     const t = th || {};
     if (!t.text || !t.bg) return {};
     const mix = (a, b, k) => { const A = rgbOf(a), B = rgbOf(b); return A && B ? "#" + A.map((v, i) => Math.round(v * (1 - k) + B[i] * k).toString(16).padStart(2, "0")).join("") : a; };
-    return { wall: t.text, wallIn: mix(t.text, t.bg, 0.45), ink: t.text, door: t.text, text: t.text, dim: t.dim || t.text, stair: t.dim || t.text, furn: t.dim || t.text, slab: t.dim || t.text,
+    return { wall: t.text, wallIn: mix(t.text, t.bg, 0.45), seam: mix(t.text, t.bg, 0.65), ink: t.text, door: t.text, text: t.text, dim: t.dim || t.text, stair: t.dim || t.text, furn: t.dim || t.text, slab: t.dim || t.text,
       glass: t.accent || t.text, light: t.accent || t.text, fill: mix(t.pan || t.bg, t.bg, 0.35), floorBase: t.pan || t.bg, grid: t.line || mix(t.bg, t.text, 0.15), paper: t.bg };
   }
   const COL = COL0;

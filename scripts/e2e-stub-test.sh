@@ -13017,6 +13017,13 @@ node scripts/test-walls660.js > /tmp/walls660.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui660-ui.js > /tmp/ui660ui.log 2>&1 \
   && ok "2.660.0 browser test: a wall's Interior / exterior, the Eraser on a shared wall takes it out of both rooms (one ↶ step), ↶, 🗑 Take this wall out, ↺ Put back, Shift+Eraser the room - or SKIP without playwright" \
   || { bad "2.660.0 walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui660ui.log | head -14; }
+# ---- 2.661.0 (Tim: "create a docker to create wall structure like brick, air gap, frame, insulation, gyprock etc. wall thickness etc")
+node scripts/test-walltype661.js > /tmp/walltype661.log 2>&1 \
+  && ok "2.661.0 the Sketcher's wall types: the layers, the built-in types, cleaned, a wall built as thick as its type, the outside layer's colour, the seams (3D + floorplan), kept by clean, edited / copied / deleted, the wiring" \
+  || { bad "2.661.0 wall type units"; grep -a "^FAIL" -A2 /tmp/walltype661.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui661-ui.js > /tmp/ui661ui.log 2>&1 \
+  && ok "2.661.0 browser test: the 🧱 Wall types docker - the built-in types, Brick veneer for every exterior wall (one ↶ step), a layer thinner / added / moved / taken out, a wall's panel picks a type, ＋ / ✕ a type, the floorplan's seams - or SKIP without playwright" \
+  || { bad "2.661.0 wall types browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui661ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
