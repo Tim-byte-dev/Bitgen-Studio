@@ -77,6 +77,9 @@
  *     DROPDOWNS     a picked <select>: its Options - every option's words changed (#sel option[value="…"])
  *     PLACEHOLDER / TOOLTIP   the words in an empty box (placeholder) and the hover help (title) of any element (ph / tip)
  *     ALT+CLICK     the app gets the click - open a section, a tab, a docker, a menu - without leaving edit mode
+ *   2.682.0 (Tim: "when in edit theme mode , shift+click runs the buttons actions"):
+ *     SHIFT+CLICK   the same as Alt+click - the button's own action runs (the press, the click, its menu), nothing is
+ *                   picked; Ctrl / ⌘ held with it = edit mode's as before
  * Pure (Node: scripts/test-themeedit.js; lib/themeStore.js uses cleanStyles): cleanSel, cleanRule, cleanStyles,
  * cssStr, compile, splitIcon, selectorsFor, ICON_POS, DYNAMIC, DIALOG_SEL, resizeBy.
  */
@@ -769,7 +772,7 @@
       let y = Math.max(8, Math.min(er.top, root.innerHeight - H - 8));
       panel.style.left = x + "px"; panel.style.top = y + "px";
     }
-    $("teMsg").textContent = `${count(scope)} element(s) · double-click words to change them · Alt+click = the app's click`;
+    $("teMsg").textContent = `${count(scope)} element(s) · double-click words to change them · Shift+click (or Alt+click) = the app's click`;
   }
   function closePanel() { if (panel) { panel.remove(); panel = null; } picked = null; placeHi(null); }
   const OWN_KEYS = ["text", "ph", "tip"];
@@ -819,7 +822,7 @@
   const over = (e) => { if (!on || ours(e.target) || isPage(e.target)) { if (on && !picked) placeHi(null); return; } if (!picked) placeHi(e.target); };
   const block = (e) => {
     if (!on || ours(e.target)) return;
-    if (e.altKey && !e.ctrlKey && !e.metaKey && !sizing && !(moving && moving.up)) return;   // 2.623.0: Alt+click = the app's (a section, a tab, a menu)
+    if ((e.altKey || e.shiftKey) && !e.ctrlKey && !e.metaKey && !sizing && !(moving && moving.up)) return;   // 2.623.0: Alt+click = the app's (a section, a tab, a menu); 2.682.0: Shift+click too - the button's own action runs
     if (e.type === "dblclick") { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); inlineEdit(e.target); return; }   // 2.623.0
     e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
     if (e.type === "pointerdown") swallowClick = false;                                         // 2.540.6: a new press - the last drag's click is history
@@ -945,7 +948,7 @@
     const gear = doc.getElementById("openSettings");
     if (gear && !doc.getElementById("thEditBtn")) {
       const b = doc.createElement("button"); b.className = "ghost"; b.id = "thEditBtn"; b.type = "button"; b.textContent = "🖌";
-      b.title = "Edit theme mode: click anything on screen to style it (font, size, colours, shadows, its icon) - double-click any words to change them, Alt+click uses the app (open a section / a tab) - click 🖌 again for live mode. Ctrl+Shift+Alt+E = the same with the dialogs too (Settings …); Ctrl+S saves the theme and leaves";
+      b.title = "Edit theme mode: click anything on screen to style it (font, size, colours, shadows, its icon) - double-click any words to change them, Shift+click (or Alt+click) runs what it does (a button's action, a section / a tab) - click 🖌 again for live mode. Ctrl+Shift+Alt+E = the same with the dialogs too (Settings …); Ctrl+S saves the theme and leaves";
       b.setAttribute("aria-pressed", "false"); b.onclick = (e) => { e.stopPropagation(); toggle(); };
       gear.insertAdjacentElement("afterend", b);
     }

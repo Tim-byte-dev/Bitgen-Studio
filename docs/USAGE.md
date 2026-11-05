@@ -4116,8 +4116,8 @@ In edit theme mode (🖌) every docker, panel and button can be picked and its w
   pointer rests on anything.
 - **The floating tool panels** (the timeline's stage panels, DLSS 5, SeedVR2, the voice chat) are picked and styled
   like the dockers.
-- **Alt+click** gives the click to the app - open a collapsed section, a tab, a docker or a menu - without leaving edit
-  theme mode, so the parts inside can be reached and edited too.
+- **Shift+click** (or **Alt+click**) gives the click to the app - a button does what it does, and a collapsed section,
+  a tab, a docker or a menu opens - without leaving edit theme mode, so the parts inside can be reached and edited too.
 All of it is kept with the theme (💾 Save theme), and ↺ Clear element styles puts every word back.
 
 ## Edit theme mode: resize, move, hide, rename; leaving saves; folding dockers (2.514.0)
@@ -6303,6 +6303,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.682.0: **Shift+click runs a button in edit theme mode**: with 🖌 on, hold Shift and click a button and it does
+  what it does (Alt+click still works the same way). A plain click still picks it to style.
 - 2.681.0: **The look stays picked**: in the image preview the looks are now a dropdown (📷 Photoreal, 🧸 Pixar, 🧊 2.5D,
   🌸 Anime, 🖍 Cartoon) with **🎨 Change style** beside it. The look you pick stays picked (also after a restart), and
   each press of 🎨 Change style makes the shown picture again in that look. Its tooltip says which image style it uses.
