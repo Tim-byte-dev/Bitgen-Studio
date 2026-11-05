@@ -22,7 +22,7 @@
     return loading;
   }
   const AX = [{ dir: [1, 0, 0], color: "#e0302c", label: "On Red Axis" }, { dir: [0, 1, 0], color: "#2ca02c", label: "On Green Axis" }, { dir: [0, 0, 1], color: "#2c6ce0", label: "On Blue Axis" }];
-  const SNAP = { Origin: "#f59e2c", Endpoint: "#16a34a", Midpoint: "#06b6d4", "On Edge": "#dc2626", "On Face": "#2563eb", "On Ground": "#9ca3af", "On Plane": "#9ca3af", Center: "#a855f7" };
+  const SNAP = { Origin: "#f59e2c", Endpoint: "#16a34a", Midpoint: "#06b6d4", "On Edge": "#dc2626", "On Face": "#2563eb", "On Ground": "#9ca3af", "On Plane": "#9ca3af", Center: "#a855f7", "On Guide": "#4f86c6", "Guide Crossing": "#4f86c6" };   // 2.667.0: construction lines
 
   async function create(host) {
     const T = await three();
@@ -267,6 +267,17 @@
       edges.forEach((E) => { if (!inGroup(E, opt)) return; const s = segScreenDist(m, M.v[E.a], M.v[E.b]); if (s.d < 6 && (!be || s.d < be.d)) be = { d: s.d, E }; });
       const hf = hitFace(ev, opt.group);
       if (be) { const p = closestOnSegToRay(M.v[be.E.a], M.v[be.E.b], r); if (!hf || g.v3.len(g.v3.sub(p, r.o)) <= hf.dist + 1e-3) return found(p, "On Edge", { edge: be.E.key }); }
+      // 2.667.0: onto a construction line (ppcons.js sets V.guides) - where two meet first
+      if (V.guides && V.guides.length) {
+        let bg = null;
+        V.guides.forEach((L) => { const c = g.linesClosest(L.a, L.d, r.o, r.d), sc = screen(c.point); if (sc[2] > 1) return; const d = d2(m, sc); if (d < 7 && (!bg || d < bg.d)) bg = { d, p: c.point, L }; });
+        if (bg) {
+          let x = null;
+          V.guides.forEach((L2) => { if (L2 === bg.L || x || Math.abs(g.v3.dot(L2.d, bg.L.d)) > 0.9999) return; const c1 = g.linesClosest(bg.L.a, bg.L.d, L2.a, L2.d).point, c2 = g.linesClosest(L2.a, L2.d, bg.L.a, bg.L.d).point; if (g.v3.len(g.v3.sub(c1, c2)) < 1e-4) { const sc = screen(c1); if (sc[2] <= 1 && d2(m, sc) < 10) x = c1; } });
+          if (x) return found(x, "Guide Crossing");
+          if (!hf || g.v3.len(g.v3.sub(bg.p, r.o)) <= hf.dist + 1e-3) return found(bg.p, "On Guide");
+        }
+      }
       if (opt.plane) { const p = planeHit(r, opt.plane.n, opt.plane.p); if (p) return found(p, "On Plane", { n: opt.plane.n }); }
       if (hf) return found(hf.point, "On Face", { face: hf.face, n: hf.n });
       const p = planeHit(r, [0, 0, 1], [0, 0, 0]) || g.v3.add(r.o, g.v3.mul(r.d, 10));

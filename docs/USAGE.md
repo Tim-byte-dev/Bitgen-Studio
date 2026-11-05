@@ -6303,6 +6303,20 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.667.0: **The Sketcher's objects panel** (🗂 Outline on its bar) gains:
+  - **Shapes** - every shape the drawing tools made: *Solid n* (closed), *Shape n* (flat or open), *Lines n* (loose lines)
+    and each group under its own name. Click a row to pick the shape, then drag one of its faces in the view to push /
+    pull it. A drag on a group's face push / pulls it too; a click still picks the whole group.
+  - **Construction** - with **Planes** and **Construction lines** inside it.
+    - *Planes:* click a face with ➤ Select to make it the sketch plane, then 📌 (on its chip in the bar, or on its row)
+      keeps it. ＋ on the heading makes a ground / front / side plane through the origin. Click a plane's row to draw in it
+      again; ⊥ looks straight at it.
+    - *Construction lines:* 📏 Tape measure, hold **Ctrl** on the second click - a dashed line through both points that the
+      drawing tools snap onto (*On Guide*, and where two cross).
+    - 👁 hides a plane or line, 🗑 deletes it.
+  - **Rename anything** - double-click a row's name (or F2 on the picked row), type, Enter (Esc leaves it): rooms, room
+    groups, walls, floors, ceilings, skirting, cornices, doors, windows, roofs, stairs, lights, furniture, cameras, shapes,
+    groups, planes and construction lines. One undo step; the properties panel's heading uses the new name.
 - 2.666.0: **△ Roof types** in the Sketcher: the Roof tool's panel (and a picked roof's panel) shows every type as a
   picture - **Gable, Hip, Skillion** (lean-to), **Dutch gable** (a hip with a small gable - a gablet - at the top of each
   end), **Clipped gable** (jerkinhead - a gable whose top is hipped back), **Gambrel** (barn - steep below, shallow above),

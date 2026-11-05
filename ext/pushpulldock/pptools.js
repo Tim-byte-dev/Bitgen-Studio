@@ -38,7 +38,7 @@
     rotate: "Click the centre, click the start, click the end (round the blue axis) · type the angle",
     scale: "Click a point and move away from / toward the middle, click · type the factor",
     offset: "Click a face, move inside it, click · type the distance",
-    tape: "Click a point, click another - their distance",
+    tape: "Click a point, click another - their distance · hold Ctrl on the second click: a construction line through both (in the objects panel's Construction)",
     paint: "Click faces to paint them (Alt+click: take a face's colour) - the colour is in the bar",
     eraser: "Click (or drag over) lines and faces to erase them",
     orbit: "Drag to orbit (the middle button orbits in any tool)", pan: "Drag to pan (the right button pans in any tool)",
@@ -165,6 +165,7 @@
       if (tool === "tape") {
         const s = snapAt(ev, st.a ? { from: st.a } : {});
         if (!st.a) { st.a = s.p; return; }
+        if ((ev.ctrlKey || ev.metaKey) && root.PPCons && v3.len(v3.sub(s.p, st.a)) > 1e-6) { root.PPCons.addGuide(st.a, s.p); st = {}; V.preview({}); return; }   // 2.667.0: Ctrl = a construction line
         const d = v3.len(v3.sub(s.p, st.a)); ctx.status("📏 " + g.fmtLen(d) + "  (Δx " + g.fmtLen(s.p[0] - st.a[0]) + ", Δy " + g.fmtLen(s.p[1] - st.a[1]) + ", Δz " + g.fmtLen(s.p[2] - st.a[2]) + ")"); ctx.vcbValue(g.fmtLen(d));
         st = {}; V.preview({}); return;
       }

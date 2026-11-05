@@ -13059,6 +13059,13 @@ node scripts/test-roofs666.js > /tmp/roofs666.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui666-ui.js > /tmp/ui666ui.log 2>&1 \
   && ok "2.666.0 browser test: the Roof panels' twelve pictures, a click changes the roof (one undo step), each type's settings, a new roof takes the tool's - or SKIP without playwright" \
   || { bad "2.666.0 roof types browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui666ui.log | head -14; }
+# ---- 2.667.0 (Tim: "add construction to the objects panel as a heading, planes and construction lines ... add shapes ... rename anything ... push/pull the shape when dragged")
+node scripts/test-cons667.js > /tmp/cons667.log 2>&1 \
+  && ok "2.667.0 the Sketcher's objects panel: shapes (solid / shape / lines / groups, names on faces), construction planes + lines, renaming any row, the wiring" \
+  || { bad "2.667.0 objects panel units"; grep -a "^FAIL" -A2 /tmp/cons667.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui667-ui.js > /tmp/ui667ui.log 2>&1 \
+  && ok "2.667.0 browser test: a shape row picks it + a face drag push / pulls it (a group's too), double-click renames, 📌 keeps the sketch plane, Tape + Ctrl = a construction line snapped onto, 🗑 - or SKIP without playwright" \
+  || { bad "2.667.0 objects panel browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui667ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

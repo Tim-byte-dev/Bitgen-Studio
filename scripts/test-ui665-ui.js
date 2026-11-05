@@ -43,6 +43,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
       const L = PPArch.addRoom(A, PPArch.rectPts([0, 0], [5, 4]), { name: "Loft", z: 2.7 }); PPArch.addRoof(A, [L.id], { type: "gable" });
       H3PushPull.commit("house", b0); });
     await p.waitForTimeout(300); await ev(() => { document.getElementById("ppName").value = "Smith house"; });
+    await ev(() => { try { window.H3DlgLayout && H3DlgLayout.reset("#ppSheetDlg"); } catch (e) { /* none */ } });   // a place kept by an earlier run: in the middle again
     await p.click("#ppPlans"); await p.waitForTimeout(500);
     const d1 = await ev(() => { const d = document.getElementById("ppSheetDlg"), bar = d && d.querySelector("[data-dlg-drag]"); return d && { open: d.open, modal: d.matches(":modal"), bar: bar && bar.textContent.replace(/\s+/g, " "), sub: document.getElementById("ppSdSub").textContent, page: document.getElementById("ppSdPage").textContent, info: document.getElementById("ppSdInfo").textContent, project: document.getElementById("ppSdProject").value, file: document.getElementById("ppSdFile").value, canvas: document.getElementById("ppSdCanvas").width }; });
     check("📄 Plans: the dialog opens (modal) with its title bar - 📄 Building plans · the model's name", d1 && d1.open && d1.modal && /📄 Building plans/.test(d1.bar) && /Smith house/.test(d1.sub), d1);

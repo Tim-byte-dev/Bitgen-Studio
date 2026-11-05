@@ -13,6 +13,8 @@
  *                                       face's loop it is in (Ctrl+Shift adds the loop)
  *     a face                            picked; dragged = EXTRUDED along its normal (out: +, in: - = a cut); Ctrl+drag =
  *                                       TURNED round its normal - the face just extruded twists its extrusion
+ *     a face of a group (2.667.0)       a click picks the group (as before); dragged = that face pushed / pulled, the group
+ *                                       kept picked
  *   The Measurements box with a face picked: that extrusion (the last one: changed).
  *   panel(kit) - pparchtools' #ppProps with nothing of the building picked: a face's Extrude + Twist, an edge's Length,
  *   Extrude edge (distance + way), Fillet (radius + pieces), a corner's X / Y / Z.
@@ -65,7 +67,16 @@
         ctx.status("• a corner - drag it to move it (Shift: along one axis) · X / Y / Z in the panel"); return true;
       }
       const p = V.pick(ev, { group: ctx.group() });
-      if (!p || (p.grp && p.grp !== ctx.group())) return false;                       // nothing / a group: as before
+      if (!p) return false;
+      if (p.grp && p.grp !== ctx.group()) {                                            // a group: a click picks it (as before) -
+        // 2.667.0 (Tim: "when user clicks a shape allow user to push/pull the shape when dragged"): a drag push / pulls its face
+        if (!p.face || add || ev.ctrlKey || ev.metaKey || ev.altKey) return false;
+        const F = G().face(M(), p.face); if (!F) return false;
+        ctx.setSel({ f: M().f.filter((x) => x.grp === p.grp).map((x) => x.id), e: M().e.filter((x) => x.grp === p.grp).map((x) => x.id), k: [], p: [] });
+        begin(ev, "extrude", { p0: p.point, fid: p.face, n: G().faceNormal(M(), F), grp: p.grp });
+        ctx.status("▣ the group - drag a face to push / pull it · double-click to edit inside");
+        return true;
+      }
       if (p.edge && !p.line) {
         const s = add ? sel() : { f: [], e: [], k: [], p: [] };
         if (ev.ctrlKey || ev.metaKey) {                                             // the loop round the face
@@ -155,7 +166,7 @@
         ctx.restore(d.before); X().moveVerts(M(), d.ids, t);
         ctx.commit("move", d.before); reselect(d.sel, P); return true;
       }
-      if (d.mode === "extrude") return finishExtrude(d.before, d.fid, d.d || 0, 0);
+      if (d.mode === "extrude") { const r = finishExtrude(d.before, d.fid, d.d || 0, 0); if (d.grp) ctx.setSel({ f: M().f.filter((x) => x.grp === d.grp).map((x) => x.id), e: M().e.filter((x) => x.grp === d.grp).map((x) => x.id), k: [], p: [] }); return r; }   // 2.667.0: a group stays picked
       if (d.mode === "turn") {
         if (d.ex) return finishExtrude(d.ex.base, d.ex.fid, d.ex.d, d.tw0 + (d.a || 0));
         ctx.restore(d.before); X().rotateFace(M(), d.fid, d.a || 0); ctx.commit("turn", d.before); ctx.setSel({ f: [d.fid], e: [], k: [], p: [] }); ctx.status("⟳ the face turned " + (d.a || 0) + "°"); return true;

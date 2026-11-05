@@ -51,6 +51,7 @@
     paintViewSel();
     if (root.PPOutline && root.PPOutline.paint) try { root.PPOutline.paint(); } catch (e) { console.warn("Sketcher outline:", e); }   // 2.639.0: the 🗂 outline docker
     if (root.PPWallType && root.PPWallType.paint) try { root.PPWallType.paint(); } catch (e) { console.warn("Sketcher wall types:", e); }   // 2.661.0: the 🧱 wall types docker
+    if (root.PPCons && root.PPCons.paint) try { root.PPCons.paint(); } catch (e) { console.warn("Sketcher construction:", e); }   // 2.667.0: construction planes / lines
     const el = $("ppInfo"); if (!el || !S.M) return;
     const s = S.sel, M = S.M, nf = (s.f || []).length, ne = (s.e || []).length + (s.k || []).length, np = (s.p || []).length;
     let t = "";
@@ -485,5 +486,6 @@
   }
   wire();
   root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, tool: (n) => S.T && S.T.use(n), boot, setColor,
+    setSel: (s) => { S.sel = Object.assign({ f: [], e: [], k: [], p: [] }, s || {}); if (S.V) S.V.setSel(S.sel); info(); },   // 2.667.0: the objects panel picks a shape
     zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot, leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); } };   // 2.663.0: + leavePlan (ppplane.js ⊥ Look at)   // 2.639.0: + commit / snapshot (ppoutline.js)
 })(typeof window !== "undefined" ? window : globalThis);

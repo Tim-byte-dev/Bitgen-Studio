@@ -24,6 +24,7 @@
     "ppmesh.js",
     "ppedit.js",
     "ppplane.js",
+    "ppcons.js",
     "pptools.js",
     "ppdock.js",
     "ppimport.js",

@@ -879,6 +879,7 @@
       const tog = el("button", "ghost pptog", box.classList.contains("open") ? "✕" : "⚙ Settings"); tog.type = "button"; tog.title = "The settings (this docker is narrow - ⛶ maximize it for room)";
       tog.onclick = () => { box.classList.toggle("open"); props(); }; box.appendChild(tog);
       const head = (t) => box.appendChild(el("div", "pph", t));
+      const lbl = (key, def) => ((AR() && AR().labels) || {})[key] || def;   // 2.667.0: a name given in the objects panel
       const row = (label, input, title) => { const r = el("label", "ppr"); r.appendChild(el("span", "", label)); r.appendChild(input); if (title) r.title = title; box.appendChild(r); return input; };
       const numIn = (label, val, on, step, min, max, unit) => { const i = el("input"); i.type = "number"; i.step = step || 0.01; if (min != null) i.min = min; if (max != null) i.max = max; i.value = +(+val).toFixed(3); i.onchange = () => { const v = parseFloat(i.value); if (Number.isFinite(v)) on(Math.min(max != null ? max : Infinity, Math.max(min != null ? min : -Infinity, v))); }; return row(label + (unit ? " (" + unit + ")" : ""), i); };
       const selIn = (label, val, opts, on) => { const s = el("select"); opts.forEach(([v, t]) => { const o = el("option", "", t); o.value = v; if (String(v) === String(val)) o.selected = true; s.appendChild(o); }); s.onchange = () => on(s.value); return row(label, s); };
@@ -936,7 +937,7 @@
         const n = A.rooms.filter((Q) => Q.closed).indexOf(R) + 1;
         if (t.part === "wall" && t.edge != null) {
           const i = t.edge, e = P().edgesOf(R)[i]; if (!e) return false;
-          head("▮ Wall " + (i + 1) + " · " + R.name + " · " + (P().wallKind(AR(), R, i) === "int" ? "interior" : "exterior"));   // 2.660.0
+          head("▮ " + lbl("room:" + R.id + ":wall:" + i, "Wall " + (i + 1)) + " · " + R.name + " · " + (P().wallKind(AR(), R, i) === "int" ? "interior" : "exterior"));   // 2.660.0
           numIn("Length", e.L, ch((v) => { if (!P().setWallLength(AR(), id, i, v)) ctx.status("▮ that length would turn the room inside out"); }), 0.05, 0.1, 500, "m");
           const prof = P().profile(R, i), flat = prof.length === 2 && Math.abs(prof[0][1] - prof[1][1]) < 1e-6;
           if (flat) numIn("Height", prof[0][1], ch((v) => P().setWallHeight(AR(), id, i, v)), 0.05, 0.05, 50, "m");
@@ -1153,7 +1154,7 @@
         box.appendChild(el("div", "pphint", "Drag it (Select) along its wall, onto another wall" + (op.kind !== "door" ? ", or up / down (its elevation)" : "") + ". Drag a grip (the small squares on its sides, top" + (op.kind !== "door" ? " and bottom" : "") + ") to resize it."));
       } else if (asel.ak === "light") {
         const L = x, def = P().LIGHTS[L.type];
-        head("💡 " + def.label);
+        head("💡 " + lbl("light:" + asel.id, def.label));
         selIn("Type", L.type, Object.keys(P().LIGHTS).map((k) => [k, P().LIGHTS[k].label]), ch((v) => { const d0 = P().LIGHTS[L.type], d1 = P().LIGHTS[v]; if (L.lm === d0.lm) L.lm = d1.lm; L.type = v; if (d1.mount === "ceil") { const sp = P().lightSpot(AR(), v, [L.x, L.y], null); L.z = sp.z; } }));
         chkIn("On", L.on, ch((v) => { L.on = v; }));
         kel(L.col, ch((v) => { L.col = v; }));
@@ -1165,14 +1166,14 @@
         box.appendChild(el("div", "pphint", "🌙 Night (in the bar) turns the sun down - the lights light the rooms. Drag a light (Select) to move it."));
       } else if (asel.ak === "roof") {
         const rf = x;
-        head("△ Roof · " + rf.rooms.length + " room" + (rf.rooms.length > 1 ? "s" : ""));
+        head("△ " + lbl("roof:" + rf.id, "Roof") + " · " + rf.rooms.length + " room" + (rf.rooms.length > 1 ? "s" : ""));
         roofFields(rf, (k) => ch((v) => { rf[k] = v; }));
         numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
         matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "stair") {
-        const s = x; head("▟ Stairs · " + Math.max(2, Math.round(s.rise / 0.18)) + " steps");
+        const s = x; head("▟ " + lbl("stair:" + s.id, "Stairs") + " · " + Math.max(2, Math.round(s.rise / 0.18)) + " steps");
         numIn("Width", s.w, ch((v) => { s.w = v; }), 0.05, 0.3, 10, "m"); numIn("Length", s.len, ch((v) => { s.len = v; }), 0.05, 0.3, 50, "m"); numIn("Height (up)", s.rise, ch((v) => { s.rise = v; }), 0.05, 0.1, 20, "m");
         numIn("Starts at", s.z, ch((v) => { s.z = v; }), 0.05, -100, 1000, "m"); matIn("Colour", s.col, ch((v) => { s.col = v; }));
         btns([["⟳ 90°", ch(() => { s.ang += 90; })], ["🗑 Delete", eraseSel]]);

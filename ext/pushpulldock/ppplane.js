@@ -47,7 +47,8 @@
       const plan = $("ppPlan"); if (plan && plan.parentNode === bar) { plan.after(look); look.after(c); } else { bar.appendChild(look); bar.appendChild(c); }
     }
     c.style.display = plane ? "inline-flex" : "none";
-    c.innerHTML = plane ? "✎ " + String(plane.label).replace(/[&<>"]/g, "") + ' <button type="button" class="ghost" id="ppPlaneOff" title="End the sketch plane (Esc)" style="padding:0 3px;font-size:11px">✕</button>' : "";
+    c.innerHTML = plane ? "✎ " + String(plane.label).replace(/[&<>"]/g, "") + ' <button type="button" class="ghost" id="ppPlaneKeep" title="Keep this plane - it goes in the objects panel\'s Construction (click it there to draw in it again)" style="padding:0 3px;font-size:11px">📌</button><button type="button" class="ghost" id="ppPlaneOff" title="End the sketch plane (Esc)" style="padding:0 3px;font-size:11px">✕</button>' : "";
+    const keep = $("ppPlaneKeep"); if (keep) keep.onclick = () => { if (root.PPCons) root.PPCons.keepPlane(); };   // 2.667.0
     const off = $("ppPlaneOff"); if (off) off.onclick = () => clear();
     const lk = $("ppLookAt"); if (lk) lk.classList.toggle("on", !!plane);
   }
@@ -55,10 +56,10 @@
   function set(n, p, label, size) {
     if (!n || !p || !(Math.hypot(n[0], n[1], n[2]) > 0.5)) return;
     plane = { n: norm(n), p: [p[0], p[1], p[2]], label: label || "a face", size: size || 1.5 };
-    draw(); chip();
+    draw(); chip(); if (root.PPCons) try { root.PPCons.paint(); } catch (e) { /* fine */ } if (root.PPOutline && root.PPOutline.paint) try { root.PPOutline.paint(); } catch (e) { /* fine */ }
     if (root.H3TestEvent) try { root.H3TestEvent("sketchplane", plane.label); } catch (e) { /* the 🧪 list */ }
   }
-  function clear() { if (!plane) return; plane = null; draw(); chip(); status("✎ the sketch plane ended - the tools draw on the ground / the face under the pointer again"); }
+  function clear() { if (!plane) return; plane = null; draw(); chip(); if (root.PPCons) try { root.PPCons.paint(); } catch (e) { /* fine */ } if (root.PPOutline && root.PPOutline.paint) try { root.PPOutline.paint(); } catch (e) { /* fine */ } status("✎ the sketch plane ended - the tools draw on the ground / the face under the pointer again"); }
   function lookAt() {
     const v = V(); if (!v || !v.lookAlong) return;
     if (!plane) { status("⊥ Look at: click a face first (➤ Select) - it becomes the sketch plane, then ⊥ looks straight at it"); return; }

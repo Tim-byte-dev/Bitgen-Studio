@@ -105,7 +105,28 @@
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], wtypes: [] }; }   // 2.653.0: + the ground (ppterrain.js)
+  /** 2.667.0: construction - planes {id, name, p, n (unit), size, hidden} and lines {id, name, a, b (two points it runs
+   *  through - drawn far past them), hidden} */
+  function cleanCons(c) {
+    const v3 = (q) => (Array.isArray(q) && q.length >= 3 && q.slice(0, 3).every((x) => Number.isFinite(+x)) ? [+q[0], +q[1], +q[2]] : null);
+    const o = c && typeof c === "object" ? c : {}, idOf = (x) => (Number.isInteger(+x) && +x > 0 ? +x : 0);
+    const planes = (Array.isArray(o.planes) ? o.planes : []).map((P0) => {
+      if (!P0) return null; const p = v3(P0.p), n0 = v3(P0.n); if (!p || !n0) return null; const L = Math.hypot(n0[0], n0[1], n0[2]); if (!(L > 1e-6)) return null;
+      return { id: idOf(P0.id), name: String(P0.name || "Plane").slice(0, 60), p, n: n0.map((x) => x / L), size: num(P0.size, 2, 0.2, 100), hidden: !!P0.hidden };
+    }).filter(Boolean).slice(0, 500);
+    const lines = (Array.isArray(o.lines) ? o.lines : []).map((L0) => {
+      if (!L0) return null; const a = v3(L0.a), b = v3(L0.b); if (!a || !b || Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) < 1e-6) return null;
+      return { id: idOf(L0.id), name: String(L0.name || "Construction line").slice(0, 60), a, b, hidden: !!L0.hidden };
+    }).filter(Boolean).slice(0, 2000);
+    return { planes, lines };
+  }
+  /** 2.667.0: names given in the objects panel to rows that have none of their own (walls, floors, roofs, lights …): {key: name} */
+  function cleanLabels(o) {
+    const out = {}; if (!o || typeof o !== "object") return out;
+    Object.keys(o).slice(0, 5000).forEach((k) => { const v = String(o[k] == null ? "" : o[k]).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 60); if (v && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)) out[k] = v; });
+    return out;
+  }
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], wtypes: [], cons: { planes: [], lines: [] }, labels: {} }; }   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
@@ -169,9 +190,12 @@
     A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);
     A.pools = root.PPSite ? root.PPSite.clean(o.pools) : (Array.isArray(o.pools) ? JSON.parse(JSON.stringify(o.pools)) : []);
     A.drives = root.PPSite ? root.PPSite.cleanDrives(o.drives) : (Array.isArray(o.drives) ? JSON.parse(JSON.stringify(o.drives)) : []);   // 2.659.0: 🛣 driveways   // 2.657.0: 🏊 pools (ppsite.js)                       // 2.651.0: the picture materials + the background
+    // 2.667.0 (Tim: "add construction to the objects panel as a heading, planes and construction lines will live in that dropdown
+    // ... user can rename anything in the objects panel"): construction planes / lines + the names given to rows
+    A.cons = cleanCons(o.cons); A.labels = cleanLabels(o.labels);
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
-    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups, A.pools, A.drives);
+    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups, A.pools, A.drives, A.cons.planes, A.cons.lines);
     all.forEach((x) => { mx = Math.max(mx, x.id + 1); });
     all.forEach((x) => { if (!x.id || seen.has(x.id)) x.id = mx++; seen.add(x.id); });
     A.n = mx;
@@ -1331,7 +1355,7 @@
   /** 2.664.0: an end piece's / a corner's size (w across, l past the end; null = as the wall) */
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
-    DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
+    cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
