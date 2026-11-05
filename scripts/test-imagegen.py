@@ -47,7 +47,7 @@ def style(**kw):
 # ------------------------------------------------------- the catalogue itself
 check("catalogue lists the five requested architectures",
       sorted(a["id"] for a in G.archs())
-      == sorted(["anima", "flux", "flux2klein9b", "flux3klein", "krea2", "sdxl", "z-image", "qwen-image"]),
+      == sorted(["anima", "flux", "flux2klein9b", "flux3klein", "krea2", "moss", "fibo2", "ph3", "sdxl", "z-image", "qwen-image"]),   # 2.678.0: + moss, fibo2 (it lagged), ph3
       [a["id"] for a in G.archs()])
 for a in G.archs():
     check(f"{a['id']}: has a model flag, defaults and te slots",

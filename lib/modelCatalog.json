@@ -30,6 +30,10 @@
       "label": "Images - MOSS-Image (the MOSS-Image styles; Settings ▸ Add-ons ▸ MOSS-Image picks what to download)"
     },
     {
+      "id": "ph3",
+      "label": "Images - P-H3 Image (PrunaAI's image model on MiniMax H3; Settings ▸ Add-ons ▸ P-H3 Image)"
+    },
+    {
       "id": "fibo",
       "label": "Image editing - Fibo 2.0 (the Fibo 2.0 styles; Settings ▸ Add-ons ▸ Fibo 2.0 picks what to download)"
     },
@@ -1281,6 +1285,50 @@
       "dest": "comfy/vae",
       "size": 250000000,
       "for": "every MOSS-Image style"
+    },
+    {
+      "id": "ph3_lora",
+      "group": "ph3",
+      "label": "P-H3 Image LoRA (bf16)",
+      "repo": "PrunaAI/P-H3-Image-Comfy",
+      "file": "loras/p-h3-image_lora_bf16.safetensors",
+      "as": "p-h3-image_lora_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 2000000000,
+      "for": "the P-H3 Image styles - P-H3 on the MiniMax H3 FL2VA transformer (no second big download)"
+    },
+    {
+      "id": "ph3_te",
+      "group": "ph3",
+      "label": "P-H3 Image text encoder (int8)",
+      "repo": "PrunaAI/P-H3-Image-Comfy",
+      "file": "text_encoders/p-h3-image_text_encoder_int8_convrot.safetensors",
+      "as": "p-h3-image_text_encoder_int8_convrot.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 5100000000,
+      "for": "every P-H3 Image style (CLIPLoader type minimax)"
+    },
+    {
+      "id": "ph3_vae",
+      "group": "ph3",
+      "label": "P-H3 Image VAE (int8)",
+      "repo": "PrunaAI/P-H3-Image-Comfy",
+      "file": "vae/p-h3-image_vae_int8_convrot.safetensors",
+      "as": "p-h3-image_vae_int8_convrot.safetensors",
+      "dest": "comfy/vae",
+      "size": 3100000000,
+      "for": "every P-H3 Image style"
+    },
+    {
+      "id": "ph3_up",
+      "group": "ph3",
+      "label": "P-H3 Image prompt upsampler (w4a8)",
+      "repo": "PrunaAI/P-H3-Image-Comfy",
+      "file": "text_encoders/p-h3-image_prompt_upsampler_w4a8.safetensors",
+      "as": "p-h3-image_prompt_upsampler_w4a8.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 6700000000,
+      "for": "every P-H3 Image style - turns a short request into the full prompt the model wants (Qwen3.5 9B)"
     },
     {
       "id": "fibo_edit_w4a8",

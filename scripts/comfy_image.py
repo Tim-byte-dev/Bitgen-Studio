@@ -100,6 +100,42 @@ def upstream(graph, nid, key):
     return v[0] if _is_link(v) else None
 
 
+RATIOS = ((1, 1), (4, 3), (3, 4), (3, 2), (2, 3), (16, 9), (9, 16), (21, 9), (9, 21), (5, 4), (4, 5))
+
+
+def aspect_of(w, h):
+    """2.678.0: a size as the nearest usual ratio, "16:9" ... (nothing known = "1:1")"""
+    try:
+        w, h = float(w), float(h)
+    except (TypeError, ValueError):
+        return "1:1"
+    if w <= 0 or h <= 0:
+        return "1:1"
+    import math
+    a, b = min(RATIOS, key=lambda r: abs(math.log((w / h) / (r[0] / r[1]))))
+    return f"{a}:{b}"
+
+
+def fill_template(graph, nid, prompt, w=None, h=None):
+    """2.678.0: the prompt node's own text holds {prompt} (and maybe {aspect}) -> that text with the prompt (and the
+    picture's ratio) put in; otherwise the prompt as it is."""
+    node = graph.get(nid) or {}
+    key = widget_key(graph, nid, "text") or prompt_key(node)
+    src = node
+    if key == "value" or key is None:
+        src = node
+    cur = _ins(src).get(key) if key else None
+    if not isinstance(cur, str):
+        # a prompt promoted to a primitive: the primitive's value
+        for v in _ins(node).values():
+            if _is_link(v) and is_primitive(graph.get(v[0])):
+                cur = _ins(graph.get(v[0])).get("value")
+                break
+    if isinstance(cur, str) and "{prompt}" in cur:
+        return cur.replace("{aspect}", aspect_of(w, h)).replace("{prompt}", str(prompt or "").strip())
+    return prompt
+
+
 def is_primitive(node):
     """A ComfyUI Primitive* node, whose `value` widget IS the widget.
 
@@ -387,6 +423,12 @@ def is_lora_node(node):
     return "loraloader" in str((node or {}).get("class_type") or "").lower()
 
 
+def is_fixed_lora(node):
+    """2.678.0: a LoRA that is PART OF THE MODEL (P-H3 Image's LoRA on the MiniMax H3 transformer) - titled "... (fixed)"
+    in the workflow - is never one of a style's LoRA slots: not filled, never bypassed."""
+    return is_lora_node(node) and "(fixed)" in str(((node or {}).get("_meta") or {}).get("title") or "").lower()
+
+
 def lora_chain(graph):
     """Existing LoRA nodes, ordered so the first is nearest the model loader.
 
@@ -394,7 +436,7 @@ def lora_chain(graph):
     another LoRA node sits after it. Ordering matters because slot 1 of the
     style has to mean the same node every time.
     """
-    loras = [nid for nid, n in graph.items() if is_lora_node(n)]
+    loras = [nid for nid, n in graph.items() if is_lora_node(n) and not is_fixed_lora(n)]
     if len(loras) < 2:
         return loras
     depth = {}
@@ -851,6 +893,10 @@ def patch(graph, style, params):
         return key
 
     prompt_txt = str(params.get("prompt") or "")
+    # 2.678.0: a prompt node that is a TEMPLATE ({prompt}, {aspect}) - P-H3 Image's upsampler reads
+    # "Aspect ratio: 4:3\nRequest: ..." - gets the words put into it
+    if r["positive"]:
+        prompt_txt = fill_template(graph, r["positive"], prompt_txt, pick("width"), pick("height"))
     if r["positive"]:
         pkey = write_text(r["positive"], prompt_txt)
         report.append(f"prompt: node {r['positive']}.{pkey}")

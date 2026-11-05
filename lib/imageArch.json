@@ -217,6 +217,36 @@
       "note": "2.566.0: MOSS-Image (OpenMOSS, 5B, Apache-2.0) renders through ComfyUI only (ComfyUI 0.42.2 or newer - the moss_image text encoder type). 25 steps, cfg 2.5, er_sde with skip layer guidance on layer 22 - ComfyUI's template (the official pipeline: 50 steps, cfg 3). SFT (instruction-tuned) or Base (for LoRAs); int8_convrot (5.4 GB) or bf16 in models/diffusion_models. Settings ▸ Add-ons ▸ MOSS-Image downloads them."
     },
     {
+      "id": "ph3",
+      "label": "P-H3 Image (PrunaAI on MiniMax H3 - ComfyUI)",
+      "model_flag": "--diffusion-model",
+      "vae": {
+        "flag": "--vae",
+        "required": true,
+        "hint": "p-h3-image_vae_int8_convrot.safetensors"
+      },
+      "te": [
+        {
+          "flag": "--llm",
+          "label": "P-H3 text encoder",
+          "required": true,
+          "hint": "p-h3-image_text_encoder_int8_convrot.safetensors (CLIPLoader type minimax)"
+        }
+      ],
+      "extra": [],
+      "negative": false,
+      "comfy_only": true,
+      "defaults": {
+        "steps": 8,
+        "cfg": 1,
+        "clip_skip": -1,
+        "width": 2048,
+        "height": 2048,
+        "sampler": "euler"
+      },
+      "note": "2.678.0: P-H3 Image (PrunaAI/P-H3-Image-Comfy, MiniMax H3 Community License) renders through ComfyUI only - its own nodes (PH3ImageConditioning, MiniMaxH3SigmaShift, TextGenerateV2), in ComfyUI from 0.44 (master / the nightly until it ships). Comfy-Org's templates: the MiniMax H3 FL2VA transformer + the P-H3 LoRA, its int8 text encoder + VAE, the w4a8 prompt upsampler (a short request -> the full prompt), 8 fixed sigmas, er_sde, no CFG / negative. Text to image about 4-8 MP; edits up to 8 pictures (<image1> is edited). Settings ▸ Add-ons ▸ P-H3 Image downloads them."
+    },
+    {
       "id": "fibo2",
       "label": "Fibo 2.0 (Edit Turbo / Dev - ComfyUI)",
       "model_flag": "--diffusion-model",

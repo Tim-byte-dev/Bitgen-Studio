@@ -6303,6 +6303,16 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.678.0: **P-H3 Image** (PrunaAI/P-H3-Image-Comfy - PrunaAI's image model on MiniMax H3): **Settings ▸ Add-ons ▸
+  P-H3 Image** downloads its LoRA (2 GB), text encoder (int8), VAE (int8) and prompt upsampler (w4a8) - about 17 GB - and
+  uses the MiniMax H3 FL2VA transformer the video already has (it is downloaded only if it is missing). Two styles come
+  with it: **P-H3 Image** (text to image, 2048 x 2048 by default - up to ~8 MP; your prompt goes to its upsampler as
+  "Aspect ratio: … Request: …") and **P-H3 Image Edit** (put the picture to edit first in the reference dock, up to 7 more
+  as references; the result keeps its shape at about 4 MP). 8 steps, no CFG, no negative prompt. P-H3 Image Edit is also an
+  edit model for the image editor's ✨ Edit and the preview's 🎨 Style. It needs a ComfyUI with the P-H3 nodes - they are on
+  ComfyUI's master branch / the nightly until the next release (0.44); an older ComfyUI is refused with the words to update.
+  Licence: the MiniMax H3 Community License (it excludes the EU, UK, Republic of Korea and the US without a licence from
+  MiniMax; show "Powered by MiniMax H3"). About 21-31 GB of VRAM at 8 MP; NVIDIA Ampere or newer for the int8 / w4a8 files.
 - 2.677.0: **The restyle's progress under the picture**: while a 🎨 Style ▾ render runs, a thin bar under the picture
   (above the preview's buttons) shows it - a moving stripe while it is queued and the models load, then the bar filling
   with the sampler's steps ("🧸 Pixar · step 12 of 25 · 48 %"); green when it is done (it fades as the result opens), red

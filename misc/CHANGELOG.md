@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.678.0** — P-H3 Image (PrunaAI on MiniMax H3): Text-to-image and Edit Styles With Its Prompt Upsampler, Settings ▸ Add-ons ▸ P-H3 Image (~17 GB on the MiniMax H3 Transformer the Video Uses), an Edit Model for the Editor and 🎨 Style
 - **2.677.0** — 🎨 Restyle Progress Bar Under the Picture in the Image Preview: Queued / Loading the Models, the Sampler's Steps Filling It, Done (Green) or Failed (Red)
 - **2.676.0** — 🎨 Style ▾ in the Image Preview: Remake the Picture as Photoreal, Pixar, 2.5D, Anime or Cartoon With the Prompt's Style (Basic Settings' Values When Override Style Is On)
 - **2.675.0** — 📌 Docker Pins Kept When You Switch Layout (⊞ Docker Configs, Workspaces, 🗂 Layouts, ↺ Reset); Right-click a Pin ▸ ↺ Reset Pin / 📌 Pin at This Size

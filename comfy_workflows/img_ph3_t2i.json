@@ -1,0 +1,267 @@
+{
+  "_comment": {
+    "about": "2.678.0 P-H3 Image text to image (PrunaAI/P-H3-Image-Comfy, Comfy-Org's image_p_h3_t2i template, unfolded to the API format). The MiniMax H3 FL2VA transformer + the P-H3 LoRA (node 19, '(fixed)' = part of the model, never a style's LoRA slot - scripts/comfy_image.py), MiniMaxH3SigmaShift 1 / 1, the int8 text encoder + VAE (CLIPLoader type minimax), the w4a8 prompt upsampler (TextGenerateV2, greedy, thinking) turning the request into the full prompt, PH3ImageConditioning, 8 fixed sigmas, er_sde, BasicGuider (no CFG / negative). The prompt node 24 is a template: {prompt} = the request, {aspect} = the picture's shape (W:H). LoRA slots 101..104 (bypassed when empty). Needs ComfyUI with the P-H3 nodes (0.44 / master).",
+    "ph3": {
+      "prompt_template": "node 24 value"
+    }
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "MiniMax H3 FL2VA transformer"
+    }
+  },
+  "19": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "p-h3-image_lora_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "P-H3 Image LoRA (fixed)"
+    }
+  },
+  "101": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "19",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "LoRA slot 1"
+    }
+  },
+  "102": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "101",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "LoRA slot 2"
+    }
+  },
+  "103": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "102",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "LoRA slot 3"
+    }
+  },
+  "104": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "103",
+        0
+      ],
+      "lora_name": "",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "LoRA slot 4"
+    }
+  },
+  "18": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift_video": 1.0,
+      "shift_audio": 1.0
+    },
+    "_meta": {
+      "title": "Sigma shift 1 / 1"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "p-h3-image_text_encoder_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "P-H3 text encoder"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "p-h3-image_vae_int8_convrot.safetensors"
+    },
+    "_meta": {
+      "title": "P-H3 VAE"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "p-h3-image_prompt_upsampler_w4a8.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "P-H3 prompt upsampler"
+    }
+  },
+  "24": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {
+      "value": "Aspect ratio: {aspect}\nRequest: {prompt}"
+    },
+    "_meta": {
+      "title": "Prompt (template)"
+    }
+  },
+  "33": {
+    "class_type": "TextGenerateV2",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "prompt": [
+        "24",
+        0
+      ],
+      "max_length": 1536,
+      "sampling_mode": "off",
+      "thinking": true,
+      "use_default_template": true,
+      "mtp": "auto"
+    },
+    "_meta": {
+      "title": "Prompt upsampler (the full prompt)"
+    }
+  },
+  "9": {
+    "class_type": "PH3ImageConditioning",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "prompt": [
+        "33",
+        0
+      ],
+      "width": 2048,
+      "height": 2048
+    },
+    "_meta": {
+      "title": "p-h3-image Conditioning"
+    }
+  },
+  "10": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "18",
+        0
+      ],
+      "conditioning": [
+        "9",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "er_sde"
+    }
+  },
+  "12": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 0
+    }
+  },
+  "13": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "1.0, 0.984753, 0.967905, 0.951688, 0.925372, 0.881923, 0.810083, 0.528718, 0.0"
+    },
+    "_meta": {
+      "title": "8 steps"
+    }
+  },
+  "14": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "12",
+        0
+      ],
+      "guider": [
+        "10",
+        0
+      ],
+      "sampler": [
+        "11",
+        0
+      ],
+      "sigmas": [
+        "13",
+        0
+      ],
+      "latent_image": [
+        "9",
+        1
+      ]
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "filename_prefix": "p-h3-image"
+    }
+  }
+}
