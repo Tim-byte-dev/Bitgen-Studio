@@ -6303,6 +6303,18 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.673.0: **🛤 Road tool** in the Sketcher (Ground ▸ 🛤 Road): pick a type - **Dirt road**, **Street**, **Road**,
+  **One-way road**, **Avenue** (4 lanes, a planted median) or **Highway** (6 lanes, a barrier, guard rails) - and click
+  along the way; double-click or Enter ends the road. It follows the ground (levelled across). Clicking near a road's end
+  carries on from it, clicking on a road makes a T (Shift: no snapping). Each type has a steepest grade (dirt 20 %,
+  street 15 %, road / one-way 12 %, avenue 8 %, highway 6 %); steeper ground is flagged ⚠ and the panel offers
+  **⛏ Cut the ground** (an even grade, the ground cut and filled to it with 1 : 2 batters - the m³ shown) or
+  **🚇 Tunnel / bridge** (through high ground in a tunnel with portals, over a deep valley on a bridge with piers);
+  *When too steep* can do either at once. Junctions are found by themselves: **traffic lights** where major roads meet
+  (with crossings and stop lines), **stop signs** where a minor road joins a major one, an all-way stop where two streets
+  cross, **give way** where a street ends on a street; plus speed signs, one-way and street-name signs. *Traffic keeps
+  to the* left (Australia, UK - white centre lines) or right (US - yellow). Alt+click a road to drag its points; ➤ Select
+  picks it (name, type, past steep ground, ⛏ Grade again, 🗑). The floorplan and 📄 Plans draw the roads with their names.
 - 2.672.0: **MOSS-Image stand-ins**: when ComfyUI does not have the style's small FLUX.2 VAE (flux2-vae_small) but has the
   full one (flux2-vae), or has another Qwen3.5 9B text encoder (w4a8 / int8 / bf16) than the one asked for, the render uses
   the one you have and says so in the log. Settings ▸ Add-ons ▸ MOSS-Image installs just the text encoder + VAE when no

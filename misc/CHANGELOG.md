@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.673.0** — 🛤 Sketcher Road Tool Like SimCity: Dirt Road, Street, Road, One-way, Avenue, Highway on the Ground; Too Steep = ⛏ Cut the Ground or 🚇 Tunnel / Bridge; Traffic Lights, Stop / Give-way / Speed / Street-name Signs at Junctions
 - **2.672.0** — MOSS-Image: a Missing VAE / Text Encoder Swapped for the Same Model in Another Size (flux2-vae for flux2-vae_small, the Qwen3.5 9B Variants); the Add-on Installs Just the Text Encoder + VAE for Your Own MOSS Model
 - **2.671.0** — Sketcher Gutter Profiles: Quad, Half Round, OG, Square Line Built In; Draw Your Own in the Profile Editor (Lines + Bézier Curves) - a Roof's Gutter Swept With It
 - **2.670.0** — Sketcher Profile Editor With Bézier Curves: Arcs as One Curve (Two Nodes), Double-click Adds a Node, Right-click Convert to Curve / Line

@@ -591,6 +591,7 @@
       else if (t.ak === "item") { x.x = Math.round((x.x + d[0]) * 1000) / 1000; x.y = Math.round((x.y + d[1]) * 1000) / 1000; x.z = floorAt(A, [x.x, x.y]); ctx.status("🛋 " + root.PPFurn.label(x) + " moved " + fmt(Math.hypot(d[0], d[1]))); }
       else if (t.ak === "slab" || t.ak === "pool") { x.pts = x.pts.map((p) => [p[0] + d[0], p[1] + d[1]]); }   // 2.657.0: + a pool
       else if (t.ak === "drive") { x.nodes.forEach((n) => { n.p = [n.p[0] + d[0], n.p[1] + d[1]]; }); }   // 2.659.0: a driveway
+      else if (t.ak === "road") { x.nodes.forEach((n) => { n.p = [n.p[0] + d[0], n.p[1] + d[1]]; }); }   // 2.673.0: a road (⛏ Grade again in its panel)
       AV().rebuild();
       return true;
     }
@@ -1239,6 +1240,8 @@
         root.PPSite.panel({ head, numIn, selIn, chkIn, matIn, colIn, btns, ch, erase: eraseSel, hint: (t) => box.appendChild(el("div", "pphint", t)) }, x);
       } else if (asel.ak === "drive" && root.PPSite) {                     // 2.659.0: 🛣
         root.PPSite.panelDrive({ head, numIn, selIn, chkIn, matIn, colIn, btns, ch, erase: eraseSel, hint: (t) => box.appendChild(el("div", "pphint", t)) }, x);
+      } else if (asel.ak === "road" && root.PPRoads) {                     // 2.673.0: 🛤
+        root.PPRoads.panel({ head, numIn, selIn, chkIn, matIn, colIn, btns, ch, txtIn, erase: eraseSel, hint: (t) => box.appendChild(el("div", "pphint", t)) }, x, AR());
       }
       ctx.resized && ctx.resized();
     }

@@ -187,7 +187,7 @@
     const kinds = [];
     S.fills.forEach((f) => {
       let fill = f.col;
-      if (f.k === "floor" && !o.shade && !(f.tag && (f.tag.ak === "pool" || f.tag.ak === "drive"))) fill = "#ffffff";
+      if (f.k === "floor" && !o.shade && !(f.tag && (f.tag.ak === "pool" || f.tag.ak === "drive" || f.tag.ak === "road"))) fill = "#ffffff";
       kinds.push({ o: ORDER[f.k] || 5, sub: 0, p: { t: "poly", rings: f.rings, fill, stroke: f.k === "wall" ? fill : null, lw: f.k === "wall" ? 0.1 : 0 } });
     });
     S.lines.forEach((l) => kinds.push({ o: ORDER[l.k] || 6, sub: 1, p: { t: "line", pts: l.pts, col: l.col, lw: LW[l.k] || 0.18, dash: l.dash ? [1.2, 0.8] : null } }));

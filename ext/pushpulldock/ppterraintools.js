@@ -23,7 +23,7 @@
 (function (root) {
   "use strict";
   const PT = () => root.PPTerrain, P = () => root.PPArch;
-  const TOOLS = [["terrain", "⛰", "Terrain", "Alt+G"], ["pool", "🏊", "Pool", ""], ["drive", "🛣", "Driveway", ""]];   // 2.659.0: + 🛣   // 2.657.0: + 🏊 Pool (no key - every letter is taken)          // every letter is a tool already (G = Group) - Alt+G (ppdock.js)
+  const TOOLS = [["terrain", "⛰", "Terrain", "Alt+G"], ["pool", "🏊", "Pool", ""], ["drive", "🛣", "Driveway", ""], ["road", "🛤", "Road", ""]];   // 2.673.0: + 🛤 Road (pproadtools.js)   // 2.659.0: + 🛣   // 2.657.0: + 🏊 Pool (no key - every letter is taken)          // every letter is a tool already (G = Group) - Alt+G (ppdock.js)
   const MODES = [["raise", "⬆", "Raise"], ["lower", "⬇", "Lower"], ["smooth", "≈", "Smooth"], ["flatten", "▬", "Flatten"], ["contour", "〰", "Contour"], ["pad", "✂", "Cut / fill"]];   // 2.656.0: + cut / fill pads
   const HINTS = {
     raise: "⛰ Raise - press and drag on the ground (Shift: lower) · [ / ] the brush size · type a size in metres",
@@ -36,7 +36,8 @@
   const HINT = { terrain: "Shape the ground - raise, lower, smooth, flatten with a brush, or draw contour lines and the ground follows them",
     drive: "🛣 Driveway - click its points along the way (it curves through them) · double-click / Enter ends · click a driveway to edit its curve: drag its points (□) and handles (○), Alt = one handle only, Delete = the point",
     pool: "🏊 Pool - click a corner, click the opposite corner (or type  8,4) - a pool with edge tiles or decking; Free shape: click its corners, back on the first" };
-  const VCB = { terrain: "Size / Elevation", pool: "Length,Width", drive: "Width" };
+  HINT.road = "🛤 Road - pick a type, click along the way (it follows the ground) · double-click / Enter ends · Alt+click a road: drag its points";
+  const VCB = { terrain: "Size / Elevation", pool: "Length,Width", drive: "Width", road: "" };
   const OPT0 = { mode: "raise", r: 3, s: 0.15, target: 0, cz: 0, cstep: 0.5, auto: true, margin: 2, lo: 0, hi: 10, padAuto: true, padZ: 0, batter: 2, padMode: "both",
     driveW: 3, driveKerb: false,
     poolShape: "rect", poolAuto: true, poolZ: 0, shallow: 1.0, deep: 1.8, edge: "tiles", edgeW: 0.35, deckW: 1.5, poolLevel: true };   // 2.657.0
@@ -48,7 +49,9 @@
     try { const s = JSON.parse(root.localStorage.getItem("pp.terrainopt") || "{}"); Object.keys(OPT0).forEach((k) => { if (typeof s[k] === typeof OPT0[k]) O[k] = s[k]; }); } catch (e) { /* fine */ }
     const keepOpt = () => { try { root.localStorage.setItem("pp.terrainopt", JSON.stringify(O)); } catch (e) { /* fine */ } };
     const AR = () => P().of(ctx.model()), TR = () => AR().terrain || null, TV = () => (ctx.terrainView ? ctx.terrainView() : null);
-    const owns = (n) => n === "terrain" || n === "pool" || n === "drive";
+    const owns = (n) => n === "terrain" || n === "pool" || n === "drive" || n === "road";
+    // 2.673.0: the 🛤 Road tool lives in pproadtools.js - every hook below hands it on while it is on
+    const RT = root.PPRoadTools && root.PPRoads ? root.PPRoadTools.create(ctx, { groundAt: (ev) => groundAt(ev), before: () => before(), TV: () => TV(), TR: () => TR(), AR: () => AR(), fmt: (m) => fmt(m) }) : null;
     let tname = null, editId = null;                                     // editId: 2.659.0 the driveway whose curve is shown                                                    // 2.657.0: which of them is on
     const fmt = (m) => (root.PPGeo && root.PPGeo.fmtLen ? root.PPGeo.fmtLen(m) : (+m).toFixed(2) + " m");
     const hint = () => HINTS[O.mode] || HINT.terrain;
@@ -63,12 +66,14 @@
       props(); return null;                                      // that click made it; the next one shapes it
     }
     function use(name) {
+      if (RT && tname === "road" && name !== "road") RT.use(false);
       const was = on; on = owns(name);
       if (!on) { tname = null; if (was) { drop(); const tv = TV(); if (tv) tv.ring(null); } return; }
       if (was && tname !== name) drop();
       tname = name; st = {}; picked = null; props();
       if (name === "pool") { const tv = TV(); if (tv) tv.ring(null); ctx.status(HINT.pool); return; }
       if (name === "drive") { const tv = TV(); if (tv) tv.ring(null); editId = null; ctx.status(HINT.drive); return; }
+      if (name === "road") { const tv = TV(); if (tv) tv.ring(null); if (RT) { RT.use(true); RT.props(); } return; }
       ctx.status(TR() ? hint() : "⛰ Terrain - click anywhere to make the ground (round the building), then shape it · " + hint());
     }
     function drop() { const had = !!(st.draft || st.stroke || picked || pickedPad || editId != null); st = {}; picked = null; pickedPad = null; editId = null; const tv = TV(); if (tv) { tv.draft(null); if (tv.marks) tv.marks(null); } return had; }
@@ -94,6 +99,7 @@
       return PT().brush(t, mode, p[0], p[1], O.r, s, O.target);
     }
     function down(ev) {
+      if (tname === "road") return RT ? RT.down(ev) : undefined;
       if (tname === "pool") return poolDown(ev);
       if (tname === "drive") return driveDown(ev);
       if (!TR()) { ensure(); return; }
@@ -106,6 +112,7 @@
       st.stroke.n += dab(h, ev); if (tv) tv.update();
     }
     function move(ev) {
+      if (tname === "road") return RT ? RT.move(ev) : undefined;
       const tv = TV(); if (!tv) return;
       if (tname === "drive") return driveMove(ev);
       if (tname === "pool") { if (st.draft) { const p = groundAt(ev); if (p) { st.draft.at = p; tv.draft(O.poolShape === "rect" ? rectRing(st.draft.pts[0], p) : st.draft.pts.concat([p, st.draft.pts[0]]), st.draft.z); } } return; }
@@ -122,7 +129,8 @@
       for (let k = 1; k <= n; k++) st.stroke.n += dab([a[0] + (h[0] - a[0]) * k / n, a[1] + (h[1] - a[1]) * k / n], ev);
       st.stroke.last = [h[0], h[1]]; tv.update();
     }
-    function up() {
+    function up(ev) {
+      if (tname === "road") { if (RT) RT.up(ev); return; }
       if (st.ddrag) { const D = st.ddrag; st.ddrag = null; if (D.moved) ctx.commit("driveway", D.before); showMarks(); return; }
       const S = st.stroke; if (!S) return; st.stroke = null;
       if (S.n) { ctx.commit("sculpt", S.before); ctx.status("⛰ " + ({ raise: "raised", lower: "lowered", smooth: "smoothed", flatten: "flattened" }[O.mode] || "shaped") + " · ↶ undoes the stroke"); }
@@ -157,7 +165,7 @@
       O.cz = Math.round((D.z + O.cstep) * 1000) / 1000; keepOpt(); picked = null; props();
       ctx.status("〰 the " + PT().fmtZ(C.z) + " contour" + (closed ? " (closed)" : "") + (shaped && shaped.held ? " - the ground shaped to " + t.contours.length + " contour" + (t.contours.length > 1 ? "s" : "") : "") + " · the next one at " + PT().fmtZ(O.cz));
     }
-    function dbl() { if (tname === "drive") { if (st.draft && st.draft.kind === "drive") finishDrive(); return; } if (tname === "pool") { if (st.draft && O.poolShape === "free") finishPool(st.draft.pts); return; } if (O.mode === "contour" && st.draft) finish(false); else if (O.mode === "pad" && st.draft) finishPad(); }
+    function dbl() { if (tname === "road") { if (RT) RT.dbl(); return; } if (tname === "drive") { if (st.draft && st.draft.kind === "drive") finishDrive(); return; } if (tname === "pool") { if (st.draft && O.poolShape === "free") finishPool(st.draft.pts); return; } if (O.mode === "contour" && st.draft) finish(false); else if (O.mode === "pad" && st.draft) finishPad(); }
 
     /* ---- 2.656.0: cut / fill pads (Tim: "can you add a cut/fill landscaping tool to sketcher") */
     /** a pad's corner: where the pointer meets the ground (else the plane at 0) */
@@ -333,6 +341,7 @@
 
     /* ---- the keys and the box */
     function vcb(text) {
+      if (tname === "road") return false;
       if (tname === "drive") { const v = parseFloat(String(text).replace(",", ".")); if (!(v > 0)) return false; const d = editDrive(); if (d) { const b = before(); d.w = Math.min(30, v); ctx.commit("driveway", b); } else { O.driveW = Math.min(30, v); keepOpt(); } props(); ctx.status("🛣 " + fmt(v) + " wide"); return true; }
       if (tname === "pool") {                                            // 2.657.0: "8,4" = a pool that size from the first corner (or the view's middle)
         const m = String(text).split(/[;, x]+/).map((x) => parseFloat(x)).filter(Number.isFinite); if (m.length < 2 || m[0] <= 0 || m[1] <= 0) return false;
@@ -349,6 +358,7 @@
     }
     function key(e) {
       if (!on) return false;
+      if (tname === "road") return RT ? RT.key(e) : false;
       if (e.key === "Enter" && st.draft && st.draft.kind === "drive") { finishDrive(); return true; }
       if ((e.key === "Delete" || e.key === "Backspace") && tname === "drive" && editId != null && st.hotNode != null) { delNode(); return true; }
       if (e.key === "Enter" && st.draft && st.draft.kind === "pool") { if (O.poolShape === "free") finishPool(st.draft.pts); return true; }
@@ -358,7 +368,7 @@
       if (e.key === "[" || e.key === "]") { O.r = Math.max(0.2, Math.min(100, Math.round(O.r * (e.key === "]" ? 1.25 : 0.8) * 100) / 100)); keepOpt(); props(); ctx.status("⛰ the brush: " + fmt(O.r)); return true; }
       return false;
     }
-    function escape() { return drop(); }
+    function escape() { if (tname === "road" && RT) return RT.escape(); return drop(); }
     function delContour(id) {
       const t = TR(); if (!t) return; const b = before(), C = t.contours.find((c) => c.id === id); if (!C) return;
       t.contours = t.contours.filter((c) => c.id !== id); if (O.auto && t.contours.length) PT().fit(t);
@@ -378,6 +388,7 @@
     }
     function props() {
       if (!on) return;
+      if (tname === "road") { if (RT) RT.props(); return; }
       const box = root.document && root.document.getElementById("ppProps"); if (!box) return;
       box.innerHTML = ""; box.style.display = "block";
       const el = (tag, cls, txt) => { const e = root.document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -471,7 +482,7 @@
       box.appendChild(el("div", "pphint", hint()));
       if (ctx.resized) ctx.resized();
     }
-    return { owns, use, down, move, up, dbl, vcb, key, escape, props, tool: () => tname, finishPool, finishDrive, editing: () => editId, showMarks, active: () => on, state: () => st, picked: () => picked, opts: O, finish, TOOLS, HINT, VCB, MODES };
+    return { roads: () => RT, owns, use, down, move, up, dbl, vcb, key, escape, props, tool: () => tname, finishPool, finishDrive, editing: () => editId, showMarks, active: () => on, state: () => st, picked: () => picked, opts: O, finish, TOOLS, HINT, VCB, MODES };
   }
   root.PPTerrainTools = { create, TOOLS, HINT, VCB, MODES, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

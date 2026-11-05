@@ -196,6 +196,29 @@
       const C = root.PPSite.path(d, 0.5); L(C, COL.dim, "sym", true);
       const E = root.PPSite.driveOutline(d); L(E.concat([E[0]]), COL.dim, "sym");
     });
+    // 2.673.0: 🛤 the roads - the surface (footpaths included), the centre line dashed, the name; junctions: lights / signs
+    const RD = root.PPRoads;
+    if (RD && (!lv0.length || sameZ(z, lv0[0]))) {
+      (A.roads || []).forEach((r) => {
+        if (hid("road:" + r.id)) return;
+        out.fills.push({ rings: [ring(RD.outline(r))], col: tint(r.type === "dirt" ? "#8a7356" : "#3a3c40", o.hex, COL.floorBase || null, COL.floorBase ? 0.6 : null), k: "floor", tag: { ak: "road", id: r.id } });
+        const C = RD.path(r); L(C, COL.dim, "sym", true);
+        const E = RD.outline(r); L(E.concat([E[0]]), COL.dim, "sym");
+        const m = C[C.length >> 1], m1 = C[Math.min(C.length - 1, (C.length >> 1) + 1)];
+        out.texts.push({ p: [m[0], m[1] + RD.section(r.type).H + 0.6], t: r.name + " · " + RD.TYPES[r.type].speed + " km/h", h: 0.5, col: COL.text, bold: true }); void m1;
+      });
+      const set = RD.cleanSet(A.roadSet);
+      if (set.auto) RD.junctions({ roads: (A.roads || []).filter((r) => !hid("road:" + r.id)), terrain: A.terrain }).forEach((j) => {
+        if (j.arms.length < 3) return;
+        j.arms.forEach((m) => {
+          if (!m.ctl) return;
+          const d = m.dir, l = [d[1], -d[0]], k = set.side === "left" ? -1 : 1, c = [j.p[0] + d[0] * (j.R + 1.3) + l[0] * k * (m.c + 0.7), j.p[1] + d[1] * (j.R + 1.3) + l[1] * k * (m.c + 0.7)], rr = 0.45, P0 = [];
+          const sides = m.ctl === "stop" ? 8 : m.ctl === "give" ? 3 : 12;
+          for (let i = 0; i <= sides; i++) { const a = 2 * Math.PI * i / sides + (sides === 8 ? Math.PI / 8 : 0); P0.push([c[0] + Math.cos(a) * rr, c[1] + Math.sin(a) * rr]); }
+          L(P0, m.ctl === "signal" ? COL.glass : COL.text, "sym");
+        });
+      });
+    }
     // 2.653.0: ⛰ the ground's contour lines (the majors labelled) + the drawn ones - on the lowest storey, under everything
     const zs = levels(A);
     if (A.terrain && root.PPTerrain && (!zs.length || sameZ(z, zs[0]))) {
@@ -218,6 +241,8 @@
     if (pool) return { ak: "pool", id: pool.id };
     const drv = root.PPSite ? (A.drives || []).find((d) => !hid("drive:" + d.id) && Q.inPoly(p, root.PPSite.driveOutline(d))) : null;   // 2.659.0
     if (drv) return { ak: "drive", id: drv.id };
+    const rd = root.PPRoads ? (A.roads || []).find((r) => !hid("road:" + r.id) && Q.inPoly(p, root.PPRoads.outline(r))) : null;   // 2.673.0
+    if (rd) return { ak: "road", id: rd.id };
     for (const op of A.ops || []) {
       if (!ids.has(op.room) || hid("op:" + op.id)) continue;
       const I = Q.opInfo(A, op); if (!I) continue;

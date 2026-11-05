@@ -36,6 +36,10 @@
           #ppProps .ppbtns { display: flex; flex-wrap: wrap; gap: 3px; margin: 8px 0 4px; }
           #ppProps .ppbtns button { font-size: 11px; padding: 2px 6px; }
           #ppProps .pphint { color: var(--dim, #999); margin-top: 6px; line-height: 1.35; }
+          #pushpulldock .pproads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; margin: 4px 0 6px; }   /* 2.673.0: 🛤 the road types */
+          #pushpulldock .pproads button { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 3px 1px 2px; font-size: 10px; line-height: 1.1; background: transparent; border: 1px solid var(--line, #444); border-radius: 4px; color: inherit; cursor: pointer; min-width: 0; }
+          #pushpulldock .pproads button:hover { background: #ffffff12; }
+          #pushpulldock .pproads button.on { border-color: var(--tiger, #f59e2c); background: #f59e2c22; }
           #pushpulldock .pproofs, #pushpulldock .ppeaves { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin: 4px 0 6px; }
           #pushpulldock .pproofs button, #pushpulldock .ppeaves button { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 3px 1px 2px; font-size: 10px; line-height: 1.1; background: transparent; border: 1px solid var(--line, #444); border-radius: 4px; color: inherit; cursor: pointer; min-width: 0; }
           #pushpulldock .pproofs button:hover, #pushpulldock .ppeaves button:hover { background: #ffffff12; }

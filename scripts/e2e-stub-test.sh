@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.673.0 (Tim: "in sketcher add a road tool like Sim City's road tool ... offer a tunnel or cut the terrain ... autoplace traffic lights and signs etc")
+node scripts/test-roads673.js > /tmp/roads673.log 2>&1 \
+  && ok "2.673.0 roads: six types, on the ground / too steep, cut + fill to an even grade, tunnel + portals / bridge + piers, junctions (lights, stop, give way, one-way), markings left / right, pparch keeps them, snapping" \
+  || { bad "2.673.0 road units"; grep -a "^FAIL" -A2 /tmp/roads673.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui673-ui.js > /tmp/ui673ui.log 2>&1 \
+  && ok "2.673.0 browser test: 🛤 Road - six type pictures, an avenue over a hill flagged too steep, ⛏ Cut the ground, a road across = traffic lights + signs, Alt+click + drag a point, ➤ Select its panel, the floorplan - or SKIP without playwright" \
+  || { bad "2.673.0 road browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui673ui.log | head -14; }
 # ---- 2.672.0 (Tim's MOSS-Image log: the text encoder / flux2-vae_small not in ComfyUI's lists)
 python3 scripts/test-standin672.py > /tmp/standin672.log 2>&1 \
   && ok "2.672.0 MOSS stand-ins: flux2-vae for a missing flux2-vae_small (one way), the Qwen3.5 9B text encoder variants, ambiguous / listed left alone, run from canonicalise_combos" \
