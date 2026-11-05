@@ -25,7 +25,7 @@ const H = (t, z) => PL.hlShapes(A, t, z == null ? 0 : z, { footprint: (it) => [[
 const whole = H({ ak: "room", id: R.id });
 check("a room = its outside outline (walls included), closed", whole.length === 1 && JSON.stringify(box(whole[0])) === "[-0.075,-0.075,4.075,3.075]" && JSON.stringify(whole[0][0]) === JSON.stringify(whole[0][whole[0].length - 1]), whole.map(box));
 const wall = H({ ak: "room", id: R.id, part: "wall", edge: 1 });
-check("one wall = that wall's quad (the east wall, 15 cm thick)", wall.length === 1 && JSON.stringify(box(wall[0])) === "[3.925,-0.075,4.075,3.075]", wall.map(box));
+check("one wall = that wall's piece (the east wall, 15 cm thick, square ends at its corners - 2.662.0)", wall.length === 1 && JSON.stringify(box(wall[0])) === "[3.925,0,4.075,3]", wall.map(box));
 check("its floor / ceiling = the inside", JSON.stringify(box(H({ ak: "room", id: R.id, part: "floor" })[0])) === "[0.075,0.075,3.925,2.925]");
 check("a free-standing wall = its quads; a room on another storey = nothing here (its own storey: its outline)", H({ ak: "room", id: W.id }).length === 1 && H({ ak: "room", id: U.id }).length === 0 && H({ ak: "room", id: U.id }, 2.85).length === 1);
 check("a door = its cut through the wall; stairs, a piece = their outline; a light = a disc", box(H({ ak: "op", id: d.id })[0])[2] - box(H({ ak: "op", id: d.id })[0])[0] > 0.89

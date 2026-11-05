@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.662.0: **Walls end square** in the Sketcher, and **new walls dragged out of corners and wall ends**.
+  - Each wall is now a rectangle from corner to corner - picked, hidden or raised on its own it ends square, not in a
+    point. The corners are pieces of their own that fill the gap, and a free wall's ends get a square end piece.
+  - With ➤ Select, point at a room's outside corner or a wall's end piece - it lights up. **Drag out of one of its sides** and
+    a new wall comes out that way (from the end face: on along the wall; from a side: across it). Drag from its **top**
+    (seen from above) and the new wall goes any way. It has the wall's height, thickness and wall type, and its own ends
+    drag out more walls the same way. Ctrl+Z takes it back.
 - 2.661.0: **🧱 Wall types** docker in the Sketcher (its button in the bar).
   - It lists the model's wall types - Brick veneer, Double brick, Timber frame (weatherboard / fibre cement), Rendered block,
     Interior stud, Interior steel stud and Wet-area stud to start with - each with its thickness and how many walls use it.

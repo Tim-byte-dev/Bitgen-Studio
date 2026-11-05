@@ -13024,6 +13024,13 @@ node scripts/test-walltype661.js > /tmp/walltype661.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui661-ui.js > /tmp/ui661ui.log 2>&1 \
   && ok "2.661.0 browser test: the 🧱 Wall types docker - the built-in types, Brick veneer for every exterior wall (one ↶ step), a layer thinner / added / moved / taken out, a wall's panel picks a type, ＋ / ✕ a type, the floorplan's seams - or SKIP without playwright" \
   || { bad "2.661.0 wall types browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui661ui.log | head -14; }
+# ---- 2.662.0 (Tim: "end walls in a square not a triangle when drawing a room , add a segment to the end of each wall so user can drag another wall from any side of the end of walls")
+node scripts/test-joint662.js > /tmp/joint662.log 2>&1 \
+  && ok "2.662.0 the Sketcher's walls end square: rectangles + corner / end pieces (the same shape as the mitred walls), end caps, jointAt, the faces / floorplan / picking, the drag-a-wall-out wiring" \
+  || { bad "2.662.0 square wall ends units"; grep -a "^FAIL" -A2 /tmp/joint662.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui662-ui.js > /tmp/ui662ui.log 2>&1 \
+  && ok "2.662.0 browser test: square wall pieces, a corner lit under the pointer, a wall dragged out of a corner (one ↶ step), another out of its end face, a click on the wall still picks it - or SKIP without playwright" \
+  || { bad "2.662.0 walls-out-of-corners browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui662ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

@@ -39,6 +39,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3PushPull && window.H3PushPullFrame && document.getElementById("tX_pushpulldock"), null, { timeout: 60000 });
     await p.waitForTimeout(600);
     await ev(() => {
+      localStorage.setItem("h3.dockmax.off", "1");   // 2.658.0: the whole-window maximize this tests (docked now fills the column - test-ui658-ui.js)
       const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock");
       const pd = document.getElementById("promptdock"); if (pd && !pd.classList.contains("dockgone")) toggleDockGone("promptdock", "tP");
       document.getElementById("titlebar").classList.remove("hidden");

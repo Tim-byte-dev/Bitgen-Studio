@@ -36,6 +36,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     const open0 = await ev(() => {
       const show = (id, btn) => { const d = document.getElementById(id); if (d && d.classList.contains("dockgone")) toggleDockGone(id, btn); };
       show("promptdock", "tP"); show("timelinedock", "tTL");
+      localStorage.setItem("h3.dockmax.off", "1");   // 2.658.0: the whole-window maximize this tests (docked now fills the column - test-ui658-ui.js)
       const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock");
       document.getElementById("titlebar").classList.remove("hidden");
       return Object.keys(H3GoneDocks).filter((k) => document.getElementById(k) && document.getElementById(k).classList.contains("on")).map((k) => H3GoneDocks[k]);
@@ -56,7 +57,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     // a room to furnish (floor at 0.5 m)
     await ev(() => { const S = H3PushPull.state; S.M.arch = PPArch.empty(); PPArch.addRoom(S.M.arch, [[0, 0], [5, 0], [5, 4], [0, 4]], { z: 0.5 }); S.V.setModel(S.M); S.A.rebuild(); S.V.view("top"); S.V.extents(); });
     const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(15));
-    check("the Build tools end with 🛋 Furniture (A) (+ 2.629.0: 📷 Camera)", tools.slice(-2).join() === "furniture,camera", tools);
+    check("the Build tools end with 🛋 Furniture (A) (+ 2.629.0: 📷 Camera; 2.653.0+: then the Ground tools)", /furniture,camera(,terrain,pool,drive)?$/.test(tools.join()), tools);
     await p.keyboard.press("a"); await p.waitForTimeout(200);
     const pn = await panel();
     check("🛋 Furniture: the panel - the House builder's categories (Living … Outside) + the project's 3D models, the pieces as buttons", /Category/.test(pn) && await ev(() => { const s = [...document.querySelectorAll("#ppProps select")][0]; return [...s.options].map((o) => o.value).join() === "Living,Dining,Kitchen,Bedroom,Bathroom,Lights,Outside,People,3D models"; }) && /Sofa \(3 seats\)/.test(pn), pn.slice(0, 200));

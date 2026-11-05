@@ -212,7 +212,67 @@
   const isGone = (R, i) => !!(R && R.gone && R.gone.length && R.gone.indexOf(i) !== -1);   // 2.660.0
   /** 2.661.0: one wall's thickness - its wall type's layers (R.tw, kept by clean / PPWallType.sync) else the room's */
   const tw = (R, i) => (R && R.tw && R.tw[i] > 0 ? R.tw[i] : R.t);
+  /** 2.662.0 (Tim: "end walls in a square not a triangle"): each wall a rectangle from its corner to its corner - its ends
+      square; the corners filled by joints (below) - the walls together the same shape as the mitred ones */
   function wallQuads(R) {
+    return edgesOf(R).map((e) => {
+      if (e.L < EPS || isGone(R, e.i)) return null;
+      const nl = left(e.u), h = tw(R, e.i) / 2;
+      return Object.assign({}, e, { nl, quad: [add(e.a, mul(nl, h)), add(e.b, mul(nl, h)), add(e.b, mul(nl, -h)), add(e.a, mul(nl, -h))] });
+    }).filter(Boolean);
+  }
+  /** 2.662.0: the corners / ends of a room's walls - each a piece of its own [{k (the corner's point number), v, poly, walls
+      [edge ...], kind "corner" | "end", out (an end: the way it faces)}]: a corner = the hull of the two walls' square ends and
+      their mitre points (the true corner), an end (an open wall's, beside a wall taken out / hidden) = a square cap past it.
+      skip(i): that wall not there (hidden) */
+  function joints(R, skip) {
+    const E = edgesOf(R), n = E.length, P = R.pts, out = [], has = (e) => !!(e && e.L > EPS && !isGone(R, e.i) && !(skip && skip(e.i)));
+    for (let k = 0; k < P.length; k++) {
+      const v = P[k], e0 = R.closed ? E[(k - 1 + n) % n] : E[k - 1], e1 = E[k] || null;
+      const a0 = has(e0) ? e0 : null, a1 = has(e1) ? e1 : null;
+      if (a0 && a1) {
+        const h0 = tw(R, a0.i) / 2, h1 = tw(R, a1.i) / 2, n0 = left(a0.u), n1 = left(a1.u);
+        if (Math.abs(crs(a0.u, a1.u)) < 1e-6 && dot(a0.u, a1.u) > 0 && Math.abs(h0 - h1) < 1e-9) continue;     // straight on, as thick: nothing to fill
+        const pts = [add(v, mul(n0, h0)), add(v, mul(n0, -h0)), add(v, mul(n1, h1)), add(v, mul(n1, -h1))];
+        [1, -1].forEach((sg) => { const x = lineX(add(a0.a, mul(n0, sg * h0)), a0.u, add(a1.a, mul(n1, sg * h1)), a1.u); if (x && len(sub(x, v)) <= 6 * Math.max(h0, h1) + 1e-9) pts.push(x); });
+        const poly = hull2(pts); if (poly.length >= 3 && Math.abs(area2(poly)) > 1e-8) out.push({ k, v, poly, walls: [a0.i, a1.i], kind: "corner" });
+      } else if (a0 || a1) {
+        const e = a0 || a1, o = a0 ? e.u : mul(e.u, -1), nl = left(e.u), h = tw(R, e.i) / 2;
+        out.push({ k, v, poly: [add(v, mul(nl, h)), add(v, mul(nl, -h)), add(add(v, mul(nl, -h)), mul(o, h)), add(add(v, mul(nl, h)), mul(o, h))], walls: [e.i], kind: "end", out: o });
+      }
+    }
+    return out;
+  }
+  /** 2.662.0: polygons' rings without the points on a straight run (polygon-clipping keeps them) - closed rings in, closed out */
+  function simplifyRings(U) {
+    return (U || []).map((poly) => poly.map((rg) => {
+      const r = rg.slice(0, -1); if (r.length < 4) return rg;
+      let ch = true;
+      while (ch && r.length > 3) { ch = false; for (let i = 0; i < r.length; i++) { const a = r[(i - 1 + r.length) % r.length], b = r[i], c = r[(i + 1) % r.length], u = sub(b, a), w = sub(c, b);
+        if (len(sub(b, a)) < 1e-9 || (Math.abs(crs(u, w)) < 1e-9 * Math.max(1, len(u) * len(w)) && dot(u, w) > 0)) { r.splice(i, 1); ch = true; break; } } }
+      return r.concat([r[0]]);
+    }));
+  }
+  /** a convex hull (2D, counter-clockwise) */
+  function hull2(pts) {
+    const P2 = pts.map((p) => [p[0], p[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (P2.length < 3) return P2;
+    const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
+    P2.forEach((p) => { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 1e-12) lo.pop(); lo.push(p); });
+    for (let i = P2.length - 1; i >= 0; i--) { const p = P2[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 1e-12) up.pop(); up.push(p); }
+    return lo.slice(0, -1).concat(up.slice(0, -1));
+  }
+  /** 2.662.0: the joint (a room's corner / a wall's end) at a point (x, y) - and whether the point is in it ONLY (past the walls'
+      own rectangles: its outside corner, an end's cap) -> {R, ...joint, only} | null */
+  function jointAt(A, p, z) {
+    let best = null;
+    (A.rooms || []).forEach((R) => {
+      if (z != null && (z < R.z - 0.05 || z > R.z + R.h + 3)) return;
+      joints(R).forEach((j) => { if (!inPoly([p[0], p[1]], j.poly)) return; const only = !wallQuads(R).some((q) => inPoly([p[0], p[1]], q.quad)); if (!best || (only && !best.only)) best = Object.assign({ R, only }, j); });
+    });
+    return best;
+  }
+  /** the walls as mitred quads (their corners meeting on the bisector) - the roofs / follow ceilings / layer seams use them */
+  function mitreQuads(R) {
     const E = edgesOf(R), n = E.length, G = (e) => (e && isGone(R, e.i) ? null : e), hw = (e) => tw(R, e.i) / 2;
     const corner = (e0, e1, s, at, own) => {   // the corner of side s (1 left / -1 right) between e0 and e1, at the vertex at (own: the wall it is for)
       const h0 = hw(e0), h1 = hw(e1), o = own || e1, perp = add(at, mul(left(o.u), s * hw(o)));
@@ -350,7 +410,7 @@
       roof) -> rows of points [[p3 ...] per t] across [A_ext?, A, C, C_ext?] | null (not a rectangle) */
   function followGrid(R, outer, eaves) {
     if (!R.closed || R.pts.length !== 4) return null;
-    const Q = wallQuads(R); if (Q.length !== 4) return null;
+    const Q = mitreQuads(R); if (Q.length !== 4) return null;
     const sloped = (i) => !flatTop(R, i) || !flatTop(R, (i + 2) % 4);
     const a = sloped(0) || !sloped(1) ? 0 : 1, c = a + 2, qa = Q[a], qc = Q[c];
     const lineA = outer ? [qa.quad[3], qa.quad[2]] : [qa.quad[0], qa.quad[1]], lineC = outer ? [qc.quad[3], qc.quad[2]] : [qc.quad[0], qc.quad[1]];
@@ -529,6 +589,7 @@
   const wallExt = (A, R, i) => (R.wext && R.wext[i]) || A.ext;             // 2.651.0: a wall's outside
   /** 2.651.0: the wall a point (x, y) at height z lies in - {R, i} (the room's wall quads, the closest) | null */
   function wallOwner(A, p, z) {
+    const jj = jointAt(A, p, z); if (jj && jj.only) { let bi = jj.walls[0], bd = Infinity; jj.walls.forEach((i) => { const e = edgesOf(jj.R)[i], d = segDist([p[0], p[1]], e.a, e.b).d; if (d < bd) { bd = d; bi = i; } }); return { R: jj.R, i: bi }; }   // 2.662.0: a corner / an end
     let best = null;
     (A.rooms || []).forEach((R) => { if (z != null && (z < R.z - 0.05 || z > R.z + R.h + 3)) return; wallQuads(R).forEach((q) => { if (inPoly([p[0], p[1]], q.quad)) { const e = edgesOf(R)[q.i], d = e ? segDist([p[0], p[1]], e.a, e.b).d : 0; if (!best || d < best.d) best = { R, i: q.i, d }; } }); });
     return best ? { R: best.R, i: best.i } : null;
@@ -608,6 +669,8 @@
     const W = [], hid = hid0 || (() => false);
     const U = [];      // 2.624.0: the walls whose top is not flat stand to their lowest top; their own piece goes above
     A.rooms.forEach((R) => wallQuads(R).forEach((q) => { if (hid("room:" + R.id + ":wall:" + q.i)) return; const flat = flatTop(R, q.i); W.push({ poly: q.quad, z0: R.z, z1: R.z + (flat ? R.h : minTop(R, q.i)), R }); if (!flat) U.push({ R, q }); }));
+    // 2.662.0: the corners / ends - as high as the higher wall's end there
+    A.rooms.forEach((R) => joints(R, (i) => hid("room:" + R.id + ":wall:" + i)).forEach((j) => { const top = Math.max(...j.walls.map((i) => topAt(R, i, i === j.k ? 0 : 1))); W.push({ poly: j.poly, z0: R.z, z1: R.z + top, R }); }));   // wall i starts at point i
     if (!W.length) return;
     const O = A.ops.map((op) => opInfo(A, op)).filter((I) => I && I.z1 > I.z0 + 1e-4);
     const zs = [...new Set(W.flatMap((w) => [w.z0, w.z1]).concat(O.flatMap((I) => [I.z0, I.z1])).map(r6))].sort((a, b) => a - b);
@@ -622,7 +685,7 @@
         const os = O.filter((I) => I.z0 <= a + EPS && I.z1 >= b - EPS);
         if (os.length && U.length) U = pc.difference.apply(null, [U].concat(os.map((I) => [ring(I.rect)])));
       } catch (e) { U = ws.map((w) => [ring(area2(w.poly) < 0 ? w.poly.slice().reverse() : w.poly)]); }   // a union that fails: the walls one by one
-      F.push(U);
+      F.push(simplifyRings(U));       // 2.662.0: the joints' points along a straight face taken out - one face a wall
     }
     const pieces = U.map(({ R, q }) => upperPiece(R, q, out, A.ext));
     // 2.624.0: a cut in a wall's top shows as a line down both its faces (to its floor)
@@ -637,7 +700,7 @@
       const T = w && w.R.wt && w.R.wt[w.i] && root.PPWallType ? root.PPWallType.find(A, w.R.wt[w.i]) : null, oc = T && root.PPWallType.outerCol(T);   // 2.661.0: its type's outside layer
       return oc || A.ext; };
     // 2.661.0: a typed wall's layer seams on its top (a flat top)
-    if (root.PPWallType) A.rooms.forEach((R) => { if (!R.wt) return; wallQuads(R).forEach((q) => { const id = R.wt[q.i]; if (!id || hid("room:" + R.id + ":wall:" + q.i) || !flatTop(R, q.i)) return; const T = root.PPWallType.find(A, id); if (!T) return;
+    if (root.PPWallType) A.rooms.forEach((R) => { if (!R.wt) return; mitreQuads(R).forEach((q) => { const id = R.wt[q.i]; if (!id || hid("room:" + R.id + ":wall:" + q.i) || !flatTop(R, q.i)) return; const T = root.PPWallType.find(A, id); if (!T) return;
       root.PPWallType.seams(T, q.quad).forEach(([a, b]) => out.lines.push([[a[0], a[1], R.z + R.h + 0.002], [b[0], b[1], R.z + R.h + 0.002]])); }); });
     const colOf = (p, z) => { const hit = inner.find((x) => z > x.R.z - EPS && z < x.R.z + x.R.h + EPS && inPoly(p, x.P)); return hit ? hit.R : null; };
     for (let k = 0; k < F.length; k++) {
@@ -785,7 +848,7 @@
   function roofFrame(A, rf) {
     const Rs = rf.rooms.map((id) => room(A, id)).filter(Boolean); if (!Rs.length) return null;
     const e0 = edgesOf(Rs[0]).find((e) => e.L > EPS); if (!e0) return null;
-    const u = e0.u, v = left(u), pts = Rs.flatMap((R) => wallQuads(R).flatMap((q) => q.quad));
+    const u = e0.u, v = left(u), pts = Rs.flatMap((R) => mitreQuads(R).flatMap((q) => q.quad));
     let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
     pts.forEach((p) => { const a = dot(p, u), b = dot(p, v); u0 = Math.min(u0, a); u1 = Math.max(u1, a); v0 = Math.min(v0, b); v1 = Math.max(v1, b); });
     const top = Math.max(...Rs.map((R) => R.z + R.h)), t = Math.max(...Rs.map((R) => R.t));
@@ -1126,7 +1189,7 @@
     return true;
   }
 
-  const api = { frames, tw, isGone, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
+  const api = { frames, tw, isGone, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

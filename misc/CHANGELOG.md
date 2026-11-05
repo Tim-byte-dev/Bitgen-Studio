@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.662.0** — Sketcher Walls End Square; Drag a New Wall Out of Any Side of a Corner or a Wall's End
 - **2.661.0** — 🧱 Wall Types Docker in the Sketcher: Layer-by-Layer Wall Build-Ups and Thickness
 - **2.660.0** — Sketcher Walls: Take One Wall Out of a Room, Interior / Exterior
 - **2.659.0** — 🛣 Driveways in the Sketcher on Bézier Curves (Points and Handles Dragged, on the Ground, Kerbs)

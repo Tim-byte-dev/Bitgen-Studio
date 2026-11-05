@@ -257,7 +257,7 @@
       const inQ = (q, R) => (tg, c) => tg.ak === "wall" && c[2] >= R.z - 0.02 && c[2] <= R.z + R.h + 3 && (P().inPoly([c[0], c[1]], q) || P().segDist([c[0], c[1]], q[0], q[1]).d < 0.03 || P().segDist([c[0], c[1]], q[2], q[3]).d < 0.03);
       if (t.ak === "room" && t.part === "wall" && t.edge != null) { const R = P().room(Ar, t.id), q = R && P().wallQuads(R).find((w) => w.i === t.edge); return q ? inQ(q.quad, R) : null; }
       if (t.ak === "room" && t.part) return (tg) => tg.ak === "room" && tg.id === t.id && tg.part === t.part;
-      if (t.ak === "room") { const R = P().room(Ar, t.id); if (!R) return null; const W = P().wallQuads(R).map((q) => inQ(q.quad, R)); return (tg, c) => (tg.ak === "room" && tg.id === t.id) || W.some((f) => f(tg, c)); }
+      if (t.ak === "room") { const R = P().room(Ar, t.id); if (!R) return null; const W = P().wallQuads(R).map((q) => inQ(q.quad, R)).concat((P().joints ? P().joints(R) : []).map((j) => (tg, c) => tg.ak === "wall" && c[2] >= R.z - 0.02 && c[2] <= R.z + R.h + 3 && (P().inPoly([c[0], c[1]], j.poly) || j.poly.some((p, k) => P().segDist([c[0], c[1]], p, j.poly[(k + 1) % j.poly.length]).d < 0.03)))); return (tg, c) => (tg.ak === "room" && tg.id === t.id) || W.some((f) => f(tg, c)); }
       if (t.ak === "wpt" || t.ak === "wtop" || t.ak === "cam") return null;
       return (tg) => tg.ak === t.ak && tg.id === t.id;
     }

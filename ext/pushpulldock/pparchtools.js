@@ -444,6 +444,10 @@
       if (gp) { st.drag = { t: asel, mode: "grip", key: gp.key, p: gp.p, n: gp.n, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false }; return true; }
       const h = AV() && AV().pick(ev);
       if (!h || (h.tag.ak !== "cam" && !nearerThanModel(ev, h))) { if (asel) setSel(null); return false; }   // 2.632.0: a camera is always on top
+      // 2.662.0 (Tim: "add a segment to the end of each wall so user can drag another wall from any side of the end of walls"):
+      // a press on a corner / a wall's end piece (past the walls themselves) - a drag draws a new wall out of that side
+      const jb = branchAt(h);
+      if (jb) { st.drag = { mode: "branch", R: jb.R, j: jb, v: jb.v, dir: jb.dir, z: jb.R.z, x0: ev.clientX, y0: ev.clientY, before: before(), moved: false }; return true; }
       // a view straight down (Top) sees only the walls' tops - there a press moves the wall; the slopes are edited from the side
       const th = Math.abs(V.ray(ev).d[2]) > 0.85 ? null : topUnder(h);
       if (th) {                                                        // 2.624.0: a cut / a top edge: dragged up / down
@@ -486,19 +490,48 @@
       if (t.ak === "op" && st.drag) { const I = P().opInfo(A, x); if (I) Object.assign(st.drag, { wp: h.point, wn: I.nl, along0: (h.point[0] - I.o[0]) * I.u[0] + (h.point[1] - I.o[1]) * I.u[1], at0: I.at, sill0: x.sill, room0: x.room, edge0: x.edge }); }   // 2.625.0: up / down too
       return true;
     }
+    /** 2.662.0: a pick on a corner / an end piece -> {R, v, walls, poly, dir (the side's way out; null: the top - any way)} | null */
+    function branchAt(h) {
+      if (!h || h.tag.ak !== "wall" || !P().jointAt) return null;
+      const side = Math.abs(h.n[2]) < 0.5, pin = side ? [h.point[0] - h.n[0] * 0.01, h.point[1] - h.n[1] * 0.01] : [h.point[0], h.point[1]];
+      const J = P().jointAt(AR(), pin, h.point[2]); if (!J || !J.only) return null;
+      const L = Math.hypot(h.n[0], h.n[1]) || 1;
+      return Object.assign({}, J, { dir: side ? [h.n[0] / L, h.n[1] / L] : null });
+    }
+    function branchFaces(J) { const z = J.R.z + J.R.h + 0.004, P0 = J.poly, out = []; for (let k = 1; k + 1 < P0.length; k++) out.push([[P0[0][0], P0[0][1], z], [P0[k][0], P0[k][1], z], [P0[k + 1][0], P0[k + 1][1], z]]); return out; }
+    function dragBranch(ev, D) {
+      const { p } = snapPlan(ev, D.z, [D.v[0], D.v[1], D.z]); let e;
+      if (D.dir) { const L = Math.max(0, (p[0] - D.v[0]) * D.dir[0] + (p[1] - D.v[1]) * D.dir[1]); e = [D.v[0] + D.dir[0] * L, D.v[1] + D.dir[1] * L]; }
+      else e = [p[0], p[1]];
+      D.end = e; const a = [D.v[0], D.v[1], D.z], b = [e[0], e[1], D.z], H = D.R.h, L = Math.hypot(e[0] - D.v[0], e[1] - D.v[1]);
+      V.preview({ lines: [[a, b], [[a[0], a[1], D.z + H], [b[0], b[1], D.z + H]], [b, [b[0], b[1], D.z + H]]], faces: branchFaces(D.j), faceColor: 0xf59e2c, marker: { p: b, color: "#f59e2c" }, tip: "▮ a new wall " + fmt(L) + (D.dir ? "" : " · any way (from the top)") });
+      ctx.vcbValue(fmt(L)); return true;
+    }
+    function finishBranch(D) {
+      const L = D.end ? Math.hypot(D.end[0] - D.v[0], D.end[1] - D.v[1]) : 0;
+      if (L < 0.05) { ctx.status("▮ drag out of a side of a corner / a wall's end to draw a new wall from it"); return; }
+      const A = AR(), w0 = D.j.walls[0], R0 = D.R, R = P().addRoom(A, [[D.v[0], D.v[1]], [D.end[0], D.end[1]]], { closed: false, z: R0.z, h: R0.h, t: R0.t, wall: R0.wall });
+      if (!R) return;
+      if (R0.wt && R0.wt[w0] && root.PPWallType) root.PPWallType.assign(A, [{ R, i: 0 }], R0.wt[w0]);   // its wall type too
+      done("wall", D.before, { ak: "room", id: R.id }); ctx.status("▮ " + R.name + " drawn out of " + R0.name + "'s " + (D.j.kind === "end" ? "wall end" : "corner") + " - " + fmt(L) + " · its ends drag out more walls the same way");
+    }
     function selectMove(ev) {
       const D = st.drag;
       if (!D) {
         const ax = axisAt(ev); if (AV() && AV().setAxisHot) AV().setAxisHot(ax ? ax.key : null);   // 2.641.0
         if (!ax && V.canvas.dataset.ppAxis) { V.canvas.style.cursor = ""; delete V.canvas.dataset.ppAxis; }
         if (ax) { V.canvas.style.cursor = "move"; V.canvas.dataset.ppAxis = "1"; ctx.status("📷 drag to move it along " + ax.key.toUpperCase() + (ax.key === "z" ? " (up / down)" : "") + " · 1 cm steps, Shift = free"); return true; }
-        const h = AV() && AV().pick(ev), near = h && nearerThanModel(ev, h), th = near ? topUnder(h) : null;
+        const h0 = AV() && AV().pick(ev), hj = h0 && nearerThanModel(ev, h0) ? branchAt(h0) : null;   // 2.662.0: over a corner / an end piece - it lights up
+        if (hj) { if (AV().setHover) AV().setHover(null); V.preview({ faces: branchFaces(hj), faceColor: 0xf59e2c, tip: "⤴ drag a new wall out of this side" }); st.jhot = true; V.canvas.style.cursor = "crosshair"; ctx.status("▮ a corner / a wall's end: drag out of a side for a new wall (from its top: any way)"); return false; }
+        if (st.jhot) { st.jhot = false; V.preview({}); V.canvas.style.cursor = ""; }
+        const h = h0, near = h && nearerThanModel(ev, h), th = near ? topUnder(h) : null;
         AV() && AV().setHover(th ? (th.k >= 0 ? { ak: "wpt", room: th.room, edge: th.edge, k: th.k } : { ak: "wtop", room: th.room, edge: th.edge, k: th.seg }) : near ? AV().resolve(h) : null);   // 2.624.0: a wall's top shows what a press takes
         return false;
       }
       if (!(ev.buttons & 1)) { st.drag = null; V.preview({}); return false; }
       if (!D.moved && Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) < 4) return true;
       D.moved = true;
+      if (D.mode === "branch") return dragBranch(ev, D);                  // 2.662.0
       if (D.many) {                                                     // 2.648.0: several picked - moved together (Shift: straight)
         const cur = planeAt(ev, D.z); if (!cur) return true;
         let d = [cur[0] - D.start[0], cur[1] - D.start[1]];
@@ -598,6 +631,7 @@
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
+      if (D.mode === "branch") { if (D.moved) finishBranch(D); else ctx.status("▮ drag out of a side of a corner / a wall's end to draw a new wall from it"); return true; }   // 2.662.0
       if (D.many && !D.moved && D.single) { setMore([]); setSel(D.single); return true; }   // 2.648.0: a click on one of several = that one
       if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : D.mode === "spin" ? "turn" : "move", D.before); props(); }
       else if (D.t && D.t.ak === "cam" && D.mode !== "axis" && D.mode !== "spin") ctx.status("📷 " + ((P().find(AR(), "cam", D.t.id) || {}).name || "camera") + " · drag it or an arrow to move it · double-click = rotate rings" + (gizmo === "rotate" ? " (now: rotate - double-click again for the arrows)" : ""));
