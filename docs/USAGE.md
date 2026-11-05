@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.676.0: **🎨 Style ▾ in the image preview**: open any picture (the gallery, the assets …) and press **🎨 Style ▾**
+  beside 💾 Save - **📷 Photoreal**, **🧸 Pixar**, **🧊 2.5D**, **🌸 Anime** or **🖍 Cartoon**. The picture is made again
+  with the image style picked in the prompt: an edit model (FLUX.2 Klein, Qwen Image Edit, FLUX Kontext …) is told to
+  change only the look and keep the composition, faces, poses and clothes; an SDXL / Illustrious / FLUX.1 style refines
+  the whole picture with the look's words and the picture's own prompt (strength 55-72 %). With **Override style** on in
+  Basic Settings, its steps, CFG, seed, checkpoint and LoRAs are used, as Generate does. It is an ordinary job (queue,
+  gallery, log); when it is done it opens in the preview next to the original. A style that can do neither says so.
 - 2.675.0: **📌 Pins stay put**: a docker's 📌 pin (its fixed height, or width for a side docker) is no longer cleared when
   the layout changes - ⊞ Docker configs loading the sizes for the dockers you opened, switching 🗂 workspace, applying a
   🗂 Layout, or ↺ Reset in Settings ▸ Dockers. Click the pin to pin / unpin as before; **right-click it** for a small menu:

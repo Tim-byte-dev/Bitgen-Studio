@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.676.0 (Tim: "in the image preview dialog, add a button with a dropdown to change the style of the picture, photoreal, pixar, 2.5D, anime,cartoon ...")
+node scripts/test-restyle676.js > /tmp/restyle676.log 2>&1 \
+  && ok "2.676.0 restyle: the five looks, edit instruction / refine words + the picture's prompt, ~1 MP size, edit / refine / none, Override style (lib/imgOverride.js) through /api/aiedit" \
+  || { bad "2.676.0 restyle units"; grep -a "^FAIL" -A2 /tmp/restyle676.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui676-ui.js > /tmp/ui676ui.log 2>&1 \
+  && ok "2.676.0 browser test: 🎨 Style ▾ in the preview, its menu, Pixar = an edit request, Anime + Override = a whole-picture refine with ovr, the result opened, video = no button - or SKIP without playwright" \
+  || { bad "2.676.0 restyle browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui676ui.log | head -14; }
 # ---- 2.675.0 (Tim: "the red pins are resetting everytime i switch layout, they should only reset if i right click and click reset in a context menu")
 node scripts/test-pins675.js > /tmp/pins675.log 2>&1 \
   && ok "2.675.0 pins: the menu's rows, a 🗂 Layout keeps the pins in use, applyLayout keeps them (start-up restore takes the saved ones), resetPin" \

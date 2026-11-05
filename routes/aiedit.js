@@ -40,6 +40,8 @@
 //                                  numbers become the model's pictures 2 / 3 (lib/refWords.js withRefs)
 //                                  2.627.0: + ref_raw ("1"): the prompt names its pictures itself - {img1} / {img2} become the
 //                                  model's word (the Sketcher: picture 1 its clean render, picture 2 its depth map)
+//                                  2.676.0: + ovr (JSON - Basic Settings' Override style: steps, cfg, model, lora_weights,
+//                                  extra_loras, mm_override - lib/imgOverride.js); the image preview's 🎨 Style sends it
 //   POST /api/aiedit/compose      2.390.0 LAYERS AS REFERENCES: multipart pic0..pic2 (the layers picked, Picture
 //                                  1 = the scene at the picture's size), names (JSON - the layers' names), prompt,
 //                                  style_id (an edit style), width, height, count, seed; 2.546.0 scene_refs (JSON - pic0
@@ -225,6 +227,9 @@ function mount(app) {
       return Object.assign({}, c, { image: path.join(dir, n) });
     });
     let styled = styles.applyLoraWeights(style, null);
+    // 2.676.0: Basic Settings' Override style (the preview's 🎨 Style sends it as ovr) - lib/imgOverride.js
+    const ovr = require("../lib/imgOverride").parse(b.ovr), ov = ovr && !plan.selfContained ? require("../lib/imgOverride").apply(style, ovr) : null;
+    if (ov) styled = ov.styled;
     if (plan.selfContained) styled = Object.assign({}, styled, { model: "", vae: "", te: "", loras: [], steps: null, cfg: null, width: null, height: null });
     const imgs = editMask ? [names.crop, names.mask].concat(names.refs)
       : names.refs.length ? [names.crop].concat(names.refs) : plan.input === "rgba" ? [names.rgba] : plan.input === "crop+mask" ? [names.crop, names.mask] : [names.crop];
@@ -247,6 +252,7 @@ function mount(app) {
       if (controls.length) p.aiedit_controls = controls;
       if (plan.negative) p.negative = String(plan.negative).slice(0, 2000);
       if (plan.denoise != null) p.denoise = plan.denoise;
+      if (ov) { if (ov.steps != null) p.steps = ov.steps; if (ov.cfg != null) p.cfg = ov.cfg; if (ov.note) p.workflow_note += " · " + ov.note; }   // 2.676.0
       p.seed = (first.seed + i) % 4294967296; p.seed_random = first.random;
       if (live) {
         p.live = true; p.workflow_note = "⚡ live: " + p.workflow_note;

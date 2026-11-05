@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.676.0** — 🎨 Style ▾ in the Image Preview: Remake the Picture as Photoreal, Pixar, 2.5D, Anime or Cartoon With the Prompt's Style (Basic Settings' Values When Override Style Is On)
 - **2.675.0** — 📌 Docker Pins Kept When You Switch Layout (⊞ Docker Configs, Workspaces, 🗂 Layouts, ↺ Reset); Right-click a Pin ▸ ↺ Reset Pin / 📌 Pin at This Size
 - **2.674.0** — One ComfyUI Folder for Everything: With Settings ▸ ComfyUI ▸ Folder Empty, the Launcher, Every Add-on and the Model Catalog Use the ComfyUI Beside the App (comfy\, ComfyUI\ or the Portable Build - the Newest) or the One Found, Like the Model Lists
 - **2.673.0** — 🛤 Sketcher Road Tool Like SimCity: Dirt Road, Street, Road, One-way, Avenue, Highway on the Ground; Too Steep = ⛏ Cut the Ground or 🚇 Tunnel / Bridge; Traffic Lights, Stop / Give-way / Speed / Street-name Signs at Junctions
