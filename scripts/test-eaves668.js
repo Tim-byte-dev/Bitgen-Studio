@@ -17,7 +17,7 @@ const make = (o) => { let A = P.empty(); const R = P.addRoom(A, P.rectPts([0, 0]
 const parts = (A) => { const c = {}; P.build(A).polys.forEach((p) => { if (p.tag && p.tag.ak === "roof") { const k = p.tag.part || "roof"; c[k] = (c[k] || 0) + 1; } }); return c; };
 const polysOf = (A, part) => P.build(A).polys.filter((p) => p.tag && p.tag.ak === "roof" && p.tag.part === part);
 
-check("the styles: plain, open, boxed, closed; gutters none, quad, half", JSON.stringify(P.EAVES) === '["plain","open","boxed","closed"]' && JSON.stringify(P.GUTTERS) === '["none","quad","half"]');
+check("the styles: plain, open, boxed, closed; gutters none, quad, half", JSON.stringify(P.EAVES) === '["plain","open","boxed","closed"]' && JSON.stringify(P.GUTTERS.slice(0, 3)) === '["none","quad","half"]');
 const old = make({});
 check("an old roof (no eave settings): plain, no fascia, no gutter - exactly as before (no extra parts)", old.roofs[0].eave === "plain" && !old.roofs[0].fascia && old.roofs[0].gutter === "none" && Object.keys(parts(old)).join() === "roof", parts(old));
 const cl = P.clean({ rooms: [{ id: 1, pts: [[0, 0], [4, 0], [4, 3], [0, 3]], closed: true }], roofs: [{ id: 2, rooms: [1], eave: "weird", gutter: "x", fasciaH: 9, fascia: 1 }] }).roofs[0];

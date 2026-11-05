@@ -43,7 +43,7 @@
   function keep(A, p) {
     if (!A || !p || p.id.startsWith("preset:")) return;
     if (!A.profiles) A.profiles = [];
-    const i = A.profiles.findIndex((q) => q.id === p.id), c = { id: p.id, name: p.name, kind: p.kind, pts: p.pts.map((q) => q.slice()) };
+    const i = A.profiles.findIndex((q) => q.id === p.id), c = Object.assign({ id: p.id, name: p.name, kind: p.kind, pts: p.pts.map((q) => q.slice()) }, p.path ? { path: PF().pathOf(p) } : {});   // 2.671.0: + its curves
     if (i >= 0) A.profiles[i] = c; else A.profiles.push(c);
   }
 
@@ -93,6 +93,7 @@
     cornice: { to: (q) => [q[0], -q[1]], from: (d) => [d[0], -d[1]], ref: "ceiling" },
     doorframe: { to: (q) => [q[1], q[0]], from: (d) => [d[1], d[0]], ref: "face" },
     windowframe: { to: (q) => [q[1], q[0]], from: (d) => [d[1], d[0]], ref: "face" },
+    gutter: { to: (q) => [q[0], q[1]], from: (d) => [d[0], d[1]], ref: "fascia" },          // 2.671.0
   };
   let D = null;                               // the open dialog's state
   function ensureDlg() {
@@ -272,10 +273,10 @@
     for (let y = Math.floor(a0[1] / step) * step; y <= a1[1]; y += step) { const s = F.toS([0, y])[1]; g.strokeStyle = Math.abs(y / 0.01 - Math.round(y / 0.01)) < 1e-6 ? "#ffffff22" : "#ffffff0d"; g.beginPath(); g.moveTo(0, s); g.lineTo(cv.width, s); g.stroke(); }
     // the wall (and the floor / ceiling) it sits against
     const o = F.toS([0, 0]); g.strokeStyle = "#9aa4b2"; g.lineWidth = 2; g.beginPath();
-    if (V.ref === "face") { g.moveTo(0, o[1]); g.lineTo(cv.width, o[1]); } else if (V.ref === "ceiling") { g.moveTo(o[0], cv.height); g.lineTo(o[0], o[1]); g.lineTo(cv.width, o[1]); } else { g.moveTo(o[0], 0); g.lineTo(o[0], o[1]); g.lineTo(cv.width, o[1]); }
+    if (V.ref === "face") { g.moveTo(0, o[1]); g.lineTo(cv.width, o[1]); } else if (V.ref === "fascia") { g.moveTo(o[0], 0); g.lineTo(o[0], cv.height); } else if (V.ref === "ceiling") { g.moveTo(o[0], cv.height); g.lineTo(o[0], o[1]); g.lineTo(cv.width, o[1]); } else { g.moveTo(o[0], 0); g.lineTo(o[0], o[1]); g.lineTo(cv.width, o[1]); }
     g.stroke(); g.lineWidth = 1;
     g.fillStyle = "#9aa4b2"; g.font = "11px sans-serif";
-    g.fillText(V.ref === "face" ? "the wall's face (the opening's edge at the left)" : V.ref === "ceiling" ? "wall | ceiling" : D.kind === "sill" ? "wall | the window's bottom" : "wall | floor", 6, 14);
+    g.fillText(V.ref === "fascia" ? "the fascia (the gutter hangs on it - its back's top just under the roof's edge)" : V.ref === "face" ? "the wall's face (the opening's edge at the left)" : V.ref === "ceiling" ? "wall | ceiling" : D.kind === "sill" ? "wall | the window's bottom" : "wall | floor", 6, 14);
     // the profile: its path (2.670.0 - lines and Bézier curves), the picked / hovered segment lit, the nodes, a curve's handles
     const P = D.p.path, n = P.n.length, Sx = (q) => F.toS(V.to(q)), tig = col("--tiger", "#f59e2c");
     D.p.pts = PF().flatten(P);

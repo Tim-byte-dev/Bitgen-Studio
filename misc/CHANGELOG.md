@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.671.0** — Sketcher Gutter Profiles: Quad, Half Round, OG, Square Line Built In; Draw Your Own in the Profile Editor (Lines + Bézier Curves) - a Roof's Gutter Swept With It
 - **2.670.0** — Sketcher Profile Editor With Bézier Curves: Arcs as One Curve (Two Nodes), Double-click Adds a Node, Right-click Convert to Curve / Line
 - **2.669.0** — ComfyUI Cleared Completely (misc\clear-comfy.bat) Before ⤓ Update ComfyUI and When bitGen Studio Exits; Every bitGen Process Ended, the Terminal Window Closed
 - **2.668.0** — Sketcher Eaves (Open, Boxed, Closed), Fascias, Barge Boards, Gutters + Downpipes; MOSS-Image Refused on a ComfyUI Older Than 0.42.2 (It Renders Noise)

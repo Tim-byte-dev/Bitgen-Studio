@@ -923,8 +923,19 @@
         selIn("Eaves", ev, EAVE_OPTS.map(([t, name]) => [t, name]), on("eave"));
         chkIn("Fascia + barge boards", !!o.fascia, on("fascia"));
         if (o.fascia) numIn("Fascia height", o.fasciaH != null ? o.fasciaH : 0.2, on("fasciaH"), 0.01, 0.05, 0.6, "m");
-        selIn("Gutters", o.gutter || "none", [["none", "None"], ["quad", "Quad (box)"], ["half", "Half round"]], on("gutter"));
-        if (o.gutter && o.gutter !== "none") chkIn("Downpipes", o.downpipes !== false, on("downpipes"));
+        // 2.671.0 (Tim: "create an editor for gutter profile in the same way"): the gutter's profile - the built-in ones in the
+        // select, every one (yours too) as pictures, ✎ = the profile editor (kind "gutter") like the skirting / cornice
+        const GF = root.PPProfile, gNow = o.gutter || "none";
+        const gOpts = [["none", "None"]].concat(GF ? GF.presets("gutter").map((p) => [p.id.replace("preset:gutter-", ""), p.name]) : [["quad", "Quad (box)"], ["half", "Half round"]]);
+        if (gNow === "custom") { const own = GF && GF.byId(o.gutterP, ((AR() || {}).profiles || []).concat(PL ? PL.list : [])); gOpts.push(["custom", own ? own.name : "Your own profile"]); }
+        selIn("Gutters", gNow, gOpts, on("gutter"));
+        if (gNow === "none") return;
+        const gid = gNow === "custom" ? o.gutterP : "preset:gutter-" + gNow;
+        const setG = (id, pp) => on("gutterSet")(!id || id.startsWith("preset:gutter-") ? { gutter: id ? id.replace("preset:gutter-", "") : "quad", gutterP: "" } : { gutter: "custom", gutterP: id, pp });
+        const edG = () => PD && PD.open({ kind: "gutter", id: gid, A: AR(), onSave: (pp) => setG(pp.id, pp) });
+        if (PU && GF) { const r = el("div", "ppr ppprofrow"); r.appendChild(el("span", "", "Gutter profile")); r.appendChild(PU.dropdown({ kind: "gutter", value: gid, A: AR(), onPick: (id, pp) => setG(id, pp), onEdit: edG })); box.appendChild(r); }
+        chkIn("Downpipes", o.downpipes !== false, on("downpipes"));
+        if (PD) btns([["✎ Gutter profiles…", edG, "Draw your own gutter's section - lines and curves, like a skirting or cornice"]]);
       };
       const btns = (list) => { const r = el("div", "ppbtns"); list.forEach(([t, fn, tip]) => { const b = el("button", "ghost", t); b.type = "button"; if (tip) b.title = tip; b.onclick = fn; r.appendChild(b); }); box.appendChild(r); };
       const ch = (fn) => (v) => { const b = before(); fn(v); ctx.commit("edit", b); props(); };
@@ -1036,7 +1047,7 @@
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
         if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Elevation (height from floor)", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
-        if (tool === "roof") { roofFields(o, opt);
+        if (tool === "roof") { roofFields(o, (k) => (k === "gutterSet" ? (v) => { if (v.pp && PL) PL.keep(AR(), v.pp); o.gutter = v.gutter; o.gutterP = v.gutterP; keepOpt(); props(); } : opt(k)));
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
         if (tool === "camera") {
           numIn("Eye height", o.eye, opt("eye"), 0.05, 0.1, 20, "m");
@@ -1178,7 +1189,7 @@
       } else if (asel.ak === "roof") {
         const rf = x;
         head("△ " + lbl("roof:" + rf.id, "Roof") + " · " + rf.rooms.length + " room" + (rf.rooms.length > 1 ? "s" : ""));
-        roofFields(rf, (k) => ch((v) => { rf[k] = v; }));
+        roofFields(rf, (k) => ch((v) => { if (k === "gutterSet") { if (v.pp && PL) PL.keep(AR(), v.pp); rf.gutter = v.gutter; rf.gutterP = v.gutterP; } else rf[k] = v; }));   // 2.671.0: + the gutter's profile
         numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
         matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
@@ -1243,7 +1254,7 @@
     const K_LABEL = { dutch: "Hip part of the rise", jerkin: "Clipped part of the rise", gambrel: "Break - in from the walls", mansard: "Break - in from the walls", saltbox: "Ridge - from the front" };
     /** the Roof tool's options for a new roof (2.666.0: + its proportion, lower pitch, flip) */
     function roofOpts() { const r = O.roof; return { type: r.type, pitch: r.pitch, over: r.over, k: r.k != null && P().ROOF_K[r.type] != null ? r.k : null, pitch2: r.pitch2 != null ? r.pitch2 : 60, flip: !!r.flip,
-      eave: r.eave || "boxed", fascia: r.fascia !== false, fasciaH: r.fasciaH != null ? r.fasciaH : 0.2, gutter: r.gutter || "quad", downpipes: r.downpipes !== false }; }   // 2.668.0: a new roof: boxed eaves, fascia, quad gutters
+      eave: r.eave || "boxed", fascia: r.fascia !== false, fasciaH: r.fasciaH != null ? r.fasciaH : 0.2, gutter: r.gutter || "quad", gutterP: r.gutterP || "", downpipes: r.downpipes !== false }; }   // 2.668.0: a new roof: boxed eaves, fascia, quad gutters
     function isRect(R) { const e = P().edgesOf(R); return e.length === 4 && e.every((a, i) => Math.abs(a.u[0] * e[(i + 1) % 4].u[0] + a.u[1] * e[(i + 1) % 4].u[1]) < 1e-6); }
     function dupRoom(id) {
       const A = AR(), R = P().room(A, id); if (!R) return;

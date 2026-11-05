@@ -168,7 +168,7 @@
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
       return { id: id(x.id), rooms, type: roofType(x.type), pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto",
         k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip,   // 2.666.0
-        eave: EAVES.includes(x.eave) ? x.eave : "plain", fascia: !!x.fascia, fasciaH: num(x.fasciaH, 0.2, 0.05, 0.6), gutter: GUTTERS.includes(x.gutter) ? x.gutter : "none",
+        eave: EAVES.includes(x.eave) ? x.eave : "plain", fascia: !!x.fascia, fasciaH: num(x.fasciaH, 0.2, 0.05, 0.6), gutter: GUTTERS.includes(x.gutter) ? x.gutter : "none", gutterP: typeof x.gutterP === "string" ? x.gutterP.slice(0, 80) : "",
         downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc") };   // 2.668.0: eaves, fascia, gutters
     }).filter(Boolean);
     A.slabs = (Array.isArray(o.slabs) ? o.slabs : []).map((x) => { if (!x || !Array.isArray(x.pts)) return null; const pts = x.pts.map(pt2).filter(Boolean); if (pts.length < 3) return null; if (area2(pts) < 0) pts.reverse(); return { id: id(x.id), pts, z: num(x.z, 0, -100, 1000), th: num(x.th, 0.2, 0.01, 5), col: hex(x.col, DEF.slab) }; }).filter(Boolean);
@@ -990,7 +990,17 @@
      showing, 600 mm apart) | boxed (a flat soffit from the fascia back to the wall) | closed (a lining under the rafters, on the
      slope); rf.fascia (+ barge boards up the rakes, rf.fasciaH tall, 25 mm thick, rf.trimCol); rf.gutter none | quad | half
      (on the fascia, rf.gutterCol) + rf.downpipes (one near the end of each eave run, down the wall to the floor). Pure. */
-  const EAVES = ["plain", "open", "boxed", "closed"], GUTTERS = ["none", "quad", "half"];
+  const EAVES = ["plain", "open", "boxed", "closed"], GUTTERS = ["none", "quad", "half", "ogee", "square", "custom"];
+  /* 2.671.0 (Tim: "create an editor for gutter profile in the same way"): a gutter is a PROFILE (ppprofile.js, kind "gutter" -
+     drawn in the profile editor like a cornice / skirting): rf.gutter = a built-in one's key ("quad" -> "preset:gutter-quad") or
+     "custom" = rf.gutterP (the model's own copy). -> {prof(o0, top) [[o, u]], w, depth} or null (no PPProfile: the old shapes) */
+  function gutterProfile(A, rf) {
+    const PF = root.PPProfile; if (!PF) return null;
+    const p = PF.resolve(A, rf.gutter === "custom" ? rf.gutterP : "preset:gutter-" + rf.gutter, "gutter");
+    if (!p || !p.pts || p.pts.length < 3) return null;
+    const s = PF.size(p), back = Math.max(...p.pts.filter((q) => q[0] <= s.minX + 0.001).map((q) => q[1]));   // its back's top
+    return { w: s.w, depth: back - s.minY, prof: (o0, top) => p.pts.map((q) => [o0 + q[0] - s.minX, top + q[1] - back]) };
+  }
   function eaveParts(A, rf, tops, cnt, keyOf, P, dz, out, tag0) {
     const eave = EAVES.includes(rf.eave) ? rf.eave : "plain", fas = !!rf.fascia, gut = GUTTERS.includes(rf.gutter) && rf.gutter !== "none" ? rf.gutter : null;
     if (eave === "plain" && !fas && !gut) return;
@@ -1026,7 +1036,7 @@
     const keyP = (p) => p.map((c) => c.toFixed(5)).join(",");
     const ends = new Map(); eaves.forEach((e) => [e.p, e.q].forEach((x) => ends.set(keyP(x), (ends.get(keyP(x)) || 0) + 1)));
     const corner = (x) => (ends.get(keyP(x)) || 0) > 1;
-    const ft = 0.025, fh = Math.max(dz + 0.01, rf.fasciaH || 0.2), ov = rf.over || 0, gw = 0.125, gd = 0.1;
+    const ft = 0.025, fh = Math.max(dz + 0.01, rf.fasciaH || 0.2), ov = rf.over || 0, gw0 = 0.125, gd = 0.1;
     const roomsZ = rf.rooms.map((id) => room(A, id)).filter(Boolean).map((R) => R.z), ground = roomsZ.length ? Math.min(...roomsZ) : 0;
     eaves.forEach((e) => {
       const pw = P(e.p[0], e.p[1], e.p[2]), qw = P(e.q[0], e.q[1], e.q[2]), dW = n3(s3(qw, pw)), cw = P(e.c[0], e.c[1], e.p[2]);
@@ -1055,8 +1065,8 @@
         }
       }
       if (gut) {                                                     // the gutter on the fascia (open at the top)
-        const o0 = fas ? ft : 0, top = dz - 0.02, bot = top - gd, t = 0.004, [A0, B0] = ext(o0 + gw);
-        const prof = gut === "quad"
+        const GP = gutterProfile(A, rf), gw = GP ? GP.w : gw0, o0 = fas ? ft : 0, top = dz - 0.02, bot = top - (GP ? GP.depth : gd), t = 0.004, [A0, B0] = ext(o0 + gw);
+        const prof = GP ? GP.prof(o0, top) : gut === "quad"
           ? [[o0, top], [o0, bot], [o0 + gw, bot], [o0 + gw, top + 0.01], [o0 + gw - t, top + 0.01], [o0 + gw - t, bot + t], [o0 + t, bot + t], [o0 + t, top]]
           : (() => { const r = gw / 2, c = [o0 + r, top], P0 = []; for (let i = 0; i <= 8; i++) { const a = Math.PI + Math.PI * i / 8; P0.push([c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]); } for (let i = 8; i >= 0; i--) { const a = Math.PI + Math.PI * i / 8; P0.push([c[0] + (r - t) * Math.cos(a), c[1] + (r - t) * Math.sin(a)]); } return P0; })();
         sweep(A0, B0, oW, Z, prof, gcol, "gutter");
@@ -1452,7 +1462,7 @@
   /** 2.664.0: an end piece's / a corner's size (w across, l past the end; null = as the wall) */
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
-    cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
+    cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, gutterProfile, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;

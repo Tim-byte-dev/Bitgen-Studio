@@ -17,7 +17,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-6);
 
 // ---- the built-in profiles
 const kinds = Object.keys(PF.KINDS);
-check("five kinds: skirting, cornice, door frame, window frame, window sill", kinds.join() === "skirt,cornice,doorframe,windowframe,sill", kinds);
+check("the kinds: skirting, cornice, door frame, window frame, window sill (+ gutter, 2.671.0)", kinds.join() === "skirt,cornice,doorframe,windowframe,sill,gutter", kinds);
 check("built-in: 7 skirting, 6 cornice, 6 door frames, 6 window frames, 5 sills", [7, 6, 6, 6, 5].every((n, i) => PF.presets(kinds[i]).length === n), kinds.map((k) => PF.presets(k).length));
 const segX = (a, b, c, d) => { const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
 const selfX = PF.PRESETS.filter((p) => { const s = p.pts, n = s.length; for (let i = 0; i < n; i++) for (let j = i + 2; j < n; j++) { if (i === 0 && j === n - 1) continue; if (segX(s[i], s[(i + 1) % n], s[j], s[(j + 1) % n])) return true; } return false; }).map((p) => p.id);

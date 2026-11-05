@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.671.0: **Gutter profiles** in the Sketcher: pick a roof - **Gutters** lists the built-in sections (Quad (box), Half round,
+  OG (ogee front), Square line (deep)), **Gutter profile** shows them (and yours) as pictures, and **✎ Gutter profiles…**
+  opens the profile editor with the kind *Gutter*: the fascia is the line on its left, x out from it, y up from the
+  gutter's bottom, and the back's top hangs just under the roof's edge. Draw it the same way as a skirting or cornice
+  (click / drag nodes, double-click a segment for a node, right-click ▸ Convert to curve / line, Delete node) and 💾 Save -
+  the roof's gutter is then your profile (the project keeps it, curves and all), swept along every eave; the downpipes
+  sit under its middle. The Roof tool's own options take a gutter profile too, for the roofs it makes next.
 - 2.670.0: **Profiles with Bézier curves** in the Sketcher's profile editor (skirting, cornice, door / window frames, sills -
   ✎ New / edit profiles…): every built-in arc and ogee is now ONE curve with just two nodes on it (its start and finish),
   so the Cove cornice is three nodes. **Click** a node or a segment to pick it; **drag** a node (its handles move with it) or

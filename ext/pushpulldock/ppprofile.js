@@ -32,6 +32,7 @@
     doorframe: { label: "Door frame", axes: ["out from the wall face", "across, from the opening's edge"], def: "preset:doorframe-flat" },
     windowframe: { label: "Window frame", axes: ["out from the wall face", "across, from the opening's edge"], def: "preset:windowframe-flat" },
     sill: { label: "Window sill", axes: ["out from the wall", "up from its underside"], def: "preset:sill-square" },
+    gutter: { label: "Gutter", axes: ["out from the fascia", "up from its bottom"], def: "preset:gutter-quad" },   // 2.671.0
   };
 
   /* ---------------- small 2D maths */
@@ -149,6 +150,12 @@
     P("sill", "nosing", "Round nosing", B().M(0, 0).L(0.05, 0).A(0.05, 0.015, 0.015, 0.015, -90, 90).L(0, 0.03)),
     P("sill", "chamfer", "Chamfered", B().M(0, 0).L(0.055, 0).L(0.065, 0.012).L(0.065, 0.03).L(0, 0.03)),
     P("sill", "apron", "With an apron", B().M(0, -0.06).L(0.02, -0.06).L(0.02, 0).L(0.065, 0).L(0.065, 0.03).L(0, 0.03)),
+    // 2.671.0 (Tim: "create an editor for gutter profile in the same way"): gutters - the metal's section, open on top, 0.4 mm
+    // shown as 4 mm so it reads; x out from the fascia, y up from the bottom; the back's top sits just under the roof's edge
+    P("gutter", "quad", "Quad (box)", B().M(0, 0.1).L(0, 0).L(0.125, 0).L(0.125, 0.11).L(0.121, 0.11).L(0.121, 0.004).L(0.004, 0.004).L(0.004, 0.1)),
+    P("gutter", "half", "Half round", B().M(0, 0.0625).A(0.0625, 0.0625, 0.0625, 0.0625, 180, 360).L(0.121, 0.0625).A(0.0625, 0.0625, 0.0585, 0.0585, 360, 180)),
+    P("gutter", "ogee", "OG (ogee front)", B().M(0, 0.1).L(0, 0).L(0.07, 0).S(0.115, 0.085).L(0.115, 0.1).L(0.111, 0.1).L(0.111, 0.085).S(0.066, 0.004).L(0.004, 0.004).L(0.004, 0.1)),
+    P("gutter", "square", "Square line (deep)", B().M(0, 0.125).L(0, 0).L(0.1, 0).L(0.1, 0.135).L(0.096, 0.135).L(0.096, 0.004).L(0.004, 0.004).L(0.004, 0.125)),
   ]);
   PRESETS.forEach((p) => { const c = clean(p); p.pts = c.pts; p.path = c.path; });
   const presets = (kind) => PRESETS.filter((p) => p.kind === kind);
@@ -210,7 +217,8 @@
       : p.kind === "doorframe" || p.kind === "windowframe" ? (q) => [pad + (q[1] - s.minY) * k, h - pad - (q[0] - s.minX) * k]
         : (q) => [pad + (q[0] - s.minX) * k, h - pad - (q[1] - s.minY) * k];
     const pts = p.pts.map((q) => map(q).map((v) => v.toFixed(2)).join(",")).join(" ");
-    const o = map([0, 0]), ref = p.kind === "cornice" ? "M" + o[0].toFixed(1) + " " + h + "V" + o[1].toFixed(1) + "H" + w
+    const o = map([0, 0]), ref = p.kind === "gutter" ? "M" + o[0].toFixed(1) + " 0V" + h
+      : p.kind === "cornice" ? "M" + o[0].toFixed(1) + " " + h + "V" + o[1].toFixed(1) + "H" + w
       : p.kind === "doorframe" || p.kind === "windowframe" ? "M0 " + o[1].toFixed(1) + "H" + w : "M" + o[0].toFixed(1) + " 0V" + o[1].toFixed(1) + "H" + w;
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" class="ppprofsvg"><path d="' + ref + '" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/><polygon points="' + pts + '" fill="currentColor" fill-opacity="0.85" stroke="currentColor" stroke-width="0.6"/></svg>';
   }
