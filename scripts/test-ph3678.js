@@ -28,7 +28,8 @@ check("the add-on: everything needed (LoRA, text encoder, VAE, upsampler + the M
   check("remove: P-H3's own files only - the MiniMax H3 transformer stays (the video needs it)", rm.ok && /the MiniMax H3 transformer stays/.test(lr.join("\n")));
   const A = JSON.parse(read("lib/imageArch.json")).archs.find((a) => a.id === "ph3");
   check("the architecture ph3: ComfyUI only, no negative, 8 steps / cfg 1, 2048 x 2048", A && A.comfy_only && A.negative === false && A.defaults.steps === 8 && A.defaults.cfg === 1 && A.defaults.width === 2048);
-  const s1 = JSON.parse(read("styles/image/P-H3 Image.json")), s2 = JSON.parse(read("styles/image/P-H3 Image Edit.json"));
+  const SS = require(path.join(ROOT, "lib", "styles.js")), st = (n) => Object.assign({ id: "x", kind: "image" }, SS.STARTER_STYLES.find((x) => x.name === n) || {});   // starters live in lib/styles.js (styles/ is user data)
+  const s1 = st("P-H3 Image"), s2 = st("P-H3 Image Edit");
   check("the starter styles: P-H3 Image (text to image) + P-H3 Image Edit, arch ph3, their workflows", s1.arch === "ph3" && s1.workflow === "comfy_workflows/img_ph3_t2i.json" && s2.workflow === "comfy_workflows/img_ph3_edit.json" && s2.name === "P-H3 Image Edit");
   const AE = require(path.join(ROOT, "lib", "aiEdit.js"));
   let e1 = null, e2 = ""; try { e1 = AE.editGraph(s2, ROOT); } catch (e) { e1 = null; } try { AE.editGraph(s1, ROOT); } catch (e) { e2 = e.message; }
