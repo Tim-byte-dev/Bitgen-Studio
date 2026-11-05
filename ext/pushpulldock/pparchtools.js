@@ -129,10 +129,20 @@
       return root.PPFurn ? root.PPFurn.make(O.furniture.type, p, z, O.furniture.rot, O.furniture.color, O.furniture.pose) : null;
     }
     function planeAt(ev, z) { const r = V.ray(ev); if (Math.abs(r.d[2]) < 1e-9) return null; const t = (z - r.o[2]) / r.d[2]; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, z] : null; }
-    function snapPlan(ev, z, from) {
-      const s = V.snap(ev, { from: from ? [from[0], from[1], z] : null, plane: { n: [0, 0, 1], p: [0, 0, z] }, extra: P().snapPoints(AR(), z), group: ctx.group() });
+    function snapPlan(ev, z, from, onWall) {
+      let s = V.snap(ev, { from: from ? [from[0], from[1], z] : null, plane: { n: [0, 0, 1], p: [0, 0, z] }, extra: P().snapPoints(AR(), z), group: ctx.group() });
       let p = [s.p[0], s.p[1], z];
+      // 2.663.0: the up (blue) axis means nothing on a floor plan - seen from above it caught the pointer anywhere on the line
+      // to the view's middle (the wall's next point stuck on its start): the floor under the pointer instead
+      if (/Blue Axis/.test(s.kind || "")) { const q = planeAt(ev, z); if (q) { p = q; s = Object.assign({}, s, { p: q, kind: "On Plane", label: "On Plane", axis: null }); } }
       if ((s.kind === "On Face" || s.kind === "On Edge") && Math.abs(s.p[2] - z) > 1e-3) { const q = planeAt(ev, z); if (q) p = q; }
+      // 2.663.0 (Tim: "the wall tool walls can start and finish from the room walls anywhere along the wall"): the pointer on a
+      // wall (its face / its top / the floorplan) - onto that wall's line (a split point / corner: Endpoint wins)
+      if (onWall && !/Endpoint|Midpoint/.test(s.kind)) {
+        const h = AV() && AV().pick(ev), q = h && h.tag.ak === "wall" && nearerThanModel(ev, h) ? [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02] : [p[0], p[1]];
+        const w = P().nearestWall(AR(), q, Math.max(pxTol(p), 0.05), z);
+        if (w) { const c = [w.e.a[0] + w.e.u[0] * w.at, w.e.a[1] + w.e.u[1] * w.at]; p = [c[0], c[1], z]; return { p, s: Object.assign({}, s, { p, kind: "On Wall", label: "On Wall · " + w.R.name + " " + fmt(w.at) + " along", color: "#f59e2c" }) }; }
+      }
       // 2.624.0: onto a floor's edge (On Floor Edge) when nothing stronger caught the pointer
       if (!/Endpoint|Midpoint|Origin|Axis/.test(s.kind)) {
         const tol = pxTol(p); let best = null;
@@ -180,7 +190,7 @@
       if (tool === "room") return rectTool(ev, O.room.z, (a, b) => finishRoom(a, b));
       if (tool === "floor") return rectTool(ev, O.floor.z, (a, b) => finishSlab(a, b));
       if (tool === "wall") {
-        const from = st.pts && st.pts[st.pts.length - 1], { p } = snapPlan(ev, O.wall.z, from);
+        const from = st.pts && st.pts[st.pts.length - 1], { p } = snapPlan(ev, O.wall.z, from, true);   // 2.663.0: on a wall's line too
         if (!st.pts) { st.pts = [p]; return; }
         if (st.pts.length >= 3 && Math.hypot(p[0] - st.pts[0][0], p[1] - st.pts[0][1]) < 1e-6) { finishWall(true); return; }
         if (Math.hypot(p[0] - from[0], p[1] - from[1]) < 1e-6) return;
@@ -257,7 +267,7 @@
         if (!fix) ctx.vcbValue((+w.toFixed(3)) + "," + (+d.toFixed(3))); return;
       }
       if (tool === "wall") {
-        const from = st.pts && st.pts[st.pts.length - 1], { p, s } = snapPlan(ev, O.wall.z, from);
+        const from = st.pts && st.pts[st.pts.length - 1], { p, s } = snapPlan(ev, O.wall.z, from, true);
         if (!from) { show(s, { tip: "the wall's start" }); return; }
         st.cur = p; const pts = st.pts.concat([p]), lines = [];
         for (let i = 0; i + 1 < pts.length; i++) { const a = pts[i], b = pts[i + 1]; lines.push([a, b], [[a[0], a[1], a[2] + O.wall.h], [b[0], b[1], b[2] + O.wall.h]]); }
@@ -457,6 +467,7 @@
         return true;
       }
       let t = AV().resolve(h); if (!t) return false;
+      if (root.PPSketchPlane && t.ak !== "cam" && h.n) root.PPSketchPlane.set(h.n, h.point, nameOf(t) + (Math.abs(h.n[2]) > 0.9 ? (h.n[2] > 0 ? " (top)" : " (underside)") : " (face)"));   // 2.663.0: the clicked face = the sketch plane
       if (ev.shiftKey && t.ak === "room") t = { ak: "room", id: t.id };                 // 2.639.0: Shift+click = the whole room (then a drag moves it)
       // 2.648.0 (Tim: "pick tool to select a single object, ctrl+click will add to the selection"): a click = that one thing;
       // Ctrl+click = added to what is picked (Ctrl+click a picked one = taken out); a press on one of several picked = a drag
@@ -631,7 +642,7 @@
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
-      if (D.mode === "branch") { if (D.moved) finishBranch(D); else ctx.status("▮ drag out of a side of a corner / a wall's end to draw a new wall from it"); return true; }   // 2.662.0
+      if (D.mode === "branch") { if (D.moved) finishBranch(D); else { setSel({ ak: "joint", room: D.R.id, k: D.j.k }); ctx.status("▪ " + (D.j.kind === "end" ? "a wall's end" : "a corner") + " picked - its width in the panel · drag out of a side for a new wall"); } return true; }   // 2.662.0 / 2.664.0: a click picks it
       if (D.many && !D.moved && D.single) { setMore([]); setSel(D.single); return true; }   // 2.648.0: a click on one of several = that one
       if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : D.mode === "spin" ? "turn" : "move", D.before); props(); }
       else if (D.t && D.t.ak === "cam" && D.mode !== "axis" && D.mode !== "spin") ctx.status("📷 " + ((P().find(AR(), "cam", D.t.id) || {}).name || "camera") + " · drag it or an arrow to move it · double-click = rotate rings" + (gizmo === "rotate" ? " (now: rotate - double-click again for the arrows)" : ""));
@@ -657,15 +668,17 @@
       if (D.free) {                                                                     // 2.639.0: Alt - free
         const v = [cur[0] - D.start[0], cur[1] - D.start[1]];
         if (!ev.shiftKey) { const g = 0.05; v[0] = Math.round(v[0] / g) * g; v[1] = Math.round(v[1] / g) * g; }
-        P().moveEdgeBy(A, R.id, D.t.edge, v);
-        AV().rebuild(); AV().setSel(D.t);
+        const k = Math.hypot(v[0], v[1]) > 1e-6 ? P().openEnds(A, R.id, D.t.edge) : D.t.edge;   // 2.663.0: a split piece - new walls join it
+        P().moveEdgeBy(A, R.id, k, v); asel = Object.assign({}, D.t, { edge: k });
+        AV().rebuild(); AV().setSel(asel);
         ctx.status("▮ " + R.name + "'s wall moved freely " + fmt(Math.hypot(v[0], v[1])) + " (Alt) · 5 cm steps, Shift = free steps");
         return true;
       }
       const out = [e.u[1], -e.u[0]], tol = ev.shiftKey ? 0 : pxTol(cur), off = O.room.off || 0;
       const sn = P().snapEdge(A, R.id, D.t.edge, (cur[0] - D.start[0]) * out[0] + (cur[1] - D.start[1]) * out[1], tol, off);
-      P().moveEdge(A, R.id, D.t.edge, sn.dist);
-      AV().rebuild(); AV().setSel(D.t);
+      const k = Math.abs(sn.dist) > 1e-6 ? P().openEnds(A, R.id, D.t.edge) : D.t.edge;   // 2.663.0: a split piece moved - a new wall each side joins it to the room
+      P().moveEdge(A, R.id, k, sn.dist); asel = Object.assign({}, D.t, { edge: k });
+      AV().rebuild(); AV().setSel(asel);
       regions(A, R.z, tol, off, sn.hit && sn.hit.kind === "floor" ? sn.hit : null);
       ctx.status("▮ " + R.name + "'s wall " + (sn.dist >= 0 ? "out " : "in ") + fmt(Math.abs(sn.dist)) + (sn.hit ? sn.hit.kind === "floor" ? " · on the floor's edge" + (off ? " (" + fmt(off) + " in)" : "") : " · on " + (P().room(A, sn.hit.room) || {}).name + "'s wall" : "") + " · Shift = no snap");
       return true;
@@ -698,8 +711,18 @@
         props(); return true;
       }
       const h = AV() && AV().pick(ev); if (!h || !nearerThanModel(ev, h) || h.tag.ak !== "wall") return false;
-      const tol = Math.max(0.12, pxTol(h.point) * 1.2);
-      const th = P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol); if (!th) return false;
+      const tol = Math.max(0.12, pxTol(h.point) * 1.2), down = Math.abs(V.ray(ev).d[2]) > 0.85 || !!(AV().planOnNow && AV().planOnNow());   // from above / the floorplan (in 3D a wall's top = a cut, as before)
+      // 2.663.0 (Tim: "select segments of the wall after a split(dbl click)"): seen from above / the floorplan, or on the wall's
+      // face below its top - the wall split in two there (each piece a wall of its own: picked, dragged, taken out)
+      const splitHere = () => {
+        const t = AV().resolve(h); if (!t || t.part !== "wall" || t.edge == null) return false;
+        const b = before(), A = AR(), k = P().splitWall(A, t.id, t.edge, h.point); if (k < 0) { ctx.status("✂ too near the wall's end to split it there"); return true; }
+        const R = P().room(A, t.id); done("split", b, { ak: "room", id: t.id, part: "wall", edge: t.edge });
+        ctx.status("✂ " + R.name + "'s wall " + (t.edge + 1) + " split in two - each piece is a wall: pick it, drag it out (new walls join it to the room), Delete takes it out · double-click again to split more");
+        return true;
+      };
+      if (down) return splitHere();
+      const th = P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol); if (!th) return splitHere();
       const b = before(), k = P().cutTop(AR(), th.room, th.edge, th.t); if (k < 0) return false;
       done("cut", b, { ak: "wpt", room: th.room, edge: th.edge, k });
       ctx.status("✂ a cut in " + th.R.name + "'s wall - drag it up / down (a slope), Delete takes it away");
@@ -755,6 +778,7 @@
         done("erase", b, null); ctx.status("⌫ erased " + n + " picked"); return;
       }
       const b = before(), t = asel;
+      if (t.ak === "joint") { if (P().setJoint(AR(), t.room, t.k, { w: null, l: null })) { done("joint", b, t); ctx.status("▪ back to the wall's own size"); } return; }   // 2.664.0
       if (t.ak === "wpt" || t.ak === "wtop") {                          // 2.624.0: Delete on a cut / a top edge
         const ok = t.ak === "wpt" ? P().removeTopPoint(AR(), t.room, t.edge, t.k) : P().removeTopSeg(AR(), t.room, t.edge, t.k);
         if (ok) { asel = null; done("erase", b, null); ctx.status(t.ak === "wpt" ? "⌫ the cut is gone" : "⌫ that top edge is straight again"); }
@@ -844,7 +868,7 @@
       const box = root.document && root.document.getElementById("ppProps"); if (!box) return;
       box.innerHTML = "";
       const A = ctx.model() ? AR() : null;
-      const x = asel && A ? (asel.ak === "wpt" || asel.ak === "wtop" ? P().room(A, asel.room) : P().find(A, asel.ak, asel.id)) : null;
+      const x = asel && A ? (asel.ak === "wpt" || asel.ak === "wtop" || asel.ak === "joint" ? P().room(A, asel.room) : P().find(A, asel.ak, asel.id)) : null;
       if (asel && !x) asel = null;
       const ED = ctx.edit ? ctx.edit() : null, edit = !tool && !x && ED && ED.wants();     // 2.625.0: a face / edges / a corner of the model
       if (!tool && !x && !edit && ctx.otherPanel && ctx.otherPanel()) return;   // 2.653.0: the ⛰ Terrain tool's own panel
@@ -1041,6 +1065,17 @@
         const ul = el("div", "pphint", picked().map((t) => "• " + nameOf(t) + (t.part ? " (" + t.part + ")" : "")).join("\n")); ul.style.whiteSpace = "pre-line"; box.appendChild(ul);
         btns([["🗑 Delete them", eraseSel, "Erase every picked part (one undo)"], ["⊡ Zoom to them", () => { if (ctx.zoomPicked) ctx.zoomPicked(); }, "Fill the view with them"]]);
         box.appendChild(el("div", "pphint", "Ctrl+click adds another (a picked one: takes it out) · drag one of them: they all move · a click: only that one · Esc: nothing picked."));
+        ctx.resized && ctx.resized(); return;
+      }
+      if (asel.ak === "joint") {                                         // 2.664.0 (Tim: "when user selects the square edge at the ends of the wall, allow user to set it's width")
+        const R = x, J = P().joints(R).find((j) => j.k === asel.k); if (!J) { asel = null; props(); return; }
+        const id = R.id, k = asel.k, E = P().edgesOf(R), names = J.walls.map((i) => "Wall " + (i + 1)).join(" + "), tMax = Math.max(...J.walls.map((i) => P().tw(R, i)));
+        head("▪ " + (J.kind === "end" ? "End of " : "Corner of ") + names + " · " + R.name);
+        numIn(J.kind === "end" ? "Width (across)" : "Width (a pier round the corner)", J.w || tMax, ch((v) => P().setJoint(AR(), id, k, { w: Math.abs(v - tMax) < 1e-6 && J.kind !== "end" ? null : v })), 0.01, 0.02, 5, "m");
+        if (J.kind === "end") numIn("Length past the end", J.l, ch((v) => P().setJoint(AR(), id, k, { l: v })), 0.01, 0, 5, "m");
+        if (R.jw && R.jw[k]) btns([["↺ As the wall", ch(() => P().setJoint(AR(), id, k, { w: null, l: null })), "Its width / length back to the wall's"]]);
+        btns([["▮ " + names, () => setSel({ ak: "room", id, part: "wall", edge: J.walls[0] }), "The wall it ends"], ["⌂ " + R.name + "'s settings", () => setSel({ ak: "room", id }), "The whole room"]]);
+        void E; box.appendChild(el("div", "pphint", "Wider than the wall it is a pier. Drag out of one of its sides (Select) for a new wall from it - from its top: any way."));
         ctx.resized && ctx.resized(); return;
       }
       if (asel.ak === "room" && asel.part && partPanel(x, asel)) { ctx.resized && ctx.resized(); return; }

@@ -318,6 +318,15 @@
       ortho.userData.k = r * 1.3 / Math.min(1, persp.aspect); ortho.zoom = 1; size();
       controls.update(); draw();
     }
+    /** 2.663.0: ⊥ Look at - straight at a plane: the eye along its normal d from the centre c, r (m) round it filling the view */
+    function lookAlong(d0, c, r) {
+      let d = G().v3.norm(d0); if (Math.abs(d[2]) > 0.999) d = G().v3.norm([0, -1e-4 * Math.sign(d[2] || 1), d[2]]);
+      const vf = persp.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * persp.aspect), rr = Math.max(0.3, +r || 2), D = rr / Math.sin(Math.min(vf, hf) / 2) * 1.2;
+      controls.target.set(c[0], c[1], c[2]);
+      [persp, ortho].forEach((k) => { k.position.set(c[0] + d[0] * D, c[1] + d[1] * D, c[2] + d[2] * D); k.lookAt(c[0], c[1], c[2]); });
+      ortho.userData.k = rr * 1.3 / Math.min(1, persp.aspect); ortho.zoom = 1; size();
+      controls.update(); draw();
+    }
     /** 2.648.0: ⊡ the box {min, max} fills the view (the way it looks now kept) */
     function frameBox(b) {
       if (!b || !b.min || !b.max) return extents();
@@ -446,7 +455,7 @@
       R, scene, controls, canvas: R.domElement, cam: () => cam, hemi, sun, grid, ground, axes,   // 2.647.0: + axes (the floorplan hides them)
       setModel(M) { V.M = M; rebuild(); }, pano, rebuild, setSel(s) { V.sel = s || { f: [], e: [] }; paintSel(); draw(); }, setHover(h) { V.hover = h; paintSel(); draw(); },
       setGroup(gid) { V.group = gid || null; rebuild(); },
-      ray, screen, pick, snap, preview, tri, view, extents: () => extents(), frameBox, zoomAt, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
+      ray, screen, pick, snap, preview, tri, view, lookAlong, extents: () => extents(), frameBox, zoomAt, diag, ortho: setOrtho, style: setStyle, shadows, shot, state, restore, leftDrag, size, draw, edges: () => edges,
     });
     size(); view("iso");
     return V;

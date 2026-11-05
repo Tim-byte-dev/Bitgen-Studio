@@ -85,7 +85,9 @@
       if ((name === "move" || name === "rotate" || name === "scale") && !hasSel()) ctx.status(HINT[name] + " - nothing is picked: press on what to " + name);
     }
     const hasSel = () => { const s = ctx.sel(); return !!((s.f && s.f.length) || (s.e && s.e.length) || (s.k && s.k.length) || (s.p && s.p.length)); };
-    function snapAt(ev, o) { const s = V.snap(ev, Object.assign({ group: ctx.group(), lock }, o || {})); lastSnap = s; return s; }
+    /** 2.663.0: ✎ the sketch plane (ppplane.js - a face clicked with Select): the drawing tools draw in it */
+    const SP = () => (root.PPSketchPlane && root.PPSketchPlane.get && /^(line|rect|circle|polygon)$/.test(tool) ? root.PPSketchPlane.get() : null);
+    function snapAt(ev, o) { const sp = SP(), oo = Object.assign({ group: ctx.group(), lock }, o || {}); if (sp && !oo.plane) oo.plane = { n: sp.n, p: sp.p }; const s = V.snap(ev, oo); lastSnap = s; return s; }
     function show(s, o) {
       const p = o || {};
       const dashed = [];
@@ -100,7 +102,8 @@
     function pickSel(ev, add, only) {     // add: to what is picked (Shift: in / out); only: Ctrl - only adds (2.648.0)
       const p = V.pick(ev, { group: ctx.group() });
       const s = add ? Object.assign({ f: [], e: [], k: [] }, JSON.parse(JSON.stringify(ctx.sel()))) : { f: [], e: [], k: [] };
-      if (!p) { if (!add) ctx.setSel(s); return null; }
+      if (!p) { if (!add) { ctx.setSel(s); if (root.PPSketchPlane) root.PPSketchPlane.clear(); } return null; }
+      if (p.face && p.n && root.PPSketchPlane) root.PPSketchPlane.set(p.n, p.point, "a face of the model");   // 2.663.0: the clicked face = the sketch plane
       const grp = p.grp && p.grp !== ctx.group() ? p.grp : null;
       const tog = (arr, x) => { const i = arr.indexOf(x); if (i >= 0) { if (!only) arr.splice(i, 1); } else arr.push(x); };
       if (grp) { M().f.forEach((F) => { if (F.grp === grp) tog(s.f, F.id); }); M().e.forEach((E) => { if (E.grp === grp) tog(s.e, E.id); }); }
@@ -132,7 +135,7 @@
       }
       if (tool === "rect" || tool === "circle" || tool === "polygon") {
         const s = snapAt(ev, st.a ? { from: st.a, plane: st.plane } : {});
-        if (!st.a) { st.a = s.p; st.plane = { n: s.n && s.kind === "On Face" ? s.n : [0, 0, 1], p: s.p }; st.face = s.face || null; return; }
+        if (!st.a) { const sp = SP(); st.a = s.p; st.plane = sp ? { n: sp.n, p: sp.p } : { n: s.n && s.kind === "On Face" ? s.n : [0, 0, 1], p: s.p }; st.face = sp ? null : s.face || null; return; }
         finishShape(s.p); return;
       }
       if (tool === "pushpull") {
@@ -434,6 +437,7 @@
        always ours (a maximized Sketcher is never docked by Esc) */
     function escape() {
       const wasOrbit = tool === "orbit";
+      if (root.PPSketchPlane && root.PPSketchPlane.get() && !Object.keys(st).length) root.PPSketchPlane.clear();   // 2.663.0: Esc ends the sketch plane
       let kept = "";
       if (TT) TT.escape();                                                // 2.653.0: a contour line being drawn is dropped
       const r = AT && AT.escape ? AT.escape(tool) : false; if (r === "kept" && ctx.statusText) kept = ctx.statusText();   // a wall run kept: its own words first

@@ -72,7 +72,7 @@ check("…the floor, ceiling, skirting and cornice follow the new walls (built f
 
 /* the wiring */
 const TL = read("ext/pushpulldock/pparchtools.js"), AV = read("ext/pushpulldock/pparchview.js"), DK = read("ext/pushpulldock/ppdock.js"), EX = JSON.parse(read("ext/pushpulldock/ext.json")), OL = read("ext/pushpulldock/ppoutline.js");
-check("Shift+click on any part of a room picks the whole room (a drag then moves it); Alt+press on a wall = free", /if \(ev\.shiftKey && t\.ak === "room"\) t = \{ ak: "room", id: t\.id \}/.test(TL) && /free: !!ev\.altKey/.test(TL) && /P\(\)\.moveEdgeBy\(A, R\.id, D\.t\.edge, v\)/.test(TL));
+check("Shift+click on any part of a room picks the whole room (a drag then moves it); Alt+press on a wall = free", /if \(ev\.shiftKey && t\.ak === "room"\) t = \{ ak: "room", id: t\.id \}/.test(TL) && /free: !!ev\.altKey/.test(TL) && /P\(\)\.moveEdgeBy\(A, R\.id, (D\.t\.edge|k), v\)/.test(TL));
 check("the room panel: Skirting / Skirting height / Cornice / Cornice size / their colour", /chkIn\("Skirting"/.test(TL) && /"Skirting height"/.test(TL) && /chkIn\("Cornice"/.test(TL) && /"Cornice size"/.test(TL));
 check("hidden furniture / cameras are not drawn; the outline repaints with the docker (info) and is loaded after ppframe.js", /hid\("item:" \+ it\.id\)/.test(AV) && /hid\("cam:" \+ c\.id\)/.test(AV) && /PPOutline\.paint\(\)/.test(DK) && EX.scripts.indexOf("ppoutline.js") > EX.scripts.indexOf("ppframe.js") && /commit, snapshot/.test(DK));
 check("the docker: 🗂 Outline in the bar, 👁 / ⊞ / ＋ / ✎ / ✕, undo-able edits", /ppOutlineBtn/.test(OL) && /data-act="eye"/.test(OL) && /data-act="group"/.test(OL) && /data-act="newgroup"/.test(OL) && /h\.commit\(label, before\)/.test(OL));

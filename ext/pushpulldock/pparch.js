@@ -121,7 +121,7 @@
         wext: cleanWcol(R.wext, closed ? pts.length : pts.length - 1),   // 2.651.0: each wall's OUTSIDE (none = the building's outside colour A.ext)
         // 2.660.0: the walls taken out (edge numbers - the floor / ceiling stay, the side open) + each wall's interior / exterior (none = auto)
         gone: cleanGone(R.gone, closed ? pts.length : pts.length - 1), wkind: cleanKind(R.wkind, closed ? pts.length : pts.length - 1),
-        wt: WT ? WT.cleanWt(R.wt, closed ? pts.length : pts.length - 1, wtIds) : {}, tw: {} };   // 2.661.0: each wall's type (tw: its thickness - sync below)
+        wt: WT ? WT.cleanWt(R.wt, closed ? pts.length : pts.length - 1, wtIds) : {}, tw: {}, jw: cleanJw(R.jw, pts.length) };   // 2.664.0: jw - a corner's / an end's own size   // 2.661.0: each wall's type (tw: its thickness - sync below)
     }).filter(Boolean);
     if (WT) WT.sync(A);
     const rid = new Set(A.rooms.map((R) => R.id));
@@ -169,6 +169,8 @@
   }
   const pid = (x) => (typeof x === "string" && /^(preset:)?[a-z0-9_-]{1,40}$/.test(x) ? x : "");
   /** 2.640.0: one wall's own inside colour {edge: colour} */
+  /** 2.664.0: {point: {w (across, m), l (past the end, m)}} - an end piece / a corner made wider (a pier) */
+  function cleanJw(o, nPts) { const out = {}; if (o && typeof o === "object") Object.keys(o).forEach((k) => { const i = +k, x = o[k]; if (!Number.isInteger(i) || i < 0 || i >= nPts || !x || typeof x !== "object") return; const q = {}; if (+x.w > 0) q.w = Math.min(5, Math.max(0.02, +x.w)); if (x.l != null && Number.isFinite(+x.l)) q.l = Math.min(5, Math.max(0, +x.l)); if (Object.keys(q).length) out[i] = q; }); return out; }
   /** 2.660.0: the walls a room has had taken out - [edge ...] sorted, each once */
   function cleanGone(o, nEdges) { return Array.isArray(o) ? [...new Set(o.map((x) => +x).filter((i) => Number.isInteger(i) && i >= 0 && i < nEdges))].sort((a, b) => a - b) : []; }
   /** 2.660.0: {edge: "int" | "ext"} - a wall set to interior / exterior by hand (the rest: auto, wallKind) */
@@ -199,7 +201,7 @@
     if (closed && area2(p) < 0) p.reverse();
     const n = A.rooms.filter((R) => R.closed === closed).length + 1;
     const R = Object.assign({ id: nid(A), name: closed ? "Room " + n : "Wall " + n, pts: p, closed, z: 0, h: DEF.h, t: DEF.t, wall: DEF.wall, floor: DEF.floor, ceilCol: DEF.ceil, floorOn: true, ceilOn: true, ceil: "flat",
-      skirtOn: closed, skirtH: 0.1, corniceOn: closed, corniceH: 0.08, trim: DEF.trim, skirtP: "", cornP: "", skirtCol: DEF.trim, cornCol: DEF.trim, wcol: {}, wext: {}, gone: [], wkind: {} }, o || {}, { pts: p, closed });   // 2.639.0: a new room comes with skirting + cornice
+      skirtOn: closed, skirtH: 0.1, corniceOn: closed, corniceH: 0.08, trim: DEF.trim, skirtP: "", cornP: "", skirtCol: DEF.trim, cornCol: DEF.trim, wcol: {}, wext: {}, gone: [], wkind: {}, jw: {} }, o || {}, { pts: p, closed });   // 2.639.0: a new room comes with skirting + cornice
     A.rooms.push(R); return R;
   }
   function rectPts(a, b) { const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]); return [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]; }
@@ -235,10 +237,14 @@
         if (Math.abs(crs(a0.u, a1.u)) < 1e-6 && dot(a0.u, a1.u) > 0 && Math.abs(h0 - h1) < 1e-9) continue;     // straight on, as thick: nothing to fill
         const pts = [add(v, mul(n0, h0)), add(v, mul(n0, -h0)), add(v, mul(n1, h1)), add(v, mul(n1, -h1))];
         [1, -1].forEach((sg) => { const x = lineX(add(a0.a, mul(n0, sg * h0)), a0.u, add(a1.a, mul(n1, sg * h1)), a1.u); if (x && len(sub(x, v)) <= 6 * Math.max(h0, h1) + 1e-9) pts.push(x); });
-        const poly = hull2(pts); if (poly.length >= 3 && Math.abs(area2(poly)) > 1e-8) out.push({ k, v, poly, walls: [a0.i, a1.i], kind: "corner" });
+        const jw = R.jw && R.jw[k];
+        if (jw && jw.w) { const s2 = jw.w / 2; [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([a, b]) => pts.push(add(v, add(mul(a0.u, a * s2), mul(n0, b * s2))))); }   // 2.664.0: a pier this wide round the corner
+        const poly = hull2(pts); if (poly.length >= 3 && Math.abs(area2(poly)) > 1e-8) out.push({ k, v, poly, walls: [a0.i, a1.i], kind: "corner", w: jw && jw.w ? jw.w : null });
       } else if (a0 || a1) {
-        const e = a0 || a1, o = a0 ? e.u : mul(e.u, -1), nl = left(e.u), h = tw(R, e.i) / 2;
-        out.push({ k, v, poly: [add(v, mul(nl, h)), add(v, mul(nl, -h)), add(add(v, mul(nl, -h)), mul(o, h)), add(add(v, mul(nl, h)), mul(o, h))], walls: [e.i], kind: "end", out: o });
+        const e = a0 || a1, o = a0 ? e.u : mul(e.u, -1), nl = left(e.u), t0 = tw(R, e.i), jw = (R.jw && R.jw[k]) || {};
+        const W = jw.w || t0, Lp = jw.l != null ? jw.l : t0 / 2, back = W > t0 + 1e-9 ? Math.max(Lp, W / 2) : 0, w2 = W / 2;   // 2.664.0: its own width / length; wider than the wall = a pier round the end
+        const s0 = add(v, mul(o, -back)), s1 = add(v, mul(o, Math.max(Lp, 1e-4)));
+        out.push({ k, v, poly: [add(s0, mul(nl, w2)), add(s0, mul(nl, -w2)), add(s1, mul(nl, -w2)), add(s1, mul(nl, w2))], walls: [e.i], kind: "end", out: o, w: W, l: Lp, t: t0 });
       }
     }
     return out;
@@ -1189,7 +1195,54 @@
     return true;
   }
 
-  const api = { frames, tw, isGone, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
+  /* ---------------- 2.663.0 (Tim: "allow user to select segments of the wall after a split(dbl click) and delete / move the
+     selected wall, if user moves the segment add walls on each side of the segment and join to the main room") */
+  /** every per-wall record of a room after a point went in at position i + 1 (edge i split in two, s = where along it 0..1):
+      the edges after it one on, edge i's own settings on both halves, its top's profile cut in two, its doors / windows on
+      the half they are in; point-keyed records (jw) one on past it; the outline's hidden walls */
+  function shiftEdges(A, R, i, s) {
+    const up = (o, copy) => { if (!o || typeof o !== "object") return o; const out = {}; Object.keys(o).forEach((k) => { const j = +k; if (j < i) out[j] = o[k]; else if (j === i) { out[i] = o[k]; if (copy) out[i + 1] = JSON.parse(JSON.stringify(o[k])); } else out[j + 1] = o[k]; }); return out; };
+    ["wcol", "wext", "wkind", "wt", "tw"].forEach((k) => { if (R[k]) R[k] = up(R[k], true); });
+    if (R.gone && R.gone.length) R.gone = R.gone.flatMap((j) => (j < i ? [j] : j === i ? [i, i + 1] : [j + 1]));
+    if (R.tops && R.tops[i]) {
+      const P0 = R.tops[i], hS = topAt(R, i, s), a = P0.filter((q) => q[0] < s - 1e-9).map((q) => [q[0] / s, q[1]]).concat([[1, hS]]), b = [[0, hS]].concat(P0.filter((q) => q[0] > s + 1e-9).map((q) => [(q[0] - s) / (1 - s), q[1]]));
+      R.tops = up(R.tops, false); R.tops[i] = a; R.tops[i + 1] = b; R.tops = cleanTops(R.tops, 1e9);
+    } else if (R.tops) R.tops = up(R.tops, false);
+    if (R.jw) { const out = {}; Object.keys(R.jw).forEach((k) => { const j = +k; out[j > i ? j + 1 : j] = R.jw[k]; }); R.jw = out; }
+    (A.ops || []).forEach((o) => { if (o.room !== R.id) return; if (o.edge > i) o.edge++; else if (o.edge === i && o._L != null && o.at > o._L) { o.edge = i + 1; o.at -= o._L; } delete o._L; });
+    if (A.hide && A.hide.length) A.hide = A.hide.flatMap((key) => { const m = new RegExp("^room:" + R.id + ":wall:(\\d+)$").exec(key); if (!m) return [key]; const j = +m[1]; return j < i ? [key] : j === i ? [key, "room:" + R.id + ":wall:" + (i + 1)] : ["room:" + R.id + ":wall:" + (j + 1)]; });
+  }
+  /** a wall split in two at a point (its nearest point on the wall's line; not within 5 cm of its ends) -> the new point's
+      number | -1. Double-click a wall (Select) - each piece is then a wall of its own (picked, moved, taken out) */
+  function splitWall(A, id, i, p, minEnd) {
+    const R = room(A, id); if (!R) return -1;
+    const e = edgesOf(R)[i]; if (!e || e.L < EPS) return -1;
+    const at = Math.max(0, Math.min(e.L, dot(sub([p[0], p[1]], e.a), e.u))), me = minEnd == null ? 0.05 : minEnd;
+    if (at < me || at > e.L - me) return -1;
+    const q = [r6(e.a[0] + e.u[0] * at), r6(e.a[1] + e.u[1] * at)];
+    (A.ops || []).forEach((o) => { if (o.room === R.id && o.edge === i) o._L = at; });
+    shiftEdges(A, R, i, at / e.L);
+    R.pts.splice(i + 1, 0, q);
+    return i + 1;
+  }
+  /** before a wall is moved across its line: a wall beside it running straight on (a split) gets a point doubled where they
+      meet - moved, the doubled point becomes a new short wall joining it to the rest of the room -> the wall's number now */
+  function openEnds(A, id, i) {
+    const R = room(A, id); if (!R) return i;
+    const E = edgesOf(R), e = E[i]; if (!e || e.L < EPS) return i;
+    const n = E.length, straight = (f) => f && f.L > EPS && Math.abs(crs(f.u, e.u)) < 1e-6 && dot(f.u, e.u) > 0;
+    const opsOn = (k, L) => (A.ops || []).forEach((o) => { if (o.room === R.id && o.edge === k) o._L = L; });
+    let k = i;
+    const prev = R.closed ? E[(i - 1 + n) % n] : E[i - 1];
+    if (straight(prev) && prev.i !== i) { opsOn(i, 0); shiftEdges(A, R, i, 0); R.pts.splice(i + 1, 0, R.pts[i].slice()); k = i + 1; }   // p_i doubled: edge i = the new short wall
+    const E2 = edgesOf(R), n2 = E2.length, next = R.closed ? E2[(k + 1) % n2] : E2[k + 1];
+    if (straight(next) && next.i !== k) { opsOn(k, Infinity); shiftEdges(A, R, k, 1); R.pts.splice(k + 1, 0, R.pts[(k + 1) % R.pts.length].slice()); }   // its far point doubled
+    return k;
+  }
+
+  /** 2.664.0: an end piece's / a corner's size (w across, l past the end; null = as the wall) */
+  function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
+  const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

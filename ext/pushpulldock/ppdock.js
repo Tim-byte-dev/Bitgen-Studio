@@ -485,5 +485,5 @@
   }
   wire();
   root.H3PushPull = { state: S, open, save, newModel, undo, redo, toProject, toTimeline, toEditor, importModel, enterGroup, erase, tool: (n) => S.T && S.T.use(n), boot, setColor,
-    zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot };   // 2.639.0: + commit / snapshot (ppoutline.js)
+    zoomSel, menu, msg, api, nameNow, openMenu, exportMenu, importMenu, sendMenu, guard, info, download, meshes, lightsOut, commit, snapshot, leavePlan: () => { if (S.P && S.P.on()) setPlan(false, true); } };   // 2.663.0: + leavePlan (ppplane.js ⊥ Look at)   // 2.639.0: + commit / snapshot (ppoutline.js)
 })(typeof window !== "undefined" ? window : globalThis);

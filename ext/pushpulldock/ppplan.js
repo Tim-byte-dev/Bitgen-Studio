@@ -250,6 +250,7 @@
   function hlShapes(A, t, z, o) {
     if (!A || !t) return [];
     const Q = P(), out = [], disc = (x, y, r) => { const c = arc([x, y], r, 0, 2 * Math.PI, 18); c.pop(); return ring(c); };
+    if (t.ak === "joint") { const R = Q.room(A, t.room), j = R && sameZ(R.z, z) && Q.joints ? Q.joints(R).find((x) => x.k === t.k) : null; return j ? [ring(j.poly)] : []; }   // 2.664.0: a corner / an end piece
     const rid = t.ak === "room" ? t.id : t.ak === "wall" || t.ak === "wpt" || t.ak === "wtop" ? t.room : null;
     if (rid != null) {
       const R = Q.room(A, rid); if (!R || !sameZ(R.z, z)) return [];

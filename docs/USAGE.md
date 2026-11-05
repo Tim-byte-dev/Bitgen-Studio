@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.663.0: **Split walls, the sketch plane and ⊥ Look at** in the Sketcher.
+  - **Double-click a wall** (➤ Select - seen from above, on the 📐 floorplan, or on its face in 3D below its top) to split it
+    there; double-click again for more. Each piece is then a wall of its own: click it, **Delete** takes just it out, and
+    **dragging it** across its line moves it - when the walls beside it run straight on, a new wall each side joins the moved
+    piece to the room (a bay or a recess). Double-clicking a wall's top in 3D still cuts its top (a slope).
+  - The **Wall tool** catches a room's wall anywhere along it (*On Wall*): start and finish walls on it, or on a split point.
+  - Click a room's **corner** or a wall's **end piece** (Select): its panel sets its **Width** (wider than the wall = a pier)
+    and, for an end, its **Length past the end**; Delete puts it back as the wall. Dragging from it still draws a new wall.
+  - **Sketch plane**: the face you click with Select (a wall's face, a floor, a face of the model) becomes the sketch plane -
+    an orange grid shows it and the bar's chip names it. Line, Rectangle, Circle and Polygon then draw in that plane. ✕ on
+    the chip, Esc or a click on nothing ends it. **⊥ Look at** (the bar) turns the view straight at it.
 - 2.662.0: **Walls end square** in the Sketcher, and **new walls dragged out of corners and wall ends**.
   - Each wall is now a rectangle from corner to corner - picked, hidden or raised on its own it ends square, not in a
     point. The corners are pieces of their own that fill the gap, and a free wall's ends get a square end piece.

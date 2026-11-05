@@ -13031,6 +13031,13 @@ node scripts/test-joint662.js > /tmp/joint662.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui662-ui.js > /tmp/ui662ui.log 2>&1 \
   && ok "2.662.0 browser test: square wall pieces, a corner lit under the pointer, a wall dragged out of a corner (one ↶ step), another out of its end face, a click on the wall still picks it - or SKIP without playwright" \
   || { bad "2.662.0 walls-out-of-corners browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui662ui.log | head -14; }
+# ---- 2.663.0 (Tim: "when user clicks a face, make that the sketch plane, add a look at button like fusion 360 has ... allow user to select segments of the wall after a split(dbl click) and delete / move the selected wall")
+node scripts/test-split663.js > /tmp/split663.log 2>&1 \
+  && ok "2.663.0 the Sketcher: a wall split (settings / windows / slopes / hidden kept), a piece opened + moved (a bay), a corner / end piece's width, the sketch plane's basis, the wiring" \
+  || { bad "2.663.0 wall split units"; grep -a "^FAIL" -A2 /tmp/split663.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui663-ui.js > /tmp/ui663ui.log 2>&1 \
+  && ok "2.663.0 browser test: double-click splits a wall (3D + floorplan), a piece dragged out joins the room (↶), Delete a piece, the Wall tool on a room's wall, a corner's width, a clicked face = the sketch plane, ⊥ Look at, a rectangle drawn in it - or SKIP without playwright" \
+  || { bad "2.663.0 wall split browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui663ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
