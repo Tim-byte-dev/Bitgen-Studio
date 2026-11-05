@@ -13107,6 +13107,13 @@ node scripts/test-restyle685.js > /tmp/restyle685.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui685-ui.js > /tmp/ui685ui.log 2>&1 \
   && ok "2.685.0 the real /api/aiedit + browser: Override's steps / CFG / checkpoint / temporary LoRA in the Change style job (checkpoint + edit styles), the bar says it" \
   || { bad "2.685.0 Override in Change style test"; grep -a "FAIL\\|Error" -A2 /tmp/ui685ui.log | head -14; }
+# ---- 2.686.0 (Tim: "if the style is not an edit style in preview image change style, create a lineart drawing first then use controlnet to generate the image")
+node scripts/test-restyle686.js > /tmp/restyle686.log 2>&1 \
+  && ok "2.686.0 units: the line-art ControlNet by the style's family, the union type, Generate over the whole picture, chooseHow, cn_stage union" \
+  || { bad "2.686.0 line-art restyle units"; grep -a "^FAIL" -A2 /tmp/restyle686.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui686-ui.js > /tmp/ui686ui.log 2>&1 \
+  && ok "2.686.0 the real routes + browser: line art first, then the look through the line-art ControlNet (union told line art); no ControlNet = picture to picture" \
+  || { bad "2.686.0 line-art restyle test"; grep -a "FAIL\\|Error" -A2 /tmp/ui686ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

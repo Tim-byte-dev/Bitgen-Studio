@@ -171,7 +171,7 @@ def complete_inputs(graph, nid, spec):
     return out
 
 
-def apply_controlnet(g, control_image, model, strength=1.0, end=1.0, start=0.0, first_only=False):
+def apply_controlnet(g, control_image, model, strength=1.0, end=1.0, start=0.0, first_only=False, union_type=None):
     """ControlNetLoader + ControlNetApplyAdvanced on every sampler's positive /
     negative (or a guider's conditioning). Returns (graph, notes); a graph with
     nowhere to hang it raises ValueError. Called again on the same graph it
@@ -210,6 +210,12 @@ def apply_controlnet(g, control_image, model, strength=1.0, end=1.0, start=0.0, 
                "_meta": {"title": "bitGen: the control map"}}
     loader = _free(g, "cn_model")
     g[loader] = {"class_type": CN_LOADER, "inputs": {"control_net_name": str(model)}}
+    # 2.686.0: a UNION ControlNet told which kind of map it gets (ComfyUI core SetUnionControlNetType - the caller checks
+    # the running ComfyUI has the option)
+    if union_type:
+        ut = _free(g, "cn_union")
+        g[ut] = {"class_type": "SetUnionControlNetType", "inputs": {"control_net": [loader, 0], "type": str(union_type)}}
+        loader = ut
     n = 0
     for k in pairs + single:
         ins = g[k]["inputs"]
@@ -226,7 +232,7 @@ def apply_controlnet(g, control_image, model, strength=1.0, end=1.0, start=0.0, 
         else:
             ins["conditioning"] = [a, 0]
         n += 1
-    return g, [f"ControlNet {model} (strength {float(strength):g}, " + (f"starts at {round(st * 100)}%, " if st > 0 else "") + "ends at "
+    return g, [f"ControlNet {model}" + (f" as {union_type}" if union_type else "") + f" (strength {float(strength):g}, " + (f"starts at {round(st * 100)}%, " if st > 0 else "") + "ends at "
                f"{round(max(st + 0.05, min(1.0, float(end if end is not None else 1.0))) * 100)}%) on {n} "
                + ("sampler(s)" if pairs else "guider(s)") + f", following the control map {control_image}"]
 

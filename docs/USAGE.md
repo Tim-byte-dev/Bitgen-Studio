@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.686.0: **🎨 Change style draws the line art first**: when the prompt's image style is not an edit model (SDXL, Pony,
+  Illustrious, SD 1.5, FLUX.1 …), Change style first turns the picture into a ✏ line-art drawing, then the style makes
+  the look from it through a line-art ControlNet. The new picture keeps the drawing's outlines while the look, colours
+  and rendering are new. The line art appears in the preview after the picture, and the result after it.
+  - The ControlNet must suit the style's model family: SDXL, Pony and Illustrious use an SDXL one (the SDXL ControlNet
+    Union ProMax from **Settings ▸ Add-ons ▸ ControlNet** works, and is told it gets line art); SD 1.5 and FLUX.1 need
+    their own line-art ControlNet in ComfyUI's models/controlnet.
+  - No ControlNet for that family (Krea 2, FLUX.2, Qwen, Z-Image, Anima …), or the line art can't be made (the
+    ControlNet add-on's nodes are missing), and the picture is remade picture to picture instead - the bar says why.
+  - An edit model (FLUX.2 Klein edit, Qwen Image Edit …) still follows the look's instruction itself, no line art.
+  - Basic Settings' Override (steps, CFG, checkpoint, temporary LoRAs) rides the line-art render too.
 - 2.685.0: **🎨 Change style uses Override style**: with an SDXL, Pony or Illustrious style in the prompt, Change style
   now remakes the whole picture with that style's own workflow (picture to picture). So the style's own checkpoint and
   LoRAs are used, and with Basic Settings ▸ Override style on, its steps, CFG, checkpoint and temporary LoRAs too.

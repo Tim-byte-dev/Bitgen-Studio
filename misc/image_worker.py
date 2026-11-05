@@ -506,8 +506,19 @@ def aiedit_controls_hook(params, cfg):
             if not Path(sp).exists():
                 raise _comfy.ComfyError(f"control layer {i + 1}: its picture was not received")
             up = _comfy.upload_image(base, sp)
+            ut = c.get("union_type")
+            if ut:   # 2.686.0: only when this ComfyUI's SetUnionControlNetType has that type (else the union model's auto)
+                try:
+                    info = _comfy.object_info(base, "SetUnionControlNetType") or {}
+                    opts = (((info.get("SetUnionControlNetType") or {}).get("input") or {}).get("required") or {}).get("type") or []
+                    opts = opts[0] if opts and isinstance(opts[0], list) else (opts[1].get("options", []) if len(opts) > 1 and isinstance(opts[1], dict) else [])
+                except Exception:                                   # noqa: BLE001
+                    opts = []
+                if ut not in opts:
+                    say(f"[worker] control layer {i + 1}: this ComfyUI has no SetUnionControlNetType {ut!r} - the union ControlNet guesses the map itself")
+                    ut = None
             graph, notes = _cn.apply_controlnet(graph, up, c.get("model"), c.get("strength", 1.0),
-                                                c.get("end", 1.0), start=c.get("start", 0.0), first_only=True)
+                                                c.get("end", 1.0), start=c.get("start", 0.0), first_only=True, union_type=ut)
             say(f"[worker] control layer {i + 1} ({c.get('type')}): " + "; ".join(notes))
         return graph
     return hook

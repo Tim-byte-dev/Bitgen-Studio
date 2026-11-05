@@ -97,6 +97,13 @@ function mount(app) {
     res.json({ models, suggest: Object.fromEntries(aiEdit.CONTROL_TYPES.map((t) => [t.id, aiEdit.pickControlNet(t.id, models)])) });
   });
 
+  // 2.686.0: the line-art ControlNet the preview's 🎨 Change style would use with this style (lib/aiEdit.js lineArtNet)
+  app.get("/api/aiedit/lineart-net", (req, res) => {
+    const style = styles.byId(core.STYLES_DIR, String((req.query || {}).style_id || ""));
+    if (!style) return res.status(400).json({ error: "pick an image style in the prompt first" });
+    res.json(aiEdit.lineArtNet(style, controlNetNames()));
+  });
+
   app.post("/api/aiedit/preprocess", upload.single("image"), (req, res) => {
     const b = req.body || {};
     const f = req.file;
@@ -182,6 +189,16 @@ function mount(app) {
     try {
       if (!plan) plan = aiEdit.plan(style, b, core.BASE, caps);
       if (plan.mode !== "edit" && !plan.editFill && b.controls) ctl = aiEdit.controls(b.controls, controlNetNames());
+      // 2.686.0: the preview's line-art restyle - the line art (ctl0) through the style family's line-art ControlNet
+      if (b.lineart === "1") {
+        if (plan.mode === "edit") throw new Error("a line-art restyle is for styles that are no edit model");
+        const net = aiEdit.lineArtNet(style, controlNetNames());
+        if (net.error) throw new Error(net.error);
+        const num = (v, d) => { const x = parseFloat(v); return Number.isFinite(x) ? x : d; };
+        ctl = aiEdit.controls([{ type: "lineart", model: net.model, strength: num(b.cn_strength, 0.85), start: 0, end: num(b.cn_end, 0.9),
+          union_type: net.union ? aiEdit.UNION_LINEART : undefined }], []);
+        plan = Object.assign({}, plan, { note: plan.note + ` + the line art through ${net.model}${net.union ? " (union: line art)" : ""}` });
+      }
     } catch (e) { return res.status(400).json({ error: e.message }); }
     const w = Math.max(64, parseInt(b.width, 10) || 0), h = Math.max(64, parseInt(b.height, 10) || 0);
     // 2.539.0: Edit + a reference picture = the crop is Picture 1, the reference Picture 2 (a second slot added if needed)

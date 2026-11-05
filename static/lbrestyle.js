@@ -22,6 +22,9 @@
  *               style button next to it each time"): the looks are a DROPDOWN (#lb_rslook - the one picked is kept,
  *               localStorage h3.restyle.look) + 🎨 Change style (#lb_restyle) beside it renders the picked look each press;
  *   2.684.0      the dropdown as wide as its words (it filled the bar) - the bar's buttons' height, font and corners;
+ *   2.686.0      a style that is no edit model: ✏ the picture's LINE ART first (/api/aiedit/preprocess), then the look
+ *                generated from it through the style family's line-art ControlNet (lineart=1; lib/aiEdit.js lineArtNet); no
+ *                such ControlNet / the line art fails = picture to picture (2.685.0), said
  *   2.685.0      Override style reaches a whole-picture refine with a checkpoint style (lib/infill.js whole - image to image
  *                with the style's own graph); the bar says what Override applied, or why not (j.override)
  *               the old menu is gone (its "With <style>" is the button's tooltip)
@@ -85,7 +88,15 @@
     const keys = Object.keys(m); if (keys.length > 200) keys.sort((a, b) => (m[a].at || 0) - (m[b].at || 0)).slice(0, keys.length - 200).forEach((k) => delete m[k]);
     return m;
   }
-  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, barState, pairsAdd }; return; }
+  /** 2.686.0: a style that is no edit model -> "lineart" when its family has a line-art ControlNet (net = GET
+   *  /api/aiedit/lineart-net), else "refine" (picture to picture, 2.685.0) with the reason, else null (pure) */
+  function chooseHow(how, net) {
+    if (how === "edit") return { how, why: "" };
+    if (net && net.model) return { how: "lineart", why: "" };
+    const why = (net && net.error) || "";
+    return { how: how === "refine" ? "refine" : null, why };
+  }
+  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, chooseHow, barState, pairsAdd }; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const S = { busy: false, menu: null };
@@ -172,23 +183,57 @@
   async function engines() { const r = await fetch("/api/aiedit/engines"); return r.ok ? r.json() : { edit: [], inpaint: [] }; }
   const canvas = (w, h) => { const c = doc.createElement("canvas"); c.width = w; c.height = h; return c; };
   const blob = (c) => new Promise((ok) => c.toBlob(ok, "image/png"));
+  /** 2.686.0: ✏ the picture's line art (a ComfyUI job) -> {blob, url, name}; shown in the preview after the picture */
+  async function lineArt(c, it, L) {
+    say("🎨 " + L.label + " - ✏ drawing the line art first…"); bar({ status: "queued" }, "✏ Line art");
+    const fd = new FormData(); fd.append("image", await blob(c), "restyle.png"); fd.append("type", "lineart");
+    const r = await fetch("/api/aiedit/preprocess", { method: "POST", body: fd }), j = await r.json();
+    if (!r.ok || !j.job) throw new Error(j.error || "refused");
+    let jj = null;
+    for (let n = 0; n < 1500; n++) {
+      await new Promise((ok) => setTimeout(ok, 1200));
+      try { jj = await (await fetch("/api/jobs/" + encodeURIComponent(j.job))).json(); } catch (e) { continue; }
+      bar(jj, "✏ Line art");
+      if (jj.status && jj.status !== "running" && jj.status !== "queued") break;
+    }
+    const out = jj && jj.status === "done" && ((jj.outputs && jj.outputs[0]) || jj.output);
+    if (!out) throw new Error("the preprocessor " + ((jj && jj.status) || "did not finish"));
+    const url = "/outputs/" + encodeURIComponent(out), b = await (await fetch(url)).blob();
+    const item = { url, kind: "image", name: out, look: "✏ line art" };
+    try { if ($("lb").open && lb.items.indexOf(it) >= 0) { lb.items.splice(lb.items.indexOf(it) + 1, 0, item); if (typeof lbFilm === "function") lbFilm(); } } catch (e) { /* the strip only */ }   // eslint-disable-line no-undef
+    S.line = item;
+    return { blob: b, url, name: out };
+  }
   async function run(lookId) {
     if (S.busy) { say("🎨 still making the last one"); return null; }
     const it = cur(), L = LOOKS.find((x) => x.id === lookId); if (!it || !L) return null;
     const st = styleNow(); if (!st.id) throw new Error("pick an image style in the prompt first");
-    const E = await engines(), how = pickHow(st.id, E);
-    if (!how) throw new Error((st.name || "this style") + " can't remake a picture - pick an edit model (FLUX.2 Klein, Qwen Image Edit …) or an SDXL / FLUX style in the prompt");
+    const E = await engines();
+    let how = pickHow(st.id, E), net = null, why = "";
+    // 2.686.0: no edit model = the picture's line art first, then the style renders the look through a line-art ControlNet
+    if (how !== "edit") {
+      try { const r = await fetch("/api/aiedit/lineart-net?style_id=" + encodeURIComponent(st.id)); net = await r.json(); } catch (e) { net = { error: "the ControlNet list could not be read" }; }
+      ({ how, why } = chooseHow(how, net));
+    }
+    if (!how) throw new Error((st.name || "this style") + " can't remake a picture - pick an edit model (FLUX.2 Klein, Qwen Image Edit …) or an SDXL / FLUX style in the prompt" + (why ? " (" + why + ")" : ""));
     S.busy = true; $("lb_restyle").disabled = true;
     try {
-      say("🎨 " + L.label + " - preparing…");
+      S.line = null; say("🎨 " + L.label + " - preparing…");
       const img = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error("the picture could not be read")); im.src = it.url; });
       const sz = fit(img.naturalWidth, img.naturalHeight), c = canvas(sz.w, sz.h), g = c.getContext("2d");
       g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, sz.w, sz.h);
-      let orig = ""; if (how === "refine") { try { const j = await (await fetch("/api/job-meta?name=" + encodeURIComponent(it.name))).json(); orig = (j && (j.prompt || (j.meta && j.meta.prompt))) || ""; } catch (e) { orig = ""; } }
+      let orig = ""; if (how === "refine" || how === "lineart") { try { const j = await (await fetch("/api/job-meta?name=" + encodeURIComponent(it.name))).json(); orig = (j && (j.prompt || (j.meta && j.meta.prompt))) || ""; } catch (e) { orig = ""; } }
+      // 2.686.0: ✏ the line art first (ComfyUI's LineArtPreprocessor - /api/aiedit/preprocess); it fails = picture to picture
+      let line = null;
+      if (how === "lineart") {
+        line = await lineArt(c, it, L).catch((e) => { why = "the line art could not be made (" + (e.message || e) + " - Settings ▸ Add-ons ▸ ControlNet installs its nodes)"; return null; });
+        if (!line) { if (pickHow(st.id, E) !== "refine") throw new Error(why); how = "refine"; }
+      }
       const fd = new FormData();
       fd.append("crop", await blob(c), "restyle.png");
-      if (how === "refine") { const empty = canvas(sz.w, sz.h); fd.append("mask", await blob(empty), "mask.png"); fd.append("rgba", await blob(empty), "hole.png"); }   // all of it is the selection
-      const fields = { mode: how, prompt: promptFor(L, how, orig), style_id: st.id, strength: how === "edit" ? 100 : L.strength, count: 1, width: sz.w, height: sz.h, whole: "1" };
+      if (how !== "edit") { const empty = canvas(sz.w, sz.h); fd.append("mask", await blob(empty), "mask.png"); fd.append("rgba", await blob(empty), "hole.png"); }   // all of it is the selection
+      const fields = { mode: how === "lineart" ? "generate" : how, prompt: promptFor(L, how === "lineart" ? "refine" : how, orig), style_id: st.id, strength: how === "edit" || how === "lineart" ? 100 : L.strength, count: 1, width: sz.w, height: sz.h, whole: "1" };
+      if (how === "lineart") { fields.restyle = "1"; fields.lineart = "1"; fd.append("ctl0", line.blob, "lineart.png"); }
       if (ovrOn()) { const o = ovrBody(); fields.ovr = JSON.stringify(o.ovr); if (o.seed != null && o.seed >= 0) fields.seed = o.seed; }
       Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
       if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
@@ -200,7 +245,8 @@
       // 2.685.0: what Basic Settings' Override put on it (or why not) - said, not only in the job log
       const oi = j.override, ovw = oi ? (oi.applied ? " · Override: " + oi.applied : oi.note ? "" : " · Override: the style's own values") + (oi.note ? " · " + oi.note : "") : "";
       S.override = oi || null;
-      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : ", refine " + L.strength + " %") + ")" + ovw + "…");
+      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : how === "lineart" ? ", from the line art" : ", refine " + L.strength + " %") + ")" + ovw + (why ? " · " + why : "") + "…");
+      S.how = how; S.why = why;
       if (ovw) { const m = $("lb_rsmsg"); if (m) m.title = ovw.replace(/^ · /, ""); }
       bar({ status: "queued" }, L.label);
       try { if (root.H3TestEvent) root.H3TestEvent("restyle_queued", id); } catch (e) { /* fine */ }
@@ -218,7 +264,7 @@
       remember(out, it, L.label);
       // 2.679.0: the finished picture shown in the preview - the preview opened again (the original first) if it was closed
       if ($("lb").open) {
-        const at = lb.items.indexOf(it), k = at >= 0 ? at : lb.i;
+        const li = S.line && how === "lineart" ? lb.items.indexOf(S.line) : -1, at = li >= 0 ? li : lb.items.indexOf(it), k = at >= 0 ? at : lb.i;
         lb.items.splice(k + 1, 0, item); lb.i = k + 1; if (typeof lbFilm === "function") lbFilm(); if (typeof lbShow === "function") lbShow();   // eslint-disable-line no-undef
       } else if (typeof lbOpen === "function") lbOpen([{ url: it.url, kind: "image", name: it.name }, item], 1);   // eslint-disable-line no-undef
       say("🎨 " + L.label + " - done: " + out);
