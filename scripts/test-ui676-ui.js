@@ -46,11 +46,11 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     await ev((png) => lbOpen([{ url: "data:image/png;base64," + png, kind: "image", name: "e2e676_source.png" }], 0), PNG);
     await p.waitForTimeout(300);
     const btn = await ev(() => { const b = document.getElementById("lb_restyle"), s = document.getElementById("lb_save"); return { text: b.textContent, before: b.nextElementSibling && b.nextElementSibling.nextElementSibling === s, shown: b.offsetParent !== null }; });
-    check("🎨 Style ▾ in the preview's bar, beside 💾 Save", btn.text === "🎨 Style ▾" && btn.before && btn.shown, btn);
-    await pickStyle(); await p.click("#lb_restyle"); await p.waitForTimeout(150);
-    const menu = await ev(() => ({ hd: document.querySelector("#lb_rsmenu .hd").textContent, items: [...document.querySelectorAll("#lb_rsmenu .it")].map((d) => d.textContent) }));
-    check("its menu: With <the prompt's style> + Photoreal, Pixar, 2.5D, Anime, Cartoon", /^With E2E style \(the prompt's style\)$/.test(menu.hd) && menu.items.join("|") === "📷 Photoreal|🧸 Pixar|🧊 2.5D|🌸 Anime|🖍 Cartoon", menu);
-    await p.click('#lb_rsmenu .it[data-look="pixar"]');
+    check("🎨 Change style in the preview's bar (its look dropdown before it), beside 💾 Save", btn.text === "🎨 Change style" && btn.before && btn.shown, btn);
+    await pickStyle(); await p.hover("#lb_restyle"); await p.waitForTimeout(100);
+    const menu = await ev(() => ({ hd: document.getElementById("lb_restyle").title, items: [...document.querySelectorAll("#lb_rslook option")].map((d) => d.textContent), prev: document.getElementById("lb_restyle").previousElementSibling.id }));
+    check("its look dropdown: Photoreal, Pixar, 2.5D, Anime, Cartoon (just before the button); the tooltip: the look With <the prompt's style>", menu.prev === "lb_rslook" && /with E2E style \(the prompt's style\)/.test(menu.hd) && menu.items.join("|") === "📷 Photoreal|🧸 Pixar|🧊 2.5D|🌸 Anime|🖍 Cartoon", menu);
+    await p.selectOption("#lb_rslook", "pixar"); await p.click("#lb_restyle");
     await p.waitForFunction(() => document.getElementById("lb_name").textContent === "e2e676_result.png", null, { timeout: 15000 });
     const s0 = sent[0];
     check("🧸 Pixar with an edit model: /api/aiedit mode edit, the prompt's style, the picture as the crop (~1 MP, its shape), the whole picture, no override", s0 && field(s0, "mode") === "edit" && field(s0, "style_id") === "st_e2e676" && hasFile(s0, "crop") && !hasFile(s0, "mask") && field(s0, "whole") === "1" && field(s0, "width") === "1296" && field(s0, "height") === "816" && /^Turn this into a Pixar-style/.test(field(s0, "prompt")) && field(s0, "ovr") === null, s0 && { mode: field(s0, "mode"), w: field(s0, "width"), h: field(s0, "height"), ovr: field(s0, "ovr") });
@@ -60,11 +60,11 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     how = "refine";
     await ev(() => { const ov = document.getElementById("ovrStyle"); if (ov) { ov.checked = true; ov.dispatchEvent(new Event("change", { bubbles: true })); } lb.i = 0; lbShow(); });
     await p.waitForTimeout(200);
-    await pickStyle(); await p.click("#lb_restyle"); await p.waitForTimeout(150);
-    const hd2 = await ev(() => document.querySelector("#lb_rsmenu .hd").textContent);
-    check("Override style on: the menu says Basic Settings' values ride along", /\+ Basic Settings \(Override style is on\)/.test(hd2), hd2);
+    await pickStyle(); await p.hover("#lb_restyle"); await p.waitForTimeout(100);
+    const hd2 = await ev(() => document.getElementById("lb_restyle").title);
+    check("Override style on: the tooltip says Basic Settings' values ride along", /\+ Basic Settings \(Override style is on\)/.test(hd2), hd2);
     await ev(() => { document.getElementById("lb_rsmsg").textContent = ""; });
-    await p.click('#lb_rsmenu .it[data-look="anime"]');
+    await p.selectOption("#lb_rslook", "anime"); await p.click("#lb_restyle");
     await p.waitForFunction(() => /done|can't|refused|not/.test(document.getElementById("lb_rsmsg").textContent), null, { timeout: 15000 });
     const msg1 = await ev(() => document.getElementById("lb_rsmsg").textContent); if (!/done/.test(msg1)) console.log("      (the bar: " + msg1 + ")");
     const s1 = sent[1], ovr = s1 && field(s1, "ovr");
@@ -76,7 +76,7 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     await p.waitForTimeout(300);
     check("a style that can remake neither way: said (pick an edit model or an SDXL / FLUX style), nothing sent", sent.length === 2 && /can't remake a picture - pick an edit model/.test(await ev(() => document.getElementById("lb_rsmsg").textContent)));
     await ev(() => lbOpen([{ url: "/x.mp4", kind: "video", name: "clip.mp4" }], 0)); await p.waitForTimeout(200);
-    check("a video in the preview: no 🎨 Style button", await ev(() => document.getElementById("lb_restyle").style.display === "none"));
+    check("a video in the preview: no 🎨 Change style button, no look dropdown", await ev(() => document.getElementById("lb_restyle").style.display === "none" && document.getElementById("lb_rslook").style.display === "none"));
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e.stack || e.message)); }
   await b.close();

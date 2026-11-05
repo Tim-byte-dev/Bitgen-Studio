@@ -38,7 +38,7 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     await p.waitForTimeout(300);
     check("an ordinary picture: no ⇆ Before / after", await ev(() => document.getElementById("lb_sbs").style.display === "none"));
     await ev(() => { document.getElementById("styleSel").value = "st_e2e679"; });
-    await p.click("#lb_restyle"); await p.waitForTimeout(150); await p.click('#lb_rsmenu .it[data-look="anime"]');
+    await p.selectOption("#lb_rslook", "anime"); await p.click("#lb_restyle");
     for (let i = 0; i < 40 && polls === 0; i++) await p.waitForTimeout(250);   // the render is running
     await p.waitForTimeout(1500);
     // the preview closed while it renders - the result must still be shown when it is done

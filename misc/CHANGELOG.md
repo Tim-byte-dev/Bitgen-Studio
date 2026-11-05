@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.681.0** — 🎨 The Image Preview's Look Is a Dropdown That Stays Picked, With 🎨 Change Style Beside It (Each Press Renders That Look)
 - **2.680.0** — ⇄ Beside the Prompt Docker's Image / Video Style Dropdowns: Toggle Between the Current and the Previous Settings (With Override Style: Basic Settings + Temporary LoRAs), Kept in model_settings.tmp
 - **2.679.0** — 🎨 Restyle: the Finished Picture Shown in the Preview (Reopened if It Was Closed); ⇆ Before / After Side by Side
 - **2.678.0** — P-H3 Image (PrunaAI on MiniMax H3): Text-to-image and Edit Styles With Its Prompt Upsampler, Settings ▸ Add-ons ▸ P-H3 Image (~17 GB on the MiniMax H3 Transformer the Video Uses), an Edit Model for the Editor and 🎨 Style

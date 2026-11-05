@@ -13084,6 +13084,10 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.681.0 (Tim: "when a style type is set in image preview keep that style in the dropdown, user will click the change style button next to it each time")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui681-ui.js > /tmp/ui681ui.log 2>&1 \
+  && ok "2.681.0 browser test: the look dropdown + 🎨 Change style, the look kept after a reload, two presses = two renders of it - or SKIP without playwright" \
+  || { bad "2.681.0 look dropdown browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui681ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

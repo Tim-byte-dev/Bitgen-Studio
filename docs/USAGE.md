@@ -6303,6 +6303,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.681.0: **The look stays picked**: in the image preview the looks are now a dropdown (📷 Photoreal, 🧸 Pixar, 🧊 2.5D,
+  🌸 Anime, 🖍 Cartoon) with **🎨 Change style** beside it. The look you pick stays picked (also after a restart), and
+  each press of 🎨 Change style makes the shown picture again in that look. Its tooltip says which image style it uses.
 - 2.680.0: **⇄ the previous settings**: beside the prompt docker's image style and video style dropdowns. Change the style
   and the one you had before becomes the *previous* setting; **⇄** puts it back - and the one it replaces becomes the
   previous, so pressing ⇄ again toggles. With **Override style** on, a setting also holds that kind's Basic Settings values

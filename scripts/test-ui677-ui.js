@@ -38,7 +38,7 @@ const STEPS = [{ status: "queued" }, { status: "queued" }, { status: "running" }
     const place = await ev(() => { const B = document.getElementById("lb_rsbar"); return { hidden: getComputedStyle(B).display === "none", before: B.nextElementSibling && B.nextElementSibling.classList.contains("lbbar"), after: B.previousElementSibling && B.previousElementSibling.classList.contains("lbbody") }; });
     check("the bar sits under the picture (after it, above the preview's bar), hidden while nothing runs", place.hidden && place.before && place.after, place);
     await ev(() => { document.getElementById("styleSel").value = "st_e2e677"; });
-    await p.click("#lb_restyle"); await p.waitForTimeout(150); await p.click('#lb_rsmenu .it[data-look="pixar"]');
+    await p.selectOption("#lb_rslook", "pixar"); await p.click("#lb_restyle");
     for (let i = 0; i < 40; i++) {
       await p.waitForTimeout(250);
       const v = await ev(() => { const B = document.getElementById("lb_rsbar"); return { cls: B.className, w: B.querySelector(".fl").style.width, tx: B.querySelector(".tx").textContent, shown: getComputedStyle(B).display !== "none" }; });

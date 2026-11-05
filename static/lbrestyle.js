@@ -18,6 +18,10 @@
  *               again (the original before it) when it was closed meanwhile; ⇆ Before / after (#lb_sbs) beside 🎨 Style: the
  *               original and the result side by side (#lb_sbsview over the picture, labelled) - for every restyled picture
  *               (the pairs kept in localStorage h3.restyle.pairs, so a result opened later from the gallery has it too)
+ *   2.681.0 (Tim: "when a style type is set in image preview keep that style in the dropdown, user will click the change
+ *               style button next to it each time"): the looks are a DROPDOWN (#lb_rslook - the one picked is kept,
+ *               localStorage h3.restyle.look) + 🎨 Change style (#lb_restyle) beside it renders the picked look each press;
+ *               the old menu is gone (its "With <style>" is the button's tooltip)
  * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js): LOOKS, promptFor(look, how, orig),
  * fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look). */
 (function (root) {
@@ -208,28 +212,41 @@
       return out;
     } finally { S.busy = false; const b = $("lb_restyle"); if (b) b.disabled = false; }
   }
+  /* 2.681.0: the look picked stays picked */
+  const LK = "h3.restyle.look";
+  function lookNow() { const s = $("lb_rslook"); return s && LOOKS.some((l) => l.id === s.value) ? s.value : LOOKS[0].id; }
+  function tip() {
+    const b = $("lb_restyle"); if (!b) return;
+    const st = styleNow(), L = LOOKS.find((x) => x.id === lookNow());
+    b.title = "Make this picture again as " + L.label.replace(/^\S+\s/, "") + " - with " + (st.name || "the prompt's image style") + (ovrOn() ? " + Basic Settings (Override style is on)" : " (the prompt's style)") + ". Pick another look in the dropdown first to change it.";
+  }
   function boot() {
     const save = $("lb_save"); if (!save) { setTimeout(boot, 400); return; }
     if ($("lb_restyle")) return;
     css();
-    const b = doc.createElement("button"); b.className = "ghost"; b.id = "lb_restyle"; b.type = "button"; b.textContent = "🎨 Style ▾";
-    b.title = "Make this picture again in another look - Photoreal, Pixar, 2.5D, Anime, Cartoon (with the prompt's image style; Basic Settings' values when Override style is on)";
-    b.onclick = (e) => { e.stopPropagation(); if (S.menu) close(); else openMenu(b); };
+    const sel = doc.createElement("select"); sel.id = "lb_rslook"; sel.title = "The look 🎨 Change style makes - it stays picked"; sel.setAttribute("aria-label", "Look");
+    LOOKS.forEach((L) => { const o = doc.createElement("option"); o.value = L.id; o.textContent = L.label; sel.appendChild(o); });
+    let keep = ""; try { keep = root.localStorage.getItem(LK) || ""; } catch (e) { keep = ""; }
+    sel.value = LOOKS.some((l) => l.id === keep) ? keep : LOOKS[0].id;
+    sel.onchange = () => { try { root.localStorage.setItem(LK, sel.value); } catch (e) { /* this session only */ } tip(); };
+    const b = doc.createElement("button"); b.className = "ghost"; b.id = "lb_restyle"; b.type = "button"; b.textContent = "🎨 Change style";
+    b.onclick = (e) => { e.stopPropagation(); close(); const it = cur(); if (!it || it.kind !== "image") { say("🎨 pictures only"); return; } run(lookNow()).catch((er) => say("🎨 " + (er.message || er))); };
+    b.onmouseenter = tip; b.onfocus = tip; tip();
     const msg = doc.createElement("span"); msg.id = "lb_rsmsg";
-    save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(msg, save);
+    save.parentNode.insertBefore(sel, save); save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(msg, save);
     // 2.679.0: ⇆ Before / after - a restyled picture beside the one it was made from
     const sb = doc.createElement("button"); sb.className = "ghost"; sb.id = "lb_sbs"; sb.type = "button"; sb.textContent = "⇆ Before / after"; sb.style.display = "none";
     sb.title = "The picture this one was restyled from, side by side with it (click again to go back)";
     sb.onclick = (e) => { e.stopPropagation(); sbsToggle(); };
-    save.parentNode.insertBefore(sb, b);
+    save.parentNode.insertBefore(sb, sel);
     // 2.677.0: the progress bar - under the picture, above the preview's bar
     const pb = doc.createElement("div"); pb.id = "lb_rsbar"; pb.setAttribute("role", "progressbar"); pb.setAttribute("aria-valuemin", "0"); pb.setAttribute("aria-valuemax", "100");
     pb.innerHTML = '<div class="tr"><div class="fl"></div></div><span class="tx"></span>';
     const lbbar = save.closest(".lbbar"); if (lbbar && lbbar.parentNode) lbbar.parentNode.insertBefore(pb, lbbar);
     doc.addEventListener("pointerdown", (e) => { if (S.menu && !S.menu.contains(e.target) && e.target !== b) close(); }, true);
     // only for pictures: hidden while a video / sound is shown
-    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(); b.style.display = it && it.kind !== "image" ? "none" : ""; close(); sbsPaint(); }).observe(nm, { childList: true, characterData: true, subtree: true });
+    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(), hide = it && it.kind !== "image"; b.style.display = hide ? "none" : ""; sel.style.display = hide ? "none" : ""; close(); sbsPaint(); tip(); }).observe(nm, { childList: true, characterData: true, subtree: true });
   }
-  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, pairsAdd, bar, run, open: openMenu, close, sbs: sbsToggle, sbsOff, pairs, state: () => S };
+  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, pairsAdd, bar, run, open: openMenu, close, look: lookNow, sbs: sbsToggle, sbsOff, pairs, state: () => S };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);
