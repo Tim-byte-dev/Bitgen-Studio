@@ -119,3 +119,5 @@ basic_settings.tmp.part
 # 2.617.0: fonts added to the studio (text effect zips - lib/fontInstall.js) and your imported text effects - this machine's
 fonts/
 textfx/user/
+# 2.680.0: the prompt docker's ⇄ (the current / previous settings of each model type) - user state
+model_settings.tmp

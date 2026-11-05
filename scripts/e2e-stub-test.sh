@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
+node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
+  && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \
+  || { bad "2.680.0 ⇄ units"; grep -a "^FAIL" -A2 /tmp/modelswap680.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui680-ui.js > /tmp/ui680ui.log 2>&1 \
+  && ok "2.680.0 browser test: ⇄ beside both dropdowns, toggles two styles, Override = the value + temporary LoRA back, model_settings.tmp, after a reload - or SKIP without playwright" \
+  || { bad "2.680.0 ⇄ browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui680ui.log | head -14; }
 # ---- 2.679.0 (Tim: "after the style change render is complete in image preview, show the finished image in preview, add a sbs button ...")
 node scripts/test-restyle679.js > /tmp/restyle679.log 2>&1 \
   && ok "2.679.0 restyle before / after: the pairs remembered (newest 200), the result shown / the preview reopened, the ⇆ button" \

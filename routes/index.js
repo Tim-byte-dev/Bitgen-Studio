@@ -1838,6 +1838,7 @@ function mount(app) {
     job.chunk = { i: 0, n: 1 };
     res.json(Object.assign(core.jobDict(job), { crop: cropName, mask: maskName, workflow: wf.workflow, takes_mask: wf.takesMask, input: wf.input }));
   });
+  require("./modelSettings").mount(app);                                // 2.680.0: the prompt docker's ⇄ (model_settings.tmp)
   require("./ph3Guard").mount(app);                                     // 2.678.0: P-H3 Image refused on a ComfyUI without its nodes
   require("./mossGuard").mount(app);                                    // 2.668.0: MOSS-Image refused on a ComfyUI that renders it as noise
   app.post("/api/genimage", (req, res) => {

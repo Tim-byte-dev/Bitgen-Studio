@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.680.0: **⇄ the previous settings**: beside the prompt docker's image style and video style dropdowns. Change the style
+  and the one you had before becomes the *previous* setting; **⇄** puts it back - and the one it replaces becomes the
+  previous, so pressing ⇄ again toggles. With **Override style** on, a setting also holds that kind's Basic Settings values
+  and its temporary LoRAs, and ⇄ brings those back too. The tooltip says what ⇄ will put back. Kept in model_settings.tmp
+  in the app's folder, so it survives a restart.
 - 2.679.0: **🎨 Restyle - the result and ⇆ Before / after**: when a 🎨 Style render is done the finished picture is shown
   in the preview right after the original - the preview opens again on it if you closed it meanwhile. **⇆ Before / after**
   (beside 🎨 Style) shows the original and the result side by side, labelled; click it again to go back. It is there for
