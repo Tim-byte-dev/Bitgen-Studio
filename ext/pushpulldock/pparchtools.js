@@ -52,7 +52,7 @@
   };
   const VCB = { room: "Width,Length", wall: "Length", door: "Width,Height", window: "Width,Height", floor: "Width,Depth", roof: "Pitch°", light: "Lumens", stairs: "Length", furniture: "Turn°", camera: "Lens°" };
   const OPT0 = { room: { h: 2.7, t: 0.15, z: 0, ceilOn: true, off: 0, autoRoof: false, autoFloor: false, w: 0, l: 0 }, wall: { h: 2.7, t: 0.15, z: 0, off: 0 }, door: { style: "single", w: 0.9, h: 2.1 }, window: { style: "double", w: 1.2, h: 1.2, sill: 0.9 },
-    floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4 }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 }, furniture: { type: "sofa", cat: "Living", rot: 0, color: "" }, camera: { eye: 1.6, fov: 60 } };
+    floor: { z: 0, th: 0.2 }, roof: { type: "gable", pitch: 30, over: 0.4, eave: "boxed", fascia: true, gutter: "quad", downpipes: true }, light: { type: "downlight", col: "#ffcf9e", lm: 0 }, stairs: { w: 1, rise: 2.7 }, furniture: { type: "sofa", cat: "Living", rot: 0, color: "" }, camera: { eye: 1.6, fov: 60 } };
 
   function create(ctx) {
     const V = ctx.V, v3 = () => G().v3;
@@ -914,6 +914,17 @@
         if (Q.ROOF_K[o.type] != null) numIn(K_LABEL[o.type], o.k != null ? o.k : Q.ROOF_K[o.type], on("k"), 0.05, 0.05, 0.95, "0 - 1");
         if (o.type === "shed" || o.type === "saltbox") chkIn("Flip - the other side high", !!o.flip, on("flip"));
         numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, on("over"), 0.05, 0, 5, "m");
+        // 2.668.0 (Tim: "please add eaves and eave styles to sketcher like open eaves, boxed eaves,closed eaves, and facias and
+        // gutters"): the eave as pictures (a section through it), the fascia + barge boards, gutters + downpipes
+        if (o.type === "follow" || o.type === "flat") return;
+        const ev = o.eave || "plain", ep = el("div", "ppeaves"); ep.setAttribute("aria-label", "Eaves");
+        EAVE_OPTS.forEach(([t, name, tip]) => { const b = el("button", t === ev ? "on" : ""); b.type = "button"; b.dataset.eave = t; b.title = tip; b.innerHTML = EAVE_SVG[t]; b.appendChild(el("span", "", name)); b.onclick = () => { if (t !== ev) on("eave")(t); }; ep.appendChild(b); });
+        box.appendChild(el("div", "pphint", "Eaves")); box.appendChild(ep);
+        selIn("Eaves", ev, EAVE_OPTS.map(([t, name]) => [t, name]), on("eave"));
+        chkIn("Fascia + barge boards", !!o.fascia, on("fascia"));
+        if (o.fascia) numIn("Fascia height", o.fasciaH != null ? o.fasciaH : 0.2, on("fasciaH"), 0.01, 0.05, 0.6, "m");
+        selIn("Gutters", o.gutter || "none", [["none", "None"], ["quad", "Quad (box)"], ["half", "Half round"]], on("gutter"));
+        if (o.gutter && o.gutter !== "none") chkIn("Downpipes", o.downpipes !== false, on("downpipes"));
       };
       const btns = (list) => { const r = el("div", "ppbtns"); list.forEach(([t, fn, tip]) => { const b = el("button", "ghost", t); b.type = "button"; if (tip) b.title = tip; b.onclick = fn; r.appendChild(b); }); box.appendChild(r); };
       const ch = (fn) => (v) => { const b = before(); fn(v); ctx.commit("edit", b); props(); };
@@ -1171,6 +1182,8 @@
         numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
         matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
+        if (rf.fascia || (rf.eave && rf.eave !== "plain")) matIn("Fascia / soffit colour", rf.trimCol, ch((v) => { rf.trimCol = v; }));   // 2.668.0
+        if (rf.gutter && rf.gutter !== "none") matIn("Gutter colour", rf.gutterCol, ch((v) => { rf.gutterCol = v; }));
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "stair") {
         const s = x; head("▟ " + lbl("stair:" + s.id, "Stairs") + " · " + Math.max(2, Math.round(s.rise / 0.18)) + " steps");
@@ -1219,10 +1232,18 @@
       ctx.resized && ctx.resized();
     }
     function ROOF_OPTS() { return P().ROOFS.map((r) => [r, P().ROOF_LABELS[r] || r]); }   // 2.666.0: the names people use (Skillion ...)
+    const EAVE_OPTS = [["plain", "Simple", "Simple - just the roof's overhang"], ["open", "Open", "Open eaves - the rafter tails show under the overhang"], ["boxed", "Boxed", "Boxed eaves - a flat soffit from the fascia back to the wall"], ["closed", "Closed", "Closed eaves - a lining fixed under the rafters, on the roof's slope"]];
+    const EAVE_SVG = (() => {   // a section through the eave: the wall, the roof, (rafters / soffit / fascia)
+      const wrap = (inner) => '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="32" viewBox="0 0 44 32"><rect x="26" y="14" width="8" height="18" fill="#d9d2c3" stroke="#2a2622" stroke-width=".6"/><path d="M4 16 L40 4 L40 7 L4 19 Z" fill="#c26b4a" stroke="#2a2622" stroke-width=".6"/>' + inner + "</svg>";
+      return { plain: wrap(""), open: wrap('<path d="M6 19 L26 12.3 M12 17 L26 13.3 M18 15 L26 12.3" stroke="#9c7650" stroke-width="2"/>'),
+        boxed: wrap('<rect x="4" y="16" width="2.4" height="7" fill="#f2efe8" stroke="#2a2622" stroke-width=".5"/><rect x="4" y="22" width="22" height="1.6" fill="#f2efe8" stroke="#2a2622" stroke-width=".5"/>'),
+        closed: wrap('<rect x="4" y="16" width="2.4" height="6" fill="#f2efe8" stroke="#2a2622" stroke-width=".5"/><path d="M6.4 20.2 L26 13.7 L26 15.3 L6.4 21.8 Z" fill="#f2efe8" stroke="#2a2622" stroke-width=".5"/>') };
+    })();
     const ROOF_SHORT = { gable: "Gable", hip: "Hip", shed: "Skillion", dutch: "Dutch gable", jerkin: "Clipped gable", gambrel: "Gambrel", mansard: "Mansard", saltbox: "Saltbox", pyramid: "Pyramid", butterfly: "Butterfly", flat: "Flat", follow: "Follow walls" };
     const K_LABEL = { dutch: "Hip part of the rise", jerkin: "Clipped part of the rise", gambrel: "Break - in from the walls", mansard: "Break - in from the walls", saltbox: "Ridge - from the front" };
     /** the Roof tool's options for a new roof (2.666.0: + its proportion, lower pitch, flip) */
-    function roofOpts() { const r = O.roof; return { type: r.type, pitch: r.pitch, over: r.over, k: r.k != null && P().ROOF_K[r.type] != null ? r.k : null, pitch2: r.pitch2 != null ? r.pitch2 : 60, flip: !!r.flip }; }
+    function roofOpts() { const r = O.roof; return { type: r.type, pitch: r.pitch, over: r.over, k: r.k != null && P().ROOF_K[r.type] != null ? r.k : null, pitch2: r.pitch2 != null ? r.pitch2 : 60, flip: !!r.flip,
+      eave: r.eave || "boxed", fascia: r.fascia !== false, fasciaH: r.fasciaH != null ? r.fasciaH : 0.2, gutter: r.gutter || "quad", downpipes: r.downpipes !== false }; }   // 2.668.0: a new roof: boxed eaves, fascia, quad gutters
     function isRect(R) { const e = P().edgesOf(R); return e.length === 4 && e.every((a, i) => Math.abs(a.u[0] * e[(i + 1) % 4].u[0] + a.u[1] * e[(i + 1) % 4].u[1]) < 1e-6); }
     function dupRoom(id) {
       const A = AR(), R = P().room(A, id); if (!R) return;

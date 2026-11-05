@@ -10,7 +10,7 @@
   "  models/diffusion_models/moss_image_base_int8_convrot.safetensors  (5.4 GB; the _bf16 build beside it = higher precision, more VRAM)",
   "  models/text_encoders/qwen3.5_9b_w4a8_gptq.safetensors      (7.3 GB; CLIPLoader type moss_image - Qwen3.5 9B)",
   "  models/vae/flux2-vae_small.safetensors                     (0.25 GB)",
-  "Needs ComfyUI with MOSS-Image support (16 Oct 2026 or later - the moss_image text encoder type).",
+  "Needs ComfyUI 0.42.0+ with MOSS-Image support (the moss_image text encoder type) - 0.42.2 or newer in practice: 0.41.x / 0.42.1 give pure noise (2.668.0).",
   "25 steps, cfg 2.5, er_sde / simple, skip layer guidance on layer 22 (0 - 50 %) - the template's settings (the official",
   "pipeline: 50 steps, cfg 3). About 1 MP (trained 1-2 MP, works 0.25 - 4 MP), sides a multiple of 16. Do not add a",
   "shift node (its default 5 is built in). LoRAs: model-only (LoraLoaderModelOnly), 4 slots, bypassed when empty."

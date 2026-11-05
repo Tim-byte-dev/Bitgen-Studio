@@ -1838,6 +1838,7 @@ function mount(app) {
     job.chunk = { i: 0, n: 1 };
     res.json(Object.assign(core.jobDict(job), { crop: cropName, mask: maskName, workflow: wf.workflow, takes_mask: wf.takesMask, input: wf.input }));
   });
+  require("./mossGuard").mount(app);                                    // 2.668.0: MOSS-Image refused on a ComfyUI that renders it as noise
   app.post("/api/genimage", (req, res) => {
     const b = req.body || {};
     const prompt = String(b.prompt || "").trim();

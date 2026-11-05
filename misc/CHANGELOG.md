@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.668.0** — Sketcher Eaves (Open, Boxed, Closed), Fascias, Barge Boards, Gutters + Downpipes; MOSS-Image Refused on a ComfyUI Older Than 0.42.2 (It Renders Noise)
 - **2.667.0** — 🗂 Sketcher Objects Panel: Shapes (Click to Pick, Drag a Face to Push / Pull - Groups Too), Construction Planes + Lines, Rename Anything
 - **2.666.0** — △ Sketcher Roof Types: Gable, Hip, Skillion, Dutch Gable, Clipped Gable, Gambrel, Mansard, Saltbox, Pyramid, Butterfly - Picked from Pictures
 - **2.665.0** — 📄 Sketcher: Building Plans to Scale as a PDF (A4 - A1, Plans, Elevations, Roof / Site Plan, Dimensions, Title Block)

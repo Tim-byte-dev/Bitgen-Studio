@@ -40,7 +40,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       return { title: c.querySelector("h4").textContent, n: boxes.length, on: boxes.filter((x) => x.checked).map((x) => x.value), locked: boxes.filter((x) => x.disabled).map((x) => x.value),
                text: c.textContent, btn: [...c.querySelectorAll("button")].map((x) => x.textContent), visible: !!c.offsetParent }; });
     check("Settings ▸ Add-ons shows \"MOSS-Image\" with its seven files to tick (SFT / Base int8 + bf16, two text encoders, the VAE), each with its size; SFT ticked; the text encoder and the VAE ticked and needed",
-      /MOSS-Image/.test(card.title) && card.visible && card.n === 7 && card.on.join() === "sft,te,vae" && card.locked.join() === "te,vae" && /5\.4 GB/.test(card.text) && /\(needed\)/.test(card.text) && /16 Oct 2026/.test(card.text) && card.btn.some((t) => /Download ticked/.test(t)), card);
+      /MOSS-Image/.test(card.title) && card.visible && card.n === 7 && card.on.join() === "sft,te,vae" && card.locked.join() === "te,vae" && /5\.4 GB/.test(card.text) && /\(needed\)/.test(card.text) && /0\.42\.2 or newer/.test(card.text) && card.btn.some((t) => /Download ticked/.test(t)), card);
     await ev(() => { const c = document.querySelector('#stab-addons [data-addon="moss"]'); const by = (v) => c.querySelector(`[data-aoi][value="${v}"]`); by("base").checked = true; by("base").dispatchEvent(new Event("change")); });
     await p.click('#stab-addons [data-addon="moss"] [data-act="install"]');
     await p.waitForTimeout(600);

@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.668.0: **Eaves, fascias and gutters** in the Sketcher: the Roof panel (the tool's and a picked roof's) shows the eave as
+  four pictures - **Simple** (just the overhang), **Open** (the rafter tails show under the overhang, 600 mm apart),
+  **Boxed** (a flat soffit from the fascia back to the wall) and **Closed** (a lining under the rafters, on the roof's
+  slope). **Fascia + barge boards** puts a fascia along the eaves and barge boards up a gable's verges (*Fascia height*);
+  **Gutters** None / Quad (box) / Half round, hung on the fascia, with **Downpipes** down the wall near each run's end. A
+  picked roof also has *Fascia / soffit colour* and *Gutter colour*. A new roof from the Roof tool starts boxed, with a
+  fascia and quad gutters; roofs made before stay as they were. They show on the building plans' elevations too.
+  **MOSS-Image:** it needs ComfyUI **0.42.2 or newer** - ComfyUI 0.41.x and 0.42.1 know the model but render pure
+  noise. A MOSS-Image picture is now refused before it is queued on a ComfyUI that is too old, with how to update it
+  (Settings ▸ ComfyUI ▸ ⤓ Update ComfyUI); the add-on's install says so too. The MOSS-Image (SFT) style no longer adds
+  skip-layer guidance (ComfyUI's own template has it off; MOSS-Image Base keeps it).
 - 2.667.0: **The Sketcher's objects panel** (🗂 Outline on its bar) gains:
   - **Shapes** - every shape the drawing tools made: *Solid n* (closed), *Shape n* (flat or open), *Lines n* (loose lines)
     and each group under its own name. Click a row to pick the shape, then drag one of its faces in the view to push /

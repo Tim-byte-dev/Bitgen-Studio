@@ -13066,6 +13066,13 @@ node scripts/test-cons667.js > /tmp/cons667.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui667-ui.js > /tmp/ui667ui.log 2>&1 \
   && ok "2.667.0 browser test: a shape row picks it + a face drag push / pulls it (a group's too), double-click renames, 📌 keeps the sketch plane, Tape + Ctrl = a construction line snapped onto, 🗑 - or SKIP without playwright" \
   || { bad "2.667.0 objects panel browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui667ui.log | head -14; }
+# ---- 2.668.0 (Tim: "moss image is not working, please add eaves and eave styles to sketcher like open eaves, boxed eaves,closed eaves, and facias and gutters")
+node scripts/test-eaves668.js > /tmp/eaves668.log 2>&1 \
+  && ok "2.668.0 the Sketcher's eaves: plain / open / boxed / closed, fascia + barge boards, quad / half gutters, downpipes, every roof type, old roofs unchanged" \
+  || { bad "2.668.0 eaves units"; grep -a "^FAIL" -A2 /tmp/eaves668.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui668-ui.js > /tmp/ui668ui.log 2>&1 \
+  && ok "2.668.0 browser test: the eave pictures, a new roof boxed + fascia + quad gutters + downpipes, open / closed, half-round gutters, fascia off + undo - or SKIP without playwright" \
+  || { bad "2.668.0 eaves browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui668ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

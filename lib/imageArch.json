@@ -214,7 +214,7 @@
         "height": 1024,
         "sampler": "euler"
       },
-      "note": "2.566.0: MOSS-Image (OpenMOSS, 5B, Apache-2.0) renders through ComfyUI only (16 Oct 2026 or later - the moss_image text encoder type). 25 steps, cfg 2.5, er_sde with skip layer guidance on layer 22 - ComfyUI's template (the official pipeline: 50 steps, cfg 3). SFT (instruction-tuned) or Base (for LoRAs); int8_convrot (5.4 GB) or bf16 in models/diffusion_models. Settings ▸ Add-ons ▸ MOSS-Image downloads them."
+      "note": "2.566.0: MOSS-Image (OpenMOSS, 5B, Apache-2.0) renders through ComfyUI only (ComfyUI 0.42.2 or newer - the moss_image text encoder type). 25 steps, cfg 2.5, er_sde with skip layer guidance on layer 22 - ComfyUI's template (the official pipeline: 50 steps, cfg 3). SFT (instruction-tuned) or Base (for LoRAs); int8_convrot (5.4 GB) or bf16 in models/diffusion_models. Settings ▸ Add-ons ▸ MOSS-Image downloads them."
     },
     {
       "id": "fibo2",

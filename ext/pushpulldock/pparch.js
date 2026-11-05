@@ -167,7 +167,9 @@
     A.roofs = (Array.isArray(o.roofs) ? o.roofs : []).map((x) => {
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
       return { id: id(x.id), rooms, type: roofType(x.type), pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto",
-        k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip };   // 2.666.0
+        k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip,   // 2.666.0
+        eave: EAVES.includes(x.eave) ? x.eave : "plain", fascia: !!x.fascia, fasciaH: num(x.fasciaH, 0.2, 0.05, 0.6), gutter: GUTTERS.includes(x.gutter) ? x.gutter : "none",
+        downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc") };   // 2.668.0: eaves, fascia, gutters
     }).filter(Boolean);
     A.slabs = (Array.isArray(o.slabs) ? o.slabs : []).map((x) => { if (!x || !Array.isArray(x.pts)) return null; const pts = x.pts.map(pt2).filter(Boolean); if (pts.length < 3) return null; if (area2(pts) < 0) pts.reverse(); return { id: id(x.id), pts, z: num(x.z, 0, -100, 1000), th: num(x.th, 0.2, 0.01, 5), col: hex(x.col, DEF.slab) }; }).filter(Boolean);
     A.stairs = (Array.isArray(o.stairs) ? o.stairs : []).map((x) => (x ? { id: id(x.id), x: num(x.x, 0, -1e5, 1e5), y: num(x.y, 0, -1e5, 1e5), ang: num(x.ang, 0, -720, 720), w: num(x.w, 1, 0.3, 10), len: num(x.len, 3.6, 0.3, 50), rise: num(x.rise, 2.7, 0.1, 20), z: num(x.z, 0, -100, 1000), col: hex(x.col, DEF.stair) } : null)).filter(Boolean);
@@ -982,6 +984,100 @@
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + f(w * k) + '" height="' + f(h * k) + '" viewBox="0 0 ' + f(w * k) + " " + f(h * k) + '">' + body + "</svg>";
     ICONS.set(key, svg); return svg;
   }
+  /* 2.668.0 (Tim: "please add eaves and eave styles to sketcher like open eaves, boxed eaves,closed eaves, and facias and
+     gutters"): what hangs on a roof's edges. EAVE edges = a top face's lowest line that is on the roof's border (the low side of a
+     slope), RAKE edges = the sloped border lines (a gable's verge). rf.eave: plain (just the overhang) | open (rafter tails
+     showing, 600 mm apart) | boxed (a flat soffit from the fascia back to the wall) | closed (a lining under the rafters, on the
+     slope); rf.fascia (+ barge boards up the rakes, rf.fasciaH tall, 25 mm thick, rf.trimCol); rf.gutter none | quad | half
+     (on the fascia, rf.gutterCol) + rf.downpipes (one near the end of each eave run, down the wall to the floor). Pure. */
+  const EAVES = ["plain", "open", "boxed", "closed"], GUTTERS = ["none", "quad", "half"];
+  function eaveParts(A, rf, tops, cnt, keyOf, P, dz, out, tag0) {
+    const eave = EAVES.includes(rf.eave) ? rf.eave : "plain", fas = !!rf.fascia, gut = GUTTERS.includes(rf.gutter) && rf.gutter !== "none" ? rf.gutter : null;
+    if (eave === "plain" && !fas && !gut) return;
+    const s3 = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], a3 = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], m3 = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+    const d3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], c3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    const n3 = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+    const newell = (R) => { let x = 0, y = 0, z = 0; R.forEach((p, i) => { const q = R[(i + 1) % R.length]; x += (p[1] - q[1]) * (p[2] + q[2]); y += (p[2] - q[2]) * (p[0] + q[0]); z += (p[0] - q[0]) * (p[1] + q[1]); }); return n3([x, y, z]); };
+    const trim = rf.trimCol || DEF.trim, gcol = rf.gutterCol || "#d7d4cc", wood = "#9c7650";
+    const face = (R, col, part, nHint) => { let n = newell(R); if (nHint && d3(n, nHint) < 0) { R = R.slice().reverse(); n = m3(n, -1); } out.polys.push({ rings: [R], n, col, tag: Object.assign({}, tag0, { part }), layer: "roof" }); };
+    /** a cross-section prof [[o, u] ...] (CCW) swept from A to B: o along side, u along up (both across the sweep) */
+    const sweep = (A0, B0, side, up, prof, col, part) => {
+      const at = (Q, q) => a3(a3(Q, m3(side, q[0])), m3(up, q[1])), d = n3(s3(B0, A0));
+      prof.forEach((q, i) => { const r = prof[(i + 1) % prof.length], nl = n3(a3(m3(side, r[1] - q[1]), m3(up, -(r[0] - q[0])))); face([at(A0, q), at(B0, q), at(B0, r), at(A0, r)], col, part, nl); out.roofLines.push([at(A0, q), at(B0, q)]); });
+      face(prof.map((q) => at(A0, q)), col, part, m3(d, -1)); face(prof.map((q) => at(B0, q)), col, part, d);
+    };
+    /** a thin board under a quad (top corners given): its top, bottom (th lower) and sides */
+    const slab = (Q, th, col, part) => {
+      const low = Q.map((q) => [q[0], q[1], q[2] - th]);
+      face(Q, col, part, [0, 0, 1]); face(low, col, part, [0, 0, -1]);
+      Q.forEach((q, i) => { const r = Q[(i + 1) % Q.length], c = Q.reduce((a, x) => a3(a, m3(x, 1 / Q.length)), [0, 0, 0]), mid = m3(a3(q, r), 0.5); face([q, r, low[(i + 1) % Q.length], low[i]], col, part, n3([mid[0] - c[0], mid[1] - c[1], 0])); out.roofLines.push([q, r]); });
+    };
+    // the border lines: eaves (a face's lowest, the face rising away from it) and rakes (sloped)
+    const eaves = [], rakes = [];
+    tops.forEach((Q) => {
+      const zmin = Math.min(...Q.map((p) => p[2])), cx = Q.reduce((a, p) => a + p[0], 0) / Q.length, cy = Q.reduce((a, p) => a + p[1], 0) / Q.length;
+      Q.forEach((p, i) => {
+        const q = Q[(i + 1) % Q.length]; if (cnt.get(keyOf(p, q)) > 1) return;
+        const flat = Math.abs(p[2] - q[2]) < 1e-6;
+        if (flat && Math.abs(p[2] - zmin) < 1e-6 && Q.some((r) => r[2] > zmin + 1e-6)) eaves.push({ p, q, Q, c: [cx, cy] });
+        else if (!flat) rakes.push({ p, q, Q, c: [cx, cy] });
+      });
+    });
+    const keyP = (p) => p.map((c) => c.toFixed(5)).join(",");
+    const ends = new Map(); eaves.forEach((e) => [e.p, e.q].forEach((x) => ends.set(keyP(x), (ends.get(keyP(x)) || 0) + 1)));
+    const corner = (x) => (ends.get(keyP(x)) || 0) > 1;
+    const ft = 0.025, fh = Math.max(dz + 0.01, rf.fasciaH || 0.2), ov = rf.over || 0, gw = 0.125, gd = 0.1;
+    const roomsZ = rf.rooms.map((id) => room(A, id)).filter(Boolean).map((R) => R.z), ground = roomsZ.length ? Math.min(...roomsZ) : 0;
+    eaves.forEach((e) => {
+      const pw = P(e.p[0], e.p[1], e.p[2]), qw = P(e.q[0], e.q[1], e.q[2]), dW = n3(s3(qw, pw)), cw = P(e.c[0], e.c[1], e.p[2]);
+      let oW = n3([dW[1], -dW[0], 0]); if (d3(oW, s3(cw, pw)) > 0) oW = m3(oW, -1);           // out = away from the face
+      const L = Math.hypot(qw[0] - pw[0], qw[1] - pw[1]), cp = corner(e.p), cq = corner(e.q);
+      const hi = e.Q.reduce((b, r) => (r[2] > b[2] ? r : b), e.Q[0]), hw = P(hi[0], hi[1], hi[2]), run = Math.abs(d3(s3(hw, pw), oW)) || 1, tpe = (hw[2] - pw[2]) / run;   // its slope
+      const ext = (k) => [a3(pw, m3(dW, cp ? -k : 0)), a3(qw, m3(dW, cq ? k : 0))];
+      const Z = [0, 0, 1];
+      if (fas) { const [A0, B0] = ext(ft); sweep(A0, B0, oW, Z, [[0, dz - fh], [ft, dz - fh], [ft, dz], [0, dz]], trim, "fascia"); }
+      const back = (k) => m3(oW, -k), inner = (x, end) => a3(a3(x, back(ov)), m3(dW, end === "p" ? (cp ? ov : 0) : (cq ? -ov : 0)));
+      if (ov > 0.02 && eave === "boxed") {                           // a flat soffit at the fascia's bottom, back to the wall
+        const zb = (fas ? dz - fh : -0.05);
+        slab([a3(pw, [0, 0, zb]), a3(qw, [0, 0, zb]), a3(inner(qw, "q"), [0, 0, zb]), a3(inner(pw, "p"), [0, 0, zb])], 0.012, trim, "soffit");
+      }
+      if (ov > 0.02 && eave === "closed") {                          // a lining on the rafters' underside (on the slope)
+        const zi = ov * tpe - 0.004;
+        slab([a3(pw, [0, 0, -0.004]), a3(qw, [0, 0, -0.004]), a3(inner(qw, "q"), [0, 0, zi]), a3(inner(pw, "p"), [0, 0, zi])], 0.012, trim, "soffit");
+      }
+      if (ov > 0.02 && eave === "open") {                            // rafter tails, 600 mm apart, out to the fascia
+        const n = Math.max(1, Math.floor((L - 0.1) / 0.6)), off = (L - (n - 1) * 0.6) / 2, ax = n3(a3(back(1), [0, 0, tpe]));
+        let up = n3(c3(dW, ax)); if (up[2] < 0) up = m3(up, -1);
+        for (let k = 0; k < n; k++) {
+          const t = off + k * 0.6; if ((cp && t < ov + 0.05) || (cq && t > L - ov - 0.05)) continue;
+          const s0 = a3(a3(pw, m3(dW, t)), back(fas ? 0 : -0.02)), s1 = a3(a3(s0, back(ov)), [0, 0, ov * tpe]);
+          sweep(s0, s1, dW, up, [[-0.0225, -0.09], [0.0225, -0.09], [0.0225, 0], [-0.0225, 0]], wood, "rafter");
+        }
+      }
+      if (gut) {                                                     // the gutter on the fascia (open at the top)
+        const o0 = fas ? ft : 0, top = dz - 0.02, bot = top - gd, t = 0.004, [A0, B0] = ext(o0 + gw);
+        const prof = gut === "quad"
+          ? [[o0, top], [o0, bot], [o0 + gw, bot], [o0 + gw, top + 0.01], [o0 + gw - t, top + 0.01], [o0 + gw - t, bot + t], [o0 + t, bot + t], [o0 + t, top]]
+          : (() => { const r = gw / 2, c = [o0 + r, top], P0 = []; for (let i = 0; i <= 8; i++) { const a = Math.PI + Math.PI * i / 8; P0.push([c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]); } for (let i = 8; i >= 0; i--) { const a = Math.PI + Math.PI * i / 8; P0.push([c[0] + (r - t) * Math.cos(a), c[1] + (r - t) * Math.sin(a)]); } return P0; })();
+        sweep(A0, B0, oW, Z, prof, gcol, "gutter");
+        if (rf.downpipes !== false) {                                // down the wall near the run's end, a pipe across to it
+          const at = a3(qw, m3(dW, -Math.min(0.35, L / 2))), wall = a3(at, back(ov - 0.05)), zt = at[2] + bot - 0.12, pr = [[-0.045, -0.03], [0.045, -0.03], [0.045, 0.03], [-0.045, 0.03]];
+          if (zt > ground + 0.3) {
+            sweep([wall[0], wall[1], ground], [wall[0], wall[1], zt], dW, oW, pr.map(([a, b]) => [a, b + 0.035]), gcol, "downpipe");
+            const g0 = a3(at, [oW[0] * (o0 + gw / 2), oW[1] * (o0 + gw / 2), bot]), w0 = [wall[0] + oW[0] * 0.035, wall[1] + oW[1] * 0.035, zt];
+            const ax = n3(s3(w0, g0)); let up = n3(c3(ax, dW)); if (up[2] < 0) up = m3(up, -1);
+            sweep(g0, w0, dW, up, [[-0.03, -0.025], [0.03, -0.025], [0.03, 0.025], [-0.03, 0.025]], gcol, "downpipe");
+          }
+        }
+      }
+    });
+    if (fas) rakes.forEach((e) => {                                  // barge boards up the gable's verges
+      const pw = P(e.p[0], e.p[1], e.p[2]), qw = P(e.q[0], e.q[1], e.q[2]), d = n3(s3(qw, pw)), cw = P(e.c[0], e.c[1], (e.p[2] + e.q[2]) / 2);
+      let side = n3([d[1], -d[0], 0]); if (Math.hypot(side[0], side[1]) < 1e-6) return; if (d3(side, s3(cw, pw)) > 0) side = m3(side, -1);
+      let up = n3(c3(side, d)); if (up[2] < 0) up = m3(up, -1);
+      sweep(pw, qw, side, up, [[0, dz - fh], [ft, dz - fh], [ft, dz], [0, dz]], trim, "fascia");
+    });
+  }
   function roof(A, rf, out) {
     if (rf.type === "follow") {       // 2.624.0: each rectangle room's walls' tops, out past them by the eaves
       const tag = { ak: "roof", id: rf.id };
@@ -1022,6 +1118,7 @@
         out.roofLines.push([A3, B3], [A2, A3]);
       });
     });
+    eaveParts(A, rf, tops, cnt, keyOf, P, dz, out, tag);                  // 2.668.0: eaves, fascias, barge boards, gutters, downpipes
     // the gable ends (and a shed's high side) walled up under the roof, in the outside walls' colour
     const wallUp = (pts2, x0, x1) => { const Q = pts2; out.polys.push({ rings: [Q.map(([y, z]) => P(x0, y, z))], n: [-U[0], -U[1], 0], col: A.ext, tag, layer: "roof" }); out.polys.push({ rings: [Q.map(([y, z]) => P(x1, y, z)).reverse()], n: [U[0], U[1], 0], col: A.ext, tag, layer: "roof" });
       Q.forEach((p, i) => { const q = Q[(i + 1) % Q.length], d = [q[0] - p[0], q[1] - p[1]], l = Math.hypot(d[0], d[1]) || 1; out.polys.push({ rings: [[P(x0, p[0], p[1]), P(x1, p[0], p[1]), P(x1, q[0], q[1]), P(x0, q[0], q[1])]], n: [V[0] * d[1] / l, V[1] * d[1] / l, -d[0] / l], col: A.ext, tag, layer: "roof" }); out.roofLines.push([P(x0, p[0], p[1]), P(x0, q[0], q[1])], [P(x1, p[0], p[1]), P(x1, q[0], q[1])]); }); };
@@ -1355,7 +1452,7 @@
   /** 2.664.0: an end piece's / a corner's size (w across, l past the end; null = as the wall) */
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
-    cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
+    cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
