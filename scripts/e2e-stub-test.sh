@@ -13038,6 +13038,13 @@ node scripts/test-split663.js > /tmp/split663.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui663-ui.js > /tmp/ui663ui.log 2>&1 \
   && ok "2.663.0 browser test: double-click splits a wall (3D + floorplan), a piece dragged out joins the room (↶), Delete a piece, the Wall tool on a room's wall, a corner's width, a clicked face = the sketch plane, ⊥ Look at, a rectangle drawn in it - or SKIP without playwright" \
   || { bad "2.663.0 wall split browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui663ui.log | head -14; }
+# ---- 2.664.0 (Tim: "can you use these models for our mannequins - and give credit to dimasalcalde and zahers")
+node scripts/test-mannequin664.js > /tmp/mannequin664.log 2>&1 \
+  && ok "2.664.0 the Sketcher's mannequin model: the pose, kept by clean, out of the public repo, its credits (About + the Guide), the model file's shape when here" \
+  || { bad "2.664.0 mannequin units"; grep -a "^FAIL" -A2 /tmp/mannequin664.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui664-ui.js > /tmp/ui664ui.log 2>&1 \
+  && ok "2.664.0 browser test: Settings ▸ About credits dimasalcalde / zahers; Furniture ▸ People ▸ mannequin (model) placed, built from the model at the person's height - or SKIP without playwright" \
+  || { bad "2.664.0 mannequin browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui664ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

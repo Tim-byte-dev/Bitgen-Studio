@@ -42,7 +42,7 @@ FILES=$(find . -type f \
   ! -path "./sd-cpp/*" ! -path "./llama-cpp/*" \
   ! -path "./comfy/*" \
   ! -path "./fonts/*" ! -path "./textfx/user/*" \
-  ! -path "./venvs/*" ! -path "./checkpoints/*" \
+  ! -path "./venvs/*" ! -path "./checkpoints/*" ! -path "./ext/pushpulldock/assets/*" \
   ! -path "*/__pycache__/*" ! -name "*.pyc" ! -name "*.log" \
   ! -name "config.json" ! -name "config.json.migrated" ! -name "custom.settings" \
   ! -name "images.tmp" \

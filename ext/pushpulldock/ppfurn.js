@@ -14,7 +14,22 @@
   function pieces() { const C = HG().CATALOGUE; return Object.keys(C).filter((k) => !C[k].hidden).map((k) => ({ type: k, label: C[k].label, cat: C[k].cat, w: C[k].w, d: C[k].d, h: C[k].h })); }
   function categories() { const out = []; pieces().forEach((p) => { if (!out.includes(p.cat)) out.push(p.cat); }); return out; }
   /* 2.630.0: 🧍 people (the House builder's mannequins - H3HouseGeo.POSES / personParts): type "person", pose, h, name */
-  const POSES = () => HG().POSES;
+  /* 2.664.0 (Tim: "can you use these models for our mannequins"): + "mannequin" - the female mannequin model by dimasalcalde and
+     zahers (CGTrader - credited in Settings ▸ About / the Guide), ext/pushpulldock/assets/mannequin-female.json (NOT in the
+     public repo - its licence; delivered apart): {pos (feet at 0, height 1, Z up), nrm, idx}; loaded once, a standing figure
+     of it.h; without the file: the standing House-builder mannequin */
+  const POSES = () => Object.assign({}, HG().POSES, { mannequin: "mannequin (model)" });
+  let MQ = null, mqTried = false;
+  function mannequin() {
+    if (MQ || mqTried || typeof fetch !== "function") return MQ;
+    mqTried = true;
+    fetch("ext/pushpulldock/assets/mannequin-female.json").then((r) => (r.ok ? r.json() : null)).then((j) => {
+      if (!j || !Array.isArray(j.pos) || !Array.isArray(j.idx)) return;
+      MQ = j; GEO.clear();
+      try { const S = root.H3PushPull && root.H3PushPull.state; if (S && S.A && S.A.rebuild) S.A.rebuild(); } catch (e) { /* fine */ }
+    }).catch(() => {});
+    return null;
+  }
   function make(type, p, z, rot, color, pose) {
     if (type === "person") return { type, x: r3(p[0]), y: r3(p[1]), z: r3(z || 0), rot: ((Math.round(+rot || 0) % 360) + 360) % 360, w: 0.5, d: 0.35, h: 1.75, color: color || "", pose: POSES()[pose] ? pose : "stand", name: "" };
     const c = HG().CATALOGUE[type]; if (!c || c.hidden) return null;
@@ -31,7 +46,7 @@
     return (Array.isArray(list) ? list : []).map((o) => {
       const n = (v, d, lo, hi) => { const x = +v; return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : d; };
       if (o && o.type === "person") return { id: o.id, type: "person", x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), pitch: n(o.pitch, 0, -180, 180), roll: n(o.roll, 0, -180, 180), w: 0.5, d: 0.35, h: n(o.h, 1.75, 0.9, 2.3),
-        color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "", pose: HG().POSES[o.pose] ? o.pose : "stand", name: String(o.name || "").slice(0, 40) };
+        color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "", pose: POSES()[o.pose] ? o.pose : "stand", name: String(o.name || "").slice(0, 40) };
       if (!o || !C[o.type] || C[o.type].hidden) return null;
       return { id: o.id, type: o.type, x: n(o.x, 0, -1e4, 1e4), y: n(o.y, 0, -1e4, 1e4), z: n(o.z, 0, -100, 1000), rot: n(o.rot, 0, -720, 720), pitch: n(o.pitch, 0, -180, 180), roll: n(o.roll, 0, -180, 180), w: n(o.w, C[o.type].w, 0.02, 50), d: n(o.d, C[o.type].d, 0.02, 50), h: n(o.h, C[o.type].h, 0.01, 50), color: /^#[0-9a-f]{6}$/i.test(o.color || "") ? o.color : "" };
     }).filter(Boolean);
@@ -73,9 +88,15 @@
   function parts(T, it) {
     const key = [it.type, it.w, it.d, it.h, it.color, it.pose || ""].join("|"); if (GEO.has(key)) return GEO.get(key);
     const person = it.type === "person";
+    if (person && it.pose === "mannequin" && mannequin()) {            // 2.664.0: the mannequin model, it.h tall
+      const g = new T.BufferGeometry(), k = +it.h || 1.75, P = MQ.pos, pos = new Float32Array(P.length);
+      for (let i = 0; i < P.length; i++) pos[i] = P[i] * k;
+      g.setAttribute("position", new T.BufferAttribute(pos, 3)); g.setAttribute("normal", new T.BufferAttribute(new Float32Array(MQ.nrm), 3)); g.setIndex(MQ.idx);
+      const out = [{ g, mat: "mannequin", color: it.color || "" }]; GEO.set(key, out); return out;
+    }
     const m = { floors: [{ id: "f0", name: "", height: 10 }], walls: [], openings: [], rooms: [], stairs: [], cameras: [], lights: [],
       items: person ? [] : [{ id: "i", floor: 0, type: it.type, x: 0, y: 0, rot: 0, w: it.w, d: it.d, h: it.h, color: it.color || undefined }],
-      people: person ? [{ id: "p", floor: 0, x: 0, y: 0, rot: 90, pose: it.pose || "stand", h: it.h, color: it.color || "" }] : [] };   // a person at rot 90 = unturned
+      people: person ? [{ id: "p", floor: 0, x: 0, y: 0, rot: 90, pose: it.pose && it.pose !== "mannequin" ? it.pose : "stand", h: it.h, color: it.color || "" }] : [] };   // a person at rot 90 = unturned
     const out = HG().build(m).meshes.map((mh) => {
       const g = new T.BufferGeometry(), P = mh.pos, N = mh.nrm, pos = new Float32Array(P.length), nrm = new Float32Array(N.length);
       for (let i = 0; i < P.length; i += 3) { pos[i] = P[i]; pos[i + 1] = -P[i + 2]; pos[i + 2] = P[i + 1]; nrm[i] = N[i]; nrm[i + 1] = -N[i + 2]; nrm[i + 2] = N[i + 1]; }
@@ -129,7 +150,7 @@
     }
     return out;
   }
-  const api = { POSES, pieces, categories, make, footprint, label, clean, group, parts, materials, isMat, isTex, hex, look, uvs, texture, setTex, texOf, texInfo: (id) => { const e = PTEX.get(id); return e ? Object.assign({}, e.t) : null; }, onTexLoad: (fn) => { onTexLoad = typeof fn === "function" ? fn : () => {}; } };
+  const api = { POSES, mannequin, hasMannequin: () => !!MQ, pieces, categories, make, footprint, label, clean, group, parts, materials, isMat, isTex, hex, look, uvs, texture, setTex, texOf, texInfo: (id) => { const e = PTEX.get(id); return e ? Object.assign({}, e.t) : null; }, onTexLoad: (fn) => { onTexLoad = typeof fn === "function" ? fn : () => {}; } };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPFurn = api;
 })(typeof window !== "undefined" ? window : globalThis);

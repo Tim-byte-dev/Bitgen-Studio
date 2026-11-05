@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.664.0** — 🧍 The Sketcher's Mannequin Model (dimasalcalde / zahers on CGTrader, credited)
 - **2.663.0** — Sketcher: Split a Wall and Move / Delete Its Pieces, the Wall Tool on Room Walls, a Corner's Width, the Sketch Plane + ⊥ Look At
 - **2.662.0** — Sketcher Walls End Square; Drag a New Wall Out of Any Side of a Corner or a Wall's End
 - **2.661.0** — 🧱 Wall Types Docker in the Sketcher: Layer-by-Layer Wall Build-Ups and Thickness

@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.664.0: **🧍 Mannequin model** in the Sketcher: Furniture (🛋) ▸ Category *People* ▸ **mannequin (model)**, then click
+  where it stands - a modelled female mannequin, as tall as the person's Height. Its panel's Pose switches between it and the
+  posed House-builder figures. The model is by dimasalcalde and zahers on CGTrader (Settings ▸ About ▸ 3D models). Its file
+  (ext/pushpulldock/assets/mannequin-female.json) comes in its own zip, not in the public repo; without it the standing
+  figure is drawn instead.
 - 2.663.0: **Split walls, the sketch plane and ⊥ Look at** in the Sketcher.
   - **Double-click a wall** (➤ Select - seen from above, on the 📐 floorplan, or on its face in 3D below its top) to split it
     there; double-click again for more. Each piece is then a wall of its own: click it, **Delete** takes just it out, and
@@ -7253,6 +7258,11 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
 - **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python
 - **ReportLab, pypdf, jsdom and Playwright** - the Guide PDFs and the test suite
+
+### 3D models
+
+- **[Female mannequin model](https://www.cgtrader.com/designers/dimasalcalde?utm_source=credit&utm_source=credit_item_page)** (dimasalcalde (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
+- **[Female mannequin model](https://www.cgtrader.com/designers/zahers?utm_source=credit&utm_source=credit_item_page)** (zahers (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
 
 ### Programs bitGen Studio works with
 

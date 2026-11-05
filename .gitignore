@@ -28,6 +28,10 @@ loras/
 llm-models/
 checkpoints/
 
+# --- licensed 3D assets (2.664.0): the Sketcher's mannequin model (CGTrader - dimasalcalde, zahers). Its licence does not
+# allow giving the file away on its own, so it is never in the public repo; it ships to Tim apart and is unzipped in place.
+ext/pushpulldock/assets/
+
 # --- this machine's work ---------------------------------------------------
 workspace/
 projects/
