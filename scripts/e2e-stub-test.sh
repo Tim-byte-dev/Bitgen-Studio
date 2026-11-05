@@ -13052,6 +13052,13 @@ node scripts/test-sheets665.js > /tmp/sheets665.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui665-ui.js > /tmp/ui665ui.log 2>&1 \
   && ok "2.665.0 browser test: 📄 Plans opens the dialog (title bar drags it), sheet / scale / pages / dimensions change the preview, 💾 Save PDF into the project's pdf folder + downloaded - or SKIP without playwright" \
   || { bad "2.665.0 building plans browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui665ui.log | head -14; }
+# ---- 2.666.0 (Tim: "can you add roof options, gable, skilion, hip etc")
+node scripts/test-roofs666.js > /tmp/roofs666.log 2>&1 \
+  && ok "2.666.0 the Sketcher's roof types: twelve shapes planar and on the walls, skillion = shed, flip, clean, icons, the panel's wiring" \
+  || { bad "2.666.0 roof types units"; grep -a "^FAIL" -A2 /tmp/roofs666.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui666-ui.js > /tmp/ui666ui.log 2>&1 \
+  && ok "2.666.0 browser test: the Roof panels' twelve pictures, a click changes the roof (one undo step), each type's settings, a new roof takes the tool's - or SKIP without playwright" \
+  || { bad "2.666.0 roof types browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui666ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

@@ -10,7 +10,7 @@
  *   I Window   click on a wall (single · double · slider) - "1.2,1.2"
  *   J Floor    two corners: a floor without walls (a deck, a storey's floor plate) - "4,3"
  *   K Ceiling  click a room: its ceiling on / off
- *   Y Roof     click a room: a roof over it (gable · hip · shed · flat); Shift+click another: the same roof over it too
+ *   Y Roof     click a room: a roof over it (gable · hip · skillion · dutch gable · clipped gable · gambrel · mansard · saltbox · pyramid · butterfly · flat - 2.666.0); Shift+click another: the same roof over it too
  *   X Light    downlight · ceiling · pendant · chandelier · spot · wall light · floor lamp · table lamp - a click puts it on
  *              the ceiling of the room under the mouse (the room's middle snaps), a wall light on the wall
  *   V Stairs   the foot, then the direction + length - its rise in the panel
@@ -213,7 +213,7 @@
         if (ev.shiftKey && last) { if (!last.rooms.includes(R.id)) { const b = before(); last.rooms.push(R.id); done("roof", b); } ctx.status("△ the roof covers " + last.rooms.length + " rooms"); return; }
         const own = A.roofs.find((x) => x.rooms.includes(R.id));
         if (own) { st.roof = own.id; setSel({ ak: "roof", id: own.id }); ctx.status("△ " + R.name + " already has a roof - its settings are in the panel (Shift+click adds rooms to it)"); return; }
-        const b = before(), rf = P().addRoof(A, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); st.roof = rf.id;
+        const b = before(), rf = P().addRoof(A, [R.id], roofOpts()); st.roof = rf.id;
         done("roof", b); ctx.status("△ a " + rf.type + " roof over " + R.name + " · Shift+click more rooms to put them under it"); return;
       }
       if (tool === "light") {
@@ -334,7 +334,7 @@
       const bf = before(), R = P().addRoom(AR(), of.pts, { z: O.room.z, h: O.room.h, t: O.room.t, ceilOn: O.room.ceilOn, slab: !!O.room.autoFloor });
       st = {}; V.preview({});
       if (!R) { ctx.status("that room is too small"); return; }
-      if (O.room.autoRoof) P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over });   // 2.631.0: the auto roof
+      if (O.room.autoRoof) P().addRoof(AR(), [R.id], roofOpts());   // 2.631.0: the auto roof
       done("room", bf, { ak: "room", id: R.id });
       const shared = sharedWith(R);
       ctx.status("⌂ " + R.name + " " + fmt(w) + " × " + fmt(d) + (shared.length ? " - sharing a wall with " + shared.join(", ") : "") + (of.moved ? " · " + of.moved + " wall(s) " + fmt(O.room.off) + " in from the floor's edge" : "") + " · drag it (Select), doors D, windows I");
@@ -899,6 +899,21 @@
       };
       const chkIn = (label, val, on) => { const i = el("input"); i.type = "checkbox"; i.checked = !!val; i.onchange = () => on(i.checked); return row(label, i); };
       const txtIn = (label, val, on) => { const i = el("input"); i.type = "text"; i.value = val; i.onchange = () => on(i.value.trim().slice(0, 60) || val); return row(label, i); };
+      /* 2.666.0 (Tim: "can you add roof options, gable, skilion, hip etc"): the roof's type as pictures + its own settings -
+         o = the tool's options or the picked roof, on(key) -> its setter */
+      const roofFields = (o, on) => {
+        const Q = P(), pick = el("div", "pproofs"); pick.setAttribute("role", "listbox"); pick.setAttribute("aria-label", "Roof type");
+        Q.ROOFS.forEach((t) => { const b = el("button", t === o.type ? "on" : ""); b.type = "button"; b.dataset.roof = t; b.title = Q.ROOF_LABELS[t]; b.setAttribute("aria-selected", t === o.type ? "true" : "false");
+          try { b.innerHTML = Q.roofIcon(t, 44); } catch (e) { /* no picture */ } b.appendChild(el("span", "", ROOF_SHORT[t] || t)); b.onclick = () => { if (t !== o.type) on("type")(t); }; pick.appendChild(b); });
+        box.appendChild(pick);
+        selIn("Type", o.type, ROOF_OPTS(), on("type"));
+        const two = o.type === "gambrel" || o.type === "mansard";
+        if (o.type !== "follow" && o.type !== "flat") numIn(two ? "Upper pitch" : "Pitch", o.pitch, on("pitch"), 1, 0, 75, "°");
+        if (two) numIn("Lower pitch", o.pitch2 != null ? o.pitch2 : 60, on("pitch2"), 1, 5, 85, "°");
+        if (Q.ROOF_K[o.type] != null) numIn(K_LABEL[o.type], o.k != null ? o.k : Q.ROOF_K[o.type], on("k"), 0.05, 0.05, 0.95, "0 - 1");
+        if (o.type === "shed" || o.type === "saltbox") chkIn("Flip - the other side high", !!o.flip, on("flip"));
+        numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, on("over"), 0.05, 0, 5, "m");
+      };
       const btns = (list) => { const r = el("div", "ppbtns"); list.forEach(([t, fn, tip]) => { const b = el("button", "ghost", t); b.type = "button"; if (tip) b.title = tip; b.onclick = fn; r.appendChild(b); }); box.appendChild(r); };
       const ch = (fn) => (v) => { const b = before(); fn(v); ctx.commit("edit", b); props(); };
       const kel = (val, on) => { const k = P().KELVIN.find((q) => q[1] === val); selIn("Colour", k ? k[1] : "custom", P().KELVIN.map((q) => [q[1], q[2]]).concat([["custom", "Another colour…"]]), (v) => { if (v !== "custom") on(v); else props(); }); colIn("", val, on); };
@@ -1009,7 +1024,7 @@
         if (tool === "door") { selIn("Style", o.style, [["single", "Single"], ["double", "Double"], ["sliding", "Sliding glass"], ["glass", "Glass panel"], ["opening", "An opening (no door)"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.3, 10, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.5, 10, "m"); }
         if (tool === "window") { selIn("Style", o.style, [["single", "Single pane"], ["double", "Two panes"], ["slider", "Sliding"]], opt("style")); numIn("Width", o.w, opt("w"), 0.05, 0.2, 20, "m"); numIn("Height", o.h, opt("h"), 0.05, 0.2, 10, "m"); numIn("Elevation (height from floor)", o.sill, opt("sill"), 0.05, 0, 10, "m"); }
         if (tool === "floor") { numIn("Top at", o.z, opt("z"), 0.05, -100, 1000, "m"); numIn("Thickness", o.th, opt("th"), 0.01, 0.01, 5, "m"); }
-        if (tool === "roof") { selIn("Type", o.type, ROOF_OPTS(), opt("type")); if (o.type !== "follow") numIn("Pitch", o.pitch, opt("pitch"), 1, 0, 75, "°"); numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, opt("over"), 0.05, 0, 5, "m");
+        if (tool === "roof") { roofFields(o, opt);
           btns([["△ Roof the whole storey", () => roofAll(), "One roof over every room on the ground floor (or the picked room's floor)"]]); }
         if (tool === "camera") {
           numIn("Eye height", o.eye, opt("eye"), 0.05, 0.1, 20, "m");
@@ -1101,12 +1116,12 @@
           chkIn("Cornice", !!R.corniceOn, ch((v) => { R.corniceOn = v; })); if (R.corniceOn) { profRow("Cornice profile", "cornice", R.cornP, (A2) => P().room(A2, R.id), "cornP"); numIn("Cornice size", R.corniceH, ch((v) => { R.corniceH = v; }), 0.01, 0.02, 0.6, "m"); }
           if (R.skirtOn || R.corniceOn) matIn("Skirting / cornice", R.skirtCol || R.trim, ch((v) => { R.trim = v; R.skirtCol = v; R.cornCol = v; }));   // 2.640.0: both (each part has its own)
           const own = AR().roofs.find((rf) => rf.rooms.includes(R.id));
-          chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
+          chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], roofOpts()); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
         }
         if (R.gone && R.gone.length) btns([["↺ Put back " + (R.gone.length === 1 ? "wall " + (R.gone[0] + 1) : "its " + R.gone.length + " walls taken out"), ch(() => P().restoreWalls(AR(), R.id)), "The walls taken out of this room (Wall " + R.gone.map((k) => k + 1).join(", ") + ")"]]);   // 2.660.0
         matIn("Outside walls (all)", AR().ext, ch((v) => { const A2 = AR(); A2.ext = v; A2.rooms.forEach((Q) => { Q.wext = {}; }); }));   // 2.651.0: every wall's own outside too
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
-          ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
+          ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], roofOpts()); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
         box.appendChild(el("div", "pphint", "Drag it (Select) - a wall near another room's wall snaps onto it and they share it. Shift keeps the drag straight."));
         if (R.closed && root.PPFurn) {                                    // 2.629.0: 🪄 Furnish (the House builder's - the LLM when one runs, else a room's set)
           const wi = el("input"); wi.type = "text"; wi.placeholder = "e.g. a cosy reading corner"; wi.id = "ppFurnWords"; row("Furnish with", wi, "optional words - the LLM picks from the furniture library");
@@ -1151,9 +1166,8 @@
       } else if (asel.ak === "roof") {
         const rf = x;
         head("△ Roof · " + rf.rooms.length + " room" + (rf.rooms.length > 1 ? "s" : ""));
-        selIn("Type", rf.type, ROOF_OPTS(), ch((v) => { rf.type = v; }));
-        if (rf.type !== "follow") numIn("Pitch", rf.pitch, ch((v) => { rf.pitch = v; }), 1, 0, 75, "°");
-        numIn(rf.type === "follow" ? "Eaves width" : "Overhang", rf.over, ch((v) => { rf.over = v; }), 0.05, 0, 5, "m"); numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
+        roofFields(rf, (k) => ch((v) => { rf[k] = v; }));
+        numIn("Thickness", rf.th, ch((v) => { rf.th = v; }), 0.01, 0.02, 2, "m");
         selIn("Ridge", rf.ridge, [["auto", "Along the long side"], ["u", "Along the first wall"], ["v", "Across the first wall"]], ch((v) => { rf.ridge = v; }));
         matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
@@ -1203,7 +1217,11 @@
       }
       ctx.resized && ctx.resized();
     }
-    function ROOF_OPTS() { return P().ROOFS.map((r) => [r, r === "follow" ? "Follows the walls' slope" : r[0].toUpperCase() + r.slice(1)]); }
+    function ROOF_OPTS() { return P().ROOFS.map((r) => [r, P().ROOF_LABELS[r] || r]); }   // 2.666.0: the names people use (Skillion ...)
+    const ROOF_SHORT = { gable: "Gable", hip: "Hip", shed: "Skillion", dutch: "Dutch gable", jerkin: "Clipped gable", gambrel: "Gambrel", mansard: "Mansard", saltbox: "Saltbox", pyramid: "Pyramid", butterfly: "Butterfly", flat: "Flat", follow: "Follow walls" };
+    const K_LABEL = { dutch: "Hip part of the rise", jerkin: "Clipped part of the rise", gambrel: "Break - in from the walls", mansard: "Break - in from the walls", saltbox: "Ridge - from the front" };
+    /** the Roof tool's options for a new roof (2.666.0: + its proportion, lower pitch, flip) */
+    function roofOpts() { const r = O.roof; return { type: r.type, pitch: r.pitch, over: r.over, k: r.k != null && P().ROOF_K[r.type] != null ? r.k : null, pitch2: r.pitch2 != null ? r.pitch2 : 60, flip: !!r.flip }; }
     function isRect(R) { const e = P().edgesOf(R); return e.length === 4 && e.every((a, i) => Math.abs(a.u[0] * e[(i + 1) % 4].u[0] + a.u[1] * e[(i + 1) % 4].u[1]) < 1e-6); }
     function dupRoom(id) {
       const A = AR(), R = P().room(A, id); if (!R) return;
@@ -1213,7 +1231,7 @@
     function roofAll() {
       const A = AR(), R0 = asel && asel.ak === "room" ? P().room(A, asel.id) : null, ids = P().level(A, R0 ? R0.z : 0);
       if (!ids.length) { ctx.status("no rooms on that floor yet"); return; }
-      const b = before(), rf = P().addRoof(A, ids, { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); st.roof = rf.id;
+      const b = before(), rf = P().addRoof(A, ids, roofOpts()); st.roof = rf.id;
       done("roof", b, { ak: "roof", id: rf.id }); ctx.status("△ one roof over " + ids.length + " rooms");
     }
     function summary() {

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.666.0** — △ Sketcher Roof Types: Gable, Hip, Skillion, Dutch Gable, Clipped Gable, Gambrel, Mansard, Saltbox, Pyramid, Butterfly - Picked from Pictures
 - **2.665.0** — 📄 Sketcher: Building Plans to Scale as a PDF (A4 - A1, Plans, Elevations, Roof / Site Plan, Dimensions, Title Block)
 - **2.664.0** — 🧍 The Sketcher's Mannequin Model (dimasalcalde / zahers on CGTrader, credited)
 - **2.663.0** — Sketcher: Split a Wall and Move / Delete Its Pieces, the Wall Tool on Room Walls, a Corner's Width, the Sketch Plane + ⊥ Look At

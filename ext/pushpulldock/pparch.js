@@ -10,7 +10,9 @@
  *           closed: false = a free-standing wall (the Wall tool's run) - no floor, no ceiling
  *   ops     doors / windows / openings ON a room's wall: {id, kind: door | window | opening, room, edge, at (its middle, metres
  *           from the edge's start), w, h, sill, style, col, flip} - they go where their room goes
- *   roofs   {id, rooms [ids], type: gable | hip | shed | flat, pitch°, over (overhang), th, col, ridge: auto | u | v}
+ *   roofs   {id, rooms [ids], type: gable | hip | shed (skillion) | dutch | jerkin | gambrel | mansard | saltbox | pyramid |
+ *           butterfly | flat | follow, pitch°, over (overhang), th, col, ridge: auto | u | v, k (the type's proportion - ROOF_K),
+ *           pitch2 (gambrel / mansard: the lower, steeper pitch), flip (the other side high: skillion, saltbox)}   2.666.0
  *   slabs   floors without walls (decks, a storey's plate): {id, pts, z (its top), th, col}
  *   stairs  {id, x, y, ang°, w, len, rise, z, col}
  *   lights  {id, type: downlight | ceiling | pendant | chandelier | wall | spot | floorlamp | tablelamp, x, y, z, room, col, lm,
@@ -45,7 +47,14 @@
   const DEF = { h: 2.7, t: 0.15, wall: "#f4f1ea", floor: "#c8a882", ceil: "#fbfbf8", ext: "#e9e3d7", door: "#8b5a2b", frame: "#f4f4f4", glass: "#9ec5e8", roof: "#8a4f3d", stair: "#b08a62", slab: "#bdb7ab", top: "#d9d3c7", trim: "#f2efe8" };   // 2.639.0: + skirting / cornice
   const OPS = { door: { w: 0.9, h: 2.1, sill: 0, style: "single" }, window: { w: 1.2, h: 1.2, sill: 0.9, style: "double" }, opening: { w: 1.0, h: 2.1, sill: 0, style: "plain" } };
   const STYLES = { door: ["single", "double", "sliding", "glass"], window: ["single", "double", "slider"], opening: ["plain"] };
-  const ROOFS = ["gable", "hip", "shed", "flat", "follow"];        // 2.624.0: follow = on the walls' tops (their slope)
+  const ROOFS = ["gable", "hip", "shed", "dutch", "jerkin", "gambrel", "mansard", "saltbox", "pyramid", "butterfly", "flat", "follow"];   // 2.624.0: follow = on the walls' tops (their slope); 2.666.0: + dutch ... butterfly
+  /** 2.666.0 (Tim: "can you add roof options, gable, skilion, hip etc"): the names people know them by */
+  const ROOF_LABELS = { gable: "Gable", hip: "Hip", shed: "Skillion (lean-to)", dutch: "Dutch gable (gablet)", jerkin: "Clipped gable (jerkinhead)", gambrel: "Gambrel (barn)", mansard: "Mansard", saltbox: "Saltbox", pyramid: "Pyramid", butterfly: "Butterfly", flat: "Flat", follow: "Follows the walls' slope" };
+  /** the proportion each type has (rf.k, 0.05 - 0.95; null = this): dutch = the hip's part of the rise (the gablet above it), jerkin =
+   *  the clipped part at the top, gambrel / mansard = how far in the slope breaks (of half the width), saltbox = the ridge from the
+   *  front (of the depth) */
+  const ROOF_K = { dutch: 0.5, jerkin: 0.3, gambrel: 0.35, mansard: 0.35, saltbox: 0.33 };
+  const ROOF_ALIAS = { skillion: "shed", skilion: "shed", "lean-to": "shed", leanto: "shed", "dutch-gable": "dutch", gablet: "dutch", jerkinhead: "jerkin", "clipped-gable": "jerkin", barn: "gambrel", "m-roof": "butterfly", pyramidal: "pyramid" };
   // the lights: their usual brightness (lumens) + the fixture's sizes
   const LIGHTS = {
     downlight: { label: "Downlight (recessed)", lm: 650, ang: 50, mount: "ceil" },
@@ -136,7 +145,8 @@
     }).filter(Boolean);
     A.roofs = (Array.isArray(o.roofs) ? o.roofs : []).map((x) => {
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
-      return { id: id(x.id), rooms, type: ROOFS.includes(x.type) ? x.type : "gable", pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto" };
+      return { id: id(x.id), rooms, type: roofType(x.type), pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto",
+        k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip };   // 2.666.0
     }).filter(Boolean);
     A.slabs = (Array.isArray(o.slabs) ? o.slabs : []).map((x) => { if (!x || !Array.isArray(x.pts)) return null; const pts = x.pts.map(pt2).filter(Boolean); if (pts.length < 3) return null; if (area2(pts) < 0) pts.reverse(); return { id: id(x.id), pts, z: num(x.z, 0, -100, 1000), th: num(x.th, 0.2, 0.01, 5), col: hex(x.col, DEF.slab) }; }).filter(Boolean);
     A.stairs = (Array.isArray(o.stairs) ? o.stairs : []).map((x) => (x ? { id: id(x.id), x: num(x.x, 0, -1e5, 1e5), y: num(x.y, 0, -1e5, 1e5), ang: num(x.ang, 0, -720, 720), w: num(x.w, 1, 0.3, 10), len: num(x.len, 3.6, 0.3, 50), rise: num(x.rise, 2.7, 0.1, 20), z: num(x.z, 0, -100, 1000), col: hex(x.col, DEF.stair) } : null)).filter(Boolean);
@@ -863,6 +873,91 @@
     if (!along) { o = add(o, mul(u, W)); U = v; Vv = mul(u, -1); const k = W; W = D; D = k; }     // the ridge runs along U
     return { o, U, V: Vv, W, D, top, t };
   }
+  /** 2.666.0: a roof type from what was saved / asked (skillion = shed ...); unknown = gable */
+  function roofType(t) { const s = String(t || "").toLowerCase().trim(); return ROOFS.includes(s) ? s : ROOF_ALIAS[s] || "gable"; }
+  /** 2.666.0: a roof's shape in its frame (x along the ridge 0..W, y across 0..D from the walls' outside, z up; top = the walls'
+   *  top, tp = tan(pitch), ov = the overhang): {tops: planar polygons (the roof's underside), ups: [[profile (y, z) CCW, x0, x1]]
+   *  - the gable ends / high sides walled up under it, extruded from x0 to x1}. Pure (scripts/test-roofs666.js). */
+  function roofShape(type, W, D, ov, top, tp, t, rf) {
+    const H = D / 2, eave = top - ov * tp, o = rf || {}, kk = o.k != null ? o.k : ROOF_K[type];
+    const c0 = [-ov, -ov, eave], c1 = [W + ov, -ov, eave], c2 = [W + ov, D + ov, eave], c3 = [-ov, D + ov, eave];
+    const ends = (prof) => [[prof, 0, t], [prof, W - t, W]];
+    const hip = () => { const rz = top + H * tp, r1 = [H, H, rz], r2 = [Math.max(H, W - H), H, rz]; return { tops: W - D > 1e-6 ? [[c0, c1, r2, r1], [c2, c3, r1, r2], [c3, c0, r1], [c1, c2, r2]] : [[c0, c1, r1], [c1, c2, r1], [c2, c3, r1], [c3, c0, r1]], ups: [] }; };
+    if (type === "shed") return { tops: [[[-ov, -ov, eave], [W + ov, -ov, eave], [W + ov, D + ov, top + (D + ov) * tp], [-ov, D + ov, top + (D + ov) * tp]]],
+      ups: ends([[0, top], [D, top], [D, top + D * tp]]).concat([[[[D - t, top], [D, top], [D, top + D * tp], [D - t, top + (D - t) * tp]], t, W - t]]) };
+    if (type === "gable") { const rz = top + H * tp; return { tops: [[c0, c1, [W + ov, H, rz], [-ov, H, rz]], [[-ov, H, rz], [W + ov, H, rz], c2, c3]], ups: ends([[0, top], [D, top], [H, rz]]) }; }
+    if (type === "hip") return hip();
+    if (type === "pyramid") { const ap = [W / 2, H, top + Math.min(W, D) / 2 * tp]; return { tops: [[c0, c1, ap], [c1, c2, ap], [c2, c3, ap], [c3, c0, ap]], ups: [] }; }
+    if (type === "dutch") {                    // a hip up to the gablet's foot, a small gable above it at each end
+      const yb = kk * H, s = ov + yb, xg1 = -ov + s, xg2 = W + ov - s, zb = top + yb * tp, rz = top + H * tp;
+      if (xg2 - xg1 < 0.2) return hip();
+      const g = [[yb, zb], [D - yb, zb], [H, rz]];
+      return { tops: [[c0, c1, [xg2, yb, zb], [xg2, H, rz], [xg1, H, rz], [xg1, yb, zb]], [c2, c3, [xg1, D - yb, zb], [xg1, H, rz], [xg2, H, rz], [xg2, D - yb, zb]],
+        [c1, c2, [xg2, D - yb, zb], [xg2, yb, zb]], [c3, c0, [xg1, yb, zb], [xg1, D - yb, zb]]],
+        ups: [[g, xg1, xg1 + 0.04], [g, xg2 - 0.04, xg2]] };
+    }
+    if (type === "jerkin") {                   // a gable whose top is hipped back
+      const yc = (1 - kk) * H, hx = H - yc, zc = top + yc * tp, rz = top + H * tp;
+      if (W - 2 * hx < 0.2) return hip();
+      return { tops: [[c0, c1, [W + ov, yc, zc], [W, yc, zc], [W - hx, H, rz], [hx, H, rz], [0, yc, zc], [-ov, yc, zc]],
+        [c2, c3, [-ov, D - yc, zc], [0, D - yc, zc], [hx, H, rz], [W - hx, H, rz], [W, D - yc, zc], [W + ov, D - yc, zc]],
+        [[0, D - yc, zc], [0, yc, zc], [hx, H, rz]], [[W, yc, zc], [W, D - yc, zc], [W - hx, H, rz]]],
+        ups: ends([[0, top], [D, top], [D - yc, zc], [yc, zc]]) };
+    }
+    if (type === "gambrel" || type === "mansard") {   // a steep lower slope (pitch2) breaking to a shallower upper one (pitch)
+      const tl = Math.tan(o.pitch2 != null ? o.pitch2 * Math.PI / 180 : Math.PI / 3), b = Math.min(kk, 0.9) * H, zb = top + b * tl, eL = top - ov * tl;
+      const d0 = [-ov, -ov, eL], d1 = [W + ov, -ov, eL], d2 = [W + ov, D + ov, eL], d3 = [-ov, D + ov, eL];
+      if (type === "gambrel") {
+        const rz = zb + (H - b) * tp;
+        return { tops: [[d0, d1, [W + ov, b, zb], [-ov, b, zb]], [[-ov, b, zb], [W + ov, b, zb], [W + ov, H, rz], [-ov, H, rz]],
+          [[-ov, H, rz], [W + ov, H, rz], [W + ov, D - b, zb], [-ov, D - b, zb]], [[-ov, D - b, zb], [W + ov, D - b, zb], d2, d3]],
+          ups: ends([[0, top], [D, top], [D - b, zb], [H, rz], [b, zb]]) };
+      }
+      const i0 = [b, b, zb], i1 = [W - b, b, zb], i2 = [W - b, D - b, zb], i3 = [b, D - b, zb], Wi = W - 2 * b, Hi = (D - 2 * b) / 2;
+      const tops = [[d0, d1, i1, i0], [d1, d2, i2, i1], [d2, d3, i3, i2], [d3, d0, i0, i3]];
+      if (tp < 1e-3 || Hi < 0.05) tops.push([i0, i1, i2, i3]);
+      else { const rz = zb + Hi * tp, r1 = [b + Hi, H, rz], r2 = [Math.max(b + Hi, W - b - Hi), H, rz];
+        if (Wi - 2 * Hi > 1e-6) tops.push([i0, i1, r2, r1], [i2, i3, r1, r2], [i3, i0, r1], [i1, i2, r2]); else tops.push([i0, i1, r1], [i1, i2, r1], [i2, i3, r1], [i3, i0, r1]); }
+      return { tops, ups: [] };
+    }
+    if (type === "saltbox") {                  // the ridge off centre: a short steep front, a long shallow back - both eaves level
+      const r = Math.min(Math.max(kk, 0.1), 0.9) * D, rz = top + r * tp, tb = (rz - top) / (D - r), eB = top - ov * tb;
+      return { tops: [[c0, c1, [W + ov, r, rz], [-ov, r, rz]], [[-ov, r, rz], [W + ov, r, rz], [W + ov, D + ov, eB], [-ov, D + ov, eB]]], ups: ends([[0, top], [D, top], [r, rz]]) };
+    }
+    if (type === "butterfly") {                // two slopes down to a valley in the middle, the outside walls up to the high eaves
+      const zw = top + H * tp, zo = top + (H + ov) * tp;
+      return { tops: [[[-ov, -ov, zo], [W + ov, -ov, zo], [W + ov, H, top], [-ov, H, top]], [[-ov, H, top], [W + ov, H, top], [W + ov, D + ov, zo], [-ov, D + ov, zo]]],
+        ups: ends([[0, top], [H, top], [0, zw]]).concat(ends([[H, top], [D, top], [D, zw]]), [[[[0, top], [t, top], [t, top + (H - t) * tp], [0, zw]], t, W - t], [[[D - t, top], [D, top], [D, zw], [D - t, top + (H - t) * tp]], t, W - t]]) };
+    }
+    return hip();
+  }
+  /** 2.666.0: a small picture of a roof type (an SVG string) - a 6 x 4 m room under it, seen from the front right, from
+   *  what build() makes (so the picture is always the real shape); cached */
+  const ICONS = new Map();
+  function roofIcon(type, size) {
+    const key = type + "|" + (size || 56); if (ICONS.has(key)) return ICONS.get(key);
+    const A = empty(), R = addRoom(A, rectPts([0, 0], [6, 4]), { h: 2.4 });
+    addRoof(A, [R.id], { type: roofType(type), pitch: 32, over: 0.3, th: 0.12, pitch2: 64 });
+    const B = build(A), V = [0.5, -0.8, 0.55], L = Math.hypot(V[0], V[1], V[2]); V[0] /= L; V[1] /= L; V[2] /= L;
+    const U = [-V[1], V[0], 0], Ul = Math.hypot(U[0], U[1]); U[0] /= Ul; U[1] /= Ul;
+    const Wv = [V[1] * U[2] - V[2] * U[1], V[2] * U[0] - V[0] * U[2], V[0] * U[1] - V[1] * U[0]];
+    const d3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], sun = [0.35, -0.55, 0.76];
+    const faces = [];
+    B.polys.forEach((q) => {
+      if (!q.n || q.layer === "ceil" || !q.tag || (q.tag.ak !== "wall" && q.tag.ak !== "roof")) return;
+      if (d3(q.n, V) <= 0.02) return;
+      let dep = 0, cnt = 0; const rings = q.rings.map((r) => r.map((p) => { dep += -d3(p, V); cnt++; return [d3(p, U), -d3(p, Wv)]; }));
+      const lit = 0.55 + 0.45 * Math.max(0, d3(q.n, sun)), base = q.tag.ak === "roof" && q.col !== A.ext ? [194, 106, 74] : [222, 214, 199];
+      faces.push({ rings, dep: dep / cnt, col: "rgb(" + base.map((c) => Math.round(c * lit)).join(",") + ")" });
+    });
+    faces.sort((a, b) => b.dep - a.dep);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    faces.forEach((f) => f.rings.forEach((r) => r.forEach((p) => { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); })));
+    const w = x1 - x0 || 1, h = y1 - y0 || 1, sz = size || 56, k = sz / Math.max(w, h * 1.3), f = (v) => (+v.toFixed(1));
+    const body = faces.map((F) => '<path d="' + F.rings.map((r) => "M" + r.map((p) => f((p[0] - x0) * k) + " " + f((p[1] - y0) * k)).join("L") + "Z").join("") + '" fill="' + F.col + '" stroke="#2a2622" stroke-width="0.6" stroke-linejoin="round"/>').join("");
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + f(w * k) + '" height="' + f(h * k) + '" viewBox="0 0 ' + f(w * k) + " " + f(h * k) + '">' + body + "</svg>";
+    ICONS.set(key, svg); return svg;
+  }
   function roof(A, rf, out) {
     if (rf.type === "follow") {       // 2.624.0: each rectangle room's walls' tops, out past them by the eaves
       const tag = { ak: "roof", id: rf.id };
@@ -877,20 +972,14 @@
       return;
     }
     const F = roofFrame(A, rf); if (!F) return;
-    const { o, U, V, W, D, top, t } = F, ov = rf.over, tp = Math.tan(rf.pitch * Math.PI / 180), tag = { ak: "roof", id: rf.id }, col = rf.col;
+    let { o, V } = F; const { U, W, D, top, t } = F, ov = rf.over;
+    if (rf.flip) { o = add(o, mul(V, D)); V = mul(V, -1); }              // 2.666.0: the other side high (skillion / saltbox)
+    const tp = Math.tan(rf.pitch * Math.PI / 180), tag = { ak: "roof", id: rf.id }, col = rf.col;
     const P = (x, y, z) => [o[0] + U[0] * x + V[0] * y, o[1] + U[1] * x + V[1] * y, z];
-    if (rf.type === "flat" || tp < 1e-3) { const pts = [[-ov, -ov], [W + ov, -ov], [W + ov, D + ov], [-ov, D + ov]].map(([x, y]) => { const p = P(x, y, 0); return [p[0], p[1]]; }); prism(pts, top, top + rf.th, col, tag, out, "roof"); return; }
-    const dz = rf.th / Math.cos(Math.atan(tp)), eave = top - ov * tp;
-    let tops = [];                             // the top surface: planar polygons (x, y, z) in the roof's frame
-    if (rf.type === "shed") tops = [[[-ov, -ov, eave], [W + ov, -ov, eave], [W + ov, D + ov, top + (D + ov) * tp], [-ov, D + ov, top + (D + ov) * tp]]];
-    else if (rf.type === "gable") {
-      const rz = top + D / 2 * tp;
-      tops = [[[-ov, -ov, eave], [W + ov, -ov, eave], [W + ov, D / 2, rz], [-ov, D / 2, rz]], [[-ov, D / 2, rz], [W + ov, D / 2, rz], [W + ov, D + ov, eave], [-ov, D + ov, eave]]];
-    } else {                                   // hip: four slopes, the ridge D/2 in from each end
-      const rz = top + D / 2 * tp, r1 = [D / 2, D / 2, rz], r2 = [Math.max(D / 2, W - D / 2), D / 2, rz];
-      const c0 = [-ov, -ov, eave], c1 = [W + ov, -ov, eave], c2 = [W + ov, D + ov, eave], c3 = [-ov, D + ov, eave];
-      tops = W - D > 1e-6 ? [[c0, c1, r2, r1], [c2, c3, r1, r2], [c3, c0, r1], [c1, c2, r2]] : [[c0, c1, r1], [c1, c2, r1], [c2, c3, r1], [c3, c0, r1]];
-    }
+    if (rf.type === "flat" || (tp < 1e-3 && rf.type !== "mansard" && rf.type !== "gambrel")) { const pts = [[-ov, -ov], [W + ov, -ov], [W + ov, D + ov], [-ov, D + ov]].map(([x, y]) => { const p = P(x, y, 0); return [p[0], p[1]]; }); prism(pts, top, top + rf.th, col, tag, out, "roof"); return; }
+    const tl = rf.type === "gambrel" || rf.type === "mansard" ? Math.tan((rf.pitch2 != null ? rf.pitch2 : 60) * Math.PI / 180) : tp;
+    const dz = rf.th / Math.cos(Math.atan(Math.max(tp, tl)));
+    const SH = roofShape(rf.type, W, D, ov, top, tp, t, rf), tops = SH.tops;   // 2.666.0: every type's shape (roofShape)
     const nrm = (Q) => { const a = Q[0], b = Q[1], c = Q[2], x = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], y = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; const n = [x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0]], l = Math.hypot(n[0], n[1], n[2]) || 1; return [n[0] / l, n[1] / l, n[2] / l]; };
     const W3 = (Q, k) => Q.map(([x, y, z]) => P(x, y, z + (k || 0)));   // Q = the underside (it sits on the walls' outer top edge); + dz = the top
     const keyOf = (p, q) => [p, q].map((x) => x.map((c) => c.toFixed(5)).join(",")).sort().join("|");
@@ -912,8 +1001,7 @@
     // the gable ends (and a shed's high side) walled up under the roof, in the outside walls' colour
     const wallUp = (pts2, x0, x1) => { const Q = pts2; out.polys.push({ rings: [Q.map(([y, z]) => P(x0, y, z))], n: [-U[0], -U[1], 0], col: A.ext, tag, layer: "roof" }); out.polys.push({ rings: [Q.map(([y, z]) => P(x1, y, z)).reverse()], n: [U[0], U[1], 0], col: A.ext, tag, layer: "roof" });
       Q.forEach((p, i) => { const q = Q[(i + 1) % Q.length], d = [q[0] - p[0], q[1] - p[1]], l = Math.hypot(d[0], d[1]) || 1; out.polys.push({ rings: [[P(x0, p[0], p[1]), P(x1, p[0], p[1]), P(x1, q[0], q[1]), P(x0, q[0], q[1])]], n: [V[0] * d[1] / l, V[1] * d[1] / l, -d[0] / l], col: A.ext, tag, layer: "roof" }); out.roofLines.push([P(x0, p[0], p[1]), P(x0, q[0], q[1])], [P(x1, p[0], p[1]), P(x1, q[0], q[1])]); }); };
-    if (rf.type === "gable") { const tri = [[0, top], [D, top], [D / 2, top + D / 2 * tp]]; wallUp(tri.slice().reverse(), 0, t); wallUp(tri.slice().reverse(), W - t, W); }
-    if (rf.type === "shed") { const tri = [[0, top], [D, top], [D, top + D * tp]]; wallUp(tri.slice().reverse(), 0, t); wallUp(tri.slice().reverse(), W - t, W); wallUp([[D - t, top], [D, top], [D, top + D * tp], [D - t, top + (D - t) * tp]].reverse(), t, W - t); }
+    SH.ups.forEach(([prof, x0, x1]) => wallUp(prof.slice().reverse(), x0, x1));
   }
 
   /* ---------------- moving rooms: the snap that shares a wall */
@@ -1243,7 +1331,7 @@
   /** 2.664.0: an end piece's / a corner's size (w across, l past the end; null = as the wall) */
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
-    DEF, OPS, STYLES, ROOFS, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
+    DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
     removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;

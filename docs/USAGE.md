@@ -6303,6 +6303,15 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.666.0: **△ Roof types** in the Sketcher: the Roof tool's panel (and a picked roof's panel) shows every type as a
+  picture - **Gable, Hip, Skillion** (lean-to), **Dutch gable** (a hip with a small gable - a gablet - at the top of each
+  end), **Clipped gable** (jerkinhead - a gable whose top is hipped back), **Gambrel** (barn - steep below, shallow above),
+  **Mansard** (steep on all four sides, a shallow hip or flat top), **Saltbox** (the ridge off centre), **Pyramid**,
+  **Butterfly** (two slopes down to a valley), **Flat** and **Follows the walls' slope**. Click a picture to change the
+  roof. Each type has its own settings: Pitch (gambrel / mansard: Upper and Lower pitch), the Dutch gable's *hip part of the
+  rise*, the clipped gable's *clipped part*, the gambrel / mansard *break*, the saltbox *ridge from the front*, and *Flip*
+  (skillion / saltbox: the other side high). Ridge (along / across), Overhang, Thickness and Colour work for all. Every type
+  shows on the building plans' elevations and roof plan.
 - 2.665.0: **📄 Building plans** in the Sketcher: **📄 Plans** on its bar (after ✨ Photo) opens the *Building plans*
   dialog - drag it by its title bar. Pick:
   - **Sheet** A4 / A3 / A2 / A1, landscape or portrait, and the **scale** - *Auto (fits)* (the largest standard scale the
