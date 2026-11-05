@@ -21,6 +21,7 @@
  *   2.681.0 (Tim: "when a style type is set in image preview keep that style in the dropdown, user will click the change
  *               style button next to it each time"): the looks are a DROPDOWN (#lb_rslook - the one picked is kept,
  *               localStorage h3.restyle.look) + 🎨 Change style (#lb_restyle) beside it renders the picked look each press;
+ *   2.684.0      the dropdown as wide as its words (it filled the bar) - the bar's buttons' height, font and corners;
  *               the old menu is gone (its "With <style>" is the button's tooltip)
  * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js): LOOKS, promptFor(look, how, orig),
  * fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look). */
@@ -93,6 +94,12 @@
     const st = doc.createElement("style"); st.id = "lbrsCss";
     st.textContent = "#lb_rsmenu{position:fixed;z-index:9400;background:var(--panel,#1c1915);border:1px solid var(--line,#3a342a);border-radius:6px;padding:4px 0;font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:230px}"
       + "#lb_rsmenu .it{padding:6px 12px;cursor:pointer;white-space:nowrap}#lb_rsmenu .it:hover{background:#ffffff14}#lb_rsmenu .hd{padding:4px 12px 6px;opacity:.7;font-size:11px;white-space:normal;max-width:300px;border-bottom:1px solid var(--line,#3a342a);margin-bottom:3px}"
+      // 2.684.0 (Tim: "fix the style dropdown in preview image it is too long and breaks the aesthetic"): the app's
+      // select{width:100%} stretched it across the bar and folded every button onto two lines - now as wide as its words,
+      // the height / font / corners of the bar's buttons
+      + "#lb_rslook{width:auto;flex:none;max-width:150px;box-sizing:border-box;padding:4px 4px 4px 7px;font:inherit;font-size:.76rem;line-height:normal;"
+      + "background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:6px;cursor:pointer;margin-right:-2px}"
+      + "#lb_rslook:hover{border-color:var(--tiger,#f59e2c)}#lb_restyle,#lb_sbs{white-space:nowrap}"
       + "#lb_rsmsg{font-size:11px;opacity:.85;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
       // 2.677.0: the progress bar under the picture
       + "#lb_rsbar{display:none;align-items:center;gap:8px;padding:3px 12px 2px;font-size:11px;transition:opacity .6s}#lb_rsbar.on{display:flex}#lb_rsbar.fade{opacity:0}"
