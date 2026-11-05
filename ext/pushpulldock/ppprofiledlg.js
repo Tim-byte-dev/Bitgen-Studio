@@ -106,7 +106,7 @@
       '<div class="pppd-main"><label class="pppd-row">Name <input id="ppPdName" type="text" maxlength="60"></label>' +
       '<canvas id="ppPdCanvas" width="420" height="320"></canvas>' +
       '<div class="pppd-row"><label>Width <input id="ppPdW" type="number" step="1" min="1" max="1000"> mm</label><label>Height <input id="ppPdH" type="number" step="1" min="1" max="1000"> mm</label><span id="ppPdN" class="pppd-hint"></span></div>' +
-      '<div class="pppd-hint" id="ppPdHint">Click = a point (on the nearest side) · drag = move it · Delete / right-click = remove it · 1 mm grid (Shift: free)</div></div></div>' +
+      '<div class="pppd-hint" id="ppPdHint">Click a node or a segment to pick it · drag a node / a curve’s handle · double-click a segment = a new node · right-click = Convert to curve / line, delete a node · 1 mm grid (Shift: free)</div></div></div>' +
       '<div class="pppd-foot"><button type="button" class="ghost" id="ppPdDel">🗑 Delete</button><span style="flex:1"></span><button type="button" class="ghost" id="ppPdCancel">Cancel</button><button type="button" id="ppPdSave">💾 Save</button></div></form>';
     css();
     doc.body.appendChild(dlg);
@@ -122,7 +122,7 @@
       ".pppd-side{width:190px;display:flex;flex-direction:column;gap:6px}.pppd-list{flex:1;overflow:auto;max-height:330px;display:flex;flex-direction:column;gap:2px}" +
       ".pppd-list button,.ppprof-opt{display:flex;align-items:center;gap:6px;text-align:left;padding:2px 4px;background:transparent;border:1px solid transparent;border-radius:4px;color:inherit;cursor:pointer;font-size:12px}" +
       ".pppd-list button.on,.ppprof-opt.on{border-color:var(--tiger,#f59e2c)}.pppd-list button:hover,.ppprof-opt:hover{background:#ffffff14}" +
-      ".pppd-main{display:flex;flex-direction:column;gap:6px}.pppd-row{display:flex;gap:10px;align-items:center;font-size:12px}.pppd-row input[type=number]{width:70px}" +
+      "#ppPdHint{min-height:30px;max-width:420px}.pppd-main{display:flex;flex-direction:column;gap:6px}.pppd-row{display:flex;gap:10px;align-items:center;font-size:12px}.pppd-row input[type=number]{width:70px}" +
       "#ppPdCanvas{background:var(--ink,#121010);border:1px solid var(--line,#3a352d);border-radius:4px;cursor:crosshair;touch-action:none}.pppd-hint{font-size:11px;opacity:.7}.pppd-grp{font-size:10px;opacity:.6;margin-top:4px}" +
       "#pushpulldock #ppProps .ppr.ppprofrow{display:flex !important;flex-direction:column;align-items:stretch;gap:2px;margin:3px 0}#pushpulldock #ppProps .ppprofrow>span{font-size:12px}" +
       ".ppprof{display:block}.ppprof-btn{display:flex;align-items:center;gap:6px;width:100%;text-align:left;padding:2px 6px}.ppprof-btn .ppprof-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ppprof-car{opacity:.6}" +
@@ -139,8 +139,8 @@
     dlg.addEventListener("keydown", (e) => {                        // the Sketcher's keys stay out of it
       e.stopPropagation();
       const a = doc.activeElement, typing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName);
-      if ((e.key === "Delete" || e.key === "Backspace") && !typing && D && D.sel >= 0) { e.preventDefault(); delPoint(D.sel); }
-      if (e.key === "Escape") { e.preventDefault(); close(null); }
+      if ((e.key === "Delete" || e.key === "Backspace") && !typing && D && D.sel && D.sel.kind === "node") { e.preventDefault(); delNode(D.sel.i); }
+      if (e.key === "Escape") { e.preventDefault(); if ($("ppPdMenu")) { menuClose(); return; } close(null); }
     });
     $("ppPdName").oninput = () => { if (D) D.p.name = $("ppPdName").value; };
     // typing a width / height scales the profile that way (frames are shown turned: across = width, out = height)
@@ -149,29 +149,60 @@
       const s = PF().size(D.p), swap = D.kind === "doorframe" || D.kind === "windowframe", ix = (axis === "w") !== swap ? 0 : 1;
       const now = ix === 0 ? s.w : s.h; if (now < 1e-6) return;
       const lo = ix === 0 ? s.minX : s.minY, k = v / now;
-      D.p.pts = D.p.pts.map((q) => { const r = q.slice(); r[ix] = Math.round((lo + (q[ix] - lo) * k) * 1e6) / 1e6; return r; });
+      const sc = (q) => { const r = q.slice(); r[ix] = Math.round((lo + (q[ix] - lo) * k) * 1e6) / 1e6; return r; };
+      D.p.path = { n: D.p.path.n.map(sc), c: D.p.path.c.map((c) => (c ? c.map(sc) : null)) };   // 2.670.0: the nodes and the handles
       paint();
     };
     $("ppPdW").onchange = scaleTo("w"); $("ppPdH").onchange = scaleTo("h");
-    $("ppPdNew").onclick = () => { if (!D) return; load({ id: "", name: (D.p.name || "Profile").replace(/ copy$/, "") + " copy", kind: D.kind, pts: D.p.pts.map((q) => q.slice()) }); $("ppPdName").focus(); $("ppPdName").select(); };
+    $("ppPdNew").onclick = () => { if (!D) return; load({ id: "", name: (D.p.name || "Profile").replace(/ copy$/, "") + " copy", kind: D.kind, pts: D.p.pts.map((q) => q.slice()), path: JSON.parse(JSON.stringify(D.p.path)) }); $("ppPdName").focus(); $("ppPdName").select(); };
     $("ppPdSave").onclick = () => save();
     $("ppPdDel").onclick = () => {
       if (!D || !D.p.id || D.p.id.startsWith("preset:")) return;
       Lib.remove(D.p.id).then(() => { list(); load(PF().presets(D.kind)[0]); hint("deleted from the project (a model that uses it keeps its own copy)"); }).catch((e) => hint("✗ " + e.message));
     };
+    /* 2.670.0 (Tim: "change the arcs to bezier curves ... double click on the line adds a node, click on a segment to select
+       the right click to toggle convert to line/convert to curve in context menu"): nodes, segments (lines / curves) and a
+       curve's two handles */
     const cv = $("ppPdCanvas");
-    cv.addEventListener("contextmenu", (e) => { e.preventDefault(); const i = hitPoint(e); if (i >= 0) delPoint(i); });
+    cv.addEventListener("contextmenu", (e) => {
+      e.preventDefault(); if (!D) return;
+      const h = hitAny(e); if (!h) return menuClose();
+      if (h.kind === "handle") return;
+      D.sel = h.kind === "node" ? { kind: "node", i: h.i } : { kind: "seg", i: h.i }; paint();
+      const items = h.kind === "node" ? [["del", "🗑 Delete node"]]
+        : [["toggle", D.p.path.c[h.i] ? "╱ Convert to line" : "◠ Convert to curve"], ["add", "＋ Add a node here"]];
+      menuOpen(e, items, (act) => {
+        if (act === "del") delNode(h.i);
+        if (act === "toggle") { const was = PF().toggleSeg(D.p.path, h.i); D.sel = { kind: "seg", i: h.i }; hint(was === "curve" ? "◠ a curve now - drag its two handles to shape it" : "╱ a straight line now"); paint(); }
+        if (act === "add") { const i = PF().splitSeg(D.p.path, h.i, h.t); D.sel = { kind: "node", i }; paint(); }
+      });
+    });
     cv.addEventListener("pointerdown", (e) => {
       if (!D || e.button !== 0) return;
-      let i = hitPoint(e);
-      if (i < 0) { const q = toModel(e); i = insertPoint(q); }
-      D.sel = i; D.drag = { i, id: e.pointerId }; try { cv.setPointerCapture(e.pointerId); } catch (x) { /* not captured */ }
+      menuClose();
+      const h = hitAny(e);
+      if (!h) { D.sel = null; paint(); return; }
+      if (h.kind === "handle") D.drag = { what: "handle", i: h.i, k: h.k, id: e.pointerId };
+      else if (h.kind === "node") { D.sel = { kind: "node", i: h.i }; D.drag = { what: "node", i: h.i, id: e.pointerId, from: D.p.path.n[h.i].slice() }; }
+      else { D.sel = { kind: "seg", i: h.i }; D.drag = null; paint(); return; }
+      try { cv.setPointerCapture(e.pointerId); } catch (x) { /* not captured */ }
       paint();
+    });
+    cv.addEventListener("dblclick", (e) => {
+      if (!D) return; const h = hitAny(e);
+      if (!h || h.kind !== "seg") return;
+      const i = PF().splitSeg(D.p.path, h.i, h.t); D.sel = { kind: "node", i }; hint("＋ a node - drag it; right-click it to delete it"); paint();
     });
     cv.addEventListener("pointermove", (e) => {
       if (!D) return;
-      if (!D.drag) { D.hover = hitPoint(e); cv.style.cursor = D.hover >= 0 ? "move" : "crosshair"; return; }
-      D.p.pts[D.drag.i] = toModel(e); paint();
+      if (!D.drag) { const h = hitAny(e); D.hover = h; cv.style.cursor = h ? (h.kind === "seg" ? "pointer" : "move") : "default"; paint(); return; }
+      const q = toModel(e), P = D.p.path;
+      if (D.drag.what === "node") {                                  // the node, its two handles with it
+        const i = D.drag.i, n = P.n.length, old = P.n[i], d = [q[0] - old[0], q[1] - old[1]];
+        P.n[i] = q; if (P.c[i]) P.c[i][0] = [P.c[i][0][0] + d[0], P.c[i][0][1] + d[1]];
+        const ip = (i - 1 + n) % n; if (P.c[ip]) P.c[ip][1] = [P.c[ip][1][0] + d[0], P.c[ip][1][1] + d[1]];
+      } else if (P.c[D.drag.i]) P.c[D.drag.i][D.drag.k] = q;
+      paint();
     });
     const up = () => { if (D && D.drag) { D.drag = null; D.frozen = null; paint(); } };
     cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
@@ -182,7 +213,7 @@
   /* the canvas's mapping: fitted round the profile (frozen while dragging so it does not swim) */
   function frame() {
     if (D.frozen) return D.frozen;
-    const cv = $("ppPdCanvas"), V = VIEW[D.kind], ds = D.p.pts.map(V.to).concat([[0, 0]]);
+    const cv = $("ppPdCanvas"), V = VIEW[D.kind], ds = PF().flatten(D.p.path).map(V.to).concat([[0, 0]]);
     const xs = ds.map((d) => d[0]), ys = ds.map((d) => d[1]);
     let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
     const span = Math.max(x1 - x0, y1 - y0, 0.03), pad = span * 0.25;
@@ -197,25 +228,38 @@
     const q = VIEW[D.kind].from(frame().toD(sx, sy));
     return e.shiftKey ? [Math.round(q[0] * 1e5) / 1e5, Math.round(q[1] * 1e5) / 1e5] : [Math.round(q[0] * 1000) / 1000, Math.round(q[1] * 1000) / 1000];   // 1 mm (Shift: free)
   }
-  function hitPoint(e) {
-    const cv = $("ppPdCanvas"), r = cv.getBoundingClientRect(), sx = (e.clientX - r.left) * cv.width / r.width, sy = (e.clientY - r.top) * cv.height / r.height, F = frame();
-    let best = -1, bd = 8;
-    D.p.pts.forEach((q, i) => { const s = F.toS(VIEW[D.kind].to(q)), d = Math.hypot(s[0] - sx, s[1] - sy); if (d < bd) { bd = d; best = i; } });
-    return best;
+  const scr = (e) => { const cv = $("ppPdCanvas"), r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
+  /** which handles show: the picked segment's, and the curves either side of a picked node */
+  function shownHandles() {
+    const P = D.p.path, n = P.n.length, out = [];
+    if (!D.sel) return out;
+    const segs = D.sel.kind === "seg" ? [D.sel.i] : [D.sel.i, (D.sel.i - 1 + n) % n];
+    segs.forEach((i) => { if (P.c[i]) out.push({ i, k: 0 }, { i, k: 1 }); });
+    return out;
   }
-  /** a new point on the side nearest it (after that side's first point) -> its index */
-  function insertPoint(q) {
-    const P = D.p.pts, n = P.length; let bi = n - 1, bd = Infinity;
-    for (let i = 0; i < n; i++) {
-      const a = P[i], b = P[(i + 1) % n], ab = [b[0] - a[0], b[1] - a[1]], L = ab[0] * ab[0] + ab[1] * ab[1];
-      const t = L ? Math.max(0, Math.min(1, ((q[0] - a[0]) * ab[0] + (q[1] - a[1]) * ab[1]) / L)) : 0, d = Math.hypot(q[0] - a[0] - ab[0] * t, q[1] - a[1] - ab[1] * t);
-      if (d < bd) { bd = d; bi = i; }
-    }
-    P.splice(bi + 1, 0, q); return bi + 1;
+  /** what is under the pointer: a handle, a node, a segment (with t) or null */
+  function hitAny(e) {
+    const [sx, sy] = scr(e), F = frame(), V = VIEW[D.kind], P = D.p.path, S = (q) => F.toS(V.to(q));
+    let best = null, bd = 8;
+    shownHandles().forEach((h) => { const s0 = S(P.c[h.i][h.k]), d = Math.hypot(s0[0] - sx, s0[1] - sy); if (d < bd) { bd = d; best = { kind: "handle", i: h.i, k: h.k }; } });
+    if (best) return best;
+    bd = 8; P.n.forEach((q, i) => { const s0 = S(q), d = Math.hypot(s0[0] - sx, s0[1] - sy); if (d < bd) { bd = d; best = { kind: "node", i }; } });
+    if (best) return best;
+    const m = VIEW[D.kind].from(F.toD(sx, sy)), ns = PF().nearestSeg(P, m);
+    return ns.i >= 0 && ns.d * F.k < 7 ? { kind: "seg", i: ns.i, t: ns.t } : null;
   }
-  function delPoint(i) {
-    if (D.p.pts.length <= 3) { hint("a profile keeps at least 3 points"); return; }
-    D.p.pts.splice(i, 1); D.sel = -1; paint();
+  function delNode(i) {
+    if (!PF().removeNode(D.p.path, i)) { hint("a profile keeps at least 3 nodes"); return; }
+    D.sel = null; paint();
+  }
+  /* the right-click menu (inside the dialog - it is on the top layer) */
+  function menuClose() { const m = $("ppPdMenu"); if (m) m.remove(); }
+  function menuOpen(e, items, on) {
+    menuClose();
+    const dlg = $("ppProfDlg"), m = el("div", "ppprof-list"); m.id = "ppPdMenu"; m.setAttribute("role", "menu");
+    const r = dlg.getBoundingClientRect(); m.style.cssText = "position:absolute;z-index:5;min-width:170px;left:" + (e.clientX - r.left) + "px;top:" + (e.clientY - r.top) + "px";
+    items.forEach(([act, label]) => { const b = el("button", "ppprof-opt", label); b.type = "button"; b.dataset.act = act; b.setAttribute("role", "menuitem"); b.onclick = (ev) => { ev.stopPropagation(); menuClose(); on(act); }; m.appendChild(b); });
+    dlg.appendChild(m);
   }
   function paint() {
     if (!D) return;
@@ -232,15 +276,22 @@
     g.stroke(); g.lineWidth = 1;
     g.fillStyle = "#9aa4b2"; g.font = "11px sans-serif";
     g.fillText(V.ref === "face" ? "the wall's face (the opening's edge at the left)" : V.ref === "ceiling" ? "wall | ceiling" : D.kind === "sill" ? "wall | the window's bottom" : "wall | floor", 6, 14);
-    // the profile
-    const S = D.p.pts.map((q) => F.toS(V.to(q)));
-    g.beginPath(); S.forEach((s, i) => (i ? g.lineTo(s[0], s[1]) : g.moveTo(s[0], s[1]))); g.closePath();
-    g.fillStyle = (col("--tiger", "#f59e2c")) + "55"; g.fill(); g.strokeStyle = col("--tiger", "#f59e2c"); g.stroke();
-    S.forEach((s, i) => { g.fillStyle = i === D.sel ? "#ffffff" : i === D.hover ? "#ffd27a" : col("--tiger", "#f59e2c"); g.fillRect(s[0] - 3.5, s[1] - 3.5, 7, 7); });
+    // the profile: its path (2.670.0 - lines and Bézier curves), the picked / hovered segment lit, the nodes, a curve's handles
+    const P = D.p.path, n = P.n.length, Sx = (q) => F.toS(V.to(q)), tig = col("--tiger", "#f59e2c");
+    D.p.pts = PF().flatten(P);
+    const seg = (i) => { const a = Sx(P.n[i]), b = Sx(P.n[(i + 1) % n]), c = P.c[i]; if (c) { const c0 = Sx(c[0]), c1 = Sx(c[1]); g.bezierCurveTo(c0[0], c0[1], c1[0], c1[1], b[0], b[1]); } else g.lineTo(b[0], b[1]); void a; };
+    g.beginPath(); const s0 = Sx(P.n[0]); g.moveTo(s0[0], s0[1]); for (let i = 0; i < n; i++) seg(i); g.closePath();
+    g.fillStyle = tig + "55"; g.fill(); g.strokeStyle = tig; g.lineWidth = 1.5; g.stroke();
+    const lit = (i, colr) => { const a = Sx(P.n[i]); g.beginPath(); g.moveTo(a[0], a[1]); seg(i); g.strokeStyle = colr; g.lineWidth = 4; g.stroke(); g.lineWidth = 1; };
+    if (D.hover && D.hover.kind === "seg" && !(D.sel && D.sel.kind === "seg" && D.sel.i === D.hover.i)) lit(D.hover.i, "#ffd27a");
+    if (D.sel && D.sel.kind === "seg") lit(D.sel.i, "#ffffff");
+    shownHandles().forEach((h) => { const end = Sx(h.k === 0 ? P.n[h.i] : P.n[(h.i + 1) % n]), hp = Sx(P.c[h.i][h.k]);
+      g.strokeStyle = "#9ec5e8"; g.beginPath(); g.moveTo(end[0], end[1]); g.lineTo(hp[0], hp[1]); g.stroke(); g.fillStyle = "#9ec5e8"; g.beginPath(); g.arc(hp[0], hp[1], 4, 0, Math.PI * 2); g.fill(); });
+    P.n.forEach((q, i) => { const s = Sx(q), on = D.sel && D.sel.kind === "node" && D.sel.i === i, hv = D.hover && D.hover.kind === "node" && D.hover.i === i; g.fillStyle = on ? "#ffffff" : hv ? "#ffd27a" : tig; g.fillRect(s[0] - 3.5, s[1] - 3.5, 7, 7); });
     const sz = PF().size(D.p), swap = D.kind === "doorframe" || D.kind === "windowframe";
     if (doc.activeElement !== $("ppPdW")) $("ppPdW").value = Math.round((swap ? sz.h : sz.w) * 1000);
     if (doc.activeElement !== $("ppPdH")) $("ppPdH").value = Math.round((swap ? sz.w : sz.h) * 1000);
-    $("ppPdN").textContent = D.p.pts.length + " points";
+    const nc = P.c.filter(Boolean).length; $("ppPdN").textContent = n + " nodes" + (nc ? " · " + nc + " curve" + (nc > 1 ? "s" : "") : "");
     const own = D.p.id && !D.p.id.startsWith("preset:");
     $("ppPdDel").disabled = !own;
     doc.querySelector("#ppProfDlg .pppd-sub").textContent = PF().KINDS[D.kind].label + " · x " + PF().KINDS[D.kind].axes[0] + ", y " + PF().KINDS[D.kind].axes[1] + (own || !D.p.id ? "" : " · built in: Save keeps a copy");
@@ -255,8 +306,8 @@
     });
   }
   function load(p) {
-    D.p = { id: p.id || "", name: p.name || "Profile", kind: D.kind, pts: p.pts.map((q) => q.slice()) };
-    D.sel = -1; D.hover = -1; D.frozen = null;
+    D.p = { id: p.id || "", name: p.name || "Profile", kind: D.kind, pts: p.pts.map((q) => q.slice()), path: PF().pathOf(p) };   // 2.670.0: the path is edited
+    D.sel = null; D.hover = null; D.frozen = null; menuClose();
     $("ppPdKind").value = D.kind; $("ppPdName").value = D.p.name;
     list(); paint();
   }
@@ -272,7 +323,7 @@
   function open(o) {
     o = o || {}; closeList();
     const dlg = ensureDlg(), kind = PF().KINDS[o.kind] ? o.kind : "skirt";
-    D = { kind, A: o.A || null, onSave: o.onSave || null, sel: -1, hover: -1, p: null };
+    D = { kind, A: o.A || null, onSave: o.onSave || null, sel: null, hover: null, p: null };
     const start = (o.id && PF().byId(o.id, Lib.list.concat((o.A && o.A.profiles) || []))) || PF().resolve(o.A, o.id, kind);
     load(start);
     if (!dlg.open) { try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } }
@@ -282,5 +333,7 @@
 
   root.PPProfileLib = Object.assign(Lib, { keep });
   root.PPProfileUI = { dropdown, close: closeList };
-  root.PPProfileDlg = { open, close: () => close(null), state: () => D, save };
+  /** a profile point (metres) -> where it is on the screen (clientX, clientY) - for the tests */
+  function toClient(q) { const cv = $("ppPdCanvas"), r = cv.getBoundingClientRect(), sp = frame().toS(VIEW[D.kind].to(q)); return [r.left + sp[0] * r.width / cv.width, r.top + sp[1] * r.height / cv.height]; }
+  root.PPProfileDlg = { open, close: () => close(null), state: () => D, save, toClient };
 })(typeof window !== "undefined" ? window : globalThis);

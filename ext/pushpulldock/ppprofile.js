@@ -3,7 +3,13 @@
  * Tim (verbatim): "create a dialog to create profiles for skirting and cornices, list the profiles in the skirting and cornice
  * properties with a dropdown showing the visual profiles. do the same for door frames, window frames and window sills."
  *
- * A profile: {id, name, kind, pts: [[x, y], ...]} - a closed polygon in METRES (counter-clockwise once cleaned):
+ * A profile: {id, name, kind, pts: [[x, y], ...], path?} - a closed polygon in METRES (counter-clockwise once cleaned):
+ *   2.670.0 (Tim: "in the sketcher editors for cornice and skirting, change the arcs to bezier curves, a curved template with
+ *   only 2 vertices on the arc (start and finish) double click on the line adds a node, click on a segment to select the right
+ *   click to toggle convert to line/convert to curve in context menu"): path = {n: [[x, y] nodes], c: [per segment i -> i+1:
+ *   null (a line) | [[c1], [c2]] (a cubic Bézier's two handles)]} - the shape as drawn; pts = path flattened (what the sweep,
+ *   the thumbnails and the size use). Every built-in arc / ogee is ONE curve (two nodes). A profile without a path (older)
+ *   has straight sides.
  *   skirt        x = out from the wall face, y = up from the floor
  *   cornice      x = out from the wall face, y = DOWN from the ceiling
  *   doorframe    x = out from the wall face (how far it stands proud), y = across it, out from the opening's edge
@@ -41,43 +47,119 @@
   /** an S (ogee) from p to q: eased both ways */
   function ess(p, q, n) { const out = []; for (let i = 0; i <= n; i++) { const t = i / n, e = t - Math.sin(2 * Math.PI * t) / (2 * Math.PI); out.push([p[0] + (q[0] - p[0]) * e, p[1] + (q[1] - p[1]) * t]); } return out; }
 
+  /* ---------------- 2.670.0: Bézier paths */
+  const STEPS = 16;
+  const bez = (a, c1, c2, b, t) => { const u = 1 - t; return [u * u * u * a[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * b[0], u * u * u * a[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * b[1]]; };
+  /** a path -> the polygon (each curve STEPS pieces; the closing node not repeated) */
+  function flatten(path, steps) {
+    const N = path.n, out = [], k = steps || STEPS;
+    N.forEach((a, i) => { out.push(a.slice()); const c = path.c[i]; if (c) { const b = N[(i + 1) % N.length]; for (let j = 1; j < k; j++) out.push(bez(a, c[0], c[1], b, j / k)); } });
+    return out;
+  }
+  /** pts (straight sides) -> a path */
+  const pathFromPts = (pts) => ({ n: pts.map((q) => q.slice()), c: pts.map(() => null) });
+  function pathOf(p) { return p && p.path && Array.isArray(p.path.n) ? { n: p.path.n.map((q) => q.slice()), c: p.path.n.map((_, i) => (p.path.c && p.path.c[i] ? p.path.c[i].map((q) => q.slice()) : null)) } : pathFromPts((p && p.pts) || []); }
+  function cleanPath(path) {
+    if (!path || !Array.isArray(path.n)) return null;
+    const ok = (q) => Array.isArray(q) && Number.isFinite(+q[0]) && Number.isFinite(+q[1]);
+    const pt = (q) => [r6(Math.min(1, Math.max(-0.5, +q[0]))), r6(Math.min(1, Math.max(-0.5, +q[1])))];
+    const n = [], c = [];
+    path.n.slice(0, 200).forEach((q, i) => { if (!ok(q)) return; const cc = Array.isArray(path.c) ? path.c[i] : null; n.push(pt(q)); c.push(Array.isArray(cc) && cc.length === 2 && ok(cc[0]) && ok(cc[1]) ? [pt(cc[0]), pt(cc[1])] : null); });
+    if (n.length < 2 || (n.length < 3 && !c.some(Boolean))) return null;
+    return { n, c };
+  }
+  /** the segment nearest q: {i, t, d} (d in metres) */
+  function nearestSeg(path, q) {
+    const N = path.n; let best = { i: -1, t: 0, d: Infinity };
+    N.forEach((a, i) => { const b = N[(i + 1) % N.length], c = path.c[i];
+      for (let j = 0; j <= 40; j++) { const t = j / 40, p = c ? bez(a, c[0], c[1], b, t) : [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], d = Math.hypot(p[0] - q[0], p[1] - q[1]); if (d < best.d) best = { i, t, d }; } });
+    return best;
+  }
+  /** a node added on segment i at t (a curve split so its shape stays) -> the new node's index */
+  function splitSeg(path, i, t) {
+    const N = path.n, a = N[i], b = N[(i + 1) % N.length], c = path.c[i];
+    if (!c) { const m = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; N.splice(i + 1, 0, m.map(r6)); path.c.splice(i + 1, 0, null); return i + 1; }
+    const L = (p, q) => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t];
+    const p01 = L(a, c[0]), p12 = L(c[0], c[1]), p23 = L(c[1], b), p012 = L(p01, p12), p123 = L(p12, p23), m = L(p012, p123);
+    path.c[i] = [p01, p012].map((q) => q.map(r6)); N.splice(i + 1, 0, m.map(r6)); path.c.splice(i + 1, 0, [p123, p23].map((q) => q.map(r6)));
+    return i + 1;
+  }
+  /** a line <-> a curve (a new curve's handles a third of the way along, bowed out a little so it shows) */
+  function toggleSeg(path, i) {
+    const N = path.n, a = N[i], b = N[(i + 1) % N.length];
+    if (path.c[i]) { path.c[i] = null; return "line"; }
+    const d = [b[0] - a[0], b[1] - a[1]], nrm = [d[1] * 0.2, -d[0] * 0.2];            // outward for a counter-clockwise shape
+    path.c[i] = [[a[0] + d[0] / 3 + nrm[0], a[1] + d[1] / 3 + nrm[1]], [a[0] + d[0] * 2 / 3 + nrm[0], a[1] + d[1] * 2 / 3 + nrm[1]]].map((q) => q.map(r6));
+    return "curve";
+  }
+  /** node i taken out: the two segments meeting there become one (a curve when either was) */
+  function removeNode(path, i) {
+    const n = path.n.length; if (n <= 3 && !(n === 3 && path.c.some(Boolean))) return false;
+    const ip = (i - 1 + n) % n, cp = path.c[ip], cn = path.c[i];
+    path.c[ip] = cp || cn ? [cp ? cp[0] : path.n[ip].slice(), cn ? cn[1] : path.n[(i + 1) % n].slice()] : null;
+    path.n.splice(i, 1); path.c.splice(i, 1);
+    return true;
+  }
+  /** a path builder for the built-in shapes: M, L, A (an elliptical arc as ONE cubic - its two ends the only nodes), S (an
+   *  ogee: vertical at both ends, one cubic) */
+  function B() {
+    const n = [], c = [], cur = () => n[n.length - 1];
+    const node = (q) => { if (!n.length || Math.hypot(q[0] - cur()[0], q[1] - cur()[1]) > 1e-7) { n.push(q.slice()); c.push(null); } };
+    const api2 = {
+      M(x, y) { node([x, y]); return api2; },
+      L(x, y) { node([x, y]); return api2; },
+      A(cx, cy, rx, ry, a0, a1) {
+        const r0 = a0 * Math.PI / 180, r1 = a1 * Math.PI / 180, P0 = [cx + rx * Math.cos(r0), cy + ry * Math.sin(r0)], P1 = [cx + rx * Math.cos(r1), cy + ry * Math.sin(r1)];
+        node(P0); const k = 4 / 3 * Math.tan((r1 - r0) / 4), d0 = [-rx * Math.sin(r0), ry * Math.cos(r0)], d1 = [-rx * Math.sin(r1), ry * Math.cos(r1)];
+        c[c.length - 1] = [[P0[0] + k * d0[0], P0[1] + k * d0[1]], [P1[0] - k * d1[0], P1[1] - k * d1[1]]]; n.push(P1); c.push(null); return api2;
+      },
+      S(x, y) { const p = cur(), dy = y - p[1]; c[c.length - 1] = [[p[0], p[1] + dy / 3], [x, y - dy / 3]]; n.push([x, y]); c.push(null); return api2; },
+      path() { if (n.length > 1 && Math.hypot(n[0][0] - cur()[0], n[0][1] - cur()[1]) < 1e-7) { const last = c[c.length - 2]; n.pop(); c.pop(); c[c.length - 1] = last; } return { n, c }; },
+    };
+    return api2;
+  }
+
   /* ---------------- the built-in profiles (native sizes in metres) */
-  const P = (kind, key, name, pts) => ({ id: "preset:" + kind + "-" + key, name, kind, pts, preset: true });
+  const P = (kind, key, name, b) => ({ id: "preset:" + kind + "-" + key, name, kind, path: b.path(), preset: true });
   const frames = (kind) => [
-    P(kind, "flat", "Flat", [[0, 0], [0.018, 0], [0.018, 0.07], [0, 0.07]]),
-    P(kind, "bullnose", "Bullnose", [[0, 0], [0.018, 0]].concat(arc(0.009, 0.061, 0.009, 0.009, 0, 90, 8)).concat([[0, 0.07]])),
-    P(kind, "chamfer", "Chamfered", [[0, 0], [0.018, 0], [0.018, 0.058], [0.008, 0.07], [0, 0.07]]),
-    P(kind, "splayed", "Splayed", [[0, 0], [0.022, 0], [0.022, 0.006], [0.01, 0.07], [0, 0.07]]),
-    P(kind, "colonial", "Colonial (moulded)", [[0, 0], [0.022, 0], [0.022, 0.008]].concat(ess([0.022, 0.012], [0.012, 0.04], 10)).concat(arc(0.012, 0.048, 0.004, 0.008, -90, 90, 6)).concat([[0.008, 0.07], [0, 0.07]])),
-    P(kind, "lambstongue", "Lamb's tongue", [[0, 0], [0.02, 0], [0.02, 0.014]].concat(arc(0.006, 0.014, 0.014, 0.056, 0, 90, 10).slice(1)).concat([[0, 0.07]])),
+    P(kind, "flat", "Flat", B().M(0, 0).L(0.018, 0).L(0.018, 0.07).L(0, 0.07)),
+    P(kind, "bullnose", "Bullnose", B().M(0, 0).L(0.018, 0).A(0.009, 0.061, 0.009, 0.009, 0, 90).L(0, 0.07)),
+    P(kind, "chamfer", "Chamfered", B().M(0, 0).L(0.018, 0).L(0.018, 0.058).L(0.008, 0.07).L(0, 0.07)),
+    P(kind, "splayed", "Splayed", B().M(0, 0).L(0.022, 0).L(0.022, 0.006).L(0.01, 0.07).L(0, 0.07)),
+    P(kind, "colonial", "Colonial (moulded)", B().M(0, 0).L(0.022, 0).L(0.022, 0.012).S(0.012, 0.04).A(0.012, 0.048, 0.004, 0.008, -90, 90).L(0.008, 0.07).L(0, 0.07)),
+    P(kind, "lambstongue", "Lamb's tongue", B().M(0, 0).L(0.02, 0).L(0.02, 0.014).A(0.006, 0.014, 0.014, 0.056, 0, 90).L(0, 0.07)),
   ];
   const PRESETS = [
-    P("skirt", "square", "Square", [[0, 0], [0.015, 0], [0.015, 0.1], [0, 0.1]]),
-    P("skirt", "pencil", "Pencil round", [[0, 0], [0.018, 0]].concat(arc(0.014, 0.096, 0.004, 0.004, 0, 90, 5)).concat([[0, 0.1]])),
-    P("skirt", "bullnose", "Bullnose", [[0, 0], [0.018, 0]].concat(arc(0.009, 0.091, 0.009, 0.009, 0, 90, 8)).concat([[0, 0.1]])),
-    P("skirt", "chamfer", "Chamfered", [[0, 0], [0.018, 0], [0.018, 0.088], [0.006, 0.1], [0, 0.1]]),
-    P("skirt", "ogee", "Ogee", [[0, 0], [0.018, 0], [0.018, 0.07]].concat(ess([0.018, 0.07], [0.006, 0.1], 12).slice(1)).concat([[0, 0.1]])),
-    P("skirt", "torus", "Torus (bead)", [[0, 0], [0.018, 0], [0.018, 0.074]].concat(arc(0.018, 0.0815, 0.0075, 0.0075, -90, 90, 10).slice(1)).concat([[0.018, 0.09], [0.008, 0.1], [0, 0.1]])),
-    P("skirt", "lambstongue", "Lamb's tongue", [[0, 0], [0.018, 0], [0.018, 0.06]].concat(arc(0.004, 0.06, 0.014, 0.04, 0, 90, 10).slice(1)).concat([[0, 0.1]])),
-    P("cornice", "square", "Square", [[0, 0], [0.06, 0], [0.06, 0.08], [0, 0.08]]),
-    P("cornice", "cove", "Cove", [[0, 0], [0.09, 0]].concat(arc(0.09, 0.09, 0.09, 0.09, 270, 180, 12).slice(1)).concat([[0, 0]]).slice(0, -1)),
-    P("cornice", "quadrant", "Quadrant (quarter round)", [[0, 0]].concat(arc(0, 0, 0.07, 0.07, 0, 90, 10))),
-    P("cornice", "ogee", "Ogee (crown)", [[0, 0], [0.1, 0], [0.1, 0.012]].concat(ess([0.1, 0.012], [0.012, 0.1], 14).slice(1)).concat([[0, 0.1]])),
-    P("cornice", "stepped", "Stepped", [[0, 0], [0.09, 0], [0.09, 0.02], [0.07, 0.02], [0.07, 0.045], [0.045, 0.045], [0.045, 0.07], [0.02, 0.07], [0.02, 0.09], [0, 0.09]]),
-    P("cornice", "coveband", "Cove + band", [[0, 0], [0.11, 0], [0.11, 0.018], [0.09, 0.018]].concat(arc(0.09, 0.09, 0.072, 0.072, 270, 180, 12).slice(1)).concat([[0.012, 0.11], [0, 0.11]])),
+    P("skirt", "square", "Square", B().M(0, 0).L(0.015, 0).L(0.015, 0.1).L(0, 0.1)),
+    P("skirt", "pencil", "Pencil round", B().M(0, 0).L(0.018, 0).L(0.018, 0.096).A(0.014, 0.096, 0.004, 0.004, 0, 90).L(0, 0.1)),
+    P("skirt", "bullnose", "Bullnose", B().M(0, 0).L(0.018, 0).A(0.009, 0.091, 0.009, 0.009, 0, 90).L(0, 0.1)),
+    P("skirt", "chamfer", "Chamfered", B().M(0, 0).L(0.018, 0).L(0.018, 0.088).L(0.006, 0.1).L(0, 0.1)),
+    P("skirt", "ogee", "Ogee", B().M(0, 0).L(0.018, 0).L(0.018, 0.07).S(0.006, 0.1).L(0, 0.1)),
+    P("skirt", "torus", "Torus (bead)", B().M(0, 0).L(0.018, 0).L(0.018, 0.074).A(0.018, 0.0815, 0.0075, 0.0075, -90, 90).L(0.018, 0.09).L(0.008, 0.1).L(0, 0.1)),
+    P("skirt", "lambstongue", "Lamb's tongue", B().M(0, 0).L(0.018, 0).L(0.018, 0.06).A(0.004, 0.06, 0.014, 0.04, 0, 90).L(0, 0.1)),
+    P("cornice", "square", "Square", B().M(0, 0).L(0.06, 0).L(0.06, 0.08).L(0, 0.08)),
+    P("cornice", "cove", "Cove", B().M(0, 0).L(0.09, 0).A(0.09, 0.09, 0.09, 0.09, 270, 180)),
+    P("cornice", "quadrant", "Quadrant (quarter round)", B().M(0, 0).L(0.07, 0).A(0, 0, 0.07, 0.07, 0, 90)),
+    P("cornice", "ogee", "Ogee (crown)", B().M(0, 0).L(0.1, 0).L(0.1, 0.012).S(0.012, 0.1).L(0, 0.1)),
+    P("cornice", "stepped", "Stepped", B().M(0, 0).L(0.09, 0).L(0.09, 0.02).L(0.07, 0.02).L(0.07, 0.045).L(0.045, 0.045).L(0.045, 0.07).L(0.02, 0.07).L(0.02, 0.09).L(0, 0.09)),
+    P("cornice", "coveband", "Cove + band", B().M(0, 0).L(0.11, 0).L(0.11, 0.018).L(0.09, 0.018).A(0.09, 0.09, 0.072, 0.072, 270, 180).L(0.012, 0.11).L(0, 0.11)),
   ].concat(frames("doorframe"), frames("windowframe"), [
-    P("sill", "square", "Square", [[0, 0], [0.06, 0], [0.06, 0.03], [0, 0.03]]),
-    P("sill", "bullnose", "Bullnose", [[0, 0], [0.06, 0]].concat(arc(0.045, 0.015, 0.015, 0.015, 0, 90, 8)).concat([[0, 0.03]])),
-    P("sill", "nosing", "Round nosing", [[0, 0], [0.05, 0]].concat(arc(0.05, 0.015, 0.015, 0.015, -90, 90, 12).slice(1)).concat([[0, 0.03]])),
-    P("sill", "chamfer", "Chamfered", [[0, 0], [0.055, 0], [0.065, 0.012], [0.065, 0.03], [0, 0.03]]),
-    P("sill", "apron", "With an apron", [[0, -0.06], [0.02, -0.06], [0.02, 0], [0.065, 0], [0.065, 0.03], [0, 0.03]]),
+    P("sill", "square", "Square", B().M(0, 0).L(0.06, 0).L(0.06, 0.03).L(0, 0.03)),
+    P("sill", "bullnose", "Bullnose", B().M(0, 0).L(0.06, 0).L(0.06, 0.015).A(0.045, 0.015, 0.015, 0.015, 0, 90).L(0, 0.03)),
+    P("sill", "nosing", "Round nosing", B().M(0, 0).L(0.05, 0).A(0.05, 0.015, 0.015, 0.015, -90, 90).L(0, 0.03)),
+    P("sill", "chamfer", "Chamfered", B().M(0, 0).L(0.055, 0).L(0.065, 0.012).L(0.065, 0.03).L(0, 0.03)),
+    P("sill", "apron", "With an apron", B().M(0, -0.06).L(0.02, -0.06).L(0.02, 0).L(0.065, 0).L(0.065, 0.03).L(0, 0.03)),
   ]);
-  PRESETS.forEach((p) => { p.pts = clean(p).pts; });
+  PRESETS.forEach((p) => { const c = clean(p); p.pts = c.pts; p.path = c.path; });
   const presets = (kind) => PRESETS.filter((p) => p.kind === kind);
 
   /* ---------------- checking */
   function clean(p) {
-    if (!p || typeof p !== "object" || !KINDS[p.kind] || !Array.isArray(p.pts)) return null;
+    if (!p || typeof p !== "object" || !KINDS[p.kind]) return null;
+    // 2.670.0: a path (Bézier) decides the shape; pts = it flattened
+    let path = p.path ? cleanPath(p.path) : null;
+    if (path) { if (area2(flatten(path)) < 0) { path = reversePath(path); } p = Object.assign({}, p, { pts: flatten(path) }); }
+    if (!Array.isArray(p.pts)) return null;
     let pts = p.pts.filter((q) => Array.isArray(q) && Number.isFinite(+q[0]) && Number.isFinite(+q[1])).map((q) => [r6(Math.min(1, Math.max(-0.5, +q[0]))), r6(Math.min(1, Math.max(-0.5, +q[1])))]);
     const Q = []; pts.forEach((q) => { if (!Q.length || len(sub(q, Q[Q.length - 1])) > 1e-5) Q.push(q); });
     while (Q.length > 2 && len(sub(Q[0], Q[Q.length - 1])) <= 1e-5) Q.pop();
@@ -85,7 +167,14 @@
     if (pts.length < 3 || Math.abs(area2(pts)) < 1e-8) return null;
     if (area2(pts) < 0) pts.reverse();
     const id = typeof p.id === "string" && /^(preset:)?[a-z0-9_-]{1,40}$/.test(p.id) ? p.id : newId();
-    return { id, name: String(p.name || KINDS[p.kind].label).slice(0, 60), kind: p.kind, pts };
+    return Object.assign({ id, name: String(p.name || KINDS[p.kind].label).slice(0, 60), kind: p.kind, pts }, path ? { path } : {});
+  }
+
+  /** the same path the other way round (counter-clockwise is how profiles are kept) */
+  function reversePath(path) {
+    const n = path.n.length, N = [], C = [];
+    for (let k = 0; k < n; k++) { const i = (n - k) % n; N.push(path.n[i].slice()); const seg = path.c[(i - 1 + n) % n]; C.push(seg ? [seg[1].slice(), seg[0].slice()] : null); }
+    return { n: N, c: C };
   }
   function cleanList(list) { const seen = new Set(); return (Array.isArray(list) ? list : []).map(clean).filter((p) => p && !p.id.startsWith("preset:") && !seen.has(p.id) && seen.add(p.id)).slice(0, 500); }
   let seq = 0;
@@ -182,7 +271,7 @@
     return out;
   }
 
-  const api = { KINDS, PRESETS, presets, clean, cleanList, newId, byId, resolve, size, fit, svg, sweep, offAt, area2 };
+  const api = { flatten, pathOf, pathFromPts, cleanPath, nearestSeg, splitSeg, toggleSeg, removeNode, reversePath, bez, KINDS, PRESETS, presets, clean, cleanList, newId, byId, resolve, size, fit, svg, sweep, offAt, area2 };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPProfile = api;
 })(typeof window !== "undefined" ? window : globalThis);

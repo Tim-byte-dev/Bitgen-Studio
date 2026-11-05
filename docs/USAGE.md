@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.670.0: **Profiles with Bézier curves** in the Sketcher's profile editor (skirting, cornice, door / window frames, sills -
+  ✎ New / edit profiles…): every built-in arc and ogee is now ONE curve with just two nodes on it (its start and finish),
+  so the Cove cornice is three nodes. **Click** a node or a segment to pick it; **drag** a node (its handles move with it) or
+  a curve's two **handles** (shown on the picked segment, or either side of a picked node); **double-click** a segment to add
+  a node there (a curve is split without changing its shape); **right-click** a segment for *Convert to curve* /
+  *Convert to line* and *Add a node here*, or a node for *Delete node* (Delete works too). Saved profiles keep their curves;
+  older ones open with straight sides.
 - 2.669.0: **ComfyUI cleared completely - before an update and when bitGen Studio exits.**
   - **⤓ Update ComfyUI** (Settings ▸ ComfyUI) first runs `misc\clear-comfy.bat`: every ComfyUI process is stopped (one
     you started yourself too - its Python holds the packages the update replaces), port 8188 is freed, and ComfyUI's

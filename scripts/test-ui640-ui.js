@@ -85,14 +85,16 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.click("#ppPdNew"); await p.waitForTimeout(150);
     await p.fill("#ppPdName", "Tim's skirting");
     const cb = await p.locator("#ppPdCanvas").boundingBox();
-    await p.mouse.click(cb.x + cb.width * 0.82, cb.y + cb.height * 0.3); await p.waitForTimeout(150);
-    const d1 = await ev(() => ({ pts: PPProfileDlg.state().p.pts.length, name: PPProfileDlg.state().p.name }));
-    check("…＋ New, a name, a click on the canvas adds a point", d1.pts === d0.pts + 1 && d1.name === "Tim's skirting", { d0, d1 });
-    // a point dragged, one removed with Delete
+    // 2.670.0: a node is added by double-clicking a segment (a click picks it); Delete removes the picked node
+    const mid = await ev(() => { const P = PPProfileDlg.state().p.path, a = P.n[0], b = P.n[1]; return PPProfileDlg.toClient([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]); });
+    const nn0 = await ev(() => PPProfileDlg.state().p.path.n.length);
+    await p.mouse.dblclick(mid[0], mid[1]); await p.waitForTimeout(150);
+    const d1 = await ev(() => ({ n: PPProfileDlg.state().p.path.n.length, name: PPProfileDlg.state().p.name }));
+    check("…＋ New, a name, a double-click on a side adds a node", d1.n === nn0 + 1 && d1.name === "Tim's skirting", { nn0, d1 });
     const d2 = await ev(() => { const D = PPProfileDlg.state(); return D.sel; });
     await p.keyboard.press("Delete"); await p.waitForTimeout(150);
-    check("…Delete removes the picked point", await ev(() => PPProfileDlg.state().p.pts.length) === d0.pts && d2 >= 0);
-    await p.mouse.click(cb.x + cb.width * 0.85, cb.y + cb.height * 0.25); await p.waitForTimeout(100);
+    check("…Delete removes the picked node", await ev(() => PPProfileDlg.state().p.path.n.length) === nn0 && d2 && d2.kind === "node");
+    void cb;
     await ev(() => { const i = document.getElementById("ppPdH"); i.value = "140"; i.dispatchEvent(new Event("change")); });
     await p.waitForTimeout(100);
     check("…Height 140 mm scales it", Math.abs(await ev(() => PPProfile.size(PPProfileDlg.state().p).h) - 0.14) < 1e-4);

@@ -13077,6 +13077,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui668-ui.js > /tmp/ui668ui.log 2
 node scripts/test-exit669.js > /tmp/exit669.log 2>&1 \
   && ok "2.669.0 clear-comfy before an update + on exit: the .bat run hidden (/nostart /nopause), Linux's own clear (a real ComfyUI process ended), the exit sweep's targets (a real worker ended), the setting, the wiring (shutdown route, exit hooks, Electron waits, start.bat exit)" \
   || { bad "2.669.0 exit / clear-comfy units"; grep -a "^FAIL" -A2 /tmp/exit669.log | head -14; }
+# ---- 2.670.0 (Tim: "in the sketcher editors for cornice and skirting, change the arcs to bezier curves ... double click on the line adds a node ... convert to line/convert to curve in context menu")
+node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
+  && ok "2.670.0 Bézier profiles: built-in arcs one curve each, split / toggle / remove, clean (counter-clockwise, flattened), the server keeps the path" \
+  || { bad "2.670.0 Bézier profile units"; grep -a "^FAIL" -A2 /tmp/bezier670.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
+  && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
+  || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
