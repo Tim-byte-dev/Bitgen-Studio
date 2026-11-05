@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.672.0: **MOSS-Image stand-ins**: when ComfyUI does not have the style's small FLUX.2 VAE (flux2-vae_small) but has the
+  full one (flux2-vae), or has another Qwen3.5 9B text encoder (w4a8 / int8 / bf16) than the one asked for, the render uses
+  the one you have and says so in the log. Settings ▸ Add-ons ▸ MOSS-Image installs just the text encoder + VAE when no
+  model is ticked - for your own MOSS model (a Civitai fine-tune: set it as the style's Model).
 - 2.671.0: **Gutter profiles** in the Sketcher: pick a roof - **Gutters** lists the built-in sections (Quad (box), Half round,
   OG (ogee front), Square line (deep)), **Gutter profile** shows them (and yours) as pictures, and **✎ Gutter profiles…**
   opens the profile editor with the kind *Gutter*: the fascia is the line on its left, x out from it, y up from the

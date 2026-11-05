@@ -13084,6 +13084,10 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.672.0 (Tim's MOSS-Image log: the text encoder / flux2-vae_small not in ComfyUI's lists)
+python3 scripts/test-standin672.py > /tmp/standin672.log 2>&1 \
+  && ok "2.672.0 MOSS stand-ins: flux2-vae for a missing flux2-vae_small (one way), the Qwen3.5 9B text encoder variants, ambiguous / listed left alone, run from canonicalise_combos" \
+  || { bad "2.672.0 stand-in units"; grep -a "^FAIL" -A2 /tmp/standin672.log | head -14; }
 # ---- 2.671.0 (Tim: "create an editor for gutter profile in the same way,")
 node scripts/test-gutter671.js > /tmp/gutter671.log 2>&1 \
   && ok "2.671.0 gutter profiles: the Gutter kind + Quad / Half round / OG / Square line (Quad = the 2.668.0 gutter exactly), a roof's gutter swept with its profile (yours too), the server takes the kind" \

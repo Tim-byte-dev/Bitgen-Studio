@@ -649,7 +649,61 @@ def canonicalise_combos(base, graph, keys=COMBO_FIX_KEYS):
         fixed.extend(relocate_model_loaders(base, graph))
     except Exception:                                                   # noqa: BLE001
         pass
+    # 2.672.0: a missing file with a known stand-in that IS listed (the MOSS-Image VAE / text encoder variants)
+    try:
+        fixed.extend(stand_in_files(base, graph))
+    except Exception:                                                   # noqa: BLE001
+        pass
     return fixed
+
+
+# 2.672.0 (Tim's MOSS-Image log: node 72 VAELoader.vae_name = flux2-vae_small.safetensors "not in (list of length 23)" -
+# "ComfyUI lists this file as: flux2-vae.safetensors"; node 71 CLIPLoader.clip_name = qwen3.5_9b_w4a8_gptq.safetensors not
+# listed): files that are the SAME model in another size / precision - Comfy-Org/MOSS-Image ships each of them for the same
+# graph - so a missing one is swapped for one ComfyUI lists, said in the log. One way only where it matters: the full
+# FLUX.2 VAE stands in for the small one (it encodes too), never the other way round.
+STAND_INS = {
+    ("vae_name", "flux2-vae_small.safetensors"): ("flux2-vae.safetensors",),
+    ("clip_name", "qwen3.5_9b_w4a8_gptq.safetensors"): ("qwen3.5_9b_int8_convrot.safetensors", "qwen3.5_9b_bf16.safetensors"),
+    ("clip_name", "qwen3.5_9b_int8_convrot.safetensors"): ("qwen3.5_9b_bf16.safetensors", "qwen3.5_9b_w4a8_gptq.safetensors"),
+    ("clip_name", "qwen3.5_9b_bf16.safetensors"): ("qwen3.5_9b_int8_convrot.safetensors", "qwen3.5_9b_w4a8_gptq.safetensors"),
+}
+
+
+def stand_in_files(base, graph, lists=None):
+    """A loader file ComfyUI does not list, with a STAND_INS entry ComfyUI does list -> that name, in place.
+    Matched by file name (any subfolder; exactly one listed file of that name). `lists` (tests): {(class, key): [names]}.
+    Returns [(node_id, key, old, new_description)]. Never raises; an unreachable server changes nothing."""
+    out, cache = [], {}
+    leaf = lambda s: str(s).replace("\\", "/").rsplit("/", 1)[-1].lower()       # noqa: E731
+    for nid, node in list(graph.items()):
+        if str(nid).startswith("_") or not isinstance(node, dict):
+            continue
+        ct, ins = str(node.get("class_type") or ""), node.get("inputs") or {}
+        for key in ("vae_name", "clip_name"):
+            v = ins.get(key)
+            if not isinstance(v, str) or not v.strip() or (key, leaf(v)) not in STAND_INS:
+                continue
+            ck = (ct, key)
+            if ck not in cache:
+                if lists is not None:
+                    cache[ck] = list(lists.get(ck) or [])
+                else:
+                    try:
+                        cache[ck] = combo_values(base, ct, key)
+                    except Exception:                                   # noqa: BLE001
+                        cache[ck] = []
+            names = cache[ck]
+            if not names or any(leaf(n) == leaf(v) for n in names):
+                continue                                                # listed (or nothing to compare with)
+            for alt in STAND_INS[(key, leaf(v))]:
+                hits = [n for n in names if leaf(n) == alt]
+                if len(hits) == 1:
+                    ins[key] = hits[0]
+                    out.append((str(nid), key, v, f"{hits[0]} - a stand-in: {leaf(v)} is not in ComfyUI, {alt} is the "
+                                f"same model in another size / precision (Comfy-Org/MOSS-Image ships both)"))
+                    break
+    return out
 
 
 # 2.525.0 (Tim, after 2.523: "krea and anima still don't work" - node 70 UNETLoader.unet_name =

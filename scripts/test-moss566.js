@@ -77,8 +77,8 @@ print(json.dumps({"p": G["74"]["inputs"]["text"], "n": G["75"]["inputs"]["text"]
       && logs.some((l) => /image styles back: MOSS-Image Base/.test(l)) && logs.some((l) => /^! .*cannot run MOSS-Image: it needs ComfyUI 0\.42\.2 or newer.*Update ComfyUI/.test(l)), { got, logs });
     const s1 = M.status(pl);
     check("...status: installed (a model + its text encoder + VAE), what is there ✓", s1.installed && s1.items.find((i) => i.id === "base").present && !s1.items.find((i) => i.id === "sft").present && /ready: /.test(s1.note), s1.note);
-    const r2 = await M.install(() => {}, ["te_int8"], { place: pl, download: fakeDl, comfy: async () => ({ online: false }), styles: () => [] });
-    check("...no model ticked = said (the text encoder alone renders nothing)", !r2.ok && /tick at least one MOSS-Image model/.test(r2.error));
+    const l2 = [], r2 = await M.install((l) => l2.push(l), ["te", "vae"], { place: pl, download: fakeDl, comfy: async () => ({ online: false }), styles: () => [] });
+    check("...2.672.0: no model ticked = the text encoder + VAE alone (for your own MOSS model), said", r2.ok && l2.some((l) => /no MOSS-Image model ticked - only the text encoder \+ VAE/.test(l)), l2);
     const r3 = await M.remove(() => {}, pl);
     check("remove: the downloaded files go", r3.ok && !fs.existsSync(path.join(t2, "diffusion_models", "moss_image_base_int8_convrot.safetensors")) && !M.status(pl).installed);
   } finally { fs.rmSync(t2, { recursive: true, force: true }); }
