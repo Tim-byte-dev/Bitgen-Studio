@@ -6303,12 +6303,16 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.655.0: **🩹 starts by itself** - **Ctrl+click** the 🩹 button: the restore is set up AND started (✏ Edit pressed for
+  you a moment later); **Shift+click** (or Ctrl+Shift+click): the restore that also **colourises** a black-and-white
+  photo, started the same way. A plain click still only sets it up. With no photo to take (the References docker empty
+  and the image editor closed) nothing starts and the note says what to do.
 - 2.654.0: **🩹 Restore / fix a photo** - a button in the prompt docker's left column (under 🎤).
   - One click: Generate mode **🖼 Image**, the ▾ operation **✏ Edit**, and the restore instruction leads the prompt -
     scratches, dust, spots, stains, creases and tears taken out, noise and grain reduced, faded colours and contrast
     fixed, soft detail sharpened, the same people, faces, clothes, pose and framing kept. Words you type after it are
     added ("her dress was dark green"). A second click adds nothing.
-  - **Shift+click**: the same, and the photo colourised (for a black-and-white photo).
+  - **Shift+click**: the same, and the photo colourised (for a black-and-white photo) - since 2.655.0 it also starts.
   - The photo: with the image editor closed, put it in the **🖼 References docker** (one picture - more are used
     together); with the editor open, the **selected layer** (or the selection on it). A note beside the button says
     which it will use. Then press **✏ Edit** - the result lands in the gallery (the editor: ⏳ Pending).

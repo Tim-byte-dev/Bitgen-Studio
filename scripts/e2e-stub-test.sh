@@ -12961,6 +12961,13 @@ node scripts/test-restore654.js > /tmp/restore654.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui654-ui.js > /tmp/ui654.log 2>&1 \
   && ok "2.654.0 browser test (stubbed AI): 🩹 in the left column, Image + ✏ Edit + the instruction, once, Shift colourise, the notes (none / References / the editor's layer), ✏ Edit sends the photo with the instruction - or SKIP without playwright" \
   || { bad "2.654.0 restore photo browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui654.log | head -14; }
+# ---- 2.655.0 (Tim: "can u add ctrl click starts the job automatically, a click starts the colorize job automatically")
+node scripts/test-restore655.js > /tmp/restore655.log 2>&1 \
+  && ok "2.655.0 🩹 starts by itself: Ctrl = restore, Shift = colourise, plain = set up; only with a photo; once; the notes" \
+  || { bad "2.655.0 restore start units"; grep -a "^FAIL" -A2 /tmp/restore655.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui655-ui.js > /tmp/ui655.log 2>&1 \
+  && ok "2.655.0 browser test (stubbed AI): no photo = not started, plain click sends nothing, Ctrl+click sends the restore, Shift+click the colourising one, two quick clicks = one job - or SKIP without playwright" \
+  || { bad "2.655.0 restore start browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui655.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui5406-ui.js > /tmp/ui5406.log 2>&1 \
   && ok "2.540.6 browser test: theme edit handles - the drag ends when let go, the next drag sizes the same element, the page never moves, a broken saved rule heals - or SKIP without playwright" \
   || { bad "2.540.6 theme edit handles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui5406.log | head -14; }

@@ -8,9 +8,13 @@
  *   - Generate mode 🖼 Image, the ▾ operation ✏ Edit (ext/imageeditdock/pcimgop.js - window.H3ImgOp)
  *   - the restore instruction LEADS the prompt, once (what is typed after it stays - "her dress is dark green")
  *   - Shift+click: the same + colourise a black-and-white photo
+ *   2.655.0 (Tim: "can u add ctrl click starts the job automatically, a click starts the colorize job automatically"):
+ *   - Ctrl+click: the restore STARTS by itself (✏ Edit pressed for you) - Shift+click / Ctrl+Shift+click: the colourising
+ *     restore starts by itself; a plain click still only sets it up. No photo to take = nothing starts (the note says why).
  *   - a note says which picture Edit will use: the image editor open = the selected layer (or the selection), closed =
  *     the 🖼 References docker's picture(s); none = how to give it one
- * Pure (Node: scripts/test-restore654.js): instruction(colour), withInstruction(text, colour), sourceNote(s).
+ * Pure (Node: scripts/test-restore654.js, test-restore655.js): instruction(colour), withInstruction(text, colour), sourceNote(s),
+ *   runNote(s, colour), clickAction(ev), canRun(s).
  * The clicks: scripts/test-ui654-ui.js. */
 (function (root) {
   "use strict";
@@ -31,6 +35,21 @@
     }
     const rest = t.replace(/^\s+/, "");
     return instruction(colour) + (rest ? " " + rest : " ");
+  }
+  /** 2.655.0: what a click means - {colour, run}: Ctrl (⌘) = run the restore, Shift = run the colourising restore, both =
+      the colourising one, plain = only set it up */
+  function clickAction(ev) {
+    const e = ev || {}, ctl = !!(e.ctrlKey || e.metaKey), sh = !!e.shiftKey;
+    return { colour: sh, run: ctl || sh };
+  }
+  /** 2.655.0: is there a picture ✏ Edit can take? (the image editor's layer / selection, or a References picture) */
+  const canRun = (s) => !!(s && s.imgop && (s.open || s.refs > 0));
+  /** 2.655.0: the note when it starts by itself (s as sourceNote's) */
+  function runNote(s, colour) {
+    s = s || {};
+    const what = s.open ? (s.hasSel ? "the selection on " + (s.layer ? "“" + s.layer + "”" : "the picture") : s.picks > 1 ? "the " + Math.min(s.picks, 3) + " layers picked" : s.layer ? "the layer “" + s.layer + "”" : "the picture in the image editor")
+      : s.refs === 1 ? "the picture in the 🖼 References docker" : "the " + s.refs + " pictures in the 🖼 References docker";
+    return (colour ? "🎨 Restoring and colourising " : "🩹 Restoring ") + what + " - starting ✏ Edit…";
   }
   /** what the user is told after the click: s = {imgop (pcimgop installed), editorOn, open, refs, picks, layer, hasSel} */
   function sourceNote(s) {
@@ -66,12 +85,13 @@
     n.style.left = Math.round(x) + "px"; n.style.top = Math.round(Math.max(8, Math.min(H - h - 8, r.top + r.height / 2 - h / 2))) + "px";
     clearTimeout(noteT); noteT = setTimeout(() => { n.hidden = true; }, 12000);
   }
+  const run = { n: 0 };
   function install() {
     const doc = root.document; if (!doc) return;
     const b = doc.getElementById("ptRestore"); if (!b || b.dataset.wired) return;
     b.dataset.wired = "1";
     b.addEventListener("click", (ev) => {
-      const colour = !!ev.shiftKey;
+      const act = clickAction(ev), colour = act.colour;
       // 🖼 Image mode (the page's own onchange - Basic Settings and the button's words follow)
       const gm = doc.getElementById("genModeSel");
       if (gm && gm.value !== "image") { gm.value = "image"; if (typeof gm.onchange === "function") gm.onchange(); gm.dispatchEvent(new Event("change")); }
@@ -92,14 +112,27 @@
         st.open = st.editorOn && /^(▦|▭)/.test(src);
         if (st.open) { st.hasSel = /^▭/.test(src); const m = /^▦ (\d+) layers$/.exec(src); st.picks = m ? +m[1] : 1; st.layer = !m && /^▦ /.test(src) ? src.slice(2) : ""; }
       } catch (e) { /* the note stays general */ }
-      const note = sourceNote(st);
+      let note = sourceNote(st);
+      // 2.655.0: Ctrl / Shift - press ✏ Edit once the ▾ and the edit style have settled (the re-checks above end at 1.1 s)
+      if (act.run && canRun(st)) {
+        note = runNote(st, colour);
+        const token = (run.n = (run.n || 0) + 1);
+        root.setTimeout(() => {
+          if (token !== run.n) return;                                // a newer click took over
+          try { if (op.get && op.get() !== "edit") op.set("edit"); } catch (e) { /* fine */ }
+          const go = doc.getElementById("go");
+          if (!go || go.disabled) { say("🩹 Could not start - the Generate button is busy; press ✏ Edit when it is free."); return; }
+          go.click();
+          if (root.H3TestEvent) { try { root.H3TestEvent("pt_restore_run", colour ? "colour" : "1"); } catch (e) { /* the 🧪 list */ } }
+        }, 1250);
+      } else if (act.run) note = st.imgop ? "🩹 Not started - put the photo in the 🖼 References docker (or open it in the image editor), then click again." : note;
       b.dataset.note = note;
       say(note);
       if (root.H3TestEvent) { try { root.H3TestEvent("pt_restore", colour ? "colour" : "1"); } catch (e) { /* the 🧪 list */ } }
     });
   }
 
-  const api = { KEY, BASE, COLOUR, instruction, withInstruction, sourceNote, install };
+  const api = { KEY, BASE, COLOUR, instruction, withInstruction, sourceNote, runNote, clickAction, canRun, install };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.H3PtRestore = api;
   if (root.document) { if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", install); else install(); root.setTimeout && root.setTimeout(install, 1500); }

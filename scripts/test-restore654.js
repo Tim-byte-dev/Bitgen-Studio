@@ -25,7 +25,7 @@ check("the note: one reference / several (keep only the photo)", /restores the p
 check("the note: the editor open - the layer / the selection / several layers", /the layer “Photo” in the image editor/.test(R.sourceNote({ imgop: true, editorOn: true, open: true, layer: "Photo" }))
   && /the selection on “Photo”/.test(R.sourceNote({ imgop: true, editorOn: true, open: true, layer: "Photo", hasSel: true })) && /2 layers picked/.test(R.sourceNote({ imgop: true, editorOn: true, open: true, picks: 2 })));
 const D = read("ext/promptdock/dock.html"), EJ = JSON.parse(read("ext/promptdock/ext.json")), J = read("ext/promptdock/ptrestore.js");
-check("dock.html: 🩹 #ptRestore in #ptools after 🎤, a tooltip", D.indexOf('id="ptRestore"') > D.indexOf('id="ptMusicVideo"') && D.indexOf('id="ptRestore"') < D.indexOf('<div class="pleft">') && />🩹<\/button>/.test(D) && /Shift\+click: colourise/.test(D));
+check("dock.html: 🩹 #ptRestore in #ptools after 🎤, a tooltip", D.indexOf('id="ptRestore"') > D.indexOf('id="ptMusicVideo"') && D.indexOf('id="ptRestore"') < D.indexOf('<div class="pleft">') && />🩹<\/button>/.test(D) && /Shift\+click: (restore \+ )?colourise/.test(D));
 check("ext.json loads ptrestore.js; the click: 🖼 Image (the page's onchange), ✏ Edit (H3ImgOp), the prompt's input event", EJ.scripts.includes("ptrestore.js") && /gm\.value = "image"; if \(typeof gm\.onchange === "function"\) gm\.onchange\(\)/.test(J) && /op\.set\("edit"\)/.test(J) && /dispatchEvent\(new Event\("input"/.test(J));
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
