@@ -179,6 +179,13 @@
       const S = root.PPSite.size(q);
       out.texts.push({ p: [cx, cy + 0.15], t: q.name, h: 0.24, col: COL.fill, bold: true }, { p: [cx, cy - 0.2], t: fmtM(S.l) + " × " + fmtM(S.w) + " m · " + fmtM(q.shallow) + "-" + fmtM(q.deep) + " m deep", h: 0.17, col: COL.fill });
     });
+    // 2.659.0: 🛣 the driveways - the surface, its centre line dashed
+    if (root.PPSite && (!lv0.length || sameZ(z, lv0[0]))) (A.drives || []).forEach((d) => {
+      if (hid("drive:" + d.id)) return;
+      out.fills.push({ rings: [ring(root.PPSite.driveOutline(d))], col: tint(d.col, o.hex, COL.floorBase || null, COL.floorBase ? 0.6 : null), k: "floor", tag: { ak: "drive", id: d.id } });
+      const C = root.PPSite.path(d, 0.5); L(C, COL.dim, "sym", true);
+      const E = root.PPSite.driveOutline(d); L(E.concat([E[0]]), COL.dim, "sym");
+    });
     // 2.653.0: ⛰ the ground's contour lines (the majors labelled) + the drawn ones - on the lowest storey, under everything
     const zs = levels(A);
     if (A.terrain && root.PPTerrain && (!zs.length || sameZ(z, zs[0]))) {
@@ -199,6 +206,8 @@
     if (lt) return { ak: "light", id: lt.Lt.id };
     const pool = (A.pools || []).find((q) => !hid("pool:" + q.id) && Q.inPoly(p, root.PPSite ? root.PPSite.outer(q) : q.pts));   // 2.657.0
     if (pool) return { ak: "pool", id: pool.id };
+    const drv = root.PPSite ? (A.drives || []).find((d) => !hid("drive:" + d.id) && Q.inPoly(p, root.PPSite.driveOutline(d))) : null;   // 2.659.0
+    if (drv) return { ak: "drive", id: drv.id };
     for (const op of A.ops || []) {
       if (!ids.has(op.room) || hid("op:" + op.id)) continue;
       const I = Q.opInfo(A, op); if (!I) continue;

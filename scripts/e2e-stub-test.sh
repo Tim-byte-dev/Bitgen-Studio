@@ -13003,6 +13003,13 @@ node scripts/test-dockmax658.js > /tmp/dockmax658.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui658-ui.js > /tmp/ui658ui.log 2>&1 \
   && ok "2.658.0 browser test: the Sketcher's bottom handle; docked ⛶ (timeline, Sketcher) fills the column, the ones below pushed down, Esc back; floating ⛶ (image editor, Sketcher) = the whole window, the others closed and back - or SKIP without playwright" \
   || { bad "2.658.0 dockmax browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui658ui.log | head -14; }
+# ---- 2.659.0 (Tim: "a driveway tool that can be adjusted with bezier curves")
+node scripts/test-drive659.js > /tmp/drive659.log 2>&1 \
+  && ok "2.659.0 the Sketcher's driveways: smooth handles, the Bézier curve, length, ribbon, a handle bends it, built / kerbs / on the ground, kept by clean, the floorplan, the wiring" \
+  || { bad "2.659.0 driveway units"; grep -a "^FAIL" -A2 /tmp/drive659.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui659-ui.js > /tmp/ui659ui.log 2>&1 \
+  && ok "2.659.0 browser test: 🛣 Driveway - points + double-click (one ↶ step), a handle dragged bends it, a point dragged, Delete a point, the Select panel + kerbs, the floorplan - or SKIP without playwright" \
+  || { bad "2.659.0 driveway browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui659ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

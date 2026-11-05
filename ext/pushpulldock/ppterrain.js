@@ -464,9 +464,21 @@
       }
       V.draw && V.draw();
     }
+    /** 2.659.0: marks over everything - lines [[p, q] (3D)], points (3D, square), rings (3D, round) - a driveway's handles */
+    function marks(m) {
+      disposeOf(TV.marksG); TV.marksG = null;
+      if (m && ((m.lines && m.lines.length) || (m.pts && m.pts.length) || (m.rings && m.rings.length))) {
+        const g = new T3.Group(); g.renderOrder = 32;
+        if (m.lines && m.lines.length) { const pos = []; m.lines.forEach(([a, b]) => pos.push(a[0], a[1], a[2], b[0], b[1], b[2])); const ge = new T3.BufferGeometry(); ge.setAttribute("position", new T3.Float32BufferAttribute(pos, 3)); const l = new T3.LineSegments(ge, new T3.LineBasicMaterial({ color: 0xf59e2c, depthTest: false, transparent: true })); l.renderOrder = 32; l.raycast = () => {}; g.add(l); }
+        const dots = (list, col, size) => { if (!list || !list.length) return; const ge = new T3.BufferGeometry(); ge.setAttribute("position", new T3.Float32BufferAttribute([].concat(...list), 3)); const pt = new T3.Points(ge, new T3.PointsMaterial({ color: col, size, sizeAttenuation: false, depthTest: false, transparent: true })); pt.renderOrder = 33; pt.raycast = () => {}; g.add(pt); };
+        dots(m.pts, 0xffffff, 9); dots(m.rings, 0xf59e2c, 7); dots(m.hot, 0x3b82f6, 11);
+        TV.marksG = g; ui.add(g);
+      }
+      V.draw && V.draw();
+    }
     TV.hit = (ev) => { const t = T(); if (!t) return null; const r = V.ray(ev); return hit(t, r.o, r.d); };
     TV.terrain = T;
-    Object.assign(TV, { rebuild, update, ring, draft, group: G });
+    Object.assign(TV, { rebuild, update, ring, draft, marks, group: G });
     if (AV) {
       const prev = AV.onRebuild; AV.onRebuild = () => { if (prev) prev(); try { rebuild(); } catch (e) { console.warn("Sketcher ground:", e); } };   // with the building, after an undo / a load
       const ex = AV.exportMeshes;                                        // the .glb takes the ground too

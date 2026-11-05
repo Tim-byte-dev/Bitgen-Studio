@@ -6303,6 +6303,14 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.659.0: **🛣 Driveway** in the Sketcher (under *Ground*, no key).
+  - Click its points along the way - it curves smoothly through them - and double-click (or Enter) to end it.
+  - Its curve shows with its points (□) and their handles (○): drag a **handle** and the curve bends (the other
+    handle turns with it; **Alt** = this side only), drag a **point** to move it, **Delete** removes the point you
+    clicked. Click another driveway to edit its curve; type a width in the box.
+  - It lies on the ⛰ ground (4 cm over it) or at a level, 3 m wide by default, with optional **kerbs**.
+  - ➤ Select a driveway for its panel: width, surface material (concrete, stone … or a picture), kerbs, on the ground /
+    its level, 〰 Smooth the curve, Delete. The 📐 floorplan draws it with its centre line.
 - 2.658.0: **⛶ maximize for the Sketcher, the Timeline and the Image editor** depends on where the docker is.
   - **Docked** (in the main column): ⛶ makes it as tall as the column; the dockers below keep their heights and are
     pushed down (scroll the column to reach them), the column scrolls to the docker's top. 🗗 / Esc puts it back.

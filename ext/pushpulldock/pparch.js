@@ -96,9 +96,9 @@
   const ring = (P) => { const R = P.map((p) => [p[0], p[1]]); R.push([P[0][0], P[0][1]]); return R; };
 
   /* ---------------- the data */
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [] }; }   // 2.653.0: + the ground (ppterrain.js)
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [] }; }   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
-  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length));   // 2.653.0: a model of only ground has something too
+  const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
     const A = empty(); if (!o || typeof o !== "object") return A;
     A.ext = hex(o.ext, DEF.ext);
@@ -149,10 +149,11 @@
     A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);
     // 2.653.0 (Tim: "terrain elevation tools like contour lines and shape the ground to match the contours"): ⛰ the ground (ppterrain.js)
     A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);
-    A.pools = root.PPSite ? root.PPSite.clean(o.pools) : (Array.isArray(o.pools) ? JSON.parse(JSON.stringify(o.pools)) : []);   // 2.657.0: 🏊 pools (ppsite.js)                       // 2.651.0: the picture materials + the background
+    A.pools = root.PPSite ? root.PPSite.clean(o.pools) : (Array.isArray(o.pools) ? JSON.parse(JSON.stringify(o.pools)) : []);
+    A.drives = root.PPSite ? root.PPSite.cleanDrives(o.drives) : (Array.isArray(o.drives) ? JSON.parse(JSON.stringify(o.drives)) : []);   // 2.659.0: 🛣 driveways   // 2.657.0: 🏊 pools (ppsite.js)                       // 2.651.0: the picture materials + the background
     // ids: kept unique, the counter past them all
     let mx = +o.n || 1; const seen = new Set();
-    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups, A.pools);
+    const all = [].concat(A.rooms, A.ops, A.roofs, A.slabs, A.stairs, A.lights, A.items, A.cams, A.groups, A.pools, A.drives);
     all.forEach((x) => { mx = Math.max(mx, x.id + 1); });
     all.forEach((x) => { if (!x.id || seen.has(x.id)) x.id = mx++; seen.add(x.id); });
     A.n = mx;
@@ -176,7 +177,7 @@
   }
   const nid = (A) => A.n++;
   const room = (A, id) => A.rooms.find((R) => R.id === id) || null;
-  const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights, item: A.items, cam: A.cams, pool: A.pools }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
+  const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights, item: A.items, cam: A.cams, pool: A.pools, drive: A.drives }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
 
   /* ---------------- rooms, walls */
   function addRoom(A, pts, o) {
@@ -580,7 +581,7 @@
     A.slabs.forEach((s) => { if (!hid("slab:" + s.id)) prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out); });
     A.rooms.forEach((R) => { if (R.closed && R.slab && !hid("room:" + R.id + ":slab")) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
     A.stairs.forEach((s) => { if (!hid("stair:" + s.id)) stair(s, out); });
-    if (root.PPSite) root.PPSite.build(A, out, hid);                     // 2.657.0: 🏊 the pools
+    if (root.PPSite) { root.PPSite.build(A, out, hid); root.PPSite.buildDrives(A, out, hid); }   // 2.657.0: 🏊 the pools; 2.659.0: 🛣 the driveways
     A.lights.forEach((L) => !hid("light:" + L.id) && out.lights.push(Object.assign({}, L, { p: [L.x, L.y, L.z], def: LIGHTS[L.type] })));
     void o;
     return out;
@@ -954,7 +955,7 @@
   }
   function remove(A, ak, id) {
     if (ak === "room") { removeRoom(A, id); return true; }
-    const key = { op: "ops", roof: "roofs", slab: "slabs", stair: "stairs", light: "lights", item: "items", cam: "cams", pool: "pools" }[ak]; if (!key || !A[key]) return false;
+    const key = { op: "ops", roof: "roofs", slab: "slabs", stair: "stairs", light: "lights", item: "items", cam: "cams", pool: "pools", drive: "drives" }[ak]; if (!key || !A[key]) return false;
     const n0 = A[key].length; A[key] = A[key].filter((x) => x.id !== id); return A[key].length < n0;
   }
   function duplicateRoom(A, id, d) {
@@ -1011,6 +1012,7 @@
     (A.items || []).forEach((it) => { pts.push([it.x - it.w / 2, it.y - it.d / 2, it.z], [it.x + it.w / 2, it.y + it.d / 2, it.z + it.h]); });
     (A.cams || []).forEach((c) => pts.push([c.x - 0.5, c.y - 0.5, c.z - 0.5], [c.x + 0.5, c.y + 0.5, c.z + 0.5]));   // 2.633.0: zoom extents shows the cameras (+ their rings)
     A.roofs.forEach((rf) => { const F = roofFrame(A, rf); if (F) pts.push([F.o[0], F.o[1], F.top + F.D / 2 * Math.tan(rf.pitch * Math.PI / 180)]); });
+    (A.drives || []).forEach((d) => (root.PPSite ? root.PPSite.driveOutline(d) : d.nodes.map((n) => n.p)).forEach((p) => pts.push([p[0], p[1], d.z])));   // 2.659.0
     (A.pools || []).forEach((q) => { const O = root.PPSite ? root.PPSite.outer(q) : q.pts; O.forEach((p) => { pts.push([p[0], p[1], q.z], [p[0], p[1], q.z - q.deep]); }); });   // 2.657.0
     if (A.terrain && root.PPTerrain) { const tb = root.PPTerrain.bounds(A.terrain); pts.push(tb.min, tb.max); }   // 2.653.0: the ground
     if (!pts.length) return null;

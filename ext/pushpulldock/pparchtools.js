@@ -480,7 +480,7 @@
         if (start) st.drag = { t, mode: "edge", z: x.z, start, free: !!ev.altKey, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
         return true;
       }
-      const z = t.ak === "room" ? x.z : t.ak === "light" || t.ak === "item" || t.ak === "cam" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" || t.ak === "pool" ? x.z : h.point[2];
+      const z = t.ak === "room" ? x.z : t.ak === "light" || t.ak === "item" || t.ak === "cam" ? x.z : t.ak === "stair" ? x.z : t.ak === "slab" || t.ak === "pool" ? x.z : h.point[2];   // a driveway: where it was pressed
       const start = planeAt(ev, z);
       if (t.ak !== "roof" && start) st.drag = { t, z, start, x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(A), moved: false };
       if (t.ak === "op" && st.drag) { const I = P().opInfo(A, x); if (I) Object.assign(st.drag, { wp: h.point, wn: I.nl, along0: (h.point[0] - I.o[0]) * I.u[0] + (h.point[1] - I.o[1]) * I.u[1], at0: I.at, sill0: x.sill, room0: x.room, edge0: x.edge }); }   // 2.625.0: up / down too
@@ -546,6 +546,7 @@
       else if (t.ak === "cam") { x.x = Math.round((x.x + d[0]) * 1000) / 1000; x.y = Math.round((x.y + d[1]) * 1000) / 1000; ctx.status("📷 " + x.name + " moved"); }
       else if (t.ak === "item") { x.x = Math.round((x.x + d[0]) * 1000) / 1000; x.y = Math.round((x.y + d[1]) * 1000) / 1000; x.z = floorAt(A, [x.x, x.y]); ctx.status("🛋 " + root.PPFurn.label(x) + " moved " + fmt(Math.hypot(d[0], d[1]))); }
       else if (t.ak === "slab" || t.ak === "pool") { x.pts = x.pts.map((p) => [p[0] + d[0], p[1] + d[1]]); }   // 2.657.0: + a pool
+      else if (t.ak === "drive") { x.nodes.forEach((n) => { n.p = [n.p[0] + d[0], n.p[1] + d[1]]; }); }   // 2.659.0: a driveway
       AV().rebuild();
       return true;
     }
@@ -1106,6 +1107,8 @@
         btns([["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "pool" && root.PPSite) {                      // 2.657.0: 🏊 its own panel (ppsite.js)
         root.PPSite.panel({ head, numIn, selIn, chkIn, matIn, colIn, btns, ch, erase: eraseSel, hint: (t) => box.appendChild(el("div", "pphint", t)) }, x);
+      } else if (asel.ak === "drive" && root.PPSite) {                     // 2.659.0: 🛣
+        root.PPSite.panelDrive({ head, numIn, selIn, chkIn, matIn, colIn, btns, ch, erase: eraseSel, hint: (t) => box.appendChild(el("div", "pphint", t)) }, x);
       }
       ctx.resized && ctx.resized();
     }

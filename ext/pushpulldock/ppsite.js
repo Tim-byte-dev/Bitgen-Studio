@@ -1,5 +1,5 @@
 /* bitGen Studio — ext/pushpulldock/ppsite.js (2.657.0): THE SITE of the 📏 Sketcher - swimming pools (window.PPSite /
- * require()); 2.658.0 adds the driveways.
+ * require()); 2.659.0: + driveways on Bézier curves (drives - see buildDrives).
  *
  * Tim (verbatim): "... and a swimming pool creator(with edge tiles or decking) and a driveway tool that can be adjusted with
  * bezier curves."
@@ -146,7 +146,96 @@
     kit.hint("Drag it (Select) · Delete removes it. Made on the ⛰ ground, the ground is cut and levelled round it.");
   }
 
-  const api = { DEF, EDGES, clean, cleanPool, offset, axis, depthAt, outer, outerW, holes, volume, build, make, rect, size, resize, panel, area2 };
+  /* ---------------- 2.659.0: DRIVEWAYS on Bézier curves (Tim: "a driveway tool that can be adjusted with bezier curves")
+   *  drives [{id, name, nodes [{p [x, y], a [dx, dy] (the handle in, from p), b [dx, dy] (the handle out)}], w (its width), col,
+   *          kerb (an edge strip each side), kerbCol, follow (on the ⛰ ground) | z (a level)}] */
+  function cleanNode(n) {
+    if (!n || !Array.isArray(n.p) || !Number.isFinite(+n.p[0]) || !Number.isFinite(+n.p[1])) return null;
+    const v = (q) => (Array.isArray(q) && Number.isFinite(+q[0]) && Number.isFinite(+q[1]) ? [r3(+q[0]), r3(+q[1])] : [0, 0]);
+    return { p: [r3(+n.p[0]), r3(+n.p[1])], a: v(n.a), b: v(n.b) };
+  }
+  function cleanDrive(o) {
+    if (!o || !Array.isArray(o.nodes)) return null;
+    const nodes = o.nodes.slice(0, 300).map(cleanNode).filter(Boolean);
+    if (nodes.length < 2) return null;
+    return { id: Number.isInteger(+o.id) && +o.id > 0 ? +o.id : 0, name: String(o.name || "Driveway").slice(0, 60), nodes, w: num(o.w, 3, 0.5, 30),
+      col: colOk(o.col, "mat:concrete"), kerb: !!o.kerb, kerbCol: colOk(o.kerbCol, "#9a958c"), follow: o.follow !== false, z: r3(num(o.z, 0, -100, 1000)) };
+  }
+  const cleanDrives = (list) => (Array.isArray(list) ? list : []).slice(0, 50).map(cleanDrive).filter(Boolean);
+  /** a cubic Bézier point (t 0..1) between node i and i + 1 */
+  function bez(n0, n1, t) {
+    const P0 = n0.p, P1 = [n0.p[0] + n0.b[0], n0.p[1] + n0.b[1]], P2 = [n1.p[0] + n1.a[0], n1.p[1] + n1.a[1]], P3 = n1.p, u = 1 - t;
+    return [u * u * u * P0[0] + 3 * u * u * t * P1[0] + 3 * u * t * t * P2[0] + t * t * t * P3[0], u * u * u * P0[1] + 3 * u * u * t * P1[1] + 3 * u * t * t * P2[1] + t * t * t * P3[1]];
+  }
+  /** the centre line: points every ~step metres along the curves (each segment at least 4 pieces) */
+  function path(d, step) {
+    const out = [], st = step || 0.5;
+    for (let i = 0; i + 1 < d.nodes.length; i++) {
+      const n0 = d.nodes[i], n1 = d.nodes[i + 1];
+      let L = 0, q = n0.p; for (let k = 1; k <= 8; k++) { const r = bez(n0, n1, k / 8); L += Math.hypot(r[0] - q[0], r[1] - q[1]); q = r; }
+      const m = Math.max(4, Math.min(200, Math.ceil(L / st)));
+      for (let k = i ? 1 : 0; k <= m; k++) out.push(bez(n0, n1, k / m));
+    }
+    return out;
+  }
+  /** the ribbon either side of the centre line: [{c, l, r}] (l / r = the edges, w / 2 out, mitred by the mean tangent) */
+  function ribbon(d, step) {
+    const P = path(d, step), h = d.w / 2, out = [];
+    P.forEach((c, i) => {
+      const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, nl = [-dy / L, dx / L];
+      out.push({ c, l: [c[0] + nl[0] * h, c[1] + nl[1] * h], r: [c[0] - nl[0] * h, c[1] - nl[1] * h] });
+    });
+    return out;
+  }
+  /** the curve's handles made smooth (Catmull-Rom): each node's handles along the line through its neighbours, a third long */
+  function smooth(d) {
+    const N = d.nodes;
+    N.forEach((n, i) => {
+      const a = N[Math.max(0, i - 1)].p, b = N[Math.min(N.length - 1, i + 1)].p, t = [(b[0] - a[0]) / 6, (b[1] - a[1]) / 6];
+      n.b = i < N.length - 1 ? [r3(t[0]), r3(t[1])] : [0, 0]; n.a = i > 0 ? [r3(-t[0]), r3(-t[1])] : [0, 0];
+    });
+    return d;
+  }
+  /** pparch.build's polygons: the surface in triangles (it follows the ground), the kerbs */
+  function buildDrives(A, out, hid) {
+    const T = A && A.terrain, PT = root.PPTerrain;
+    ((A && A.drives) || []).forEach((d) => {
+      if (hid && hid("drive:" + d.id)) return;
+      const R = ribbon(d), Z = (p) => (d.follow && T && PT ? PT.at(T, p[0], p[1]) + 0.04 : d.z + 0.01), tag = (part) => ({ ak: "drive", id: d.id, part });
+      const tri = (a, b, c, col, part) => { const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]; const L = Math.hypot(n[0], n[1], n[2]); if (L < 1e-12) return; n = n.map((x) => x / L); if (n[2] < 0) { n = n.map((x) => -x); out.polys.push({ rings: [[a, c, b]], n, col, tag: tag(part), layer: "main" }); } else out.polys.push({ rings: [[a, b, c]], n, col, tag: tag(part), layer: "main" }); };
+      for (let i = 0; i + 1 < R.length; i++) {
+        const l0 = [R[i].l[0], R[i].l[1], Z(R[i].l)], r0 = [R[i].r[0], R[i].r[1], Z(R[i].r)], l1 = [R[i + 1].l[0], R[i + 1].l[1], Z(R[i + 1].l)], r1 = [R[i + 1].r[0], R[i + 1].r[1], Z(R[i + 1].r)];
+        tri(l0, r0, r1, d.col, "surface"); tri(l0, r1, l1, d.col, "surface");
+        if (d.kerb) [[l0, l1], [r0, r1]].forEach(([a, b]) => { const up = (p) => [p[0], p[1], p[2] + 0.12]; tri(a, b, up(b), d.kerbCol, "kerb"); tri(a, up(b), up(a), d.kerbCol, "kerb"); });
+      }
+      out.lines.push(...R.slice(1).map((q, i) => [[R[i].l[0], R[i].l[1], Z(R[i].l)], [q.l[0], q.l[1], Z(q.l)]]), ...R.slice(1).map((q, i) => [[R[i].r[0], R[i].r[1], Z(R[i].r)], [q.r[0], q.r[1], Z(q.r)]]));
+    });
+  }
+  /** the outline of a drive on the plan (left edge out, right edge back) */
+  const driveOutline = (d) => { const R = ribbon(d); return R.map((q) => q.l).concat(R.slice().reverse().map((q) => q.r)); };
+  function driveLength(d) { const P = path(d, 0.25); let L = 0; for (let i = 1; i < P.length; i++) L += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); return r3(L); }
+  function makeDrive(A, pts, o) {
+    const d = cleanDrive(Object.assign({ name: "Driveway " + (((A && A.drives) || []).length + 1) }, o || {}, { id: A ? A.n++ : 1, nodes: pts.map((p) => ({ p, a: [0, 0], b: [0, 0] })) }));
+    if (!d) return null;
+    if (!(o && o.sharp)) smooth(d);
+    if (A) { if (!A.drives) A.drives = []; A.drives.push(d); }
+    return d;
+  }
+  /** a drive's panel (pparchtools props) */
+  function panelDrive(kit, d) {
+    kit.head("🛣 " + d.name + " · " + driveLength(d) + " m long");
+    kit.numIn("Width", d.w, kit.ch((v) => { d.w = v; }), 0.1, 0.5, 30, "m");
+    kit.matIn("Surface", d.col, kit.ch((v) => { d.col = v; }));
+    kit.chkIn("Kerbs", d.kerb, kit.ch((v) => { d.kerb = v; }));
+    if (d.kerb) kit.matIn("Kerb", d.kerbCol, kit.ch((v) => { d.kerbCol = v; }));
+    kit.chkIn("On the ground", d.follow, kit.ch((v) => { d.follow = v; }));
+    if (!d.follow) kit.numIn("Level", d.z, kit.ch((v) => { d.z = v; }), 0.05, -100, 1000, "m");
+    kit.btns([["〰 Smooth the curve", kit.ch(() => { smooth(d); })], ["🗑 Delete", kit.erase]]);
+    kit.hint("Its curve: the 🛣 Driveway tool - click it, then drag its points (□) and their handles (○). Drag it (Select) · Delete removes it.");
+  }
+
+  const api = { cleanDrive, cleanDrives, bez, path, ribbon, smooth, buildDrives, driveOutline, driveLength, makeDrive, panelDrive,
+    DEF, EDGES, clean, cleanPool, offset, axis, depthAt, outer, outerW, holes, volume, build, make, rect, size, resize, panel, area2 };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPSite = api;
 })(typeof window !== "undefined" ? window : globalThis);
