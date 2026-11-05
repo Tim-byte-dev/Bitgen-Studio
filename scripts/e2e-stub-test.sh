@@ -13084,6 +13084,13 @@ node scripts/test-bezier670.js > /tmp/bezier670.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui670-ui.js > /tmp/ui670ui.log 2>&1 \
   && ok "2.670.0 browser test: the Cove = 3 nodes / 1 curve, click picks a segment, right-click Convert to curve / line, a handle dragged, double-click adds a node (on the arc too), Delete node, Save keeps the path - or SKIP without playwright" \
   || { bad "2.670.0 Bézier profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui670ui.log | head -14; }
+# ---- 2.679.0 (Tim: "after the style change render is complete in image preview, show the finished image in preview, add a sbs button ...")
+node scripts/test-restyle679.js > /tmp/restyle679.log 2>&1 \
+  && ok "2.679.0 restyle before / after: the pairs remembered (newest 200), the result shown / the preview reopened, the ⇆ button" \
+  || { bad "2.679.0 before / after units"; grep -a "^FAIL" -A2 /tmp/restyle679.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui679-ui.js > /tmp/ui679ui.log 2>&1 \
+  && ok "2.679.0 browser test: done while the preview was closed = reopened on the result, ⇆ Before / after side by side, off on another picture, remembered later - or SKIP without playwright" \
+  || { bad "2.679.0 before / after browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui679ui.log | head -14; }
 # ---- 2.678.0 (Tim: "please add this image edit model, https://huggingface.co/PrunaAI/P-H3-Image-Comfy")
 python3 scripts/test-ph3678.py > /tmp/ph3678py.log 2>&1 \
   && ok "2.678.0 P-H3 workflows: the template graph, the prompt template ({aspect} / {prompt}), the fixed P-H3 LoRA + style slots, size / seed, the edit graph's picture slots, no picture = said" \

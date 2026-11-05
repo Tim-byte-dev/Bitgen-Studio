@@ -13,8 +13,13 @@
  *   2.677.0 (Tim: "show the progress of the generation with a small bar below the picture"): #lb_rsbar under the picture
  *               (above the preview's bar) - queued / loading the models = a moving stripe, the sampler's steps = the bar
  *               filling ("🧸 Pixar · step 12 of 25 · 48 %"), done = full + green (it fades), failed = red
- * Pure (Node: scripts/test-restyle676.js, test-restyle677.js): LOOKS, promptFor(look, how, orig), fit(w, h),
- * pickHow(styleId, engines), barState(job, label). */
+ *   2.679.0 (Tim: "after the style change render is complete in image preview, show the finished image in preview, add a
+ *               sbs button so user can see before and after style change"): done = the result shown in the preview - opened
+ *               again (the original before it) when it was closed meanwhile; ⇆ Before / after (#lb_sbs) beside 🎨 Style: the
+ *               original and the result side by side (#lb_sbsview over the picture, labelled) - for every restyled picture
+ *               (the pairs kept in localStorage h3.restyle.pairs, so a result opened later from the gallery has it too)
+ * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js): LOOKS, promptFor(look, how, orig),
+ * fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look). */
 (function (root) {
   "use strict";
   const KEEP = "Keep the same picture: the composition, framing, subjects, their faces, poses, clothes and the background - change only the rendering style.";
@@ -66,7 +71,14 @@
     const words = pr && pr.total > 0 ? "step " + Math.max(0, Math.min(+pr.step || 0, +pr.total)) + " of " + pr.total + " · " + pct + " %" : "loading the models";
     return { pct, text: L + words, kind: pct == null ? "wait" : "run" };
   }
-  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, barState }; return; }
+  /** 2.679.0: remember which picture a result was made from (pure: a plain object, the newest 200 kept) */
+  function pairsAdd(map, result, source, look) {
+    const m = Object.assign({}, map || {}); if (!result || !source) return m;
+    m[result] = { src: source.url, name: source.name, look: look || "", at: Date.now() };
+    const keys = Object.keys(m); if (keys.length > 200) keys.sort((a, b) => (m[a].at || 0) - (m[b].at || 0)).slice(0, keys.length - 200).forEach((k) => delete m[k]);
+    return m;
+  }
+  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, barState, pairsAdd }; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const S = { busy: false, menu: null };
@@ -84,7 +96,10 @@
       + "#lb_rsbar .fl{height:100%;width:0;background:var(--tiger,#f59e2c);border-radius:3px;transition:width .4s}"
       + "#lb_rsbar.wait .fl{width:30%;position:absolute;animation:lbrsSlide 1.3s ease-in-out infinite}#lb_rsbar.done .fl{background:#3fb950}#lb_rsbar.fail .fl{background:#d0383e}"
       + "#lb_rsbar .tx{white-space:nowrap;opacity:.85;min-width:0;overflow:hidden;text-overflow:ellipsis;max-width:46%}"
-      + "@keyframes lbrsSlide{0%{left:-30%}100%{left:100%}}";
+      + "@keyframes lbrsSlide{0%{left:-30%}100%{left:100%}}"
+      // 2.679.0: before / after side by side
+      + "#lb_sbsview{position:absolute;inset:0;display:flex;gap:6px;padding:6px;background:#000;z-index:5}#lb_sbsview figure{flex:1;margin:0;display:flex;flex-direction:column;min-width:0;min-height:0}"
+      + "#lb_sbsview img{flex:1;min-height:0;width:100%;object-fit:contain}#lb_sbsview figcaption{font-size:11px;text-align:center;padding:4px;opacity:.85}#lb_sbs.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}";
     doc.head.appendChild(st);
   }
   function styleNow() {
@@ -99,6 +114,23 @@
     return { ovr: o, seed: b.seed };
   }
   function close() { if (S.menu) { S.menu.remove(); S.menu = null; } }
+  /* 2.679.0: the restyled pictures' originals (localStorage - a convenience; without it, this session's results only) */
+  const PK = "h3.restyle.pairs";
+  function pairs() { try { return JSON.parse(root.localStorage.getItem(PK) || "{}") || {}; } catch (e) { return S.pairs || {}; } }
+  function remember(result, source, look) { const m = pairsAdd(pairs(), result, source, look); S.pairs = m; try { root.localStorage.setItem(PK, JSON.stringify(m)); } catch (e) { /* this session only */ } }
+  const pairOf = (it) => (it && it.kind === "image" ? (it.before ? { src: it.before, name: it.beforeName || "", look: it.look || "" } : pairs()[it.name] || null) : null);
+  function sbsOff() { const v = $("lb_sbsview"); if (v) v.remove(); const b = $("lb_sbs"); if (b) b.classList.remove("on"); }
+  function sbsToggle() {
+    if ($("lb_sbsview")) { sbsOff(); return false; }
+    const it = cur(), p = pairOf(it), stage = $("lb_stage"); if (!p || !stage) return false;
+    const v = doc.createElement("div"); v.id = "lb_sbsview";
+    const fig = (src, cap) => { const f = doc.createElement("figure"), im = doc.createElement("img"), c = doc.createElement("figcaption"); im.src = src; im.alt = cap; c.textContent = cap; f.appendChild(im); f.appendChild(c); return f; };
+    v.appendChild(fig(p.src, "Before" + (p.name ? " · " + p.name : ""))); v.appendChild(fig(it.url, "After" + (p.look ? " · " + p.look : "") + " · " + it.name));
+    if (getComputedStyle(stage).position === "static") stage.style.position = "relative";
+    stage.appendChild(v); $("lb_sbs").classList.add("on");
+    return true;
+  }
+  function sbsPaint() { const b = $("lb_sbs"); if (!b) return; sbsOff(); b.style.display = pairOf(cur()) ? "" : "none"; }
   /** 2.677.0: paint the bar under the picture from a job record (null = hide it) */
   function bar(j, label) {
     const B = $("lb_rsbar"); if (!B) return;
@@ -165,8 +197,13 @@
       }
       if (!jj || jj.status !== "done") { bar(jj || { status: "failed" }, L.label); throw new Error("the render " + ((jj && jj.status) || "did not finish") + " - see the job log"); }
       const out = (jj.outputs && jj.outputs[0]) || jj.output; if (!out) throw new Error("the render made nothing");
-      const item = { url: "/outputs/" + encodeURIComponent(out), kind: "image", name: out };
-      if ($("lb").open) { lb.items.splice(lb.i + 1, 0, item); lb.i += 1; if (typeof lbFilm === "function") lbFilm(); if (typeof lbShow === "function") lbShow(); }   // eslint-disable-line no-undef
+      const item = { url: "/outputs/" + encodeURIComponent(out), kind: "image", name: out, before: it.url, beforeName: it.name, look: L.label };
+      remember(out, it, L.label);
+      // 2.679.0: the finished picture shown in the preview - the preview opened again (the original first) if it was closed
+      if ($("lb").open) {
+        const at = lb.items.indexOf(it), k = at >= 0 ? at : lb.i;
+        lb.items.splice(k + 1, 0, item); lb.i = k + 1; if (typeof lbFilm === "function") lbFilm(); if (typeof lbShow === "function") lbShow();   // eslint-disable-line no-undef
+      } else if (typeof lbOpen === "function") lbOpen([{ url: it.url, kind: "image", name: it.name }, item], 1);   // eslint-disable-line no-undef
       say("🎨 " + L.label + " - done: " + out);
       return out;
     } finally { S.busy = false; const b = $("lb_restyle"); if (b) b.disabled = false; }
@@ -180,14 +217,19 @@
     b.onclick = (e) => { e.stopPropagation(); if (S.menu) close(); else openMenu(b); };
     const msg = doc.createElement("span"); msg.id = "lb_rsmsg";
     save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(msg, save);
+    // 2.679.0: ⇆ Before / after - a restyled picture beside the one it was made from
+    const sb = doc.createElement("button"); sb.className = "ghost"; sb.id = "lb_sbs"; sb.type = "button"; sb.textContent = "⇆ Before / after"; sb.style.display = "none";
+    sb.title = "The picture this one was restyled from, side by side with it (click again to go back)";
+    sb.onclick = (e) => { e.stopPropagation(); sbsToggle(); };
+    save.parentNode.insertBefore(sb, b);
     // 2.677.0: the progress bar - under the picture, above the preview's bar
     const pb = doc.createElement("div"); pb.id = "lb_rsbar"; pb.setAttribute("role", "progressbar"); pb.setAttribute("aria-valuemin", "0"); pb.setAttribute("aria-valuemax", "100");
     pb.innerHTML = '<div class="tr"><div class="fl"></div></div><span class="tx"></span>';
     const lbbar = save.closest(".lbbar"); if (lbbar && lbbar.parentNode) lbbar.parentNode.insertBefore(pb, lbbar);
     doc.addEventListener("pointerdown", (e) => { if (S.menu && !S.menu.contains(e.target) && e.target !== b) close(); }, true);
     // only for pictures: hidden while a video / sound is shown
-    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(); b.style.display = it && it.kind !== "image" ? "none" : ""; close(); }).observe(nm, { childList: true, characterData: true, subtree: true });
+    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(); b.style.display = it && it.kind !== "image" ? "none" : ""; close(); sbsPaint(); }).observe(nm, { childList: true, characterData: true, subtree: true });
   }
-  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, bar, run, open: openMenu, close, state: () => S };
+  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, pairsAdd, bar, run, open: openMenu, close, sbs: sbsToggle, sbsOff, pairs, state: () => S };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

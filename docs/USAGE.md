@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.679.0: **🎨 Restyle - the result and ⇆ Before / after**: when a 🎨 Style render is done the finished picture is shown
+  in the preview right after the original - the preview opens again on it if you closed it meanwhile. **⇆ Before / after**
+  (beside 🎨 Style) shows the original and the result side by side, labelled; click it again to go back. It is there for
+  every restyled picture, also when you open the result later from the gallery (this browser remembers the last 200).
 - 2.678.0: **P-H3 Image** (PrunaAI/P-H3-Image-Comfy - PrunaAI's image model on MiniMax H3): **Settings ▸ Add-ons ▸
   P-H3 Image** downloads its LoRA (2 GB), text encoder (int8), VAE (int8) and prompt upsampler (w4a8) - about 17 GB - and
   uses the MiniMax H3 FL2VA transformer the video already has (it is downloaded only if it is missing). Two styles come
