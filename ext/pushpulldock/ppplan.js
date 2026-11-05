@@ -27,7 +27,7 @@
   const P = () => root.PPArch || (typeof require === "function" ? require("./pparch.js") : null);
   const PC = () => root.polygonClipping || null;
   const EPS = 1e-6;
-  const COL0 = { fill: "#ffffff", grid: "#e3ded2", floorBase: "", paper: "#f7f5f0", wall: "#2b2c30", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
+  const COL0 = { fill: "#ffffff", grid: "#e3ded2", floorBase: "", paper: "#f7f5f0", wall: "#2b2c30", wallIn: "#7d7f86", ink: "#2b2c30", glass: "#2f7fc4", door: "#3a3b40", stair: "#55575d", furn: "#6b6d73", light: "#c58b00", slab: "#8d8f95", text: "#1f2024", dim: "#5b5d63" };
   const sameZ = (a, b) => Math.abs(a - b) < 0.01;
   const r4 = (x) => Math.round(x * 1e4) / 1e4;
 
@@ -90,7 +90,8 @@
       out.texts.push({ p: [c[0], c[1] - 0.55], t: (+ar.toFixed(2)) + " m²", h: 0.17, col: COL.dim });
     });
     // the walls: one shape, the openings cut out
-    const quads = []; rooms.forEach((R) => Q.wallQuads(R).forEach((q) => { if (!hid("room:" + R.id + ":wall:" + q.i)) quads.push(area2(q.quad) < 0 ? q.quad.slice().reverse() : q.quad); }));
+    // 2.660.0: interior walls a lighter fill under the exterior ones (Q.wallKind - auto: a room on both sides)
+    const quads = [], inQ = []; rooms.forEach((R) => Q.wallQuads(R).forEach((q) => { if (!hid("room:" + R.id + ":wall:" + q.i)) { const r = area2(q.quad) < 0 ? q.quad.slice().reverse() : q.quad; quads.push(r); if (Q.wallKind && Q.wallKind(A, R, q.i) === "int") inQ.push(r); } }));
     const ops = (A.ops || []).filter((op) => ids.has(op.room) && !hid("op:" + op.id)).map((op) => Q.opInfo(A, op)).filter(Boolean);
     if (quads.length) {
       let U = null; const pc = PC();
@@ -102,7 +103,11 @@
         } catch (e) { U = null; }
       }
       if (!U) U = quads.map((q) => [ring(q)]);                                        // no polygon-clipping: the walls one by one
+      // 2.660.0: the interior walls' part of the shape - the lighter fill (the exterior walls' dark one stays round them)
+      let UI = null; if (inQ.length && pc && inQ.length < quads.length) { try { const ex = quads.filter((q) => !inQ.includes(q)); UI = pc.difference(pc.intersection(U, pc.union.apply(null, inQ.map((q) => [ring(q)]))), pc.union.apply(null, ex.map((q) => [ring(q)]))); } catch (e) { UI = null; } }
+      else if (inQ.length && pc) UI = U;
       U.forEach((poly) => out.fills.push({ rings: poly, col: COL.wall, k: "wall" }));
+      if (UI) UI.forEach((poly) => out.fills.push({ rings: poly, col: COL.wallIn || COL.dim, k: "wall", int: true }));
     }
     // the doors, windows and openings
     ops.forEach((I) => {
@@ -385,7 +390,7 @@
     const t = th || {};
     if (!t.text || !t.bg) return {};
     const mix = (a, b, k) => { const A = rgbOf(a), B = rgbOf(b); return A && B ? "#" + A.map((v, i) => Math.round(v * (1 - k) + B[i] * k).toString(16).padStart(2, "0")).join("") : a; };
-    return { wall: t.text, ink: t.text, door: t.text, text: t.text, dim: t.dim || t.text, stair: t.dim || t.text, furn: t.dim || t.text, slab: t.dim || t.text,
+    return { wall: t.text, wallIn: mix(t.text, t.bg, 0.45), ink: t.text, door: t.text, text: t.text, dim: t.dim || t.text, stair: t.dim || t.text, furn: t.dim || t.text, slab: t.dim || t.text,
       glass: t.accent || t.text, light: t.accent || t.text, fill: mix(t.pan || t.bg, t.bg, 0.35), floorBase: t.pan || t.bg, grid: t.line || mix(t.bg, t.text, 0.15), paper: t.bg };
   }
   const COL = COL0;

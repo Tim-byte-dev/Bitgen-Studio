@@ -29,14 +29,14 @@
       const n = nOf[R.id] || 0, kids = [];
       if (R.closed) {
         const E = P().edgesOf(R);
-        E.forEach((e) => kids.push({ key: "room:" + R.id + ":wall:" + e.i, label: "Wall " + (e.i + 1), icon: "▮", sel: { ak: "room", id: R.id, part: "wall", edge: e.i }, hide: "room:" + R.id + ":wall:" + e.i }));
+        E.forEach((e) => !P().isGone(R, e.i) && kids.push({ key: "room:" + R.id + ":wall:" + e.i, label: "Wall " + (e.i + 1), icon: "▮", sel: { ak: "room", id: R.id, part: "wall", edge: e.i }, hide: "room:" + R.id + ":wall:" + e.i }));
         if (R.floorOn) kids.push({ key: "room:" + R.id + ":floor", label: "Floor " + n, icon: "▦", sel: { ak: "room", id: R.id, part: "floor" }, hide: "room:" + R.id + ":floor" });
         if (R.ceilOn) kids.push({ key: "room:" + R.id + ":ceil", label: "Ceiling " + n, icon: "⌓", sel: { ak: "room", id: R.id, part: "ceil" }, hide: "room:" + R.id + ":ceil" });
         if (R.skirtOn) kids.push({ key: "room:" + R.id + ":skirt", label: "Skirting " + n, icon: "▁", sel: { ak: "room", id: R.id, part: "skirt" }, hide: "room:" + R.id + ":skirt" });
         if (R.corniceOn) kids.push({ key: "room:" + R.id + ":cornice", label: "Cornice " + n, icon: "▔", sel: { ak: "room", id: R.id, part: "cornice" }, hide: "room:" + R.id + ":cornice" });
         if (R.slab) kids.push({ key: "room:" + R.id + ":slab", label: "Floor slab " + n, icon: "▬", sel: { ak: "room", id: R.id, part: "slab" }, hide: "room:" + R.id + ":slab" });
         A.ops.filter((o) => o.room === R.id).forEach((o) => kids.push({ key: "op:" + o.id, label: LABEL[o.kind] + " " + opNo[o.id], icon: o.kind === "window" ? "🪟" : o.kind === "door" ? "🚪" : "▯", sel: { ak: "op", id: o.id }, hide: "op:" + o.id }));
-      } else P().edgesOf(R).forEach((e) => kids.push({ key: "room:" + R.id + ":wall:" + e.i, label: "Wall " + (e.i + 1), icon: "▮", sel: { ak: "room", id: R.id, part: "wall", edge: e.i }, hide: "room:" + R.id + ":wall:" + e.i }));
+      } else P().edgesOf(R).forEach((e) => !P().isGone(R, e.i) && kids.push({ key: "room:" + R.id + ":wall:" + e.i, label: "Wall " + (e.i + 1), icon: "▮", sel: { ak: "room", id: R.id, part: "wall", edge: e.i }, hide: "room:" + R.id + ":wall:" + e.i }));
       return { key: "room:" + R.id, label: R.name, icon: R.closed ? "⌂" : "▮", sel: { ak: "room", id: R.id }, hide: "room:" + R.id, room: R.id, children: kids };
     };
     const grouped = new Set(), out = [];

@@ -13010,6 +13010,13 @@ node scripts/test-drive659.js > /tmp/drive659.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui659-ui.js > /tmp/ui659ui.log 2>&1 \
   && ok "2.659.0 browser test: 🛣 Driveway - points + double-click (one ↶ step), a handle dragged bends it, a point dragged, Delete a point, the Select panel + kerbs, the floorplan - or SKIP without playwright" \
   || { bad "2.659.0 driveway browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui659ui.log | head -14; }
+# ---- 2.660.0 (Tim: "allow me to remove just 1 wall from a room, allow me to toggle walls to interior/exterior")
+node scripts/test-walls660.js > /tmp/walls660.log 2>&1 \
+  && ok "2.660.0 the Sketcher's walls: one taken out (its twin on the same line, square ends, the floor to the line, no skirting there, its doors gone, put back), interior / exterior (auto, set, the outside face's colour, the floorplan), the wiring" \
+  || { bad "2.660.0 wall units"; grep -a "^FAIL" -A2 /tmp/walls660.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui660-ui.js > /tmp/ui660ui.log 2>&1 \
+  && ok "2.660.0 browser test: a wall's Interior / exterior, the Eraser on a shared wall takes it out of both rooms (one ↶ step), ↶, 🗑 Take this wall out, ↺ Put back, Shift+Eraser the room - or SKIP without playwright" \
+  || { bad "2.660.0 walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui660ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

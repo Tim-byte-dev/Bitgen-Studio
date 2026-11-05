@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.660.0** — Sketcher Walls: Take One Wall Out of a Room, Interior / Exterior
 - **2.659.0** — 🛣 Driveways in the Sketcher on Bézier Curves (Points and Handles Dragged, on the Ground, Kerbs)
 - **2.658.0** — ⛶ Maximize Knows Where the Docker Is: Docked = Fill the Column (the Ones Below Pushed Down), Floating = the Whole Window; the Sketcher Sized in the Column
 - **2.657.0** — 🏊 Pools in the Sketcher (Edge Tiles or Decking, Shallow / Deep End, the Ground Cut and Levelled Round It)

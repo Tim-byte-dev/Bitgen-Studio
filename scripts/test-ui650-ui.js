@@ -66,7 +66,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await ev(() => H3PushPull.state.T.arch.setSel({ ak: "room", id: H3PushPull.state.M.arch.rooms[0].id, part: "wall", edge: 3 }));
     await p.click("#ppPlan"); await p.waitForTimeout(500);
     const pl = await tints(true), wallCol = await ev(() => { const c = new H3PushPull.state.V.T.Color(H3PushPull.state.V.theme.text); return [c.r * 255, c.g * 255, c.b * 255]; });
-    const pw = await px([0, 2, 0]), pOther = await px([5, 2, 0]);
+    const pw = await px([0, 2, 0]), pOther = await px([9, 2, 0]);   // 2.660.0: an outside wall (the shared one at x = 5 is interior - its lighter fill)
     check("floorplan: the picked wall filled in the accent (a plan highlight), the other walls as they were", pl.acc >= 1 && toward(wallCol, pw, accRGB) && !toward(wallCol, pOther, accRGB), { pl, pw, pOther, wallCol });
     [x, y] = await scr([7.5, 3.4, 0]); await p.mouse.move(x, y); await p.waitForTimeout(250);
     const ph = await tints(true), hovered = await ev(() => H3PushPull.state.A.hover);

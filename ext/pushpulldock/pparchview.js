@@ -197,7 +197,7 @@
       const at = [hit.point[0] - hit.n[0] * 0.05, hit.point[1] - hit.n[1] * 0.05];
       if (t.room) {                                                     // 2.624.0: + which of its walls
         const R = P().room(Ar, t.room); let edge = t.edge != null ? t.edge : null;
-        if (R && edge == null) { let bd = Infinity; P().edgesOf(R).forEach((e) => { const d = P().segDist(at, e.a, e.b).d; if (d < bd) { bd = d; edge = e.i; } }); }
+        if (R && edge == null) { let bd = Infinity; P().edgesOf(R).forEach((e) => { if (P().isGone(R, e.i)) return; const d = P().segDist(at, e.a, e.b).d; if (d < bd) { bd = d; edge = e.i; } }); }
         return { ak: "room", id: t.room, part: "wall", edge };
       }
       const w = P().nearestWall(Ar, at, 0.6, hit.point[2]);

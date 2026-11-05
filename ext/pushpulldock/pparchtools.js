@@ -674,6 +674,7 @@
     function eraseAt(ev) {
       const h = AV() && AV().pick(ev); if (!h || !nearerThanModel(ev, h)) return false;
       const t = AV().resolve(h); if (!t) return false;
+      if (t.ak === "room" && t.part === "wall" && t.edge != null && !ev.shiftKey) { takeOut(t.id, t.edge); return true; }   // 2.660.0: one wall (Shift: the room)
       const b = before(); if (P().remove(AR(), t.ak, t.id)) { if (asel && asel.ak === t.ak && asel.id === t.id) asel = null; done("erase", b); ctx.status("⌫ erased the " + nameOf(t)); }
       return true;
     }
@@ -699,12 +700,20 @@
       ctx.status("🪣 " + (tg.ak === "wall" ? paintWhat + (ev.shiftKey ? "" : " · Shift+click: every wall on that side") : tg.ak === "op" && tg.part === "glass" ? "the glass" : tg.ak === "room" ? ({ ceil: "the ceiling", skirt: "the skirting", cornice: "the cornice" }[tg.part] || "the floor") : "the " + nameOf({ ak: tg.ak })) + " painted");
       return col;
     }
+    /** 2.660.0: one wall out of its room (and the wall of the room beside on the same line - the two rooms open into each other) */
+    function takeOut(id, i) {
+      const b = before(), A = AR(), L = P().removeWall(A, id, i, true); if (!L) return false;
+      if (asel && asel.ak === "room" && asel.part === "wall" && L.some((w) => w.R.id === asel.id && w.i === asel.edge)) asel = { ak: "room", id: asel.id };   // its panel: the room's
+      done("erase", b, asel); const R = L[0].R;
+      ctx.status("⌫ Wall " + (i + 1) + " taken out of " + R.name + (L.length > 1 ? " (and " + L.slice(1).map((w) => w.R.name + "'s wall " + (w.i + 1)).join(", ") + " on the same line)" : "") + " - the room's panel puts it back · Shift+Eraser = the whole room");
+      return true;
+    }
     function eraseSel() {
       if (!asel) return;
       if (amore.length) {                                               // 2.648.0: several picked - all of them, one undo step
         const b = before(), A = AR(), list = picked(); let n = 0;
         list.forEach((t) => {
-          if (t.ak === "room" && t.part) { const R = P().room(A, t.id); if (!R) return; const key = { floor: "floorOn", ceil: "ceilOn", skirt: "skirtOn", cornice: "corniceOn", slab: "slab" }[t.part]; if (key) { R[key] = false; n++; } else if (t.part === "wall" && t.edge != null) { const k = "room:" + R.id + ":wall:" + t.edge; A.hide = (A.hide || []).filter((q) => q !== k).concat([k]); n++; } return; }
+          if (t.ak === "room" && t.part) { const R = P().room(A, t.id); if (!R) return; const key = { floor: "floorOn", ceil: "ceilOn", skirt: "skirtOn", cornice: "corniceOn", slab: "slab" }[t.part]; if (key) { R[key] = false; n++; } else if (t.part === "wall" && t.edge != null) { if (P().removeWall(A, R.id, t.edge, true)) n++; } return; }
           if (t.ak === "wpt" || t.ak === "wtop") return;
           if (P().remove(A, t.ak, t.id)) n++;
         });
@@ -721,7 +730,7 @@
         const R = P().room(AR(), t.id); if (!R) return;
         const key = { floor: "floorOn", ceil: "ceilOn", skirt: "skirtOn", cornice: "corniceOn", slab: "slab" }[t.part];
         if (key) { R[key] = false; done("erase", b, { ak: "room", id: R.id }); ctx.status("⌫ " + R.name + "'s " + ({ floor: "floor", ceil: "ceiling", skirt: "skirting", cornice: "cornice", slab: "floor slab" }[t.part]) + " off - its room's panel turns it on again"); return; }
-        if (t.part === "wall" && t.edge != null) { const A2 = AR(), k = "room:" + R.id + ":wall:" + t.edge; A2.hide = (A2.hide || []).filter((x) => x !== k).concat([k]); done("erase", b, { ak: "room", id: R.id }); ctx.status("⌫ Wall " + (t.edge + 1) + " hidden - 👁 in the 🗂 outline shows it again"); return; }
+        if (t.part === "wall" && t.edge != null) { takeOut(R.id, t.edge); return; }   // 2.660.0: taken out (it was hidden - 👁 still hides one)
       }
       if (P().remove(AR(), t.ak, t.id)) { asel = null; done("erase", b, null); ctx.status("⌫ erased the " + nameOf(t)); }
     }
@@ -854,7 +863,7 @@
         const n = A.rooms.filter((Q) => Q.closed).indexOf(R) + 1;
         if (t.part === "wall" && t.edge != null) {
           const i = t.edge, e = P().edgesOf(R)[i]; if (!e) return false;
-          head("▮ Wall " + (i + 1) + " · " + R.name);
+          head("▮ Wall " + (i + 1) + " · " + R.name + " · " + (P().wallKind(AR(), R, i) === "int" ? "interior" : "exterior"));   // 2.660.0
           numIn("Length", e.L, ch((v) => { if (!P().setWallLength(AR(), id, i, v)) ctx.status("▮ that length would turn the room inside out"); }), 0.05, 0.1, 500, "m");
           const prof = P().profile(R, i), flat = prof.length === 2 && Math.abs(prof[0][1] - prof[1][1]) < 1e-6;
           if (flat) numIn("Height", prof[0][1], ch((v) => P().setWallHeight(AR(), id, i, v)), 0.05, 0.05, 50, "m");
@@ -865,7 +874,13 @@
             matIn("Outside", P().wallExt(AR(), R, i), ch((v) => { const Q = rm(AR()); Q.wext = Object.assign({}, Q.wext || {}); Q.wext[i] = v; }));   // 2.651.0
             if (R.wcol && R.wcol[i]) btns([["↺ Same as the room's walls", ch(() => { const Q = rm(AR()); delete Q.wcol[i]; })]]);
           } else matIn("Colour", R.wall, ch((v) => { R.wall = v; }));
+          // 2.660.0: interior / exterior (auto: a room on both sides = interior) + take this one wall out
+          const auto = P().autoKind(AR(), R, i), kin = (R.wkind && R.wkind[i]) || "auto";
+          selIn("Interior / exterior", kin, [["auto", "Auto (" + (auto === "int" ? "interior" : "exterior") + ")"], ["int", "Interior"], ["ext", "Exterior"]], ch((v) => { P().setWallKind(AR(), id, i, v); }));
+          if (R.wkind && R.wkind[i] === "int") box.appendChild(el("div", "pphint", "Interior: its outside face takes its inside colour (unless it has its own Outside colour)."));
           shownIn("room:" + id + ":wall:" + i);
+          const tw = P().twinWalls(AR(), R, i);
+          btns([["🗑 Take this wall out", () => takeOut(id, i), "Just this wall - the floor and ceiling stay, the side open" + (tw.length ? " (" + tw.map((w) => w.R.name).join(", ") + "'s wall on the same line too)" : "") + " · Delete · Eraser"]]);
           const ops = A.ops.filter((o) => o.room === id && o.edge === i);
           if (ops.length) { box.appendChild(el("div", "pphint", "In this wall:")); btns(ops.map((o) => [(o.kind === "door" ? "🚪 " : o.kind === "window" ? "🪟 " : "▯ ") + (o.kind[0].toUpperCase() + o.kind.slice(1)) + " " + fmt(o.w) + " × " + fmt(o.h), () => setSel({ ak: "op", id: o.id })])); }
           room();
@@ -1013,6 +1028,7 @@
           const own = AR().roofs.find((rf) => rf.rooms.includes(R.id));
           chkIn("Roof", !!own, ch((v) => { const A2 = AR(); if (v && !A2.roofs.some((rf) => rf.rooms.includes(R.id))) P().addRoof(A2, [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); if (!v) A2.roofs.forEach((rf) => { rf.rooms = rf.rooms.filter((q) => q !== R.id); }), A2.roofs = A2.roofs.filter((rf) => rf.rooms.length); }));
         }
+        if (R.gone && R.gone.length) btns([["↺ Put back " + (R.gone.length === 1 ? "wall " + (R.gone[0] + 1) : "its " + R.gone.length + " walls taken out"), ch(() => P().restoreWalls(AR(), R.id)), "The walls taken out of this room (Wall " + R.gone.map((k) => k + 1).join(", ") + ")"]]);   // 2.660.0
         matIn("Outside walls (all)", AR().ext, ch((v) => { const A2 = AR(); A2.ext = v; A2.rooms.forEach((Q) => { Q.wext = {}; }); }));   // 2.651.0: every wall's own outside too
         btns([["⟳ 90°", ch(() => P().rotateRoom(AR(), R.id, 90)), "Turn it a quarter round its middle"], ["⧉ Duplicate", () => dupRoom(R.id), "A copy beside it, sharing its wall"],
           ["△ Roof", () => { const b = before(); const rf = P().addRoof(AR(), [R.id], { type: O.roof.type, pitch: O.roof.pitch, over: O.roof.over }); done("roof", b, { ak: "roof", id: rf.id }); }, "A roof over this room"], ["🗑 Delete", eraseSel, "Delete (its doors, windows and lights too)"]]);
