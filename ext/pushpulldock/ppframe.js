@@ -92,10 +92,10 @@
   }
   function paintMax() {
     const b = $("ppMaxBtn"); if (!b) return;
-    const m = maxed(), t = m ? "⇲ Dock" : "⛶";
+    const m = maxed(), push = m && dock.dataset.dmMode === "push", t = push ? "🗗" : m ? "⇲ Dock" : "⛶";
     if (b.textContent !== t) b.textContent = t;
-    b.title = m ? "Dock - put it back in its place (Esc)" : "Maximize - the whole window under the title bar";
-    b.setAttribute("aria-label", m ? "Dock" : "Maximize");
+    b.title = push ? "Restore - its height in the column again (Esc)" : m ? "Dock - put it back in its place (Esc)" : "Maximize - docked: the column's whole height (the dockers below pushed down); floating: the whole window, the others closed";
+    b.setAttribute("aria-label", push ? "Restore" : m ? "Dock" : "Maximize");
   }
   function close() { if (maxed()) toggleMaxed(false); if (typeof root.toggleDockGone === "function") root.toggleDockGone("pushpulldock", "tX_pushpulldock"); }
   function fileMenu() {
@@ -143,8 +143,10 @@
   }
   let wasMax = false;
   function fit() {
-    if (maxed() !== wasMax) { wasMax = maxed(); if (wasMax) closeOthers(); else reopenOthers(); }
-    if (maxed()) { dock.style.setProperty("--pp-top", top() + "px"); dock.style.setProperty("--pp-bottom", bottom() + "px"); }
+    // 2.658.0: the others closed only for the whole-window maximize (floating) - docked, ⛶ grows it in the column
+    const full = maxed() && dock.dataset.dmMode !== "push";
+    if (maxed() !== wasMax) { wasMax = maxed(); if (wasMax) { if (full) closeOthers(); } else reopenOthers(); }
+    if (full) { dock.style.setProperty("--pp-top", top() + "px"); dock.style.setProperty("--pp-bottom", bottom() + "px"); }
     else { dock.style.removeProperty("--pp-top"); dock.style.removeProperty("--pp-bottom"); }
     paintMax();
     const h = H(); if (h && h.state.V) setTimeout(() => { h.state.V.size(); }, 30);

@@ -229,7 +229,8 @@ check("settings: reload is OFFERED, never forced",
   check("the last docker (console) has NO handle below it",
     (() => {
       let n = dd.getElementById("consoledock").nextElementSibling;
-      while (n) { if (n.classList && n.classList.contains("hsplit")) return false; n = n.nextElementSibling; }
+      // 2.658.0: an extension docker after it brings its own handle (the Sketcher's --pph) - only console handles count
+      while (n) { if (n.classList && n.classList.contains("hsplit") && n.dataset.hresize !== "pph") return false; n = n.nextElementSibling; }
       return true;
     })(), null);
   check("a hidden (collapsed) docker's handle hides until it is unhidden (CSS)",

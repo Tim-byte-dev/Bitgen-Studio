@@ -38,6 +38,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await ev(() => {
       const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock");
       document.getElementById("ppMain").style.minHeight = "700px";
+      if (typeof setVar === "function") setVar("pph", 820);   // 2.658.0: the Sketcher has its own height in the column now - tall enough for the view
       const pd = document.getElementById("promptdock"); if (pd && !pd.classList.contains("dockgone")) toggleDockGone("promptdock", "tP");
     });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.T, null, { timeout: 40000 });

@@ -80,8 +80,11 @@
   function attach(id, opts) {
     var dock = $(id); if (!dock || attached[id]) return null;
     var o = opts || {};
-    attached[id] = true; css(); dock.classList.add("dockfull");
+    attached[id] = true; css(); if (!o.engage) dock.classList.add("dockfull");
     var was = dock.classList.contains("maxed");
+    // 2.658.0: o.engage(dock) -> false = this maximize is not a whole-window one (a docked docker grows in its column -
+    // static/dockmax.js); the dockfull class (its CSS) only while engaged
+    var engaged = !o.engage || !!lsGet("h3.dockfull." + id);
     function fit() {
       dock.style.setProperty("--df-top", top() + "px"); dock.style.setProperty("--df-bottom", bottom() + "px");
       if (o.onFit) try { o.onFit(dock.classList.contains("maxed")); } catch (e) { /* fine */ }
@@ -90,6 +93,8 @@
       var m = dock.classList.contains("maxed");
       if (m === was) { if (m) fit(); return; }
       was = m;
+      if (m && o.engage) { engaged = !!o.engage(dock); dock.classList.toggle("dockfull", engaged); if (!engaged) { if (o.onFit) try { o.onFit(true); } catch (e) { /* fine */ } return; } }
+      if (!m && o.engage && !engaged) { if (o.onFit) try { o.onFit(false); } catch (e) { /* fine */ } return; }
       if (m) {
         if (!lsGet("h3.dockfull." + id)) lsSet("h3.dockfull." + id, JSON.stringify(snapshotOf(docksNow(), lsAll(), id)));
         closeOthers(id); fit();
@@ -104,6 +109,7 @@
     root.addEventListener("resize", function () { if (dock.classList.contains("maxed")) fit(); });
     // a reload while maximized: still maximized = keep the layout before; not any more = put it back now
     if (lsGet("h3.dockfull." + id)) { if (was) { closeOthers(id); fit(); } else setTimeout(function () { restore(id); }, 400); }
+    else if (was && o.engage && !o.engage(dock)) { /* 2.658.0: maximized in its column - not the whole window */ }
     else if (was) { lsSet("h3.dockfull." + id, JSON.stringify(snapshotOf(docksNow(), lsAll(), id))); closeOthers(id); fit(); }
     dock.querySelectorAll(".maxbtn").forEach(function (b) { b.dataset.fullTitle = "1"; });
     return { restore: function () { return restore(id); }, snapshot: function () { return lsGet("h3.dockfull." + id); } };

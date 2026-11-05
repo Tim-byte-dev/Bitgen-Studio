@@ -45,8 +45,9 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.T && H3PushPull.state.A, null, { timeout: 40000 });
     await p.waitForTimeout(600);
 
-    /* ⛶ the whole window under the title bar */
-    await ev(() => { const t = document.getElementById("titlebar"); t.classList.remove("hidden"); });
+    /* ⛶ the whole window under the title bar (2.658.0: that is the FLOATING maximize now - docked, ⛶ grows it in the column,
+       scripts/test-ui658-ui.js; this test keeps the whole-window one with static/dockmax.js's switch) */
+    await ev(() => { localStorage.setItem("h3.dockmax.off", "1"); const t = document.getElementById("titlebar"); t.classList.remove("hidden"); });
     await p.click("#pushpulldock .maxbtn"); await p.waitForTimeout(400);
     const mx = await ev(() => { const d = document.getElementById("pushpulldock"), r = d.getBoundingClientRect(), t = document.getElementById("titlebar").getBoundingClientRect(); return { maxed: d.classList.contains("maxed"), pos: getComputedStyle(d).position, x: r.x, y: Math.round(r.y), w: r.width, h: Math.round(r.height), W: innerWidth, H: innerHeight, tb: Math.round(t.bottom), sb: Math.round(document.getElementById("statusbar").getBoundingClientRect().top), cv: document.querySelector("#ppView canvas").getBoundingClientRect().width }; });
     check("⛶ maximize: the docker covers the whole bitGen window between the title bar and the status bar (2.625.0) (its own 3D view grows with it)", mx.maxed && mx.pos === "fixed" && mx.x === 0 && mx.w === mx.W && mx.y === mx.tb && mx.tb > 0 && mx.y + mx.h === mx.sb && mx.sb < mx.H && mx.cv > 1200, mx);
@@ -59,7 +60,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const AR = () => ev(() => JSON.parse(JSON.stringify(H3PushPull.state.M.arch || {})));
     const msg = () => ev(() => document.getElementById("ppMsg").textContent);
     const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(15));
-    check("the Build tools under the modelling tools: Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs", tools.join() === "room,wall,door,window,floor,ceiling,roof,light,stairs,furniture,camera,terrain", tools);   // 2.653.0: + ⛰ Terrain (under Ground)
+    check("the Build tools under the modelling tools: Room, Wall, Door, Window, Floor, Ceiling, Roof, Light, Stairs", tools.join() === "room,wall,door,window,floor,ceiling,roof,light,stairs,furniture,camera,terrain,pool", tools);   // 2.653.0: + ⛰ Terrain (under Ground)
 
     /* their keys stay in the docker */
     const docks0 = await ev(() => [...document.querySelectorAll(".bdock, .secfloat")].map((d) => d.id + ":" + d.className).join("|"));
@@ -206,6 +207,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e.stack || e)); }
   finally {
+    try { await ev(() => localStorage.removeItem("h3.dockmax.off")); } catch { /* closed */ }
     await b.close();
     try { await api("/api/projects/delete", { name: PN }); } catch { /* fine */ }
   }

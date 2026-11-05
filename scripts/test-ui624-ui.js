@@ -42,6 +42,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
       const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock");
       const pd = document.getElementById("promptdock"); if (pd && !pd.classList.contains("dockgone")) toggleDockGone("promptdock", "tP");
       document.getElementById("titlebar").classList.remove("hidden");
+      localStorage.setItem("h3.dockmax.off", "1");   // 2.658.0: the whole-window ⛶ (docked, ⛶ grows it in the column - test-ui658-ui.js)
       d.scrollIntoView({ block: "start" });
     });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.T && H3PushPull.state.A, null, { timeout: 40000 });

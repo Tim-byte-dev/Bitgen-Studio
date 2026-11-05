@@ -32,7 +32,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await api("/api/projects/new", { name: PN }); await api("/api/projects/load", { name: PN });
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3PushPull && document.getElementById("tX_pushpulldock"), null, { timeout: 60000 });
-    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); H3PushPullFrame.toggleMaxed(true); try { localStorage.removeItem("pp.outline"); } catch (e) {} });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true)); try { localStorage.removeItem("pp.outline"); } catch (e) {} });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.A && document.getElementById("ppOutline") && window.PPProfile && window.PPProfileDlg, null, { timeout: 40000 });
     const scr = (w) => ev((w) => { const V = H3PushPull.state.V, s = V.screen(w), r = V.canvas.getBoundingClientRect(); return [r.left + s[0], r.top + s[1]]; }, w);
     await ev(() => { const S = H3PushPull.state, b0 = H3PushPull.snapshot(); S.M.arch = PPArch.empty(); const R1 = PPArch.addRoom(S.M.arch, [[0, 0], [4, 0], [4, 3], [0, 3]]); PPArch.addOp(S.M.arch, "door", 0.9, { room: R1.id, edge: 0, at: 2 }); PPArch.addOp(S.M.arch, "window", 1.2, { room: R1.id, edge: 2, at: 2 }); H3PushPull.commit("rooms", b0); S.V.view("top"); S.V.extents(); S.T.use("select"); });

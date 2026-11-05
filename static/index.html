@@ -21,7 +21,7 @@
     --disp: Bahnschrift, "Avenir Next Condensed", "Arial Narrow", sans-serif;
     --body: "Segoe UI", system-ui, sans-serif;
     --ldock: 300px; --refs: 225px; --assets: 225px; --qdock: 230px; --rdock: 210px;
-    --ph: 120px; --ch: 190px; --ch2: 200px; --th: 150px; --vh: 280px; --pvh: 300px; --mh: 170px; --eh: 320px; --cfh: 420px; --sth: 240px; --sfh: 220px; --sbar: 30px; --mbar: 36px; --labw: 208px;
+    --ph: 120px; --ch: 190px; --ch2: 200px; --th: 150px; --vh: 280px; --pvh: 300px; --mh: 170px; --eh: 320px; --cfh: 420px; --sth: 240px; --sfh: 220px; --pph: 460px; --sbar: 30px; --mbar: 36px; --labw: 208px;
     font-size: 14px;
   }
   * { box-sizing: border-box; }
@@ -430,6 +430,7 @@
   #gset .gcval { font-family: var(--mono); color: var(--tiger); }
   /* IMAGE EDITOR DOCK (2.108.0) */
   #imageeditdock { height: var(--eh); }
+  #pushpulldock { height: var(--pph); }   /* 2.658.0 (Tim: "allow sketcher to be resized vertically when docked"): its bottom handle sizes it */
   #imageeditdock .bbody { display: flex; flex-direction: column; min-height: 0; }
   .ietools { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 4px 6px; border-bottom: 1px solid var(--line); }
   .iegrp { display: flex; gap: 2px; }
@@ -3392,7 +3393,8 @@
 <script src="/static/folderfilter.js"></script>  <!-- 2.559.0: every folder filter dropdown keeps its folder (folder_filters.cfg) -->
 <script src="/static/basiccfg.js"></script>  <!-- 2.559.0: Basic Settings kept in basic.cfg -->
 <script src="/static/stylebasic.js"></script>  <!-- 2.615.0: Basic Settings kept per style in misc/basic_settings.tmp -->
-<script src="/static/dockfull.js"></script>  <!-- 2.638.0: a docker's ⛶ = the whole window, the others closed; 🗗 = the layout before (H3DockFull - the SolidCraft docker) -->
+<script src="/static/dockfull.js"></script>
+<script src="/static/dockmax.js"></script>  <!-- 2.658.0: ⛶ docked = grow in the column (the dockers below pushed down); floating = the whole window, the others closed (H3DockMax) -->  <!-- 2.638.0: a docker's ⛶ = the whole window, the others closed; 🗗 = the layout before (H3DockFull - the SolidCraft docker) -->
 <script src="/static/refkeep.js"></script>  <!-- 2.548.0: the reference docker kept as it changes (POST /api/projects/refs) -->  <!-- 2.547.0: ↺ Built-in styles back (Settings ▸ Image / Video styles) -->  <!-- 2.545.0: ▣ Docker (Ctrl+Alt+D) - an empty docker the others drop into; ⇱ on the main dockers -->
 <script src="/static/tlai.js"></script>  <!-- 2.420.0: 🤖 AI in the timeline maths (H3TlAi) -->
 <script src="/static/glcomp.js"></script>  <!-- 2.421.0: the GPU compositor (H3GLComp) -->
@@ -13668,7 +13670,7 @@ function setVar(name, px) { R.setProperty("--" + name, px + "px"); store.set("v.
    (window.H3_DOCK_STATUS) so it is applied before the rest of the boot; every drag, collapse, hide, 📌 pin and
    maximize writes the whole record back (debounced) to /api/docker-status. The rules (📌 max, the reflow order)
    are static/dockstatus.js (window.H3DockStatus). */
-const DOCK_VARS = { timelinedock: "th", imageeditdock: "eh", comfydock: "cfh", musicdock: "mh", stemsdock: "sth", sfxdock: "sfh", chatdock: "ch2", promptdock: "ph", consoledock: "ch" };   // 2.299.1: + stemsdock
+const DOCK_VARS = { timelinedock: "th", imageeditdock: "eh", comfydock: "cfh", musicdock: "mh", stemsdock: "sth", sfxdock: "sfh", chatdock: "ch2", promptdock: "ph", consoledock: "ch", pushpulldock: "pph" };   // 2.658.0: + the Sketcher   // 2.299.1: + stemsdock
 /* The previewdock is fixed (--pvh); the VIDEO dock is the elastic one (2.255.0) - it takes what the fixed docks
    leave, and keeps --vh (its last height) only while ANOTHER dock is the maximized one (2.381.0). */
 const DOCKER_VARS = { ...DOCK_VARS, previewdock: "pvh" };   // 2.255.0: the VIDEO dock is the elastic one
@@ -13934,6 +13936,7 @@ function reflowDocks(keep) {
   const col = document.getElementById("maincol");
   if (!col || col.clientHeight < 300) return;
   keep = typeof keep === "string" ? keep : null;
+  if (col.classList.contains("dm-push")) return;   // 2.658.0: a docked ⛶ pushes the dockers below down (static/dockmax.js) - no squeeze
   const mx = col.querySelector(".bdock.maxed");
   const vd = $("videodock");
   const flexEl = mx || vd;
@@ -14866,7 +14869,7 @@ async function startGraphJob() {
 }
 
 (function init() {
-  for (const k of ["ldock", "refs", "assets", "qdock", "rdock", "ph", "ch", "th", "vh", "pvh", "mh", "sth", "sfh", "ch2", "eh", "cfh"]) {
+  for (const k of ["ldock", "refs", "assets", "qdock", "rdock", "ph", "ch", "th", "vh", "pvh", "mh", "sth", "sfh", "ch2", "eh", "cfh", "pph"]) {
     const v = parseInt(store.get("v." + k, ""), 10);
     if (v) R.setProperty("--" + k, v + "px");
   }

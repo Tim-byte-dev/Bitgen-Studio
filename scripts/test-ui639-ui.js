@@ -28,7 +28,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await api("/api/projects/new", { name: PN }); await api("/api/projects/load", { name: PN });
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3PushPull && document.getElementById("tX_pushpulldock"), null, { timeout: 60000 });
-    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); H3PushPullFrame.toggleMaxed(true); try { localStorage.removeItem("pp.outline"); } catch (e) {} });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true)); try { localStorage.removeItem("pp.outline"); } catch (e) {} });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.A && document.getElementById("ppOutline"), null, { timeout: 40000 });
     const scr = (w) => ev((w) => { const V = H3PushPull.state.V, s = V.screen(w), r = V.canvas.getBoundingClientRect(); return [r.left + s[0], r.top + s[1]]; }, w);
     // two rooms drawn with the Room tool's model functions, a door
@@ -81,7 +81,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await p.click("#ppOutlineBtn"); await p.waitForTimeout(150);
     check("🗂 Outline in the bar hides / shows the docker", off && await ev(() => !document.getElementById("ppOutline").classList.contains("off")));
     // 2.639.2 (Tim: "it's still black, in fullscreen and normal view"): one bad number in the model no longer blacks the view
-    await ev(() => H3PushPullFrame.toggleMaxed(true)); await p.waitForTimeout(300);
+    await ev(() => (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true))); await p.waitForTimeout(300);
     const nan = await ev(async () => { const S = H3PushPull.state; S.M.arch.lights.push({ id: 777, type: "ceiling", x: 1, y: 1, z: NaN, room: null, col: "#ffffff", lm: 800, on: true, drop: 0.6, ang: 40, dir: 0 }); S.V.setModel(S.M); S.A.rebuild(); S.V.extents();
       await new Promise((r) => setTimeout(r, 600));
       const c = S.V.canvas, g = document.createElement("canvas"); g.width = 64; g.height = 64; const x = g.getContext("2d"); x.drawImage(c, 0, 0, 64, 64); const d = x.getImageData(0, 0, 64, 64).data; let mn = 999, mx = 0; for (let i = 0; i < d.length; i += 4) { const q = d[i] + d[i + 1] + d[i + 2]; mn = Math.min(mn, q); mx = Math.max(mx, q); }

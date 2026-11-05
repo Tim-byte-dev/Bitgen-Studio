@@ -36,7 +36,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     await p.waitForTimeout(800);
     const gone = await ev(() => ({ h3: typeof window.H3House, sf: !!(window.SecFloat && SecFloat.windows && SecFloat.windows.house), btn: [...document.querySelectorAll("#statusbar button")].some((x) => /House/.test(x.textContent)), geo: !!window.H3HouseGeo }));
     check("the 🏠 House builder is gone - no window, no status-bar button (its geometry stays for the Sketcher)", gone.h3 === "undefined" && !gone.sf && !gone.btn && gone.geo, gone);
-    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock"); H3PushPullFrame.toggleMaxed(true); });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); if (d.classList.contains("collapsed")) toggleCollapse("pushpulldock"); (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true)); });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.A, null, { timeout: 40000 });
     await p.waitForTimeout(400);
 

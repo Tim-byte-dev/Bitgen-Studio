@@ -31,7 +31,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await api("/api/projects/new", { name: PN }); await api("/api/projects/load", { name: PN });
     await p.goto(URL_, { waitUntil: "domcontentloaded" });
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && window.H3PushPull && window.PPTerrain && PPTerrain.addPad && document.getElementById("tX_pushpulldock"), null, { timeout: 60000 });
-    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); H3PushPullFrame.toggleMaxed(true); });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true)); });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.TV, null, { timeout: 40000 });
     // a ground sloping up to the east (+1 m every 10 m)
     await ev(() => { const S = H3PushPull.state, b0 = H3PushPull.snapshot(), A = S.M.arch = PPArch.empty(); const t = A.terrain = PPTerrain.clean({ x0: -15, y0: -15, cell: 0.5, nx: 60, ny: 60 });

@@ -12996,6 +12996,13 @@ node scripts/test-pool657.js > /tmp/pool657.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui657-ui.js > /tmp/ui657ui.log 2>&1 \
   && ok "2.657.0 browser test: 🏊 Pool - two corners on the ground (one ↶ step), the ground levelled round it and cut away, its Select panel (deep end, decking), the floorplan, Delete - or SKIP without playwright" \
   || { bad "2.657.0 pool browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui657ui.log | head -14; }
+# ---- 2.658.0 (Tim: "allow sketcher to be resized vertically when docked. when mamimize button is pressed in docked mode expand to fill empty space dockers that are docked below will be pushed downwards. when maximazi is pressed when it is floating then maximize normally and close other dockers. do the same for timeline and image editor")
+node scripts/test-dockmax658.js > /tmp/dockmax658.log 2>&1 \
+  && ok "2.658.0 ⛶ maximize by place: push / full, the column height, the Sketcher's --pph + handle, the wiring (dockfull engage, ppframe, the reflow)" \
+  || { bad "2.658.0 dockmax units"; grep -a "^FAIL" -A2 /tmp/dockmax658.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui658-ui.js > /tmp/ui658ui.log 2>&1 \
+  && ok "2.658.0 browser test: the Sketcher's bottom handle; docked ⛶ (timeline, Sketcher) fills the column, the ones below pushed down, Esc back; floating ⛶ (image editor, Sketcher) = the whole window, the others closed and back - or SKIP without playwright" \
+  || { bad "2.658.0 dockmax browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui658ui.log | head -14; }
 
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"

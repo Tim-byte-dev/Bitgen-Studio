@@ -35,7 +35,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("the helpers load: H3ZoomDrag (forward = in: factor(-100) ≈ 1.82, back = out), H3PointerIcon", await ev(() => { const f = H3ZoomDrag.factor; return Math.abs(f(-100) - 1.822) < 0.01 && f(100) < 1 && H3ZoomDrag.isPress({ button: 2, shiftKey: true }) && !H3ZoomDrag.isPress({ button: 0, shiftKey: true }) && !H3ZoomDrag.isPress({ button: 2, shiftKey: true, ctrlKey: true }) && /<path d="M6 3/.test(H3PointerIcon.svg()); }));
 
     /* ================= the Sketcher ================= */
-    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); H3PushPullFrame.toggleMaxed(true); });
+    await ev(() => { const d = document.getElementById("pushpulldock"); if (d.classList.contains("dockgone")) toggleDockGone("pushpulldock", "tX_pushpulldock"); (localStorage.setItem("h3.dockmax.off", "1"), H3PushPullFrame.toggleMaxed(true)); });
     await p.waitForFunction(() => H3PushPull.state.booted && H3PushPull.state.A && H3PushPull.state.T, null, { timeout: 40000 });
     await ev(() => { const S = H3PushPull.state, b0 = H3PushPull.snapshot(), A = S.M.arch = PPArch.empty(); PPArch.addRoom(A, [[0, 0], [5, 0], [5, 4], [0, 4]], { name: "Kitchen" }); PPArch.addRoom(A, [[12, 0], [14, 0], [14, 2], [12, 2]], { name: "Shed" }); H3PushPull.commit("rooms", b0); S.V.view("iso"); S.V.extents(); S.T.use("select"); });
     await p.waitForTimeout(400);

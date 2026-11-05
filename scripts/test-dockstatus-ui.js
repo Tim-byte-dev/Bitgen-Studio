@@ -94,7 +94,7 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
       await p.evaluate(() => [...document.querySelectorAll("#maincol .bdock")].filter((d) => ["previewdock", "timelinedock", "videodock", "imageeditdock", "comfydock", "musicdock", "stemsdock", "sfxdock", "chatdock", "promptdock", "consoledock"].includes(d.id)).every((d) => d.querySelector(".bhead").firstChild.classList.contains("pinbtn"))   // 2.579.0: the 11 built-in ones (an extension docker, e.g. 📐 SolidCraft, is not in docker_status.json)
         // (a side dock's fold caret, static/sidecollapse.js, sits before it - the pin is the first thing after it)
         && ["ldock", "refsdock", "assetsdock", "qdock", "rdock"].every((id) => { const h = document.getElementById(id).querySelector(".dockhead"), f = h.firstElementChild; return f.classList.contains("pinbtn") || (f.classList.contains("sccaret") && f.nextElementSibling && f.nextElementSibling.classList.contains("pinbtn")); })
-        && document.querySelectorAll(".pinbtn").length === 16));
+        && document.querySelectorAll(".pinbtn").length === 16 + (document.getElementById("pushpulldock") ? 1 : 0)));   // 2.658.0: + the Sketcher's (it has a height in the column now)
     await p.click("#timelinedock .pinbtn");
     let st = await status((d) => d.timelinedock.max_height > 0);
     check("📌 pin: max_height = the dock's current height (200), the button lit, written to docker_status.json",
@@ -121,7 +121,9 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
     check("opening a dock puts the other open PINNED docks back at their max height (prompt 110 -> 150), the new dock open",
       (await H("promptdock")) === 150 && await p.evaluate(() => !document.getElementById("musicdock").classList.contains("collapsed")), await H("promptdock"));
 
-    // 4
+    // 4 (2.658.0: the timeline's ⛶ now grows it in the column and pushes the dockers below down - static/dockmax.js,
+    // scripts/test-ui658-ui.js; this section keeps testing the column maximize of the other dockers, with that off)
+    await p.evaluate(() => localStorage.setItem("h3.dockmax.off", "1"));
     await p.evaluate(() => setVar("th", 150)); await p.waitForTimeout(300);
     const thNormal = await p.evaluate(() => cssPx("th"));
     const before = { pv: await H("previewdock"), pr: await H("promptdock"), mu: await H("musicdock"), vd: await H("videodock"), tl: await H("timelinedock") };
@@ -165,6 +167,7 @@ const E = (o) => ({ state: "open", hidden: false, max_height: 0, max_width: 0, m
     check("the status-bar toggle writes hidden: true; again -> false", st.timelinedock.hidden === true, st.timelinedock);
     await p.click("#tT");
 
+    await p.evaluate(() => localStorage.removeItem("h3.dockmax.off"));
     // 5
     check("the queue's menu bar: no ⏹ / ⏹✕ boxes, no checkboxes",
       await p.evaluate(() => !document.getElementById("qStopJob") && !document.getElementById("qStopAll") && !document.querySelector("#qdock .qfhead input")));

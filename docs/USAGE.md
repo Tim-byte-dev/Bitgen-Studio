@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.658.0: **⛶ maximize for the Sketcher, the Timeline and the Image editor** depends on where the docker is.
+  - **Docked** (in the main column): ⛶ makes it as tall as the column; the dockers below keep their heights and are
+    pushed down (scroll the column to reach them), the column scrolls to the docker's top. 🗗 / Esc puts it back.
+  - **Floating** (outside the column): ⛶ fills the whole window between the title bar and the status bar and closes the
+    other dockers; 🗗 / Esc (the Sketcher: ⇲ Dock) brings the layout back as it was.
+  - **The Sketcher docked** now has its own height and a bottom handle (drag it to make it taller / shorter) and a 📌 pin
+    like the other dockers; the height is remembered.
 - 2.657.0: **🏊 Pool** in the Sketcher - under *Ground*, beside ⛰ Terrain (no key - every letter is taken).
   - Click a corner and the opposite corner (or type `8,4` + Enter) - a rectangle pool; **Shape: Free shape** = click its
     corners, back on the first (double-click / Enter). Its panel: **Shallow end** / **Deep end** (the floor slopes between

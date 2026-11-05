@@ -26,6 +26,7 @@ The window, its dockers, the look of the app, projects and the files they hold.
 
 ### Dockers and layout
 
+- **Maximize docked or floating** — the Sketcher, Timeline and Image editor: docked, ⛶ fills the column's height and pushes the dockers below down; floating, ⛶ takes the whole window and closes the other dockers (back on restore). The Sketcher has its own resizable height in the column. *Where:* the docker's ⛶. *Since:* 2.658.0
 - **Collapse and maximize** — every docker collapses to its header or is maximized; the others stay open at their own height, Esc restores. *Where:* each docker's header
 - **Pins** — a pin keeps a dock's height (or a side dock's width) as it is now; it can be made smaller but not taller. *Where:* the first button in each dock's header. *Since:* 2.381.0
 - **The remembered layout** — every dock's state, height, width, pin and maximize are kept in docker_status.json and loaded before anything paints. *Where:* the install folder. *Since:* 2.381.0
