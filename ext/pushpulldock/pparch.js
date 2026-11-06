@@ -126,7 +126,7 @@
     Object.keys(o).slice(0, 5000).forEach((k) => { const v = String(o[k] == null ? "" : o[k]).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 60); if (v && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)) out[k] = v; });
     return out;
   }
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {}, joins: [] }; }   // 2.690.0: + joins (walls joined end to end)   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {}, joins: [], struct: { show: false, roof: "sheet", grade: "MGP10" } }; }   // 2.692.0: + struct (🪵 framing view, the roof's covering, the lintels' grade)   // 2.690.0: + joins (walls joined end to end)   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length || (A.roads || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
@@ -147,7 +147,7 @@
         // 2.639.0: skirting (at the floor) + cornice (under the ceiling) round the room's inside
         skirtOn: closed && !!R.skirtOn, skirtH: num(R.skirtH, 0.1, 0.02, 0.6), corniceOn: closed && !!R.corniceOn, corniceH: num(R.corniceH, 0.08, 0.02, 0.6), trim: hex(R.trim, DEF.trim),
         // 2.640.0: the profiles they are swept with (ppprofile.js ids - "" = the kind's default), their own colours, one wall's own inside colour
-        skirtP: pid(R.skirtP), cornP: pid(R.cornP), skirtCol: hex(R.skirtCol, hex(R.trim, DEF.trim)), cornCol: hex(R.cornCol, hex(R.trim, DEF.trim)), wcol: cleanWcol(R.wcol, closed ? pts.length : pts.length - 1),
+        skirtP: pid(R.skirtP), cornP: pid(R.cornP), skirtCol: hex(R.skirtCol, hex(R.trim, DEF.trim)), cornCol: hex(R.cornCol, hex(R.trim, DEF.trim)), fs: closed && R.fs && root.PPStruct ? root.PPStruct.clean(R.fs) : closed && R.fs && typeof R.fs === "object" ? JSON.parse(JSON.stringify(R.fs)) : null, wcol: cleanWcol(R.wcol, closed ? pts.length : pts.length - 1),
         wext: cleanWcol(R.wext, closed ? pts.length : pts.length - 1),   // 2.651.0: each wall's OUTSIDE (none = the building's outside colour A.ext)
         // 2.660.0: the walls taken out (edge numbers - the floor / ceiling stay, the side open) + each wall's interior / exterior (none = auto)
         gone: cleanGone(R.gone, closed ? pts.length : pts.length - 1), wkind: cleanKind(R.wkind, closed ? pts.length : pts.length - 1),
@@ -162,7 +162,7 @@
       return { id: id(x.id), kind: x.kind, room: +x.room, edge: Math.max(0, Math.floor(+x.edge || 0)), at: num(x.at, 1, -1000, 1000), w: num(x.w, d.w, 0.2, 20), h: num(x.h, d.h, 0.2, 20), sill: num(x.sill, d.sill, 0, 20),
         style: STYLES[x.kind].includes(x.style) ? x.style : d.style, col: hex(x.col, x.kind === "door" ? DEF.door : DEF.frame), flip: !!x.flip,
         open: num(x.open, 0, 0, 100), dir: !!x.dir,               // 2.631.0: how far it is open (%), which way
-        frameP: pid(x.frameP), sillP: x.kind === "window" ? pid(x.sillP) : "", trimCol: hex(x.trimCol, DEF.trim), glass: hex(x.glass, DEF.glass) };   // 2.651.0: + its glass; 2.640.0: its frame (architrave) + sill profiles ("" = none)
+        frameP: pid(x.frameP), sillP: x.kind === "window" ? pid(x.sillP) : "", trimCol: hex(x.trimCol, DEF.trim), glass: hex(x.glass, DEF.glass), lint: x.lint && root.PPStruct ? root.PPStruct.cleanLint(x.lint) : null };   // 2.692.0: its lintel (null = sized by itself)   // 2.651.0: + its glass; 2.640.0: its frame (architrave) + sill profiles ("" = none)
     }).filter(Boolean);
     A.roofs = (Array.isArray(o.roofs) ? o.roofs : []).map((x) => {
       if (!x) return null; const rooms = (Array.isArray(x.rooms) ? x.rooms : []).map(Number).filter((r) => rid.has(r)); if (!rooms.length) return null;
@@ -189,6 +189,7 @@
     A.profiles = root.PPProfile ? root.PPProfile.cleanList(o.profiles) : (Array.isArray(o.profiles) ? o.profiles : []);   // 2.640.0: the profiles the model uses
     A.tex = cleanTex(o.tex); A.bg = cleanBg(o.bg);
     // 2.653.0 (Tim: "terrain elevation tools like contour lines and shape the ground to match the contours"): ⛰ the ground (ppterrain.js)
+    A.struct = root.PPStruct ? root.PPStruct.cleanStruct(o.struct) : (o.struct && typeof o.struct === "object" ? JSON.parse(JSON.stringify(o.struct)) : null);   // 2.692.0
     A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);
     A.pools = root.PPSite ? root.PPSite.clean(o.pools) : (Array.isArray(o.pools) ? JSON.parse(JSON.stringify(o.pools)) : []);
     // 2.690.0: walls joined end to end {a, b (room ids), p (the shared point)} - kept while both are there
@@ -750,11 +751,14 @@
   }
 
   /* ---------------- the geometry */
+  const STRUCT_H = { box: (...a) => box(...a), prism: (...a) => prism(...a), exterior: (R) => exterior(R), opInfo: (A, op) => opInfo(A, op), wallKind: (A, R, i) => wallKind(A, R, i), inPoly: (p, P) => inPoly(p, P) };   // 2.692.0: what PPStruct draws with
   function build(A, opt) {
     const out = { polys: [], lines: [], roofLines: [], lights: [] };
     if (!A) return out;
     const o = opt || {}, hid = hiddenOf(A);           // 2.639.0: what the outline docker hides is not built
+    const w0 = out.polys.length;
     walls(A, out, hid);
+    if (A.struct && A.struct.show) for (let i = w0; i < out.polys.length; i++) out.polys[i].alpha = 0.3;   // 2.692.0: 🪵 the framing seen through the walls
     A.rooms.forEach((R) => {
       if (!R.closed) return;
       const inn = interior(R); if (!inn || Math.abs(area2(inn)) < 1e-4) return;
@@ -768,7 +772,8 @@
     A.ops.forEach((op) => { const I = opInfo(A, op); if (I && !hid("op:" + op.id)) { fixture(I, out); frames(A, I, out); } });
     A.roofs.forEach((rf) => { if (!hid("roof:" + rf.id)) roof(A, rf, out); });
     A.slabs.forEach((s) => { if (!hid("slab:" + s.id)) prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out); });
-    A.rooms.forEach((R) => { if (R.closed && R.slab && !hid("room:" + R.id + ":slab")) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
+    if (root.PPStruct) root.PPStruct.build(A, out, hid, STRUCT_H);          // 2.692.0: floor systems + lintels
+    A.rooms.forEach((R) => { if (R.closed && R.slab && !(R.fs && R.fs.type && R.fs.type !== "none") && !hid("room:" + R.id + ":slab")) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
     A.stairs.forEach((s) => { if (!hid("stair:" + s.id)) stair(s, out); });
     if (root.PPSite) { root.PPSite.build(A, out, hid); root.PPSite.buildDrives(A, out, hid); }
     if (root.PPRoads) root.PPRoads.build(A, out, hid);                     // 2.673.0: 🛤 roads, junctions, tunnels, bridges, signs   // 2.657.0: 🏊 the pools; 2.659.0: 🛣 the driveways
@@ -1579,7 +1584,7 @@
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, gutterProfile, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, endNear, addJoins, applyJoins, joinsOf, butts, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, endNear, addJoins, applyJoins, joinsOf, butts, structH: STRUCT_H, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);

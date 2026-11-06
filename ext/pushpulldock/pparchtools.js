@@ -1086,6 +1086,65 @@
       const ch = (fn) => (v) => { const b = before(); fn(v); ctx.commit("edit", b); props(); };
       const kel = (val, on) => { const k = P().KELVIN.find((q) => q[1] === val); selIn("Colour", k ? k[1] : "custom", P().KELVIN.map((q) => [q[1], q[2]]).concat([["custom", "Another colour…"]]), (v) => { if (v !== "custom") on(v); else props(); }); colIn("", val, on); };
       const opt = (k) => (v) => { O[tool][k] = v; keepOpt(); props(); };
+      /* 2.692.0 (Tim: "is it possible to add framing, wood/steel to australian standards? and flooring solutions like slab, pier,
+         raised etc" + "just use the standards don't import anything"): a room's floor system + a door / window's lintel (ppstruct.js) */
+      const SS = root.PPStruct, SH = () => P().structH;
+      const sizeOpts = SS ? SS.SIZES.map(([D, B]) => [D + "x" + B, D + " × " + B + " mm"]) : [], gradeOpts = SS ? Object.keys(SS.GRADES).map((k) => [k, SS.GRADES[k].label]) : [];
+      const sizeOf = (v) => { const [D, B] = String(v).split("x").map(Number); return { D, B }; };
+      const verdict = (c, what) => { const d = el("div", "pphint", (c.ok ? "✔ " : "✗ ") + what + " - " + Math.round(c.util * 100) + "% of its limit (deflection " + c.long.toFixed(1) + " of " + c.lim.long.toFixed(1) + " mm" + (c.lim.bounce ? ", bounce " + c.bounce.toFixed(1) + " of " + c.lim.bounce + " mm" : "") + ")");
+        d.dataset.ppcheck = c.ok ? "ok" : "no"; d.style.color = c.ok ? "" : "#e0573f"; box.appendChild(d); };
+      const structShow = () => { const S0 = SS.cleanStruct(AR().struct); chkIn("🪵 Show framing (walls see-through)", S0.show, ch((v) => { AR().struct = Object.assign(SS.cleanStruct(AR().struct), { show: v }); })); };
+      const GUIDE = "A guide check, not a certificate: beam sums from the grade's published strength + stiffness (simply supported; floor 1.5 kPa + a 1.8 kN point load, 1 kN bounce ≤ 2 mm; roof sheet 0.4 / tiles 0.9 kPa). Confirm the sizes against AS 1684 or your supplier's span tables; slabs and footings are your engineer's design (AS 2870).";
+      function structRoom(R) {
+        if (!SS) return;
+        const fs = SS.clean(R.fs), set = (fn) => ch((v) => { const f2 = SS.clean(R.fs); fn(f2, v); R.fs = SS.clean(f2); });
+        head("🏗 Floor system");
+        selIn("Floor system", fs.type, SS.FLOORS, set((f, v) => { f.type = v; }));
+        if (fs.type === "none") { box.appendChild(el("div", "pphint", "Pick a slab or a raised floor to build it under the room.")); return; }
+        if (fs.type === "raised") {
+          selIn("Joists", fs.joist.D + "x" + fs.joist.B, sizeOpts, set((f, v) => Object.assign(f.joist, sizeOf(v))));
+          selIn("Joist grade", fs.joist.grade, gradeOpts, set((f, v) => { f.joist.grade = v; }));
+          selIn("Joist spacing", String(fs.joist.at), [["0.3", "300 mm"], ["0.45", "450 mm"], ["0.6", "600 mm"]], set((f, v) => { f.joist.at = +v; }));
+          selIn("Bearers", fs.bearer.D + "x" + fs.bearer.B, sizeOpts, set((f, v) => Object.assign(f.bearer, sizeOf(v))));
+          selIn("Bearer pieces", String(fs.bearer.n), [["1", "1"], ["2", "2 nailed together"], ["3", "3 nailed together"]], set((f, v) => { f.bearer.n = +v; }));
+          selIn("Bearer grade", fs.bearer.grade, gradeOpts, set((f, v) => { f.bearer.grade = v; }));
+          numIn("Bearer spacing (the joists' span)", fs.bearer.at, set((f, v) => { f.bearer.at = v; }), 0.1, 0.6, 6, "m");
+          selIn("Piers", fs.pier.kind, Object.keys(SS.PIERS).map((k) => [k, SS.PIERS[k].label]), set((f, v) => { f.pier.kind = v; f.pier.w = SS.PIERS[v].w; }));
+          numIn("Pier spacing (the bearers' span)", fs.pier.at, set((f, v) => { f.pier.at = v; }), 0.1, 0.6, 5, "m");
+          const C = SS.floorChecks(fs);
+          verdict(C.joist, "Joists " + C.joist.size); verdict(C.bearer, "Bearers " + C.bearer.size);
+          const best = (c) => (c.best ? SS.sizeName(c.best) : "none of the stock sizes - closer spacing");
+          box.appendChild(el("div", "pphint", "Smallest that passes: joists " + best(C.joist) + ", bearers " + best(C.bearer) + "."));
+          btns([["✔ Size them", ch(() => { const f2 = SS.clean(R.fs), C2 = SS.floorChecks(f2); ["joist", "bearer"].forEach((k) => { const b = C2[k].best; if (b) Object.assign(f2[k], { D: b.D, B: b.B, n: b.n }); }); R.fs = SS.clean(f2); })]]);
+        } else {
+          selIn("Site class", fs.site, SS.SITES.map((k) => [k, "Class " + k]), set((f, v) => { f.site = v; }));
+          numIn(fs.type === "waffle" ? "Topping + pods: pod depth" : "Slab thickness", fs.type === "waffle" ? fs.podH : fs.slab, set((f, v) => { if (f.type === "waffle") f.podH = v; else f.slab = v; }), 0.005, 0.05, 0.6, "m");
+          if (fs.type !== "suspended") { numIn("Edge beam width", fs.edgeW, set((f, v) => { f.edgeW = v; }), 0.01, 0.1, 1.5, "m"); if (fs.type !== "waffle") numIn("Edge beam depth", fs.edgeD, set((f, v) => { f.edgeD = v; }), 0.01, 0.1, 2, "m"); }
+          if (fs.type === "waffle") { numIn("Rib width", fs.ribW, set((f, v) => { f.ribW = v; }), 0.01, 0.05, 0.5, "m"); numIn("Rib spacing", fs.ribAt, set((f, v) => { f.ribAt = v; }), 0.05, 0.6, 3, "m"); }
+          if (fs.type === "raft") numIn("Internal beam spacing", fs.beamAt, set((f, v) => { f.beamAt = v; }), 0.1, 1, 8, "m");
+          if (fs.type === "suspended") numIn("Pier spacing", fs.pier.at, set((f, v) => { f.pier.at = v; }), 0.1, 0.6, 5, "m");
+        }
+        const pl = SS.plan(AR(), R, SH());
+        pl.members.forEach((m) => box.appendChild(el("div", "pphint", "• " + m.kind + ": " + m.size + " - " + m.count + (m.len ? ", " + m.len.toFixed(1) + " m" : ""))));
+        pl.notes.forEach((t) => { const d = el("div", "pphint", "⚠ " + t); d.dataset.ppnote = "1"; box.appendChild(d); });
+        box.appendChild(el("div", "pphint", GUIDE));
+        structShow();
+      }
+      function structOp(op) {
+        if (!SS) return;
+        const L = SS.lintel(AR(), op, SH());
+        if (!L) { box.appendChild(el("div", "pphint", "🪵 No lintel worked out - an inside wall (not carrying the roof here).")); return; }
+        head("🪵 Lintel");
+        selIn("Lintel", L.auto ? "auto" : L.m.D + "x" + L.m.B, [["auto", "Auto (the smallest that passes)"]].concat(sizeOpts), ch((v) => { op.lint = v === "auto" ? null : SS.cleanLint(Object.assign({}, L.m, sizeOf(v))); }));
+        if (!L.auto) { selIn("Lintel pieces", String(L.m.n), [["1", "1"], ["2", "2 nailed together"], ["3", "3 nailed together"]], ch((v) => { op.lint = SS.cleanLint(Object.assign({}, L.m, { n: +v })); }));
+          selIn("Lintel grade", L.m.grade, gradeOpts, ch((v) => { op.lint = SS.cleanLint(Object.assign({}, L.m, { grade: v })); })); }
+        verdict(L.check, "Lintel " + L.size + " over " + fmt(L.span));
+        const S0 = SS.cleanStruct(AR().struct);
+        selIn("Roof covering", S0.roof, [["sheet", "Sheet metal"], ["tile", "Tiles"]], ch((v) => { AR().struct = Object.assign(SS.cleanStruct(AR().struct), { roof: v }); }));
+        if (L.auto) selIn("Lintel grade (auto)", S0.grade, gradeOpts, ch((v) => { AR().struct = Object.assign(SS.cleanStruct(AR().struct), { grade: v }); }));
+        box.appendChild(el("div", "pphint", "Roof load width " + fmt(L.rlw) + " (half the room's depth + the eave) + the wall above. " + GUIDE));
+        structShow();
+      }
       // 2.640.0: a profile as a picture dropdown (ppprofiledlg.js) - get / set the id on a thing found again by its id
       const PL = root.PPProfileLib, PU = root.PPProfileUI, PD = root.PPProfileDlg;
       const profRow = (label, kind, val, find, key, none) => {
@@ -1299,6 +1358,7 @@
         if (R.closed) { matIn("Floor", R.floor, ch((v) => { R.floor = v; })); matIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0
         if (R.closed) {                                                   // 2.631.0: the auto floor slab + the auto roof for this room
           chkIn("Floor slab under the walls", !!R.slab, ch((v) => { R.slab = v; }));
+          structRoom(R);                                                  // 2.692.0: the floor system (piers, bearers, joists / slabs)
           // 2.639.0: skirting / trim at the floor, a cornice under the ceiling
           chkIn("Skirting", !!R.skirtOn, ch((v) => { R.skirtOn = v; })); if (R.skirtOn) { profRow("Skirting profile", "skirt", R.skirtP, (A2) => P().room(A2, R.id), "skirtP"); numIn("Skirting height", R.skirtH, ch((v) => { R.skirtH = v; }), 0.01, 0.02, 0.6, "m"); }
           chkIn("Cornice", !!R.corniceOn, ch((v) => { R.corniceOn = v; })); if (R.corniceOn) { profRow("Cornice profile", "cornice", R.cornP, (A2) => P().room(A2, R.id), "cornP"); numIn("Cornice size", R.corniceH, ch((v) => { R.corniceH = v; }), 0.01, 0.02, 0.6, "m"); }
@@ -1337,6 +1397,7 @@
           const sliding = op.style === "sliding" || op.style === "slider";
           chkIn(sliding ? "The other pane slides" : op.kind === "door" ? "Opens outward" : "Opens inward", !!op.dir, ch((v) => { op.dir = v; }));
         }
+        structOp(op);                                                     // 2.692.0: its lintel
         btns([["🗑 Delete", eraseSel]]);
         box.appendChild(el("div", "pphint", "Drag it (Select) along its wall, onto another wall" + (op.kind !== "door" ? ", or up / down (its elevation)" : "") + ". Drag a grip (the small squares on its sides, top" + (op.kind !== "door" ? " and bottom" : "") + ") to resize it."));
       } else if (asel.ak === "light") {

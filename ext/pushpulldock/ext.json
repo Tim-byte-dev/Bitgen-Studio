@@ -17,6 +17,7 @@
     "ppsite.js",
     "pproads.js",
     "ppwalltype.js",
+    "ppstruct.js",
     "pparch.js",
     "pparchview.js",
     "ppplan.js",

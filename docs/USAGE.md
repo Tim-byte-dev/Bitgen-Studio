@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.692.0: **Floor systems and lintels** in the Sketcher. Pick a room and set its **🏗 Floor system**: slab on ground (edge
+  beams), waffle pod slab (pods + ribs), stiffened raft (internal beams), suspended slab on piers, or a **raised timber floor**
+  on concrete / steel / brick / timber stumps, with bearers and joists you size (stock sizes, MGP10 / MGP12 / MGP15 pine or F17
+  hardwood, 300 / 450 / 600 centres). The structure is built under the room in 3D and listed (counts and lengths); a raised floor
+  says when there is too little clearance under the bearers. Each joist and bearer is **checked ✔ / ✗** with plain beam sums
+  from the grade's published strength and stiffness (a house floor's 1.5 kPa, a 1.8 kN point load, a bounce limit); **✔ Size
+  them** picks the smallest stock size that passes. A door or window in an outside wall gets a **🪵 Lintel** - Auto (the
+  smallest that passes for its width, the roof load width and sheet or tile roof) or one you pick. **🪵 Show framing** makes the
+  walls see-through so the lintels show. This is a guide, not a certificate: no supplier's or standard's span tables are copied
+  in - confirm the sizes against AS 1684 or your supplier's span tables, and slabs / footings are your engineer's design
+  (AS 2870; the site class is recorded with the slab).
 - 2.691.0: **New walls butt up to the old ones** in the Sketcher: where a wall's free end meets another wall, the new wall
   stops against it instead of getting a square cap of its own. End to end (joined, or drawn there), the old wall's end is
   shaped round the corner so their outside faces meet - one clean corner, as if it were one wall. A wall that ends on another

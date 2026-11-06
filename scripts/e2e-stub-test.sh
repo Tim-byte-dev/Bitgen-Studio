@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.692.0 (Tim: "is it possible to add framing, wood/steel to australian standards? and flooring solutions like slab, pier, raised etc" + "just use the standards don't import anything")
+node scripts/test-struct692.js > /tmp/struct692.log 2>&1 \
+  && ok "2.692.0 units: floor systems (raised: flooring / joists / bearers / piers at their heights, slabs, ribs, beams), the beam check (strength, deflection, point load, bounce), choose, lintels (outside walls, tiles, picked), build + clean, no supplier tables" \
+  || { bad "2.692.0 structure units"; grep -a "^FAIL" -A2 /tmp/struct692.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui692-ui.js > /tmp/ui692ui.log 2>&1 \
+  && ok "2.692.0 browser test: 🏗 Floor system raised (✔ / ✗, ✔ Size them, undo), 🪵 Show framing + the lintel, the window's lintel auto / picked, a waffle slab, kept by a save - or SKIP without playwright" \
+  || { bad "2.692.0 structure browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui692ui.log | head -14; }
 # ---- 2.691.0 (Tim: "the ends of the walls are not mitered or shaped, the new wall will butt up to the existing walls, even in rooms, use last set wall thickness for the wall thickness right now u have it set at 2m")
 node scripts/test-butt691.js > /tmp/butt691.log 2>&1 \
   && ok "2.691.0 units: butts(A) - joined / drawn end to end = the new wall no cap, the old one shaped (one clean outline), a wall across a room cut to the inside faces, a thick angled wall cut to the face, ends on nothing / own-size ends kept; the last-set thickness wiring" \
