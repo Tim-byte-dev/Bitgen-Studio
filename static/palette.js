@@ -79,7 +79,9 @@
     + ".hlp{height:100%;overflow:auto;font-size:.8rem;line-height:1.45;padding:2px 10px 10px}.hlp h3{color:var(--tiger,#f59e2c);margin:.9em 0 .3em}.hlp h4,.hlp h5{margin:.8em 0 .2em}"
     + ".hlp table{border-collapse:collapse;margin:.4em 0;font-size:.74rem}.hlp td,.hlp th{border:1px solid var(--line,#3a342a);padding:3px 6px;vertical-align:top}.hlp th{background:rgba(255,255,255,.04)}"
     + ".hlp code{font-family:var(--mono,monospace);font-size:.72rem;background:rgba(255,255,255,.06);padding:0 3px;border-radius:3px}.hlp pre{background:rgba(255,255,255,.05);padding:6px;overflow:auto}"
-    + ".hlp .hlpbar{display:flex;gap:6px;align-items:center;position:sticky;top:0;background:var(--panel,#1b1814);padding:4px 0}.hlp .hlpbar select{flex:1;min-width:0}";
+    + ".hlp .hlpbar{display:flex;gap:6px;align-items:center;position:sticky;top:0;background:var(--panel,#1b1814);padding:4px 0}.hlp .hlpbar select{flex:1;min-width:0}"
+    + ".hlp .hlpbar select.hlplang{flex:none;width:auto}.hlp .hlpnote{margin:.5em 0;padding:5px 8px;border-left:3px solid var(--tiger,#f59e2c);background:rgba(245,158,44,.08);font-size:.74rem}"
+    + ".hlp .hlpnote button{margin-left:8px}";
   var S = { open: false, sel: 0, list: [], help: null, recent: [] };
   function $(id) { return document.getElementById(id); }
   try { S.recent = JSON.parse(localStorage.getItem("h3pal.recent") || "[]"); } catch (e) { S.recent = []; }
@@ -183,7 +185,9 @@
     return true;
   }
   function close() { S.open = false; var o = $("palOv"); if (o) o.classList.remove("on"); }
-  function loadHelp() { return fetch("/api/help").then(function (r) { return r.json(); }).then(function (j) { S.help = j && j.sections ? j : { sections: [], shortcuts: { groups: [] } }; return S.help; }).catch(function () { S.help = { sections: [], shortcuts: { groups: [] } }; return S.help; }); }
+  // 2.703.0: the guide in the picked language (static/helplang.js; a section not translated comes in English)
+  var hlang = function () { return root.H3HelpLang ? H3HelpLang.get() : "en"; };
+  function loadHelp() { var L = hlang(); return fetch("/api/help" + (L === "en" ? "" : "?lang=" + encodeURIComponent(L))).then(function (r) { return r.json(); }).then(function (j) { S.help = j && j.sections ? j : { sections: [], shortcuts: { groups: [] } }; return S.help; }).catch(function () { S.help = { sections: [], shortcuts: { groups: [] } }; return S.help; }); }
   function mount() {
     if (!$("palCss")) { var st = document.createElement("style"); st.id = "palCss"; st.textContent = CSS; document.head.appendChild(st); }
     var ov = document.createElement("div"); ov.id = "palOv"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Find anything");
@@ -207,17 +211,36 @@
     if (root.H3TestEvent) root.H3TestEvent("help_open", which || "");
     var go = function () {
       if (!helpBody) return;
-      var sel = helpBody.querySelector("select"), box = helpBody.querySelector(".hlpc"), html = "";
+      var sel = helpBody.querySelector("select:not(.hlplang)"), box = helpBody.querySelector(".hlpc"), html = "";
       if (/^keys:/.test(which)) { var gr = S.help.shortcuts.groups[+which.slice(5)] || { title: "", rows: [] }; html = "<h3>⌨ " + esc(gr.title) + "</h3><table>" + gr.rows.map(function (r) { return "<tr><td><kbd>" + esc(r[0]) + "</kbd></td><td>" + esc(r[1]) + "</td></tr>"; }).join("") + "</table>"; }
-      else { var sec = S.help.sections.find(function (x) { return x.id === which; }) || S.help.sections[0]; if (sec) { html = "<h3>" + esc(sec.title) + "</h3>" + mdToHtml(sec.md); which = sec.id; } }
+      else { var sec = S.help.sections.find(function (x) { return x.id === which; }) || S.help.sections[0]; if (sec) { html = note(sec) + "<h3>" + esc(sec.title) + "</h3>" + mdToHtml(sec.md); which = sec.id; } }
       box.innerHTML = html; sel.value = which; helpBody.scrollTop = 0;
+      var eb = box.querySelector("[data-hlpen]"); if (eb) eb.onclick = function () { showEnglish(eb.getAttribute("data-hlpen")); };
       if (root.SecFloat) SecFloat.show("help", true);
     };
     return (S.help ? Promise.resolve() : loadHelp()).then(function () {
-      var sel = helpBody && helpBody.querySelector("select");
+      var sel = helpBody && helpBody.querySelector("select:not(.hlplang)");
       if (sel && !sel.options.length) sel.innerHTML = S.help.sections.map(function (x) { return '<option value="' + esc(x.id) + '">' + esc(x.title) + "</option>"; }).join("") + S.help.shortcuts.groups.map(function (gr, i) { return '<option value="keys:' + i + '">⌨ ' + esc(gr.title) + "</option>"; }).join("");
       go();
     });
+  }
+  // 2.703.0: a translated section older than the English one / not translated yet says so - the English one a click away
+  function note(sec) {
+    var L = S.help && S.help.lang; if (!L || L === "en" || !root.H3HelpLang) return "";
+    if (sec.lang === "en") return '<p class="hlpnote" data-hlpnote="missing">' + esc(H3HelpLang.say("missing", L)) + "</p>";
+    if (sec.stale) return '<p class="hlpnote" data-hlpnote="stale">' + esc(H3HelpLang.say("stale", L)) + '<button type="button" class="ghost" data-hlpen="' + esc(sec.id) + '">' + esc(H3HelpLang.say("english", L)) + "</button></p>";
+    return "";
+  }
+  function showEnglish(id) {
+    return (S.helpEn ? Promise.resolve(S.helpEn) : fetch("/api/help").then(function (r) { return r.json(); }).then(function (j) { S.helpEn = j; return j; })).then(function (en) {
+      var sec = (en.sections || []).find(function (x) { return x.id === id; }); if (!sec || !helpBody) return;
+      helpBody.querySelector(".hlpc").innerHTML = "<h3>" + esc(sec.title) + "</h3>" + mdToHtml(sec.md); helpBody.scrollTop = 0;
+    });
+  }
+  function relang() {                                   // the language changed: the guide again, the same section
+    var sel = helpBody && helpBody.querySelector("select:not(.hlplang)"), cur = sel ? sel.value : "";
+    S.help = null; if (sel) sel.innerHTML = "";
+    loadHelp().then(function () { if (S.open) { S.all = build(); search(); } if (helpBody && helpBody.querySelector(".hlpc").innerHTML) showHelp(cur); });
   }
   function start() {
     if (!$("menubar") || !root.SecFloat || !SecFloat.add || !SecFloat.started) { setTimeout(start, 200); return; }
@@ -232,6 +255,7 @@
     helpBody = document.createElement("div"); helpBody.className = "hlp"; helpBody.id = "hlpBody";
     helpBody.innerHTML = '<div class="hlpbar"><select aria-label="Guide section"></select></div><div class="hlpc"></div>';
     helpBody.querySelector("select").onchange = function (e) { showHelp(e.target.value); };
+    if (root.H3HelpLang) { helpBody.querySelector(".hlpbar").appendChild(H3HelpLang.picker("hlplang")); H3HelpLang.onChange(relang); }
     SecFloat.add({ id: "help", title: "📖 Help", w: 620, h: 640, body: helpBody, onShow: function () { if (!helpBody.querySelector(".hlpc").innerHTML) showHelp(""); } });
     // Ctrl+K - unless a docker used it itself (the timeline's split, the image editor's own palette)
     root.addEventListener("keydown", function (e) {

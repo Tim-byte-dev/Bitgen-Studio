@@ -1,0 +1,1035 @@
+{
+  "lang": "zh-CN",
+  "groups": [
+    {
+      "en": "4c7e43283fb0",
+      "title": "在应用中的任意位置",
+      "rows": [
+        [
+          "Ctrl+K",
+          "查找任何内容——面板、设置、按钮、风格、使用指南、快捷键（也可点击菜单栏中的 🔍）。鼠标位于时间线图层上方时，Ctrl+K 仍用于分割；在图像编辑器中则打开其自身的命令面板"
+        ],
+        [
+          "Ctrl+Alt+D",
+          "显示 / 隐藏 ▣ Docker——一个空面板，可将其他面板放入其中（并排或堆叠；点击面板标题上的 ⇱ 使其浮动，然后拖动其标题放入）"
+        ],
+        [
+          "Ctrl+Alt+S",
+          "打开 Settings（设置）（输入文字时也有效——主题隐藏了 ⚙ 按钮时同样可用）"
+        ],
+        [
+          "Ctrl+Alt+Shift+T",
+          "恢复为 bitGen Default 主题（Dark，无元素样式，UI 尺寸 100 %）；Settings ▸ Themes ▸ ↶ The theme before 可撤销此操作。在地址中加入 ?theme=default 可在页面绘制之前完成同样的操作"
+        ],
+        [
+          "P",
+          "显示 / 隐藏提示词面板（在输入框中输入时无效；鼠标位于图像编辑器上方时，P 为其 Pen 工具）"
+        ],
+        [
+          "Ctrl+P",
+          "将提示词面板置于最前：打开并展开，覆盖在遮挡它的任何内容之上，提示词输入框可直接输入（在输入框中输入时也有效；在 🎨 Artist 模式下同样有效——显示在全屏画布之上）"
+        ],
+        [
+          "S",
+          "显示 / 隐藏 Basic Settings——一个浮动面板（输入时无效；鼠标位于图像编辑器上方时，S 为其 Clone Stamp）"
+        ],
+        [
+          "L",
+          "显示 / 隐藏 LLM tokens——一个浮动面板（输入时无效；鼠标位于图像编辑器上方时，L 为其 Lasso，位于时间线上方时为穿梭播放）"
+        ],
+        [
+          "1",
+          "显示 / 隐藏时间线的 Tools & Properties 窗口"
+        ],
+        [
+          "2",
+          "显示 / 隐藏负面提示词面板（输入时无效；🎥 多机位对话框打开时，按 1 - 9 切换到对应机位）"
+        ],
+        [
+          "Space",
+          "暂停 / 播放预览——时间线画布、实时预览或预览视频（在输入框中输入时无效）"
+        ],
+        [
+          "Esc",
+          "退出最大化的面板"
+        ],
+        [
+          "Delete",
+          "删除选中的图库图片（移至回收站）"
+        ],
+        [
+          "Enter",
+          "在提示词输入框中：发送到聊天"
+        ],
+        [
+          "Shift+Enter",
+          "在提示词输入框中：换行"
+        ],
+        [
+          "Ctrl+Shift+Alt+E",
+          "进入编辑主题模式，对话框也可一并编辑（已打开的 Settings 保持打开，以便设置其样式）——再按一次退出"
+        ],
+        [
+          "Ctrl+S (in edit theme mode)",
+          "保存主题并退出编辑主题模式"
+        ],
+        [
+          "Ctrl+Alt+Shift+B",
+          "🐞 Bug report——先截取窗口截图，再打开该面板（输入时也有效）；再按一次将其隐藏"
+        ]
+      ]
+    },
+    {
+      "en": "83489bd7bc8d",
+      "title": "Lightbox（以全尺寸打开的图片或片段）",
+      "rows": [
+        [
+          "← / →",
+          "上一个 / 下一个"
+        ],
+        [
+          "+ / −",
+          "放大 / 缩小"
+        ],
+        [
+          "0",
+          "重新适应窗口"
+        ]
+      ]
+    },
+    {
+      "en": "137a9e748479",
+      "title": "时间线画布（鼠标指针位于画布上方）",
+      "rows": [
+        [
+          "V",
+          "Move（移动）"
+        ],
+        [
+          "T",
+          "Text（文本）"
+        ],
+        [
+          "H",
+          "Hand（抓手）"
+        ],
+        [
+          "Z",
+          "Zoom（缩放）"
+        ],
+        [
+          "M",
+          "Select（选择）（用于 ✨ Fill）"
+        ],
+        [
+          "B",
+          "Mask brush（蒙版画笔）"
+        ],
+        [
+          "Shift+P",
+          "Path 工具（路径图层）"
+        ],
+        [
+          "Shift+C",
+          "Camera 工具：拖动 = 平移 / 俯仰，Alt+拖动 = 横滚，Shift+拖动 = 高度，滚轮 = 推拉，Shift+滚轮 = 变焦"
+        ],
+        [
+          "Space (hold)",
+          "用抓手平移"
+        ],
+        [
+          "Space (tap)",
+          "播放 / 暂停"
+        ],
+        [
+          "Delete",
+          "移除选中的片段"
+        ],
+        [
+          "F2",
+          "重命名选中的图层"
+        ],
+        [
+          "← / →",
+          "微移选中的片段（按住 Shift：更大的步长——在时间线 ⚙ 中设置）"
+        ],
+        [
+          "Enter",
+          "设置选中片段的开始时间"
+        ],
+        [
+          "Delete / Backspace",
+          "移除选中的关键帧（在其弹出窗口中）"
+        ],
+        [
+          "Esc / Enter",
+          "Path 工具：返回 Move 工具"
+        ],
+        [
+          "Alt+click",
+          "Path 工具：删除一个点"
+        ],
+        [
+          "Shift+Q",
+          "✎ Freehand shape：绘制路径（按住 Alt = 绘制到所选的形状图层中）"
+        ],
+        [
+          "Shift+M",
+          "✒ Mask Pen：点击 = 角点，拖动 = 曲线，点击第一个点 / Enter = 闭合，Esc = 完成"
+        ],
+        [
+          "Alt+drag (Blender view)",
+          "缩放——向上 / 向前拖动 = 放大，向下 / 向后拖动 = 缩小（在图像编辑器的 Blender 场景工具中同样适用）"
+        ],
+        [
+          "Z (Blender view)",
+          "缩放至所选对象（未选择任何对象 = 整个场景）"
+        ],
+        [
+          "Shift + right-drag",
+          "缩放——以按下的位置为中心，向前（向上）放大，向后（向下）缩小"
+        ]
+      ]
+    },
+    {
+      "en": "c2884ce65e5c",
+      "title": "时间线图层（鼠标指针位于图层、标尺或菜单栏上方）",
+      "rows": [
+        [
+          "V",
+          "▸ Select 工具"
+        ],
+        [
+          "B",
+          "⇤ Ripple edit 工具"
+        ],
+        [
+          "N",
+          "⇹ Roll edit 工具"
+        ],
+        [
+          "Y",
+          "⇆ Slip 工具"
+        ],
+        [
+          "U",
+          "↔ Slide 工具"
+        ],
+        [
+          "I",
+          "In（入点）——标尺选区从位置标记处开始"
+        ],
+        [
+          "O",
+          "Out（出点）——标尺选区在位置标记处结束"
+        ],
+        [
+          "Ctrl+K",
+          "在位置标记处分割（分割选中的片段，否则分割高亮图层上的片段）"
+        ],
+        [
+          "↑ / ↓",
+          "上一个 / 下一个编辑点"
+        ],
+        [
+          "Home / End",
+          "时间线的开头 / 结尾"
+        ],
+        [
+          "M",
+          "在位置标记处添加标记（位于标记上时：编辑其名称、颜色、注释——双击旗标效果相同）"
+        ],
+        [
+          "Shift+M / Alt+M",
+          "下一个 / 上一个标记"
+        ],
+        [
+          "Ctrl+Shift+E",
+          "将位置标记处的帧导出为 PNG（在画布上同样适用）"
+        ],
+        [
+          "Ctrl+Shift+M",
+          "在选中片段的位置标记处添加片段标记（它会固定在该帧上）"
+        ],
+        [
+          "J / K / L",
+          "穿梭播放预览：倒放 / 停止 / 正放——再次按 J 或 L 以 2x、4x、8x 速度播放（在时间线面板内的任意位置均可，包括画布）"
+        ],
+        [
+          "K + J / K + L",
+          "按住 K：后退 / 前进一帧"
+        ]
+      ]
+    },
+    {
+      "en": "6f93aae189fb",
+      "title": "3D 图层（选中一个 3D 图层时）",
+      "rows": [
+        [
+          "G",
+          "移动控件（再按一次 = 关闭）"
+        ],
+        [
+          "R",
+          "旋转控件"
+        ],
+        [
+          "S",
+          "缩放控件"
+        ]
+      ]
+    },
+    {
+      "en": "80a0b0dcdea8",
+      "title": "图像编辑器 - 工具",
+      "rows": [
+        [
+          "V",
+          "Move（移动）"
+        ],
+        [
+          "M  (Shift+M cycles)",
+          "Rectangular Marquee（矩形选框）· Elliptical Marquee（椭圆选框）"
+        ],
+        [
+          "L  (Shift+L cycles)",
+          "Lasso（套索）· Polygonal Lasso（多边形套索）· Magnetic Lasso（磁性套索）"
+        ],
+        [
+          "W  (Shift+W cycles)",
+          "Object Selection（对象选择，Segment Anything）· Magic Wand（魔棒）· Quick Selection Brush（快速选择画笔）"
+        ],
+        [
+          "C",
+          "Crop（裁剪）"
+        ],
+        [
+          "I",
+          "Eyedropper（吸管）"
+        ],
+        [
+          "J  (Shift+J cycles)",
+          "Spot Healing Brush（污点修复画笔）· Healing Brush（修复画笔）· Patch（修补）· Content-Aware Move（内容感知移动）· Red Eye（红眼）"
+        ],
+        [
+          "B  (Shift+B cycles)",
+          "Brush（画笔）· Pencil（铅笔）· Mixer Brush（混合器画笔）"
+        ],
+        [
+          "S",
+          "Clone Stamp（仿制图章）"
+        ],
+        [
+          "Y",
+          "History Brush（历史记录画笔）"
+        ],
+        [
+          "E  (Shift+E cycles)",
+          "Eraser（橡皮擦）· Background Eraser（背景橡皮擦）· Magic Eraser（魔术橡皮擦）"
+        ],
+        [
+          "G  (Shift+G cycles)",
+          "Gradient（渐变）· Paint Bucket（油漆桶）"
+        ],
+        [
+          "R  (Shift+R cycles)",
+          "Blur（模糊）· Sharpen（锐化）· Smudge（涂抹）"
+        ],
+        [
+          "O  (Shift+O cycles)",
+          "Dodge（减淡）· Burn（加深）· Sponge（海绵）"
+        ],
+        [
+          "P  (Shift+P cycles)",
+          "Pen（钢笔）· Freeform Pen（自由钢笔）· Curvature Pen（弯度钢笔）· Add Anchor Point（添加锚点）· Delete Anchor Point（删除锚点）· Convert Point（转换点）"
+        ],
+        [
+          "T  (Shift+T cycles)",
+          "Horizontal Type（横排文字）· Vertical Type（直排文字）· Type on a Path（路径文字）"
+        ],
+        [
+          "A  (Shift+A cycles)",
+          "Path Selection（路径选择）· Direct Selection（直接选择）"
+        ],
+        [
+          "U  (Shift+U cycles)",
+          "Shape（形状：矩形、椭圆、多边形、直线）· Custom Shape（自定形状）"
+        ],
+        [
+          "H",
+          "Hand（抓手）"
+        ],
+        [
+          "Z",
+          "Zoom（缩放）"
+        ],
+        [
+          "F5  (F5 again cycles)",
+          "曲线工具：Bézier（贝塞尔）· Freehand（手绘）· 2-Point Line（两点线）· Polyline（折线）· 3-Point Curve（三点曲线）· B-Spline（B 样条）· Pen（钢笔）· Artistic Media（艺术笔）"
+        ],
+        [
+          "F10",
+          "Shape 工具（编辑节点）"
+        ],
+        [
+          "F6  (F6 again cycles)",
+          "形状：Rectangle（矩形）· 3-Point Rectangle（三点矩形）· Ellipse（椭圆）· 3-Point Ellipse（三点椭圆）· Polygon（多边形）· Star（星形）· Complex Star（复杂星形）· Spiral（螺旋）· Graph Paper（图纸）· Common Shapes（常见形状）"
+        ],
+        [
+          "F8  (F8 again cycles)",
+          "Parallel（平行度量）· Horizontal / Vertical（水平 / 垂直度量）· Angular Dimension（角度量）· 3-Point Callout（三点标注）· Connector（连接器）"
+        ]
+      ]
+    },
+    {
+      "en": "4c42a91c7c2e",
+      "title": "图像编辑器 - File 菜单",
+      "rows": [
+        [
+          "Ctrl+N",
+          "New（新建）"
+        ],
+        [
+          "Ctrl+O",
+          "Open（打开）"
+        ],
+        [
+          "Alt+Ctrl+O",
+          "Place as Layer（置入为图层）"
+        ],
+        [
+          "Ctrl+S",
+          "Save to Images（保存到 Images）"
+        ],
+        [
+          "Shift+Ctrl+S",
+          "Save as PSD（保存为 PSD）"
+        ],
+        [
+          "Alt+Ctrl+S",
+          "Save Project (.bgi)（保存项目）"
+        ],
+        [
+          "Shift+Delete",
+          "Delete Layer（删除图层）"
+        ],
+        [
+          "Ctrl+;",
+          "Guidelines（参考线）"
+        ],
+        [
+          "Alt+Ctrl+;",
+          "Lock Guidelines（锁定参考线）"
+        ],
+        [
+          "Shift+Ctrl+;",
+          "Snap（对齐）"
+        ],
+        [
+          "Alt+Shift+Ctrl+W",
+          "Export As（导出为）"
+        ],
+        [
+          "Ctrl+W",
+          "Close（关闭）"
+        ],
+        [
+          "Alt+Ctrl+W",
+          "Close All（全部关闭）"
+        ]
+      ]
+    },
+    {
+      "en": "d13f5d936edf",
+      "title": "图像编辑器 - Edit 菜单",
+      "rows": [
+        [
+          "Ctrl+Z",
+          "Undo（撤销）"
+        ],
+        [
+          "Shift+Ctrl+Z",
+          "Redo（重做）"
+        ],
+        [
+          "Ctrl+X",
+          "Cut（剪切）"
+        ],
+        [
+          "Ctrl+C",
+          "Copy（复制）"
+        ],
+        [
+          "Shift+Ctrl+C",
+          "Copy Merged（合并复制）"
+        ],
+        [
+          "Ctrl+V",
+          "Paste（粘贴）"
+        ],
+        [
+          "Shift+Ctrl+V",
+          "Paste in Place（原位粘贴）"
+        ],
+        [
+          "Shift+F5",
+          "Fill（填充）"
+        ],
+        [
+          "Ctrl+T",
+          "Free Transform（自由变换）"
+        ],
+        [
+          "Alt+Shift+Ctrl+C",
+          "Content-Aware Scale（内容识别缩放）"
+        ],
+        [
+          "Ctrl+,",
+          "Preferences（首选项）"
+        ]
+      ]
+    },
+    {
+      "en": "56e7b7f4457c",
+      "title": "图像编辑器 - Image 菜单",
+      "rows": [
+        [
+          "Shift+Ctrl+L",
+          "Auto Tone（自动色调）"
+        ],
+        [
+          "Alt+Shift+Ctrl+L",
+          "Auto Contrast（自动对比度）"
+        ],
+        [
+          "Shift+Ctrl+B",
+          "Auto Color（自动颜色）"
+        ],
+        [
+          "Alt+Ctrl+I",
+          "Image Size（图像大小）"
+        ],
+        [
+          "Alt+Ctrl+C",
+          "Canvas Size（画布大小）"
+        ]
+      ]
+    },
+    {
+      "en": "d62177e7e6a5",
+      "title": "图像编辑器 - Layer 菜单",
+      "rows": [
+        [
+          "Shift+Ctrl+N",
+          "Layer（新建图层）"
+        ],
+        [
+          "Ctrl+J",
+          "Layer via Copy（通过复制新建图层）"
+        ],
+        [
+          "Shift+Ctrl+J",
+          "Layer via Cut（通过剪切新建图层）"
+        ],
+        [
+          "Alt+Ctrl+G",
+          "Create / Release Clipping Mask（创建 / 释放剪贴蒙版）"
+        ],
+        [
+          "Ctrl+G",
+          "Group Layers（图层编组）"
+        ],
+        [
+          "Shift+Ctrl+G",
+          "Ungroup Layers（取消图层编组）"
+        ],
+        [
+          "Shift+Ctrl+]",
+          "Bring to Front（置为顶层）"
+        ],
+        [
+          "Ctrl+]",
+          "Bring Forward（前移一层）"
+        ],
+        [
+          "Ctrl+[",
+          "Send Backward（后移一层）"
+        ],
+        [
+          "Shift+Ctrl+[",
+          "Send to Back（置为底层）"
+        ],
+        [
+          "Ctrl+/",
+          "Lock All（全部锁定）"
+        ],
+        [
+          "Ctrl+E",
+          "Merge Down（向下合并）"
+        ],
+        [
+          "Shift+Ctrl+E",
+          "Merge Visible（合并可见图层）"
+        ],
+        [
+          "F12",
+          "Outline Pen（轮廓笔）"
+        ],
+        [
+          "Ctrl+Q",
+          "Convert to Curves（转换为曲线）"
+        ]
+      ]
+    },
+    {
+      "en": "eb8b6a085b0a",
+      "title": "图像编辑器 - Select 菜单",
+      "rows": [
+        [
+          "Ctrl+A",
+          "All（全部）"
+        ],
+        [
+          "Ctrl+D",
+          "Deselect（取消选择）"
+        ],
+        [
+          "Shift+Ctrl+D",
+          "Reselect（重新选择）"
+        ],
+        [
+          "Shift+Ctrl+I",
+          "Inverse（反选）"
+        ],
+        [
+          "Shift+F6",
+          "Feather（羽化）"
+        ],
+        [
+          "Q",
+          "Edit in Quick Mask Mode（以快速蒙版模式编辑）"
+        ],
+        [
+          "Alt+Ctrl+R",
+          "Select and Mask（选择并遮住）"
+        ]
+      ]
+    },
+    {
+      "en": "36d21059b364",
+      "title": "图像编辑器 - Channels 面板",
+      "rows": [
+        [
+          "Ctrl+2",
+          "RGB（全部通道）"
+        ],
+        [
+          "Ctrl+3",
+          "仅显示红色通道"
+        ],
+        [
+          "Ctrl+4",
+          "仅显示绿色通道"
+        ],
+        [
+          "Ctrl+5",
+          "仅显示蓝色通道"
+        ],
+        [
+          "Ctrl-click a channel",
+          "将其亮度 / 已存储的选区载入为选区"
+        ]
+      ]
+    },
+    {
+      "en": "4f93f18d0d99",
+      "title": "图像编辑器 - 曲线工具（F5）和 Shape 工具（F10）",
+      "rows": [
+        [
+          "click / drag",
+          "Bézier：尖突节点 / 平滑节点（曲线）"
+        ],
+        [
+          "C / S while dragging",
+          "Bézier：将节点设为尖突 / 平滑"
+        ],
+        [
+          "Ctrl",
+          "曲线工具：以 15° 为步长"
+        ],
+        [
+          "click the first node",
+          "闭合曲线"
+        ],
+        [
+          "double-click · Enter · Space",
+          "完成"
+        ],
+        [
+          "Esc",
+          "放弃正在绘制的线条"
+        ],
+        [
+          "C / S / Y",
+          "Shape 工具：尖突 / 平滑 / 对称节点"
+        ],
+        [
+          "+ · Insert",
+          "Shape 工具：添加节点"
+        ],
+        [
+          "- · Delete",
+          "Shape 工具：删除所选节点"
+        ],
+        [
+          "double-click the line / a node",
+          "Shape 工具：添加 / 删除节点"
+        ],
+        [
+          "arrows (Shift ×10)",
+          "Shape 工具：微移所选节点"
+        ]
+      ]
+    },
+    {
+      "en": "81f573ff9b56",
+      "title": "图像编辑器 - Filter 菜单",
+      "rows": [
+        [
+          "Ctrl+F",
+          "Last Filter（上次滤镜操作）"
+        ],
+        [
+          "Shift+Ctrl+X",
+          "Liquify（液化）"
+        ]
+      ]
+    },
+    {
+      "en": "5a3af014c65b",
+      "title": "图像编辑器 - View 菜单",
+      "rows": [
+        [
+          "Ctrl+=",
+          "Zoom In（放大）"
+        ],
+        [
+          "Ctrl+-",
+          "Zoom Out（缩小）"
+        ],
+        [
+          "Ctrl+0",
+          "Fit on Screen（按屏幕大小缩放）"
+        ],
+        [
+          "Ctrl+1",
+          "100%（实际像素）"
+        ],
+        [
+          "Ctrl+R",
+          "Rulers（标尺）"
+        ],
+        [
+          "Ctrl+'",
+          "Grid（网格）"
+        ],
+        [
+          "\\",
+          "Mask Overlay（蒙版叠加）"
+        ],
+        [
+          "F",
+          "Full Screen Mode（全屏模式）"
+        ],
+        [
+          "Ctrl+Alt+0",
+          "Zoom to Selection（缩放至选区）"
+        ]
+      ]
+    },
+    {
+      "en": "a97c9719bdc0",
+      "title": "图像编辑器 - Window 菜单",
+      "rows": [
+        [
+          "F7",
+          "Layers（图层）"
+        ],
+        [
+          "Tab",
+          "Show / Hide Panels（显示 / 隐藏面板）"
+        ],
+        [
+          "Alt+F9",
+          "Actions（动作）"
+        ],
+        [
+          "Alt+F7",
+          "Dockers: Transform（变换）"
+        ],
+        [
+          "Shift+Ctrl+A",
+          "Dockers: Align and Distribute（对齐与分布）"
+        ],
+        [
+          "Alt+Enter",
+          "Dockers: Object Properties（对象属性）"
+        ],
+        [
+          "Ctrl+Tab",
+          "Next Document（下一个文档）"
+        ],
+        [
+          "Shift+Ctrl+Tab",
+          "Previous Document（上一个文档）"
+        ]
+      ]
+    },
+    {
+      "en": "526262278bb5",
+      "title": "图像编辑器 - Help 菜单",
+      "rows": [
+        [
+          "F1",
+          "Image Editor Help（图像编辑器帮助）"
+        ],
+        [
+          "Ctrl+K",
+          "Command Palette（命令面板）"
+        ]
+      ]
+    },
+    {
+      "en": "c5af82d38eaa",
+      "title": "图像编辑器 - 单键与点击",
+      "rows": [
+        [
+          "Q",
+          "Quick Mask（快速蒙版）开 / 关"
+        ],
+        [
+          "X",
+          "交换前景色 / 背景色"
+        ],
+        [
+          "D",
+          "默认颜色（黑 / 白）"
+        ],
+        [
+          "F",
+          "全屏"
+        ],
+        [
+          "K",
+          "选区画笔"
+        ],
+        [
+          "1 … 0",
+          "画笔不透明度 10 … 100 %（绘画工具）"
+        ],
+        [
+          "[ / ]",
+          "减小 / 增大画笔尺寸"
+        ],
+        [
+          "Tab",
+          "显示 / 隐藏面板"
+        ],
+        [
+          "Shift+Tab",
+          "显示 / 隐藏面板组"
+        ],
+        [
+          "\\",
+          "蒙版叠加：蒙版遮挡处显示为红色（绘制蒙版时始终显示）"
+        ],
+        [
+          "Space (hold)",
+          "平移"
+        ],
+        [
+          "Enter",
+          "应用当前显示的 ✨ 结果 / 闭合多边形"
+        ],
+        [
+          "Esc",
+          "放弃 ✨ 结果 / 取消多边形 / 退出蒙版视图"
+        ],
+        [
+          "Shift / Alt / Shift+Alt",
+          "选择工具：添加 / 减去 / 交叉"
+        ],
+        [
+          "Click / Shift / Alt",
+          "Object Selection：选择该对象 / 再添加一个 / 移除一个（拖动 = 框选）"
+        ],
+        [
+          "Ctrl+click a layer",
+          "将其选作 ✨ Compose / → References 的输入（按点击顺序）"
+        ],
+        [
+          "Ctrl+click a thumbnail",
+          "将其透明度（或蒙版）载入为选区"
+        ],
+        [
+          "Alt+click a mask",
+          "查看蒙版本身"
+        ],
+        [
+          "Shift+click a mask",
+          "停用 / 启用该蒙版"
+        ],
+        [
+          "Alt+click the eye",
+          "仅显示此图层"
+        ],
+        [
+          "O",
+          "Sketch：Offset 工具（F = 另一侧，Enter = 使用输入的距离）"
+        ],
+        [
+          "Shift + middle-drag",
+          "环绕所选的 3D 物体（或 3D 视图图层）旋转视角"
+        ],
+        [
+          "Middle-drag",
+          "平移画布"
+        ],
+        [
+          "Shift+right-click",
+          "在 🎨 Artist 模式下：恢复正常模式（也可用 Ctrl+Esc / Ctrl+Shift+F——在 Windows 上 Ctrl+Esc 可能会打开开始菜单）；不会弹出上下文菜单"
+        ],
+        [
+          "Alt+P",
+          "在 🎨 Artist 模式下：在指针处打开调色板（再按 Alt+P 关闭）"
+        ],
+        [
+          "Ctrl+B",
+          "在 🎨 Artist 模式下：在指针处打开画笔"
+        ],
+        [
+          "Alt+G",
+          "在 🎨 Artist 模式下：在画布上方显示 Layers 面板和 ⏳ Pending——选择图层，按 Ctrl+P 打开提示词面板，点击 Generate / ▾ Edit；再按 Alt+G 将其隐藏"
+        ],
+        [
+          "Shift + right-drag",
+          "缩放——以按下的位置为中心，向前（向上）放大，向后（向下）缩小（在 🎨 Artist 模式下同样适用；Shift+右键单击则会退出 Artist 模式）"
+        ]
+      ]
+    },
+    {
+      "en": "c1eb26542b9b",
+      "title": "Sketcher - 鼠标位于面板上方时",
+      "rows": [
+        [
+          "Space",
+          "Select（选择）"
+        ],
+        [
+          "L / R / C / N",
+          "Line（直线）/ Rectangle（矩形）/ Circle（圆）/ Polygon（多边形）"
+        ],
+        [
+          "P",
+          "Push/Pull（推 / 拉）"
+        ],
+        [
+          "M / Q / S",
+          "Move（移动；按住 Ctrl：复制）/ Rotate（旋转）/ Scale（缩放）"
+        ],
+        [
+          "F",
+          "Offset（偏移）"
+        ],
+        [
+          "T / B / E",
+          "Tape（卷尺）/ Paint（上色）/ Eraser（橡皮擦）"
+        ],
+        [
+          "O / H",
+          "Orbit（环绕）/ Pan（平移）（鼠标中键 / 右键始终可用）"
+        ],
+        [
+          "→ ← ↑ / ↓",
+          "锁定红 / 绿 / 蓝轴 / 解除锁定（按住 Shift：锁定当前显示的轴）"
+        ],
+        [
+          "G",
+          "将所选内容编组（选中的是组时：将其炸开）"
+        ],
+        [
+          "Shift+Z",
+          "显示全部内容"
+        ],
+        [
+          "U / W",
+          "Room（房间）/ Wall（墙）"
+        ],
+        [
+          "D / I",
+          "Door（门）/ Window（窗）（放在墙上）"
+        ],
+        [
+          "J / K",
+          "Floor（地板）/ Ceiling（天花板）开 / 关"
+        ],
+        [
+          "Y",
+          "Roof（屋顶）（Shift+点击：将更多房间纳入屋顶之下）"
+        ],
+        [
+          "X",
+          "Light（灯光）（类型在面板中设置）"
+        ],
+        [
+          "V",
+          "Stairs（楼梯）"
+        ],
+        [
+          "Alt+G",
+          "⛰ Terrain（地形）——地面：用画笔进行 Raise / Lower / Smooth / Flatten（抬高 / 降低 / 平滑 / 压平），或绘制地面随之变化的 〰 等高线（模式在面板中设置）"
+        ],
+        [
+          "[ / ] (Terrain)",
+          "减小 / 增大画笔；Shift+拖动：反向操作（抬高 ⇄ 降低）；Alt+点击（Flatten）：取该处的高度"
+        ],
+        [
+          "Drag a room (Select)",
+          "其墙会吸附到相邻房间的墙上——合并为一面共用墙"
+        ],
+        [
+          "Delete",
+          "擦除所选内容"
+        ],
+        [
+          "Esc",
+          "取消工具并清空选择——在 3D 视图、📐 平面图和摄像机视图中进入 🔄 Orbit（正在绘制的连续墙会保留）；在 Orbit 中：切换到 ➤ Select。绝不会将最大化的 Sketcher 还原停靠"
+        ],
+        [
+          "a number",
+          "输入到 Measurements 框中——按 Enter 应用（3,2 · 150cm · 36s）"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y / Ctrl+S",
+          "撤销 / 重做 / 保存"
+        ],
+        [
+          "Double-click a picked camera",
+          "在移动箭头 ⇄ 旋转环之间切换"
+        ],
+        [
+          "Shift + right-drag",
+          "缩放——以按下的位置为中心，向前（向上）放大，向后（向下）缩小（在平面图中同样适用）"
+        ],
+        [
+          "Ctrl+click",
+          "➤ Select：加入所选内容——面、线条和建筑部件（点击已选中的部件：将其移出选择）；拖动其中任意一个即可移动全部，按 Delete 将全部擦除"
+        ],
+        [
+          "Shift+click",
+          "🪣 Paint：为该侧的所有墙上色（房间的所有内墙面 / 所有外墙）——单击则只为这一面墙的该侧上色"
+        ]
+      ]
+    }
+  ]
+}

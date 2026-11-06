@@ -1,0 +1,250 @@
+<!-- en: imageeditor 15412ea81a87 -->
+<h1>画像エディター</h1>
+
+<p>エディターのレイアウト、ツール、キー操作について説明します。</p>
+
+<h3 id="dockers514">✅ View ▸ Dockers、ドッカーグループの折りたたみと閉じる操作 (2.514.0)</h3>
+<ul>
+  <li>ドッカーグループのタブの先頭にある <b>▾</b> で、グループをタブだけに折りたたみます。タブをクリックすると再び開きます。</li>
+  <li><b>✕</b> でグループを閉じます。<b>View ▸ Dockers</b> には画像エディターのすべてのドッカーがチェック付きで並び、<b>All Dockers</b> ですべてを元に戻せます。</li>
+  <li>アプリのサイドドッカーは、タイトルバーの <b>▾</b> で細いタイトル帯に折りたたまれます。</li>
+  <li>🖌 Edit theme モード：要素のハンドルをドラッグするとサイズを変更、要素の内側をドラッグすると移動できます。要素を非表示にしたり、テキストを変更したりすることもできます。モードを終了すると、テーマを保存するかどうか確認されます。</li>
+</ul>
+
+<h3 id="pen">✅ Pen <kbd>P</kbd> (2.421.0)</h3>
+<ul>
+  <li><b>Pen</b>：クリックでコーナーアンカー、ドラッグでスムーズアンカー（ハンドルは対称に動きます）、最初のアンカーをクリックでパスを閉じます。<kbd>Alt</kbd> でカスプ、<kbd>Shift</kbd> で 45° 刻み、<kbd>Ctrl</kbd> で一時的に Direct Selection、<kbd>Enter</kbd> / <kbd>Esc</kbd> でパスを開いたまま終了します。選択中のパスの上では、セグメント上でアンカーを追加し、アンカー上でそのアンカーを削除します（<b>Auto Add/Delete</b>）。</li>
+  <li><b>Freeform Pen</b>：手描きで描画します。<b>Curve Fit</b> (px) で、ベジェ曲線が描いた軌跡にどれだけ忠実に沿うかを指定します。始点の近くで描き終えるとパスが閉じます。</li>
+  <li><b>Add / Delete Anchor Point</b>、<b>Convert Point</b>（クリック：曲線 ⇄ コーナー、アンカーをドラッグ：新しいハンドル、ハンドルをドラッグ：カスプ）。<kbd>Shift</kbd>+<kbd>P</kbd> でこれらを順に切り替えます。エディター上では <kbd>P</kbd> は Pen ですが、それ以外の場所では従来どおりプロンプトドッカーの表示／非表示を切り替えます。</li>
+  <li><b>Mode</b>：<i>Shape</i> はシェイプレイヤーを描画し（描画色で塗り、背景色 + W の幅で線）、<i>Path</i> は Work Path を描画します。<b>▣ ⊕ ⊖ ⊗ ⊘</b>：New Layer、Combine、Subtract Front Shape、Intersect、Exclude。</li>
+</ul>
+
+<h3 id="pathsel">✅ Path Selection / Direct Selection <kbd>A</kbd> (2.421.0)</h3>
+<ul>
+  <li><b>Path Selection</b>：コンポーネントをクリックして選択（<kbd>Shift</kbd> で追加）、ドラッグで移動、<kbd>Alt</kbd>+ドラッグでコピー、<kbd>Delete</kbd> で削除します。演算方法はオプションバーで指定します。<b>⧉ Merge Components</b>（結果を単純なアウトラインにします）、<b>⟳ Transform…</b>（拡大縮小、回転、反転）。</li>
+  <li><b>Direct Selection</b>：アンカーとハンドルを操作します。<kbd>Shift</kbd> で追加、矩形で囲んで複数選択、矢印キーで微調整（<kbd>Shift</kbd> で ×10）、<kbd>Delete</kbd> で削除、<b>Corner</b> / <b>Smooth</b>。シェイプレイヤーのアウトラインをクリックすると編集できます。アンカーを動かした時点で、シェイプレイヤーはパスになります。</li>
+</ul>
+
+<h3 id="cshape">✅ カスタムシェイプ <kbd>U</kbd> (2.421.0)</h3>
+<ul>
+  <li><b>Custom Shape</b> ツール：ハート、星、バースト、矢印、シェブロン、プラス、クロス、チェック、稲妻、吹き出し、しずく、月、家、雲、リング、フレームをドラッグで描きます（<kbd>Shift</kbd> で縦横比を保持）。<b>Edit ▸ Define Custom Shape…</b> で選択中のパスを追加します（ピッカー内の自作シェイプを右クリックすると削除されます）。</li>
+  <li><b>Shape</b> ツール（長方形、楕円、多角形、直線）にも同じ演算ボタンがあります。New Layer 以外を選ぶと、アクティブなシェイプレイヤーに追加されます。</li>
+</ul>
+
+<h3 id="paths">✅ Paths パネル (2.421.0)</h3>
+<ul>
+  <li>Layers と History の隣にあり、Work Path、保存済みのパス、アクティブなレイヤーの Shape Path と Vector Mask を表示します。クリックで選択、<kbd>Ctrl</kbd>+クリックで選択範囲として読み込みます（<kbd>Shift</kbd> で追加、<kbd>Alt</kbd> で除外）。Work Path をダブルクリックすると保存、保存済みのパスをダブルクリックすると名前を変更します。</li>
+  <li><b>●</b> 描画色で塗りつぶし · <b>○</b> ブラシで境界線を描画 · <b>⬚</b> 選択範囲として読み込み · <b>⟲</b> 選択範囲から作業用パスを作成 · <b>◇</b> ベクトルマスク · <b>＋</b> 新規 · <b>⧉</b> 複製 · <b>☰</b> その他（保存、SVG、カスタムシェイプ、シェイプレイヤー） · <b>🗑</b> 削除。● ○ ⬚ ⟲ を <kbd>Alt</kbd>+クリックすると、それぞれのオプションが開きます。</li>
+</ul>
+
+<h3 id="vmask">✅ ベクトルマスク (2.421.0)</h3>
+<ul>
+  <li><b>Layer ▸ Vector Mask</b>：Reveal All、Hide All、Current Path、Disable / Enable、Rasterize（ピクセルマスクに変換）、Delete。サムネイルはレイヤーマスクのサムネイルの隣にあり、クリックでパスを編集、<kbd>Shift</kbd>+クリックでオフ／オンを切り替えます。</li>
+  <li>Properties：Density、Feather、Invert、Link。切り抜き、キャンバスサイズ、画像サイズ、回転を行うと、すべてのパスも画像と一緒に変換されます。PSD はベクトルマスクとパスのシェイプレイヤーを保持します。<b>File ▸ Export Path as SVG…</b> / <b>Place SVG as Shape Layer…</b>。</li>
+</ul>
+
+<h3 id="smart">✅ スマートオブジェクト (2.422.0)</h3>
+<ul>
+  <li><b>Layer ▸ Smart Objects: Convert to Smart Object</b>：レイヤーまたはグループが内部に格納されます（引き続き編集可能です）。スマートオブジェクト (▣) はその内容から再描画されるため、拡大縮小・回転・ワープを行っても画質が劣化しません。</li>
+  <li><b>Edit Contents</b>（サムネイルをダブルクリック）：内部がバナー付きで開きます。<b>✔ Done</b> でスマートオブジェクトとそのすべての複製が更新され、<b>✕ Cancel</b> で変更せずに閉じます。<b>New Smart Object via Copy</b> = 内容が独立した複製を作成します。<b>Replace Contents…</b>、<b>Export Contents…</b>、<b>Convert to Layers</b>、<b>Rasterize</b>。</li>
+</ul>
+
+<h3 id="sfilters">✅ スマートフィルター (2.422.0)</h3>
+<ul>
+  <li>スマートオブジェクトに適用した Filter / Adjustment は、レイヤーの下に「追加」されます。👁 でオン／オフ、ダブルクリックで設定、右クリックで不透明度、▲ で順序、✕ で削除します。</li>
+  <li><b>filter mask</b>（Smart Filters の行にあります）：クリックしてペイントします。黒く塗った部分ではフィルターが隠れます。<kbd>Shift</kbd>+クリックでオフになります。</li>
+</ul>
+
+<h3 id="xform">✅ Skew、Distort、Perspective、Warp (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Transform: Skew / Distort / Perspective / Warp</b>、またはスマートオブジェクト上で <kbd>Ctrl</kbd>+<kbd>T</kbd>。モードはオプションバーで切り替えます。Warp：グリッドの点、または内側の任意の位置をドラッグします。Bend % 付きのプリセットもあります。<kbd>Enter</kbd> で適用、<kbd>Esc</kbd> でキャンセルします。</li>
+</ul>
+
+<h3 id="puppet">✅ Puppet Warp (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Puppet Warp</b>：クリックでピンを打ち、ピンをドラッグして曲げます。<kbd>Alt</kbd>+クリック / <kbd>Delete</kbd> でピンを削除します。Density、Show Mesh。スマートオブジェクト上ではスマートフィルターとして適用されます。</li>
+</ul>
+
+<h3 id="cas">✅ Content-Aware Scale (2.422.0)</h3>
+<ul>
+  <li><b>Edit ▸ Content-Aware Scale…</b>（<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd>）：幅／高さを % で指定すると、重要でないピクセルが削られます（または複製されます）。<b>Protect: the selection</b>、ライブプレビュー付きです。</li>
+</ul>
+
+<h3 id="liquify">✅ Liquify (2.422.0)</h3>
+<ul>
+  <li><b>Filter ▸ Liquify…</b>（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>X</kbd>）：<kbd>W</kbd> 押し出し、<kbd>R</kbd> 復元、<kbd>C</kbd> 渦（<kbd>Alt</kbd> で逆回転）、<kbd>S</kbd> 縮小、<kbd>B</kbd> 膨張、<kbd>F</kbd> / <kbd>D</kbd> 固定／固定解除。サイズは <kbd>[</kbd> <kbd>]</kbd>、筆圧、Restore All。スマートオブジェクト上ではスマートフィルターとして適用されます。</li>
+</ul>
+
+<h3 id="selmask">✅ Select and Mask (2.423.0)</h3>
+<ul>
+  <li><b>Select ▸ Select and Mask…</b>（<kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>R</kbd>）：Quick Selection <kbd>W</kbd>、Refine Edge <kbd>R</kbd>（髪の毛の上で使います）、Brush <kbd>B</kbd>（<kbd>Alt</kbd> で削除）、表示モード、Radius / Smart Radius、Smooth、Feather、Contrast、Shift Edge、Decontaminate Colors、Output To Selection / Layer Mask / New Layer / New Layer with Layer Mask。</li>
+</ul>
+
+<h3 id="maglasso">✅ Magnetic Lasso、Quick Selection、Sky (2.423.0)</h3>
+<ul>
+  <li><b>Magnetic Lasso</b>（<kbd>L</kbd>）：エッジに沿って動かすと、エッジに吸着します。クリックで点を設定、<kbd>Backspace</kbd> で 1 点戻し、ダブルクリック / <kbd>Enter</kbd> で閉じます。Width、Contrast、Frequency。</li>
+  <li><b>Quick Selection</b>（<kbd>W</kbd>）：ペイントすると、選択範囲がエッジまで広がります。<kbd>Alt</kbd> で削除。Tolerance、Auto-Enhance。<b>Select ▸ Sky</b>。</li>
+</ul>
+
+<h3 id="channels">✅ チャンネルと保存した選択範囲 (2.423.0)</h3>
+<ul>
+  <li><b>Channels</b> タブ：RGB / Red / Green / Blue（クリックで表示、<kbd>Ctrl</kbd>+<kbd>2</kbd> … <kbd>5</kbd>、<kbd>Ctrl</kbd>+クリックでその明るさを選択範囲として読み込み）とアルファチャンネル。<b>Select ▸ Save Selection…</b> / <b>Load Selection…</b>、⬚ ◫ ＋ 🗑。</li>
+</ul>
+
+<h3 id="retouch">✅ Patch、Content-Aware Move / Fill、Red Eye (2.423.0)</h3>
+<ul>
+  <li><b>J</b>：Spot Healing（Content-Aware / Proximity Match）、Healing Brush（ブレンド：テクスチャはソースから、明るさは適用先から取ります）、<b>Patch</b>（対象を囲み、きれいなテクスチャの上へドラッグ）、<b>Content-Aware Move</b>（選択範囲をドラッグ：Move / Extend）、<b>Red Eye</b>（瞳孔をクリック）。</li>
+  <li><b>Edit ▸ Content-Aware Fill…</b> と <b>Edit ▸ Fill…</b> の Content-Aware は AI を使いません。画像自体の内容から塗りつぶします。</li>
+</ul>
+
+<h3 id="erasers">✅ Mixer Brush、Background / Magic Eraser (2.423.0)</h3>
+<ul>
+  <li><b>Mixer Brush</b>（<kbd>B</kbd>）：Wet、Load、Mix、Clean after each stroke。<b>Background Eraser</b>（<kbd>E</kbd>）：Continuous / Once、Tolerance、Protect Foreground Color。<b>Magic Eraser</b>（<kbd>E</kbd>）：クリックした色を消去します（Tolerance、Contiguous）。</li>
+</ul>
+
+<h3 id="pdf">✅ PDF ファイル：開く、編集する、保存する (2.424.0)</h3>
+<ul>
+  <li><b>Save PDF… / Save as New PDF…</b> (2.435.0)：Save ダイアログの <b>Embed fonts</b> を使うと、各行がそれぞれのフォントで書き出され、フォントが埋め込まれます（使用した文字のみ）。フォントはこのコンピューターのフォント、またはインストール先の <code>fonts</code> フォルダーから取得します。どの文字体系でも本物のテキストのまま保持されます。</li>
+  <li><b>File ▸ Open PDF…</b>（または .pdf をドロップ）、<b>Open PDF from Project…</b>：Pages ストリップが表示されます。ページは、テキストを除いた Background と、<b>行ごとのテキストレイヤー</b>（フォント、サイズ、色、幅を元に合わせたもの）として開きます。</li>
+  <li>すべてのツールで編集できます。各ページは独自のレイヤーと取り消し履歴を保持します（別の画像を開いている場合も同様です：File ▸ PDF Pages）。</li>
+  <li><b>💾 Save PDF</b>：変更したページが元の PDF 内で置き換えられます（プロジェクト内のコピーに保存され、ダウンロードもされます）。<b>Save as New…</b>。変更していないページはベクターのまま残り、テキストは選択可能な本物の PDF テキスト（Helvetica / Times / Courier）になります。これらのフォントで表現できない文字は画像に焼き込まれます。</li>
+</ul>
+
+<h3 id="vlines">✅ ベクターライン：曲線ツール、Shape ツール、Outline Pen (2.425.0)</h3>
+<ul>
+  <li><kbd>F5</kbd>（もう一度押すと次のツール）：<b>Bézier</b>（クリックでカスプノード、ドラッグでスムーズノード、ドラッグ中に <kbd>C</kbd> / <kbd>S</kbd>、<kbd>Ctrl</kbd> で 15° 刻み、最初のノードをクリックで閉じる、ダブルクリック / <kbd>Enter</kbd> / <kbd>Space</kbd> で完了、<kbd>Esc</kbd> で破棄）、<b>Freehand</b>、<b>2-Point Line</b>、<b>Polyline</b>、<b>3-Point Curve</b>、<b>B-Spline</b>、<b>Node Pen</b>。アクティブなラインの開いた端から描き始めると、そのラインを延長できます。</li>
+  <li><kbd>F10</kbd> <b>Shape tool</b>：ノード、ハンドル、セグメントを選択／ドラッグします。ダブルクリックでノードを追加／削除、<kbd>C</kbd> <kbd>S</kbd> <kbd>Y</kbd> でカスプ／スムーズ／対称。結合、分割、直線化／曲線化、方向の反転、閉じる、抽出、自動で閉じる、ノードの削減。</li>
+  <li><kbd>F12</kbd> <b>Outline Pen</b>：幅、色、破線、角の形状、線端、位置、矢印、塗りの背面に配置、オブジェクトに合わせて拡大縮小。<kbd>Ctrl</kbd>+<kbd>Q</kbd> <b>Convert to Curves</b>。</li>
+  <li><b>Layer ▸ Vector Line: Convert to Path…</b> / <b>Make from Path…</b>（Paths パネルの 〰）：ラインはアウトライン設定を記憶したパスになり、正確に元のラインへ戻せます。SVG と PSD でも保持されます。</li>
+</ul>
+
+<h3 id="curvpen">✅ Curvature Pen、Rubber Band、パスの整列／分布 (2.425.0)</h3>
+<ul>
+  <li><b>Curvature Pen</b>（<kbd>P</kbd>）：点をクリックすると、曲線がその点を通ります。点をダブルクリックでコーナー／スムーズを切り替え、ドラッグで移動、<kbd>Enter</kbd> で終了します。Pen の <b>Rubber Band</b> オプション。<b>Path Selection</b>（<kbd>A</kbd>）：選択したコンポーネントを整列／分布します（コンポーネント同士、またはキャンバス基準）。</li>
+</ul>
+
+<h3 id="typepanels">✅ Character / Paragraph パネル、段落テキスト、スタイル (2.426.0)</h3>
+<ul>
+  <li><b>Character</b>（Color の隣）：フォント、スタイル、サイズ、行送り、カーニング、トラッキング、垂直／水平比率、ベースラインシフト、色、Faux Bold / Italic、All Caps、Small Caps、Superscript / Subscript、Underline / Strikethrough。</li>
+  <li><b>Paragraph</b>：揃え、最終行の Justify（左揃え／中央揃え／右揃え／両端揃え）、インデント（左、右、1 行目）、段落前後のスペース、Hyphenate。<b>Paragraph text</b>（段落テキスト）：Type ツール（<kbd>T</kbd>）でドラッグすると、テキストがボックス内で折り返されます。Layer ▸ Type: Convert to Paragraph / Point Text。</li>
+  <li><b>Character / Paragraph Styles</b>：＋ でテキストから新規作成、クリックで適用、⌫ Clear Override、⟲ Redefine（そのスタイルを使うすべてのテキストに反映されます）、🗑。</li>
+</ul>
+
+<h3 id="actions">✅ Actions と Batch (2.427.0)</h3>
+<ul>
+  <li><b>Actions</b> タブ（History の隣、<kbd>Alt</kbd>+<kbd>F9</kbd>）：● 記録（メニューコマンドとそのダイアログの設定、フィルター、Layers パネルの操作）、■ 停止、▶ 再生。☑ でステップのオン／オフ、▢ でそのダイアログで一時停止、▲ ▼ 🗑。ダブルクリックでステップを再記録／アクション名とファンクションキーを設定します。☰ Insert Stop、Insert Menu Item、Duplicate、Button Mode、Load / Save (.json)、Reset。</li>
+  <li><b>File ▸ Automate: Batch…</b>：選択したファイルまたはフォルダーに対してアクションを実行します。結果はプロジェクトの batch フォルダー、画像ギャラリーに保存するか、ダウンロードするか、そのままにできます。PNG / JPEG。エラー時は停止するかログに記録します。レポートも作成されます。</li>
+</ul>
+
+<h3 id="coreldraw">✅ 描画ツール (2.428.0)</h3>
+<ul>
+  <li><kbd>F6</kbd>（もう一度押すと次のツール）：Rectangle（角の半径。角丸／スカラップ／面取り）、3-Point Rectangle、Ellipse（扇形／円弧）、3-Point Ellipse、Polygon、Star、Complex Star、Spiral、Graph Paper、Common Shapes。<kbd>Ctrl</kbd> で正方形／正円、<kbd>Shift</kbd> で中心から描画します。<kbd>F10</kbd> でノードを編集するか <kbd>Ctrl</kbd>+<kbd>Q</kbd> を押すまでは、ライブシェイプのまま編集できます。</li>
+  <li>Artistic Media（<kbd>F5</kbd> のグループ内）：Preset、Calligraphic、Pressure、Sprayer。</li>
+  <li><kbd>F8</kbd>：Parallel、Horizontal / Vertical、Angular Dimensions、3-Point Callout、Connector（直線／直角／角丸。接続したオブジェクトに追従します）。</li>
+</ul>
+
+<h3 id="dockers">✅ ドッカー (2.429.0)</h3>
+<ul>
+  <li>Window ▸ Dockers：<b>Transform</b>（<kbd>Alt</kbd>+<kbd>F7</kbd>：位置、回転、拡大縮小と反転、サイズ、傾斜。9 つの基準点を中心に操作でき、コピーも作成できます）、<b>Shaping</b>（結合、トリム、交差、単純化、前面／背面の型抜き、境界）、<b>Align and Distribute</b>（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>A</kbd>）、<b>Object Properties</b>（<kbd>Alt</kbd>+<kbd>Enter</kbd>：グラデーションを含む塗り、アウトライン、透明度）。Ctrl+クリックでレイヤーを複数選択できます。</li>
+</ul>
+
+<h3 id="documents">✅ ドキュメント、カラーパレット、⊠ 透明、自動塗りつぶし (2.430.0)</h3>
+<ul>
+  <li><b>Documents</b>：New / Open を行うたびに、それぞれ独立したドキュメントになります。最初のドキュメントはタブとしてドッキングされ、以降のドキュメントは個別のウィンドウでフローティング表示されます（Window ▸ Arrange ▸ Open Documents as Tabs ですべてをドッキングします）。ウィンドウをタブストリップにドラッグするとドッキング、タブをストリップの外へドラッグするとフローティングになります。<kbd>Ctrl</kbd>+<kbd>W</kbd> で Close、<kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>W</kbd> で Close All、<kbd>Ctrl</kbd>+<kbd>Tab</kbd> で次のドキュメント。Tile / Cascade / Consolidate All to Tabs。</li>
+  <li>右側の <b>Colour palette</b>：曲線／シェイプ／テキストの上では、クリックで塗り、右クリックでアウトラインの色を設定します。ピクセルの上では、クリックで描画色、右クリックで背景色を設定します。<b>⊠</b> = 色なし／透明な描画色（ブラシで透明を塗ります）。</li>
+  <li><b>Auto-fill</b>：閉じた曲線や新しいシェイプは、最後に選んだ色で塗りつぶされます（曲線ツールのバーにある ▨ でオフにできます）。</li>
+</ul>
+
+<h3 id="generated">✅ 生成した画像をキャンバスへ (2.431.0)</h3>
+<ul>
+  <li>エディターを開いている間、プロンプトドッカーは <b>🖼 Image</b>（→ ▦ キャンバス）を生成し、作成された画像はすべて、前面にあるドキュメントにプロンプト名の付いた新しいレイヤーとして配置されます（ドキュメントがない場合は新しいドキュメントとして開きます）。エディターを閉じると、プロンプトドッカーは元のモードに戻ります。</li>
+</ul>
+
+<h3 id="paneldock">✅ パネル列はドッカーです (2.454.0)</h3>
+<ul>
+  <li>⇱ で任意のタブグループをフローティングにできます。タイトルをつかんで列の上にドラッグすると、ドッキングする位置がオレンジ色の線で示されます。</li>
+  <li>列の左端をドラッグすると幅を変更できます。並び順と幅は保持されます。</li>
+</ul>
+
+<h3 id="frames453">✅ フレーム：内容をロック、右クリックで編集 (2.453.0)</h3>
+<ul>
+  <li>内容はフレームにロックされます。Move ツールとそのハンドルはフレームを操作し、内容はフレームと一緒に移動／拡大縮小／回転します。</li>
+  <li>右クリック ▸ Edit Frame Contents / Finish Editing Frame / Extract Contents / Lock Contents to Frame。</li>
+</ul>
+
+<h3 id="handles">✅ Move ツールのハンドル (2.452.0)</h3>
+<ul>
+  <li>クリックで拡大縮小ハンドル（Shift で縦横比を保持、Alt で中心から）、ダブルクリックで回転ハンドル（角で回転、Shift で 15° 刻み、辺で傾斜）を表示します。</li>
+  <li>オプションバーの変形オプション：角度、⟲90 ⟳90、反転、W % x H %。</li>
+  <li>テキストは回転しても編集可能なまま、シェイプはベクターのままです。</li>
+</ul>
+
+<h3 id="promptlink451">✅ プロンプトドッカーからの Edit / Generate、Del (2.451.0)</h3>
+<ul>
+  <li>✨ AI ▸ Edit：プロンプトドッカーが 🖼 Image + Qwen Image 2.1 edit に切り替わり、ボタンの表示が ✏ Edit になります。Generate：✨ Generate で、選択したレイヤーの選択範囲内に生成します。</li>
+  <li>Del で現在のレイヤーを削除します（選択範囲がある場合は、その範囲を消去します）。</li>
+</ul>
+
+<h3 id="warpgrid">✅ Warp のグリッド + 分割線、Liquify の追加機能 (2.450.0)</h3>
+<ul>
+  <li>Warp：Grid（Default / 3 x 3 / 4 x 4 / 5 x 5 / Custom の列 x 行）。Split Warp Crosswise / Vertically / Horizontally：分割したい位置をクリックします。分割線を Alt+クリックすると削除されます。</li>
+  <li>Liquify：Smooth (E)、Push Left (O)。</li>
+  <li>Face-Aware Liquify：Face ツール (A) で顔の位置を指定します。目、鼻、口、顔の形を調整する 13 個のスライダーがあります。</li>
+</ul>
+
+<h3 id="pcruns">✅ 文字単位の書式 (2.449.0)</h3>
+<ul>
+  <li>入力中に文字を選択し、オプションバー（フォント、B、I、サイズ、トラッキング、色）または Character パネルで変更すると、選択した文字だけが変わります。</li>
+  <li>何も選択していない場合はレイヤー全体が対象になります。書式付きの範囲の中で入力すると、その書式が引き継がれます。ベースラインは 1 本で、各行の高さはその行で最も大きい文字に合わせられます。</li>
+  <li>Layer ▸ Type: Clear Character Overrides。</li>
+</ul>
+
+<h3 id="cafill">✅ Content-Aware Fill ワークスペース (2.448.0)</h3>
+<ul>
+  <li>Edit ▸ Content-Aware Fill…（選択範囲が必要です）：サンプリング領域が緑色で表示されます。Auto、Rectangular、Custom（🖌 Sampling Brush の + / −、Alt）。</li>
+  <li>ライブ Preview。Colour Adaptation は None / Default / High / Very High。</li>
+  <li>Output To Current Layer / New Layer / Duplicate Layer。取り消しは 1 回で済みます。</li>
+</ul>
+
+<h3 id="artboards">✅ アートボード (2.447.0)</h3>
+<ul>
+  <li>Layer ▸ New ▸ Artboard…（サイズ、背景、選択したレイヤーを含めるかどうか）、Artboard ツール（V をもう一度押す）、Artboard from Group。</li>
+  <li>アートボードのレイヤーはその内側にだけ表示され、アートボードを動かすとレイヤーも一緒に動きます。Properties：X / Y / W / H、背景、⇱ Fit。</li>
+  <li>File ▸ Export ▸ Artboards to Files…：アートボードごとに PNG を 1 枚書き出します。</li>
+</ul>
+
+<h3 id="grids">✅ グリッドボタン、Grids & Guides 設定 (2.445.0)</h3>
+<ul>
+  <li>上部バーの ⊞：グリッドのオン／オフ (Ctrl+')。</li>
+  <li>⚙ ▸ Grids & Guides：グリッド間隔、n 本ごとの主線、線またはドット、グリッドの色 + 濃さ、ガイドラインの色、スナップ距離。</li>
+</ul>
+
+<h3 id="promptlink">✅ プロンプトドッカーからの ✨ Edit / Generate、⚙ 設定 (2.444.0)</h3>
+<ul>
+  <li>✨ AI ▸ Edit：プロンプトドッカーのスタイルが Qwen Image 2.1 edit、ボタンが ✏ Edit になります。指示はそこに入力します。</li>
+  <li>✨ AI ▸ Generate：プロンプトドッカーの ✨ Generate で、選択したレイヤーの選択範囲内にレンダリングします。✔ Apply でそのレイヤーに合成します。</li>
+  <li>⚙（メニューバーの右）/ Edit ▸ Preferences… (Ctrl+,)：エディターの設定です。</li>
+</ul>
+
+<h3 id="frames">✅ フレーム：シェイプの中のレイヤー (2.442.0)</h3>
+<ul>
+  <li>Layer ▸ Frame ▸ Place Inside Frame…（または、閉じたシェイプの行の中央にレイヤーをドラッグ）：レイヤーはシェイプの内側にだけ表示され、Layers ではシェイプの下にツリーとして並びます。</li>
+  <li>フレームを移動／回転／拡大縮小すると、内容も一緒に変形します（Lock Contents to Frame）。</li>
+  <li>Edit Frame Contents（Move ツールでフレームをダブルクリック）：内容だけを単独で編集します。✓ Finish Editing Frame で終了します。Extract Contents で内容をフレームから取り出します。</li>
+  <li>閉じたシェイプがアクティブな状態で ✨ Generate を使うと、画像はシェイプの内側に生成されます。</li>
+</ul>
+
+<h3 id="flux3">✅ FLUX 3 Image Klein、画像編集モードでは編集用スタイルのみ表示 (2.502.0)</h3>
+<ul>
+  <li><b>FLUX 3 Klein</b>（蒸留版、16 ステップ）、<b>FLUX 3 Klein base</b>（50 ステップ、cfg 3.5）、<b>FLUX 3 Klein edit</b>（参照画像を最大 4 枚）の画像スタイルです。ComfyUI 0.41.0 以降が必要です。</li>
+  <li>画像エディターを開いている間、画像スタイルのドロップダウンには画像を編集できるスタイルだけが表示されます。エディターを閉じると、再びすべてのスタイルが表示されます。</li>
+</ul>
+
+<h3 id="cad494">✅ CAD 機能の改良 (2.494.0)</h3>
+<ul>
+  <li>ツール列の <b>⌬ CAD</b>：スケッチ／スケッチツール／3D ボディを選択している間は、CAD ツールバーが自動で表示されます。ボタンをオンにすると常に表示されます。タイムラインにも専用の ⌬ CAD ボタンがあります。</li>
+  <li>Sketch：<b>Select</b> が先頭に、スケッチ中は <b>Create Sketch</b> が非表示に、<b>Finish Sketch</b> → Solid タブへ移動します。選択した線の端に表示される <b>＋</b> で、そこから続けて描けます。</li>
+  <li><b>Offset (O)</b>：チェーンをクリックし、ポインターで方向と距離を指定します（または値を入力して Enter、F で反転）。どの向きで描いた線もまとめてオフセットされ、角丸部分もつながったままです。</li>
+  <li><b>Extrude / Revolve</b>：使用する閉じた領域をクリックし（ハイライト表示されます）、Enter で設定を開きます。</li>
+  <li>3D：<b>Shift + middle-drag</b>（Shift + 中ボタンドラッグ）でオービット、<b>view cube</b>（ビューキューブ。面、角、ドラッグ）と Home / Orbit / Pan / Fit。</li>
+</ul>
