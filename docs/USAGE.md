@@ -6303,6 +6303,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.702.1: **Credits** - Dandyson EEbu (Baridakara) is credited for text effects and fonts (Settings ▸ About and the
+  Credits section, under Text effects and fonts).
 - 2.702.0: **SVG pictures** - an .svg can go into Assets (drop it, or + add pictures) and into the References (drop it, + add
   reference, or drag it from Assets). Nothing after an upload reads SVG (ComfyUI, the timeline and the models want pixels), so the
   studio draws it into a PNG as it goes in - sharp, because a vector is drawn at the size it is used (the long side at least 2048,
@@ -7527,6 +7529,10 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 
 - **[Female mannequin model](https://www.cgtrader.com/designers/dimasalcalde?utm_source=credit&utm_source=credit_item_page)** (dimasalcalde (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
 - **[Female mannequin model](https://www.cgtrader.com/designers/zahers?utm_source=credit&utm_source=credit_item_page)** (zahers (CGTrader)) - the Sketcher's 🧍 mannequin (model) - People in the Furniture tool
+
+### Text effects and fonts
+
+- **[Dandyson EEbu (Baridakara)](https://www.facebook.com/dandyson.godspower)** - text effects and fonts
 
 ### Programs bitGen Studio works with
 
