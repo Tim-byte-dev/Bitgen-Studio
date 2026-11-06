@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.703.0 (Tim: "is it possible to translate help and the user guide into chinese and japanese as additional help files?")
+node scripts/test-i18n703.js > /tmp/i18n703.log 2>&1 \
+  && ok "2.703.0 units: the guide + help in zh-CN / ja - markers, hashes, stale / not translated, the checker, the language picked, the wiring, the shipped translations' structure, the PDFs" \
+  || { bad "2.703.0 i18n units"; grep -a "^FAIL" -A2 /tmp/i18n703.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-i18n703-ui.js > /tmp/i18n703ui.log 2>&1 \
+  && ok "2.703.0 browser test: 📖 Help + Ctrl+K in 简体中文 / 日本語 (the picker, kept), stale / not translated notes with English a click away, the ❔ pages in the language - or SKIP without playwright" \
+  || { bad "2.703.0 i18n browser test"; grep -a "FAIL\\|Error" -A2 /tmp/i18n703ui.log | head -14; }
 # ---- 2.702.0 (Tim: "can u add svg to the images i can upload to assets or references")
 node scripts/test-svg702.js > /tmp/svg702.log 2>&1 \
   && ok "2.702.0 units: BGSvg - an SVG's own size (units, viewBox), the PNG's size (2048-4096 long side), made ready to draw; the page, the Open dialog, the + add tiles wired" \

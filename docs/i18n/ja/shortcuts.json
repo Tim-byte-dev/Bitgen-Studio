@@ -1,0 +1,1035 @@
+{
+  "lang": "ja",
+  "groups": [
+    {
+      "en": "4c7e43283fb0",
+      "title": "アプリ内のどこでも",
+      "rows": [
+        [
+          "Ctrl+K",
+          "何でも検索します - ドッカー、設定、ボタン、スタイル、ガイド、ショートカット（メニューバーの 🔍 からも可能）。タイムラインのレイヤー上では Ctrl+K は引き続き分割、画像エディターでは独自のパレットになります"
+        ],
+        [
+          "Ctrl+Alt+D",
+          "▣ Docker の表示／非表示 - 他のドッカーをドロップして収められる空のドッカーです（横並びまたは縦積み。ドッカーのタイトルの ⇱ でフローティングにし、タイトルをドラッグして入れます）"
+        ],
+        [
+          "Ctrl+Alt+S",
+          "Settings（設定）を開きます（入力中でも有効。テーマで ⚙ ボタンが非表示になっている場合にも使えます）"
+        ],
+        [
+          "Ctrl+Alt+Shift+T",
+          "bitGen Default テーマに戻します（Dark、要素スタイルなし、UI サイズ 100 %）。Settings ▸ Themes ▸ ↶ The theme before で元に戻せます。アドレスに ?theme=default を付けると、ページの描画前に適用されます"
+        ],
+        [
+          "P",
+          "プロンプトドッカーの表示／非表示（ボックスに入力中は無効。画像エディター上では P は Pen になります）"
+        ],
+        [
+          "Ctrl+P",
+          "プロンプトドッカーを最前面に出します：開いて展開し、覆っているものの上に表示して、プロンプトボックスにすぐ入力できる状態にします（ボックスに入力中でも、🎨 Artist mode でも有効 - 全画面キャンバスの上に表示されます）"
+        ],
+        [
+          "S",
+          "Basic Settings の表示／非表示 - フローティングドッカーです（入力中は無効。画像エディター上では S は Clone Stamp になります）"
+        ],
+        [
+          "L",
+          "LLM tokens の表示／非表示 - フローティングドッカーです（入力中は無効。画像エディター上では L は Lasso、タイムライン上ではシャトルになります）"
+        ],
+        [
+          "1",
+          "タイムラインの Tools & Properties ウィンドウの表示／非表示"
+        ],
+        [
+          "2",
+          "ネガティブプロンプトドッカーの表示／非表示（入力中は無効。🎥 マルチカメラダイアログが開いている間は 1 - 9 でカメラを切り替えます）"
+        ],
+        [
+          "Space",
+          "プレビューの一時停止／再生 - タイムラインキャンバス、ライブプレビュー、またはプレビュー動画（ボックスに入力中は無効）"
+        ],
+        [
+          "Esc",
+          "最大化したドッカーを元に戻します"
+        ],
+        [
+          "Delete",
+          "選択したギャラリーの画像を削除します（ごみ箱へ移動）"
+        ],
+        [
+          "Enter",
+          "プロンプトボックス内：チャットに送信します"
+        ],
+        [
+          "Shift+Enter",
+          "プロンプトボックス内：改行します"
+        ],
+        [
+          "Ctrl+Shift+Alt+E",
+          "ダイアログも含めたテーマ編集モード（開いている Settings は開いたままになり、スタイルを設定できます） - もう一度押すと終了します"
+        ],
+        [
+          "Ctrl+S (in edit theme mode)",
+          "テーマを保存してテーマ編集モードを終了します"
+        ],
+        [
+          "Ctrl+Alt+Shift+B",
+          "🐞 Bug report - まずウィンドウのスクリーンショットを撮り、次にドッカーを開きます（入力中でも有効）。もう一度押すと非表示になります"
+        ]
+      ]
+    },
+    {
+      "en": "83489bd7bc8d",
+      "title": "ライトボックス（画像またはクリップをフルサイズで開いたとき）",
+      "rows": [
+        [
+          "← / →",
+          "前へ／次へ"
+        ],
+        [
+          "+ / −",
+          "ズームイン／ズームアウト"
+        ],
+        [
+          "0",
+          "画面に合わせ直します"
+        ]
+      ]
+    },
+    {
+      "en": "137a9e748479",
+      "title": "タイムラインキャンバス（ポインターがキャンバス上にあるとき）",
+      "rows": [
+        [
+          "V",
+          "Move（移動）"
+        ],
+        [
+          "T",
+          "Text（テキスト）"
+        ],
+        [
+          "H",
+          "Hand（手のひら）"
+        ],
+        [
+          "Z",
+          "Zoom（ズーム）"
+        ],
+        [
+          "M",
+          "Select（選択） - ✨ Fill 用"
+        ],
+        [
+          "B",
+          "Mask brush（マスクブラシ）"
+        ],
+        [
+          "Shift+P",
+          "Path tool（パスツール） - パスレイヤー用"
+        ],
+        [
+          "Shift+C",
+          "Camera tool（カメラツール）：ドラッグ = パン／チルト、Alt+ドラッグ = ロール、Shift+ドラッグ = 高さ、ホイール = ドリー、Shift+ホイール = ズーム"
+        ],
+        [
+          "Space (hold)",
+          "手のひらでパンします"
+        ],
+        [
+          "Space (tap)",
+          "再生／一時停止"
+        ],
+        [
+          "Delete",
+          "選択したクリップを削除します"
+        ],
+        [
+          "F2",
+          "選択したレイヤーの名前を変更します"
+        ],
+        [
+          "← / →",
+          "選択したクリップを少しずつ移動します（Shift：大きいステップ - タイムラインの ⚙ で設定）"
+        ],
+        [
+          "Enter",
+          "選択したクリップの開始時間を設定します"
+        ],
+        [
+          "Delete / Backspace",
+          "選択したキーフレームを削除します（そのポップアップ内で）"
+        ],
+        [
+          "Esc / Enter",
+          "Path tool：Move ツールに戻ります"
+        ],
+        [
+          "Alt+click",
+          "Path tool：ポイントを削除します"
+        ],
+        [
+          "Shift+Q",
+          "✎ Freehand shape：パスを描きます（Alt = 選択中のシェイプレイヤーに追加）"
+        ],
+        [
+          "Shift+M",
+          "✒ Mask Pen：クリック = コーナー、ドラッグ = カーブ、最初のポイント／Enter = 閉じる、Esc = 完了"
+        ],
+        [
+          "Alt+drag (Blender view)",
+          "ズーム - 上／奥へドラッグ = ズームイン、下／手前へ = ズームアウト（画像エディターの Blender シーンツールでも同様）"
+        ],
+        [
+          "Z (Blender view)",
+          "選択したオブジェクトにズームします（何も選択していない場合はシーン全体）"
+        ],
+        [
+          "Shift + right-drag",
+          "ズーム - 奥（上）へでズームイン、手前（下）へでズームアウト。押した位置を中心にズームします"
+        ]
+      ]
+    },
+    {
+      "en": "c2884ce65e5c",
+      "title": "タイムラインのレイヤー（ポインターがレイヤー、ルーラー、またはメニューバー上にあるとき）",
+      "rows": [
+        [
+          "V",
+          "▸ Select tool（選択ツール）"
+        ],
+        [
+          "B",
+          "⇤ Ripple edit tool（リップル編集ツール）"
+        ],
+        [
+          "N",
+          "⇹ Roll edit tool（ロール編集ツール）"
+        ],
+        [
+          "Y",
+          "⇆ Slip tool（スリップツール）"
+        ],
+        [
+          "U",
+          "↔ Slide tool（スライドツール）"
+        ],
+        [
+          "I",
+          "イン - ルーラーの選択範囲が位置マーカーから始まります"
+        ],
+        [
+          "O",
+          "アウト - ルーラーの選択範囲が位置マーカーで終わります"
+        ],
+        [
+          "Ctrl+K",
+          "位置マーカーで分割します（選択したクリップ。選択がなければハイライトされたレイヤーのクリップ）"
+        ],
+        [
+          "↑ / ↓",
+          "前／次の編集点"
+        ],
+        [
+          "Home / End",
+          "タイムラインの先頭／末尾"
+        ],
+        [
+          "M",
+          "位置マーカーにマーカーを追加します（マーカー上では：その名前、色、コメント - フラグをダブルクリックしても同じです）"
+        ],
+        [
+          "Shift+M / Alt+M",
+          "次／前のマーカー"
+        ],
+        [
+          "Ctrl+Shift+E",
+          "位置マーカーのフレームを PNG として書き出します（キャンバスでも有効）"
+        ],
+        [
+          "Ctrl+Shift+M",
+          "選択したクリップの位置マーカーの位置にクリップマーカーを付けます（そのフレームに留まります）"
+        ],
+        [
+          "J / K / L",
+          "プレビューのシャトル：逆再生／停止／順再生 - J または L をもう一度押すと 2x、4x、8x で再生します（タイムラインドッカー内のどこでも、キャンバスでも有効）"
+        ],
+        [
+          "K + J / K + L",
+          "K を押したまま：1 フレーム戻る／進む"
+        ]
+      ]
+    },
+    {
+      "en": "6f93aae189fb",
+      "title": "3D レイヤー（3D レイヤーを選択しているとき）",
+      "rows": [
+        [
+          "G",
+          "移動ウィジェット（もう一度押すとオフ）"
+        ],
+        [
+          "R",
+          "回転ウィジェット"
+        ],
+        [
+          "S",
+          "スケールウィジェット"
+        ]
+      ]
+    },
+    {
+      "en": "80a0b0dcdea8",
+      "title": "画像エディター - ツール",
+      "rows": [
+        [
+          "V",
+          "Move（移動）"
+        ],
+        [
+          "M  (Shift+M cycles)",
+          "Rectangular Marquee · Elliptical Marquee"
+        ],
+        [
+          "L  (Shift+L cycles)",
+          "Lasso · Polygonal Lasso · Magnetic Lasso"
+        ],
+        [
+          "W  (Shift+W cycles)",
+          "Object Selection (Segment Anything) · Magic Wand · Quick Selection Brush"
+        ],
+        [
+          "C",
+          "Crop（切り抜き）"
+        ],
+        [
+          "I",
+          "Eyedropper（スポイト）"
+        ],
+        [
+          "J  (Shift+J cycles)",
+          "Spot Healing Brush · Healing Brush · Patch · Content-Aware Move · Red Eye"
+        ],
+        [
+          "B  (Shift+B cycles)",
+          "Brush · Pencil · Mixer Brush"
+        ],
+        [
+          "S",
+          "Clone Stamp（コピースタンプ）"
+        ],
+        [
+          "Y",
+          "History Brush（ヒストリーブラシ）"
+        ],
+        [
+          "E  (Shift+E cycles)",
+          "Eraser · Background Eraser · Magic Eraser"
+        ],
+        [
+          "G  (Shift+G cycles)",
+          "Gradient · Paint Bucket"
+        ],
+        [
+          "R  (Shift+R cycles)",
+          "Blur · Sharpen · Smudge"
+        ],
+        [
+          "O  (Shift+O cycles)",
+          "Dodge · Burn · Sponge"
+        ],
+        [
+          "P  (Shift+P cycles)",
+          "Pen · Freeform Pen · Curvature Pen · Add Anchor Point · Delete Anchor Point · Convert Point"
+        ],
+        [
+          "T  (Shift+T cycles)",
+          "Horizontal Type · Vertical Type · Type on a Path"
+        ],
+        [
+          "A  (Shift+A cycles)",
+          "Path Selection · Direct Selection"
+        ],
+        [
+          "U  (Shift+U cycles)",
+          "Shape（長方形、楕円、多角形、直線） · Custom Shape"
+        ],
+        [
+          "H",
+          "Hand（手のひら）"
+        ],
+        [
+          "Z",
+          "Zoom（ズーム）"
+        ],
+        [
+          "F5  (F5 again cycles)",
+          "曲線ツール：Bézier · Freehand · 2-Point Line · Polyline · 3-Point Curve · B-Spline · Pen · Artistic Media"
+        ],
+        [
+          "F10",
+          "Shape tool（ノード編集）"
+        ],
+        [
+          "F6  (F6 again cycles)",
+          "シェイプ：Rectangle · 3-Point Rectangle · Ellipse · 3-Point Ellipse · Polygon · Star · Complex Star · Spiral · Graph Paper · Common Shapes"
+        ],
+        [
+          "F8  (F8 again cycles)",
+          "Parallel · Horizontal / Vertical · Angular Dimension · 3-Point Callout · Connector"
+        ]
+      ]
+    },
+    {
+      "en": "4c42a91c7c2e",
+      "title": "画像エディター - File メニュー",
+      "rows": [
+        [
+          "Ctrl+N",
+          "New（新規）"
+        ],
+        [
+          "Ctrl+O",
+          "Open（開く）"
+        ],
+        [
+          "Alt+Ctrl+O",
+          "Place as Layer（レイヤーとして配置）"
+        ],
+        [
+          "Ctrl+S",
+          "Save to Images（Images に保存）"
+        ],
+        [
+          "Shift+Ctrl+S",
+          "Save as PSD（PSD として保存）"
+        ],
+        [
+          "Alt+Ctrl+S",
+          "Save Project (.bgi)（プロジェクトを保存）"
+        ],
+        [
+          "Shift+Delete",
+          "Delete Layer（レイヤーを削除）"
+        ],
+        [
+          "Ctrl+;",
+          "Guidelines（ガイドライン）"
+        ],
+        [
+          "Alt+Ctrl+;",
+          "Lock Guidelines（ガイドラインをロック）"
+        ],
+        [
+          "Shift+Ctrl+;",
+          "Snap（スナップ）"
+        ],
+        [
+          "Alt+Shift+Ctrl+W",
+          "Export As（形式を指定して書き出し）"
+        ],
+        [
+          "Ctrl+W",
+          "Close（閉じる）"
+        ],
+        [
+          "Alt+Ctrl+W",
+          "Close All（すべて閉じる）"
+        ]
+      ]
+    },
+    {
+      "en": "d13f5d936edf",
+      "title": "画像エディター - Edit メニュー",
+      "rows": [
+        [
+          "Ctrl+Z",
+          "Undo（取り消し）"
+        ],
+        [
+          "Shift+Ctrl+Z",
+          "Redo（やり直し）"
+        ],
+        [
+          "Ctrl+X",
+          "Cut（切り取り）"
+        ],
+        [
+          "Ctrl+C",
+          "Copy（コピー）"
+        ],
+        [
+          "Shift+Ctrl+C",
+          "Copy Merged（結合部分をコピー）"
+        ],
+        [
+          "Ctrl+V",
+          "Paste（ペースト）"
+        ],
+        [
+          "Shift+Ctrl+V",
+          "Paste in Place（同じ位置にペースト）"
+        ],
+        [
+          "Shift+F5",
+          "Fill（塗りつぶし）"
+        ],
+        [
+          "Ctrl+T",
+          "Free Transform（自由変形）"
+        ],
+        [
+          "Alt+Shift+Ctrl+C",
+          "Content-Aware Scale（コンテンツに応じて拡大・縮小）"
+        ],
+        [
+          "Ctrl+,",
+          "Preferences（環境設定）"
+        ]
+      ]
+    },
+    {
+      "en": "56e7b7f4457c",
+      "title": "画像エディター - Image メニュー",
+      "rows": [
+        [
+          "Shift+Ctrl+L",
+          "Auto Tone（自動トーン補正）"
+        ],
+        [
+          "Alt+Shift+Ctrl+L",
+          "Auto Contrast（自動コントラスト）"
+        ],
+        [
+          "Shift+Ctrl+B",
+          "Auto Color（自動カラー補正）"
+        ],
+        [
+          "Alt+Ctrl+I",
+          "Image Size（画像サイズ）"
+        ],
+        [
+          "Alt+Ctrl+C",
+          "Canvas Size（キャンバスサイズ）"
+        ]
+      ]
+    },
+    {
+      "en": "d62177e7e6a5",
+      "title": "画像エディター - Layer メニュー",
+      "rows": [
+        [
+          "Shift+Ctrl+N",
+          "Layer（新規レイヤー）"
+        ],
+        [
+          "Ctrl+J",
+          "Layer via Copy（コピーしたレイヤー）"
+        ],
+        [
+          "Shift+Ctrl+J",
+          "Layer via Cut（カットしたレイヤー）"
+        ],
+        [
+          "Alt+Ctrl+G",
+          "Create / Release Clipping Mask（クリッピングマスクを作成／解除）"
+        ],
+        [
+          "Ctrl+G",
+          "Group Layers（レイヤーをグループ化）"
+        ],
+        [
+          "Shift+Ctrl+G",
+          "Ungroup Layers（レイヤーのグループ解除）"
+        ],
+        [
+          "Shift+Ctrl+]",
+          "Bring to Front（最前面へ）"
+        ],
+        [
+          "Ctrl+]",
+          "Bring Forward（前面へ）"
+        ],
+        [
+          "Ctrl+[",
+          "Send Backward（背面へ）"
+        ],
+        [
+          "Shift+Ctrl+[",
+          "Send to Back（最背面へ）"
+        ],
+        [
+          "Ctrl+/",
+          "Lock All（すべてロック）"
+        ],
+        [
+          "Ctrl+E",
+          "Merge Down（下のレイヤーと結合）"
+        ],
+        [
+          "Shift+Ctrl+E",
+          "Merge Visible（表示レイヤーを結合）"
+        ],
+        [
+          "F12",
+          "Outline Pen（輪郭ペン）"
+        ],
+        [
+          "Ctrl+Q",
+          "Convert to Curves（曲線に変換）"
+        ]
+      ]
+    },
+    {
+      "en": "eb8b6a085b0a",
+      "title": "画像エディター - Select メニュー",
+      "rows": [
+        [
+          "Ctrl+A",
+          "All（すべてを選択）"
+        ],
+        [
+          "Ctrl+D",
+          "Deselect（選択を解除）"
+        ],
+        [
+          "Shift+Ctrl+D",
+          "Reselect（再選択）"
+        ],
+        [
+          "Shift+Ctrl+I",
+          "Inverse（選択範囲を反転）"
+        ],
+        [
+          "Shift+F6",
+          "Feather（境界をぼかす）"
+        ],
+        [
+          "Q",
+          "Edit in Quick Mask Mode（クイックマスクモードで編集）"
+        ],
+        [
+          "Alt+Ctrl+R",
+          "Select and Mask（選択とマスク）"
+        ]
+      ]
+    },
+    {
+      "en": "36d21059b364",
+      "title": "画像エディター - Channels パネル",
+      "rows": [
+        [
+          "Ctrl+2",
+          "RGB（全チャンネル）"
+        ],
+        [
+          "Ctrl+3",
+          "レッドチャンネルのみ"
+        ],
+        [
+          "Ctrl+4",
+          "グリーンチャンネルのみ"
+        ],
+        [
+          "Ctrl+5",
+          "ブルーチャンネルのみ"
+        ],
+        [
+          "Ctrl-click a channel",
+          "その明るさ／保存した選択範囲を選択範囲として読み込みます"
+        ]
+      ]
+    },
+    {
+      "en": "4f93f18d0d99",
+      "title": "画像エディター - 曲線ツール（F5）と Shape tool（F10）",
+      "rows": [
+        [
+          "click / drag",
+          "Bézier：カスプノード／スムーズノード（カーブ）"
+        ],
+        [
+          "C / S while dragging",
+          "Bézier：ノードをカスプ／スムーズにします"
+        ],
+        [
+          "Ctrl",
+          "曲線ツール：15° 単位で制限"
+        ],
+        [
+          "click the first node",
+          "曲線を閉じます"
+        ],
+        [
+          "double-click · Enter · Space",
+          "完了"
+        ],
+        [
+          "Esc",
+          "描画中の線を破棄します"
+        ],
+        [
+          "C / S / Y",
+          "Shape tool：カスプ／スムーズ／対称ノード"
+        ],
+        [
+          "+ · Insert",
+          "Shape tool：ノードを追加します"
+        ],
+        [
+          "- · Delete",
+          "Shape tool：選択したノードを削除します"
+        ],
+        [
+          "double-click the line / a node",
+          "Shape tool：ノードを追加／削除します"
+        ],
+        [
+          "arrows (Shift ×10)",
+          "Shape tool：選択したノードを少しずつ移動します"
+        ]
+      ]
+    },
+    {
+      "en": "81f573ff9b56",
+      "title": "画像エディター - Filter メニュー",
+      "rows": [
+        [
+          "Ctrl+F",
+          "Last Filter（前回のフィルター）"
+        ],
+        [
+          "Shift+Ctrl+X",
+          "Liquify（ゆがみ）"
+        ]
+      ]
+    },
+    {
+      "en": "5a3af014c65b",
+      "title": "画像エディター - View メニュー",
+      "rows": [
+        [
+          "Ctrl+=",
+          "Zoom In（ズームイン）"
+        ],
+        [
+          "Ctrl+-",
+          "Zoom Out（ズームアウト）"
+        ],
+        [
+          "Ctrl+0",
+          "Fit on Screen（画面サイズに合わせる）"
+        ],
+        [
+          "Ctrl+1",
+          "100%"
+        ],
+        [
+          "Ctrl+R",
+          "Rulers（ルーラー）"
+        ],
+        [
+          "Ctrl+'",
+          "Grid（グリッド）"
+        ],
+        [
+          "\\",
+          "Mask Overlay（マスクオーバーレイ）"
+        ],
+        [
+          "F",
+          "Full Screen Mode（フルスクリーンモード）"
+        ],
+        [
+          "Ctrl+Alt+0",
+          "Zoom to Selection（選択範囲にズーム）"
+        ]
+      ]
+    },
+    {
+      "en": "a97c9719bdc0",
+      "title": "画像エディター - Window メニュー",
+      "rows": [
+        [
+          "F7",
+          "Layers（レイヤー）"
+        ],
+        [
+          "Tab",
+          "Show / Hide Panels（パネルの表示／非表示）"
+        ],
+        [
+          "Alt+F9",
+          "Actions（アクション）"
+        ],
+        [
+          "Alt+F7",
+          "Dockers: Transform（ドッカー：変形）"
+        ],
+        [
+          "Shift+Ctrl+A",
+          "Dockers: Align and Distribute（ドッカー：整列と分布）"
+        ],
+        [
+          "Alt+Enter",
+          "Dockers: Object Properties（ドッカー：オブジェクトのプロパティ）"
+        ],
+        [
+          "Ctrl+Tab",
+          "Next Document（次のドキュメント）"
+        ],
+        [
+          "Shift+Ctrl+Tab",
+          "Previous Document（前のドキュメント）"
+        ]
+      ]
+    },
+    {
+      "en": "526262278bb5",
+      "title": "画像エディター - Help メニュー",
+      "rows": [
+        [
+          "F1",
+          "Image Editor Help（画像エディターのヘルプ）"
+        ],
+        [
+          "Ctrl+K",
+          "Command Palette（コマンドパレット）"
+        ]
+      ]
+    },
+    {
+      "en": "c5af82d38eaa",
+      "title": "画像エディター - 単独キーとクリック",
+      "rows": [
+        [
+          "Q",
+          "Quick Mask のオン／オフ"
+        ],
+        [
+          "X",
+          "描画色と背景色を入れ替えます"
+        ],
+        [
+          "D",
+          "初期設定の色（黒／白）に戻します"
+        ],
+        [
+          "F",
+          "フルスクリーン"
+        ],
+        [
+          "K",
+          "選択ブラシ"
+        ],
+        [
+          "1 … 0",
+          "ブラシの不透明度 10 … 100 %（ペイントツール）"
+        ],
+        [
+          "[ / ]",
+          "ブラシサイズを小さく／大きくします"
+        ],
+        [
+          "Tab",
+          "パネルの表示／非表示"
+        ],
+        [
+          "Shift+Tab",
+          "パネルグループの表示／非表示"
+        ],
+        [
+          "\\",
+          "マスクオーバーレイ：マスクで隠れている部分を赤で表示します（マスクをペイント中は常に表示）"
+        ],
+        [
+          "Space (hold)",
+          "パン"
+        ],
+        [
+          "Enter",
+          "表示中の ✨ 結果を適用します／多角形を閉じます"
+        ],
+        [
+          "Esc",
+          "✨ 結果を破棄します／多角形をキャンセルします／マスク表示を終了します"
+        ],
+        [
+          "Shift / Alt / Shift+Alt",
+          "選択ツール：追加／削除／交差"
+        ],
+        [
+          "Click / Shift / Alt",
+          "Object Selection：対象を選択／1 つ追加／1 つ除外（ドラッグ = ボックスで指定）"
+        ],
+        [
+          "Ctrl+click a layer",
+          "✨ Compose／→ References 用に選択します（選択した順番どおり）"
+        ],
+        [
+          "Ctrl+click a thumbnail",
+          "その透明部分（またはマスク）を選択範囲として読み込みます"
+        ],
+        [
+          "Alt+click a mask",
+          "マスク自体を表示します"
+        ],
+        [
+          "Shift+click a mask",
+          "マスクを無効化／有効化します"
+        ],
+        [
+          "Alt+click the eye",
+          "このレイヤーだけを表示します"
+        ],
+        [
+          "O",
+          "Sketch：Offset ツール（F = 反対側、Enter = 入力した距離）"
+        ],
+        [
+          "Shift + middle-drag",
+          "選択した 3D ボディ（または 3D ビューレイヤー）をオービットします"
+        ],
+        [
+          "Middle-drag",
+          "キャンバスをパンします"
+        ],
+        [
+          "Shift+right-click",
+          "🎨 Artist mode 中：通常表示に戻ります（Ctrl+Esc／Ctrl+Shift+F でも可能 - Windows では Ctrl+Esc でスタートメニューが開くことがあります）。コンテキストメニューは開きません"
+        ],
+        [
+          "Alt+P",
+          "🎨 Artist mode 中：ポインターの位置にカラーパレットを表示します（もう一度 Alt+P を押すと閉じます）"
+        ],
+        [
+          "Ctrl+B",
+          "🎨 Artist mode 中：ポインターの位置にブラシを表示します"
+        ],
+        [
+          "Alt+G",
+          "🎨 Artist mode 中：キャンバスの上に Layers パネルと ⏳ Pending を表示します - レイヤーを選び、Ctrl+P でプロンプトドッカー、Generate／▾ Edit を使えます。もう一度 Alt+G を押すと非表示になります"
+        ],
+        [
+          "Shift + right-drag",
+          "ズーム - 奥（上）へでズームイン、手前（下）へでズームアウト。押した位置を中心にズームします（🎨 Artist mode でも有効。Shift+右クリックすると Artist mode を終了します）"
+        ]
+      ]
+    },
+    {
+      "en": "c1eb26542b9b",
+      "title": "Sketcher - ドッカー上",
+      "rows": [
+        [
+          "Space",
+          "Select（選択）"
+        ],
+        [
+          "L / R / C / N",
+          "Line / Rectangle / Circle / Polygon（線／長方形／円／多角形）"
+        ],
+        [
+          "P",
+          "Push/Pull（プッシュ／プル）"
+        ],
+        [
+          "M / Q / S",
+          "Move / Rotate / Scale（移動／回転／拡大縮小。Move では Ctrl でコピー）"
+        ],
+        [
+          "F",
+          "Offset（オフセット）"
+        ],
+        [
+          "T / B / E",
+          "Tape / Paint / Eraser（メジャー／ペイント／消しゴム）"
+        ],
+        [
+          "O / H",
+          "Orbit / Pan（オービット／パン。中ボタン／右ボタンでは常に使えます）"
+        ],
+        [
+          "→ ← ↑ / ↓",
+          "赤／緑／青の軸に固定／固定を解除します（Shift：表示中の軸）"
+        ],
+        [
+          "G",
+          "選択したものをグループ化します（グループを選択している場合は分解します）"
+        ],
+        [
+          "Shift+Z",
+          "すべてを表示範囲に収めます"
+        ],
+        [
+          "U / W",
+          "Room / Wall（部屋／壁）"
+        ],
+        [
+          "D / I",
+          "Door / Window（ドア／窓） - 壁の上に配置"
+        ],
+        [
+          "J / K",
+          "Floor / Ceiling（床／天井）のオン／オフ"
+        ],
+        [
+          "Y",
+          "Roof（屋根） - Shift+クリック：その下に含める部屋を追加"
+        ],
+        [
+          "X",
+          "Light（ライト） - 種類はパネルで選択"
+        ],
+        [
+          "V",
+          "Stairs（階段）"
+        ],
+        [
+          "Alt+G",
+          "⛰ Terrain - 地面：ブラシで Raise / Lower / Smooth / Flatten を行うか、地面が沿う 〰 等高線を描きます（モードはパネルで選択）"
+        ],
+        [
+          "[ / ] (Terrain)",
+          "ブラシを小さく／大きくします。Shift+ドラッグ：逆の動作（隆起 ⇄ 沈降）。Alt+クリック（Flatten）：その位置の高さを取得します"
+        ],
+        [
+          "Drag a room (Select)",
+          "その壁が隣の部屋の壁にスナップし、1 枚の共有壁になります"
+        ],
+        [
+          "Delete",
+          "選択したものを消去します"
+        ],
+        [
+          "Esc",
+          "ツールなし・選択なしの状態にします - 3D ビュー、📐 平面図、カメラのビューでは 🔄 Orbit になります（連続して描いている壁は保持されます）。Orbit 中は ➤ Select に切り替わります。最大化した Sketcher をドッキングすることはありません"
+        ],
+        [
+          "a number",
+          "Measurements ボックスに入力されます - Enter で適用します（3,2 · 150cm · 36s）"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y / Ctrl+S",
+          "元に戻す／やり直し／保存"
+        ],
+        [
+          "Double-click a picked camera",
+          "移動矢印 ⇄ 回転リングを切り替えます"
+        ],
+        [
+          "Shift + right-drag",
+          "ズーム - 奥（上）へでズームイン、手前（下）へでズームアウト。押した位置を中心にズームします（平面図でも有効）"
+        ],
+        [
+          "Ctrl+click",
+          "➤ Select：選択に追加します - 面、線、建物のパーツ（選択済みのパーツは選択から外れます）。そのうち 1 つをドラッグするとすべてが移動し、Delete ですべて消去します"
+        ],
+        [
+          "Shift+click",
+          "🪣 Paint：その側のすべての壁を塗ります（部屋の内側／すべての外壁） - 通常のクリックでは 1 枚の壁の片面だけを塗ります"
+        ]
+      ]
+    }
+  ]
+}

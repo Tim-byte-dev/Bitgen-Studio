@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.703.0** — 🌏 The Guide, Help, Shortcut Keys and Guide PDF in Simplified Chinese (Mainland) and Japanese - a Language Picker; Sections Newer in English Say So
 - **2.702.1** — Credits: Dandyson EEbu (Baridakara) for Text Effects and Fonts
 - **2.702.0** — 🖼 SVG Pictures into Assets and References (Drawn into a Sharp PNG as They Go In) + the Logo at 1920 × 1080
 - **2.701.0** — 🎬 A 15 s Start-Up Splash (the Logo + the Credits) in the Desktop App, and the Logo in the Setup

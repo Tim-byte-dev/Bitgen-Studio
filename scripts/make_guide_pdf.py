@@ -4,6 +4,9 @@
 Tim (verbatim): "create a pdf with instructions and shortcut key quick view".
 
     python3 scripts/make_guide_pdf.py [out.pdf]        (default docs/bitGen-Studio-Guide.pdf)
+    python3 scripts/make_guide_pdf.py --lang zh-CN|ja [out.pdf]   (2.703.0: docs/bitGen-Studio-Guide-<lang>.pdf from
+        docs/i18n/<lang>/USAGE.md + shortcuts.json - a section / group not translated is printed in English; Noto Sans CJK
+        embedded through scripts/cjkfont.py, CJK line breaking)
 
 Built from the app's own files, so it is made again for every release and never drifts:
   docs/shortcuts.json   the shortcut groups (the image editor's rows were read from its command table)
@@ -51,6 +54,21 @@ for d in ("/usr/share/fonts/truetype/dejavu", "C:/Windows/Fonts", "/Library/Font
         FONT, BOLD, ITAL, MONO = "DV", "DV-B", "DV-I", "DV-M"
         _GLYPHS = set(pdfmetrics.getFont("DV").face.charToGlyph.keys()) & set(pdfmetrics.getFont("DV-M").face.charToGlyph.keys()) | set(range(32, 127))
         break
+
+
+FALLBACK = None      # 2.703.0: in a Chinese / Japanese build, the characters the CJK font lacks but DejaVu has
+
+
+def fb(markup):
+    """wrap the characters the main font cannot draw (but DejaVu can) in <font name="DV"> - outside the tags only"""
+    if not FALLBACK:
+        return markup
+    out = []
+    for part in re.split(r"(<[^>]+>|&[a-z]+;|&#\d+;)", markup):
+        if not part or part.startswith("<") or part.startswith("&"):
+            out.append(part); continue
+        out.append(re.sub("([" + re.escape("".join(sorted(FALLBACK))) + "]+)", r'<font name="DV">\1</font>', part) if any(ch in FALLBACK for ch in part) else part)
+    return "".join(out)
 
 
 def drawable(text):
@@ -108,19 +126,25 @@ def inline(md):
 def P(markup, style):
     """a Paragraph - and if the markdown's markup does not nest (a stray * or **), the same words without it"""
     try:
-        return Paragraph(markup, style)
+        return Paragraph(fb(markup), style)
     except ValueError:
         return Paragraph(esc(re.sub(r"<[^>]+>", "", markup).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")), style)
 
 
 # ------------------------------------------------------------------ styles
+WRAP = None          # 2.703.0: "CJK" in a Chinese / Japanese build (lines break between any two characters)
+
+
 def S(name, **k):
     base = dict(fontName=FONT, fontSize=9.6, leading=13.2, textColor=INK, spaceAfter=4)
+    if WRAP:
+        base["wordWrap"] = WRAP
     base.update(k)
     return ParagraphStyle(name, **base)
 
 
-ST = {
+def styles():
+  return {
     "body": S("body"),
     "h1": S("h1", fontName=BOLD, fontSize=19, leading=24, spaceBefore=4, spaceAfter=10, textColor=INK),
     "h2": S("h2", fontName=BOLD, fontSize=13.5, leading=17, spaceBefore=12, spaceAfter=6, textColor=TIGER, keepWithNext=1),
@@ -133,7 +157,10 @@ ST = {
     "sub": S("sub", leftIndent=10, spaceAfter=2),
     "cap": S("cap", fontName=ITAL, fontSize=8, leading=10, textColor=DIM, alignment=TA_CENTER, spaceAfter=8),
     "code": S("code", fontName=MONO, fontSize=8, leading=10.5, backColor=CHIP, borderPadding=4, spaceAfter=6),
-}
+  }
+
+
+ST = styles()
 
 
 class Bookmark(Flowable):
@@ -162,7 +189,7 @@ def shortcut_tables(groups, col_w):
         t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LINEBELOW", (0, 0), (-1, -1), 0.3, LINE),
                                ("TOPPADDING", (0, 0), (-1, -1), 2.2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2.2),
                                ("LEFTPADDING", (0, 0), (-1, -1), 2), ("RIGHTPADDING", (0, 0), (-1, -1), 3)]))
-        blocks.append(KeepTogether([Paragraph(esc(drawable(g["title"])), ST["grp"]), t, Spacer(1, 7)]))
+        blocks.append(KeepTogether([P(esc(drawable(g["title"])), ST["grp"]), t, Spacer(1, 7)]))
     return blocks
 
 
@@ -207,7 +234,7 @@ def md_flowables(md, img_dir, width):
             key = slug(m.group(2)) or f"h{n_h}"
             heads.append((lvl, title, key))
             out.append(Bookmark(title, lvl - 1, key))
-            out.append(Paragraph(esc(title), ST["h2" if lvl == 2 else "h3"]))
+            out.append(P(esc(title), ST["h2" if lvl == 2 else "h3"]))
             i += 1
             continue
         m = re.match(r"^!\[([^\]]*)\]\(([^)]+)\)", s)
@@ -223,7 +250,7 @@ def md_flowables(md, img_dir, width):
                     if h > 120 * mm:
                         h = 120 * mm; w = h * iw / ih
                     out.append(Image(p, width=w, height=h))
-                    out.append(Paragraph(esc(drawable(m.group(1))), ST["cap"]))
+                    out.append(P(esc(drawable(m.group(1))), ST["cap"]))
                 except Exception:  # noqa: BLE001 - a picture that will not load is skipped
                     pass
             i += 1
@@ -298,11 +325,76 @@ def md_flowables(md, img_dir, width):
     return out, heads
 
 
-# ------------------------------------------------------------------ the document
-def build(out_path):
-    ver = json.load(open(os.path.join(ROOT, "package.json"), encoding="utf-8")).get("version", "")
+# ------------------------------------------------------------------ 2.703.0: the Chinese / Japanese guide
+WORDS = {
+    "en": {"head": "Guide · v{ver}", "sub": "Instructions and shortcut keys", "ver": "Version {ver}  ·  {date}", "date": "%d %B %Y",
+           "tag": "Local AI video, image, music and editing studio - ComfyUI, MiniMax H3, Wan, LTX, local LLMs",
+           "parts": ["Part 1  -  Shortcut keys at a glance", "Part 2  -  Instructions (every docker, step by step)", "Credits  -  at the end of Part 2"],
+           "p1": "Part 1 - Shortcut keys at a glance", "keys": "Shortcut keys at a glance",
+           "keysnote": "Keys work when the docker they belong to has the pointer or the focus, and never while you type in a box. "
+                       "In the image editor every menu shows its keys too, and <b>Ctrl+K</b> finds any command by name.",
+           "p2": "Part 2 - Instructions", "instr": "Instructions", "toc": "Contents", "title": "Guide"},
+    "zh-CN": {"head": "指南 · v{ver}", "sub": "使用说明与快捷键", "ver": "版本 {ver}  ·  {date}", "date": "%Y年%m月%d日",
+              "tag": "本地 AI 视频、图像、音乐与编辑工作室 - ComfyUI、MiniMax H3、Wan、LTX、本地 LLM",
+              "parts": ["第 1 部分  -  快捷键一览", "第 2 部分  -  使用说明（逐个面板、逐步讲解）", "鸣谢  -  位于第 2 部分末尾"],
+              "p1": "第 1 部分 - 快捷键一览", "keys": "快捷键一览",
+              "keysnote": "快捷键在指针或焦点位于其所属面板时生效，在输入框中输入时不会触发。在图像编辑器中，每个菜单也会显示其快捷键，"
+                          "按 <b>Ctrl+K</b> 可按名称查找任何命令。应用的按钮和菜单为英文，因此本指南中的界面名称保留英文。",
+              "p2": "第 2 部分 - 使用说明", "instr": "使用说明", "toc": "目录", "title": "指南"},
+    "ja": {"head": "ガイド · v{ver}", "sub": "使い方とショートカットキー", "ver": "バージョン {ver}  ·  {date}", "date": "%Y年%m月%d日",
+           "tag": "ローカル AI 動画・画像・音楽・編集スタジオ - ComfyUI、MiniMax H3、Wan、LTX、ローカル LLM",
+           "parts": ["第 1 部  -  ショートカットキー一覧", "第 2 部  -  使い方（ドッカーごとに手順を説明）", "クレジット  -  第 2 部の最後"],
+           "p1": "第 1 部 - ショートカットキー一覧", "keys": "ショートカットキー一覧",
+           "keysnote": "キーは、そのキーが属するドッカーにポインターまたはフォーカスがあるときに働き、入力欄に入力している間は働きません。"
+                       "画像エディターでは各メニューにもキーが表示され、<b>Ctrl+K</b> で任意のコマンドを名前で検索できます。"
+                       "アプリのボタンやメニューは英語のため、このガイドでも画面上の名前は英語のまま記載しています。",
+           "p2": "第 2 部 - 使い方", "instr": "使い方", "toc": "目次", "title": "ガイド"},
+}
+LANG = "en"
+
+
+def use_lang(lang):
+    """read the translated guide + shortcuts; switch the fonts to Noto Sans CJK (SC / JP) with DejaVu behind it"""
+    global LANG, FONT, BOLD, ITAL, _GLYPHS, FALLBACK, WRAP, ST
+    tmd = open(os.path.join(ROOT, "docs", "i18n", lang, "USAGE.md"), encoding="utf-8").read()
+    md = re.sub(r"^\s*<!--\s*en:[^>]*-->\s*\n", "", tmd, flags=re.M)
     sc = json.load(open(os.path.join(ROOT, "docs", "shortcuts.json"), encoding="utf-8"))
-    md = open(os.path.join(ROOT, "docs", "USAGE.md"), encoding="utf-8").read()
+    try:
+        tsc = json.load(open(os.path.join(ROOT, "docs", "i18n", lang, "shortcuts.json"), encoding="utf-8"))
+    except (OSError, ValueError):
+        tsc = {"groups": []}
+    groups = []
+    for i, g in enumerate(sc["groups"]):                 # a group with the same keys in the same order = translated
+        t = tsc["groups"][i] if i < len(tsc.get("groups", [])) else None
+        ok = t and len(t.get("rows", [])) == len(g["rows"]) and all(a[0] == b[0] for a, b in zip(t["rows"], g["rows"]))
+        groups.append({"title": t["title"], "rows": [[r[0], r[1]] for r in t["rows"]]} if ok else g)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from cjkfont import cjk_ttf
+    import tempfile
+    text = md + json.dumps(groups, ensure_ascii=False) + json.dumps(WORDS[lang], ensure_ascii=False)
+    fdir = os.path.join(tempfile.gettempdir(), "bitgen-cjk-fonts")
+    reg, bold = cjk_ttf(lang, "Regular", text, fdir), cjk_ttf(lang, "Bold", text, fdir)
+    pdfmetrics.registerFont(TTFont("CJ", reg)); pdfmetrics.registerFont(TTFont("CJ-B", bold))
+    pdfmetrics.registerFontFamily("CJ", normal="CJ", bold="CJ-B", italic="CJ", boldItalic="CJ-B")
+    cj = set(pdfmetrics.getFont("CJ").face.charToGlyph.keys())
+    dv = set(_GLYPHS or set())
+    FALLBACK = set(chr(c) for c in (dv - cj) if c > 127) if FONT == "DV" else set()
+    _GLYPHS = cj | dv
+    FONT, BOLD, ITAL = "CJ", "CJ-B", "CJ"
+    WRAP, LANG = "CJK", lang
+    ST = styles()
+    return md, {"groups": groups}
+
+
+# ------------------------------------------------------------------ the document
+def build(out_path, lang="en"):
+    ver = json.load(open(os.path.join(ROOT, "package.json"), encoding="utf-8")).get("version", "")
+    if lang != "en":
+        md, sc = use_lang(lang)
+    else:
+        sc = json.load(open(os.path.join(ROOT, "docs", "shortcuts.json"), encoding="utf-8"))
+        md = open(os.path.join(ROOT, "docs", "USAGE.md"), encoding="utf-8").read()
+    w = WORDS[lang]
     credits = json.load(open(os.path.join(ROOT, "lib", "credits.json"), encoding="utf-8")).get("credits", [])
     W, H = A4
     M = 16 * mm
@@ -313,7 +405,7 @@ def build(out_path):
         c.setFillColor(BG); c.rect(0, 0, W, H, fill=1, stroke=0)          # every page dark (the app's --ink)
         c.setStrokeColor(TIGER); c.setLineWidth(1.2); c.line(M, H - 11 * mm, W - M, H - 11 * mm)
         c.setFont(BOLD, 7.5); c.setFillColor(INK); c.drawString(M, H - 9.5 * mm, "bitGen Studio")
-        c.setFont(FONT, 7.5); c.setFillColor(DIM); c.drawRightString(W - M, H - 9.5 * mm, f"Guide · v{ver}")
+        c.setFont(FONT, 7.5); c.setFillColor(DIM); c.drawRightString(W - M, H - 9.5 * mm, w["head"].format(ver=ver))
         c.drawCentredString(W / 2, 8 * mm, str(doc.page))
         c.restoreState()
 
@@ -322,22 +414,22 @@ def build(out_path):
         c.setFillColor(BG); c.rect(0, 0, W, H, fill=1, stroke=0)
         c.setFillColor(TIGER); c.rect(0, H * 0.62, W, 5, fill=1, stroke=0)
         c.setFillColor(colors.white); c.setFont(BOLD, 34); c.drawString(M, H * 0.70, "bitGen Studio")
-        c.setFont(FONT, 15); c.setFillColor(colors.HexColor("#f2e7d6")); c.drawString(M, H * 0.665, "Instructions and shortcut keys")
+        c.setFont(FONT, 15); c.setFillColor(colors.HexColor("#f2e7d6")); c.drawString(M, H * 0.665, w["sub"])
         c.setFont(FONT, 10); c.setFillColor(colors.HexColor("#b9ab95"))
-        c.drawString(M, H * 0.58, f"Version {ver}  ·  {date.today().strftime('%d %B %Y')}")
-        c.drawString(M, H * 0.56, "Local AI video, image, music and editing studio - ComfyUI, MiniMax H3, Wan, LTX, local LLMs")
+        c.drawString(M, H * 0.58, w["ver"].format(ver=ver, date=date.today().strftime(w["date"])))
+        c.drawString(M, H * 0.56, w["tag"])
         # 2.642.0: the credit lines (lib/credits.json - the same as Settings ▸ About and the Credits section)
         y = H * 0.515
         for cr in credits:
             c.setFont(BOLD, 11.5); c.setFillColor(colors.HexColor("#f2e7d6")); c.drawString(M, y, drawable(cr["role"] + cr.get("join", " ") + cr["name"])); y -= 17
         c.setFont(FONT, 8.5); c.setFillColor(colors.HexColor("#b9ab95"))
         y = H * 0.40
-        for line in ["Part 1  -  Shortcut keys at a glance", "Part 2  -  Instructions (every docker, step by step)", "Credits  -  at the end of Part 2"]:
+        for line in w["parts"]:
             c.drawString(M, y, line); y -= 14
         c.restoreState()
 
     doc = BaseDocTemplate(out_path, pagesize=A4, leftMargin=M, rightMargin=M, topMargin=15 * mm, bottomMargin=14 * mm,
-                          title=f"bitGen Studio {ver} - Guide", author="bitGen Studio", subject="Instructions and shortcut keys")
+                          title=f"bitGen Studio {ver} - {w['title']}", author="bitGen Studio", subject=w["sub"], lang=lang)
     full = Frame(M, 14 * mm, width, H - 29 * mm, id="full")
     gap = 6 * mm
     colw = (width - gap) / 2
@@ -350,16 +442,11 @@ def build(out_path):
     story = [Spacer(1, 1)]
     from reportlab.platypus.doctemplate import NextPageTemplate
     story += [NextPageTemplate("keys"), PageBreak()]
-    story += [Bookmark("Part 1 - Shortcut keys at a glance", 0, "p1"),
-              Paragraph("Shortcut keys at a glance", ST["h1"]),
-              Paragraph("Keys work when the docker they belong to has the pointer or the focus, and never while you type in a box. "
-                        "In the image editor every menu shows its keys too, and <b>Ctrl+K</b> finds any command by name.", ST["body"]),
-              Spacer(1, 4)]
+    story += [Bookmark(w["p1"], 0, "p1"), P(w["keys"], ST["h1"]), P(w["keysnote"], ST["body"]), Spacer(1, 4)]
     story += shortcut_tables(sc["groups"], colw)
     story += [NextPageTemplate("text"), PageBreak()]
-    story += [Bookmark("Part 2 - Instructions", 0, "p2"), Paragraph("Instructions", ST["h1"]),
-              Paragraph("<b>Contents</b>", ST["h3"])]
-    toc = [[Paragraph(f'<link href="#{k}" color="#e8e2d6">{esc(t)}</link>', ST["toc"])] for lvl, t, k in heads if lvl == 2]
+    story += [Bookmark(w["p2"], 0, "p2"), P(w["instr"], ST["h1"]), P(f"<b>{w['toc']}</b>", ST["h3"])]
+    toc = [[P(f'<link href="#{k}" color="#e8e2d6">{esc(t)}</link>', ST["toc"])] for lvl, t, k in heads if lvl == 2]
     half = (len(toc) + 1) // 2
     rows = [[toc[r][0] if r < len(toc) else "", toc[r + half][0] if r + half < len(toc) else ""] for r in range(half)]
     tt = Table(rows, colWidths=[width / 2, width / 2])
@@ -367,10 +454,16 @@ def build(out_path):
     story += [tt, PageBreak()]
     story += flow
     doc.build(story)
-    return {"version": ver, "headings": len(heads), "shortcut_groups": len(sc["groups"])}
+    return {"version": ver, "headings": len(heads), "shortcut_groups": len(sc["groups"]), "lang": lang}
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "docs", "bitGen-Studio-Guide.pdf")
-    r = build(out)
+    a = sys.argv[1:]
+    lang = "en"
+    if "--lang" in a:
+        i = a.index("--lang"); lang = a[i + 1]; del a[i:i + 2]
+        if lang not in WORDS or lang == "en":
+            sys.exit("--lang: zh-CN or ja")
+    out = a[0] if a else os.path.join(ROOT, "docs", "bitGen-Studio-Guide" + ("" if lang == "en" else "-" + lang) + ".pdf")
+    r = build(out, lang)
     print(json.dumps(dict(r, out=out)))
