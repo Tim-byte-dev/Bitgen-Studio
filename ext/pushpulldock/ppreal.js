@@ -109,6 +109,9 @@
   function boardCaptions(u) { return u.tiles.map((t) => t.where.join(", ")).concat(u.bg ? ["Background (" + (u.bg.kind === "sky" ? "360° sky" : "backdrop") + ")"] : []); }
   /** s = {sketcher, prompt, editor, maxed} (on screen) */
   function linkedNow(s) { return !!(s && s.sketcher && s.prompt && (s.maxed || !s.editor)); }
+  /** 2.696.0 (Tim: "add a dropdown to the left of the photo button with image edit styles this will be exclusive to sketcher - keep
+      the last one used as selected"): the Sketcher's own pick when it is still an edit style, else pickEditStyle */
+  function sketcherStyle(own, cur, engines) { const E = (engines && engines.edit) || []; return own && E.some((x) => x.id === own) ? own : pickEditStyle(cur, engines); }
   /** the style to run: the prompt docker's when it is an edit model, else the engines' default edit model, else the first */
   function pickEditStyle(cur, engines) {
     const E = (engines && engines.edit) || []; if (!E.length) return "";
@@ -143,7 +146,7 @@
     });
     return c;
   }
-  const api = { DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { sketcherStyle, DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -153,6 +156,21 @@
   const PP = () => root.H3PushPull;
   const say = (t) => { const P = PP(); if (P && P.state && $("ppMsg")) $("ppMsg").textContent = t; };
   async function engines() { if (S.engines) return S.engines; try { S.engines = await (await root.fetch("/api/aiedit/engines")).json(); } catch (e) { S.engines = { edit: [] }; } return S.engines; }
+  const KEY = "pp.realStyle", kept = () => { try { return root.localStorage.getItem(KEY) || ""; } catch (e) { return ""; } }, keep = (v) => { try { if (v) root.localStorage.setItem(KEY, v); } catch (e) { /* fine */ } };
+  /** 2.696.0: the bar's Photo style dropdown - the edit styles, the last one used picked; refreshed when it is opened */
+  async function fillStyles(force) {
+    const sel = $("ppRealStyle"); if (!sel || (sel.dataset.filled && !force)) return;
+    sel.dataset.filled = "1";
+    if (force) S.engines = null;
+    const E = await engines(), list = E.edit || [], st = $("styleSel"), now = sketcherStyle(sel.value || kept(), st ? st.value : "", E);
+    sel.innerHTML = "";
+    if (!list.length) { const o = document.createElement("option"); o.value = ""; o.textContent = "no edit model"; sel.appendChild(o); sel.disabled = true; return; }
+    sel.disabled = false;
+    list.forEach((x) => { const o = document.createElement("option"); o.value = x.id; o.textContent = x.name || x.id; sel.appendChild(o); });
+    sel.value = now;
+    if (!sel.dataset.wired) { sel.dataset.wired = "1"; sel.addEventListener("change", () => keep(sel.value)); sel.addEventListener("pointerdown", () => { if (Date.now() - (+sel.dataset.at || 0) > 5000) { sel.dataset.at = Date.now(); fillStyles(true); } }); }
+  }
+  const ownStyle = () => { const sel = $("ppRealStyle"); return (sel && sel.value) || kept(); };
   function setSel(id, v) { const s = $(id); if (!s || s.value === v) return; if (![...s.options].some((o) => o.value === v)) return; s.value = v; s.dispatchEvent(new Event("change", { bubbles: true })); }
   async function link(on) {
     if (on === S.linked) return;
@@ -161,7 +179,7 @@
     if (on) {
       S.keep = { mode: gm ? gm.value : null, style: st ? st.value : null };
       if (gm) setSel("genModeSel", "image");
-      const E = await engines(); const id = pickEditStyle(st ? st.value : "", E);
+      const E = await engines(); const id = sketcherStyle(ownStyle(), st ? st.value : "", E);   // 2.696.0: the Sketcher's own style
       if (id && st) setSel("styleSel", id);
       S.keep.setStyle = st ? st.value : null; S.keep.setMode = gm ? gm.value : null;
       if (pr && !pr.value.trim()) { pr.value = DEFAULT; S.keep.text = DEFAULT; pr.dispatchEvent(new Event("input", { bubbles: true })); }
@@ -187,13 +205,14 @@
     if (root.H3TakeGenerate !== mineTake) { mineTake.prev = root.H3TakeGenerate || null; root.H3TakeGenerate = mineTake; }
     if (root.H3GoLabel !== mineLabel) { mineLabel.prev = root.H3GoLabel || null; root.H3GoLabel = mineLabel; }
   }
-  function tick() { seams(); link(linkedNow(state())); }
+  function tick() { seams(); link(linkedNow(state())); fillStyles(false); }
 
   /* ---- the run */
   async function run(text) {
     const P = PP(), V = P && P.state && P.state.V; if (!V || !P.state.M) { say("📷 the Sketcher's view is not ready"); return; }
     if (S.busy) { say("📷 still making the last one"); return; }
-    const E = await engines(), st = $("styleSel"), style = pickEditStyle(st ? st.value : "", E);
+    const E = await engines(), st = $("styleSel"), style = sketcherStyle(ownStyle(), st ? st.value : "", E);   // 2.696.0: the bar's Photo style
+    if (style) keep(style);
     if (!style) { say("📷 no edit model - install one (Qwen Image Edit, FLUX Kontext, FLUX.2 Klein ...) in the Model manager"); return; }
     S.busy = true; if (typeof root.paintGoLabel === "function") root.paintGoLabel();
     try {

@@ -61,7 +61,7 @@ const r3 = (v) => Math.round(v * 1000) / 1000;
     await p.mouse.up(); await p.waitForTimeout(400);
     const A2 = await ev(() => { const A = H3PushPull.state.M.arch; return { pts: A.rooms.map((R) => R.pts.map((q) => q.map((v) => Math.round(v * 1000) / 1000))), joins: A.joins }; });
     check("drag Wall 2 1 m to the right: Wall 1's joined end goes WITH it while dragging (Wall 1 4 m -> 5 m)", Math.abs(live[1][0][0] - 5) < 0.06 && Math.abs(live[0][1][0] - live[1][0][0]) < 0.001 && live[0][0][0] === 0, live);
-    check("…let go: Wall 1 is 5 m long (its other end still at 0, 0), the join moved to 5, 0", Math.abs(A2.pts[1][0][0] - 5) < 0.06 && A2.pts[0][1][0] === A2.pts[1][0][0] && A2.pts[0][1][1] === 0 && JSON.stringify(A2.pts[0][0]) === "[0,0]" && A2.joins[0].p[0] === A2.pts[0][1][0], A2);
+    check("…let go: Wall 1 is 5 m long (its other end still at 0, 0), the join moved to 5, 0", Math.abs(A2.pts[1][0][0] - 5) < 0.06 && A2.pts[0][1][0] === A2.pts[1][0][0] && A2.pts[0][1][1] === 0 && JSON.stringify(A2.pts[0][0]) === "[0,0]" && Math.abs(A2.joins[0].p[0] - A2.pts[0][1][0]) < 0.001, A2);
     await ev(() => document.getElementById("ppUndo").click()); await p.waitForTimeout(300);
     const A3 = await ev(() => H3PushPull.state.M.arch.rooms.map((R) => R.pts));
     check("…↶ one step: both walls back (4 m, Wall 2 at x 4)", JSON.stringify(A3[0].map((q) => q.map(r3))) === "[[0,0],[4,0]]" && r3(A3[1][0][0]) === 4, A3);

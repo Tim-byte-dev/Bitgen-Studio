@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.696.0 (Tim: "add a dropdown to the left of the photo button with image edit styles this will be exclusive to sketcher - keep the last one used as selected")
+node scripts/test-photostyle696.js > /tmp/photostyle696.log 2>&1 \
+  && ok "2.696.0 units: sketcherStyle (own pick / fallback), #ppRealStyle before ✨ Photo, kept in pp.realStyle, used by the run + the link" \
+  || { bad "2.696.0 photo style units"; grep -a "^FAIL" -A2 /tmp/photostyle696.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui696-ui.js > /tmp/ui696ui.log 2>&1 \
+  && ok "2.696.0 browser test: the Photo style dropdown (the edit styles, left of ✨ Photo), the pick kept, the prompt docker untouched, ✨ Photo runs it, kept after a reload - or SKIP without playwright" \
+  || { bad "2.696.0 photo style browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui696ui.log | head -14; }
 # ---- 2.695.0 (Tim: "can we add roof material types like colourbond, concrete tiles , etc")
 node scripts/test-roofmat695.js > /tmp/roofmat695.log 2>&1 \
   && ok "2.695.0 units: roof coverings - 8 generic coverings, clean, colour, the pattern lines, the weight in the rafter + lintel checks, the panel's minimum pitch note, ✨ Photo's words" \

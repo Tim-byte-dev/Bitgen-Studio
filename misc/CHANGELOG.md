@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.696.0** — ✨ The Sketcher's Own Photo Style Dropdown (Image Edit Styles, the Last One Used Kept)
 - **2.695.0** — Sketcher Roof Coverings: Pre-Painted Steel (Corrugated / Ribbed / Standing Seam), Concrete + Terracotta Tiles, Slate, Shingles, Polycarbonate
 - **2.694.0** — 🪵 Sketcher Roof Framing: Rafters, Ridge, Hips / Valleys, Ceiling Joists, Underpurlins + Struts, or a Truss Layout
 - **2.693.0** — 🪵 Sketcher Wall Framing: Timber or Steel Studs, Plates, Jamb / Jack Studs, Noggings, Strap Braces, Totals Per Room

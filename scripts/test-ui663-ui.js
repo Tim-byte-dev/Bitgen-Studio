@@ -63,7 +63,8 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await reset(); await p.waitForTimeout(200);
     await ev(() => document.getElementById("ppPlan").click()); await p.waitForTimeout(400);
     const pc = await scr(0, 2, 0); await p.mouse.dblclick(pc[0], pc[1]); await p.waitForTimeout(350);
-    check("📐 the floorplan: double-click a wall splits it too", JSON.stringify(await pts()) === "[[0,0],[6,0],[6,4],[0,4],[0,2]]", await pts());
+    const fp = await pts();   // 2.696.0: where clicked, to the pixel (the bar's height changes the view's scale) - within 2 cm
+    check("📐 the floorplan: double-click a wall splits it too (at the point clicked, within 2 cm)", fp.length === 5 && JSON.stringify(fp.slice(0, 4)) === "[[0,0],[6,0],[6,4],[0,4]]" && fp[4][0] === 0 && Math.abs(fp[4][1] - 2) <= 0.02, fp);
     await ev(() => document.getElementById("ppPlan").click()); await p.waitForTimeout(300);
     // the Wall tool: starts on the room's wall anywhere along it
     await ev(() => { const S = H3PushPull.state; S.T.use("wall"); S.V.view("top"); S.V.extents(); }); await p.waitForTimeout(200);

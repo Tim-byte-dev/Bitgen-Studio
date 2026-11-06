@@ -6303,6 +6303,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.696.0: **The Sketcher's own Photo style** - a dropdown on the Sketcher's bar, just left of ✨ Photo, lists the image edit
+  styles; ✨ Photo uses the one picked there (the prompt docker keeps its own style), and the last one used stays picked
+  (after a restart too). When a picked style is gone it falls back to the prompt's edit style or the default edit model.
 - 2.695.0: **Roof coverings** in the Sketcher. A roof's (or the Roof tool's) **Covering**: pre-painted steel - corrugated,
   ribbed (trapezoidal) or standing seam - concrete tiles, terracotta tiles, slate, asphalt shingles or clear polycarbonate. The
   roof takes the covering's colour (until you pick your own) and its pattern - ribs down the slope for sheeting, courses and
