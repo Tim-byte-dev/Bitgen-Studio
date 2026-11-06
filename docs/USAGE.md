@@ -6303,6 +6303,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.702.0: **SVG pictures** - an .svg can go into Assets (drop it, or + add pictures) and into the References (drop it, + add
+  reference, or drag it from Assets). Nothing after an upload reads SVG (ComfyUI, the timeline and the models want pixels), so the
+  studio draws it into a PNG as it goes in - sharp, because a vector is drawn at the size it is used (the long side at least 2048,
+  at most 4096 pixels), with its transparent background kept. Assets then holds <name>.png. The Open dialog lists .svg with the
+  other pictures, so Image Edit's Open and Place as Layer take one too. An SVG that needs other files beside it (linked pictures
+  or fonts) draws without them. **The logo at 1920 x 1080** is in docs/images/bitgen-logo-1920x1080.png.
 - 2.701.0: **A start-up splash** - the desktop app opens with a 15 second film of the logo (the lines drawn, the wings beat,
   "bitGen Studio", "together · grow · transform") and the credits **Produced and developed by Timothy Nolan Paul** and
   **Programmed by Claude Opus 5.5**, while the studio starts behind it. Click it or press any key to skip; the studio appears when

@@ -93,7 +93,7 @@
     "application/zip": [".zip"], "text/plain": [".txt"],
   };
   var FAMILY = {
-    image: { label: "Image files", exts: [".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif", ".tif", ".tiff", ".jxl"] },
+    image: { label: "Image files", exts: [".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif", ".tif", ".tiff", ".jxl", ".svg"] },
     video: { label: "Video files", exts: [".mp4", ".webm", ".mov", ".mkv", ".avi", ".m4v"] },
     audio: { label: "Audio files", exts: [".wav", ".mp3", ".flac", ".ogg", ".opus", ".m4a", ".aac"] },
   };
@@ -868,7 +868,11 @@
               if (!res.ok) throw new Error("could not read " + baseName(p));
               var mt = +(res.headers.get("X-File-Mtime") || 0) || Date.now();
               return res.blob().then(function (b) {
-                files.push(new File([b], baseName(p), { type: b.type || "", lastModified: mt }));
+                var f = new File([b], baseName(p), { type: b.type || "", lastModified: mt });
+                // 2.702.0: an SVG comes back as the PNG drawn from it (static/svgpic.js) - every picker gets pixels
+                if (window.BGSvg && window.BGSvg.isSvgName(f.name) && input.getAttribute("data-keep-svg") == null)
+                  return window.BGSvg.toPngFile(f).then(function (png) { files.push(png); });
+                files.push(f);
               });
             }).then(next);
           };

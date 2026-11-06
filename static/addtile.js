@@ -25,16 +25,19 @@
     video: [".webm", ".avi", ".mp4", ".mov", ".mkv"],
     sound: [".wav", ".mp3", ".ogg", ".flac", ".m4a", ".opus"],
   };
+  // 2.702.0 (Tim: "add svg to the images i can upload to assets or references"): an SVG is a picture too - the page draws it
+  // into a PNG before it is uploaded (static/svgpic.js), so the server's list stays as it is
+  const DRAWN = { ".svg": "images", ".svgz": "images" };
   const WORD = { images: ["picture", "pictures"], video: ["video", "videos"], sound: ["sound", "sounds"] };
   /** a file name -> "images" | "video" | "sound" | null */
   function kindOf(name) {
     const m = /(\.[^.\\/]+)$/.exec(String(name || "").toLowerCase());
     if (!m) return null;
     for (const k of Object.keys(EXTS)) if (EXTS[k].includes(m[1])) return k;
-    return null;
+    return DRAWN[m[1]] || null;
   }
   /** the accept="" for a kind (extensions, so the Open dialog's filter names them) */
-  function accept(kind) { return (EXTS[kind] || []).join(","); }
+  function accept(kind) { return (EXTS[kind] || []).concat(Object.keys(DRAWN).filter((e) => DRAWN[e] === kind)).join(","); }
   /** files -> {mine: [...the kind], other: [...another supported kind], bad: [...not supported]} */
   function split(files, kind) {
     const out = { mine: [], other: [], bad: [] };
@@ -97,7 +100,7 @@
     return el;
   }
 
-  const api = { EXTS, kindOf, accept, split, room, label, pick, make };
+  const api = { EXTS, DRAWN, kindOf, accept, split, room, label, pick, make };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.AddTile = api;
 })(typeof window !== "undefined" ? window : globalThis);

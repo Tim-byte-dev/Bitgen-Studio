@@ -8,6 +8,7 @@
 <script src="/static/themes.js"></script>  <!-- 2.432.0: Settings ▸ Themes - the kept theme on <html> before the page paints (H3Theme) -->
 <script src="/static/safetheme.js"></script>  <!-- 2.636.0: Ctrl+Alt+S = Settings; bitGen Default (Ctrl+Alt+Shift+T, ?theme=default) -->
 <script src="/static/jxl.js"></script>  <!-- 2.479.0: JPEG XL pictures in the page (BGJxl) - before anything loads a picture -->
+<script src="/static/svgpic.js"></script>  <!-- 2.702.0: an SVG picked or dropped is uploaded as a PNG drawn from it (BGSvg) -->
 <script src="/static/themeedit.js"></script>
 <script src="/static/zoomdrag.js"></script>  <!-- 2.648.0: Shift + right-drag zooms (H3ZoomDrag) - the Sketcher, the timeline, the image editor -->
 <script src="/static/pointericon.js"></script>  <!-- 2.648.0: the pick / move tools' pointer arrow (H3PointerIcon) -->
@@ -3868,14 +3869,18 @@ function renderTray() {
 }
 { const st = document.createElement("style"); st.textContent = "#tray .slot.unused{opacity:.38}"; document.head.appendChild(st); }   // 2.548.0
 const filepick = document.createElement("input");
-filepick.type = "file"; filepick.accept = "image/png,image/jpeg,image/webp,image/bmp"; filepick.multiple = true;
-filepick.onchange = e => {
-  for (const f of e.target.files) {
+filepick.type = "file"; filepick.accept = "image/png,image/jpeg,image/webp,image/bmp,.svg,image/svg+xml"; filepick.multiple = true;
+filepick.onchange = async e => {
+  const picked = Array.from(e.target.files || []);
+  e.target.value = "";
+  for (let f of picked) {
     if (refs.length >= CAP[mode]) break;
+    // 2.702.0 (Tim: "add svg to the images i can upload to assets or references"): an SVG becomes the PNG drawn from it here,
+    // so the tray, its size (2.699.0) and the render all see the same pixels (static/svgpic.js)
+    if (window.BGSvg && await BGSvg.isSvgBlob(f)) { try { f = await BGSvg.toPngFile(f); } catch (err) { alert(err.message); continue; } }
     refs.push({ file: f, url: URL.createObjectURL(f),
                 subject: nextFreeSubject(), role: "person", roleOther: "" });
   }
-  e.target.value = "";
   normalizeSubjects(); renderTray();
 };
 
