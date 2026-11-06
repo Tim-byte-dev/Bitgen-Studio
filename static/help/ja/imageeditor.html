@@ -248,3 +248,238 @@
   <li><b>Extrude / Revolve</b>：使用する閉じた領域をクリックし（ハイライト表示されます）、Enter で設定を開きます。</li>
   <li>3D：<b>Shift + middle-drag</b>（Shift + 中ボタンドラッグ）でオービット、<b>view cube</b>（ビューキューブ。面、角、ドラッグ）と Home / Orbit / Pan / Fit。</li>
 </ul>
+
+<h3 id="round-h">✅ PDF ページ、Select Subject（内蔵 + AI マット）、Remove Background (2.488.0)</h3>
+<ul>
+  <li>PDF Pages ストリップ：<b>＋ Page</b>、<b>⤓ PDF…</b>（別の PDF のページを追加）、<b>▲ ▼</b> とドラッグで並べ替え、<b>🗑</b> でページを削除します。新しい順序で保存され、手を加えていないページはベクターのままです。</li>
+  <li><b>Select ▸ Subject</b>：内蔵（ダウンロード不要）または AI マット（このコンピューター上の BiRefNet）。<b>Subject Settings…</b>、<b>Layer ▸ Remove Background</b>（被写体をレイヤーマスクにします）。Segment Anything：<b>Subject by Words…</b>。</li>
+</ul>
+
+<h3 id="modes">✅ Image ▸ Mode、Proof Colors、Gamut Warning、CMYK TIFF (2.487.0)</h3>
+<ul>
+  <li><b>Image ▸ Mode</b>：Bitmap（しきい値、パターン、拡散、ハーフトーン）、Grayscale、Duotone（1-4 インク、プリセット）、Indexed Color（Local / Web / Uniform / Grey パレット、ディザ）+ <b>Color Table…</b> (.act)、RGB Color、CMYK Color（コート紙／非コート紙／新聞用紙、墨版生成、総インク量）。</li>
+  <li><b>View ▸ Proof Setup…</b>、<b>Proof Colors</b> (Alt+Ctrl+Y)、<b>Gamut Warning</b> (Shift+Ctrl+Y)：画面表示のみに適用されます。Info パネルでは、印刷できない色に "!" が付きます。</li>
+  <li><b>Export As ▸ TIFF (CMYK, for print)</b>。チャンネルあたり 8 ビットのみです（ブラウザーの canvas の制約によります）。</li>
+</ul>
+
+<h3 id="merge">✅ Auto-Align / Auto-Blend Layers、Photomerge、Merge to HDR (2.486.0)</h3>
+<ul>
+  <li><b>Edit ▸ Auto-Align Layers…</b>：選択したレイヤーを位置合わせします。遠近法、移動／回転／拡大縮小、または移動のみ。基準は中央、アクティブ、または最下部のレイヤーです。</li>
+  <li><b>Edit ▸ Auto-Blend Layers…</b>：パノラマ用（継ぎ目をなじませ、トーンを揃えます）または深度合成用（各位置で最もシャープなレイヤーを使います）のマスクを作成します。</li>
+  <li><b>Automate ▸ Photomerge…</b>：ファイルまたは開いているドキュメントをつなぎ合わせ、新しい Panorama ドキュメントを作成します。各画像はマスク付きのレイヤー 1 枚になります。</li>
+  <li><b>Automate ▸ Merge to HDR…</b>：露出ブラケットで撮影した画像を位置合わせし、適正露出の 1 枚に合成します（露出フュージョン、8 ビット）。</li>
+</ul>
+
+<h3 id="fileplus">✅ 対応ファイル形式の追加、File Info、Print、Contact Sheet、Crop and Straighten Photos (2.485.0)</h3>
+<ul>
+  <li><b>Export As</b>：AVIF（このコンピューターの ffmpeg で作成）、GIF（256 色、透明色を 1 色指定）、TIFF、BMP、TGA（透明度付き）を追加しました。</li>
+  <li><b>File Info…</b> (Alt+Shift+Ctrl+I)：タイトル、作成者、説明、キーワード、著作権、URL。ドキュメントと一緒に保持され、書き出した PNG と JPEG ファイルに書き込まれます。</li>
+  <li><b>Zoom</b>（ズーム）：キャンバス上の任意の位置で <kbd>Shift</kbd> + 右ドラッグします。前方（上）へドラッグすると拡大、後方（下）へドラッグすると縮小し、押した位置を中心にズームします（Artist モードでも使えます）。<b>⊡ Zoom to Selection</b>（ツール列の 🔍 の下、View ▸ Zoom to Selection、<kbd>Ctrl+Alt+0</kbd>）：選択範囲がビュー全体に表示されます。選択範囲がない場合は、選択したレイヤーのピクセルが対象になります。<b>Move</b> <kbd>V</kbd> ツールでは専用のポインターが表示されます (2.648.0)。</li>
+  <li><b>🎨 Artist mode</b>（🎨 ボタン、View ▸ Artist Mode、Ctrl+Shift+F）：キャンバスだけを全画面表示します。<kbd>Alt+P</kbd> でカラーパレット、<kbd>Ctrl+B</kbd> でブラシ、<kbd>Alt+G</kbd> で Layers パネル + ⏳ Pending、<kbd>Ctrl+P</kbd> でプロンプトドッカーを表示します。レイヤーを選んで ▾ Edit または Generate を使うと、結果は ⏳ Pending で待機します。Ctrl+Esc、または Shift+右クリック（ドラッグなし）で元に戻ります。Shift+右ドラッグでズームします。</li>
+  <li><b>Print…</b>（Ctrl+Shift+P。Ctrl+P はプロンプトドッカーを前面に表示します）：フィット、サイズ、またはパーセンテージと用紙の向きを指定してから、システムの印刷ダイアログを開きます。</li>
+  <li><b>Automate ▸ Contact Sheet…</b>（ファイルまたは開いているドキュメント、グリッド、キャプション）と <b>Crop and Straighten Photos</b>（スキャン画像内の写真を 1 枚ずつ個別のドキュメントにします）。</li>
+</ul>
+
+<h3 id="brushset">✅ Brush Settings、プリセット、.abr ブラシ (2.484.0)</h3>
+<ul>
+  <li><b>🖌 Brush</b> タブ：プリセット（内蔵、自作、インポートしたもの）、<b>⤒ Import .abr…</b>、<b>💾 New Brush Preset…</b>（brushes/&lt;name&gt;.json）。</li>
+  <li>Brush Tip Shape（角度、真円率、反転）、Shape Dynamics、Scattering、Texture、Dual Brush、Color Dynamics、Transfer、Smoothing。</li>
+</ul>
+
+<h3 id="measure">✅ Navigator、Histogram、Info、計測ツール (2.483.0)</h3>
+<ul>
+  <li>タブ：<b>Navigator</b>、<b>Histogram</b>（チャンネル、統計）、<b>Info</b>（ポインター位置の RGB / HSB / CMYK、サンプラー）、<b>Notes</b>。</li>
+  <li>Eyedropper (I) のグループ：<b>Color Sampler</b>、<b>Ruler</b>（↻ Straighten）、<b>Note</b>、<b>Count</b>。Crop ツール (C) のグループ：<b>Perspective Crop</b>。</li>
+  <li>Select ▸ Grow、Similar、Focus Area…、Transform Selection…。Layer ▸ Matting ▸ Defringe、Remove Black / White Matte。</li>
+</ul>
+
+<h3 id="develop">✅ Develop Filter + Lens Correction (2.482.0)</h3>
+<ul>
+  <li>Filter ▸ <b>Develop Filter…</b> (Alt+Shift+Ctrl+A)：Basic（ホワイトバランス、露光量、トーン、テクスチャ／明瞭度／かすみの除去、自然な彩度、B&amp;W、✨ Auto）、Curve、Color mixer、Grading、Detail、Optics、Geometry、Effects、Presets（+ 自作のプリセット）。</li>
+  <li>Filter ▸ <b>Lens Correction…</b> (Alt+Shift+Ctrl+R)：ゆがみ、色収差、周辺光量、遠近法、角度、拡大・縮小、エッジ。開いている間はグリッドが表示されます。</li>
+</ul>
+
+<h3 id="fltroundB">✅ 44 種類のフィルターを追加 (2.481.0)</h3>
+<ul>
+  <li>Filter ▸ Blur：Surface、Smart、Average、<b>Lens Blur</b>。Blur Gallery：<b>Field</b>、<b>Iris</b>、<b>Path</b>、<b>Spin</b>（画像をクリックして中心を配置します）。</li>
+  <li>Noise：Reduce Noise、Dust &amp; Scratches、Despeckle。Sharpen：<b>Smart Sharpen</b>。Other：High Pass、Minimum、Maximum、Offset、<b>Custom</b> (5 x 5)、HSB / HSL。</li>
+  <li>Distort：Displace、Polar Coordinates、Pinch、ZigZag、Shear、Glass。Pixelate：Color Halftone、Crystallize、Pointillize、Facet、Fragment、Mezzotint。Render：<b>Lighting Effects</b>、Fibers、Difference Clouds。Stylize：Diffuse、Tiles、Trace Contour。Artistic / Sketch / Texture：Cutout、Poster Edges、Watercolor、Dry Brush、Graphic Pen、Charcoal、Grain、Craquelure。</li>
+</ul>
+
+<h3 id="adjroundA">✅ 色調補正の追加 + Apply Image (2.480.0)</h3>
+<ul>
+  <li>Image ▸ Adjustments：<b>Shadows / Highlights</b>、<b>HDR Toning</b>、<b>Selective Color</b>（9 つの色域、C / M / Y / K、相対／絶対）、<b>Replace Color</b>（画像をクリックして色を選択）、<b>Match Color</b>（別のレイヤー、統合した画像、またはファイルを基準にします）、<b>Color Lookup</b>（ルック + .cube LUT）。</li>
+  <li>Image ▸ <b>Apply Image…</b>：別のレイヤー、またはそのチャンネルをレイヤーに合成します。新しい調整レイヤー：Selective Color、Color Lookup。</li>
+</ul>
+
+<h3 id="uelights">✅ Unreal のライト、ボリュメトリックライトとフォグ (2.476.0)</h3>
+<ul>
+  <li>UNREAL ▸ <b>Lights &amp; Fog</b> / 💡 Lights タブ：プリセット、Point / Spot / Rect / Sun / Sky ライト（色または色温度、強度、到達距離、コーン、ボリュメトリック、シャドウ）、ハイトフォグ + ボリュメトリックフォグ。</li>
+  <li>UNREAL ▸ <b>Lights</b>：画像上でライトをドラッグします（Shift で奥行き、Alt で向き）。タイムラインの UNREAL ▸ Lights &amp; Fog… も同じパネルを使います。</li>
+</ul>
+
+<h3 id="uecam">✅ Unreal カメラ (2.475.0)</h3>
+<ul>
+  <li>UNREAL ▸ <b>Camera</b>：ドラッグでオービット、Ctrl で見回し、Shift でパン、Alt でロール、ホイールでドリー、Ctrl+ホイールでズーム。Focus モードでは、ピントを合わせたい対象をクリックします。1 回の操作ごとに取り消しステップが 1 つ作られます。</li>
+  <li>🎥 <b>Camera</b> タブ：レンズプリセット、焦点距離／画角、フィルムバック、F 値、フォーカス、露出、X Y Z、ロール／ピッチ／ヨー、Unreal のビューポートとの相互転送。</li>
+</ul>
+
+<h3 id="multisel">✅ ツールなし、選択ボックス、複数レイヤー (2.474.0)</h3>
+<ul>
+  <li><b>Esc</b> でツールなしの状態になります。その状態で破線のボックスをドラッグします。左から右へドラッグすると完全に内側にあるものを、右から左へドラッグすると触れているものを選択します。Shift で追加します。</li>
+  <li>Layers パネル：Shift+クリックで間にあるすべてのレイヤーを選択、Ctrl+クリックで追加／除外します。Move ツールは選択したすべてのレイヤーを移動し、<b>Del</b> でそれらを削除します。</li>
+</ul>
+
+<h3 id="unreal">✅ Unreal Engine 5.8 ブリッジ (2.472.0)</h3>
+<ul>
+  <li><b>bitGen Bridge</b> プラグイン（bitgen-ue-bridge zip）を Unreal プロジェクトの Plugins フォルダーにインストールし、Settings ▸ 3D ▸ Unreal Engine ▸ Test connection で接続を確認します。</li>
+  <li>UNREAL タブ：<b>Unreal Layer</b>（カメラから見たレベル）と <b>MetaHuman Layer</b>（ポーズを付けてフレーミングし、透明な背景にしたもの）。🎮 Unreal タブでカメラ／フィギュアを微調整して再レンダリングします。</li>
+</ul>
+
+<h3 id="bodies">✅ パラメトリック 3D ボディ (2.471.0)</h3>
+<ul>
+  <li>SOLID タブ：閉じたスケッチを <b>Extrude</b> / <b>Revolve</b>（New Body、Join、Cut、Intersect）、<b>Fillet</b>、<b>Chamfer</b>、<b>Shell</b>、<b>Split Body</b>（反対側は新しいボディレイヤーになります）。</li>
+  <li>どの数値も、名前付きパラメーターを使った式で指定できます（ƒx Change Parameters）。スケッチやパラメーターを変更すると、ボディが再構築されます。</li>
+  <li>🧊 Body タブ：フィーチャー（抑制、編集、並べ替え、削除）、ビュー（🖐 Orbit）、外観、Export STL / glTF / STEP / → Timeline。</li>
+  <li>Settings ▸ 3D：エンジンを選択します。ブラウザー内の OpenCascade、または Blender です。</li>
+</ul>
+
+<h3 id="cadbar">✅ ドローソフトのような選択、CAD ツールバー (2.470.0)</h3>
+<ul>
+  <li>Move ツール：ポインターの下にあるオブジェクトは<b>青</b>、選択中のオブジェクトは<b>オレンジ</b>の輪郭で表示されます。空のキャンバスをクリックするか Esc を押すと、選択が解除されます。</li>
+  <li>シェイプを描くと、そのシェイプが選択された状態で Move ツールに切り替わります（ツールバーの ⚙ でオフにできます）。</li>
+  <li>上部の <b>CAD toolbar</b>：SKETCH（Create / Modify / Constraints / Inspect / Insert / Finish Sketch）と SHAPES。Window ▸ CAD Toolbar。</li>
+  <li>プレビューの上にあるタイムラインのツールバー：CREATE、3D、SKETCH（Sketch on This Frame）。</li>
+</ul>
+
+<h3 id="linked">✅ リンクされたスマートオブジェクト、PSD のスマートオブジェクト、.atn アクション (2.469.0)</h3>
+<ul>
+  <li>File ▸ <b>Place Linked…</b>、Layer ▸ Smart Objects ▸ Convert to Linked… / Embed Linked / <b>Update Modified Content</b> / Relink to File…。内容はプロジェクトの linked フォルダー (🔗) に置かれます。</li>
+  <li>PSD のスマートオブジェクトはスマートオブジェクトとして開き、内容付きの配置レイヤーとして保存されます。</li>
+  <li>Actions ▸ Load Actions… で <b>.atn</b> アクションファイルを読み込めます（対応するステップは再生され、それ以外はオフの状態で読み込まれます）。</li>
+</ul>
+
+<h3 id="actionsx">✅ Actions：ストロークと選択範囲の記録、条件分岐、Image Processor、ドロップレット (2.468.0)</h3>
+<ul>
+  <li>記録時にブラシストロークや手動で作成した選択範囲も保持され、再生すると同じ位置に適用されます（画像サイズに合わせて拡大縮小されます）。</li>
+  <li>☰ ▸ Insert Conditional…：横長／縦長／選択範囲あり／特定のレイヤーの種類…といった条件に合えばあるアクションを、そうでなければ別のアクションを再生します。</li>
+  <li>File ▸ Scripts：<b>Image Processor…</b>（JPEG / PNG、サイズに合わせてリサイズ、アクション）。File ▸ Automate：<b>Create Droplet…</b>：Actions タブに 💧 タイルが作られ、そこに画像をドロップして処理できます。</li>
+</ul>
+
+<h3 id="chanspot">✅ 単一チャンネルの編集、スポットチャンネル (2.467.0)</h3>
+<ul>
+  <li>Channels パネル：<b>Red / Green / Blue</b> をクリック (Ctrl+3-5) すると、編集はそのチャンネルだけに反映されます。Shift+クリックでチャンネルを追加、RGB (Ctrl+2) ですべてのチャンネルが対象になります。</li>
+  <li><b>◍</b> New Spot Channel（インクの色 + 濃度、選択範囲から作成）。<b>✎</b> で選択中のアルファ／スポットチャンネルにペイントし、<b>✔</b> で確定します。<b>⇣</b> でスポットチャンネルをレイヤーとして統合します。</li>
+</ul>
+
+<h3 id="otype">✅ OpenType、オプティカルカーニング、テキストのアウトライン化、シェイプ内テキスト、角丸 (2.466.0)</h3>
+<ul>
+  <li>Character パネル：<b>OpenType</b> ボタン + Stylistic set。Kerning の <b>Optical</b>（どちらもコンピューター上のフォントファイルを使用します）。</li>
+  <li>Layer ▸ <b>Type: Convert to Shape</b> / <b>Create Work Path</b>：文字のアウトラインを作成します。</li>
+  <li>選択中のシェイプレイヤーの内側を Type ツールでクリックする（または Type: Text in the Picked Shape）と、テキストがシェイプの内側に流し込まれます。</li>
+  <li>Direct Selection：<b>⌜ Radius</b> + <b>Round Corners</b>：任意のパス（結合したシェイプも含む）の、選択した角（またはすべての角）を丸めます。</li>
+</ul>
+
+<h3 id="pinpatch">✅ パペットピンの奥行きと回転、Patch の Content-Aware (2.465.0)</h3>
+<ul>
+  <li>Puppet Warp：選択したピンの <b>Pin Depth ⬆ / ⬇</b>（折り重なる部分でどちらを上にするか）と <b>Rotate Auto / Fixed</b> + 角度。選択したピンの近くを <kbd>Alt</kbd>+ドラッグすると回転します。</li>
+  <li>Patch：<b>Normal</b>（Transparent、Diffusion 1-7）または <b>Content-Aware</b>（Structure 1-7、Color 0-10）。Content-Aware Move：Structure + Color。</li>
+</ul>
+
+<h3 id="sketchcad">✅ スケッチレイヤー：数値入力、Measure、単位、DXF / SVG (2.464.0)</h3>
+<ul>
+  <li>描画中に数値を入力できます：Line の長さ（<kbd>Tab</kbd> で角度）、長方形の幅（<kbd>Tab</kbd> で高さ）、円の直径、多角形の半径。<kbd>Enter</kbd> で描画され、値は寸法として保持されます。</li>
+  <li><kbd>M</kbd> Measure：1 つのアイテムならそのサイズ、2 つならその間の距離、閉じた領域の内側ならその面積 + 周長を表示します。単位 (px / mm / in) は 📐 Sketch タブで設定します。</li>
+  <li>File ▸ Export Sketch as DXF… / SVG…（プロジェクトの cad フォルダー）、File ▸ Import DXF… / from Project…（フィットまたは実寸）。</li>
+</ul>
+
+<h3 id="sketchmod">✅ スケッチの修正ツール (2.463.0)</h3>
+<ul>
+  <li><kbd>T</kbd> Trim（赤く表示された部分が削除されます）、<kbd>E</kbd> Extend（次の線／円まで延長）、<kbd>F</kbd> Fillet / Chamfer（角を選んでから半径／距離を入力）。</li>
+  <li>Polygon（辺の数はオプションバーの Sides）、Slot、2-Point Circle、3-Point Circle、Spline（Enter で終了）。</li>
+  <li>📐 Sketch タブ ▸ Modify：⇉ Offset…、⇋ Mirror（最後に選択した線が対称軸になります）、▦ Rectangular Pattern…、✺ Circular Pattern…。</li>
+</ul>
+
+<h3 id="sketch">✅ スケッチレイヤー：拘束 + 寸法 (2.462.0)</h3>
+<ul>
+  <li>Layer ▸ <b>New Sketch</b>、または <b>N</b> ツールで描画します：<kbd>L</kbd> 線、<kbd>R</kbd> 長方形、<kbd>C</kbd> 円、<kbd>A</kbd> 3 点円弧、<kbd>P</kbd> 点、<kbd>D</kbd> 寸法、<kbd>S</kbd> 選択、<kbd>X</kbd> 補助線、<kbd>Del</kbd> 削除。</li>
+  <li>水平／垂直に近い線はスナップされます（Horizontal / Vertical）。接する点同士は結合されます。寸法：クリックして配置し、値を入力します。</li>
+  <li>📐 Sketch タブ：自由度（✓ 完全拘束）、Coincident · Collinear · Concentric · Midpoint · Fix · Parallel · Perpendicular · Horizontal · Vertical · Tangent · Equal · Symmetric。</li>
+  <li>⬚ Profiles → Shapes で、閉じた領域からシェイプレイヤーを作成します。</li>
+</ul>
+
+<h3 id="dazlive">🧪 Daz ライブリンク (2.461.0、実験的機能)</h3>
+<ul>
+  <li>Daz Studio：Scripts ▸ bitGen ▸ <b>bitGen Live Link</b>（このウィンドウは開いたままにしておきます）。</li>
+  <li>🧊 3D タブ：<b>📡 Camera → Daz</b>、<b>📡 Pose → Daz</b>、<b>↺</b>（元に戻す）、☐ <b>as I change</b>。Daz は "bitGen Camera" を通して表示し、同じ名前のボーンが回転します。</li>
+</ul>
+
+<h3 id="layer3d">✅ 3D レイヤー：Daz / Blender のシーン (2.460.0)</h3>
+<ul>
+  <li>Daz Studio：Scripts ▸ bitGen ▸ bitGen Bridge ▸ <b>Scene</b>。次に Layer ▸ <b>New 3D Layer (Daz / Blender)…</b> を選びます。任意の .blend を選択することもできます。</li>
+  <li>🧊 3D タブ：🎥 シーンカメラ、Front / Back / Left / Right / Top、Turn / Tilt / Distance / Lens。<b>🖐 Drag the view</b> でオービット、<kbd>Shift</kbd> でパン、<kbd>Ctrl</kbd> / ホイールでズーム。</li>
+  <li>Pose：フィギュア + ボーン、X / Y / Z の回転、Reset。Frame。Render：Quick / EEVEE / Cycles、透明背景、▶ Render。</li>
+  <li><b>✨ Generate from it</b>：プロンプトドッカー（Edit モード）が、このビューから新しい画像を作成します。</li>
+</ul>
+
+<h3 id="dimauto">✅ 自動寸法、間取り寸法、連続寸法 (2.458.0)</h3>
+<ul>
+  <li>Layer ▸ Auto Dimension（寸法ツールのバーにある ⊞ Auto）：選択したオブジェクトの幅 + 高さを記入します。</li>
+  <li>Layer ▸ Floorplan Dimensions…（⌂ Floorplan）：選択した閉じたシェイプのすべての壁の寸法を外側に記入し、全体のサイズも加えて 1 つのグループにします。</li>
+  <li>Chain Dimension ツール (F8)：点をクリックし、Enter またはダブルクリックしてから、寸法線の位置を指定します。各区間 + 合計が記入されます。<kbd>Shift</kbd> で水平、<kbd>Ctrl</kbd> で垂直、<kbd>Backspace</kbd> で点を 1 つ取り消します。</li>
+</ul>
+
+<h3 id="dimgroup">✅ 寸法グループ (2.457.0)</h3>
+<ul>
+  <li>各寸法はグループになっています：Extension Line 1、Extension Line 2、Dimension Line（矢印 + 数値）。</li>
+  <li>エッジ上で押してドラッグすると、そのエッジの寸法になります。または、ノード／エッジをクリックし、別のノード／エッジをクリックしてから、寸法線の位置を指定します。</li>
+  <li>寸法補助線をドラッグすると、長さがリアルタイムに変わります。その端点ノードをドラッグすると、その寸法補助線だけが伸び縮みします。</li>
+  <li><kbd>Shift</kbd> で水平、<kbd>Ctrl</kbd> で垂直。Move ツールで寸法線をつかむとグループ全体が移動し、中央の点をドラッグすると寸法線が移動します。</li>
+</ul>
+
+<h3 id="dims">✅ CAD 寸法：正確な点、リアルタイムに追従する端点、縮尺 (2.441.0)</h3>
+<ul>
+  <li>寸法ツールは、ノード、中点、角、辺の中点、アウトライン上の最も近い点、ガイドラインの交点にスナップします（点の位置に名前が表示されます。<kbd>Alt</kbd> で自由に配置）。</li>
+  <li>寸法に Move ツールを使い、端をドラッグすると、数値がリアルタイムに追従します。<kbd>Shift</kbd> で水平、<kbd>Ctrl</kbd> で垂直。</li>
+  <li>プロパティバーの 📏：選択した寸法の実寸 + 単位を入力すると、それが画像の縮尺になり、すべての寸法に適用されます（Layer ▸ Dimension Scale…）。</li>
+</ul>
+
+<h3 id="guides">✅ 定規、ガイドライン、スナップ (2.440.0)</h3>
+<ul>
+  <li><b>Rulers</b>（<kbd>Ctrl</kbd>+<kbd>R</kbd>）の単位は px、mm、cm、in、pt から選べます（View ▸ Ruler Units）。定規からドラッグすると<b>ガイドライン</b>が作成されます。Move ツール（または <kbd>Ctrl</kbd>）でガイドラインを移動し、定規の上に戻すと削除されます。View ▸ Guidelines / Lock / New… / Guidelines… / Clear。</li>
+  <li><b>View ▸ Snap To</b>：Snap（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>;</kbd>）、Grid、Guidelines、Objects、Nodes、Midpoints、Intersections、Page。描画ツールではポインターが、Move ツールではレイヤーのボックスがスナップします。Grid and Snapping… で距離、グリッド間隔、dpi を設定します。</li>
+</ul>
+
+<h3 id="propbar">✅ プロパティバー、角の半径、シェイプへの ⊕ / ⊖、線の幅とスタイル (2.439.0)</h3>
+<ul>
+  <li>ツールオプションの下にある <b>Object</b> バー：選択したレイヤーの <b>X Y W H</b>。<b>🔒</b> で縦横比を保持します。</li>
+  <li>長方形：4 つの角の半径（<b>🔗</b> = すべて連動）。ベクターシェイプ：アウトラインの幅（プリセット付き）と線のスタイル（画像から選択）。</li>
+  <li>シェイプツール (F6)：<b>◻ New / ⊕ Add / ⊖ Subtract / ⊗ Intersect / ⊘ Exclude</b>。シェイプを選択した状態で描くと、新しいシェイプはその一部として結合されます。元のシェイプはそのまま残ります。</li>
+</ul>
+
+<h3 id="floatpanels">✅ フローティングパネルグループ、名前付きドッカー、中央に開くダイアログ (2.438.0)</h3>
+<ul>
+  <li>Layers / Colour グループのタブにある <b>⇱</b> で、グループをエディター内でフローティングにします。タイトルでドラッグ、各辺でサイズ変更、<b>⇲</b> で元の位置に戻します。</li>
+  <li><b>Window ▸ New Docker…</b>：名前付きの空のドッカーを作成します。フローティンググループをその上にドラッグすると、タブとしてドッキングされます。<b>⚙</b>：メインドッカーにする／ドッカー内に限定する、名前の変更、削除。<code>panel_layout.cfg</code> に保存されます。</li>
+  <li>ダイアログは画面の中央、または最後に移動した位置に開きます（<code>dialog_layout.cfg</code>）。<kbd>Shift</kbd>+<kbd>Del</kbd> で選択したレイヤーを削除します。</li>
+</ul>
+
+<h3 id="genfill">✅ ✨ Generate Fill in Shape / in Mask、パターンライブラリ (2.437.0)</h3>
+<ul>
+  <li><b>Layer ▸ ✨ Generate Fill in Shape…</b>（レイヤーの右クリック、または Properties からも使えます）：レイヤーのアウトラインの内側に生成します。<b>✔ Apply</b> で、シェイプに<b>クリッピング</b>された新しいレイヤーに配置されます（ライブのまま保持されます）。<b>✨ Generate Fill in Mask…</b>：レイヤーのマスクの内側に生成し、結果にはそのマスクのコピーが付きます。</li>
+  <li><b>Edit ▸ Define Pattern…</b> / <b>Pattern Library…</b>：インストールフォルダーの patterns/&lt;name&gt;.png に保存されます。<b>New Fill Layer ▸ Pattern…</b>（拡大率、オフセットは Properties で設定）、<b>Edit ▸ Fill ▸ Pattern</b>、<b>Pattern Overlay</b>（user:&lt;name&gt;）。.bgi には使用しているパターンが含まれます。</li>
+</ul>
+
+<h3 id="bgi">✅ プロジェクトファイル：.bgi (2.436.0)</h3>
+<ul>
+  <li><b>File ▸ Save Project (.bgi)</b> <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>S</kbd> / <b>Save Project As (.bgi)…</b>：ドキュメントをそのままの状態で保存します。レイヤー、グループ、マスク、テキスト／シェイプ／塗りつぶし／調整レイヤー、スタイル、内容とスマートフィルターを含むスマートオブジェクト、パス、チャンネル、選択範囲、レイヤーカンプが、プロジェクトの <code>bgi</code> フォルダーに保存されます（指定した場合はダウンロードもされます）。</li>
+  <li><b>Open Project (.bgi)…</b>、<b>Open Project from Project…</b>、Open…（<kbd>Ctrl</kbd>+<kbd>O</kbd>）、または .bgi をエディターにドロップ：新しいドキュメントとして開き、すべて編集可能で、履歴は新しく始まります。</li>
+  <li>zip 形式です：<code>doc.xml</code>（XML 形式のドキュメント）+ <code>preview.png</code> + 各レイヤー／マスクの PNG。</li>
+</ul>
+
+<h3 id="gradients">✅ Gradient Editor、Layer Comps、スマートフィルターの描画モード (2.434.0)</h3>
+<ul>
+  <li><b>Gradient Editor</b>（Edit ▸ Gradient Editor…、Gradient ツールのグラデーションボタン、塗りつぶしレイヤーやシェイプのグラデーション）：プリセット + 自作のグラデーション。バーの下をクリックで新しい分岐点、ドラッグで移動、下へドラッグで削除します。各分岐点の色（または描画色／背景色）、不透明度、位置。Reverse、Distribute。</li>
+  <li><b>Layer Comps</b>（Window ▸ Layer Comps）：レイヤーの表示／位置／外観を保存して切り替えます（▶、◀ ▶）。↻ で更新、Last Document State。</li>
+  <li><b>Smart filter Blending Options</b>（スマートフィルターを右クリック）：描画モード + 不透明度。</li>
+</ul>
