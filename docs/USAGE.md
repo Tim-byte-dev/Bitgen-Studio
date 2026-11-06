@@ -6303,6 +6303,10 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.699.0: **Edit size follows Override style** - with Basic Settings' **Override style** ticked, an edit of a References
+  picture comes out at Basic Settings' Size (as in 2.698.0); not ticked (or Size = Style's own), it comes out at the **first
+  reference picture's own size** (in 16 px steps, at most 4096 px on the long side) - the workflow keeps that size instead of
+  scaling to its own megapixels.
 - 2.698.0: **Edits come out at Basic Settings' Size** - an edit of a References docker picture (the prompt docker's ✏ Edit or
   Refine with the image editor closed) now uses Basic Settings' image **Size** + **Aspect**: picture 1 is cropped to that shape
   (its middle kept) and the workflow keeps that size (its own "scale to N megapixels" steps follow). **Style's own** keeps the

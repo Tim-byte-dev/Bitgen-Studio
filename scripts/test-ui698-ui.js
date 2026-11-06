@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.698.0 in a REAL browser: AN EDIT OF A REFERENCES PICTURE COMES OUT AT BASIC SETTINGS' SIZE. With Size set
- * (1024, 1:1) the References docker's picture 1 (1000 x 500) is sent cropped to 1024 x 1024 with exact=1; with "Style's own" it is
- * sent at its own shape, no exact.
+ * (1024, 1:1) and Override style ticked, the References docker's picture 1 (1000 x 500) is sent cropped to 1024 x 1024 with exact=1;
+ * 2.699.0: Override NOT ticked (or "Style's own") = the first picture's own size (1008 x 496 - 16 px steps), exact=1 too.
+ * Tim (verbatim, 2.699.0): "if override is not checked use the first reference image size"
  * Tim (verbatim): "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using
  * basic settings docker?"
  * Against the running app (H3_URL). No Playwright = SKIP. */
@@ -39,13 +40,13 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
           return new Response(JSON.stringify({ jobs: [{ id: "t698" }] }), { status: 200, headers: { "Content-Type": "application/json" } }); }
         return real(u, o); };
     });
+    const ovr = (on) => ev((on) => { const c = document.getElementById("ovrStyle"); if (c && c.checked !== on) c.click(); return c ? c.checked : null; }, on);
+    const ovr0 = await ev(() => { const c = document.getElementById("ovrStyle"); return c ? c.checked : null; });
+    await ovr(true);
     const sizeTo = (res, ar) => ev(([res, ar]) => { const r = document.getElementById("imgRes"), a = document.getElementById("imgAr"); r.value = res; r.dispatchEvent(new Event("change")); a.value = ar; a.dispatchEvent(new Event("change")); return window.H3BasicImageSize(); }, [res, ar]);
     const go = () => ev(async () => { const E = window.imageEditorInstance.E; await E.promptLink.takeOp({ kind: "refs", op: "edit", mode: "edit" }, "make it night"); });
     const want = await sizeTo("1024", "1:1");
     check("Basic Settings' Size 1024 + 1:1: H3BasicImageSize = 1024 x 1024", want && want.width === 1024 && want.height === 1024, want);
-    const style0 = await ev(() => document.getElementById("styleSel").value);   // put back at the end (it is saved - other tests read it)
-    await ev(() => { const s = document.getElementById("styleSel"); const o = [...s.options].find((x) => /edit/i.test(x.textContent)); if (o) { s.value = o.value; s.dispatchEvent(new Event("change")); } });
-    await p.waitForTimeout(400);
     await go(); await p.waitForFunction(() => window.__sent.length >= 1, null, { timeout: 20000 }).catch(() => {});
     const s1 = await ev(() => window.__sent[0]);
     check("the References picture (1000 x 500) is sent at 1024 x 1024 with exact=1 - cropped, its middle kept (blue stripe in the middle, red at the edge)",
@@ -54,8 +55,14 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("Style's own: H3BasicImageSize = null", (await ev(() => window.H3BasicImageSize())) === null);
     await ev(() => { window.__sent = []; }); await go(); await p.waitForFunction(() => window.__sent.length >= 1, null, { timeout: 20000 }).catch(() => {});
     const s2 = await ev(() => window.__sent[0]);
-    check("…then the picture goes at its own shape (2:1), no exact", s2 && Math.abs(s2.crop[0] / s2.crop[1] - 2) < 0.05 && !s2.exact, s2);
-    await ev((v) => { const s = document.getElementById("styleSel"); s.value = v; s.dispatchEvent(new Event("change")); }, style0); await p.waitForTimeout(1500);
+    check("…then the first picture's own size (1000 x 500 -> 1008 x 496, 16 px steps), exact=1 (the workflow keeps it)", s2 && s2.crop[0] === 1008 && s2.crop[1] === 496 && s2.exact === "1", s2);
+    // 2.699.0: Override not ticked - Basic Settings' Size is not used
+    await sizeTo("1024", "1:1"); await ovr(false);
+    check("Override style NOT ticked: H3BasicImageSize = null even with Size 1024", (await ev(() => window.H3BasicImageSize())) === null);
+    await ev(() => { window.__sent = []; }); await go(); await p.waitForFunction(() => window.__sent.length >= 1, null, { timeout: 20000 }).catch(() => {});
+    const s3 = await ev(() => window.__sent[0]);
+    check("…the first picture's own size is sent (1008 x 496), exact=1", s3 && s3.crop[0] === 1008 && s3.crop[1] === 496 && s3.w === "1008" && s3.h === "496" && s3.exact === "1", s3);
+    await sizeTo("", "1:1"); if (ovr0 !== null) await ovr(ovr0);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e.stack || e.message)); }
   await b.close();

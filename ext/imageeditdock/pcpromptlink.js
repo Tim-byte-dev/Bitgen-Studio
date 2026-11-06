@@ -263,14 +263,16 @@
       try {
         const blobs = await Promise.all(refs.map((r) => (r.file ? Promise.resolve(r.file) : root.fetch(r.url).then((x) => x.blob()))));
         const bmp = await root.createImageBitmap(blobs[0]);
-        // 2.698.0: Basic Settings' Size set = the result at that size - picture 1 cropped to its shape (the middle kept) and sent at
-        // it, the workflow told to keep it (exact); "Style's own" = the picture's own shape, as before
+        // 2.698.0: Basic Settings' Size (Override style ticked) = the result at that size - picture 1 cropped to its shape (the middle
+        // kept); 2.699.0: otherwise the FIRST picture's own size (16 px steps, at most 4096 on the long side) - either way the
+        // workflow is told to keep it (exact), not to scale it to its own megapixels
         const want = typeof root.H3BasicImageSize === "function" ? root.H3BasicImageSize() : null;
-        const fit = want ? { w: want.width, h: want.height } : E.P.fitSize(bmp.width, bmp.height, (S.res || 1) * 1048576, 16);
+        const a16 = (v) => Math.max(64, Math.round(v / 16) * 16), cap = Math.min(1, 4096 / Math.max(bmp.width, bmp.height));
+        const fit = want ? { w: want.width, h: want.height } : { w: a16(bmp.width * cap), h: a16(bmp.height * cap) };
         const crop = E.newCanvas(fit.w, fit.h), cg = crop.getContext("2d"); cg.imageSmoothingQuality = "high";
         if (want) { const k = Math.max(fit.w / bmp.width, fit.h / bmp.height), sw = fit.w / k, sh = fit.h / k; cg.drawImage(bmp, (bmp.width - sw) / 2, (bmp.height - sh) / 2, sw, sh, 0, 0, fit.w, fit.h); }
         else cg.drawImage(bmp, 0, 0, fit.w, fit.h);
-        const exact = !!want;
+        const exact = true;
         const blobOf = (c) => new Promise((r) => c.toBlob(r, "image/png"));
         if (root.H3TestEvent) { try { root.H3TestEvent("imgop_refs", act.op); } catch (e) { /* the 🧪 list */ } }
         let r = null;

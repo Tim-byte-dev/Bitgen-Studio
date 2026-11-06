@@ -1402,7 +1402,7 @@
       <div id="iset" class="hidden">
         <div class="grid3">
           <div><label class="f">Size</label>
-            <select id="imgRes" title="Long edge in pixels. Style's own = whatever the style's workflow renders at. Edits of a References picture come out at this size too (Style's own = the picture's own size).">
+            <select id="imgRes" title="Long edge in pixels. Style's own = whatever the style's workflow renders at. With Override style ticked, edits of a References picture come out at this size too (not ticked / Style's own = the first picture's own size).">
               <option value="" selected>Style's own</option>
               <option value="512">512</option><option value="768">768</option>
               <option value="1024">1024</option><option value="1280">1280</option>
@@ -8016,8 +8016,9 @@ function imgWhFromUi() {
   return { width: w, height: h };
 }
 // 2.698.0 (Tim: "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using basic
-// settings docker?"): Basic Settings' image Size for edits too - null = "Style's own" (the picture's size)
-window.H3BasicImageSize = () => imgWhFromUi();
+// settings docker?"): Basic Settings' image Size for edits too - null = the picture's own size. 2.699.0 (Tim: "if override is not
+// checked use the first reference image size"): only with Override style ticked
+window.H3BasicImageSize = () => (ovrStyleOn() ? imgWhFromUi() : null);
 function imgWhReadout() {
   const wh = imgWhFromUi();
   if ($("imgWh")) $("imgWh").textContent = wh ? `→ ${wh.width}×${wh.height}` : "→ the style's own size";

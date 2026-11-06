@@ -43,7 +43,9 @@ check("every Qwen edit workflow's scalers follow too", ok, q)
 rd = lambda p: open(os.path.join(ROOT, p), encoding="utf8").read()
 IX, PL, MT, RA = rd("static/index.html"), rd("ext/imageeditdock/pcpromptlink.js"), rd("ext/imageeditdock/mount.js"), rd("routes/aiedit.js")
 check("wired: H3BasicImageSize (null = Style's own) -> runRefs crops picture 1 to it (the middle) and sends exact -> exact_size on the job",
-  "window.H3BasicImageSize = () => imgWhFromUi();" in IX and "const want = typeof root.H3BasicImageSize" in PL and PL.count("exact }, tellSay)") == 2
+  "window.H3BasicImageSize = () => (ovrStyleOn() ? imgWhFromUi() : null);" in IX and "const want = typeof root.H3BasicImageSize" in PL and PL.count("exact }, tellSay)") == 2
   and 'if (req.exact) fd.append("exact", "1");' in MT and 'if (b.exact === "1") p.exact_size = true;' in RA)
+check("2.699.0: Override style not ticked = no Basic Settings size; then the FIRST picture's own size (16 px steps, <= 4096) is sent, exact either way",
+  "ovrStyleOn() ? imgWhFromUi() : null" in IX and "{ w: a16(bmp.width * cap), h: a16(bmp.height * cap) }" in PL and "4096 / Math.max(bmp.width, bmp.height)" in PL and "const exact = true;" in PL)
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)
