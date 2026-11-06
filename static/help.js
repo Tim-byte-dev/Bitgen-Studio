@@ -44,14 +44,14 @@
     cur = { topic: t, anchor: anchor || "" };
     var L = window.H3HelpLang ? H3HelpLang.get() : "en";
     var english = function () { return fetch("/static/help/" + t + ".html").then(function (r) { if (!r.ok) throw new Error("no help for " + t); return r.text(); }).then(function (h) { return { html: h, lang: "en", stale: false }; }); };
-    var show = function (p) {
+    var show = function (p, asked) {                      // asked = the English page the reader asked for (no note)
         var html = p.html;
         body.innerHTML = html;
         if (p.lang !== "en" && p.stale && window.H3HelpLang) {         // English is newer: say so, the English page a click away
           var n = document.createElement("p"); n.className = "hpnote"; n.setAttribute("data-hpnote", "stale"); n.textContent = H3HelpLang.say("stale", p.lang);
           var b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = H3HelpLang.say("english", p.lang);
-          b.onclick = function () { english().then(show); }; n.appendChild(b); body.insertBefore(n, body.firstChild);
-        } else if (L !== "en" && p.lang === "en" && window.H3HelpLang) {
+          b.onclick = function () { english().then(function (e) { show(e, true); }); }; n.appendChild(b); body.insertBefore(n, body.firstChild);
+        } else if (!asked && L !== "en" && p.lang === "en" && window.H3HelpLang) {
           var m = document.createElement("p"); m.className = "hpnote"; m.setAttribute("data-hpnote", "missing"); m.textContent = H3HelpLang.say("missing", L); body.insertBefore(m, body.firstChild);
         }
         var h = body.querySelector("h1, h2");
