@@ -11,6 +11,7 @@
  *        help-<topic>.<lang>.html -> static/help/<lang>/<topic>.html, shortcuts.<lang>.json -> docs/i18n/<lang>/shortcuts.json
  *   node scripts/i18n-help.js check    <lang> [--strict]               the structure kept (markers, code, links, pictures,
  *        tables, the help pages' tags + ids, the shortcut keys) and the text really translated; exit 1 on a problem
+ * The translators' brief + glossary: docs/i18n/TRANSLATING.md (UI names stay English; markers / code / links untouched).
  * <lang>: zh-CN | ja.  Tim: "is it possible to translate help and the user guide into chinese and japanese as additional help
  * files?" (refreshed when he asks: `status`, then `prep` without --all gives only what changed in English).
  */
