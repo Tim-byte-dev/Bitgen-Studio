@@ -6303,6 +6303,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.687.0: **A quieter sketch plane** in the Sketcher: clicking a face still makes it the sketch plane (the bar's ✎ chip
+  names it, the drawing tools draw in it, ⊥ Look at turns to it), but the orange square and grid are no longer drawn
+  over it. A plane you keep with 📌 still shows its faint dashed outline.
 - 2.686.0: **🎨 Change style draws the line art first**: when the prompt's image style is not an edit model (SDXL, Pony,
   Illustrious, SD 1.5, FLUX.1 …), Change style first turns the picture into a ✏ line-art drawing, then the style makes
   the look from it through a line-art ControlNet. The new picture keeps the drawing's outlines while the look, colours
@@ -6473,7 +6476,7 @@ orange line shows where it will go - and let go.
   - Click a room's **corner** or a wall's **end piece** (Select): its panel sets its **Width** (wider than the wall = a pier)
     and, for an end, its **Length past the end**; Delete puts it back as the wall. Dragging from it still draws a new wall.
   - **Sketch plane**: the face you click with Select (a wall's face, a floor, a face of the model) becomes the sketch plane -
-    an orange grid shows it and the bar's chip names it. Line, Rectangle, Circle and Polygon then draw in that plane. ✕ on
+    the bar's chip names it (2.687.0: nothing is drawn over the face any more). Line, Rectangle, Circle and Polygon then draw in that plane. ✕ on
     the chip, Esc or a click on nothing ends it. **⊥ Look at** (the bar) turns the view straight at it.
 - 2.662.0: **Walls end square** in the Sketcher, and **new walls dragged out of corners and wall ends**.
   - Each wall is now a rectangle from corner to corner - picked, hidden or raised on its own it ends square, not in a

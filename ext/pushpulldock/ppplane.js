@@ -2,8 +2,8 @@
  *
  * Tim (verbatim): "when user clicks a face, make that the sketch plane, add a look at button like fusion 360 has"
  *
- *   A face clicked with ➤ Select (a wall's face, a floor, a roof, a face of the model) becomes the sketch plane: an orange
- *   square shows it, the bar's chip names it (✕ / Esc / a click on nothing ends it), and ✏ Line / ▭ Rectangle / ◯ Circle /
+ *   A face clicked with ➤ Select (a wall's face, a floor, a roof, a face of the model) becomes the sketch plane (2.687.0:
+ *   nothing drawn over it - no orange square / grid), the bar's chip names it (✕ / Esc / a click on nothing ends it), and ✏ Line / ▭ Rectangle / ◯ Circle /
  *   ⬠ Polygon draw in that plane - wherever the pointer goes - instead of on the ground or the face under the pointer.
  *   ⊥ Look at (the bar): the view turns straight at the sketch plane (Fusion's Look At), it in the middle.
  * Pure (Node: scripts/test-plane663.js): basis(n) - two directions in the plane; norm(n).
@@ -25,15 +25,10 @@
     const v = V(); if (!v || !v.T || !v.scene) return;
     if (!grp) { grp = new v.T.Group(); grp.name = "pp-plane-ui"; v.scene.add(grp); v.hideOnShot = (v.hideOnShot || []).concat([grp]); }
     while (grp.children.length) { const c = grp.children.pop(); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); }
-    if (plane) {
-      const T = v.T, B = basis(plane.n), s = plane.size || 1.5, o = plane.p.map((x, i) => x + B.n[i] * 0.003);
-      const P = (a, b) => new T.Vector3(o[0] + B.u[0] * a + B.v[0] * b, o[1] + B.u[1] * a + B.v[1] * b, o[2] + B.u[2] * a + B.v[2] * b);
-      const g = new T.BufferGeometry().setFromPoints([P(-s, -s), P(s, -s), P(s, s), P(-s, -s), P(s, s), P(-s, s)]);
-      const m = new T.Mesh(g, new T.MeshBasicMaterial({ color: 0xf59e2c, transparent: true, opacity: 0.16, side: T.DoubleSide, depthWrite: false }));
-      m.raycast = () => {}; m.renderOrder = 9; grp.add(m);
-      const L = [], k = 6; for (let i = -k; i <= k; i++) { const a = i / k * s; L.push(P(a, -s), P(a, s), P(-s, a), P(s, a)); }
-      const ln = new T.LineSegments(new T.BufferGeometry().setFromPoints(L), new T.LineBasicMaterial({ color: 0xf59e2c, transparent: true, opacity: 0.45 })); ln.raycast = () => {}; grp.add(ln);
-    }
+    // 2.687.0 (Tim: "when clicking on a face keep the face as a plane but do not show the plane grid - there is too much on
+    // the screen"): the sketch plane is no longer drawn (the orange square + its 13 x 13 grid are gone) - the clicked face
+    // keeps its pick highlight and the bar's ✎ chip names the plane; the tools still draw in it. A KEPT plane
+    // (📌 - PPCons construction planes) keeps its faint dashed outline.
     if (v.draw) v.draw();
   }
   function chip() {

@@ -13114,6 +13114,10 @@ node scripts/test-restyle686.js > /tmp/restyle686.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui686-ui.js > /tmp/ui686ui.log 2>&1 \
   && ok "2.686.0 the real routes + browser: line art first, then the look through the line-art ControlNet (union told line art); no ControlNet = picture to picture" \
   || { bad "2.686.0 line-art restyle test"; grep -a "FAIL\\|Error" -A2 /tmp/ui686ui.log | head -14; }
+# ---- 2.687.0 (Tim: "when clicking on a face keep the face as a plane but do not show the plane grid - there is too much on the screen")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui687-ui.js > /tmp/ui687ui.log 2>&1 \
+  && ok "2.687.0 browser test: a clicked face is the sketch plane with nothing drawn over it; the tools still draw in it; a kept plane keeps its outline - or SKIP without playwright" \
+  || { bad "2.687.0 sketch plane not drawn browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui687ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

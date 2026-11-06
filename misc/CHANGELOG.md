@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.687.0** — ✎ The Sketcher's Sketch Plane Is No Longer Drawn Over the Clicked Face (No Orange Square / Grid) - It Is Still the Plane the Tools Draw In
 - **2.686.0** — ✏ Change Style With a Style That Is No Edit Model Draws the Picture's Line Art First, Then Renders the Look From It Through a Line-Art ControlNet
 - **2.685.0** — 🎨 Change Style Uses Basic Settings' Override (and the Style's Own Model) With SDXL / Pony / Illustrious Styles; the Bar Says What Override Applied
 - **2.684.0** — 🎨 The Image Preview's Look Dropdown Is Only As Wide As Its Words, the Buttons' Height - the Bar Stays on One Line
