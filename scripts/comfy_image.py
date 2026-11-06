@@ -1122,7 +1122,22 @@ def patch(graph, style, params):
     elif r["latent"] and "width" in _ins(graph.get(r["latent"], {})):
         # the latent's width is a LINK (GetImageSize in the edit graph): the
         # size is computed from the source picture, and saying so beats silence
-        report.append("size: taken from the reference image, not the style")
+        if params.get("exact_size") and pick("width") and pick("height"):
+            report.append("size %sx%s: Basic Settings' Size (the picture was sent at it)" % (int(pick("width")), int(pick("height"))))
+        else:
+            report.append("size: taken from the reference image, not the style")
+    # 2.698.0 (Tim: "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using
+    # basic settings docker?"): the picture comes at Basic Settings' Size; the graph's own "scale to N megapixels" steps would
+    # resize it again (P-H3 to 4 MP, Qwen to 1 MP) - they keep THAT many pixels instead
+    if params.get("exact_size") and pick("width") and pick("height"):
+        mp = round(int(pick("width")) * int(pick("height")) / (1024 * 1024), 4)   # ComfyUI: megapixels x 1024 x 1024 pixels
+        hit = [nid for nid, v in graph.items() if v.get("class_type") == "ImageScaleToTotalPixels" and not _is_link(_ins(v).get("megapixels"))]
+        for nid in hit:
+            graph[nid]["inputs"]["megapixels"] = mp
+            if "resolution_steps" in graph[nid]["inputs"] and not _is_link(graph[nid]["inputs"]["resolution_steps"]):
+                graph[nid]["inputs"]["resolution_steps"] = 16
+        if hit:
+            report.append("size: %s MP kept by node(s) %s (Basic Settings' Size)" % (mp, ", ".join(hit)))
     if r["latent"]:
         lat = graph[r["latent"]]["inputs"]
         batch = params.get("batch")

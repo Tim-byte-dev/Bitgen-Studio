@@ -263,8 +263,14 @@
       try {
         const blobs = await Promise.all(refs.map((r) => (r.file ? Promise.resolve(r.file) : root.fetch(r.url).then((x) => x.blob()))));
         const bmp = await root.createImageBitmap(blobs[0]);
-        const fit = E.P.fitSize(bmp.width, bmp.height, (S.res || 1) * 1048576, 16);
-        const crop = E.newCanvas(fit.w, fit.h), cg = crop.getContext("2d"); cg.imageSmoothingQuality = "high"; cg.drawImage(bmp, 0, 0, fit.w, fit.h);
+        // 2.698.0: Basic Settings' Size set = the result at that size - picture 1 cropped to its shape (the middle kept) and sent at
+        // it, the workflow told to keep it (exact); "Style's own" = the picture's own shape, as before
+        const want = typeof root.H3BasicImageSize === "function" ? root.H3BasicImageSize() : null;
+        const fit = want ? { w: want.width, h: want.height } : E.P.fitSize(bmp.width, bmp.height, (S.res || 1) * 1048576, 16);
+        const crop = E.newCanvas(fit.w, fit.h), cg = crop.getContext("2d"); cg.imageSmoothingQuality = "high";
+        if (want) { const k = Math.max(fit.w / bmp.width, fit.h / bmp.height), sw = fit.w / k, sh = fit.h / k; cg.drawImage(bmp, (bmp.width - sw) / 2, (bmp.height - sh) / 2, sw, sh, 0, 0, fit.w, fit.h); }
+        else cg.drawImage(bmp, 0, 0, fit.w, fit.h);
+        const exact = !!want;
         const blobOf = (c) => new Promise((r) => c.toBlob(r, "image/png"));
         if (root.H3TestEvent) { try { root.H3TestEvent("imgop_refs", act.op); } catch (e) { /* the 🧪 list */ } }
         let r = null;
@@ -272,11 +278,11 @@
           const editStyle = editStyleNow();
           r = await api.compose({ pics: [await blobOf(crop)].concat(blobs.slice(1)), names: refs.map((x, i) => String(x.desc || x.name || `Picture ${i + 1}`).slice(0, 60)), prompt, style_id: editStyle, count: S.count || 1, width: fit.w, height: fit.h }, tellSay);
         } else if (act.mode === "edit") {
-          r = await api.aiedit({ mode: "edit", prompt, style_id: editStyleNow(), count: S.count || 1, strength: 100, width: fit.w, height: fit.h, crop: await blobOf(crop) }, tellSay);
+          r = await api.aiedit({ mode: "edit", prompt, style_id: editStyleNow(), count: S.count || 1, strength: 100, width: fit.w, height: fit.h, crop: await blobOf(crop), exact }, tellSay);
         } else {                                                            // refine: the whole of picture 1
           const none = E.newCanvas(fit.w, fit.h);                          // a clear mask = everything selected; the hole picture = all clear
           r = await api.aiedit({ mode: "refine", prompt: prompt || (api.mainPrompt ? api.mainPrompt() : ""), style_id: ($("ieStyle") || {}).value || "", count: S.count || 1, strength: S.strength || 50,
-                                 width: fit.w, height: fit.h, crop: await blobOf(crop), mask: await blobOf(none), rgba: await blobOf(none) }, tellSay);
+                                 width: fit.w, height: fit.h, crop: await blobOf(crop), mask: await blobOf(none), rgba: await blobOf(none), exact }, tellSay);
         }
         if (r && r.jobs) tellSay(`${r.jobs.length} render(s) queued from the References docker's picture${refs.length > 1 && act.mode === "compose" ? "s" : " 1"} - the results land in the gallery`);
       } catch (e) { tellSay(`${act.op} failed: ${e.message || e}`); }

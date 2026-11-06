@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.698.0** — 📐 Edits of a References Picture Come Out at Basic Settings' Size (Not the Picture's)
 - **2.697.0** — 🩹 P-H3 Image Edit Fixed (an Unused Picture Slot No Longer Takes the Guider With It)
 - **2.696.0** — ✨ The Sketcher's Own Photo Style Dropdown (Image Edit Styles, the Last One Used Kept)
 - **2.695.0** — Sketcher Roof Coverings: Pre-Painted Steel (Corrugated / Ribbed / Standing Seam), Concrete + Terracotta Tiles, Slate, Shingles, Polycarbonate

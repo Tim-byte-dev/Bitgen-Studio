@@ -273,6 +273,7 @@ function mount(app) {
       if (controls.length) p.aiedit_controls = controls;
       if (plan.negative) p.negative = String(plan.negative).slice(0, 2000);
       if (plan.denoise != null) p.denoise = plan.denoise;
+      if (b.exact === "1") p.exact_size = true;                         // 2.698.0: Basic Settings' Size - the output at width x height
       if (ov) { if (ov.steps != null) p.steps = ov.steps; if (ov.cfg != null) p.cfg = ov.cfg; if (ov.note) p.workflow_note += " · " + ov.note; }   // 2.676.0
       p.seed = (first.seed + i) % 4294967296; p.seed_random = first.random;
       if (live) {

@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.698.0: **Edits come out at Basic Settings' Size** - an edit of a References docker picture (the prompt docker's ✏ Edit or
+  Refine with the image editor closed) now uses Basic Settings' image **Size** + **Aspect**: picture 1 is cropped to that shape
+  (its middle kept) and the workflow keeps that size (its own "scale to N megapixels" steps follow). **Style's own** keeps the
+  picture's own shape and size, as before. Edits inside the image editor keep the selection's size (the result is pasted back
+  over it).
 - 2.697.0: **P-H3 Image Edit works** - every P-H3 Image Edit job failed with "Return type mismatch between linked nodes
   [guider]": removing the unused picture slots also removed the graph's guider. Only a slot's own reference nodes are removed
   now (the character creator's guiders were affected the same way).

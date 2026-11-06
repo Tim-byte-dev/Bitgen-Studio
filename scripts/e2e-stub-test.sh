@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.698.0 (Tim: "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using basic settings docker?")
+python3 scripts/test-editsize698.py > /tmp/editsize698.log 2>&1 \
+  && ok "2.698.0 units: exact_size - P-H3's / Qwen's megapixel scalers keep Basic Settings' Size, unchanged without it, the page -> route wiring" \
+  || { bad "2.698.0 edit size units"; grep -a "^FAIL" -A2 /tmp/editsize698.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui698-ui.js > /tmp/ui698ui.log 2>&1 \
+  && ok "2.698.0 browser test: a References picture (1000 x 500) sent at Basic Settings' 1024 x 1024 (cropped, exact), Style's own = its own shape - or SKIP without playwright" \
+  || { bad "2.698.0 edit size browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui698ui.log | head -14; }
 # ---- 2.697.0 (Tim: "p-h3 downloaded but doesn't work... node 14: Return type mismatch between linked nodes [guider]")
 python3 scripts/test-ph3edit697.py > /tmp/ph3edit697.log 2>&1 \
   && ok "2.697.0 P-H3 Image Edit: an unused picture slot no longer bypasses the BasicGuider (1 and 3 pictures), the character creator's guiders kept, every shipped workflow's guiders intact" \

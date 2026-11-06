@@ -110,6 +110,7 @@ function mountImageEditor() {
       } else if (req.ref) { fd.append("ref0", req.ref, "ref.png"); fd.append("ref_desc", req.ref_desc || ""); }   // 2.539.0: the References docker's picture
       if (req.rgba) fd.append("rgba", req.rgba, "hole.png");
       for (const k of ["mode", "prompt", "style_id", "strength", "count", "width", "height"]) fd.append(k, String(req[k] == null ? "" : req[k]));
+      if (req.exact) fd.append("exact", "1");                           // 2.698.0: the output at width x height (Basic Settings' Size), not the picture's
       // 2.556.0: the editor's 2.552-2.555 settings - they never left the browser before (this list did not carry them):
       // Krita's mask sizes, no selection, fill with the edit model + its style + the fill kind
       for (const k of ["mask_grow", "mask_feather", "whole", "fill_edit", "edit_style_id", "fill_kind", "live", "live_id", "live_steps", "seed"]) if (req[k] != null && req[k] !== "") fd.append(k, String(req[k]));
