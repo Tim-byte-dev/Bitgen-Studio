@@ -1113,6 +1113,31 @@
         if (t.walls) { const d = el("div", "pphint", "• " + R.name + ": " + (t.studs + t.jambs + t.jacks) + " studs (" + t.jambs + " jamb, " + t.jacks + " jack), " + t.studLen.toFixed(1) + " m; plates " + t.plate.toFixed(1) + " m; noggings " + t.nog.toFixed(1) + " m" + (t.braces ? "; " + t.braces + " strap braces" : "")); d.dataset.ppframe = "1"; box.appendChild(d); }
         box.appendChild(el("div", "pphint", "Laid out by common practice (a jamb stud each side of an opening, jack studs over the head and under a sill, a post at each corner). Stud sizes are NOT checked - wall height, spacing and wind decide them (AS 1684's stud tables); bracing is nominal (AS 1684 / your engineer). Seen with 🪵 Show framing."));
       }
+      /** 2.694.0: 🪵 a roof's frame - rafters (sizes checked) or trusses (layout) */
+      function structRoof(rf) {
+        if (!SS) return;
+        const fr = SS.cleanRoofFr(rf.fr), set = (fn) => ch((v) => { const f2 = SS.cleanRoofFr(rf.fr); fn(f2, v); rf.fr = SS.cleanRoofFr(f2); });
+        head("🪵 Roof framing");
+        if (rf.type === "flat" || rf.type === "follow") { box.appendChild(el("div", "pphint", "A flat / follow-the-walls roof is not framed here.")); return; }
+        selIn("Roof frame", fr.kind, SS.ROOFFR, set((f, v) => { f.kind = v; }));
+        if (fr.kind === "none") return;
+        if (fr.kind === "trusses") numIn("Truss spacing", fr.trussAt, set((f, v) => { f.trussAt = v; }), 0.05, 0.45, 1.2, "m");
+        else {
+          selIn("Rafters", fr.rafter.D + "x" + fr.rafter.B, sizeOpts, set((f, v) => Object.assign(f.rafter, sizeOf(v)))); selIn("Rafter grade", fr.rafter.grade, gradeOpts, set((f, v) => { f.rafter.grade = v; }));
+          selIn("Rafter spacing", String(fr.rafter.at), [["0.45", "450 mm"], ["0.6", "600 mm"], ["0.9", "900 mm"]], set((f, v) => { f.rafter.at = +v; }));
+          numIn("Underpurlin when a slope runs past (0 = never)", fr.purlin, set((f, v) => { f.purlin = v; }), 0.1, 0, 10, "m");
+          selIn("Ceiling joists", fr.cj.D + "x" + fr.cj.B, sizeOpts, set((f, v) => Object.assign(f.cj, sizeOf(v)))); selIn("Ceiling joist grade", fr.cj.grade, gradeOpts, set((f, v) => { f.cj.grade = v; }));
+          selIn("Ceiling joist spacing", String(fr.cj.at), [["0.45", "450 mm"], ["0.6", "600 mm"]], set((f, v) => { f.cj.at = +v; }));
+          numIn("Ceiling joists held up every (walls / hanging beams)", fr.cj.span, set((f, v) => { f.cj.span = v; }), 0.1, 0.6, 8, "m");
+        }
+        const F = SS.roofFrames(AR(), Object.assign({}, rf, { fr }), SH());
+        if (F && F.checks) { verdict(F.checks.rafter, "Rafters " + F.checks.rafter.size + " over " + fmt(F.rSpan)); verdict(F.checks.cj, "Ceiling joists " + F.checks.cj.size + " over " + fmt(fr.cj.span));
+          btns([["✔ Size them", ch(() => { const f2 = SS.cleanRoofFr(rf.fr), F2 = SS.roofFrames(AR(), Object.assign({}, rf, { fr: f2 }), SH()); [["rafter", "rafter"], ["cj", "cj"]].forEach(([k, c]) => { const b = F2.checks[c].best; if (b) Object.assign(f2[k], { D: b.D, B: b.B, n: 1 }); }); rf.fr = SS.cleanRoofFr(f2); })]]); }
+        if (F) { const d = el("div", "pphint", fr.kind === "trusses" ? "• " + F.n.trusses + " trusses @ " + Math.round(fr.trussAt * 1000) + " mm - the truss maker designs them; this is their layout."
+          : "• " + F.n.rafters + " rafters, " + F.n.rafterLen.toFixed(1) + " m; " + F.n.cj + " ceiling joists, " + F.n.cjLen.toFixed(1) + " m; ridge " + F.n.ridge.toFixed(1) + " m; " + F.n.hips + " hip / valley rafters; underpurlins " + F.n.purlinLen.toFixed(1) + " m, " + F.n.struts + " struts."); d.dataset.pproof = "1"; box.appendChild(d); }
+        box.appendChild(el("div", "pphint", "Rafters / ceiling joists: the guide check (" + GUIDE.replace(/^A guide check, not a certificate: /, "") + ") Hips, ridges, underpurlins and struts are laid out, not sized. Seen with 🪵 Show framing."));
+        structShow();
+      }
       function structRoom(R) {
         if (!SS) return;
         structWalls(R);
@@ -1439,6 +1464,7 @@
         matIn("Colour", rf.col, ch((v) => { rf.col = v; }));
         if (rf.fascia || (rf.eave && rf.eave !== "plain")) matIn("Fascia / soffit colour", rf.trimCol, ch((v) => { rf.trimCol = v; }));   // 2.668.0
         if (rf.gutter && rf.gutter !== "none") matIn("Gutter colour", rf.gutterCol, ch((v) => { rf.gutterCol = v; }));
+        structRoof(rf);                                                    // 2.694.0: its frame
         btns([["△ Over the whole storey", ch(() => { const R0 = P().room(AR(), rf.rooms[0]); rf.rooms = P().level(AR(), R0 ? R0.z : 0); }), "Every room on its floor under this roof"], ["🗑 Delete", eraseSel]]);
       } else if (asel.ak === "stair") {
         const s = x; head("▟ " + lbl("stair:" + s.id, "Stairs") + " · " + Math.max(2, Math.round(s.rise / 0.18)) + " steps");

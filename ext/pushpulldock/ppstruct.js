@@ -251,11 +251,111 @@
     wallFrames(A, R, H).forEach((w) => { t.walls++; Object.keys(w.n).forEach((k) => { t[k] += w.n[k]; }); });
     return t;
   }
+  /* ---- 2.694.0 (Tim: "go ahead" - roof framing after wall framing): a roof's frame - RAFTERS (common rafters down every roof
+     face at the spacing, a ridge board, hip / valley rafters on the sloped edges two faces share, ceiling joists on the top plates,
+     an underpurlin half way up a long slope with struts to the ceiling joists) or TRUSSES (one at each spacing, top chords on the
+     roof's underside, a bottom chord on the plates, webs - laid out only: the truss maker designs them). Rafters and ceiling joists
+     are checked by the same guide sums (roof sheet 0.4 / tiles 0.9 kPa + 0.25 kPa; ceiling 0.2 kPa); struts / purlins / hips are
+     not. rf.fr = {kind rafters | trusses | none, rafter, cj (+ span: its supports - hanging beams / walls), purlin (run that needs
+     one, 0 = never), trussAt} */
+  const ROOFFR = [["rafters", "Rafters (pitched)"], ["trusses", "Trusses (layout only)"], ["none", "None"]];
+  function cleanRoofFr(x) {
+    const o = x && typeof x === "object" ? x : {};
+    return { kind: ROOFFR.some((k) => k[0] === o.kind) ? o.kind : "rafters", rafter: cleanMember(o.rafter, { D: 140, B: 45, n: 1, grade: "MGP10", at: 0.6 }),
+      cj: Object.assign(cleanMember(o.cj, { D: 120, B: 35, n: 1, grade: "MGP10", at: 0.6 }), { span: num(o.cj && o.cj.span, 2.4, 0.6, 8) }),
+      purlin: num(o.purlin, 2.4, 0, 10), trussAt: num(o.trussAt, 0.6, 0.45, 1.2) };
+  }
+  const v3 = { sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], add: (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], mul: (a, k) => [a[0] * k, a[1] * k, a[2] * k],
+    crs: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], len: (a) => Math.hypot(a[0], a[1], a[2]) };
+  const unit = (a) => { const L = v3.len(a) || 1; return v3.mul(a, 1 / L); };
+  const inPoly2 = (p, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const a = P[i], b = P[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  /** a roof's members in the ROOF's own frame (x along the ridge 0..W, y across 0..D, z up) -> {F, P (to the world), beams [{part, a,
+   *  b, w, d}], checks, n} | null - roofs of type flat / follow are not framed (a note) */
+  function roofFrames(A, rf, H) {
+    const fr = cleanRoofFr(rf.fr); if (fr.kind === "none" || rf.type === "follow" || rf.type === "flat") return null;
+    const F = H.roofFrame(A, rf); if (!F) return null;
+    let o = F.o, V = F.V; const { U, W, D, top, t } = F, ov = rf.over;
+    if (rf.flip) { o = [o[0] + V[0] * D, o[1] + V[1] * D]; V = [-V[0], -V[1]]; }
+    const tp = Math.tan(rf.pitch * Math.PI / 180); if (tp < 1e-3) return null;
+    const P = (x, y, z) => [o[0] + U[0] * x + V[0] * y, o[1] + U[1] * x + V[1] * y, z];
+    const tops = H.roofShape(rf.type, W, D, ov, top, tp, t, rf).tops;
+    const planes = tops.map((Q) => { const n = unit(v3.crs(v3.sub(Q[1], Q[0]), v3.sub(Q[2], Q[0]))); return { Q, n: n[2] < 0 ? v3.mul(n, -1) : n, d0: Q[0] }; }).filter((p) => Math.abs(p.n[2]) > 1e-6);
+    const zAt = (x, y) => { let z = null; planes.forEach((pl) => { if (!inPoly2([x, y], pl.Q)) return; const zz = pl.d0[2] - (pl.n[0] * (x - pl.d0[0]) + pl.n[1] * (y - pl.d0[1])) / pl.n[2]; if (z === null || zz > z) z = zz; }); return z; };
+    const beams = [], n = { rafters: 0, rafterLen: 0, hips: 0, ridge: 0, cj: 0, cjLen: 0, purlinLen: 0, struts: 0, trusses: 0 };
+    const beam = (part, a, b, w, d) => { if (v3.len(v3.sub(b, a)) > 0.02) beams.push({ part, a: P(a[0], a[1], a[2]), b: P(b[0], b[1], b[2]), w, d }); };
+    const R = fr.rafter, rd = R.D / 1000, rb = R.B * R.n / 1000, C = fr.cj, cd = C.D / 1000, cb = C.B * C.n / 1000;
+    // ceiling joists on the plates, across the building (both kinds: a truss's bottom chord is its own)
+    let runMax = 0;
+    if (fr.kind === "rafters") {
+      for (let x = cb / 2; x <= W - cb / 2 + 1e-6; x += C.at) { beam("ceiling joist", [x, 0, top + cd / 2], [x, D, top + cd / 2], cb, cd); n.cj++; n.cjLen += D; }
+      planes.forEach((pl) => {
+        const Q = pl.Q, zmin = Math.min(...Q.map((p) => p[2]));
+        const lo = Q.filter((p) => Math.abs(p[2] - zmin) < 1e-6); if (lo.length < 2) return;           // a face with an eave
+        const e = unit([lo[1][0] - lo[0][0], lo[1][1] - lo[0][1], 0]); let g = [-e[1], e[0], 0];         // along the eave / up the slope (plan)
+        const c = Q.reduce((s0, p) => [s0[0] + p[0] / Q.length, s0[1] + p[1] / Q.length], [0, 0]);
+        if ((c[0] - lo[0][0]) * g[0] + (c[1] - lo[0][1]) * g[1] < 0) g = [-g[0], -g[1], 0];
+        const Q2 = Q.map((p) => [p[0], p[1]]), es = Q2.map((p) => p[0] * e[0] + p[1] * e[1]), gs = Q2.map((p) => p[0] * g[0] + p[1] * g[1]), o2 = lo[0];
+        const run = Math.max(...gs) - Math.min(...gs); runMax = Math.max(runMax, run);
+        const zOn = (x, y) => pl.d0[2] - (pl.n[0] * (x - pl.d0[0]) + pl.n[1] * (y - pl.d0[1])) / pl.n[2] - rd / 2 / Math.max(0.2, pl.n[2]);
+        for (let s1 = Math.min(...es) + rb / 2; s1 <= Math.max(...es) - rb / 2 + 1e-6; s1 += R.at) {
+          const p0 = [e[0] * s1, e[1] * s1]; spans(Q2, p0, [g[0], g[1]]).forEach(([t0, t1]) => { const a = [p0[0] + g[0] * t0, p0[1] + g[1] * t0], b = [p0[0] + g[0] * t1, p0[1] + g[1] * t1];
+            beam("rafter", [a[0], a[1], zOn(a[0], a[1])], [b[0], b[1], zOn(b[0], b[1])], rb, rd); n.rafters++; n.rafterLen += Math.hypot(t1 - t0, (t1 - t0) * tp); }); }
+        if (fr.purlin > 0 && run > fr.purlin) {                                                          // an underpurlin half way up, struts down to the ceiling joists
+          const gm = Math.min(...gs) + run / 2, p0 = [g[0] * gm, g[1] * gm];
+          spans(Q2, p0, [e[0], e[1]]).forEach(([t0, t1]) => { const a = [p0[0] + e[0] * t0, p0[1] + e[1] * t0], b = [p0[0] + e[0] * t1, p0[1] + e[1] * t1], zp = (x, y) => zOn(x, y) - rd / 2 - 0.06;
+            beam("underpurlin", [a[0], a[1], zp(a[0], a[1])], [b[0], b[1], zp(b[0], b[1])], 0.075, 0.12); n.purlinLen += t1 - t0;
+            stations(t0, t1, 1.8, 0.3).forEach((tt) => { const q = [p0[0] + e[0] * tt, p0[1] + e[1] * tt]; const zt = zp(q[0], q[1]) - 0.06; if (zt - (top + cd) > 0.1) { beam("strut", [q[0], q[1], top + cd], [q[0], q[1], zt], 0.07, 0.07); n.struts++; } }); });
+        }
+        void o2;
+      });
+      // the ridge + hips / valleys: the edges two faces share (level = ridge, sloped = hip / valley)
+      const seen = new Map(); planes.forEach((pl) => pl.Q.forEach((p, i) => { const q = pl.Q[(i + 1) % pl.Q.length], k = [p, q].map((x) => x.map((c) => c.toFixed(4)).join(",")).sort().join("|"); seen.set(k, (seen.get(k) || []).concat([[p, q]])); }));
+      seen.forEach((v) => { if (v.length < 2) return; const [p, q] = v[0], down = (x) => [x[0], x[1], x[2] - rd * 0.6];
+        const below = (Q) => Q.reduce((m, x) => Math.max(m, x[2]), -Infinity) <= p[2] + 1e-6;   // a ridge: both faces fall away from it; else a break between two slopes
+        if (Math.abs(p[2] - q[2]) < 1e-6 && seen.size && planes.filter((pl) => pl.Q.some((x) => Math.abs(x[2] - p[2]) < 1e-6 && Math.hypot(x[0] - p[0], x[1] - p[1]) < 1e-4)).every((pl) => below(pl.Q))) { beam("ridge", down(p), down(q), 0.035, rd + 0.05); n.ridge += Math.hypot(q[0] - p[0], q[1] - p[1]); }
+        else if (Math.abs(p[2] - q[2]) < 1e-6) { beam("break purlin", down(p), down(q), 0.075, rd + 0.05); n.purlinLen += Math.hypot(q[0] - p[0], q[1] - p[1]); }
+        else { beam("hip / valley rafter", down(p), down(q), rb, rd + 0.05); n.hips++; } });
+    } else {                                                                                             // trusses: the layout
+      for (let x = 0.05; x <= W - 0.05 + 1e-6; x += fr.trussAt) {
+        const ys = []; for (let k = 0; k <= 24; k++) ys.push(-ov + (D + 2 * ov) * k / 24);
+        const pts = ys.map((y) => { const z = zAt(x, y); return z === null ? null : [x, y, z - 0.05]; });
+        let any = false; for (let k = 0; k + 1 < pts.length; k++) if (pts[k] && pts[k + 1]) { beam("truss top chord", pts[k], pts[k + 1], 0.035, 0.09); any = true; }
+        if (!any) continue;
+        beam("truss bottom chord", [x, 0, top + 0.045], [x, D, top + 0.045], 0.035, 0.09);
+        const zy = (y) => { const z = zAt(x, y); return z === null ? null : z - 0.1; };
+        [[D / 4, D / 2], [3 * D / 4, D / 2], [D / 4, D / 4], [3 * D / 4, 3 * D / 4], [D / 2, D / 2]].forEach(([yb, yt]) => { const zt = zy(yt); if (zt !== null && zt > top + 0.12) beam("truss web", [x, yb, top + 0.09], [x, yt, zt], 0.035, 0.07); });
+        n.trusses++;
+      }
+    }
+    // the checks (rafters + ceiling joists): the sloped span between its supports
+    const S = cleanStruct(A.struct), G = LOAD.roofG[S.roof], cosA = Math.cos(Math.atan(tp));
+    const rSpan = fr.kind === "rafters" ? (fr.purlin > 0 && runMax > fr.purlin ? runMax / 2 : runMax) / cosA : 0;
+    const rl = { g: G * R.at, q: LOAD.roofQ * R.at }, cl = { g: 0.2 * C.at, q: 0 };
+    const checks = fr.kind === "rafters" && rSpan > 0 ? {
+      rafter: Object.assign(check(R, rSpan, rl.g, rl.q), { size: sizeName(R), best: choose(rSpan, rl.g, rl.q, R.grade, { n: 1, at: R.at }) }),
+      cj: Object.assign(check(C, C.span, cl.g, cl.q), { size: sizeName(C), best: choose(C.span, cl.g, cl.q, C.grade, { n: 1, at: C.at }) }) } : null;
+    return { fr, beams, n, checks, rSpan, run: runMax };
+  }
+  /** a beam between two points as 6 faces: width w across (level), depth d square to it */
+  function drawBeam(bm, col, tag, out) {
+    const ax = unit(v3.sub(bm.b, bm.a)); let side = v3.crs(ax, [0, 0, 1]); if (v3.len(side) < 1e-6) side = [1, 0, 0]; side = unit(side); const up = unit(v3.crs(side, ax));
+    const hw = v3.mul(side, bm.w / 2), hd = v3.mul(up, bm.d / 2), C = (p, sw, sd) => v3.add(v3.add(p, v3.mul(hw, sw)), v3.mul(hd, sd));
+    const a = [C(bm.a, -1, -1), C(bm.a, 1, -1), C(bm.a, 1, 1), C(bm.a, -1, 1)], b = [C(bm.b, -1, -1), C(bm.b, 1, -1), C(bm.b, 1, 1), C(bm.b, -1, 1)];
+    const quad = (r, nn) => out.polys.push({ rings: [r], n: nn, col, tag, layer: "main" });
+    quad([a[0], a[3], a[2], a[1]], v3.mul(ax, -1)); quad([b[0], b[1], b[2], b[3]], ax);
+    for (let k = 0; k < 4; k++) { const k2 = (k + 1) % 4, nn = k === 0 ? v3.mul(up, -1) : k === 1 ? side : k === 2 ? up : v3.mul(side, -1); quad([a[k], a[k2], b[k2], b[k]], nn); }
+  }
+  const ROOFCOL = { "break purlin": "#a97f50", rafter: "#c59a62", "ceiling joist": "#d0a874", ridge: "#b5895a", "hip / valley rafter": "#b5895a", underpurlin: "#a97f50", strut: "#a97f50", "truss top chord": "#c9a06a", "truss bottom chord": "#c9a06a", "truss web": "#bf9562" };
   /** every member of the model -> rows {what, size, count, len} (the plans / panel schedule) */
   function schedule(A, H) {
     const rows = [];
     (A.rooms || []).forEach((R) => plan(A, R, H).members.forEach((m) => rows.push(Object.assign({ room: R.name }, m))));
     lintels(A, H).forEach((L) => rows.push({ room: L.I.R.name, kind: "Lintel (" + L.op.kind + " " + Math.round(L.op.w * 1000) + ")", size: L.size, count: 1, len: L.span + 0.1 }));
+    (A.roofs || []).forEach((rf) => { const F = roofFrames(A, rf, H); if (!F) return; const nm = "Roof " + rf.id, f = F.fr;
+      if (f.kind === "rafters") rows.push({ room: nm, kind: "Rafters", size: sizeName(f.rafter) + " @ " + Math.round(f.rafter.at * 1000), count: F.n.rafters, len: F.n.rafterLen },
+        { room: nm, kind: "Ceiling joists", size: sizeName(f.cj) + " @ " + Math.round(f.cj.at * 1000), count: F.n.cj, len: F.n.cjLen }, { room: nm, kind: "Ridge board", size: "", count: 0, len: F.n.ridge },
+        { room: nm, kind: "Hip / valley rafters", size: "", count: F.n.hips, len: 0 }, { room: nm, kind: "Underpurlins + struts", size: "", count: F.n.struts, len: F.n.purlinLen });
+      else rows.push({ room: nm, kind: "Trusses (the truss maker's design)", size: "@ " + Math.round(f.trussAt * 1000), count: F.n.trusses, len: 0 }); });
     const S = cleanStruct(A.struct), sn = studOf(S) ? studOf(S).label : "";
     if (S.frame !== "none") (A.rooms || []).forEach((R) => { const t = frameTotals(A, R, H); if (!t.walls) return;
       rows.push({ room: R.name, kind: "Studs (common + jamb + jack)", size: sn + " @ " + Math.round(S.stud.at * 1000), count: t.studs + t.jambs + t.jacks, len: t.studLen },
@@ -271,6 +371,8 @@
         if (p.prism) H.prism(p.prism, p.z0, p.z1, p.col, tag, out); else H.box(p.o, p.u, p.n, p.x0, p.x1, p.y0, p.y1, p.z0, p.z1, p.col, tag, out); });
     });
     const S = cleanStruct(A.struct); if (!S.show) return;
+    (A.roofs || []).forEach((rf) => { if (hid("roof:" + rf.id)) return; const F = roofFrames(A, rf, H); if (!F) return; const tag = { ak: "roof", id: rf.id, part: "frame" };
+      F.beams.forEach((bm) => drawBeam(bm, ROOFCOL[bm.part] || "#c59a62", tag, out)); });
     if (S.frame !== "none") (A.rooms || []).forEach((R) => { if (hid("room:" + R.id) || hid("room:" + R.id + ":struct")) return;
       wallFrames(A, R, H, S).forEach((w) => { if (hid("room:" + R.id + ":wall:" + w.i)) return; const tag = { ak: "room", id: R.id, part: "frame", edge: w.i };
         w.parts.forEach((p) => {
@@ -282,7 +384,7 @@
     lintels(A, H).forEach((L) => { if (hid("op:" + L.op.id)) return; const I = L.I, D = L.m.D / 1000, w = L.m.B * L.m.n / 1000;
       H.box(I.o, I.u, I.nl, I.x0 - 0.05, I.x1 + 0.05, -w / 2, w / 2, I.z1, I.z1 + D, L.check.ok ? COL.lintel : "#d0402b", { ak: "op", id: L.op.id, part: "lintel" }, out); });
   }
-  const api = { STEEL, FRAMES, wallFrames, frameTotals, JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
+  const api = { ROOFFR, cleanRoofFr, roofFrames, drawBeam, STEEL, FRAMES, wallFrames, frameTotals, JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPStruct = api;
 })(typeof window !== "undefined" ? window : globalThis);

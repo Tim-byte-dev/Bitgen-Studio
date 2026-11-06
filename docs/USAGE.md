@@ -6303,6 +6303,14 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.694.0: **Roof framing** in the Sketcher. A picked roof's **🪵 Roof framing**: **Rafters** - common rafters down every face
+  at the spacing (450 / 600 / 900), a ridge board, hip / valley rafters on the sloped edges two faces share, break purlins where a
+  gambrel / mansard changes slope, ceiling joists on the top plates, and an underpurlin half way up any slope longer than you set
+  (0 = never) with struts down to the ceiling joists - or **Trusses** laid out at their spacing (top chords, bottom chord, webs;
+  the truss maker designs them). Rafters and ceiling joists get the same ✔ / ✗ guide check and **✔ Size them** (the rafters over
+  the slope to the underpurlin, the ceiling joists over how often they are held up). Every roof type is framed except flat and
+  follow-the-walls. Shown with **🪵 Show framing**, which now makes the roof see-through too; the totals are in the panel and the
+  member schedule. Hips, ridges, underpurlins and struts are laid out, not sized.
 - 2.693.0: **Wall framing** in the Sketcher. A picked room's **🪵 Wall framing** sets the frame for every wall: **Timber**
   (stud size and grade, one or two top plates) or **Light-gauge steel** (C-section studs, one top track), the stud spacing
   (300 / 450 / 600), how often the nogging rows go and nominal strap braces; **Frame this room's walls** leaves one room out.

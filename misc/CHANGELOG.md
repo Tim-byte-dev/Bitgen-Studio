@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.694.0** — 🪵 Sketcher Roof Framing: Rafters, Ridge, Hips / Valleys, Ceiling Joists, Underpurlins + Struts, or a Truss Layout
 - **2.693.0** — 🪵 Sketcher Wall Framing: Timber or Steel Studs, Plates, Jamb / Jack Studs, Noggings, Strap Braces, Totals Per Room
 - **2.692.0** — 🏗 Sketcher Floor Systems (Slab, Waffle Pod, Raft, Suspended, Raised Timber on Piers / Bearers / Joists) + 🪵 Lintels, Checked by Beam Sums
 - **2.691.0** — ⊣ Sketcher New Walls Butt Up to the Old Ones (End to End Shaped Round the Corner, Cut to a Wall's Face in Rooms) + Wall Thickness Remembers the Last One Set

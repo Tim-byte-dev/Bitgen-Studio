@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.694.0 (Tim: "go ahead" - roof framing)
+node scripts/test-roof694.js > /tmp/roof694.log 2>&1 \
+  && ok "2.694.0 units: roof framing - rafters / ridge / hips / breaks / ceiling joists / underpurlins + struts on gable, hip, gambrel, pyramid, shed; trusses; checks + sizes; not flat / follow / none; drawBeam; build (see-through roof) + clean + schedule" \
+  || { bad "2.694.0 roof framing units"; grep -a "^FAIL" -A2 /tmp/roof694.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui694-ui.js > /tmp/ui694ui.log 2>&1 \
+  && ok "2.694.0 browser test: 🪵 Roof framing panel (rafters ✔, totals), drawn with 🪵 Show framing (roof see-through), ✗ -> ✔ Size them, trusses, undo, kept by a save - or SKIP without playwright" \
+  || { bad "2.694.0 roof framing browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui694ui.log | head -14; }
 # ---- 2.693.0 (Tim: "you choose, we will go one at a time" - wall framing)
 node scripts/test-frame693.js > /tmp/frame693.log 2>&1 \
   && ok "2.693.0 units: wall framing - plates (cut at doors), studs at the spacing (none stacked), jamb / jack studs, sill trimmer, heads in inside walls, noggings, braces, corner posts, shared walls once, steel, totals, schedule, build + clean" \

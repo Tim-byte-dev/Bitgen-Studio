@@ -169,7 +169,7 @@
       return { id: id(x.id), rooms, type: roofType(x.type), pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto",
         k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip,   // 2.666.0
         eave: EAVES.includes(x.eave) ? x.eave : "plain", fascia: !!x.fascia, fasciaH: num(x.fasciaH, 0.2, 0.05, 0.6), gutter: GUTTERS.includes(x.gutter) ? x.gutter : "none", gutterP: typeof x.gutterP === "string" ? x.gutterP.slice(0, 80) : "",
-        downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc") };   // 2.668.0: eaves, fascia, gutters
+        downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc"), fr: x.fr && root.PPStruct ? root.PPStruct.cleanRoofFr(x.fr) : null };   // 2.694.0: its frame   // 2.668.0: eaves, fascia, gutters
     }).filter(Boolean);
     A.slabs = (Array.isArray(o.slabs) ? o.slabs : []).map((x) => { if (!x || !Array.isArray(x.pts)) return null; const pts = x.pts.map(pt2).filter(Boolean); if (pts.length < 3) return null; if (area2(pts) < 0) pts.reverse(); return { id: id(x.id), pts, z: num(x.z, 0, -100, 1000), th: num(x.th, 0.2, 0.01, 5), col: hex(x.col, DEF.slab) }; }).filter(Boolean);
     A.stairs = (Array.isArray(o.stairs) ? o.stairs : []).map((x) => (x ? { id: id(x.id), x: num(x.x, 0, -1e5, 1e5), y: num(x.y, 0, -1e5, 1e5), ang: num(x.ang, 0, -720, 720), w: num(x.w, 1, 0.3, 10), len: num(x.len, 3.6, 0.3, 50), rise: num(x.rise, 2.7, 0.1, 20), z: num(x.z, 0, -100, 1000), col: hex(x.col, DEF.stair) } : null)).filter(Boolean);
@@ -751,7 +751,7 @@
   }
 
   /* ---------------- the geometry */
-  const STRUCT_H = { box: (...a) => box(...a), prism: (...a) => prism(...a), exterior: (R) => exterior(R), opInfo: (A, op) => opInfo(A, op), wallKind: (A, R, i) => wallKind(A, R, i), inPoly: (p, P) => inPoly(p, P), wallQuads: (R) => wallQuads(R), wallsAt: (R, k) => wallsAt(R, k), minTop: (R, i) => minTop(R, i), edgesOf: (R) => edgesOf(R), segDist: (p, a, b) => segDist(p, a, b) };   // 2.693.0: + the wall framing's   // 2.692.0: what PPStruct draws with
+  const STRUCT_H = { box: (...a) => box(...a), prism: (...a) => prism(...a), exterior: (R) => exterior(R), opInfo: (A, op) => opInfo(A, op), wallKind: (A, R, i) => wallKind(A, R, i), inPoly: (p, P) => inPoly(p, P), wallQuads: (R) => wallQuads(R), wallsAt: (R, k) => wallsAt(R, k), minTop: (R, i) => minTop(R, i), edgesOf: (R) => edgesOf(R), segDist: (p, a, b) => segDist(p, a, b), roofFrame: (A, rf) => roofFrame(A, rf), roofShape: (...a) => roofShape(...a) };   // 2.693.0: + the wall framing's   // 2.692.0: what PPStruct draws with
   function build(A, opt) {
     const out = { polys: [], lines: [], roofLines: [], lights: [] };
     if (!A) return out;
@@ -770,7 +770,9 @@
       else if (ceilOn) out.polys.push({ rings: [inn.map((p) => [p[0], p[1], R.z + R.h - 0.003]).reverse()], n: [0, 0, -1], col: R.ceilCol, tag: { ak: "room", id: R.id, part: "ceil" }, layer: "ceil" });
     });
     A.ops.forEach((op) => { const I = opInfo(A, op); if (I && !hid("op:" + op.id)) { fixture(I, out); frames(A, I, out); } });
+    const r0 = out.polys.length;
     A.roofs.forEach((rf) => { if (!hid("roof:" + rf.id)) roof(A, rf, out); });
+    if (A.struct && A.struct.show) for (let i = r0; i < out.polys.length; i++) out.polys[i].alpha = 0.25;   // 2.694.0: the roof frame seen through the roof
     A.slabs.forEach((s) => { if (!hid("slab:" + s.id)) prism(s.pts, s.z - s.th, s.z, s.col, { ak: "slab", id: s.id }, out); });
     if (root.PPStruct) root.PPStruct.build(A, out, hid, STRUCT_H);          // 2.692.0: floor systems + lintels
     A.rooms.forEach((R) => { if (R.closed && R.slab && !(R.fs && R.fs.type && R.fs.type !== "none") && !hid("room:" + R.id + ":slab")) { const X = exterior(R); if (X) prism(X, R.z - 0.2, R.z, DEF.slab, { ak: "room", id: R.id, part: "slab" }, out); } });   // 2.631.0: the auto floor
