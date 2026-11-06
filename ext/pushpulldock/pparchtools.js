@@ -61,7 +61,12 @@
     let gizmo = "move";                                           // 2.641.0: a picked camera's widget - "move" (arrows) | "rotate" (rings, a double-click)
     const O = JSON.parse(JSON.stringify(OPT0));
     try { const s = JSON.parse(root.localStorage.getItem("pp.archopt") || "{}"); Object.keys(O).forEach((k) => { if (s[k] && typeof s[k] === "object") Object.assign(O[k], s[k]); }); } catch (e) { /* fine */ }
+    ["wall", "room"].forEach((k) => { if (!(O[k].t >= 0.02 && O[k].t < 2)) O[k].t = OPT0[k].t; });   // 2.691.0: 2 m = a size in mm held at the top - back to 150 mm
     const keepOpt = () => { try { root.localStorage.setItem("pp.archopt", JSON.stringify(O)); } catch (e) { /* fine */ } };
+    /** 2.691.0 (Tim: "use last set wall thickness for the wall thickness right now u have it set at 2m"): a wall thickness typed
+        anywhere (the Wall / Room tool, a picked wall or room) = the next walls' and rooms' too; over 2 = millimetres (200 = 0.2 m) */
+    const tOf = (v) => Math.min(2, Math.max(0.02, v > 2 ? v / 1000 : v));
+    const lastT = (v) => { O.wall.t = v; O.room.t = v; keepOpt(); };
     const AV = () => ctx.archView(), AR = () => P().of(ctx.model());
     const fmt = (m) => G().fmtLen(m);
     const owns = (n) => !!HINT[n];
@@ -616,7 +621,7 @@
     function finishBranch(D) {
       const L = D.end ? Math.hypot(D.end[0] - D.v[0], D.end[1] - D.v[1]) : 0;
       if (L < 0.05) { ctx.status("▮ drag out of a side of a corner / a wall's end to draw a new wall from it"); return; }
-      const A = AR(), w0 = D.j.walls[0], R0 = D.R, R = P().addRoom(A, [[D.v[0], D.v[1]], [D.end[0], D.end[1]]], { closed: false, z: R0.z, h: R0.h, t: R0.t, wall: R0.wall });
+      const A = AR(), w0 = D.j.walls[0], R0 = D.R, R = P().addRoom(A, [[D.v[0], D.v[1]], [D.end[0], D.end[1]]], { closed: false, z: R0.z, h: R0.h, t: O.wall.t, wall: R0.wall });   // 2.691.0: the last-set thickness
       if (!R) return;
       if (R0.wt && R0.wt[w0] && root.PPWallType) root.PPWallType.assign(A, [{ R, i: 0 }], R0.wt[w0]);   // its wall type too
       P().addJoins(A, R);                                                     // 2.690.0: joined where it starts (and ends)
@@ -1020,6 +1025,7 @@
       const head = (t) => box.appendChild(el("div", "pph", t));
       const lbl = (key, def) => ((AR() && AR().labels) || {})[key] || def;   // 2.667.0: a name given in the objects panel
       const row = (label, input, title) => { const r = el("label", "ppr"); r.appendChild(el("span", "", label)); r.appendChild(input); if (title) r.title = title; box.appendChild(r); return input; };
+      const tIn = (label, val, on) => { const r = numIn(label, val, (v) => { const m = +tOf(v).toFixed(4); lastT(m); on(m); }, 0.01, 0.02, 2000, "m"); const i = r; if (i) { i.title = "metres - or type millimetres (200 = 0.2 m) · the next walls you draw are this thick too"; i.dataset.wallT = "1"; } return r; };   // 2.691.0
       const numIn = (label, val, on, step, min, max, unit) => { const i = el("input"); i.type = "number"; i.step = step || 0.01; if (min != null) i.min = min; if (max != null) i.max = max; i.value = +(+val).toFixed(3); i.onchange = () => { const v = parseFloat(i.value); if (Number.isFinite(v)) on(Math.min(max != null ? max : Infinity, Math.max(min != null ? min : -Infinity, v))); }; return row(label + (unit ? " (" + unit + ")" : ""), i); };
       const selIn = (label, val, opts, on) => { const s = el("select"); opts.forEach(([v, t]) => { const o = el("option", "", t); o.value = v; if (String(v) === String(val)) o.selected = true; s.appendChild(o); }); s.onchange = () => on(s.value); return row(label, s); };
       const colIn = (label, val, on) => { const i = el("input"); i.type = "color"; i.value = val; i.onchange = () => on(i.value); return row(label, i); };
@@ -1103,7 +1109,7 @@
           const prof = P().profile(R, i), flat = prof.length === 2 && Math.abs(prof[0][1] - prof[1][1]) < 1e-6;
           if (flat) numIn("Height", prof[0][1], ch((v) => P().setWallHeight(AR(), id, i, v)), 0.05, 0.05, 50, "m");
           else { numIn("Start height", prof[0][1], ch((v) => P().moveTopPoint(AR(), id, i, 0, v)), 0.05, 0.05, 50, "m"); numIn("End height", prof[prof.length - 1][1], ch((v) => P().moveTopPoint(AR(), id, i, prof.length - 1, v)), 0.05, 0.05, 50, "m"); box.appendChild(el("div", "pphint", "Its top slopes (" + (prof.length - 2) + " cut" + (prof.length === 3 ? "" : "s") + ") - drag its top in the view to change the cuts")); }
-          numIn("Thickness (all " + R.name + "'s walls)", R.t, ch((v) => P().setRoom(AR(), id, { t: v })), 0.01, 0.02, 2, "m");
+          tIn("Thickness (all " + R.name + "'s walls)", R.t, ch((v) => P().setRoom(AR(), id, { t: v })));
           const WT = root.PPWallType;                                      // 2.661.0: its wall type (its layers = its thickness)
           if (WT) {
             const wt = (R.wt && R.wt[i]) || "";
@@ -1179,7 +1185,7 @@
       if (tool && !(tool === "camera" && x && asel.ak === "cam")) {     // 2.629.0: a camera just placed shows ITS panel (its buttons)
         head({ room: "⌂ Room", wall: "▮ Wall", door: "🚪 Door", window: "🪟 Window", floor: "▦ Floor", ceiling: "⌓ Ceiling", roof: "△ Roof", light: "💡 Light", stairs: "▟ Stairs", furniture: "🛋 Furniture", camera: "📷 Camera" }[tool] + " - the next one");
         const o = O[tool];
-        if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); numIn("Wall thickness", o.t, opt("t"), 0.01, 0.02, 2, "m"); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m");
+        if (tool === "room" || tool === "wall") { numIn("Wall height", o.h, opt("h"), 0.05, 0.1, 50, "m"); tIn("Wall thickness", o.t, () => props()); numIn("Floor level", o.z, opt("z"), 0.05, -100, 1000, "m");
           numIn("Offset from floor edge", o.off || 0, opt("off"), 0.01, -5, 5, "m");      // 2.624.0
           if (tool === "room") { chkIn("Auto roof (the Roof tool's type)", !!o.autoRoof, opt("autoRoof")); chkIn("Auto floor (a slab under the walls)", !!o.autoFloor, opt("autoFloor")); }   // 2.631.0
           if (tool === "room") chkIn("Ceiling", o.ceilOn, opt("ceilOn"));
@@ -1287,7 +1293,7 @@
           numIn("Length", sz.l, ch((v) => { if (!P().resizeRoom(AR(), R.id, P().roomSize(P().room(AR(), R.id)).w, v)) ctx.status("⌂ that length does not fit"); }), 0.05, 0.3, 500, "m");
           if (!rect) box.appendChild(el("div", "pphint", "Not a rectangle: Width / Length stretch it from the corner of its box (its doors and windows keep their place along the walls).")); }
         numIn("Wall height", R.h, ch((v) => P().setRoom(AR(), R.id, { h: v })), 0.05, 0.1, 50, "m");
-        numIn("Wall thickness", R.t, ch((v) => P().setRoom(AR(), R.id, { t: v })), 0.01, 0.02, 2, "m");
+        tIn("Wall thickness", R.t, ch((v) => P().setRoom(AR(), R.id, { t: v })));
         numIn("Floor level", R.z, ch((v) => P().setRoom(AR(), R.id, { z: v })), 0.05, -100, 1000, "m");
         matIn(R.closed ? "Walls inside" : "Wall", R.wall, ch((v) => { R.wall = v; }));
         if (R.closed) { matIn("Floor", R.floor, ch((v) => { R.floor = v; })); matIn("Ceiling", R.ceilCol, ch((v) => { R.ceilCol = v; })); chkIn("Has a floor", R.floorOn, ch((v) => { R.floorOn = v; })); selIn("Ceiling", !R.ceilOn ? "none" : R.ceil === "follow" ? "follow" : "flat", [["none", "None"], ["flat", "Flat"], ["follow", "Follows the walls' slope"]], ch((v) => { R.ceilOn = v !== "none"; R.ceil = v === "follow" ? "follow" : "flat"; })); }   // 2.624.0

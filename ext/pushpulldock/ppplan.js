@@ -91,6 +91,7 @@
     });
     // the walls: one shape, the openings cut out
     // 2.660.0: interior walls a lighter fill under the exterior ones (Q.wallKind - auto: a room on both sides)
+    if (Q.butts) Q.butts(A);                                               // 2.691.0: the ends that butt up to other walls
     const quads = [], inQ = []; rooms.forEach((R) => Q.wallQuads(R).forEach((q) => { if (!hid("room:" + R.id + ":wall:" + q.i)) { const r = area2(q.quad) < 0 ? q.quad.slice().reverse() : q.quad; quads.push(r); if (Q.wallKind && Q.wallKind(A, R, q.i) === "int") inQ.push(r); } }));
     // 2.662.0: + the corners / ends (the walls' pieces end square) - interior when every wall at it is
     if (Q.joints) rooms.forEach((R) => Q.joints(R, (i) => hid("room:" + R.id + ":wall:" + i)).forEach((j) => { const r = area2(j.poly) < 0 ? j.poly.slice().reverse() : j.poly; quads.push(r); if (Q.wallKind && j.walls.every((i) => Q.wallKind(A, R, i) === "int")) inQ.push(r); }));
@@ -265,6 +266,7 @@
       const a = s.ang * Math.PI / 180, u = [Math.cos(a), Math.sin(a)], v = [-u[1], u[0]], d = [p[0] - s.x, p[1] - s.y], x = d[0] * u[0] + d[1] * u[1], y = d[0] * v[0] + d[1] * v[1];
       if (x >= 0 && x <= s.len && Math.abs(y) <= s.w / 2) return { ak: "stair", id: s.id };
     }
+    if (Q.butts) Q.butts(A);                                               // 2.691.0
     for (const R of rooms) {
       for (const q of Q.wallQuads(R)) if (!hid("room:" + R.id + ":wall:" + q.i) && Q.inPoly(p, q.quad)) return { ak: "wall", room: R.id, edge: q.i };
       if (Q.joints) for (const j of Q.joints(R, (i) => hid("room:" + R.id + ":wall:" + i))) if (Q.inPoly(p, j.poly)) { const E = Q.edgesOf(R); let bi = j.walls[0], bd = Infinity; j.walls.forEach((i) => { const d = Q.segDist(p, E[i].a, E[i].b).d; if (d < bd) { bd = d; bi = i; } }); return { ak: "wall", room: R.id, edge: bi }; }   // 2.662.0: a corner

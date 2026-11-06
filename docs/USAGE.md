@@ -6303,6 +6303,13 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.691.0: **New walls butt up to the old ones** in the Sketcher: where a wall's free end meets another wall, the new wall
+  stops against it instead of getting a square cap of its own. End to end (joined, or drawn there), the old wall's end is
+  shaped round the corner so their outside faces meet - one clean corner, as if it were one wall. A wall that ends on another
+  wall's line (a wall across a room from wall to wall, or into a room's side) is cut to that wall's face, even at an angle or
+  thicker than it. **Wall thickness** now remembers the last one you set - in the Wall or Room tool, or on a picked wall or
+  room - and the next walls and rooms are drawn that thick; a number over 2 is read as millimetres (200 = 0.2 m). A stored
+  thickness stuck at the 2 m limit goes back to 150 mm.
 - 2.690.0: **Walls join end to end** in the Sketcher: drawing with ▮ Wall, a point near another wall's end or corner
   (within about 15 cm, or 14 px when zoomed out) is pulled onto it - the tip says **⊕ joined** (hold Shift to place it
   freely). A wall that ends there is **joined** to that wall: drag the new wall and the old wall's end goes with it, so the

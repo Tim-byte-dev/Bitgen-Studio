@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.691.0 (Tim: "the ends of the walls are not mitered or shaped, the new wall will butt up to the existing walls, even in rooms, use last set wall thickness for the wall thickness right now u have it set at 2m")
+node scripts/test-butt691.js > /tmp/butt691.log 2>&1 \
+  && ok "2.691.0 units: butts(A) - joined / drawn end to end = the new wall no cap, the old one shaped (one clean outline), a wall across a room cut to the inside faces, a thick angled wall cut to the face, ends on nothing / own-size ends kept; the last-set thickness wiring" \
+  || { bad "2.691.0 butt units"; grep -a "^FAIL" -A2 /tmp/butt691.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui691-ui.js > /tmp/ui691ui.log 2>&1 \
+  && ok "2.691.0 browser test: a stored 2 m thickness back to 150 mm, 200 typed = 0.2 m, a wall onto a wall's end butts (old end shaped, one outline), a wall across a room cut to the faces, a picked wall's thickness = the next wall's - or SKIP without playwright" \
+  || { bad "2.691.0 butt walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui691ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

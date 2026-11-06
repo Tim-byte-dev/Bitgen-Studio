@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.691.0** — ⊣ Sketcher New Walls Butt Up to the Old Ones (End to End Shaped Round the Corner, Cut to a Wall's Face in Rooms) + Wall Thickness Remembers the Last One Set
 - **2.690.0** — ⊕ Sketcher Walls Snap to Other Walls' Ends and Stay Joined - Drag One and the Other Grows or Shrinks With It
 - **2.689.0** — 🗄 Sketcher Cupboards & Shelving: Built-In Robes, Walk-In Robes (L / U), Pantry, Linen, Shelving - a Design Dialog With Bays, Doors, Handles, Colours; Saved as Your Own Templates
 - **2.688.0** — Sketcher: the Top Bar Always on Screen; a Wall's End Piece Picks the Wall (Double-Click = Push / Pull); Ctrl+Drag Held Horizontal / Vertical; ✨ Photo Names Only What the Model Has

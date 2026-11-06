@@ -125,6 +125,7 @@
     const Q = deps.PPArch, pc = root.polygonClipping, hid = Q.hiddenOf(A);
     const rooms = A.rooms.filter((R) => Math.abs(R.z - z) < 0.01 && !hid("room:" + R.id)), ids = new Set(rooms.map((R) => R.id));
     const quads = [], ccw = (q) => (area2(q) < 0 ? q.slice().reverse() : q.slice());
+    if (Q.butts) Q.butts(A);                                               // 2.691.0: the ends that butt up to other walls
     rooms.forEach((R) => Q.wallQuads(R).forEach((q) => { if (!hid("room:" + R.id + ":wall:" + q.i)) quads.push(ccw(q.quad)); }));
     if (Q.joints) rooms.forEach((R) => Q.joints(R, (i) => hid("room:" + R.id + ":wall:" + i)).forEach((j) => quads.push(ccw(j.poly))));
     let rings = [];

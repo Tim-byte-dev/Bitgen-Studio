@@ -258,11 +258,73 @@
   /** 2.662.0 (Tim: "end walls in a square not a triangle"): each wall a rectangle from its corner to its corner - its ends
       square; the corners filled by joints (below) - the walls together the same shape as the mitred ones */
   function wallQuads(R) {
+    const B = BUTT && BUTT.get(R);                                    // 2.691.0: an end that butts up to another wall's face - cut to it
     return edgesOf(R).map((e) => {
       if (e.L < EPS || isGone(R, e.i)) return null;
-      const nl = left(e.u), h = tw(R, e.i) / 2;
-      return Object.assign({}, e, { nl, quad: [add(e.a, mul(nl, h)), add(e.b, mul(nl, h)), add(e.b, mul(nl, -h)), add(e.a, mul(nl, -h))] });
+      const nl = left(e.u), h = tw(R, e.i) / 2, quad = [add(e.a, mul(nl, h)), add(e.b, mul(nl, h)), add(e.b, mul(nl, -h)), add(e.a, mul(nl, -h))];
+      if (B) Object.keys(B).forEach((k) => { const c = B[k].trim; if (!c || c.edge !== e.i) return; if (c.at === "a") { quad[0] = c.l; quad[3] = c.r; } else { quad[1] = c.l; quad[2] = c.r; } });
+      return Object.assign({}, e, { nl, quad });
     }).filter(Boolean);
+  }
+  /* ---------------- 2.691.0 (Tim: "the ends of the walls are not mitered or shaped, the new wall will butt up to the existing
+     walls, even in rooms"): where a wall's free end meets another wall, the NEW wall BUTTS UP to the old one - no square cap of
+     its own; on the old wall's line / in its body = cut to the old wall's face; end to end = the old wall's end shaped round the
+     corner (its outside faces meet, like one wall's corner). butts(A) works it out for the model (walls() / the plan call it);
+     wallQuads / joints read it. */
+  const BUTT = typeof WeakMap === "function" ? new WeakMap() : null;
+  /** a room's walls at its point k (the ones there) */
+  function wallsAt(R, k) {
+    const E = edgesOf(R), n = E.length, e0 = R.closed ? E[(k - 1 + n) % n] : E[k - 1], e1 = E[k] || null;
+    return [e0, e1].filter((e) => e && e.L > EPS && !isGone(R, e.i));
+  }
+  /** the old wall's end round the corner a new wall makes with it at v: the hull of both square ends + where their faces meet */
+  function endHull(R, e, v, O, f) {
+    const ends = (x) => Math.hypot(x.b[0] - v[0], x.b[1] - v[1]) < 0.002;
+    const u0 = ends(e) ? e.u : mul(e.u, -1), u1 = ends(f) ? mul(f.u, -1) : f.u, h0 = tw(R, e.i) / 2, h1 = tw(O, f.i) / 2, n0 = left(u0), n1 = left(u1);
+    const pts = [add(v, mul(n0, h0)), add(v, mul(n0, -h0)), add(v, mul(n1, h1)), add(v, mul(n1, -h1))];
+    [1, -1].forEach((sg) => { const x = lineX(add(v, mul(n0, sg * h0)), u0, add(v, mul(n1, sg * h1)), u1); if (x && len(sub(x, v)) <= 6 * Math.max(h0, h1) + 1e-9) pts.push(x); });
+    const P2 = hull2(pts); return P2.length >= 3 && Math.abs(area2(P2)) > 1e-8 ? P2 : [];
+  }
+  /** -> {room id: {k: {butt} | {butt, trim: {edge, at, l, r}} | {hull}}} - and kept for wallQuads / joints */
+  function butts(A) {
+    const out = {}; if (!A || !A.rooms) return out;
+    const Rs = A.rooms, at = new Map(Rs.map((R, i) => [R, i]));
+    Rs.forEach((R) => { if (BUTT) BUTT.delete(R); });
+    Rs.forEach((R) => R.pts.forEach((v, k) => {
+      const W = wallsAt(R, k); if (W.length !== 1) return;               // a free end only (one wall there)
+      if (R.jw && R.jw[k] && (R.jw[k].w || R.jw[k].l != null)) return;  // 2.664.0: its own end piece - kept
+      const e = W[0], o = Math.hypot(e.b[0] - v[0], e.b[1] - v[1]) < 1e-9 ? e.u : mul(e.u, -1), h = tw(R, e.i) / 2;
+      let got = null;
+      for (const O of Rs) {
+        if (O === R || Math.abs((O.z || 0) - (R.z || 0)) > 0.05) continue;
+        const kO = vAt(O, v);
+        if (kO >= 0) {                                                  // on the other wall's end / corner
+          const WO = wallsAt(O, kO); if (!WO.length) continue;
+          if (WO.length >= 2) { got = { butt: true }; break; }          // its corner: it keeps it
+          const j = (A.joins || []).find((x) => ((x.a === R.id && x.b === O.id) || (x.a === O.id && x.b === R.id)) && Math.hypot(x.p[0] - v[0], x.p[1] - v[1]) < 0.002);
+          const isNew = j ? j.a === R.id : R.closed !== O.closed ? !R.closed : at.get(R) > at.get(O);
+          if (isNew) { got = { butt: true }; break; }
+          if (!got) got = { hull: endHull(R, e, v, O, WO[0]) };
+          continue;
+        }
+        for (const f of edgesOf(O)) {                                   // on the other wall's line / in its body: cut to its face
+          if (f.L < EPS || isGone(O, f.i)) continue;
+          const hO = tw(O, f.i) / 2, sd = segDist(v, f.a, f.b); if (sd.d > hO + 1e-6) continue;
+          got = { butt: true };
+          if (sd.t > 1e-6 && sd.t < 1 - 1e-6 && Math.abs(crs(e.u, f.u)) > 0.2) {
+            const back = sub(v, mul(o, Math.max(h, 0.05))), sg = crs(f.u, sub(back, f.a)) >= 0 ? 1 : -1, fp = add(f.a, mul(left(f.u), sg * hO)), nl = left(e.u);
+            const l = lineX(add(v, mul(nl, h)), e.u, fp, f.u), r = lineX(add(v, mul(nl, -h)), e.u, fp, f.u), lim = 4 * (h + hO) + 1e-9;
+            if (l && r && len(sub(l, v)) <= lim && len(sub(r, v)) <= lim) got.trim = { edge: e.i, at: o === e.u ? "b" : "a", l, r };
+          }
+          break;
+        }
+        if (got && got.butt) break;
+      }
+      if (!got) return;
+      (out[R.id] = out[R.id] || {})[k] = got;
+      if (BUTT) { const m = BUTT.get(R) || {}; m[k] = got; BUTT.set(R, m); }
+    }));
+    return out;
   }
   /** 2.662.0: the corners / ends of a room's walls - each a piece of its own [{k (the corner's point number), v, poly, walls
       [edge ...], kind "corner" | "end", out (an end: the way it faces)}]: a corner = the hull of the two walls' square ends and
@@ -283,6 +345,9 @@
         const poly = hull2(pts); if (poly.length >= 3 && Math.abs(area2(poly)) > 1e-8) out.push({ k, v, poly, walls: [a0.i, a1.i], kind: "corner", w: jw && jw.w ? jw.w : null });
       } else if (a0 || a1) {
         const e = a0 || a1, o = a0 ? e.u : mul(e.u, -1), nl = left(e.u), t0 = tw(R, e.i), jw = (R.jw && R.jw[k]) || {};
+        const bt = BUTT && BUTT.get(R) && BUTT.get(R)[k];                // 2.691.0: butts up to another wall - no cap; the old one shaped round
+        if (bt && bt.butt) continue;
+        if (bt && bt.hull) { if (bt.hull.length) out.push({ k, v, poly: bt.hull, walls: [e.i], kind: "end", out: o, w: t0, l: t0 / 2, t: t0, shaped: true }); continue; }
         const W = jw.w || t0, Lp = jw.l != null ? jw.l : t0 / 2, back = W > t0 + 1e-9 ? Math.max(Lp, W / 2) : 0, w2 = W / 2;   // 2.664.0: its own width / length; wider than the wall = a pier round the end
         const s0 = add(v, mul(o, -back)), s1 = add(v, mul(o, Math.max(Lp, 1e-4)));
         out.push({ k, v, poly: [add(s0, mul(nl, w2)), add(s0, mul(nl, -w2)), add(s1, mul(nl, -w2)), add(s1, mul(nl, w2))], walls: [e.i], kind: "end", out: o, w: W, l: Lp, t: t0 });
@@ -715,6 +780,7 @@
    * the walls standing through it minus the openings cut through it */
   function walls(A, out, hid0) {
     const W = [], hid = hid0 || (() => false);
+    butts(A);                                                              // 2.691.0: which ends butt up to which walls
     const U = [];      // 2.624.0: the walls whose top is not flat stand to their lowest top; their own piece goes above
     A.rooms.forEach((R) => wallQuads(R).forEach((q) => { if (hid("room:" + R.id + ":wall:" + q.i)) return; const flat = flatTop(R, q.i); W.push({ poly: q.quad, z0: R.z, z1: R.z + (flat ? R.h : minTop(R, q.i)), R }); if (!flat) U.push({ R, q }); }));
     // 2.662.0: the corners / ends - as high as the higher wall's end there
@@ -1513,7 +1579,7 @@
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, gutterProfile, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, endNear, addJoins, applyJoins, joinsOf, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, endNear, addJoins, applyJoins, joinsOf, butts, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);
