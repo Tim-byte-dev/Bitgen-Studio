@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#0b0907}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 44%,#2a2018 0%,#15100c 55%,#070605 100%)}
+#dust{position:absolute;inset:0}
+#logo{position:absolute;left:50%;top:41%;width:720px;height:720px;margin:-360px 0 0 -360px}
+#logo svg{width:100%;height:100%;overflow:visible}
+#word{position:absolute;left:0;right:0;top:740px;text-align:center;font-family:"Inter Display","Inter",sans-serif;font-weight:300;font-size:86px;letter-spacing:.18em;color:#f2ede4;opacity:0}
+#word b{font-weight:500;color:#f59e2c}
+#tag{position:absolute;left:0;right:0;top:860px;text-align:center;font-family:"Inter",sans-serif;font-weight:300;font-size:30px;letter-spacing:.42em;color:#bfb5a6;opacity:0;text-transform:uppercase}
+#black{position:absolute;inset:0;background:#000;opacity:1}
+</style></head><body>
+<div id="bg"></div><canvas id="dust" width="1920" height="1080"></canvas>
+<div id="logo"></div>
+<div id="word"><b>bitGen</b> Studio</div>
+<div id="tag">together · grow · transform</div>
+<div id="black"></div>
+<script>
+const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x), seg = (t, a, b) => ease((t - a) / (b - a));
+let P = [], L = [], R = [], gL, gR;
+async function boot(svgText) {
+  const box = document.getElementById("logo"); box.innerHTML = svgText.replace(/<svg[^>]*>/, '<svg viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">');
+  const svg = box.querySelector("svg"), paths = [...svg.querySelectorAll("path")];
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  defs.innerHTML = '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.prepend(defs);
+  gL = document.createElementNS("http://www.w3.org/2000/svg", "g"); gR = document.createElementNS("http://www.w3.org/2000/svg", "g"); svg.appendChild(gL); svg.appendChild(gR);
+  paths.forEach((p) => { const b = p.getBBox(), cx = b.x + b.width / 2; (cx < 540 ? gL : gR).appendChild(p); });
+  // the halves: each path's order outward from the middle (pairs draw together)
+  const prep = (g) => [...g.children].map((p) => { const b = p.getBBox(), d = Math.abs(b.x + b.width / 2 - 540) + Math.abs(b.y + b.height / 2 - 600) * 0.6, len = p.getTotalLength();
+    p.setAttribute("fill", "#f2ede4"); p.setAttribute("stroke", "#f59e2c"); p.setAttribute("stroke-width", "3.2"); p.setAttribute("stroke-linejoin", "round");
+    p.style.strokeDasharray = len; return { p, d, len }; }).sort((a, b) => a.d - b.d);
+  L = prep(gL); R = prep(gR); P = L.concat(R);
+  [L, R].forEach((side) => side.forEach((o, i) => { o.k = i / Math.max(1, side.length - 1); }));
+  svg.setAttribute("filter", "url(#glow)");
+  // dust: fixed seeds
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  window.D = Array.from({ length: 90 }, () => ({ x: rnd() * 1920, y: rnd() * 1080, r: 0.6 + rnd() * 2.2, v: 6 + rnd() * 18, ph: rnd() * 6.28, a: 0.15 + rnd() * 0.5 }));
+}
+function draw(t) {
+  // fade in from black, out at the end
+  document.getElementById("black").style.opacity = String(Math.max(1 - seg(t, 0, 0.9), seg(t, 9.3, 10)));
+  const c = document.getElementById("dust").getContext("2d"); c.clearRect(0, 0, 1920, 1080);
+  D.forEach((d) => { const y = (d.y - d.v * t + 1080) % 1080, x = d.x + Math.sin(t * 0.6 + d.ph) * 14, a = d.a * (0.5 + 0.5 * Math.sin(t * 1.3 + d.ph)) * (0.35 + 0.65 * seg(t, 4.6, 6.2));
+    c.fillStyle = `rgba(245,170,80,${a})`; c.beginPath(); c.arc(x, y, d.r, 0, 6.283); c.fill(); });
+  // 1 the lines drawn (0.6 - 4.4 s): from the middle outward, the two tigers together
+  P.forEach((o) => { const a = 0.6 + o.k * 2.2, f = seg(t, a, a + 1.6); o.p.style.strokeDashoffset = String(o.len * (1 - f)); o.p.style.strokeOpacity = String(f > 0 ? 1 - 0.85 * seg(t, 4.4, 5.6) : 0);
+    // 2 filled (3.8 - 5.6 s)
+    o.p.style.fillOpacity = String(seg(t, 3.8 + o.k * 0.8, 4.8 + o.k * 0.8)); });
+  // the glow: up as it fills, a pulse at 5.2 s
+  const gl = 0.35 + 0.65 * Math.exp(-Math.pow((t - 5.3) / 0.7, 2)); document.querySelector("#logo svg").style.opacity = String(0.6 + 0.4 * seg(t, 0.6, 2)); document.querySelector("feGaussianBlur").setAttribute("stdDeviation", String(3 + 9 * gl * seg(t, 3.5, 5)));
+  // 3 the butterfly (5.4 - 8 s): two slow wing beats, the halves folding about the middle; a little lift
+  const w = seg(t, 5.4, 5.8) * (1 - seg(t, 7.6, 8.2)), beat = Math.pow(Math.sin(Math.max(0, t - 5.4) * Math.PI / 1.1), 2) * w, sx = 1 - 0.22 * beat;
+  gL.setAttribute("transform", `translate(540 0) scale(${sx} 1) translate(-540 0)`); gR.setAttribute("transform", `translate(540 0) scale(${sx} 1) translate(-540 0)`);
+  const lift = -18 * seg(t, 5.4, 8) ; document.getElementById("logo").style.transform = `translateY(${lift}px) scale(${1 + 0.04 * seg(t, 0, 10)})`;
+  // 4 the name + its meaning (6.6 - 8.4 s)
+  const wd = seg(t, 6.6, 7.8), tg = seg(t, 7.4, 8.6);
+  const W = document.getElementById("word"); W.style.opacity = String(wd); W.style.transform = `translateY(${(1 - wd) * 24}px)`; W.style.letterSpacing = `${0.3 - 0.12 * wd}em`;
+  const T = document.getElementById("tag"); T.style.opacity = String(tg * 0.9); T.style.transform = `translateY(${(1 - tg) * 16}px)`;
+}
+</script></body></html>

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>bitGen Studio v2</title>
+<link rel="icon" type="image/png" href="/static/favicon.png">
 <script src="/static/themes.js"></script>  <!-- 2.432.0: Settings ▸ Themes - the kept theme on <html> before the page paints (H3Theme) -->
 <script src="/static/safetheme.js"></script>  <!-- 2.636.0: Ctrl+Alt+S = Settings; bitGen Default (Ctrl+Alt+Shift+T, ?theme=default) -->
 <script src="/static/jxl.js"></script>  <!-- 2.479.0: JPEG XL pictures in the page (BGJxl) - before anything loads a picture -->
@@ -927,6 +928,8 @@
     -webkit-app-region: drag; user-select: none;
   }
   #titlebar .tbicon { display: flex; align-items: center; padding: 0 8px 0 10px; color: var(--tiger); font-size: .8rem; }
+  /* 2.700.0: the logo (Tim's two tigers + tree = a butterfly), in the theme's accent */
+  #titlebar .tblogo { display: block; width: 22px; height: 22px; background: var(--tiger); -webkit-mask: url(/static/logo.svg) center / 170% no-repeat; mask: url(/static/logo.svg) center / 170% no-repeat; }
   #titlebar .tbname {
     display: flex; align-items: center; font-family: var(--disp); font-size: .7rem;
     letter-spacing: .12em; text-transform: uppercase; color: var(--dim);
@@ -1188,7 +1191,7 @@
 <!-- Frameless-shell title bar. Hidden in a normal browser (the browser already
      has one); shown only when the Electron preload is present. -->
 <div id="titlebar" class="hidden">
-  <span class="tbicon">▦</span>
+  <span class="tbicon" title="bitGen Studio"><i class="tblogo" aria-hidden="true"></i></span>
   <span class="tbname">bitGen Studio</span>
   <span class="tbdrag"></span>
   <button class="tbbtn" id="tbMin" title="Minimize" aria-label="Minimize">&#xE921;</button>

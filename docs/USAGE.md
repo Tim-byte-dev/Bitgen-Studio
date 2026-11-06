@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.700.0: **The bitGen Studio logo** - Tim's own design (made for Tiger Art): two tigers for cooperation against all odds, a
+  tree for growth, and the butterfly they make together for change into something beautiful. It is the app icon (the window,
+  the taskbar, the Windows installer), the browser tab's icon and the mark at the left of the title bar (in the theme's accent
+  colour). A 10 second intro film of it is in docs/images/bitgen-studio-intro.mp4 (made from misc/intro/ - node
+  misc/intro/render.js makes it again).
 - 2.699.0: **Edit size follows Override style** - with Basic Settings' **Override style** ticked, an edit of a References
   picture comes out at Basic Settings' Size (as in 2.698.0); not ticked (or Size = Style's own), it comes out at the **first
   reference picture's own size** (in 16 px steps, at most 4096 px on the long side) - the workflow keeps that size instead of

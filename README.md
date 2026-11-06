@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/images/logo.png" width="128" alt="bitGen Studio"></p>
+
 # bitGen Studio
 
 **A local, self-hosted AI film and design studio.** Write a screenplay with a local LLM, render scenes with MiniMax H3, LTX and Wan through **ComfyUI**, cut them on a full **timeline**, paint and compose in a layered **image editor**, sketch and model in **CAD** (constrained sketches and parametric 3D bodies), build rooms and sets in the 3D **Sketcher**, and bring in scenes from **Blender**, **Daz Studio** and **Unreal Engine 5.8**. All of it runs on your own GPU, with no accounts and no cloud, and nothing leaves your machine.
