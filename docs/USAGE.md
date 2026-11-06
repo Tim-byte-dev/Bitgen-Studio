@@ -6303,6 +6303,8 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.700.1: the logo is no longer cut off - the title bar shows the whole butterfly (static/logo-mark.svg, the logo cropped to
+  its outline) and the app icon gives the wing tips room inside its rim.
 - 2.700.0: **The bitGen Studio logo** - Tim's own design (made for Tiger Art): two tigers for cooperation against all odds, a
   tree for growth, and the butterfly they make together for change into something beautiful. It is the app icon (the window,
   the taskbar, the Windows installer), the browser tab's icon and the mark at the left of the title bar (in the theme's accent
