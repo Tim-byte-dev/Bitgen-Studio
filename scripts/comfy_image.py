@@ -639,9 +639,23 @@ def bypass_image_slot(graph, load_nid):
     ComfyUI's validation exactly like an empty lora_name does.
     """
     branch = _downstream(graph, load_nid)
+    feeds = branch | {str(load_nid)}
     for nid in sorted(branch, key=lambda n: int(n) if n.isdigit() else 0):
-        if nid in graph and _is_link(_ins(graph[nid]).get("conditioning")):
-            bypass_node(graph, nid, [(0, "conditioning")])
+        if nid not in graph:
+            continue
+        ins = _ins(graph[nid])
+        if not _is_link(ins.get("conditioning")):
+            continue
+        # 2.697.0: only a node that takes THIS slot's picture / latent through
+        # another input (a ReferenceLatent's `latent`) is the slot's own pass-
+        # through. A node reached only through its `conditioning` input serves
+        # the whole graph - P-H3's BasicGuider sits downstream of every image
+        # slot (PH3ImageConditioning -> BasicGuider); bypassing it handed the
+        # sampler a CONDITIONING where it wants a GUIDER ("Return type mismatch
+        # ... [guider]") and every P-H3 Image Edit job failed.
+        if not any(_is_link(v) and str(v[0]) in feeds and k != "conditioning" for k, v in ins.items()):
+            continue
+        bypass_node(graph, nid, [(0, "conditioning")])
     prune_orphans(graph, branch | {load_nid})
     graph.pop(load_nid, None)
     # 2.337.0: an OPTIONAL autogrow input (Qwen Image 2.1's images.image_N)

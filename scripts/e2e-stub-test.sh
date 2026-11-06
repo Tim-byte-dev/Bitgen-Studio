@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.697.0 (Tim: "p-h3 downloaded but doesn't work... node 14: Return type mismatch between linked nodes [guider]")
+python3 scripts/test-ph3edit697.py > /tmp/ph3edit697.log 2>&1 \
+  && ok "2.697.0 P-H3 Image Edit: an unused picture slot no longer bypasses the BasicGuider (1 and 3 pictures), the character creator's guiders kept, every shipped workflow's guiders intact" \
+  || { bad "2.697.0 P-H3 edit guider"; grep -a "^FAIL" -A2 /tmp/ph3edit697.log | head -14; }
 # ---- 2.696.0 (Tim: "add a dropdown to the left of the photo button with image edit styles this will be exclusive to sketcher - keep the last one used as selected")
 node scripts/test-photostyle696.js > /tmp/photostyle696.log 2>&1 \
   && ok "2.696.0 units: sketcherStyle (own pick / fallback), #ppRealStyle before ✨ Photo, kept in pp.realStyle, used by the run + the link" \

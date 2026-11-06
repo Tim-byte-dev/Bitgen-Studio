@@ -6303,6 +6303,9 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.697.0: **P-H3 Image Edit works** - every P-H3 Image Edit job failed with "Return type mismatch between linked nodes
+  [guider]": removing the unused picture slots also removed the graph's guider. Only a slot's own reference nodes are removed
+  now (the character creator's guiders were affected the same way).
 - 2.696.0: **The Sketcher's own Photo style** - a dropdown on the Sketcher's bar, just left of ✨ Photo, lists the image edit
   styles; ✨ Photo uses the one picked there (the prompt docker keeps its own style), and the last one used stays picked
   (after a restart too). When a picked style is gone it falls back to the prompt's edit style or the default edit model.
