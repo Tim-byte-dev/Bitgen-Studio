@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.695.0 (Tim: "can we add roof material types like colourbond, concrete tiles , etc")
+node scripts/test-roofmat695.js > /tmp/roofmat695.log 2>&1 \
+  && ok "2.695.0 units: roof coverings - 8 generic coverings, clean, colour, the pattern lines, the weight in the rafter + lintel checks, the panel's minimum pitch note, ✨ Photo's words" \
+  || { bad "2.695.0 roof coverings units"; grep -a "^FAIL" -A2 /tmp/roofmat695.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui695-ui.js > /tmp/ui695ui.log 2>&1 \
+  && ok "2.695.0 browser test: Covering (generic names), corrugated steel colour + ribs, terracotta tiles ⚠ at 15°, the rafter check, ✔ at 25°, undo, kept by a save - or SKIP without playwright" \
+  || { bad "2.695.0 roof coverings browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui695ui.log | head -14; }
 # ---- 2.694.0 (Tim: "go ahead" - roof framing)
 node scripts/test-roof694.js > /tmp/roof694.log 2>&1 \
   && ok "2.694.0 units: roof framing - rafters / ridge / hips / breaks / ceiling joists / underpurlins + struts on gable, hip, gambrel, pyramid, shed; trusses; checks + sizes; not flat / follow / none; drawBeam; build (see-through roof) + clean + schedule" \

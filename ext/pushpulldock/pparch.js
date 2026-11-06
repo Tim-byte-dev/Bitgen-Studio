@@ -169,7 +169,7 @@
       return { id: id(x.id), rooms, type: roofType(x.type), pitch: num(x.pitch, 30, 0, 75), over: num(x.over, 0.4, 0, 5), th: num(x.th, 0.15, 0.02, 2), col: hex(x.col, DEF.roof), ridge: ["auto", "u", "v"].includes(x.ridge) ? x.ridge : "auto",
         k: x.k == null || x.k === "" ? null : num(x.k, null, 0.05, 0.95), pitch2: num(x.pitch2, 60, 5, 85), flip: !!x.flip,   // 2.666.0
         eave: EAVES.includes(x.eave) ? x.eave : "plain", fascia: !!x.fascia, fasciaH: num(x.fasciaH, 0.2, 0.05, 0.6), gutter: GUTTERS.includes(x.gutter) ? x.gutter : "none", gutterP: typeof x.gutterP === "string" ? x.gutterP.slice(0, 80) : "",
-        downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc"), fr: x.fr && root.PPStruct ? root.PPStruct.cleanRoofFr(x.fr) : null };   // 2.694.0: its frame   // 2.668.0: eaves, fascia, gutters
+        downpipes: x.downpipes !== false, trimCol: hex(x.trimCol, DEF.trim), gutterCol: hex(x.gutterCol, "#d7d4cc"), mat: root.PPStruct ? (root.PPStruct.ROOFMATS[x.mat] ? x.mat : "") : typeof x.mat === "string" ? x.mat.slice(0, 40) : "", fr: x.fr && root.PPStruct ? root.PPStruct.cleanRoofFr(x.fr) : null };   // 2.694.0: its frame   // 2.668.0: eaves, fascia, gutters
     }).filter(Boolean);
     A.slabs = (Array.isArray(o.slabs) ? o.slabs : []).map((x) => { if (!x || !Array.isArray(x.pts)) return null; const pts = x.pts.map(pt2).filter(Boolean); if (pts.length < 3) return null; if (area2(pts) < 0) pts.reverse(); return { id: id(x.id), pts, z: num(x.z, 0, -100, 1000), th: num(x.th, 0.2, 0.01, 5), col: hex(x.col, DEF.slab) }; }).filter(Boolean);
     A.stairs = (Array.isArray(o.stairs) ? o.stairs : []).map((x) => (x ? { id: id(x.id), x: num(x.x, 0, -1e5, 1e5), y: num(x.y, 0, -1e5, 1e5), ang: num(x.ang, 0, -720, 720), w: num(x.w, 1, 0.3, 10), len: num(x.len, 3.6, 0.3, 50), rise: num(x.rise, 2.7, 0.1, 20), z: num(x.z, 0, -100, 1000), col: hex(x.col, DEF.stair) } : null)).filter(Boolean);
@@ -1183,12 +1183,13 @@
     const F = roofFrame(A, rf); if (!F) return;
     let { o, V } = F; const { U, W, D, top, t } = F, ov = rf.over;
     if (rf.flip) { o = add(o, mul(V, D)); V = mul(V, -1); }              // 2.666.0: the other side high (skillion / saltbox)
-    const tp = Math.tan(rf.pitch * Math.PI / 180), tag = { ak: "roof", id: rf.id }, col = rf.col;
+    const MT = root.PPStruct && root.PPStruct.roofMat(rf), tp = Math.tan(rf.pitch * Math.PI / 180), tag = { ak: "roof", id: rf.id }, col = MT && rf.col === DEF.roof ? MT.col : rf.col;   // 2.695.0: a covering's own colour until one is picked
     const P = (x, y, z) => [o[0] + U[0] * x + V[0] * y, o[1] + U[1] * x + V[1] * y, z];
     if (rf.type === "flat" || (tp < 1e-3 && rf.type !== "mansard" && rf.type !== "gambrel")) { const pts = [[-ov, -ov], [W + ov, -ov], [W + ov, D + ov], [-ov, D + ov]].map(([x, y]) => { const p = P(x, y, 0); return [p[0], p[1]]; }); prism(pts, top, top + rf.th, col, tag, out, "roof"); return; }
     const tl = rf.type === "gambrel" || rf.type === "mansard" ? Math.tan((rf.pitch2 != null ? rf.pitch2 : 60) * Math.PI / 180) : tp;
     const dz = rf.th / Math.cos(Math.atan(Math.max(tp, tl)));
     const SH = roofShape(rf.type, W, D, ov, top, tp, t, rf), tops = SH.tops;   // 2.666.0: every type's shape (roofShape)
+    if (MT) tops.forEach((Q) => root.PPStruct.roofPattern(Q, dz, rf.mat, P, out.roofLines));   // 2.695.0: ribs / tile courses on it
     const nrm = (Q) => { const a = Q[0], b = Q[1], c = Q[2], x = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], y = [c[0] - a[0], c[1] - a[1], c[2] - a[2]]; const n = [x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0]], l = Math.hypot(n[0], n[1], n[2]) || 1; return [n[0] / l, n[1] / l, n[2] / l]; };
     const W3 = (Q, k) => Q.map(([x, y, z]) => P(x, y, z + (k || 0)));   // Q = the underside (it sits on the walls' outer top edge); + dz = the top
     const keyOf = (p, q) => [p, q].map((x) => x.map((c) => c.toFixed(5)).join(",")).sort().join("|");

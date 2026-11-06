@@ -185,7 +185,8 @@
     const depth = R.pts.reduce((mx, p) => Math.max(mx, Math.abs(dot([p[0] - o[0], p[1] - o[1]], nl))), 0);
     const rlw = depth / 2 + 0.45, S = cleanStruct(A.struct);                          // half the room's depth + the eave
     const above = Math.max(0, R.h - (op.sill + op.h)), span = op.w + 0.1;
-    const g = LOAD.roofG[S.roof] * rlw + LOAD.wallG * above, q = LOAD.roofQ * rlw;
+    const over = (A.roofs || []).find((rf) => (rf.rooms || []).indexOf(R.id) >= 0), cover = over && roofMat(over) ? roofMat(over).load : S.roof;   // 2.695.0: the covering over this room
+    const g = LOAD.roofG[cover] * rlw + LOAD.wallG * above, q = LOAD.roofQ * rlw;
     const auto = !op.lint, m = op.lint ? cleanLint(op.lint) : (choose(span, g, q, S.grade, { n: 2, B: 45 }) || { D: 290, B: 45, n: 3, grade: S.grade, at: 1 });
     return { op, I, span, g, q, rlw, m, auto, size: sizeName(m), check: check(m, span, g, q) };
   }
@@ -258,6 +259,42 @@
      are checked by the same guide sums (roof sheet 0.4 / tiles 0.9 kPa + 0.25 kPa; ceiling 0.2 kPa); struts / purlins / hips are
      not. rf.fr = {kind rafters | trusses | none, rafter, cj (+ span: its supports - hanging beams / walls), purlin (run that needs
      one, 0 = never), trussAt} */
+  /* 2.695.0 (Tim: "can we add roof material types like colourbond, concrete tiles , etc"): the roof's covering - its weight class
+     for the frame / lintel checks, a typical minimum pitch (CHECK THE MAKER'S - said in the panel), its default colour, the
+     pattern drawn on the roof (sheets: lines down the slope at the rib spacing; tiles / slate / shingles: courses + staggered
+     joints) and the words ✨ Photo uses. Generic names only - no brand names in what the user sees (the 2.459.0 rule). */
+  const ROOFMATS = {
+    "steel-corr": { label: "Pre-painted steel - corrugated", load: "sheet", min: 5, col: "#5c6166", pat: "down", at: 0.152, words: "corrugated pre-painted steel" },
+    "steel-rib": { label: "Pre-painted steel - ribbed (trapezoidal)", load: "sheet", min: 3, col: "#6b7269", pat: "down", at: 0.19, words: "ribbed pre-painted steel sheeting" },
+    "steel-seam": { label: "Pre-painted steel - standing seam", load: "sheet", min: 1, col: "#44494e", pat: "down", at: 0.4, words: "standing seam steel" },
+    "tile-concrete": { label: "Concrete tiles", load: "tile", min: 15, col: "#6f6a63", pat: "courses", at: 0.33, w: 0.33, words: "concrete roof tiles" },
+    "tile-terracotta": { label: "Terracotta tiles", load: "tile", min: 20, col: "#b0562f", pat: "courses", at: 0.33, w: 0.25, words: "terracotta roof tiles" },
+    slate: { label: "Slate", load: "tile", min: 20, col: "#3e4347", pat: "courses", at: 0.25, w: 0.3, words: "natural slate" },
+    shingle: { label: "Asphalt shingles", load: "sheet", min: 18, col: "#4a4541", pat: "courses", at: 0.14, w: 0.33, words: "asphalt shingles" },
+    polycarb: { label: "Clear polycarbonate sheet", load: "sheet", min: 5, col: "#cfe2e8", pat: "down", at: 0.152, words: "clear polycarbonate roofing" } };
+  const roofMat = (rf) => (rf && ROOFMATS[rf.mat]) || null;
+  /** the roof's dead load class: its covering's, else the model's Roof covering setting */
+  const roofLoadOf = (A, rf) => { const m = roofMat(rf); return m ? m.load : cleanStruct(A.struct).roof; };
+  /** the covering's pattern on one roof face (Q = its underside in the roof's frame, dz = the roof's thickness, P = to the world)
+   *  -> pushed into lines */
+  function roofPattern(Q, dz, mat, P, lines) {
+    const M = ROOFMATS[mat]; if (!M || Q.length < 3) return 0;
+    const nrm = unit(v3.crs(v3.sub(Q[1], Q[0]), v3.sub(Q[2], Q[0]))), n = nrm[2] < 0 ? v3.mul(nrm, -1) : nrm; if (Math.abs(n[2]) < 1e-6) return 0;
+    const zmin = Math.min(...Q.map((p) => p[2])), lo = Q.filter((p) => Math.abs(p[2] - zmin) < 1e-6); if (lo.length < 2) return 0;
+    const e = unit([lo[1][0] - lo[0][0], lo[1][1] - lo[0][1], 0]); let g = [-e[1], e[0], 0];
+    const c = Q.reduce((s0, p) => [s0[0] + p[0] / Q.length, s0[1] + p[1] / Q.length], [0, 0]); if ((c[0] - lo[0][0]) * g[0] + (c[1] - lo[0][1]) * g[1] < 0) g = [-g[0], -g[1], 0];
+    const Q2 = Q.map((p) => [p[0], p[1]]), z = (x, y) => Q[0][2] - (n[0] * (x - Q[0][0]) + n[1] * (y - Q[0][1])) / n[2] + dz + 0.004, W3 = (p) => P(p[0], p[1], z(p[0], p[1]));
+    const es = Q2.map((p) => p[0] * e[0] + p[1] * e[1]), gs = Q2.map((p) => p[0] * g[0] + p[1] * g[1]); let k = 0;
+    const seg = (p0, d, t0, t1) => { lines.push([W3([p0[0] + d[0] * t0, p0[1] + d[1] * t0]), W3([p0[0] + d[0] * t1, p0[1] + d[1] * t1])]); k++; };
+    const along = Math.hypot(1, Math.tan(Math.acos(Math.min(1, Math.abs(n[2])))));     // a course spacing measured up the slope -> in plan
+    if (M.pat === "down") { for (let s = Math.min(...es) + M.at; s < Math.max(...es) - 1e-6; s += M.at) { const p0 = [e[0] * s, e[1] * s]; spans(Q2, p0, [g[0], g[1]]).forEach(([t0, t1]) => seg(p0, g, t0, t1)); } return k; }
+    let row = 0;
+    for (let t = Math.min(...gs) + M.at / along; t < Math.max(...gs) - 1e-6; t += M.at / along, row++) {
+      const p0 = [g[0] * t, g[1] * t]; spans(Q2, p0, [e[0], e[1]]).forEach(([s0, s1]) => { seg(p0, e, s0, s1);
+        const off = row % 2 ? M.w / 2 : 0; for (let s = s0 + off + M.w; s < s1 - 1e-6; s += M.w) { const b = [p0[0] + e[0] * s, p0[1] + e[1] * s]; const st = M.at / along; seg(b, [-g[0], -g[1]], 0, Math.min(st, t - Math.min(...gs))); } });
+    }
+    return k;
+  }
   const ROOFFR = [["rafters", "Rafters (pitched)"], ["trusses", "Trusses (layout only)"], ["none", "None"]];
   function cleanRoofFr(x) {
     const o = x && typeof x === "object" ? x : {};
@@ -328,7 +365,7 @@
       }
     }
     // the checks (rafters + ceiling joists): the sloped span between its supports
-    const S = cleanStruct(A.struct), G = LOAD.roofG[S.roof], cosA = Math.cos(Math.atan(tp));
+    const G = LOAD.roofG[roofLoadOf(A, rf)], cosA = Math.cos(Math.atan(tp));                // 2.695.0: the roof's own covering
     const rSpan = fr.kind === "rafters" ? (fr.purlin > 0 && runMax > fr.purlin ? runMax / 2 : runMax) / cosA : 0;
     const rl = { g: G * R.at, q: LOAD.roofQ * R.at }, cl = { g: 0.2 * C.at, q: 0 };
     const checks = fr.kind === "rafters" && rSpan > 0 ? {
@@ -384,7 +421,7 @@
     lintels(A, H).forEach((L) => { if (hid("op:" + L.op.id)) return; const I = L.I, D = L.m.D / 1000, w = L.m.B * L.m.n / 1000;
       H.box(I.o, I.u, I.nl, I.x0 - 0.05, I.x1 + 0.05, -w / 2, w / 2, I.z1, I.z1 + D, L.check.ok ? COL.lintel : "#d0402b", { ak: "op", id: L.op.id, part: "lintel" }, out); });
   }
-  const api = { ROOFFR, cleanRoofFr, roofFrames, drawBeam, STEEL, FRAMES, wallFrames, frameTotals, JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
+  const api = { ROOFMATS, roofMat, roofLoadOf, roofPattern, ROOFFR, cleanRoofFr, roofFrames, drawBeam, STEEL, FRAMES, wallFrames, frameTotals, JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPStruct = api;
 })(typeof window !== "undefined" ? window : globalThis);

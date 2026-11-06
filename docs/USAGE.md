@@ -6303,6 +6303,12 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.695.0: **Roof coverings** in the Sketcher. A roof's (or the Roof tool's) **Covering**: pre-painted steel - corrugated,
+  ribbed (trapezoidal) or standing seam - concrete tiles, terracotta tiles, slate, asphalt shingles or clear polycarbonate. The
+  roof takes the covering's colour (until you pick your own) and its pattern - ribs down the slope for sheeting, courses and
+  staggered joints for tiles, slate and shingles. The panel gives the covering's typical minimum pitch and warns (⚠) when the
+  roof is flatter - check the maker's own minimum. Tiles and slate weigh as heavy in the rafter, ceiling and lintel checks,
+  sheeting and shingles as light; ✨ Photo's prompt names the covering ("a hip roof of terracotta roof tiles").
 - 2.694.0: **Roof framing** in the Sketcher. A picked roof's **🪵 Roof framing**: **Rafters** - common rafters down every face
   at the spacing (450 / 600 / 900), a ridge board, hip / valley rafters on the sloped edges two faces share, break purlins where a
   gambrel / mansard changes slope, ceiling joists on the top plates, and an underpurlin half way up any slope longer than you set

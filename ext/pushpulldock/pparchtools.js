@@ -1059,6 +1059,13 @@
         if (Q.ROOF_K[o.type] != null) numIn(K_LABEL[o.type], o.k != null ? o.k : Q.ROOF_K[o.type], on("k"), 0.05, 0.05, 0.95, "0 - 1");
         if (o.type === "shed" || o.type === "saltbox") chkIn("Flip - the other side high", !!o.flip, on("flip"));
         numIn(o.type === "follow" ? "Eaves width" : "Overhang", o.over, on("over"), 0.05, 0, 5, "m");
+        if (root.PPStruct) {                                              // 2.695.0: the covering
+          const RM = root.PPStruct.ROOFMATS, m = RM[o.mat];
+          selIn("Covering", o.mat || "", [["", "(not set - plain)"]].concat(Object.keys(RM).map((k) => [k, RM[k].label])), on("mat"));
+          if (m && o.type !== "follow" && o.type !== "flat") { const lowP = Math.min(o.pitch, o.type === "gambrel" || o.type === "mansard" ? (o.pitch2 != null ? o.pitch2 : 60) : o.pitch);
+            const d = el("div", "pphint", (lowP < m.min ? "⚠ " + m.label + " usually needs at least " + m.min + "° - this roof is " + lowP + "°." : "✔ " + m.label + ": a typical minimum pitch of " + m.min + "°.") + " Check the maker's minimum. Weighs as " + (m.load === "tile" ? "tiles" : "sheet") + " in the framing checks.");
+            d.dataset.pproofmat = lowP < m.min ? "low" : "ok"; if (lowP < m.min) d.style.color = "#e0573f"; box.appendChild(d); }
+        }
         // 2.668.0 (Tim: "please add eaves and eave styles to sketcher like open eaves, boxed eaves,closed eaves, and facias and
         // gutters"): the eave as pictures (a section through it), the fascia + barge boards, gutters + downpipes
         if (o.type === "follow" || o.type === "flat") return;
@@ -1536,7 +1543,7 @@
     const K_LABEL = { dutch: "Hip part of the rise", jerkin: "Clipped part of the rise", gambrel: "Break - in from the walls", mansard: "Break - in from the walls", saltbox: "Ridge - from the front" };
     /** the Roof tool's options for a new roof (2.666.0: + its proportion, lower pitch, flip) */
     function roofOpts() { const r = O.roof; return { type: r.type, pitch: r.pitch, over: r.over, k: r.k != null && P().ROOF_K[r.type] != null ? r.k : null, pitch2: r.pitch2 != null ? r.pitch2 : 60, flip: !!r.flip,
-      eave: r.eave || "boxed", fascia: r.fascia !== false, fasciaH: r.fasciaH != null ? r.fasciaH : 0.2, gutter: r.gutter || "quad", gutterP: r.gutterP || "", downpipes: r.downpipes !== false }; }   // 2.668.0: a new roof: boxed eaves, fascia, quad gutters
+      eave: r.eave || "boxed", fascia: r.fascia !== false, fasciaH: r.fasciaH != null ? r.fasciaH : 0.2, gutter: r.gutter || "quad", gutterP: r.gutterP || "", downpipes: r.downpipes !== false, mat: r.mat || "" }; }   // 2.668.0: a new roof: boxed eaves, fascia, quad gutters
     function isRect(R) { const e = P().edgesOf(R); return e.length === 4 && e.every((a, i) => Math.abs(a.u[0] * e[(i + 1) % 4].u[0] + a.u[1] * e[(i + 1) % 4].u[1]) < 1e-6); }
     function dupRoom(id) {
       const A = AR(), R = P().room(A, id); if (!R) return;

@@ -49,7 +49,8 @@
     if (win.length) parts.push(n(win.length, "window"));
     if (gap.length) parts.push(n(gap.length, "open doorway"));
     const roofs = A.roofs || [];
-    if (roofs.length) { const ty = [...new Set(roofs.map((r) => r.type || "gable"))]; parts.push(roofs.length === 1 ? "a " + ty[0] + " roof" : roofs.length + " roofs (" + ty.join(", ") + ")"); }
+    if (roofs.length) { const ty = [...new Set(roofs.map((r) => r.type || "gable"))]; const RM = root.PPStruct && root.PPStruct.ROOFMATS, mw = RM ? [...new Set(roofs.map((r) => RM[r.mat] && RM[r.mat].words).filter(Boolean))] : [];   // 2.695.0: + its covering
+      parts.push((roofs.length === 1 ? "a " + ty[0] + " roof" : roofs.length + " roofs (" + ty.join(", ") + ")") + (mw.length ? " of " + mw.join(" and ") : "")); }
     if ((A.stairs || []).length) parts.push(n(A.stairs.length, "staircase"));
     if ((A.slabs || []).length) parts.push(n(A.slabs.length, "floor slab"));
     const items = (A.items || []).filter(shown), people = items.filter((it) => it.type === "person"), furn = items.filter((it) => it.type !== "person");
