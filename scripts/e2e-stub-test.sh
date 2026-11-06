@@ -13122,6 +13122,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui687-ui.js > /tmp/ui687ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui688-ui.js > /tmp/ui688ui.log 2>&1 \
   && ok "2.688.0 browser test: the bar on screen (docker clipped), end piece = the wall / double-click push-pull, Ctrl+drag held to an axis, the photo prompt from the model - or SKIP without playwright" \
   || { bad "2.688.0 Sketcher bar / wall ends / Ctrl+drag / photo prompt browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui688ui.log | head -14; }
+# ---- 2.689.0 (Tim: "add a shelf/cupboard dialog for builtin cupboards, walk-in robes etc. must be customizable and be able to save as template")
+node scripts/test-joinery689.js > /tmp/joinery689.log 2>&1 \
+  && ok "2.689.0 units: the cupboard design (runs, bays, boxes inside the outline, plan, front view), PPFurn joinery items, the templates store" \
+  || { bad "2.689.0 cupboards units"; grep -a "^FAIL" -A2 /tmp/joinery689.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2>&1 \
+  && ok "2.689.0 browser test: 🗄 templates, the dialog (edit, front view, 💾 save as template), placed against a wall, 3D, the plan symbol, Fit the wall, Design / Apply / undo - or SKIP without playwright" \
+  || { bad "2.689.0 cupboards browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui689ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

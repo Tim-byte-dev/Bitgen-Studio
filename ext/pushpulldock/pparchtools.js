@@ -126,7 +126,45 @@
     function furnAt(ev) {
       const A = AR(), q = planeAt(ev, 0); if (!q) return null;
       let z = floorAt(A, q), p = planeAt(ev, z) || q; z = floorAt(A, p);
+      if (O.furniture.type === "joinery" && root.PPJoinery) return joineryAt(A, p, z, O.furniture.spec, O.furniture.rot);   // 2.689.0
       return root.PPFurn ? root.PPFurn.make(O.furniture.type, p, z, O.furniture.rot, O.furniture.color, O.furniture.pose) : null;
+    }
+    /** 2.689.0: a cupboard / shelving / walk-in robe put where the pointer is - inside a room its BACK goes against the nearest
+     *  inside face of a wall, facing into the room, slid along it (flush with a corner within 15 cm); else free, turned as set */
+    function jWallFor(A, p, z, D) {                                     // (wallFor(ev) is the doors' / lights' own, below)
+      const R = P().roomAt(A, p, z), poly = R && P().interior(R); if (!poly || poly.length < 3) return null;
+      let best = null;
+      for (let k = 0; k < poly.length; k++) {
+        const a = poly[k], b = poly[(k + 1) % poly.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 0.2) continue;
+        const u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], s0 = P().segDist(p, a, b);
+        if (!best || s0.d < best.d) best = { R, a, b, u, L, d: s0.d, k };
+      }
+      return best && best.d <= Math.max(1.2, (D || 0) + 0.6) ? best : null;
+    }
+    /** 2.689.0: ↔ Fit the wall - the cupboard as wide as the wall behind it (L / U: as deep as the room), against it */
+    function fitWall(it) {
+      const J = root.PPJoinery, A = AR(), a = -(it.rot || 0) * Math.PI / 180, back = [it.x + (it.d / 2) * Math.sin(a), it.y - (it.d / 2) * Math.cos(a)];
+      const w = jWallFor(A, back, it.z, it.d); if (!w) { ctx.status("↔ no room wall behind it - put it against one first"); return; }
+      const s = J.clean(it.spec); s.w = Math.round(w.L * 1000) / 1000;
+      if (s.layout !== "run") {                                            // as deep as the room: to the face across from it
+        const n = [-w.u[1], w.u[0]], poly = P().interior(w.R), mid = [(w.a[0] + w.b[0]) / 2, (w.a[1] + w.b[1]) / 2];
+        let far = 0; poly.forEach((q) => { far = Math.max(far, (q[0] - mid[0]) * n[0] + (q[1] - mid[1]) * n[1]); });
+        if (far > s.d + 0.3) s.side = Math.round(far * 1000) / 1000;      // the room's full depth (to the face across)
+      }
+      const placed = joineryAt(A, [(w.a[0] + w.b[0]) / 2, (w.a[1] + w.b[1]) / 2], it.z, s, it.rot);
+      Object.assign(it, { x: placed.x, y: placed.y, rot: placed.rot }); J.apply(it, s);
+      ctx.status("↔ " + J.label(it) + " - " + Math.round(s.w * 1000) + " mm wide, against the wall");
+    }
+    function joineryAt(A, p, z, spec, rot) {
+      const J = root.PPJoinery, s = J.clean(spec || J.DEFAULT), D = J.dims(s), w = jWallFor(A, p, z, D.d);
+      if (!w) return Object.assign(J.makeItem(s, p, z, rot), { against: null });
+      const n = [-w.u[1], w.u[0]];                                          // the walls run anticlockwise: left = into the room
+      let t = (p[0] - w.a[0]) * w.u[0] + (p[1] - w.a[1]) * w.u[1];
+      t = D.w >= w.L ? w.L / 2 : Math.max(D.w / 2, Math.min(w.L - D.w / 2, t));
+      if (t - D.w / 2 < 0.15) t = Math.min(w.L / 2, D.w / 2); else if (w.L - (t + D.w / 2) < 0.15) t = Math.max(w.L / 2, w.L - D.w / 2);   // flush into a corner
+      const c = [w.a[0] + w.u[0] * t + n[0] * (D.d / 2 + 0.002), w.a[1] + w.u[1] * t + n[1] * (D.d / 2 + 0.002)];
+      const r = ((Math.round(Math.atan2(n[0], n[1]) * 180 / Math.PI) % 360) + 360) % 360;
+      return Object.assign(J.makeItem(s, c, z, r), { against: { room: w.R.id, len: w.L } });
     }
     function planeAt(ev, z) { const r = V.ray(ev); if (Math.abs(r.d[2]) < 1e-9) return null; const t = (z - r.o[2]) / r.d[2]; return t > 0 ? [r.o[0] + r.d[0] * t, r.o[1] + r.d[1] * t, z] : null; }
     function snapPlan(ev, z, from, onWall) {
@@ -232,6 +270,7 @@
       }
       if (tool === "furniture") {                                        // 2.628.0: 🛋 a piece on the floor under the click
         const it = furnAt(ev); if (!it) return;
+        delete it.against;
         const b = before(); if (!A.items) A.items = []; it.id = A.n++; A.items.push(it);
         done("furniture", b, { ak: "item", id: it.id }); ctx.status("🛋 " + root.PPFurn.label(it) + " · R turns the next one · Select drags it"); return;
       }
@@ -254,7 +293,8 @@
         const F = root.PPFurn.footprint(it), z = it.z + 0.01, lines = F.map((p, i) => { const q = F[(i + 1) % 4]; return [[p[0], p[1], z], [q[0], q[1], z]]; });
         const fr = [(F[0][0] + F[1][0]) / 2, (F[0][1] + F[1][1]) / 2];
         lines.push([[it.x, it.y, z], [it.x + (it.x - fr[0]) * 0.8, it.y + (it.y - fr[1]) * 0.8, z]]);      // its front
-        V.preview({ lines, tip: "🛋 " + root.PPFurn.label(it) + " · " + it.rot + "°", tipAt: [it.x, it.y, it.z + it.h], color: 0x2563eb });
+        const jn = it.type === "joinery";
+        V.preview({ lines, tip: (jn ? "🗄 " : "🛋 ") + root.PPFurn.label(it) + " · " + (jn ? (it.against ? "against the wall · " : "free · ") + Math.round(it.w * 1000) + " × " + Math.round(it.d * 1000) + " mm" : it.rot + "°"), tipAt: [it.x, it.y, it.z + it.h], color: 0x2563eb });
         return;
       }
       if (tool === "room" || tool === "floor") {
@@ -1140,10 +1180,27 @@
           numIn("Field of view", o.fov, opt("fov"), 1, 3, 140, "°");
         }
         if (tool === "furniture" && root.PPFurn) {                       // 2.628.0: the House builder's library + the project's 3D models
-          const F = root.PPFurn, cats = F.categories().concat(["People", "3D models"]);       // 2.630.0: + 🧍 People
+          const F = root.PPFurn, cats = F.categories().concat(root.PPJoinery ? ["Cupboards & shelving"] : [], ["People", "3D models"]);       // 2.630.0: + 🧍 People; 2.689.0: + 🗄
           if (!cats.includes(o.cat)) o.cat = cats[0];
           selIn("Category", o.cat, cats.map((c) => [c, c]), (v) => { o.cat = v; const first = F.pieces().find((p) => p.cat === v); if (first) o.type = first.type; keepOpt(); props(); });
-          if (o.cat === "People") {
+          if (o.cat === "Cupboards & shelving" && root.PPJoinery) {           // 2.689.0: built-in robes, walk-in robes, shelving
+            const JJ = root.PPJoinery, L = root.PPJoineryLib;
+            if (o.type !== "joinery") o.type = "joinery";
+            o.spec = JJ.clean(o.spec || JJ.PRESETS[0].spec);
+            const grid = el("div", "ppfurn"); grid.id = "ppJnPick"; grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:4px 0";
+            const all = L ? L.all() : JJ.PRESETS;
+            all.forEach((t) => { const b = el("button", "ghost" + (t.spec.name === o.spec.name ? " on" : ""), (t.group === "Yours" ? "★ " : "") + t.name); b.type = "button"; b.dataset.tpl = t.id;
+              const D = JJ.dims(t.spec); b.title = Math.round(D.w * 1000) + " × " + Math.round(D.d * 1000) + " × " + Math.round(D.h * 1000) + " mm · " + JJ.LAYOUTS[t.spec.layout];
+              b.style.cssText = "font-size:11px;padding:2px 4px;text-align:left" + (t.spec.name === o.spec.name ? ";outline:1px solid var(--tiger,#f59e2c)" : "");
+              b.onclick = () => { o.spec = JJ.clean(JSON.parse(JSON.stringify(t.spec))); keepOpt(); props(); ctx.status("🗄 " + t.name + " - click against a wall in a room to put it there"); }; grid.appendChild(b); });
+            box.appendChild(grid);
+            if (L && !L.loaded) L.load().then(() => { if (tool === "furniture" && O.furniture.cat === "Cupboards & shelving") props(); });
+            const D = JJ.dims(o.spec);
+            box.appendChild(el("div", "pphint", "🗄 " + o.spec.name + " · " + Math.round(D.w * 1000) + " × " + Math.round(D.d * 1000) + " × " + Math.round(D.h * 1000) + " mm · " + JJ.LAYOUTS[o.spec.layout]));
+            btns([["🗄 Design / change…", () => { if (!root.PPJoineryDlg) return; root.PPJoineryDlg.open({ spec: o.spec, title: "🗄 Cupboards & shelving - the next one you put down", ok: "Use it", onOK: (sp) => { o.spec = sp; keepOpt(); props(); ctx.status("🗄 " + sp.name + " - click against a wall in a room to put it there"); } }); }, "Change its size, layout, bays, doors, handles, colours - and save it as your own template"]]);
+            numIn("Turn (free)", o.rot, (v) => { o.rot = ((Math.round(v) % 360) + 360) % 360; keepOpt(); props(); }, 15, -360, 360, "°");
+            box.appendChild(el("div", "pphint", "In a room it goes with its back against the nearest wall, facing in, flush into a corner; outside a room it stands free, turned as set."));
+          } else if (o.cat === "People") {
             if (o.type !== "person") { o.type = "person"; o.pose = o.pose || "stand"; }
             const P0 = F.POSES(), grid = el("div", "ppfurn"); grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:3px;margin:4px 0";
             Object.keys(P0).forEach((k) => { const b = el("button", "ghost", "🧍 " + P0[k]); b.type = "button"; b.dataset.pose = k; b.style.cssText = "font-size:11px;padding:2px 4px;text-align:left" + (k === o.pose ? ";outline:1px solid var(--tiger,#f59e2c)" : ""); b.onclick = () => { o.type = "person"; o.pose = k; keepOpt(); props(); ctx.status("🧍 " + P0[k] + " - click on a floor"); }; grid.appendChild(b); });
@@ -1300,8 +1357,18 @@
         btns([["👁 Look through", () => lookThrough(c)], ["📷 Shot + depth + normal", () => camShots(c)], ["📍 360° location", () => camLocation(c)], ["🗑 Delete", eraseSel]]);
         box.appendChild(el("div", "pphint", "📷 the shot (the photo look) + its depth and normal maps go to the Image assets; 📍 a 360° panorama from it becomes a Location (its @tag, the prompt's location)."));
       } else if (asel.ak === "item" && root.PPFurn) {                    // 2.628.0: a piece of furniture
-        const it = x; head((it.type === "person" ? "🧍 " : "🛋 ") + root.PPFurn.label(it));
-        if (it.type === "person") {                                       // 2.630.0: a person - name, pose, height
+        const it = x; head((it.type === "person" ? "🧍 " : it.type === "joinery" ? "🗄 " : "🛋 ") + root.PPFurn.label(it));
+        if (it.type === "joinery" && root.PPJoinery) {                    // 2.689.0: a cupboard - its design, the dialog
+          const JJ = root.PPJoinery, sp = it.spec, chs = (fn) => ch((v) => { fn(v); JJ.apply(it, it.spec); });
+          box.appendChild(el("div", "pphint", JJ.LAYOUTS[sp.layout] + " · " + JJ.DOORS[sp.doors] + " · " + sp.runs.reduce((a, r) => a + r.bays.length, 0) + " bays"));
+          numIn("Width", sp.w, chs((v) => { sp.w = v; }), 0.05, 0.3, 12, "m");
+          numIn(sp.layout === "run" ? "Depth" : "Robe depth", sp.layout === "run" ? sp.d : sp.side, chs((v) => { if (sp.layout === "run") sp.d = v; else sp.side = v; }), 0.05, 0.15, 12, "m");
+          numIn("Height", sp.h, chs((v) => { sp.h = v; }), 0.05, 0.3, 4, "m");
+          if (sp.doors !== "none") chkIn("Doors in 3D", sp.showDoors, chs((v) => { sp.showDoors = v; }));
+          btns([["✎ Design…", () => { if (!root.PPJoineryDlg) return; root.PPJoineryDlg.open({ spec: it.spec, title: "🗄 " + JJ.label(it), ok: "Apply", onOK: (s2) => { const b = before(); JJ.apply(it, s2); done("cupboard", b, { ak: "item", id: it.id }); } }); }, "Its bays, doors, handles, colours, sizes - and 💾 save it as a template"],
+            ["↔ Fit the wall", ch(() => fitWall(it)), "As wide as the wall it stands against (a walk-in robe: as deep as the room too), against it"]]);
+        }
+        if (it.type === "joinery") { /* its own panel above */ } else if (it.type === "person") {                                       // 2.630.0: a person - name, pose, height
           txtIn("Name", it.name || "", ch((v) => { it.name = v; }));
           selIn("Pose", it.pose, Object.keys(root.PPFurn.POSES()).map((k) => [k, root.PPFurn.POSES()[k]]), ch((v) => { it.pose = v; }));
           numIn("Height", it.h, ch((v) => { it.h = v; }), 0.05, 0.9, 2.3, "m");
@@ -1358,7 +1425,7 @@
       const rooms = A.rooms.filter((R) => R.closed).length, walls = A.rooms.length - rooms;
       return [n(rooms, "room"), n(walls, "wall"), n(A.ops.filter((o) => o.kind === "door").length, "door"), n(A.ops.filter((o) => o.kind === "window").length, "window"), n(A.roofs.length, "roof"), n(A.lights.length, "light"), n(A.stairs.length, "stairs"), n(A.slabs.length, "floor")].filter(Boolean).join(" · ");
     }
-    return { escape, picked, setMore, gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
+    return { joineryAt: (p, z, spec, rot) => joineryAt(AR(), p, z || 0, spec, rot || 0), escape, picked, setMore, gizmo: () => gizmo, furnishRoom, lookThrough, leaveThrough, through: () => (through ? through.id : null), camShots, camLocation, lastCam: () => last, owns, use, down, move, up, dbl, vcb, key, selectDown, selectMove, selectUp, selectDbl, eraseAt, paintAt, sel: () => asel, setSel, props, summary, state: () => st, opts: O, roofAll, TOOLS, HINT, VCB };
   }
   root.PPArchTools = { create, TOOLS, HINT, VCB, OPT0 };
 })(typeof window !== "undefined" ? window : globalThis);

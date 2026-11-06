@@ -60,7 +60,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     check("the Build tools end with 🛋 Furniture (A) (+ 2.629.0: 📷 Camera; 2.653.0+: then the Ground tools)", /furniture,camera(,terrain,pool,drive(,road)?)?$/.test(tools.join()), tools);
     await p.keyboard.press("a"); await p.waitForTimeout(200);
     const pn = await panel();
-    check("🛋 Furniture: the panel - the House builder's categories (Living … Outside) + the project's 3D models, the pieces as buttons", /Category/.test(pn) && await ev(() => { const s = [...document.querySelectorAll("#ppProps select")][0]; return [...s.options].map((o) => o.value).join() === "Living,Dining,Kitchen,Bedroom,Bathroom,Lights,Outside,People,3D models"; }) && /Sofa \(3 seats\)/.test(pn), pn.slice(0, 200));
+    check("🛋 Furniture: the panel - the House builder's categories (Living … Outside) + the project's 3D models, the pieces as buttons", /Category/.test(pn) && await ev(() => { const s = [...document.querySelectorAll("#ppProps select")][0]; return [...s.options].map((o) => o.value).join() === "Living,Dining,Kitchen,Bedroom,Bathroom,Lights,Outside,Cupboards & shelving,People,3D models"; }) && /Sofa \(3 seats\)/.test(pn), pn.slice(0, 200));
     await ev(() => { const s = [...document.querySelectorAll("#ppProps select")][0]; s.value = "Bedroom"; s.dispatchEvent(new Event("change")); });
     await ev(() => { const x = document.querySelector('#ppProps button[data-type="bed_double"]'); x.click(); });
     await p.keyboard.press("r"); await p.waitForTimeout(150);

@@ -6303,6 +6303,21 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.689.0: **🗄 Cupboards & shelving in the Sketcher** (🛋 Furniture ▸ Category **Cupboards & shelving**): built-in robes,
+  walk-in robes, linen, pantry and broom cupboards, bookshelves and shelving units.
+  - Pick a template, or press **🗄 Design / change…** to open the dialog: name, layout (**straight**, **L-shape** or
+    **U-shape walk-in**), width / depth / height (and the robe's depth for L / U), board thickness, plinth, doors (none,
+    hinged, sliding, bi-fold, glass - and whether they show in 3D), handles (bar, knob, edge pull), the body / door / handle
+    colours (any colour or one of the Sketcher's materials).
+  - Each run (Back, Left, Right) has its **bays**: a width (0 shares what is left), what is in it (hanging rail, double
+    hanging, shelves, drawers + shelves, shoe shelves, open), how many shelves / drawers; ↑ ↓ to reorder, ✕ to take one out,
+    ＋ Add bay, ⇔ Share evenly. A front view and a plan follow every change.
+  - **💾 Save as template** keeps your design (by its name - the same name replaces it) for every project; your templates
+    are listed with ★ in the Furniture panel and under **Yours** in the dialog; 🗑 Delete template removes one.
+  - Click inside a room and it goes with its back against the nearest wall, facing in, flush into a corner when it is
+    close; outside a room it stands free. Picked, its panel has Width / Depth / Height, Doors in 3D, **✎ Design…** (Apply =
+    one ↶ step) and **↔ Fit the wall** (as wide as the wall; a walk-in robe as deep as the room too).
+  - On the floorplan and in 📄 Plans: each run, its bays, hanging rails dashed, sliding tracks or door swings.
 - 2.688.0: **Sketcher: bar always on screen, wall ends, Ctrl+drag, a truer Photo prompt.**
   - The Sketcher's top bar (☰ File … ✨ Photo, 📄 Plans, Send) stays on screen: when docked, the docker can no longer be
     scrolled away under it, and the view takes the room that's left.

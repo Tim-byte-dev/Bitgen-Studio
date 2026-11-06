@@ -48,6 +48,7 @@ output/
 # code (lib/styles.js STARTER_STYLES), so an empty folder is the correct
 # starting state and a committed one would overwrite somebody's own.
 styles/
+/joinery/
 graphs/
 # pose_sheets/ is the user's own pose sheets for the Character creator (2.577.0) - made on first use
 pose_sheets/

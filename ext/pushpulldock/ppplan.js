@@ -162,8 +162,16 @@
     (A.items || []).forEach((it) => {
       if (hid("item:" + it.id) || !(Math.abs((it.z || 0) - z) < 0.3)) return;
       const F = o.footprint ? o.footprint(it) : null; if (!F || F.length < 3) return;
+      const JN = it.type === "joinery" && it.spec && root.PPJoinery;
+      if (JN) {                                                          // 2.689.0: 🗄 each run, its bays, hanging rails dashed, the doors
+        const a = -(it.rot || 0) * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a), W = (q) => [it.x + q[0] * cs - q[1] * sn, it.y + q[0] * sn + q[1] * cs];
+        root.PPJoinery.runsOf(it.spec).forEach((R) => { if (R.L < 0.05) return; const c4 = [[0, 0], [R.L, 0], [R.L, R.d], [0, R.d]].map(([u, f]) => W([R.s[0] + R.u[0] * u + R.f[0] * f, R.s[1] + R.u[1] * u + R.f[1] * f]));
+          out.fills.push({ rings: [ring(c4)], col: COL.fill, k: "furn", tag: { ak: "item", id: it.id } }); });
+        root.PPJoinery.plan(it.spec).forEach((q) => L([W(q.a), W(q.b)], COL.furn, "furn", q.dash));
+      } else {
       out.fills.push({ rings: [ring(F)], col: COL.fill, k: "furn", tag: { ak: "item", id: it.id } });
       L(ring(F), COL.furn, "furn");
+      }
       const c = [(F[0][0] + F[2][0]) / 2, (F[0][1] + F[2][1]) / 2], t = o.label ? o.label(it) : it.type || "";
       const underLabel = out.texts.some((x) => Q.inPoly(x.p, F) || Q.inPoly([x.p[0], x.p[1] - 0.55], F));   // a room's name there: the piece unnamed
       if (t && !underLabel && Math.min(it.w || 0, it.d || 0) >= 0.3) out.texts.push({ p: c, t, h: Math.min(0.13, Math.max(0.08, Math.min(it.w, it.d) / 4)), col: COL.furn });

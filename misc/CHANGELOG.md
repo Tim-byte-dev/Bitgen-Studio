@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.689.0** — 🗄 Sketcher Cupboards & Shelving: Built-In Robes, Walk-In Robes (L / U), Pantry, Linen, Shelving - a Design Dialog With Bays, Doors, Handles, Colours; Saved as Your Own Templates
 - **2.688.0** — Sketcher: the Top Bar Always on Screen; a Wall's End Piece Picks the Wall (Double-Click = Push / Pull); Ctrl+Drag Held Horizontal / Vertical; ✨ Photo Names Only What the Model Has
 - **2.687.0** — ✎ The Sketcher's Sketch Plane Is No Longer Drawn Over the Clicked Face (No Orange Square / Grid) - It Is Still the Plane the Tools Draw In
 - **2.686.0** — ✏ Change Style With a Style That Is No Edit Model Draws the Picture's Line Art First, Then Renders the Look From It Through a Line-Art ControlNet
