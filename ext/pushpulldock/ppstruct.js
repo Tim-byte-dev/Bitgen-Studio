@@ -49,7 +49,14 @@
       sheet: num(o.sheet, 0.019, 0.01, 0.05) };
   }
   const cleanLint = (l) => (l && typeof l === "object" ? cleanMember(l, { D: 140, B: 45, n: 2, grade: "MGP10", at: 1 }) : null);
-  const cleanStruct = (s) => { const o = s && typeof s === "object" ? s : {}; return { show: !!o.show, roof: o.roof === "tile" ? "tile" : "sheet", grade: GRADES[o.grade] ? o.grade : "MGP10" }; };
+  /** 2.693.0: light-gauge steel stud profiles - web D x flange B (mm), named generically */
+  const STEEL = [{ id: "c75", D: 75, B: 35, label: "C 75 × 35 steel" }, { id: "c89", D: 89, B: 41, label: "C 89 × 41 steel" }, { id: "c92", D: 92, B: 41, label: "C 92 × 41 steel" }, { id: "c150", D: 150, B: 41, label: "C 150 × 41 steel" }];
+  const FRAMES = [["timber", "Timber"], ["steel", "Light-gauge steel"], ["none", "None"]];
+  const cleanStruct = (s) => { const o = s && typeof s === "object" ? s : {}, st = o.stud && typeof o.stud === "object" ? o.stud : {};
+    return { show: !!o.show, roof: o.roof === "tile" ? "tile" : "sheet", grade: GRADES[o.grade] ? o.grade : "MGP10",
+      frame: FRAMES.some((f) => f[0] === o.frame) ? o.frame : "timber", stud: { D: Math.round(num(st.D, 90, 45, 300)), B: Math.round(num(st.B, 35, 25, 100)), grade: GRADES[st.grade] ? st.grade : "MGP10", at: num(st.at, 0.45, 0.3, 0.9) },
+      steel: STEEL.some((x) => x.id === o.steel) ? o.steel : "c89", plates: o.plates === 1 ? 1 : 2, nog: num(o.nog, 1.2, 0.6, 2), brace: o.brace !== false }; };
+  const studOf = (S) => (S.frame === "steel" ? STEEL.find((x) => x.id === S.steel) : { D: S.stud.D, B: S.stud.B, label: S.stud.D + " × " + S.stud.B + " " + S.stud.grade });
   const sizeName = (m) => (m.n > 1 ? m.n + "/" : "") + m.D + " × " + m.B + " " + m.grade;
 
   /** the beam sums for a member on a simply supported span (m) with line loads g / q (kN/m, the member's own weight added):
@@ -183,11 +190,77 @@
     return { op, I, span, g, q, rlw, m, auto, size: sizeName(m), check: check(m, span, g, q) };
   }
   function lintels(A, H) { return (A.ops || []).map((op) => lintel(A, op, H)).filter(Boolean); }
+  /* ---- 2.693.0 (Tim: "you choose, we will go one at a time" - wall framing after 2.692.0's floors + lintels): every wall's frame -
+     bottom plate (cut at doors), top plate(s), studs at the spacing, a jamb stud each side of an opening, jack studs over the head /
+     under a window's sill trimmer, noggings in rows, a strap brace in each clear panel 1.8 m or longer; corners get a post. Laid
+     out by common practice; stud sizes are NOT checked (AS 1684's stud tables: height, spacing, wind) - said in the panel. */
+  /** one room's walls framed -> [{R, i, parts [box descriptors {part, o, u, n, x0..z1, col} | {part, strap: [x0, z0, x1, z1], e, D}], n {...}}] */
+  function wallFrames(A, R, H, S0) {
+    const S = S0 || cleanStruct(A.struct); if (S.frame === "none" || R.noFrame) return [];
+    const sd = studOf(S), D = sd.D / 1000, B = sd.B / 1000, steel = S.frame === "steel", col = steel ? "#9aa0a6" : COL.timber, nTop = steel ? 1 : S.plates;
+    const at = A.rooms.indexOf(R), out = [], np = R.pts.length;
+    H.wallQuads(R).forEach((q) => {
+      const e = q, mid = [(e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2];
+      // a wall two rooms share is framed once (by the first room)
+      if (A.rooms.slice(0, Math.max(0, at)).some((Q) => Math.abs(Q.z - R.z) < 0.01 && H.edgesOf(Q).some((f) => Math.abs(f.u[0] * e.u[1] - f.u[1] * e.u[0]) < 0.02 && H.segDist(mid, f.a, f.b).d < 0.01))) return;
+      const al = (p) => dot([p[0] - e.a[0], p[1] - e.a[1]], e.u);
+      let s0 = Math.min(al(q.quad[0]), al(q.quad[3])), s1 = Math.max(al(q.quad[1]), al(q.quad[2]));
+      const k0 = e.i, k1 = R.closed ? (e.i + 1) % np : e.i + 1, corners = [];
+      if (H.wallsAt(R, k0).length >= 2) { s0 += D / 2; corners.push(0); }
+      if (H.wallsAt(R, k1).length >= 2) { s1 -= D / 2; corners.push(1); }
+      if (s1 - s0 < 2 * B) return;
+      const z0 = R.z, ztop = R.z + H.minTop(R, e.i), zs = z0 + B, zt = ztop - nTop * B, parts = [], n = { studs: 0, jambs: 0, jacks: 0, studLen: 0, plate: 0, nog: 0, braces: 0 };
+      const bx = (part, x0, x1, za, zb, c) => { if (x1 - x0 > 1e-4 && zb - za > 1e-4) parts.push({ part, o: e.a, u: e.u, n: e.nl, x0, x1, y0: -D / 2, y1: D / 2, z0: za, z1: zb, col: c || col }); };
+      const ops = (A.ops || []).filter((op) => op.room === R.id && op.edge === e.i).map((op) => { const I = H.opInfo(A, op); if (!I) return null; const L = lintel(A, op, H);
+        return { op, x0: I.x0, x1: I.x1, zb: op.kind === "door" ? z0 : I.z0, zh: I.z1, hd: L ? L.m.D / 1000 : D, win: op.kind !== "door" && I.z0 > z0 + 0.05, lint: !!L }; }).filter(Boolean);
+      // plates: the bottom one cut at doors
+      let cuts = ops.filter((o) => !o.win && o.zb <= z0 + 1e-6).map((o) => [o.x0, o.x1]).sort((a, b) => a[0] - b[0]), x = s0;
+      cuts.forEach(([a, b]) => { bx("bottom plate", x, Math.max(x, a), z0, zs); n.plate += Math.max(0, a - x); x = Math.max(x, b); }); bx("bottom plate", x, s1, z0, zs); n.plate += Math.max(0, s1 - x);
+      for (let k = 0; k < nTop; k++) { bx("top plate", s0, s1, ztop - (k + 1) * B, ztop - k * B); n.plate += s1 - s0; }
+      // studs: at the spacing from the start, the end one, none in an opening (jack studs there instead)
+      const xs = []; for (let p = s0 + B / 2; p < s1 - B / 2 - 1e-6; p += S.stud.at) xs.push(p);
+      const xe = s1 - B / 2; if (xs.length > 1 && xe - xs[xs.length - 1] < B) xs[xs.length - 1] = xe - B;   // the last one too close: beside the end stud (a bay never wider than the spacing)
+      xs.push(xe);
+      const inOp = (p) => ops.find((o) => p > o.x0 - B * 1.5 && p < o.x1 + B * 1.5);
+      xs.forEach((p) => { const o = inOp(p);
+        if (!o) { bx("stud", p - B / 2, p + B / 2, zs, zt); n.studs++; n.studLen += zt - zs; return; }
+        if (p <= o.x0 || p >= o.x1) return;                       // beside the opening: its jamb stud stands there
+        const top0 = o.zh + o.hd; if (zt - top0 > 0.03) { bx("jack stud", p - B / 2, p + B / 2, top0, zt); n.jacks++; n.studLen += zt - top0; }
+        if (o.win && o.zb - B - zs > 0.03) { bx("jack stud", p - B / 2, p + B / 2, zs, o.zb - B); n.jacks++; n.studLen += o.zb - B - zs; } });
+      ops.forEach((o) => {
+        [[o.x0 - B, o.x0], [o.x1, o.x1 + B]].forEach(([a, b]) => { if (a >= s0 - 1e-6 && b <= s1 + 1e-6) { bx("jamb stud", a, b, zs, zt); n.jambs++; n.studLen += zt - zs; } });
+        if (!o.lint) bx("head", o.x0 - B, o.x1 + B, o.zh, Math.min(zt, o.zh + o.hd));                 // an inside wall's head (an outside one: its lintel)
+        if (o.win) bx("sill trimmer", o.x0, o.x1, o.zb - B, o.zb);
+      });
+      // noggings in rows, broken at openings
+      for (let z = zs + S.nog; z < zt - 0.15; z += S.nog) {
+        let x2 = s0; const hits = ops.filter((o) => z + B > o.zb - B && z < o.zh + o.hd).map((o) => [o.x0 - B, o.x1 + B]).sort((a, b) => a[0] - b[0]);
+        hits.forEach(([a, b]) => { bx("nogging", x2, Math.max(x2, a), z, z + B); n.nog += Math.max(0, a - x2); x2 = Math.max(x2, b); }); bx("nogging", x2, s1, z, z + B); n.nog += Math.max(0, s1 - x2);
+      }
+      // a strap brace in each clear panel (no opening) 1.8 m or longer - nominal: the bracing design is AS 1684's / the engineer's
+      if (S.brace) { let x3 = s0; const gaps = []; ops.map((o) => [o.x0 - B, o.x1 + B]).sort((a, b) => a[0] - b[0]).forEach(([a, b]) => { gaps.push([x3, a]); x3 = Math.max(x3, b); }); gaps.push([x3, s1]);
+        gaps.forEach(([a, b]) => { if (b - a < 1.8) return; const run = Math.min(b - a - 0.1, (zt - zs) * 1.2); parts.push({ part: "strap brace", strap: [a + 0.05, zs, a + 0.05 + run, zt], e, D }); n.braces++; }); }
+      corners.filter((c) => c === 0).forEach((c) => { const v = e.a; parts.push({ part: "corner post", o: v, u: e.u, n: e.nl, x0: -D / 2, x1: D / 2, y0: -D / 2, y1: D / 2, z0: zs, z1: zt, col, post: k1 }); });
+      out.push({ R, i: e.i, parts, n, s0, s1 });
+    });
+    return out;
+  }
+  /** a room's framing totals -> {studs, jambs, jacks, studLen, plate, nog, braces, walls} */
+  function frameTotals(A, R, H) {
+    const t = { studs: 0, jambs: 0, jacks: 0, studLen: 0, plate: 0, nog: 0, braces: 0, walls: 0 };
+    wallFrames(A, R, H).forEach((w) => { t.walls++; Object.keys(w.n).forEach((k) => { t[k] += w.n[k]; }); });
+    return t;
+  }
   /** every member of the model -> rows {what, size, count, len} (the plans / panel schedule) */
   function schedule(A, H) {
     const rows = [];
     (A.rooms || []).forEach((R) => plan(A, R, H).members.forEach((m) => rows.push(Object.assign({ room: R.name }, m))));
     lintels(A, H).forEach((L) => rows.push({ room: L.I.R.name, kind: "Lintel (" + L.op.kind + " " + Math.round(L.op.w * 1000) + ")", size: L.size, count: 1, len: L.span + 0.1 }));
+    const S = cleanStruct(A.struct), sn = studOf(S) ? studOf(S).label : "";
+    if (S.frame !== "none") (A.rooms || []).forEach((R) => { const t = frameTotals(A, R, H); if (!t.walls) return;
+      rows.push({ room: R.name, kind: "Studs (common + jamb + jack)", size: sn + " @ " + Math.round(S.stud.at * 1000), count: t.studs + t.jambs + t.jacks, len: t.studLen },
+        { room: R.name, kind: "Plates", size: sn, count: 0, len: t.plate }, { room: R.name, kind: "Noggings", size: sn, count: 0, len: t.nog });
+      if (t.braces) rows.push({ room: R.name, kind: "Strap braces (nominal)", size: "metal strap", count: t.braces, len: 0 }); });
     return rows;
   }
   /** add the structure to pparch's build output (H = pparch's helpers) */
@@ -197,11 +270,19 @@
       plan(A, R, H).parts.forEach((p) => { const tag = { ak: "room", id: R.id, part: "struct" };
         if (p.prism) H.prism(p.prism, p.z0, p.z1, p.col, tag, out); else H.box(p.o, p.u, p.n, p.x0, p.x1, p.y0, p.y1, p.z0, p.z1, p.col, tag, out); });
     });
-    if (!cleanStruct(A.struct).show) return;
+    const S = cleanStruct(A.struct); if (!S.show) return;
+    if (S.frame !== "none") (A.rooms || []).forEach((R) => { if (hid("room:" + R.id) || hid("room:" + R.id + ":struct")) return;
+      wallFrames(A, R, H, S).forEach((w) => { if (hid("room:" + R.id + ":wall:" + w.i)) return; const tag = { ak: "room", id: R.id, part: "frame", edge: w.i };
+        w.parts.forEach((p) => {
+          if (!p.strap) { H.box(p.o, p.u, p.n, p.x0, p.x1, p.y0, p.y1, p.z0, p.z1, p.col, tag, out); return; }
+          const [xa, za, xb, zb] = p.strap, e = p.e, wd = 0.03;
+          [1, -1].forEach((sg) => { const y = sg * (p.D / 2 + 0.003), P = (x, z) => [e.a[0] + e.u[0] * x + e.nl[0] * y, e.a[1] + e.u[1] * x + e.nl[1] * y, z];
+            const rg = [P(xa, za), P(xa + wd, za), P(xb + wd, zb), P(xb, zb)]; out.polys.push({ rings: [sg > 0 ? rg : rg.slice().reverse()], n: [e.nl[0] * sg, e.nl[1] * sg, 0], col: "#6f747a", tag, layer: "main" }); });
+        }); }); });
     lintels(A, H).forEach((L) => { if (hid("op:" + L.op.id)) return; const I = L.I, D = L.m.D / 1000, w = L.m.B * L.m.n / 1000;
       H.box(I.o, I.u, I.nl, I.x0 - 0.05, I.x1 + 0.05, -w / 2, w / 2, I.z1, I.z1 + D, L.check.ok ? COL.lintel : "#d0402b", { ak: "op", id: L.op.id, part: "lintel" }, out); });
   }
-  const api = { JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
+  const api = { STEEL, FRAMES, wallFrames, frameTotals, JOIST, GRADES, SIZES, FLOORS, SITES, PIERS, LOAD, LIMIT, clean, cleanLint, cleanStruct, cleanMember, check, choose, floorChecks, plan, lintel, lintels, schedule, build, sizeName, spans, stations };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPStruct = api;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -142,7 +142,7 @@
       if (pts.length < (closed ? 3 : 2)) return null;
       if (closed && area2(pts) < 0) pts.reverse();
       return { id: id(R.id), name: String(R.name || (closed ? "Room" : "Wall")).slice(0, 60), pts, closed, z: num(R.z, 0, -100, 1000), h: num(R.h, DEF.h, 0.1, 50), t: num(R.t, DEF.t, 0.02, 2),
-        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false, slab: !!R.slab,
+        wall: hex(R.wall, DEF.wall), floor: hex(R.floor, DEF.floor), ceilCol: hex(R.ceilCol, DEF.ceil), floorOn: R.floorOn !== false, ceilOn: R.ceilOn !== false, slab: !!R.slab, noFrame: !!R.noFrame,
         ceil: R.ceil === "follow" ? "follow" : "flat", tops: cleanTops(R.tops, closed ? pts.length : pts.length - 1),
         // 2.639.0: skirting (at the floor) + cornice (under the ceiling) round the room's inside
         skirtOn: closed && !!R.skirtOn, skirtH: num(R.skirtH, 0.1, 0.02, 0.6), corniceOn: closed && !!R.corniceOn, corniceH: num(R.corniceH, 0.08, 0.02, 0.6), trim: hex(R.trim, DEF.trim),
@@ -751,7 +751,7 @@
   }
 
   /* ---------------- the geometry */
-  const STRUCT_H = { box: (...a) => box(...a), prism: (...a) => prism(...a), exterior: (R) => exterior(R), opInfo: (A, op) => opInfo(A, op), wallKind: (A, R, i) => wallKind(A, R, i), inPoly: (p, P) => inPoly(p, P) };   // 2.692.0: what PPStruct draws with
+  const STRUCT_H = { box: (...a) => box(...a), prism: (...a) => prism(...a), exterior: (R) => exterior(R), opInfo: (A, op) => opInfo(A, op), wallKind: (A, R, i) => wallKind(A, R, i), inPoly: (p, P) => inPoly(p, P), wallQuads: (R) => wallQuads(R), wallsAt: (R, k) => wallsAt(R, k), minTop: (R, i) => minTop(R, i), edgesOf: (R) => edgesOf(R), segDist: (p, a, b) => segDist(p, a, b) };   // 2.693.0: + the wall framing's   // 2.692.0: what PPStruct draws with
   function build(A, opt) {
     const out = { polys: [], lines: [], roofLines: [], lights: [] };
     if (!A) return out;

@@ -1095,8 +1095,27 @@
         d.dataset.ppcheck = c.ok ? "ok" : "no"; d.style.color = c.ok ? "" : "#e0573f"; box.appendChild(d); };
       const structShow = () => { const S0 = SS.cleanStruct(AR().struct); chkIn("🪵 Show framing (walls see-through)", S0.show, ch((v) => { AR().struct = Object.assign(SS.cleanStruct(AR().struct), { show: v }); })); };
       const GUIDE = "A guide check, not a certificate: beam sums from the grade's published strength + stiffness (simply supported; floor 1.5 kPa + a 1.8 kN point load, 1 kN bounce ≤ 2 mm; roof sheet 0.4 / tiles 0.9 kPa). Confirm the sizes against AS 1684 or your supplier's span tables; slabs and footings are your engineer's design (AS 2870).";
+      /** 2.693.0: 🪵 the walls' framing - every room's (the settings are the model's), this room's totals */
+      function structWalls(R) {
+        const S0 = SS.cleanStruct(AR().struct), setS = (fn) => ch((v) => { const A2 = AR(), S2 = SS.cleanStruct(A2.struct); fn(S2, v); A2.struct = SS.cleanStruct(S2); });
+        head("🪵 Wall framing (every room)");
+        structShow();
+        selIn("Frame", S0.frame, SS.FRAMES, setS((S2, v) => { S2.frame = v; }));
+        if (S0.frame === "none") return;
+        if (S0.frame === "timber") { selIn("Studs", S0.stud.D + "x" + S0.stud.B, sizeOpts.filter((o) => +o[0].split("x")[0] <= 140), setS((S2, v) => Object.assign(S2.stud, sizeOf(v)))); selIn("Stud grade", S0.stud.grade, gradeOpts, setS((S2, v) => { S2.stud.grade = v; }));
+          selIn("Top plates", String(S0.plates), [["1", "1"], ["2", "2 (doubled)"]], setS((S2, v) => { S2.plates = +v; })); }
+        else selIn("Steel studs", S0.steel, SS.STEEL.map((x) => [x.id, x.label]), setS((S2, v) => { S2.steel = v; }));
+        selIn("Stud spacing", String(S0.stud.at), [["0.3", "300 mm"], ["0.45", "450 mm"], ["0.6", "600 mm"]], setS((S2, v) => { S2.stud.at = +v; }));
+        numIn("Nogging rows every", S0.nog, setS((S2, v) => { S2.nog = v; }), 0.05, 0.6, 2, "m");
+        chkIn("Strap braces in clear panels (nominal)", S0.brace, setS((S2, v) => { S2.brace = v; }));
+        chkIn("Frame this room's walls", !R.noFrame, ch((v) => { R.noFrame = !v; }));
+        const t = SS.frameTotals(AR(), R, SH());
+        if (t.walls) { const d = el("div", "pphint", "• " + R.name + ": " + (t.studs + t.jambs + t.jacks) + " studs (" + t.jambs + " jamb, " + t.jacks + " jack), " + t.studLen.toFixed(1) + " m; plates " + t.plate.toFixed(1) + " m; noggings " + t.nog.toFixed(1) + " m" + (t.braces ? "; " + t.braces + " strap braces" : "")); d.dataset.ppframe = "1"; box.appendChild(d); }
+        box.appendChild(el("div", "pphint", "Laid out by common practice (a jamb stud each side of an opening, jack studs over the head and under a sill, a post at each corner). Stud sizes are NOT checked - wall height, spacing and wind decide them (AS 1684's stud tables); bracing is nominal (AS 1684 / your engineer). Seen with 🪵 Show framing."));
+      }
       function structRoom(R) {
         if (!SS) return;
+        structWalls(R);
         const fs = SS.clean(R.fs), set = (fn) => ch((v) => { const f2 = SS.clean(R.fs); fn(f2, v); R.fs = SS.clean(f2); });
         head("🏗 Floor system");
         selIn("Floor system", fs.type, SS.FLOORS, set((f, v) => { f.type = v; }));
@@ -1128,7 +1147,6 @@
         pl.members.forEach((m) => box.appendChild(el("div", "pphint", "• " + m.kind + ": " + m.size + " - " + m.count + (m.len ? ", " + m.len.toFixed(1) + " m" : ""))));
         pl.notes.forEach((t) => { const d = el("div", "pphint", "⚠ " + t); d.dataset.ppnote = "1"; box.appendChild(d); });
         box.appendChild(el("div", "pphint", GUIDE));
-        structShow();
       }
       function structOp(op) {
         if (!SS) return;

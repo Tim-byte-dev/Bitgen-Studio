@@ -6303,6 +6303,15 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.693.0: **Wall framing** in the Sketcher. A picked room's **🪵 Wall framing** sets the frame for every wall: **Timber**
+  (stud size and grade, one or two top plates) or **Light-gauge steel** (C-section studs, one top track), the stud spacing
+  (300 / 450 / 600), how often the nogging rows go and nominal strap braces; **Frame this room's walls** leaves one room out.
+  Each wall gets a bottom plate (cut at doors), top plates, studs at the spacing, a jamb stud each side of an opening, jack
+  studs over the head / lintel and under a window's sill trimmer, noggings in rows (broken at openings), a strap brace in each
+  clear panel 1.8 m or longer and a post at each corner; a wall two rooms share is framed once. The room's totals (studs, metres
+  of studs / plates / noggings, braces) show in the panel and in the member schedule. It is drawn with **🪵 Show framing**.
+  Laid out by common practice - stud sizes are not checked (AS 1684's stud tables: wall height, spacing, wind) and the bracing
+  is nominal (AS 1684 / your engineer).
 - 2.692.0: **Floor systems and lintels** in the Sketcher. Pick a room and set its **🏗 Floor system**: slab on ground (edge
   beams), waffle pod slab (pods + ribs), stiffened raft (internal beams), suspended slab on piers, or a **raised timber floor**
   on concrete / steel / brick / timber stumps, with bearers and joists you size (stock sizes, MGP10 / MGP12 / MGP15 pine or F17
