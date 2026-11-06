@@ -212,7 +212,7 @@ ResizeImageMaskNode）。
 - （2.341.0）画布使用的 LoRA：OmniNFT RL、Transition、IC-LoRA Union Control
   （风格迁移）、IC-LoRA Detailer 和 LTX Ripple。
 
-Lightricks 的仓库需要授权访问：请在 Hugging Face 上接受其许可协议，并把你的 token 填入模型目录。
+Lightricks 的仓库需要授权访问：请在 Hugging Face 上接受其许可协议，并把你的访问令牌（token）填入模型目录。
 下载大文件时，请在 **Download with** 中选择 Hugging Face CLI（**Install hf CLI** 可安装它）。
 画布需要以下节点包：ComfyUI-GGUF、KJNodes、VideoHelperSuite、rgthree、mxToolkit、
 Easy-Use 和 controlnet_aux（Setup → Node packs）；任务开始时，缺失的节点会连同其所属的节点包
@@ -3424,7 +3424,7 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
   - 过宽的结果会缩放到 8000 像素以内。
 - **File ▸ Automate ▸ Merge to HDR…** 接收包围曝光的照片（同一场景分别以偏暗、正常和偏亮的曝光拍摄），并将其融合为一张曝光良好的图片。
   - 每一处主要取自该处最清晰的那张曝光：对比度好、颜色好、既不过暗也不过亮。
-  - 开启 **Line the pictures up first** 时，会校正各次拍摄之间轻微的相机移动。
+  - 开启 **Line the pictures up first** 时，会校正各次拍摄之间轻微的摄像机移动。
   - 结果是一张普通的 8 位图片，而不是 32 位 HDR 文件。
 
 ## 更多文件类型、File Info、Print、Contact Sheet、Crop and Straighten Photos——第 F 轮（2.485.0）
@@ -3554,19 +3554,19 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
 - **更新插件**为 **bitgen-ue-bridge-1.2.0.zip**（灯光和雾由它放置）。
 - 对 Unreal 或 MetaHuman 图层使用 **Image editor ▸ UNREAL ▸ Lights & Fog**（或 Properties 中的 **💡 Lights** 选项卡，Window ▸ Unreal Lights）：
   - **＋ Lights from a preset**（从预设添加灯光）：Three-point（三点布光：主光、补光、轮廓光）、Golden hour（黄金时刻：低角度的暖色太阳 + 天空光）、Night street（夜晚街道：一盏暖色聚光灯 + 冷色补光）、Neon（霓虹：品红 + 青色矩形灯，配合体积雾）、Studio softbox（影棚柔光箱）。
-  - **＋ Point / Spot / Rect / Sun / Sky**：为相机放置一盏新灯——位于前方、偏上并偏向一侧，对准拍摄主体。
+  - **＋ Point / Spot / Rect / Sun / Sky**：为摄像机放置一盏新灯——位于前方、偏上并偏向一侧，对准拍摄主体。
   - 每盏灯可设置：**颜色**或以开尔文表示的**色温**、**强度**（坎德拉；太阳光为勒克斯）、**照射范围**、**柔和尺寸**、聚光灯的**锥角**、矩形灯的**尺寸**、**Volumetric**（体积光，即它照亮体积雾的强度——形成光束）、**阴影**、**位置**（X Y Z）和**朝向**（roll 翻滚、pitch 俯仰、yaw 偏航）；☐ 关闭该灯，✕ 删除该灯。
   - **Fog**（雾）：高度雾（密度、衰减、颜色、起始位置）和**体积雾**（反照率、消光、作用距离），以及雾预设（light haze 薄霾、morning mist 晨雾、thick volumetric 浓重体积雾、cinema smoke 电影烟雾）。
   - **Keep them in the Unreal level**（保留在 Unreal 关卡中）：不勾选时，bitGen 的灯光和雾（命名为 bitGen_*）只在生成这张图片时存在。
   - 每次更改都会重新渲染该图层——**一个撤销步骤**。
-- **UNREAL ▸ Lights** 是**灯光工具**：每盏灯都会在图片中其所在位置显示一个标记（聚光灯或矩形灯还会显示其照射方向）。在图片上**拖动**标记（与相机的距离保持不变），**Shift + 拖动** = 拉近 / 推远，**Alt + 拖动** = 转动其朝向；Del 删除选中的灯。
-- **Timeline ▸ UNREAL ▸ Lights & Fog…**（选中 Unreal、MetaHuman 或 Unreal 相机片段时）：同样的面板，另有 **⇦ The image editor's lights**，可引入图像编辑器中该图层的灯光和雾；**Render** 用这些设置重新生成该片段。
+- **UNREAL ▸ Lights** 是**灯光工具**：每盏灯都会在图片中其所在位置显示一个标记（聚光灯或矩形灯还会显示其照射方向）。在图片上**拖动**标记（与摄像机的距离保持不变），**Shift + 拖动** = 拉近 / 推远，**Alt + 拖动** = 转动其朝向；Del 删除选中的灯。
+- **Timeline ▸ UNREAL ▸ Lights & Fog…**（选中 Unreal、MetaHuman 或 Unreal 摄像机片段时）：同样的面板，另有 **⇦ The image editor's lights**，可引入图像编辑器中该图层的灯光和雾；**Render** 用这些设置重新生成该片段。
 
-## 图像编辑器中的 Unreal 相机：移动、镜头、光圈值、曝光、预设（2.475.0）
+## 图像编辑器中的 Unreal 摄像机：移动、镜头、光圈值、曝光、预设（2.475.0）
 <!-- en: the-unreal-camera-in-the-image-editor-move-it-lens-f-stop-exposure-presets-2-475 088c8621518d -->
 
-- **更新插件**：将 **bitgen-ue-bridge-1.1.0.zip**（或更新版本）解压到项目的 Plugins 文件夹中，覆盖旧版本（相机镜头、"To Unreal's viewport" 和 "Click to focus" 都需要它）。
-- **UNREAL ▸ Camera**（选中 Unreal 或 MetaHuman 图层时）是 **Unreal 相机工具**——在图片上拖动即可在场景中移动相机：
+- **更新插件**：将 **bitgen-ue-bridge-1.1.0.zip**（或更新版本）解压到项目的 Plugins 文件夹中，覆盖旧版本（摄像机镜头、"To Unreal's viewport" 和 "Click to focus" 都需要它）。
+- **UNREAL ▸ Camera**（选中 Unreal 或 MetaHuman 图层时）是 **Unreal 摄像机工具**——在图片上拖动即可在场景中移动摄像机：
   - **拖动** = **Orbit**（围绕注视点环绕：以对焦距离为准，未设置时为 5 m），**Ctrl + 拖动** = **Look**（原地转动：yaw / pitch），**Shift + 拖动** = **Pan**（平移），**Alt + 拖动** = **Roll**（倾斜地平线），**滚轮** = **Dolly**（前后推拉），**Ctrl + 滚轮** = **缩放**（焦距）。
   - 这些模式也是选项栏上的按钮（Orbit、Look、Pan、Dolly、Roll、**Focus**：点击需要清晰的位置，Unreal 会测量距离）。
   - 拖动时 Unreal 会绘制小尺寸预览；松开后以完整尺寸渲染——**一个撤销步骤**。三分线和对焦点会叠加显示在图层上。
@@ -3575,8 +3575,8 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
   - **Lens**（镜头）：焦距（滑块 + 数值）与**视野**联动，**底片规格**（全画幅、Super 35、APS-C、Micro 4/3、IMAX、手机）。
   - **Depth of field**（景深）：**f-stop**（光圈值，f/1.2 - f/22）和**对焦**距离（0 = 全部清晰），**🎯 Click to focus**。
   - **Exposure**（曝光），单位为 EV（-5 … +5）。
-  - 以数值设置**位置**（X Y Z，cm）和**转向**（roll、pitch、yaw，°）；**⇩ From Unreal's viewport**、**⇧ To Unreal's viewport**（Unreal 通过此相机观察），**⟳ Render**。
-- **时间线**：Unreal 相机的 UNREAL ▸ Keys… 现在新增 **Lens** 行（焦距、光圈值、对焦、曝光），供其渲染使用。
+  - 以数值设置**位置**（X Y Z，cm）和**转向**（roll、pitch、yaw，°）；**⇩ From Unreal's viewport**、**⇧ To Unreal's viewport**（Unreal 通过此摄像机观察），**⟳ Render**。
+- **时间线**：Unreal 摄像机的 UNREAL ▸ Keys… 现在新增 **Lens** 行（焦距、光圈值、对焦、曝光），供其渲染使用。
 
 ## 无工具状态、选择框与同时选中多个图层（2.474.0）
 <!-- en: no-tool-the-selection-box-and-several-layers-at-once-2-474-0 c602f4827f16 -->
@@ -3595,19 +3595,19 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
 - **docs/bitGen-Studio-Features.pdf** 列出了 bitGen Studio 迄今为止的全部功能——约 575 项，分为十个领域（工作区、生成视频、图像、音乐与声音、时间线、图像编辑器、CAD 与 3D、桥接、交付、快捷键）：每项功能的作用、所在位置以及自哪个版本起提供。文档开头是各领域一览（每项都是链接），并按领域和子领域设有书签。
 - 它在每次发布时由 **docs/FEATURES.md** 生成（`python3 scripts/make_features_pdf.py`），与 Guide（分步说明 + 快捷键）和宣传手册配套。
 
-## Unreal Engine 5.8 桥接：Unreal 图层、MetaHuman 图层、Unreal 相机（2.472.0）
+## Unreal Engine 5.8 桥接：Unreal 图层、MetaHuman 图层、Unreal 摄像机（2.472.0）
 <!-- en: the-unreal-engine-5-8-bridge-unreal-layers-metahuman-layers-the-unreal-camera-2- b76a75ae9a27 -->
 
 - **一次性安装**（2.513.0 起：也可以交给 bitGen 完成——菜单栏中的 🎮 Load UE project）：将 **bitgen-ue-bridge-1.1.0.zip**（或更新版本）解压到 Unreal 项目的 **Plugins** 文件夹（`<Project>\Plugins\bitGenBridge`），打开项目并启用它要求的插件（Python Editor Script Plugin、Editor Scripting Utilities、Sequencer Scripting、Movie Render Queue）。Output Log 中会显示 "[bitGen Bridge] listening"。在 bitGen 中：**Settings ▸ 3D ▸ Unreal Engine ▸ Test connection**。它只在本机（127.0.0.1）上工作；端口为 30020，除非你在两端同时修改。
 - 如需**透明背景**（MetaHuman 图层），请在 Unreal 中开启 Project Settings ▸ Rendering ▸ Post Processing ▸ "Enable alpha channel support in post processing"（zip 中的 README 有操作说明；如果 alpha 是反的，可用 Settings 中的 "alpha is inverted" 修正）。
 - **Image editor ▸ UNREAL** 选项卡（位于 CAD 工具栏上，或 Layer ▸ New Unreal Layer… / New MetaHuman Layer…）：
-  - **Unreal Layer**：通过所打开项目的某台相机（或保持当前状态的关卡视口）观察到的一个关卡，按你选择的尺寸生成——一个可以移动、缩放、加滤镜和蒙版的图片图层。
+  - **Unreal Layer**：通过所打开项目的某台摄像机（或保持当前状态的关卡视口）观察到的一个关卡，按你选择的尺寸生成——一个可以移动、缩放、加滤镜和蒙版的图片图层。
   - **MetaHuman Layer**：项目中的一个 MetaHuman，摆出某段动画在某一时刻的姿势，以 **Face / Bust / Full body** 构图并可转向，背景透明。
-  - **🎮 Unreal** 选项卡（Properties）可微调相机（Turn、Tilt、Dolly、Field of view）或人物（构图、转向、姿势时间），然后 **⟳ Renders again**——一个撤销步骤。**Use Viewport** 立即采用 Unreal 当前的视口相机。
+  - **🎮 Unreal** 选项卡（Properties）可微调摄像机（Turn、Tilt、Dolly、Field of view）或人物（构图、转向、姿势时间），然后 **⟳ Renders again**——一个撤销步骤。**Use Viewport** 立即采用 Unreal 当前的视口摄像机。
 - **Timeline ▸ UNREAL** 选项卡：
-  - **Unreal Layer**：项目中的一个 **Level Sequence**（或通过相机 / 视口观察的关卡，静止画面），由 Unreal 的 **Movie Render Queue** 以时间线的尺寸和 fps 渲染 -> 在播放头处生成视频图层 **UE1**。
+  - **Unreal Layer**：项目中的一个 **Level Sequence**（或通过摄像机 / 视口观察的关卡，静止画面），由 Unreal 的 **Movie Render Queue** 以时间线的尺寸和 fps 渲染 -> 在播放头处生成视频图层 **UE1**。
   - **MetaHuman Layer**：一个播放动画的 MetaHuman，带构图和转向，背景透明 -> **MH1**。
-  - **Unreal Camera**：你自己的相机——第一个关键帧取自 Unreal 的视口（或关卡中的某台相机）；在 Unreal 中移动视口，把播放头移到后面的位置，然后按 **＋ Key**；**Keys…** 用于编辑关键帧（时间、位置、转向、视野——相机在关键帧之间直线移动）；**Render Again** 通过它渲染关卡 -> **UE Cam1**。
+  - **Unreal Camera**：你自己的摄像机——第一个关键帧取自 Unreal 的视口（或关卡中的某台摄像机）；在 Unreal 中移动视口，把播放头移到后面的位置，然后按 **＋ Key**；**Keys…** 用于编辑关键帧（时间、位置、转向、视野——摄像机在关键帧之间直线移动）；**Render Again** 通过它渲染关卡 -> **UE Cam1**。
   - 每个片段都会记住自己的生成方式：修改 Unreal 项目后，用 **Render Again** 即可重新生成。
 
 ## 参数化 3D 实体：Extrude、Revolve、Fillet、Chamfer、Shell、Split Body（2.471.0）
@@ -3726,11 +3726,11 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
 ## 时间线上的姿势，以及 Daz 实时链接（2.461.0）
 <!-- en: poses-on-the-timeline-and-the-daz-live-link-2-461-0 d0315f061871 -->
 
-**在时间线上**：从 Daz Studio 发送来的场景（bitGen Bridge ▸ Scene）会在预览画布上方的 🟧 .blend 预览中打开，相机已经可以在其中移动（🎥 scene camera 场景相机 / 🧭 free view 自由视角）。其 Properties 现在新增 **Pose**：
+**在时间线上**：从 Daz Studio 发送来的场景（bitGen Bridge ▸ Scene）会在预览画布上方的 🟧 .blend 预览中打开，摄像机已经可以在其中移动（🎥 scene camera 场景摄像机 / 🧭 free view 自由视角）。其 Properties 现在新增 **Pose**：
 - 选择**人物**和一根**骨骼**（输入其名称的一部分即可查找），用 **X / Y / Z** 旋转它（单位为度，叠加在其自身姿势之上——或叠加在其动画之上：旋转会随动作一起运动）。预览会立即显示旋转效果；**Reset bone / Reset pose**；Ctrl+Z 可撤销。💾 **Save** 和 **🎬 Render to real** 会将姿势交给 Blender（人物带动画时，会在各帧上设置关键帧）。
 - **🧊 To the image editor**：将同一场景作为图像编辑器中的一个 **3D 图层**，带有此姿势和此视角（自由视角的位置）——在那里用 **✨ Generate from it** 生成一张新图像。
 
-**Daz 实时链接（实验性）**——bitGen 直接在 Daz Studio 中移动相机、调整姿势：
+**Daz 实时链接（实验性）**——bitGen 直接在 Daz Studio 中移动摄像机、调整姿势：
 - 在 Daz Studio 中运行 **Scripts ▸ bitGen ▸ bitGen Live Link**（来自 bitgen-daz-bridge zip，1.1.0）。链接期间会一直打开一个小窗口；它大约每秒向 bitGen 询问一次要做什么。
 - 在图像编辑器的 **🧊 3D** 选项卡中：**📡 Camera → Daz**（Daz 的视口通过一台 "bitGen Camera" 观察，其位置与 3D 图层的视角相同），**📡 Pose → Daz**（所选人物中同名的骨骼按你设置的旋转进行旋转），**↺** 撤回这些旋转，☐ **as I change** 在每次更改时同时发送两者。上方的一行文字会显示 Daz 是否已链接，以及 Daz 中当前选中的是哪个人物。
 - 在时间线上：Pose 部分中的 **📡 View + pose → Daz**（自由视角 + 旋转）。
@@ -3740,8 +3740,8 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
 ## 3D 图层：图像编辑器中的 Daz / Blender 场景（2.460.0）
 <!-- en: 3d-layers-a-daz-blender-scene-in-the-image-editor-2-460-0 7d1cd9dabca1 -->
 
-将 3D 场景带入图片，移动其相机，为其中的人物摆姿势，并利用该视角生成新图像。
-- **从 Daz Studio 发送**：Scripts ▸ bitGen ▸ bitGen Bridge ▸ **Scene**——场景（带骨骼绑定的人物、道具、灯光、相机）会作为 Blender 场景进入项目（必须安装 Blender——🟧 Blender settings）。任何 **.blend** 文件也同样可用。
+将 3D 场景带入图片，移动其摄像机，为其中的人物摆姿势，并利用该视角生成新图像。
+- **从 Daz Studio 发送**：Scripts ▸ bitGen ▸ bitGen Bridge ▸ **Scene**——场景（带骨骼绑定的人物、道具、灯光、摄像机）会作为 Blender 场景进入项目（必须安装 Blender——🟧 Blender settings）。任何 **.blend** 文件也同样可用。
 - **Layer ▸ New 3D Layer (Daz / Blender)…**：选择场景（从 Daz 发送的场景标有 "Daz ·"）或输入 .blend 文件的路径。随即出现一个 **3D 图层**：它是一个普通的图片图层（蒙版、滤镜、移动和混合模式都有效），每当你改变其视角时，Blender 都会重新绘制它。原始文件永远不会被修改。如果没有打开的图片，会按场景尺寸新建一张。
 - **🧊 3D** 选项卡（在 ✨ AI / ◈ Control 旁）：
   - **Camera**：🎥 **Scene camera**（Daz / Blender 中设置的视角）、**Front / Back / Left / Right / Top**，或输入 **Turn**、**Tilt**、**Distance** 和 **Lens**（视野，单位为度）。**🖐 Drag the view**：在画布上拖动 = 围绕场景环绕，**Shift**+拖动 = 平移，**Ctrl**+拖动或**滚轮** = 缩放；拖动时以线框盒显示视角，松开后由 Blender 绘制（约需一秒）。
@@ -3749,7 +3749,7 @@ Install 按钮上会显示软件包名称和下载大小。如果软件包超出
   - **Frame**：动画场景的第几帧。
   - **Render**：**Quick**（快速、平面着色——即视角预览所用的方式）、**EEVEE** 或 **Cycles**，☐ **transparent**（透明）背景，**▶ Render** 以完整尺寸绘制该图层（Layer ▸ Render 3D Layer 作用相同）。
   - **✨ Generate from it**：在提示词面板中输入你想要的内容（例如 "a photo of a woman waving in a sunny park"），然后按下此按钮——编辑器会切换到 **Edit**，提示词面板会根据你所看到的这张图片生成新图像。
-- 每次更改都是**一个撤销步骤**（图片及其相机 / 姿势一起）。**.bgi** 文件会保留 3D 图层的场景、相机和姿势。
+- 每次更改都是**一个撤销步骤**（图片及其摄像机 / 姿势一起）。**.bgi** 文件会保留 3D 图层的场景、摄像机和姿势。
 
 ## 按功能命名的工具（2.459.0）
 <!-- en: tools-named-by-what-they-do-2-459-0 2b7f05e598ac -->
@@ -4129,7 +4129,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
     - *Planes*：用 ➤ Select 点击一个面将其设为草图平面，然后用 📌（在工具栏中它的标签上，或在它的行上）将其保留。标题上的 ＋ 可创建一个经过原点的地面 / 正面 / 侧面平面。点击平面所在的行可再次在其中绘制；⊥ 可正对它查看。
     - *Construction lines*：使用 📏 Tape measure，在第二次点击时按住 **Ctrl**——生成一条穿过两点的虚线，绘图工具会吸附到它上面（*On Guide*，以及两条线的交点）。
     - 👁 隐藏平面或辅助线，🗑 将其删除。
-  - **重命名任何对象**——双击某行的名称（或在选中的行上按 F2），输入后按 Enter（按 Esc 则保持原名）：房间、房间组、墙、地板、天花板、踢脚线、檐口线、门、窗、屋顶、楼梯、灯、家具、相机、形状、组、平面和辅助线。重命名为一个撤销步骤；属性面板的标题会使用新名称。
+  - **重命名任何对象**——双击某行的名称（或在选中的行上按 F2），输入后按 Enter（按 Esc 则保持原名）：房间、房间组、墙、地板、天花板、踢脚线、檐口线、门、窗、屋顶、楼梯、灯、家具、摄像机、形状、组、平面和辅助线。重命名为一个撤销步骤；属性面板的标题会使用新名称。
 - 2.666.0：Sketcher 中的 **△ Roof types**（屋顶类型）：Roof 工具的面板（以及选中屋顶的面板）以图片显示每种类型——**Gable**（双坡）、**Hip**（四坡）、**Skillion**（单坡 / 披屋）、**Dutch gable**（荷兰式山墙：四坡顶，每端顶部有一个小山墙——gablet）、**Clipped gable**（截角山墙 / jerkinhead：顶部向后做成坡面的山墙）、**Gambrel**（复折式 / 谷仓式：下陡上缓）、**Mansard**（孟莎式：四面陡坡，顶部为平缓的四坡或平顶）、**Saltbox**（盐盒式：屋脊偏离中心）、**Pyramid**（攒尖）、**Butterfly**（蝶形：两坡向下汇成天沟）、**Flat**（平屋顶）和 **Follows the walls' slope**（随墙坡度）。点击图片即可更改屋顶类型。每种类型有各自的设置：Pitch（gambrel / mansard：Upper 和 Lower pitch）、荷兰式山墙的 *hip part of the rise*（四坡部分占屋顶升高的比例）、截角山墙的 *clipped part*（截角部分）、gambrel / mansard 的 *break*（折点）、盐盒式的 *ridge from the front*（屋脊距正面的位置），以及 *Flip*（skillion / saltbox：将高侧换到另一侧）。Ridge（顺向 / 横向）、Overhang、Thickness 和 Colour 适用于所有类型。每种类型都会显示在建筑图纸的立面图和屋顶平面图上。
 - 2.665.0：Sketcher 中的 **📄 Building plans**（建筑图纸）：其工具栏上的 **📄 Plans**（位于 ✨ Photo 之后）会打开 *Building plans* 对话框——拖动其标题栏即可移动。可选择：
   - **Sheet**（图纸）A4 / A3 / A2 / A1，横向或纵向，以及**比例**——*Auto (fits)*（能容纳各视图的最大标准比例）或 1:20 - 1:500。
@@ -4365,7 +4365,7 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
   Layers 面板和 Layer 菜单中也有 Convert Layer to 3D…）。
   - 选择引擎：**Hunyuan3D 2.1**（只生成形状，速度快）或 **TRELLIS.2**（形状 + 纹理，较慢）。两者都在
     ComfyUI 中运行，与 🧊 按钮相同。
-  - 选择模型的去向：**Image editor**（作为 3D 图层——Blender 会把模型放进一个有灯光、相机已对准它的场景；可在 🧊 3D
+  - 选择模型的去向：**Image editor**（作为 3D 图层——Blender 会把模型放进一个有灯光、摄像机已对准它的场景；可在 🧊 3D
     标签页中环绕查看、渲染并以它为基础生成——需要 Blender）、**SolidCraft docker**（作为新设计打开）
     或 **Just save it**（保存到项目的 models3d/ 文件夹）。
   - 任务在队列中运行；完成后，模型会在你指定的位置打开。来自 References 或编辑器的图片会先保存到项目的 images 中。
@@ -4458,12 +4458,12 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
   - 面板标签栏开头的 **⠿** 可用同样的方式拖动**整个**面板（拖到另一个面板上 = 其所有标签页都并入该面板）。
   - 单击标签页仍然只是打开它。每个标签页的位置都会被记住。**Window ▸ Show All Dockers** 显示所有隐藏的
     面板，**Window ▸ Reset Docker Tabs** 把每个标签页放回初始位置。
-- 2.590.0：**📺 Unreal View**——实时显示所选 Unreal / MetaHuman 图层的相机在 Unreal 中看到的画面（每秒几帧）：
+- 2.590.0：**📺 Unreal View**——实时显示所选 Unreal / MetaHuman 图层的摄像机在 Unreal 中看到的画面（每秒几帧）：
   - **图像编辑器**：选中一个 Unreal / MetaHuman 图层时会打开一个浮动面板（☑ show it when an Unreal
-    layer is selected），并在 🎥 相机工具、🎮 Unreal 标签页、镜头和灯光改变相机时跟随该图层的相机。
+    layer is selected），并在 🎥 摄像机工具、🎮 Unreal 标签页、镜头和灯光改变摄像机时跟随该图层的摄像机。
     选中其他图层时它会停止。它和其他标签页一样——把它拖到某个面板上即可固定在那里。
   - **时间线**：选中一个 Unreal 片段时，预览行上方会打开一个窗口（UNREAL ▸ View ▸ 📺 Unreal View
-    显示 / 隐藏它）：显示**播放头**处的片段——处于关键帧之间的 Unreal 相机、处于其姿势中的 MetaHuman、处于该帧的 Level
+    显示 / 隐藏它）：显示**播放头**处的片段——处于关键帧之间的 Unreal 摄像机、处于其姿势中的 MetaHuman、处于该帧的 Level
     Sequence（Sequencer 会在该处打开它）。
   - 它的工具栏：● live · 每秒帧数、尺寸（S / M / L——越小越快）、⏸，以及 **⚡ Keep Unreal fast**。
   - **必须让 Unreal 保持打开吗？** Unreal Editor 必须在**运行**中并打开你的项目（bitGen Bridge
@@ -4560,8 +4560,8 @@ F6 形状工具（Rectangle、Ellipse、Polygon、Star……）的栏开头有�
   只显示 "rendering… Ns"），sd-cli 生成的图片和视频也一样；并且所有显示正在运行的生成的地方都会显示步数：
   状态栏（step n/total）、队列、Console 中 Cancel 旁边、Song 标签页和 Music 面板
   （之前显示 "[object Object]"）、图像编辑器的结果图块和 ⏳ Pending 卡片、From the picture、3D /
-  Unreal 真实图片、时间线的 ✨ 填充、🤖 AI take、相机深度和卡拉 OK 叠加层、StoryBoard（网格卡片、
-  场景选择器、⏫ 放大、✎ First frame、故事板图片、环境 / 角色创建器、角色表镜次、
+  Unreal 真实图片、时间线的 ✨ 填充、🤖 AI take、摄像机深度和卡拉 OK 叠加层、StoryBoard（网格卡片、
+  场景选择器、⏫ 放大、✎ First frame、故事板图片、环境 / 角色创建器、角色设定图镜次、
   RefMod 提取）、替换对话框（镜次和首帧）、VR world、风格诊断（style doctor）和 Sketcher。
 
 StoryBoard（时间线下方包含各场景的面板）在所有地方都称为 StoryBoard——它的标题、
@@ -4758,7 +4758,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
-- **标签胜过描述**——在提示词中写 `@anna`，会自动带上 Anna 的角色表和
+- **标签胜过描述**——在提示词中写 `@anna`，会自动带上 Anna 的角色设定图和
   声音。
 - 当起始帧中没有出现人脸时，**Cont** 在切换镜头后保持角色一致的效果
   比 **First** 好得多。
