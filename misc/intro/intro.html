@@ -8,11 +8,17 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#0b0907
 #word b{font-weight:500;color:#f59e2c}
 #tag{position:absolute;left:0;right:0;top:860px;text-align:center;font-family:"Inter",sans-serif;font-weight:300;font-size:30px;letter-spacing:.42em;color:#bfb5a6;opacity:0;text-transform:uppercase}
 #black{position:absolute;inset:0;background:#000;opacity:1}
+.cred{position:absolute;left:0;right:0;text-align:center;font-family:"Inter",sans-serif;font-weight:300;font-size:30px;letter-spacing:.06em;color:#d9d1c4;opacity:0}
+.cred b{font-weight:500;color:#f2ede4}
+body.splash #logo{top:37.5%}body.splash #word{top:688px}body.splash #tag{top:802px}body.splash #cr1{top:902px!important}body.splash #cr2{top:952px!important}
+.cred i{font-style:normal;color:#9d9384;font-size:24px;letter-spacing:.14em;text-transform:uppercase;margin-right:.6em}
 </style></head><body>
 <div id="bg"></div><canvas id="dust" width="1920" height="1080"></canvas>
 <div id="logo"></div>
 <div id="word"><b>bitGen</b> Studio</div>
 <div id="tag">together · grow · transform</div>
+<div class="cred" id="cr1" style="top:952px"><i>Produced and developed by</i><b>Timothy Nolan Paul</b></div>
+<div class="cred" id="cr2" style="top:1000px"><i>Programmed by</i><b>Claude Opus 5.5</b></div>
 <div id="black"></div>
 <script>
 const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x), seg = (t, a, b) => ease((t - a) / (b - a));
@@ -36,9 +42,15 @@ async function boot(svgText) {
   let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
   window.D = Array.from({ length: 90 }, () => ({ x: rnd() * 1920, y: rnd() * 1080, r: 0.6 + rnd() * 2.2, v: 6 + rnd() * 18, ph: rnd() * 6.28, a: 0.15 + rnd() * 0.5 }));
 }
+// 2.701.0 (Tim: "make a splash screen with the video, but add produced and developed by Timothy Nolan Paul, programmed by claude
+// opus 5.5 15seconds"): #splash = 15 s - the credits after the name, the logo breathing, the fade at the end
+const SPLASH = /splash/.test(location.hash), DUR = SPLASH ? 15 : 10;
+if (SPLASH) document.body.classList.add("splash");
 function draw(t) {
   // fade in from black, out at the end
-  document.getElementById("black").style.opacity = String(Math.max(1 - seg(t, 0, 0.9), seg(t, 9.3, 10)));
+  document.getElementById("black").style.opacity = String(Math.max(1 - seg(t, 0, 0.9), seg(t, DUR - 0.7, DUR)));
+  if (SPLASH) { const c1 = seg(t, 9.0, 10.2), c2 = seg(t, 9.8, 11.0);
+    [["cr1", c1], ["cr2", c2]].forEach(([id, v]) => { const e = document.getElementById(id); e.style.opacity = String(v); e.style.transform = `translateY(${(1 - v) * 14}px)`; }); }
   const c = document.getElementById("dust").getContext("2d"); c.clearRect(0, 0, 1920, 1080);
   D.forEach((d) => { const y = (d.y - d.v * t + 1080) % 1080, x = d.x + Math.sin(t * 0.6 + d.ph) * 14, a = d.a * (0.5 + 0.5 * Math.sin(t * 1.3 + d.ph)) * (0.35 + 0.65 * seg(t, 4.6, 6.2));
     c.fillStyle = `rgba(245,170,80,${a})`; c.beginPath(); c.arc(x, y, d.r, 0, 6.283); c.fill(); });
@@ -51,7 +63,7 @@ function draw(t) {
   // 3 the butterfly (5.4 - 8 s): two slow wing beats, the halves folding about the middle; a little lift
   const w = seg(t, 5.4, 5.8) * (1 - seg(t, 7.6, 8.2)), beat = Math.pow(Math.sin(Math.max(0, t - 5.4) * Math.PI / 1.1), 2) * w, sx = 1 - 0.22 * beat;
   gL.setAttribute("transform", `translate(540 0) scale(${sx} 1) translate(-540 0)`); gR.setAttribute("transform", `translate(540 0) scale(${sx} 1) translate(-540 0)`);
-  const lift = -18 * seg(t, 5.4, 8) ; document.getElementById("logo").style.transform = `translateY(${lift}px) scale(${1 + 0.04 * seg(t, 0, 10)})`;
+  const lift = -18 * seg(t, 5.4, 8) - (SPLASH ? 6 * Math.sin(Math.max(0, t - 8) * 1.1) * seg(t, 8, 9) : 0); document.getElementById("logo").style.transform = `translateY(${lift}px) scale(${1 + 0.04 * seg(t, 0, DUR)})`;
   // 4 the name + its meaning (6.6 - 8.4 s)
   const wd = seg(t, 6.6, 7.8), tg = seg(t, 7.4, 8.6);
   const W = document.getElementById("word"); W.style.opacity = String(wd); W.style.transform = `translateY(${(1 - wd) * 24}px)`; W.style.letterSpacing = `${0.3 - 0.12 * wd}em`;

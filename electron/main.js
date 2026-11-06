@@ -55,6 +55,26 @@ function startServer() {
   );
 }
 
+/* 2.701.0 (Tim: "can u make a splash screen with the video, but add produced and developed by Timothy Nolan Paul, programmed by
+   claude opus 5.5 15seconds"): the start-up splash - static/splash.html plays static/splash.webm (15 s) in a frameless window while
+   the server starts and the studio loads behind it; the studio is shown when BOTH the splash is done (ended / clicked / a key /
+   16.5 s at most) and its window is ready. BITGEN_NO_SPLASH=1 (or no splash.html) = no splash. */
+let splash = null, splashDone = true, winReady = false;
+function maybeShowMain() { if (win && !win.isDestroyed() && winReady && splashDone && !win.isVisible()) win.show(); }
+function createSplash() {
+  const f = path.join(ROOT, "static", "splash.html");
+  if (process.env.BITGEN_NO_SPLASH === "1" || !require("fs").existsSync(f) || !require("fs").existsSync(path.join(ROOT, "static", "splash.webm"))) return;
+  splashDone = false;
+  let w = 1280; try { const d = screen.getPrimaryDisplay().workAreaSize; w = Math.max(640, Math.min(1280, Math.round(d.width * 0.62))); } catch (e) { /* fine */ }
+  splash = new BrowserWindow({ width: w, height: Math.round(w * 9 / 16), frame: false, resizable: false, center: true, alwaysOnTop: true,
+    backgroundColor: "#000000", icon: path.join(ROOT, "static", "icon.png"), autoHideMenuBar: true, show: true,
+    webPreferences: { contextIsolation: true, nodeIntegration: false } });
+  const done = () => { if (splashDone) return; splashDone = true; maybeShowMain(); if (splash && !splash.isDestroyed()) splash.close(); };
+  splash.on("closed", () => { splash = null; done(); });
+  setTimeout(done, 16500);                                  // a video that stalls never holds the studio back
+  splash.loadFile(f);
+}
+
 function createWindow() {
   win = new BrowserWindow({
     width: 1600, height: 950, minWidth: 1100, minHeight: 700,
@@ -69,7 +89,7 @@ function createWindow() {
       nodeIntegration: false,
     },
   });
-  win.once("ready-to-show", () => win.show());
+  win.once("ready-to-show", () => { winReady = true; maybeShowMain(); });   // 2.701.0: after the splash
   // keep external links in the real browser, not in a chromeless app window
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
@@ -199,6 +219,7 @@ app.whenReady().then(async () => {
   } catch (e) { console.error("[electron] setup gate: " + e.message); showSetup = process.env.H3_SETUP === "1"; }
   if (showSetup) { createSetupWindow(); }
   else {
+    createSplash();                                         // 2.701.0: the splash while the studio starts
     try { await startServer(); }
     catch (e) { console.error("[electron] " + e.message); }
     createWindow();

@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.701.0: **A start-up splash** - the desktop app opens with a 15 second film of the logo (the lines drawn, the wings beat,
+  "bitGen Studio", "together · grow · transform") and the credits **Produced and developed by Timothy Nolan Paul** and
+  **Programmed by Claude Opus 5.5**, while the studio starts behind it. Click it or press any key to skip; the studio appears when
+  the film ends (or after 16.5 seconds whatever happens). BITGEN_NO_SPLASH=1 turns it off. The film is also in
+  docs/images/bitgen-studio-splash.mp4. **The setup** shows the logo too (its title bar and every page's header).
 - 2.700.1: the logo is no longer cut off - the title bar shows the whole butterfly (static/logo-mark.svg, the logo cropped to
   its outline) and the app icon gives the wing tips room inside its rim.
 - 2.700.0: **The bitGen Studio logo** - Tim's own design (made for Tiger Art): two tigers for cooperation against all odds, a

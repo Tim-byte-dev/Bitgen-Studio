@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- bitGen Studio — 2.701.0 (Tim: "can u make a splash screen with the video, but add produced and developed by Timothy Nolan Paul,
+     programmed by claude opus 5.5 15seconds"): the desktop app's start-up splash - static/splash.webm (made by
+     misc/intro/render.js --splash) while the studio starts behind it. A click or any key skips it; electron/main.js closes it after
+     16.5 s whatever happens and shows the studio. -->
+<html><head><meta charset="utf-8"><title>bitGen Studio</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: pointer; -webkit-user-select: none; user-select: none; }
+  body { -webkit-app-region: drag; }
+  video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  #skip { position: absolute; right: 14px; bottom: 10px; font: 12px "Segoe UI", system-ui, sans-serif; color: rgba(242,237,228,.55); opacity: 0; transition: opacity .8s; -webkit-app-region: no-drag; }
+  body.hint #skip { opacity: 1; }
+</style></head>
+<body>
+<video id="v" src="splash.webm" autoplay muted playsinline></video>
+<div id="skip">click or press any key to skip</div>
+<script>
+  const end = () => { try { window.close(); } catch (e) { /* the app closes it */ } };
+  const v = document.getElementById("v");
+  v.addEventListener("ended", end); v.addEventListener("error", end);
+  document.addEventListener("mousedown", end); document.addEventListener("keydown", end);
+  setTimeout(() => document.body.classList.add("hint"), 1500);
+</script>
+</body></html>

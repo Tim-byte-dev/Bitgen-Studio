@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.701.0 (Tim: "can u make a splash screen with the video, but add produced and developed by Timothy Nolan Paul, programmed by claude opus 5.5 15seconds, and add the logo to the setup")
+node scripts/test-splash701.js > /tmp/splash701.log 2>&1 \
+  && ok "2.701.0 units: the splash window (before the server, the studio after it + ready, 16.5 s, BITGEN_NO_SPLASH), splash.html + webm, the credits exactly, the setup's logo" \
+  || { bad "2.701.0 splash units"; grep -a "^FAIL" -A2 /tmp/splash701.log | head -14; }
+node scripts/test-ui701-ui.js > /tmp/ui701ui.log 2>&1 \
+  && ok "2.701.0 browser test: the splash film plays (15 s, 1920 x 1080, muted), the skip hint, a key / click closes it; the setup shows the logo - or SKIP without playwright" \
+  || { bad "2.701.0 splash browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui701ui.log | head -14; }
 # ---- 2.698.0 (Tim: "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using basic settings docker?")
 python3 scripts/test-editsize698.py > /tmp/editsize698.log 2>&1 \
   && ok "2.698.0 units: exact_size - P-H3's / Qwen's megapixel scalers keep Basic Settings' Size, unchanged without it, the page -> route wiring" \

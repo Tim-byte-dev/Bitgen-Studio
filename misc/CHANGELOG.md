@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.701.0** — 🎬 A 15 s Start-Up Splash (the Logo + the Credits) in the Desktop App, and the Logo in the Setup
 - **2.700.1** — 🦋 The Logo Shown Whole (Title Bar Mark + App Icon No Longer Cut at the Wing Tips)
 - **2.700.0** — 🦋 The bitGen Studio Logo (Two Tigers + a Tree = a Butterfly) as the App Icon, Title Bar Mark, Favicon + a 10 s Intro Film
 - **2.699.0** — 📐 Override Style Off = Edits at the First Reference Picture's Own Size

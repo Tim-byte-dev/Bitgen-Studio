@@ -49,7 +49,7 @@
     display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line);
   }
   #tbar { height: 38px; display: flex; align-items: center; flex: none; -webkit-app-region: drag; padding-left: 14px; gap: 9px; }
-  #tbar .logo { width: 16px; height: 16px; border-radius: 4px; background: linear-gradient(135deg, var(--tiger), var(--tiger-deep)); }
+  #tbar .logo { width: 18px; height: 18px; border-radius: 4px; background: #120e0b url("../static/icon.png") center / cover no-repeat; }   /* 2.701.0: the logo (a picture - a CSS mask does not load over file://) */
   #tbar .title { font-size: 12px; color: var(--dim); }
   #tbar .sp { flex: 1; }
   #tbar button { -webkit-app-region: no-drag; width: 46px; height: 38px; border: 0; background: transparent;
@@ -67,8 +67,9 @@
   h1 { font-size: 22px; font-weight: 600; }
   .sub { color: var(--dim); margin-top: 4px; }
   .head { display: flex; gap: 14px; align-items: center; margin: 4px 0 14px; }
-  .mark { width: 48px; height: 48px; border-radius: 12px; flex: none;
-    background: linear-gradient(135deg, var(--tiger), var(--tiger-deep)); box-shadow: 0 6px 24px rgba(255,139,61,.22); }
+  /* 2.701.0 (Tim: "add the logo to the setup"): the bitGen Studio logo (static/icon.png - two tigers + a tree = a butterfly) */
+  .mark { width: 52px; height: 52px; border-radius: 12px; flex: none;
+    background: #120e0b url("../static/icon.png") center / cover no-repeat; box-shadow: 0 6px 24px rgba(255,139,61,.22); }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
   .card h2 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
   .card ul { margin: 4px 0 0 18px; color: var(--dim); font-size: 12.5px; line-height: 1.55; }
