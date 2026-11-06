@@ -189,6 +189,11 @@
       }
       return { p, s };
     }
+    /** 2.690.0: a wall's point pulled onto another wall's end / corner when it is close (15 cm, or 14 px when zoomed out) */
+    function endMagnet(p, z) {
+      const tol = Math.min(0.6, Math.max(0.15, pxTol([p[0], p[1], z]))), e = P().endNear(AR(), p, tol, z);   // pxTol = 14 px in metres
+      return e ? { p: [e.p[0], e.p[1], z], name: e.R.name, kind: e.R.closed ? "corner" : "end" } : null;
+    }
     function pxTol(p) { const a = V.screen(p), b = V.screen([p[0] + 1, p[1], p[2]]), c = V.screen([p[0], p[1] + 1, p[2]]); const ppm = Math.max(Math.hypot(b[0] - a[0], b[1] - a[1]), Math.hypot(c[0] - a[0], c[1] - a[1]), 1); return Math.min(1.2, Math.max(0.03, 14 / ppm)); }
     function show(s, o) {
       const p = o || {};
@@ -228,7 +233,8 @@
       if (tool === "room") return rectTool(ev, O.room.z, (a, b) => finishRoom(a, b));
       if (tool === "floor") return rectTool(ev, O.floor.z, (a, b) => finishSlab(a, b));
       if (tool === "wall") {
-        const from = st.pts && st.pts[st.pts.length - 1], { p } = snapPlan(ev, O.wall.z, from, true);   // 2.663.0: on a wall's line too
+        const from = st.pts && st.pts[st.pts.length - 1]; let { p } = snapPlan(ev, O.wall.z, from, true);   // 2.663.0: on a wall's line too
+        const mg = !ev.shiftKey && endMagnet(p, O.wall.z); if (mg) p = mg.p;              // 2.690.0: onto another wall's end (Shift: free)
         if (!st.pts) { st.pts = [p]; return; }
         if (st.pts.length >= 3 && Math.hypot(p[0] - st.pts[0][0], p[1] - st.pts[0][1]) < 1e-6) { finishWall(true); return; }
         if (Math.hypot(p[0] - from[0], p[1] - from[1]) < 1e-6) return;
@@ -307,12 +313,14 @@
         if (!fix) ctx.vcbValue((+w.toFixed(3)) + "," + (+d.toFixed(3))); return;
       }
       if (tool === "wall") {
-        const from = st.pts && st.pts[st.pts.length - 1], { p, s } = snapPlan(ev, O.wall.z, from, true);
-        if (!from) { show(s, { tip: "the wall's start" }); return; }
+        const from = st.pts && st.pts[st.pts.length - 1]; let { p, s } = snapPlan(ev, O.wall.z, from, true);
+        const mg = !ev.shiftKey && endMagnet(p, O.wall.z);                                 // 2.690.0: shown pulled onto that end
+        if (mg) { p = mg.p; s = Object.assign({}, s, { p, kind: "Endpoint", label: "⊕ " + mg.name + "'s " + mg.kind + " - joined" }); }
+        if (!from) { show(s, { tip: mg ? "the wall's start · ⊕ joined to " + mg.name + "'s " + mg.kind : "the wall's start" }); return; }
         st.cur = p; const pts = st.pts.concat([p]), lines = [];
         for (let i = 0; i + 1 < pts.length; i++) { const a = pts[i], b = pts[i + 1]; lines.push([a, b], [[a[0], a[1], a[2] + O.wall.h], [b[0], b[1], b[2] + O.wall.h]]); }
         const closes = st.pts.length >= 3 && Math.hypot(p[0] - st.pts[0][0], p[1] - st.pts[0][1]) < 1e-6;
-        show(s, { from, lines, tip: fmt(Math.hypot(p[0] - from[0], p[1] - from[1])) + (closes ? " · closes it: a room" : "") }); ctx.vcbValue(fmt(Math.hypot(p[0] - from[0], p[1] - from[1]))); return;
+        show(s, { from, lines, tip: fmt(Math.hypot(p[0] - from[0], p[1] - from[1])) + (closes ? " · closes it: a room" : mg ? " · ⊕ joined to " + mg.name + "'s " + mg.kind : "") }); ctx.vcbValue(fmt(Math.hypot(p[0] - from[0], p[1] - from[1]))); return;
       }
       if (tool === "door" || tool === "window") {
         const w = wallFor(ev); st.w = w;
@@ -395,7 +403,8 @@
       const of = P().offsetOnFloor(AR(), pts, closed, O.wall.t, O.wall.off);                     // 2.624.0: off a floor's edge
       const bf = before(), R = P().addRoom(AR(), of.pts, { closed, z: O.wall.z, h: O.wall.h, t: O.wall.t });
       if (!R) { ctx.status("that wall is too small"); return; }
-      done(closed ? "room" : "wall", bf, { ak: "room", id: R.id }); ctx.status((closed ? "⌂ the walls closed round " + R.name : "▮ " + R.name + " - doors and windows go in it too") + (of.moved ? " · " + of.moved + " run(s) " + fmt(O.wall.off) + " in from the floor's edge" : ""));
+      const nj = P().addJoins(AR(), R);                                      // 2.690.0: its ends on other walls' ends = joined
+      done(closed ? "room" : "wall", bf, { ak: "room", id: R.id }); if (nj) { ctx.status("▮ " + R.name + " ⊕ joined to " + nj + " wall end" + (nj > 1 ? "s" : "") + " - drag either and the other grows / shrinks with it"); return; } ctx.status((closed ? "⌂ the walls closed round " + R.name : "▮ " + R.name + " - doors and windows go in it too") + (of.moved ? " · " + of.moved + " run(s) " + fmt(O.wall.off) + " in from the floor's edge" : ""));
     }
     function stairOf(a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); if (L < 0.3) return null; return { id: 0, x: a[0], y: a[1], ang: Math.atan2(dy, dx) * 180 / Math.PI, w: O.stairs.w, len: L, rise: O.stairs.rise, z: 0, col: P().DEF.stair }; }
     function finishStairs(a, b) {
@@ -610,9 +619,19 @@
       const A = AR(), w0 = D.j.walls[0], R0 = D.R, R = P().addRoom(A, [[D.v[0], D.v[1]], [D.end[0], D.end[1]]], { closed: false, z: R0.z, h: R0.h, t: R0.t, wall: R0.wall });
       if (!R) return;
       if (R0.wt && R0.wt[w0] && root.PPWallType) root.PPWallType.assign(A, [{ R, i: 0 }], R0.wt[w0]);   // its wall type too
+      P().addJoins(A, R);                                                     // 2.690.0: joined where it starts (and ends)
       done("wall", D.before, { ak: "room", id: R.id }); ctx.status("▮ " + R.name + " drawn out of " + R0.name + "'s " + (D.j.kind === "end" ? "wall end" : "corner") + " - " + fmt(L) + " · its ends drag out more walls the same way");
     }
+    // 2.690.0: while anything is dragged, a wall joined to a moved one follows at the join (it grows / shrinks)
     function selectMove(ev) {
+      const r = selectMove0(ev), D = st.drag;
+      if (D && D.moved && D.base && AR().joins && AR().joins.length) {
+        const B = P().clean(JSON.parse(D.base));
+        if (P().applyJoins(AR(), B)) { AV().rebuild(); AV().setSel(asel); }
+      }
+      return r;
+    }
+    function selectMove0(ev) {
       const D = st.drag;
       if (!D) {
         const ax = axisAt(ev); if (AV() && AV().setAxisHot) AV().setAxisHot(ax ? ax.key : null);   // 2.641.0

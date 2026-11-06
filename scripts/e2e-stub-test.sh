@@ -13129,6 +13129,10 @@ node scripts/test-joinery689.js > /tmp/joinery689.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2>&1 \
   && ok "2.689.0 browser test: 🗄 templates, the dialog (edit, front view, 💾 save as template), placed against a wall, 3D, the plan symbol, Fit the wall, Design / Apply / undo - or SKIP without playwright" \
   || { bad "2.689.0 cupboards browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui689ui.log | head -14; }
+# ---- 2.690.0 (Tim: "snap walls to the end of other walls when they are close, when the new wall snaps to another wall join the walls together so when the new wall moves the old walls resize")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
+  && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
+  || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
 # ---- 2.680.0 (Tim: "add a toggle button next to each model type dropdown in prompt docker ... save the settings in a file model_settings.tmp")
 node scripts/test-modelswap680.js > /tmp/modelswap680.log 2>&1 \
   && ok "2.680.0 ⇄ previous settings: the two model types, a setting's values (no files / LoRA rows), model_settings.tmp written / read / cleaned, the route, the .tmp out of git" \

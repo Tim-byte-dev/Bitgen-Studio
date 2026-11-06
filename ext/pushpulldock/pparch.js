@@ -126,7 +126,7 @@
     Object.keys(o).slice(0, 5000).forEach((k) => { const v = String(o[k] == null ? "" : o[k]).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, 60); if (v && /^[a-z]+:\d+(:[a-z]+(:\d+)?)?$/.test(k)) out[k] = v; });
     return out;
   }
-  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {} }; }   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
+  function empty() { return { n: 1, ext: DEF.ext, rooms: [], ops: [], roofs: [], slabs: [], stairs: [], lights: [], items: [], cams: [], hide: [], groups: [], profiles: [], terrain: null, pools: [], drives: [], roads: [], roadSet: { side: "left", auto: true }, wtypes: [], cons: { planes: [], lines: [] }, labels: {}, joins: [] }; }   // 2.690.0: + joins (walls joined end to end)   // 2.667.0: + construction planes / lines, the names given in the objects panel   // 2.653.0: + the ground (ppterrain.js)
   function of(M) { if (!M.arch) M.arch = empty(); return M.arch; }
   const has = (A) => !!(A && (A.rooms.length || A.slabs.length || A.stairs.length || A.lights.length || A.roofs.length || (A.items || []).length || (A.cams || []).length || A.terrain || (A.pools || []).length || (A.drives || []).length || (A.roads || []).length));   // 2.653.0: a model of only ground has something too
   function clean(o) {
@@ -191,6 +191,8 @@
     // 2.653.0 (Tim: "terrain elevation tools like contour lines and shape the ground to match the contours"): ⛰ the ground (ppterrain.js)
     A.terrain = root.PPTerrain ? root.PPTerrain.clean(o.terrain) : (o.terrain && typeof o.terrain === "object" ? JSON.parse(JSON.stringify(o.terrain)) : null);
     A.pools = root.PPSite ? root.PPSite.clean(o.pools) : (Array.isArray(o.pools) ? JSON.parse(JSON.stringify(o.pools)) : []);
+    // 2.690.0: walls joined end to end {a, b (room ids), p (the shared point)} - kept while both are there
+    { const ids0 = new Set(A.rooms.map((R) => R.id)); A.joins = (Array.isArray(o.joins) ? o.joins : []).filter((j) => j && ids0.has(+j.a) && ids0.has(+j.b) && +j.a !== +j.b && Array.isArray(j.p) && Number.isFinite(+j.p[0]) && Number.isFinite(+j.p[1])).slice(0, 2000).map((j) => ({ a: +j.a, b: +j.b, p: [r4(+j.p[0]), r4(+j.p[1])] })); }
     A.roads = root.PPRoads ? root.PPRoads.cleanRoads(o.roads) : (Array.isArray(o.roads) ? JSON.parse(JSON.stringify(o.roads)) : []);   // 2.673.0: 🛤 roads (pproads.js)
     A.roadSet = root.PPRoads ? root.PPRoads.cleanSet(o.roadSet) : (o.roadSet && typeof o.roadSet === "object" ? Object.assign({}, o.roadSet) : { side: "left", auto: true });
     A.drives = root.PPSite ? root.PPSite.cleanDrives(o.drives) : (Array.isArray(o.drives) ? JSON.parse(JSON.stringify(o.drives)) : []);   // 2.659.0: 🛣 driveways   // 2.657.0: 🏊 pools (ppsite.js)                       // 2.651.0: the picture materials + the background
@@ -229,6 +231,7 @@
   }
   const nid = (A) => A.n++;
   const room = (A, id) => A.rooms.find((R) => R.id === id) || null;
+  const r4 = (x) => Math.round(x * 1e4) / 1e4;                               // 2.690.0 (the joins' points)
   const find = (A, ak, id) => { const L = { room: A.rooms, op: A.ops, roof: A.roofs, slab: A.slabs, stair: A.stairs, light: A.lights, item: A.items, cam: A.cams, pool: A.pools, drive: A.drives, road: A.roads }[ak]; return L ? L.find((x) => x.id === id) || null : null; };
 
   /* ---------------- rooms, walls */
@@ -1334,6 +1337,49 @@
     return { min: mn, max: mx };
   }
   /** plan points worth snapping to (corners + wall middles) */
+  /* ---------------- 2.690.0 (Tim: "snap walls to the end of other walls when they are close, when the new wall snaps to another
+     wall join the walls together so when the new wall moves the old walls resize"): walls JOINED end to end */
+  /** another wall's end / corner within tol of p (the rooms at level z; not exceptId) -> {room, k, p, R} | null */
+  function endNear(A, p, tol, z, exceptId) {
+    let best = null;
+    A.rooms.forEach((R) => { if (R.id === exceptId || (z != null && Math.abs(R.z - z) > 0.05)) return;
+      R.pts.forEach((q, k) => { const d = Math.hypot(q[0] - p[0], q[1] - p[1]); if (d <= tol && (!best || d < best.d)) best = { room: R.id, k, p: [q[0], q[1]], R, d }; }); });
+    return best;
+  }
+  const vAt = (R, p) => R.pts.findIndex((q) => Math.hypot(q[0] - p[0], q[1] - p[1]) < 0.002);
+  /** a new wall R: each of its points that sits on another wall's end / corner joins them -> how many joins made */
+  function addJoins(A, R) {
+    if (!A.joins) A.joins = []; let n = 0;
+    R.pts.forEach((p) => A.rooms.forEach((O) => {
+      if (O.id === R.id || Math.abs(O.z - R.z) > 0.05 || vAt(O, p) < 0) return;
+      if (A.joins.some((j) => ((j.a === R.id && j.b === O.id) || (j.a === O.id && j.b === R.id)) && Math.hypot(j.p[0] - p[0], j.p[1] - p[1]) < 0.002)) return;
+      A.joins.push({ a: R.id, b: O.id, p: [r4(p[0]), r4(p[1])] }); n++;
+    }));
+    return n;
+  }
+  /** keep joined walls together after a change (B = the model before it): where one side of a join moved and the other did not,
+   *  the other's point follows - that wall grows / shrinks; the join's point moves with them -> how many points moved */
+  function applyJoins(A, B) {
+    let n = 0;
+    (B.joins || []).forEach((j0, i) => {                                  // the joins as they were BEFORE (their points then)
+      const j = (A.joins || []).find((x) => x.a === j0.a && x.b === j0.b && (x === A.joins[i] || Math.hypot(x.p[0] - j0.p[0], x.p[1] - j0.p[1]) < 0.002)) || A.joins[i];
+      const Ra = room(A, j0.a), Rb = room(A, j0.b), Ba = room(B, j0.a), Bb = room(B, j0.b); if (!j || !Ra || !Rb || !Ba || !Bb) return;
+      const ka = vAt(Ba, j0.p), kb = vAt(Bb, j0.p); if (ka < 0 || kb < 0 || !Ra.pts[ka] || !Rb.pts[kb]) return;
+      const pa = Ra.pts[ka], pb = Rb.pts[kb], ma = Math.hypot(pa[0] - j0.p[0], pa[1] - j0.p[1]) > 1e-6, mb = Math.hypot(pb[0] - j0.p[0], pb[1] - j0.p[1]) > 1e-6;
+      // the one dragged leads: it moved and the other did not - or (a drag that changes the model step by step) all of its
+      // points moved while only the other's joined end did; moved together = nothing to do
+      const all = (R, R0) => R.pts.length === R0.pts.length && R.pts.every((q, k) => Math.hypot(q[0] - R0.pts[k][0], q[1] - R0.pts[k][1]) > 1e-6);
+      const same = Math.hypot(pa[0] - pb[0], pa[1] - pb[1]) < 1e-6;
+      let lead = null;
+      if (ma && !mb) lead = "a"; else if (mb && !ma) lead = "b";
+      else if (ma && mb && !same) { const fa = all(Ra, Ba), fb = all(Rb, Bb); lead = fa && !fb ? "a" : fb && !fa ? "b" : "a"; }
+      if (lead === "a" && !same) { Rb.pts[kb] = [pa[0], pa[1]]; n++; } else if (lead === "b" && !same) { Ra.pts[ka] = [pb[0], pb[1]]; n++; }
+      const q = Ra.pts[ka]; j.p = [r4(q[0]), r4(q[1])];
+    });
+    return n;
+  }
+  /** the joins of a wall -> [{other room id, p}] */
+  const joinsOf = (A, id) => (A.joins || []).filter((j) => j.a === id || j.b === id).map((j) => ({ room: j.a === id ? j.b : j.a, p: j.p.slice() }));
   function snapPoints(A, z) {
     const out = [];
     A.slabs.forEach((sl) => sl.pts.forEach((p, i) => { const q = sl.pts[(i + 1) % sl.pts.length]; out.push({ p: [p[0], p[1], z != null ? z : sl.z], kind: "Endpoint" }, { p: [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2, z != null ? z : sl.z], kind: "Midpoint" }); }));   // 2.624.0: a floor's corners
@@ -1467,7 +1513,7 @@
   function setJoint(A, id, k, o) { const R = room(A, id); if (!R || !R.pts[k]) return false; R.jw = Object.assign({}, R.jw || {}); const q = Object.assign({}, R.jw[k] || {}, o || {}); Object.keys(q).forEach((x) => { if (q[x] == null) delete q[x]; }); if (Object.keys(q).length) R.jw[k] = cleanJw({ 0: q }, 1)[0]; else delete R.jw[k]; if (!R.jw[k]) delete R.jw[k]; return true; }
   const api = { frames, tw, isGone, setJoint, cleanJw, splitWall, openEnds, shiftEdges, joints, jointAt, mitreQuads, hull2, twinWalls, removeWall, restoreWalls, wallKind, autoKind, setWallKind, cleanGone, cleanKind, frameWidth, wallCol, setWallHeight, setWallLength, chainsBetween, exterior, opHandles, resizeOp, profile, topAt, flatTop, minTop, cutTop, moveTopPoint, moveTopSeg, removeTopPoint, removeTopSeg, topHit, topPoints, followGrid, slabEdges, snapToFloor, offsetOnFloor, moveEdge, moveEdgeBy, hiddenOf, trims, snapEdge, cleanTops,
     cleanCons, cleanLabels, DEF, OPS, STYLES, ROOFS, ROOF_LABELS, ROOF_K, roofType, roofShape, roofIcon, EAVES, GUTTERS, gutterProfile, eaveParts, LIGHTS, KELVIN, empty, of, has, clean, find, room, addRoom, rectPts, edgesOf, wallQuads, interior, opInfo, build, snapMove, moveRooms, rotateRoom, setRoom, resizeRect,
-    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
+    removeRoom, remove, duplicateRoom, roomSize, resizeRoom, selBox, moveMany, wallOwner, wallExt, cleanTex, cleanBg, roomAt, nearestWall, endNear, addJoins, applyJoins, joinsOf, addOp, addLight, lightSpot, addRoof, level, bbox, snapPoints, roofFrame, area2, inPoly, centroid, roomArea, segDist };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && typeof root === "object") root.PPArch = api;
 })(typeof window !== "undefined" ? window : globalThis);

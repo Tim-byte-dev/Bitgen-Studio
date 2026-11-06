@@ -6303,6 +6303,11 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.690.0: **Walls join end to end** in the Sketcher: drawing with ▮ Wall, a point near another wall's end or corner
+  (within about 15 cm, or 14 px when zoomed out) is pulled onto it - the tip says **⊕ joined** (hold Shift to place it
+  freely). A wall that ends there is **joined** to that wall: drag the new wall and the old wall's end goes with it, so the
+  old wall grows or shrinks; drag the old wall and the new one follows the same way. A wall drawn out of an end piece is
+  joined too, and the joins are saved with the model. Dragging both together moves them as one.
 - 2.689.0: **🗄 Cupboards & shelving in the Sketcher** (🛋 Furniture ▸ Category **Cupboards & shelving**): built-in robes,
   walk-in robes, linen, pantry and broom cupboards, bookshelves and shelving units.
   - Pick a template, or press **🗄 Design / change…** to open the dialog: name, layout (**straight**, **L-shape** or
