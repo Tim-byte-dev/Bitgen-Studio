@@ -29,9 +29,60 @@
      depth, one more), so they ride as ONE labelled MATERIAL BOARD (picture 3): a tile each, where it is used written under it */
   const BOARD = "{img3} is a material board: each tile is a real material or picture, with where it goes written under it - use exactly those materials, textures and colours on those parts of the building";
   const BOARD_BG = "; the tile marked Background is what surrounds the building (keep it as the scene's background)";
-  function promptFor(text, board) {
+  /* 2.688.0 (Tim: "only add the objects in the scene to the photo generate - for example if there aren't any windows don't
+     add windows to the prompt"): LEAD named "a building: real brick, timber, glass and concrete" for every model - the edit
+     model then added glass / brick that are not there. The lead is now written from the MODEL: what is in it (rooms, walls,
+     doors, windows, roofs, stairs, furniture by name, people, pools, roads, ground …), the materials it really uses (its
+     "mat:<key>" paints by name; glass only with windows / glass doors), and "add nothing that is not in the render". */
+  const n = (k, one, many) => (k === 1 ? (/^[aeiou]/i.test(one) ? "an " : "a ") + one : k + " " + (many || one + "s"));
+  const listOf = (a) => (a.length <= 1 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
+  /** what is in the model, in words (pure) -> {parts: [...], materials: [...], building: bool, any: bool}
+   *  deps = {furn(type) -> label, mat(key) -> label} (the page: PPFurn / H3HouseGeo; tests pass their own) */
+  function sceneWords(A0, faces, deps) {
+    const A = A0 || {}, d = deps || {}, parts = [], mats = new Set(), shown = (x) => x && x.hidden !== true;
+    const mat = (v) => { if (typeof v !== "string" || !v.startsWith("mat:")) return; const k = v.slice(4), L = (d.mat ? d.mat(k) : k) || k; mats.add(String(L).toLowerCase()); };
+    const rooms = (A.rooms || []).filter(shown), closed = rooms.filter((R) => R.closed !== false), free = rooms.filter((R) => R.closed === false);
+    if (closed.length) parts.push(n(closed.length, "room") + " with walls" + (closed.some((R) => R.floorOn !== false) ? " and floors" : ""));
+    if (free.length) parts.push(n(free.length, "free-standing wall"));
+    const ops = A.ops || [], door = ops.filter((o) => o.kind === "door"), win = ops.filter((o) => o.kind === "window"), gap = ops.filter((o) => o.kind !== "door" && o.kind !== "window");
+    if (door.length) parts.push(n(door.length, "door"));
+    if (win.length) parts.push(n(win.length, "window"));
+    if (gap.length) parts.push(n(gap.length, "open doorway"));
+    const roofs = A.roofs || [];
+    if (roofs.length) { const ty = [...new Set(roofs.map((r) => r.type || "gable"))]; parts.push(roofs.length === 1 ? "a " + ty[0] + " roof" : roofs.length + " roofs (" + ty.join(", ") + ")"); }
+    if ((A.stairs || []).length) parts.push(n(A.stairs.length, "staircase"));
+    if ((A.slabs || []).length) parts.push(n(A.slabs.length, "floor slab"));
+    const items = (A.items || []).filter(shown), people = items.filter((it) => it.type === "person"), furn = items.filter((it) => it.type !== "person");
+    const byName = new Map(); furn.forEach((it) => { const L = String((d.furn ? d.furn(it.type) : it.type) || it.type).toLowerCase(); byName.set(L, (byName.get(L) || 0) + 1); });
+    const fl = [...byName.entries()].slice(0, 12).map(([L, k]) => n(k, L, /s$|sh$|ch$/.test(L) ? L + "es" : L + "s"));
+    parts.push(...fl);
+    if (people.length) parts.push(people.length === 1 ? "a person" : people.length + " people");
+    if ((A.lights || []).length) parts.push(n(A.lights.length, "light fitting"));
+    if ((A.pools || []).length) parts.push(n(A.pools.length, "swimming pool"));
+    if ((A.drives || []).length) parts.push(n(A.drives.length, "driveway"));
+    if ((A.roads || []).length) parts.push(n(A.roads.length, "road"));
+    if (A.terrain) parts.push("the ground it stands on");
+    const shapes = (faces || []).length;
+    if (shapes && !rooms.length) parts.push("the modelled 3D shapes");
+    // the materials it really uses
+    const vals = (o) => (Array.isArray(o) ? o : o && typeof o === "object" ? Object.values(o) : []);   // wcol / wext: {wall index: colour}
+    mat(A.ext); rooms.forEach((R) => { mat(R.wall); mat(R.floor); mat(R.ceilCol); vals(R.wcol).forEach(mat); vals(R.wext).forEach(mat); mat(R.skirtCol); mat(R.cornCol); });
+    ops.forEach((o) => { mat(o.col); mat(o.trimCol); }); roofs.forEach((r) => mat(r.col)); (A.stairs || []).forEach((x) => mat(x.col)); (A.slabs || []).forEach((x) => mat(x.col));
+    (faces || []).forEach((F) => mat(F && F.mat));
+    if (win.length || door.some((o) => /glass|slid/i.test(String(o.style || "")))) mats.add("glass");
+    return { parts, materials: [...mats], building: rooms.length > 0, any: parts.length > 0 };
+  }
+  /** the lead written from the model (pure) */
+  function leadFor(w) {
+    if (!w || !w.any) return LEAD;
+    const what = w.building ? "a building with " + listOf(w.parts) : listOf(w.parts);
+    return "Convert {img1}: Turn this 3D render into a photorealistic photograph of " + what + "."
+      + (w.materials.length ? " Real materials: " + listOf(w.materials) + "." : " Real, natural materials.")
+      + " Show only what is in the render and add nothing else. Natural daylight, soft shadows, no outlines, DSLR photo.";   // naming what NOT to add would prompt it
+  }
+  function promptFor(text, board, scene) {
     const t = String(text || "").trim();
-    return LEAD + " " + DEPTH + (board ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
+    return (scene ? leadFor(scene) : LEAD) + " " + DEPTH + (board ? " " + BOARD + (board.bg ? BOARD_BG : "") + "." : "") + (t && t !== DEFAULT ? "\n" + t : "");
   }
   /** the pictures the model uses and where (pure): [{id, src, name, where: [...]}] (+ {bg} the backdrop / sky) - faces = the
    *  model's own faces' materials (M.f) */
@@ -91,7 +142,7 @@
     });
     return c;
   }
-  const api = { DEFAULT, LEAD, DEPTH, BOARD, promptFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
+  const api = { DEFAULT, LEAD, DEPTH, BOARD, promptFor, sceneWords, leadFor, usedPictures, boardCaptions, linkedNow, pickEditStyle, shotSize, realName };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
@@ -152,6 +203,9 @@
       const blob = await new Promise((ok) => c.toBlob(ok, "image/png")), dblob = await new Promise((ok) => dm.toBlob(ok, "image/png"));
       S.shots = { photo: c, depth: dm };
       // 2.652.0: the model's pictures (materials, the backdrop) as a labelled board = picture 3
+      // 2.688.0: the lead names only what the model has (sceneWords)
+      const scene = sceneWords(P.state.M.arch, P.state.M.f, { furn: (t) => { try { const pc = root.PPFurn && root.PPFurn.pieces().find((x) => x.type === t); return pc ? pc.label : t; } catch (e) { return t; } },
+        mat: (k) => { try { const m = root.H3HouseGeo && root.H3HouseGeo.MATERIALS[k]; return m ? m.label || k : k; } catch (e) { return k; } } });
       const used = usedPictures(P.state.M.arch, P.state.M.f), bc = used.tiles.length || used.bg ? await boardPic(used) : null;
       const bblob = bc ? await new Promise((ok) => bc.toBlob(ok, "image/png")) : null;
       S.shots.board = bc; S.board = bc ? boardCaptions(used) : null;
@@ -160,10 +214,10 @@
         fd.append("crop", blob, "sketcher.png");
         fd.append("ref0", dblob, "sketcher_depth.png"); fd.append("ref_desc", "depth map"); fd.append("ref_raw", "1");
         if (withBoard) fd.append("ref1", bblob, "sketcher_materials.png");
-        const fields = { mode: "edit", prompt: promptFor(text, withBoard ? used : null), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
+        const fields = { mode: "edit", prompt: promptFor(text, withBoard ? used : null, scene), style_id: style, strength: 100, count: 1, width: sz.w, height: sz.h, whole: "1" };
         Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
         if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
-        S.sent = { prompt: fields.prompt, board: !!withBoard };
+        S.sent = { prompt: fields.prompt, board: !!withBoard, scene };
         const r = await root.fetch("/api/aiedit", { method: "POST", body: fd }); return { r, j: await r.json() };
       };
       say("📷 a real photo of the model" + (bblob ? " (+ its materials board)" : "") + " - queued (" + ((E.edit.find((x) => x.id === style) || {}).name || style) + ")…");

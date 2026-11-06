@@ -31,7 +31,7 @@ check("promptFor: the board line names {img3} (the server puts the model's word)
 
 const PR = read("ext/pushpulldock/ppreal.js"), PV = read("ext/pushpulldock/ppview.js"), PM = read("ext/pushpulldock/ppmatpick.js"), PD = read("ext/pushpulldock/ppdock.js"), DH = read("ext/pushpulldock/dock.html");
 check("the run: the board as ref1 (picture 3) with ref_raw; a model that takes two pictures -> sent again without it, said so",
-  /if \(withBoard\) fd\.append\("ref1", bblob, "sketcher_materials\.png"\);/.test(PR) && /promptFor\(text, withBoard \? used : null\)/.test(PR) && /\(\{ r, j \} = await send\(false\)\);/.test(PR) && /queued without the materials board/.test(PR));
+  /if \(withBoard\) fd\.append\("ref1", bblob, "sketcher_materials\.png"\);/.test(PR) && /promptFor\(text, withBoard \? used : null(, scene)?\)/.test(PR) && /\(\{ r, j \} = await send\(false\)\);/.test(PR) && /queued without the materials board/.test(PR));
 check("the board picture: up to 6 tiles, 3 a row, cover-fitted, a caption under each", /\.slice\(0, 6\);/.test(PR) && /const cols = Math\.min\(3, items\.length\)/.test(PR) && /g\.fillText\(t, x \+ 2, y \+ T \+ 10\)/.test(PR));
 check("the shot: the backdrop in the photo (fitted to the shot's shape), never in the depth / normal map", /if \(o\.depth \|\| o\.normal\) scene\.background = null; else if \(bg0 && V\.bgFit\) V\.bgFit\(w \/ h\);/.test(PV) && /scene\.background = bg0;/.test(PV) && /V\.bgFit = \(asp\) =>/.test(PM));
 check("✨ Photo in the Sketcher's toolbar runs it (the prompt box's words added)", /id="ppReal"/.test(DH) && /root\.H3SketcherReal\.run\(t\)/.test(PD));

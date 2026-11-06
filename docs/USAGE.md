@@ -6303,6 +6303,17 @@ orange line shows where it will go - and let go.
     the quick one to train; **Qwen3.5 9B**; and the setup wizard's Qwen3 4B / 8B / 14B.
   - Compare the ones you download with 🔁 Compare LLMs on your own jobs, then train the winner on your picks.
   - Qwen3.8 and Gemma 4 need a recent llama.cpp - update it with misc\get-llama.ps1 if a model will not load.
+- 2.688.0: **Sketcher: bar always on screen, wall ends, Ctrl+drag, a truer Photo prompt.**
+  - The Sketcher's top bar (☰ File … ✨ Photo, 📄 Plans, Send) stays on screen: when docked, the docker can no longer be
+    scrolled away under it, and the view takes the room that's left.
+  - **Click a wall's end piece** (the square cap at an open wall's end) and the whole wall is picked. **Double-click it**
+    to push / pull: drag the end along the wall to make the wall longer or shorter (1 cm steps, Shift: free; Esc ends it).
+    The end's own width (a pier) is in the wall's panel: **▪ This end's width…**. Corners keep their own piece.
+  - **Ctrl+drag** moves what a plain drag would, held **horizontal or vertical** by the way you drag (like Shift).
+    Ctrl+click without dragging still adds to (or takes out of) what's picked.
+  - **✨ Photo** now writes its prompt from the model: it names what is there (rooms, doors, windows, roof types,
+    stairs, furniture by name, people, pools, roads, the ground) and the materials you used, and asks for nothing else.
+    No windows in the model, no windows or glass in the prompt.
 - 2.687.0: **A quieter sketch plane** in the Sketcher: clicking a face still makes it the sketch plane (the bar's ✎ chip
   names it, the drawing tools draw in it, ⊥ Look at turns to it), but the orange square and grid are no longer drawn
   over it. A plane you keep with 📌 still shows its faint dashed outline.

@@ -57,7 +57,7 @@ const near = (a, b, e) => Math.abs(a - b) < (e || 1e-3);
     // a room to furnish (floor at 0.5 m)
     await ev(() => { const S = H3PushPull.state; S.M.arch = PPArch.empty(); PPArch.addRoom(S.M.arch, [[0, 0], [5, 0], [5, 4], [0, 4]], { z: 0.5 }); S.V.setModel(S.M); S.A.rebuild(); S.V.view("top"); S.V.extents(); });
     const tools = await ev(() => [...document.querySelectorAll("#ppTools button")].map((x) => x.id.replace("ppT_", "")).slice(15));
-    check("the Build tools end with 🛋 Furniture (A) (+ 2.629.0: 📷 Camera; 2.653.0+: then the Ground tools)", /furniture,camera(,terrain,pool,drive)?$/.test(tools.join()), tools);
+    check("the Build tools end with 🛋 Furniture (A) (+ 2.629.0: 📷 Camera; 2.653.0+: then the Ground tools)", /furniture,camera(,terrain,pool,drive(,road)?)?$/.test(tools.join()), tools);
     await p.keyboard.press("a"); await p.waitForTimeout(200);
     const pn = await panel();
     check("🛋 Furniture: the panel - the House builder's categories (Living … Outside) + the project's 3D models, the pieces as buttons", /Category/.test(pn) && await ev(() => { const s = [...document.querySelectorAll("#ppProps select")][0]; return [...s.options].map((o) => o.value).join() === "Living,Dining,Kitchen,Bedroom,Bathroom,Lights,Outside,People,3D models"; }) && /Sofa \(3 seats\)/.test(pn), pn.slice(0, 200));

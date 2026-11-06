@@ -18,7 +18,15 @@
           #ppBar select, #ppBar input[type=text] { font-size: 11px; width: auto; flex: none; }
           #ppBar button, #ppFoot button, #ppFoot label { flex: none; }
           #ppBar .sep { width: 1px; height: 18px; background: var(--line, #444); margin: 0 2px; }
-          #ppMain { flex: 1; display: flex; min-height: 430px; gap: 4px; position: relative; }
+          #ppMain { flex: 1 1 auto; display: flex; min-height: 220px; gap: 4px; position: relative; }
+          /* 2.688.0 (Tim: "when scrolling keep the top menubar/toolstrip from scrolling - it should always be visible"): docked,
+             the Sketcher's content (the bar wraps to several rows in a narrow column, the view held 430 px) was taller than
+             its docker, and a focus / scroll lower down (the foot, a field) scrolled the docker's hidden overflow - the bar
+             went off the top and the wheel could not bring it back. The docker is now CLIPPED (it can never be scrolled), the
+             bar + foot keep their size and the view takes what is left (220 px at least); the bar also sticks to the top. */
+          #pushpulldock, #pushpulldock > #ppBody { overflow: clip !important; }
+          #ppBar { flex: none; position: sticky; top: 0; z-index: 7; background: var(--panel, #1f1c17); padding-bottom: 2px; }
+          #ppFoot { flex: none; }
           #pushpulldock.ppnarrow #ppProps { position: absolute; right: 0; top: 0; bottom: 0; z-index: 6; background: var(--panel, #1f1c17); box-shadow: -6px 0 18px #0006; max-width: 100%; }
           #ppProps .pptog { display: none; }
           #pushpulldock.ppnarrow #ppProps .pptog { display: block; float: right; font-size: 11px; padding: 0 5px; margin: 0 0 2px 4px; }

@@ -402,6 +402,7 @@
     }
     function key(e, baseTool) {
       const k = e.key;
+      if (k === "Escape" && st.pull) { st.pull = null; ctx.status("⇔ push / pull ended"); return true; }   // 2.688.0
       if (owns(baseTool) && k === "Escape") {
         if (baseTool === "wall" && st.pts && st.pts.length >= 2) { finishWall(false); return true; }
         if (Object.keys(st).length) { st = {}; V.preview({}); ctx.status(HINT[baseTool]); return true; }
@@ -432,6 +433,27 @@
       return P().topHit(AR(), [h.point[0] - h.n[0] * 0.02, h.point[1] - h.n[1] * 0.02], h.point[2], tol);
     }
     function selectDown(ev) {
+      // 2.688.0 (Tim: "ctrl +drag will snap to horizontal or vertical depending on which way it is dragged"): a Ctrl press waits -
+      // let go without moving = Ctrl+click (added to / taken out of the picked, 2.648.0); dragged = what a plain press would
+      // drag, held to horizontal or vertical (the way it goes, like Shift)
+      if ((ev.ctrlKey || ev.metaKey) && !ev.altKey && !st.ctrlReplay) {
+        const h0 = AV() && AV().pick(ev);
+        if (h0 && h0.tag.ak !== "cam" && nearerThanModel(ev, h0)) {
+          st.drag = { mode: "ctrlwait", ev: copyEv(ev), x0: ev.clientX, y0: ev.clientY, moved: false };
+          return true;
+        }
+      }
+      // 2.688.0: an end piece double-clicked = push / pull armed - a drag on it moves the wall's end along the wall
+      if (st.pull) {
+        const hp = AV() && AV().pick(ev), jp = hp && nearerThanModel(ev, hp) ? branchAt(hp) : null;
+        if (jp && jp.kind === "end" && jp.R.id === st.pull.room && jp.k === st.pull.k) {
+          const R0 = P().room(AR(), jp.R.id), v0 = R0.pts[jp.k].slice(), oth = R0.pts[jp.k === 0 ? 1 : jp.k - 1];
+          const zp = hp.point[2];                                         // the pointer followed at the height it pressed (the end's top / face)
+          st.drag = { mode: "endpull", room: jp.R.id, k: jp.k, edge: jp.walls[0], out: jp.out, v0, other: oth, z: zp, start: planeAt(ev, zp), x0: ev.clientX, y0: ev.clientY, before: before(), base: JSON.stringify(AR()), moved: false };
+          return true;
+        }
+        st.pull = null;
+      }
       const rg = ringAt(ev);                                             // 2.633.0: a rotate ring - yaw / pitch / roll by dragging round it
       if (rg) {
         const r = V.canvas.getBoundingClientRect(), cs = V.screen(rg.c), cp = V.cam().position;
@@ -501,6 +523,29 @@
       if (t.ak === "op" && st.drag) { const I = P().opInfo(A, x); if (I) Object.assign(st.drag, { wp: h.point, wn: I.nl, along0: (h.point[0] - I.o[0]) * I.u[0] + (h.point[1] - I.o[1]) * I.u[1], at0: I.at, sill0: x.sill, room0: x.room, edge0: x.edge }); }   // 2.625.0: up / down too
       return true;
     }
+    /** 2.688.0: a press's fields kept (a Ctrl press replayed as a plain one once it moves) */
+    function copyEv(ev) {
+      const o = { clientX: ev.clientX, clientY: ev.clientY, button: ev.button || 0, buttons: 1, shiftKey: !!ev.shiftKey, altKey: !!ev.altKey, ctrlKey: false, metaKey: false,
+        target: ev.target, currentTarget: ev.currentTarget, pointerId: ev.pointerId, pointerType: ev.pointerType, detail: ev.detail, timeStamp: ev.timeStamp,
+        preventDefault() {}, stopPropagation() {}, stopImmediatePropagation() {} };
+      if (typeof ev.offsetX === "number") { o.offsetX = ev.offsetX; o.offsetY = ev.offsetY; }
+      return o;
+    }
+    /** 2.688.0: the wall's end pushed / pulled along the wall (Tim: "if the user doubleclicks the edge segment then push/pull
+     *  from that segment") - the end moves on the wall's own line, at least 10 cm of wall left */
+    function dragEndPull(ev, D) {
+      const cur = planeAt(ev, D.z); if (!cur || !D.start) return true;
+      const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const R = P().room(M.arch, D.room); if (!R) return true;
+      const L0 = Math.hypot(D.v0[0] - D.other[0], D.v0[1] - D.other[1]);
+      let d = (cur[0] - D.start[0]) * D.out[0] + (cur[1] - D.start[1]) * D.out[1];
+      d = Math.max(0.1 - L0, Math.round(d * 1000) / 1000);
+      if (!ev.shiftKey) { const L1 = Math.round((L0 + d) * 100) / 100; d = L1 - L0; }      // 1 cm steps (Shift: free)
+      R.pts[D.k] = [Math.round((D.v0[0] + D.out[0] * d) * 1e4) / 1e4, Math.round((D.v0[1] + D.out[1] * d) * 1e4) / 1e4];
+      AV().rebuild(); AV().setSel(asel);
+      const L = Math.hypot(R.pts[D.k][0] - D.other[0], R.pts[D.k][1] - D.other[1]);
+      ctx.vcbValue(fmt(L)); ctx.status("⇔ " + R.name + "'s wall " + (D.edge + 1) + " " + (d >= 0 ? "pulled out" : "pushed in") + " " + fmt(Math.abs(d)) + " - now " + fmt(L) + " long · let go to keep it");
+      return true;
+    }
     /** 2.662.0: a pick on a corner / an end piece -> {R, v, walls, poly, dir (the side's way out; null: the top - any way)} | null */
     function branchAt(h) {
       if (!h || h.tag.ak !== "wall" || !P().jointAt) return null;
@@ -513,6 +558,7 @@
     function dragBranch(ev, D) {
       const { p } = snapPlan(ev, D.z, [D.v[0], D.v[1], D.z]); let e;
       if (D.dir) { const L = Math.max(0, (p[0] - D.v[0]) * D.dir[0] + (p[1] - D.v[1]) * D.dir[1]); e = [D.v[0] + D.dir[0] * L, D.v[1] + D.dir[1] * L]; }
+      else if (D.axisLock || ev.shiftKey) { const dx = p[0] - D.v[0], dy = p[1] - D.v[1]; e = Math.abs(dx) > Math.abs(dy) ? [p[0], D.v[1]] : [D.v[0], p[1]]; }   // 2.688.0: Ctrl / Shift - horizontal or vertical
       else e = [p[0], p[1]];
       D.end = e; const a = [D.v[0], D.v[1], D.z], b = [e[0], e[1], D.z], H = D.R.h, L = Math.hypot(e[0] - D.v[0], e[1] - D.v[1]);
       V.preview({ lines: [[a, b], [[a[0], a[1], D.z + H], [b[0], b[1], D.z + H]], [b, [b[0], b[1], D.z + H]]], faces: branchFaces(D.j), faceColor: 0xf59e2c, marker: { p: b, color: "#f59e2c" }, tip: "▮ a new wall " + fmt(L) + (D.dir ? "" : " · any way (from the top)") });
@@ -542,11 +588,19 @@
       if (!(ev.buttons & 1)) { st.drag = null; V.preview({}); return false; }
       if (!D.moved && Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) < 4) return true;
       D.moved = true;
+      if (D.mode === "ctrlwait") {                                       // 2.688.0: a Ctrl press dragged - the plain press, held to an axis
+        st.drag = null; st.ctrlReplay = true;
+        try { selectDown(D.ev); } finally { st.ctrlReplay = false; }
+        if (!st.drag) return true;
+        st.drag.axisLock = true; st.drag.moved = true;
+        return selectMove(ev);
+      }
+      if (D.mode === "endpull") return dragEndPull(ev, D);                // 2.688.0
       if (D.mode === "branch") return dragBranch(ev, D);                  // 2.662.0
       if (D.many) {                                                     // 2.648.0: several picked - moved together (Shift: straight)
         const cur = planeAt(ev, D.z); if (!cur) return true;
         let d = [cur[0] - D.start[0], cur[1] - D.start[1]];
-        if (ev.shiftKey) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }
+        if (ev.shiftKey || D.axisLock) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }   // 2.688.0: Ctrl+drag too
         const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); P().moveMany(M.arch, D.many, d);
         AV().rebuild(); AV().setSel(asel); if (AV().setMore) AV().setMore(amore);
         ctx.status(D.many.length + " picked moved " + fmt(Math.hypot(d[0], d[1])));
@@ -560,7 +614,7 @@
       const cur = planeAt(ev, D.z); if (!cur && !D.wp) return true;     // 2.625.0: a door / window drags on its wall's face
       if (D.mode === "edge") return dragEdge(ev, D, cur);
       let d = cur ? [cur[0] - D.start[0], cur[1] - D.start[1]] : [0, 0];
-      if (ev.shiftKey) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }
+      if (ev.shiftKey || D.axisLock) { if (Math.abs(d[0]) > Math.abs(d[1])) d[1] = 0; else d[0] = 0; }   // 2.688.0: Ctrl+drag too
       const M = ctx.model(); M.arch = P().clean(JSON.parse(D.base)); const A = M.arch, t = D.t, x = P().find(A, t.ak, t.id); if (!x) return true;
       if (t.ak === "room") {
         const tol = pxTol(cur), off = (x.closed ? O.room.off : O.wall.off) || 0;
@@ -643,7 +697,24 @@
     function selectUp() {
       const D = st.drag; if (!D) return false;
       st.drag = null; V.preview({});
-      if (D.mode === "branch") { if (D.moved) finishBranch(D); else { setSel({ ak: "joint", room: D.R.id, k: D.j.k }); ctx.status("▪ " + (D.j.kind === "end" ? "a wall's end" : "a corner") + " picked - its width in the panel · drag out of a side for a new wall"); } return true; }   // 2.662.0 / 2.664.0: a click picks it
+      if (D.mode === "ctrlwait") {                                       // 2.688.0: not moved = the Ctrl+click (2.648.0)
+        st.ctrlReplay = true; const e2 = Object.assign({}, D.ev, { ctrlKey: true });
+        try { selectDown(e2); } finally { st.ctrlReplay = false; }
+        st.drag = null; return true;
+      }
+      if (D.mode === "endpull") {
+        if (D.moved) { ctx.commit("wall end", D.before); props(); }
+        else ctx.status("⇔ push / pull armed - drag the wall's end along the wall (1 cm steps, Shift: free) · Esc or a click elsewhere ends it");
+        return true;
+      }
+      if (D.mode === "branch") {
+        if (D.moved) finishBranch(D);
+        // 2.688.0 (Tim: "if user clicks on an end segment of a wall treat it as the whole wall"): a click on a wall's END piece
+        // picks that wall (its panel has ▪ This end's width…); a corner is still its own piece (2.664.0)
+        else if (D.j.kind === "end") { setSel({ ak: "room", id: D.R.id, part: "wall", edge: D.j.walls[0] }); ctx.status("▮ the whole wall picked · double-click its end to push / pull it · drag out of the end's side for a new wall"); }
+        else { setSel({ ak: "joint", room: D.R.id, k: D.j.k }); ctx.status("▪ a corner picked - its width in the panel · drag out of a side for a new wall"); }
+        return true;
+      }   // 2.662.0 / 2.664.0: a click picks it
       if (D.many && !D.moved && D.single) { setMore([]); setSel(D.single); return true; }   // 2.648.0: a click on one of several = that one
       if (D.moved) { ctx.commit(D.mode === "top" ? "wall top" : D.mode === "grip" ? "resize" : D.mode === "spin" ? "turn" : "move", D.before); props(); }
       else if (D.t && D.t.ak === "cam" && D.mode !== "axis" && D.mode !== "spin") ctx.status("📷 " + ((P().find(AR(), "cam", D.t.id) || {}).name || "camera") + " · drag it or an arrow to move it · double-click = rotate rings" + (gizmo === "rotate" ? " (now: rotate - double-click again for the arrows)" : ""));
@@ -712,6 +783,14 @@
         props(); return true;
       }
       const h = AV() && AV().pick(ev); if (!h || !nearerThanModel(ev, h) || h.tag.ak !== "wall") return false;
+      // 2.688.0: a wall's END piece double-clicked = push / pull from it (not a split)
+      const je = branchAt(h);
+      if (je && je.kind === "end") {
+        st.pull = { room: je.R.id, k: je.k };
+        setSel({ ak: "room", id: je.R.id, part: "wall", edge: je.walls[0] });
+        ctx.status("⇔ push / pull: drag the end of " + je.R.name + "'s wall " + (je.walls[0] + 1) + " along the wall to make it longer or shorter (1 cm steps, Shift: free) · Esc ends it");
+        return true;
+      }
       const tol = Math.max(0.12, pxTol(h.point) * 1.2), down = Math.abs(V.ray(ev).d[2]) > 0.85 || !!(AV().planOnNow && AV().planOnNow());   // from above / the floorplan (in 3D a wall's top = a cut, as before)
       // 2.663.0 (Tim: "select segments of the wall after a split(dbl click)"): seen from above / the floorplan, or on the wall's
       // face below its top - the wall split in two there (each piece a wall of its own: picked, dragged, taken out)
@@ -984,6 +1063,9 @@
           shownIn("room:" + id + ":wall:" + i);
           const tw = P().twinWalls(AR(), R, i);
           btns([["🗑 Take this wall out", () => takeOut(id, i), "Just this wall - the floor and ceiling stay, the side open" + (tw.length ? " (" + tw.map((w) => w.R.name).join(", ") + "'s wall on the same line too)" : "") + " · Delete · Eraser"]]);
+          // 2.688.0: a click on the wall's end piece picks the wall now - its end's own width / length (2.664.0) from here
+          const ends = P().joints(R).filter((j) => j.kind === "end" && j.walls[0] === i);
+          if (ends.length) btns(ends.map((j) => ["▪ " + (ends.length > 1 ? (j.k === i ? "Start" : "Far") + " end's width…" : "This end's width…"), () => setSel({ ak: "joint", room: id, k: j.k }), "The square piece at the wall's end - its own width / length (a pier) · double-click it on the model to push / pull the wall"]));
           const ops = A.ops.filter((o) => o.room === id && o.edge === i);
           if (ops.length) { box.appendChild(el("div", "pphint", "In this wall:")); btns(ops.map((o) => [(o.kind === "door" ? "🚪 " : o.kind === "window" ? "🪟 " : "▯ ") + (o.kind[0].toUpperCase() + o.kind.slice(1)) + " " + fmt(o.w) + " × " + fmt(o.h), () => setSel({ ak: "op", id: o.id })])); }
           room();
