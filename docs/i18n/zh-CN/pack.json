@@ -1,0 +1,29 @@
+{
+ "format": 1,
+ "id": "zh-CN",
+ "name": "Chinese (Simplified)",
+ "native": "简体中文",
+ "region": "Mainland China, Singapore",
+ "browser": [
+  "zh-cn",
+  "zh-sg",
+  "zh-hans",
+  "zh"
+ ],
+ "keepAll": true,
+ "order": 1,
+ "version": "2.715.0",
+ "authors": [
+  "bitGen Studio"
+ ],
+ "words": {
+  "stale": "这一部分的英文版已更新，以下译文可能已过时。",
+  "missing": "这一部分尚未翻译，以下为英文原文。",
+  "english": "查看英文版",
+  "lang": "指南与帮助的语言"
+ },
+ "files": {
+  "ui": "../../../static/i18n/ui/zh-CN.json",
+  "help": "../../../static/help/zh-CN"
+ }
+}

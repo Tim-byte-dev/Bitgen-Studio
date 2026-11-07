@@ -1,0 +1,26 @@
+{
+ "format": 1,
+ "id": "ja",
+ "name": "Japanese",
+ "native": "日本語",
+ "region": "Japan",
+ "browser": [
+  "ja"
+ ],
+ "keepAll": true,
+ "order": 3,
+ "version": "2.715.0",
+ "authors": [
+  "bitGen Studio"
+ ],
+ "words": {
+  "stale": "このセクションは英語版のほうが新しいため、翻訳が古くなっている可能性があります。",
+  "missing": "このセクションはまだ翻訳されていません。英語の原文を表示しています。",
+  "english": "英語版を表示",
+  "lang": "ガイドとヘルプの言語"
+ },
+ "files": {
+  "ui": "../../../static/i18n/ui/ja.json",
+  "help": "../../../static/help/ja"
+ }
+}

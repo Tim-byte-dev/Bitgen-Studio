@@ -16,7 +16,8 @@ const path = require("path");
 const crypto = require("crypto");
 const ROOT = path.join(__dirname, "..");
 const DIR = path.join(ROOT, "static", "i18n", "ui");
-const LANGS = ["zh-CN", "zh-TW", "ja"];
+// 2.715.0: the built-in language packs (docs/i18n/<id>/pack.json - lib/langPacks.js); an installed pack keeps its own ui.json
+const LANGS = require("../lib/langPacks").list().filter((p) => p.source === "built-in").map((p) => p.id);
 const read = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch (e) { return null; } };
 // 2.706.0: + the words the app builds (static/i18n/ui/dynamic.json - scripts/ui-dynamic.js): strings, and patterns with {n}
 const dyn = () => read(path.join(DIR, "dynamic.json")) || { strings: [], patterns: [] };

@@ -37,7 +37,7 @@
   }
   /** 2.706.0: the words the app BUILDS ("installed {0} — skipped {1}") - dictionary patterns, {n} = any value; compiled once */
   function compile(pats) {
-    return Object.keys(pats || {}).map(function (k) {
+    return Object.keys(pats || {}).filter(function (k) { return pats[k] !== ""; }).map(function (k) {     // 2.715.0: "" = not translated (a pack's)
       var parts = k.split(/\{(\d+)\}/), lits = [], order = [], re = "^";
       for (var i = 0; i < parts.length; i++) {
         if (i % 2) { order.push(+parts[i]); re += "((?:(?! · )[^\\n])+?)"; }     // a value never spans a " · " piece or a line
@@ -140,28 +140,35 @@
   function load(lang) {
     var cached = null;
     try { cached = JSON.parse(root.localStorage.getItem(KEY(lang)) || "null"); } catch (e) { cached = null; }
-    var fresh = fetch("/static/i18n/ui/" + lang + ".json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("no " + lang); return r.json(); })
+    // 2.715.0: from its language pack (lib/langPacks.js)
+    var fresh = fetch("/api/langpacks/" + encodeURIComponent(lang) + "/ui.json", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("no " + lang); return r.json(); })
       .then(function (j) { try { root.localStorage.setItem(KEY(lang), JSON.stringify(j)); } catch (e) { /* too big for storage - fetched each time */ } return j; });
     return cached ? { now: cached, later: fresh } : { now: null, later: fresh };
   }
+  // 2.715.0: "" in a pack = not translated yet (the English stays)
+  function dropEmpty(d) { if (!d) return d; var o = {}; for (var k in d) if (Object.prototype.hasOwnProperty.call(d, k) && d[k] !== "") o[k] = d[k]; return o; }
   function setDict(lang, j) {
     if (S.lang !== lang) return;
     var same = S.dict && j && S.dictV === j.v;
-    S.dict = j && j.strings ? j.strings : null; S.dictV = j && j.v; S.pats = compile(j && j.patterns);
+    S.dict = j && j.strings ? dropEmpty(j.strings) : null; S.dictV = j && j.v; S.pats = compile(j && j.patterns);
     if (!same && S.dict) { observe(); walk(doc.body); }
     doc.documentElement.setAttribute("data-uilang", lang);
   }
   // Chinese / Japanese break between any two characters - short labels and buttons would stand one character per line
   // (工/作/区): there they break only where the English would (keep-all); long text still wraps normally
-  (function css() {
-    if (doc.getElementById("uiLangCss")) return;
-    var st = doc.createElement("style"); st.id = "uiLangCss";
-    st.textContent = ["zh-CN", "zh-TW", "ja"].map(function (l) { return 'html[data-uilang="' + l + '"] :is(button, label, select, option, th, legend, summary, .bhead, .wslab, .tab, [role=tab], .stab, h1, h2, h3, h4, h5)'; }).join(",\n")
+  // 2.715.0: for every language pack that says keepAll (Chinese, Japanese, Korean ...), refreshed when the packs change
+  function css() {
+    var st = doc.getElementById("uiLangCss");
+    if (!st) { st = doc.createElement("style"); st.id = "uiLangCss"; (doc.head || doc.documentElement).appendChild(st); }
+    var packs = root.H3HelpLang && root.H3HelpLang.packs ? root.H3HelpLang.packs() : [{ id: "zh-CN", keepAll: true }, { id: "zh-TW", keepAll: true }, { id: "ja", keepAll: true }];
+    var ids = packs.filter(function (p) { return p.keepAll; }).map(function (p) { return String(p.id).replace(/[^A-Za-z0-9-]/g, ""); });
+    if (!ids.length) { st.textContent = ""; return; }
+    st.textContent = ids.map(function (l) { return 'html[data-uilang="' + l + '"] :is(button, label, select, option, th, legend, summary, .bhead, .wslab, .tab, [role=tab], .stab, h1, h2, h3, h4, h5)'; }).join(",\n")
       + " { word-break: keep-all; }"
       // the status bar's short readouts (idle, LLM: …, ComfyUI: …) stay on one line
-      + ["zh-CN", "zh-TW", "ja"].map(function (l) { return 'html[data-uilang="' + l + '"] :is(#sbjobs, #sbllm, #sbvis, #sbcomfy, #sbfree)'; }).join(",\n") + " { white-space: nowrap; }";
-    (doc.head || doc.documentElement).appendChild(st);
-  })();
+      + ids.map(function (l) { return 'html[data-uilang="' + l + '"] :is(#sbjobs, #sbllm, #sbvis, #sbcomfy, #sbfree)'; }).join(",\n") + " { white-space: nowrap; }";
+  }
+  css();
   function apply(lang) {
     if (lang === S.lang && (lang === "en" || S.dict)) return Promise.resolve();
     restore(); S.dict = null; S.pats = null; S.lang = lang;
@@ -183,6 +190,7 @@
     if (!root.H3HelpLang) { setTimeout(start, 50); return; }
     apply(H3HelpLang.get());
     H3HelpLang.onChange(function (l) { apply(l); });
+    if (H3HelpLang.onPacks) H3HelpLang.onPacks(function () { css(); });
     (function place() { if (doc.getElementById("dockCfgWrap")) picker(); else setTimeout(place, 200); })();
   }
   root.H3UiLang = Object.assign({ apply: apply, restore: restore, walk: walk, state: function () { return S; } }, pure);

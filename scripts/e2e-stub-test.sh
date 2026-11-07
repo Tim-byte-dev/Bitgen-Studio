@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.715.0 (Tim: "lets do number 2, this way we don't have to create all the packs at once - if we could have a master pack so users can translate the strings and upload to tigerart for the community it would be ideal")
+node scripts/test-langpacks715.js > /tmp/langpacks715.log 2>&1 \
+  && ok "2.715.0 language packs: the built-in ones from docs/i18n/<id>/pack.json, helpI18n / helplang / uilang read the packs, pack.json rules, the master pack, install (cleaned: {0} checked, help pages sanitised, stray files out) / 409 / replace / a built-in's id / remove, export for translating, hostile zips refused, the routes" \
+  || { bad "2.715.0 language packs"; grep -a "^FAIL" -A2 /tmp/langpacks715.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-langpacks715-ui.js > /tmp/langpacks715ui.log 2>&1 \
+  && ok "2.715.0 browser test: Settings ▸ Languages - the packs and how much each is translated, ⤓ Master pack, ⤒ Install a pack (in the dropdown at once, the app's words from it), asks before replacing, a built-in's id, a broken file, ✕ Remove - or SKIP" \
+  || { bad "2.715.0 Languages tab browser test"; grep -a "FAIL\\|Error" -A2 /tmp/langpacks715ui.log | head -14; }
 # ---- 2.714.1 (Tim: "please translate the feature list too, it is the core information")
 python3 scripts/test-features7141.py > /tmp/features7141.log 2>&1 \
   && ok "2.714.1 the feature list in 简体中文 / 繁體中文 / 日本語 (docs/i18n/<lang>/FEATURES.md): the English's shape line for line, every feature in the PDF's form, the same *Where:* / *Since:* + versions, translated, zh-TW converted" \

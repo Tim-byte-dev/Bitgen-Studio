@@ -240,6 +240,7 @@ function mount(app) {
   require("./workspaces").mount(app);   // 2.526.0: the Workspace dropdown's memory (lib/workspaces.js, workspaces.json)
   require("./styleDoctor").mount(app);  // 2.527.0: 🩺 the Style doctor (lib/styleDoctor.js)
   require("./help").mount(app);         // 2.530.0: the in-app help for the Ctrl+K palette (lib/helpDocs.js)
+  require("./langPacks").mount(app);    // 2.715.0: language packs - Settings ▸ Languages (lib/langPacks.js)
   require("./usage").mount(app);        // 2.520.0: 📊 the usage log (lib/usageLog.js)
   require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote GPU (lib/remoteGpu.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,

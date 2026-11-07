@@ -7570,6 +7570,23 @@ change at once - nothing restarts, and back to English puts every word back.
   English names those editors still show.
 - The words come from static/i18n/ui/<language>.json. `node scripts/i18n-ui.js status ja` says how many are translated.
 
+## Language packs (2.715.0)
+
+Every language besides English is a **language pack**: the app's own words, the guide, the ❔ help pages, the shortcut
+list and the feature list. 简体中文, 繁體中文 and 日本語 are built in; more can be added without a new version of the app.
+**Settings ▸ Languages** lists them, with how much of each is translated.
+
+- **⤒ Install a pack** adds a language from a pack's .zip. It is checked first; a language that is already there asks
+  before it is replaced (a pack for a built-in language is used instead of it until you remove the pack).
+- The new language is in the dropdown next to ⊞ at once. Anything the pack has not translated shows in English.
+- **✕ Remove** takes an installed pack away (a built-in language comes back).
+- **⤓ Master pack** is everything in English, with TRANSLATING.txt saying how to fill in each file - to translate bitGen
+  Studio into a new language. Put the language's code and name in pack.json, translate what you can (the app's words in
+  ui.json make the biggest difference), zip it and install it.
+- **⤓ Export for translating** gives a pack back with the parts added to the app since, its translations kept - to carry
+  on, or to improve a built-in language.
+- Installed packs are kept in the langpacks folder of the install. A pack's help pages keep only plain formatting.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

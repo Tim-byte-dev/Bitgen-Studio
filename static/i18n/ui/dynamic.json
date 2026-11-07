@@ -3243,6 +3243,146 @@
    "src": "static/karaokestyle.js:63"
   },
   {
+   "s": "App",
+   "src": "static/langpacks.js:41"
+  },
+  {
+   "s": "Guide",
+   "src": "static/langpacks.js:41"
+  },
+  {
+   "s": "Shortcuts",
+   "src": "static/langpacks.js:41"
+  },
+  {
+   "s": "Features",
+   "src": "static/langpacks.js:41"
+  },
+  {
+   "s": "Website",
+   "src": "static/langpacks.js:41"
+  },
+  {
+   "s": "In use",
+   "src": "static/langpacks.js:45"
+  },
+  {
+   "s": "Use",
+   "src": "static/langpacks.js:46"
+  },
+  {
+   "s": "installed - used instead of the built-in one",
+   "src": "static/langpacks.js:55"
+  },
+  {
+   "s": "built in",
+   "src": "static/langpacks.js:55"
+  },
+  {
+   "s": "Translated by",
+   "src": "static/langpacks.js:57"
+  },
+  {
+   "s": "The pack as a .zip with today's English added where it is not translated yet - to carry on translating, or to share",
+   "src": "static/langpacks.js:62"
+  },
+  {
+   "s": "Export for translating",
+   "src": "static/langpacks.js:63"
+  },
+  {
+   "s": "Remove it - the built-in one comes back",
+   "src": "static/langpacks.js:66"
+  },
+  {
+   "s": "Remove this language pack",
+   "src": "static/langpacks.js:66"
+  },
+  {
+   "s": "Sections whose English is newer than the translation",
+   "src": "static/langpacks.js:76"
+  },
+  {
+   "s": "English",
+   "src": "static/langpacks.js:82"
+  },
+  {
+   "s": "Checking the pack",
+   "src": "static/langpacks.js:107"
+  },
+  {
+   "s": "Replace",
+   "src": "static/langpacks.js:115"
+  },
+  {
+   "s": "Not installed",
+   "src": "static/langpacks.js:119"
+  },
+  {
+   "s": "Languages",
+   "src": "static/langpacks.js:127"
+  },
+  {
+   "s": "Language packs: the languages of the app, the guide and the help",
+   "src": "static/langpacks.js:127"
+  },
+  {
+   "s": "Each language besides English is a language pack: the app's own words, the guide, the ❔ help pages, the shortcut list and the feature list. Anything a pack has not translated shows in English. Pick the language with the dropdown next to ⊞ on the menu bar, or with Use here",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Install a pack",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Master pack",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Translate bitGen Studio into your language",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Master pack - a .zip with everything in English and TRANSLATING.txt (how to fill each file in)",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Unzip it, put your language's code and name in pack.json, and translate what you can - the app's words (ui.json) first make the biggest difference. Anything left as it is stays English",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Zip the folder again and ⤒ Install a pack - try it in the app",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Share it: upload the .zip on tigerart.com.au so everyone can install it",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Later, ⤓ Export for translating gives your pack back with the parts added since then, your translations kept",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Language packs",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Add a language from a language pack .zip (it is checked first)",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Every part in English, with TRANSLATING.txt - to start a new language",
+   "src": "static/langpacks.js:130"
+  },
+  {
+   "s": "Removed - the built-in one is back",
+   "src": "static/langpacks.js:165"
+  },
+  {
+   "s": "Removed",
+   "src": "static/langpacks.js:165"
+  },
+  {
    "s": "Layout",
    "src": "static/layouts.js:98"
   },
@@ -7303,10 +7443,6 @@
    "src": "ext/imageeditdock/brushdyn.js:284"
   },
   {
-   "s": "built in",
-   "src": "ext/imageeditdock/brushdyn.js:284"
-  },
-  {
    "s": "Pen pressure",
    "src": "ext/imageeditdock/brushdyn.js:290"
   },
@@ -9225,10 +9361,6 @@
   {
    "s": "Pick a body layer - or draw a closed sketch and press SOLID ▸ Extrude / Revolve (the CAD toolbar along the top)",
    "src": "ext/imageeditdock/pcbody.js:570"
-  },
-  {
-   "s": "Features",
-   "src": "ext/imageeditdock/pcbody.js:573"
   },
   {
    "s": "Orbit",
@@ -12744,10 +12876,6 @@
   },
   {
    "s": "Edit Contents",
-   "src": "ext/imageeditdock/pcsmart.js:458"
-  },
-  {
-   "s": "Replace",
    "src": "ext/imageeditdock/pcsmart.js:458"
   },
   {
@@ -20311,10 +20439,6 @@
    "src": "ext/videodock/posepick.js:63"
   },
   {
-   "s": "Use",
-   "src": "ext/videodock/posepick.js:63"
-  },
-  {
    "s": "search",
    "src": "ext/videodock/posepick.js:63"
   },
@@ -21959,6 +22083,26 @@
   {
    "p": "Working · {0}",
    "src": "static/installbtn.js:84"
+  },
+  {
+   "p": "{0} older",
+   "src": "static/langpacks.js:76"
+  },
+  {
+   "p": "Installed {0} ({1}). Notes",
+   "src": "static/langpacks.js:99"
+  },
+  {
+   "p": "Installed {0} ({1})",
+   "src": "static/langpacks.js:99"
+  },
+  {
+   "p": "{0} ({1}) is built in. Use this pack instead of it? Removing the pack brings the built-in one back",
+   "src": "static/langpacks.js:113"
+  },
+  {
+   "p": "{0} ({1}) is installed already (v{2}). Replace it with this one (v{3})",
+   "src": "static/langpacks.js:113"
   },
   {
    "p": "{0} new",

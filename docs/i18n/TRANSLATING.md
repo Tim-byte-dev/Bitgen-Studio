@@ -110,3 +110,21 @@ The UI is translated at run time by static/uilang.js from a dictionary per langu
   since 2.707.0 (EDITORS / UI_EDITOR_PAGES there are empty; put a docker back in them if its UI ever stops being translated).
 - Not translated: words drawn on a canvas (the timeline's ruler and clip labels, the image editor's on-canvas readouts), what
   the user types, the guide's own text (it has its own translations), code / file names.
+
+## Language packs (2.715.0) - every language besides English is a pack
+Tim: "make the languages into language packs, so we can add a new language easily later" - "if we could have a master pack so
+users can translate the strings and upload to tigerart for the community it would be ideal". The code: lib/langPacks.js.
+- **Built in**: `docs/i18n/<id>/pack.json` (zh-CN, zh-TW, ja). Its `"files"` says where the older parts live
+  (static/i18n/ui/<id>.json, static/help/<id>/); USAGE.md, shortcuts.json and FEATURES.md sit beside it. A new built-in
+  language = a new docs/i18n/<id>/ folder with a pack.json (and its parts) - no code changes; add it to scripts/cjkfont.py /
+  scripts/make_guide_pdf.py only if it should get a Guide PDF.
+- **Installed**: `<install>/langpacks/<id>/` from Settings ▸ Languages ▸ ⤒ Install a pack (a .zip: pack.json, ui.json,
+  USAGE.md, shortcuts.json, FEATURES.md, site.json, help/<topic>.html - any of them may be missing or half done). An installed
+  pack with a built-in's id is used instead of it until removed. A pack's help pages are sanitised (plain tags only).
+- **The master pack** (Settings ▸ Languages ▸ ⤓ Master pack, or GET /api/langpacks/master.zip): every part in English, ui.json
+  values "", id "xx", TRANSLATING.txt for community translators. A part still word for word the English counts as not
+  translated, so a half-done pack shows English there.
+- **⤓ Export for translating** (GET /api/langpacks/<id>/export.zip): a pack - built in or installed - with today's English
+  parts added and its translations kept (a translated guide section keeps its old hash, so it still shows as older).
+- pack.json: id (ko, es, pt-BR, zh-Hant ...; not en / xx), name, native, region, browser (the system languages that pick it -
+  the longest tag match wins), keepAll (CJK), version, authors, words {stale, missing, english, lang}.

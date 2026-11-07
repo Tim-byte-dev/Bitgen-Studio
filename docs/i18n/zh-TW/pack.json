@@ -1,0 +1,30 @@
+{
+ "format": 1,
+ "id": "zh-TW",
+ "name": "Chinese (Traditional)",
+ "native": "繁體中文",
+ "region": "Taiwan, Hong Kong, Macau",
+ "browser": [
+  "zh-tw",
+  "zh-hk",
+  "zh-mo",
+  "zh-hant"
+ ],
+ "keepAll": true,
+ "order": 2,
+ "version": "2.715.0",
+ "authors": [
+  "bitGen Studio"
+ ],
+ "madeFrom": "zh-CN",
+ "words": {
+  "stale": "這一部分的英文版已更新，以下譯文可能已過時。",
+  "missing": "這一部分尚未翻譯，以下為英文原文。",
+  "english": "檢視英文版",
+  "lang": "指南與說明的語言"
+ },
+ "files": {
+  "ui": "../../../static/i18n/ui/zh-TW.json",
+  "help": "../../../static/help/zh-TW"
+ }
+}
