@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 3301,
+ "count": 3272,
  "strings": [
   {
    "s": "0 (auto)",
@@ -148,156 +148,12 @@
    ]
   },
   {
-   "s": "1.0/8GB",
+   "s": "1. open … 2. click … 3",
    "kinds": [
-    "text"
+    "placeholder"
    ],
    "where": [
-    "b in #stats"
-   ]
-  },
-  {
-   "s": "1.1/8GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "b in #stats"
-   ]
-  },
-  {
-   "s": "1.2/8GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "b in #stats"
-   ]
-  },
-  {
-   "s": "1.3 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "1.3/8GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "b in #stats"
-   ]
-  },
-  {
-   "s": "10 MB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "10.0 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "10.3 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "11/05/2026, 3:00 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/05/2026, 3:02 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/05/2026, 3:11 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/05/2026, 3:16 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/05/2026, 8:37 PM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/05/2026, 9:06 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/06/2026, 11:17 PM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/07/2026, 12:17 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
-   ]
-  },
-  {
-   "s": "11/07/2026, 12:46 AM",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.c"
+    "textarea#brSteps"
    ]
   },
   {
@@ -310,21 +166,12 @@
    ]
   },
   {
-   "s": "125 MB",
+   "s": "15s | ref | wide drone shot over a neon city at night, rain on glass 12s | ref:bandMembers | close on the singer, handheld, shallow depth of field 8s | cont | the camera pulls back as the lights cut out",
    "kinds": [
-    "text"
+    "placeholder"
    ],
    "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "16.9 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
+    "textarea#mv_shots"
    ]
   },
   {
@@ -334,15 +181,6 @@
    ],
    "where": [
     "input#chHeight"
-   ]
-  },
-  {
-   "s": "17.6 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -364,30 +202,12 @@
    ]
   },
   {
-   "s": "2.0 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "2.10 GHz",
    "kinds": [
     "text"
    ],
    "where": [
     "b in #stats"
-   ]
-  },
-  {
-   "s": "2.5 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -436,33 +256,6 @@
    ]
   },
   {
-   "s": "22.2 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "22.5 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "250 MB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "27 GB free of 252 GB",
    "kinds": [
     "title"
@@ -478,15 +271,6 @@
    ],
    "where": [
     "div#sdMsg.note"
-   ]
-  },
-  {
-   "s": "29 items",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.fd-count"
    ]
   },
   {
@@ -517,39 +301,12 @@
    ]
   },
   {
-   "s": "3.1 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "3.6 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "32-billion-parameter",
    "kinds": [
     "text"
    ],
    "where": [
     "b in #ctab-engine"
-   ]
-  },
-  {
-   "s": "336 MB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -697,33 +454,6 @@
    ]
   },
   {
-   "s": "4.3 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "4.9 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "44.2 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "5 GB (PyTorch + its packages, in its own venv) + the model (~2 GB)",
    "kinds": [
     "text"
@@ -742,66 +472,12 @@
    ]
   },
   {
-   "s": "5.1 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "5.4 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "52kg",
    "kinds": [
     "placeholder"
    ],
    "where": [
     "input#chWeight"
-   ]
-  },
-  {
-   "s": "6 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.hint in #hwPanel"
-   ]
-  },
-  {
-   "s": "6.2 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "6.6 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "6.7 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -832,39 +508,12 @@
    ]
   },
   {
-   "s": "7.3 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "7.5 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
    "s": "704 - round down",
    "kinds": [
     "text"
    ],
    "where": [
     "option in #vdSetH3Fit"
-   ]
-  },
-  {
-   "s": "723 MB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -901,33 +550,6 @@
    ],
    "where": [
     "option in #s_vsphases"
-   ]
-  },
-  {
-   "s": "8.4 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "80 MB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
-   ]
-  },
-  {
-   "s": "9.6 GB",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span.sz in #aoList"
    ]
   },
   {
@@ -3153,6 +2775,15 @@
    ]
   },
   {
+   "s": "Caption override for this song only — leave empty to use the style's. Global Metadata: genre, BPM, key, mood. Vocal Details: … Arrangement",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#muCaption"
+   ]
+  },
+  {
    "s": "Caption the empty ones",
    "kinds": [
     "text"
@@ -4275,15 +3906,6 @@
    ],
    "where": [
     "h4 in #stab-about"
-   ]
-  },
-  {
-   "s": "ComfyUI not found (folder not found: /tmp/claude-0/t705/comfy) - set its folder in Settings ▸ ComfyUI first",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.kv in #aoList"
    ]
   },
   {
@@ -5715,6 +5337,24 @@
    ]
   },
   {
+   "s": "Describe the character to generate",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#ccPrompt.pb-hidden"
+   ]
+  },
+  {
+   "s": "Describe the place… (tip: '360 equirectangular panorama of …')",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#ecPrompt.pb-hidden"
+   ]
+  },
+  {
    "s": "Describe what went wrong - a screenshot, the logs, the system and your last steps go with it. 💾 Save makes one .zip: the file to send",
    "kinds": [
     "text"
@@ -6980,6 +6620,24 @@
    ],
    "where": [
     "label.f in #stab-llm"
+   ]
+  },
+  {
+   "s": "Extra direction (optional) — the swap instructions always ride",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#scSwapText"
+   ]
+  },
+  {
+   "s": "Extra direction for the swap",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "textarea#scSwapText"
    ]
   },
   {
@@ -8477,6 +8135,15 @@
    ],
    "where": [
     "option in #assetScope"
+   ]
+  },
+  {
+   "s": "Global Metadata: genre, BPM, key, mood. Vocal Details: who sings and how. Arrangement: instruments, intro/verse/chorus/outro",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#s_mucaption"
    ]
   },
   {
@@ -10967,6 +10634,15 @@
    ]
   },
   {
+   "s": "Lyrics — the prompt for the song. Section tags on their own lines: [verse] … [chorus] … [bridge] … [outro]",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#muLyrics"
+   ]
+  },
+  {
    "s": "MAT (Remove)",
    "kinds": [
     "text"
@@ -11280,7 +10956,7 @@
    "where": [
     "button#tbMax.tbbtn",
     "button.maxbtn in #comfydock",
-    "button.maxbtn in #stemsdock"
+    "button.maxbtn in #chatdock"
    ]
   },
   {
@@ -13469,7 +13145,6 @@
     "title"
    ],
    "where": [
-    "button.pinbtn in #stemsdock",
     "button.pinbtn in #chatdock"
    ]
   },
@@ -13518,6 +13193,15 @@
    ],
    "where": [
     "button.pinbtn.on in #consoledock"
+   ]
+  },
+  {
+   "s": "Pinned: this dock's height goes no further than 200px - click to unpin (any height) · right-click: ↺ Reset pin",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.pinbtn.on in #chatdock"
    ]
   },
   {
@@ -13988,11 +13672,13 @@
   {
    "s": "Prompt chat",
    "kinds": [
-    "text"
+    "text",
+    "aria-label"
    ],
    "where": [
     "div.bhead in #chatdock",
-    "td in #drList"
+    "td in #drList",
+    "div.h3fp.dfm-float"
    ]
   },
   {
@@ -15048,6 +14734,15 @@
    ]
   },
   {
+   "s": "Reference description",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "textarea#scRefDesc"
+   ]
+  },
+  {
    "s": "Reference dock",
    "kinds": [
     "text"
@@ -15762,7 +15457,7 @@
    ],
    "where": [
     "button.maxbtn in #comfydock",
-    "button.maxbtn in #stemsdock",
+    "button.maxbtn in #chatdock",
     "button.maxbtn in #previewdock"
    ]
   },
@@ -16548,6 +16243,15 @@
    ]
   },
   {
+   "s": "Scene prompt editor",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "textarea#scEditText"
+   ]
+  },
+  {
    "s": "Scene render flow",
    "kinds": [
     "aria-label"
@@ -16670,15 +16374,6 @@
    ],
    "where": [
     "input#mmQ"
-   ]
-  },
-  {
-   "s": "Search t705",
-   "kinds": [
-    "placeholder"
-   ],
-   "where": [
-    "input"
    ]
   },
   {
@@ -17292,6 +16987,24 @@
    ]
   },
   {
+   "s": "Shared prompt for all scenes",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "textarea#scPrefix"
+   ]
+  },
+  {
+   "s": "Shared prompt — character definitions, voice assignments and @tags. Rides in front of every scene. 👥 populates it from the cast",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#scPrefix"
+   ]
+  },
+  {
    "s": "Sheet",
    "kinds": [
     "text"
@@ -17361,6 +17074,15 @@
    ],
    "where": [
     "span.ph in #palList"
+   ]
+  },
+  {
+   "s": "Shot N] action... @tag (S1), tone: <d>[English] dialogue</d>",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#scEditText"
    ]
   },
   {
@@ -18025,8 +17747,8 @@
     "text"
    ],
    "where": [
-    "label in #stemsdock",
-    "button.ghost.gbtn in #muTabs"
+    "button.ghost.gbtn in #muTabs",
+    "label in #stemsdock"
    ]
   },
   {
@@ -18578,9 +18300,9 @@
     "aria-label"
    ],
    "where": [
-    "div.bhead in #stemsdock",
     "button#tSt.on",
-    "td in #drList"
+    "div.h3fp.dfm-float",
+    "span.h3fp-n"
    ]
   },
   {
@@ -19157,6 +18879,15 @@
    ],
    "where": [
     "h4 in #aoList"
+   ]
+  },
+  {
+   "s": "Temperament, wants, fears, how they speak and carry themselves — who this character IS in a scene",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#chPersonaIn"
    ]
   },
   {
@@ -20079,6 +19810,24 @@
    ]
   },
   {
+   "s": "The second model's negative prompt. Blank = the same negative as the first picture",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "textarea#cnNeg"
+   ]
+  },
+  {
+   "s": "The second model's own prompt - used when Use prompt docker prompt is unticked",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "textarea#cnPrompt"
+   ]
+  },
+  {
    "s": "The second model's steps. 0 = its workflow's own (a distilled Klein wants 4)",
    "kinds": [
     "title"
@@ -20204,6 +19953,15 @@
    ],
    "where": [
     "span in #tlpNewFxRow"
+   ]
+  },
+  {
+   "s": "The text to read",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "textarea#spText"
    ]
   },
   {
@@ -20924,6 +20682,33 @@
     "label in #chTabProfile",
     "label in #scRefDlg",
     "label.f in #sec-cnet"
+   ]
+  },
+  {
+   "s": "Type a line to speak",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#ttsText"
+   ]
+  },
+  {
+   "s": "Type exactly what is said in the clip, or press Transcribe",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#s_vctext"
+   ]
+  },
+  {
+   "s": "Type, paste or ✨ write the words. A dialog - one line each: Anna (happy): We made it! [laughter] Ben (surprised): Already? (sad) A line on its own takes an emotion like this. A blank line = a longer pause",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#spText"
    ]
   },
   {
@@ -22197,6 +21982,15 @@
    ]
   },
   {
+   "s": "What the picture must NOT have - e.g. blurry, deformed hands, extra fingers, text, watermark",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#negPrompt"
+   ]
+  },
+  {
    "s": "What the queue preset does, a job it is holding, warnings, Custom",
    "kinds": [
     "title"
@@ -22206,12 +22000,30 @@
    ]
   },
   {
+   "s": "What the screenplay writer should know about this image — what it shows, what to copy from it",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#scRefDesc"
+   ]
+  },
+  {
    "s": "What the subject IS — 'animal' forbids anthropomorphizing outright",
    "kinds": [
     "title"
    ],
    "where": [
     "select#chOptKind"
+   ]
+  },
+  {
+   "s": "What this project is for — shown under the menu bar",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#npDesc"
    ]
   },
   {
@@ -22266,6 +22078,15 @@
    ],
    "where": [
     "input#scSwapStart"
+   ]
+  },
+  {
+   "s": "Where they come from and what happened before the story — the writer reads this and their chapter memory when building scenes",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#chBackstoryIn"
    ]
   },
   {
@@ -22708,6 +22529,15 @@
    ],
    "where": [
     "button#brUseRec.ghost"
+   ]
+  },
+  {
+   "s": "Your prompt — or a question for the chat above (💬 Send to chat, or Ctrl+Enter). e.g. <subject 1> walks through a rain-soaked laneway at night, neon reflections, handheld camera, ambient street sound",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#prompt"
    ]
   },
   {
@@ -23602,6 +23432,15 @@
    ]
   },
   {
+   "s": "blank = the first picture's negative - e.g. anime, cartoon, drawing, illustration",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#cnNeg"
+   ]
+  },
+  {
    "s": "blank = the workflow's own",
    "kinds": [
     "placeholder"
@@ -23789,17 +23628,6 @@
    ],
    "where": [
     "span.k in #drList"
-   ]
-  },
-  {
-   "s": "checking",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span#s_vasagelbl.hint",
-    "span#s_vaspectrumlbl.hint",
-    "div#s_vastatus.hint"
    ]
   },
   {
@@ -24281,15 +24109,6 @@
    ]
   },
   {
-   "s": "default: /tmp/claude-0/t705/misc/default.settings custom: /tmp/claude-0/t705/custom.settings (customised: captioner, native, rgpu)",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div#s_setinfo.hint"
-   ]
-  },
-  {
    "s": "designed",
    "kinds": [
     "text"
@@ -24615,6 +24434,15 @@
    ],
    "where": [
     "input#spName"
+   ]
+  },
+  {
+   "s": "e.g. score_9, score_8_up, photo, realistic, a young woman",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#cnPrompt"
    ]
   },
   {
@@ -25049,33 +24877,6 @@
    ]
   },
   {
-   "s": "floating · 260 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
-   "s": "floating · 294 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
-   "s": "floating · 492 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
    "s": "flux · edit (1 picture)",
    "kinds": [
     "text"
@@ -25433,24 +25234,6 @@
    ]
   },
   {
-   "s": "in its place · 131 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
-   "s": "in its place · 171 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
    "s": "in its place · 200 px wide",
    "kinds": [
     "text"
@@ -25470,24 +25253,6 @@
   },
   {
    "s": "in its place · 300 px wide",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
-   "s": "in its place · 420 px high",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "td.w in #drList"
-   ]
-  },
-  {
-   "s": "in its place · closed · 30 px high",
    "kinds": [
     "text"
    ],
@@ -25985,15 +25750,6 @@
    ]
   },
   {
-   "s": "llama.cpp is not installed - ⬇ Install engine puts it in /tmp/claude-0/t705/llama-cpp",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div#s_llmengver.hint"
-   ]
-  },
-  {
    "s": "llm-models",
    "kinds": [
     "text"
@@ -26389,8 +26145,8 @@
     "text"
    ],
    "where": [
-    "option in #stSegFmt",
-    "option in #muFormat"
+    "option in #muFormat",
+    "option in #stSegFmt"
    ]
   },
   {
@@ -26907,15 +26663,6 @@
    ]
   },
   {
-   "s": "none of these yet - the LLM folder: /tmp/claude-0/t705/llm-models",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.kv in #aoList"
-   ]
-  },
-  {
    "s": "none wired yet —",
    "kinds": [
     "text"
@@ -27045,15 +26792,6 @@
    ],
    "where": [
     "span#s_mingstatus.hint"
-   ]
-  },
-  {
-   "s": "not installed — press Install OmniVoice (/tmp/claude-0/t705/venvs/omnivoice)",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "span#s_omnistatus.hint"
    ]
   },
   {
@@ -29857,25 +29595,6 @@
    ]
   },
   {
-   "s": "tmp/claude-0/t705",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "button.fd-crumb",
-    "button.fd-si.cur"
-   ]
-  },
-  {
-   "s": "tmp/claude-0/t705/projects/default",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "button.fd-si"
-   ]
-  },
-  {
    "s": "to the end",
    "kinds": [
     "placeholder"
@@ -30025,7 +29744,8 @@
     "text"
    ],
    "where": [
-    "span.k in #drList"
+    "span.k in #drList",
+    "span"
    ]
   },
   {
@@ -30209,8 +29929,8 @@
     "text"
    ],
    "where": [
-    "option in #stSegFmt",
-    "option in #muFormat"
+    "option in #muFormat",
+    "option in #stSegFmt"
    ]
   },
   {
@@ -30253,6 +29973,15 @@
    ]
   },
   {
+   "s": "what should have happened",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#brExp"
+   ]
+  },
+  {
    "s": "what should the LLM write? (e.g. two friends meet after years)",
    "kinds": [
     "placeholder"
@@ -30268,6 +29997,15 @@
    ],
    "where": [
     "input#spDesc"
+   ]
+  },
+  {
+   "s": "what you saw - an error message, what stopped, what looked wrong",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#brWhat"
    ]
   },
   {

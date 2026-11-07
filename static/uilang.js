@@ -22,6 +22,8 @@
   "use strict";
   var SKIP = "#imageeditdock, #timelinedock, #pushpulldock, #solidcraftdock, #hlpBody .hlpc, #hpBody, script, style, code, pre, kbd, textarea, [contenteditable=''], [contenteditable='true'], [data-noi18n]";
   var ATTRS = ["title", "placeholder", "aria-label"];
+  // a text box's own words (what is typed) are never touched - but its placeholder / tooltip are
+  var SKIP_ATTR = SKIP.replace(", textarea", "");
   var LET = /[A-Za-z]/;
   /** the words between their symbols: "💾 Save…" -> {pre "💾 ", core "Save", post "…"} (inner spaces collapsed) */
   function split(s) {
@@ -40,12 +42,12 @@
     if (t == null) { var whole = s.replace(/\s+/g, " ").trim(); if (dict[whole] != null) return s.match(/^\s*/)[0] + dict[whole] + s.match(/\s*$/)[0]; return null; }
     return p.pre + t + p.post;
   }
-  var pure = { split: split, tr: tr, SKIP: SKIP, ATTRS: ATTRS };
+  var pure = { split: split, tr: tr, SKIP: SKIP, SKIP_ATTR: SKIP.replace(", textarea", ""), ATTRS: ATTRS };
   if (typeof module !== "undefined" && module.exports && typeof window === "undefined") { module.exports = pure; return; }
 
   var doc = root.document, S = { lang: "en", dict: null, obs: null, nodes: new Set(), els: new Set() };
   var ORIG = new WeakMap(), LAST = new WeakMap(), AORIG = new WeakMap(), ALAST = new WeakMap();
-  var skipped = function (el) { try { return !!(el && el.closest && el.closest(SKIP)); } catch (e) { return false; } };
+  var skipped = function (el, sel) { try { return !!(el && el.closest && el.closest(sel || SKIP)); } catch (e) { return false; } };
   function textNode(n) {
     var v = n.nodeValue;
     if (LAST.get(n) === v) return;                          // our own translation
@@ -56,7 +58,7 @@
     if (t != null && t !== v) { LAST.set(n, t); n.nodeValue = t; S.nodes.add(n); }
   }
   function attrs(el) {
-    if (!el.getAttribute || skipped(el)) return;
+    if (!el.getAttribute || skipped(el, SKIP_ATTR)) return;
     for (var i = 0; i < ATTRS.length; i++) {
       var a = ATTRS[i], v = el.getAttribute(a);
       if (v == null) continue;
@@ -70,10 +72,11 @@
   function walk(rootEl) {
     if (!rootEl || !S.dict) return;
     if (rootEl.nodeType === 3) { textNode(rootEl); return; }
-    if (rootEl.nodeType !== 1 || skipped(rootEl)) return;
+    if (rootEl.nodeType !== 1) return;
     attrs(rootEl);
+    if (skipped(rootEl) && !rootEl.querySelector("textarea")) return;
     var w = doc.createTreeWalker(rootEl, 5 /* elements + text */, null), n;
-    while ((n = w.nextNode())) { if (n.nodeType === 3) textNode(n); else attrs(n); }
+    while ((n = w.nextNode())) { if (n.nodeType === 3) textNode(n); else attrs(n); }      // (textNode / attrs check what to skip)
   }
   function restore() {
     S.nodes.forEach(function (n) { if (ORIG.has(n) && LAST.get(n) === n.nodeValue) n.nodeValue = ORIG.get(n); LAST.delete(n); });
@@ -108,6 +111,15 @@
     if (!same && S.dict) { observe(); walk(doc.body); }
     doc.documentElement.setAttribute("data-uilang", lang);
   }
+  // Chinese / Japanese break between any two characters - short labels and buttons would stand one character per line
+  // (工/作/区): there they break only where the English would (keep-all); long text still wraps normally
+  (function css() {
+    if (doc.getElementById("uiLangCss")) return;
+    var st = doc.createElement("style"); st.id = "uiLangCss";
+    st.textContent = ["zh-CN", "zh-TW", "ja"].map(function (l) { return 'html[data-uilang="' + l + '"] :is(button, label, select, option, th, legend, summary, .bhead, .wslab, .tab, [role=tab], .stab, h1, h2, h3, h4, h5)'; }).join(",\n")
+      + " { word-break: keep-all; }";
+    (doc.head || doc.documentElement).appendChild(st);
+  })();
   function apply(lang) {
     if (lang === S.lang && (lang === "en" || S.dict)) return Promise.resolve();
     restore(); S.dict = null; S.lang = lang;

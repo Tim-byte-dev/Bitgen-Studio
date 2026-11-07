@@ -21,7 +21,8 @@ const read = (p) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } cat
 const strings = () => (read(path.join(DIR, "strings.json")) || { strings: [] }).strings.map((x) => x.s);
 const dictOf = (lang) => (read(path.join(DIR, lang + ".json")) || { strings: {} }).strings;
 function save(lang, d) {
-  const sorted = {}; Object.keys(d).sort().forEach((k) => { sorted[k] = d[k]; });
+  const S = new Set(strings());                     // only what the app has now (a word gone from the app goes from here)
+  const sorted = {}; Object.keys(d).sort().forEach((k) => { if (!S.size || S.has(k)) sorted[k] = d[k]; });
   const v = crypto.createHash("sha256").update(JSON.stringify(sorted)).digest("hex").slice(0, 12);
   fs.writeFileSync(path.join(DIR, lang + ".json"), JSON.stringify({ lang, v, count: Object.keys(sorted).length, strings: sorted }, null, 1) + "\n");
   return v;

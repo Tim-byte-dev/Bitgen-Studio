@@ -30,13 +30,13 @@ const CJK = /[぀-ヿ一-鿿]/;
     for (const [lang, test] of [["zh-CN", /[一-鿿]/], ["ja", /[぀-ヿ一-鿿]/], ["zh-TW", /[一-鿿]/]]) {
       await p.selectOption("#uiLangSel", lang);
       await p.waitForFunction((l) => document.documentElement.getAttribute("data-uilang") === l && window.H3UiLang.state().dict, lang, { timeout: 15000 });
-      const r = await p.evaluate(() => {
+      const r = await p.evaluate((enSet) => {
         const D = H3UiLang.state().dict, gen = document.querySelector('[data-stab="general"]').textContent, set = document.getElementById("openSettings").title;
         // how much of the main window's visible words are translated now
         let en = 0, tr = 0; const w = document.createTreeWalker(document.getElementById("menubar").parentElement || document.body, 4, null); let n;
         while ((n = w.nextNode())) { const e = n.parentElement; if (!e || e.closest(H3UiLang.SKIP) || !e.getClientRects().length) continue; const v = n.nodeValue.trim(); if (!/[A-Za-z]{3}/.test(v) && !/[぀-ヿ一-鿿]/.test(v)) continue; if (/[぀-ヿ一-鿿]/.test(v)) tr++; else en++; }
-        return { gen, set, want: D.General, wantSet: D.Settings, tr, en, ie: (document.querySelector("#imageeditdock .bhead") || {}).textContent || "" };
-      });
+        return { gen, set, want: D.General, wantSet: H3UiLang.tr(enSet, D), tr, en, ie: (document.querySelector("#imageeditdock .bhead") || {}).textContent || "" };
+      }, before.set);
       check(`${lang}: the app's words change at once - Settings' tabs, the ⚙ tooltip, most of what is on screen; the image editor stays English (this release)`,
         r.gen === r.want && test.test(r.gen) && r.set === r.wantSet && r.tr > r.en && r.ie === before.ie, r);
     }

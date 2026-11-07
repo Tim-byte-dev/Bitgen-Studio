@@ -7,7 +7,8 @@ Tim (verbatim): "can you add a traditional chinese version as well?"
     pip install opencc                  (OpenCC - Apache-2.0, the standard Simplified <-> Traditional converter)
     python3 scripts/i18n-zhtw.py [--force]   docs/i18n/zh-CN/* + static/help/zh-CN/*  ->  docs/i18n/zh-TW/* + static/help/zh-TW/*
                                         (refuses to overwrite the reviewed zh-TW without --force)
-    python3 scripts/i18n-zhtw.py --ui        static/i18n/ui/zh-CN.json -> zh-TW.json (2.705.0: the app's own words)
+    python3 scripts/i18n-zhtw.py --ui        static/i18n/ui/zh-CN.json -> zh-TW.json (2.705.0: the app's own words; only the
+                                        words zh-TW lacks - the reviewed ones are kept; --force converts all)
 
 OpenCC's "s2twp" turns the characters AND the mainland words into Taiwan's (视频 -> 影片, 文件 -> 檔案, 默认 -> 預設, 项目 ->
 專案); TW_WORDS then sets the app's own terms. Code, `code`, links, URLs, HTML tags and the <!-- en: … --> markers are left
@@ -76,7 +77,10 @@ def ui():
     """2.705.0: the UI dictionary - static/i18n/ui/zh-CN.json -> zh-TW.json (the translations converted; the English keys kept)"""
     cc = converter()
     d = json.load(open(os.path.join(ROOT, "static", "i18n", "ui", "zh-CN.json"), encoding="utf-8"))
-    out = {k: convert_text(v, cc) for k, v in d["strings"].items()}
+    tw_path = os.path.join(ROOT, "static", "i18n", "ui", "zh-TW.json")
+    have = {} if "--force" in sys.argv or not os.path.exists(tw_path) else json.load(open(tw_path, encoding="utf-8"))["strings"]
+    # the reviewed zh-TW words are kept; only words zh-TW lacks are converted (--force: all again)
+    out = {k: (have[k] if k in have else convert_text(v, cc)) for k, v in d["strings"].items()}
     import hashlib
     v = hashlib.sha256(json.dumps(dict(sorted(out.items())), ensure_ascii=False, separators=(", ", ": ")).encode("utf-8")).hexdigest()[:12]
     json.dump({"lang": "zh-TW", "v": v, "count": len(out), "strings": dict(sorted(out.items()))},

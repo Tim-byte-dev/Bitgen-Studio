@@ -30,7 +30,7 @@ const COLLECT = () => {
   const w = document.createTreeWalker(document.body, 5, null); let n;
   while ((n = w.nextNode())) {
     if (n.nodeType === 3) { const p = n.parentElement; if (p && !p.closest(SKIP)) add(n.nodeValue, "text", p); }
-    else if (!n.closest(SKIP)) for (const a of A) { const v = n.getAttribute(a); if (v) add(v, a, n); }
+    else if (!n.closest(H3UiLang.SKIP_ATTR)) for (const a of A) { const v = n.getAttribute(a); if (v) add(v, a, n); }
   }
   return out;
 };
