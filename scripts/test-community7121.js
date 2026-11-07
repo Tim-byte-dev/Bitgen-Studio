@@ -50,6 +50,11 @@ check("the address built from db.json (MySQL, utf8mb4)", s.dsn === "mysql:host=l
 check("the Community admins from db.json, lower-case", JSON.stringify(s.admins) === '["tim","lili"]', s.admins);
 check("still https only", s.require_https === true);
 
+const dbj = JSON.parse(fs.readFileSync(path.join(PRIV, "db.json"), "utf8"));
+fs.writeFileSync(path.join(PRIV, "db.json"), JSON.stringify(Object.assign({}, dbj, { host: "localhost:3307" })));
+s = settings();
+check("a host with :port (as Plesk shows it) becomes host + port", s.dsn === "mysql:host=localhost;port=3307;dbname=timpaul_bitgen;charset=utf8mb4", s.dsn);
+fs.writeFileSync(path.join(PRIV, "db.json"), JSON.stringify(dbj));
 s = settings({ BGC_DSN: "sqlite:" + path.join(TMP, "x.db") });
 check("BGC_DSN still replaces the address (the password still read)", s.dsn.startsWith("sqlite:") && s.pass === PASS, s);
 

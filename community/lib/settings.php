@@ -1,7 +1,7 @@
 <?php
 // bitGen Community (2.710.0) - the settings: config.php (never in git) + the environment overrides.
 // 2.712.1: no config.php -> the private folder the tigerart.com.au admin page (/b_admin/) writes, OUTSIDE public_html:
-//   <home>/bitgen-private/db.json      {"host", "name", "user", "admins": [...]}  (no password in it)
+//   <home>/bitgen-private/db.json      {"host" (may end in :port), "name", "user", "admins": [...]}  (no password)
 //   <home>/bitgen-private/db-pass.txt  the database password, encrypted with secret.key (bgc_secret_open)
 //   <home>/bitgen-private/secret.key   32 random bytes, base64
 // <home> = the folder above the site's document root; BITGEN_PRIVATE_DIR overrides the whole path.
@@ -72,8 +72,10 @@ function bgc_private_settings(): array
     if ($dir === '' || !is_file($dir . '/db.json')) return [];
     $j = json_decode((string) @file_get_contents($dir . '/db.json'), true);
     if (!is_array($j) || empty($j['name'])) return [];
+    // the host may end in :port (Plesk shows "localhost:3306")
+    [$host, $port] = array_pad(explode(':', (string) ($j['host'] ?? 'localhost'), 2), 2, '');
     $out = [
-        'dsn' => 'mysql:host=' . ($j['host'] ?? 'localhost') . ';dbname=' . $j['name'] . ';charset=utf8mb4',
+        'dsn' => 'mysql:host=' . $host . ($port !== '' ? ';port=' . $port : '') . ';dbname=' . $j['name'] . ';charset=utf8mb4',
         'user' => (string) ($j['user'] ?? ''),
         'admins' => is_array($j['admins'] ?? null) ? $j['admins'] : [],
     ];
