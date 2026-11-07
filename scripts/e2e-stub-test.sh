@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.705.0 (Tim: "is it possible to add a language dropdown to the left of docker layout and change the language of the ui on change?")
+node scripts/test-uilang705.js > /tmp/uilang705.log 2>&1 \
+  && ok "2.705.0 units: the UI translation (split / tr, what is skipped), the guides naming buttons as the app does, the wiring, the three dictionaries complete and well formed" \
+  || { bad "2.705.0 uilang units"; grep -a "^FAIL" -A2 /tmp/uilang705.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-uilang705-ui.js > /tmp/uilang705ui.log 2>&1 \
+  && ok "2.705.0 browser test: the dropdown left of ⊞ changes the main window's words at once in 简体中文 / 日本語 / 繁體中文, new words translated as they appear, editors English, back to English restores - or SKIP without playwright" \
+  || { bad "2.705.0 uilang browser test"; grep -a "FAIL\\|Error" -A2 /tmp/uilang705ui.log | head -14; }
 # ---- 2.703.0 (Tim: "is it possible to translate help and the user guide into chinese and japanese as additional help files?")
 node scripts/test-i18n703.js > /tmp/i18n703.log 2>&1 \
   && ok "2.703.0 units: the guide + help in zh-CN / ja - markers, hashes, stale / not translated, the checker, the language picked, the wiring, the shipped translations' structure, the PDFs" \

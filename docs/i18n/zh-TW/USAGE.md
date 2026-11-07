@@ -4547,6 +4547,16 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **各語言的指南 PDF**：docs/bitGen-Studio-Guide-zh-CN.pdf、docs/bitGen-Studio-Guide-zh-TW.pdf 和 docs/bitGen-Studio-Guide-ja.pdf。
 - 譯文檔案與英文檔案放在一起：docs/i18n/zh-CN/、docs/i18n/zh-TW/ 和 docs/i18n/ja/（USAGE.md、shortcuts.json），以及 static/help/zh-CN/、static/help/zh-TW/、static/help/ja/。繁體中文版由簡體中文版轉換而來（`python3 scripts/i18n-zhtw.py`，採用台灣用語），之後再經人工校讀。執行 `node scripts/i18n-help.js status zh-TW` 可列出已過時的內容。
 
+## 應用程式本身的中文與日文版（2.705.0）
+<!-- en: the-app-itself-in-chinese-and-japanese-2-705-0 d6320f6eb1c4 -->
+
+選單列上 ⊞（面板版面配置）左邊的下拉選單可以切換應用程式本身的語言：**English** / **简体中文** / **繁體中文** / **日本語**。按鈕、選單、面板標題、分頁、設定、提示訊息以及空白輸入框中的提示文字會立即切換——不需要重新啟動，切回英文後所有文字都會恢復原狀。
+
+- 它與 📖 說明指南和 ❔ 說明頁面的語言是同一個設定：變更其中一個，另一個也會跟著改變。
+- 本版本翻譯了主視窗。影像編輯器、時間軸、📏 草圖建模和 CAD 面板仍為英文（將在之後的版本翻譯）；應用程式執行時即時產生的文字（例如含有數字或檔名的狀態訊息）也仍為英文。
+- 譯文指南中提到的按鈕名稱與翻譯後的應用程式介面一致；介紹各編輯器的章節仍使用這些編輯器目前顯示的英文名稱。
+- 介面文字來自 static/i18n/ui/<語言>.json。執行 `node scripts/i18n-ui.js status zh-TW` 可查看已翻譯的數量。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

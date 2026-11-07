@@ -88,3 +88,19 @@ able to find them on screen. So:
    (UI names in English are expected), nothing dropped.
 4. Reply with ONE line: the files you wrote and anything you were unsure about (at most two short notes). No summary of the
    content.
+
+## The app's own words (2.705.0) - static/i18n/ui/<lang>.json
+
+The UI is translated at run time by static/uilang.js from a dictionary per language {"strings": {"English": "translation"}}.
+- `H3_URL=http://127.0.0.1:8311/ node scripts/ui-strings.js` collects every word of the running main window (the editors are
+  left out - static/uilang.js SKIP) into static/i18n/ui/strings.json, with where each one appears.
+- Translators get pieces of that list and return one JSON object per piece; `node scripts/i18n-ui.js build <lang> <dir>`
+  merges them (a dir holding ONLY the new pieces - otherwise older pieces overwrite reviewed words), `check` must say 0
+  problems, `status` says what is missing. zh-TW: `python3 scripts/i18n-zhtw.py --ui` converts only the words zh-TW lacks.
+- UI rules: labels short, in the software style of the language (保存 / 開く); tooltips in full sentences (ja です・ます);
+  names, model / style names, file names, code, keys, literal values the app sends stay as they are; placeholders and ▸
+  menu paths kept; a fragment (its icon and trailing ":" "…" are kept by the app) translated so it still works.
+- The guides take the button names from the dictionary at read time (lib/helpI18n.js uiNames - not in the editors' sections
+  until their UI is translated: EDITORS / UI_EDITOR_PAGES there).
+- NEXT (Tim chose the main window first): the image editor, timeline, Sketcher and CAD dockers - take them out of SKIP,
+  collect again, translate the new strings, and remove them from EDITORS.

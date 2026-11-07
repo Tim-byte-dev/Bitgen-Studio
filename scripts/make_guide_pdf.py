@@ -363,7 +363,9 @@ LANG = "en"
 def use_lang(lang):
     """read the translated guide + shortcuts; switch the fonts to Noto Sans CJK (SC / JP) with DejaVu behind it"""
     global LANG, FONT, BOLD, ITAL, _GLYPHS, FALLBACK, WRAP, ST
-    tmd = open(os.path.join(ROOT, "docs", "i18n", lang, "USAGE.md"), encoding="utf-8").read()
+    import subprocess
+    # 2.705.0: the guide as the app shows it - the buttons named as the translated UI names them (one place: lib/helpI18n.js)
+    tmd = subprocess.run(["node", os.path.join(ROOT, "scripts", "i18n-help.js"), "render", lang], capture_output=True, check=True).stdout.decode("utf-8")
     md = re.sub(r"^\s*<!--\s*en:[^>]*-->\s*\n", "", tmd, flags=re.M)
     sc = json.load(open(os.path.join(ROOT, "docs", "shortcuts.json"), encoding="utf-8"))
     try:

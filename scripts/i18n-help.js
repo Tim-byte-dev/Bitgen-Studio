@@ -9,6 +9,8 @@
  *   node scripts/i18n-help.js assemble <lang> <dir>                    the translated pieces into the app:
  *        guide-NN.<lang>[.partK].md -> docs/i18n/<lang>/USAGE.md (merged by section with what is there, English order)
  *        help-<topic>.<lang>.html -> static/help/<lang>/<topic>.html, shortcuts.<lang>.json -> docs/i18n/<lang>/shortcuts.json
+ *   node scripts/i18n-help.js render   <lang>                          the translated guide as the app shows it (2.705.0: the
+ *        buttons named as the translated UI names them - lib/helpI18n.js uiNames) on stdout - make_guide_pdf.py --lang reads it
  *   node scripts/i18n-help.js check    <lang> [--strict]               the structure kept (markers, code, links, pictures,
  *        tables, the help pages' tags + ids, the shortcut keys) and the text really translated; exit 1 on a problem
  * The translators' brief + glossary: docs/i18n/TRANSLATING.md (UI names stay English; markers / code / links untouched).
@@ -177,6 +179,12 @@ if (require.main === module) {
   if (cmd === "status") console.log(JSON.stringify(I.report(ROOT, lang), null, 1));
   else if (cmd === "prep") prep(lang, a[2], { size: +opt("--size", 40000), all: a.includes("--all") });
   else if (cmd === "assemble") assemble(lang, a[2]);
+  else if (cmd === "render") {
+    const tmd = read(P.tr(lang)) || "", UD = I.uiDict(ROOT, lang), titles = {};
+    for (const s of I.rawSections(read(P.en))) titles[s.id] = s.title;
+    process.stdout.write(!UD ? tmd : I.rawSections(tmd).map((s) => { const mk = s.raw.split("\n").map(I.parseMarker).find(Boolean);
+      return mk && mk.id !== "_top" && !I.EDITORS.test(titles[mk.id] || "") ? I.uiNames(s.raw, UD) : s.raw; }).join("\n"));
+  }
   else if (cmd === "check") { const pr = check(lang, a.includes("--strict")); pr.forEach((x) => console.log("PROBLEM: " + x)); console.log(`check ${lang}: ${pr.length} problems`); process.exit(pr.length ? 1 : 0); }
   else { console.log("unknown command " + cmd); process.exit(2); }
 }

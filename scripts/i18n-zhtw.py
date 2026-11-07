@@ -7,6 +7,8 @@ Tim (verbatim): "can you add a traditional chinese version as well?"
     pip install opencc                  (OpenCC - Apache-2.0, the standard Simplified <-> Traditional converter)
     python3 scripts/i18n-zhtw.py [--force]   docs/i18n/zh-CN/* + static/help/zh-CN/*  ->  docs/i18n/zh-TW/* + static/help/zh-TW/*
                                         (refuses to overwrite the reviewed zh-TW without --force)
+    python3 scripts/i18n-zhtw.py --ui        static/i18n/ui/zh-CN.json -> zh-TW.json (2.705.0: the app's own words; only the
+                                        words zh-TW lacks - the reviewed ones are kept; --force converts all)
 
 OpenCC's "s2twp" turns the characters AND the mainland words into Taiwan's (视频 -> 影片, 文件 -> 檔案, 默认 -> 預設, 项目 ->
 專案); TW_WORDS then sets the app's own terms. Code, `code`, links, URLs, HTML tags and the <!-- en: … --> markers are left
@@ -28,9 +30,22 @@ TW_WORDS = [
     ("型別", "類型"), ("選項卡", "分頁"), ("標籤頁", "分頁"), ("引數", "參數"), ("摳圖", "去背"), ("漸變", "漸層"),
     ("魔棒", "魔術棒"), ("控制元件", "控制項"), ("映象", "鏡像"), ("全域性", "全域"), ("擴充套件", "擴充功能"),
     ("和麵板", "和面板"), ("全綵", "全彩"), ("傢俱", "家具"), ("合並", "合併"),
+    # 2.705.x: the Taiwan editor's review of the UI dictionary (zh-TW.json) - more terms s2twp leaves; after 選區 above
+    ("選取範圍域", "選取區域"), ("渲染髮送", "渲染傳送"), ("隻停止", "只停止"), ("跟蹤", "追蹤"), ("自定義", "自訂"),
+    ("單擊", "點選"), ("點擊", "點選"), ("畫素", "像素"), ("分形", "碎形"), ("噪波", "雜訊"), ("噪聲", "雜訊"), ("噪點", "雜訊"),
+    ("頂欄", "頂端列"), ("搜索", "搜尋"), ("計算機", "電腦"), ("語義", "語意"), ("潛空間", "潛在空間"), ("指令碼", "腳本"),
+    ("進度條", "進度列"), ("寬高比", "長寬比"), ("底模", "基礎模型"), ("重置", "重設"), ("許可權", "權限"), ("只讀", "唯讀"),
+    ("許可證", "授權"), ("標題條", "標題列"), ("全屏", "全螢幕"), ("錄屏", "螢幕錄影"), ("橫屏", "橫向"), ("豎屏", "直向"),
+    ("示例", "範例"), ("獲取", "取得"), ("賬", "帳"), ("令牌", "權杖"), ("重啟", "重新啟動"), ("壓縮包", "壓縮檔"),
+    ("居中", "置中"), ("向下取整", "無條件捨去"), ("向上取整", "無條件進位"), ("檢測", "偵測"), ("導航窗格", "瀏覽窗格"),
+    ("單詞", "字詞"), ("稠密", "密集"), ("克隆", "複製"), ("另存為", "另存新檔"), ("構建", "建構"), ("裁剪", "裁切"),
+    ("依賴包", "相依套件"), ("快速訪問", "快速存取"),
 ]
 # NOT automatic (the meaning decides - read for them): 行 / 列 in tables (Taiwan: 列 = row, 欄 = column); 應用 = 應用程式
-# (the app) or 套用 (apply); 項目 = 專案 (a project) or 項目 (an item); 連線 (a connection) vs 連接 (walls that join).
+# (the app) or 套用 (apply); 項目 = 專案 (a project) or 項目 (an item); 連線 (a connection) vs 連接 (walls that join);
+# 通過 = 透過 (through) unless "passed"; 新建 = 新增 but not in 重新建立; 自帶 = 內建 / 本身; 本地 = 本機 (not 本地化);
+# 常規 = 一般 (Settings ▸ General, Normal); 組 = 群組 (a group) but not 一組 / 模組 / 組長; 訪問 = 存取 / 連線;
+# 剪下 = Cut (clipboard) but 剪接 for video cuts; 退出 = 結束 / 離開; 幫助 = 說明 (Help); “ ” -> 「 」 in Chinese prose.
 KEEP = re.compile(r"(```[\s\S]*?```|`[^`\n]+`|<!--[\s\S]*?-->|<[^>]+>|\]\([^)]*\)|https?://[^\s)<>\"]+)")
 
 
@@ -58,7 +73,24 @@ def convert_text(text, cc):
     return "".join(out)
 
 
+def ui():
+    """2.705.0: the UI dictionary - static/i18n/ui/zh-CN.json -> zh-TW.json (the translations converted; the English keys kept)"""
+    cc = converter()
+    d = json.load(open(os.path.join(ROOT, "static", "i18n", "ui", "zh-CN.json"), encoding="utf-8"))
+    tw_path = os.path.join(ROOT, "static", "i18n", "ui", "zh-TW.json")
+    have = {} if "--force" in sys.argv or not os.path.exists(tw_path) else json.load(open(tw_path, encoding="utf-8"))["strings"]
+    # the reviewed zh-TW words are kept; only words zh-TW lacks are converted (--force: all again)
+    out = {k: (have[k] if k in have else convert_text(v, cc)) for k, v in d["strings"].items()}
+    import hashlib
+    v = hashlib.sha256(json.dumps(dict(sorted(out.items())), ensure_ascii=False, separators=(", ", ": ")).encode("utf-8")).hexdigest()[:12]
+    json.dump({"lang": "zh-TW", "v": v, "count": len(out), "strings": dict(sorted(out.items()))},
+              open(os.path.join(ROOT, "static", "i18n", "ui", "zh-TW.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print(json.dumps({"ui": "zh-TW", "strings": len(out)}))
+
+
 def main():
+    if "--ui" in sys.argv:
+        return ui()
     force = "--force" in sys.argv
     if not force and os.path.exists(os.path.join(ROOT, "docs", "i18n", "zh-TW", "USAGE.md")):
         sys.exit("docs/i18n/zh-TW already exists and was read over by hand (2.704.0) - converting again would undo that.\n"

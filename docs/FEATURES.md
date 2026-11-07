@@ -1234,6 +1234,7 @@ Getting the work out: movies in every format, files for other editors, and bitGe
 - **The brochure** — a 3-page brochure. *Where:* docs/bitGen-Studio-Brochure.pdf. *Since:* 2.392.0
 - **The Feature Reference** — this catalogue of every feature by area (what it does, where it is, since which version), made again for every release. *Where:* docs/bitGen-Studio-Features.pdf. *Since:* 2.473.0
 - **In-app help** — help pages for the timeline and the image editor. *Where:* the Help buttons. *Since:* 2.380.0
+- **The app in Chinese and Japanese** — the main window's own words (buttons, menus, docker titles, tabs, Settings, tooltips, hints) in Simplified Chinese, Traditional Chinese or Japanese, switched at once from a dropdown on the menu bar; the same setting as the guide's language, and the guides name the buttons as the app shows them. The editors (image editor, timeline, Sketcher, CAD) follow later. *Where:* the dropdown left of ⊞ on the menu bar. *Since:* 2.705.0
 - **The guide and help in Chinese and Japanese** — the 📖 Help window, Ctrl+K's guide entries, the ❔ help pages, the shortcut list and the Guide PDF in Simplified Chinese (mainland China), Traditional Chinese (Taiwan / Hong Kong, 2.704.0) or Japanese; the app's own buttons stay English, so the translations name them in English. A section newer in English says so, with the English one a click away. *Where:* the language picker in 📖 Help or a ❔ help page; docs/bitGen-Studio-Guide-zh-CN.pdf, -zh-TW.pdf, -ja.pdf. *Since:* 2.703.0
 
 ## Keyboard shortcuts

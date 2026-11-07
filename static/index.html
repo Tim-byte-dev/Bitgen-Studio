@@ -3430,6 +3430,7 @@
 <script src="/static/workspaces.js"></script>  <!-- 2.526.0: the Workspace dropdown in the menu bar (H3Workspace - routes/workspaces.js) -->
 <script src="/static/styledoctor.js"></script>  <!-- 2.527.0: 🩺 the Style doctor (H3StyleDoctor - routes/styleDoctor.js) -->
 <script src="/static/helplang.js"></script>  <!-- 2.703.0: the guide + help language (English / 简体中文 / 日本語 - H3HelpLang) -->
+<script src="/static/uilang.js"></script>  <!-- 2.705.0: the app's words in the picked language (H3UiLang - static/i18n/ui/<lang>.json; the dropdown left of ⊞) -->
 <script src="/static/palette.js"></script>  <!-- 2.530.0: ⌕ the Ctrl+K command palette + 📖 Help (H3Palette - routes/help.js) -->
 <script src="/static/hwpanel.js"></script>  <!-- 2.520.0: Settings -> Models -> This computer & package (H3HwPanel - lib/hwPlan.js) -->  <!-- 2.518.0: 🧪 the Testing docker + the log to upload (H3TestDock - lib/testPlan.js) -->  <!-- 2.517.0: ⚡ power draw + clocks in the System stats, a job's energy (H3Power) -->  <!-- 2.516.0: keyframes on any property (H3AnyKeys - the canvas, the export, lib/clipFx.js) -->  <!-- 2.513.0: the timeline's frame size (presets, aspects - the timeline's size bar) -->
 <script src="/static/pmedia.js"></script>
@@ -4357,14 +4358,14 @@ async function refreshHf() {
   if (el && document.activeElement !== el && !el.value && j.has_token) {
     el.placeholder = `saved: ${j.masked} — retype to replace`;
   }
-  if ($("s_hfstatus") && $("s_hfstatus").textContent === "not checked yet" && j.has_token)
+  if ($("s_hfstatus") && !$("s_hfstatus").dataset.checked && j.has_token)          // 2.705.0: by a flag, not the words
     $("s_hfstatus").textContent = "a token is saved — press Test token to verify it";
 }
 if ($("s_hfshow")) $("s_hfshow").onchange = () =>
   ($("s_hftok").type = $("s_hfshow").checked ? "text" : "password");
 if ($("s_hftest")) $("s_hftest").onclick = async () => {
   const tok = $("s_hftok").value.trim();
-  $("s_hfstatus").textContent = "checking with huggingface.co…";
+  $("s_hfstatus").textContent = "checking with huggingface.co…"; $("s_hfstatus").dataset.checked = "1";
   try {
     // save first so a typed token is what gets tested AND what downloads use
     if (tok) await fetch("/api/config", { method: "POST",
@@ -5254,6 +5255,7 @@ function comfyPaint(j) {
       sb.textContent = j.reachable ? "ComfyUI: running"
         : j.starting ? "ComfyUI: starting…"
         : "ComfyUI: not running";
+      sb.dataset.state = j.reachable ? "running" : j.starting ? "starting" : "down";   // 2.705.0: the state, not the words (the UI may be translated)
       sb.style.color = j.reachable ? "" : (j.starting ? "var(--tiger)" : "#c98b7a");
       sb.style.cursor = j.reachable || j.starting ? "default" : "pointer";
       sb.title = j.reachable ? `Reachable at ${j.url}`
@@ -5310,7 +5312,7 @@ async function refreshComfy() {
 }
 async function comfyStart(fromSettings) {
   comfyBusy = true;
-  if ($("sbcomfy")) $("sbcomfy").textContent = "ComfyUI: starting…";
+  if ($("sbcomfy")) { $("sbcomfy").textContent = "ComfyUI: starting…"; $("sbcomfy").dataset.state = "starting"; }
   try {
     const res = await fetch("/api/comfy/start", { method: "POST" });
     const j = await res.json();
@@ -5326,7 +5328,7 @@ async function comfyStart(fromSettings) {
 $("sbcomfy") && ($("sbcomfy").onclick = () => {
   /* Only when it is actually down: clicking "running" should do nothing rather
      than queue a second launch that exits on the port the first one holds. */
-  if (!comfyBusy && $("sbcomfy").textContent === "ComfyUI: not running") comfyStart(false);
+  if (!comfyBusy && $("sbcomfy").dataset.state === "down") comfyStart(false);      // 2.705.0: by state (the words may be translated)
 });
 $("s_cstart") && ($("s_cstart").onclick = () => comfyStart(true));
 /* Free VRAM now (2.98.0): POST /api/comfy/free -> ComfyUI unloads every model

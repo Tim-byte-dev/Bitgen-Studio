@@ -7441,6 +7441,19 @@ stay in English, so the translations name them in English - what you read is wha
   shortcuts.json) and static/help/zh-CN/, static/help/zh-TW/, static/help/ja/. The Traditional Chinese one is made from the
   Simplified one (`python3 scripts/i18n-zhtw.py`, Taiwan's words) and then read over. `node scripts/i18n-help.js status zh-CN` lists what is out of date.
 
+## The app itself in Chinese and Japanese (2.705.0)
+
+The dropdown on the menu bar, just left of ⊞ (docker layout), changes the language of the app itself: **English** /
+**简体中文** / **繁體中文** / **日本語**. Buttons, menus, docker titles, tabs, Settings, tooltips and the hints in empty boxes
+change at once - nothing restarts, and back to English puts every word back.
+
+- It is the same setting as the language of the 📖 Help guide and the ❔ pages: change one and the other follows.
+- This release translates the main window. The image editor, the timeline, the 📏 Sketcher and the CAD docker are still in
+  English (they come next); so are words the app builds while it runs (a status with a number or a file name in it).
+- The translated guides name the buttons the way the translated app shows them; the sections about the editors keep the
+  English names those editors still show.
+- The words come from static/i18n/ui/<language>.json. `node scripts/i18n-ui.js status ja` says how many are translated.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

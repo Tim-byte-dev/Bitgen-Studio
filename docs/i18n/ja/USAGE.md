@@ -4308,6 +4308,16 @@ Windows 11 と同じように、複数をまとめて選択できます：**Ctrl
 - **各言語のガイド PDF**：docs/bitGen-Studio-Guide-zh-CN.pdf、docs/bitGen-Studio-Guide-zh-TW.pdf、docs/bitGen-Studio-Guide-ja.pdf。
 - 翻訳ファイルは英語のファイルと並べて置かれています：docs/i18n/zh-CN/、docs/i18n/zh-TW/、docs/i18n/ja/（USAGE.md、shortcuts.json）、static/help/zh-CN/、static/help/zh-TW/、static/help/ja/。繁体字中国語版は簡体字版から変換し（`python3 scripts/i18n-zhtw.py`、台湾の用語）、その後に読み直して整えています。`node scripts/i18n-help.js status ja` で古くなった箇所を一覧できます。
 
+## アプリ本体の中国語版・日本語版（2.705.0）
+<!-- en: the-app-itself-in-chinese-and-japanese-2-705-0 d6320f6eb1c4 -->
+
+メニューバーの ⊞（ドッカーレイアウト）のすぐ左にあるドロップダウンで、アプリ本体の言語を切り替えられます：**English** / **简体中文** / **繁體中文** / **日本語**。ボタン、メニュー、ドッカーのタイトル、タブ、設定、ツールチップ、空の入力欄に表示されるヒントがすぐに切り替わります。再起動は不要で、英語に戻せばすべての文字が元どおりになります。
+
+- 📖 ヘルプのガイドと ❔ ページの言語と同じ設定です。どちらかを変えると、もう一方も切り替わります。
+- このリリースで翻訳したのはメインウィンドウです。画像エディター、タイムライン、📏 Sketcher、CAD ドッカーはまだ英語のままです（次のリリースで対応します）。アプリが実行中に組み立てる文字（数字やファイル名を含むステータスなど）も英語のままです。
+- 翻訳版のガイドでは、ボタンの名前を翻訳されたアプリの表示どおりに記載しています。エディターについてのセクションでは、そのエディターが現在表示している英語の名前のままです。
+- 文字は static/i18n/ui/<言語>.json から読み込まれます。`node scripts/i18n-ui.js status ja` で翻訳済みの数を確認できます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
