@@ -7338,8 +7338,10 @@ marked; **↺ The theme's colours** undoes them.
 
 **Saved themes**: type a name, **💾 Save theme** - it is written to **themes\<name>.json** in the install folder (the
 colours, the accent, the UI size, the theme it started from) and shows as a card under it. A click on a card loads it,
-✕ deletes the file. **⤓ Export** downloads the theme as a .json, **⤒ Import** uses one (then 💾 Save theme keeps it).
-Copy .json files into the themes folder to share them between computers.
+✕ deletes the file. **⤓ Export** downloads the theme as a .json. **⤒ Import** uses one and saves it at once as
+themes\<its name>.json; the theme you had is kept first as **themes\<its name>_old.json**, and **↶ Revert** (it shows
+after an import) puts that one back under its own name. Copy .json files into the themes folder to share them between
+computers.
 
 **PDF ▸ Save PDF… / Save as New PDF…** (the image editor's Pages strip, or File): the Save dialog has **Embed fonts**
 (on by default, kept): each line of type is written as real text in its own font, embedded in the PDF with only the

@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.709.0 (Tim: "...save the current theme as themename_old.json and save the imported theme automatically when imported add a revert button...")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-themeimport709-ui.js > /tmp/themeimport709.log 2>&1 \
+  && ok "2.709.0 browser test: ⤒ Import keeps the theme in use as <name>_old.json, uses + saves the imported one, ↶ Revert brings the old one back under its name; a built-in name gets (imported); a non-theme refused - or SKIP without playwright" \
+  || { bad "2.709.0 theme import browser test"; grep -a "FAIL\\|Error" -A2 /tmp/themeimport709.log | head -14; }
 # ---- 2.708.0 (Tim: "Add the RTX upscale")
 node scripts/test-rtxvfx708.js > /tmp/rtxvfx708.log 2>&1 \
   && ok "2.708.0 RTX VFX units: the graph (one chunk: loader skip / cap -> the DENO finisher -> combine, Tim's presets A / B), the live-list check, the worker's chunks + lossless concat, options / params / ⚙ branches, REAL worker runs on the stub ComfyUI (1 chunk at 48; 3 chunks joined, all 48 frames, x2 with the sound; no pack / a pass not offered / the pack's own error refused in words), the page" \

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5341,
+ "count": 5344,
  "strings": [
   {
    "s": "0 (auto)",
@@ -3835,6 +3835,15 @@
    ],
    "where": [
     "button#tlpReset.ghost"
+   ]
+  },
+  {
+   "s": "Back to the theme you had before the import",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_threvert"
    ]
   },
   {
@@ -27285,6 +27294,15 @@
    ]
   },
   {
+   "s": "Revert",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#s_threvert"
+   ]
+  },
+  {
    "s": "Revolve",
    "kinds": [
     "text",
@@ -36997,6 +37015,15 @@
    ],
    "where": [
     "button#s_thimport.ghost"
+   ]
+  },
+  {
+   "s": "Use a theme .json file - the theme in use is kept as themes\\<name>_old.json and the imported one is saved at once",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_thimport"
    ]
   },
   {

@@ -16,7 +16,8 @@
  *   CUSTOM + SAVED (2.435.0, Tim: "allow user to save/load themes (save themes to themes\theme name.json)"): every
  *              colour can be changed (Customize); 💾 Save theme writes themes/<name>.json in the install folder
  *              (routes/themes.js, lib/themeStore.js: the colours, the accent, the UI size, the theme it started from);
- *              the saved ones are cards of their own - a click loads one, ✕ deletes it; ⤓ Export / ⤒ Import a .json.
+ *              the saved ones are cards of their own - a click loads one, ✕ deletes it; ⤓ Export / ⤒ Import a .json
+ *              (2.709.0: Import keeps the theme in use as <name>_old.json and saves the imported one; ↶ Revert).
  *              The changed colours are kept in this browser (h3.themeVars) and on <html> before the page paints too.
  *
  *   ELEMENT STYLES (2.443.0, static/themeedit.js - 🖌 edit theme mode): a theme record keeps `styles` too
@@ -163,9 +164,46 @@
     const a = doc.createElement("a"); a.href = root.URL.createObjectURL(blob); a.download = n.trim().replace(/[^A-Za-z0-9 ._()&+-]+/g, "_") + ".json"; doc.body.appendChild(a); a.click();
     setTimeout(() => { root.URL.revokeObjectURL(a.href); a.remove(); }, 3000);
   }
+  /* 2.709.0 (Tim: "can u add an import button to themes,save the current theme as themename_old.json and save the
+   * imported theme automatically when imported add a revert button as well to revert to the old theme if pressed"):
+   * ⤒ Import keeps the theme in use as themes/<its name>_old.json, uses the imported one and saves it at once as
+   * themes/<its name>.json; ↶ Revert goes back to the _old one (under its own name). h3.themeRevert = {file, name}. */
+  const REVERT = "themeRevert";
+  const revertOf = () => { try { const r = JSON.parse(get(REVERT, "null")); return r && r.file ? r : null; } catch (e) { return null; } };
+  /** the name the theme in use is kept under before an import: "<its name>_old" (a built-in one: its own name) */
+  function oldNameOf(c) { const n = String((c && c.name) || ((THEMES[(c && c.theme)] || THEMES.dark).name) || "theme").trim(); return n + "_old"; }
+  function postSave(name, rec) {
+    return root.fetch("/api/themes/save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, theme: Object.assign({}, rec, { name }) }) })
+      .then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || "refused"); return j; }));
+  }
+  function paintRevert() {
+    const b = root.document && root.document.getElementById("s_threvert"); if (!b) return;
+    const r = revertOf(); b.hidden = !r;
+    if (r) b.title = `Back to the theme you had before the import (themes/${r.file}.json)`;
+  }
   function importFile(file) {
-    return file.text().then((txt) => { const rec = JSON.parse(txt); if (!rec || !rec.vars) throw new Error("not a bitGen theme (.json with vars)"); const f = useRecord(rec); say(`${f.name || file.name} imported - 💾 Save theme keeps it in themes/`); return f; })
-      .catch((e) => { say("could not import: " + e.message); return null; });
+    let rec;
+    return file.text().then((txt) => {
+      rec = JSON.parse(txt); if (!rec || !rec.vars) throw new Error("not a bitGen theme (.json with vars)");
+      const c = current(), oldName = oldNameOf(c);
+      return postSave(oldName, snapshot(oldName)).then((o) => ({ o, was: c.name || "" }));
+    }).then(({ o, was }) => {
+      const want = String(rec.name || file.name.replace(/\.json$/i, "")).trim() || "Imported theme";
+      useRecord(Object.assign({}, rec, { name: want }));
+      const keep = (n) => postSave(n, snapshot(n));
+      return keep(want).catch(() => keep(want + " (imported)")).then((j) => {
+        set("themeName", j.name); set(REVERT, JSON.stringify({ file: o.name, name: was }));
+        say(`${j.name} imported and saved as themes/${j.file} - the theme before is themes/${o.file} (↶ Revert goes back)`);
+        paintRevert(); return refresh().then(() => j);
+      });
+    }).catch((e) => { say("could not import: " + e.message); return null; });
+  }
+  /** ↶ Revert: the theme kept before the last import, back in use (under the name it had) */
+  function revert() {
+    const r = revertOf(); if (!r) { say("nothing to revert to"); return Promise.resolve(null); }
+    return root.fetch("/api/themes/" + encodeURIComponent(r.file)).then((x) => x.json().then((j) => { if (!x.ok || !j || !j.vars) throw new Error((j && j.error) || "themes/" + r.file + ".json is gone"); return j; }))
+      .then((j) => { useRecord(Object.assign({}, j, { name: r.name || "" })); set(REVERT, ""); paintRevert(); say(`back to ${r.name || "the theme before"} (from themes/${r.file}.json)`); return j; })
+      .catch((e) => { say("could not revert: " + e.message); return null; });
   }
   function start() {
     const doc = root.document, box = doc && doc.getElementById("s_themes"); if (!box || box.dataset.ready) return;
@@ -189,13 +227,15 @@
     const ex = doc.getElementById("s_thexport"); if (ex) ex.onclick = exportNow;
     const im = doc.getElementById("s_thimport"), fi = doc.getElementById("s_thfile");
     if (im && fi) { im.onclick = () => fi.click(); fi.onchange = () => { const f = fi.files && fi.files[0]; fi.value = ""; if (f) importFile(f); }; }
+    const rv = doc.getElementById("s_threvert"); if (rv) rv.onclick = revert;          // 2.709.0
+    paintRevert();
     paint(); refresh();
   }
   // before the page paints: the kept theme
   try { const c = current(); apply(c.theme, c.accent, c.vars); } catch (e) { /* no DOM (Node) */ }
   if (root.document) { if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start(); }
 
-  const H3Theme = { THEMES, ORDER, VARS, LABELS, shade, varsFor, clampScale, effective, fromSaved, apply, choose, current, start, refresh, saveAs, load, remove, importFile, snapshot, use: useRecord, saved: () => saved };   // 2.587.0: + use (a layout brings its theme - static/layouts.js)
+  const H3Theme = { THEMES, ORDER, VARS, LABELS, shade, varsFor, clampScale, effective, fromSaved, apply, choose, current, start, refresh, saveAs, load, remove, importFile, revert, oldNameOf, snapshot, use: useRecord, saved: () => saved };   // 2.587.0: + use (a layout brings its theme - static/layouts.js)
   if (typeof module !== "undefined" && module.exports) module.exports = H3Theme;
   else root.H3Theme = H3Theme;
 })(typeof window !== "undefined" ? window : globalThis);

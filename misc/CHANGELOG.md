@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.709.0** — Theme Import Keeps the Theme You Had (<name>_old.json), Saves the Imported One at Once, and ↶ Revert Goes Back
 - **2.708.0** — 16 GB Mode for MiniMax H3 (DENO's Turbo 8+2: Text Encoder Unload, 8-Step Pass, Latent Upscale + 2 Refine Steps) and the RTX VFX Upscaler (NVIDIA RTX Video Super Resolution / Deblur)
 - **2.707.0** — 🌏 Every Docker in 简体中文 / 繁體中文 / 日本語 - the Image Editor, Timeline, Sketcher, SolidCraft, StoryBoard and the Rest, With Their Tools, Panels and Menus
 - **2.706.0** — 🌏 The Settings Dialog in 简体中文 / 繁體中文 / 日本語 - Every Tab, and the Status Lines It Writes While It Runs
