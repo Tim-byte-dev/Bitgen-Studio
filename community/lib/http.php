@@ -5,6 +5,7 @@ declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
 const BGC_MAX_BODY = 16384;   // 16 KB - a request body any bigger is refused (413)
+const BGC_MAX_BUG_BODY = 7340032;   // 2.714.0: 7 MB for bug_report only (the logs + a screenshot; PHP's post_max_size is 8 MB)
 
 /** an error a person can read; $status is the HTTP status it goes out with */
 final class ApiError extends Exception
@@ -45,15 +46,16 @@ function bgc_reply(int $status, array $data): void
 }
 
 /** the request body as an array (an empty body = {}); 400 for anything that is not a JSON object, 413 over 16 KB */
-function bgc_read_body(): array
+function bgc_read_body(int $max = BGC_MAX_BODY): array
 {
+    $say = $max >= 1048576 ? round($max / 1048576) . ' MB' : round($max / 1024) . ' KB';
     $len = $_SERVER['CONTENT_LENGTH'] ?? '';
-    if ($len !== '' && ctype_digit((string) $len) && (int) $len > BGC_MAX_BODY) {
-        throw new ApiError(413, 'That request is too big (16 KB at most).');
+    if ($len !== '' && ctype_digit((string) $len) && (int) $len > $max) {
+        throw new ApiError(413, "That request is too big ($say at most).");
     }
-    $raw = file_get_contents('php://input', false, null, 0, BGC_MAX_BODY + 1);
+    $raw = file_get_contents('php://input', false, null, 0, $max + 1);
     if ($raw === false) $raw = '';
-    if (strlen($raw) > BGC_MAX_BODY) throw new ApiError(413, 'That request is too big (16 KB at most).');
+    if (strlen($raw) > $max) throw new ApiError(413, "That request is too big ($say at most).");
     if (trim($raw) === '') return [];
     try {
         $data = json_decode($raw, true, 16, JSON_THROW_ON_ERROR);

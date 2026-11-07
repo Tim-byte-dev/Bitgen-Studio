@@ -7,6 +7,10 @@
 //   GET    /api/bugreport                the saved reports, newest first
 //   GET    /api/bugreport/zip/:id        the report as one .zip (the file to send)
 //   GET    /api/bugreport/shot/:id       its screenshot          DELETE /api/bugreport/:id
+//   GET    /api/bugreport/who            2.714.0: who a report would be sent as ({as: member|anonymous, handle, why})
+//   POST   /api/bugreport/send/:id       2.714.0: {anon, shot (a data:image/jpeg URL - the marked-up screenshot)} -> the
+//                                        bitGen Community (lib/community.js sendBug) -> {ok, as, pending, url}; noted in
+//                                        report.json "sent"
 "use strict";
 const B = require("../lib/bugReport");
 
@@ -31,5 +35,15 @@ function mount(app) {
   }));
   app.get("/api/bugreport/shot/:id", wrap((req, res) => { const f = B.screenshot(req.params.id); if (!f) return res.status(404).end(); res.sendFile(f); }));
   app.delete("/api/bugreport/:id", wrap((req, res) => res.json({ ok: B.remove(req.params.id) })));
+  const C = require("../lib/community");
+  app.get("/api/bugreport/who", wrap(async (_req, res) => res.json(await C.whoSends())));
+  app.post("/api/bugreport/send/:id", express.text({ type: () => true, limit: "20mb" }), wrap(async (req, res) => {
+    let body = {};
+    try { body = JSON.parse(typeof req.body === "string" && req.body ? req.body : "{}"); } catch { return res.status(400).json({ error: "not JSON" }); }
+    const r = await C.sendBug(B.payload(req.params.id, body.shot), { anon: !!body.anon });
+    if (!r.ok) return res.status(r.status >= 400 && r.status < 500 ? r.status : 502).json({ error: r.error, as: r.as });
+    B.markSent(req.params.id, { as: r.as, handle: r.handle, topic_id: r.topic_id, url: r.url, pending: r.pending });
+    res.json(r);
+  }));
 }
 module.exports = { mount };

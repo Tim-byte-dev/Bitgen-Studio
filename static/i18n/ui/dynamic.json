@@ -1752,203 +1752,251 @@
   },
   {
    "s": "Describe what went wrong - a screenshot, the logs, the system and your last steps go with it. 💾 Save makes one .zip: the file to send",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Title",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Severity",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Where",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "What happened",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "What you expected",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Steps to reproduce",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Use the recorded steps",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Screenshot",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Pen",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Box",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Undo",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Again",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "A picture",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "No screenshot - 📷 to take one (Ctrl+Alt+Shift+B takes it before the docker opens)",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Attached",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "screenshot",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "logs",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "system + settings (keys and tokens hidden)",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "recorded steps",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "What is included",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
-   "s": "Save report",
-   "src": "static/bugreport.js:138"
+   "s": "Send anonymously",
+   "src": "static/bugreport.js:144"
+  },
+  {
+   "s": "Sent, it gets a discussion on the website under Bug reports. Everyone sees the title and what you wrote; only the admins see the logs, the settings, the system and the screenshot",
+   "src": "static/bugreport.js:144"
+  },
+  {
+   "s": "Save and send",
+   "src": "static/bugreport.js:144"
+  },
+  {
+   "s": "Save as a file",
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "New",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Earlier reports",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "none yet",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "in a few words: what broke",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "The docker or part of the app - the one you used last is picked",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "what you saw - an error message, what stopped, what looked wrong",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "what should have happened",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "1. open …&#10;2. click …&#10;3",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Your last clicks and keys, recorded from when the app started (never what you typed)",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Draw on it",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Draw a box around something",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Take a new screenshot of the window (the docker hides for it)",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
+  },
+  {
+   "s": "Save the report and send it to the bitGen Community",
+   "src": "static/bugreport.js:144"
+  },
+  {
+   "s": "Save the report as a .zip file, without sending it",
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Clear the form for another bug",
-   "src": "static/bugreport.js:138"
+   "src": "static/bugreport.js:144"
   },
   {
    "s": "Crash / freeze",
-   "src": "static/bugreport.js:162"
+   "src": "static/bugreport.js:171"
   },
   {
    "s": "Something does not work",
-   "src": "static/bugreport.js:162"
+   "src": "static/bugreport.js:171"
   },
   {
    "s": "Wrong result",
-   "src": "static/bugreport.js:162"
+   "src": "static/bugreport.js:171"
   },
   {
    "s": "Looks wrong",
-   "src": "static/bugreport.js:162"
+   "src": "static/bugreport.js:171"
   },
   {
    "s": "Idea / wish",
-   "src": "static/bugreport.js:162"
+   "src": "static/bugreport.js:171"
   },
   {
    "s": "reading",
-   "src": "static/bugreport.js:240"
-  },
-  {
-   "s": "System",
-   "src": "static/bugreport.js:243"
-  },
-  {
-   "s": "Page errors",
-   "src": "static/bugreport.js:243"
-  },
-  {
-   "s": "Failed requests",
-   "src": "static/bugreport.js:243"
-  },
-  {
-   "s": "Settings (report.json - keys and tokens hidden)",
-   "src": "static/bugreport.js:243"
-  },
-  {
-   "s": "logs/",
-   "src": "static/bugreport.js:244"
-  },
-  {
-   "s": "Recorded steps (",
-   "src": "static/bugreport.js:245"
-  },
-  {
-   "s": "the app did not answer",
    "src": "static/bugreport.js:249"
   },
   {
+   "s": "System",
+   "src": "static/bugreport.js:252"
+  },
+  {
+   "s": "Page errors",
+   "src": "static/bugreport.js:252"
+  },
+  {
+   "s": "Failed requests",
+   "src": "static/bugreport.js:252"
+  },
+  {
+   "s": "Settings (report.json - keys and tokens hidden)",
+   "src": "static/bugreport.js:252"
+  },
+  {
+   "s": "logs/",
+   "src": "static/bugreport.js:253"
+  },
+  {
+   "s": "Recorded steps (",
+   "src": "static/bugreport.js:254"
+  },
+  {
+   "s": "the app did not answer",
+   "src": "static/bugreport.js:258"
+  },
+  {
+   "s": "sending to the bitGen Community",
+   "src": "static/bugreport.js:270"
+  },
+  {
+   "s": "sent anonymously - it shows once an admin approves it",
+   "src": "static/bugreport.js:279"
+  },
+  {
+   "s": "sent anonymously -",
+   "src": "static/bugreport.js:279"
+  },
+  {
+   "s": "open its discussion",
+   "src": "static/bugreport.js:280"
+  },
+  {
+   "s": "sends it anonymously - confirm your email in 💬 Community to send it as you",
+   "src": "static/bugreport.js:289"
+  },
+  {
+   "s": "sends it anonymously - join the 💬 Community to send it as you (optional)",
+   "src": "static/bugreport.js:289"
+  },
+  {
+   "s": "Send this report to the bitGen Community",
+   "src": "static/bugreport.js:321"
+  },
+  {
    "s": "Delete this report",
-   "src": "static/bugreport.js:275"
+   "src": "static/bugreport.js:323"
   },
   {
    "s": "Bug report",
-   "src": "static/bugreport.js:295"
+   "src": "static/bugreport.js:343"
   },
   {
    "s": "Fold / unfold the toolbar",
@@ -21646,31 +21694,43 @@
   },
   {
    "p": "{0} steps recorded · {1} page error(s) · {2} failed request(s)",
-   "src": "static/bugreport.js:170"
+   "src": "static/bugreport.js:179"
   },
   {
    "p": "{0} steps recorded · {1} page error(s)",
-   "src": "static/bugreport.js:170"
+   "src": "static/bugreport.js:179"
   },
   {
    "p": "{0} steps recorded · {1} failed request(s)",
-   "src": "static/bugreport.js:170"
+   "src": "static/bugreport.js:179"
   },
   {
    "p": "{0} steps recorded",
-   "src": "static/bugreport.js:170"
+   "src": "static/bugreport.js:179"
   },
   {
    "p": "{0} × {1} · {2} · {3} mark(s)",
-   "src": "static/bugreport.js:186"
+   "src": "static/bugreport.js:195"
   },
   {
    "p": "{0} × {1} · {2} mark(s)",
-   "src": "static/bugreport.js:186"
+   "src": "static/bugreport.js:195"
   },
   {
    "p": "Recorded steps ({0})",
-   "src": "static/bugreport.js:243"
+   "src": "static/bugreport.js:252"
+  },
+  {
+   "p": "not sent: {0}",
+   "src": "static/bugreport.js:276"
+  },
+  {
+   "p": "sent as @{0} -",
+   "src": "static/bugreport.js:279"
+  },
+  {
+   "p": "sends it as {0} (@{1}) - you can follow its discussion and reply",
+   "src": "static/bugreport.js:289"
   },
   {
    "p": "Done ({0} s)",

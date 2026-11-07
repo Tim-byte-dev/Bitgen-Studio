@@ -3575,14 +3575,23 @@ Settings ▸ General ▸ **🐞 Report a bug…**.
    - the **system + settings**: version, OS, graphics card, RAM, ComfyUI version;
    - the **recorded steps**.
 5. **👁 What is included** shows all of it before you save.
-6. **💾 Save report** writes the report into the app folder's `bug-reports` folder and downloads
-   **bitgen-bug-<date>-<title>.zip**. That one file is what you send. It holds:
+6. **📤 Save and send** (2.714.0) saves the report and sends it to the **bitGen Community**: it gets its own
+   discussion on the website, under **Discussions ▸ Bug reports**, where you and others can follow it and reply.
+   - Signed in to **💬 Community** with a confirmed email, it goes **as you** and shows at once. The line above the
+     button says who it goes as.
+   - Not signed in (or the email not confirmed yet), it goes **anonymously** and shows once an admin approves it.
+     Tick **Send anonymously** to send it that way even when you are signed in.
+   - Everyone sees the title and what you wrote. **Only the admins** see the logs, the settings, the system and the
+     screenshot. The screenshot goes with your ✏ / ▭ marks; your home folder is shown as `~` in the logs and settings.
+   - **Earlier reports**: **📤** sends one you saved before; **✓ sent** opens where it went.
+7. **💾 Save as a file** writes the report into the app folder's `bug-reports` folder and downloads
+   **bitgen-bug-<date>-<title>.zip**, without sending it. It holds:
    - `report.md`, to read;
    - `report.json`, everything;
    - `screenshot.png`;
    - the `logs`.
 
-**Earlier reports** lists what you saved: **⤓** downloads one again, **🗑** deletes it. A report you have started but
+**Earlier reports** lists what you saved: **📤** sends it, **⤓** downloads it again, **🗑** deletes it. A report you have started but
 not saved is kept in this browser until you save it.
 
 **Privacy**:
@@ -4592,7 +4601,9 @@ whether it is open are remembered.
 **Joining is optional** - bitGen Studio works the same without it.
 
 **The Discussions** (2.713.0) are on the website, https://tigerart.com.au/discussions.php: longer questions, your
-work, ideas - in four categories (Help, Show your work, Ideas, General). Sign in there with the **same user ID and
+work, ideas - in five categories (Help, Bug reports, Show your work, Ideas, General). **Bug reports** (2.714.0) are
+filled by 🐞 Bug report ▸ 📤 Save and send and by the website's **Report a bug** form; each shows its status (Open,
+Being fixed, Fixed, Duplicate, Not a bug, Won't fix), set by the admins. Sign in there with the **same user ID and
 password** (or join there - it is the same account). Members' posts show at once. **Guests** (no account) can read and
 post too, with a name; a guest's post waits until an admin approves it. Admins see the waiting posts, approve or refuse
 them, remove posts and ban members there too.

@@ -75,7 +75,8 @@ async function main() {
 
   // ---- info / the envelope ----------------------------------------------------------------------------------------
   let r = await call("info");
-  check("info: {name, version 2.713.0, rules, users 0, help_room help}", ok(r) && r.j.name && r.j.version === "2.713.0" && typeof r.j.rules === "string" && r.j.users === 0 && r.j.help_room === "help", r.j);
+  const BOOTV = (fs.readFileSync(path.join(DIR, "lib", "boot.php"), "utf8").match(/define\('BGC', '([^']+)'\)/) || [])[1];
+  check("info: {name, version (lib/boot.php's " + BOOTV + "), rules, users 0, help_room help}", ok(r) && r.j.name && r.j.version === BOOTV && typeof r.j.rules === "string" && r.j.users === 0 && r.j.help_room === "help", r.j);
   check("replies: Content-Type application/json; charset=utf-8 + X-Content-Type-Options nosniff", /^application\/json; charset=utf-8$/i.test(r.h.get("content-type") || "") && r.h.get("x-content-type-options") === "nosniff");
   check("the first request made the tables (SQLite file exists)", fs.existsSync(DB));
   r = await call("info", null, null, { method: "GET" }); check("GET info works (a browser check that the server is up)", ok(r));

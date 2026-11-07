@@ -7,7 +7,8 @@
 declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
-const BGC_FORUM_CATS = ['help' => 'Help', 'showcase' => 'Show your work', 'ideas' => 'Ideas', 'general' => 'General'];
+// 2.714.0: + bugs - its discussions are made by bug_report (act_bugs.php), not forum_new
+const BGC_FORUM_CATS = ['help' => 'Help', 'bugs' => 'Bug reports', 'showcase' => 'Show your work', 'ideas' => 'Ideas', 'general' => 'General'];
 const BGC_TOPICS_PAGE = 25;
 const BGC_POSTS_PAGE = 30;
 
@@ -46,12 +47,16 @@ function act_forum_list(array $b, ?array $me): array
     $args = $cat !== null ? [$cat] : [];
     $total = (int) q_val('SELECT COUNT(*) FROM bgc_topics x ' . BGC_FORUM_AUTHOR . ' WHERE ' . $where, $args);
     $pages = max(1, (int) ceil($total / BGC_TOPICS_PAGE));
-    $rows = q_all('SELECT x.*, u.handle AS u_handle, u.display AS u_display FROM bgc_topics x ' . BGC_FORUM_AUTHOR . ' WHERE ' . $where
+    $rows = q_all('SELECT x.*, u.handle AS u_handle, u.display AS u_display, b.status AS b_status, b.severity AS b_severity, b.app_version AS b_version '
+        . 'FROM bgc_topics x ' . BGC_FORUM_AUTHOR . ' LEFT JOIN bgc_bugs b ON b.topic_id = x.id WHERE ' . $where
         . ' ORDER BY x.last_at DESC, x.id DESC LIMIT ' . BGC_TOPICS_PAGE . ' OFFSET ' . (($page - 1) * BGC_TOPICS_PAGE), $args);
     $topics = [];
     foreach ($rows as $r) {
-        $topics[] = ['id' => (int) $r['id'], 'category' => (string) $r['category'], 'title' => (string) $r['title'], 'author' => forum_author($r),
+        $t = ['id' => (int) $r['id'], 'category' => (string) $r['category'], 'title' => (string) $r['title'], 'author' => forum_author($r),
             'created' => iso((int) $r['created_at']), 'last_at' => iso((int) $r['last_at']), 'replies' => (int) $r['replies']];
+        if ($r['b_status'] !== null) $t['bug'] = ['status' => (string) $r['b_status'], 'status_label' => BGC_BUG_STATUS[$r['b_status']] ?? $r['b_status'],
+            'severity' => (string) $r['b_severity'], 'severity_label' => BGC_BUG_SEV[$r['b_severity']] ?? $r['b_severity'], 'app_version' => (string) $r['b_version']];
+        $topics[] = $t;
     }
     $out = ['categories' => forum_cats(), 'topics' => $topics, 'page' => $page, 'pages' => $pages, 'total' => $total];
     if ($me !== null && is_admin($me)) $out['pending'] = (int) q_val('SELECT COUNT(*) FROM bgc_posts WHERE pending = 1 AND deleted = 0');
@@ -84,7 +89,8 @@ function act_forum_topic(array $b, ?array $me): array
     }
     return ['topic' => ['id' => (int) $t['id'], 'category' => (string) $t['category'], 'title' => (string) $t['title'], 'author' => forum_author($t),
         'created' => iso((int) $t['created_at']), 'replies' => (int) $t['replies'], 'pending' => (int) $t['pending'] === 1],
-        'categories' => forum_cats(), 'posts' => $posts, 'page' => $page, 'pages' => $pages];
+        'categories' => forum_cats(), 'posts' => $posts, 'page' => $page, 'pages' => $pages,
+        'bug' => $t['category'] === 'bugs' ? bug_for_topic((int) $t['id'], $admin) : null];
 }
 
 /** who is writing: a member (confirmed - the dispatcher checks), or a guest with a name. Rate limits either way. */
@@ -108,6 +114,7 @@ function forum_writer(array $b, ?array $me, bool $topic): array
 function act_forum_new(array $b, ?array $me): array
 {
     $cat = v_category($b, false);
+    if ($cat === 'bugs') throw new ApiError(400, 'A bug report has its own form - Report a bug (or 🐞 in bitGen Studio).');
     $title = v_text($b, 'title', 3, 120, false, 'The title');
     $body = v_text($b, 'body', 1, 8000, true, 'The text');
     $w = forum_writer($b, $me, true);
@@ -169,9 +176,10 @@ function act_forum_delete(array $b, array $me): array
 function act_admin_forum_pending(array $b, array $me): array
 {
     $out = [];
-    foreach (q_all('SELECT p.id, p.topic_id, p.guest_name, p.body, p.at, t.title, t.pending AS t_pending FROM bgc_posts p JOIN bgc_topics t ON t.id = p.topic_id '
+    foreach (q_all('SELECT p.id, p.topic_id, p.guest_name, p.body, p.at, t.title, t.category, t.pending AS t_pending FROM bgc_posts p JOIN bgc_topics t ON t.id = p.topic_id '
         . 'WHERE p.pending = 1 AND p.deleted = 0 AND t.deleted = 0 ORDER BY p.id ASC LIMIT 200') as $r) {
         $out[] = ['id' => (int) $r['id'], 'topic_id' => (int) $r['topic_id'], 'title' => (string) $r['title'], 'new_topic' => (int) $r['t_pending'] === 1,
+            'category' => (string) $r['category'],
             'guest_name' => (string) $r['guest_name'], 'body' => (string) $r['body'], 'at' => iso((int) $r['at'])];
     }
     return ['posts' => $out];
@@ -195,6 +203,7 @@ function act_admin_forum_moderate(array $b, array $me): array
         } elseif ($first) {
             q('DELETE FROM bgc_posts WHERE topic_id = ?', [$tid]);
             q('DELETE FROM bgc_topics WHERE id = ?', [$tid]);
+            q('DELETE FROM bgc_bugs WHERE topic_id = ?', [$tid]);          // a refused (anonymous) bug report goes with it
         } else {
             q('DELETE FROM bgc_posts WHERE id = ?', [$pid]);
         }

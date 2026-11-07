@@ -40,6 +40,10 @@ const BGC_ACTIONS = [
     'forum_delete' => ['act_forum_delete', true, false, false],
     'admin_forum_pending' => ['act_admin_forum_pending', true, true, false],
     'admin_forum_moderate' => ['act_admin_forum_moderate', true, true, false],
+    // 2.714.0
+    'bug_report' => ['act_bug_report', 'opt', false, false],
+    'bug_shot' => ['act_bug_shot', true, true, false],
+    'admin_bug_status' => ['act_admin_bug_status', true, true, false],
 ];
 
 /** one action -> its reply (without ok); throws ApiError. $body may carry "token" (the website keeps it in its session). */

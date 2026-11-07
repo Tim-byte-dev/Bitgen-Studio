@@ -5,7 +5,8 @@ declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
 // 2: names + email (verified) on bgc_users, banned emails, the discussions (bgc_topics, bgc_posts) - 2.713.0
-const BGC_SCHEMA = '2';
+// 3: bug reports (bgc_bugs) - 2.714.0
+const BGC_SCHEMA = '3';
 
 function db(): PDO
 {
@@ -160,6 +161,13 @@ function db_tables(): array
         'bgc_posts' => ['id {PK}, topic_id BIGINT NOT NULL, user_id BIGINT NULL, guest_name VARCHAR(40) NULL, body TEXT NOT NULL, at BIGINT NOT NULL, '
             . 'pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0',
             ['bgc_posts_topic' => 'topic_id, id', 'bgc_posts_pending' => 'pending', 'bgc_posts_user' => 'user_id']],
+        // 2.714.0: a bug report - from bitGen Studio's 🐞 docker (with its system, settings, logs and screenshot) or the
+        // website's form; its public face is a discussion in the "bugs" category (topic_id). details = JSON, shot = base64.
+        'bgc_bugs' => ['id {PK}, topic_id BIGINT NULL, user_id BIGINT NULL, anon SMALLINT NOT NULL DEFAULT 0, title VARCHAR(200) NOT NULL, '
+            . 'severity VARCHAR(16) NOT NULL, area VARCHAR(120) NOT NULL, app_version VARCHAR(40) NOT NULL, happened TEXT NOT NULL, '
+            . 'expected TEXT NOT NULL, steps TEXT NOT NULL, details MEDIUMTEXT NULL, shot MEDIUMTEXT NULL, shot_type VARCHAR(16) NULL, '
+            . "source VARCHAR(8) NOT NULL DEFAULT 'app', status VARCHAR(16) NOT NULL DEFAULT 'open', created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
+            ['bgc_bugs_topic' => 'topic_id', 'bgc_bugs_status' => 'status, id']],
     ];
 }
 

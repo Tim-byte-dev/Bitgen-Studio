@@ -57,6 +57,10 @@ HTTP 4xx/5xx status (400 bad input, 401 no / bad token, 403 not allowed / banned
 | admin_forum_pending | - | `{posts: [{id, topic_id, title, new_topic, guest_name, body, at}]}` (admins) |
 | admin_forum_moderate | `{post_id, approve}` | `{approved}` - approved shows (with its discussion); refused is deleted (admins) |
 
+| bug_report | `{title, severity, area?, app_version?, happened?, expected?, steps?, details?: {system, settings, recorded, page_errors, failed_requests, logs: {file: text}, notes}, screenshot?: data:image/png\|jpeg URL, source?: app\|web, guest_name?}` | `{bug_id, topic_id, pending, anonymous}` (2.714.0) - a discussion under "bugs" (Bug reports); a confirmed member's shows at once, without a token it is anonymous and waits for an admin; up to 7 MB (the only action over 16 KB), details 2 MB, screenshot 4 MB, PNG / JPEG by its bytes; members 10 / hour, anonymous 5 / hour per address. forum_topic of a bug has `bug: {id, status, status_label, severity, severity_label, area, app_version, anonymous, source, has_details, has_shot, details? (admins)}`; forum_list's bug topics carry `bug: {status, …}` |
+| bug_shot | `{bug_id}` | `{type: png\|jpeg, data: base64}` (admins) |
+| admin_bug_status | `{bug_id, status}` | `{status, status_label}` - open, working, fixed, duplicate, notabug, wontfix (admins) |
+
 An author (forum): `{handle, name}` for a member (name = the display name), `{guest: true, name}` for a guest,
 `{left: true, name: "(left)"}` for a deleted account.
 

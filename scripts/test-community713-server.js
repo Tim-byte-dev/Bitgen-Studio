@@ -130,7 +130,7 @@ const sql = (db, statements) => spawnSync("php", ["-r", "$p = new PDO('sqlite:' 
 
   // ---- the discussions --------------------------------------------------------------------------------------------------
   r = await call("forum_list", {});
-  check("forum_list without an account: the 4 categories, no topics yet", ok(r) && r.j.categories.map((c) => c.id).join() === "help,showcase,ideas,general" && r.j.topics.length === 0, r.j);
+  check("forum_list without an account: the categories (2.714.0: + bugs), no topics yet", ok(r) && r.j.categories.map((c) => c.id).join() === "help,bugs,showcase,ideas,general" && r.j.topics.length === 0, r.j);
   r = await call("forum_list", {}, "f".repeat(64)); check("a bad token on a guest-or-member action -> 401 (not silently a guest)", err(r, 401));
   r = await call("forum_new", { category: "help", title: "How do I start?", body: "First time here.\nWhere do I begin?" }, tim);
   check("a member starts a discussion - live at once", ok(r) && r.j.pending === false && r.j.topic_id > 0, r.j);
@@ -200,7 +200,7 @@ const sql = (db, statements) => spawnSync("php", ["-r", "$p = new PDO('sqlite:' 
   r = await call("verify_email", { code: codeFor("old@example.com") }, oldie);
   r = await call("send", { to: "help", body: "back again" }, oldie); check("... then, confirmed, chats as before", ok(r), r.j);
   const cols = spawnSync("php", ["-r", "$p = new PDO('sqlite:' . $argv[1]); echo json_encode([$p->query('SELECT v FROM bgc_meta WHERE k = \"schema\"')->fetchColumn(), $p->query(\"SELECT sql FROM sqlite_master WHERE name = 'bgc_users_email'\")->fetchColumn()]);", OLD], { encoding: "utf8" }).stdout;
-  check("the old database is at schema 2 with the unique email index", /^\["2","CREATE UNIQUE INDEX bgc_users_email/.test(cols), cols);
+  check("the old database is brought up to the current schema (2+) with the unique email index", /^\["[2-9]","CREATE UNIQUE INDEX bgc_users_email/.test(cols), cols);
 
   console.log("\n" + pass + " passed, " + fail + " failed");
   procs.forEach((p) => p.kill());

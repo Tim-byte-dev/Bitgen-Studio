@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.714.0** — 🐞 Bug Reports Go to the bitGen Community (📤 Save and Send - as You When Signed In, Anonymous When Not) and Get a Discussion on the Website Under Bug Reports; the Admins Download Every Bug as One List
 - **2.713.0** — 💬 Community Members Give a Name + a Confirmed Email (a Code Emailed), a Ban Bans the Address; the Discussions on tigerart.com.au (One Account, Guests Post for an Admin to Approve)
 - **2.712.2** — 💬 Community Server: a Database Server With :port (Plesk Shows localhost:3306)
 - **2.712.1** — 💬 The Community Server Reads Its Database Password Encrypted, From the Private Folder the tigerart.com.au Admin Page Writes; the Website Moves to Its Own Repository
