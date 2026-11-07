@@ -120,6 +120,14 @@ try:
 except Exception:                  # noqa: BLE001 - the shipped FastH3 Omni graph carries the recipe itself
     _f3 = None
 
+# 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax"): 16 GB mode - DENO's R2V Turbo 8+2 recipe
+# (text encoder unload, 8-step pass, latent upscale + 2 refine steps with sparse attention) on any native H3 render -
+# scripts/h3_16gb.py; engine.comfy.vram16 {mode off | on | auto, scale, turbo}.
+try:
+    import h3_16gb as _h16
+except Exception:                  # noqa: BLE001 - the render says 16 GB mode did not load
+    _h16 = None
+
 # 2.353.0 (Tim: "the h3_Video_ref workflow doesn't use video reference, can we
 # add video and sound slots when a reference video and/or sound is added"): an
 # H3 reference graph saved with pictures only gets its video / sound slots
@@ -2834,6 +2842,62 @@ def _clip_device(cfg) -> str:
     return v if v in ("cpu",) else ""
 
 
+def _vram16_cfg(cfg) -> dict:
+    """engine.comfy.vram16 (2.708.0): {mode: off | on | auto, scale: 1.0-2.0, turbo: bool} - absent = auto"""
+    v = (((cfg or {}).get("engine") or {}).get("comfy") or {}).get("vram16") or {}
+    v = v if isinstance(v, dict) else {}
+    mode = str(v.get("mode") or "auto").strip().lower()       # lib/vram16.js DEFAULT: auto (on for a <= 16 GB card)
+    return {"mode": mode if mode in ("off", "on", "auto") else "auto", "scale": v.get("scale", 1.5),
+            "turbo": v.get("turbo", True) is not False}
+
+
+def _gpu_vram_gb(base):
+    """the card ComfyUI renders on, in GB (its /system_stats), or None"""
+    try:
+        st = _http_json(f"{base}/system_stats", timeout=10) or {}
+        devs = [d for d in (st.get("devices") or []) if str(d.get("type") or "").lower() != "cpu"]
+        return round(float(devs[0]["vram_total"]) / 2 ** 30, 1) if devs else None       # GiB, as cards are sold
+    except Exception:              # noqa: BLE001 - unknown
+        return None
+
+
+def _vram16_opts(base, cfg, upscale_stage=False):
+    """None = 16 GB mode off for this render; else the options scripts/h3_16gb.apply takes - which of its nodes this
+    ComfyUI has, and the LoRA / upscaler files it lists (by file name, any subfolder)"""
+    c = _vram16_cfg(cfg)
+    if c["mode"] == "off" or _h16 is None:
+        return None
+    if c["mode"] == "auto":
+        gb = _gpu_vram_gb(base)
+        if gb is None or gb > 16.5:
+            say(f"[comfy] 16 GB mode (auto): off - the card has {gb if gb is not None else 'an unknown amount of'} GB")
+            return None
+        say(f"[comfy] 16 GB mode (auto): on - the card has {gb} GB")
+    have, lists = {}, {}
+    for cls in set(_h16.NODES.values()):
+        try:
+            info = (_http_json(f"{base}/object_info/{urllib.parse.quote(cls)}", timeout=10) or {}).get(cls)
+        except Exception:          # noqa: BLE001 - absent
+            info = None
+        have[cls] = bool(info)
+        if cls == "MinimaxH3LatentUpscaler3D" and info:
+            lists["upscaler"] = _combo_list((((info.get("input") or {}).get("required") or {}).get("model_name")))
+    try:
+        li = (_http_json(f"{base}/object_info/LoraLoaderModelOnly", timeout=10) or {}).get("LoraLoaderModelOnly") or {}
+        lists["lora"] = _combo_list((((li.get("input") or {}).get("required") or {}).get("lora_name")))
+    except Exception:              # noqa: BLE001
+        lists["lora"] = []
+    def listed(name, pool):
+        want = name.lower()
+        for x in pool or []:
+            if re.split(r"[\\/]", x)[-1].lower() == want:
+                return x
+        return None
+    files = {k: listed(_h16.FILES[k], lists.get("upscaler" if k == "upscaler" else "lora")) for k in _h16.FILES}
+    return {"scale": c["scale"], "turbo": c["turbo"], "have": have, "files": files,
+            "kitchen": _kitchen_attn(base), "upscale_stage": bool(upscale_stage)}
+
+
 def _comfy_clear_vram(base, cfg) -> None:
     """Start this generation from an EMPTY card (2.98.0).
 
@@ -3231,6 +3295,17 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
             if float(cfg_val or 1) > 1:
                 say(f"[comfy] FastH3: cfg {cfg_val} -> 1 (the model is distilled with guidance built in)")
                 cfg_val = 1.0
+        if not rp:                             # 2.708.0: 16 GB mode (Settings ▸ ComfyUI ▸ 16 GB mode)
+            o16 = _vram16_opts(base, cfg, upscale_stage=bool(params.get("upscale_stage")))
+            if o16 is not None:
+                g, n16 = _h16.apply(g, o16)
+                for n in n16:
+                    say(f"[comfy] {n}")
+                if any(n.startswith("16 GB mode: pass 1 =") for n in n16) and float(cfg_val or 1) > 1:
+                    say(f"[comfy] 16 GB mode: cfg {cfg_val} -> 1 (the 8-step LoRAs are distilled with guidance built in)")
+                    cfg_val = 1.0
+        elif _vram16_cfg(cfg)["mode"] != "off":
+            say("[comfy] 16 GB mode: not used on a RunPod endpoint (its card is not this one)")
         if params.get("upscale_stage"):        # 2.312.0: the video docker's upscaler
             if _us is None and params.get("upscale_take"):
                 raise RuntimeError("scripts/upscalestage.py did not load - the take cannot be upscaled")

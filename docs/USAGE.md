@@ -4502,6 +4502,64 @@ workflow ends with). It does three things:
 NVIDIA's DLLs into ComfyUI/models/dlss5/ yourself; the pack's README names them, and it never downloads them. Restart
 ComfyUI. Frame generation needs its own worker files in models/dlss5/dlssg/ (also in the README).
 
+## RTX VFX: NVIDIA RTX Video finishing and upscaling (2.708.0)
+
+**✨ RTX VFX** runs a video through NVIDIA RTX Video, using the DENO ComfyUI nodes (DenoRTXVFXVideoFinisher). It
+makes up to two passes over the picture:
+
+- **First pass** (optional): **Deblur** works on soft frames before the upscale. Off skips it.
+- **Upscale pass**: **VSR** (Super Resolution) upscales and cleans up the picture; **High Bitrate** is NVIDIA's upscale
+  mode for clean, high-bitrate sources such as a freshly rendered take.
+- **Presets.** A = one VSR pass. B = Deblur first, then High Bitrate. Custom lets you pick each pass and its quality;
+  the dropdowns list what your ComfyUI's node offers.
+- **Scale** multiplies each side (1x cleans up at the same size, up to 4x). The panel says about what size it will make;
+  the node rounds each side to a multiple of 32.
+- **Frames per batch** is how many frames go through ComfyUI in one run (48 by default). A longer video runs in
+  several pieces, which are joined without re-encoding; the queue shows "chunk 2/5" as they go. Lower it if ComfyUI
+  runs out of memory; 0 runs every frame at once.
+
+**Where.**
+
+- The preview bar's **✨ RTX VFX** button works on the video you are previewing. **✨ Finish** queues it, and the result
+  lands in the gallery with the original's sound.
+- In the StoryBoard's ⚙, set **Upscaler → RTX VFX (NVIDIA RTX)**. A scene's ⏫ then sends its take through it, scaled
+  to the ⚙'s Upscale resolution (the take's short side up to 720 / 1080 / 1440 / 2160, at most 4x), with the passes
+  from the panel. With "Upscale every render" ticked, each take is sent as it lands.
+
+**Setup.** NVIDIA RTX cards on Windows only. In Settings → ComfyUI → Video accelerators, press **Install DENO nodes
+(RTX VFX)**. The node pack does not include NVIDIA's runtime; install it with the pack's own installer
+(https://deno2026.github.io/comfyui-deno-custom-nodes/rtx-vfx-install/): extract NVIDIA's official installer zip into
+ComfyUI/custom_nodes/deno-custom-nodes/tools/, close ComfyUI, run **install_rtx_vfx.bat**, then restart ComfyUI. The
+graph also uses ComfyUI-VideoHelperSuite. If the node fails, the job shows the pack's own error message.
+
+## 16 GB mode: MiniMax H3 on a 16 GB card (2.708.0)
+
+MiniMax H3 is built for a big card. **16 GB mode** renders it the way DENO's *R2V Turbo 8+2* workflow does, so a
+16 GB card can make a scene:
+
+1. The 32B **text encoder is unloaded** right after it has read the prompt, so it never shares the card with the sampler.
+2. **Pass 1** renders the scene at Basic Settings' size in **8 steps** (the Ref2VA Acc 8-step LoRA). The sound is made here.
+3. The video is **upscaled in latent space** (× the upscale, 1.0-2.0).
+4. **Pass 2** redraws only the **last 2 steps** at the bigger size with the DMD + 2K refiner LoRAs and Sol sparse
+   attention. The sound from pass 1 is kept as it was.
+
+The take comes out at Basic Settings' size × the upscale. Start around 896 × 512 with an upscale of 1.2-1.8; a
+bigger upscale or a longer clip takes much longer.
+
+**Settings ▸ ComfyUI ▸ 16 GB mode**: **Auto** (the default) turns it on when the card ComfyUI renders on has 16 GB or
+less; **On** uses it for every H3 render; **Off** never. **Upscale ×** sets pass 2; 1 = no second pass. **Pass 1 in 8
+steps** can be turned off to keep your style's own steps for pass 1.
+
+What it needs: a ComfyUI with MiniMax H3 and Sol attention (0.43 or later), the **DENO custom nodes** (Settings ▸
+ComfyUI ▸ Video accelerators ▸ ⬇ Install DENO nodes), the **H3 latent upscaler nodes** (⬇ Install the latent upscaler
+nodes, in the 16 GB mode section) and the files (**⤓ The 16 GB mode files…** opens Settings ▸ Add-ons ▸ 16 GB mode:
+the two LoRAs of each pass and the latent upscaler). KJNodes, when installed, also unloads every model before the big
+decode. The status line under the switch shows what is there. A part this ComfyUI cannot run is left out and the
+render's log says which and what to install, so a render never fails because 16 GB mode is on.
+
+Not with: a FastH3 Omni style (already 8 steps with sparse attention) and the ⚙ upscaler's stage (it upscales the
+render itself, so 16 GB mode keeps only the text encoder unload and pass 1). RunPod renders do not use it.
+
 ## Long video: one MiniMax H3 run up to 30 seconds (2.503.0)
 
 A MiniMax H3 clip used to be one generation of up to 15 seconds; anything longer was rendered in 15-second pieces and

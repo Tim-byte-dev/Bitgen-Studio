@@ -51,6 +51,7 @@
     return c.to.replace(/\{(\d+)\}/g, function (all, n) {
       var i = c.order.indexOf(+n); if (i < 0) return all;
       var v = m[i + 1], t = dict && dict[v.replace(/\s+/g, " ").trim()];       // a value that is itself a word the app has
+      if (t == null && dict) { var q = split(v); if (q.core && dict[q.core] != null) t = q.pre + dict[q.core] + q.post; }   // 2.708.0: with its icon ("✗ Lasso")
       return t != null ? t : v;
     });
   }

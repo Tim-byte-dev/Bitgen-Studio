@@ -2225,6 +2225,32 @@
       gets the whole card. It costs <b>roughly two minutes of prompt encoding per run</b> on a
       32B encoder, so it is off by default: turn it on only when a render is genuinely short of
       VRAM. Nothing inside ComfyUI is changed.</div>
+    <!-- 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax"): 16 GB mode - static/vram16.js -->
+    <label class="f" style="margin-top:12px" for="s_c16mode">16 GB mode (MiniMax H3 on a 16 GB card)</label>
+    <div class="rowbtns" style="align-items:center;flex-wrap:wrap;gap:8px">
+      <select id="s_c16mode" style="max-width:340px">
+        <option value="auto">Auto - on when the card has 16 GB or less (default)</option>
+        <option value="on">On - every MiniMax H3 render</option>
+        <option value="off">Off</option>
+      </select>
+      <label for="s_c16scale" class="hint" style="margin:0">Upscale ×</label>
+      <input type="number" id="s_c16scale" min="1" max="2" step="0.1" value="1.5" style="width:70px" title="Pass 2 grows the latent this much: Basic Settings' size × this = the take's size (1 = no second pass)">
+      <label class="chk" style="margin:0"><input type="checkbox" id="s_c16turbo" checked> Pass 1 in 8 steps (Acc 8-step LoRA)</label>
+    </div>
+    <div id="s_c16status" class="hint" style="margin-top:4px;white-space:pre-line">not checked yet</div>
+    <div class="rowbtns" style="margin-top:4px;align-items:center;flex-wrap:wrap;gap:6px">
+      <button class="ghost" id="s_vapack_h3latentup" type="button" data-pack="h3latentup" title="The H3 latent upscaler nodes (MinimaxH3LatentUpscaler3D) - git clone / pull into custom_nodes">⬇ Install the latent upscaler nodes</button>
+      <span id="s_vapacklbl_h3latentup" class="hint">not checked</span>
+      <button class="ghost" id="s_c16files" type="button" title="Download the two LoRAs of each pass and the latent upscaler (Settings ▸ Add-ons ▸ 16 GB mode)">⤓ The 16 GB mode files…</button>
+    </div>
+    <div class="hint help" style="margin:2px 0 4px">DENO's MiniMax H3 R2V Turbo 8+2 recipe on your own H3 renders:
+      the 32B text encoder is unloaded after encoding, <b>pass 1</b> renders at Basic Settings' size in 8 steps
+      (the Ref2VA Acc 8-step LoRA) and makes the sound, then the video latent is <b>upscaled</b> (× the number above)
+      and <b>pass 2</b> redraws only the last 2 steps with the DMD + 2K refiner LoRAs and Sol sparse attention, the
+      sound kept. The take comes out at the size × the upscale - start around 896&nbsp;×&nbsp;512 with 1.2-1.8; bigger
+      takes much longer. Any part this ComfyUI cannot run (a node pack or file missing) is left out and the render says
+      so. Needs the DENO custom nodes (Video accelerators, below) and the latent upscaler nodes; KJNodes adds a model
+      unload before the decode.</div>
     <label class="f" style="margin-top:10px">Console of a ComfyUI started by bitGen Studio</label>
     <select id="s_cstdio">
       <option value="file">Log file (comfy.log, streamed into this console) — default</option>
@@ -2311,6 +2337,11 @@
     <div class="rowbtns" style="margin-top:6px;align-items:center">
       <button class="ghost" id="s_vapack_dlss5" type="button" data-pack="dlss5" title="NVIDIA DLSS 5 neural rendering / upscale / frame generation (RTX). Put NVIDIA's DLLs in ComfyUI/models/dlss5/ yourself - the pack's README says which">⬇ Install RH DLSS 5</button>
       <span id="s_vapacklbl_dlss5" class="hint">not checked</span>
+    </div>
+    <!-- 2.708.0: the DENO pack (RTX VFX video finisher); NVIDIA's runtime comes from the pack's own installer -->
+    <div class="rowbtns" style="margin-top:6px;align-items:center">
+      <button class="ghost" id="s_vapack_deno" type="button" data-pack="deno" title="NVIDIA RTX Video Super Resolution / Deblur / High Bitrate (RTX cards, Windows). The pack does not include NVIDIA's runtime: extract the official installer zip into ComfyUI/custom_nodes/deno-custom-nodes/tools/, close ComfyUI, run install_rtx_vfx.bat, then restart ComfyUI">⬇ Install DENO nodes (RTX VFX)</button>
+      <span id="s_vapacklbl_deno" class="hint">not checked</span>
     </div>
     <div class="rowbtns" style="margin-top:6px">
       <button class="ghost" id="s_vacheck" type="button">↻ Check</button>
@@ -3339,6 +3370,7 @@
 <script src="/static/body3docc.js"></script>  <!-- 2.471.0: their OpenCascade engine (the WebAssembly loads on first use) -->
 <script src="/static/settings3d.js"></script>  <!-- 2.471.0: Settings ▸ 3D -->
 <script src="/static/addons.js"></script>
+<script src="/static/vram16.js"></script>   <!-- 2.708.0: Settings ▸ ComfyUI ▸ 16 GB mode -->
 <script src="/static/features.js"></script>  <!-- 2.593.0: Settings ▸ General ▸ Face fix / ControlNet on + hidden when off (H3Features) -->  <!-- 2.540.4: Settings ▸ Add-ons (YuE2, Viggle native) -->
 <script src="/static/dockreset.js"></script>  <!-- 2.579.0: Settings ▸ Dockers - every docker + ↺ Reset (H3DockReset) -->
 <script src="/static/about.js"></script>  <!-- 2.642.0: Settings ▸ About - the version + the credits (H3About, /api/about) -->
@@ -3362,6 +3394,7 @@
 <script src="/static/dlss5panel.js"></script>
 <script src="/static/selvideo.js"></script>
 <script src="/static/stylecard.js"></script>
+<script src="/static/rtxvfxpanel.js"></script>  <!-- 2.708.0: ✨ RTX VFX finisher panel (after stylecard.js: test-stylecard pins the order above) -->
 <script src="/static/remoteui.js"></script>
 <script src="/static/segmap.js"></script>
 <!-- 2.298.0: the project's media (every subfolder) in every media dropdown -->
@@ -4094,12 +4127,12 @@ async function refreshVideoAccel() {
   if ($("s_vasage") && !(window.H3Install && H3Install.busy($("s_vasage")))) { if (window.H3Install) H3Install.set($("s_vasage"), sageFull, { install: "⬇ Install Sage" }); else $("s_vasage").textContent = sageFull ? "⟳ Reinstall Sage" : "⬇ Install Sage"; }
   if (plbl) plbl.textContent = sp ? "✓ installed" : "✗ not installed";
   if ($("s_vaspectrum") && !(window.H3Install && H3Install.busy($("s_vaspectrum")))) { if (window.H3Install) H3Install.set($("s_vaspectrum"), sp, { install: "⬇ Install Spectrum" }); else $("s_vaspectrum").textContent = sp ? "⟳ Reinstall Spectrum" : "⬇ Install Spectrum"; }
-  // 2.503.0: KJNodes (Long video), Yusu H3 Unified, RH DLSS 5
-  for (const k of ["kjnodes", "yusu", "veda", "dlss5"]) {
+  // 2.503.0: KJNodes (Long video), Yusu H3 Unified, RH DLSS 5 (+ 2.708.0 the DENO nodes - RTX VFX)
+  for (const k of ["kjnodes", "yusu", "veda", "dlss5", "deno", "h3latentup"]) {   // + h3latentup (16 GB mode)
     const on = ((j.repos || {})[k] || {}).installed, lb = $("s_vapacklbl_" + k);
     if (lb) lb.textContent = on ? "✓ installed" : "✗ not installed";
     const bt = $("s_vapack_" + k);
-    const nm = { kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5" }[k];
+    const nm = { kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5", deno: "DENO nodes (RTX VFX)", h3latentup: "H3 latent upscaler nodes" }[k];
     // 2.601.0: installed = ⟳ Reinstall / update (git pull) - and never relabelled while it runs
     if (bt && !(window.H3Install && H3Install.busy(bt))) { if (window.H3Install) H3Install.set(bt, !!on, { install: "⬇ Install " + nm, reinstall: "⟳ Reinstall / update " + nm, title: "Installed - git pull updates it (and its requirements)" }); else bt.textContent = (on ? "⟳ Reinstall / update " : "⬇ Install ") + nm; }
   }
@@ -4123,7 +4156,7 @@ function comfyInstallFollow(btn, doing, after) {
 async function vaInstall(what, blurb, btn) {
   if (!(await appConfirm(blurb + "\n\nThis changes YOUR ComfyUI install. Output streams to the "
     + "app console. Restart ComfyUI afterwards."))) return;
-  const name = { sage: "Sage", spectrum: "Spectrum", kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5" }[what] || what;
+  const name = { sage: "Sage", spectrum: "Spectrum", kjnodes: "KJNodes", yusu: "Yusu H3 Unified", veda: "Veda", dlss5: "RH DLSS 5", deno: "DENO nodes (RTX VFX)" }[what] || what;
   if (btn && window.H3Install) H3Install.start(btn, "Starting " + name + "…");
   try {
     const j = await (await fetch("/api/comfy/vaccel/install", { method: "POST",
@@ -4140,12 +4173,14 @@ $("s_vasage") && ($("s_vasage").onclick = (e) =>
     + "• sageattention wheel matching ComfyUI's own torch/CUDA (+ triton-windows)\n"
     + "• ComfyUI-KJNodes clone/update (the nodes that apply it)\n"
     + "Undo with: pip uninstall sageattention", e.currentTarget));
-for (const k of ["kjnodes", "yusu", "veda", "dlss5"])              // 2.503.0 (+ veda 2.536.0)
+for (const k of ["kjnodes", "yusu", "veda", "dlss5", "deno", "h3latentup"])   // 2.503.0 (+ veda 2.536.0, deno + h3latentup 2.708.0)
   $("s_vapack_" + k) && ($("s_vapack_" + k).onclick = (e) => vaInstall(k, {
     kjnodes: "git clone / update ComfyUI-KJNodes into custom_nodes?\nLong video needs its MiniMax low-VRAM attention + chunked feed-forward nodes.",
     yusu: "git clone / update ComfyUI-Yusu-MiniMaxH3-Unified into custom_nodes?\nFor imported workflows that use its one-node H3 front end.",
     veda: "git clone / update Veda-on-ComfyUI into custom_nodes, then pip install its requirements into ComfyUI's python (triton-windows on Windows)?\nVeda sparse attention for MiniMax H3 - needs ComfyUI 0.38 or newer. Then download its predictor: Settings -> Models -> Model catalog -> Veda predictor (MiniMax H3).",
-    dlss5: "git clone / update ComfyUI-RH-DLSS5 into custom_nodes?\nNVIDIA RTX only. Copy NVIDIA's DLLs (_nvngx.dll, nvngx_dlssnr.dll, nvngx_dlss.dll) into ComfyUI/models/dlss5/ yourself - the pack never downloads them." }[k], e.currentTarget));
+    h3latentup: "git clone / update the H3 latent upscaler nodes (LBH-123-AI/Comfyui_Minimax_h3_latent_Upscaler) into custom_nodes?\n16 GB mode's latent upscale pass needs them. Restart ComfyUI after.",
+    dlss5: "git clone / update ComfyUI-RH-DLSS5 into custom_nodes?\nNVIDIA RTX only. Copy NVIDIA's DLLs (_nvngx.dll, nvngx_dlssnr.dll, nvngx_dlss.dll) into ComfyUI/models/dlss5/ yourself - the pack never downloads them.",
+    deno: "git clone / update comfyui-deno-custom-nodes into custom_nodes/deno-custom-nodes?\nThe RTX VFX video finisher (NVIDIA RTX Video Super Resolution / Deblur / High Bitrate) - NVIDIA RTX cards on Windows only.\nThe pack does NOT include NVIDIA's runtime. Afterwards: extract the official installer zip into ComfyUI/custom_nodes/deno-custom-nodes/tools/, close ComfyUI, run install_rtx_vfx.bat, then restart ComfyUI (https://deno2026.github.io/comfyui-deno-custom-nodes/rtx-vfx-install/)." }[k], e.currentTarget));
 $("s_vaspectrum") && ($("s_vaspectrum").onclick = (e) =>
   vaInstall("spectrum", "git clone / update ComfyUI-Spectrum-MiniMax-H3 into custom_nodes?\n"
     + "Spectrum is APPROXIMATE: ~30% fewer H3 transformer steps, fast motion can drift.", e.currentTarget));
@@ -4190,6 +4225,7 @@ function fillSettings() {
   if ($("s_cchunk")) $("s_cchunk").checked = (eng.comfy || {}).chunk_on_oom === true;
   if ($("s_cstdio")) $("s_cstdio").value = ((eng.comfy || {}).stdio === "console") ? "console" : "file";
   if ($("s_ccpuclip")) $("s_ccpuclip").checked = ((eng.comfy || {}).clip_device || "default") === "cpu";
+  if (window.H3Vram16) H3Vram16.fill((eng.comfy || {}).vram16);          // 2.708.0: 16 GB mode
   const vc = +((eng.comfy || {}).vram_ceiling || 0);
   if ($("s_cvram")) $("s_cvram").textContent = vc > 0
     ? `${vc}f (${(vc / 24).toFixed(2)}s) — ${(eng.comfy || {}).vram_ceiling_note || "learned"}`
@@ -5465,6 +5501,7 @@ $("s_save").onclick = async () => {
                          clear_on_exit: $("s_cclear") ? $("s_cclear").checked : true,   // 2.669.0
                          free_before_gen: $("s_cfree").checked,
                          clip_device: $("s_ccpuclip").checked ? "cpu" : "default",
+                         vram16: window.H3Vram16 ? H3Vram16.read() : undefined,   // 2.708.0: 16 GB mode
                          chunk_on_oom: $("s_cchunk").checked,
                          stdio: $("s_cstdio") ? $("s_cstdio").value : "file",
                          lora_4step: $("s_clora").checked } },

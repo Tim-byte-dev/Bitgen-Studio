@@ -25,6 +25,8 @@
              nodes (ext/previewdock/seedvr2.js, lib/seedvr2.js) - its own job in the queue -->
         <button id="pvSeedvr2" title="⏫ Upscale the video you are previewing with SeedVR2 (ComfyUI core nodes, seedvr2_7b_sharp_fp16) - pick the size, then Upscale; the result lands in the gallery">⏫ SeedVR2</button>
         <button id="pvDlss5" title="⚡ Enhance / upscale the video you are previewing with NVIDIA DLSS 5 (RH DLSS 5 nodes, RTX only) - optional frame generation; the result lands in the gallery">⚡ DLSS 5</button>
+        <!-- 2.708.0 (Tim: "Add the RTX upscale"): the DENO pack's RTX VFX finisher (ext/previewdock/rtxvfx.js, lib/rtxvfx.js) -->
+        <button id="pvRtxvfx" title="✨ Finish / upscale the video you are previewing with NVIDIA RTX Video (DENO nodes: Super Resolution, Deblur, High Bitrate) - RTX cards on Windows; the result lands in the gallery">✨ RTX VFX</button>
         <button id="pvSaveBtn" title="Save the previewed picture — a save dialog lets you pick the folder and name (a tone-mapped EXR/HDR saves as the PNG you are seeing)">💾 Save</button>
         <input id="pvLoadFile" type="file" accept="image/png,image/jpeg,image/webp,.exr,.hdr"
                style="display:none" aria-label="Choose a picture to preview (PNG, JPEG, WebP, EXR or HDR)">

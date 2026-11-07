@@ -219,7 +219,7 @@ check("the page: Veda in a video style (off / on / quality + a predictor field),
       'id="s_vsveda"' in html and 'id="s_vsvedapred"' in html and '$("s_vsvedabox").style.display = ac.veda' in html
       and 'veda: $("s_vsveda") ? $("s_vsveda").value : "off"' in html and '$("s_vsveda").value = vac.veda || "off"' in html)
 check("…and ⬇ Install Veda under Settings -> ComfyUI -> Video accelerators (status label + install blurb)",
-      'id="s_vapack_veda"' in html and 'id="s_vapacklbl_veda"' in html and '["kjnodes", "yusu", "veda", "dlss5"]' in html and "Veda-on-ComfyUI into custom_nodes" in html)
+      'id="s_vapack_veda"' in html and 'id="s_vapacklbl_veda"' in html and '["kjnodes", "yusu", "veda", "dlss5"' in html and "Veda-on-ComfyUI into custom_nodes" in html)
 
 print(f"\n{PASS} passed, {FAIL} failed")
 print("RESULT: " + ("FAIL" if FAIL else "PASS") + f" ({PASS} passed, {FAIL} failed)")

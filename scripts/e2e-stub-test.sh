@@ -13133,6 +13133,20 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.708.0 (Tim: "Add the RTX upscale")
+node scripts/test-rtxvfx708.js > /tmp/rtxvfx708.log 2>&1 \
+  && ok "2.708.0 RTX VFX units: the graph (one chunk: loader skip / cap -> the DENO finisher -> combine, Tim's presets A / B), the live-list check, the worker's chunks + lossless concat, options / params / ⚙ branches, REAL worker runs on the stub ComfyUI (1 chunk at 48; 3 chunks joined, all 48 frames, x2 with the sound; no pack / a pass not offered / the pack's own error refused in words), the page" \
+  || { bad "2.708.0 RTX VFX units"; grep -a "^FAIL" -A2 /tmp/rtxvfx708.log | head -14; }
+# ---- 2.708.0 (Tim: "this workflow is meant to work with 16gb vram - minimax")
+python3 scripts/test-vram16708.py > /tmp/vram16708py.log 2>&1 \
+  && ok "2.708.0 16 GB mode graph: on ref2va / fl2va - text encoder unload, pass 1 in 8 steps with the Acc LoRA (turbo switch bypassed), latent upscale + the last 2 sigmas with DMD + 2K refiner + Sol sparse attention, the sound kept, decodes read pass 2; missing parts left out with a note; FastH3 / ⚙ stage / x1 respected" \
+  || { bad "2.708.0 16 GB mode graph"; grep -a "^FAIL" -A2 /tmp/vram16708py.log | head -14; }
+node scripts/test-vram16708.js > /tmp/vram16708.log 2>&1 \
+  && ok "2.708.0 16 GB mode app: settings (Auto default), the catalog files, status, the add-on, the route, Settings markup + save, the node packs" \
+  || { bad "2.708.0 16 GB mode app"; grep -a "^FAIL" -A2 /tmp/vram16708.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-vram16708-ui.js > /tmp/vram16708ui.log 2>&1 \
+  && ok "2.708.0 browser test: Settings ▸ ComfyUI ▸ 16 GB mode - Auto / On / Off, upscale, 8-step pass, status, install button, Save + reopen, ⤓ to Add-ons - or SKIP without playwright" \
+  || { bad "2.708.0 16 GB mode browser test"; grep -a "FAIL\\|Error" -A2 /tmp/vram16708ui.log | head -14; }
 # ---- 2.707.0 (Tim: "ok, i guess we can do the dockers next")
 node scripts/test-uilang707.js > /tmp/uilang707.log 2>&1 \
   && ok "2.707.0 units: every docker's words (ui-dynamic reads all the code incl. the editors' data labels, ui-strings opens every docker, readouts left out), the guides name the editors' buttons as the app does, the dictionaries complete" \

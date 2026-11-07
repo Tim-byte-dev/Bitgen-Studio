@@ -38,6 +38,7 @@ const takeUpscale = require("../lib/takeUpscale");         // 2.315.0: ⏫ upsca
 const seedvr2 = require("../lib/seedvr2");                 // 2.400.0: ⏫ with the ⚙ Upscaler on SeedVR2 (video)
 const sceneResume = require("../lib/sceneResume");         // 2.562.0: a job a restart took away comes back to its scene
 const dlss5 = require("../lib/dlss5");                     // 2.504.0: ⏫ with the ⚙ Upscaler on DLSS 5
+const rtxvfx = require("../lib/rtxvfx");                   // 2.708.0: ⏫ with the ⚙ Upscaler on RTX VFX
 const sceneCount = require("../lib/sceneCount");           // 2.323.0: the Scenes field / scenes.txt
 const movies = require("../lib/movies");
 const comfy = require("../lib/comfy");
@@ -352,6 +353,11 @@ function syncJobs(project) {
             try { scenes.save(st, project); const q = dlss5.onTake(project, r.n); if (q && q.job) st = scenes.load(project); }
             catch { /* never stall the board */ }
           }
+          // 2.708.0: the same for the ⚙ on RTX VFX
+          if (src && rtxvfx.isUpscaler(renderSettings.read(core.projDir(project || core.getProject())))) {
+            try { scenes.save(st, project); const q = rtxvfx.onTake(project, r.n); if (q && q.job) st = scenes.load(project); }
+            catch { /* never stall the board */ }
+          }
         } catch (e) {
           // 2.308.0: a finished job ALWAYS leaves "running" - a harvest that
           // throws fails the scene in words rather than freezing it
@@ -441,6 +447,9 @@ function queueScene(project, n, opts) {
   // 2.504.0: the ⚙ Upscaler on DLSS 5 - the take through RunningHub's DLSS 5 nodes as its own job (lib/dlss5)
   if (upscale && dlss5.isUpscaler(renderSettings.read(core.projDir(project || core.getProject()))))
     return dlss5.queueTake(project, n);
+  // 2.708.0: the ⚙ Upscaler on RTX VFX - the take through the DENO pack's NVIDIA RTX video finisher as its own job (lib/rtxvfx)
+  if (upscale && rtxvfx.isUpscaler(renderSettings.read(core.projDir(project || core.getProject()))))
+    return rtxvfx.queueTake(project, n);
   const upExport = upscale && fs.existsSync(wfPath(UPSCALE_WF));
   if (!st.plan) return { status: 400, error:
     "write and apply a screenplay first — the board has no plan to render from" };

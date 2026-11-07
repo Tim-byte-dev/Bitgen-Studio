@@ -127,6 +127,8 @@ def core_schemas():
         **SEEDVR2_SCHEMAS,
         # 2.504.0: RunningHub's DLSS 5 pack (nodes.py INPUT_TYPES - all optional, as the pack declares them)
         **DLSS5_SCHEMAS,
+        # 2.708.0: the DENO pack's RTX VFX finisher (STUB_RTXVFX_ABSENT=1 = a ComfyUI without the pack)
+        **({} if os.environ.get("STUB_RTXVFX_ABSENT") else RTXVFX_SCHEMAS),
         # 2.319.0, faithful-mock rule (Tim's run: LineArtPreprocessor ->
         # KeyError: 'coarse'): comfyui_controlnet_aux declares its switches
         # as OPTIONAL and reads them as always-sent - the stub fails the same
@@ -216,6 +218,18 @@ DLSS5_SCHEMAS = {
         "scene_change_threshold": ["FLOAT", {"default": 0.24}], "keep_audio": [["on", "off"], {"default": "on"}],
         "audio": ["AUDIO"], "runtime_dir": ["STRING", {"default": ""}], "wine_prefix": ["STRING", {"default": ""}]}},
         "output": ["IMAGE", "VIDEO", "STRING"]},
+}
+
+# 2.708.0: the DENO pack's DenoRTXVFXVideoFinisher. Its widget NAMES are the ones Tim's export carries; the option lists
+# hold ONLY the values seen in that export (the real pack offers more - the worker reads whatever /object_info says)
+RTXVFX_SCHEMAS = {
+    "DenoRTXVFXVideoFinisher": {"input": {"required": {
+        "images": ["IMAGE"], "first_pass": [["Off", "Deblur"], {"default": "Off"}], "first_quality": [["Ultra"], {"default": "Ultra"}],
+        "upscale_pass": [["VSR", "High Bitrate"], {"default": "VSR"}], "upscale_quality": [["High"], {"default": "High"}],
+        "resize_type": [["Scale"], {"default": "Scale"}], "scale": ["FLOAT", {"default": 2.0}], "megapixels": ["FLOAT", {"default": 4.0}],
+        "width": ["INT", {"default": 3840}], "height": ["INT", {"default": 2160}], "divisible_by": [["32"], {"default": "32"}],
+        "ratio_preset": [["16:9"], {"default": "16:9"}], "resize_method": [["Center Crop (Fill)"], {"default": "Center Crop (Fill)"}]}},
+        "output": ["IMAGE"], "output_name": ["images"]},
 }
 
 ABSENT = {"SolAttnPatch", "MiniMaxChunkFeedForward"}   # 2.344.0: classes this stub ComfyUI lacks
@@ -492,6 +506,60 @@ def render_dlss5(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+def render_rtxvfx(pid, g):
+    """2.708.0: an RTX VFX chunk graph answered like ComfyUI + VideoHelperSuite + the DENO pack would: the wiring is
+    checked (the finisher's images from the loader, the combine's from the finisher, the frame rate from
+    VHS_VideoInfoSource), a combo the node does not list fails as validation would; the LOADED frames (skip_first_frames
+    / frame_load_cap of the uploaded video, at 24 fps) are saved at each side x scale (to divisible_by) under "gifs"
+    like VHS_VideoCombine. STUB_RTXVFX_FAIL=<text> = the pack's own error (the NVIDIA runtime missing, say)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import rtxvfx_graph as RG                                 # noqa: E402
+
+    def err(nid, ct, msg):
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_start", {"prompt_id": pid, "timestamp": 1}],
+            ["execution_error", {"prompt_id": pid, "node_id": str(nid), "node_type": ct, "exception_type": "RuntimeError",
+                                 "exception_message": msg, "traceback": ["  File \"custom_nodes/deno-custom-nodes/nodes.py\""]}]]},
+            "outputs": {}}
+    of = lambda ct: next(((k, v) for k, v in g.items() if v.get("class_type") == ct), (None, None))   # noqa: E731
+    lv_id, lv = of("VHS_LoadVideo")
+    vi_id, _vi = of("VHS_VideoInfoSource")
+    fx_id, fx = of(RG.NODE)
+    vc_id, vc = of("VHS_VideoCombine")
+    if not (lv and fx and vc and vi_id):
+        return err(fx_id or "0", RG.NODE, "the stub expects loader, info, finisher and combine")
+    li, fi, ci = lv.get("inputs") or {}, fx.get("inputs") or {}, vc.get("inputs") or {}
+    f = li.get("video")
+    if not isinstance(f, str) or f not in UPLOADED:
+        return err(lv_id, "VHS_LoadVideo", f"Invalid video file: {f}")
+    if fi.get("images") != [lv_id, 0] or ci.get("images") != [fx_id, 0] or ci.get("frame_rate") != [vi_id, 0]:
+        return err(fx_id, RG.NODE, "wiring: images <- VHS_LoadVideo 0, combine images <- finisher 0, frame_rate <- VHS_VideoInfoSource 0")
+    for k, spec in RTXVFX_SCHEMAS[RG.NODE]["input"]["required"].items():
+        if k not in fi:
+            return err(fx_id, RG.NODE, f"Required input is missing: {k}")
+        if isinstance(spec[0], list) and fi[k] not in spec[0]:
+            return err(fx_id, RG.NODE, f"Value not in list: {k}: '{fi[k]}' not in {spec[0]}")
+    if os.environ.get("STUB_RTXVFX_FAIL"):
+        return err(fx_id, RG.NODE, os.environ["STUB_RTXVFX_FAIL"])
+    info = _probe(INPUTS / f) if (INPUTS / f).is_file() else {}
+    w, h, dur = info.get("w") or 192, info.get("h") or 108, info.get("dur") or 1.0
+    total = int(round(dur * 24))
+    skip, cap = int(li.get("skip_first_frames") or 0), int(li.get("frame_load_cap") or 0)
+    n = max(0, total - skip) if cap <= 0 else max(0, min(cap, total - skip))
+    if n <= 0:
+        return err(lv_id, "VHS_LoadVideo", f"No frames generated (skip_first_frames {skip} of {total})")
+    t = RG.target(w, h, fi.get("scale") or 1, int(str(fi.get("divisible_by") or "32")))
+    ow, oh = t["width"], t["height"]
+    fn = f"rtxvfx_{pid}.mp4"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={ow}x{oh}:rate=24",
+                    "-frames:v", str(n), "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "ultrafast", str(OUT / fn)],
+                   check=False)
+    Path(OUT / f"video_{pid}.json").write_text(json.dumps({"_rtxvfx": fi, "_load": li, "_out": [ow, oh, n]}), encoding="utf-8")
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True},
+                 "outputs": {str(vc_id): {"gifs": [{"filename": fn, "subfolder": "", "type": "output",
+                                                    "format": "video/h264-mp4"}]}}}
+
+
 def render(pid, g):
     # An image graph (one that ends in SaveImage) renders PNGs; anything else is
     # the video path. A FAITHFUL stub matters more than a convenient one: a mock
@@ -514,6 +582,8 @@ def render(pid, g):
         return render_seedvr2(pid, g)                  # 2.400.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
         return render_dlss5(pid, g)                    # 2.504.0
+    if any(v.get("class_type") == "DenoRTXVFXVideoFinisher" for v in g.values()):
+        return render_rtxvfx(pid, g)                   # 2.708.0
     if any(v.get("class_type") == "SaveGLB" for v in g.values()):
         return render_mesh(pid, g)                     # 2.404.0
     if save:
@@ -1051,6 +1121,8 @@ class H(BaseHTTPRequestHandler):
                                  "full_attention_layers": ["STRING", {"default": ""}], "full_attention_steps": ["STRING", {"default": ""}],
                                  "verbose": ["BOOLEAN", {"default": False}]}},
                     "output": ["MODEL"], "output_name": ["MODEL"]}})
+            if ct == "DenoRTXVFXVideoFinisher" and os.environ.get("STUB_RTXVFX_ABSENT"):
+                return self._j({})                     # 2.708.0: a ComfyUI without the DENO pack
             CS = core_schemas()
             if ct in CS:
                 return self._j({ct: CS[ct]})

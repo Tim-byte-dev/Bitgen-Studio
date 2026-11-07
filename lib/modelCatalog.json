@@ -454,6 +454,39 @@
       "for": "the swap dialog's Viggle (H3) engine (2.344.0)"
     },
     {
+      "id": "h3_acc8",
+      "group": "video",
+      "label": "H3 Ref2VA Acc 8-step LoRA (16 GB mode, pass 1)",
+      "repo": "Kijai/MiniMax-H3-experimental",
+      "file": "loras/MiniMax-H3-Ref2VA-Acc-8Step_pruned_comfy.safetensors",
+      "dest": "comfy/loras",
+      "size": 1610000000,
+      "for": "16 GB mode: the first pass in 8 steps (Settings ▸ ComfyUI ▸ 16 GB mode)",
+      "as": "MiniMax-H3-Ref2VA-Acc-8Step_pruned_comfy.safetensors"
+    },
+    {
+      "id": "h3_dmd_ref",
+      "group": "video",
+      "label": "H3 DMD Ref2VA 8-step turbo LoRA (16 GB mode, pass 2)",
+      "repo": "drbaph/MiniMax-H3-Turbo-Lora-ComfyUI",
+      "file": "experimental/minimax_h3_dmd_ref2va_8step_turbo_pruned.safetensors",
+      "dest": "comfy/loras",
+      "size": 2130000000,
+      "for": "16 GB mode: the 2 refine steps after the latent upscale",
+      "as": "minimax_h3_dmd_ref2va_8step_turbo_pruned.safetensors"
+    },
+    {
+      "id": "h3_refiner2k",
+      "group": "video",
+      "label": "H3 Open-H3 2K refiner LoRA rank 16 (16 GB mode, pass 2)",
+      "repo": "Kijai/MiniMax-H3-experimental",
+      "file": "loras/minimax_h3_open_regenerate_2k_refiner_rank_16_bf16.safetensors",
+      "dest": "comfy/loras",
+      "size": 147900000,
+      "for": "16 GB mode: detail in the 2 refine steps after the latent upscale",
+      "as": "minimax_h3_open_regenerate_2k_refiner_rank_16_bf16.safetensors"
+    },
+    {
       "id": "h3_latent_up",
       "group": "upscale",
       "label": "H3 latent upscaler (3D)",

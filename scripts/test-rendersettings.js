@@ -181,7 +181,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     d && d.last === "vdSetWrap" && d.btn[0] === "⚙" && d.btn[1] === "Render settings" && d.hidden === "none", d);
   check("jsdom: ⚙ opens the panel and paints the record (720p, Sage on, a saved upscaler not in the scan kept; 2.400.0 SeedVR2 (video) after Off)",
     d && d.open === "flex" && JSON.stringify(d.painted)
-      === '["720",true,"old_up.safetensors",["","seedvr2","dlss5","minimax_h3_latent_upscaler_3d_bf16.safetensors","old_up.safetensors"],false]', d && d.painted);
+      === '["720",true,"old_up.safetensors",["","seedvr2","dlss5","rtxvfx","minimax_h3_latent_upscaler_3d_bf16.safetensors","old_up.safetensors"],false]', d && d.painted);
   check("jsdom: the LoRA rows are the core's, on the same video list (mountTempLoras into the panel)",
     d && JSON.stringify(d.mounted) === '[["video","vdSetLoras",[{"path":"a.safetensors","weight":0.8}]]]'
     && JSON.stringify(d.added) === '[["video","vdSetLoras"]]', d && [d.mounted, d.added]);

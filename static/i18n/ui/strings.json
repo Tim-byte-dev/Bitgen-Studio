@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5312,
+ "count": 5341,
  "strings": [
   {
    "s": "0 (auto)",
@@ -137,6 +137,15 @@
    ],
    "where": [
     "textarea#mv_shots"
+   ]
+  },
+  {
+   "s": "16 GB mode (MiniMax H3 on a 16 GB card)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
    ]
   },
   {
@@ -3453,6 +3462,15 @@
    ],
    "where": [
     "option in #tlFrPreset"
+   ]
+  },
+  {
+   "s": "Auto - on when the card has 16 GB or less (default)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "s_c16mode"
    ]
   },
   {
@@ -8668,6 +8686,15 @@
    ]
   },
   {
+   "s": "DENO's MiniMax H3 R2V Turbo 8+2 recipe on your own H3 renders: the 32B text encoder is unloaded after encoding",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
    "s": "DESCRIPTION",
    "kinds": [
     "text"
@@ -8701,6 +8728,15 @@
    ],
    "where": [
     "span in #hwRows"
+   ]
+  },
+  {
+   "s": "DMD Ref2VA 8-step LoRA",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
    ]
   },
   {
@@ -10269,6 +10305,15 @@
    ],
    "where": [
     "button.ghost in #aoList"
+   ]
+  },
+  {
+   "s": "Download the two LoRAs of each pass and the latent upscaler (Settings ▸ Add-ons ▸ 16 GB mode)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "s_c16files"
    ]
   },
   {
@@ -12677,6 +12722,15 @@
    ]
   },
   {
+   "s": "Finish / upscale the video you are previewing with NVIDIA RTX Video (DENO nodes: Super Resolution, Deblur, High Bitrate) - RTX cards on Windows; the result lands in the gallery",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "pvRtxvfx"
+   ]
+  },
+  {
    "s": "Finish Sketch",
    "kinds": [
     "title",
@@ -14758,6 +14812,15 @@
    ]
   },
   {
+   "s": "H3 latent upscaler (3D)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
+   ]
+  },
+  {
    "s": "H3 memory-efficient patch (lowest VRAM)",
    "kinds": [
     "text"
@@ -16176,6 +16239,24 @@
    ],
    "where": [
     "button.ghost in #aoList"
+   ]
+  },
+  {
+   "s": "Install DENO nodes (RTX VFX)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "s_vapack_deno"
+   ]
+  },
+  {
+   "s": "Install H3 latent upscaler nodes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "s_vapack_h3latentup"
    ]
   },
   {
@@ -19914,6 +19995,15 @@
    ]
   },
   {
+   "s": "MiniMax H3 renders on a 16 GB card, as DENO's R2V Turbo 8+2 does it: the text encoder leaves VRAM before sampling, pass 1 in 8 steps at your size, then a latent upscale and 2 refine steps with sparse attention - the sound from pass 1 kept",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
+   ]
+  },
+  {
    "s": "MiniMax H3's ref2va model, text encoder and VAE (Settings ▸ Setup - the same files the H3 styles use); ComfyUI with MiniMax H3 (v0.30 or later; update it in Settings ▸ ComfyUI); git for the node pack. The weights carry the MiniMax H3 Community License - the EU, the UK, South Korea and the US are excluded territories (NOTICE.md); the code is Apache-2.0",
    "kinds": [
     "text"
@@ -20576,6 +20666,15 @@
    ],
    "where": [
     "button#s_vapack_dlss5.ghost"
+   ]
+  },
+  {
+   "s": "NVIDIA RTX Video Super Resolution / Deblur / High Bitrate (RTX cards, Windows). The pack does not include NVIDIA's runtime: extract the official installer zip into ComfyUI/custom_nodes/deno-custom-nodes/tools/, close ComfyUI, run install_rtx_vfx.bat, then restart ComfyUI",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "s_vapack_deno"
    ]
   },
   {
@@ -22011,6 +22110,15 @@
    ]
   },
   {
+   "s": "On - every MiniMax H3 render",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "s_c16mode"
+   ]
+  },
+  {
    "s": "On - fastest (90% sparse, the authors' setting)",
    "kinds": [
     "text"
@@ -22394,6 +22502,15 @@
    ],
    "where": [
     "div.uep-d in #uepDlg"
+   ]
+  },
+  {
+   "s": "Open-H3 2K refiner LoRA",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
    ]
   },
   {
@@ -23105,6 +23222,24 @@
    ],
    "where": [
     "span in #kgDlg"
+   ]
+  },
+  {
+   "s": "Pass 1 in 8 steps (Acc 8-step LoRA)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
+   "s": "Pass 2 grows the latent this much: Basic Settings' size × this = the take's size (1 = no second pass)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "s_c16scale"
    ]
   },
   {
@@ -25446,6 +25581,24 @@
    ]
   },
   {
+   "s": "RTX VFX",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "pvRtxvfx"
+   ]
+  },
+  {
+   "s": "RTX VFX (NVIDIA RTX) - the take as its own job",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "vdSetUpscaler"
+   ]
+  },
+  {
    "s": "Radial gradient",
    "kinds": [
     "title"
@@ -25907,6 +26060,24 @@
    ],
    "where": [
     "button#tlAddRef.ghost"
+   ]
+  },
+  {
+   "s": "Ref2VA Acc 8-step LoRA",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
+   ]
+  },
+  {
+   "s": "Ref2VA Acc 8-step LoRA 1.6 GB, DMD Ref2VA 8-step LoRA 2.1 GB, Open-H3 2K refiner LoRA 148 MB, H3 latent upscaler (3D) 300 MB",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
    ]
   },
   {
@@ -33548,6 +33719,15 @@
    ]
   },
   {
+   "s": "The 16 GB mode files",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "s_c16files"
+   ]
+  },
+  {
    "s": "The Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded here",
    "kinds": [
     "text"
@@ -33599,6 +33779,15 @@
    ],
    "where": [
     "button#tlpGraph.ghost"
+   ]
+  },
+  {
+   "s": "The H3 latent upscaler nodes (MinimaxH3LatentUpscaler3D) - git clone / pull into custom_nodes",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "s_vapack_h3latentup"
    ]
   },
   {
@@ -36744,6 +36933,15 @@
    ]
   },
   {
+   "s": "Upscale ×",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
    "s": "Upscaler",
    "kinds": [
     "text"
@@ -39485,6 +39683,15 @@
    ],
    "where": [
     "button#tlTool_zoom.ghost"
+   ]
+  },
+  {
+   "s": "a ComfyUI with MiniMax H3 and Sol attention (0.43 or later); the DENO custom nodes and the H3 latent upscaler nodes (Settings ▸ ComfyUI ▸ 16 GB mode installs them). LoRAs by Kijai and drbaph, the latent upscaler by LBH - each keeps its own licence",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "aoList"
    ]
   },
   {
@@ -45257,6 +45464,24 @@
    ]
   },
   {
+   "s": "pass 1",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
+   "s": "pass 2",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
    "s": "patterns",
    "kinds": [
     "text"
@@ -45885,6 +46110,15 @@
    ]
   },
   {
+   "s": "redraws only the last 2 steps with the DMD + 2K refiner LoRAs and Sol sparse attention, the sound kept. The take comes out at the size × the upscale - start around 896 × 512 with 1.2-1.8; bigger takes much longer. Any part this ComfyUI cannot run (a node pack or file missing) is left out and the render says so. Needs the DENO custom nodes (Video accelerators, below) and the latent upscaler nodes; KJNodes adds a model unload before the decode",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
    "s": "ref2va comfy_workflows/ref2va.json — API export ok",
    "kinds": [
     "text"
@@ -46008,6 +46242,15 @@
    ],
    "where": [
     "span.what in #stab-about"
+   ]
+  },
+  {
+   "s": "renders at Basic Settings' size in 8 steps (the Ref2VA Acc 8-step LoRA) and makes the sound, then the video latent is",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
    ]
   },
   {
@@ -47901,6 +48144,15 @@
    ]
   },
   {
+   "s": "the number above) and",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
+   ]
+  },
+  {
    "s": "the one you pick: from 2.2 GB (2B Q4_K_M + projector) to 5.6 GB (4B Q8_0 + projector)",
    "kinds": [
     "text"
@@ -48558,6 +48810,15 @@
    ],
    "where": [
     "input#muTitle"
+   ]
+  },
+  {
+   "s": "upscaled",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "ctab-engine"
    ]
   },
   {

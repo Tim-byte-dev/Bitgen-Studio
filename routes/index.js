@@ -173,6 +173,7 @@ function mount(app) {
   require("./camPath").mount(app);      // 2.399.0: the timeline's 🎥 camera path - guide videos, what each model is told
   require("./seedvr2").mount(app);      // 2.400.0: ⏫ SeedVR2 video upscaling (preview dock + the ⚙ Upscaler's SeedVR2)
   require("./dlss5").mount(app);        // 2.504.0: ⚡ DLSS 5 enhance / upscale / frame generation (preview dock + the ⚙ Upscaler's DLSS 5)
+  require("./rtxvfx").mount(app);       // 2.708.0: ✨ RTX VFX finisher - NVIDIA RTX VSR / Deblur / High Bitrate (preview dock + the ⚙ Upscaler's RTX VFX)
   require("./scene").mount(app);        // 2.515.0: 🧍 cut-out through a shot, 📷 3D camera tracker, 🩹 content-aware fill
   require("./ueProject").mount(app);    // 2.513.0: 🎮 Load UE project (the bridge plugin put in, Unreal restarted)
   require("./lottie").mount(app);       // 2.512.0: ⤓ Lottie (JSON) export of the picture / text layers
@@ -224,6 +225,7 @@ function mount(app) {
   require("./comfyUpdate").mount(app);  // 2.573.0: ⤓ Update ComfyUI (lib/comfyUpdate.js)
   require("./mediaMeta").mount(app);    // 2.575.0: a file's prompt / seed / cfg / steps (lib/mediaMeta.js)
   require("./addons").mount(app);       // 2.540.4: Settings ▸ Add-ons - optional engines (YuE2, Viggle native) installed in the app (lib/addons.js)
+  require("./vram16").mount(app);       // 2.708.0: Settings ▸ ComfyUI ▸ 16 GB mode - its status (lib/vram16.js)
   require("./llamaEngine").mount(app);  // 2.596.0: Settings ▸ LLM ▸ llama.cpp version, Install / ⟳ Update with progress (lib/llamaEngine.js)
   require("./imageSave").mount(app);    // 2.604.0: the image editor's 💾 Save to Images - a temp copy, then the format picked, Assets + Gallery
   require("./to3d").mount(app);         // 2.594.0: 🧊 Convert to 3D a picture the page sends (reference dock, image editor) - lib/to3d.js
