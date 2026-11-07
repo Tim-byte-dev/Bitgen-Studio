@@ -1,0 +1,44 @@
+# bitGen Community (2.710.0) - Apache / LiteSpeed: only api.php may be opened from the web.
+# Everything else in this folder is denied: lib/ (the PHP parts), config.php (the database password),
+# *.db (a SQLite database), *.sql, *.md and these dot-files.
+
+# deny everything ...
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
+
+# ... but api.php
+<Files "api.php">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</Files>
+
+# said again by name, in case a host's own rules re-open files: config.php, databases, SQL, notes, dot-files
+<FilesMatch "(^config\.php$|^config\.sample\.php$|\.db$|\.sqlite3?$|\.sql$|\.md$|^\.)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # lib/ is never served (lib/.htaccess denies it too)
+    RewriteRule ^lib(/|$) - [F,L]
+    # many shared hosts (PHP as CGI / FastCGI) drop the Authorization header - hand it to PHP.
+    # If it still does not arrive, bitGen also sends the token in the JSON body ("token"), which api.php accepts.
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>

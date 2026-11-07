@@ -122,3 +122,6 @@ fonts/
 textfx/user/
 # 2.680.0: the prompt docker's ⇄ (the current / previous settings of each model type) - user state
 model_settings.tmp
+# 2.710.0: the bitGen Community server's settings (its database password) and a SQLite test / tiny-install database
+community/config.php
+community/*.db
