@@ -4560,6 +4560,31 @@ render's log says which and what to install, so a render never fails because 16 
 Not with: a FastH3 Omni style (already 8 steps with sparse attention) and the ⚙ upscaler's stage (it upscales the
 render itself, so 16 GB mode keeps only the text encoder unload and pass 1). RunPod renders do not use it.
 
+## 💬 The bitGen Community: help and friends (2.710.0)
+
+**💬 Community** on the status bar opens a small chat panel (bottom right), like Facebook's.
+
+- **Join**: type a **user ID** (3-24 letters, numbers, _ . -), a display name and a password (8 characters or more),
+  then **Join**. Already have an ID (on another computer)? Type it and the password, then **Sign in**.
+- **Help**: the room every member shares. Ask a question there and anyone can answer. Click a name to find that person
+  and add them as a friend.
+- **Friends**: find people by user ID or name and press **+ Add friend**. They get a friend request; when they press
+  **✓ Accept** you are friends (**✕ Decline** says no). Requests to you are listed at the top. A friend has **💬** for a
+  private chat (its own tab), **Remove**, and **Block** (they cannot message or ask you again, and their Help messages
+  are hidden from you).
+- **⚑** on a message reports it to the community's admins, with a reason. The badge on 💬 Community counts new messages
+  and friend requests while the panel is closed.
+- **⋯**: **Sign out** on this computer (your ID stays), **Leave the community** (deletes your ID and friendships - type
+  your password), and the community server's address. Admins also see **Reports** there: delete the message, or ban
+  its writer.
+
+What people write is shown exactly as written, never translated or turned into links or pictures. New messages
+arrive every few seconds while the panel is open. Your password is sent once to the community server (over https) and
+never kept; bitGen keeps only a sign-in token in community.json in the install folder, and the page never sees it.
+
+The community server is a small PHP program (the `community/` folder of the repo, `community/README.md` explains the
+install on any PHP + MariaDB host). The default address is https://tigerart.com.au/bitgen-community/api.php.
+
 ## Long video: one MiniMax H3 run up to 30 seconds (2.503.0)
 
 A MiniMax H3 clip used to be one generation of up to 15 seconds; anything longer was rendered in 15-second pieces and

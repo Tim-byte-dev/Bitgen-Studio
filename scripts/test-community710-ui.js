@@ -86,6 +86,14 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
     await p.click("#tCm"); await p.evaluate(() => H3Community.show("@bob"));
     await p.waitForFunction(() => /Any time <b>friend<\/b>/.test(document.getElementById("cmList").textContent));
     check("…what people write is shown as text (an HTML tag stays visible, nothing is made of it)", await p.evaluate(() => !document.querySelector("#cmList b") && /<b>friend<\/b>/.test(document.getElementById("cmList").textContent)));
+    // in Chinese: the panel's own words translated, what people write never
+    await post(A("send"), { to: "alice_1", body: "Help" }, bob);
+    await p.selectOption("#uiLangSel", "zh-CN"); await p.waitForFunction(() => document.documentElement.getAttribute("data-uilang") === "zh-CN" && H3UiLang.state().dict);
+    await p.waitForFunction(() => [...document.querySelectorAll("#cmList .cmm .txt")].some((x) => x.textContent === "Help"), null, { timeout: 15000 });
+    const zh = await p.evaluate(() => ({ tab: document.querySelector("#cmTabs button").textContent, send: document.getElementById("cmSend").textContent, bodies: [...document.querySelectorAll("#cmList .cmm .txt")].map((x) => x.textContent) }));
+    check("in 简体中文 the panel's words are translated (Help -> 帮助, Send -> 发送) but a message that says \"Help\" stays as written",
+      zh.tab === "帮助" && zh.send === "发送" && zh.bodies.includes("Help"), zh);
+    await p.selectOption("#uiLangSel", "en"); await p.waitForFunction(() => document.documentElement.getAttribute("data-uilang") === "en");
     // report
     await p.evaluate(() => [...document.querySelectorAll("#cmList .cmm")].find((m) => /Any time/.test(m.textContent)).querySelector("button.act").click());
     await p.fill("#cmList .cmrep input", "testing a report"); await p.press("#cmList .cmrep input", "Enter");
@@ -98,6 +106,19 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
     await p.evaluate(() => [...document.querySelectorAll("#cmBody button")].find((x) => x.textContent === "Sign out").click());
     await p.waitForSelector("#cmSignIn", { timeout: 10000 });
     check("⋯ Sign out: back to Join / Sign in, the ID remembered", (await (await fetch(URL0 + "api/community")).json()).joined === false);
+    // an admin (boss) signs in: ⋯ ▸ Reports (admin) lists the report; Delete message removes it for everyone
+    await p.fill("#cmHandle", "boss"); await p.fill("#cmPass", "boss-password"); await p.click("#cmSignIn");
+    await p.waitForSelector("#cmList", { timeout: 10000 });
+    await p.evaluate(() => document.getElementById("cmMore").click());
+    await p.waitForFunction(() => document.querySelector("#cmReports [data-report]"), null, { timeout: 10000 });
+    const rp = await p.evaluate(() => document.getElementById("cmReports").textContent);
+    await p.evaluate(() => [...document.querySelectorAll("#cmReports button")].find((x) => x.textContent === "Delete message").click());
+    await p.waitForFunction(() => /deleted/.test(document.getElementById("cmMsg").textContent), null, { timeout: 10000 });
+    const after = await post(A("history"), { room: "alice_1" }, bob);
+    check("an admin: ⋯ ▸ Reports (admin) shows the reported message + reason; Delete message removes it for everyone",
+      /Any time/.test(rp) && /testing a report/.test(rp) && !(after.messages || []).some((m) => /Any time/.test(m.body)) && ((await post(A("admin_reports"), {}, boss)).reports || []).length === 0, { rp, after });
+    await post(URL0 + "api/community/signout", {}); await p.evaluate(() => H3Community.refresh());
+    await p.waitForSelector("#cmSignIn", { timeout: 10000 });
     await p.fill("#cmHandle", "alice_1"); await p.fill("#cmPass", "alices-password"); await p.click("#cmSignIn");
     await p.waitForSelector("#cmList", { timeout: 10000 });
     await p.evaluate(() => document.getElementById("cmMore").click());

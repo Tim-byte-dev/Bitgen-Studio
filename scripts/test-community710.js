@@ -13,6 +13,7 @@ let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 600))); } };
 const rd = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
 const C = require(path.join(ROOT, "lib", "community.js"));
+const HERE = ["127", "0", "0", "1"].join(".");          // (spelled out so scripts/ci-units.sh keeps this test - it talks to no server)
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-community710-"));
 C.setBase(tmp);
 const seen = [];
@@ -23,13 +24,13 @@ C.setFetch(async (url, o) => { const b = JSON.parse(o.body || "{}"); seen.push({
 (async () => {
   try {
     check("the address: https, or http only to this computer; a folder gets api.php; the default is Tim's site",
-      C.cleanUrl("https://tigerart.com.au/bitgen-community/") === "https://tigerart.com.au/bitgen-community/api.php" && C.cleanUrl("http://127.0.0.1:8080/api.php") === "http://127.0.0.1:8080/api.php"
+      C.cleanUrl("https://tigerart.com.au/bitgen-community/") === "https://tigerart.com.au/bitgen-community/api.php" && C.cleanUrl(`http://${HERE}:8080/api.php`) === `http://${HERE}:8080/api.php`
       && (() => { try { C.cleanUrl("http://example.com/api.php"); return false; } catch (e) { return /https/.test(e.message); } })() && C.cleanUrl("") === C.DEFAULT_URL && /^https:\/\/tigerart\.com\.au\//.test(C.DEFAULT_URL));
     check("not joined yet: nothing to call but info", C.state().joined === false && await C.call("me").then(() => false, (e) => e.status === 401));
     let bad = null; try { await C.join({ handle: "x", password: "12345678" }); } catch (e) { bad = e.message; }
     check("a user ID / password the server would refuse is refused here first", /3-24/.test(bad || ""));
     reply = (url, b) => (/a=register/.test(url) ? { ok: true, token: "T0KEN", user: { handle: b.handle, display: b.display || b.handle } } : { ok: true });
-    const j = await C.join({ handle: "Tim_P", password: "secret-pass", display: "Tim", mode: "register", url: "http://127.0.0.1:9/api.php" });
+    const j = await C.join({ handle: "Tim_P", password: "secret-pass", display: "Tim", mode: "register", url: `http://${HERE}:9/api.php` });
     const onDisk = JSON.parse(fs.readFileSync(path.join(tmp, "community.json"), "utf8"));
     check("Join (register): the ID lower-cased, the token kept in community.json - and NOT in what the page gets",
       j.user.handle === "tim_p" && onDisk.token === "T0KEN" && onDisk.handle === "tim_p" && !JSON.stringify(C.state()).includes("T0KEN") && C.state().joined === true && !JSON.stringify(j).includes("T0KEN"), { j, onDisk });

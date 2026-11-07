@@ -12,6 +12,7 @@ const os = require("os");
 const net = require("net");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
+if (spawnSync("php", ["-v"]).status !== 0) { console.log("SKIP: no php here - the 2.710.0 community server test did not run"); process.exit(0); }
 
 const ROOT = path.join(__dirname, "..");
 const DIR = path.join(ROOT, "community");

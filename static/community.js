@@ -16,7 +16,8 @@
  *   a friend's tab  your private chat with them
  *   ⋯              sign out, leave the community (deletes your ID), the server's address
  * New messages come every few seconds while the panel is open (every 20 s while it is closed - for the badge).
- * Everything people write is shown as text, never as HTML.
+ * Everything people write is shown as text, never as HTML - and never translated (data-noi18n: a message "Save" stays
+ * "Save" in a Chinese / Japanese bitGen).
  */
 (function () {
   "use strict";
@@ -50,7 +51,7 @@
   function panel() {
     let p = $("cmPanel"); if (p) return p;
     p = el("div", { id: "cmPanel", class: "cmpanel", role: "dialog", "aria-label": "bitGen Community", hidden: true });
-    p.appendChild(el("div", { class: "cmhead" }, [el("b", { text: "💬 bitGen Community" }), el("span", { id: "cmWho", class: "cmwho" }),
+    p.appendChild(el("div", { class: "cmhead" }, [el("b", { text: "💬 bitGen Community" }), el("span", { id: "cmWho", class: "cmwho", "data-noi18n": true }),
       el("button", { type: "button", class: "ghost", id: "cmMore", title: "Sign out, leave the community, the server's address", text: "⋯", onclick: more }),
       el("button", { type: "button", class: "ghost", title: "Close", "aria-label": "Close", text: "✕", onclick: () => toggle(false) })]));
     p.appendChild(el("div", { id: "cmTabs", class: "cmtabs", role: "tablist" }));
@@ -79,7 +80,7 @@
       [label, n ? el("span", { class: "n", text: String(n) }) : null]));
     add("help", "Help", S.unread.help);
     add("friends", "Friends", S.incoming.length);
-    for (const h of S.dms) { const f = S.friends.find((x) => x.handle === h); add("@" + h, (f && f.display) || h, S.unread["@" + h]); }
+    for (const h of S.dms) { const f = S.friends.find((x) => x.handle === h); add("@" + h, el("span", { "data-noi18n": true, text: (f && f.display) || h }), S.unread["@" + h]); }
   }
   function render() {
     panel(); tabs(); badge();
@@ -118,11 +119,11 @@
   /* ---------------- chat (Help or a friend) ---------------- */
   function msgEl(m) {
     const mine = S.me && m.from === S.me.handle;
-    const who = el("span", { class: "who", text: mine ? "You" : (m.from_display || m.from), title: "@" + m.from, onclick: mine ? null : () => person(m.from, m.from_display) });
+    const who = el("span", { class: "who", "data-noi18n": mine ? null : true, text: mine ? "You" : (m.from_display || m.from), title: "@" + m.from, onclick: mine ? null : () => person(m.from, m.from_display) });
     const acts = [];
     if (!mine) acts.push(el("button", { type: "button", class: "act", title: "Report this message to the admins", "aria-label": "Report", text: "⚑", onclick: () => report(m) }));
     if (S.admin) acts.push(el("button", { type: "button", class: "act", title: "Delete this message (admin)", "aria-label": "Delete", text: "🗑", onclick: () => adminDelete(m) }));
-    return el("div", { class: "cmm" + (mine ? " mine" : ""), "data-id": String(m.id) }, [...acts, who, el("span", { class: "when", text: time(m.at) }), el("div", { class: "txt", text: m.body })]);
+    return el("div", { class: "cmm" + (mine ? " mine" : ""), "data-id": String(m.id) }, [...acts, who, el("span", { class: "when", text: time(m.at) }), el("div", { class: "txt", "data-noi18n": true, text: m.body })]);
   }
   function chatView(b, room) {
     const list = el("div", { id: "cmList", class: "cmlist", "aria-live": "polite" });
@@ -168,9 +169,9 @@
   function person(h, display) {          // a name clicked in the Help room
     S.view = "friends"; render();
     const q = $("cmFind"); if (q) { q.value = h; find(); }
-    say(rel(h) === "friend" ? (display || h) + " is your friend" : "");
+    say(rel(h) === "friend" ? "already your friend" : "");
   }
-  function row(u, btns) { return el("div", { class: "cmrow", "data-handle": u.handle }, [el("span", { class: "cmdot" + (u.online ? " on" : ""), title: u.online ? "online" : "away" }), el("span", { class: "nm", title: "@" + u.handle, text: (u.display || u.handle) + "  @" + u.handle }), ...btns]); }
+  function row(u, btns) { return el("div", { class: "cmrow", "data-handle": u.handle }, [el("span", { class: "cmdot" + (u.online ? " on" : ""), title: u.online ? "online" : "away" }), el("span", { class: "nm", "data-noi18n": true, title: "@" + u.handle, text: (u.display || u.handle) + "  @" + u.handle }), ...btns]); }
   const btn = (text, title, fn, cls) => el("button", { type: "button", class: cls || "ghost", title, text, onclick: fn });
   function relBtns(u) {
     const r = u.relation || rel(u.handle);
@@ -203,9 +204,9 @@
   async function act(action, handle) {
     const j = await call(action, { handle });
     if (!j.ok) return say(j.error || "refused", true);
-    say(action === "friend_request" ? (j.status === "friends" ? "you are friends now" : "asked - you are friends when they accept") : action === "block" ? "blocked" : "");
     if (action === "block" || action === "friend_remove") { S.dms = S.dms.filter((h) => h !== handle); if (S.view === "@" + handle) S.view = "friends"; }
     await loadFriends(); render(); if (($("cmFind") || {}).value) find();
+    say(action === "friend_request" ? (j.status === "friends" ? "you are friends now" : "asked - you are friends when they accept") : action === "block" ? "blocked" : "");
   }
   async function respond(handle, accept) {
     const j = await call("friend_respond", { handle, accept });
@@ -222,13 +223,30 @@
     const b = $("cmBody"); b.textContent = "";
     const pad = el("div", { class: "cmpad" });
     if (S.joined) {
-      pad.append(el("div", { text: "Signed in as " + (S.me ? S.me.display + " (@" + S.me.handle + ")" : "") }),
+      pad.append(el("div", {}, [el("span", { text: "Signed in as" }), " ", el("b", { "data-noi18n": true, text: S.me ? S.me.display + " (@" + S.me.handle + ")" : "" })]),
         el("div", { class: "rowbtns", style: "margin-top:8px;gap:6px" }, [btn("Sign out", "Sign out on this computer (your ID stays)", async () => { await api("/api/community/signout", {}); S.joined = false; S.msgs.clear(); render(); })]));
       pad.append(el("div", { class: "cmsec", text: "Leave the community" }), el("div", { class: "hint", text: "Deletes your user ID and friendships. Type your password:" }),
         el("input", { id: "cmLeavePass", type: "password", autocomplete: "current-password" }),
         el("div", { class: "rowbtns", style: "margin-top:6px" }, [btn("Leave and delete my ID", "Cannot be undone", async () => {
           const j = await api("/api/community/leave", { password: $("cmLeavePass").value }); if (!j.ok) return say(j.error, true);
           S.joined = false; S.me = null; S.msgs.clear(); S.friends = []; say("you left the community"); render(); }, "")]));
+    }
+    if (S.joined && S.admin) {           // the admins: what people reported - delete the message, ban the writer
+      const box = el("div", { id: "cmReports" }, [el("div", { class: "hint", text: "loading…" })]);
+      pad.append(el("div", { class: "cmsec", text: "Reports (admin)" }), box);
+      call("admin_reports").then((j) => {
+        box.textContent = "";
+        const rs = (j && j.reports) || []; if (!rs.length) { box.appendChild(el("div", { class: "hint", text: "nothing reported" })); return; }
+        for (const r of rs) {
+          const m = r.message || {};
+          box.appendChild(el("div", { class: "cmm", "data-report": String(r.id) }, [
+            el("div", { "data-noi18n": true, text: "@" + (m.from || "?") + ": " + (m.body || "") }),
+            el("div", { class: "hint" }, [el("span", { text: "reported by" }), " ", el("span", { "data-noi18n": true, text: "@" + (r.reporter || "?") + " - " + (r.reason || "") })]),
+            el("div", { class: "rowbtns", style: "gap:4px;margin-top:4px" }, [
+              btn("Delete message", "Remove it for everyone", async () => { const x = await call("admin_delete", { id: m.id }); say(x.ok ? "deleted" : x.error, !x.ok); if (x.ok) { S.msgs.delete(m.id); more(); } }),
+              m.from ? btn("Ban the writer", "They cannot sign in any more; their messages are hidden", async () => { const x = await call("admin_ban", { handle: m.from, banned: true }); say(x.ok ? "banned" : x.error, !x.ok); }) : null])]));
+        }
+      });
     }
     pad.append(el("div", { class: "cmsec", text: "Community server" }), el("input", { id: "cmUrl2", type: "text", value: S.url, spellcheck: "false" }),
       el("div", { class: "rowbtns", style: "margin-top:6px;gap:6px" }, [btn("Use this address", "The community server's api.php", async () => {

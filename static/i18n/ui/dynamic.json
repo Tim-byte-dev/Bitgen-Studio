@@ -2043,6 +2043,86 @@
    "src": "static/comfyupdate.js:57"
   },
   {
+   "s": "bitGen Community",
+   "src": "static/community.js:53"
+  },
+  {
+   "s": "Sign out, leave the community, the server's address",
+   "src": "static/community.js:54"
+  },
+  {
+   "s": "Join the bitGen Community: ask for help in the Help room, and add friends to chat with",
+   "src": "static/community.js:101"
+  },
+  {
+   "s": "Join",
+   "src": "static/community.js:110"
+  },
+  {
+   "s": "Make this user ID and join",
+   "src": "static/community.js:110"
+  },
+  {
+   "s": "Sign in",
+   "src": "static/community.js:111"
+  },
+  {
+   "s": "Use a user ID you already have",
+   "src": "static/community.js:111"
+  },
+  {
+   "s": "Community server",
+   "src": "static/community.js:112"
+  },
+  {
+   "s": "Report this message to the admins",
+   "src": "static/community.js:123"
+  },
+  {
+   "s": "Delete this message (admin)",
+   "src": "static/community.js:124"
+  },
+  {
+   "s": "Send",
+   "src": "static/community.js:134"
+  },
+  {
+   "s": "Why? (the admins see it)",
+   "src": "static/community.js:151"
+  },
+  {
+   "s": "Find people by user ID or name",
+   "src": "static/community.js:184"
+  },
+  {
+   "s": "Friend requests",
+   "src": "static/community.js:187"
+  },
+  {
+   "s": "Waiting for them",
+   "src": "static/community.js:188"
+  },
+  {
+   "s": "Friends",
+   "src": "static/community.js:189"
+  },
+  {
+   "s": "No friends yet - find someone, or + Add friend from a name in the Help room",
+   "src": "static/community.js:190"
+  },
+  {
+   "s": "Leave the community",
+   "src": "static/community.js:227"
+  },
+  {
+   "s": "Deletes your user ID and friendships. Type your password",
+   "src": "static/community.js:227"
+  },
+  {
+   "s": "Community",
+   "src": "static/community.js:281"
+  },
+  {
    "s": "Drag to size this column",
    "src": "static/dgdock.js:232"
   },
@@ -6813,10 +6893,6 @@
   {
    "s": "Voice chat",
    "src": "static/voicechat.js:121"
-  },
-  {
-   "s": "Send",
-   "src": "static/voicechat.js:122"
   },
   {
    "s": "Pause / resume listening",
