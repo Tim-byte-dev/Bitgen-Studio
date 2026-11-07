@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5344,
+ "count": 5415,
  "strings": [
   {
    "s": "0 (auto)",
@@ -1386,6 +1386,15 @@
    ]
   },
   {
+   "s": "Accept",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Acly",
    "kinds": [
     "text"
@@ -1754,6 +1763,15 @@
    ],
    "where": [
     "button#pcSwAdd.ghost"
+   ]
+  },
+  {
+   "s": "Add friend",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -3312,6 +3330,24 @@
    ]
   },
   {
+   "s": "Ask the community… (Enter sends, Shift+Enter a new line)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Ask to be friends",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Aspect",
    "kinds": [
     "text"
@@ -3916,6 +3952,15 @@
    ]
   },
   {
+   "s": "Ban the writer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Bar",
    "kinds": [
     "text"
@@ -4326,6 +4371,15 @@
    ],
    "where": [
     "span#s_b3blinfo.hint"
+   ]
+  },
+  {
+   "s": "Block",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -5300,6 +5354,24 @@
    ],
    "where": [
     "button#scSwapCancel.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Cancel your request",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Cannot be undone",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -7198,6 +7270,24 @@
    ]
   },
   {
+   "s": "Community",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Community server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Compare LLMs",
    "kinds": [
     "text"
@@ -8937,6 +9027,15 @@
    ]
   },
   {
+   "s": "Decline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Default (same as LLM)",
    "kinds": [
     "text"
@@ -9137,6 +9236,15 @@
    ]
   },
   {
+   "s": "Delete message",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Delete path",
    "kinds": [
     "title"
@@ -9292,6 +9400,15 @@
    ]
   },
   {
+   "s": "Delete this message (admin)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Delete this saved template",
    "kinds": [
     "title"
@@ -9326,6 +9443,15 @@
    ],
    "where": [
     "button.ghost.gbtn in #agBar"
+   ]
+  },
+  {
+   "s": "Deletes your user ID and friendships. Type your password",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -9787,6 +9913,15 @@
    ],
    "where": [
     "option in #spEmo"
+   ]
+  },
+  {
+   "s": "Display name (for a new ID)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -12712,6 +12847,15 @@
    ]
   },
   {
+   "s": "Find people by user ID or name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Find the beats",
    "kinds": [
     "text"
@@ -13811,6 +13955,24 @@
    ],
    "where": [
     "button#tlTool_freehand.ghost"
+   ]
+  },
+  {
+   "s": "Friend requests",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Friends",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -16812,6 +16974,24 @@
    ]
   },
   {
+   "s": "Join",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Join the bitGen Community: ask for help in the Help room, and add friends to chat with",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Join the picked shapes into one (the target's look)",
    "kinds": [
     "title"
@@ -17820,12 +18000,30 @@
    ]
   },
   {
+   "s": "Leave and delete my ID",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Leave original source",
    "kinds": [
     "text"
    ],
    "where": [
     "label in #dkShape"
+   ]
+  },
+  {
+   "s": "Leave the community",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -19433,6 +19631,15 @@
    ]
   },
   {
+   "s": "Make this user ID and join",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Make work path from the selection (Alt-click: tolerance)",
    "kinds": [
     "title"
@@ -19796,6 +20003,15 @@
    ],
    "where": [
     "button#kxLMerge.ghost"
+   ]
+  },
+  {
+   "s": "Message… (Enter sends)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -21464,6 +21680,15 @@
    ]
   },
   {
+   "s": "No friends yet - find someone, or + Add friend from a name in the Help room",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "No grade, no LUT",
    "kinds": [
     "title"
@@ -21488,6 +21713,15 @@
    ],
    "where": [
     "div.k in #lyList"
+   ]
+  },
+  {
+   "s": "No messages yet - ask the first question",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -21710,6 +21944,15 @@
    ],
    "where": [
     "option in #s_vsrole"
+   ]
+  },
+  {
+   "s": "Not friends any more",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -23249,6 +23492,15 @@
    ],
    "where": [
     "s_c16scale"
+   ]
+  },
+  {
+   "s": "Password (8 or more characters)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -26589,6 +26841,15 @@
    ]
   },
   {
+   "s": "Remove it for everyone",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Remove the key here",
    "kinds": [
     "title"
@@ -26916,12 +27177,30 @@
    ]
   },
   {
+   "s": "Report this message to the admins",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "ReportLab, pypdf, jsdom and Playwright",
    "kinds": [
     "text"
    ],
    "where": [
     "b in #stab-about"
+   ]
+  },
+  {
+   "s": "Reports (admin)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -28506,6 +28785,15 @@
    ]
   },
   {
+   "s": "Say hello",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Scale",
    "kinds": [
     "text"
@@ -29347,6 +29635,15 @@
    ]
   },
   {
+   "s": "Send",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Send a picture of the view (as you see it - day or night) to the image editor",
    "kinds": [
     "title"
@@ -29470,6 +29767,15 @@
    ],
    "where": [
     "legend in #tlExchangeDlg"
+   ]
+  },
+  {
+   "s": "Send to the admins",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -30742,6 +31048,51 @@
    ],
    "where": [
     "label in #kxOpts"
+   ]
+  },
+  {
+   "s": "Sign in",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Sign out",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Sign out on this computer (your ID stays)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Sign out, leave the community, the server's address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "Signed in as",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -34046,6 +34397,15 @@
    ]
   },
   {
+   "s": "The community server's api.php",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "The control type for a new control layer",
    "kinds": [
     "title"
@@ -35410,6 +35770,24 @@
    "where": [
     "button.cbb.on in #ieKx",
     "span.lb in #ieKx"
+   ]
+  },
+  {
+   "s": "They cannot message or ask you, and their Help messages are hidden",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "They cannot sign in any more; their messages are hidden",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -37027,6 +37405,15 @@
    ]
   },
   {
+   "s": "Use a user ID you already have",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Use as location",
    "kinds": [
     "text"
@@ -37193,6 +37580,15 @@
    ]
   },
   {
+   "s": "Use this address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Use this computer",
    "kinds": [
     "text"
@@ -37208,6 +37604,15 @@
    ],
    "where": [
     "label.f in #stab-video"
+   ]
+  },
+  {
+   "s": "User ID (3-24 letters, numbers, _ . -)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -38157,6 +38562,15 @@
    ]
   },
   {
+   "s": "Waiting for them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Wall (W) - Click, click … a free-standing wall · back on its start = a room · double-click or Esc ends it · type a length",
    "kinds": [
     "title"
@@ -38877,6 +39291,15 @@
    ]
   },
   {
+   "s": "Why? (the admins see it)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Width",
    "kinds": [
     "text",
@@ -39292,6 +39715,15 @@
    ],
    "where": [
     "label in #chTabProfile"
+   ]
+  },
+  {
+   "s": "You",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -39865,6 +40297,15 @@
    ]
   },
   {
+   "s": "address kept",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "adds it as a reference image",
    "kinds": [
     "text"
@@ -39956,6 +40397,15 @@
    ],
    "where": [
     "label in #s_b3more"
+   ]
+  },
+  {
+   "s": "already your friend",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -40167,6 +40617,24 @@
    ]
   },
   {
+   "s": "asked",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "asked - you are friends when they accept",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "assets",
    "kinds": [
     "text"
@@ -40270,12 +40738,30 @@
    ]
   },
   {
+   "s": "away",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "bad",
    "kinds": [
     "title"
    ],
    "where": [
     "label.thc in #s_thcustom"
+   ]
+  },
+  {
+   "s": "banned",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -40367,6 +40853,24 @@
    ],
    "where": [
     "option in #mv_lyricstyle"
+   ]
+  },
+  {
+   "s": "bitGen Community",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "bitGen Community - ask for help, chat with friends",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -40533,6 +41037,15 @@
    ],
    "where": [
     "span"
+   ]
+  },
+  {
+   "s": "blocked",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -41307,6 +41820,15 @@
    ]
   },
   {
+   "s": "could not join",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "cpu",
    "kinds": [
     "text"
@@ -41404,6 +41926,15 @@
    ]
   },
   {
+   "s": "declined",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "deepbeepmeep",
    "kinds": [
     "text"
@@ -41466,6 +41997,15 @@
    ],
    "where": [
     "div#s_setinfo.hint"
+   ]
+  },
+  {
+   "s": "deleted",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -43266,6 +43806,15 @@
    ]
   },
   {
+   "s": "joining",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "jxl-oxide, libjxl and @jsquash/jxl",
    "kinds": [
     "text"
@@ -44747,6 +45296,15 @@
    ]
   },
   {
+   "s": "nobody found",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "node ComfyUI does not have",
    "kinds": [
     "text"
@@ -44999,12 +45557,30 @@
    ]
   },
   {
+   "s": "not reported",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "not running",
    "kinds": [
     "text"
    ],
    "where": [
     "span#cfnote.dim"
+   ]
+  },
+  {
+   "s": "not sent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -45023,6 +45599,15 @@
    ],
    "where": [
     "div.kv in #aoList"
+   ]
+  },
+  {
+   "s": "nothing reported",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -45142,6 +45727,15 @@
    ],
    "where": [
     "span.hint in #hwRows"
+   ]
+  },
+  {
+   "s": "online",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -46308,6 +46902,24 @@
    ]
   },
   {
+   "s": "reported - thank you",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "reported by",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "res_multistep",
    "kinds": [
     "text"
@@ -46760,6 +47372,15 @@
    ],
    "where": [
     "option in #spTag"
+   ]
+  },
+  {
+   "s": "signing in",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {
@@ -49379,6 +50000,24 @@
    ],
    "where": [
     "option in #tlpTfProp"
+   ]
+  },
+  {
+   "s": "you are friends now",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "you left the community",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#cmPanel"
    ]
   },
   {

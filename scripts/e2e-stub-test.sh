@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.710.0 (Tim: "i would like to make bitgen a community, can we add a little chat to bitgen like fb ...")
+node scripts/test-community710-server.js > /tmp/community710srv.log 2>&1 \
+  && ok "2.710.0 the community server (community/api.php under php -S, SQLite): every action, friend requests, Help + DMs, block, report, admin delete / ban, rate limits, token fallback - or SKIP without php" \
+  || { bad "2.710.0 community server"; grep -a "^FAIL" -A2 /tmp/community710srv.log | head -14; }
+node scripts/test-community710.js > /tmp/community710.log 2>&1 \
+  && ok "2.710.0 the app's side: https-only address, the token kept in community.json (never to the page), the action list, signed out on a refused token, sign out / leave, the wiring" \
+  || { bad "2.710.0 community app side"; grep -a "^FAIL" -A2 /tmp/community710.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-community710-ui.js > /tmp/community710ui.log 2>&1 \
+  && ok "2.710.0 browser test: 💬 Community against the real PHP server - join, Help both ways, + Add friend -> accepted, a private chat, the badge, text-only messages, Chinese UI with messages untouched, report, admin delete, sign out, leave - or SKIP" \
+  || { bad "2.710.0 community browser test"; grep -a "FAIL\\|Error" -A2 /tmp/community710ui.log | head -14; }
 # ---- 2.709.0 (Tim: "...save the current theme as themename_old.json and save the imported theme automatically when imported add a revert button...")
 H3_URL=http://127.0.0.1:8311/ node scripts/test-themeimport709-ui.js > /tmp/themeimport709.log 2>&1 \
   && ok "2.709.0 browser test: ⤒ Import keeps the theme in use as <name>_old.json, uses + saves the imported one, ↶ Revert brings the old one back under its name; a built-in name gets (imported); a non-theme refused - or SKIP without playwright" \
