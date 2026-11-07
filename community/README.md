@@ -64,10 +64,12 @@ location = /bitgen-community/api.php { include fastcgi_params; fastcgi_param SCR
 
 ## Settings without config.php (2.712.1)
 
-With no `config.php`, the server reads a private folder **outside** public_html - `/home/<cPanel user>/bitgen-private/`
-(the folder above the site's document root; `BITGEN_PRIVATE_DIR` moves it):
+With no `config.php`, the server reads a private folder **outside** the site's folder - on Plesk
+`/var/www/vhosts/<domain>/bitgen-private/`, on cPanel `/home/<user>/bitgen-private/` (the folder above the site's
+document root; `BITGEN_PRIVATE_DIR` moves it):
 
-- `db.json` - `{"host": "localhost", "name": "timpaul_bitgen", "user": "timpaul_bitgen", "admins": ["tim"]}` (no password)
+- `db.json` - `{"host": "localhost", "name": "timpaul_bitgen", "user": "timpaul_bitgen", "admins": ["tim"]}` (no password;
+  the host may end in `:port`, as Plesk shows it: `localhost:3306`)
 - `db-pass.txt` - the password, encrypted: `bgx1:` + base64(24-byte nonce + libsodium secretbox), or `bgx2:` +
   base64(12-byte IV + 16-byte tag + AES-256-GCM)
 - `secret.key` - the 32-byte key, base64
