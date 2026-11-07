@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5451,
+ "count": 5453,
  "strings": [
   {
    "s": "0 (auto)",
@@ -50369,6 +50369,24 @@
    ],
    "where": [
     "option in #tlAutoTrT"
+   ]
+  },
+  {
+   "s": "Veda on action shots too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #s_vsvedabox"
+   ]
+  },
+  {
+   "s": "Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #s_vsvedabox"
    ]
   }
  ]

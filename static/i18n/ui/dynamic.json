@@ -1344,147 +1344,147 @@
   },
   {
    "s": "new video style",
-   "src": "index.html:9701"
+   "src": "index.html:9702"
   },
   {
    "s": "new video style —",
-   "src": "index.html:9736"
+   "src": "index.html:9738"
   },
   {
    "s": "template —",
-   "src": "index.html:9743"
+   "src": "index.html:9745"
   },
   {
    "s": "give the style a name",
-   "src": "index.html:9782"
+   "src": "index.html:9784"
   },
   {
    "s": "a project name is required",
-   "src": "index.html:9820"
+   "src": "index.html:9822"
   },
   {
    "s": "could not create the project",
-   "src": "index.html:9831"
+   "src": "index.html:9833"
   },
   {
    "s": "right-click: ↺ Reset pin",
-   "src": "index.html:10340"
+   "src": "index.html:10342"
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10843"
+   "src": "index.html:10845"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:10941"
-  },
-  {
-   "s": "Checkpoints",
-   "src": "index.html:10941"
-  },
-  {
-   "s": "Text encoders",
-   "src": "index.html:10942"
-  },
-  {
-   "s": "CLIP vision",
    "src": "index.html:10943"
   },
   {
-   "s": "Embeddings",
+   "s": "Checkpoints",
+   "src": "index.html:10943"
+  },
+  {
+   "s": "Text encoders",
    "src": "index.html:10944"
   },
   {
-   "s": "Upscale models",
+   "s": "CLIP vision",
    "src": "index.html:10945"
+  },
+  {
+   "s": "Embeddings",
+   "src": "index.html:10946"
+  },
+  {
+   "s": "Upscale models",
+   "src": "index.html:10947"
   },
   {
    "s": "Configs",
-   "src": "index.html:10945"
+   "src": "index.html:10947"
   },
   {
    "s": "folder, or a name under the base folder",
-   "src": "index.html:10947"
+   "src": "index.html:10949"
   },
   {
    "s": "Select folder",
-   "src": "index.html:10947"
+   "src": "index.html:10949"
   },
   {
    "s": "Select Folder",
-   "src": "index.html:10971"
+   "src": "index.html:10973"
   },
   {
    "s": "the folder dialog could not open — type the path",
-   "src": "index.html:10974"
+   "src": "index.html:10976"
   },
   {
    "s": "pick the base folder first",
-   "src": "index.html:10979"
+   "src": "index.html:10981"
   },
   {
    "s": "standard folders filled — 💾 to write them",
-   "src": "index.html:10982"
+   "src": "index.html:10984"
   },
   {
    "s": "writing",
-   "src": "index.html:10987"
+   "src": "index.html:10989"
   },
   {
    "s": "refused",
-   "src": "index.html:10992"
+   "src": "index.html:10994"
   },
   {
    "s": "written: nothing new · restart ComfyUI to pick the folders up",
-   "src": "index.html:10993"
+   "src": "index.html:10995"
   },
   {
    "s": "new graph —",
-   "src": "index.html:11036"
+   "src": "index.html:11038"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11043"
+   "src": "index.html:11045"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11060"
+   "src": "index.html:11062"
   },
   {
    "s": "label",
-   "src": "index.html:11067"
+   "src": "index.html:11069"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11067"
+   "src": "index.html:11069"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11067"
+   "src": "index.html:11069"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11067"
+   "src": "index.html:11069"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11097"
+   "src": "index.html:11099"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11136"
+   "src": "index.html:11138"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11267"
+   "src": "index.html:11269"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11344"
+   "src": "index.html:11346"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11344"
+   "src": "index.html:11346"
   },
   {
    "s": "Version",
@@ -20599,8 +20599,12 @@
    "src": "ext/videodock/qedit.js:86"
   },
   {
-   "s": "no edit style - Qwen Image 2.1 edit is seeded on restart",
+   "s": "Qwen",
    "src": "ext/videodock/qedit.js:97"
+  },
+  {
+   "s": "no edit style - Qwen Image 2.1 edit is seeded on restart",
+   "src": "ext/videodock/qedit.js:99"
   },
   {
    "s": "no seed used yet",
@@ -21654,83 +21658,83 @@
   },
   {
    "p": "{0} · {1} · {2} phases",
-   "src": "index.html:9736"
+   "src": "index.html:9738"
   },
   {
    "p": "saved \"{0}\" → styles/video/",
-   "src": "index.html:9790"
+   "src": "index.html:9792"
   },
   {
    "p": "preview · {0}",
-   "src": "index.html:9962"
+   "src": "index.html:9964"
   },
   {
    "p": "{0}s (from {1}s)",
-   "src": "index.html:10093"
+   "src": "index.html:10095"
   },
   {
    "p": "{0} · right-click: ↺ Reset pin",
-   "src": "index.html:10340"
+   "src": "index.html:10342"
   },
   {
    "p": "{0} dock",
-   "src": "index.html:10741"
+   "src": "index.html:10743"
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10799"
+   "src": "index.html:10801"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10804"
+   "src": "index.html:10806"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:10947"
+   "src": "index.html:10949"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:10993"
+   "src": "index.html:10995"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:10993"
+   "src": "index.html:10995"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:10993"
+   "src": "index.html:10995"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11045"
+   "src": "index.html:11047"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11136"
+   "src": "index.html:11138"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11192"
+   "src": "index.html:11194"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11192"
+   "src": "index.html:11194"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11301"
+   "src": "index.html:11303"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11365"
+   "src": "index.html:11367"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11492"
+   "src": "index.html:11494"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11493"
+   "src": "index.html:11495"
   },
   {
    "p": "The credits could not be read: {0}",

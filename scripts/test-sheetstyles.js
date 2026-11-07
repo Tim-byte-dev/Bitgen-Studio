@@ -42,9 +42,10 @@ check("the starter Klein t2i style is listed (it swaps to its edit sibling)",
       rows0.map((r) => r.name));
 // 2.332.0: the Qwen Image Edit 2511 starter carries ONE LoRA by design - its
 // Lightning 4-step LoRA (the patcher bypasses unfilled LoRA slots, so the
-// style must name it); every other starter carries none
-check("every starter row reports ZERO LoRAs, except Qwen Image Edit 2511's one Lightning LoRA",
-      rows0.length > 0 && rows0.every((r) => (r.name === "Qwen Image Edit 2511" ? r.loras === 1 : r.loras === 0)),
+// style must name it); 2.717.0: + Qwen Image 2.1 edit Turbo8's Turbo8 LoRA; every other starter carries none
+const ONE_LORA = ["Qwen Image Edit 2511", "Qwen Image 2.1 edit Turbo8"];
+check("every starter row reports ZERO LoRAs, except Qwen Image Edit 2511's Lightning LoRA and Qwen Image 2.1 edit Turbo8's Turbo8 LoRA",
+      rows0.length > 0 && rows0.every((r) => (ONE_LORA.includes(r.name) ? r.loras === 1 : r.loras === 0)),
       rows0.map((r) => [r.name, r.loras]));
 check("a plain SDXL t2i style is NOT listed (no slots, no sibling — the 2.199.0 lesson)",
       !rows0.some((r) => r.name === "SDXL" || r.name === "Pony"),

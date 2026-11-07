@@ -161,6 +161,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **长视频：单次运行最长 30 秒** — 低显存注意力和分块前馈让最长 30 秒的 MiniMax H3 片段可以在一次生成中渲染完成，而不必拼接多个 15 秒的片段。 *Where:* StoryBoard 的 ⚙（Long video），或 MiniMax H3 Long (30 s) 视频风格。 *Since:* 2.503.0
 - **一键获取更多 ComfyUI 节点包** — 安装或更新 KJNodes、Yusu H3 Unified 和 RH DLSS 5。 *Where:* Settings > ComfyUI > Video accelerators。 *Since:* 2.503.0
 - **Veda 稀疏注意力** — 视频风格中可选的 MiniMax H3 加速器（On / Quality）：在其训练尺寸下比标准注意力快约 2-3 倍，可一键安装，其预测器在模型目录中。 *Where:* Settings > Video styles；Settings > ComfyUI > Video accelerators。 *Since:* 2.536.0
+- **根据盲测调整的 Veda 与 Spectrum** — Veda 会跳过提示词描述打斗、变形、爆炸或追逐的镜头（这类镜头省时不多，画面还会变软；☑ 动作镜头也使用 Veda 可保留），并取代 Long video 的低显存注意力，而不再被跳过；Spectrum 在 12 步以上的运行中让前 2 步和最后 3 步真实计算，使脸部保持清晰。 *Where:* 设置 ▸ 视频样式 ▸ Veda 稀疏注意力 / Spectrum。 *Since:* 2.717.0
 - **可管理数百个模型的模型管理器** — 适应面板大小的分页、文件夹标签页（SDXL、Pony …）、📌 This project 标签页、可调整大小的卡片、每个模型的信息页（含示例图片和提示词），每个模型的 Civitai 详情 + 缩略图 + 示例都保存在一个共享的 model_info 文件夹中。 *Where:* 🧩 Models。 *Since:* 2.537.0
 - **Civitai 下载到各类型的文件夹** — 任意 Civitai 卡片上的 ⤓ 会下载到你为该类型选定过一次的文件夹（SDXL LoRA、Pony 模型、Wan LoRA …）；Shift+点击可更改；📁 列出这些文件夹（model_folders.json）；🔄 Sync 为电脑上的每个模型获取 Civitai 详情。 *Where:* 🧩 Models。 *Since:* 2.538.0
 - **参考图描述** — 每张参考图片、每个参考视频和声音下方都有一段简短描述，随项目和分组保存，用于映射行、提示词对话和 ✨ Enhance；另有墙 / 地板 / 家具 / 灯光等图片类型。 *Where:* References 面板。 *Since:* 2.539.0
@@ -1244,6 +1245,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **中文和日文版指南与帮助** — 📖 Help 窗口、Ctrl+K 中的指南条目、❔ 帮助页面、快捷键列表和 Guide PDF，提供简体中文（中国大陆）、繁体中文（台湾 / 香港，2.704.0）或日文版本；应用自身的按钮保持英文，因此译文用英文称呼它们。若某一节的英文版较新，会注明这一点，并可一键切换到英文版。 *Where:* 📖 Help 或 ❔ 帮助页面中的语言选择器；docs/bitGen-Studio-Guide-zh-CN.pdf、-zh-TW.pdf、-ja.pdf。 *Since:* 2.703.0
 - **语言包** — 除英文外，每种语言都是一个语言包：⤒ 从 .zip 安装（先进行检查；已有的语言会先询问是否替换），✕ 移除，查看每个语言包的翻译进度（应用、指南、帮助、快捷键、功能）；⤓ 主语言包 - 全部英文内容并附 TRANSLATING.txt - 用于将 bitGen Studio 翻译成新语言；⤓ 导出以供翻译 会返回语言包，补入较新的英文并保留其译文。 *Where:* 设置 ▸ 语言。 *Since:* 2.715.0
 - **社区语言包** — 社区分享的语言包列出其他人翻译的语言包（来自 tigerart.com.au 上的 bitGen 社区，每个都经过管理员检查）：⤓ 一键安装；⇪ 分享以你的身份将已安装的语言包发送到社区，并可附上给管理员的留言；你分享的语言包显示每个语言包是等待中、已分享还是未被接受（及原因），✕ 可将其撤下。网站的语言包页面也列出这些语言包，并提供主语言包和上传表单。 *Where:* 设置 ▸ 语言 ▸ 社区分享的语言包；tigerart.com.au/languages.php。 *Since:* 2.716.0
+- **更快的首帧（Auto）+ Qwen Image 2.1 Turbo8** — 场景卡片的 ✎ 首帧默认为 Auto：已安装时用 Qwen Image Edit 2511 以 4 步生成（Apache 2.0——可以商用），超过三张图片时用 Qwen Image 2.1 edit；新的 Qwen Image 2.1 edit Turbo8 样式让 Qwen 2.1 只需 8 步而非 25 步（Qwen Research License——非商业）。 *Where:* 场景卡片 ▸ ✎ 首帧 ▸ 样式；设置 ▸ 模型 ▸ 模型目录。 *Since:* 2.717.0
 
 ## 键盘快捷键
 

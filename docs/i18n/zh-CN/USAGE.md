@@ -4571,6 +4571,19 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **Shared by the community**（2.716.0）列出其他人翻译的语言包，来自 tigerart.com.au 上的 bitGen 社区——每个语言包在显示之前都经过管理员检查。点击 **⤓ Install** 即可一键安装。
 - 在已安装的语言包上点击 **⇪ Share**，会以你的身份发送到社区（需先登录 💬 Community），并可附上给管理员的留言。管理员检查后即对所有人显示；**Your shared packs** 显示每个语言包的状态，✕ 可将其撤下。网站的语言包页面（tigerart.com.au/languages.php）列出相同的语言包，提供主语言包下载，也可以上传。
 
+## 更快的首帧与加速修正（2.717.0）
+<!-- en: faster-first-frames-and-the-speed-up-fixes-2-717-0 d7efaedbbd01 -->
+
+一位测试者在一张 RTX 3090 上测量了 bitGen 的加速选项（同一张图、同一个 seed、两位盲评评审）。改动如下：
+
+- **场景卡片上的 ✎ First frame**：样式列表以 **Auto** 开头。安装了 Qwen Image Edit 2511（完整包——20 GB 的模型）时，Auto 用它的 Lightning LoRA 以 4 步生成首帧，而不是 Qwen Image 2.1 的 25 步。需要三张以上图片（底图、角色、道具）的首帧仍交给 Qwen Image 2.1 edit，提示中会说明。在列表中选一个样式，就会一直使用它。
+- **Qwen Image 2.1 edit Turbo8**：新的图像样式——借助社区的 Turbo8 LoRA，Qwen Image 2.1 只需 8 步（Settings ▸ Models ▸ Model catalog ▸ Qwen Image 2.1 Turbo8 LoRA）。细小密集的文字比 25 步时差；标题和标签没问题。
+- **许可证**：Qwen Image 2.1 和 Turbo8 LoRA 采用 Qwen Research License——仅限非商业用途。Qwen Image Edit 2511 及其 Lightning LoRA 为 Apache 2.0——可以商用。这就是 Auto 优先使用 2511 的原因。
+- **Veda** 会跳过提示词描述打斗、变形、爆炸或追逐的镜头：测试发现这类镜头只快 22%，画面还会变软。视频样式中的 **Veda on action shots too** 让每个镜头都使用 Veda。
+- **Veda 与 Long video**：Veda 现在取代 Long video 的低显存注意力（一个 12 秒的长镜头快了 65%）。如果很长的镜头显存不足，请为它关闭 Veda。
+- **Spectrum** 在 12 步以上的运行中，前 2 步和最后 3 步都真实计算——最后几步负责绘制脸部和细节，预测这些步骤会让它们变糊。
+- Long video 仍不使用 Sage 注意力：在它之上加 Sage 只快了 17%。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

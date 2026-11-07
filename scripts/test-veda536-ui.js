@@ -54,6 +54,14 @@ const NAME = "E2E Veda 536";
     await ev((id) => { const l = document.getElementById("s_vslist"); l.value = id; l.onchange(); }, ss); await p.waitForTimeout(200);
     await ev((id) => { const l = document.getElementById("s_vslist"); l.value = id; l.onchange(); }, saved[0]); await p.waitForTimeout(300);
     check("…opening it again reads Veda quality + the predictor back", await ev(() => document.getElementById("s_vsveda").value === "quality" && document.getElementById("s_vsvedapred").value === "minimax_h3_r2va_veda_preview_fp8.safetensors"));
+    // 2.717.0: "Veda on action shots too" (off = big-motion shots skip Veda) - saved as veda_action keep, read back
+    await ev(() => { document.getElementById("s_vsvedaaction").checked = true; }); await p.click("#s_vssave"); await p.waitForTimeout(900);
+    const act = (((await api("/api/styles?kind=video")).styles) || []).find((s) => s.id === saved[0]) || {};
+    await ev((id) => { const l = document.getElementById("s_vslist"); l.value = id; l.onchange(); }, ss); await p.waitForTimeout(200);
+    await ev((id) => { const l = document.getElementById("s_vslist"); l.value = id; l.onchange(); }, saved[0]); await p.waitForTimeout(300);
+    check("2.717.0 ☑ Veda on action shots too: saved as accel.veda_action keep, read back when opened", act.accel && act.accel.veda_action === "keep"
+      && await ev(() => document.getElementById("s_vsvedaaction").checked), act.accel);
+    await ev(() => { document.getElementById("s_vsvedaaction").checked = false; });
     await ev(() => { document.getElementById("s_vsveda").value = "off"; }); await p.click("#s_vssave"); await p.waitForTimeout(900);
     const off = ((await api("/api/styles?kind=video")).styles || []).find((s) => s.id === saved[0]) || {};
     check("…Veda Off saves the old shape (no veda key)", off.accel && !("veda" in off.accel) && !("veda_predictor" in off.accel), off.accel);

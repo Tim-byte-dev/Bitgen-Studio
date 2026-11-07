@@ -7593,6 +7593,26 @@ list and the feature list. 简体中文, 繁體中文 and 日本語 are built in
   one off. The website's Language packs page (tigerart.com.au/languages.php) lists the same packs, offers the master pack
   and takes uploads too.
 
+## Faster first frames and the speed-up fixes (2.717.0)
+
+A tester measured bitGen's speed-ups on one RTX 3090 (same picture, same seed, two blind judges). What changed:
+
+- **✎ First frame on the scene cards**: the style list starts with **Auto**. With Qwen Image Edit 2511 installed (the
+  full package - a 20 GB model), Auto makes the frame with it in 4 steps (its Lightning LoRA) instead of Qwen Image 2.1's
+  25. A frame that needs more than three pictures (the base, the cast, the props) still goes to Qwen Image 2.1 edit,
+  and the note says so. Pick a style in the list to always use that one.
+- **Qwen Image 2.1 edit Turbo8**: a new image style - Qwen Image 2.1 in 8 steps with the community Turbo8 LoRA (Settings ▸
+  Models ▸ Model catalog ▸ Qwen Image 2.1 Turbo8 LoRA). Small, dense text is weaker than at 25 steps; titles and labels hold.
+- **Licences**: Qwen Image 2.1 and the Turbo8 LoRA are under the Qwen Research License - non-commercial use only. Qwen
+  Image Edit 2511 and its Lightning LoRA are Apache 2.0 - commercial use is fine. That is why Auto prefers 2511.
+- **Veda** skips a shot whose prompt describes a fight, a transformation, an explosion or a chase: the test found it saved
+  only 22 % there and softened the picture. **Veda on action shots too** in the video style keeps it on every shot.
+- **Veda with Long video**: Veda now takes the place of Long video's low-VRAM attention (a 12 s long shot ran 65 % faster).
+  If a very long shot runs out of memory, set Veda off for it.
+- **Spectrum** on a run of 12 steps or more keeps the first 2 and the last 3 steps real - the last steps draw faces and
+  fine detail, which blurred when they were forecast.
+- Long video still leaves Sage attention out: Sage on top of it measured only 17 % faster.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

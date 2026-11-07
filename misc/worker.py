@@ -1120,6 +1120,41 @@ SPECTRUM_PRESETS = {   # written onto the node; every OTHER knob = the node's
     "on": {},          # own (audio-safe, conservative) defaults via schema sync
     "aggressive": {"blend_weight": 0.75, "flex_window": 3.0},   # README's preset
 }
+# 2.717.0 (Tim: "can we add the faster 8 step turbo model and fix the problems he talked about" - a tester's blind
+# benchmark on one RTX 3090, two rounds of 32 same-seed pairs judged blind): what it found and what changed here -
+#   Veda on fights / transformations: only 22 % faster and the judges mostly preferred the native run (Veda softer) ->
+#     Veda now SKIPS a shot whose prompt reads as big motion (VEDA_ACTION words; the style's "veda_action": "keep" keeps it);
+#   Veda on full-size, long and dialogue shots: 41-65 % faster without losing the blind vote (a 12.25 s long shot
+#     628 s -> 222 s) -> with Long video on, Veda now takes the place of the low-VRAM attention patch (chunked
+#     feed-forward kept) instead of being skipped;
+#   Spectrum on a 20-step lip-sync shot: twice as fast but faces blurred (sometimes a face detector lost them) -> "on"
+#     keeps more REAL solver steps at both ends on a run of 12+ steps (SPECTRUM_DETAIL - warmup_steps / tail_actual_steps,
+#     the node's own inputs per its README): the last steps draw fine detail such as faces, so they are never forecast;
+#   KJ head-chunk attention + Sage on a long shot: only 17 % -> nothing to change: Long video already leaves Sage out.
+SPECTRUM_DETAIL = {"warmup_steps": 2, "tail_actual_steps": 3}
+SPECTRUM_DETAIL_MIN_STEPS = 12
+VEDA_ACTION = re.compile(
+    r"\b(fight(s|ing)?|punch(es|ing)?|kick(s|ing)?|brawl\w*|battle\w*|combat|duel\w*|sword ?fight\w*|martial arts|"
+    r"wrestl\w*|explo(de|des|ding|sion|sions)|transform(s|ing|ation|ations)?|morph(s|ing)?|shape-?shift\w*|"
+    r"chase[sd]?|chasing|sprint\w*|backflip\w*|somersault\w*|cartwheel\w*|acrobat\w*|parkour|stunts?|"
+    r"tumbl\w*|crash(es|ing)?|smash\w*|spinning|breakdanc\w*|dance battle)\b"
+    r"|打鬥|打斗|戰鬥|战斗|格鬥|格斗|變形|变形|變身|变身|爆炸|追逐|戦闘|格闘|爆発",
+    re.IGNORECASE)
+
+
+def is_big_motion(prompt):
+    """2.717.0: does a shot's prompt describe big, fast motion (a fight, a transformation, an explosion, a chase)?"""
+    return bool(VEDA_ACTION.search(str(prompt or "")))
+
+
+def _graph_steps(g):
+    """2.717.0: the sampling steps the graph asks for - the largest integer `steps` on any node, or 0."""
+    best = 0
+    for v in g.values():
+        st = ((v or {}).get("inputs") or {}).get("steps")
+        if isinstance(st, int) and not isinstance(st, bool) and st > best:
+            best = st
+    return best
 
 
 def _kitchen_attn(base):
@@ -1164,7 +1199,7 @@ def _accel_model_edge(g):
     return src, cons
 
 
-def apply_video_accel(g, accel):
+def apply_video_accel(g, accel, prompt=""):
     """Inject the accelerator patches a VIDEO STYLE asked for. accel =
     {sage: off|auto|memeff|<sageattn mode>, spectrum: off|on|aggressive}
     (normalized by lib/styles.js). Off/blank/absent = graph untouched.
@@ -1196,10 +1231,15 @@ def apply_video_accel(g, accel):
     if veda != "off" and not h3:
         notes.append("accel: Veda is MiniMax H3-only and this graph has no native MiniMaxH3 node - skipped")
         veda = "off"
-    if veda != "off" and long:
-        notes.append("accel: Veda skipped - Long video runs its own low-VRAM attention patch (two attention "
-                     "replacements on one model is not a verified combination)")
+    if veda != "off" and str(ac.get("veda_action") or "skip").strip() != "keep" and is_big_motion(prompt):
+        # 2.717.0: a blind test on fights / transformations - 22 % faster and visibly softer; native wins there
+        notes.append("accel: Veda skipped for this shot - its prompt reads as big motion (a fight, a transformation, an "
+                     "explosion, a chase), where Veda saves little and softens the picture; the style's \"Veda on action "
+                     "shots\" keeps it")
         veda = "off"
+    veda_long = veda != "off" and long          # 2.717.0: Veda takes the low-VRAM attention patch's place
+    if veda_long:
+        kitchen_attn = False
     if veda != "off" and sage not in ("", "off"):
         notes.append(f"accel: sage {sage} skipped - Veda replaces attention itself (its INT8 kernel is "
                      "derived from SageAttention), so a Sage patch in front of it would do nothing")
@@ -1229,13 +1269,15 @@ def apply_video_accel(g, accel):
     prev = src
     if long:     # 2.503.0: the secret-sauce order - [attention backend] -> low-VRAM attention -> chunked feed-forward
         chain = ([("h3attnbe", ACCEL_ATTN_BACKEND)] if kitchen_attn else []) \
-            + ([] if vsa else [("h3lowvram", ACCEL_LOWVRAM)]) + [("h3chunkff", ACCEL_CHUNKFF)]
+            + ([] if vsa or veda_long else [("h3lowvram", ACCEL_LOWVRAM)]) + [("h3chunkff", ACCEL_CHUNKFF)]
         for nid, ct in chain:
             g[nid] = {"class_type": ct, "inputs": dict({"model": prev}, **LONG_PARAMS[ct])}
             prev = [nid, 0]
         notes.append("accel: Long video -> " + " -> ".join(f"{nid} ({ct})" for nid, ct in chain)
                      + " - head_chunks 4, FF chunks 2 / seq_threshold 4096"
-                     + (", comfy kitchen attention" if kitchen_attn else ""))
+                     + (", comfy kitchen attention" if kitchen_attn else "")
+                     + (" - Veda replaces the low-VRAM attention (a 12 s long shot ran 65 % faster that way on a 24 GB card; "
+                        "if a very long shot runs out of memory, set Veda off)" if veda_long else ""))
     if sage not in ("", "off"):
         if sage == "memeff":
             g["h3sage"] = {"class_type": ACCEL_SAGE_MEMEFF, "inputs": {"model": prev}}
@@ -1248,6 +1290,11 @@ def apply_video_accel(g, accel):
     if spectrum not in ("", "off"):
         ins = {"model": prev, "enabled": True}
         ins.update(SPECTRUM_PRESETS.get(spectrum, {}))
+        n_steps = _graph_steps(g)
+        if spectrum == "on" and n_steps >= SPECTRUM_DETAIL_MIN_STEPS:     # 2.717.0: faces stay sharp
+            ins.update(SPECTRUM_DETAIL)
+            notes.append(f"accel: spectrum keeps {SPECTRUM_DETAIL['warmup_steps']} real steps first and "
+                         f"{SPECTRUM_DETAIL['tail_actual_steps']} last of {n_steps} - the last steps draw faces and fine detail")
         g["h3spectrum"] = {"class_type": ACCEL_SPECTRUM, "inputs": ins}
         notes.append(f"accel: spectrum {spectrum} -> h3spectrum ({ACCEL_SPECTRUM})"
                      + (" - blend_weight 0.75, flex_window 3.0"
@@ -3387,7 +3434,7 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         # accelerators go in AFTER the lora bypass/pruning settled the model
         # chain, and BEFORE schema sync fills their parameters (see the block
         # above apply_video_accel for why this exact spot).
-        g, anotes = apply_video_accel(g, vstyle.get("accel"))
+        g, anotes = apply_video_accel(g, vstyle.get("accel"), prompt=params.get("prompt") or "")
         for n in anotes:
             say(f"[comfy] {n}")
         if not rp:

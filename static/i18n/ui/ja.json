@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "8e8755450b8d",
- "count": 8752,
+ "v": "58a97aa8547b",
+ "count": 8754,
  "patternCount": 1013,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -3841,6 +3841,7 @@
   "Off": "オフ",
   "Off (default): a scene renders at its own size so you can preview it; ⏫ on the scene (or ⏫ in the scene menubar for the ticked scenes) upscales that exact take. On: every render runs the upscaler as well": "オフ（既定）：シーンは本来のサイズでレンダリングされるのでプレビューできます。シーンの ⏫（チェックしたシーンにはシーンのメニューバーの ⏫）で、そのテイクをそのままアップスケールします。オン：すべてのレンダリングでアップスケーラーも実行します",
   "Off (flat video)": "オフ（通常の動画）",
+  "Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot": "オフ（既定）：格闘、変身、爆発、追跡を描くプロンプトのショットは Veda なしでレンダリングします - ブラインドテストで、こうしたショットでは Veda の短縮効果が小さく、画が柔らかくなることがわかりました。オン：すべてのショットで Veda を使います",
   "Off = hidden everywhere and never used. On = Basic Settings shows it, Settings ▸ Add-ons lists its download links, and whatever it is missing (node packs, models) downloads into ComfyUI's folders by itself - now, and again at every start while it is on": "オフ = どこにも表示されず、使われません。オン = 基本設定に表示され、設定 ▸ アドオンにダウンロードリンクが並び、不足しているもの（ノードパック、モデル）が ComfyUI のフォルダーに自動でダウンロードされます - 今すぐ、そしてオンの間は起動のたびに",
   "Off = see inside in the 3D view (the doors stay in the design, the plan and the plans)": "オフ = 3D ビューで内部を表示（扉はデザイン、平面図、図面には残ります）",
   "Off by default: a clip that will not fit is": "既定ではオフ：収まらないクリップは",
@@ -6486,6 +6487,7 @@
   "Vector mask": "ベクトルマスク",
   "Vector mask - click to edit its path (Pen / Direct Selection); Shift-click disables it; Ctrl-click loads it as the selection": "ベクトルマスク - クリックでパスを編集（ペン / パス選択）、Shift+クリックで無効化、Ctrl+クリックで選択範囲として読み込み",
   "Veda": "Veda",
+  "Veda on action shots too": "アクションショットでも Veda を使う",
   "Veda sparse attention": "Veda スパースアテンション",
   "Veda sparse attention (veda-sparse/Veda-on-ComfyUI): a learned predictor keeps ~10% of the attention and a Triton kernel skips the rest - about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768; 5/10/14 s). It replaces attention, so Sage is skipped while it is on. A preview: compare a hero shot with Veda off. Needs ComfyUI 0.38+, the Veda pack and its predictor (Settings -> ComfyUI -> Video accelerators; Settings -> Models -> Model catalog)": "Veda スパースアテンション（veda-sparse/Veda-on-ComfyUI）：学習済みの予測器がアテンションの約 10% を残し、Triton カーネルが残りをスキップします - 学習済みのサイズ（1344x768、768x1344、768x768、1024x768、5/10/14 秒）で約 2-3 倍高速です。アテンションを置き換えるため、オンの間は Sage をスキップします。プレビュー版です：重要なショットは Veda をオフにした結果と比較してください。ComfyUI 0.38 以降、Veda パックとその予測器が必要です（設定 -> ComfyUI -> 動画アクセラレーター、設定 -> モデル -> モデルカタログ）",
   "Veda sparse attention for MiniMax H3 (ComfyUI 0.38+): git clone / pull + its python requirements (triton-windows on Windows). The predictor (275 MB) is in Settings -> Models -> Model catalog": "MiniMax H3 用 Veda スパースアテンション（ComfyUI 0.38+）：git clone / pull + Python の依存パッケージ（Windows では triton-windows）。予測モデル（275 MB）は設定 -> モデル -> モデルカタログにあります",

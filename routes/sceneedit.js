@@ -1,7 +1,7 @@
 // bitGen Studio — ✎ FIRST FRAME (QWEN IMAGE 2.1) routes (2.337.0). Mounted
 // from routes/index.js (never server.js). The planning is lib/sceneEdit.js;
 // the render is an ordinary image job (image_worker.py) through the picked
-// edit style (Qwen Image 2.1 edit by default); a finished job is filed into
+// edit style (2.717.0: Qwen Image Edit 2511 by default - Qwen Image 2.1 edit for more than three pictures); a finished job is filed into
 // the scene's First frame by routes/characters.js syncJobs -> sceneEdit.harvest.
 //
 //   GET  /api/sceneedit/engines           {edit:[{id,name}], default, cast:[{name,tag,url}]}
@@ -37,12 +37,29 @@ const upload = multer({ dest: path.join(require("os").tmpdir(), "bitgen-qedit"),
 const takeOf = (row) => row && row.output
   ? (path.isAbsolute(row.output) ? row.output : path.join(core.pDir("video"), path.basename(row.output))) : "";
 
-/** The edit styles, Qwen Image 2.1 first. */
+/** The edit styles. 2.717.0 (Tim, asked which 8-step route: "Both, commercial-safe default"): the default is Qwen
+ *  Image Edit 2511 with its 4-step Lightning LoRA when it is installed (Apache 2.0 - commercial use is fine; three
+ *  pictures at most; a 20 GB model - not installed = Qwen Image 2.1 edit stays the default), and a
+ *  frame that needs more pictures goes to Qwen Image 2.1 edit (8 pictures; the Qwen Research License - non-commercial
+ *  only). "wide" = that Qwen 2.1 style. A style the user picked is always used as it is. */
+const EDIT_2511 = /qwen[\s_-]*image[\s_-]*edit[\s_-]*25\d\d/i;
+const QWEN21 = /qwen.*2\.1/i;
+/** is Qwen Image Edit 2511 + its Lightning LoRA on disk? (a 20 GB model - the "full" package; a smaller install keeps
+ *  Qwen Image 2.1 as the default) */
+function ready2511() {
+  try {
+    const M = require("../lib/setupModels"), p = require("../lib/setupRun").modelPaths();
+    return ["qwen_edit", "qwen_lightning"].every((id) => { const m = M.byId(id); return m && M.present(m, p); });
+  } catch { return false; }
+}
 function editEngines() {
   const e = aiEdit.engines(styles.read(core.STYLES_DIR, "image"), core.BASE).edit;
-  const pref = e.find((x) => /qwen.*2\.1/i.test(x.name)) || e.find((x) => /qwen/i.test(x.name)) || e[0];
-  return { edit: e, default: pref ? pref.id : "" };
+  const safe = ready2511() ? e.find((x) => EDIT_2511.test(x.name)) : null;
+  const wide = e.find((x) => QWEN21.test(x.name) && !/turbo/i.test(x.name)) || e.find((x) => QWEN21.test(x.name));
+  const pref = safe || wide || e.find((x) => /qwen/i.test(x.name)) || e[0];
+  return { edit: e, default: pref ? pref.id : "", wide: wide ? wide.id : "" };
 }
+const COMPOSE_MAX = 3;                       // lib/aiEdit.js MAX_COMPOSE: the 2511 edit model takes three pictures
 
 /** The cast with a sheet: [{name, tag, file, path}]. */
 function castSheets(project) {
@@ -214,8 +231,9 @@ function mount(app) {
     if (b.base != null && sceneEdit.BASES.includes(b.base)) q.base = b.base;
     if (Array.isArray(b.chars)) q.chars = b.chars.map(String).filter(Boolean).slice(0, sceneEdit.MAX_CHARS);
     const eng = editEngines();
-    const styleId = String(b.style_id || q.style_id || eng.default || "");
-    const style = styles.byId(core.STYLES_DIR, styleId);
+    const chosen = String(b.style_id || q.style_id || "");          // 2.717.0: blank = the default (and its fallback)
+    const styleId = chosen || eng.default || "";
+    let style = styles.byId(core.STYLES_DIR, styleId);
     if (!style) return res.status(400).json({ error: "no edit style - Settings -> Image styles needs \"Qwen Image 2.1 edit\" (restart the app to seed it) or another Qwen / Kontext edit style" });
     let eg;
     try { eg = aiEdit.editGraph(style, core.BASE); } catch (e) { return res.status(400).json({ error: e.message }); }
@@ -228,23 +246,46 @@ function mount(app) {
                             picAPath: g.picAPath, picALabel: g.picALabel, place: g.place,
                             text: q.prompt, sceneText: (r.prompt || []).join(" ") });
     } catch (e) { if (tmp) try { fs.unlinkSync(tmp); } catch {} return res.status(400).json({ error: e.message }); }
-    if (pl.images.length > (eg.slots || 0))
-      return res.status(400).json({ error: `${style.name} has ${eg.slots || 0} picture slot(s) and this frame needs ${pl.images.length} - use Qwen Image 2.1 edit (8), or drop a prop / a character` });
+    // 2.717.0: the default (Qwen Image Edit 2511) takes three pictures; more -> Qwen Image 2.1 edit (non-commercial)
+    let why = "";
+    if (!chosen && eng.wide && style.id !== eng.wide && pl.images.length > Math.max(eg.slots || 0, EDIT_2511.test(style.name) ? COMPOSE_MAX : 0)) {
+      const w2 = styles.byId(core.STYLES_DIR, eng.wide);
+      if (w2) { try { eg = aiEdit.editGraph(w2, core.BASE); style = w2; why = ` - ${pl.images.length} pictures is more than Qwen Image Edit 2511 takes, so ${w2.name} made it (Qwen Research License: non-commercial use only)`; } catch { /* keep the default */ } }
+    }
+    let workflow = eg.workflow, slots = eg.slots || 0;
+    if (pl.images.length > slots) {                    // the 2511 edit graph: picture slots added up to three
+      try {
+        const cp = aiEdit.composePlan(style, pl.images.length, core.BASE);
+        if (cp.graph) {
+          const dir = path.join(core.WORKSPACE || path.join(core.BASE, "workspace"), "qedit");
+          fs.mkdirSync(dir, { recursive: true });
+          workflow = path.join(dir, `scene-${r.id || r.n}-${pl.images.length}.json`);
+          fs.writeFileSync(workflow, JSON.stringify(cp.graph, null, 1));
+        }
+        slots = cp.slots;
+      } catch { /* not composable: said below */ }
+    }
+    if (pl.images.length > slots)
+      return res.status(400).json({ error: `${style.name} has ${slots} picture slot(s) and this frame needs ${pl.images.length} - use Qwen Image 2.1 edit (8), or drop a prop / a character` });
+    // the model's own word for its pictures: Qwen 2.1 <image1>, Qwen Image Edit 2511 "Picture 1" (lib/refWords.js)
+    const wording = (() => { try { return require("../lib/refWords").wordingFor(style, core.BASE); } catch { return "qwen21"; } })();
+    const prompt = wording === "qwen21" ? pl.prompt : require("../lib/refWords").retag(pl.prompt, wording);
     const cfg = core.getConfig();
     const cv = sceneEdit.canvasFor(parseInt(b.width, 10) || (cfg.defaults || {}).width, parseInt(b.height, 10) || (cfg.defaults || {}).height);
     const w = cv.width, h = cv.height;
     const seed = imageSeed.forRequest(styles.numOrNull(b.seed));
-    const p = { mode: "image", prompt: pl.prompt, style: styles.applyLoraWeights(style, null), style_id: style.id,
-                style_name: style.name, width: w, height: h, batch: 1, workflow: eg.workflow,
+    const p = { mode: "image", prompt, style: styles.applyLoraWeights(style, null), style_id: style.id,
+                style_name: style.name, width: w, height: h, batch: 1, workflow,
                 workflow_note: `✎ first frame for scene ${r.n} (${base}${baseLabel ? ": " + baseLabel : ""}) - ` + pl.roles.map((x, i) => `<image${i + 1}> ${x}`).join(", "),
                 images: pl.images, no_assets: true, qedit_scene: r.id, seed: seed.seed, seed_random: seed.random };
     const job = core.makeJob(p);
     job.chunk = { i: 0, n: 1 };
-    q.job = job.id; q.status = "running"; q.error = ""; q.at = Date.now(); q.style_id = style.id;
+    q.job = job.id; q.status = "running"; q.error = ""; q.at = Date.now();
+    if (b.style_id) q.style_id = String(b.style_id).slice(0, 64);      // 2.717.0: only a pick is kept (blank = the default)
     r.qedit = q;
     scenes.save(st, project);
     res.json({ ok: true, n: r.n, job: job.id, base, prompt: pl.prompt, roles: pl.roles, qedit: q,
-               note: `✎ scene ${r.n}: ${style.name} makes the first frame from ${pl.roles.join(" + ")} - it lands in the First slot`
+               note: `✎ scene ${r.n}: ${style.name} makes the first frame from ${pl.roles.join(" + ")} - it lands in the First slot` + why
                  + (g.place && !g.place.path ? ` (the place: ${g.place.name}, in words - it has no view picture)` : "") });
   }));
 
@@ -292,4 +333,4 @@ function mount(app) {
   });
 }
 
-module.exports = { mount, contSource, castSheets };
+module.exports = { mount, contSource, castSheets, editEngines, ready2511 };          // 2.717.0: + the default edit style

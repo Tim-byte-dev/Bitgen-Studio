@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "7ee714bf98dd",
- "count": 8752,
+ "v": "73300ae98bee",
+ "count": 8754,
  "patternCount": 1013,
  "strings": {
   "0 (auto)": "0（自动）",
@@ -3841,6 +3841,7 @@
   "Off": "关",
   "Off (default): a scene renders at its own size so you can preview it; ⏫ on the scene (or ⏫ in the scene menubar for the ticked scenes) upscales that exact take. On: every render runs the upscaler as well": "关（默认）：场景按自身尺寸渲染，便于预览；场景上的 ⏫（或场景菜单栏中的 ⏫，作用于已勾选的场景）会放大该镜次。开：每次渲染都同时运行放大器",
   "Off (flat video)": "关（平面视频）",
+  "Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot": "关闭（默认）：提示词描述打斗、变形、爆炸或追逐的镜头不使用 Veda 渲染 - 盲测发现 Veda 在这类镜头上省时不多，还会让画面变软。开启：每个镜头都使用 Veda",
   "Off = hidden everywhere and never used. On = Basic Settings shows it, Settings ▸ Add-ons lists its download links, and whatever it is missing (node packs, models) downloads into ComfyUI's folders by itself - now, and again at every start while it is on": "关 = 在所有地方隐藏且从不使用。开 = 基本设置中显示它，设置 ▸ 附加组件列出其下载链接，缺少的内容（节点包、模型）会自动下载到 ComfyUI 的文件夹 - 立即下载，并在开启期间每次启动时再次下载",
   "Off = see inside in the 3D view (the doors stay in the design, the plan and the plans)": "关 = 在 3D 视图中可看到内部（门仍保留在设计、平面图和图纸中）",
   "Off by default: a clip that will not fit is": "默认关闭：放不下的片段会被",
@@ -6486,6 +6487,7 @@
   "Vector mask": "矢量蒙版",
   "Vector mask - click to edit its path (Pen / Direct Selection); Shift-click disables it; Ctrl-click loads it as the selection": "矢量蒙版 - 点击编辑其路径（钢笔 / 直接选择）；Shift+点击停用；Ctrl+点击将其作为选区载入",
   "Veda": "Veda",
+  "Veda on action shots too": "动作镜头也使用 Veda",
   "Veda sparse attention": "Veda 稀疏注意力",
   "Veda sparse attention (veda-sparse/Veda-on-ComfyUI): a learned predictor keeps ~10% of the attention and a Triton kernel skips the rest - about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768; 5/10/14 s). It replaces attention, so Sage is skipped while it is on. A preview: compare a hero shot with Veda off. Needs ComfyUI 0.38+, the Veda pack and its predictor (Settings -> ComfyUI -> Video accelerators; Settings -> Models -> Model catalog)": "Veda 稀疏注意力 (veda-sparse/Veda-on-ComfyUI)：一个经过学习的预测器保留约 10% 的注意力，Triton 内核跳过其余部分 - 在其训练尺寸下（1344x768、768x1344、768x768、1024x768；5/10/14 s）约快 2-3 倍。它会替换注意力，因此开启时跳过 Sage。预览功能：重要镜头请与关闭 Veda 的结果对比。需要 ComfyUI 0.38+、Veda 节点包及其预测器（设置 -> ComfyUI -> 视频加速器；设置 -> 模型 -> 模型目录）",
   "Veda sparse attention for MiniMax H3 (ComfyUI 0.38+): git clone / pull + its python requirements (triton-windows on Windows). The predictor (275 MB) is in Settings -> Models -> Model catalog": "适用于 MiniMax H3 的 Veda 稀疏注意力（ComfyUI 0.38+）：git clone / pull 及其 Python 依赖（Windows 上为 triton-windows）。预测器（275 MB）位于设置 -> 模型 -> 模型目录",

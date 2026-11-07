@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.717.0 (Tim: "can we add the faster 8 step turbo model and fix the problems he talked about")
+node scripts/test-turbo717.js > /tmp/turbo717.log 2>&1 \
+  && ok "2.717.0 faster first frames: the Qwen Image 2.1 edit Turbo8 starter (8 steps, its LoRA) + catalog entry, licences said, Auto = Qwen Image Edit 2511 when installed (Qwen 2.1 for 4+ pictures / without it), Picture n wording, veda_action, the checkbox, the docker's Auto" \
+  || { bad "2.717.0 faster first frames"; grep -a "^FAIL" -A2 /tmp/turbo717.log | head -14; }
+python3 scripts/test-turbo717.py > /tmp/turbo717py.log 2>&1 \
+  && ok "2.717.0 the accelerator fixes: big-motion prompts (EN / 中文 / 日本語) skip Veda unless kept, Veda replaces Long video's low-VRAM attention, Spectrum keeps 2 + 3 real steps on 12+ step runs, Sage still out of Long video" \
+  || { bad "2.717.0 accelerator fixes"; grep -a "^FAIL" -A2 /tmp/turbo717py.log | head -14; }
 # ---- 2.716.0 (Tim: "if we could have a master pack so users can translate the strings and upload to tigerart for the community it would be ideal")
 node scripts/test-langpacks716.js > /tmp/langpacks716.log 2>&1 \
   && ok "2.716.0 community language packs, the app's side: list signed out (marked installed), install from the community (409 / replace / gone), share as the member (its note, coverage, the pack's own files), an expired token, the page's wiring" \

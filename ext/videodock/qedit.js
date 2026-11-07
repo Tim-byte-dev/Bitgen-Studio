@@ -10,7 +10,7 @@
  * (characters.js scCard calls ScQedit.block(r), scPaint calls ScQedit.bind).
  * Start from (auto / 📍 location / ↪ the frame it continues from / 🖼 its
  * First picture), the cast to put in, a 📍 location, up to three 🧸 props, a
- * line of direction and the edit style (Qwen Image 2.1 edit by default). ✎
+ * line of direction and the edit style (2.717.0: Auto - Qwen Image Edit 2511, Qwen Image 2.1 edit for 4+ pictures). ✎
  * Make first frame queues an image job (routes/sceneedit.js); the finished
  * picture lands in the scene's First slot. The open / closed state and the
  * cast list live here, so the board's 4-second repaint keeps them.
@@ -93,7 +93,9 @@
       + esc(q.prompt || "") + "</textarea>"
       + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
       + '<select data-qestyle="' + n + '" aria-label="Edit style for scene ' + n + '" style="font-size:.68rem">'
-      + (edit.length ? edit.map(function (e) { var sel = (q.style_id || info.default) === e.id; return '<option value="' + esc(e.id) + '"' + (sel ? " selected" : "") + ">" + esc(e.name) + "</option>"; }).join("")
+      // 2.717.0: Auto (the default) = Qwen Image Edit 2511 + Lightning (Apache 2.0); four pictures or more -> Qwen Image 2.1 edit
+      + (edit.length ? '<option value=""' + (q.style_id ? "" : " selected") + ' title="Qwen Image Edit 2511 in 4 steps when it is installed (Apache 2.0 - commercial use is fine) for up to three pictures; more pictures, or no 2511, go to Qwen Image 2.1 edit (non-commercial licence)">Auto - ' + esc((edit.filter(function (e) { return e.id === info.default; })[0] || { name: "Qwen" }).name) + "</option>"
+          + edit.map(function (e) { var sel = q.style_id === e.id; return '<option value="' + esc(e.id) + '"' + (sel ? " selected" : "") + ">" + esc(e.name) + "</option>"; }).join("")
           : '<option value="">(no edit style - Qwen Image 2.1 edit is seeded on restart)</option>')
       + "</select>"
       + '<button class="ghost gbtn" type="button" data-qewrite="' + n + '" style="font-size:.68rem" '

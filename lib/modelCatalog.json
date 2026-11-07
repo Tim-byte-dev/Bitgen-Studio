@@ -744,7 +744,7 @@
       "file": "diffusion_models/qwen_image_2.1_int8_convrot.safetensors",
       "dest": "comfy/diffusion_models",
       "size": 7260000000,
-      "for": "✎ First frame on the scene cards (character + location + props -> a first frame) and the image editor's Qwen 2.1 edit"
+      "for": "✎ First frame on the scene cards with 4+ pictures (character + location + props -> a first frame) and the image editor's Qwen 2.1 edit (non-commercial licence - the Qwen Research License)"
     },
     {
       "id": "qwen21_te",
@@ -797,6 +797,16 @@
       "for": "Qwen Image Edit + every Krea 2 image style + the Anima image styles"
     },
     {
+      "id": "qwen21_turbo8",
+      "group": "edit",
+      "label": "Qwen Image 2.1 Turbo8 LoRA (8 steps)",
+      "repo": "chriswritescode/Turbo8-LoRA-Qwen-Image-2.1",
+      "file": "turbo8_lora_step2500.safetensors",
+      "dest": "comfy/loras",
+      "size": 1360000000,
+      "for": "the Qwen Image 2.1 edit Turbo8 style - Qwen Image 2.1 in 8 steps instead of 25 (non-commercial licence - the Qwen Research License)"
+    },
+    {
       "id": "qwen_lightning",
       "group": "edit",
       "label": "Qwen-Image-Edit 2511 Lightning LoRA (4 steps)",
@@ -804,7 +814,7 @@
       "file": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
       "dest": "comfy/loras",
       "size": 849608296,
-      "for": "Qwen Image Edit in 4 steps (the style's LoRA slot 1)"
+      "for": "Qwen Image Edit in 4 steps (the style's LoRA slot 1) - the scene cards' ✎ First frame default (Apache 2.0: commercial use is fine)"
     },
     {
       "id": "face_yolo",

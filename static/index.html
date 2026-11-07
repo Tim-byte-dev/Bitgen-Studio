@@ -2892,7 +2892,9 @@
               <option value="on">On - fastest (90% sparse, the authors' setting)</option>
               <option value="quality">Quality - denser (75% / 50%, full attention on step 1)</option>
             </select>
-            <input type="text" id="s_vsvedapred" placeholder="predictor file - blank = the one ComfyUI lists (R2VA one for references)" style="margin-top:4px" spellcheck="false"></div>
+            <input type="text" id="s_vsvedapred" placeholder="predictor file - blank = the one ComfyUI lists (R2VA one for references)" style="margin-top:4px" spellcheck="false">
+            <!-- 2.717.0 (a tester's blind benchmark: fights / transformations only 22 % faster and softer with Veda) -->
+            <label class="chk" style="margin-top:4px" title="Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot."><input type="checkbox" id="s_vsvedaaction"> Veda on action shots too</label></div>
         </div>
         <p class="hint help" style="margin:4px 0 0">Accelerators are injected in front of the sampler at render time — install the pieces first
           under Settings → ComfyUI → <b>Video accelerators</b>, restart ComfyUI. The ready-made <b>MiniMax H3 SS</b> style ships with Sage auto + Spectrum on.</p>
@@ -13199,6 +13201,7 @@ function vsPaintForm(st) {
   if ($("s_vslong")) $("s_vslong").value = vac.long === "on" ? (vac.kitchen_attn ? "kitchen" : "on") : "off";   // 2.503.0
   if ($("s_vsveda")) $("s_vsveda").value = vac.veda || "off";                       // 2.536.0
   if ($("s_vsvedapred")) $("s_vsvedapred").value = vac.veda_predictor || "";
+  if ($("s_vsvedaaction")) $("s_vsvedaaction").checked = vac.veda_action === "keep";      // 2.717.0
   paintVideoArch();
   $("s_vsstatus").textContent = st ? `editing "${st.name}"` : "new video style";
 }
@@ -13221,7 +13224,8 @@ function vsReadForm() {
              kitchen_attn: !!($("s_vslong") && $("s_vslong").value === "kitchen"),
              // 2.536.0: Veda sparse attention (+ an optional predictor file)
              veda: $("s_vsveda") ? $("s_vsveda").value : "off",
-             veda_predictor: $("s_vsvedapred") ? $("s_vsvedapred").value.trim() : "" },
+             veda_predictor: $("s_vsvedapred") ? $("s_vsvedapred").value.trim() : "",
+             veda_action: $("s_vsvedaaction") && $("s_vsvedaaction").checked ? "keep" : "skip" },
   };
 }
 async function refreshVideoStyles(selectId) {

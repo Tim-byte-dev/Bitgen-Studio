@@ -131,8 +131,8 @@ check("routes/sceneedit.js is mounted from routes/index.js (never server.js)",
   IDX.includes('require("./sceneedit").mount(app);') && !read("misc/server.js").includes("sceneedit"));
 check("route: the endpoints", ["/api/sceneedit/engines", "/api/scenes/:n/qedit\"", "/api/scenes/:n/qedit/pic\"", "/api/scenes/:n/qedit/pic/upload",
   "/api/scenes/:n/qedit/pic/delete", "/api/scenes/:n/qedit/pic/:file", "/api/scenes/:n/qedit/run"].every((e) => R.includes(e)));
-check("route: Qwen 2.1 first among the edit styles; a job already running is refused (409); the canvas from canvasFor; no_assets",
-  R.includes("/qwen.*2\\.1/i.test(x.name)") && R.includes("status(409)") && R.includes("sceneEdit.canvasFor(") && R.includes("no_assets: true"));
+check("route: 2.717.0 the default Qwen Image Edit 2511 when installed (Qwen 2.1 for 4+ pictures / without it); a job already running is refused (409); the canvas from canvasFor; no_assets",
+  R.includes("const QWEN21 = /qwen.*2\\.1/i") && R.includes("ready2511() ? e.find((x) => EDIT_2511.test(x.name))") && R.includes("COMPOSE_MAX") && R.includes("status(409)") && R.includes("sceneEdit.canvasFor(") && R.includes("no_assets: true"));
 const SF = read("lib", "sceneFrames.js");
 check("route: the continuation frame the way a render finds it (picked frame, else the scene before; the tail PNGs first) - lib/sceneFrames (2.338.0, shared with LTX scenes)",
   R.includes('require("../lib/sceneFrames")') && SF.includes("row.cont_src") && SF.includes("tailFrames.pick(project, st, c.row, c.t)")
@@ -174,11 +174,12 @@ check("the picker: qe_location / qe_prop go to /qedit/pic and /qedit/pic/upload"
   const det = doc.querySelector('details.scqe[data-qe="2"]');
   check("block: a closed <details> accordion titled ✎ First frame (2.563.0: the edit style picked below makes it - no model in the title), the failure said",
     det && !det.open && /✎ First frame/.test(det.querySelector("summary").textContent) && !/Qwen/.test(det.querySelector("summary").textContent) && /⚠ failed/.test(det.textContent) && /boom/.test(det.textContent));
-  check("block: Start from (the record's choice), the cast as checkboxes (Bo ticked), 📍 location + 🧸 prop thumbs, the direction, the edit styles (Qwen 2.1 picked), ✎ Make first frame",
+  check("block: Start from (the record's choice), the cast as checkboxes (Bo ticked), 📍 location + 🧸 prop thumbs, the direction, the edit styles (Auto first - 2.717.0 - and Qwen 2.1 picked), ✎ Make first frame",
     det.querySelector("[data-qebase]").value === "continue"
     && Array.from(det.querySelectorAll("[data-qechar]")).map((c) => c.value + ":" + c.checked).join() === "Ava:false,Bo:true"
     && det.querySelector('img[src="/api/scenes/2/qedit/pic/qe_location.png"]') && det.querySelector('img[src="/api/scenes/2/qedit/pic/qe_prop_a_cup.png"]')
-    && det.querySelector("[data-qeprompt]").value === "rain" && det.querySelector("[data-qestyle]").value === "q21"
+    && det.querySelector("[data-qeprompt]").value === "rain" && det.querySelector("[data-qestyle]").value === ""
+    && det.querySelector("[data-qestyle]").options[0].value === "" && /^Auto - /.test(det.querySelector("[data-qestyle]").options[0].textContent)
     && /Make first frame/.test(det.querySelector("[data-qerun]").textContent));
   const picks = [], notes = [];
   let refreshed = 0;
@@ -195,7 +196,7 @@ check("the picker: qe_location / qe_prop go to /qedit/pic and /qedit/pic/upload"
   const run = calls.find((c) => /\/qedit\/run$/.test(c.url));
   check("✎ Make first frame posts the base, the ticked cast, the direction and the style; the note is shown",
     run && run.url === "/api/scenes/2/qedit/run" && run.body.base === "continue" && JSON.stringify(run.body.chars) === '["Ava","Bo"]'
-    && run.body.prompt === "rain" && run.body.style_id === "q21" && notes.includes("✎ queued") && refreshed >= 1, run && run.body);
+    && run.body.prompt === "rain" && run.body.style_id === "" && notes.includes("✎ queued") && refreshed >= 1, run && run.body);
   det.open = true; det.dispatchEvent(new w.Event("toggle"));
   check("the open state is remembered for the repaint", QE._open[2] === true && /<details[^>]* open/.test(QE.block(row)));
   check("busy: a running ✎ keeps the board polling", QE.busy([{ qedit: { status: "running" } }]) && !QE.busy([{ qedit: { status: "done" } }]));

@@ -69,7 +69,10 @@ gp, _ = worker.apply_video_accel(h3(), {"veda": "on", "spectrum": "on"})
 check("veda + spectrum: shift -> spectrum -> veda -> guider (Veda last)", gp["h3spectrum"]["inputs"]["model"] == ["2", 0]
       and gp["h3veda"]["inputs"]["model"] == ["h3spectrum", 0] and gp["3"]["inputs"]["model"] == ["h3veda", 0], gp)
 gl, nl = worker.apply_video_accel(h3(), {"veda": "on", "long": "on"})
-check("veda + Long video: Veda skipped (Long runs its own attention patch)", "h3veda" not in gl and "h3lowvram" in gl and any("Veda skipped" in n for n in nl), nl)
+# 2.717.0 (a tester's blind benchmark: a 12.25 s long shot 628 s -> 222 s with Veda, not worse): Veda takes the low-VRAM
+# attention patch's place on a long run (the chunked feed-forward stays) - before, Veda was skipped there
+check("veda + Long video (2.717.0): Veda replaces the low-VRAM attention patch, the chunked feed-forward stays", "h3veda" in gl and "h3lowvram" not in gl and "h3chunkff" in gl
+      and gl["h3veda"]["inputs"]["model"] == ["h3chunkff", 0] and any("Veda replaces the low-VRAM attention" in n for n in nl), nl)
 plain = {"1": {"class_type": "UNETLoader", "inputs": {}}, "3": {"class_type": "BasicGuider", "inputs": {"model": ["1", 0], "conditioning": ["9", 0]}}}
 gn, nn = worker.apply_video_accel(copy.deepcopy(plain), {"veda": "on"})
 check("a graph with no native MiniMax H3 node: skipped with a note", "h3veda" not in gn and any("Veda is MiniMax H3-only" in n for n in nn), nn)
@@ -181,7 +184,7 @@ finally:
 
 src = open(os.path.join(ROOT, "misc", "worker.py"), encoding="utf-8").read()
 check("the render calls _veda_resolve right after the accelerators go in", "_veda_resolve(base, g)          # 2.536.0" in src
-      and src.index("_veda_resolve(base, g)          # 2.536.0") > src.index("g, anotes = apply_video_accel(g, vstyle.get(\"accel\"))"))
+      and src.index("_veda_resolve(base, g)          # 2.536.0") > src.index("g, anotes = apply_video_accel(g, vstyle.get(\"accel\")"))
 
 # ---- styles, the arch, the catalog, the installer, the page
 js = r'''
