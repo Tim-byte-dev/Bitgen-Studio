@@ -39,7 +39,8 @@ with tempfile.TemporaryDirectory() as td:
     if txt:
         flat = re.sub(r"\s+", " ", txt)
         check("the cover: 'Feature Reference', this version, the count", "Feature Reference" in flat and f"Version {ver}" in flat and f"{len(feats)} features" in flat, flat[:300])
-        missing = [f["name"] for f in feats if re.sub(r"\s+", " ", re.sub(r"[*`]", "", f["name"]))[:30] not in flat]
+        # a name's emoji is not drawn (the fonts have none - G.drawable leaves it out), so it is compared without it (2.714.1)
+        missing = [f["name"] for f in feats if re.sub(r"\s+", " ", F.G.drawable(re.sub(r"[*`]", "", f["name"]))).strip()[:30] not in flat]
         check("every feature's name is in the PDF's text", len(missing) <= 3, missing[:5])
     else:
         print("SKIP: pdftotext is not installed - the PDF's text was not read")
