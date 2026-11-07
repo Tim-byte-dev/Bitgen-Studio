@@ -7426,17 +7426,20 @@ dialogs** switches the *Choose file* buttons back to the browser's picker.
 ## The guide and help in Chinese and Japanese (2.703.0)
 
 The guide (the 📖 **Help** window and the guide entries **Ctrl+K** finds), the ❔ help pages and the shortcut list are also
-in **Simplified Chinese** (简体中文, for mainland China) and **Japanese** (日本語). The app's own buttons, menus and dockers
+in **Simplified Chinese** (简体中文, for mainland China), **Traditional Chinese** (繁體中文, for Taiwan and Hong Kong -
+2.704.0) and **Japanese** (日本語). The app's own buttons, menus and dockers
 stay in English, so the translations name them in English - what you read is what you see on screen.
 
 - **Pick the language** in the dropdown at the top of the 📖 Help window or in a ❔ help page's title bar (**English** /
-  **简体中文** / **日本語**). One setting for both, kept. Until you pick one it follows your computer's language.
+  **简体中文** / **繁體中文** / **日本語**). One setting for both, kept. Until you pick one it follows your computer's language.
 - **Ctrl+K** searches the guide in that language, and still finds a section by its English name.
 - English is the original. When a section changes in English after it was translated, the translated one says so at its
   top, with a button that shows the English one. A section not translated yet is shown in English, with a note.
-- **The Guide PDF** in each language: docs/bitGen-Studio-Guide-zh-CN.pdf and docs/bitGen-Studio-Guide-ja.pdf.
-- The translations are files beside the English ones: docs/i18n/zh-CN/ and docs/i18n/ja/ (USAGE.md, shortcuts.json) and
-  static/help/zh-CN/, static/help/ja/. `node scripts/i18n-help.js status zh-CN` lists what is out of date.
+- **The Guide PDF** in each language: docs/bitGen-Studio-Guide-zh-CN.pdf, docs/bitGen-Studio-Guide-zh-TW.pdf and
+  docs/bitGen-Studio-Guide-ja.pdf.
+- The translations are files beside the English ones: docs/i18n/zh-CN/, docs/i18n/zh-TW/ and docs/i18n/ja/ (USAGE.md,
+  shortcuts.json) and static/help/zh-CN/, static/help/zh-TW/, static/help/ja/. The Traditional Chinese one is made from the
+  Simplified one (`python3 scripts/i18n-zhtw.py`, Taiwan's words) and then read over. `node scripts/i18n-help.js status zh-CN` lists what is out of date.
 
 ## Tips
 

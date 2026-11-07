@@ -12,7 +12,7 @@
  *   node scripts/i18n-help.js check    <lang> [--strict]               the structure kept (markers, code, links, pictures,
  *        tables, the help pages' tags + ids, the shortcut keys) and the text really translated; exit 1 on a problem
  * The translators' brief + glossary: docs/i18n/TRANSLATING.md (UI names stay English; markers / code / links untouched).
- * <lang>: zh-CN | ja.  Tim: "is it possible to translate help and the user guide into chinese and japanese as additional help
+ * <lang>: zh-CN | zh-TW | ja (2.704.0: zh-TW is made from zh-CN with OpenCC s2twp, then reviewed - see TRANSLATING.md).  Tim: "is it possible to translate help and the user guide into chinese and japanese as additional help
  * files?" (refreshed when he asks: `status`, then `prep` without --all gives only what changed in English).
  */
 "use strict";
@@ -121,12 +121,15 @@ function checkText(id, en, tr, lang, probs, strict) {
   if (pics(en) !== pics(tr)) p(`pictures ${pics(en)} -> ${pics(tr)}`);
   if (tableRows(en) !== tableRows(tr)) p(`table rows ${tableRows(en)} -> ${tableRows(tr)}`);
   if (headings(en) !== headings(tr)) p(`headings ${headings(en)} -> ${headings(tr)}`);
-  const pe = prose(en), pt = prose(tr), letters = (pe.match(/[A-Za-z]/g) || []).length, cjk = (pt.match(CJK) || []).length;
+  const pe = prose(en), pt = prose(tr).replace(/简体中文|繁體中文/g, ""),      // the picker's own labels may name the other script
+    letters = (pe.match(/[A-Za-z]/g) || []).length, cjk = (pt.match(CJK) || []).length;
   if (letters > 120 && cjk < letters / 40) p(`looks untranslated (${cjk} CJK characters for ${letters} English letters)`);
   if (lang === "ja" && letters > 120 && !kana.test(pt)) p("no kana - is it Japanese?");
   if (lang === "zh-CN" && (pt.match(/[぀-ヿ]/g) || []).length > 3) p("kana in the Chinese text");
   if (joinCjk(tr) !== tr) p("a line broken between two CJK characters (a stray space when shown) - assemble joins them");
   if (lang === "zh-CN" && /[們這說個為與實開關體點邊際層畫題據]/.test(pt)) p("Traditional characters in the Simplified text");
+  if (lang === "zh-TW" && /[们这说个为与实开关体点边际层画题据认将从过还选击设动视频]/.test(pt)) p("Simplified characters in the Traditional text");
+  if (lang === "zh-TW" && (pt.match(/[\u3040-\u30ff]/g) || []).length > 3) p("kana in the Chinese text");
 }
 const tagSeq = (h) => (h.replace(/<!--[\s\S]*?-->/g, "").match(/<\/?[a-z][a-z0-9]*/gi) || []).map((t) => t.toLowerCase()).join(" ");
 const idsOf = (h) => (h.match(/\sid="[^"]*"/g) || []).sort().join(" ");

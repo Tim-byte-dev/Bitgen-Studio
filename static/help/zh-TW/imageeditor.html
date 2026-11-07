@@ -1,0 +1,482 @@
+<!-- en: imageeditor 15412ea81a87 -->
+<h1>影像編輯器</h1>
+
+<p>編輯器的佈局、工具和快捷鍵。</p>
+
+<h3 id="dockers514">✅ View ▸ Dockers；摺疊和關閉面板組（2.514.0）</h3>
+<ul>
+  <li>面板組標籤欄開頭的 <b>▾</b> 可將該組摺疊為只顯示標籤；點選某個標籤即可重新展開。</li>
+  <li><b>✕</b> 關閉該組。<b>View ▸ Dockers</b> 列出影像編輯器的所有面板（已顯示的帶勾選標記），另有 <b>All Dockers</b> 可將它們全部恢復。</li>
+  <li>應用的側邊面板可通過其標題欄中的 <b>▾</b> 摺疊為一條細窄的標題條。</li>
+  <li>🖌 Edit theme mode（編輯主題模式）：拖動元素的控制柄可調整其大小，在元素內部拖動可移動它，也可以隱藏它或修改其文字。退出時會詢問是否儲存主題。</li>
+</ul>
+
+<h3 id="pen">✅ Pen 鋼筆工具 <kbd>P</kbd>（2.421.0）</h3>
+<ul>
+  <li><b>Pen</b>：點選 = 角點錨點，拖動 = 平滑錨點（兩側控制柄對稱），點選第一個錨點 = 閉合路徑。<kbd>Alt</kbd> = 尖角點，<kbd>Shift</kbd> = 以 45° 為步進，<kbd>Ctrl</kbd> = 臨時切換為 Direct Selection，<kbd>Enter</kbd> / <kbd>Esc</kbd> = 保持路徑開放。在已選路徑上，指向線段時新增錨點，指向錨點時刪除錨點（<b>Auto Add/Delete</b>）。</li>
+  <li><b>Freeform Pen</b>：徒手繪製；<b>Curve Fit</b>（px）決定貝塞爾曲線貼合筆跡的緊密程度。在起點附近結束即閉合路徑。</li>
+  <li><b>Add / Delete Anchor Point</b>、<b>Convert Point</b>（點選：曲線 ⇄ 角點；拖動錨點：拉出新的控制柄；拖動控制柄：轉為尖角點）。<kbd>Shift</kbd>+<kbd>P</kbd> 在這些工具之間迴圈切換。指標在編輯器上方時 <kbd>P</kbd> 是 Pen；在其他位置它仍用於顯示 / 隱藏提示詞面板。</li>
+  <li><b>Mode</b>：<i>Shape</i> 繪製形狀圖層（用前景色填充，用背景色按 W 寬度描邊），<i>Path</i> 繪製 Work Path（工作路徑）。<b>▣ ⊕ ⊖ ⊗ ⊘</b>：New Layer、Combine、Subtract Front Shape、Intersect、Exclude。</li>
+</ul>
+
+<h3 id="pathsel">✅ Path Selection / Direct Selection <kbd>A</kbd>（2.421.0）</h3>
+<ul>
+  <li><b>Path Selection</b>：點選一個元件（按 <kbd>Shift</kbd> 加選），拖動可移動，<kbd>Alt</kbd>-拖動可複製，<kbd>Delete</kbd> 刪除；其運算方式在選項欄中設定；<b>⧉ Merge Components</b>（結果為普通輪廓）；<b>⟳ Transform…</b>（縮放、旋轉、翻轉）。</li>
+  <li><b>Direct Selection</b>：操作錨點和控制柄——<kbd>Shift</kbd> 加選，框選可選中多個，方向鍵微移（<kbd>Shift</kbd> ×10），<kbd>Delete</kbd> 刪除，<b>Corner</b> / <b>Smooth</b>。點選形狀圖層的輪廓即可編輯它；一旦移動錨點，形狀圖層就會變為路徑。</li>
+</ul>
+
+<h3 id="cshape">✅ 自定形狀 <kbd>U</kbd>（2.421.0）</h3>
+<ul>
+  <li><b>Custom Shape</b> 工具：心形、星形、爆炸形、箭頭、V 形、加號、叉號、對勾、閃電、對話氣泡、水滴、月亮、房子、雲朵、圓環、邊框——拖動繪製（<kbd>Shift</kbd> 保持比例）。<b>Edit ▸ Define Custom Shape…</b> 將所選路徑新增為自定形狀（在選取器中右鍵點選你自己新增的形狀即可將其刪除）。</li>
+  <li><b>Shape</b> 工具（矩形、橢圓、多邊形、直線）具有相同的運算按鈕：除 New Layer 外，其他選項都會新增到當前的形狀圖層中。</li>
+</ul>
+
+<h3 id="paths">✅ Paths 面板（2.421.0）</h3>
+<ul>
+  <li>位於 Layers 和 History 旁邊：顯示 Work Path、已儲存的路徑，以及當前圖層的 Shape Path 和 Vector Mask。點選 = 選中；<kbd>Ctrl</kbd>-點選 = 載入為選區（<kbd>Shift</kbd> 新增，<kbd>Alt</kbd> 減去）。雙擊 Work Path = 儲存它；雙擊已儲存的路徑 = 重新命名。</li>
+  <li><b>●</b> 用前景色填充 · <b>○</b> 用畫筆描邊 · <b>⬚</b> 載入為選區 · <b>⟲</b> 從選區生成工作路徑 · <b>◇</b> 向量蒙版 · <b>＋</b> 新建 · <b>⧉</b> 複製 · <b>☰</b> 更多（儲存、SVG、自定形狀、形狀圖層）· <b>🗑</b> 刪除。<kbd>Alt</kbd>-點選 ● ○ ⬚ ⟲ 可開啟它們的選項。</li>
+</ul>
+
+<h3 id="vmask">✅ 向量蒙版（2.421.0）</h3>
+<ul>
+  <li><b>Layer ▸ Vector Mask</b>：Reveal All、Hide All、Current Path、Disable / Enable、Rasterize（柵格化到畫素蒙版中）、Delete。其縮圖位於圖層蒙版縮圖旁邊：點選 = 編輯其路徑，<kbd>Shift</kbd>-點選 = 關閉 / 開啟。</li>
+  <li>屬性：Density、Feather、Invert、Link。裁剪、畫布大小、影像大小和旋轉會讓所有路徑隨圖片一起變換；PSD 會保留向量蒙版和路徑形狀圖層；<b>File ▸ Export Path as SVG…</b> / <b>Place SVG as Shape Layer…</b>。</li>
+</ul>
+
+<h3 id="smart">✅ 智慧物件（2.422.0）</h3>
+<ul>
+  <li><b>Layer ▸ Smart Objects: Convert to Smart Object</b>：將圖層或圖層組放入其中（仍可編輯）；智慧物件（▣）根據其內容重新繪製，因此縮放 / 旋轉 / 變形都不會損失畫質。</li>
+  <li><b>Edit Contents</b>（雙擊縮圖）：開啟其內部內容並顯示一條橫幅——<b>✔ Done</b> 更新該智慧物件及其所有副本，<b>✕ Cancel</b> 則保持原樣。<b>New Smart Object via Copy</b> = 內容相互獨立的副本。<b>Replace Contents…</b>、<b>Export Contents…</b>、<b>Convert to Layers</b>、<b>Rasterize</b>。</li>
+</ul>
+
+<h3 id="sfilters">✅ 智慧濾鏡（2.422.0）</h3>
+<ul>
+  <li>對智慧物件使用的 Filter / Adjustment 會以條目形式“新增”到圖層下方：👁 開 / 關，雙擊 = 開啟其設定，右鍵點選 = 不透明度，▲ 調整順序，✕ 刪除。</li>
+  <li><b>filter mask</b>（濾鏡蒙版，位於 Smart Filters 行上）：點選它後進行塗抹——塗黑的地方會隱藏濾鏡效果；<kbd>Shift</kbd>-點選可將其關閉。</li>
+</ul>
+
+<h3 id="xform">✅ Skew、Distort、Perspective、Warp（2.422.0）</h3>
+<ul>
+  <li><b>Edit ▸ Transform: Skew / Distort / Perspective / Warp</b>（斜切 / 扭曲 / 透視 / 變形），或在智慧物件上按 <kbd>Ctrl</kbd>+<kbd>T</kbd>；可在選項欄中切換模式。Warp：拖動網格點或內部任意位置；預設可設定 Bend %。<kbd>Enter</kbd> 應用，<kbd>Esc</kbd> 取消。</li>
+</ul>
+
+<h3 id="puppet">✅ Puppet Warp 操控變形（2.422.0）</h3>
+<ul>
+  <li><b>Edit ▸ Puppet Warp</b>：點選放置圖釘，拖動圖釘使畫面彎曲，<kbd>Alt</kbd>-點選 / <kbd>Delete</kbd> 刪除圖釘；Density、Show Mesh。在智慧物件上會作為智慧濾鏡應用。</li>
+</ul>
+
+<h3 id="cas">✅ Content-Aware Scale 內容識別縮放（2.422.0）</h3>
+<ul>
+  <li><b>Edit ▸ Content-Aware Scale…</b>（<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd>）：設定寬度 / 高度 %，不重要的畫素會被去除（或加倍）；<b>Protect: the selection</b>（保護選區）；帶即時預覽。</li>
+</ul>
+
+<h3 id="liquify">✅ Liquify 液化（2.422.0）</h3>
+<ul>
+  <li><b>Filter ▸ Liquify…</b>（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>X</kbd>）：<kbd>W</kbd> 推移，<kbd>R</kbd> 重建，<kbd>C</kbd> 旋轉扭曲（<kbd>Alt</kbd> 反向），<kbd>S</kbd> 褶皺，<kbd>B</kbd> 膨脹，<kbd>F</kbd> / <kbd>D</kbd> 凍結 / 解凍；用 <kbd>[</kbd> <kbd>]</kbd> 調整大小，壓力，Restore All。在智慧物件上會作為智慧濾鏡應用。</li>
+</ul>
+
+<h3 id="selmask">✅ Select and Mask 選擇並遮住（2.423.0）</h3>
+<ul>
+  <li><b>Select ▸ Select and Mask…</b>（<kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>R</kbd>）：Quick Selection <kbd>W</kbd>、Refine Edge <kbd>R</kbd>（用於頭髮等區域）、Brush <kbd>B</kbd>（<kbd>Alt</kbd> 減去）；多種檢視；Radius / Smart Radius、Smooth、Feather、Contrast、Shift Edge；Decontaminate Colors；Output To 可選 Selection / Layer Mask / New Layer / New Layer with Layer Mask。</li>
+</ul>
+
+<h3 id="maglasso">✅ Magnetic Lasso、Quick Selection、Sky（2.423.0）</h3>
+<ul>
+  <li><b>Magnetic Lasso</b>（<kbd>L</kbd>）：沿邊緣移動——它會自動吸附；點選設定一個點，<kbd>Backspace</kbd> 撤回一個點，雙擊 / <kbd>Enter</kbd> 閉合。Width、Contrast、Frequency。</li>
+  <li><b>Quick Selection</b>（<kbd>W</kbd>）：塗抹——選區會擴充套件到邊緣；<kbd>Alt</kbd> 減去；Tolerance、Auto-Enhance。<b>Select ▸ Sky</b>。</li>
+</ul>
+
+<h3 id="channels">✅ 通道和儲存的選區（2.423.0）</h3>
+<ul>
+  <li><b>Channels</b> 標籤頁：RGB / Red / Green / Blue（點選 = 檢視該通道，<kbd>Ctrl</kbd>+<kbd>2</kbd> … <kbd>5</kbd>；<kbd>Ctrl</kbd>-點選 = 將其明度載入為選區）以及 Alpha 通道——<b>Select ▸ Save Selection…</b> / <b>Load Selection…</b>；⬚ ◫ ＋ 🗑。</li>
+</ul>
+
+<h3 id="retouch">✅ Patch、Content-Aware Move / Fill、Red Eye（2.423.0）</h3>
+<ul>
+  <li><b>J</b>：Spot Healing（Content-Aware / Proximity Match）、Healing Brush（融合：紋理取自源點，光影取自當前位置）、<b>Patch</b>（圈出區域，拖到乾淨的紋理上）、<b>Content-Aware Move</b>（拖動選區：Move / Extend）、<b>Red Eye</b>（點選瞳孔）。</li>
+  <li><b>Edit ▸ Content-Aware Fill…</b> 以及 <b>Edit ▸ Fill…</b> 中的 Content-Aware——不使用 AI：完全根據圖片自身的內容進行填充。</li>
+</ul>
+
+<h3 id="erasers">✅ Mixer Brush、Background / Magic Eraser（2.423.0）</h3>
+<ul>
+  <li><b>Mixer Brush</b>（<kbd>B</kbd>）：Wet、Load、Mix，每次描邊後 Clean。<b>Background Eraser</b>（<kbd>E</kbd>）：Continuous / Once、Tolerance、Protect Foreground Color。<b>Magic Eraser</b>（<kbd>E</kbd>）：點選即清除該顏色（Tolerance、Contiguous）。</li>
+</ul>
+<h3 id="pdf">✅ PDF 檔案：開啟、編輯、儲存（2.424.0）</h3>
+<ul>
+  <li><b>Save PDF… / Save as New PDF…</b>（2.435.0）：儲存對話方塊中的 <b>Embed fonts</b> 會讓每一行以各自的字型寫入並嵌入（只嵌入用到的字元）——字型取自本機已安裝的字型或安裝目錄下的 <code>fonts</code> 資料夾；任何文字系統都保持為真實文本。</li>
+  <li><b>File ▸ Open PDF…</b>（或直接拖入 .pdf 檔案）、<b>Open PDF from Project…</b>：顯示 Pages 頁面欄；每一頁開啟後為一個不含文字的 Background 圖層 + <b>每行一個文字圖層</b>（字型、字號、顏色、寬度均已匹配）。</li>
+  <li>可使用所有工具進行編輯；每一頁都保留各自的圖層和撤銷記錄（在另一張圖片上也可以——File ▸ PDF Pages）。</li>
+  <li><b>💾 Save PDF</b>：在原檔案中替換已修改的頁面（儲存到專案中的副本，同時也會下載一份）；<b>Save as New…</b>。未修改的頁面保持向量；文字會成為真實、可選中的 PDF 文本（Helvetica / Times / Courier）；這些字型無法書寫的內容會合併到圖片中。</li>
+</ul>
+
+<h3 id="vlines">✅ 向量線條：曲線工具、Shape tool、Outline Pen（2.425.0）</h3>
+<ul>
+  <li><kbd>F5</kbd>（再按一次 = 下一個工具）：<b>Bézier</b>（點選 = 尖突節點，拖動 = 平滑節點，拖動時按 <kbd>C</kbd> / <kbd>S</kbd>，<kbd>Ctrl</kbd> = 15°，點選第一個節點 = 閉合，雙擊 / <kbd>Enter</kbd> / <kbd>Space</kbd> = 完成，<kbd>Esc</kbd> = 放棄），<b>Freehand</b>、<b>2-Point Line</b>、<b>Polyline</b>、<b>3-Point Curve</b>、<b>B-Spline</b>、<b>Node Pen</b>。從當前線條的開放端點開始繪製即可接續該線條。</li>
+  <li><kbd>F10</kbd> <b>Shape tool</b>：選取 / 拖動節點、控制柄、線段；雙擊 = 新增 / 刪除節點；<kbd>C</kbd> <kbd>S</kbd> <kbd>Y</kbd> = 尖突 / 平滑 / 對稱；連線、斷開、轉為直線 / 曲線、反轉方向、閉合、提取、自動閉合、減少節點。</li>
+  <li><kbd>F12</kbd> <b>Outline Pen</b>：寬度、顏色、虛線、轉角、線端、位置、箭頭、置於填充之後、隨物件縮放。<kbd>Ctrl</kbd>+<kbd>Q</kbd> <b>Convert to Curves</b>。</li>
+  <li><b>Layer ▸ Vector Line: Convert to Path…</b> / <b>Make from Path…</b>（Paths 面板中的 〰）：線條會變為一條記住其輪廓設定的路徑，並可原樣還原。SVG 和 PSD 都會保留它們。</li>
+</ul>
+
+<h3 id="curvpen">✅ Curvature Pen、Rubber Band、路徑對齊 / 分佈（2.425.0）</h3>
+<ul>
+  <li><b>Curvature Pen</b>（<kbd>P</kbd>）：點選放置點——曲線會穿過這些點；雙擊某個點 = 在角點 / 平滑點之間切換；拖動可移動；<kbd>Enter</kbd> 結束。Pen 的 <b>Rubber Band</b> 選項。<b>Path Selection</b>（<kbd>A</kbd>）：對齊 / 分佈所選元件（相對於彼此或相對於畫布）。</li>
+</ul>
+
+<h3 id="typepanels">✅ Character 與 Paragraph 面板、段落文字、樣式（2.426.0）</h3>
+<ul>
+  <li><b>Character</b>（位於 Color 旁邊）：字型、字形樣式、字號、行距、字距微調、字距、垂直 / 水平縮放、基線偏移、顏色、Faux Bold / Italic、All Caps、Small Caps、Superscript / Subscript、Underline / Strikethrough。</li>
+  <li><b>Paragraph</b>：對齊方式，兩端對齊時末行左對齊 / 居中 / 右對齊 / 全部對齊，縮排（左、右、首行），段前 / 段後間距，Hyphenate。<b>Paragraph text</b>：用 Type 工具（<kbd>T</kbd>）拖出文本框——文字會在框內自動換行；Layer ▸ Type: Convert to Paragraph / Point Text。</li>
+  <li><b>Character / Paragraph Styles</b>：＋ 根據當前文字新建，點選 = 應用，⌫ Clear Override，⟲ Redefine（所有使用該樣式的文字隨之更新），🗑。</li>
+</ul>
+
+<h3 id="actions">✅ Actions 與 Batch（2.427.0）</h3>
+<ul>
+  <li><b>Actions</b> 標籤頁（位於 History 旁邊，<kbd>Alt</kbd>+<kbd>F9</kbd>）：● 錄製（選單命令及其對話方塊中的設定、濾鏡、Layers 面板中的操作），■ 停止，▶ 播放；☑ 開啟 / 關閉某個步驟，▢ 在該步驟的對話方塊處暫停；▲ ▼ 🗑；雙擊 = 重新錄製某個步驟 / 修改動作的名稱和功能鍵；☰ Insert Stop、Insert Menu Item、Duplicate、Button Mode、Load / Save（.json）、Reset。</li>
+  <li><b>File ▸ Automate: Batch…</b>：對選定的檔案或資料夾執行某個動作——結果可儲存到專案的 batch 資料夾、影像相簿、下載或保留原樣；PNG / JPEG；遇到錯誤時停止或記錄到日誌；生成一份報告。</li>
+</ul>
+
+<h3 id="coreldraw">✅ 繪圖工具（2.428.0）</h3>
+<ul>
+  <li><kbd>F6</kbd>（再按一次 = 下一個工具）：Rectangle（圓角半徑；圓角 / 扇形角 / 倒角）、3-Point Rectangle、Ellipse（餅形 / 弧形）、3-Point Ellipse、Polygon、Star、Complex Star、Spiral、Graph Paper、Common Shapes。<kbd>Ctrl</kbd> = 正方形 / 正圓，<kbd>Shift</kbd> = 從中心繪製。形狀一直保持可調，直到用 <kbd>F10</kbd> 編輯節點或按 <kbd>Ctrl</kbd>+<kbd>Q</kbd>。</li>
+  <li>Artistic Media（位於 <kbd>F5</kbd> 中）：Preset、Calligraphic、Pressure、Sprayer。</li>
+  <li><kbd>F8</kbd>：Parallel、Horizontal / Vertical 和 Angular Dimensions、3-Point Callout、Connector（直線 / 直角 / 圓角——會跟隨所連線的物件移動）。</li>
+</ul>
+
+<h3 id="dockers">✅ 面板（2.429.0）</h3>
+<ul>
+  <li>Window ▸ Dockers：<b>Transform</b>（<kbd>Alt</kbd>+<kbd>F7</kbd>：位置、旋轉、縮放與映象、大小、傾斜——可圍繞 9 個錨點之一，可生成副本），<b>Shaping</b>（焊接、修剪、相交、簡化、前減後 / 後減前、邊界），<b>Align and Distribute</b>（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>A</kbd>），<b>Object Properties</b>（<kbd>Alt</kbd>+<kbd>Enter</kbd>：填充（含漸變）、輪廓、透明度）。按住 Ctrl 點選圖層可選中多個。</li>
+</ul>
+
+<h3 id="documents">✅ 文件、調色盤、⊠ 透明、自動填充（2.430.0）</h3>
+<ul>
+  <li><b>Documents</b>：每次 New / Open 都會建立一個獨立的文件——第一個以標籤頁形式停靠，之後的文件在各自的視窗中浮動（Window ▸ Arrange ▸ Open Documents as Tabs 可將它們全部停靠）。將視窗拖到標籤欄上即可停靠，將標籤拖離標籤欄即可浮動；<kbd>Ctrl</kbd>+<kbd>W</kbd> Close，<kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>W</kbd> Close All，<kbd>Ctrl</kbd>+<kbd>Tab</kbd> 切換到下一個文件；Tile / Cascade / Consolidate All to Tabs。</li>
+  <li>右側的 <b>Colour palette</b>（調色盤）：對於曲線 / 形狀 / 文字，點選 = 填充，右鍵點選 = 輪廓；對於畫素，點選 = 前景色，右鍵點選 = 背景色。<b>⊠</b> = 無顏色 / 透明前景色（畫筆會畫出透明效果）。</li>
+  <li><b>Auto-fill</b>：閉合的曲線或新建的形狀會用最後選取的顏色填充（曲線工具欄上的 ▨ 可將其關閉）。</li>
+</ul>
+
+<h3 id="generated">✅ 生成的圖片直接放到畫布上（2.431.0）</h3>
+<ul>
+  <li>編輯器開啟時，提示詞面板會生成 <b>🖼 Image</b>（→ ▦ canvas），它生成的每張圖片都會作為新圖層放到最前面的文件上，圖層以提示詞命名（若沒有開啟的文件，則作為新文件開啟）。關閉編輯器後，提示詞面板會恢復到之前的模式。</li>
+</ul>
+
+<h3 id="paneldock">✅ 面板列本身就是一個可停靠面板（2.454.0）</h3>
+<ul>
+  <li>⇱ 可讓任意標籤組浮動；按住其標題拖到面板列上方——一條橙色線會顯示它將停靠的位置。</li>
+  <li>拖動面板列的左邊緣可調整其寬度；順序和寬度都會被儲存。</li>
+</ul>
+
+<h3 id="frames453">✅ 框架：內容已鎖定，右鍵點選進行編輯（2.453.0）</h3>
+<ul>
+  <li>內容鎖定在其框架中：Move 工具及其控制柄作用於框架；內容會隨框架一起移動 / 縮放 / 旋轉。</li>
+  <li>右鍵點選 ▸ Edit Frame Contents / Finish Editing Frame / Extract Contents / Lock Contents to Frame。</li>
+</ul>
+
+<h3 id="handles">✅ Move 工具的控制柄（2.452.0）</h3>
+<ul>
+  <li>點選 = 縮放控制柄（Shift = 等比例，Alt = 從中心縮放）；雙擊 = 旋轉控制柄（拖動角點進行旋轉，Shift 以 15° 為步進；拖動邊進行傾斜）。</li>
+  <li>選項欄中的變換選項：角度、⟲90 ⟳90、翻轉、W % x H %。</li>
+  <li>旋轉後文字仍可編輯；形狀仍保持向量。</li>
+</ul>
+
+<h3 id="promptlink451">✅ 從提示詞面板進行 Edit / Generate，Del（2.451.0）</h3>
+<ul>
+  <li>✨ AI ▸ Edit：提示詞面板切換到 🖼 Image + Qwen Image 2.1 edit，其按鈕顯示為 ✏ Edit。Generate：✨ Generate 會生成到所選圖層的選區中。</li>
+  <li>Del 刪除當前圖層（有選區時：清除選區內的內容）。</li>
+</ul>
+
+<h3 id="warpgrid">✅ Warp 網格 + 分割線、Liquify 新增功能（2.450.0）</h3>
+<ul>
+  <li>Warp：Grid（Default / 3 x 3 / 4 x 4 / 5 x 5 / Custom 列 x 行）；Split Warp Crosswise / Vertically / Horizontally——點選要分割的位置；Alt-點選分割線可將其刪除。</li>
+  <li>Liquify：Smooth（E）、Push Left（O）。</li>
+  <li>Face-Aware Liquify：用 Face 工具（A）定位面部；13 個滑塊可調整眼睛、鼻子、嘴巴和臉型。</li>
+</ul>
+
+<h3 id="pcruns">✅ 逐字元設定文字樣式（2.449.0）</h3>
+<ul>
+  <li>輸入文字時：先選中若干字元，然後使用選項欄（字型、B、I、字號、字距、顏色）或 Character 面板——只有這些字元會改變。</li>
+  <li>未選中任何字元 = 作用於整個圖層。在已設定樣式的一段文字中輸入，會沿用該段的樣式。所有字元共用一條基線，每行的高度取決於該行中最大的字元。</li>
+  <li>Layer ▸ Type: Clear Character Overrides。</li>
+</ul>
+
+<h3 id="cafill">✅ Content-Aware Fill 工作區（2.448.0）</h3>
+<ul>
+  <li>Edit ▸ Content-Aware Fill…（需要有選區）：取樣區域以綠色顯示——Auto、Rectangular 或 Custom（🖌 Sampling Brush + / −，Alt）。</li>
+  <li>即時 Preview；Colour Adaptation 可選 None / Default / High / Very High。</li>
+  <li>Output To 可選 Current Layer / New Layer / Duplicate Layer；只佔一步撤銷。</li>
+</ul>
+
+<h3 id="artboards">✅ 畫板（2.447.0）</h3>
+<ul>
+  <li>Layer ▸ New ▸ Artboard…（尺寸、背景、將所選圖層放入其中）、Artboard 工具（再按一次 V）、Artboard from Group。</li>
+  <li>畫板中的圖層只在畫板內部顯示；移動畫板會帶動這些圖層；Properties：X / Y / W / H、背景、⇱ Fit。</li>
+  <li>File ▸ Export ▸ Artboards to Files…：每個畫板匯出一個 PNG。</li>
+</ul>
+
+<h3 id="grids">✅ 網格按鈕、Grids & Guides 設定（2.445.0）</h3>
+<ul>
+  <li>頂部欄上的 ⊞：開啟 / 關閉網格（Ctrl+'）。</li>
+  <li>⚙ ▸ Grids & Guides：網格間距、每隔 n 條線一條主網格線、線條或點狀、網格顏色 + 強度、參考線顏色、吸附距離。</li>
+</ul>
+<h3 id="promptlink">✅ 從提示詞面板進行 ✨ Edit / Generate、⚙ 設定（2.444.0）</h3>
+<ul>
+  <li>✨ AI ▸ Edit：提示詞面板的風格 = Qwen Image 2.1 edit，其按鈕 = ✏ Edit——在那裡輸入編輯指令。</li>
+  <li>✨ AI ▸ Generate：提示詞面板的 ✨ Generate 會渲染到所選圖層的選區中；✔ Apply 將結果融合到該圖層。</li>
+  <li>⚙（選單欄右側）/ Edit ▸ Preferences…（Ctrl+,）：編輯器的設定。</li>
+</ul>
+
+<h3 id="frames">✅ 框架：形狀內的圖層（2.442.0）</h3>
+<ul>
+  <li>Layer ▸ Frame ▸ Place Inside Frame…（或將圖層拖到閉合形狀所在行的中間）：這些圖層只在形狀內部顯示，並在 Layers 中以樹狀結構列在該形狀下方。</li>
+  <li>移動 / 旋轉 / 縮放框架——其內容會隨之變化（Lock Contents to Frame）。</li>
+  <li>Edit Frame Contents（用 Move 工具雙擊框架）——單獨編輯其中的內容；✓ Finish Editing Frame。Extract Contents 將內容取出。</li>
+  <li>當前圖層為閉合形狀時使用 ✨ Generate：生成的圖片會放在形狀內部。</li>
+</ul>
+
+<h3 id="flux3">✅ FLUX 3 Image Klein；編輯影像模式只列出編輯類風格（2.502.0）</h3>
+<ul>
+  <li><b>FLUX 3 Klein</b>（蒸餾版，16 步）、<b>FLUX 3 Klein base</b>（50 步，cfg 3.5）和 <b>FLUX 3 Klein edit</b>（最多 4 張參考圖）影像風格。需要 ComfyUI 0.41.0+。</li>
+  <li>影像編輯器開啟時，影像風格下拉菜單隻顯示能夠編輯圖片的風格；關閉編輯器後會重新顯示全部風格。</li>
+</ul>
+
+<h3 id="cad494">✅ CAD 功能改進（2.494.0）</h3>
+<ul>
+  <li>工具列中的 <b>⌬ CAD</b>：選中草圖 / 草圖工具 / 3D 實體時，CAD 工具欄會自動顯示；該按鈕可讓它一直顯示。時間軸有自己的 ⌬ CAD 按鈕。</li>
+  <li>草圖：<b>Select</b> 排在最前，繪製草圖時隱藏 <b>Create Sketch</b>，<b>Finish Sketch</b> → 切換到 Solid 標籤頁，選中線條的兩端會出現 <b>＋</b>，可從那裡繼續繪製。</li>
+  <li><b>Offset (O)</b>：點選一條連續線鏈，指標位置決定偏移的方向和距離（或輸入數值 + Enter，F 翻轉方向）；無論線條按什麼方向繪製，都會一起偏移，圓角保持連線。</li>
+  <li><b>Extrude / Revolve</b>：點選要使用的閉合區域（會高亮顯示），Enter = 開啟設定。</li>
+  <li>3D：<b>Shift + 中鍵拖動</b> 環繞檢視，<b>view cube</b>（檢視立方體：點選面、角或拖動），並帶有 Home / Orbit / Pan / Fit。</li>
+</ul>
+
+<h3 id="round-h">✅ PDF 頁面、Select Subject（內建 + AI 摳圖）、Remove Background（2.488.0）</h3>
+<ul>
+  <li>PDF Pages 頁面欄：<b>＋ Page</b>、<b>⤓ PDF…</b>（匯入另一個 PDF 的頁面）、<b>▲ ▼</b> 及拖動可調整順序，<b>🗑</b> 刪除頁面——按新順序儲存，未改動的頁面仍為向量。</li>
+  <li><b>Select ▸ Subject</b>：內建方式（無需下載）或 AI 摳圖（在本機執行 BiRefNet）；<b>Subject Settings…</b>；<b>Layer ▸ Remove Background</b>（將主體作為圖層蒙版）。Segment Anything：<b>Subject by Words…</b>。</li>
+</ul>
+
+<h3 id="modes">✅ Image ▸ Mode、Proof Colors、Gamut Warning、CMYK TIFF（2.487.0）</h3>
+<ul>
+  <li><b>Image ▸ Mode</b>：Bitmap（閾值、圖案、擴散、半調網屏）、Grayscale、Duotone（1-4 種油墨，預設）、Indexed Color（Local / Web / Uniform / Grey 調色盤，仿色）+ <b>Color Table…</b>（.act）、RGB Color、CMYK Color（塗布紙 / 非塗布紙 / 新聞紙，黑版生成，油墨總量）。</li>
+  <li><b>View ▸ Proof Setup…</b>、<b>Proof Colors</b>（Alt+Ctrl+Y）、<b>Gamut Warning</b>（Shift+Ctrl+Y）——隻影響螢幕顯示；Info 面板會用“!”標記無法列印的顏色。</li>
+  <li><b>Export As ▸ TIFF (CMYK, for print)</b>。僅支援每通道 8 位（受瀏覽器畫布的限制）。</li>
+</ul>
+
+<h3 id="merge">✅ Auto-Align / Auto-Blend Layers、Photomerge、Merge to HDR（2.486.0）</h3>
+<ul>
+  <li><b>Edit ▸ Auto-Align Layers…</b>：將所選圖層對齊——透視、移動 / 旋轉 / 縮放，或僅移動；以中間圖層、當前圖層或底部圖層為基準。</li>
+  <li><b>Edit ▸ Auto-Blend Layers…</b>：生成蒙版，用於全景圖（柔和接縫、色調匹配）或焦點堆疊（每處取最清晰的圖層）。</li>
+  <li><b>Automate ▸ Photomerge…</b>：將檔案或已開啟的文件拼接成一個新的 Panorama 文件，每張圖一個帶蒙版的圖層。</li>
+  <li><b>Automate ▸ Merge to HDR…</b>：將包圍曝光的照片對齊並融合成一張曝光良好的圖片（曝光融合，8 位）。</li>
+</ul>
+
+<h3 id="fileplus">✅ 更多檔案型別、File Info、Print、Contact Sheet、Crop and Straighten Photos（2.485.0）</h3>
+<ul>
+  <li><b>Export As</b>：新增 AVIF（由本機的 ffmpeg 生成）、GIF（256 色，可設一種透明色）、TIFF、BMP、TGA（支援透明）。</li>
+  <li><b>File Info…</b>（Alt+Shift+Ctrl+I）：標題、作者、描述、關鍵詞、版權、URL——隨文件一起儲存，並寫入匯出的 PNG 和 JPEG 檔案。</li>
+  <li><b>Zoom</b>：<kbd>Shift</kbd> + 在畫布任意位置按住右鍵拖動——向前（向上）放大，向後（向下）縮小，以按下的位置為中心（在 Artist mode 中也可用）。<b>⊡ Zoom to Selection</b>（位於工具列的 🔍 下方、View ▸ Zoom to Selection、<kbd>Ctrl+Alt+0</kbd>）：讓選區充滿檢視——沒有選區時：以所選圖層的畫素為準。<b>Move</b> <kbd>V</kbd> 現在會顯示指標游標（2.648.0）。</li>
+  <li><b>🎨 Artist mode</b>（🎨 按鈕、View ▸ Artist Mode、Ctrl+Shift+F）：全屏只顯示畫布。<kbd>Alt+P</kbd> 調色盤，<kbd>Ctrl+B</kbd> 畫筆，<kbd>Alt+G</kbd> Layers 面板 + ⏳ Pending，<kbd>Ctrl+P</kbd> 提示詞面板——選擇一個圖層，▾ Edit 或 Generate，結果會在 ⏳ Pending 中等待處理。按 Ctrl+Esc 或 Shift+右鍵點選（不拖動）返回；Shift+右鍵拖動則進行縮放。</li>
+  <li><b>Print…</b>（Ctrl+Shift+P——Ctrl+P 用於將提示詞面板置於最前）：適合頁面、指定尺寸或百分比、方向，然後開啟系統的列印對話方塊。</li>
+  <li><b>Automate ▸ Contact Sheet…</b>（檔案或已開啟的文件，網格排列，帶說明文字）和 <b>Crop and Straighten Photos</b>（將掃描件中的每張照片分別作為獨立的文件）。</li>
+</ul>
+
+<h3 id="brushset">✅ Brush Settings、預設、.abr 畫筆（2.484.0）</h3>
+<ul>
+  <li><b>🖌 Brush</b> 標籤頁：預設（內建的、你自己的、匯入的）、<b>⤒ Import .abr…</b>、<b>💾 New Brush Preset…</b>（brushes/&lt;name&gt;.json）。</li>
+  <li>Brush Tip Shape（角度、圓度、翻轉）、Shape Dynamics、Scattering、Texture、Dual Brush、Color Dynamics、Transfer、Smoothing。</li>
+</ul>
+
+<h3 id="measure">✅ Navigator、Histogram、Info、測量工具（2.483.0）</h3>
+<ul>
+  <li>標籤頁：<b>Navigator</b>、<b>Histogram</b>（通道、統計資料）、<b>Info</b>（指標處的 RGB / HSB / CMYK 值、取樣點）、<b>Notes</b>。</li>
+  <li>與 Eyedropper（I）同組：<b>Color Sampler</b>、<b>Ruler</b>（↻ Straighten）、<b>Note</b>、<b>Count</b>。與 Crop 工具（C）同組：<b>Perspective Crop</b>。</li>
+  <li>Select ▸ Grow、Similar、Focus Area…、Transform Selection…；Layer ▸ Matting ▸ Defringe、Remove Black / White Matte。</li>
+</ul>
+
+<h3 id="develop">✅ Develop Filter + Lens Correction（2.482.0）</h3>
+<ul>
+  <li>Filter ▸ <b>Develop Filter…</b>（Alt+Shift+Ctrl+A）：Basic（白平衡、曝光、色調、紋理 / 清晰度 / 去朦朧、自然飽和度、黑白、✨ Auto）、Curve、Color mixer、Grading、Detail、Optics、Geometry、Effects、Presets（+ 你自己的預設）。</li>
+  <li>Filter ▸ <b>Lens Correction…</b>（Alt+Shift+Ctrl+R）：畸變、色邊、暗角、透視、角度、縮放、邊緣；開啟時會顯示網格。</li>
+</ul>
+
+<h3 id="fltroundB">✅ 新增 44 種濾鏡（2.481.0）</h3>
+<ul>
+  <li>Filter ▸ Blur：Surface、Smart、Average、<b>Lens Blur</b>。Blur Gallery：<b>Field</b>、<b>Iris</b>、<b>Path</b>、<b>Spin</b>（點選圖片放置中心點）。</li>
+  <li>Noise：Reduce Noise、Dust &amp; Scratches、Despeckle。Sharpen：<b>Smart Sharpen</b>。Other：High Pass、Minimum、Maximum、Offset、<b>Custom</b>（5 x 5）、HSB / HSL。</li>
+  <li>Distort：Displace、Polar Coordinates、Pinch、ZigZag、Shear、Glass。Pixelate：Color Halftone、Crystallize、Pointillize、Facet、Fragment、Mezzotint。Render：<b>Lighting Effects</b>、Fibers、Difference Clouds。Stylize：Diffuse、Tiles、Trace Contour。Artistic / Sketch / Texture：Cutout、Poster Edges、Watercolor、Dry Brush、Graphic Pen、Charcoal、Grain、Craquelure。</li>
+</ul>
+
+<h3 id="adjroundA">✅ 更多調整 + Apply Image（2.480.0）</h3>
+<ul>
+  <li>Image ▸ Adjustments：<b>Shadows / Highlights</b>、<b>HDR Toning</b>、<b>Selective Color</b>（九個顏色範圍，C / M / Y / K，相對 / 絕對）、<b>Replace Color</b>（點選圖片取色）、<b>Match Color</b>（取自另一個圖層、合併後的圖片或檔案）、<b>Color Lookup</b>（預設外觀 + .cube LUT）。</li>
+  <li>Image ▸ <b>Apply Image…</b>：將另一個圖層或其某個通道混合到當前圖層上。新增調整圖層：Selective Color、Color Lookup。</li>
+</ul>
+
+<h3 id="uelights">✅ Unreal 燈光、體積光和霧（2.476.0）</h3>
+<ul>
+  <li>UNREAL ▸ <b>Lights &amp; Fog</b> / 💡 Lights 標籤頁：預設，Point / Spot / Rect / Sun / Sky 燈光（顏色或色溫、強度、照射範圍、光錐、體積光、陰影），高度霧 + 體積霧。</li>
+  <li>UNREAL ▸ <b>Lights</b>：在圖片上拖動燈光（Shift = 深度，Alt = 朝向）。時間軸中的 UNREAL ▸ Lights &amp; Fog… 使用同一個面板。</li>
+</ul>
+
+<h3 id="uecam">✅ Unreal 攝像機（2.475.0）</h3>
+<ul>
+  <li>UNREAL ▸ <b>Camera</b>：拖動 = 環繞，Ctrl = 環視，Shift = 平移，Alt = 滾轉，滾輪 = 推拉，Ctrl+滾輪 = 變焦；Focus 模式 = 點選需要清晰對焦的物體。每次移動算作一步撤銷。</li>
+  <li>🎥 <b>Camera</b> 標籤頁：鏡頭預設、焦距 / 視場角、膠片背（感測器尺寸）、光圈值、對焦、曝光、X Y Z、滾轉 / 俯仰 / 偏航，可傳送到 Unreal 視口或從中讀取。</li>
+</ul>
+
+<h3 id="multisel">✅ 無工具狀態、選擇框、多個圖層（2.474.0）</h3>
+<ul>
+  <li><b>Esc</b> = 不選任何工具。然後拖出一個虛線框：從左向右拖動會選中完全位於框內的物件，從右向左拖動會選中與框接觸的物件；Shift 加選。</li>
+  <li>Layers 面板：Shift-點選 = 選中兩者之間的所有圖層，Ctrl-點選 = 加選 / 減選。Move 工具會移動所有選中的圖層；<b>Del</b> 刪除它們。</li>
+</ul>
+
+<h3 id="unreal">✅ Unreal Engine 5.8 橋接（2.472.0）</h3>
+<ul>
+  <li>將 <b>bitGen Bridge</b> 外掛（bitgen-ue-bridge zip）安裝到你的 Unreal 專案的 Plugins 資料夾中；Settings ▸ 3D ▸ Unreal Engine ▸ Test connection。</li>
+  <li>UNREAL 標籤頁：<b>Unreal Layer</b>（通過攝像機看到的關卡畫面）和 <b>MetaHuman Layer</b>（擺好姿勢、構好圖、背景透明的人物）；🎮 Unreal 標籤頁可微調攝像機 / 人物並重新渲染。</li>
+</ul>
+
+<h3 id="bodies">✅ 引數化 3D 實體（2.471.0）</h3>
+<ul>
+  <li>SOLID 標籤頁：對閉合草圖進行 <b>Extrude</b> / <b>Revolve</b>（New Body、Join、Cut、Intersect），<b>Fillet</b>、<b>Chamfer</b>、<b>Shell</b>、<b>Split Body</b>（另一側 = 一個新的實體圖層）。</li>
+  <li>每個數值都可以是由命名引數組成的算式（ƒx Change Parameters）；修改草圖或引數後，實體會自動重建。</li>
+  <li>🧊 Body 標籤頁：特徵（抑制、編輯、重新排序、刪除）、檢視（🖐 Orbit）、外觀、Export STL / glTF / STEP / → Timeline。</li>
+  <li>Settings ▸ 3D：選擇引擎——瀏覽器中的 OpenCascade 或 Blender。</li>
+</ul>
+<h3 id="cadbar">✅ 像繪圖軟體一樣選取物件、CAD 工具欄（2.470.0）</h3>
+<ul>
+  <li>Move 工具：指標下方的物件顯示<b>藍色</b>輪廓，選中的物件顯示<b>橙色</b>輪廓；點選畫布空白處或按 Esc 取消選擇。</li>
+  <li>繪製形狀後會自動切換到 Move 工具並選中該形狀（工具欄上的 ⚙ 可關閉此功能）。</li>
+  <li>頂部的 <b>CAD toolbar</b>（CAD 工具欄）：SKETCH（Create / Modify / Constraints / Inspect / Insert / Finish Sketch）和 SHAPES；Window ▸ CAD Toolbar。</li>
+  <li>時間軸預覽上方的工具欄：CREATE、3D、SKETCH（Sketch on This Frame）。</li>
+</ul>
+
+<h3 id="linked">✅ 連結的智慧物件、PSD 智慧物件、.atn 動作（2.469.0）</h3>
+<ul>
+  <li>File ▸ <b>Place Linked…</b>；Layer ▸ Smart Objects ▸ Convert to Linked… / Embed Linked / <b>Update Modified Content</b> / Relink to File…——內容存放在專案的 linked 資料夾中（🔗）。</li>
+  <li>PSD 中的智慧物件會以智慧物件的形式開啟，並連同其內容一起儲存為置入圖層。</li>
+  <li>Actions ▸ Load Actions… 可載入 <b>.atn</b> 動作檔案（能匹配的步驟可以播放，其餘步驟匯入後處於關閉狀態）。</li>
+</ul>
+
+<h3 id="actionsx">✅ Actions：錄製筆觸和選區、條件動作、Image Processor、快捷批處理（2.468.0）</h3>
+<ul>
+  <li>錄製時會記錄畫筆筆觸和手動建立的選區——播放時在相同位置重現（按圖片大小縮放）。</li>
+  <li>☰ ▸ Insert Conditional…——如果是橫向 / 縱向 / 有選區 / 某種圖層型別……則播放一個動作，否則播放另一個。</li>
+  <li>File ▸ Scripts：<b>Image Processor…</b>（JPEG / PNG、調整大小以適應、執行動作）；File ▸ Automate：<b>Create Droplet…</b>——在 Actions 標籤頁中生成一個 💧 圖塊，可將圖片拖放到上面進行處理。</li>
+</ul>
+
+<h3 id="chanspot">✅ 單通道編輯；專色通道（2.467.0）</h3>
+<ul>
+  <li>Channels 面板：點選 <b>Red / Green / Blue</b>（Ctrl+3-5）——編輯只改變該通道；Shift-點選可再新增一個通道；RGB（Ctrl+2）= 全部通道。</li>
+  <li><b>◍</b> New Spot Channel（油墨顏色 + 密度，基於選區）；<b>✎</b> 在所選的 Alpha / 專色通道上繪製，<b>✔</b> 保留結果；<b>⇣</b> 將專色通道合併為圖層。</li>
+</ul>
+
+<h3 id="otype">✅ OpenType、視覺字距、文字轉輪廓、形狀內文字、圓角（2.466.0）</h3>
+<ul>
+  <li>Character 面板：<b>OpenType</b> 按鈕 + Stylistic set；Kerning 選擇 <b>Optical</b>（兩者都會使用你電腦上的字型檔案）。</li>
+  <li>Layer ▸ <b>Type: Convert to Shape</b> / <b>Create Work Path</b>——生成文字的輪廓。</li>
+  <li>用 Type 工具在所選形狀圖層內部點選（或使用 Type: Text in the Picked Shape）——文字會在形狀內部排布。</li>
+  <li>Direct Selection：<b>⌜ Radius</b> + <b>Round Corners</b>——將任意路徑（包括合併後的形狀）的所選角（或全部角）變為圓角。</li>
+</ul>
+
+<h3 id="pinpatch">✅ 操控圖釘深度 + 旋轉；Patch 的 Content-Aware 模式（2.465.0）</h3>
+<ul>
+  <li>Puppet Warp：所選圖釘的 <b>Pin Depth ⬆ / ⬇</b>（摺疊重疊處哪一部分位於上方）和 <b>Rotate Auto / Fixed</b> + 角度；在所選圖釘附近 <kbd>Alt</kbd>-拖動可旋轉它。</li>
+  <li>Patch：<b>Normal</b>（Transparent，Diffusion 1-7）或 <b>Content-Aware</b>（Structure 1-7，Color 0-10）。Content-Aware Move：Structure + Color。</li>
+</ul>
+
+<h3 id="sketchcad">✅ 草圖圖層：輸入尺寸、Measure、單位、DXF / SVG（2.464.0）</h3>
+<ul>
+  <li>繪製時直接輸入數字：直線長度（<kbd>Tab</kbd> 切換到角度）、矩形寬度（<kbd>Tab</kbd> 切換到高度）、圓的直徑、多邊形半徑——<kbd>Enter</kbd> 完成繪製，並將這些數值保留為尺寸標註。</li>
+  <li><kbd>M</kbd> Measure：一個物件 = 顯示其尺寸，兩個物件 = 顯示它們之間的距離，在閉合區域內部 = 顯示其面積 + 周長。單位（px / mm / in）在 📐 Sketch 標籤頁中設定。</li>
+  <li>File ▸ Export Sketch as DXF… / SVG…（儲存到專案的 cad 資料夾）；File ▸ Import DXF… / from Project…（適應畫布或按實際尺寸）。</li>
+</ul>
+
+<h3 id="sketchmod">✅ 草圖修改工具（2.463.0）</h3>
+<ul>
+  <li><kbd>T</kbd> Trim（紅色部分會被刪除），<kbd>E</kbd> Extend（延伸到下一條線 / 圓），<kbd>F</kbd> Fillet / Chamfer（點選一個角，然後輸入半徑 / 距離）。</li>
+  <li>Polygon（邊數在選項欄的 Sides 中設定）、Slot、2-Point Circle、3-Point Circle、Spline（按 Enter 結束）。</li>
+  <li>📐 Sketch 標籤頁 ▸ Modify：⇉ Offset…、⇋ Mirror（以最後選取的映象線為軸）、▦ Rectangular Pattern…、✺ Circular Pattern…。</li>
+</ul>
+
+<h3 id="sketch">✅ 草圖圖層——約束 + 尺寸標註（2.462.0）</h3>
+<ul>
+  <li>Layer ▸ <b>New Sketch</b>，或使用 <b>N</b> 組工具繪製：<kbd>L</kbd> 直線、<kbd>R</kbd> 矩形、<kbd>C</kbd> 圓、<kbd>A</kbd> 三點圓弧、<kbd>P</kbd> 點、<kbd>D</kbd> 尺寸標註、<kbd>S</kbd> 選擇；<kbd>X</kbd> 構造線，<kbd>Del</kbd> 刪除。</li>
+  <li>接近水平 / 豎直的線會自動吸附（Horizontal / Vertical）；相交的點會自動連線。尺寸標註：點選、放置、輸入數值。</li>
+  <li>📐 Sketch 標籤頁：自由度（✓ 完全約束），Coincident · Collinear · Concentric · Midpoint · Fix · Parallel · Perpendicular · Horizontal · Vertical · Tangent · Equal · Symmetric。</li>
+  <li>⬚ Profiles → Shapes 會將閉合區域生成為形狀圖層。</li>
+</ul>
+
+<h3 id="dazlive">🧪 Daz 即時連結（2.461.0，實驗性）</h3>
+<ul>
+  <li>Daz Studio：Scripts ▸ bitGen ▸ <b>bitGen Live Link</b>（保持其視窗開啟）。</li>
+  <li>🧊 3D 標籤頁：<b>📡 Camera → Daz</b>、<b>📡 Pose → Daz</b>、<b>↺</b>（恢復原狀）、☐ <b>as I change</b>（隨改動同步）。Daz 會通過一臺“bitGen Camera”進行觀察；同名的骨骼會隨之旋轉。</li>
+</ul>
+
+<h3 id="layer3d">✅ 3D 圖層：Daz / Blender 場景（2.460.0）</h3>
+<ul>
+  <li>Daz Studio：Scripts ▸ bitGen ▸ bitGen Bridge ▸ <b>Scene</b>。然後使用 Layer ▸ <b>New 3D Layer (Daz / Blender)…</b>——或選擇任意 .blend 檔案。</li>
+  <li>🧊 3D 標籤頁：🎥 場景攝像機，Front / Back / Left / Right / Top，Turn / Tilt / Distance / Lens；<b>🖐 Drag the view</b> = 環繞，<kbd>Shift</kbd> = 平移，<kbd>Ctrl</kbd> / 滾輪 = 縮放。</li>
+  <li>Pose：人物 + 骨骼，X / Y / Z 旋轉，Reset。Frame。Render：Quick / EEVEE / Cycles，透明背景，▶ Render。</li>
+  <li><b>✨ Generate from it</b>：提示詞面板（Edit 模式）根據當前檢視生成一張新影像。</li>
+</ul>
+
+<h3 id="dimauto">✅ 自動、平面圖和連續尺寸標註（2.458.0）</h3>
+<ul>
+  <li>Layer ▸ Auto Dimension（尺寸工具欄上的 ⊞ Auto）：標註所選物件的寬度 + 高度。</li>
+  <li>Layer ▸ Floorplan Dimensions…（⌂ Floorplan）：在外側標註所選閉合形狀的每一面牆，+ 總尺寸——合為一個組。</li>
+  <li>Chain Dimension 工具（F8）：依次點選各點，按 Enter 或雙擊，然後點選尺寸線的放置位置——標註每一段 + 總長。<kbd>Shift</kbd> = 水平，<kbd>Ctrl</kbd> = 豎直，<kbd>Backspace</kbd> = 撤銷一個點。</li>
+</ul>
+
+<h3 id="dimgroup">✅ 尺寸標註組（2.457.0）</h3>
+<ul>
+  <li>每個尺寸標註都是一個組：Extension Line 1、Extension Line 2 和 Dimension Line（箭頭 + 數值）。</li>
+  <li>在一條邊上按下並拖動 = 標註該邊的尺寸。或者點選一個節點 / 邊，再點選另一個節點 / 邊，然後點選尺寸線的放置位置。</li>
+  <li>拖動尺寸界線 = 長度即時變化。拖動其端點節點 = 只讓該尺寸界線變長 / 變短。</li>
+  <li><kbd>Shift</kbd> = 水平，<kbd>Ctrl</kbd> = 豎直。用 Move 工具拖動尺寸線即可移動整個組；拖動中間的圓點可單獨移動尺寸線。</li>
+</ul>
+
+<h3 id="dims">✅ CAD 尺寸標註：精確的點、即時端點、比例（2.441.0）</h3>
+<ul>
+  <li>尺寸工具會吸附到節點、中點、角點、邊的中點、輪廓上的最近點、參考線交點（在該點處顯示名稱；<kbd>Alt</kbd> = 自由放置）。</li>
+  <li>用 Move 工具操作尺寸標註：拖動一端——數值即時跟隨變化；<kbd>Shift</kbd> = 水平，<kbd>Ctrl</kbd> = 豎直。</li>
+  <li>屬性欄上的 📏：為所選尺寸標註輸入實際尺寸 + 單位 = 作為該圖片所有尺寸標註的比例（Layer ▸ Dimension Scale…）。</li>
+</ul>
+
+<h3 id="guides">✅ 標尺、參考線和吸附（2.440.0）</h3>
+<ul>
+  <li><b>Rulers</b>（<kbd>Ctrl</kbd>+<kbd>R</kbd>），單位為 px、mm、cm、in 或 pt（View ▸ Ruler Units）。從標尺中拖出 = 一條 <b>guideline</b>（參考線）；用 Move 工具（或按住 <kbd>Ctrl</kbd>）可移動參考線，拖回標尺上即可刪除。View ▸ Guidelines / Lock / New… / Guidelines… / Clear。</li>
+  <li><b>View ▸ Snap To</b>：Snap（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>;</kbd>）、Grid、Guidelines、Objects、Nodes、Midpoints、Intersections、Page。繪圖工具吸附的是指標，Move 工具吸附的是圖層的邊界框。Grid and Snapping… 用於設定吸附距離、網格間距、dpi。</li>
+</ul>
+
+<h3 id="propbar">✅ 屬性欄、圓角半徑、⊕ / ⊖ 合併到形狀、線寬和線型（2.439.0）</h3>
+<ul>
+  <li>工具選項下方的 <b>Object</b> 欄：所選圖層的 <b>X Y W H</b>，<b>🔒</b> 保持比例。</li>
+  <li>矩形：四個圓角半徑（<b>🔗</b> = 同時調整全部）。向量形狀：輪廓寬度（帶預設）和線型（從圖示中選取）。</li>
+  <li>形狀工具（F6）：<b>◻ New / ⊕ Add / ⊖ Subtract / ⊗ Intersect / ⊘ Exclude</b>——選中一個形狀時，新繪製的形狀會作為其一部分合並進來；原有形狀本身保持不變。</li>
+</ul>
+
+<h3 id="floatpanels">✅ 浮動面板組、命名面板、對話方塊居中顯示（2.438.0）</h3>
+<ul>
+  <li>Layers / Colour 組標籤上的 <b>⇱</b> 可讓該組在編輯器內浮動——拖動標題可移動它，拖動任意邊緣可調整大小，<b>⇲</b> 將其放回原處。</li>
+  <li><b>Window ▸ New Docker…</b>：建立一個空的命名面板——將浮動組拖到上面即可作為標籤頁停靠；<b>⚙</b>：設為主面板或限制在某個面板內、重新命名、刪除。儲存在 <code>panel_layout.cfg</code> 中。</li>
+  <li>對話方塊會在螢幕中央開啟，或在你上次移動到的位置開啟（<code>dialog_layout.cfg</code>）。<kbd>Shift</kbd>+<kbd>Del</kbd> 刪除所選圖層。</li>
+</ul>
+
+<h3 id="genfill">✅ ✨ Generate Fill in Shape / in Mask、圖案庫（2.437.0）</h3>
+<ul>
+  <li><b>Layer ▸ ✨ Generate Fill in Shape…</b>（也可右鍵點選圖層，或在 Properties 中使用）：在圖層的輪廓內生成內容；<b>✔ Apply</b> 將結果放到一個<b>剪下</b>到該形狀的新圖層上（形狀仍保持可編輯）。<b>✨ Generate Fill in Mask…</b>：在圖層的蒙版範圍內生成，結果附帶一份該蒙版的副本。</li>
+  <li><b>Edit ▸ Define Pattern…</b> / <b>Pattern Library…</b>：安裝資料夾中的 patterns/&lt;name&gt;.png——<b>New Fill Layer ▸ Pattern…</b>（在 Properties 中設定縮放、偏移）、<b>Edit ▸ Fill ▸ Pattern</b>、<b>Pattern Overlay</b>（user:&lt;name&gt;）。.bgi 檔案會攜帶其使用的圖案。</li>
+</ul>
+
+<h3 id="bgi">✅ 專案檔案：.bgi（2.436.0）</h3>
+<ul>
+  <li><b>File ▸ Save Project (.bgi)</b> <kbd>Alt</kbd>+<kbd>Ctrl</kbd>+<kbd>S</kbd> / <b>Save Project As (.bgi)…</b>：原樣儲存文件——圖層、組、蒙版、文字 / 形狀 / 填充 / 調整圖層、樣式、包含其內容和智慧濾鏡的智慧物件、路徑、通道、選區、圖層複合——儲存在專案的 <code>bgi</code> 資料夾中（需要時還會下載一份）。</li>
+  <li><b>Open Project (.bgi)…</b>、<b>Open Project from Project…</b>、Open…（<kbd>Ctrl</kbd>+<kbd>O</kbd>）或將 .bgi 拖放到編輯器上：作為新文件開啟，所有內容均可編輯，歷史記錄重新開始。</li>
+  <li>它是一個 zip 檔案：<code>doc.xml</code>（XML 格式的文件）+ <code>preview.png</code> + 每個圖層 / 蒙版各一個 PNG。</li>
+</ul>
+
+<h3 id="gradients">✅ Gradient Editor、Layer Comps、智慧濾鏡混合模式（2.434.0）</h3>
+<ul>
+  <li><b>Gradient Editor</b>（Edit ▸ Gradient Editor…、Gradient 工具的漸變按鈕、填充圖層或形狀的漸變）：預設 + 你自己的漸變，在漸變條下方點選 = 新建色標，拖動 = 移動，向下拖出 = 刪除；每個色標的顏色（或前景色 / 背景色）、不透明度、位置；Reverse、Distribute。</li>
+  <li><b>Layer Comps</b>（Window ▸ Layer Comps）：儲存圖層的可見性 / 位置 / 外觀，並在它們之間切換（▶、◀ ▶），↻ 更新，Last Document State。</li>
+  <li><b>Smart filter Blending Options</b>（右鍵點選智慧濾鏡）：混合模式 + 不透明度。</li>
+</ul>

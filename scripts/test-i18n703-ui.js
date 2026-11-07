@@ -31,7 +31,12 @@ const HAN = /[一-鿿]/, KANA = /[぀-ヿ]/;
     await p.evaluate(() => { H3HelpLang.set("zh-CN"); return H3Palette.showHelp(""); });
     await p.waitForFunction(() => { const c = document.querySelector("#hlpBody .hlpc"); return c && /[一-鿿]/.test(c.textContent); }, null, { timeout: 15000 });
     const h1 = await p.evaluate(() => ({ title: document.querySelector("#hlpBody .hlpc h3").textContent, pick: document.querySelector("#hlpBody select.hlplang").value, opts: [...document.querySelector("#hlpBody select.hlplang").options].map((o) => o.textContent), secs: document.querySelector("#hlpBody select:not(.hlplang)").options.length, kept: localStorage.getItem("bg.helpLang") }));
-    check("📖 Help in 简体中文: the section in Chinese, the language picker (English / 简体中文 / 日本語) beside the section list, kept", HAN.test(h1.title) && h1.pick === "zh-CN" && h1.opts.join() === "English,简体中文,日本語" && h1.secs > 150 && h1.kept === "zh-CN", h1);
+    check("📖 Help in 简体中文: the section in Chinese, the language picker (English / 简体中文 / 繁體中文 / 日本語) beside the section list, kept", HAN.test(h1.title) && h1.pick === "zh-CN" && h1.opts.join() === "English,简体中文,繁體中文,日本語" && h1.secs > 150 && h1.kept === "zh-CN", h1);
+    // 2.704.0: Traditional Chinese
+    await p.selectOption("#hlpBody select.hlplang", "zh-TW");
+    await p.waitForFunction(() => /[這說個為與實開關體點邊層畫題據選單視檔設]/.test(document.querySelector("#hlpBody .hlpc").textContent), null, { timeout: 15000 });
+    const tw = await p.evaluate(() => document.querySelector("#hlpBody .hlpc").textContent.slice(0, 3000));
+    check("…繁體中文 (2.704.0): the guide in Traditional characters, no Simplified ones", !/[们这说个为与实开关体点边层画题据]/.test(tw.replace(/简体中文/g, "")), tw.slice(0, 200));
     // switch to Japanese from the picker
     await p.selectOption("#hlpBody select.hlplang", "ja");
     await p.waitForFunction(() => /[぀-ヿ]/.test(document.querySelector("#hlpBody .hlpc").textContent), null, { timeout: 15000 });
