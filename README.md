@@ -163,8 +163,8 @@ bitGen Studio window (Electron, or http://127.0.0.1:8311 in a browser)
    └─ bridges            Blender (blender/), Daz Studio (daz/), Unreal Engine 5.8 (ue/)
 ```
 
-Two more folders are not part of the app but live beside it: `community/` is the 💬 Community server (PHP), and
-`website/` is the tigerart.com.au website (PHP, no database). Each has a README with its upload steps.
+One more folder is not part of the app but lives beside it: `community/` is the 💬 Community server (PHP), with a
+README for putting it on shared hosting. The tigerart.com.au website has its own repository.
 
 ## Tests
 
