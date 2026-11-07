@@ -15,6 +15,11 @@
  *                      pressed and where - never what was typed: a text box only says "edited #id"), page errors and
  *                      requests that failed (method, path, status - no bodies)
  * Pure (Node: scripts/test-bugreport522.js): keyName, recordKey, fmtT, stepsText, isOpenKey.
+ * 2.714.0 (Tim: "have the app allow the user to send the bug report to the db if they are registered. if not registered
+ * bug report will be sent as anon"): 📤 Save and send = the report to the bitGen Community (its own discussion on the
+ * website, under Bug reports) - as you when signed in to 💬 Community with a confirmed email, else anonymously (an admin
+ * approves it first); ☐ Send anonymously. Earlier reports: 📤 sends one, ✓ opens where it went. The public sees the title
+ * and your words; the logs, settings, system and screenshot only the admins.
  */
 (function (root) {
   "use strict";
@@ -111,6 +116,7 @@
 
   /* ---------------- the docker */
   var CSS = ".brd{display:flex;flex-direction:column;gap:6px;height:100%;min-height:0;overflow:auto;font-size:.76rem}"
+    + ".bsend{border:1px solid var(--line,#3a342a);border-radius:7px;padding:6px 8px;display:flex;flex-direction:column;gap:3px}.bsend label{display:flex;gap:6px;align-items:center}.bsent{text-decoration:none;color:var(--ok,#7fb069);white-space:nowrap}"
     + ".brd .bf{display:grid;grid-template-columns:120px 1fr;gap:5px 8px;align-items:start}.brd .bf label{padding-top:4px;color:var(--dim,#9a917f)}"
     + ".brd textarea{width:100%;min-height:54px;resize:vertical}.brd input[type=text]{width:100%}"
     + ".brd .bbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.brd .bnote{color:var(--dim,#999);font-size:.7rem}.brd .bok{color:#7c7}.brd .bbad{color:#e66}"
@@ -154,7 +160,10 @@
       + '<div class="binc"><label><input type="checkbox" id="brIncShot" checked> screenshot</label><label><input type="checkbox" id="brIncLogs" checked> logs</label>'
       + '<label><input type="checkbox" id="brIncSys" checked> system + settings (keys and tokens hidden)</label><label><input type="checkbox" id="brIncSteps" checked> recorded steps</label>'
       + '<button type="button" class="ghost" id="brPeek">👁 What is included</button></div><div id="brPeekBox" style="display:none"></div>'
-      + '<div class="bbar" style="margin-top:6px"><button type="button" id="brSave">💾 Save report</button><button type="button" class="ghost" id="brNew" title="Clear the form for another bug">🧹 New</button><span class="bnote" id="brMsg" aria-live="polite" style="flex:1"></span></div>'
+      + '<div class="bsend"><div class="bnote" id="brWho">…</div>'
+      + '<label><input type="checkbox" id="brAnon"> Send anonymously</label>'
+      + '<div class="bnote">Sent, it gets a discussion on the website under Bug reports. Everyone sees the title and what you wrote; only the admins see the logs, the settings, the system and the screenshot.</div></div>'
+      + '<div class="bbar" style="margin-top:6px"><button type="button" id="brSend" title="Save the report and send it to the bitGen Community">📤 Save and send</button><button type="button" class="ghost" id="brSave" title="Save the report as a .zip file, without sending it">💾 Save as a file</button><button type="button" class="ghost" id="brNew" title="Clear the form for another bug">🧹 New</button><span class="bnote" id="brMsg" aria-live="polite" style="flex:1"></span></div>'
       + "<h5>Earlier reports</h5><div class=\"blist\" id=\"brList\"><div class=\"bnote\">none yet</div></div>";
     return body;
   }
@@ -248,7 +257,41 @@
         + '<div class="bnote">Settings (report.json - keys and tokens hidden)</div><pre>' + esc(JSON.stringify(p.settings, null, 1).slice(0, 6000)) + "</pre>";
     }).catch(function () { box.innerHTML = '<div class="bnote bbad">the app did not answer</div>'; });
   }
-  function save() {
+  /** the marked-up screenshot as a JPEG (smaller to send), at most 1920 wide */
+  function shotJpeg() {
+    var c = $("brCanvas"); if (!S.img || !c || !c.width) return "";
+    var w = Math.min(1920, c.width), h = Math.round(c.height * w / c.width), o = document.createElement("canvas"); o.width = w; o.height = h;
+    o.getContext("2d").drawImage(c, 0, 0, w, h);
+    return o.toDataURL("image/jpeg", 0.85);
+  }
+  /** 📤 a saved report to the bitGen Community */
+  function send(id, shot) {
+    var m = $("brMsg");
+    if (m) { m.className = "bnote"; m.textContent = "sending to the bitGen Community…"; }
+    var bs = $("brSend"); if (bs) bs.disabled = true;
+    return fetch("/api/bugreport/send/" + encodeURIComponent(id), { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ anon: !!($("brAnon") && $("brAnon").checked), shot: shot || "" }) })
+      .then(function (r) { return r.json(); }).then(function (r) {
+        if (bs) bs.disabled = false;
+        if (!m) return;
+        if (r.error) { m.className = "bnote bbad"; m.textContent = "not sent: " + r.error; list(); return; }
+        m.className = "bnote bok"; m.textContent = "";
+        var t = document.createElement("span");
+        t.textContent = r.as === "member" ? "✓ sent as @" + r.handle + " - " : r.pending ? "✓ sent anonymously - it shows once an admin approves it. " : "✓ sent anonymously - ";
+        var a = document.createElement("a"); a.href = r.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "open its discussion";
+        m.appendChild(t); m.appendChild(a);
+        list();
+      }).catch(function (e) { if (bs) bs.disabled = false; if (m) { m.className = "bnote bbad"; m.textContent = "not sent: " + (e && e.message || e); } });
+  }
+  /** who a report goes as (the line above 📤) */
+  function who() {
+    var w = $("brWho"); if (!w) return;
+    fetch("/api/bugreport/who").then(function (r) { return r.json(); }).then(function (x) {
+      w.textContent = x.as === "member" ? "📤 sends it as " + (x.display || x.handle) + " (@" + x.handle + ") - you can follow its discussion and reply."
+        : x.why === "email not confirmed" ? "📤 sends it anonymously - confirm your email in 💬 Community to send it as you."
+        : "📤 sends it anonymously - join the 💬 Community to send it as you (optional).";
+    }).catch(function () { w.textContent = ""; });
+  }
+  function save(andSend) {
     var title = $("brTitle").value.trim();
     if (!title && !$("brWhat").value.trim()) { say("a title or what happened first", "bbad"); $("brTitle").focus(); return; }
     var inc = { screenshot: $("brIncShot").checked && !!S.img, logs: $("brIncLogs").checked, system: $("brIncSys").checked, steps: $("brIncSteps").checked };
@@ -256,14 +299,17 @@
       recorded: inc.steps ? REC.map(function (s) { return { t: s.t, what: s.what }; }) : [], page_errors: ERR.slice(), failed_requests: FREQ.slice(),
       page: { url: location.pathname, size: innerWidth + "×" + innerHeight, ua: navigator.userAgent, dockers: shownDockers() }, include: inc,
       screenshot: inc.screenshot ? $("brCanvas").toDataURL("image/png") : "" };
+    var shot = andSend && inc.screenshot ? shotJpeg() : "";
     $("brSave").disabled = true; say("saving…");
     fetch("/api/bugreport", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).then(function (r) {
       $("brSave").disabled = false;
       if (r.error) { say(r.error, "bbad"); return; }
+      try { localStorage.removeItem(DRAFT); } catch (e) { /* fine */ }
+      S.lastId = r.id;
+      if (andSend) return send(r.id, shot);
       say("✓ saved " + r.id + " - bitgen-" + r.id + ".zip is downloading: the file to send", "bok");
       var a = document.createElement("a"); a.href = "/api/bugreport/zip/" + encodeURIComponent(r.id); a.download = "bitgen-" + r.id + ".zip"; document.body.appendChild(a); a.click(); a.remove();
-      try { localStorage.removeItem(DRAFT); } catch (e) { /* fine */ }
-      S.lastId = r.id; list();
+      list();
     }).catch(function (e) { $("brSave").disabled = false; say("the app did not answer: " + (e && e.message || e), "bbad"); });
   }
   function list() {
@@ -271,6 +317,8 @@
       var box = $("brList"); if (!box || !Array.isArray(l)) return;
       box.innerHTML = l.length ? l.map(function (b) {
         return '<div class="bi" data-id="' + esc(b.id) + '">' + (b.screenshot ? '<img alt="" loading="lazy" src="/api/bugreport/shot/' + encodeURIComponent(b.id) + '">' : "") + '<span style="flex:1">' + esc(b.title) + ' <span class="bnote">' + esc((b.when || "").slice(0, 16).replace("T", " ")) + (b.area ? " · " + esc(b.area) : "") + "</span></span>"
+          + (b.sent ? '<a href="' + esc(b.sent.url) + '" target="_blank" rel="noopener" class="bsent" title="Sent to the bitGen Community - open its discussion">✓ sent</a>'
+            : '<button type="button" class="ghost" data-send title="Send this report to the bitGen Community">📤</button>')
           + '<a class="ghost" href="/api/bugreport/zip/' + encodeURIComponent(b.id) + '" download="bitgen-' + esc(b.id) + '.zip" title="The .zip to send" style="text-decoration:none;padding:2px 7px;border:1px solid var(--line,#444);border-radius:5px;color:inherit">⤓</a>'
           + '<button type="button" class="ghost" data-del title="Delete this report">🗑</button></div>';
       }).join("") : '<div class="bnote">none yet</div>';
@@ -285,22 +333,24 @@
     if (isShown() && !force) { show(false); return Promise.resolve(false); }
     rec("opened 🐞 Bug report");
     var first = !S.img && root.h3shell && root.h3shell.capture ? capture() : Promise.resolve();
-    return first.then(function () { show(true); fillSelects(); loadDraft(); list(); setTimeout(function () { var t = $("brTitle"); if (t && !t.value) t.focus(); }, 60); return true; });
+    return first.then(function () { show(true); fillSelects(); loadDraft(); list(); who(); setTimeout(function () { var t = $("brTitle"); if (t && !t.value) t.focus(); }, 60); return true; });
   }
   function start() {
     if (!root.SecFloat || !SecFloat.add || !SecFloat.started) { setTimeout(start, 150); return; }
     if ($("brBody")) return;
     if (!$("brCss")) { var st = document.createElement("style"); st.id = "brCss"; st.textContent = CSS; document.head.appendChild(st); }
     var body = build();
-    SecFloat.add({ id: "bugreport", title: "🐞 Bug report", w: 680, h: 760, body: body, onShow: function () { fillSelects(); list(); } });
+    SecFloat.add({ id: "bugreport", title: "🐞 Bug report", w: 680, h: 760, body: body, onShow: function () { fillSelects(); list(); who(); } });
     wireCanvas();
     $("brUseRec").onclick = function () { var t = stepsText(REC.filter(function (s) { return !/^opened 🐞/.test(s.what); }).slice(-25)); $("brSteps").value = ($("brSteps").value.trim() ? $("brSteps").value.trim() + "\n" : "") + t; saveDraft(); };
     $("brPeek").onclick = peek;
-    $("brSave").onclick = save;
+    $("brSave").onclick = function () { save(false); };
+    $("brSend").onclick = function () { save(true); };
     $("brNew").onclick = function () { clearForm(); say("🧹 a new report"); };
     FIELDS.forEach(function (f) { $(f).addEventListener("input", saveDraft); });
     body.addEventListener("keydown", function (e) { if (!isOpenKey(e)) e.stopPropagation(); });
     $("brList").addEventListener("click", function (e) {
+      if (e.target.hasAttribute("data-send")) { send(e.target.closest(".bi").dataset.id, ""); return; }
       if (!e.target.hasAttribute("data-del")) return;
       var id = e.target.closest(".bi").dataset.id;
       var ok = typeof appConfirm === "function" ? appConfirm("Delete the bug report " + id + "?") : Promise.resolve(true);

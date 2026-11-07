@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5449,
+ "count": 5451,
  "strings": [
   {
    "s": "0 (auto)",
@@ -29977,6 +29977,15 @@
    ]
   },
   {
+   "s": "Sent to the bitGen Community - open its discussion",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #brBody"
+   ]
+  },
+  {
    "s": "Separate",
    "kinds": [
     "text"
@@ -47541,6 +47550,15 @@
    "where": [
     "span.uels in #tlUELive",
     "span.uels in #kueLiveView"
+   ]
+  },
+  {
+   "s": "sent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #brBody"
    ]
   },
   {

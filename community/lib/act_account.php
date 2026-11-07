@@ -148,6 +148,7 @@ function act_delete_account(array $b, array $me): array
         q('UPDATE bgc_reports SET reporter_id = NULL WHERE reporter_id = ?', [$id]);
         q('UPDATE bgc_topics SET user_id = NULL WHERE user_id = ?', [$id]);
         q('UPDATE bgc_posts SET user_id = NULL WHERE user_id = ?', [$id]);
+        q('UPDATE bgc_bugs SET user_id = NULL WHERE user_id = ?', [$id]);
         q('DELETE FROM bgc_users WHERE id = ?', [$id]);
     });
     return [];
