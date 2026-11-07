@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.718.0 (Tim: "can we add a Tutorials to the website - show how to add a new model to bitgen and a new workflow, use images and a video")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui718-ui.js > /tmp/ui718ui.log 2>&1 \
+  && ok "2.718.0 browser test: 🧩 Models ▸ ⟳ also reloads the app's model lists (a just-added model is found in its new style) - or SKIP" \
+  || { bad "2.718.0 model list refresh"; grep -a "FAIL\\|Error" -A2 /tmp/ui718ui.log | head -14; }
 # ---- 2.717.0 (Tim: "can we add the faster 8 step turbo model and fix the problems he talked about")
 node scripts/test-turbo717.js > /tmp/turbo717.log 2>&1 \
   && ok "2.717.0 faster first frames: the Qwen Image 2.1 edit Turbo8 starter (8 steps, its LoRA) + catalog entry, licences said, Auto = Qwen Image Edit 2511 when installed (Qwen 2.1 for 4+ pictures / without it), Picture n wording, veda_action, the checkbox, the docker's Auto" \

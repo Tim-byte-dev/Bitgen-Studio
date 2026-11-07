@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.718.0** — 🧩 ⟳ in the Model Manager Also Refreshes the App's Model Lists (a Just-Added Model No Longer Shows "Not Found" in Its New Style); the Website Gets Tutorials Taken From the App
 - **2.717.0** — ⚡ Faster First Frames (Auto: Qwen Image Edit 2511 in 4 Steps, Commercial-Safe) and a Qwen Image 2.1 Turbo8 Style (8 Steps); Veda Skips Action Shots and Works With Long Video, Spectrum Keeps Faces Sharp - Fixes From a Tester's Blind Benchmark
 - **2.716.0** — 🌏 Community Language Packs: Members Share Their Translations Through the bitGen Community (an Admin Checks Each), Everyone Installs Them in One Click from Settings ▸ Languages; the Website Gets a Language Packs Page With the Master Pack
 - **2.715.0** — 🌏 Language Packs: Every Language Besides English Is a Pack - Settings ▸ Languages Installs, Removes and Exports Them, and the Master Pack Lets Anyone Translate bitGen Studio Into a New Language

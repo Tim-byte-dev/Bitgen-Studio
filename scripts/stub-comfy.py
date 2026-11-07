@@ -71,8 +71,9 @@ def _folder_combo(sub, floor):
     """The category's files RECURSIVELY, subfolder-relative with forward
     slashes — exactly how ComfyUI's own dropdown spells a nested model
     (flux_klein_9B/aisha.safetensors), so an install into a subfolder
-    appears in the live list the way the app's saved value names it."""
-    names = list(floor)
+    appears in the live list the way the app's saved value names it.
+    2.718.0: STUB_FULL_INFO (the website's tutorial pictures) lists only the folder's own files - no stand-in names."""
+    names = [] if os.environ.get("STUB_FULL_INFO") else list(floor)
     for d in ([MODELS_ROOT / s for s in sub] + _yaml_dirs(sub)):
         try:
             for f in sorted(d.rglob("*")):
@@ -85,6 +86,25 @@ def _folder_combo(sub, floor):
         except Exception:
             pass
     return names
+
+
+def tutorial_schemas():
+    """2.718.0: ComfyUI's own schemas for the core nodes of a plain text-to-image workflow (STUB_FULL_INFO)"""
+    return {
+        "CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [_folder_combo(["checkpoints"], ["sd_xl_base_1.0.safetensors"])]}},
+                                   "output": ["MODEL", "CLIP", "VAE"], "output_name": ["MODEL", "CLIP", "VAE"], "category": "loaders"},
+        "CLIPTextEncode": {"input": {"required": {"text": ["STRING", {"multiline": True, "dynamicPrompts": True}], "clip": ["CLIP"]}},
+                           "output": ["CONDITIONING"], "output_name": ["CONDITIONING"], "category": "conditioning"},
+        "EmptyLatentImage": {"input": {"required": {"width": ["INT", {"default": 512, "min": 16, "max": 16384, "step": 8}],
+                                                    "height": ["INT", {"default": 512, "min": 16, "max": 16384, "step": 8}],
+                                                    "batch_size": ["INT", {"default": 1, "min": 1, "max": 4096}]}},
+                             "output": ["LATENT"], "output_name": ["LATENT"], "category": "latent"},
+        "VAEDecode": {"input": {"required": {"samples": ["LATENT"], "vae": ["VAE"]}}, "output": ["IMAGE"], "output_name": ["IMAGE"], "category": "latent"},
+        "SaveImage": {"input": {"required": {"images": ["IMAGE"], "filename_prefix": ["STRING", {"default": "ComfyUI"}]}},
+                      "output": [], "output_name": [], "output_node": True, "category": "image"},
+        "PreviewImage": {"input": {"required": {"images": ["IMAGE"]}}, "output": [], "output_name": [], "output_node": True, "category": "image"},
+        "LoadImage": {"input": {"required": {"image": [["example.png"], {"image_upload": True}]}}, "output": ["IMAGE", "MASK"], "output_name": ["IMAGE", "MASK"], "category": "image"},
+    }
 
 def core_schemas():
     return {
@@ -1089,6 +1109,16 @@ class H(BaseHTTPRequestHandler):
                  "torch_vram_total": 32 * GB, "torch_vram_free": free}]})
         if u.path == "/e2e/vram":          # e2e introspection, not a ComfyUI route
             return self._j(dict(VRAM))
+        # 2.718.0 (the website's tutorials - tigerart scripts/tutorial-capture.js): STUB_FULL_INFO=1 answers the FULL node
+        # list like a real ComfyUI (the core nodes a plain text-to-image workflow uses, with their real schemas), so
+        # Settings ▸ ComfyUI ▸ Graphs ▸ Import & check reads it as a running ComfyUI. Off = the old {"ok": true}.
+        if u.path.rstrip("/") == "/object_info" and os.environ.get("STUB_FULL_INFO"):
+            full = dict(core_schemas()); full.update(tutorial_schemas())
+            return self._j(full)
+        if u.path.startswith("/object_info/") and os.environ.get("STUB_FULL_INFO"):
+            ct = unquote(u.path.rstrip("/").rsplit("/", 1)[-1])
+            if ct in tutorial_schemas():
+                return self._j({ct: tutorial_schemas()[ct]})
         if u.path.startswith("/object_info"):
             ct = unquote(u.path.rstrip("/").rsplit("/", 1)[-1])   # 2.338.0: encoded class names
             if ct == "MiniMaxH3ChainContext":
