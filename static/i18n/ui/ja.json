@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "79270d553d55",
- "count": 8652,
+ "v": "6d9d5c752d00",
+ "count": 8654,
  "patternCount": 1000,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -4932,6 +4932,7 @@
   "Saving and samples": "保存とサンプル",
   "Say hello": "あいさつしましょう",
   "Say it in writing": "文字で伝える",
+  "Say no to the request": "リクエストを断ります",
   "Say whether it worked (and what to change)": "動作したかどうか（と変更してほしい点）を伝えます",
   "Scale": "拡大・縮小",
   "Scale %": "拡大・縮小 %",
@@ -6724,6 +6725,7 @@
   "Year made": "製造年",
   "Yellow": "イエロー",
   "You": "あなた",
+  "You become friends": "友達になります",
   "Your electricity price (on your bill, e.g. 0.35 AUD per kWh) and the daily supply charge (the fixed amount per day, e.g. 1.10). Every finished job's ⚡ card, its": "電気料金（請求書に記載、例：1 kWh あたり 0.35 AUD）と 1 日あたりの基本料金（1 日ごとの固定額、例：1.10）。完了した各ジョブの ⚡ カード、その",
   "Your last clicks and keys, recorded from when the app started (never what you typed)": "アプリ起動時から記録した直近のクリックとキー操作（入力した文字は記録しません）",
   "Your pictures, videos and sounds": "自分の画像、動画、音声",
