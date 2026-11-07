@@ -81,9 +81,11 @@ def ui():
     have = {} if "--force" in sys.argv or not os.path.exists(tw_path) else json.load(open(tw_path, encoding="utf-8"))["strings"]
     # the reviewed zh-TW words are kept; only words zh-TW lacks are converted (--force: all again)
     out = {k: (have[k] if k in have else convert_text(v, cc)) for k, v in d["strings"].items()}
+    have_p = {} if "--force" in sys.argv or not os.path.exists(tw_path) else json.load(open(tw_path, encoding="utf-8")).get("patterns", {})
+    pats = {k: (have_p[k] if k in have_p else convert_text(v, cc)) for k, v in d.get("patterns", {}).items()}   # 2.706.0
     import hashlib
     v = hashlib.sha256(json.dumps(dict(sorted(out.items())), ensure_ascii=False, separators=(", ", ": ")).encode("utf-8")).hexdigest()[:12]
-    json.dump({"lang": "zh-TW", "v": v, "count": len(out), "strings": dict(sorted(out.items()))},
+    json.dump({"lang": "zh-TW", "v": v, "count": len(out), "patternCount": len(pats), "strings": dict(sorted(out.items())), "patterns": dict(sorted(pats.items()))},
               open(os.path.join(ROOT, "static", "i18n", "ui", "zh-TW.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(json.dumps({"ui": "zh-TW", "strings": len(out)}))
 

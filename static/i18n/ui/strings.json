@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 3272,
+ "count": 3286,
  "strings": [
   {
    "s": "0 (auto)",
@@ -1460,8 +1460,8 @@
    ],
    "where": [
     "option in #assetScope",
-    "span in #sec-vdscenes",
-    "button#sdAll.ghost"
+    "button#sdAll.ghost",
+    "span in #sec-vdscenes"
    ]
   },
   {
@@ -1731,9 +1731,9 @@
     "text"
    ],
    "where": [
-    "label in #vdSetPanel",
     "label.f in #vset",
-    "label.f in #iset"
+    "label.f in #iset",
+    "label in #vdSetPanel"
    ]
   },
   {
@@ -1802,7 +1802,7 @@
    "where": [
     "button in #rdock",
     "button in #settings",
-    "label in #mvBar"
+    "h5#rmHaudio"
    ]
   },
   {
@@ -2491,9 +2491,9 @@
     "text"
    ],
    "where": [
-    "label in #vdSetPanel",
-    "label in #ccAdv",
-    "label.f in #ecAdv"
+    "label.f in #vset",
+    "label.f in #iset",
+    "label.f in #sec-cnet"
    ]
   },
   {
@@ -3773,15 +3773,6 @@
    ]
   },
   {
-   "s": "ComfyUI + Console + Image editor + Music + Preview + Prompt + SFX + Stems + Timeline + StoryBoard",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "b in #dockCfgPanel"
-   ]
-  },
-  {
    "s": "ComfyUI + Image editor + Music + Preview + Prompt + SFX + Stems + Timeline + StoryBoard",
    "kinds": [
     "text"
@@ -4976,8 +4967,8 @@
    ],
    "where": [
     "button.ghost.gbtn in #chTabs",
-    "button#chSheetDataset.ghost.gbtn",
-    "button.ghost in #ltBody"
+    "button.ghost in #ltBody",
+    "button#chSheetDataset.ghost.gbtn"
    ]
   },
   {
@@ -5718,6 +5709,15 @@
    ]
   },
   {
+   "s": "Don't check on startup",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#updOff.ghost"
+   ]
+  },
+  {
    "s": "Done",
    "kinds": [
     "text"
@@ -6237,8 +6237,8 @@
     "text"
    ],
    "where": [
-    "label.hint in #sfxdock",
-    "label.f in #sec-cnet"
+    "label.f in #sec-cnet",
+    "label.hint in #sfxdock"
    ]
   },
   {
@@ -7625,8 +7625,8 @@
    ],
    "where": [
     "label.f in #mvdlg",
-    "select#spFmt",
-    "label.f in #vset"
+    "label.f in #vset",
+    "select#spFmt"
    ]
   },
   {
@@ -8299,8 +8299,8 @@
    ],
    "where": [
     "option in #videoStyleSel",
-    "option in #vdWorkflow",
-    "option in #scStyleSel"
+    "option in #bscSel",
+    "option in #vdWorkflow"
    ]
   },
   {
@@ -8395,7 +8395,7 @@
    "where": [
     "label in #chTabProfile",
     "label.f in #s_styleeditor",
-    "input#ccH"
+    "label.f in #customWH"
    ]
   },
   {
@@ -8768,6 +8768,15 @@
    ],
    "where": [
     "td in #drList"
+   ]
+  },
+  {
+   "s": "Image editor (imageeditdock) — scripts: brushes.js, filters.js, pcdoc.js, pcpath.js, pcbezier.js, pcmesh.js, pcselect.js, pcretouch.js, pccaret.js, pctools.js, pcui.js, pcdocs.js, pcsam.js, pcpsd.js, pcfill.js, pcstyles.js, pctext.js, pctype.js, pcotype.js, pcruns.js, pcfxshape.js, pctextfill.js, pclivewarp.js, pcpen.js, pcvline.js, pcdraw.js, pcdockers.js, pcpalette.js, pcgrad.js, pcsmart.js, pcwarp.js, pclinked.js, pcchannels.js, pcrefine.js, pcheal.js, pcpdf.js, pcatn.js, pcactions.js, pccomps.js, pcactionsx.js, pcbgi.js, pcgenfill.js, pcpattern.js, pcpanels.js, pcpropbar.js, pcguides.js, pcdims.js, pcframes.js, pcprefs.js, pcpromptlink.js, pcartboards.js, pccafill.js, pcdimgroup.js, pcdimauto.js, pc3d.js, pcsketch.js, pcsketchtools.js, pcsketchcad.js, pcsketchcadui.js, pchandles.js, pcselhl.js, pcmultisel.js, pccadbar.js, pcbody.js, pcunreal.js, pcuecam.js, pcuelights.js, filters2.js, filters3.js, filters4.js, filters5.js, pcmeasure.js, brushdyn.js, pcfileplus.js, pcmerge.js, pcmode.js, pcsubject.js, pcimgop.js, pcblendlayer.js, pctablet.js, pclive.js, pcfocus.js, pcuelive.js, pctabdock.js, pccoldock.js, pcbridgeoff.js, pczones.js, pcpending.js, imageedit.js, mount.js, ieeditonly.js",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #x_list"
    ]
   },
   {
@@ -9360,9 +9369,9 @@
     "text"
    ],
    "where": [
-    "button.on in #conSrc",
     "label in #ltBody",
-    "button.ghost in #ltBody"
+    "button.ghost in #ltBody",
+    "button.on in #conSrc"
    ]
   },
   {
@@ -9408,6 +9417,15 @@
    ],
    "where": [
     "input#vdKaraoke"
+   ]
+  },
+  {
+   "s": "Karaoke - when a scene renders, a second, TRANSPARENT video is made with its part of the song's lyrics and a bouncing ball, and placed on the timeline's Karaoke layer above the scene. The scene's own take has no lyrics. The lyrics come from lyrics/<song>.txt (saved with every song bitGen makes), timed by speech-to-text when it is installed. Turning it on also makes the overlays for scenes already rendered",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #mvBar"
    ]
   },
   {
@@ -9936,6 +9954,15 @@
    ]
   },
   {
+   "s": "Later",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#updLater.ghost"
+   ]
+  },
+  {
    "s": "Launch ComfyUI from the folder set in Settings → ComfyUI, then re-read the model folders",
    "kinds": [
     "title"
@@ -10004,8 +10031,8 @@
     "text"
    ],
    "where": [
-    "label in #muPaneSong",
-    "span in #cpWrap"
+    "span in #cpWrap",
+    "label in #muPaneSong"
    ]
   },
   {
@@ -10127,8 +10154,8 @@
    ],
    "where": [
     "button#ltBtn",
-    "button#vdSetLoraAdd.ghost.gbtn",
-    "div.chLbl in #cspane-create"
+    "option in #mmCvType",
+    "button#vdSetLoraAdd.ghost.gbtn"
    ]
   },
   {
@@ -10206,8 +10233,8 @@
    ],
    "where": [
     "label.f in #s_styleeditor",
-    "span in #vdSetPanel",
-    "label.f in #sec-cnet"
+    "label.f in #sec-cnet",
+    "button.ghost in #mmBody"
    ]
   },
   {
@@ -10253,8 +10280,8 @@
    ],
    "where": [
     "button.ghost in #dockCfgPanel",
-    "button#chatLoadBtn.ghost.gbtn",
-    "b in #gallery"
+    "b in #gallery",
+    "button#g_load.ghost"
    ]
   },
   {
@@ -10956,7 +10983,7 @@
    "where": [
     "button#tbMax.tbbtn",
     "button.maxbtn in #comfydock",
-    "button.maxbtn in #chatdock"
+    "button.maxbtn in #promptdock"
    ]
   },
   {
@@ -12444,6 +12471,15 @@
    ]
   },
   {
+   "s": "Open Settings",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#updOpen"
+   ]
+  },
+  {
    "s": "Open a .bgp",
    "kinds": [
     "text"
@@ -13140,15 +13176,6 @@
    ]
   },
   {
-   "s": "Pin: the height it is now becomes its max-height",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "button.pinbtn in #chatdock"
-   ]
-  },
-  {
    "s": "Pin: the width it is now becomes its max-width",
    "kinds": [
     "title"
@@ -13672,13 +13699,13 @@
   {
    "s": "Prompt chat",
    "kinds": [
-    "text",
-    "aria-label"
+    "aria-label",
+    "text"
    ],
    "where": [
-    "div.bhead in #chatdock",
-    "td in #drList",
-    "div.h3fp.dfm-float"
+    "div.h3fp.dfm-float",
+    "span.h3fp-n",
+    "div.bhead in #chatdock"
    ]
   },
   {
@@ -14682,8 +14709,8 @@
     "text"
    ],
    "where": [
-    "button.ghost.gbtn in #sec-vdscenes",
-    "button.active in #vset"
+    "button.active in #vset",
+    "button.ghost.gbtn in #sec-vdscenes"
    ]
   },
   {
@@ -15419,8 +15446,8 @@
     "text"
    ],
    "where": [
-    "label in #vdSetPanel",
-    "label.f in #vset"
+    "label.f in #vset",
+    "label in #vdSetPanel"
    ]
   },
   {
@@ -15457,8 +15484,8 @@
    ],
    "where": [
     "button.maxbtn in #comfydock",
-    "button.maxbtn in #chatdock",
-    "button.maxbtn in #previewdock"
+    "button.maxbtn in #previewdock",
+    "button.maxbtn in #musicdock"
    ]
   },
   {
@@ -15821,9 +15848,9 @@
     "aria-label"
    ],
    "where": [
-    "button#chatSaveBtn.ghost.gbtn",
     "button#scRefSave",
-    "button#scEditSave"
+    "button#scEditSave",
+    "button#s_save.ghost"
    ]
   },
   {
@@ -16527,24 +16554,6 @@
    ],
    "where": [
     "div.tlp-none in #tlProps"
-   ]
-  },
-  {
-   "s": "Select a job to follow its log. [style settings] the last styles' Basic Settings put back (0 field(s))",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div#log"
-   ]
-  },
-  {
-   "s": "Select a job to follow its log. [style settings] the last styles' Basic Settings put back (0 field(s)) [docker configs] layout loaded for Image editor + Music + Preview + Prompt + SFX + Stems + Timeline + StoryBoard - these dockers were opened together [workspace] ↺ Expert is back to its default layout",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div#log"
    ]
   },
   {
@@ -17499,9 +17508,9 @@
     "text"
    ],
    "where": [
+    "label.f in #iset",
     "label in #ccAdv",
-    "label.f in #ecAdv",
-    "label.f in #iset"
+    "label.f in #ecAdv"
    ]
   },
   {
@@ -17511,6 +17520,15 @@
    ],
    "where": [
     "td in #drList"
+   ]
+  },
+  {
+   "s": "Sketcher (pushpulldock) — scripts: ppgeo.js, ppglb.js, ppview.js, ppfurn.js, ppjoinery.js, ppcam.js, ppprofile.js, ppprofiledlg.js, ppjoinerydlg.js, ppterrain.js, ppsite.js, pproads.js, ppwalltype.js, ppstruct.js, pparch.js, pparchview.js, ppplan.js, ppsheets.js, ppmatpick.js, pparchtools.js, pproadtools.js, ppterraintools.js, ppmesh.js, ppedit.js, ppplane.js, ppcons.js, pptools.js, ppdock.js, ppimport.js, ppframe.js, ppoutline.js, ppreal.js, ppsheetsdlg.js",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #x_list"
    ]
   },
   {
@@ -18563,8 +18581,8 @@
    ],
    "where": [
     "label in #promptdock",
-    "label in #muPaneSong",
-    "label in #cspane-create"
+    "th in #sdBody",
+    "label in #muPaneSong"
    ]
   },
   {
@@ -18687,9 +18705,9 @@
     "text"
    ],
    "where": [
+    "button in #vset",
     "button#vdSwapDlg.ghost.gbtn",
-    "button#scSwapGo.gbtn",
-    "button in #vset"
+    "button#scSwapGo.gbtn"
    ]
   },
   {
@@ -19364,6 +19382,15 @@
    ],
    "where": [
     "button#pdArenaScores.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "The board's render flow. Native audio: each scene is its own clip - Ref / Cont through ref2va (reference pictures, character sheets, voices, @tags), First / Trans through fl2va; with a song it lip-syncs, without one the characters speak. H3_Video_Ref: every scene through the plain ref2va export. LTX 2.5: each scene through Tim's LTX 2.5 all-in-one canvas - text, the frame it starts on (First / Cont), first + last (Trans), and with a song the lip-synced versions",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#vdWorkflow"
    ]
   },
   {
@@ -20328,6 +20355,15 @@
    ]
   },
   {
+   "s": "Timeline (timelinedock) — scripts: timelinedock.js, tlrange.js, tlsettings.js, stabilise.js, retimesound.js, canvas.js, tlctx.js, stagedock.js, kgnudge.js, karaokegen.js, fill.js, m3d.js, m3dgizmo.js, m3dlook.js, m3dblender.js, blendview.js, blendpose.js, dazbridge.js, fxdlg.js, clipfx.js, tlremap.js, captions.js, colourpanel.js, edittools.js, deliver.js, interchange.js, bgv.js, textedit.js, m3dbar.js, paths.js, camera.js, markers.js, targets.js, nest.js, mixer.js, proxy.js, multicam.js, mogrt.js, tlrender.js, tlai.js, tlkeys.js, textfx.js, tlfloat.js, tlgrid.js, tlselhl.js, tlcadbar.js, tlbody.js, tlunreal.js, tluelive.js, tlgraph.js, tlparent.js, tlblend.js, tlshape.js, tltextanim.js, tlexpr.js, tlmask.js, tltrack.js, tltime.js, tlvbake.js, tlparticles.js, tlaudio.js, tlgen.js, tldist.js, tlrays.js, tlwarp.js, tlmotion.js, tl3d.js, tldata.js, tllottie.js, tlsizebar.js, tlscene.js, tlcutout.js, tlcamtrack.js, tlvfill.js, tlanykey.js, tltextfill.js, tlmorph.js, tlframe.js, tljoin.js, tlranges.js",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint in #x_list"
+   ]
+  },
+  {
    "s": "Timeline dock",
    "kinds": [
     "title"
@@ -20351,8 +20387,8 @@
     "text"
    ],
    "where": [
-    "label.f in #muPaneSong",
-    "label in #brBody"
+    "label in #brBody",
+    "label.f in #muPaneSong"
    ]
   },
   {
@@ -20674,6 +20710,15 @@
    ]
   },
   {
+   "s": "Turn the check on startup off (Settings ▸ General ▸ ⟳ Updates turns it on again)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#updOff.ghost"
+   ]
+  },
+  {
    "s": "Type",
    "kinds": [
     "text"
@@ -20755,8 +20800,8 @@
     "text"
    ],
    "where": [
-    "button#sfxUndo.ghost.gbtn",
     "button#brUndo.ghost",
+    "button#sfxUndo.ghost.gbtn",
     "span.pl in #palList"
    ]
   },
@@ -20915,6 +20960,15 @@
    ]
   },
   {
+   "s": "Updates available",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #updCard"
+   ]
+  },
+  {
    "s": "Upgrade to Editor",
    "kinds": [
     "text"
@@ -20983,8 +21037,8 @@
     "text"
    ],
    "where": [
-    "label in #vdSetPanel",
-    "option in #mmCvType"
+    "option in #mmCvType",
+    "label in #vdSetPanel"
    ]
   },
   {
@@ -21321,6 +21375,15 @@
    "s": "Veda sparse attention",
    "kinds": [
     "text"
+   ],
+   "where": [
+    "label.f in #s_vsvedabox"
+   ]
+  },
+  {
+   "s": "Veda sparse attention (veda-sparse/Veda-on-ComfyUI): a learned predictor keeps ~10% of the attention and a Triton kernel skips the rest - about 2-3x faster at its trained sizes (1344x768, 768x1344, 768x768, 1024x768; 5/10/14 s). It replaces attention, so Sage is skipped while it is on. A preview: compare a hero shot with Veda off. Needs ComfyUI 0.38+, the Veda pack and its predictor (Settings -> ComfyUI -> Video accelerators; Settings -> Models -> Model catalog)",
+   "kinds": [
+    "title"
    ],
    "where": [
     "label.f in #s_vsvedabox"
@@ -22036,6 +22099,15 @@
    ]
   },
   {
+   "s": "When a single run dies of GPU out-of-memory the worker re-plans that clip into chunks that fit (fl2va hand-off between them, one seam) and remembers the ceiling here, so the next long clip is planned to render from the start instead of failing first. 10 s fits beside a 21 GB int8 model on a 32 GB card; 15 s does not, so it becomes 243f + 124f. Reset it after changing the model, the frame size, or ComfyUI's attention/offload flags",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #ctab-engine"
+   ]
+  },
+  {
    "s": "When the ControlNet lets go, as a share of the steps. 100% = to the end; ~60-80% lets the second model finish the detail (skin, light) in its own style",
    "kinds": [
     "title"
@@ -22196,8 +22268,8 @@
    ],
    "where": [
     "label.f in #s_styleeditor",
-    "input#ccW",
-    "label.f in #customWH"
+    "label.f in #customWH",
+    "input#ccW"
    ]
   },
   {
@@ -22955,13 +23027,13 @@
   {
    "s": "all",
    "kinds": [
-    "placeholder",
-    "text"
+    "text",
+    "placeholder"
    ],
    "where": [
-    "input#scSwapDur",
     "button#ltCapAll.ghost",
-    "button#rmCapAll.ghost"
+    "button#rmCapAll.ghost",
+    "input#scSwapDur"
    ]
   },
   {
@@ -23387,6 +23459,24 @@
    ]
   },
   {
+   "s": "bitGen Studio 2.705.0 (you have 2.704.0)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "li in #updCard"
+   ]
+  },
+  {
+   "s": "bitGen Studio 2.705.0 (you have 2.704.0) Click: Settings, where ⤓ Update installs it",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "span#sbUpd"
+   ]
+  },
+  {
    "s": "bitGen Studio is MIT licensed. Each project above keeps its own licence - misc/NOTICE.md lists what ships, what is downloaded, and the model licences. Model weights are downloaded by you and carry their makers' terms",
    "kinds": [
     "text"
@@ -23411,6 +23501,15 @@
    ],
    "where": [
     "div.uep-d in #uepDlg"
+   ]
+  },
+  {
+   "s": "bitGen update",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#sbUpd"
    ]
   },
   {
@@ -26786,6 +26885,15 @@
    ]
   },
   {
+   "s": "not installed in ComfyUI's python python: python3 (configured python (may not be ComfyUI's)) · torch NOT importable here — No NVIDIA GPU reported by nvidia-smi. — Only helps weights already in FP8/NVFP4/MXFP8. The int8_convrot MiniMax H3 checkpoints are not, so expect little change unless you also switch to an fp8/nvfp4 model file (the nvfp4_awq text encoder does qualify). — Needs CUDA runtime 13+ and NVIDIA driver r580+; installs into ComfyUI's python, not bitGen Studio's",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div#s_kstatus.hint"
+   ]
+  },
+  {
    "s": "not installed — Install Ming-3.0 TTS… (Settings ▸ Add-ons)",
    "kinds": [
     "text"
@@ -27580,6 +27688,15 @@
    ],
    "where": [
     "label.nauto in #negDock"
+   ]
+  },
+  {
+   "s": "python: python3 (configured python (may not be ComfyUI's)) custom_nodes: — set the ComfyUI folder above — — sageattention is NOT installed in ComfyUI's python — Sage backends: 'auto' is fine on Blackwell; sageattn_qk_int8_pv_fp16_cuda is the least likely to overflow if a clip comes out black or noisy. — Spectrum is APPROXIMATE (~30% fewer H3 transformer steps): fast motion can drift vs a native run. Its defaults are the audio-safe path; A/B the same seed when quality matters. — restart ComfyUI after any install; the render itself verifies the nodes exist and names what is missing",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div#s_vastatus.hint"
    ]
   },
   {
@@ -28452,8 +28569,8 @@
    ],
    "where": [
     "b in #stab-image",
-    "input#muDur",
-    "button#negStyle.ghost"
+    "button#negStyle.ghost",
+    "input#muDur"
    ]
   },
   {
@@ -29492,6 +29609,15 @@
    ],
    "where": [
     "span.what in #stab-about"
+   ]
+  },
+  {
+   "s": "the 🧩 Model manager shows this computer's folders). ComfyUI on this computer is not started while a remote one is in use. The power meters read this computer only: a remote job's cost is its time × the $/hour (RunPod: the pod's own price) in 📊 Usage. A RunPod pod needs a ComfyUI template with its port exposed over HTTP; for the LoRA trainer on a pod, ⤓ Export job and run it with ai-toolkit there. Keep a remote ComfyUI off the open internet - use a VPN, Tailscale or the SSH tunnel",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.hint.help in #stab-rgpu"
    ]
   },
   {

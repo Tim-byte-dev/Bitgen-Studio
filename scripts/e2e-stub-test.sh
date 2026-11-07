@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.706.0 (Tim: "do the settings dialog next, the other dockers can go into the next edit")
+node scripts/test-uilang706.js > /tmp/uilang706.log 2>&1 \
+  && ok "2.706.0 units: the words the app builds while it runs (scripts/ui-dynamic.js - strings + patterns with {n}), patterns / fill / line-by-line in static/uilang.js, the three dictionaries complete for Settings" \
+  || { bad "2.706.0 uilang units"; grep -a "^FAIL" -A2 /tmp/uilang706.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-uilang706-ui.js > /tmp/uilang706ui.log 2>&1 \
+  && ok "2.706.0 browser test: Settings in 简体中文 / 日本語 / 繁體中文 - every tab, the live statuses (token check, package status line by line, dockers' sizes), back to English - or SKIP without playwright" \
+  || { bad "2.706.0 uilang browser test"; grep -a "FAIL\\|Error" -A2 /tmp/uilang706ui.log | head -14; }
 # ---- 2.705.0 (Tim: "is it possible to add a language dropdown to the left of docker layout and change the language of the ui on change?")
 node scripts/test-uilang705.js > /tmp/uilang705.log 2>&1 \
   && ok "2.705.0 units: the UI translation (split / tr, what is skipped), the guides naming buttons as the app does, the wiring, the three dictionaries complete and well formed" \

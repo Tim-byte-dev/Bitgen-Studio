@@ -20,7 +20,7 @@
  */
 (function (root) {
   "use strict";
-  var SKIP = "#imageeditdock, #timelinedock, #pushpulldock, #solidcraftdock, #hlpBody .hlpc, #hpBody, script, style, code, pre, kbd, textarea, [contenteditable=''], [contenteditable='true'], [data-noi18n]";
+  var SKIP = "#imageeditdock, #timelinedock, #pushpulldock, #solidcraftdock, #hlpBody .hlpc, #hpBody, #log, script, style, code, pre, kbd, textarea, [contenteditable=''], [contenteditable='true'], [data-noi18n]";
   var ATTRS = ["title", "placeholder", "aria-label"];
   // a text box's own words (what is typed) are never touched - but its placeholder / tooltip are
   var SKIP_ATTR = SKIP.replace(", textarea", "");
@@ -35,14 +35,53 @@
     while (opens > closes && /^\s*[)）\]]/.test(post)) { var k = post.search(/[)）\]]/); core += post.slice(0, k + 1); post = post.slice(k + 1); closes++; }
     return { pre: pre, core: core.replace(/\s+/g, " "), post: post };
   }
-  function tr(s, dict) {
+  /** 2.706.0: the words the app BUILDS ("installed {0} — skipped {1}") - dictionary patterns, {n} = any value; compiled once */
+  function compile(pats) {
+    return Object.keys(pats || {}).map(function (k) {
+      var parts = k.split(/\{(\d+)\}/), lits = [], order = [], re = "^";
+      for (var i = 0; i < parts.length; i++) {
+        if (i % 2) { order.push(+parts[i]); re += "((?:(?! · )[^\\n])+?)"; }     // a value never spans a " · " piece or a line
+        else { lits.push(parts[i]); re += parts[i].replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+      }
+      var frag = lits.slice().sort(function (a, b) { return b.length - a.length; })[0] || "";
+      return { re: new RegExp(re + "$"), order: order, to: pats[k], frag: frag.trim() };
+    }).filter(function (c) { return c.frag.length >= 3; });
+  }
+  function fill(c, m, dict) {
+    return c.to.replace(/\{(\d+)\}/g, function (all, n) {
+      var i = c.order.indexOf(+n); if (i < 0) return all;
+      var v = m[i + 1], t = dict && dict[v.replace(/\s+/g, " ").trim()];       // a value that is itself a word the app has
+      return t != null ? t : v;
+    });
+  }
+  function tr(s, dict, pats) {
     if (!dict || !s || !LET.test(s)) return null;
     var p = split(s), t = dict[p.core];
+    if (t == null && pats && pats.length) {
+      var core = p.core.trim();
+      for (var i = 0; i < pats.length; i++) {
+        var c = pats[i]; if (core.indexOf(c.frag) < 0) continue;
+        var m = c.re.exec(core); if (m) return p.pre + fill(c, m, dict) + p.post;
+      }
+    }
     if (t == null && p.post) { var full = (p.core + p.post).replace(/\s+/g, " ").trim(); if (dict[full] != null) return p.pre + dict[full]; }
     if (t == null) { var whole = s.replace(/\s+/g, " ").trim(); if (dict[whole] != null) return s.match(/^\s*/)[0] + dict[whole] + s.match(/\s*$/)[0]; return null; }
     return p.pre + t + p.post;
   }
-  var pure = { split: split, tr: tr, SKIP: SKIP, SKIP_ATTR: SKIP.replace(", textarea", ""), ATTRS: ATTRS };
+  /** 2.706.0: words the app JOINS from pieces - lines ("\n") or " · " parts: the whole first, else each piece */
+  function trAll(s, dict, pats) {
+    var t = tr(s, dict, pats);
+    if (t != null) return t;
+    var seps = [/(\r?\n)/, /( · )/];
+    for (var i = 0; i < seps.length; i++) {
+      var parts = String(s).split(seps[i]); if (parts.length < 3) continue;
+      var changed = false;
+      for (var j = 0; j < parts.length; j += 2) { var u = trAll(parts[j], dict, pats); if (u != null && u !== parts[j]) { parts[j] = u; changed = true; } }
+      if (changed) return parts.join("");
+    }
+    return null;
+  }
+  var pure = { split: split, tr: tr, trAll: trAll, compile: compile, SKIP: SKIP, SKIP_ATTR: SKIP.replace(", textarea", ""), ATTRS: ATTRS };
   if (typeof module !== "undefined" && module.exports && typeof window === "undefined") { module.exports = pure; return; }
 
   var doc = root.document, S = { lang: "en", dict: null, obs: null, nodes: new Set(), els: new Set() };
@@ -53,7 +92,7 @@
     if (LAST.get(n) === v) return;                          // our own translation
     if (!v || !LET.test(v)) return;
     if (skipped(n.parentElement)) return;
-    var t = tr(v, S.dict);
+    var t = trAll(v, S.dict, S.pats);
     ORIG.set(n, v);
     if (t != null && t !== v) { LAST.set(n, t); n.nodeValue = t; S.nodes.add(n); }
   }
@@ -64,7 +103,7 @@
       if (v == null) continue;
       var last = ALAST.get(el) || {};
       if (last[a] === v) continue;
-      var t = tr(v, S.dict);
+      var t = trAll(v, S.dict, S.pats);
       var o = AORIG.get(el) || {}; o[a] = v; AORIG.set(el, o);
       if (t != null && t !== v) { last[a] = t; ALAST.set(el, last); el.setAttribute(a, t); S.els.add(el); }
     }
@@ -107,7 +146,7 @@
   function setDict(lang, j) {
     if (S.lang !== lang) return;
     var same = S.dict && j && S.dictV === j.v;
-    S.dict = j && j.strings ? j.strings : null; S.dictV = j && j.v;
+    S.dict = j && j.strings ? j.strings : null; S.dictV = j && j.v; S.pats = compile(j && j.patterns);
     if (!same && S.dict) { observe(); walk(doc.body); }
     doc.documentElement.setAttribute("data-uilang", lang);
   }
@@ -124,7 +163,7 @@
   })();
   function apply(lang) {
     if (lang === S.lang && (lang === "en" || S.dict)) return Promise.resolve();
-    restore(); S.dict = null; S.lang = lang;
+    restore(); S.dict = null; S.pats = null; S.lang = lang;
     doc.documentElement.setAttribute("data-uilang", lang);
     if (lang === "en") return Promise.resolve();
     var L = load(lang);

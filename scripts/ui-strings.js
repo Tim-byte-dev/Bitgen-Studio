@@ -21,7 +21,7 @@ const COLLECT = () => {
   const add = (raw, kind, el) => {
     if (!raw || !/[A-Za-z]{2}/.test(raw)) return;
     const core = H3UiLang.split(raw).core.trim();
-    if (!core || core.length > 400 || !/[A-Za-z]{2}/.test(core)) return;
+    if (!core || core.length > 2000 || !/[A-Za-z]{2}/.test(core)) return;
     if (/^[\w.-]+\.(png|jpe?g|json|js|mp4|wav|safetensors|gguf)$/i.test(core) || /^https?:/.test(core)) return;
     const e = out[core] || (out[core] = { kinds: [], where: [] });
     if (!e.kinds.includes(kind)) e.kinds.push(kind);

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.706.0** — 🌏 The Settings Dialog in 简体中文 / 繁體中文 / 日本語 - Every Tab, and the Status Lines It Writes While It Runs
 - **2.705.0** — 🌏 The App Itself in 简体中文 / 繁體中文 / 日本語: a Language Dropdown Left of ⊞ Changes the Main Window's Words at Once (One Setting With the Guide)
 - **2.704.0** — 🌏 The Guide, Help, Shortcut Keys and Guide PDF in Traditional Chinese (Taiwan / Hong Kong) Too
 - **2.703.0** — 🌏 The Guide, Help, Shortcut Keys and Guide PDF in Simplified Chinese (Mainland) and Japanese - a Language Picker; Sections Newer in English Say So

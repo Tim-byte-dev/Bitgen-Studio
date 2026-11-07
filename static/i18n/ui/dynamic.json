@@ -1,0 +1,1240 @@
+{
+ "made": "2026-11-07",
+ "scope": "settings",
+ "strings": [
+  {
+   "s": "not installed in ComfyUI's python",
+   "src": "index.html:561"
+  },
+  {
+   "s": "Reinstall Sage",
+   "src": "index.html:628"
+  },
+  {
+   "s": "Install Sage",
+   "src": "index.html:628"
+  },
+  {
+   "s": "Reinstall Spectrum",
+   "src": "index.html:630"
+  },
+  {
+   "s": "Install Spectrum",
+   "src": "index.html:630"
+  },
+  {
+   "s": "custom_nodes: — set the ComfyUI folder above —",
+   "src": "index.html:643"
+  },
+  {
+   "s": "custom_nodes: — set the ComfyUI folder above — · git NOT on PATH (needed for the git installs)",
+   "src": "index.html:643"
+  },
+  {
+   "s": "model max (362f = 15.08s)",
+   "src": "index.html:728"
+  },
+  {
+   "s": "cpu",
+   "src": "index.html:776"
+  },
+  {
+   "s": "a token is saved — press Test token to verify it",
+   "src": "index.html:896"
+  },
+  {
+   "s": "checking with huggingface.co",
+   "src": "index.html:902"
+  },
+  {
+   "s": "starting",
+   "src": "index.html:948"
+  },
+  {
+   "s": "checking",
+   "src": "index.html:1035"
+  },
+  {
+   "s": "pick a clip from the project first",
+   "src": "index.html:1077"
+  },
+  {
+   "s": "decoding",
+   "src": "index.html:1078"
+  },
+  {
+   "s": "no selection - ▶ Play plays the whole clip; drag across the waveform to choose a region",
+   "src": "index.html:1163"
+  },
+  {
+   "s": "Play",
+   "src": "index.html:1180"
+  },
+  {
+   "s": "load a clip first",
+   "src": "index.html:1185"
+  },
+  {
+   "s": "Stop",
+   "src": "index.html:1194"
+  },
+  {
+   "s": "transcribing the reference",
+   "src": "index.html:1202"
+  },
+  {
+   "s": "choose a file, load a clip, or name a saved voice",
+   "src": "index.html:1216"
+  },
+  {
+   "s": "transcribed — check it reads correctly",
+   "src": "index.html:1225"
+  },
+  {
+   "s": "give the voice a name",
+   "src": "index.html:1238"
+  },
+  {
+   "s": "drag across the waveform to select a region",
+   "src": "index.html:1239"
+  },
+  {
+   "s": "choose a file, or load a project clip",
+   "src": "index.html:1240"
+  },
+  {
+   "s": "saving",
+   "src": "index.html:1244"
+  },
+  {
+   "s": "ready",
+   "src": "index.html:1334"
+  },
+  {
+   "s": "OmniVoice is not installed",
+   "src": "index.html:1334"
+  },
+  {
+   "s": "server offline",
+   "src": "index.html:1534"
+  },
+  {
+   "s": "queuing download",
+   "src": "index.html:1568"
+  },
+  {
+   "s": "failed",
+   "src": "index.html:1572"
+  },
+  {
+   "s": "download a safetensors source first",
+   "src": "index.html:1584"
+  },
+  {
+   "s": "pick the folder that holds the zips first",
+   "src": "index.html:1678"
+  },
+  {
+   "s": "installing",
+   "src": "index.html:1682"
+  },
+  {
+   "s": "install failed",
+   "src": "index.html:1688"
+  },
+  {
+   "s": "nothing installed",
+   "src": "index.html:1693"
+  },
+  {
+   "s": "sd-cli found at the path above",
+   "src": "index.html:1725"
+  },
+  {
+   "s": "not found — install it or fix the path",
+   "src": "index.html:1725"
+  },
+  {
+   "s": "server not running",
+   "src": "index.html:2626"
+  },
+  {
+   "s": "engine not installed",
+   "src": "index.html:2626"
+  },
+  {
+   "s": "read from ComfyUI itself — exactly what its dropdowns hold",
+   "src": "index.html:3625"
+  },
+  {
+   "s": "read from the model folders and extra_model_paths.yaml",
+   "src": "index.html:3625"
+  },
+  {
+   "s": "read from the model folders",
+   "src": "index.html:3625"
+  },
+  {
+   "s": "no ComfyUI folder set (Settings → ComfyUI)",
+   "src": "index.html:3633"
+  },
+  {
+   "s": "Folders come from ComfyUI's own dropdowns, which already include anything extra_model_paths.yaml adds. Restart ComfyUI after editing that file",
+   "src": "index.html:3653"
+  },
+  {
+   "s": "No extra_model_paths.yaml found — only ComfyUI's own models folder is being scanned. Use Show folders to see where it looked",
+   "src": "index.html:3653"
+  },
+  {
+   "s": "ComfyUI folder: (not set)",
+   "src": "index.html:3685"
+  },
+  {
+   "s": "ComfyUI folder: (not set) ← NOT FOUND",
+   "src": "index.html:3685"
+  },
+  {
+   "s": "List source: ComfyUI /object_info (authoritative)",
+   "src": "index.html:3686"
+  },
+  {
+   "s": "List source: folder scan (ComfyUI not answering)",
+   "src": "index.html:3686"
+  },
+  {
+   "s": "extra_model_paths candidates",
+   "src": "index.html:3689"
+  },
+  {
+   "s": "none — no ComfyUI folder set",
+   "src": "index.html:3693"
+  },
+  {
+   "s": "no search folder",
+   "src": "index.html:3699"
+  },
+  {
+   "s": "Model",
+   "src": "index.html:4047"
+  },
+  {
+   "s": "override — ComfyUI dropdown value, blank = use the workflow's",
+   "src": "index.html:4047"
+  },
+  {
+   "s": "VAE",
+   "src": "index.html:4050"
+  },
+  {
+   "s": "models\\…safetensors or .gguf",
+   "src": "index.html:4053"
+  },
+  {
+   "s": "Names as ComfyUI lists them, relative to",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "its",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "loras folder (",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "flux/grain.safetensors",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "LoRA nodes are built into the workflow at render time, so the exported graph needs none. Weight 0 switches one off without removing it from the stack",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "Files are resolved against the LoRA folder in Settings → Paths. Weight 0 switches one off without removing it from the stack",
+   "src": "index.html:4097"
+  },
+  {
+   "s": "new chain —",
+   "src": "index.html:4255"
+  },
+  {
+   "s": "unsaved — press Save style",
+   "src": "index.html:4700"
+  },
+  {
+   "s": "unsaved copy — press Save style",
+   "src": "index.html:4707"
+  },
+  {
+   "s": "save failed",
+   "src": "index.html:4729"
+  },
+  {
+   "s": "Reused for every song made with this style. The lyrics go in the prompt box, not here",
+   "src": "index.html:4821"
+  },
+  {
+   "s": "Text encoder",
+   "src": "index.html:9615"
+  },
+  {
+   "s": "blank = the workflow's own",
+   "src": "index.html:9616"
+  },
+  {
+   "s": "new video style",
+   "src": "index.html:9697"
+  },
+  {
+   "s": "give the style a name",
+   "src": "index.html:9778"
+  },
+  {
+   "s": "the folder dialog could not open — type the path",
+   "src": "index.html:10970"
+  },
+  {
+   "s": "pick the base folder first",
+   "src": "index.html:10975"
+  },
+  {
+   "s": "standard folders filled — 💾 to write them",
+   "src": "index.html:10978"
+  },
+  {
+   "s": "writing",
+   "src": "index.html:10983"
+  },
+  {
+   "s": "refused",
+   "src": "index.html:10988"
+  },
+  {
+   "s": "written: nothing new · restart ComfyUI to pick the folders up",
+   "src": "index.html:10989"
+  },
+  {
+   "s": "no workflow loaded",
+   "src": "index.html:11263"
+  },
+  {
+   "s": "Loading",
+   "src": "about.js:36"
+  },
+  {
+   "s": "About",
+   "src": "about.js:44"
+  },
+  {
+   "s": "The version and the credits",
+   "src": "about.js:44"
+  },
+  {
+   "s": "Add-ons",
+   "src": "addons.js:33"
+  },
+  {
+   "s": "Optional engines that are not part of the main install. Each goes into its own folder next to the app and can be removed again. One install runs at a time; its log shows below",
+   "src": "addons.js:37"
+  },
+  {
+   "s": "No add-ons",
+   "src": "addons.js:62"
+  },
+  {
+   "s": "Download again",
+   "src": "addons.js:110"
+  },
+  {
+   "s": "Download ticked",
+   "src": "addons.js:110"
+  },
+  {
+   "s": "Removing",
+   "src": "addons.js:146"
+  },
+  {
+   "s": "Installing",
+   "src": "addons.js:146"
+  },
+  {
+   "s": "removed",
+   "src": "addons.js:146"
+  },
+  {
+   "s": "installed",
+   "src": "addons.js:146"
+  },
+  {
+   "s": "ComfyUI updates",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Channel",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Newest (master)",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Stable releases",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Check",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Update ComfyUI",
+   "src": "comfyupdate.js:23"
+  },
+  {
+   "s": "Asking GitHub",
+   "src": "comfyupdate.js:53"
+  },
+  {
+   "s": "newer ComfyUI is out",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "s": "hidden",
+   "src": "dockreset.js:64"
+  },
+  {
+   "s": "in a ▣ docker",
+   "src": "dockreset.js:65"
+  },
+  {
+   "s": "floating",
+   "src": "dockreset.js:65"
+  },
+  {
+   "s": "folded",
+   "src": "dockreset.js:66"
+  },
+  {
+   "s": "in its place",
+   "src": "dockreset.js:67"
+  },
+  {
+   "s": "docked beside a docker",
+   "src": "dockreset.js:73"
+  },
+  {
+   "s": "in the column",
+   "src": "dockreset.js:73"
+  },
+  {
+   "s": "moved",
+   "src": "dockreset.js:74"
+  },
+  {
+   "s": "maximized",
+   "src": "dockreset.js:76"
+  },
+  {
+   "s": "closed",
+   "src": "dockreset.js:77"
+  },
+  {
+   "s": "Dockers",
+   "src": "dockreset.js:172"
+  },
+  {
+   "s": "Every docker and floating window, where it is now, and ↺ Reset: back at its default place and size (out of a floating window or a ▣ docker, not maximized, shown and open, its first height / width). Dockers you add later (extensions) are listed too",
+   "src": "dockreset.js:177"
+  },
+  {
+   "s": "Reset all",
+   "src": "dockreset.js:177"
+  },
+  {
+   "s": "This computer",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "package",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "for this computer",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "Not right",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "Save",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "pick a bigger package to upgrade",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "s": "starting the upgrade",
+   "src": "hwpanel.js:82"
+  },
+  {
+   "s": "upgrading",
+   "src": "hwpanel.js:91"
+  },
+  {
+   "s": "upgraded",
+   "src": "hwpanel.js:91"
+  },
+  {
+   "s": "upgrade finished with problems - the log says what",
+   "src": "hwpanel.js:91"
+  },
+  {
+   "s": "llama.cpp: checking the installed and the newest version",
+   "src": "llmtab.js:45"
+  },
+  {
+   "s": "Render with",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Remote ComfyUI",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "hour",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "RunPod",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "My pods",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "port",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "SSH tunnel",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Open the tunnel",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Close",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Test",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Use it",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on the remote machine the same way. Its",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "models must be on that machine",
+   "src": "remotegpu.js:20"
+  },
+  {
+   "s": "Use this computer",
+   "src": "remotegpu.js:59"
+  },
+  {
+   "s": "stopped",
+   "src": "remotegpu.js:60"
+  },
+  {
+   "s": "The",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "parametric 3D bodies",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "Extrude, Revolve, Fillet, Chamfer, Split, Shell on a sketch - the image editor's SOLID tab) are worked out by one of two engines. Both give the same body; pick the one you prefer",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "3D body engine",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "In the browser (OpenCascade)",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "exact solids, nothing to install; the first build loads it (a second or two)",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "Blender (on this computer)",
+   "src": "settings3d.js:21"
+  },
+  {
+   "s": "Blender was not found (set its path in the timeline's 🟧 Blender settings)",
+   "src": "settings3d.js:48"
+  },
+  {
+   "s": "not installed — Install Ming-3.0 TTS… (Settings ▸ Add-ons)",
+   "src": "speechengines.js:28"
+  },
+  {
+   "s": "Ming-3.0 TTS is not installed",
+   "src": "speechengines.js:31"
+  },
+  {
+   "s": "Bark 3.0 installed · . Lyrics, captions, word times and other languages stay on faster-whisper",
+   "src": "speechengines.js:41"
+  },
+  {
+   "s": "Bark 3.0 installed · . Lyrics, captions, word times and other languages stay on faster-whisper — install faster-whisper below for those",
+   "src": "speechengines.js:41"
+  },
+  {
+   "s": "Bark 3.0 is not installed — Install Bark 3.0… (Settings ▸ Add-ons). Lyrics, captions, word times and other languages stay on faster-whisper",
+   "src": "speechengines.js:41"
+  },
+  {
+   "s": "Bark 3.0 is not installed — Install Bark 3.0… (Settings ▸ Add-ons). Lyrics, captions, word times and other languages stay on faster-whisper — install faster-whisper below for those",
+   "src": "speechengines.js:41"
+  },
+  {
+   "s": "Updates",
+   "src": "updater.js:24"
+  },
+  {
+   "s": "Check for updates",
+   "src": "updater.js:24"
+  },
+  {
+   "s": "Update now",
+   "src": "updater.js:24"
+  },
+  {
+   "s": "Restart now",
+   "src": "updater.js:24"
+  },
+  {
+   "s": "Check for updates on startup (bitGen Studio and ComfyUI)",
+   "src": "updater.js:24"
+  },
+  {
+   "s": "a git clone of",
+   "src": "updater.js:44"
+  },
+  {
+   "s": "git is not installed - the update needs it",
+   "src": "updater.js:44"
+  },
+  {
+   "s": "installed from a zip of",
+   "src": "updater.js:44"
+  },
+  {
+   "s": "In a browser: close the window running start.bat (or bitgen-studio.sh) and start it again",
+   "src": "updater.js:89"
+  },
+  {
+   "s": "Restart: close start.bat and start it again",
+   "src": "updater.js:89"
+  },
+  {
+   "s": "Layout",
+   "src": "layouts.js:98"
+  },
+  {
+   "s": "Saved",
+   "src": "layouts.js:98"
+  },
+  {
+   "s": "Has",
+   "src": "layouts.js:98"
+  },
+  {
+   "s": "No layouts saved yet",
+   "src": "layouts.js:98"
+  },
+  {
+   "s": "Layouts - the dockers (where, how big, shown / hidden / off) + the theme",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "json in the install folder\">💾 Save layout",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "Save as the default",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "Import",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "A layout is layouts/",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "name",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "json; a theme is themes/",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "json (Settings ▸ Themes ▸ 💾 Save theme, ⤓ Export, ⤒ Import). Copy",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "layouts/default.json",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "and",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "themes/default.json",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "into the repo: a fresh install starts with that layout, and a browser that never picked a theme takes that one",
+   "src": "layouts.js:119"
+  },
+  {
+   "s": "uses",
+   "src": "stylecard.js:81"
+  },
+  {
+   "s": "Video style",
+   "src": "stylecard.js:114"
+  },
+  {
+   "s": "No style - Generate runs the workflow template with its own models. Pick a style to see and change its model",
+   "src": "stylecard.js:135"
+  },
+  {
+   "s": "LoRAs",
+   "src": "stylecard.js:160"
+  },
+  {
+   "s": "Negative",
+   "src": "stylecard.js:160"
+  }
+ ],
+ "patterns": [
+  {
+   "p": "installed: comfy-kitchen {0} · backends: {1}",
+   "src": "index.html:561"
+  },
+  {
+   "p": "installed: comfy-kitchen {0}",
+   "src": "index.html:561"
+  },
+  {
+   "p": "python: {0} ({1}) · torch {2}",
+   "src": "index.html:566"
+  },
+  {
+   "p": "python: {0} ({1}) · torch NOT importable here",
+   "src": "index.html:566"
+  },
+  {
+   "p": "gpu: {0} — SM {1}",
+   "src": "index.html:568"
+  },
+  {
+   "p": "probe error: {0}",
+   "src": "index.html:570"
+  },
+  {
+   "p": "python: {0} ({1}) · torch {2} · triton missing (some sage backends need it)",
+   "src": "index.html:641"
+  },
+  {
+   "p": "python: {0} ({1}) · triton missing (some sage backends need it)",
+   "src": "index.html:641"
+  },
+  {
+   "p": "python: {0} ({1})",
+   "src": "index.html:641"
+  },
+  {
+   "p": "custom_nodes: {0}",
+   "src": "index.html:643"
+  },
+  {
+   "p": "custom_nodes: {0} · git NOT on PATH (needed for the git installs)",
+   "src": "index.html:643"
+  },
+  {
+   "p": "{0}f ({1}s) — learned",
+   "src": "index.html:728"
+  },
+  {
+   "p": "cuda{0}",
+   "src": "index.html:775"
+  },
+  {
+   "p": "valid — signed in as {0} (orgs: {1})",
+   "src": "index.html:913"
+  },
+  {
+   "p": "valid — signed in as {0}",
+   "src": "index.html:913"
+  },
+  {
+   "p": "works — produced {0}s in \"{1}\". Nothing was saved",
+   "src": "index.html:957"
+  },
+  {
+   "p": "works — produced {0}s in the default voice. Nothing was saved",
+   "src": "index.html:957"
+  },
+  {
+   "p": "works — produced {0} bytes in \"{1}\". Nothing was saved",
+   "src": "index.html:957"
+  },
+  {
+   "p": "works — produced {0} bytes in the default voice. Nothing was saved",
+   "src": "index.html:957"
+  },
+  {
+   "p": "installed · model {0} on {1} · {2} transcript(s)",
+   "src": "index.html:1022"
+  },
+  {
+   "p": "not installed — press Install faster-whisper ({0})",
+   "src": "index.html:1022"
+  },
+  {
+   "p": "{0} · {1}s — drag across the waveform to pick a region, or save the whole clip",
+   "src": "index.html:1072"
+  },
+  {
+   "p": "could not decode that clip: {0}",
+   "src": "index.html:1084"
+  },
+  {
+   "p": "reading {0}",
+   "src": "index.html:1091"
+  },
+  {
+   "p": "{0} loaded — no waveform preview ({1}), but Save voice clone will work",
+   "src": "index.html:1101"
+  },
+  {
+   "p": "{0} loaded — no waveform preview (browser cannot decode this format), but Save voice clone will work",
+   "src": "index.html:1101"
+  },
+  {
+   "p": "{0}s → {1}s ({2}s) — short; 10-30s clones better",
+   "src": "index.html:1154"
+  },
+  {
+   "p": "transcribed ({0}) — check it reads correctly",
+   "src": "index.html:1225"
+  },
+  {
+   "p": "saved \"{0}\" ({1}–{2}s)",
+   "src": "index.html:1263"
+  },
+  {
+   "p": "saved \"{0}\"",
+   "src": "index.html:1263"
+  },
+  {
+   "p": "installed · {0}",
+   "src": "index.html:1331"
+  },
+  {
+   "p": "not installed — press Install OmniVoice ({0})",
+   "src": "index.html:1331"
+  },
+  {
+   "p": "download queued as job {0} — watch the console",
+   "src": "index.html:1573"
+  },
+  {
+   "p": "conversion queued as job {0}",
+   "src": "index.html:1589"
+  },
+  {
+   "p": "install failed: {0}",
+   "src": "index.html:1689"
+  },
+  {
+   "p": "installed {0} — skipped {1}",
+   "src": "index.html:1693"
+  },
+  {
+   "p": "installed {0}",
+   "src": "index.html:1693"
+  },
+  {
+   "p": "nothing installed — skipped {0}",
+   "src": "index.html:1693"
+  },
+  {
+   "p": "{0} model file(s) listed (server v{1})",
+   "src": "index.html:1953"
+  },
+  {
+   "p": "{0} model file(s) listed (server vpre-2.233.5)",
+   "src": "index.html:1953"
+  },
+  {
+   "p": "engine: found · models: {0} · running: {1}",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "engine: found · models: {0} · running: {1} (loading)",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "engine: found · models: {0}",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "engine: NOT FOUND — run misc\\get-llama.ps1 · models: {0} · running: {1}",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "engine: NOT FOUND — run misc\\get-llama.ps1 · models: {0} · running: {1} (loading)",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "engine: NOT FOUND — run misc\\get-llama.ps1 · models: {0}",
+   "src": "index.html:1964"
+  },
+  {
+   "p": "serving {0} — ready",
+   "src": "index.html:2626"
+  },
+  {
+   "p": "serving {0} — loading",
+   "src": "index.html:2626"
+  },
+  {
+   "p": "{0} model file found",
+   "src": "index.html:3620"
+  },
+  {
+   "p": "{0} model files found",
+   "src": "index.html:3620"
+  },
+  {
+   "p": "folder: {0}",
+   "src": "index.html:3633"
+  },
+  {
+   "p": "Model list narrowed to {0} — this workflow loads with {1}, so other kinds are hidden because ComfyUI would refuse them",
+   "src": "index.html:3650"
+  },
+  {
+   "p": "Reading extra_model_paths.yaml: {0}",
+   "src": "index.html:3653"
+  },
+  {
+   "p": "ComfyUI folder: {0}",
+   "src": "index.html:3685"
+  },
+  {
+   "p": "ComfyUI folder: {0} ← NOT FOUND",
+   "src": "index.html:3685"
+  },
+  {
+   "p": "USED {0}",
+   "src": "index.html:3691"
+  },
+  {
+   "p": "USED {0} (absent)",
+   "src": "index.html:3691"
+  },
+  {
+   "p": "found {0}",
+   "src": "index.html:3691"
+  },
+  {
+   "p": "found {0} (absent)",
+   "src": "index.html:3691"
+  },
+  {
+   "p": "{0} (absent)",
+   "src": "index.html:3691"
+  },
+  {
+   "p": "{0}: {1} entries",
+   "src": "index.html:3696"
+  },
+  {
+   "p": "ok {0} [{1}]",
+   "src": "index.html:3698"
+  },
+  {
+   "p": "MISSING {0} [{1}]",
+   "src": "index.html:3698"
+  },
+  {
+   "p": "{0} · optional",
+   "src": "index.html:4050"
+  },
+  {
+   "p": "This workflow loads with {0}, so only that kind is offered. Tick to see the rest — ComfyUI will refuse a kind its loader cannot take",
+   "src": "index.html:4068"
+  },
+  {
+   "p": "Input: {0} with {1}. Output: a {2} ControlNet ({3})",
+   "src": "index.html:4289"
+  },
+  {
+   "p": "Input: {0} with {1}. Output: a {2} ControlNet ({3}). No comfyui_controlnet_aux ckpts folder found — use 📁, or leave the default",
+   "src": "index.html:4289"
+  },
+  {
+   "p": "saved as {0} — still needs: {1}",
+   "src": "index.html:4740"
+  },
+  {
+   "p": "saved as styles\\{0}",
+   "src": "index.html:4740"
+  },
+  {
+   "p": "editing \"{0}\"",
+   "src": "index.html:9697"
+  },
+  {
+   "p": "saved \"{0}\" → styles/video/",
+   "src": "index.html:9786"
+  },
+  {
+   "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
+   "src": "index.html:10989"
+  },
+  {
+   "p": "written: {0} · restart ComfyUI to pick the folders up",
+   "src": "index.html:10989"
+  },
+  {
+   "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
+   "src": "index.html:10989"
+  },
+  {
+   "p": "API workflow — {0} nodes, {1} value(s) you can wire",
+   "src": "index.html:11188"
+  },
+  {
+   "p": "{0} workflow — {1}",
+   "src": "index.html:11188"
+  },
+  {
+   "p": "saved as {0}",
+   "src": "index.html:11297"
+  },
+  {
+   "p": "The credits could not be read: {0}",
+   "src": "about.js:38"
+  },
+  {
+   "p": "Could not read the add-ons: {0}",
+   "src": "addons.js:53"
+  },
+  {
+   "p": "Removing… {0} · {1} s",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "Removing… {0}",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "Removing… · {0} s",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "Installing… {0} · {1} s",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "Installing… {0}",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "Installing… · {0} s",
+   "src": "addons.js:146"
+  },
+  {
+   "p": "ComfyUI {0}",
+   "src": "comfyupdate.js:47"
+  },
+  {
+   "p": "the portable build (its own updater) · {0}",
+   "src": "comfyupdate.js:47"
+  },
+  {
+   "p": "a git clone · {0}",
+   "src": "comfyupdate.js:47"
+  },
+  {
+   "p": "not a git clone - update it with ComfyUI-Manager · {0}",
+   "src": "comfyupdate.js:47"
+  },
+  {
+   "p": "ComfyUI {0} is out",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "you have {0}, {1} new commit(s) on master) · newest release {2}",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "you have {0}, {1} new commit(s) on master",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "you have {0}) · newest release {1}",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "you have {0}",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "ComfyUI {0} is the newest release ({1})",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "ComfyUI {0} is the newest release",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "ComfyUI {0} is the newest on master ({1})",
+   "src": "comfyupdate.js:57"
+  },
+  {
+   "p": "{0} px wide",
+   "src": "dockreset.js:68"
+  },
+  {
+   "p": "{0} px high",
+   "src": "dockreset.js:78"
+  },
+  {
+   "p": "{0} (as you told it) · installed",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "p": "Upgrade to {0}",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "p": "installs what it adds - into your ComfyUI, then {0} of models (gated ones need your Hugging Face token)",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "p": "installs what it adds - ComfyUI first, then {0} of models (gated ones need your Hugging Face token)",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "p": "{0} - more than this computer runs well",
+   "src": "hwpanel.js:47"
+  },
+  {
+   "p": "upgrading… {0} / {1} model files",
+   "src": "hwpanel.js:91"
+  },
+  {
+   "p": "llama.cpp: {0}",
+   "src": "llmtab.js:50"
+  },
+  {
+   "p": "llama.cpp {0} was already the newest · {1}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp updated {0} -> {1} · {2}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp updated {0} -> · {1}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp updated to {0} · {1}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp updated to · {0}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp {0} installed · {1}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "llama.cpp installed · {0}",
+   "src": "llmtab.js:84"
+  },
+  {
+   "p": "stopped · {0}",
+   "src": "remotegpu.js:60"
+  },
+  {
+   "p": "now: {0} · {1}",
+   "src": "remotegpu.js:64"
+  },
+  {
+   "p": "now: {0}",
+   "src": "remotegpu.js:64"
+  },
+  {
+   "p": "pod {0} - 🔄 My pods lists them",
+   "src": "remotegpu.js:111"
+  },
+  {
+   "p": "Reinstall {0}",
+   "src": "speechengines.js:18"
+  },
+  {
+   "p": "{0} — Install Ming-3.0 TTS… (Settings ▸ Add-ons)",
+   "src": "speechengines.js:28"
+  },
+  {
+   "p": "Bark 3.0 installed · {0}. Lyrics, captions, word times and other languages stay on faster-whisper",
+   "src": "speechengines.js:41"
+  },
+  {
+   "p": "Bark 3.0 installed · {0}. Lyrics, captions, word times and other languages stay on faster-whisper — install faster-whisper below for those",
+   "src": "speechengines.js:41"
+  },
+  {
+   "p": "bitGen Studio {0}",
+   "src": "updater.js:44"
+  },
+  {
+   "p": "The model \"{0}\" renders with in phase {1}1 - pick another to change it (saved into the style)",
+   "src": "stylecard.js:92"
+  },
+  {
+   "p": "The model \"{0}\" renders with - pick another to change it (saved into the style)",
+   "src": "stylecard.js:92"
+  },
+  {
+   "p": "Workflows: {0}",
+   "src": "stylecard.js:143"
+  }
+ ]
+}
