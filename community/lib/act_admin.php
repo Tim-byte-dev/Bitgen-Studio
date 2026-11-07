@@ -1,5 +1,6 @@
 <?php
 // bitGen Community (2.710.0) - the admins' actions (admins = the handles in config 'admins'): reports, delete, ban.
+// 2.713.0: a ban also bans the email address; admin_user shows a member's real name and email.
 declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
@@ -43,9 +44,29 @@ function act_admin_ban(array $b, array $me): array
     if ($h === $me['handle']) throw new ApiError(400, 'You cannot ban yourself.');
     $u = user_by_handle($h);
     if ($u === null) throw new ApiError(404, 'There is no user "' . $h . '".');
+    user_set_banned($u, $banned);
+    return [];
+}
+
+/** 2.713.0: banned = no sign-in, every token gone, everything they wrote hidden, AND their email address can never
+ *  join again (Tim: "so if we ban a user they can't just change their username"). Unbanned lifts both. */
+function user_set_banned(array $u, bool $banned): void
+{
     db_tx(static function () use ($u, $banned): void {
         q('UPDATE bgc_users SET banned = ? WHERE id = ?', [$banned ? 1 : 0, (int) $u['id']]);
         if ($banned) q('DELETE FROM bgc_tokens WHERE user_id = ?', [(int) $u['id']]);
+        $key = (string) ($u['email_key'] ?? '');
+        if ($key !== '') {
+            if ($banned) q_insert_once('INSERT INTO bgc_banned_emails (email_key, at) VALUES (?, ?)', [$key, now_ms()]);
+            else q('DELETE FROM bgc_banned_emails WHERE email_key = ?', [$key]);
+        }
     });
-    return [];
+}
+
+/** 2.713.0: who someone really is - name and email (admins only; nobody else ever sees them) */
+function act_admin_user(array $b, array $me): array
+{
+    $u = user_by_handle(v_handle($b));
+    if ($u === null) throw new ApiError(404, 'There is no such user.');
+    return ['user' => user_out($u) + profile_out($u) + ['banned' => (int) $u['banned'] === 1, 'joined' => iso((int) $u['created_at'])]];
 }

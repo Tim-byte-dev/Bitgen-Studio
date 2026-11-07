@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5418,
+ "count": 5449,
  "strings": [
   {
    "s": "0 (auto)",
@@ -1392,6 +1392,15 @@
    ],
    "where": [
     "#cmPanel"
+   ]
+  },
+  {
+   "s": "Account",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -3123,6 +3132,15 @@
    "where": [
     "option in #lb_rslook",
     "option in #chOptStyle"
+   ]
+  },
+  {
+   "s": "Another code to the same address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -5666,6 +5684,15 @@
    ]
   },
   {
+   "s": "Change your name or email address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Channel",
    "kinds": [
     "text"
@@ -7391,12 +7418,30 @@
    ]
   },
   {
+   "s": "Confirm",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Confirm delete — ask before deleting, and really delete",
    "kinds": [
     "text"
    ],
    "where": [
     "label.chk in #stab-general"
+   ]
+  },
+  {
+   "s": "Confirm your email address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -9907,6 +9952,15 @@
    ]
   },
   {
+   "s": "Discussions",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Disgusted",
    "kinds": [
     "text"
@@ -9922,6 +9976,15 @@
    ],
    "where": [
     "#cmPanel"
+   ]
+  },
+  {
+   "s": "Display name (what others see - your user ID if empty)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -11238,6 +11301,24 @@
    ],
    "where": [
     "button.ghost.ptsk in #kxOpts"
+   ]
+  },
+  {
+   "s": "Email address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
+   "s": "Email address (a code goes to it)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -12967,6 +13048,15 @@
    ],
    "where": [
     "option in #ltxModeSel"
+   ]
+  },
+  {
+   "s": "First name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -17831,6 +17921,15 @@
    ]
   },
   {
+   "s": "Last name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Last ⊣",
    "kinds": [
     "text"
@@ -19083,6 +19182,15 @@
    ],
    "where": [
     "button#s_vapack_kjnodes.ghost"
+   ]
+  },
+  {
+   "s": "Longer questions, your work, ideas - sign in there with the same user ID. Guests can read and post too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -21368,6 +21476,15 @@
    ]
   },
   {
+   "s": "New here? Also",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "legend in #cmPanel"
+   ]
+  },
+  {
    "s": "New job",
    "kinds": [
     "text"
@@ -21658,6 +21775,15 @@
    ],
    "where": [
     "span.hint in #s_thstyles"
+   ]
+  },
+  {
+   "s": "No email? Look in the spam folder. The code works for 15 minutes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -22461,6 +22587,33 @@
    ]
   },
   {
+   "s": "Only the admins see these",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
+   "s": "Only the admins see your name and email address. A new address is confirmed with a code",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
+   "s": "Only the community's admins see your name and email address. Nobody else does",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Only the connected area (off = every matching pixel)",
    "kinds": [
     "title"
@@ -22671,6 +22824,15 @@
    ],
    "where": [
     "h3#ask_title"
+   ]
+  },
+  {
+   "s": "Open the Discussions on the website",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -29653,6 +29815,15 @@
    ]
   },
   {
+   "s": "Send a new code",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Send a picture of the view (as you see it - day or night) to the image editor",
    "kinds": [
     "title"
@@ -31075,6 +31246,15 @@
    ],
    "where": [
     "#cmPanel"
+   ]
+  },
+  {
+   "s": "Sign out on this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -34406,6 +34586,15 @@
    ]
   },
   {
+   "s": "The community now asks every member for a name and an email address (a code confirms it). Only the admins see them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "The community server's api.php",
    "kinds": [
     "text"
@@ -36735,6 +36924,15 @@
    ]
   },
   {
+   "s": "Type it here",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Type the instruction in the",
    "kinds": [
     "text"
@@ -38757,6 +38955,15 @@
    ]
   },
   {
+   "s": "We emailed a 6-digit code to",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "WeVisOne-VL",
    "kinds": [
     "text"
@@ -39700,6 +39907,15 @@
    ]
   },
   {
+   "s": "Wrong address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "X-ray",
    "kinds": [
     "text"
@@ -39745,6 +39961,15 @@
    ]
   },
   {
+   "s": "Your details",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "Your electricity price (on your bill, e.g. 0.35 AUD per kWh) and the daily supply charge (the fixed amount per day, e.g. 1.10). Every finished job's ⚡ card, its",
    "kinds": [
     "text"
@@ -39760,6 +39985,15 @@
    ],
    "where": [
     "button#brUseRec.ghost"
+   ]
+  },
+  {
+   "s": "Your name or email address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -40172,6 +40406,15 @@
    ]
   },
   {
+   "s": "a code is on its way to your email",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "a cutaway over the ruler selection (a new layer, sound off)",
    "kinds": [
     "text"
@@ -40187,6 +40430,15 @@
    ],
    "where": [
     "input#lyName"
+   ]
+  },
+  {
+   "s": "a new code is on its way",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -42463,6 +42715,15 @@
    ],
    "where": [
     "span"
+   ]
+  },
+  {
+   "s": "email address confirmed - welcome",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {
@@ -47083,6 +47344,15 @@
    ]
   },
   {
+   "s": "saved - a code is on its way to the new address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
+   ]
+  },
+  {
    "s": "saves a model, its VAE and text encoders, the sampler settings and a LoRA stack under one name, so the Style dropdown next to the prompt can reproduce a look without retyping five paths. Each style is its own file —",
    "kinds": [
     "text"
@@ -49422,6 +49692,15 @@
    ],
    "where": [
     "p.hint.help in #stab-music"
+   ]
+  },
+  {
+   "s": "type your first and last name (only the admins see them)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #cmPanel"
    ]
   },
   {

@@ -30,11 +30,16 @@ C.setFetch(async (url, o) => { const b = JSON.parse(o.body || "{}"); seen.push({
     let bad = null; try { await C.join({ handle: "x", password: "12345678" }); } catch (e) { bad = e.message; }
     check("a user ID / password the server would refuse is refused here first", /3-24/.test(bad || ""));
     reply = (url, b) => (/a=register/.test(url) ? { ok: true, token: "T0KEN", user: { handle: b.handle, display: b.display || b.handle } } : { ok: true });
-    const j = await C.join({ handle: "Tim_P", password: "secret-pass", display: "Tim", mode: "register", url: `http://${HERE}:9/api.php` });
+    // 2.713.0: a new ID needs a name and an email address - refused here first without them
+    let noName = null; try { await C.join({ handle: "Tim_P", password: "secret-pass", mode: "register", url: `http://${HERE}:9/api.php` }); } catch (e) { noName = e.message; }
+    let noMail = null; try { await C.join({ handle: "Tim_P", password: "secret-pass", first_name: "Tim", last_name: "Paul", email: "not-an-address", mode: "register", url: `http://${HERE}:9/api.php` }); } catch (e) { noMail = e.message; }
+    check("2.713.0: Join without a name / with a bad email address is refused here first", /first and last name/.test(noName || "") && /email address/.test(noMail || ""), [noName, noMail]);
+    const j = await C.join({ handle: "Tim_P", password: "secret-pass", display: "Tim", first_name: "Tim", last_name: "Paul", email: "tim@example.com", mode: "register", url: `http://${HERE}:9/api.php` });
+    check("2.713.0: …the name and email address go to the server with the register", seen[seen.length - 1].body.first_name === "Tim" && seen[seen.length - 1].body.email === "tim@example.com");
     const onDisk = JSON.parse(fs.readFileSync(path.join(tmp, "community.json"), "utf8"));
     check("Join (register): the ID lower-cased, the token kept in community.json - and NOT in what the page gets",
       j.user.handle === "tim_p" && onDisk.token === "T0KEN" && onDisk.handle === "tim_p" && !JSON.stringify(C.state()).includes("T0KEN") && C.state().joined === true && !JSON.stringify(j).includes("T0KEN"), { j, onDisk });
-    check("…the password went to the server once, in the body, never stored", seen[seen.length - 1].body.password === "secret-pass" && !fs.readFileSync(path.join(tmp, "community.json"), "utf8").includes("secret-pass"));
+    check("…the password went to the server once, in the body, never stored", seen.filter((x) => x.body && x.body.password === "secret-pass").length === 1 && !fs.readFileSync(path.join(tmp, "community.json"), "utf8").includes("secret-pass"));
     reply = () => ({ ok: true, messages: [] });
     await C.call("poll", { since: 0 });
     const last = seen[seen.length - 1];

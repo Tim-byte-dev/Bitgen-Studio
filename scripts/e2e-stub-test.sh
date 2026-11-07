@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.713.0 (Tim: "let users enter first name, last name and email - and verify email so if we ban a user they can't just change their username ... add a discussions page on tigerart ... allow guest access too")
+node scripts/test-community713-server.js > /tmp/community713srv.log 2>&1 \
+  && ok "2.713.0 the community server: joining needs a name + email, the emailed code (tries, run out, resend limit), one account per address (Gmail dots / +tag), set_profile, real names admins only, a ban bans the address, the discussions (members live, guests wait for an admin, approve / refuse, delete, paging, guests' limit, banned / left authors), a schema-1 database upgraded - or SKIP without php" \
+  || { bad "2.713.0 community server"; grep -a "^FAIL" -A2 /tmp/community713srv.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-community713-ui.js > /tmp/community713ui.log 2>&1 \
+  && ok "2.713.0 browser test: 💬 Join asks for a name + email, the code step (wrong code, Send a new code, Confirm) before Help opens, ⋯ Your details + Change -> a new code, the Discussions link, an older member asked for name + email, the new words in 简体中文 - or SKIP" \
+  || { bad "2.713.0 community browser test"; grep -a "FAIL\\|Error" -A2 /tmp/community713ui.log | head -14; }
 # ---- 2.712.1 (Tim: "i will enter the db password into a text field, the password will be encrypted then saved in a txt file")
 node scripts/test-community7121.js > /tmp/community7121.log 2>&1 \
   && ok "2.712.1 the Community server reads db.json + the encrypted db-pass.txt from the private folder the tigerart admin page writes (both formats, wrong key / damaged refused, config.php wins, BGC_DSN overrides) - or SKIP without php" \

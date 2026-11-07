@@ -2044,91 +2044,139 @@
   },
   {
    "s": "Sign out, leave the community, the server's address",
-   "src": "static/community.js:66"
+   "src": "static/community.js:74"
   },
   {
    "s": "bitGen Community",
-   "src": "static/community.js:71"
+   "src": "static/community.js:79"
   },
   {
    "s": "Join the bitGen Community: ask for help in the Help room, and add friends to chat with",
-   "src": "static/community.js:122"
-  },
-  {
-   "s": "Join",
-   "src": "static/community.js:131"
-  },
-  {
-   "s": "Make this user ID and join",
-   "src": "static/community.js:131"
-  },
-  {
-   "s": "Sign in",
-   "src": "static/community.js:132"
-  },
-  {
-   "s": "Use a user ID you already have",
-   "src": "static/community.js:132"
-  },
-  {
-   "s": "Community server",
    "src": "static/community.js:133"
   },
   {
+   "s": "New here? Also",
+   "src": "static/community.js:137"
+  },
+  {
+   "s": "Only the community's admins see your name and email address. Nobody else does",
+   "src": "static/community.js:140"
+  },
+  {
+   "s": "Join",
+   "src": "static/community.js:149"
+  },
+  {
+   "s": "Make this user ID and join",
+   "src": "static/community.js:149"
+  },
+  {
+   "s": "Sign in",
+   "src": "static/community.js:150"
+  },
+  {
+   "s": "Use a user ID you already have",
+   "src": "static/community.js:150"
+  },
+  {
+   "s": "Community server",
+   "src": "static/community.js:151"
+  },
+  {
+   "s": "Confirm your email address",
+   "src": "static/community.js:163"
+  },
+  {
+   "s": "We emailed a 6-digit code to",
+   "src": "static/community.js:164"
+  },
+  {
+   "s": "Confirm",
+   "src": "static/community.js:166"
+  },
+  {
+   "s": "No email? Look in the spam folder. The code works for 15 minutes",
+   "src": "static/community.js:169"
+  },
+  {
+   "s": "Your details",
+   "src": "static/community.js:183"
+  },
+  {
    "s": "Report this message to the admins",
-   "src": "static/community.js:144"
+   "src": "static/community.js:199"
   },
   {
    "s": "Delete this message (admin)",
-   "src": "static/community.js:145"
+   "src": "static/community.js:200"
   },
   {
    "s": "Send",
-   "src": "static/community.js:155"
-  },
-  {
-   "s": "Why? (the admins see it)",
-   "src": "static/community.js:172"
-  },
-  {
-   "s": "Find people by user ID or name",
-   "src": "static/community.js:205"
-  },
-  {
-   "s": "Friend requests",
-   "src": "static/community.js:208"
-  },
-  {
-   "s": "Waiting for them",
-   "src": "static/community.js:209"
-  },
-  {
-   "s": "Friends",
    "src": "static/community.js:210"
   },
   {
+   "s": "Why? (the admins see it)",
+   "src": "static/community.js:227"
+  },
+  {
+   "s": "Find people by user ID or name",
+   "src": "static/community.js:260"
+  },
+  {
+   "s": "Friend requests",
+   "src": "static/community.js:263"
+  },
+  {
+   "s": "Waiting for them",
+   "src": "static/community.js:264"
+  },
+  {
+   "s": "Friends",
+   "src": "static/community.js:265"
+  },
+  {
    "s": "No friends yet - find someone, or + Add friend from a name in the Help room",
-   "src": "static/community.js:211"
+   "src": "static/community.js:266"
+  },
+  {
+   "s": "Discussions",
+   "src": "static/community.js:300"
+  },
+  {
+   "s": "Open the Discussions on the website",
+   "src": "static/community.js:300"
+  },
+  {
+   "s": "Longer questions, your work, ideas - sign in there with the same user ID. Guests can read and post too",
+   "src": "static/community.js:301"
+  },
+  {
+   "s": "Only the admins see these",
+   "src": "static/community.js:304"
+  },
+  {
+   "s": "Account",
+   "src": "static/community.js:307"
   },
   {
    "s": "Signed in as",
-   "src": "static/community.js:246"
+   "src": "static/community.js:307"
   },
   {
    "s": "Leave the community",
-   "src": "static/community.js:248"
+   "src": "static/community.js:309"
   },
   {
    "s": "Deletes your user ID and friendships. Type your password",
-   "src": "static/community.js:248"
+   "src": "static/community.js:309"
   },
   {
    "s": "Reports (admin)",
-   "src": "static/community.js:256"
+   "src": "static/community.js:317"
   },
   {
    "s": "Community",
-   "src": "static/community.js:319"
+   "src": "static/community.js:380"
   },
   {
    "s": "Drag to size this column",

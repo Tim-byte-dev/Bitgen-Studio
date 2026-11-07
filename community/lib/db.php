@@ -4,7 +4,8 @@
 declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
-const BGC_SCHEMA = '1';
+// 2: names + email (verified) on bgc_users, banned emails, the discussions (bgc_topics, bgc_posts) - 2.713.0
+const BGC_SCHEMA = '2';
 
 function db(): PDO
 {
@@ -132,7 +133,8 @@ function db_tables(): array
     return [
         'bgc_meta' => ['k VARCHAR(40) NOT NULL PRIMARY KEY, v VARCHAR(200) NOT NULL', []],
         'bgc_users' => ['id {PK}, handle VARCHAR(24) NOT NULL UNIQUE, display VARCHAR(40) NOT NULL, pass_hash VARCHAR(255) NOT NULL, '
-            . 'created_at BIGINT NOT NULL, last_seen BIGINT NOT NULL DEFAULT 0, banned SMALLINT NOT NULL DEFAULT 0', []],
+            . 'created_at BIGINT NOT NULL, last_seen BIGINT NOT NULL DEFAULT 0, banned SMALLINT NOT NULL DEFAULT 0, '
+            . implode(', ', array_map(fn ($c, $d) => "$c $d", array_keys(BGC_USER_V2), BGC_USER_V2)), []],
         'bgc_tokens' => ['token_hash CHAR(64) NOT NULL PRIMARY KEY, user_id BIGINT NOT NULL, created_at BIGINT NOT NULL, last_used BIGINT NOT NULL',
             ['bgc_tokens_user' => 'user_id']],
         'bgc_requests' => ['from_id BIGINT NOT NULL, to_id BIGINT NOT NULL, at BIGINT NOT NULL, PRIMARY KEY (from_id, to_id)',
@@ -148,7 +150,48 @@ function db_tables(): array
             ['bgc_reports_msg' => 'message_id']],
         'bgc_hits' => ['id {PK}, k VARCHAR(100) NOT NULL, at BIGINT NOT NULL',
             ['bgc_hits_k' => 'k, at', 'bgc_hits_at' => 'at']],
+        // 2.713.0: an email address an admin banned (its email_key) can never join again
+        'bgc_banned_emails' => ['email_key VARCHAR(190) NOT NULL PRIMARY KEY, at BIGINT NOT NULL', []],
+        // 2.713.0: the discussions on the website - a topic, its posts (the first post is the topic's text); a guest's
+        // post has guest_name and no user_id and waits (pending) until an admin approves it
+        'bgc_topics' => ['id {PK}, category VARCHAR(16) NOT NULL, title VARCHAR(200) NOT NULL, user_id BIGINT NULL, guest_name VARCHAR(40) NULL, '
+            . 'created_at BIGINT NOT NULL, last_at BIGINT NOT NULL, replies INT NOT NULL DEFAULT 0, pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0',
+            ['bgc_topics_list' => 'deleted, pending, last_at', 'bgc_topics_cat' => 'category, last_at', 'bgc_topics_user' => 'user_id']],
+        'bgc_posts' => ['id {PK}, topic_id BIGINT NOT NULL, user_id BIGINT NULL, guest_name VARCHAR(40) NULL, body TEXT NOT NULL, at BIGINT NOT NULL, '
+            . 'pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0',
+            ['bgc_posts_topic' => 'topic_id, id', 'bgc_posts_pending' => 'pending', 'bgc_posts_user' => 'user_id']],
     ];
+}
+
+// the columns schema 2 adds to bgc_users (a new install gets them in CREATE TABLE; an older one by ALTER TABLE)
+const BGC_USER_V2 = [
+    'first_name' => 'VARCHAR(40) NULL',
+    'last_name' => 'VARCHAR(40) NULL',
+    'email' => 'VARCHAR(190) NULL',
+    'email_key' => 'VARCHAR(190) NULL',          // the address reduced (lower-case, no +tag; Gmail without dots) - unique
+    'email_verified' => 'SMALLINT NOT NULL DEFAULT 0',
+    'code_hash' => 'CHAR(64) NULL',               // the emailed code's sha256 (with the user id)
+    'code_expires' => 'BIGINT NULL',
+    'code_tries' => 'SMALLINT NOT NULL DEFAULT 0',
+];
+
+/** an older database (schema 1): the new bgc_users columns and the unique index on email_key */
+function db_migrate_users(PDO $pdo): void
+{
+    foreach (BGC_USER_V2 as $col => $def) {
+        try {
+            $pdo->prepare("SELECT $col FROM bgc_users WHERE 1 = 0")->execute();      // $col: from BGC_USER_V2 only
+        } catch (PDOException $e) {
+            $pdo->exec("ALTER TABLE bgc_users ADD COLUMN $col $def");
+        }
+    }
+    // one account per email address (NULLs - accounts from before 2.713.0 - do not count). Made once: "already there"
+    // is fine (MySQL has no CREATE INDEX IF NOT EXISTS)
+    try {
+        $pdo->exec('CREATE UNIQUE INDEX bgc_users_email ON bgc_users (email_key)');
+    } catch (PDOException $e) {
+        if (!preg_match('/exists|Duplicate key name|1061/i', $e->getMessage())) throw $e;
+    }
 }
 
 function db_dialect(string $driver): array
@@ -178,6 +221,7 @@ function db_schema(PDO $pdo, string $driver): void
             foreach ($indexes as $iname => $icols) $pdo->exec("CREATE INDEX IF NOT EXISTS $iname ON $name ($icols)");
         }
     }
+    db_migrate_users($pdo);
     $pdo->prepare('DELETE FROM bgc_meta WHERE k = ?')->execute(['schema']);
     try {
         $pdo->prepare('INSERT INTO bgc_meta (k, v) VALUES (?, ?)')->execute(['schema', BGC_SCHEMA]);

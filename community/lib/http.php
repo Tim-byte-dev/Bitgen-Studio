@@ -10,10 +10,13 @@ const BGC_MAX_BODY = 16384;   // 16 KB - a request body any bigger is refused (4
 final class ApiError extends Exception
 {
     public int $status;
-    public function __construct(int $status, string $message)
+    /** more fields for the reply, e.g. ['need' => 'verify'] (2.713.0) */
+    public array $extra;
+    public function __construct(int $status, string $message, array $extra = [])
     {
         parent::__construct($message);
         $this->status = $status;
+        $this->extra = $extra;
     }
 }
 

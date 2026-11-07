@@ -52,6 +52,9 @@ function bgc_settings(): array
         'require_https' => (bool) ($BGC['require_https'] ?? true),
         'ip_header' => isset($BGC['ip_header']) ? (string) $BGC['ip_header'] : null,
         'limits' => array_map('intval', $limits),
+        // 2.713.0: the address the email codes come from, and the website named in them
+        'mail_from' => bgc_mail_from((string) ($BGC['mail_from'] ?? '')),
+        'site_url' => rtrim((string) ($BGC['site_url'] ?? ('https://' . bgc_host())), '/'),
     ];
     return $s;
 }
@@ -79,6 +82,7 @@ function bgc_private_settings(): array
         'user' => (string) ($j['user'] ?? ''),
         'admins' => is_array($j['admins'] ?? null) ? $j['admins'] : [],
     ];
+    if (!empty($j['mail_from'])) $out['mail_from'] = (string) $j['mail_from'];
     $box = @file_get_contents($dir . '/db-pass.txt');
     $key = @file_get_contents($dir . '/secret.key');
     if (is_string($box) && is_string($key)) {
@@ -106,4 +110,20 @@ function bgc_secret_open(string $box, string $key): ?string
         return $p === false ? null : $p;
     }
     return null;
+}
+
+/** this site's name from the request (no port, no "www."), or localhost */
+function bgc_host(): string
+{
+    $h = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '')));
+    $h = preg_replace('/^www\./', '', $h);
+    return preg_match('/^[a-z0-9.-]+$/', $h) && str_contains($h, '.') ? $h : 'localhost';
+}
+
+/** the sender: the configured address if it is a plain email address, else noreply@<this site> */
+function bgc_mail_from(string $configured): string
+{
+    $c = trim($configured);
+    if ($c !== '' && filter_var($c, FILTER_VALIDATE_EMAIL) && !preg_match('/[\r\n<>"]/', $c)) return $c;
+    return 'noreply@' . bgc_host();
 }

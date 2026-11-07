@@ -29,13 +29,16 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.710.0 browser test did not run"); process.exit(0); }
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-cm710-")), port = await freePort();
-  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_ADMINS: "boss" }), stdio: "ignore" });
+  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_ADMINS: "boss", BGC_MAIL_LOG: path.join(tmp, "mail.log") }), stdio: "ignore" });
   const API = "http://127.0.0.1:" + port + "/api.php", A = (a) => API + "?a=" + a;
+  // 2.713.0: joining = a name + an email address, confirmed with the emailed code (BGC_MAIL_LOG)
+  const codeFor = (email) => { const f = path.join(tmp, "mail.log"); const m = fs.existsSync(f) ? fs.readFileSync(f, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((x) => x.to === email).pop() : null; return m ? m.text.match(/\b(\d{6})\b/)[1] : ""; };
+  const member = async (handle, password, display) => { const email = handle + "@example.com"; const r = await post(A("register"), Object.assign({ handle, password, first_name: "First", last_name: "Last", email }, display ? { display } : {})); await post(A("verify_email"), { code: codeFor(email) }, r.token); return r.token; };
   for (let i = 0; i < 50; i++) { try { const j = await post(A("info")); if (j.ok) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 100)); }
   const before = await (await fetch(URL0 + "api/community")).json();
   const b = await chromium.launch();
   try {
-    const bob = (await post(A("register"), { handle: "bob", password: "bobs-password", display: "Bob" })).token;
+    const bob = await member("bob", "bobs-password", "Bob");
     await post(A("send"), { to: "help", body: "Hi all, I am Bob" }, bob);
     await post(URL0 + "api/community/url", { url: API });
     await post(URL0 + "api/community/signout", {});
@@ -43,9 +46,14 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
     await p.goto(URL0); await p.waitForFunction(() => window.H3Community && document.getElementById("tCm"), null, { timeout: 30000 });
     const sb = await p.evaluate(() => ({ inBar: document.getElementById("tCm").parentElement.id, text: document.getElementById("tCm").textContent }));
     check("💬 Community sits on the status bar", sb.inBar === "statusbar" && /Community/.test(sb.text), sb);
-    await p.click("#tCm"); await p.waitForSelector("#cmJoin", { timeout: 10000 });
+    await p.evaluate(() => { if (!H3Community.isOpen()) H3Community.toggle(true); }); await p.waitForSelector("#cmJoin", { timeout: 10000 });     // open (it may be remembered open)
     await p.fill("#cmHandle", "Alice_1"); await p.fill("#cmDisplay", "Alice"); await p.fill("#cmPass", "alices-password");
+    await p.fill("#cmFirst", "Alice"); await p.fill("#cmLast", "Archer"); await p.fill("#cmEmail", "alice@example.com");
     await p.click("#cmJoin");
+    await p.waitForSelector("#cmCode", { timeout: 15000 });
+    const vv = await p.evaluate(() => ({ body: document.getElementById("cmBody").textContent, tabs: document.querySelectorAll("#cmTabs button").length }));
+    check("2.713.0 Join asks for the emailed code before anything else (no tabs yet; the address shown)", /alice@example\.com/.test(vv.body) && vv.tabs === 0, vv);
+    await p.fill("#cmCode", codeFor("alice@example.com")); await p.click("#cmVerify");
     await p.waitForFunction(() => /Hi all, I am Bob/.test((document.getElementById("cmList") || {}).textContent || ""), null, { timeout: 15000 });
     const j1 = await p.evaluate(() => ({ who: document.getElementById("cmWho").textContent, tabs: [...document.querySelectorAll("#cmTabs button")].map((x) => x.textContent) }));
     const st = await (await fetch(URL0 + "api/community")).json();
@@ -98,7 +106,7 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
     await p.evaluate(() => [...document.querySelectorAll("#cmList .cmm")].find((m) => /Any time/.test(m.textContent)).querySelector("button.act").click());
     await p.fill("#cmList .cmrep input", "testing a report"); await p.press("#cmList .cmrep input", "Enter");
     await p.waitForFunction(() => /reported/.test(document.getElementById("cmMsg").textContent));
-    const boss = (await post(A("register"), { handle: "boss", password: "boss-password" })).token;
+    const boss = await member("boss", "boss-password");
     const rep = await post(A("admin_reports"), {}, boss);
     check("⚑ report: the admins see it (reason + the message)", (rep.reports || []).some((r) => r.reason === "testing a report"), rep);
     // sign out, leave

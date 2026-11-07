@@ -15,7 +15,12 @@
  *                  requests to you: ✓ Accept / ✕ Decline; yours waiting: cancel; your friends (● online) -> 💬 chat,
  *                  remove, block
  *   a friend's tab  your private chat with them
- *   ⋯              sign out, leave the community (deletes your ID), the server's address
+ *   ⋯              your details (name, email), the Discussions on the website, sign out, leave the community (deletes
+ *                  your ID), the server's address
+ * 2.713.0 (Tim: "let users enter first name, last name and email - and verify email so if we ban a user they can't just
+ * change their username"): Join asks for a first + last name and an email address (only the admins see them); the
+ * server emails a 6-digit code and the panel asks for it (Confirm / Send a new code / a different address) before the
+ * Help room and friends open. Members from before 2.713.0 are asked for their name + email the same way.
  * New messages come every few seconds while the panel is open (every 20 s while it is closed - for the badge).
  * Everything people write is shown as text, never as HTML - and never translated (data-noi18n: a message "Save" stays
  * "Save" in a Chinese / Japanese bitGen).
@@ -24,7 +29,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const OPEN_MS = 4000, CLOSED_MS = 20000;
-  const S = { me: null, admin: false, since: 0, at: null, msgs: new Map(), friends: [], incoming: [], outgoing: [], view: "help", dms: [], unread: {}, timer: 0, rules: "", busy: false, joined: false, url: "" };
+  const S = { me: null, profile: null, editProfile: false, admin: false, since: 0, at: null, msgs: new Map(), friends: [], incoming: [], outgoing: [], view: "help", dms: [], unread: {}, timer: 0, rules: "", busy: false, joined: false, url: "" };
   function el(tag, attrs, kids) {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs || {})) { if (v == null || v === false) continue; if (k === "text") e.textContent = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else if (k === "class") e.className = v; else e.setAttribute(k, v === true ? "" : v); }
@@ -35,6 +40,9 @@
     const r = await fetch(u, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     let j; try { j = await r.json(); } catch (e) { j = { ok: false, error: "no answer" }; }
     if (j && j.signedOut) { S.joined = false; render(); }
+    if (j && (j.need === "verify" || j.need === "profile") && S.joined) {         // the server wants the address confirmed first
+      S.profile = Object.assign({}, S.profile || {}, { verified: false, needs_profile: j.need === "profile" }); render();
+    }
     return j;
   }
   const call = (a, b) => api("/api/community/call/" + a, b || {});
@@ -90,12 +98,14 @@
       + ".cmm .who{font-weight:600;cursor:pointer}.cmm .when{color:var(--dim,#9a917f);font-size:11px;margin-left:6px}.cmm .txt{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px}.cmm .act{float:right;opacity:.5;margin-left:6px;cursor:pointer;background:none;border:0;color:inherit;padding:0}.cmm .act:hover{opacity:1}"
       + ".cmsend{display:flex;gap:6px;padding:6px;border-top:1px solid var(--line,#3a342a)}.cmsend textarea{flex:1;resize:none;height:38px}.cmpad{padding:8px 10px;overflow-y:auto}.cmpad label{display:block;margin:6px 0 2px;color:var(--dim,#9a917f)}.cmpad input{width:100%;box-sizing:border-box}"
       + ".cmrow{display:flex;align-items:center;gap:6px;padding:3px 0}.cmrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cmdot{width:8px;height:8px;border-radius:50%;background:var(--dim,#9a917f);flex:none}.cmdot.on{background:var(--ok,#7fb069)}"
-      + ".cmsec{margin:10px 0 4px;font-weight:600}.cmmsg{padding:3px 9px 6px;min-height:16px}.cmmsg.bad{color:var(--bad,#d1553f)}.cmrules{white-space:pre-wrap;color:var(--dim,#9a917f);font-size:12px;margin-top:8px}"
+      + ".cmsec{margin:10px 0 4px;font-weight:600}.cmnew{border:1px solid var(--line,#3a342a);border-radius:8px;margin:10px 0 0;padding:4px 8px 8px}.cmnew legend{color:var(--dim,#9a917f);padding:0 4px}#cmCode{font-size:20px;letter-spacing:4px;text-align:center;margin-top:6px}.cmmsg{padding:3px 9px 6px;min-height:16px}.cmmsg.bad{color:var(--bad,#d1553f)}.cmrules{white-space:pre-wrap;color:var(--dim,#9a917f);font-size:12px;margin-top:8px}"
       + "#tCm{position:relative}#tCm .cmbadge{position:absolute;top:-4px;right:-4px;background:var(--bad,#d1553f);color:#fff;border-radius:8px;font-size:10px;padding:0 4px;line-height:14px}" }));
   }
+  const confirmed = () => !!(S.profile && S.profile.verified);
+  const siteUrl = () => { try { return new URL(S.url).origin; } catch (e) { return "https://tigerart.com.au"; } };
   function tabs() {
     const t = $("cmTabs"); t.textContent = "";
-    if (!S.joined) return;
+    if (!S.joined || !confirmed()) return;
     const add = (id, label, n) => t.appendChild(el("button", { type: "button", role: "tab", class: S.view === id ? "on" : "", "aria-selected": S.view === id ? "true" : "false", onclick: () => show(id) },
       [label, n ? el("span", { class: "n", text: String(n) }) : null]));
     add("help", "Help", S.unread.help);
@@ -107,6 +117,7 @@
     $("cmWho").textContent = S.joined && S.me ? S.me.display + " (@" + S.me.handle + ")" : "";
     const b = $("cmBody"); b.textContent = "";
     if (!S.joined) return joinView(b);
+    if (!confirmed() || S.editProfile) return (S.editProfile || (S.profile && S.profile.needs_profile)) ? profileView(b) : verifyView(b);
     if (S.view === "friends") return friendsView(b);
     chatView(b, S.view);
   }
@@ -121,18 +132,62 @@
     const pad = el("div", { class: "cmpad" });
     pad.appendChild(el("div", { text: "Join the bitGen Community: ask for help in the Help room, and add friends to chat with." }));
     const f = (id, label, type, ph) => [el("label", { for: id, text: label }), el("input", { id, type, placeholder: ph || "", autocomplete: type === "password" ? "current-password" : "off", spellcheck: "false" })];
-    pad.append(...f("cmHandle", "User ID (3-24 letters, numbers, _ . -)", "text", "your_id"), ...f("cmDisplay", "Display name (for a new ID)", "text", ""), ...f("cmPass", "Password (8 or more characters)", "password", ""));
+    pad.append(...f("cmHandle", "User ID (3-24 letters, numbers, _ . -)", "text", "your_id"), ...f("cmPass", "Password (8 or more characters)", "password", ""));
+    // 2.713.0: a new ID also needs a name and an email address (a code goes to it); a sign-in needs neither
+    const fresh = el("fieldset", { class: "cmnew" }, [el("legend", { text: "New here? Also:" }),
+      ...f("cmFirst", "First name", "text", ""), ...f("cmLast", "Last name", "text", ""), ...f("cmEmail", "Email address (a code goes to it)", "email", ""),
+      ...f("cmDisplay", "Display name (what others see - your user ID if empty)", "text", ""),
+      el("div", { class: "hint", text: "Only the community's admins see your name and email address. Nobody else does." })]);
+    pad.appendChild(fresh);
     const go = (mode) => async () => {
       say(mode === "register" ? "joining…" : "signing in…");
-      const j = await api("/api/community/join", { mode, handle: $("cmHandle").value, password: $("cmPass").value, display: $("cmDisplay").value, url: $("cmUrl").value });
+      const j = await api("/api/community/join", { mode, handle: $("cmHandle").value, password: $("cmPass").value, display: $("cmDisplay").value, url: $("cmUrl").value,
+        first_name: $("cmFirst").value, last_name: $("cmLast").value, email: $("cmEmail").value });
       if (!j.ok) return say(j.error || "could not join", true);
-      $("cmPass").value = ""; say(""); await start(true);
+      $("cmPass").value = ""; say(mode === "register" ? (j.mail_sent ? "a code is on its way to your email" : "joined - but the email did not go; ask for a new code") : ""); await start(true);
     };
     pad.appendChild(el("div", { class: "rowbtns", style: "margin-top:10px;gap:6px" }, [el("button", { type: "button", id: "cmJoin", text: "Join", title: "Make this user ID and join", onclick: go("register") }),
       el("button", { type: "button", class: "ghost", id: "cmSignIn", text: "Sign in", title: "Use a user ID you already have", onclick: go("login") })]));
     const det = el("details", { style: "margin-top:10px" }, [el("summary", { text: "Community server" }), el("input", { id: "cmUrl", type: "text", spellcheck: "false", value: S.url })]);
     pad.appendChild(det);
     pad.appendChild(el("div", { id: "cmRules", class: "cmrules", text: S.rules }));
+    b.appendChild(pad);
+  }
+
+  /* ---------------- confirm the email address (2.713.0) ---------------- */
+  function verifyView(b) {
+    const p = S.profile || {};
+    const pad = el("div", { class: "cmpad" });
+    const code = el("input", { id: "cmCode", type: "text", inputmode: "numeric", autocomplete: "one-time-code", maxlength: "7", placeholder: "123456", spellcheck: "false" });
+    code.addEventListener("keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") confirmCode(); });
+    pad.append(el("div", { class: "cmsec", text: "Confirm your email address" }),
+      el("div", {}, [el("span", { text: "We emailed a 6-digit code to" }), " ", el("b", { "data-noi18n": true, text: p.email || "" }), el("span", { text: ". Type it here:" })]),
+      code,
+      el("div", { class: "rowbtns", style: "margin-top:8px;gap:6px" }, [el("button", { type: "button", id: "cmVerify", text: "Confirm", onclick: confirmCode }),
+        btn("Send a new code", "Another code to the same address", async () => { const j = await call("resend_code"); say(j.ok ? (j.mail_sent ? "a new code is on its way" : "the email did not go - try again later") : j.error, !j.ok || !j.mail_sent); }),
+        btn("Wrong address?", "Change your name or email address", () => { S.editProfile = true; render(); })]),
+      el("div", { class: "hint", style: "margin-top:8px", text: "No email? Look in the spam folder. The code works for 15 minutes." }),
+      el("div", { class: "rowbtns", style: "margin-top:12px" }, [btn("Sign out", "Sign out on this computer", async () => { await api("/api/community/signout", {}); S.joined = false; S.profile = null; render(); })]));
+    b.appendChild(pad); setTimeout(() => code.focus(), 0);
+  }
+  async function confirmCode() {
+    const c = ($("cmCode") || {}).value || ""; if (!c.trim()) return;
+    const j = await call("verify_email", { code: c });
+    if (!j.ok) return say(j.error || "not confirmed", true);
+    S.profile = j.profile; say("email address confirmed - welcome!"); await start(true);
+  }
+  function profileView(b) {
+    const p = S.profile || {};
+    const pad = el("div", { class: "cmpad" });
+    const f = (id, label, type, v) => [el("label", { for: id, text: label }), el("input", { id, type, value: v || "", spellcheck: "false", autocomplete: "off" })];
+    pad.append(el("div", { class: "cmsec", text: "Your details" }),
+      el("div", { class: "hint", text: p.needs_profile ? "The community now asks every member for a name and an email address (a code confirms it). Only the admins see them." : "Only the admins see your name and email address. A new address is confirmed with a code." }),
+      ...f("cmPFirst", "First name", "text", p.first_name), ...f("cmPLast", "Last name", "text", p.last_name), ...f("cmPEmail", "Email address", "email", p.email),
+      el("div", { class: "rowbtns", style: "margin-top:8px;gap:6px" }, [el("button", { type: "button", id: "cmPSave", text: "Save", onclick: async () => {
+        const j = await call("set_profile", { first_name: $("cmPFirst").value, last_name: $("cmPLast").value, email: $("cmPEmail").value });
+        if (!j.ok) return say(j.error || "not saved", true);
+        S.profile = j.profile; S.editProfile = false; say(j.mail_sent ? "saved - a code is on its way to the new address" : "saved"); render(); } }),
+        (confirmed() || !p.needs_profile) ? btn("Back", "", () => { S.editProfile = false; render(); }) : null]));
     b.appendChild(pad);
   }
 
@@ -242,8 +297,14 @@
   function more() {
     const b = $("cmBody"); b.textContent = "";
     const pad = el("div", { class: "cmpad" });
+    pad.append(el("div", { class: "cmsec", text: "Discussions" }), el("div", {}, [el("a", { id: "cmForum", href: siteUrl() + "/discussions.php", target: "_blank", rel: "noopener", text: "Open the Discussions on the website" })]),
+      el("div", { class: "hint", text: "Longer questions, your work, ideas - sign in there with the same user ID. Guests can read and post too." }));
+    if (S.joined && S.profile && !S.profile.needs_profile) {
+      pad.append(el("div", { class: "cmsec", text: "Your details" }), el("div", { "data-noi18n": true, text: (S.profile.first_name + " " + S.profile.last_name).trim() + " - " + S.profile.email }),
+        el("div", { class: "hint", text: "Only the admins see these." }), el("div", { class: "rowbtns", style: "margin-top:6px" }, [btn("Change", "Your name or email address", () => { S.editProfile = true; render(); })]));
+    }
     if (S.joined) {
-      pad.append(el("div", {}, [el("span", { text: "Signed in as" }), " ", el("b", { "data-noi18n": true, text: S.me ? S.me.display + " (@" + S.me.handle + ")" : "" })]),
+      pad.append(el("div", { class: "cmsec", text: "Account" }), el("div", {}, [el("span", { text: "Signed in as" }), " ", el("b", { "data-noi18n": true, text: S.me ? S.me.display + " (@" + S.me.handle + ")" : "" })]),
         el("div", { class: "rowbtns", style: "margin-top:8px;gap:6px" }, [btn("Sign out", "Sign out on this computer (your ID stays)", async () => { await api("/api/community/signout", {}); S.joined = false; S.msgs.clear(); render(); })]));
       pad.append(el("div", { class: "cmsec", text: "Leave the community" }), el("div", { class: "hint", text: "Deletes your user ID and friendships. Type your password:" }),
         el("input", { id: "cmLeavePass", type: "password", autocomplete: "current-password" }),
@@ -279,7 +340,7 @@
     clearTimeout(S.timer);
     const open = isOpen();
     try {
-      if (S.joined) {
+      if (S.joined && confirmed()) {
         const j = await call("poll", { since: S.since, at: S.at });
         if (j.ok) {
           for (const id of j.deleted || []) S.msgs.delete(id);
@@ -302,9 +363,9 @@
     const info = await call("info"); S.rules = info && info.ok ? info.rules || "" : "";
     if (S.joined) {
       const me = await call("me");
-      if (me.ok) { S.me = me.user; S.admin = !!me.admin; } else S.joined = false;
+      if (me.ok) { S.me = me.user; S.admin = !!me.admin; S.profile = me.profile || { verified: true }; } else S.joined = false;
     }
-    if (S.joined) { await loadFriends(); const h = await call("history", { room: "help", limit: 80 }); if (h.ok) for (const m of h.messages || []) { S.msgs.set(m.id, m); S.since = Math.max(S.since, m.id); } }
+    if (S.joined && confirmed()) { await loadFriends(); const h = await call("history", { room: "help", limit: 80 }); if (h.ok) for (const m of h.messages || []) { S.msgs.set(m.id, m); S.since = Math.max(S.since, m.id); } }
     if (fresh) S.view = "help";
     render(); poll();
   }
