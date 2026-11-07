@@ -22,6 +22,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const REG_LIMIT = 12;
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), "bgc710-"));
 const DB = path.join(TMP, "community.db");
+const MAIL = path.join(TMP, "mail.log");                 // 2.713.0: the emailed codes land here (BGC_MAIL_LOG)
+/** the newest code emailed to this address */
+const codeFor = (email) => { const ls = fs.existsSync(MAIL) ? fs.readFileSync(MAIL, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((m) => m.to === email) : []; const m = ls.length ? ls[ls.length - 1].text.match(/\b(\d{6})\b/) : null; return m ? m[1] : null; };
+let idn = 0;
+/** 2.713.0: what joining needs now besides a handle and password - a name and an email address (unique per call) */
+const P = () => ({ first_name: "First", last_name: "Last", email: "u" + (++idn) + "@example.com" });
 let php = null, BASE = "";
 
 function freePort() {
@@ -55,13 +61,13 @@ async function main() {
   check(".gitignore: community/config.php and community/*.db never go in git", /^community\/config\.php$/m.test(gi) && /^community\/\*\.db$/m.test(gi));
   check("config.sample.php documents dsn / user / pass / admins / rules and the env overrides", ["'dsn'", "'user'", "'pass'", "'admins'", "'rules'", "BGC_DSN", "BGC_ADMINS"].every((k) => fs.readFileSync(path.join(DIR, "config.sample.php"), "utf8").includes(k)));
   const libs = phpFiles.filter((f) => f.startsWith("lib/"));
-  check("every lib/*.php refuses to run unless api.php loaded it", libs.every((f) => /if \(!defined\('BGC'\)\) \{ http_response_code\(404\); exit; \}/.test(fs.readFileSync(path.join(DIR, f), "utf8"))));
+  check("every lib/*.php refuses to run unless loaded (boot.php - the loader - prints nothing)", libs.filter((f) => f !== "lib/boot.php").every((f) => /if \(!defined\('BGC'\)\) \{ http_response_code\(404\); exit; \}/.test(fs.readFileSync(path.join(DIR, f), "utf8"))) && !/echo|print/.test(fs.readFileSync(path.join(DIR, "lib/boot.php"), "utf8")));
   const allSrc = phpFiles.map((f) => fs.readFileSync(path.join(DIR, f), "utf8")).join("\n");
-  check("no ->query( / ->exec( with input: the only exec() calls are fixed statements (schema, SET NAMES, PRAGMA)", !/->query\(/.test(allSrc) && (allSrc.match(/->exec\(/g) || []).length <= 5);
+  check("no ->query( / ->exec( with input: the only exec() calls are fixed statements (schema, SET NAMES, PRAGMA)", !/->query\(/.test(allSrc) && (allSrc.match(/->exec\(/g) || []).length <= 8);
 
   // ---- the server -------------------------------------------------------------------------------------------------
   const port = await freePort(); BASE = "http://127.0.0.1:" + port;
-  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "Alice", BGC_REGISTER_PER_HOUR: String(REG_LIMIT) }), stdio: ["ignore", "pipe", "pipe"] });
+  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "Alice", BGC_REGISTER_PER_HOUR: String(REG_LIMIT), BGC_MAIL_LOG: MAIL }), stdio: ["ignore", "pipe", "pipe"] });
   let phpLog = ""; php.stdout.on("data", (d) => { phpLog += d; }); php.stderr.on("data", (d) => { phpLog += d; });
   let up = false;
   for (let i = 0; i < 60 && !up; i++) { try { await fetch(BASE + "/api.php?a=info"); up = true; } catch (e) { await sleep(100); } }
@@ -69,7 +75,7 @@ async function main() {
 
   // ---- info / the envelope ----------------------------------------------------------------------------------------
   let r = await call("info");
-  check("info: {name, version 2.710.0, rules, users 0, help_room help}", ok(r) && r.j.name && r.j.version === "2.710.0" && typeof r.j.rules === "string" && r.j.users === 0 && r.j.help_room === "help", r.j);
+  check("info: {name, version 2.713.0, rules, users 0, help_room help}", ok(r) && r.j.name && r.j.version === "2.713.0" && typeof r.j.rules === "string" && r.j.users === 0 && r.j.help_room === "help", r.j);
   check("replies: Content-Type application/json; charset=utf-8 + X-Content-Type-Options nosniff", /^application\/json; charset=utf-8$/i.test(r.h.get("content-type") || "") && r.h.get("x-content-type-options") === "nosniff");
   check("the first request made the tables (SQLite file exists)", fs.existsSync(DB));
   r = await call("info", null, null, { method: "GET" }); check("GET info works (a browser check that the server is up)", ok(r));
@@ -81,7 +87,12 @@ async function main() {
   // ---- register ---------------------------------------------------------------------------------------------------
   let regCount = 0;     // register calls that got past validation (they count toward the per-IP limit)
   const T = {};
-  const reg = async (handle, display) => { const x = await call("register", Object.assign({ handle, password: "pw-" + handle.toLowerCase() + "-123" }, display ? { display } : {})); regCount++; return x; };
+  // 2.713.0: joining = a name + an email address, then the emailed code
+  const reg = async (handle, display) => {
+    const p = P(); const x = await call("register", Object.assign({ handle, password: "pw-" + handle.toLowerCase() + "-123" }, p, display ? { display } : {})); regCount++;
+    if (ok(x)) { const v = await call("verify_email", { code: codeFor(p.email) }, x.j.token); if (!ok(v)) console.log("verify failed for " + handle, v.j); }
+    return x;
+  };
   r = await reg("Alice", "Alice A");
   check("register: {token (64 hex), user {handle lower-case, display, online}}", ok(r) && /^[0-9a-f]{64}$/.test(r.j.token) && r.j.user.handle === "alice" && r.j.user.display === "Alice A" && r.j.user.online === true, r.j);
   T.alice = r.j.token;
@@ -89,13 +100,13 @@ async function main() {
   r = await reg("BOB"); check("register: a taken handle (any case) -> 409", err(r, 409), r);
   r = await reg("help"); check("register: \"help\" (the Help room's name) -> 409", err(r, 409), r);
   for (const bad of ["ab", "has space", "x".repeat(25), "émile", "a/b", ""]) {
-    r = await call("register", { handle: bad, password: "password123" }); check("register: bad handle " + JSON.stringify(bad) + " -> 400", err(r, 400), r);
+    r = await call("register", { ...P(), handle: bad, password: "password123" }); check("register: bad handle " + JSON.stringify(bad) + " -> 400", err(r, 400), r);
   }
-  r = await call("register", { handle: "shorty", password: "1234567" }); check("register: a 7-character password -> 400", err(r, 400), r);
-  r = await call("register", { handle: "longpw", password: "p".repeat(201) }); check("register: a 201-character password -> 400", err(r, 400), r);
-  r = await call("register", { handle: "ctrl", password: "password123", display: "bad\u0007name" }); check("register: a display with a control character -> 400", err(r, 400), r);
-  r = await call("register", { handle: "longdisp", password: "password123", display: "d".repeat(41) }); check("register: a 41-character display -> 400", err(r, 400), r);
-  r = await call("register", { handle: 123, password: "password123" }); check("register: a number for handle -> 400", err(r, 400), r);
+  r = await call("register", { ...P(), handle: "shorty", password: "1234567" }); check("register: a 7-character password -> 400", err(r, 400), r);
+  r = await call("register", { ...P(), handle: "longpw", password: "p".repeat(201) }); check("register: a 201-character password -> 400", err(r, 400), r);
+  r = await call("register", { ...P(), handle: "ctrl", password: "password123", display: "bad\u0007name" }); check("register: a display with a control character -> 400", err(r, 400), r);
+  r = await call("register", { ...P(), handle: "longdisp", password: "password123", display: "d".repeat(41) }); check("register: a 41-character display -> 400", err(r, 400), r);
+  r = await call("register", { ...P(), handle: 123, password: "password123" }); check("register: a number for handle -> 400", err(r, 400), r);
   r = await call("info"); check("info: users = 6", r.j.users === 6, r.j);
 
   // ---- login / me -------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 // bitGen Studio — routes/community.js (2.710.0): the 💬 Community panel's routes (lib/community.js does the work).
 //   GET  /api/community                 {url, handle, display, joined}
 //   POST /api/community/url    {url}    the community server's address
-//   POST /api/community/join   {handle, password, display?, mode: register | login, url?}
+//   POST /api/community/join   {handle, password, display?, first_name, last_name, email (register), mode: register | login, url?}
 //   POST /api/community/signout
 //   POST /api/community/leave  {password}
 //   POST /api/community/call/:action {…}  one community action for the signed-in user (lib/community.js ACTIONS)

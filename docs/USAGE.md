@@ -4567,8 +4567,14 @@ render itself, so 16 GB mode keeps only the text encoder unload and pass 1). Run
 a docker's middle to put it INSIDE that docker as a tab; ▁ minimizes it, ⛶ maximizes it, ✕ closes it. Where it is and
 whether it is open are remembered.
 
-- **Join**: type a **user ID** (3-24 letters, numbers, _ . -), a display name and a password (8 characters or more),
-  then **Join**. Already have an ID (on another computer)? Type it and the password, then **Sign in**.
+- **Join**: type a **user ID** (3-24 letters, numbers, _ . -) and a password (8 characters or more), and under
+  **New here? Also** your **first name**, **last name** and **email address** (and a display name if you like), then
+  **Join** (2.713.0). Only the community's admins see your name and email address - everyone else sees your user ID and
+  display name. Already have an ID (on another computer)? Type it and the password, then **Sign in**.
+- **Confirm your email address**: the community emails a **6-digit code**; type it and press **Confirm** (or Enter).
+  The Help room and friends open after that. **Send a new code** sends another (4 an hour); **Wrong address?** changes
+  the name or address. The code works for 15 minutes and 5 tries. No email? Look in the spam folder. Members who joined
+  before 2.713.0 are asked for their name and email address the same way the next time they sign in.
 - **Help**: the room every member shares. Ask a question there and anyone can answer. Click a name to find that person
   and add them as a friend.
 - **Friends**: find people by user ID or name and press **+ Add friend**. They get a friend request; when they press
@@ -4577,16 +4583,27 @@ whether it is open are remembered.
   are hidden from you).
 - **⚑** on a message reports it to the community's admins, with a reason. The badge on 💬 Community counts new messages
   and friend requests while the panel is closed.
-- **⋯**: **Sign out** on this computer (your ID stays), **Leave the community** (deletes your ID and friendships - type
-  your password), and the community server's address. Admins also see **Reports** there: delete the message, or ban
-  its writer.
+- **⋯**: **Discussions** (opens the website's discussions - see below), **Your details** (your name and email
+  address; **Change** - a new address is confirmed with a new code), **Sign out** on this computer (your ID stays),
+  **Leave the community** (deletes your ID and friendships - type your password), and the community server's address.
+  Admins also see **Reports** there: delete the message, or ban its writer. A ban also bans the writer's **email
+  address**: they cannot come back under a new user ID with it.
+
+**Joining is optional** - bitGen Studio works the same without it.
+
+**The Discussions** (2.713.0) are on the website, https://tigerart.com.au/discussions.php: longer questions, your
+work, ideas - in four categories (Help, Show your work, Ideas, General). Sign in there with the **same user ID and
+password** (or join there - it is the same account). Members' posts show at once. **Guests** (no account) can read and
+post too, with a name; a guest's post waits until an admin approves it. Admins see the waiting posts, approve or refuse
+them, remove posts and ban members there too.
 
 What people write is shown exactly as written, never translated or turned into links or pictures. New messages
 arrive every few seconds while the panel is open. Your password is sent once to the community server (over https) and
 never kept; bitGen keeps only a sign-in token in community.json in the install folder, and the page never sees it.
 
 The community server is a small PHP program (the `community/` folder of the repo, `community/README.md` explains the
-install on any PHP + MariaDB host). The default address is https://tigerart.com.au/bitgen-community/api.php.
+install on any PHP + MariaDB host; the emails go through the host's own mail server). The default address is
+https://tigerart.com.au/bitgen-community/api.php.
 
 ## Long video: one MiniMax H3 run up to 30 seconds (2.503.0)
 

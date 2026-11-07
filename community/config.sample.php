@@ -6,6 +6,7 @@
 //   BGC_DSN                 replaces 'dsn' (e.g. sqlite:/home/you/bgc.db) - with it set, config.php is optional
 //   BGC_ADMINS              replaces 'admins' (a comma list: "tim,lili")
 //   BGC_REGISTER_PER_HOUR   replaces limits.register_per_hour
+//   BGC_MAIL_LOG            writes the emails to this file instead of sending them (tests)
 if (!defined('BGC')) { http_response_code(404); exit; }
 
 $BGC = [
@@ -25,6 +26,12 @@ $BGC = [
     // what bitGen shows as the community's name and rules (api.php?a=info)
     'name' => 'bitGen Community',
     'rules' => 'Be kind. Help each other. No spam, no hate, nothing illegal. Admins may delete messages and ban accounts.',
+
+    // ---- email (2.713.0): the code that confirms a new member's address ---------------------------------------
+    // sent by the hosting's own mail server (PHP mail()); empty = noreply@<this site>
+    'mail_from' => '',
+    // the website named in the email (where members can also type the code: <site_url>/account.php)
+    // 'site_url' => 'https://tigerart.com.au',
 
     // ---- safety ------------------------------------------------------------------------------------------------
     // refuse plain http:// (passwords and tokens would cross the internet readable). Leave on.

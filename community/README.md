@@ -91,6 +91,14 @@ can write (SQLite writes a journal file next to it). Fine for a few dozen people
 | `BGC_ADMINS` | `admins` | a comma list of user ids, e.g. `tim,lili` |
 | `BGC_REGISTER_PER_HOUR` | `limits.register_per_hour` | the tests register more than 5 users from 127.0.0.1 |
 
+## Email (2.713.0)
+
+Joining sends a 6-digit code to the member's address. It goes through PHP's `mail()` - the hosting's own mail server
+(Plesk and cPanel have one) - from `noreply@<the site>`, or the address set as `mail_from` (config.php, or the
+tigerart admin page ▸ Emails). For it to reach inboxes rather than spam: in Plesk ▸ Mail Settings turn on mail for the
+domain and **DKIM**; the domain's DNS should have the SPF record Plesk suggests. `BGC_MAIL_LOG=<file>` writes the emails
+to a file instead of sending them (tests).
+
 ## Security, in short
 
 - Passwords: `password_hash` / `password_verify` (over a sha384 of the password, so bcrypt's 72-byte limit never
