@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.712.0 (Tim: "can you create the full tigerart.com.au website and only use bitgen as the only product")
+node scripts/test-website712.js > /tmp/website712.log 2>&1 \
+  && ok "2.712.0 the tigerart.com.au website (website/ under php -S): every page and every local link / picture / installer answers, the version + every feature from the app, the installers byte for byte, credits with their authors; in a browser the feature filter, the phone menu, the film held on the drawing, reduced motion - or SKIP without php" \
+  || { bad "2.712.0 website"; grep -a "^FAIL" -A2 /tmp/website712.log | head -14; }
 # ---- 2.711.0 (Tim: "make it a floating docker too")
 H3_URL=http://127.0.0.1:8311/ node scripts/test-community711-ui.js > /tmp/community711ui.log 2>&1 \
   && ok "2.711.0 browser test: 💬 Community is a floating docker - the docker title bar, every edge sizes it, kept across a reload, docks inside another docker as a tab, floats again, 💬 / ✕ hide it - or SKIP" \
