@@ -177,7 +177,7 @@
     const r = u.relation || rel(u.handle);
     if (r === "friend") return [btn("💬", "Chat", () => show("@" + u.handle))];
     if (r === "requested") return [el("span", { class: "hint", text: "asked" }), btn("✕", "Cancel your request", () => act("friend_remove", u.handle))];
-    if (r === "incoming") return [btn("✓", "Accept", () => respond(u.handle, true), ""), btn("✕", "Decline", () => respond(u.handle, false))];
+    if (r === "incoming") return [btn("✓ Accept", "You become friends", () => respond(u.handle, true), ""), btn("✕ Decline", "Say no to the request", () => respond(u.handle, false))];
     return [btn("+ Add friend", "Ask to be friends", () => act("friend_request", u.handle))];
   }
   function friendsView(b) {

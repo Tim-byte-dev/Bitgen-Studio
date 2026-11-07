@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5415,
+ "count": 5417,
  "strings": [
   {
    "s": "0 (auto)",
@@ -28794,6 +28794,15 @@
    ]
   },
   {
+   "s": "Say no to the request",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
    "s": "Scale",
    "kinds": [
     "text"
@@ -39721,6 +39730,15 @@
    "s": "You",
    "kinds": [
     "text"
+   ],
+   "where": [
+    "#cmPanel"
+   ]
+  },
+  {
+   "s": "You become friends",
+   "kinds": [
+    "title"
    ],
    "where": [
     "#cmPanel"

@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "91a2c9791828",
- "count": 8652,
+ "v": "b5fd670abbef",
+ "count": 8654,
  "patternCount": 1000,
  "strings": {
   "0 (auto)": "0（自动）",
@@ -4932,6 +4932,7 @@
   "Saving and samples": "保存与样张",
   "Say hello": "打个招呼吧",
   "Say it in writing": "用文字说",
+  "Say no to the request": "拒绝此请求",
   "Say whether it worked (and what to change)": "说明是否成功（以及需要修改什么）",
   "Scale": "缩放",
   "Scale %": "缩放 %",
@@ -6724,6 +6725,7 @@
   "Year made": "生产年份",
   "Yellow": "黄色",
   "You": "你",
+  "You become friends": "你们成为好友",
   "Your electricity price (on your bill, e.g. 0.35 AUD per kWh) and the daily supply charge (the fixed amount per day, e.g. 1.10). Every finished job's ⚡ card, its": "你的电价（见电费账单，例如每 kWh 0.35 AUD）和每日供电费（每天的固定金额，例如 1.10）。每个已完成任务的 ⚡ 卡片、其",
   "Your last clicks and keys, recorded from when the app started (never what you typed)": "自应用启动以来记录的你最近的点击和按键（绝不记录你输入的内容）",
   "Your pictures, videos and sounds": "你的图片、视频和声音",
