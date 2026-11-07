@@ -18,8 +18,8 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 let ts;
-for (const p of ["typescript", path.join(execSync("npm root -g", { encoding: "utf8" }).trim(), "typescript")]) { try { ts = require(p); break; } catch (e) { /* next */ } }
-if (!ts) { console.log("needs the TypeScript compiler (npm i -g typescript)"); process.exit(2); }
+for (const p of ["typescript", (() => { try { return path.join(execSync("npm root -g", { encoding: "utf8" }).trim(), "typescript"); } catch (e) { return ""; } })()]) { if (!p) continue; try { ts = require(p); break; } catch (e) { /* next */ } }
+if (!ts && require.main === module) { console.log("needs the TypeScript compiler (npm i -g typescript)"); process.exit(2); }
 const ROOT = path.join(__dirname, "..");
 const U = require(path.join(ROOT, "static", "uilang.js"));
 // the files that draw Settings' tabs (each writes only there, or mostly there)
@@ -107,4 +107,4 @@ if (require.main === module) {
   fs.writeFileSync(path.join(ROOT, "static", "i18n", "ui", "dynamic.json"), JSON.stringify(out, null, 1) + "\n");
   console.log(`ui-dynamic: ${out.strings.length} strings, ${out.patterns.length} patterns (settings ids ${ids.size})`);
 }
-module.exports = { forms, pieces, scan, settingsIds };
+module.exports = { forms, pieces, scan, settingsIds, hasParser: !!ts };

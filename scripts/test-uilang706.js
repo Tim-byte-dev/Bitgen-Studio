@@ -21,8 +21,9 @@ check("compile: a pattern needs a fixed word part of 3+ characters (\"{0} {1}\" 
 // the extractor
 const sample = `function paint(j){ $("s_box").textContent = j.ok ? \`installed \${j.name} (\${j.size})\` : "not installed — press Install"; $("s_box").title = "Click to " + (j.on ? "stop" : "start") + " it";
   const lines = []; lines.push("python: " + j.py); $("s_box").textContent = lines.join("\\n"); el.innerHTML = '<b>' + n + '</b> files ready'; $("other").textContent = "elsewhere"; }`;
-const got = Y.scan(sample, "x.js", new Set(["s_box"])).map((r) => r.p).sort();
-check("ui-dynamic: every place the code writes words -> strings and {n} patterns (ternaries expanded, pushes of the same function, innerHTML pieces), only for the Settings dialog's elements",
+const got = Y.hasParser ? Y.scan(sample, "x.js", new Set(["s_box"])).map((r) => r.p).sort() : null;
+if (!got) console.log("SKIP: the extractor check (no TypeScript compiler here - a developer tool; dynamic.json is checked below)");
+else check("ui-dynamic: every place the code writes words -> strings and {n} patterns (ternaries expanded, pushes of the same function, innerHTML pieces), only for the Settings dialog's elements",
   ["Click to start it", "Click to stop it", "installed {0} ({1})", "not installed — press Install", "python: {0}"].every((x) => got.includes(x)) && !got.includes("elsewhere"), got);
 const dyn = JSON.parse(fs.readFileSync(path.join(ROOT, "static", "i18n", "ui", "dynamic.json"), "utf8"));
 check("dynamic.json: the Settings code's words (100+ strings, 100+ patterns - e.g. the token check, the speech engines, the add-ons, the LLM engine line)",
