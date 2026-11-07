@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.712.0** — 🌐 The tigerart.com.au Website: bitGen Studio as the Only Product - Home, Every Feature, Download, Guide, Community, About; PHP, No Database (website/)
 - **2.711.0** — 💬 Community Is a Floating Docker: Float It, Dock It Beside / Inside Another Docker, Remembered
 - **2.710.1** — 💬 Community: Friend Requests Show ✓ Accept / ✕ Decline in Words
 - **2.710.0** — 💬 The bitGen Community: Join With a User ID, the Help Room, Friend Requests (Ask, Then Accepted), Private Chats, Report / Block, Admins; the PHP + MariaDB Server (community/)
