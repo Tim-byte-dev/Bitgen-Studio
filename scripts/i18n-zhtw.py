@@ -9,6 +9,8 @@ Tim (verbatim): "can you add a traditional chinese version as well?"
                                         (refuses to overwrite the reviewed zh-TW without --force)
     python3 scripts/i18n-zhtw.py --ui        static/i18n/ui/zh-CN.json -> zh-TW.json (2.705.0: the app's own words; only the
                                         words zh-TW lacks - the reviewed ones are kept; --force converts all)
+    python3 scripts/i18n-zhtw.py --features  docs/i18n/zh-CN/FEATURES.md -> zh-TW/FEATURES.md (2.714.1: the feature list)
+    python3 scripts/i18n-zhtw.py --json <src> <dst>   a {"strings": {...}} dictionary (2.714.1: the website's zh-CN -> zh-TW)
 
 OpenCC's "s2twp" turns the characters AND the mainland words into Taiwan's (视频 -> 影片, 文件 -> 檔案, 默认 -> 預設, 项目 ->
 專案); TW_WORDS then sets the app's own terms. Code, `code`, links, URLs, HTML tags and the <!-- en: … --> markers are left
@@ -94,9 +96,35 @@ def ui():
     print(json.dumps({"ui": "zh-TW", "strings": len(out)}))
 
 
+def features():
+    """2.714.1: the feature list - docs/i18n/zh-CN/FEATURES.md -> zh-TW/FEATURES.md (converted whole each time; the
+    *Where:* / *Since:* markers, code and links kept)"""
+    cc = converter()
+    src = os.path.join(ROOT, "docs", "i18n", "zh-CN", "FEATURES.md")
+    dst = os.path.join(ROOT, "docs", "i18n", "zh-TW", "FEATURES.md")
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    md = open(src, encoding="utf-8").read()
+    open(dst, "w", encoding="utf-8").write(convert_text(md, cc))
+    print(json.dumps({"features": "zh-TW", "lines": md.count("\n")}))
+
+
+def json_strings(src, dst):
+    """2.714.1: any {"strings": {...}} dictionary (the website's) - the values converted, the English keys kept"""
+    cc = converter()
+    d = json.load(open(src, encoding="utf-8"))
+    d["strings"] = {k: convert_text(v, cc) for k, v in d["strings"].items()}
+    open(dst, "w", encoding="utf-8").write(json.dumps(d, ensure_ascii=False, indent=1) + "\n")
+    print(json.dumps({"json": dst, "strings": len(d["strings"])}))
+
+
 def main():
     if "--ui" in sys.argv:
         return ui()
+    if "--features" in sys.argv:
+        return features()
+    if "--json" in sys.argv:
+        i = sys.argv.index("--json")
+        return json_strings(sys.argv[i + 1], sys.argv[i + 2])
     force = "--force" in sys.argv
     if not force and os.path.exists(os.path.join(ROOT, "docs", "i18n", "zh-TW", "USAGE.md")):
         sys.exit("docs/i18n/zh-TW already exists and was read over by hand (2.704.0) - converting again would undo that.\n"

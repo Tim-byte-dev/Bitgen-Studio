@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.714.1 (Tim: "please translate the feature list too, it is the core information")
+python3 scripts/test-features7141.py > /tmp/features7141.log 2>&1 \
+  && ok "2.714.1 the feature list in 简体中文 / 繁體中文 / 日本語 (docs/i18n/<lang>/FEATURES.md): the English's shape line for line, every feature in the PDF's form, the same *Where:* / *Since:* + versions, translated, zh-TW converted" \
+  || { bad "2.714.1 translated feature lists"; grep -a "^FAIL" -A2 /tmp/features7141.log | head -14; }
 # ---- 2.714.0 (Tim: "can we also add the bug report discussion to the website and have the app allow the user to send the bug report to the db if they are registered. if not registered bug report will be sent as anon. compile the list of bugs so i can give it to you")
 node scripts/test-community714-server.js > /tmp/community714srv.log 2>&1 \
   && ok "2.714.0 the community server: bug_report from a member (live) / anonymous (waits), screenshot PNG / JPEG by its bytes, details admins only, 7 MB for bug_report alone, Bug reports category, status, refuse = gone, the export rows worst first, limits - or SKIP without php" \
