@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "e1a6be33fbaa",
- "count": 8654,
+ "v": "d7661f59e373",
+ "count": 8655,
  "patternCount": 1000,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -6918,6 +6918,7 @@
   "bitGen Bridge": "bitGen Bridge",
   "bitGen Community": "bitGen 社群",
   "bitGen Community - ask for help, chat with friends": "bitGen 社群 - 尋求幫助，與好友聊天",
+  "bitGen Community - ask for help, chat with friends (a docker: float it, or dock it beside / inside another)": "bitGen 社群 - 尋求幫助，與好友聊天（一個面板：可浮動，或停靠在其他面板旁邊 / 裡面）",
   "bitGen Default": "bitGen 預設",
   "bitGen Default - built in: Dark, no element styles, UI size 100 % (Ctrl+Alt+Shift+T)": "bitGen 預設 - 內建：深色，無元素樣式，UI 大小 100 %（Ctrl+Alt+Shift+T）",
   "bitGen Studio": "bitGen Studio",

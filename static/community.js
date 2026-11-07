@@ -7,7 +7,8 @@
  * contract community/API.md); this page talks only to bitGen's own server (routes/community.js -> lib/community.js),
  * which keeps the user's token.
  *
- *   💬 Community (the status bar)   opens / closes the panel (bottom right); its badge = unread messages + friend requests
+ *   💬 Community (the status bar)   shows / hides it - a docker of its own (2.711.0: floats, docks, tabs into a docker,
+ *                                   remembered); its badge = unread messages + friend requests
  *   not joined     a user ID + display name + password: Join (a new ID) or Sign in (one you have); the server's address
  *   Help           the public room every member is in - ask, answer; a name -> + Add friend; ⚑ report a message
  *   Friends        search people by ID / name -> + Add friend (they are asked; when they accept you are friends);
@@ -48,23 +49,42 @@
   }
 
   /* ---------------- the panel ---------------- */
+  // 2.711.0 (Tim: "make it a floating docker too"): the panel is a DOCKER of its own (static/secfloat.js SecFloat.add ->
+  // static/dockfloat.js): it floats (every edge sizes it, the title bar drags it, ▁ minimize / ⛶ maximize / ✕), docks
+  // above / below / beside a docker, stacks in a side docker or goes INSIDE one as a tab - where it is, and whether it is
+  // open, kept in docker_status.json (floats.community). 💬 Community on the status bar shows / hides it.
+  const SFID = "community";
+  const docked = () => !!(window.SecFloat && SecFloat.windows && SecFloat.windows[SFID]);
+  function isOpen() {
+    if (docked()) return !!SecFloat.state(SFID).shown;
+    const p = $("cmPanel"); return !!p && !p.hidden;
+  }
   function panel() {
     let p = $("cmPanel"); if (p) return p;
-    p = el("div", { id: "cmPanel", class: "cmpanel", role: "dialog", "aria-label": "bitGen Community", hidden: true });
-    p.appendChild(el("div", { class: "cmhead" }, [el("b", { text: "💬 bitGen Community" }), el("span", { id: "cmWho", class: "cmwho", "data-noi18n": true }),
-      el("button", { type: "button", class: "ghost", id: "cmMore", title: "Sign out, leave the community, the server's address", text: "⋯", onclick: more }),
-      el("button", { type: "button", class: "ghost", title: "Close", "aria-label": "Close", text: "✕", onclick: () => toggle(false) })]));
+    p = el("div", { id: "cmPanel", class: "cmpanel", role: "group", "aria-label": "bitGen Community" });
+    p.appendChild(el("div", { class: "cmhead" }, [el("span", { id: "cmWho", class: "cmwho", "data-noi18n": true }),
+      el("button", { type: "button", class: "ghost", id: "cmMore", title: "Sign out, leave the community, the server's address", text: "⋯", onclick: more })]));
     p.appendChild(el("div", { id: "cmTabs", class: "cmtabs", role: "tablist" }));
     p.appendChild(el("div", { id: "cmBody", class: "cmbody" }));
     p.appendChild(el("div", { id: "cmMsg", class: "hint cmmsg", "aria-live": "polite" }));
-    document.body.appendChild(p);
+    if (window.SecFloat && typeof SecFloat.add === "function" && window.DockFloat) {
+      const w = SecFloat.add({ id: SFID, title: "💬 bitGen Community", w: 380, h: 540, minW: 280, minH: 220, body: p, button: $("tCm"),
+        firstX: (vw) => Math.max(8, vw - 400),
+        onShow: () => { S.unread[S.view] = 0; render(); poll(); } });
+      if (w && w.body) { w.body.style.padding = "0"; w.body.style.overflow = "hidden"; }
+    } else {                                   // no docker system (a test page): the fixed panel, bottom right
+      p.classList.add("cmfixed"); p.hidden = true;
+      p.prepend(el("div", { class: "cmhead" }, [el("b", { text: "💬 bitGen Community" }), el("button", { type: "button", class: "ghost", title: "Close", "aria-label": "Close", text: "✕", onclick: () => toggle(false) })]));
+      document.body.appendChild(p);
+    }
     return p;
   }
   function style() {
     if ($("cmStyle")) return;
     document.head.appendChild(el("style", { id: "cmStyle", text:
-      ".cmpanel{position:fixed;right:12px;bottom:34px;width:360px;height:500px;max-height:calc(100vh - 60px);z-index:9000;display:flex;flex-direction:column;background:var(--panel,#1d1a15);color:var(--text,#e8e2d6);border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:13px}"
-      + ".cmpanel[hidden]{display:none}.cmhead{display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid var(--line,#3a342a)}.cmhead b{flex:1}.cmwho{color:var(--dim,#9a917f);font-size:12px}"
+      ".cmpanel{height:100%;min-height:0;display:flex;flex-direction:column;color:var(--text,#e8e2d6);font-size:13px}"
+      + ".cmpanel.cmfixed{position:fixed;right:12px;bottom:34px;width:360px;height:500px;max-height:calc(100vh - 60px);z-index:9000;background:var(--panel,#1d1a15);border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.45)}"
+      + ".cmpanel[hidden]{display:none}.cmhead{display:flex;align-items:center;gap:6px;padding:4px 9px;border-bottom:1px solid var(--line,#3a342a)}.cmhead b{flex:1}.cmwho{flex:1;color:var(--dim,#9a917f);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
       + ".cmtabs{display:flex;gap:2px;padding:4px 6px 0;overflow-x:auto;border-bottom:1px solid var(--line,#3a342a)}.cmtabs button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:4px 8px;background:none;color:var(--dim,#9a917f);white-space:nowrap}.cmtabs button.on{color:var(--text,#e8e2d6);border-bottom-color:var(--tiger,#f59e2c)}.cmtabs .n{margin-left:4px;background:var(--tiger,#f59e2c);color:#000;border-radius:8px;padding:0 5px;font-size:11px}"
       + ".cmbody{flex:1;min-height:0;display:flex;flex-direction:column}.cmlist{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:6px}.cmm{max-width:85%;align-self:flex-start;background:var(--panel-2,#26221b);border-radius:9px;padding:5px 8px}.cmm.mine{align-self:flex-end;background:color-mix(in srgb,var(--tiger,#f59e2c) 22%,var(--panel-2,#26221b))}"
       + ".cmm .who{font-weight:600;cursor:pointer}.cmm .when{color:var(--dim,#9a917f);font-size:11px;margin-left:6px}.cmm .txt{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:2px}.cmm .act{float:right;opacity:.5;margin-left:6px;cursor:pointer;background:none;border:0;color:inherit;padding:0}.cmm .act:hover{opacity:1}"
@@ -257,7 +277,7 @@
   /* ---------------- polling ---------------- */
   async function poll() {
     clearTimeout(S.timer);
-    const open = !$("cmPanel") || !$("cmPanel").hidden;
+    const open = isOpen();
     try {
       if (S.joined) {
         const j = await call("poll", { since: S.since, at: S.at });
@@ -289,17 +309,18 @@
     render(); poll();
   }
   function toggle(on) {
-    const p = panel(); p.hidden = on === undefined ? !p.hidden : !on;
-    $("tCm").classList.toggle("on", !p.hidden);
-    if (!p.hidden) { S.unread[S.view] = 0; render(); poll(); }
+    panel();
+    if (docked()) { SecFloat.show(SFID, on); }
+    else { const p = $("cmPanel"); p.hidden = on === undefined ? !p.hidden : !on; $("tCm").classList.toggle("on", !p.hidden); if (!p.hidden) { S.unread[S.view] = 0; render(); poll(); } }
   }
   function boot() {
     style();
     const sb = $("statusbar"); if (!sb || $("tCm")) return;
-    const b = el("button", { id: "tCm", type: "button", title: "bitGen Community - ask for help, chat with friends", text: "💬 Community", onclick: () => toggle() });
+    const b = el("button", { id: "tCm", type: "button", title: "bitGen Community - ask for help, chat with friends (a docker: float it, or dock it beside / inside another)", text: "💬 Community" });
     const after = $("tQ"); if (after && after.parentNode === sb) after.after(b); else sb.appendChild(b);
-    panel(); start(false);
+    const go = () => { panel(); if (!docked()) b.onclick = () => toggle(); start(false); };
+    if (window.SecFloat && window.DockFloat) go(); else { let n = 0; const wait = () => (window.SecFloat && window.DockFloat) || n++ > 60 ? go() : setTimeout(wait, 100); wait(); }
   }
-  window.H3Community = { toggle, show, state: () => S, refresh: () => start(false) };
+  window.H3Community = { toggle, show, isOpen, state: () => S, refresh: () => start(false) };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

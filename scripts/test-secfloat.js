@@ -40,8 +40,8 @@ const base = fs.mkdtempSync(path.join(os.tmpdir(), "secfloat393_"));
 try {
   const d0 = DS.load(base);
   const F0 = '{"shown":false,"x":-1,"y":-1,"w":0,"h":0,"mode":"float","to":"","side":"","dw":0,"dh":0,"active":false,"min":false,"at":""}';   // 2.401.4: + at (inline in the left docker); 2.575.0: + min (minimized)
-  check("docker_status.json: floats.basic / floats.llmtok (+ 2.399.0 floats.camera, the timeline's 🎥 Camera panel; 2.419.0 floats.negprompt, the ⊖ negative prompt), hidden and unplaced at first",
-    JSON.stringify(d0.floats) === `{"basic":${F0},"llmtok":${F0},"camera":${F0},"negprompt":${F0}}`, d0.floats);   // 2.398.0: + where it is docked
+  check("docker_status.json: floats.basic / floats.llmtok (+ 2.399.0 floats.camera, the timeline's 🎥 Camera panel; 2.419.0 floats.negprompt, the ⊖ negative prompt; 2.711.0 floats.community, 💬 Community), hidden and unplaced at first",
+    JSON.stringify(d0.floats) === `{"basic":${F0},"llmtok":${F0},"camera":${F0},"negprompt":${F0},"community":${F0}}`, d0.floats);   // 2.398.0: + where it is docked
   const r1 = DS.save(base, { floats: { basic: { shown: true, x: 400, y: 120, w: 360, h: 99999 }, junk: { shown: true } } });
   check("save: merged and clamped, unknown floats dropped, the dockers untouched", r1.floats.basic.shown && r1.floats.basic.x === 400 && r1.floats.basic.h === 4000 && !r1.floats.junk && Object.keys(r1.docks).length === 16, r1.floats);
   const r2 = DS.save(base, { floats: { llmtok: { shown: true } } });
