@@ -16,7 +16,7 @@ Tim: "is it possible to translate help and the user guide into chinese and japan
 import hashlib
 import os
 
-FACE = {"zh-CN": "Noto Sans CJK SC", "ja": "Noto Sans CJK JP"}
+FACE = {"zh-CN": "Noto Sans CJK SC", "zh-TW": "Noto Sans CJK TC", "ja": "Noto Sans CJK JP"}       # 2.704.0: + TC
 DIRS = [os.environ.get("BITGEN_CJK_FONT_DIR", ""), "/usr/share/fonts/opentype/noto", "/usr/share/fonts/noto-cjk",
         "/usr/share/fonts/google-noto-cjk", "C:/Windows/Fonts", "/Library/Fonts", os.path.expanduser("~/Library/Fonts")]
 

@@ -4,6 +4,8 @@ bitGen Studio is a local desktop AI video / image / music / editing studio. Its 
 pages (HTML fragments) and its shortcut list (JSON) are being translated into:
 - **zh-CN** = Simplified Chinese for mainland China (简体中文, mainland vocabulary, full-width Chinese punctuation ，。：；？！（）
   in Chinese sentences; half-width punctuation inside code / keys / English names).
+- **zh-TW** = Traditional Chinese for Taiwan / Hong Kong (2.704.0) - NOT translated separately: made from the reviewed
+  zh-CN with `python3 scripts/i18n-zhtw.py` (OpenCC s2twp, Taiwan's words), then read over by a Taiwan editor.
 - **ja** = Japanese (です・ます調, natural technical-manual Japanese, full-width 、。 punctuation).
 
 The translation must read as if written by a native technical writer: clear, direct, instructional. Translate meaning, not

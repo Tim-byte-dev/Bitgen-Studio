@@ -4537,15 +4537,15 @@ Assets 面板可以把项目的文件整理成**组**——只存在于面板中
 dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 
 ## 中文和日文版指南与帮助（2.703.0）
-<!-- en: the-guide-and-help-in-chinese-and-japanese-2-703-0 817ffffa9e3c -->
+<!-- en: the-guide-and-help-in-chinese-and-japanese-2-703-0 71defce43e4e -->
 
-指南（📖 **Help**（帮助）窗口，以及 **Ctrl+K** 能找到的指南条目）、❔ 帮助页面和快捷键列表现在也提供**简体中文**（面向中国大陆）和**日语**（日本語）版本。应用本身的按钮、菜单和面板仍为英文，因此译文中的界面名称保留英文——你读到的就是屏幕上显示的。
+指南（📖 **Help**（帮助）窗口，以及 **Ctrl+K** 能找到的指南条目）、❔ 帮助页面和快捷键列表现在也提供**简体中文**（面向中国大陆）、**繁體中文**（面向台湾和香港，2.704.0）和**日语**（日本語）版本。应用本身的按钮、菜单和面板仍为英文，因此译文中的界面名称保留英文——你读到的就是屏幕上显示的。
 
-- **选择语言**：在 📖 Help 窗口顶部的下拉列表中，或在 ❔ 帮助页面的标题栏中选择（**English** / **简体中文** / **日本語**）。两处共用同一个设置，并会被记住。在你选择之前，它会跟随电脑的系统语言。
+- **选择语言**：在 📖 Help 窗口顶部的下拉列表中，或在 ❔ 帮助页面的标题栏中选择（**English** / **简体中文** / **繁體中文** / **日本語**）。两处共用同一个设置，并会被记住。在你选择之前，它会跟随电脑的系统语言。
 - **Ctrl+K** 会用所选语言搜索指南，同时仍能按英文名称找到对应部分。
 - 英文为原文。如果某个部分在翻译之后英文版又有更新，译文顶部会提示这一点，并提供一个查看英文版的按钮。尚未翻译的部分会以英文显示，并附有说明。
-- **各语言的指南 PDF**：docs/bitGen-Studio-Guide-zh-CN.pdf 和 docs/bitGen-Studio-Guide-ja.pdf。
-- 译文文件与英文文件并列存放：docs/i18n/zh-CN/ 和 docs/i18n/ja/（USAGE.md、shortcuts.json），以及 static/help/zh-CN/、static/help/ja/。运行 `node scripts/i18n-help.js status zh-CN` 可列出已过时的内容。
+- **各语言的指南 PDF**：docs/bitGen-Studio-Guide-zh-CN.pdf、docs/bitGen-Studio-Guide-zh-TW.pdf 和 docs/bitGen-Studio-Guide-ja.pdf。
+- 译文文件与英文文件并列存放：docs/i18n/zh-CN/、docs/i18n/zh-TW/ 和 docs/i18n/ja/（USAGE.md、shortcuts.json），以及 static/help/zh-CN/、static/help/zh-TW/、static/help/ja/。繁体中文版由简体中文版转换而来（`python3 scripts/i18n-zhtw.py`，采用台湾用语），之后再经人工校读。运行 `node scripts/i18n-help.js status zh-CN` 可列出已过时的内容。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

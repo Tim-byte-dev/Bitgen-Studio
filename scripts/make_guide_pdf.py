@@ -4,7 +4,7 @@
 Tim (verbatim): "create a pdf with instructions and shortcut key quick view".
 
     python3 scripts/make_guide_pdf.py [out.pdf]        (default docs/bitGen-Studio-Guide.pdf)
-    python3 scripts/make_guide_pdf.py --lang zh-CN|ja [out.pdf]   (2.703.0: docs/bitGen-Studio-Guide-<lang>.pdf from
+    python3 scripts/make_guide_pdf.py --lang zh-CN|zh-TW|ja [out.pdf]   (2.703.0: docs/bitGen-Studio-Guide-<lang>.pdf from
         docs/i18n/<lang>/USAGE.md + shortcuts.json - a section / group not translated is printed in English; Noto Sans CJK
         embedded through scripts/cjkfont.py, CJK line breaking)
 
@@ -341,6 +341,13 @@ WORDS = {
               "keysnote": "快捷键在指针或焦点位于其所属面板时生效，在输入框中输入时不会触发。在图像编辑器中，每个菜单也会显示其快捷键，"
                           "按 <b>Ctrl+K</b> 可按名称查找任何命令。应用的按钮和菜单为英文，因此本指南中的界面名称保留英文。",
               "p2": "第 2 部分 - 使用说明", "instr": "使用说明", "toc": "目录", "title": "指南"},
+    "zh-TW": {"head": "指南 · v{ver}", "sub": "使用說明與快捷鍵", "ver": "版本 {ver}  ·  {date}", "date": "%Y年%m月%d日",
+              "tag": "本機 AI 影片、圖片、音樂與剪輯工作室 - ComfyUI、MiniMax H3、Wan、LTX、本機 LLM",
+              "parts": ["第 1 部分  -  快捷鍵一覽", "第 2 部分  -  使用說明（逐一介紹每個面板與步驟）", "致謝  -  位於第 2 部分末尾"],
+              "p1": "第 1 部分 - 快捷鍵一覽", "keys": "快捷鍵一覽",
+              "keysnote": "快捷鍵在指標或焦點位於其所屬面板時生效，在輸入框中輸入時不會觸發。在影像編輯器中，每個選單也會顯示其快捷鍵，"
+                          "按 <b>Ctrl+K</b> 可依名稱尋找任何指令。應用程式的按鈕與選單為英文，因此本指南中的介面名稱保留英文。",
+              "p2": "第 2 部分 - 使用說明", "instr": "使用說明", "toc": "目錄", "title": "指南"},
     "ja": {"head": "ガイド · v{ver}", "sub": "使い方とショートカットキー", "ver": "バージョン {ver}  ·  {date}", "date": "%Y年%m月%d日",
            "tag": "ローカル AI 動画・画像・音楽・編集スタジオ - ComfyUI、MiniMax H3、Wan、LTX、ローカル LLM",
            "parts": ["第 1 部  -  ショートカットキー一覧", "第 2 部  -  使い方（ドッカーごとに手順を説明）", "クレジット  -  第 2 部の最後"],
@@ -463,7 +470,7 @@ if __name__ == "__main__":
     if "--lang" in a:
         i = a.index("--lang"); lang = a[i + 1]; del a[i:i + 2]
         if lang not in WORDS or lang == "en":
-            sys.exit("--lang: zh-CN or ja")
+            sys.exit("--lang: zh-CN, zh-TW or ja")
     out = a[0] if a else os.path.join(ROOT, "docs", "bitGen-Studio-Guide" + ("" if lang == "en" else "-" + lang) + ".pdf")
     r = build(out, lang)
     print(json.dumps(dict(r, out=out)))

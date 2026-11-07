@@ -15,7 +15,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const I = require(path.join(ROOT, "lib", "helpI18n.js")), HD = require(path.join(ROOT, "lib", "helpDocs.js"));
 const T = require(path.join(ROOT, "scripts", "i18n-help.js")), L = require(path.join(ROOT, "static", "helplang.js"));
 
-check("two languages: Simplified Chinese (zh-CN, mainland) and Japanese", JSON.stringify(I.LANGS.map((l) => l.id)) === '["zh-CN","ja"]' && I.isLang("zh-CN") && !I.isLang("zh-TW") && !I.isLang("en"));
+check("three languages: Simplified Chinese (zh-CN, mainland), Traditional Chinese (zh-TW, Taiwan / Hong Kong - 2.704.0) and Japanese", JSON.stringify(I.LANGS.map((l) => l.id)) === '["zh-CN","zh-TW","ja"]' && I.isLang("zh-TW") && !I.isLang("zh-HK") && !I.isLang("en"));
 const EN = "# Guide\n\nIntro words.\n\n## First one\n\nAlpha text `code`.\n\n![pic](images/a.png)\n\n## Second\n\nBeta text.\n\n### Sub\n\nGamma.\n";
 const R = I.rawSections(EN);
 check("rawSections: the part before the first ## (_top) + each ## section, ids as lib/helpDocs gives them", R.map((s) => s.id).join() === "_top,first-one,second" && HD.sections(EN).map((s) => s.id).join() === "first-one,second" && /!\[pic\]/.test(R[1].raw));
@@ -58,9 +58,9 @@ check("…untranslated text, and Traditional characters in the Simplified text, 
 check("…a line broken between two CJK characters is joined (no stray space mid-sentence in the app / PDF); lists and code are not touched", T.joinCjk("中文第一行\n  第二行\n- 列表\n```\n代码\n行\n```\nEnglish\n中文") === "中文第一行第二行\n- 列表\n```\n代码\n行\n```\nEnglish\n中文");
 
 // the language picked
-check("helplang: the system language picks the default - zh-CN / zh-Hans / zh-SG / zh -> zh-CN, zh-TW / zh-HK stay English, ja -> ja",
-  L.fromSystem(["zh-CN"]) === "zh-CN" && L.fromSystem(["zh-Hans-CN"]) === "zh-CN" && L.fromSystem(["zh"]) === "zh-CN" && L.fromSystem(["zh-SG"]) === "zh-CN" && L.fromSystem(["zh-TW"]) === "en" && L.fromSystem(["ja-JP", "en"]) === "ja" && L.fromSystem(["en-AU"]) === "en" && L.fromSystem([]) === "en");
-check("…the notes in each language (a section newer in English / not translated / the English button)", /英文/.test(L.say("stale", "zh-CN")) && /英語/.test(L.say("stale", "ja")) && L.say("english", "zh-CN") === "查看英文版" && /まだ翻訳/.test(L.say("missing", "ja")));
+check("helplang: the system language picks the default - zh-CN / zh-Hans / zh-SG / zh -> zh-CN, zh-TW / zh-HK / zh-MO / zh-Hant -> zh-TW (2.704.0), ja -> ja",
+  L.fromSystem(["zh-CN"]) === "zh-CN" && L.fromSystem(["zh-Hans-CN"]) === "zh-CN" && L.fromSystem(["zh"]) === "zh-CN" && L.fromSystem(["zh-SG"]) === "zh-CN" && L.fromSystem(["zh-TW"]) === "zh-TW" && L.fromSystem(["zh-HK"]) === "zh-TW" && L.fromSystem(["zh-Hant-TW"]) === "zh-TW" && L.fromSystem(["zh-MO"]) === "zh-TW" && L.fromSystem(["ja-JP", "en"]) === "ja" && L.fromSystem(["en-AU"]) === "en" && L.fromSystem([]) === "en");
+check("…the notes in each language (a section newer in English / not translated / the English button)", /英文/.test(L.say("stale", "zh-CN")) && /英語/.test(L.say("stale", "ja")) && L.say("english", "zh-CN") === "查看英文版" && L.say("english", "zh-TW") === "檢視英文版" && /英文版已更新/.test(L.say("stale", "zh-TW")) && /まだ翻訳/.test(L.say("missing", "ja")));
 
 // wiring
 const rd = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
@@ -68,10 +68,11 @@ check("wired: /api/help?lang + /api/help/page (routes/help.js - never server.js)
   /i18n\.load\(core\.BASE/.test(rd("routes/help.js")) && /\/api\/help\/page/.test(rd("routes/help.js")) && !/helpI18n|helpDocs/.test(rd("misc/server.js"))
   && /"\/api\/help" \+ \(L === "en"/.test(rd("static/palette.js")) && /H3HelpLang\.picker\("hlplang"\)/.test(rd("static/palette.js")) && /data-hlpnote/.test(rd("static/palette.js"))
   && /\/api\/help\/page\?topic=/.test(rd("static/help.js")) && /helplang\.js"><\/script>[^\n]*\n<script src="\/static\/palette\.js">/.test(rd("static/index.html")));
+check("…zh-TW made from zh-CN by scripts/i18n-zhtw.py (OpenCC s2twp - Taiwan's words; code, tags, links, markers kept), its PDF in Noto Sans CJK TC; the checker finds Simplified characters in it", /OpenCC\("s2twp"\)/.test(rd("scripts/i18n-zhtw.py")) && /KEEP = re\.compile/.test(rd("scripts/i18n-zhtw.py")) && /"zh-TW": "Noto Sans CJK TC"/.test(rd("scripts/cjkfont.py")) && /"zh-TW": \{"head"/.test(rd("scripts/make_guide_pdf.py")) && (() => { const q = []; T.checkText("s", "x", "这个", "zh-TW", q); return q.some((x) => /Simplified/.test(x)); })());
 check("…the Guide PDF in each language: make_guide_pdf.py --lang (Noto Sans CJK through scripts/cjkfont.py, CJK line breaking)", /def use_lang\(lang\)/.test(rd("scripts/make_guide_pdf.py")) && /WRAP, LANG = "CJK", lang/.test(rd("scripts/make_guide_pdf.py")) && /def cjk_ttf\(/.test(rd("scripts/cjkfont.py")));
 
 // the shipped translations
-for (const lang of ["zh-CN", "ja"]) {
+for (const lang of ["zh-CN", "zh-TW", "ja"]) {
   const r = I.report(ROOT, lang), pr = T.check(lang);
   check(`${lang}: the guide, the shortcuts and the three ❔ pages are there; every section kept its structure (markers, code, links, pictures, tables, tags, ids, keys)`,
     fs.existsSync(path.join(ROOT, "docs", "i18n", lang, "USAGE.md")) && r.sections.ok + r.sections.stale.length > 150 && Object.values(r.pages).every((v) => v !== "missing") && pr.length === 0, { pr: pr.slice(0, 8), ok: r.sections.ok, missing: r.sections.missing.length });
