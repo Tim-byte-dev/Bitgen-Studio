@@ -48,7 +48,7 @@ The window, its dockers, the look of the app, projects and the files they hold.
 - **Accent colour** — any colour for the buttons, lit tabs and sliders. *Where:* Settings > Themes. *Since:* 2.432.0
 - **UI size** — one slider scales every font and panel together, 60 to 175 %. *Where:* Settings > Themes. *Since:* 2.432.0
 - **Customize colours** — a colour for each part of the theme (background, panels, lines, text, OK, error, hover, canvas, selected). *Where:* Settings > Themes > Customize. *Since:* 2.435.0
-- **Saved themes** — save a theme as a .json in the themes folder, load it from its card, export and import it. *Where:* Settings > Themes. *Since:* 2.435.0
+- **Saved themes** — save a theme as a .json in the themes folder, load it from its card, export and import it; an import keeps the theme you had as <name>_old.json, saves the imported one at once, and ↶ Revert goes back (2.709.0). *Where:* Settings > Themes. *Since:* 2.435.0
 - **Edit theme mode** — click any element on screen to pick it and change its font, size, colours, shadows, corner radius or icon, for this element, all like it, or its whole kind. *Where:* the brush button in the top bar. *Since:* 2.443.0
 - **Dialogs keep working in edit theme mode** — dialogs and popup menus take clicks and keys as usual while the mode is on. *Where:* edit theme mode. *Since:* 2.455.0
 - **Editor themes** — the image editor follows the app theme, or its own Pro, Studio or Classic look. *Where:* the image editor's Window > Theme. *Since:* 2.393.0

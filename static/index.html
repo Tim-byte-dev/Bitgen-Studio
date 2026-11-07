@@ -1960,7 +1960,8 @@
       <input type="text" id="s_thname" placeholder="Theme name" style="flex:1;min-width:0" spellcheck="false" aria-label="Theme name">
       <button class="ghost" id="s_thsave" type="button" title="Keep the colours, the accent and the UI size as themes\<name>.json">💾 Save theme</button>
       <button class="ghost" id="s_thexport" type="button" title="Download the theme as a .json file">⤓ Export</button>
-      <button class="ghost" id="s_thimport" type="button" title="Use a theme .json file (then 💾 Save theme keeps it)">⤒ Import</button>
+      <button class="ghost" id="s_thimport" type="button" title="Use a theme .json file - the theme in use is kept as themes\<name>_old.json and the imported one is saved at once">⤒ Import</button>
+      <button class="ghost" id="s_threvert" type="button" hidden title="Back to the theme you had before the import">↶ Revert</button>
       <input type="file" id="s_thfile" accept=".json,application/json" hidden>
     </div>
     <div id="s_thsaved" class="thgrid" style="margin-top:6px" aria-label="Saved themes"></div>
