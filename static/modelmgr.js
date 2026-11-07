@@ -998,7 +998,8 @@
     body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = (window.H3FolderMem && window.H3FolderMem.get("mm:" + S.tab)) || ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); if (S.tab === "paths" && window.H3ModelPaths) window.H3ModelPaths.load(); }; });
     // 2.718.0: ⟳ also refreshes the app's own model lists (Settings' style model combos, Basic Settings' overrides) - a model
     // just copied in showed "— not found" in its new style until the app was reloaded
-    $("mmRescan").onclick = function () { load(true); if (S.tab === "used") loadUsed(); if (typeof root.loadComfyModels === "function") root.loadComfyModels(true); };
+    $("mmRescan").onclick = function () { load(true); if (S.tab === "used") loadUsed(); if (typeof root.loadComfyModels === "function") root.loadComfyModels(true);
+      if (root.H3ModelsFound) root.H3ModelsFound.refresh(); };   // 2.719.0: misc/models_found.json made again
     $("mmFetch").onclick = function (e) { startFetch(e.shiftKey); };
     $("mmSync").onclick = function (e) { startSync(e.shiftKey); };
     $("mmFoldBtn").onclick = function () { S.fold = !S.fold; $("mmFoldBtn").classList.toggle("on", S.fold); if (S.fold) loadFolders(); else paintFoldBox(); };

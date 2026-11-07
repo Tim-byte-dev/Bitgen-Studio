@@ -1,8 +1,8 @@
 {
  "lang": "zh-CN",
  "v": "73300ae98bee",
- "count": 8754,
- "patternCount": 1013,
+ "count": 8759,
+ "patternCount": 1028,
  "strings": {
   "0 (auto)": "0（自动）",
   "0 = auto (LoRA count / 20 base)": "0 = 自动（LoRA 的步数 / 基础模型 20）",
@@ -8757,7 +8757,12 @@
   "zahers (CGTrader)": "zahers (CGTrader)",
   "zero-shot cloning conditions on the pair, and a wrong transcript is the usual cause of a slurred result. 10–30 seconds of clean speech works best": "零样本克隆以这对素材为条件，文字稿错误通常是结果含糊不清的原因。10–30 秒的清晰语音效果最好",
   "zones (edit model)": "区域（编辑模型）",
-  "zoom in": "放大"
+  "zoom in": "放大",
+  "Models not found": "未找到模型",
+  "None of these can be downloaded from here. Put the files in the folders above, then press Generate again": "这些文件都无法在这里下载。请把文件放进上面列出的文件夹，然后再按一次“生成”",
+  "Downloading": "正在下载",
+  "Checking again": "正在重新检查",
+  "the download failed": "下载失败"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",
@@ -9772,6 +9777,21 @@
   "{0}×{1} · {2} fps": "{0}×{1} · {2} fps",
   "{0}×{1} — 1080p-class is ~4× the memory/time of 540p": "{0}×{1} — 1080p 级别所需内存/时间约为 540p 的 4 倍",
   "{0}×{1} → about {2}×{3} (×{4})": "{0}×{1} → 约 {2}×{3} (×{4})",
-  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 约 {2}×{3} (×{4}) · 帧生成 {5}"
+  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 约 {2}×{3} (×{4}) · 帧生成 {5}",
+  "This render needs {0} model files that are not in any of ComfyUI's model paths": "本次渲染需要 {0} 个模型文件，它们不在 ComfyUI 的任何模型路径中",
+  "This render needs {0} model file that is not in any of ComfyUI's model paths": "本次渲染需要 {0} 个模型文件，它不在 ComfyUI 的任何模型路径中",
+  "goes in {0} (the style)": "应放在 {0}（风格）",
+  "goes in {0} (the workflow)": "应放在 {0}（工作流）",
+  "goes in {0} (Basic Settings)": "应放在 {0}（基本设置）",
+  "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into {0}": "不在 bitGen 的下载列表中 - 请自行下载（Civitai、Hugging Face）到 {0}",
+  "Download {0} ({1})": "下载 {0} 个（{1}）",
+  "Download ({0})": "下载（{0}）",
+  "Still not found: {0}. A download failed - the line under it says why": "仍未找到：{0}。有下载失败 - 失败原因写在该文件下方",
+  "Still not found: {0}": "仍未找到：{0}",
+  "The download did not start: {0}": "下载没有开始：{0}",
+  "Could not check again: {0}": "无法重新检查：{0}",
+  "Download {0}": "下载 {0} 个",
+  "{0} - Hugging Face: {1}": "{0} - Hugging Face：{1}",
+  "Hugging Face: {0}": "Hugging Face：{0}"
  }
 }

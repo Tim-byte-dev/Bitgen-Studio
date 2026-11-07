@@ -3448,6 +3448,7 @@
 <script src="/static/anykeys.js"></script>
 <script src="/static/powerstats.js"></script>
 <script src="/static/queuepresets.js"></script>  <!-- 2.518.0: the menu bar's ⏱ queue presets (H3QueuePresets - lib/queuePresets.js) -->
+<script src="/static/modelsfound.js"></script>  <!-- 2.719.0: models not found before a render - ⬇ Download / Cancel (H3ModelsFound - lib/modelsFound.js, misc/models_found.json) -->
 <script src="/static/modelmgr.js"></script>  <!-- 2.518.0: 🧩 the Model + LoRA manager docker, Civitai downloads (H3ModelMgr - lib/modelCards.js, lib/civitai.js) -->
 <script src="/static/mmpaths.js"></script>  <!-- 2.580.0: the Model manager's 📁 Model paths tab - extra_model_paths.yaml groups + ⟳ Restart ComfyUI (H3ModelPaths - lib/extraPaths.js) -->
 <script src="/static/lorasel.js"></script>  <!-- 2.581.0: the selected LoRAs for ✨ Enhance + the prompt chat (H3LoraSel - lib/loraWords.js) -->
@@ -5599,6 +5600,14 @@ async function ensureComfyReady(opts) {
 }
 
 async function submitJob(promptText) {
+  // 2.719.0: are the files the video style loads in a model path? - not found = ⬇ Download / Cancel
+  if (window.H3ModelsFound) {
+    const rp0 = window.RefRoles ? RefRoles.plan(mode, refs) : { mode };
+    const vreq = { kind: "video", video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",
+      mode: curFrameOp() ? "fl2va" : rp0.mode, basic: window.H3Basic ? H3Basic.json() : "",
+      extra_loras: ovrStyleOn() ? tempLoras("video") : [] };
+    if (!(await H3ModelsFound.ensure(vreq))) return null;
+  }
   if (!(await ensureComfyReady())) return;
   const fd = new FormData();
   // 2.340.0: a picture typed First frame -> fl2va (+ its Last frame); else
@@ -8541,6 +8550,7 @@ async function startMusicJob(text) {
   const id = ($("musicSel") || {}).value;
   if (!id) { alert("Create a music style first: Settings → Music"); return null; }
   const st = musicList.find(s => s.id === id) || {};
+  if (window.H3ModelsFound && !(await H3ModelsFound.ensure({ kind: "music", style_id: id }))) return null;   // 2.719.0
   if (!(await ensureComfyReady({ button: $("goMusic"), need: true }))) return null;
   // ComfyUI is up, so its dropdowns are authoritative — check the style's
   // model names against them rather than discovering the mismatch in the log.
@@ -9191,6 +9201,11 @@ async function startImageJob(text) {
      on a ComfyUI nobody had started. Done before the button is disabled so the
      helper can label it while the models load. */
   const st = styleList.find(s => s.id === id) || {};
+  // 2.719.0: are the files it loads in a model path? (misc/models_found.json) - not found = ⬇ Download / Cancel
+  if (window.H3ModelsFound) {
+    const ib = imgBasicsBody({});
+    if (!(await H3ModelsFound.ensure({ kind: "image", style_id: id, model: ib.model, extra_loras: ib.extra_loras }))) return null;
+  }
   if ((st.engine || "comfy") === "comfy"
       && !(await ensureComfyReady({ button: $("goImg"), need: true }))) return null;
   // ComfyUI is up now, so its dropdowns are authoritative — check the style

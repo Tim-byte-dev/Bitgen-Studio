@@ -81,7 +81,9 @@ function mount(app) {
     const engine = ["auto", "hf", "builtin"].includes(b.engine) ? b.engine : "auto";
     begin("download");
     for (const id of ids) state.files[id] = { state: "wait", got: 0, total: 0, error: "" };
-    S().download(ids, String(b.token || "").trim(), emit, { engine, force: b.force === true })   // 2.601.0: ⟳ Download again
+    // 2.719.0: no token sent (the render's "models not found" ⬇ Download) = the saved one (Settings ▸ Models)
+    const token = String(b.token || ((((require("../lib/core").getConfig() || {}).hf) || {}).token) || "").trim();
+    S().download(ids, token, emit, { engine, force: b.force === true })   // 2.601.0: ⟳ Download again
       .catch((e) => { emit({ type: "log", line: "[error] " + (e && e.message || e), err: true }); state.result = { ok: false, done: [], failed: [{ id: "*", error: String(e && e.message || e) }] }; })
       .finally(() => { state.busy = false; });
     res.json({ ok: true, ...view() });

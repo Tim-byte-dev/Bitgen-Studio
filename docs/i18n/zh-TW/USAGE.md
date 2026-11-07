@@ -4584,6 +4584,16 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **Spectrum** 在 12 步以上的執行中，前 2 步和最後 3 步都真實計算——最後幾步負責繪製臉部和細節，預測這些步驟會讓它們變糊。
 - Long video 仍不使用 Sage 注意力：在它之上加 Sage 只快了 17%。
 
+## 找不到模型——渲染前先檢查（2.719.0）
+<!-- en: models-not-found-checked-before-a-render-2-719-0 f44fb5eb4106 -->
+
+圖片、影片或歌曲開始渲染之前，bitGen 會檢查它要載入的每個模型檔案是否在 ComfyUI 的某個模型路徑中：工作流自帶的模型、文字編碼器、VAE 和放大模型，以及樣式的模型、VAE、文字編碼器和 LoRA（開啟 Override style 時，還包括 Basic Settings 的模型和 LoRA）。
+
+- 檢查很快：它讀取 bitGen 已找到的所有模型檔案的清單，儲存在 **misc/models_found.json**（ComfyUI 的 `models` 資料夾，以及它的 extra_model_paths.yaml 中的每個路徑）。當某個名稱不在清單中（你可能剛剛加入了這個檔案）、ComfyUI 的資料夾改變，或你在 🧩 Models 中按下 ⟳ 時，清單會重新生成。同名檔案在其他子資料夾中也算找到。
+- 缺少檔案時，會彈出 **Models not found** 對話方塊，逐個列出：檔名、它應放入的資料夾，以及它來自哪裡（工作流、樣式或 Basic Settings）。bitGen 模型目錄中有的檔案會顯示大小和下載來源；**⬇ Download** 會下載這些檔案（使用 Settings ▸ Models 中儲存的 Hugging Face token），每個檔案一個進度列，然後再檢查一次——全部到位後渲染會自動開始。不在目錄中的檔案會註明這一點：請自行下載（Civitai、Hugging Face）到顯示的資料夾中。
+- **Cancel**（或 Esc、Enter）不會開始渲染。已經開始的下載會繼續進行——在 Settings ▸ Models 中可以看到。佇列中等待、缺少相同檔案的渲染會直接停止，不再重複詢問。
+- 不檢查的情況：另一臺電腦上的 ComfyUI（Remote GPU）、沒有設定 ComfyUI 資料夾、sd-cli 樣式，以及 Wan 或 LTX 樣式自行挑選的檔案。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

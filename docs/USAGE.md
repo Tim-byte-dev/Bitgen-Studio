@@ -7613,6 +7613,26 @@ A tester measured bitGen's speed-ups on one RTX 3090 (same picture, same seed, t
   fine detail, which blurred when they were forecast.
 - Long video still leaves Sage attention out: Sage on top of it measured only 17 % faster.
 
+## Models not found - checked before a render (2.719.0)
+
+Before a picture, a video or a song starts, bitGen checks that every model file it will load is in one of ComfyUI's
+model paths: the workflow's own model, text encoder, VAE and upscaler, and the style's model, VAE, text encoders and
+LoRAs (and Basic Settings' model and LoRAs when Override style is on).
+
+- The check is quick: it reads a list of every model file bitGen has found, kept in **misc/models_found.json** (the
+  `models` folder of ComfyUI and every path in its extra_model_paths.yaml). The list is made again when a name is not on
+  it (you may have just added the file), when ComfyUI's folder changes, and when you press ⟳ in 🧩 Models. A file found
+  by its name in another subfolder counts as found.
+- When files are missing, a **Models not found** box lists each one: its name, the folder it goes in and where it came
+  from (the workflow, the style or Basic Settings). A file in bitGen's model catalog shows its size and where it downloads
+  from; **⬇ Download** fetches those (with the Hugging Face token saved in Settings ▸ Models), a bar for each, then checks
+  again - when all are there the render starts by itself. A file not in the catalog says so: download it yourself
+  (Civitai, Hugging Face) into the folder shown.
+- **Cancel** (or Esc, or Enter) starts no render. A download already running keeps going - Settings ▸ Models shows it.
+  Renders waiting in the queue for the same missing files are stopped without asking again.
+- Not checked: a ComfyUI on another computer (Remote GPU), no ComfyUI folder set, sd-cli styles, and the files a Wan or
+  LTX style picks for itself.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

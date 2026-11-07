@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.719.0 (Tim: "check if models are in a model path before render - create a list of found models so it can be a quick check save the list as /misc/models_found.json. if models are not found bring up a msgbox to download/cancel model names not found")
+node scripts/test-modelsfound719.js > /tmp/modelsfound719.log 2>&1 \
+  && ok "2.719.0 models in a model path: the loaders read, what image / video / Wan renders need with the overrides, the list made + saved, a miss rescans, a deleted file, the catalogue's download, not-checked reasons, the route's plan, the wiring" \
+  || { bad "2.719.0 models found units"; grep -a "^FAIL" -A2 /tmp/modelsfound719.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui719-ui.js > /tmp/ui719ui.log 2>&1 \
+  && ok "2.719.0 browser test: the Models not found box (names, folders, downloads), ⬇ Download with progress then the render goes on, a failed download said, Cancel / Esc = no render, asked once per queue, Generate image / video send the check first - or SKIP" \
+  || { bad "2.719.0 models not found box"; grep -a "FAIL\\|Error" -A2 /tmp/ui719ui.log | head -14; }
 # ---- 2.718.0 (Tim: "can we add a Tutorials to the website - show how to add a new model to bitgen and a new workflow, use images and a video")
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui718-ui.js > /tmp/ui718ui.log 2>&1 \
   && ok "2.718.0 browser test: 🧩 Models ▸ ⟳ also reloads the app's model lists (a just-added model is found in its new style) - or SKIP" \

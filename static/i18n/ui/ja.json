@@ -1,8 +1,8 @@
 {
  "lang": "ja",
  "v": "58a97aa8547b",
- "count": 8754,
- "patternCount": 1013,
+ "count": 8759,
+ "patternCount": 1028,
  "strings": {
   "0 (auto)": "0（自動）",
   "0 = auto (LoRA count / 20 base)": "0 = 自動（LoRA のステップ数 / ベースは 20）",
@@ -8757,7 +8757,12 @@
   "zahers (CGTrader)": "zahers (CGTrader)",
   "zero-shot cloning conditions on the pair, and a wrong transcript is the usual cause of a slurred result. 10–30 seconds of clean speech works best": "ゼロショットのクローンはこのペアを条件にするため、書き起こしの誤りが不明瞭な結果の主な原因になります。ノイズのない話し声 10–30 秒が最適です",
   "zones (edit model)": "ゾーン（編集モデル）",
-  "zoom in": "ズームイン"
+  "zoom in": "ズームイン",
+  "Models not found": "モデルが見つかりません",
+  "None of these can be downloaded from here. Put the files in the folders above, then press Generate again": "ここからダウンロードできるファイルはありません。上のフォルダーにファイルを置いてから、もう一度「生成」を押してください",
+  "Downloading": "ダウンロード中",
+  "Checking again": "再確認中",
+  "the download failed": "ダウンロードに失敗しました"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",
@@ -9772,6 +9777,21 @@
   "{0}×{1} · {2} fps": "{0}×{1} · {2} fps",
   "{0}×{1} — 1080p-class is ~4× the memory/time of 540p": "{0}×{1} — 1080p クラスは 540p の約 4 倍のメモリ / 時間がかかります",
   "{0}×{1} → about {2}×{3} (×{4})": "{0}×{1} → 約 {2}×{3}（×{4}）",
-  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3}（×{4}） · フレーム生成 {5}"
+  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3}（×{4}） · フレーム生成 {5}",
+  "This render needs {0} model files that are not in any of ComfyUI's model paths": "このレンダリングには、ComfyUI のどのモデルパスにもないモデルファイルが {0} 個必要です",
+  "This render needs {0} model file that is not in any of ComfyUI's model paths": "このレンダリングには、ComfyUI のどのモデルパスにもないモデルファイルが {0} 個必要です",
+  "goes in {0} (the style)": "置き場所：{0}（スタイル）",
+  "goes in {0} (the workflow)": "置き場所：{0}（ワークフロー）",
+  "goes in {0} (Basic Settings)": "置き場所：{0}（基本設定）",
+  "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into {0}": "bitGen のダウンロード一覧にはありません - ご自身で（Civitai、Hugging Face）{0} にダウンロードしてください",
+  "Download {0} ({1})": "{0} 個をダウンロード（{1}）",
+  "Download ({0})": "ダウンロード（{0}）",
+  "Still not found: {0}. A download failed - the line under it says why": "まだ見つかりません：{0}。失敗したダウンロードがあります - 理由は各ファイルの下に表示されています",
+  "Still not found: {0}": "まだ見つかりません：{0}",
+  "The download did not start: {0}": "ダウンロードが始まりませんでした：{0}",
+  "Could not check again: {0}": "再確認できませんでした：{0}",
+  "Download {0}": "{0} 個をダウンロード",
+  "{0} - Hugging Face: {1}": "{0} - Hugging Face：{1}",
+  "Hugging Face: {0}": "Hugging Face：{0}"
  }
 }

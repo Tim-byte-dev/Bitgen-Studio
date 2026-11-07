@@ -1,8 +1,8 @@
 {
  "lang": "zh-TW",
  "v": "4736ea46e2c1",
- "count": 8754,
- "patternCount": 1013,
+ "count": 8759,
+ "patternCount": 1028,
  "strings": {
   "0 (auto)": "0（自動）",
   "0 = auto (LoRA count / 20 base)": "0 = 自動（LoRA 的步數 / 基礎模型 20）",
@@ -8757,7 +8757,12 @@
   "zahers (CGTrader)": "zahers (CGTrader)",
   "zero-shot cloning conditions on the pair, and a wrong transcript is the usual cause of a slurred result. 10–30 seconds of clean speech works best": "零樣本複製以這對素材為條件，文字稿錯誤通常是結果含糊不清的原因。10–30 秒的清晰語音效果最好",
   "zones (edit model)": "區域（編輯模型）",
-  "zoom in": "放大"
+  "zoom in": "放大",
+  "Models not found": "找不到模型",
+  "None of these can be downloaded from here. Put the files in the folders above, then press Generate again": "這些檔案都無法在這裡下載。請把檔案放進上面列出的資料夾，然後再按一次「生成」",
+  "Downloading": "正在下載",
+  "Checking again": "正在重新檢查",
+  "the download failed": "下載失敗"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 對 - 此任務從中學習（{0}）",
@@ -9772,6 +9777,21 @@
   "{0}×{1} · {2} fps": "{0}×{1} · {2} fps",
   "{0}×{1} — 1080p-class is ~4× the memory/time of 540p": "{0}×{1} — 1080p 等級所需記憶體/時間約為 540p 的 4 倍",
   "{0}×{1} → about {2}×{3} (×{4})": "{0}×{1} → 約 {2}×{3} (×{4})",
-  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3} (×{4}) · 影格生成 {5}"
+  "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3} (×{4}) · 影格生成 {5}",
+  "This render needs {0} model files that are not in any of ComfyUI's model paths": "本次渲染需要 {0} 個模型檔案，它們不在 ComfyUI 的任何模型路徑中",
+  "This render needs {0} model file that is not in any of ComfyUI's model paths": "本次渲染需要 {0} 個模型檔案，它不在 ComfyUI 的任何模型路徑中",
+  "goes in {0} (the style)": "應放在 {0}（風格）",
+  "goes in {0} (the workflow)": "應放在 {0}（工作流）",
+  "goes in {0} (Basic Settings)": "應放在 {0}（基本設定）",
+  "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into {0}": "不在 bitGen 的下載清單中 - 請自行下載（Civitai、Hugging Face）到 {0}",
+  "Download {0} ({1})": "下載 {0} 個（{1}）",
+  "Download ({0})": "下載（{0}）",
+  "Still not found: {0}. A download failed - the line under it says why": "仍找不到：{0}。有下載失敗 - 失敗原因寫在該檔案下方",
+  "Still not found: {0}": "仍找不到：{0}",
+  "The download did not start: {0}": "下載沒有開始：{0}",
+  "Could not check again: {0}": "無法重新檢查：{0}",
+  "Download {0}": "下載 {0} 個",
+  "{0} - Hugging Face: {1}": "{0} - Hugging Face：{1}",
+  "Hugging Face: {0}": "Hugging Face：{0}"
  }
 }
