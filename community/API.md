@@ -60,9 +60,18 @@ HTTP 4xx/5xx status (400 bad input, 401 no / bad token, 403 not allowed / banned
 | bug_report | `{title, severity, area?, app_version?, happened?, expected?, steps?, details?: {system, settings, recorded, page_errors, failed_requests, logs: {file: text}, notes}, screenshot?: data:image/png\|jpeg URL, source?: app\|web, guest_name?}` | `{bug_id, topic_id, pending, anonymous}` (2.714.0) - a discussion under "bugs" (Bug reports); a confirmed member's shows at once, without a token it is anonymous and waits for an admin; up to 7 MB (the only action over 16 KB), details 2 MB, screenshot 4 MB, PNG / JPEG by its bytes; members 10 / hour, anonymous 5 / hour per address. forum_topic of a bug has `bug: {id, status, status_label, severity, severity_label, area, app_version, anonymous, source, has_details, has_shot, details? (admins)}`; forum_list's bug topics carry `bug: {status, …}` |
 | bug_shot | `{bug_id}` | `{type: png\|jpeg, data: base64}` (admins) |
 | admin_bug_status | `{bug_id, status}` | `{status, status_label}` - open, working, fixed, duplicate, notabug, wontfix (admins) |
+| pack_list | - | `{packs: [pack], max_bytes, mine?: [pack] (signed in: yours, any status, with review_note), pending?: [pack] (admins)}` (2.716.0) - the live language packs, by language, newest first |
+| pack_get | `{id}` | `pack + {zip: base64}` - a live pack (yours or, for an admin, a waiting one too); a download is counted |
+| pack_upload | `{zip: base64, note?, coverage?: {ui, patterns, guide, shortcuts, help, features, site: {done, total}}}` | `{id, pending, code, native, version, counts}` - confirmed members; waits for an admin (an admin's is live at once); a 5 MB zip at most, 10 a day; the zip must hold pack.json (id - a language code, not en / xx - and native) |
+| pack_delete | `{id}` | `{deleted}` - yours, or any (admins) |
+| admin_pack_moderate | `{id, approve, note?}` | `{approved}` - approved = live (the same person's older live pack of that language goes); refused keeps the note for the uploader, the zip is dropped (admins) |
 
 An author (forum): `{handle, name}` for a member (name = the display name), `{guest: true, name}` for a guest,
 `{left: true, name: "(left)"}` for a deleted account.
+
+A language pack (2.716.0): `{id, code, native, name, version, app, status: pending | live | refused, by: author, note, counts: {ui,
+patterns, files, coverage: {...}}, size, downloads, created, updated, review_note?}`. The pack format is bitGen Studio's
+lib/langPacks.js; the app checks and cleans a pack again when it installs it.
 
 A message: `{id, room: "help" | "dm", from: handle, from_display, to: handle | null, body, at}`. Deleted messages never
 come back in poll / history; poll's `deleted` tells a client which ones to drop.

@@ -3244,143 +3244,235 @@
   },
   {
    "s": "App",
-   "src": "static/langpacks.js:41"
+   "src": "static/langpacks.js:44"
   },
   {
    "s": "Guide",
-   "src": "static/langpacks.js:41"
+   "src": "static/langpacks.js:44"
   },
   {
    "s": "Shortcuts",
-   "src": "static/langpacks.js:41"
+   "src": "static/langpacks.js:44"
   },
   {
    "s": "Features",
-   "src": "static/langpacks.js:41"
+   "src": "static/langpacks.js:44"
   },
   {
    "s": "Website",
-   "src": "static/langpacks.js:41"
+   "src": "static/langpacks.js:44"
   },
   {
    "s": "In use",
-   "src": "static/langpacks.js:45"
+   "src": "static/langpacks.js:48"
   },
   {
    "s": "Use",
-   "src": "static/langpacks.js:46"
+   "src": "static/langpacks.js:49"
   },
   {
    "s": "installed - used instead of the built-in one",
-   "src": "static/langpacks.js:55"
+   "src": "static/langpacks.js:58"
   },
   {
    "s": "built in",
-   "src": "static/langpacks.js:55"
+   "src": "static/langpacks.js:58"
   },
   {
    "s": "Translated by",
-   "src": "static/langpacks.js:57"
+   "src": "static/langpacks.js:60"
   },
   {
    "s": "The pack as a .zip with today's English added where it is not translated yet - to carry on translating, or to share",
-   "src": "static/langpacks.js:62"
+   "src": "static/langpacks.js:65"
   },
   {
    "s": "Export for translating",
-   "src": "static/langpacks.js:63"
+   "src": "static/langpacks.js:66"
+  },
+  {
+   "s": "Send this pack to the bitGen Community (tigerart.com.au) so everyone can install it - an admin checks it first",
+   "src": "static/langpacks.js:69"
+  },
+  {
+   "s": "Share",
+   "src": "static/langpacks.js:70"
   },
   {
    "s": "Remove it - the built-in one comes back",
-   "src": "static/langpacks.js:66"
+   "src": "static/langpacks.js:72"
   },
   {
    "s": "Remove this language pack",
-   "src": "static/langpacks.js:66"
+   "src": "static/langpacks.js:72"
   },
   {
    "s": "Sections whose English is newer than the translation",
-   "src": "static/langpacks.js:76"
-  },
-  {
-   "s": "English",
    "src": "static/langpacks.js:82"
   },
   {
+   "s": "English",
+   "src": "static/langpacks.js:88"
+  },
+  {
    "s": "Checking the pack",
-   "src": "static/langpacks.js:107"
+   "src": "static/langpacks.js:113"
   },
   {
    "s": "Replace",
-   "src": "static/langpacks.js:115"
+   "src": "static/langpacks.js:121"
   },
   {
    "s": "Not installed",
-   "src": "static/langpacks.js:119"
+   "src": "static/langpacks.js:125"
+  },
+  {
+   "s": "Shared by",
+   "src": "static/langpacks.js:141"
+  },
+  {
+   "s": "Installed",
+   "src": "static/langpacks.js:143"
+  },
+  {
+   "s": "Install this version",
+   "src": "static/langpacks.js:144"
+  },
+  {
+   "s": "Install",
+   "src": "static/langpacks.js:144"
+  },
+  {
+   "s": "Downloads",
+   "src": "static/langpacks.js:149"
+  },
+  {
+   "s": "Asking the bitGen Community",
+   "src": "static/langpacks.js:156"
+  },
+  {
+   "s": "The bitGen Community could not be reached: no answer",
+   "src": "static/langpacks.js:157"
+  },
+  {
+   "s": "No shared language packs yet - be the first: translate the master pack and ⇪ Share it",
+   "src": "static/langpacks.js:158"
+  },
+  {
+   "s": "Your shared packs",
+   "src": "static/langpacks.js:161"
+  },
+  {
+   "s": "shared - anyone can install it",
+   "src": "static/langpacks.js:167"
+  },
+  {
+   "s": "waiting for an admin to check it",
+   "src": "static/langpacks.js:167"
+  },
+  {
+   "s": "not accepted",
+   "src": "static/langpacks.js:167"
+  },
+  {
+   "s": "Take it off the community",
+   "src": "static/langpacks.js:169"
+  },
+  {
+   "s": "Downloading the pack",
+   "src": "static/langpacks.js:188"
+  },
+  {
+   "s": "What it covers, what is still to do",
+   "src": "static/langpacks.js:204"
+  },
+  {
+   "s": "Sending the pack",
+   "src": "static/langpacks.js:209"
   },
   {
    "s": "Languages",
-   "src": "static/langpacks.js:127"
+   "src": "static/langpacks.js:221"
   },
   {
    "s": "Language packs: the languages of the app, the guide and the help",
-   "src": "static/langpacks.js:127"
+   "src": "static/langpacks.js:221"
   },
   {
    "s": "Each language besides English is a language pack: the app's own words, the guide, the ❔ help pages, the shortcut list and the feature list. Anything a pack has not translated shows in English. Pick the language with the dropdown next to ⊞ on the menu bar, or with Use here",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Install a pack",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Master pack",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Translate bitGen Studio into your language",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Master pack - a .zip with everything in English and TRANSLATING.txt (how to fill each file in)",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Unzip it, put your language's code and name in pack.json, and translate what you can - the app's words (ui.json) first make the biggest difference. Anything left as it is stays English",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Zip the folder again and ⤒ Install a pack - try it in the app",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Share it: upload the .zip on tigerart.com.au so everyone can install it",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Later, ⤓ Export for translating gives your pack back with the parts added since then, your translations kept",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
+  },
+  {
+   "s": "Shared by the community",
+   "src": "static/langpacks.js:224"
+  },
+  {
+   "s": "Language packs other people translated, from the bitGen Community on tigerart.com.au - an admin checks each one before it shows here",
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Language packs",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Add a language from a language pack .zip (it is checked first)",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
   },
   {
    "s": "Every part in English, with TRANSLATING.txt - to start a new language",
-   "src": "static/langpacks.js:130"
+   "src": "static/langpacks.js:224"
+  },
+  {
+   "s": "Ask the bitGen Community again",
+   "src": "static/langpacks.js:224"
+  },
+  {
+   "s": "Shared language packs",
+   "src": "static/langpacks.js:224"
+  },
+  {
+   "s": "Taken off the community",
+   "src": "static/langpacks.js:261"
   },
   {
    "s": "Removed - the built-in one is back",
-   "src": "static/langpacks.js:165"
+   "src": "static/langpacks.js:271"
   },
   {
    "s": "Removed",
-   "src": "static/langpacks.js:165"
+   "src": "static/langpacks.js:271"
   },
   {
    "s": "Layout",
@@ -4637,10 +4729,6 @@
   {
    "s": "asking Civitai",
    "src": "static/modelmgr.js:1093"
-  },
-  {
-   "s": "not accepted",
-   "src": "static/modelmgr.js:1095"
   },
   {
    "s": "Model manager - your models + LoRAs as cards, select them, a new style from one, Civitai downloads",
@@ -5940,10 +6028,6 @@
   },
   {
    "s": "Viggle native",
-   "src": "static/swapdlg.js:488"
-  },
-  {
-   "s": "Install",
    "src": "static/swapdlg.js:488"
   },
   {
@@ -22086,23 +22170,43 @@
   },
   {
    "p": "{0} older",
-   "src": "static/langpacks.js:76"
+   "src": "static/langpacks.js:82"
   },
   {
    "p": "Installed {0} ({1}). Notes",
-   "src": "static/langpacks.js:99"
+   "src": "static/langpacks.js:105"
   },
   {
    "p": "Installed {0} ({1})",
-   "src": "static/langpacks.js:99"
+   "src": "static/langpacks.js:105"
   },
   {
    "p": "{0} ({1}) is built in. Use this pack instead of it? Removing the pack brings the built-in one back",
-   "src": "static/langpacks.js:113"
+   "src": "static/langpacks.js:119"
   },
   {
    "p": "{0} ({1}) is installed already (v{2}). Replace it with this one (v{3})",
-   "src": "static/langpacks.js:113"
+   "src": "static/langpacks.js:119"
+  },
+  {
+   "p": "The bitGen Community could not be reached: {0}",
+   "src": "static/langpacks.js:157"
+  },
+  {
+   "p": "{0} shared pack(s) waiting for you - check them on tigerart.com.au ▸ Language packs",
+   "src": "static/langpacks.js:172"
+  },
+  {
+   "p": "Share {0} with the bitGen Community? Everyone can install it once an admin has checked it. A note for the admins (optional)",
+   "src": "static/langpacks.js:203"
+  },
+  {
+   "p": "Sent {0} v{1} - it shows for everyone once an admin has checked it",
+   "src": "static/langpacks.js:212"
+  },
+  {
+   "p": "Shared {0} v{1} - anyone can install it now",
+   "src": "static/langpacks.js:212"
   },
   {
    "p": "{0} new",

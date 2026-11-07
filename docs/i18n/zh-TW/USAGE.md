@@ -4558,7 +4558,7 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 介面文字來自 static/i18n/ui/<語言>.json。執行 `node scripts/i18n-ui.js status zh-TW` 可查看已翻譯的數量。
 
 ## 語言包（2.715.0）
-<!-- en: language-packs-2-715-0 3dceade312aa -->
+<!-- en: language-packs-2-715-0 ec7b69eda5ac -->
 
 除英文外，每種語言都是一個**語言包**：包含應用自身的文字、指南、❔ 說明頁面、快捷鍵列表和功能列表。简体中文、繁體中文和日本語為內建語言；無需新版本的應用即可新增更多語言。**Settings ▸ Languages** 列出所有語言包及各自的翻譯進度。
 
@@ -4568,6 +4568,8 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **⤓ Master pack** 包含全部英文內容，並附 TRANSLATING.txt 說明如何填寫每個檔案 - 用於將 bitGen Studio 翻譯成新語言。在 pack.json 中填入語言代碼和名稱，儘量翻譯（ui.json 中應用的文字效果最明顯），然後壓縮為 .zip 並安裝。
 - **⤓ Export for translating** 會返回語言包，補入此後應用新增的部分並保留其譯文 - 用於繼續翻譯，或改進內建語言。
 - 已安裝的語言包儲存在安裝目錄的 langpacks 資料夾中。語言包中的說明頁面只保留簡單的格式。
+- **Shared by the community**（2.716.0）列出其他人翻譯的語言包，來自 tigerart.com.au 上的 bitGen 社群——每個語言包在顯示之前都經過管理員檢查。點選 **⤓ Install** 即可一鍵安裝。
+- 在已安裝的語言包上點選 **⇪ Share**，會以你的身份傳送到社群（需先登入 💬 Community），並可附上給管理員的留言。管理員檢查後即對所有人顯示；**Your shared packs** 顯示每個語言包的狀態，✕ 可將其撤下。網站的語言包頁面（tigerart.com.au/languages.php）列出相同的語言包，提供主語言包下載，也可以上傳。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

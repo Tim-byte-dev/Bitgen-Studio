@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.716.0 (Tim: "if we could have a master pack so users can translate the strings and upload to tigerart for the community it would be ideal")
+node scripts/test-langpacks716.js > /tmp/langpacks716.log 2>&1 \
+  && ok "2.716.0 community language packs, the app's side: list signed out (marked installed), install from the community (409 / replace / gone), share as the member (its note, coverage, the pack's own files), an expired token, the page's wiring" \
+  || { bad "2.716.0 community language packs"; grep -a "^FAIL" -A2 /tmp/langpacks716.log | head -14; }
+node scripts/test-community716-server.js > /tmp/community716srv.log 2>&1 \
+  && ok "2.716.0 the community server's language packs: upload (waits), mine / pending, approve -> listed + downloadable, a newer version replaces, refuse with a note, an admin's live at once, delete, every refused zip - or SKIP without php" \
+  || { bad "2.716.0 language pack server"; grep -a "^FAIL" -A2 /tmp/community716srv.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-langpacks716-ui.js > /tmp/langpacks716ui.log 2>&1 \
+  && ok "2.716.0 browser test: Shared by the community - nothing yet, a shared pack listed (@who, note) and installed in one click, ⇪ Share signed out / signed in (waits), approved, ✕, an unreachable community - or SKIP" \
+  || { bad "2.716.0 community packs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/langpacks716ui.log | head -14; }
 # ---- 2.715.0 (Tim: "lets do number 2, this way we don't have to create all the packs at once - if we could have a master pack so users can translate the strings and upload to tigerart for the community it would be ideal")
 node scripts/test-langpacks715.js > /tmp/langpacks715.log 2>&1 \
   && ok "2.715.0 language packs: the built-in ones from docs/i18n/<id>/pack.json, helpI18n / helplang / uilang read the packs, pack.json rules, the master pack, install (cleaned: {0} checked, help pages sanitised, stray files out) / 409 / replace / a built-in's id / remove, export for translating, hostile zips refused, the routes" \

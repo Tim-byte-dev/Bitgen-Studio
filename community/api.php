@@ -25,7 +25,7 @@ function bgc_main(): void
             throw new ApiError(405, 'Use POST.');
         }
         bgc_require_https();
-        $body = $method === 'POST' ? bgc_read_body($action === 'bug_report' ? BGC_MAX_BUG_BODY : BGC_MAX_BODY) : [];
+        $body = $method === 'POST' ? bgc_read_body(in_array($action, ['bug_report', 'pack_upload'], true) ? BGC_MAX_BUG_BODY : BGC_MAX_BODY) : [];
         bgc_reply(200, ['ok' => true] + bgc_dispatch($action, $body));
     } catch (ApiError $e) {
         bgc_reply($e->status, ['ok' => false, 'error' => $e->getMessage()] + $e->extra);

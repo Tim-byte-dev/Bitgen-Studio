@@ -8,6 +8,9 @@
  * shortcuts, the feature list), Use, ⤓ Export for translating, ✕ Remove (installed ones). Below: ⤒ Install a pack (.zip -
  * checked first; a language already there asks before it is replaced) and ⤓ Master pack (everything in English, to start a
  * new language). The language list next to ⊞ follows at once (H3HelpLang.refresh).
+ * 2.716.0: "Shared by the community" - the packs on tigerart.com.au's bitGen Community (⤓ Install - asks before replacing),
+ * ⇪ Share on an installed pack (with a note for the admins - it waits for one to check it), your shared packs and their
+ * status (✕ takes one off).
  *   pct(c) (pure)       "97 %" / "3 of 3" / "—" for a {done, total}
  *   summary(cov) (pure) [[label, text]] for a pack's coverage
  */
@@ -62,6 +65,9 @@
     ex.title = "The pack as a .zip with today's English added where it is not translated yet - to carry on translating, or to share";
     ex.textContent = "⤓ Export for translating";
     if (p.source === "installed") {
+      var sh = el("button", "ghost", acts); sh.type = "button"; sh.setAttribute("data-lpshare", "");
+      sh.title = "Send this pack to the bitGen Community (tigerart.com.au) so everyone can install it - an admin checks it first";
+      sh.textContent = "⇪ Share";
       var rm = el("button", "ghost", acts); rm.type = "button"; rm.setAttribute("data-lpremove", "");
       rm.title = p.replaces ? "Remove it - the built-in one comes back" : "Remove this language pack";
       rm.textContent = "✕ Remove";
@@ -120,6 +126,94 @@
       });
     }).catch(function (e) { msgEl(true).textContent = e.message || String(e); });
   }
+  /* ---- 2.716.0: the community's packs (routes/langPacks.js /api/langpacks/community*) */
+  function postJson(url, body) {
+    return root.fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) { var e = new Error(j.error || r.statusText); e.data = j; e.status = r.status; throw e; } return j; }); });
+  }
+  var CMS = null;
+  function cmRow(p, box) {
+    var r = el("div", "lprow", box); r.setAttribute("data-cm", String(p.id));
+    var head = el("div", "", r);
+    var nm = el("span", "lpname", head); nm.lang = p.code; nm.setAttribute("data-noi18n", ""); nm.textContent = p.native;
+    var sm = el("small", "", head); sm.setAttribute("data-noi18n", ""); sm.textContent = (p.name !== p.native ? p.name + " · " : "") + p.code;
+    var v = el("span", "lptag", head); v.setAttribute("data-noi18n", ""); v.textContent = "v" + p.version;
+    var by = el("small", "", head); by.setAttribute("data-noi18n", ""); by.title = "Shared by"; by.textContent = "@" + ((p.by && (p.by.handle || p.by.name)) || "?");
+    var acts = el("div", "lpacts", r), have = p.installed;
+    if (have && have.source === "installed" && have.version === p.version) { var x = el("span", "hint", acts); x.textContent = "Installed"; }
+    else { var b = el("button", "ghost", acts); b.type = "button"; b.setAttribute("data-cminstall", ""); b.textContent = have ? "⤓ Install this version" : "⤓ Install"; }
+    var cov = el("div", "lpcov", r), c = (p.counts && p.counts.coverage) || {};
+    var app = c.ui ? summary({ ui: c.ui, patterns: c.patterns || { done: 0, total: 0 } })[0][1] : null;
+    var it = el("span", "", cov); it.appendChild(doc.createTextNode("App ")); var bb = el("b", "", it); bb.textContent = app || String((p.counts && p.counts.ui) || 0);
+    if (c.guide) { var g = el("span", "", cov); g.appendChild(doc.createTextNode("Guide ")); var gb = el("b", "", g); gb.textContent = pct(c.guide); }
+    var dl = el("span", "", cov); dl.title = "Downloads"; dl.textContent = "⤓ " + (p.downloads || 0);
+    if (p.note) { var n = el("span", "", cov); n.setAttribute("data-noi18n", ""); n.textContent = "“" + p.note + "”"; }
+  }
+  function cmPaint() {
+    var box = $("s_lpcm"), mine = $("s_lpmine"); if (!box) return;
+    box.textContent = ""; mine.textContent = "";
+    var j = CMS;
+    if (!j) { var w = el("p", "hint", box); w.textContent = "Asking the bitGen Community…"; return; }
+    if (!j.ok) { var e = el("p", "hint", box); e.textContent = "The bitGen Community could not be reached: " + (j.error || "no answer"); return; }
+    if (!j.packs.length) { var z = el("p", "hint", box); z.textContent = "No shared language packs yet - be the first: translate the master pack and ⇪ Share it."; }
+    j.packs.forEach(function (p) { cmRow(p, box); });
+    if (j.mine && j.mine.length) {
+      var h = el("p", "hint", mine); h.textContent = "Your shared packs:";
+      var ul = el("ul", "lpwarn hint", mine);
+      j.mine.forEach(function (p) {
+        var li = el("li", "", ul); li.setAttribute("data-cmmine", String(p.id));
+        var t = el("span", "", li); t.setAttribute("data-noi18n", ""); t.textContent = p.native + " v" + p.version + " - ";
+        var st = el("span", "", li);
+        st.textContent = p.status === "live" ? "shared - anyone can install it" : p.status === "pending" ? "waiting for an admin to check it" : "not accepted";
+        if (p.status === "refused" && p.review_note) { var why = el("span", "", li); why.setAttribute("data-noi18n", ""); why.textContent = ": " + p.review_note; }
+        var d = el("button", "ghost", li); d.type = "button"; d.setAttribute("data-cmdelete", ""); d.title = "Take it off the community"; d.textContent = "✕";
+      });
+    }
+    if (j.pending && j.pending.length) { var a = el("p", "hint", mine); a.textContent = j.pending.length + " shared pack(s) waiting for you - check them on tigerart.com.au ▸ Language packs."; }
+  }
+  function cmLoad() {
+    CMS = null; cmPaint();
+    return root.fetch("/api/langpacks/community", { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (j) { CMS = j; cmPaint(); }).catch(function (e) { CMS = { ok: false, error: e.message }; cmPaint(); });
+  }
+  function askReplace(text, yesFn) {
+    var ask = $("s_lpask"); ask.textContent = "";
+    var q = el("span", "", ask); q.textContent = text;
+    var yes = el("button", "ghost", ask); yes.type = "button"; yes.id = "s_lpyes"; yes.textContent = "Replace";
+    var no = el("button", "ghost", ask); no.type = "button"; no.id = "s_lpno"; no.textContent = "Cancel";
+    yes.onclick = function () { ask.textContent = ""; yesFn(); };
+    no.onclick = function () { ask.textContent = ""; msgEl().textContent = "Not installed."; };
+  }
+  function cmInstall(id, replace) {
+    msgEl().textContent = "Downloading the pack…";
+    return postJson("/api/langpacks/community/install", { id: id, replace: !!replace }).then(function (r) { return installed(r).then(cmLoad); }).catch(function (e) {
+      if (e.status === 409 && e.data && e.data.exists) {
+        msgEl().textContent = "";
+        var p = (CMS && CMS.packs || []).find(function (x) { return x.id === id; }) || {}, have = p.installed || {};
+        askReplace(have.source === "built-in" ? e.data.native + " (" + e.data.id + ") is built in. Use this pack instead of it? Removing the pack brings the built-in one back."
+          : e.data.native + " (" + e.data.id + ") is installed already (v" + have.version + "). Replace it with this one (v" + p.version + ")?", function () { cmInstall(id, true); });
+        return;
+      }
+      msgEl(true).textContent = e.message;
+    });
+  }
+  function share(id) {
+    var p = (H3HelpLang.packs() || []).find(function (x) { return x.id === id; }) || { native: id };
+    var ask = $("s_lpask"); ask.textContent = "";
+    var q = el("span", "", ask); q.textContent = "Share " + p.native + " with the bitGen Community? Everyone can install it once an admin has checked it. A note for the admins (optional):";
+    var note = el("input", "", ask); note.type = "text"; note.id = "s_lpnote"; note.maxLength = 500; note.placeholder = "What it covers, what is still to do"; note.style.cssText = "flex:1;min-width:180px";
+    var yes = el("button", "ghost", ask); yes.type = "button"; yes.id = "s_lpsend"; yes.textContent = "⇪ Send";
+    var no = el("button", "ghost", ask); no.type = "button"; no.textContent = "Cancel";
+    no.onclick = function () { ask.textContent = ""; };
+    yes.onclick = function () {
+      yes.disabled = true; msgEl().textContent = "Sending the pack…";
+      postJson("/api/langpacks/" + encodeURIComponent(id) + "/share", { note: note.value }).then(function (r) {
+        ask.textContent = "";
+        msgEl().textContent = r.pending ? "Sent " + r.native + " v" + r.version + " - it shows for everyone once an admin has checked it." : "Shared " + r.native + " v" + r.version + " - anyone can install it now.";
+        return cmLoad();
+      }).catch(function (e) { yes.disabled = false; msgEl(true).textContent = e.message; });
+    };
+  }
   function boot() {
     var dlg = $("settings"), tabs = dlg && dlg.querySelector(".stabs");
     if (!tabs || $("stab-langs")) return !!tabs;
@@ -140,15 +234,20 @@
       + "<li>Unzip it, put your language's code and name in pack.json, and translate what you can - the app's words (ui.json) first make the biggest difference. Anything left as it is stays English.</li>"
       + "<li>Zip the folder again and ⤒ Install a pack - try it in the app.</li>"
       + "<li>Share it: upload the .zip on tigerart.com.au so everyone can install it.</li>"
-      + "<li>Later, ⤓ Export for translating gives your pack back with the parts added since then, your translations kept.</li></ol></details>";
+      + "<li>Later, ⤓ Export for translating gives your pack back with the parts added since then, your translations kept.</li></ol></details>"
+      + '<div class="rowbtns" style="margin-top:14px;align-items:center"><label class="f" style="margin:0;flex:1">Shared by the community</label>'
+      + '<button type="button" class="ghost" id="s_lpcmref" title="Ask the bitGen Community again">↻</button></div>'
+      + '<p class="hint" style="margin:2px 0 6px">Language packs other people translated, from the bitGen Community on tigerart.com.au - an admin checks each one before it shows here.</p>'
+      + '<div id="s_lpcm" aria-label="Shared language packs"></div><div id="s_lpmine"></div>';
     var all = dlg.querySelectorAll(".stab"), themes = $("stab-themes");
     if (themes) themes.after(pane); else if (all.length) all[all.length - 1].after(pane); else tabs.after(pane);
     // a listener, not onclick: the page's own tab code (index.html) sets every tab's onclick after the scripts load
     b.addEventListener("click", function () {
       dlg.querySelectorAll(".stabs button").forEach(function (x) { x.classList.toggle("active", x === b); });
       doc.querySelectorAll(".stab").forEach(function (t) { t.classList.toggle("active", t.id === "stab-langs"); });
-      reload();
+      reload(); cmLoad();
     });
+    $("s_lpcmref").onclick = function () { cmLoad(); };
     $("s_lpinstall").onclick = function () { $("s_lpfile").click(); };
     $("s_lpfile").onchange = function () {
       var f = this.files && this.files[0]; this.value = "";
@@ -156,9 +255,16 @@
       f.arrayBuffer().then(install);
     };
     pane.addEventListener("click", function (e) {
-      var t = e.target, r = t.closest && t.closest("[data-lp]"); if (!r) return;
+      var t = e.target, c = t.closest && t.closest("[data-cm]"), m = t.closest && t.closest("[data-cmmine]");
+      if (c && t.closest("[data-cminstall]")) { cmInstall(parseInt(c.getAttribute("data-cm"), 10)); return; }
+      if (m && t.closest("[data-cmdelete]")) {
+        postJson("/api/langpacks/community/delete", { id: parseInt(m.getAttribute("data-cmmine"), 10) }).then(function () { msgEl().textContent = "Taken off the community."; return cmLoad(); }).catch(function (e3) { msgEl(true).textContent = e3.message; });
+        return;
+      }
+      var r = t.closest && t.closest("[data-lp]"); if (!r) return;
       var id = r.getAttribute("data-lp");
       if (t.closest("[data-lpuse]")) { H3HelpLang.set(id); paint(); }
+      else if (t.closest("[data-lpshare]")) share(id);
       else if (t.closest("[data-lpremove]")) {
         root.fetch("/api/langpacks/remove", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id }) })
           .then(function (x) { return x.json().then(function (j) { if (!x.ok) throw new Error(j.error); return j; }); })
@@ -168,6 +274,6 @@
     if (root.H3HelpLang) { H3HelpLang.onPacks(function () { if (pane.classList.contains("active")) paint(); }); H3HelpLang.onChange(function () { if (pane.classList.contains("active")) paint(); }); }
     return true;
   }
-  root.H3LangPacks = Object.assign({ boot: boot, reload: reload, install: install, state: function () { return { cov: COV }; } }, pure);
+  root.H3LangPacks = Object.assign({ boot: boot, reload: reload, install: install, cmLoad: cmLoad, state: function () { return { cov: COV, community: CMS }; } }, pure);
   (function wait(n) { if (!boot() && n < 100) setTimeout(function () { wait(n + 1); }, 100); })(0);
 })(typeof window !== "undefined" ? window : globalThis);

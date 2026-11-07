@@ -44,6 +44,12 @@ const BGC_ACTIONS = [
     'bug_report' => ['act_bug_report', 'opt', false, false],
     'bug_shot' => ['act_bug_shot', true, true, false],
     'admin_bug_status' => ['act_admin_bug_status', true, true, false],
+    // 2.716.0: language packs (act_packs.php)
+    'pack_list' => ['act_pack_list', 'opt', false, true],
+    'pack_get' => ['act_pack_get', 'opt', false, true],
+    'pack_upload' => ['act_pack_upload', true, false, false],
+    'pack_delete' => ['act_pack_delete', true, false, false],
+    'admin_pack_moderate' => ['act_admin_pack_moderate', true, true, false],
 ];
 
 /** one action -> its reply (without ok); throws ApiError. $body may carry "token" (the website keeps it in its session). */

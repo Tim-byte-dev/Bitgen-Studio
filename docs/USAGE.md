@@ -7586,6 +7586,12 @@ list and the feature list. 简体中文, 繁體中文 and 日本語 are built in
 - **⤓ Export for translating** gives a pack back with the parts added to the app since, its translations kept - to carry
   on, or to improve a built-in language.
 - Installed packs are kept in the langpacks folder of the install. A pack's help pages keep only plain formatting.
+- **Shared by the community** (2.716.0) lists the packs other people translated, from the bitGen Community on
+  tigerart.com.au - an admin checks each one before it shows. **⤓ Install** puts one in with one click.
+- **⇪ Share** on an installed pack sends it to the community as you (sign in to 💬 Community first), with a note for the
+  admins. It shows for everyone once an admin has checked it; **Your shared packs** says where each one is, and ✕ takes
+  one off. The website's Language packs page (tigerart.com.au/languages.php) lists the same packs, offers the master pack
+  and takes uploads too.
 
 ## Tips
 

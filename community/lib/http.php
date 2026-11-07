@@ -5,7 +5,7 @@ declare(strict_types=1);
 if (!defined('BGC')) { http_response_code(404); exit; }
 
 const BGC_MAX_BODY = 16384;   // 16 KB - a request body any bigger is refused (413)
-const BGC_MAX_BUG_BODY = 7340032;   // 2.714.0: 7 MB for bug_report only (the logs + a screenshot; PHP's post_max_size is 8 MB)
+const BGC_MAX_BUG_BODY = 7340032;   // 2.714.0: 7 MB for bug_report (the logs + a screenshot; PHP's post_max_size is 8 MB) - 2.716.0: and pack_upload (a 5 MB language pack as base64)
 
 /** an error a person can read; $status is the HTTP status it goes out with */
 final class ApiError extends Exception

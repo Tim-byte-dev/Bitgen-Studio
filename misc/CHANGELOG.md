@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.716.0** — 🌏 Community Language Packs: Members Share Their Translations Through the bitGen Community (an Admin Checks Each), Everyone Installs Them in One Click from Settings ▸ Languages; the Website Gets a Language Packs Page With the Master Pack
 - **2.715.0** — 🌏 Language Packs: Every Language Besides English Is a Pack - Settings ▸ Languages Installs, Removes and Exports Them, and the Master Pack Lets Anyone Translate bitGen Studio Into a New Language
 - **2.714.1** — 🌏 The Feature List in 简体中文 / 繁體中文 / 日本語 (docs/i18n/<lang>/FEATURES.md) for the Website's Features Page; the tigerart.com.au Site Gets a Language Dropdown
 - **2.714.0** — 🐞 Bug Reports Go to the bitGen Community (📤 Save and Send - as You When Signed In, Anonymous When Not) and Get a Discussion on the Website Under Bug Reports; the Admins Download Every Bug as One List

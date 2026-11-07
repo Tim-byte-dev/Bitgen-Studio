@@ -13,6 +13,7 @@ function act_info(array $b, ?array $me): array
         'rules' => $s['rules'],
         'users' => (int) q_val('SELECT COUNT(*) FROM bgc_users WHERE banned = ?', [0]),
         'help_room' => 'help',
+        'packs' => true,                 // 2.716.0: language packs (act_packs.php)
     ];
 }
 

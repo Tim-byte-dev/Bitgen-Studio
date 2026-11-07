@@ -43,7 +43,7 @@ const bug = (o) => Object.assign({ title: "The timeline freezes", severity: "cra
   php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "100", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }) });
   for (let i = 0; i < 60; i++) { try { await fetch(BASE + "/api.php?a=info"); break; } catch (e) { await sleep(100); } }
   const tim = await join("tim"), boss = await join("boss");
-  let r = await call("info"); check("info: version 2.714.0", r.j.version === "2.714.0", r.j);
+  let r = await call("info"); check("info: version 2.714.0 or later", /^2\.(71[4-9]|7[2-9]\d)\./.test(r.j.version), r.j);
 
   // ---- a member sends one ------------------------------------------------------------------------------------------------
   r = await call("bug_report", bug(), tim);

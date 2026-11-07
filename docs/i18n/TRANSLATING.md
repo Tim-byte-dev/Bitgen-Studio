@@ -128,3 +128,10 @@ users can translate the strings and upload to tigerart for the community it woul
   parts added and its translations kept (a translated guide section keeps its old hash, so it still shows as older).
 - pack.json: id (ko, es, pt-BR, zh-Hant ...; not en / xx), name, native, region, browser (the system languages that pick it -
   the longest tag match wins), keepAll (CJK), version, authors, words {stale, missing, english, lang}.
+- **Shared by the community (2.716.0)**: members share packs through the bitGen Community (community/lib/act_packs.php -
+  pack_list / pack_get / pack_upload / pack_delete / admin_pack_moderate; an admin approves each). The app: Settings ▸
+  Languages ▸ Shared by the community (⤓ Install) and ⇪ Share on an installed pack; the website: tigerart.com.au/languages.php
+  (the list, the master pack - made by the website's daily refresh from lib/langPacks.js - uploads, the admins' checks).
+- **The website's words in a pack**: docs/i18n/site-keys.json is the website's English (tigerart: `php scripts/site-i18n.php
+  export <bitgen>` refreshes it); the master pack carries them as site.json. The website itself still uses its own
+  public/inc/i18n/<lang>.json - a pack's site.json is there for the website to adopt later.

@@ -6,7 +6,8 @@ if (!defined('BGC')) { http_response_code(404); exit; }
 
 // 2: names + email (verified) on bgc_users, banned emails, the discussions (bgc_topics, bgc_posts) - 2.713.0
 // 3: bug reports (bgc_bugs) - 2.714.0
-const BGC_SCHEMA = '3';
+// 4: language packs (bgc_packs) - 2.716.0
+const BGC_SCHEMA = '4';
 
 function db(): PDO
 {
@@ -168,6 +169,12 @@ function db_tables(): array
             . 'expected TEXT NOT NULL, steps TEXT NOT NULL, details MEDIUMTEXT NULL, shot MEDIUMTEXT NULL, shot_type VARCHAR(16) NULL, '
             . "source VARCHAR(8) NOT NULL DEFAULT 'app', status VARCHAR(16) NOT NULL DEFAULT 'open', created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
             ['bgc_bugs_topic' => 'topic_id', 'bgc_bugs_status' => 'status, id']],
+        // 2.716.0: a language pack a member shared (act_packs.php) - the .zip as base64; pending until an admin approves it
+        'bgc_packs' => ['id {PK}, code VARCHAR(24) NOT NULL, native VARCHAR(40) NOT NULL, name VARCHAR(60) NOT NULL, version VARCHAR(20) NOT NULL, '
+            . "app VARCHAR(20) NOT NULL, user_id BIGINT NULL, status VARCHAR(10) NOT NULL DEFAULT 'pending', note VARCHAR(600) NOT NULL, "
+            . 'review_note VARCHAR(600) NOT NULL, counts TEXT NOT NULL, zip MEDIUMTEXT NULL, size INT NOT NULL, sha CHAR(64) NOT NULL, '
+            . 'downloads INT NOT NULL DEFAULT 0, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL',
+            ['bgc_packs_status' => 'status, code', 'bgc_packs_user' => 'user_id']],
     ];
 }
 
