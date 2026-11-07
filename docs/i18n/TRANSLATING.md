@@ -92,15 +92,21 @@ able to find them on screen. So:
 ## The app's own words (2.705.0) - static/i18n/ui/<lang>.json
 
 The UI is translated at run time by static/uilang.js from a dictionary per language {"strings": {"English": "translation"}}.
-- `H3_URL=http://127.0.0.1:8311/ node scripts/ui-strings.js` collects every word of the running main window (the editors are
-  left out - static/uilang.js SKIP) into static/i18n/ui/strings.json, with where each one appears.
+- `H3_URL=http://127.0.0.1:8311/ node scripts/ui-strings.js` collects every word of the running app - the main window,
+  Settings, and (2.707.0) every docker with its tabs / tools / modes / menus picked in turn - into static/i18n/ui/strings.json,
+  with where each one appears; readouts (sizes, levels, dates, colour codes) and what a pattern makes from a number are left
+  out, and what an earlier collection found is kept (`--fresh` starts over, `--clean` re-filters the file without a browser).
+- `node scripts/ui-dynamic.js` (needs `npm i -g typescript`, a developer tool) reads ALL the app's code - static/*.js, every
+  ext/<docker>/*.js, index.html - for the words it writes while it runs (static/i18n/ui/dynamic.json): strings, and patterns
+  with {0} {1} for the values it fills in; also the words the editors keep as data ({label: "…"}, ["id", "Label"], tooltips
+  inside HTML built in a .map). `--settings` = the 2.706.0 scope (the Settings dialog only).
 - Translators get pieces of that list and return one JSON object per piece; `node scripts/i18n-ui.js build <lang> <dir>`
   merges them (a dir holding ONLY the new pieces - otherwise older pieces overwrite reviewed words), `check` must say 0
   problems, `status` says what is missing. zh-TW: `python3 scripts/i18n-zhtw.py --ui` converts only the words zh-TW lacks.
 - UI rules: labels short, in the software style of the language (保存 / 開く); tooltips in full sentences (ja です・ます);
   names, model / style names, file names, code, keys, literal values the app sends stay as they are; placeholders and ▸
   menu paths kept; a fragment (its icon and trailing ":" "…" are kept by the app) translated so it still works.
-- The guides take the button names from the dictionary at read time (lib/helpI18n.js uiNames - not in the editors' sections
-  until their UI is translated: EDITORS / UI_EDITOR_PAGES there).
-- NEXT (Tim chose the main window first): the image editor, timeline, Sketcher and CAD dockers - take them out of SKIP,
-  collect again, translate the new strings, and remove them from EDITORS.
+- The guides take the button names from the dictionary at read time (lib/helpI18n.js uiNames) - in every section and ❔ page
+  since 2.707.0 (EDITORS / UI_EDITOR_PAGES there are empty; put a docker back in them if its UI ever stops being translated).
+- Not translated: words drawn on a canvas (the timeline's ruler and clip labels, the image editor's on-canvas readouts), what
+  the user types, the guide's own text (it has its own translations), code / file names.

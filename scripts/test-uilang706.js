@@ -27,7 +27,7 @@ else check("ui-dynamic: every place the code writes words -> strings and {n} pat
   ["Click to start it", "Click to stop it", "installed {0} ({1})", "not installed — press Install", "python: {0}"].every((x) => got.includes(x)) && !got.includes("elsewhere"), got);
 const dyn = JSON.parse(fs.readFileSync(path.join(ROOT, "static", "i18n", "ui", "dynamic.json"), "utf8"));
 check("dynamic.json: the Settings code's words (100+ strings, 100+ patterns - e.g. the token check, the speech engines, the add-ons, the LLM engine line)",
-  dyn.scope === "settings" && dyn.strings.length > 100 && dyn.patterns.length > 100 && dyn.patterns.some((x) => /^valid — signed in as \{0\}/.test(x.p)) && dyn.patterns.some((x) => /installed \{0\}/.test(x.p)));
+  /^(settings|all)$/.test(dyn.scope) && dyn.strings.length > 100 && dyn.patterns.length > 100 && dyn.patterns.some((x) => /^valid — signed in as \{0\}/.test(x.p)) && dyn.patterns.some((x) => /installed \{0\}/.test(x.p)));
 check("i18n-ui check: a pattern's {n} must all survive", C.HOLES("a {1} b {0}") === C.HOLES("{0} 和 {1}") && C.HOLES("a {0}") !== C.HOLES("a"));
 for (const lang of ["zh-CN", "zh-TW", "ja"]) {
   const pats = C.patsOf(lang), all = C.patterns(), have = all.filter((p) => pats[p] != null).length, pr = C.check(lang);

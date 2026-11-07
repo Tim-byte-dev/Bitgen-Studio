@@ -34,7 +34,7 @@ function save(lang, d, pats) {
   fs.writeFileSync(path.join(DIR, lang + ".json"), JSON.stringify({ lang, v, count: Object.keys(sorted).length, patternCount: Object.keys(sp).length, strings: sorted, patterns: sp }, null, 1) + "\n");
   return v;
 }
-const PH = (s) => [...String(s).matchAll(/<[^<>\s]{1,30}>|\{[^{}]{1,20}\}|%[sd]|\[[^\]]{1,12}\]/g)].map((m) => m[0]).sort().join(" ");
+const PH = (s) => [...String(s).matchAll(/<[^<>\s]{1,30}>|\{[^{}]{1,20}\}|%[sd]|\[[^\]\s]{1,12}\]/g)].map((m) => m[0]).sort().join(" ");
 const ARTICLE = /^(the|a|an)$/i;          // a bare article may translate to nothing (Japanese / Chinese have none)
 const ARROWS = (s) => (String(s).match(/▸/g) || []).length;
 const HOLES = (s) => (String(s).match(/\{\d+\}/g) || []).sort().join(" ");

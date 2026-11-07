@@ -19,12 +19,12 @@ check("split: the words between their icons / symbols - \"💾 Save…\" -> 💾
 const D = { Save: "保存", Steps: "步数", "top level": "顶层", "Open the folder": "打开文件夹" };
 check("tr: translated with its icon / colon / spaces kept; inner spaces collapsed for the lookup; unknown words -> null (they stay English)",
   U.tr("💾 Save", D) === "💾 保存" && U.tr("Steps:", D) === "步数:" && U.tr("(top level)", D) === "(顶层)" && U.tr("Open  the\n folder", D) === "打开文件夹" && U.tr("Delete", D) === null && U.tr("123", D) === null);
-check("not translated: the editors' dockers (this release), the guide's own text, code / kbd / pre, text boxes, [data-noi18n]",
-  ["#imageeditdock", "#timelinedock", "#pushpulldock", "#solidcraftdock", "#hlpBody .hlpc", "code", "kbd", "textarea", "[data-noi18n]"].every((x) => U.SKIP.includes(x)) && JSON.stringify(U.ATTRS) === '["title","placeholder","aria-label"]');
+check("not translated: the guide's own text, code / kbd / pre, text boxes, [data-noi18n] (2.707.0: the editors' dockers ARE now)",
+  ["#hlpBody .hlpc", "code", "kbd", "textarea", "[data-noi18n]"].every((x) => U.SKIP.includes(x)) && !/imageeditdock|timelinedock|pushpulldock|solidcraftdock/.test(U.SKIP) && JSON.stringify(U.ATTRS) === '["title","placeholder","aria-label"]');
 check("guides: a bold name the UI dictionary has is shown as the app shows it, its old gloss （…） dropped; others untouched",
   I.uiNames("按 **💾 Save**（保存） 再 **Steps**（步数）：**Delete**（删除）", D) === "按 **💾 保存** 再 **步数**：**Delete**（删除）" && I.uiNamesHtml("<b>Save</b>（保存）<b>X</b>", D) === "<b>保存</b><b>X</b>" && I.uiNames("x", null) === "x");
-check("…but not in the editors' sections / ❔ pages (their own UI is still English): EDITORS covers the image editor, timeline, Sketcher, CAD",
-  ["The image editor with AI", "Editing on the timeline: speed", "📏 Sketcher - 3D modelling", "📐 SolidCraft"].every((t) => I.EDITORS.test(t)) && !I.EDITORS.test("Settings ▸ Add-ons") && /UI_EDITOR_PAGES = \["timeline", "imageeditor", "pushpull"\]/.test(rd("lib/helpI18n.js")));
+check("…in the editors' sections / ❔ pages too since 2.707.0 (their UI is translated): EDITORS matches nothing, UI_EDITOR_PAGES is empty",
+  ["The image editor with AI", "Editing on the timeline: speed", "📏 Sketcher - 3D modelling", "📐 SolidCraft"].every((t) => !I.EDITORS.test(t)) && /UI_EDITOR_PAGES = \[\]/.test(rd("lib/helpI18n.js")));
 check("dictionary check: placeholders and ▸ menu paths must survive", C.PH("Open <project> {n} [0-2s] %s") === C.PH("打开 %s [0-2s] {n} <project>") && C.PH("a <x>") !== C.PH("一个"));
 
 const IDX = rd("static/index.html");

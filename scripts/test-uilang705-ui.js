@@ -37,8 +37,8 @@ const CJK = /[぀-ヿ一-鿿]/;
         while ((n = w.nextNode())) { const e = n.parentElement; if (!e || e.closest(H3UiLang.SKIP) || !e.getClientRects().length) continue; const v = n.nodeValue.trim(); if (!/[A-Za-z]{3}/.test(v) && !/[぀-ヿ一-鿿]/.test(v)) continue; if (/[぀-ヿ一-鿿]/.test(v)) tr++; else en++; }
         return { gen, set, want: D.General, wantSet: H3UiLang.tr(enSet, D), tr, en, ie: (document.querySelector("#imageeditdock .bhead") || {}).textContent || "" };
       }, before.set);
-      check(`${lang}: the app's words change at once - Settings' tabs, the ⚙ tooltip, most of what is on screen; the image editor stays English (this release)`,
-        r.gen === r.want && test.test(r.gen) && r.set === r.wantSet && r.tr > r.en && r.ie === before.ie, r);
+      check(`${lang}: the app's words change at once - Settings' tabs, the ⚙ tooltip, most of what is on screen, the image editor's title too (2.707.0)`,
+        r.gen === r.want && test.test(r.gen) && r.set === r.wantSet && r.tr > r.en && test.test(r.ie), r);
     }
     // the app writes new words while it runs - translated as they appear (before they are painted)
     const dyn = await p.evaluate(async () => { const D = H3UiLang.state().dict, k = Object.keys(D).find((x) => /^[A-Z][a-z]+$/.test(x)); const b = document.createElement("button"); b.textContent = "⚙ " + k; b.title = k; document.getElementById("menubar").appendChild(b);

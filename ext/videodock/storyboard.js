@@ -65,7 +65,9 @@
     const d = $("videodock"); if (!d) return;
     const h = d.querySelector(":scope > .bhead");
     // 2.574.1: a title the theme gave it (themeedit words(): .h3words) stays as the theme says
-    if (h && !h.classList.contains("h3words")) for (const n of h.childNodes) if (n.nodeType === 3 && /Video/.test(n.textContent)) { n.textContent = n.textContent.replace(/Video/, "StoryBoard"); break; }
+    // 2.707.0: the app's words may already be in another language (static/uilang.js) - "Video" as the dictionary has it counts too
+    const tr = (window.H3UiLang && H3UiLang.state().dict && H3UiLang.state().dict.Video) || null;
+    if (h && !h.classList.contains("h3words")) for (const n of h.childNodes) if (n.nodeType === 3 && (/Video/.test(n.textContent) || (tr && n.textContent.includes(tr)))) { n.textContent = n.textContent.replace(/Video/, "StoryBoard").replace(tr || "\u0000", "StoryBoard"); break; }
     const b = $("tV"); if (b) { b.textContent = "StoryBoard"; b.title = "StoryBoard - the scenes with their storyboard pictures, the cast, 360° environments"; }
   }
   /* ---- floating: the whole docker as a floatpanels panel */

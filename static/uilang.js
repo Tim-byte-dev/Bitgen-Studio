@@ -20,7 +20,7 @@
  */
 (function (root) {
   "use strict";
-  var SKIP = "#imageeditdock, #timelinedock, #pushpulldock, #solidcraftdock, #hlpBody .hlpc, #hpBody, #log, script, style, code, pre, kbd, textarea, [contenteditable=''], [contenteditable='true'], [data-noi18n]";
+  var SKIP = "#hlpBody .hlpc, #hpBody, #log, script, style, code, pre, kbd, textarea, [contenteditable=''], [contenteditable='true'], [data-noi18n]";
   var ATTRS = ["title", "placeholder", "aria-label"];
   // a text box's own words (what is typed) are never touched - but its placeholder / tooltip are
   var SKIP_ATTR = SKIP.replace(", textarea", "");
