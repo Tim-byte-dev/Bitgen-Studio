@@ -27,12 +27,13 @@ function save(lang, d) {
   return v;
 }
 const PH = (s) => [...String(s).matchAll(/<[^<>\s]{1,30}>|\{[^{}]{1,20}\}|%[sd]|\[[^\]]{1,12}\]/g)].map((m) => m[0]).sort().join(" ");
+const ARTICLE = /^(the|a|an)$/i;          // a bare article may translate to nothing (Japanese / Chinese have none)
 const ARROWS = (s) => (String(s).match(/▸/g) || []).length;
 function check(lang) {
   const d = dictOf(lang), S = new Set(strings()), probs = [];
   for (const [k, v] of Object.entries(d)) {
     if (!S.has(k)) probs.push(`not a collected string: ${k.slice(0, 60)}`);
-    if (typeof v !== "string" || !v.trim()) { probs.push(`empty: ${k.slice(0, 60)}`); continue; }
+    if (typeof v !== "string" || (!v.trim() && !ARTICLE.test(k))) { probs.push(`empty: ${k.slice(0, 60)}`); continue; }
     if (PH(k) !== PH(v)) probs.push(`placeholders changed: ${k.slice(0, 50)} -> ${v.slice(0, 50)}`);
     if (ARROWS(k) !== ARROWS(v)) probs.push(`▸ menu path changed: ${k.slice(0, 50)}`);
     if (/^zh/.test(lang) && (v.match(/[぀-ヿ]/g) || []).length > 2) probs.push(`kana in Chinese: ${v.slice(0, 50)}`);
@@ -48,7 +49,7 @@ if (require.main === module) {
     const d = dictOf(lang), S = new Set(strings());
     const files = fs.readdirSync(dir).filter((f) => new RegExp(`^chunk\\d+\\.${lang.replace("-", "\\-")}(\\.part\\w+)?\\.json$`).test(f)).sort();
     let n = 0, bad = 0;
-    for (const f of files) { const j = read(path.join(dir, f)); if (!j) { console.log("not JSON: " + f); bad++; continue; } for (const [k, v] of Object.entries(j)) { if (S.has(k) && typeof v === "string" && v.trim()) { d[k] = v; n++; } } }
+    for (const f of files) { const j = read(path.join(dir, f)); if (!j) { console.log("not JSON: " + f); bad++; continue; } for (const [k, v] of Object.entries(j)) { if (S.has(k) && typeof v === "string" && (v.trim() || ARTICLE.test(k))) { d[k] = v; n++; } } }
     fs.mkdirSync(DIR, { recursive: true });
     console.log(`build ${lang}: ${files.length} files, ${n} strings${bad ? `, ${bad} unreadable` : ""} -> v ${save(lang, d)}`);
   } else if (cmd === "status") {
