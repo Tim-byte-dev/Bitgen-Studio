@@ -79,7 +79,7 @@ check("the project keeps it (save + load); both scripts load", /negative: window
 const SF = read("static", "secfloat.js"), NJ = read("static", "negprompt.js");
 check("key 2: a SecFloat window (free over the editor / canvas, skipped while the 🎥 multi-camera dialog is open); docker_status.json keeps floats.negprompt; docs/shortcuts.json lists 2",
   /if \(!wants\(ev, sp\.key, a, dlg, sp\.free \? false : owner/.test(SF) && /if \(sp\.skip\)/.test(SF) && /SecFloat\.add\(\{ id: "negprompt", title: "Negative prompt", key: "2"/.test(NJ) && /tlMulticamDlg/.test(NJ)
-  && /const FLOATS = \["basic", "llmtok", "camera", "negprompt"\]/.test(read("lib", "dockerStatus.js")) && JSON.parse(read("docs", "shortcuts.json")).groups[0].rows.some((r) => r[0] === "2"));
+  && /const FLOATS = \["basic", "llmtok", "camera", "negprompt"(, "community")?\]/.test(read("lib", "dockerStatus.js")) && JSON.parse(read("docs", "shortcuts.json")).groups[0].rows.some((r) => r[0] === "2"));
 const SFp = require(path.join(ROOT, "static", "secfloat.js"));
 check("SecFloat.wants: 2 toggles (not while typing, not with Shift / Ctrl, not with a dialog open)", SFp.wants({ key: "2" }, "2", null, false, false) && !SFp.wants({ key: "2", shiftKey: true }, "2", null, false, false)
   && !SFp.wants({ key: "2" }, "2", { tagName: "TEXTAREA" }, false, false) && !SFp.wants({ key: "2" }, "2", null, true, false));

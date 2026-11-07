@@ -4562,7 +4562,10 @@ render itself, so 16 GB mode keeps only the text encoder unload and pass 1). Run
 
 ## 💬 The bitGen Community: help and friends (2.710.0)
 
-**💬 Community** on the status bar opens a small chat panel (bottom right), like Facebook's.
+**💬 Community** on the status bar shows / hides a small chat panel, like Facebook's. It is a docker of its own
+(2.711.0): drag its title bar to float it anywhere (every edge sizes it), drop it beside or below another docker, or onto
+a docker's middle to put it INSIDE that docker as a tab; ▁ minimizes it, ⛶ maximizes it, ✕ closes it. Where it is and
+whether it is open are remembered.
 
 - **Join**: type a **user ID** (3-24 letters, numbers, _ . -), a display name and a password (8 characters or more),
   then **Join**. Already have an ID (on another computer)? Type it and the password, then **Sign in**.

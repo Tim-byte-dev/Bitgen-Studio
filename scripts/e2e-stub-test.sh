@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.711.0 (Tim: "make it a floating docker too")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-community711-ui.js > /tmp/community711ui.log 2>&1 \
+  && ok "2.711.0 browser test: 💬 Community is a floating docker - the docker title bar, every edge sizes it, kept across a reload, docks inside another docker as a tab, floats again, 💬 / ✕ hide it - or SKIP" \
+  || { bad "2.711.0 community docker browser test"; grep -a "FAIL\\|Error" -A2 /tmp/community711ui.log | head -14; }
 # ---- 2.710.0 (Tim: "i would like to make bitgen a community, can we add a little chat to bitgen like fb ...")
 node scripts/test-community710-server.js > /tmp/community710srv.log 2>&1 \
   && ok "2.710.0 the community server (community/api.php under php -S, SQLite): every action, friend requests, Help + DMs, block, report, admin delete / ban, rate limits, token fallback - or SKIP without php" \

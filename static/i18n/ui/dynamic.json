@@ -2043,84 +2043,92 @@
    "src": "static/comfyupdate.js:57"
   },
   {
-   "s": "bitGen Community",
-   "src": "static/community.js:53"
+   "s": "Sign out, leave the community, the server's address",
+   "src": "static/community.js:66"
   },
   {
-   "s": "Sign out, leave the community, the server's address",
-   "src": "static/community.js:54"
+   "s": "bitGen Community",
+   "src": "static/community.js:71"
   },
   {
    "s": "Join the bitGen Community: ask for help in the Help room, and add friends to chat with",
-   "src": "static/community.js:101"
+   "src": "static/community.js:122"
   },
   {
    "s": "Join",
-   "src": "static/community.js:110"
+   "src": "static/community.js:131"
   },
   {
    "s": "Make this user ID and join",
-   "src": "static/community.js:110"
+   "src": "static/community.js:131"
   },
   {
    "s": "Sign in",
-   "src": "static/community.js:111"
+   "src": "static/community.js:132"
   },
   {
    "s": "Use a user ID you already have",
-   "src": "static/community.js:111"
+   "src": "static/community.js:132"
   },
   {
    "s": "Community server",
-   "src": "static/community.js:112"
+   "src": "static/community.js:133"
   },
   {
    "s": "Report this message to the admins",
-   "src": "static/community.js:123"
+   "src": "static/community.js:144"
   },
   {
    "s": "Delete this message (admin)",
-   "src": "static/community.js:124"
+   "src": "static/community.js:145"
   },
   {
    "s": "Send",
-   "src": "static/community.js:134"
+   "src": "static/community.js:155"
   },
   {
    "s": "Why? (the admins see it)",
-   "src": "static/community.js:151"
+   "src": "static/community.js:172"
   },
   {
    "s": "Find people by user ID or name",
-   "src": "static/community.js:184"
+   "src": "static/community.js:205"
   },
   {
    "s": "Friend requests",
-   "src": "static/community.js:187"
+   "src": "static/community.js:208"
   },
   {
    "s": "Waiting for them",
-   "src": "static/community.js:188"
+   "src": "static/community.js:209"
   },
   {
    "s": "Friends",
-   "src": "static/community.js:189"
+   "src": "static/community.js:210"
   },
   {
    "s": "No friends yet - find someone, or + Add friend from a name in the Help room",
-   "src": "static/community.js:190"
+   "src": "static/community.js:211"
+  },
+  {
+   "s": "Signed in as",
+   "src": "static/community.js:246"
   },
   {
    "s": "Leave the community",
-   "src": "static/community.js:227"
+   "src": "static/community.js:248"
   },
   {
    "s": "Deletes your user ID and friendships. Type your password",
-   "src": "static/community.js:227"
+   "src": "static/community.js:248"
+  },
+  {
+   "s": "Reports (admin)",
+   "src": "static/community.js:256"
   },
   {
    "s": "Community",
-   "src": "static/community.js:281"
+   "src": "static/community.js:319"
   },
   {
    "s": "Drag to size this column",

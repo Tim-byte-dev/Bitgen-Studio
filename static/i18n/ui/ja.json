@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "6d9d5c752d00",
- "count": 8654,
+ "v": "a892a427893f",
+ "count": 8655,
  "patternCount": 1000,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -6918,6 +6918,7 @@
   "bitGen Bridge": "bitGen Bridge",
   "bitGen Community": "bitGen コミュニティ",
   "bitGen Community - ask for help, chat with friends": "bitGen コミュニティ - 質問したり、友達とチャットしたり",
+  "bitGen Community - ask for help, chat with friends (a docker: float it, or dock it beside / inside another)": "bitGen コミュニティ - 質問したり友達とチャットしたり（ドッカー：フローティングにするか、他のドッカーの横 / 中にドッキングできます）",
   "bitGen Default": "bitGen 既定",
   "bitGen Default - built in: Dark, no element styles, UI size 100 % (Ctrl+Alt+Shift+T)": "bitGen 既定 - 組み込み：ダーク、要素スタイルなし、UI サイズ 100 %（Ctrl+Alt+Shift+T）",
   "bitGen Studio": "bitGen Studio",

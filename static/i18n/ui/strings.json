@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5417,
+ "count": 5418,
  "strings": [
   {
    "s": "0 (auto)",
@@ -40889,6 +40889,15 @@
    ],
    "where": [
     "#cmPanel"
+   ]
+  },
+  {
+   "s": "bitGen Community - ask for help, chat with friends (a docker: float it, or dock it beside / inside another)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#tCm"
    ]
   },
   {
