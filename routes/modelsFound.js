@@ -5,7 +5,8 @@
 // not found"
 //
 //   GET  /api/models/found[?refresh=1]   the list (misc/models_found.json); refresh = scan the model paths again (🧩 ⟳)
-//   POST /api/models/check  {kind: image | music | video, style_id / video_style_id, mode, model, basic, extra_loras}
+//   POST /api/models/check  {kind: image | music | video | aiedit, style_id / video_style_id, mode, model, basic, extra_loras,
+//                            fill_edit, edit_style_id}
 //        -> {checked, why, needed, found, missing: [{name, cat, folder, from, source: {id, label, size} | null}], ...}
 //        the same request the render will send (static/modelsfound.js reads it from the Generate path); the style's
 //        overrides, Basic Settings' model / LoRAs and the workflow for the mode, as /api/genimage, /api/genmusic and
@@ -33,7 +34,19 @@ const loraList = (v) => {
 /** what the render would load -> needs() rows, or {skip: why} */
 function plan(b) {
   const C = require("../lib/core"), styles = require("../lib/styles");
-  const kind = ["image", "music", "video"].includes(b.kind) ? b.kind : "image";
+  const kind = ["image", "music", "video", "aiedit"].includes(b.kind) ? b.kind : "image";
+  // 2.719.1: the image editor's ✨ AI (/api/aiedit, /api/aiedit/compose - routes/aiedit.js): its Edit / Regenerate style; a
+  // selection filled through the Edit model (fill_edit) = that edit style; Edit / Compose run the style's workflow, the
+  // others its inpaint workflow (none = only the style's own names - lib/aiEdit.js picks the graph)
+  if (kind === "aiedit") {
+    let st = styles.byId(C.STYLES_DIR, String(b.style_id || ""));
+    const es = b.fill_edit === "1" && b.mode !== "edit" && b.edit_style_id ? styles.byId(C.STYLES_DIR, String(b.edit_style_id)) : null;
+    if (es) st = es;
+    if (!st) return { skip: "no style picked" };
+    if ((st.engine || "comfy") !== "comfy") return { skip: "an sd-cli style - its files are paths, not ComfyUI model names" };
+    const wf = es || !b.mode || b.mode === "edit" ? st.workflow : (st.inpaint_workflow || "");
+    return { kind, wf: wf || "", rows: MF.needs(readGraph(wf), st, "image", {}) };
+  }
   if (kind === "video") {
     const id = String(b.video_style_id || b.style_id || "");
     let vs = id ? styles.byId(C.STYLES_DIR, id) : null;

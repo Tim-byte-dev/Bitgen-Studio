@@ -119,6 +119,13 @@ if (t8) {
   const wfNames = names(MF.loaderFiles(JSON.parse(rd(t8.workflow)))).filter((x) => !/lora/i.test(x));
   check("the route's plan (Qwen Image 2.1 edit Turbo8): its workflow's model files + its Turbo8 LoRA", p.rows && wfNames.every((w) => names(p.rows).includes(w)) && names(p.rows).includes("turbo8_lora_step2500.safetensors"), p);
 } else check("a starter style to plan (Qwen Image 2.1 edit Turbo8)", false, styles.read(C.STYLES_DIR, "image").map((s) => s.name));
+if (t8) {
+  const pe = R.plan({ kind: "aiedit", style_id: t8.id, mode: "edit" });
+  check("2.719.1 the image editor's ✨ AI (kind aiedit, Edit with Qwen Image 2.1 edit Turbo8 - Tim's log): the workflow's files + the Turbo8 LoRA",
+    pe.rows && names(pe.rows).includes("turbo8_lora_step2500.safetensors") && names(pe.rows).includes("qwen_image_2.1_int8_convrot.safetensors"), pe);
+  const pf = R.plan({ kind: "aiedit", style_id: "nope", mode: "inpaint", fill_edit: "1", edit_style_id: t8.id });
+  check("…a selection filled through the Edit model (fill_edit) = the edit style's files", pf.rows && names(pf.rows).includes("turbo8_lora_step2500.safetensors"), pf);
+}
 check("…a style that is not there: not checked (the render says why)", R.plan({ kind: "image", style_id: "nope" }).skip === "no style picked");
 const ltx = styles.read(C.STYLES_DIR, "video").find((s) => require("../lib/ltx").isLtxStyle(s));
 if (ltx) check("…an LTX style: not checked (it picks its files itself)", /LTX/.test(R.plan({ kind: "video", video_style_id: ltx.id }).skip || ""));
@@ -135,6 +142,10 @@ const sec = (fn) => { const i = idx.indexOf(fn); return idx.slice(i, i + 2200); 
 check("Generate image: the check runs before ComfyUI is started (kind image, the style, Basic Settings' model / LoRAs)", /H3ModelsFound\.ensure\(\{ kind: "image", style_id: id, model: ib\.model, extra_loras: ib\.extra_loras \}\)/.test(sec("async function startImageJob")) && sec("async function startImageJob").indexOf("H3ModelsFound.ensure") < sec("async function startImageJob").indexOf("ensureComfyReady"));
 check("Generate video: the check runs first (kind video, the style, the mode, Basic Settings)", /kind: "video"/.test(sec("async function submitJob")) && sec("async function submitJob").indexOf("H3ModelsFound.ensure") < sec("async function submitJob").indexOf("ensureComfyReady"));
 check("Generate music: the check runs first", /H3ModelsFound\.ensure\(\{ kind: "music", style_id: id \}\)/.test(sec("async function startMusicJob")));
+const mfj = rd("static/modelsfound.js");
+check("2.719.1 every render in the page is checked: fetch wrapped for /api/genimage, /api/genmusic, /api/generate, /api/aiedit(/compose)",
+  /"\/api\/genimage": "image", "\/api\/genmusic": "music", "\/api\/generate": "video", "\/api\/aiedit": "aiedit", "\/api\/aiedit\/compose": "aiedit"/.test(mfj) && /wrap\(root\)/.test(mfj));
+check("…the 🩺 Style doctor is not stopped by the box (X-Models-Check: skip - it reports failures in its table)", /"X-Models-Check": "skip"/.test(rd("static/styledoctor.js")));
 check("🧩 ⟳ makes the list again", /H3ModelsFound\.refresh\(\)/.test(rd("static/modelmgr.js")));
 check("routes/index.js mounts routes/modelsFound.js (server.js untouched)", /require\("\.\/modelsFound"\)\.mount\(app\)/.test(rd("routes/index.js")) && !/modelsFound/.test(rd("misc/server.js")));
 check("the list is this machine's: .gitignore + make_zips.sh leave misc/models_found.json out", /^models_found\.json$/m.test(rd(".gitignore")) && /! -name "models_found\.json"/.test(rd("scripts/make_zips.sh")));

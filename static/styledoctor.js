@@ -37,7 +37,8 @@
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function jget(u) { return fetch(u, { cache: "no-store" }).then(function (r) { return r.json(); }); }
-  function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
+  // 2.719.1: X-Models-Check skip - the doctor reports a missing model in its table; it does not stop at the Models not found box
+  function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json", "X-Models-Check": "skip" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
   function wait(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
   function say(t) { var m = $("sdMsg"); if (m) m.textContent = t || ""; }
 

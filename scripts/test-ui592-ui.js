@@ -86,6 +86,11 @@ async function waitJob(id, ms) {
     p.on("request", (r) => { if (/\/api\/genimage$/.test(r.url()) && r.method() === "POST") { try { posted.push(JSON.parse(r.postData() || "{}")); } catch { posted.push({}); } } });
     await ev(async () => { const s = document.getElementById("pzStyle"); s.focus(); await new Promise((r) => setTimeout(r, 600));
       const o = [...s.options].find((x) => /FLUX\.2 9B \(verified\)/.test(x.textContent)) || [...s.options].find((x) => /FLUX\.2/.test(x.textContent)); if (o) { s.value = o.value; s.onchange(); } });
+    // 2.719.1: a render is checked for its model files first (static/modelsfound.js) - the stub ComfyUI's folder gets the
+    // picked style's files (empty stand-ins), as a real install has them
+    { const sid = await ev(() => document.getElementById("pzStyle").value);
+      const mc = await post("api/models/check", { kind: "image", style_id: sid });
+      for (const m of mc.missing || []) { const f = path.join(comfyDir, "models", m.cat, m.name); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, "x"); } }
     await ev(() => { window.__jid = null; const f = window.fetch; window.__f0 = f; window.fetch = async function (u, o) { const r = await f.apply(this, arguments); if (/\/api\/genimage$/.test(String(u))) { try { const j = await r.clone().json(); window.__jid = j.id; } catch (e) { /* not json */ } } return r; }; });
     await ev(() => document.getElementById("pzGo").click());
     await p.waitForFunction(() => window.__jid, null, { timeout: 30000 }).catch(() => null);

@@ -7630,6 +7630,10 @@ LoRAs (and Basic Settings' model and LoRAs when Override style is on).
   (Civitai, Hugging Face) into the folder shown.
 - **Cancel** (or Esc, or Enter) starts no render. A download already running keeps going - Settings ▸ Models shows it.
   Renders waiting in the queue for the same missing files are stopped without asking again.
+- Every render is checked, wherever it is started: the prompt docker's Generate, the image editor's ✨ AI (Edit, Compose,
+  Regenerate - also from the References docker's pictures), the StoryBoard, the characters, the timeline and the music
+  docker. When you cancel, the place you started from says it was not rendered. The 🩺 Style doctor is not stopped: it
+  reports a missing model in its table.
 - Not checked: a ComfyUI on another computer (Remote GPU), no ComfyUI folder set, sd-cli styles, and the files a Wan or
   LTX style picks for itself.
 

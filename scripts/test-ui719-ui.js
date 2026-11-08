@@ -9,6 +9,8 @@
  *      the render goes on; still missing = said, the failed download's reason under it
  *   4. the wiring: Generate image / video send the check first (the style, Basic Settings, the mode) and a Cancel sends
  *      no render
+ *   5. 2.719.1: ANY render request in the page (the image editor's ✨ AI, a JSON /api/genimage) is checked first; Cancel =
+ *      409 to that caller; X-Models-Check: skip; one check per render
  * The check's answers are played by the page (route) - no model files needed. Against the running app (H3_URL, default the
  * e2e server on :8311). No Playwright = SKIP. */
 "use strict";
@@ -117,6 +119,38 @@ const miss = (tag) => ({ checked: true, why: "", needed: 3, found: 1, rescanned:
     check("Generate video: the check is sent first (kind video, the video style, the mode, Basic Settings)", vReq.kind === "video" && vReq.video_style_id === vsid && ["ref2va", "t2va", "fl2va"].includes(vReq.mode) && "basic" in vReq && Array.isArray(vReq.extra_loras), vReq);
     await p.click("#mfCancel").catch(() => {}); await p.waitForTimeout(400);
     check("…Cancel: no video is rendered (no /api/generate)", (await ev(() => window.__vidv)) === null && !S.renders.includes("video"), S.renders);
+    // 5. 2.719.1: every render in the page - whoever sends it (Tim's log: the image editor's ✨ AI went straight to ComfyUI)
+    S.answer = () => miss("g"); S.checks.length = 0; S.renders.length = 0;
+    await p.route("**/api/aiedit", async (r) => { S.renders.push("aiedit"); await r.fulfill({ json: { mode: "edit", jobs: [{ id: "j1" }], workflow: "comfy_workflows/img_qwen21_edit.json" } }); });
+    await ev(() => { const fd = new FormData(); fd.append("mode", "edit"); fd.append("style_id", "t8"); fd.append("prompt", "x"); fd.append("crop", new Blob(["x"]), "crop.png");
+      window.__ae = fetch("/api/aiedit", { method: "POST", body: fd }).then(async (r) => { window.__aev = { status: r.status, j: await r.json() }; }); });
+    await p.waitForSelector("#mfDlg[open]", { timeout: 6000 }).catch(() => {});
+    const aeReq = S.checks[0] || {};
+    check("2.719.1 the image editor's ✨ AI (a FormData POST /api/aiedit from any code in the page): checked first - kind aiedit, its style, Edit; the box opens",
+      aeReq.kind === "aiedit" && aeReq.style_id === "t8" && aeReq.mode === "edit" && await ev(() => !!document.getElementById("mfDlg")), aeReq);
+    await p.click("#mfCancel").catch(() => {});
+    await p.waitForFunction(() => window.__aev, null, { timeout: 5000 }).catch(() => {});
+    const aev = await ev(() => window.__aev);
+    check("…Cancel: the caller gets 409 {models_missing, error 'Not rendered - …'} (it shows its own message), nothing reaches /api/aiedit",
+      aev && aev.status === 409 && aev.j.models_missing === true && /Not rendered/.test(aev.j.error) && !S.renders.includes("aiedit"), { aev, r: S.renders });
+    n = 0; S.answer = () => (n++ === 0 ? miss("h") : { checked: true, missing: [] }); S.checks.length = 0;
+    S.state = [{ busy: false, result: { ok: true, done: [], failed: [] }, files: { qwen21_turbo8: { state: "ok", got: 1, total: 1 } } }];
+    await ev(() => { window.__gi = fetch("/api/genimage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: "p", style_id: "s9", model: "ck.safetensors", extra_loras: [{ path: "t.safetensors", weight: 1 }] }) })
+      .then((r) => { window.__giv = r.status; }); });
+    await p.waitForSelector("#mfDlg[open]", { timeout: 6000 }).catch(() => {});
+    await p.click("#mfDownload").catch(() => {});
+    await p.waitForFunction(() => window.__giv !== undefined, null, { timeout: 8000 }).catch(() => {});
+    const giReq = S.checks[0] || {};
+    check("…a JSON POST /api/genimage (the StoryBoard, the characters, the timeline …): checked with its style, model and LoRAs; ⬇ Download then the request goes on",
+      giReq.kind === "image" && giReq.style_id === "s9" && giReq.model === "ck.safetensors" && giReq.extra_loras && giReq.extra_loras[0].path === "t.safetensors"
+      && (await ev(() => window.__giv)) === 400 && S.renders.includes("image"), { giReq, r: S.renders });
+    S.checks.length = 0;
+    await ev(() => fetch("/api/genimage", { method: "POST", headers: { "Content-Type": "application/json", "X-Models-Check": "skip" }, body: JSON.stringify({ prompt: "p", style_id: "s10" }) }).catch(() => null));
+    check("…X-Models-Check: skip (the 🩺 Style doctor) = not checked", S.checks.length === 0, S.checks);
+    S.answer = () => ({ checked: true, missing: [] }); S.checks.length = 0;
+    await ev(() => H3ModelsFound.ensure({ kind: "image", style_id: "s11" }));
+    await ev(() => fetch("/api/genimage", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: "p", style_id: "s11" }) }).catch(() => null));
+    check("…just checked by Generate = its own request is not checked again (one check per render)", S.checks.length === 1, S.checks);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("the run finished", false, String(e && e.stack || e)); }
   finally { try { await b.close(); } catch { /* fine */ } }

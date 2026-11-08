@@ -4816,23 +4816,23 @@
   },
   {
    "s": "Models not found",
-   "src": "static/modelsfound.js:58"
+   "src": "static/modelsfound.js:63"
   },
   {
    "s": "None of these can be downloaded from here. Put the files in the folders above, then press Generate again",
-   "src": "static/modelsfound.js:95"
+   "src": "static/modelsfound.js:100"
   },
   {
    "s": "Downloading",
-   "src": "static/modelsfound.js:117"
+   "src": "static/modelsfound.js:122"
   },
   {
    "s": "the download failed",
-   "src": "static/modelsfound.js:126"
+   "src": "static/modelsfound.js:131"
   },
   {
    "s": "Checking again",
-   "src": "static/modelsfound.js:130"
+   "src": "static/modelsfound.js:135"
   },
   {
    "s": "Negative prompt docker (2)",
@@ -5668,67 +5668,67 @@
   },
   {
    "s": "work",
-   "src": "static/styledoctor.js:60"
+   "src": "static/styledoctor.js:61"
   },
   {
    "s": "Quick check (512 × 512, 4 steps)",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Real render (the style's own steps + size)",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Keep the test pictures",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "None",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Report",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Result",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Why / what to do",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Unticked, the test pictures leave the gallery and the Image assets - each row keeps its own",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Cancel the render running now and end the run",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Tick every style",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Untick every style",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Forget the last run and its test pictures",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "The last run as a .md file",
-   "src": "static/styledoctor.js:138"
+   "src": "static/styledoctor.js:139"
   },
   {
    "s": "Style doctor - render a tiny test picture with every image style and see which work, and why the others fail",
-   "src": "static/styledoctor.js:156"
+   "src": "static/styledoctor.js:157"
   },
   {
    "s": "Style doctor",
-   "src": "static/styledoctor.js:158"
+   "src": "static/styledoctor.js:159"
   },
   {
    "s": "Built-in",
@@ -22434,63 +22434,63 @@
   },
   {
    "p": "This render needs {0} model file that is not in any of ComfyUI's model paths",
-   "src": "static/modelsfound.js:72"
+   "src": "static/modelsfound.js:77"
   },
   {
    "p": "This render needs {0} model files that are not in any of ComfyUI's model paths",
-   "src": "static/modelsfound.js:72"
+   "src": "static/modelsfound.js:77"
   },
   {
    "p": "goes in {0} (Basic Settings)",
-   "src": "static/modelsfound.js:79"
+   "src": "static/modelsfound.js:84"
   },
   {
    "p": "goes in {0} (the style)",
-   "src": "static/modelsfound.js:79"
+   "src": "static/modelsfound.js:84"
   },
   {
    "p": "goes in {0} (the workflow)",
-   "src": "static/modelsfound.js:79"
+   "src": "static/modelsfound.js:84"
   },
   {
    "p": "{0} - Hugging Face: {1}",
-   "src": "static/modelsfound.js:82"
+   "src": "static/modelsfound.js:87"
   },
   {
    "p": "Hugging Face: {0}",
-   "src": "static/modelsfound.js:82"
+   "src": "static/modelsfound.js:87"
   },
   {
    "p": "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into {0}",
-   "src": "static/modelsfound.js:83"
+   "src": "static/modelsfound.js:88"
   },
   {
    "p": "Download {0} ({1})",
-   "src": "static/modelsfound.js:93"
+   "src": "static/modelsfound.js:98"
   },
   {
    "p": "Download {0}",
-   "src": "static/modelsfound.js:93"
+   "src": "static/modelsfound.js:98"
   },
   {
    "p": "Download ({0})",
-   "src": "static/modelsfound.js:93"
+   "src": "static/modelsfound.js:98"
   },
   {
    "p": "Still not found: {0}. A download failed - the line under it says why",
-   "src": "static/modelsfound.js:136"
+   "src": "static/modelsfound.js:141"
   },
   {
    "p": "Still not found: {0}",
-   "src": "static/modelsfound.js:136"
+   "src": "static/modelsfound.js:141"
   },
   {
    "p": "Could not check again: {0}",
-   "src": "static/modelsfound.js:137"
+   "src": "static/modelsfound.js:142"
   },
   {
    "p": "The download did not start: {0}",
-   "src": "static/modelsfound.js:140"
+   "src": "static/modelsfound.js:145"
   },
   {
    "p": "Back to {0} (now: {1})",
@@ -22774,15 +22774,15 @@
   },
   {
    "p": "{0} work",
-   "src": "static/styledoctor.js:60"
+   "src": "static/styledoctor.js:61"
   },
   {
    "p": "{0} failed",
-   "src": "static/styledoctor.js:60"
+   "src": "static/styledoctor.js:61"
   },
   {
    "p": "{0} skipped",
-   "src": "static/styledoctor.js:60"
+   "src": "static/styledoctor.js:61"
   },
   {
    "p": "Put back the built-in {0} styles that are missing (deleted or lost) - yours are not touched",

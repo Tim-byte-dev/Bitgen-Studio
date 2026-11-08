@@ -16,14 +16,19 @@
  *   A QUEUE       a Cancel is remembered for 20 s for the same missing files, so the next queued renders of that style are
  *                 refused with a console line instead of asking again.
  *   refresh()     scan the model paths again (🧩 ⟳ calls it)
+ *   2.719.1 EVERY RENDER: the page's fetch is wrapped - any POST to /api/genimage, /api/genmusic, /api/generate,
+ *                 /api/aiedit(/compose) is checked first, whoever sends it (the image editor's ✨ AI, the StoryBoard, the
+ *                 characters, the timeline …); Cancel = 409 {error, models_missing} to that caller. Just checked = not
+ *                 asked again for 10 s. "X-Models-Check: skip" = not checked (the 🩺 Style doctor).
  */
 (function (root) {
   "use strict";
   var doc = root.document;
-  var declined = {};
+  var declined = {}, okAt = {};
+  var realFetch = root.fetch ? root.fetch.bind(root) : null;      // 2.719.1: our own calls never go through the wrapper below
   function log(t) { try { if (typeof root.logLine === "function") root.logLine("[models] " + t); } catch (e) { /* no console */ } }
   function jpost(u, b) {
-    return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) })
+    return realFetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ("HTTP " + r.status)); return j; }); });
   }
   function gb(n) { n = +n || 0; return n >= 1e9 ? (n / 1e9).toFixed(1) + " GB" : n >= 1e6 ? Math.round(n / 1e6) + " MB" : n ? Math.round(n / 1e3) + " KB" : ""; }
@@ -118,7 +123,7 @@
         ids.forEach(function (id) { rows[id].bar.style.display = "block"; rows[id].err.style.display = "none"; });
         jpost("/api/setup/download", { ids: ids }).then(function () {
           timer = setInterval(function () {
-            fetch("/api/setup/state").then(function (x) { return x.json(); }).then(function (st) {
+            realFetch("/api/setup/state").then(function (x) { return x.json(); }).then(function (st) {
               Object.keys(rows).forEach(function (id) {
                 var f = (st.files || {})[id]; if (!f) return;
                 var pc = f.state === "ok" ? 100 : f.total ? Math.min(100, Math.floor(100 * f.got / f.total)) : 0;
@@ -151,9 +156,11 @@
   /** the check before a render -> Promise<boolean> */
   function ensure(req) {
     req = req || {};
+    var rk = JSON.stringify(req);
+    if (okAt[rk] && Date.now() - okAt[rk] < 10000) return Promise.resolve(true);   // just checked (Generate, then its request)
     return jpost("/api/models/check", req).then(function (r) {
       if (!r.checked) { if (r.why && r.why !== "no style picked") log("not checked - " + r.why); return true; }
-      if (!(r.missing || []).length) return true;
+      if (!(r.missing || []).length) { okAt[rk] = Date.now(); return true; }
       var k = keyOf(req, r);
       if (declined[k] && Date.now() - declined[k] < 20000) {
         log("refused - " + r.missing.length + " model file(s) not found (cancelled a moment ago): " + r.missing.map(function (m) { return m.name; }).join(", "));
@@ -163,7 +170,65 @@
       return box(r, req);
     }).catch(function (e) { log("the check did not run (" + ((e && e.message) || e) + ") - rendering anyway"); return true; });
   }
-  function refresh() { return fetch("/api/models/found?refresh=1&names=0").then(function (r) { return r.json(); }).catch(function () { return null; }); }
+  function refresh() { return realFetch("/api/models/found?refresh=1&names=0").then(function (r) { return r.json(); }).catch(function () { return null; }); }
 
-  root.H3ModelsFound = { ensure: ensure, refresh: refresh, box: box };
+  /* 2.719.1 - EVERY RENDER, WHEREVER IT IS STARTED. 2.719.0 asked only from the prompt docker's Generate; a render the image
+     editor's ✨ AI sent (Tim's log: "1 render(s) queued from the References docker's picture 1" -> ComfyUI: "Value not in
+     list [lora_name] = turbo8_lora_step2500.safetensors") went straight to ComfyUI. Now every POST that starts a render in
+     this page is checked first, whoever sends it: the prompt docker, the image editor, the StoryBoard, the characters,
+     the timeline, the music docker, Push/Pull … A Cancel answers the caller with 409 {error, models_missing} - it shows
+     its own "not rendered" message. "X-Models-Check: skip" = not checked (the 🩺 Style doctor reports it in its table). */
+  var RENDERS = { "/api/genimage": "image", "/api/genmusic": "music", "/api/generate": "video", "/api/aiedit": "aiedit", "/api/aiedit/compose": "aiedit" };
+  function field(body, k) {
+    if (!body) return undefined;
+    if (typeof FormData !== "undefined" && body instanceof FormData) { var v = body.get(k); return v == null || typeof v !== "string" ? undefined : v; }
+    return body[k];
+  }
+  function loras(v) { if (typeof v === "string") { try { v = JSON.parse(v || "[]"); } catch (e) { v = []; } } return Array.isArray(v) ? v : []; }
+  /** the check's request from a render request -> {kind, ...} or null (a body this cannot read = not checked) */
+  function reqFrom(kind, raw) {
+    var body = raw;
+    if (typeof raw === "string") { try { body = JSON.parse(raw); } catch (e) { return null; } }
+    else if (!(typeof FormData !== "undefined" && raw instanceof FormData)) return null;
+    if (!body || typeof body !== "object") return null;
+    var f = function (k) { return field(body, k); };
+    if (kind === "video") return { kind: "video", video_style_id: f("video_style_id") || "", mode: f("mode") || "ref2va", basic: f("basic") || "", extra_loras: loras(f("extra_loras")) };
+    if (kind === "aiedit") return { kind: "aiedit", style_id: f("style_id") || "", mode: f("mode") || "", fill_edit: f("fill_edit") || "", edit_style_id: f("edit_style_id") || "" };
+    if (kind === "music") return { kind: "music", style_id: f("style_id") || "" };
+    var q = { kind: "image", style_id: f("style_id") || "" };
+    if (f("model")) q.model = f("model");
+    var ex = loras(f("extra_loras")); if (ex.length) q.extra_loras = ex;
+    return q;
+  }
+  function skipHeader(h) {
+    if (!h) return false;
+    try { if (typeof h.get === "function") return /skip/i.test(h.get("X-Models-Check") || ""); } catch (e) { /* not Headers */ }
+    for (var k in h) if (/^x-models-check$/i.test(k) && /skip/i.test(String(h[k]))) return true;
+    return false;
+  }
+  function wrap(win) {
+    if (!win || !win.fetch || win.fetch.__h3mf) return;
+    var orig = win.fetch.bind(win);
+    var w = function (input, init) {
+      var kind = null, q = null;
+      try {
+        var url = typeof input === "string" ? input : (input && input.url) || "";
+        var method = String((init && init.method) || (input && typeof input !== "string" && input.method) || "GET").toUpperCase();
+        var path = new URL(url, (win.location && win.location.href) || "http://localhost/").pathname;
+        kind = method === "POST" ? RENDERS[path] : null;
+        if (kind && !skipHeader(init && init.headers)) q = reqFrom(kind, init && init.body);
+      } catch (e) { q = null; }
+      if (!q) return orig(input, init);
+      return ensure(q).then(function (go) {
+        if (go) return orig(input, init);
+        return new Response(JSON.stringify({ error: "Not rendered - model files it needs are not in ComfyUI's model paths (cancelled). The Console lists them.", models_missing: true }),
+          { status: 409, headers: { "Content-Type": "application/json" } });
+      });
+    };
+    w.__h3mf = true;
+    win.fetch = w;
+  }
+  if (root.fetch && typeof root.Response !== "undefined") wrap(root);
+
+  root.H3ModelsFound = { ensure: ensure, refresh: refresh, box: box, wrap: wrap, reqFrom: reqFrom };
 })(typeof window !== "undefined" ? window : globalThis);
