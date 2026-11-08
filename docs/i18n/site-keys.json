@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 742,
+    "count": 743,
     "keys": [
         "\"You need pytorch with cu130\"",
         "\"at\" must be an ISO-8601 time (the \"now\" of your last poll).",
@@ -662,6 +662,7 @@
         "bitGen Studio: a free, local AI film and design studio. Write, render, edit and score on your own computer.",
         "bitGen Studio: image editing, video editing, music editing and AI generation",
         "bitGen runs it once through ComfyUI with test inputs. When it works, it is saved into comfy_workflows/ and added to the Graph list; when it does not, ComfyUI's own error is shown and nothing is saved.",
+        "by Tiger Art",
         "clone from another address",
         "confirm your email to post",
         "cutting, joining and previews - on Windows {0}, then open a new terminal",
