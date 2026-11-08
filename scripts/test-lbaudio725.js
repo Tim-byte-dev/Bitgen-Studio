@@ -43,8 +43,11 @@ check("the dialog's sound is NOT the Preview docker's: mount marks it data-noviz
   /a\.dataset\.noviz = "1";/.test(src) && /el\.dataset\.noviz === "1"\) return false;/.test(rd("ext/previewdock/audioviz.js")));
 check("the docks give sounds to the preview as kind audio: the Gallery's songs, Assets ▸ Sound, References' sounds",
   (H.match(/dataset\.lbKind = "audio";/g) || []).length >= 2 && /el\.dataset\.lbKind = kind === "images" \? "image" : kind === "video" \? "video" : "audio";/.test(H));
-check("the play starts the look, a pause holds it (dimmed), Next autoplays (only after a click on ‹ ›)",
-  /a\.addEventListener\("play", \(\) => start\(a\)\);/.test(src) && /classList\.add\("paused"\)/.test(src) && /if \(S\.autoplay\) \{ S\.autoplay = false;/.test(src) && /L\.i = j; S\.autoplay = true;/.test(src));
+check("the play starts the look, a pause holds it (dimmed), Next autoplays (only after a click on ‹ ›, or ▶ on a Gallery song)",
+  /a\.addEventListener\("play", \(\) => start\(a\)\);/.test(src) && /classList\.add\("paused"\)/.test(src) && /if \(S\.autoplay\) \{\n\s+S\.autoplay = false;/.test(src) && /L\.i = j; S\.autoplay = true;/.test(src));
+check("2.725.1: a sound that starts in a tile the preview opens (the Gallery's song players) stops there and goes on in the preview, from the same second (a capturing play listener; the preview's own sound ignored)",
+  /doc\.addEventListener\("play", fromTile, true\);/.test(src) && /a\.closest\("#lb"\)\) return;/.test(src) && /a\.closest\('\[data-lb-url\]\[data-lb-kind="audio"\]'\)/.test(src)
+  && /S\.autoplay = true; S\.startAt = at > 0\.3 \? at : 0;/.test(src) && /lbOpen\(items, i\)/.test(src) && /a\.currentTime = at;/.test(src));
 const UI = JSON.parse(rd("static/i18n/ui/ja.json")), ZH = JSON.parse(rd("static/i18n/ui/zh-CN.json")), TW = JSON.parse(rd("static/i18n/ui/zh-TW.json"));
 const word = (d) => (d.strings || d)["Another visualization"];
 check("🎲's tooltip in 日本語 / 简体中文 / 繁體中文", !!word(UI) && !!word(ZH) && !!word(TW) && /Another visualization/.test(rd("static/i18n/ui/dynamic.json")));

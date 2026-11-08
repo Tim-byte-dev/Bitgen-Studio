@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.725.1** — ▶ on a Song in the Gallery Opens It in the Preview, Playing, With Its Visualization (It Played in the List Before)
 - **2.725.0** — A Song in the Preview Gets a Random Visualization When It Plays (🎲 Another), and Next / Prev Play the Next / Previous Song of the Docker It Was Clicked In
 - **2.724.1** — Models Not Found: a Model the Download List Saves Under Another Name (YuE2's Checkpoint, the H3 Latent Upscaler, the SDXL ControlNets) Now Comes With ⬇ Download
 - **2.724.0** — The Floating Docker You Used Last Is on Top: 💬 Community, Basic Settings, the ▣ Dockers and Your Own Named Dockers Share One Order Above the Rest of the App

@@ -201,7 +201,12 @@
     box.insertBefore(row, a); row.appendChild(a); row.appendChild(dice);
     a.addEventListener("play", () => start(a));
     a.addEventListener("pause", () => { const b = a.closest(".lbaud"); if (b) { b.classList.add("paused"); b.classList.remove("playing"); } });
-    if (S.autoplay) { S.autoplay = false; const p = a.play(); if (p && p.catch) p.catch(() => {}); }
+    if (S.autoplay) {
+      S.autoplay = false;
+      if (S.startAt > 0) { const at = S.startAt; a.addEventListener("loadedmetadata", () => { try { a.currentTime = at; } catch (e) { /* fine */ } }, { once: true }); }
+      S.startAt = 0;
+      const p = a.play(); if (p && p.catch) p.catch(() => {});
+    }
   }
   function lbState() { try { return lb; } catch (e) { return null; } }       // index.html's `const lb` (the global lexical scope)
   /** index.html's lbGo: on a sound, ‹ › go to the previous / next SOUND and play it; true = handled */
@@ -213,6 +218,22 @@
     try { lbShow(); } catch (e) { return false; }                          // index.html's lightbox
     return true;
   }
+  /* 2.725.1 (Tim: "it's not working, i clicked play on a song in the gallery and nothing"): the Gallery's songs have a
+   * player of their own on the tile, so ▶ there played the song in the list and the preview never opened. Now a sound
+   * that starts playing in a tile the preview can open ([data-lb-url], kind audio - the Gallery's Audio tab) stops there
+   * and goes on in the preview, from the same second, with its visualization; Next / Prev then walk that tab's songs. */
+  function fromTile(e) {
+    const a = e.target;
+    if (!a || a.tagName !== "AUDIO" || a.closest("#lb")) return;
+    const tile = a.closest('[data-lb-url][data-lb-kind="audio"]'); if (!tile) return;
+    let items = null; try { items = lbItemsFrom(tile); } catch (err) { return; }      // index.html's lightbox
+    const i = items.findIndex((x) => x.url === tile.dataset.lbUrl); if (i < 0) return;
+    const at = a.currentTime || 0;
+    try { a.pause(); } catch (err) { /* fine */ }
+    S.autoplay = true; S.startAt = at > 0.3 ? at : 0;
+    try { lbOpen(items, i); } catch (err) { S.autoplay = false; }
+  }
+  doc.addEventListener("play", fromTile, true);
   function state() { return { viz: S.viz, last: S.last, frames: S.frames, playing: !!(S.el && !S.el.paused), hooked: !!S.an, ctx: S.ctx ? S.ctx.state : null }; }
 
   root.H3LbAudio = Object.assign({ mount, go, another, state, DRAW }, api);

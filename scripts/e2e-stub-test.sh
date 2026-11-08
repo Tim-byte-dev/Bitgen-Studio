@@ -13138,7 +13138,7 @@ node scripts/test-lbaudio725.js > /tmp/lbaudio725.log 2>&1 \
   && ok "2.725.0 a sound in the preview: six looks picked at random (never the same twice in a row, calm ones for reduced motion), the next / previous SOUND of its list (pictures skipped, wrapping), the lightbox's hooks, kept out of the Preview docker's visualizer" \
   || { bad "2.725.0 preview sound"; grep -a "^FAIL" -A2 /tmp/lbaudio725.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui725-ui.js > /tmp/ui725ui.log 2>&1 \
-  && ok "2.725.0 browser test: a sound clicked in a list opens with a canvas; ▶ = a random look moving with the sound, 🎲 another, paused still; Next / Prev / ‹ › / ← → = the next / previous sound, played; on a picture nothing plays; closing stops it - or SKIP without playwright" \
+  && ok "2.725.0 browser test (+ 2.725.1: ▶ on a Gallery song opens the preview playing it, Next = the tab's next song): a sound clicked in a list opens with a canvas; ▶ = a random look moving with the sound, 🎲 another, paused still; Next / Prev / ‹ › / ← → = the next / previous sound, played; on a picture nothing plays; closing stops it - or SKIP without playwright" \
   || { bad "2.725.0 preview sound browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui725ui.log | head -14; }
 # ---- 2.724.1 (Tim's box: "yue2_convrot_int8.safetensors ... Not in bitGen's download list - download it yourself")
 node scripts/test-modelsfound7241.js > /tmp/modelsfound7241.log 2>&1 \

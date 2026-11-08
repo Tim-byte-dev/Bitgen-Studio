@@ -7673,7 +7673,8 @@ stage docker and the voice chat.
 ## A song in the preview: a visualization, and Next plays the next song (2.725.0)
 
 Click a song or a sound in the Gallery, Assets ▸ Sound or References and it opens in the preview, the same window that
-shows a picture when you click one.
+shows a picture when you click one. **▶ on a song's own player in the Gallery's Audio tab** opens it there too, already
+playing (2.725.1).
 
 - **▶ starts a visualization** picked at random: spectrum bars, mirrored bars, a waveform, a ring, a flight through
   stars or ripples. It moves with the music. Each song gets a different look from the last one.

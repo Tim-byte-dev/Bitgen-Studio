@@ -5,6 +5,8 @@
  * list it was clicked in (a picture between them skipped, the end wraps) and play it; on a picture they page as before
  * and nothing plays by itself; closing stops it. Three sounds + a picture in a [data-lb-group] list, as the Gallery /
  * Assets / References give the preview. No server / no Playwright = SKIP.
+ * 2.725.1: THE REAL GALLERY - ▶ on a song tile's own player opens the preview playing it (Tim: "it's not working, i clicked
+ * play on a song in the gallery and nothing").
  * Tim (verbatim): "when user starts to play an audio show a random visualization, next button will play the next audio
  * in the docker the file was clicked in our preview dialog where we show pictures when a picture is clicked not the
  * preview docker with the button in statusbar" */
@@ -107,6 +109,32 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       return out; });
     check("every look (bars, mirror, wave, ring, stars, ripples) draws on a real canvas, silence included", Object.keys(dr).length === 6 && Object.values(dr).every((x) => x.ok === true && x.lit > 0), dr);
     await ev(() => document.getElementById("t725").remove());
+
+    // 2.725.1 (Tim: "it's not working, i clicked play on a song in the gallery and nothing"): THE REAL GALLERY - ▶ on a
+    // song tile's own player opens the preview playing it, with its visualization; Next = the tab's next song
+    const where = await (await fetch(URL0 + "api/outputs/where")).json();
+    const outDir = ((where.dirs || []).find((d) => d.exists) || (where.dirs || [])[0] || {}).dir;
+    const wavBuf = (hz, secs) => { const sr = 22050, n = sr * secs, b = Buffer.alloc(44 + n * 2);
+      b.write("RIFF", 0); b.writeUInt32LE(36 + n * 2, 4); b.write("WAVE", 8); b.write("fmt ", 12); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22);
+      b.writeUInt32LE(sr, 24); b.writeUInt32LE(sr * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write("data", 36); b.writeUInt32LE(n * 2, 40);
+      for (let i = 0; i < n; i++) b.writeInt16LE(Math.round(Math.sin(i / sr * hz * 2 * Math.PI) * 16000), 44 + i * 2); return b; };
+    const fsx = require("fs"), made = [];
+    if (outDir) { fsx.mkdirSync(outDir, { recursive: true }); for (const [n2, hz] of [["e2e725_first.wav", 262], ["e2e725_second.wav", 392]]) { const f = path.join(outDir, n2); fsx.writeFileSync(f, wavBuf(hz, 6)); made.push(f); } }
+    check("two songs in the project's output folder (" + outDir + ")", made.length === 2);
+    await ev(() => { const b = document.querySelector('.gtabs button[data-gtab="audio"]'); if (b) b.click(); if (typeof refreshGallery === "function") refreshGallery(); });
+    await p.waitForSelector('#gallery [data-lb-name="e2e725_first.wav"] audio', { timeout: 15000 });
+    await ev(() => document.querySelector('#gallery [data-lb-name="e2e725_first.wav"]').scrollIntoView({ block: "center" })); await p.waitForTimeout(300);
+    const ab = await ev(() => { const r = document.querySelector('#gallery [data-lb-name="e2e725_first.wav"] audio').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+    await p.mouse.click(ab.x + Math.min(22, ab.h / 2 + 4), ab.y + ab.h / 2); await p.waitForTimeout(1200);   // the player's own ▶
+    const gq = await ev(() => { const lbA = document.querySelector("#lb_wrap audio"), tileA = document.querySelector('#gallery [data-lb-name="e2e725_first.wav"] audio');
+      return { open: document.getElementById("lb").open, name: document.getElementById("lb_name").textContent, lbPlaying: !!lbA && !lbA.paused, tilePaused: tileA.paused, st: H3LbAudio.state() }; });
+    check("THE GALLERY: ▶ on a song's own player opens the preview with that song PLAYING and its visualization (the tile's player stops)",
+      gq.open && gq.name === "e2e725_first.wav" && gq.lbPlaying && gq.tilePaused && gq.st.playing && gq.st.hooked && H3LbAudioVIZ(gq.st.viz) && gq.st.frames > 5, gq);
+    await p.click("#lb_nx"); await p.waitForTimeout(900);
+    const gn = await ev(() => ({ name: document.getElementById("lb_name").textContent, playing: !document.querySelector("#lb_wrap audio").paused }));
+    check("…Next › = the Audio tab's other song, playing", gn.name === "e2e725_second.wav" && gn.playing, gn);
+    await ev(() => document.getElementById("lb").close());
+    for (const f of made) { try { fsx.unlinkSync(f); } catch (e) { /* fine */ } }
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e.stack || e.message)); }
   await b.close();

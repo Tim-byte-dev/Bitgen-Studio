@@ -4618,9 +4618,9 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 提示词面板保留自己的规则：Ctrl+P 会把它提到遮住它的东西之上。
 
 ## 预览中的歌曲：可视化效果，Next 播放下一首（2.725.0）
-<!-- en: a-song-in-the-preview-a-visualization-and-next-plays-the-next-song-2-725-0 605a23eace01 -->
+<!-- en: a-song-in-the-preview-a-visualization-and-next-plays-the-next-song-2-725-0 6b82839293f0 -->
 
-在 Gallery、Assets ▸ Sound 或 References 中点击一首歌或一个声音，它会在预览中打开，就是点击图片时显示图片的那个窗口。
+在 Gallery、Assets ▸ Sound 或 References 中点击一首歌或一个声音，它会在预览中打开，就是点击图片时显示图片的那个窗口。在 **Gallery 的 Audio 标签中按歌曲自带播放器的 ▶**，也会在那里打开并已经开始播放（2.725.1）。
 
 - **▶ 会开始一个可视化效果**，随机选择：频谱条、镜像条、波形、圆环、穿越星空或涟漪。它随音乐变化，每首歌的效果都和上一首不同。
 - 播放器旁边的 **🎲** 可以在播放时换一个效果。暂停时，画面静止并变暗。
