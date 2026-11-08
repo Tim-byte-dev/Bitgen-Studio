@@ -7785,6 +7785,22 @@ playing (2.725.1).
   chords, triplets, dotted rhythms, repeats and endings, key and time changes, bass, alto and tenor clefs. Grace notes
   and lyric lines are not drawn.
 
+## 🎨 The paper under the sheet music (2.732.0)
+
+- **🎨 Paper** in the Sheet Music tab opens a row of choices for the paper the score is drawn on. The pages on screen,
+  **⛶ Read** and the saved PDF all use it.
+- **Paper colour**: any colour, or one of the round swatches (White, Cream, Antique, Stone, Pale blue, Kraft, Night).
+- **Material**: Plain, or a texture repeated across the page like tiles: Parchment, Linen, Laid paper, Recycled,
+  Watercolour, Canvas or Kraft. Under **Pictures** you can use any picture in the project, or **📂 From this computer…**,
+  repeated the same way (its shape kept).
+- **Tile size**: how big one repeat is on the page, from 40 to 600 pt (72 pt = 1 inch). **Texture**: how strongly the
+  material shows over the colour.
+- **Ink**: the colour of the notes, lines and words. **Auto** uses near-black on light paper and warm white on dark paper
+  (Night); Black, Sepia, Navy and White are fixed.
+- **in the PDF too**: untick it to save the PDF on plain white with black ink (better for printing) while the screen keeps
+  your paper. A textured PDF holds one small picture of the tile, repeated by the PDF reader, so the file stays small.
+- **↺ Plain white** goes back to the start. Your choice is remembered on this computer.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

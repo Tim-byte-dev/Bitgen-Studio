@@ -5,6 +5,7 @@
   "html": "dock.html",
   "scripts": [
     "musicdock.js",
+    "scorepaper.js",
     "muscore.js"
   ]
 }

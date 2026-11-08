@@ -4446,6 +4446,17 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **💾 Save PDF** はページを A4 の PDF として、曲名を付けてプロジェクトの **pdf** フォルダーに保存します（画像エディターの File ▸ Open PDF from Project にも表示されます）。**download too** にチェックを入れるとダウンロードもされます。PDF はどの PDF リーダーにも最初からあるフォントだけを使うので、何も埋め込まれません。それらのフォントにない文字（中国語、日本語）のタイトルは ? と表示されます。
 - 浄書エンジンは bitGen Studio の一部で、外部ライブラリではありません。YuE2 の楽譜のほか、一般的な ABC の曲も読めます：和音、3 連符、付点のリズム、反復と括弧、調と拍子の変更、ヘ音記号・アルト記号・テノール記号。装飾音と歌詞の行は描かれません。
 
+## 🎨 楽譜の下の用紙（2.732.0）
+<!-- en: the-paper-under-the-sheet-music-2-732-0 479328ee4cd2 -->
+
+- Sheet Music タブの **🎨 Paper** を押すと、楽譜を描く用紙の選択肢が 1 行で開きます。画面上のページ、**⛶ Read**、保存した PDF のすべてに使われます。
+- **Paper colour**：好きな色、または丸い見本（White、Cream、Antique、Stone、Pale blue、Kraft、Night）。
+- **Material**：Plain か、タイルのようにページ全体に繰り返す質感：Parchment、Linen、Laid paper、Recycled、Watercolour、Canvas、Kraft。**Pictures** ではプロジェクト内の画像、または **📂 From this computer…** の画像を同じように繰り返せます（形はそのまま）。
+- **Tile size**：1 回の繰り返しのページ上の大きさで、40〜600 pt（72 pt = 1 インチ）。**Texture**：素材が色の上にどれだけ強く出るか。
+- **Ink**：音符、線、文字の色。**Auto** は明るい用紙ではほぼ黒、暗い用紙（Night）では暖かい白を使います。Black、Sepia、Navy、White は固定です。
+- **in the PDF too**：チェックを外すと、画面は選んだ用紙のまま、PDF は白い用紙に黒インクで保存します（印刷向き）。質感のある PDF にはタイルの小さな画像が 1 枚だけ入り、PDF リーダーがそれを繰り返すので、ファイルは小さいままです。
+- **↺ Plain white** で最初の状態に戻ります。選んだ内容はこのコンピューターに記憶されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

@@ -4685,6 +4685,17 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **💾 Save PDF** 把各頁儲存為 A4 的 PDF，以歌名命名，放在專案的 **pdf** 資料夾裡（影像編輯器的 File ▸ Open PDF from Project 也會列出它）。勾選 **download too** 時還會同時下載。PDF 只使用每個 PDF 閱讀器內建的字型，因此不嵌入任何內容；標題裡這些字型沒有的文字（中文、日文）會顯示為 ?。
 - 製譜引擎是 bitGen Studio 自己的一部分，不是外部函式庫。除了 YuE2 自己的樂譜，它也能讀一般的 ABC 曲譜：和弦、三連音、附點節奏、反覆和反覆結尾、調號和拍號的變化、低音譜號、中音譜號和次中音譜號。裝飾音和歌詞行不會畫出。
 
+## 🎨 樂譜下面的紙張（2.732.0）
+<!-- en: the-paper-under-the-sheet-music-2-732-0 479328ee4cd2 -->
+
+- Sheet Music 分頁裡的 **🎨 Paper** 會開啟一行選項，用來選擇畫樂譜的紙張。螢幕上的各頁、**⛶ Read** 和儲存的 PDF 都會使用它。
+- **Paper colour**：任意顏色，或圓形色樣之一（White、Cream、Antique、Stone、Pale blue、Kraft、Night）。
+- **Material**：Plain，或像磁磚一樣鋪滿整頁的質感：Parchment、Linen、Laid paper、Recycled、Watercolour、Canvas 或 Kraft。在 **Pictures** 下可以用專案中的任何圖片，或 **📂 From this computer…**，同樣平鋪（保持其形狀）。
+- **Tile size**：一次重複在頁面上的大小，40 到 600 pt（72 pt = 1 英寸）。**Texture**：材質在顏色上顯現的強弱。
+- **Ink**：音符、線條和文字的顏色。**Auto** 在淺色紙上用近黑色，在深色紙（Night）上用暖白色；Black、Sepia、Navy 和 White 是固定的。
+- **in the PDF too**：取消勾選後，PDF 以白紙黑墨儲存（更適合列印），螢幕上仍保留你的紙張。帶質感的 PDF 只含一張小小的平鋪圖片，由 PDF 閱讀器重複繪製，因此檔案仍然很小。
+- **↺ Plain white** 回到初始狀態。你的選擇會記在這台電腦上。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

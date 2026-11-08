@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 744,
+    "count": 745,
     "keys": [
         "\"You need pytorch with cu130\"",
         "\"at\" must be an ISO-8601 time (the \"now\" of your last poll).",
@@ -612,6 +612,7 @@
         "What it runs on",
         "What you expected",
         "What's new",
+        "When an address is not on the site, only that address is counted (without anything after a ?) - not the visit, the country or where it came from.",
         "When bitGen Studio grows, {0} gives your pack back with the new English parts added and your translations kept.",
         "When something goes wrong",
         "Where",

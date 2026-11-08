@@ -80,7 +80,7 @@ z8 [GBd]8|z8 [FAc]8|z8 [EGc]8|z8 [DF^A]8|
         status: document.getElementById("muSheetStatus").textContent, sel: sel.value, opts: [...sel.options].map((o) => o.value),
         pdfOff: document.getElementById("muScorePdf").disabled, abcHidden: document.getElementById("muAbc").classList.contains("hidden") };
     });
-    check("opening the tab draws the newest score: a white page of SVG with the staves (hundreds of paths)", a.pages === 1 && a.paths > 150 && a.white === "#fff", a);
+    check("opening the tab draws the newest score: a white page of SVG with the staves (hundreds of paths)", a.pages === 1 && a.paths > 150 && a.white === "#ffffff", a);
     check("…its title from the file (E2E-Score731), the voice names, chord symbols, Verse / Chorus, ♩ = 92",
       a.texts.includes("E2E-Score731") && a.texts.includes("Vocal Melody") && a.texts.includes("Ins Melody") && a.texts.includes("Gm") && a.texts.includes("D7")
       && a.texts.includes("Verse") && a.texts.includes("Chorus") && a.texts.includes("= 92"), a.texts);

@@ -1125,19 +1125,46 @@
   const SVG_FONT = { H: ["Helvetica, Arial, sans-serif", "normal", "normal"], HB: ["Helvetica, Arial, sans-serif", "bold", "normal"],
     HO: ["Helvetica, Arial, sans-serif", "normal", "italic"], TB: ["'Times New Roman', Times, serif", "bold", "normal"],
     TR: ["'Times New Roman', Times, serif", "normal", "normal"], TI: ["'Times New Roman', Times, serif", "normal", "italic"] };
+  // 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music"): the LOOK of a page -
+  //   {paper: {color "#rrggbb", tile?: {href (svg) | jpeg Uint8Array (pdf), w, h (pt a repeat)}, avg?: "#rrggbb"}, ink: "#rrggbb"}
+  // the paper is a colour, or a picture repeated across the page (a material); the ink is every note, line and word.
+  function hexRgb(h) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(String(h || "").trim());
+    if (!m) return null;
+    const n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  const rgbHex = (c) => "#" + c.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+  /** grey text (op.g: 0 = ink .. 1 = paper) as a colour between the ink and the paper */
+  function soft(ink, paper, g) { return ink.map((v, k) => v + (paper[k] - v) * g); }
+  function lookOf(o) {
+    const L = (o && (o.look || o)) || {};
+    const P = L.paper || {};
+    const ink = hexRgb(L.ink) || [0, 0, 0];
+    const color = hexRgb(P.color) || [255, 255, 255];
+    const avg = hexRgb(P.avg) || color;
+    const tile = P.tile && +P.tile.w > 0 && +P.tile.h > 0 ? P.tile : null;
+    return { ink, color, avg, tile };
+  }
   function toSVG(page, opt) {
-    const o = opt || {};
+    const o = opt || {}, L = lookOf(o.look);
+    const inkHex = rgbHex(L.ink), uid = "abcp" + (o.id || "0");
     const out = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${r2(page.w)} ${r2(page.h)}"${o.width ? ` width="${o.width}"` : ""} class="abcPage">`,
-      `<rect width="${r2(page.w)}" height="${r2(page.h)}" fill="#fff"/>`];
+      `<rect width="${r2(page.w)}" height="${r2(page.h)}" fill="${rgbHex(L.color)}"/>`];
+    if (L.tile && L.tile.href) {
+      out.push(`<defs><pattern id="${uid}" patternUnits="userSpaceOnUse" width="${r2(L.tile.w)}" height="${r2(L.tile.h)}">`
+        + `<image href="${xmlEsc(L.tile.href)}" width="${r2(L.tile.w)}" height="${r2(L.tile.h)}" preserveAspectRatio="none"/></pattern></defs>`
+        + `<rect width="${r2(page.w)}" height="${r2(page.h)}" fill="url(#${uid})"/>`);
+    }
     page.ops.forEach((op) => {
       if (op.t === "t") {
-        const f = SVG_FONT[op.f] || SVG_FONT.H, g = op.g ? Math.round(op.g * 255) : 0;
+        const f = SVG_FONT[op.f] || SVG_FONT.H, c = op.g ? rgbHex(soft(L.ink, L.avg, op.g)) : inkHex;
         out.push(`<text x="${r2(op.x)}" y="${r2(op.y)}" font-family="${f[0]}" font-weight="${f[1]}" font-style="${f[2]}" font-size="${r2(op.z)}"`
-          + `${op.a === "m" ? ' text-anchor="middle"' : op.a === "e" ? ' text-anchor="end"' : ""} fill="rgb(${g},${g},${g})">${xmlEsc(op.s)}</text>`);
+          + `${op.a === "m" ? ' text-anchor="middle"' : op.a === "e" ? ' text-anchor="end"' : ""} fill="${c}">${xmlEsc(op.s)}</text>`);
         return;
       }
-      const fillA = op.fill ? `fill="#000"${op.eo ? ' fill-rule="evenodd"' : ""}` : 'fill="none"';
-      const strokeA = op.stroke ? ` stroke="#000" stroke-width="${r2(op.w || 1)}"${op.cap ? ' stroke-linecap="round" stroke-linejoin="round"' : ""}` : "";
+      const fillA = op.fill ? `fill="${inkHex}"${op.eo ? ' fill-rule="evenodd"' : ""}` : 'fill="none"';
+      const strokeA = op.stroke ? ` stroke="${inkHex}" stroke-width="${r2(op.w || 1)}"${op.cap ? ' stroke-linecap="round" stroke-linejoin="round"' : ""}` : "";
       out.push(`<path d="${pathD(op.d)}" ${fillA}${strokeA}/>`);
     });
     out.push("</svg>");
@@ -1162,15 +1189,19 @@
     return out + ")";
   }
   const n3 = (v) => { const r = Math.round(v * 1000) / 1000; return Object.is(r, -0) ? "0" : String(r); };
-  function pageStream(pg) {
-    const H = pg.h, out = ["0 g 0 G 1 j"];
+  const rgbPdf = (c) => c.map((v) => n3(v / 255)).join(" ");
+  function pageStream(pg, L, hasTile) {
+    const H = pg.h, ink = rgbPdf(L.ink), out = [];
+    if (hasTile) out.push(`q /Pattern cs /P1 scn 0 0 ${n3(pg.w)} ${n3(pg.h)} re f Q`);
+    else if (L.color.join() !== "255,255,255") out.push(`q ${rgbPdf(L.color)} rg 0 0 ${n3(pg.w)} ${n3(pg.h)} re f Q`);
+    out.push(`${ink} rg ${ink} RG 1 j`);
     const Yp = (y) => n3(H - y);
     pg.ops.forEach((op) => {
       if (op.t === "t") {
-        const g = op.g || 0;
         let x = op.x;
         if (op.a === "m" || op.a === "e") { const w = textWidth(op.s, op.f, op.z); x -= op.a === "m" ? w / 2 : w; }
-        out.push(`${n3(g)} g BT /${op.f} ${n3(op.z)} Tf ${n3(x)} ${Yp(op.y)} Td ${pdfStr(op.s)} Tj ET 0 g`);
+        const c = op.g ? rgbPdf(soft(L.ink, L.avg, op.g)) + " rg " : "";
+        out.push(`${c}BT /${op.f} ${n3(op.z)} Tf ${n3(x)} ${Yp(op.y)} Td ${pdfStr(op.s)} Tj ET${c ? " " + ink + " rg" : ""}`);
         return;
       }
       const parts = [];
@@ -1186,16 +1217,47 @@
     });
     return out.join("\n");
   }
-  function toPDF(pages, meta) {
-    const m = meta || {};
+  /** a baseline / progressive JPEG's size and colour channels (its SOF marker) - null when it is not one */
+  function jpegInfo(b) {
+    if (!b || b.length < 4 || b[0] !== 0xff || b[1] !== 0xd8) return null;
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const mk = b[i + 1];
+      if (mk === 0xd8 || mk === 0x01 || (mk >= 0xd0 && mk <= 0xd7) || mk === 0xff) { i += mk === 0xff ? 1 : 2; continue; }
+      const len = (b[i + 2] << 8) | b[i + 3];
+      if (mk >= 0xc0 && mk <= 0xcf && mk !== 0xc4 && mk !== 0xc8 && mk !== 0xcc) {
+        const h = (b[i + 5] << 8) | b[i + 6], w = (b[i + 7] << 8) | b[i + 8], n = b[i + 9];
+        return w > 0 && h > 0 && (n === 1 || n === 3 || n === 4) ? { w, h, n } : null;
+      }
+      i += 2 + len;
+    }
+    return null;
+  }
+  const bin = (bytes) => { let s = ""; for (let k = 0; k < bytes.length; k += 8192) s += String.fromCharCode.apply(null, bytes.subarray(k, k + 8192)); return s; };
+  /** pages -> a PDF. look (2.732.0): {paper: {color, avg, tile: {jpeg, w, h}}, ink} - the paper colour under every page, a
+   *  material as a tiling pattern (the JPEG kept once, DCTDecode - read by every PDF reader, nothing decoded here) */
+  function toPDF(pages, meta, look) {
+    const m = meta || {}, L = lookOf(look);
     const objs = [null, null];
     const add = (s) => { objs.push(s); return objs.length; };
+    let patRef = "";
+    const jp = L.tile && L.tile.jpeg ? (L.tile.jpeg instanceof Uint8Array ? L.tile.jpeg : new Uint8Array(L.tile.jpeg)) : null;
+    const ji = jp ? jpegInfo(jp) : null;
+    if (ji) {
+      const cs = ji.n === 1 ? "/DeviceGray" : ji.n === 4 ? "/DeviceCMYK /Decode [1 0 1 0 1 0 1 0]" : "/DeviceRGB";
+      const im = add(`<< /Type /XObject /Subtype /Image /Width ${ji.w} /Height ${ji.h} /ColorSpace ${cs} /BitsPerComponent 8 /Filter /DCTDecode /Length ${jp.length} >>\nstream\n${bin(jp)}\nendstream`);
+      const tw = +L.tile.w, th = +L.tile.h;
+      const cell = `q ${n3(tw)} 0 0 ${n3(th)} 0 0 cm /Im1 Do Q`;
+      const H0 = (pages && pages[0] && pages[0].h) || 841.89;
+      patRef = `/Pattern << /P1 ${add(`<< /Type /Pattern /PatternType 1 /PaintType 1 /TilingType 1 /BBox [0 0 ${n3(tw)} ${n3(th)}] /XStep ${n3(tw)} /YStep ${n3(th)} /Matrix [1 0 0 1 0 ${n3(H0)}] /Resources << /XObject << /Im1 ${im} 0 R >> >> /Length ${cell.length} >>\nstream\n${cell}\nendstream`)} 0 R >> `;
+    }
     const fontRefs = Object.keys(PDF_FONTS).map((k) => `/${k} ${add(`<< /Type /Font /Subtype /Type1 /BaseFont /${PDF_FONTS[k]} /Encoding /WinAnsiEncoding >>`)} 0 R`).join(" ");
     const kids = [];
     (pages || []).forEach((pg) => {
-      const s = pageStream(pg);
+      const s = pageStream(pg, L, !!patRef);
       const cid = add(`<< /Length ${s.length} >>\nstream\n${s}\nendstream`);
-      kids.push(add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${n3(pg.w)} ${n3(pg.h)}] /Resources << /Font << ${fontRefs} >> >> /Contents ${cid} 0 R >>`));
+      kids.push(add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${n3(pg.w)} ${n3(pg.h)}] /Resources << /Font << ${fontRefs} >> ${patRef}>> /Contents ${cid} 0 R >>`));
     });
     objs[0] = "<< /Type /Catalog /Pages 2 0 R >>";
     objs[1] = `<< /Type /Pages /Kids [${kids.map((k) => k + " 0 R").join(" ")}] /Count ${kids.length} >>`;
@@ -1215,5 +1277,5 @@
     return bytes;
   }
 
-  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, WHOLE, version: "2.731.0" };
+  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, WHOLE, version: "2.732.0" };
 }));

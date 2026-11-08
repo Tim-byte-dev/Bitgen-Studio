@@ -80,6 +80,12 @@
             #muScore .muPaper svg{display:block;width:100%;height:auto}
             #muScore .muEmpty{padding:28px 8px;text-align:center}
             #muScoreBar .gbtn input[type=file]{display:none}
+            #muPaperRow{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:6px 0;padding:8px;border:1px solid var(--line,#262a33);border-radius:6px}
+            #muPaperRow.hidden{display:none}
+            #muPaperSwatches{display:flex;gap:4px}
+            #muPaperSwatches .muSwatch{width:22px;height:22px;padding:0;border-radius:50%;border:1px solid rgba(127,127,127,.6);cursor:pointer}
+            #muPaperSwatches .muSwatch[aria-pressed=true]{outline:2px solid var(--accent,#f2a03d);outline-offset:2px}
+            #muPaperRow output{font-variant-numeric:tabular-nums;min-width:3.5em;display:inline-block}
           </style>
           <div class="hint help">The sheet music of a song, drawn on the staff. <b>Write</b>
             composes a score from the Song tab's lyrics and style;
@@ -102,8 +108,25 @@
             <button class="ghost gbtn" id="muScoreBig" disabled title="Read the score full size">⛶ Read</button>
             <button class="go" id="muScorePdf" disabled title="Save the engraved pages as a PDF in the project's pdf folder">💾 Save PDF</button>
             <label style="display:flex;gap:4px;align-items:center" title="Also download the PDF to this computer"><input type="checkbox" id="muScoreDl" checked> download too</label>
+            <button class="ghost gbtn" id="muPaperBtn" aria-pressed="false" aria-controls="muPaperRow" title="The paper the music is drawn on: colour, material, ink">🎨 Paper</button>
             <button class="ghost gbtn" id="muAbcToggle" aria-pressed="false" title="Show the ABC notation the score is drawn from">‹/› ABC text</button>
             <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
+          </div>
+          <!-- 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music") -->
+          <div id="muPaperRow" class="hidden" role="group" aria-label="Paper">
+            <label class="f" style="margin:0">Paper colour
+              <span style="display:flex;gap:6px;align-items:center"><input type="color" id="muPaperColor" value="#ffffff" title="Any colour for the paper"><span id="muPaperSwatches" role="group" aria-label="Paper colours"></span></span></label>
+            <label class="f" style="margin:0">Material
+              <select id="muPaperMat" title="A material repeated across the page, or a picture"><option value="plain">Plain</option></select></label>
+            <label class="f" style="margin:0">Tile size <output id="muPaperSizeV">180 pt</output>
+              <input type="range" id="muPaperSize" min="40" max="600" step="10" value="180" title="How big one repeat of the material is on the page (72 pt = 1 inch)"></label>
+            <label class="f" style="margin:0">Texture <output id="muPaperStrengthV">60%</output>
+              <input type="range" id="muPaperStrength" min="0" max="100" step="5" value="60" title="How strongly the material shows over the colour"></label>
+            <label class="f" style="margin:0">Ink
+              <select id="muPaperInk" title="The colour of the notes, lines and words - Auto = dark on light paper, light on dark"><option value="auto">Auto</option></select></label>
+            <label style="display:flex;gap:4px;align-items:center" title="Save the PDF on this paper (untick for plain white, for printing)"><input type="checkbox" id="muPaperPdf" checked> in the PDF too</label>
+            <button class="ghost gbtn" id="muPaperReset" type="button" title="Back to plain white paper, black ink">↺ Plain white</button>
+            <input type="file" id="muPaperFile" accept="image/*" hidden>
           </div>
           <div id="muScore" aria-live="polite"><div class="muEmpty hint">No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score.</div></div>
           <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0 0" class="hint hidden">— no sheet yet —</pre>

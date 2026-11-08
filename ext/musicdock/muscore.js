@@ -15,13 +15,17 @@
  *   MuScore.refresh(select?)        the Score list -> Promise<files>
  *   MuScore.savePdf()               -> Promise<{name, size, pages} | null>
  *   MuScore.openView()              ⛶ Read: the pages full size in a dialog
+ *   MuScore.setPaper(settings)      🎨 Paper (2.732.0): colour / material / size / strength / ink / in the PDF -> Promise<look>
  *   MuScore.state                   {text, name, title, result}
  */
 (function (root) {
   "use strict";
   const doc = root.document;
   const $ = (id) => doc.getElementById(id);
-  const S = { text: "", name: "", title: "", result: null, listed: false };
+  const S = { text: "", name: "", title: "", result: null, listed: false, look: null, paper: null };
+  const P = () => root.ScorePaper;
+  /** a page as SVG in the chosen paper + ink (2.732.0); `pre` keeps the pattern ids apart (the tab / ⛶ Read) */
+  const svgOf = (pg, k, pre) => root.AbcScore.toSVG(pg, { look: S.look && S.look.svg, id: pre + k });
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   function test(k, v) { try { if (root.H3TestEvent) root.H3TestEvent(k, v); } catch (e) { /* the 🧪 list */ } }
   function status(t) { const el = $("muSheetStatus"); if (el) el.textContent = t; }
@@ -58,10 +62,10 @@
     box.innerHTML = "";
     r.pages.forEach((pg, k) => {
       const p = doc.createElement("div");
-      p.style.cssText = "background:#fff;margin:0 auto 16px;max-width:900px;box-shadow:0 2px 12px rgba(0,0,0,.5)";
+      p.style.cssText = "margin:0 auto 16px;max-width:900px;box-shadow:0 2px 12px rgba(0,0,0,.5)";
       p.setAttribute("role", "img");
       p.setAttribute("aria-label", S.title + " - page " + (k + 1));
-      p.innerHTML = A.toSVG(pg).replace("<svg ", '<svg style="display:block;width:100%;height:auto" ');
+      p.innerHTML = svgOf(pg, k, "v").replace("<svg ", '<svg style="display:block;width:100%;height:auto" ');
       box.appendChild(p);
     });
   }
@@ -99,7 +103,7 @@
       d.className = "muPaper";
       d.setAttribute("role", "img");
       d.setAttribute("aria-label", S.title + " - page " + (k + 1) + " of " + r.pages.length);
-      d.innerHTML = A.toSVG(pg);
+      d.innerHTML = svgOf(pg, k, "m");
       box.appendChild(d);
     });
     box.scrollTop = 0;
@@ -162,7 +166,8 @@
     btn.textContent = "⏳ Writing…";
     const file = (S.title || titleFrom(S.name) || "sheet music").replace(/[^A-Za-z0-9 ._()-]+/g, "_").trim().slice(0, 70) + ".pdf";
     let bytes;
-    try { bytes = A.toPDF(r.pages, { title: S.title, subject: "Sheet music" }); } catch (e) {
+    const pl = S.look && S.paper && S.paper.pdf ? S.look.pdf : null;      // 2.732.0: the paper + ink, unless "in the PDF too" is off
+    try { bytes = A.toPDF(r.pages, { title: S.title, subject: "Sheet music" }, pl); } catch (e) {
       status("could not write the PDF: " + ((e && e.message) || e)); btn.disabled = false; btn.textContent = was; return Promise.resolve(null);
     }
     return root.fetch("/api/pdf/save?name=" + encodeURIComponent(file), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: bytes })
@@ -178,6 +183,102 @@
       .finally(() => { btn.disabled = false; btn.textContent = was; });
   }
 
+  // 🎨 Paper (2.732.0, Tim: "allow user to choose background color/material tiling for the sheet music"): the paper's
+  // colour, a material repeated across it (or a picture), its size and strength, the ink - ext/musicdock/scorepaper.js
+  /** the pages again in the current paper (the layout is kept - only the drawing changes) */
+  function repaint() {
+    const A = root.AbcScore, r = S.result;
+    if (!A || !r || r.empty) return;
+    const box = $("muScore");
+    Array.prototype.forEach.call(box.querySelectorAll(".muPaper"), (d, k) => { if (r.pages[k]) d.innerHTML = svgOf(r.pages[k], k, "m"); });
+    if (view() && view().open) fillView();
+  }
+  function paperRead() {
+    const v = (id) => ($(id) || {}).value;
+    const mat = v("muPaperMat") || "plain";
+    const pic = mat.indexOf("pic:") === 0 ? { src: "/passets/images/" + mat.slice(4), name: mat.slice(4) } : mat === "picture" ? (S.paper && S.paper.picture) : null;
+    return { color: v("muPaperColor"), material: pic ? "picture" : mat, picture: pic, size: v("muPaperSize"), strength: v("muPaperStrength"),
+      ink: v("muPaperInk"), pdf: !!($("muPaperPdf") || {}).checked };
+  }
+  function paperFill(s) {
+    if (!$("muPaperColor")) return;
+    $("muPaperColor").value = s.color; $("muPaperSize").value = s.size; $("muPaperStrength").value = s.strength;
+    $("muPaperInk").value = s.ink; $("muPaperPdf").checked = s.pdf;
+    const sel = $("muPaperMat");
+    const want = s.material === "picture" && s.picture ? (s.picture.src.indexOf("/passets/images/") === 0 ? "pic:" + s.picture.src.slice(16) : "picture") : s.material;
+    if (want === "picture" && !Array.prototype.some.call(sel.options, (o) => o.value === "picture")) {
+      const o = doc.createElement("option"); o.value = "picture"; o.textContent = "🖼 " + (s.picture.name || "picture");
+      (sel.querySelector('optgroup[data-g="pics"]') || sel).appendChild(o);
+    }
+    if (want.indexOf("pic:") === 0 && !Array.prototype.some.call(sel.options, (o) => o.value === want)) {
+      const o = doc.createElement("option"); o.value = want; o.textContent = "🖼 " + want.slice(4);
+      (sel.querySelector('optgroup[data-g="pics"]') || sel).appendChild(o);
+    }
+    sel.value = want;
+    const tex = s.material !== "plain";
+    $("muPaperSize").disabled = !tex; $("muPaperStrength").disabled = !tex;
+    $("muPaperSizeV").textContent = s.size + " pt"; $("muPaperStrengthV").textContent = s.strength + "%";
+    Array.prototype.forEach.call(doc.querySelectorAll("#muPaperSwatches button"), (b) => b.setAttribute("aria-pressed", b.dataset.color === s.color ? "true" : "false"));
+  }
+  let paperSeq = 0;
+  /** apply settings: keep them, make the tile, repaint -> Promise<look> */
+  function setPaper(o, quiet) {
+    const SP = P();
+    if (!SP) return Promise.resolve(null);
+    const s = SP.save(o);
+    S.paper = s;
+    paperFill(s);
+    const seq = ++paperSeq;
+    return SP.look(s).then((lk) => {
+      if (seq !== paperSeq) return null;                  // a newer choice won
+      S.look = lk;
+      repaint();
+      const m = SP.MATERIALS.find((x) => x.id === s.material);
+      if (!quiet) status("🎨 paper: " + (s.material === "picture" ? "🖼 " + (s.picture && s.picture.name) : m ? m.label : s.material) + " on " + s.color + ", ink " + lk.ink
+        + (s.pdf ? "" : " (the PDF stays plain white)"));
+      test("mu_score_paper", s.material + " " + s.color + " " + lk.ink);
+      return lk;
+    }).catch((e) => { status("⚠ the paper could not be made: " + ((e && e.message) || e)); return null; });
+  }
+  function paperBuild() {
+    const SP = P(), sel = $("muPaperMat");
+    if (!SP || !sel || sel.dataset.built) return;
+    sel.dataset.built = "1";
+    sel.innerHTML = "";
+    const g1 = doc.createElement("optgroup"); g1.label = "Materials";
+    SP.MATERIALS.forEach((m) => { const o = doc.createElement("option"); o.value = m.id; o.textContent = m.label; g1.appendChild(o); });
+    const g2 = doc.createElement("optgroup"); g2.label = "Pictures"; g2.dataset.g = "pics";
+    const f = doc.createElement("option"); f.value = "file:"; f.textContent = "📂 From this computer…"; g2.appendChild(f);
+    sel.appendChild(g1); sel.appendChild(g2);
+    const ink = $("muPaperInk");
+    ink.innerHTML = "";
+    [["auto", "Auto"], ["black", "Black"], ["sepia", "Sepia"], ["navy", "Navy"], ["white", "White"]].forEach((p2) => { const o = doc.createElement("option"); o.value = p2[0]; o.textContent = p2[1]; ink.appendChild(o); });
+    const sw = $("muPaperSwatches");
+    sw.innerHTML = "";
+    SP.PRESETS.forEach((p2) => {
+      const b = doc.createElement("button");
+      b.type = "button"; b.className = "muSwatch"; b.dataset.color = p2.color; b.title = p2.label; b.setAttribute("aria-label", p2.label + " paper");
+      b.style.background = p2.color; sw.appendChild(b);
+    });
+    // the project's pictures, as materials
+    root.fetch("/api/passets?scope=project").then((r) => r.json()).then((j) => {
+      (j.images || []).slice(0, 200).forEach((a) => {
+        const v = "pic:" + a.name;
+        if (Array.prototype.some.call(sel.options, (o) => o.value === v)) return;
+        const o = doc.createElement("option"); o.value = v; o.textContent = "🖼 " + a.name; g2.appendChild(o);
+      });
+      if (S.paper) paperFill(S.paper);
+    }).catch(() => { /* no project pictures */ });
+    paperFill(S.paper || SP.load());
+  }
+  function paperToggle() {
+    const row = $("muPaperRow"), b = $("muPaperBtn");
+    if (!row) return;
+    paperBuild();
+    const on = row.classList.toggle("hidden") === false;
+    if (b) b.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+
   // the controls (the dock's html may arrive after this script: listeners on the document)
   doc.addEventListener("click", (e) => {
     const t = e.target;
@@ -185,6 +286,10 @@
     if (t.closest("#muScorePdf") || t.closest("#muSvPdf")) { e.preventDefault(); savePdf(); return; }
     if (t.closest("#muScoreBig")) { e.preventDefault(); openView(); return; }
     if (t.closest("#muSvClose")) { e.preventDefault(); const d = view(); if (d) d.close(); return; }
+    if (t.closest("#muPaperBtn")) { e.preventDefault(); paperToggle(); return; }
+    const sw = t.closest("#muPaperSwatches button");
+    if (sw) { e.preventDefault(); $("muPaperColor").value = sw.dataset.color; setPaper(paperRead()); return; }
+    if (t.closest("#muPaperReset")) { e.preventDefault(); setPaper(Object.assign({}, P().DEFAULTS, { pdf: S.paper ? S.paper.pdf : true })); return; }
     if (t.closest("#muScoreRefresh")) { e.preventDefault(); refresh(); return; }
     if (t.closest("#muAbcToggle")) {
       e.preventDefault();
@@ -196,10 +301,27 @@
     const tab = t.closest('button[data-mutab="sheet"]');
     if (tab) first();
   });
+  doc.addEventListener("input", (e) => {                 // the sliders say their value as they move
+    const t = e.target;
+    if (t && t.id === "muPaperSize") $("muPaperSizeV").textContent = t.value + " pt";
+    if (t && t.id === "muPaperStrength") $("muPaperStrengthV").textContent = t.value + "%";
+  });
   doc.addEventListener("change", (e) => {
     const t = e.target;
     if (!t) return;
     if (t.id === "muScoreList") { if (t.value) load(t.value); return; }
+    if (t.id === "muPaperMat" && t.value === "file:") { paperFill(S.paper || P().load()); const f = $("muPaperFile"); if (f) f.click(); return; }
+    if (/^muPaper(Color|Mat|Size|Strength|Ink|Pdf)$/.test(t.id)) { setPaper(paperRead()); return; }
+    if (t.id === "muPaperFile") {
+      const f = t.files && t.files[0];
+      if (!f) return;
+      P().shrink(f).then((src) => {
+        const sel = $("muPaperMat");
+        Array.prototype.forEach.call(sel.querySelectorAll('option[value="picture"]'), (o) => o.remove());
+        setPaper(Object.assign(paperRead(), { material: "picture", picture: { src, name: f.name } }));
+      }, (e) => status("⚠ " + ((e && e.message) || e)));
+      t.value = "";
+    }
     if (t.id === "muAbcFile") {
       const f = t.files && t.files[0];
       if (!f) return;
@@ -214,8 +336,12 @@
     if (S.listed) return;
     refresh().then((files) => { if (!S.text && files.length) load(files[0].name); });
   }
-  function boot() { const p = $("muPaneSheet"); if (p && !p.classList.contains("hidden")) first(); }
+  function boot() {
+    paperBuild();                                         // the 🎨 Paper row's lists (shown or not)
+    if (P()) setPaper(P().load(), true);                  // the paper this viewer chose last time
+    const p = $("muPaneSheet"); if (p && !p.classList.contains("hidden")) first();
+  }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, titleFrom, state: S };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S };
 }(typeof window !== "undefined" ? window : this));

@@ -156,7 +156,7 @@ check("a 160-bar, two-staff song engraves in well under 2 s (" + ms + " ms, " + 
 // ── SVG ──
 const svg = A.toSVG(R.pages[0]);
 check("SVG: one page, a white sheet, paths and text, the names escaped",
-  /^<svg [^>]*viewBox="0 0 595.28 841.89"/.test(svg) && svg.endsWith("</svg>") && svg.includes('fill="#fff"') && (svg.match(/<path /g) || []).length === paths.length
+  /^<svg [^>]*viewBox="0 0 595.28 841.89"/.test(svg) && svg.endsWith("</svg>") && svg.includes('fill="#ffffff"') && (svg.match(/<path /g) || []).length === paths.length
   && svg.includes(">Vocal Melody</text>"));
 check("SVG: & < > in a title are escaped", A.toSVG(A.render("X:1\nT:Rock & <Roll>\nK:C\nC|]").pages[0]).includes("Rock &amp; &lt;Roll&gt;"));
 

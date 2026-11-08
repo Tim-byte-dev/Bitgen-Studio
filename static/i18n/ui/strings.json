@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5516,
+ "count": 5555,
  "strings": [
   {
    "s": "0 (auto)",
@@ -900,6 +900,15 @@
    ],
    "where": [
     "p.hint.help in #stab-general"
+   ]
+  },
+  {
+   "s": "A material repeated across the page, or a picture",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#muPaperMat"
    ]
   },
   {
@@ -3180,6 +3189,33 @@
    ]
   },
   {
+   "s": "Antique",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
+   "s": "Antique paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
+   "s": "Any colour for the paper",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "input#muPaperColor"
+   ]
+  },
+  {
    "s": "Append",
    "kinds": [
     "text"
@@ -3910,6 +3946,15 @@
    ]
   },
   {
+   "s": "Back to plain white paper, black ink",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muPaperReset.ghost.gbtn"
+   ]
+  },
+  {
    "s": "Back to the centre, 100%, no rotation",
    "kinds": [
     "title"
@@ -4234,6 +4279,15 @@
    ],
    "where": [
     "span.ic in #ieKx"
+   ]
+  },
+  {
+   "s": "Black",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperInk"
    ]
   },
   {
@@ -8015,6 +8069,24 @@
    ],
    "where": [
     "option in #cpPreset"
+   ]
+  },
+  {
+   "s": "Cream",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
+   "s": "Cream paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
    ]
   },
   {
@@ -14230,6 +14302,15 @@
    ]
   },
   {
+   "s": "From this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
+   ]
+  },
+  {
    "s": "From 🔁 Compare LLMs",
    "kinds": [
     "text"
@@ -15738,6 +15819,15 @@
    ]
   },
   {
+   "s": "How big one repeat of the material is on the page (72 pt = 1 inch)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "input#muPaperSize"
+   ]
+  },
+  {
    "s": "How close a colour must be to the clicked one (0-255)",
    "kinds": [
     "title"
@@ -15888,6 +15978,15 @@
    ],
    "where": [
     "label in #tfxEffects"
+   ]
+  },
+  {
+   "s": "How strongly the material shows over the colour",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "input#muPaperStrength"
    ]
   },
   {
@@ -16504,6 +16603,15 @@
    ],
    "where": [
     "label.f in #stab-video"
+   ]
+  },
+  {
+   "s": "Ink",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #muPaperRow"
    ]
   },
   {
@@ -17637,6 +17745,26 @@
    ]
   },
   {
+   "s": "Kraft",
+   "kinds": [
+    "title",
+    "text"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches",
+    "option in #muPaperMat"
+   ]
+  },
+  {
+   "s": "Kraft paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
    "s": "Krea",
    "kinds": [
     "text"
@@ -17960,6 +18088,15 @@
    ],
    "where": [
     "span in #tfxColour"
+   ]
+  },
+  {
+   "s": "Laid paper",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
    ]
   },
   {
@@ -18569,6 +18706,15 @@
    "where": [
     "option in #s_cntype",
     "option in #cnType"
+   ]
+  },
+  {
+   "s": "Linen",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
    ]
   },
   {
@@ -20014,6 +20160,15 @@
    ]
   },
   {
+   "s": "Material",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #muPaperRow"
+   ]
+  },
+  {
    "s": "Material preset",
    "kinds": [
     "title"
@@ -21241,6 +21396,15 @@
    ]
   },
   {
+   "s": "Navy",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperInk"
+   ]
+  },
+  {
    "s": "Needs",
    "kinds": [
     "text"
@@ -21837,6 +22001,15 @@
    ],
    "where": [
     "button#ppNight.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Night paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
    ]
   },
   {
@@ -23654,6 +23827,24 @@
    ]
   },
   {
+   "s": "Pale blue",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
+   "s": "Pale blue paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
    "s": "Pan",
    "kinds": [
     "text"
@@ -23754,6 +23945,35 @@
    ]
   },
   {
+   "s": "Paper",
+   "kinds": [
+    "text",
+    "aria-label"
+   ],
+   "where": [
+    "button#muPaperBtn.ghost.gbtn",
+    "div#muPaperRow.hidden"
+   ]
+  },
+  {
+   "s": "Paper colour",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #muPaperRow"
+   ]
+  },
+  {
+   "s": "Paper colours",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "span#muPaperSwatches"
+   ]
+  },
+  {
    "s": "Paragraph",
    "kinds": [
     "text"
@@ -23816,6 +24036,15 @@
    ],
    "where": [
     "button.ghost.ietool in #kxTools"
+   ]
+  },
+  {
+   "s": "Parchment",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
    ]
   },
   {
@@ -24650,6 +24879,24 @@
    ],
    "where": [
     "span in #tlsDlg"
+   ]
+  },
+  {
+   "s": "Plain",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
+   ]
+  },
+  {
+   "s": "Plain white",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#muPaperReset.ghost.gbtn"
    ]
   },
   {
@@ -26595,6 +26842,15 @@
    ],
    "where": [
     "button#projBin.ghost"
+   ]
+  },
+  {
+   "s": "Recycled",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
    ]
   },
   {
@@ -28916,6 +29172,15 @@
    ]
   },
   {
+   "s": "Save the PDF on this paper (untick for plain white, for printing)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #muPaperRow"
+   ]
+  },
+  {
    "s": "Save the current references as a group",
    "kinds": [
     "title"
@@ -30299,6 +30564,15 @@
    ],
    "where": [
     "button#stGo.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Sepia",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperInk"
    ]
   },
   {
@@ -33241,6 +33515,24 @@
    ]
   },
   {
+   "s": "Stone",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
+   "s": "Stone paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
+   ]
+  },
+  {
    "s": "Stop",
    "kinds": [
     "aria-label",
@@ -34929,6 +35221,15 @@
    ]
   },
   {
+   "s": "The colour of the notes, lines and words - Auto = dark on light paper, light on dark",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#muPaperInk"
+   ]
+  },
+  {
    "s": "The community now asks every member for a name and an email address (a code confirms it). Only the admins see them",
    "kinds": [
     "text"
@@ -35452,6 +35753,15 @@
    ],
    "where": [
     "button#pcPalMenu.pm"
+   ]
+  },
+  {
+   "s": "The paper the music is drawn on: colour, material, ink",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muPaperBtn.ghost.gbtn"
    ]
   },
   {
@@ -36494,6 +36804,15 @@
    ],
    "where": [
     "label.chk in #sec-cnet"
+   ]
+  },
+  {
+   "s": "Tile size",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #muPaperRow"
    ]
   },
   {
@@ -39325,6 +39644,15 @@
    ]
   },
   {
+   "s": "Watercolour",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPaperMat"
+   ]
+  },
+  {
    "s": "Wave: how fast it travels (cycles a second)",
    "kinds": [
     "title"
@@ -39865,6 +40193,26 @@
    ],
    "where": [
     "b in #stab-about"
+   ]
+  },
+  {
+   "s": "White",
+   "kinds": [
+    "title",
+    "text"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches",
+    "option in #muPaperInk"
+   ]
+  },
+  {
+   "s": "White paper",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button.muSwatch in #muPaperSwatches"
    ]
   },
   {
@@ -44326,6 +44674,15 @@
    ],
    "where": [
     "p.hint.help in #ctab-graphs"
+   ]
+  },
+  {
+   "s": "in the PDF too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #muPaperRow"
    ]
   },
   {

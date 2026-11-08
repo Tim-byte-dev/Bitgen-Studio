@@ -355,6 +355,7 @@ Songs, stems, voices and the words in them.
 - **Music styles** — a reusable caption (genre, BPM, key, mood, voice) with its workflow and settings. *Where:* Settings > Music
 - **Covers and sheet music** — made in the Music docker. *Where:* the Music docker
 - **🎼 Sheet music on the staff, as a PDF** — the score drawn as real sheet music (clefs, key and time signatures, notes, beams, rests, accidentals, ties, chord symbols, the song's sections), any .abc in the project or on your computer, read full size, and saved as an A4 PDF in the project's pdf folder; drawn by bitGen Studio itself, no outside library. *Where:* the Music docker's 🎼 Sheet Music tab. *Since:* 2.731.0
+- **🎨 Paper for the sheet music** — any paper colour, a material repeated across the page (parchment, linen, laid paper, recycled, watercolour, canvas, kraft) or a picture from the project or your computer, its tile size and strength, and the ink (auto: dark on light paper, light on dark); on screen and in the saved PDF, or a plain white PDF for printing. *Where:* the Music docker's 🎼 Sheet Music tab ▸ 🎨 Paper. *Since:* 2.732.0
 - **Songs from the chat** — the chat writes lyrics that fit the chosen music style and sends them to the Music docker. *Where:* the prompt chat. *Since:* 2.92.0
 - **Lyrics files** — every song keeps its lyrics as a text file in the project. *Where:* the project's lyrics folder
 

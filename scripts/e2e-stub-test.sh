@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music")
+node scripts/test-paper732.js > /tmp/paper732.log 2>&1 \
+  && ok "2.732.0 sheet music paper: the settings kept sane (colour, 8 materials, tile 40-600 pt, texture, ink, in the PDF; a picture only from the project or a data URL), auto ink dark on light / light on dark; SVG: the colour + a pattern of the tile, everything in the ink, grey words between; PDF: a coloured page = one rectangle, a material = ONE JPEG (DCTDecode, RGB / grey) in a tiling pattern on every page, xref still right, qpdf + pdftoppm see the colour" \
+  || { bad "2.732.0 sheet music paper"; grep -a "^FAIL" -A1 /tmp/paper732.log | head -12; }
+node scripts/test-ui732-ui.js > /tmp/ui732ui.log 2>&1 \
+  && ok "2.732.0 browser test: 🎨 Paper's row (8 materials + a picture from this computer, 7 colours, 5 inks), Parchment on Antique = a 240 pt JPEG pattern, Night = light ink, 💾 Save PDF on the paper (one DCTDecode tile) or plain white, a picture's aspect kept, remembered after a reload, ↺ Plain white, ⛶ Read the same - or SKIP without playwright / a studio" \
+  || { bad "2.732.0 sheet music paper browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui732ui.log | head -14; }
 # ---- 2.731.0 (Tim: "in our music docker, sheet music tab can we have real sheet music with the notes drawn on the staff
 # with it's clefs etc. and save as pdf?")
 node scripts/test-abcscore731.js > /tmp/abcscore731.log 2>&1 \
