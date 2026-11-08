@@ -70,6 +70,27 @@ def multiplier(src_w, src_h, out_w, out_h):
     return round(max(out_w / max(1, src_w), out_h / max(1, src_h)), 4)
 
 
+def size_verdict(src_w, src_h, exp_w, exp_h, got_w, got_h):
+    """2.727.0: what came back against what was asked -> (verdict, message).
+    "ok" | "unknown" (no size read) | "source" (exactly the source's size - nothing was upscaled: the job must not
+    hand it over as an upscale) | "off" (some other size - said in the log, the file is named by what it IS).
+    A few pixels either way are ok: SeedVR2 pads to 16 and the post-processing trims to even sizes."""
+    try:
+        sw, sh, ew, eh, gw, gh = (int(v or 0) for v in (src_w, src_h, exp_w, exp_h, got_w, got_h))
+    except (TypeError, ValueError):
+        return "unknown", ""
+    if gw <= 0 or gh <= 0:
+        return "unknown", ""
+    near = lambda a, b: abs(a - b) <= max(4, round(b * 0.02))      # noqa: E731
+    if near(gw, ew) and near(gh, eh):
+        return "ok", ""
+    if (gw, gh) == (sw, sh):
+        return "source", (f"ComfyUI handed back {gw}x{gh} - the size of the source, not the {ew}x{eh} asked for: "
+                          "nothing was upscaled, so no file was written. Update ComfyUI and try again; if it happens "
+                          "again, send the job's log (it lists the graph in seedvr2_queued.json).")
+    return "off", f"ComfyUI handed back {gw}x{gh}, not the {ew}x{eh} asked for - the file is named by its real size"
+
+
 def chunk_spec(chunk):
     """"auto" / "off" / a 4n+1 frame count -> (in_graph, inputs for SeedVR2TemporalChunk)."""
     c = str(chunk if chunk is not None else "auto").strip().lower()

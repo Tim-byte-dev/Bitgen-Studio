@@ -96,7 +96,7 @@ def collect(outputs):
             for it in lst:
                 if not isinstance(it, dict):
                     continue
-                if str(it.get("filename") or "").lower().endswith(KNOWN_EXT):
+                if str(it.get("filename") or "").lower().endswith(KNOWN_EXT) and not _comfy.is_input_echo(it):
                     items.append(it)
     return items
 

@@ -458,6 +458,8 @@ def render_seedvr2(pid, g):
     info = _probe(INPUTS / f) if (INPUTS / f).is_file() else {}
     w, h, dur = info.get("w") or 192, info.get("h") or 108, info.get("dur") or 1.0
     m = float(((rsz or {}).get("inputs") or {}).get("resize_type.multiplier") or 1)
+    if os.environ.get("STUB_SEEDVR2_KEEP_SIZE") == "1":
+        m = 1.0                                        # 2.727.0: a ComfyUI that hands back the source's size
     ow, oh = max(2, int(round(w * m))), max(2, int(round(h * m)))
     ow, oh = ow - ow % 2, oh - oh % 2
     fn = f"seedvr2_{pid}.mp4"
@@ -581,6 +583,25 @@ def render_rtxvfx(pid, g):
 
 
 def render(pid, g):
+    """2.727.0: like a real ComfyUI since PR #15637 (2026-08-30): every LoadVideo shows back the file it was GIVEN -
+    {"images": [{filename, subfolder, "type": "input"}], "animated": [true]} - FIRST in the history's outputs (it
+    runs first), ahead of the SaveVideo. A worker that takes "the first video" downloads its own source (Tim's
+    ..._seedvr2_1080p.mp4 that was the 960x544 clip). STUB_NO_INPUT_ECHO=1 = an older ComfyUI."""
+    _render(pid, g)
+    job = JOBS.get(pid) or {}
+    if os.environ.get("STUB_NO_INPUT_ECHO") == "1" or (job.get("status") or {}).get("status_str") != "success":
+        return
+    echo = {}
+    for k, v in g.items():
+        f = ((v or {}).get("inputs") or {}).get("file") if (v or {}).get("class_type") == "LoadVideo" else None
+        if isinstance(f, str) and f:
+            sub, _, fn = f.replace("\\", "/").rpartition("/")
+            echo[str(k)] = {"images": [{"filename": fn, "subfolder": sub, "type": "input"}], "animated": [True]}
+    if echo:
+        job["outputs"] = {**echo, **{k: v for k, v in (job.get("outputs") or {}).items() if k not in echo}}
+
+
+def _render(pid, g):
     # An image graph (one that ends in SaveImage) renders PNGs; anything else is
     # the video path. A FAITHFUL stub matters more than a convenient one: a mock
     # that is less capable than the real server lets tests pass while the real

@@ -1345,6 +1345,19 @@ def wait(base, pid, on_tick=None, timeout=7200, poll=1.0):
         time.sleep(poll)
 
 
+def is_input_echo(it):
+    """2.727.0: an outputs item that is only ComfyUI showing back a file it was GIVEN - never a result.
+
+    Since ComfyUI PR #15637 (2026-08-30, "add VideoTrim and VideoCrop nodes") LoadVideo reports a preview of its
+    own input file - {"filename": the uploaded video, "type": "input"} - under its node id in the history, the same
+    `videos`-style list SaveVideo uses. Node "1" (LoadVideo) comes before the SaveVideo node, so "the first video
+    in the outputs" became the SOURCE: an upscale downloaded the clip it was handed and called it 1080p (Tim's
+    ..._seedvr2_1080p.mp4 that was 960x544, exactly the source). Results are written to output/ or temp/;
+    input/ only ever holds what we uploaded.
+    """
+    return isinstance(it, dict) and str(it.get("type") or "").lower() == "input"
+
+
 def output_images(outputs):
     """Every image item in a history outputs dict, in node order.
 
@@ -1357,7 +1370,7 @@ def output_images(outputs):
         for key in ("images", "gifs"):
             for it in node_out.get(key, []) or []:
                 nm = str(it.get("filename") or "")
-                if nm.lower().endswith((".png", ".jpg", ".jpeg", ".webp", ".bmp")):
+                if nm.lower().endswith((".png", ".jpg", ".jpeg", ".webp", ".bmp")) and not is_input_echo(it):
                     items.append(it)
     return items
 
@@ -1384,7 +1397,7 @@ def output_videos(outputs):
                 if not isinstance(it, dict):
                     continue
                 nm = str(it.get("filename") or "")
-                if nm.lower().endswith(VIDEO_EXT):
+                if nm.lower().endswith(VIDEO_EXT) and not is_input_echo(it):
                     items.append(it)
     return items
 
@@ -1430,7 +1443,7 @@ def output_audio(outputs):
                 if not isinstance(it, dict):
                     continue
                 nm = str(it.get("filename") or "")
-                if nm.lower().endswith(AUDIO_EXT):
+                if nm.lower().endswith(AUDIO_EXT) and not is_input_echo(it):
                     items.append(it)
     return items
 

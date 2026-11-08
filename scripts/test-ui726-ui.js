@@ -24,14 +24,19 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const errs = [];
     const page = async (w, h) => { const p = await (await b.newContext({ viewport: { width: w, height: h } })).newPage(); p.on("pageerror", (e) => errs.push(e.message)); return p; };
     const file = "file://" + path.join(ROOT, "static", "splash.html");
-    // ---- the splash: the picture
+    // ---- the splash: the picture. 2.727.0: #neural PLAYS the brain film now (scripts/test-ui727-ui.js); the picture is
+    // what stands in when the film cannot play - a copy of the splash without static/splash-neural.webm shows it
+    const fs = require("fs"), os = require("os");
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "splash727-"));
+    for (const n of ["splash.html", "splash-neural.jpg"]) fs.copyFileSync(path.join(ROOT, "static", n), path.join(tmp, n));
+    const fileStill = "file://" + path.join(tmp, "splash.html");
     const s = await page(1280, 720);
     await s.addInitScript(() => { window.__closed = 0; window.close = () => { window.__closed++; }; });
-    await s.goto(file + "#neural"); await s.waitForTimeout(2800);
+    await s.goto(fileStill + "#neural"); await s.waitForTimeout(2800);
     const a = await s.evaluate(() => { const i = document.getElementById("pic"), r = { width: i.offsetWidth, height: i.offsetHeight }, v = document.getElementById("v"), c = document.getElementById("cred");
       return { pick: document.body.dataset.splash, loaded: i.complete && i.naturalWidth, nh: i.naturalHeight, w: r.width, h: r.height, op: +getComputedStyle(i).opacity, video: getComputedStyle(v).display, src: v.getAttribute("src"),
         cred: +getComputedStyle(c).opacity, credText: c.textContent, closed: window.__closed }; });
-    check("splash #neural: the brain picture fills the window (1920 x 1080 loaded, faded in), no film loaded", a.pick === "neural" && a.loaded === 1920 && a.nh === 1080 && a.w === 1280 && a.h === 720 && a.op > 0.95 && a.video === "none" && !a.src, a);
+    check("splash #neural, the film missing: the brain picture fills the window (1920 x 1080 loaded, faded in), the film let go", a.pick === "neural" && a.loaded === 1920 && a.nh === 1080 && a.w === 1280 && a.h === 720 && a.op > 0.95 && a.video === "none" && !a.src, a);
     check("…the credits show (Timothy Nolan Paul, Claude Opus 5.5); not closed yet", a.cred > 0.9 && /Produced and developed byTimothy Nolan Paul/.test(a.credText) && /Programmed byClaude Opus 5\.5/.test(a.credText) && a.closed === 0, a);
     const zoom = await s.evaluate(() => getComputedStyle(document.getElementById("pic")).transform);
     check("…a slow push-in (scaled past 1 by now)", /^matrix\(1\.0[1-6]/.test(zoom), zoom);
@@ -39,7 +44,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("…it closes itself at 8 s", (await s.evaluate(() => window.__closed)) >= 1);
     const k = await page(1280, 720);
     await k.addInitScript(() => { window.__closed = 0; window.close = () => { window.__closed++; }; });
-    await k.goto(file + "#neural"); await k.waitForTimeout(500); await k.keyboard.press("a");
+    await k.goto(fileStill + "#neural"); await k.waitForTimeout(500); await k.keyboard.press("a");
     check("…a key skips it", (await k.evaluate(() => window.__closed)) === 1);
     // ---- the film
     const f = await page(1280, 720);

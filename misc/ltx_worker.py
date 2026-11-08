@@ -106,7 +106,8 @@ def first_video(outputs):
             if not isinstance(lst, list):
                 continue
             for it in lst:
-                if isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(VIDEO_EXT):
+                if (isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(VIDEO_EXT)
+                        and not _comfy.is_input_echo(it)):   # 2.727.0: LoadVideo's preview of its input is not a result
                     return it
     return None
 

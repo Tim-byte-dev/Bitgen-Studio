@@ -3729,7 +3729,8 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         for key in ("videos", "gifs", "images", "audio"):
             for it in node_out.get(key, []):
                 nm = str(it.get("filename", ""))
-                if nm.lower().endswith((".webm", ".mp4", ".mkv", ".avi", ".mov")):
+                # 2.727.0: LoadVideo shows back its input (type "input") - the clip we gave it, never the render
+                if nm.lower().endswith((".webm", ".mp4", ".mkv", ".avi", ".mov")) and str(it.get("type", "")).lower() != "input":
                     cands.append((_rank(cls), str(onid), cls, it))
     if cands:
         cands.sort(key=lambda c: c[0])

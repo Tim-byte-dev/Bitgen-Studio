@@ -110,7 +110,8 @@ def first_video(outputs):
     for node_out in (outputs or {}).values():
         for lst in (node_out or {}).values():
             for it in lst if isinstance(lst, list) else []:
-                if isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(_comfy.VIDEO_EXT):
+                if (isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(_comfy.VIDEO_EXT)
+                        and not _comfy.is_input_echo(it)):
                     return it
     return None
 
@@ -247,9 +248,17 @@ def main():
     # 4. the sound back under it
     stage(4, "laying the sound back")
     got = probe(raw) or {}
+    # 2.727.0: the size is CHECKED, and the name says what the file is (it said the size asked for - Tim's
+    # ..._seedvr2_1080p.mp4 was the 960x544 source, downloaded from LoadVideo's preview: comfy_client.is_input_echo)
+    verdict, vmsg = SV.size_verdict(sw, sh, exp_w, exp_h, got.get("width"), got.get("height"))
+    if verdict == "source":
+        fail(vmsg)
+    if verdict == "off":
+        say(f"[worker] WARNING: {vmsg}")
+    real = min(got.get("width") or exp_w, got.get("height") or exp_h)
     name = str(params.get("output_name") or "").strip()
     if not name:
-        name = f"{src.stem}_seedvr2_{min(exp_w, exp_h)}p.mp4"
+        name = f"{src.stem}_seedvr2_{real}p.mp4"
     name = _iname.reserve(output_dir, Path(name).stem + ".mp4")
     asrc = Path(str(params.get("audio_source") or "")) if params.get("audio_source") else src
     if not asrc.is_file():

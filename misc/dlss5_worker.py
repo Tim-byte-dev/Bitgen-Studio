@@ -90,7 +90,8 @@ def first_video(outputs):
     for node_out in (outputs or {}).values():
         for lst in (node_out or {}).values():
             for it in lst if isinstance(lst, list) else []:
-                if isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(_comfy.VIDEO_EXT):
+                if (isinstance(it, dict) and str(it.get("filename") or "").lower().endswith(_comfy.VIDEO_EXT)
+                        and not _comfy.is_input_echo(it)):
                     return it
     return None
 

@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.727.0 (Tim: "can u check this video and upload it to the website and intergrate in our bitgen-studio repo if it
+# is good enough" - the video was named _seedvr2_1080p and was the 960x544 source)
+python3 scripts/test-inputecho727.py > /tmp/inputecho727.log 2>&1 \
+  && ok "2.727.0 an upscale never hands back its source: LoadVideo's preview of its input (ComfyUI PR #15637, type input) is skipped by output_videos / images / audio and every worker's own picker; SeedVR2 checks the size it got (ok / the source = fail in words / another = warned) and names the file by it; LIVE on the stub (which now echoes LoadVideo first): 960x544 -> 1906x1080 _1080p, the source size refused" \
+  || { bad "2.727.0 input echo / SeedVR2 size"; grep -a "^FAIL" /tmp/inputecho727.log | head -12; }
+node scripts/test-ui727-ui.js > /tmp/ui727ui.log 2>&1 \
+  && ok "2.727.0 browser test: the splash's #neural plays the brain film (splash-neural.webm, 15 s, muted, full window, the picture its poster), the credits over it, closes when it ends, a key skips; #film still the orange film - or SKIP without playwright" \
+  || { bad "2.727.0 brain film splash browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui727ui.log | head -14; }
 # ---- 2.726.0 (Tim: "use this as one of the starting images and change the theme to match")
 node scripts/test-neural726.js > /tmp/neural726.log 2>&1 \
   && ok "2.726.0 the Neural blue theme (the picture's colours, after Slate, translated; Dark the default), the splash = the film or the brain picture at random (8 s, the credits), a fresh install's first project starts with the picture in Assets ▸ Images (never a later project, never twice)" \

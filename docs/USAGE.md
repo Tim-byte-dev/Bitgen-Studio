@@ -7697,6 +7697,19 @@ playing (2.725.1).
   picture.
 - The website (tigerart.com.au) has the same Neural blue look under **Colours** at the bottom of every page.
 
+## The brain comes alive; upscales that came back as the source (2.727.0)
+
+- **The splash's brain picture is a film now**: lightning strikes the bitGen brain, a flash, and the big bitGen Studio
+  title, for 15 seconds with the credits over it. The picture still shows if the film cannot play. A click or any key
+  skips it, as before. The website's home page shows the same film.
+- **Fixed: an upscale could hand back the video it was given.** Since ComfyUI's August 2026 update, the Load Video node
+  shows the file it loaded in ComfyUI's results, ahead of the real result. bitGen took that as the finished video, so a
+  ⏫ SeedVR2 upscale to 1080p could come back at the source's own size with *_seedvr2_1080p* in its name. bitGen now
+  skips what ComfyUI only shows back. The same fix covers RTX Video, DLSS 5, LTX, Viggle and workflow renders.
+- **SeedVR2 checks the size it got.** The file is named by the size it really is. If ComfyUI hands back the source's
+  size, the job stops and says so instead of writing a copy. Run the upscale again to get a true 1080p version of a
+  video made before this fix.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

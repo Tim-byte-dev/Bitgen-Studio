@@ -5,15 +5,18 @@
      16.5 s whatever happens and shows the studio.
      2.726.0 (Tim: "use this as one of the starting images and change the theme to match"): ONE OF TWO at each start, at random -
      the film, or the bitGen brain picture (static/splash-neural.jpg, docs/images/bitgen-neural.jpg widened to 16:9) for 8 s with a
-     slow push-in and the same credits. #film / #neural in the address picks one (the tests). -->
+     slow push-in and the same credits. #film / #neural in the address picks one (the tests).
+     2.727.0 (Tim: "can u check this video and upload it to the website and intergrate in our bitgen-studio repo"): the brain
+     comes alive - static/splash-neural.webm (Tim's LTX clip, 15 s, silent here like the film): lightning, a flash, the big
+     bitGen Studio title; the picture is its poster, and stands in for 8 s if the film cannot play. -->
 <html><head><meta charset="utf-8"><title>bitGen Studio</title>
 <style>
   html, body { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: pointer; -webkit-user-select: none; user-select: none; }
   body { -webkit-app-region: drag; }
   video, #pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
   #pic { display: none; opacity: 0; transform: scale(1); transform-origin: 50% 46%; }
-  body.neural #pic { display: block; animation: in 1.1s ease-out forwards, push 8s linear forwards; }
-  body.neural video { display: none; }
+  body.still #pic { display: block; animation: in 1.1s ease-out forwards, push 8s linear forwards; }
+  body.still video { display: none; }
   @keyframes in { to { opacity: 1; } }
   @keyframes push { to { transform: scale(1.06); } }
   #cred { position: absolute; left: 0; right: 0; bottom: 5.5%; display: none; text-align: center; font: 300 clamp(11px, 1.45vw, 19px) "Segoe UI", system-ui, sans-serif; letter-spacing: .06em; color: #cfe2f6; opacity: 0; text-shadow: 0 1px 6px #000; }
@@ -22,7 +25,7 @@
   body.neural #cred { display: block; animation: in 1s ease-out 1.4s forwards; }
   #skip { position: absolute; right: 14px; bottom: 10px; font: 12px "Segoe UI", system-ui, sans-serif; color: rgba(242,237,228,.55); opacity: 0; transition: opacity .8s; -webkit-app-region: no-drag; }
   body.hint #skip { opacity: 1; }
-  @media (prefers-reduced-motion: reduce) { body.neural #pic { animation: in 1.1s ease-out forwards; } }
+  @media (prefers-reduced-motion: reduce) { body.still #pic { animation: in 1.1s ease-out forwards; } }
 </style></head>
 <body>
 <video id="v" muted playsinline></video>
@@ -34,13 +37,23 @@
   const want = (location.hash || "").slice(1);
   const pick = want === "film" || want === "neural" ? want : (Math.random() < 0.5 ? "film" : "neural");
   document.body.dataset.splash = pick;
-  if (pick === "neural") {
-    document.body.classList.add("neural");
+  const v = document.getElementById("v");
+  // the brain picture for 8 s - when the brain film cannot play
+  const still = () => {
+    if (document.body.classList.contains("still")) return;
+    v.removeAttribute("src"); v.load();
+    document.body.classList.add("still");
     document.getElementById("pic").addEventListener("error", end);
     setTimeout(end, 8000);
+  };
+  v.addEventListener("ended", end);
+  if (pick === "neural") {
+    document.body.classList.add("neural");
+    v.poster = "splash-neural.jpg";
+    v.addEventListener("error", still);
+    v.autoplay = true; v.src = "splash-neural.webm";
   } else {
-    const v = document.getElementById("v");
-    v.addEventListener("ended", end); v.addEventListener("error", end);
+    v.addEventListener("error", end);
     v.autoplay = true; v.src = "splash.webm";
   }
   document.addEventListener("mousedown", end); document.addEventListener("keydown", end);
