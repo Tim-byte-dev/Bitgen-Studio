@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.724.1** — Models Not Found: a Model the Download List Saves Under Another Name (YuE2's Checkpoint, the H3 Latent Upscaler, the SDXL ControlNets) Now Comes With ⬇ Download
 - **2.724.0** — The Floating Docker You Used Last Is on Top: 💬 Community, Basic Settings, the ▣ Dockers and Your Own Named Dockers Share One Order Above the Rest of the App
 - **2.723.0** — Suspend a Community Member for Some Days, Make a Member an Admin From the Members List, and a Members Search That Filters as You Type
 - **2.722.0** — Free VRAM Only When the Model Changes (the New Default): Renders in a Row With the Same Model Keep It on the Card - No Unload, No Reload

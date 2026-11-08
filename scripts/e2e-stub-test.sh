@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.724.1 (Tim's box: "yue2_convrot_int8.safetensors ... Not in bitGen's download list - download it yourself")
+node scripts/test-modelsfound7241.js > /tmp/modelsfound7241.log 2>&1 \
+  && ok "2.724.1 models not found: a catalogue model saved under another name (as) is offered by that name - YuE2's checkpoint gets ⬇ Download; every renamed entry found; a download's own name that is not what it is saved as matches nothing" \
+  || { bad "2.724.1 renamed downloads"; grep -a "^FAIL" -A2 /tmp/modelsfound7241.log | head -14; }
 # ---- 2.724.0 (Tim: "the community dialog is going behind the custom dialog, give floating dialogs the highest z-index's")
 node scripts/test-floatz724.js > /tmp/floatz724.log 2>&1 \
   && ok "2.724.0 one order for every floating dialog (static/floatz.js): band 60-199 over the docked app and the status bar, under menus and message boxes; the last pressed / opened on top; Community, Basic Settings, LLM tokens, ▣ dockers, the ⊞ named dockers (were 9300), floated main dockers, the stage docker, voice chat" \
