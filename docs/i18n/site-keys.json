@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 577,
+    "count": 578,
     "keys": [
         "\"at\" must be an ISO-8601 time (the \"now\" of your last poll).",
         "\"details\" must be an object.",
@@ -488,6 +488,7 @@
         "You can only send a message to a friend.",
         "You cannot ask {0} to be friends.",
         "You cannot ban yourself.",
+        "You cannot suspend yourself.",
         "Your account",
         "Your bitGen Community account - the same user ID in bitGen Studio and in the Discussions.",
         "Your computer, your files",
