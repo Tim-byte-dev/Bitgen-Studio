@@ -6543,20 +6543,24 @@
    "src": "static/themes.js:33"
   },
   {
+   "s": "Neural blue",
+   "src": "static/themes.js:37"
+  },
+  {
    "s": "High contrast",
-   "src": "static/themes.js:36"
+   "src": "static/themes.js:39"
   },
   {
    "s": "the theme's own",
-   "src": "static/themes.js:101"
+   "src": "static/themes.js:104"
   },
   {
    "s": "No saved themes yet - change the colours, give it a name, 💾 Save theme",
-   "src": "static/themes.js:117"
+   "src": "static/themes.js:120"
   },
   {
    "s": "bitGen Default - built in: Dark, no element styles, UI size 100 % (Ctrl+Alt+Shift+T)",
-   "src": "static/themes.js:118"
+   "src": "static/themes.js:121"
   },
   {
    "s": "auto transition off - plain cuts again",
@@ -22938,19 +22942,19 @@
   },
   {
    "p": "Load {0} (themes/{1})",
-   "src": "static/themes.js:118"
+   "src": "static/themes.js:121"
   },
   {
    "p": "Delete themes/{0}.json",
-   "src": "static/themes.js:120"
+   "src": "static/themes.js:123"
   },
   {
    "p": "Delete {0}",
-   "src": "static/themes.js:120"
+   "src": "static/themes.js:123"
   },
   {
    "p": "Back to the theme you had before the import (themes/{0}.json)",
-   "src": "static/themes.js:182"
+   "src": "static/themes.js:185"
   },
   {
    "p": "sequential: {0} clip(s) moved - the clips play one after the other down the layers",

@@ -47,7 +47,7 @@ const KEY = "chatdock+timelinedock";
     const tab = await ev(() => ({ shown: getComputedStyle(document.getElementById("stab-themes")).display !== "none", cards: [...document.querySelectorAll("#s_themes [data-theme-id]")].map((x) => x.dataset.themeId), on: (document.querySelector("#s_themes .on") || {}).dataset,
       size: !!document.querySelector("#stab-themes #s_uiscale"), notGeneral: !document.querySelector("#stab-general #s_uiscale") }));
     check("Settings ▸ Themes: Dark / Darker / Slate / Light / High contrast (Dark on), the accent, the UI size slider (moved here from General)",
-      tab.shown && tab.cards.join() === "dark,darker,slate,light,contrast" && tab.on && tab.on.themeId === "dark" && tab.size && tab.notGeneral, tab);
+      tab.shown && tab.cards.join() === "dark,darker,slate,neural,light,contrast" && tab.on && tab.on.themeId === "dark" && tab.size && tab.notGeneral, tab);
 
     /* 2 a theme: the app's colours, the editor's bitGen theme follows, kept after a reload */
     await p.click('#s_themes [data-theme-id="light"]'); await p.waitForTimeout(150);

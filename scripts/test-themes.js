@@ -20,7 +20,7 @@ const T = require(path.join(ROOT, "static", "themes.js"));
 const C = require(path.join(ROOT, "lib", "dockerCfg.js"));
 
 /* ---- 1 */
-check("five themes in order: Dark, Darker (OLED), Slate, Light, High contrast", T.ORDER.join() === "dark,darker,slate,light,contrast" && T.ORDER.every((k) => T.THEMES[k] && T.THEMES[k].name));
+check("six themes in order: Dark, Darker (OLED), Slate, Neural blue (2.726.0), Light, High contrast", T.ORDER.join() === "dark,darker,slate,neural,light,contrast" && T.ORDER.every((k) => T.THEMES[k] && T.THEMES[k].name));
 check("...each sets every colour variable (a hex each) and a color-scheme", T.ORDER.every((k) => T.VARS.every((v) => /^#[0-9a-f]{6}$/i.test(T.THEMES[k][v])) && ["dark", "light"].includes(T.THEMES[k].scheme)));
 check("Dark = bitGen's own colours (the :root defaults)", (() => { const ix = read("static", "index.html"); const d = T.THEMES.dark; return ["ink", "panel", "panel-2", "line", "text", "dim", "tiger", "tiger-deep", "ok", "bad", "ui-hover", "ui-canvas", "ui-on"].every((k) => new RegExp("--" + k + ": " + d[k] + ";").test(ix)); })());
 const v = T.varsFor("light", "#2266DD");

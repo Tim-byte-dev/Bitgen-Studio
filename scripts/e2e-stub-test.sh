@@ -11083,7 +11083,7 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-iegen-ui.js > /tmp/iegenui4310.l
 #      ui. save the visibility status of the dockers as well, and their positions and sizes when save layout button
 #      under docker layout")
 node scripts/test-themes.js > /tmp/themes4320.log 2>&1 \
-  && ok "themes + docker layout units (2.432.0 the five themes, varsFor / accent / shade / clampScale, themes.js in <head>, the Themes tab + the UI size moved, the editor follows, docker.cfg keeps vis / floats / panels / cols, the page saves / applies them)" \
+  && ok "themes + docker layout units (2.432.0 the five themes (2.726.0: six, + Neural blue), varsFor / accent / shade / clampScale, themes.js in <head>, the Themes tab + the UI size moved, the editor follows, docker.cfg keeps vis / floats / panels / cols, the page saves / applies them)" \
   || { bad "2.432.0 themes + docker layout units"; grep -a "^FAIL" -A2 /tmp/themes4320.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-themes-ui.js > /tmp/themesui4320.log 2>&1 \
   && ok "2.432.0 themes + docker layout browser test: Settings ▸ Themes (5 themes, Light changes the app, the accent, kept after a reload, Reset), UI size 150 % = 21 px fonts + the dock slider in step, ⊞ Docker layout ▸ 💾 Save layout keeps on-screen / collapsed / hidden dockers + References hidden + a floating panel's place; Load puts them back - or SKIP without playwright" \
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.726.0 (Tim: "use this as one of the starting images and change the theme to match")
+node scripts/test-neural726.js > /tmp/neural726.log 2>&1 \
+  && ok "2.726.0 the Neural blue theme (the picture's colours, after Slate, translated; Dark the default), the splash = the film or the brain picture at random (8 s, the credits), a fresh install's first project starts with the picture in Assets ▸ Images (never a later project, never twice)" \
+  || { bad "2.726.0 Neural blue / brain picture"; grep -a "^FAIL" -A2 /tmp/neural726.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui726-ui.js > /tmp/ui726ui.log 2>&1 \
+  && ok "2.726.0 browser test: the splash's picture fills the window with the credits, pushes in, closes at 8 s, a key skips; the film still plays; both come up at random; Settings ▸ Themes ▸ Neural blue turns the app navy and blue, kept after a reload - or SKIP without playwright" \
+  || { bad "2.726.0 Neural blue browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui726ui.log | head -14; }
 # ---- 2.725.0 (Tim: "when user starts to play an audio show a random visualization, next button will play the next audio in the docker the file was clicked in our preview dialog")
 node scripts/test-lbaudio725.js > /tmp/lbaudio725.log 2>&1 \
   && ok "2.725.0 a sound in the preview: six looks picked at random (never the same twice in a row, calm ones for reduced motion), the next / previous SOUND of its list (pictures skipped, wrapping), the lightbox's hooks, kept out of the Preview docker's visualizer" \

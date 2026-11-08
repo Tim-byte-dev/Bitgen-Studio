@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
  "v": "73300ae98bee",
- "count": 8767,
+ "count": 8768,
  "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自动）",
@@ -8770,7 +8770,8 @@
   "When the model changes": "模型改变时",
   "When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway": "模型改变时：使用同一模型的一串渲染会把它留在显卡上（不卸载、不重新加载）——不会越积越多：ComfyUI 只保留一份并重复使用，需要空间时会自行释放。显存不足的错误之后，下一次渲染无论如何都会清空显卡",
   "the default) keeps a model on the card while the renders in a row use it - no unload and reload between them": "默认）在连续的渲染都使用同一模型时把它留在显卡上——中间不卸载、不重新加载",
-  "Another visualization": "换一种可视化效果"
+  "Another visualization": "换一种可视化效果",
+  "Neural blue": "神经蓝"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",

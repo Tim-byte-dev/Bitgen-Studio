@@ -3,7 +3,7 @@
  * Tim (verbatim): "create a themes tab in the settings dialog - have a ui size slider to adjust the size of fonts and
  * the ui".
  *
- *   THEMES     Dark (bitGen's own), Darker (OLED black), Slate (cool blue-grey), Light, High contrast - each is the
+ *   THEMES     Dark (bitGen's own), Darker (OLED black), Slate (cool blue-grey), Neural blue (2.726.0), Light, High contrast - each is the
  *              app's colour variables (--ink, --panel, --panel-2, --line, --text, --dim, --tiger (the accent),
  *              --tiger-deep, --ok, --bad, --ui-hover, --ui-canvas, --ui-on) set on <html>, each also as --th-<name>
  *              (the image editor re-maps --panel ... inside itself, so its bitGen theme reads --th-*) - it follows.
@@ -32,10 +32,13 @@
     dark: { name: "Dark", scheme: "dark", ink: "#14120f", panel: "#1d1a15", "panel-2": "#26221b", line: "#3a342a", text: "#e8e2d6", dim: "#9a917f", tiger: "#f59e2c", "tiger-deep": "#c4761a", ok: "#7fb069", bad: "#d1553f", "ui-hover": "#2f2a21", "ui-canvas": "#0f0d0b", "ui-on": "#4a3414" },
     darker: { name: "Darker (OLED)", scheme: "dark", ink: "#000000", panel: "#0c0b09", "panel-2": "#16140f", line: "#2a261f", text: "#ece6da", dim: "#8f8775", tiger: "#f59e2c", "tiger-deep": "#c4761a", ok: "#7fb069", bad: "#e0573f", "ui-hover": "#1d1a14", "ui-canvas": "#000000", "ui-on": "#3a2810" },
     slate: { name: "Slate", scheme: "dark", ink: "#11151a", panel: "#181d24", "panel-2": "#202732", line: "#313b49", text: "#e3e8ef", dim: "#8c97a8", tiger: "#4aa3ff", "tiger-deep": "#2b7fd6", ok: "#6fbf73", bad: "#e06060", "ui-hover": "#252e3a", "ui-canvas": "#0c0f13", "ui-on": "#1e3a5c" },
+    // 2.726.0 (Tim: "use this as one of the starting images and change the theme to match"): the colours of the bitGen brain
+    // picture (docs/images/bitgen-neural.png) - midnight navy, its electric blue as the accent
+    neural: { name: "Neural blue", scheme: "dark", ink: "#020a17", panel: "#06132a", "panel-2": "#0c1d38", line: "#1c3e62", text: "#e4eefa", dim: "#87a2bf", tiger: "#52baff", "tiger-deep": "#2b8fd6", ok: "#5fd3a0", bad: "#ff6b7a", "ui-hover": "#10284a", "ui-canvas": "#010610", "ui-on": "#133e6b" },
     light: { name: "Light", scheme: "light", ink: "#f3f1ec", panel: "#ffffff", "panel-2": "#ebe7de", line: "#cfc8b8", text: "#26221b", dim: "#6f6756", tiger: "#d97a06", "tiger-deep": "#a85d03", ok: "#3c8a2e", bad: "#c0392b", "ui-hover": "#e4dfd3", "ui-canvas": "#d6d2c8", "ui-on": "#f8dcb4" },
     contrast: { name: "High contrast", scheme: "dark", ink: "#000000", panel: "#000000", "panel-2": "#141414", line: "#ffffff", text: "#ffffff", dim: "#e6e6e6", tiger: "#ffd400", "tiger-deep": "#d1ad00", ok: "#3dff7a", bad: "#ff5c5c", "ui-hover": "#262626", "ui-canvas": "#000000", "ui-on": "#4d4000" },
   };
-  const ORDER = ["dark", "darker", "slate", "light", "contrast"];
+  const ORDER = ["dark", "darker", "slate", "neural", "light", "contrast"];
   const VARS = ["ink", "panel", "panel-2", "line", "text", "dim", "tiger", "tiger-deep", "ok", "bad", "ui-hover", "ui-canvas", "ui-on"];
   const isHex = (c) => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c);
   /** a colour made darker (k < 0) or lighter (k > 0), -1 .. 1 */

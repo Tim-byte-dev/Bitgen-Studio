@@ -19,7 +19,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1280, height: 720 } }); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
-    await p.goto("file://" + path.join(ROOT, "static", "splash.html"));
+    await p.goto("file://" + path.join(ROOT, "static", "splash.html") + "#film");   // 2.726.0: the film (one of two at random)
     await p.waitForFunction(() => { const v = document.getElementById("v"); return v && v.readyState >= 2; }, null, { timeout: 15000 });
     const v = await p.evaluate(() => { const v = document.getElementById("v"); return { dur: v.duration, w: v.videoWidth, h: v.videoHeight, muted: v.muted, playing: !v.paused, err: v.error && v.error.code }; });
     check("the splash film plays: 15 s, 1920 x 1080, muted, no error", Math.abs(v.dur - 15) < 0.1 && v.w === 1920 && v.h === 1080 && v.muted && v.playing && !v.err, v);

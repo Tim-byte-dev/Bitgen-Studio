@@ -7686,6 +7686,17 @@ playing (2.725.1).
   the bottom still opens anything.
 - Closing the preview stops the song. The Preview docker (its button on the status bar) is not affected.
 
+## The Neural blue theme and the bitGen brain picture (2.726.0)
+
+- **Settings ▸ Themes ▸ Neural blue** turns the studio midnight navy with an electric-blue accent: the colours of the
+  bitGen brain picture. Dark (tiger orange) stays the default, and your own accent colour still works on top of it.
+- **At start-up** the app shows one of two splash screens at random: the intro film, or the brain picture with the
+  credits for 8 seconds. A click or any key skips either.
+- **A new install** puts the brain picture in the first project's Assets ▸ Images, so the image editor, ✨ AI edits and
+  image-to-video have a picture to try straight away. Later projects start empty, and you can delete it like any other
+  picture.
+- The website (tigerart.com.au) has the same Neural blue look under **Colours** at the bottom of every page.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

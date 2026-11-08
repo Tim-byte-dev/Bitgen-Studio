@@ -1250,6 +1250,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **僅在模型改變時釋放顯示記憶體** — 連續使用同一模型的渲染會把它留在顯示卡上（不解除安裝、不重新載入）；換用其他模型或發生顯示記憶體不足的錯誤時，會先釋放顯示卡；也可以像以前一樣每次生成前釋放。 *Where:* 設定 ▸ ComfyUI ▸ Free VRAM before a generation ▸ Free it。 *Since:* 2.722.0
 - **最後使用的浮動面板在最上面** — 💬 Community、Basic Settings、LLM tokens、▣ 面板、你自己命名的面板、浮動的主面板、舞台面板和語音聊天，在應用程式其餘部分之上共用一個順序：點擊或打開其中一個，它就會到最上面（命名面板不會再遮住 Community）。 *Where:* 每個浮動面板。 *Since:* 2.724.0
 - **預覽中的歌曲：視覺化效果，Next 播放下一首** — 在預覽中對歌曲或聲音按 ▶，會開始一個隨機選擇的視覺化效果（條形、鏡像、波形、圓環、星空、漣漪；🎲 換一個）；Next / Prev 跳到所點擊面板中的下一首 / 上一首並播放。 *Where:* 預覽（在 Gallery、Assets 或 References 中點擊歌曲）。 *Since:* 2.725.0
+- **Neural blue 主題和 bitGen 大腦圖片** — 午夜海軍藍配電光藍強調色的主題；啟動畫面隨機顯示片頭影片或大腦圖片；新安裝的第一個專案會在 Assets ▸ Images 中自帶這張圖片。 *Where:* Settings ▸ Themes、啟動畫面、Assets ▸ Images。 *Since:* 2.726.0
 
 ## 鍵盤快捷鍵
 
