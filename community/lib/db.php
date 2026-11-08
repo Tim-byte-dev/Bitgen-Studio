@@ -7,7 +7,8 @@ if (!defined('BGC')) { http_response_code(404); exit; }
 // 2: names + email (verified) on bgc_users, banned emails, the discussions (bgc_topics, bgc_posts) - 2.713.0
 // 3: bug reports (bgc_bugs) - 2.714.0
 // 4: language packs (bgc_packs) - 2.716.0
-const BGC_SCHEMA = '4';
+// 5: a discussion pinned to the top, bitGen Studio's own (official) discussions - 2.721.0
+const BGC_SCHEMA = '5';
 
 function db(): PDO
 {
@@ -157,10 +158,11 @@ function db_tables(): array
         // 2.713.0: the discussions on the website - a topic, its posts (the first post is the topic's text); a guest's
         // post has guest_name and no user_id and waits (pending) until an admin approves it
         'bgc_topics' => ['id {PK}, category VARCHAR(16) NOT NULL, title VARCHAR(200) NOT NULL, user_id BIGINT NULL, guest_name VARCHAR(40) NULL, '
-            . 'created_at BIGINT NOT NULL, last_at BIGINT NOT NULL, replies INT NOT NULL DEFAULT 0, pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0',
+            . 'created_at BIGINT NOT NULL, last_at BIGINT NOT NULL, replies INT NOT NULL DEFAULT 0, pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0, '
+            . 'pinned SMALLINT NOT NULL DEFAULT 0, official SMALLINT NOT NULL DEFAULT 0',
             ['bgc_topics_list' => 'deleted, pending, last_at', 'bgc_topics_cat' => 'category, last_at', 'bgc_topics_user' => 'user_id']],
         'bgc_posts' => ['id {PK}, topic_id BIGINT NOT NULL, user_id BIGINT NULL, guest_name VARCHAR(40) NULL, body TEXT NOT NULL, at BIGINT NOT NULL, '
-            . 'pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0',
+            . 'pending SMALLINT NOT NULL DEFAULT 0, deleted SMALLINT NOT NULL DEFAULT 0, official SMALLINT NOT NULL DEFAULT 0',
             ['bgc_posts_topic' => 'topic_id, id', 'bgc_posts_pending' => 'pending', 'bgc_posts_user' => 'user_id']],
         // 2.714.0: a bug report - from bitGen Studio's 🐞 docker (with its system, settings, logs and screenshot) or the
         // website's form; its public face is a discussion in the "bugs" category (topic_id). details = JSON, shot = base64.
@@ -189,6 +191,24 @@ const BGC_USER_V2 = [
     'code_expires' => 'BIGINT NULL',
     'code_tries' => 'SMALLINT NOT NULL DEFAULT 0',
 ];
+
+// 2.721.0 (schema 5): a discussion pinned to the top by an admin; bitGen Studio's own posts (official - shipped in
+// community/notes/, lib/act_forum.php forum_notes_sync)
+const BGC_FORUM_V5 = ['bgc_topics' => ['pinned' => 'SMALLINT NOT NULL DEFAULT 0', 'official' => 'SMALLINT NOT NULL DEFAULT 0'], 'bgc_posts' => ['official' => 'SMALLINT NOT NULL DEFAULT 0']];
+
+/** an older database (schema 2-4): the schema 5 columns on the discussions' tables */
+function db_migrate_forum(PDO $pdo): void
+{
+    foreach (BGC_FORUM_V5 as $table => $cols) {
+        foreach ($cols as $col => $def) {
+            try {
+                $pdo->prepare("SELECT $col FROM $table WHERE 1 = 0")->execute();      // names from BGC_FORUM_V5 only
+            } catch (PDOException $e) {
+                $pdo->exec("ALTER TABLE $table ADD COLUMN $col $def");
+            }
+        }
+    }
+}
 
 /** an older database (schema 1): the new bgc_users columns and the unique index on email_key */
 function db_migrate_users(PDO $pdo): void
@@ -237,6 +257,7 @@ function db_schema(PDO $pdo, string $driver): void
         }
     }
     db_migrate_users($pdo);
+    db_migrate_forum($pdo);
     $pdo->prepare('DELETE FROM bgc_meta WHERE k = ?')->execute(['schema']);
     try {
         $pdo->prepare('INSERT INTO bgc_meta (k, v) VALUES (?, ?)')->execute(['schema', BGC_SCHEMA]);

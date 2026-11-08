@@ -56,6 +56,7 @@ HTTP 4xx/5xx status (400 bad input, 401 no / bad token, 403 not allowed / banned
 | forum_delete | `{post_id}` | `{topic_deleted}` - its writer or an admin; the first post takes its whole discussion |
 | admin_forum_pending | - | `{posts: [{id, topic_id, title, new_topic, guest_name, body, at}]}` (admins) |
 | admin_forum_moderate | `{post_id, approve}` | `{approved}` - approved shows (with its discussion); refused is deleted (admins) |
+| admin_forum_pin | `{topic_id, pinned}` | `{pinned}` (2.721.0, admins) - a pinned discussion comes first in forum_list (newest activity first among them); forum_list's topics and forum_topic's topic carry `pinned` |
 
 | bug_report | `{title, severity, area?, app_version?, happened?, expected?, steps?, details?: {system, settings, recorded, page_errors, failed_requests, logs: {file: text}, notes}, screenshot?: data:image/png\|jpeg URL, source?: app\|web, guest_name?}` | `{bug_id, topic_id, pending, anonymous}` (2.714.0) - a discussion under "bugs" (Bug reports); a confirmed member's shows at once, without a token it is anonymous and waits for an admin; up to 7 MB (the only action over 16 KB), details 2 MB, screenshot 4 MB, PNG / JPEG by its bytes; members 10 / hour, anonymous 5 / hour per address. forum_topic of a bug has `bug: {id, status, status_label, severity, severity_label, area, app_version, anonymous, source, has_details, has_shot, details? (admins)}`; forum_list's bug topics carry `bug: {status, …}` |
 | bug_shot | `{bug_id}` | `{type: png\|jpeg, data: base64}` (admins) |
@@ -78,3 +79,12 @@ come back in poll / history; poll's `deleted` tells a client which ones to drop.
 
 Config: `config.php` (copied from config.sample.php, never in git): `$BGC = ['dsn' => 'mysql:host=localhost;dbname=bitgen_community;charset=utf8mb4', 'user' => ..., 'pass' => ..., 'admins' => ['tim'], 'rules' => '...']`.
 The environment variable BGC_DSN (sqlite:/path/file.db) overrides the dsn (tests). Tables are created on first use.
+
+## bitGen Studio's own discussions (2.721.0)
+
+`community/notes/*.json` (see notes/README.md) are posted as discussions by **bitGen Studio** - an author
+`{official: true, name: "bitGen Studio"}` - the first time forum_list is read after they change: once each (by key),
+pinned when the note says so; a higher `rev` updates the title and text; one an admin removed is not posted again. A
+guest cannot post under a name with "bitgen" in it. A server whose database comes from BGC_DSN posts none unless
+BGC_NOTES_DIR names a folder.
+

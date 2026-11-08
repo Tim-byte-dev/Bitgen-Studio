@@ -79,8 +79,8 @@ const call = (k, req) => new Promise((done) => { const res = { code: 200, status
     check("Settings ▸ Languages: Shared by the community (↻, ⤓ Install, Installed), ⇪ Share with a note, Your shared packs (status, ✕), admins pointed to the website",
       /Shared by the community/.test(J) && /data-cminstall/.test(J) && /"Installed"/.test(J) && /data-lpshare/.test(J) && /s_lpnote/.test(J) && /Your shared packs/.test(J) && /data-cmdelete/.test(J) && /tigerart\.com\.au ▸ Language packs/.test(J));
     check("…a shared pack's names, note and review note go in as text", /nm\.textContent = p\.native/.test(J) && /n\.textContent = "“" \+ p\.note \+ "”"/.test(J) && /why\.textContent = ": " \+ p\.review_note/.test(J));
-    check("community server: act_packs.php loaded, the five actions, schema 4 (bgc_packs), pack_upload's body up to 7 MB, info says packs: true",
-      /act_packs\.php/.test(rd("community/lib/boot.php")) && ["pack_list", "pack_get", "pack_upload", "pack_delete", "admin_pack_moderate"].every((a) => rd("community/lib/dispatch.php").includes("'" + a + "'")) && /BGC_SCHEMA = '4'/.test(rd("community/lib/db.php")) && /'bgc_packs'/.test(rd("community/lib/db.php")) && /'pack_upload'\], true\) \? BGC_MAX_BUG_BODY/.test(rd("community/api.php")) && /'packs' => true/.test(rd("community/lib/act_account.php")));
+    check("community server: act_packs.php loaded, the five actions, schema 4+ (bgc_packs), pack_upload's body up to 7 MB, info says packs: true",
+      /act_packs\.php/.test(rd("community/lib/boot.php")) && ["pack_list", "pack_get", "pack_upload", "pack_delete", "admin_pack_moderate"].every((a) => rd("community/lib/dispatch.php").includes("'" + a + "'")) && /BGC_SCHEMA = '([4-9]|\d\d)'/.test(rd("community/lib/db.php")) && /'bgc_packs'/.test(rd("community/lib/db.php")) && /'pack_upload'\], true\) \? BGC_MAX_BUG_BODY/.test(rd("community/api.php")) && /'packs' => true/.test(rd("community/lib/act_account.php")));
   } catch (x) { fail++; console.log("FAIL: " + x.stack); }
   fs.rmSync(tmp, { recursive: true, force: true });
   console.log(`\n${pass} passed, ${fail} failed`);

@@ -16,8 +16,11 @@ const BGC_POSTS_PAGE = 30;
 const BGC_FORUM_AUTHOR = 'LEFT JOIN bgc_users u ON u.id = x.user_id';
 const BGC_FORUM_NOT_BANNED = '(u.id IS NULL OR u.banned = 0)';
 
+const BGC_OFFICIAL = 'bitGen Studio';       // 2.721.0: who an official discussion is by (community/notes/)
+
 function forum_author(array $r): array
 {
+    if (!empty($r['official'])) return ['official' => true, 'name' => BGC_OFFICIAL];
     if (!empty($r['guest_name']) && $r['user_id'] === null) return ['guest' => true, 'name' => (string) $r['guest_name']];
     if ($r['u_handle'] === null) return ['left' => true, 'name' => BGC_LEFT];
     return ['handle' => (string) $r['u_handle'], 'name' => (string) $r['u_display']];
@@ -45,15 +48,16 @@ function act_forum_list(array $b, ?array $me): array
     $page = v_int($b, 'page', 1, 100000, 1);
     $where = 'x.deleted = 0 AND x.pending = 0 AND ' . BGC_FORUM_NOT_BANNED . ($cat !== null ? ' AND x.category = ?' : '');
     $args = $cat !== null ? [$cat] : [];
+    try { forum_notes_sync(); } catch (Throwable $e) { error_log('bgc notes: ' . $e->getMessage()); }   // 2.721.0: never stops the list
     $total = (int) q_val('SELECT COUNT(*) FROM bgc_topics x ' . BGC_FORUM_AUTHOR . ' WHERE ' . $where, $args);
     $pages = max(1, (int) ceil($total / BGC_TOPICS_PAGE));
     $rows = q_all('SELECT x.*, u.handle AS u_handle, u.display AS u_display, b.status AS b_status, b.severity AS b_severity, b.app_version AS b_version '
         . 'FROM bgc_topics x ' . BGC_FORUM_AUTHOR . ' LEFT JOIN bgc_bugs b ON b.topic_id = x.id WHERE ' . $where
-        . ' ORDER BY x.last_at DESC, x.id DESC LIMIT ' . BGC_TOPICS_PAGE . ' OFFSET ' . (($page - 1) * BGC_TOPICS_PAGE), $args);
+        . ' ORDER BY x.pinned DESC, x.last_at DESC, x.id DESC LIMIT ' . BGC_TOPICS_PAGE . ' OFFSET ' . (($page - 1) * BGC_TOPICS_PAGE), $args);
     $topics = [];
     foreach ($rows as $r) {
         $t = ['id' => (int) $r['id'], 'category' => (string) $r['category'], 'title' => (string) $r['title'], 'author' => forum_author($r),
-            'created' => iso((int) $r['created_at']), 'last_at' => iso((int) $r['last_at']), 'replies' => (int) $r['replies']];
+            'created' => iso((int) $r['created_at']), 'last_at' => iso((int) $r['last_at']), 'replies' => (int) $r['replies'], 'pinned' => (int) $r['pinned'] === 1];
         if ($r['b_status'] !== null) $t['bug'] = ['status' => (string) $r['b_status'], 'status_label' => BGC_BUG_STATUS[$r['b_status']] ?? $r['b_status'],
             'severity' => (string) $r['b_severity'], 'severity_label' => BGC_BUG_SEV[$r['b_severity']] ?? $r['b_severity'], 'app_version' => (string) $r['b_version']];
         $topics[] = $t;
@@ -88,7 +92,7 @@ function act_forum_topic(array $b, ?array $me): array
         $posts[] = $p;
     }
     return ['topic' => ['id' => (int) $t['id'], 'category' => (string) $t['category'], 'title' => (string) $t['title'], 'author' => forum_author($t),
-        'created' => iso((int) $t['created_at']), 'replies' => (int) $t['replies'], 'pending' => (int) $t['pending'] === 1],
+        'created' => iso((int) $t['created_at']), 'replies' => (int) $t['replies'], 'pending' => (int) $t['pending'] === 1, 'pinned' => (int) $t['pinned'] === 1],
         'categories' => forum_cats(), 'posts' => $posts, 'page' => $page, 'pages' => $pages,
         'bug' => $t['category'] === 'bugs' ? bug_for_topic((int) $t['id'], $admin) : null];
 }
@@ -104,6 +108,8 @@ function forum_writer(array $b, ?array $me, bool $topic): array
     }
     if (!is_string($b['guest_name'] ?? null) || trim($b['guest_name']) === '') throw new ApiError(400, 'Your name is needed to post as a guest (or join, and post as yourself).');
     $name = v_text($b, 'guest_name', 2, 40, false, 'Your name');
+    // 2.721.0: bitGen Studio's own posts carry its name - a guest cannot borrow it
+    if (str_contains(preg_replace('/[^a-z]/', '', strtolower($name)), 'bitgen')) throw new ApiError(400, 'That name is kept for bitGen Studio\'s own posts - pick another.');
     $k = 'fg:' . bgc_client_ip();
     rl_check($k, 4, 3600 * 1000, 'Guests can post 4 times an hour - join the community to post more.');
     rl_hit($k);
@@ -209,4 +215,89 @@ function act_admin_forum_moderate(array $b, array $me): array
         }
     });
     return ['approved' => $approve];
+}
+
+/* ---------------- 2.721.0: a discussion pinned to the top; bitGen Studio's own discussions
+ * Tim: "can you add a discussion to the website with that info and pin it please". */
+
+/** admins: {topic_id, pinned} - pinned discussions come first in the list (newest activity first among them) */
+function act_admin_forum_pin(array $b, array $me): array
+{
+    $tid = v_int($b, 'topic_id', 1, PHP_INT_MAX, null);
+    $pin = v_bool($b, 'pinned');
+    if (q_row('SELECT id FROM bgc_topics WHERE id = ? AND deleted = 0', [$tid]) === null) throw new ApiError(404, 'There is no such discussion (it may have been removed).');
+    q('UPDATE bgc_topics SET pinned = ? WHERE id = ?', [$pin ? 1 : 0, $tid]);
+    return ['pinned' => $pin];
+}
+
+/** where bitGen Studio's own discussions come from: BGC_NOTES_DIR, else community/notes/ - except on a server whose
+ *  database is given by BGC_DSN (a test or a developer's run: no notes unless BGC_NOTES_DIR names a folder) */
+function forum_notes_dir(): ?string
+{
+    $env = getenv('BGC_NOTES_DIR');
+    if (is_string($env) && $env !== '') return is_dir($env) ? $env : null;
+    $dsn = getenv('BGC_DSN');
+    if (is_string($dsn) && $dsn !== '') return null;
+    $d = dirname(__DIR__) . '/notes';
+    return is_dir($d) ? $d : null;
+}
+
+/** a note (community/notes/<name>.json): {key, rev, category, title, lines: [...] | body, pinned} -> checked, or null */
+function forum_note_read(string $file): ?array
+{
+    $n = json_decode((string) @file_get_contents($file), true);
+    if (!is_array($n)) return null;
+    $key = is_string($n['key'] ?? null) ? $n['key'] : '';
+    $body = is_array($n['lines'] ?? null) ? implode("\n", array_map('strval', $n['lines'])) : (string) ($n['body'] ?? '');
+    $title = trim((string) ($n['title'] ?? ''));
+    $cat = (string) ($n['category'] ?? 'general');
+    if (!preg_match('/^[a-z0-9-]{3,30}$/', $key) || $title === '' || mb_strlen($title) > 120 || trim($body) === '' || mb_strlen($body) > 8000
+        || !array_key_exists($cat, BGC_FORUM_CATS) || $cat === 'bugs') return null;
+    return ['key' => $key, 'rev' => max(1, (int) ($n['rev'] ?? 1)), 'category' => $cat, 'title' => $title, 'body' => $body, 'pinned' => !empty($n['pinned'])];
+}
+
+/** bitGen Studio's own discussions, shipped with the server (community/notes/*.json, put on the site by /b_admin/'s
+ *  Update): each is posted once, by "bitGen Studio" (official), pinned when the note says so; a higher rev updates its
+ *  title and text (its replies and pin stay). One a discussion an admin removed is not posted again. Runs when the list
+ *  is read and the notes changed (bgc_meta notes_sig) -> {added, updated} */
+function forum_notes_sync(): array
+{
+    $dir = forum_notes_dir();
+    $out = ['added' => 0, 'updated' => 0];
+    if ($dir === null) return $out;
+    $files = glob($dir . '/*.json') ?: [];
+    sort($files);
+    $sig = substr(hash('sha256', implode('|', array_map(static fn ($f) => basename($f) . ':' . hash_file('sha256', $f), $files))), 0, 40);
+    if (q_val('SELECT v FROM bgc_meta WHERE k = ?', ['notes_sig']) === $sig) return $out;
+    foreach ($files as $f) {
+        $n = forum_note_read($f);
+        if ($n === null) { error_log('bgc notes: ' . basename($f) . ' is not a note (key, title, text, category)'); continue; }
+        $mk = 'note:' . $n['key'];
+        $have = q_val('SELECT v FROM bgc_meta WHERE k = ?', [$mk]);           // "<topic id>:<rev>"
+        $now = now_ms();
+        if ($have === null) {
+            db_tx(static function () use ($n, $mk, $now): void {
+                q('INSERT INTO bgc_topics (category, title, user_id, guest_name, created_at, last_at, replies, pending, deleted, pinned, official) VALUES (?, ?, NULL, NULL, ?, ?, 0, 0, 0, ?, 1)',
+                    [$n['category'], $n['title'], $now, $now, $n['pinned'] ? 1 : 0]);
+                $tid = (int) db()->lastInsertId();
+                q('INSERT INTO bgc_posts (topic_id, user_id, guest_name, body, at, pending, deleted, official) VALUES (?, NULL, NULL, ?, ?, 0, 0, 1)', [$tid, $n['body'], $now]);
+                q('INSERT INTO bgc_meta (k, v) VALUES (?, ?)', [$mk, $tid . ':' . $n['rev']]);
+            });
+            $out['added']++;
+            continue;
+        }
+        [$tid, $rev] = array_map('intval', explode(':', (string) $have) + [0, 0]);
+        if ($n['rev'] <= $rev) continue;
+        db_tx(static function () use ($n, $mk, $tid): void {
+            if (q_row('SELECT id FROM bgc_topics WHERE id = ? AND deleted = 0', [$tid]) !== null) {
+                q('UPDATE bgc_topics SET title = ?, category = ? WHERE id = ?', [$n['title'], $n['category'], $tid]);
+                q('UPDATE bgc_posts SET body = ? WHERE id = (SELECT MIN(id) FROM bgc_posts WHERE topic_id = ?)', [$n['body'], $tid]);
+            }
+            q('UPDATE bgc_meta SET v = ? WHERE k = ?', [$tid . ':' . $n['rev'], $mk]);
+        });
+        $out['updated']++;
+    }
+    q('DELETE FROM bgc_meta WHERE k = ?', ['notes_sig']);
+    q('INSERT INTO bgc_meta (k, v) VALUES (?, ?)', ['notes_sig', $sig]);
+    return $out;
 }

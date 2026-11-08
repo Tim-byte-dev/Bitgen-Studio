@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.721.0 (Tim: "can you add a discussion to the website with that info and pin it please")
+node scripts/test-community721-server.js > /tmp/community721srv.log 2>&1 \
+  && ok "2.721.0 Community server: a schema 4 database migrated (its topic kept), bitGen Studio's notes posted once (official, pinned first), a newer rev updates, a removed one stays removed, bad notes skipped, admin_forum_pin (admins, 404), no guest named bitGen Studio, no notes on a BGC_DSN server - or SKIP without php" \
+  || { bad "2.721.0 pins / notes"; grep -a "^FAIL" -A2 /tmp/community721srv.log | head -14; }
 # ---- 2.720.0 (Tim: "if worker exits with code 1 , check for models if models are not found ask if user wants to dl models")
 node scripts/test-modelsfound720.js > /tmp/modelsfound720.log 2>&1 \
   && ok "2.720.0 after a failed render: the names ComfyUI refused (both wordings), the job's style + workflow files, job.models_missing + a [models] line, on disk = not missing, remote / done / no folder = nothing, jobDict, the wiring" \
