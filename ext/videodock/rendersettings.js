@@ -161,7 +161,8 @@
         up.innerHTML = '<option value="">Off</option>'
           + '<option value="seedvr2">SeedVR2 (video) - the take as its own job</option>'
           + '<option value="dlss5">DLSS 5 (NVIDIA RTX) - the take as its own job</option>'   // 2.504.0
-          + '<option value="rtxvfx">RTX VFX (NVIDIA RTX) - the take as its own job</option>' + files.map(opt).join("");   // 2.708.0
+          + '<option value="rtxvfx">RTX VFX (NVIDIA RTX) - the take as its own job</option>'   // 2.708.0
+          + '<option value="relayvsr">RelayVSR (video, x2 / x4) - the take as its own job</option>' + files.map(opt).join("");   // 2.728.0
         up.value = keep;
         // 2.313.0: the image upscale models (ESRGAN & co) for the tail PNGs
         var imgs = ((cats.upscale_models || {}).files || []).map(function (f) { return f.name; });

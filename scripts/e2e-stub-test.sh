@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.728.0 (Tim: "yes please add a 1920x1080 automatic preset and add https://github.com/kopperx/RelayVSR")
+python3 scripts/test-relayvsr728.py > /tmp/relayvsr728.log 2>&1 \
+  && ok "2.728.0 RelayVSR + the 1920x1080 frame: the core-node graph (RelayVSRConditioning, a guider, one euler step, VSR Decode on the same frames), the x2 / x4 pair from what ComfyUI lists (never mixed), fit_vf (covered + trimmed / scaled down, never blown up); auto = the smallest pair; the ⚙ 1920x1080 read as 1080 by DLSS 5 / RTX VFX / the in-render upscaler; LIVE: 960x544 -> exactly 1920x1080 (x2) and 2160p (x4), native; no nodes / no files / the source back = fails in words; SeedVR2 at 1920x1080 = exactly 1920x1080" \
+  || { bad "2.728.0 RelayVSR / 1920x1080"; grep -a "^FAIL" /tmp/relayvsr728.log | head -12; }
+node scripts/test-ui728-ui.js > /tmp/ui728ui.log 2>&1 \
+  && ok "2.728.0 browser test: 🔁 RelayVSR in the preview bar, the panel's plan for a 960x544 asset (1920 × 1080 via x2, 2160p via x4, x2 at 2160p refused), 🔁 Upscale queues the job + remembers, one upscale panel at a time, SeedVR2's 1920 × 1080, the ⚙'s RelayVSR + 1920 × 1080, Settings ▸ Add-ons ▸ RelayVSR - or SKIP without playwright / a studio" \
+  || { bad "2.728.0 RelayVSR browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui728ui.log | head -14; }
 # ---- 2.727.0 (Tim: "can u check this video and upload it to the website and intergrate in our bitgen-studio repo if it
 # is good enough" - the video was named _seedvr2_1080p and was the 960x544 source)
 python3 scripts/test-inputecho727.py > /tmp/inputecho727.log 2>&1 \

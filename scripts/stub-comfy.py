@@ -149,6 +149,9 @@ def core_schemas():
         **DLSS5_SCHEMAS,
         # 2.708.0: the DENO pack's RTX VFX finisher (STUB_RTXVFX_ABSENT=1 = a ComfyUI without the pack)
         **({} if os.environ.get("STUB_RTXVFX_ABSENT") else RTXVFX_SCHEMAS),
+        # 2.728.0: ComfyUI's core RelayVSR nodes (comfy_extras/nodes_wan.py, PR #17511) - STUB_RELAYVSR_ABSENT=1 = a
+        # ComfyUI older than them (the v0.44.0 release)
+        **({} if os.environ.get("STUB_RELAYVSR_ABSENT") else RELAYVSR_SCHEMAS),
         # 2.319.0, faithful-mock rule (Tim's run: LineArtPreprocessor ->
         # KeyError: 'coarse'): comfyui_controlnet_aux declares its switches
         # as OPTIONAL and reads them as always-sent - the stub fails the same
@@ -213,6 +216,15 @@ SEEDVR2_SCHEMAS = {
         "output": ["LATENT", "INT"]},
     "SeedVR2TemporalMerge": {"input": {"required": {"latents": ["LATENT"], "temporal_overlap": ["INT", {"forceInput": True}]}},
                              "output": ["LATENT"]},
+}
+
+# 2.728.0: ComfyUI's core RelayVSR nodes as comfy_extras/nodes_wan.py declares them (commit 2f89433, PR #17511)
+RELAYVSR_SCHEMAS = {
+    "RelayVSRConditioning": {"input": {"required": {"model": ["MODEL"], "images": ["IMAGE"]}},
+                             "output": ["CONDITIONING", "LATENT"], "output_name": ["positive", "latent"]},
+    "VSRDecode": {"input": {"required": {"vae": ["VAE"], "samples": ["LATENT"], "images": ["IMAGE"],
+                                         "detail": ["FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}]}},
+                  "output": ["IMAGE"], "display_name": "VSR Decode"},
 }
 
 # 2.504.0: ComfyUI-RH-DLSS5's two nodes as its nodes.py declares them (every input OPTIONAL; the option lists verbatim)
@@ -477,6 +489,62 @@ def render_seedvr2(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+def render_relayvsr(pid, g):
+    """2.728.0: a RelayVSR video graph, answered like ComfyUI's core nodes would: the LOADED video times the Flash
+    decoder's factor (its file: x4 in the name = 4, else 2 - the real one reads it from the file's metadata), as long as
+    the source, no sound. The wiring is checked the way the real nodes need it: the guider holds the conditioning's
+    positive, the sampler's latent is the conditioning's latent, VSR Decode reads the sampler AND the same frames."""
+    def node(link):
+        return g.get(str(link[0])) if isinstance(link, list) and link else None
+    def err(nid, ct, msg):
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_start", {"prompt_id": pid, "timestamp": 1}],
+            ["execution_error", {"prompt_id": pid, "node_id": str(nid), "node_type": ct, "exception_type": "ValueError",
+                                 "exception_message": msg, "traceback": ["  File \"comfy_extras/nodes_wan.py\""]}]]},
+            "outputs": {}}
+    by = lambda ct: next(((k, v) for k, v in g.items() if v.get("class_type") == ct), (None, None))   # noqa: E731
+    _, load = by("LoadVideo")
+    cid, cond = by("RelayVSRConditioning")
+    gid, guide = by("BasicGuider")
+    sid, samp = by("SamplerCustomAdvanced")
+    did, dec = by("VSRDecode")
+    _, vl = by("VAELoader")
+    _, ul = by("UNETLoader")
+    f = ((load or {}).get("inputs") or {}).get("file")
+    if not isinstance(f, str) or f not in UPLOADED:
+        return err("1", "LoadVideo", f"Invalid video file: {f}")
+    ci, gi, si, di = ((x or {}).get("inputs") or {} for x in (cond, guide, samp, dec))
+    if (node(gi.get("conditioning")) is not cond) or (gi.get("conditioning") or [None, None])[1] != 0:
+        return err(gid, "BasicGuider", "conditioning must be RelayVSRConditioning's positive")
+    if (node(si.get("latent_image")) is not cond) or (si.get("latent_image") or [None, None])[1] != 1:
+        return err(sid, "SamplerCustomAdvanced", "latent_image must be RelayVSRConditioning's latent")
+    if node(di.get("samples")) is not samp:
+        return err(did, "VSRDecode", "samples must be the sampler's output")
+    if di.get("images") != ci.get("images"):
+        return err(did, "VSRDecode", "images must be the same low-quality frames the conditioning read")
+    if not (0.0 <= float(di.get("detail", 1.0)) <= 1.0):
+        return err(did, "VSRDecode", "detail must be 0..1")
+    vae = str(((vl or {}).get("inputs") or {}).get("vae_name") or "")
+    fac = 4 if "x4" in vae.lower() else 2
+    if os.environ.get("STUB_RELAYVSR_KEEP_SIZE") == "1":
+        fac = 1                                        # a ComfyUI that hands back the source's size
+    info = _probe(INPUTS / f) if (INPUTS / f).is_file() else {}
+    w, h, dur = info.get("w") or 192, info.get("h") or 108, info.get("dur") or 1.0
+    ow, oh = w * fac, h * fac
+    fn = f"relayvsr_{pid}.mp4"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={ow}x{oh}:rate=24",
+                    "-t", f"{dur:.3f}", "-pix_fmt", "yuv420p", "-c:v", "libx264", "-preset", "ultrafast", str(OUT / fn)],
+                   check=False)
+    rec = {"_relayvsr": {k: (v.get("inputs") or {}) for k, v in g.items()},
+           "_classes": sorted({str(v.get("class_type", "")) for v in g.values()}),
+           "_unet": str(((ul or {}).get("inputs") or {}).get("unet_name") or ""), "_vae": vae, "_factor": fac,
+           "_source": {"file": f, "w": w, "h": h, "dur": dur, "audio": info.get("audio")}, "_out": [ow, oh]}
+    Path(OUT / f"video_{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
+    sv = next((k for k, v in g.items() if v.get("class_type") == "SaveVideo"), "13")
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True},
+                 "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
+
+
 def render_dlss5(pid, g):
     """2.504.0: a DLSS 5 graph answered like the pack would: the LOADED video at the size DLSS picks (the pack's
     fixed factors / 1K-8K buckets - scripts/dlss5_graph.target states the same rule), as long as the source, at the
@@ -621,6 +689,8 @@ def _render(pid, g):
     if any(v.get("class_type") == "SeedVR2Conditioning" for v in g.values()) and \
             any(v.get("class_type") == "LoadVideo" for v in g.values()):
         return render_seedvr2(pid, g)                  # 2.400.0
+    if any(v.get("class_type") == "RelayVSRConditioning" for v in g.values()):
+        return render_relayvsr(pid, g)                 # 2.728.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
         return render_dlss5(pid, g)                    # 2.504.0
     if any(v.get("class_type") == "DenoRTXVFXVideoFinisher" for v in g.values()):
@@ -1174,6 +1244,8 @@ class H(BaseHTTPRequestHandler):
                     "output": ["MODEL"], "output_name": ["MODEL"]}})
             if ct == "DenoRTXVFXVideoFinisher" and os.environ.get("STUB_RTXVFX_ABSENT"):
                 return self._j({})                     # 2.708.0: a ComfyUI without the DENO pack
+            if ct in ("RelayVSRConditioning", "VSRDecode") and os.environ.get("STUB_RELAYVSR_ABSENT"):
+                return self._j({})                     # 2.728.0: a ComfyUI older than its RelayVSR nodes
             CS = core_schemas()
             if ct in CS:
                 return self._j({ct: CS[ct]})

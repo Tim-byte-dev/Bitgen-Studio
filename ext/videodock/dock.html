@@ -185,11 +185,12 @@
           <input type="checkbox" id="vdSetLong"> Long video (one run up to 30 s)</label>
         <label style="display:flex;flex-direction:column;gap:2px">Upscaler
           <select id="vdSetUpscaler" title="MMH3 Ultimate Upscale - a 3D latent upscaler from ComfyUI's models/latent_upscale_models - or SeedVR2 (video): the take goes through ComfyUI's core SeedVR2 nodes as its own job (any style, the preview's ⏫ SeedVR2 options). The scene's ⏫ (or ⏫ in the scene menubar for the ticked scenes) upscales a take with it. Off = no upscaler">
-            <option value="">Off</option><option value="seedvr2">SeedVR2 (video) - the take as its own job</option><option value="dlss5">DLSS 5 (NVIDIA RTX) - the take as its own job</option><option value="rtxvfx">RTX VFX (NVIDIA RTX) - the take as its own job</option></select></label>
+            <option value="">Off</option><option value="seedvr2">SeedVR2 (video) - the take as its own job</option><option value="dlss5">DLSS 5 (NVIDIA RTX) - the take as its own job</option><option value="rtxvfx">RTX VFX (NVIDIA RTX) - the take as its own job</option><option value="relayvsr">RelayVSR (video, x2 / x4) - the take as its own job</option></select></label>
         <label style="display:flex;flex-direction:column;gap:2px">Upscale resolution
           <select id="vdSetUpRes" title="The upscaled short side, the render's aspect kept">
             <option value="720">720p</option><option value="1080">1080p</option>
             <option value="1440">1440p</option><option value="2160">2160p (4K)</option>
+            <option value="1920x1080" title="Exactly 1920 x 1080: SeedVR2 / RelayVSR upscale until the take covers the frame and trim the overhang off the middle; the other upscalers use 1080p">1920 × 1080 (16:9 exact)</option>
           </select></label>
         <!-- 2.315.0 (Tim: "i would prefer to press the button so i can
              preview the scene"): OFF by default - renders stay fast, ⏫

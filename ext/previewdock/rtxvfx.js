@@ -15,6 +15,7 @@
     if (RtxVfxPanel.shown()) { RtxVfxPanel.close(); return; }
     if (window.SeedVR2Panel && SeedVR2Panel.shown()) SeedVR2Panel.close();
     if (window.Dlss5Panel && Dlss5Panel.shown()) Dlss5Panel.close();
+    if (window.RelayVsrPanel && RelayVsrPanel.shown()) RelayVsrPanel.close();   // 2.728.0
     RtxVfxPanel.open({ name: current(), from: "preview", anchor: el("pvRtxvfx") });
   });
   const p = el("player");

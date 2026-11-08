@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5460,
+ "count": 5472,
  "strings": [
   {
    "s": "0 (auto)",
@@ -164,6 +164,15 @@
    ],
    "where": [
     "input#chHeight"
+   ]
+  },
+  {
+   "s": "1920 × 1080 (16:9 exact)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #vdSetUpRes"
    ]
   },
   {
@@ -7133,6 +7142,15 @@
    ]
   },
   {
+   "s": "ComfyUI newer than the v0.44.0 release (its own RelayVSR nodes since 5 Nov 2026 - ⤓ Update ComfyUI, \"latest\"); an NVIDIA GPU",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.kv in #aoList"
+   ]
+  },
+  {
    "s": "ComfyUI node packs",
    "kinds": [
     "text"
@@ -11760,6 +11778,15 @@
    ]
   },
   {
+   "s": "Exactly 1920 x 1080: SeedVR2 / RelayVSR upscale until the take covers the frame and trim the overhang off the middle; the other upscalers use 1080p",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "option in #vdSetUpRes"
+   ]
+  },
+  {
    "s": "Example",
    "kinds": [
     "text"
@@ -13960,6 +13987,15 @@
    ]
   },
   {
+   "s": "Free VRAM before a generation (unload ComfyUI's models + empty its cache)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.chk in #ctab-engine"
+   ]
+  },
+  {
    "s": "Free VRAM before every generation (unload ComfyUI's models + empty its cache)",
    "kinds": [
     "text"
@@ -13976,6 +14012,15 @@
    "where": [
     "b in #ctab-engine",
     "button#s_cfreenow.ghost"
+   ]
+  },
+  {
+   "s": "Free it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #ctab-engine"
    ]
   },
   {
@@ -22298,6 +22343,15 @@
    ]
   },
   {
+   "s": "Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #s_vsvedabox"
+   ]
+  },
+  {
    "s": "Off = hidden everywhere and never used. On = Basic Settings shows it, Settings ▸ Add-ons lists its download links, and whatever it is missing (node packs, models) downloads into ComfyUI's folders by itself - now, and again at every start while it is on",
    "kinds": [
     "text"
@@ -26836,6 +26890,60 @@
    ],
    "where": [
     "button#s_cconsole.ghost"
+   ]
+  },
+  {
+   "s": "RelayVSR",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#pvRelayvsr"
+   ]
+  },
+  {
+   "s": "RelayVSR (video upscaling x2 / x4)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "h4 in #aoList"
+   ]
+  },
+  {
+   "s": "RelayVSR (video, x2 / x4) - the take as its own job",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #vdSetUpscaler"
+   ]
+  },
+  {
+   "s": "RelayVSR in the preview bar and the video docker's ⚙ Upscaler: a one-step video upscaler (Wan 2.2 on every 15th frame, a small decoder for the rest) - the x2 is trained on MiniMax H3 clips, 1920 × 1080 from a 960x544 render",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.kv in #aoList"
+   ]
+  },
+  {
+   "s": "RelayVSR x2 (LightX2V, trained on H3 clips)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #aoList"
+   ]
+  },
+  {
+   "s": "RelayVSR x4 (the original)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #aoList"
    ]
   },
   {
@@ -37536,6 +37644,15 @@
    ]
   },
   {
+   "s": "Upscale the video you are previewing with RelayVSR (ComfyUI core nodes, x2 / x4 - the x2 is trained on MiniMax H3 clips) - 1920 × 1080 or any size; the result lands in the gallery",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#pvRelayvsr"
+   ]
+  },
+  {
    "s": "Upscale the video you are previewing with SeedVR2 (ComfyUI core nodes, seedvr2_7b_sharp_fp16) - pick the size, then Upscale; the result lands in the gallery",
    "kinds": [
     "title"
@@ -38067,6 +38184,15 @@
    ],
    "where": [
     "b in #stab-about"
+   ]
+  },
+  {
+   "s": "Veda on action shots too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #s_vsvedabox"
    ]
   },
   {
@@ -39337,6 +39463,24 @@
   },
   {
    "s": "When the app starts and a ComfyUI on this computer is already running (left from before, or started by hand), end it and start it again from bitGen Studio - so its console, restart and memory are the app's. Needs the ComfyUI folder or launch command below",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.f in #ctab-engine"
+   ]
+  },
+  {
+   "s": "When the model changes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #ctab-engine"
+   ]
+  },
+  {
+   "s": "When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway",
    "kinds": [
     "title"
    ],
@@ -41096,6 +41240,15 @@
    ],
    "where": [
     "label in #tlAiDlg"
+   ]
+  },
+  {
+   "s": "before every generation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #s_cfreewhen"
    ]
   },
   {
@@ -48837,6 +48990,15 @@
    ]
   },
   {
+   "s": "the default) keeps a model on the card while the renders in a row use it - no unload and reload between them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #ctab-engine"
+   ]
+  },
+  {
    "s": "the desktop app",
    "kinds": [
     "text"
@@ -49383,6 +49545,24 @@
    ],
    "where": [
     "option in #s_vsphases"
+   ]
+  },
+  {
+   "s": "the x2 pair - an H3 / LTX render to 1080p or 1920 x 1080",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #aoList"
+   ]
+  },
+  {
+   "s": "the x4 pair - 4K (2160p) from a small clip",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #aoList"
    ]
   },
   {
@@ -50145,6 +50325,15 @@
    ]
   },
   {
+   "s": "when the model changes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #s_cfreewhen"
+   ]
+  },
+  {
    "s": "when the style is picked under the prompt — and Basic Settings is what the render uses, so you can still change them per render. Later phases keep their own steps/cfg",
    "kinds": [
     "text"
@@ -50369,87 +50558,6 @@
    ],
    "where": [
     "option in #tlAutoTrT"
-   ]
-  },
-  {
-   "s": "Veda on action shots too",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "label in #s_vsvedabox"
-   ]
-  },
-  {
-   "s": "Off (the default): a shot whose prompt describes a fight, a transformation, an explosion or a chase renders without Veda - a blind test found Veda saves little there and softens the picture. On: Veda on every shot",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "label in #s_vsvedabox"
-   ]
-  },
-  {
-   "s": "Free VRAM before a generation (unload ComfyUI's models + empty its cache)",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "label.chk in #ctab-engine"
-   ]
-  },
-  {
-   "s": "Free it",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "label.f in #ctab-engine"
-   ]
-  },
-  {
-   "s": "When the model changes",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "b in #ctab-engine"
-   ]
-  },
-  {
-   "s": "When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "label.f in #ctab-engine"
-   ]
-  },
-  {
-   "s": "before every generation",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "option in #s_cfreewhen"
-   ]
-  },
-  {
-   "s": "the default) keeps a model on the card while the renders in a row use it - no unload and reload between them",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.hint.help in #ctab-engine"
-   ]
-  },
-  {
-   "s": "when the model changes",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "option in #s_cfreewhen"
    ]
   }
  ]

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.728.0** — An Exact 1920 × 1080 Upscale (Covered, Then Trimmed) in SeedVR2, RelayVSR and the ⚙; RelayVSR Video Upscaling x2 / x4 in ComfyUI's Own Nodes, Its Files from Settings ▸ Add-ons
 - **2.727.0** — The bitGen Brain Comes Alive: the Splash and the Website Play Its Lightning Film; Fixed: an Upscale Could Hand Back the Video It Was Given (ComfyUI's Load Video Now Shows Its Input in the Results) - SeedVR2 Checks the Size It Got
 - **2.726.0** — The Neural Blue Theme and the bitGen Brain Picture: a Splash of Its Own (One of Two at Random), a Sample in a New Install's First Project, and the Same Look on the Website
 - **2.725.1** — ▶ on a Song in the Gallery Opens It in the Preview, Playing, With Its Visualization (It Played in the List Before)

@@ -116,6 +116,39 @@ def first_video(outputs):
     return None
 
 
+def prepare_source(src, params, work, feed_name):
+    """2.728.0 (shared with misc/relayvsr_worker.py): the source's size, the window asked for, and a file ComfyUI's
+    LoadVideo reads (the window cut / an FFV1 master made a near-lossless H.264) -> (info, start, dur, feed)."""
+    info = probe(src)
+    if not info:
+        fail(f"could not read {src.name} (is ffprobe installed, is it a video?)")
+    start = max(0.0, float(params.get("start") or 0))
+    dur = float(params.get("duration") or 0) or None
+    if start >= (info.get("duration") or 0) > 0:
+        fail(f"the window starts at {start:.2f}s - {src.name} is only {info['duration']:.2f}s long")
+    say(f"[worker] {src.name}: {info['width']}x{info['height']} · {info.get('fps', 24):.3g} fps · "
+        f"{info.get('duration', 0):.2f}s" + (" · with sound" if info.get("audio") else " · silent")
+        + (f" · window {start:.2f}s +{dur:.2f}s" if (start or dur) else ""))
+    feed = src
+    if start or dur or src.suffix.lower() not in DIRECT:
+        feed = work / feed_name
+        cut = ["ffmpeg", "-y", "-loglevel", "error"]
+        if start:
+            cut += ["-ss", f"{start:.3f}"]
+        cut += ["-i", str(src)]
+        if dur:
+            cut += ["-t", f"{dur:.3f}"]
+        cut += ["-map", "0:v:0", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "8", "-pix_fmt", "yuv444p",
+                str(feed)]
+        r = subprocess.run(cut, capture_output=True, text=True)
+        if r.returncode != 0 or not feed.is_file():
+            fail("ffmpeg could not prepare the video: " + (r.stderr or "").strip()[-300:])
+        say(f"[worker] prepared {feed.name} (" + ("the window, " if (start or dur) else "")
+            + ("near-lossless H.264 from the " + src.suffix.lstrip(".").upper() if src.suffix.lower() not in DIRECT
+               else "re-encoded near-lossless") + ")")
+    return info, start, dur, feed
+
+
 def main():
     if len(sys.argv) != 2:
         fail("usage: seedvr2_worker.py <job.json>")
@@ -136,33 +169,7 @@ def main():
 
     # 1. the source: its size, the window, a file LoadVideo reads
     stage(1, "reading the video")
-    info = probe(src)
-    if not info:
-        fail(f"could not read {src.name} (is ffprobe installed, is it a video?)")
-    start = max(0.0, float(params.get("start") or 0))
-    dur = float(params.get("duration") or 0) or None
-    if start >= (info.get("duration") or 0) > 0:
-        fail(f"the window starts at {start:.2f}s - {src.name} is only {info['duration']:.2f}s long")
-    say(f"[worker] {src.name}: {info['width']}x{info['height']} · {info.get('fps', 24):.3g} fps · "
-        f"{info.get('duration', 0):.2f}s" + (" · with sound" if info.get("audio") else " · silent")
-        + (f" · window {start:.2f}s +{dur:.2f}s" if (start or dur) else ""))
-    feed = src
-    if start or dur or src.suffix.lower() not in DIRECT:
-        feed = work / "seedvr2_src.mp4"
-        cut = ["ffmpeg", "-y", "-loglevel", "error"]
-        if start:
-            cut += ["-ss", f"{start:.3f}"]
-        cut += ["-i", str(src)]
-        if dur:
-            cut += ["-t", f"{dur:.3f}"]
-        cut += ["-map", "0:v:0", "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "8", "-pix_fmt", "yuv444p",
-                str(feed)]
-        r = subprocess.run(cut, capture_output=True, text=True)
-        if r.returncode != 0 or not feed.is_file():
-            fail("ffmpeg could not prepare the video: " + (r.stderr or "").strip()[-300:])
-        say(f"[worker] prepared {feed.name} (" + ("the window, " if (start or dur) else "")
-            + ("near-lossless H.264 from the " + src.suffix.lstrip(".").upper() if src.suffix.lower() not in DIRECT
-               else "re-encoded near-lossless") + ")")
+    info, start, dur, feed = prepare_source(src, params, work, "seedvr2_src.mp4")
     sw, sh = info["width"], info["height"]
     ow, oh = int(params.get("width") or 0), int(params.get("height") or 0)
     if not (ow > 0 and oh > 0):
@@ -256,6 +263,11 @@ def main():
     if verdict == "off":
         say(f"[worker] WARNING: {vmsg}")
     real = min(got.get("width") or exp_w, got.get("height") or exp_h)
+    # 2.728.0: the exact frame (1920x1080) - the upscale covers it, the overhang is trimmed off the middle
+    crop = SV.crop_to(got.get("width"), got.get("height"), ow, oh) if params.get("fit") == "crop" else None
+    if crop:
+        say(f"[worker] {got.get('width')}x{got.get('height')} trimmed to {crop[0]}x{crop[1]} (the middle kept)")
+        real = min(crop)
     name = str(params.get("output_name") or "").strip()
     if not name:
         name = f"{src.stem}_seedvr2_{real}p.mp4"
@@ -263,7 +275,7 @@ def main():
     asrc = Path(str(params.get("audio_source") or "")) if params.get("audio_source") else src
     if not asrc.is_file():
         asrc = src
-    r = subprocess.run(SV.mux_args(raw, asrc, output_dir / name, start, dur, got.get("duration") or None),
+    r = subprocess.run(SV.mux_args(raw, asrc, output_dir / name, start, dur, got.get("duration") or None, crop),
                        capture_output=True, text=True)
     if r.returncode != 0:
         fail("ffmpeg could not finish the upscale: " + (r.stderr or "").strip()[-300:])

@@ -7710,6 +7710,24 @@ playing (2.725.1).
   size, the job stops and says so instead of writing a copy. Run the upscale again to get a true 1080p version of a
   video made before this fix.
 
+## 1920 × 1080 exactly, and RelayVSR (2.728.0)
+
+- **1920 × 1080 (16:9 exact)** is a new size in ⏫ SeedVR2, 🔁 RelayVSR and the video docker's ⚙ **Upscale resolution**.
+  A clip that is not quite 16:9 (an LTX render of 960x544) is upscaled until it covers the whole 1920 × 1080 frame, then
+  the few extra rows are trimmed off the top and bottom. 1080p still keeps the whole picture (1906x1080 from 960x544).
+  DLSS 5, RTX VFX and the in-render upscaler treat 1920 × 1080 as 1080p.
+- **🔁 RelayVSR** in the preview bar upscales the video you are previewing with RelayVSR, a fast video upscaler that
+  works in one step. It runs in ComfyUI's own nodes, so nothing else is installed. Pick a size, then **🔁 Upscale**; the
+  result lands in the gallery with the original sound.
+  - **Model**: RelayVSR comes as two pairs of files. **x2** (LightX2V's, trained on MiniMax H3 clips) suits an H3 or LTX
+    render. **x4** reaches 4K from a small clip. **auto** picks the smaller pair that reaches the size you chose.
+  - **Detail**: 1 keeps everything the model adds; lower is closer to a plain upscale.
+  - The video docker's ⚙ **Upscaler** has **RelayVSR** too: a scene's ⏫ (and **Upscale every render**) uses it, at the
+    ⚙ **Upscale resolution**.
+- **Setting it up**: RelayVSR needs ComfyUI newer than the v0.44.0 release (Settings ▸ ComfyUI ▸ ⤓ Update ComfyUI on
+  the "latest" channel, then restart ComfyUI). Settings ▸ Add-ons ▸ **RelayVSR** downloads the files (x2 is ticked;
+  about 5.3 GB for each pair). The panel says when either is missing.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

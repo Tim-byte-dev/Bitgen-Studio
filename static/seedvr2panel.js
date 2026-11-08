@@ -41,7 +41,8 @@
       <div class="svrow"><b>⏫ SeedVR2</b><span id="svSrc" class="svdim"></span></div>
       <label>Size <select id="svSize" title="The upscaled short side (the aspect kept), or a factor">
         <option value="720">720p</option><option value="1080">1080p</option><option value="1440">1440p</option>
-        <option value="2160">2160p (4K)</option><option value="x2">×2</option><option value="x3">×3</option><option value="x4">×4</option></select></label>
+        <option value="2160">2160p (4K)</option><option value="x2">×2</option><option value="x3">×3</option><option value="x4">×4</option>
+        <option value="1920x1080" title="exactly 1920 x 1080: upscaled until it covers the frame, the overhang trimmed off the middle">1920 × 1080 (16:9 exact)</option></select></label>
       <label>Colour match <select id="svColor" title="Match the result's colours to the original - lab is the most faithful; none skips it">
         <option value="lab">lab</option><option value="wavelet">wavelet</option><option value="adain">adain</option><option value="none">none</option></select></label>
       <label>Temporal split <select id="svChunk" title="auto: a long clip is sampled in pieces that fit the free VRAM, cross-faded back together; off: the whole clip at once">

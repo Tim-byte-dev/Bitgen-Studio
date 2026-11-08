@@ -170,15 +170,33 @@ def build(opts):
     return g, notes
 
 
-def mux_args(upscaled, source, dest, start=0.0, dur=None, out_dur=None):
+def crop_to(got_w, got_h, fit_w, fit_h):
+    """2.728.0: the exact frame (1920x1080) out of an upscale that covers it -> (w, h) to trim to, or None when there is
+    nothing to trim or the picture is smaller than the frame (it is never stretched)."""
+    try:
+        gw, gh, fw, fh = int(got_w or 0), int(got_h or 0), int(fit_w or 0), int(fit_h or 0)
+    except (TypeError, ValueError):
+        return None
+    if min(gw, gh, fw, fh) <= 0 or (gw, gh) == (fw, fh) or gw < fw or gh < fh:
+        return None
+    return fw, fh
+
+
+def mux_args(upscaled, source, dest, start=0.0, dur=None, out_dur=None, crop=None, vf=None):
     """ffmpeg: the upscaled picture with the SOURCE's sound (the same window), H.264 for every player; a silent source
-    stays silent (the ? on the map). out_dur = the upscaled clip's length - the sound never makes it longer."""
+    stays silent (the ? on the map). out_dur = the upscaled clip's length - the sound never makes it longer.
+    crop = (w, h): trimmed to that from the middle (2.728.0, the 1920x1080 frame); vf = any other -vf chain (RelayVSR's
+    fit to the size asked for, scripts/relayvsr_graph.fit_vf) - the crop goes after it."""
     a = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(upscaled)]
     if start:
         a += ["-ss", f"{float(start):.3f}"]
     if dur:
         a += ["-t", f"{float(dur):.3f}"]
-    a += ["-i", str(source), "-map", "0:v:0", "-map", "1:a:0?", "-c:v", "libx264", "-preset", "slow", "-crf", "14",
+    a += ["-i", str(source), "-map", "0:v:0", "-map", "1:a:0?"]
+    chain = [f for f in (vf, f"crop={int(crop[0])}:{int(crop[1])}" if crop else None) if f]
+    if chain:
+        a += ["-vf", ",".join(chain)]
+    a += ["-c:v", "libx264", "-preset", "slow", "-crf", "14",
           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k"]
     if out_dur:
         a += ["-t", f"{float(out_dur):.3f}"]

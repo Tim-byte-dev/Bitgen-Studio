@@ -538,6 +538,46 @@
       "for": "SeedVR2 upscaling"
     },
     {
+      "id": "relayvsr_x2",
+      "group": "upscale",
+      "label": "RelayVSR x2 (int8, LightX2V - trained on H3 clips)",
+      "repo": "Comfy-Org/RelayVSR",
+      "file": "diffusion_models/relayvsr_x2_lightx2v_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 5160000000,
+      "for": "🔁 RelayVSR video upscaling x2 - the step after an H3 / LTX render (2.728.0; ComfyUI newer than v0.44.0)"
+    },
+    {
+      "id": "relayvsr_vae_x2",
+      "group": "upscale",
+      "label": "RelayVSR Flash decoder x2",
+      "repo": "Comfy-Org/RelayVSR",
+      "file": "vae/relayvsr_flash_vae_x2_fp32.safetensors",
+      "dest": "comfy/vae",
+      "size": 140000000,
+      "for": "RelayVSR x2 (a pair with the x2 model - never mix x2 and x4)"
+    },
+    {
+      "id": "relayvsr_x4",
+      "group": "upscale",
+      "label": "RelayVSR x4 (int8, the original)",
+      "repo": "Comfy-Org/RelayVSR",
+      "file": "diffusion_models/relayvsr_x4_int8_convrot.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 5160000000,
+      "for": "🔁 RelayVSR video upscaling x4 - 4K from a 960x544 clip (2.728.0)"
+    },
+    {
+      "id": "relayvsr_vae_x4",
+      "group": "upscale",
+      "label": "RelayVSR Flash decoder x4",
+      "repo": "Comfy-Org/RelayVSR",
+      "file": "vae/relayvsr_flash_vae_x4_fp32.safetensors",
+      "dest": "comfy/vae",
+      "size": 140000000,
+      "for": "RelayVSR x4 (a pair with the x4 model)"
+    },
+    {
       "id": "klein9b",
       "group": "images",
       "label": "FLUX.2 Klein 9B",

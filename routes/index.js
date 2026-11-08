@@ -174,6 +174,7 @@ function mount(app) {
   require("./seedvr2").mount(app);      // 2.400.0: ⏫ SeedVR2 video upscaling (preview dock + the ⚙ Upscaler's SeedVR2)
   require("./dlss5").mount(app);        // 2.504.0: ⚡ DLSS 5 enhance / upscale / frame generation (preview dock + the ⚙ Upscaler's DLSS 5)
   require("./rtxvfx").mount(app);       // 2.708.0: ✨ RTX VFX finisher - NVIDIA RTX VSR / Deblur / High Bitrate (preview dock + the ⚙ Upscaler's RTX VFX)
+  require("./relayvsr").mount(app);     // 2.728.0: 🔁 RelayVSR video upscaling (ComfyUI core nodes; preview dock + the ⚙ Upscaler's RelayVSR)
   require("./scene").mount(app);        // 2.515.0: 🧍 cut-out through a shot, 📷 3D camera tracker, 🩹 content-aware fill
   require("./ueProject").mount(app);    // 2.513.0: 🎮 Load UE project (the bridge plugin put in, Unreal restarted)
   require("./lottie").mount(app);       // 2.512.0: ⤓ Lottie (JSON) export of the picture / text layers
