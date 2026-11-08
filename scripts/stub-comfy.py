@@ -113,7 +113,7 @@ def core_schemas():
                           "options": _folder_combo(["text_encoders", "clip"],
                                                    ["clip_l.safetensors"])},
             "type": {"type": "COMBO",
-                     "options": ["stable_diffusion", "minimax", "wan", "ltxv"]}}}},
+                     "options": ["stable_diffusion", "minimax", "wan", "ltxv", "lumina2"]}}}},   # 2.729.0: + lumina2 (Z-Image)
         "VAELoader": {"input": {"required": {
             "vae_name": [_folder_combo(["vae"], ["Wan2.1_VAE.safetensors"])]}}},
         # 2.334.0: the swap looks for the H3 Character Swap LoRA here - a

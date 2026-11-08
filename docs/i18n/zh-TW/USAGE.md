@@ -4653,6 +4653,17 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   - 影片停駐欄的 ⚙ **放大器** 中也有 **RelayVSR**：場景的 ⏫（以及 **每次算繪都放大**）會依 ⚙ **放大解析度** 使用它。
 - **準備**：RelayVSR 需要比 v0.44.0 版本更新的 ComfyUI（設定 ▸ ComfyUI ▸ ⤓ 更新 ComfyUI，選 "latest" 通道，然後重新啟動 ComfyUI）。設定 ▸ 附加元件 ▸ **RelayVSR** 會下載這些檔案（預設勾選 x2；每對約 5.3 GB）。缺少其中任何一項時，面板會提示。
 
+## NitroFusion2：一步出圖（2.729.0）
+<!-- en: nitrofusion2-pictures-in-one-step-2-729-0 df99414524e6 -->
+
+- **NitroFusion2** 是經過訓練、能在一到兩步內完成圖片的 Z-Image-Turbo，文字清晰、細節精細。它在 ComfyUI 內建的節點中執行。有三個圖像風格使用它：
+  - **NitroFusion2**：一步。最快，建議先用這個。
+  - **NitroFusion2 2-step**：兩步，第一步加上作者的去蒸餾 LoRA，可以去掉一些偽影。請把步數保持為 2：這兩步是把同一個排程一分為二。
+  - **NitroFusion2 GGUF**：用 GGUF 檔案一步出圖，適合小顯示卡（預設 Q4_K_M；其他檔案可選為該風格的模型）。
+- cfg 保持為 1，沒有負面提示詞。它訓練時的尺寸約為 1 百萬像素（1024 x 1024）。
+- 該風格的自訂 LoRA 和其他圖像風格一樣放進四個 LoRA 插槽；去蒸餾 LoRA 保持不變。
+- **準備**：設定 ▸ 附加元件 ▸ **NitroFusion2** 會下載你勾選的檔案：模型（12.3 GB）和去蒸餾 LoRA 預設勾選，GGUF 檔案可選，Qwen3 4B 文字編碼器和 FLUX.1 VAE 會隨任何一項一起下載。勾選 GGUF 檔案時也會安裝 ComfyUI-GGUF。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

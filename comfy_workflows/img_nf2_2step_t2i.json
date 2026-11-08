@@ -1,0 +1,221 @@
+{
+ "_comment": [
+  "NitroFusion2 (2 steps) - Text to Image. Export (API) format for a bitGen Studio image style.",
+  "2.729.0 (Tim: \"can u add this please https://chendaryen.github.io/NitroFusion2.github.io/\"). NitroFusion2 (Dar-Yen Chen, Yi-Zhe Song,",
+  "Apache-2.0) is Z-Image-Turbo distilled to 1-2 steps with an adversarial loss on the MMDiT's text stream - sharp text and fine detail in one step.",
+  "Derived from the authors' workflows/nitrofusion2_2step.json: the first step with their de-distillation LoRA at 0.5 (it takes",
+  "NitroFusion2 back towards Z-Image-Turbo and removes some artifacts), the second step NitroFusion2 alone - two KSamplerAdvanced on one",
+  "2-step schedule (0 -> 1, 1 -> 2), shift 6. Their LoRA-at-0.0 node on the second step is left out (a LoRA at 0 is the model itself).",
+  "MODELS: as the 1-step style + models/loras/nf2-dedistill-lora.safetensors (382 MB). The de-distillation LoRA's node is \"(fixed)\":",
+  "a style's own LoRAs go in the 4 slots before it, never into it. 2 steps, cfg 1, euler / simple, 1024 x 1024."
+ ],
+ "70": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "nf2-bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "71": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen_3_4b.safetensors",
+   "type": "lumina2",
+   "device": "default"
+  }
+ },
+ "72": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ae.safetensors"
+  }
+ },
+ "101": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "70",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "102": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "101",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "103": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "102",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "104": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "103",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "74": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "71",
+    0
+   ]
+  }
+ },
+ "76": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "74",
+    0
+   ]
+  }
+ },
+ "66": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "90": {
+  "class_type": "LoraLoaderModelOnly",
+  "_meta": {
+   "title": "NitroFusion2 de-distillation (fixed)"
+  },
+  "inputs": {
+   "model": [
+    "104",
+    0
+   ],
+   "lora_name": "nf2-dedistill-lora.safetensors",
+   "strength_model": 0.5
+  }
+ },
+ "80": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "model": [
+    "90",
+    0
+   ],
+   "shift": 6.0
+  }
+ },
+ "81": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "model": [
+    "104",
+    0
+   ],
+   "shift": 6.0
+  }
+ },
+ "3": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "model": [
+    "80",
+    0
+   ],
+   "add_noise": "enable",
+   "noise_seed": 0,
+   "steps": 2,
+   "cfg": 1.0,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "positive": [
+    "74",
+    0
+   ],
+   "negative": [
+    "76",
+    0
+   ],
+   "latent_image": [
+    "66",
+    0
+   ],
+   "start_at_step": 0,
+   "end_at_step": 1,
+   "return_with_leftover_noise": "enable"
+  }
+ },
+ "4": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "model": [
+    "81",
+    0
+   ],
+   "add_noise": "disable",
+   "noise_seed": 0,
+   "steps": 2,
+   "cfg": 1.0,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "positive": [
+    "74",
+    0
+   ],
+   "negative": [
+    "76",
+    0
+   ],
+   "latent_image": [
+    "3",
+    0
+   ],
+   "start_at_step": 1,
+   "end_at_step": 2,
+   "return_with_leftover_noise": "disable"
+  }
+ },
+ "65": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "4",
+    0
+   ],
+   "vae": [
+    "72",
+    0
+   ]
+  }
+ },
+ "9": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "H3-Studio",
+   "images": [
+    "65",
+    0
+   ]
+  }
+ }
+}

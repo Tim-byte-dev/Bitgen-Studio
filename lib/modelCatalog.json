@@ -30,6 +30,10 @@
       "label": "Images - MOSS-Image (the MOSS-Image styles; Settings ▸ Add-ons ▸ MOSS-Image picks what to download)"
     },
     {
+      "id": "nf2",
+      "label": "Images - NitroFusion2 (Z-Image-Turbo in 1-2 steps; Settings ▸ Add-ons ▸ NitroFusion2 picks what to download)"
+    },
+    {
       "id": "ph3",
       "label": "Images - P-H3 Image (PrunaAI's image model on MiniMax H3; Settings ▸ Add-ons ▸ P-H3 Image)"
     },
@@ -1368,6 +1372,57 @@
       "dest": "comfy/vae",
       "size": 250000000,
       "for": "every MOSS-Image style"
+    },
+    {
+      "id": "nf2_bf16",
+      "group": "nf2",
+      "label": "NitroFusion2 (bf16)",
+      "repo": "ChenDY/NitroFusion2",
+      "file": "nf2-bf16.safetensors",
+      "dest": "comfy/diffusion_models",
+      "size": 12310000000,
+      "for": "the NitroFusion2 and NitroFusion2 2-step styles (2.729.0)"
+    },
+    {
+      "id": "nf2_dedistill",
+      "group": "nf2",
+      "label": "NitroFusion2 de-distillation LoRA",
+      "repo": "ChenDY/NitroFusion2",
+      "file": "nf2-dedistill-lora.safetensors",
+      "dest": "comfy/loras",
+      "size": 382000000,
+      "for": "the NitroFusion2 2-step style's first step (at 0.5)"
+    },
+    {
+      "id": "nf2_q8",
+      "group": "nf2",
+      "label": "NitroFusion2 GGUF Q8_0",
+      "repo": "ChenDY/NitroFusion2",
+      "file": "nf2-Q8_0.gguf",
+      "dest": "comfy/unet",
+      "size": 7220000000,
+      "for": "the NitroFusion2 GGUF style near full quality (set it as the style's Model)"
+    },
+    {
+      "id": "nf2_q4",
+      "group": "nf2",
+      "label": "NitroFusion2 GGUF Q4_K_M",
+      "repo": "ChenDY/NitroFusion2",
+      "file": "nf2-Q4_K_M.gguf",
+      "dest": "comfy/unet",
+      "size": 5070000000,
+      "for": "the NitroFusion2 GGUF style (its default - smaller cards)"
+    },
+    {
+      "id": "nf2_te",
+      "group": "nf2",
+      "label": "Text encoder - Qwen3 4B (Z-Image)",
+      "repo": "Comfy-Org/z_image_turbo",
+      "file": "split_files/text_encoders/qwen_3_4b.safetensors",
+      "as": "qwen_3_4b.safetensors",
+      "dest": "comfy/text_encoders",
+      "size": 7490000000,
+      "for": "every NitroFusion2 style (CLIPLoader type lumina2)"
     },
     {
       "id": "ph3_lora",

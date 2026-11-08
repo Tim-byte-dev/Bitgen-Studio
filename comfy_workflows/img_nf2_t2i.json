@@ -1,0 +1,167 @@
+{
+ "_comment": [
+  "NitroFusion2 (1 step) - Text to Image. Export (API) format for a bitGen Studio image style.",
+  "2.729.0 (Tim: \"can u add this please https://chendaryen.github.io/NitroFusion2.github.io/\"). NitroFusion2 (Dar-Yen Chen, Yi-Zhe Song,",
+  "Apache-2.0) is Z-Image-Turbo distilled to 1-2 steps with an adversarial loss on the MMDiT's text stream - sharp text and fine detail in one step.",
+  "Derived from the authors' own ComfyUI workflow (github.com/ChenDarYen/NitroFusion2: workflows/nitrofusion2_1step.json): node types, widget",
+  "names and values taken from that file; its subgraph flattened (what Export (API) gives). ComfyUI's own nodes - no node pack.",
+  "MODELS (ComfyUI's OWN folders - Settings ▸ Add-ons ▸ NitroFusion2 downloads them):",
+  "  models/diffusion_models/nf2-bf16.safetensors   (12.3 GB; ChenDY/NitroFusion2)",
+  "  models/text_encoders/qwen_3_4b.safetensors     (7.5 GB; CLIPLoader type lumina2 - Comfy-Org/z_image_turbo, Z-Image-Turbo's encoder)",
+  "  models/vae/ae.safetensors                      (0.3 GB; the FLUX.1 VAE Z-Image uses)",
+  "1 step, cfg 1, euler / simple, shift 3 (ModelSamplingAuraFlow), a zeroed negative - the authors' settings. 1024 x 1024 (about 1 MP).",
+  "LoRAs: model-only (LoraLoaderModelOnly), 4 slots, bypassed when empty."
+ ],
+ "70": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "nf2-bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "71": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen_3_4b.safetensors",
+   "type": "lumina2",
+   "device": "default"
+  }
+ },
+ "72": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ae.safetensors"
+  }
+ },
+ "101": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "70",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "102": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "101",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "103": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "102",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "104": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "103",
+    0
+   ],
+   "lora_name": "",
+   "strength_model": 1.0
+  }
+ },
+ "74": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "71",
+    0
+   ]
+  }
+ },
+ "76": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "74",
+    0
+   ]
+  }
+ },
+ "66": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "80": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "model": [
+    "104",
+    0
+   ],
+   "shift": 3.0
+  }
+ },
+ "3": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "80",
+    0
+   ],
+   "positive": [
+    "74",
+    0
+   ],
+   "negative": [
+    "76",
+    0
+   ],
+   "latent_image": [
+    "66",
+    0
+   ],
+   "seed": 0,
+   "steps": 1,
+   "cfg": 1.0,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1.0
+  }
+ },
+ "65": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "3",
+    0
+   ],
+   "vae": [
+    "72",
+    0
+   ]
+  }
+ },
+ "9": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "filename_prefix": "H3-Studio",
+   "images": [
+    "65",
+    0
+   ]
+  }
+ }
+}

@@ -689,6 +689,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🎙 语音对话** — 像实时聊天一样免手动与应用交谈：它能听懂你说的话（faster-whisper，本地运行，常驻加载），本地 LLM 会出声回答并执行你的要求——提示词、风格、Basic Settings、Generate、StoryBoard 场景、面板。 *Where:* 状态栏的 🎙 Voice（Ctrl+Alt+V）。 *Since:* 2.564.0
 - **StoryBoard 网格；🎞 编写故事板** — 场景以类似 Model manager 的卡片排列在网格中，用 ➜ 指向下一个场景，点击可打开完整的场景卡片；LLM 编写各个场景，每个场景都会以其故事板图片作为起始（First）帧。 *Where:* StoryBoard（▦ / ☰、🎞 Write storyboard、☑ Start on it）。 *Since:* 2.565.0
 - **MOSS-Image** — OpenMOSS 的 5B 图像模型，提供两种图像风格（SFT、Base）；Settings ▸ Add-ons ▸ MOSS-Image 会将你勾选的模型、文本编码器和 VAE 下载到 ComfyUI 中，并检查 ComfyUI 版本是否足够新。 *Where:* Settings ▸ Add-ons；Settings ▸ Image（各风格）。 *Since:* 2.566.0
+- **NitroFusion2 图像** — 把 Z-Image-Turbo 蒸馏到 1-2 步：一步就有清晰的文字和细节；三个风格（1 步、配合去蒸馏 LoRA 的 2 步、适合小显卡的 GGUF），cfg 1，无负面提示词。 *Where:* Image 停靠栏的风格，文件在 Settings > Add-ons > NitroFusion2。 *Since:* 2.729.0
 - **主题编辑器：对齐、内边距、外边距、圆角** — Style 面板可对齐文字（左 / 居中 / 右 / 两端对齐，上 / 中 / 下——适用于按钮、弹性行 / 列、网格和文字块），为元素及其文字设置内边距和外边距（每一边单独设置，= 同时设置四边），并可单独设置每个角的圆角。 *Where:* 🖌 Edit theme 模式 ▸ 点击某个元素 ▸ Text / Box。 *Since:* 2.567.0
 - **由 LLM 编写的 StoryBoard 图片** — 🖼 将场景发回给 LLM，为其开场帧编写图片提示词，并以角色设定表和上一个场景的最后一帧（若该场景已有镜次）作为参考图；📁 更换图片（其他场景的图片、某个镜次的帧、项目图片或文件）；图片在网格中铺满整张卡片。 *Where:* StoryBoard ▸ ▦ 网格 ▸ 卡片的 🖼 / 📁；工具栏上的 ☑ LLM writes it / ☑ Previous last frame。 *Since:* 2.568.0
 - **🔲 区域（图像编辑器）** — 画布上的若干框，每个框写明其中要放的内容；可逐框填充（每个框执行一次 ✨ Generate）、由 Edit 模型一次完成（在副本上勾出各框轮廓），或作为区域提示词一次完成（生成新图片，每个框的文字只作用于框内）。 *Where:* Image editor ▸ ✨ AI panel ▸ 🔲 Zones；与选框工具放在一起的 Zones 工具。 *Since:* 2.569.0

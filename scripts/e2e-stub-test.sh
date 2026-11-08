@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.729.0 (Tim: "can u add this please https://chendaryen.github.io/NitroFusion2.github.io/")
+python3 scripts/test-nf2729.py > /tmp/nf2729.log 2>&1 \
+  && ok "2.729.0 NitroFusion2: the authors' 1-step / 2-step / GGUF workflows flattened (nf2-bf16, qwen_3_4b lumina2, ae, shift 3 / 6, the de-distillation LoRA 0.5 on step 0->1 only), through the patcher (prompt, size, one seed, steps 2 on both samplers, a style LoRA never in the fixed node), the starters, the catalog, Settings ▸ Add-ons ▸ NitroFusion2 (ComfyUI-GGUF only for a GGUF), the model cards; LIVE: image_worker renders each style on the stub" \
+  || { bad "2.729.0 NitroFusion2"; grep -a "^FAIL" /tmp/nf2729.log | head -12; }
+node scripts/test-ui729-ui.js > /tmp/ui729ui.log 2>&1 \
+  && ok "2.729.0 browser test: Settings ▸ Add-ons shows the NitroFusion2 card (six files, the defaults ticked, the shared encoder + VAE fixed), the three styles listed - or SKIP without playwright / a studio" \
+  || { bad "2.729.0 NitroFusion2 browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui729ui.log | head -14; }
 # ---- 2.728.0 (Tim: "yes please add a 1920x1080 automatic preset and add https://github.com/kopperx/RelayVSR")
 python3 scripts/test-relayvsr728.py > /tmp/relayvsr728.log 2>&1 \
   && ok "2.728.0 RelayVSR + the 1920x1080 frame: the core-node graph (RelayVSRConditioning, a guider, one euler step, VSR Decode on the same frames), the x2 / x4 pair from what ComfyUI lists (never mixed), fit_vf (covered + trimmed / scaled down, never blown up); auto = the smallest pair; the ⚙ 1920x1080 read as 1080 by DLSS 5 / RTX VFX / the in-render upscaler; LIVE: 960x544 -> exactly 1920x1080 (x2) and 2160p (x4), native; no nodes / no files / the source back = fails in words; SeedVR2 at 1920x1080 = exactly 1920x1080" \

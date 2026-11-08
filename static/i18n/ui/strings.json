@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5472,
+ "count": 5486,
  "strings": [
   {
    "s": "0 (auto)",
@@ -7014,6 +7014,15 @@
    ]
   },
   {
+   "s": "ComfyUI (its own nodes - no node pack; ComfyUI-GGUF only for the GGUF files, installed here); about 16 GB of VRAM with bf16, less with GGUF",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "ComfyUI (recommended)",
    "kinds": [
     "text"
@@ -9069,6 +9078,15 @@
    ],
    "where": [
     "a in #stab-about"
+   ]
+  },
+  {
+   "s": "De-distillation LoRA (382 MB)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -14333,6 +14351,24 @@
     "option in #tcapFont",
     "option in #ptFont",
     "option in #pcyFont"
+   ]
+  },
+  {
+   "s": "GGUF Q4_K_M (5.1 GB)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
+   "s": "GGUF Q8_0 (7.2 GB)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -21747,6 +21783,24 @@
    ],
    "where": [
     "button#ppNight.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "NitroFusion2 (bf16, 12.3 GB)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
+   "s": "NitroFusion2 (image model, 1-2 steps)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -34275,6 +34329,15 @@
    ]
   },
   {
+   "s": "Text encoder - Qwen3 4B (Z-Image)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "Text encoder - Qwen3-VL 4B (int8)",
    "kinds": [
     "text"
@@ -34527,6 +34590,15 @@
    ],
    "where": [
     "div.hint.help in #ctab-engine"
+   ]
+  },
+  {
+   "s": "The NitroFusion2 image styles: Z-Image-Turbo distilled to 1-2 steps - sharp text and fine detail in one step (1 step, 2 steps with its de-distillation LoRA, or GGUF for smaller cards)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -38012,6 +38084,15 @@
     "label#s_stvaelabel.f",
     "label.f in #s_mueditor",
     "option in #mmCvType"
+   ]
+  },
+  {
+   "s": "VAE - FLUX.1 ae",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -45374,6 +45455,15 @@
    ]
   },
   {
+   "s": "needed by every NitroFusion2 style",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "needed by every P-H3 Image style",
    "kinds": [
     "title"
@@ -46271,6 +46361,15 @@
    ]
   },
   {
+   "s": "optional - GGUF near full quality; pick it as the GGUF style's Model",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "optional - GGUF, a little better than Q4_0",
    "kinds": [
     "title"
@@ -46340,6 +46439,15 @@
    ],
    "where": [
     "label in #aoList"
+   ]
+  },
+  {
+   "s": "optional - the NitroFusion2 GGUF style for smaller cards (installs ComfyUI-GGUF)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -48851,6 +48959,24 @@
    ],
    "where": [
     "span.what in #stab-about"
+   ]
+  },
+  {
+   "s": "the NitroFusion2 (1 step) and NitroFusion2 2-step styles - the full model",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
+   "s": "the NitroFusion2 2-step style's first step - fewer artifacts at 2 steps",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {

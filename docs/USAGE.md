@@ -7728,6 +7728,22 @@ playing (2.725.1).
   the "latest" channel, then restart ComfyUI). Settings ▸ Add-ons ▸ **RelayVSR** downloads the files (x2 is ticked;
   about 5.3 GB for each pair). The panel says when either is missing.
 
+## NitroFusion2: pictures in one step (2.729.0)
+
+- **NitroFusion2** is Z-Image-Turbo trained to finish a picture in one or two steps, with sharp text and fine detail.
+  It runs in ComfyUI's own nodes. Three image styles use it:
+  - **NitroFusion2**: one step. The fastest, and the one to start with.
+  - **NitroFusion2 2-step**: two steps with the authors' de-distillation LoRA on the first, which removes some artifacts.
+    Keep its steps at 2: the two steps are one schedule split in half.
+  - **NitroFusion2 GGUF**: one step from a GGUF file, for smaller cards (Q4_K_M by default; pick another as the style's
+    Model).
+- cfg stays at 1 and there is no negative prompt. About 1 megapixel (1024 x 1024) is what it was trained for.
+- Your own LoRAs for the style go in its four LoRA slots, as with the other image styles; the de-distillation LoRA stays
+  as it is.
+- **Setting it up**: Settings ▸ Add-ons ▸ **NitroFusion2** downloads the files you tick: the model (12.3 GB) and the
+  de-distillation LoRA are ticked, the GGUF files are optional, and the Qwen3 4B text encoder and the FLUX.1 VAE come
+  with any of them. Ticking a GGUF file installs ComfyUI-GGUF as well.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
