@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 743,
+    "count": 744,
     "keys": [
         "\"You need pytorch with cu130\"",
         "\"at\" must be an ISO-8601 time (the \"now\" of your last poll).",
@@ -293,7 +293,7 @@
         "No feature matches that. Try a shorter word, or ask in the <a href=\"{0}\">Discussions</a>.",
         "No shared language packs yet - be the first: download the master pack below and translate it.",
         "No sign-up, no subscription and no credits to buy. The Community is the only part that goes online, and only if you join it.",
-        "No tracking and no analytics. Two cookies at most: \"lang\" remembers the language you picked (for a year), and a session cookie on the Discussions and Account pages keeps you signed in and lets a guest's post through (it shows the form came from this site) - it is deleted when you close the browser. The fonts and pictures load from this site, not from anyone else's. Like every web server, ours writes a short access log (the page asked for, the time and your network address) that the host keeps for a limited time to keep the site running.",
+        "No tracking, no cookie for counting and no outside analytics service. To learn where our visitors come from, the server counts page views: each one adds 1 to that day's total for the page, the country and state (looked up from your network address on our own server - the address is then dropped), the site you came from, the kind of device and the language. No address, name or anything that tells one visitor from another is kept - only the totals. The country and state come from <a href=\"{0}\" rel=\"noopener\">IP Geolocation by DB-IP</a>.",
         "Not a bug",
         "Not here",
         "Nothing here yet - <a href=\"{0}\">start the first discussion</a>.",
@@ -578,6 +578,7 @@
         "Try it in the app",
         "Try: lip sync, keyframes, LoRA, karaoke",
         "Tutorials",
+        "Two cookies at most: \"lang\" remembers the language you picked (for a year), and a session cookie on the Discussions and Account pages keeps you signed in and lets a guest's post through (it shows the form came from this site) - it is deleted when you close the browser. The fonts and pictures load from this site, not from anyone else's. Like every web server, ours writes a short access log (the page asked for, the time and your network address) that the host keeps for a limited time to keep the site running.",
         "Type the code we email you",
         "Type with OpenType features, vector shapes and the pen",
         "Uninstalling",
