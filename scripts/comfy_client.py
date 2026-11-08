@@ -121,6 +121,71 @@ def free_before_gen(cfg) -> bool:
     return c.get("free_before_gen") is not False
 
 
+# 2.722.0 (Tim: "if render queue is using the same model don't unload vram until model is changed (will this keep adding
+# to vram?)"): WHEN to free. "change" (the default) = only when this render loads other model files than the last one
+# ComfyUI ran - a queue of pictures / clips with the same model keeps it on the card. It does NOT pile up: ComfyUI holds
+# ONE copy of a loaded model and reuses it; a render's working memory is released when it ends, and ComfyUI evicts by
+# itself when the next graph needs the room. "always" = the 2.98.0 behaviour (every render starts from an empty card);
+# "off" = never. engine.comfy.free_vram; an old free_before_gen: false = "off".
+FREE_MODES = ("change", "always", "off")
+MODEL_EXTS = (".safetensors", ".gguf", ".ckpt", ".pt", ".pt2", ".pth", ".bin", ".sft", ".pkl", ".onnx")
+
+
+def free_mode(cfg) -> str:
+    """off (the switch off - free_before_gen false), else engine.comfy.free_vram: change (default) | always."""
+    c = (((cfg or {}).get("engine") or {}).get("comfy") or {})
+    if c.get("free_before_gen") is False:
+        return "off"
+    m = os.environ.get("BITGEN_FREE_VRAM") or c.get("free_vram")       # the env: the e2e run keeps 2.98.0's every-render clear
+    return m if m in FREE_MODES else "change"
+
+
+def models_of(graph):
+    """The model files a graph loads (any node's unlinked input naming a model file), sorted, '/' separators - the
+    'which models' key. [] for a graph that loads none (a pure tool graph)."""
+    out = set()
+    for node in (graph or {}).values() if isinstance(graph, dict) else []:
+        for v in ((node or {}).get("inputs") or {}).values() if isinstance(node, dict) else []:
+            if isinstance(v, str) and v.lower().endswith(MODEL_EXTS):
+                out.add(v.replace("\\", "/"))
+    return sorted(out)
+
+
+def _loaded_file(base):
+    """Where 'what ComfyUI last ran' is kept - one file per ComfyUI address (BITGEN_COMFY_LOADED: tests)."""
+    env = os.environ.get("BITGEN_COMFY_LOADED")
+    if env:
+        return Path(env)
+    import hashlib
+    import tempfile
+    return Path(tempfile.gettempdir()) / ("bitgen-comfy-loaded-" + hashlib.sha1(str(base).encode("utf-8")).hexdigest()[:12] + ".json")
+
+
+def loaded_models(base):
+    """The model files of the last graph this ComfyUI was given by bitGen (None = unknown / forgotten)."""
+    try:
+        d = json.loads(_loaded_file(base).read_text(encoding="utf-8"))
+        return d.get("models") if d.get("base") == str(base) else None
+    except Exception:                                       # noqa: BLE001
+        return None
+
+
+def note_loaded(base, graph):
+    """Remember the models of a graph just queued (every queue - a live render, a tool graph, chunk 2 of a clip)."""
+    try:
+        _loaded_file(base).write_text(json.dumps({"base": str(base), "models": models_of(graph), "at": time.time()}), encoding="utf-8")
+    except Exception:                                       # noqa: BLE001 - never blocks a render
+        pass
+
+
+def forget_loaded(base):
+    """Unknown again (out of memory, a crash): the next render frees the card whatever it loads."""
+    try:
+        _loaded_file(base).unlink()
+    except Exception:                                       # noqa: BLE001
+        pass
+
+
 def vram(base, timeout=5):
     """[{name, free, total}] in bytes from /system_stats — [] when it cannot say."""
     try:
@@ -189,12 +254,15 @@ def free_memory(base, unload_models=True, free_memory=True, settle=15.0,
     return before, cur
 
 
-def clear_before_gen(base, cfg, say) -> bool:
+def clear_before_gen(base, cfg, say, graph=None) -> bool:
     """The workers' shared 'start from an empty card' step; True if it ran.
 
     Called once per job, right before the first /prompt (after the graph has
     passed its checks, so a missing node fails BEFORE the unload, not after).
     Never raises: a ComfyUI without /free, or one that refuses, still renders.
+    2.722.0: `graph` = what this render will queue. In the "change" mode (the default) the card is kept when it loads
+    the same model files as the last graph ComfyUI was given (a queue of renders with one model); without a graph, or
+    after an out-of-memory error / a crash (forgotten), it is freed as before.
     """
     # 2.352.0: a running native Viggle engine hands its model back first (RAM + VRAM)
     try:
@@ -202,14 +270,25 @@ def clear_before_gen(base, cfg, say) -> bool:
         _nc.free_for_comfy(cfg, say)
     except Exception:                                       # noqa: BLE001  (never blocks a ComfyUI job)
         pass
-    if not free_before_gen(cfg):
+    mode = free_mode(cfg)
+    if mode == "off":
         say("[comfy] VRAM clear before generation is OFF (Settings -> ComfyUI)")
         return False
+    if mode == "change" and graph is not None:
+        now, last = models_of(graph), loaded_models(base)
+        if now and last == now:
+            names = ", ".join(n.split("/")[-1] for n in now[:3]) + (f" +{len(now) - 3}" if len(now) > 3 else "")
+            say(f"[comfy] VRAM kept: the same model(s) as the last render ({names}) - no unload, no reload "
+                "(Settings -> ComfyUI -> Free VRAM: when the model changes)")
+            return False
+        if last is not None and now:
+            say("[comfy] the model changed since the last render - freeing the VRAM first")
     try:
         before, after = free_memory(base)
     except Exception as e:                                  # noqa: BLE001
         say(f"[comfy] VRAM clear failed ({str(e)[:120]}) - rendering anyway")
         return False
+    forget_loaded(base)                                   # an empty card: nothing loaded until the next queue
     if before or after:
         say(f"[comfy] VRAM: {fmt_vram(before)} -> {fmt_vram(after)} "
             "(models unloaded, cache emptied)")
@@ -1212,6 +1291,7 @@ def queue(base, graph, client_id=None):
     if not pid:
         raise ComfyError("ComfyUI rejected the workflow:\n"
                          + "\n".join(describe_rejection(res, graph, base)))
+    note_loaded(base, graph)                              # 2.722.0: what ComfyUI holds after this one
     return pid
 
 
@@ -1236,6 +1316,7 @@ def wait(base, pid, on_tick=None, timeout=7200, poll=1.0):
             # misses are a blip; a run of them is ComfyUI gone - say so.
             down += 1
             if down >= 5:
+                forget_loaded(base)                       # 2.722.0: a crashed ComfyUI holds nothing we know of
                 raise ComfyError(
                     "ComfyUI stopped answering while rendering - it most likely crashed "
                     f"({getattr(e, 'reason', e)}). Its console (the ComfyUI dock) shows why - "
@@ -1245,6 +1326,8 @@ def wait(base, pid, on_tick=None, timeout=7200, poll=1.0):
         if hist:
             st = hist.get("status") or {}
             if st.get("status_str") == "error":
+                if is_oom(st.get("messages") or []):
+                    forget_loaded(base)                   # 2.722.0: out of memory - the next render frees the card
                 msgs = []
                 for m in (st.get("messages") or [])[-6:]:
                     msgs.append(json.dumps(m, ensure_ascii=False)[:600])

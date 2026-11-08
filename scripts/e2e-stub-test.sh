@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes
+H3_E2E=1 BITGEN_FREE_VRAM=always node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.722.0 (Tim: "if render queue is using the same model don't unload vram until model is changed (will this keep adding to vram?")
+python3 scripts/test-vramkeep722.py > /tmp/vramkeep722.log 2>&1 \
+  && ok "2.722.0 VRAM kept while the renders use the same model: free_mode (change / always / off), models_of, the same models kept (said), other models / no graph freed, noted on every queue, forgotten after out of memory or a crash, every worker hands its graph over, the Settings dropdown" \
+  || { bad "2.722.0 VRAM kept"; grep -a "^FAIL" -A2 /tmp/vramkeep722.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui722-ui.js > /tmp/ui722ui.log 2>&1 \
+  && ok "2.722.0 browser test: Settings ▸ ComfyUI ▸ Free it (when the model changes / before every generation), its tooltip, saved + painted - or SKIP" \
+  || { bad "2.722.0 Free it setting"; grep -a "FAIL\\|Error" -A2 /tmp/ui722ui.log | head -14; }
 # ---- 2.721.0 (Tim: "can you add a discussion to the website with that info and pin it please")
 node scripts/test-community721-server.js > /tmp/community721srv.log 2>&1 \
   && ok "2.721.0 Community server: a schema 4 database migrated (its topic kept), bitGen Studio's notes posted once (official, pinned first), a newer rev updates, a removed one stays removed, bad notes skipped, admin_forum_pin (admins, 404), no guest named bitGen Studio, no notes on a BGC_DSN server - or SKIP without php" \

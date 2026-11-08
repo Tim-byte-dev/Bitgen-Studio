@@ -161,7 +161,7 @@ const rj = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
   check("...every key in default.settings exists in DEFAULT_CONFIG (no orphan settings)", orphans.length === 0, orphans);
   const missing = leaves(DC).filter((k) => get(d, k) === undefined && k !== "python");
   check("...and every DEFAULT_CONFIG key is present in default.settings (nothing half-shipped)", missing.length === 0, missing);
-  const steer = ["engine.backend", "engine.comfy.free_before_gen", "engine.comfy.chunk_on_oom",
+  const steer = ["engine.backend", "engine.comfy.free_before_gen", "engine.comfy.free_vram", "engine.comfy.chunk_on_oom",
                  "engine.comfy.clip_device", "engine.comfy.stdio", "engine.comfy.lora_4step",
                  "engine.comfy.vram_ceiling", "defaults.steps", "defaults.width", "defaults.height"];
   const dis = steer.filter((k) => JSON.stringify(get(d, k)) !== JSON.stringify(get(DC, k)));

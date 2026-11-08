@@ -1,7 +1,7 @@
 {
  "lang": "ja",
  "v": "58a97aa8547b",
- "count": 8759,
+ "count": 8766,
  "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -8762,7 +8762,14 @@
   "None of these can be downloaded from here. Put the files in the folders above, then press Generate again": "ここからダウンロードできるファイルはありません。上のフォルダーにファイルを置いてから、もう一度「生成」を押してください",
   "Downloading": "ダウンロード中",
   "Checking again": "再確認中",
-  "the download failed": "ダウンロードに失敗しました"
+  "the download failed": "ダウンロードに失敗しました",
+  "Free VRAM before a generation (unload ComfyUI's models + empty its cache)": "生成前に VRAM を解放（ComfyUI のモデルをアンロードしてキャッシュを空にする）",
+  "Free it": "解放するタイミング",
+  "when the model changes": "モデルが変わったとき",
+  "before every generation": "毎回の生成前",
+  "When the model changes": "モデルが変わったとき",
+  "When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway": "モデルが変わったとき：同じモデルを使うレンダリングが続く間はカードに残します（アンロードも再読み込みもしません）。増え続けることはありません：ComfyUI はコピーを 1 つだけ持って使い回し、必要なときは自分で空きを作ります。メモリ不足のエラーの後は、次のレンダリングで必ずカードを空にします",
+  "the default) keeps a model on the card while the renders in a row use it - no unload and reload between them": "既定）は、続けて行うレンダリングが同じモデルを使う間、そのモデルをカードに残します - 間でアンロードや再読み込みをしません"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",

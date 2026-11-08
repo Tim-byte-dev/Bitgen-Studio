@@ -7642,6 +7642,20 @@ LoRAs (and Basic Settings' model and LoRAs when Override style is on).
 - Not checked: a ComfyUI on another computer (Remote GPU), no ComfyUI folder set, sd-cli styles, and the files a Wan or
   LTX style picks for itself.
 
+## Free VRAM only when the model changes (2.722.0)
+
+**Settings ▸ ComfyUI ▸ Free VRAM before a generation** now has **Free it**: **when the model changes** (the default) or
+**before every generation** (as before).
+
+- When the model changes: a queue of renders that use the same model keeps it on the card - no unload and no reload
+  between them, so pictures and clips in a row start sooner. When the next render loads other model files, the card is
+  freed first, and the console says which happened ("VRAM kept: the same model(s) …" or "the model changed").
+- It does not keep adding to the VRAM: ComfyUI holds one copy of a loaded model and reuses it, a render's working memory
+  is released when it ends, and ComfyUI frees room by itself when the next graph needs it.
+- After an out-of-memory error (or ComfyUI stopping), the next render frees the card whatever model it uses.
+- Before every generation is the old behaviour: every render starts from an empty card (the safest for long clips after
+  a mixed session). Untick the switch to leave it all to ComfyUI.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

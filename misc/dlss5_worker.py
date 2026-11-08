@@ -171,7 +171,7 @@ def main():
 
     stage(3, "DLSS 5 in ComfyUI")
     try:
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graph)
         _pid, outputs = _CP.run(_comfy, base, graph, say, "enhancing")
     except _comfy.ComfyError as e:
         msg = str(e)

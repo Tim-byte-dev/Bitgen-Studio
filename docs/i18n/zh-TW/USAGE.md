@@ -4596,6 +4596,16 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 仍然中途停止的渲染（2.720.0）——它的 worker 以錯誤退出——也會被檢查：ComfyUI 拒絕的模型名稱，以及它的樣式載入的檔案。如果有檔案不在模型路徑中，會彈出對話方塊詢問 **The render stopped: … Download it?**，同樣提供 ⬇ Download / Cancel。下載完成後，在 Queue 面板中對該任務按 ↻ Retry（或再按一次 Generate）。這能發現渲染前的檢檢視不到的情況：自訂節點的模型、StoryBoard 自行渲染的場景、Swap、LTX 以及 Wan 自己挑選的檔案。
 - 不檢查的情況：另一臺電腦上的 ComfyUI（Remote GPU）、沒有設定 ComfyUI 資料夾、sd-cli 樣式，以及 Wan 或 LTX 樣式自行挑選的檔案。
 
+## 僅在模型改變時釋放顯示記憶體（2.722.0）
+<!-- en: free-vram-only-when-the-model-changes-2-722-0 d847cda123ca -->
+
+**Settings ▸ ComfyUI ▸ Free VRAM before a generation** 現在多了 **Free it**：**when the model changes**（預設）或 **before every generation**（與以前相同）。
+
+- 模型改變時：使用同一模型的一串渲染會把它留在顯示卡上——中間不解除安裝、不重新載入，連續的圖片和片段開始得更快。下一次渲染載入其他模型檔案時，會先釋放顯示卡；主控台會說明是哪一種情況（“VRAM kept: the same model(s) …”或“the model changed”）。
+- 顯示記憶體不會越積越多：ComfyUI 對已載入的模型只保留一份並重復使用，渲染的工作記憶體在結束時釋放，下一個流程需要空間時 ComfyUI 會自行釋放。
+- 發生顯示記憶體不足的錯誤（或 ComfyUI 停止）之後，下一次渲染無論使用什麼模型都會先釋放顯示卡。
+- Before every generation 是以前的做法：每次渲染都從空的顯示卡開始（在混合使用之後渲染長片段時最穩妥）。取消勾選開關則完全交給 ComfyUI 管理。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

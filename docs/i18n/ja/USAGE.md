@@ -4357,6 +4357,16 @@ Windows 11 と同じように、複数をまとめて選択できます：**Ctrl
 - それでも途中で止まったレンダリング（2.720.0）- worker がエラーで終了したもの - も確認します：ComfyUI が受け付けなかったモデル名と、そのスタイルが読み込むファイルです。モデルパスにないものがあれば、**The render stopped: … Download it?** というボックスが同じ ⬇ Download / Cancel とともに開きます。ダウンロード後は、Queue ドッカーでそのジョブの ↻ Retry を押してください（または、もう一度 Generate）。レンダリング前の確認では見えないもの - カスタムノードのモデル、StoryBoard が自分でレンダリングするシーン、Swap、LTX、Wan が自分で選ぶファイル - を拾います。
 - 確認しないもの：別のコンピューターの ComfyUI（Remote GPU）、ComfyUI のフォルダーが未設定の場合、sd-cli スタイル、Wan や LTX のスタイルが自分で選ぶファイル。
 
+## モデルが変わったときだけ VRAM を解放（2.722.0）
+<!-- en: free-vram-only-when-the-model-changes-2-722-0 d847cda123ca -->
+
+**Settings ▸ ComfyUI ▸ Free VRAM before a generation** に **Free it** が加わりました：**when the model changes**（既定）または **before every generation**（従来どおり）。
+
+- モデルが変わったとき：同じモデルを使うレンダリングが続く間はカードに残します - 間でアンロードも再読み込みもしないので、続けて作る画像やクリップが早く始まります。次のレンダリングが別のモデルファイルを読み込むときは、先にカードを解放します。どちらになったかはコンソールに表示されます（「VRAM kept: the same model(s) …」または「the model changed」）。
+- VRAM が増え続けることはありません：ComfyUI は読み込んだモデルのコピーを 1 つだけ持って使い回し、レンダリングの作業メモリは終了時に解放され、次のグラフが必要とすれば ComfyUI が自分で空きを作ります。
+- メモリ不足のエラー（または ComfyUI の停止）の後は、次のレンダリングがどのモデルでも先にカードを解放します。
+- Before every generation は従来の動作です：毎回空のカードから始めます（いろいろ使った後に長いクリップを作るときに最も安全）。スイッチのチェックを外すと、すべて ComfyUI に任せます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

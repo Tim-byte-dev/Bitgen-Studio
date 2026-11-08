@@ -149,7 +149,7 @@ def run(params, cfg, output_dir, stem, seed):
                "Missing Custom Nodes), then re-export the workflow.")
 
     say("[worker] ===== chunk 1/1")
-    _comfy.clear_before_gen(base, cfg, say)
+    _comfy.clear_before_gen(base, cfg, say, graph)
     # 2.401.3: live "[comfy] step v/m" lines from ComfyUI's websocket (scripts/comfy_progress.py) - the job's
     # progress, the queue card and the status bar move instead of saying "loading" until the end
     pid, outputs = _CP.run(_comfy, base, graph, say, "rendering")

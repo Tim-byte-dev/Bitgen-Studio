@@ -188,7 +188,7 @@ def main():
     # 3. render
     stage(3, f"{conv.get('label')} is building the model")
     try:
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graph)
         pid, outputs = _CP.run(_comfy, base, graph, say, "modelling")
     except _comfy.ComfyError as e:
         fail(str(e))

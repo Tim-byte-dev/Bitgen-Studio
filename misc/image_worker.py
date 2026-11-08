@@ -216,7 +216,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
                         ins[k] = seed
                         say(f"[worker] seed -> node {nid}.{k}")
         say("[worker] ===== chunk 1/1 (H3 look sheet)")
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graph)
         pid, outputs = _cprog.run(_comfy, base, graph, say)          # 2.574.0: with its steps
         imgs = [it for it in _comfy.output_images(outputs)
                 if it.get("type", "output") == "output"]
@@ -324,7 +324,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed, graph_hook=None
     if params.get("live"):
         say("[worker] live render - the model stays loaded (no VRAM clear)")
     else:
-        _comfy.clear_before_gen(base, cfg, say)   # empty card first (2.98.0)
+        _comfy.clear_before_gen(base, cfg, say, graph)   # empty card first (2.98.0)
     pid, outputs = _cprog.run(_comfy, base, graph, say)              # 2.574.0: live "[comfy] step v/m" lines
 
     items = _comfy.output_images(outputs)

@@ -171,6 +171,8 @@ def _tail_comfy(cfg):
         if not r.get("prompt_id"):
             raise RuntimeError("ComfyUI refused the upscale graph: "
                                + json.dumps(r.get("error") or r.get("node_errors") or r)[:300])
+        if _cc is not None:
+            _cc.note_loaded(base, g)           # 2.722.0
         return r["prompt_id"]
 
     def wait(pid, limit=600):
@@ -2945,7 +2947,7 @@ def _vram16_opts(base, cfg, upscale_stage=False):
             "kitchen": _kitchen_attn(base), "upscale_stage": bool(upscale_stage)}
 
 
-def _comfy_clear_vram(base, cfg) -> None:
+def _comfy_clear_vram(base, cfg, graph=None) -> None:
     """Start this generation from an EMPTY card (2.98.0).
 
     ComfyUI keeps every model it has touched resident and evicts on its own
@@ -2959,7 +2961,7 @@ def _comfy_clear_vram(base, cfg) -> None:
     if _cc is None:
         say(f"[comfy] VRAM clear skipped: scripts/comfy_client.py did not import ({_cc_err})")
         return
-    _cc.clear_before_gen(base, cfg, say)
+    _cc.clear_before_gen(base, cfg, say, graph)          # 2.722.0: kept when the same models as the last render
 
 
 def _crop_take(p, w, h):
@@ -3449,7 +3451,7 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         _chain_continuity_check(base, g)   # 2.172.0: "not a continuous scene"
     _diagnose_sampler(g)           # what the sampler will actually receive
     if free_vram and not rp:       # once per job: chunk 2+ keeps the model warm
-        _comfy_clear_vram(base, cfg)
+        _comfy_clear_vram(base, cfg, g)
     if not rp:
         _accel_preflight(base, g)  # a pack older than this ComfyUI? (2.129.0)
 
@@ -3490,6 +3492,8 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                           read_error_body=True)
         pid = resp.get("prompt_id")
         pidbox["pid"] = pid
+        if pid and _cc is not None:
+            _cc.note_loaded(base, graph)       # 2.722.0: what ComfyUI holds after this one
         if not pid:
             stop_ws.set()
             err = resp.get("error") or {}
@@ -6132,6 +6136,8 @@ def main() -> None:
             break                               # every chunk rendered
         except ComfyOOM as oom:
             oom_tries += 1
+            if _cc is not None:                # 2.722.0: the retry starts from an empty card, same model or not
+                _cc.forget_loaded(_comfy_url(cfg))
             if not _chunk_on_oom(cfg):
                 # "don't do chunks": say what happened and stop. Splitting a
                 # clip behind the user's back is not a fix, it is a different

@@ -327,7 +327,7 @@ def run_official(job, params, cfg, base, lmode, style, images, tpl, work, output
         say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")
     say("[worker] ===== chunk 1/1")
     try:
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graph)
         pid, outputs = _CP.run(_comfy, base, graph, say, "rendering")
     except _comfy.ComfyError as e:
         fail(str(e))
@@ -550,7 +550,7 @@ def main():
         say(f"[worker]   node {nid}.{key}: matched ComfyUI's spelling -> {new}")
     say("[worker] ===== chunk 1/1")
     try:
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graph)
         # 2.401.3: live "[comfy] step v/m" lines from ComfyUI's websocket (scripts/comfy_progress.py) - the job's
         # progress, the queue card and the status bar move instead of saying "loading" until the end
         pid, outputs = _CP.run(_comfy, base, graph, say, "rendering")

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.722.0** — Free VRAM Only When the Model Changes (the New Default): Renders in a Row With the Same Model Keep It on the Card - No Unload, No Reload
 - **2.721.0** — Pinned Discussions on the Website, and bitGen Studio's Own Discussions (the First: Speed Results From an RTX 5090 and a Tester's RTX 3090 Blind Benchmark, Pinned)
 - **2.720.0** — A Render That Stops on a Missing Model Asks to Download It: When the Worker Exits With an Error, the Names ComfyUI Refused and the Style's Files Are Checked, Then ⬇ Download / Cancel
 - **2.719.1** — The Models Not Found Check Covers Every Render, Wherever It Starts: the Image Editor's ✨ AI (Also From the References Docker), the StoryBoard, Characters, Timeline and Music Docker

@@ -65,6 +65,7 @@
       "keep_alive": true,
       "clear_on_exit": true,
       "free_before_gen": true,
+      "free_vram": "change",
       "clip_device": "default",
       "chunk_on_oom": false,
       "stdio": "file",

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5453,
+ "count": 5460,
  "strings": [
   {
    "s": "0 (auto)",
@@ -50387,6 +50387,69 @@
    ],
    "where": [
     "label in #s_vsvedabox"
+   ]
+  },
+  {
+   "s": "Free VRAM before a generation (unload ComfyUI's models + empty its cache)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.chk in #ctab-engine"
+   ]
+  },
+  {
+   "s": "Free it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #ctab-engine"
+   ]
+  },
+  {
+   "s": "When the model changes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #ctab-engine"
+   ]
+  },
+  {
+   "s": "When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.f in #ctab-engine"
+   ]
+  },
+  {
+   "s": "before every generation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #s_cfreewhen"
+   ]
+  },
+  {
+   "s": "the default) keeps a model on the card while the renders in a row use it - no unload and reload between them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #ctab-engine"
+   ]
+  },
+  {
+   "s": "when the model changes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #s_cfreewhen"
    ]
   }
  ]

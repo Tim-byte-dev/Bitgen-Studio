@@ -2205,7 +2205,9 @@
     <label class="chk" style="margin-top:6px" title="misc\clear-comfy.bat when bitGen Studio exits: every ComfyUI process stopped, port 8188 freed, ComfyUI's temp / __pycache__ / ComfyUI-Manager cache emptied (never models, output, input or settings); bitGen Studio's own processes ended and its terminal window closed. It also runs before ⤓ Update ComfyUI"><input type="checkbox" id="s_cclear" checked>
       Clear ComfyUI completely when bitGen Studio exits (misc\clear-comfy.bat - it outranks the box above)</label>
     <label class="chk" style="margin-top:10px"><input type="checkbox" id="s_cfree" checked>
-      Free VRAM before every generation (unload ComfyUI's models + empty its cache)</label>
+      Free VRAM before a generation (unload ComfyUI's models + empty its cache)</label>
+    <label class="f" style="margin:4px 0 0 24px" title="When the model changes: a queue of renders with the same model keeps it on the card (no unload, no reload) - it does not pile up: ComfyUI holds one copy and reuses it, and frees room by itself when it needs it. After an out-of-memory error the next render frees the card anyway.">Free it
+      <select id="s_cfreewhen"><option value="change">when the model changes</option><option value="always">before every generation</option></select></label>
     <div class="hint help" style="margin:2px 0 4px">ComfyUI keeps every model it has used on
       the card (the H3 video model, the image model from the last still, the music model
       from the last song…) and only evicts by its own estimate — after a mixed session a
@@ -2213,7 +2215,8 @@
       sampler while a 10&nbsp;s one squeezes in. With this on, each Generate first asks
       ComfyUI to unload everything and empty its cache (<code>POST /free</code>); the
       weights come back from RAM in a few seconds. Off = ComfyUI's own management only.
-      <b>🧹 Free VRAM now</b> does the same by hand, any time.</div>
+      <b>🧹 Free VRAM now</b> does the same by hand, any time. <b>When the model changes</b> (the default) keeps a model
+      on the card while the renders in a row use it - no unload and reload between them.</div>
     <label class="chk" style="margin-top:10px"><input type="checkbox" id="s_ccpuclip">
       Keep the text encoder in system RAM (not VRAM) — slow, try only for real VRAM limits</label>
     <div class="hint help" style="margin:2px 0 4px">The MiniMax H3 templates load a
@@ -4228,6 +4231,7 @@ function fillSettings() {
   $("s_claunch").value = (eng.comfy || {}).launch || "";
   $("s_clora").checked = !!(eng.comfy || {}).lora_4step;
   $("s_cfree").checked = (eng.comfy || {}).free_before_gen !== false;   // default ON
+  if ($("s_cfreewhen")) $("s_cfreewhen").value = (eng.comfy || {}).free_vram === "always" ? "always" : "change";   // 2.722.0: default when the model changes
   if ($("s_cchunk")) $("s_cchunk").checked = (eng.comfy || {}).chunk_on_oom === true;
   if ($("s_cstdio")) $("s_cstdio").value = ((eng.comfy || {}).stdio === "console") ? "console" : "file";
   if ($("s_ccpuclip")) $("s_ccpuclip").checked = ((eng.comfy || {}).clip_device || "default") === "cpu";
@@ -5506,6 +5510,7 @@ $("s_save").onclick = async () => {
                          keep_alive: $("s_ckeep").checked,
                          clear_on_exit: $("s_cclear") ? $("s_cclear").checked : true,   // 2.669.0
                          free_before_gen: $("s_cfree").checked,
+                         free_vram: $("s_cfreewhen") ? $("s_cfreewhen").value : "change",   // 2.722.0
                          clip_device: $("s_ccpuclip").checked ? "cpu" : "default",
                          vram16: window.H3Vram16 ? H3Vram16.read() : undefined,   // 2.708.0: 16 GB mode
                          chunk_on_oom: $("s_cchunk").checked,

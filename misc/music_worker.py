@@ -344,7 +344,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed):
              "them (Manager -> Install Missing Custom Nodes).")
 
     say("[worker] ===== chunk 1/1")
-    _comfy.clear_before_gen(base, cfg, say)   # empty card first (2.98.0)
+    _comfy.clear_before_gen(base, cfg, say, graph)   # empty card first (2.98.0)
     # 2.401.3: live "[comfy] step v/m" lines from ComfyUI's websocket (scripts/comfy_progress.py) - the job's
     # progress, the queue card and the status bar move instead of saying "loading" until the end
     pid, outputs = _CP.run(_comfy, base, graph, say, "rendering")

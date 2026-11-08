@@ -250,7 +250,7 @@ def main():
     stage(3, "RTX VFX in ComfyUI")
     pieces = []
     try:
-        _comfy.clear_before_gen(base, cfg, say)
+        _comfy.clear_before_gen(base, cfg, say, graphs[0])
         for i, (g, (skip, cap)) in enumerate(zip(graphs, parts), 1):
             last = f"{skip + 1}-{skip + cap}" if cap else f"{skip + 1}-end"
             say(f"[worker] chunk {i}/{total} - frames {last}")
