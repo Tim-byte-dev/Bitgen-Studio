@@ -7670,6 +7670,21 @@ stage docker and the voice chat.
 - A docker you dock again (beside, inside or in a column) leaves the order, and comes back on top when you float it.
 - The prompt docker keeps its own rule: Ctrl+P lifts it over whatever covers it.
 
+## A song in the preview: a visualization, and Next plays the next song (2.725.0)
+
+Click a song or a sound in the Gallery, Assets ▸ Sound or References and it opens in the preview, the same window that
+shows a picture when you click one.
+
+- **▶ starts a visualization** picked at random: spectrum bars, mirrored bars, a waveform, a ring, a flight through
+  stars or ripples. It moves with the music. Each song gets a different look from the last one.
+- **🎲** beside the player picks another look while it plays. Paused, the picture holds still and dims.
+- **Next ›, ‹ Prev, the arrows on the picture and ← →** go to the next or previous **song in the docker you clicked
+  it in**, and play it. Pictures and videos in between are skipped, and after the last song it starts again at the
+  first.
+- On a picture or a video they page through the list as before, and nothing starts playing by itself. The strip at
+  the bottom still opens anything.
+- Closing the preview stops the song. The Preview docker (its button on the status bar) is not affected.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

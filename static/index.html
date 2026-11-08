@@ -3461,6 +3461,7 @@
 <script src="/static/testdock.js"></script>
 <script src="/static/testcoach.js"></script>  <!-- 2.534.0: 🧪 Test mode - suggests the next test where you are, asks whether it worked -->
 <script src="/static/lbfollow.js"></script>  <!-- 2.534.0: a render finishing while the preview is open joins it -->
+<script src="/static/lbaudio.js"></script>  <!-- 2.725.0: a sound in the preview - a random visualization while it plays, ‹ › = the previous / next sound, played (H3LbAudio) -->
 <script src="/static/loratrain.js"></script>  <!-- 2.520.0: 🎓 the LoRA trainer docker (H3LoraTrain - lib/loraTrain.js, ai-toolkit) -->
 <script src="/static/refmodmgr.js"></script>  <!-- 2.588.0: 🧬 RefMods in the 🎓 docker (H3RefMods - lib/refmodLib.js, refmod/<name>/) -->
 <script src="/static/usagedock.js"></script>  <!-- 2.520.0: 📊 the energy usage docker (H3Usage - lib/usageLog.js) -->
@@ -8912,6 +8913,8 @@ function lbShow() {
     const a = document.createElement("audio");
     a.src = it.url; a.controls = true; a.autoplay = false;   // 2.562.0: ▶ plays it, not opening it
     wrap.querySelector(".lbaud").appendChild(a);
+    // 2.725.0 (Tim: "when user starts to play an audio show a random visualization"): static/lbaudio.js
+    if (window.H3LbAudio) H3LbAudio.mount(a);
   } else {
     const img = document.createElement("img");
     img.src = it.url; img.alt = it.name;
@@ -8941,6 +8944,9 @@ function lbStopMedia() {
 
 function lbGo(d) {
   if (lb.items.length < 2) return;
+  // 2.725.0 (Tim: "next button will play the next audio in the docker the file was clicked"): on a sound, ‹ › go to the
+  // previous / next SOUND of that list and play it (static/lbaudio.js)
+  if (window.H3LbAudio && H3LbAudio.go(d)) return;
   lb.i = (lb.i + d + lb.items.length) % lb.items.length;
   lbShow();
 }

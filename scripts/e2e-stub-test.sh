@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.725.0 (Tim: "when user starts to play an audio show a random visualization, next button will play the next audio in the docker the file was clicked in our preview dialog")
+node scripts/test-lbaudio725.js > /tmp/lbaudio725.log 2>&1 \
+  && ok "2.725.0 a sound in the preview: six looks picked at random (never the same twice in a row, calm ones for reduced motion), the next / previous SOUND of its list (pictures skipped, wrapping), the lightbox's hooks, kept out of the Preview docker's visualizer" \
+  || { bad "2.725.0 preview sound"; grep -a "^FAIL" -A2 /tmp/lbaudio725.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui725-ui.js > /tmp/ui725ui.log 2>&1 \
+  && ok "2.725.0 browser test: a sound clicked in a list opens with a canvas; ▶ = a random look moving with the sound, 🎲 another, paused still; Next / Prev / ‹ › / ← → = the next / previous sound, played; on a picture nothing plays; closing stops it - or SKIP without playwright" \
+  || { bad "2.725.0 preview sound browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui725ui.log | head -14; }
 # ---- 2.724.1 (Tim's box: "yue2_convrot_int8.safetensors ... Not in bitGen's download list - download it yourself")
 node scripts/test-modelsfound7241.js > /tmp/modelsfound7241.log 2>&1 \
   && ok "2.724.1 models not found: a catalogue model saved under another name (as) is offered by that name - YuE2's checkpoint gets ⬇ Download; every renamed entry found; a download's own name that is not what it is saved as matches nothing" \
