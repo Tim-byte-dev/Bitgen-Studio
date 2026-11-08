@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.730.0 (Tim: "https://flowhmr.github.io/ . we can add a reference video for motion?" + "add it to addons with a
+# disclaimer that it is for non commercial use only")
+python3 scripts/test-flowhmr730.py > /tmp/flowhmr730.log 2>&1 \
+  && ok "2.730.0 FlowHMR: the add-on's install (the non-commercial notice first, Python 3.13 refused, the code + 3 submodules, torch 2.10 from the card's CUDA index - never the cu118 pin, the requirements without torch, YOLOX --no-deps, the FBX SDK tried, the public files; gated refused / no SMPL-H = not ready, said with the access pages + where model.npz goes; with them = ready), jobParams refused until ready; LIVE worker with a stand-in FlowHMR: moving every 10 / still reach its flags, .fbx + .npz in models3d, no FBX = .npz alone, out of memory said, not installed said" \
+  || { bad "2.730.0 FlowHMR"; grep -a "^FAIL" /tmp/flowhmr730.log | head -12; }
+node scripts/test-ui730-ui.js > /tmp/ui730ui.log 2>&1 \
+  && ok "2.730.0 browser test: 🕺 Motion in the preview bar, its panel's NON-COMMERCIAL notice + 'not ready - Settings ▸ Add-ons ▸ FlowHMR', still camera greys 'Camera every', one panel at a time with 🔁, the add-on card (non-commercial, the 4 links) - or SKIP without playwright / a studio" \
+  || { bad "2.730.0 FlowHMR browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui730ui.log | head -14; }
 # ---- 2.729.0 (Tim: "can u add this please https://chendaryen.github.io/NitroFusion2.github.io/")
 python3 scripts/test-nf2729.py > /tmp/nf2729.log 2>&1 \
   && ok "2.729.0 NitroFusion2: the authors' 1-step / 2-step / GGUF workflows flattened (nf2-bf16, qwen_3_4b lumina2, ae, shift 3 / 6, the de-distillation LoRA 0.5 on step 0->1 only), through the patcher (prompt, size, one seed, steps 2 on both samplers, a style LoRA never in the fixed node), the starters, the catalog, Settings ▸ Add-ons ▸ NitroFusion2 (ComfyUI-GGUF only for a GGUF), the model cards; LIVE: image_worker renders each style on the stub" \

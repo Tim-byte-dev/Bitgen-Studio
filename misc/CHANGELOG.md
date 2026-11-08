@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.730.0** — 🕺 Motion from a Reference Video: FlowHMR Motion Capture (an Animated Skeleton .fbx + SMPL-H .npz in models3d) as a Settings ▸ Add-ons Install - Non-Commercial Use Only
 - **2.729.0** — NitroFusion2 Image Styles: Z-Image-Turbo in One or Two Steps (1 Step, 2 Steps with Its De-Distillation LoRA, GGUF), Its Files from Settings ▸ Add-ons
 - **2.728.0** — An Exact 1920 × 1080 Upscale (Covered, Then Trimmed) in SeedVR2, RelayVSR and the ⚙; RelayVSR Video Upscaling x2 / x4 in ComfyUI's Own Nodes, Its Files from Settings ▸ Add-ons
 - **2.727.0** — The bitGen Brain Comes Alive: the Splash and the Website Play Its Lightning Film; Fixed: an Upscale Could Hand Back the Video It Was Given (ComfyUI's Load Video Now Shows Its Input in the Results) - SeedVR2 Checks the Size It Got

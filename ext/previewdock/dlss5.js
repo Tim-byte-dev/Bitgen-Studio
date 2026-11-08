@@ -16,6 +16,7 @@
     if (window.SeedVR2Panel && SeedVR2Panel.shown()) SeedVR2Panel.close();
     if (window.RtxVfxPanel && RtxVfxPanel.shown()) RtxVfxPanel.close();   // 2.708.0
     if (window.RelayVsrPanel && RelayVsrPanel.shown()) RelayVsrPanel.close();   // 2.728.0
+    if (window.FlowHmrPanel && FlowHmrPanel.shown()) FlowHmrPanel.close();   // 2.730.0
     Dlss5Panel.open({ name: current(), from: "preview", anchor: el("pvDlss5") });
   });
   const p = el("player");

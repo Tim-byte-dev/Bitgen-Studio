@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5486,
+ "count": 5498,
  "strings": [
   {
    "s": "0 (auto)",
@@ -5511,6 +5511,15 @@
    ],
    "where": [
     "button#tlSetLast.ghost"
+   ]
+  },
+  {
+   "s": "Capture the motion of the person in the video you are previewing with FlowHMR - an animated skeleton (.fbx) + SMPL-H (.npz) in the project's models3d. Non-commercial use only (Settings ▸ Add-ons ▸ FlowHMR)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pvFlowhmr"
    ]
   },
   {
@@ -13584,6 +13593,24 @@
    ],
    "where": [
     "label in #kxOpts"
+   ]
+  },
+  {
+   "s": "FlowHMR (GitHub, Apache-2.0)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
+   "s": "FlowHMR motion capture (non-commercial use only)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -28287,6 +28314,15 @@
    ]
   },
   {
+   "s": "SAM 3D Body - request access (Hugging Face)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "SD 1.5 inpaint ControlNet",
    "kinds": [
     "text"
@@ -28421,6 +28457,15 @@
    ],
    "where": [
     "button.cbgl in #tlCadBar"
+   ]
+  },
+  {
+   "s": "SMPL-H body model - register, then download the AMASS \"Extended SMPL+H model\" (MANO)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -38123,6 +38168,15 @@
    ]
   },
   {
+   "s": "VGGT-Omega - request access (Hugging Face), then set your token in Settings",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "VIEW ▾",
    "kinds": [
     "text"
@@ -40940,6 +40994,15 @@
    ]
   },
   {
+   "s": "an NVIDIA GPU (up to ~30 GB VRAM for a moving camera - less with a still camera or a camera every 10 frames); the app's Python 3.10 - 3.12; git (Settings ▸ General ▸ Setup); YOUR Hugging Face token with access to facebook/VGGT-Omega and facebook/sam-3d-body-dinov3, and the SMPL-H model from mano.is.tue.mpg.de (you register and put it in place - the links below)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "an NVIDIA GPU with BF16 and ~24 GB VRAM; the app's Python 3.10 - 3.13",
    "kinds": [
     "text"
@@ -42756,6 +42819,15 @@
    ]
   },
   {
+   "s": "downloaded by Install once you have access",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
    "s": "dpi",
    "kinds": [
     "text",
@@ -43570,6 +43642,15 @@
    ],
    "where": [
     "td.w in #drList"
+   ]
+  },
+  {
+   "s": "flowhmr/FlowHMR/assets/body_models/smplh/neutral/model.npz (its neutral model.npz)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
    ]
   },
   {
@@ -50684,6 +50765,33 @@
    ],
    "where": [
     "option in #tlAutoTrT"
+   ]
+  },
+  {
+   "s": "~8 GB (PyTorch + its packages in its own venv, the code) + the models (~6 GB: FlowHMR 0.46B, YOLOX, VGGT-Omega, SAM 3D Body)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#aoList"
+   ]
+  },
+  {
+   "s": "🕺 Motion",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pvFlowhmr"
+   ]
+  },
+  {
+   "s": "🕺 Motion in the preview bar: a video of a person becomes 3D motion - an animated skeleton (.fbx) and SMPL-H (.npz) in the project's models3d, for the timeline's 3D layers, Blender, Daz or Unreal. ⚠ NON-COMMERCIAL USE ONLY: it needs the SMPL-H body model and Meta's SAM 3D Body / VGGT-Omega, whose licences forbid commercial use",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pvFlowhmr"
    ]
   }
  ]

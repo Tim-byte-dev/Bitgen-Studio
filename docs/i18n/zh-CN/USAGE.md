@@ -4664,6 +4664,18 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 该风格的自定义 LoRA 和其他图像风格一样放进四个 LoRA 插槽；去蒸馏 LoRA 保持不变。
 - **准备**：设置 ▸ 附加组件 ▸ **NitroFusion2** 会下载你勾选的文件：模型（12.3 GB）和去蒸馏 LoRA 默认勾选，GGUF 文件可选，Qwen3 4B 文本编码器和 FLUX.1 VAE 会随任何一项一起下载。勾选 GGUF 文件时也会安装 ComfyUI-GGUF。
 
+## 🕺 从参考视频获取动作：FlowHMR（2.730.0）
+<!-- en: motion-from-a-reference-video-flowhmr-2-730-0 fae293348a4b -->
+
+> **仅限非商业用途。** FlowHMR 的代码是免费的（Apache-2.0），但没有 SMPL-H 人体模型以及 Meta 的 SAM 3D Body 和 VGGT-Omega 就无法运行，而这些的许可证不允许商业使用。用它捕捉的动作只供个人或研究使用。
+
+- 预览栏中的 **🕺 动作** 会读取正在预览的视频，以 3D 方式捕捉其中人物的动作。结果是带动画的骨架（**.fbx**）和同一动作的 SMPL-H（**.npz**），以 *<视频名>_motion* 保存在项目的 **models3d** 文件夹中。时间线的 3D 图层、Blender、Daz 和 Unreal 都能使用 .fbx。
+- **镜头**：**moving** 会推算镜头的移动，让人物在场景中的路径正确；**still** 用于固定在三脚架上的镜头，最省资源。**镜头估计间隔** 每 1 帧最准确，但约需 30 GB 显存；每 10 帧则轻得多。
+- **准备**：设置 ▸ 附加组件 ▸ **FlowHMR 动作捕捉**。安装会把 FlowHMR 放进它自己的 Python 环境并下载模型，但有三样东西需要你先准备：
+  - **SMPL-H 人体模型**：在 mano.is.tue.mpg.de 注册，下载 Extended SMPL+H model，把其中 neutral 的 *model.npz* 放到附加组件指明的位置；
+  - **VGGT-Omega** 和 **SAM 3D Body**：在它们的 Hugging Face 页面申请访问，并在设置中填入你的 Hugging Face 令牌。链接都在附加组件的卡片上。准备好后再安装一次：它会告诉你还缺什么。
+- 需要 NVIDIA 显卡和应用的 Python 3.10 - 3.12。没有 FBX SDK（只能在 Python 3.10 上安装）时只会得到 .npz。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

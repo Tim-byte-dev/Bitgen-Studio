@@ -7744,6 +7744,28 @@ playing (2.725.1).
   de-distillation LoRA are ticked, the GGUF files are optional, and the Qwen3 4B text encoder and the FLUX.1 VAE come
   with any of them. Ticking a GGUF file installs ComfyUI-GGUF as well.
 
+## 🕺 Motion from a reference video: FlowHMR (2.730.0)
+
+> **Non-commercial use only.** FlowHMR's code is free (Apache-2.0), but it cannot run without the SMPL-H body model and
+> Meta's SAM 3D Body and VGGT-Omega, whose licences do not allow commercial use. Motion captured with it is for personal
+> or research use.
+
+- **🕺 Motion** in the preview bar takes the video you are previewing and captures the motion of the person in it, in
+  3D. The result is an animated skeleton (**.fbx**) and the same motion as SMPL-H (**.npz**), saved in the project's
+  **models3d** folder as *<video>_motion*. The timeline's 3D layers, Blender, Daz and Unreal can use the .fbx.
+- **Camera**: **moving** works out how the camera moved, so the person's path through the scene is right; **still** is
+  for a camera on a tripod and is the lightest. **Camera every** 1 frame is the most exact but needs about 30 GB of
+  video memory; every 10 frames is much lighter.
+- **Setting it up**: Settings ▸ Add-ons ▸ **FlowHMR motion capture**. Install puts FlowHMR in its own Python environment
+  and downloads its model, but three things need you first:
+  - the **SMPL-H body model**: register on mano.is.tue.mpg.de, download the Extended SMPL+H model and put its neutral
+    *model.npz* where the add-on says;
+  - **VGGT-Omega** and **SAM 3D Body**: request access on their Hugging Face pages and set your Hugging Face token in
+    Settings.
+  The links are on the add-on's card. Install again once you have them: it says what is still missing.
+- It needs an NVIDIA card and the app's Python 3.10 - 3.12. Without the FBX SDK (it installs only for Python 3.10) you
+  get the .npz alone.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

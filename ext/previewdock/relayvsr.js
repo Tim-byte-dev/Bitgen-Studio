@@ -13,7 +13,7 @@
     ev.stopPropagation();
     if (!window.RelayVsrPanel) return;
     if (RelayVsrPanel.shown()) { RelayVsrPanel.close(); return; }
-    for (const P of [window.SeedVR2Panel, window.Dlss5Panel, window.RtxVfxPanel]) if (P && P.shown()) P.close();
+    for (const P of [window.SeedVR2Panel, window.Dlss5Panel, window.RtxVfxPanel, window.FlowHmrPanel]) if (P && P.shown()) P.close();
     RelayVsrPanel.open({ name: current(), from: "preview", anchor: el("pvRelayvsr") });
   });
   const p = el("player");
