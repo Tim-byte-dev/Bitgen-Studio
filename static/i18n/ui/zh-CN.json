@@ -2,7 +2,7 @@
  "lang": "zh-CN",
  "v": "73300ae98bee",
  "count": 8759,
- "patternCount": 1028,
+ "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自动）",
   "0 = auto (LoRA count / 20 base)": "0 = 自动（LoRA 的步数 / 基础模型 20）",
@@ -9792,6 +9792,9 @@
   "Could not check again: {0}": "无法重新检查：{0}",
   "Download {0}": "下载 {0} 个",
   "{0} - Hugging Face: {1}": "{0} - Hugging Face：{1}",
-  "Hugging Face: {0}": "Hugging Face：{0}"
+  "Hugging Face: {0}": "Hugging Face：{0}",
+  "The render stopped: {0} model file it needs is not in any of ComfyUI's model paths. Download it": "渲染已停止：它需要的 {0} 个模型文件不在 ComfyUI 的任何模型路径中。要下载吗",
+  "The render stopped: {0} model files it needs are not in any of ComfyUI's model paths. Download them": "渲染已停止：它需要的 {0} 个模型文件不在 ComfyUI 的任何模型路径中。要下载吗",
+  "goes in {0} (ComfyUI refused it)": "应放在 {0}（ComfyUI 拒绝了它）"
  }
 }

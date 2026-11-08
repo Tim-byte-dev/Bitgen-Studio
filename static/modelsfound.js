@@ -56,7 +56,8 @@
   }
 
   /** the box -> Promise<true | false>; r = the check's answer, req = the render's request (checked again after a download) */
-  function box(r, req) {
+  function box(r, req, opt) {
+    opt = opt || {};
     css();
     var old = doc.getElementById("mfDlg"); if (old) old.remove();
     var d = el("dialog", "mfdlg"); d.id = "mfDlg";
@@ -74,14 +75,17 @@
     var rows = {};
     function paint(res) {
       var miss = res.missing || [];
-      p.textContent = miss.length === 1 ? "This render needs " + miss.length + " model file that is not in any of ComfyUI's model paths:"
+      if (opt.job) p.textContent = miss.length === 1 ? "The render stopped: " + miss.length + " model file it needs is not in any of ComfyUI's model paths. Download it?"
+        : "The render stopped: " + miss.length + " model files it needs are not in any of ComfyUI's model paths. Download them?";
+      else p.textContent = miss.length === 1 ? "This render needs " + miss.length + " model file that is not in any of ComfyUI's model paths:"
         : "This render needs " + miss.length + " model files that are not in any of ComfyUI's model paths:";
       ul.textContent = ""; rows = {};
       miss.forEach(function (m) {
         var li = el("li"); li.dataset.name = m.name;
         li.appendChild(el("span", "mfname", m.name));
         var where = el("span", "mfwhere");
-        where.textContent = m.from === "basic" ? "goes in " + m.folder + " (Basic Settings)" : m.from === "style" ? "goes in " + m.folder + " (the style)" : "goes in " + m.folder + " (the workflow)";
+        where.textContent = m.from === "basic" ? "goes in " + m.folder + " (Basic Settings)" : m.from === "style" ? "goes in " + m.folder + " (the style)"
+          : m.from === "comfyui" ? "goes in " + m.folder + " (ComfyUI refused it)" : "goes in " + m.folder + " (the workflow)";
         li.appendChild(where);
         var src = el("span", m.source ? "mfsrc" : "mfsrc none");
         if (m.source) src.textContent = "⬇ " + (gb(m.source.size) ? gb(m.source.size) + " - " : "") + "Hugging Face: " + m.source.repo;
@@ -111,6 +115,7 @@
         resolve(v);
       }
       no.onclick = function () {
+        if (opt.job && !busy) { log("not downloaded - the job's log says which files are missing"); done(false); return; }
         if (busy) log("the download keeps going - Settings ▸ Models shows it; press Generate again when it is done");
         else log("render cancelled - " + (r.missing || []).length + " model file(s) not found");
         done(false);
@@ -134,7 +139,10 @@
               clearInterval(timer); timer = 0; busy = false;
               note.textContent = "Checking again…";
               jpost("/api/models/check", req).then(function (r2) {
-                if (!r2.checked || !(r2.missing || []).length) { log("the missing models are in place - the render goes on"); done(true); return; }
+                if (!r2.checked || !(r2.missing || []).length) {
+                  log(opt.job ? "the missing models are in place - press ↻ Retry on the job in the Queue docker, or Generate again" : "the missing models are in place - the render goes on");
+                  done(true); return;
+                }
                 r = r2; paint(r2);
                 var failed = (st.result.failed || []).map(function (x) { return x.id; });
                 failed.forEach(function (id) { var f = (st.files || {})[id]; if (rows[id] && f && f.error) { rows[id].err.textContent = f.error; rows[id].err.style.display = ""; } });
@@ -230,5 +238,26 @@
   }
   if (root.fetch && typeof root.Response !== "undefined") wrap(root);
 
-  root.H3ModelsFound = { ensure: ensure, refresh: refresh, box: box, wrap: wrap, reqFrom: reqFrom };
+  /* 2.720.0 - AFTER A FAILED RENDER. Tim: "if worker exits with code 1 , check for models if models are not found ask if user
+     wants to dl models". The server checks a job whose worker exited with an error (lib/modelsFound.js afterFail - the
+     names ComfyUI refused + the job's style) and the job carries models_missing; the queue's poll (refreshJobs, every 5 s)
+     hands its list here: a job that failed since the page opened, with models missing, asks once - ⬇ Download / Cancel;
+     after the download the box closes and the console says to ↻ Retry. One box at a time (the next failed job waits). */
+  var asked = {}, since = Date.now() / 1000 - 30, busyBox = false;
+  function watchJobs(list) {
+    if (busyBox || !Array.isArray(list)) return;
+    for (var i = 0; i < list.length; i++) {
+      var j = list[i];
+      if (!j || j.status !== "failed" || !j.models_missing || asked[j.id]) continue;
+      if ((j.finished || 0) < since) { asked[j.id] = 1; continue; }        // failed before this page opened: not asked again
+      var mm = j.models_missing.missing || [];
+      if (!mm.length) continue;
+      asked[j.id] = 1; busyBox = true;
+      log("job " + j.id + " stopped - " + mm.length + " model file(s) not found: " + mm.map(function (m) { return m.name; }).join(", "));
+      box({ checked: true, missing: mm }, { job_id: j.id }, { job: j.id }).then(function () { busyBox = false; }, function () { busyBox = false; });
+      return;
+    }
+  }
+
+  root.H3ModelsFound = { ensure: ensure, refresh: refresh, box: box, wrap: wrap, reqFrom: reqFrom, watchJobs: watchJobs };
 })(typeof window !== "undefined" ? window : globalThis);

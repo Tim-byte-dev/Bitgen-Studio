@@ -7634,6 +7634,11 @@ LoRAs (and Basic Settings' model and LoRAs when Override style is on).
   Regenerate - also from the References docker's pictures), the StoryBoard, the characters, the timeline and the music
   docker. When you cancel, the place you started from says it was not rendered. The 🩺 Style doctor is not stopped: it
   reports a missing model in its table.
+- A render that still stops (2.720.0) - its worker exits with an error - is checked too: the model names ComfyUI refused
+  and the files its style loads. When one is not in a model path, a box asks **The render stopped: … Download it?** with
+  the same ⬇ Download / Cancel. After the download, press ↻ Retry on the job in the Queue docker (or Generate again). This
+  catches what the check before the render cannot see: a custom node's model, a scene the StoryBoard renders by itself,
+  Swap, LTX and Wan's own picks.
 - Not checked: a ComfyUI on another computer (Remote GPU), no ComfyUI folder set, sd-cli styles, and the files a Wan or
   LTX style picks for itself.
 

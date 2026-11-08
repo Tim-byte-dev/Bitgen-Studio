@@ -4585,7 +4585,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - Long video 仍不使用 Sage 注意力：在它之上加 Sage 只快了 17%。
 
 ## 找不到模型——渲染前先检查（2.719.0）
-<!-- en: models-not-found-checked-before-a-render-2-719-0 dcfa389450c7 -->
+<!-- en: models-not-found-checked-before-a-render-2-719-0 44e1694bba66 -->
 
 图片、视频或歌曲开始渲染之前，bitGen 会检查它要加载的每个模型文件是否在 ComfyUI 的某个模型路径中：工作流自带的模型、文本编码器、VAE 和放大模型，以及样式的模型、VAE、文本编码器和 LoRA（打开 Override style 时，还包括 Basic Settings 的模型和 LoRA）。
 
@@ -4593,6 +4593,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 缺少文件时，会弹出 **Models not found** 对话框，逐个列出：文件名、它应放入的文件夹，以及它来自哪里（工作流、样式或 Basic Settings）。bitGen 模型目录中有的文件会显示大小和下载来源；**⬇ Download** 会下载这些文件（使用 Settings ▸ Models 中保存的 Hugging Face token），每个文件一个进度条，然后再检查一次——全部到位后渲染会自动开始。不在目录中的文件会注明这一点：请自行下载（Civitai、Hugging Face）到显示的文件夹中。
 - **Cancel**（或 Esc、Enter）不会开始渲染。已经开始的下载会继续进行——在 Settings ▸ Models 中可以看到。队列中等待、缺少相同文件的渲染会直接停止，不再重复询问。
 - 不论从哪里开始的渲染都会检查：提示词面板的 Generate、图像编辑器的 ✨ AI（Edit、Compose、Regenerate——包括从 References 面板的图片开始的）、StoryBoard、角色、时间线和音乐面板。取消后，开始渲染的地方会显示没有渲染。🩺 Style doctor 不会被拦下：它会在自己的表格中报告缺少的模型。
+- 仍然中途停止的渲染（2.720.0）——它的 worker 以错误退出——也会被检查：ComfyUI 拒绝的模型名称，以及它的样式加载的文件。如果有文件不在模型路径中，会弹出对话框询问 **The render stopped: … Download it?**，同样提供 ⬇ Download / Cancel。下载完成后，在 Queue 面板中对该任务按 ↻ Retry（或再按一次 Generate）。这能发现渲染前的检查看不到的情况：自定义节点的模型、StoryBoard 自行渲染的场景、Swap、LTX 以及 Wan 自己挑选的文件。
 - 不检查的情况：另一台电脑上的 ComfyUI（Remote GPU）、没有设置 ComfyUI 文件夹、sd-cli 样式，以及 Wan 或 LTX 样式自行挑选的文件。
 
 ## 提示

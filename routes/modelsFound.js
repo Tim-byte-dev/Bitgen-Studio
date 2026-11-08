@@ -7,6 +7,7 @@
 //   GET  /api/models/found[?refresh=1]   the list (misc/models_found.json); refresh = scan the model paths again (🧩 ⟳)
 //   POST /api/models/check  {kind: image | music | video | aiedit, style_id / video_style_id, mode, model, basic, extra_loras,
 //                            fill_edit, edit_style_id}
+//        2.720.0: {job_id} = a failed job's files (the names ComfyUI refused + its style's) - checked again after ⬇ Download
 //        -> {checked, why, needed, found, missing: [{name, cat, folder, from, source: {id, label, size} | null}], ...}
 //        the same request the render will send (static/modelsfound.js reads it from the Generate path); the style's
 //        overrides, Basic Settings' model / LoRAs and the workflow for the mode, as /api/genimage, /api/genmusic and
@@ -85,6 +86,12 @@ function mount(app) {
   }));
   app.post("/api/models/check", trap.guard((req, res) => {
     const b = req.body || {};
+    // 2.720.0: {job_id} = a failed job checked again (after ⬇ Download): the names ComfyUI refused + its style's files
+    if (b.job_id) {
+      const job = require("../lib/core").jobs.get(String(b.job_id));
+      if (!job) return res.json(skip("that job is no longer in the queue"));
+      return res.json(Object.assign({ kind: "job", job_id: job.id }, MF.check(MF.jobNeeds(job))));
+    }
     const p = plan(b);
     if (p.skip) return res.json(skip(p.skip));
     const r = MF.check(p.rows);

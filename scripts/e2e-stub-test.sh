@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.720.0 (Tim: "if worker exits with code 1 , check for models if models are not found ask if user wants to dl models")
+node scripts/test-modelsfound720.js > /tmp/modelsfound720.log 2>&1 \
+  && ok "2.720.0 after a failed render: the names ComfyUI refused (both wordings), the job's style + workflow files, job.models_missing + a [models] line, on disk = not missing, remote / done / no folder = nothing, jobDict, the wiring" \
+  || { bad "2.720.0 after-failure units"; grep -a "^FAIL" -A2 /tmp/modelsfound720.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui720-ui.js > /tmp/ui720ui.log 2>&1 \
+  && ok "2.720.0 browser test: a job that stopped on missing models asks once (The render stopped: … Download it?), Cancel, ⬇ Download re-checks the job and says Retry, old / other jobs not asked; the real thing - the stub refusing the missing Turbo8 LoRA, the job flagged, the box from the app's own poll - or SKIP" \
+  || { bad "2.720.0 failed-render download box"; grep -a "FAIL\\|Error" -A2 /tmp/ui720ui.log | head -14; }
 # ---- 2.719.0 (Tim: "check if models are in a model path before render - create a list of found models so it can be a quick check save the list as /misc/models_found.json. if models are not found bring up a msgbox to download/cancel model names not found")
 node scripts/test-modelsfound719.js > /tmp/modelsfound719.log 2>&1 \
   && ok "2.719.0 models in a model path: the loaders read, what image / video / Wan renders need with the overrides, the list made + saved, a miss rescans, a deleted file, the catalogue's download, not-checked reasons, the route's plan, the wiring" \

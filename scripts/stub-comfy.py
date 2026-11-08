@@ -1302,6 +1302,23 @@ class H(BaseHTTPRequestHandler):
                 return self._j({"error": {"type": "prompt_outputs_failed_validation",
                                           "message": "Prompt outputs failed validation"},
                                 "node_errors": vv}, 400)
+            # 2.720.0, faithful-mock rule (Tim's log: "node 22: Value not in list [lora_name] = turbo8_lora_step2500.safetensors
+            # / lora_name: 'turbo8_lora_step2500.safetensors' not in (list of length 492)"): with STUB_CHECK_LORAS a LoRA node's
+            # file must be in the stub's loras folder, refused in ComfyUI's own shape. Off (every other leg) = unchanged.
+            if os.environ.get("STUB_CHECK_LORAS"):
+                have = _folder_combo(["loras"], [])
+                bad = {}
+                for nid, v in g.items():
+                    if isinstance(v, dict) and v.get("class_type") in ("LoraLoader", "LoraLoaderModelOnly"):
+                        ln = (v.get("inputs") or {}).get("lora_name")
+                        if isinstance(ln, str) and ln not in have:
+                            bad[str(nid)] = {"errors": [{"type": "value_not_in_list", "message": "Value not in list",
+                                "details": f"lora_name: '{ln}' not in (list of length {len(have)})",
+                                "extra_info": {"input_name": "lora_name", "input_config": [have], "received_value": ln}}],
+                                "dependent_outputs": [], "class_type": v.get("class_type")}
+                if bad:
+                    return self._j({"error": {"type": "prompt_outputs_failed_validation", "message": "Prompt outputs failed validation"},
+                                    "node_errors": bad}, 400)
             if any(v.get("class_type") == "E2E_Reject" for v in g.values()):
                 return self._j({"error": {"type": "prompt_outputs_failed_validation",
                                           "message": "Prompt outputs failed validation"},

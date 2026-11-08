@@ -2,7 +2,7 @@
  "lang": "ja",
  "v": "58a97aa8547b",
  "count": 8759,
- "patternCount": 1028,
+ "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自動）",
   "0 = auto (LoRA count / 20 base)": "0 = 自動（LoRA のステップ数 / ベースは 20）",
@@ -9792,6 +9792,9 @@
   "Could not check again: {0}": "再確認できませんでした：{0}",
   "Download {0}": "{0} 個をダウンロード",
   "{0} - Hugging Face: {1}": "{0} - Hugging Face：{1}",
-  "Hugging Face: {0}": "Hugging Face：{0}"
+  "Hugging Face: {0}": "Hugging Face：{0}",
+  "The render stopped: {0} model file it needs is not in any of ComfyUI's model paths. Download it": "レンダリングが止まりました：必要なモデルファイル {0} 個が ComfyUI のどのモデルパスにもありません。ダウンロードしますか",
+  "The render stopped: {0} model files it needs are not in any of ComfyUI's model paths. Download them": "レンダリングが止まりました：必要なモデルファイル {0} 個が ComfyUI のどのモデルパスにもありません。ダウンロードしますか",
+  "goes in {0} (ComfyUI refused it)": "置き場所：{0}（ComfyUI が受け付けませんでした）"
  }
 }

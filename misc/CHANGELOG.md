@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.720.0** — A Render That Stops on a Missing Model Asks to Download It: When the Worker Exits With an Error, the Names ComfyUI Refused and the Style's Files Are Checked, Then ⬇ Download / Cancel
 - **2.719.1** — The Models Not Found Check Covers Every Render, Wherever It Starts: the Image Editor's ✨ AI (Also From the References Docker), the StoryBoard, Characters, Timeline and Music Docker
 - **2.719.0** — Models Not Found Are Caught Before a Render: a Quick Check Against a List of the Model Files in ComfyUI's Model Paths (misc/models_found.json), With ⬇ Download / Cancel
 - **2.718.0** — 🧩 ⟳ in the Model Manager Also Refreshes the App's Model Lists (a Just-Added Model No Longer Shows "Not Found" in Its New Style); the Website Gets Tutorials Taken From the App

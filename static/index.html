@@ -6370,6 +6370,7 @@ async function refreshJobs() {
   const box = $("jobs");
   liveJobsById = {};
   for (const j of list) liveJobsById[j.id] = j;
+  if (window.H3ModelsFound && H3ModelsFound.watchJobs) H3ModelsFound.watchJobs(list);   // 2.720.0: a render that stopped on missing models asks to download them
   // 2.400.0: the job the queue's RUNNING card stands for is shown THERE, not twice
   let merged = null;
   try { merged = window.QueueRun ? QueueRun.mergedJobId(GQ.items, GENQUEUE.RUNNING) : null; } catch { merged = null; }
