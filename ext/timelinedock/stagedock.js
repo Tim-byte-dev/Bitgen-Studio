@@ -21,7 +21,7 @@
   function sget(k, d) { try { return typeof store === "object" ? store.get(k, d) : d; } catch (e) { return d; } }
   function sset(k, v) { try { if (typeof store === "object") store.set(k, v); } catch (e) { /* fine */ } }
   var CSS = ""
-    + ".tsd{position:fixed;z-index:45;display:flex;flex-direction:column;min-width:220px;min-height:140px;"
+    + ".tsd{position:fixed;z-index:60;display:flex;flex-direction:column;min-width:220px;min-height:140px;"
     + "background:var(--panel,#1d1a15);border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.55);overflow:hidden}"
     + ".tsd.nogrips{resize:both}.tsd.tsd-confined{min-width:0;min-height:0}"
     + ".tsd.off{display:none!important}"

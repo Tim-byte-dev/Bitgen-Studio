@@ -1248,6 +1248,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **更快的首幀（Auto）+ Qwen Image 2.1 Turbo8** — 場景卡片的 ✎ 首幀預設為 Auto：已安裝時用 Qwen Image Edit 2511 以 4 步生成（Apache 2.0——可以商用），超過三張圖片時用 Qwen Image 2.1 edit；新的 Qwen Image 2.1 edit Turbo8 樣式讓 Qwen 2.1 只需 8 步而非 25 步（Qwen Research License——非商業）。 *Where:* 場景卡片 ▸ ✎ 首幀 ▸ 樣式；設定 ▸ 模型 ▸ 模型目錄。 *Since:* 2.717.0
 - **渲染前檢查缺失的模型** — 渲染要載入的每個模型檔案（工作流的、樣式的，以及 Basic Settings 的）都會與 ComfyUI 模型路徑中已找到的模型檔案清單比對（misc/models_found.json，缺少某個名稱時重新生成）；對話方塊列出缺少的檔案及各自應放入的資料夾，⬇ Download 下載模型目錄中有的檔案後渲染自動開始，Cancel 則停止渲染；仍因缺少模型而停止的渲染會詢問是否下載（2.720.0）。 *Where:* 生成（圖片、影片、音樂）；🧩 Models ▸ ⟳ 重新生成清單。 *Since:* 2.719.0
 - **僅在模型改變時釋放顯示記憶體** — 連續使用同一模型的渲染會把它留在顯示卡上（不解除安裝、不重新載入）；換用其他模型或發生顯示記憶體不足的錯誤時，會先釋放顯示卡；也可以像以前一樣每次生成前釋放。 *Where:* 設定 ▸ ComfyUI ▸ Free VRAM before a generation ▸ Free it。 *Since:* 2.722.0
+- **最後使用的浮動面板在最上面** — 💬 Community、Basic Settings、LLM tokens、▣ 面板、你自己命名的面板、浮動的主面板、舞台面板和語音聊天，在應用程式其餘部分之上共用一個順序：點擊或打開其中一個，它就會到最上面（命名面板不會再遮住 Community）。 *Where:* 每個浮動面板。 *Since:* 2.724.0
 
 ## 鍵盤快捷鍵
 

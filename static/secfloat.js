@@ -83,7 +83,7 @@
   const $ = (id) => document.getElementById(id);
   const CSS = ""
     + ".secfloat{display:flex;flex-direction:column;background:var(--panel,#1d1a15);position:relative;min-width:0;min-height:0;overflow:hidden}"
-    + ".secfloat.df-float{position:fixed;z-index:47;border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);min-width:240px;min-height:90px;max-width:96vw;max-height:92vh}"
+    + ".secfloat.df-float{position:fixed;z-index:60;border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);min-width:240px;min-height:90px;max-width:96vw;max-height:92vh}"
     + ".secfloat.df-stack,.secfloat.df-side{flex:0 0 auto;border-top:1px solid var(--line,#3a342a);border-bottom:1px solid var(--line,#3a342a)}"
     + ".secfloat.df-inrow{height:auto!important;align-self:stretch;max-width:calc(100% - 160px);min-width:200px!important;border-left:1px solid var(--line,#3a342a);border-right:1px solid var(--line,#3a342a)}"
     + ".df-row:not(:has(> .bdock:not(.dockgone):not(.collapsed))) > .secfloat{flex:1 1 auto!important;height:260px!important}"
@@ -149,7 +149,13 @@
       if (W[id].btn) W[id].btn.classList.toggle("on", on);
     }
   }
-  function front(id) { for (const k of Object.keys(W)) if (W[k].el.classList.contains("df-float")) W[k].el.style.zIndex = k === id ? 49 : 47; }
+  // 2.724.0 (Tim: "the community dialog is going behind the custom dialog, give floating dialogs the highest z-index's"):
+  // one order for every floating dialog (static/floatz.js) - this window to the top of it
+  function front(id) {
+    if (!W[id]) return;
+    if (window.H3FloatZ) { window.H3FloatZ.raise(W[id].el); return; }
+    for (const k of Object.keys(W)) if (W[k].el.classList.contains("df-float")) W[k].el.style.zIndex = k === id ? 61 : 60;
+  }
   function show(id, on) {
     if (!W[id]) return false;
     const f = rec()[id], w = W[id];

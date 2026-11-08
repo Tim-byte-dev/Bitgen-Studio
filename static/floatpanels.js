@@ -97,7 +97,10 @@
   let LAY = { panels: {}, dockers: {} }, loaded = false, saveT = null;
   const $ = (id) => root.document.getElementById(id);
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const CSS = ".h3fp{position:fixed;z-index:9300;display:flex;flex-direction:column;min-width:160px;min-height:100px;background:var(--panel,var(--pc-panel,#1c1915));color:var(--text,var(--pc-text,#e8e2d6));border:1px solid var(--line,var(--pc-line,#3a342a));border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden}"
+  // 2.724.0: a named docker floating over the whole app (a child of <body>) sits in the floating dialogs' band
+  // (static/floatz.js - 60, the one used last on top) with Community, Basic Settings and the ▣ dockers; one confined to a
+  // docker (inside it) keeps 9300 over that docker's own parts
+  const CSS = "body>.h3fp{z-index:60}.h3fp{position:fixed;z-index:9300;display:flex;flex-direction:column;min-width:160px;min-height:100px;background:var(--panel,var(--pc-panel,#1c1915));color:var(--text,var(--pc-text,#e8e2d6));border:1px solid var(--line,var(--pc-line,#3a342a));border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden}"
     + ".h3fp.off{display:none}.h3fp-t{display:flex;align-items:center;gap:4px;height:26px;flex:none;padding:0 4px 0 8px;cursor:move;user-select:none;background:var(--panel-2,var(--pc-bg,#26221b));border-bottom:1px solid var(--line,var(--pc-line,#3a342a));font-size:12px}"
     + ".h3fp-n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.h3fp-t button{border:0;background:none;color:inherit;cursor:pointer;padding:0 4px;font-size:13px;line-height:24px}.h3fp-t button:hover{color:var(--tiger,#f59e2c)}"
     + ".h3fp-b{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto}.h3fp-b>*{flex:1 1 auto;min-height:0}"
@@ -233,7 +236,7 @@
     if (r.state === "zone" && r.zone && r.zone.host !== hostId) leaveZone(r);
     const body = h.slot(id, key, r); if (!body) return false;
     if (r.kind === "panel") { body.appendChild(r.el); if (r.win) r.win.classList.add("off"); }
-    else { if (!r.win) makeWin(r); r.win.classList.remove("off", "in", "hid"); r.win.classList.add("h3fp-zoned"); body.appendChild(r.win); }
+    else { if (!r.win) makeWin(r); r.win.classList.remove("off", "in", "hid"); r.win.classList.add("h3fp-zoned"); body.appendChild(r.win); if (root.H3FloatZ) root.H3FloatZ.drop(r.win); }
     r.state = "zone"; r.zone = { host: hostId, key: key || "end" }; delete r.zoneWant;
     if (r.onState) r.onState("zone");
     save();
@@ -300,6 +303,7 @@
     if (!(r.w > 0)) { r.w = Math.min(320, B.right - B.left); r.h = Math.min(460, B.bottom - B.top); r.x = B.right - r.w - 24; r.y = B.top + 40; }
     Object.assign(r, fit(r, B)); setRect(r);
     if (r.win._dfGrips) r.win._dfGrips.refresh();       // the resize grips on now (not only after a first hover)
+    if (!restoring && root.H3FloatZ) root.H3FloatZ.raise(r.win);   // 2.724.0: floated = on top of the floating dialogs
     if (r.onState) r.onState("float");
     save();
   }
@@ -438,7 +442,7 @@
     save();
     return r;
   }
-  function show(id, on) { const r = R[id]; if (!r || !r.win) return; if (on && r.state === "zone") { r.win.classList.remove("off"); save(); return; } if (on && r.state !== "in") { r.win.classList.remove("off"); keepRect(r); } else if (!on) r.win.classList.add("off"); save(); }
+  function show(id, on) { const r = R[id]; if (!r || !r.win) return; if (on && r.state === "zone") { r.win.classList.remove("off"); save(); return; } if (on && r.state !== "in") { r.win.classList.remove("off"); keepRect(r); if (root.H3FloatZ) root.H3FloatZ.raise(r.win); } else if (!on) r.win.classList.add("off"); save(); }
   /** the app's own text box (askText, index.html) - centred like every dialog; the browser's prompt without it */
   function ask(title, label, value) {
     if (typeof root.askText === "function") return Promise.resolve(root.askText(title, label, value));

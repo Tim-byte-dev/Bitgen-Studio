@@ -42,9 +42,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => H3Panels.float("fd-dockers", { x: 700, y: 380, w: 760, h: 380 }));
     await p.waitForTimeout(1300);
     const z = await ev(() => { const w = H3Panels.get("fd-dockers").win; return { z: getComputedStyle(w).zIndex, app: w.classList.contains("dg-app") }; });
-    check("the ▣ docker sits in the app's floating band (z 45 - the prompt docker 44, Basic Settings 47) - not 9300 over everything", z.app && z.z === "45", z);
+    check("the ▣ docker sits in the app's floating band (2.724.0: 60 and up, the one shown last on top - static/floatz.js) - not 9300 over everything", z.app && +z.z >= 60 && +z.z < 200, z);
     { const pn = await ev(() => { const r = H3Panels.get("fd-dockers").win.querySelector(".h3fd").getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); await p.mouse.click(pn.x, pn.y); await p.waitForTimeout(150); }
-    check("...a press on it brings it to the front of that band (48)", (await ev(() => getComputedStyle(H3Panels.get("fd-dockers").win).zIndex)) === "48");
+    check("...a press on it brings it to the front of that band (2.724.0: the top of H3FloatZ's order)", await ev(() => H3FloatZ.top() === H3Panels.get("fd-dockers").win && +getComputedStyle(H3Panels.get("fd-dockers").win).zIndex > 60));
     const before = await ev(() => { const a = document.getElementById("app"), d = document.getElementById("refsdock"); return { n: a.children.length, i: [...a.children].indexOf(d), prev: d.previousElementSibling && d.previousElementSibling.id, btn: !!document.getElementById("dgFloat_refsdock"), sb: document.getElementById("videodock").dataset.dgDrag === "1" }; });
     check("References (a side docker) has ⇱ and is dragged in by its title; the StoryBoard (its own ⇱) by its title bar too", before.btn && before.sb, before);
     const head = await ev(() => { const h = document.querySelector("#refsdock > .dockhead h1"), r = h.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });   // its title (not its ▾ / 📌)

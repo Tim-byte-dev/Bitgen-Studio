@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.724.0 (Tim: "the community dialog is going behind the custom dialog, give floating dialogs the highest z-index's")
+node scripts/test-floatz724.js > /tmp/floatz724.log 2>&1 \
+  && ok "2.724.0 one order for every floating dialog (static/floatz.js): band 60-199 over the docked app and the status bar, under menus and message boxes; the last pressed / opened on top; Community, Basic Settings, LLM tokens, ▣ dockers, the ⊞ named dockers (were 9300), floated main dockers, the stage docker, voice chat" \
+  || { bad "2.724.0 floating dialogs order"; grep -a "^FAIL" -A2 /tmp/floatz724.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui724-ui.js > /tmp/ui724ui.log 2>&1 \
+  && ok "2.724.0 browser test: Community vs a ▣ docker and a ⊞ named docker - a real press or opening it again brings it over the other where they overlap; Basic Settings joins the order; docked = out of it - or SKIP without playwright" \
+  || { bad "2.724.0 floating dialogs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui724ui.log | head -14; }
 # ---- 2.723.0 (Tim: "add 2 buttons next to ban, suspend (input number of days) and make admin. add a search bar to users, filter the search results after 3 characters")
 node scripts/test-community723-server.js > /tmp/community723srv.log 2>&1 \
   && ok "2.723.0 Community server: admin_suspend (admins, 1-3650 days, 0 lifts, not yourself) signs the member out, refuses sign-in until it ends (told when), keeps their posts, ends by itself; admin_user shows it; schema 6 - or SKIP without php" \

@@ -7656,6 +7656,20 @@ LoRAs (and Basic Settings' model and LoRAs when Override style is on).
 - Before every generation is the old behaviour: every render starts from an empty card (the safest for long clips after
   a mixed session). Untick the switch to leave it all to ComfyUI.
 
+## Floating dockers: the one you used last is on top (2.724.0)
+
+Every floating docker now shares one order, above the rest of the app: 💬 Community, Basic Settings, LLM tokens, the ▣
+dockers, the dockers you made with **⊞ Docker configs ▸ ▣ New docker…**, a main docker floated with ⇱, the timeline's
+stage docker and the voice chat.
+
+- **Click a floating docker** anywhere (its title bar, a button, a box inside it) and it comes to the top. Clicking into
+  it with the keyboard does the same.
+- **Opening one** (💬 Community on the status bar, S for Basic Settings, a ▣ docker's button) puts it on top too. Before,
+  a docker made with ▣ New docker… always covered 💬 Community.
+- Floating dockers sit over the docked dockers and the status bar, and under the menus, pop-up menus and message boxes.
+- A docker you dock again (beside, inside or in a column) leaves the order, and comes back on top when you float it.
+- The prompt docker keeps its own rule: Ctrl+P lifts it over whatever covers it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

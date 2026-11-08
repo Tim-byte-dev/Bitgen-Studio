@@ -100,7 +100,7 @@
   function css() {
     if ($("vcCss")) return;
     const s = doc.createElement("style"); s.id = "vcCss";
-    s.textContent = "#vcPanel{position:fixed;right:18px;bottom:40px;width:380px;max-width:94vw;height:460px;max-height:80vh;z-index:50;display:flex;flex-direction:column;background:var(--panel,#1d1a15);color:var(--text,#e8e2d6);border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);font-size:.8rem}"
+    s.textContent = "#vcPanel{position:fixed;right:18px;bottom:40px;width:380px;max-width:94vw;height:460px;max-height:80vh;z-index:60;display:flex;flex-direction:column;background:var(--panel,#1d1a15);color:var(--text,#e8e2d6);border:1px solid var(--line,#3a342a);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);font-size:.8rem}"
       + "#vcPanel .vch{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line,#3a342a);cursor:move;user-select:none}"
       + "#vcPanel .vch b{flex:1;font-family:var(--disp);letter-spacing:.12em;text-transform:uppercase;font-size:.72rem}"
       + "#vcPanel .vch button,#vcPanel .vcf button{background:none;border:1px solid var(--line,#3a342a);color:inherit;border-radius:5px;padding:1px 7px;cursor:pointer}"

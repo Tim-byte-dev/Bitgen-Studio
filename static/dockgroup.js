@@ -41,8 +41,10 @@
   const OWN = { videodock: "sb.dock" };
   const SIDE = { ldock: "no-left", refsdock: "no-refs", assetsdock: "no-assets", qdock: "no-queue", rdock: "no-right" };
   /** 2.558.0: the floating band the app's own floating dockers share - the prompt docker 44, ▣ dockers and floated main
-   *  dockers 45 (48 when clicked last), Basic Settings / LLM tokens 47 / 49 - instead of 9300 over everything */
-  const Z = { base: 45, front: 48 };
+   *  dockers 45 (48 when clicked last), Basic Settings / LLM tokens 47 / 49 - instead of 9300 over everything.
+   *  2.724.0: ONE band for every floating dialog (static/floatz.js, H3FloatZ.BAND): 60, the one pressed / opened last on top
+   *  (61 +) - above the docked app and the status bar, below menus and message boxes */
+  const Z = { base: 60, front: 61 };
   /** Ctrl+Alt+D (not with Shift / Meta; an AltGr layout's own character on D is left alone) */
   function isToggleKey(e) {
     if (!e || !e.ctrlKey || !e.altKey || e.shiftKey || e.metaKey) return false;
@@ -124,6 +126,7 @@
     } else if (want && r.state === "in") p.float(id);          // it was dropped in another docker - out again
     else p.show(id, want);
     watch(); paint(); markApp();
+    if (want && root.H3FloatZ) { const g = p.get(id); if (g && g.win) root.H3FloatZ.raise(g.win); }   // 2.724.0: shown = on top
     tev("docker_group", want ? "shown" : "hidden");
   }
   const watched = new WeakSet();
@@ -365,7 +368,7 @@
     for (const w of wins) {
       if (w.classList.contains("dg-app")) continue;
       w.classList.add("dg-app");
-      w.addEventListener("pointerdown", () => { doc.querySelectorAll(".h3fp.dg-front").forEach((x) => { if (x !== w) x.classList.remove("dg-front"); }); w.classList.add("dg-front"); }, true);
+      w.addEventListener("pointerdown", () => { doc.querySelectorAll(".h3fp.dg-front").forEach((x) => { if (x !== w) x.classList.remove("dg-front"); }); w.classList.add("dg-front"); if (root.H3FloatZ) root.H3FloatZ.raise(w); }, true);
     }
   }
   /** 2.549.0: drag a main docker's title bar onto a ▣ docker (shown) = it goes in, where the orange line is */
