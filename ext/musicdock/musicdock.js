@@ -425,15 +425,19 @@ $("goCover") && ($("goCover").onclick = function () {
     } });
 });
 
-/* 🎼 Sheet Music: the score, shown in the pane */
+/* 🎼 Sheet Music: the score, ENGRAVED in the pane (2.731.0 - ext/musicdock/muscore.js + static/abcscore.js) */
 function muShowAbc(job) {
   var name = job && (job.output || (job.outputs || [])[0]);
   if (!name) { $("muSheetStatus").textContent = "done, but no .abc landed — see the Console"; return; }
   fetch("/outputs/" + encodeURIComponent(name))
     .then(function (r) { return r.text(); })
     .then(function (t) {
-      $("muAbc").textContent = t || "— empty score —";
-      $("muSheetStatus").textContent = "done — " + name + " (also in the project's output folder)";
+      if (window.MuScore) {
+        window.MuScore.refresh(name).then(function () { window.MuScore.show(t, name, "done — "); });
+      } else {
+        $("muAbc").textContent = t || "— empty score —";
+        $("muSheetStatus").textContent = "done — " + name + " (also in the project's output folder)";
+      }
     })
     .catch(function () { $("muSheetStatus").textContent = "done, but " + name + " would not load"; });
 }

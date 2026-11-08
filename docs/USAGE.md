@@ -7766,6 +7766,25 @@ playing (2.725.1).
 - It needs an NVIDIA card and the app's Python 3.10 - 3.12. Without the FBX SDK (it installs only for Python 3.10) you
   get the .npz alone.
 
+## 🎼 Sheet music on the staff, saved as a PDF (2.731.0)
+
+- The Music docker's **🎼 Sheet Music** tab draws the score as real sheet music: the staves with their clefs, the key
+  and time signatures, the notes with their stems, flags and beams, the rests, accidentals, ties and slurs, the chord
+  symbols over the melody and the song's sections (Verse, Chorus …) as boxed marks. A YuE2 score has two staves, the
+  vocal melody and the instrument line, joined by a bracket.
+- Where a score comes from: **🎼 Write sheet from lyrics**, **📜 Transcribe audio**, the **Score** list (every .abc in
+  the project, newest first; each song saves its score beside the audio, and the newest is drawn when the tab opens) or
+  **📂 Open .abc** for a file on this computer. **↻** looks for new scores.
+- **⛶ Read** opens the pages full size. **‹/› ABC text** shows the notation the drawing is made from, and **⧉ Copy**
+  copies it.
+- **💾 Save PDF** saves the pages as an A4 PDF in the project's **pdf** folder, named after the song (the image editor's
+  File ▸ Open PDF from Project lists it too). With **download too** ticked it is downloaded as well. The PDF uses only
+  the fonts every PDF reader already has, so nothing is embedded; a title in letters those fonts lack (Chinese, Japanese)
+  shows ? marks.
+- The engraver is part of bitGen Studio, not an outside library. Besides YuE2's own scores it reads ordinary ABC tunes:
+  chords, triplets, dotted rhythms, repeats and endings, key and time changes, bass, alto and tenor clefs. Grace notes
+  and lyric lines are not drawn.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

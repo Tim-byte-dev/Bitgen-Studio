@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.731.0 (Tim: "in our music docker, sheet music tab can we have real sheet music with the notes drawn on the staff
+# with it's clefs etc. and save as pdf?")
+node scripts/test-abcscore731.js > /tmp/abcscore731.log 2>&1 \
+  && ok "2.731.0 sheet music engraver: the YuE2 dialect (voices + names, % sections, Z4 bar rests, chord symbols, L:1/16, Q), keys / modes / clefs, accidentals through the bar in every octave and reset at the bar line, a tied note keeps its pitch, [chords] (3 > < ( ) |: :| [1 [2 [K:] M:, notes split + tied, the pages (title from T: or the file, numbered, inside the margins, the same every time), SVG escaped; the PDF written by hand: xref offsets on their objects, the standard fonts only, WinAnsi, qpdf / pdfinfo / pdftoppm / pdftotext" \
+  || { bad "2.731.0 sheet music engraver"; grep -a "^FAIL" -A1 /tmp/abcscore731.log | head -12; }
+node scripts/test-ui731-ui.js > /tmp/ui731ui.log 2>&1 \
+  && ok "2.731.0 browser test: GET /api/scores (newest first), the Sheet Music tab draws the newest score (white A4 SVG pages: staves, names, chord symbols, Verse / Chorus, ♩ = 92), the Score list picks another, 💾 Save PDF into the project's pdf folder (+ the same file downloaded, in the PDF list), ⛶ Read full size, ‹/› ABC text, 📂 Open .abc, a file with no notes said - or SKIP without playwright / a studio" \
+  || { bad "2.731.0 sheet music browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui731ui.log | head -14; }
 # ---- 2.730.0 (Tim: "https://flowhmr.github.io/ . we can add a reference video for motion?" + "add it to addons with a
 # disclaimer that it is for non commercial use only")
 python3 scripts/test-flowhmr730.py > /tmp/flowhmr730.log 2>&1 \

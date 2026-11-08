@@ -70,20 +70,43 @@
           </div>
         </div>
         <div id="muPaneSheet" class="hidden">
-          <div class="hint help">The sheet music (ABC notation) of a song. <b>Write</b>
+          <!-- 2.731.0 (Tim: "in our music docker, sheet music tab can we have real sheet music with the notes drawn on
+               the staff with it's clefs etc. and save as pdf?"): the score is ENGRAVED - staves, clefs, key and time
+               signatures, notes, beams, rests, ties, chord symbols - by static/abcscore.js (written here, no library),
+               and 💾 Save PDF writes the pages as a PDF into the project's pdf folder. -->
+          <style>
+            #muScore{max-height:72vh;overflow:auto;padding:12px;border-radius:6px;background:var(--bg2,#1b1e25);border:1px solid var(--line,#262a33)}
+            #muScore .muPaper{background:#fff;max-width:860px;margin:0 auto 14px;box-shadow:0 2px 10px rgba(0,0,0,.45)}
+            #muScore .muPaper svg{display:block;width:100%;height:auto}
+            #muScore .muEmpty{padding:28px 8px;text-align:center}
+            #muScoreBar .gbtn input[type=file]{display:none}
+          </style>
+          <div class="hint help">The sheet music of a song, drawn on the staff. <b>Write</b>
             composes a score from the Song tab's lyrics and style;
             <b>Transcribe</b> reads one out of an audio file (SheetSage2).
             Every generated song also saves its score as a .abc beside the
-            audio.</div>
+            audio - pick it under <b>Score</b>. <b>💾 Save PDF</b> keeps the
+            pages in the project's pdf folder.</div>
           <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:6px 0">
             <button class="go" id="goSheetWrite" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write sheet from lyrics</button>
             <label class="f" style="margin:0">Audio file
               <input type="file" id="muSheetRef" accept="audio/*"></label>
             <button class="go" id="goSheetTranscribe" title="Transcribe the picked audio file into ABC notation">📜 Transcribe audio</button>
-            <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
             <span id="muSheetStatus" class="dim">idle</span>
           </div>
-          <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:0" class="hint">— no sheet yet —</pre>
+          <div id="muScoreBar" style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:6px 0">
+            <label class="f" style="margin:0">Score
+              <select id="muScoreList" title="The project's sheet music (.abc), newest first"><option value="">— pick a score —</option></select></label>
+            <button class="ghost gbtn" id="muScoreRefresh" title="Look for new scores in the project" aria-label="Look for new scores">↻</button>
+            <label class="ghost gbtn" id="muAbcOpen" title="Open a .abc file from this computer" style="cursor:pointer">📂 Open .abc<input type="file" id="muAbcFile" accept=".abc,text/plain,text/vnd.abc"></label>
+            <button class="ghost gbtn" id="muScoreBig" disabled title="Read the score full size">⛶ Read</button>
+            <button class="go" id="muScorePdf" disabled title="Save the engraved pages as a PDF in the project's pdf folder">💾 Save PDF</button>
+            <label style="display:flex;gap:4px;align-items:center" title="Also download the PDF to this computer"><input type="checkbox" id="muScoreDl" checked> download too</label>
+            <button class="ghost gbtn" id="muAbcToggle" aria-pressed="false" title="Show the ABC notation the score is drawn from">‹/› ABC text</button>
+            <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
+          </div>
+          <div id="muScore" aria-live="polite"><div class="muEmpty hint">No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score.</div></div>
+          <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0 0" class="hint hidden">— no sheet yet —</pre>
         </div>
         <div id="muPaneSong">
         <!-- 2.243.0 (Tim: "add a title input for the song in music docker"):

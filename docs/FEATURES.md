@@ -354,6 +354,7 @@ Songs, stems, voices and the words in them.
 - **Songs from lyrics and a style** — MiniMax Music3 or YuE2, with up to four songs per press. *Where:* the Music docker. *Since:* 2.90.0
 - **Music styles** — a reusable caption (genre, BPM, key, mood, voice) with its workflow and settings. *Where:* Settings > Music
 - **Covers and sheet music** — made in the Music docker. *Where:* the Music docker
+- **🎼 Sheet music on the staff, as a PDF** — the score drawn as real sheet music (clefs, key and time signatures, notes, beams, rests, accidentals, ties, chord symbols, the song's sections), any .abc in the project or on your computer, read full size, and saved as an A4 PDF in the project's pdf folder; drawn by bitGen Studio itself, no outside library. *Where:* the Music docker's 🎼 Sheet Music tab. *Since:* 2.731.0
 - **Songs from the chat** — the chat writes lyrics that fit the chosen music style and sends them to the Music docker. *Where:* the prompt chat. *Since:* 2.92.0
 - **Lyrics files** — every song keeps its lyrics as a text file in the project. *Where:* the project's lyrics folder
 

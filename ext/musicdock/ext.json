@@ -4,6 +4,7 @@
   "order": 60,
   "html": "dock.html",
   "scripts": [
-    "musicdock.js"
+    "musicdock.js",
+    "muscore.js"
   ]
 }

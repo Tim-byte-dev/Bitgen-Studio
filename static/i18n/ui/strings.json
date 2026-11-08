@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5498,
+ "count": 5516,
  "strings": [
   {
    "s": "0 (auto)",
@@ -1224,6 +1224,15 @@
    ],
    "where": [
     "option in #tixFmt"
+   ]
+  },
+  {
+   "s": "ABC text",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#muAbcToggle.ghost.gbtn"
    ]
   },
   {
@@ -2729,6 +2738,15 @@
    ],
    "where": [
     "option in #tlpMatte"
+   ]
+  },
+  {
+   "s": "Also download the PDF to this computer",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #muScoreBar"
    ]
   },
   {
@@ -19359,6 +19377,24 @@
    ]
   },
   {
+   "s": "Look for new scores",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "button#muScoreRefresh.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Look for new scores in the project",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muScoreRefresh.ghost.gbtn"
+   ]
+  },
+  {
    "s": "Look through the scene's camera (what renders)",
    "kinds": [
     "title"
@@ -22076,6 +22112,15 @@
    ]
   },
   {
+   "s": "No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.muEmpty.hint in #muScore"
+   ]
+  },
+  {
    "s": "No style - Generate runs the workflow template with its own models. Pick a style to see and change its model",
    "kinds": [
     "text"
@@ -22808,6 +22853,15 @@
    ]
   },
   {
+   "s": "Open .abc",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label#muAbcOpen.ghost.gbtn"
+   ]
+  },
+  {
    "s": "Open ComfyUI in a real browser window",
    "kinds": [
     "title"
@@ -22877,6 +22931,15 @@
    ],
    "where": [
     "button#updOpen"
+   ]
+  },
+  {
+   "s": "Open a .abc file from this computer",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label#muAbcOpen.ghost.gbtn"
    ]
   },
   {
@@ -26326,6 +26389,15 @@
    ]
   },
   {
+   "s": "Read",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#muScoreBig.ghost.gbtn"
+   ]
+  },
+  {
    "s": "Read & save to Audio",
    "kinds": [
     "text"
@@ -26377,6 +26449,15 @@
    ],
    "where": [
     "button#mmRescan.ghost"
+   ]
+  },
+  {
+   "s": "Read the score full size",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muScoreBig.ghost.gbtn"
    ]
   },
   {
@@ -28853,6 +28934,15 @@
    ]
   },
   {
+   "s": "Save the engraved pages as a PDF in the project's pdf folder",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muScorePdf.go"
+   ]
+  },
+  {
    "s": "Save the model as .glb / .obj / .stl - into the project's 3D models or to this computer",
    "kinds": [
     "title"
@@ -29383,6 +29473,16 @@
     "label.f in #s_mueditor",
     "label in #ccAdv",
     "label.f in #ecAdv"
+   ]
+  },
+  {
+   "s": "Score",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "b in #muPaneSheet",
+    "label.f in #muScoreBar"
    ]
   },
   {
@@ -31066,6 +31166,15 @@
     "select.cmfolder in #s_stmodelcombo",
     "select.cmfolder in #s_stvaecombo",
     "select.cmfolder in #s_sttecombo0"
+   ]
+  },
+  {
+   "s": "Show the ABC notation the score is drawn from",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muAbcToggle.ghost.gbtn"
    ]
   },
   {
@@ -35535,6 +35644,15 @@
    ]
   },
   {
+   "s": "The project's sheet music (.abc), newest first",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#muScoreList"
+   ]
+  },
+  {
    "s": "The prompt box is extra direction (optional) - the swap instructions always ride. The video's own audio is kept",
    "kinds": [
     "text"
@@ -35790,6 +35908,15 @@
   },
   {
    "s": "The sheet music (ABC notation) of a song",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
+   ]
+  },
+  {
+   "s": "The sheet music of a song, drawn on the staff",
    "kinds": [
     "text"
    ],
@@ -42819,6 +42946,15 @@
    ]
   },
   {
+   "s": "download too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #muScoreBar"
+   ]
+  },
+  {
    "s": "downloaded by Install once you have access",
    "kinds": [
     "text"
@@ -44487,6 +44623,15 @@
    ],
    "where": [
     "option in #s_vsaspect"
+   ]
+  },
+  {
+   "s": "keeps the pages in the project's pdf folder",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
    ]
   },
   {
@@ -46841,6 +46986,15 @@
    ]
   },
   {
+   "s": "pick a score —",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muScoreList"
+   ]
+  },
+  {
    "s": "pick a workflow in comfy_workflows/ —",
    "kinds": [
     "text"
@@ -47344,6 +47498,15 @@
   },
   {
    "s": "reads one out of an audio file (SheetSage2). Every generated song also saves its score as a .abc beside the audio",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
+   ]
+  },
+  {
+   "s": "reads one out of an audio file (SheetSage2). Every generated song also saves its score as a .abc beside the audio - pick it under",
    "kinds": [
     "text"
    ],

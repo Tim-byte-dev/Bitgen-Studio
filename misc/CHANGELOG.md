@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.731.0** — 🎼 Real Sheet Music in the Music Docker: the Score Engraved on the Staff (Clefs, Key and Time Signatures, Notes, Beams, Rests, Ties, Chord Symbols, Sections), Read Full Size, Saved as an A4 PDF - Drawn by bitGen Studio Itself, No Library
 - **2.730.0** — 🕺 Motion from a Reference Video: FlowHMR Motion Capture (an Animated Skeleton .fbx + SMPL-H .npz in models3d) as a Settings ▸ Add-ons Install - Non-Commercial Use Only
 - **2.729.0** — NitroFusion2 Image Styles: Z-Image-Turbo in One or Two Steps (1 Step, 2 Steps with Its De-Distillation LoRA, GGUF), Its Files from Settings ▸ Add-ons
 - **2.728.0** — An Exact 1920 × 1080 Upscale (Covered, Then Trimmed) in SeedVR2, RelayVSR and the ⚙; RelayVSR Video Upscaling x2 / x4 in ComfyUI's Own Nodes, Its Files from Settings ▸ Add-ons
