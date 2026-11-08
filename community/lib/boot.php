@@ -2,7 +2,7 @@
 // bitGen Community (2.713.0) - every part, loaded in order. api.php uses it, and so does the tigerart.com.au website
 // (its discussions and account pages call bgc_call() in-process - the same actions, the same checks, no HTTP hop).
 declare(strict_types=1);
-if (!defined('BGC')) define('BGC', '2.721.0');
+if (!defined('BGC')) define('BGC', '2.723.0');
 
 require __DIR__ . '/http.php';
 require __DIR__ . '/settings.php';

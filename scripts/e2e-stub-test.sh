@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.723.0 (Tim: "add 2 buttons next to ban, suspend (input number of days) and make admin. add a search bar to users, filter the search results after 3 characters")
+node scripts/test-community723-server.js > /tmp/community723srv.log 2>&1 \
+  && ok "2.723.0 Community server: admin_suspend (admins, 1-3650 days, 0 lifts, not yourself) signs the member out, refuses sign-in until it ends (told when), keeps their posts, ends by itself; admin_user shows it; schema 6 - or SKIP without php" \
+  || { bad "2.723.0 suspend"; grep -a "^FAIL" -A2 /tmp/community723srv.log | head -14; }
 # ---- 2.722.0 (Tim: "if render queue is using the same model don't unload vram until model is changed (will this keep adding to vram?")
 python3 scripts/test-vramkeep722.py > /tmp/vramkeep722.log 2>&1 \
   && ok "2.722.0 VRAM kept while the renders use the same model: free_mode (change / always / off), models_of, the same models kept (said), other models / no graph freed, noted on every queue, forgotten after out of memory or a crash, every worker hands its graph over, the Settings dropdown" \

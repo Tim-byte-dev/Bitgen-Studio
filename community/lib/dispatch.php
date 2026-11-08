@@ -41,6 +41,7 @@ const BGC_ACTIONS = [
     'admin_forum_pending' => ['act_admin_forum_pending', true, true, false],
     'admin_forum_moderate' => ['act_admin_forum_moderate', true, true, false],
     'admin_forum_pin' => ['act_admin_forum_pin', true, true, false],                 // 2.721.0
+    'admin_suspend' => ['act_admin_suspend', true, true, false],                     // 2.723.0
     // 2.714.0
     'bug_report' => ['act_bug_report', 'opt', false, false],
     'bug_shot' => ['act_bug_shot', true, true, false],

@@ -58,7 +58,7 @@ async function start(env) {
   await start({ BGC_NOTES_DIR: NOTES });
   const boss = await join("boss"), ann = await join("ann");
   let r = await call("info");
-  check("info: the server says 2.721.0", ok(r) && r.j.version === "2.721.0", r.j);
+  check("info: the server says 2.721.0 or newer", ok(r) && /^2\.(72[1-9]|7[3-9]\d)\./.test(r.j.version), r.j);
   r = await call("forum_list", {});
   const real = JSON.parse(fs.readFileSync(path.join(DIR, "notes", "speed-results-2026-11.json"), "utf8"));
   const titles = r.j.topics.map((t) => t.title);

@@ -114,6 +114,7 @@ function act_login(array $b, ?array $me): array
         throw new ApiError(401, 'That user id and password do not match.');
     }
     if ((int) $u['banned'] !== 0) throw new ApiError(403, 'This account is banned.');
+    if (user_suspended($u)) throw new ApiError(403, user_suspended_msg($u));          // 2.723.0
     q('UPDATE bgc_users SET last_seen = ? WHERE id = ?', [now_ms(), (int) $u['id']]);
     $u = user_by_handle($handle);
     return ['token' => token_issue((int) $u['id']), 'user' => user_out($u), 'profile' => profile_out($u)];

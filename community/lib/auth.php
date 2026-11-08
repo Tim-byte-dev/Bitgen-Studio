@@ -43,6 +43,10 @@ function auth_user(array $body): array
         throw new ApiError(401, 'This account is banned.');
     }
     $now = now_ms();
+    if (user_suspended($u, $now)) {                            // 2.723.0: suspended - signed out until it ends
+        q('DELETE FROM bgc_tokens WHERE user_id = ?', [(int) $u['id']]);
+        throw new ApiError(401, user_suspended_msg($u));
+    }
     if ((int) $u['token_used'] < $now - 60000) q('UPDATE bgc_tokens SET last_used = ? WHERE token_hash = ?', [$now, $hash]);
     $u['token_hash'] = $hash;
     return $u;
@@ -52,3 +56,17 @@ function is_admin(array $user): bool
 {
     return in_array(strtolower((string) $user['handle']), bgc_settings()['admins'], true);
 }
+
+/** 2.723.0: is this member suspended now? (suspended_until in the future) */
+function user_suspended(array $u, ?int $now = null): bool
+{
+    $until = (int) ($u['suspended_until'] ?? 0);
+    return $until > ($now ?? now_ms());
+}
+
+/** what a suspended member is told (the date it ends, UTC) */
+function user_suspended_msg(array $u): string
+{
+    return 'This account is suspended until ' . gmdate('j M Y, H:i', intdiv((int) $u['suspended_until'], 1000)) . ' UTC.';
+}
+

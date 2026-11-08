@@ -8,7 +8,8 @@ if (!defined('BGC')) { http_response_code(404); exit; }
 // 3: bug reports (bgc_bugs) - 2.714.0
 // 4: language packs (bgc_packs) - 2.716.0
 // 5: a discussion pinned to the top, bitGen Studio's own (official) discussions - 2.721.0
-const BGC_SCHEMA = '5';
+// 6: a member suspended for some days (bgc_users.suspended_until) - 2.723.0
+const BGC_SCHEMA = '6';
 
 function db(): PDO
 {
@@ -188,6 +189,7 @@ const BGC_USER_V2 = [
     'email_key' => 'VARCHAR(190) NULL',          // the address reduced (lower-case, no +tag; Gmail without dots) - unique
     'email_verified' => 'SMALLINT NOT NULL DEFAULT 0',
     'code_hash' => 'CHAR(64) NULL',               // the emailed code's sha256 (with the user id)
+    'suspended_until' => 'BIGINT NULL',           // 2.723.0: suspended until this time (ms) - no sign-in, no token; NULL = not
     'code_expires' => 'BIGINT NULL',
     'code_tries' => 'SMALLINT NOT NULL DEFAULT 0',
 ];

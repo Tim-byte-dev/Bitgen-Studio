@@ -63,10 +63,35 @@ function user_set_banned(array $u, bool $banned): void
     });
 }
 
+/** 2.723.0: suspend a member for some days (1-3650) - signed out everywhere, no sign-in until it ends (their posts stay);
+ *  days 0 / null = lift it. Returns when it ends (ms) or null. Tim: "add 2 buttons next to ban, suspend (input number
+ *  of days) and make admin" */
+function user_set_suspended(array $u, ?int $days): ?int
+{
+    $until = $days !== null && $days > 0 ? now_ms() + min(3650, $days) * 86400000 : null;
+    db_tx(static function () use ($u, $until): void {
+        q('UPDATE bgc_users SET suspended_until = ? WHERE id = ?', [$until, (int) $u['id']]);
+        if ($until !== null) q('DELETE FROM bgc_tokens WHERE user_id = ?', [(int) $u['id']]);
+    });
+    return $until;
+}
+
+/** admins: {handle, days} - days 0 lifts it -> {suspended_until: ISO | null} */
+function act_admin_suspend(array $b, array $me): array
+{
+    $u = user_by_handle(v_handle($b));
+    if ($u === null) throw new ApiError(404, 'There is no such user.');
+    $days = v_int($b, 'days', 0, 3650, null);
+    if ((int) $u['id'] === (int) $me['id']) throw new ApiError(400, 'You cannot suspend yourself.');
+    $until = user_set_suspended($u, $days);
+    return ['suspended_until' => $until === null ? null : iso($until)];
+}
+
 /** 2.713.0: who someone really is - name and email (admins only; nobody else ever sees them) */
 function act_admin_user(array $b, array $me): array
 {
     $u = user_by_handle(v_handle($b));
     if ($u === null) throw new ApiError(404, 'There is no such user.');
-    return ['user' => user_out($u) + profile_out($u) + ['banned' => (int) $u['banned'] === 1, 'joined' => iso((int) $u['created_at'])]];
+    return ['user' => user_out($u) + profile_out($u) + ['banned' => (int) $u['banned'] === 1, 'joined' => iso((int) $u['created_at']),
+        'suspended_until' => user_suspended($u) ? iso((int) $u['suspended_until']) : null]];
 }
