@@ -57,7 +57,10 @@ CFG.rgpu = { mode: "serverless", serverless: { endpoint: "ep", comfy: "0.34.0" }
 const a = R.all();
 check("all(): filter on in serverless; the template's modes; (no styles folder here = none)", a.on && a.filter && a.template.modes.ref2va === true && a.styles && typeof a.styles === "object");
 CFG.rgpu.serverless.show_all = true;
-check("…\"my image has node packs\" = no filter", R.all().filter === false);
+// 2.746.0: the endpoint check applies to REMOTE styles (lib/rpslStyles.js hideWhy); "my image has node packs" turns it off
+const bad = { ok: false, why: "needs X" };
+check("…(2.746.0) a remote style the endpoint cannot render is hidden; \"my image has node packs\" shows it", R.hideWhy({ runs_on: "remote" }, bad, { where: "remote", sls: true, show_all: false }) === "needs X"
+  && R.hideWhy({ runs_on: "remote" }, bad, { where: "remote", sls: true, show_all: true }) === null);
 
 /* ---- the Settings ▸ Save guard */
 let cfg = { engine: { comfy: { url: "http://127.0.0.1:8311/rpsl", autostart: false } }, rgpu: { mode: "serverless", prev: { url: "http://127.0.0.1:8188", autostart: true } } };

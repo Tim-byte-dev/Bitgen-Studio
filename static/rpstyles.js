@@ -1,6 +1,9 @@
 /* bitGen Studio — static/rpstyles.js (2.744.0): ON A RUNPOD SERVERLESS ENDPOINT, ONLY THE STYLES IT CAN RENDER (window.H3RpStyles).
  * Tim (verbatim): "if user is using runpod only show the styles that will work with runpod"
  *
+ *   2.746.0 (Tim: "when radio is selected for local show local styles, remote show remote styles ..., both , show all
+ *   styles"): the server's answer carries each style's `hide` reason - Basic Settings ▸ GPU on Local hides the remote
+ *   styles, on Remote the styles for this computer, on Both none - plus the endpoint check below for remote styles.
  *   GET /api/remotegpu/serverless/styles (lib/rpslStyles.js) says, style by style, whether the endpoint's ComfyUI has
  *   every node its workflow uses. While Remote GPU is on RunPod Serverless (and "show every style" is off) the style
  *   pickers - the prompt docker's image styles (#styleSel), the video styles (#videoStyleSel, with its "— template —"),
@@ -27,12 +30,11 @@
       .catch(function () { return null; });
   }
   function hiddenFor(sel, opt, m) {
-    if (!m || !m.filter || opt.dataset.rpsl === "note") return null;
-    if (m.kinds && !m.kinds[KIND[sel.id]]) return null;
-    if (opt.value === "") return sel.id === "videoStyleSel" && m.template && !m.template.ok ? (m.template.why || "") : null;
+    if (!m || opt.dataset.rpsl === "note") return null;
+    if (opt.value === "") return sel.id === "videoStyleSel" && m.template && m.template.hide ? m.template.hide : null;
     var st = m.styles[opt.value];
     if (!st) { if (Date.now() - S.asked > 5000) setTimeout(load, 0); return null; }      // a style saved since: ask again
-    return st.ok ? null : (st.why || "");
+    return st.hide || null;                                  // 2.746.0: the server says why (lib/rpslStyles.js hideWhy)
   }
   function apply(sel) {
     if (!sel || S.busy) return;
@@ -51,7 +53,9 @@
       if (n) {
         var note = doc.createElement("option");
         note.dataset.rpsl = "note"; note.disabled = true; note.value = "__rpsl";
-        note.textContent = "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)";
+        note.textContent = m.where === "local" ? "🖥 " + n + " remote styles hidden: Basic Settings ▸ GPU is on Local"
+          : m.where === "remote" ? "☁ " + n + " styles hidden: Basic Settings ▸ GPU is on Remote - only the remote styles it can render show"
+          : "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)";
         sel.appendChild(note);
       }
       var cur = sel.selectedOptions[0];
@@ -62,7 +66,8 @@
     } finally { S.busy = false; }
   }
   function applyAll() { SELS.forEach(function (id) { apply($(id)); }); }
-  var watched = {};
+  var watched = {}, againT = 0;
+  function again() { clearTimeout(againT); againT = setTimeout(load, 250); }
   function watch() {
     SELS.forEach(function (id) {
       var sel = $(id);
@@ -73,7 +78,7 @@
       new MutationObserver(function (recs) {
         if (S.busy) return;
         var theirs = recs.some(function (r) { return [].slice.call(r.addedNodes).concat([].slice.call(r.removedNodes)).some(function (n) { return !mine(n); }); });
-        if (theirs) apply(sel);
+        if (theirs) { apply(sel); again(); }   // 2.746.0: a repaint follows a save - its "Runs on" may have changed
       }).observe(sel, { childList: true });
       apply(sel);
     });

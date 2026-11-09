@@ -149,11 +149,13 @@
     var box = $("rgSlsStyles"); if (!box) return;
     fetch("/api/remotegpu/serverless/styles").then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.styles) { box.textContent = ""; return; }
-      var all = Object.keys(j.styles).map(function (k) { return j.styles[k]; }), no = all.filter(function (x) { return !x.ok; });
+      // 2.746.0: the REMOTE styles are the ones the endpoint renders (static/runson.js - Runs on: Remote GPU)
+      var all = Object.keys(j.styles).map(function (k) { return j.styles[k]; }).filter(function (x) { return x.runs_on === "remote"; }), no = all.filter(function (x) { return !x.ok; });
       box.innerHTML = "";
       var line = document.createElement("div");
-      line.textContent = j.show_all ? "Every style shows - the endpoint's image has node packs the studio cannot see."
-        : "This endpoint can render " + (all.length - no.length) + " of " + all.length + " styles; the style lists show only those while RunPod Serverless is in use.";
+      line.textContent = !all.length ? "No remote styles yet - set a style's Runs on to Remote GPU (Settings ▸ Image, Video or Audio ▸ Music styles)."
+        : j.show_all ? "Every remote style shows - the endpoint's image has node packs the studio cannot see."
+        : "This endpoint can render " + (all.length - no.length) + " of your " + all.length + " remote styles; the others are hidden from the style lists.";
       box.appendChild(line);
       if (!no.length || j.show_all) return;
       var d = document.createElement("details"), sm = document.createElement("summary");

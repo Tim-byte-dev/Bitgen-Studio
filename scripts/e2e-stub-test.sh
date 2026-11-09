@@ -13133,6 +13133,15 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.746.0 (Tim: "when radio is selected for local show local styles, remote show remote styles (create remote styles),
+# both , show all styles" + "A Runs on setting per style ... add text input in styles for endpoints if remote style is selected,
+# prefix remote style names with R_ add this on save if it is not there")
+node scripts/test-remotestyles746.js > /tmp/remotestyles746.log 2>&1 \
+  && ok "2.746.0 remote styles: runs_on + endpoint on every kind, R_ added once on save and taken off going local; Local lists this computer's styles, Remote the R_ ones (less what a serverless endpoint cannot render), Both all; Both = the style decides, no style = the boxes; a style's own endpoint wins (/rpsl/ep/<id> - /run, /status, /cancel to that endpoint)" \
+  || { bad "2.746.0 remote styles units"; grep -a "^FAIL" -A1 /tmp/remotestyles746.log | head -14; }
+node scripts/test-ui746-ui.js > /tmp/ui746ui.log 2>&1 \
+  && ok "2.746.0 browser test: Settings ▸ Image / Video / Music styles have Runs on under the name (the endpoint box only for Remote GPU); SDXL saved remote = R_SDXL + its endpoint; Basic Settings ▸ GPU Local hides it, Remote shows only it, Both shows all; saved back = SDXL - or SKIP" \
+  || { bad "2.746.0 remote styles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui746ui.log | head -14; }
 # ---- 2.745.0 (Tim: "add a accordian menu item to basic settings - GPU - add checkboxes remote,local, both - if both, add
 # checkboxes - llm,vllm,image,video")
 node scripts/test-gpusplit745.js > /tmp/gpusplit745.log 2>&1 \

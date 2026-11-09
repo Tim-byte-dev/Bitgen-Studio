@@ -8012,6 +8012,28 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - With Both, the RunPod Serverless style filter (2.744.0) applies only to the kinds sent to the endpoint.
 - Fixed: Basic Settings' remembered settings (basic.cfg and per style) don't include the GPU choice.
 
+## 🏷 Remote styles: each style says where it runs (2.746.0)
+
+- Every style editor has **Runs on** under the style's name: Settings ▸ Image, Settings ▸ Video and Settings ▸ Audio ▸
+  Music styles.
+  - **This computer:** the style renders with the models on this computer.
+  - **Remote GPU:** the style renders on the remote GPU, so its models (and any node packs it needs) must be there.
+    A box asks for its **RunPod endpoint ID**. Leave it blank to use the endpoint in Settings ▸ Remote GPU, or give
+    the style its own endpoint - for example one endpoint with SDXL models and another with FLUX.
+- 💾 Save starts a remote style's name with **R_** (R_SDXL) if it doesn't already. Set it back to This computer and the
+  R_ comes off again.
+- **Basic Settings ▸ GPU** now decides which styles the lists show:
+  - **Local:** only the styles for this computer. The last line of a list says how many remote styles are hidden.
+  - **Remote:** only the remote (R_) styles. On a RunPod Serverless endpoint, a remote style it can't render is hidden
+    too (2.744.0).
+  - **Both:** every style. The style decides where the job renders: an R_ style on the remote GPU, the others here.
+    A job with no style (upscaling, graphs and so on) follows the Image and Video + songs boxes.
+- A job's log says where it rendered and why, for example "this image job (R_SDXL - a remote style) renders on RunPod
+  Serverless ohkr3evlck2bxn".
+- Settings ▸ Remote GPU ▸ RunPod Serverless counts your remote styles only: "This endpoint can render K of your N remote
+  styles".
+- Your styles start as This computer, so after updating set Runs on for the styles you want on the remote GPU.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

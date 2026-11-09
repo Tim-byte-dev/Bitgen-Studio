@@ -7,7 +7,9 @@
  *                           Settings ▸ Remote GPU (a button opens it).
  *   Both ▸ LLM · Vision LLM · Image · Video + songs   ticked = on the remote GPU; LLM / Vision LLM need the RunPod vLLM
  *                           endpoint (Settings ▸ Remote GPU ▸ LLM on RunPod) - said beside them when it is missing.
- *   a line under it says where each kind runs now. A change saves at once; document "h3:rgpu" follows (the style
+ *   a line under it says where each kind runs now. 2.746.0: a STYLE says where it runs (static/runson.js) - Local lists
+ *   only this computer's styles, Remote only the remote (R_) ones, Both every style and the style decides; the boxes then
+ *   decide only for jobs with no style. A change saves at once; document "h3:rgpu" follows (the style
  *   lists, the Remote GPU tab) and is listened to (the tab's Use it changes this). */
 (function (root) {
   "use strict";
@@ -25,7 +27,7 @@
     });
     var b = el("div", { id: "gpuBoxes", style: "display:flex;gap:4px 12px;flex-wrap:wrap;margin-top:6px" });
     [["llm", "LLM", "The chat / prompt model on the RunPod vLLM endpoint"], ["vlm", "Vision LLM", "The model that describes pictures, on the RunPod vLLM endpoint"],
-     ["image", "Image", "Pictures (image styles, upscaling, graphs, 3D) on the remote GPU"], ["video", "Video + songs", "Video jobs and songs on the remote GPU"]].forEach(function (o) {
+     ["image", "Image", "Picture jobs with no style (upscaling, graphs, 3D) on the remote GPU - a style says where it runs itself"], ["video", "Video + songs", "Video jobs and songs with no style (the template) on the remote GPU - a style says where it runs itself"]].forEach(function (o) {
       var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "checkbox", id: "gpu_" + o[0] });
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); b.appendChild(l);
     });
@@ -50,8 +52,11 @@
     ["llm", "vlm", "image", "video"].forEach(function (k) { $("gpu_" + k).checked = !!v[k] && (k === "image" || k === "video" || !!v.vllm_ready); });
     ["llm", "vlm"].forEach(function (k) { var i = $("gpu_" + k); i.disabled = !v.vllm_ready; i.parentNode.title = v.vllm_ready ? i.parentNode.title.replace(/ - set up .*$/, "") : "No RunPod vLLM endpoint yet - set up Settings ▸ Remote GPU ▸ LLM on RunPod"; });
     var R = v.routes || {};
+    // 2.746.0: in Both a style decides - R_ styles on the remote GPU, the others here; the boxes are for jobs with no style
     $("gpuLine").textContent = !v.remote ? "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote GPU."
-      : "Image: " + where(R.image) + " · Video + songs: " + where(R.video) + " · LLM: " + (R.llm === "remote" ? "RunPod vLLM" : "this computer")
+      : v.where === "both" ? "R_ styles: " + where("remote") + " · other styles: this computer · no style - Image: " + where(R.image) + " · Video + songs: " + where(R.video)
+        + " · LLM: " + (R.llm === "remote" ? "RunPod vLLM" : "this computer") + " · Vision LLM: " + (R.vlm === "remote" ? "RunPod vLLM" : "this computer")
+      : (v.where === "remote" ? "Remote styles (R_) only · " : "Styles for this computer only · ") + "Image: " + where(R.image) + " · Video + songs: " + where(R.video) + " · LLM: " + (R.llm === "remote" ? "RunPod vLLM" : "this computer")
         + " · Vision LLM: " + (R.vlm === "remote" ? "RunPod vLLM" : "this computer");
     $("gpuSetup").style.display = v.remote ? "none" : "";
   }

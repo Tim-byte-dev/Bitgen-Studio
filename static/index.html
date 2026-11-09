@@ -3452,6 +3452,7 @@
 <script src="/static/basictabs.js"></script>  <!-- 2.742.0: every Basic Settings tab keeps its own settings (H3BasicTabs) -->
 <script src="/static/rpstyles.js"></script>  <!-- 2.744.0: on a RunPod Serverless endpoint the style lists show only the styles it can render (H3RpStyles) -->
 <script src="/static/gpusplit.js"></script>  <!-- 2.745.0: Basic Settings ▸ GPU - remote / local / both (H3GpuSplit) -->
+<script src="/static/runson.js"></script>  <!-- 2.746.0: a style runs on this computer or the remote GPU (H3RunsOn) -->
 <script src="/static/edittools.js"></script>  <!-- 2.407.0: ripple / roll / slip / slide maths (H3EditTools) -->
 <script src="/static/tlmarks.js"></script>  <!-- 2.410.0: markers, edit points, split at the position marker (H3Marks) -->
 <script src="/static/spaceplay.js"></script>  <!-- 2.410.0: Space pauses / plays the preview anywhere unless typing (H3Space) -->
@@ -7594,6 +7595,7 @@ function paintStyleForm(s) {
   const arch = archOf(s.arch);
   const engine = s.engine || "comfy";
   $("s_stname").value = s.name || "";
+  if (window.H3RunsOn) H3RunsOn.paint("st", s);   // 2.746.0: Runs on this computer / the remote GPU (static/runson.js)
   $("s_stengine").value = engine;
   $("s_starch").innerHTML = (imgCat.archs || [])
     .map(a => `<option value="${a.id}">${a.label}</option>`).join("");
@@ -7700,6 +7702,7 @@ function readStyleForm() {
     return { path: txt.value.trim(), weight: parseFloat(rng.value) };
   }).filter(l => l.path);
   return {
+    ...(window.H3RunsOn ? H3RunsOn.read("st") : {}),   // 2.746.0: runs_on + endpoint
     id: curStyleId || undefined,
     name: $("s_stname").value, arch: arch.id,
     engine: $("s_stengine").value, workflow: $("s_stwf").value,
@@ -8374,6 +8377,7 @@ function paintMusicForm(s) {
   const arch = muArchOf(s.arch);
   const d = arch.defaults || {};
   $("s_muname").value = s.name || "";
+  if (window.H3RunsOn) H3RunsOn.paint("mu", s);   // 2.746.0
   $("s_muarch").innerHTML = (muCat.archs || [])
     .map(a => `<option value="${a.id}">${a.label}</option>`).join("");
   $("s_muarch").value = arch.id;
@@ -8443,6 +8447,7 @@ function readMusicForm() {
   const arch = muArchOf($("s_muarch").value);
   const te = (arch.te || []).map((_s, i) => ($(`s_mute${i}`) || {}).value || "");
   return {
+    ...(window.H3RunsOn ? H3RunsOn.read("mu") : {}),   // 2.746.0: runs_on + endpoint
     id: curMusicId || undefined,
     kind: "music",
     name: $("s_muname").value, arch: arch.id,
@@ -13300,6 +13305,7 @@ function vsPaintForm(st) {
   const a = st ? (videoArchs.find((x) => x.id === st.arch) || vsArch()) : vsArch();
   curVideoStyleId = st ? st.id : null;
   $("s_vsname").value = st ? st.name : "";
+  if (window.H3RunsOn) H3RunsOn.paint("vs", st || {});   // 2.746.0
   if ($("s_vsarch")) $("s_vsarch").value = a.id;
   for (const m of ["t2va", "ref2va", "fl2va"]) $("s_vswf_" + m).value = (st && st.workflows && st.workflows[m]) || "";
   $("s_vsphases").innerHTML = "";
@@ -13326,6 +13332,7 @@ function vsPaintForm(st) {
 }
 function vsReadForm() {
   return {
+    ...(window.H3RunsOn ? H3RunsOn.read("vs") : {}),   // 2.746.0: runs_on + endpoint
     id: curVideoStyleId || undefined, kind: "video", name: $("s_vsname").value.trim(), arch: $("s_vsarch").value,
     workflows: Object.fromEntries(["t2va", "ref2va", "fl2va"].map((m) => [m, $("s_vswf_" + m).value.trim()])),
     phases: [...$("s_vsphases").children].map((r) => ({ model: r.querySelector(".vsmodel").value.trim(),

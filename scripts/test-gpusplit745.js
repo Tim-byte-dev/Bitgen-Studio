@@ -56,9 +56,11 @@ const R = require("../lib/remoteGpu.js");
     && jE.config.engine.comfy.url === "http://127.0.0.1:8188" && !jE.note && jE.gpu === null);
   // the RunPod style filter: only the kinds Both sends to the endpoint (songs go with video)
   const RS = require("../lib/rpslStyles.js");
-  check("rpslStyles in Both: only the ticked kinds are filtered (Image on; Video and songs off)", JSON.stringify(RS.settings().kinds) === '{"image":true,"video":false,"music":false}' && RS.settings().on);
+  // 2.746.0: in Both every style is listed - a remote style the endpoint cannot render is the only one hidden
+  check("rpslStyles in Both: on, a serverless remote; a local style never hidden, a remote one only when the endpoint cannot render it", RS.settings().on && RS.settings().where === "both" && RS.settings().sls
+    && RS.hideWhy({ runs_on: "local" }, { ok: false, why: "x" }, RS.settings()) === null && RS.hideWhy({ runs_on: "remote" }, { ok: false, why: "x" }, RS.settings()) === "x" && RS.hideWhy({ runs_on: "remote" }, { ok: true }, RS.settings()) === null);
   G.set({ where: "local" });
-  check("Local: this computer's address; nothing filtered; the remote still remembered", CFG.engine.comfy.url === "http://127.0.0.1:8188" && CFG.rgpu.remote_mode === "serverless" && !RS.settings().on
+  check("Local: this computer's address; only the remote styles hidden (2.746.0); the remote still remembered", CFG.engine.comfy.url === "http://127.0.0.1:8188" && CFG.rgpu.remote_mode === "serverless" && !RS.settings().on && /GPU is on Local/.test(RS.hideWhy({ runs_on: "remote" }, { ok: true }, RS.settings()))
     && G.forJob(JSON.parse(JSON.stringify(CFG)), { mode: "image" }).config.engine.comfy.url === "http://127.0.0.1:8188");
   v = G.set({ where: "remote" });
   check("Remote again: the remembered remote back in use", /\/rpsl$/.test(CFG.engine.comfy.url) && CFG.rgpu.mode === "serverless" && v.where === "remote");

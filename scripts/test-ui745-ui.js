@@ -41,6 +41,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   }); });
   const rpUp = await new Promise((r) => { rp.once("error", () => r(false)); rp.listen(8399, "127.0.0.1", () => r(true)); });
   const v0 = await api("/api/remotegpu"), g0 = await api("/api/gpusplit"), c0 = await api("/api/config");
+  const madeRemote = [];
   await api("/api/remotegpu/use", { mode: "local" });
   await api("/api/remotegpu/save", { runpod: { key: "" }, serverless: { endpoint: "", comfy: "0.34.0", show_all: false } });
   await api("/api/gpusplit/vllm", { endpoint: "", model: "", vlm_endpoint: "", vlm_model: "" });
@@ -83,17 +84,20 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
       && G.ticks.join() === "llm-,vlm-,image,video" && !/\/rpsl$/.test(c.engine.comfy.url) && c.rgpu.remote_mode === "serverless", { G, url: c.engine.comfy.url });
     await p.check("#gpu_image"); await sleep(1000);
     G = await gpu();
-    check("…Image ticked: the line says Image on the endpoint, Video + songs here", /Image: RunPod Serverless epui745 · Video \+ songs: this computer/.test(G.line), G.line);
+    check("…Image ticked: the line says Image on the endpoint, Video + songs here", /R_ styles: RunPod Serverless epui745 · other styles: this computer · no style - Image: RunPod Serverless epui745 · Video \+ songs: this computer/.test(G.line), G.line);
     const lists = await ev(() => ({ img: [...document.getElementById("styleSel").options].filter((o) => o.hidden).length, vid: [...document.getElementById("videoStyleSel").options].filter((o) => o.hidden).length,
       note: [...document.getElementById("styleSel").options].some((o) => o.dataset.rpsl === "note") }));
-    check("…the image styles are filtered for the endpoint, the video styles are not (they render here)", lists.img > 0 && lists.note && lists.vid === 0, lists);
+    // 2.746.0: Both lists every style (no remote styles here yet = nothing hidden)
+    check("…Both lists every style (2.746.0 - the style decides where it renders)", lists.img === 0 && !lists.note && lists.vid === 0, lists);
     // an image job goes to the endpoint
     if (rpUp) {
+      // 2.746.0: in Both the STYLE decides - SDXL made a remote style (R_SDXL, no endpoint of its own = the remote GPU's)
       const sty = (await api("/api/styles?kind=image")).styles.find((s) => s.name === "SDXL");
+      await api("/api/styles", { id: sty.id, kind: "image", runs_on: "remote" }); madeRemote.push(sty.id);
       const j = await api("/api/genimage", { prompt: "a green square", style_id: sty.id });
       let st = null; for (let i = 0; i < 60; i++) { await sleep(1000); st = await api("/api/jobs/" + j.id + "?log_from=0"); if (st.status === "done" || st.status === "failed") break; }
       const L = (st.log || []).join("\n");
-      check("…an image job renders on the endpoint: its log says so, ComfyUI's address in it is the endpoint's, the picture comes back", st.status === "done" && /\[gpu\] this image job renders on RunPod Serverless epui745/.test(L)
+      check("…a remote style's image job renders on the endpoint: its log says so, ComfyUI's address in it is the endpoint's, the picture comes back", st.status === "done" && /\[gpu\] this image job \(R_SDXL - a remote style\) renders on RunPod Serverless epui745/.test(L)
         && /\/rpsl/.test(L) && Object.keys(runs).length >= 1, { status: st.status, log: L.split("\n").slice(-8) });
     } else console.log("SKIP: the image job leg - 8399 is busy");
     // vLLM: an endpoint makes LLM / Vision LLM tickable
@@ -102,18 +106,19 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("…with a vLLM endpoint (Settings ▸ Remote GPU ▸ LLM on RunPod) LLM and Vision LLM can be ticked", G.ticks.join() === "llm,vlm,image*,video", G.ticks);
     await p.check("#gpu_llm"); await sleep(800);
     G = await gpu();
-    check("…LLM ticked: the line says LLM on RunPod vLLM", /LLM: RunPod vLLM · Vision LLM: this computer/.test(G.line), G.line);
+    check("…LLM ticked: the line says LLM on RunPod vLLM", / LLM: RunPod vLLM · Vision LLM: this computer/.test(G.line), G.line);
     // Local
     await p.check('input[name="gpuWhere"][value="local"]'); await sleep(1000);
     G = await gpu(); c = await api("/api/config");
     const hid = await ev(() => [...document.getElementById("styleSel").options].filter((o) => o.hidden).length);
-    check("Local: everything on this computer, the boxes hidden, nothing filtered", G.boxes === "none" && /Image: this computer · Video \+ songs: this computer · LLM: this computer/.test(G.line) && !/\/rpsl$/.test(c.engine.comfy.url) && hid === 0, { G, hid });
+    check("Local: everything on this computer, the boxes hidden, only the remote style (R_SDXL) hidden", G.boxes === "none" && /Image: this computer · Video \+ songs: this computer · LLM: this computer/.test(G.line) && !/\/rpsl$/.test(c.engine.comfy.url) && hid === (madeRemote.length ? 1 : 0), { G, hid });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close(); rp.close();
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});
+    for (const id of madeRemote) await api("/api/styles", { id, kind: "image", runs_on: "local" }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: (v0.runpod || {}).key || "" }, serverless: Object.assign({ endpoint: "", cost_hr: 0, comfy: "0.34.0", show_all: false }, v0.serverless || {}) }).catch(() => {});
     await api("/api/gpusplit/vllm", Object.assign({ endpoint: "", model: "", vlm_endpoint: "", vlm_model: "" }, g0.vllm || {})).catch(() => {});
     await api("/api/gpusplit", { where: "local", llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});

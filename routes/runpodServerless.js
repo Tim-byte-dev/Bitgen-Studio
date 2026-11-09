@@ -2,6 +2,7 @@
 // Mounted from routes/index.js: early() BEFORE the app's express.json() (a workflow is bigger than its 100 kB default;
 // an upload is multipart), mount() with the other routes.
 //   GET  /rpsl/system_stats             what the endpoint is (no card here: devices [])
+//   /rpsl/ep/<endpoint>/...  (2.746.0)  the same, for a remote style's own endpoint
 //   POST /rpsl/upload/image             multipart "image" -> kept for the next job {name, subfolder, type}
 //   POST /rpsl/prompt   {prompt}        -> {prompt_id, number, node_errors}  (400 {error, node_errors} as ComfyUI does)
 //   GET  /rpsl/history[/:id]            ComfyUI's history shape, once the job is done
@@ -20,31 +21,37 @@ function early(app) {
 }
 function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
-  app.get("/rpsl/system_stats", (req, res) => res.json(S.stats()));
-  app.post("/rpsl/upload/image", (req, res) => {
+  // 2.746.0: /rpsl/ep/<endpoint>/... = the same ComfyUI shape for ONE remote style's own endpoint (lib/gpuSplit.js forJob);
+  // /rpsl/... = the endpoint in Settings ▸ Remote GPU. Mounted ep first - /rpsl would otherwise see /ep/... and pass it on.
+  const epOf = (req) => String((req.params || {}).ep || "").replace(/[^A-Za-z0-9_-]/g, "");
+  const r = express.Router({ mergeParams: true });
+  r.get("/system_stats", (req, res) => res.json(S.stats(epOf(req))));
+  r.post("/upload/image", (req, res) => {
     const f = S.parseMultipart(req.body, req.headers["content-type"]);
     if (!f) { res.status(400).json({ error: "no file in the upload" }); return; }
     res.json(S.upload(f.name, f.buf));
   });
-  app.post("/rpsl/prompt", async (req, res) => {
-    try { res.json(await S.prompt(req.body || {})); }
+  r.post("/prompt", async (req, res) => {
+    try { res.json(await S.prompt(req.body || {}, epOf(req))); }
     catch (e) {   // ComfyUI's rejection shape - scripts/comfy_client.describe_rejection prints error.message
       res.status(e.status === 401 || e.status === 404 || e.status === 413 || e.status === 400 ? 400 : 502)
         .json({ error: { type: "runpod_serverless", message: "RunPod Serverless: " + String((e && e.message) || e), details: "" }, node_errors: {} });
     }
   });
-  app.get("/rpsl/history/:id", (req, res) => res.json(S.history(req.params.id)));
-  app.get("/rpsl/history", (req, res) => res.json(S.history()));
-  app.get("/rpsl/view", (req, res) => {
+  r.get("/history/:id", (req, res) => res.json(S.history(req.params.id)));
+  r.get("/history", (req, res) => res.json(S.history()));
+  r.get("/view", (req, res) => {
     const p = S.viewPath(req.query.filename, req.query.subfolder);
     if (!p) { res.status(404).json({ error: "no such file" }); return; }
     res.sendFile(p);
   });
-  app.get("/rpsl/queue", (req, res) => res.json(S.queueView()));
-  app.post("/rpsl/queue", (req, res) => res.json({}));
-  app.post("/rpsl/interrupt", wrap(() => S.interrupt()));
-  app.post("/rpsl/free", (req, res) => res.json({}));
-  app.get(/^\/rpsl\/(object_info|ws)(\/.*)?$/, (req, res) => res.status(404).json({ error: "a RunPod Serverless endpoint cannot answer this" }));
+  r.get("/queue", (req, res) => res.json(S.queueView()));
+  r.post("/queue", (req, res) => res.json({}));
+  r.post("/interrupt", wrap(() => S.interrupt()));
+  r.post("/free", (req, res) => res.json({}));
+  r.get(/^\/(object_info|ws)(\/.*)?$/, (req, res) => res.status(404).json({ error: "a RunPod Serverless endpoint cannot answer this" }));
+  app.use("/rpsl/ep/:ep", r);
+  app.use("/rpsl", r);
   app.post("/api/remotegpu/serverless/test", wrap((req) => {
     const b = req.body || {}, o = {};
     if (b.key) o.key = String(b.key).trim();

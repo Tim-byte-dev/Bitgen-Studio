@@ -31,6 +31,12 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const c0 = await api("/api/config");
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI744" }, serverless: { endpoint: "epui744", comfy: "0.34.0", show_all: false } });
   await api("/api/remotegpu/use", { mode: "serverless" });
+  // 2.746.0: Remote lists only the REMOTE styles - every image + video style made remote for this test (put back after)
+  const madeRemote = [];
+  for (const k of ["image", "video"]) for (const st of ((await api("/api/styles?kind=" + k)).styles || [])) {
+    if (st.runs_on === "remote") continue;
+    await api("/api/styles", { id: st.id, kind: k, runs_on: "remote" }); madeRemote.push([st.id, k]);
+  }
   const ans = await api("/api/remotegpu/serverless/styles");
   const b = await chromium.launch();
   try {
@@ -46,16 +52,16 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const wrongI = img.opts.filter((o) => !o.note && o.v && ans.styles[o.v] && o.hidden === ans.styles[o.v].ok);
     const nHidI = img.opts.filter((o) => o.hidden && !o.note).length;
     check("image styles: hidden exactly when the endpoint cannot render them (why in the title); a last line says how many", ans.filter && nHidI > 0 && wrongI.length === 0
-      && img.opts.some((o) => o.note && new RegExp("^☁ " + nHidI + " styles hidden: your RunPod endpoint cannot render them")) && img.opts.filter((o) => o.hidden && !o.note).every((o) => o.title.length > 5), { nHidI, wrongI: wrongI.slice(0, 3), note: img.opts.filter((o) => o.note) });
+      && img.opts.some((o) => o.note && new RegExp("^☁ " + nHidI + " styles hidden: Basic Settings ▸ GPU is on Remote")) && img.opts.filter((o) => o.hidden && !o.note).every((o) => o.title.length > 5), { nHidI, wrongI: wrongI.slice(0, 3), note: img.opts.filter((o) => o.note) });
     const name = (o, re) => o.opts.find((x) => re.test(x.t));
-    check("…SDXL and FLUX 2 Klein shown; Fibo 2, a GGUF style, Qwen Image 2.1 hidden (this install's)", name(img, /^SDXL$/) && !name(img, /^SDXL$/).hidden && name(img, /^FLUX\.2 Klein 9B$/) && !name(img, /^FLUX\.2 Klein 9B$/).hidden
-      && name(img, /^Fibo 2\.0 Dev/).hidden && name(img, /GGUF/).hidden && name(img, /^Qwen Image 2\.1 edit$/).hidden);
-    check("video styles: MiniMax H3 SS shown; LTX, Wan, the swap style hidden; the template (Ref + F/L work) shown", !name(vid, /^MiniMax H3 SS$/).hidden && name(vid, /^LTX 2\.3$/).hidden && name(vid, /^Wan 2\.1$/).hidden
-      && name(vid, /^mmh3_chr_swap$/).hidden && !vid.opts.find((o) => o.v === "").hidden);
+    check("…R_SDXL and R_FLUX 2 Klein shown; Fibo 2, a GGUF style, Qwen Image 2.1 hidden (this install's, made remote)", name(img, /^R_SDXL$/) && !name(img, /^R_SDXL$/).hidden && name(img, /^R_FLUX\.2 Klein 9B$/) && !name(img, /^R_FLUX\.2 Klein 9B$/).hidden
+      && name(img, /^R_Fibo 2\.0 Dev/).hidden && name(img, /GGUF/).hidden && name(img, /^R_Qwen Image 2\.1 edit$/).hidden);
+    check("video styles: R_MiniMax H3 SS shown; LTX, Wan, the swap style hidden; the template (Ref + F/L work) shown", !name(vid, /^R_MiniMax H3 SS$/).hidden && name(vid, /^R_LTX 2\.3$/).hidden && name(vid, /^R_Wan 2\.1$/).hidden
+      && name(vid, /^R_mmh3_chr_swap$/).hidden && !vid.opts.find((o) => o.v === "").hidden);
     check("…nothing hidden is the one picked", ![img, vid].some((x) => (x.opts.find((o) => o.v === x.val) || {}).hidden));
     // a hidden style picked (a project that remembered it) moves to a shown one, with a change event
-    const moved = await ev((id) => { const s = document.getElementById("styleSel"); let changed = 0; s.addEventListener("change", () => changed++, { once: true }); s.value = id; H3RpStyles.apply(); return { val: s.value, hidden: s.selectedOptions[0].hidden, changed }; }, name(img, /^Fibo 2\.0 Dev/).v);
-    check("…a hidden style that was picked moves to a shown one (and the page hears the change)", moved.val !== name(img, /^Fibo 2\.0 Dev/).v && !moved.hidden && moved.changed === 1, moved);
+    const moved = await ev((id) => { const s = document.getElementById("styleSel"); let changed = 0; s.addEventListener("change", () => changed++, { once: true }); s.value = id; H3RpStyles.apply(); return { val: s.value, hidden: s.selectedOptions[0].hidden, changed }; }, name(img, /^R_Fibo 2\.0 Dev/).v);
+    check("…a hidden style that was picked moves to a shown one (and the page hears the change)", moved.val !== name(img, /^R_Fibo 2\.0 Dev/).v && !moved.hidden && moved.changed === 1, moved);
     // the list repainted (a style saved) is filtered again
     await ev(() => { const s = document.getElementById("styleSel"); const o = s.options[0].cloneNode(true); s.innerHTML = ""; [...document.querySelectorAll("#videoStyleSel option")].length; s.appendChild(o); });
     await sleep(300);
@@ -64,12 +70,13 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
 
     // Settings ▸ Remote GPU
     await ev(() => { document.getElementById("openSettings").onclick(); document.querySelector('#settings .stabs [data-stab="rgpu"]').click(); });
-    await p.waitForFunction(() => /can render \d+ of \d+ styles/.test((document.getElementById("rgSlsStyles") || {}).textContent || ""), null, { timeout: 8000 }).catch(() => {});
+    await p.waitForFunction(() => /can render \d+ of your \d+ remote styles/.test((document.getElementById("rgSlsStyles") || {}).textContent || ""), null, { timeout: 8000 }).catch(() => {});
     const tab = await ev(() => ({ line: document.getElementById("rgSlsStyles").textContent, items: [...document.querySelectorAll("#rgSlsStyles li")].map((li) => li.textContent), comfy: document.getElementById("rgSlsComfy").value, all: document.getElementById("rgSlsAll").checked, shown: !!document.getElementById("rgSlsStyles").offsetParent }));
-    const nNo = Object.values(ans.styles).filter((x) => !x.ok).length, nAll = Object.keys(ans.styles).length;
+    const remo = Object.values(ans.styles).filter((x) => x.runs_on === "remote");   // 2.746.0: the remote styles are counted
+    const nNo = remo.filter((x) => !x.ok).length, nAll = remo.length;
     tab.nAll = nAll; tab.nNo = nNo;
-    check("Remote GPU ▸ RunPod Serverless: \"can render N of M\", the others listed with why; ComfyUI 0.34.0, packs off", tab.shown && new RegExp(`can render ${nAll - nNo} of ${nAll} styles`).test(tab.line)
-      && tab.items.length === nNo && tab.items.some((t) => /^LTX 2\.3 \(video\) - the LTX worker/.test(t)) && tab.comfy === "0.34.0" && !tab.all, tab);
+    check("Remote GPU ▸ RunPod Serverless: \"can render N of M\", the others listed with why; ComfyUI 0.34.0, packs off", tab.shown && new RegExp(`can render ${nAll - nNo} of your ${nAll} remote styles`).test(tab.line)
+      && tab.items.length === nNo && tab.items.some((t) => /^R_LTX 2\.3 \(video\) - the LTX worker/.test(t)) && tab.comfy === "0.34.0" && !tab.all, tab);
     // "my image has node packs"
     await p.click("#rgSlsAll"); await sleep(1200);
     L = await lists();
@@ -77,7 +84,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.click("#rgSlsAll"); await sleep(300);
     await p.selectOption("#rgSlsComfy", "latest"); await sleep(1400);
     L = await lists();
-    check("\"A newer ComfyUI\": Fibo 2 shows; a GGUF style still hidden (a node pack)", (await api("/api/remotegpu")).serverless.comfy === "latest" && !name(L[0], /^Fibo 2\.0 Dev/).hidden && name(L[0], /GGUF/).hidden);
+    check("\"A newer ComfyUI\": Fibo 2 shows; a GGUF style still hidden (a node pack)", (await api("/api/remotegpu")).serverless.comfy === "latest" && !name(L[0], /^R_Fibo 2\.0 Dev/).hidden && name(L[0], /GGUF/).hidden);
     await p.selectOption("#rgSlsComfy", "0.34.0"); await sleep(600);
 
     // Settings ▸ Save keeps the endpoint (Tim's test rendered on this computer)
@@ -90,13 +97,15 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.check('#stab-rgpu input[name="rgmode"][value="local"]'); await p.click("#rgUse"); await sleep(1500);
     L = await lists();
     const c2 = await api("/api/config");
-    check("This computer: its own ComfyUI again, and every style shows", !/\/rpsl$/.test(c2.engine.comfy.url) && !L.some((x) => x.opts.some((o) => o.hidden || o.note)), c2.engine.comfy.url);
+    check("This computer: its own ComfyUI again; only this computer's styles listed now (the ones made remote are hidden - 2.746.0)", !/\/rpsl$/.test(c2.engine.comfy.url)
+      && L.every((x) => x.opts.filter((o) => o.v && !o.note).every((o) => o.hidden)) && L[0].opts.some((o) => o.note && /remote styles hidden: Basic Settings ▸ GPU is on Local/.test(o.t)), c2.engine.comfy.url);
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close();
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});
+    for (const [id, k] of madeRemote) await api("/api/styles", { id, kind: k, runs_on: "local" }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: (v0.runpod || {}).key || "" }, serverless: Object.assign({ endpoint: "", cost_hr: 0, comfy: "0.34.0", show_all: false }, v0.serverless || {}) }).catch(() => {});
     if (v0.mode && v0.mode !== "local") await api("/api/remotegpu/use", { mode: v0.mode }).catch(() => {});
     if ((c0.engine || {}).comfy) await api("/api/config", { engine: { comfy: { url: c0.engine.comfy.url, autostart: c0.engine.comfy.autostart } } }).catch(() => {});

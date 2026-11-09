@@ -369,6 +369,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **☁ RunPod Serverless 渲染** — 所有渲染都发送到 RunPod Serverless 端点（RunPod 的 ComfyUI 工作器，模型在网络卷上），只在工作器运行时计费；图片、视频和歌曲都会传回；✓ 测试显示工作器和任务。 *Where:* 设置 ▸ 远程 GPU ▸ RunPod Serverless。 *Since:* 2.743.0
 - **☁ RunPod Serverless 只显示能渲染的风格** — 用 RunPod Serverless 端点渲染时，图片、视频和音乐的风格列表会隐藏它无法渲染的风格（逐个节点对照端点镜像里的 ComfyUI）；可以设置更新的 ComfyUI 或额外的节点包。 *Where:* 风格列表；设置 ▸ 远程 GPU ▸ RunPod Serverless。 *Since:* 2.744.0
 - **🖥 基本设置 ▸ GPU：远程、本地或两者** — 所有任务在远程 GPU 上、全部在这里，或“两者”：勾选的 LLM、视觉 LLM、图片和视频 + 歌曲发送到远程 GPU；LLM 在 RunPod vLLM 端点上运行（设置 ▸ 远程 GPU ▸ LLM on RunPod）。 *Where:* 基本设置 ▸ GPU。 *Since:* 2.745.0
+- **🏷 远程风格** — 每个图片、视频和音乐风格在这台电脑或远程 GPU 上运行（运行于，可选为风格指定自己的 RunPod 端点；远程风格的名称以 R_ 开头）；基本设置 ▸ GPU 为本地时列出这台电脑的风格，远程时列出 R_ 风格，两者时列出全部 - 选两者时由风格决定在哪里渲染。 *Where:* 设置 ▸ 图片 / 视频 / 音频 ▸ 音乐风格 ▸ 运行于；基本设置 ▸ GPU。 *Since:* 2.746.0
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 
