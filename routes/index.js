@@ -333,6 +333,8 @@ function mount(app) {
     const config = core.getConfig();
     const data = req.body || {};
     const prevComfy = { ...((config.engine || {}).comfy || {}) };   // pre-merge snapshot
+    // 2.744.0: while a remote GPU is in use, the ComfyUI tab's address is this computer's - the one in use stays (lib/remoteGpu.js)
+    if (data.engine && data.engine.comfy) data.engine = { ...data.engine, comfy: require("../lib/remoteGpu").guardComfy(data.engine.comfy, config) };
     for (const k of ["python", "sd_cli", "lora_dir", "extra_args"]) if (k in data) config[k] = data[k];
     // NOTE: this is an allow-list — a new top-level config section MUST be
     // added here or its settings save silently, do nothing, and read back as

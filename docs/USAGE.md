@@ -7970,6 +7970,24 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - The model check before a render is skipped: the models are on the endpoint's volume, not on this computer. If one is
   missing, the job fails with the endpoint's own message.
 
+## ☁ On RunPod Serverless, only the styles it can render (2.744.0)
+
+- While **Settings ▸ Remote GPU ▸ RunPod Serverless** is in use, the style lists (the prompt docker's image styles,
+  the video styles, the Music docker's) show only the styles the endpoint can render. The last line of a list says
+  how many are hidden; pointing at a hidden style in Settings says why.
+- An endpoint can't be asked which nodes it has, so the studio goes by what its image carries. RunPod's worker
+  image 5.10.0 has **ComfyUI 0.34.0** and no node packs. A style works when every node of its workflow is in that
+  ComfyUI. Styles whose worker needs ComfyUI's node lists are hidden too: LTX 2.3 / 2.5 and Wan 2.1 / 2.2.
+- In the RunPod Serverless part of Remote GPU:
+  - **ComfyUI in the endpoint's image:** pick **A newer ComfyUI** for an image you built with one (Fibo 2, YuE2,
+    Qwen Image 2.1 … then show).
+  - **My image has extra node packs - show every style:** the studio can't see which packs, so every style shows.
+  - A line says how many styles the endpoint can render, and a list gives the others with the reason.
+- **This computer** shows every style again.
+- Fixed: pressing **Save** in Settings while a remote GPU was in use put ComfyUI's address back to this computer's,
+  so the next render ran here. Now the Remote GPU tab decides which ComfyUI renders. An address typed in the ComfyUI
+  tab is this computer's, and **This computer** uses it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

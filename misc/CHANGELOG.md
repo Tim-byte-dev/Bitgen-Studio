@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.744.0** — ☁ On RunPod Serverless the Style Lists Show Only What the Endpoint Can Render (Each Workflow Checked Node by Node Against the Image's ComfyUI 0.34.0 - or a Newer One; Extra Node Packs = Show Every Style); Fixed: Settings ▸ Save While on a Remote GPU Put the Renders Back on This Computer
 - **2.743.0** — ☁ RunPod Serverless: Settings ▸ Remote GPU Sends Every Render to a Serverless Endpoint (RunPod's ComfyUI Worker, Models on a Network Volume) - Paid Only While a Worker Runs; Pictures, Videos and Songs Come Back (Video Combine and Song Saves Routed Through ComfyUI's Save Video); ✓ Test Shows Workers and Jobs; the 10 MB Limit Checked Before Sending. Fixed: After a Reload, Basic Settings' First Tab Click Could Skip Bringing Back Its Settings (2.742.0)
 - **2.742.0** — 🗂 Every Basic Settings Tab Keeps Its Own Settings: Ref / F/L / Text / Swap Each Remember Format, Size, Seconds, Steps, CFG, Seed and Model (Saved When Left, Back When Reopened, Kept Across Restarts; Only Your Own Click Switches Them); Character Chain Keeps Unsaved Typing
 - **2.741.0** — 🎶 ACE-Step 1.5 Turbo Songs (ComfyUI's Own Template, MIT Licence, 8 Steps): BPM / Key / Beats a Bar / Language and LoRAs per Style; Every Sound Setting on Settings ▸ Audio (the Music Styles Moved From the Music Tab)

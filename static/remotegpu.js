@@ -8,6 +8,10 @@
  *   RunPod Serverless (2.743.0, Tim: "can we try using a runpod serverless gpu?")  the API key (the same one) + the
  *                 endpoint ID + its $/hour; ✓ Test = RunPod's /health (workers ready / running, jobs waiting); each job
  *                 goes to the endpoint through lib/runpodServerless.js
+ *                 2.744.0 (Tim: "if user is using runpod only show the styles that will work with runpod"): which
+ *                 ComfyUI the endpoint's image carries (#rgSlsComfy), "it has node packs - show every style" (#rgSlsAll),
+ *                 and how many styles it can render with the others and why (#rgSlsStyles) - static/rpstyles.js hides
+ *                 them in the style lists. Use it / a save fire document "h3:rgpu".
  *   ✓ Test        the machine's GPU + VRAM + ComfyUI version (<url>/system_stats)
  */
 (function (root) {
@@ -40,6 +44,10 @@
       + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgSlsKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1"></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgEndpoint" spellcheck="false" placeholder="endpoint ID (Serverless → your endpoint, e.g. abc123xyz)" style="flex:1">'
       + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="$/h" title="What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'
+      + '<div class="rowbtns" style="align-items:center;margin-top:6px;flex-wrap:wrap"><label class="f" for="rgSlsComfy" style="margin:0">ComfyUI in the endpoint\'s image</label>'
+      + '<select id="rgSlsComfy" style="flex:1;min-width:220px"><option value="0.34.0">ComfyUI 0.34.0 - RunPod\'s worker image 5.10.0</option><option value="latest">A newer ComfyUI (an image you built)</option></select></div>'
+      + '<label class="chk" style="margin-top:4px"><input type="checkbox" id="rgSlsAll"> My image has extra node packs - show every style</label>'
+      + '<div id="rgSlsStyles" class="hint" aria-live="polite" style="margin-top:4px"></div>'
       + '<ul class="hint help" id="rgSlsHelp" style="margin:6px 0 0;padding-left:18px">'
       + '<li>No machine to start or stop: each render is one job, paid only while a worker runs it.</li>'
       + '<li>The first job after a quiet spell waits for a worker to start - a cold start can take minutes.</li>'
@@ -67,6 +75,7 @@
     $("rgPods").onclick = pods;
     $("rgTunOn").onclick = function () { save().then(function () { return post("/api/remotegpu/tunnel", { on: true }); }).then(function (t) { S.v.tunnel = t; paintTun(); setTimeout(load, 3000); }); };
     $("rgTunOff").onclick = function () { post("/api/remotegpu/tunnel", { on: false }).then(function (t) { S.v.tunnel = t; paintTun(); }); };
+    $("rgSlsComfy").addEventListener("change", save);   // 2.744.0
     h.querySelectorAll("input").forEach(function (el) { if (el.type !== "radio") el.addEventListener("change", save); el.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
     var tb = document.querySelector('#settings .stabs [data-stab="rgpu"]'); if (tb) tb.addEventListener("click", load);
   }
@@ -80,6 +89,8 @@
     $("rgUrl").value = v.url || ""; $("rgCost").value = v.cost_hr || "";
     $("rgKey").value = (v.runpod || {}).key || ""; $("rgPort").value = (v.runpod || {}).port || 8188;
     $("rgSlsKey").value = (v.runpod || {}).key || ""; $("rgEndpoint").value = (v.serverless || {}).endpoint || ""; $("rgSlsCost").value = (v.serverless || {}).cost_hr || "";
+    $("rgSlsComfy").value = (v.serverless || {}).comfy || "0.34.0"; $("rgSlsAll").checked = !!(v.serverless || {}).show_all;
+    paintStyles();
     var s = v.ssh || {}; $("rgHost").value = s.host || ""; $("rgUser").value = s.user || ""; $("rgSshPort").value = s.port || ""; $("rgKeyFile").value = s.key || "";
     $("rgRemotePort").value = s.remote_port || ""; $("rgLocalPort").value = s.local_port || "";
     paintSecs(); paintTun(); paintPods();
@@ -88,9 +99,29 @@
     var key = mode() === "serverless" ? $("rgSlsKey").value : $("rgKey").value;      // one RunPod key for pods and serverless
     return post("/api/remotegpu/save", { url: $("rgUrl").value, cost_hr: $("rgCost").value,
       runpod: { key: key, port: +$("rgPort").value || 8188 },
-      serverless: { endpoint: $("rgEndpoint").value, cost_hr: $("rgSlsCost").value },
+      serverless: { endpoint: $("rgEndpoint").value, cost_hr: $("rgSlsCost").value, comfy: $("rgSlsComfy").value, show_all: $("rgSlsAll").checked },
       ssh: { host: $("rgHost").value, user: $("rgUser").value, port: +$("rgSshPort").value || 22, key: $("rgKeyFile").value, remote_port: +$("rgRemotePort").value || 8188, local_port: +$("rgLocalPort").value || 8189 } })
-      .then(function (v) { if (!v.error) S.v = v; return v; });
+      .then(function (v) { if (!v.error) { S.v = v; changed(); } return v; });
+  }
+  /** 2.744.0: the style lists follow (static/rpstyles.js) and this tab says what the endpoint can render */
+  function changed() { try { document.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } setTimeout(paintStyles, 400); }
+  function paintStyles() {
+    var box = $("rgSlsStyles"); if (!box) return;
+    fetch("/api/remotegpu/serverless/styles").then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.styles) { box.textContent = ""; return; }
+      var all = Object.keys(j.styles).map(function (k) { return j.styles[k]; }), no = all.filter(function (x) { return !x.ok; });
+      box.innerHTML = "";
+      var line = document.createElement("div");
+      line.textContent = j.show_all ? "Every style shows - the endpoint's image has node packs the studio cannot see."
+        : "This endpoint can render " + (all.length - no.length) + " of " + all.length + " styles; the style lists show only those while RunPod Serverless is in use.";
+      box.appendChild(line);
+      if (!no.length || j.show_all) return;
+      var d = document.createElement("details"), sm = document.createElement("summary");
+      sm.textContent = "The styles it cannot render, and why"; d.appendChild(sm);
+      var ul = document.createElement("ul"); ul.style.cssText = "margin:4px 0 0;padding-left:18px";
+      no.forEach(function (x) { var li = document.createElement("li"), b = document.createElement("b"); b.textContent = x.name; li.appendChild(b); li.appendChild(document.createTextNode(" (" + x.kind + ") - " + x.why)); ul.appendChild(li); });
+      d.appendChild(ul); box.appendChild(d);
+    }).catch(function () { /* offline */ });
   }
   function urlFor(m) {
     var v = S.v || {};
@@ -119,8 +150,9 @@
     var m = mode();
     save().then(function () { return post("/api/remotegpu/use", { mode: m }); }).then(function (v) {
       if (v.error) { say("rgMsg", v.error, false); return; }
-      S.v = v; paint();
+      S.v = v; paint(); changed();
       try { if (typeof cfg !== "undefined" && cfg && cfg.engine && cfg.engine.comfy) { cfg.engine.comfy.url = v.comfy_url; } } catch (e) { /* fine */ }
+      try { if ($("s_curl")) $("s_curl").value = v.comfy_url; } catch (e) { /* fine */ }   // 2.744.0: the ComfyUI tab shows the one in use
       say("rgMsg", m === "local" ? "✓ rendering on this computer again" : "✓ rendering with " + v.current.label + " - ✓ Test it", true);
     });
   }

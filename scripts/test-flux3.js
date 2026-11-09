@@ -95,7 +95,7 @@ check("pick: keeps an edit style, else the remembered one, else the first that c
   && IO.pick(["a", "b"], ed, "a", null) === null);
 const IOS = read("ext", "imageeditdock", "ieeditonly.js"), EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts;
 check("the page: /api/aiedit/engines' edit list, options hidden + disabled (never removed), restored when the editor closes; loaded after mount.js",
-  /fetch\("\/api\/aiedit\/engines"\)/.test(IOS) && /o\.hidden = hide; o\.disabled = hide;/.test(IOS) && /pref\.set\("ie\.styleWas"/.test(IOS)
+  /fetch\("\/api\/aiedit\/engines"\)/.test(IOS) && /o\.hidden = hide \|\| rp; o\.disabled = hide \|\| rp;/.test(IOS) && /pref\.set\("ie\.styleWas"/.test(IOS)
   && EXT.indexOf("ieeditonly.js") === EXT.indexOf("mount.js") + 1);
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

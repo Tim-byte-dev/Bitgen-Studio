@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.744.0 (Tim: "if user is using runpod only show the styles that will work with runpod" + his test that rendered locally)
+node scripts/test-rpslstyles744.js > /tmp/rpslstyles744.log 2>&1 \
+  && ok "2.744.0 RunPod styles: ComfyUI 0.34.0 / newer node lists from ComfyUI's source; each style's workflow checked node by node (image, music, video own / per-mode / templates; LTX + Wan need /object_info; UI exports, other engines, chains); Settings ▸ Save keeps the remote ComfyUI (the ComfyUI tab's address = this computer's)" \
+  || { bad "2.744.0 RunPod styles units"; grep -a "^FAIL" -A1 /tmp/rpslstyles744.log | head -14; }
+node scripts/test-ui744-ui.js > /tmp/ui744ui.log 2>&1 \
+  && ok "2.744.0 browser test: on RunPod Serverless the image / video style lists hide exactly what the endpoint cannot render (+ how many), a hidden pick moves; Remote GPU says N of M + why; node packs = every style, a newer ComfyUI = Fibo 2; Settings ▸ Save keeps /rpsl; This computer = every style - or SKIP" \
+  || { bad "2.744.0 RunPod styles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui744ui.log | head -14; }
 # ---- 2.743.0 (Tim: "can we try using a runpod serverless gpu?")
 node scripts/test-rpsl743.js > /tmp/rpsl743.log 2>&1 \
   && ok "2.743.0 RunPod Serverless: Video Combine -> CreateVideo + SaveVideo, a song save -> its sound in a 16x16 video (ComfyUI's input names); the 10 MB limit; against a stand-in RunPod the app's own comfy_client uploads, queues, waits and downloads a picture, the LTX Ripple videos and an ACE-Step mp3 (out of its carrier with ffmpeg); a failed job, a bucket result, a cancel" \

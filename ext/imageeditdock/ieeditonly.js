@@ -13,6 +13,8 @@
  * be availaible at all times"): since 2.541.0 the prompt docker's ▾ says what its button does - only EDIT, REPLACE
  * BACKGROUND and COMPOSE need an edit model, so only then is the list narrowed; ✨ Generate / Refine / Fill / Remove list
  * every style (Krea 2, SDXL …). Picking a style that cannot edit while the ▾ is on Edit puts the ▾ on Generate.
+ * 2.744.0: static/rpstyles.js also hides styles here (on a RunPod Serverless endpoint, those it cannot render - marked
+ * data-rpsl-why): an option stays hidden when EITHER says so, and a style it hides is never the one picked here.
  * Pure (Node: scripts/test-ieeditonly.js, test-ieedit549.js): pick(options, editIds, current, preferred), needsEdit(op).
  */
 (function (root) {
@@ -50,7 +52,12 @@
     busy = true;
     try {
       var opts = [].slice.call(sel.options);
-      opts.forEach(function (o) { var hide = on && !!o.value && !edit.has(o.value); o.hidden = hide; o.disabled = hide; });
+      opts.forEach(function (o) {
+        var hide = on && !!o.value && !edit.has(o.value);
+        o.dataset.ieHide = hide ? "1" : "";
+        var rp = o.dataset.rpslWhy != null;                                   // 2.744.0: RunPod Serverless hides it too
+        o.hidden = hide || rp; o.disabled = hide || rp;
+      });
       sel.classList.toggle("ie-editonly", on);
       if (on) {
         sel.dataset.ieTitle = sel.dataset.ieTitle || sel.title || "";
@@ -58,7 +65,7 @@
         // 2.549.0: the style to put back on close = the last one that could not edit (the ▾'s Edit may have switched
         // it already - pcpromptlink.js toEditStyle - before this ran)
         if (!wasOn) pref.set("ie.styleWas", edit.has(sel.value) ? (pref.get("ie.lastPlain") || sel.value) : sel.value);
-        var want = pick(opts.map(function (o) { return o.value; }), edit, sel.value, pref.get("ie.editStyle"));
+        var want = pick(opts.filter(function (o) { return o.dataset.rpslWhy == null; }).map(function (o) { return o.value; }), edit, sel.value, pref.get("ie.editStyle"));
         if (want && want !== sel.value) {
           sel.value = want;
           if (sel.onchange) sel.onchange();
