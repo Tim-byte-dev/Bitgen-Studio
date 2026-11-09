@@ -7928,6 +7928,17 @@ playing (2.725.1).
     not known.
 - The caption is still the style (genre, instruments, mood, singer) and the lyrics are still the prompt.
 
+## 🗂 Every Basic Settings tab keeps its own settings (2.742.0)
+
+- In **Basic Settings**, each of **Ref**, **F/L**, **Text** and **Swap** remembers its own settings: Format,
+  Resolution, Aspect, Width and Height, Seconds, Max seconds per segment, Steps, CFG, Seed and Model. Change tab and the
+  one you leave is saved; go back and its settings return. A tab you have not opened before starts with what is
+  showing. They are kept in this browser, so they last after a restart.
+- Only your own click changes them. When a project opens, or the app picks a tab for you (adding pictures, a
+  screenplay), the settings showing stay as they are.
+- **Character chain** keeps what you typed when you go to **Standard** and back, even before you press
+  **💾 Save chain settings**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

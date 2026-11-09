@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.742.0** — 🗂 Every Basic Settings Tab Keeps Its Own Settings: Ref / F/L / Text / Swap Each Remember Format, Size, Seconds, Steps, CFG, Seed and Model (Saved When Left, Back When Reopened, Kept Across Restarts; Only Your Own Click Switches Them); Character Chain Keeps Unsaved Typing
 - **2.741.0** — 🎶 ACE-Step 1.5 Turbo Songs (ComfyUI's Own Template, MIT Licence, 8 Steps): BPM / Key / Beats a Bar / Language and LoRAs per Style; Every Sound Setting on Settings ▸ Audio (the Music Styles Moved From the Music Tab)
 - **2.740.0** — ⬇ A Part Not Installed Yet (the Song Separation, Speech to Text) Is Asked for in a Download / Cancel Box and Installed in Place - ✨ Create, Split Into Layers and the Stems Docker Go On by Themselves
 - **2.739.0** — ✨ Create: Pick a Song (the Project's or One From This Computer) and One Press Splits It Into Its Layers (Waveforms Shown), Takes the Lyrics (the Song Tab's or Heard in the Vocals) and Writes Its Sheet Music With the Words, Playing That Song

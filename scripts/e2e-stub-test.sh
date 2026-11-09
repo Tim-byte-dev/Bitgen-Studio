@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.742.0 (Tim: "when the tab is changed save the settings of the tab before it is changed and revert when tab is
+# changed back" - "i mean the basic settings docker")
+node scripts/test-ui742-ui.js > /tmp/ui742ui.log 2>&1 \
+  && ok "2.742.0 browser test: Basic Settings' Ref / F/L / Text / Swap each keep their own settings (saved when left, back when reopened, the labels follow, kept across a reload); a mode the app picks changes nothing and the settings stay the user's tab's; Character chain keeps unsaved typing until Save - or SKIP" \
+  || { bad "2.742.0 Basic Settings tabs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui742ui.log | head -14; }
 # ---- 2.741.0 (Tim: "yes please" to ACE-Step + "we can also add an audio tab to general settings, ace step can use loras , i am
 # not sure about the other" -> "All on the Audio tab")
 python3 scripts/test-acestep741.py > /tmp/acestep741.log 2>&1 \
