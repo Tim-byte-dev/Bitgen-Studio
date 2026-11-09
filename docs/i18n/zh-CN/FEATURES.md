@@ -363,6 +363,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **🎼 声部与混音** — 总谱一个标签，每个谱表各一个标签：每种乐器和人声都有单独的乐谱（带声部名，人声声部带歌词），可阅读并存为 PDF；播放时，用音符播放可逐个谱表开关（Shift+点击 = 只听这一个），用歌曲播放则在分离后可开关 Vocals / Instruments（✂ Separate vocals）。 *Where:* Music 面板的 🎼 Sheet Music 标签页。 *Since:* 2.737.0
 - **🎚 按图层播放歌曲** — 乐谱播放真正的歌曲（项目中的任何歌曲，自动找到或按乐谱选择并记住），分成 Vocals、Drums、Bass 和 Other（✂ Split into layers，在这台电脑上用 demucs），每个图层一条轨道，带波形、播放位置、开关（Shift+点击 = 只听这一个）和点击播放；没有歌曲的乐谱用柔和的钢琴声播放音符。 *Where:* Music 面板的 🎼 Sheet Music 标签页。 *Since:* 2.738.0
 - **✨ Create** — 一键把歌曲（项目中的或这台电脑上的）变成四个图层及其波形、歌词（Song 标签页的，或从人声中听出）以及音符下方带歌词的乐谱，并按图层播放这首歌。 *Where:* Music 面板的 🎼 Sheet Music 标签页 ▸ Song + ✨ Create。 *Since:* 2.739.0
+- **⬇ 缺少的组件就地下载** — 尚未安装的组件（歌曲分离、语音转文字）会在带大小说明的 ⬇ Download / Cancel 框中询问；Download 会带进度条安装，任务随后自动继续。 *Where:* ✨ Create、✂ Split into layers、Stems 面板的 Separate。 *Since:* 2.740.0
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 

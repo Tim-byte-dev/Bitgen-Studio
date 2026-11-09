@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.740.0 (Tim: "Create stopped at the split: demucs is not installed — press Install in the Stems dock , if a model needs to
+# be installed show the download/cancel msgbox and download the model instead of asking user to find install")
+node scripts/test-ui740-ui.js > /tmp/ui740ui.log 2>&1 \
+  && ok "2.740.0 browser test: ✨ Create with the separation not installed = the ⬇ Download / Cancel box (what, why, size; Cancel focused - Enter stops at the split, nothing queued); Download queues the install, shows its bar + log line, closes by itself and Create goes on; speech not installed = its own box (Cancel = no words, Download = the words heard); the Stems docker's Separate asks too - or SKIP" \
+  || { bad "2.740.0 download-box browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui740ui.log | head -14; }
 # ---- 2.739.0 (Tim: "add a button - Create - this will use the audio file + lyrics from song or loaded file or transcribed file,
 # split the stems show the different waveforms and create the sheet music - i think this will make it less complicated")
 node scripts/test-ui739-ui.js > /tmp/ui739ui.log 2>&1 \

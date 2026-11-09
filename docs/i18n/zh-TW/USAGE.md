@@ -4764,6 +4764,14 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 如果某一步無法執行（未安裝分離工具、ComfyUI 沒有執行…），Create 會停在那裡並說明原因。
 - 沒有錄音的樂譜仍可使用 **🎼 Write from lyrics**：它根據歌詞和風格作曲。
 
+## ⬇ 缺少的元件在需要時下載（2.740.0）
+<!-- en: missing-parts-download-when-they-are-needed-2-740-0 20afe21c1c0a -->
+
+- 當某個功能需要尚未安裝的元件時 - **✨ Create**、**✂ Split into layers** 或 Stems 面板的 **Separate** 所用的歌曲分離（demucs），或用來聽出歌詞的語音轉文字（Whisper）- 會彈出一個框，說明缺少什麼、它的作用和大小，並帶有 **⬇ Download** 和 **Cancel**。你不必去找 Install 按鈕。
+- **⬇ Download** 會就地安裝，顯示進度條和正在做的事；完成後框會關閉，工作自動繼續（✨ Create 會依次進行分離、歌詞和樂譜）。
+- **Cancel**（Enter 和 Esc 也是 - 焦點在 Cancel 上，所以大的下載不會因誤按而開始）會停止該工作並說明。對於歌詞，Cancel 只是做出不帶歌詞的樂譜。下載時按 **Close** 會讓安裝在佇列中繼續。
+- ComfyUI 算圖用的模型已經以同樣方式詢問（找不到模型的提示框，2.719.0）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

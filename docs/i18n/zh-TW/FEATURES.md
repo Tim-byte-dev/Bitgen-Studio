@@ -363,6 +363,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🎼 聲部與混音** — 總譜一個分頁，每個譜表各一個分頁：每種樂器和人聲都有單獨的樂譜（帶聲部名，人聲聲部帶歌詞），可閱讀並存為 PDF；播放時，用音符播放可逐個譜表開關（Shift+點擊 = 只聽這一個），用歌曲播放則在分離後可開關 Vocals / Instruments（✂ Separate vocals）。 *Where:* Music 面板的 🎼 Sheet Music 分頁。 *Since:* 2.737.0
 - **🎚 按圖層播放歌曲** — 樂譜播放真正的歌曲（專案中的任何歌曲，自動找到或按樂譜選擇並記住），分成 Vocals、Drums、Bass 和 Other（✂ Split into layers，在這台電腦上用 demucs），每個圖層一條軌道，帶波形、播放位置、開關（Shift+點擊 = 只聽這一個）和點擊播放；沒有歌曲的樂譜用柔和的鋼琴聲播放音符。 *Where:* Music 面板的 🎼 Sheet Music 分頁。 *Since:* 2.738.0
 - **✨ Create** — 一鍵把歌曲（專案中的或這台電腦上的）變成四個圖層及其波形、歌詞（Song 分頁的，或從人聲中聽出）以及音符下方帶歌詞的樂譜，並按圖層播放這首歌。 *Where:* Music 面板的 🎼 Sheet Music 分頁 ▸ Song + ✨ Create。 *Since:* 2.739.0
+- **⬇ 缺少的元件就地下載** — 尚未安裝的元件（歌曲分離、語音轉文字）會在帶大小說明的 ⬇ Download / Cancel 框中詢問；Download 會帶進度條安裝，工作隨後自動繼續。 *Where:* ✨ Create、✂ Split into layers、Stems 面板的 Separate。 *Since:* 2.740.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

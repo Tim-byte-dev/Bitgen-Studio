@@ -49,7 +49,7 @@
       .then(function (j) {
         say(j.installed
           ? "demucs ready (" + (j.model || "htdemucs") + " on " + (j.device || "auto") + ")"
-          : "demucs is not installed — press ⚙ Install (its own venv, ~2 GB with torch)");
+          : "demucs is not installed — Separate offers to download it (or ⚙ Install; its own venv, ~2.5 GB with torch)");
         // 2.601.0 (Tim: "if an addon/package/model has been installed change the button to reinstall"): an installed
         // demucs shows ⟳ Reinstall (it was hidden since 2.274.0); never relabelled while its install runs
         var ib = el("stInstall");
@@ -748,7 +748,20 @@
   if (el("stGo")) el("stGo").onclick = function () {
     var song = el("stSong") ? el("stSong").value : "";
     if (!song) { say("pick a song first"); return; }
-    var b = el("stGo"); b.disabled = true;
+    var b = el("stGo");
+    // 2.740.0 (Tim: "if a model needs to be installed show the download/cancel msgbox and download the model"): demucs not
+    // installed = the ⬇ Download / Cancel box (H3NeedInstall), then the separation goes on by itself
+    if (window.H3NeedInstall && !b.dataset.niOk) {
+      b.disabled = true;
+      window.H3NeedInstall.ensure("demucs", "Separate splits the song into its vocals and its instruments with it.").then(function (ok) {
+        b.disabled = false;
+        if (!ok) { say("the song separation is not installed - Separate asks to download it"); return; }
+        status();
+        b.dataset.niOk = "1"; try { b.onclick(); } finally { delete b.dataset.niOk; }
+      });
+      return;
+    }
+    b.disabled = true;
     sepAnimStart(b);
     say("separating " + song + " — the first run also downloads the htdemucs weights…");
     if (el("stOut")) el("stOut").textContent = "";

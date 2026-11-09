@@ -391,6 +391,14 @@
     const song = curSong(), btn = $("muStemSep");
     if (!song) return Promise.resolve(null);
     if (btn) { btn.disabled = true; btn.textContent = "⏳ Splitting…"; }
+    // 2.740.0: not installed = the ⬇ Download / Cancel box first
+    const need = root.H3NeedInstall ? root.H3NeedInstall.ensure("demucs", "✂ Split into layers splits the song with it.") : Promise.resolve(true);
+    return need.then((ok) => {
+      if (!ok) { if (btn) { btn.disabled = false; btn.textContent = "✂ Split into layers"; } status("the song separation is not installed - ✂ Split into layers asks to download it"); return null; }
+      return splitNow(song, btn);
+    });
+  }
+  function splitNow(song, btn) {
     status("✂ splitting " + song.name + " into vocals, drums, bass and the rest (demucs, on this computer) - a song takes a minute or two…");
     return root.fetch("/api/stems/separate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ file: song.name, layers: 4 }) })
       .then((x) => x.json()).then((j) => {

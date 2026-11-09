@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5596,
+ "count": 5604,
  "strings": [
   {
    "s": "0 (auto)",
@@ -8284,6 +8284,15 @@
    ]
   },
   {
+   "s": "Create listens to the vocals with it for the words - the Song tab's lyrics box is empty. Cancel = the sheet music without words",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
+   ]
+  },
+  {
    "s": "Create music video",
    "kinds": [
     "aria-label"
@@ -8344,6 +8353,15 @@
    ],
    "where": [
     "button#ptSong.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Create splits the song into its layers with it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
    ]
   },
   {
@@ -15593,6 +15611,15 @@
    ],
    "where": [
     "button#tlTrimHead.ghost"
+   ]
+  },
+  {
+   "s": "Hears the words that are sung or spoken",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
    ]
   },
   {
@@ -30750,6 +30777,15 @@
    ]
   },
   {
+   "s": "Separate splits the song into its vocals and its instruments with it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
+   ]
+  },
+  {
    "s": "Sepia",
    "kinds": [
     "text"
@@ -33242,6 +33278,15 @@
    ]
   },
   {
+   "s": "Split into layers splits the song with it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
+   ]
+  },
+  {
    "s": "Split into vocals + instrumental with demucs (GPU if available; the first run downloads the htdemucs weights into demucs' own cache)",
    "kinds": [
     "title"
@@ -33257,6 +33302,15 @@
    ],
    "where": [
     "button#goSheetCreate.ghost.muPri"
+   ]
+  },
+  {
+   "s": "Splits a song into its layers - vocals, drums, bass and the rest",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
    ]
   },
   {
@@ -41521,6 +41575,24 @@
    ],
    "where": [
     "div.kv in #aoList"
+   ]
+  },
+  {
+   "s": "about 2 GB: PyTorch and faster-whisper, installed once into venvs/whisper; its model comes with the first use",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
+   ]
+  },
+  {
+   "s": "about 2.5 GB: PyTorch and Meta's demucs, installed once into venvs/demucs; its model (about 80 MB) comes with the first split",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "dialog#niDlg"
    ]
   },
   {

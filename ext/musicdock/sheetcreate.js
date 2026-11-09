@@ -75,6 +75,9 @@
     try {
       // 1 the layers
       if (!(song.layers && song.layers.drums)) {
+        // 2.740.0 (Tim: "if a model needs to be installed show the download/cancel msgbox and download the model instead of
+        // asking user to find install"): the separation not installed = the ⬇ Download / Cancel box, then on from here
+        if (root.H3NeedInstall && !(await root.H3NeedInstall.ensure("demucs", "✨ Create splits the song into its layers with it."))) throw new Error("the song separation is not installed - ⬇ Download it in the box, then ✨ Create again");
         status("✨ 1 / 3 - splitting " + song.name + " into vocals, drums, bass and the rest (demucs, on this computer)…");
         await post("/api/stems/separate", { file: song.name, layers: 4 });
         await M().refresh();
@@ -91,6 +94,8 @@
       if (!words) {
         status("✨ 2 / 3 - listening to the vocals for the words…");
         try {
+          if (root.H3NeedInstall && !(await root.H3NeedInstall.ensure("whisper", "✨ Create listens to the vocals with it for the words - the Song tab's lyrics box is empty. Cancel = the sheet music without words.")))
+            throw new Error("speech to text is not installed");
           const j = await post("/api/asr/transcribe", { name: song.layers.vocals, mode: "lyrics" });
           words = String(j.text || "").trim();
           if (words && box) { box.value = words; box.dispatchEvent(new Event("input", { bubbles: true })); }

@@ -7901,6 +7901,18 @@ playing (2.725.1).
 - If a step cannot run (the separation is not installed, ComfyUI is not running…), Create stops there and says why.
 - **🎼 Write from lyrics** is still there for a score with no recording: it composes one from the lyrics and the style.
 
+## ⬇ Missing parts download when they are needed (2.740.0)
+
+- When something needs a part that is not installed yet - the song separation (demucs) for **✨ Create**, **✂ Split into
+  layers** or the Stems docker's **Separate**, or speech to text (Whisper) for hearing the words - a box says what is
+  missing, what it does and how big it is, with **⬇ Download** and **Cancel**. You do not have to find an Install button.
+- **⬇ Download** installs it right there, with a progress bar and what it is doing; when it is done the box closes and the
+  job carries on by itself (✨ Create goes on with the split, then the words, then the sheet music).
+- **Cancel** (Enter and Esc too - Cancel has the focus, so a big download is never one stray key away) stops that job and
+  says so. For the words, Cancel just makes the sheet music without them. **Close** while it downloads leaves the install
+  running in the Queue.
+- Models that ComfyUI renders with already ask the same way (the models-not-found box, 2.719.0).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

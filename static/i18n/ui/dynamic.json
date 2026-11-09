@@ -4995,6 +4995,30 @@
    "src": "static/modelsfound.js:140"
   },
   {
+   "s": "Song separation (demucs)",
+   "src": "static/needinstall.js:20"
+  },
+  {
+   "s": "Splits a song into its layers - vocals, drums, bass and the rest",
+   "src": "static/needinstall.js:20"
+  },
+  {
+   "s": "Speech to text (Whisper)",
+   "src": "static/needinstall.js:23"
+  },
+  {
+   "s": "Hears the words that are sung or spoken",
+   "src": "static/needinstall.js:23"
+  },
+  {
+   "s": "Close this box - the install keeps going in the Queue",
+   "src": "static/needinstall.js:111"
+  },
+  {
+   "s": "Try again",
+   "src": "static/needinstall.js:121"
+  },
+  {
    "s": "Negative prompt docker (2)",
    "src": "static/negprompt.js:108"
   },
@@ -15112,31 +15136,31 @@
   },
   {
    "s": "Pause",
-   "src": "ext/musicdock/muscore.js:500"
+   "src": "ext/musicdock/muscore.js:508"
   },
   {
    "s": "Play - the notes light up as they sound",
-   "src": "ext/musicdock/muscore.js:500"
+   "src": "ext/musicdock/muscore.js:508"
   },
   {
    "s": "bar –",
-   "src": "ext/musicdock/muscore.js:516"
+   "src": "ext/musicdock/muscore.js:524"
   },
   {
    "s": "picture",
-   "src": "ext/musicdock/muscore.js:571"
+   "src": "ext/musicdock/muscore.js:579"
   },
   {
    "s": "From this computer",
-   "src": "ext/musicdock/muscore.js:612"
+   "src": "ext/musicdock/muscore.js:620"
   },
   {
    "s": "Navy",
-   "src": "ext/musicdock/muscore.js:616"
+   "src": "ext/musicdock/muscore.js:624"
   },
   {
    "s": "Audio file",
-   "src": "ext/musicdock/muscore.js:696"
+   "src": "ext/musicdock/muscore.js:704"
   },
   {
    "s": "the lyrics box is empty — the video follows the song's words",
@@ -22837,6 +22861,22 @@
    "src": "static/modelswap.js:56"
   },
   {
+   "p": "{0} is not installed yet",
+   "src": "static/needinstall.js:89"
+  },
+  {
+   "p": "This needs {0}",
+   "src": "static/needinstall.js:90"
+  },
+  {
+   "p": "Download: {0}",
+   "src": "static/needinstall.js:92"
+  },
+  {
+   "p": "{0} installed",
+   "src": "static/needinstall.js:120"
+  },
+  {
    "p": "{0} · empty = the style's own",
    "src": "static/negprompt.js:105"
   },
@@ -24010,15 +24050,15 @@
   },
   {
    "p": "bar {0}1 / {1}",
-   "src": "ext/musicdock/muscore.js:516"
+   "src": "ext/musicdock/muscore.js:524"
   },
   {
    "p": "{0} pt",
-   "src": "ext/musicdock/muscore.js:581"
+   "src": "ext/musicdock/muscore.js:589"
   },
   {
    "p": "{0} paper",
-   "src": "ext/musicdock/muscore.js:621"
+   "src": "ext/musicdock/muscore.js:629"
   },
   {
    "p": "writing the screenplay… ({0} scenes; a big song can take a few minutes)",
@@ -24334,7 +24374,7 @@
   },
   {
    "p": "{0} 🎸 {1} — the vocal stem makes the cleanest @music timing reference",
-   "src": "ext/stemsdock/stemsdock.js:764"
+   "src": "ext/stemsdock/stemsdock.js:777"
   },
   {
    "p": "{0} bone(s) turned",
