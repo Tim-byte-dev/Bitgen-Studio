@@ -49,7 +49,7 @@
     return post("/api/update/check").then(function (c) {
       S.chk = c; $("upCheck").disabled = false;
       var m = c.error && !c.latest ? "✗ " + c.error
-        : c.newer ? '<span class="new">⬆ ' + esc(c.latest || "a newer version") + " is on GitHub</span> (you have " + esc(c.current) + (c.behind ? ", " + c.behind + " new commit(s)" : "") + ")"
+        : c.newer ? '<span class="new">⬆ ' + esc(c.latest || "a newer version") + " is on GitHub</span> (you have " + esc(c.current) + (c.more ? ", new commits waiting" : c.behind ? ", " + c.behind + " new commit(s)" : "") + ")"
         : "✓ You have the newest version (" + esc(c.current) + ")";
       $("upMsg").innerHTML = m;
       $("upGo").disabled = !c.newer;
@@ -57,7 +57,12 @@
       ol.innerHTML = (c.commits || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
       if (window.H3TestEvent) window.H3TestEvent("update_check", c.newer ? "newer" : "same");
       return c;
-    }).catch(function (e) { $("upCheck").disabled = false; $("upMsg").textContent = "✗ " + e.message; });
+    }).catch(function (e) { $("upCheck").disabled = false; $("upMsg").textContent = "✗ " + said(e); });
+  }
+  /** 2.747.0: the browser's "Failed to fetch" = the studio stopped answering - say that */
+  function said(e) {
+    var m = String((e && e.message) || e || "");
+    return /failed to fetch|networkerror|load failed/i.test(m) ? "bitGen Studio stopped answering (" + m + ") - is it still running? Try again in a moment" : m;
   }
   function update() {
     var c = S.chk || {};
@@ -67,7 +72,7 @@
     return post("/api/update/start").then(function (r) {
       if (r.error) { $("upMsg").textContent = "✗ " + r.error; $("upCheck").disabled = false; return r; }
       S.job = { state: "running" }; paintJob(); follow(); return r;
-    });
+    }).catch(function (e) { $("upMsg").textContent = "✗ " + said(e); $("upCheck").disabled = false; $("upGo").disabled = false; return null; });
   }
   function follow() {
     clearTimeout(S.timer);

@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "4344ff581ea3",
- "count": 8999,
+ "v": "06a1c48a1cbd",
+ "count": 9000,
  "patternCount": 1073,
  "strings": {
   "0 (auto)": "0（自动）",
@@ -3851,6 +3851,7 @@
   "No rating": "无评分",
   "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote GPU": "没有设置远程 GPU - 所有任务都在这台电脑上运行。请在 设置 ▸ 远程 GPU 中设置",
   "No remote styles yet - set a style's Runs on to Remote GPU (Settings ▸ Image, Video or Audio ▸ Music styles)": "还没有远程风格 - 把风格的“运行于”设为远程 GPU（设置 ▸ 图片、视频 或 音频 ▸ 音乐风格）",
+  "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU": "没有远程风格：基本设置 ▸ GPU 为远程 - 请改为本地，或把风格的“运行于”设为远程 GPU",
   "No render details for this file": "此文件没有渲染详情",
   "No rotation": "不旋转",
   "No rotation (X / Y / Z 0°)": "无旋转（X / Y / Z 0°）",

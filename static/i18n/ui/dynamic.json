@@ -2723,36 +2723,36 @@
    "src": "static/framesize.js:26"
   },
   {
-   "s": "Remote",
-   "src": "static/gpusplit.js:24"
+   "s": "Local",
+   "src": "static/gpusplit.js:25"
   },
   {
-   "s": "Local",
-   "src": "static/gpusplit.js:24"
+   "s": "Remote",
+   "src": "static/gpusplit.js:25"
   },
   {
    "s": "Both",
-   "src": "static/gpusplit.js:24"
+   "src": "static/gpusplit.js:25"
   },
   {
    "s": "Vision LLM",
-   "src": "static/gpusplit.js:29"
+   "src": "static/gpusplit.js:30"
   },
   {
    "s": "Image",
-   "src": "static/gpusplit.js:30"
+   "src": "static/gpusplit.js:31"
   },
   {
    "s": "Video + songs",
-   "src": "static/gpusplit.js:30"
+   "src": "static/gpusplit.js:31"
   },
   {
    "s": "No RunPod vLLM endpoint yet - set up Settings ▸ Remote GPU ▸ LLM on RunPod",
-   "src": "static/gpusplit.js:53"
+   "src": "static/gpusplit.js:54"
   },
   {
    "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote GPU",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -5619,6 +5619,10 @@
    "src": "static/remotegpu.js:215"
   },
   {
+   "s": "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU",
+   "src": "static/rpstyles.js:57"
+  },
+  {
    "s": "RTX VFX finisher",
    "src": "static/rtxvfxpanel.js:38"
   },
@@ -7428,11 +7432,11 @@
   },
   {
    "s": "In a browser: close the window running start.bat (or bitgen-studio.sh) and start it again",
-   "src": "static/updater.js:89"
+   "src": "static/updater.js:94"
   },
   {
    "s": "Restart: close start.bat and start it again",
-   "src": "static/updater.js:89"
+   "src": "static/updater.js:94"
   },
   {
    "s": "Day",
@@ -22226,11 +22230,11 @@
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11570"
+   "src": "index.html:11571"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11571"
+   "src": "index.html:11572"
   },
   {
    "p": "The credits could not be read: {0}",
@@ -22618,47 +22622,47 @@
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: this computer · Vision LLM: this computer",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: this computer",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:56"
+   "src": "static/gpusplit.js:57"
   },
   {
    "p": "{0} takes {1} · saves: {2}",
@@ -23266,15 +23270,15 @@
   },
   {
    "p": "{0} remote styles hidden: Basic Settings ▸ GPU is on Local",
-   "src": "static/rpstyles.js:56"
+   "src": "static/rpstyles.js:57"
   },
   {
    "p": "{0} styles hidden: Basic Settings ▸ GPU is on Remote - only the remote styles it can render show",
-   "src": "static/rpstyles.js:56"
+   "src": "static/rpstyles.js:57"
   },
   {
    "p": "{0} styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)",
-   "src": "static/rpstyles.js:56"
+   "src": "static/rpstyles.js:57"
   },
   {
    "p": "This ComfyUI has no DenoRTXVFXVideoFinisher yet. {0}",

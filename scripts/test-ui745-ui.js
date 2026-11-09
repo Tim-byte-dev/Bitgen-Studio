@@ -51,7 +51,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const p = await b.newPage({ viewport: { width: 1400, height: 1000 } });
     const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const ev = (f, a) => p.evaluate(f, a);
-    const ready = async () => { await p.waitForFunction(() => window.H3GpuSplit && H3GpuSplit.state().v && document.getElementById("gpuWhere"), null, { timeout: 30000 }); await sleep(500); };
+    const ready = async () => { await p.waitForFunction(() => window.H3GpuSplit && H3GpuSplit.state().v && document.getElementById("gpuWhere"), null, { timeout: 30000 }); await sleep(500); await ev(() => toggleSec("gpu", false)); };   // 2.747.0: closed by default
     const gpu = () => ev(() => ({ radios: [...document.querySelectorAll('input[name="gpuWhere"]')].map((i) => i.value + (i.checked ? "*" : "") + (i.disabled ? "-" : "")),
       boxes: document.getElementById("gpuBoxes").style.display, ticks: ["llm", "vlm", "image", "video"].map((k) => { const i = document.getElementById("gpu_" + k); return k + (i.checked ? "*" : "") + (i.disabled ? "-" : ""); }),
       line: document.getElementById("gpuLine").textContent, msg: document.getElementById("gpuMsg").textContent, setup: document.getElementById("gpuSetup").style.display !== "none",
@@ -59,8 +59,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.goto(URL0); await ready();
     let G = await gpu();
     const rm0 = (await api("/api/gpusplit")).remote;
-    check("Basic Settings ▸ GPU: an accordion item in Basic Settings with Remote · Local · Both", /GPU$/.test(G.head) && G.inBasic && G.radios.map((r) => r.replace(/[*-]/g, "")).join() === "remote,local,both", G);
-    if (!rm0) check("…no remote GPU set up: only Local can be chosen, the line says so, a button to Settings ▸ Remote GPU", G.radios.join() === "remote-,local*,both-" && /No remote GPU set up/.test(G.line) && G.setup, G);
+    check("Basic Settings ▸ GPU: an accordion item in Basic Settings with Local · Remote · Both (2.747.0: Local first)", /GPU( · \w+)?$/.test(G.head) && G.inBasic && G.radios.map((r) => r.replace(/[*-]/g, "")).join() === "local,remote,both", G);
+    if (!rm0) check("…no remote GPU set up: only Local can be chosen, the line says so, a button to Settings ▸ Remote GPU", G.radios.join() === "local*,remote-,both-" && /No remote GPU set up/.test(G.line) && G.setup, G);
     else console.log("NOTE: this studio remembers a remote GPU (" + rm0.label + ") - the 'none set up' leg is skipped");
     if (G.setup) { await p.click("#gpuSetup"); await sleep(500); }
     check("…the button opens Settings ▸ Remote GPU", !G.setup || await ev(() => document.getElementById("settings").open && document.getElementById("stab-rgpu").classList.contains("active")));
@@ -74,7 +74,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.click("#rgUse"); await sleep(1200);
     await ev(() => document.getElementById("settings").close());
     G = await gpu();
-    check("…Use it -> Basic Settings ▸ GPU says Remote (all three can be chosen now), the line: everything on RunPod, the LLMs here (no vLLM endpoint)", G.radios.join() === "remote*,local,both"
+    check("…Use it -> Basic Settings ▸ GPU says Remote (all three can be chosen now), the line: everything on RunPod, the LLMs here (no vLLM endpoint)", G.radios.join() === "local,remote*,both"
       && /Image: RunPod Serverless epui745 · Video \+ songs: RunPod Serverless epui745 · LLM: this computer · Vision LLM: this computer/.test(G.line), G);
     // Both
     await p.check('input[name="gpuWhere"][value="both"]'); await sleep(1000);

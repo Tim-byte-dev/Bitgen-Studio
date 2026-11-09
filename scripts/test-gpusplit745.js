@@ -111,7 +111,7 @@ const R = require("../lib/remoteGpu.js");
     /require\("\.\/gpuSplit"\)\.forJob\(jobCfg, job\.params\)/.test(CORE) && /config: jobCfg,/.test(CORE) && /job\._gpu = sp\.gpu/.test(CORE) && /entryFor\(job, priceNow\(\), job\._gpu \|\| remoteNow\(\)\)/.test(UL));
   check("quickPrompt.js asks llmTarget too; routes mounted from routes/index.js; Basic Settings has the GPU item + its script; nothing in server.js",
     /require\("\.\/gpuSplit"\)\.llmTarget\("llm"\)/.test(read("lib", "quickPrompt.js")) && /require\("\.\/gpuSplit"\)\.mount\(app\)/.test(RI)
-      && /<h2 class="sec drop" data-sec="gpu"[^>]*><span class="caret">▾<\/span>GPU<\/h2>\s*<div class="secbody" id="sec-gpu"/.test(read("static", "index.html")) && /<script src="\/static\/gpusplit\.js"><\/script>/.test(read("static", "index.html"))
+      && /<h2 class="sec drop" data-sec="gpu"[^>]*><span class="caret">▾<\/span>GPU( <span id="gpuNow"[^>]*><\/span>)?<\/h2>\s*<div class="secbody" id="sec-gpu"/.test(read("static", "index.html")) && /<script src="\/static\/gpusplit\.js"><\/script>/.test(read("static", "index.html"))
       && !/gpuSplit|gpusplit/.test(read("misc", "server.js")));
   const BC = require("../static/basiccfg.js");
   check("the GPU choice is NOT one of Basic Settings' remembered fields (basic.cfg / per style) - put back, it re-routed the renders",

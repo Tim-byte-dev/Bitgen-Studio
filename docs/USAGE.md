@@ -8034,6 +8034,21 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   styles".
 - Your styles start as This computer, so after updating set Runs on for the styles you want on the remote GPU.
 
+## 🖥 GPU on Local by default, and an update check that finishes (2.747.0)
+
+- **Basic Settings ▸ GPU** is now the first item in Basic Settings, above Override style. It starts closed and its
+  header shows the current choice (GPU · Local). Open it and it stays open, like the other sections.
+- **Local is the default** and the first choice. Updating to this version switches it to Local once, because Remote
+  GPU's Use it had put it on Remote, and Remote lists only R_ styles - with none yet the image and video lists were
+  empty. The remote GPU stays set up; choose Remote or Both again whenever you want.
+- With Remote chosen and no R_ style yet, the style list's last line says so: set Basic Settings ▸ GPU to Local, or a
+  style's Runs on to Remote GPU.
+- **Settings ▸ General ▸ Updates:** in a git install, 🔍 Check for updates downloaded the whole update (about 13 MB of
+  guide PDFs each release) inside one request. The studio stops waiting for a request after 5 minutes, so on a slower
+  line, or a few versions behind, the check failed with "Failed to fetch". It now asks GitHub only for its newest
+  commit, so it finishes in seconds, and ⤓ Update now downloads the rest in the background (up to an hour allowed).
+  If the studio stops answering, the message says so instead of "Failed to fetch".
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

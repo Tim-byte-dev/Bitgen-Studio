@@ -50,10 +50,12 @@
         if (hide) { n++; o.dataset.rpslWhy = why; o.title = why; }
         else if (o.dataset.rpslWhy != null) { delete o.dataset.rpslWhy; o.removeAttribute("title"); }
       });
+      var shown = [].slice.call(sel.options).some(function (o) { return o.value && !o.hidden && o.dataset.rpsl !== "note"; });
       if (n) {
         var note = doc.createElement("option");
         note.dataset.rpsl = "note"; note.disabled = true; note.value = "__rpsl";
         note.textContent = m.where === "local" ? "🖥 " + n + " remote styles hidden: Basic Settings ▸ GPU is on Local"
+          : m.where === "remote" && !shown ? "☁ No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU"   // 2.747.0
           : m.where === "remote" ? "☁ " + n + " styles hidden: Basic Settings ▸ GPU is on Remote - only the remote styles it can render show"
           : "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)";
         sel.appendChild(note);

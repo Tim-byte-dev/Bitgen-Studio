@@ -1269,6 +1269,13 @@
 
       <h2 class="sec drop" data-sec="basic"><span class="caret">▾</span>Basic Settings</h2>
       <div class="secbody" id="sec-basic">
+      <!-- 2.745.0 (Tim: "add a accordian menu item to basic settings - GPU - add checkboxes remote,local, both - if both, add
+           checkboxes - llm,vllm,image,video"): where the work runs - Remote / Local / Both, and with Both which kinds go to
+           the remote GPU (vllm = the vision LLM; the LLMs on a RunPod vLLM endpoint) - static/gpusplit.js, lib/gpuSplit.js.
+           2.747.0 (Tim: "minimize the gpu menu item in basic settings, put gpu menu item above overide checkbox"): first in
+           Basic Settings, closed until opened (remembered), the choice shown beside its name -->
+      <h2 class="sec drop" data-sec="gpu" style="margin-top:0;font-size:.8rem" title="Where the work runs - Local, Remote or Both (closed by default; the choice shows beside it)"><span class="caret">▾</span>GPU <span id="gpuNow" class="dim" style="font-weight:normal;font-size:.7rem"></span></h2>
+      <div class="secbody" id="sec-gpu" style="margin-bottom:8px"></div>
       <!-- 2.256.0 (by instruction): the override switch sits at the TOP of
            Basic Settings and governs ALL style kinds — checked, the settings
            below ride every render and beat the style's own values (the
@@ -1283,11 +1290,6 @@
       <!-- 2.409.0 (Tim: "if overide is checked ... all models including ltx2.3 and 2.5 use basic settings including, cfg,
            steps, seed, model and loras"): what the switch decides right now (static/basicset.js) -->
       <div id="ovrSummary" class="dim" style="font-size:.66rem;margin:-4px 0 8px"></div>
-      <!-- 2.745.0 (Tim: "add a accordian menu item to basic settings - GPU - add checkboxes remote,local, both - if both, add
-           checkboxes - llm,vllm,image,video"): where the work runs - Remote / Local / Both, and with Both which kinds go to
-           the remote GPU (vllm = the vision LLM; the LLMs on a RunPod vLLM endpoint) - static/gpusplit.js, lib/gpuSplit.js -->
-      <h2 class="sec drop" data-sec="gpu" style="margin-top:0;font-size:.8rem"><span class="caret">▾</span>GPU</h2>
-      <div class="secbody" id="sec-gpu" style="margin-bottom:8px"></div>
       <!-- MODE-AWARE (2.93.0, by instruction): the Generate dropdown decides
            which of these two sets is showing. #vset is the video settings,
            #iset the image settings; applyBasicMode() flips them.
@@ -15112,6 +15114,7 @@ async function startGraphJob() {
   if (store.get("s.llmtok", "0") === "1") toggleSec("llmtok", true);   // 2.256.0
   if (store.get("s.cnet", "0") === "1") toggleSec("cnet", true);       // 2.316.0
   if (store.get("s.facefix", "0") === "1") toggleSec("facefix", true); // 2.322.0
+  toggleSec("gpu", store.get("s.gpu", "1") === "1");                   // 2.747.0: closed until opened
   // 2.256.0: the Tokens-consumed label — llmChat's session counter, polled
   // gently; a fetch that fails leaves the last number standing.
   {

@@ -7,6 +7,7 @@
 const G = require("../lib/gpuSplit");
 
 function mount(app) {
+  try { G.defaultLocal(); } catch (e) { console.error("[gpu] " + ((e && e.message) || e)); }   // 2.747.0: once - Local by default
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   app.get("/api/gpusplit", wrap(() => G.view()));
   app.post("/api/gpusplit", wrap((req) => G.set(req.body || {})));

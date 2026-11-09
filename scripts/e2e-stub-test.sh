@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.747.0 (Tim: "the image and video styles are not showing, make local default, minimize the gpu menu item in basic
+# settings, put gpu menu item above overide checkbox ... previous version would not let me update inapp" - "failed to fetch")
+node scripts/test-gpulocal747.js > /tmp/gpulocal747.log 2>&1 \
+  && ok "2.747.0 Local by default: nothing saved = Local; once per install Remote / Both -> Local (ComfyUI back here, the remote kept), never again; a new install marked; the update check: ls-remote (30 s), a 60 s fetch at most, a slow line still says newer, counted without a fetch when the commits are here; the update's fetch an hour" \
+  || { bad "2.747.0 GPU Local + update check units"; grep -a "^FAIL" -A1 /tmp/gpulocal747.log | head -14; }
+node scripts/test-ui747-ui.js > /tmp/ui747ui.log 2>&1 \
+  && ok "2.747.0 browser test: Basic Settings ▸ GPU first (above Override style), closed, GPU · Local in its header, remembered open; Local first; Remote with no R_ style says so in the list; Updates: a check the studio stops answering says so - or SKIP" \
+  || { bad "2.747.0 GPU section + update message browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui747ui.log | head -14; }
 # ---- 2.746.0 (Tim: "when radio is selected for local show local styles, remote show remote styles (create remote styles),
 # both , show all styles" + "A Runs on setting per style ... add text input in styles for endpoints if remote style is selected,
 # prefix remote style names with R_ add this on save if it is not there")

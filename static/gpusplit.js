@@ -7,6 +7,7 @@
  *                           Settings ▸ Remote GPU (a button opens it).
  *   Both ▸ LLM · Vision LLM · Image · Video + songs   ticked = on the remote GPU; LLM / Vision LLM need the RunPod vLLM
  *                           endpoint (Settings ▸ Remote GPU ▸ LLM on RunPod) - said beside them when it is missing.
+ *   2.747.0: Local first and the default; the section sits first in Basic Settings, closed, its choice beside "GPU".
  *   a line under it says where each kind runs now. 2.746.0: a STYLE says where it runs (static/runson.js) - Local lists
  *   only this computer's styles, Remote only the remote (R_) ones, Both every style and the style decides; the boxes then
  *   decide only for jobs with no style. A change saves at once; document "h3:rgpu" follows (the style
@@ -21,7 +22,7 @@
   function build() {
     var box = $("sec-gpu"); if (!box || $("gpuWhere")) return !!box;
     var g = el("div", { id: "gpuWhere", role: "radiogroup", "aria-label": "Where the work runs", style: "display:flex;gap:12px;flex-wrap:wrap" });
-    [["remote", "Remote", "Every job on the remote GPU set up in Settings ▸ Remote GPU"], ["local", "Local", "Every job on this computer"], ["both", "Both", "Pick what runs on the remote GPU - the rest runs on this computer"]].forEach(function (o) {
+    [["local", "Local", "Every job on this computer (the default)"], ["remote", "Remote", "Every job on the remote GPU set up in Settings ▸ Remote GPU"], ["both", "Both", "Pick what runs on the remote GPU - the rest runs on this computer"]].forEach(function (o) {
       var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "radio", name: "gpuWhere", value: o[0] });
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); g.appendChild(l);
     });
@@ -59,6 +60,8 @@
       : (v.where === "remote" ? "Remote styles (R_) only · " : "Styles for this computer only · ") + "Image: " + where(R.image) + " · Video + songs: " + where(R.video) + " · LLM: " + (R.llm === "remote" ? "RunPod vLLM" : "this computer")
         + " · Vision LLM: " + (R.vlm === "remote" ? "RunPod vLLM" : "this computer");
     $("gpuSetup").style.display = v.remote ? "none" : "";
+    // 2.747.0: the section is closed by default - its header says the choice
+    if ($("gpuNow")) $("gpuNow").textContent = "· " + (v.where === "remote" ? "Remote" : v.where === "both" ? "Both" : "Local");
   }
   function load() {
     return root.fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (v) { if (v && v.where) { S.v = v; paint(); } return v; }).catch(function () { /* offline */ });

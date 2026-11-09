@@ -40,6 +40,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.goto(URL0);
     await p.waitForFunction(() => window.H3RunsOn && window.H3RpStyles && H3RpStyles.state().map && document.getElementById("styleSel").options.length > 1, null, { timeout: 30000 });
     await sleep(800);
+    await ev(() => toggleSec("gpu", false));   // 2.747.0: Basic Settings ▸ GPU is closed by default
     // the editors
     await ev(() => { document.getElementById("openSettings").onclick(); document.querySelector('#settings .stabs [data-stab="image"]').click(); });
     await sleep(500);
