@@ -2723,6 +2723,38 @@
    "src": "static/framesize.js:26"
   },
   {
+   "s": "Remote",
+   "src": "static/gpusplit.js:22"
+  },
+  {
+   "s": "Local",
+   "src": "static/gpusplit.js:22"
+  },
+  {
+   "s": "Both",
+   "src": "static/gpusplit.js:22"
+  },
+  {
+   "s": "Vision LLM",
+   "src": "static/gpusplit.js:27"
+  },
+  {
+   "s": "Image",
+   "src": "static/gpusplit.js:28"
+  },
+  {
+   "s": "Video + songs",
+   "src": "static/gpusplit.js:28"
+  },
+  {
+   "s": "No RunPod vLLM endpoint yet - set up Settings ▸ Remote GPU ▸ LLM on RunPod",
+   "src": "static/gpusplit.js:51"
+  },
+  {
+   "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote GPU",
+   "src": "static/gpusplit.js:53"
+  },
+  {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
    "src": "static/graphcheck.js:49"
   },
@@ -5392,167 +5424,195 @@
   },
   {
    "s": "Render with",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Remote ComfyUI",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "hour",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "RunPod",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "My pods",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "port",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "RunPod Serverless",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "ComfyUI in the endpoint's image",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "ComfyUI 0.34.0 - RunPod's worker image 5.10.0",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "A newer ComfyUI (an image you built)",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "My image has extra node packs - show every style",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "No machine to start or stop: each render is one job, paid only while a worker runs it",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "The first job after a quiet spell waits for a worker to start - a cold start can take minutes",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "The endpoint runs RunPod's ComfyUI worker (worker-comfyui 5.x), with the models on a network volume (/runpod-volume/models/…, the same folders as ComfyUI's) and the custom nodes your styles use in its image",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Pictures, videos and songs all come back - videos and songs are saved through ComfyUI's own Save Video node on the way",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "A job and its input files must be under 10 MB - long reference videos are better on a pod. There are no live steps while it runs",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "SSH tunnel",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Open the tunnel",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Test",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Use it",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on the remote machine the same way. Its",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "models must be on that machine",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "LLM on RunPod (vLLM)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Make the endpoint on runpod.io: Serverless ▸ New Endpoint ▸ Deploy LLM API (RunPod's vLLM worker), with the Hugging Face model it should run",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "The vision LLM must be a vision-language model (one that takes pictures, such as Qwen2.5-VL). One vision-language endpoint can serve both - leave the vision endpoint blank",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Basic Settings ▸ GPU decides when they are used: Remote, or Both with LLM / Vision LLM ticked",
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "What the machine costs per hour (0 = free) - the usage log adds it",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "RunPod API key (runpod.io → Settings → API Keys)",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "endpoint ID (Serverless → your endpoint, e.g. abc123xyz)",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "host (or IP)",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "user",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "key file (optional) e.g. C:\\Users\\me\\.ssh\\id_ed25519",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "remote ComfyUI port 8188",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "local port 8189",
-   "src": "static/remotegpu.js:27"
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "RunPod API key (the same key)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "LLM endpoint ID",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "model name (blank = ask the endpoint)",
+   "src": "static/remotegpu.js:31"
   },
   {
    "s": "Remote URL",
-   "src": "static/remotegpu.js:29"
+   "src": "static/remotegpu.js:33"
   },
   {
    "s": "RunPod pod",
-   "src": "static/remotegpu.js:29"
+   "src": "static/remotegpu.js:33"
   },
   {
    "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on",
-   "src": "static/remotegpu.js:67"
+   "src": "static/remotegpu.js:71"
   },
   {
    "s": "the remote machine the same way. Its",
-   "src": "static/remotegpu.js:68"
+   "src": "static/remotegpu.js:72"
   },
   {
    "s": "the 🧩 Model manager shows this computer's folders",
-   "src": "static/remotegpu.js:68"
+   "src": "static/remotegpu.js:72"
   },
   {
    "s": "Use this computer",
-   "src": "static/remotegpu.js:83"
+   "src": "static/remotegpu.js:104"
   },
   {
    "s": "stopped",
-   "src": "static/remotegpu.js:84"
+   "src": "static/remotegpu.js:105"
   },
   {
    "s": "Every style shows - the endpoint's image has node packs the studio cannot see",
-   "src": "static/remotegpu.js:115"
+   "src": "static/remotegpu.js:155"
   },
   {
    "s": "The styles it cannot render, and why",
-   "src": "static/remotegpu.js:120"
+   "src": "static/remotegpu.js:160"
   },
   {
    "s": "pod",
-   "src": "static/remotegpu.js:173"
+   "src": "static/remotegpu.js:213"
   },
   {
    "s": "RTX VFX finisher",
@@ -18007,10 +18067,6 @@
    "src": "ext/timelinedock/edittools.js:126"
   },
   {
-   "s": "Image",
-   "src": "ext/timelinedock/fill.js:146"
-  },
-  {
    "s": "Video",
    "src": "ext/timelinedock/fill.js:146"
   },
@@ -22541,6 +22597,22 @@
    "src": "static/fontlist.js:106"
   },
   {
+   "p": "Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
+   "src": "static/gpusplit.js:53"
+  },
+  {
+   "p": "Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: this computer",
+   "src": "static/gpusplit.js:53"
+  },
+  {
+   "p": "Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: RunPod vLLM",
+   "src": "static/gpusplit.js:53"
+  },
+  {
+   "p": "Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: this computer",
+   "src": "static/gpusplit.js:53"
+  },
+  {
    "p": "{0} takes {1} · saves: {2}",
    "src": "static/graphcheck.js:114"
   },
@@ -23118,23 +23190,23 @@
   },
   {
    "p": "stopped · {0}",
-   "src": "static/remotegpu.js:84"
+   "src": "static/remotegpu.js:105"
   },
   {
    "p": "now: {0} · {1}",
-   "src": "static/remotegpu.js:88"
+   "src": "static/remotegpu.js:109"
   },
   {
    "p": "now: {0}",
-   "src": "static/remotegpu.js:88"
+   "src": "static/remotegpu.js:109"
   },
   {
    "p": "This endpoint can render {0} of {1} styles; the style lists show only those while RunPod Serverless is in use",
-   "src": "static/remotegpu.js:115"
+   "src": "static/remotegpu.js:155"
   },
   {
    "p": "pod {0} - 🔄 My pods lists them",
-   "src": "static/remotegpu.js:169"
+   "src": "static/remotegpu.js:209"
   },
   {
    "p": "try {0} (virtual)",
@@ -23146,7 +23218,7 @@
   },
   {
    "p": "{0} styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)",
-   "src": "static/rpstyles.js:52"
+   "src": "static/rpstyles.js:54"
   },
   {
    "p": "This ComfyUI has no DenoRTXVFXVideoFinisher yet. {0}",

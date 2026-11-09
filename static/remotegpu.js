@@ -12,6 +12,10 @@
  *                 ComfyUI the endpoint's image carries (#rgSlsComfy), "it has node packs - show every style" (#rgSlsAll),
  *                 and how many styles it can render with the others and why (#rgSlsStyles) - static/rpstyles.js hides
  *                 them in the style lists. Use it / a save fire document "h3:rgpu".
+ *   🧠 LLM on RunPod (2.745.0, Basic Settings ▸ GPU - lib/gpuSplit.js): a RunPod vLLM endpoint (RunPod's vLLM worker,
+ *                 OpenAI-compatible) for the LLM, another (or the same) for the vision LLM, the served model names (blank =
+ *                 asked of the endpoint), ✓ Test each. The three key boxes are one RunPod key (typing in one fills the
+ *                 others).
  *   ✓ Test        the machine's GPU + VRAM + ComfyUI version (<url>/system_stats)
  */
 (function (root) {
@@ -69,13 +73,30 @@
       + 'ComfyUI on this computer is not started while a remote one is in use. The power meters read this computer only: a remote job\'s cost is its '
       + 'time × the $/hour (RunPod: the pod\'s own price) in 📊 Usage. A RunPod pod needs a ComfyUI template with its port exposed over HTTP; '
       + 'for the LoRA trainer on a pod, ⤓ Export job and run it with ai-toolkit there. Keep a remote ComfyUI off the open internet - use a VPN, '
-      + 'Tailscale or the SSH tunnel.</p>';
+      + 'Tailscale or the SSH tunnel.</p>'
+      // 2.745.0: the LLMs on RunPod (vLLM) - Basic Settings ▸ GPU says when they are used
+      + '<div id="rgVllm" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px"><label class="f">🧠 LLM on RunPod (vLLM)</label>'
+      + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgVkey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (the same key)" style="flex:1"></div>'
+      + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgVep" spellcheck="false" placeholder="LLM endpoint ID" style="flex:1">'
+      + '<input type="text" id="rgVmodel" spellcheck="false" placeholder="model name (blank = ask the endpoint)" style="flex:1"><button type="button" class="ghost" id="rgVtest" style="flex:none">✓ Test</button></div>'
+      + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgVvep" spellcheck="false" placeholder="Vision LLM endpoint ID (blank = the LLM\'s)" style="flex:1">'
+      + '<input type="text" id="rgVvmodel" spellcheck="false" placeholder="model name (blank = ask the endpoint)" style="flex:1"><button type="button" class="ghost" id="rgVvtest" style="flex:none">✓ Test</button></div>'
+      + '<div id="rgVmsg" class="hint" aria-live="polite" style="margin-top:4px"></div>'
+      + '<ul class="hint help" style="margin:6px 0 0;padding-left:18px">'
+      + '<li>Make the endpoint on runpod.io: Serverless ▸ New Endpoint ▸ Deploy LLM API (RunPod\'s vLLM worker), with the Hugging Face model it should run.</li>'
+      + '<li>The vision LLM must be a vision-language model (one that takes pictures, such as Qwen2.5-VL). One vision-language endpoint can serve both - leave the vision endpoint blank.</li>'
+      + '<li>Basic Settings ▸ GPU decides when they are used: Remote, or Both with LLM / Vision LLM ticked.</li>'
+      + '</ul></div>';
     h.querySelectorAll('input[name="rgmode"]').forEach(function (r) { r.onchange = function () { paintSecs(); }; });
     $("rgTest").onclick = test; $("rgUse").onclick = use;
     $("rgPods").onclick = pods;
     $("rgTunOn").onclick = function () { save().then(function () { return post("/api/remotegpu/tunnel", { on: true }); }).then(function (t) { S.v.tunnel = t; paintTun(); setTimeout(load, 3000); }); };
     $("rgTunOff").onclick = function () { post("/api/remotegpu/tunnel", { on: false }).then(function (t) { S.v.tunnel = t; paintTun(); }); };
     $("rgSlsComfy").addEventListener("change", save);   // 2.744.0
+    // 2.745.0: one RunPod key in three boxes
+    ["rgKey", "rgSlsKey", "rgVkey"].forEach(function (id) { $(id).addEventListener("input", function () { var v = $(id).value; ["rgKey", "rgSlsKey", "rgVkey"].forEach(function (o) { if (o !== id) $(o).value = v; }); }); });
+    ["rgVep", "rgVmodel", "rgVvep", "rgVvmodel"].forEach(function (id) { $(id).addEventListener("change", saveVllm); });
+    $("rgVtest").onclick = function () { testVllm("llm"); }; $("rgVvtest").onclick = function () { testVllm("vlm"); };
     h.querySelectorAll("input").forEach(function (el) { if (el.type !== "radio") el.addEventListener("change", save); el.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
     var tb = document.querySelector('#settings .stabs [data-stab="rgpu"]'); if (tb) tb.addEventListener("click", load);
   }
@@ -90,13 +111,15 @@
     $("rgKey").value = (v.runpod || {}).key || ""; $("rgPort").value = (v.runpod || {}).port || 8188;
     $("rgSlsKey").value = (v.runpod || {}).key || ""; $("rgEndpoint").value = (v.serverless || {}).endpoint || ""; $("rgSlsCost").value = (v.serverless || {}).cost_hr || "";
     $("rgSlsComfy").value = (v.serverless || {}).comfy || "0.34.0"; $("rgSlsAll").checked = !!(v.serverless || {}).show_all;
+    $("rgVkey").value = (v.runpod || {}).key || "";
+    loadVllm();
     paintStyles();
     var s = v.ssh || {}; $("rgHost").value = s.host || ""; $("rgUser").value = s.user || ""; $("rgSshPort").value = s.port || ""; $("rgKeyFile").value = s.key || "";
     $("rgRemotePort").value = s.remote_port || ""; $("rgLocalPort").value = s.local_port || "";
     paintSecs(); paintTun(); paintPods();
   }
   function save() {
-    var key = mode() === "serverless" ? $("rgSlsKey").value : $("rgKey").value;      // one RunPod key for pods and serverless
+    var key = $("rgKey").value;      // one RunPod key for pods, serverless and vLLM (the three boxes mirror each other)
     return post("/api/remotegpu/save", { url: $("rgUrl").value, cost_hr: $("rgCost").value,
       runpod: { key: key, port: +$("rgPort").value || 8188 },
       serverless: { endpoint: $("rgEndpoint").value, cost_hr: $("rgSlsCost").value, comfy: $("rgSlsComfy").value, show_all: $("rgSlsAll").checked },
@@ -104,6 +127,23 @@
       .then(function (v) { if (!v.error) { S.v = v; changed(); } return v; });
   }
   /** 2.744.0: the style lists follow (static/rpstyles.js) and this tab says what the endpoint can render */
+  /* 2.745.0: the vLLM endpoint(s) */
+  function loadVllm() {
+    fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (g) {
+      var x = (g && g.vllm) || {};
+      [["rgVep", "endpoint"], ["rgVmodel", "model"], ["rgVvep", "vlm_endpoint"], ["rgVvmodel", "vlm_model"]].forEach(function (p) { if (document.activeElement !== $(p[0])) $(p[0]).value = x[p[1]] || ""; });
+    }).catch(function () { /* offline */ });
+  }
+  function saveVllm() {
+    return save().then(function () { return post("/api/gpusplit/vllm", { endpoint: $("rgVep").value, model: $("rgVmodel").value, vlm_endpoint: $("rgVvep").value, vlm_model: $("rgVvmodel").value }); })
+      .then(function (g) { changed(); return g; });
+  }
+  function testVllm(kind) {
+    say("rgVmsg", "asking RunPod…");
+    saveVllm().then(function () { return post("/api/gpusplit/vllm/test", { kind: kind }); }).then(function (r) {
+      say("rgVmsg", r.ok ? "✓ " + (kind === "vlm" ? "Vision LLM: " : "LLM: ") + r.model + " · " + r.line : "✗ " + r.error, !!r.ok);
+    });
+  }
   function changed() { try { document.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } setTimeout(paintStyles, 400); }
   function paintStyles() {
     var box = $("rgSlsStyles"); if (!box) return;

@@ -1283,6 +1283,11 @@
       <!-- 2.409.0 (Tim: "if overide is checked ... all models including ltx2.3 and 2.5 use basic settings including, cfg,
            steps, seed, model and loras"): what the switch decides right now (static/basicset.js) -->
       <div id="ovrSummary" class="dim" style="font-size:.66rem;margin:-4px 0 8px"></div>
+      <!-- 2.745.0 (Tim: "add a accordian menu item to basic settings - GPU - add checkboxes remote,local, both - if both, add
+           checkboxes - llm,vllm,image,video"): where the work runs - Remote / Local / Both, and with Both which kinds go to
+           the remote GPU (vllm = the vision LLM; the LLMs on a RunPod vLLM endpoint) - static/gpusplit.js, lib/gpuSplit.js -->
+      <h2 class="sec drop" data-sec="gpu" style="margin-top:0;font-size:.8rem"><span class="caret">▾</span>GPU</h2>
+      <div class="secbody" id="sec-gpu" style="margin-bottom:8px"></div>
       <!-- MODE-AWARE (2.93.0, by instruction): the Generate dropdown decides
            which of these two sets is showing. #vset is the video settings,
            #iset the image settings; applyBasicMode() flips them.
@@ -3446,6 +3451,7 @@
 <script src="/static/basicset.js"></script>  <!-- 2.409.0: Override style for every video model (H3Basic) -->
 <script src="/static/basictabs.js"></script>  <!-- 2.742.0: every Basic Settings tab keeps its own settings (H3BasicTabs) -->
 <script src="/static/rpstyles.js"></script>  <!-- 2.744.0: on a RunPod Serverless endpoint the style lists show only the styles it can render (H3RpStyles) -->
+<script src="/static/gpusplit.js"></script>  <!-- 2.745.0: Basic Settings ▸ GPU - remote / local / both (H3GpuSplit) -->
 <script src="/static/edittools.js"></script>  <!-- 2.407.0: ripple / roll / slip / slide maths (H3EditTools) -->
 <script src="/static/tlmarks.js"></script>  <!-- 2.410.0: markers, edit points, split at the position marker (H3Marks) -->
 <script src="/static/spaceplay.js"></script>  <!-- 2.410.0: Space pauses / plays the preview anywhere unless typing (H3Space) -->

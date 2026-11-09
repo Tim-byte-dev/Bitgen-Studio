@@ -250,6 +250,7 @@ function mount(app) {
   require("./usage").mount(app);        // 2.520.0: 📊 the usage log (lib/usageLog.js)
   require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote GPU (lib/remoteGpu.js)
   require("./runpodServerless").mount(app);   // 2.743.0: a RunPod Serverless endpoint behind a ComfyUI-shaped /rpsl (lib/runpodServerless.js)
+  require("./gpuSplit").mount(app);   // 2.745.0: Basic Settings ▸ GPU - remote / local / both (lib/gpuSplit.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
   // "fresh" for 10% of the file's age, hours for files months old) can

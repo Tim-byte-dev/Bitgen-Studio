@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.745.0 (Tim: "add a accordian menu item to basic settings - GPU - add checkboxes remote,local, both - if both, add
+# checkboxes - llm,vllm,image,video")
+node scripts/test-gpusplit745.js > /tmp/gpusplit745.log 2>&1 \
+  && ok "2.745.0 GPU split: jobs sorted image / video + songs / never; Remote / Local / Both put ComfyUI's address where it belongs; Both gives a ticked kind's job.json the remote's ComfyUI (the usage log too); Use it / This computer follow; the LLM + vision LLM go to a stand-in RunPod vLLM endpoint (the model asked of /models, the key) and nothing starts here; not one of Basic Settings' remembered fields" \
+  || { bad "2.745.0 GPU split units"; grep -a "^FAIL" -A1 /tmp/gpusplit745.log | head -14; }
+node scripts/test-ui745-ui.js > /tmp/ui745ui.log 2>&1 \
+  && ok "2.745.0 browser test: Basic Settings ▸ GPU - only Local with no remote; Use it = Remote; Both shows the four boxes (LLMs only with a vLLM endpoint), an image job renders on the endpoint (stand-in on 8399) while video stays here, only image styles filtered; Local = everything here - or SKIP" \
+  || { bad "2.745.0 Basic Settings GPU browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui745ui.log | head -14; }
 # ---- 2.744.0 (Tim: "if user is using runpod only show the styles that will work with runpod" + his test that rendered locally)
 node scripts/test-rpslstyles744.js > /tmp/rpslstyles744.log 2>&1 \
   && ok "2.744.0 RunPod styles: ComfyUI 0.34.0 / newer node lists from ComfyUI's source; each style's workflow checked node by node (image, music, video own / per-mode / templates; LTX + Wan need /object_info; UI exports, other engines, chains); Settings ▸ Save keeps the remote ComfyUI (the ComfyUI tab's address = this computer's)" \

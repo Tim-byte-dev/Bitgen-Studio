@@ -7988,6 +7988,30 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   so the next render ran here. Now the Remote GPU tab decides which ComfyUI renders. An address typed in the ComfyUI
   tab is this computer's, and **This computer** uses it.
 
+## 🖥 Basic Settings ▸ GPU: what runs on the remote GPU (2.745.0)
+
+- **Basic Settings ▸ GPU** has three choices:
+  - **Remote:** every job on the remote GPU set up in Settings ▸ Remote GPU (the same as its Use it).
+  - **Local:** everything on this computer (the same as This computer). The remote stays set up for later.
+  - **Both:** you pick what goes to the remote GPU, and the rest runs on this computer.
+    - **LLM:** the chat / prompt model.
+    - **Vision LLM:** the model that describes pictures.
+    - **Image:** pictures, upscaling, graphs, 3D.
+    - **Video + songs:** video jobs and songs.
+    Jobs that don't use ComfyUI (exporting, karaoke, training) always run here.
+- A line under it says where each kind runs now. Remote and Both can only be chosen once a remote GPU is set up; a
+  button opens Settings ▸ Remote GPU.
+- With Both, ComfyUI's address stays this computer's, so your own ComfyUI starts as usual. Each job of a ticked kind
+  is sent to the remote GPU when it starts; its log says where it rendered, and 📊 Usage counts its time there.
+- **The LLMs on RunPod:** Settings ▸ Remote GPU ▸ **🧠 LLM on RunPod (vLLM)** takes the endpoint ID of RunPod's vLLM
+  worker (runpod.io: Serverless ▸ New Endpoint ▸ Deploy LLM API, with the Hugging Face model it should run).
+  - The vision LLM needs a vision-language model, such as Qwen2.5-VL. One such endpoint can serve both - leave the
+    vision endpoint blank.
+  - Leave a model name blank and the studio asks the endpoint which model it serves. ✓ Test checks each one.
+  - Without an endpoint, LLM and Vision LLM can't be ticked and run here.
+- With Both, the RunPod Serverless style filter (2.744.0) applies only to the kinds sent to the endpoint.
+- Fixed: Basic Settings' remembered settings (basic.cfg and per style) don't include the GPU choice.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

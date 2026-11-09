@@ -16,6 +16,7 @@
   "use strict";
   var doc = root.document;
   var SELS = ["styleSel", "videoStyleSel", "musicSel"];
+  var KIND = { styleSel: "image", videoStyleSel: "video", musicSel: "music" };   // 2.745.0: Basic Settings ▸ GPU "both" filters only the kinds it sends
   var S = { map: null, asked: 0, busy: false };
   function $(id) { return doc.getElementById(id); }
   function test(k, v) { try { if (root.H3TestEvent) root.H3TestEvent(k, v); } catch (e) { /* the 🧪 list */ } }
@@ -27,6 +28,7 @@
   }
   function hiddenFor(sel, opt, m) {
     if (!m || !m.filter || opt.dataset.rpsl === "note") return null;
+    if (m.kinds && !m.kinds[KIND[sel.id]]) return null;
     if (opt.value === "") return sel.id === "videoStyleSel" && m.template && !m.template.ok ? (m.template.why || "") : null;
     var st = m.styles[opt.value];
     if (!st) { if (Date.now() - S.asked > 5000) setTimeout(load, 0); return null; }      // a style saved since: ask again

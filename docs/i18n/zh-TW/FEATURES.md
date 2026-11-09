@@ -368,6 +368,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🗂 基本設定的每個分頁保留自己的設定** — Ref、F/L、Text 和 Swap 各自記住格式、尺寸、秒數、步數、CFG、種子和模型；離開分頁時儲存，回來時恢復（重新啟動後仍保留）；Character chain 保留未儲存的輸入。 *Where:* 基本設定。 *Since:* 2.742.0
 - **☁ RunPod Serverless 算圖** — 所有算圖都傳送到 RunPod Serverless 端點（RunPod 的 ComfyUI 工作器，模型在網路磁碟區上），只在工作器執行時計費；圖片、影片和歌曲都會傳回；✓ 測試顯示工作器和任務。 *Where:* 設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.743.0
 - **☁ RunPod Serverless 只顯示能算圖的風格** — 用 RunPod Serverless 端點算圖時，圖片、影片和音樂的風格清單會隱藏它無法算圖的風格（逐個節點對照端點映像檔裡的 ComfyUI）；可以設定更新的 ComfyUI 或額外的節點包。 *Where:* 風格清單；設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.744.0
+- **🖥 基本設定 ▸ GPU：遠端、本機或兩者** — 所有任務在遠端 GPU 上、全部在這裡，或「兩者」：勾選的 LLM、視覺 LLM、圖片和影片 + 歌曲傳送到遠端 GPU；LLM 在 RunPod vLLM 端點上執行（設定 ▸ 遠端 GPU ▸ LLM on RunPod）。 *Where:* 基本設定 ▸ GPU。 *Since:* 2.745.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 
