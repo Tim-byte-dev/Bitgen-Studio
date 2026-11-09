@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 866,
+    "count": 867,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -51,6 +51,7 @@
         "A card with 20 GB or more",
         "A cold start, or no GPU of the chosen type free in that data centre - tick more GPU types on the endpoint. Its page shows the workers starting.",
         "A display name is 1-40 printable characters.",
+        "A download (an installer, the source zip or the master pack) adds 1 to that day's total for the file and the country - nothing else.",
         "A first name",
         "A first test with SDXL",
         "A free ComfyUI front end for AI video, images and editing - bitGen Studio",
