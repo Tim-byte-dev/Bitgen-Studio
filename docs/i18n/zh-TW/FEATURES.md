@@ -366,6 +366,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **⬇ 缺少的元件就地下載** — 尚未安裝的元件（歌曲分離、語音轉文字）會在帶大小說明的 ⬇ Download / Cancel 框中詢問；Download 會帶進度條安裝，工作隨後自動繼續。 *Where:* ✨ Create、✂ Split into layers、Stems 面板的 Separate。 *Since:* 2.740.0
 - **🎶 ACE-Step 1.5 歌曲** — 快速的音樂模型（8 步，MIT 授權）：從文字和歌詞生成帶人聲的歌曲，10 秒到 10 分鐘，50 多種語言；風格可設定 BPM、調、每小節拍數和語言，並可使用 LoRA。 *Where:* Music 面板（風格 ACE-Step 1.5）；設定 ▸ 音訊 ▸ 音樂風格。 *Since:* 2.741.0
 - **🗂 基本設定的每個分頁保留自己的設定** — Ref、F/L、Text 和 Swap 各自記住格式、尺寸、秒數、步數、CFG、種子和模型；離開分頁時儲存，回來時恢復（重新啟動後仍保留）；Character chain 保留未儲存的輸入。 *Where:* 基本設定。 *Since:* 2.742.0
+- **☁ RunPod Serverless 算圖** — 所有算圖都傳送到 RunPod Serverless 端點（RunPod 的 ComfyUI 工作器，模型在網路磁碟區上），只在工作器執行時計費；圖片、影片和歌曲都會傳回；✓ 測試顯示工作器和任務。 *Where:* 設定 ▸ 遠端 GPU ▸ RunPod Serverless。 *Since:* 2.743.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

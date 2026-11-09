@@ -5392,107 +5392,143 @@
   },
   {
    "s": "Render with",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "Remote ComfyUI",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "hour",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "RunPod",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "My pods",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "port",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "RunPod Serverless",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "No machine to start or stop: each render is one job, paid only while a worker runs it",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "The first job after a quiet spell waits for a worker to start - a cold start can take minutes",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "The endpoint runs RunPod's ComfyUI worker (worker-comfyui 5.x), with the models on a network volume (/runpod-volume/models/…, the same folders as ComfyUI's) and the custom nodes your styles use in its image",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "Pictures, videos and songs all come back - videos and songs are saved through ComfyUI's own Save Video node on the way",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "A job and its input files must be under 10 MB - long reference videos are better on a pod. There are no live steps while it runs",
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "SSH tunnel",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "Open the tunnel",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "Test",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "Use it",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on the remote machine the same way. Its",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "models must be on that machine",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "What the machine costs per hour (0 = free) - the usage log adds it",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "RunPod API key (runpod.io → Settings → API Keys)",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "endpoint ID (Serverless → your endpoint, e.g. abc123xyz)",
+   "src": "static/remotegpu.js:23"
+  },
+  {
+   "s": "What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it",
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "host (or IP)",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "user",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "key file (optional) e.g. C:\\Users\\me\\.ssh\\id_ed25519",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "remote ComfyUI port 8188",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "local port 8189",
-   "src": "static/remotegpu.js:20"
+   "src": "static/remotegpu.js:23"
   },
   {
    "s": "Remote URL",
-   "src": "static/remotegpu.js:22"
+   "src": "static/remotegpu.js:25"
+  },
+  {
+   "s": "RunPod pod",
+   "src": "static/remotegpu.js:25"
   },
   {
    "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on",
-   "src": "static/remotegpu.js:44"
-  },
-  {
-   "s": "the remote machine the same way. Its",
-   "src": "static/remotegpu.js:45"
-  },
-  {
-   "s": "the 🧩 Model manager shows this computer's folders",
-   "src": "static/remotegpu.js:45"
-  },
-  {
-   "s": "Use this computer",
    "src": "static/remotegpu.js:59"
   },
   {
-   "s": "stopped",
+   "s": "the remote machine the same way. Its",
    "src": "static/remotegpu.js:60"
   },
   {
+   "s": "the 🧩 Model manager shows this computer's folders",
+   "src": "static/remotegpu.js:60"
+  },
+  {
+   "s": "Use this computer",
+   "src": "static/remotegpu.js:74"
+  },
+  {
+   "s": "stopped",
+   "src": "static/remotegpu.js:75"
+  },
+  {
    "s": "pod",
-   "src": "static/remotegpu.js:115"
+   "src": "static/remotegpu.js:141"
   },
   {
    "s": "RTX VFX finisher",
@@ -23058,19 +23094,19 @@
   },
   {
    "p": "stopped · {0}",
-   "src": "static/remotegpu.js:60"
+   "src": "static/remotegpu.js:75"
   },
   {
    "p": "now: {0} · {1}",
-   "src": "static/remotegpu.js:64"
+   "src": "static/remotegpu.js:79"
   },
   {
    "p": "now: {0}",
-   "src": "static/remotegpu.js:64"
+   "src": "static/remotegpu.js:79"
   },
   {
    "p": "pod {0} - 🔄 My pods lists them",
-   "src": "static/remotegpu.js:111"
+   "src": "static/remotegpu.js:137"
   },
   {
    "p": "try {0} (virtual)",

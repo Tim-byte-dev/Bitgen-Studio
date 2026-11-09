@@ -120,6 +120,7 @@ function mount(app) {
   try { require("../lib/miscMigrate").run(core.BASE); } catch (e) { /* 2.591.0: the app root tidied into misc/ - never blocks the start */ }
   require("../lib/appLog").start();   // 2.522.0: the app console kept for 🐞 bug reports (from the first line on)
   require("./layouts").guard(app);     // 2.587.0: FIRST - a layout being applied holds off the page's own layout saves; a fresh install starts from layouts/default.json
+  require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   app.use(express.json());
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
@@ -248,6 +249,7 @@ function mount(app) {
   require("./langPacks").mount(app);    // 2.715.0: language packs - Settings ▸ Languages (lib/langPacks.js)
   require("./usage").mount(app);        // 2.520.0: 📊 the usage log (lib/usageLog.js)
   require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote GPU (lib/remoteGpu.js)
+  require("./runpodServerless").mount(app);   // 2.743.0: a RunPod Serverless endpoint behind a ComfyUI-shaped /rpsl (lib/runpodServerless.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
   // "fresh" for 10% of the file's age, hours for files months old) can

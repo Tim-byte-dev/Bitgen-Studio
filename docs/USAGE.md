@@ -7939,6 +7939,37 @@ playing (2.725.1).
 - **Character chain** keeps what you typed when you go to **Standard** and back, even before you press
   **💾 Save chain settings**.
 
+## ☁ Rendering on a RunPod Serverless endpoint (2.743.0)
+
+**Settings ▸ Remote GPU ▸ RunPod Serverless** sends every render to a RunPod Serverless endpoint. There is no machine to
+start or stop: each render is one job, and you pay only while a worker runs it.
+
+**Setting up the endpoint (once, on runpod.io)**
+
+1. Make a **network volume** and put your models in it under `models/` (the same folders as ComfyUI's: `models/checkpoints`,
+   `models/diffusion_models`, `models/loras`, `models/text_encoders`, `models/vae` …). The worker reads them from
+   `/runpod-volume/models/…`.
+2. Make a **Serverless endpoint** from RunPod's ComfyUI worker image, `runpod/worker-comfyui:<version>-base` (version 5.x).
+   If your styles use custom nodes (the MiniMax H3 nodes, VHS, KJNodes …), build your own image from it with those
+   nodes installed (`RUN comfy-node-install <node pack>` in a Dockerfile - see the worker's customization guide).
+   Attach the network volume.
+3. Copy the endpoint's **ID** and an **API key** (Settings → API Keys).
+
+**In bitGen Studio**
+
+- Pick **RunPod Serverless**, paste the API key and the endpoint ID, and put what a worker costs per hour (RunPod lists
+  it per second - multiply by 3600) so 📊 Usage can add it. **✓ Test** shows the workers that are ready or running and the
+  jobs waiting. **Use it** switches every render to the endpoint; **This computer** switches back.
+- The first job after a quiet spell waits for a worker to start (a cold start can take minutes). There are no live steps
+  while a job runs - the progress shows the time instead.
+- Pictures, videos and songs all come back. The worker only returns pictures and Save Video files, so on the way videos
+  saved with Video Combine are saved with ComfyUI's own Save Video, and a song travels inside a tiny silent video and
+  is taken out again on this computer.
+- A job and its input files must be under **10 MB** (RunPod's limit). Long reference videos or songs are better on a
+  pod or this computer; the job says so before anything is sent.
+- The model check before a render is skipped: the models are on the endpoint's volume, not on this computer. If one is
+  missing, the job fails with the endpoint's own message.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

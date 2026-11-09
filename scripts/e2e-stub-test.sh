@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 BITGEN_FREE_VRAM=always node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.722.0: every render frees the card (its legs count /free)
+H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.743.0 (Tim: "can we try using a runpod serverless gpu?")
+node scripts/test-rpsl743.js > /tmp/rpsl743.log 2>&1 \
+  && ok "2.743.0 RunPod Serverless: Video Combine -> CreateVideo + SaveVideo, a song save -> its sound in a 16x16 video (ComfyUI's input names); the 10 MB limit; against a stand-in RunPod the app's own comfy_client uploads, queues, waits and downloads a picture, the LTX Ripple videos and an ACE-Step mp3 (out of its carrier with ffmpeg); a failed job, a bucket result, a cancel" \
+  || { bad "2.743.0 RunPod Serverless units"; grep -a "^FAIL" -A1 /tmp/rpsl743.log | head -14; }
+node scripts/test-ui743-ui.js > /tmp/ui743ui.log 2>&1 \
+  && ok "2.743.0 browser test: Settings ▸ Remote GPU ▸ RunPod Serverless - its own part, saved, ✓ Test = /health (stand-in on 8399), Use it -> the studio's /rpsl answers like a ComfyUI, This computer puts it back - or SKIP" \
+  || { bad "2.743.0 RunPod Serverless browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui743ui.log | head -14; }
 # ---- 2.742.0 (Tim: "when the tab is changed save the settings of the tab before it is changed and revert when tab is
 # changed back" - "i mean the basic settings docker")
 node scripts/test-ui742-ui.js > /tmp/ui742ui.log 2>&1 \

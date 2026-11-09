@@ -19,7 +19,7 @@ const R = require("../lib/remoteGpu.js");
 
 (async () => {
   /* ---- pure */
-  check("MODES", R.MODES.join() === "local,url,runpod,ssh");
+  check("MODES (2.743.0: + serverless)", R.MODES.join() === "local,url,runpod,ssh,serverless");
   check("cleanUrl: adds http://, drops the trailing /, refuses junk", R.cleanUrl("192.168.1.20:8188/") === "http://192.168.1.20:8188" && R.cleanUrl("https://x.example.com/comfy/") === "https://x.example.com/comfy" && R.cleanUrl("") === "" && R.cleanUrl("http://") === "");
   check("runpodUrl: the pod's proxy URL for a port", R.runpodUrl("abc123xyz", 8188) === "https://abc123xyz-8188.proxy.runpod.net" && R.runpodUrl("a/b?c", 0) === "https://abc-8188.proxy.runpod.net");
   const v1 = R.mapPod({ id: "p1", name: "comfy", desiredStatus: "RUNNING", costPerHr: 0.69, gpuCount: 1, machine: { gpuDisplayName: "RTX 4090" } }, 8188);

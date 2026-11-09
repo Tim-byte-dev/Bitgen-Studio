@@ -5,6 +5,9 @@
  *   Remote URL    http(s)://host:port of a ComfyUI (another PC, a VPN / Tailscale address, a cloud proxy) + its $/hour
  *   RunPod        the API key, 🔄 your pods (GPU, $/hour, status) - pick one, ▶ start / ⏹ stop it; its ComfyUI port
  *   SSH tunnel    host, user, port, key file, the remote ComfyUI port, a local port - the app keeps ssh -N -L open
+ *   RunPod Serverless (2.743.0, Tim: "can we try using a runpod serverless gpu?")  the API key (the same one) + the
+ *                 endpoint ID + its $/hour; ✓ Test = RunPod's /health (workers ready / running, jobs waiting); each job
+ *                 goes to the endpoint through lib/runpodServerless.js
  *   ✓ Test        the machine's GPU + VRAM + ComfyUI version (<url>/system_stats)
  */
 (function (root) {
@@ -19,7 +22,7 @@
     var h = $("stab-rgpu"); if (!h || $("rgMode")) return;
     h.innerHTML = '<label class="f">Render with</label>'
       + '<div id="rgMode" class="rowbtns" role="radiogroup" aria-label="Render with" style="margin-top:4px;align-items:center;flex-wrap:wrap">'
-      + [["local", "This computer"], ["url", "Remote URL"], ["runpod", "RunPod"], ["ssh", "SSH tunnel"]].map(function (m) {
+      + [["local", "This computer"], ["url", "Remote URL"], ["runpod", "RunPod pod"], ["serverless", "RunPod Serverless"], ["ssh", "SSH tunnel"]].map(function (m) {
         return '<label class="chk" style="margin:0 10px 0 0"><input type="radio" name="rgmode" value="' + m[0] + '"> ' + m[1] + "</label>"; }).join("")
       + '<span id="rgNow" class="hint" style="flex:1"></span></div>'
       // URL
@@ -32,6 +35,18 @@
       + '<button type="button" class="ghost" id="rgPods" style="flex:none">🔄 My pods</button>'
       + '<input type="number" id="rgPort" min="1" max="65535" value="8188" title="ComfyUI\'s port on the pod (the template\'s HTTP port)" style="width:80px;flex:none"><span class="hint" style="flex:none">port</span></div>'
       + '<div id="rgPodList" style="margin-top:6px"></div></div>'
+      // RunPod Serverless (2.743.0)
+      + '<div class="rgsec" data-rg="serverless"><label class="f" style="margin-top:12px">RunPod Serverless</label>'
+      + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgSlsKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1"></div>'
+      + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgEndpoint" spellcheck="false" placeholder="endpoint ID (Serverless → your endpoint, e.g. abc123xyz)" style="flex:1">'
+      + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="$/h" title="What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'
+      + '<ul class="hint help" id="rgSlsHelp" style="margin:6px 0 0;padding-left:18px">'
+      + '<li>No machine to start or stop: each render is one job, paid only while a worker runs it.</li>'
+      + '<li>The first job after a quiet spell waits for a worker to start - a cold start can take minutes.</li>'
+      + '<li>The endpoint runs RunPod\'s ComfyUI worker (worker-comfyui 5.x), with the models on a network volume (/runpod-volume/models/…, the same folders as ComfyUI\'s) and the custom nodes your styles use in its image.</li>'
+      + '<li>Pictures, videos and songs all come back - videos and songs are saved through ComfyUI\'s own Save Video node on the way.</li>'
+      + '<li>A job and its input files must be under 10 MB - long reference videos are better on a pod. There are no live steps while it runs.</li>'
+      + '</ul></div>'
       // SSH
       + '<div class="rgsec" data-rg="ssh"><label class="f" style="margin-top:12px">SSH tunnel</label>'
       + '<div class="grid3" style="align-items:center;gap:6px"><input type="text" id="rgHost" placeholder="host (or IP)" spellcheck="false"><input type="text" id="rgUser" placeholder="user" spellcheck="false"><input type="number" id="rgSshPort" placeholder="22" min="1" max="65535">'
@@ -64,13 +79,16 @@
     $("rgNow").textContent = "now: " + v.current.label + (v.comfy_url ? " · " + v.comfy_url : "");
     $("rgUrl").value = v.url || ""; $("rgCost").value = v.cost_hr || "";
     $("rgKey").value = (v.runpod || {}).key || ""; $("rgPort").value = (v.runpod || {}).port || 8188;
+    $("rgSlsKey").value = (v.runpod || {}).key || ""; $("rgEndpoint").value = (v.serverless || {}).endpoint || ""; $("rgSlsCost").value = (v.serverless || {}).cost_hr || "";
     var s = v.ssh || {}; $("rgHost").value = s.host || ""; $("rgUser").value = s.user || ""; $("rgSshPort").value = s.port || ""; $("rgKeyFile").value = s.key || "";
     $("rgRemotePort").value = s.remote_port || ""; $("rgLocalPort").value = s.local_port || "";
     paintSecs(); paintTun(); paintPods();
   }
   function save() {
+    var key = mode() === "serverless" ? $("rgSlsKey").value : $("rgKey").value;      // one RunPod key for pods and serverless
     return post("/api/remotegpu/save", { url: $("rgUrl").value, cost_hr: $("rgCost").value,
-      runpod: { key: $("rgKey").value, port: +$("rgPort").value || 8188 },
+      runpod: { key: key, port: +$("rgPort").value || 8188 },
+      serverless: { endpoint: $("rgEndpoint").value, cost_hr: $("rgSlsCost").value },
       ssh: { host: $("rgHost").value, user: $("rgUser").value, port: +$("rgSshPort").value || 22, key: $("rgKeyFile").value, remote_port: +$("rgRemotePort").value || 8188, local_port: +$("rgLocalPort").value || 8189 } })
       .then(function (v) { if (!v.error) S.v = v; return v; });
   }
@@ -83,6 +101,14 @@
   }
   function test() {
     var m = mode(), u = urlFor(m);
+    if (m === "serverless") {
+      if (!$("rgEndpoint").value.trim()) { say("rgMsg", "the endpoint ID first", false); return; }
+      say("rgMsg", "asking RunPod…");
+      save().then(function () { return post("/api/remotegpu/serverless/test", {}); }).then(function (r) {
+        say("rgMsg", r.ok ? "✓ " + r.line : "✗ " + r.error, !!r.ok);
+      });
+      return;
+    }
     if (!u) { say("rgMsg", m === "runpod" ? "pick a pod first" : "the address first", false); return; }
     say("rgMsg", "asking " + u + "…");
     save().then(function () { return post("/api/remotegpu/test", { url: u }); }).then(function (r) {

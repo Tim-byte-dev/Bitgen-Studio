@@ -4791,6 +4791,30 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 只有您自己点击才会切换它们。打开项目时，或应用替您选择选项卡时（添加图片、剧本），当前显示的设置保持不变。
 - **Character chain** 在您切换到 **Standard** 再回来时，即使还没按 **💾 Save chain settings**，也会保留您输入的内容。
 
+## ☁ 在 RunPod Serverless 端点上渲染（2.743.0）
+<!-- en: rendering-on-a-runpod-serverless-endpoint-2-743-0 63b789299560 -->
+
+**设置 ▸ 远程 GPU ▸ RunPod Serverless** 把所有渲染发送到 RunPod Serverless 端点。无需启动或停止机器：每次渲染是一个任务，只在工作器运行时计费。
+
+**准备端点（在 runpod.io 上一次即可）**
+
+1. 创建一个 **网络卷**，把模型放在 `models/` 下（与 ComfyUI 相同的文件夹：`models/checkpoints`、
+   `models/diffusion_models`、`models/loras`、`models/text_encoders`、`models/vae` …）。工作器从
+   `/runpod-volume/models/…` 读取。
+2. 用 RunPod 的 ComfyUI 工作器镜像 `runpod/worker-comfyui:<version>-base`（5.x 版本）创建一个 **Serverless 端点**。如果你的风格用到自定义节点（MiniMax H3 节点、VHS、KJNodes …），请以它为基础构建自己的镜像并装好这些节点（在 Dockerfile 中 `RUN comfy-node-install <节点包>` - 参见工作器的自定义指南）。挂载网络卷。
+3. 复制端点的 **ID** 和一个 **API 密钥**（Settings → API Keys）。
+
+**在 bitGen Studio 中**
+
+- 选择 **RunPod Serverless**，粘贴 API 密钥和端点 ID，并填写工作器每小时的费用（RunPod 按秒列出 - 乘以 3600），
+  📊 使用情况会计入。**✓ 测试** 显示就绪或运行中的工作器以及等待中的任务。**使用** 把所有渲染切换到端点；
+  **这台电脑** 切换回来。
+- 闲置一段时间后的第一个任务需要等待工作器启动（冷启动可能需要几分钟）。任务运行时没有步骤显示，进度显示的是时间。
+- 图片、视频和歌曲都会传回。工作器只返回图片和 Save Video 文件，所以在途中，用 Video Combine 保存的视频改用
+  ComfyUI 自带的 Save Video 保存，歌曲则装在一个很小的无声视频里传送，再在这台电脑上取出。
+- 任务及其输入文件必须小于 **10 MB**（RunPod 的限制）。较长的参考视频或歌曲更适合用 Pod 或这台电脑；这种情况下任务会在发送前说明。
+- 渲染前的模型检查会跳过：模型在端点的卷上，而不在这台电脑上。如果缺少某个模型，任务会以端点自己的消息失败。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

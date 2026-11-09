@@ -30,7 +30,7 @@
   function activeMode() { var b = doc.querySelector(".modes button.active"); return b ? b.dataset.mode : ""; }
   // whose settings are showing: the tab the user last opened (a mode the APP picks shows the same settings, so they
   // still belong to that tab - saved under it when the user next changes tab, never under the app's pick)
-  var owner = "";
+  var owner = "", prevActive = "";   // owner "" until the first click by hand: at load the settings showing are the project's
   function snapshot() {
     var o = {};
     FIELDS.forEach(function (id) { var el = $(id); if (el) o[id] = el.value; });
@@ -54,7 +54,8 @@
   function leaving(e) {
     var b = e.target && e.target.closest ? e.target.closest(".modes button[data-mode]") : null;
     if (!b || !e.isTrusted) return;
-    var from = owner || activeMode();
+    prevActive = activeMode();
+    var from = owner || prevActive;
     if (!from || (from === b.dataset.mode && from === activeMode())) return;
     state.modes[from] = snapshot(); save(state);
     test("basictab_saved", from);
@@ -63,9 +64,9 @@
   function opened(e) {
     var b = e.target && e.target.closest ? e.target.closest(".modes button[data-mode]") : null;
     if (!b || !e.isTrusted) return;
-    var to = b.dataset.mode, o = state.modes[to], was = owner;
+    var to = b.dataset.mode, o = state.modes[to];
     owner = to;
-    if (!o || was === to) return;
+    if (!o || prevActive === to) return;                 // the tab already open, clicked again: nothing changes
     put(o);
     test("basictab_restored", to);
   }
@@ -76,7 +77,6 @@
     var strip = doc.querySelector(".modes");
     if (strip && !strip.dataset.h3bt) {
       strip.dataset.h3bt = "1";
-      owner = activeMode();
       strip.addEventListener("click", leaving, true);
       strip.addEventListener("click", opened, false);
     }

@@ -160,7 +160,7 @@ const JOB = "e2e_ui520";
     await p.click("#openSettings"); await p.waitForTimeout(600);
     await p.click('#settings .stabs [data-stab="rgpu"]'); await p.waitForTimeout(600);
     const rg = await ev(() => ({ modes: [...document.querySelectorAll('#stab-rgpu input[name="rgmode"]')].map((r) => r.value), now: (document.getElementById("rgNow") || {}).textContent || "" }));
-    check("Settings -> Remote GPU: This computer / another machine's URL / RunPod / SSH tunnel", rg.modes.join() === "local,url,runpod,ssh", rg);
+    check("Settings -> Remote GPU: This computer / another machine's URL / RunPod pod / RunPod Serverless (2.743.0) / SSH tunnel", rg.modes.join() === "local,url,runpod,serverless,ssh", rg);
     await p.check('#stab-rgpu input[name="rgmode"][value="url"]'); await p.waitForTimeout(300);
     await p.fill("#rgUrl", RURL); await p.fill("#rgCost", "0.4");
     await p.click("#rgTest"); await p.waitForTimeout(1500);
