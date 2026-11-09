@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 859,
+    "count": 862,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -115,6 +115,7 @@
         "Ban @{0}",
         "Ban @{0}?",
         "Banned @{0} - they cannot sign in, their posts are hidden and their email address cannot join again.",
+        "Basic Settings ▸ GPU decides what runs where (from version 2.745.0): Remote sends everything to RunPod, Local keeps everything on your computer, and Both lets you tick what goes to RunPod - the LLM, the vision LLM, pictures, and video + songs. With Both, your own ComfyUI starts as usual and each ticked job is sent to RunPod when it starts.",
         "Be kind. Help each other. No spam, no hate, nothing illegal. Admins may delete messages and ban accounts.",
         "Be kind. Help each other. No spam, no hate, nothing illegal. Admins may delete messages and ban accounts. Report a message with ⚑ and the admins will look at it.",
         "Before every render the studio checks the files it needs are there and offers to download any that are missing.",
@@ -362,6 +363,7 @@
         "Only an admin can do that.",
         "Only its uploader or an admin can delete a language pack.",
         "Only its writer or an admin can remove a post.",
+        "Only some work on RunPod",
         "Only the admins see these. A new address is confirmed with a code.",
         "Only the community's admins can do this.",
         "Only the community's admins can see this.",
@@ -567,6 +569,7 @@
         "The Community",
         "The Editor package runs on any computer. For the AI parts, Settings ▸ Remote GPU renders on another machine's card:",
         "The GGUF styles (ComfyUI-GGUF), character swap (VideoHelperSuite, rgthree), LTX Ripple and the LTX canvas (KJNodes, LTXVideo, VideoHelperSuite, RES4LYF), Viggle, the character sheet creator (H3LookSheets, KJNodes) and the music video with a song (H3 NativeAudioLock).",
+        "The LLM and the vision LLM run on a second Serverless endpoint made with RunPod's vLLM worker (Serverless ▸ New Endpoint ▸ Deploy LLM API, with the Hugging Face model it should run). Put its ID in Settings ▸ Remote GPU ▸ LLM on RunPod. The vision LLM needs a model that takes pictures, such as Qwen2.5-VL - one such endpoint can do both.",
         "The MiniMax H3 video models go into ComfyUI's models folder:",
         "The Model manager reads every model in ComfyUI's folders and extra_model_paths.yaml - a card each, its type read from the file. Before a render, bitGen checks the files are there and offers to download any that are missing. <a href=\"{0}\">Add a model</a>.",
         "The Model manager reads the folders again and the new card appears.",
