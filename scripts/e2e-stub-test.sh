@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.737.0 (Tim: "in sheet music , can we separate the instruments and have sheet music for each instrument and another for
+# vocals? and have toggle buttons to play each instrument and vocals?")
+node scripts/test-parts737.js > /tmp/parts737.log 2>&1 \
+  && ok "2.737.0 parts: render lists the staves (the vocal marked), parts:[i] engraves one staff alone named at the top (not labelled again), the words only on the vocal part, timing's v = the score's staff, bad / all parts = the full score, a one-staff score ignores parts; the full score's sound has every staff for the mix" \
+  || { bad "2.737.0 parts"; grep -a "^FAIL" -A1 /tmp/parts737.log | head -12; }
+node scripts/test-ui737-ui.js > /tmp/ui737ui.log 2>&1 \
+  && ok "2.737.0 browser test: Full score / Vocal / Piano / Bass tabs, a part alone (named, words only on the vocal), ⛶ Read titled with it, the place kept; the song's stems play in step with Vocals / Instruments toggles, the notes with a toggle per staff (a muted staff is not struck, Shift+click alone), ✂ Separate vocals on a song without stems - or SKIP without playwright / a studio" \
+  || { bad "2.737.0 parts + mix browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui737ui.log | head -14; }
 # ---- 2.736.0 (Tim: "in sheet music docker make the buttons a normal size button not full docker width. fix the layout , the
 # media buttons are not right and remake the rayout to match bitgen . it looks cheap")
 node scripts/test-ui736-ui.js > /tmp/ui736ui.log 2>&1 \

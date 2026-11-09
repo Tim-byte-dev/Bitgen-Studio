@@ -17,7 +17,7 @@ const ABC = "X:1\nT:t\nM:4/4\nL:1/4\nQ:1/4=120\nK:C\nV:1 name=Vocal\nC D- D (E |
 const R = A.render(ABC, { lyrics: "hel-lo dear world sing" });
 const W = R.timing.words;
 const q = 480;
-check("version 2.735.0", A.version === "2.735.0", A.version);
+check("version 2.735.0 or later", /^2\.(7(3[5-9]|[4-9]\d)|[89]\d\d)\./.test(A.version), A.version);
 check("four syllables timed (sing has no note left)", W.length === 4 && W.map((w) => w.s).join(" ") === "hel lo dear world", W);
 check("hel: its quarter note", W[0].t0 === 0 && W[0].t1 === q, W[0]);
 check("lo: held through its tie (D- D)", W[1].t0 === q && W[1].t1 === 3 * q, W[1]);

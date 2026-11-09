@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5591,
+ "count": 5593,
  "strings": [
   {
    "s": "0 (auto)",
@@ -24177,6 +24177,15 @@
    ]
   },
   {
+   "s": "Parts",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "div#muParts.muPartTabs"
+   ]
+  },
+  {
    "s": "Pass 1 in 8 steps (Acc 8-step LoRA)",
    "kinds": [
     "text"
@@ -40134,6 +40143,15 @@
    ],
    "where": [
     "select#chType"
+   ]
+  },
+  {
+   "s": "What plays",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "span#muPlayMix"
    ]
   },
   {

@@ -25,7 +25,8 @@
   "use strict";
   const doc = root.document;
   const $ = (id) => doc.getElementById(id);
-  const S = { text: "", name: "", title: "", result: null, listed: false, look: null, paper: null };
+  const S = { text: "", name: "", title: "", result: null, listed: false, look: null, paper: null,
+    part: -1, partOf: null, mute: {}, trackOff: {} };     // 2.737.0: the part shown (-1 = the full score), the staves / stems turned off
   const P = () => root.ScorePaper;
   /** a page as SVG in the chosen paper + ink (2.732.0); `pre` keeps the pattern ids apart (the tab / ⛶ Read) */
   const svgOf = (pg, k, pre) => root.AbcScore.toSVG(pg, { look: S.look && S.look.svg, id: pre + k });
@@ -69,7 +70,7 @@
   function fillView() {
     const A = root.AbcScore, r = S.result, box = $("muSvPages");
     if (!A || !r || !box) return;
-    $("muSvTitle").textContent = S.title + " - " + r.pages.length + " page" + (r.pages.length === 1 ? "" : "s");
+    $("muSvTitle").textContent = S.title + (partName() ? " - " + partName() : "") + " - " + r.pages.length + " page" + (r.pages.length === 1 ? "" : "s");
     box.innerHTML = "";
     r.pages.forEach((pg, k) => {
       const p = doc.createElement("div");
@@ -93,18 +94,25 @@
     const A = root.AbcScore;
     playStop();
     S.text = String(text == null ? "" : text); S.name = String(name || "");
+    if (S.partOf !== S.name + "\n" + S.text.length) { S.part = -1; S.mute = {}; S.trackOff = {}; S.partOf = S.name + "\n" + S.text.length; }   // 2.737.0: a new score - all of it
     const pre = $("muAbc");
     if (pre) pre.textContent = S.text || "— empty score —";
     if (!A) { empty("The sheet music engraver did not load - reload the page."); return null; }
     let r;
     const ly = wordsOn() ? lyricsNow() : "";             // 2.734.0: the words, when ticked
-    try { r = A.render(S.text, { title: titleFrom(S.name), lyrics: ly }); } catch (e) {
+    try {
+      r = A.render(S.text, { title: titleFrom(S.name), lyrics: ly, parts: S.part >= 0 ? [S.part] : null, partName: S.part >= 0 ? partLabel(S.part) : "" });
+      // 2.737.0: a part's sheet shows its own staff, the player still has the whole score to play (each staff on or off)
+      if (S.part >= 0 && r.shown && r.shown.length < r.parts.length) { const f = A.render(S.text, { title: titleFrom(S.name) }); r.timing.sound = f.timing.sound; }
+      else if (S.part >= 0) S.part = -1;
+    } catch (e) {
       S.result = null;
       empty("Could not draw " + (S.name || "this score") + ": " + ((e && e.message) || e) + " - ‹/› ABC text shows the notation.");
       status("could not draw " + (S.name || "the score"));
       return null;
     }
     S.result = r; S.title = r.title || titleFrom(S.name) || "Sheet music";
+    partsBuild();
     if (r.empty) {
       empty((S.name || "This score") + " has no notes to draw - ‹/› ABC text shows what it holds.");
       status((how || "") + (S.name || "the score") + " - no notes in it");
@@ -128,7 +136,8 @@
       + ", " + r.voices + (r.voices === 1 ? " staff" : " staves");
     const wd = !wordsOn() ? "" : !ly.trim() ? " · words: the Song tab's lyrics are empty"
       : r.words ? ` · words: ${r.words.placed} of ${r.words.notes} sung notes under ${r.words.voice}` + (r.words.used < r.words.syllables ? ` (${r.words.syllables - r.words.used} syllable${r.words.syllables - r.words.used === 1 ? "" : "s"} more than the notes)` : "") : "";
-    status((how || "🎼 ") + (S.name || S.title) + " - " + sum + (r.warnings.length ? " (" + r.warnings.join("; ") + ")" : "") + wd);
+    const pn = partName() ? " · part: " + partName() : "";
+    status((how || "🎼 ") + (S.name || S.title) + " - " + sum + pn + (r.warnings.length ? " (" + r.warnings.join("; ") + ")" : "") + wd);
     const sel = $("muScoreList");
     if (sel && S.name && Array.prototype.some.call(sel.options, (o) => o.value === S.name)) sel.value = S.name;
     playSetup();
@@ -183,10 +192,10 @@
     btn.disabled = true;
     const was = btn.textContent;
     btn.textContent = "⏳ Writing…";
-    const file = (S.title || titleFrom(S.name) || "sheet music").replace(/[^A-Za-z0-9 ._()-]+/g, "_").trim().slice(0, 70) + ".pdf";
+    const file = ((S.title || titleFrom(S.name) || "sheet music") + (partName() ? " - " + partName() : "")).replace(/[^A-Za-z0-9 ._()-]+/g, "_").trim().slice(0, 70) + ".pdf";
     let bytes;
     const pl = S.look && S.paper && S.paper.pdf ? S.look.pdf : null;      // 2.732.0: the paper + ink, unless "in the PDF too" is off
-    try { bytes = A.toPDF(r.pages, { title: S.title, subject: "Sheet music" }, pl); } catch (e) {
+    try { bytes = A.toPDF(r.pages, { title: S.title + (partName() ? " - " + partName() : ""), subject: partName() ? "Sheet music - " + partName() : "Sheet music" }, pl); } catch (e) {
       status("could not write the PDF: " + ((e && e.message) || e)); btn.disabled = false; btn.textContent = was; return Promise.resolve(null);
     }
     return root.fetch("/api/pdf/save?name=" + encodeURIComponent(file), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: bytes })
@@ -200,6 +209,80 @@
       })
       .catch((e) => { status("⚠ the PDF was not saved: " + ((e && e.message) || e)); return null; })
       .finally(() => { btn.disabled = false; btn.textContent = was; });
+  }
+
+  // 🎼 PARTS + THE MIX (2.737.0, Tim: "can we separate the instruments and have sheet music for each instrument and another
+  // for vocals? and have toggle buttons to play each instrument and vocals?"): tabs on the viewer - the full score, then each
+  // staff's own sheet (AbcScore.render's parts; the words go only on the vocal one) - and, in the transport, what plays: with
+  // the notes, a toggle per staff (Shift+click = that one alone); with the song, its stems - Vocals and Instruments - when it
+  // has been separated (✂ Separate runs the Stems docker's demucs on it).
+  function partLabel(i) { const r = S.result, p = r && r.parts && r.parts[i]; return p ? p.name : ""; }
+  function partName() { return S.part >= 0 ? partLabel(S.part) : ""; }
+  function partsBuild() {
+    const box = $("muParts"), r = S.result;
+    if (!box) return;
+    const ps = (r && !r.empty && r.parts) || [];
+    box.hidden = ps.length < 2;
+    if (ps.length < 2) { box.innerHTML = ""; return; }
+    box.innerHTML = [{ i: -1, name: "Full score" }].concat(ps).map((p) => `<button type="button" role="tab" data-part="${p.i}"${p.vocal ? ' data-vocal="1"' : ""} aria-selected="${S.part === p.i}"`
+      + ` title="${p.i < 0 ? "Every staff together" : "The " + esc(p.name) + " part on its own sheet" + (p.vocal ? " - with the words" : "")}">${esc(p.name)}${p.vocal && !/vocal|voice|vox/i.test(p.name) ? '<span class="muVox">vocal</span>' : ""}</button>`).join("");
+  }
+  function setPart(i) {
+    i = +i;
+    if (!S.result || i === S.part) return;
+    const at = PB.player ? Math.max(0, PB.player.position()) : 0, was = !!(PB.player && PB.player.playing());
+    S.part = i;
+    show(S.text, S.name, "🎼 ");
+    if (PB.player && at) PB.player.seek(at);
+    if (PB.player && was) PB.player.play();
+    test("mu_score_part", i < 0 ? "full" : partLabel(i));
+  }
+  function stemsFor(name) { const f = S.files && S.files[name]; return f && f.stems ? f.stems : null; }
+  function mixBuild() {
+    const box = $("muPlayMix"), r = S.result;
+    if (!box) return;
+    const mode = PB.player ? PB.player.mode : "synth", song = songFor(S.name), st = stemsFor(S.name);
+    let h = "";
+    if (mode === "song" && st) {
+      h = '<span class="muMixL">Play</span>' + [["vocals", "Vocals"], ["instrumental", "Instruments"]].map(([k, n]) => `<button type="button" class="ghost muMix" data-track="${k}" aria-pressed="${!S.trackOff[k]}"`
+        + ` title="${n === "Vocals" ? "The singing (" + esc(st.vocals) + ")" : "Everything but the singing (" + esc(st.instrumental) + ")"} - click: on / off">${n}</button>`).join("");
+    } else if (mode === "song" && song) {
+      h = `<button type="button" class="ghost" id="muStemSep" title="Split ${esc(song)} into its vocals and its instruments (the Stems docker's demucs, on this computer) - then each can be turned on and off here">✂ Separate vocals</button>`;
+    } else if (r && r.parts && r.parts.length > 1) {
+      h = '<span class="muMixL">Play</span>' + r.parts.map((p) => `<button type="button" class="ghost muMix" data-staff="${p.i}" aria-pressed="${!S.mute[p.i]}"`
+        + ` title="${esc(p.name)} - click: on / off · Shift+click: only this one">${esc(p.name)}</button>`).join("");
+    }
+    box.innerHTML = h ? h + '<span class="muSep"></span>' : "";
+  }
+  function mixToggle(b, solo) {
+    if (!PB.player) return;
+    if (b.dataset.track) {
+      const k = b.dataset.track; S.trackOff[k] = !S.trackOff[k];
+      PB.player.setTrack(k, !S.trackOff[k]);
+      test("mu_score_mix", k + " " + (S.trackOff[k] ? "off" : "on"));
+    } else {
+      const v = +b.dataset.staff, ps = (S.result && S.result.parts) || [];
+      if (solo) {
+        const alone = ps.every((p) => !!S.mute[p.i] === (p.i !== v));
+        ps.forEach((p) => { S.mute[p.i] = alone ? false : p.i !== v; });
+      } else S.mute[v] = !S.mute[v];
+      PB.player.remix();
+      test("mu_score_mix", ps.map((p) => p.name + (S.mute[p.i] ? " off" : " on")).join(", "));
+    }
+    mixBuild();
+  }
+  function separate() {
+    const song = songFor(S.name), btn = $("muStemSep");
+    if (!song) return Promise.resolve(null);
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Separating…"; }
+    status("✂ separating " + song + " into vocals + instruments (demucs, on this computer) - a song takes a minute or two…");
+    return root.fetch("/api/stems/separate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ file: song }) })
+      .then((x) => x.json()).then((j) => {
+        if (j.error) throw new Error(j.error);
+        const at = PB.player ? Math.max(0, PB.player.position()) : 0;
+        return refresh(S.name).then(() => { playMake(at); status("✂ " + song + " separated: " + j.vocals + " + " + j.instrumental + " - the Vocals and Instruments toggles turn each on and off"); test("mu_score_stems", j.vocals + " " + j.instrumental); return j; });
+      })
+      .catch((e) => { status("⚠ could not separate the song: " + ((e && e.message) || e)); if (btn) { btn.disabled = false; btn.textContent = "✂ Separate vocals"; } return null; });
   }
 
   // 🗣 WORDS (2.734.0, Tim: "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that
@@ -275,8 +358,13 @@
     const mode = ($("muPlaySound") || {}).value || "synth", song = songFor(S.name);
     const useSong = mode === "song" && song;
     if ($("muPlaySyncL")) $("muPlaySyncL").classList.toggle("hidden", !useSong);
-    PB.player = P2.create({ timing: T, audioUrl: useSong ? "/outputs/" + encodeURIComponent(song) : "", offset: useSong ? syncRead(S.name) : 0,
+    const st = useSong ? stemsFor(S.name) : null;                  // 2.737.0: a separated song plays as its stems
+    const tracks = st ? [{ key: "instrumental", url: "/passets/sound/" + encodeURIComponent(st.instrumental), on: !S.trackOff.instrumental },
+      { key: "vocals", url: "/passets/sound/" + encodeURIComponent(st.vocals), on: !S.trackOff.vocals }] : null;
+    PB.player = P2.create({ timing: T, audioUrl: useSong && !st ? "/outputs/" + encodeURIComponent(song) : "", tracks, offset: useSong ? syncRead(S.name) : 0,
+      isMuted: (v) => !!S.mute[v],
       onFrame: paint, onError: (e) => status("⚠ could not play: " + ((e && e.message) || e)) });
+    mixBuild();
     if (at) PB.player.seek(at);
     paint(PB.player.position(), P2.tickAt(T, PB.player.position()));
   }
@@ -436,6 +524,12 @@
 
   // the controls (the dock's html may arrive after this script: listeners on the document)
   doc.addEventListener("click", (e) => {
+    const tg = e.target && e.target.closest ? e.target : null;
+    const pt = tg && tg.closest("#muParts [data-part]");
+    if (pt) { e.preventDefault(); setPart(pt.getAttribute("data-part")); return; }
+    const mx = tg && tg.closest("#muPlayMix .muMix");
+    if (mx) { e.preventDefault(); mixToggle(mx, e.shiftKey); return; }
+    if (tg && tg.closest("#muStemSep")) { e.preventDefault(); separate(); return; }
     const t = e.target;
     if (!t || !t.closest) return;
     if (t.closest("#muScorePdf") || t.closest("#muSvPdf")) { e.preventDefault(); savePdf(); return; }
@@ -523,5 +617,5 @@
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words, ICONS };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words, ICONS, setPart, separate };
 }(typeof window !== "undefined" ? window : this));

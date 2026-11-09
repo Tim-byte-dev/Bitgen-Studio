@@ -4737,6 +4737,15 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 两条工具栏：**制作乐谱**（🎼 Write from lyrics、用来选择录音的 🎵 Audio file… - 选中的文件名会显示在按钮上 - 以及 📜 Transcribe），和**这份乐谱**（Score 列表、↻、📂 Open .abc、⛶ Read、带 download too 的 💾 Save PDF、words、🎨 Paper、‹/› ABC text、⧉ Copy）。Write 和 Save PDF 带橙色边框，是主要操作。
 - 播放器位于乐谱查看区的顶部：⏮ ⏪ ▶ ⏩ ⏭、时间、小节、Sound、Sync 和 follow。播放时 ▶ 会变成橙色的 ⏸。⛶ Read 中有同样的按钮。
 
+## 🎼 声部与混音：每种乐器和人声（2.737.0）
+<!-- en: parts-and-the-mix-each-instrument-and-the-vocals-2-737-0 76d7483f0fe0 -->
+
+- 有多个谱表的乐谱，在乐谱上方会有**标签**：**Full score**，然后每个谱表一个（人声的会有标记）。点一个标签，就只显示那个谱表的单独乐谱，顶部写着声部名：钢琴手的声部、歌手的声部（勾选 **words** 时带歌词）。⛶ Read 和 💾 Save PDF 使用当前的声部，PDF 也以它命名（Night Drive - Piano.pdf）。切换标签时，歌曲的位置保持不变。
+- 播放器里的 **Play** 可以边听边开关：
+  - 用 **🎹 the notes** 时，每个谱表一个按钮：点击即静音或取消静音，**Shift+点击**只听这一个（再 Shift+点击一次恢复全部）；
+  - 用 **🎵 the song** 时，歌曲分离成音轨后可使用 **Vocals** 和 **Instruments**。还没分离的歌曲会显示 **✂ Separate vocals**：它运行 Stems 面板的分离（demucs，在这台电脑上），完成后出现这两个按钮。
+- 歌曲只能分成歌声和其余部分（分离产生的就是这两个），所以单独开关各个乐器只能在用音符播放时进行，录音中做不到。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

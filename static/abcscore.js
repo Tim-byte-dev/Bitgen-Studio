@@ -504,10 +504,24 @@
 
   function render(input, options) {
     const o = Object.assign({}, DEF, options || {});
-    const S = typeof input === "string" || input == null ? parse(input || "") : input;
+    const S0 = typeof input === "string" || input == null ? parse(input || "") : input;
+    // 2.737.0 (Tim: "can we separate the instruments and have sheet music for each instrument and another for vocals?"):
+    // o.parts = the staves to engrave (indices into the score's voices) - a part's own sheet; the rest of the score is left
+    // out of the layout. timing's v stays the score's own voice index; the words go only on a part with the vocal staff.
+    const allV = S0.voices || [];
+    const VOCAL_RE = /vocal|voice|sing|vox|lead|lyric/i;
+    const vocalAll = Math.max(0, allV.findIndex((v) => VOCAL_RE.test(v.name + " " + v.snm + " " + v.id)));
+    let S = S0, partOf = null;
+    if (Array.isArray(o.parts) && o.parts.length && allV.length > 1) {
+      const keep = [...new Set(o.parts.map((x) => +x).filter((x) => Number.isInteger(x) && x >= 0 && x < allV.length))].sort((a, b) => a - b);
+      if (keep.length && keep.length < allV.length) { S = Object.assign({}, S0, { voices: keep.map((x) => allV[x]) }); partOf = keep; }
+    }
+    const vIdx = (vi) => (partOf ? partOf[vi] : vi);
     const sp = o.sp;
     const title = (S.title && S.title[0]) || String(o.title || "").trim();
-    const result = { pages: [], title, voices: S.voices.length, measures: S.measureCount || 0, systems: 0, warnings: (S.warnings || []).slice(), empty: false };
+    const result = { pages: [], title, voices: S.voices.length, measures: S.measureCount || 0, systems: 0, warnings: (S.warnings || []).slice(), empty: false,
+      parts: allV.map((v, i) => ({ i, name: String(v.name || v.snm || v.id || "Staff " + (i + 1)), snm: String(v.snm || ""), vocal: i === vocalAll && (allV.length > 1 ? VOCAL_RE.test(v.name + " " + v.snm + " " + v.id) : true) })),
+      shown: partOf ? partOf.slice() : allV.map((v, i) => i) };
     const pw = o.pageW, ph = o.pageH;
     if (!S.voices.length || !S.measureCount) {
       result.empty = true;
@@ -628,9 +642,9 @@
     // 2.734.0: the words under the vocal staff - one syllable to each sung note (a tied-over note or one inside a slur
     // keeps the syllable before), section by section: [verse] -> the next % verse of the score, a repeated chorus re-sung
     const LYR_Z = 10;
-    const vocal = Math.max(0, V.findIndex((v) => /vocal|voice|sing|vox|lead|lyric/i.test(v.name + " " + v.snm + " " + v.id)));
+    const vocal = partOf ? partOf.indexOf(vocalAll) : vocalAll;          // 2.737.0: -1 = a part without the vocal staff
     result.words = null;
-    if (o.lyrics && String(o.lyrics).trim()) {
+    if (o.lyrics && String(o.lyrics).trim() && vocal >= 0) {
       const L = lyricsSections(o.lyrics);
       const groups = [];                                   // the score's sections: {key, notes: [pieces]}
       let g = { key: "", notes: [] }, open = 0;
@@ -720,12 +734,12 @@
       info.forEach((inf, i) => pcs[vi][i].forEach((pc) => {
         if (pc.rest || pc.barRest || !pc.heads) return;
         const t0 = barT[i] + pc.onset, t1 = t0 + pc.dur;
-        timing.notes.push({ id: -1, v: vi, bar: i, t0, t1, pc });
+        timing.notes.push({ id: -1, v: vIdx(vi), bar: i, t0, t1, pc });
         pc.heads.forEach((h) => {
           const midi = 12 * (h.pt.o + 1) + SEMI[LETTERS.indexOf(h.pt.L)] + h.pt.a;
           const held = (!pc.first || h.pt.tieIn) && ringing[midi] && ringing[midi].t1 === t0;
           if (held) ringing[midi].t1 = t1;
-          else { const s2 = { v: vi, midi, t0, t1 }; timing.sound.push(s2); ringing[midi] = s2; }
+          else { const s2 = { v: vIdx(vi), midi, t0, t1 }; timing.sound.push(s2); ringing[midi] = s2; }
         });
       }));
     });
@@ -772,7 +786,7 @@
       return Math.abs(a.count);
     }
     const contentW = (pw - o.ml - o.mr) / sp;            // in staff spaces
-    const names = V.length > 1 || V.some((v) => v.name);
+    const names = (V.length > 1 || V.some((v) => v.name)) && !(partOf && V.length === 1 && String(o.partName || "").trim());   // 2.737.0: a one-staff part is named at the top instead
     const nameW = (first) => (names ? Math.max.apply(null, V.map((v) => textWidth(first ? (v.name || v.snm || "") : (v.snm || v.name || ""), "H", first ? 9 : 8))) / sp : 0);
     const bracketW = V.length > 1 ? 1.4 : 0;
     function headerW(i, first) {
@@ -932,9 +946,14 @@
     let ty = o.mt;
     if (title) { ty += 18; titleOps.push({ t: "t", x: pw / 2, y: ty, s: title, f: "TB", z: 18, a: "m" }); ty += 6; }
     (S.title || []).slice(1, 2).forEach((sub) => { ty += 14; titleOps.push({ t: "t", x: pw / 2, y: ty, s: sub, f: "TR", z: 12, a: "m" }); });
-    if (S.composer) { ty += 14; titleOps.push({ t: "t", x: pw - o.mr, y: ty, s: S.composer, f: "TR", z: 10, a: "e" }); }
+    const partName = partOf ? String(o.partName || "").trim() : "";     // 2.737.0: a part's name, top left (as printed parts have)
+    if (S.composer || partName) {
+      ty += 14;
+      if (S.composer) titleOps.push({ t: "t", x: pw - o.mr, y: ty, s: S.composer, f: "TR", z: 10, a: "e" });
+      if (partName) titleOps.push({ t: "t", x: o.ml, y: ty, s: partName, f: "TB", z: 12 });
+    }
     const tempo = S.tempo;
-    if (title || S.composer || (S.title || []).length > 1) ty += 10;
+    if (title || S.composer || partName || (S.title || []).length > 1) ty += 10;
 
     const pages = [];
     let page = { w: pw, h: ph, ops: titleOps.slice() };
@@ -1475,5 +1494,5 @@
     return bytes;
   }
 
-  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, syllables, lyricsSections, WHOLE, version: "2.735.0" };
+  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, syllables, lyricsSections, WHOLE, version: "2.737.0" };
 }));

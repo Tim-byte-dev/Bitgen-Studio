@@ -102,6 +102,21 @@
             .muTime{font-family:var(--mono,monospace);font-size:.74rem;color:var(--text,#e8e2d8);min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
             #muPlayBarNo{font-family:var(--mono,monospace);font-size:.68rem;color:var(--dim,#8a8378);min-width:6.5em}
             #muPlaySync{width:4.5em}
+            /* 2.737.0 (Tim: "separate the instruments and have sheet music for each instrument and another for vocals? and have
+               toggle buttons to play each instrument and vocals"): the parts as tabs on the viewer, the mix in the transport */
+            .muPartTabs{display:flex;gap:2px;align-items:flex-end;padding:6px 8px 0;background:var(--panel,#1c1915);border-bottom:1px solid var(--line,#262a33);overflow-x:auto}
+            .muPartTabs[hidden]{display:none}
+            .muPartTabs button{flex:none;border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;background:none;color:var(--dim,#8a8378);padding:5px 12px;font-size:.74rem;cursor:pointer;margin-bottom:-1px;white-space:nowrap}
+            .muPartTabs button:hover{color:var(--text,#e8e2d8)}
+            .muPartTabs button[aria-selected=true]{background:var(--panel-2,#221e19);border-color:var(--line,#262a33);color:var(--text,#e8e2d8)}
+            .muPartTabs button .muVox{color:var(--tiger,#f2a03d);font-size:.66rem;margin-left:5px}
+            #muPlayMix{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+            #muPlayMix:empty{display:none}
+            #muPlayMix .muMixL{font-size:.72rem;color:var(--dim,#8a8378);margin-right:2px}
+            #muPlayMix button.muMix{display:inline-flex;gap:6px;align-items:center;padding:3px 9px;font-size:.72rem}
+            #muPlayMix button.muMix::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--tiger,#f2a03d)}
+            #muPlayMix button.muMix[aria-pressed=false]{color:var(--dim,#8a8378);text-decoration:line-through}
+            #muPlayMix button.muMix[aria-pressed=false]::before{background:var(--line,#3a342c)}
             #muScore{position:relative;max-height:72vh;overflow:auto;padding:14px 12px}
             #muScore .muPaper{background:#fff;max-width:860px;margin:0 auto 14px;box-shadow:0 2px 10px rgba(0,0,0,.45)}
             #muScore .muPaper svg{display:block;width:100%;height:auto}
@@ -160,6 +175,7 @@
             <input type="file" id="muPaperFile" accept="image/*" hidden>
           </div>
           <div class="muViewer">
+            <div id="muParts" class="muPartTabs" role="tablist" aria-label="Parts" hidden></div>
             <!-- 2.733.0 (Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs
                  sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js. 2.736.0: the viewer's
                  header, the icons drawn (MuScore.ICONS swaps ▶ / ⏸) -->
@@ -172,6 +188,7 @@
               <span id="muPlayTime" class="muTime" aria-live="off">0:00 / 0:00</span>
               <span id="muPlayBarNo">bar –</span>
               <span class="muSep"></span>
+              <span id="muPlayMix" role="group" aria-label="What plays"></span>
               <label class="muIn">Sound
                 <select id="muPlaySound" disabled title="The song the score belongs to (the audio file beside it), or the written notes played by the browser"><option value="synth">🎹 the notes</option></select></label>
               <label class="muIn" id="muPlaySyncL" title="Seconds of the song before bar 1 (its intro) - nudge it until the lights match the singing">Sync (s)

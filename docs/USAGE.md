@@ -7860,6 +7860,21 @@ playing (2.725.1).
 - The player is the score viewer's header: ⏮ ⏪ ▶ ⏩ ⏭, the time, the bar, Sound, Sync and follow. ▶ turns into an orange ⏸
   while it plays. ⛶ Read has the same buttons.
 
+## 🎼 Parts and the mix: each instrument and the vocals (2.737.0)
+
+- A score with more than one staff gets **tabs** on top of the score: **Full score**, then one for each staff - the vocal
+  one marked. A tab shows that staff alone on its own sheet, its name at the top: the piano player's part, the singer's
+  part (with the words when **words** is ticked). ⛶ Read and 💾 Save PDF use the part you are on, and the PDF is named
+  after it (Night Drive - Piano.pdf). Changing tabs keeps your place in the song.
+- **Play** in the player turns things on and off while you listen:
+  - with **🎹 the notes**, a button for each staff - click one to mute or unmute it, **Shift+click** to hear that one alone
+    (Shift+click it again for all of them);
+  - with **🎵 the song**, **Vocals** and **Instruments**, once the song has been separated into its stems. A song that has
+    not been separated yet shows **✂ Separate vocals**: it runs the Stems docker's separation (demucs, on this computer)
+    and the two buttons appear when it is done.
+- The song can only be split into the singing and everything else (that is what the separation makes), so the separate
+  instruments can be turned on and off with the notes, not inside the recording.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

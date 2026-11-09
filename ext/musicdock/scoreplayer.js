@@ -12,7 +12,10 @@
  * Pure (Node-tested): secPerTick, tickAt, secAt, barAt, activeAt, wordsAt (2.735.0), prevBar, nextBar, fmt, midiHz.
  * The browser: create({timing, audioUrl, offset, onFrame}) -> {play, pause, toggle, seek, back, forward, toStart, toEnd,
  * position, duration, playing, mode, setOffset, destroy}. onFrame(sec, tick) runs every frame while it plays and after
- * every seek - the tab paints the notes from it. */
+ * every seek - the tab paints the notes from it.
+ * 2.737.0 (Tim: "have toggle buttons to play each instrument and vocals"): the synth asks o.isMuted(v) before it strikes a
+ * staff's note and api.remix() cuts what is ringing and goes on with the new mix; o.tracks = [{key, url}] plays the song as
+ * its stems (vocals + instrumental, in step - the first leads, the rest follow it) and api.setTrack(key, on) mutes one. */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory(null);
   else root.ScorePlayer = factory(root);
@@ -68,27 +71,41 @@
     let offset = +o.offset || 0, raf = 0, dead = false;
     const scoreEnd = secAt(T, T.total);
     let eng;
-    if (o.audioUrl) {
-      const a = new root.Audio();
-      a.preload = "auto"; a.src = o.audioUrl;
-      a.addEventListener("ended", () => { stopLoop(); frame(); });
+    const tracks = Array.isArray(o.tracks) && o.tracks.length ? o.tracks : (o.audioUrl ? [{ key: "song", url: o.audioUrl }] : []);
+    if (tracks.length) {
+      const els = tracks.map((t) => { const x = new root.Audio(); x.preload = "auto"; x.src = t.url; x.muted = t.on === false; return { key: t.key, el: x }; });
+      const a = els[0].el, rest = els.slice(1).map((t) => t.el);
+      const follow = (hard) => rest.forEach((x) => {                 // the stems stay on the lead's clock
+        if (!Number.isFinite(x.duration) && !hard) return;
+        if (hard || Math.abs(x.currentTime - a.currentTime) > 0.06) { try { x.currentTime = a.currentTime; } catch (e) { /* not loaded yet */ } }
+        if (!a.paused && x.paused && !a.ended) { const p = x.play(); if (p && p.catch) p.catch(() => {}); }
+      });
+      a.addEventListener("ended", () => { rest.forEach((x) => x.pause()); stopLoop(); frame(); });
       a.addEventListener("loadedmetadata", () => frame());
       eng = {
-        mode: "song", el: a,
+        mode: "song", el: a, els,
         pos: () => a.currentTime - offset,
         dur: () => (Number.isFinite(a.duration) && a.duration > 0 ? a.duration - offset : scoreEnd),
         playing: () => !a.paused && !a.ended,
-        play: () => { const p = a.play(); return p && p.catch ? p.catch((e) => { if (o.onError) o.onError(e); }) : Promise.resolve(); },
-        pause: () => a.pause(),
-        seek: (s) => { a.currentTime = Math.max(0, Math.min(s + offset, Number.isFinite(a.duration) ? a.duration : s + offset)); },
-        destroy: () => { a.pause(); a.removeAttribute("src"); try { a.load(); } catch (e) { /* gone */ } },
+        play: () => {
+          const all = [a].concat(rest).map((x) => { const p = x.play(); return p && p.catch ? p : Promise.resolve(); });
+          follow(true);
+          return Promise.all(all).catch((e) => { if (o.onError) o.onError(e); });
+        },
+        pause: () => { a.pause(); rest.forEach((x) => x.pause()); },
+        seek: (s) => { a.currentTime = Math.max(0, Math.min(s + offset, Number.isFinite(a.duration) ? a.duration : s + offset)); follow(true); },
+        tick: () => follow(false),
+        setTrack: (key, on) => { const t = els.find((x) => x.key === key); if (t) t.el.muted = !on; return !!t; },
+        destroy: () => { [a].concat(rest).forEach((x) => { x.pause(); x.removeAttribute("src"); try { x.load(); } catch (e) { /* gone */ } }); },
       };
     } else {
       let ctx = null, startCtx = 0, startPos = 0, pos = 0, on = false, timer = 0, next = 0, voices = [];
+      const struck = {};                                  // 2.737.0: notes struck per staff (what the mix let through)
       const sound = T.sound || [];
       const gainFor = (v) => (v === 0 ? 0.16 : 0.09);
       const strike = (n, at, from) => {
         const len = Math.max(0.05, secAt(T, n.t1) - Math.max(from, secAt(T, n.t0)));
+        struck[n.v] = (struck[n.v] || 0) + 1;
         const g = ctx.createGain(), peak = gainFor(n.v);
         g.gain.setValueAtTime(0.0001, at);
         g.gain.exponentialRampToValueAtTime(peak, at + 0.012);
@@ -113,13 +130,14 @@
         while (next < sound.length && secAt(T, sound[next].t0) < until) {
           const n = sound[next++], s0 = secAt(T, n.t0), s1 = secAt(T, n.t1);
           if (s1 <= p) continue;                          // already over
+          if (o.isMuted && o.isMuted(n.v)) continue;      // 2.737.0: that staff is off
           strike(n, startCtx + (Math.max(s0, p) - startPos), Math.max(s0, p));
         }
         if (p >= scoreEnd + 0.1) { pause(); pos = scoreEnd; frame(); }
       };
       const hush = () => { voices.slice().forEach((os) => { try { os.stop(); } catch (e) { /* stopped */ } }); voices = []; };
       eng = {
-        mode: "synth",
+        mode: "synth", struck,
         pos: () => now(), dur: () => scoreEnd,
         playing: () => on,
         play: () => {
@@ -138,7 +156,7 @@
         destroy: () => { on = false; clearInterval(timer); hush(); if (ctx && ctx.close) ctx.close().catch(() => {}); ctx = null; },
       };
     }
-    function frame() { if (!dead) { const s = eng.pos(); onFrame(s, tickAt(T, s)); } }
+    function frame() { if (!dead) { if (eng.tick) eng.tick(); const s = eng.pos(); onFrame(s, tickAt(T, s)); } }
     function loop() { frame(); raf = eng.playing() ? root.requestAnimationFrame(loop) : 0; }
     function startLoop() { if (!raf) raf = root.requestAnimationFrame(loop); }
     function stopLoop() { if (raf) root.cancelAnimationFrame(raf); raf = 0; }
@@ -155,6 +173,11 @@
       toEnd: () => { pause(); seek(eng.dur()); },
       position: () => eng.pos(), duration: () => eng.dur(), playing: () => eng.playing(),
       setOffset: (v) => { const p = eng.pos(); offset = +v || 0; if (eng.mode === "song") frame(); return p; },
+      // 2.737.0: the mix changed - the synth cuts what rings and strikes on without the muted staves; the song mutes a stem
+      remix: () => { if (eng.mode === "synth" && eng.playing()) eng.seek(eng.pos()); },
+      setTrack: (key, on) => (eng.setTrack ? eng.setTrack(key, on) : false),
+      tracks: () => (eng.els ? eng.els.map((t) => ({ key: t.key, on: !t.el.muted, t: t.el.currentTime, paused: t.el.paused })) : []),
+      struck: () => Object.assign({}, eng.struck || {}),
       destroy: () => { dead = true; stopLoop(); eng.destroy(); },
     };
     return api;
