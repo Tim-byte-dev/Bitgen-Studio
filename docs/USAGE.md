@@ -7842,6 +7842,16 @@ playing (2.725.1).
   words are drawn again a moment later; untick to remove them. The words go into ⛶ Read and the saved PDF too (the PDF's
   fonts have no Chinese or Japanese characters, so those show as ?).
 
+## 🗣 The words lit as they are sung (2.735.0)
+
+- With **words** ticked, press ▶ in the Sheet Music tab: the syllable being sung lights up orange under the vocal staff,
+  together with its note.
+- A syllable stays lit for as long as it is sung - through a note tied on from it, through the notes of its slur, and
+  over the barline - and goes dark in a rest.
+- Click a word to play from it, the same as clicking a note. ⛶ Read lights the words too.
+- It follows the same clock as the notes: with the song beside the score, set **Sync** so the notes and the words land
+  on the singing.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

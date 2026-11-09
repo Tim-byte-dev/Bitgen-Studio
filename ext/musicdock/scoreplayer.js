@@ -9,7 +9,7 @@
  *          clock is the song's time minus a Sync offset (seconds of intro before bar 1);
  *   synth  the notes themselves, played by the browser (Web Audio oscillators, nothing loaded) - for a score with no
  *          song (🎼 Write, 📂 Open .abc) or to check the written notes.
- * Pure (Node-tested): secPerTick, tickAt, secAt, barAt, activeAt, prevBar, nextBar, fmt, midiHz.
+ * Pure (Node-tested): secPerTick, tickAt, secAt, barAt, activeAt, wordsAt (2.735.0), prevBar, nextBar, fmt, midiHz.
  * The browser: create({timing, audioUrl, offset, onFrame}) -> {play, pause, toggle, seek, back, forward, toStart, toEnd,
  * position, duration, playing, mode, setOffset, destroy}. onFrame(sec, tick) runs every frame while it plays and after
  * every seek - the tab paints the notes from it. */
@@ -34,6 +34,13 @@
     const out = [];
     if (tick < 0 || tick >= T.total) return out;
     for (const n of T.notes || []) { if (n.t0 > tick) break; if (tick < n.t1) out.push(n.id); }
+    return out;
+  }
+  /** 2.735.0: the sung syllables at `tick` -> their ids (a word stays lit through the notes it holds) */
+  function wordsAt(T, tick) {
+    const out = [];
+    if (tick < 0) return out;
+    for (const w of T.words || []) { if (w.t0 > tick) break; if (tick < w.t1) out.push(w.id); }
     return out;
   }
   /** ⏪: the start of this bar - or the bar before when it is within half a second of this one's start */
@@ -153,5 +160,5 @@
     return api;
   }
 
-  return { secPerTick, tickAt, secAt, barAt, activeAt, prevBar, nextBar, fmt, midiHz, create };
+  return { secPerTick, tickAt, secAt, barAt, activeAt, wordsAt, prevBar, nextBar, fmt, midiHz, create };
 }));

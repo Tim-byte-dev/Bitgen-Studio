@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.735.0 (Tim: "can the words be highlighted as the song is sung?")
+node scripts/test-sungwords735.js > /tmp/sungwords735.log 2>&1 \
+  && ok "2.735.0 words lit as they are sung: each syllable timed from its note through its tie / slur / over the barline, ended by a rest or a sung note with no syllable; the SVG marks it data-w (not the hyphens); wordsAt; the words clear of each other at the barlines; no lyrics = no words, the notes unchanged" \
+  || { bad "2.735.0 words lit as they are sung"; grep -a "^FAIL" -A1 /tmp/sungwords735.log | head -12; }
+node scripts/test-ui735-ui.js > /tmp/ui735ui.log 2>&1 \
+  && ok "2.735.0 browser test: with words ticked the sung syllable lights orange with its note (held through the tie and the slur over the barline, dark in a rest), follows the clock while it plays, a click on a word jumps there, ⛶ Read lights too, unticked = notes only - or SKIP without playwright / a studio" \
+  || { bad "2.735.0 sung words browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui735ui.log | head -14; }
 # ---- 2.734.0 (Tim: "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that is being
 # worked on in the lyrics input")
 node scripts/test-words734.js > /tmp/words734.log 2>&1 \

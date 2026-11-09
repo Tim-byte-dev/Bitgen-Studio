@@ -641,7 +641,7 @@
           if (pc.rest || pc.barRest || !pc.heads || !pc.first) return;
           const tied = pc.heads.every((h) => h.pt.tieIn);
           const inSlur = open > 0 && !pc.ev.slurStart;
-          if (!tied && !inSlur) g.notes.push(pc);
+          if (!tied && !inSlur) { g.notes.push(pc); pc.slot = true; }
           open += (pc.ev.slurStart || 0);
           if (pc.ev.slurEnd) open = Math.max(0, open - pc.ev.slurEnd);
         });
@@ -695,8 +695,13 @@
         const nx = cols[k + 1], need = (c.lyr || 0) / 2 + (nx ? (nx.lyr || 0) / 2 : 0) + (c.lyr || (nx && nx.lyr) ? 0.7 : 0);
         if (need > c.spring + c.after) c.after += need - (c.spring + c.after);
       });
+      // 2.735.0: and room at the barlines - the last word clear of the bar's end, the first clear of its start (the words
+      // of two bars ran into each other: "world,sing")
+      const cL = cols[cols.length - 1], c0 = cols[0];
+      if (cL && cL.lyr) { const need = HEAD_W / 2 + cL.lyr / 2 + 0.35; if (need > cL.spring + cL.after) cL.after += need - (cL.spring + cL.after); }
+      inf.lead = c0 && c0.lyr ? Math.max(0, c0.lyr / 2 - HEAD_W / 2 - 1.0 + 0.35 - c0.acc) : 0;
       inf.cols = cols; inf.end = end;
-      inf.fixed = 1.0 + cols.reduce((a, c) => a + c.acc + c.after, 0);
+      inf.fixed = 1.0 + (inf.lead || 0) + cols.reduce((a, c) => a + c.acc + c.after, 0);
       inf.stretch = cols.reduce((a, c) => a + c.spring, 0);
       if (!cols.length) { inf.fixed = 1.0; inf.stretch = Math.max(5.0, spring(end || WHOLE)); }
       if (inf.startRepeat) inf.fixed += 1.4;
@@ -728,6 +733,20 @@
     // the notes in time order across the voices; a note's id = its place (the SVG head's data-n)
     timing.notes.sort((a, b) => a.t0 - b.t0 || a.v - b.v);
     timing.notes.forEach((n, k) => { n.id = k; n.pc.nid = k; delete n.pc; });
+    // 2.735.0 (Tim: "can the words be highlighted as the song is sung?"): each sung syllable's time - from its note to the
+    // end of the notes it holds (a tie, the notes of a slur, the rest of a note over the barline); a rest, or a sung note
+    // with no syllable left for it, ends it. The SVG marks the syllable data-w = its id.
+    timing.words = [];
+    if (result.words) {
+      let cur = null;
+      info.forEach((inf, i) => pcs[vocal][i].forEach((pc) => {
+        if (pc.rest || pc.barRest || !pc.heads) { cur = null; return; }
+        const t0 = barT[i] + pc.onset, t1 = t0 + pc.dur;
+        if (pc.syl) { cur = { id: timing.words.length, t0, t1, s: pc.syl.s }; timing.words.push(cur); pc.wid = cur.id; }
+        else if (pc.first && pc.slot) cur = null;
+        else if (cur && t0 <= cur.t1) cur.t1 = Math.max(cur.t1, t1);
+      }));
+    }
     const qBeat = S.tempo && S.tempo.beat ? S.tempo.beat : WHOLE / 4;
     timing.qpm = S.tempo && S.tempo.bpm ? S.tempo.bpm * qBeat / (WHOLE / 4) : 120;
     timing.tempoGiven = !!(S.tempo && S.tempo.bpm);
@@ -829,7 +848,7 @@
         if (inf.startRepeat) { drawBar(ops, i === sy.start ? px : mx, "|:", sp); px += 1.4 * sp; }
         drawBar(ops, mx + mw, inf.bar, sp);
         const colX = {};
-        let x = px + 1.0 * sp;
+        let x = px + (1.0 + (inf.lead || 0)) * sp;
         inf.cols.forEach((c) => { x += c.acc * sp; colX[c.t] = x; x += (c.spring * sy.f + c.after) * sp; });
         pcs[vi][i].forEach((pc) => {
           if (pc.barRest) {
@@ -845,7 +864,7 @@
           if (pc.rest) { if (!pc.invisible) drawRest(ops, pc, xx, sp, Y); }
           else drawNote(ops, pc, xx, sp, Y, grow);
           if (pc.first && pc.ev.chord) chordQ.push({ x: xx, s: pc.ev.chord });
-          if (pc.syl) lyrQ.push({ x: xx + HEAD_W * sp / 2, s: pc.syl.s, end: pc.syl.end });
+          if (pc.syl) lyrQ.push({ x: xx + HEAD_W * sp / 2, s: pc.syl.s, end: pc.syl.end, w: pc.wid });
           if (pc.first && pc.ev.annot) annotQ.push({ x: xx, s: pc.ev.annot });
           if (pc.ev.tuplet && !pc.rest) (tupQ[pc.ev.tuplet.id] = tupQ[pc.ev.tuplet.id] || { p: pc.ev.tuplet.p, list: [] }).list.push(pc);
           if (pc.ev.tuplet && pc.rest) (tupQ[pc.ev.tuplet.id] = tupQ[pc.ev.tuplet.id] || { p: pc.ev.tuplet.p, list: [] }).list.push(pc);
@@ -868,7 +887,7 @@
       if (lyrQ.length) {
         const ly = Math.max(4 * sp, box.bottom) + LYR_Z + 3;
         lyrQ.forEach((w, k) => {
-          ops.push({ t: "t", x: w.x, y: ly, s: w.s, f: "TR", z: LYR_Z, a: "m" });
+          ops.push({ t: "t", x: w.x, y: ly, s: w.s, f: "TR", z: LYR_Z, a: "m", w: w.w });
           if (w.end) return;
           const nx = lyrQ[k + 1], ww = textWidth(w.s, "TR", LYR_Z) / 2;
           const hx = nx ? (w.x + ww + nx.x - textWidth(nx.s, "TR", LYR_Z) / 2) / 2 : w.x + ww + 4;
@@ -1339,7 +1358,7 @@
       if (op.t === "t") {
         const f = SVG_FONT[op.f] || SVG_FONT.H, c = op.g ? rgbHex(soft(L.ink, L.avg, op.g)) : inkHex;
         out.push(`<text x="${r2(op.x)}" y="${r2(op.y)}" font-family="${f[0]}" font-weight="${f[1]}" font-style="${f[2]}" font-size="${r2(op.z)}"`
-          + `${op.a === "m" ? ' text-anchor="middle"' : op.a === "e" ? ' text-anchor="end"' : ""} fill="${c}">${xmlEsc(op.s)}</text>`);
+          + `${op.a === "m" ? ' text-anchor="middle"' : op.a === "e" ? ' text-anchor="end"' : ""} fill="${c}"${op.w != null ? ` data-w="${op.w}"` : ""}>${xmlEsc(op.s)}</text>`);
         return;
       }
       const fillA = op.fill ? `fill="${inkHex}"${op.eo ? ' fill-rule="evenodd"' : ""}` : 'fill="none"';
@@ -1456,5 +1475,5 @@
     return bytes;
   }
 
-  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, syllables, lyricsSections, WHOLE, version: "2.734.0" };
+  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, syllables, lyricsSections, WHOLE, version: "2.735.0" };
 }));

@@ -226,27 +226,29 @@
   // .abc (the same name, an audio file - GET /api/scores says which) or the notes played by the browser; every frame the
   // notes sounding get .abcOn (their heads carry data-n from the engraver), the bar a soft band, the page follows.
   const PL = () => root.ScorePlayer;
-  const PB = { player: null, lit: [], els: {}, bands: [], bar: -2, playing: false };
+  const PB = { player: null, lit: [], els: {}, bands: [], bar: -2, playing: false, wels: {}, wlit: [] };
   const SYNC_KEY = "h3.muScoreSync";
   function syncRead(name) { try { const m = JSON.parse(root.localStorage.getItem(SYNC_KEY) || "{}"); return +m[name] || 0; } catch (e) { return 0; } }
   function syncSave(name, v) { try { const m = JSON.parse(root.localStorage.getItem(SYNC_KEY) || "{}"); m[name] = v; root.localStorage.setItem(SYNC_KEY, JSON.stringify(m)); } catch (e) { /* this page only */ } }
-  function playStop() { if (PB.player) { try { PB.player.destroy(); } catch (e) { /* gone */ } } PB.player = null; PB.lit = []; PB.bar = -2; PB.playing = false; }
+  function playStop() { if (PB.player) { try { PB.player.destroy(); } catch (e) { /* gone */ } } PB.player = null; PB.lit = []; PB.wlit = []; PB.bar = -2; PB.playing = false; }
   function playButtons(on) {
     Array.prototype.forEach.call(doc.querySelectorAll("#muPlayBar [data-act], #muSvPlay [data-act]"), (b) => { b.disabled = !on; });
     ["muPlaySound", "muPlaySync"].forEach((id) => { const x = $(id); if (x) x.disabled = !on; });
   }
   /** the note heads (data-n) and a bar band in every page of the tab and of ⛶ Read - again after any redraw */
   function relight() {
-    PB.els = {}; PB.bands = [];
+    PB.els = {}; PB.bands = []; PB.wels = {};
     Array.prototype.forEach.call(doc.querySelectorAll("#muScore .muPaper svg, #muSvPages svg"), (svg) => {
       Array.prototype.forEach.call(svg.querySelectorAll("path[data-n]"), (el) => { (PB.els[el.getAttribute("data-n")] = PB.els[el.getAttribute("data-n")] || []).push(el); });
+      // 2.735.0: the sung syllables (data-w) - lit while they are sung
+      Array.prototype.forEach.call(svg.querySelectorAll("text[data-w]"), (el) => { (PB.wels[el.getAttribute("data-w")] = PB.wels[el.getAttribute("data-w")] || []).push(el); });
       const band = doc.createElementNS("http://www.w3.org/2000/svg", "rect");
       band.setAttribute("class", "abcBar"); band.setAttribute("width", "0"); band.setAttribute("height", "0");
       const first = svg.querySelector("path");
       svg.insertBefore(band, first || null);
       PB.bands.push({ svg, band, page: Array.prototype.indexOf.call(svg.closest("#muScore, #muSvPages").querySelectorAll("svg"), svg), box: svg.closest("#muScore, #muSvPages") });
     });
-    const lit = PB.lit; PB.lit = []; PB.bar = -2;
+    const lit = PB.lit; PB.lit = []; PB.wlit = []; PB.bar = -2;
     if (PB.player) paint(PB.player.position(), PL().tickAt(S.result.timing, PB.player.position()));
     else lit.length = 0;
   }
@@ -295,6 +297,12 @@
     PB.lit.forEach((id) => { if (!keep.has(id)) (PB.els[id] || []).forEach((el) => el.classList.remove("abcOn")); });
     now.forEach((id) => (PB.els[id] || []).forEach((el) => el.classList.add("abcOn")));
     PB.lit = now;
+    // 2.735.0 (Tim: "can the words be highlighted as the song is sung?"): the syllable being sung, held through its tie / slur
+    const wnow = P2.wordsAt ? P2.wordsAt(T, tick).map(String) : [];
+    const wkeep = new Set(wnow);
+    PB.wlit.forEach((id) => { if (!wkeep.has(id)) (PB.wels[id] || []).forEach((el) => el.classList.remove("abcOn")); });
+    wnow.forEach((id) => (PB.wels[id] || []).forEach((el) => el.classList.add("abcOn")));
+    PB.wlit = wnow;
     // the bar: its band, its number, the page following it
     const bi = tick >= 0 && tick < T.total ? P2.barAt(T, tick) : -1;
     if ($("muPlayBarNo")) $("muPlayBarNo").textContent = bi >= 0 ? "bar " + (bi + 1) + " / " + T.barStarts.length : "bar –";
@@ -434,6 +442,12 @@
     if (t.closest("#muPaperBtn")) { e.preventDefault(); paperToggle(); return; }
     const pa = t.closest("#muPlayBar [data-act], #muSvPlay [data-act]");
     if (pa) { e.preventDefault(); playAct(pa.getAttribute("data-act")); return; }
+    const word = t.closest && t.closest("#muScore text[data-w], #muSvPages text[data-w]");
+    if (word && PB.player && S.result && S.result.timing && S.result.timing.words) {   // 2.735.0: a word clicked - sing from it
+      const w = S.result.timing.words[+word.getAttribute("data-w")];
+      if (w) { PB.player.seek(PL().secAt(S.result.timing, w.t0)); test("mu_score_wseek", String(w.id)); }
+      return;
+    }
     const note = t.closest && t.closest("#muScore path[data-n], #muSvPages path[data-n]");
     if (note && PB.player && S.result && S.result.timing) {               // a note clicked: play from it
       const n = S.result.timing.notes[+note.getAttribute("data-n")];
