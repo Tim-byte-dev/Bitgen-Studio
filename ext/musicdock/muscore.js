@@ -161,6 +161,7 @@
       const files = (j && j.files) || [];
       S.files = {};
       files.forEach((f) => { S.files[f.name] = f; });
+      S.songs = (j && j.songs) || [];                    // 2.738.0: the project's recordings
       const keep = select || sel.value;
       sel.innerHTML = "";
       const o0 = doc.createElement("option");
@@ -237,52 +238,168 @@
     if (PB.player && was) PB.player.play();
     test("mu_score_part", i < 0 ? "full" : partLabel(i));
   }
-  function stemsFor(name) { const f = S.files && S.files[name]; return f && f.stems ? f.stems : null; }
-  function mixBuild() {
+  // 🎚 THE SONG IN ITS LAYERS (2.738.0, Tim: "when playing in sheet music play the actual song in it's separated layers,
+  // show the layers as waveforms. right now it sounds like a 1980's watch"): Sound picks the RECORDING a score plays (any
+  // song in the project, remembered per score; the one beside it or with the same title found by itself), and the song
+  // plays as its layers - ✂ Split into layers makes four (vocals, drums, bass, other: demucs on this computer) - each a lane
+  // under the transport: its waveform (GET /api/waveform), its on / off (Shift+click = alone), a click on it plays from
+  // there. 🎹 the notes (the browser's own sound) is what a score with no recording falls back to.
+  const SONG_KEY = "h3.muScoreSong";
+  const LAYER_NAME = { vocals: "Vocals", drums: "Drums", bass: "Bass", other: "Other", instrumental: "Instruments", song: "Song" };
+  const LAYER_ORDER = ["vocals", "drums", "bass", "other", "instrumental"];
+  const LAYER_COL = { vocals: "#f2a03d", drums: "#d0765a", bass: "#c9a65c", other: "#93b07f", instrumental: "#9fb0c4", song: "#cdbb9f" };
+  const urlOf = (src, name) => (src === "sound" ? "/passets/sound/" : "/outputs/") + encodeURIComponent(name);
+  const keyOf = (x) => x.src + "/" + x.name;
+  function songMap() { try { return JSON.parse(root.localStorage.getItem(SONG_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function songMapSave(score, v) { try { const m = songMap(); m[score] = v; root.localStorage.setItem(SONG_KEY, JSON.stringify(m)); } catch (e) { /* this page only */ } }
+  const baseOf = (n) => String(n || "").replace(/\.[^.]+$/, "").replace(/_\d{8}-\d{6}.*$/, "").replace(/[^\p{L}\p{N}]+/gu, "").toLowerCase();
+  /** the recording a score plays: the one picked for it, else the song beside it (a generated song writes its .abc
+   *  there), else the newest song with the same title, else none (the notes) */
+  function songChoice(score) {
+    const L = S.songs || [], m = songMap()[score];
+    if (m === "synth") return null;
+    if (m) { const x = L.find((s2) => keyOf(s2) === m); if (x) return x; }
+    const f = S.files && S.files[score];
+    if (f && f.audio) { const x = L.find((s2) => s2.name === f.audio && s2.src !== "sound") || L.find((s2) => s2.name === f.audio); if (x) return x; }
+    const b = baseOf(score);
+    return (b && L.find((s2) => baseOf(s2.name) === b)) || null;
+  }
+  function curSong() {
+    const sel = $("muPlaySound"), v = sel ? sel.value : "";
+    return v && v !== "synth" ? (S.songs || []).find((x) => "song:" + keyOf(x) === v) || null : null;
+  }
+  function soundOptions() {
+    const sel = $("muPlaySound");
+    if (!sel) return;
+    const pick = songChoice(S.name);
+    sel.innerHTML = '<option value="synth">🎹 the notes (no recording)</option>' + (S.songs || []).map((x) => `<option value="song:${esc(keyOf(x))}">🎵 ${esc(x.name)}${x.layers ? (x.layers.drums ? " · 4 layers" : " · 2 layers") : ""}</option>`).join("");
+    sel.value = pick ? "song:" + keyOf(pick) : "synth";
+  }
+  function laneList(song) {
+    if (!song) return [];
+    if (song.layers) return LAYER_ORDER.filter((k) => song.layers[k]).map((k) => ({ key: k, src: "sound", name: song.layers[k] }));
+    return [{ key: "song", src: song.src, name: song.name }];
+  }
+  const WAVES = {};
+  function peaksOf(src, name) {
+    const k = src + "/" + name;
+    if (!WAVES[k]) WAVES[k] = root.fetch("/api/waveform?src=" + encodeURIComponent(src) + "&name=" + encodeURIComponent(name)).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    return WAVES[k];
+  }
+  function drawWave(c, w, key) {
+    if (!c) return;
+    if (w !== undefined) c._w = w;
+    w = c._w;
+    const dpr = root.devicePixelRatio || 1, W = Math.max(1, Math.round(c.clientWidth * dpr)), H = Math.max(1, Math.round(c.clientHeight * dpr));
+    if (c.width !== W) c.width = W;
+    if (c.height !== H) c.height = H;
+    const g = c.getContext && c.getContext("2d");
+    if (!g) return;
+    g.clearRect(0, 0, W, H);
+    const pk = (w && w.peaks) || [];
+    c.dataset.peaks = String(pk.length);
+    if (!pk.length) return;
+    g.fillStyle = LAYER_COL[key] || LAYER_COL.song;
+    const bar = Math.max(1, Math.round(2 * dpr)), mid = H / 2;
+    for (let x = 0; x < W; x += bar + 1) {
+      let m = 0;
+      const i0 = Math.floor(x / W * pk.length), i1 = Math.max(i0 + 1, Math.floor((x + bar) / W * pk.length));
+      for (let i = i0; i < i1 && i < pk.length; i++) if (pk[i] > m) m = pk[i];
+      const h = Math.max(1, m / 255 * (H - 2 * dpr));
+      g.fillRect(x, mid - h / 2, bar, h);
+    }
+  }
+  function layersBuild() {
+    const box = $("muLayers");
+    if (!box) return;
+    const song = PB.player && PB.player.mode === "song" ? curSong() : null;
+    if (!song) {
+      const n = (S.songs || []).length;
+      box.hidden = !(n && S.result && !S.result.empty);
+      box.innerHTML = box.hidden ? "" : `<div class="muLaneBar"><span class="muMeta">Playing the written notes - pick the recording under <b>Sound</b> to hear the song itself, in its layers.</span></div>`;
+      return;
+    }
+    const lanes = laneList(song), four = !!(song.layers && song.layers.drums);
+    box.hidden = false;
+    box.innerHTML = lanes.map((l) => `<div class="muLane${S.trackOff[l.key] ? " off" : ""}" data-lane="${l.key}">`
+      + (l.key === "song" ? `<span class="muLaneName" title="${esc(l.name)}">Song</span>`
+        : `<button type="button" class="ghost muMix" data-track="${l.key}" aria-pressed="${!S.trackOff[l.key]}" title="${esc(LAYER_NAME[l.key])} (${esc(l.name)}) - click: on / off · Shift+click: only this one">${LAYER_NAME[l.key]}</button>`)
+      + `<div class="muWave" data-key="${l.key}" title="${esc(l.name)} - click to play from there"><canvas></canvas><i class="muPlayed"></i><i class="muHead"></i></div></div>`).join("")
+      + (four ? "" : `<div class="muLaneBar"><button type="button" class="ghost" id="muStemSep" title="Split ${esc(song.name)} into four layers - vocals, drums, bass and the other instruments (demucs, on this computer) - each with its waveform and on / off">✂ Split into layers</button>`
+        + `<span class="muMeta">${song.layers ? "vocals + instruments now - split it for the drums, the bass and the rest" : "one recording - split it to hear each layer on its own"}</span></div>`);
+    lanes.forEach((l) => { const c = box.querySelector(`[data-lane="${l.key}"] canvas`); peaksOf(l.src, l.name).then((w) => drawWave(c, w, l.key)); });
+    lanesPaint();
+  }
+  function lanesPaint() {
+    const a = PB.player && PB.player.audio;
+    if (!a) return;
+    const f = Number.isFinite(a.duration) && a.duration > 0 ? Math.max(0, Math.min(1, a.currentTime / a.duration)) : 0;
+    Array.prototype.forEach.call(doc.querySelectorAll("#muLayers .muWave"), (w) => {
+      const h = w.querySelector(".muHead"), pl = w.querySelector(".muPlayed");
+      if (h) h.style.left = (f * 100).toFixed(3) + "%";
+      if (pl) pl.style.width = (f * 100).toFixed(3) + "%";
+    });
+  }
+  function laneSeek(w, clientX) {
+    const a = PB.player && PB.player.audio, r = w.getBoundingClientRect();
+    if (!a || !Number.isFinite(a.duration) || !r.width) return;
+    const t = Math.max(0, Math.min(1, (clientX - r.left) / r.width)) * a.duration;
+    PB.player.seek(t - syncRead(S.name));
+    test("mu_score_lane_seek", t.toFixed(2));
+  }
+  let waveT = 0;
+  root.addEventListener && root.addEventListener("resize", () => { clearTimeout(waveT); waveT = setTimeout(() => Array.prototype.forEach.call(doc.querySelectorAll("#muLayers canvas"), (c) => drawWave(c, undefined, c.closest(".muLane").dataset.lane)), 150); });
+  function mixBuild() {                                  // the notes: a toggle per staff (the song's layers have their lanes)
     const box = $("muPlayMix"), r = S.result;
     if (!box) return;
-    const mode = PB.player ? PB.player.mode : "synth", song = songFor(S.name), st = stemsFor(S.name);
-    let h = "";
-    if (mode === "song" && st) {
-      h = '<span class="muMixL">Play</span>' + [["vocals", "Vocals"], ["instrumental", "Instruments"]].map(([k, n]) => `<button type="button" class="ghost muMix" data-track="${k}" aria-pressed="${!S.trackOff[k]}"`
-        + ` title="${n === "Vocals" ? "The singing (" + esc(st.vocals) + ")" : "Everything but the singing (" + esc(st.instrumental) + ")"} - click: on / off">${n}</button>`).join("");
-    } else if (mode === "song" && song) {
-      h = `<button type="button" class="ghost" id="muStemSep" title="Split ${esc(song)} into its vocals and its instruments (the Stems docker's demucs, on this computer) - then each can be turned on and off here">✂ Separate vocals</button>`;
-    } else if (r && r.parts && r.parts.length > 1) {
-      h = '<span class="muMixL">Play</span>' + r.parts.map((p) => `<button type="button" class="ghost muMix" data-staff="${p.i}" aria-pressed="${!S.mute[p.i]}"`
-        + ` title="${esc(p.name)} - click: on / off · Shift+click: only this one">${esc(p.name)}</button>`).join("");
-    }
-    box.innerHTML = h ? h + '<span class="muSep"></span>' : "";
+    const synth = !PB.player || PB.player.mode === "synth";
+    box.innerHTML = synth && r && r.parts && r.parts.length > 1 ? '<span class="muMixL">Play</span>' + r.parts.map((p) => `<button type="button" class="ghost muMix" data-staff="${p.i}" aria-pressed="${!S.mute[p.i]}"`
+      + ` title="${esc(p.name)} - click: on / off · Shift+click: only this one">${esc(p.name)}</button>`).join("") + '<span class="muSep"></span>' : "";
   }
   function mixToggle(b, solo) {
     if (!PB.player) return;
     if (b.dataset.track) {
-      const k = b.dataset.track; S.trackOff[k] = !S.trackOff[k];
-      PB.player.setTrack(k, !S.trackOff[k]);
-      test("mu_score_mix", k + " " + (S.trackOff[k] ? "off" : "on"));
-    } else {
-      const v = +b.dataset.staff, ps = (S.result && S.result.parts) || [];
+      const k = b.dataset.track, keys = laneList(curSong()).map((l) => l.key).filter((x) => x !== "song");
       if (solo) {
-        const alone = ps.every((p) => !!S.mute[p.i] === (p.i !== v));
-        ps.forEach((p) => { S.mute[p.i] = alone ? false : p.i !== v; });
-      } else S.mute[v] = !S.mute[v];
-      PB.player.remix();
-      test("mu_score_mix", ps.map((p) => p.name + (S.mute[p.i] ? " off" : " on")).join(", "));
+        const alone = keys.every((x) => !!S.trackOff[x] === (x !== k));
+        keys.forEach((x) => { S.trackOff[x] = alone ? false : x !== k; });
+      } else S.trackOff[k] = !S.trackOff[k];
+      keys.forEach((x) => PB.player.setTrack(x, !S.trackOff[x]));
+      Array.prototype.forEach.call(doc.querySelectorAll("#muLayers .muLane"), (ln) => {
+        const off = !!S.trackOff[ln.dataset.lane]; ln.classList.toggle("off", off);
+        const bt = ln.querySelector(".muMix"); if (bt) bt.setAttribute("aria-pressed", String(!off));
+      });
+      test("mu_score_mix", keys.map((x) => x + (S.trackOff[x] ? " off" : " on")).join(", "));
+      return;
     }
+    const v = +b.dataset.staff, ps = (S.result && S.result.parts) || [];
+    if (solo) {
+      const alone = ps.every((p) => !!S.mute[p.i] === (p.i !== v));
+      ps.forEach((p) => { S.mute[p.i] = alone ? false : p.i !== v; });
+    } else S.mute[v] = !S.mute[v];
+    PB.player.remix();
+    test("mu_score_mix", ps.map((p) => p.name + (S.mute[p.i] ? " off" : " on")).join(", "));
     mixBuild();
   }
   function separate() {
-    const song = songFor(S.name), btn = $("muStemSep");
+    const song = curSong(), btn = $("muStemSep");
     if (!song) return Promise.resolve(null);
-    if (btn) { btn.disabled = true; btn.textContent = "⏳ Separating…"; }
-    status("✂ separating " + song + " into vocals + instruments (demucs, on this computer) - a song takes a minute or two…");
-    return root.fetch("/api/stems/separate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ file: song }) })
+    if (btn) { btn.disabled = true; btn.textContent = "⏳ Splitting…"; }
+    status("✂ splitting " + song.name + " into vocals, drums, bass and the rest (demucs, on this computer) - a song takes a minute or two…");
+    return root.fetch("/api/stems/separate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ file: song.name, layers: 4 }) })
       .then((x) => x.json()).then((j) => {
         if (j.error) throw new Error(j.error);
         const at = PB.player ? Math.max(0, PB.player.position()) : 0;
-        return refresh(S.name).then(() => { playMake(at); status("✂ " + song + " separated: " + j.vocals + " + " + j.instrumental + " - the Vocals and Instruments toggles turn each on and off"); test("mu_score_stems", j.vocals + " " + j.instrumental); return j; });
+        return refresh(S.name).then(() => {
+          soundOptions();
+          const sel = $("muPlaySound"); if (sel) sel.value = "song:" + keyOf(song);
+          playMake(at);
+          status("✂ " + song.name + " split into its layers: " + ["vocals", "drums", "bass", "other"].filter((k) => j[k]).join(", ") + " - each lane turns on and off");
+          test("mu_score_stems", Object.keys(j).filter((k) => k !== "ok").join(" "));
+          return j;
+        });
       })
-      .catch((e) => { status("⚠ could not separate the song: " + ((e && e.message) || e)); if (btn) { btn.disabled = false; btn.textContent = "✂ Separate vocals"; } return null; });
+      .catch((e) => { status("⚠ could not split the song: " + ((e && e.message) || e)); if (btn) { btn.disabled = false; btn.textContent = "✂ Split into layers"; } return null; });
   }
 
   // 🗣 WORDS (2.734.0, Tim: "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that
@@ -337,15 +454,10 @@
     if (PB.player) paint(PB.player.position(), PL().tickAt(S.result.timing, PB.player.position()));
     else lit.length = 0;
   }
-  function songFor(name) { const f = S.files && S.files[name]; return f && f.audio ? f.audio : ""; }
   function playSetup() {
     const T = S.result && S.result.timing, P2 = PL();
     if (!T || !P2 || !S.result.pages.length) { playButtons(false); return; }
-    const song = songFor(S.name), sel = $("muPlaySound");
-    if (sel) {
-      sel.innerHTML = (song ? `<option value="song">🎵 the song (${esc(song)})</option>` : "") + '<option value="synth">🎹 the notes</option>';
-      sel.value = song ? "song" : "synth";
-    }
+    soundOptions();
     const sync = $("muPlaySync");
     if (sync) sync.value = String(syncRead(S.name));
     relight();
@@ -355,16 +467,15 @@
   function playMake(at) {
     const T = S.result.timing, P2 = PL();
     if (PB.player) PB.player.destroy();
-    const mode = ($("muPlaySound") || {}).value || "synth", song = songFor(S.name);
-    const useSong = mode === "song" && song;
-    if ($("muPlaySyncL")) $("muPlaySyncL").classList.toggle("hidden", !useSong);
-    const st = useSong ? stemsFor(S.name) : null;                  // 2.737.0: a separated song plays as its stems
-    const tracks = st ? [{ key: "instrumental", url: "/passets/sound/" + encodeURIComponent(st.instrumental), on: !S.trackOff.instrumental },
-      { key: "vocals", url: "/passets/sound/" + encodeURIComponent(st.vocals), on: !S.trackOff.vocals }] : null;
-    PB.player = P2.create({ timing: T, audioUrl: useSong && !st ? "/outputs/" + encodeURIComponent(song) : "", tracks, offset: useSong ? syncRead(S.name) : 0,
+    const song = curSong();                                  // 2.738.0: the recording, as its layers when it has them
+    if ($("muPlaySyncL")) $("muPlaySyncL").classList.toggle("hidden", !song);
+    const lanes = laneList(song);
+    const tracks = song && song.layers ? lanes.map((l) => ({ key: l.key, url: urlOf("sound", l.name), on: !S.trackOff[l.key] })) : null;
+    PB.player = P2.create({ timing: T, audioUrl: song && !song.layers ? urlOf(song.src, song.name) : "", tracks, offset: song ? syncRead(S.name) : 0,
       isMuted: (v) => !!S.mute[v],
       onFrame: paint, onError: (e) => status("⚠ could not play: " + ((e && e.message) || e)) });
     mixBuild();
+    layersBuild();
     if (at) PB.player.seek(at);
     paint(PB.player.position(), P2.tickAt(T, PB.player.position()));
   }
@@ -377,6 +488,7 @@
     if ($("muPlayTime")) $("muPlayTime").textContent = tt;
     if ($("muSvTime")) $("muSvTime").textContent = tt;
     PB.playing = playing;
+    lanesPaint();
     ["muPlayToggle", "muSvToggle"].forEach((id) => {
       const b = $(id), ic = playing ? "pause" : "play";
       if (b && b.dataset.icon !== ic) { b.dataset.icon = ic; b.innerHTML = ICONS[ic]; b.title = playing ? "Pause" : "Play - the notes light up as they sound"; b.setAttribute("aria-label", playing ? "Pause" : "Play"); }
@@ -527,9 +639,11 @@
     const tg = e.target && e.target.closest ? e.target : null;
     const pt = tg && tg.closest("#muParts [data-part]");
     if (pt) { e.preventDefault(); setPart(pt.getAttribute("data-part")); return; }
-    const mx = tg && tg.closest("#muPlayMix .muMix");
+    const mx = tg && tg.closest("#muPlayMix .muMix, #muLayers .muMix");
     if (mx) { e.preventDefault(); mixToggle(mx, e.shiftKey); return; }
     if (tg && tg.closest("#muStemSep")) { e.preventDefault(); separate(); return; }
+    const wv = tg && tg.closest("#muLayers .muWave");
+    if (wv) { e.preventDefault(); laneSeek(wv, e.clientX); return; }
     const t = e.target;
     if (!t || !t.closest) return;
     if (t.closest("#muScorePdf") || t.closest("#muSvPdf")) { e.preventDefault(); savePdf(); return; }
@@ -575,7 +689,7 @@
     if (t.id === "muScoreList") { if (t.value) load(t.value); return; }
     if (t.id === "muSheetRef") { const f = t.files && t.files[0], n = $("muSheetRefName"); if (n) n.textContent = f ? f.name : "Audio file…"; return; }   // 2.736.0
     if (t.id === "muScoreWords") { try { root.localStorage.setItem(WORDS_KEY, t.checked ? "1" : "0"); } catch (er) { /* this page only */ } redraw(); test("mu_score_words", t.checked ? "on" : "off"); return; }
-    if (t.id === "muPlaySound") { const at = PB.player ? Math.max(0, PB.player.position()) : 0; playMake(at); return; }
+    if (t.id === "muPlaySound") { const at = PB.player ? Math.max(0, PB.player.position()) : 0; songMapSave(S.name, t.value === "synth" ? "synth" : t.value.slice(5)); S.trackOff = {}; playMake(at); return; }
     if (t.id === "muPlaySync") {
       const v = Math.max(-60, Math.min(120, parseFloat(t.value) || 0));
       syncSave(S.name, v);

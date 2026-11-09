@@ -113,10 +113,23 @@
             #muPlayMix{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
             #muPlayMix:empty{display:none}
             #muPlayMix .muMixL{font-size:.72rem;color:var(--dim,#8a8378);margin-right:2px}
-            #muPlayMix button.muMix{display:inline-flex;gap:6px;align-items:center;padding:3px 9px;font-size:.72rem}
-            #muPlayMix button.muMix::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--tiger,#f2a03d)}
-            #muPlayMix button.muMix[aria-pressed=false]{color:var(--dim,#8a8378);text-decoration:line-through}
-            #muPlayMix button.muMix[aria-pressed=false]::before{background:var(--line,#3a342c)}
+            #muPaneSheet button.muMix{display:inline-flex;gap:6px;align-items:center;padding:3px 9px;font-size:.72rem}
+            #muPaneSheet button.muMix::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--tiger,#f2a03d)}
+            #muPaneSheet button.muMix[aria-pressed=false]{color:var(--dim,#8a8378);text-decoration:line-through}
+            #muPaneSheet button.muMix[aria-pressed=false]::before{background:var(--line,#3a342c)}
+            /* 2.738.0 (Tim: "play the actual song in it's separated layers, show the layers as waveforms"): a lane per layer */
+            .muLayers{display:flex;flex-direction:column;gap:4px;padding:6px 8px 8px;background:var(--panel-2,#221e19);border-bottom:1px solid var(--line,#262a33)}
+            .muLayers[hidden]{display:none}
+            .muLane{display:grid;grid-template-columns:112px 1fr;gap:8px;align-items:center}
+            .muLane .muMix{width:100%;justify-content:flex-start}
+            .muLaneName{font-size:.72rem;color:var(--dim,#8a8378);padding-left:4px}
+            .muWave{position:relative;height:34px;background:#13100c;border:1px solid var(--line,#262a33);border-radius:4px;overflow:hidden;cursor:pointer}
+            .muWave canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+            .muWave .muPlayed{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(242,160,61,.10);pointer-events:none}
+            .muWave .muHead{position:absolute;top:0;bottom:0;left:0;width:2px;margin-left:-1px;background:var(--tiger,#f2a03d);pointer-events:none}
+            .muLane.off .muWave canvas{opacity:.25;filter:grayscale(1)}
+            .muLaneBar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:2px}
+            .muLaneBar .ghost{width:auto;margin:0;flex:none}
             #muScore{position:relative;max-height:72vh;overflow:auto;padding:14px 12px}
             #muScore .muPaper{background:#fff;max-width:860px;margin:0 auto 14px;box-shadow:0 2px 10px rgba(0,0,0,.45)}
             #muScore .muPaper svg{display:block;width:100%;height:auto}
@@ -195,6 +208,7 @@
                 <input type="number" id="muPlaySync" step="0.1" min="-60" max="120" value="0" disabled></label>
               <label class="muIn" style="margin-left:auto" title="Scroll the score to the bar that is playing"><input type="checkbox" id="muPlayFollow" checked> follow</label>
             </div>
+            <div id="muLayers" class="muLayers" role="group" aria-label="The song's layers" hidden></div>
             <div id="muScore" aria-live="polite"><div class="muEmpty hint">No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score.</div></div>
           </div>
           <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0 0" class="hint hidden">— no sheet yet —</pre>

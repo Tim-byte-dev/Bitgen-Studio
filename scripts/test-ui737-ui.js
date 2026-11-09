@@ -7,6 +7,7 @@
  *   - the notes played by the browser: a toggle per staff (Shift+click = that one alone) - a staff turned off is not struck;
  *   - the song: its stems (vocals + instrumental, from the Stems docker) play in step and Vocals / Instruments turn each on
  *     and off; a song not separated yet offers ✂ Separate vocals (the separation itself is answered here, not run).
+ *   2.738.0: the song's toggles are on its layer lanes (#muLayers), and the split makes four layers.
  * No server / no Playwright = SKIP. The test's files are removed afterwards. */
 "use strict";
 const fs = require("fs");
@@ -59,7 +60,8 @@ function wav(sec, hz) {                                   // a quiet tone, 8 kHz
   const sound = path.join(projDir, "sound");
   fs.mkdirSync(sound, { recursive: true });
   const made = [path.join(out, STEM + ".abc"), path.join(out, STEM + ".wav"), path.join(sound, STEM + "_vocals.wav"), path.join(sound, STEM + "_instrumental.wav"),
-    path.join(out, STEM2 + ".abc"), path.join(out, STEM2 + ".wav"), path.join(sound, STEM2 + "_vocals.wav"), path.join(sound, STEM2 + "_instrumental.wav")];
+    path.join(out, STEM2 + ".abc"), path.join(out, STEM2 + ".wav"), path.join(sound, STEM2 + "_vocals.wav"), path.join(sound, STEM2 + "_drums.wav"),
+    path.join(sound, STEM2 + "_bass.wav"), path.join(sound, STEM2 + "_other.wav")];
   fs.writeFileSync(made[0], ABC); fs.writeFileSync(made[1], wav(9, 330)); fs.writeFileSync(made[2], wav(9, 440)); fs.writeFileSync(made[3], wav(9, 220));
   fs.writeFileSync(made[4], ABC); fs.writeFileSync(made[5], wav(9, 330));
   const b = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
@@ -70,8 +72,8 @@ function wav(sec, hz) {                                   // a quiet tone, 8 kHz
     // the separation is answered here (demucs is not run by a test): the two stems written, then the reply
     await p.route("**/api/stems/separate", async (route) => {
       const body = JSON.parse(route.request().postData() || "{}");
-      fs.writeFileSync(made[6], wav(9, 440)); fs.writeFileSync(made[7], wav(9, 220));
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, vocals: STEM2 + "_vocals.wav", instrumental: STEM2 + "_instrumental.wav", asked: body.file }) });
+      [6, 7, 8, 9].forEach((k, i) => fs.writeFileSync(made[k], wav(9, 220 + 110 * i)));
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, vocals: STEM2 + "_vocals.wav", drums: STEM2 + "_drums.wav", bass: STEM2 + "_bass.wav", other: STEM2 + "_other.wav", asked: body.file, layers: body.layers }) });
     });
     await p.goto(URL0);
     await p.waitForFunction(() => window.MuScore && document.getElementById("muParts") && document.getElementById("muPlayMix"), null, { timeout: 30000 });
@@ -108,24 +110,24 @@ function wav(sec, hz) {                                   // a quiet tone, 8 kHz
     check("⛶ Read shows the part, titled with it", /^Parts - Vocal - 1 page$/.test(rv.title), rv);
 
     // the song with its stems: Vocals / Instruments
-    const mix = () => ev(() => [...document.querySelectorAll("#muPlayMix .muMix")].map((x) => x.textContent + ":" + x.getAttribute("aria-pressed")));
+    const mix = () => ev(() => [...document.querySelectorAll("#muPlayMix .muMix, #muLayers .muMix")].map((x) => x.textContent + ":" + x.getAttribute("aria-pressed")));
     const m1 = await ev(() => ({ mode: MuScore.player().mode, tracks: MuScore.player().tracks().map((t) => t.key + ":" + t.on), sound: document.getElementById("muPlaySound").value }));
-    check("the song has stems: it plays as vocals + instrumental, the toggles Vocals and Instruments on", m1.mode === "song" && m1.tracks.join() === "instrumental:true,vocals:true"
+    check("the song has stems: it plays as vocals + instrumental, the toggles Vocals and Instruments on", m1.mode === "song" && m1.tracks.join() === "vocals:true,instrumental:true"
       && JSON.stringify(await mix()) === JSON.stringify(["Vocals:true", "Instruments:true"]), { m1, mix: await mix() });
-    await ev(() => document.querySelector('#muPlayMix [data-track="vocals"]').click());
+    await ev(() => document.querySelector('#muLayers [data-track="vocals"]').click());
     const m2 = await ev(() => MuScore.player().tracks().map((t) => t.key + ":" + t.on).join());
-    check("Vocals off: the vocal stem muted, the button shows it off", m2 === "instrumental:true,vocals:false" && JSON.stringify(await mix()) === JSON.stringify(["Vocals:false", "Instruments:true"]), m2);
+    check("Vocals off: the vocal stem muted, the button shows it off", m2 === "vocals:false,instrumental:true" && JSON.stringify(await mix()) === JSON.stringify(["Vocals:false", "Instruments:true"]), m2);
     await ev(() => MuScore.player().seek(1.0));
     await ev(() => MuScore.player().play());
     await sleep(1500);
     const m3 = await ev(() => { const tr = MuScore.player().tracks(); return { tr, pos: MuScore.player().position() }; });
     await ev(() => MuScore.player().pause());
     check("…both stems play in step (the same place within 0.1 s)", m3.tr.length === 2 && m3.tr.every((t) => !t.paused) && Math.abs(m3.tr[0].t - m3.tr[1].t) < 0.1 && m3.pos > 1.8, m3);
-    await ev(() => document.querySelector('#muPlayMix [data-track="vocals"]').click());
+    await ev(() => document.querySelector('#muLayers [data-track="vocals"]').click());
     check("Vocals on again", (await ev(() => MuScore.player().tracks().map((t) => t.on).join())) === "true,true");
     await ev(() => document.querySelector('#muParts [data-part="1"]').click());
     await sleep(300);
-    const kept = await ev(() => ({ pos: MuScore.player().position(), mix: [...document.querySelectorAll("#muPlayMix .muMix")].length }));
+    const kept = await ev(() => ({ pos: MuScore.player().position(), mix: [...document.querySelectorAll("#muLayers .muMix")].length }));
     check("another part keeps the place in the song (and the mix)", Math.abs(kept.pos - m3.pos) < 0.3 && kept.mix === 2, { kept, was: m3.pos });
 
     // the notes played by the browser: a toggle per staff
@@ -149,11 +151,11 @@ function wav(sec, hz) {                                   // a quiet tone, 8 kHz
     await p.waitForFunction((n) => MuScore.state.name === n && MuScore.player(), STEM2 + ".abc", { timeout: 15000 });
     await sleep(300);
     const n1 = await ev(() => ({ sep: !!document.getElementById("muStemSep"), mode: MuScore.player().mode, part: MuScore.state.part, tabs: [...document.querySelectorAll("#muParts [aria-selected=true]")].map((x) => x.textContent) }));
-    check("another score starts on its full score; its song not separated: ✂ Separate vocals", n1.sep && n1.mode === "song" && n1.part === -1 && n1.tabs.join() === "Full score", n1);
+    check("another score starts on its full score; its song not separated: ✂ Split into layers", n1.sep && n1.mode === "song" && n1.part === -1 && n1.tabs.join() === "Full score", n1);
     await ev(() => document.getElementById("muStemSep").click());
-    await p.waitForFunction(() => document.querySelectorAll("#muPlayMix .muMix").length === 2, null, { timeout: 10000 }).catch(() => {});
-    const n2 = await ev(() => ({ mix: [...document.querySelectorAll("#muPlayMix .muMix")].map((x) => x.textContent), tracks: MuScore.player().tracks().length, st: document.getElementById("muSheetStatus").textContent }));
-    check("✂ Separate: the song's stems found - Vocals and Instruments to toggle", n2.mix.join() === "Vocals,Instruments" && n2.tracks === 2 && /separated/.test(n2.st), n2);
+    await p.waitForFunction(() => document.querySelectorAll("#muLayers .muMix").length === 4, null, { timeout: 10000 }).catch(() => {});
+    const n2 = await ev(() => ({ mix: [...document.querySelectorAll("#muLayers .muMix")].map((x) => x.textContent), tracks: MuScore.player().tracks().length, st: document.getElementById("muSheetStatus").textContent }));
+    check("✂ Split: the song's four layers found - Vocals, Drums, Bass, Other to toggle", n2.mix.join() === "Vocals,Drums,Bass,Other" && n2.tracks === 4 && /split into its layers/.test(n2.st), n2);
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));

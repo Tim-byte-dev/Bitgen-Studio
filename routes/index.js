@@ -2226,6 +2226,7 @@ const trap = require("../lib/trap");
     if (!name) return res.status(400).json({ error: "file names the song asset to separate" });
     try {
       const r = await stems.separate(name, {
+        layers: +(req.body || {}).layers === 4 ? 4 : 2,      // 2.738.0: the Sheet Music tab's four layers
         onLog: (s) => core.jobsSay && core.jobsSay(s) });
       res.json({ ok: true, ...r });
     } catch (e) {

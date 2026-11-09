@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.738.0 (Tim: "when playing in sheet music play the actual song in it's separated layers, show the layers as waveforms.
+# right now it sounds like a 1980's watch")
+node scripts/test-ui738-ui.js > /tmp/ui738ui.log 2>&1 \
+  && ok "2.738.0 browser test: Sound lists the notes + the project's songs, a score finds its song by title and the pick is remembered; four layers play in step as lanes with drawn waveforms, the playhead, on / off and Shift+click alone, click-to-play; a song not split = one lane + ✂ Split into layers (layers: 4); the notes sound as a soft piano - or SKIP without playwright / a studio" \
+  || { bad "2.738.0 song layers browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui738ui.log | head -14; }
 # ---- 2.737.0 (Tim: "in sheet music , can we separate the instruments and have sheet music for each instrument and another for
 # vocals? and have toggle buttons to play each instrument and vocals?")
 node scripts/test-parts737.js > /tmp/parts737.log 2>&1 \

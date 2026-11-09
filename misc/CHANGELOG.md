@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.738.0** — 🎚 The Sheet Music Plays the Real Song in Its Layers: Vocals, Drums, Bass and Other (✂ Split Into Layers), Each a Waveform Lane With the Playhead, On / Off and Click-to-Play; the Song Found or Picked per Score; the Notes as a Soft Piano
 - **2.737.0** — 🎼 Parts and the Mix: Each Instrument and the Vocals on Their Own Sheet (Tabs on the Score), and While It Plays a Toggle per Staff With the Notes, Vocals / Instruments With the Separated Song (✂ Separate Vocals)
 - **2.736.0** — 🎼 The Sheet Music Tab Remade to Match bitGen: Normal-Size Buttons Instead of Full-Width Bars, Two Toolbars With Dividers, the Player as the Score Viewer's Header With Drawn Icons (No Emoji), the Audio File Picked by a Button
 - **2.735.1** — The Sheet Music Tab's ▶ Back in Line With ⏮ ⏪ ⏩ ⏭ (It Was a Full-Width Bar); the Sheet Music Screenshots for the Guide and the Website (scripts/capture-sheet-shots.js)

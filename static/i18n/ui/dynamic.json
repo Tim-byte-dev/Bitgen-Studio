@@ -15060,71 +15060,83 @@
   },
   {
    "s": "no scores in the project yet —",
-   "src": "ext/musicdock/muscore.js:167"
+   "src": "ext/musicdock/muscore.js:168"
   },
   {
    "s": "Writing",
-   "src": "ext/musicdock/muscore.js:194"
+   "src": "ext/musicdock/muscore.js:195"
   },
   {
    "s": "Full score",
-   "src": "ext/musicdock/muscore.js:227"
+   "src": "ext/musicdock/muscore.js:228"
   },
   {
    "s": "vocal",
-   "src": "ext/musicdock/muscore.js:228"
+   "src": "ext/musicdock/muscore.js:229"
   },
   {
    "s": "Every staff together",
-   "src": "ext/musicdock/muscore.js:228"
+   "src": "ext/musicdock/muscore.js:229"
   },
   {
-   "s": "Vocals",
-   "src": "ext/musicdock/muscore.js:247"
+   "s": "the notes (no recording)",
+   "src": "ext/musicdock/muscore.js:275"
   },
   {
-   "s": "Instruments",
-   "src": "ext/musicdock/muscore.js:247"
+   "s": "Playing the written notes - pick the recording under",
+   "src": "ext/musicdock/muscore.js:319"
   },
   {
-   "s": "Separating",
-   "src": "ext/musicdock/muscore.js:277"
+   "s": "to hear the song itself, in its layers",
+   "src": "ext/musicdock/muscore.js:319"
   },
   {
-   "s": "Separate vocals",
-   "src": "ext/musicdock/muscore.js:285"
+   "s": "Split into layers",
+   "src": "ext/musicdock/muscore.js:324"
   },
   {
-   "s": "the notes",
-   "src": "ext/musicdock/muscore.js:346"
+   "s": "vocals + instruments now - split it for the drums, the bass and the rest",
+   "src": "ext/musicdock/muscore.js:324"
+  },
+  {
+   "s": "one recording - split it to hear each layer on its own",
+   "src": "ext/musicdock/muscore.js:324"
+  },
+  {
+   "s": "Song",
+   "src": "ext/musicdock/muscore.js:325"
+  },
+  {
+   "s": "Splitting",
+   "src": "ext/musicdock/muscore.js:387"
   },
   {
    "s": "Pause",
-   "src": "ext/musicdock/muscore.js:382"
-  },
-  {
-   "s": "Play - the notes light up as they sound",
-   "src": "ext/musicdock/muscore.js:382"
-  },
-  {
-   "s": "bar –",
-   "src": "ext/musicdock/muscore.js:398"
-  },
-  {
-   "s": "picture",
-   "src": "ext/musicdock/muscore.js:453"
-  },
-  {
-   "s": "From this computer",
    "src": "ext/musicdock/muscore.js:494"
   },
   {
+   "s": "Play - the notes light up as they sound",
+   "src": "ext/musicdock/muscore.js:494"
+  },
+  {
+   "s": "bar –",
+   "src": "ext/musicdock/muscore.js:510"
+  },
+  {
+   "s": "picture",
+   "src": "ext/musicdock/muscore.js:565"
+  },
+  {
+   "s": "From this computer",
+   "src": "ext/musicdock/muscore.js:606"
+  },
+  {
    "s": "Navy",
-   "src": "ext/musicdock/muscore.js:498"
+   "src": "ext/musicdock/muscore.js:610"
   },
   {
    "s": "Audio file",
-   "src": "ext/musicdock/muscore.js:576"
+   "src": "ext/musicdock/muscore.js:690"
   },
   {
    "s": "the lyrics box is empty — the video follows the song's words",
@@ -17973,10 +17985,6 @@
   {
    "s": "Karaoke",
    "src": "ext/timelinedock/karaokegen.js:63"
-  },
-  {
-   "s": "Song",
-   "src": "ext/timelinedock/karaokegen.js:68"
   },
   {
    "s": "Part",
@@ -23954,31 +23962,47 @@
   },
   {
    "p": "pick a score ({0}) —",
-   "src": "ext/musicdock/muscore.js:167"
+   "src": "ext/musicdock/muscore.js:168"
   },
   {
    "p": "The {0} part on its own sheet - with the words",
-   "src": "ext/musicdock/muscore.js:228"
+   "src": "ext/musicdock/muscore.js:229"
   },
   {
    "p": "The {0} part on its own sheet",
-   "src": "ext/musicdock/muscore.js:228"
+   "src": "ext/musicdock/muscore.js:229"
   },
   {
-   "p": "the song ({0})",
-   "src": "ext/musicdock/muscore.js:346"
+   "p": "{0} · 4 layers",
+   "src": "ext/musicdock/muscore.js:275"
+  },
+  {
+   "p": "{0} · 2 layers",
+   "src": "ext/musicdock/muscore.js:275"
+  },
+  {
+   "p": "Split {0} into four layers - vocals, drums, bass and the other instruments (demucs, on this computer) - each with its waveform and on / off",
+   "src": "ext/musicdock/muscore.js:324"
+  },
+  {
+   "p": "{0} ({1}) - click: on / off · Shift+click: only this one",
+   "src": "ext/musicdock/muscore.js:326"
+  },
+  {
+   "p": "{0} - click to play from there",
+   "src": "ext/musicdock/muscore.js:327"
   },
   {
    "p": "bar {0}1 / {1}",
-   "src": "ext/musicdock/muscore.js:398"
+   "src": "ext/musicdock/muscore.js:510"
   },
   {
    "p": "{0} pt",
-   "src": "ext/musicdock/muscore.js:463"
+   "src": "ext/musicdock/muscore.js:575"
   },
   {
    "p": "{0} paper",
-   "src": "ext/musicdock/muscore.js:503"
+   "src": "ext/musicdock/muscore.js:615"
   },
   {
    "p": "writing the screenplay… ({0} scenes; a big song can take a few minutes)",

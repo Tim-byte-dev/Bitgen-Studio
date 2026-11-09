@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5593,
+ "count": 5594,
  "strings": [
   {
    "s": "0 (auto)",
@@ -36487,6 +36487,15 @@
    ],
    "where": [
     "select#muPlaySound"
+   ]
+  },
+  {
+   "s": "The song's layers",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "div#muLayers.muLayers"
    ]
   },
   {

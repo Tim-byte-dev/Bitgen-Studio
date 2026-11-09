@@ -102,23 +102,43 @@
       let ctx = null, startCtx = 0, startPos = 0, pos = 0, on = false, timer = 0, next = 0, voices = [];
       const struck = {};                                  // 2.737.0: notes struck per staff (what the mix let through)
       const sound = T.sound || [];
-      const gainFor = (v) => (v === 0 ? 0.16 : 0.09);
+      // 2.738.0 (Tim: "right now it sounds like a 1980's watch"): a soft piano - a struck tone that dies away (not a held
+      // beep), its overtones quieter and shorter, a gentle low-pass over everything, a touch of room; the low notes rounder
+      const gainFor = (midi) => 0.11 * Math.min(1.25, Math.max(0.55, 1.15 - (midi - 60) / 60));
+      let bus = null;
+      const busOf = () => {
+        if (bus) return bus;
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 3200; lp.Q.value = 0.5;
+        const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 3;
+        const dry = ctx.createGain(); dry.gain.value = 0.9;
+        const dl = ctx.createDelay(0.5); dl.delayTime.value = 0.085;          // a small room: one soft early echo
+        const fb = ctx.createGain(); fb.gain.value = 0.22;
+        const wet = ctx.createGain(); wet.gain.value = 0.18;
+        lp.connect(dry); dry.connect(comp);
+        lp.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(comp);
+        comp.connect(ctx.destination);
+        bus = lp; return bus;
+      };
       const strike = (n, at, from) => {
-        const len = Math.max(0.05, secAt(T, n.t1) - Math.max(from, secAt(T, n.t0)));
+        const held = Math.max(0.05, secAt(T, n.t1) - Math.max(from, secAt(T, n.t0)));
+        const hz = midiHz(n.midi), peak = gainFor(n.midi);
+        const ring = Math.min(3.2, 0.9 + 140 / hz);                            // low notes ring longer
+        const len = Math.min(held + 0.25, ring);
         struck[n.v] = (struck[n.v] || 0) + 1;
-        const g = ctx.createGain(), peak = gainFor(n.v);
+        const g = ctx.createGain();
         g.gain.setValueAtTime(0.0001, at);
-        g.gain.exponentialRampToValueAtTime(peak, at + 0.012);
-        g.gain.exponentialRampToValueAtTime(peak * 0.55, at + Math.min(0.25, len * 0.6));
-        g.gain.setValueAtTime(peak * 0.55, at + Math.max(0.02, len - 0.06));
-        g.gain.exponentialRampToValueAtTime(0.0001, at + len + 0.05);
-        g.connect(ctx.destination);
-        const hz = midiHz(n.midi);
-        [["triangle", 1, 1], ["sine", 2, 0.25]].forEach(([w, mul, lvl]) => {
+        g.gain.exponentialRampToValueAtTime(peak, at + 0.006);
+        g.gain.exponentialRampToValueAtTime(peak * 0.45, at + 0.18);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 0.12), at + Math.max(0.2, len - 0.05));
+        g.gain.exponentialRampToValueAtTime(0.0001, at + len + 0.12);
+        g.connect(busOf());
+        [["triangle", 1, 1, 1], ["sine", 2, 0.32, 0.45], ["sine", 3, 0.12, 0.25], ["sine", 1.003, 0.4, 1]].forEach(([w, mul, lvl, keep]) => {
           const os = ctx.createOscillator(), og = ctx.createGain();
-          os.type = w; os.frequency.value = hz * mul; og.gain.value = lvl;
+          os.type = w; os.frequency.value = hz * mul;
+          og.gain.setValueAtTime(lvl, at);
+          if (keep < 1) og.gain.exponentialRampToValueAtTime(Math.max(0.0001, lvl * 0.05), at + Math.max(0.08, len * keep));
           os.connect(og); og.connect(g);
-          os.start(at); os.stop(at + len + 0.08);
+          os.start(at); os.stop(at + len + 0.15);
           voices.push(os);
           os.onended = () => { const k = voices.indexOf(os); if (k >= 0) voices.splice(k, 1); };
         });
@@ -153,7 +173,7 @@
         },
         pause: () => { if (on) { pos = now(); on = false; } clearInterval(timer); hush(); },
         seek: (s) => { const was = on; if (was) { on = false; clearInterval(timer); hush(); } pos = Math.max(0, Math.min(s, scoreEnd)); if (was) eng.play(); },
-        destroy: () => { on = false; clearInterval(timer); hush(); if (ctx && ctx.close) ctx.close().catch(() => {}); ctx = null; },
+        destroy: () => { on = false; clearInterval(timer); hush(); if (ctx && ctx.close) ctx.close().catch(() => {}); ctx = null; bus = null; },
       };
     }
     function frame() { if (!dead) { if (eng.tick) eng.tick(); const s = eng.pos(); onFrame(s, tickAt(T, s)); } }

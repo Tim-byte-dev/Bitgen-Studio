@@ -7875,6 +7875,19 @@ playing (2.725.1).
 - The song can only be split into the singing and everything else (that is what the separation makes), so the separate
   instruments can be turned on and off with the notes, not inside the recording.
 
+## 🎚 The song in its layers, as waveforms (2.738.0)
+
+- The sheet music plays the **real song**. **Sound** in the player lists every song in the project: a score finds its own
+  (the song it was made with, or the one with the same title), and what you pick is remembered for that score.
+  **🎹 the notes (no recording)** plays the written notes in the browser, as a soft piano - for a score that has no song.
+- A song plays in its **layers**, each a lane under the player: its **waveform**, the playhead running along it, and a
+  button to turn it on or off (**Shift+click** = that layer alone; Shift+click again for all of them). Click anywhere on a
+  waveform to play from there.
+- A song that has not been split shows one **Song** lane and **✂ Split into layers**: it splits the song on this computer
+  (demucs) into **Vocals, Drums, Bass** and **Other** (everything else), which takes a minute or two. A song already split in
+  the Stems docker shows its **Vocals** and **Instruments** until you split it into four.
+- **Sync (s)** still lines the song up with the notes when the song has an intro before bar 1.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

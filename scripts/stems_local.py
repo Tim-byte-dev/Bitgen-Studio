@@ -8,6 +8,9 @@ Job: { "file": "<abs path to the song>", "out_dir": "<abs dir>",
        "model": "htdemucs", "device": "cuda"|"cpu"|"auto",
        "stem": "<base name for outputs>" }
 Answer: { "vocals": "<abs>", "instrumental": "<abs>" } or { "error": "..." }
+2.738.0 (Tim: "play the actual song in it's separated layers, show the layers as waveforms"): "layers": 4 runs the
+same htdemucs model WITHOUT --two-stems - its four stems - and answers
+{ "vocals", "drums", "bass", "other" } (<stem>_vocals.wav, _drums.wav, _bass.wav, _other.wav).
 
 Demucs pulls the htdemucs weights from its own hub cache on first run —
 fully local afterwards. --two-stems=vocals yields exactly the pair Tim
@@ -32,9 +35,11 @@ def main() -> int:
     device = job.get("device") or "auto"
     stem = job.get("stem") or os.path.splitext(os.path.basename(src))[0]
 
+    layers = int(job.get("layers") or 2)
     work = tempfile.mkdtemp(prefix="h3stems_")
-    cmd = [sys.executable, "-m", "demucs.separate",
-           "-n", model, "--two-stems", "vocals", "-o", work]
+    cmd = [sys.executable, "-m", "demucs.separate", "-n", model, "-o", work]
+    if layers != 4:
+        cmd[5:5] = ["--two-stems", "vocals"]
     if device in ("cuda", "cpu"):
         cmd += ["-d", device]
     cmd.append(src)
@@ -49,14 +54,16 @@ def main() -> int:
     track = os.path.splitext(os.path.basename(src))[0]
     made = os.path.join(work, model, track)
     pair = {}
-    for kind, suffix in (("vocals", "_vocals"), ("no_vocals", "_instrumental")):
+    kinds = (("vocals", "_vocals"), ("drums", "_drums"), ("bass", "_bass"), ("other", "_other")) if layers == 4 \
+        else (("vocals", "_vocals"), ("no_vocals", "_instrumental"))
+    for kind, suffix in kinds:
         p = os.path.join(made, kind + ".wav")
         if not os.path.isfile(p):
             print(json.dumps({"error": f"demucs finished but {kind}.wav is missing in {made}"}))
             return 1
         dst = os.path.join(out_dir, stem + suffix + ".wav")
         shutil.move(p, dst)
-        pair["instrumental" if kind == "no_vocals" else "vocals"] = dst
+        pair["instrumental" if kind == "no_vocals" else kind] = dst
     shutil.rmtree(work, ignore_errors=True)
     print(json.dumps(pair))
     return 0

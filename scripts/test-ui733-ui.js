@@ -126,11 +126,12 @@ const size = (f) => { const r = spawnSync("ffprobe", ["-v", "error", "-show_entr
     await p.selectOption("#muScoreList", ABC);
     await p.waitForFunction((n) => document.getElementById("muSheetStatus").textContent.indexOf(n) >= 0 && MuScore.player(), ABC, { timeout: 15000 }).catch(() => {});
     await sleep(500);
-    const s0 = await ev(() => ({ sound: [...document.getElementById("muPlaySound").options].map((o) => o.value + ":" + o.textContent), time: document.getElementById("muPlayTime").textContent,
+    const s0 = await ev(() => ({ sound: [...document.getElementById("muPlaySound").options].map((o) => o.value + ":" + o.textContent), pick: document.getElementById("muPlaySound").value, time: document.getElementById("muPlayTime").textContent,
       on: [...document.querySelectorAll("#muPlayBar [data-act]")].every((x) => !x.disabled), heads: document.querySelectorAll("#muScore path[data-n]").length, mode: MuScore.player().mode,
       listed: [...document.getElementById("muScoreList").options].some((o) => /^🎵 E2E-Play733/.test(o.textContent)) }));
     check("the score with a song beside it: 🎵 in the list, Sound = the song (its file) or the notes, the five buttons on, 0:00 / 0:12, each note head numbered (a chord's three heads share one)",
-      s0.sound[0] === "song:🎵 the song (" + WAV + ")" && s0.sound[1] === "synth:🎹 the notes" && s0.on && s0.mode === "song" && /^0:00 \/ 0:1[12]$/.test(s0.time) && s0.heads === 28 && s0.listed, s0);
+      /* 2.738.0: Sound lists the notes, then every song in the project - the one beside the score picked */
+      s0.sound[0] === "synth:🎹 the notes (no recording)" && s0.sound.includes("song:output/" + WAV + ":🎵 " + WAV) && s0.pick === "song:output/" + WAV && s0.on && s0.mode === "song" && /^0:00 \/ 0:1[12]$/.test(s0.time) && s0.heads === 28 && s0.listed, s0);
     await ev(() => document.querySelector('#muPlayBar [data-act="toggle"]').click());
     await sleep(2200);
     const s1 = await ev(() => ({ time: document.getElementById("muPlayTime").textContent, bar: document.getElementById("muPlayBarNo").textContent, lit: [...document.querySelectorAll("#muScore path.abcOn")].map((x) => +x.getAttribute("data-n")),
@@ -186,8 +187,8 @@ const size = (f) => { const r = spawnSync("ffprobe", ["-v", "error", "-show_entr
     await ev(() => document.getElementById("muScoreView").close());
     // a score with no song: the notes only
     await ev(() => MuScore.show("X:1\nT:No Song\nL:1/4\nK:C\nC D E F|]\n", "no-song.abc", "📂 "));
-    const ns = await ev(() => ({ sound: [...document.getElementById("muPlaySound").options].map((o) => o.value), mode: MuScore.player().mode, time: document.getElementById("muPlayTime").textContent }));
-    check("a score with no song beside it (📂 Open .abc): only 🎹 the notes, 0:00 / 0:02 (120 bpm, no tempo given)", ns.sound.join() === "synth" && ns.mode === "synth" && ns.time === "0:00 / 0:02", ns);
+    const ns = await ev(() => ({ sound: [...document.getElementById("muPlaySound").options].map((o) => o.value), pick: document.getElementById("muPlaySound").value, mode: MuScore.player().mode, time: document.getElementById("muPlayTime").textContent }));
+    check("a score with no song beside it (📂 Open .abc): only 🎹 the notes, 0:00 / 0:02 (120 bpm, no tempo given)", ns.sound[0] === "synth" && ns.pick === "synth" && ns.mode === "synth" && ns.time === "0:00 / 0:02", ns);
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
