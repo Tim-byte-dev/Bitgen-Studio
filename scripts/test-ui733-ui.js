@@ -134,7 +134,7 @@ const size = (f) => { const r = spawnSync("ffprobe", ["-v", "error", "-show_entr
     await ev(() => document.querySelector('#muPlayBar [data-act="toggle"]').click());
     await sleep(2200);
     const s1 = await ev(() => ({ time: document.getElementById("muPlayTime").textContent, bar: document.getElementById("muPlayBarNo").textContent, lit: [...document.querySelectorAll("#muScore path.abcOn")].map((x) => +x.getAttribute("data-n")),
-      band: +document.querySelector("#muScore .abcBar").getAttribute("width"), btn: document.getElementById("muPlayToggle").textContent, pos: MuScore.player().position() }));
+      band: +document.querySelector("#muScore .abcBar").getAttribute("width"), btn: (document.getElementById("muPlayToggle").dataset.icon === "pause" ? "⏸" : "▶"), pos: MuScore.player().position() }));
     const T = await ev(() => MuScore.state.result.timing);
     const want = (sec) => T.notes.filter((n) => n.t0 <= sec * 960 && sec * 960 < n.t1).map((n) => n.id);
     check("▶ plays the song: the time runs, ⏸ shows, bar 2 of 4 (120 bpm = 2 s a bar), its band drawn, the notes sounding lit (and only they)",
@@ -143,7 +143,7 @@ const size = (f) => { const r = spawnSync("ffprobe", ["-v", "error", "-show_entr
     await ev(() => document.querySelector('#muPlayBar [data-act="toggle"]').click());
     await ev(() => MuScore.player().seek(0.1));
     await ev(() => document.querySelector('#muPlayBar [data-act="fwd"]').click());
-    const f1 = await ev(() => ({ bar: document.getElementById("muPlayBarNo").textContent, pos: MuScore.player().position(), btn: document.getElementById("muPlayToggle").textContent }));
+    const f1 = await ev(() => ({ bar: document.getElementById("muPlayBarNo").textContent, pos: MuScore.player().position(), btn: (document.getElementById("muPlayToggle").dataset.icon === "pause" ? "⏸" : "▶") }));
     await ev(() => document.querySelector('#muPlayBar [data-act="fwd"]').click());
     await ev(() => document.querySelector('#muPlayBar [data-act="back"]').click());
     const f2 = await ev(() => ({ bar: document.getElementById("muPlayBarNo").textContent, pos: MuScore.player().position() }));
@@ -178,10 +178,10 @@ const size = (f) => { const r = spawnSync("ffprobe", ["-v", "error", "-show_entr
     await ev(() => MuScore.openView());
     await sleep(500);
     const v = await ev(() => ({ btns: [...document.querySelectorAll("#muSvPlay [data-act]")].map((x) => x.getAttribute("data-act")), lit: document.querySelectorAll("#muSvPages path.abcOn").length,
-      toggle: document.getElementById("muSvToggle").textContent, time: document.getElementById("muSvTime").textContent }));
+      toggle: (document.getElementById("muSvToggle").dataset.icon === "pause" ? "⏸" : "▶"), time: document.getElementById("muSvTime").textContent }));
     check("⛶ Read: the same five buttons, ⏸ while it plays, the time, the notes lit there too", v.btns.join() === "start,back,toggle,fwd,end" && v.toggle === "⏸" && v.lit >= 1 && /^0:0\d \/ 0:/.test(v.time), v);
     await ev(() => document.querySelector('#muSvPlay [data-act="toggle"]').click());
-    const v2 = await ev(() => ({ playing: MuScore.player().playing(), t: document.getElementById("muSvToggle").textContent }));
+    const v2 = await ev(() => ({ playing: MuScore.player().playing(), t: (document.getElementById("muSvToggle").dataset.icon === "pause" ? "⏸" : "▶") }));
     check("…its ⏸ pauses", !v2.playing && v2.t === "▶", v2);
     await ev(() => document.getElementById("muScoreView").close());
     // a score with no song: the notes only

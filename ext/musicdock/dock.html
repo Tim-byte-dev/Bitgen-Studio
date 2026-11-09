@@ -75,71 +75,73 @@
                signatures, notes, beams, rests, ties, chord symbols - by static/abcscore.js (written here, no library),
                and 💾 Save PDF writes the pages as a PDF into the project's pdf folder. -->
           <style>
-            #muScore{max-height:72vh;overflow:auto;padding:12px;border-radius:6px;background:var(--bg2,#1b1e25);border:1px solid var(--line,#262a33)}
+            /* 2.736.0 (Tim: "make the buttons a normal size button not full docker width. fix the layout, the media buttons are not
+               right and remake the layout to match bitgen"): bitGen's own toolbars - .ghost buttons in a row, thin dividers,
+               the time in the mono face - and the transport as the score viewer's header, its icons drawn (not emoji) */
+            #muPaneSheet .muTb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+            #muPaneSheet>.hint.help{margin:0 0 10px}
+            #muPaneSheet .muGrp{display:inline-flex;gap:6px;align-items:center;flex:none}
+            #muPaneSheet .muTb .ghost,#muPaneSheet .muTrans .ghost{width:auto;margin:0;flex:none}
+            #muPaneSheet .muSep{flex:none;align-self:center;border-left:1px solid var(--line,#262a33);height:16px;margin:0 2px}
+            #muPaneSheet .muPri,#muScoreView .muPri{border-color:var(--tiger,#f2a03d);color:var(--tiger,#f2a03d)}
+            #muPaneSheet .muPri:hover:not(:disabled),#muScoreView .muPri:hover:not(:disabled){background:var(--tiger,#f2a03d);color:#1a1105}
+            #muPaneSheet .ghost:disabled,#muScoreView .ghost:disabled{opacity:.45;cursor:default;border-color:var(--line,#262a33)}
+            #muPaneSheet .muIn{display:inline-flex;gap:6px;align-items:center;margin:0;font-size:.72rem;color:var(--dim,#8a8378)}
+            #muPaneSheet .muIn input[type=checkbox]{margin:0}
+            #muPaneSheet .muMeta{font-family:var(--mono,monospace);font-size:.68rem;color:var(--dim,#8a8378);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 12em}
+            #muScoreList{max-width:24em}
+            #muSheetRefL{cursor:pointer;max-width:18em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+            #muAbcOpen{cursor:pointer}
+            #muScoreBar .gbtn input[type=file]{display:none}
+            .muViewer{border:1px solid var(--line,#262a33);border-radius:7px;overflow:hidden;background:#0f0d0a}
+            .muTrans{display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding:5px 8px;background:var(--panel-2,#221e19);border-bottom:1px solid var(--line,#262a33)}
+            .muTrans button[data-act]{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:4px 8px;line-height:1}
+            .muTrans button[data-act] svg{width:13px;height:13px;fill:currentColor;display:block}
+            .muTrans button[data-act=toggle]{min-width:38px}
+            .muTrans button[data-act=toggle][data-icon=pause]{color:var(--tiger,#f2a03d);border-color:var(--tiger,#f2a03d)}
+            .muTime{font-family:var(--mono,monospace);font-size:.74rem;color:var(--text,#e8e2d8);min-width:92px;text-align:center;font-variant-numeric:tabular-nums}
+            #muPlayBarNo{font-family:var(--mono,monospace);font-size:.68rem;color:var(--dim,#8a8378);min-width:6.5em}
+            #muPlaySync{width:4.5em}
+            #muScore{position:relative;max-height:72vh;overflow:auto;padding:14px 12px}
             #muScore .muPaper{background:#fff;max-width:860px;margin:0 auto 14px;box-shadow:0 2px 10px rgba(0,0,0,.45)}
             #muScore .muPaper svg{display:block;width:100%;height:auto}
             #muScore .muEmpty{padding:28px 8px;text-align:center}
-            #muScoreBar .gbtn input[type=file]{display:none}
-            #muScore{position:relative}
-            #muPlayBar{display:flex;gap:6px;align-items:end;flex-wrap:wrap;margin:6px 0}
-            #muPlayBar button[data-act]{min-width:34px;font-size:1rem;line-height:1}
-            #muPlayBar #muPlayToggle{width:auto;flex:0 0 auto;margin-top:0;padding:6px 16px;letter-spacing:0}   /* 2.735.1: .go is a full-width button - the transport stays one row */
-            #muPlayTime{font-variant-numeric:tabular-nums;min-width:7.5em;align-self:center}
-            #muPlayBarNo{align-self:center;min-width:6em}
-            #muPlaySync{width:5.5em}
             .abcPage path.abcOn{fill:#e8742b !important}
             .abcPage .abcBar{fill:#e8892b;opacity:.13;pointer-events:none}
             .abcPage text[data-w]{cursor:pointer}
             .abcPage text.abcOn{fill:#e8742b !important;font-weight:700}
             .abcPage path[data-n]{cursor:pointer}
-            #muPaperRow{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:6px 0;padding:8px;border:1px solid var(--line,#262a33);border-radius:6px}
+            #muPaperRow{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:0 0 8px;padding:8px;border:1px solid var(--line,#262a33);border-radius:6px}
             #muPaperRow.hidden{display:none}
             #muPaperSwatches{display:flex;gap:4px}
             #muPaperSwatches .muSwatch{width:22px;height:22px;padding:0;border-radius:50%;border:1px solid rgba(127,127,127,.6);cursor:pointer}
             #muPaperSwatches .muSwatch[aria-pressed=true]{outline:2px solid var(--accent,#f2a03d);outline-offset:2px}
             #muPaperRow output{font-variant-numeric:tabular-nums;min-width:3.5em;display:inline-block}
           </style>
-          <div class="hint help">The sheet music of a song, drawn on the staff. <b>Write</b>
-            composes a score from the Song tab's lyrics and style;
-            <b>Transcribe</b> reads one out of an audio file (SheetSage2).
-            Every generated song also saves its score as a .abc beside the
-            audio - pick it under <b>Score</b>. <b>💾 Save PDF</b> keeps the
-            pages in the project's pdf folder.</div>
-          <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:6px 0">
-            <button class="go" id="goSheetWrite" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write sheet from lyrics</button>
-            <label class="f" style="margin:0">Audio file
-              <input type="file" id="muSheetRef" accept="audio/*"></label>
-            <button class="go" id="goSheetTranscribe" title="Transcribe the picked audio file into ABC notation">📜 Transcribe audio</button>
-            <span id="muSheetStatus" class="dim">idle</span>
+          <div class="hint help">The song as sheet music. <b>Write</b> composes a score from the Song tab's lyrics and
+            style, <b>Transcribe</b> reads one out of a recording (SheetSage2), and every generated song saves its score
+            beside the audio - pick it under <b>Score</b>. <b>Save PDF</b> keeps the pages in the project's pdf folder.</div>
+          <div class="muTb" id="muSheetMake" role="group" aria-label="Make a score">
+            <button class="ghost muPri" id="goSheetWrite" type="button" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write from lyrics</button>
+            <span class="muSep"></span>
+            <label class="ghost" id="muSheetRefL" title="The recording to transcribe - an audio file from this computer">🎵 <span id="muSheetRefName">Audio file…</span><input type="file" id="muSheetRef" accept="audio/*" hidden></label>
+            <button class="ghost" id="goSheetTranscribe" type="button" title="Transcribe the picked audio file into ABC notation">📜 Transcribe</button>
+            <span id="muSheetStatus" class="muMeta">idle</span>
           </div>
-          <div id="muScoreBar" style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:6px 0">
-            <label class="f" style="margin:0">Score
+          <div class="muTb" id="muScoreBar" role="group" aria-label="The score">
+            <span class="muGrp"><label class="muIn">Score
               <select id="muScoreList" title="The project's sheet music (.abc), newest first"><option value="">— pick a score —</option></select></label>
-            <button class="ghost gbtn" id="muScoreRefresh" title="Look for new scores in the project" aria-label="Look for new scores">↻</button>
-            <label class="ghost gbtn" id="muAbcOpen" title="Open a .abc file from this computer" style="cursor:pointer">📂 Open .abc<input type="file" id="muAbcFile" accept=".abc,text/plain,text/vnd.abc"></label>
-            <button class="ghost gbtn" id="muScoreBig" disabled title="Read the score full size">⛶ Read</button>
-            <button class="go" id="muScorePdf" disabled title="Save the engraved pages as a PDF in the project's pdf folder">💾 Save PDF</button>
-            <label style="display:flex;gap:4px;align-items:center" title="Also download the PDF to this computer"><input type="checkbox" id="muScoreDl" checked> download too</label>
-            <label style="display:flex;gap:4px;align-items:center" title="Put the words - the Song tab's lyrics - under the notes of the vocal staff, section by section ([verse] … [chorus] …)"><input type="checkbox" id="muScoreWords"> words</label>
-            <button class="ghost gbtn" id="muPaperBtn" aria-pressed="false" aria-controls="muPaperRow" title="The paper the music is drawn on: colour, material, ink">🎨 Paper</button>
-            <button class="ghost gbtn" id="muAbcToggle" aria-pressed="false" title="Show the ABC notation the score is drawn from">‹/› ABC text</button>
-            <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
-          </div>
-          <!-- 2.733.0 (Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs
-               sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js -->
-          <div id="muPlayBar" role="group" aria-label="Play the score">
-            <button class="ghost gbtn" data-act="start" disabled title="Back to the start" aria-label="Back to the start">⏮</button>
-            <button class="ghost gbtn" data-act="back" disabled title="Back one bar" aria-label="Back one bar">⏪</button>
-            <button class="go" id="muPlayToggle" data-act="toggle" disabled title="Play - the notes light up as they sound" aria-label="Play">▶</button>
-            <button class="ghost gbtn" data-act="fwd" disabled title="Forward one bar" aria-label="Forward one bar">⏩</button>
-            <button class="ghost gbtn" data-act="end" disabled title="To the end" aria-label="To the end">⏭</button>
-            <span id="muPlayTime" aria-live="off">0:00 / 0:00</span>
-            <span id="muPlayBarNo" class="dim">bar –</span>
-            <label class="f" style="margin:0">Sound
-              <select id="muPlaySound" disabled title="The song the score belongs to (the audio file beside it), or the written notes played by the browser"><option value="synth">🎹 the notes</option></select></label>
-            <label class="f" style="margin:0" id="muPlaySyncL" title="Seconds of the song before bar 1 (its intro) - nudge it until the lights match the singing">Sync (s)
-              <input type="number" id="muPlaySync" step="0.1" min="-60" max="120" value="0" disabled></label>
-            <label style="display:flex;gap:4px;align-items:center" title="Scroll the score to the bar that is playing"><input type="checkbox" id="muPlayFollow" checked> follow</label>
+            <button class="ghost gbtn" id="muScoreRefresh" type="button" title="Look for new scores in the project" aria-label="Look for new scores">↻</button>
+            <label class="ghost gbtn" id="muAbcOpen" title="Open a .abc file from this computer">📂 Open .abc<input type="file" id="muAbcFile" accept=".abc,text/plain,text/vnd.abc"></label></span>
+            <span class="muSep"></span>
+            <span class="muGrp"><button class="ghost gbtn" id="muScoreBig" type="button" disabled title="Read the score full size">⛶ Read</button>
+            <button class="ghost muPri" id="muScorePdf" type="button" disabled title="Save the engraved pages as a PDF in the project's pdf folder">💾 Save PDF</button>
+            <label class="muIn" title="Also download the PDF to this computer"><input type="checkbox" id="muScoreDl" checked> download too</label></span>
+            <span class="muSep"></span>
+            <span class="muGrp"><label class="muIn" title="Put the words - the Song tab's lyrics - under the notes of the vocal staff, section by section ([verse] … [chorus] …)"><input type="checkbox" id="muScoreWords"> words</label>
+            <button class="ghost gbtn" id="muPaperBtn" type="button" aria-pressed="false" aria-controls="muPaperRow" title="The paper the music is drawn on: colour, material, ink">🎨 Paper</button>
+            <button class="ghost gbtn" id="muAbcToggle" type="button" aria-pressed="false" title="Show the ABC notation the score is drawn from">‹/› ABC text</button>
+            <button class="ghost gbtn" id="muAbcCopy" type="button" title="Copy the ABC notation">⧉ Copy</button></span>
           </div>
           <!-- 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music") -->
           <div id="muPaperRow" class="hidden" role="group" aria-label="Paper">
@@ -157,7 +159,27 @@
             <button class="ghost gbtn" id="muPaperReset" type="button" title="Back to plain white paper, black ink">↺ Plain white</button>
             <input type="file" id="muPaperFile" accept="image/*" hidden>
           </div>
-          <div id="muScore" aria-live="polite"><div class="muEmpty hint">No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score.</div></div>
+          <div class="muViewer">
+            <!-- 2.733.0 (Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs
+                 sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js. 2.736.0: the viewer's
+                 header, the icons drawn (MuScore.ICONS swaps ▶ / ⏸) -->
+            <div id="muPlayBar" class="muTrans" role="group" aria-label="Play the score">
+              <button class="ghost" type="button" data-act="start" disabled title="Back to the start" aria-label="Back to the start"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3" width="2" height="10" rx=".5"/><path d="M13.5 3.2v9.6L5.5 8z"/></svg></button>
+              <button class="ghost" type="button" data-act="back" disabled title="Back one bar" aria-label="Back one bar"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.2v9.6L1 8zM15 3.2v9.6L8 8z"/></svg></button>
+              <button class="ghost" type="button" id="muPlayToggle" data-act="toggle" data-icon="play" disabled title="Play - the notes light up as they sound" aria-label="Play"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.6v10.8L13.5 8z"/></svg></button>
+              <button class="ghost" type="button" data-act="fwd" disabled title="Forward one bar" aria-label="Forward one bar"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3.2v9.6L8 8zM8 3.2v9.6L15 8z"/></svg></button>
+              <button class="ghost" type="button" data-act="end" disabled title="To the end" aria-label="To the end"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3.2v9.6l8-4.8z"/><rect x="11.5" y="3" width="2" height="10" rx=".5"/></svg></button>
+              <span id="muPlayTime" class="muTime" aria-live="off">0:00 / 0:00</span>
+              <span id="muPlayBarNo">bar –</span>
+              <span class="muSep"></span>
+              <label class="muIn">Sound
+                <select id="muPlaySound" disabled title="The song the score belongs to (the audio file beside it), or the written notes played by the browser"><option value="synth">🎹 the notes</option></select></label>
+              <label class="muIn" id="muPlaySyncL" title="Seconds of the song before bar 1 (its intro) - nudge it until the lights match the singing">Sync (s)
+                <input type="number" id="muPlaySync" step="0.1" min="-60" max="120" value="0" disabled></label>
+              <label class="muIn" style="margin-left:auto" title="Scroll the score to the bar that is playing"><input type="checkbox" id="muPlayFollow" checked> follow</label>
+            </div>
+            <div id="muScore" aria-live="polite"><div class="muEmpty hint">No sheet yet. Write one from the lyrics, transcribe an audio file, or pick a score.</div></div>
+          </div>
           <pre id="muAbc" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0 0" class="hint hidden">— no sheet yet —</pre>
         </div>
         <div id="muPaneSong">

@@ -4492,6 +4492,12 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - 歌詞をクリックすると、音符をクリックしたときと同じようにそこから再生します。⛶ Read でも歌詞が光ります。
 - 光るタイミングは音符と同じ時計に沿います。楽譜の隣に曲がある場合は、音符と歌詞が歌声に合うよう **Sync** を調整してください。
 
+## 🎼 Sheet Music タブのレイアウト（2.736.0）
+<!-- en: the-sheet-music-tab-s-layout-2-736-0 fe58fda26898 -->
+
+- ツールバーは 2 つ：**楽譜を作る**（🎼 Write from lyrics、録音を選ぶ 🎵 Audio file… - 選んだファイル名がボタンに表示されます - と 📜 Transcribe）と、**その楽譜**（Score の一覧、↻、📂 Open .abc、⛶ Read、download too 付きの 💾 Save PDF、words、🎨 Paper、‹/› ABC text、⧉ Copy）。Write と Save PDF はオレンジの枠で、主な操作です。
+- プレーヤーは楽譜ビューアーの上部にあります：⏮ ⏪ ▶ ⏩ ⏭、時間、小節、Sound、Sync、follow。再生中は ▶ がオレンジの ⏸ になります。⛶ Read にも同じボタンがあります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

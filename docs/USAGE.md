@@ -7852,6 +7852,14 @@ playing (2.725.1).
 - It follows the same clock as the notes: with the song beside the score, set **Sync** so the notes and the words land
   on the singing.
 
+## 🎼 The Sheet Music tab's layout (2.736.0)
+
+- Two toolbars: **making a score** (🎼 Write from lyrics, 🎵 Audio file… to pick a recording - its name shows on the
+  button - and 📜 Transcribe), and **the score** (the Score list, ↻, 📂 Open .abc, ⛶ Read, 💾 Save PDF with download too,
+  words, 🎨 Paper, ‹/› ABC text, ⧉ Copy). Write and Save PDF are outlined in orange: the main actions.
+- The player is the score viewer's header: ⏮ ⏪ ▶ ⏩ ⏭, the time, the bar, Sound, Sync and follow. ▶ turns into an orange ⏸
+  while it plays. ⛶ Read has the same buttons.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

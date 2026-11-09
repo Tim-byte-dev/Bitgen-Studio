@@ -52,15 +52,15 @@
     d.style.cssText = "width:min(980px,96vw);max-height:94vh;padding:0;border:1px solid var(--line,#333);border-radius:8px;background:var(--bg2,#1b1e25);color:inherit";
     d.innerHTML = '<div style="display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line,#333);position:sticky;top:0;background:inherit;z-index:1">'
       + '<b id="muSvTitle" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sheet music</b>'
-      + '<span id="muSvPlay" role="group" aria-label="Play the score" style="display:flex;gap:4px;align-items:center">'
-      + '<button class="ghost gbtn" type="button" data-act="start" style="width:auto" title="Back to the start" aria-label="Back to the start">⏮</button>'
-      + '<button class="ghost gbtn" type="button" data-act="back" style="width:auto" title="Back one bar" aria-label="Back one bar">⏪</button>'
-      + '<button class="ghost gbtn" type="button" data-act="toggle" id="muSvToggle" style="width:auto" title="Play" aria-label="Play">▶</button>'
-      + '<button class="ghost gbtn" type="button" data-act="fwd" style="width:auto" title="Forward one bar" aria-label="Forward one bar">⏩</button>'
-      + '<button class="ghost gbtn" type="button" data-act="end" style="width:auto" title="To the end" aria-label="To the end">⏭</button>'
-      + '<span id="muSvTime" style="font-variant-numeric:tabular-nums;min-width:7.5em">0:00 / 0:00</span></span>'
-      + '<button class="go" id="muSvPdf" type="button" style="width:auto;flex:none" title="Save the pages as a PDF in the project\'s pdf folder">💾 Save PDF</button>'
-      + '<button class="ghost gbtn" id="muSvClose" type="button" style="width:auto;flex:none" title="Close" aria-label="Close">✕</button></div>'
+      + '<span id="muSvPlay" class="muTrans" role="group" aria-label="Play the score" style="padding:0;background:none;border:0">'
+      + '<button class="ghost" type="button" data-act="start" title="Back to the start" aria-label="Back to the start">' + ICONS.start + '</button>'
+      + '<button class="ghost" type="button" data-act="back" title="Back one bar" aria-label="Back one bar">' + ICONS.back + '</button>'
+      + '<button class="ghost" type="button" data-act="toggle" data-icon="play" id="muSvToggle" title="Play" aria-label="Play">' + ICONS.play + '</button>'
+      + '<button class="ghost" type="button" data-act="fwd" title="Forward one bar" aria-label="Forward one bar">' + ICONS.fwd + '</button>'
+      + '<button class="ghost" type="button" data-act="end" title="To the end" aria-label="To the end">' + ICONS.end + '</button>'
+      + '<span id="muSvTime" class="muTime">0:00 / 0:00</span></span>'
+      + '<button class="ghost muPri" id="muSvPdf" type="button" style="flex:none" title="Save the pages as a PDF in the project\'s pdf folder">💾 Save PDF</button>'
+      + '<button class="ghost" id="muSvClose" type="button" style="flex:none" title="Close" aria-label="Close">✕</button></div>'
       + '<div id="muSvPages" style="position:relative;overflow:auto;max-height:calc(94vh - 52px);padding:16px"></div>';
     doc.body.appendChild(d);
     d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
@@ -226,6 +226,8 @@
   // .abc (the same name, an audio file - GET /api/scores says which) or the notes played by the browser; every frame the
   // notes sounding get .abcOn (their heads carry data-n from the engraver), the bar a soft band, the page follows.
   const PL = () => root.ScorePlayer;
+  // 2.736.0: the transport's icons, drawn - ⏪ / ⏩ were colour emoji beside plain ⏮ / ⏭ (the same in the tab and ⛶ Read)
+  const ICONS = {"start": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><rect x=\"2.5\" y=\"3\" width=\"2\" height=\"10\" rx=\".5\"/><path d=\"M13.5 3.2v9.6L5.5 8z\"/></svg>", "back": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M8 3.2v9.6L1 8zM15 3.2v9.6L8 8z\"/></svg>", "play": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M4.5 2.6v10.8L13.5 8z\"/></svg>", "fwd": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M1 3.2v9.6L8 8zM8 3.2v9.6L15 8z\"/></svg>", "end": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2.5 3.2v9.6l8-4.8z\"/><rect x=\"11.5\" y=\"3\" width=\"2\" height=\"10\" rx=\".5\"/></svg>", "pause": "<svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"3\" width=\"3\" height=\"10\" rx=\".6\"/><rect x=\"9.5\" y=\"3\" width=\"3\" height=\"10\" rx=\".6\"/></svg>"};
   const PB = { player: null, lit: [], els: {}, bands: [], bar: -2, playing: false, wels: {}, wlit: [] };
   const SYNC_KEY = "h3.muScoreSync";
   function syncRead(name) { try { const m = JSON.parse(root.localStorage.getItem(SYNC_KEY) || "{}"); return +m[name] || 0; } catch (e) { return 0; } }
@@ -288,8 +290,8 @@
     if ($("muSvTime")) $("muSvTime").textContent = tt;
     PB.playing = playing;
     ["muPlayToggle", "muSvToggle"].forEach((id) => {
-      const b = $(id), ic = playing ? "⏸" : "▶";
-      if (b && b.textContent !== ic) { b.textContent = ic; b.title = playing ? "Pause" : "Play - the notes light up as they sound"; b.setAttribute("aria-label", playing ? "Pause" : "Play"); }
+      const b = $(id), ic = playing ? "pause" : "play";
+      if (b && b.dataset.icon !== ic) { b.dataset.icon = ic; b.innerHTML = ICONS[ic]; b.title = playing ? "Pause" : "Play - the notes light up as they sound"; b.setAttribute("aria-label", playing ? "Pause" : "Play"); }
     });
     // the notes sounding now
     const now = P2.activeAt(T, tick).map(String);
@@ -477,6 +479,7 @@
     const t = e.target;
     if (!t) return;
     if (t.id === "muScoreList") { if (t.value) load(t.value); return; }
+    if (t.id === "muSheetRef") { const f = t.files && t.files[0], n = $("muSheetRefName"); if (n) n.textContent = f ? f.name : "Audio file…"; return; }   // 2.736.0
     if (t.id === "muScoreWords") { try { root.localStorage.setItem(WORDS_KEY, t.checked ? "1" : "0"); } catch (er) { /* this page only */ } redraw(); test("mu_score_words", t.checked ? "on" : "off"); return; }
     if (t.id === "muPlaySound") { const at = PB.player ? Math.max(0, PB.player.position()) : 0; playMake(at); return; }
     if (t.id === "muPlaySync") {
@@ -520,5 +523,5 @@
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words, ICONS };
 }(typeof window !== "undefined" ? window : this));

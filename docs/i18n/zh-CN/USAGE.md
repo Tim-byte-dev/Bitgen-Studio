@@ -4731,6 +4731,12 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 点击歌词即从那里播放，和点击音符一样。⛶ Read 中歌词也会亮起。
 - 它和音符使用同一个时钟：如果乐谱旁边有歌曲，请调整 **Sync**，让音符和歌词对上歌声。
 
+## 🎼 Sheet Music 标签页的布局（2.736.0）
+<!-- en: the-sheet-music-tab-s-layout-2-736-0 fe58fda26898 -->
+
+- 两条工具栏：**制作乐谱**（🎼 Write from lyrics、用来选择录音的 🎵 Audio file… - 选中的文件名会显示在按钮上 - 以及 📜 Transcribe），和**这份乐谱**（Score 列表、↻、📂 Open .abc、⛶ Read、带 download too 的 💾 Save PDF、words、🎨 Paper、‹/› ABC text、⧉ Copy）。Write 和 Save PDF 带橙色边框，是主要操作。
+- 播放器位于乐谱查看区的顶部：⏮ ⏪ ▶ ⏩ ⏭、时间、小节、Sound、Sync 和 follow。播放时 ▶ 会变成橙色的 ⏸。⛶ Read 中有同样的按钮。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -117,7 +117,7 @@ z8 [GBd]8|z8 [FAc]8|z8 [EGc]8|z8 [DF^A]8|
     // ⛶ Read
     await ev(() => document.querySelector("#muScoreBig").click());
     await p.waitForTimeout(300);
-    const v = await ev(() => { const d = document.getElementById("muScoreView"); const s2 = d && d.querySelector("svg"); const r = s2 && s2.getBoundingClientRect();
+    const v = await ev(() => { const d = document.getElementById("muScoreView"); const s2 = d && d.querySelector("#muSvPages svg"); const r = s2 && s2.getBoundingClientRect();
       return { open: !!d && d.open, w: r ? r.width : 0, title: d ? document.getElementById("muSvTitle").textContent : "" }; });
     check("⛶ Read: the pages full size in a dialog (wider than 500 px), titled with the score", v.open && v.w > 500 && /E2E-Score731 - 1 page/.test(v.title), v);
     await ev(() => document.querySelector("#muSvClose").click());

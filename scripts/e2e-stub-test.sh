@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.736.0 (Tim: "in sheet music docker make the buttons a normal size button not full docker width. fix the layout , the
+# media buttons are not right and remake the rayout to match bitgen . it looks cheap")
+node scripts/test-ui736-ui.js > /tmp/ui736ui.log 2>&1 \
+  && ok "2.736.0 browser test: the Sheet Music tab has no full-width bars (every button narrow in a wide docker), Write / Save PDF outlined, two toolbars with dividers, the audio file picked by a button showing its name, the transport the viewer's header with five drawn (svg) buttons on one row, ▶ -> ⏸ while it plays, ⛶ Read the same - or SKIP without playwright / a studio" \
+  || { bad "2.736.0 sheet music layout browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui736ui.log | head -14; }
 # ---- 2.735.0 (Tim: "can the words be highlighted as the song is sung?")
 node scripts/test-sungwords735.js > /tmp/sungwords735.log 2>&1 \
   && ok "2.735.0 words lit as they are sung: each syllable timed from its note through its tie / slur / over the barline, ended by a rest or a sung note with no syllable; the SVG marks it data-w (not the hyphens); wordsAt; the words clear of each other at the barlines; no lyrics = no words, the notes unchanged" \

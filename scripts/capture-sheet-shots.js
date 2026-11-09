@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /* bitGen Studio — the SHEET MUSIC screenshots for the guide and the website (tigerart's website-sync.py copies
  * docs/images/<name>.png -> assets/img/<name>.jpg). Against a running studio (H3_URL, or H3_PORT - default 8311):
- *   docs/images/sheet-music.png       the Music docker's 🎼 Sheet Music tab (maximised): "Night Drive" - the song in
+ *   docs/images/sheet-music.png       the Music docker's 🎼 Sheet Music tab (maximised; its toolbars, the transport and
+ *                                      the score): "Night Drive" - the song in
  *                                      docs/images/music.png - on parchment, the words ticked, playing in the chorus (the
  *                                      sung note and syllable lit, the bar marked);
  *   docs/images/sheet-music-read.png  ⛶ Read: the same score full size.
@@ -95,12 +96,13 @@ Take the long way, we'll get there
     await ev(() => {
       const st = document.createElement("style");
       st.textContent = "#musicdock{position:fixed!important;inset:0!important;z-index:2147483000!important;height:100vh!important;max-height:none!important;"
-        + "display:flex!important;flex-direction:column!important;background:var(--panel,#1c1915)}#musicdock>.bbody{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;max-height:none!important;height:auto!important}";
+        + "display:flex!important;flex-direction:column!important;background:var(--panel,#1c1915)}#musicdock>.bbody{flex:1 1 auto!important;min-height:0!important;overflow:auto!important;max-height:none!important;height:auto!important;padding-bottom:420px!important}";   // room to scroll the toolbars to the top (cropped away)
       document.head.appendChild(st);
     });
     await ev(() => document.querySelector('button[data-mutab="sheet"]').click());
     await sleep(900);
     await ev(() => MuScore.refresh());
+    await p.waitForFunction((n) => [...document.querySelectorAll("#muScoreList option")].some((o) => o.value === n), NAME, { timeout: 15000 });
     await p.selectOption("#muScoreList", NAME);
     await p.waitForFunction(() => MuScore.player(), null, { timeout: 15000 });
     if (!(await ev(() => document.getElementById("muScoreWords").checked))) await ev(() => MuScore.words(true));
@@ -115,18 +117,24 @@ Take the long way, we'll get there
     if (!lit.length) { bad++; console.error("capture-sheet-shots: no word lit"); }
     // from the Score row down: the transport, then the score to the chorus line that is lit
     await ev(() => {
-      const body = document.querySelector("#musicdock > .bbody"), row = document.getElementById("muScoreList");
-      body.scrollTop += row.getBoundingClientRect().top - body.getBoundingClientRect().top - 22;
+      const body = document.querySelector("#musicdock > .bbody"), row = document.getElementById("muSheetMake");
+      body.scrollTop += row.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
       const box = document.getElementById("muScore"); if (box) box.scrollTop = 0;
     });
     await sleep(200);
-    const top = await ev(() => Math.max(0, Math.round(document.getElementById("muScoreList").getBoundingClientRect().top - 21)));
-    await p.screenshot({ path: path.join(OUT, "sheet-music.png"), clip: { x: 0, y: top, width: 1310, height: 1000 - top } });
+    // the two toolbars, the transport and the score - to the viewer's bottom edge
+    const clip = await ev(() => {
+      const t = document.getElementById("muSheetMake").getBoundingClientRect(), v = document.querySelector("#muPaneSheet .muViewer").getBoundingClientRect();
+      const y = Math.max(0, Math.round(t.top - 3));
+      return { x: 0, y, width: innerWidth, height: Math.min(innerHeight, Math.round(v.bottom + 10)) - y };
+    });
+    await p.screenshot({ path: path.join(OUT, "sheet-music.png"), clip });
     console.log("sheet-music.png  lit: " + lit.join(" "));
     await ev(() => MuScore.openView());
     await sleep(700);
     await ev((s) => MuScore.player().seek(s), at);
     await sleep(300);
+    await ev(() => { if (document.activeElement) document.activeElement.blur(); });
     await p.screenshot({ path: path.join(OUT, "sheet-music-read.png"), clip: await ev(() => {
       const r = document.getElementById("muScoreView").getBoundingClientRect();
       return { x: Math.max(0, r.left), y: Math.max(0, r.top), width: Math.min(r.width, innerWidth), height: Math.min(r.height, innerHeight - Math.max(0, r.top)) };

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5590,
+ "count": 5591,
  "strings": [
   {
    "s": "0 (auto)",
@@ -20005,6 +20005,15 @@
    ]
   },
   {
+   "s": "Make a score",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "div#muSheetMake.muTb"
+   ]
+  },
+  {
    "s": "Make a song: the lyrics box is the PROMPT, the selected music style is the sound",
    "kinds": [
     "title"
@@ -36182,6 +36191,15 @@
    ]
   },
   {
+   "s": "The recording to transcribe - an audio file from this computer",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label#muSheetRefL.ghost"
+   ]
+  },
+  {
    "s": "The render size (megapixels) - smaller is faster; the result is scaled to the picture",
    "kinds": [
     "title"
@@ -36308,6 +36326,15 @@
    ]
   },
   {
+   "s": "The score",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "div#muScoreBar.muTb"
+   ]
+  },
+  {
    "s": "The second model's CFG. 0 = its workflow's own",
    "kinds": [
     "title"
@@ -36418,21 +36445,21 @@
    ]
   },
   {
-   "s": "The sheet music of a song, drawn on the staff",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.hint.help in #muPaneSheet"
-   ]
-  },
-  {
    "s": "The side dockers",
    "kinds": [
     "text"
    ],
    "where": [
     "h4 in #drList"
+   ]
+  },
+  {
+   "s": "The song as sheet music",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
    ]
   },
   {
@@ -37385,15 +37412,6 @@
    "where": [
     "button#s_vctranscribe.ghost",
     "b in #muPaneSheet"
-   ]
-  },
-  {
-   "s": "Transcribe audio",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "button#goSheetTranscribe.go"
    ]
   },
   {
@@ -40872,21 +40890,21 @@
    ]
   },
   {
+   "s": "Write from lyrics",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button#goSheetWrite.ghost.muPri"
+   ]
+  },
+  {
    "s": "Write screenplay",
    "kinds": [
     "text"
    ],
    "where": [
     "button#muVidGo.go"
-   ]
-  },
-  {
-   "s": "Write sheet from lyrics",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "button#goSheetWrite.go"
    ]
   },
   {
@@ -48146,16 +48164,7 @@
    ]
   },
   {
-   "s": "reads one out of an audio file (SheetSage2). Every generated song also saves its score as a .abc beside the audio",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "div.hint.help in #muPaneSheet"
-   ]
-  },
-  {
-   "s": "reads one out of an audio file (SheetSage2). Every generated song also saves its score as a .abc beside the audio - pick it under",
+   "s": "reads one out of a recording (SheetSage2), and every generated song saves its score beside the audio - pick it under",
    "kinds": [
     "text"
    ],
