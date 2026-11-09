@@ -79,7 +79,7 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
     && /<div id="vset">[\s\S]{0,400}<div id="bsStyleCard"><\/div>\s*<div class="modes"/.test(html)
     && (html.match(/StyleCard\.paint\(\)/g) || []).length === 3);
   check("wiring: ⏫ Enhance in the prompt menubar opens the SeedVR2 panel for SelVideo.get(); the prompt rewrite kept as enhancePrompt(); the tooltip follows h3:selvideo",
-    /id="enhanceBtn"[^>]*>⏫ Enhance<\/button>/.test(pd) && /\$\("enhanceBtn"\)\.onclick = \(e\) => \{[\s\S]{0,400}SeedVR2Panel\.open\(\{ name: v \? v\.name : "", from: v \? v\.from : "", anchor: \$\("enhanceBtn"\) \}\)/.test(html)
+    /id="enhanceBtn"[^>]*>⏫ Enhance<\/button>/.test(pd) && /\$\("enhanceBtn"\)\.onclick = \(e\) => \{[\s\S]{0,1200}SeedVR2Panel\.open\(\{ name: v \? v\.name : "", from: v \? v\.from : "", anchor: \$\("enhanceBtn"\) \}\)/.test(html)
     && /async function enhancePrompt\(\)/.test(html) && /addEventListener\("h3:selvideo"/.test(html));
   check("wiring: /api/stylecard mounted; the preview's ⏫ SeedVR2 uses the shared panel (no panel markup of its own)",
     /require\("\.\/styleCard"\)\.mount\(app\)/.test(read("routes/index.js")) && /SeedVR2Panel\.open\(\{ name: current\(\), from: "preview"/.test(read("ext/previewdock/seedvr2.js"))

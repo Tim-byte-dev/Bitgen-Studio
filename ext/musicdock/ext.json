@@ -6,6 +6,7 @@
   "scripts": [
     "musicdock.js",
     "scorepaper.js",
+    "scoreplayer.js",
     "muscore.js"
   ]
 }

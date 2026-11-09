@@ -80,6 +80,15 @@
             #muScore .muPaper svg{display:block;width:100%;height:auto}
             #muScore .muEmpty{padding:28px 8px;text-align:center}
             #muScoreBar .gbtn input[type=file]{display:none}
+            #muScore{position:relative}
+            #muPlayBar{display:flex;gap:6px;align-items:end;flex-wrap:wrap;margin:6px 0}
+            #muPlayBar button[data-act]{min-width:34px;font-size:1rem;line-height:1}
+            #muPlayTime{font-variant-numeric:tabular-nums;min-width:7.5em;align-self:center}
+            #muPlayBarNo{align-self:center;min-width:6em}
+            #muPlaySync{width:5.5em}
+            .abcPage path.abcOn{fill:#e8742b !important}
+            .abcPage .abcBar{fill:#e8892b;opacity:.13;pointer-events:none}
+            .abcPage path[data-n]{cursor:pointer}
             #muPaperRow{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:6px 0;padding:8px;border:1px solid var(--line,#262a33);border-radius:6px}
             #muPaperRow.hidden{display:none}
             #muPaperSwatches{display:flex;gap:4px}
@@ -111,6 +120,22 @@
             <button class="ghost gbtn" id="muPaperBtn" aria-pressed="false" aria-controls="muPaperRow" title="The paper the music is drawn on: colour, material, ink">🎨 Paper</button>
             <button class="ghost gbtn" id="muAbcToggle" aria-pressed="false" title="Show the ABC notation the score is drawn from">‹/› ABC text</button>
             <button class="ghost gbtn" id="muAbcCopy" title="Copy the ABC notation">⧉ Copy</button>
+          </div>
+          <!-- 2.733.0 (Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs
+               sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js -->
+          <div id="muPlayBar" role="group" aria-label="Play the score">
+            <button class="ghost gbtn" data-act="start" disabled title="Back to the start" aria-label="Back to the start">⏮</button>
+            <button class="ghost gbtn" data-act="back" disabled title="Back one bar" aria-label="Back one bar">⏪</button>
+            <button class="go" id="muPlayToggle" data-act="toggle" disabled title="Play - the notes light up as they sound" aria-label="Play">▶</button>
+            <button class="ghost gbtn" data-act="fwd" disabled title="Forward one bar" aria-label="Forward one bar">⏩</button>
+            <button class="ghost gbtn" data-act="end" disabled title="To the end" aria-label="To the end">⏭</button>
+            <span id="muPlayTime" aria-live="off">0:00 / 0:00</span>
+            <span id="muPlayBarNo" class="dim">bar –</span>
+            <label class="f" style="margin:0">Sound
+              <select id="muPlaySound" disabled title="The song the score belongs to (the audio file beside it), or the written notes played by the browser"><option value="synth">🎹 the notes</option></select></label>
+            <label class="f" style="margin:0" id="muPlaySyncL" title="Seconds of the song before bar 1 (its intro) - nudge it until the lights match the singing">Sync (s)
+              <input type="number" id="muPlaySync" step="0.1" min="-60" max="120" value="0" disabled></label>
+            <label style="display:flex;gap:4px;align-items:center" title="Scroll the score to the bar that is playing"><input type="checkbox" id="muPlayFollow" checked> follow</label>
           </div>
           <!-- 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music") -->
           <div id="muPaperRow" class="hidden" role="group" aria-label="Paper">

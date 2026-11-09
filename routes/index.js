@@ -177,6 +177,7 @@ function mount(app) {
   require("./relayvsr").mount(app);     // 2.728.0: 🔁 RelayVSR video upscaling (ComfyUI core nodes; preview dock + the ⚙ Upscaler's RelayVSR)
   require("./flowhmr").mount(app);      // 2.730.0: 🕺 FlowHMR motion capture (a video -> models3d/ .fbx + .npz; non-commercial)
   require("./scores").mount(app);       // 2.731.0: 🎼 the project's .abc scores for the Music docker's engraved sheet music
+  require("./imgupscale").mount(app);   // 2.733.0: ⏫ Enhance on a PICTURE - SeedVR2 / an upscale model / lanczos (lib/imgUpscale.js)
   require("./scene").mount(app);        // 2.515.0: 🧍 cut-out through a shot, 📷 3D camera tracker, 🩹 content-aware fill
   require("./ueProject").mount(app);    // 2.513.0: 🎮 Load UE project (the bridge plugin put in, Unreal restarted)
   require("./lottie").mount(app);       // 2.512.0: ⤓ Lottie (JSON) export of the picture / text layers

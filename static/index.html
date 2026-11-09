@@ -3406,6 +3406,7 @@
 <script src="/static/relayvsrpanel.js"></script>  <!-- 2.728.0: 🔁 RelayVSR upscale panel (ComfyUI core nodes) -->
 <script src="/static/flowhmrpanel.js"></script>  <!-- 2.730.0: 🕺 FlowHMR motion capture panel (non-commercial) -->
 <script src="/static/abcscore.js"></script>  <!-- 2.731.0: 🎼 the sheet music engraver (ABC -> staves, SVG + PDF; no library) -->
+<script src="/static/imgupscalepanel.js"></script>  <!-- 2.733.0: ⏫ Enhance on a picture - the picture upscale panel -->
 <script src="/static/remoteui.js"></script>
 <script src="/static/segmap.js"></script>
 <!-- 2.298.0: the project's media (every subfolder) in every media dropdown -->
@@ -6288,11 +6289,24 @@ $("promptClear") && ($("promptClear").onclick = (e) => {
 function paintEnhanceBtn(v) {
   const b = $("enhanceBtn");
   if (!b) return;
+  // 2.733.0 (Tim: "if we select an image thumbnail and press the enhance buton can we upscale the image"): the picture
+  // clicked last (static/selvideo.js) is upscaled instead (static/imgupscalepanel.js)
+  const im = window.SelVideo && SelVideo.kind && SelVideo.kind() === "image" ? SelVideo.getImage() : null;
+  if (im) {
+    b.classList.add("armed");
+    b.title = `Upscale the picture ${im.name} (${im.label}) - pick the size and the way, then ⏫ Upscale`;
+    return;
+  }
   if (v === undefined) v = window.SelVideo ? SelVideo.get() : null;
   b.classList.toggle("armed", !!v);
   b.title = v ? `Upscale ${v.name} (${v.label}) with SeedVR2 - pick the size, then ⏫ Upscale`
-    : "Upscale the selected video with SeedVR2 - click a video in the gallery, the Video assets or the reference dock first";
+    : "Upscale the selected video or picture - click a video or a picture in the gallery, the assets or the reference dock first";
 }
+document.addEventListener("h3:selmedia", (e) => {
+  paintEnhanceBtn();
+  const d = e.detail || {};
+  if (window.ImgUpscalePanel && ImgUpscalePanel.shown() && d.kind === "image" && d.image) ImgUpscalePanel.retarget(d.image);
+});
 document.addEventListener("h3:selvideo", (e) => {
   paintEnhanceBtn(e.detail || null);
   // the panel open from ⏫ Enhance follows the new pick
@@ -6301,6 +6315,14 @@ document.addEventListener("h3:selvideo", (e) => {
 });
 $("enhanceBtn").onclick = (e) => {
   e.stopPropagation();
+  if (window.ImgUpscalePanel && window.SelVideo && SelVideo.kind && SelVideo.kind() === "image") {   // 2.733.0: a picture
+    if (ImgUpscalePanel.shown()) { ImgUpscalePanel.close(); return; }
+    if (window.SeedVR2Panel) SeedVR2Panel.close();
+    const im = SelVideo.getImage();
+    ImgUpscalePanel.open({ name: im.name, from: im.from, url: im.url, anchor: $("enhanceBtn") });
+    return;
+  }
+  if (window.ImgUpscalePanel) ImgUpscalePanel.close();
   if (!window.SeedVR2Panel) return;
   if (SeedVR2Panel.shown()) { SeedVR2Panel.close(); return; }
   const v = window.SelVideo ? SelVideo.get() : null;

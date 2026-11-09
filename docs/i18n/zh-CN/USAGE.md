@@ -4696,6 +4696,25 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **in the PDF too**：取消勾选后，PDF 以白纸黑墨保存（更适合打印），屏幕上仍保留你的纸张。带质感的 PDF 只含一张小小的平铺图片，由 PDF 阅读器重复绘制，因此文件仍然很小。
 - **↺ Plain white** 回到初始状态。你的选择会记在这台电脑上。
 
+## ⏫ 图片的 Enhance：放大一张图片（2.733.0）
+<!-- en: enhance-on-a-picture-upscale-an-image-2-733-0 3ec9caf4a12e -->
+
+- 在图库的 **Images**、**Image** 素材或参考面板中点击一张图片，然后按提示词面板中的 **⏫ Enhance**。它的提示会说出要放大的图片。如果你最后点击的是视频，Enhance 仍然用 SeedVR2 放大视频。
+- 面板会显示这张图片以及将生成的结果，例如 320×180 → 640×360：
+  - **Size**：×2、×3、×4，或短边 1080、1440、2160 px（保持形状，每边最多 8192 px）。
+  - **Way**：**SeedVR2** 会恢复细节（需要 ComfyUI、SeedVR2 模型和 VAE——与视频放大器相同的文件）；**Upscale model** 使用 ComfyUI 的 models/upscale_models 中的文件（4x-UltraSharp、RealESRGAN …），快速且锐利；**Lanczos** 完全不需要 ComfyUI，但不会增加新的细节。
+  - **Model**、**Colour match** 和 **Denoise** 用于 SeedVR2（Model 也用来选择放大模型）。
+- **⏫ Upscale** 把任务加入队列。结果是图库 Images 中名为 *<图片名>_upscaled_<宽>x<高>.png* 的 PNG。面板会按项目记住你的选择。
+
+## ▶ 播放乐谱，发声的音符会亮起（2.733.0）
+<!-- en: playing-the-sheet-music-the-notes-lit-as-they-sound-2-733-0 fe90ac659bab -->
+
+- 在 **🎼 Sheet Music** 标签页的乐谱下方：**⏮** 回到开头，**⏪** 后退一小节（快速按两次到上一小节），**▶ / ⏸** 播放和暂停，**⏩** 前进一小节，**⏭** 到结尾。旁边显示时间和小节号，**⛶ Read** 中也有同样的按钮。
+- 播放时，正在发声的音符会以橙色亮起，所在小节有一条淡淡的色带。勾选 **follow** 时，乐谱会滚动让该小节保持可见。点击任意音符即可跳到那里。
+- **Sound**：**🎵 the song** 播放这份乐谱所属的歌曲（.abc 旁边同名的音频文件——在 Music 面板中制作的歌曲都有，Score 列表会给这些乐谱标上 🎵）。**🎹 the notes** 在浏览器中演奏写出的音符，用于没有歌曲的乐谱（🎼 Write、📂 Open .abc）或检查写了什么。
+- **Sync (s)**：小节 1 之前歌曲的秒数，例如前奏。调整到亮起的音符与歌声对齐为止。每份乐谱都会记住。
+- 速度来自乐谱的速度标记（Q:）；没有速度的乐谱按每分钟 120 拍播放。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

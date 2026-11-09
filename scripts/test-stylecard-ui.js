@@ -95,7 +95,7 @@ const J = (u, b) => fetch(URL_ + u, b ? { method: "POST", headers: { "Content-Ty
     const e0b = await ev(() => ({ shown: SeedVR2Panel.shown(), plan: document.getElementById("svPlan").textContent, go: document.getElementById("svGo").disabled }));
     await ev(() => SeedVR2Panel.close());
     check("⏫ Enhance (the prompt menubar) with nothing selected: not armed, says to click a video; the panel says so, Upscale off",
-      e0.label === "⏫ Enhance" && !e0.armed && /click a video in the gallery, the Video assets or the reference dock first/.test(e0.title)
+      e0.label === "⏫ Enhance" && !e0.armed && /click a video or a picture in the gallery, the assets or the reference dock first/.test(e0.title)   /* 2.733.0: pictures too */
       && e0b.shown && /select a video first/.test(e0b.plan) && e0b.go, { e0, e0b });
 
     const where = await J("api/outputs/where");

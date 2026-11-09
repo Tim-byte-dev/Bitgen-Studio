@@ -261,6 +261,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 ### 放大与增强
 
 - **SeedVR2 放大** — 把视频放大到 720p-4K 或按倍数放大，支持颜色匹配、时间分段和降噪。 *Where:* 预览栏。 *Since:* 2.400.0
+- **⏫ 图片的 Enhance** — 点击一张图片（图库的 Images、Image 素材、参考面板），⏫ Enhance 就会放大它：×2–×4 或短边 1080–2160 px，可用 SeedVR2（恢复细节）、ComfyUI 的 models/upscale_models 中的放大模型，或不需要 ComfyUI 的 Lanczos；结果是图库中的 PNG。 *Where:* 提示词面板的 ⏫ Enhance。 *Since:* 2.733.0
 - **DLSS 5 增强、放大与帧生成** — 对视频进行 NVIDIA DLSS 5 神经渲染（default / natural / cinematic），放大到 1x DLAA、1.5x-3x 或 1K-8K，并可选用帧生成，最高可达原帧率的 6 倍；仅限 RTX 显卡。 *Where:* 预览栏的 ⚡ DLSS 5，以及故事板上 StoryBoard 的 ⚙ Upscaler。 *Since:* 2.504.0
 - **RTX VFX 视频精修** — 对视频进行 NVIDIA RTX Video Super Resolution 处理，可选先进行一遍 Deblur，再进行一遍 High Bitrate（预设 A：VSR；预设 B：先 Deblur，再 High Bitrate；或自行选择处理步骤），缩放 1x-4x，每次处理一批帧；适用于 Windows 上的 RTX 显卡，通过 DENO ComfyUI 节点实现。 *Where:* 预览栏的 ✨ RTX VFX、StoryBoard 的 ⚙ Upscaler，以及用于安装的 Settings > ComfyUI > Video accelerators。 *Since:* 2.708.0
 - **RelayVSR 放大** — 在 ComfyUI 自带节点中运行的一步视频放大器：x2（用 MiniMax H3 片段训练）或 x4，auto 会选择能达到所选尺寸的那一对；正好 1920 × 1080（先覆盖再裁切）或任意尺寸，保留原来的声音。 *Where:* 预览栏的 🔁 RelayVSR、StoryBoard 的 ⚙ Upscaler，文件在 Settings > Add-ons > RelayVSR。 *Since:* 2.728.0
@@ -356,6 +357,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **翻唱和乐谱** — 在 Music 面板中制作。 *Where:* Music 面板
 - **🎼 五线谱上的乐谱，可存为 PDF** — 把乐谱画成真正的五线谱（谱号、调号和拍号、音符、符杠、休止符、变音记号、延音线、和弦名称、歌曲段落），可全尺寸阅读项目中或这台电脑上的任何 .abc，并保存为 A4 的 PDF 放进项目的 pdf 文件夹；由 bitGen Studio 自己绘制，不用外部库。 *Where:* Music 面板的 🎼 Sheet Music 标签页。 *Since:* 2.731.0
 - **🎨 乐谱的纸张** — 任意纸张颜色、铺满整页的材质（羊皮纸、亚麻、条纹纸、再生纸、水彩纸、画布、牛皮纸）或项目中/这台电脑上的图片，平铺大小和强度，以及墨色（自动：浅色纸用深色，深色纸用浅色）；屏幕上和保存的 PDF 里都一样，也可保存为白底 PDF 便于打印。 *Where:* Music 面板的 🎼 Sheet Music 标签页 ▸ 🎨 Paper。 *Since:* 2.732.0
+- **▶ 播放乐谱** — 播放／暂停、后退一小节、回到开头、前进一小节、到结尾；正在发声的音符会亮起，小节会被标出，乐谱自动跟随，点击音符即跳到那里；播放乐谱旁边的歌曲（带用于前奏的 Sync），或由浏览器演奏写出的音符。 *Where:* Music 面板的 🎼 Sheet Music 标签页及其 ⛶ Read。 *Since:* 2.733.0
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 

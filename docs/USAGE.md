@@ -7801,6 +7801,34 @@ playing (2.725.1).
   your paper. A textured PDF holds one small picture of the tile, repeated by the PDF reader, so the file stays small.
 - **↺ Plain white** goes back to the start. Your choice is remembered on this computer.
 
+## ⏫ Enhance on a picture: upscale an image (2.733.0)
+
+- Click a picture - in the gallery's **Images**, the **Image** assets or the reference dock - then press **⏫ Enhance**
+  in the prompt docker. Its tooltip names the picture it will upscale. When the last thing you clicked was a video,
+  Enhance still upscales the video with SeedVR2.
+- The panel shows the picture and what it will make, for example 320×180 → 640×360:
+  - **Size**: ×2, ×3, ×4, or a short side of 1080, 1440 or 2160 px (the shape kept, at most 8192 px a side).
+  - **Way**: **SeedVR2** restores detail (ComfyUI, the SeedVR2 model and VAE - the same files as the video
+    upscaler); **Upscale model** uses a file in ComfyUI's models/upscale_models (4x-UltraSharp, RealESRGAN …), fast and
+    sharp; **Lanczos** needs no ComfyUI at all but adds no new detail.
+  - **Model**, **Colour match** and **Denoise** are for SeedVR2 (Model also picks the upscale model).
+- **⏫ Upscale** queues the job. The result is a PNG in the gallery's Images named *<picture>_upscaled_<w>x<h>.png*.
+  The panel remembers your choices for the project.
+
+## ▶ Playing the sheet music, the notes lit as they sound (2.733.0)
+
+- Under the score in the **🎼 Sheet Music** tab: **⏮** back to the start, **⏪** back one bar (press it twice quickly
+  for the bar before), **▶ / ⏸** play and pause, **⏩** forward one bar, **⏭** to the end. The time and the bar number
+  show beside them, and **⛶ Read** has the same buttons.
+- While it plays, the notes sounding light up in orange and the bar gets a soft band. With **follow** ticked, the score
+  scrolls to keep the bar in view. Click any note to jump to it.
+- **Sound**: **🎵 the song** plays the song the score belongs to (the audio file with the same name beside the .abc - a
+  song made in the Music docker has one; the Score list marks those scores with 🎵). **🎹 the notes** plays the written
+  notes in the browser, for a score with no song (🎼 Write, 📂 Open .abc) or to check what is written.
+- **Sync (s)**: the seconds of the song before bar 1, such as an intro. Nudge it until the lights match the singing.
+  It is remembered for each score.
+- The speed comes from the score's tempo (Q:); a score with none plays at 120 beats a minute.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -16,6 +16,8 @@
  *   MuScore.savePdf()               -> Promise<{name, size, pages} | null>
  *   MuScore.openView()              ⛶ Read: the pages full size in a dialog
  *   MuScore.setPaper(settings)      🎨 Paper (2.732.0): colour / material / size / strength / ink / in the PDF -> Promise<look>
+ *   MuScore.player()                ▶ (2.733.0): the ScorePlayer of the score on show (⏮ ⏪ ▶/⏸ ⏩ ⏭, the notes lit as
+ *                                   they sound; the song beside the .abc, or the notes played by the browser)
  *   MuScore.state                   {text, name, title, result}
  */
 (function (root) {
@@ -37,6 +39,7 @@
     const box = $("muScore");
     if (box) box.innerHTML = '<div class="muEmpty hint">' + esc(msg) + "</div>";
     ["muScorePdf", "muScoreBig"].forEach((id) => { const b = $(id); if (b) b.disabled = true; });
+    playStop(); playButtons(false);
   }
   // ⛶ Read: the pages full size in a dialog (the docker is often a narrow column)
   const view = () => $("muScoreView");
@@ -48,9 +51,16 @@
     d.style.cssText = "width:min(980px,96vw);max-height:94vh;padding:0;border:1px solid var(--line,#333);border-radius:8px;background:var(--bg2,#1b1e25);color:inherit";
     d.innerHTML = '<div style="display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line,#333);position:sticky;top:0;background:inherit;z-index:1">'
       + '<b id="muSvTitle" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Sheet music</b>'
+      + '<span id="muSvPlay" role="group" aria-label="Play the score" style="display:flex;gap:4px;align-items:center">'
+      + '<button class="ghost gbtn" type="button" data-act="start" style="width:auto" title="Back to the start" aria-label="Back to the start">⏮</button>'
+      + '<button class="ghost gbtn" type="button" data-act="back" style="width:auto" title="Back one bar" aria-label="Back one bar">⏪</button>'
+      + '<button class="ghost gbtn" type="button" data-act="toggle" id="muSvToggle" style="width:auto" title="Play" aria-label="Play">▶</button>'
+      + '<button class="ghost gbtn" type="button" data-act="fwd" style="width:auto" title="Forward one bar" aria-label="Forward one bar">⏩</button>'
+      + '<button class="ghost gbtn" type="button" data-act="end" style="width:auto" title="To the end" aria-label="To the end">⏭</button>'
+      + '<span id="muSvTime" style="font-variant-numeric:tabular-nums;min-width:7.5em">0:00 / 0:00</span></span>'
       + '<button class="go" id="muSvPdf" type="button" style="width:auto;flex:none" title="Save the pages as a PDF in the project\'s pdf folder">💾 Save PDF</button>'
       + '<button class="ghost gbtn" id="muSvClose" type="button" style="width:auto;flex:none" title="Close" aria-label="Close">✕</button></div>'
-      + '<div id="muSvPages" style="overflow:auto;max-height:calc(94vh - 52px);padding:16px"></div>';
+      + '<div id="muSvPages" style="position:relative;overflow:auto;max-height:calc(94vh - 52px);padding:16px"></div>';
     doc.body.appendChild(d);
     d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
     return d;
@@ -68,6 +78,7 @@
       p.innerHTML = svgOf(pg, k, "v").replace("<svg ", '<svg style="display:block;width:100%;height:auto" ');
       box.appendChild(p);
     });
+    relight();
   }
   function openView() {
     if (!S.result || S.result.empty) { status("nothing to show yet - draw a score first"); return; }
@@ -79,6 +90,7 @@
 
   function show(text, name, how) {
     const A = root.AbcScore;
+    playStop();
     S.text = String(text == null ? "" : text); S.name = String(name || "");
     const pre = $("muAbc");
     if (pre) pre.textContent = S.text || "— empty score —";
@@ -115,6 +127,7 @@
     status((how || "🎼 ") + (S.name || S.title) + " - " + sum + (r.warnings.length ? " (" + r.warnings.join("; ") + ")" : ""));
     const sel = $("muScoreList");
     if (sel && S.name && Array.prototype.some.call(sel.options, (o) => o.value === S.name)) sel.value = S.name;
+    playSetup();
     test("mu_score", (S.name || S.title) + " " + r.pages.length);
     return r;
   }
@@ -133,6 +146,8 @@
     if (!sel) return Promise.resolve([]);
     return root.fetch("/api/scores").then((r) => r.json()).then((j) => {
       const files = (j && j.files) || [];
+      S.files = {};
+      files.forEach((f) => { S.files[f.name] = f; });
       const keep = select || sel.value;
       sel.innerHTML = "";
       const o0 = doc.createElement("option");
@@ -142,7 +157,7 @@
         const o = doc.createElement("option");
         o.value = f.name;
         const d = new Date(f.mtime);
-        o.textContent = f.name + (isNaN(d) ? "" : " · " + d.toISOString().slice(0, 16).replace("T", " "));
+        o.textContent = (f.audio ? "🎵 " : "") + f.name + (isNaN(d) ? "" : " · " + d.toISOString().slice(0, 16).replace("T", " "));
         sel.appendChild(o);
       });
       if (keep && files.some((f) => f.name === keep)) sel.value = keep;
@@ -183,6 +198,112 @@
       .finally(() => { btn.disabled = false; btn.textContent = was; });
   }
 
+  // ▶ PLAYBACK (2.733.0, Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the
+  // songs sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js. The song beside the
+  // .abc (the same name, an audio file - GET /api/scores says which) or the notes played by the browser; every frame the
+  // notes sounding get .abcOn (their heads carry data-n from the engraver), the bar a soft band, the page follows.
+  const PL = () => root.ScorePlayer;
+  const PB = { player: null, lit: [], els: {}, bands: [], bar: -2, playing: false };
+  const SYNC_KEY = "h3.muScoreSync";
+  function syncRead(name) { try { const m = JSON.parse(root.localStorage.getItem(SYNC_KEY) || "{}"); return +m[name] || 0; } catch (e) { return 0; } }
+  function syncSave(name, v) { try { const m = JSON.parse(root.localStorage.getItem(SYNC_KEY) || "{}"); m[name] = v; root.localStorage.setItem(SYNC_KEY, JSON.stringify(m)); } catch (e) { /* this page only */ } }
+  function playStop() { if (PB.player) { try { PB.player.destroy(); } catch (e) { /* gone */ } } PB.player = null; PB.lit = []; PB.bar = -2; PB.playing = false; }
+  function playButtons(on) {
+    Array.prototype.forEach.call(doc.querySelectorAll("#muPlayBar [data-act], #muSvPlay [data-act]"), (b) => { b.disabled = !on; });
+    ["muPlaySound", "muPlaySync"].forEach((id) => { const x = $(id); if (x) x.disabled = !on; });
+  }
+  /** the note heads (data-n) and a bar band in every page of the tab and of ⛶ Read - again after any redraw */
+  function relight() {
+    PB.els = {}; PB.bands = [];
+    Array.prototype.forEach.call(doc.querySelectorAll("#muScore .muPaper svg, #muSvPages svg"), (svg) => {
+      Array.prototype.forEach.call(svg.querySelectorAll("path[data-n]"), (el) => { (PB.els[el.getAttribute("data-n")] = PB.els[el.getAttribute("data-n")] || []).push(el); });
+      const band = doc.createElementNS("http://www.w3.org/2000/svg", "rect");
+      band.setAttribute("class", "abcBar"); band.setAttribute("width", "0"); band.setAttribute("height", "0");
+      const first = svg.querySelector("path");
+      svg.insertBefore(band, first || null);
+      PB.bands.push({ svg, band, page: Array.prototype.indexOf.call(svg.closest("#muScore, #muSvPages").querySelectorAll("svg"), svg), box: svg.closest("#muScore, #muSvPages") });
+    });
+    const lit = PB.lit; PB.lit = []; PB.bar = -2;
+    if (PB.player) paint(PB.player.position(), PL().tickAt(S.result.timing, PB.player.position()));
+    else lit.length = 0;
+  }
+  function songFor(name) { const f = S.files && S.files[name]; return f && f.audio ? f.audio : ""; }
+  function playSetup() {
+    const T = S.result && S.result.timing, P2 = PL();
+    if (!T || !P2 || !S.result.pages.length) { playButtons(false); return; }
+    const song = songFor(S.name), sel = $("muPlaySound");
+    if (sel) {
+      sel.innerHTML = (song ? `<option value="song">🎵 the song (${esc(song)})</option>` : "") + '<option value="synth">🎹 the notes</option>';
+      sel.value = song ? "song" : "synth";
+    }
+    const sync = $("muPlaySync");
+    if (sync) sync.value = String(syncRead(S.name));
+    relight();
+    playMake(0);
+    playButtons(true);
+  }
+  function playMake(at) {
+    const T = S.result.timing, P2 = PL();
+    if (PB.player) PB.player.destroy();
+    const mode = ($("muPlaySound") || {}).value || "synth", song = songFor(S.name);
+    const useSong = mode === "song" && song;
+    if ($("muPlaySyncL")) $("muPlaySyncL").classList.toggle("hidden", !useSong);
+    PB.player = P2.create({ timing: T, audioUrl: useSong ? "/outputs/" + encodeURIComponent(song) : "", offset: useSong ? syncRead(S.name) : 0,
+      onFrame: paint, onError: (e) => status("⚠ could not play: " + ((e && e.message) || e)) });
+    if (at) PB.player.seek(at);
+    paint(PB.player.position(), P2.tickAt(T, PB.player.position()));
+  }
+  function paint(sec, tick) {
+    const T = S.result && S.result.timing, P2 = PL();
+    if (!T || !PB.player) return;
+    const playing = PB.player.playing();
+    const dur = PB.player.duration();
+    const tt = P2.fmt(Math.max(0, sec)) + " / " + P2.fmt(dur);
+    if ($("muPlayTime")) $("muPlayTime").textContent = tt;
+    if ($("muSvTime")) $("muSvTime").textContent = tt;
+    PB.playing = playing;
+    ["muPlayToggle", "muSvToggle"].forEach((id) => {
+      const b = $(id), ic = playing ? "⏸" : "▶";
+      if (b && b.textContent !== ic) { b.textContent = ic; b.title = playing ? "Pause" : "Play - the notes light up as they sound"; b.setAttribute("aria-label", playing ? "Pause" : "Play"); }
+    });
+    // the notes sounding now
+    const now = P2.activeAt(T, tick).map(String);
+    const keep = new Set(now);
+    PB.lit.forEach((id) => { if (!keep.has(id)) (PB.els[id] || []).forEach((el) => el.classList.remove("abcOn")); });
+    now.forEach((id) => (PB.els[id] || []).forEach((el) => el.classList.add("abcOn")));
+    PB.lit = now;
+    // the bar: its band, its number, the page following it
+    const bi = tick >= 0 && tick < T.total ? P2.barAt(T, tick) : -1;
+    if ($("muPlayBarNo")) $("muPlayBarNo").textContent = bi >= 0 ? "bar " + (bi + 1) + " / " + T.barStarts.length : "bar –";
+    if (bi === PB.bar) return;
+    PB.bar = bi;
+    const b = bi >= 0 ? T.bars[bi] : null;
+    PB.bands.forEach((x) => {
+      const on = b && x.page === b.page;
+      x.band.setAttribute("x", on ? b.x0 : 0); x.band.setAttribute("y", on ? b.y0 : 0);
+      x.band.setAttribute("width", on ? Math.max(0, b.x1 - b.x0) : 0); x.band.setAttribute("height", on ? Math.max(0, b.y1 - b.y0) : 0);
+      if (on && playing && ($("muPlayFollow") || { checked: true }).checked) follow(x, b);
+    });
+  }
+  /** keep the playing bar's system in view of its scroll box */
+  function follow(x, b) {
+    const box = x.box, paperEl = x.svg.parentElement, pg = S.result.pages[b.page];
+    if (!box || !paperEl || !pg) return;
+    const k = x.svg.getBoundingClientRect().height / pg.h;
+    const top = paperEl.offsetTop + b.y0 * k, bot = paperEl.offsetTop + b.y1 * k;
+    if (top < box.scrollTop || bot > box.scrollTop + box.clientHeight) box.scrollTop = Math.max(0, top - 24);
+  }
+  function playAct(act) {
+    const p = PB.player;
+    if (!p) return;
+    if (act === "toggle") p.toggle().then(() => paint(p.position(), PL().tickAt(S.result.timing, p.position())));
+    else if (act === "start") p.toStart();
+    else if (act === "back") p.back();
+    else if (act === "fwd") p.forward();
+    else if (act === "end") p.toEnd();
+    test("mu_score_play", act + " " + p.mode);
+  }
+
   // 🎨 Paper (2.732.0, Tim: "allow user to choose background color/material tiling for the sheet music"): the paper's
   // colour, a material repeated across it (or a picture), its size and strength, the ink - ext/musicdock/scorepaper.js
   /** the pages again in the current paper (the layout is kept - only the drawing changes) */
@@ -192,6 +313,7 @@
     const box = $("muScore");
     Array.prototype.forEach.call(box.querySelectorAll(".muPaper"), (d, k) => { if (r.pages[k]) d.innerHTML = svgOf(r.pages[k], k, "m"); });
     if (view() && view().open) fillView();
+    relight();
   }
   function paperRead() {
     const v = (id) => ($(id) || {}).value;
@@ -287,6 +409,14 @@
     if (t.closest("#muScoreBig")) { e.preventDefault(); openView(); return; }
     if (t.closest("#muSvClose")) { e.preventDefault(); const d = view(); if (d) d.close(); return; }
     if (t.closest("#muPaperBtn")) { e.preventDefault(); paperToggle(); return; }
+    const pa = t.closest("#muPlayBar [data-act], #muSvPlay [data-act]");
+    if (pa) { e.preventDefault(); playAct(pa.getAttribute("data-act")); return; }
+    const note = t.closest && t.closest("#muScore path[data-n], #muSvPages path[data-n]");
+    if (note && PB.player && S.result && S.result.timing) {               // a note clicked: play from it
+      const n = S.result.timing.notes[+note.getAttribute("data-n")];
+      if (n) { PB.player.seek(PL().secAt(S.result.timing, n.t0)); test("mu_score_seek", String(n.id)); }
+      return;
+    }
     const sw = t.closest("#muPaperSwatches button");
     if (sw) { e.preventDefault(); $("muPaperColor").value = sw.dataset.color; setPaper(paperRead()); return; }
     if (t.closest("#muPaperReset")) { e.preventDefault(); setPaper(Object.assign({}, P().DEFAULTS, { pdf: S.paper ? S.paper.pdf : true })); return; }
@@ -310,6 +440,14 @@
     const t = e.target;
     if (!t) return;
     if (t.id === "muScoreList") { if (t.value) load(t.value); return; }
+    if (t.id === "muPlaySound") { const at = PB.player ? Math.max(0, PB.player.position()) : 0; playMake(at); return; }
+    if (t.id === "muPlaySync") {
+      const v = Math.max(-60, Math.min(120, parseFloat(t.value) || 0));
+      syncSave(S.name, v);
+      if (PB.player && PB.player.mode === "song") PB.player.setOffset(v);
+      if (PB.player) paint(PB.player.position(), PL().tickAt(S.result.timing, PB.player.position()));
+      return;
+    }
     if (t.id === "muPaperMat" && t.value === "file:") { paperFill(S.paper || P().load()); const f = $("muPaperFile"); if (f) f.click(); return; }
     if (/^muPaper(Color|Mat|Size|Strength|Ink|Pdf)$/.test(t.id)) { setPaper(paperRead()); return; }
     if (t.id === "muPaperFile") {
@@ -343,5 +481,5 @@
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct };
 }(typeof window !== "undefined" ? window : this));

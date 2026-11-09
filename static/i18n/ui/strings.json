@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5555,
+ "count": 5588,
  "strings": [
   {
    "s": "0 (auto)",
@@ -85,6 +85,15 @@
    ]
   },
   {
+   "s": "1 = full restore; lower keeps more of the original's texture",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "1 leaves it to sd-cli, which is right for the flux/qwen family",
    "kinds": [
     "title"
@@ -113,6 +122,15 @@
    ]
   },
   {
+   "s": "1080 px",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "120f · 1 gen [124] − trim 4 ✓ consistent",
    "kinds": [
     "title"
@@ -128,6 +146,15 @@
    ],
    "where": [
     "option in #tfxLoudT"
+   ]
+  },
+  {
+   "s": "1440 px",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -301,6 +328,15 @@
    ],
    "where": [
     "option in #chatSaves"
+   ]
+  },
+  {
+   "s": "2160 px (4K)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -828,6 +864,15 @@
    ],
    "where": [
     "option in #tlpExPre"
+   ]
+  },
+  {
+   "s": "A factor, or the short side in pixels (the shape kept)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -3928,6 +3973,16 @@
    ]
   },
   {
+   "s": "Back one bar",
+   "kinds": [
+    "title",
+    "aria-label"
+   ],
+   "where": [
+    "button.ghost.gbtn in #muPlayBar"
+   ]
+  },
+  {
    "s": "Back to default.settings — custom.settings is kept as custom.settings.bak",
    "kinds": [
     "title"
@@ -3961,6 +4016,16 @@
    ],
    "where": [
     "button#tlpReset.ghost"
+   ]
+  },
+  {
+   "s": "Back to the start",
+   "kinds": [
+    "title",
+    "aria-label"
+   ],
+   "where": [
+    "button.ghost.gbtn in #muPlayBar"
    ]
   },
   {
@@ -6980,6 +7045,15 @@
    ],
    "where": [
     "label in #kxOpts"
+   ]
+  },
+  {
+   "s": "Colour match",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -14021,6 +14095,16 @@
    ]
   },
   {
+   "s": "Forward one bar",
+   "kinds": [
+    "title",
+    "aria-label"
+   ],
+   "where": [
+    "button.ghost.gbtn in #muPlayBar"
+   ]
+  },
+  {
    "s": "Fractions (frac)",
    "kinds": [
     "title"
@@ -18100,6 +18184,15 @@
    ]
   },
   {
+   "s": "Lanczos (no ComfyUI)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "Lanczos (no model)",
    "kinds": [
     "text"
@@ -20157,6 +20250,15 @@
    ],
    "where": [
     "input.mx-f in #tlMixerDlg"
+   ]
+  },
+  {
+   "s": "Match the result's colours to the original - lab is the most faithful; none skips it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -24216,6 +24318,15 @@
    ]
   },
   {
+   "s": "Pause",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#muSvPlay"
+   ]
+  },
+  {
    "s": "Pause (s)",
    "kinds": [
     "text"
@@ -24929,6 +25040,15 @@
    ]
   },
   {
+   "s": "Play - the notes light up as they sound",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#muPlayToggle.go"
+   ]
+  },
+  {
    "s": "Play / pause the full song",
    "kinds": [
     "title"
@@ -25007,6 +25127,15 @@
    ],
    "where": [
     "button#tlCPlay.ghost"
+   ]
+  },
+  {
+   "s": "Play the score",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "div#muPlayBar"
    ]
   },
   {
@@ -29817,6 +29946,15 @@
    ]
   },
   {
+   "s": "Scroll the score to the bar that is playing",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #muPlayBar"
+   ]
+  },
+  {
    "s": "Scroll up",
    "kinds": [
     "title"
@@ -29932,6 +30070,15 @@
    ]
   },
   {
+   "s": "Seconds of the song before bar 1 (its intro) - nudge it until the lights match the singing",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label#muPlaySyncL.f"
+   ]
+  },
+  {
    "s": "Seed",
    "kinds": [
     "text"
@@ -29962,6 +30109,15 @@
    ]
   },
   {
+   "s": "SeedVR2 (restores detail)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "SeedVR2 (video) - the take as its own job",
    "kinds": [
     "text"
@@ -29977,6 +30133,15 @@
    ],
    "where": [
     "option in #vdSetPngUp"
+   ]
+  },
+  {
+   "s": "SeedVR2 restores detail (slow, ComfyUI); an upscale model is quick and sharp (ComfyUI's models/upscale_models); Lanczos needs no ComfyUI but adds no detail",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -34222,6 +34387,15 @@
    ]
   },
   {
+   "s": "Sync (s)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label#muPlaySyncL.f"
+   ]
+  },
+  {
    "s": "Sync by sound → multi-camera",
    "kinds": [
     "text"
@@ -35320,6 +35494,15 @@
    ]
   },
   {
+   "s": "The file ComfyUI uses",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "The file the song is saved as. flac = lossless (the render itself); mp3 = lame V0; wav = 16-bit PCM. Converted after the render from the lossless flac",
    "kinds": [
     "title"
@@ -36253,6 +36436,15 @@
    ]
   },
   {
+   "s": "The song the score belongs to (the audio file beside it), or the written notes played by the browser",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#muPlaySound"
+   ]
+  },
+  {
    "s": "The song's lyrics - correct any wrong word here, then Generate",
    "kinds": [
     "title"
@@ -37014,6 +37206,16 @@
    ],
    "where": [
     "button#lb_tomodel.ghost"
+   ]
+  },
+  {
+   "s": "To the end",
+   "kinds": [
+    "title",
+    "aria-label"
+   ],
+   "where": [
+    "button.ghost.gbtn in #muPlayBar"
    ]
   },
   {
@@ -38162,12 +38364,39 @@
    ]
   },
   {
+   "s": "Upscale",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "Upscale every render",
    "kinds": [
     "text"
    ],
    "where": [
     "label in #vdSetPanel"
+   ]
+  },
+  {
+   "s": "Upscale model",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
+   "s": "Upscale picture",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -38180,12 +38409,30 @@
    ]
   },
   {
+   "s": "Upscale the picture",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "Upscale the selected scenes",
    "kinds": [
     "aria-label"
    ],
    "where": [
     "button#scUpSel.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Upscale the selected video or picture - click a video or a picture in the gallery, the assets or the reference dock first",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#enhanceBtn.ghost.gbtn"
    ]
   },
   {
@@ -39677,6 +39924,15 @@
    ],
    "where": [
     "canvas#sfxWave"
+   ]
+  },
+  {
+   "s": "Way",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -41807,6 +42063,15 @@
    ]
   },
   {
+   "s": "bar –",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span#muPlayBarNo.dim"
+   ]
+  },
+  {
    "s": "bark-stt/model (model.bark, bark_loader.py, NOTICE)",
    "kinds": [
     "text"
@@ -41877,6 +42142,15 @@
    ],
    "where": [
     "p.hint.help in #stab-llm"
+   ]
+  },
+  {
+   "s": "best available",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
    ]
   },
   {
@@ -44198,6 +44472,15 @@
    ],
    "where": [
     "input#x_dir"
+   ]
+  },
+  {
+   "s": "follow",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #muPlayBar"
    ]
   },
   {
@@ -49807,6 +50090,15 @@
    ]
   },
   {
+   "s": "the first listed",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#iuPanel"
+   ]
+  },
+  {
    "s": "the first reference picture",
    "kinds": [
     "text"
@@ -49993,6 +50285,15 @@
    ],
    "where": [
     "div.kv in #aoList"
+   ]
+  },
+  {
+   "s": "the notes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muPlaySound"
    ]
   },
   {

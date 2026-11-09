@@ -122,6 +122,9 @@ def core_schemas():
             "model": ["MODEL"],
             "lora_name": {"type": "COMBO", "options": _folder_combo(["loras"], [])},
             "strength_model": ["FLOAT", {"default": 1.0}]}}},
+        # 2.733.0: ComfyUI's image-upscale loader - a folder scan of models/upscale_models like a real server
+        "UpscaleModelLoader": {"input": {"required": {"model_name": [_folder_combo(["upscale_models"], [])]}}, "output": ["UPSCALE_MODEL"]},
+        "ImageUpscaleWithModel": {"input": {"required": {"upscale_model": ["UPSCALE_MODEL"], "image": ["IMAGE"]}}, "output": ["IMAGE"]},
         "UNETLoader": {"input": {"required": {
             "unet_name": ["COMBO", {"options": _folder_combo(
                 ["unet", "diffusion_models"], ["stub-unet.safetensors"])}],
@@ -489,6 +492,41 @@ def render_seedvr2(pid, g):
                  "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}], "animated": [True]}}}
 
 
+def render_img_upscale(pid, g):
+    """2.733.0: a PICTURE upscale graph, answered like ComfyUI would: SeedVR2 - the LOADED picture times the Resize
+    node's multiplier (SeedVR2 pads to 16, as the real one does: a size a few pixels over); an upscale model - the
+    ImageScale's width x height. STUB_SEEDVR2_KEEP_SIZE=1 hands back the source's own size (the 2.727.0 failure)."""
+    load = next((v for v in g.values() if v.get("class_type") == "LoadImage"), None)
+    f = ((load or {}).get("inputs") or {}).get("image")
+    if not isinstance(f, str) or f not in UPLOADED:
+        JOBS[pid] = {"status": {"status_str": "error", "completed": False, "messages": [
+            ["execution_error", {"prompt_id": pid, "node_id": "1", "node_type": "LoadImage", "exception_type": "FileNotFoundError",
+                                 "exception_message": f"Invalid image file: {f}"}]]}, "outputs": {}}
+        return
+    info = _probe(INPUTS / f) if (INPUTS / f).is_file() else {}
+    w, h = info.get("w") or 64, info.get("h") or 64
+    rsz = next((v for v in g.values() if v.get("class_type") == "ResizeImageMaskNode"), None)
+    sc = next((v for v in g.values() if v.get("class_type") == "ImageScale"), None)
+    if sc:
+        ow, oh = int(sc["inputs"].get("width") or w), int(sc["inputs"].get("height") or h)
+    else:
+        m = float(((rsz or {}).get("inputs") or {}).get("resize_type.multiplier") or 1)
+        ow, oh = int(round(w * m)), int(round(h * m))
+        ow, oh = ow + (-ow % 16), oh + (-oh % 16)       # SeedVR2 pads to 16
+    if os.environ.get("STUB_SEEDVR2_KEEP_SIZE") == "1":
+        ow, oh = w, h
+    fn = f"imgup_{pid}.png"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"testsrc2=size={ow}x{oh}:rate=1",
+                    "-frames:v", "1", str(OUT / fn)], check=False)
+    rec = {"_classes": sorted({str(v.get("class_type", "")) for v in g.values()}),
+           "_inputs": {str(v.get("class_type")): (v.get("inputs") or {}) for v in g.values()},
+           "_source": {"file": f, "w": w, "h": h}, "_out": [ow, oh]}
+    Path(OUT / f"imgup_{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
+    sv = next((k for k, v in g.items() if v.get("class_type") == "SaveImage"), "9")
+    JOBS[pid] = {"status": {"status_str": "success", "completed": True},
+                 "outputs": {str(sv): {"images": [{"filename": fn, "subfolder": "", "type": "output"}]}}}
+
+
 def render_relayvsr(pid, g):
     """2.728.0: a RelayVSR video graph, answered like ComfyUI's core nodes would: the LOADED video times the Flash
     decoder's factor (its file: x4 in the name = 4, else 2 - the real one reads it from the file's metadata), as long as
@@ -689,6 +727,9 @@ def _render(pid, g):
     if any(v.get("class_type") == "SeedVR2Conditioning" for v in g.values()) and \
             any(v.get("class_type") == "LoadVideo" for v in g.values()):
         return render_seedvr2(pid, g)                  # 2.400.0
+    if any(v.get("class_type") in ("SeedVR2Conditioning", "ImageUpscaleWithModel") for v in g.values()) and \
+            any(v.get("class_type") == "LoadImage" for v in g.values()) and os.environ.get("STUB_IMG_UPSCALE", "1") == "1":
+        return render_img_upscale(pid, g)              # 2.733.0
     if any(v.get("class_type") == "RelayVSRConditioning" for v in g.values()):
         return render_relayvsr(pid, g)                 # 2.728.0
     if any(v.get("class_type") == "RH_DLSS5Enhance" for v in g.values()):
@@ -1301,7 +1342,7 @@ class H(BaseHTTPRequestHandler):
             base = (m.group(1).decode("utf-8", "replace") if m else "")
             base = os.path.basename(base).strip() or ("up_" + uuid.uuid4().hex[:6] + ".png")
             UPLOADED.add(base)
-            if re.search(r"\.(mp4|webm|mov|mkv|m4v)$", base, re.I):     # 2.400.0: the SeedVR2 render reads it back
+            if re.search(r"\.(mp4|webm|mov|mkv|m4v|png|jpe?g|webp)$", base, re.I):     # 2.400.0 / 2.733.0 (pictures): read back
                 _keep_upload(body, base)
             return self._j({"name": base, "subfolder": ""})
         if self.path == "/e2e/schema":        # e2e control, not a ComfyUI route

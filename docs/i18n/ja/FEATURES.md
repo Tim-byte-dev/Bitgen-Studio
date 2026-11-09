@@ -261,6 +261,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 ### アップスケールと補正
 
 - **SeedVR2 アップスケール** — 動画を 720p-4K、または倍率指定でアップスケールします。色合わせ、時間方向の分割、ノイズ除去に対応しています。 *Where:* プレビューバー。 *Since:* 2.400.0
+- **⏫ 画像の Enhance** — 画像（ギャラリーの Images、Image アセット、参照ドック）をクリックして ⏫ Enhance を押すとアップスケールします：×2〜×4 または短辺 1080〜2160 px、SeedVR2（ディテールを復元）、ComfyUI の models/upscale_models のアップスケールモデル、または ComfyUI 不要の Lanczos。結果はギャラリーの PNG。 *Where:* プロンプトドッカーの ⏫ Enhance。 *Since:* 2.733.0
 - **DLSS 5 による補正、アップスケール、フレーム生成** — 動画に NVIDIA DLSS 5 のニューラルレンダリングを適用し（default / natural / cinematic）、1x DLAA、1.5x-3x、または 1K-8K へのアップスケールと、オプションでフレームレートを最大 6x にするフレーム生成を行います。RTX のみ対応です。 *Where:* プレビューバーの ⚡ DLSS 5、およびボード上の StoryBoard の ⚙ Upscaler。 *Since:* 2.504.0
 - **RTX VFX 動画仕上げ** — 動画に NVIDIA RTX Video Super Resolution を適用します。オプションで最初に Deblur パス、さらに High Bitrate パスを加えられ（プリセット A：VSR、プリセット B：Deblur の後に High Bitrate、またはパスを個別に選択）、1x-4x に拡大し、フレームを一定数ずつまとめて処理します。Windows の RTX カードで、DENO の ComfyUI ノードを通じて動作します。 *Where:* プレビューバーの ✨ RTX VFX、StoryBoard の ⚙ Upscaler、インストールは Settings > ComfyUI > Video accelerators。 *Since:* 2.708.0
 - **RelayVSR アップスケール** — ComfyUI 自身のノードで動く 1 ステップの動画アップスケーラー：x2（MiniMax H3 のクリップで学習済み）または x4、auto はサイズに届く組を選びます。ちょうど 1920 × 1080（覆ってから切り取り）または任意のサイズ、元の音声はそのまま。 *Where:* プレビューバーの 🔁 RelayVSR、StoryBoard の ⚙ Upscaler、ファイルは Settings > Add-ons > RelayVSR。 *Since:* 2.728.0
@@ -356,6 +357,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **カバーと楽譜** — Music ドッカーで作成します。 *Where:* Music ドッカー
 - **🎼 五線譜の楽譜と PDF** — 楽譜を本物の譜面として描きます（音部記号、調号と拍子記号、音符、連桁、休符、臨時記号、タイ、コードネーム、曲のセクション）。プロジェクト内やこのコンピューター上の .abc を原寸大で読め、A4 の PDF としてプロジェクトの pdf フォルダーに保存できます。外部ライブラリを使わず bitGen Studio 自身が描きます。 *Where:* Music ドッカーの 🎼 Sheet Music タブ。 *Since:* 2.731.0
 - **🎨 楽譜の用紙** — 用紙の色、ページ全体に繰り返す素材（羊皮紙、リネン、簀の目紙、再生紙、水彩紙、キャンバス、クラフト紙）またはプロジェクトやこのコンピューターの画像、タイルの大きさと強さ、インク（自動：明るい用紙には濃い色、暗い用紙には明るい色）。画面でも保存した PDF でも使え、印刷用に白い PDF にもできます。 *Where:* Music ドッカーの 🎼 Sheet Music タブ ▸ 🎨 Paper。 *Since:* 2.732.0
+- **▶ 楽譜の再生** — 再生／一時停止、1 小節戻る、最初に戻る、1 小節進む、最後へ。鳴っている音符が光り、小節に印が付き、楽譜がついて行きます。音符をクリックするとそこへ移動。楽譜の隣の曲（イントロ用の Sync 付き）か、ブラウザーが鳴らす書かれた音符。 *Where:* Music ドッカーの 🎼 Sheet Music タブとその ⛶ Read。 *Since:* 2.733.0
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
 

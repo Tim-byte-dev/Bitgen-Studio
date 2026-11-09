@@ -578,6 +578,40 @@
       if (inf.startRepeat) inf.fixed += 1.4;
     });
 
+    // 2.733.0 (Tim: "add media buttons ... and highlight the notes as the song is played"): THE TIMING - each bar's start in
+    // ticks (its own length: the longest voice, else the meter's bar), each written note an id + its time (the SVG
+    // marks its head data-n), and the notes to sound (a tie holds the note on, it is not struck again)
+    const barT = [];
+    let tAt = 0;
+    info.forEach((inf) => { barT.push(tAt); tAt += inf.end > 0 ? inf.end : (barTicks(inf.meter) || WHOLE); });
+    const timing = { total: tAt, bars: [], notes: [], sound: [] };
+    const SEMI = [0, 2, 4, 5, 7, 9, 11];
+    V.forEach((v, vi) => {
+      const ringing = {};                                  // midi -> the sound note a tie extends
+      info.forEach((inf, i) => pcs[vi][i].forEach((pc) => {
+        if (pc.rest || pc.barRest || !pc.heads) return;
+        const t0 = barT[i] + pc.onset, t1 = t0 + pc.dur;
+        timing.notes.push({ id: -1, v: vi, bar: i, t0, t1, pc });
+        pc.heads.forEach((h) => {
+          const midi = 12 * (h.pt.o + 1) + SEMI[LETTERS.indexOf(h.pt.L)] + h.pt.a;
+          const held = (!pc.first || h.pt.tieIn) && ringing[midi] && ringing[midi].t1 === t0;
+          if (held) ringing[midi].t1 = t1;
+          else { const s2 = { v: vi, midi, t0, t1 }; timing.sound.push(s2); ringing[midi] = s2; }
+        });
+      }));
+    });
+    timing.sound.sort((a, b) => a.t0 - b.t0 || a.midi - b.midi);
+    // the notes in time order across the voices; a note's id = its place (the SVG head's data-n)
+    timing.notes.sort((a, b) => a.t0 - b.t0 || a.v - b.v);
+    timing.notes.forEach((n, k) => { n.id = k; n.pc.nid = k; delete n.pc; });
+    const qBeat = S.tempo && S.tempo.beat ? S.tempo.beat : WHOLE / 4;
+    timing.qpm = S.tempo && S.tempo.bpm ? S.tempo.bpm * qBeat / (WHOLE / 4) : 120;
+    timing.tempoGiven = !!(S.tempo && S.tempo.bpm);
+    timing.tpq = WHOLE / 4;                               // ticks a quarter note
+    timing.seconds = timing.total / timing.tpq * 60 / timing.qpm;
+    timing.barStarts = barT;
+    result.timing = timing;
+
     // what a measure needs in front of it when it does not start a system (a key / meter change)
     const keyW = (k) => Math.abs(k.count) * 1.0;
     const sameMeter = (a, b) => (!a && !b) || (a && b && a.n === b.n && a.d === b.d);
@@ -824,6 +858,9 @@
       if (sy.start > 0) page.ops.push({ t: "t", x: x0 + 0.1 * sp, y: top - 1.4 * sp, s: String(sy.start + 1), f: "HO", z: 7, g: 0.25 });
       y = top + sysBottom;
       page.ranges[page.ranges.length - 1][1] = page.ops.length;
+      for (let i = sy.start; i < sy.end; i++) {            // 2.733.0: where each bar is (the player's highlight)
+        (page.bars = page.bars || []).push({ i, sys: page.ranges.length - 1, x0: sy.mx[i], x1: sy.mx[i] + sy.mw[i], y0: top - 1.2 * sp, y1: yBot + 1.2 * sp });
+      }
       page.lastY = y;
     });
     // a full page spreads its systems down to the bottom margin (never the last page)
@@ -834,9 +871,14 @@
       if (!(extra > 0) || extra > (bottom - o.mt) * 0.45) return;
       const per = Math.min(40, extra / (n - 1));
       pg.ranges.forEach((r, j) => { if (j) for (let q = r[0]; q < r[1]; q++) pg.ops[q] = shift(pg.ops[q], per * j); });
+      (pg.bars || []).forEach((b) => { if (b.sys) { b.y0 += per * b.sys; b.y1 += per * b.sys; } });
     });
     if (pages.length > 1) pages.forEach((pg, k) => pg.ops.push({ t: "t", x: pw / 2, y: ph - o.mb + 16, s: (k + 1) + " / " + pages.length, f: "H", z: 8, a: "m", g: 0.45 }));
     pages.forEach((pg) => { delete pg.nsys; delete pg.ranges; delete pg.lastY; });
+    pages.forEach((pg, k) => (pg.bars || []).forEach((b) => {
+      result.timing.bars[b.i] = { i: b.i, page: k, x0: b.x0, x1: b.x1, y0: b.y0, y1: b.y1, t0: barT[b.i], t1: b.i + 1 < barT.length ? barT[b.i + 1] : result.timing.total };
+    }));
+    pages.forEach((pg) => { delete pg.bars; });
     result.pages = pages;
     return result;
   }
@@ -936,7 +978,7 @@
     pc.heads.forEach((h, k) => {
       const hx = headX(pc, k, sp), y = Y(h.p);
       h.y = y; h.x = hx;
-      ops.push({ t: "p", d: noteheadPath(hx, y, sp, pc.base), fill: true, eo: pc.base >= 960 });
+      ops.push({ t: "p", d: noteheadPath(hx, y, sp, pc.base), fill: true, eo: pc.base >= 960, n: pc.nid });
       grow(y - 0.5 * sp); grow(y + 0.5 * sp);
       // ledger lines
       const lx1 = hx - 0.35 * sp, lx2 = hx + hw + 0.35 * sp;
@@ -1165,7 +1207,7 @@
       }
       const fillA = op.fill ? `fill="${inkHex}"${op.eo ? ' fill-rule="evenodd"' : ""}` : 'fill="none"';
       const strokeA = op.stroke ? ` stroke="${inkHex}" stroke-width="${r2(op.w || 1)}"${op.cap ? ' stroke-linecap="round" stroke-linejoin="round"' : ""}` : "";
-      out.push(`<path d="${pathD(op.d)}" ${fillA}${strokeA}/>`);
+      out.push(`<path d="${pathD(op.d)}" ${fillA}${strokeA}${op.n != null ? ` data-n="${op.n}"` : ""}/>`);
     });
     out.push("</svg>");
     return out.join("");
@@ -1277,5 +1319,5 @@
     return bytes;
   }
 
-  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, WHOLE, version: "2.732.0" };
+  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, WHOLE, version: "2.733.0" };
 }));

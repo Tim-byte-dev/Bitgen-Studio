@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.733.0** — ⏫ Enhance on a Picture: a Selected Image Upscaled (SeedVR2, an Upscale Model or Lanczos) to a PNG in the Gallery; ▶ the Sheet Music Plays - ⏮ ⏪ ▶/⏸ ⏩ ⏭, the Notes Lit as They Sound, the Song Beside the Score or the Notes Themselves
 - **2.732.0** — 🎨 Paper for the Sheet Music: Any Colour, a Material Tiled Across the Page (Parchment, Linen, Laid, Recycled, Watercolour, Canvas, Kraft) or a Picture, Its Size and Strength, the Ink (Auto on Dark Paper) - on Screen and in the PDF
 - **2.731.0** — 🎼 Real Sheet Music in the Music Docker: the Score Engraved on the Staff (Clefs, Key and Time Signatures, Notes, Beams, Rests, Ties, Chord Symbols, Sections), Read Full Size, Saved as an A4 PDF - Drawn by bitGen Studio Itself, No Library
 - **2.730.0** — 🕺 Motion from a Reference Video: FlowHMR Motion Capture (an Animated Skeleton .fbx + SMPL-H .npz in models3d) as a Settings ▸ Add-ons Install - Non-Commercial Use Only

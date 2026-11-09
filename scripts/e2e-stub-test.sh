@@ -13133,6 +13133,18 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.733.0 (Tim: "if we select an image thumbnail and press the enhance buton can we upscale the image" + "in sheet music
+# tab add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs sheet music and
+# highlight the notes as the song is played")
+python3 scripts/test-imgupscale733.py > /tmp/imgupscale733.log 2>&1 \
+  && ok "2.733.0 picture upscale: Tim's SeedVR2 image workflow (model / VAE / colour / denoise / seed / the multiplier), the upscale-model workflow at the size, the model picked from ComfyUI's list; sizes (x2-x4, short sides, 8192 px at most), names never paths (gallery / Image assets / an upload's token - sniffed: PNG / JPEG / WebP / BMP); LIVE: SeedVR2 padded -> exactly the size, an upscale model, lanczos without ComfyUI, PNGs <name>_upscaled_<w>x<h>.png; the source back / no upscale model / no ComfyUI fail in words" \
+  || { bad "2.733.0 picture upscale"; grep -a "^FAIL" /tmp/imgupscale733.log | head -12; }
+node scripts/test-player733.js > /tmp/player733.log 2>&1 \
+  && ok "2.733.0 sheet music player timing: bars by their own length, notes in time order across the voices with ids = the SVG heads' data-n, the tempo (Q, 3/8 beats, none = 120), a tie held not struck, MIDI; barAt / activeAt / prevBar / nextBar / fmt; each bar's place on its page; the song beside a score" \
+  || { bad "2.733.0 sheet music player timing"; grep -a "^FAIL" -A1 /tmp/player733.log | head -12; }
+node scripts/test-ui733-ui.js > /tmp/ui733ui.log 2>&1 \
+  && ok "2.733.0 browser test: a gallery picture clicked = ⏫ Enhance's picture panel (320x180 -> 640x360, Lanczos -> the PNG at that size), a video after it = SeedVR2's panel, a reference-dock picture sent + planned; the score's song offered, ▶ runs the clock + lights the notes + the bar band, ⏸ ⏩ ⏪ ⏭ ⏮, a note clicked jumps, Sync moves the clock + is kept, 🎹 the notes, ⛶ Read's buttons - or SKIP without playwright / a studio" \
+  || { bad "2.733.0 picture upscale / sheet music player browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui733ui.log | head -14; }
 # ---- 2.732.0 (Tim: "allow user to choose background color/material tiling for the sheet music")
 node scripts/test-paper732.js > /tmp/paper732.log 2>&1 \
   && ok "2.732.0 sheet music paper: the settings kept sane (colour, 8 materials, tile 40-600 pt, texture, ink, in the PDF; a picture only from the project or a data URL), auto ink dark on light / light on dark; SVG: the colour + a pattern of the tile, everything in the ink, grey words between; PDF: a coloured page = one rectangle, a material = ONE JPEG (DCTDecode, RGB / grey) in a tiling pattern on every page, xref still right, qpdf + pdftoppm see the colour" \
