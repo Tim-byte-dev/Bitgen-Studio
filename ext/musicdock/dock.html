@@ -90,7 +90,16 @@
             #muPaneSheet .muIn input[type=checkbox]{margin:0}
             #muPaneSheet .muMeta{font-family:var(--mono,monospace);font-size:.68rem;color:var(--dim,#8a8378);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 12em}
             #muScoreList{max-width:24em}
-            #muSheetRefL{cursor:pointer;max-width:18em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+            #muCreateSrc{max-width:22em}
+            #muPaneSheet .muSteps{display:inline-flex;gap:4px;align-items:center}
+            #muPaneSheet .muSteps[hidden]{display:none}
+            #muPaneSheet .muStep{font-size:.68rem;padding:2px 8px;border-radius:10px;border:1px solid var(--line,#262a33);color:var(--dim,#8a8378);white-space:nowrap}
+            #muPaneSheet .muStep[data-state=doing]{color:var(--tiger,#f2a03d);border-color:var(--tiger,#f2a03d)}
+            #muPaneSheet .muStep[data-state=done]{color:var(--text,#e8e2d8);border-color:#5c7a4e;background:rgba(110,160,90,.14)}
+            #muPaneSheet .muStep[data-state=done]::after{content:" ✓"}
+            #muPaneSheet .muStep[data-state=skip]{text-decoration:line-through}
+            #muPaneSheet .muStep[data-state=fail]{color:#e07a6a;border-color:#a8503f}
+            #muPaneSheet .muStep[data-state=fail]::after{content:" ✕"}
             #muAbcOpen{cursor:pointer}
             #muScoreBar .gbtn input[type=file]{display:none}
             .muViewer{border:1px solid var(--line,#262a33);border-radius:7px;overflow:hidden;background:#0f0d0a}
@@ -146,14 +155,21 @@
             #muPaperSwatches .muSwatch[aria-pressed=true]{outline:2px solid var(--accent,#f2a03d);outline-offset:2px}
             #muPaperRow output{font-variant-numeric:tabular-nums;min-width:3.5em;display:inline-block}
           </style>
-          <div class="hint help">The song as sheet music. <b>Write</b> composes a score from the Song tab's lyrics and
-            style, <b>Transcribe</b> reads one out of a recording (SheetSage2), and every generated song saves its score
-            beside the audio - pick it under <b>Score</b>. <b>Save PDF</b> keeps the pages in the project's pdf folder.</div>
+          <div class="hint help"><b>✨ Create</b> takes a song - from the project, or 📂 from this computer - splits it into its
+            layers (their waveforms show under the player), writes its sheet music and puts the lyrics under the notes: the
+            Song tab's, or the words heard in the vocals. <b>Write from lyrics</b> composes a score with no recording.
+            <b>Save PDF</b> keeps the pages in the project's pdf folder.</div>
+          <!-- 2.739.0 (Tim: "add a button - Create - this will use the audio file + lyrics from song or loaded file or
+               transcribed file, split the stems show the different waveforms and create the sheet music - i think this will
+               make it less complicated"): ext/musicdock/sheetcreate.js -->
           <div class="muTb" id="muSheetMake" role="group" aria-label="Make a score">
-            <button class="ghost muPri" id="goSheetWrite" type="button" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write from lyrics</button>
+            <label class="muIn">Song
+              <select id="muCreateSrc" title="The song to make the sheet music of - any song in the project (the Song tab's title picks its own), or one from this computer"><option value="">— songs load with the list —</option></select></label>
+            <input type="file" id="muSheetRef" accept="audio/*" hidden>
+            <button class="ghost muPri" id="goSheetCreate" type="button" title="Split the song into its layers, show their waveforms, write its sheet music and put the lyrics under the notes - one press">✨ Create</button>
+            <span id="muCreateSteps" class="muSteps" aria-live="polite" hidden></span>
             <span class="muSep"></span>
-            <label class="ghost" id="muSheetRefL" title="The recording to transcribe - an audio file from this computer">🎵 <span id="muSheetRefName">Audio file…</span><input type="file" id="muSheetRef" accept="audio/*" hidden></label>
-            <button class="ghost" id="goSheetTranscribe" type="button" title="Transcribe the picked audio file into ABC notation">📜 Transcribe</button>
+            <button class="ghost" id="goSheetWrite" type="button" title="Compose the ABC score from the Song tab's lyrics + style (no audio is rendered)">🎼 Write from lyrics</button>
             <span id="muSheetStatus" class="muMeta">idle</span>
           </div>
           <div class="muTb" id="muScoreBar" role="group" aria-label="The score">

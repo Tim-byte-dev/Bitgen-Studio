@@ -15060,83 +15060,83 @@
   },
   {
    "s": "no scores in the project yet —",
-   "src": "ext/musicdock/muscore.js:168"
+   "src": "ext/musicdock/muscore.js:169"
   },
   {
    "s": "Writing",
-   "src": "ext/musicdock/muscore.js:195"
+   "src": "ext/musicdock/muscore.js:197"
   },
   {
    "s": "Full score",
-   "src": "ext/musicdock/muscore.js:228"
+   "src": "ext/musicdock/muscore.js:230"
   },
   {
    "s": "vocal",
-   "src": "ext/musicdock/muscore.js:229"
+   "src": "ext/musicdock/muscore.js:231"
   },
   {
    "s": "Every staff together",
-   "src": "ext/musicdock/muscore.js:229"
+   "src": "ext/musicdock/muscore.js:231"
   },
   {
    "s": "the notes (no recording)",
-   "src": "ext/musicdock/muscore.js:275"
+   "src": "ext/musicdock/muscore.js:277"
   },
   {
    "s": "Playing the written notes - pick the recording under",
-   "src": "ext/musicdock/muscore.js:319"
-  },
-  {
-   "s": "to hear the song itself, in its layers",
-   "src": "ext/musicdock/muscore.js:319"
-  },
-  {
-   "s": "Split into layers",
-   "src": "ext/musicdock/muscore.js:324"
-  },
-  {
-   "s": "vocals + instruments now - split it for the drums, the bass and the rest",
-   "src": "ext/musicdock/muscore.js:324"
-  },
-  {
-   "s": "one recording - split it to hear each layer on its own",
-   "src": "ext/musicdock/muscore.js:324"
-  },
-  {
-   "s": "Song",
    "src": "ext/musicdock/muscore.js:325"
   },
   {
+   "s": "to hear the song itself, in its layers",
+   "src": "ext/musicdock/muscore.js:325"
+  },
+  {
+   "s": "Split into layers",
+   "src": "ext/musicdock/muscore.js:330"
+  },
+  {
+   "s": "vocals + instruments now - split it for the drums, the bass and the rest",
+   "src": "ext/musicdock/muscore.js:330"
+  },
+  {
+   "s": "one recording - split it to hear each layer on its own",
+   "src": "ext/musicdock/muscore.js:330"
+  },
+  {
+   "s": "Song",
+   "src": "ext/musicdock/muscore.js:331"
+  },
+  {
    "s": "Splitting",
-   "src": "ext/musicdock/muscore.js:387"
+   "src": "ext/musicdock/muscore.js:393"
   },
   {
    "s": "Pause",
-   "src": "ext/musicdock/muscore.js:494"
+   "src": "ext/musicdock/muscore.js:500"
   },
   {
    "s": "Play - the notes light up as they sound",
-   "src": "ext/musicdock/muscore.js:494"
+   "src": "ext/musicdock/muscore.js:500"
   },
   {
    "s": "bar –",
-   "src": "ext/musicdock/muscore.js:510"
+   "src": "ext/musicdock/muscore.js:516"
   },
   {
    "s": "picture",
-   "src": "ext/musicdock/muscore.js:565"
+   "src": "ext/musicdock/muscore.js:571"
   },
   {
    "s": "From this computer",
-   "src": "ext/musicdock/muscore.js:606"
+   "src": "ext/musicdock/muscore.js:612"
   },
   {
    "s": "Navy",
-   "src": "ext/musicdock/muscore.js:610"
+   "src": "ext/musicdock/muscore.js:616"
   },
   {
    "s": "Audio file",
-   "src": "ext/musicdock/muscore.js:690"
+   "src": "ext/musicdock/muscore.js:696"
   },
   {
    "s": "the lyrics box is empty — the video follows the song's words",
@@ -15152,63 +15152,63 @@
   },
   {
    "s": "loading",
-   "src": "ext/musicdock/musicdock.js:260"
+   "src": "ext/musicdock/musicdock.js:263"
   },
   {
    "s": "none yet — Save one first —",
-   "src": "ext/musicdock/musicdock.js:264"
+   "src": "ext/musicdock/musicdock.js:267"
   },
   {
    "s": "no rendered audio found for this title — load the song, press Generate, then reopen this list (renders from before the title feature carry no title in their filename and cannot be matched)",
-   "src": "ext/musicdock/musicdock.js:298"
+   "src": "ext/musicdock/musicdock.js:301"
   },
   {
    "s": "no render record yet — press Generate; the record is written when the song finishes",
-   "src": "ext/musicdock/musicdock.js:316"
+   "src": "ext/musicdock/musicdock.js:319"
   },
   {
    "s": "Load this song into the dock",
-   "src": "ext/musicdock/musicdock.js:337"
+   "src": "ext/musicdock/musicdock.js:340"
   },
   {
    "s": "the songs endpoint did not answer — is the app server running",
-   "src": "ext/musicdock/musicdock.js:356"
+   "src": "ext/musicdock/musicdock.js:359"
   },
   {
    "s": "press 🆕 New again to clear the song",
-   "src": "ext/musicdock/musicdock.js:404"
+   "src": "ext/musicdock/musicdock.js:407"
   },
   {
    "s": "new song — the page is blank",
-   "src": "ext/musicdock/musicdock.js:411"
+   "src": "ext/musicdock/musicdock.js:414"
   },
   {
    "s": "pick a reference track first",
-   "src": "ext/musicdock/musicdock.js:418"
+   "src": "ext/musicdock/musicdock.js:421"
   },
   {
    "s": "done — see the gallery's Audio tab (the .abc score is saved beside the song)",
-   "src": "ext/musicdock/musicdock.js:422"
+   "src": "ext/musicdock/musicdock.js:425"
   },
   {
    "s": "done, but no .abc landed — see the Console",
-   "src": "ext/musicdock/musicdock.js:431"
+   "src": "ext/musicdock/musicdock.js:434"
   },
   {
    "s": "pick an audio file first",
-   "src": "ext/musicdock/musicdock.js:450"
+   "src": "ext/musicdock/musicdock.js:453"
   },
   {
    "s": "nothing to copy yet",
-   "src": "ext/musicdock/musicdock.js:457"
+   "src": "ext/musicdock/musicdock.js:460"
   },
   {
    "s": "copied",
-   "src": "ext/musicdock/musicdock.js:459"
+   "src": "ext/musicdock/musicdock.js:462"
   },
   {
    "s": "copy failed — select the text by hand",
-   "src": "ext/musicdock/musicdock.js:460"
+   "src": "ext/musicdock/musicdock.js:463"
   },
   {
    "s": "Plain",
@@ -15249,6 +15249,22 @@
   {
    "s": "Night",
    "src": "ext/musicdock/scorepaper.js:26"
+  },
+  {
+   "s": "A song from this computer",
+   "src": "ext/musicdock/sheetcreate.js:34"
+  },
+  {
+   "s": "no songs in the project yet —",
+   "src": "ext/musicdock/sheetcreate.js:34"
+  },
+  {
+   "s": "Split",
+   "src": "ext/musicdock/sheetcreate.js:48"
+  },
+  {
+   "s": "Creating",
+   "src": "ext/musicdock/sheetcreate.js:71"
   },
   {
    "s": "Spectrum bars",
@@ -23958,51 +23974,51 @@
   },
   {
    "p": "{0} - page {1}1 of {2}",
-   "src": "ext/musicdock/muscore.js:127"
+   "src": "ext/musicdock/muscore.js:128"
   },
   {
    "p": "pick a score ({0}) —",
-   "src": "ext/musicdock/muscore.js:168"
+   "src": "ext/musicdock/muscore.js:169"
   },
   {
    "p": "The {0} part on its own sheet - with the words",
-   "src": "ext/musicdock/muscore.js:229"
+   "src": "ext/musicdock/muscore.js:231"
   },
   {
    "p": "The {0} part on its own sheet",
-   "src": "ext/musicdock/muscore.js:229"
+   "src": "ext/musicdock/muscore.js:231"
   },
   {
    "p": "{0} · 4 layers",
-   "src": "ext/musicdock/muscore.js:275"
+   "src": "ext/musicdock/muscore.js:277"
   },
   {
    "p": "{0} · 2 layers",
-   "src": "ext/musicdock/muscore.js:275"
+   "src": "ext/musicdock/muscore.js:277"
   },
   {
    "p": "Split {0} into four layers - vocals, drums, bass and the other instruments (demucs, on this computer) - each with its waveform and on / off",
-   "src": "ext/musicdock/muscore.js:324"
+   "src": "ext/musicdock/muscore.js:330"
   },
   {
    "p": "{0} ({1}) - click: on / off · Shift+click: only this one",
-   "src": "ext/musicdock/muscore.js:326"
+   "src": "ext/musicdock/muscore.js:332"
   },
   {
    "p": "{0} - click to play from there",
-   "src": "ext/musicdock/muscore.js:327"
+   "src": "ext/musicdock/muscore.js:333"
   },
   {
    "p": "bar {0}1 / {1}",
-   "src": "ext/musicdock/muscore.js:510"
+   "src": "ext/musicdock/muscore.js:516"
   },
   {
    "p": "{0} pt",
-   "src": "ext/musicdock/muscore.js:575"
+   "src": "ext/musicdock/muscore.js:581"
   },
   {
    "p": "{0} paper",
-   "src": "ext/musicdock/muscore.js:615"
+   "src": "ext/musicdock/muscore.js:621"
   },
   {
    "p": "writing the screenplay… ({0} scenes; a big song can take a few minutes)",
@@ -24018,31 +24034,35 @@
   },
   {
    "p": "{0} ({1} lyric chars)",
-   "src": "ext/musicdock/musicdock.js:275"
+   "src": "ext/musicdock/musicdock.js:278"
   },
   {
    "p": "Play {0}",
-   "src": "ext/musicdock/musicdock.js:281"
+   "src": "ext/musicdock/musicdock.js:284"
   },
   {
    "p": "No rendered audio for {0}",
-   "src": "ext/musicdock/musicdock.js:299"
+   "src": "ext/musicdock/musicdock.js:302"
   },
   {
    "p": "Details of {0}",
-   "src": "ext/musicdock/musicdock.js:310"
+   "src": "ext/musicdock/musicdock.js:313"
   },
   {
    "p": "Load {0}",
-   "src": "ext/musicdock/musicdock.js:338"
+   "src": "ext/musicdock/musicdock.js:341"
   },
   {
    "p": "done — {0} (also in the project's output folder)",
-   "src": "ext/musicdock/musicdock.js:439"
+   "src": "ext/musicdock/musicdock.js:442"
   },
   {
    "p": "done, but {0} would not load",
-   "src": "ext/musicdock/musicdock.js:442"
+   "src": "ext/musicdock/musicdock.js:445"
+  },
+  {
+   "p": "{0} · split",
+   "src": "ext/musicdock/sheetcreate.js:35"
   },
   {
    "p": "Ask {0} LLMs the prompt, one after the other - each reply shows in the chat under its LLM's name; pick the one you like. Every round is recorded (🏆 = the best LLM for each job)",

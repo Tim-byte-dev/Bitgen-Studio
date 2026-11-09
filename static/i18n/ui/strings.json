@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5594,
+ "count": 5596,
  "strings": [
   {
    "s": "0 (auto)",
@@ -3578,15 +3578,6 @@
    ],
    "where": [
     "label.f in #chset"
-   ]
-  },
-  {
-   "s": "Audio file",
-   "kinds": [
-    "text"
-   ],
-   "where": [
-    "label.f in #muPaneSheet"
    ]
   },
   {
@@ -33260,6 +33251,15 @@
    ]
   },
   {
+   "s": "Split the song into its layers, show their waveforms, write its sheet music and put the lyrics under the notes - one press",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#goSheetCreate.ghost.muPri"
+   ]
+  },
+  {
    "s": "Spot",
    "kinds": [
     "text"
@@ -36200,15 +36200,6 @@
    ]
   },
   {
-   "s": "The recording to transcribe - an audio file from this computer",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "label#muSheetRefL.ghost"
-   ]
-  },
-  {
    "s": "The render size (megapixels) - smaller is faster; the result is scaled to the picture",
    "kinds": [
     "title"
@@ -36487,6 +36478,15 @@
    ],
    "where": [
     "select#muPlaySound"
+   ]
+  },
+  {
+   "s": "The song to make the sheet music of - any song in the project (the Song tab's title picks its own), or one from this computer",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#muCreateSrc"
    ]
   },
   {
@@ -37439,15 +37439,6 @@
    ],
    "where": [
     "button#mv_quick.ghost"
-   ]
-  },
-  {
-   "s": "Transcribe the picked audio file into ABC notation",
-   "kinds": [
-    "title"
-   ],
-   "where": [
-    "button#goSheetTranscribe.go"
    ]
   },
   {
@@ -43074,6 +43065,15 @@
   },
   {
    "s": "composes a score from the Song tab's lyrics and style",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
+   ]
+  },
+  {
+   "s": "composes a score with no recording",
    "kinds": [
     "text"
    ],
@@ -48999,6 +48999,15 @@
    ]
   },
   {
+   "s": "songs load with the list —",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #muCreateSrc"
+   ]
+  },
+  {
    "s": "sound",
    "kinds": [
     "text"
@@ -49545,6 +49554,15 @@
    ],
    "where": [
     "option in #spTag"
+   ]
+  },
+  {
+   "s": "takes a song - from the project, or 📂 from this computer - splits it into its layers (their waveforms show under the player), writes its sheet music and puts the lyrics under the notes: the Song tab's, or the words heard in the vocals",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div.hint.help in #muPaneSheet"
    ]
   },
   {

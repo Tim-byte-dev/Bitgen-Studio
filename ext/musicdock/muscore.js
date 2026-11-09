@@ -112,6 +112,7 @@
       return null;
     }
     S.result = r; S.title = r.title || titleFrom(S.name) || "Sheet music";
+    S.preview = null;                                    // 2.739.0: a score plays its own song from here
     partsBuild();
     if (r.empty) {
       empty((S.name || "This score") + " has no notes to draw - ‹/› ABC text shows what it holds.");
@@ -176,6 +177,7 @@
       });
       if (keep && files.some((f) => f.name === keep)) sel.value = keep;
       S.listed = true;
+      try { doc.dispatchEvent(new CustomEvent("h3:muscores")); } catch (e) { /* old browser */ }   // 2.739.0: ✨ Create's Song list follows
       return files;
     }).catch(() => []);
   }
@@ -309,10 +311,14 @@
       g.fillRect(x, mid - h / 2, bar, h);
     }
   }
+  /** 2.739.0: the lanes of a song before any score plays it (✨ Create shows them while the sheet music is written) */
+  function previewLayers(song) { S.preview = song || null; layersBuild(); }
+  function linkSong(score, song) { if (score && song) songMapSave(score, keyOf(song)); }
   function layersBuild() {
     const box = $("muLayers");
     if (!box) return;
-    const song = PB.player && PB.player.mode === "song" ? curSong() : null;
+    const live = PB.player && PB.player.mode === "song" ? curSong() : null;
+    const song = live || S.preview || null, still = !live;   // still = waveforms only, nothing playing them yet
     if (!song) {
       const n = (S.songs || []).length;
       box.hidden = !(n && S.result && !S.result.empty);
@@ -323,9 +329,9 @@
     box.hidden = false;
     box.innerHTML = lanes.map((l) => `<div class="muLane${S.trackOff[l.key] ? " off" : ""}" data-lane="${l.key}">`
       + (l.key === "song" ? `<span class="muLaneName" title="${esc(l.name)}">Song</span>`
-        : `<button type="button" class="ghost muMix" data-track="${l.key}" aria-pressed="${!S.trackOff[l.key]}" title="${esc(LAYER_NAME[l.key])} (${esc(l.name)}) - click: on / off · Shift+click: only this one">${LAYER_NAME[l.key]}</button>`)
+        : `<button type="button" class="ghost muMix" data-track="${l.key}" aria-pressed="${!S.trackOff[l.key]}"${still ? " disabled" : ""} title="${esc(LAYER_NAME[l.key])} (${esc(l.name)}) - click: on / off · Shift+click: only this one">${LAYER_NAME[l.key]}</button>`)
       + `<div class="muWave" data-key="${l.key}" title="${esc(l.name)} - click to play from there"><canvas></canvas><i class="muPlayed"></i><i class="muHead"></i></div></div>`).join("")
-      + (four ? "" : `<div class="muLaneBar"><button type="button" class="ghost" id="muStemSep" title="Split ${esc(song.name)} into four layers - vocals, drums, bass and the other instruments (demucs, on this computer) - each with its waveform and on / off">✂ Split into layers</button>`
+      + (four || still ? "" : `<div class="muLaneBar"><button type="button" class="ghost" id="muStemSep" title="Split ${esc(song.name)} into four layers - vocals, drums, bass and the other instruments (demucs, on this computer) - each with its waveform and on / off">✂ Split into layers</button>`
         + `<span class="muMeta">${song.layers ? "vocals + instruments now - split it for the drums, the bass and the rest" : "one recording - split it to hear each layer on its own"}</span></div>`);
     lanes.forEach((l) => { const c = box.querySelector(`[data-lane="${l.key}"] canvas`); peaksOf(l.src, l.name).then((w) => drawWave(c, w, l.key)); });
     lanesPaint();
@@ -731,5 +737,5 @@
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words, ICONS, setPart, separate };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words, ICONS, setPart, separate, previewLayers, linkSong, baseOf, keyOf, urlOf };
 }(typeof window !== "undefined" ? window : this));

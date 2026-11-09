@@ -7,6 +7,7 @@
     "musicdock.js",
     "scorepaper.js",
     "scoreplayer.js",
-    "muscore.js"
+    "muscore.js",
+    "sheetcreate.js"
   ]
 }

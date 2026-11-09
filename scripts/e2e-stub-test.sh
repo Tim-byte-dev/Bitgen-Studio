@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.739.0 (Tim: "add a button - Create - this will use the audio file + lyrics from song or loaded file or transcribed file,
+# split the stems show the different waveforms and create the sheet music - i think this will make it less complicated")
+node scripts/test-ui739-ui.js > /tmp/ui739ui.log 2>&1 \
+  && ok "2.739.0 browser test: Song · ✨ Create · Write from lyrics (the Song tab's title picks the song); Create splits into 4 layers (waveforms at once), hears the words in the vocals when the lyrics box is empty, transcribes the song itself, opens the score with the words playing that song in its layers; split / written lyrics skipped next time; 📂 a song from this computer copied in; a failing split stops there - or SKIP" \
+  || { bad "2.739.0 Create browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui739ui.log | head -14; }
 # ---- 2.738.0 (Tim: "when playing in sheet music play the actual song in it's separated layers, show the layers as waveforms.
 # right now it sounds like a 1980's watch")
 node scripts/test-ui738-ui.js > /tmp/ui738ui.log 2>&1 \

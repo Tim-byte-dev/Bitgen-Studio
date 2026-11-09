@@ -7888,6 +7888,19 @@ playing (2.725.1).
   the Stems docker shows its **Vocals** and **Instruments** until you split it into four.
 - **Sync (s)** still lines the song up with the notes when the song has an intro before bar 1.
 
+## ✨ Create: a song's layers and its sheet music in one press (2.739.0)
+
+- In the Sheet Music tab pick the **Song** - any song in the project (the one with the Song tab's title is picked for
+  you), or **📂 A song from this computer…**, which copies it into the project - and press **✨ Create**. Three steps
+  run, each ticked off beside the button:
+  1. **Split** - the song into Vocals, Drums, Bass and Other (on this computer); their waveforms show under the player
+     straight away. A song that is already split skips this.
+  2. **Lyrics** - the Song tab's lyrics; when that box is empty, the words are heard in the vocal layer and put in it.
+  3. **Sheet music** - written from the song itself. It opens with the words under the notes, and plays that song in its
+     layers.
+- If a step cannot run (the separation is not installed, ComfyUI is not running…), Create stops there and says why.
+- **🎼 Write from lyrics** is still there for a score with no recording: it composes one from the lyrics and the style.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

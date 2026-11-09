@@ -62,18 +62,17 @@ const ABC = "X:1\nT:Layout\nM:4/4\nL:1/4\nQ:1/4=120\nK:C\nV:1 name=Vocal\nC D E 
         widest: Math.max(...btns.map((x) => Math.round(r(x).width))),
         wide: btns.filter((x) => r(x).width > 220).map((x) => x.id || x.textContent.trim()),
         pri: [...pane.querySelectorAll(".muPri")].map((x) => x.id).sort(),
-        ghost: ["goSheetWrite", "goSheetTranscribe", "muScorePdf"].every((id) => document.getElementById(id).classList.contains("ghost")),
-        makeRow: ["goSheetWrite", "muSheetRefL", "goSheetTranscribe"].map((id) => Math.round(r(document.getElementById(id)).top)),
+        ghost: ["goSheetCreate", "goSheetWrite", "muScorePdf"].every((id) => document.getElementById(id).classList.contains("ghost")),
+        makeRow: ["muCreateSrc", "goSheetCreate", "goSheetWrite"].map((id) => { const q = r(document.getElementById(id)); return Math.round(q.top + q.height / 2); }),
         seps: pane.querySelectorAll(".muSep").length,
         fileShown: getComputedStyle(document.getElementById("muSheetRef")).display,
       };
     });
     check("no full-width .go bars in the tab; every button narrow in a wide docker (" + L.paneW + " px)", L.go === 0 && L.paneW > 1000 && L.widest < 220 && !L.wide.length, L);
-    check("Write / Transcribe / Save PDF are normal .ghost buttons; Write and Save PDF outlined as the main actions", L.ghost && L.pri.join() === "goSheetWrite,muScorePdf", L);
-    check("make a score: Write · Audio file… · Transcribe on one row; thin dividers between the groups", Math.max(...L.makeRow) - Math.min(...L.makeRow) <= 2 && L.seps >= 4, L);
-    check("the audio file is picked through a button (the browser's file box hidden)", L.fileShown === "none", L);
-    await p.setInputFiles("#muSheetRef", { name: "my take.wav", mimeType: "audio/wav", buffer: Buffer.alloc(64) });
-    check("…the picked file's name shows on it", (await ev(() => document.getElementById("muSheetRefName").textContent)) === "my take.wav");
+    // 2.739.0: the make bar is Song · ✨ Create · Write from lyrics (Create took over Audio file… + Transcribe)
+    check("Create / Write / Save PDF are normal .ghost buttons; ✨ Create and Save PDF outlined as the main actions", L.ghost && L.pri.join() === "goSheetCreate,muScorePdf", L);
+    check("make a score: Song · ✨ Create · Write from lyrics on one row; thin dividers between the groups", Math.max(...L.makeRow) - Math.min(...L.makeRow) <= 2 && L.seps >= 4, L);
+    check("a song from this computer is picked through the Song list (the browser's file box hidden)", L.fileShown === "none", L);
 
     const T = await ev(() => {
       const bar = document.getElementById("muPlayBar"), view = bar.closest(".muViewer"), bs = [...bar.querySelectorAll("button[data-act]")];

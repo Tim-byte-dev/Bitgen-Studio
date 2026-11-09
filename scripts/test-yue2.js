@@ -174,7 +174,7 @@ print(json.dumps(res))
     && H.includes('id="muPaneSong"'));
   check("dock: the Cover and Sheet controls exist (ref pickers, buttons, the ABC pane)",
     H.includes('id="muCoverRef"') && H.includes('id="goCover"')
-    && H.includes('id="goSheetWrite"') && H.includes('id="goSheetTranscribe"')
+    && H.includes('id="goSheetWrite"') && H.includes('id="goSheetCreate"')   /* 2.739.0: ✨ Create took over Transcribe */
     && H.includes('id="muSheetRef"') && H.includes('id="muAbc"')
     && H.includes('id="muAbcCopy"'));
   const J = read("ext", "musicdock", "musicdock.js");

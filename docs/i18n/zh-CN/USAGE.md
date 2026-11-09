@@ -4754,6 +4754,16 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 还没分开的歌曲会显示一条 **Song** 轨道和 **✂ Split into layers**：它在这台电脑上（demucs）把歌曲分成 **Vocals、Drums、Bass** 和 **Other**（其余所有），需要一两分钟。已在 Stems 面板中分离过的歌曲，在分成四个之前显示 **Vocals** 和 **Instruments**。
 - 歌曲在第 1 小节前有前奏时，仍用 **Sync (s)** 把歌曲和音符对齐。
 
+## ✨ Create：一键得到歌曲的图层和乐谱（2.739.0）
+<!-- en: create-a-song-s-layers-and-its-sheet-music-in-one-press-2-739-0 9541017c13fa -->
+
+- 在 Sheet Music 标签页选择 **Song** - 项目中的任何歌曲（与 Song 标签页标题相同的歌曲会自动选中），或 **📂 A song from this computer…**（把它复制到项目中）- 然后按 **✨ Create**。会运行三个步骤，在按钮旁逐一打勾：
+  1. **Split** - 把歌曲分成 Vocals、Drums、Bass 和 Other（在这台电脑上）；它们的波形立即显示在播放器下方。已经分开的歌曲会跳过这一步。
+  2. **Lyrics** - Song 标签页的歌词；该框为空时，会从人声图层中听出歌词并填进去。
+  3. **Sheet music** - 根据歌曲本身写出。打开时音符下方带有歌词，并按图层播放这首歌。
+- 如果某一步无法运行（未安装分离工具、ComfyUI 没有运行…），Create 会停在那里并说明原因。
+- 没有录音的乐谱仍可使用 **🎼 Write from lyrics**：它根据歌词和风格作曲。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

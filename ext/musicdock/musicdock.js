@@ -147,10 +147,12 @@ $("muFormat") && ($("muFormat").onchange = function () {
 function muVariantJob(opts) {
   var status = $(opts.statusId);
   var say = function (t) { if (status) status.textContent = t; };
+  // 2.739.0: opts.fail(error) - the job did not end done (✨ Create waits on it: ext/musicdock/sheetcreate.js)
+  var fail = function (t) { say(t); if (opts.fail) { try { opts.fail(new Error(t)); } catch (e) { /* the caller's */ } } };
   var styleId = ($("musicSel") || {}).value;
-  if (!styleId) { say("pick a music style first (Settings → Music)"); return; }
+  if (!styleId) { fail("pick a music style first (Settings → Music)"); return; }
   var lyrics = String((($("muLyrics") || {}).value) || "").trim();
-  if (opts.needLyrics && !lyrics) { say("write the lyrics on the Song tab first"); return; }
+  if (opts.needLyrics && !lyrics) { fail("write the lyrics on the Song tab first"); return; }
   var run = function () {
     var body, headers = null;
     if (opts.refFile) {
@@ -173,7 +175,7 @@ function muVariantJob(opts) {
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (rr) {
         if (opts.button) opts.button.disabled = false;
-        if (!rr.ok) { say("refused: " + (rr.j.error || "request failed")); return; }
+        if (!rr.ok) { fail("refused: " + (rr.j.error || "request failed")); return; }
         var id = rr.j.id;
         say("queued · job " + id);
         try { refreshJobs(); selectJob(id); } catch (e) { /* console shut: fine */ }
@@ -181,22 +183,23 @@ function muVariantJob(opts) {
           // 2.574.0: progress is {step, total, …} (it read "[object Object]") - "step n of total" (static/stepstext.js)
           if (jj.status === "running") say(opts.doing + " · job " + id + (window.H3Steps ? window.H3Steps.tag(jj.progress) : ""));
         }).then(function (st) {
-          if (st !== "done") { say(st + " · job " + id + " — open the Console for the log"); return; }
+          if (st !== "done") { fail(st + " · job " + id + " — open the Console for the log"); return; }
           fetch("/api/jobs/" + id).then(function (r) { return r.json(); })
             .then(function (job) { say("done · job " + id); if (opts.done) opts.done(job); })
-            .catch(function () { say("done · job " + id); });
-        }).catch(function () { say("job " + id + " — status lost; see the Console"); });
+            .catch(function () { fail("done · job " + id + " — but its result could not be read"); });
+        }).catch(function () { fail("job " + id + " — status lost; see the Console"); });
       })
       .catch(function (er) {
         if (opts.button) opts.button.disabled = false;
-        say("failed: " + (er.message || er));
+        fail("failed: " + (er.message || er));
       });
   };
   // ComfyUI must be up (the Song tab's own rule); ensureComfyReady is core's
   var ready = (typeof ensureComfyReady === "function")
     ? ensureComfyReady({ button: opts.button, need: true }) : Promise.resolve(true);
-  Promise.resolve(ready).then(function (up) { if (up) run(); });
+  Promise.resolve(ready).then(function (up) { if (up) run(); else fail("ComfyUI is not running - start it (Settings ▸ ComfyUI) and press again"); });
 }
+window.MuVariantJob = muVariantJob;   // 2.739.0: ✨ Create (sheetcreate.js) runs the transcription through the same route
 
 /* --------------- 2.241.0: New / Save / Load — the song as a file -------- */
 /* The song = the dock's working state: lyrics + caption + style + length +
