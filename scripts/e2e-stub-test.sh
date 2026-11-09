@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.734.0 (Tim: "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that is being
+# worked on in the lyrics input")
+node scripts/test-words734.js > /tmp/words734.log 2>&1 \
+  && ok "2.734.0 words under the sheet music: syllables (English rules of thumb, typed hyphens, a CJK character each, punctuation on the ends), the lyrics' [tag] sections, one syllable a sung note of the vocal staff (ties / slurs hold), [verse] -> % verse, a chorus re-sung, no tags = one run; the bars widen, the words centred under their notes below the staff with hyphens, in the SVG and the PDF" \
+  || { bad "2.734.0 words under the sheet music"; grep -a "^FAIL" -A1 /tmp/words734.log | head -12; }
+node scripts/test-ui734-ui.js > /tmp/ui734ui.log 2>&1 \
+  && ok "2.734.0 browser test: the 'words' tick (off at first) lays the Song tab's lyrics under the vocal staff verse / chorus with hyphens, the status counts them, editing the lyrics redraws, ⛶ Read + 💾 Save PDF carry them, empty lyrics said, the tick kept after a reload, untick = gone - or SKIP without playwright / a studio" \
+  || { bad "2.734.0 words browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui734ui.log | head -14; }
 # ---- 2.733.0 (Tim: "if we select an image thumbnail and press the enhance buton can we upscale the image" + "in sheet music
 # tab add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the songs sheet music and
 # highlight the notes as the song is played")

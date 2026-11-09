@@ -16,6 +16,7 @@
  *   MuScore.savePdf()               -> Promise<{name, size, pages} | null>
  *   MuScore.openView()              ⛶ Read: the pages full size in a dialog
  *   MuScore.setPaper(settings)      🎨 Paper (2.732.0): colour / material / size / strength / ink / in the PDF -> Promise<look>
+ *   MuScore.words(on?)              2.734.0: the Song tab's lyrics under the vocal staff (the "words" tick) -> on
  *   MuScore.player()                ▶ (2.733.0): the ScorePlayer of the score on show (⏮ ⏪ ▶/⏸ ⏩ ⏭, the notes lit as
  *                                   they sound; the song beside the .abc, or the notes played by the browser)
  *   MuScore.state                   {text, name, title, result}
@@ -96,7 +97,8 @@
     if (pre) pre.textContent = S.text || "— empty score —";
     if (!A) { empty("The sheet music engraver did not load - reload the page."); return null; }
     let r;
-    try { r = A.render(S.text, { title: titleFrom(S.name) }); } catch (e) {
+    const ly = wordsOn() ? lyricsNow() : "";             // 2.734.0: the words, when ticked
+    try { r = A.render(S.text, { title: titleFrom(S.name), lyrics: ly }); } catch (e) {
       S.result = null;
       empty("Could not draw " + (S.name || "this score") + ": " + ((e && e.message) || e) + " - ‹/› ABC text shows the notation.");
       status("could not draw " + (S.name || "the score"));
@@ -124,7 +126,9 @@
     if (view() && view().open) fillView();
     const sum = r.pages.length + " page" + (r.pages.length === 1 ? "" : "s") + ", " + r.measures + " bar" + (r.measures === 1 ? "" : "s")
       + ", " + r.voices + (r.voices === 1 ? " staff" : " staves");
-    status((how || "🎼 ") + (S.name || S.title) + " - " + sum + (r.warnings.length ? " (" + r.warnings.join("; ") + ")" : ""));
+    const wd = !wordsOn() ? "" : !ly.trim() ? " · words: the Song tab's lyrics are empty"
+      : r.words ? ` · words: ${r.words.placed} of ${r.words.notes} sung notes under ${r.words.voice}` + (r.words.used < r.words.syllables ? ` (${r.words.syllables - r.words.used} syllable${r.words.syllables - r.words.used === 1 ? "" : "s"} more than the notes)` : "") : "";
+    status((how || "🎼 ") + (S.name || S.title) + " - " + sum + (r.warnings.length ? " (" + r.warnings.join("; ") + ")" : "") + wd);
     const sel = $("muScoreList");
     if (sel && S.name && Array.prototype.some.call(sel.options, (o) => o.value === S.name)) sel.value = S.name;
     playSetup();
@@ -197,6 +201,25 @@
       .catch((e) => { status("⚠ the PDF was not saved: " + ((e && e.message) || e)); return null; })
       .finally(() => { btn.disabled = false; btn.textContent = was; });
   }
+
+  // 🗣 WORDS (2.734.0, Tim: "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that
+  // is being worked on in the lyrics input"): the tick puts the Song tab's lyrics (#muLyrics) under the vocal staff
+  // (AbcScore.render's lyrics); ticking, unticking or editing the lyrics draws the score again. The tick is kept per viewer.
+  const WORDS_KEY = "h3.muScoreWords";
+  function wordsOn() { const c = $("muScoreWords"); return !!(c && c.checked); }
+  function lyricsNow() { const t = $("muLyrics"); return t ? String(t.value || "") : ""; }
+  function redraw() { if (S.text) show(S.text, S.name, "🎼 "); }
+  function words(on) {
+    const c = $("muScoreWords");
+    if (c && on != null) { c.checked = !!on; try { root.localStorage.setItem(WORDS_KEY, c.checked ? "1" : "0"); } catch (e) { /* this page only */ } redraw(); }
+    return wordsOn();
+  }
+  let lyrT = 0;
+  doc.addEventListener("input", (e) => {                 // the lyrics edited while the words show: drawn again a moment later
+    if (!e.target || e.target.id !== "muLyrics" || !wordsOn() || !S.text) return;
+    clearTimeout(lyrT);
+    lyrT = setTimeout(() => { if (!(PB.player && PB.player.playing())) redraw(); }, 700);
+  });
 
   // ▶ PLAYBACK (2.733.0, Tim: "add media buttons play/pause, rewind,rewind to start,foward , foward to end buttons for the
   // songs sheet music and highlight the notes as the song is played"): ext/musicdock/scoreplayer.js. The song beside the
@@ -440,6 +463,7 @@
     const t = e.target;
     if (!t) return;
     if (t.id === "muScoreList") { if (t.value) load(t.value); return; }
+    if (t.id === "muScoreWords") { try { root.localStorage.setItem(WORDS_KEY, t.checked ? "1" : "0"); } catch (er) { /* this page only */ } redraw(); test("mu_score_words", t.checked ? "on" : "off"); return; }
     if (t.id === "muPlaySound") { const at = PB.player ? Math.max(0, PB.player.position()) : 0; playMake(at); return; }
     if (t.id === "muPlaySync") {
       const v = Math.max(-60, Math.min(120, parseFloat(t.value) || 0));
@@ -475,11 +499,12 @@
     refresh().then((files) => { if (!S.text && files.length) load(files[0].name); });
   }
   function boot() {
+    try { const c = $("muScoreWords"); if (c) c.checked = root.localStorage.getItem(WORDS_KEY) === "1"; } catch (e) { /* default off */ }
     paperBuild();                                         // the 🎨 Paper row's lists (shown or not)
     if (P()) setPaper(P().load(), true);                  // the paper this viewer chose last time
     const p = $("muPaneSheet"); if (p && !p.classList.contains("hidden")) first();
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", () => setTimeout(boot, 400)); else setTimeout(boot, 400);
 
-  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct };
+  root.MuScore = { show, load, refresh, savePdf, openView, setPaper, paperToggle, titleFrom, state: S, player: () => PB.player, playAct, words };
 }(typeof window !== "undefined" ? window : this));

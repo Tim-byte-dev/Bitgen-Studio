@@ -7829,6 +7829,19 @@ playing (2.725.1).
   It is remembered for each score.
 - The speed comes from the score's tempo (Q:); a score with none plays at 120 beats a minute.
 
+## 🗣 The words under the sheet music (2.734.0)
+
+- Tick **words** in the Sheet Music tab and the lyrics in the Song tab's lyrics box - the song you are working on - go
+  under the notes of the vocal staff, one syllable to a note, with a hyphen between the syllables of a word.
+- They follow the sections: the lyrics' **[verse]**, **[chorus]** … tags are matched to the score's Verse, Chorus …
+  in order, and a chorus that comes back sings its words again. Lyrics or a score without sections are laid from the
+  first note on.
+- A note tied over from the one before, or inside a slur, holds the syllable before. Type hyphens yourself (se-ven,
+  Hal-le-lu-jah) where the automatic split is wrong. Chinese and Japanese lyrics get one character a note.
+- The status line says how many sung notes got words, and how many syllables were left over. Edit the lyrics and the
+  words are drawn again a moment later; untick to remove them. The words go into ⛶ Read and the saved PDF too (the PDF's
+  fonts have no Chinese or Japanese characters, so those show as ?).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

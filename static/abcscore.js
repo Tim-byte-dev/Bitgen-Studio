@@ -425,6 +425,79 @@
     return w / 1000 * z * (FONT_SCALE[f] || 1);
   }
 
+  // ───────────────────────────── the words (2.734.0) ─────────────────────────────
+  // Tim (verbatim): "can we add a checkbox in the sheetmusic tab to add the words, add the lyrics of the song that is being
+  // worked on in the lyrics input". The Song tab's lyrics ([verse] / [chorus] … tags on their own lines) are cut into
+  // syllables and laid one under each sung note of the vocal staff, section by section.
+  const CJK = /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7af\uff66-\uff9f]/;
+  const LETTER = "A-Za-z\u00c0-\u024f'\u2019";
+  /** one word -> its syllables (English rules of thumb; a CJK word = one syllable a character; punctuation kept on the ends) */
+  function syllables(word) {
+    const w = String(word || "");
+    if (!w) return [];
+    if (CJK.test(w)) {
+      const out = [];
+      for (const ch of w) { if (CJK.test(ch) || !out.length) out.push(ch); else out[out.length - 1] += ch; }
+      return out;
+    }
+    const m = new RegExp("^([^" + LETTER + "]*)([" + LETTER + "]+)([^" + LETTER + "]*)$").exec(w);
+    if (!m) return [w];
+    const pre = m[1], core = m[2], post = m[3], low = core.toLowerCase(), n = low.length;
+    const isV = (i) => i >= 0 && i < n && /[aeiouyàáâäãåæèéêëìíîïòóôõöùúûüÿ]/.test(low[i]) && !(low[i] === "y" && i === 0);
+    const groups = [];
+    for (let i = 0; i < n; i++) { if (isV(i)) { const st = i; while (isV(i + 1)) i++; groups.push({ a: st, b: i + 1 }); } }
+    const last = groups[groups.length - 1];
+    if (groups.length > 1 && last.a === n - 1 && low[n - 1] === "e" && !(n >= 3 && low[n - 2] === "l" && !isV(n - 3))) groups.pop();   // a silent final e
+    else if (groups.length > 1 && last.a === n - 2 && /e[ds]$/.test(low)
+      && (low[n - 1] === "d" ? !/[td]/.test(low[n - 3]) : !/[sxzgc]/.test(low[n - 3]) && !/(ch|sh)es$/.test(low))
+      && (isV(n - 4) || low[n - 4] === low[n - 3] || /^(lk|rk|sk|nk|nc|mp|rn|rm|rl|lm|wn|sh|ch|ng|ss)$/.test(low.slice(n - 4, n - 2)))) groups.pop();  // loved, called, walked, danced (not hundred, wanted)
+    if (groups.length < 2) return [w];
+    const cuts = [];
+    for (let k = 1; k < groups.length; k++) {
+      const a = groups[k - 1].b, b = groups[k].a, cons = low.slice(a, b);
+      let cut;
+      if (!cons.length) cut = b;                                                // li-on
+      else if (cons.length === 1) cut = a;                                      // ba-by
+      else if (k === groups.length - 1 && b === n - 1 && low.slice(n - 2) === "le") cut = b - 2;   // ta-ble
+      else if (/^(ch|sh|th|ph|wh|gh)$/.test(cons.slice(0, 2)) && cons.length === 2) cut = a;     // fa-ther
+      else if (/^(ck|ng|ght)/.test(cons)) cut = a + (cons.startsWith("ght") ? 3 : 2);             // pick-et, sing-er
+      else if (cons.length >= 3) cut = /^(bl|br|cl|cr|dr|fl|fr|gl|gr|pl|pr|sc|sk|sl|sm|sn|sp|st|sw|tr|tw|wr|th|ch|sh|ph)$/.test(cons.slice(-2)) ? b - 2 : b - 1;   // mon-ster, emp-ty
+      else cut = a + 1;                                                         // win-ter
+      cuts.push(cut);
+    }
+    if (/[^aeiouy]ing$/.test(low) && n > 4 && low.slice(n - 5, n - 3) !== "th") cuts[cuts.length - 1] = low[n - 4] === low[n - 5] && !isV(n - 4) ? n - 4 : n - 3;   // walk-ing, run-ning
+    const parts = [];
+    let from = 0;
+    cuts.forEach((c) => { if (c > from && c < n) { parts.push(core.slice(from, c)); from = c; } });
+    parts.push(core.slice(from));
+    parts[0] = pre + parts[0];
+    parts[parts.length - 1] += post;
+    return parts;
+  }
+  const secKey = (s) => String(s || "").toLowerCase().replace(/[^a-z\u00c0-\u024f\u3040-\u9fff]+/g, "");
+  /** the lyrics -> [{name, key, syl: [{s, end}]}] - a [tag] line starts a section; words are cut into syllables */
+  function lyricsSections(text) {
+    const out = [];
+    let cur = null;
+    const begin = (name) => { cur = { name, key: secKey(name), syl: [] }; out.push(cur); };
+    for (const raw of String(text || "").replace(/\r\n?/g, "\n").split("\n")) {
+      let line = raw.trim();
+      const tag = /^\[([^\]]{1,40})\]\s*/.exec(line);
+      if (tag) { begin(tag[1].trim()); line = line.slice(tag[0].length); }
+      if (!line) continue;
+      if (!cur) begin("");
+      for (const word of line.split(/\s+/)) {
+        if (!word || !/[\p{L}\p{N}]/u.test(word)) continue;
+        // a hyphen typed inside a word splits it there too (se-ven, Hal-le-lu-jah) - each piece cut further if it must
+        const pieces = word.split(/(?<=[^-])-(?=[^-])/);
+        const parts = [];
+        pieces.forEach((pc) => syllables(pc).forEach((x) => parts.push(x)));
+        parts.forEach((p, k) => cur.syl.push({ s: p, end: k === parts.length - 1 }));
+      }
+    }
+    return out.filter((x) => x.syl.length || x.key);
+  }
+
   // ───────────────────────────── the engraver ─────────────────────────────
   const DEF = { pageW: 595.28, pageH: 841.89, ml: 46, mr: 40, mt: 44, mb: 46, sp: 5.0 };
   const HEAD_W = 1.18, STEM_W = 0.12, BEAM_T = 0.48, BEAM_STEP = 0.75;
@@ -552,6 +625,52 @@
       });
     }));
 
+    // 2.734.0: the words under the vocal staff - one syllable to each sung note (a tied-over note or one inside a slur
+    // keeps the syllable before), section by section: [verse] -> the next % verse of the score, a repeated chorus re-sung
+    const LYR_Z = 10;
+    const vocal = Math.max(0, V.findIndex((v) => /vocal|voice|sing|vox|lead|lyric/i.test(v.name + " " + v.snm + " " + v.id)));
+    result.words = null;
+    if (o.lyrics && String(o.lyrics).trim()) {
+      const L = lyricsSections(o.lyrics);
+      const groups = [];                                   // the score's sections: {key, notes: [pieces]}
+      let g = { key: "", notes: [] }, open = 0;
+      groups.push(g);
+      info.forEach((inf, i) => {
+        if (inf.section) { g = { key: secKey(inf.section), notes: [] }; groups.push(g); }
+        pcs[vocal][i].forEach((pc) => {
+          if (pc.rest || pc.barRest || !pc.heads || !pc.first) return;
+          const tied = pc.heads.every((h) => h.pt.tieIn);
+          const inSlur = open > 0 && !pc.ev.slurStart;
+          if (!tied && !inSlur) g.notes.push(pc);
+          open += (pc.ev.slurStart || 0);
+          if (pc.ev.slurEnd) open = Math.max(0, open - pc.ev.slurEnd);
+        });
+      });
+      const tagged = L.some((x) => x.key) && groups.some((x) => x.key);
+      let placed = 0, notes = 0;
+      const total = L.reduce((a, x) => a + x.syl.length, 0), usedSyl = new Set();
+      const lay = (list, syl) => { list.forEach((pc, k) => { if (k < syl.length) { pc.syl = syl[k]; placed++; usedSyl.add(syl[k]); } }); };
+      if (tagged) {
+        const used = new Set(), lastOf = {};
+        let nextFree = 0;
+        groups.forEach((gr) => {
+          notes += gr.notes.length;
+          if (!gr.notes.length) return;
+          let pick = L.findIndex((x, k) => !used.has(k) && x.key && x.key === gr.key);
+          if (pick < 0 && gr.key && lastOf[gr.key] != null) pick = lastOf[gr.key];          // the chorus again
+          if (pick < 0) { while (nextFree < L.length && used.has(nextFree)) nextFree++; pick = nextFree < L.length ? nextFree : -1; }
+          if (pick < 0) return;
+          used.add(pick); if (L[pick].key) lastOf[L[pick].key] = pick;
+          lay(gr.notes, L[pick].syl);
+        });
+      } else {
+        const all = groups.reduce((a, gr) => a.concat(gr.notes), []);
+        notes = all.length;
+        lay(all, L.reduce((a, x) => a.concat(x.syl), []));
+      }
+      result.words = { syllables: total, used: usedSyl.size, placed, notes, voice: V[vocal].name || V[vocal].id, sections: tagged };
+    }
+
     // horizontal spacing: the onsets of every voice in a measure share columns
     const spring = (d) => Math.max(1.75, 0.9 + 1.9 * Math.sqrt(Math.max(d, 15) / 480));
     info.forEach((inf, i) => {
@@ -568,9 +687,14 @@
         if (!pc.rest && !pc.beam && beamsOf(pc.base) >= 1 && !pc.up) after = Math.max(after, 0.45);
         if (pc.heads && pc.up && pc.heads.some((h, k) => k && h.p - pc.heads[k - 1].p === 1)) after = Math.max(after, 1.0);
         c.after = Math.max(c.after, after);
+        if (pc.syl) c.lyr = Math.max(c.lyr || 0, textWidth(pc.syl.s, "TR", LYR_Z) / sp + (pc.syl.end ? 0 : 0.6));   // 2.734.0
       }));
       const cols = Object.keys(at).map((k) => at[k]).sort((a, b) => a.t - b.t);
       cols.forEach((c, k) => { c.spring = spring((k + 1 < cols.length ? cols[k + 1].t : end) - c.t); });
+      cols.forEach((c, k) => {                             // 2.734.0: room for the words (half each side of a note)
+        const nx = cols[k + 1], need = (c.lyr || 0) / 2 + (nx ? (nx.lyr || 0) / 2 : 0) + (c.lyr || (nx && nx.lyr) ? 0.7 : 0);
+        if (need > c.spring + c.after) c.after += need - (c.spring + c.after);
+      });
       inf.cols = cols; inf.end = end;
       inf.fixed = 1.0 + cols.reduce((a, c) => a + c.acc + c.after, 0);
       inf.stretch = cols.reduce((a, c) => a + c.spring, 0);
@@ -693,7 +817,7 @@
       kx = drawKey(ops, v.clef, inf0.key, kx, sp, Y, null);
       if (sy.showMeter) drawMeter(ops, inf0.meter, sy.meterX, sp);
       // measures
-      const chordQ = [], annotQ = [], tieQ = [], tupQ = {}, slurOpen = [];
+      const chordQ = [], annotQ = [], tieQ = [], tupQ = {}, slurOpen = [], lyrQ = [];
       for (let i = sy.start; i < sy.end; i++) {
         const inf = info[i], mx = sy.mx[i], mw = sy.mw[i];
         let px = mx;
@@ -721,6 +845,7 @@
           if (pc.rest) { if (!pc.invisible) drawRest(ops, pc, xx, sp, Y); }
           else drawNote(ops, pc, xx, sp, Y, grow);
           if (pc.first && pc.ev.chord) chordQ.push({ x: xx, s: pc.ev.chord });
+          if (pc.syl) lyrQ.push({ x: xx + HEAD_W * sp / 2, s: pc.syl.s, end: pc.syl.end });
           if (pc.first && pc.ev.annot) annotQ.push({ x: xx, s: pc.ev.annot });
           if (pc.ev.tuplet && !pc.rest) (tupQ[pc.ev.tuplet.id] = tupQ[pc.ev.tuplet.id] || { p: pc.ev.tuplet.p, list: [] }).list.push(pc);
           if (pc.ev.tuplet && pc.rest) (tupQ[pc.ev.tuplet.id] = tupQ[pc.ev.tuplet.id] || { p: pc.ev.tuplet.p, list: [] }).list.push(pc);
@@ -739,6 +864,18 @@
       Object.keys(tupQ).forEach((id) => drawTuplet(ops, tupQ[id], sp, Y, grow));
       // ties and slurs
       tieQ.forEach((t) => drawTie(ops, t, sy, sp, Y, grow, x0 + sy.hw * sp));
+      // 2.734.0: the words under the staff, below everything on it; a hyphen between the syllables of a word
+      if (lyrQ.length) {
+        const ly = Math.max(4 * sp, box.bottom) + LYR_Z + 3;
+        lyrQ.forEach((w, k) => {
+          ops.push({ t: "t", x: w.x, y: ly, s: w.s, f: "TR", z: LYR_Z, a: "m" });
+          if (w.end) return;
+          const nx = lyrQ[k + 1], ww = textWidth(w.s, "TR", LYR_Z) / 2;
+          const hx = nx ? (w.x + ww + nx.x - textWidth(nx.s, "TR", LYR_Z) / 2) / 2 : w.x + ww + 4;
+          if (!nx || nx.x - textWidth(nx.s, "TR", LYR_Z) / 2 - (w.x + ww) > 3) ops.push({ t: "t", x: hx, y: ly, s: "-", f: "TR", z: LYR_Z, a: "m" });
+        });
+        grow(ly + 3);
+      }
       // text above: chord symbols, annotations (after the notes, so they clear them)
       let line = Math.min(-1.7 * sp, box.top - 0.9 * sp);
       if (chordQ.length) {
@@ -1319,5 +1456,5 @@
     return bytes;
   }
 
-  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, WHOLE, version: "2.733.0" };
+  return { parse, render, toSVG, toPDF, parseKey, parseMeter, split, textWidth, jpegInfo, hexRgb, syllables, lyricsSections, WHOLE, version: "2.734.0" };
 }));

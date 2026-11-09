@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "9851b576f285",
- "count": 8886,
+ "v": "3f087670601f",
+ "count": 8888,
  "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -4471,6 +4471,7 @@
   "Put the position marker on the clip where the mask sits right, then 🎯": "マスクがぴったり合うクリップ上の位置に位置マーカーを置いてから 🎯",
   "Put the selected style's own negative here to edit": "選択中のスタイル自身のネガティブをここに入れて編集します",
   "Put the text where the shape is (its place, size and turn)": "テキストをシェイプのある場所に置きます（位置、サイズ、回転）",
+  "Put the words - the Song tab's lyrics - under the notes of the vocal staff, section by section ([verse] … [chorus] …)": "Song タブの歌詞をボーカル譜の音符の下に、セクションごとに入れます（[verse] … [chorus] …）",
   "Put this docker in the panel column": "このドッカーをパネル列に配置",
   "Put this room in a group (or out of one)": "この部屋をグループに入れる（またはグループから出す）",
   "Put this workspace back to its default layout": "このワークスペースを既定のレイアウトに戻します",
@@ -8856,6 +8857,7 @@
   "wipe →": "ワイプ →",
   "wipe ↓": "ワイプ ↓",
   "with bitGen's instructions": "bitGen の指示付き",
+  "words": "歌詞",
   "work": "動作",
   "workflow reset failed": "ワークフローのリセットに失敗しました",
   "workflow's": "ワークフローの値",

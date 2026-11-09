@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5588,
+ "count": 5590,
  "strings": [
   {
    "s": "0 (auto)",
@@ -26178,6 +26178,15 @@
    ]
   },
   {
+   "s": "Put the words - the Song tab's lyrics - under the notes of the vocal staff, section by section ([verse] … [chorus] …)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #muScoreBar"
+   ]
+  },
+  {
    "s": "Put this docker in the panel column",
    "kinds": [
     "title"
@@ -51441,6 +51450,15 @@
    ],
    "where": [
     "option in #tlAutoTrT"
+   ]
+  },
+  {
+   "s": "words",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #muScoreBar"
    ]
   },
   {

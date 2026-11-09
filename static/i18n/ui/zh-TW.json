@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "a81bba2f4ce3",
- "count": 8886,
+ "v": "c716475c099c",
+ "count": 8888,
  "patternCount": 1031,
  "strings": {
   "0 (auto)": "0（自動）",
@@ -4471,6 +4471,7 @@
   "Put the position marker on the clip where the mask sits right, then 🎯": "將位置標記放到片段上遮罩位置正確的地方，然後點 🎯",
   "Put the selected style's own negative here to edit": "將所選風格自身的負面提示詞放到這裡以便編輯",
   "Put the text where the shape is (its place, size and turn)": "將文字放在形狀所在處（其位置、大小和旋轉）",
+  "Put the words - the Song tab's lyrics - under the notes of the vocal staff, section by section ([verse] … [chorus] …)": "把 Song 分頁的歌詞逐段放在人聲譜表的音符下方（[verse] … [chorus] …）",
   "Put this docker in the panel column": "將此面板放入面板欄",
   "Put this room in a group (or out of one)": "將此房間放入群組（或移出群組）",
   "Put this workspace back to its default layout": "將此工作區恢復為預設佈局",
@@ -8856,6 +8857,7 @@
   "wipe →": "擦除 →",
   "wipe ↓": "擦除 ↓",
   "with bitGen's instructions": "附帶 bitGen 的指令",
+  "words": "歌詞",
   "work": "正常",
   "workflow reset failed": "工作流重設失敗",
   "workflow's": "沿用工作流",
