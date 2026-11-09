@@ -4,7 +4,8 @@
  *   - with "words" ticked, each syllable under the vocal staff is marked (data-w) and lights (.abcOn, orange) while it is
  *     sung - held through its tie and through the notes of its slur, dark in a rest, together with its note head;
  *   - while it plays the lit syllable is the one the clock is on; a click on a word plays from it; ⛶ Read lights too;
- *   - unticked: no words to light, the notes still light.
+ *   - unticked: no words to light, the notes still light;
+ *   - 2.735.1: the transport buttons stay on one row (▶ was a full-width .go bar).
  * No server / no Playwright = SKIP. The test's file is removed afterwards. */
 "use strict";
 const fs = require("fs");
@@ -67,6 +68,11 @@ const LYRICS = "Hel-lo dear world, sing it to me now";
       w0.marked.join(" ") === "0:Hel 1:lo 2:dear 3:world, 4:sing 5:it 6:to 7:me", w0);
     check("…the words' times: lo held through its tie, dear through its slur over the barline", w0.words.slice(0, 4).join(" ") === "Hel@0-480 lo@480-1440 dear@1440-2880 world,@3360-3840", w0.words);
 
+    // 2.735.1: the transport is one row (▶ is a .go button, and .go is full width everywhere else)
+    const tr = await ev(() => { const bs = [...document.querySelectorAll("#muPlayBar button[data-act]")].map((x) => x.getBoundingClientRect());
+      const bar = document.getElementById("muPlayBar").getBoundingClientRect();
+      return { tops: bs.map((r) => Math.round(r.top + r.height / 2)), play: Math.round(bs[2].width), bar: Math.round(bar.width) }; });
+    check("2.735.1: ⏮ ⏪ ▶ ⏩ ⏭ on one row, ▶ a button not a full-width bar", tr.tops.length === 5 && Math.max(...tr.tops) - Math.min(...tr.tops) <= 2 && tr.play < 90, tr);
     await ev(() => MuScore.player().seek(1.0));                        // tick 960: the tied-over D
     const a = await ev(() => ({ lit: [...document.querySelectorAll("#muScore text.abcOn")].map((x) => x.textContent), heads: document.querySelectorAll("#muScore path.abcOn").length,
       fill: (() => { const x = document.querySelector("#muScore text.abcOn"); return x ? getComputedStyle(x).fill : ""; })(),

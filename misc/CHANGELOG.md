@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.735.1** — The Sheet Music Tab's ▶ Back in Line With ⏮ ⏪ ⏩ ⏭ (It Was a Full-Width Bar); the Sheet Music Screenshots for the Guide and the Website (scripts/capture-sheet-shots.js)
 - **2.735.0** — ✨ The Words Lit as They Are Sung: While the Sheet Music Plays, the Syllable Being Sung Lights Up Under the Vocal Staff With Its Note - Held Through Ties and Slurs, a Click on a Word Plays From It
 - **2.734.0** — 🗣 Words Under the Sheet Music: a Tick Lays the Song Tab's Lyrics Under the Vocal Staff, One Syllable a Note, Section by Section - on Screen, in ⛶ Read and in the PDF
 - **2.733.0** — ⏫ Enhance on a Picture: a Selected Image Upscaled (SeedVR2, an Upscale Model or Lanczos) to a PNG in the Gallery; ▶ the Sheet Music Plays - ⏮ ⏪ ▶/⏸ ⏩ ⏭, the Notes Lit as They Sound, the Song Beside the Score or the Notes Themselves
