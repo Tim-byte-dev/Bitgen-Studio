@@ -150,7 +150,7 @@ function muVariantJob(opts) {
   // 2.739.0: opts.fail(error) - the job did not end done (✨ Create waits on it: ext/musicdock/sheetcreate.js)
   var fail = function (t) { say(t); if (opts.fail) { try { opts.fail(new Error(t)); } catch (e) { /* the caller's */ } } };
   var styleId = ($("musicSel") || {}).value;
-  if (!styleId) { fail("pick a music style first (Settings → Music)"); return; }
+  if (!styleId) { fail("pick a music style first (Settings → Audio ▸ Music styles)"); return; }
   var lyrics = String((($("muLyrics") || {}).value) || "").trim();
   if (opts.needLyrics && !lyrics) { fail("write the lyrics on the Song tab first"); return; }
   var run = function () {

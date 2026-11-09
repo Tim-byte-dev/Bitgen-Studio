@@ -364,9 +364,9 @@ check("numOrNull rejects NaN", S.numOrNull("abc") === null, null);
     S.save(w, st);
   fs.writeFileSync(path.join(w, ".starters"), "2026-08-01T00:00:00.000Z\n");
   const made = S.seedStarters(w);
-  check("an install with the old date stamp gets ONLY the starters it never had (Music3 2.90.1, MiniMax H3 SS 2.116.0, minimaxH3-I 2.128.0, MM3_Characters 2.135.0, MM3H-Character-ref 2.143.0, H3_Video_Ref 2.223.16, YuE2 2.229.0, YuE2 ComfyUI 2.236.0, MMH3_NativeAudio_MV 2.284.0, mmh3_chr_swap 2.328.0, LTX 2.5 2.338.0, H3_Viggle 2.352.0, Wan 2.1 + Wan 2.2 2.368.0, LTX 2.3 2.402.0, MiniMax H3 Long (30 s) 2.503.0, FastH3 Omni 2.573.0; the chain starters retired)",
+  check("an install with the old date stamp gets ONLY the starters it never had (Music3 2.90.1, MiniMax H3 SS 2.116.0, minimaxH3-I 2.128.0, MM3_Characters 2.135.0, MM3H-Character-ref 2.143.0, H3_Video_Ref 2.223.16, YuE2 2.229.0, YuE2 ComfyUI 2.236.0, MMH3_NativeAudio_MV 2.284.0, mmh3_chr_swap 2.328.0, LTX 2.5 2.338.0, H3_Viggle 2.352.0, Wan 2.1 + Wan 2.2 2.368.0, LTX 2.3 2.402.0, MiniMax H3 Long (30 s) 2.503.0, FastH3 Omni 2.573.0, ACE-Step 1.5 2.741.0; the chain starters retired)",
     JSON.stringify(made.slice().sort())
-      === JSON.stringify(["MM3H-Character-ref", "MM3_Characters", "MiniMax H3 Long (30 s)", "MiniMax H3 SS", "MiniMax Music3", "minimaxH3-I", "H3_Video_Ref", "YuE2", "YuE2 ComfyUI", "MMH3_NativeAudio_MV", "mmh3_chr_swap", "LTX 2.5", "LTX 2.3", "H3_Viggle", "Wan 2.1", "Wan 2.2", "FastH3 Omni"].sort()), made);
+      === JSON.stringify(["MM3H-Character-ref", "MM3_Characters", "MiniMax H3 Long (30 s)", "MiniMax H3 SS", "MiniMax Music3", "minimaxH3-I", "H3_Video_Ref", "YuE2", "YuE2 ComfyUI", "MMH3_NativeAudio_MV", "mmh3_chr_swap", "LTX 2.5", "LTX 2.3", "H3_Viggle", "Wan 2.1", "Wan 2.2", "FastH3 Omni", "ACE-Step 1.5"].sort()), made);
   /* Tim: "for this style we will use the workflows paths because it is made
      specifically for comfyui". The starter must therefore name NO loader: the
      graph's own are the single source of truth, and an override here would
@@ -394,7 +394,7 @@ check("numOrNull rejects NaN", S.numOrNull("abc") === null, null);
   S.save(w2, { name: "MiniMax Music3", kind: "music", workflow: "mine.json", caption: "mine" });
   S.seedStarters(w2);
   check("a user's own MiniMax Music3 style is not overwritten by the late starter",
-    S.read(w2, "music")[0].caption === "mine", S.read(w2, "music"));
+    (S.read(w2, "music").find((x) => x.name === "MiniMax Music3") || {}).caption === "mine", S.read(w2, "music"));
   // ---- ControlNet chain styles (2.97.0)
   const wc = ws();
   const ch = S.save(wc, { name: "Sketch to Photo", kind: "image",
@@ -622,8 +622,10 @@ check("numOrNull rejects NaN", S.numOrNull("abc") === null, null);
   const w2 = ws();
   S.seedStarters(w2);
   const st = S.read(w2, "music");
-  check("the starters include THREE music styles — MiniMax Music3, YuE2 and YuE2 ComfyUI (2.236.0)",
-    st.length === 3
+  check("the starters include FOUR music styles — MiniMax Music3, YuE2, YuE2 ComfyUI (2.236.0) and ACE-Step 1.5 (2.741.0)",
+    st.length === 4
+    && st.some((x) => x.name === "ACE-Step 1.5" && x.arch === "ace-step-1.5" && x.workflow === "comfy_workflows/audio_ace_step_1_5.json"
+         && x.steps === 8 && x.cfg === 1 && x.max_duration === 120 && x.te.length === 2 && x.bpm === null && x.keyscale === "")
     && st.some((x) => x.name === "YuE2 ComfyUI" && x.arch === "yue2-comfy"
          && x.workflow === "comfy_workflows/audio_yue2.json"
          && x.sampler === "dpm_2" && x.max_duration === 360)
@@ -788,8 +790,11 @@ console.log("=======================");
     && /first use/i.test(a.notes || "") && /Length field does not apply/.test(a.notes || ""), a);
   check("the minimax entry is engine-tagged comfy — the dropdown carries BOTH and more later is one entry each",
     (S.musicArchById("minimax-music3") || {}).engine === "comfy"
-    && S.musicArchIds().length === 3
-    && (S.musicArchById("yue2-comfy") || {}).engine === "comfy");
+    && S.musicArchIds().length === 4
+    && (S.musicArchById("yue2-comfy") || {}).engine === "comfy"
+    // 2.741.0: ACE-Step 1.5 - comfy, last (the fallback arch stays MiniMax), takes LoRAs and the song's settings
+    && (S.musicArchById("ace-step-1.5") || {}).engine === "comfy" && S.musicArchIds()[3] === "ace-step-1.5"
+    && S.musicArchById("ace-step-1.5").loras === true && S.musicArchById("ace-step-1.5").meta.keyscales.length === 34);
   const MW = fs.readFileSync(path.join(__dirname, "..", "misc", "music_worker.py"), "utf8");
   check("music_worker dispatches BY ARCH (ENGINE_FOR) — comfy path untouched, yue2 shells the pinned venv CLI",
     /ENGINE_FOR = \{"yue2": "yue2"\}/.test(MW)

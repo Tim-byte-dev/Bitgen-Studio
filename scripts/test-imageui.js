@@ -452,7 +452,9 @@ check("only the two explicit Open-externally buttons leave the app",
 // ------------------------------------------------- music + the queue dock (2.90.0)
 // The Music tab is the Image tab's twin; the checks mirror the image ones so a
 // block replacement that drops a handler is caught here, not in the browser.
-check("Settings has a Music tab", /data-stab="music"/.test(HTML) && /id="stab-music"/.test(HTML), null);
+// 2.741.0 (Tim: "All on the Audio tab"): the music styles are a section of the Audio tab now, not a tab of their own
+check("Settings' Audio tab holds the music styles (no Music tab)", !/data-stab="music"/.test(HTML) && /<section id="stab-music"/.test(HTML)
+  && HTML.indexOf('id="stab-audio"') < HTML.indexOf('id="stab-music"') && HTML.indexOf('id="stab-music"') < HTML.indexOf('id="auSpeechH"'), null);
 for (const id of ["s_mulist", "s_munew", "s_mudup", "s_mudel", "s_musave", "s_muname", "s_muarch",
                   "s_muwf", "s_mumodelcombo", "s_muvaecombo", "s_mute", "s_musteps", "s_mucfg",
                   "s_mudur", "s_musampler", "s_musched", "s_mucaption", "s_mustatus", "s_mucmstart"]) {

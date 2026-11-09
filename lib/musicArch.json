@@ -15,7 +15,8 @@
   "engines, or a worker branch for a genuinely new runtime).",
   "",
   "THE LYRICS ARE THE PROMPT; the caption is the STYLE (unchanged for both",
-  "engines - YuE2 calls the caption its 'style prompt')."
+  "engines - YuE2 calls the caption its 'style prompt').",
+  "2.741.0: + ace-step-1.5 (Tim: \"yes please\" to ACE-Step, \"ace step can use loras\") - its workflow is ComfyUI's own split template converted to API form; `loras: true` shows the LoRA rows in the style editor, `meta` the BPM / key / time signature / language choices (the encoder's own option lists, comfy_extras/nodes_ace.py)."
  ],
  "samplers": [
   "euler",
@@ -121,6 +122,144 @@
    "caption_hint": "YuE2's style prompt - genre, instruments, voice, mood (e.g. 'violin with girl singing jpop anime')",
    "lyrics_hint": "[verse] / [chorus] tags on their own lines - the words of the song",
    "note": "ComfyUI-NATIVE YuE2 (2.236.0, Tim's yue2_full.json): the song is written as ABC sheet notation first (YuE2GenerateABC), then sung from that score. Files ComfyUI needs: the checkpoint yue2_convrot_int8.safetensors in models/checkpoints, and for the Cover/Transcribe tabs sheetsage2_bf16.safetensors in models/audio_encoders. The music dock's Sheet Music tab shows the score; every song saves its .abc beside the audio."
+  },
+  {
+   "id": "ace-step-1.5",
+   "label": "ACE-Step 1.5 Turbo",
+   "workflow_hint": "comfy_workflows/audio_ace_step_1_5.json",
+   "model_hint": "acestep_v1.5_turbo.safetensors",
+   "vae": {
+    "required": false,
+    "hint": "ace_1.5_vae.safetensors"
+   },
+   "te": [
+    {
+     "label": "Text encoder 1 (Qwen 0.6B)",
+     "required": false,
+     "hint": "qwen_0.6b_ace15.safetensors"
+    },
+    {
+     "label": "Text encoder 2 (Qwen 1.7B - the 4B one for the XL models)",
+     "required": false,
+     "hint": "qwen_1.7b_ace15.safetensors"
+    }
+   ],
+   "defaults": {
+    "steps": 8,
+    "cfg": 1,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "max_duration": 120
+   },
+   "limits": {
+    "max_duration": 600
+   },
+   "caption_hint": "Genre, BPM, instruments, mood and the singer: \"Warm indie pop, clean electric guitar, round bass, tight drums, soft pads. Bright female lead vocal with harmonies in the chorus.\"",
+   "lyrics_hint": "[Verse 1]\n...\n\n[Chorus]\n...\n\n[Bridge]\n...",
+   "note": "ACE-Step 1.5 Turbo (ACE Studio + StepFun, MIT licence): text + lyrics to a full song with vocals, 10 s to 10 min, lyrics in 50+ languages, fast (8 steps, cfg 1). The caption is the style (genre, instruments, mood, singer); the lyrics are the prompt. BPM, key, time signature and language steer the song (blank = the workflow's). Takes LoRAs (ComfyUI's loras folder) - a LoRA trained for ACE-Step 1.5 changes its sound or voice.",
+   "engine": "comfy",
+   "loras": true,
+   "meta": {
+    "bpm": {
+     "min": 10,
+     "max": 300
+    },
+    "keyscales": [
+     "C major",
+     "C# major",
+     "Db major",
+     "D major",
+     "D# major",
+     "Eb major",
+     "E major",
+     "F major",
+     "F# major",
+     "Gb major",
+     "G major",
+     "G# major",
+     "Ab major",
+     "A major",
+     "A# major",
+     "Bb major",
+     "B major",
+     "C minor",
+     "C# minor",
+     "Db minor",
+     "D minor",
+     "D# minor",
+     "Eb minor",
+     "E minor",
+     "F minor",
+     "F# minor",
+     "Gb minor",
+     "G minor",
+     "G# minor",
+     "Ab minor",
+     "A minor",
+     "A# minor",
+     "Bb minor",
+     "B minor"
+    ],
+    "timesigs": [
+     "2",
+     "3",
+     "4",
+     "6"
+    ],
+    "languages": [
+     "ar",
+     "az",
+     "bg",
+     "bn",
+     "ca",
+     "cs",
+     "da",
+     "de",
+     "el",
+     "en",
+     "es",
+     "fa",
+     "fi",
+     "fr",
+     "he",
+     "hi",
+     "hr",
+     "ht",
+     "hu",
+     "id",
+     "is",
+     "it",
+     "ja",
+     "ko",
+     "la",
+     "lt",
+     "ms",
+     "ne",
+     "nl",
+     "no",
+     "pa",
+     "pl",
+     "pt",
+     "ro",
+     "ru",
+     "sa",
+     "sk",
+     "sr",
+     "sv",
+     "sw",
+     "ta",
+     "te",
+     "th",
+     "tl",
+     "tr",
+     "uk",
+     "ur",
+     "vi",
+     "yue",
+     "zh",
+     "unknown"
+    ]
+   }
   }
  ]
 }

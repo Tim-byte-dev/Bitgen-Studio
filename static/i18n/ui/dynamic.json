@@ -988,503 +988,503 @@
   },
   {
    "s": "Reused for every song made with this style. The lyrics go in the prompt box, not here",
-   "src": "index.html:4857"
+   "src": "index.html:4858"
   },
   {
-   "s": "no music styles yet (Settings → Music) —",
-   "src": "index.html:4905"
+   "s": "no music styles yet (Settings → Audio ▸ Music styles) —",
+   "src": "index.html:4932"
   },
   {
-   "s": "Create a music style first: Settings → Music",
-   "src": "index.html:4970"
+   "s": "Create a music style first: Settings → Audio ▸ Music styles",
+   "src": "index.html:4997"
   },
   {
    "s": "Make a song: the lyrics box is the PROMPT, the selected music style is the sound",
-   "src": "index.html:4976"
+   "src": "index.html:5003"
   },
   {
    "s": "New music style",
-   "src": "index.html:4992"
+   "src": "index.html:5019"
   },
   {
    "s": "linking",
-   "src": "index.html:5293"
+   "src": "index.html:5320"
   },
   {
    "s": "this format cannot play in the browser — use ↗ to open it",
-   "src": "index.html:5417"
+   "src": "index.html:5444"
   },
   {
    "s": "select and copy",
-   "src": "index.html:5945"
+   "src": "index.html:5972"
   },
   {
    "s": "assistant",
-   "src": "index.html:6005"
-  },
-  {
-   "s": "you",
-   "src": "index.html:6005"
-  },
-  {
-   "s": "Retry",
-   "src": "index.html:6031"
-  },
-  {
-   "s": "Ask this again",
    "src": "index.html:6032"
   },
   {
+   "s": "you",
+   "src": "index.html:6032"
+  },
+  {
+   "s": "Retry",
+   "src": "index.html:6058"
+  },
+  {
+   "s": "Ask this again",
+   "src": "index.html:6059"
+  },
+  {
    "s": "Copy this message",
-   "src": "index.html:6037"
+   "src": "index.html:6064"
   },
   {
    "s": "none yet —",
-   "src": "index.html:6066"
+   "src": "index.html:6093"
   },
   {
    "s": "Nothing yet — ask for help with a shot, a still or a line of speech",
-   "src": "index.html:6078"
+   "src": "index.html:6105"
   },
   {
    "s": "Nothing yet — ask for help with a shot",
-   "src": "index.html:6078"
+   "src": "index.html:6105"
   },
   {
    "s": "nothing picked —",
-   "src": "index.html:6342"
+   "src": "index.html:6369"
   },
   {
    "s": "could not build the phrase",
-   "src": "index.html:6344"
+   "src": "index.html:6371"
   },
   {
    "s": "Speak",
-   "src": "index.html:6407"
+   "src": "index.html:6434"
   },
   {
    "s": "Transcribing",
-   "src": "index.html:6408"
+   "src": "index.html:6435"
   },
   {
    "s": "naming and saving",
-   "src": "index.html:6507"
+   "src": "index.html:6534"
   },
   {
    "s": "chat cleared",
-   "src": "index.html:6521"
+   "src": "index.html:6548"
   },
   {
    "s": "clear failed",
-   "src": "index.html:6521"
+   "src": "index.html:6548"
   },
   {
    "s": "pick a saved chat first",
-   "src": "index.html:6526"
+   "src": "index.html:6553"
   },
   {
    "s": "load failed",
-   "src": "index.html:6533"
+   "src": "index.html:6560"
   },
   {
    "s": "no song (silent cut) —",
-   "src": "index.html:6635"
+   "src": "index.html:6662"
   },
   {
    "s": "no group —",
-   "src": "index.html:6703"
+   "src": "index.html:6730"
   },
   {
    "s": "no groups saved —",
-   "src": "index.html:6703"
+   "src": "index.html:6730"
   },
   {
    "s": "no layer · start:end (s) - frames",
-   "src": "index.html:7111"
+   "src": "index.html:7138"
   },
   {
    "s": "opacity",
-   "src": "index.html:7242"
+   "src": "index.html:7269"
   },
   {
    "s": "volume",
-   "src": "index.html:7245"
+   "src": "index.html:7272"
   },
   {
    "s": "scale %",
-   "src": "index.html:7253"
+   "src": "index.html:7280"
   },
   {
    "s": "rot °",
-   "src": "index.html:7254"
+   "src": "index.html:7281"
   },
   {
    "s": "colour",
-   "src": "index.html:7256"
+   "src": "index.html:7283"
   },
   {
    "s": "to the next ◆",
-   "src": "index.html:7257"
+   "src": "index.html:7284"
   },
   {
    "s": "Delete keyframe",
-   "src": "index.html:7258"
+   "src": "index.html:7285"
   },
   {
    "s": "Remove from this layer",
-   "src": "index.html:7797"
+   "src": "index.html:7824"
   },
   {
    "s": "Cut (no transition)",
-   "src": "index.html:7843"
+   "src": "index.html:7870"
   },
   {
    "s": "Drag up or down to reorder (render order)",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Click to rename this layer",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Visibility — include this layer in the preview and the export",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Isolate — show only soloed layers (filmstrip stays on)",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Remove this layer",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Volume",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Opacity",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "In transition",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Out transition",
-   "src": "index.html:7916"
+   "src": "index.html:7943"
   },
   {
    "s": "Preview started here — double-click to send the position marker back",
-   "src": "index.html:8187"
+   "src": "index.html:8214"
   },
   {
    "s": "Drag across the ruler to select a time range (shift+drag works on the tracks too)",
-   "src": "index.html:8333"
+   "src": "index.html:8360"
   },
   {
    "s": "path - write what follows it · draw it on the canvas (P)",
-   "src": "index.html:8456"
+   "src": "index.html:8483"
   },
   {
    "s": "path - write what follows it",
-   "src": "index.html:8456"
+   "src": "index.html:8483"
   },
   {
    "s": "First/Last frame markers (First/Last mode)",
-   "src": "index.html:8511"
+   "src": "index.html:8538"
   },
   {
    "s": "REF",
-   "src": "index.html:8519"
+   "src": "index.html:8546"
   },
   {
    "s": "Reference frame markers (Reference mode)",
-   "src": "index.html:8519"
+   "src": "index.html:8546"
   },
   {
    "s": "Drag the selection start",
-   "src": "index.html:8534"
+   "src": "index.html:8561"
   },
   {
    "s": "Drag the selection end",
-   "src": "index.html:8534"
+   "src": "index.html:8561"
   },
   {
    "s": "extracting frames",
-   "src": "index.html:8821"
+   "src": "index.html:8848"
   },
   {
    "s": "Selection starts on this frame",
-   "src": "index.html:8854"
+   "src": "index.html:8881"
   },
   {
    "s": "Selection ends after this frame",
-   "src": "index.html:8854"
+   "src": "index.html:8881"
   },
   {
    "s": "Use as the FIRST frame",
-   "src": "index.html:8854"
+   "src": "index.html:8881"
   },
   {
    "s": "Use as the LAST frame",
-   "src": "index.html:8854"
+   "src": "index.html:8881"
   },
   {
    "s": "Add as a reference image",
-   "src": "index.html:8854"
+   "src": "index.html:8881"
   },
   {
    "s": "Transcribe speech to text",
-   "src": "index.html:8948"
+   "src": "index.html:8975"
   },
   {
    "s": "Extract timed lyrics (.lrc + .srt)",
-   "src": "index.html:8948"
+   "src": "index.html:8975"
   },
   {
    "s": "empty — drop files above",
-   "src": "index.html:8983"
+   "src": "index.html:9010"
   },
   {
    "s": "none — drag a video here from Assets or the Gallery, or + add video",
-   "src": "index.html:9095"
+   "src": "index.html:9122"
   },
   {
    "s": "none — drag a sound file here from Assets, or + add sound",
-   "src": "index.html:9096"
+   "src": "index.html:9123"
   },
   {
    "s": "Click to choose which frames of this video are the reference",
-   "src": "index.html:9106"
+   "src": "index.html:9133"
   },
   {
    "s": "Reference",
-   "src": "index.html:9109"
+   "src": "index.html:9136"
   },
   {
    "s": "Append",
-   "src": "index.html:9109"
+   "src": "index.html:9136"
   },
   {
    "s": "Prepend",
-   "src": "index.html:9109"
+   "src": "index.html:9136"
   },
   {
    "s": "Preview",
-   "src": "index.html:9109"
+   "src": "index.html:9136"
   },
   {
    "s": "fl2va · <Picture 1> = its last frame - the new part starts on it; <Picture 2> = the Image tab's picture (its end)",
-   "src": "index.html:9123"
+   "src": "index.html:9150"
   },
   {
    "s": "fl2va · <Picture 1> = its first frame - the new part ends on it; <Picture 2> = the Image tab's picture (its start)",
-   "src": "index.html:9123"
+   "src": "index.html:9150"
   },
   {
    "s": "Text encoder",
-   "src": "index.html:9662"
+   "src": "index.html:9689"
   },
   {
    "s": "blank = the workflow's own",
-   "src": "index.html:9663"
+   "src": "index.html:9690"
   },
   {
    "s": "Checkpoint",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "Steps (blank = the workflow's)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "cfg (blank = the workflow's)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "Load as (8-bit halves a bf16/fp16 model's VRAM)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "the workflow's own —",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "Full precision (as stored)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "8-bit fp8 (e4m3fn) — half the VRAM",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "8-bit fp8 fast (RTX 40/50 fp8 math)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "8-bit fp8 (e5m2)",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "Remove this phase",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "wf",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "How ComfyUI loads this checkpoint. 8-bit (fp8) halves a bf16/fp16 model in VRAM - e.g. a 34 GB bf16 model loads as about 17 GB and fits a 32 GB card. A file that is already int8/fp8/fp4/GGUF is left as it is",
-   "src": "index.html:9688"
+   "src": "index.html:9715"
   },
   {
    "s": "Pick the checkpoint (ComfyUI models folder)",
-   "src": "index.html:9707"
+   "src": "index.html:9734"
   },
   {
    "s": "new video style",
-   "src": "index.html:9745"
+   "src": "index.html:9772"
   },
   {
    "s": "new video style —",
-   "src": "index.html:9781"
+   "src": "index.html:9808"
   },
   {
    "s": "template —",
-   "src": "index.html:9788"
+   "src": "index.html:9815"
   },
   {
    "s": "give the style a name",
-   "src": "index.html:9827"
+   "src": "index.html:9854"
   },
   {
    "s": "a project name is required",
-   "src": "index.html:9865"
+   "src": "index.html:9892"
   },
   {
    "s": "could not create the project",
-   "src": "index.html:9876"
+   "src": "index.html:9903"
   },
   {
    "s": "right-click: ↺ Reset pin",
-   "src": "index.html:10385"
+   "src": "index.html:10412"
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10888"
+   "src": "index.html:10915"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:10986"
+   "src": "index.html:11013"
   },
   {
    "s": "Checkpoints",
-   "src": "index.html:10986"
+   "src": "index.html:11013"
   },
   {
    "s": "Text encoders",
-   "src": "index.html:10987"
+   "src": "index.html:11014"
   },
   {
    "s": "CLIP vision",
-   "src": "index.html:10988"
+   "src": "index.html:11015"
   },
   {
    "s": "Embeddings",
-   "src": "index.html:10989"
-  },
-  {
-   "s": "Upscale models",
-   "src": "index.html:10990"
-  },
-  {
-   "s": "Configs",
-   "src": "index.html:10990"
-  },
-  {
-   "s": "folder, or a name under the base folder",
-   "src": "index.html:10992"
-  },
-  {
-   "s": "Select folder",
-   "src": "index.html:10992"
-  },
-  {
-   "s": "Select Folder",
    "src": "index.html:11016"
   },
   {
-   "s": "the folder dialog could not open — type the path",
+   "s": "Upscale models",
+   "src": "index.html:11017"
+  },
+  {
+   "s": "Configs",
+   "src": "index.html:11017"
+  },
+  {
+   "s": "folder, or a name under the base folder",
    "src": "index.html:11019"
   },
   {
+   "s": "Select folder",
+   "src": "index.html:11019"
+  },
+  {
+   "s": "Select Folder",
+   "src": "index.html:11043"
+  },
+  {
+   "s": "the folder dialog could not open — type the path",
+   "src": "index.html:11046"
+  },
+  {
    "s": "pick the base folder first",
-   "src": "index.html:11024"
+   "src": "index.html:11051"
   },
   {
    "s": "standard folders filled — 💾 to write them",
-   "src": "index.html:11027"
+   "src": "index.html:11054"
   },
   {
    "s": "writing",
-   "src": "index.html:11032"
+   "src": "index.html:11059"
   },
   {
    "s": "refused",
-   "src": "index.html:11037"
+   "src": "index.html:11064"
   },
   {
    "s": "written: nothing new · restart ComfyUI to pick the folders up",
-   "src": "index.html:11038"
+   "src": "index.html:11065"
   },
   {
    "s": "new graph —",
-   "src": "index.html:11081"
+   "src": "index.html:11108"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11088"
+   "src": "index.html:11115"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11105"
+   "src": "index.html:11132"
   },
   {
    "s": "label",
-   "src": "index.html:11112"
+   "src": "index.html:11139"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11112"
+   "src": "index.html:11139"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11112"
+   "src": "index.html:11139"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11112"
+   "src": "index.html:11139"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11142"
+   "src": "index.html:11169"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11181"
+   "src": "index.html:11208"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11312"
+   "src": "index.html:11339"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11389"
+   "src": "index.html:11416"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11389"
+   "src": "index.html:11416"
   },
   {
    "s": "Version",
@@ -21769,332 +21769,332 @@
    "src": "index.html:4776"
   },
   {
-   "p": "This style still needs: {0} — fill it in under Settings → Music",
-   "src": "index.html:4973"
+   "p": "This style still needs: {0} — fill it in under Settings → Audio ▸ Music styles",
+   "src": "index.html:5000"
   },
   {
    "p": "Make it available as a {0}",
-   "src": "index.html:5284"
+   "src": "index.html:5311"
   },
   {
    "p": "Hard-links {0} from your {1} folder into ComfyUI's {2} folder. On one drive this is instant and uses no extra space",
-   "src": "index.html:5285"
+   "src": "index.html:5312"
   },
   {
    "p": "Copied to {0}. Try generating again",
-   "src": "index.html:5310"
+   "src": "index.html:5337"
   },
   {
    "p": "It was already there: {0} (created that folder — your extra_model_paths.yaml already named it, it just did not exist yet) Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5315"
+   "src": "index.html:5342"
   },
   {
    "p": "It was already there: {0} Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5315"
+   "src": "index.html:5342"
   },
   {
    "p": "Linked to {0} (created that folder — your extra_model_paths.yaml already named it, it just did not exist yet) Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5315"
+   "src": "index.html:5342"
   },
   {
    "p": "Linked to {0} Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5315"
+   "src": "index.html:5342"
   },
   {
    "p": "Save a copy to {0} (the last Save-as folder) - Shift-click: Save as",
-   "src": "index.html:5515"
+   "src": "index.html:5542"
   },
   {
    "p": "loaded {0}",
-   "src": "index.html:6533"
+   "src": "index.html:6560"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap · {4}",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap",
-   "src": "index.html:6575"
+   "src": "index.html:6602"
   },
   {
    "p": "{0} ({1} img · {2} vid · {3} snd)",
-   "src": "index.html:6709"
+   "src": "index.html:6736"
   },
   {
    "p": "{0} ({1} img · {2} vid)",
-   "src": "index.html:6709"
+   "src": "index.html:6736"
   },
   {
    "p": "{0} ({1} img · {2} snd)",
-   "src": "index.html:6709"
+   "src": "index.html:6736"
   },
   {
    "p": "{0} ({1} img)",
-   "src": "index.html:6709"
+   "src": "index.html:6736"
   },
   {
    "p": "{0} image, {1} video, {2} sound — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} image, {1} video — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} image, {1} sound — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} image — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} images, {1} video, {2} sound — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} images, {1} video — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} images, {1} sound — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} images — saving an existing name overwrites that group",
-   "src": "index.html:6781"
+   "src": "index.html:6808"
   },
   {
    "p": "{0} · start:end (s) - frames",
-   "src": "index.html:7111"
+   "src": "index.html:7138"
   },
   {
    "p": "keyframe @ +{0}s — tweens to the next diamond",
-   "src": "index.html:7258"
+   "src": "index.html:7285"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7} · hold",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7} · ease {8}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · hold",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · ease {7}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}°",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6} · hold",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6} · ease {7}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · hold",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · ease {6}",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}%",
-   "src": "index.html:7409"
+   "src": "index.html:7436"
   },
   {
    "p": "{0} transition — {1}, {2}s {3}",
-   "src": "index.html:7960"
+   "src": "index.html:7987"
   },
   {
    "p": "{0} transition — cut {1}",
-   "src": "index.html:7960"
+   "src": "index.html:7987"
   },
   {
    "p": "{0} — click to highlight this layer for Keep / Cut",
-   "src": "index.html:8035"
+   "src": "index.html:8062"
   },
   {
    "p": "{0} · starts {1}s · in {2}s out {3}s ({4}s) — click to select, double-click to set its start time (or add a ◆ keyframe), drag to reorder, edges to trim",
-   "src": "index.html:8349"
+   "src": "index.html:8376"
   },
   {
    "p": "starts {0}s · in {1} out {2} — click to select, double-click to set its start time (or add a ◆ keyframe), drag to move, edges to trim",
-   "src": "index.html:8399"
-  },
-  {
-   "p": "image · starts {0}s +{1}s · opacity {2}% — click to select, double-click to set its start time (or add a ◆ keyframe), right edge = duration",
    "src": "index.html:8426"
   },
   {
+   "p": "image · starts {0}s +{1}s · opacity {2}% — click to select, double-click to set its start time (or add a ◆ keyframe), right edge = duration",
+   "src": "index.html:8453"
+  },
+  {
    "p": "{0} · draw it on the canvas (P)",
-   "src": "index.html:8456"
+   "src": "index.html:8483"
   },
   {
    "p": "Path layer: {0} point(s), {1}s +{2}s - click to select it",
-   "src": "index.html:8457"
+   "src": "index.html:8484"
   },
   {
    "p": "{0} · layer V{1}2 · {2}s +{3}s — click to select, double-click to set its start time (or add a ◆ keyframe), edges trim, drag to move",
-   "src": "index.html:8470"
+   "src": "index.html:8497"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps (capped at {6}) · cached",
-   "src": "index.html:8838"
+   "src": "index.html:8865"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps (capped at {6})",
-   "src": "index.html:8838"
+   "src": "index.html:8865"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps · cached",
-   "src": "index.html:8838"
+   "src": "index.html:8865"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps",
-   "src": "index.html:8838"
+   "src": "index.html:8865"
   },
   {
    "p": "phase {0}1",
-   "src": "index.html:9714"
+   "src": "index.html:9741"
   },
   {
    "p": "{0} · {1} · {2} phases",
-   "src": "index.html:9781"
+   "src": "index.html:9808"
   },
   {
    "p": "saved \"{0}\" → styles/video/",
-   "src": "index.html:9835"
+   "src": "index.html:9862"
   },
   {
    "p": "preview · {0}",
-   "src": "index.html:10007"
+   "src": "index.html:10034"
   },
   {
    "p": "{0}s (from {1}s)",
-   "src": "index.html:10138"
+   "src": "index.html:10165"
   },
   {
    "p": "{0} · right-click: ↺ Reset pin",
-   "src": "index.html:10385"
+   "src": "index.html:10412"
   },
   {
    "p": "{0} dock",
-   "src": "index.html:10786"
+   "src": "index.html:10813"
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10844"
+   "src": "index.html:10871"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10849"
+   "src": "index.html:10876"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:10992"
+   "src": "index.html:11019"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11038"
+   "src": "index.html:11065"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11038"
+   "src": "index.html:11065"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11038"
+   "src": "index.html:11065"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11090"
+   "src": "index.html:11117"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11181"
+   "src": "index.html:11208"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11237"
+   "src": "index.html:11264"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11237"
+   "src": "index.html:11264"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11346"
+   "src": "index.html:11373"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11410"
+   "src": "index.html:11437"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11537"
+   "src": "index.html:11564"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11538"
+   "src": "index.html:11565"
   },
   {
    "p": "The credits could not be read: {0}",

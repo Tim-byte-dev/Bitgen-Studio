@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.741.0 (Tim: "yes please" to ACE-Step + "we can also add an audio tab to general settings, ace step can use loras , i am
+# not sure about the other" -> "All on the Audio tab")
+python3 scripts/test-acestep741.py > /tmp/acestep741.log 2>&1 \
+  && ok "2.741.0 ACE-Step 1.5: the workflow is ComfyUI's split template with every input named as ComfyUI's source names it; the patcher puts the lyrics in lyrics, the caption in tags, the duration in the encoder + latent, bpm / key / beats / language, one seed, Turbo's sampler, music LoRAs model-only (image LoRAs unchanged); the catalogue has its four files" \
+  || { bad "2.741.0 ACE-Step units"; grep -a "^FAIL" -A1 /tmp/acestep741.log | head -12; }
+node scripts/test-ui741-ui.js > /tmp/ui741ui.log 2>&1 \
+  && ok "2.741.0 browser test: no Music tab - the Audio tab holds the music styles, speech, speech to text (a jump bar); the ACE-Step 1.5 starter shows BPM / key / beats a bar / language and LoRAs, saved and painted back; MiniMax shows neither; the Music docker lists it - or SKIP" \
+  || { bad "2.741.0 Audio tab browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui741ui.log | head -14; }
 # ---- 2.740.0 (Tim: "Create stopped at the split: demucs is not installed — press Install in the Stems dock , if a model needs to
 # be installed show the download/cancel msgbox and download the model instead of asking user to find install")
 node scripts/test-ui740-ui.js > /tmp/ui740ui.log 2>&1 \

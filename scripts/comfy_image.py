@@ -476,7 +476,7 @@ def bypass_node(graph, nid, pairs):
     return graph
 
 
-def apply_loras(graph, loras, r=None):
+def apply_loras(graph, loras, r=None, model_only=False):
     """Fill the workflow's LoRA slots from the style; bypass the rest.
 
     bitGen Studio's shipped templates carry FOUR LoraLoader nodes so a stack can be
@@ -512,13 +512,14 @@ def apply_loras(graph, loras, r=None):
     # 3. more LoRAs than slots: build the extras onto the end of the chain
     extra = live[len(slots):]
     if extra:
-        graph, built = build_loras(graph, extra, roles(graph))
+        graph, built = build_loras(graph, extra, roles(graph), model_only=model_only)
         report += [(nid, name, w, "built") for nid, name, w in built]
     return graph, report
 
 
-def build_loras(graph, loras, r):
-    """Create LoraLoader nodes in front of the model (and CLIP, when present)."""
+def build_loras(graph, loras, r, model_only=False):
+    """Create LoraLoader nodes in front of the model (and CLIP, when present).
+    model_only (2.741.0, music styles): LoraLoaderModelOnly even when the graph has a CLIP."""
     live = [l for l in (loras or []) if comfy_lora_name((l or {}).get("path"))]
     if not live:
         return graph, []
@@ -545,7 +546,7 @@ def build_loras(graph, loras, r):
         name = comfy_lora_name(l.get("path"))
         w = l.get("weight")
         w = 1.0 if w is None or w == "" else float(w)
-        if clip_src and cur_clip:
+        if clip_src and cur_clip and not model_only:
             graph[nid] = {"class_type": "LoraLoader",
                           "inputs": {"model": cur_model, "clip": cur_clip,
                                      "lora_name": name,
@@ -1072,6 +1073,39 @@ def patch(graph, style, params):
                     and not _is_link(_ins(n).get("abc"))):
                 n["inputs"]["abc"] = abc_in
                 report.append(f"abc score ({len(abc_in)} chars): node {nid}")
+    # ---- ACE-Step 1.5 (2.741.0, Tim: "yes please" to adding ACE-Step) — class-
+    # targeted like YuE2: its encoder spells the caption `tags`, plans the song's
+    # length in its own `duration` (the latent's `seconds` is written by the
+    # generic duration pass), and takes bpm / keyscale / timesignature / language,
+    # which only a style that sets them changes (blank = the template's). Every
+    # write is link-guarded. Input names: ComfyUI comfy_extras/nodes_ace.py.
+    ace = [nid for nid, n in graph.items()
+           if n.get("class_type") in ("TextEncodeAceStepAudio1.5", "TextEncodeAceStepAudio")]
+    if ace:
+        capw = str((style or {}).get("caption") or "")
+        durw = pick("max_duration")
+        meta = {"bpm": pick("bpm"), "keyscale": pick("keyscale"),
+                "timesignature": pick("timesig"), "language": pick("language")}
+        done = []
+        for nid in ace:
+            ins = _ins(graph[nid])
+            def put(k, v):
+                if k in ins and not _is_link(ins[k]):
+                    graph[nid]["inputs"][k] = v
+                    return True
+                return False
+            if capw.strip() and put("tags", capw):
+                done.append(f"tags ({len(capw)} chars)")
+            if durw is not None and put("duration", float(durw)):
+                done.append(f"duration {float(durw):g}s")
+            if meta["bpm"] not in (None, "") and put("bpm", int(float(meta["bpm"]))):
+                done.append(f"bpm {int(float(meta['bpm']))}")
+            for k in ("keyscale", "timesignature", "language"):
+                v = meta[k]
+                if v not in (None, "") and put(k, str(v)):
+                    done.append(f"{k} {v}")
+        report.append("ace-step: node(s) " + ", ".join(sorted(ace))
+                      + (" - " + ", ".join(dict.fromkeys(done)) if done else " (the template's values)"))
     # the cover's reference audio: LoadAudio by class, the name as ComfyUI's
     # input folder knows it (comfy_client.upload_image put it there).
     ref = str(params.get("ref_audio") or "")
@@ -1154,7 +1188,9 @@ def patch(graph, style, params):
     for nid, name, how in ireport:
         report.append(f"image slot {nid}: bypassed (unused)" if how == "bypassed"
                       else f"image slot {nid}: {name}")
-    graph, lreport = apply_loras(graph, style.get("loras"), roles(graph))
+    # 2.741.0: a MUSIC style's LoRAs patch the model only - an ACE-Step LoRA is for its DiT, and LoraLoader would
+    # also try to patch the Qwen text encoders the graph's CLIP carries
+    graph, lreport = apply_loras(graph, style.get("loras"), roles(graph), model_only=(kind == "music"))
     for nid, name, w, how in lreport:
         report.append(f"LoRA node {nid}: bypassed (no LoRA in this slot)"
                       if how == "bypassed" else

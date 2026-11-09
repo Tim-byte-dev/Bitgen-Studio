@@ -274,6 +274,17 @@
   .thsaved .thx { padding: 0 6px; }
   .thsaved.on .thcard { outline: 2px solid var(--tiger); outline-offset: 1px; }
   .stab.active { display: block; }
+  /* 2.741.0: the Audio tab's sections (music styles, speech, speech to text) */
+  #stab-audio .ausubnav { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+  #stab-audio .ausubnav button { font-size: .72rem; padding: 3px 10px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); background: none; cursor: pointer; }
+  #stab-audio .ausubnav button:hover { border-color: var(--tiger); color: var(--tiger); }
+  #stab-music .muace { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; align-items: end; margin-top: 8px; }
+  #stab-music .muace.hidden, #stab-music .mulorasec.hidden { display: none; }
+  #stab-music .mulorasec { margin-top: 8px; }
+  #stab-audio .auhead { margin: 4px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); font-family: var(--disp); font-size: .86rem; color: var(--tiger); scroll-margin-top: 8px; }
+  #stab-audio .auhead:first-of-type { border-top: 0; padding-top: 0; }
+  #stab-audio .auhead .dimflag { font-family: var(--body, inherit); font-size: .7rem; letter-spacing: 0; text-transform: none; }
+  #stab-audio .ausec { margin-bottom: 14px; }
   .chk { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: .8rem; }
   .chk input { width: auto; accent-color: var(--tiger); }
   .slot.add { border-style: dashed; display: flex; align-items: center; justify-content: center; aspect-ratio: 4/3; color: var(--dim); font-size: .76rem; cursor: pointer; }
@@ -1929,7 +1940,6 @@
     <button data-stab="image">Image</button>
     <button data-stab="video">Video</button>
     <button data-stab="cnet">ControlNet</button>
-    <button data-stab="music">Music</button>
     <button data-stab="models">Models</button>
     <button data-stab="extensions">Extensions</button>
   </div>
@@ -2540,6 +2550,100 @@
     <div id="s_llmstatus" class="hint" style="margin-top:8px"></div>
   </div>
   <div class="stab" id="stab-audio">
+    <!-- 2.741.0 (Tim: "we can also add an audio tab to general settings" -> "All on the Audio tab"): every sound setting in
+         one place - the music styles (they were the Music tab), then speech, then speech to text -->
+    <nav class="ausubnav" aria-label="Audio settings">
+      <button type="button" data-auto="auMusicH">🎶 Music styles</button><button type="button" data-auto="auSpeechH">🗣 Speech</button><button type="button" data-auto="auAsrH">📝 Speech to text</button>
+    </nav>
+    <section id="stab-music" class="ausec" aria-labelledby="auMusicH">
+    <h3 class="auhead" id="auMusicH">🎶 Music styles <span class="dimflag">ACE-Step, MiniMax Music3, YuE2 - the sound of a song, its model and its LoRAs</span></h3>
+      <p class="hint help" style="margin:0 0 8px">Music generation through <b>ComfyUI</b>, by its own
+        worker (<code>music_worker.py</code>). A <b>music style</b> saves the model, its
+        workflow and — the important part — the <b>caption</b>: the Global Metadata / Vocal
+        Details / Arrangement text that describes the <i>sound</i>. That text is reusable
+        across songs, which is what makes it a style. <b>The lyrics are the prompt</b>: type
+        them in the prompt box with <code>[Verse]</code> / <code>[Chorus]</code> /
+        <code>[Instrumental]</code> section tags and press 🎶. Each style is its own file,
+        <code>styles\&lt;style name&gt;.json</code>, in the same folder as image styles, so
+        names are unique across both.</p>
+      <div class="rowbtns" style="margin-bottom:8px">
+        <label class="f" style="margin:0">Styles</label>
+        <select id="s_mulist" style="flex:1"></select>
+        <button class="ghost" id="s_munew" type="button" title="Create a new music style">＋ New</button>
+        <button class="ghost" id="s_mudup" type="button" title="Copy this style to a new one">⧉ Duplicate</button>
+        <button class="ghost" id="s_mudel" type="button" title="Delete this style">✕ Delete</button>
+      </div>
+      <div id="s_mueditor">
+        <div class="grid3" style="align-items:end">
+          <div style="grid-column:1/3"><label class="f">Style name</label>
+            <input type="text" id="s_muname" placeholder="Lo-fi late night"></div>
+          <div><label class="f">Music model</label><select id="s_muarch"></select></div>
+        </div>
+        <p class="hint" id="s_munote" style="margin:6px 0 0"></p>
+        <div style="margin-top:6px">
+          <label class="f">ComfyUI workflow — <b>Export (API)</b> file</label>
+          <input type="text" id="s_muwf" placeholder="comfy_workflows\audio_minimax_music3.json">
+          <p class="hint help" style="margin:4px 0 0">In ComfyUI open the model's template (the Template
+            Library has one), make sure it ends in a <b>SaveAudio</b> node, then
+            <b>Workflow → Export (API)</b> and save the file here. The workflow carries its
+            own models — the fields below are <i>optional overrides</i>, ComfyUI dropdown
+            values rather than paths. Lyrics, caption, seed, steps, cfg, duration, sampler
+            and scheduler are patched into it on every render.</p>
+        </div>
+        <div style="margin-top:6px"><label class="f" id="s_mumodellabel">Model
+            <span class="dimflag">override — ComfyUI dropdown value, blank = use the workflow's</span></label>
+          <div id="s_mumodelcombo"></div>
+          <label class="dimflag" id="s_muallkindsl" style="display:none">
+            <input type="checkbox" id="s_muallkinds"> show every model kind</label>
+          <input type="text" id="s_mumodel" style="display:none"></div>
+        <div style="margin-top:6px"><label class="f">VAE
+            <span class="dimflag">override — ComfyUI dropdown value, blank = use the workflow's</span></label>
+          <div id="s_muvaecombo"></div>
+          <input type="text" id="s_muvae" style="display:none"></div>
+        <div id="s_mute"></div>
+        <!-- 2.741.0 (ACE-Step 1.5): the song's settings and the LoRAs - shown for a model that takes them (lib/musicArch.json
+             meta / loras: true); blank = the workflow's own value -->
+        <div class="muace hidden" id="s_muace">
+          <div><label class="f" title="Beats per minute - blank = the workflow's">BPM</label><input type="number" id="s_mubpm" min="10" max="300" step="1" placeholder="auto"></div>
+          <div><label class="f">Key</label><select id="s_mukey"></select></div>
+          <div><label class="f" title="The time signature: how many beats a bar has - blank = the workflow's">Beats a bar</label><select id="s_mutime"></select></div>
+          <div><label class="f" title="The language the lyrics are sung in">Language</label><select id="s_mulang"></select></div>
+        </div>
+        <div class="mulorasec hidden" id="s_mulorasec">
+          <label class="f">LoRAs <span class="dimflag">ComfyUI's loras folder - LoRAs trained for this model change its sound or voice; the slider is the strength</span></label>
+          <div id="s_muloras"></div>
+          <button class="ghost" id="s_muloraadd" type="button" title="Add a LoRA to this style">＋ LoRA</button>
+        </div>
+        <div class="rowbtns" id="s_mucmbar" style="margin-top:6px">
+          <button class="ghost" id="s_mucmstart" type="button"
+            title="Launch ComfyUI from the folder set in Settings → ComfyUI, then re-read the model folders.">▶ Start ComfyUI &amp; scan models</button>
+        </div>
+        <p class="hint" id="s_mucmstatus" style="margin:6px 0 0"></p>
+        <div class="grid3" style="align-items:end;margin-top:6px">
+          <div><label class="f">Steps</label><input type="number" id="s_musteps" min="1" max="200"></div>
+          <div><label class="f">CFG scale</label><input type="number" id="s_mucfg" step="0.1" min="0" max="30"></div>
+          <div><label class="f" title="Seconds of song. The model's node caps it.">Duration (s)</label>
+            <input type="number" id="s_mudur" min="1" max="600" step="1"></div>
+        </div>
+        <div class="grid3" style="align-items:end;margin-top:6px">
+          <div><label class="f">Sampler</label><select id="s_musampler"></select></div>
+          <div><label class="f">Scheduler</label><select id="s_musched"></select></div>
+          <div></div>
+        </div>
+        <div style="margin-top:6px">
+          <label class="f">Caption — the sound of this style
+            <span class="dimflag">genre, BPM, key, mood · vocal · arrangement — NOT the lyrics</span></label>
+          <textarea id="s_mucaption" rows="9" spellcheck="false" style="width:100%;font-family:var(--mono);font-size:.72rem"></textarea>
+          <p class="hint" id="s_mucaphint" style="margin:2px 0 0"></p>
+        </div>
+        <div class="rowbtns" style="margin-top:10px">
+          <span id="s_mustatus" class="hint" style="flex:1"></span>
+          <button class="ghost" id="s_musave" type="button"
+            style="border-color:var(--tiger);color:var(--tiger)">Save style</button>
+        </div>
+      </div>
+    </section>
+    <h3 class="auhead" id="auSpeechH">🗣 Speech <span class="dimflag">the voices the chat, the Speech dock and Test voice speak with</span></h3>
     <p class="hint help" style="margin:0 0 8px">Both tools run <b>locally</b>, each in its own
       Python venv — no server, no API key, nothing leaves this machine. OmniVoice and
       faster-whisper pin different torch stacks, so each keeps its own venv.</p>
@@ -2668,7 +2772,7 @@
       Speaks one line and throws it away — it does not add anything to your Sound assets.
       The pip package is code only; the model weights are a separate download.</div>
 
-    <h3 style="margin:16px 0 4px;font-family:var(--disp);font-size:.78rem;color:var(--tiger)">Speech to text / lyrics</h3>
+    <h3 style="margin:16px 0 4px;font-family:var(--disp);font-size:.78rem;color:var(--tiger)" id="auAsrH">Speech to text / lyrics</h3>
     <!-- 2.594.0 (Tim: "add option to use https://underdog.ai/bark as stt engine"): static/speechengines.js -->
     <div class="grid3" style="align-items:end;margin-bottom:6px">
       <div style="grid-column:1/3"><label class="f">Speech-to-text engine (🎤 Transcribe, voice clone transcripts, the 🎙 voice chat, the phone remote)</label>
@@ -2965,80 +3069,6 @@
     </div>
   </div>
 
-  <div class="stab" id="stab-music">
-    <p class="hint help" style="margin:0 0 8px">Music generation through <b>ComfyUI</b>, by its own
-      worker (<code>music_worker.py</code>). A <b>music style</b> saves the model, its
-      workflow and — the important part — the <b>caption</b>: the Global Metadata / Vocal
-      Details / Arrangement text that describes the <i>sound</i>. That text is reusable
-      across songs, which is what makes it a style. <b>The lyrics are the prompt</b>: type
-      them in the prompt box with <code>[Verse]</code> / <code>[Chorus]</code> /
-      <code>[Instrumental]</code> section tags and press 🎶. Each style is its own file,
-      <code>styles\&lt;style name&gt;.json</code>, in the same folder as image styles, so
-      names are unique across both.</p>
-    <div class="rowbtns" style="margin-bottom:8px">
-      <label class="f" style="margin:0">Styles</label>
-      <select id="s_mulist" style="flex:1"></select>
-      <button class="ghost" id="s_munew" type="button" title="Create a new music style">＋ New</button>
-      <button class="ghost" id="s_mudup" type="button" title="Copy this style to a new one">⧉ Duplicate</button>
-      <button class="ghost" id="s_mudel" type="button" title="Delete this style">✕ Delete</button>
-    </div>
-    <div id="s_mueditor">
-      <div class="grid3" style="align-items:end">
-        <div style="grid-column:1/3"><label class="f">Style name</label>
-          <input type="text" id="s_muname" placeholder="Lo-fi late night"></div>
-        <div><label class="f">Music model</label><select id="s_muarch"></select></div>
-      </div>
-      <p class="hint" id="s_munote" style="margin:6px 0 0"></p>
-      <div style="margin-top:6px">
-        <label class="f">ComfyUI workflow — <b>Export (API)</b> file</label>
-        <input type="text" id="s_muwf" placeholder="comfy_workflows\audio_minimax_music3.json">
-        <p class="hint help" style="margin:4px 0 0">In ComfyUI open the model's template (the Template
-          Library has one), make sure it ends in a <b>SaveAudio</b> node, then
-          <b>Workflow → Export (API)</b> and save the file here. The workflow carries its
-          own models — the fields below are <i>optional overrides</i>, ComfyUI dropdown
-          values rather than paths. Lyrics, caption, seed, steps, cfg, duration, sampler
-          and scheduler are patched into it on every render.</p>
-      </div>
-      <div style="margin-top:6px"><label class="f" id="s_mumodellabel">Model
-          <span class="dimflag">override — ComfyUI dropdown value, blank = use the workflow's</span></label>
-        <div id="s_mumodelcombo"></div>
-        <label class="dimflag" id="s_muallkindsl" style="display:none">
-          <input type="checkbox" id="s_muallkinds"> show every model kind</label>
-        <input type="text" id="s_mumodel" style="display:none"></div>
-      <div style="margin-top:6px"><label class="f">VAE
-          <span class="dimflag">override — ComfyUI dropdown value, blank = use the workflow's</span></label>
-        <div id="s_muvaecombo"></div>
-        <input type="text" id="s_muvae" style="display:none"></div>
-      <div id="s_mute"></div>
-      <div class="rowbtns" id="s_mucmbar" style="margin-top:6px">
-        <button class="ghost" id="s_mucmstart" type="button"
-          title="Launch ComfyUI from the folder set in Settings → ComfyUI, then re-read the model folders.">▶ Start ComfyUI &amp; scan models</button>
-      </div>
-      <p class="hint" id="s_mucmstatus" style="margin:6px 0 0"></p>
-      <div class="grid3" style="align-items:end;margin-top:6px">
-        <div><label class="f">Steps</label><input type="number" id="s_musteps" min="1" max="200"></div>
-        <div><label class="f">CFG scale</label><input type="number" id="s_mucfg" step="0.1" min="0" max="30"></div>
-        <div><label class="f" title="Seconds of song. The model's node caps it.">Duration (s)</label>
-          <input type="number" id="s_mudur" min="1" max="600" step="1"></div>
-      </div>
-      <div class="grid3" style="align-items:end;margin-top:6px">
-        <div><label class="f">Sampler</label><select id="s_musampler"></select></div>
-        <div><label class="f">Scheduler</label><select id="s_musched"></select></div>
-        <div></div>
-      </div>
-      <div style="margin-top:6px">
-        <label class="f">Caption — the sound of this style
-          <span class="dimflag">genre, BPM, key, mood · vocal · arrangement — NOT the lyrics</span></label>
-        <textarea id="s_mucaption" rows="9" spellcheck="false" style="width:100%;font-family:var(--mono);font-size:.72rem"></textarea>
-        <p class="hint" id="s_mucaphint" style="margin:2px 0 0"></p>
-      </div>
-      <div class="rowbtns" style="margin-top:10px">
-        <span id="s_mustatus" class="hint" style="flex:1"></span>
-        <button class="ghost" id="s_musave" type="button"
-          style="border-color:var(--tiger);color:var(--tiger)">Save style</button>
-      </div>
-    </div>
-  </div>
 
   <!-- 2.520.0 (Tim: "add a remote gpu tab in settings in case users can use a remote machine or runpod headless etc."):
        filled by static/remotegpu.js (lib/remoteGpu.js) -->
@@ -8356,6 +8386,7 @@ function paintMusicForm(s) {
   cmCombo($("s_muvaecombo"), $("s_muvae"), ["vae"],
           { blank: "— use the workflow's —", title: "Select a VAE" });
   paintMuTeSlots(arch, s.te);
+  paintMuAce(arch, s);
   $("s_musampler").innerHTML = (muCat.samplers || [])
     .map(x => `<option value="${x}">${x}</option>`).join("");
   $("s_musampler").value = s.sampler || d.sampler || "";
@@ -8377,6 +8408,29 @@ function paintMusicForm(s) {
   musicDirty = false;
 }
 
+/* 2.741.0 (Tim: "ace step can use loras"): the song's BPM / key / time signature / language and the LoRA rows, for
+   a model whose catalogue entry has them (lib/musicArch.json meta, loras: true) - the others hide them */
+function paintMuAce(arch, s) {
+  const m = arch.meta || null;
+  $("s_muace").classList.toggle("hidden", !m);
+  if (m) {
+    const opts = (list, v, blank) => `<option value="">${blank}</option>` + (list || []).map((x) => `<option value="${x}"${x === v ? " selected" : ""}>${x}</option>`).join("");
+    $("s_mubpm").value = s.bpm ?? "";
+    $("s_mubpm").min = (m.bpm || {}).min || 10; $("s_mubpm").max = (m.bpm || {}).max || 300;
+    $("s_mukey").innerHTML = opts(m.keyscales, s.keyscale || "", "auto (the workflow's)");
+    $("s_mutime").innerHTML = opts(m.timesigs, s.timesig || "", "auto");
+    $("s_mulang").innerHTML = opts(m.languages, s.language || "", "auto (the workflow's)");
+  }
+  $("s_mulorasec").classList.toggle("hidden", !arch.loras);
+  $("s_muloras").innerHTML = "";
+  if (arch.loras) for (const l of (s.loras || [])) $("s_muloras").appendChild(loraRow(l, true));
+}
+$("s_muloraadd") && ($("s_muloraadd").onclick = () => { $("s_muloras").appendChild(loraRow(null, true)); musicDirty = true; });
+["s_muloras", "s_muace"].forEach((id) => { const el = $(id); if (el) { el.addEventListener("input", () => (musicDirty = true)); el.addEventListener("change", () => (musicDirty = true)); el.addEventListener("click", (e) => { if (e.target.closest(".lx")) musicDirty = true; }); } });
+document.querySelectorAll("#stab-audio .ausubnav [data-auto]").forEach((b) => b.addEventListener("click", () => {
+  const h = $(b.dataset.auto); if (h) h.scrollIntoView({ block: "start", behavior: "smooth" });
+}));
+
 function readMusicForm() {
   const arch = muArchOf($("s_muarch").value);
   const te = (arch.te || []).map((_s, i) => ($(`s_mute${i}`) || {}).value || "");
@@ -8390,6 +8444,9 @@ function readMusicForm() {
     max_duration: $("s_mudur").value,
     sampler: $("s_musampler").value, scheduler: $("s_musched").value,
     caption: $("s_mucaption").value,
+    // 2.741.0: the LoRAs and the song's settings (the server keeps them only for a model that has them)
+    loras: arch.loras ? [...$("s_muloras").querySelectorAll(".lorarow")].map((r) => { const [t, g] = r.querySelectorAll("input"); return { path: t.value.trim(), weight: parseFloat(g.value) }; }).filter((l) => l.path) : [],
+    ...(arch.meta ? { bpm: $("s_mubpm").value === "" ? null : +$("s_mubpm").value, keyscale: $("s_mukey").value, timesig: $("s_mutime").value, language: $("s_mulang").value } : {}),
   };
 }
 
@@ -8420,7 +8477,7 @@ async function refreshMusicStyles(selectId) {
     sel.innerHTML = musicList.length
       ? musicList.map(s => `<option value="${s.id}">${s.name}`
           + `${musicMissing[s.id] ? " ⚠ incomplete" : ""}</option>`).join("")
-      : `<option value="">— no music styles yet (Settings → Music) —</option>`;
+      : `<option value="">— no music styles yet (Settings → Audio ▸ Music styles) —</option>`;
     if (musicList.some(s => s.id === want)) sel.value = want;
     updateMusicBtn();
   }
@@ -8482,10 +8539,10 @@ function updateMusicBtn() {
   const miss = musicMissing[id];
   if (!musicList.length) {
     b.disabled = true;
-    b.title = "Create a music style first: Settings → Music";
+    b.title = "Create a music style first: Settings → Audio ▸ Music styles";
   } else if (miss && miss.length) {
     b.disabled = true;
-    b.title = `This style still needs: ${miss.join(", ")} — fill it in under Settings → Music`;
+    b.title = `This style still needs: ${miss.join(", ")} — fill it in under Settings → Audio ▸ Music styles`;
   } else {
     b.disabled = false;
     b.title = "Make a song: the lyrics box is the PROMPT, the selected music style is the sound";
@@ -8582,7 +8639,7 @@ async function startMusicJob(text) {
   const lyrics = String(text == null ? musicLyrics() : text).trim();
   if (!lyrics) { muStatus("write the lyrics first"); alert("Write the lyrics in the Music dock first."); return null; }
   const id = ($("musicSel") || {}).value;
-  if (!id) { alert("Create a music style first: Settings → Music"); return null; }
+  if (!id) { alert("Create a music style first: Settings → Audio ▸ Music styles"); return null; }
   const st = musicList.find(s => s.id === id) || {};
   if (window.H3ModelsFound && !(await H3ModelsFound.ensure({ kind: "music", style_id: id }))) return null;   // 2.719.0
   if (!(await ensureComfyReady({ button: $("goMusic"), need: true }))) return null;

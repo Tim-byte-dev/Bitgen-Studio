@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5604,
+ "count": 5621,
  "strings": [
   {
    "s": "0 (auto)",
@@ -1290,6 +1290,24 @@
    ]
   },
   {
+   "s": "ACE-Step 1.5 Turbo (ACE Studio + StepFun, MIT licence): text + lyrics to a full song with vocals, 10 s to 10 min, lyrics in 50+ languages, fast (8 steps, cfg 1). The caption is the style (genre, instruments, mood, singer); the lyrics are the prompt. BPM, key, time signature and language steer the song (blank = the workflow's). Takes LoRAs (ComfyUI's loras folder) - a LoRA trained for ACE-Step 1.5 changes its sound or voice",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p#s_munote.hint"
+   ]
+  },
+  {
+   "s": "ACE-Step, MiniMax Music3, YuE2 - the sound of a song, its model and its LoRAs",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "h3#auMusicH.auhead"
+   ]
+  },
+  {
    "s": "AFTER DRAWING ▾",
    "kinds": [
     "text"
@@ -1597,6 +1615,15 @@
    ],
    "where": [
     "button#cnLoraAdd.ghost"
+   ]
+  },
+  {
+   "s": "Add a LoRA to this style",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_muloraadd.ghost"
    ]
   },
   {
@@ -3590,6 +3617,15 @@
    ]
   },
   {
+   "s": "Audio settings",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "nav.ausubnav"
+   ]
+  },
+  {
    "s": "Audio to video (text + audio)",
    "kinds": [
     "text"
@@ -3921,6 +3957,15 @@
    ],
    "where": [
     "button.cbgl in #tlCadBar"
+   ]
+  },
+  {
+   "s": "BPM",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_muace"
    ]
   },
   {
@@ -4308,6 +4353,24 @@
    ],
    "where": [
     "button#taiMarkBeats"
+   ]
+  },
+  {
+   "s": "Beats a bar",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_muace"
+   ]
+  },
+  {
+   "s": "Beats per minute - blank = the workflow's",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.f in #s_muace"
    ]
   },
   {
@@ -7376,6 +7439,15 @@
    ],
    "where": [
     "button.ghost in #mmBody"
+   ]
+  },
+  {
+   "s": "ComfyUI's loras folder - LoRAs trained for this model change its sound or voice; the slider is the strength",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span.dimflag in #s_mulorasec"
    ]
   },
   {
@@ -14970,6 +15042,15 @@
    ]
   },
   {
+   "s": "Genre, BPM, instruments, mood and the singer: \"Warm indie pop, clean electric guitar, round bass, tight drums, soft pads. Bright female lead vocal with harmonies in the chorus.\"",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "textarea#s_mucaption"
+   ]
+  },
+  {
    "s": "Georgia",
    "kinds": [
     "text"
@@ -18220,6 +18301,15 @@
    ]
   },
   {
+   "s": "Language",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_muace"
+   ]
+  },
+  {
    "s": "Language (blank = detect)",
    "kinds": [
     "text"
@@ -21335,12 +21425,21 @@
    ]
   },
   {
-   "s": "Music style — the sound of the song. Styles are created and edited in Settings → Music",
+   "s": "Music style — the sound of the song. Styles are created and edited in Settings → Audio ▸ Music styles",
    "kinds": [
     "title"
    ],
    "where": [
     "select#musicSel"
+   ]
+  },
+  {
+   "s": "Music styles",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "h3#auMusicH.auhead"
    ]
   },
   {
@@ -33138,6 +33237,15 @@
    ]
   },
   {
+   "s": "Speech to text",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button in nav.ausubnav"
+   ]
+  },
+  {
    "s": "Speech to text / lyrics",
    "kinds": [
     "text"
@@ -35066,6 +35174,24 @@
    ]
   },
   {
+   "s": "Text encoder 1 (Qwen 0.6B)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_mute"
+   ]
+  },
+  {
+   "s": "Text encoder 2 (Qwen 1.7B - the 4B one for the XL models)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #s_mute"
+   ]
+  },
+  {
    "s": "Text read aloud with emotion by OmniVoice or Ming-3.0 TTS - one voice or a cast - saved into the Audio assets",
    "kinds": [
     "title"
@@ -35727,6 +35853,15 @@
    ],
    "where": [
     "input#chSubtype"
+   ]
+  },
+  {
+   "s": "The language the lyrics are sung in",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.f in #s_muace"
    ]
   },
   {
@@ -36687,6 +36822,15 @@
    "where": [
     "div#s_thcustom.thcustom",
     "button#s_threset.ghost"
+   ]
+  },
+  {
+   "s": "The time signature: how many beats a bar has - blank = the workflow's",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.f in #s_muace"
    ]
   },
   {
@@ -50672,6 +50816,15 @@
    ],
    "where": [
     "span.what in #stab-about"
+   ]
+  },
+  {
+   "s": "the voices the chat, the Speech dock and Test voice speak with",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "h3#auSpeechH.auhead"
    ]
   },
   {

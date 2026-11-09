@@ -7913,6 +7913,21 @@ playing (2.725.1).
   running in the Queue.
 - Models that ComfyUI renders with already ask the same way (the models-not-found box, 2.719.0).
 
+## 🎶 ACE-Step 1.5, and the music styles on the Audio tab (2.741.0)
+
+- **ACE-Step 1.5 Turbo** is a new music model: text and lyrics to a whole song with vocals, from 10 seconds to 10 minutes,
+  with lyrics in 50+ languages, and fast (8 steps). Its licence (MIT) lets you use the songs commercially. Pick the
+  **ACE-Step 1.5** style in the Music docker; the first song asks to download its four model files (about 9.3 GB) if
+  ComfyUI does not have them yet.
+- **Settings ▸ Audio** now holds every sound setting: the **🎶 Music styles** (they were the Music tab), then **🗣 Speech**,
+  then **📝 Speech to text**. The buttons at the top jump to each.
+- An ACE-Step style has two extra parts:
+  - **BPM, Key, Beats a bar and Language** steer the song. Leave one blank (auto) for the workflow's own value.
+  - **LoRAs**: ＋ LoRA picks one from ComfyUI's loras folder, the slider sets its strength. A LoRA trained for ACE-Step
+    1.5 changes its sound or its voice. LoRAs are only offered for ACE-Step: whether MiniMax Music3 and YuE2 take them is
+    not known.
+- The caption is still the style (genre, instruments, mood, singer) and the lyrics are still the prompt.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -303,7 +303,7 @@ def run_comfy(params, cfg, style, output_dir, stem, batch, seed):
     if not rel:
         fail("this music style has no ComfyUI workflow. In ComfyUI: open the "
              "MiniMax Music3 template (or your own song graph), Workflow -> "
-             "Export (API), save the file, then pick it in Settings -> Music.")
+             "Export (API), save the file, then pick it in Settings -> Audio -> Music styles.")
     wf = Path(rel) if Path(rel).is_absolute() else Path(cfg["_app_dir"]) / rel
     if not wf.exists():
         fail(f"workflow not found: {wf}")
@@ -418,10 +418,10 @@ def main() -> None:
 
     stored = params.get("style") or {}
     if not stored:
-        fail("no music style was sent - create one in Settings -> Music.")
+        fail("no music style was sent - create one in Settings -> Audio -> Music styles.")
     if str(stored.get("kind") or "image") != "music":
         fail(f"style '{stored.get('name')}' is an image style, not a music one "
-             "- pick a music style (Settings -> Music).")
+             "- pick a music style (Settings -> Audio -> Music styles).")
 
     batch = max(1, min(4, int(params.get("batch") or 1)))
     seed = int(params.get("seed", -1))
