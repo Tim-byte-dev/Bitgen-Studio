@@ -4,6 +4,23 @@
 
 **A local, self-hosted AI film and design studio.** Write a screenplay with a local LLM, render scenes with MiniMax H3, LTX and Wan through **ComfyUI**, cut them on a full **timeline**, paint and compose in a layered **image editor**, sketch and model in **CAD** (constrained sketches and parametric 3D bodies), build rooms and sets in the 3D **Sketcher**, and bring in scenes from **Blender**, **Daz Studio** and **Unreal Engine 5.8**. All of it runs on your own GPU, with no accounts and no cloud, and nothing leaves your machine.
 
+> [!IMPORTANT]
+> **Using version 2.745.0 or 2.746.0? Update once with `git pull`.** In those two versions, Settings ▸ General ▸
+> Updates can stop with **"Failed to fetch"** (the check took longer than the studio waits). Update by hand once - from
+> 2.747.0 on, the in-app update works again:
+>
+> 1. **Close bitGen Studio.**
+> 2. **Open a terminal in your bitGen folder** (the `Bitgen-Studio` folder the installer made):
+>    - **Windows:** open the folder in File Explorer, click the address bar, type `cmd` and press Enter.
+>    - **macOS / Linux:** open Terminal and go to the folder, for example `cd ~/Bitgen-Studio`.
+> 3. **Type `git pull` and press Enter.**
+> 4. **Start bitGen Studio again** (`start.bat`, or your launcher). Settings ▸ General ▸ Updates should show 2.747.0
+>    or newer.
+>
+> Your projects, styles, settings and models are not touched - git leaves them alone. If git says *your local changes
+> would be overwritten*, type `git stash` and then `git pull` again (`git stash pop` brings your change back).
+> Installed from the zip (no `.git` folder inside)? Download the new zip instead.
+
 > [!WARNING]
 > **Public beta — still in testing.** bitGen Studio is a beta and is still being tested. Expect rough edges and the odd
 > bug. **Bug reports and improvements are very welcome**: open an issue (the *Bug report* and *Feature request*
