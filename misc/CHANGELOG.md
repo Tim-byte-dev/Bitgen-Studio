@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.756.1** — 🃏 Every RunPod Template as a Card: the PODS Docker Lists All of RunPod's Public Templates at Once (All / Official / Verified / Community With Counts), a Card Each Like ComfyUI's (Tile, Kind, ComfyUI Badge, Image, Disk, Ports, Create Pod…, ↗), a Search as You Type (Every Word) and a Kind Filter; ComfyUI Only Off at the Start (It Hid All 100 Official Templates)
 - **2.756.0** — 🖥 The PODS Docker: RunPod's Public Templates (Official / Verified / Community, ComfyUI Only, Search), Create a Pod in bitGen (Live GPU Prices, Secure / Community, Disk Sizes) and Start / Stop / Use / Terminate Your Pods; Basic Settings ▸ GPU ▸ Remote Servers RunPod or OpenRouter, RunPod ▸ Serverless or Pods
 - **2.755.0** — ☁ Pods Keep Working After 15 November: bitGen Moves to RunPod's REST API v2 (Pods, Start / Stop, the Endpoint's Image) Before v1 Retires; the Remote Generation Docker Shows Loading Pod, Pod Loaded (With Time Running and Cost So Far) and Stopping Pod
 - **2.754.0** — ☁ Use Remote Generation (One Checkbox: Off Hides Basic Settings ▸ GPU and Keeps Everything Here); the Remote Generation Docker (From Basic Settings ▸ GPU, Not the Status Bar): Where the Work Runs, Your RunPod Pods (Start / Stop / Use It) and Pod Shortcuts - RunPod Templates Deployed With One Click

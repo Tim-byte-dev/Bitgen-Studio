@@ -1,5 +1,6 @@
 // bitGen Studio — routes/pods.js (2.756.0): the PODS docker (static/podsdock.js, lib/pods.js). Mounted from routes/index.js.
-//   GET  /api/pods/templates?source=official|verified|community&comfy=1&q=&refresh=1   {source, templates, total}
+//   GET  /api/pods/templates?source=all|official|verified|community&comfy=1&q=&refresh=1   {source, templates, total, counts, failed}
+//        (2.756.1: all = the default - the docker loads every template once and searches them itself)
 //   GET  /api/pods/gpus?cloud=SECURE|COMMUNITY        {cloud, gpus: [{id, name, memory, price, availability, offered, max}]}
 //   POST /api/pods/create  {templateId, name, gpu, count, cloud, disk, volume, port}   -> {pod, port} (remembered as bitGen's)
 //   GET  /api/pods/mine                               {pods: [... + bitgen]}

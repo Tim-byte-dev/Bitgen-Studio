@@ -8178,6 +8178,22 @@ start or stop: each render is one job, and you pay only while a worker runs it.
     **Use it** (render on it, through its ComfyUI port) and **Terminate** - it asks first, because the pod and every file
     on it are deleted; only a network volume survives.
 
+## 🃏 Every RunPod template as a card (2.756.1)
+
+- The PODS docker now lists **every** public template RunPod has at once. **All** shows Official, Verified and
+  Community together, or pick one group; each button says how many templates it holds. RunPod gives at most 100
+  templates a group.
+- Each template is a **card**, like ComfyUI's template browser: a coloured tile with its initials, the kind of machine it
+  is made for (NVIDIA, AMD or CPU) and a **ComfyUI** badge when it runs ComfyUI; below it the name, the image, the group
+  it comes from, its disk and /workspace sizes and its web ports. **Create pod…** opens the form above the cards, and
+  **↗** opens the template's page on RunPod. RunPod's list has no pictures or descriptions for templates, so bitGen
+  draws the tile.
+- **Search** as you type: every word must be found in the name, the image, a port, the kind or the group - for example
+  `comfy 3000` or `pytorch rocm`. **Every kind** narrows the cards to NVIDIA, AMD or CPU templates.
+- **ComfyUI only** is now off at the start: it hid all 100 Official templates, because none of them run ComfyUI. Tick it
+  to see only the templates bitGen can render with.
+- If RunPod doesn't answer for one group, the others still show and the line under the buttons names the missing one.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

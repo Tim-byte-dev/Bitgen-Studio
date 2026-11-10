@@ -4,6 +4,13 @@
  *   The button "🖥 PODS" sits in Basic Settings ▸ GPU and, like the docker, shows only when Use remote generation is on and
  *   the engine is RunPod ▸ Pods (Basic Settings ▸ GPU ▸ Remote servers).
  *   TEMPLATES   RunPod's public templates - Official / Verified / Community, a search, "ComfyUI only" (on); each: its page ↗
+ *   2.756.1 (Tim: "list all them templates filter them by search, have a card for each of them like comfyui does. now it says
+ *               0 of 100 templates" - ComfyUI only was on, and none of the 100 Official ones run ComfyUI): ALL the templates
+ *               at once (All = Official + Verified + Community, each with its count), a card each (a coloured tile with the
+ *               template's initials, its kind NVIDIA / AMD / CPU, a ComfyUI badge; name, image, where it is from, disk,
+ *               /workspace, its web ports; Create pod… + ↗ its page), searched as you type (every word: name, image, port,
+ *               kind, source), a kind filter, ComfyUI only OFF by default. RunPod's API gives no pictures or descriptions
+ *               for templates, so the tile is drawn here. Create pod… opens the form above the cards.
  *               and "Create pod…": the GPU (live price per hour + memory + availability on the cloud picked), Secure /
  *               Community cloud, how many GPUs, the container disk and /workspace's size, the price an hour -> Create pod
  *               (RunPod REST v2 POST /pods); the new pod then loads ("loading pod…" -> "pod loaded")
@@ -12,7 +19,7 @@
  *   Links open in the browser (target _blank). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { g: null, src: "official", comfy: true, q: "", tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null };
+  var doc = root.document, S = { g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
@@ -25,7 +32,22 @@
     + ".pdk .pdRow .nm{flex:1;min-width:150px}.pdk .pdRow .nm b{color:var(--text,#eee)}.pdk .pdRow .sub{display:block;color:var(--dim,#999);font-size:.68rem;word-break:break-all}"
     + ".pdk a.pdLink{color:var(--tiger,#f59e2c)}.pdk .pdForm{width:100%;border:1px solid var(--line,#3a342a);border-radius:7px;padding:6px 8px;margin:4px 0;background:var(--panel,#1b1814);display:grid;grid-template-columns:auto 1fr;gap:4px 8px;align-items:center}"
     + ".pdk .pdForm .full{grid-column:1/3}.pdk .bg{font-size:.65rem;border:1px solid var(--tiger,#f59e2c);color:var(--tiger,#f59e2c);border-radius:4px;padding:0 3px}"
-    + ".pdk .pdKill{width:100%;color:#e88}";
+    + ".pdk .pdKill{width:100%;color:#e88}"
+    // 2.756.1: the template cards
+    + ".pdk .pdTabs .n{opacity:.65;margin-left:4px;font-size:.66rem}"
+    + ".pdk .pdGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px;align-content:start}"
+    + ".pdk .pdCard{display:flex;flex-direction:column;border:1px solid var(--line,#3a342a);border-radius:8px;overflow:hidden;background:var(--panel,#1b1814);min-width:0}"
+    + ".pdk .pdCard:hover,.pdk .pdCard.sel{border-color:var(--tiger,#f59e2c)}"
+    + ".pdk .pdArt{position:relative;height:64px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,hsl(var(--h) 42% 30%),hsl(calc(var(--h) + 38) 48% 16%))}"
+    + ".pdk .pdGlyph{font-size:1.55rem;font-weight:800;letter-spacing:.02em;color:rgba(255,255,255,.88);text-shadow:0 1px 2px rgba(0,0,0,.4)}"
+    + ".pdk .pdCat,.pdk .pdCfy{position:absolute;top:5px;font-size:.6rem;font-weight:700;border-radius:4px;padding:1px 5px}"
+    + ".pdk .pdCat{left:5px;background:rgba(0,0,0,.45);color:#ddd}.pdk .pdCfy{right:5px;background:var(--tiger,#f59e2c);color:#111}"
+    + ".pdk .pdInfo{padding:6px 8px 4px;display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}"
+    + ".pdk .pdName{color:var(--text,#eee);font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}"
+    + ".pdk .pdImg{color:var(--dim,#999);font-size:.64rem;font-family:ui-monospace,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
+    + ".pdk .pdChips{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}.pdk .pdChips span{font-size:.6rem;border:1px solid var(--line,#3a342a);border-radius:4px;padding:0 4px;color:var(--dim,#aaa)}"
+    + ".pdk .pdAct{display:flex;gap:4px;align-items:center;padding:4px 8px 7px}.pdk .pdAct button{flex:1;font-size:.7rem}.pdk .pdAct a{text-decoration:none;padding:0 4px}"
+    + ".pdk .pdNew{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:6px 8px;background:var(--panel,#1b1814)}.pdk .pdNew .pdForm{border:0;padding:4px 0 0;margin:0;background:none}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -50,48 +72,93 @@
   /* ---------------- the docker */
   function body() {
     var d = doc.createElement("div"); d.className = "pdk"; d.id = "pdBody";
-    d.innerHTML = '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
-      + [["official", "Official"], ["verified", "Verified"], ["community", "Community"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + "</button>"; }).join("")
-      + '<input type="search" id="pdQ" placeholder="Search templates" spellcheck="false" style="flex:1;min-width:120px">'
-      + '<label class="chk" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy" checked> ComfyUI only</label>'
+    d.innerHTML = '<div class="rowbtns" style="align-items:center">'
+      + '<input type="search" id="pdQ" placeholder="Search templates - name, image, port, kind" spellcheck="false" style="flex:1;min-width:140px">'
       + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button></div>'
+      + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
+      + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
+      + '<select id="pdKind" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
+      + '<label class="chk" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label></div>'
       + '<div class="hint" id="pdMsg" aria-live="polite"></div>'
-      + '<div class="pdList" id="pdTpl"></div>'
+      + '<div id="pdCreate"></div>'
+      + '<div class="pdGrid" id="pdTpl"></div>'
       + '<h4>My pods</h4><div id="pdPods"></div>'
       + '<div class="hint">🅱 = bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it.</div>';
     return d;
   }
   function wire() {
-    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { S.src = b.dataset.pdsrc; S.form = null; loadTpl(); }; });
-    $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; loadTpl(); };
-    var t = null; $("pdQ").addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { S.q = $("pdQ").value; loadTpl(); }, 300); });
+    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { S.src = b.dataset.pdsrc; filter(); }; });
+    $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
+    $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };
+    var t = null; $("pdQ").addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { S.q = $("pdQ").value; filter(); }, 120); });
     $("pdRefresh").onclick = function () { loadTpl(true); loadPods(); };
     $("pdBody").querySelectorAll("input,select").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
   }
+  /** every template, from all three sources, once; the filters then run here as you type */
   function loadTpl(refresh) {
     say("asking RunPod for its templates…");
-    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.classList.toggle("on", b.dataset.pdsrc === S.src); });
-    return getj("/api/pods/templates?source=" + S.src + (S.comfy ? "&comfy=1" : "") + (S.q ? "&q=" + encodeURIComponent(S.q) : "") + (refresh ? "&refresh=1" : "")).then(function (j) {
-      if (j.error) { say(j.error, false); S.tpl = []; paintTpl(); return; }
-      S.tpl = j.templates || []; paintTpl();
-      var m = $("pdMsg"); m.style.color = ""; m.textContent = S.tpl.length + " of " + j.total + " templates";
+    return getj("/api/pods/templates?source=all" + (refresh ? "&refresh=1" : "")).then(function (j) {
+      if (j.error) { say(j.error, false); S.all = []; S.counts = {}; filter(); return; }
+      S.all = j.templates || []; S.counts = j.counts || {}; S.failed = j.failed || []; filter();
     }).catch(function () { say("RunPod could not be reached", false); });
+  }
+  /* the words a search looks through - the same as lib/pods.js searchText / matches */
+  function hay(t) { return [t.name, t.image, (t.ports || []).join(" "), t.category, t.source, t.id, t.comfy ? "comfyui comfy" : ""].join(" ").toLowerCase(); }
+  function matches(t, q) { var w = String(q || "").toLowerCase().split(/\s+/).filter(Boolean), h = hay(t); return w.every(function (x) { return h.indexOf(x) >= 0; }); }
+  var SRC_WORD = { official: "Official", verified: "Verified", community: "Community" };
+  function filter() {
+    var pre = S.all.filter(function (t) { return (!S.comfy || t.comfy) && (!S.kind || t.category === S.kind) && matches(t, S.q); });
+    S.tpl = pre.filter(function (t) { return S.src === "all" || t.source === S.src; });
+    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) {
+      var k = b.dataset.pdsrc, n = k === "all" ? pre.length : pre.filter(function (t) { return t.source === k; }).length;
+      b.classList.toggle("on", k === S.src); b.querySelector(".n").textContent = String(n);
+    });
+    paintTpl();
+    var m = $("pdMsg"); if (!m) return;
+    m.style.color = "";
+    m.textContent = S.failed.length ? S.tpl.length + " of " + S.all.length + " templates · RunPod did not answer for: " + S.failed.map(function (k) { return SRC_WORD[k] || k; }).join(", ")
+      : S.tpl.length + " of " + S.all.length + " templates";
+  }
+  /** a template's tile colour (from its image's name, so one maker's templates look alike) and initials */
+  function hue(s) { var h = 0, x = String(s || "").split(":")[0]; for (var i = 0; i < x.length; i++) h = (h * 31 + x.charCodeAt(i)) % 360; return h; }
+  function initials(n) { var w = String(n || "").replace(/[^A-Za-z0-9 ]+/g, " ").split(/\s+/).filter(Boolean); return ((w[0] || "?").charAt(0) + (w[1] ? w[1].charAt(0) : (w[0] || "").charAt(1))).toUpperCase(); }
+  function card(t) {
+    var web = (t.ports || []).filter(function (p) { return /\/http$/.test(p); });
+    return '<div class="pdCard' + (S.form && S.form.id === t.id ? " sel" : "") + '" data-tpl="' + esc(t.id) + '">'
+      + '<div class="pdArt" style="--h:' + hue(t.image || t.name) + '"><span class="pdGlyph">' + esc(initials(t.name)) + "</span>"
+      + (t.category ? '<span class="pdCat">' + esc(t.category) + "</span>" : "") + (t.comfy ? '<span class="pdCfy" title="Runs ComfyUI - bitGen can render on it">ComfyUI</span>' : "") + "</div>"
+      + '<div class="pdInfo"><span class="pdName" title="' + esc(t.name) + '">' + esc(t.name) + "</span>"
+      + '<span class="pdImg" title="' + esc(t.image) + '">' + esc(t.image) + "</span>"
+      + '<div class="pdChips"><span>' + esc(SRC_WORD[t.source] || t.source) + "</span>"
+      + (t.disk ? `<span title="Container disk">${t.disk} GB disk</span>` : "")
+      + (t.volume ? `<span title="Kept while the pod is stopped">${t.volume} GB /workspace</span>` : "")
+      + web.slice(0, 3).map(function (p) { return "<span>" + esc(p) + "</span>"; }).join("") + "</div></div>"
+      + '<div class="pdAct"><button type="button" class="ghost" data-pdcreate="' + esc(t.id) + '">Create pod…</button>'
+      + '<a class="pdLink" href="' + esc(t.page) + '" target="_blank" rel="noopener" title="Its page on RunPod">↗</a></div></div>';
   }
   function paintTpl() {
     var box = $("pdTpl"); if (!box) return;
-    box.innerHTML = S.tpl.map(function (t) {
-      var f = S.form && S.form.id === t.id;
-      return '<div class="pdRow" data-tpl="' + esc(t.id) + '"><span class="nm"><a class="pdLink" href="' + esc(t.page) + '" target="_blank" rel="noopener" title="Its page on RunPod">' + esc(t.name) + "</a>"
-        + '<span class="sub">' + esc(t.image) + (t.ports.length ? " · " + esc(t.ports.join(", ")) : "") + "</span></span>"
-        + '<button type="button" class="ghost" data-pdcreate="' + esc(t.id) + '">' + (f ? "✕ Close" : "Create pod…") + "</button>"
-        + (f ? formHtml(t) : "") + "</div>";
-    }).join("") || '<div class="hint">No templates here.</div>';
-    box.querySelectorAll("[data-pdcreate]").forEach(function (b) { b.onclick = function () {
-      var t = S.tpl.find(function (x) { return x.id === b.dataset.pdcreate; }); if (!t) return;
-      S.form = S.form && S.form.id === t.id ? null : { id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50 };
-      paintTpl(); if (S.form) gpus(S.form.cloud);
-    }; });
-    if (S.form) wireForm();
+    box.innerHTML = S.tpl.map(card).join("") || '<div class="hint">' + (S.all.length ? "No template matches - try fewer words, another kind, or untick ComfyUI only." : "No templates here.") + "</div>";
+    box.querySelectorAll("[data-pdcreate]").forEach(function (b) { b.onclick = function () { openForm(b.dataset.pdcreate); }; });
+    paintForm();
+  }
+  function openForm(id) {
+    var t = S.all.find(function (x) { return x.id === id; }); if (!t) return;
+    S.form = S.form && S.form.id === t.id ? null : { id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50 };
+    box2sel(); paintForm();
+    if (S.form) { gpus(S.form.cloud); var c = $("pdCreate"); if (c && c.scrollIntoView) c.scrollIntoView({ block: "nearest" }); }
+  }
+  function box2sel() { $("pdTpl").querySelectorAll(".pdCard").forEach(function (c) { c.classList.toggle("sel", !!(S.form && S.form.id === c.dataset.tpl)); }); }
+  function paintForm() {
+    var c = $("pdCreate"); if (!c) return;
+    var t = S.form && S.all.find(function (x) { return x.id === S.form.id; });
+    if (!t) { S.form = null; c.innerHTML = ""; return; }
+    if ($("pdForm") && c.dataset.tpl === t.id) return;
+    c.dataset.tpl = t.id;
+    c.innerHTML = '<div class="pdNew"><div class="rowbtns" style="align-items:center"><span style="flex:1">Create a pod from <b>' + esc(t.name) + "</b></span>"
+      + '<button type="button" class="ghost" id="pdClose" title="Close">✕ Close</button></div>' + formHtml(t) + "</div>";
+    $("pdClose").onclick = function () { S.form = null; c.dataset.tpl = ""; box2sel(); paintForm(); };
+    wireForm();
   }
   function formHtml(t) {
     return '<div class="pdForm" id="pdForm"><label class="f" for="pdName" style="margin:0">Name</label><input type="text" id="pdName" value="' + esc(t.name.slice(0, 40)) + '" spellcheck="false">'
@@ -133,7 +200,7 @@
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
       if (r.error) { say(r.error, false); return; }
-      say("✓ pod created - loading pod…", true); S.form = null; paintTpl();
+      say("✓ pod created - loading pod…", true); S.form = null; box2sel(); paintForm();
       S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port;
       loadPods().then(tick);
     });
@@ -217,7 +284,7 @@
     if (!(root.SecFloat && SecFloat.add && SecFloat.started) || !buildBtn()) { setTimeout(boot, 250); return; }
     if (!$("pdCss")) { var st = doc.createElement("style"); st.id = "pdCss"; st.textContent = CSS; doc.head.appendChild(st); }
     if (!$("pdBody")) {
-      SecFloat.add({ id: "pods", title: "PODS", w: 560, h: 640, body: body(), onShow: function () { loadTpl(); loadPods(); } });
+      SecFloat.add({ id: "pods", title: "PODS", w: 760, h: 700, body: body(), onShow: function () { loadTpl(); loadPods(); } });
       wire();
     }
     loadG();
@@ -225,5 +292,5 @@
     doc.addEventListener("change", function (e) { if (e.target && /^(gpuProv|gpuRunpod|gpuWhere)$/.test(e.target.name || "")) setTimeout(loadG, 500); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3Pods = { show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; } };
+  root.H3Pods = { show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; }, matches: matches, initials: initials };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -708,7 +708,7 @@
         "The Model manager reads the folders again and the new card appears.",
         "The Model manager with its model cards",
         "The New style form",
-        "The PODS docker lists RunPod's public templates - Official, Verified and Community - with a search. ComfyUI only is on: those are the templates bitGen can render with.",
+        "The PODS docker shows every public RunPod template as a card - Official, Verified and Community together, or one group at a time - with a search as you type and a filter for NVIDIA, AMD or CPU. Tick ComfyUI only to see just the templates bitGen can render with.",
         "The Remote generation docker (Basic Settings ▸ GPU ▸ ☁ Remote generation docker) shows where the work runs and your pods, and keeps pod shortcuts: templates you add by their link.",
         "The app",
         "The app window never appears",

@@ -8,6 +8,9 @@
  * generation engine? the user can choose/create a pod"
  *   - Basic Settings ▸ GPU: Remote servers RunPod / OpenRouter, RunPod: Serverless / Pods (Pods unlocks Remote);
  *   - the 🖥 PODS button only with RunPod ▸ Pods; the docker: Official / Verified / Community templates, ComfyUI only, search;
+ *   - 2.756.1 (Tim: "list all them templates filter them by search, have a card for each of them like comfyui does. now it
+ *     says 0 of 100 templates"): every template at once (All + a count per source), a card each, search word by word,
+ *     the kind filter, ComfyUI only off by default; Create pod… opens the form above the cards;
  *   - Create pod…: GPUs with live prices (none free = disabled), the hourly estimate, POST /pods (template, GPU, cloud, disk,
  *     /workspace); the new pod 🅱 in My pods, loading pod… -> pod loaded; ⏹ Stop; Terminate asks first, then deletes it;
  *   - RunPod ▸ Serverless: the button and the docker go.
@@ -33,7 +36,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const TPL = { official: [{ id: "cmfy756a", name: "ComfyUI - CUDA 12.8", image: "runpod/comfyui:latest", disk: 40, ports: ["8188/http", "22/tcp"], category: "NVIDIA", public: true },
     { id: "ptch756a", name: "PyTorch 2.8", image: "runpod/pytorch:2.8", disk: 50, ports: ["8888/http"], category: "NVIDIA", public: true },
     { id: "srvl756a", name: "Serverless worker", image: "x/y", serverless: true, ports: [] }],
-    verified: [], community: [{ id: "h3com756", name: "MiniMax H3 (community)", image: "someone/h3-comfy:1", disk: 80, ports: ["3000/http"] }] };
+    verified: [{ id: "rocm756a", name: "ROCm PyTorch", image: "rocm/pytorch:6.4", disk: 30, ports: ["8888/http"], category: "AMD", public: true },
+      { id: "cmfy756a", name: "ComfyUI - CUDA 12.8 (again)", image: "runpod/comfyui:latest", disk: 40, ports: ["8188/http"], category: "NVIDIA" }],
+    community: [{ id: "h3com756", name: "MiniMax H3 (community)", image: "someone/h3-comfy:1", disk: 80, ports: ["3000/http"], mounts: { persistent: { size: 120, path: "/workspace" } }, category: "NVIDIA" }] };
   const GPUS = [{ id: "NVIDIA GeForce RTX 4090", name: "RTX 4090", memory: 24, secure: true, community: true, price: { secure: 0.69, community: 0.34 }, availability: "HIGH", maxCount: { secure: 8, community: 4 } },
     { id: "NVIDIA RTX A4000", name: "RTX A4000", memory: 16, secure: true, community: true, price: { secure: 0.25, community: 0.17 }, availability: "MEDIUM", maxCount: { secure: 4, community: 4 } },
     { id: "NVIDIA H100 80GB HBM3", name: "H100 80GB", memory: 80, secure: true, community: false, price: { secure: 2.99, community: null }, availability: "NONE", maxCount: { secure: 8, community: 0 } }];
@@ -88,19 +93,41 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("…Remote picked with no pod yet: allowed (renders stay here until a pod is used)", (await api("/api/gpusplit")).where === "remote");
     await p.click("#gpuPods"); await sleep(600);
     await p.click("#pdRefresh");   // the server keeps RunPod's templates 10 minutes - this test's stand-in, not an earlier one's
-    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdRow").length > 0 && /templates/.test(document.getElementById("pdMsg").textContent), null, { timeout: 10000 }).catch(() => {});
-    const tpl = () => ev(() => [...document.querySelectorAll("#pdTpl .pdRow")].map((r) => r.querySelector(".nm a").textContent));
+    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdCard").length > 0 && /templates/.test(document.getElementById("pdMsg").textContent), null, { timeout: 10000 }).catch(() => {});
+    const tpl = () => ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((r) => r.querySelector(".pdName").textContent));
+    const msg = () => ev(() => document.getElementById("pdMsg").textContent);
+    const tabs = () => ev(() => [...document.querySelectorAll("[data-pdsrc]")].map((b) => b.dataset.pdsrc + (b.classList.contains("on") ? "*" : "") + "=" + b.querySelector(".n").textContent).join(" "));
     const t1 = await tpl();
-    check("the PODS docker opens on RunPod's Official templates, ComfyUI only: the ComfyUI one (not PyTorch, never a serverless one), its page ↗", (await ev(() => SecFloat.state("pods").shown)) && t1.join() === "ComfyUI - CUDA 12.8"
-      && (await ev(() => document.querySelector("#pdTpl .pdRow .nm a").href)) === "https://www.runpod.io/console/explore/cmfy756a" && /1 of 3 templates/.test(await ev(() => document.getElementById("pdMsg").textContent)), t1);
-    await p.uncheck("#pdComfy"); await sleep(800);
-    check("…ComfyUI only off: PyTorch too (the serverless one still not)", (await tpl()).join() === "ComfyUI - CUDA 12.8,PyTorch 2.8", await tpl());
-    await p.fill("#pdQ", "pytorch"); await sleep(900);
-    check("…search: PyTorch only", (await tpl()).join() === "PyTorch 2.8", await tpl());
-    await p.fill("#pdQ", ""); await p.check("#pdComfy"); await p.click('[data-pdsrc="community"]'); await sleep(900);
-    check("…Community: the MiniMax H3 template (ComfyUI on port 3000)", (await tpl()).join() === "MiniMax H3 (community)", await tpl());
+    check("2.756.1: the PODS docker opens on ALL the templates (Official + Verified + Community, each once, never a serverless one), ComfyUI ones first; a count per source; ComfyUI only OFF",
+      (await ev(() => SecFloat.state("pods").shown)) && t1.join() === "ComfyUI - CUDA 12.8,MiniMax H3 (community),PyTorch 2.8,ROCm PyTorch" && /^4 of 4 templates$/.test(await msg())
+      && (await tabs()) === "all*=4 official=2 verified=1 community=1" && !(await ev(() => document.getElementById("pdComfy").checked)) && seen.filter((x) => /catalog\/templates/.test(x)).length >= 3, { t1, m: await msg(), tabs: await tabs() });
+    const c0 = await ev(() => { const c = document.querySelector('#pdTpl .pdCard[data-tpl="h3com756"]'); return { glyph: c.querySelector(".pdGlyph").textContent, cat: c.querySelector(".pdCat").textContent, cfy: !!c.querySelector(".pdCfy"),
+      img: c.querySelector(".pdImg").textContent, chips: [...c.querySelectorAll(".pdChips span")].map((x) => x.textContent), href: c.querySelector("a.pdLink").href, h: c.querySelector(".pdArt").style.getPropertyValue("--h"),
+      w: c.getBoundingClientRect().width, cols: getComputedStyle(document.getElementById("pdTpl")).gridTemplateColumns.split(" ").length }; });
+    check("…a card each, like ComfyUI's: a coloured tile with its initials, NVIDIA, the ComfyUI badge; name, image, Community, 80 GB disk, 120 GB /workspace, 3000/http; Create pod… + ↗ its page; several cards a row",
+      c0.glyph === "MH" && c0.cat === "NVIDIA" && c0.cfy && c0.img === "someone/h3-comfy:1" && c0.chips.join("|") === "Community|80 GB disk|120 GB /workspace|3000/http"
+      && c0.href === "https://www.runpod.io/console/explore/h3com756" && c0.h !== "" && c0.cols >= 2 && c0.w > 150, c0);
+    await p.fill("#pdQ", "pytorch"); await sleep(400);
+    check("…search as you type: PyTorch and ROCm PyTorch; the counts follow", (await tpl()).join() === "PyTorch 2.8,ROCm PyTorch" && (await tabs()) === "all*=2 official=1 verified=1 community=0" && /^2 of 4 templates$/.test(await msg()), { t: await tpl(), tabs: await tabs() });
+    await p.fill("#pdQ", "pytorch rocm"); await sleep(400);
+    check("…every word must match (pytorch rocm -> ROCm PyTorch)", (await tpl()).join() === "ROCm PyTorch", await tpl());
+    await p.fill("#pdQ", "3000"); await sleep(400);
+    check("…a port finds it too (3000 -> the MiniMax H3 one)", (await tpl()).join() === "MiniMax H3 (community)", await tpl());
+    await p.fill("#pdQ", "nothing-like-this"); await sleep(400);
+    check("…nothing matches: says what to try", (await tpl()).length === 0 && /No template matches/.test(await ev(() => document.getElementById("pdTpl").textContent)));
+    await p.fill("#pdQ", ""); await p.selectOption("#pdKind", "AMD"); await sleep(300);
+    check("…the kind filter: AMD -> ROCm PyTorch", (await tpl()).join() === "ROCm PyTorch", await tpl());
+    await p.selectOption("#pdKind", ""); await p.check("#pdComfy"); await sleep(300);
+    check("…ComfyUI only: the two ComfyUI ones", (await tpl()).join() === "ComfyUI - CUDA 12.8,MiniMax H3 (community)", await tpl());
+    await p.click('[data-pdsrc="community"]'); await sleep(300);
+    check("…Community: the MiniMax H3 template (ComfyUI on port 3000)", (await tpl()).join() === "MiniMax H3 (community)" && (await tabs()).startsWith("all=2 official=1 verified=0 community*=1"), { t: await tpl(), tabs: await tabs() });
     await p.click('[data-pdcreate="h3com756"]');
     await p.waitForFunction(() => document.querySelectorAll("#pdGpu option").length > 2, null, { timeout: 8000 }).catch(() => {});
+    check("…Create pod… opens the form above the cards, the card marked", await ev(() => { const c = document.getElementById("pdCreate"), f = document.getElementById("pdForm");
+      return !!f && c.contains(f) && /Create a pod from MiniMax H3 \(community\)/.test(c.textContent) && document.querySelector('.pdCard[data-tpl="h3com756"]').classList.contains("sel")
+        && c.getBoundingClientRect().top < document.getElementById("pdTpl").getBoundingClientRect().top; }));
+    await p.fill("#pdQ", "h3"); await sleep(400);
+    check("…the form stays open while the search changes", await ev(() => !!document.getElementById("pdForm") && document.querySelectorAll("#pdGpu option").length > 2));
     const f = await ev(() => ({ opts: [...document.querySelectorAll("#pdGpu option")].map((o) => o.textContent + (o.disabled ? " [x]" : "")), sel: document.getElementById("pdGpu").value, disk: document.getElementById("pdDisk").value, price: document.getElementById("pdPrice").textContent, name: document.getElementById("pdName").value }));
     check("Create pod…: the GPUs, offered ones first, cheapest first, with memory, $/h (Secure) and availability; none free = disabled; picks a 20 GB+ card; the template's disk; the hourly estimate",
       f.opts[0] === "RTX A4000 · 16 GB · $0.25/h · medium" && f.opts[1] === "RTX 4090 · 24 GB · $0.69/h · high" && /^H100 80GB · 80 GB · \$2\.99\/h · none free \[x\]$/.test(f.opts[2]) && f.sel === "NVIDIA GeForce RTX 4090"
