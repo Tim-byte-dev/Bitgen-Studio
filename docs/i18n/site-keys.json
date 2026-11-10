@@ -165,7 +165,7 @@
         "Container disk",
         "Copy the file into ComfyUI's models folder",
         "Copy the key again, or make a new one (Settings ▸ API Keys).",
-        "Copy the {0} folder out of the app folder (and {1}, {2} and {3} if you want your styles and settings).",
+        "Copy the {0} folder out of the app folder (and {1}, {2} and {3} if you want your styles and settings, and {4} for your API keys - from version 2.748.0).",
         "Custom node packs must be on RunPod too: they go into the worker's image. Many styles need none - see Which styles work.",
         "Cut it on a real timeline",
         "Delete the app folder",
