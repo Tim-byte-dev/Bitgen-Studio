@@ -17,7 +17,7 @@ function mount(app) {
   app.post("/api/remotegpu/test", wrap((req) => R.test((req.body || {}).url)));
   app.post("/api/remotegpu/pods", wrap((req) => R.pods((req.body || {}).key, (req.body || {}).port).then((pods) => ({ pods }))));
   app.post("/api/remotegpu/pod/:id/:action", wrap((req) => R.podAction(req.params.id, req.params.action)));
-  app.get("/api/remotegpu/pod/:id", wrap((req) => R.podState(req.params.id)));   // 2.755.0: loading pod / pod loaded / stopping / stopped + uptime
+  app.get("/api/remotegpu/pod/:id", wrap((req) => R.podState(req.params.id, +req.query.port || 0)));   // 2.755.0: loading pod / pod loaded / stopping / stopped + uptime
   app.post("/api/remotegpu/tunnel", wrap((req) => R.tunnel(!!(req.body || {}).on)));
 }
 module.exports = { mount };

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5656,
+ "count": 5669,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -831,12 +831,30 @@
    ]
   },
   {
+   "s": "A RunPod Serverless endpoint - paid only while a job runs",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "A RunPod Serverless endpoint running RunPod's vLLM worker (your model, paid while it runs)",
    "kinds": [
     "title"
    ],
    "where": [
     "label in #rgLlmProv"
+   ]
+  },
+  {
+   "s": "A RunPod pod - your own GPU machine, paid by the hour while it runs (the PODS docker)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -8407,6 +8425,15 @@
    ],
    "where": [
     "button#ptMusicVideo.ghost.gbtn"
+   ]
+  },
+  {
+   "s": "Create pod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -17407,6 +17434,15 @@
    ]
   },
   {
+   "s": "Its page on RunPod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "Its part in the 🎚 mix: the music ducks under the voices",
    "kinds": [
     "title"
@@ -20092,6 +20128,15 @@
    ],
    "where": [
     "label in #aoList"
+   ]
+  },
+  {
+   "s": "Machines run by RunPod's community hosts - usually cheaper",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -28049,6 +28094,15 @@
    ]
   },
   {
+   "s": "Render on a RunPod GPU - Serverless or a pod (the LLM on RunPod's vLLM when set up)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "Render on this pod (its ComfyUI)",
    "kinds": [
     "text"
@@ -28987,6 +29041,15 @@
    ]
   },
   {
+   "s": "RunPod could not be reached",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "RunPod refused - your API key (an All key) goes in Settings ▸ Remote generation",
    "kinds": [
     "text"
@@ -29002,6 +29065,15 @@
    ],
    "where": [
     "#rgdBody"
+   ]
+  },
+  {
+   "s": "RunPod's own data centres",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -35473,6 +35545,15 @@
    ]
   },
   {
+   "s": "The LLM on OpenRouter - pictures, videos and songs render on this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "The LLM runs on",
    "kinds": [
     "aria-label"
@@ -36422,6 +36503,15 @@
    ],
    "where": [
     "select#scView"
+   ]
+  },
+  {
+   "s": "The pod and every file on it (models, outputs) are deleted - only a network volume survives",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -42383,6 +42473,15 @@
    ]
   },
   {
+   "s": "asking RunPod for its templates",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
+   ]
+  },
+  {
    "s": "assets",
    "kinds": [
     "text"
@@ -43649,6 +43748,15 @@
    "where": [
     "option in #s_llmdev",
     "option in #s_visdev"
+   ]
+  },
+  {
+   "s": "creating the pod on RunPod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {
@@ -48272,6 +48380,15 @@
    ],
    "where": [
     "b in #stab-audio"
+   ]
+  },
+  {
+   "s": "pod created - loading pod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#pdBody / #gpuEngine"
    ]
   },
   {

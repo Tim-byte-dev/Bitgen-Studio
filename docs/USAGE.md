@@ -8161,6 +8161,23 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   - **⏹ Stop** - "stopping pod…", then "stopped". A stopped pod still pays for its storage until you terminate it on
     RunPod.
 
+## 🖥 Remote servers, RunPod Serverless or Pods, and the PODS docker (2.756.0)
+
+- **Basic Settings ▸ GPU ▸ Remote servers:** pick **RunPod** or **OpenRouter**. OpenRouter runs the LLM there, and
+  pictures, videos and songs render on this computer. For RunPod, pick **Serverless** (an endpoint, paid only while a
+  job runs) or **Pods** (your own GPU machine, paid by the hour while it runs). With nothing set up yet, these choices
+  show under Local, so you can pick Pods first - it unlocks Remote.
+- **The PODS docker** (the **🖥 PODS** button in Basic Settings ▸ GPU) shows only when RunPod ▸ Pods is picked:
+  - RunPod's public templates - **Official**, **Verified** and **Community** - with a search and **ComfyUI only** (on:
+    the templates bitGen can render with). Each name opens its page on RunPod.
+  - **Create pod…:** pick the GPU (RunPod's price per hour now, its memory and how many are free; "none free" can't be
+    picked), the cloud (**Secure** - RunPod's own data centres - or **Community** - usually cheaper), how many GPUs, the
+    container disk (wiped when the pod stops) and /workspace's size (kept while stopped, billed for storage). The hourly
+    estimate shows below. **Create pod** makes it on RunPod; it then shows "loading pod…" and "pod loaded".
+  - **My pods:** every pod on your account. 🅱 marks the ones bitGen created or started. **▶ Start** / **⏹ Stop**,
+    **Use it** (render on it, through its ComfyUI port) and **Terminate** - it asks first, because the pod and every file
+    on it are deleted; only a network volume survives.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

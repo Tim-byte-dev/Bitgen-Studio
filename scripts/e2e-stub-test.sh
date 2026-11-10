@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.756.0 (Tim: "show the remote servers, runpod and openrouter ... serverless or pods" + "the list of public pods from runpod in a docker called PODS ... the user can choose/create a pod")
+node scripts/test-pods756.js > /tmp/pods756.log 2>&1 \
+  && ok "2.756.0 units: lib/pods.js (ComfyUI templates + port, template / GPU views with the cloud's price, the create body in RunPod's limits, bitGen's pods remembered / forgotten), the engine (engineOf / setEngine; Pods allows Remote with no pod yet), routes, the PODS docker + button wiring" \
+  || { bad "2.756.0 pods units"; grep -a "^FAIL" -A1 /tmp/pods756.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui756-ui.js > /tmp/ui756ui.log 2>&1 \
+  && ok "2.756.0 browser test: Remote servers RunPod / OpenRouter + Serverless / Pods; 🖥 PODS only for Pods; templates (Official / Community, ComfyUI only, search); Create pod (GPU prices, none free disabled, the estimate, POST /pods body); 🅱 loading -> loaded; Use it on port 3000; Stop; Terminate asks then deletes - on a stand-in RunPod, or SKIP without playwright" \
+  || { bad "2.756.0 PODS browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui756ui.log | head -14; }
 # ---- 2.755.0 (RunPod retires REST v1 on 15 Nov 2026; Tim: "show loading pod, pod loaded, stopping pod")
 node scripts/test-runpodv2755.js > /tmp/rp755.log 2>&1 \
   && ok "2.755.0 units: RunPod REST v2 (lib/runpodApi.js) - base + stand-in, pods paged, POST /pods/{id}/action, 401/403/404/409 said plainly, v2 + v1 pods mapped, states in words, the proxy (+ stand-in), the endpoint's image from /serverless, nothing calls rest.runpod.io/v1" \

@@ -253,6 +253,7 @@ function mount(app) {
   require("./gpuSplit").mount(app);   // 2.745.0: Basic Settings ▸ GPU - remote / local / both (lib/gpuSplit.js)
   require("./openRouter").mount(app); // 2.753.0: OpenRouter - the LLM on Settings ▸ Remote generation (lib/openRouter.js)
   require("./remoteDock").mount(app); // 2.754.0: the Remote generation docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
+  require("./pods").mount(app);       // 2.756.0: the PODS docker - public templates, GPU prices, create / start / stop / terminate (lib/pods.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
   // "fresh" for 10% of the file's age, hours for files months old) can

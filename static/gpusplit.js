@@ -32,10 +32,22 @@
       var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "checkbox", id: "gpu_" + o[0] });
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); b.appendChild(l);
     });
+    // 2.756.0 (Tim: "if user ... remote selected in basic settings show the remote servers, runpod and openrouter, if user
+    // selects runpod show serverless or pods radio group"): the generation engine, under Remote (and Both)
+    var eng = el("div", { id: "gpuEngine", style: "margin-top:6px;display:none" });
+    [["gpuProv", "Remote servers", [["runpod", "RunPod", "Render on a RunPod GPU - Serverless or a pod (the LLM on RunPod's vLLM when set up)"], ["openrouter", "OpenRouter", "The LLM on OpenRouter - pictures, videos and songs render on this computer"]]],
+     ["gpuRunpod", "RunPod", [["serverless", "Serverless", "A RunPod Serverless endpoint - paid only while a job runs"], ["pods", "Pods", "A RunPod pod - your own GPU machine, paid by the hour while it runs (the PODS docker)"]]]].forEach(function (grp) {
+      var row = el("div", { id: grp[0], role: "radiogroup", "aria-label": grp[1], style: "display:flex;gap:4px 12px;flex-wrap:wrap;align-items:center;margin-top:3px" });
+      row.appendChild(el("span", { class: "hint", style: "font-size:.7rem;min-width:92px" }, grp[1]));
+      grp[2].forEach(function (o) { var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "radio", name: grp[0], value: o[0] }); l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); row.appendChild(l); });
+      eng.appendChild(row);
+    });
     var line = el("div", { id: "gpuLine", class: "hint", "aria-live": "polite", style: "margin-top:6px;font-size:.7rem" });
     var msg = el("div", { id: "gpuMsg", class: "hint", "aria-live": "polite", style: "font-size:.7rem" });
     var open = el("button", { type: "button", class: "ghost", id: "gpuSetup", style: "margin-top:4px;font-size:.72rem" }, "⚙ Settings ▸ Remote generation");
-    box.appendChild(g); box.appendChild(b); box.appendChild(line); box.appendChild(msg); box.appendChild(open);
+    box.appendChild(g); box.appendChild(eng); box.appendChild(b); box.appendChild(line);
+    eng.querySelectorAll('input[name="gpuProv"]').forEach(function (i) { i.onchange = function () { save({ engine: { provider: i.value } }); }; });
+    eng.querySelectorAll('input[name="gpuRunpod"]').forEach(function (i) { i.onchange = function () { save({ engine: { runpod: i.value } }); }; }); box.appendChild(msg); box.appendChild(open);
     g.querySelectorAll("input").forEach(function (i) { i.onchange = function () { save({ where: i.value }); }; });
     b.querySelectorAll("input").forEach(function (i) { i.onchange = function () { var o = {}; o[i.id.slice(4)] = i.checked; save(o); }; });
     open.onclick = function () {
@@ -50,8 +62,13 @@
   function paint() {
     var v = S.v; if (!v || !$("gpuWhere")) return;
     // 2.753.0: Both needs a remote GPU OR a remote LLM (OpenRouter alone: the LLMs there, every render here); Remote a GPU
-    doc.querySelectorAll('input[name="gpuWhere"]').forEach(function (i) { i.checked = i.value === v.where; i.disabled = i.value === "remote" ? !v.remote : i.value === "both" ? !(v.remote || v.vllm_ready) : false; });
+    doc.querySelectorAll('input[name="gpuWhere"]').forEach(function (i) { i.checked = i.value === v.where; i.disabled = i.value === "remote" ? !(v.remote || (v.engine && v.engine.pods)) : i.value === "both" ? !(v.remote || v.vllm_ready || (v.engine && v.engine.pods)) : false; });   // 2.756.0: Pods - a pod comes from the PODS docker
     $("gpuBoxes").style.display = v.where === "both" ? "flex" : "none";
+    var e = v.engine || { provider: "runpod", runpod: "serverless" };
+    $("gpuEngine").style.display = v.where === "local" && v.remote ? "none" : "";   // nothing set up yet: pick the engine first (Pods unlocks Remote)
+    doc.querySelectorAll('input[name="gpuProv"]').forEach(function (i) { i.checked = i.value === e.provider; });
+    doc.querySelectorAll('input[name="gpuRunpod"]').forEach(function (i) { i.checked = i.value === e.runpod; });
+    $("gpuRunpod").style.display = e.provider === "runpod" ? "flex" : "none";
     // a box that cannot apply is not shown ticked (LLM / Vision LLM with no vLLM endpoint run here, whatever was saved)
     ["llm", "vlm", "image", "video"].forEach(function (k) { $("gpu_" + k).checked = !!v[k] && (k === "image" || k === "video" || !!v.vllm_ready); });
     ["llm", "vlm"].forEach(function (k) { var i = $("gpu_" + k); i.disabled = !v.vllm_ready; i.parentNode.title = i.parentNode.title.replace(/ - set up .*$/, "") + (v.vllm_ready ? "" : " - set up Settings ▸ Remote generation ▸ 🧠 LLM first"); });

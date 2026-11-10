@@ -4962,6 +4962,17 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
     Pod 已執行多久以及大約花了多少錢。
   - **⏹ 停止** - 顯示「正在停止 Pod…」，然後是「已停止」。停止的 Pod 在 RunPod 上終止（Terminate）之前仍要支付儲存費用。
 
+## 🖥 遠端伺服器、RunPod 的 Serverless 或 Pod，以及 PODS 停靠窗 (2.756.0)
+<!-- en: remote-servers-runpod-serverless-or-pods-and-the-pods-docker-2-756-0 ec394393fd67 -->
+
+- **基本設定 ▸ GPU ▸ 遠端伺服器：** 選擇 **RunPod** 或 **OpenRouter**。OpenRouter 會在那裡執行 LLM，圖片、影片和歌曲在這臺電腦上渲染。RunPod 則選擇 **Serverless**（端點，只在任務執行時計費）或 **Pod**（你自己的 GPU 機器，執行時按小時計費）。還沒有任何設定時，這些選項顯示在本機下方，所以你可以先選 Pod - 這樣遠端就能選了。
+- **PODS 停靠窗**（基本設定 ▸ GPU 中的 **🖥 PODS** 按鈕）只在選擇 RunPod ▸ Pod 時顯示：
+  - RunPod 的公開範本 - **官方**、**已驗證** 和 **Community** - 帶搜尋和 **僅 ComfyUI**（開啟：bitGen 能用來渲染的範本）。點擊名稱會開啟它在 RunPod 上的頁面。
+  - **建立 Pod…：** 選擇 GPU（RunPod 目前每小時的價格、顯示記憶體以及空閒情況；「none free」的不能選）、雲（**Secure** -
+    RunPod 自己的資料中心 - 或 **Community** - 通常更便宜）、GPU 數量、容器磁碟（Pod 停止時清空）和 /workspace 的大小（停止時保留，收取儲存費用）。下方會顯示每小時的估算。**建立 Pod** 會在 RunPod 上建立它，然後顯示「正在載入 Pod…」和「Pod 已就緒」。
+  - **我的 Pod：** 你帳戶裡的所有 Pod。🅱 表示由 bitGen 建立或啟動的。**▶ 開始** / **⏹ 停止**、**使用**（透過它的 ComfyUI
+    連接埠渲染）和 **終止** - 它會先詢問，因為 Pod 及其上的所有檔案都會被刪除；只有網路磁碟區會保留。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

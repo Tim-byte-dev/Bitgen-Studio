@@ -2747,8 +2747,20 @@
    "src": "static/gpusplit.js:31"
   },
   {
+   "s": "Remote servers",
+   "src": "static/gpusplit.js:38"
+  },
+  {
+   "s": "Serverless",
+   "src": "static/gpusplit.js:39"
+  },
+  {
+   "s": "Pods",
+   "src": "static/gpusplit.js:39"
+  },
+  {
    "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:62"
+   "src": "static/gpusplit.js:79"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -5135,6 +5147,142 @@
    "src": "static/palette.js:256"
   },
   {
+   "s": "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods",
+   "src": "static/podsdock.js:36"
+  },
+  {
+   "s": "PODS",
+   "src": "static/podsdock.js:36"
+  },
+  {
+   "s": "ComfyUI only",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "My pods",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "Search templates",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "Only templates that run ComfyUI - the ones bitGen can render with",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "Ask RunPod again",
+   "src": "static/podsdock.js:53"
+  },
+  {
+   "s": "Official",
+   "src": "static/podsdock.js:54"
+  },
+  {
+   "s": "Verified",
+   "src": "static/podsdock.js:54"
+  },
+  {
+   "s": "No templates here",
+   "src": "static/podsdock.js:82"
+  },
+  {
+   "s": "Cloud",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "Secure",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "GPU",
+   "src": "static/podsdock.js:100"
+  },
+  {
+   "s": "asking RunPod",
+   "src": "static/podsdock.js:100"
+  },
+  {
+   "s": "GPUs",
+   "src": "static/podsdock.js:101"
+  },
+  {
+   "s": "Container disk",
+   "src": "static/podsdock.js:102"
+  },
+  {
+   "s": "wiped when the pod stops",
+   "src": "static/podsdock.js:102"
+  },
+  {
+   "s": "workspace",
+   "src": "static/podsdock.js:103"
+  },
+  {
+   "s": "GB",
+   "src": "static/podsdock.js:103"
+  },
+  {
+   "s": "kept while stopped - billed for storage",
+   "src": "static/podsdock.js:103"
+  },
+  {
+   "s": "Create pod",
+   "src": "static/podsdock.js:105"
+  },
+  {
+   "s": "no GPUs offered",
+   "src": "static/podsdock.js:116"
+  },
+  {
+   "s": "terminating",
+   "src": "static/podsdock.js:148"
+  },
+  {
+   "s": "stopping pod",
+   "src": "static/podsdock.js:149"
+  },
+  {
+   "s": "loading pod",
+   "src": "static/podsdock.js:150"
+  },
+  {
+   "s": "pod loaded",
+   "src": "static/podsdock.js:151"
+  },
+  {
+   "s": "stopped",
+   "src": "static/podsdock.js:154"
+  },
+  {
+   "s": "No pods yet - create one from a template above",
+   "src": "static/podsdock.js:159"
+  },
+  {
+   "s": "bitGen created or started it",
+   "src": "static/podsdock.js:161"
+  },
+  {
+   "s": "Use it",
+   "src": "static/podsdock.js:164"
+  },
+  {
+   "s": "Render on this pod (its ComfyUI)",
+   "src": "static/podsdock.js:164"
+  },
+  {
+   "s": "Terminate",
+   "src": "static/podsdock.js:165"
+  },
+  {
+   "s": "Delete the pod and everything on it",
+   "src": "static/podsdock.js:165"
+  },
+  {
    "s": "since start",
    "src": "static/powerstats.js:95"
   },
@@ -5475,10 +5623,6 @@
    "src": "static/remotedock.js:70"
   },
   {
-   "s": "My pods",
-   "src": "static/remotedock.js:85"
-  },
-  {
    "s": "Pod shortcuts",
    "src": "static/remotedock.js:85"
   },
@@ -5509,22 +5653,6 @@
   {
    "s": "Remote GPU",
    "src": "static/remotedock.js:114"
-  },
-  {
-   "s": "stopping pod",
-   "src": "static/remotedock.js:123"
-  },
-  {
-   "s": "loading pod",
-   "src": "static/remotedock.js:124"
-  },
-  {
-   "s": "pod loaded",
-   "src": "static/remotedock.js:128"
-  },
-  {
-   "s": "stopped",
-   "src": "static/remotedock.js:134"
   },
   {
    "s": "rendering on the pod",
@@ -5652,10 +5780,6 @@
   },
   {
    "s": "Open the tunnel",
-   "src": "static/remotegpu.js:35"
-  },
-  {
-   "s": "Use it",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -12041,10 +12165,6 @@
   {
    "s": "House",
    "src": "ext/imageeditdock/pcpath.js:460"
-  },
-  {
-   "s": "Cloud",
-   "src": "ext/imageeditdock/pcpath.js:461"
   },
   {
    "s": "Ring",
@@ -18563,10 +18683,6 @@
    "src": "ext/timelinedock/m3dblender.js:79"
   },
   {
-   "s": "GPU",
-   "src": "ext/timelinedock/m3dblender.js:79"
-  },
-  {
    "s": "Find / test",
    "src": "ext/timelinedock/m3dblender.js:79"
   },
@@ -22802,23 +22918,23 @@
   },
   {
    "p": "{0} - set up Settings ▸ Remote generation ▸ 🧠 LLM first",
-   "src": "static/gpusplit.js:57"
+   "src": "static/gpusplit.js:74"
   },
   {
    "p": "No remote GPU - pictures, videos and songs render on this computer · LLM: {0} · Vision LLM: {1}",
-   "src": "static/gpusplit.js:62"
+   "src": "static/gpusplit.js:79"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: {3} · Vision LLM: {4}",
-   "src": "static/gpusplit.js:62"
+   "src": "static/gpusplit.js:79"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:62"
+   "src": "static/gpusplit.js:79"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:62"
+   "src": "static/gpusplit.js:79"
   },
   {
    "p": "{0} takes {1} · saves: {2}",
@@ -23241,6 +23357,30 @@
    "src": "static/palette.js:168"
   },
   {
+   "p": "{0} of {1} templates",
+   "src": "static/podsdock.js:77"
+  },
+  {
+   "p": "About ${0} an hour while it runs (RunPod's price now), plus storage",
+   "src": "static/podsdock.js:128"
+  },
+  {
+   "p": "{0} terminated - no more charges for it",
+   "src": "static/podsdock.js:184"
+  },
+  {
+   "p": "{0} - pod loaded",
+   "src": "static/podsdock.js:200"
+  },
+  {
+   "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
+   "src": "static/podsdock.js:201"
+  },
+  {
+   "p": "rendering on {0}",
+   "src": "static/podsdock.js:210"
+  },
+  {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",
    "src": "static/powerstats.js:99"
   },
@@ -23415,18 +23555,6 @@
   {
    "p": "pod loaded · running {0} h {1} min · ≈ ${2}",
    "src": "static/remotedock.js:130"
-  },
-  {
-   "p": "{0} - pod loaded",
-   "src": "static/remotedock.js:148"
-  },
-  {
-   "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/remotedock.js:149"
-  },
-  {
-   "p": "rendering on {0}",
-   "src": "static/remotedock.js:179"
   },
   {
    "p": "{0} pod(s)",
