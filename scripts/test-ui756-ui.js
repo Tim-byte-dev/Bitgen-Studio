@@ -86,8 +86,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("RunPod ▸ Pods: the 🖥 PODS button shows and Remote unlocks (a pod comes from the PODS docker)", (await vis("#gpuPods")) && !(await ev(() => document.querySelector('input[name="gpuWhere"][value="remote"]').disabled)) && (await api("/api/gpusplit")).engine.pods === true);
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(700);
     check("…Remote picked with no pod yet: allowed (renders stay here until a pod is used)", (await api("/api/gpusplit")).where === "remote");
-    await p.click("#gpuPods");
-    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdRow").length > 0, null, { timeout: 10000 }).catch(() => {});
+    await p.click("#gpuPods"); await sleep(600);
+    await p.click("#pdRefresh");   // the server keeps RunPod's templates 10 minutes - this test's stand-in, not an earlier one's
+    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdRow").length > 0 && /templates/.test(document.getElementById("pdMsg").textContent), null, { timeout: 10000 }).catch(() => {});
     const tpl = () => ev(() => [...document.querySelectorAll("#pdTpl .pdRow")].map((r) => r.querySelector(".nm a").textContent));
     const t1 = await tpl();
     check("the PODS docker opens on RunPod's Official templates, ComfyUI only: the ComfyUI one (not PyTorch, never a serverless one), its page ↗", (await ev(() => SecFloat.state("pods").shown)) && t1.join() === "ComfyUI - CUDA 12.8"
