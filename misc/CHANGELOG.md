@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.750.0** — 🦋 The New Logo: the Tribal Butterfly, Two Tigers Facing Each Other and a Tree Whose Branches Are the Antennae, in a Glowing Ring - the App Icon, Favicon, Windows Installer Icon, README Logo, Banner and the Vector Marks (Title Bar, Intro)
 - **2.749.0** — ☁ Ready-Made Remote Styles for RunPod's Stock worker-comfyui Images (R_SDXL + img2img, R_FLUX.1 schnell / dev / dev fp8, R_SD3 Medium, R_Z-Image Turbo); the Endpoint's Image Asked of RunPod and Only Its Styles Listed; the Log Says Where a Job Rendered ([power] + the RunPod Cost, No VRAM Step on Serverless)
 - **2.748.0** — 🔑 API Keys in settings/keys.json, Each Encrypted (AES-256-GCM, settings/keys.master) - Updates and Reset Leave Them, custom.settings Holds None (Moved There at the First Start, the Community Sign-in Too); default.settings Lists Every Default Again
 - **2.747.0** — 🖥 Basic Settings ▸ GPU: Local by Default (Switched Once on Update - the Style Lists Were Empty on Remote), First in Basic Settings Above Override Style, Closed With Its Choice in the Header; the Update Check Asks GitHub for Its Newest Commit Only (It Ran a Full git fetch in One Request and Hit the 5-Minute Limit: "Failed to fetch")
