@@ -50,6 +50,15 @@
       + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="$/h" title="What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:6px;flex-wrap:wrap"><label class="f" for="rgSlsComfy" style="margin:0">ComfyUI in the endpoint\'s image</label>'
       + '<select id="rgSlsComfy" style="flex:1;min-width:220px"><option value="0.34.0">ComfyUI 0.34.0 - RunPod\'s worker image 5.10.0</option><option value="latest">A newer ComfyUI (an image you built)</option></select></div>'
+      // 2.749.0 (Tim: "please add the remote styles"): which stock worker image the endpoint runs - the ready-made R_ styles
+      // for the other images hide (lib/runpodImage.js; RunPod's REST API says it)
+      + '<div class="rowbtns" style="align-items:center;margin-top:6px;flex-wrap:wrap"><label class="f" for="rgSlsImage" style="margin:0">Your endpoint\'s image</label>'
+      + '<select id="rgSlsImage" style="flex:1;min-width:220px" title="Which RunPod worker-comfyui image the endpoint runs - each holds one model set, so the ready-made R_ styles for the other images are hidden">'
+      + '<option value="">Not known yet - every remote style shows</option><option value="sdxl">SDXL (worker-comfyui …-sdxl)</option><option value="sd3">SD3 Medium (…-sd3)</option>'
+      + '<option value="flux1-schnell">FLUX.1 schnell (…-flux1-schnell)</option><option value="flux1-dev">FLUX.1 dev (…-flux1-dev)</option><option value="flux1-dev-fp8">FLUX.1 dev fp8 (…-flux1-dev-fp8)</option>'
+      + '<option value="z-image-turbo">Z-Image Turbo (…-z-image-turbo)</option><option value="base">base - your models on a network volume</option><option value="own">Your own image</option></select>'
+      + '<button type="button" class="ghost" id="rgSlsDetect" title="Ask RunPod which image the endpoint runs (its API key)">🔍 Ask RunPod</button></div>'
+      + '<div id="rgSlsImgMsg" class="hint" aria-live="polite"></div>'
       + '<label class="chk" style="margin-top:4px"><input type="checkbox" id="rgSlsAll"> My image has extra node packs - show every style</label>'
       + '<div id="rgSlsStyles" class="hint" aria-live="polite" style="margin-top:4px"></div>'
       + '<ul class="hint help" id="rgSlsHelp" style="margin:6px 0 0;padding-left:18px">'
@@ -93,6 +102,8 @@
     $("rgTunOn").onclick = function () { save().then(function () { return post("/api/remotegpu/tunnel", { on: true }); }).then(function (t) { S.v.tunnel = t; paintTun(); setTimeout(load, 3000); }); };
     $("rgTunOff").onclick = function () { post("/api/remotegpu/tunnel", { on: false }).then(function (t) { S.v.tunnel = t; paintTun(); }); };
     $("rgSlsComfy").addEventListener("change", save);   // 2.744.0
+    $("rgSlsImage").addEventListener("change", function () { image({ image: $("rgSlsImage").value }); });   // 2.749.0
+    $("rgSlsDetect").onclick = function () { image({ detect: true }); };
     // 2.745.0: one RunPod key in three boxes
     ["rgKey", "rgSlsKey", "rgVkey"].forEach(function (id) { $(id).addEventListener("input", function () { var v = $(id).value; ["rgKey", "rgSlsKey", "rgVkey"].forEach(function (o) { if (o !== id) $(o).value = v; }); }); });
     ["rgVep", "rgVmodel", "rgVvep", "rgVvmodel"].forEach(function (id) { $(id).addEventListener("change", saveVllm); });
@@ -113,6 +124,7 @@
     $("rgSlsComfy").value = (v.serverless || {}).comfy || "0.34.0"; $("rgSlsAll").checked = !!(v.serverless || {}).show_all;
     $("rgVkey").value = (v.runpod || {}).key || "";
     loadVllm();
+    loadImage();
     paintStyles();
     var s = v.ssh || {}; $("rgHost").value = s.host || ""; $("rgUser").value = s.user || ""; $("rgSshPort").value = s.port || ""; $("rgKeyFile").value = s.key || "";
     $("rgRemotePort").value = s.remote_port || ""; $("rgLocalPort").value = s.local_port || "";
@@ -143,6 +155,27 @@
     saveVllm().then(function () { return post("/api/gpusplit/vllm/test", { kind: kind }); }).then(function (r) {
       say("rgVmsg", r.ok ? "✓ " + (kind === "vlm" ? "Vision LLM: " : "LLM: ") + r.model + " · " + r.line : "✗ " + r.error, !!r.ok);
     });
+  }
+  /* 2.749.0: the endpoint's worker image - asked of RunPod once for each endpoint, or picked */
+  var asked = {};
+  function paintImage(k, msg, ok) {
+    if (!$("rgSlsImage")) return;
+    if (k && document.activeElement !== $("rgSlsImage")) $("rgSlsImage").value = k.image || "";
+    say("rgSlsImgMsg", msg != null ? msg : k && k.image_name ? "RunPod: " + k.image_name : "", ok);
+  }
+  function image(b) {
+    say("rgSlsImgMsg", b.detect ? "Asking RunPod…" : "");
+    return post("/api/remotegpu/serverless/image", b).then(function (k) {
+      if (k.error) { paintImage(null, "✗ " + k.error, false); return k; }
+      paintImage(k, null, b.detect ? true : undefined); changed(); return k;
+    });
+  }
+  function loadImage() {
+    fetch("/api/remotegpu/serverless/image").then(function (r) { return r.json(); }).then(function (k) {
+      paintImage(k);
+      var key = ((S.v || {}).runpod || {}).key;
+      if (k && k.endpoint && key && !k.image && !asked[k.endpoint]) { asked[k.endpoint] = 1; image({ detect: true }); }
+    }).catch(function () { /* offline */ });
   }
   function changed() { try { document.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } setTimeout(paintStyles, 400); }
   function paintStyles() {

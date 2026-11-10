@@ -8073,6 +8073,35 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - Fixed: misc/default.settings now lists every default the app uses (five newer ones were missing from the file; the
   values were already in use).
 
+## ☁ Ready-made remote styles for RunPod's worker images (2.749.0)
+
+- Seven remote styles come with the studio, one or two for each of RunPod's stock worker-comfyui images. Each image holds
+  one set of models:
+
+  | Style | RunPod image (runpod/worker-comfyui:5.10.0-…) |
+  |---|---|
+  | R_SDXL, R_SDXL img2img | sdxl |
+  | R_FLUX.1 schnell | flux1-schnell |
+  | R_FLUX.1 dev | flux1-dev |
+  | R_FLUX.1 dev fp8 | flux1-dev-fp8 |
+  | R_SD3 Medium | sd3 |
+  | R_Z-Image Turbo | z-image-turbo |
+
+  They use only ComfyUI's own nodes and the model files RunPod puts in that image, so they render with nothing
+  uploaded.
+- **Settings ▸ Remote GPU ▸ RunPod Serverless ▸ Your endpoint's image:** the studio asks RunPod which image your endpoint
+  runs (🔍 Ask RunPod, and by itself the first time) and lists only the ready-made styles for it. With the sdxl image you
+  see R_SDXL and R_SDXL img2img; the others are hidden, and their tooltip says why. Pick the image yourself if RunPod
+  cannot say. "base" (models on a network volume), "Your own image" and "Not known yet" show every remote style.
+- Like any remote style, they show when Basic Settings ▸ GPU is on Remote or Both. On Local they are hidden.
+- **The log now says where a job rendered.**
+  - On RunPod Serverless the VRAM step says the endpoint's worker loads the models, instead of "VRAM kept" (which was
+    about this computer).
+  - The [power] line starts with "rendered on RunPod Serverless …" and an estimate of what the job cost there (from the
+    price per hour in Settings ▸ Remote GPU). Then it gives what this computer used while it waited.
+- Your own style can't take the name of a ready-made one: saving SDXL as a remote style is refused because R_SDXL already
+  exists. Use R_SDXL, or give yours another name.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

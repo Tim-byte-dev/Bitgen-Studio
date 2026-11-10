@@ -110,8 +110,9 @@ W = {p.name: p.read_text(encoding="utf-8") for p in (ROOT / "misc").glob("*worke
 bare = [n for n, s in W.items() if re.search(r"clear_before_gen\(base, cfg, say\)", s)]
 check("every worker hands its graph to clear_before_gen (none left without it)", not bare, bare)
 users = sorted(n for n, s in W.items() if "clear_before_gen(" in s)
-check("...the 13 workers that free the card (image, video, Wan, LTX, music, graph, swap, Viggle, Ripple, SeedVR2, RTX VFX, DLSS 5, 3D)",
-      len(users) == 13, users)
+# 2.749.0: + RelayVSR (2.728.0) and the picture upscaler (2.733.0), which free the card too - the list had not followed
+check("...the 15 workers that free the card (image, video, Wan, LTX, music, graph, swap, Viggle, Ripple, SeedVR2, RTX VFX, DLSS 5, 3D, RelayVSR, picture upscale)",
+      len(users) == 15 and "relayvsr_worker.py" in users and "imgupscale_worker.py" in users, users)
 V = W["worker.py"]
 check("the video worker: its own /prompt notes the models; its clear gets the graph; its out-of-memory ladder forgets",
       "_cc.note_loaded(base, graph)" in V and "_comfy_clear_vram(base, cfg, g)" in V and "_cc.clear_before_gen(base, cfg, say, graph)" in V

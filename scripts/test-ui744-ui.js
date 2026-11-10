@@ -32,10 +32,12 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI744" }, serverless: { endpoint: "epui744", comfy: "0.34.0", show_all: false } });
   await api("/api/remotegpu/use", { mode: "serverless" });
   // 2.746.0: Remote lists only the REMOTE styles - every image + video style made remote for this test (put back after)
-  const madeRemote = [];
+  const madeRemote = [], stayLocal = new Set();
   for (const k of ["image", "video"]) for (const st of ((await api("/api/styles?kind=" + k)).styles || [])) {
     if (st.runs_on === "remote") continue;
-    await api("/api/styles", { id: st.id, kind: k, runs_on: "remote" }); madeRemote.push([st.id, k]);
+    // 2.749.0: a style whose R_ name is a ready-made starter (SDXL -> R_SDXL) cannot take it (a name is never used twice) - it stays local
+    const r = await fetch(URL0 + "api/styles", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: st.id, kind: k, runs_on: "remote" }) });
+    if (r.ok) madeRemote.push([st.id, k]); else stayLocal.add(st.id);
   }
   const ans = await api("/api/remotegpu/serverless/styles");
   const b = await chromium.launch();
@@ -49,7 +51,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const lists = () => ev(() => ["styleSel", "videoStyleSel"].map((id) => ({ id, opts: [...document.getElementById(id).options].map((o) => ({ v: o.value, t: o.textContent, hidden: o.hidden, note: o.dataset.rpsl === "note", title: o.title })), val: document.getElementById(id).value })));
     let L = await lists();
     const img = L[0], vid = L[1];
-    const wrongI = img.opts.filter((o) => !o.note && o.v && ans.styles[o.v] && o.hidden === ans.styles[o.v].ok);
+    const wrongI = img.opts.filter((o) => !o.note && o.v && ans.styles[o.v] && o.hidden !== !!ans.styles[o.v].hide);   // 2.746.0: the server says why (hide)
     const nHidI = img.opts.filter((o) => o.hidden && !o.note).length;
     check("image styles: hidden exactly when the endpoint cannot render them (why in the title); a last line says how many", ans.filter && nHidI > 0 && wrongI.length === 0
       && img.opts.some((o) => o.note && new RegExp("^☁ " + nHidI + " styles hidden: Basic Settings ▸ GPU is on Remote")) && img.opts.filter((o) => o.hidden && !o.note).every((o) => o.title.length > 5), { nHidI, wrongI: wrongI.slice(0, 3), note: img.opts.filter((o) => o.note) });
@@ -80,7 +82,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     // "my image has node packs"
     await p.click("#rgSlsAll"); await sleep(1200);
     L = await lists();
-    check("\"My image has extra node packs\": saved, and every style shows (no note)", (await api("/api/remotegpu")).serverless.show_all === true && !L.some((x) => x.opts.some((o) => o.hidden || o.note)), L.map((x) => x.opts.filter((o) => o.hidden).length));
+    check("\"My image has extra node packs\": saved, and every style shows (no note)", (await api("/api/remotegpu")).serverless.show_all === true && !L.some((x) => x.opts.some((o) => (o.hidden && !stayLocal.has(o.v)) || (o.note && !stayLocal.size))), L.map((x) => x.opts.filter((o) => o.hidden).length));
     await p.click("#rgSlsAll"); await sleep(300);
     await p.selectOption("#rgSlsComfy", "latest"); await sleep(1400);
     L = await lists();
@@ -98,7 +100,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     L = await lists();
     const c2 = await api("/api/config");
     check("This computer: its own ComfyUI again; only this computer's styles listed now (the ones made remote are hidden - 2.746.0)", !/\/rpsl$/.test(c2.engine.comfy.url)
-      && L.every((x) => x.opts.filter((o) => o.v && !o.note).every((o) => o.hidden)) && L[0].opts.some((o) => o.note && /remote styles hidden: Basic Settings ▸ GPU is on Local/.test(o.t)), c2.engine.comfy.url);
+      && L.every((x) => x.opts.filter((o) => o.v && !o.note && !stayLocal.has(o.v)).every((o) => o.hidden)) && L[0].opts.some((o) => o.note && /remote styles hidden: Basic Settings ▸ GPU is on Local/.test(o.t)), c2.engine.comfy.url);
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));

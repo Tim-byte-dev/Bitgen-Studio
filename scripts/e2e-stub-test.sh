@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
+H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v1 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.749.0 (Tim: "it is still not using runpod ... please add the remote styles - but actually looks like it ran on runpod")
+node scripts/test-remotestarters749.js > /tmp/remotestarters749.log 2>&1 \
+  && ok "2.749.0 ready-made remote styles: R_SDXL (+ img2img), R_FLUX.1 schnell / dev / dev fp8, R_SD3 Medium, R_Z-Image Turbo - remote, each with its RunPod image; core 0.34.0 nodes and only the files RunPod's Dockerfile puts in that image; the patcher fills them; the endpoint's image from RunPod's REST API (stand-in); the others hidden; [power] says where it rendered; no VRAM step on /rpsl" \
+  || { bad "2.749.0 remote starters units"; grep -a "^FAIL" -A1 /tmp/remotestarters749.log | head -14; }
+node scripts/test-ui749-ui.js > /tmp/ui749ui.log 2>&1 \
+  && ok "2.749.0 browser test: the endpoint's image asked of RunPod as the page loads (stand-in on 8399) and shown in Settings ▸ Remote GPU; sdxl = R_SDXL + img2img listed, the others hidden with why; another image picked / not known follow - or SKIP" \
+  || { bad "2.749.0 remote starters browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui749ui.log | head -14; }
 # ---- 2.748.0 (Tim: "save the users api keys in a file in a folder called settings, maybe encrypt the keys and decrptt them
 # when using the app. so user doesn't need to add them with new updates")
 node scripts/test-keys748.js > /tmp/keys748.log 2>&1 \

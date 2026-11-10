@@ -91,13 +91,14 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("…Both lists every style (2.746.0 - the style decides where it renders)", lists.img === 0 && !lists.note && lists.vid === 0, lists);
     // an image job goes to the endpoint
     if (rpUp) {
-      // 2.746.0: in Both the STYLE decides - SDXL made a remote style (R_SDXL, no endpoint of its own = the remote GPU's)
-      const sty = (await api("/api/styles?kind=image")).styles.find((s) => s.name === "SDXL");
+      // 2.746.0: in Both the STYLE decides - Pony made a remote style (R_Pony, no endpoint of its own = the remote GPU's)
+      // (2.749.0: Pony - R_SDXL is a ready-made starter, and a name is never used twice)
+      const sty = (await api("/api/styles?kind=image")).styles.find((s) => s.name === "Pony");
       await api("/api/styles", { id: sty.id, kind: "image", runs_on: "remote" }); madeRemote.push(sty.id);
       const j = await api("/api/genimage", { prompt: "a green square", style_id: sty.id });
       let st = null; for (let i = 0; i < 60; i++) { await sleep(1000); st = await api("/api/jobs/" + j.id + "?log_from=0"); if (st.status === "done" || st.status === "failed") break; }
       const L = (st.log || []).join("\n");
-      check("…a remote style's image job renders on the endpoint: its log says so, ComfyUI's address in it is the endpoint's, the picture comes back", st.status === "done" && /\[gpu\] this image job \(R_SDXL - a remote style\) renders on RunPod Serverless epui745/.test(L)
+      check("…a remote style's image job renders on the endpoint: its log says so, ComfyUI's address in it is the endpoint's, the picture comes back", st.status === "done" && /\[gpu\] this image job \(R_Pony - a remote style\) renders on RunPod Serverless epui745/.test(L)
         && /\/rpsl/.test(L) && Object.keys(runs).length >= 1, { status: st.status, log: L.split("\n").slice(-8) });
     } else console.log("SKIP: the image job leg - 8399 is busy");
     // vLLM: an endpoint makes LLM / Vision LLM tickable
@@ -111,7 +112,11 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.check('input[name="gpuWhere"][value="local"]'); await sleep(1000);
     G = await gpu(); c = await api("/api/config");
     const hid = await ev(() => [...document.getElementById("styleSel").options].filter((o) => o.hidden).length);
-    check("Local: everything on this computer, the boxes hidden, only the remote style (R_SDXL) hidden", G.boxes === "none" && /Image: this computer · Video \+ songs: this computer · LLM: this computer/.test(G.line) && !/\/rpsl$/.test(c.engine.comfy.url) && hid === (madeRemote.length ? 1 : 0), { G, hid });
+    // every hidden one a remote style - by id from the server (the page's label of one renamed through the API is still its old one)
+    const remIds = ((await api("/api/styles?kind=image")).styles || []).filter((x) => x.runs_on === "remote").map((x) => x.id);
+    const hidR = await ev((ids) => [...document.getElementById("styleSel").options].filter((o) => o.hidden && ids.includes(o.value)).length, remIds);
+    const hidN = await ev(() => [...document.getElementById("styleSel").options].filter((o) => o.hidden).map((o) => o.textContent + (o.dataset.ieHide ? " (edit-only)" : "")));
+    check("Local: everything on this computer, the boxes hidden, only the remote styles (R_Pony + the ready-made R_ ones) hidden", G.boxes === "none" && /Image: this computer · Video \+ songs: this computer · LLM: this computer/.test(G.line) && !/\/rpsl$/.test(c.engine.comfy.url) && hid === hidR && hid >= (madeRemote.length ? 1 : 0), { G, hid, hidR, hidN });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));

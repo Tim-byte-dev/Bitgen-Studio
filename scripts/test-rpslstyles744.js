@@ -52,8 +52,9 @@ check("an engine other than ComfyUI, a ControlNet chain, a UI export, a file not
   && /UI format/.test(R.checkStyle({ kind: "image", engine: "comfy", workflow: "x.json" }, H, CFG, () => ({ classes: ["A"], ui: true })).why)
   && /not in this install/.test(C({ kind: "image", engine: "comfy", workflow: "comfy_workflows/nope_744.json" }).why));
 check("settings(): off on this computer; on with mode serverless; an unknown ComfyUI version = 0.34.0", R.settings().on === false
-  && (CFG.rgpu = { mode: "serverless", serverless: { comfy: "9.9", show_all: false } }, R.settings().on && R.settings().comfy === "0.34.0"));
-CFG.rgpu = { mode: "serverless", serverless: { endpoint: "ep", comfy: "0.34.0" } };
+  // 2.747.0: nothing saved in Basic Settings ▸ GPU = Local, so these say Remote
+  && (CFG.rgpu = { mode: "serverless", split: { where: "remote" }, serverless: { comfy: "9.9", show_all: false } }, R.settings().on && R.settings().comfy === "0.34.0"));
+CFG.rgpu = { mode: "serverless", split: { where: "remote" }, serverless: { endpoint: "ep", comfy: "0.34.0" } };
 const a = R.all();
 check("all(): filter on in serverless; the template's modes; (no styles folder here = none)", a.on && a.filter && a.template.modes.ref2va === true && a.styles && typeof a.styles === "object");
 CFG.rgpu.serverless.show_all = true;

@@ -17,6 +17,8 @@ for (const p of ["playwright", (() => { try { return path.join(execSync("npm roo
   try { ({ chromium } = require(p)); break; } catch { /* next */ }
 }
 if (!chromium) { console.log("SKIP: playwright is not installed here - the 2.747.0 browser test did not run"); process.exit(0); }
+const fs = require("fs");
+const SDIR = path.join(__dirname, "..", "styles", "image"), PARK = fs.mkdtempSync(path.join(require("os").tmpdir(), "ui747-")), parked = [];
 const URL0 = process.env.H3_URL || ("http://127.0.0.1:" + (process.env.H3_PORT || 8311) + "/");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
@@ -49,7 +51,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     s = await sec();
     check("opened, it stays open after a reload (remembered like the other sections)", !s.closed, s);
 
-    // Remote with no remote styles
+    // Remote with no remote styles (2.749.0: the ready-made R_ starters moved out of the styles folder for this part, put back after)
+    for (const f of fs.readdirSync(SDIR).filter((f) => /^R_.*\.json$/.test(f))) { fs.renameSync(path.join(SDIR, f), path.join(PARK, f)); parked.push(f); }
     await api("/api/remotegpu/save", { runpod: { key: "rpa_UI747" }, serverless: { endpoint: "epui747", comfy: "0.34.0", show_all: false } });
     await api("/api/remotegpu/use", { mode: "serverless" });          // Remote GPU's Use it -> Basic Settings ▸ GPU Remote
     await p.reload(); await ready();
@@ -78,6 +81,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
+    for (const f of parked) { try { fs.renameSync(path.join(PARK, f), path.join(SDIR, f)); } catch { /* next */ } }
     await b.close();
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: (v0.runpod || {}).key || "" }, serverless: Object.assign({ endpoint: "", cost_hr: 0, comfy: "0.34.0", show_all: false }, v0.serverless || {}) }).catch(() => {});

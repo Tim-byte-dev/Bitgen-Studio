@@ -5,9 +5,9 @@
  * selected, prefix remote style names with R_ add this on save if it is not there"
  *   - Settings ▸ Image, Video and Audio ▸ Music styles: "Runs on" under the name (This computer / Remote GPU), the endpoint
  *     box only for Remote GPU;
- *   - SDXL saved as Remote GPU + an endpoint: the server keeps runs_on / endpoint and names it R_SDXL; the form shows it;
- *   - Basic Settings ▸ GPU Local = only this computer's styles in the lists; Remote = only R_SDXL; Both = every style;
- *   - saved back as This computer: SDXL again, no endpoint.
+ *   - Pony saved as Remote GPU + an endpoint: the server keeps runs_on / endpoint and names it R_Pony; the form shows it;
+ *   - Basic Settings ▸ GPU Local = only this computer's styles in the lists; Remote = only the R_ ones; Both = every style;
+ *   - saved back as This computer: Pony again, no endpoint. (2.749.0: Pony - R_SDXL is a ready-made starter now)
  * Put back afterwards. No server / no Playwright = SKIP. */
 "use strict";
 const path = require("path");
@@ -27,7 +27,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.746.0 browser test did not run"); process.exit(0); }
   const v0 = await api("/api/remotegpu"), g0 = await api("/api/gpusplit"), c0 = await api("/api/config");
-  const sdxl = (await api("/api/styles?kind=image")).styles.find((s) => s.name === "SDXL");
+  // 2.749.0: Pony (not SDXL - the ready-made R_SDXL remote style is a starter now, and a name is never used twice)
+  const sdxl = (await api("/api/styles?kind=image")).styles.find((s) => s.name === "Pony");
   // a remote GPU to switch to: RunPod Serverless (nothing is sent in this test)
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI746" }, serverless: { endpoint: "epui746", comfy: "0.34.0", show_all: false } });
   await api("/api/remotegpu/use", { mode: "serverless" });
@@ -57,22 +58,22 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const epShown = await ev(() => getComputedStyle(document.getElementById("s_step")).display !== "none");
     await p.fill("#s_step", "ohkr3evlck2bxn");
     await ev(() => document.getElementById("s_stsave").click());
-    await p.waitForFunction(() => /^R_SDXL$/.test(document.getElementById("s_stname").value), null, { timeout: 8000 }).catch(() => {});
+    await p.waitForFunction(() => /^R_Pony$/.test(document.getElementById("s_stname").value), null, { timeout: 8000 }).catch(() => {});
     const saved = (await api("/api/styles?kind=image")).styles.find((s) => s.id === sdxl.id);
     const form = await ev(() => ({ name: document.getElementById("s_stname").value, r: (document.querySelector('input[name="s_strunson"]:checked') || {}).value, ep: document.getElementById("s_step").value }));
-    check("Remote GPU: the endpoint box shows; 💾 Save -> the server keeps runs_on remote + the endpoint and names it R_SDXL; the form shows that", epShown && saved.name === "R_SDXL" && saved.runs_on === "remote"
-      && saved.endpoint === "ohkr3evlck2bxn" && form.name === "R_SDXL" && form.r === "remote" && form.ep === "ohkr3evlck2bxn", { saved: { n: saved.name, r: saved.runs_on, e: saved.endpoint }, form });
+    check("Remote GPU: the endpoint box shows; 💾 Save -> the server keeps runs_on remote + the endpoint and names it R_Pony; the form shows that", epShown && saved.name === "R_Pony" && saved.runs_on === "remote"
+      && saved.endpoint === "ohkr3evlck2bxn" && form.name === "R_Pony" && form.r === "remote" && form.ep === "ohkr3evlck2bxn", { saved: { n: saved.name, r: saved.runs_on, e: saved.endpoint }, form });
     await ev(() => document.getElementById("settings").close());
     // the lists follow Basic Settings ▸ GPU
     const lists = () => ev(() => { const o = [...document.getElementById("styleSel").options].filter((x) => x.value && x.dataset.rpsl !== "note"); return { shown: o.filter((x) => !x.hidden).map((x) => x.textContent), hidden: o.filter((x) => x.hidden).map((x) => x.textContent), note: ([...document.getElementById("styleSel").options].find((x) => x.dataset.rpsl === "note") || {}).textContent || "" }; });
     const pick = async (w) => { await p.check(`input[name="gpuWhere"][value="${w}"]`); await sleep(1300); return lists(); };
     let L = await pick("local");
-    check("GPU Local: the image list shows this computer's styles, not R_SDXL; its last line says why", L.hidden.join() === "R_SDXL" && L.shown.length > 3 && /1 remote styles hidden: Basic Settings ▸ GPU is on Local/.test(L.note), { hidden: L.hidden, note: L.note, n: L.shown.length });
+    check("GPU Local: the image list shows this computer's styles, not R_Pony or the ready-made R_ styles; its last line says why", L.hidden.includes("R_Pony") && L.hidden.every((n) => /^R_/.test(n)) && L.shown.every((n) => !/^R_/.test(n)) && L.shown.length > 3 && new RegExp(L.hidden.length + " remote styles hidden: Basic Settings ▸ GPU is on Local").test(L.note), { hidden: L.hidden, note: L.note, n: L.shown.length });
     L = await pick("remote");
-    check("GPU Remote: only the remote style R_SDXL shows", L.shown.join() === "R_SDXL" && L.hidden.length > 3 && /GPU is on Remote/.test(L.note), { shown: L.shown, note: L.note });
-    check("…and it is the one picked (a hidden pick moved to it)", await ev(() => document.getElementById("styleSel").selectedOptions[0].textContent === "R_SDXL"));
+    check("GPU Remote: only the remote styles show (R_Pony and the ready-made R_ ones)", L.shown.includes("R_Pony") && L.shown.every((n) => /^R_/.test(n)) && L.hidden.length > 3 && /GPU is on Remote/.test(L.note), { shown: L.shown, note: L.note });
+    check("…and one of them is the one picked (a hidden pick moved to it)", await ev(() => /^R_/.test(document.getElementById("styleSel").selectedOptions[0].textContent)));
     L = await pick("both");
-    check("GPU Both: every style", L.hidden.length === 0 && L.shown.includes("R_SDXL") && L.shown.length > 4 && !L.note, L.hidden);
+    check("GPU Both: every style", L.hidden.length === 0 && L.shown.includes("R_Pony") && L.shown.length > 4 && !L.note, L.hidden);
     const line = await ev(() => document.getElementById("gpuLine").textContent);
     check("…the line: R_ styles on the remote GPU, the others here", /^R_ styles: RunPod Serverless epui746 · other styles: this computer/.test(line), line);
     // back to this computer
@@ -82,9 +83,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await sleep(500);
     await p.check('input[name="s_strunson"][value="local"]'); await sleep(100);
     await ev(() => document.getElementById("s_stsave").click());
-    await p.waitForFunction(() => document.getElementById("s_stname").value === "SDXL", null, { timeout: 8000 }).catch(() => {});
+    await p.waitForFunction(() => document.getElementById("s_stname").value === "Pony", null, { timeout: 8000 }).catch(() => {});
     const back = (await api("/api/styles?kind=image")).styles.find((s) => s.id === sdxl.id);
-    check("saved back as This computer: SDXL again, local, no endpoint", back.name === "SDXL" && back.runs_on === "local" && back.endpoint === "", { n: back.name, r: back.runs_on, e: back.endpoint });
+    check("saved back as This computer: Pony again, local, no endpoint", back.name === "Pony" && back.runs_on === "local" && back.endpoint === "", { n: back.name, r: back.runs_on, e: back.endpoint });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));

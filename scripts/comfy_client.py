@@ -270,6 +270,12 @@ def clear_before_gen(base, cfg, say, graph=None) -> bool:
         _nc.free_for_comfy(cfg, say)
     except Exception:                                       # noqa: BLE001  (never blocks a ComfyUI job)
         pass
+    # 2.749.0 (Tim's log: the RunPod render said "VRAM kept ... the same model(s) as the last render" - this computer's
+    # words): on RunPod Serverless (the studio's /rpsl adapter) each job may start on a fresh worker - nothing to keep
+    # or free here
+    if "/rpsl" in str(base or ""):
+        say("[comfy] RunPod Serverless: the endpoint's worker loads the models itself - no VRAM to keep or free on this computer")
+        return False
     mode = free_mode(cfg)
     if mode == "off":
         say("[comfy] VRAM clear before generation is OFF (Settings -> ComfyUI)")

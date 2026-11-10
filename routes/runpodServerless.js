@@ -10,6 +10,7 @@
 //   GET  /rpsl/object_info[...], /rpsl/ws   404 - the workers go on without them
 //   POST /api/remotegpu/serverless/test {key?, endpoint?}  -> {ok, line, health} (RunPod's /health)
 //   GET  /api/remotegpu/serverless/jobs                    the jobs this session sent
+//   GET/POST /api/remotegpu/serverless/image  (2.749.0)  {endpoint, image, image_name}; POST {detect: true} asks RunPod, {image} = the pick
 //   GET  /api/remotegpu/serverless/styles  (2.744.0)       {on, filter, comfy, show_all, versions, styles: {id: {ok, why}}, template}
 "use strict";
 const express = require("express");
@@ -61,5 +62,8 @@ function mount(app) {
   app.get("/api/remotegpu/serverless/jobs", wrap(() => ({ jobs: S.jobs() })));
   // 2.744.0: which styles the endpoint can render (lib/rpslStyles.js) - the style lists hide the rest (static/rpstyles.js)
   app.get("/api/remotegpu/serverless/styles", wrap(() => require("../lib/rpslStyles").all()));
+  // 2.749.0: the worker image the endpoint runs (lib/runpodImage.js) - the ready-made R_ styles for the others hide
+  app.get("/api/remotegpu/serverless/image", wrap(() => require("../lib/runpodImage").known()));
+  app.post("/api/remotegpu/serverless/image", wrap((req) => { const b = req.body || {}, I = require("../lib/runpodImage"); return b.detect ? I.detect() : I.set(b.image); }));
 }
 module.exports = { early, mount };

@@ -4894,6 +4894,28 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **加密的作用：** 密钥不再以明文出现在设置文件、它的备份或你发给别人的文件中。应用必须在不询问你的情况下打开它们，所以能读取你在这台电脑上的文件的人也能打开 - 任何会记住密钥的应用都是如此。
 - 修复：misc/default.settings 现在列出了应用使用的所有默认值（文件中缺少 5 个较新的值；这些值早已在使用）。
 
+## ☁ 为 RunPod 工作器镜像准备的现成远程风格（2.749.0）
+<!-- en: ready-made-remote-styles-for-runpod-s-worker-images-2-749-0 6b1d662e8cbb -->
+
+- 工作室自带 7 个远程风格，RunPod 的每个标准 worker-comfyui 镜像有一到两个。每个镜像只有一套模型：
+
+  | 风格 | RunPod 镜像（runpod/worker-comfyui:5.10.0-…） |
+  |---|---|
+  | R_SDXL, R_SDXL img2img | sdxl |
+  | R_FLUX.1 schnell | flux1-schnell |
+  | R_FLUX.1 dev | flux1-dev |
+  | R_FLUX.1 dev fp8 | flux1-dev-fp8 |
+  | R_SD3 Medium | sd3 |
+  | R_Z-Image Turbo | z-image-turbo |
+
+  它们只使用 ComfyUI 自己的节点和 RunPod 放进该镜像的模型文件，所以无需上传任何东西就能渲染。
+- **设置 ▸ 远程 GPU ▸ RunPod Serverless ▸ 端点的镜像：** 工作室向 RunPod 询问你的端点运行的镜像（🔍 询问 RunPod，第一次会自动询问），并只列出适合该镜像的现成风格。使用 sdxl 镜像时会看到 R_SDXL 和 R_SDXL img2img；其他的会隐藏，工具提示会说明原因。如果 RunPod 无法回答，请自己选择。“base”（模型在网络存储卷上）、“你自己的镜像”和“尚不清楚”会显示所有远程风格。
+- 和其他远程风格一样，它们在 基本设置 ▸ GPU 为远程或两者时显示；为本地时隐藏。
+- **日志现在会说明任务在哪里渲染。**
+  - 在 RunPod Serverless 上，VRAM 步骤会说明由端点的工作器加载模型，而不是“VRAM kept”（那是指这台电脑）。
+  - [power] 行以“rendered on RunPod Serverless …”和该任务在那里的大致费用（根据 设置 ▸ 远程 GPU 中的每小时价格）开头，然后是这台电脑在等待期间的用电。
+- 你自己的风格不能使用现成风格的名称：因为 R_SDXL 已经存在，把 SDXL 保存为远程风格会被拒绝。请使用 R_SDXL，或给你的风格另起名字。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

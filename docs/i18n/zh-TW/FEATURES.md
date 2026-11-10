@@ -372,6 +372,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🏷 遠端風格** — 每個圖片、影片和音樂風格在這台電腦或遠端 GPU 上執行（執行於，可選為風格指定自己的 RunPod 端點；遠端風格的名稱以 R_ 開頭）；基本設定 ▸ GPU 為本機時列出這台電腦的風格，遠端時列出 R_ 風格，兩者時列出全部 - 選兩者時由風格決定在哪裡算圖。 *Where:* 設定 ▸ 圖片 / 影片 / 音訊 ▸ 音樂風格 ▸ 執行於；基本設定 ▸ GPU。 *Since:* 2.746.0
 - **🖥 GPU 預設為本機；更新檢查很快** — 基本設定 ▸ GPU 從本機開始，位於基本設定第一項並收合（標題顯示選擇）；更新檢查只向 GitHub 詢問最新提交，任何網路都能幾秒完成，立即更新 在背景下載。 *Where:* 基本設定 ▸ GPU；設定 ▸ 一般 ▸ 更新。 *Since:* 2.747.0
 - **🔑 API 金鑰加密儲存，更新後仍在** — Hugging Face、Civitai 和 RunPod 金鑰、遠端存取金鑰以及社群登入儲存在 settings/keys.json 中，每個單獨加密（AES-256-GCM，由 settings/keys.master 開啟）；更新和恢復預設值都不會動它們；custom.settings 不儲存任何金鑰。 *Where:* bitGen 資料夾中的 settings/（設定 ▸ 一般 中顯示）。 *Since:* 2.748.0
+- **☁ 為 RunPod 準備的現成遠端風格** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium 和 R_Z-Image Turbo，各自對應 RunPod 的一個標準 worker-comfyui 映像（無需上傳）；工作室向 RunPod 詢問端點的鏡像並只列出適合的風格；記錄說明任務在哪裡算圖以及在那裡的大致費用。 *Where:* 基本設定 ▸ GPU 遠端 / 兩者；設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像。 *Since:* 2.749.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

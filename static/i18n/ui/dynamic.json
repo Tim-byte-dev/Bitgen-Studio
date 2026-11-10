@@ -5463,6 +5463,50 @@
    "src": "static/remotegpu.js:31"
   },
   {
+   "s": "Your endpoint's image",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Not known yet - every remote style shows",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "SDXL (worker-comfyui …-sdxl)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "SD3 Medium (…-sd3)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "FLUX.1 schnell (…-flux1-schnell)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "FLUX.1 dev (…-flux1-dev)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "FLUX.1 dev fp8 (…-flux1-dev-fp8)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Z-Image Turbo (…-z-image-turbo)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "base - your models on a network volume",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Your own image",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Ask RunPod",
+   "src": "static/remotegpu.js:31"
+  },
+  {
    "s": "My image has extra node packs - show every style",
    "src": "static/remotegpu.js:31"
   },
@@ -5543,6 +5587,14 @@
    "src": "static/remotegpu.js:31"
   },
   {
+   "s": "Which RunPod worker-comfyui image the endpoint runs - each holds one model set, so the ready-made R_ styles for the other images are hidden",
+   "src": "static/remotegpu.js:31"
+  },
+  {
+   "s": "Ask RunPod which image the endpoint runs (its API key)",
+   "src": "static/remotegpu.js:31"
+  },
+  {
    "s": "host (or IP)",
    "src": "static/remotegpu.js:31"
   },
@@ -5584,39 +5636,39 @@
   },
   {
    "s": "The app sends the pictures and fetches the results over ComfyUI's own HTTP API, so every job renders on",
-   "src": "static/remotegpu.js:71"
+   "src": "static/remotegpu.js:80"
   },
   {
    "s": "the remote machine the same way. Its",
-   "src": "static/remotegpu.js:72"
+   "src": "static/remotegpu.js:81"
   },
   {
    "s": "the 🧩 Model manager shows this computer's folders",
-   "src": "static/remotegpu.js:72"
+   "src": "static/remotegpu.js:81"
   },
   {
    "s": "Use this computer",
-   "src": "static/remotegpu.js:104"
+   "src": "static/remotegpu.js:115"
   },
   {
    "s": "stopped",
-   "src": "static/remotegpu.js:105"
+   "src": "static/remotegpu.js:116"
   },
   {
    "s": "No remote styles yet - set a style's Runs on to Remote GPU (Settings ▸ Image, Video or Audio ▸ Music styles)",
-   "src": "static/remotegpu.js:156"
+   "src": "static/remotegpu.js:189"
   },
   {
    "s": "Every remote style shows - the endpoint's image has node packs the studio cannot see",
-   "src": "static/remotegpu.js:156"
+   "src": "static/remotegpu.js:189"
   },
   {
    "s": "The styles it cannot render, and why",
-   "src": "static/remotegpu.js:162"
+   "src": "static/remotegpu.js:195"
   },
   {
    "s": "pod",
-   "src": "static/remotegpu.js:215"
+   "src": "static/remotegpu.js:248"
   },
   {
    "s": "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU",
@@ -23266,23 +23318,23 @@
   },
   {
    "p": "stopped · {0}",
-   "src": "static/remotegpu.js:105"
+   "src": "static/remotegpu.js:116"
   },
   {
    "p": "now: {0} · {1}",
-   "src": "static/remotegpu.js:109"
+   "src": "static/remotegpu.js:120"
   },
   {
    "p": "now: {0}",
-   "src": "static/remotegpu.js:109"
+   "src": "static/remotegpu.js:120"
   },
   {
    "p": "This endpoint can render {0} of your {1} remote styles; the others are hidden from the style lists",
-   "src": "static/remotegpu.js:156"
+   "src": "static/remotegpu.js:189"
   },
   {
    "p": "pod {0} - 🔄 My pods lists them",
-   "src": "static/remotegpu.js:211"
+   "src": "static/remotegpu.js:244"
   },
   {
    "p": "try {0} (virtual)",
