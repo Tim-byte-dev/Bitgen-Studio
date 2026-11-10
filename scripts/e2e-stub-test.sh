@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.751.0 (Tim: "make the new logo the official bitgen logo, we use it for everything that uses a logo")
+node scripts/test-logo751.js > /tmp/logo751.log 2>&1 \
+  && ok "2.751.0 the official logo: transparent PNGs (master 512, README / website 256, app icon 512, favicon 64) all the master scaled, the .ico 16-256, the banner; misc/brand/make_logo.py from docs/images/logo-source.jpg; the SVGs carry the tree; the intro draws the ring; docs/BRAND.md names every file" \
+  || { bad "2.751.0 official logo units"; grep -a "^FAIL" -A1 /tmp/logo751.log | head -12; }
 # ---- 2.749.0 (Tim: "it is still not using runpod ... please add the remote styles - but actually looks like it ran on runpod")
 node scripts/test-remotestarters749.js > /tmp/remotestarters749.log 2>&1 \
   && ok "2.749.0 ready-made remote styles: R_SDXL (+ img2img), R_FLUX.1 schnell / dev / dev fp8, R_SD3 Medium, R_Z-Image Turbo - remote, each with its RunPod image; core 0.34.0 nodes and only the files RunPod's Dockerfile puts in that image; the patcher fills them; the endpoint's image from RunPod's REST API (stand-in); the others hidden; [power] says where it rendered; no VRAM step on /rpsl" \
