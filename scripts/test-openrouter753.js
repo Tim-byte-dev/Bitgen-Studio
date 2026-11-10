@@ -34,7 +34,7 @@ const O = require("../lib/openRouter");
   check("pickVision: the one picked for it; else the LLM's when it takes pictures; else none", O.pickVision({ model: "aa/free-text:free", vlm_model: "x/y" }, all) === "x/y"
     && O.pickVision({ model: "mm/free-vision:free" }, all) === "mm/free-vision:free" && O.pickVision({ model: "aa/free-text:free" }, all) === "");
   check("BASE: openrouter.ai/api/v1, or H3_OPENROUTER_API (the tests' stand-in)", (delete process.env.H3_OPENROUTER_API, O.BASE()) === "https://openrouter.ai/api/v1"
-    && (process.env.H3_OPENROUTER_API = "http://127.0.0.1:1/v1/", O.BASE()) === "http://127.0.0.1:1/v1");
+    && (process.env.H3_OPENROUTER_API = "http://stand.in:1/v1/", O.BASE()) === "http://stand.in:1/v1");
   check("the key is kept encrypted with the others (lib/secrets.js PATHS rgpu.openrouter.key)", require("../lib/secrets").PATHS.includes("rgpu.openrouter.key"));
 
   // lib/gpuSplit.js with a config in hand (core stubbed)
@@ -46,7 +46,7 @@ const O = require("../lib/openRouter");
     const G = require("../lib/gpuSplit");
     const t = await G.llmTarget("llm"), tv = await G.llmTarget("vlm");
     check("gpuSplit: OpenRouter the provider, Both + LLM ticked -> the chat goes to OpenRouter's /chat/completions with the key and the model",
-      G.llmReady() && t && t.url === "http://127.0.0.1:1/v1/chat/completions" && t.model === "mm/free-vision:free" && t.headers.Authorization === "Bearer sk-or-T" && /^OpenRouter /.test(t.label) && tv.model === "mm/free-vision:free", t);
+      G.llmReady() && t && t.url === "http://stand.in:1/v1/chat/completions" && t.model === "mm/free-vision:free" && t.headers.Authorization === "Bearer sk-or-T" && /^OpenRouter /.test(t.label) && tv.model === "mm/free-vision:free", t);
     const v = G.view();
     check("…view: vllm_ready (the page's name for 'a remote LLM is set up'), llm_provider openrouter, the label; LLM routed remote", v.vllm_ready === true && v.llm_provider === "openrouter" && v.llm_label === "OpenRouter mm/free-vision:free" && v.routes.llm === "remote", v);
     CFG.rgpu.split.llm = false;

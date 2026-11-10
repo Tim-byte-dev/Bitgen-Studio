@@ -5459,6 +5459,74 @@
    "src": "static/relayvsrpanel.js:121"
   },
   {
+   "s": "Use remote generation",
+   "src": "static/remotedock.js:38"
+  },
+  {
+   "s": "Render, or run the LLM, somewhere else: a RunPod GPU, OpenRouter or another computer. Off: everything runs on this computer, and Basic Settings ▸ GPU is hidden",
+   "src": "static/remotedock.js:38"
+  },
+  {
+   "s": "Show / hide the Remote generation docker: your pods, pod shortcuts and where the work runs",
+   "src": "static/remotedock.js:69"
+  },
+  {
+   "s": "Remote generation docker",
+   "src": "static/remotedock.js:70"
+  },
+  {
+   "s": "My pods",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Pod shortcuts",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "RunPod templates you deploy as your own pods. Paste a template's link from its page on RunPod, give it a name and add it. Deploy ↗ opens RunPod with it picked; then 🔄 My pods lists the new pod",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Explore RunPod templates ↗",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Settings ▸ Remote generation",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Ask RunPod for your pods (your API key - Settings ▸ Remote generation)",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Name, e.g. MiniMax H3 ComfyUI",
+   "src": "static/remotedock.js:85"
+  },
+  {
+   "s": "Where the work runs",
+   "src": "static/remotedock.js:114"
+  },
+  {
+   "s": "Remote GPU",
+   "src": "static/remotedock.js:114"
+  },
+  {
+   "s": "rendering on the pod",
+   "src": "static/remotedock.js:140"
+  },
+  {
+   "s": "no pods yet - deploy one (a shortcut below, or on RunPod)",
+   "src": "static/remotedock.js:149"
+  },
+  {
+   "s": "No shortcuts yet",
+   "src": "static/remotedock.js:154"
+  },
+  {
+   "s": "Remote generation",
+   "src": "static/remotedock.js:183"
+  },
+  {
    "s": "Render with",
    "src": "static/remotegpu.js:35"
   },
@@ -5472,10 +5540,6 @@
   },
   {
    "s": "RunPod",
-   "src": "static/remotegpu.js:35"
-  },
-  {
-   "s": "My pods",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -5777,10 +5841,6 @@
   {
    "s": "Runs on",
    "src": "static/runson.js:21"
-  },
-  {
-   "s": "Remote GPU",
-   "src": "static/runson.js:24"
   },
   {
    "s": "RunPod endpoint ID (blank = the one in Settings ▸ Remote generation)",
@@ -23331,6 +23391,14 @@
   {
    "p": "{0}×{1} → {2}×{3} (RelayVSR {4})",
    "src": "static/relayvsrpanel.js:85"
+  },
+  {
+   "p": "rendering on {0}",
+   "src": "static/remotedock.js:140"
+  },
+  {
+   "p": "{0} pod(s)",
+   "src": "static/remotedock.js:149"
   },
   {
    "p": "stopped · {0}",

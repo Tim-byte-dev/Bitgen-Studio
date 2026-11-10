@@ -20,6 +20,7 @@ let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 600))); } };
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.753.1 browser test did not run"); process.exit(0); }
+  await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: true }) }).catch(() => {});   // 2.754.0: the tab shows its parts only with Use remote generation ticked
   const b = await chromium.launch();
   try {
     const ctx = await b.newContext({ viewport: { width: 1400, height: 1000 } });
@@ -44,7 +45,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.check('#stab-rgpu input[name="rgmode"][value="local"]');
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e)); }
-  finally { await b.close(); }
+  finally { await b.close(); await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: null }) }).catch(() => {}); }   // 2.754.0: back to never chosen
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })();

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5637,
+ "count": 5652,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -9859,6 +9859,15 @@
    ],
    "where": [
     "label.f in #sec-facefix"
+   ]
+  },
+  {
+   "s": "Deploy ↗",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -27910,6 +27919,15 @@
    ]
   },
   {
+   "s": "Remove this shortcut",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "Remove what is selected and continue the surroundings (the prompt is optional)",
    "kinds": [
     "title"
@@ -28028,6 +28046,15 @@
    ],
    "where": [
     "button#plNow"
+   ]
+  },
+  {
+   "s": "Render on this pod (its ComfyUI)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -28957,6 +28984,24 @@
    ],
    "where": [
     "input#rgKey"
+   ]
+  },
+  {
+   "s": "RunPod refused - your API key (an All key) goes in Settings ▸ Remote generation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
+   "s": "RunPod's deploy page with this template picked (bitGen's referral link)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -36859,6 +36904,24 @@
    ]
   },
   {
+   "s": "The template's link (runpod.io/console/explore/",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
+   "s": "The template's page on RunPod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "The text effect preset a new text starts with (the T tool)",
    "kinds": [
     "title"
@@ -40704,6 +40767,15 @@
    ]
   },
   {
+   "s": "Where the work runs",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "Where they come from and what happened before the story — the writer reads this and their chapter memory when building scenes",
    "kinds": [
     "placeholder"
@@ -42299,6 +42371,15 @@
    ],
    "where": [
     "#rgOrMsg"
+   ]
+  },
+  {
+   "s": "asking RunPod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -46979,6 +47060,15 @@
    ]
   },
   {
+   "s": "no pods yet - deploy one (a shortcut below, or on RunPod)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "no preset —",
    "kinds": [
     "text"
@@ -47169,6 +47259,15 @@
    ],
    "where": [
     "option in #bgvList"
+   ]
+  },
+  {
+   "s": "none set up",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -49175,6 +49274,15 @@
    ]
   },
   {
+   "s": "shortcut added",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "show",
    "kinds": [
     "text"
@@ -49647,6 +49755,15 @@
    ]
   },
   {
+   "s": "starting - give it a minute, then Use it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "starts at",
    "kinds": [
     "text"
@@ -49717,6 +49834,15 @@
    ],
    "where": [
     "span#rgTun.hint"
+   ]
+  },
+  {
+   "s": "stopped - storage is still billed until you terminate it on RunPod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -51068,6 +51194,15 @@
    ],
    "where": [
     "input#chPronouns"
+   ]
+  },
+  {
+   "s": "this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {

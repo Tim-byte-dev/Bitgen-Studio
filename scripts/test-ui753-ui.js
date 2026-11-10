@@ -57,6 +57,7 @@ const MODELS = [
   await api("/api/openrouter", { key: "", model: "", vlm_model: "", free_only: true, provider: "runpod" });
   await api("/api/gpusplit", { where: "local", llm: false, vlm: false, image: false, video: false });
   const rm0 = (await api("/api/gpusplit")).remote;
+  await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: true }) }).catch(() => {});   // 2.754.0: the tab shows its parts only with Use remote generation ticked
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1400, height: 1000 } });
@@ -127,6 +128,7 @@ const MODELS = [
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close();
+    await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: null }) }).catch(() => {});   // 2.754.0: back to never chosen
     or.close();
     await api("/api/gpusplit", { where: "local", llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/openrouter", { key: o0.key || "", model: o0.model || "", vlm_model: o0.vlm_model || "", free_only: o0.free_only !== false, provider: o0.provider || "runpod" }).catch(() => {});

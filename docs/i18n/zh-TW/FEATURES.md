@@ -374,6 +374,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🔑 API 金鑰加密儲存，更新後仍在** — Hugging Face、Civitai 和 RunPod 金鑰、遠端存取金鑰以及社群登入儲存在 settings/keys.json 中，每個單獨加密（AES-256-GCM，由 settings/keys.master 開啟）；更新和恢復預設值都不會動它們；custom.settings 不儲存任何金鑰。 *Where:* bitGen 資料夾中的 settings/（設定 ▸ 一般 中顯示）。 *Since:* 2.748.0
 - **☁ 為 RunPod 準備的現成遠端風格** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium 和 R_Z-Image Turbo，各自對應 RunPod 的一個標準 worker-comfyui 映像（無需上傳）；工作室向 RunPod 詢問端點的鏡像並只列出適合的風格；記錄說明任務在哪裡算圖以及在那裡的大致費用。 *Where:* 基本設定 ▸ GPU 遠端 / 兩者；設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像。 *Since:* 2.749.0
 - **🧠 OpenRouter 上的 LLM（免費模型）+「遠端生成」** — 劇本寫作、提示詞輔助和圖片描述可以在 OpenRouter 上執行：一個 API 金鑰（加密儲存）、免費模型（或顯示每百萬 token 價格的付費模型）、用於圖片的視覺模型、✓ Test；不需要遠端 GPU - 圖片、影片和歌曲仍在這裡渲染。設定中的 Remote GPU 分頁現在叫 Remote generation（遠端生成）。 *Where:* Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter；Basic Settings ▸ GPU 選 Both 並勾選 LLM / Vision LLM。 *Since:* 2.753.0
+- **☁ 使用遠端生成 + 遠端生成停靠窗 + Pod 捷徑** — 一個核取方塊開啟或關閉遠端生成（關閉：一切在這裡執行，基本設定 ▸ GPU 隱藏）；從 基本設定 ▸ GPU（而不是狀態列）開啟的浮動停靠窗顯示任務在哪裡執行、你的 RunPod Pod（開始 / 停止 / 使用）以及 Pod 捷徑：用連結新增的 RunPod 範本，部署 ↗ 會開啟已選好該範本的 RunPod。 *Where:* Settings ▸ Remote generation ▸ Use remote generation；Basic Settings ▸ GPU ▸ ☁ Remote generation docker。 *Since:* 2.754.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

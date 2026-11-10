@@ -32,6 +32,7 @@ const KEY = "rpa_UI748_" + "x".repeat(20);
   const info = await api("/api/settings/info");
   if (path.resolve(path.dirname(info.custom)) !== path.resolve(ROOT)) { console.log("SKIP: the studio at " + URL0 + " runs from another folder - the 2.748.0 browser test did not run"); process.exit(0); }
   const v0 = await api("/api/remotegpu");
+  await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: true }) }).catch(() => {});   // 2.754.0: the tab shows its parts only with Use remote generation ticked
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1400, height: 1000 } });
@@ -63,6 +64,7 @@ const KEY = "rpa_UI748_" + "x".repeat(20);
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close();
+    await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: null }) }).catch(() => {});   // 2.754.0: back to never chosen
     await api("/api/remotegpu/save", { runpod: { key: (v0.runpod || {}).key || "" } }).catch(() => {});
   }
   check("put back: the test key is gone from settings/", !read("settings/keys.json").includes("UI748") && !(await api("/api/remotegpu")).runpod.key_set === !(v0.runpod || {}).key);

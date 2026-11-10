@@ -8132,6 +8132,24 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   OpenRouter can change these limits.
 - Your prompts and pictures go to OpenRouter and the model's provider. Keep private material on this computer.
 
+## ☁ Use remote generation, the Remote generation docker and pod shortcuts (2.754.0)
+
+- **Settings ▸ Remote generation ▸ Use remote generation** is the first thing in the tab. Unticked, the rest of the tab,
+  Basic Settings ▸ GPU and the Remote generation docker are hidden, and everything runs on this computer. A new install
+  starts unticked; an update starts ticked when something remote was already set up.
+- **The Remote generation docker:** in Basic Settings ▸ GPU, press **☁ Remote generation docker**. It floats and docks
+  like the others, and it has no button in the status bar. It shows:
+  - where the work runs, the remote GPU in use and where the LLM runs;
+  - **My pods**: your RunPod pods (your API key - an "All" key), with **▶ Start**, **⏹ Stop** and **Use it** (render
+    on that pod). A stopped pod still pays for its storage until you terminate it on RunPod;
+  - **Pod shortcuts**: RunPod templates - "public pods" - that you deploy as your own pods.
+- **Add a pod shortcut:**
+  1. On RunPod, open **Explore** (the docker's **Explore RunPod templates ↗**) and find a template - pick one that runs
+     ComfyUI.
+  2. Copy its page's link (runpod.io/console/explore/…), paste it into the docker with a name, and press **＋ Add**.
+  3. **Deploy ↗** opens RunPod's deploy page with the template picked (bitGen's referral link). Pick the GPU and deploy.
+  4. Back in the docker, **🔄 My pods** lists the new pod - **Use it**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

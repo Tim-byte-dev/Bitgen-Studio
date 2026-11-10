@@ -33,6 +33,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI746" }, serverless: { endpoint: "epui746", comfy: "0.34.0", show_all: false } });
   await api("/api/remotegpu/use", { mode: "serverless" });
   await api("/api/gpusplit", { where: "local" });
+  await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: true }) }).catch(() => {});   // 2.754.0: the tab shows its parts only with Use remote generation ticked
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1400, height: 1000 } });
@@ -91,6 +92,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close();
+    await fetch(URL0 + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: null }) }).catch(() => {});   // 2.754.0: back to never chosen
     await api("/api/styles", { id: sdxl.id, kind: "image", runs_on: "local" }).catch(() => {});
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: (v0.runpod || {}).key || "" }, serverless: Object.assign({ endpoint: "", cost_hr: 0, comfy: "0.34.0", show_all: false }, v0.serverless || {}) }).catch(() => {});

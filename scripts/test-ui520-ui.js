@@ -67,6 +67,7 @@ const JOB = "e2e_ui520";
   await new Promise((r) => srv.listen(0, "127.0.0.1", r));
   const RURL = "http://127.0.0.1:" + srv.address().port;
 
+  await fetch(URL_ + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: true }) }).catch(() => {});   // 2.754.0: the tab shows its parts only with Use remote generation ticked
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1900, height: 1150 }, acceptDownloads: true });
   const errs = [];
@@ -191,6 +192,7 @@ const JOB = "e2e_ui520";
     check("the run did not throw", false, String(e && e.stack || e).slice(0, 600));
   } finally {
     await b.close().catch(() => {});
+    await fetch(URL_ + "api/remotegen/enabled", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ on: null }) }).catch(() => {});   // 2.754.0: back to never chosen
     srv.close();
     await api("/api/loratrain/job/" + JOB, undefined, "DELETE").catch(() => {});
     await api("/api/config", { engine: { comfy: { dir: keep.comfyDir } }, power: Object.assign({ price_kwh: 0, supply_day: 0, peak_price_kwh: 0, peak_windows: [] }, keep.power) }).catch(() => {});

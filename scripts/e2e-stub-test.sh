@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.754.0 (Tim: "can you make a remote generation floating docker ... add a checkbox in the settings- remote geneation tab, to use remote generation ... is it possible to have a shortcut to them?")
+node scripts/test-remotedock754.js > /tmp/rd754.log 2>&1 \
+  && ok "2.754.0 units: pod shortcuts (a template link / deploy link / ID, Deploy = RunPod's deploy page + bitGen's referral code, kept, refused when not a template), Use remote generation (never chosen = on when something remote is set up; off = Local + the LLM here + Both refused + jobs here), routes, the docker a SecFloat window with no status-bar button" \
+  || { bad "2.754.0 remote docker units"; grep -a "^FAIL" -A1 /tmp/rd754.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui754-ui.js > /tmp/ui754ui.log 2>&1 \
+  && ok "2.754.0 browser test: off hides Basic Settings ▸ GPU + the tab's parts; ticked shows them; ☁ Remote generation docker (in GPU, not the status bar) floats: where the work runs, My pods (start / Use it on a stand-in RunPod), pod shortcuts (Deploy ↗ with the referral code, a bad link refused, ✕); unticked = all here again - or SKIP without playwright" \
+  || { bad "2.754.0 remote docker browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui754ui.log | head -14; }
 # ---- 2.753.1 (Tim: "replace all the logos with the orange border with the new logo" / "the old orange border logo is also in the video")
 node scripts/test-logo7531.js > /tmp/logo7531.log 2>&1 \
   && ok "2.753.1 units: Windows' icon cache refreshed once per logo at start (lib/iconRefresh.js, ie4uinit.exe -show, Windows only, never in the way) so the shortcuts drop the old orange-bordered logo" \
