@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.756.2 (Tim: "bitgen has crashed - i rebooted the pc" - the start-up ComfyUI restart ended the studio itself on RunPod Serverless)
+node scripts/test-comfyboot7562.js > /tmp/comfyboot7562.log 2>&1 \
+  && ok "2.756.2 units: the start-up restart leaves the studio's own address alone (/rpsl, its port) and never ends its own process; a real ComfyUI left running is still restarted" \
+  || { bad "2.756.2 start-up self-kill units"; grep -a "^FAIL" -A1 /tmp/comfyboot7562.log | head -12; }
 # ---- 2.756.1 (Tim: "list all them templates filter them by search, have a card for each of them like comfyui does. now it says 0 of 100 templates")
 node scripts/test-pods7561.js > /tmp/pods7561.log 2>&1 \
   && ok "2.756.1 units: every template from Official + Verified + Community once (pods only), ComfyUI first, a count per source, a failed source named, the search word by word (server = page), the cards + the form above them" \
