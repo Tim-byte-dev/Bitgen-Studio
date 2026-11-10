@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 934,
+    "count": 936,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -335,6 +335,7 @@
         "Lower the size or the length, or set Settings ▸ ComfyUI ▸ Free it to \"before every generation\". The studio remembers the longest clip your card finished and splits longer ones.",
         "Made by",
         "Main",
+        "Make a RunPod account",
         "Make a free account at <a href=\"{0}\" rel=\"noopener\">openrouter.ai</a> and create a key (Keys).",
         "Make a network volume",
         "Make an API key",
@@ -846,6 +847,7 @@
         "bitGen Studio: image editing, video editing, music editing and AI generation",
         "bitGen runs it once through ComfyUI with test inputs. When it works, it is saved into comfy_workflows/ and added to the Graph list; when it does not, ComfyUI's own error is shown and nothing is saved.",
         "bitGen's check for missing models before a render is skipped - it cannot see RunPod's disk. A model that is not there fails the render with RunPod's own message.",
+        "bitGen's referral link: signing up with it helps fund bitGen Studio.",
         "by Tiger Art",
         "clone from another address",
         "confirm your email to post",

@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "493b6ecf0caa",
- "count": 9034,
+ "v": "8a5a29103032",
+ "count": 9036,
  "patternCount": 1075,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3466,6 +3466,7 @@
   "Make a 3D model": "3D モデルを作成",
   "Make a 3D model of": "3D モデルを作成：",
   "Make a 3D model of this picture (Hunyuan3D / TRELLIS.2 in ComfyUI) -> models3d/ (the .blend preview's ＋ Model)": "この画像の 3D モデルを作成します（ComfyUI の Hunyuan3D / TRELLIS.2） -> models3d/（.blend プレビューの ＋ モデル）",
+  "Make a RunPod account ↗": "RunPod のアカウントを作る ↗",
   "Make a free account and a key at openrouter.ai (Keys). Nothing to install - the studio sends the LLM's requests over the internet": "openrouter.ai で無料のアカウントとキー（Keys）を作ります。インストールは不要です - スタジオが LLM へのリクエストをインターネット経由で送ります",
   "Make a group of what is picked (G) - picked as one, double-click it to edit inside; with a group picked: explode it": "選択したものをグループにします (G) - まとめて選択され、ダブルクリックで内部を編集できます。グループを選択中：分解します",
   "Make a new image from this view with the prompt docker (Edit mode: the edit model + this picture)": "このビューからプロンプトドッカーで新しい画像を作ります（編集モード：編集モデル + この画像）",
@@ -7249,6 +7250,7 @@
   "bitGen links to it through the bitGen Bridge plugin. Pick the project here and bitGen puts the plugin in, switches on what it needs and restarts Unreal with it": "bitGen は bitGen Bridge プラグインを介して連携します。ここでプロジェクトを選ぶと、bitGen がプラグインを組み込み、必要な機能を有効にして、プラグイン付きで Unreal を再起動します",
   "bitGen update": "bitGen のアップデート",
   "bitGen v2.704.0] no files found — scanned: /tmp/bg-vision595-9QJoB0/My Vision (missing) — every file in these folders lists, so empty means the folders hold nothing (or the path is wrong); an mmproj .gguf BESIDE a model lets it see pictures (misc\\get-qwen3vl.ps1 downloads a matched pair": "bitGen v2.704.0] ファイルが見つかりません — スキャン先：/tmp/bg-vision595-9QJoB0/My Vision（見つかりません）— これらのフォルダー内のファイルはすべて一覧に表示されるので、空ならフォルダーに何もない（またはパスが間違っている）ということです。モデルの「横に」mmproj .gguf を置くと画像を認識できるようになります (misc\\get-qwen3vl.ps1 で対応するペアをダウンロードできます",
+  "bitGen's referral link: signing up with it helps fund bitGen Studio": "bitGen の紹介リンクです：このリンクから登録すると bitGen Studio の開発資金になります",
   "bitgen-blender-addon zip: Blender → Edit → Preferences →": "bitgen-blender-addon zip：Blender → 編集 → プリファレンス →",
   "bitgen-blender-addon zip: Blender → Edit → Preferences → Add-ons → Install from Disk) adds a": "bitgen-blender-addon zip：Blender → 編集 → プリファレンス → アドオン → ディスクからインストール) で次が追加されます：",
   "bitgen-ext-*.zip": "bitgen-ext-*.zip",

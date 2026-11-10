@@ -219,6 +219,7 @@ app.whenReady().then(async () => {
   } catch (e) { console.error("[electron] setup gate: " + e.message); showSetup = process.env.H3_SETUP === "1"; }
   if (showSetup) { createSetupWindow(); }
   else {
+    try { require(path.join(ROOT, "lib", "iconRefresh")).refresh(ROOT); } catch (e) { /* 2.753.1: the new logo on the shortcuts - never in the way */ }
     createSplash();                                         // 2.701.0: the splash while the studio starts
     try { await startServer(); }
     catch (e) { console.error("[electron] " + e.message); }

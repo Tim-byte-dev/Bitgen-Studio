@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.753.1** — 🦋 No More Old Orange-Bordered Logo: Windows' Shortcut Icon Cache Refreshed Once at Start (lib/iconRefresh.js - ie4uinit.exe -show); the Website's Pictures and Films Carry a Version in Their Address, So Browsers Fetch the New Logo and the Sharp Brain Film; bitGen's RunPod Referral Link at the Top of Settings ▸ Remote Generation's RunPod Parts (Opens in the Browser) and on the Website
 - **2.753.0** — 🧠 The LLM on OpenRouter: One API Key, Its Free Models (or Paid, Priced per Million Tokens), a Vision Model for Pictures, ✓ Test - No Remote GPU Needed (Basic Settings ▸ GPU Both With LLM / Vision LLM Ticked); Settings' Remote GPU Tab Is Now Remote Generation
 - **2.752.0** — 🧠 The Start-up Splash Is Always the bitGen Brain Film, With the Official Logo in Its Top Left (the Orange Logo Film No Longer Comes Up at Random), and Upscaled to 1920 x 1080 So Its Titles Are Sharp (misc/brand/upscale_brain.py); the Website's Home Page Plays the Same Brain Film With the Logo
 - **2.751.0** — 🦋 The Official bitGen Logo, Everywhere: the Intro Film and the Start-up Splash Re-rendered With It (Its Blue Ring Drawn In); One Script Makes Every Logo File From One Source (misc/brand/make_logo.py, docs/images/logo-source.jpg); docs/BRAND.md Says Which File to Use Where

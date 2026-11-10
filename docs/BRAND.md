@@ -53,3 +53,12 @@ The tree in the two SVGs is the same shapes, mapped onto the SVG's wings.
 | The name, "bitGen" | tiger orange `#f59e2c` |
 
 On a light background the white butterfly does not show - put the logo on a dark one.
+
+## When the logo changes
+
+The old logo (the butterfly in a dark square with an orange border, before 2.750.0) can stay on screen after an update:
+
+- **Windows shortcuts** keep their picture in Windows' icon cache. lib/iconRefresh.js runs Windows' own
+  `ie4uinit.exe -show` once at start for each logo - bump its `LOGO` when `installer/bitgen.ico` changes.
+- **The website**: browsers keep pictures and films for 30 days. Every picture and film address there carries its
+  version (`inc/site.php` `ua()` - `?v=` the file's change time), so a new file is fetched at once.

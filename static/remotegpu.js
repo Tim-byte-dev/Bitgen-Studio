@@ -21,6 +21,10 @@
 (function (root) {
   "use strict";
   var S = { v: null, pods: [] };
+  // 2.753.1 (Tim: "add this link to the top of the runpod section in app (open externally) and on the website"): bitGen's
+  // RunPod referral link at the top of each RunPod part - target _blank = the browser (electron/main.js setWindowOpenHandler)
+  var RUNPOD_REF = "https://runpod.io?ref=gbj9zxqh";
+  var refLine = '<p class="hint rgRef" style="margin:2px 0 6px"><a href="' + RUNPOD_REF + '" target="_blank" rel="noopener" style="color:var(--tiger)">Make a RunPod account ↗</a> - bitGen\'s referral link: signing up with it helps fund bitGen Studio.</p>';
   function $(id) { return document.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function post(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
@@ -38,13 +42,13 @@
       + '<div class="rowbtns" style="align-items:center"><input type="text" id="rgUrl" spellcheck="false" placeholder="http://192.168.1.50:8188 or https://my-box.tailnet.ts.net:8188" style="flex:1">'
       + '<input type="number" id="rgCost" min="0" step="0.01" placeholder="$/h" title="What the machine costs per hour (0 = free) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div></div>'
       // RunPod
-      + '<div class="rgsec" data-rg="runpod"><label class="f" style="margin-top:12px">RunPod</label>'
+      + '<div class="rgsec" data-rg="runpod"><label class="f" style="margin-top:12px">RunPod</label>' + refLine
       + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1">'
       + '<button type="button" class="ghost" id="rgPods" style="flex:none">🔄 My pods</button>'
       + '<input type="number" id="rgPort" min="1" max="65535" value="8188" title="ComfyUI\'s port on the pod (the template\'s HTTP port)" style="width:80px;flex:none"><span class="hint" style="flex:none">port</span></div>'
       + '<div id="rgPodList" style="margin-top:6px"></div></div>'
       // RunPod Serverless (2.743.0)
-      + '<div class="rgsec" data-rg="serverless"><label class="f" style="margin-top:12px">RunPod Serverless</label>'
+      + '<div class="rgsec" data-rg="serverless"><label class="f" style="margin-top:12px">RunPod Serverless</label>' + refLine
       + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgSlsKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1"></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgEndpoint" spellcheck="false" placeholder="endpoint ID (Serverless → your endpoint, e.g. abc123xyz)" style="flex:1">'
       + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="$/h" title="What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'

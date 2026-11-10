@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.753.1 (Tim: "replace all the logos with the orange border with the new logo" / "the old orange border logo is also in the video")
+node scripts/test-logo7531.js > /tmp/logo7531.log 2>&1 \
+  && ok "2.753.1 units: Windows' icon cache refreshed once per logo at start (lib/iconRefresh.js, ie4uinit.exe -show, Windows only, never in the way) so the shortcuts drop the old orange-bordered logo" \
+  || { bad "2.753.1 logo cache units"; grep -a "^FAIL" -A1 /tmp/logo7531.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7531-ui.js > /tmp/ui7531ui.log 2>&1 \
+  && ok "2.753.1 browser test: Settings ▸ Remote generation - RunPod pod + RunPod Serverless start with bitGen's RunPod referral link (runpod.io?ref=gbj9zxqh), target _blank = the browser; a click opens a new window - or SKIP without playwright" \
+  || { bad "2.753.1 RunPod referral link browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7531ui.log | head -14; }
 # ---- 2.753.0 (Tim: "lets add openrouter to remote gpu, maybe change remote gpu to remote generation?")
 node scripts/test-openrouter753.js > /tmp/or753.log 2>&1 \
   && ok "2.753.0 units: lib/openRouter.js (headers naming the app, prices per million, text models only, free first, the vision pick), the key encrypted, lib/gpuSplit.js sends the LLM / vision LLM to OpenRouter when it is the provider, routes mounted, the tab is Remote generation, no Settings ▸ Remote GPU left" \

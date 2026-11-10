@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5635,
+ "count": 5637,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -20119,6 +20119,15 @@
    ],
    "where": [
     "span in #ieKx"
+   ]
+  },
+  {
+   "s": "Make a RunPod account ↗",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "a in .rgRef"
    ]
   },
   {
@@ -42677,6 +42686,15 @@
    ],
    "where": [
     "select#visionSel"
+   ]
+  },
+  {
+   "s": "bitGen's referral link: signing up with it helps fund bitGen Studio",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p.rgRef"
    ]
   },
   {

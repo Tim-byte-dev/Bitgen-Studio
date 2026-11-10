@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "2caa7c01e16e",
- "count": 9034,
+ "v": "3e2491ad7eec",
+ "count": 9036,
  "patternCount": 1075,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -3466,6 +3466,7 @@
   "Make a 3D model": "生成 3D 模型",
   "Make a 3D model of": "生成 3D 模型：",
   "Make a 3D model of this picture (Hunyuan3D / TRELLIS.2 in ComfyUI) -> models3d/ (the .blend preview's ＋ Model)": "為此圖片生成 3D 模型（ComfyUI 中的 Hunyuan3D / TRELLIS.2）-> models3d/（.blend 預覽中的 ＋ 模型）",
+  "Make a RunPod account ↗": "註冊 RunPod 帳戶 ↗",
   "Make a free account and a key at openrouter.ai (Keys). Nothing to install - the studio sends the LLM's requests over the internet": "在 openrouter.ai 註冊免費帳戶並建立金鑰（Keys）。無需安裝 - 工作室通過網際網路傳送 LLM 請求",
   "Make a group of what is picked (G) - picked as one, double-click it to edit inside; with a group picked: explode it": "將所選內容建立為群組 (G) - 作為整體選擇，雙擊可進入內部編輯；選取群組時：將其分解",
   "Make a new image from this view with the prompt docker (Edit mode: the edit model + this picture)": "用提示詞面板從此檢視生成新影像（編輯模式：編輯模型 + 此圖片）",
@@ -7249,6 +7250,7 @@
   "bitGen links to it through the bitGen Bridge plugin. Pick the project here and bitGen puts the plugin in, switches on what it needs and restarts Unreal with it": "bitGen 透過 bitGen Bridge 外掛與其連線。在這裡選擇專案，bitGen 會放入外掛、開啟所需功能，並帶著外掛重新啟動 Unreal",
   "bitGen update": "bitGen 更新",
   "bitGen v2.704.0] no files found — scanned: /tmp/bg-vision595-9QJoB0/My Vision (missing) — every file in these folders lists, so empty means the folders hold nothing (or the path is wrong); an mmproj .gguf BESIDE a model lets it see pictures (misc\\get-qwen3vl.ps1 downloads a matched pair": "bitGen v2.704.0] 未找到檔案——已掃描：/tmp/bg-vision595-9QJoB0/My Vision（缺失）——這些資料夾中的每個檔案都會列出，所以為空表示資料夾裡什麼都沒有（或路徑有誤）；在模型旁邊放一個 mmproj .gguf 就能讓它看懂圖片 (misc\\get-qwen3vl.ps1 會下載匹配的一對",
+  "bitGen's referral link: signing up with it helps fund bitGen Studio": "這是 bitGen 的推薦連結：通過它註冊可以支援 bitGen Studio 的開發",
   "bitgen-blender-addon zip: Blender → Edit → Preferences →": "bitgen-blender-addon zip：Blender → 編輯 → 偏好設定 →",
   "bitgen-blender-addon zip: Blender → Edit → Preferences → Add-ons → Install from Disk) adds a": "bitgen-blender-addon zip：Blender → 編輯 → 偏好設定 → 外掛 → 從磁碟安裝) 會新增一個",
   "bitgen-ext-*.zip": "bitgen-ext-*.zip",
