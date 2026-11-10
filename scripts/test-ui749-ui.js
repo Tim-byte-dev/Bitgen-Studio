@@ -30,7 +30,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     seen.push({ url: q.url, auth: q.headers.authorization });
     if (q.headers.authorization !== "Bearer rpa_UI749") { s.writeHead(401); return s.end("{}"); }
     s.writeHead(200, { "Content-Type": "application/json" });
-    s.end(JSON.stringify({ id: "epui749", template: { imageName: "runpod/worker-comfyui:5.10.0-sdxl" } }));
+    // 2.755.0: RunPod's REST API v2 - the endpoints with their image
+    s.end(JSON.stringify({ endpoints: [{ id: "epui749", image: "runpod/worker-comfyui:5.10.0-sdxl" }], pagination: { nextCursor: null, hasNextPage: false } }));
   });
   try { await new Promise((ok, bad) => { rest.once("error", bad); rest.listen(8399, "127.0.0.1", ok); }); } catch { console.log("SKIP: port 8399 is busy - the 2.749.0 browser test did not run"); process.exit(0); }
   const v0 = await api("/api/remotegpu"), g0 = await api("/api/gpusplit"), c0 = await api("/api/config");
@@ -54,7 +55,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.waitForFunction(() => /RunPod: runpod\/worker-comfyui:5\.10\.0-sdxl/.test((document.getElementById("rgSlsImgMsg") || {}).textContent || ""), null, { timeout: 10000 }).catch(() => {});
     const tab = await ev(() => ({ sel: document.getElementById("rgSlsImage").value, msg: document.getElementById("rgSlsImgMsg").textContent }));
     check("Settings ▸ Remote GPU ▸ RunPod Serverless asks RunPod by itself (Bearer key, includeTemplate) and says the image: SDXL",
-      tab.sel === "sdxl" && /RunPod: runpod\/worker-comfyui:5\.10\.0-sdxl/.test(tab.msg) && seen.some((x) => x.url === "/v1/endpoints/epui749?includeTemplate=true" && x.auth === "Bearer rpa_UI749"), { tab, seen });
+      tab.sel === "sdxl" && /RunPod: runpod\/worker-comfyui:5\.10\.0-sdxl/.test(tab.msg) && seen.some((x) => x.url === "/v2/serverless?limit=1000" && x.auth === "Bearer rpa_UI749"), { tab, seen });
     await sleep(1200);
     L = await lists();
     check("…with the sdxl image: R_SDXL and R_SDXL img2img listed; the FLUX / SD3 / Z-Image ones hidden, saying why",

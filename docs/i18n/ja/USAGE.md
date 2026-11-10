@@ -4724,6 +4724,16 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   3. **デプロイ ↗** で、そのテンプレートを選んだ状態の RunPod のデプロイページが開きます（bitGen の紹介リンク）。GPU を選んでデプロイします。
   4. ドッカーに戻り、**🔄 マイポッド** に新しい Pod が表示されます - **これを使う**。
 
+## ☁ 11 月 15 日以降も Pod はそのまま使えます。Pod を読み込み中、Pod の準備完了、Pod を停止中 (2.755.0)
+<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 78732d83c2a8 -->
+
+- RunPod は、bitGen が Pod に使っていた API（REST v1）を 2026 年 11 月 15 日に終了します。bitGen は 🔄 マイポッド、▶ 開始 /
+  ⏹ 停止、Serverless エンドポイントのイメージに、RunPod の新しい API（REST v2）を使うようになりました。設定の変更は不要です。
+  API キーには Pod へのアクセス権が必要です - 「All」のキー。
+- **リモート生成ドッカーに Pod の状態が表示されます：**
+  - **▶ 開始** - RunPod が Pod を起動し、続いて ComfyUI を起動する間は「Pod を読み込み中…」、ComfyUI が応答すると「Pod の準備完了」。その後、Pod の実行時間とそれまでの費用の目安を表示します。
+  - **⏹ 停止** - 「Pod を停止中…」、続いて「停止」。停止した Pod も、RunPod で削除（Terminate）するまではストレージ料金がかかります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

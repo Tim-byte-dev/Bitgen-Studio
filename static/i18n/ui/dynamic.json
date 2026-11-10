@@ -5511,20 +5511,36 @@
    "src": "static/remotedock.js:114"
   },
   {
+   "s": "stopping pod",
+   "src": "static/remotedock.js:123"
+  },
+  {
+   "s": "loading pod",
+   "src": "static/remotedock.js:124"
+  },
+  {
+   "s": "pod loaded",
+   "src": "static/remotedock.js:128"
+  },
+  {
+   "s": "stopped",
+   "src": "static/remotedock.js:134"
+  },
+  {
    "s": "rendering on the pod",
-   "src": "static/remotedock.js:140"
+   "src": "static/remotedock.js:179"
   },
   {
    "s": "no pods yet - deploy one (a shortcut below, or on RunPod)",
-   "src": "static/remotedock.js:149"
+   "src": "static/remotedock.js:188"
   },
   {
    "s": "No shortcuts yet",
-   "src": "static/remotedock.js:154"
+   "src": "static/remotedock.js:193"
   },
   {
    "s": "Remote generation",
-   "src": "static/remotedock.js:183"
+   "src": "static/remotedock.js:222"
   },
   {
    "s": "Render with",
@@ -5745,10 +5761,6 @@
   {
    "s": "Use this computer",
    "src": "static/remotegpu.js:119"
-  },
-  {
-   "s": "stopped",
-   "src": "static/remotegpu.js:120"
   },
   {
    "s": "No remote styles yet - set a style's Runs on to Remote GPU (Settings ▸ Image, Video or Audio ▸ Music styles)",
@@ -23393,12 +23405,32 @@
    "src": "static/relayvsrpanel.js:85"
   },
   {
+   "p": "loading pod… · running {0} min",
+   "src": "static/remotedock.js:127"
+  },
+  {
+   "p": "pod loaded · running {0} min · ≈ ${1}",
+   "src": "static/remotedock.js:129"
+  },
+  {
+   "p": "pod loaded · running {0} h {1} min · ≈ ${2}",
+   "src": "static/remotedock.js:130"
+  },
+  {
+   "p": "{0} - pod loaded",
+   "src": "static/remotedock.js:148"
+  },
+  {
+   "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
+   "src": "static/remotedock.js:149"
+  },
+  {
    "p": "rendering on {0}",
-   "src": "static/remotedock.js:140"
+   "src": "static/remotedock.js:179"
   },
   {
    "p": "{0} pod(s)",
-   "src": "static/remotedock.js:149"
+   "src": "static/remotedock.js:188"
   },
   {
    "p": "stopped · {0}",

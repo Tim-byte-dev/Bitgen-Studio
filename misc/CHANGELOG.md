@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.755.0** — ☁ Pods Keep Working After 15 November: bitGen Moves to RunPod's REST API v2 (Pods, Start / Stop, the Endpoint's Image) Before v1 Retires; the Remote Generation Docker Shows Loading Pod, Pod Loaded (With Time Running and Cost So Far) and Stopping Pod
 - **2.754.0** — ☁ Use Remote Generation (One Checkbox: Off Hides Basic Settings ▸ GPU and Keeps Everything Here); the Remote Generation Docker (From Basic Settings ▸ GPU, Not the Status Bar): Where the Work Runs, Your RunPod Pods (Start / Stop / Use It) and Pod Shortcuts - RunPod Templates Deployed With One Click
 - **2.753.1** — 🦋 No More Old Orange-Bordered Logo: Windows' Shortcut Icon Cache Refreshed Once at Start (lib/iconRefresh.js - ie4uinit.exe -show); the Website's Pictures and Films Carry a Version in Their Address, So Browsers Fetch the New Logo and the Sharp Brain Film; bitGen's RunPod Referral Link at the Top of Settings ▸ Remote Generation's RunPod Parts (Opens in the Browser) and on the Website
 - **2.753.0** — 🧠 The LLM on OpenRouter: One API Key, Its Free Models (or Paid, Priced per Million Tokens), a Vision Model for Pictures, ✓ Test - No Remote GPU Needed (Basic Settings ▸ GPU Both With LLM / Vision LLM Ticked); Settings' Remote GPU Tab Is Now Remote Generation

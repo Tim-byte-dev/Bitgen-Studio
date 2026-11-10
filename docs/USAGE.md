@@ -8150,6 +8150,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   3. **Deploy ↗** opens RunPod's deploy page with the template picked (bitGen's referral link). Pick the GPU and deploy.
   4. Back in the docker, **🔄 My pods** lists the new pod - **Use it**.
 
+## ☁ Pods keep working after 15 November; loading pod, pod loaded, stopping pod (2.755.0)
+
+- RunPod retires the API bitGen used for pods (REST v1) on 15 November 2026. bitGen now uses RunPod's new API (REST
+  v2) for 🔄 My pods, ▶ Start / ⏹ Stop and the Serverless endpoint's image. Nothing to change on your side. Your API key
+  needs access to pods - an "All" key.
+- **The Remote generation docker shows what a pod is doing:**
+  - **▶ Start** - "loading pod…" while RunPod starts it and then its ComfyUI, then "pod loaded" once ComfyUI answers.
+    Then it shows how long the pod has been running and about what that has cost.
+  - **⏹ Stop** - "stopping pod…", then "stopped". A stopped pod still pays for its storage until you terminate it on
+    RunPod.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

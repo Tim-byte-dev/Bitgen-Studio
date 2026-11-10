@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.754.0 in a REAL browser against a running studio (H3_URL, or H3_PORT - default 8311) started with
- * H3_RUNPOD_REST_API=http://127.0.0.1:8399/v1 (a stand-in RunPod REST API this test serves on 8399).
+ * H3_RUNPOD_REST_API=http://127.0.0.1:8399/v2 (2.755.0: REST v2 - a stand-in RunPod REST API this test serves on 8399).
  * Tim (verbatim): "can you make a remote generation floating docker, add the toggle for it under the basic settings gpu menu
  * item not in the statusbar. add a checkbox in the settings- remote geneation tab, to use remote generation, if checked show
  * the gpu menu item in basic settings if unchecked hide the gpu menu item ... no point confusing people . i would like to add
@@ -31,11 +31,15 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const seen = []; let state = "EXITED";
   const rp = http.createServer((q, s) => {
     seen.push(q.method + " " + q.url + " " + (q.headers.authorization || ""));
-    s.writeHead(200, { "Content-Type": "application/json" });
+    // 2.755.0: the pod's ComfyUI through "RunPod's proxy" (H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port})
+    if (q.url === "/proxy/pod754-8188/system_stats") { if (state !== "RUNNING") { s.writeHead(502); return s.end("{}"); } s.writeHead(200, { "Content-Type": "application/json" }); return s.end(JSON.stringify({ system: { comfyui_version: "0.3.60" }, devices: [{ name: "cuda:0 RTX 4090", vram_total: 25769803776, type: "cuda" }] })); }
     if (q.headers.authorization !== "Bearer rpa_UI754") { s.writeHead(401); return s.end("{}"); }
-    if (q.method === "GET" && q.url === "/v1/pods") return s.end(JSON.stringify([{ id: "pod754", name: "H3 pod", desiredStatus: state, machine: { gpuDisplayName: "RTX 4090" }, costPerHr: 0.69 }]));
-    if (q.method === "POST" && q.url === "/v1/pods/pod754/start") { state = "RUNNING"; return s.end("{}"); }
-    if (q.method === "POST" && q.url === "/v1/pods/pod754/stop") { state = "EXITED"; return s.end("{}"); }
+    s.writeHead(200, { "Content-Type": "application/json" });
+    // 2.755.0: RunPod's REST API v2 - {pods, pagination}; POST /pods/{id}/action {action}; GET /pods/{id} with runtime
+    const pod = () => ({ id: "pod754", name: "H3 pod", status: state, gpu: { id: "NVIDIA GeForce RTX 4090", count: 1 }, cost: 0.69, ports: ["8188/http"], startedAt: state === "RUNNING" ? new Date().toISOString() : null, runtime: state === "RUNNING" ? { uptime: 42 } : null });
+    if (q.method === "GET" && q.url === "/v2/pods?limit=1000") return s.end(JSON.stringify({ pods: [pod()], pagination: { nextCursor: null, hasNextPage: false } }));
+    if (q.method === "GET" && q.url === "/v2/pods/pod754") return s.end(JSON.stringify(pod()));
+    if (q.method === "POST" && q.url === "/v2/pods/pod754/action") { let b = ""; q.on("data", (d) => { b += d; }); return q.on("end", () => { const a = (JSON.parse(b || "{}")).action; seen.push("ACTION " + a); state = a === "start" ? "RUNNING" : a === "stop" ? "EXITED" : state; s.end(JSON.stringify(pod())); }); }
     s.end("{}");
   });
   try { await new Promise((ok, bad) => { rp.once("error", bad); rp.listen(8399, "127.0.0.1", ok); }); } catch { console.log("SKIP: port 8399 is busy - the 2.754.0 browser test did not run"); process.exit(0); }
@@ -74,12 +78,21 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("the button opens the floating docker (pressed): where the work runs (Local), no remote GPU, the LLM here", d0.shown && d0.body && d0.pressed === "true" && /Where the work runs: Local/.test(d0.now) && /Remote GPU: none set up/.test(d0.now) && /LLM: this computer/.test(d0.now), d0);
     await p.waitForFunction(() => document.querySelector("#rgdPodList [data-rgdpod]"), null, { timeout: 8000 }).catch(() => {});
     const pods = await ev(() => [...document.querySelectorAll("#rgdPodList .rgdRow")].map((r) => r.textContent));
-    check("My pods: listed as the docker opens (your key) - name, GPU, $/h, state, ▶ Start, Use it", pods.length === 1 && /H3 pod · RTX 4090 · \$0\.69\/h · EXITED▶ StartUse it/.test(pods[0]) && seen.some((x) => x === "GET /v1/pods Bearer rpa_UI754"), pods);
-    await p.click('#rgdPodList [data-act="start"]'); await sleep(2500);
+    check("My pods: listed as the docker opens (your key) - name, GPU, $/h, state, ▶ Start, Use it", pods.length === 1 && /H3 pod · RTX 4090 · \$0\.69\/h · stopped▶ StartUse it/.test(pods[0]) && seen.some((x) => x === "GET /v2/pods?limit=1000 Bearer rpa_UI754"), pods);
+    await ev(() => { window.H3_POD_POLL = 400; });
+    await p.click('#rgdPodList [data-act="start"]');
+    const loading = await ev(() => document.querySelector("#rgdPodList .rgdSt").textContent);
+    await p.waitForFunction(() => /pod loaded/.test((document.querySelector("#rgdPodList .rgdSt") || {}).textContent || ""), null, { timeout: 10000 }).catch(() => {});
     const pods2 = await ev(() => [...document.querySelectorAll("#rgdPodList .rgdRow")].map((r) => r.textContent));
-    check("…▶ Start starts it on RunPod; the list then says RUNNING with ⏹ Stop", seen.includes("POST /v1/pods/pod754/start Bearer rpa_UI754") && /RUNNING⏹ Stop/.test(pods2[0] || ""), pods2);
+    check("…▶ Start (RunPod REST v2: POST /pods/{id}/action start): \"loading pod…\" at once, then \"pod loaded\" when its ComfyUI answers - with its time running and about what it cost so far; ⏹ Stop",
+      seen.includes("ACTION start") && seen.includes("POST /v2/pods/pod754/action Bearer rpa_UI754") && /loading pod/.test(loading) && /pod loaded · running 1 min · ≈ \$0\.01⏹ Stop/.test(pods2[0] || "") && /pod loaded/.test(await ev(() => document.getElementById("rgdMsg").textContent)), { loading, pods2 });
     await p.click("#rgdPodList [data-rgduse]"); await sleep(1500);
     const rg = await api("/api/remotegpu");
+    await p.click('#rgdPodList [data-act="stop"]');
+    const stopping = await ev(() => document.querySelector("#rgdPodList .rgdSt").textContent);
+    await p.waitForFunction(() => /^stopped$/.test((document.querySelector("#rgdPodList .rgdSt") || {}).textContent || ""), null, { timeout: 10000 }).catch(() => {});
+    const stopped = await ev(() => ({ st: document.querySelector("#rgdPodList .rgdSt").textContent, btn: document.querySelector("#rgdPodList [data-rgdpod]").dataset.act, msg: document.getElementById("rgdMsg").textContent }));
+    check("…⏹ Stop: \"stopping pod…\", then \"stopped\" (▶ Start again), saying storage is still billed", seen.includes("ACTION stop") && /stopping pod/.test(stopping) && stopped.st === "stopped" && stopped.btn === "start" && /storage is still billed/.test(stopped.msg), { stopping, stopped });
     check("…Use it: the studio renders on that pod (RunPod pod pod754, its ComfyUI through RunPod's proxy)", rg.mode === "runpod" && rg.runpod.pod_id === "pod754" && /pod754-8188\.proxy\.runpod\.net/.test(rg.comfy_url || ""), { mode: rg.mode, pod: rg.runpod && rg.runpod.pod_id, url: rg.comfy_url });
     // shortcuts
     await p.fill("#rgdCutName", "Bad"); await p.fill("#rgdCutLink", "https://example.com/nothing"); await p.click("#rgdCutAdd"); await sleep(600);

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5652,
+ "count": 5656,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -44351,6 +44351,15 @@
    ]
   },
   {
+   "s": "error",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "euler",
    "kinds": [
     "text"
@@ -46069,6 +46078,15 @@
    ],
    "where": [
     "span.what in #stab-about"
+   ]
+  },
+  {
+   "s": "loading pod - RunPod is starting it, then its ComfyUI",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {
@@ -48257,6 +48275,15 @@
    ]
   },
   {
+   "s": "pod running",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
+   ]
+  },
+  {
    "s": "polygon-clipping",
    "kinds": [
     "text"
@@ -50077,6 +50104,15 @@
    "where": [
     "option in #videoStyleSel",
     "option in #bscSel"
+   ]
+  },
+  {
+   "s": "terminated",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgdBody"
    ]
   },
   {

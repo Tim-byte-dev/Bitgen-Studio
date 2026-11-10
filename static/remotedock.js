@@ -16,7 +16,7 @@
  *   Links open in the browser (target _blank - electron/main.js setWindowOpenHandler). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { on: null, g: null, pods: [], cuts: [], explore: "", msg: "" };
+  var doc = root.document, S = { on: null, g: null, pods: [], cuts: [], explore: "", msg: "", st: {}, watch: {} };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
@@ -115,19 +115,58 @@
       + "<div><b>Remote GPU:</b> " + esc(g.remote ? g.remote.label : "none set up") + "</div>"
       + "<div><b>LLM:</b> " + esc(g.routes && g.routes.llm === "remote" ? (g.llm_label || "remote") : "this computer") + "</div>";
   }
+  // 2.755.0 (Tim: "show loading pod, pod loaded, stopping pod"): a pod being started / stopped is watched (GET
+  // /api/remotegpu/pod/:id - RunPod REST v2 + its ComfyUI answering) until it is loaded / stopped
+  /** a pod's state, written into its .rgdSt (each case its own words - the UI translations read them) */
+  function setSt(el, p) {
+    var st = S.st[p.id], w = S.watch[p.id];
+    if (w === "stop" && (!st || st.status !== "EXITED")) { el.textContent = "stopping pod…"; return; }
+    if (w === "start" && (!st || st.status !== "RUNNING")) { el.textContent = "loading pod…"; return; }
+    if (st && st.status === "RUNNING") {
+      var sec = +st.uptime || 0, cost = (sec / 3600 * (+st.cost_hr || 0)).toFixed(2), m = Math.round(sec / 60), h = Math.floor(m / 60), mm = m % 60;
+      if (!st.ready) { el.textContent = sec ? "loading pod… · running " + m + " min" : "loading pod…"; return; }
+      if (!sec) { el.textContent = "pod loaded"; return; }
+      if (m < 60) { el.textContent = "pod loaded · running " + m + " min · ≈ $" + cost; return; }
+      el.textContent = "pod loaded · running " + h + " h " + mm + " min · ≈ $" + cost; return;
+    }
+    if (st) { el.textContent = st.word; return; }
+    if (/RUNNING/.test(p.status)) { el.textContent = "running"; return; }
+    if (/EXITED/.test(p.status)) { el.textContent = "stopped"; return; }
+    el.textContent = String(p.status || "").toLowerCase();
+  }
+  function watch(id, want) { S.watch[id] = want; paintPods(); if (!S.ticking) tick(); }
+  function tick() {
+    var ids = Object.keys(S.watch); S.ticking = ids.length > 0; if (!ids.length) return;
+    Promise.all(ids.map(function (id) {
+      return getj("/api/remotegpu/pod/" + encodeURIComponent(id)).then(function (st) {
+        if (!st || st.error) return;
+        S.st[id] = st;
+        var p = S.pods.find(function (x) { return x.id === id; }); if (p) p.status = st.status;
+        if ((S.watch[id] === "start" && st.ready) || (S.watch[id] === "stop" && st.status === "EXITED")) {
+          delete S.watch[id];
+          var m = $("rgdMsg"), nm = st.name || "the pod";
+          if (st.ready) { m.style.color = "#7c7"; m.textContent = "✓ " + nm + " - pod loaded"; }
+          else { m.style.color = ""; m.textContent = "⏹ " + nm + " stopped - storage is still billed until you terminate it on RunPod"; }
+        }
+      }).catch(function () { /* next time */ });
+    })).then(function () { paintPods(); if (Object.keys(S.watch).length) setTimeout(tick, +(root.H3_POD_POLL || 4000)); else S.ticking = false; });
+  }
   function paintPods() {
     var box = $("rgdPodList"); if (!box) return;
     box.innerHTML = S.pods.map(function (p) {
-      var up = /RUNNING/.test(p.status);
-      return '<div class="rgdRow"><span class="nm"><b>' + esc(p.name) + "</b> · " + esc(p.gpu || "") + " · $" + (+p.cost_hr || 0).toFixed(2) + "/h · " + esc(p.status || "") + "</span>"
+      var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
+      return '<div class="rgdRow" data-pod="' + esc(p.id) + '"><span class="nm"><b>' + esc(p.name) + "</b> · " + esc(p.gpu || "") + " · $" + (+p.cost_hr || 0).toFixed(2) + '/h · <span class="rgdSt"></span></span>'
         + '<button type="button" class="ghost" data-rgdpod="' + esc(p.id) + '" data-act="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
         + '<button type="button" class="ghost" data-rgduse="' + esc(p.id) + '" title="Render on this pod (its ComfyUI)">Use it</button></div>';
     }).join("");
+    box.querySelectorAll(".rgdRow[data-pod]").forEach(function (r) { var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (p) setSt(r.querySelector(".rgdSt"), p); });
     box.querySelectorAll("[data-rgdpod]").forEach(function (b) { b.onclick = function () {
-      say(b.dataset.act === "start" ? "▶ starting…" : "⏹ stopping…");
-      post("/api/remotegpu/pod/" + encodeURIComponent(b.dataset.rgdpod) + "/" + b.dataset.act).then(function (r) {
-        say(r.error || (b.dataset.act === "start" ? "▶ starting - give it a minute, then Use it" : "⏹ stopped - storage is still billed until you terminate it on RunPod"), r.error ? false : null);
-        setTimeout(pods, 1500);
+      var id = b.dataset.rgdpod, act = b.dataset.act;
+      delete S.st[id]; S.watch[id] = act; paintPods();
+      post("/api/remotegpu/pod/" + encodeURIComponent(id) + "/" + act).then(function (r) {
+        if (r.error) { delete S.watch[id]; say(r.error, false); paintPods(); return; }
+        say(act === "start" ? "▶ loading pod - RunPod is starting it, then its ComfyUI" : "⏹ stopping pod…");
+        if (!S.ticking) tick();                  // watched only once RunPod has the action
       });
     }; });
     box.querySelectorAll("[data-rgduse]").forEach(function (b) { b.onclick = function () {

@@ -4952,6 +4952,16 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   3. **部署 ↗** 會開啟已選好該範本的 RunPod 部署頁面（bitGen 的推薦連結）。選擇 GPU 並部署。
   4. 回到停靠窗，**🔄 我的 Pod** 會列出新的 Pod - 按 **使用**。
 
+## ☁ 11 月 15 日之後 Pod 照常可用；正在載入 Pod、Pod 已就緒、正在停止 Pod (2.755.0)
+<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 78732d83c2a8 -->
+
+- RunPod 將在 2026 年 11 月 15 日停用 bitGen 用於 Pod 的 API（REST v1）。現在 bitGen 的 🔄 我的 Pod、▶ 開始 / ⏹ 停止以及 Serverless 端點的映像都使用 RunPod 的新 API（REST v2）。你不需要做任何更改。你的 API 金鑰需要有 Pod 的存取權限 -
+  All 權限的金鑰。
+- **遠端生成停靠窗會顯示 Pod 正在做什麼：**
+  - **▶ 開始** - RunPod 啟動 Pod、然後啟動它的 ComfyUI 時顯示「正在載入 Pod…」，ComfyUI 有回應後顯示「Pod 已就緒」。之後顯示
+    Pod 已執行多久以及大約花了多少錢。
+  - **⏹ 停止** - 顯示「正在停止 Pod…」，然後是「已停止」。停止的 Pod 在 RunPod 上終止（Terminate）之前仍要支付儲存費用。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

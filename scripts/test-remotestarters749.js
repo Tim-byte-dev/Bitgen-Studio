@@ -7,6 +7,7 @@
  *              downloads; the studio's own patcher finds the prompt, seed, steps, size (and the model override)
  *   image      runpodImage.parse ("runpod/worker-comfyui:5.10.0-sdxl" -> sdxl ...); detect = GET <rest>/endpoints/<id>?
  *              includeTemplate=true with Bearer <key> -> template.imageName (a stand-in RunPod); kept for THAT endpoint
+ *              (2.755.0: RunPod's REST v2 - GET /v2/serverless, paged, each endpoint's image)
  *   lists      Remote / Both on a serverless endpoint with a known stock image: a starter for another image hidden (why);
  *              its own endpoint, base / own / not known, "node packs": shown
  *   log        [power] on a remote GPU: "rendered on <label> - about $x ...; this computer while it waited: ..."; the
@@ -74,13 +75,15 @@ print(json.dumps(out))`, JSON.stringify(img.filter((x) => x.runs_on === "remote"
   const srv = http.createServer((q, s) => {
     seen.push({ url: q.url, auth: q.headers.authorization });
     if (q.headers.authorization !== "Bearer rpa_K") { s.writeHead(401); return s.end("{}"); }
-    if (!/^\/v1\/endpoints\/ep749\?includeTemplate=true$/.test(q.url)) { s.writeHead(404); return s.end("{}"); }
-    s.writeHead(200, { "Content-Type": "application/json" }); s.end(JSON.stringify({ id: "ep749", template: { imageName: "runpod/worker-comfyui:5.10.0-sdxl" } }));
+    // 2.755.0: RunPod's REST API v2 - the endpoints listed with their image (two pages here)
+    if (/^\/v2\/serverless\?limit=1000$/.test(q.url)) { s.writeHead(200, { "Content-Type": "application/json" }); return s.end(JSON.stringify({ endpoints: [{ id: "epA", image: "x/y:1" }], pagination: { nextCursor: "c2", hasNextPage: true } })); }
+    if (/^\/v2\/serverless\?limit=1000&cursor=c2$/.test(q.url)) { s.writeHead(200, { "Content-Type": "application/json" }); return s.end(JSON.stringify({ endpoints: [{ id: "ep749", image: "runpod/worker-comfyui:5.10.0-sdxl" }], pagination: { nextCursor: null, hasNextPage: false } })); }
+    s.writeHead(404); s.end("{}");
   });
   await new Promise((r) => srv.listen(0, "127.0.0.1", r));
-  process.env.H3_RUNPOD_REST_API = `http://127.0.0.1:${srv.address().port}/v1`;
+  process.env.H3_RUNPOD_REST_API = `http://127.0.0.1:${srv.address().port}/v2`;
   const k = await I.detect();
-  check("detect: GET <rest>/endpoints/<id>?includeTemplate=true with Authorization: Bearer <key> -> template.imageName -> sdxl, kept for that endpoint",
+  check("detect (2.755.0: REST v2): GET <rest>/serverless, every page, with Authorization: Bearer <key> -> the endpoint's image -> sdxl, kept for that endpoint",
     k.image === "sdxl" && k.image_name === "runpod/worker-comfyui:5.10.0-sdxl" && CFG.rgpu.serverless.image_ep === "ep749" && seen[0].auth === "Bearer rpa_K", { k, seen });
   CFG.rgpu.runpod.key = "rpa_WRONG";
   let e1 = ""; try { await I.detect(); } catch (e) { e1 = e.message; }
