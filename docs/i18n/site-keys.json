@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 877,
+    "count": 878,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -237,6 +237,7 @@
         "From a terminal: {0} in the app folder, then start it again. What is new in each version is in the <a href=\"{1}\" rel=\"noopener\">changelog</a>.",
         "From one sentence to a whole film",
         "From version 2.746.0 each style says where it runs: in its settings (Settings ▸ Image, Video, or Audio ▸ Music styles) set Runs on to Remote GPU, and its name starts with R_. Local lists only the styles for your computer, Remote only the R_ styles, and Both lists them all - an R_ style renders on RunPod, the others on your computer.",
+        "From version 2.749.0 bitGen comes with ready-made remote styles for RunPod's own images - nothing to upload: R_SDXL and R_SDXL img2img (the sdxl image), R_FLUX.1 schnell, R_FLUX.1 dev and R_FLUX.1 dev fp8 (the flux1-schnell, flux1-dev and flux1-dev-fp8 images), R_SD3 Medium (sd3) and R_Z-Image Turbo (z-image-turbo). Each image holds one set of models, so bitGen asks RunPod which image your endpoint runs and lists only its styles (Settings ▸ Remote GPU ▸ Your endpoint's image).",
         "GPU",
         "General",
         "Get bitGen Studio",
