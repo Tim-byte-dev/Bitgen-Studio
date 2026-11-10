@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.752.0 (Tim: "are you able to upscale the video and make the text more sharp?")
+node scripts/test-brain752.js > /tmp/brain752.log 2>&1 \
+  && ok "2.752.0 units: the brain film upscaled - docs/images/bitgen-neural.mp4 + static/splash-neural.webm 1920 x 1080, 15 s, silent; misc/brand/upscale_brain.py (Real-ESRGAN via ONNX Runtime, no PyTorch, never loaded by the app, weights kept out of git); splash.html only the brain + the logo; BRAND.md" \
+  || { bad "2.752.0 brain film units"; grep -a "^FAIL" -A1 /tmp/brain752.log | head -12; }
+# ---- 2.752.0 (Tim: "only use the brain video for the splash screen and the tigerart video, maybe just add the logo to the top left")
+node scripts/test-ui752-ui.js > /tmp/ui752ui.log 2>&1 \
+  && ok "2.752.0 browser test: the splash is the brain film at every start (no orange film, static/splash.webm gone), the official logo (icon.png) faded in at the top left over it, clicks go through, 48 px at least, it stays when the picture stands in - or SKIP without playwright" \
+  || { bad "2.752.0 brain splash + logo browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui752ui.log | head -14; }
 # ---- 2.751.0 (Tim: "make the new logo the official bitgen logo, we use it for everything that uses a logo")
 node scripts/test-logo751.js > /tmp/logo751.log 2>&1 \
   && ok "2.751.0 the official logo: transparent PNGs (master 512, README / website 256, app icon 512, favicon 64) all the master scaled, the .ico 16-256, the banner; misc/brand/make_logo.py from docs/images/logo-source.jpg; the SVGs carry the tree; the intro draws the ring; docs/BRAND.md names every file" \
@@ -13302,14 +13310,14 @@ python3 scripts/test-inputecho727.py > /tmp/inputecho727.log 2>&1 \
   && ok "2.727.0 an upscale never hands back its source: LoadVideo's preview of its input (ComfyUI PR #15637, type input) is skipped by output_videos / images / audio and every worker's own picker; SeedVR2 checks the size it got (ok / the source = fail in words / another = warned) and names the file by it; LIVE on the stub (which now echoes LoadVideo first): 960x544 -> 1906x1080 _1080p, the source size refused" \
   || { bad "2.727.0 input echo / SeedVR2 size"; grep -a "^FAIL" /tmp/inputecho727.log | head -12; }
 node scripts/test-ui727-ui.js > /tmp/ui727ui.log 2>&1 \
-  && ok "2.727.0 browser test: the splash's #neural plays the brain film (splash-neural.webm, 15 s, muted, full window, the picture its poster), the credits over it, closes when it ends, a key skips; #film still the orange film - or SKIP without playwright" \
+  && ok "2.727.0 browser test: the splash's #neural plays the brain film (splash-neural.webm, 15 s, muted, full window, the picture its poster), the credits over it, closes when it ends, a key skips; 2.752.0: #film plays the brain too - or SKIP without playwright" \
   || { bad "2.727.0 brain film splash browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui727ui.log | head -14; }
 # ---- 2.726.0 (Tim: "use this as one of the starting images and change the theme to match")
 node scripts/test-neural726.js > /tmp/neural726.log 2>&1 \
   && ok "2.726.0 the Neural blue theme (the picture's colours, after Slate, translated; Dark the default), the splash = the film or the brain picture at random (8 s, the credits), a fresh install's first project starts with the picture in Assets ▸ Images (never a later project, never twice)" \
   || { bad "2.726.0 Neural blue / brain picture"; grep -a "^FAIL" -A2 /tmp/neural726.log | head -14; }
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui726-ui.js > /tmp/ui726ui.log 2>&1 \
-  && ok "2.726.0 browser test: the splash's picture fills the window with the credits, pushes in, closes at 8 s, a key skips; the film still plays; both come up at random; Settings ▸ Themes ▸ Neural blue turns the app navy and blue, kept after a reload - or SKIP without playwright" \
+  && ok "2.726.0 browser test: the splash's picture fills the window with the credits, pushes in, closes at 8 s, a key skips; Settings ▸ Themes ▸ Neural blue turns the app navy and blue, kept after a reload - or SKIP without playwright" \
   || { bad "2.726.0 Neural blue browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui726ui.log | head -14; }
 # ---- 2.725.0 (Tim: "when user starts to play an audio show a random visualization, next button will play the next audio in the docker the file was clicked in our preview dialog")
 node scripts/test-lbaudio725.js > /tmp/lbaudio725.log 2>&1 \
@@ -13480,7 +13488,7 @@ node scripts/test-splash701.js > /tmp/splash701.log 2>&1 \
   && ok "2.701.0 units: the splash window (before the server, the studio after it + ready, 16.5 s, BITGEN_NO_SPLASH), splash.html + webm, the credits exactly, the setup's logo" \
   || { bad "2.701.0 splash units"; grep -a "^FAIL" -A2 /tmp/splash701.log | head -14; }
 node scripts/test-ui701-ui.js > /tmp/ui701ui.log 2>&1 \
-  && ok "2.701.0 browser test: the splash film plays (15 s, 1920 x 1080, muted), the skip hint, a key / click closes it; the setup shows the logo - or SKIP without playwright" \
+  && ok "2.701.0 browser test: the splash film plays (15 s, muted; 2.752.0: the brain), the skip hint, a key / click closes it; the setup shows the logo - or SKIP without playwright" \
   || { bad "2.701.0 splash browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui701ui.log | head -14; }
 # ---- 2.698.0 (Tim: "when we edit an image it always uses the ref-image resolution can we change this to use our resolution using basic settings docker?")
 python3 scripts/test-editsize698.py > /tmp/editsize698.log 2>&1 \

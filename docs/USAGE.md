@@ -8102,6 +8102,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - Your own style can't take the name of a ready-made one: saving SDXL as a remote style is refused because R_SDXL already
   exists. Use R_SDXL, or give yours another name.
 
+## 🧠 The splash is the bitGen brain, with the logo (2.752.0)
+
+- **The desktop app's start-up splash is always the bitGen brain film** now: lightning strikes the brain, then the big
+  bitGen Studio title, with the credits under it. The orange logo film is no longer one of the two at random.
+- **The official logo sits in its top left** - small, clear of the brain. It stays there when the brain picture stands in
+  for a film that cannot play.
+- **The brain film is sharper**: it was 960 × 544 and is now 1920 × 1080, upscaled with an AI upscaler, so the bitGen
+  Studio titles and the labels are crisp.
+- A click or any key still skips the splash.
+- The website's home page plays the same brain film, with the logo in the same place.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

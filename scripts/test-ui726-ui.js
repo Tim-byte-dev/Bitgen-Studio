@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.726.0 in a REAL browser: THE NEURAL BLUE THEME + THE BRAIN PICTURE AS A STARTING IMAGE.
  *   the splash page (static/splash.html, as electron/main.js loads it - a file): #neural shows the picture (loaded, 16:9, full
- *   window), the credits after a moment, closes itself at 8 s, a key skips; #film plays the film; with nothing asked both
- *   come up over several starts. Against a running studio (H3_URL / H3_PORT, default 8311): Settings ▸ Themes has a Neural blue
+ *   window), the credits after a moment, closes itself at 8 s, a key skips (2.752.0: the brain always - no film, no
+ *   random pick). Against a running studio (H3_URL / H3_PORT, default 8311): Settings ▸ Themes has a Neural blue
  *   card; a click turns the app navy and blue, a reload keeps it; Dark back. No Playwright = SKIP (the studio part SKIPs
  *   without a server). Tim (verbatim): "use this as one of the starting images and change the theme to match" */
 "use strict";
@@ -46,16 +46,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await k.addInitScript(() => { window.__closed = 0; window.close = () => { window.__closed++; }; });
     await k.goto(fileStill + "#neural"); await k.waitForTimeout(500); await k.keyboard.press("a");
     check("…a key skips it", (await k.evaluate(() => window.__closed)) === 1);
-    // ---- the film
-    const f = await page(1280, 720);
-    await f.goto(file + "#film");
-    await f.waitForFunction(() => { const v = document.getElementById("v"); return v && v.readyState >= 2; }, null, { timeout: 15000 });
-    const fv = await f.evaluate(() => { const v = document.getElementById("v"); return { pick: document.body.dataset.splash, playing: !v.paused, pic: getComputedStyle(document.getElementById("pic")).display, cred: getComputedStyle(document.getElementById("cred")).display }; });
-    check("splash #film: the film plays, the picture and its credits hidden (the film has its own)", fv.pick === "film" && fv.playing && fv.pic === "none" && fv.cred === "none", fv);
-    // ---- at random
-    const r = await page(640, 360), seen = new Set();
-    for (let i = 0; i < 16 && seen.size < 2; i++) { await r.goto(file + "?n=" + i); seen.add(await r.evaluate(() => document.body.dataset.splash)); }
-    check("splash with nothing asked: one of the two at random (both come up)", seen.has("film") && seen.has("neural"), [...seen]);
+    // 2.752.0: no orange film, no random pick - the brain every time (scripts/test-ui752-ui.js)
 
     // ---- the theme, in the studio
     let up = true; try { const rr = await fetch(URL0); if (!rr.ok) throw 0; } catch { up = false; }

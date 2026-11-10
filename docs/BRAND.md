@@ -21,7 +21,9 @@ glowing ring.
 | Banner, link previews (the website's `og.jpg`) | `docs/images/bitgen-logo-1920x1080.png` |
 | Vector: the butterfly + tree (the intro film draws it and adds the ring) | `static/logo.svg` |
 | Vector: the small mark without the ring (the title bar, tinted) | `static/logo-mark.svg` |
-| The intro (10 s) and the start-up splash (15 s) | `docs/images/bitgen-studio-intro.mp4`, `docs/images/bitgen-studio-splash.mp4`, `static/splash.webm` |
+| The intro (10 s) and the logo film with the credits (15 s) | `docs/images/bitgen-studio-intro.mp4`, `docs/images/bitgen-studio-splash.mp4` |
+| The app's start-up splash (since 2.752.0): the bitGen brain film, the logo top left | `static/splash-neural.webm` (+ `static/splash-neural.jpg`, its picture) with `static/icon.png` |
+| The brain film for the web, 1280 x 720 (the website's home page copies it) | `docs/images/bitgen-neural.mp4` |
 
 ## Making the files
 
@@ -30,8 +32,13 @@ All the picture files come from one source and one script, so they always match:
 ```
 python3 misc/brand/make_logo.py       # docs/images/logo-source.jpg -> the PNGs, the .ico and the banner
 node misc/intro/render.js             # the intro film (Playwright + ffmpeg)
-node misc/intro/render.js --splash    # the splash film + static/splash.webm
+node misc/intro/render.js --splash    # the 15 s logo film with the credits
+python3 misc/brand/upscale_brain.py SOURCE.mp4   # the brain film: Tim's 960 x 544 clip -> the app's 1920 x 1080 + the web's 1280 x 720
 ```
+
+The brain film is Tim's LTX clip, upscaled in 2.752.0 with Real-ESRGAN's small general model (realesr-general-x4v3,
+BSD-3-Clause) so its titles are sharp. The script runs it with ONNX Runtime on the CPU - no PyTorch - and nothing in the
+app uses it.
 
 `docs/images/logo-source.jpg` is Tim's original picture (the navy disc). The script draws the tree on it in the wings'
 style (tapered, pointed strokes, the same white and blue glow), keys the navy out to transparency and writes each size.

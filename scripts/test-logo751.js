@@ -48,7 +48,7 @@ check("the SVGs carry the tree (9 shapes: trunk, two roots, two branches = the a
   (svg.match(/id="tree_\d+"/g) || []).length === 9 && (mark.match(/id="tree_\d+"/g) || []).length === 9 && /viewBox="7 200 1054 636"/.test(mark));
 const intro = fs.readFileSync(R("misc", "intro", "intro.html"), "utf8");
 check("the intro film draws the official ring (blue, round the butterfly) and the butterfly in the logo's white", /RING\.setAttribute\("r", "666"\)/.test(intro) && /RING\.setAttribute\("stroke", "#7fb3d8"\)/.test(intro) && /p\.setAttribute\("fill", "#eef3f7"\)/.test(intro));
-check("the films exist (intro 10 s, splash mp4 + the app's webm)", ["docs/images/bitgen-studio-intro.mp4", "docs/images/bitgen-studio-splash.mp4", "static/splash.webm"].every((f) => fs.statSync(R(f)).size > 300000));
+check("the films exist (intro 10 s, the 15 s logo film; 2.752.0: the app's splash is the brain film, no static/splash.webm)", ["docs/images/bitgen-studio-intro.mp4", "docs/images/bitgen-studio-splash.mp4"].every((f) => fs.statSync(R(f)).size > 300000));
 const brand = fs.readFileSync(R("docs", "BRAND.md"), "utf8");
 check("docs/BRAND.md: the official logo, every file and the script", /the official bitGen logo/.test(brand) && ["docs/images/logo-512.png", "docs/images/logo.png", "static/icon.png", "static/favicon.png", "installer/bitgen.ico", "docs/images/bitgen-logo-1920x1080.png", "static/logo.svg", "static/logo-mark.svg", "misc/brand/make_logo.py"].every((f) => brand.includes(f)));
 check("the README shows docs/images/logo.png; the app's window icon is static/icon.png", /<img src="docs\/images\/logo\.png"/.test(fs.readFileSync(R("README.md"), "utf8")) && /icon: path\.join\(ROOT, "static", "icon\.png"\)/.test(fs.readFileSync(R("electron", "main.js"), "utf8")));

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* bitGen Studio — 2.701.0 in a REAL browser: static/splash.html plays static/splash.webm (15 s, 1920 x 1080, muted), shows the skip
+/* bitGen Studio — 2.701.0 in a REAL browser: static/splash.html plays its film (2.752.0: the brain, 15 s, muted), shows the skip
  * hint, and a key closes it; the setup page shows the logo. Opens the files directly (no server). No Playwright = SKIP.
  * Tim (verbatim): "can u make a splash screen with the video, but add produced and developed by Timothy Nolan Paul, programmed by
  * claude opus 5.5 15seconds, and add the logo to the setup" */
@@ -19,10 +19,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1280, height: 720 } }); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
-    await p.goto("file://" + path.join(ROOT, "static", "splash.html") + "#film");   // 2.726.0: the film (one of two at random)
+    await p.goto("file://" + path.join(ROOT, "static", "splash.html"));   // 2.752.0: always the brain film
     await p.waitForFunction(() => { const v = document.getElementById("v"); return v && v.readyState >= 2; }, null, { timeout: 15000 });
     const v = await p.evaluate(() => { const v = document.getElementById("v"); return { dur: v.duration, w: v.videoWidth, h: v.videoHeight, muted: v.muted, playing: !v.paused, err: v.error && v.error.code }; });
-    check("the splash film plays: 15 s, 1920 x 1080, muted, no error", Math.abs(v.dur - 15) < 0.1 && v.w === 1920 && v.h === 1080 && v.muted && v.playing && !v.err, v);
+    check("the splash film plays: 15 s, muted, no error (2.752.0: the brain film, 1920 x 1080)", Math.abs(v.dur - 15) < 0.3 && v.w === 1920 && v.h === 1080 && v.muted && v.playing && !v.err, v);
     await p.waitForTimeout(1700);
     check("…the skip hint shows after 1.5 s", await p.evaluate(() => document.body.classList.contains("hint")));
     const closes = await p.evaluate(() => { let c = 0; window.close = () => { c++; }; document.dispatchEvent(new KeyboardEvent("keydown", { key: "a" })); document.dispatchEvent(new MouseEvent("mousedown")); return c; });

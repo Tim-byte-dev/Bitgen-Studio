@@ -1272,7 +1272,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **仅在模型改变时释放显存** — 连续使用同一模型的渲染会把它留在显卡上（不卸载、不重新加载）；换用其他模型或发生显存不足的错误时，会先释放显卡；也可以像以前一样每次生成前释放。 *Where:* 设置 ▸ ComfyUI ▸ Free VRAM before a generation ▸ Free it。 *Since:* 2.722.0
 - **最后使用的浮动面板在最上面** — 💬 Community、Basic Settings、LLM tokens、▣ 面板、你自己命名的面板、浮动的主面板、舞台面板和语音聊天，在应用其余部分之上共用一个顺序：点击或打开其中一个，它就会到最上面（命名面板不会再遮住 Community）。 *Where:* 每个浮动面板。 *Since:* 2.724.0
 - **预览中的歌曲：可视化效果，Next 播放下一首** — 在预览中对歌曲或声音按 ▶，会开始一个随机选择的可视化效果（条形、镜像、波形、圆环、星空、涟漪；🎲 换一个）；Next / Prev 跳到所点击面板中的下一首 / 上一首并播放。 *Where:* 预览（在 Gallery、Assets 或 References 中点击歌曲）。 *Since:* 2.725.0
-- **Neural blue 主题和 bitGen 大脑图片** — 午夜海军蓝配电光蓝强调色的主题；启动画面随机显示片头影片或大脑图片；新安装的第一个项目会在 Assets ▸ Images 中自带这张图片。 *Where:* Settings ▸ Themes、启动画面、Assets ▸ Images。 *Since:* 2.726.0
+- **Neural blue 主题和 bitGen 大脑图片** — 午夜海军蓝配电光蓝强调色的主题；启动画面是大脑影片，左上角显示标志（自 2.752.0 起；此前随机显示片头影片或大脑）；新安装的第一个项目会在 Assets ▸ Images 中自带这张图片。 *Where:* Settings ▸ Themes、启动画面、Assets ▸ Images。 *Since:* 2.726.0
 
 ## 键盘快捷键
 

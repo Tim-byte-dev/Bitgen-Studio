@@ -29,7 +29,7 @@ check("…its name in 日本語 / 简体中文 / 繁體中文 (and collected in 
 
 // ---- the splash
 const SP = rd("static/splash.html");
-check("splash: one of two at each start - the film or the picture, at random; #film / #neural picks", /const pick = want === "film" \|\| want === "neural" \? want : \(Math\.random\(\) < 0\.5 \? "film" : "neural"\);/.test(SP));
+check("splash: 2.752.0 - always the brain (no random pick, no orange film)", /document\.body\.dataset\.splash = "neural";/.test(SP) && !/Math\.random/.test(SP) && !/"splash\.webm"/.test(SP));
 check("…the picture: static/splash-neural.jpg full window, a slow push-in, 8 s, the same credits (Timothy Nolan Paul, Claude Opus 5.5); a click / a key still skips",
   /<img id="pic" alt="" src="splash-neural\.jpg">/.test(SP) && /@keyframes push \{ to \{ transform: scale\(1\.06\); \} \}/.test(SP) && /setTimeout\(end, 8000\)/.test(SP)
   && /Produced and developed by<b>Timothy Nolan Paul<\/b>/.test(SP) && /Programmed by<b>Claude Opus 5\.5<\/b>/.test(SP) && /addEventListener\("keydown", end\)/.test(SP));
