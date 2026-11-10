@@ -2206,7 +2206,7 @@ ComfyUI 的每個載入器都只列出各自的資料夾：**Load Diffusion Mode
 | 💬 LLM fine-tune | 應用程式的助手，基於你自己的對話訓練 | Unsloth | LLM 資料夾中的一個 `.gguf` |
 | 👁 Vision fine-tune | 應用程式的視覺模型（圖片描述、圖片問答） | Unsloth | 視覺資料夾中的一個 `.gguf` 及其 `mmproj` |
 
-基礎模型清單用 ★ 標出推薦的模型，並對照你的顯示卡說明每個模型需要多少顯示記憶體。即使你的顯示卡太小，也仍可以在更大的機器上訓練該模型：使用 **⤓ Export job**，或 Settings ▸ Remote GPU ▸ RunPod。
+基礎模型清單用 ★ 標出推薦的模型，並對照你的顯示卡說明每個模型需要多少顯示記憶體。即使你的顯示卡太小，也仍可以在更大的機器上訓練該模型：使用 **⤓ Export job**，或 Settings ▸ Remote generation ▸ RunPod。
 
 ### 推薦的基礎模型
 
@@ -2276,7 +2276,7 @@ ComfyUI 的每個載入器都只列出各自的資料夾：**Load Diffusion Mode
 ComfyUI 會完成合併並儲存；新檔案會連同卡片一起移入 `checkpoints/trained`（或 `diffusion_models/trained`）。烘焙需要使用本機的 ComfyUI，不能使用遠端的 ComfyUI。
 
 ## LoRA 訓練器、尖峰 / 離峰電價、用量日誌、Remote GPU、設定中的軟體套件（2.520.0）
-<!-- en: the-lora-trainer-peak-off-peak-prices-the-usage-log-remote-gpu-packages-in-setti bedb64d734b5 -->
+<!-- en: the-lora-trainer-peak-off-peak-prices-the-usage-log-remote-gpu-packages-in-setti 8c3a0bf1b840 -->
 
 ### 🎓 LoRA 訓練器
 
@@ -2324,7 +2324,7 @@ Settings ▸ General ▸ Energy cost：
 
 日誌儲存在應用程式資料夾的 `usage` 資料夾中：每月一個檔案。
 
-### Settings ▸ Remote GPU
+### Settings ▸ Remote generation
 
 使用另一臺機器的顯示卡進行生成：
 
@@ -4792,9 +4792,9 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **Character chain** 在您切換到 **Standard** 再回來時，即使還沒按 **💾 Save chain settings**，也會保留您輸入的內容。
 
 ## ☁ 在 RunPod Serverless 端點上算圖（2.743.0）
-<!-- en: rendering-on-a-runpod-serverless-endpoint-2-743-0 63b789299560 -->
+<!-- en: rendering-on-a-runpod-serverless-endpoint-2-743-0 acb1583d96d0 -->
 
-**設定 ▸ 遠端 GPU ▸ RunPod Serverless** 把所有算圖傳送到 RunPod Serverless 端點。無需啟動或停止機器：每次算圖是一個任務，只在工作器執行時計費。
+**設定 ▸ 遠端生成 ▸ RunPod Serverless** 把所有算圖傳送到 RunPod Serverless 端點。無需啟動或停止機器：每次算圖是一個任務，只在工作器執行時計費。
 
 **準備端點（在 runpod.io 上一次即可）**
 
@@ -4816,9 +4816,9 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 算圖前的模型檢查會略過：模型在端點的磁碟區上，而不在這台電腦上。如果缺少某個模型，任務會以端點自己的訊息失敗。
 
 ## ☁ 在 RunPod Serverless 上只顯示能算圖的風格（2.744.0）
-<!-- en: on-runpod-serverless-only-the-styles-it-can-render-2-744-0 dabe4194b6b8 -->
+<!-- en: on-runpod-serverless-only-the-styles-it-can-render-2-744-0 95e77634c111 -->
 
-- 使用 **設定 ▸ 遠端 GPU ▸ RunPod Serverless** 時，風格清單（提示詞面板的圖片風格、影片風格、Music 面板的風格）只顯示端點能算圖的風格。清單最後一行會說明隱藏了多少個；在設定裡指向隱藏的風格可以看到原因。
+- 使用 **設定 ▸ 遠端生成 ▸ RunPod Serverless** 時，風格清單（提示詞面板的圖片風格、影片風格、Music 面板的風格）只顯示端點能算圖的風格。清單最後一行會說明隱藏了多少個；在設定裡指向隱藏的風格可以看到原因。
 - 無法詢問端點有哪些節點，所以軟體根據它的映像檔內容來判斷。RunPod 的工作器映像檔 5.10.0 帶的是 **ComfyUI 0.34.0**，沒有節點包。工作流程的每個節點都在這個 ComfyUI 裡，風格就能用。工作器需要 ComfyUI 節點清單的風格也會隱藏：
   LTX 2.3 / 2.5 和 Wan 2.1 / 2.2。
 - 在遠端 GPU 的 RunPod Serverless 部分：
@@ -4830,19 +4830,19 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 修正：使用遠端 GPU 時在設定裡按 **儲存**，會把 ComfyUI 的位址改回這台電腦的，下一次算圖就在這裡進行。現在由遠端 GPU 分頁決定用哪個 ComfyUI 算圖。在 ComfyUI 分頁輸入的位址是這台電腦的，**這台電腦** 會使用它。
 
 ## 🖥 基本設定 ▸ GPU：哪些在遠端 GPU 上執行（2.745.0）
-<!-- en: basic-settings-gpu-what-runs-on-the-remote-gpu-2-745-0 f7560bda8729 -->
+<!-- en: basic-settings-gpu-what-runs-on-the-remote-gpu-2-745-0 bbf5b58a5a1e -->
 
 - **基本設定 ▸ GPU** 有三個選項：
-  - **遠端：** 所有任務都在 設定 ▸ 遠端 GPU 中設定的遠端 GPU 上執行（與那裡的「使用」相同）。
+  - **遠端：** 所有任務都在 設定 ▸ 遠端生成 中設定的遠端 GPU 上執行（與那裡的「使用」相同）。
   - **本機：** 全部在這台電腦上執行（與「這台電腦」相同）。遠端設定會保留，以後再用。
   - **兩者：** 選擇傳送到遠端 GPU 的內容，其餘的在這台電腦上執行。
     - **LLM：** 聊天 / 提示詞模型。
     - **視覺 LLM：** 描述圖片的模型。
     - **圖片：** 圖片、放大、圖形、3D。
     - **影片 + 歌曲：** 影片任務和歌曲。不使用 ComfyUI 的任務（匯出、卡拉 OK、訓練）始終在這裡執行。
-- 下面一行會說明每種內容現在在哪裡執行。設定好遠端 GPU 後才能選擇「遠端」和「兩者」；有一個按鈕可開啟 設定 ▸ 遠端 GPU。
+- 下面一行會說明每種內容現在在哪裡執行。設定好遠端 GPU 後才能選擇「遠端」和「兩者」；有一個按鈕可開啟 設定 ▸ 遠端生成。
 - 選「兩者」時，ComfyUI 的位址仍是這台電腦的，所以你自己的 ComfyUI 照常啟動。勾選種類的任務會在開始時傳送到遠端 GPU；日誌會說明在哪裡算圖，📊 使用情況也會記錄那裡的時間。
-- **RunPod 上的 LLM：** 在 設定 ▸ 遠端 GPU ▸ **🧠 LLM on RunPod (vLLM)** 中填寫 RunPod vLLM 工作器的端點 ID
+- **RunPod 上的 LLM：** 在 設定 ▸ 遠端生成 ▸ **🧠 LLM on RunPod (vLLM)** 中填寫 RunPod vLLM 工作器的端點 ID
   （runpod.io：Serverless ▸ New Endpoint ▸ Deploy LLM API，並填寫要執行的 Hugging Face 模型）。
   - 視覺 LLM 需要視覺語言模型，例如 Qwen2.5-VL。一個這樣的端點可以同時用於兩者 - 視覺端點留空。
   - 模型名稱留空時，軟體會詢問端點它執行的是哪個模型。✓ 測試可以逐個檢查。
@@ -4851,11 +4851,11 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 修正：基本設定會記住的設定（basic.cfg 和每個風格）不再包含 GPU 選項。
 
 ## 🏷 遠端風格：每個風格決定在哪裡執行（2.746.0）
-<!-- en: remote-styles-each-style-says-where-it-runs-2-746-0 5e69f6d70b10 -->
+<!-- en: remote-styles-each-style-says-where-it-runs-2-746-0 7b1be4d493b7 -->
 
 - 每個風格編輯器在風格名稱下方都有 **執行於**：設定 ▸ 圖片、設定 ▸ 影片 和 設定 ▸ 音訊 ▸ 音樂風格。
   - **這台電腦：** 用這台電腦上的模型算圖。
-  - **遠端 GPU：** 在遠端 GPU 上算圖，所以它的模型（以及需要的節點包）必須在那裡。會出現一個 **RunPod 端點 ID** 輸入框。留空就使用 設定 ▸ 遠端 GPU 中的端點；也可以給風格指定自己的端點 - 例如一個放 SDXL 模型的端點，另一個放 FLUX 的端點。
+  - **遠端 GPU：** 在遠端 GPU 上算圖，所以它的模型（以及需要的節點包）必須在那裡。會出現一個 **RunPod 端點 ID** 輸入框。留空就使用 設定 ▸ 遠端生成 中的端點；也可以給風格指定自己的端點 - 例如一個放 SDXL 模型的端點，另一個放 FLUX 的端點。
 - 💾 儲存時，遠端風格的名稱會以 **R_** 開頭（R_SDXL），已經有的不會重複加上。改回「這台電腦」後 R_ 會被移除。
 - **基本設定 ▸ GPU** 現在決定清單中顯示哪些風格：
   - **本機：** 只顯示這台電腦的風格。清單最後一行顯示隱藏了多少個遠端風格。
@@ -4863,7 +4863,7 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   - **兩者：** 顯示所有風格。由風格決定在哪裡算圖：R_ 風格在遠端 GPU 上，其他的在這裡。沒有風格的任務（放大、圖表等）依「圖片」和「影片 + 歌曲」的勾選來決定。
 - 任務記錄會說明在哪裡算圖以及原因，例如「this image job (R_SDXL - a remote style) renders on RunPod Serverless
   ohkr3evlck2bxn」。
-- 設定 ▸ 遠端 GPU ▸ RunPod Serverless 只計算你的遠端風格：「此端點可以算圖你 N 個遠端風格中的 K 個」。
+- 設定 ▸ 遠端生成 ▸ RunPod Serverless 只計算你的遠端風格：「此端點可以算圖你 N 個遠端風格中的 K 個」。
 - 現有風格都從「這台電腦」開始，所以更新後請為要在遠端 GPU 上使用的風格設定「執行於」。
 
 ## 🖥 GPU 預設為本機，更新檢查能順利完成（2.747.0）
@@ -4876,12 +4876,12 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **設定 ▸ 一般 ▸ 更新：** 在 git 安裝中，🔍 檢查更新 會在一次請求中下載整個更新（每個版本約 13 MB 的指南 PDF）。工作室等待請求的時間最多 5 分鐘，所以網路較慢或落後幾個版本時，檢查會以「Failed to fetch」失敗。現在它只向 GitHub 詢問最新的提交，幾秒就能完成，⤓ 立即更新 會在背景下載其餘部分（最多允許 1 小時）。如果工作室不再回應，訊息會說明這一點，而不是「Failed to fetch」。
 
 ## 🔑 你的 API 金鑰加密儲存在 settings 資料夾中（2.748.0）
-<!-- en: your-api-keys-are-kept-encrypted-in-the-settings-folder-2-748-0 cfe19658f20e -->
+<!-- en: your-api-keys-are-kept-encrypted-in-the-settings-folder-2-748-0 0181ccd6ed4a -->
 
 - 你加入的 API 金鑰和權杖儲存在 bitGen 資料夾中的 **settings/keys.json**，每一個都單獨加密（AES-256-GCM）。包括：
   - Hugging Face 權杖
   - Civitai 權杖
-  - RunPod API 金鑰（設定 ▸ 遠端 GPU）
+  - RunPod API 金鑰（設定 ▸ 遠端生成）
   - 遠端存取金鑰
   - bitGen 社群的登入
 - **settings/keys.master** 存放用來開啟它們的金鑰，在第一次儲存金鑰時產生。
@@ -4894,7 +4894,7 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 修正：misc/default.settings 現在列出了應用程式使用的所有預設值（檔案中缺少 5 個較新的值；這些值早已在使用）。
 
 ## ☁ 為 RunPod 工作器映像準備的現成遠端風格（2.749.0）
-<!-- en: ready-made-remote-styles-for-runpod-s-worker-images-2-749-0 6b1d662e8cbb -->
+<!-- en: ready-made-remote-styles-for-runpod-s-worker-images-2-749-0 2f702f11ea3c -->
 
 - 工作室自帶 7 個遠端風格，RunPod 的每個標準 worker-comfyui 映像有一到兩個。每個映像只有一套模型：
 
@@ -4908,11 +4908,11 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   | R_Z-Image Turbo | z-image-turbo |
 
   它們只使用 ComfyUI 自己的節點和 RunPod 放進該映像的模型檔案，所以無需上傳任何東西就能算圖。
-- **設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像：** 工作室向 RunPod 詢問你的端點執行的映像（🔍 詢問 RunPod，第一次會自動詢問），並只列出適合該映像的現成風格。使用 sdxl 映像時會看到 R_SDXL 和 R_SDXL img2img；其他的會隱藏，工具提示會說明原因。如果 RunPod 無法回答，請自己選擇。「base」（模型在網路磁碟區上）、「你自己的鏡像」和「尚不清楚」會顯示所有遠端風格。
+- **設定 ▸ 遠端生成 ▸ RunPod Serverless ▸ 端點的鏡像：** 工作室向 RunPod 詢問你的端點執行的映像（🔍 詢問 RunPod，第一次會自動詢問），並只列出適合該映像的現成風格。使用 sdxl 映像時會看到 R_SDXL 和 R_SDXL img2img；其他的會隱藏，工具提示會說明原因。如果 RunPod 無法回答，請自己選擇。「base」（模型在網路磁碟區上）、「你自己的鏡像」和「尚不清楚」會顯示所有遠端風格。
 - 和其他遠端風格一樣，它們在 基本設定 ▸ GPU 為遠端或兩者時顯示；為本機時隱藏。
 - **記錄現在會說明任務在哪裡算圖。**
   - 在 RunPod Serverless 上，VRAM 步驟會說明由端點的工作器載入模型，而不是「VRAM kept」（那是指這台電腦）。
-  - [power] 行以「rendered on RunPod Serverless …」和該任務在那裡的大致費用（根據 設定 ▸ 遠端 GPU 中的每小時價格）開頭，然後是這台電腦在等待期間的用電。
+  - [power] 行以「rendered on RunPod Serverless …」和該任務在那裡的大致費用（根據 設定 ▸ 遠端生成 中的每小時價格）開頭，然後是這台電腦在等待期間的用電。
 - 你自己的風格不能使用現成風格的名稱：因為 R_SDXL 已經存在，把 SDXL 儲存為遠端風格會被拒絕。請使用 R_SDXL，或給你的風格另取名字。
 
 ## 🧠 啟動畫面改為 bitGen 大腦和標誌 (2.752.0)
@@ -4923,6 +4923,20 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **大腦影片更清晰了**：從 960 × 544 提升到 1920 × 1080，使用 AI 放大工具放大，bitGen Studio 標題和各個標籤都很清晰。
 - 點擊或按任意鍵仍可跳過啟動畫面。
 - 網站首頁播放同一段大腦影片，標誌也在同一位置。
+
+## 🧠 OpenRouter 上的 LLM；「遠端 GPU」現在叫「遠端生成」 (2.753.0)
+<!-- en: the-llm-on-openrouter-remote-gpu-is-now-remote-generation-2-753-0 5dfe0eaeb867 -->
+
+- **設定 ▸ 遠端 GPU 現在叫 設定 ▸ 遠端生成。** 裡面的一切照常可用。
+- **LLM 可以在 OpenRouter**（openrouter.ai）上執行：一個 API 金鑰就能使用數百個模型，其中一些免費。無需安裝。顯示卡較小時最有幫助 - LLM 不必再和圖片模型共用顯示卡。
+  1. 在 openrouter.ai 註冊免費帳戶並建立金鑰（Keys）。
+  2. 在 設定 ▸ 遠端生成 ▸ 🧠 LLM 中選擇 **OpenRouter**，貼上金鑰。金鑰會和你的其他金鑰一起加密儲存在 settings 資料夾中。
+  3. 選擇 **LLM**。一開始 **僅免費模型** 是勾選的；取消勾選即可看到付費模型及其每百萬 token 的價格。
+  4. 選擇用於描述圖片的 **視覺 LLM** - 只列出能處理圖片的模型（👁）。留空則在 LLM 能處理圖片時使用該 LLM。
+  5. **✓ Test** 會檢查金鑰和模型。
+  6. 在 基本設定 ▸ GPU 中選擇 **兩者**，並勾選 **LLM** 和 **視覺 LLM**。沒有遠端 GPU 也能用 - 圖片、影片和歌曲仍在這臺電腦上渲染。
+- 免費模型每分鐘約 20 次請求，每天 50 次；帳戶購買 $10 額度後每天 1000 次。OpenRouter 可能會調整這些限制。
+- 你的提示詞和圖片會傳送給 OpenRouter 及模型提供方。私密素材請留在這臺電腦上。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

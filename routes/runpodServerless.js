@@ -23,7 +23,7 @@ function early(app) {
 function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   // 2.746.0: /rpsl/ep/<endpoint>/... = the same ComfyUI shape for ONE remote style's own endpoint (lib/gpuSplit.js forJob);
-  // /rpsl/... = the endpoint in Settings ▸ Remote GPU. Mounted ep first - /rpsl would otherwise see /ep/... and pass it on.
+  // /rpsl/... = the endpoint in Settings ▸ Remote generation. Mounted ep first - /rpsl would otherwise see /ep/... and pass it on.
   const epOf = (req) => String((req.params || {}).ep || "").replace(/[^A-Za-z0-9_-]/g, "");
   const r = express.Router({ mergeParams: true });
   r.get("/system_stats", (req, res) => res.json(S.stats(epOf(req))));

@@ -903,7 +903,7 @@
         },
         {
           "id": "rg_url",
-          "title": "Settings -> Remote GPU: another machine's ComfyUI URL -> ✓ Test -> Use it; generation runs there, Local puts it back",
+          "title": "Settings -> Remote generation: another machine's ComfyUI URL -> ✓ Test -> Use it; generation runs there, Local puts it back",
           "manual": true,
           "where": "settings"
         },

@@ -39,7 +39,7 @@ const R = require("../lib/remoteGpu.js");
 
   /* ---- set() */
   let err = null; try { G.set({ where: "remote" }); } catch (e) { err = e; }
-  check("Remote with no remote GPU set up: refused, saying where to set one up", err && err.status === 400 && /Settings ▸ Remote GPU/.test(err.message));
+  check("Remote with no remote GPU set up: refused, saying where to set one up", err && err.status === 400 && /Settings ▸ Remote generation/.test(err.message));
   R.use("serverless");                              // Settings ▸ Remote GPU ▸ Use it
   check("Remote GPU's Use it = Remote (split), the remote remembered, ComfyUI's address the endpoint's", CFG.rgpu.split.where === "remote" && CFG.rgpu.remote_mode === "serverless" && /\/rpsl$/.test(CFG.engine.comfy.url));
   let v = G.set({ where: "both", image: true });

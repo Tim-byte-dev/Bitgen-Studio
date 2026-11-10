@@ -1,4 +1,4 @@
-// bitGen Studio — routes/remoteGpu.js (2.520.0): Settings -> Remote GPU (lib/remoteGpu.js). Mounted from routes/index.js.
+// bitGen Studio — routes/remoteGpu.js (2.520.0): Settings -> Remote generation (lib/remoteGpu.js). Mounted from routes/index.js.
 //   GET  /api/remotegpu                          {mode, current, url, cost_hr, runpod, ssh, tunnel, comfy_url}
 //   POST /api/remotegpu/save    {url?, cost_hr?, runpod?, ssh?}     keep the fields (no switch)
 //   POST /api/remotegpu/use     {mode: local|url|runpod|ssh}        switch the ComfyUI the app renders with

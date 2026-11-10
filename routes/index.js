@@ -248,9 +248,10 @@ function mount(app) {
   require("./help").mount(app);         // 2.530.0: the in-app help for the Ctrl+K palette (lib/helpDocs.js)
   require("./langPacks").mount(app);    // 2.715.0: language packs - Settings ▸ Languages (lib/langPacks.js)
   require("./usage").mount(app);        // 2.520.0: 📊 the usage log (lib/usageLog.js)
-  require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote GPU (lib/remoteGpu.js)
+  require("./remoteGpu").mount(app);    // 2.520.0: Settings -> Remote generation (lib/remoteGpu.js)
   require("./runpodServerless").mount(app);   // 2.743.0: a RunPod Serverless endpoint behind a ComfyUI-shaped /rpsl (lib/runpodServerless.js)
   require("./gpuSplit").mount(app);   // 2.745.0: Basic Settings ▸ GPU - remote / local / both (lib/gpuSplit.js)
+  require("./openRouter").mount(app); // 2.753.0: OpenRouter - the LLM on Settings ▸ Remote generation (lib/openRouter.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
   // "fresh" for 10% of the file's age, hours for files months old) can

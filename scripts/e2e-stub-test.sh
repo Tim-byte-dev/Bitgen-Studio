@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v1 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
+H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v1 H3_OPENROUTER_API=http://127.0.0.1:8397/v1 node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.753.0: OpenRouter to test-ui753-ui.js's stand-in on 8397; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.753.0 (Tim: "lets add openrouter to remote gpu, maybe change remote gpu to remote generation?")
+node scripts/test-openrouter753.js > /tmp/or753.log 2>&1 \
+  && ok "2.753.0 units: lib/openRouter.js (headers naming the app, prices per million, text models only, free first, the vision pick), the key encrypted, lib/gpuSplit.js sends the LLM / vision LLM to OpenRouter when it is the provider, routes mounted, the tab is Remote generation, no Settings ▸ Remote GPU left" \
+  || { bad "2.753.0 OpenRouter units"; grep -a "^FAIL" -A1 /tmp/or753.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui753-ui.js > /tmp/ui753ui.log 2>&1 \
+  && ok "2.753.0 browser test: Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter - the key lists the models (free only, the vision list), ✓ Test, the key encrypted; Basic Settings ▸ GPU Both with no remote GPU, LLM ticked; a prompt enhance goes to OpenRouter with the key and the app named - or SKIP without playwright" \
+  || { bad "2.753.0 OpenRouter browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui753ui.log | head -14; }
 # ---- 2.752.0 (Tim: "are you able to upscale the video and make the text more sharp?")
 node scripts/test-brain752.js > /tmp/brain752.log 2>&1 \
   && ok "2.752.0 units: the brain film upscaled - docs/images/bitgen-neural.mp4 + static/splash-neural.webm 1920 x 1080, 15 s, silent; misc/brand/upscale_brain.py (Real-ESRGAN via ONNX Runtime, no PyTorch, never loaded by the app, weights kept out of git); splash.html only the brain + the logo; BRAND.md" \

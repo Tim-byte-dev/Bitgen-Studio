@@ -74,7 +74,7 @@ const R = require("../lib/remoteGpu.js");
   const IDX = read("routes", "index.js"), SRV = read("misc/server.js"), HTML = read("static", "index.html"), RT = read("routes", "remoteGpu.js"), UI = read("static", "remotegpu.js");
   check("routes/index mounts remoteGpu (not server.js)", /require\("\.\/remoteGpu"\)/.test(IDX) && !/remoteGpu/.test(SRV));
   check("routes: view, save, use, test, pods, pod start/stop, tunnel", ["/api/remotegpu\"", "/api/remotegpu/save", "/api/remotegpu/use", "/api/remotegpu/test", "/api/remotegpu/pods", "/api/remotegpu/pod/:id/:action", "/api/remotegpu/tunnel"].every((u) => RT.includes(u)));
-  check("Settings has the Remote GPU tab after ComfyUI, filled by static/remotegpu.js", /data-stab="rgpu">Remote GPU</.test(HTML) && /id="stab-rgpu"/.test(HTML) && /<script src="\/static\/remotegpu\.js/.test(HTML) && /stab-rgpu/.test(UI));
+  check("Settings has the Remote generation tab (2.753.0: was Remote GPU) after ComfyUI, filled by static/remotegpu.js", /data-stab="rgpu">Remote generation</.test(HTML) && /id="stab-rgpu"/.test(HTML) && /<script src="\/static\/remotegpu\.js/.test(HTML) && /stab-rgpu/.test(UI));
   check("it is config.rgpu (config.remote is the phone remote)", /\.rgpu\b/.test(read("lib", "remoteGpu.js")) && !/cfg\(\)\.remote\b/.test(read("lib", "remoteGpu.js")));
 
   console.log(`RESULT: ${pass} passed, ${fail} failed`);

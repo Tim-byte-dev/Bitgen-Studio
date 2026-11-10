@@ -4,7 +4,7 @@
  * selected, prefix remote style names with R_ add this on save if it is not there"
  *   Under the name of each style editor - Settings ▸ Image (s_st), Settings ▸ Audio ▸ Music styles (s_mu), Settings ▸
  *   Video (s_vs): Runs on ◉ This computer ◉ Remote GPU, and for a remote style its RunPod endpoint ID (blank = the one in
- *   Settings ▸ Remote GPU). The server keeps them (lib/styles.js gpuFields) and starts a remote style's name with "R_".
+ *   Settings ▸ Remote generation). The server keeps them (lib/styles.js gpuFields) and starts a remote style's name with "R_".
  *   paint(prefix, style)   read(prefix) -> {runs_on, endpoint}   (called from each form's paint / read)
  *   Basic Settings ▸ GPU then lists them (static/rpstyles.js) and routes them (lib/gpuSplit.js forJob). */
 (function (root) {
@@ -29,7 +29,7 @@
     });
     box.appendChild(row);
     var ep = doc.createElement("input"); ep.type = "text"; ep.id = "s_" + p + "ep"; ep.spellcheck = false;
-    ep.placeholder = "RunPod endpoint ID (blank = the one in Settings ▸ Remote GPU)";
+    ep.placeholder = "RunPod endpoint ID (blank = the one in Settings ▸ Remote generation)";
     ep.title = "The RunPod Serverless endpoint this style renders on - its models and node packs must be there";
     ep.style.cssText = "margin-top:4px;width:100%";
     ep.addEventListener("input", function () { poke(p); });

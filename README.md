@@ -218,7 +218,7 @@ licence when you do. Without cadrille, the app's own local LLM writes the code i
 | Hugging Face | [huggingface.co](https://huggingface.co) | Where the model files come from (Settings ▸ Models, Add-ons, the Model manager's downloads). |
 | Final Cut Pro, DaVinci Resolve and other editors | [OpenTimelineIO](https://opentimeline.io) · [DaVinci Resolve](https://www.blackmagicdesign.com/products/davinciresolve) · [Final Cut Pro](https://www.apple.com/final-cut-pro/) | The timeline out and in as FCP 7 XML, FCPXML, EDL and OTIO. |
 | Krita AI Diffusion | [github.com/Acly/krita-ai-diffusion](https://github.com/Acly/krita-ai-diffusion) | The image editor's selection Generate / Fill / Remove follows its technique per model family. |
-| RunPod (or any remote GPU) | [runpod.io](https://www.runpod.io) | Settings ▸ Remote GPU: render on a ComfyUI on another machine, a RunPod pod, or a RunPod Serverless endpoint (paid only while a job runs). |
+| RunPod (or any remote GPU) | [runpod.io](https://www.runpod.io) | Settings ▸ Remote generation: render on a ComfyUI on another machine, a RunPod pod, or a RunPod Serverless endpoint (paid only while a job runs). |
 | FFmpeg | [ffmpeg.org](https://ffmpeg.org) | Compiles, exports, proxies and the audio / video conversions. |
 
 ## Acknowledgements

@@ -310,7 +310,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **LoRA トレーナー** — ai-toolkit（Ostris）で手持ちの画像から LoRA を学習します：9 種類のベースモデル（Z-Image Turbo、FLUX、Qwen-Image、SDXL、SD 1.5、Chroma、Wan 2.1…）、トリガーワード、ランク、ステップ数、キャプション付きデータセット（キャプションはアシスタントに任せることも可能）、編集可能な YAML、ステップ・loss・サンプルのライブ表示。LoRA はカード付きで ComfyUI の loras/trained に保存され、ジョブは zip として書き出せます。 *Where:* ステータスバーの 🎓 LoRA。 *Since:* 2.520.0
 - **ピーク／オフピーク料金** — ピーク料金とピーク時間帯（曜日と時刻。日付をまたぐ設定も可能）。それ以外の時間はすべてオフピークとなり、ジョブの消費電力量はピークとオフピークに分けて計算されます。 *Where:* Settings ▸ General ▸ Energy cost。 *Since:* 2.520.0
 - **使用量ログ** — 各ジョブの消費電力量、ピーク比率、料金、リモート GPU を日ごとに記録します。期間の指定、合計、CSV 出力に対応。 *Where:* Settings ▸ General ▸ 📊 Usage…、またはステータスバーの ⚡ の数値をクリック。 *Since:* 2.520.0
-- **リモート GPU** — 別のマシンの ComfyUI、RunPod の pod（一覧・起動・停止、そのプロキシ）、または SSH トンネルを使用します。✓ Test、Use it / Use this computer。 *Where:* Settings ▸ Remote GPU。 *Since:* 2.520.0
+- **リモート GPU** — 別のマシンの ComfyUI、RunPod の pod（一覧・起動・停止、そのプロキシ）、または SSH トンネルを使用します。✓ Test、Use it / Use this computer。 *Where:* Settings ▸ Remote generation。 *Since:* 2.520.0
 - **このコンピューターとパッケージ** — お使いのハードウェア、インストール済みのパッケージ、各パッケージで使える機能を表示します。✎ Not right?、⬆ Upgrade でセットアップを経ずに上位のパッケージへアップグレードできます。 *Where:* Settings ▸ Models。 *Since:* 2.520.0
 - **グループ単位のダウンロード** — モデルグループごとのチェックボックスで、ファイル数とサイズも表示されます。 *Where:* セットアップのモデルページ。Settings ▸ Models ▸ Model downloads。 *Since:* 2.520.0
 - **チェックポイントのファインチューニング** — ai-toolkit で画像モデル（Lumina 2、Flex.1、FLUX.2 klein、SDXL）の全重みを学習します。パラメータースワップで VRAM 使用量を抑え、diffusion_models/trained に 1 つの .safetensors としてまとめます。 *Where:* 🎓 LoRA ▸ Type。 *Since:* 2.521.0
@@ -373,6 +373,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **🖥 GPU は既定でローカル、すぐ終わる更新の確認** — 基本設定 ▸ GPU はローカルで始まり、基本設定の一番上で閉じています（選択は見出しに表示）。更新の確認は GitHub に最新のコミットだけを尋ねるので、どんな回線でも数秒で終わり、今すぐ更新 はバックグラウンドでダウンロードします。 *Where:* 基本設定 ▸ GPU；設定 ▸ 一般 ▸ アップデート。 *Since:* 2.747.0
 - **🔑 API キーを暗号化して更新後も保持** — Hugging Face・Civitai・RunPod のキー、リモートアクセスのキー、コミュニティのサインインは settings/keys.json に 1 つずつ暗号化して保存（AES-256-GCM、settings/keys.master で開く）。更新や既定値に戻す操作でも残り、custom.settings にはキーを保存しません。 *Where:* bitGen フォルダー内の settings/（設定 ▸ 一般 に表示）。 *Since:* 2.748.0
 - **☁ RunPod 用の既製リモートスタイル** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium、R_Z-Image Turbo。それぞれ RunPod の標準 worker-comfyui イメージ用です（アップロード不要）。スタジオはエンドポイントのイメージを RunPod に確認し、そのスタイルだけを一覧に出します。ジョブをどこで描画し、そこでいくらかかったかの目安がログに出ます。 *Where:* 基本設定 ▸ GPU のリモート / 両方；設定 ▸ リモート GPU ▸ RunPod Serverless ▸ エンドポイントのイメージ。 *Since:* 2.749.0
+- **🧠 OpenRouter の LLM（無料モデル）+「リモート生成」** — 脚本ライター、プロンプト補助、画像の説明を OpenRouter で実行できます：API キー 1 つ（暗号化して保存）、無料モデル（または 100 万トークンあたりの価格が表示される有料モデル）、画像用のビジョンモデル、✓ Test。リモート GPU は不要で、画像・動画・曲はこれまでどおりここでレンダーされます。設定の Remote GPU タブは Remote generation（リモート生成）になりました。 *Where:* Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter、Basic Settings ▸ GPU の Both で LLM / Vision LLM にチェック。 *Since:* 2.753.0
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
 

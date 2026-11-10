@@ -310,7 +310,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **LoRA 訓練器** — 使用 ai-toolkit（Ostris）以你的圖片訓練 LoRA：九種基礎模型（Z-Image Turbo、FLUX、Qwen-Image、SDXL、SD 1.5、Chroma、Wan 2.1…）、觸發詞、rank、步數、帶描述文字的資料集（或由助手生成描述）、可編輯的 YAML、即時顯示步數 / loss / 樣圖；訓練好的 LoRA 連同卡片存入 ComfyUI 的 loras/trained；可將任務匯出為 zip。 *Where:* 狀態列的 🎓 LoRA. *Since:* 2.520.0
 - **峰谷電價** — 設定峰時電價和峰時時段（星期幾 + 時間，也可跨越午夜）；其餘時間均為谷時；任務分別統計峰時和谷時耗電量。 *Where:* Settings ▸ General ▸ Energy cost. *Since:* 2.520.0
 - **用量日誌** — 按天記錄每個任務的耗電量、峰時佔比、費用和所用遠端 GPU；可選時間範圍、顯示合計、匯出 CSV。 *Where:* Settings ▸ General ▸ 📊 Usage…，或點選狀態列中的 ⚡ 數值. *Since:* 2.520.0
-- **遠端 GPU** — 使用另一臺機器上的 ComfyUI、RunPod pod（列出 / 啟動 / 停止，以及其代理）或 SSH 隧道；✓ Test；Use it / Use this computer。 *Where:* Settings ▸ Remote GPU. *Since:* 2.520.0
+- **遠端 GPU** — 使用另一臺機器上的 ComfyUI、RunPod pod（列出 / 啟動 / 停止，以及其代理）或 SSH 隧道；✓ Test；Use it / Use this computer。 *Where:* Settings ▸ Remote generation. *Since:* 2.520.0
 - **本機與安裝包** — 你的硬體、已安裝的安裝包、每種安裝包可使用的功能；✎ Not right?；⬆ 無需重新安裝即可升級到更大的安裝包。 *Where:* Settings ▸ Models. *Since:* 2.520.0
 - **分組下載** — 每個模型組一個核取方塊，並顯示其檔案數量和大小。 *Where:* 安裝程式的模型頁面；Settings ▸ Models ▸ Model downloads. *Since:* 2.520.0
 - **檢查點微調** — 使用 ai-toolkit 訓練影像模型（Lumina 2、Flex.1、FLUX.2 klein、SDXL）的全部權重，通過參數交換降低顯示記憶體佔用；結果合併為 diffusion_models/trained 中的一個 .safetensors 檔案。 *Where:* 🎓 LoRA ▸ Type. *Since:* 2.521.0
@@ -373,6 +373,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🖥 GPU 預設為本機；更新檢查很快** — 基本設定 ▸ GPU 從本機開始，位於基本設定第一項並收合（標題顯示選擇）；更新檢查只向 GitHub 詢問最新提交，任何網路都能幾秒完成，立即更新 在背景下載。 *Where:* 基本設定 ▸ GPU；設定 ▸ 一般 ▸ 更新。 *Since:* 2.747.0
 - **🔑 API 金鑰加密儲存，更新後仍在** — Hugging Face、Civitai 和 RunPod 金鑰、遠端存取金鑰以及社群登入儲存在 settings/keys.json 中，每個單獨加密（AES-256-GCM，由 settings/keys.master 開啟）；更新和恢復預設值都不會動它們；custom.settings 不儲存任何金鑰。 *Where:* bitGen 資料夾中的 settings/（設定 ▸ 一般 中顯示）。 *Since:* 2.748.0
 - **☁ 為 RunPod 準備的現成遠端風格** — R_SDXL（+ img2img）、R_FLUX.1 schnell / dev / dev fp8、R_SD3 Medium 和 R_Z-Image Turbo，各自對應 RunPod 的一個標準 worker-comfyui 映像（無需上傳）；工作室向 RunPod 詢問端點的鏡像並只列出適合的風格；記錄說明任務在哪裡算圖以及在那裡的大致費用。 *Where:* 基本設定 ▸ GPU 遠端 / 兩者；設定 ▸ 遠端 GPU ▸ RunPod Serverless ▸ 端點的鏡像。 *Since:* 2.749.0
+- **🧠 OpenRouter 上的 LLM（免費模型）+「遠端生成」** — 劇本寫作、提示詞輔助和圖片描述可以在 OpenRouter 上執行：一個 API 金鑰（加密儲存）、免費模型（或顯示每百萬 token 價格的付費模型）、用於圖片的視覺模型、✓ Test；不需要遠端 GPU - 圖片、影片和歌曲仍在這裡渲染。設定中的 Remote GPU 分頁現在叫 Remote generation（遠端生成）。 *Where:* Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter；Basic Settings ▸ GPU 選 Both 並勾選 LLM / Vision LLM。 *Since:* 2.753.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

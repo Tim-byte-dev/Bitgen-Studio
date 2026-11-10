@@ -12,7 +12,7 @@
  *   RUN tab               ▶ Start training (a queue job), its step / total, loss, the last log lines, ⏹ Stop; the
  *                         checkpoints, the sample pictures as they come; the finished LoRA lands in ComfyUI's loras
  *                         folder (trained/<name>) - the 🧩 Model manager shows it; ⤓ Export job (.zip) for another
- *                         machine (a RunPod pod - Settings -> Remote GPU)
+ *                         machine (a RunPod pod - Settings -> Remote generation)
  * 2.521.0 (Tim: "can we add a checkpoint finetune option to the lora creator docker to build on existing llm, vision and
  *   image models? reccomend the best base models for the tasks"): every job has a TYPE (the Job tab's first row) -
  *     🎨 LoRA (pictures / video)           as before; a finished picture LoRA can be ⧉ BAKED into its base model (a new

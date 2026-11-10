@@ -1,7 +1,7 @@
 // bitGen Studio — routes/gpuSplit.js (2.745.0): Basic Settings ▸ GPU (lib/gpuSplit.js). Mounted from routes/index.js.
 //   GET  /api/gpusplit                        {where, llm, vlm, image, video, remote, vllm, vllm_ready, routes}
 //   POST /api/gpusplit   {where?, llm?, vlm?, image?, video?}   save + put ComfyUI's address where it belongs
-//   POST /api/gpusplit/vllm  {endpoint?, model?, vlm_endpoint?, vlm_model?}   the RunPod vLLM endpoint(s) (Settings ▸ Remote GPU)
+//   POST /api/gpusplit/vllm  {endpoint?, model?, vlm_endpoint?, vlm_model?}   the RunPod vLLM endpoint(s) (Settings ▸ Remote generation)
 //   POST /api/gpusplit/vllm/test  {kind: llm|vlm}   its health + the model it serves
 "use strict";
 const G = require("../lib/gpuSplit");

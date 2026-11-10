@@ -1,7 +1,25 @@
 {
  "made": "2026-11-07",
- "count": 5621,
+ "count": 5635,
  "strings": [
+  {
+   "s": "(no list yet - 🔄)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #rgOrModel"
+   ]
+  },
+  {
+   "s": "(the API key first)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #rgOrModel"
+   ]
+  },
   {
    "s": "0 (auto)",
    "kinds": [
@@ -810,6 +828,15 @@
    ],
    "where": [
     "select#gsSel"
+   ]
+  },
+  {
+   "s": "A RunPod Serverless endpoint running RunPod's vLLM worker (your model, paid while it runs)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #rgLlmProv"
    ]
   },
   {
@@ -23554,6 +23581,15 @@
    ]
   },
   {
+   "s": "OpenRouter",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label in #rgLlmProv"
+   ]
+  },
+  {
    "s": "OpenSymbol",
    "kinds": [
     "text"
@@ -24731,6 +24767,15 @@
    ],
    "where": [
     "div.msg in #kbodyBody"
+   ]
+  },
+  {
+   "s": "Pick a model…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #rgOrModel"
    ]
   },
   {
@@ -27711,6 +27756,15 @@
    ]
   },
   {
+   "s": "Remote generation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "button in #settings .stabs"
+   ]
+  },
+  {
    "s": "Remove",
    "kinds": [
     "text"
@@ -29142,6 +29196,15 @@
    ],
    "where": [
     "label in #vdSetPanel"
+   ]
+  },
+  {
+   "s": "Same as the LLM (when it takes pictures)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "option in #rgOrVlm"
    ]
   },
   {
@@ -35356,6 +35419,15 @@
    ]
   },
   {
+   "s": "The LLM runs on",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "#rgLlmProv"
+   ]
+  },
+  {
    "s": "The LLM writes each picture's prompt from its scene - the opening frame: who, what, where, the framing and light, the pictures named (off = the scene's own words)",
    "kinds": [
     "title"
@@ -39826,6 +39898,15 @@
    ]
   },
   {
+   "s": "Vision LLM",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #rgOr"
+   ]
+  },
+  {
    "s": "Vision model status",
    "kinds": [
     "title"
@@ -42191,6 +42272,24 @@
    ],
    "where": [
     "#cmPanel"
+   ]
+  },
+  {
+   "s": "asking OpenRouter for its models…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgOrMsg"
+   ]
+  },
+  {
+   "s": "asking OpenRouter…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#rgOrMsg"
    ]
   },
   {
@@ -47460,6 +47559,15 @@
    ]
   },
   {
+   "s": "openrouter.ai - hundreds of models through one API key, some of them free; nothing to install",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label in #rgLlmProv"
+   ]
+  },
+  {
    "s": "optional",
    "kinds": [
     "placeholder"
@@ -51895,6 +52003,15 @@
    ]
   },
   {
+   "s": "⚙ Settings ▸ Remote generation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#gpuSetup"
+   ]
+  },
+  {
    "s": "🕺 Motion",
    "kinds": [
     "text"
@@ -51910,6 +52027,15 @@
    ],
    "where": [
     "#pvFlowhmr"
+   ]
+  },
+  {
+   "s": "🧠 LLM",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #rgVllm"
    ]
   }
  ]

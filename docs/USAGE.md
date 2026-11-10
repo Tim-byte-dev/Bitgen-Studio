@@ -3754,7 +3754,7 @@ The power meter files every reading as peak or off-peak, so a job that ran acros
 
 The log is kept in the app folder's `usage` folder: one file a month.
 
-### Settings ▸ Remote GPU
+### Settings ▸ Remote generation
 
 Generate on another machine's graphics card:
 
@@ -7941,7 +7941,7 @@ playing (2.725.1).
 
 ## ☁ Rendering on a RunPod Serverless endpoint (2.743.0)
 
-**Settings ▸ Remote GPU ▸ RunPod Serverless** sends every render to a RunPod Serverless endpoint. There is no machine to
+**Settings ▸ Remote generation ▸ RunPod Serverless** sends every render to a RunPod Serverless endpoint. There is no machine to
 start or stop: each render is one job, and you pay only while a worker runs it.
 
 **Setting up the endpoint (once, on runpod.io)**
@@ -7972,7 +7972,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 
 ## ☁ On RunPod Serverless, only the styles it can render (2.744.0)
 
-- While **Settings ▸ Remote GPU ▸ RunPod Serverless** is in use, the style lists (the prompt docker's image styles,
+- While **Settings ▸ Remote generation ▸ RunPod Serverless** is in use, the style lists (the prompt docker's image styles,
   the video styles, the Music docker's) show only the styles the endpoint can render. The last line of a list says
   how many are hidden; pointing at a hidden style in Settings says why.
 - An endpoint can't be asked which nodes it has, so the studio goes by what its image carries. RunPod's worker
@@ -7991,7 +7991,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 ## 🖥 Basic Settings ▸ GPU: what runs on the remote GPU (2.745.0)
 
 - **Basic Settings ▸ GPU** has three choices:
-  - **Remote:** every job on the remote GPU set up in Settings ▸ Remote GPU (the same as its Use it).
+  - **Remote:** every job on the remote GPU set up in Settings ▸ Remote generation (the same as its Use it).
   - **Local:** everything on this computer (the same as This computer). The remote stays set up for later.
   - **Both:** you pick what goes to the remote GPU, and the rest runs on this computer.
     - **LLM:** the chat / prompt model.
@@ -8000,10 +8000,10 @@ start or stop: each render is one job, and you pay only while a worker runs it.
     - **Video + songs:** video jobs and songs.
     Jobs that don't use ComfyUI (exporting, karaoke, training) always run here.
 - A line under it says where each kind runs now. Remote and Both can only be chosen once a remote GPU is set up; a
-  button opens Settings ▸ Remote GPU.
+  button opens Settings ▸ Remote generation.
 - With Both, ComfyUI's address stays this computer's, so your own ComfyUI starts as usual. Each job of a ticked kind
   is sent to the remote GPU when it starts; its log says where it rendered, and 📊 Usage counts its time there.
-- **The LLMs on RunPod:** Settings ▸ Remote GPU ▸ **🧠 LLM on RunPod (vLLM)** takes the endpoint ID of RunPod's vLLM
+- **The LLMs on RunPod:** Settings ▸ Remote generation ▸ **🧠 LLM on RunPod (vLLM)** takes the endpoint ID of RunPod's vLLM
   worker (runpod.io: Serverless ▸ New Endpoint ▸ Deploy LLM API, with the Hugging Face model it should run).
   - The vision LLM needs a vision-language model, such as Qwen2.5-VL. One such endpoint can serve both - leave the
     vision endpoint blank.
@@ -8018,7 +8018,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   Music styles.
   - **This computer:** the style renders with the models on this computer.
   - **Remote GPU:** the style renders on the remote GPU, so its models (and any node packs it needs) must be there.
-    A box asks for its **RunPod endpoint ID**. Leave it blank to use the endpoint in Settings ▸ Remote GPU, or give
+    A box asks for its **RunPod endpoint ID**. Leave it blank to use the endpoint in Settings ▸ Remote generation, or give
     the style its own endpoint - for example one endpoint with SDXL models and another with FLUX.
 - 💾 Save starts a remote style's name with **R_** (R_SDXL) if it doesn't already. Set it back to This computer and the
   R_ comes off again.
@@ -8030,7 +8030,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
     A job with no style (upscaling, graphs and so on) follows the Image and Video + songs boxes.
 - A job's log says where it rendered and why, for example "this image job (R_SDXL - a remote style) renders on RunPod
   Serverless ohkr3evlck2bxn".
-- Settings ▸ Remote GPU ▸ RunPod Serverless counts your remote styles only: "This endpoint can render K of your N remote
+- Settings ▸ Remote generation ▸ RunPod Serverless counts your remote styles only: "This endpoint can render K of your N remote
   styles".
 - Your styles start as This computer, so after updating set Runs on for the styles you want on the remote GPU.
 
@@ -8055,7 +8055,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   (AES-256-GCM). They are:
   - the Hugging Face token,
   - the Civitai token,
-  - the RunPod API key (Settings ▸ Remote GPU),
+  - the RunPod API key (Settings ▸ Remote generation),
   - the remote-access key,
   - your bitGen Community sign-in.
 - **settings/keys.master** holds the key that opens them. It is made the first time a key is saved.
@@ -8089,7 +8089,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 
   They use only ComfyUI's own nodes and the model files RunPod puts in that image, so they render with nothing
   uploaded.
-- **Settings ▸ Remote GPU ▸ RunPod Serverless ▸ Your endpoint's image:** the studio asks RunPod which image your endpoint
+- **Settings ▸ Remote generation ▸ RunPod Serverless ▸ Your endpoint's image:** the studio asks RunPod which image your endpoint
   runs (🔍 Ask RunPod, and by itself the first time) and lists only the ready-made styles for it. With the sdxl image you
   see R_SDXL and R_SDXL img2img; the others are hidden, and their tooltip says why. Pick the image yourself if RunPod
   cannot say. "base" (models on a network volume), "Your own image" and "Not known yet" show every remote style.
@@ -8098,7 +8098,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   - On RunPod Serverless the VRAM step says the endpoint's worker loads the models, instead of "VRAM kept" (which was
     about this computer).
   - The [power] line starts with "rendered on RunPod Serverless …" and an estimate of what the job cost there (from the
-    price per hour in Settings ▸ Remote GPU). Then it gives what this computer used while it waited.
+    price per hour in Settings ▸ Remote generation). Then it gives what this computer used while it waited.
 - Your own style can't take the name of a ready-made one: saving SDXL as a remote style is refused because R_SDXL already
   exists. Use R_SDXL, or give yours another name.
 
@@ -8112,6 +8112,25 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   Studio titles and the labels are crisp.
 - A click or any key still skips the splash.
 - The website's home page plays the same brain film, with the logo in the same place.
+
+## 🧠 The LLM on OpenRouter; "Remote GPU" is now "Remote generation" (2.753.0)
+
+- **Settings ▸ Remote GPU is now Settings ▸ Remote generation.** Everything in it works as before.
+- **The LLM can run on OpenRouter** (openrouter.ai): one API key gives you hundreds of models, some of them free. Nothing
+  to install. It helps most when your graphics card is small - the LLM no longer has to share it with the picture models.
+  1. Make a free account at openrouter.ai and create a key (Keys).
+  2. Settings ▸ Remote generation ▸ 🧠 LLM: pick **OpenRouter** and paste the key. It is kept encrypted in the settings
+     folder, with your other keys.
+  3. Pick the **LLM**. **Free models only** is ticked at first; untick it to see the paid ones with their price per
+     million tokens.
+  4. Pick a **Vision LLM** for describing pictures - only the models that take pictures are listed (👁). Leave it blank
+     to use the LLM, when it takes pictures.
+  5. **✓ Test** checks the key and the model.
+  6. Basic Settings ▸ GPU: pick **Both** and tick **LLM** and **Vision LLM**. This works without a remote GPU - pictures,
+     videos and songs still render on this computer.
+- Free models allow about 20 requests a minute and 50 a day; 1000 a day once the account has bought $10 of credits.
+  OpenRouter can change these limits.
+- Your prompts and pictures go to OpenRouter and the model's provider. Keep private material on this computer.
 
 ## Tips
 

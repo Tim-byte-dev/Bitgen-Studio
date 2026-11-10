@@ -2747,12 +2747,8 @@
    "src": "static/gpusplit.js:31"
   },
   {
-   "s": "No RunPod vLLM endpoint yet - set up Settings ▸ Remote GPU ▸ LLM on RunPod",
-   "src": "static/gpusplit.js:54"
-  },
-  {
-   "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote GPU",
-   "src": "static/gpusplit.js:57"
+   "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation",
+   "src": "static/gpusplit.js:62"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -5067,6 +5063,46 @@
    "src": "static/negprompt.js:134"
   },
   {
+   "s": "RunPod vLLM",
+   "src": "static/openrouter.js:23"
+  },
+  {
+   "s": "Free models only",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Test",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Make a free account and a key at openrouter.ai (Keys). Nothing to install - the studio sends the LLM's requests over the internet",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "The vision LLM must take pictures (marked 👁). Blank = the LLM, when it does",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Your prompts and pictures go to OpenRouter and the model's provider - keep private material on this computer",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Basic Settings ▸ GPU decides when they are used: Both with LLM / Vision LLM ticked, or Remote. It works without a remote GPU - pictures, videos and songs still render here",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "OpenRouter API key (openrouter.ai → Keys)",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "List only the models OpenRouter offers free",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Ask OpenRouter for its model list again",
+   "src": "static/openrouter.js:32"
+  },
+  {
    "s": "Picture style",
    "src": "static/palette.js:148"
   },
@@ -5539,10 +5575,6 @@
    "src": "static/remotegpu.js:31"
   },
   {
-   "s": "Test",
-   "src": "static/remotegpu.js:31"
-  },
-  {
    "s": "Use it",
    "src": "static/remotegpu.js:31"
   },
@@ -5751,7 +5783,7 @@
    "src": "static/runson.js:24"
   },
   {
-   "s": "RunPod endpoint ID (blank = the one in Settings ▸ Remote GPU)",
+   "s": "RunPod endpoint ID (blank = the one in Settings ▸ Remote generation)",
    "src": "static/runson.js:32"
   },
   {
@@ -22697,48 +22729,24 @@
    "src": "static/fontlist.js:106"
   },
   {
-   "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
+   "p": "{0} - set up Settings ▸ Remote generation ▸ 🧠 LLM first",
    "src": "static/gpusplit.js:57"
   },
   {
-   "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:57"
+   "p": "No remote GPU - pictures, videos and songs render on this computer · LLM: {0} · Vision LLM: {1}",
+   "src": "static/gpusplit.js:62"
   },
   {
-   "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:57"
+   "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: {3} · Vision LLM: {4}",
+   "src": "static/gpusplit.js:62"
   },
   {
-   "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: this computer · Vision LLM: this computer",
-   "src": "static/gpusplit.js:57"
+   "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
+   "src": "static/gpusplit.js:62"
   },
   {
-   "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: this computer",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: RunPod vLLM · Vision LLM: this computer",
-   "src": "static/gpusplit.js:57"
-  },
-  {
-   "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: this computer · Vision LLM: RunPod vLLM",
-   "src": "static/gpusplit.js:57"
+   "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
+   "src": "static/gpusplit.js:62"
   },
   {
    "p": "{0} takes {1} · saves: {2}",
@@ -23145,6 +23153,14 @@
    "src": "static/negprompt.js:108"
   },
   {
+   "p": "{0} · {1} tokens",
+   "src": "static/openrouter.js:71"
+  },
+  {
+   "p": "{0} models · {1} free",
+   "src": "static/openrouter.js:92"
+  },
+  {
    "p": "{0}+ · ↑ ↓ pick · Enter runs · Esc closes",
    "src": "static/palette.js:168"
   },
@@ -23353,7 +23369,7 @@
    "src": "static/rpstyles.js:57"
   },
   {
-   "p": "{0} styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)",
+   "p": "{0} styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote generation)",
    "src": "static/rpstyles.js:57"
   },
   {

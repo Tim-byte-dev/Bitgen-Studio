@@ -57,7 +57,7 @@
         note.textContent = m.where === "local" ? "🖥 " + n + " remote styles hidden: Basic Settings ▸ GPU is on Local"
           : m.where === "remote" && !shown ? "☁ No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU"   // 2.747.0
           : m.where === "remote" ? "☁ " + n + " styles hidden: Basic Settings ▸ GPU is on Remote - only the remote styles it can render show"
-          : "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote GPU)";
+          : "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote generation)";
         sel.appendChild(note);
       }
       var cur = sel.selectedOptions[0];
