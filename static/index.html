@@ -2146,7 +2146,7 @@
     <div class="rowbtns">
       <button class="ghost" id="s_reset" type="button"
         style="border-color:#c98b7a;color:#c98b7a"
-        title="Back to default.settings — custom.settings is kept as custom.settings.bak">↺ Reset settings to defaults</button>
+        title="Back to default.settings — custom.settings is kept as custom.settings.bak; your API keys (settings/keys.json) stay">↺ Reset settings to defaults</button>
     </div>
   </div>
 
@@ -4298,7 +4298,9 @@ async function paintSettingsInfo() {
     const j = await (await fetch("/api/settings/info")).json();
     el.textContent = `default: ${j.defaults}\ncustom:  ${j.custom}` +
       (j.custom_exists ? ` (customised: ${j.custom_keys.length ? j.custom_keys.join(", ") : "nothing"})`
-                       : " (not created yet — everything is default)");
+                       : " (not created yet — everything is default)") +
+      // 2.748.0: the API keys, encrypted, in their own folder - updates and Reset leave them (names only, never a value)
+      (j.keys ? `\nkeys:    ${j.keys} (` + (j.keys_saved && j.keys_saved.length ? "encrypted: " + j.keys_saved.join(", ") : "no API keys saved yet") + ")" : "");
   } catch { el.textContent = ""; }
 }
 async function loadConfig() {

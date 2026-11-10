@@ -4876,6 +4876,24 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **设置 ▸ 常规 ▸ 更新：** 在 git 安装中，🔍 检查更新 会在一次请求中下载整个更新（每个版本约 13 MB 的指南 PDF）。工作室等待请求的时间最多 5 分钟，所以网络较慢或落后几个版本时，检查会以“Failed to fetch”失败。现在它只向 GitHub 询问最新的提交，几秒就能完成，⤓ 立即更新 会在后台下载其余部分（最多允许 1 小时）。如果工作室不再响应，消息会说明这一点，而不是
   “Failed to fetch”。
 
+## 🔑 你的 API 密钥加密保存在 settings 文件夹中（2.748.0）
+<!-- en: your-api-keys-are-kept-encrypted-in-the-settings-folder-2-748-0 cfe19658f20e -->
+
+- 你添加的 API 密钥和令牌保存在 bitGen 文件夹中的 **settings/keys.json**，每一个都单独加密（AES-256-GCM）。包括：
+  - Hugging Face 令牌
+  - Civitai 令牌
+  - RunPod API 密钥（设置 ▸ 远程 GPU）
+  - 远程访问密钥
+  - bitGen 社区的登录
+- **settings/keys.master** 存放用来打开它们的密钥，在第一次保存密钥时生成。
+- **更新不会动它们。** settings 文件夹不属于应用的文件，所以 `git pull`、⤓ 立即更新 和新的 zip 都不会碰它。密钥只需添加一次。
+- **custom.settings 不再保存任何密钥。** 已经在里面的密钥会在第一次启动 2.748.0 时移到 settings/。custom.settings.bak
+  和 community.json 中的社区登录令牌也一样。
+- **设置 ▸ 常规** 显示密钥文件的位置和已保存密钥的名称（从不显示密钥本身）。将设置恢复为默认值 会保留你的密钥。
+- **移到新文件夹或新电脑：** 把整个 settings 文件夹复制过去（keys.json 和 keys.master 一起）。单独的 keys.json 无法打开。
+- **加密的作用：** 密钥不再以明文出现在设置文件、它的备份或你发给别人的文件中。应用必须在不询问你的情况下打开它们，所以能读取你在这台电脑上的文件的人也能打开 - 任何会记住密钥的应用都是如此。
+- 修复：misc/default.settings 现在列出了应用使用的所有默认值（文件中缺少 5 个较新的值；这些值早已在使用）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

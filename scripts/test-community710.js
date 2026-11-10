@@ -37,8 +37,10 @@ C.setFetch(async (url, o) => { const b = JSON.parse(o.body || "{}"); seen.push({
     const j = await C.join({ handle: "Tim_P", password: "secret-pass", display: "Tim", first_name: "Tim", last_name: "Paul", email: "tim@example.com", mode: "register", url: `http://${HERE}:9/api.php` });
     check("2.713.0: …the name and email address go to the server with the register", seen[seen.length - 1].body.first_name === "Tim" && seen[seen.length - 1].body.email === "tim@example.com");
     const onDisk = JSON.parse(fs.readFileSync(path.join(tmp, "community.json"), "utf8"));
-    check("Join (register): the ID lower-cased, the token kept in community.json - and NOT in what the page gets",
-      j.user.handle === "tim_p" && onDisk.token === "T0KEN" && onDisk.handle === "tim_p" && !JSON.stringify(C.state()).includes("T0KEN") && C.state().joined === true && !JSON.stringify(j).includes("T0KEN"), { j, onDisk });
+    // 2.748.0: the token is kept in settings/keys.json, encrypted (lib/secrets.js) - community.json keeps the ID
+    const tok = () => require("../lib/secrets.js").store(tmp).read()["community.token"];
+    check("Join (register): the ID lower-cased, the token kept (settings/keys.json, encrypted - not community.json) - and NOT in what the page gets",
+      j.user.handle === "tim_p" && tok() === "T0KEN" && !("token" in onDisk) && !fs.readFileSync(path.join(tmp, "settings", "keys.json"), "utf8").includes("T0KEN") && onDisk.handle === "tim_p" && !JSON.stringify(C.state()).includes("T0KEN") && C.state().joined === true && !JSON.stringify(j).includes("T0KEN"), { j, onDisk });
     check("…the password went to the server once, in the body, never stored", seen.filter((x) => x.body && x.body.password === "secret-pass").length === 1 && !fs.readFileSync(path.join(tmp, "community.json"), "utf8").includes("secret-pass"));
     reply = () => ({ ok: true, messages: [] });
     await C.call("poll", { since: 0 });
@@ -52,7 +54,7 @@ C.setFetch(async (url, o) => { const b = JSON.parse(o.body || "{}"); seen.push({
     check("a token the server no longer takes: signed out here (the panel shows Join / Sign in again)", x.ok === false && x.signedOut === true && C.state().joined === false && C.state().handle === "tim_p");
     reply = (url) => (/a=login/.test(url) ? { ok: true, token: "T2", user: { handle: "tim_p", display: "Tim" } } : { ok: true });
     await C.join({ handle: "tim_p", password: "secret-pass", mode: "login" });
-    check("Sign in (login) keeps the new token", JSON.parse(fs.readFileSync(path.join(tmp, "community.json"), "utf8")).token === "T2");
+    check("Sign in (login) keeps the new token", require("../lib/secrets.js").store(tmp).read()["community.token"] === "T2");
     reply = () => ({ ok: false, error: "can't reach" }); C.setFetch(async () => { throw new Error("ECONNREFUSED"); });
     const off = await C.call("poll", {});
     check("the community server down: an answer that says so (no crash)", off.ok === false && off.status === 0 && /cannot reach/.test(off.error), off);

@@ -13133,6 +13133,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.748.0 (Tim: "save the users api keys in a file in a folder called settings, maybe encrypt the keys and decrptt them
+# when using the app. so user doesn't need to add them with new updates")
+node scripts/test-keys748.js > /tmp/keys748.log 2>&1 \
+  && ok "2.748.0 API keys: settings/keys.json, each AES-256-GCM (keys.master, 0600 / 0700), none in plain text; custom.settings never holds one (moved at the first start, .bak scrubbed), the config has them decrypted; save / clear / reset; the Community token too; settings/ git-ignored" \
+  || { bad "2.748.0 API keys units"; grep -a "^FAIL" -A1 /tmp/keys748.log | head -14; }
+node scripts/test-ui748-ui.js > /tmp/ui748ui.log 2>&1 \
+  && ok "2.748.0 browser test: a RunPod key saved in Settings ▸ Remote GPU lands encrypted in settings/keys.json, not custom.settings, shows again after a reload; Settings ▸ General names it (never the value); Settings ▸ Save keeps it out - or SKIP" \
+  || { bad "2.748.0 API keys browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui748ui.log | head -14; }
 # ---- 2.747.0 (Tim: "the image and video styles are not showing, make local default, minimize the gpu menu item in basic
 # settings, put gpu menu item above overide checkbox ... previous version would not let me update inapp" - "failed to fetch")
 node scripts/test-gpulocal747.js > /tmp/gpulocal747.log 2>&1 \

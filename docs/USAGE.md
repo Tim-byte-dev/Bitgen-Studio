@@ -8049,6 +8049,30 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   commit, so it finishes in seconds, and ⤓ Update now downloads the rest in the background (up to an hour allowed).
   If the studio stops answering, the message says so instead of "Failed to fetch".
 
+## 🔑 Your API keys are kept, encrypted, in the settings folder (2.748.0)
+
+- The API keys and tokens you add are saved in **settings/keys.json** inside the bitGen folder, each one encrypted
+  (AES-256-GCM). They are:
+  - the Hugging Face token,
+  - the Civitai token,
+  - the RunPod API key (Settings ▸ Remote GPU),
+  - the remote-access key,
+  - your bitGen Community sign-in.
+- **settings/keys.master** holds the key that opens them. It is made the first time a key is saved.
+- **Updates leave them alone.** The settings folder is not part of the app's files, so `git pull`, ⤓ Update now and a new
+  zip never touch it. You add a key once.
+- **custom.settings no longer holds any key.** Keys already in it move to settings/ the first time 2.748.0 starts.
+  The same happens to custom.settings.bak and to the Community sign-in token in community.json.
+- **Settings ▸ General** shows where the keys file is and which keys are saved (never a key itself).
+  ↺ Reset settings to defaults keeps your keys.
+- **Moving to a new folder or computer:** copy the whole settings folder across, keys.json and keys.master together.
+  keys.json alone cannot be opened.
+- **What the encryption does:** the keys are no longer plain text in a settings file, a backup of it or a file you send
+  to someone. The app has to open them without asking you anything, so anyone who can read your files on this computer
+  could open them too, as with any app that remembers a key.
+- Fixed: misc/default.settings now lists every default the app uses (five newer ones were missing from the file; the
+  values were already in use).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

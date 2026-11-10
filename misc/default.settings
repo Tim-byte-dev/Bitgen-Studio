@@ -78,7 +78,13 @@
       },
       "widget_overrides": {},
       "node_bypass": [],
-      "autostart": false
+      "autostart": false,
+      "restart_on_start": true,
+      "vram16": {
+        "mode": "auto",
+        "scale": 1.5,
+        "turbo": true
+      }
     },
     "runpod": {
       "enabled": false,
@@ -204,5 +210,6 @@
     "base": "",
     "lora_dirs": [],
     "python": ""
-  }
+  },
+  "projects_dir": ""
 }

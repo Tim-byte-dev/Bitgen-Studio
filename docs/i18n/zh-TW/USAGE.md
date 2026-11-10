@@ -4875,6 +4875,24 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - 選了遠端但還沒有 R_ 風格時，風格清單最後一行會說明：把 基本設定 ▸ GPU 改為本機，或把風格的「執行於」設為遠端 GPU。
 - **設定 ▸ 一般 ▸ 更新：** 在 git 安裝中，🔍 檢查更新 會在一次請求中下載整個更新（每個版本約 13 MB 的指南 PDF）。工作室等待請求的時間最多 5 分鐘，所以網路較慢或落後幾個版本時，檢查會以「Failed to fetch」失敗。現在它只向 GitHub 詢問最新的提交，幾秒就能完成，⤓ 立即更新 會在背景下載其餘部分（最多允許 1 小時）。如果工作室不再回應，訊息會說明這一點，而不是「Failed to fetch」。
 
+## 🔑 你的 API 金鑰加密儲存在 settings 資料夾中（2.748.0）
+<!-- en: your-api-keys-are-kept-encrypted-in-the-settings-folder-2-748-0 cfe19658f20e -->
+
+- 你加入的 API 金鑰和權杖儲存在 bitGen 資料夾中的 **settings/keys.json**，每一個都單獨加密（AES-256-GCM）。包括：
+  - Hugging Face 權杖
+  - Civitai 權杖
+  - RunPod API 金鑰（設定 ▸ 遠端 GPU）
+  - 遠端存取金鑰
+  - bitGen 社群的登入
+- **settings/keys.master** 存放用來開啟它們的金鑰，在第一次儲存金鑰時產生。
+- **更新不會動它們。** settings 資料夾不屬於應用程式的檔案，所以 `git pull`、⤓ 立即更新 和新的 zip 都不會碰它。金鑰只需加入一次。
+- **custom.settings 不再儲存任何金鑰。** 已經在裡面的金鑰會在第一次啟動 2.748.0 時移到 settings/。custom.settings.bak
+  和 community.json 中的社群登入權杖也一樣。
+- **設定 ▸ 一般** 顯示金鑰檔案的位置和已儲存金鑰的名稱（從不顯示金鑰本身）。將設定恢復為預設值 會保留你的金鑰。
+- **移到新資料夾或新電腦：** 把整個 settings 資料夾複製過去（keys.json 和 keys.master 一起）。單獨的 keys.json 無法開啟。
+- **加密的作用：** 金鑰不再以明文出現在設定檔、它的備份或你傳給別人的檔案中。應用程式必須在不詢問你的情況下開啟它們，所以能讀取你在這台電腦上的檔案的人也能開啟 - 任何會記住金鑰的應用程式都是如此。
+- 修正：misc/default.settings 現在列出了應用程式使用的所有預設值（檔案中缺少 5 個較新的值；這些值早已在使用）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
