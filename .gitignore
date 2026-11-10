@@ -135,3 +135,4 @@ community.json
 community/config.php
 community/*.db
 /misc/brand/.cache/
+/.pdocs/
