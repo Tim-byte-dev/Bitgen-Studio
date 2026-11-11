@@ -54,7 +54,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
         ep: getComputedStyle(document.getElementById("s_step")).display, mu: !!document.getElementById("s_murunson"), vs: !!document.getElementById("s_vsrunson") || !!(window.H3RunsOn && H3RunsOn.build("vs")) };
     });
     check("Settings ▸ Image: \"Runs on\" under the style's name - This computer (picked) / Remote GPU / API (2.757.0), no endpoint box yet; the Music and Video editors have it too", ed.box && ed.after
-      && ed.radios.join() === "local*,remote,api" && ed.ep === "none" && ed.mu && ed.vs, ed);
+      && ed.radios.join() === "local*,remote,api,pod" && ed.ep === "none" && ed.mu && ed.vs, ed);
     await p.check('input[name="s_strunson"][value="remote"]'); await sleep(200);
     const epShown = await ev(() => getComputedStyle(document.getElementById("s_step")).display !== "none");
     await p.fill("#s_step", "ohkr3evlck2bxn");

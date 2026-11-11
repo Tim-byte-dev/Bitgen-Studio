@@ -1372,119 +1372,119 @@
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10923"
+   "src": "index.html:10921"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:11021"
+   "src": "index.html:11019"
   },
   {
    "s": "Checkpoints",
-   "src": "index.html:11021"
+   "src": "index.html:11019"
   },
   {
    "s": "Text encoders",
-   "src": "index.html:11022"
+   "src": "index.html:11020"
   },
   {
    "s": "CLIP vision",
-   "src": "index.html:11023"
+   "src": "index.html:11021"
   },
   {
    "s": "Embeddings",
-   "src": "index.html:11024"
+   "src": "index.html:11022"
   },
   {
    "s": "Upscale models",
-   "src": "index.html:11025"
+   "src": "index.html:11023"
   },
   {
    "s": "Configs",
-   "src": "index.html:11025"
+   "src": "index.html:11023"
   },
   {
    "s": "folder, or a name under the base folder",
-   "src": "index.html:11027"
+   "src": "index.html:11025"
   },
   {
    "s": "Select folder",
-   "src": "index.html:11027"
+   "src": "index.html:11025"
   },
   {
    "s": "Select Folder",
-   "src": "index.html:11051"
+   "src": "index.html:11049"
   },
   {
    "s": "the folder dialog could not open — type the path",
-   "src": "index.html:11054"
+   "src": "index.html:11052"
   },
   {
    "s": "pick the base folder first",
-   "src": "index.html:11059"
+   "src": "index.html:11057"
   },
   {
    "s": "standard folders filled — 💾 to write them",
-   "src": "index.html:11062"
+   "src": "index.html:11060"
   },
   {
    "s": "writing",
-   "src": "index.html:11067"
+   "src": "index.html:11065"
   },
   {
    "s": "refused",
-   "src": "index.html:11072"
+   "src": "index.html:11070"
   },
   {
    "s": "written: nothing new · restart ComfyUI to pick the folders up",
-   "src": "index.html:11073"
+   "src": "index.html:11071"
   },
   {
    "s": "new graph —",
-   "src": "index.html:11116"
+   "src": "index.html:11114"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11123"
+   "src": "index.html:11121"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11140"
+   "src": "index.html:11138"
   },
   {
    "s": "label",
-   "src": "index.html:11147"
+   "src": "index.html:11145"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11147"
+   "src": "index.html:11145"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11147"
+   "src": "index.html:11145"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11147"
+   "src": "index.html:11145"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11177"
+   "src": "index.html:11175"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11216"
+   "src": "index.html:11214"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11347"
+   "src": "index.html:11345"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11424"
+   "src": "index.html:11422"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11424"
+   "src": "index.html:11422"
   },
   {
    "s": "Version",
@@ -1761,6 +1761,34 @@
   {
    "s": "All",
    "src": "static/assetgroups.js:453"
+  },
+  {
+   "s": "Music",
+   "src": "static/audiodock.js:15"
+  },
+  {
+   "s": "Songs - lyrics, a music style, cover, sheet music",
+   "src": "static/audiodock.js:15"
+  },
+  {
+   "s": "Stems",
+   "src": "static/audiodock.js:16"
+  },
+  {
+   "s": "Split a song into its vocals and its music (demucs)",
+   "src": "static/audiodock.js:16"
+  },
+  {
+   "s": "SFX",
+   "src": "static/audiodock.js:17"
+  },
+  {
+   "s": "Sound effects - add audio or video, trim, keep a part",
+   "src": "static/audiodock.js:17"
+  },
+  {
+   "s": "Audio",
+   "src": "static/audiodock.js:58"
   },
   {
    "s": "Off: each style's own settings",
@@ -2331,6 +2359,14 @@
    "src": "static/community.js:380"
   },
   {
+   "s": "Prices show in US dollars, as the services list them",
+   "src": "static/currency.js:65"
+  },
+  {
+   "s": "checking the rates",
+   "src": "static/currency.js:77"
+  },
+  {
    "s": "Drag to size this column",
    "src": "static/dgdock.js:232"
   },
@@ -2437,14 +2473,6 @@
   {
    "s": "Image editor",
    "src": "static/dockreset.js:19"
-  },
-  {
-   "s": "Music",
-   "src": "static/dockreset.js:20"
-  },
-  {
-   "s": "Stems",
-   "src": "static/dockreset.js:20"
   },
   {
    "s": "Prompt chat",
@@ -5364,199 +5392,199 @@
   },
   {
    "s": "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods",
-   "src": "static/podsdock.js:60"
+   "src": "static/podsdock.js:69"
   },
   {
    "s": "PODS",
-   "src": "static/podsdock.js:60"
+   "src": "static/podsdock.js:69"
   },
   {
    "s": "Every kind",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "NVIDIA",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "AMD",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "ComfyUI only",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "For any style",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "Explore RunPod templates ↗",
-   "src": "static/podsdock.js:77"
-  },
-  {
-   "s": "My pods",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "Search templates - name, image, port, kind",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "Ask RunPod again",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "The kind of machine the template is made for",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "Only templates that run ComfyUI - the ones bitGen can render with",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "A template that is not listed: paste its RunPod link",
-   "src": "static/podsdock.js:77"
+   "src": "static/podsdock.js:86"
   },
   {
    "s": "Official",
-   "src": "static/podsdock.js:81"
+   "src": "static/podsdock.js:90"
   },
   {
    "s": "Verified",
-   "src": "static/podsdock.js:81"
+   "src": "static/podsdock.js:90"
+  },
+  {
+   "s": "My pods",
+   "src": "static/podsdock.js:90"
   },
   {
    "s": "kept under ★ Shortcuts",
-   "src": "static/podsdock.js:145"
+   "src": "static/podsdock.js:167"
   },
   {
    "s": "removed from ★ Shortcuts",
-   "src": "static/podsdock.js:145"
+   "src": "static/podsdock.js:167"
   },
   {
    "s": "Runs ComfyUI - bitGen can render on it",
-   "src": "static/podsdock.js:178"
+   "src": "static/podsdock.js:201"
   },
   {
    "s": "fits",
-   "src": "static/podsdock.js:180"
+   "src": "static/podsdock.js:203"
   },
   {
    "s": "Container disk",
-   "src": "static/podsdock.js:183"
+   "src": "static/podsdock.js:206"
   },
   {
    "s": "Kept while the pod is stopped",
-   "src": "static/podsdock.js:184"
+   "src": "static/podsdock.js:207"
   },
   {
    "s": "No shortcuts yet - press ☆ on a template to keep it here",
-   "src": "static/podsdock.js:193"
+   "src": "static/podsdock.js:216"
   },
   {
    "s": "No template matches - try fewer words, another kind, or untick ComfyUI only",
-   "src": "static/podsdock.js:193"
+   "src": "static/podsdock.js:216"
   },
   {
    "s": "No templates here",
-   "src": "static/podsdock.js:193"
+   "src": "static/podsdock.js:216"
   },
   {
    "s": "Create a pod from",
-   "src": "static/podsdock.js:214"
+   "src": "static/podsdock.js:237"
   },
   {
    "s": "Cloud",
-   "src": "static/podsdock.js:221"
+   "src": "static/podsdock.js:244"
   },
   {
    "s": "Secure",
-   "src": "static/podsdock.js:221"
+   "src": "static/podsdock.js:244"
   },
   {
    "s": "GPU",
-   "src": "static/podsdock.js:223"
+   "src": "static/podsdock.js:246"
   },
   {
    "s": "asking RunPod",
-   "src": "static/podsdock.js:223"
+   "src": "static/podsdock.js:246"
   },
   {
    "s": "GPUs",
-   "src": "static/podsdock.js:224"
+   "src": "static/podsdock.js:247"
   },
   {
    "s": "wiped when the pod stops",
-   "src": "static/podsdock.js:225"
+   "src": "static/podsdock.js:248"
   },
   {
    "s": "workspace",
-   "src": "static/podsdock.js:226"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "GB",
-   "src": "static/podsdock.js:226"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "kept while stopped - billed for storage",
-   "src": "static/podsdock.js:226"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "Create pod",
-   "src": "static/podsdock.js:228"
+   "src": "static/podsdock.js:251"
   },
   {
    "s": "no GPUs offered",
-   "src": "static/podsdock.js:239"
+   "src": "static/podsdock.js:262"
   },
   {
    "s": "terminating",
-   "src": "static/podsdock.js:273"
+   "src": "static/podsdock.js:298"
   },
   {
    "s": "stopping pod",
-   "src": "static/podsdock.js:274"
+   "src": "static/podsdock.js:299"
   },
   {
    "s": "loading pod",
-   "src": "static/podsdock.js:275"
+   "src": "static/podsdock.js:300"
   },
   {
    "s": "pod loaded",
-   "src": "static/podsdock.js:276"
+   "src": "static/podsdock.js:301"
   },
   {
    "s": "stopped",
-   "src": "static/podsdock.js:279"
+   "src": "static/podsdock.js:304"
   },
   {
-   "s": "No pods yet - create one from a template above",
-   "src": "static/podsdock.js:284"
+   "s": "No pods yet - pick a template (All, Official …) and press Create pod",
+   "src": "static/podsdock.js:309"
   },
   {
    "s": "bitGen created or started it",
-   "src": "static/podsdock.js:286"
+   "src": "static/podsdock.js:311"
   },
   {
    "s": "Render on this pod (its ComfyUI)",
-   "src": "static/podsdock.js:289"
+   "src": "static/podsdock.js:314"
   },
   {
    "s": "Styles",
-   "src": "static/podsdock.js:290"
+   "src": "static/podsdock.js:315"
   },
   {
    "s": "Terminate",
-   "src": "static/podsdock.js:293"
+   "src": "static/podsdock.js:318"
   },
   {
    "s": "Delete the pod and everything on it",
-   "src": "static/podsdock.js:293"
+   "src": "static/podsdock.js:318"
   },
   {
    "s": "since start",
@@ -5744,10 +5772,6 @@
   },
   {
    "s": "Videos",
-   "src": "static/refmodmgr.js:56"
-  },
-  {
-   "s": "Audio",
    "src": "static/refmodmgr.js:56"
   },
   {
@@ -6059,7 +6083,11 @@
    "src": "static/remotegpu.js:35"
   },
   {
-   "s": "What the machine costs per hour (0 = free) - the usage log adds it",
+   "s": "US$/h",
+   "src": "static/remotegpu.js:35"
+  },
+  {
+   "s": "What the machine costs per hour in US dollars (0 = free) - the usage log adds it",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -6071,7 +6099,7 @@
    "src": "static/remotegpu.js:35"
   },
   {
-   "s": "What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it",
+   "s": "What a worker of the endpoint costs per hour of running, in US dollars (RunPod lists it per second - × 3600) - the usage log adds it",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -8379,20 +8407,20 @@
    "src": "static/workspaces.js:37"
   },
   {
-   "s": "A song and its video - music, stems, the timeline, the storyboard, the preview and the prompt",
-   "src": "static/workspaces.js:41"
+   "s": "A song and its video - the Audio docker (music, stems), the timeline, the storyboard, the preview and the prompt",
+   "src": "static/workspaces.js:42"
   },
   {
    "s": "Everything - every docker and every button",
-   "src": "static/workspaces.js:45"
+   "src": "static/workspaces.js:46"
   },
   {
    "s": "Workspace",
-   "src": "static/workspaces.js:226"
+   "src": "static/workspaces.js:227"
   },
   {
    "s": "Put this workspace back to its default layout",
-   "src": "static/workspaces.js:226"
+   "src": "static/workspaces.js:227"
   },
   {
    "s": "not running",
@@ -22746,59 +22774,59 @@
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10879"
+   "src": "index.html:10878"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10884"
+   "src": "index.html:10883"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:11027"
+   "src": "index.html:11025"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11073"
+   "src": "index.html:11071"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11073"
+   "src": "index.html:11071"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11073"
+   "src": "index.html:11071"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11125"
+   "src": "index.html:11123"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11216"
+   "src": "index.html:11214"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11272"
+   "src": "index.html:11270"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11272"
+   "src": "index.html:11270"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11381"
+   "src": "index.html:11379"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11445"
+   "src": "index.html:11443"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11573"
+   "src": "index.html:11571"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11574"
+   "src": "index.html:11572"
   },
   {
    "p": "The credits could not be read: {0}",
@@ -23099,6 +23127,26 @@
   {
    "p": "ComfyUI {0} is the newest on master ({1})",
    "src": "static/comfyupdate.js:57"
+  },
+  {
+   "p": "Your rate: 1 USD = {0} {1}",
+   "src": "static/currency.js:65"
+  },
+  {
+   "p": "1 USD = {0} {1} (the reference rate of {2}) - checked again every 12 hours",
+   "src": "static/currency.js:65"
+  },
+  {
+   "p": "1 USD = {0} {1} (the reference rate of the last check) - checked again every 12 hours",
+   "src": "static/currency.js:65"
+  },
+  {
+   "p": "No {0} rate yet - bitGen could not reach the rates service. Type a rate, or press ↻ when you are online. Prices stay in US dollars until then",
+   "src": "static/currency.js:65"
+  },
+  {
+   "p": "Could not get the rates: {0}",
+   "src": "static/currency.js:78"
   },
   {
    "p": "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}",
@@ -23622,11 +23670,11 @@
   },
   {
    "p": "{0} · {1} tokens",
-   "src": "static/openrouter.js:71"
+   "src": "static/openrouter.js:73"
   },
   {
    "p": "{0} models · {1} free",
-   "src": "static/openrouter.js:92"
+   "src": "static/openrouter.js:94"
   },
   {
    "p": "{0}+ · ↑ ↓ pick · Enter runs · Esc closes",
@@ -23669,40 +23717,48 @@
    "src": "static/podload.js:209"
   },
   {
+   "p": "{0} pod on your RunPod account",
+   "src": "static/podsdock.js:190"
+  },
+  {
+   "p": "{0} pods on your RunPod account",
+   "src": "static/podsdock.js:190"
+  },
+  {
    "p": "{0} of {1} templates · RunPod did not answer for: {2}",
-   "src": "static/podsdock.js:168"
+   "src": "static/podsdock.js:191"
   },
   {
    "p": "{0} of {1} templates",
-   "src": "static/podsdock.js:168"
+   "src": "static/podsdock.js:191"
   },
   {
    "p": "{0} GB disk",
-   "src": "static/podsdock.js:183"
+   "src": "static/podsdock.js:206"
   },
   {
    "p": "{0} GB /workspace",
-   "src": "static/podsdock.js:184"
+   "src": "static/podsdock.js:207"
   },
   {
-   "p": "About ${0} an hour while it runs (RunPod's price now), plus storage",
-   "src": "static/podsdock.js:251"
+   "p": "About {0} an hour while it runs (RunPod's price now), plus storage",
+   "src": "static/podsdock.js:274"
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:331"
+   "src": "static/podsdock.js:356"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:347"
+   "src": "static/podsdock.js:372"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:348"
+   "src": "static/podsdock.js:373"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:357"
+   "src": "static/podsdock.js:382"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",

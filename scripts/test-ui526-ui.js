@@ -38,7 +38,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     const vis = (id) => { const e = document.getElementById(id); return !!e && getComputedStyle(e).display !== "none" && e.offsetParent !== null; };
     const docks = {}; H3Workspace.BOTTOM.forEach((k) => { const e = document.getElementById(k); docks[k] = !e ? "-" : e.classList.contains("dockgone") ? "gone" : e.classList.contains("collapsed") ? "collapsed" : "open"; });
     const side = {}; H3Workspace.SIDE.forEach((k) => { side[k] = !document.getElementById("app").classList.contains(H3Workspace.SIDE_CLS[k]); });
-    return { docks, side, btn: Object.fromEntries(["tT", "tSt", "tCF", "tIE", "tMu", "tPv", "tP", "tQ", "ltBtn", "hbBtn", "projReset", "openSettings", "wsSel"].map((i) => [i, vis(i)])),
+    return { docks, side, btn: Object.fromEntries(["tT", "tAu", "tCF", "tIE", "tPv", "tP", "tQ", "ltBtn", "hbBtn", "projReset", "openSettings", "wsSel"].map((i) => [i, vis(i)])),
       gm: (document.getElementById("genModeSel") || {}).value, maxed: [...document.querySelectorAll(".bdock.maxed")].map((e) => e.id), house: SecFloat.state("house").shown, ws: document.body.getAttribute("data-workspace") };
   });
   let gm0 = "";
@@ -56,7 +56,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await pick("basic");
     let s = await state();
     check("Basic: the preview + the prompt; timeline, image editor, music hidden; the assets dock hidden", s.docks.previewdock === "open" && s.docks.promptdock === "open" && s.docks.timelinedock === "gone" && s.docks.imageeditdock === "gone" && s.docks.musicdock === "gone" && s.side.assets === false, s);
-    check("…its buttons: Timeline, Stems, ComfyUI, 🎓 LoRA, 🏠 House, ↺ Reset project hidden - Prompt, Queue, ⚙, the dropdown stay", !s.btn.tT && !s.btn.tSt && !s.btn.tCF && !s.btn.ltBtn && !s.btn.hbBtn && !s.btn.projReset && s.btn.tP && s.btn.tQ && s.btn.openSettings && s.btn.wsSel, s.btn);
+    check("…its buttons: Timeline, Audio, ComfyUI, 🎓 LoRA, 🏠 House, ↺ Reset project hidden - Prompt, Queue, ⚙, the dropdown stay", !s.btn.tT && !s.btn.tAu && !s.btn.tCF && !s.btn.ltBtn && !s.btn.hbBtn && !s.btn.projReset && s.btn.tP && s.btn.tQ && s.btn.openSettings && s.btn.wsSel, s.btn);
     check("…the floating 🏠 House closed (Expert keeps it)", s.house === false);
     check("…hidden, never disabled: the buttons are still there to reach", await ev(() => ["tT", "hbBtn"].every((i) => document.getElementById(i) && !document.getElementById(i).disabled)));
     await shot("ui526-basic.png");
@@ -64,7 +64,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await pick("image");
     s = await state();
     check("Image editing: the image editor (maximized) + the prompt; preview and timeline hidden; Generate -> 🖼 Image", s.docks.imageeditdock === "open" && s.maxed.includes("imageeditdock") && s.docks.previewdock === "gone" && s.docks.timelinedock === "gone" && s.gm === "image", s);
-    check("…its buttons: Editor shown, Timeline / Preview / Music hidden", s.btn.tIE && !s.btn.tT && !s.btn.tPv && !s.btn.tMu, s.btn);
+    check("…its buttons: Editor shown, Timeline / Preview / Audio hidden", s.btn.tIE && !s.btn.tT && !s.btn.tPv && !s.btn.tAu, s.btn);
     await shot("ui526-image.png");
 
     await pick("video");
@@ -76,7 +76,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
 
     await pick("musicvideo");
     s = await state();
-    check("Music video: + music and stems, the timeline, the storyboard, the preview", ["previewdock", "timelinedock", "videodock", "musicdock", "stemsdock", "promptdock"].every((k) => s.docks[k] === "open") && s.docks.imageeditdock === "gone" && s.side.refs === true && s.btn.tMu && s.btn.tSt, s);
+    check("Music video: + the Audio docker on Music (2.760.0: Stems is its tab - one at a time), the timeline, the storyboard, the preview", ["previewdock", "timelinedock", "videodock", "musicdock", "promptdock"].every((k) => s.docks[k] === "open") && s.docks.stemsdock === "gone" && s.docks.imageeditdock === "gone" && s.side.refs === true && s.btn.tAu, s);
     await shot("ui526-musicvideo.png");
 
     await pick("video");

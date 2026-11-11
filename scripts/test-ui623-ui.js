@@ -49,7 +49,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const inl = await ev(() => { const i = document.getElementById("thInline"); return i ? i.value : null; });
     await p.fill("#thInline", "Sounds & speech"); await p.keyboard.press("Enter"); await p.waitForTimeout(300);
     const head = await ev(() => ({ txt: document.querySelector("#sfxdock > .bhead").textContent, maxbtn: !!document.querySelector("#sfxdock > .bhead .maxbtn"), inl: !!document.getElementById("thInline") }));
-    check("double-click a docker's title: a box with its words (SFX); Enter = the new title, its ▾ and ⛶ kept", inl === "SFX" && /Sounds & speech/.test(head.txt) && head.maxbtn && !head.inl, { inl, head });
+    check("double-click a docker's title: a box with its words (Audio - 2.760.0: SFX is the Audio docker's tab); Enter = the new title, its ▾ and ⛶ kept", inl === "Audio" && /Sounds & speech/.test(head.txt) && head.maxbtn && !head.inl, { inl, head });
     at = await box("#sfxAdd");
     await p.mouse.dblclick(at.x, at.y); await p.waitForTimeout(250);
     await p.fill("#thInline", "Import"); await p.keyboard.press("Enter"); await p.waitForTimeout(300);

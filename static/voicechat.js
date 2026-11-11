@@ -75,8 +75,8 @@
   /** a docker's words -> {el: its id, btn: the statusbar button, app: #app's class while hidden, sf: a SecFloat window} */
   const DOCKS = {
     prompt: { el: "promptdock", btn: "tP" }, preview: { el: "previewdock", btn: "tPv" }, timeline: { el: "timelinedock", btn: "tT" },
-    storyboard: { el: "videodock", btn: "tV" }, music: { el: "musicdock", btn: "tMu" }, stems: { el: "stemsdock", btn: "tSt" },
-    sfx: { el: "sfxdock", btn: "tSfx" }, "image editor": { el: "imageeditdock", btn: "tIE" }, comfyui: { el: "comfydock", btn: "tCF" },
+    storyboard: { el: "videodock", btn: "tV" }, music: { el: "musicdock", btn: "tAu" }, stems: { el: "stemsdock", btn: "tAu" },
+    sfx: { el: "sfxdock", btn: "tAu" }, "image editor": { el: "imageeditdock", btn: "tIE" }, comfyui: { el: "comfydock", btn: "tCF" },
     chat: { el: "chatdock", btn: "tCh" }, console: { el: "consoledock", btn: "tC" },
     settings: { el: "ldock", btn: "tL", app: "no-left" }, references: { el: "refsdock", btn: "tRefs", app: "no-refs" },
     assets: { el: "assetsdock", btn: "tAssets", app: "no-assets" }, queue: { el: "qdock", btn: "tQ", app: "no-queue" }, gallery: { el: "rdock", btn: "tR", app: "no-right" },
@@ -319,7 +319,8 @@
         if (d.sf) { if (root.SecFloat && root.SecFloat.show) root.SecFloat.show(d.sf, true); return "shown: " + a.docker; }
         const el = $(d.el), app = $("app");
         const hidden = (d.app && app && app.classList.contains(d.app)) || (el && el.classList.contains("dockgone"));
-        if (hidden && $(d.btn)) $(d.btn).click();
+        if (hidden && root.H3Audio && root.H3Audio.IDS.indexOf(d.el) >= 0) root.H3Audio.tab(d.el);   // 2.760.0: the Audio docker's tabs
+        else if (hidden && $(d.btn)) $(d.btn).click();
         if (el && el.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse(d.el);
         return "shown: " + a.docker;
       }

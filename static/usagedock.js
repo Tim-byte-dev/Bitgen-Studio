@@ -70,7 +70,7 @@
           var tip = (j.prompt || "") + (c.total != null ? "\nenergy " + money(c.energy, c.currency) + (c.peak != null ? " (peak " + money(c.peak, c.currency) + ", off-peak " + money(c.offpeak, c.currency) + ")" : "") + (c.supply != null ? " + supply share " + money(c.supply, c.currency) : "") : "");
           return '<tr class="' + esc(j.status) + '" title="' + esc(tip) + '"><td class="l">' + esc(new Date(j.t).toLocaleString()) + '</td><td class="l">' + esc(j.mode) + '</td><td class="l">' + esc(j.what || (j.prompt || "").slice(0, 40)) + '</td><td class="l">' + esc(j.status)
             + "</td><td>" + (j.secs / 60).toFixed(1) + "</td><td>" + (e.wh != null ? kwh(e.wh) : "-") + "</td><td>" + (e.wh_peak != null ? kwh(e.wh_peak) : "") + "</td><td>" + (e.avg_w || "")
-            + "</td><td><b>" + (c.total != null ? money(c.total, c.currency) : "") + '</b></td><td class="l">' + esc(j.remote ? j.remote.label + (j.remote.cost ? " " + money(j.remote.cost, "USD") : "") : "") + "</td></tr>";
+            + "</td><td><b>" + (c.total != null ? money(c.total, c.currency) : "") + '</b></td><td class="l">' + esc(j.remote ? j.remote.label + (j.remote.cost ? " " + money(j.remote.cost, j.remote.cost_usd != null ? (c.currency || cur) : "USD") : "") : "") + "</td></tr>";
         }).join("") + "</tbody></table>" : '<div class="unote" style="padding:8px">No finished jobs in this range.</div>';
     }
     $("usCsv").href = "/api/usage/csv?kind=" + S.tab + "&" + qs();

@@ -40,7 +40,7 @@
       // URL
       + '<div class="rgsec" data-rg="url"><label class="f" style="margin-top:12px">Remote ComfyUI</label>'
       + '<div class="rowbtns" style="align-items:center"><input type="text" id="rgUrl" spellcheck="false" placeholder="http://192.168.1.50:8188 or https://my-box.tailnet.ts.net:8188" style="flex:1">'
-      + '<input type="number" id="rgCost" min="0" step="0.01" placeholder="$/h" title="What the machine costs per hour (0 = free) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div></div>'
+      + '<input type="number" id="rgCost" min="0" step="0.01" placeholder="US$/h" title="What the machine costs per hour in US dollars (0 = free) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div></div>'
       // RunPod
       + '<div class="rgsec" data-rg="runpod"><label class="f" style="margin-top:12px">RunPod</label>' + refLine
       + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1">'
@@ -51,7 +51,7 @@
       + '<div class="rgsec" data-rg="serverless"><label class="f" style="margin-top:12px">RunPod Serverless</label>' + refLine
       + '<div class="rowbtns" style="align-items:center"><input type="password" id="rgSlsKey" spellcheck="false" autocomplete="off" placeholder="RunPod API key (runpod.io → Settings → API Keys)" style="flex:1"></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="text" id="rgEndpoint" spellcheck="false" placeholder="endpoint ID (Serverless → your endpoint, e.g. abc123xyz)" style="flex:1">'
-      + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="$/h" title="What a worker of the endpoint costs per hour of running (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'
+      + '<input type="number" id="rgSlsCost" min="0" step="0.01" placeholder="US$/h" title="What a worker of the endpoint costs per hour of running, in US dollars (RunPod lists it per second - × 3600) - the usage log adds it" style="width:80px;flex:none"><span class="hint" style="flex:none">$/hour</span></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:6px;flex-wrap:wrap"><label class="f" for="rgSlsComfy" style="margin:0">ComfyUI in the endpoint\'s image</label>'
       + '<select id="rgSlsComfy" style="flex:1;min-width:220px"><option value="0.34.0">ComfyUI 0.34.0 - RunPod\'s worker image 5.10.0</option><option value="latest">A newer ComfyUI (an image you built)</option></select></div>'
       // 2.749.0 (Tim: "please add the remote styles"): which stock worker image the endpoint runs - the ready-made R_ styles
@@ -247,7 +247,7 @@
     var sel = ((S.v || {}).runpod || {}).pod_id;
     box.innerHTML = S.pods.length ? S.pods.map(function (p) {
       return '<div class="rowbtns" style="align-items:center;margin:2px 0"><label class="chk" style="margin:0;flex:1"><input type="radio" name="rgpod" value="' + esc(p.id) + '"' + (p.id === sel ? " checked" : "") + "> <b>" + esc(p.name) + "</b> · " + esc(p.gpu) + (p.gpus > 1 ? " x" + p.gpus : "")
-        + " · $" + (+p.cost_hr || 0).toFixed(2) + "/h · " + esc(p.status) + "</label>"
+        + " · " + (root.H3Money ? H3Money.usdHtml(+p.cost_hr || 0, "/h") : "$" + (+p.cost_hr || 0).toFixed(2) + "/h") + " · " + esc(p.status) + "</label>"   // 2.760.0: Settings ▸ General ▸ Currency
         + '<button type="button" class="ghost" data-pod="' + esc(p.id) + '" data-act="start" style="flex:none">▶ start</button><button type="button" class="ghost" data-pod="' + esc(p.id) + '" data-act="stop" style="flex:none">⏹ stop</button></div>';
     }).join("") : (sel ? '<div class="hint">pod ' + esc(((S.v || {}).runpod || {}).pod_name || sel) + " - 🔄 My pods lists them</div>" : "");
     box.querySelectorAll('input[name="rgpod"]').forEach(function (r) { r.onchange = function () {

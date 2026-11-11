@@ -97,12 +97,12 @@ fs.writeFileSync(path.join(tmp, "ui587_bad.json"), JSON.stringify(BAD));
     await p.waitForSelector('[data-drvis="main:sfxdock"]', { timeout: 10000 });
     await ev(() => document.querySelector('[data-drvis="main:sfxdock"]').click());
     await p.waitForTimeout(500);
-    const off = await ev(() => ({ dock: document.getElementById("sfxdock").classList.contains("dockoff"), btn: getComputedStyle(document.getElementById("tSfx")).display, ls: localStorage.getItem("h3.dockoff"), icon: document.querySelector('[data-drvis="main:sfxdock"]').textContent }));
-    check("👁 on SFX: the docker AND its status-bar button are hidden, the icon says 🚫, kept (h3.dockoff)", off.dock && off.btn === "none" && /sfxdock/.test(off.ls) && off.icon === "🚫", off);
+    const off = await ev(() => ({ dock: document.getElementById("sfxdock").classList.contains("dockoff"), btn: (document.querySelector('#musicdock [data-autab="sfxdock"]') || {}).hidden ? "none" : "shown", ls: localStorage.getItem("h3.dockoff"), icon: document.querySelector('[data-drvis="main:sfxdock"]').textContent }));
+    check("👁 on SFX: the docker AND its tab in the Audio docker (2.760.0) are hidden, the icon says 🚫, kept (h3.dockoff)", off.dock && off.btn === "none" && /sfxdock/.test(off.ls) && off.icon === "🚫", off);
     await ev(() => document.querySelector('[data-drvis="main:sfxdock"]').click());
     await p.waitForTimeout(500);
-    const on = await ev(() => ({ dock: document.getElementById("sfxdock").classList.contains("dockoff"), gone: document.getElementById("sfxdock").classList.contains("dockgone"), btn: getComputedStyle(document.getElementById("tSfx")).display, icon: document.querySelector('[data-drvis="main:sfxdock"]').textContent }));
-    check("🚫 again: both back (the docker shown, its button there), 👁", !on.dock && !on.gone && on.btn !== "none" && on.icon === "👁", on);
+    const on = await ev(() => ({ dock: document.getElementById("sfxdock").classList.contains("dockoff"), gone: document.getElementById("sfxdock").classList.contains("dockgone"), btn: (document.querySelector('#musicdock [data-autab="sfxdock"]') || {}).hidden ? "none" : "shown", icon: document.querySelector('[data-drvis="main:sfxdock"]').textContent }));
+    check("🚫 again: both back (the docker shown, its Audio tab there), 👁", !on.dock && !on.gone && on.btn !== "none" && on.icon === "👁", on);
 
     // ------------------------------------------------ 🗂 Layouts
     await p.fill("#lyName", "ui587");

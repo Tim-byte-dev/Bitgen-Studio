@@ -50,7 +50,10 @@ const api = async (u, body) => {
       const docks = [...document.querySelectorAll("#maincol > .bdock")];
       const pd = document.getElementById("promptdock");          // 2.389.0: the prompt floats (or sits in a .pf-row) by default
       if (pd && !docks.includes(pd)) docks.push(pd);
-      const col = docks.map((d) => ({ id: d.id, btn: dockBtnFor(d.id), lit: !!dockBtnFor(d.id) && document.getElementById(dockBtnFor(d.id)).classList.contains("on"), gone: d.classList.contains("dockgone") }));
+      // 2.760.0: Music / Stems / SFX are the Audio docker's tabs - its one button (tAu) is lit while one of them is on screen
+      const AU = window.H3Audio ? H3Audio.IDS : [], auOn = AU.some((i) => { const x = document.getElementById(i); return x && !x.classList.contains("dockgone"); });
+      const col = docks.map((d) => AU.includes(d.id) ? { id: d.id, btn: "tAu", lit: document.getElementById("tAu").classList.contains("on"), gone: !auOn }
+        : ({ id: d.id, btn: dockBtnFor(d.id), lit: !!dockBtnFor(d.id) && document.getElementById(dockBtnFor(d.id)).classList.contains("on"), gone: d.classList.contains("dockgone") }));
       const side = Object.values(SIDE_DOCKS).map(([, cls, bt]) => ({ bt, ok: !!document.getElementById(bt), lit: document.getElementById(bt).classList.contains("on"), hidden: document.getElementById("app").classList.contains(cls) }));
       return { col, side };
     });
@@ -58,8 +61,8 @@ const api = async (u, body) => {
     check("...lit exactly while it is on screen", all.col.every((x) => x.lit === !x.gone) && all.side.every((x) => x.ok && x.lit === !x.hidden), all);
     // 2
     const two = await p.evaluate(() => {
-      const d = document.getElementById("musicdock"), btn = document.getElementById("tMu"), out = {};
-      if (d.classList.contains("dockgone")) btn.click();
+      const d = document.getElementById("musicdock"), btn = document.getElementById("tAu"), out = {};
+      H3Audio.tab("musicdock");
       if (d.classList.contains("collapsed")) toggleCollapse("musicdock");
       toggleCollapse("musicdock");
       out.collapsedLit = d.classList.contains("collapsed") && btn.classList.contains("on");
@@ -74,7 +77,16 @@ const api = async (u, body) => {
     // 3
     const three = await p.evaluate(() => {
       const r = {};
-      for (const [b, id] of [["tSt", "stemsdock"], ["tSfx", "sfxdock"], ["tCh", "chatdock"]]) {
+      // 2.760.0: Stems and SFX - the Audio docker's tabs: a tab shows it and puts the one before away
+      for (const id of ["stemsdock", "sfxdock"]) {
+        const tab = document.querySelector("#musicdock [data-autab=\"" + id + "\"]"), d = document.getElementById(id), m = document.getElementById("musicdock");
+        H3Audio.tab("musicdock");
+        if (!tab || !d) { r[id] = "missing"; continue; }
+        tab.click();
+        r[id] = !d.classList.contains("dockgone") && m.classList.contains("dockgone") && document.getElementById("tAu").classList.contains("on");
+      }
+      H3Audio.tab("musicdock");
+      for (const [b, id] of [["tCh", "chatdock"]]) {
         const btn = document.getElementById(b), d = document.getElementById(id);
         if (!btn || !d) { r[b] = "missing"; continue; }
         const was = d.classList.contains("dockgone");
@@ -87,8 +99,8 @@ const api = async (u, body) => {
       L.click(); r.tL = s1 && app.classList.contains("no-left") === w0 && L.classList.contains("on") === !w0;
       return r;
     });
-    check("Stems, SFX and Chat have statusbar buttons that hide / show them; a side docker's (⟨) too",
-      three.tSt === true && three.tSfx === true && three.tCh === true && three.tL === true, three);
+    check("Stems and SFX are the Audio docker's tabs (one on screen at a time); Chat's statusbar button hides / shows it; a side docker's (⟨) too",
+      three.stemsdock === true && three.sfxdock === true && three.tCh === true && three.tL === true, three);
     const st = await api("/api/docker-status");
     check("...hidden / shown is still written to docker_status.json", st.docks && typeof st.docks.stemsdock.hidden === "boolean", st.docks && st.docks.stemsdock);
 

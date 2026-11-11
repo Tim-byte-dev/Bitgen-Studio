@@ -493,7 +493,7 @@ check("the Music dock sits under the timeline dock, above the chat",
 check("...with a lyrics box, a caption override, length/songs/seed and a status line",
   ["muLyrics", "muCaption", "muDur", "muBatch", "muSeed", "muStatus"].every((id) => new RegExp(`id="${id}"`).test(HTML)), null);
 check("...its own splitter, height variable and status-bar toggle",
-  /data-hresize="mh"/.test(HTML) && /--mh:/.test(HTML) && /id="tMu"/.test(HTML) && /"tMu"\)\.onclick/.test(CODE), null);
+  /data-hresize="mh"/.test(HTML) && /--mh:/.test(HTML) && /id="tAu"/.test(HTML) && /GONE_DOCKS = \{[^}]*tMu: "musicdock"/.test(CODE), null);   // 2.760.0: the Audio docker's button
 check("Generate Music sends the dock's fields only when filled (blank = the style's)",
   /body\.caption = cap/.test(CODE) && /body\.max_duration = dur/.test(CODE)
   && /body\.seed = seed/.test(CODE) && /Math\.min\(4, num\("muBatch"\)/.test(CODE), null);

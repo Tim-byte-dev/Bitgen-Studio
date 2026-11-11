@@ -5027,6 +5027,19 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - Hugging Face 上需要授权的模型会使用你在设置中的 Hugging Face 令牌，它只随下载发送到你自己的 Pod。
 - **来自链接或这台电脑的文件**（在 ⬇ Models 中）：选择要放入的模型文件夹（loras、checkpoints 等），然后粘贴链接 - Civitai、Hugging Face 或任何网址 - 并按 **⬇ From the link**，或按 **⬆ From this computer…** 从磁盘选择文件。两者都通过 Pod 的 Jupyter。来自电脑的文件会分段发送，所需时间取决于你的上传速度，所以 Hugging Face 或 Civitai 上已有的模型用链接会更快。Civitai 链接使用设置中的 Civitai 令牌。
 
+## 🎵 Audio 停靠栏、以你的货币显示价格、My pods (2.760.0)
+<!-- en: the-audio-docker-prices-in-your-currency-and-my-pods-2-760-0 aeeea0948303 -->
+
+- **Audio 停靠栏。** Music、Stems 和 SFX 现在是同一个停靠栏 **Audio** 的标签页，状态栏上的三个按钮也合并为一个
+  **Audio** 按钮。该按钮以你上次使用的标签页显示或隐藏 Audio 停靠栏。它的标题栏显示 **Audio** 和标签页
+  **🎵 Music · 🎚 Stems · 💥 SFX**：点一个标签页就显示它，其余的收起。每个标签页保留各自的高度、▾ 折叠、⛶ 最大化和
+  ⇱ 浮动。任何打开其中之一的操作——工作区、保存的停靠栏布局、语音聊天——都会把它作为 Audio 停靠栏的标签页打开。扩展已关闭的标签页不会显示。
+- **货币**（设置 ▸ General）：RunPod、OpenRouter 等服务以美元列出价格。选择你的货币（AUD、USD、EUR、GBP、CNY、JPY
+  等），bitGen 就以该货币显示：PODS 停靠栏的 GPU、每小时价格和你的 Pod，Remote generation 的 Pod，以及 OpenRouter
+  的模型。把鼠标悬停在价格上可看到美元金额和汇率。汇率是当天的参考汇率（来自公布各国央行汇率的 Frankfurter——无需账户，无需密钥），每 12 小时检查一次，并保存以便离线使用。在 **1 USD = …** 中输入汇率即可使用你自己的汇率（例如银行的）；清空后恢复为当天的汇率。远程 GPU 的费用以 Energy cost 的货币计入 📊 Usage 账单。
+- **🖥 My pods**（PODS 停靠栏）：模板标签页旁的一个按钮，显示你有多少个 Pod。它只显示你的 Pod——没有模板卡片，没有搜索。模板标签页（All、Official 等）只显示模板。**Create pod…** 只显示表单（✕ Close 或点一个标签页即可返回），
+  Pod 创建后停靠栏会切换到 My pods，加载进度条在那里运行。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

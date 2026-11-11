@@ -8294,6 +8294,24 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   parts; your upload speed decides how long it takes, so a model that is on Hugging Face or Civitai is quicker by its link.
   Civitai links use your Civitai token from Settings.
 
+## 🎵 The Audio docker, prices in your currency, and My pods (2.760.0)
+
+- **The Audio docker.** Music, Stems and SFX are now the tabs of one docker, **Audio**, and the statusbar has one
+  **Audio** button instead of three. The button shows or hides the Audio docker on the tab you used last. Its title bar
+  reads **Audio** with the tabs **🎵 Music · 🎚 Stems · 💥 SFX**: a tab shows that one and puts the others away. Each tab
+  keeps its own height, ▾ fold, ⛶ maximize and ⇱ float. Anything that opens one of them - a workspace, a saved docker
+  layout, voice chat - opens it as the Audio docker's tab. A tab whose extension is turned off is not offered.
+- **Currency** (Settings ▸ General): RunPod, OpenRouter and the other services list their prices in US dollars. Pick your
+  currency (AUD, USD, EUR, GBP, CNY, JPY …) and bitGen shows them in it: the PODS docker's GPUs, the price an hour and
+  your pods, Remote generation's pods, and OpenRouter's models. Hover a price to see the dollars and the rate. The rate is
+  the day's reference rate (from Frankfurter, which publishes the central banks' rates - no account, no key), checked
+  every 12 hours and kept for when you are offline. Type a rate in **1 USD = …** to use your own (your bank's, say);
+  clear it to go back to the day's rate. A remote GPU's cost goes on the 📊 Usage bill in the Energy cost currency.
+- **🖥 My pods** (the PODS docker): a button beside the template tabs, with how many pods you have. It shows your pods
+  alone - no template cards, no search. The template tabs (All, Official …) show the templates alone. **Create pod…**
+  shows the form alone (✕ Close or a tab goes back), and once the pod is created the docker switches to My pods, where
+  its loading bar runs.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

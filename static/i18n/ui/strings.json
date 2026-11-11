@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5669,
+ "count": 5681,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -109,6 +109,15 @@
    ],
    "where": [
     "#iuPanel"
+   ]
+  },
+  {
+   "s": "1 USD =",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #stab-general"
    ]
   },
   {
@@ -3653,6 +3662,15 @@
    ]
   },
   {
+   "s": "Audio docker - Music, Stems and SFX as its tabs",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#tAu"
+   ]
+  },
+  {
    "s": "Audio layer",
    "kinds": [
     "text"
@@ -4506,6 +4524,15 @@
    ],
    "where": [
     "label in #muPaneSong"
+   ]
+  },
+  {
+   "s": "Blank = the day's reference rate. Type a rate to use your own (your bank's, say)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "input#s_currate"
    ]
   },
   {
@@ -8931,6 +8958,15 @@
    ],
    "where": [
     "select#s_kwhcur"
+   ]
+  },
+  {
+   "s": "Currency for prices",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "select#s_cur"
    ]
   },
   {
@@ -15131,6 +15167,15 @@
    ],
    "where": [
     "input#chBreed"
+   ]
+  },
+  {
+   "s": "Get the day's rates now",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button#s_curre"
    ]
   },
   {
@@ -25814,6 +25859,15 @@
    ]
   },
   {
+   "s": "Prices show in US dollars, as the services list them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "div in #stab-general"
+   ]
+  },
+  {
    "s": "Print",
    "kinds": [
     "text"
@@ -29074,6 +29128,15 @@
    ],
    "where": [
     "#pdBody / #gpuEngine"
+   ]
+  },
+  {
+   "s": "RunPod, OpenRouter and the other services list their prices in US dollars. bitGen shows them in this currency at the day's reference rate (from Frankfurter, the central banks' published rates - checked every 12 hours and kept for when you are offline); hover a price to see the dollars and the rate. Type a rate to use your own. A remote GPU's cost goes on the 📊 Usage bill in the Energy cost currency. Saved immediately",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "p in #stab-general"
    ]
   },
   {
@@ -33229,6 +33292,15 @@
    ]
   },
   {
+   "s": "Songs - lyrics, a music style, cover, sheet music",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button"
+   ]
+  },
+  {
    "s": "Songs from lyrics + a style caption with the \"YuE2\" style in the Music docker (vocals, instruments, 48 kHz stereo)",
    "kinds": [
     "text"
@@ -33263,6 +33335,15 @@
    ],
    "where": [
     "label in #sfxdock"
+   ]
+  },
+  {
+   "s": "Sound effects - add audio or video, trim, keep a part",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button"
    ]
   },
   {
@@ -33572,6 +33653,15 @@
    ],
    "where": [
     "label.chk in #ctab-engine"
+   ]
+  },
+  {
+   "s": "Split a song into its vocals and its music (demucs)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button"
    ]
   },
   {
@@ -36539,6 +36629,15 @@
    ],
    "where": [
     "button#cpPrev.ghost"
+   ]
+  },
+  {
+   "s": "The prices bitGen shows (RunPod's GPUs and pods, OpenRouter's models, a remote GPU) - in this currency",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "select#s_cur"
    ]
   },
   {
@@ -41490,6 +41589,15 @@
    ],
    "where": [
     "p.hint.help in #stab-general"
+   ]
+  },
+  {
+   "s": "Your exchange rate (blank = the day's rate)",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "input#s_currate"
    ]
   },
   {

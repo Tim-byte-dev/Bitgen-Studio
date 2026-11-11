@@ -16,7 +16,12 @@
  *               (RunPod REST v2 POST /pods); the new pod then loads ("loading pod…" -> "pod loaded")
  *   MY PODS     every pod (🅱 = bitGen created or started it - those are the ones bitGen terminates when it exits, 2.757.0):
  *               ▶ Start / ⏹ Stop, Use it (render on it), Terminate (asks first: the pod and its files are deleted)
- *   Links open in the browser (target _blank). */
+ *   Links open in the browser (target _blank).
+ *   2.760.0 (Tim: "in pods docker add a button for my pods (only show my pods when this is clicked), when creating a pod hide
+ *               all the templates, after the pod is created only show my pods"): 🖥 My pods (its count) beside the template
+ *               tabs shows the pods alone (no templates, no search); the template tabs show the templates alone; Create pod…
+ *               hides the cards and their filters (the form alone - ✕ Close or a tab goes back); a pod created -> My pods.
+ *               The prices show in Settings ▸ General ▸ Currency (static/currency.js H3Money). */
 (function (root) {
   "use strict";
   var doc = root.document, S = { g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "" };
@@ -49,7 +54,11 @@
     + ".pdk .pdAct{display:flex;gap:4px;align-items:center;padding:4px 8px 7px}.pdk .pdAct button{flex:1;font-size:.7rem}.pdk .pdAct a{text-decoration:none;padding:0 4px}"
     + ".pdk .pdAct button.pdStar{flex:0 0 auto;font-size:.9rem;padding:0 6px;color:var(--tiger,#f59e2c)}.pdk .pdAct a.pdDeploy{flex:0 0 auto;font-size:.7rem;padding:2px 6px}"
     + ".pdk .pdFits{font-size:.68rem;color:#7fd17f}"
-    + ".pdk .pdNew{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:6px 8px;background:var(--panel,#1b1814)}.pdk .pdNew .pdForm{border:0;padding:4px 0 0;margin:0;background:none}";
+    + ".pdk .pdNew{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:6px 8px;background:var(--panel,#1b1814)}.pdk .pdNew .pdForm{border:0;padding:4px 0 0;margin:0;background:none}"
+    // 2.760.0: two views - the templates, or 🖥 My pods; Create pod… shows the form alone
+    + ".pdk:not(.pdMine) #pdMineBox{display:none}.pdk.pdMine #pdTpl,.pdk.pdMine #pdCreate,.pdk.pdMine .pdTplOnly,.pdk.pdMine #pdStarAdd{display:none!important}"
+    + ".pdk.pdMaking #pdTpl,.pdk.pdMaking .pdTplOnly,.pdk.pdMaking #pdStarAdd{display:none!important}"
+    + ".pdk .pdTabs button[data-pdsrc=mine]{margin-left:6px}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -67,7 +76,9 @@
     var on = wanted(), shown = !!(root.SecFloat && SecFloat.windows && SecFloat.windows.pods && (SecFloat.state("pods") || {}).shown);
     b.style.display = on ? "" : "none";
     b.setAttribute("aria-pressed", shown ? "true" : "false"); b.classList.toggle("on", shown);
-    if (!on && shown) SecFloat.show("pods", false);
+    // 2.760.0: it closes when RunPod ▸ Pods is turned OFF - not when Remote generation's 🖥 PODS docker button opens it on another engine
+    if (!on && shown && S.wanted0) SecFloat.show("pods", false);
+    if (S.g) S.wanted0 = on;
   }
   function loadG() { return getj("/api/gpusplit").then(function (g) { if (g && g.where) { S.g = g; paintBtn(); } return g; }).catch(function () { /* offline */ }); }
 
@@ -75,24 +86,24 @@
   function body() {
     var d = doc.createElement("div"); d.className = "pdk"; d.id = "pdBody";
     d.innerHTML = '<div class="rowbtns" style="align-items:center">'
-      + '<input type="search" id="pdQ" placeholder="Search templates - name, image, port, kind" spellcheck="false" style="flex:1;min-width:140px">'
+      + '<input type="search" id="pdQ" class="pdTplOnly" placeholder="Search templates - name, image, port, kind" spellcheck="false" style="flex:1;min-width:140px">'
       + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button></div>'
       + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
-      + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
-      + '<select id="pdKind" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
-      + '<label class="chk" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label>'
-      + '<select id="pdFor" title="Templates that look made for this bitGen style first - a pod created this way gets the style\'s P_ style when it has loaded" style="width:auto"><option value="">For any style</option></select></div>'
+      + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
+      + '<select id="pdKind" class="pdTplOnly" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
+      + '<label class="chk pdTplOnly" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label>'
+      + '<select id="pdFor" class="pdTplOnly" title="Templates that look made for this bitGen style first - a pod created this way gets the style\'s P_ style when it has loaded" style="width:auto"><option value="">For any style</option></select></div>'
       + '<div class="hint" id="pdMsg" aria-live="polite"></div>'
       + '<div id="pdStarAdd" class="rowbtns" style="align-items:center;display:none"><input type="text" id="pdCutLink" placeholder="A template that is not listed: paste its RunPod link" spellcheck="false" style="flex:1;min-width:160px">'
       + '<button type="button" class="ghost" id="pdCutAdd">＋ Add</button><a class="pdLink" href="https://www.runpod.io/console/explore" target="_blank" rel="noopener">Explore RunPod templates ↗</a></div>'
       + '<div id="pdCreate"></div>'
       + '<div class="pdGrid" id="pdTpl"></div>'
-      + '<h4>My pods</h4><div id="pdPods"></div><div id="pdStyPanel"></div>'
-      + '<div class="hint">🅱 = bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it.</div>';
+      + '<div id="pdMineBox"><div id="pdPods"></div><div id="pdStyPanel"></div>'
+      + '<div class="hint">🅱 = bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it.</div></div>';
     return d;
   }
   function wire() {
-    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { S.src = b.dataset.pdsrc; filter(); }; });
+    $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { go(b.dataset.pdsrc); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
     $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };
     $("pdFor").onchange = function () { S.forStyle = $("pdFor").value; filter(); };
@@ -102,6 +113,19 @@
     $("pdCutLink").addEventListener("keydown", function (e) { if (e.key === "Enter") $("pdCutAdd").onclick(); });
     $("pdBody").querySelectorAll("input,select").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
   }
+  /** 2.760.0: a tab - a template source, or "mine" (🖥 My pods); it leaves an open Create pod form */
+  function go(src) {
+    if (S.form) { S.form = null; var c = $("pdCreate"); if (c) c.dataset.tpl = ""; paintForm(); }
+    S.src = src; filter();
+  }
+  /** 2.760.0: the docker's view - the templates, the form alone, or 🖥 My pods alone */
+  function view() {
+    var b = $("pdBody"); if (!b) return;
+    b.classList.toggle("pdMine", S.src === "mine");
+    b.classList.toggle("pdMaking", S.src !== "mine" && !!S.form);
+  }
+  function money(v, sfx) { return root.H3Money ? root.H3Money.usd(v, sfx) : "$" + (+v || 0).toFixed(2) + (sfx || ""); }
+  function moneyHtml(v, sfx) { return root.H3Money ? root.H3Money.usdHtml(v, sfx) : esc(money(v, sfx)); }
   /** every template, from all three sources, once; the filters then run here as you type */
   function loadTpl(refresh) {
     say("asking RunPod for its templates…");
@@ -159,12 +183,13 @@
     if (S.src === "star") (S.cuts || []).forEach(function (c) { if (!S.all.some(function (t) { return t.id === c.id; }) && matches({ name: c.name, id: c.id }, S.q)) S.tpl.push({ id: c.id, name: c.name, page: c.page, deploy: c.deploy, image: "", ports: [], source: "", cut: true }); });
     var sa = $("pdStarAdd"); if (sa) sa.style.display = S.src === "star" ? "" : "none";
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) {
-      var k = b.dataset.pdsrc, n = k === "all" ? pre.length : k === "star" ? (S.cuts || []).length : pre.filter(function (t) { return t.source === k; }).length;
+      var k = b.dataset.pdsrc, n = k === "mine" ? (S.pods || []).length : k === "all" ? pre.length : k === "star" ? (S.cuts || []).length : pre.filter(function (t) { return t.source === k; }).length;
       b.classList.toggle("on", k === S.src); b.querySelector(".n").textContent = String(n);
     });
-    paintTpl();
+    paintTpl(); view();
     var m = $("pdMsg"); if (!m) return;
     m.style.color = "";
+    if (S.src === "mine") { m.textContent = (S.pods || []).length + " pod" + ((S.pods || []).length === 1 ? "" : "s") + " on your RunPod account"; return; }
     m.textContent = S.failed.length ? S.tpl.length + " of " + S.all.length + " templates · RunPod did not answer for: " + S.failed.map(function (k) { return SRC_WORD[k] || k; }).join(", ")
       : S.tpl.length + " of " + S.all.length + " templates";
   }
@@ -201,7 +226,7 @@
   function openForm(id) {
     var t = S.all.find(function (x) { return x.id === id; }); if (!t) return;
     S.form = S.form && S.form.id === t.id ? null : { id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50 };
-    box2sel(); paintForm();
+    box2sel(); paintForm(); view();
     if (S.form) { gpus(S.form.cloud); var c = $("pdCreate"); if (c && c.scrollIntoView) c.scrollIntoView({ block: "nearest" }); }
   }
   function box2sel() { $("pdTpl").querySelectorAll(".pdCard").forEach(function (c) { c.classList.toggle("sel", !!(S.form && S.form.id === c.dataset.tpl)); }); }
@@ -213,7 +238,7 @@
     c.dataset.tpl = t.id;
     c.innerHTML = '<div class="pdNew"><div class="rowbtns" style="align-items:center"><span style="flex:1">Create a pod from <b>' + esc(t.name) + "</b></span>"
       + '<button type="button" class="ghost" id="pdClose" title="Close">✕ Close</button></div>' + formHtml(t) + "</div>";
-    $("pdClose").onclick = function () { S.form = null; c.dataset.tpl = ""; box2sel(); paintForm(); };
+    $("pdClose").onclick = function () { S.form = null; c.dataset.tpl = ""; box2sel(); paintForm(); view(); };
     wireForm();
   }
   function formHtml(t) {
@@ -237,7 +262,7 @@
     var sel = $("pdGpu"); if (!sel) return;
     var fill = function (list) {
       sel.innerHTML = list.map(function (g) {
-        return '<option value="' + esc(g.id) + '"' + (g.offered ? "" : " disabled") + ">" + esc(g.name) + " · " + g.memory + " GB · $" + g.price.toFixed(2) + "/h" + (g.offered ? (g.availability ? " · " + g.availability.toLowerCase() : "") : " · none free") + "</option>";
+        return '<option value="' + esc(g.id) + '"' + (g.offered ? "" : " disabled") + ">" + esc(g.name) + " · " + g.memory + " GB · " + esc(money(g.price, "/h")) + (g.offered ? (g.availability ? " · " + g.availability.toLowerCase() : "") : " · none free") + "</option>";
       }).join("") || '<option value="">no GPUs offered</option>';
       var first = list.find(function (g) { return g.offered && g.memory >= 20; }) || list.find(function (g) { return g.offered; });
       if (first) sel.value = first.id;
@@ -248,7 +273,7 @@
   }
   function price() {
     var el = $("pdPrice"), list = S.gpus[S.form && S.form.cloud] || [], g = list.find(function (x) { return x.id === ($("pdGpu") || {}).value; }), n = +(($("pdCount") || {}).value) || 1;
-    if (el) el.textContent = g ? "About $" + (g.price * n).toFixed(2) + " an hour while it runs (RunPod's price now), plus storage" : "";
+    if (el) { el.textContent = g ? "About " + money(g.price * n) + " an hour while it runs (RunPod's price now), plus storage" : ""; el.title = g && root.H3Money ? H3Money.usdText(g.price * n, H3Money.state()).title : ""; }
   }
   function create() {
     var b = { for_style: S.forStyle || "", templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
@@ -256,7 +281,8 @@
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
       if (r.error) { say(r.error, false); return; }
-      say("✓ pod created - loading pod…", true); S.form = null; box2sel(); paintForm();
+      S.form = null; box2sel(); paintForm(); S.src = "mine"; filter();   // 2.760.0: a pod created -> 🖥 My pods
+      say("✓ pod created - loading pod…", true);
       S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port;
       loadPods().then(tick);
     });
@@ -266,8 +292,9 @@
   function loadPods() {
     return getj("/api/pods/mine").then(function (j) { if (j.error) { $("pdPods").innerHTML = '<div class="hint">' + esc(j.error) + "</div>"; return; } S.pods = j.pods || [];
       S.pods.forEach(function (p) { if (/STARTING|PROVISIONING|CREATED/.test(p.status) && !S.watch[p.id]) S.watch[p.id] = "start"; });   // 2.758.0: its bar
-      paintPods(); if (!S.ticking) tick(); }).catch(function () { /* offline */ });
+      paintPods(); mineCount(); if (!S.ticking) tick(); }).catch(function () { /* offline */ });
   }
+  function mineCount() { var b = $("pdBody") && $("pdBody").querySelector('[data-pdsrc="mine"] .n'); if (b) b.textContent = String((S.pods || []).length); }
   function setSt(el, p) {
     var st = S.st[p.id], w = S.watch[p.id];
     if (w === "terminate") { el.textContent = "terminating…"; return; }
@@ -284,7 +311,7 @@
     box.innerHTML = S.pods.map(function (p) {
       var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
       return '<div class="pdRow" data-pod="' + esc(p.id) + '"><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
-        + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · $" + (+p.cost_hr || 0).toFixed(2) + '/h · <span class="pdSt"></span></span></span>'
+        + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span></span></span>'
         + '<button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
@@ -294,7 +321,7 @@
         + (S.kill === p.id ? '<div class="pdKill">Terminate <b>' + esc(p.name) + "</b>? The pod and every file on it (models, outputs) are deleted - only a network volume survives. "
           + '<button type="button" class="ghost" data-pdkillyes>Terminate</button> <button type="button" class="ghost" data-pdkillno>Cancel</button></div>' : "")
         + "</div>";
-    }).join("") || '<div class="hint">No pods yet - create one from a template above.</div>';
+    }).join("") || '<div class="hint">No pods yet - pick a template (All, Official …) and press Create pod….</div>';
     box.querySelectorAll(".pdRow[data-pod]").forEach(function (r) {
       var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (!p) return;
       setSt(r.querySelector(".pdSt"), p);
@@ -369,6 +396,7 @@
     }
     loadG();
     doc.addEventListener("h3:rgpu", loadG);
+    root.addEventListener("h3:currency", function () { if (!$("pdBody")) return; paintPods(); if (S.form && $("pdGpu") && S.gpus[S.form.cloud]) { var keep = $("pdGpu").value; gpus(S.form.cloud); if (keep) { $("pdGpu").value = keep; price(); } } });
     doc.addEventListener("change", function (e) { if (e.target && /^(gpuProv|gpuRunpod|gpuWhere)$/.test(e.target.name || "")) setTimeout(loadG, 500); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();

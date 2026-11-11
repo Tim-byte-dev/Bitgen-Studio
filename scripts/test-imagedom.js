@@ -751,11 +751,11 @@ function route(url, opts) {
       && order.indexOf("musicdock") === order.indexOf("comfydock") + 1, order);
     check("...with its own splitter and height variable",
       !!d.querySelector('.hsplit[data-hresize="mh"]') && /--mh:/.test(html()), null);
-    check("...a status-bar toggle, lit because it starts open",
-      !!$("tMu") && has("tMu", "on") && !has("musicdock", "collapsed"), null);
+    check("...open from the start; 2.760.0: its statusbar button is the Audio docker's (Music / Stems / SFX are its tabs)",
+      !!$("tAu") && !$("tMu") && !has("musicdock", "collapsed"), null);
     w.toggleCollapse("musicdock");
     check("...that collapses - its button stays lit (on screen), 2.386.0",
-      has("musicdock", "collapsed") && has("tMu", "on") && /▸ Music/.test($("musicdock").querySelector(".bhead").textContent),
+      has("musicdock", "collapsed") && !has("musicdock", "dockgone") && /▸ Music/.test($("musicdock").querySelector(".bhead").textContent),
       $("musicdock").querySelector(".bhead").textContent);
     w.toggleCollapse("musicdock");
     for (const id of ["muLyrics", "muCaption", "musicSel", "muDur", "muBatch", "muSeed", "goMusic", "muStatus"]) {

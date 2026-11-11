@@ -80,6 +80,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     check("RunPod ▸ Pods ticks Override style (its steps / seed / CFG / size / aspect go with a pod render)", ovr0 && (await ev(() => document.getElementById("ovrStyle").checked)));
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(700);
     await p.click("#gpuPods"); await sleep(600);
+    await p.click('[data-pdsrc="mine"]'); await sleep(300);   // 2.760.0: the pods are under 🖥 My pods
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod758"]'), null, { timeout: 10000 });
     // ▶ Start: the stages, as the stand-in moves through them
     await p.click('#pdPods .pdRow[data-pod="pod758"] [data-pdact="start"]');
@@ -122,6 +123,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     check("…a P_ style picked: Basic Settings' checkpoint box and temporary LoRA rows are off ('A P_ pod style: the pod's own model and LoRAs are used.'), steps and size stay on",
       lk.ck.length > 0 && lk.ck.every(Boolean) && lk.note && lk.add && !lk.steps && !lk.res, lk);
     // pod shortcuts on the cards (Tim: "add to pod's card in pods docker can bitgen fill in the template link automatically?")
+    await p.click('[data-pdsrc="all"]');   // 2.760.0: back to the templates
     await p.click("#pdRefresh");
     await p.waitForFunction(() => document.querySelector('#pdTpl .pdCard[data-tpl="qzbk758t"] [data-pdstar]'), null, { timeout: 10000 }).catch(() => {});
     await p.click('#pdTpl .pdCard[data-tpl="qzbk758t"] [data-pdstar]');

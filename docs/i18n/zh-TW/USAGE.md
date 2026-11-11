@@ -5026,6 +5026,19 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - Hugging Face 上需要授權的模型會使用你在設定中的 Hugging Face 權杖，它只隨下載傳送到你自己的 Pod。
 - **來自連結或這臺電腦的檔案**（在 ⬇ Models 中）：選擇要放入的模型資料夾（loras、checkpoints 等），然後貼上連結 - Civitai、Hugging Face 或任何網址 - 並按 **⬇ From the link**，或按 **⬆ From this computer…** 從磁碟選擇檔案。兩者都通過 Pod 的 Jupyter。來自電腦的檔案會分段傳送，所需時間取決於你的上傳速度，所以 Hugging Face 或 Civitai 上已有的模型用連結會更快。Civitai 連結使用設定中的 Civitai 權杖。
 
+## 🎵 Audio 停靠欄、以你的貨幣顯示價格、My pods (2.760.0)
+<!-- en: the-audio-docker-prices-in-your-currency-and-my-pods-2-760-0 aeeea0948303 -->
+
+- **Audio 停靠欄。** Music、Stems 和 SFX 現在是同一個停靠欄 **Audio** 的分頁，狀態列上的三個按鈕也合併為一個
+  **Audio** 按鈕。該按鈕以你上次使用的分頁顯示或隱藏 Audio 停靠欄。它的標題欄顯示 **Audio** 和分頁
+  **🎵 Music · 🎚 Stems · 💥 SFX**：點一個分頁就顯示它，其餘的收起。每個分頁保留各自的高度、▾ 摺疊、⛶ 最大化和
+  ⇱ 浮動。任何開啟其中之一的操作——工作區、儲存的停靠欄佈局、語音聊天——都會把它作為 Audio 停靠欄的分頁開啟。擴充功能已關閉的分頁不會顯示。
+- **貨幣**（設定 ▸ General）：RunPod、OpenRouter 等服務以美元列出價格。選擇你的貨幣（AUD、USD、EUR、GBP、CNY、JPY
+  等），bitGen 就以該貨幣顯示：PODS 停靠欄的 GPU、每小時價格和你的 Pod，Remote generation 的 Pod，以及 OpenRouter
+  的模型。把滑鼠懸停在價格上可看到美元金額和匯率。匯率是當天的參考匯率（來自公佈各國央行匯率的 Frankfurter——無需帳戶，無需金鑰），每 12 小時檢查一次，並儲存以便離線使用。在 **1 USD = …** 中輸入匯率即可使用你自己的匯率（例如銀行的）；清空後恢復為當天的匯率。遠端 GPU 的費用以 Energy cost 的貨幣計入 📊 Usage 帳單。
+- **🖥 My pods**（PODS 停靠欄）：範本分頁旁的一個按鈕，顯示你有多少個 Pod。它只顯示你的 Pod——沒有範本卡片，沒有搜尋。範本分頁（All、Official 等）只顯示範本。**Create pod…** 只顯示錶單（✕ Close 或點一個分頁即可返回），
+  Pod 建立後停靠欄會切換到 My pods，載入進度列在那裡執行。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

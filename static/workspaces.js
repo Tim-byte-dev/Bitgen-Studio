@@ -29,21 +29,22 @@
   var DEFS = {
     basic: { tip: "Make pictures and videos from a prompt - the prompt, the preview, the gallery and the queue; the rest is out of the way",
       bottom: ["previewdock", "promptdock"], collapsed: [], side: ["ldock", "refs", "qdock", "rdock"], genMode: "", share: { previewdock: 0.55, promptdock: 0.38 },
-      sb: ["tT", "tV", "tMu", "tSt", "tSfx", "tIE", "tCF", "tC", "negBtn", "mmBtn", "ltBtn", "hbBtn"],
+      sb: ["tT", "tV", "tAu", "tIE", "tCF", "tC", "negBtn", "mmBtn", "ltBtn", "hbBtn"],
       menu: ["projBgp", "projUe", "capRec", "projBin", "projReset", "thEditBtn", "quWrap", "dockCfgWrap"] },
     image: { tip: "Make and edit pictures - the image editor, the prompt, references, assets and the gallery",
       bottom: ["imageeditdock", "promptdock"], collapsed: ["chatdock"], side: ["ldock", "refs", "assets", "qdock", "rdock"], genMode: "image", share: { promptdock: 0.3 }, max: "imageeditdock",
-      sb: ["tPv", "tT", "tV", "tMu", "tSt", "tSfx"], menu: ["projUe", "capRec"] },
+      sb: ["tPv", "tT", "tV", "tAu"], menu: ["projUe", "capRec"] },
     video: { tip: "Make and cut video - the preview, the timeline, the storyboard, sound effects and the prompt",
       bottom: ["previewdock", "timelinedock", "videodock", "sfxdock", "promptdock"], collapsed: ["consoledock"], side: ["ldock", "refs", "assets", "qdock", "rdock"], genMode: "video",
       share: { previewdock: 0.34, timelinedock: 0.22, sfxdock: 0.12, promptdock: 0.18 },
-      sb: ["tIE", "tMu", "tSt"], menu: [] },
-    musicvideo: { tip: "A song and its video - music, stems, the timeline, the storyboard, the preview and the prompt",
-      bottom: ["previewdock", "timelinedock", "videodock", "musicdock", "stemsdock", "promptdock"], collapsed: [], side: ["ldock", "refs", "assets", "qdock", "rdock"], genMode: "",
-      share: { previewdock: 0.26, timelinedock: 0.18, musicdock: 0.16, stemsdock: 0.13, promptdock: 0.16 },
+      sb: ["tIE"], menu: [] },
+    // 2.760.0: Music, Stems and SFX are the Audio docker's tabs (static/audiodock.js) - one of them on screen at a time
+    musicvideo: { tip: "A song and its video - the Audio docker (music, stems), the timeline, the storyboard, the preview and the prompt",
+      bottom: ["previewdock", "timelinedock", "videodock", "musicdock", "promptdock"], collapsed: [], side: ["ldock", "refs", "assets", "qdock", "rdock"], genMode: "",
+      share: { previewdock: 0.26, timelinedock: 0.18, musicdock: 0.29, promptdock: 0.16 },
       sb: ["tIE", "tCF"], menu: [] },
     expert: { tip: "Everything - every docker and every button",
-      bottom: ["previewdock", "timelinedock", "videodock", "imageeditdock", "musicdock", "stemsdock", "sfxdock", "promptdock"],
+      bottom: ["previewdock", "timelinedock", "videodock", "imageeditdock", "musicdock", "promptdock"],
       collapsed: ["comfydock", "chatdock", "consoledock"], side: ["ldock", "refs", "assets", "qdock", "rdock"], genMode: "", sb: [], menu: [] }
   };
   function valid(id) { return IDS.indexOf(id) >= 0; }

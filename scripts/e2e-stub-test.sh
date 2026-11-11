@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v2 H3_OPENROUTER_API=http://127.0.0.1:8397/v1 H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port} H3_API_BASE_OPENROUTER=http://127.0.0.1:8396/or H3_API_BASE_CLAUDE=http://127.0.0.1:8396/anth node misc/server.js > /tmp/h3srv.log 2>&1 &   # 2.757.0: Settings ▸ API's OpenRouter + Claude to test-ui757-ui.js's stand-in on 8396; H3_E2E gates test-only routes; 2.755.0: RunPod REST v2 (pods, endpoints) to the stand-ins too; 2.753.0: OpenRouter to test-ui753-ui.js's stand-in on 8397; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
+H3_E2E=1 BITGEN_FREE_VRAM=always H3_FX_API=http://127.0.0.1:8395 H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v2 H3_OPENROUTER_API=http://127.0.0.1:8397/v1 H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port} H3_API_BASE_OPENROUTER=http://127.0.0.1:8396/or H3_API_BASE_CLAUDE=http://127.0.0.1:8396/anth node misc/server.js > /tmp/h3srv.log 2>&1 &   # 2.760.0: Settings ▸ General ▸ Currency's rates from test-ui760-ui.js's stand-in on 8395 (never the real service); 2.757.0: Settings ▸ API's OpenRouter + Claude to test-ui757-ui.js's stand-in on 8396; H3_E2E gates test-only routes; 2.755.0: RunPod REST v2 (pods, endpoints) to the stand-ins too; 2.753.0: OpenRouter to test-ui753-ui.js's stand-in on 8397; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.760.0 (Tim: "put music stems and sfx as tabs in an new docker called audio, remove those buttons from the statusbar - it is getting cluttered. in general tab add currency (AUD,USD,CNY,JPY)etc. convert to this currency when showing prices" + "in pods docker add a button for my pods (only show my pods when this is clicked), when creating a pod hide all the templates, after the pod is created only show my pods")
+node scripts/test-currency760.js > /tmp/currency760.log 2>&1 \
+  && ok "2.760.0 units: the day's rates (Frankfurter v2 / v1, kept in config.fx, every 12 h, offline keeps the last), a typed rate wins, a remote GPU's cost on the bill in the bill's currency, A$ / CN¥ / ¥ formats with the dollars on hover, the Audio docker's one-on-screen rule + one statusbar button, the PODS docker's My pods / form-alone views" \
+  || { bad "2.760.0 currency + Audio docker + My pods units"; grep -a "^FAIL" -A1 /tmp/currency760.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui760-ui.js > /tmp/ui760ui.log 2>&1 \
+  && ok "2.760.0 browser test: one Audio button, the Audio docker's tabs (Stems, SFX, the last one back, Music from anywhere = its tab); PODS: the templates alone, 🖥 My pods alone; Currency AUD = the pod's price in A$ at once (dollars on hover), a typed rate, back to USD - on stand-ins, or SKIP without playwright" \
+  || { bad "2.760.0 Audio docker / currency / My pods browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui760ui.log | head -14; }
 # ---- 2.759.0 (Tim: "if i select a pod, how do i choose what model comfyui template to use and to dl it?" - asked: Both)
 node scripts/test-pods759.js > /tmp/pods759.log 2>&1 \
   && ok "2.759.0 units: a style's files from bitGen's download list (address + folder), Manager's list only, ComfyUI's folder from its argv, the pod's download Python, templates scored for a style (page = server), bitGen's own Jupyter password per pod (encrypted) + the template's ports, the routes + docker wiring" \

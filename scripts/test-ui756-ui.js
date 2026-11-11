@@ -100,7 +100,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const t1 = await tpl();
     check("2.756.1: the PODS docker opens on ALL the templates (Official + Verified + Community, each once, never a serverless one), ComfyUI ones first; a count per source; ComfyUI only OFF",
       (await ev(() => SecFloat.state("pods").shown)) && t1.join() === "ComfyUI - CUDA 12.8,MiniMax H3 (community),PyTorch 2.8,ROCm PyTorch" && /^4 of 4 templates$/.test(await msg())
-      && (await tabs()) === "all*=4 official=2 verified=1 community=1" && !(await ev(() => document.getElementById("pdComfy").checked)) && seen.filter((x) => /catalog\/templates/.test(x)).length >= 3, { t1, m: await msg(), tabs: await tabs() });
+      && /^all\*=4 official=2 verified=1 community=1 star=\d+ mine=\d+$/.test(await tabs()) && !(await ev(() => document.getElementById("pdComfy").checked)) && seen.filter((x) => /catalog\/templates/.test(x)).length >= 3, { t1, m: await msg(), tabs: await tabs() });
     const c0 = await ev(() => { const c = document.querySelector('#pdTpl .pdCard[data-tpl="h3com756"]'); return { glyph: c.querySelector(".pdGlyph").textContent, cat: c.querySelector(".pdCat").textContent, cfy: !!c.querySelector(".pdCfy"),
       img: c.querySelector(".pdImg").textContent, chips: [...c.querySelectorAll(".pdChips span")].map((x) => x.textContent), href: c.querySelector("a.pdLink").href, h: c.querySelector(".pdArt").style.getPropertyValue("--h"),
       w: c.getBoundingClientRect().width, cols: getComputedStyle(document.getElementById("pdTpl")).gridTemplateColumns.split(" ").length }; });
@@ -108,7 +108,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
       c0.glyph === "MH" && c0.cat === "NVIDIA" && c0.cfy && c0.img === "someone/h3-comfy:1" && c0.chips.join("|") === "Community|80 GB disk|120 GB /workspace|3000/http"
       && c0.href === "https://www.runpod.io/console/explore/h3com756" && c0.h !== "" && c0.cols >= 2 && c0.w > 150, c0);
     await p.fill("#pdQ", "pytorch"); await sleep(400);
-    check("…search as you type: PyTorch and ROCm PyTorch; the counts follow", (await tpl()).join() === "PyTorch 2.8,ROCm PyTorch" && (await tabs()) === "all*=2 official=1 verified=1 community=0" && /^2 of 4 templates$/.test(await msg()), { t: await tpl(), tabs: await tabs() });
+    check("…search as you type: PyTorch and ROCm PyTorch; the counts follow", (await tpl()).join() === "PyTorch 2.8,ROCm PyTorch" && (await tabs()).startsWith("all*=2 official=1 verified=1 community=0 ") && /^2 of 4 templates$/.test(await msg()), { t: await tpl(), tabs: await tabs() });
     await p.fill("#pdQ", "pytorch rocm"); await sleep(400);
     check("…every word must match (pytorch rocm -> ROCm PyTorch)", (await tpl()).join() === "ROCm PyTorch", await tpl());
     await p.fill("#pdQ", "3000"); await sleep(400);
@@ -123,11 +123,11 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("…Community: the MiniMax H3 template (ComfyUI on port 3000)", (await tpl()).join() === "MiniMax H3 (community)" && (await tabs()).startsWith("all=2 official=1 verified=0 community*=1"), { t: await tpl(), tabs: await tabs() });
     await p.click('[data-pdcreate="h3com756"]');
     await p.waitForFunction(() => document.querySelectorAll("#pdGpu option").length > 2, null, { timeout: 8000 }).catch(() => {});
-    check("…Create pod… opens the form above the cards, the card marked", await ev(() => { const c = document.getElementById("pdCreate"), f = document.getElementById("pdForm");
-      return !!f && c.contains(f) && /Create a pod from MiniMax H3 \(community\)/.test(c.textContent) && document.querySelector('.pdCard[data-tpl="h3com756"]').classList.contains("sel")
-        && c.getBoundingClientRect().top < document.getElementById("pdTpl").getBoundingClientRect().top; }));
-    await p.fill("#pdQ", "h3"); await sleep(400);
-    check("…the form stays open while the search changes", await ev(() => !!document.getElementById("pdForm") && document.querySelectorAll("#pdGpu option").length > 2));
+    // 2.760.0 (Tim: "when creating a pod hide all the templates"): the form alone - the cards and their filters hidden
+    check("…Create pod… opens the form ALONE (2.760.0: the template cards, the search and the filters hidden; the tabs stay)", await ev(() => { const c = document.getElementById("pdCreate"), f = document.getElementById("pdForm"), seen = (id) => { const e = document.getElementById(id); return !!e && e.offsetParent !== null; };
+      return !!f && c.contains(f) && seen("pdForm") && /Create a pod from MiniMax H3 \(community\)/.test(c.textContent) && document.querySelector('.pdCard[data-tpl="h3com756"]').classList.contains("sel")
+        && !seen("pdTpl") && !seen("pdQ") && !seen("pdKind") && !seen("pdFor") && !!document.querySelector('[data-pdsrc="mine"]').offsetParent; }));
+    check("…the form stays open while the templates are refreshed", await ev(() => { H3Pods.load(); return true; }) && await sleep(600).then(() => ev(() => !!document.getElementById("pdForm") && document.querySelectorAll("#pdGpu option").length > 2)));
     const f = await ev(() => ({ opts: [...document.querySelectorAll("#pdGpu option")].map((o) => o.textContent + (o.disabled ? " [x]" : "")), sel: document.getElementById("pdGpu").value, disk: document.getElementById("pdDisk").value, price: document.getElementById("pdPrice").textContent, name: document.getElementById("pdName").value }));
     check("Create pod…: the GPUs, offered ones first, cheapest first, with memory, $/h (Secure) and availability; none free = disabled; picks a 20 GB+ card; the template's disk; the hourly estimate",
       f.opts[0] === "RTX A4000 · 16 GB · $0.25/h · medium" && f.opts[1] === "RTX 4090 · 24 GB · $0.69/h · high" && /^H100 80GB · 80 GB · \$2\.99\/h · none free \[x\]$/.test(f.opts[2]) && f.sel === "NVIDIA GeForce RTX 4090"
@@ -138,12 +138,16 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.selectOption("#pdGpu", "NVIDIA GeForce RTX 4090"); await p.fill("#pdName", "My H3 pod"); await p.fill("#pdVol", "60");
     await p.click("#pdGo");
     await p.waitForFunction(() => document.querySelector('#pdPods [data-pod="new756"]'), null, { timeout: 8000 }).catch(() => {});
+    const row0 = await ev(() => (document.querySelector('#pdPods [data-pod="new756"]') || {}).textContent || "");   // before it loads
+    check("2.760.0 (Tim: \"after the pod is created only show my pods\"): 🖥 My pods lit, the pods alone - no templates, no form", await ev(() => {
+      const seen = (e) => !!e && e.offsetParent !== null;
+      return document.querySelector('[data-pdsrc="mine"]').classList.contains("on") && seen(document.getElementById("pdPods")) && !seen(document.getElementById("pdTpl")) && !document.getElementById("pdForm") && !seen(document.getElementById("pdQ"))
+        && /pod created/.test(document.getElementById("pdMsg").textContent); }));
     const created = seen.find((x) => /^POST \/v2\/pods /.test(x)) || "";
     let body = {}; try { body = JSON.parse(created.slice("POST /v2/pods ".length)); } catch { body = {}; }
     check("Create pod: POST /pods - the name, the template, the GPU (1), Secure, the container disk, /workspace 60 GB",
       body.name === "My H3 pod" && body.templateId === "h3com756" && body.gpu && body.gpu.id === "NVIDIA GeForce RTX 4090" && body.gpu.count === 1 && body.cloud === "SECURE" && body.disk === 80
       && body.mounts && body.mounts.persistent && body.mounts.persistent.size === 60 && body.mounts.persistent.path === "/workspace", body);
-    const row0 = await ev(() => document.querySelector('#pdPods [data-pod="new756"]').textContent);
     await p.waitForFunction(() => /pod loaded/.test((document.querySelector('#pdPods [data-pod="new756"] .pdSt') || {}).textContent || ""), null, { timeout: 12000 }).catch(() => {});
     const row1 = await ev(() => document.querySelector('#pdPods [data-pod="new756"]').textContent);
     const bg = (await api("/api/gpusplit")) && (await api("/api/pods/mine")).pods.find((x) => x.id === "new756");

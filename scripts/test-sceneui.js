@@ -872,9 +872,9 @@ const tick = () => new Promise((r) => setTimeout(r, 250));
     const html = PAGE;
     check("statusbar: .dockgone hides a dock ENTIRELY (titlebar included)",
           /\.dockgone \{ display: none !important; \}/.test(html));
-    const wired = ["tP", "tT", "tV", "tPv", "tC", "tMu", "tIE", "tCF"]
+    const wired = ["tP", "tT", "tV", "tPv", "tC", "tIE", "tCF"]   // 2.760.0: Music / Stems / SFX - the Audio docker's one button (static/audiodock.js)
       .every((b) => new RegExp('\\$\\("' + b + '"\\)\\.onclick = \\(\\) => \\{? ?toggleDockGone\\(').test(html));
-    check("statusbar: all 8 center-dock buttons toggle full-hide (not collapse)",
+    check("statusbar: the center-dock buttons toggle full-hide (not collapse)",
           wired && /const GONE_DOCKS = \{/.test(html)
           && !/\$\("tV"\)\.onclick = \(\) => toggleCollapse/.test(html));
     check("statusbar: hidden docks persist and restore at boot with the button lit",

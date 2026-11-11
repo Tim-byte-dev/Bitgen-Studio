@@ -1876,9 +1876,9 @@
   <button id="tPv" title="Preview dock — the player above the timeline">Preview</button>
   <button id="tT" title="Timeline dock">Timeline</button>
   <button id="tV" title="StoryBoard — the scenes with their storyboard pictures, the cast, 360° environments">StoryBoard</button>
-  <button id="tMu" title="Music dock">Music</button>
-  <button id="tSt" title="Stems dock">Stems</button>
-  <button id="tSfx" title="Sound effects dock">SFX</button>
+  <!-- 2.760.0 (Tim: "put music stems and sfx as tabs in an new docker called audio, remove those buttons from the
+       statusbar"): one button - static/audiodock.js -->
+  <button id="tAu" title="Audio docker - Music, Stems and SFX as its tabs">Audio</button>
   <button id="tIE" title="Image editor dock">Editor</button>
   <button id="tCF" title="ComfyUI dock — ComfyUI’s own interface, in this window">ComfyUI</button>
   <button id="tCh" title="Prompt chat dock">Chat</button>
@@ -2090,6 +2090,29 @@
       right ComfyUI folder (checkpoints, diffusion_models, loras, vae, embeddings, controlnet, upscale_models) - no moving files,
       no Save As - and writes the model's card (picture, base model, keywords, cfg / steps) beside it. Some models download
       without a key; creators can require one. Saved in <span class="mono">custom.settings</span>, sent only to Civitai.</p>
+
+    <!-- 2.760.0 (Tim: "in general tab add currency (AUD,USD,CNY,JPY)etc. convert to this currency when showing prices"):
+         static/currency.js + lib/currency.js -->
+    <label class="f" style="margin-top:14px" for="s_cur">Currency</label>
+    <div class="rowbtns" style="margin-top:4px;align-items:center">
+      <select id="s_cur" aria-label="Currency for prices" style="flex:none;width:auto"
+        title="The prices bitGen shows (RunPod's GPUs and pods, OpenRouter's models, a remote GPU) - in this currency">
+        <option>USD</option><option>AUD</option><option>EUR</option><option>GBP</option><option>CNY</option><option>JPY</option>
+        <option>NZD</option><option>CAD</option><option>SGD</option><option>HKD</option><option>KRW</option><option>INR</option>
+        <option>THB</option><option>CHF</option></select>
+      <span id="s_curraterow" style="display:none;align-items:center;gap:6px">
+        <span class="hint" style="flex:none;white-space:nowrap">1 USD =</span>
+        <input type="number" id="s_currate" min="0" step="0.0001" style="width:110px;flex:none" aria-label="Your exchange rate (blank = the day's rate)"
+          title="Blank = the day's reference rate. Type a rate to use your own (your bank's, say)">
+        <span class="hint" id="s_curcode" style="flex:none"></span>
+        <button class="ghost" id="s_curre" type="button" style="flex:none" title="Get the day's rates now">↻</button>
+      </span>
+    </div>
+    <div class="hint" id="s_curmsg" aria-live="polite" style="margin-top:4px"></div>
+    <p class="hint help" style="margin-top:4px">RunPod, OpenRouter and the other services list their prices in US dollars. bitGen shows
+      them in this currency at the day's reference rate (from Frankfurter, the central banks' published rates - checked every
+      12 hours and kept for when you are offline); hover a price to see the dollars and the rate. Type a rate to use your own.
+      A remote GPU's cost goes on the 📊 Usage bill in the Energy cost currency. Saved immediately.</p>
 
     <!-- 2.518.0 (Tim: "add Energy cost to the settings dialog"): the price per kWh - every job's ⚡ card and [power] line
          say what it cost (lib/power.js costOf) -->
@@ -3512,6 +3535,8 @@
 <script src="/static/loratrain.js"></script>  <!-- 2.520.0: 🎓 the LoRA trainer docker (H3LoraTrain - lib/loraTrain.js, ai-toolkit) -->
 <script src="/static/refmodmgr.js"></script>  <!-- 2.588.0: 🧬 RefMods in the 🎓 docker (H3RefMods - lib/refmodLib.js, refmod/<name>/) -->
 <script src="/static/usagedock.js"></script>  <!-- 2.520.0: 📊 the energy usage docker (H3Usage - lib/usageLog.js) -->
+<script src="/static/currency.js"></script>  <!-- 2.760.0: Settings ▸ General ▸ Currency - prices in your money (H3Money) -->
+<script src="/static/audiodock.js"></script>  <!-- 2.760.0: the Audio docker - Music, Stems, SFX as tabs (H3Audio) -->
 <script src="/static/remotegpu.js"></script>  <!-- 2.520.0: Settings -> Remote generation (was Remote GPU; H3RemoteGpu - lib/remoteGpu.js) -->
 <script src="/static/openrouter.js"></script>  <!-- 2.753.0: its 🧠 LLM on OpenRouter (H3OpenRouter - lib/openRouter.js) -->
 <script src="/static/podload.js"></script>  <!-- 2.758.0: a pod's loading bar + its P_ styles (H3PodLoad) -->
@@ -14426,8 +14451,7 @@ $("tP").onclick = () => toggleDockGone("promptdock", "tP");
 $("tT").onclick = () => toggleDockGone("timelinedock", "tT");
 $("tV").onclick = () => toggleDockGone("videodock", "tV");
 $("tPv").onclick = () => toggleDockGone("previewdock", "tPv");
-$("tSt").onclick = () => toggleDockGone("stemsdock", "tSt");      // 2.386.0
-$("tSfx").onclick = () => toggleDockGone("sfxdock", "tSfx");
+// 2.760.0: Stems, SFX and Music are the Audio docker's tabs - its one button is static/audiodock.js's
 $("tCh").onclick = () => toggleDockGone("chatdock", "tCh");
 $("s_llmoffload").onchange = () => {
   $("s_llmlayersrow").style.display = $("s_llmoffload").value === "hybrid" ? "" : "none";
@@ -14454,7 +14478,6 @@ $("tokMax").onchange = async () => {
   } catch { /* offline */ }
 };
 $("tC").onclick = () => toggleDockGone("consoledock", "tC");
-$("tMu").onclick = () => toggleDockGone("musicdock", "tMu");
 $("tIE").onclick = () => toggleDockGone("imageeditdock", "tIE");
 $("tCF").onclick = () => toggleDockGone("comfydock", "tCF", () => window.comfyDockPaint && window.comfyDockPaint());
 
@@ -15178,8 +15201,7 @@ async function startGraphJob() {
   else $("tT").classList.add("on");
   if (store.get("c.previewdock", "0") === "1") toggleCollapse("previewdock");
   else $("tPv").classList.add("on");
-  if (store.get("c.musicdock", "0") === "1") toggleCollapse("musicdock");
-  else $("tMu").classList.add("on");
+  if (store.get("c.musicdock", "0") === "1") toggleCollapse("musicdock");   // 2.760.0: the Audio docker's button paints itself
   if (store.get("c.imageeditdock", "1") === "1") toggleCollapse("imageeditdock");   // closed until asked for
   else $("tIE").classList.add("on");
   /* The ComfyUI dock is closed until asked for, and the iframe is not given a

@@ -63,7 +63,9 @@
     Array.prototype.forEach.call(doc.querySelectorAll("#rgVllm .rgVrp"), function (c) { c.style.display = p === "runpod" ? "" : "none"; });
     $("rgOr").style.display = p === "openrouter" ? "" : "none";
   }
-  function label(m) { return (m.vision ? "👁 " : "") + m.name + (m.free ? " - free" : m.in != null ? " - $" + m.in + " / $" + m.out + " per M tokens" : ""); }
+  /* 2.760.0: Settings ▸ General ▸ Currency (static/currency.js) */
+  function usd(v) { return root.H3Money ? root.H3Money.usd(+v || 0) : "$" + v; }
+  function label(m) { return (m.vision ? "👁 " : "") + m.name + (m.free ? " - free" : m.in != null ? " - " + usd(m.in) + " / " + usd(m.out) + " per M tokens" : ""); }
   function fill(sel, list, cur, blank) {
     sel.innerHTML = "";
     if (blank) sel.appendChild(el("option", { value: "" }, blank));

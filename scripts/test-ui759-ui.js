@@ -27,13 +27,14 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const POD = { id: "pod759", name: "Qwen pod", desiredStatus: "RUNNING", status: "RUNNING", imageName: "ls250824/run-comfyui-image", gpu: { id: "NVIDIA RTX A5000", count: 1 }, costPerHr: 0.27, runtime: { uptime: 60 } };
   const TPL = [{ id: "pyt759aa", name: "PyTorch 2.8", image: "runpod/pytorch:2.8", ports: ["8888/http"], category: "NVIDIA" },
     { id: "krea759a", name: "ComfyUI Krea 2 ready", image: "someone/krea2-comfy", ports: ["8188/http"], category: "NVIDIA" }];
+  let MVAE = "qwen_image_vae.safetensors";   // Manager's list: the style's VAE (set from the files the style ticks - its files follow bitGen's catalogue)
   const rp = http.createServer((q, s) => { let b = ""; q.on("data", (d) => { b += d; }); q.on("end", () => {
     const send = (c, j) => { s.writeHead(c, { "Content-Type": "application/json" }); s.end(JSON.stringify(j)); };
     const px = /^\/proxy\/pod759-3000(\/.*)$/.exec(q.url);
     if (px) { const p = px[1];
       if (p === "/system_stats") return send(200, { system: { argv: ["/workspace/ComfyUI/main.py"] } });
       if (p === "/manager/queue/status") return send(200, { total_count: queued.length, done_count: done, in_progress_count: 0, is_processing: done < queued.length });
-      if (p.startsWith("/externalmodel/getlist")) return send(200, { models: [{ name: "Qwen VAE", filename: "qwen_image_vae.safetensors", save_path: "default", type: "vae", base: "Qwen-Image", url: "u" }] });
+      if (p.startsWith("/externalmodel/getlist")) return send(200, { models: [{ name: "Qwen VAE", filename: MVAE, save_path: "default", type: "vae", base: "Qwen-Image", url: "u" }] });
       if (p === "/manager/queue/install_model") { queued.push(JSON.parse(b)); return send(200, {}); }
       if (p === "/manager/queue/start") return send(200, {});
       return send(404, {}); }
@@ -62,6 +63,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await sleep(300);
     const order1 = await ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((c) => c.dataset.tpl + (c.querySelector(".pdFits") ? " ✓" : "")));
     check("For Krea 2 Turbo: the template that has Krea first, marked ✓ fits; the other after it", order1.join() === "krea759a ✓,pyt759aa" && order0.join() !== order1.join(), { order0, order1 });
+    await p.click('[data-pdsrc="mine"]'); await sleep(300);   // 2.760.0: the pods are under 🖥 My pods
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod759"] [data-pdmod]'), null, { timeout: 10000 });
     await p.click('#pdPods .pdRow[data-pod="pod759"] [data-pdmod]');
     await p.waitForFunction(() => document.querySelector("#pdStyPanel [data-pmgo]"), null, { timeout: 15000 });
@@ -71,15 +73,16 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await ev(() => { const s = document.querySelector("#pdStyPanel [data-pmstyle]"), o = [...s.options].find((x) => x.textContent === "qwen2_1"); s.value = o.value; s.dispatchEvent(new Event("change")); });
     await p.waitForFunction(() => /Ticked the style's \d+ file\(s\)/.test(document.querySelector("#pdStyPanel [data-pmmsg]").textContent), null, { timeout: 8000 }).catch(() => {});
     const tk = await ev(() => ({ msg: document.querySelector("#pdStyPanel [data-pmmsg]").textContent, on: [...document.querySelectorAll("#pdStyPanel [data-pmf]:checked")].map((i) => i.getAttribute("data-pmf")) }));
+    MVAE = tk.on.find((n) => /vae/i.test(n)) || tk.on[0] || MVAE;
     check("…picking the style qwen2_1 ticks its files from bitGen's list (with their size)", /Ticked the style's \d+ file\(s\), [\d.]+ GB\./.test(tk.msg) && tk.on.length > 0, tk);
     await p.click("#pdStyPanel [data-pmgo]");
     await p.waitForFunction(() => /ComfyUI-Manager is downloading/.test(document.querySelector("#pdStyPanel [data-pmmsg]").textContent), null, { timeout: 10000 }).catch(() => {});
     const go = await ev(() => document.querySelector("#pdStyPanel [data-pmmsg]").textContent);
-    check("…⬇ Download ticked: ComfyUI-Manager downloads the one in its list (the Qwen VAE); the rest named", /ComfyUI-Manager is downloading 1 file\(s\)\. Not in ComfyUI-Manager's list: /.test(go) && queued.length === 1 && queued[0].filename === "qwen_image_vae.safetensors", { go, queued });
+    check("…⬇ Download ticked: ComfyUI-Manager downloads the one in its list (the Qwen VAE); the rest named", /ComfyUI-Manager is downloading 1 file\(s\)\. Not in ComfyUI-Manager's list: /.test(go) && queued.length === 1 && queued[0].filename === MVAE, { go, queued, MVAE });
     done = 1;
     await p.waitForFunction(() => document.querySelector("#pdStyPanel [data-pmsty]"), null, { timeout: 8000 }).catch(() => {});
     const bars = await ev(() => [...document.querySelectorAll("#pdStyPanel [data-pmprog] .pdLoad")].map((x) => x.textContent));
-    check("…a bar per file, then 🎨 Make P_ styles from the pod", bars.length === 1 && /qwen_image_vae\.safetensors · done/.test(bars[0]) && (await ev(() => !!document.querySelector("#pdStyPanel [data-pmsty]"))), bars);
+    check("…a bar per file, then 🎨 Make P_ styles from the pod", bars.length === 1 && bars[0].startsWith(MVAE + " · done") && (await ev(() => !!document.querySelector("#pdStyPanel [data-pmsty]"))), bars);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e)); }
   finally {

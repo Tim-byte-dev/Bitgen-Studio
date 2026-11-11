@@ -119,7 +119,7 @@ const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a
       }));
     }, style.id);
     check("Settings ▸ Image, the API_ style: Runs on ◉ This computer ◉ Remote GPU ◉ API - API picked, this API in the list, its model",
-      ro.choices.join() === "local,remote,api" && ro.v === "api" && ro.api === apiId && ro.shown === "flex" && ro.model === "google/gemini-2.5-flash-image" && ro.opts.some((o) => /UI Test \(OpenRouter\)/.test(o)), ro);
+      ro.choices.join() === "local,remote,api,pod" && ro.v === "api" && ro.api === apiId && ro.shown === "flex" && ro.model === "google/gemini-2.5-flash-image" && ro.opts.some((o) => /UI Test \(OpenRouter\)/.test(o)), ro);
     await ev(() => document.querySelector('#settings .stabs [data-stab="api"]').click());
 
     // Use for the LLM

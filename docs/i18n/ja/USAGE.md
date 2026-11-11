@@ -4798,6 +4798,18 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - Hugging Face のゲート付きモデルには、設定の Hugging Face トークンを使います。トークンはダウンロードと一緒に自分の Pod にだけ送られます。
 - **リンクまたはこのコンピューターからのファイル**（⬇ Models 内）：入れるモデルフォルダー（loras、checkpoints など）を選び、リンク - Civitai、Hugging Face、任意の Web アドレス - を貼り付けて **⬇ From the link** を押すか、**⬆ From this computer…** を押してディスクのファイルを選びます。どちらも Pod の Jupyter を使います。コンピューターからのファイルは分割して送られ、かかる時間はアップロード速度次第なので、Hugging Face や Civitai にあるモデルはリンクからの方が速く入ります。Civitai のリンクには設定の Civitai トークンを使います。
 
+## 🎵 Audio ドッカー、自分の通貨での価格、My pods (2.760.0)
+<!-- en: the-audio-docker-prices-in-your-currency-and-my-pods-2-760-0 aeeea0948303 -->
+
+- **Audio ドッカー。** Music、Stems、SFX は 1 つのドッカー **Audio** のタブになり、ステータスバーのボタンも 3 つから
+  **Audio** 1 つになりました。このボタンは、最後に使ったタブで Audio ドッカーを表示／非表示にします。タイトルバーには
+  **Audio** とタブ **🎵 Music · 🎚 Stems · 💥 SFX** が並び、タブを押すとそれが表示され、ほかは片付きます。各タブはそれぞれの高さ、▾ 折りたたみ、⛶ 最大化、⇱ フロートを保ちます。ワークスペース、保存したドッカーレイアウト、ボイスチャットなど、どれかを開く操作は Audio ドッカーのそのタブとして開きます。拡張機能がオフのタブは表示されません。
+- **通貨**（設定 ▸ General）：RunPod、OpenRouter などのサービスは価格を米ドルで示します。通貨（AUD、USD、EUR、GBP、
+  CNY、JPY など）を選ぶと、bitGen はその通貨で表示します：PODS ドッカーの GPU、1 時間あたりの価格と自分の Pod、
+  Remote generation の Pod、OpenRouter のモデル。価格にマウスを乗せると米ドルとレートが見えます。レートはその日の参照レート（中央銀行のレートを公開している Frankfurter から - アカウントもキーも不要）で、12 時間ごとに確認され、オフライン用に保存されます。自分のレート（銀行のものなど）を使うには **1 USD = …** に入力します。空にするとその日のレートに戻ります。リモート GPU の費用は 📊 Usage の請求に Energy cost の通貨で加算されます。
+- **🖥 My pods**（PODS ドッカー）：テンプレートのタブの横にあるボタンで、Pod の数が表示されます。押すと Pod だけを表示します - テンプレートのカードも検索もなし。テンプレートのタブ（All、Official など）はテンプレートだけを表示します。
+  **Create pod…** はフォームだけを表示し（✕ Close かタブで戻ります）、Pod が作成されるとドッカーは My pods に切り替わり、そこで読み込みバーが進みます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
