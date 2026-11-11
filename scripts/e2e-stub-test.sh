@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?" + "can you show progess of pod loading?" + "use overide settings when pods load but disable checkpoints and lora loader")
+node scripts/test-pods758.js > /tmp/pods758.log 2>&1 \
+  && ok "2.758.0 units: the loading stages + the timed bar (kept per pod / image), the bitGen style for each pod model, the pod's files put in, P_ styles (Runs on: RunPod pod), only P_ on Pods, P_ renders on its pod, Override = steps / seed / CFG / size (no checkpoint / LoRAs)" \
+  || { bad "2.758.0 pod styles units"; grep -a "^FAIL" -A1 /tmp/pods758.log | head -12; }
+node scripts/test-pods758-live.js > /tmp/pods758l.log 2>&1 \
+  && ok "2.758.0 LIVE pod styles against a stand-in pod: its models + workflows read, P_ styles from the two models bitGen knows and the two picture workflows (a UI export converted), Boogu / a missing node / a video one skipped with the reason, made again = updated" \
+  || { bad "2.758.0 pod styles (live)"; grep -a "^FAIL" -A1 /tmp/pods758l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui758-ui.js > /tmp/ui758ui.log 2>&1 \
+  && ok "2.758.0 browser test: Pods ticks Override style; ▶ Start walks the bar (machine -> container -> ComfyUI -> loaded in …, the time kept); 🎨 Styles lists the pod's models + workflows, Make P_ styles; only P_ styles on Pods; a P_ style picked = checkpoint + LoRAs off - on a stand-in RunPod, or SKIP without playwright" \
+  || { bad "2.758.0 pod styles browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui758ui.log | head -14; }
 # ---- 2.757.0 (+ Tim: "can we add claude as well?") (Tim: "can you add an api tab to bitgen with add api input and name input and a use checkbox for each api the use adds. if api is checked add it to styles with prefix API_ so bitgen can truly work without good hardware" + "add runninghub too")
 node scripts/test-apis757.js > /tmp/apis757.log 2>&1 \
   && ok "2.757.0 units: seven services incl. Claude (key shapes = Auto-detect, page = server; Claude = the LLM, its body fitted), add / Use = API_ styles per kind (rename follows, your Model kept, untick removes only Use's), the LLM (one API at a time), keys encrypted per API (a removed one's key goes), API jobs -> misc/api_worker.py (no GPU wait, only its key in job.json), the video request as typed, never hidden, no model-file check" \

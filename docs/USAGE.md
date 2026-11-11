@@ -8238,6 +8238,39 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - Video: OpenAI ended its video API (Sora) in September 2026, and Gemini's video models are not offered through the
   API keys bitGen uses - use OpenRouter, fal.ai, Replicate or RunningHub for video.
 
+## 🧩 P_ pod styles and a pod's loading bar (2.758.0)
+
+- **Only P_ styles on Pods.** With Basic Settings ▸ GPU on **RunPod ▸ Pods** (Remote or Both), the style lists show only
+  **P_** styles - styles that render on your pod with the models already on it. On Local or Serverless the P_ styles are
+  hidden, because they need a pod.
+- **Choosing the model: 🎨 Styles.** Once a pod says *pod loaded*, press **🎨 Styles** on it in the PODS docker. bitGen
+  reads the pod's ComfyUI and lists:
+  - **The pod's models**, each with the bitGen style it fits - for example `qwen_image…` → qwen2_1, `z_image_turbo…` →
+    Z-Image Turbo, `krea2…` → Krea 2, `flux1-krea…` → FLUX.1 dev. A model bitGen has no workflow for (a custom one such as
+    Boogu) can't be ticked - use one of the pod's own workflows for it.
+  - **The pod's saved workflows** - the ones the template ships in its ComfyUI. They already use its models and custom
+    nodes.
+  Tick what you want and press **🎨 Make P_ styles**. A model becomes `P_<model file>`: bitGen's own workflow for that
+  model type, with the pod's model, text encoder and VAE put in. A workflow becomes `P_<workflow name>`, exactly as the
+  template made it. Picture styles only for now - a video or song workflow is listed with the reason. Making them again
+  updates the same styles.
+- Any style can run on a pod too: Settings ▸ Image ▸ the style's **Runs on** ▸ **RunPod pod**, with the pod's ID (blank =
+  the pod you pressed **Use it** on). The name then starts with **P_**.
+- **Basic Settings with a P_ style.** Picking RunPod ▸ Pods ticks **Override style**, so Basic Settings' **steps, seed,
+  CFG, size and aspect ratio** go with every pod render. The **checkpoint** box and the **LoRA** rows are switched off
+  while a P_ style is picked - the pod's own model and LoRAs are used. With Override style off, the pod's workflow keeps
+  its own numbers.
+- **The loading bar.** While a pod starts, the PODS docker and the Remote generation docker show where it is:
+  1/4 *waiting for a GPU machine* → 2/4 *starting the container* (the template's image is downloaded) → 3/4 *ComfyUI
+  starting* (a template like this one downloads its models now - often the longest part) → *pod loaded in …*. RunPod
+  doesn't report download percentages, so the bar is the time so far against how long this pod - or another pod of the
+  same template - took last time ("3 min of about 7 min"); the first time it moves by stage.
+- **Your pods and pod shortcuts are in the PODS docker now.** The Remote generation docker keeps where the work runs and
+  a **🖥 PODS docker** button. A pod shortcut is the **☆** on a template's card: press it and bitGen keeps the template
+  - its link is filled in for you. **★ Shortcuts** lists them, each with **Deploy ↗** (RunPod's deploy page with the
+  template picked) and **Create pod…**; press **★** again to remove one. A template RunPod doesn't list (a private one) can
+  still be added on that tab by pasting its link.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

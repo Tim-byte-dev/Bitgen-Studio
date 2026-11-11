@@ -579,6 +579,9 @@ function mount(app) {
     // worker.py apply_video_style(). Blank = the Settings -> ComfyUI template.
     let videoStyle = null;
     const bo = basicOverride.parse(f.basic);          // 2.409.0: Override style ON -> Basic Settings decide
+    // 2.758.0: a P_ pod style - Basic Settings' steps / seed / CFG only (the pod's model and LoRAs stay)
+    const podVs = f.video_style_id ? styles.byId(core.STYLES_DIR, String(f.video_style_id)) : null;
+    if (podVs && podVs.runs_on === "pod") { if (bo) { bo.model = ""; bo.loras = []; } f.extra_loras = "[]"; }
     if (f.video_style_id) {
       const vs = styles.byId(core.STYLES_DIR, String(f.video_style_id));
       if (!vs || vs.kind !== "video") return res.status(400).json({ error: "that video style no longer exists — pick another in the dropdown" });
@@ -1902,7 +1905,15 @@ function mount(app) {
     // Per-render LoRA weights from the Basic-Settings sliders (2.93.0): the
     // patcher reads style.loras, so the override IS a modified style copy —
     // one contract, no second lora path through the worker.
+    // 2.758.0 (Tim: "use overide settings when pods load but disable checkpoints and lora loader, overide settings will be
+    // for step, seed and cfg"): a P_ pod style keeps the pod's model and LoRAs - Basic Settings' checkpoint, temporary LoRAs,
+    // LoRA weights and the Model manager's pick are not used; steps / seed / CFG still are
+    const podStyle = style.runs_on === "pod";
+    if (podStyle) { delete b.model; delete b.extra_loras; delete b.lora_weights; delete b.mm_override; }
     let styled = styles.applyLoraWeights(style, b.lora_weights);
+    // + "overide settings will be for step, seed and cfg and the size and aspect ratio": the pod's workflow keeps its own
+    // numbers unless Basic Settings sends them (Override style on) - the style's saved defaults are not written in
+    if (podStyle) styled = Object.assign({}, styled, { steps: null, cfg: null, width: null, height: null, sampler: "", clip_skip: null });
     // 2.115.0: a checkpoint picked in Basic Settings replaces the style's for this render
     // 2.540.3: ...only when the model FITS the style's workflow (lib/modelFit.js) - an SDXL / Anima checkpoint in a
     // FLUX 3 Klein or Qwen edit workflow can only fail; it is left out for this render and the log says why

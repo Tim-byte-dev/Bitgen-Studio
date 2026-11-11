@@ -9,14 +9,14 @@
  *   Basic Settings ▸ GPU          "☁ Remote generation docker" shows / hides it (no status-bar button).
  *   The docker (SecFloat "rgen": floats, docks, remembered like the others)
  *     NOW        where the work runs (Basic Settings ▸ GPU), the remote GPU, the LLM
- *     MY PODS    🔄 your RunPod pods (your API key) - ▶ start / ⏹ stop / Use it (pod + its ComfyUI port)
- *     SHORTCUTS  RunPod templates you add by pasting their link - Deploy ↗ opens RunPod's deploy page with the template
- *                and bitGen's referral code; Explore RunPod templates ↗; after deploying, 🔄 lists the new pod
+ *     🖥 PODS    opens the PODS docker - since 2.758.0 your pods, their loading bars and the pod shortcuts (☆ on a
+ *                template's card, ★ Shortcuts) live there only (Tim: "can you remove this My pods ... from remote generation
+ *                docker and add to pod's card in pods docker")
  *     ⚙          Settings ▸ Remote generation
  *   Links open in the browser (target _blank - electron/main.js setWindowOpenHandler). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { on: null, g: null, pods: [], cuts: [], explore: "", msg: "", st: {}, watch: {} };
+  var doc = root.document, S = { on: null, g: null, msg: "" };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
@@ -83,24 +83,15 @@
   function body() {
     var d = doc.createElement("div"); d.className = "rgd"; d.id = "rgdBody";
     d.innerHTML = '<div class="rgdNow" id="rgdNow" aria-live="polite"></div>'
-      + '<h4>My pods</h4>'
-      + '<div class="rowbtns" style="align-items:center"><button type="button" class="ghost" id="rgdPods" title="Ask RunPod for your pods (your API key - Settings ▸ Remote generation)">🔄 My pods</button>'
-      + '<span class="hint" id="rgdMsg" aria-live="polite" style="flex:1"></span></div>'
-      + '<div id="rgdPodList"></div>'
-      + '<h4>Pod shortcuts</h4>'
-      + '<div class="hint">RunPod templates you deploy as your own pods. Paste a template\'s link from its page on RunPod, give it a name and add it. Deploy ↗ opens RunPod with it picked; then 🔄 My pods lists the new pod.</div>'
-      + '<div id="rgdCuts"></div>'
-      + '<div class="rgdAdd"><input type="text" id="rgdCutName" placeholder="Name, e.g. MiniMax H3 ComfyUI" spellcheck="false">'
-      + '<input type="text" id="rgdCutLink" placeholder="The template\'s link (runpod.io/console/explore/…)" spellcheck="false">'
-      + '<button type="button" class="ghost" id="rgdCutAdd">＋ Add</button></div>'
-      + '<div><a class="rgdLink" id="rgdExplore" href="https://www.runpod.io/console/explore" target="_blank" rel="noopener">Explore RunPod templates ↗</a></div>'
-      + '<div class="rowbtns" style="margin-top:4px"><button type="button" class="ghost" id="rgdSettings">⚙ Settings ▸ Remote generation</button></div>';
+      // 2.758.0 (Tim: "can you remove this My pods ... Pod shortcuts ... from remote generation docker and add to pod's card in
+      // pods docker"): your pods, their loading bars and the shortcuts (☆ on a template's card) live in the PODS docker
+      + '<span class="hint" id="rgdMsg" aria-live="polite"></span>'
+      + '<div class="rowbtns" style="margin-top:4px"><button type="button" class="ghost" id="rgdPodsDock" title="Your RunPod pods, the templates and the ★ shortcuts">🖥 PODS docker</button>'
+      + '<button type="button" class="ghost" id="rgdSettings">⚙ Settings ▸ Remote generation</button></div>';
     return d;
   }
   function wire() {
-    $("rgdPods").onclick = pods;
-    $("rgdCutAdd").onclick = addCut;
-    $("rgdCutLink").addEventListener("keydown", function (e) { if (e.key === "Enter") addCut(); });
+    $("rgdPodsDock").onclick = function () { if (root.H3Pods && H3Pods.show) H3Pods.show(true); };
     $("rgdSettings").onclick = function () {
       var o = $("openSettings"); if (o && o.onclick) o.onclick();
       setTimeout(function () { var t = doc.querySelector('#settings .stabs [data-stab="rgpu"]'); if (t) t.click(); }, 60);
@@ -115,100 +106,11 @@
       + "<div><b>Remote GPU:</b> " + esc(g.remote ? g.remote.label : "none set up") + "</div>"
       + "<div><b>LLM:</b> " + esc(g.routes && g.routes.llm === "remote" ? (g.llm_label || "remote") : "this computer") + "</div>";
   }
-  // 2.755.0 (Tim: "show loading pod, pod loaded, stopping pod"): a pod being started / stopped is watched (GET
-  // /api/remotegpu/pod/:id - RunPod REST v2 + its ComfyUI answering) until it is loaded / stopped
-  /** a pod's state, written into its .rgdSt (each case its own words - the UI translations read them) */
-  function setSt(el, p) {
-    var st = S.st[p.id], w = S.watch[p.id];
-    if (w === "stop" && (!st || st.status !== "EXITED")) { el.textContent = "stopping pod…"; return; }
-    if (w === "start" && (!st || st.status !== "RUNNING")) { el.textContent = "loading pod…"; return; }
-    if (st && st.status === "RUNNING") {
-      var sec = +st.uptime || 0, cost = (sec / 3600 * (+st.cost_hr || 0)).toFixed(2), m = Math.round(sec / 60), h = Math.floor(m / 60), mm = m % 60;
-      if (!st.ready) { el.textContent = sec ? "loading pod… · running " + m + " min" : "loading pod…"; return; }
-      if (!sec) { el.textContent = "pod loaded"; return; }
-      if (m < 60) { el.textContent = "pod loaded · running " + m + " min · ≈ $" + cost; return; }
-      el.textContent = "pod loaded · running " + h + " h " + mm + " min · ≈ $" + cost; return;
-    }
-    if (st) { el.textContent = st.word; return; }
-    if (/RUNNING/.test(p.status)) { el.textContent = "running"; return; }
-    if (/EXITED/.test(p.status)) { el.textContent = "stopped"; return; }
-    el.textContent = String(p.status || "").toLowerCase();
-  }
-  function watch(id, want) { S.watch[id] = want; paintPods(); if (!S.ticking) tick(); }
-  function tick() {
-    var ids = Object.keys(S.watch); S.ticking = ids.length > 0; if (!ids.length) return;
-    Promise.all(ids.map(function (id) {
-      return getj("/api/remotegpu/pod/" + encodeURIComponent(id)).then(function (st) {
-        if (!st || st.error) return;
-        S.st[id] = st;
-        var p = S.pods.find(function (x) { return x.id === id; }); if (p) p.status = st.status;
-        if ((S.watch[id] === "start" && st.ready) || (S.watch[id] === "stop" && st.status === "EXITED")) {
-          delete S.watch[id];
-          var m = $("rgdMsg"), nm = st.name || "the pod";
-          if (st.ready) { m.style.color = "#7c7"; m.textContent = "✓ " + nm + " - pod loaded"; }
-          else { m.style.color = ""; m.textContent = "⏹ " + nm + " stopped - storage is still billed until you terminate it on RunPod"; }
-        }
-      }).catch(function () { /* next time */ });
-    })).then(function () { paintPods(); if (Object.keys(S.watch).length) setTimeout(tick, +(root.H3_POD_POLL || 4000)); else S.ticking = false; });
-  }
-  function paintPods() {
-    var box = $("rgdPodList"); if (!box) return;
-    box.innerHTML = S.pods.map(function (p) {
-      var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
-      return '<div class="rgdRow" data-pod="' + esc(p.id) + '"><span class="nm"><b>' + esc(p.name) + "</b> · " + esc(p.gpu || "") + " · $" + (+p.cost_hr || 0).toFixed(2) + '/h · <span class="rgdSt"></span></span>'
-        + '<button type="button" class="ghost" data-rgdpod="' + esc(p.id) + '" data-act="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
-        + '<button type="button" class="ghost" data-rgduse="' + esc(p.id) + '" title="Render on this pod (its ComfyUI)">Use it</button></div>';
-    }).join("");
-    box.querySelectorAll(".rgdRow[data-pod]").forEach(function (r) { var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (p) setSt(r.querySelector(".rgdSt"), p); });
-    box.querySelectorAll("[data-rgdpod]").forEach(function (b) { b.onclick = function () {
-      var id = b.dataset.rgdpod, act = b.dataset.act;
-      delete S.st[id]; S.watch[id] = act; paintPods();
-      post("/api/remotegpu/pod/" + encodeURIComponent(id) + "/" + act).then(function (r) {
-        if (r.error) { delete S.watch[id]; say(r.error, false); paintPods(); return; }
-        say(act === "start" ? "▶ loading pod - RunPod is starting it, then its ComfyUI" : "⏹ stopping pod…");
-        if (!S.ticking) tick();                  // watched only once RunPod has the action
-      });
-    }; });
-    box.querySelectorAll("[data-rgduse]").forEach(function (b) { b.onclick = function () {
-      var p = S.pods.find(function (x) { return x.id === b.dataset.rgduse; }) || {};
-      getj("/api/remotegpu").then(function (v) {
-        var port = +((v.runpod || {}).port) || 8188;
-        return post("/api/remotegpu/save", { runpod: { pod_id: p.id, pod_name: p.name, cost_hr: p.cost_hr, port: port } });
-      }).then(function () { return post("/api/remotegpu/use", { mode: "runpod" }); }).then(function (v) {
-        if (v.error) { say(v.error, false); return; }
-        var m = $("rgdMsg"); m.style.color = "#7c7"; m.textContent = "✓ rendering on " + (p.name || "the pod"); changed(); load();
-      });
-    }; });
-  }
-  function pods() {
-    say("asking RunPod…");
-    return post("/api/remotegpu/pods", {}).then(function (r) {
-      if (r.error) { say(/key/i.test(r.error) || /401|403|refused/i.test(r.error) ? "RunPod refused - your API key (an All key) goes in Settings ▸ Remote generation" : r.error, false); return; }
-      S.pods = r.pods || []; paintPods();
-      var m = $("rgdMsg"); m.style.color = ""; m.textContent = S.pods.length ? S.pods.length + " pod(s)" : "no pods yet - deploy one (a shortcut below, or on RunPod)";
-    });
-  }
-  function paintCuts() {
-    var box = $("rgdCuts"); if (!box) return;
-    box.innerHTML = S.cuts.map(function (c) {
-      return '<div class="rgdRow"><span class="nm"><a class="rgdLink" href="' + esc(c.page) + '" target="_blank" rel="noopener" title="The template\'s page on RunPod">' + esc(c.name) + "</a></span>"
-        + '<a class="btn ghost rgdDeploy" href="' + esc(c.deploy) + '" target="_blank" rel="noopener" title="RunPod\'s deploy page with this template picked (bitGen\'s referral link)">Deploy ↗</a>'
-        + '<button type="button" class="ghost" data-rgdcut="' + esc(c.id) + '" title="Remove this shortcut">✕</button></div>';
-    }).join("") || '<div class="hint">No shortcuts yet.</div>';
-    box.querySelectorAll("[data-rgdcut]").forEach(function (b) { b.onclick = function () { post("/api/remotegen/shortcuts", { remove: b.dataset.rgdcut }).then(function (r) { if (!r.error) { S.cuts = r.shortcuts; paintCuts(); } }); }; });
-  }
-  function addCut() {
-    var name = $("rgdCutName").value, link = $("rgdCutLink").value;
-    post("/api/remotegen/shortcuts", { add: { name: name, link: link } }).then(function (r) {
-      if (r.error) { say(r.error, false); return; }
-      S.cuts = r.shortcuts; paintCuts(); $("rgdCutName").value = ""; $("rgdCutLink").value = ""; say("✓ shortcut added", true);
-    });
-  }
   function load() {
     return Promise.all([getj("/api/remotegen"), getj("/api/gpusplit")]).then(function (a) {
       var x = a[0] || {}, g = a[1] || {};
-      S.on = !!x.enabled; S.cuts = x.shortcuts || []; S.g = g;
-      paintOn(); paintNow(); paintCuts();
+      S.on = !!x.enabled; S.g = g;
+      paintOn(); paintNow();
     }).catch(function () { /* offline */ });
   }
   function show(on) { if (!(root.SecFloat && SecFloat.show && SecFloat.windows && SecFloat.windows.rgen)) return false; var r = SecFloat.show("rgen", on); paintBtn(); return r; }
@@ -219,7 +121,7 @@
     if (!ready || !sw || !bt) { setTimeout(boot, 250); return; }
     if (!$("rgdCss")) { var st = doc.createElement("style"); st.id = "rgdCss"; st.textContent = CSS; doc.head.appendChild(st); }
     if (!$("rgdBody")) {
-      SecFloat.add({ id: "rgen", title: "Remote generation", w: 460, h: 560, body: body(), onShow: function () { load(); if (!S.pods.length) pods(); } });
+      SecFloat.add({ id: "rgen", title: "Remote generation", w: 460, h: 560, body: body(), onShow: function () { load(); } });
       wire();
     }
     load();
@@ -228,5 +130,5 @@
     doc.addEventListener("click", function (e) { if (e.target && e.target.closest && e.target.closest(".df-x, .sf-x, [data-sfclose]")) setTimeout(paintBtn, 50); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3RemoteDock = { load: load, show: show, setOn: setOn, pods: pods, state: function () { return S; } };
+  root.H3RemoteDock = { load: load, show: show, setOn: setOn, state: function () { return S; } };
 })(typeof window !== "undefined" ? window : globalThis);

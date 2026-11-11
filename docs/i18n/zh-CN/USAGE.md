@@ -5004,6 +5004,18 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 密钥 **加密** 保存在这台电脑上（settings/keys.json），只发送给对应的服务；页面只显示最后四个字符。生成任务的文件只包含它需要的密钥。
 - 视频：OpenAI 已在 2026 年 9 月停止其视频 API（Sora），Gemini 的视频模型也不通过 bitGen 使用的 API 密钥提供 - 视频请使用 OpenRouter、fal.ai、Replicate 或 RunningHub。
 
+## 🧩 P_ Pod 风格和 Pod 加载进度条 (2.758.0)
+<!-- en: p-pod-styles-and-a-pod-s-loading-bar-2-758-0 4dd5ce6454aa -->
+
+- **Pods 下只显示 P_ 风格。** 基本设置 ▸ GPU 为 **RunPod ▸ Pods**（远程或两者）时，风格列表只显示 **P_** 风格 - 用 Pod 上已有的模型生成的风格。在本地或 Serverless 下 P_ 风格会隐藏，因为它们需要 Pod。
+- **选择模型：🎨 Styles。** Pod 显示 *pod loaded* 后，在 PODS 停靠窗中按它的 **🎨 Styles**。bitGen 会读取 Pod 的 ComfyUI 并列出：
+  - **Pod 的模型**，以及每个模型适合的 bitGen 风格 - 例如 `qwen_image…` → qwen2_1、`z_image_turbo…` → Z-Image Turbo、`krea2…` → Krea 2、`flux1-krea…` → FLUX.1 dev。bitGen 没有工作流的模型（例如 Boogu 这样的自定义模型）不能勾选 - 请使用 Pod 自己的工作流。
+  - **Pod 中保存的工作流** - 模板放在 ComfyUI 里的工作流。它们已经使用模板的模型和自定义节点。勾选需要的内容，然后按 **🎨 Make P_ styles**。模型会变成 `P_<model file>`：该模型类型的 bitGen 工作流，填入 Pod 的模型、文本编码器和 VAE。工作流会变成 `P_<workflow name>`，与模板做的完全一样。目前只有图片风格 - 视频或歌曲工作流会列出并说明原因。再次创建会更新同一个风格。
+- 任何风格都可以在 Pod 上运行：设置 ▸ 图片 ▸ 风格的 **Runs on** ▸ **RunPod pod**，填入 Pod 的 ID（留空 = 你按了 **Use it** 的 Pod）。名称随后以 **P_** 开头。
+- **P_ 风格下的基本设置。** 选择 RunPod ▸ Pods 会勾选 **Override style**，基本设置的 **步数、种子、CFG、尺寸和宽高比** 会用于每次 Pod 生成。选中 P_ 风格时，**检查点** 框和 **LoRA** 行会关闭 - 使用 Pod 自己的模型和 LoRA。Override style 关闭时，Pod 的工作流使用自己的数值。
+- **加载进度条。** Pod 启动时，PODS 停靠窗和远程生成停靠窗会显示当前阶段：1/4 *waiting for a GPU machine*（等待 GPU 机器）→ 2/4 *starting the container*（下载模板的镜像）→ 3/4 *ComfyUI starting*（这类模板会在此时下载模型 - 通常是最长的部分）→ *pod loaded in …*。RunPod 不报告下载百分比，所以进度条是把已用时间与这个 Pod - 或同一模板的另一个 Pod - 上次的加载时间相比（“3 min of about 7 min”）；第一次按阶段前进。
+- **Pod 和 Pod 快捷方式现在在 PODS 停靠窗中。** 远程生成停靠窗保留工作运行位置和 **🖥 PODS docker** 按钮。Pod 快捷方式就是模板卡片上的 **☆**：按下后 bitGen 会记住这个模板 - 链接会自动填入。**★ Shortcuts** 列出它们，每个都有 **Deploy ↗**（已选好模板的 RunPod 部署页面）和 **Create pod…**；再按一次 **★** 即可移除。RunPod 不列出的模板（私有模板）仍可在该标签页粘贴链接添加。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

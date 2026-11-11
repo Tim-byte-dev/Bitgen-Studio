@@ -7,8 +7,7 @@
  * public pods to my account is it possible to have a shortcut to them?"
  *   - off (a new install): Basic Settings ▸ GPU hidden; Settings ▸ Remote generation shows only "Use remote generation";
  *   - ticked: GPU back, the tab's parts back; GPU has "☁ Remote generation docker" (not in the status bar); it opens the
- *     floating docker: where the work runs, 🔄 My pods (start / stop / Use it), pod shortcuts (Deploy ↗ = RunPod's deploy
- *     page with the template + bitGen's referral code; a bad link refused; ✕ removes), Explore ↗;
+ *     floating docker: where the work runs, 🖥 PODS docker (2.758.0: My pods and the pod shortcuts moved there);
  *   - unticked: GPU + docker hidden, everything back on this computer.
  * Put back afterwards. No server / no Playwright / 8399 busy = SKIP. */
 "use strict";
@@ -76,37 +75,14 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const d0 = await ev(() => ({ shown: SecFloat.state("rgen").shown, body: !!document.getElementById("rgdBody") && document.getElementById("rgdBody").offsetWidth > 0, pressed: document.getElementById("gpuDock").getAttribute("aria-pressed"),
       now: document.getElementById("rgdNow").textContent, title: (document.getElementById("rgdBody").closest(".df-panel, .df-float, [data-dfid]") || {}).textContent || "" }));
     check("the button opens the floating docker (pressed): where the work runs (Local), no remote GPU, the LLM here", d0.shown && d0.body && d0.pressed === "true" && /Where the work runs: Local/.test(d0.now) && /Remote GPU: none set up/.test(d0.now) && /LLM: this computer/.test(d0.now), d0);
-    await p.waitForFunction(() => document.querySelector("#rgdPodList [data-rgdpod]"), null, { timeout: 8000 }).catch(() => {});
-    const pods = await ev(() => [...document.querySelectorAll("#rgdPodList .rgdRow")].map((r) => r.textContent));
-    check("My pods: listed as the docker opens (your key) - name, GPU, $/h, state, ▶ Start, Use it", pods.length === 1 && /H3 pod · RTX 4090 · \$0\.69\/h · stopped▶ StartUse it/.test(pods[0]) && seen.some((x) => x === "GET /v2/pods?limit=1000 Bearer rpa_UI754"), pods);
-    await ev(() => { window.H3_POD_POLL = 400; });
-    await p.click('#rgdPodList [data-act="start"]');
-    const loading = await ev(() => document.querySelector("#rgdPodList .rgdSt").textContent);
-    await p.waitForFunction(() => /pod loaded/.test((document.querySelector("#rgdPodList .rgdSt") || {}).textContent || ""), null, { timeout: 10000 }).catch(() => {});
-    const pods2 = await ev(() => [...document.querySelectorAll("#rgdPodList .rgdRow")].map((r) => r.textContent));
-    check("…▶ Start (RunPod REST v2: POST /pods/{id}/action start): \"loading pod…\" at once, then \"pod loaded\" when its ComfyUI answers - with its time running and about what it cost so far; ⏹ Stop",
-      seen.includes("ACTION start") && seen.includes("POST /v2/pods/pod754/action Bearer rpa_UI754") && /loading pod/.test(loading) && /pod loaded · running 1 min · ≈ \$0\.01⏹ Stop/.test(pods2[0] || "") && /pod loaded/.test(await ev(() => document.getElementById("rgdMsg").textContent)), { loading, pods2 });
-    await p.click("#rgdPodList [data-rgduse]"); await sleep(1500);
-    const rg = await api("/api/remotegpu");
-    await p.click('#rgdPodList [data-act="stop"]');
-    const stopping = await ev(() => document.querySelector("#rgdPodList .rgdSt").textContent);
-    await p.waitForFunction(() => /^stopped$/.test((document.querySelector("#rgdPodList .rgdSt") || {}).textContent || ""), null, { timeout: 10000 }).catch(() => {});
-    const stopped = await ev(() => ({ st: document.querySelector("#rgdPodList .rgdSt").textContent, btn: document.querySelector("#rgdPodList [data-rgdpod]").dataset.act, msg: document.getElementById("rgdMsg").textContent }));
-    check("…⏹ Stop: \"stopping pod…\", then \"stopped\" (▶ Start again), saying storage is still billed", seen.includes("ACTION stop") && /stopping pod/.test(stopping) && stopped.st === "stopped" && stopped.btn === "start" && /storage is still billed/.test(stopped.msg), { stopping, stopped });
-    check("…Use it: the studio renders on that pod (RunPod pod pod754, its ComfyUI through RunPod's proxy)", rg.mode === "runpod" && rg.runpod.pod_id === "pod754" && /pod754-8188\.proxy\.runpod\.net/.test(rg.comfy_url || ""), { mode: rg.mode, pod: rg.runpod && rg.runpod.pod_id, url: rg.comfy_url });
-    // shortcuts
-    await p.fill("#rgdCutName", "Bad"); await p.fill("#rgdCutLink", "https://example.com/nothing"); await p.click("#rgdCutAdd"); await sleep(600);
-    check("pod shortcuts: a link that is not a RunPod template is refused, saying where to copy it", /not a RunPod template link/.test(await ev(() => document.getElementById("rgdMsg").textContent)));
-    await p.fill("#rgdCutName", "MiniMax H3 ComfyUI"); await p.fill("#rgdCutLink", "https://www.runpod.io/console/explore/57we0zdwtt"); await p.press("#rgdCutLink", "Enter"); await sleep(800);
-    const c1 = await ev(() => [...document.querySelectorAll("#rgdCuts .rgdRow")].map((r) => { const a = r.querySelector(".rgdDeploy"), n = r.querySelector(".nm a"); return { name: n.textContent, page: n.href, deploy: a.href, t: a.target, rel: a.rel }; }));
-    check("…a template's page link added: its name links to the page, Deploy ↗ = RunPod's deploy page with it + bitGen's referral code, in the browser",
-      c1.length === 1 && c1[0].name === "MiniMax H3 ComfyUI" && c1[0].page === "https://www.runpod.io/console/explore/57we0zdwtt" && c1[0].deploy === "https://runpod.io/console/deploy?template=57we0zdwtt&ref=gbj9zxqh" && c1[0].t === "_blank" && /noopener/.test(c1[0].rel), c1);
-    const [pop] = await Promise.all([ctx.waitForEvent("page", { timeout: 8000 }), p.click("#rgdCuts .rgdDeploy")]);
-    check("…Deploy ↗ opens a new window (the app hands it to the browser), the studio stays", /template=57we0zdwtt&ref=gbj9zxqh/.test(pop.url()) && /127\.0\.0\.1/.test(p.url()), pop.url());
-    await pop.close();
-    check("…kept (the server's list) and Explore RunPod templates ↗ is there", (await api("/api/remotegen")).shortcuts.length === 1 && (await ev(() => { const a = document.getElementById("rgdExplore"); return a.href === "https://www.runpod.io/console/explore" && a.target === "_blank"; })));
-    await p.click("#rgdCuts [data-rgdcut]"); await sleep(600);
-    check("…✕ removes it", (await api("/api/remotegen")).shortcuts.length === 0 && /No shortcuts yet/.test(await ev(() => document.getElementById("rgdCuts").textContent)));
+    // 2.758.0 (Tim: "can you remove this My pods ... Pod shortcuts ... from remote generation docker and add to pod's card in pods
+    // docker"): the pods + shortcuts moved to the PODS docker (test-ui756-ui.js, test-ui758-ui.js); here a button opens it
+    const d1 = await ev(() => ({ pods: !!document.getElementById("rgdPodList"), cuts: !!document.getElementById("rgdCuts"), text: document.getElementById("rgdBody").textContent }));
+    check("2.758.0: no My pods / Pod shortcuts in this docker any more - 🖥 PODS docker opens the PODS docker (your pods, the templates, ★ shortcuts)",
+      !d1.pods && !d1.cuts && !/My pods|Pod shortcuts/.test(d1.text) && /🖥 PODS docker/.test(d1.text), d1);
+    await p.click("#rgdPodsDock"); await sleep(800);
+    check("…it opens", await ev(() => !!(SecFloat.state("pods") || {}).shown));
+    await ev(() => SecFloat.show("pods", false));
     // off again
     await ev(() => { document.getElementById("openSettings").onclick(); document.querySelector('#settings .stabs [data-stab="rgpu"]').click(); });
     await sleep(400); await p.uncheck("#rgEnabled"); await sleep(1200);

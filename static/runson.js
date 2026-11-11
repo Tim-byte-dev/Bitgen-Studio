@@ -25,7 +25,8 @@
     var row = doc.createElement("div"); row.setAttribute("role", "radiogroup"); row.setAttribute("aria-label", "Runs on");
     row.style.cssText = "display:flex;gap:12px;flex-wrap:wrap;align-items:center";
     [["local", "This computer", "Renders with the models on this computer"], ["remote", "Remote GPU", "Renders on the remote GPU (Basic Settings ▸ GPU) - its models must be there; the name starts with R_"],
-     ["api", "API", "Renders on an online service from Settings ▸ API - no graphics card needed here; the name starts with API_"]].forEach(function (o) {
+     ["api", "API", "Renders on an online service from Settings ▸ API - no graphics card needed here; the name starts with API_"],
+     ["pod", "RunPod pod", "Renders on a RunPod pod with the models already on it (Basic Settings ▸ GPU ▸ RunPod ▸ Pods); the name starts with P_"]].forEach(function (o) {
       var l = doc.createElement("label"); l.className = "chk"; l.style.margin = "0"; l.title = o[2];
       var i = doc.createElement("input"); i.type = "radio"; i.name = "s_" + p + "runson"; i.value = o[0];
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); row.appendChild(l);
@@ -46,6 +47,12 @@
       + `<span class="hint" id="s_${p}apinote"></span>`;
     ["apiid", "apimodel", "apiextra"].forEach(function (k) { ap.querySelector("#s_" + p + k).addEventListener(k === "apiid" ? "change" : "input", function () { poke(p); }); });
     box.appendChild(ap);
+    // 2.758.0: a P_ pod style - which pod (blank = the one in use: Use it in the PODS / Remote generation docker)
+    var pd = doc.createElement("input"); pd.type = "text"; pd.id = "s_" + p + "podid"; pd.spellcheck = false;
+    pd.placeholder = "RunPod pod ID (blank = the pod in use)"; pd.title = "The pod this style renders on - its ComfyUI must have the style's models";
+    pd.style.cssText = "margin-top:4px;width:100%;display:none";
+    pd.addEventListener("input", function () { poke(p); });
+    box.appendChild(pd);
     host.parentNode.insertBefore(box, host.nextSibling);
     return box;
   }
@@ -55,6 +62,7 @@
   function show(p) {
     var e = $("s_" + p + "ep"); if (e) e.style.display = val(p) === "remote" ? "" : "none";
     var a = $("s_" + p + "api"); if (a) a.style.display = val(p) === "api" ? "flex" : "none";
+    var pd = $("s_" + p + "podid"); if (pd) pd.style.display = val(p) === "pod" ? "" : "none";
     if (val(p) === "api") fill(p, null);
   }
   /* 2.757.0: the APIs from Settings ▸ API (asked once a minute at most) */
@@ -81,12 +89,13 @@
   }
   function paint(p, s) {
     if (!build(p)) return;
-    var st = s || {}, v = st.runs_on === "remote" || st.runs_on === "api" ? st.runs_on : "local";
+    var st = s || {}, v = ["remote", "api", "pod"].indexOf(st.runs_on) >= 0 ? st.runs_on : "local";
     doc.querySelectorAll('input[name="s_' + p + 'runson"]').forEach(function (i) { i.checked = i.value === v; });
     $("s_" + p + "ep").value = st.endpoint || "";
     var sel = $("s_" + p + "apiid"); sel.setAttribute("data-want", st.api_id || "");
     $("s_" + p + "apimodel").value = st.api_model || "";
     $("s_" + p + "apiextra").value = st.api_extra ? JSON.stringify(st.api_extra) : "";
+    $("s_" + p + "podid").value = st.pod_id || "";
     show(p);
     if (v === "api") fill(p, st.api_id || "");
   }
@@ -97,6 +106,7 @@
       var sel = $("s_" + p + "apiid");
       return { runs_on: "api", endpoint: "", api_id: sel.value || sel.getAttribute("data-want") || "", api_model: $("s_" + p + "apimodel").value.trim(), api_extra: $("s_" + p + "apiextra").value.trim() };
     }
+    if (v === "pod") return { runs_on: "pod", endpoint: "", pod_id: $("s_" + p + "podid").value.trim() };
     return { runs_on: v, endpoint: v === "remote" ? $("s_" + p + "ep").value.trim() : "" };
   }
   root.H3RunsOn = { paint: paint, read: read, build: build, reload: function () { apis = null; } };

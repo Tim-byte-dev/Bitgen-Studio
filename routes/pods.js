@@ -5,6 +5,9 @@
 //   POST /api/pods/create  {templateId, name, gpu, count, cloud, disk, volume, port}   -> {pod, port} (remembered as bitGen's)
 //   GET  /api/pods/mine                               {pods: [... + bitgen]}
 //   POST /api/pods/:id/:action   start | stop | terminate
+//   GET  /api/pods/:id/comfy?port=              2.758.0: the pod's ComfyUI - its models, the bitGen style each fits, its
+//                                               saved workflows (lib/podStyles.js contents)
+//   POST /api/pods/:id/styles {models, workflows, pod_name, port}   2.758.0: P_ styles from them -> {made, skipped}
 "use strict";
 const P = require("../lib/pods");
 
@@ -14,6 +17,9 @@ function mount(app) {
   app.get("/api/pods/gpus", wrap((req) => P.gpus(req.query.cloud)));
   app.post("/api/pods/create", wrap((req) => P.create(req.body || {})));
   app.get("/api/pods/mine", wrap(() => P.mine()));
+  // 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?"): before /:id/:action
+  app.get("/api/pods/:id/comfy", wrap((req) => require("../lib/podStyles").contents(req.params.id, +req.query.port || 0)));
+  app.post("/api/pods/:id/styles", wrap((req) => require("../lib/podStyles").make(req.params.id, req.body || {})));
   app.post("/api/pods/:id/:action", wrap((req) => {
     if (!["start", "stop", "terminate"].includes(req.params.action)) { const e = new Error("start, stop or terminate"); e.status = 400; throw e; }
     return P.act(req.params.id, req.params.action);
