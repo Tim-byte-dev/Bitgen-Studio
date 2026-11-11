@@ -74,7 +74,7 @@ check("the page's Save: off until a tick / a field changes or a file went to the
   && H.isDirty({ saved: {}, cur: {}, touched: true }) && H.isDirty({ saved: { kinds: ["llm"], llm: { port: 8000 } }, cur: { kinds: ["llm"], llm: { port: 8001 } } }) && H.KINDS.map((k) => k[1]).join() === "Video,LLM,vLLM,Image,Image edit");
 const D = rd("static", "podsdock.js"), C0 = rd("lib", "core.js"), G0 = rd("lib", "gpuSplit.js"), R0 = rd("routes", "pods.js"), ST = rd("lib", "styles.js");
 check("wiring: My pods items (.pdAcc / .pdHead / H3PodSetup), 💲 in Basic Settings once a minute, core asks podRevive.gate before a P_ job, gpuSplit's LLM asks the pod, the routes before /:id/:action, styles keep pod_recipe / pod_setup / pod_kind",
-  /class="pdRow pdAcc/.test(D) && /class="pdHead"/.test(D) && /H3PodSetup\.html\(p\)/.test(D) && /id = "gpuPodCost"/.test(D) && /setInterval\(costLine, \+\(root\.H3_POD_COST_POLL \|\| 60000\)\)/.test(D)
+  /class="pdRow pdAcc/.test(D) && /class="pdHead"/.test(D) && /H3PodSetup\.html\(p\)/.test(D) && !/id = "gpuPodCost"/.test(D) && /setInterval\(costLine, \+\(root\.H3_POD_COST_POLL \|\| 60000\)\)/.test(D)
   && /require\("\.\/podRevive"\)\.gate\(st0\)/.test(C0) && /require\("\.\/podSetup"\)\.llmTarget\(kind\)/.test(G0)
   && ["/api/pods/costs", "/api/pods/:id/setup", "/api/pods/:id/folders", "/api/pods/:id/folder"].every((r) => R0.indexOf('"' + r + '"') > 0 && R0.indexOf('"' + r + '"') < R0.indexOf('"/api/pods/:id/:action"'))
   && /out\.pod_recipe = rc/.test(ST) && /out\.pod_setup = /.test(ST) && !/podSetup|podRevive|podCosts/.test(rd("misc", "server.js")));

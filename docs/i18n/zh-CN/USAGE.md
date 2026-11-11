@@ -5124,6 +5124,15 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **从这台电脑发送文件现在可以了：** bitGen 在发送时给文件用了隐藏的名字，所以 RunPod 的 Jupyter 拒绝了上传（“refused part 1 (HTTP
   400)”）；现在用普通的名字。这包括 Override style 的 checkpoint、LoRA 以及从这台电脑发送的自定义节点。大的 checkpoint 需要的时间取决于你的上传速度。
 
+## 💲 RunPod 停靠窗，以及你自己的停靠窗里的停靠窗 (2.763.5)
+<!-- en: the-runpod-docker-and-dockers-inside-your-own-dockers-2-763-5 2c4460344be1 -->
+
+- **💲 RunPod 停靠窗：** 一个独立的停靠窗，显示你的 RunPod 余额、当前支出以及按此支出余额还能用多久、你的支出上限、你的 Pod 的费用（正在运行、今天、本月、每个 Pod - 已终止的 Pod 只要还在账单上也会显示），以及 RunPod 的 GPU 价格（Secure 或 Community 云、显存、每小时价格、空闲数量、一个 Pod 最多可用的数量；可以搜索，并按价格、显存或名称排序）。用 Basic Settings ▸ GPU 或 PODS 停靠窗里的 💲 RunPod 打开。它在屏幕上时每分钟查询一次，🔄 立即查询。
+- **费用行离开了 Basic Settings：** GPU 下面的 💲 行（2.761.0）现在在 💲 RunPod 停靠窗里。
+- **你自己的停靠窗可以放入其他停靠窗：** 用 ⊞ Docker configs ▸ ▣ New docker… 创建的停靠窗（浮动的，或限定在某个停靠窗内的）现在可以放入 PODS、💲 RunPod、Basic Settings、LLM tokens 和其他停靠窗口 - 按住标题栏拖到它上面，在橙色线处松开 - 想放几个都行，作为标签页或并排。拖动主停靠窗的标题栏也能放进去。重启后它们仍在里面。
+- **浮动对话框始终在停靠窗前面：** PODS、💲 RunPod、Basic Settings、💬 Community 等浮动对话框始终在 ▣ 停靠窗和你自己的停靠窗前面，即使你点了某个停靠窗也是如此。限定在另一个停靠窗内的停靠窗不再盖住它们（以前它被放在所有东西上面）。要操作下面的东西，请把对话框移开或停靠它。
+- **从这台电脑发送的自定义节点：** 节点文件夹一次打包一个文件，所以打包大文件夹时 bitGen 仍可继续工作；权重、声音和压缩包原样存放，包里的 Python 环境会被排除（Pod 会自己安装）。日志显示进度：已打包的文件数，然后是发送的每一部分及其大小。超过 2 GB 的包不会上传，日志会说明原因 - 请用 git 放到 Pod 上，或把它变小。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

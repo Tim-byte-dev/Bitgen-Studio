@@ -155,6 +155,7 @@ bpy.ops.wm.save_as_mainfile(filepath=sys.argv[-1])
 
     /* 4 a right-click on a ▣ docker's title bar */
     await ev(() => { const E = window.imageEditorInstance.E; if (E.setFull) E.setFull(false); }); await p.waitForTimeout(300);   // the editor out of full screen
+    await ev(() => { for (const k of Object.keys(SecFloat.windows)) SecFloat.show(k, false); });   // 2.763.5: a floating dialog stays OVER the dockers - none over the ▣ docker's title
     await p.keyboard.press("Control+Alt+KeyD"); await p.waitForTimeout(600);
     await ev(() => H3Panels.float("fd-dockers", { x: 400, y: 120, w: 700, h: 300 })); await p.waitForTimeout(200);
     const t = await ev(() => { const r = H3Panels.get("fd-dockers").win.querySelector(".h3fp-t .h3fp-n").getBoundingClientRect(); return { x: r.left + 10, y: r.top + r.height / 2 }; });

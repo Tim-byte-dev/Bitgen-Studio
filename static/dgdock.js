@@ -386,9 +386,13 @@
     const r = adoptMember(id);
     Promise.resolve(r && r.ready).then(() => { P().zoneInto(id, zh.host.id, zh.zone.key); G().paint(); tev("docker_member_zone", id + ">" + zh.host.id); });
   }
+  /** 2.763.5 (Tim: "allow multiple dockers to dock in the custom created docker … it can't dock in the custom docker"):
+   *  not only the ▣ dockers - a docker made with ⊞ Docker configs ▸ ▣ New docker… (floating, or confined to a docker) takes
+   *  them too (static/floatpanels.js dockerAt: the one on top, one it may go in) */
   function groupUnder(x, y, id) {
-    const g = G().groupAt(x, y); if (!g) return null;
-    if (g.perm) { const d = $(G().permId(g.id)); if (d && nearEdge(x, y, d.getBoundingClientRect(), id === "pf.promptdock" ? "pf" : EDGE)) return null; }
+    const did = P().dockerAt ? P().dockerAt(x, y, id) : null;
+    const g = did ? P().get(did) : G().groupAt(x, y); if (!g) return null;
+    if (g.perm && G().isGroup(g.id)) { const d = $(G().permId(g.id)); if (d && nearEdge(x, y, d.getBoundingClientRect(), id === "pf.promptdock" ? "pf" : EDGE)) return null; }
     return g;
   }
   let cur = null;

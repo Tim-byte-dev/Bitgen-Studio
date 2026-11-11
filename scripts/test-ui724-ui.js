@@ -49,14 +49,14 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     const gt = await ev(() => { const h = H3Panels.get("fd-dockers").win.querySelector(".h3fp-t"); const r = h.getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height / 2 }; });
     await p.mouse.click(gt.x, gt.y); await p.waitForTimeout(200);
     let u = await under(), z = await zs();
-    check("a press on the ▣ docker: it is on top where they overlap (the custom docker over Community)", u === "docker" && z.g > z.c && z.g >= 61, { u, z });
+    check("a press on the ▣ docker: Community STAYS over it (2.763.5: the floating dialogs over every docker)", u === "community" && z.c > z.g && z.g >= 61, { u, z });
     // 💬 Community opened again from the status bar - back on top (the bug: it stayed behind)
     await p.click("#tCm"); await p.waitForTimeout(250); await p.click("#tCm"); await p.waitForTimeout(400);
     u = await under(); z = await zs();
     check("💬 Community shown again (its status-bar button): ON TOP of the ▣ docker", u === "community" && z.c > z.g, { u, z });
     // a press back and forth with the real mouse
     await p.mouse.click(gt.x, gt.y); await p.waitForTimeout(200);
-    check("…press the ▣ docker: it goes over Community", (await under()) === "docker");
+    check("…press the ▣ docker again: Community still over it", (await under()) === "community");
     const ct = await ev(() => { const h = document.querySelector("#sf-community .sfhead"); const r = h.getBoundingClientRect(); return { x: r.left + 40, y: r.top + r.height / 2 }; });
     await p.mouse.click(ct.x, ct.y); await p.waitForTimeout(200);
     u = await under(); z = await zs();
@@ -75,10 +75,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("every floating dialog is over the status bar and the docked dockers, under the ⊞ Docker configs panel", lv.min > lv.sbz && lv.min > lv.docked && lv.max < lv.dcz, lv);
     // THE BUG: a named docker made with ⊞ Docker configs ▸ ▣ New docker… (H3Panels.newDocker - it was 9300, over everything)
     const nd = await ev(() => { H3Panels.newDocker({ id: "t724-named", name: "Mine" }); H3Panels.float("t724-named", { x: 520, y: 240, w: 520, h: 400 });
-      const w = H3Panels.get("t724-named").win; return { body: w.parentElement === document.body, z: +getComputedStyle(w).zIndex, top: H3FloatZ.top() === w }; });
+      const w = H3Panels.get("t724-named").win; return { body: w.parentElement === document.body, z: +getComputedStyle(w).zIndex, top: H3FloatZ.top() === w, cz: +getComputedStyle(document.getElementById("sf-community")).zIndex }; });
     await p.waitForTimeout(300);
     const under2 = () => ev((s) => { const t = document.elementFromPoint(s.x, s.y); return document.getElementById("sf-community").contains(t) ? "community" : H3Panels.get("t724-named").win.contains(t) ? "named" : "other"; }, spot);
-    check("a ⊞ named docker floating over the app: in the band (not 9300), on top when floated", nd.body && nd.z >= 61 && nd.z < 200 && nd.top, nd);
+    check("a ⊞ named docker floating over the app: in the band (not 9300), under the floating dialogs (2.763.5)", nd.body && nd.z >= 61 && nd.z < 200 && !nd.top && nd.z < nd.cz, nd);
     await p.click("#tCm"); await p.waitForTimeout(250); await p.click("#tCm"); await p.waitForTimeout(400);
     let u2 = await under2();
     check("💬 Community opened again: over the named docker (it went behind it before)", u2 === "community", u2);
@@ -86,7 +86,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.mouse.click(nt.x, nt.y); await p.waitForTimeout(200); u2 = await under2();
     const ct2 = await ev(() => { const h = document.querySelector("#sf-community .sfhead"); const r = h.getBoundingClientRect(); return { x: r.left + 40, y: r.top + r.height / 2 }; });
     await p.mouse.click(ct2.x, ct2.y); await p.waitForTimeout(200);
-    check("…press the named docker: it goes over Community; press Community: back over it", u2 === "named" && (await under2()) === "community", u2);
+    check("…press the named docker: Community stays over it; press Community: still over it", u2 === "community" && (await under2()) === "community", u2);
     await ev(() => { H3Panels.show("t724-named", false); });
     // docked inside a docker: out of the order, no z of its own
     const dk = await ev(() => new Promise((res) => { const host = document.getElementById("timelinedock") || document.getElementById("previewdock"); SecFloat.windows.community.panel.dockTo(host, "inside");

@@ -8439,6 +8439,27 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   style's checkpoint, LoRAs and custom nodes sent from this computer. A big checkpoint takes as long as your upload speed
   allows.
 
+## 💲 The RunPod docker, and dockers inside your own dockers (2.763.5)
+
+- **💲 RunPod docker:** a docker of its own with your RunPod balance, what it is spending now and how long the balance
+  lasts at that, your spend limit, what your pods cost (running now, today, this month, and each pod - a terminated pod
+  stays while it is on the bill), and RunPod's GPU prices (Secure or Community cloud, the memory, the price an hour, how
+  many are free, the most one pod can have; search it and sort it by price, memory or name). Open it with 💲 RunPod in
+  Basic Settings ▸ GPU or in the PODS docker. It is asked again every minute while it is on screen, and 🔄 asks at once.
+- **The cost line left Basic Settings:** the 💲 line under GPU (2.761.0) now lives in the 💲 RunPod docker.
+- **Any docker of yours takes other dockers:** a docker made with ⊞ Docker configs ▸ ▣ New docker… (floating, or
+  confined to a docker) now takes PODS, 💲 RunPod, Basic Settings, LLM tokens and the other docker windows - drag one by
+  its title bar onto it and let go on the orange line - as many as you like, as tabs or side by side. A main docker's
+  title bar dragged onto it goes in too. They come back in it after a restart.
+- **The floating dialogs stay in front of the dockers:** PODS, 💲 RunPod, Basic Settings, 💬 Community and the other
+  floating dialogs are always over the ▣ dockers and your own dockers, even after you press a docker. A docker confined
+  to another docker no longer covers them (it was put over everything). Move a dialog aside, or dock it, to reach what
+  is under it.
+- **Custom nodes sent from this computer:** a node folder is packed a file at a time, so bitGen keeps working while a big
+  one is packed; weights, sounds and archives are stored as they are, and a Python environment inside a pack is left
+  out (the pod installs its own). The log says how far it is: the files packed, then each part sent and its size. A
+  pack over 2 GB is not uploaded and the log says why - put it on the pod with git, or make it smaller.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

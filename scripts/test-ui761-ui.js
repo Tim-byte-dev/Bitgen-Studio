@@ -64,11 +64,15 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     const ev = (f, a) => p.evaluate(f, a);
     await p.addInitScript(() => { window.H3_POD_COST_POLL = 2000; });
     await p.goto(URL0);
-    await p.waitForFunction(() => window.H3Pods && window.H3PodSetup && window.SecFloat && SecFloat.windows.pods && document.getElementById("gpuPodCost"), null, { timeout: 30000 });
-    await ev(() => { if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(500);
-    await p.waitForFunction(() => /RunPod pods/.test((document.getElementById("gpuPodCost") || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
-    const cost = await ev(() => { const e = document.getElementById("gpuPodCost"); return { t: e.textContent, shown: e.offsetParent !== null }; });
-    check("Basic Settings ▸ GPU (RunPod ▸ Pods): 💲 the pods' cost - 1 running at $0.69/h now, RunPod's bill today and this month", cost.shown && /💲 RunPod pods: 1 running · \$0\.69\/h now · \$1\.25 today · \$1\.25 this month/.test(cost.t), cost);
+    // 2.763.5: the 💲 line moved out of Basic Settings into the 💲 RunPod docker (static/runpoddock.js)
+    await p.waitForFunction(() => window.H3Pods && window.H3PodSetup && window.H3RunPod && window.SecFloat && SecFloat.windows.pods && SecFloat.windows.runpod && document.getElementById("gpuRpDock"), null, { timeout: 30000 });
+    await ev(() => { if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(1800);
+    await ev(() => H3RunPod.show(true));
+    await p.waitForFunction(() => /1\.25/.test((document.getElementById("rpCost") || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
+    const cost = await ev(() => { const e = document.getElementById("rpCost"); return { t: e ? e.textContent : "", line: !!document.getElementById("gpuPodCost"), btn: document.getElementById("gpuRpDock").offsetParent !== null }; });
+    check("the 💲 RunPod docker (💲 RunPod in Basic Settings ▸ GPU, no 💲 line there now): 1 running at $0.69/h now, RunPod's bill today and this month",
+      cost.btn && !cost.line && /Running now1 pod · \$0\.69\/h/.test(cost.t) && /Today\$1\.25/.test(cost.t) && /This month\$1\.25/.test(cost.t), cost);
+    await ev(() => H3RunPod.show(false));
     await ev(() => H3Pods.show(true)); await sleep(500);
     await p.click('[data-pdsrc="mine"]');
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod761u"] .pdHead'), null, { timeout: 10000 });

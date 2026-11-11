@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 1069,
+    "count": 1070,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -821,6 +821,7 @@
         "The workflow drawn as a graph",
         "The workflow picked in Basic Settings, with its controls",
         "The {0} folder holds the studio and everything it installed - and ComfyUI and the models, unless you put them somewhere else.",
+        "The 💲 RunPod docker shows your RunPod balance, what it is spending now and how long the balance lasts at that, what your pods cost today and this month, and RunPod's GPU prices on the Secure and Community clouds - open it from Basic Settings ▸ GPU or the PODS docker. It goes inside your own dockers like PODS and Basic Settings do, and the floating dialogs stay in front of every docker.",
         "Then get the studio and start it:",
         "There is no code waiting - ask for a new one.",
         "There is no such bug.",

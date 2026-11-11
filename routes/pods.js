@@ -10,6 +10,7 @@
 //   POST /api/pods/:id/styles {models, workflows, pod_name, port}   2.758.0: P_ styles from them -> {made, skipped}
 //   2.759.0 ⬇ Models: GET /api/pods/catalog (bitGen's ComfyUI files), POST /api/pods/plan {styles} (a style's files),
 //   GET /api/pods/:id/ways (Manager / Jupyter), POST /api/pods/:id/models {files, jupyter_password?, port}, GET /api/pods/:id/models
+//   2.763.5: GET /api/pods/account (?refresh=1) {balance, spend_hr, spend_limit, under, lasts_hr, at, error?} - lib/runpodAccount.js
 //   2.761.0: GET /api/pods/costs (RunPod's bill + the running pods), GET|POST /api/pods/:id/setup {kinds, llm, pod_name, port}
 //   (lib/podSetup.js), GET /api/pods/:id/folders, POST /api/pods/:id/folder {folder, name} (lib/podModels.js)
 "use strict";
@@ -19,6 +20,7 @@ function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   app.get("/api/pods/templates", wrap((req) => P.templates({ source: req.query.source, comfy: req.query.comfy === "1", q: req.query.q, refresh: req.query.refresh === "1" })));
   app.get("/api/pods/gpus", wrap((req) => P.gpus(req.query.cloud)));
+  app.get("/api/pods/account", wrap((req) => require("../lib/runpodAccount").account(req.query.refresh === "1")));   // 2.763.5: the balance (the 💲 RunPod docker)
   app.post("/api/pods/create", wrap((req) => P.create(req.body || {})));
   app.get("/api/pods/mine", wrap(() => P.mine()));
   // 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?"): before /:id/:action

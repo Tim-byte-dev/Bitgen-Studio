@@ -393,7 +393,7 @@
       Object.assign(el.style, { left: p.x + "px", top: p.y + "px", width: W + "px", height: H + "px" });
       Object.assign(s, { mode: "float", to: "", side: "", at: "", x: p.x, y: p.y, w: W, h: H });
       g.refresh();
-      if (!quiet) { spec.save(); relayout(); }
+      if (!quiet) { spec.save(); relayout(); if (spec.front) spec.front(); }   // 2.763.5: floated = on top of its layer (static/floatz.js)
       if (spec.onPlace) spec.onPlace("float");
     }
     function dockTo(target, side, quiet, active, at) {

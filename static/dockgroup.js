@@ -77,6 +77,9 @@
   const tev = (k, v) => { if (root.H3TestEvent) { try { root.H3TestEvent(k, v); } catch (e) { /* the 🧪 list */ } } };
   const permId = (id) => "dgp_" + String(id).replace(/[^\w-]/g, "_");
   const groups = () => (P() ? P().list().filter((d) => d.kind === "docker" && isGroup(d.id)).map((d) => P().get(d.id)).filter(Boolean) : []);
+  /** 2.763.5 (Tim: "allow multiple dockers to dock in the custom created docker"): every docker a docker can be dragged
+   *  into - the ▣ dockers AND the ones made with ⊞ Docker configs ▸ ▣ New docker… (floating or confined) */
+  const intos = () => (P() ? P().list().filter((d) => d.kind === "docker").map((d) => P().get(d.id)).filter(Boolean) : []);
   const shownOf = (r) => !!r && (r.perm ? !!$(permId(r.id)) && !$(permId(r.id)).classList.contains("dockgone") : !!r.win && !r.win.classList.contains("off"));
   function shown(id) { return shownOf(P() && P().get(id || GROUP)); }
 
@@ -376,7 +379,7 @@
   /** 2.549.0: drag a main docker's title bar onto a ▣ docker (shown) = it goes in, where the orange line is */
   function groupAt(x, y, skip) {
     let best = null;
-    for (const r of groups()) {
+    for (const r of intos()) {                                              // 2.763.5: + the ▣ New docker… ones
       if (!shownOf(r) || !r.win || r.id === skip) continue;
       const fd = r.win.querySelector(".h3fd"); if (!fd) continue;
       const b = fd.getBoundingClientRect(); if (!b.width || x < b.left || x > b.right || y < b.top || y > b.bottom) continue;
@@ -389,13 +392,13 @@
     h.addEventListener("pointerdown", (e) => {
       if (e.button !== 0 || e.target.closest("button, select, input, textarea")) return;
       const d = $(id); if (!d || d.classList.contains("dg-floating")) return;
-      if (!groups().some((g) => shownOf(g))) return;                        // 2.558.0: no ▣ docker shown - a plain press
+      if (!intos().some((g) => shownOf(g))) return;                         // 2.558.0: no ▣ docker shown - a plain press (2.763.5: or a ▣ New docker… one)
       const x0 = e.clientX, y0 = e.clientY; let on = false, tag = null, line = null, over = null, slot = null;
       const mv = (m) => {
         if (!on) { if (!dragged(x0, y0, m.clientX, m.clientY)) return; on = true; css();
           tag = doc.createElement("div"); tag.id = "dgDragTag"; tag.textContent = "⇱ " + (headText(h) || id) + " - drop it on a ▣ docker"; doc.body.appendChild(tag);
           line = doc.createElement("div"); line.id = "dgDropLine"; line.style.display = "none"; doc.body.appendChild(line);
-          for (const g of groups()) if (g.win && shownOf(g)) g.win.classList.add("dg-target"); }   // 2.558.0: where it can go
+          for (const g of intos()) if (g.win && shownOf(g)) g.win.classList.add("dg-target"); }   // 2.558.0: where it can go
         m.preventDefault();
         tag.style.left = (m.clientX + 14) + "px"; tag.style.top = (m.clientY + 10) + "px";
         over = groupAt(m.clientX, m.clientY);

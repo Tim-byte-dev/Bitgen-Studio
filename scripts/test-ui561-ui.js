@@ -43,7 +43,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   try {
     await open(); await boot();
     await ev(() => { const a = document.getElementById("app"); if (a.classList.contains("no-refs")) document.getElementById("tRefs").click(); if (a.classList.contains("no-assets")) document.getElementById("tAssets").click();
-      const pd = document.getElementById("promptdock"); if (pd && !pd.classList.contains("dockgone")) toggleDockGone("promptdock", "tP"); });
+      const pd = document.getElementById("promptdock"); if (pd && !pd.classList.contains("dockgone")) toggleDockGone("promptdock", "tP");
+      for (const k of Object.keys(SecFloat.windows)) SecFloat.show(k, false); });   // 2.763.5: a floating dialog stays OVER the dockers - none over the ▣ docker's title bar
     await p.waitForTimeout(500);
     await p.keyboard.press("Control+Alt+KeyD");
     await p.waitForFunction(() => window.H3DockGroup.shown(), null, { timeout: 8000 });

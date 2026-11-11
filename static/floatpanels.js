@@ -104,6 +104,11 @@
     + ".h3fp.off{display:none}.h3fp-t{display:flex;align-items:center;gap:4px;height:26px;flex:none;padding:0 4px 0 8px;cursor:move;user-select:none;background:var(--panel-2,var(--pc-bg,#26221b));border-bottom:1px solid var(--line,var(--pc-line,#3a342a));font-size:12px}"
     + ".h3fp-n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.h3fp-t button{border:0;background:none;color:inherit;cursor:pointer;padding:0 4px;font-size:13px;line-height:24px}.h3fp-t button:hover{color:var(--tiger,#f59e2c)}"
     + ".h3fp-b{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto}.h3fp-b>*{flex:1 1 auto;min-height:0}"
+    // 2.763.5 (Tim: "move the pods docker in front of any custom docker, right now it goes behind the custom docker"): a
+    // named docker CONFINED to a docker was 9300 - its host makes no stacking context of its own, so it was over the whole
+    // app's floating dialogs (PODS, Basic Settings …); it is in the floating band now (static/floatz.js - dockers under the
+    // floating dialogs), still over its host's own parts (the docked dockers are under the band)
+    + ".h3fp.h3fp-dk{z-index:60}"
     + ".h3fp.h3fp-zoned{position:relative!important;left:auto!important;top:auto!important;width:auto!important;height:auto!important;flex:1 1 auto;min-height:0;border:0;border-radius:0;box-shadow:none;z-index:auto}.h3fp.h3fp-zoned>.h3fp-t{display:none}"   // 2.609.0
     + ".h3fp.in{position:static!important;width:auto!important;height:auto!important;flex:1;min-height:0;border:0;border-radius:0;box-shadow:none}.h3fp.in>.h3fp-t{display:none}.h3fp.in.hid{display:none}"
     + ".h3fd{flex:1;display:flex;flex-direction:column;min-height:0}.h3fd-tabs{display:flex;flex:none;overflow-x:auto;border-bottom:1px solid var(--line,var(--pc-line,#3a342a));background:var(--ink,var(--pc-bg,#14120f))}"
@@ -154,7 +159,7 @@
   function makeWin(r) {
     css();
     const w = root.document.createElement("div");
-    w.className = "h3fp off"; w.dataset.fp = r.id; w.setAttribute("role", "dialog"); w.setAttribute("aria-label", r.title); w.dataset.noLayout = "";
+    w.className = "h3fp off" + (r.kind === "docker" ? " h3fp-dk" : ""); w.dataset.fp = r.id; w.setAttribute("role", "dialog"); w.setAttribute("aria-label", r.title); w.dataset.noLayout = "";
     w.innerHTML = `<div class="h3fp-t"><span class="h3fp-n"></span>${r.kind === "docker" ? '<button type="button" class="h3fp-lay"></button><button type="button" class="h3fp-cfg" title="Rename, layout (tabs / horizontal / vertical), main docker or confined to a docker, delete">⚙</button>' : ""}`
       + `${r.kind === "panel" ? '<button type="button" class="h3fp-out" title="Float it (out of the docker it is in)">⇱</button>' : ""}`
       + `${r.home ? '<button type="button" class="h3fp-home" title="Put it back where it was">⇲</button>' : ""}<button type="button" class="h3fp-x" title="Hide">✕</button></div><div class="h3fp-b"></div>`;
@@ -280,6 +285,13 @@
   function targetAt(r, x, y) {
     const list = Object.values(R).filter((d) => d.kind === "docker" && d.id !== r.id && d.win && isShown(d) && canDock(r.id, d.id, (k) => (R[k] ? R[k].docker : null))
       && (!r.scope || !r.scope() || r.scope().contains(d.win)))
+      .map((d) => ({ id: d.id, rect: d.win.querySelector(".h3fd").getBoundingClientRect(), z: depthZ(d) }));
+    return hitDocker(x, y, list);
+  }
+  /** 2.763.5: the named docker (a ▣ docker or one made with ▣ New docker…, floating or confined) under (x, y) that the
+   *  window `id` may go in - static/dgdock.js asks it for Basic Settings, PODS and the other docker windows of static/secfloat.js */
+  function dockerAt(x, y, id) {
+    const list = Object.values(R).filter((d) => d.kind === "docker" && d.id !== id && d.win && isShown(d) && d.win.querySelector(".h3fd") && (!id || canDock(id, d.id, (k) => (R[k] ? R[k].docker : null))))
       .map((d) => ({ id: d.id, rect: d.win.querySelector(".h3fd").getBoundingClientRect(), z: depthZ(d) }));
     return hitDocker(x, y, list);
   }
@@ -602,7 +614,7 @@
     root.addEventListener("pointerdown", () => { down = true; }, true); root.addEventListener("pointerup", () => { down = false; }, true);
   }
 
-  const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+  const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), dockerAt, zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     restoring: () => restoring > 0, keepTabs, flush,   // 2.575.0
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;

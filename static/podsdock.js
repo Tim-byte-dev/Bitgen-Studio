@@ -93,24 +93,17 @@
     b.title = "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods"; b.textContent = "🖥 PODS";
     b.onclick = function () { show(); };
     box.appendChild(b);
-    // 2.761.0 (Tim: "add the cost in basics settings refresh after every minute to show total cost, keep track of all costs
-    // like we do with electricity"): what the pods cost - RunPod's bill, asked every minute (lib/podCosts.js); 📊 Usage keeps it
-    var c = doc.createElement("div"); c.id = "gpuPodCost"; c.className = "hint"; c.style.cssText = "margin:4px 0 0;display:none"; c.setAttribute("aria-live", "polite");
-    box.appendChild(c);
+    // 2.761.0's 💲 line (what the pods cost) moved to the 💲 RunPod docker in 2.763.5 (static/runpoddock.js)
     return true;
   }
-  /** 2.761.0: 💲 the pods' cost in Basic Settings ▸ GPU (once a minute while RunPod ▸ Pods is on) */
+  /** 2.761.0: what each pod cost (RunPod's bill, once a minute while RunPod ▸ Pods is on) - for the pod rows' figures.
+   *  2.763.5 (Tim: "move runpod balance and usage costs from the basic settings docker to the runpod docker"): no 💲 line in
+   *  Basic Settings any more - the 💲 RunPod docker (static/runpoddock.js) shows the bill, the balance and the GPU prices */
   function costLine() {
-    var el = $("gpuPodCost"); if (!el) return;
-    if (!wanted()) { el.style.display = "none"; return; }
+    if (!wanted()) return;
     getj("/api/pods/costs").then(function (j) {
       if (!j) return;
-      S.cost = j; el.style.display = "";
-      var u = function (v, sfx) { return money(v, sfx); };
-      el.innerHTML = "💲 RunPod pods: " + (j.running ? "<b>" + j.running + " running · " + esc(u(j.running_hr, "/h")) + "</b> now · " : "none running · ")
-        + "<b>" + esc(u(j.today_usd)) + "</b> today · <b>" + esc(u(j.month_usd)) + "</b> this month"
-        + (j.error ? ' <span style="color:#e88">(' + esc(j.error) + ")</span>" : "");
-      el.title = "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity.";
+      S.cost = j;
       if ($("pdPods") && S.pods.length) paintPods();
     }).catch(function () { /* offline */ });
   }
@@ -130,7 +123,8 @@
     var d = doc.createElement("div"); d.className = "pdk"; d.id = "pdBody";
     d.innerHTML = '<div class="rowbtns" style="align-items:center">'
       + '<input type="search" id="pdQ" class="pdTplOnly" placeholder="Search templates - name, image, port, kind" spellcheck="false" style="flex:1;min-width:140px">'
-      + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button></div>'
+      + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button>'
+      + '<button type="button" class="ghost" id="pdRpDock" title="The 💲 RunPod docker: your balance, what your pods cost, RunPod\'s GPU prices">💲 RunPod</button></div>'
       + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
       + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
       + '<select id="pdKind" class="pdTplOnly" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
@@ -147,6 +141,7 @@
     return d;
   }
   function wire() {
+    $("pdRpDock").onclick = function () { if (root.H3RunPod) H3RunPod.show(true); };   // 2.763.5
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { go(b.dataset.pdsrc); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
     $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };
