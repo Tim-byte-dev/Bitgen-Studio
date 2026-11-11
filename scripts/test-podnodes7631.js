@@ -27,7 +27,7 @@ check("httpsOf: ssh -> https, user:token@ never sent, other schemes = none (uplo
   PN.httpsOf(b.url) === "https://github.com/me/pack.git" && PN.httpsOf(c.url) === "https://example.com/x.git" && PN.httpsOf("ssh://git@gitlab.com/g/p.git") === "https://gitlab.com/g/p.git" && PN.httpsOf("/local/repo") === "");
 check("keepFile: no .git / __pycache__ / node_modules / .venv, nothing over 50 MB", PN.keepFile("nodes/x.py", 10) && !PN.keepFile(".git/HEAD", 1) && !PN.keepFile("a/__pycache__/x.pyc", 1) && !PN.keepFile("big.safetensors", 60e6) && !PN.keepFile(".venv/x", 1));
 check("folderOfModule: custom_nodes.<folder>.… -> the folder; a core node -> none", PN.folderOfModule("custom_nodes.ComfyUI-KJNodes.nodes") === "ComfyUI-KJNodes" && PN.folderOfModule("custom_nodes.websocket_image_save") === "websocket_image_save" && PN.folderOfModule("nodes") === "" && PN.folderOfModule("comfy_extras.nodes_mask") === "");
-{ const code = PN.mirrorCode([{ folder: "A", git: "https://x/a.git", commit: "a".repeat(40) }, { folder: "B", zip: ".bitgen_nodes_B.zip" }], "/workspace/ComfyUI");
+{ const code = PN.mirrorCode([{ folder: "A", git: "https://x/a.git", commit: "a".repeat(40) }, { folder: "B", zip: "bitgen-nodes-B.zip" }], "/workspace/ComfyUI");
   const f = path.join(os.tmpdir(), "mc7631.py"); fs.writeFileSync(f, code);
   const r = spawnSync("python3", ["-c", "import ast,sys; ast.parse(open(sys.argv[1]).read()); print('ok')", f], { encoding: "utf8" });
   check("mirrorCode: valid Python - a pod folder there already is left alone, git clone + checkout the commit (else the newest, said), a zip unpacked into custom_nodes, requirements with the Python running main.py",
@@ -35,8 +35,8 @@ check("folderOfModule: custom_nodes.<folder>.… -> the folder; a core node -> n
 const CORE = rd("lib", "core.js"), SPs = rd("lib", "stylePods.js"), PPs = rd("lib", "podPrep.js"), ASK = rd("static", "stylepodask.js"), PSU = rd("static", "podsetup.js"), RT = rd("routes", "stylePods.js");
 check("wiring: a pod that cannot be had FAILS the job with the reason (cancelled when you cancelled) - never rendered elsewhere; jobs carry pod_note while queued; the page shows it over the status bar",
   /j\.status = g\.cancelled \? "cancelled" : "failed";/.test(CORE) && /pod_note: job\.status === "queued" \? job\._podNote \|\| null : null/.test(CORE) && !/pod_job = \{ error/.test(CORE) && /id = "spaChip"/.test(ASK) && /"🖥 " \+ j\.pod_note/.test(ASK));
-check("wiring: a pod bitGen creates (asked or made again) gets this computer's custom nodes once (rgpu.pod_nodes); a style's missing classes come from this computer's own folders first (podPrep localFolders); My pods ▸ ⬆ My custom nodes (POST /api/stylepods/nodes/:pod)",
-  /nodesTodo\(made\.pod\.id, true\)/.test(SPs) && /movePod\(pod, id\); nodesTodo\(id, true\)/.test(SPs) && /require\("\.\/podNodes"\)\.mirror\(id, port/.test(SPs)
+check("wiring: a pod bitGen creates (asked, or from the PODS docker - 2.763.4: a gone pod is never made again by itself) gets this computer's custom nodes once (rgpu.pod_nodes); a style's missing classes come from this computer's own folders first (podPrep localFolders); My pods ▸ ⬆ My custom nodes (POST /api/stylepods/nodes/:pod)",
+  /nodesTodo\(made\.pod\.id, true\)/.test(SPs) && /SP\.nodesTodo\(p\.id, true\)/.test(fs.readFileSync(path.join(ROOT, "lib", "pods.js"), "utf8")) && /require\("\.\/podNodes"\)\.mirror\(id, port/.test(SPs)
   && /localFolders: \(classes\) => require\("\.\/podNodes"\)\.foldersFor\(classes\)/.test(PPs) && /data-psnodes/.test(PSU) && /\/api\/stylepods\/nodes\//.test(PSU) && /app\.post\("\/api\/stylepods\/nodes\/:pod"/.test(RT));
 
 /* ---------------- live: this computer's ComfyUI with four packs + a switched-off one */
@@ -103,10 +103,10 @@ const srv = http.createServer(async (q, s) => {
       if (q.headers.authorization !== "token " + CFG.rgpu.pod_jupyter[id]) return send(403, {});
       if (p === "/api/status") return send(200, {});
       if (p === "/api/kernels" && q.method === "POST") return send(201, { id: "k" + id });
-      const up = /^\/api\/contents\/(\.bitgen_[^?]+)$/.exec(p);
+      if (/^\/api\/contents\/\./.test(p) && q.method === "PUT") return send(400, { message: "Cannot create file or directory (hidden)" });   // 2.763.4: as Jupyter does
+      const up = /^\/api\/contents\/(bitgen-[^?]+)$/.exec(p);
       if (up && q.method === "PUT") { const j = JSON.parse(b), f = path.join(dir, "..", decodeURIComponent(up[1])); if (j.chunk === 1 || j.chunk === undefined) fs.writeFileSync(f, Buffer.from(j.content, "base64")); else fs.appendFileSync(f, Buffer.from(j.content, "base64")); seen.push("UPLOAD " + decodeURIComponent(up[1])); return send(201, {}); }
-      const st = /^\/api\/contents\/(\.bitgen_[\w]+\.json)/.exec(p);
-      if (st) { const f = path.join(dir, "..", st[1]); return fs.existsSync(f) ? send(200, { content: fs.readFileSync(f, "utf8") }) : send(404, {}); }
+      if (/^\/api\/contents\/\./.test(p)) return send(404, {});   // 2.763.4: Jupyter does not show hidden files - bitGen reads them through a kernel
     }
     return send(404, {});
   }
@@ -129,7 +129,7 @@ srv.on("upgrade", (q, sock) => {
       // a kernel lives on: its background threads (downloads, node installs) finish before this stand-in's Python ends
       const py = spawn("python3", ["-u", "-c", msg.content.code + "\nimport threading\nfor _t in threading.enumerate():\n    if _t is not threading.main_thread(): _t.join()\n"], { cwd: dir });
       let out = "", sent = false;
-      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy|nodes-started|mirror-started|cn )/.test(out)) { sent = true;
+      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy|nodes-started|mirror-started|cn |json )/.test(out)) { sent = true;
         wsSend(sock, { msg_type: "stream", parent_header: { msg_id: msg.header.msg_id }, content: { name: "stdout", text: out } });
         wsSend(sock, { msg_type: "execute_reply", parent_header: { msg_id: msg.header.msg_id }, content: { status: "ok" } }); } });
       py.stderr.on("data", (x) => { seen.push("PYERR " + String(x).slice(0, 300)); });
@@ -155,7 +155,7 @@ srv.listen(0, "127.0.0.1", async () => {
     check("mirror (all): the git pack CLONED on the pod at your commit (not the newest)", fs.existsSync(on("ComfyUI-KJNodes", "__init__.py")) && /V = 1/.test(fs.readFileSync(on("ComfyUI-KJNodes", "__init__.py"), "utf8")), { r, seen: seen.filter((x) => /PYERR/.test(x)) });
     check("…the pack the pod could not clone (private) uploaded from here instead; the plain folder uploaded without __pycache__ / the big file; the single .py too",
       fs.existsSync(on("MyPrivatePack", "__init__.py")) && fs.existsSync(on("ZipPack", "__init__.py")) && !fs.existsSync(on("ZipPack", "__pycache__")) && !fs.existsSync(on("ZipPack", "big.bin")) && fs.existsSync(on("websocket_image_save.py"))
-      && seen.some((x) => /UPLOAD \.bitgen_nodes_MyPrivatePack\.zip/.test(x)) && !seen.some((x) => /UPLOAD \.bitgen_nodes_ComfyUI-KJNodes/.test(x)), { r, up: seen.filter((x) => /UPLOAD/.test(x)) });
+      && seen.some((x) => /UPLOAD bitgen-nodes-MyPrivatePack\.zip/.test(x)) && !seen.some((x) => /UPLOAD bitgen-nodes-ComfyUI-KJNodes/.test(x)), { r, up: seen.filter((x) => /UPLOAD/.test(x)) });
     check("…ComfyUI-Manager the pod has already: left alone; the .disabled one never sent; ComfyUI restarted through ComfyUI-Manager and waited for",
       r.there.join() === "ComfyUI-Manager" && !fs.existsSync(on("OldPack.disabled")) && r.done.length === 4 && !r.failed.length && r.restarted && seen.includes("REBOOT"), r);
     check("…its state for My pods: done, what it did", PN.status("pod7631").running === false && /4 put on the pod, 1 there already/.test(PN.status("pod7631").note), PN.status("pod7631"));

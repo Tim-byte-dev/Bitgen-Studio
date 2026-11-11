@@ -5112,6 +5112,18 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **渲染现在能到达 Pod：** RunPod 的代理因为渲染 worker 的自我介绍方式，用“HTTP Error 403: Forbidden”拒绝了渲染；现在它会报出自己的名字。实时步数也能通过 Pod 的 https 地址显示。
 - **会等待风格的文件：** Pod 上的下载会一直跟进到完成。如果风格需要的文件仍不在 Pod 上，渲染会停止，日志写出那个文件 - 不会送到无法渲染它的 Pod。
 
+## 🖥 PODS 停靠窗：Pod 在做什么，以及创建前的全部细节 (2.763.4)
+<!-- en: the-pods-docker-what-a-pod-is-doing-and-every-detail-before-it-is-made-2-763-4 da94d08fd734 -->
+
+- **Pod 有多忙：** 在 🖥 My pods 中，每个运行中的 Pod 名字旁会显示 GPU 负载和 GPU 显存占用的条。打开 Pod 可以看到全部：GPU、显存、
+  RAM、CPU 和两个磁盘（容器磁盘和 /workspace）。停靠窗在屏幕上时每几秒更新一次。
+- **Create pod 前的全部细节：** 表单列出 Pod 将会是什么 - 模板和它的镜像、GPU 和数量（总显存）、每小时价格、云、两个磁盘、CUDA 13
+  主机、端口、它渲染的风格和负责的类型，以及加载后会放上去的东西（这台电脑的自定义节点、风格的文件）。表单的每次改动都会更新它。
+- **会选上提示词停靠窗的风格：** 停靠窗的风格下拉列表（For、Style 和 Pod 的 Styles）从提示词停靠窗为 Generate 模式选中的风格开始。
+- **已不存在的 Pod 不会自己重建：** 风格的 Pod 在 RunPod 上不存在时，渲染会打开 PODS 停靠窗，说明 Pod 已不存在，并按旧 Pod 的方式（RunPod 还列出时用它的模板、GPU、数量、云、磁盘）填好新 Pod - 检查后按 Create pod，或使用你的某个 Pod。
+- **从这台电脑发送文件现在可以了：** bitGen 在发送时给文件用了隐藏的名字，所以 RunPod 的 Jupyter 拒绝了上传（“refused part 1 (HTTP
+  400)”）；现在用普通的名字。这包括 Override style 的 checkpoint、LoRA 以及从这台电脑发送的自定义节点。大的 checkpoint 需要的时间取决于你的上传速度。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

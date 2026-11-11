@@ -24,7 +24,7 @@
  *               The prices show in Settings ▸ General ▸ Currency (static/currency.js H3Money). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "" };
+  var doc = root.document, S = { stats: {}, g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "" };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
@@ -76,7 +76,13 @@
     + ".pdk .psTools .psPrep{flex:1}"
     // 2.763.3: the waiting render's banner + the form's style / kind
     + ".pdk .pdAsk{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.pdk .pdAsk .t{flex:1;min-width:220px}"
-    + ".pdk .pdForm .pdKinds{display:flex;flex-wrap:wrap;gap:4px 12px}";
+    + ".pdk .pdForm .pdKinds{display:flex;flex-wrap:wrap;gap:4px 12px}"
+    // 2.763.4: the pod's load / memory / disks as bars; the summary before Create pod
+    + ".pdk .pdStats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 8px;margin:2px 0}.pdk .pdStatsHead{display:inline-flex;gap:6px;margin-left:6px;vertical-align:middle}"
+    + ".pdk .pdBar{position:relative;display:block;height:16px;border-radius:4px;background:var(--panel-2,#26262c);overflow:hidden;font-size:11px;line-height:16px}"
+    + ".pdk .pdBar i{position:absolute;left:0;top:0;bottom:0;background:var(--tiger,#f59e2c);opacity:.55}.pdk .pdBar.hi i{background:#e66;opacity:.7}"
+    + ".pdk .pdBar b{position:relative;padding:0 6px;font-weight:normal;white-space:nowrap}.pdk .pdStatsHead .pdBar{width:92px;height:12px;line-height:12px;font-size:10px}"
+    + ".pdk .pdSum{border:1px solid var(--line,#333);border-radius:6px;padding:6px 10px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px}.pdk .pdSum .k{color:var(--dim,#999)}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -144,7 +150,7 @@
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { go(b.dataset.pdsrc); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
     $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };
-    $("pdFor").onchange = function () { S.forStyle = $("pdFor").value; filter(); };
+    $("pdFor").onchange = function () { S.forStyle = $("pdFor").value; S.forUser = true; filter(); };
     var t = null; $("pdQ").addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { S.q = $("pdQ").value; filter(); }, 120); });
     $("pdRefresh").onclick = function () { loadTpl(true); loadPods(); };
     $("pdCutAdd").onclick = function () { star({ link: $("pdCutLink").value, name: "" }, true).then(function (ok) { if (ok) $("pdCutLink").value = ""; }); };
@@ -187,11 +193,19 @@
     if (s && t.comfy) s += 3;
     return s;
   }
+  /** 2.763.4 (Tim: "put the style in the dropdown as the selected style in the prompt docker"): the style picked for the
+      Generate mode (🖼 Image -> #styleSel, 🎬 Video -> #videoStyleSel, 🎶 Music -> #musicSel) */
+  function promptStyle() {
+    var g = $("genModeSel"), m = g ? g.value : "image";
+    var sel = $(m === "video" ? "videoStyleSel" : m === "audio" ? "musicSel" : "styleSel");
+    return sel && sel.value ? sel.value : "";
+  }
   function loadStyles() {
-    return Promise.all([getj("/api/styles?kind=image"), getj("/api/styles?kind=video")]).then(function (a) {
-      S.styles = [].concat((a[0] || {}).styles || [], (a[1] || {}).styles || []).filter(function (x) { return x.runs_on !== "api"; });
+    return Promise.all([getj("/api/styles?kind=image"), getj("/api/styles?kind=video"), getj("/api/styles?kind=music")]).then(function (a) {
+      S.styles = [].concat((a[0] || {}).styles || [], (a[1] || {}).styles || [], (a[2] || {}).styles || []).filter(function (x) { return x.runs_on !== "api" && x.runs_on !== "remote"; });
       var sel = $("pdFor"); if (!sel) return;
-      var keep = sel.value;
+      if (!S.forUser) S.forStyle = promptStyle() || S.forStyle;   // follows the prompt docker until you pick one here
+      var keep = S.forStyle || sel.value;
       sel.innerHTML = '<option value="">For any style</option>' + S.styles.map(function (x) { return '<option value="' + esc(x.id) + '">For ' + esc(x.name) + "</option>"; }).join("");
       sel.value = keep;
     }).catch(function () { /* offline */ });
@@ -263,7 +277,7 @@
   }
   function openForm(id, pre) {
     var t = S.all.find(function (x) { return x.id === id; }); if (!t) return;
-    S.form = S.form && S.form.id === t.id && !pre ? null : Object.assign({ id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50, style: S.forStyle || "", kinds: [] }, pre || {});
+    S.form = S.form && S.form.id === t.id && !pre ? null : Object.assign({ id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50, style: S.forStyle || promptStyle(), kinds: [] }, pre || {});
     var cc = $("pdCreate"); if (cc && pre) cc.dataset.tpl = "";
     box2sel(); paintForm(); view();
     if (S.form) { gpus(S.form.cloud); var c = $("pdCreate"); if (c && c.scrollIntoView) c.scrollIntoView({ block: "nearest" }); }
@@ -294,11 +308,14 @@
       + '<label class="f" for="pdDisk" style="margin:0">Container disk</label><span><input type="number" id="pdDisk" min="10" max="1000" value="' + (+t.disk || 50) + '" style="width:80px"> GB <span class="hint">(wiped when the pod stops)</span></span>'
       + '<label class="f" for="pdVol" style="margin:0">/workspace</label><span><input type="number" id="pdVol" min="10" max="2000" value="' + ((S.form && S.form.volume) || 50) + '" style="width:80px"> GB <span class="hint">(kept while stopped - billed for storage)</span></span>'
       + '<span class="full hint" id="pdPrice"></span>'
+      + '<div class="full pdSum" id="pdSum" aria-live="polite"></div>'
       + '<span class="full"><button type="button" id="pdGo">Create pod</button></span></div>';
   }
   function wireForm() {
     doc.querySelectorAll('input[name="pdCloud"]').forEach(function (r) { r.checked = r.value === S.form.cloud; r.onchange = function () { S.form.cloud = r.value; gpus(r.value); }; });
-    ["pdGpu", "pdCount"].forEach(function (id) { $(id).addEventListener("change", price); });
+    ["pdGpu", "pdCount", "pdDisk", "pdVol", "pdStyle"].forEach(function (id) { var x = $(id); if (x) { x.addEventListener("change", price); x.addEventListener("input", price); } });
+    doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { c.addEventListener("change", price); });
+    if (S.nodesN == null) getj("/api/stylepods/nodes").then(function (j) { S.nodesN = (j && j.count) || 0; summary(); }).catch(function () { /* offline */ });
     $("pdGo").onclick = create;
     $("pdForm").querySelectorAll("input,select").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
   }
@@ -316,9 +333,25 @@
     if (S.gpus[cloud]) { fill(S.gpus[cloud]); return; }
     getj("/api/pods/gpus?cloud=" + cloud).then(function (j) { if (j.error) { say(j.error, false); return; } S.gpus[cloud] = j.gpus || []; fill(S.gpus[cloud]); });
   }
+  /** 2.763.4 (Tim: "show all the details before i create the pod"): everything the pod will be, above Create pod */
+  function summary() {
+    var el = $("pdSum"); if (!el || !S.form) return;
+    var t = S.all.find(function (x) { return x.id === S.form.id; }) || {}, list = S.gpus[S.form.cloud] || [], g = list.find(function (x) { return x.id === ($("pdGpu") || {}).value; }), n = +(($("pdCount") || {}).value) || 1;
+    var st = ($("pdStyle") || {}).value, sty = (S.styles || []).find(function (x) { return x.id === st; }), ks = [];
+    doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { if (c.checked) ks.push(c.parentNode.textContent.trim()); });
+    var cu = /cuda[\s_-]*13/i.test((t.name || "") + " " + (t.image || "")), web = (t.ports || []).join(", ");
+    var rows = [["Template", (t.name || "?") + (t.image ? " (" + t.image + ")" : "")], ["GPU", g ? n + " × " + g.name + " · " + g.memory + " GB each" + (n > 1 ? " (" + (g.memory * n) + " GB in all)" : "") : "pick one"],
+      ["Price", g ? money(g.price * n, "/h") + " while it runs (RunPod's price now) + storage" : "-"], ["Cloud", S.form.cloud === "COMMUNITY" ? "Community" : "Secure"],
+      ["Container disk", (+(($("pdDisk") || {}).value) || 0) + " GB (wiped when it stops)"], ["/workspace", (+(($("pdVol") || {}).value) || 0) + " GB (kept while stopped)"],
+      ["Host", cu ? "CUDA 13 or newer only" : "any"], ["Ports", (web || "-") + " + Jupyter (bitGen's own password)"],
+      ["Style", sty ? sty.name + (ks.length ? " · this pod renders " + ks.join(", ") + " styles with no pod of their own" : "") : (ks.length ? "renders " + ks.join(", ") + " styles with no pod of their own" : "none")],
+      ["Then", "this computer's custom nodes" + (S.nodesN != null ? " (" + S.nodesN + ")" : "") + (sty ? " and " + sty.name + "'s files" + (S.ask && S.askSize ? " (about " + S.askSize + " GB)" : "") : "") + " go on it"]];
+    el.innerHTML = rows.map(function (r) { return '<span class="k">' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span>"; }).join("");
+  }
   function price() {
     var el = $("pdPrice"), list = S.gpus[S.form && S.form.cloud] || [], g = list.find(function (x) { return x.id === ($("pdGpu") || {}).value; }), n = +(($("pdCount") || {}).value) || 1;
     if (el) { el.textContent = g ? "About " + money(g.price * n) + " an hour while it runs (RunPod's price now), plus storage" : ""; el.title = g && root.H3Money ? H3Money.usdText(g.price * n, H3Money.state()).title : ""; }
+    summary();
   }
   function create() {
     var kinds = []; doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { if (c.checked) kinds.push(c.dataset.pdkind); });
@@ -369,8 +402,10 @@
       return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '">'
         + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
         + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span>'
-        + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "") + "</span></span></button>"
+        + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "")
+        + (/RUNNING/.test(p.status) ? '<span class="pdStatsHead" data-pdstath="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], true) + "</span>" : "") + "</span></span></button>"
         + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
+        + (/RUNNING/.test(p.status) ? '<div class="pdStats" data-pdstats="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], false) + "</div>" : "")
         + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")
         + '<div class="pdActs"><button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
         + (S.ask ? '<button type="button" data-pdfor title="The waiting render of ' + esc(S.ask.style_name) + ' goes to this pod, and the style stays linked to it">▶ Use for ' + esc(S.ask.style_name) + "</button>" : "")
@@ -450,6 +485,42 @@
       try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ }
     });
   }
+  /* 2.763.4 (Tim: "in the pods docker show utilization, memory and disk visualizations and usage"): a running pod's GPU load,
+     GPU memory, RAM, CPU and disks (GET /api/pods/:id/stats - lib/podStats.js) as bars - a small pair beside its name, all of
+     them inside it - asked every 5 s while this docker is on screen */
+  function gb(b) { return (Math.round((+b || 0) / 1e8) / 10).toFixed(1); }
+  function bar(label, pct, title) {
+    var p = Math.max(0, Math.min(100, Math.round(+pct || 0)));
+    return '<span class="pdBar' + (p >= 90 ? " hi" : "") + '" title="' + esc(title || label) + '"><i style="width:' + p + '%"></i><b>' + esc(label) + "</b></span>";
+  }
+  function statsHtml(st, small) {
+    if (!st) return small ? "" : '<span class="hint">asking the pod how busy it is…</span>';
+    if (st.error && !(st.gpus || []).length) return small ? "" : '<span class="hint">' + esc(st.error) + "</span>";
+    var out = [];
+    (st.gpus || []).forEach(function (g, i) {
+      var nm = (st.gpus.length > 1 ? "GPU" + (i + 1) : "GPU"), mp = g.mem_total ? 100 * g.mem_used / g.mem_total : 0;
+      if (g.util != null) out.push(bar(nm + " " + g.util + "%", g.util, g.name + " - how busy it is"));
+      out.push(bar((small ? "VRAM " : "VRAM ") + gb(g.mem_used) + "/" + gb(g.mem_total) + " GB", mp, g.name + " - its memory in use"));
+    });
+    if (small) return out.slice(0, 2).join("");
+    if (st.ram) out.push(bar("RAM " + gb(st.ram.used) + "/" + gb(st.ram.total) + " GB", 100 * st.ram.used / (st.ram.total || 1), "the pod's memory in use"));
+    if (st.cpu) out.push(bar("CPU " + st.cpu.load + "% (" + st.cpu.cores + " cores)", st.cpu.load, "the pod's processor load (1-minute average)"));
+    (st.disks || []).forEach(function (d) { out.push(bar((d.path === "/" ? "Disk" : d.path) + " " + gb(d.used) + "/" + gb(d.total) + " GB", 100 * d.used / (d.total || 1), d.path === "/" ? "the container disk (wiped when the pod stops)" : "/workspace (kept while the pod is stopped)")); });
+    return out.join("") || '<span class="hint">no figures from the pod yet</span>';
+  }
+  function pollStats() {
+    var vis = $("pdBody") && $("pdBody").offsetParent !== null;
+    var ids = vis ? (S.pods || []).filter(function (p) { return /RUNNING/.test(p.status); }).map(function (p) { return p.id; }) : [];
+    Promise.all(ids.map(function (id) {
+      var pt = S.port && S.port[id];
+      return getj("/api/pods/" + encodeURIComponent(id) + "/stats" + (pt ? "?port=" + pt : "")).then(function (st) {
+        S.stats[id] = st;
+        var h = doc.querySelector('[data-pdstath="' + id + '"]'), b = doc.querySelector('[data-pdstats="' + id + '"]');
+        if (h) h.innerHTML = statsHtml(st, true);
+        if (b) b.innerHTML = statsHtml(st, false);
+      }).catch(function () { /* next time */ });
+    })).then(function () { setTimeout(pollStats, +(root.H3_POD_STATS_POLL || 5000)); });
+  }
   /* 2.763.3 (Tim: "if a pod doesn't exist for a style popup the pods docker to create the pod when generate button is
      pressed, auto select the type and style. let user select gpu and number of gpu's and let the user start and stop and
      terminate the pod from the docker"): a render waiting for a pod opens this docker - a banner names it, the create form
@@ -459,10 +530,10 @@
   function forRender(o) {
     if (!o || !o.ask) return false;
     if (!(root.SecFloat && SecFloat.windows && SecFloat.windows.pods)) return false;
-    S.ask = o.ask;
+    S.ask = o.ask; S.askWas = o.was || null; S.askSize = o.size_gb || 0;
     show(true);   // (false when it is on screen already)
     paintAsk();
-    var pre = { style: o.ask.style_id, kinds: [o.ask.kind], gpu: o.pick || "", volume: o.volume_gb || 50, count: 1 };
+    var pre = { style: o.ask.style_id, kinds: [o.ask.kind], gpu: o.pick || "", volume: o.volume_gb || 50, count: o.count || 1, cloud: o.cloud || "SECURE" };
     var openIt = function () {
       if (!o.template) { go("mine"); say(o.template_error || "RunPod's ComfyUI CUDA 13 template was not found - pick a template, or use one of your pods", false); return; }
       if (!S.all.some(function (t) { return t.id === o.template.id; })) { setTimeout(openIt, 400); return; }
@@ -470,7 +541,7 @@
       openForm(o.template.id, pre);
       var nm = $("pdName"); if (nm) nm.value = ("bitGen " + o.ask.style_name).slice(0, 40);
     };
-    Promise.resolve(loadStyles()).then(function () { S.forStyle = o.ask.style_id; var f = $("pdFor"); if (f) f.value = o.ask.style_id; openIt(); });
+    Promise.resolve(loadStyles()).then(function () { S.forStyle = o.ask.style_id; S.forUser = true; var f = $("pdFor"); if (f) f.value = o.ask.style_id; openIt(); });
     paintPods();
     return true;
   }
@@ -478,7 +549,7 @@
     var b = $("pdAsk"); if (!b) return;
     if (!S.ask) { b.hidden = true; b.innerHTML = ""; return; }
     b.hidden = false;
-    b.innerHTML = '<span class="t">⏳ A render of <b>' + esc(S.ask.style_name) + "</b> is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for " + esc(S.ask.style_name) + " on one of yours.</span>"
+    b.innerHTML = '<span class="t">⏳ ' + (S.askWas ? "The pod " + esc(S.askWas.name) + (S.askWas.gpu ? " (" + esc(S.askWas.gpu) + ")" : "") + " is gone on RunPod - the new one below is filled in the same way. " : "") + 'A render of <b>' + esc(S.ask.style_name) + "</b> is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for " + esc(S.ask.style_name) + " on one of yours.</span>"
       + '<button type="button" class="ghost" id="pdAskMine">🖥 My pods</button><button type="button" class="ghost" id="pdAskNo" title="Do not render it now">Cancel the render</button>';
     $("pdAskMine").onclick = function () { go("mine"); };
     $("pdAskNo").onclick = function () { answerAsk({ action: "cancel" }); };
@@ -502,6 +573,7 @@
       wire();
     }
     loadG().then(costLine);
+    pollStats();   // 2.763.4
     setInterval(costLine, +(root.H3_POD_COST_POLL || 60000));
     doc.addEventListener("h3:rgpu", function () { loadG().then(costLine); });
     root.addEventListener("h3:currency", function () { if (!$("pdBody")) return; paintPods(); if (S.form && $("pdGpu") && S.gpus[S.form.cloud]) { var keep = $("pdGpu").value; gpus(S.form.cloud); if (keep) { $("pdGpu").value = keep; price(); } } });

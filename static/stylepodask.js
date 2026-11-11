@@ -114,7 +114,7 @@
      only the fallback when that docker is not there */
   function viaDocker(id) {
     if (!(root.H3Pods && H3Pods.forRender)) return Promise.resolve(false);
-    return getj("/api/stylepods/ask/" + id + "?cloud=SECURE").then(function (o) { return !o.error && H3Pods.forRender(o); }).catch(function () { return false; });
+    return getj("/api/stylepods/ask/" + id).then(function (o) { return !o.error && H3Pods.forRender(o); }).catch(function () { return false; });
   }
   function answered(id) { asked[id] = true; if (open === id) open = null; }
   function watchJobs(list) {

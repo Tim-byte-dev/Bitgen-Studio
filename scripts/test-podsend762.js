@@ -108,7 +108,8 @@ const srv = http.createServer(async (q, s) => {
       if (q.headers.authorization !== "token " + CFG.rgpu.pod_jupyter[id]) return send(403, {});
       if (p === "/api/status") return send(200, {});
       if (p === "/api/kernels" && q.method === "POST") return send(201, { id: "k" + id });
-      const up = /^\/api\/contents\/(\.bitgen_up_[^?]+)$/.exec(p);
+      if (/^\/api\/contents\/\./.test(p) && q.method === "PUT") return send(400, { message: "Cannot create file or directory (hidden)" });   // 2.763.4: as Jupyter does
+      const up = /^\/api\/contents\/(bitgen-upload-[^?]+)$/.exec(p);
       if (up && q.method === "PUT") { const j = JSON.parse(b), f = path.join(dir, "..", decodeURIComponent(up[1])); if (j.chunk === 1 || j.chunk === undefined) fs.writeFileSync(f, Buffer.from(j.content, "base64")); else fs.appendFileSync(f, Buffer.from(j.content, "base64")); return send(201, {}); }
       if (/^\/api\/contents\/\.bitgen_dl\.json/.test(p)) { const f = path.join(dir, "..", ".bitgen_dl.json"); return fs.existsSync(f) ? send(200, { content: fs.readFileSync(f, "utf8") }) : send(404, {}); }
     }
@@ -178,7 +179,7 @@ srv.listen(0, "127.0.0.1", async () => {
     const mk2 = await PS.makeFor("pod761", { file: "sdxl_base_1.0.safetensors", kinds: ["image"], pod_name: "Krea pod", port: 3000, arch: "sdxl" });
     const st2 = S.read(path.join(TMP, "styles")).filter((x) => x.runs_on === "pod" && x.name === "P_Krea pod");
     check("a checkpoint the pod already has: nothing sent - the same P_ style now SDXL (bitGen's SDXL workflow)", mk2.made.join() === "P_Krea pod" && st2.length === 1 && st2[0].arch === "sdxl" && st2[0].pod_model === "sdxl_base_1.0.safetensors"
-      && !seen.some((x) => /bitgen_up_/.test(x)), { mk2, st2: st2.map((x) => [x.name, x.arch, x.pod_model]) });
+      && !seen.some((x) => /bitgen-upload-/.test(x)), { mk2, st2: st2.map((x) => [x.name, x.arch, x.pod_model]) });
     // Basic Settings ▸ Override style's checkpoint on a P_ render: the pod lacks it -> sent, then the job uses the pod's name
     fs.rmSync(path.join(COMFY.pod761, "models", "checkpoints", "Krea"), { recursive: true, force: true });
     const job = Object.assign({}, st2[0], { model: "Krea\\krea2_turbo_fp8.safetensors", model_override: true });
@@ -188,7 +189,7 @@ srv.listen(0, "127.0.0.1", async () => {
       first && first.wait > 0 && r && r.model === "Krea/krea2_turbo_fp8.safetensors" && fs.existsSync(path.join(COMFY.pod761, "models", "checkpoints", "Krea", "krea2_turbo_fp8.safetensors")), { first, r });
     seen.length = 0;
     const r2 = RV.gate(job);
-    check("…next time: on the pod already - go at once, nothing sent", r2 && r2.model === "Krea/krea2_turbo_fp8.safetensors" && !r2.wait && !seen.some((x) => /bitgen_up_/.test(x)), r2);
+    check("…next time: on the pod already - go at once, nothing sent", r2 && r2.model === "Krea/krea2_turbo_fp8.safetensors" && !r2.wait && !seen.some((x) => /bitgen-upload-/.test(x)), r2);
     const job2 = Object.assign({}, st2[0], { model: "nowhere.safetensors", model_override: true });
     let r3 = RV.gate(job2); for (let i = 0; i < 100 && r3 && r3.wait; i++) { await new Promise((ok) => setTimeout(ok, 150)); r3 = RV.gate(job2); }
     check("…a checkpoint neither on the pod nor on this computer: said, not waited for forever", r3 && /not on the pod and not in this computer's ComfyUI models folders/.test(r3.error || ""), r3);

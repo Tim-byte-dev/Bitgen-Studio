@@ -62,7 +62,7 @@ const PP = require("../lib/podPrep");
   check("lib/pods.js create: for_style links the style, kinds = the pod for them (one pod per kind), this computer's custom nodes wanted; a CUDA 13 template = a CUDA 13 host",
     /if \(o\.for_style\) SP\.link\(o\.for_style, p\.id\);/.test(PJ) && /SP\.setKinds\(p\.id, o\.kinds\)/.test(PJ) && /SP\.nodesTodo\(p\.id, true\)/.test(PJ) && /o\.cuda = "13\.0"/.test(PJ) && !/pod_for = /.test(PJ));
   check("the docker: forRender opens it with a banner + the create form on the CUDA 13 template, the style, its kind, bitGen's GPU pick, GPUs, the disk; ▶ Use for <style> on your pods; Cancel the render; the question asks the docker first",
-    /function forRender\(o\)/.test(PD) && /openForm\(o\.template\.id, pre\)/.test(PD) && /var pre = \{ style: o\.ask\.style_id, kinds: \[o\.ask\.kind\], gpu: o\.pick \|\| "", volume: o\.volume_gb \|\| 50, count: 1 \};/.test(PD)
+    /function forRender\(o\)/.test(PD) && /openForm\(o\.template\.id, pre\)/.test(PD) && /var pre = \{ style: o\.ask\.style_id, kinds: \[o\.ask\.kind\], gpu: o\.pick \|\| "", volume: o\.volume_gb \|\| 50, count: o\.count \|\| 1, cloud: o\.cloud \|\| "SECURE" \};/.test(PD)
     && /data-pdfor/.test(PD) && /id="pdAskNo"/.test(PD) && /id="pdStyle"/.test(PD) && /data-pdkind/.test(PD) && /H3Pods\.forRender\(o\)/.test(AS));
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

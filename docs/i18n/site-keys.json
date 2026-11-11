@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 1068,
+    "count": 1069,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -333,6 +333,7 @@
         "In My pods, open a pod and pick your styles in Styles (the Generate mode's, or All), then press 💾 Save: bitGen puts each style's workflow, models, LoRAs and node packs on the pod. Tick Image, Image edit or Video on a pod to send every style of that kind there - a pod for each kind, or all on one pod. With Pods picked your own styles show, and P_ styles made before still work.",
         "In bitGen Studio: {0} - one click installs it. Or download the .zip here and use {1}.",
         "In four languages",
+        "In the PODS docker each running pod shows how busy its GPU is and how full its GPU memory, RAM and disks are. Before a pod is made, the form lists everything it will be - the template, the GPUs, the price an hour, the disks and what goes on it - and a pod RunPod no longer has is never made again without asking you.",
         "In {0}",
         "Install",
         "Install a new ComfyUI in a folder you choose, or use one you already have. A new one gets its own Python and the right PyTorch for your card - CUDA 13.0 or 12.8 for RTX 50, 12.8 or 12.6 for RTX 20-40, Metal on a Mac. Every custom node pack the studio uses is installed with it, then ComfyUI checks that each one loads.",

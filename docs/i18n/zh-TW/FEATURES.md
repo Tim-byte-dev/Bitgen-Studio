@@ -387,6 +387,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **🖥 你的自訂節點上 Pod + Pod 在做什麼** — bitGen 為風格建立的 Pod 會裝上這臺電腦 ComfyUI 的所有自訂節點包（git 包在 Pod 上按相同版本 clone，其餘的以及私有的打成 zip 上傳；.disabled 的和 Pod 上已有的保持不動），然後重新啟動它的 ComfyUI（ComfyUI-Manager，否則重新啟動 Pod）；⬆ My custom nodes 可對任何 Pod 這樣做；風格缺少的節點來自這臺電腦 ComfyUI 指出的節點包；狀態列上方的一行顯示等待中的渲染的 Pod 在做什麼，無法使用的 Pod 會帶著原因停止渲染；在 Both 下有 Pod（自己的或其類型的）的風格會送到那個 Pod。 *Where:* 🖥 PODS ▸ 🖥 My pods ▸ Pod ▸ ⬆ My custom nodes；渲染等待時的狀態列上方。 *Since:* 2.763.1
 - **🖥 Pod 渲染不用這臺電腦的 ComfyUI** — 送到 RunPod Pod 的渲染會立即傳送：不啟動這臺電腦的 ComfyUI，也不拿風格去對照它的模型清單或下拉式清單（檔案會放到 Pod 上）；失敗的渲染的原因（[pod] / [gpu] / 錯誤行）會在日誌的「that one failed」之後顯示。 *Where:* Pod 模式下的 Generate；日誌。 *Since:* 2.763.2
 - **🖥 沒有 Pod 的風格開啟 PODS 停靠窗** — 用沒有 Pod 的風格按 Generate 會開啟 PODS 停靠窗：橫幅說明等待中的渲染，建立表單已在 RunPod 的 ComfyUI CUDA 13 範本上開啟，風格、其類型、bitGen 推薦的 GPU、GPU 數量和磁碟都已填好（都可以改）；你的 Pod 上有 ▶ Use for <风格>；Cancel the render；Start / Stop / Terminate 照舊。Pod 渲染現在能到達 Pod（worker 向 RunPod 代理報出自己的名字 - 不再 403；https 上也有即時步數）；風格在 Pod 上的下載會等到完成，仍缺少的檔案會帶著名字停止渲染。 *Where:* 🖥 PODS（按 Generate 時自動開啟）。 *Since:* 2.763.3
+- **🖥 PODS 停靠窗：Pod 的資料 + 建立前的全部細節** — 每個執行中的 Pod 在名字旁顯示 GPU 負載和 GPU 顯示記憶體的條，開啟後顯示 GPU、顯示記憶體、RAM、CPU 和兩個磁碟（每幾秒更新，來自 Pod 的 Jupyter 或 ComfyUI）；建立表單列出 Pod 的全部內容（範本和鏡像、GPU、價格、雲、磁碟、CUDA 13 主機、埠、風格、會放上去的東西），並跟隨表單變化；停靠窗的風格下拉式清單從提示詞停靠窗的風格開始；RunPod 上已不存在的 Pod 不會自己重建 - 停靠窗會開啟，按舊 Pod 的方式填好；從這臺電腦傳送的檔案不再因 HTTP 400 失敗（不再用隱藏的分段檔名）。 *Where:* 🖥 PODS ▸ 🖥 My pods；Create pod…。 *Since:* 2.763.4
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

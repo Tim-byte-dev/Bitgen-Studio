@@ -35,6 +35,9 @@ function mount(app) {
   app.post("/api/pods/:id/upload", wrap((req) => require("../lib/podModels").upload(req.params.id, req.body || {})));
   // 2.761.0 (Tim: "make each pod name in my pods a accordian menuitem, add folder, checkpoint and add lora ... checkboxes ...
   // video,llm,vllm,image,image-edit ... a save button ... add the cost in basics settings refresh after every minute")
+  // 2.763.4 (Tim: "in the pods docker show utilization, memory and disk visualizations and usage"): a running pod's GPU load,
+  // GPU memory, RAM, CPU and disks (lib/podStats.js)
+  app.get("/api/pods/:id/stats", wrap((req) => require("../lib/podStats").stats(req.params.id, +req.query.port || 0)));
   app.get("/api/pods/costs", wrap((req) => require("../lib/podCosts").costs(req.query.refresh === "1")));
   app.get("/api/pods/:id/setup", wrap((req) => Object.assign(require("../lib/podSetup").view(req.params.id), { revive: require("../lib/podRevive").status(req.params.id) })));
   app.post("/api/pods/:id/setup", wrap((req) => require("../lib/podSetup").save(req.params.id, req.body || {})));

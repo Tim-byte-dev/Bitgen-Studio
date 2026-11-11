@@ -43,6 +43,8 @@ function mount(app) {
     PN.mirror(req.params.pod, port, {}).catch(() => null);
     return { started: PN.list().length };
   }));
+  // 2.763.4: how many custom node packs this computer would put on a pod (the PODS docker's summary before Create pod)
+  app.get("/api/stylepods/nodes", wrap(() => { const L = require("../lib/podNodes").list(); return { count: L.length, folders: L.map((k) => k.folder) }; }));
   app.get("/api/stylepods/prepare/:pod", wrap((req) => ({ prep: require("../lib/podPrep").status(String(req.params.pod).replace(/[^A-Za-z0-9]/g, "")) })));
 }
 module.exports = { mount };

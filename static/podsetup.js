@@ -46,6 +46,8 @@
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
   function ed(id) { return ED[id] = ED[id] || { saved: clean({}), cur: clean({}), loaded: false, msg: "" }; }
+  /** the style picked in the prompt docker for the Generate mode */
+  function promptStyleId() { var g = doc.getElementById("genModeSel"), m = g ? g.value : "image", sel = doc.getElementById(m === "video" ? "videoStyleSel" : m === "audio" ? "musicSel" : "styleSel"); return sel && sel.value ? sel.value : ""; }
   function modeKind() { var g = doc.getElementById("genModeSel"); return kindOfMode(g ? g.value : "image"); }
   function styles(repaint) {
     if (STYLES) return STYLES;
@@ -78,7 +80,7 @@
   /** the item's body (below the name): the ticks, the LLM server, the styles, 💾 Save */
   function html(p) {
     var e = ed(p.id), c = e.cur, llm = c.kinds.indexOf("llm") >= 0 || c.kinds.indexOf("vlm") >= 0;
-    var mk = modeKind(), list = listFor(styles(null), mk, ALL, c.styles);
+    var mk = modeKind(), list = listFor(styles(null), mk, ALL, c.styles), ps = promptStyleId();   // 2.763.4: the prompt docker's style picked
     return '<div class="psKinds" role="group" aria-label="What this pod is for" title="Ticked = this pod renders every style of that kind that has no pod of its own. One pod per kind - tick them all on one pod to use one pod for everything">'
       + KINDS.map(function (k) { return '<label class="chk"><input type="checkbox" data-pskind="' + k[0] + '"' + (c.kinds.indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("")
       + "</div>"
@@ -87,8 +89,8 @@
         + (c.kinds.indexOf("vlm") >= 0 ? ' <label>vision model <input type="text" data-psvmodel value="' + esc(c.llm.vlm_model) + '" placeholder="blank = the same" spellcheck="false" style="width:150px"></label>' : "") + "</div>" : "")
       + '<div class="psStyles"><label class="f" title="Your styles that render on this pod - their workflow, models, text encoders, VAE, LoRAs and node packs go to the pod">Styles <span class="hint">(' + (ALL ? "all styles" : ICON[mk] + " " + mk + " styles - the Generate mode") + ")</span></label>"
       + '<div class="psPick"><select data-psstyle aria-label="A style for this pod"><option value="">— pick a style —</option>'
-      + list.map(function (s) { return '<option value="' + esc(s.id) + '">' + (ALL ? (ICON[s.kind || "image"] || "") + " " : "") + esc(s.name) + "</option>"; }).join("")
-      + '</select><button type="button" class="ghost" data-psadd title="Link the picked style to this pod" disabled>＋</button>'
+      + list.map(function (s) { return '<option value="' + esc(s.id) + '"' + (s.id === ps ? " selected" : "") + ">" + (ALL ? (ICON[s.kind || "image"] || "") + " " : "") + esc(s.name) + "</option>"; }).join("")
+      + '</select><button type="button" class="ghost" data-psadd title="Link the picked style to this pod"' + (list.some(function (s) { return s.id === ps; }) ? "" : " disabled") + '>＋</button>'
       + '<button type="button" class="ghost' + (ALL ? " on" : "") + '" data-psall aria-pressed="' + (ALL ? "true" : "false") + '" title="List every style, not only the Generate mode\'s">All</button></div>'
       + '<div class="psChips">' + (c.styles.length ? c.styles.map(function (id) { return '<span class="psChip" data-pschip="' + esc(id) + '">' + kindIcon(id) + " " + esc(nameOf(id)) + ' <button type="button" class="ghost" data-psdel="' + esc(id) + '" title="Take this style off the pod">✕</button></span>'; }).join("")
         : '<span class="hint">no styles of its own yet</span>') + "</div></div>"

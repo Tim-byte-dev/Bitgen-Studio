@@ -8420,6 +8420,25 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **The style's files are waited for:** the downloads on the pod are followed until they finish. If a file the style needs
   is still not on the pod, the render stops and its log names the file - it is not sent to a pod that cannot render it.
 
+## 🖥 The PODS docker: what a pod is doing, and every detail before it is made (2.763.4)
+
+- **How busy a pod is:** in 🖥 My pods, each running pod shows bars beside its name for how busy its GPU is and how full
+  its GPU memory is. Open the pod to see all of them: the GPU, its memory, the RAM, the CPU and both disks (the container
+  disk and /workspace). They update every few seconds while the docker is on screen.
+- **Every detail before Create pod:** the form lists what the pod will be - the template and its image, the GPU x how
+  many (and the memory in all), the price an hour, the cloud, both disks, a CUDA 13 host, the ports, the style it renders
+  and the kinds it is the pod for, and what goes on it after it loads (this computer's custom nodes, the style's files).
+  It follows every change you make in the form.
+- **The prompt docker's style is picked:** the docker's style dropdowns (For, Style, and a pod's Styles) start on the
+  style picked in the prompt docker for the Generate mode.
+- **A pod that is gone is never made again by itself:** when RunPod no longer has a style's pod, the render opens the PODS
+  docker, says the pod is gone, and fills the new one in the way the old one was made (its template if RunPod still lists
+  it, its GPU, how many, the cloud, the disk) - check it and press Create pod, or use one of your pods.
+- **Sending a file from this computer works now:** RunPod's Jupyter refused the upload ("refused part 1 (HTTP 400)")
+  because bitGen gave the file a hidden name while it was being sent; it uses a normal name now. This covers Override
+  style's checkpoint, LoRAs and custom nodes sent from this computer. A big checkpoint takes as long as your upload speed
+  allows.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

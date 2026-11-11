@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.763.4 (Tim: "the pods docker still didn't show, the pod was created automatically, i didn't get to choose the gpu pod, show all the details before i create the pod. in the pods docker show utilization, memory and disk visualizations and usage. put the style in the dropdown as the selected style in the prompt docker" + "the pod's Jupyter refused part 1 (HTTP 400)")
+node scripts/test-podstats7634.js > /tmp/podstats7634.log 2>&1 \
+  && ok "2.763.4 units + LIVE: pod figures (nvidia-smi / meminfo / load / disks parsed, ComfyUI's /system_stats without Jupyter, the Python runs), upload names Jupyter accepts (no hidden part file), kernels shut down; a gone pod is not made again - the render asks, filled in from the old pod (template, GPU, count, cloud, disk)" \
+  || { bad "2.763.4 pod figures + gone pod units"; grep -a "^FAIL" -A1 /tmp/podstats7634.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7634-ui.js > /tmp/ui7634ui.log 2>&1 \
+  && ok "2.763.4 browser test: a running pod's VRAM bar beside its name + RAM inside; For / Style start on the prompt docker's style; the summary before Create pod (follows 2 × A40); made as shown; its pod gone -> the docker says so, filled in A40 × 2, nothing made by itself - on a stand-in RunPod, or SKIP without playwright" \
+  || { bad "2.763.4 PODS docker browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7634ui.log | head -14; }
 # ---- 2.763.3 (Tim: "[worker] ERROR: cannot reach ComfyUI at https://18bgghhpmvz3i3-8188.proxy.runpod.net (HTTP Error 403: Forbidden)" + "if a pod doesn't exist for a style popup the pods docker to create the pod when generate button is pressed, auto select the type and style. let user select gpu and number of gpu's and let the user start and stop and terminate the pod from the docker")
 node scripts/test-pod7633.js > /tmp/pod7633.log 2>&1 \
   && ok "2.763.3 units + LIVE: a stand-in proxy that 403s Python-urllib answers the worker (comfy_client's User-Agent), comfy_progress TLS; prepare waits for the pod's Jupyter + the downloads (an unreadable status is not finished), a file still missing stops the render; pods.create links the style + kinds; the docker's forRender / Use for / Cancel" \

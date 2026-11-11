@@ -159,10 +159,10 @@ const srv = http.createServer(async (q, s) => {
       if (q.headers.authorization !== "token " + CFG.rgpu.pod_jupyter[id]) return send(403, {});
       if (p === "/api/status") return send(200, {});
       if (p === "/api/kernels" && q.method === "POST") return send(201, { id: "k" + id });
-      const up = /^\/api\/contents\/(\.bitgen_up_[^?]+)$/.exec(p);
+      if (/^\/api\/contents\/\./.test(p) && q.method === "PUT") return send(400, { message: "Cannot create file or directory (hidden)" });   // 2.763.4: as Jupyter does
+      const up = /^\/api\/contents\/(bitgen-upload-[^?]+)$/.exec(p);
       if (up && q.method === "PUT") { const j = JSON.parse(b), f = path.join(dir, "..", decodeURIComponent(up[1])); if (j.chunk === 1 || j.chunk === undefined) fs.writeFileSync(f, Buffer.from(j.content, "base64")); else fs.appendFileSync(f, Buffer.from(j.content, "base64")); return send(201, {}); }
-      const st = /^\/api\/contents\/(\.bitgen_(?:dl|nodes)\.json)/.exec(p);
-      if (st) { const f = path.join(dir, "..", st[1]); return fs.existsSync(f) ? send(200, { content: fs.readFileSync(f, "utf8") }) : send(404, {}); }
+      if (/^\/api\/contents\/\./.test(p)) return send(404, {});   // 2.763.4: Jupyter does not show hidden files - bitGen reads them through a kernel
     }
     return send(404, {});
   }
@@ -197,7 +197,7 @@ srv.on("upgrade", (q, sock) => {
       // a kernel lives on: its background threads (downloads, node installs) finish before this stand-in's Python ends
       const py = spawn("python3", ["-u", "-c", msg.content.code + "\nimport threading\nfor _t in threading.enumerate():\n    if _t is not threading.main_thread(): _t.join()\n"], { cwd: dir });
       let out = "", sent = false;
-      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy|nodes-started)/.test(out)) { sent = true;
+      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy|nodes-started|mirror-started|json )/.test(out)) { sent = true;
         wsSend(sock, { msg_type: "stream", parent_header: { msg_id: msg.header.msg_id }, content: { name: "stdout", text: out } });
         wsSend(sock, { msg_type: "execute_reply", parent_header: { msg_id: msg.header.msg_id }, content: { status: "ok" } }); } });
       py.stderr.on("data", (x) => { seen.push("PYERR " + String(x).slice(0, 300)); });
@@ -243,7 +243,7 @@ srv.listen(0, "127.0.0.1", async () => {
     // next time: at once
     seen.length = 0;
     r = SPl.gate(job());
-    check("next render of the style: straight to its pod, nothing asked or sent again", r && r.pod_id === "pod763" && !r.wait && !seen.some((x) => /KERNEL|bitgen_up_|\/hf\//.test(x)), { r, seen });
+    check("next render of the style: straight to its pod, nothing asked or sent again", r && r.pod_id === "pod763" && !r.wait && !seen.some((x) => /KERNEL|bitgen-upload-|\/hf\//.test(x)), { r, seen });
     // the pod for a kind: another style with no pod of its own goes to the Image pod
     CFG.rgpu.pod_cfg = { pod763: { kinds: ["image"] } };
     const other = { mode: "image", style: { id: "st763b", name: "Other", kind: "image", engine: "comfy" } };

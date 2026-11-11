@@ -59,7 +59,8 @@ const srv = http.createServer(async (q, s) => {
     if (q.headers.authorization !== "token jupw759") return send(403, {});
     if (p === "/api/status") return send(200, { started: "now" });
     if (p === "/api/kernels" && q.method === "POST") return send(201, { id: "k1" });
-    const up = /^\/api\/contents\/(\.bitgen_up_[^?]+)$/.exec(p);
+    if (/^\/api\/contents\/\./.test(p) && q.method === "PUT") return send(400, { message: "Cannot create file or directory (hidden)" });   // 2.763.4: as Jupyter does
+      const up = /^\/api\/contents\/(bitgen-upload-[^?]+)$/.exec(p);
     if (up && q.method === "PUT") {   // Jupyter's chunked upload: chunk 1 starts the file, -1 is the last
       const j = JSON.parse(b), f = path.join(JROOT, decodeURIComponent(up[1])); seen.push("CHUNK " + j.chunk);
       if (j.chunk === 1 || j.chunk === undefined) fs.writeFileSync(f, Buffer.from(j.content, "base64")); else fs.appendFileSync(f, Buffer.from(j.content, "base64"));

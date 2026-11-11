@@ -119,7 +119,8 @@ const srv = http.createServer(async (q, s) => {
       if (q.headers.authorization !== "token " + CFG.rgpu.pod_jupyter[id]) return send(403, {});
       if (p === "/api/status") return send(200, {});
       if (p === "/api/kernels" && q.method === "POST") return send(201, { id: "k" + id });
-      const up = /^\/api\/contents\/(\.bitgen_up_[^?]+)$/.exec(p);
+      if (/^\/api\/contents\/\./.test(p) && q.method === "PUT") return send(400, { message: "Cannot create file or directory (hidden)" });   // 2.763.4: as Jupyter does
+      const up = /^\/api\/contents\/(bitgen-upload-[^?]+)$/.exec(p);
       if (up && q.method === "PUT") { const j = JSON.parse(b), f = path.join(dir, "..", decodeURIComponent(up[1])); if (j.chunk === 1 || j.chunk === undefined) fs.writeFileSync(f, Buffer.from(j.content, "base64")); else fs.appendFileSync(f, Buffer.from(j.content, "base64")); return send(201, {}); }
       if (/^\/api\/contents\/\.bitgen_dl\.json/.test(p)) { const f = path.join(dir, "..", ".bitgen_dl.json"); return fs.existsSync(f) ? send(200, { content: fs.readFileSync(f, "utf8") }) : send(404, {}); }
     }
