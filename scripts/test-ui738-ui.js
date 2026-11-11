@@ -57,6 +57,9 @@ function wav(sec, hz, amp) {                              // a tone with a slow 
     const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const ev = (f, a) => p.evaluate(f, a);
     let asked = null;
+    // the song separation / speech to text count as installed here (2.740.0 asks to download them otherwise - test-ui740)
+    await p.route("**/api/stems", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, model: "htdemucs", device: "auto" }) }));
+    await p.route("**/api/asr", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, engine: "whisper" }) }));
     await p.route("**/api/stems/separate", async (route) => {
       asked = JSON.parse(route.request().postData() || "{}");
       [7, 8, 9, 10].forEach((k, i) => fs.writeFileSync(made[k], wav(10, 150 * (i + 1))));

@@ -93,7 +93,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("…Remote picked with no pod yet: allowed (renders stay here until a pod is used)", (await api("/api/gpusplit")).where === "remote");
     await p.click("#gpuPods"); await sleep(600);
     await p.click("#pdRefresh");   // the server keeps RunPod's templates 10 minutes - this test's stand-in, not an earlier one's
-    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdCard").length > 0 && /templates/.test(document.getElementById("pdMsg").textContent), null, { timeout: 10000 }).catch(() => {});
+    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdCard").length > 0 && /^\d+ of \d+ templates/.test(document.getElementById("pdMsg").textContent), null, { timeout: 10000 }).catch(() => {});
     const tpl = () => ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((r) => r.querySelector(".pdName").textContent));
     const msg = () => ev(() => document.getElementById("pdMsg").textContent);
     const tabs = () => ev(() => [...document.querySelectorAll("[data-pdsrc]")].map((b) => b.dataset.pdsrc + (b.classList.contains("on") ? "*" : "") + "=" + b.querySelector(".n").textContent).join(" "));
@@ -167,9 +167,11 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close(); rp.close();
+    // the engine first, while remote generation is still on (afterwards the studio refuses the change and Pods stayed
+    // picked - the next tests then found Remote unlocked)
+    await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: Object.assign({ key: "", pod_id: "", pod_name: "", cost_hr: 0, port: 8188 }, v0.runpod || {}), serverless: Object.assign({ endpoint: "" }, v0.serverless || {}) }).catch(() => {});
-    await api("/api/gpusplit", { where: "local", engine: (g0.engine || { provider: "runpod", runpod: "serverless" }), llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/remotegen/enabled", { on: null }).catch(() => {});
   }
   console.log(`\n${pass} passed, ${fail} failed`);

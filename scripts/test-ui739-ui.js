@@ -57,6 +57,9 @@ function wav(sec, hz) {
     const ev = (f, a) => p.evaluate(f, a);
     const calls = { separate: [], asr: [], gen: [] };
     let sepFail = false;
+    // the song separation / speech to text count as installed here (2.740.0 asks to download them otherwise - test-ui740)
+    await p.route("**/api/stems", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, model: "htdemucs", device: "auto" }) }));
+    await p.route("**/api/asr", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, engine: "whisper" }) }));
     await p.route("**/api/stems/separate", async (route) => {
       const body = JSON.parse(route.request().postData() || "{}");
       calls.separate.push(body);

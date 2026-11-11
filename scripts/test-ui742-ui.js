@@ -34,6 +34,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.goto(URL0);
     const ready = () => p.waitForFunction(() => window.H3BasicTabs && document.querySelector(".modes button.active") && document.getElementById("seconds").value !== "", null, { timeout: 30000 }).then(() => sleep(1500));
     await ready();
+    await ev(() => { if (window.SecFloat && SecFloat.state("basic") && !SecFloat.state("basic").shown) SecFloat.show("basic", true); });   // a new studio opens with Basic Settings closed
+    await sleep(400);
     await ev(() => { window.H3BasicTabs.forget(); const s = document.getElementById("sec-basic"); if (s && s.classList.contains("collapsed")) s.classList.remove("collapsed"); });
     // a REAL click (trusted) on whatever is at the button's centre - the button itself, shown
     const click = async (sel) => {

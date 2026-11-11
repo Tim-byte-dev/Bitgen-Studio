@@ -70,6 +70,9 @@ function wav(sec, hz) {                                   // a quiet tone, 8 kHz
     const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const ev = (f, a) => p.evaluate(f, a);
     // the separation is answered here (demucs is not run by a test): the two stems written, then the reply
+    // the song separation / speech to text count as installed here (2.740.0 asks to download them otherwise - test-ui740)
+    await p.route("**/api/stems", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, model: "htdemucs", device: "auto" }) }));
+    await p.route("**/api/asr", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ installed: true, engine: "whisper" }) }));
     await p.route("**/api/stems/separate", async (route) => {
       const body = JSON.parse(route.request().postData() || "{}");
       [6, 7, 8, 9].forEach((k, i) => fs.writeFileSync(made[k], wav(9, 220 + 110 * i)));
