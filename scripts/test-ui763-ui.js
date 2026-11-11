@@ -4,10 +4,10 @@
  * H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port} (this test's stand-in RunPod on 8399).
  * Tim (verbatim): "if we are in pod mode and a style is selected, check if that style has a pod assigned to it and create the
  * pod with the comfy cuda 13 template" (agreed: ask first - the GPU, its $/h, the disk; Create or Use my running pod)
- *   - Basic Settings ▸ GPU on RunPod ▸ Pods (Remote); an image render of a style with no pod waits, the box opens by itself:
- *     the CUDA 13 template, the GPUs with ⭐ bitGen's pick and $/h, the disk, your pods; Esc does not close it
- *   - Create pod: POST /v2/pods with the CUDA 13 template, the GPU picked, gpu.minCudaVersion 13.0; the style linked to it
- *   - another style: Use this pod (a stopped one) -> linked; Cancel on a third -> the job goes on without a pod
+ *   - Basic Settings ▸ GPU on RunPod ▸ Pods (Remote); an image render of a style with no pod waits - 2.763.3: the PODS docker
+ *     opens with a banner and the create form filled in: the CUDA 13 template, the style + its kind, bitGen's GPU pick, GPUs, disk
+ *   - Create pod (GPUs 2): POST /v2/pods with the CUDA 13 template, minCudaVersion 13.0; the style linked + the pod for Image
+ *   - another style: ▶ Use for <style> on your stopped pod -> linked; a third: Cancel the render -> cancelled
  * Put back afterwards. No server / no Playwright / 8399 busy = SKIP. */
 "use strict";
 const path = require("path"), http = require("http");
@@ -62,49 +62,55 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.goto(URL0);
     await p.waitForFunction(() => window.H3StylePodAsk && typeof refreshJobs === "function", null, { timeout: 30000 });
     check("the page has the question box's code (H3StylePodAsk) and at least three image styles to try", imgs.length >= 3, imgs.length);
-    // 1. a style with no pod -> asked
+    // 1. a style with no pod -> 2.763.3 (Tim: "popup the pods docker to create the pod when generate button is pressed, auto
+    //    select the type and style. let user select gpu and number of gpu's"): the PODS docker opens with the form filled in
     const j1 = await api("/api/genimage", { prompt: "a red fox", style_id: imgs[0].id }); jobs.push(j1.id || j1.job_id);
-    await p.waitForFunction(() => { const d = document.getElementById("spaDlg"); return d && d.open && d.querySelector("#spaGpu"); }, null, { timeout: 30000 }).catch(() => {});
-    const box = await ev(() => { const d = document.getElementById("spaDlg"); if (!d) return null;
-      return { open: d.open, title: d.querySelector("#spaTitle").textContent, tpl: (d.querySelector("fieldset .hint") || {}).textContent || "", gpus: [...d.querySelectorAll("#spaGpu option")].map((o) => o.textContent + (o.disabled ? " [off]" : "") + (o.selected ? " [x]" : "")),
-        vol: (d.querySelector("#spaVol") || {}).value, pods: [...d.querySelectorAll("#spaPod option")].map((o) => o.textContent), cost: (d.querySelector("#spaCost") || {}).textContent || "", create: !(d.querySelector("#spaCreate") || {}).disabled }; });
-    check("a render in pod mode whose style has no pod: the box opens by itself - 'A pod for <style>', RunPod's ComfyUI CUDA 13 template, the disk (50 GB at least)",
-      box && box.open && box.title === "A pod for " + imgs[0].name && /ComfyUI CUDA 13/.test(box.tpl) && +box.vol >= 50 && box.create, box);
-    check("…the GPUs with memory and $/h - ⭐ bitGen's pick (the cheapest with enough memory) picked, one with none free greyed; your stopped pod offered; the cost line",
-      box && box.gpus.some((g) => /^⭐ .* · \d+ GB · \$\d\.\d\d\/h \[x\]$/.test(g)) && box.gpus.some((g) => /H100.*\(none free now\) \[off\]/.test(g)) && box.pods.some((t) => /Stopped pod/.test(t) && /exited/.test(t)) && /About \$\d\.\d\d\/h while it runs/.test(box.cost), box);
-    // 2.763.1 (Tim: "it says starting in queue but i don't know what it's doing"): the waiting render's pod line on screen
+    await p.waitForFunction(() => { const a = document.getElementById("pdAsk"), f = document.getElementById("pdForm"), g = document.getElementById("pdGpu"); return a && !a.hidden && f && g && g.value; }, null, { timeout: 40000 }).catch(() => {});
+    const box = await ev(() => { const a = document.getElementById("pdAsk"); if (!a) return null; const g = document.getElementById("pdGpu");
+      return { ask: a.hidden ? "" : a.textContent, tpl: (document.getElementById("pdCreate") || {}).dataset ? document.getElementById("pdCreate").dataset.tpl : "", style: (document.getElementById("pdStyle") || {}).value,
+        kinds: [...document.querySelectorAll("#pdForm [data-pdkind]")].filter((c) => c.checked).map((c) => c.dataset.pdkind), gpu: g ? g.value : "", gpus: g ? [...g.options].map((o) => o.textContent + (o.disabled ? " [off]" : "")) : [],
+        count: (document.getElementById("pdCount") || {}).value, vol: (document.getElementById("pdVol") || {}).value, name: (document.getElementById("pdName") || {}).value, price: (document.getElementById("pdPrice") || {}).textContent || "" }; });
+    check("a render in pod mode whose style has no pod: the PODS docker opens - a banner names the waiting render; the create form is on RunPod's ComfyUI CUDA 13 template with the style + its kind (Image) picked",
+      box && /A render of .* is waiting for a pod/.test(box.ask) && box.tpl === "tplCu13u" && box.style === imgs[0].id && box.kinds.join() === "image" && box.name === ("bitGen " + imgs[0].name).slice(0, 40), box);
+    check("…bitGen's GPU pick (the cheapest with enough memory - RTX A6000 here) picked, the others yours to choose (one with none free greyed), GPUs 1, the disk 50 GB+, the price an hour",
+      box && box.gpu === "NVIDIA RTX A6000" && box.gpus.some((g) => /H100.*none free \[off\]/.test(g)) && box.count === "1" && +box.vol >= 50 && /About \$\d\.\d\d an hour/.test(box.price), box);
+    // 2.763.1: the waiting render's pod line on screen
     await p.waitForFunction(() => { const c = document.getElementById("spaChip"); return c && !c.hidden; }, null, { timeout: 15000 }).catch(() => {});
     const chip = await ev(() => { const c = document.getElementById("spaChip"); return c ? { hidden: c.hidden, t: c.textContent } : null; });
     check("2.763.1: a line over the status bar says what the waiting render's pod is doing", chip && !chip.hidden && /^🖥 waiting for you - no pod renders /.test(chip.t), chip);
-    await p.keyboard.press("Escape"); await sleep(300);
-    check("…Esc does not close it (Cancel says what happens to the render)", await ev(() => document.getElementById("spaDlg").open));
     const q1 = await api("/api/jobs");
-    check("…the job waits in the queue with the question (job.pod_ask) and a [pod] line", (() => { const j = q1.find((x) => x.id === jobs[0]); return j && j.status === "queued" && /^pa\d+$/.test(j.pod_ask || ""); })(), q1.map((x) => [x.id, x.status, x.pod_ask]));
-    await ev(() => { const s = document.getElementById("spaGpu"); s.value = "NVIDIA RTX A6000"; s.dispatchEvent(new Event("change")); });
-    await p.click("#spaCreate");
-    await p.waitForFunction(() => !document.getElementById("spaDlg").open, null, { timeout: 15000 }).catch(() => {});
+    check("…the job waits in the queue with the question (job.pod_ask)", (() => { const j = q1.find((x) => x.id === jobs[0]); return j && j.status === "queued" && /^pa\d+$/.test(j.pod_ask || ""); })(), q1.map((x) => [x.id, x.status, x.pod_ask]));
+    await ev(() => { const c = document.getElementById("pdCount"); c.value = "2"; c.dispatchEvent(new Event("change")); });
+    await ev(() => document.getElementById("pdGo").click());
+    await p.waitForFunction(() => { const a = document.getElementById("pdAsk"); return a && a.hidden; }, null, { timeout: 15000 }).catch(() => {});
     const c = created[0] || {};
-    check("Create pod: RunPod is asked for a pod from the CUDA 13 template on the GPU picked, on a CUDA 13 host, with the disk; the box closes",
-      c.templateId === "tplCu13u" && c.gpu && c.gpu.id === "NVIDIA RTX A6000" && c.gpu.minCudaVersion === "13.0" && c.mounts && c.mounts.persistent.size >= 50 && !(await ev(() => document.getElementById("spaDlg").open)), c);
-    const l1 = (await api("/api/stylepods")).links;
-    check("…the style is linked to the new pod (next time it goes there by itself)", l1[imgs[0].id] === "pod763new", l1);
-    // 2. another style -> Use my stopped pod
-    const j2 = await api("/api/genimage", { prompt: "a blue fox", style_id: imgs[1].id }); jobs.push(j2.id || j2.job_id);
+    check("Create pod: RunPod is asked for a pod from the CUDA 13 template (a CUDA 13 host - gpu.minCudaVersion), the GPU picked x 2, the disk; the banner goes",
+      c.templateId === "tplCu13u" && c.gpu && c.gpu.id === "NVIDIA RTX A6000" && c.gpu.count === 2 && c.gpu.minCudaVersion === "13.0" && c.mounts && c.mounts.persistent.size >= 50 && (await ev(() => document.getElementById("pdAsk").hidden)), c);
+    for (let i = 0; i < 20; i++) { const jj = (await api("/api/jobs")).find((x) => x.id === jobs[0]); if (!jj || !jj.pod_ask) break; await sleep(500); }
+    const sp1 = await api("/api/stylepods");
+    check("…the style is linked to the new pod and the pod ticked for Image; the waiting render goes there (its question answered)", sp1.links[imgs[0].id] === "pod763new" && sp1.kinds.image === "pod763new"
+      && !((await api("/api/jobs")).find((x) => x.id === jobs[0]) || {}).pod_ask, sp1);
+    // 2. another style -> ▶ Use for <style> on your stopped pod (the pod for Image untick first - else it would go there)
+    await api("/api/pods/pod763new/setup", { kinds: [], styles: [imgs[0].id], pod_name: "bitGen", port: 8188 });
     await api("/api/jobs/" + jobs[0] + "/cancel", {}).catch(() => {});
-    await p.waitForFunction((n) => { const d = document.getElementById("spaDlg"); return d && d.open && d.querySelector("#spaTitle").textContent === "A pod for " + n && d.querySelector("#spaUse"); }, imgs[1].name, { timeout: 30000 }).catch(() => {});
-    await p.click("#spaUse").catch(() => {});
-    await p.waitForFunction(() => !document.getElementById("spaDlg").open, null, { timeout: 15000 }).catch(() => {});
+    const j2 = await api("/api/genimage", { prompt: "a blue fox", style_id: imgs[1].id }); jobs.push(j2.id || j2.job_id);
+    await ev(() => { if (window.H3Pods) H3Pods.load(); });
+    await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod763u"] [data-pdfor]'), null, { timeout: 40000 }).catch(() => {});
+    const uf = await ev(() => { const b = document.querySelector('#pdPods .pdRow[data-pod="pod763u"] [data-pdfor]'); return b ? b.textContent : ""; });
+    check("another style: your pods show ▶ Use for <style> while its render waits", uf === "▶ Use for " + imgs[1].name, { uf, ask: await ev(() => H3Pods.ask()), banner: await ev(() => document.getElementById("pdAsk").textContent), rows: await ev(() => [...document.querySelectorAll("#pdPods .pdRow")].map((r) => r.dataset.pod + (r.classList.contains("open") ? "*" : ""))), jobs: (await api("/api/jobs")).map((x) => [x.id, x.status, x.pod_ask]), sp: await api("/api/stylepods") });
+    await ev(() => document.querySelector('#pdPods .pdRow[data-pod="pod763u"] [data-pdfor]').click());
+    await sleep(1500);
     const l2 = (await api("/api/stylepods")).links;
-    check("another style: Use this pod (your stopped one) - linked to it", l2[imgs[1].id] === "pod763u", l2);
-    // 3. a third -> Cancel
+    check("…pressed: the style linked to that pod", l2[imgs[1].id] === "pod763u", { l2, msg: await ev(() => document.getElementById("pdMsg").textContent), ask: await ev(() => H3Pods.ask()), jobs: (await api("/api/jobs")).map((x) => [x.id, x.status, x.pod_ask]) });
+    // 3. a third -> Cancel the render (the banner's button)
     await api("/api/jobs/" + jobs[1] + "/cancel", {}).catch(() => {});
     const j3 = await api("/api/genimage", { prompt: "a green fox", style_id: imgs[2].id }); jobs.push(j3.id || j3.job_id);
-    await p.waitForFunction((n) => { const d = document.getElementById("spaDlg"); return d && d.open && d.querySelector("#spaTitle").textContent === "A pod for " + n && d.querySelector("#spaCancel"); }, imgs[2].name, { timeout: 30000 }).catch(() => {});
-    await p.click("#spaCancel").catch(() => {});
+    await p.waitForFunction(() => { const a = document.getElementById("pdAsk"); return a && !a.hidden && document.getElementById("pdAskNo"); }, null, { timeout: 40000 }).catch(() => {});
+    await ev(() => document.getElementById("pdAskNo").click());
     let j3s = null;
     for (let i = 0; i < 40; i++) { await sleep(500); const all = await api("/api/jobs"); j3s = all.find((x) => x.id === jobs[2]); if (!j3s || j3s.status !== "queued") break; }
     const lg = await api("/api/jobs/" + jobs[2] + "?log_from=0").catch(() => ({}));
-    check("a third style: Cancel - the render is cancelled (2.763.1: not rendered anywhere else; said in its log), no link made", (!j3s || j3s.status === "cancelled") && !(await api("/api/stylepods")).links[imgs[2].id]
+    check("a third style: Cancel the render - cancelled (not rendered anywhere else; said in its log), no link made", (!j3s || j3s.status === "cancelled") && !(await api("/api/stylepods")).links[imgs[2].id]
       && (lg.log || []).some((l) => /you cancelled/.test(l)), { j3s: j3s && j3s.status, log: (lg.log || []).filter((l) => /\[pod\]|\[gpu\]/.test(l)) });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {

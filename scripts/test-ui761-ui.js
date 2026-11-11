@@ -57,6 +57,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI761", pod_id: "", port: 3000 }, serverless: { endpoint: "" } });
   await api("/api/remotegen/enabled", { on: true });
   await api("/api/gpusplit", { where: "remote", engine: { provider: "runpod", runpod: "pods" } });
+  await api("/api/pods/costs?refresh=1").catch(() => {});   // the costs are kept 50 s - an earlier test's stand-in is not this one
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1500, height: 1000 } }); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -108,7 +109,8 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.check('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="llm"]'); await sleep(400);
     r = await row();
     check("LLM ticked: the pod's LLM server - its port (8000) and model", r.llm && (await ev(() => document.querySelector('#pdPods [data-psport]').value)) === "8000" && r.save === false, r);
-    await ev((v) => { const s = document.querySelector('#pdPods .pdRow[data-pod="pod761u"] [data-psstyle]'); s.value = v; s.dispatchEvent(new Event("change")); }, pick);
+    await sleep(600);   // the LLM tick's repaint
+    await p.selectOption('#pdPods .pdRow[data-pod="pod761u"] [data-psstyle]', pick);
     await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psadd]'); await sleep(300);
     await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-pssave]');
     await p.waitForFunction(() => /✓ saved/.test((document.querySelector('#pdPods .pdRow[data-pod="pod761u"] .psMsg') || {}).textContent || ""), null, { timeout: 20000 }).catch(() => {});

@@ -34,8 +34,12 @@ def listen(base, client_id, stop, pidbox, g, seen, say):
         host, port = u.hostname, u.port or (443 if u.scheme == "https" else 80)
         key = base64.b64encode(os.urandom(16)).decode()
         s = socket.create_connection((host, port), timeout=10)
+        if u.scheme == "https":                 # 2.763.3: a RunPod pod's proxy is https (wss)
+            import ssl
+            s = ssl.create_default_context().wrap_socket(s, server_hostname=host)
         s.sendall((f"GET /ws?clientId={client_id} HTTP/1.1\r\n"
-                   f"Host: {host}:{port}\r\n"
+                   f"Host: {host}" + ("" if port in (80, 443) else f":{port}") + "\r\n"
+                   "User-Agent: bitGen-Studio (ComfyUI client)\r\n"
                    "Upgrade: websocket\r\nConnection: Upgrade\r\n"
                    f"Sec-WebSocket-Key: {key}\r\n"
                    "Sec-WebSocket-Version: 13\r\n\r\n").encode())

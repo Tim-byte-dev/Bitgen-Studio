@@ -109,11 +109,21 @@
     c.textContent = "🖥 " + j.pod_note;
     c.title = "The render waits for its RunPod pod - the job's log has every step ([pod] lines)";
   }
+  /* 2.763.3 (Tim: "if a pod doesn't exist for a style popup the pods docker to create the pod when generate button is
+     pressed"): the question opens the PODS docker (H3Pods.forRender: its create form filled in for the style); this box is
+     only the fallback when that docker is not there */
+  function viaDocker(id) {
+    if (!(root.H3Pods && H3Pods.forRender)) return Promise.resolve(false);
+    return getj("/api/stylepods/ask/" + id + "?cloud=SECURE").then(function (o) { return !o.error && H3Pods.forRender(o); }).catch(function () { return false; });
+  }
+  function answered(id) { asked[id] = true; if (open === id) open = null; }
   function watchJobs(list) {
     chip(list);
     if (open) return;
     var p = pending(list, asked);
-    if (p.length) show(p[0]);
+    if (!p.length) return;
+    var id = p[0]; open = id;
+    viaDocker(id).then(function (ok) { if (ok) { asked[id] = true; open = null; } else { open = null; show(id); } });
   }
-  root.H3StylePodAsk = Object.assign({ watchJobs: watchJobs, show: show }, pure);
+  root.H3StylePodAsk = Object.assign({ watchJobs: watchJobs, show: show, answered: answered }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

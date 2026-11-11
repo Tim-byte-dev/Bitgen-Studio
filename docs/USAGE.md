@@ -8405,6 +8405,21 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   lists first - the render is sent straight away (before, it could fail on this computer without reaching the pod). When
   a render fails, the lines that say why ([pod], [gpu], errors) are printed after "that one failed" in the log.
 
+## 🖥 The PODS docker opens for a style with no pod (2.763.3)
+
+- **Generate with a style that has no pod** now opens the 🖥 PODS docker (it replaces the small question box). A banner
+  names the render that is waiting, and the create form is already open on RunPod's "ComfyUI CUDA 13" template with the
+  **Style** and its kind (**For**: Image, Image edit or Video) picked, bitGen's GPU pick (the cheapest with enough memory
+  for the style's model), **GPUs** 1 and the disk filled in. Change the GPU, how many GPUs, the cloud or the disk, then
+  press **Create pod**: the style is linked to the new pod, the pod is the one for that kind, and the render goes there
+  once the pod has loaded and has the style's files.
+- **Or use one of your pods:** while a render waits, every pod in 🖥 My pods shows **▶ Use for <style>**. ▶ Start,
+  ⏹ Stop and Terminate are there as before. **Cancel the render** in the banner cancels it.
+- **Renders reach the pod now:** RunPod's proxy refused the render with "HTTP Error 403: Forbidden" because of the way the
+  render worker introduced itself; it now gives its own name. The live step count also works over the pod's https address.
+- **The style's files are waited for:** the downloads on the pod are followed until they finish. If a file the style needs
+  is still not on the pod, the render stops and its log names the file - it is not sent to a pod that cannot render it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

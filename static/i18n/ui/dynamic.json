@@ -5396,231 +5396,251 @@
   },
   {
    "s": "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods",
-   "src": "static/podsdock.js:84"
+   "src": "static/podsdock.js:87"
   },
   {
    "s": "PODS",
-   "src": "static/podsdock.js:84"
+   "src": "static/podsdock.js:87"
   },
   {
    "s": "RunPod pods",
-   "src": "static/podsdock.js:101"
-  },
-  {
-   "s": "now",
-   "src": "static/podsdock.js:101"
-  },
-  {
-   "s": "today",
-   "src": "static/podsdock.js:101"
-  },
-  {
-   "s": "this month",
-   "src": "static/podsdock.js:101"
-  },
-  {
-   "s": "RunPod pods: none running",
-   "src": "static/podsdock.js:101"
-  },
-  {
-   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
    "src": "static/podsdock.js:104"
   },
   {
+   "s": "now",
+   "src": "static/podsdock.js:104"
+  },
+  {
+   "s": "today",
+   "src": "static/podsdock.js:104"
+  },
+  {
+   "s": "this month",
+   "src": "static/podsdock.js:104"
+  },
+  {
+   "s": "RunPod pods: none running",
+   "src": "static/podsdock.js:104"
+  },
+  {
+   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
+   "src": "static/podsdock.js:107"
+  },
+  {
    "s": "Every kind",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "NVIDIA",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "AMD",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "ComfyUI only",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "For any style",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "Explore RunPod templates ↗",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "Search templates - name, image, port, kind",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "Ask RunPod again",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "The kind of machine the template is made for",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "Only templates that run ComfyUI - the ones bitGen can render with",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
+  },
+  {
+   "s": "Templates that look made for this bitGen style first - a pod created this way renders the style (linked to it)",
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "A template that is not listed: paste its RunPod link",
-   "src": "static/podsdock.js:122"
+   "src": "static/podsdock.js:125"
   },
   {
    "s": "Official",
-   "src": "static/podsdock.js:126"
+   "src": "static/podsdock.js:129"
   },
   {
    "s": "Verified",
-   "src": "static/podsdock.js:126"
+   "src": "static/podsdock.js:129"
   },
   {
    "s": "My pods",
-   "src": "static/podsdock.js:126"
+   "src": "static/podsdock.js:129"
   },
   {
    "s": "kept under ★ Shortcuts",
-   "src": "static/podsdock.js:203"
+   "src": "static/podsdock.js:207"
   },
   {
    "s": "removed from ★ Shortcuts",
-   "src": "static/podsdock.js:203"
+   "src": "static/podsdock.js:207"
   },
   {
    "s": "Runs ComfyUI - bitGen can render on it",
-   "src": "static/podsdock.js:237"
+   "src": "static/podsdock.js:241"
   },
   {
    "s": "fits",
-   "src": "static/podsdock.js:239"
-  },
-  {
-   "s": "Container disk",
-   "src": "static/podsdock.js:242"
-  },
-  {
-   "s": "Kept while the pod is stopped",
    "src": "static/podsdock.js:243"
   },
   {
+   "s": "Container disk",
+   "src": "static/podsdock.js:246"
+  },
+  {
+   "s": "Kept while the pod is stopped",
+   "src": "static/podsdock.js:247"
+  },
+  {
    "s": "No shortcuts yet - press ☆ on a template to keep it here",
-   "src": "static/podsdock.js:252"
+   "src": "static/podsdock.js:256"
   },
   {
    "s": "No template matches - try fewer words, another kind, or untick ComfyUI only",
-   "src": "static/podsdock.js:252"
+   "src": "static/podsdock.js:256"
   },
   {
    "s": "No templates here",
-   "src": "static/podsdock.js:252"
+   "src": "static/podsdock.js:256"
   },
   {
    "s": "Create a pod from",
-   "src": "static/podsdock.js:273"
+   "src": "static/podsdock.js:278"
   },
   {
    "s": "Cloud",
-   "src": "static/podsdock.js:280"
+   "src": "static/podsdock.js:285"
   },
   {
    "s": "Secure",
-   "src": "static/podsdock.js:280"
+   "src": "static/podsdock.js:285"
   },
   {
    "s": "GPU",
-   "src": "static/podsdock.js:282"
-  },
-  {
-   "s": "asking RunPod",
-   "src": "static/podsdock.js:282"
-  },
-  {
-   "s": "GPUs",
-   "src": "static/podsdock.js:283"
-  },
-  {
-   "s": "wiped when the pod stops",
-   "src": "static/podsdock.js:284"
-  },
-  {
-   "s": "workspace",
-   "src": "static/podsdock.js:285"
-  },
-  {
-   "s": "GB",
-   "src": "static/podsdock.js:285"
-  },
-  {
-   "s": "kept while stopped - billed for storage",
-   "src": "static/podsdock.js:285"
-  },
-  {
-   "s": "Create pod",
    "src": "static/podsdock.js:287"
   },
   {
-   "s": "no GPUs offered",
-   "src": "static/podsdock.js:298"
+   "s": "asking RunPod",
+   "src": "static/podsdock.js:287"
   },
   {
-   "s": "terminating",
-   "src": "static/podsdock.js:334"
+   "s": "GPUs",
+   "src": "static/podsdock.js:288"
   },
   {
-   "s": "stopping pod",
-   "src": "static/podsdock.js:335"
+   "s": "The style that renders on this pod (linked to it)",
+   "src": "static/podsdock.js:290"
   },
   {
-   "s": "loading pod",
-   "src": "static/podsdock.js:336"
-  },
-  {
-   "s": "pod loaded",
-   "src": "static/podsdock.js:337"
-  },
-  {
-   "s": "stopped",
-   "src": "static/podsdock.js:340"
-  },
-  {
-   "s": "No pods yet - pick a template (All, Official …) and press Create pod",
-   "src": "static/podsdock.js:352"
-  },
-  {
-   "s": "bitGen created or started it",
-   "src": "static/podsdock.js:357"
-  },
-  {
-   "s": "Render on this pod (its ComfyUI)",
-   "src": "static/podsdock.js:363"
-  },
-  {
-   "s": "Styles",
-   "src": "static/podsdock.js:364"
-  },
-  {
-   "s": "Terminate",
-   "src": "static/podsdock.js:366"
-  },
-  {
-   "s": "Delete the pod and everything on it",
-   "src": "static/podsdock.js:366"
-  },
-  {
-   "s": "Video",
-   "src": "static/podsetup.js:21"
+   "s": "This pod renders every style of the kinds ticked that has no pod of its own - one pod per kind",
+   "src": "static/podsdock.js:292"
   },
   {
    "s": "Image edit",
-   "src": "static/podsetup.js:21"
+   "src": "static/podsdock.js:293"
+  },
+  {
+   "s": "Video",
+   "src": "static/podsdock.js:293"
+  },
+  {
+   "s": "wiped when the pod stops",
+   "src": "static/podsdock.js:294"
+  },
+  {
+   "s": "workspace",
+   "src": "static/podsdock.js:295"
+  },
+  {
+   "s": "kept while stopped - billed for storage",
+   "src": "static/podsdock.js:295"
+  },
+  {
+   "s": "Create pod",
+   "src": "static/podsdock.js:297"
+  },
+  {
+   "s": "no GPUs offered",
+   "src": "static/podsdock.js:308"
+  },
+  {
+   "s": "terminating",
+   "src": "static/podsdock.js:347"
+  },
+  {
+   "s": "stopping pod",
+   "src": "static/podsdock.js:348"
+  },
+  {
+   "s": "loading pod",
+   "src": "static/podsdock.js:349"
+  },
+  {
+   "s": "pod loaded",
+   "src": "static/podsdock.js:350"
+  },
+  {
+   "s": "stopped",
+   "src": "static/podsdock.js:353"
+  },
+  {
+   "s": "No pods yet - pick a template (All, Official …) and press Create pod",
+   "src": "static/podsdock.js:365"
+  },
+  {
+   "s": "bitGen created or started it",
+   "src": "static/podsdock.js:370"
+  },
+  {
+   "s": "Render on this pod (its ComfyUI)",
+   "src": "static/podsdock.js:377"
+  },
+  {
+   "s": "Styles",
+   "src": "static/podsdock.js:378"
+  },
+  {
+   "s": "Terminate",
+   "src": "static/podsdock.js:380"
+  },
+  {
+   "s": "Delete the pod and everything on it",
+   "src": "static/podsdock.js:380"
+  },
+  {
+   "s": "A render of",
+   "src": "static/podsdock.js:481"
+  },
+  {
+   "s": "Cancel the render",
+   "src": "static/podsdock.js:481"
+  },
+  {
+   "s": "Do not render it now",
+   "src": "static/podsdock.js:481"
   },
   {
    "s": "What this pod is for",
@@ -6744,6 +6764,10 @@
   },
   {
    "s": "Disk",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "GB",
    "src": "static/stylepodask.js:58"
   },
   {
@@ -23846,51 +23870,55 @@
   },
   {
    "p": "{0} running · {1}",
-   "src": "static/podsdock.js:101"
+   "src": "static/podsdock.js:104"
   },
   {
    "p": "{0} pod on your RunPod account",
-   "src": "static/podsdock.js:226"
+   "src": "static/podsdock.js:230"
   },
   {
    "p": "{0} pods on your RunPod account",
-   "src": "static/podsdock.js:226"
+   "src": "static/podsdock.js:230"
   },
   {
    "p": "{0} of {1} templates · RunPod did not answer for: {2}",
-   "src": "static/podsdock.js:227"
+   "src": "static/podsdock.js:231"
   },
   {
    "p": "{0} of {1} templates",
-   "src": "static/podsdock.js:227"
+   "src": "static/podsdock.js:231"
   },
   {
    "p": "{0} GB disk",
-   "src": "static/podsdock.js:242"
+   "src": "static/podsdock.js:246"
   },
   {
    "p": "{0} GB /workspace",
-   "src": "static/podsdock.js:243"
+   "src": "static/podsdock.js:247"
   },
   {
    "p": "About {0} an hour while it runs (RunPod's price now), plus storage",
-   "src": "static/podsdock.js:310"
+   "src": "static/podsdock.js:321"
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:408"
+   "src": "static/podsdock.js:423"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:424"
+   "src": "static/podsdock.js:439"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:425"
+   "src": "static/podsdock.js:440"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:434"
+   "src": "static/podsdock.js:449"
+  },
+  {
+   "p": "is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for {0} on one of yours",
+   "src": "static/podsdock.js:481"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",

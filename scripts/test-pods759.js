@@ -46,15 +46,15 @@ check("createBody: a pod bitGen creates gets bitGen's own Jupyter password (env)
 check("…the password kept encrypted per pod (rgpu.pod_jupyter.<id> - lib/secrets.js), dropped from custom.settings",
   SEC.isKeyPath("rgpu.pod_jupyter.abc123") && SEC.pathsOf({ rgpu: { pod_jupyter: { abc123: "x" } } }).includes("rgpu.pod_jupyter.abc123") && !JSON.stringify(SEC.strip({ rgpu: { pod_jupyter: { abc123: "secretpw" } } })).includes("secretpw"));
 const PJ = rd("lib", "pods.js");
-check("lib/pods.js create: the template's ports from RunPod's list, a random password, kept with setJupyter; for_style remembered (rgpu.pod_for)",
-  /o\.jupyter = require\("crypto"\)\.randomBytes\(18\)\.toString\("base64url"\)/.test(PJ) && /require\("\.\/podModels"\)\.setJupyter\(p\.id, o\.jupyter\)/.test(PJ) && /c\.rgpu\.pod_for = /.test(PJ));
+check("lib/pods.js create: the template's ports from RunPod's list, a random password, kept with setJupyter; for_style = the style linked to the pod (2.763.3 - no P_ copy)",
+  /o\.jupyter = require\("crypto"\)\.randomBytes\(18\)\.toString\("base64url"\)/.test(PJ) && /require\("\.\/podModels"\)\.setJupyter\(p\.id, o\.jupyter\)/.test(PJ) && /if \(o\.for_style\) SP\.link\(o\.for_style, p\.id\);/.test(PJ));
 check("lib/remoteGpu.js: a pod made for a style makes its P_ style once loaded (lib/podStyles.js autoFor)", /require\("\.\/podStyles"\)\.autoFor\(m\.id, want/.test(rd("lib", "remoteGpu.js")));
 const RT = rd("routes", "pods.js");
 check("routes/pods.js: catalog / plan / ways / models (GET state, POST start), before /:id/:action",
   ["/api/pods/catalog", "/api/pods/plan", "/api/pods/:id/ways", "/api/pods/:id/models"].every((r) => RT.includes('"' + r + '"') && RT.indexOf('"' + r + '"') < RT.indexOf('"/api/pods/:id/:action"')));
 const PL = rd("static", "podload.js");
 check("the PODS docker: ⬇ Models on a running pod (a style ticks its files, a search of bitGen's list, the Jupyter password box when needed, a bar per file, then 🎨 Make P_ styles); For style + ✓ fits on the cards; Create sends for_style",
-  /data-pdmod/.test(PD) && /H3PodLoad\.models\(host, p,/.test(PD) && /id="pdFor"/.test(PD) && /✓ fits /.test(PD) && /for_style: S\.forStyle/.test(PD)
+  /data-pdmod/.test(PD) && /H3PodLoad\.models\(host, p,/.test(PD) && /id="pdFor"/.test(PD) && /✓ fits /.test(PD) && /for_style: \(\$\("pdStyle"\) \|\| \{\}\)\.value/.test(PD)
   && /data-pmstyle/.test(PL) && /data-pmq/.test(PL) && /data-pmpw/.test(PL) && /data-pmsty/.test(PL) && /\/api\/pods\/plan/.test(PL));
 check("+ \"add mounting the model in the pod from the hdd or link?\": nameFromLink (the link's file name, a model extension added when it has none), only ComfyUI model folders; the routes; the panel's link box, folder list and ⬆ From this computer… (bitGen's Open dialog)",
   PM.nameFromLink("https://civitai.com/api/download/models/12345") === "12345.safetensors" && PM.nameFromLink("https://h/x/my%20lora.safetensors?x=1") === "my lora.safetensors"

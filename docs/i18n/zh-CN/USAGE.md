@@ -5102,6 +5102,16 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **2.763.2：** 送到 Pod 的渲染不再先启动这台电脑的 ComfyUI，也不再拿风格对照它的模型列表 - 渲染会立即发送（以前可能还没到
   Pod 就在这台电脑上失败）。渲染失败时，说明原因的行（[pod]、[gpu]、错误）会显示在日志的“that one failed”之后。
 
+## 🖥 没有 Pod 的风格会打开 PODS 停靠窗 (2.763.3)
+<!-- en: the-pods-docker-opens-for-a-style-with-no-pod-2-763-3 b989403c9906 -->
+
+- **用没有 Pod 的风格按 Generate**，现在会打开 🖥 PODS 停靠窗（取代小询问框）。横幅说明正在等待的渲染，创建表单已经在 RunPod 的
+  “ComfyUI CUDA 13”模板上打开，**Style** 和它的类型（**For**：Image、Image edit 或 Video）、bitGen 推荐的 GPU（显存足够放下风格模型的最便宜的一个）、**GPUs** 1 和磁盘都已填好。改好 GPU、GPU 数量、云或磁盘后按 **Create pod**：风格会关联到新 Pod，这个 Pod
+  成为该类型的 Pod，Pod 加载完并有了风格的文件后渲染就会送过去。
+- **或者使用你的某个 Pod：** 渲染等待时，🖥 My pods 中每个 Pod 都会显示 **▶ Use for <风格>**。▶ Start、⏹ Stop 和 Terminate 照旧。横幅里的 **Cancel the render** 会取消这次渲染。
+- **渲染现在能到达 Pod：** RunPod 的代理因为渲染 worker 的自我介绍方式，用“HTTP Error 403: Forbidden”拒绝了渲染；现在它会报出自己的名字。实时步数也能通过 Pod 的 https 地址显示。
+- **会等待风格的文件：** Pod 上的下载会一直跟进到完成。如果风格需要的文件仍不在 Pod 上，渲染会停止，日志写出那个文件 - 不会送到无法渲染它的 Pod。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -63,12 +63,12 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       const t = document.getElementById("prompt"); t.value = "a house by a lake"; t.dispatchEvent(new Event("input", { bubbles: true })); }, st.id);
     await sleep(400);
     await ev(() => document.getElementById("go").click());   // the button the prompt docker shows (the docker may be folded here)
-    await p.waitForFunction(() => { const d = document.getElementById("spaDlg"); return d && d.open && d.querySelector("#spaCancel"); }, null, { timeout: 30000 }).catch(() => {});
-    const open = await ev(() => { const d = document.getElementById("spaDlg"); return d ? { open: d.open, title: (d.querySelector("#spaTitle") || {}).textContent || "" } : null; });
-    check("Generate (🖼 Image, a style with no pod): the render is SENT (POST /api/genimage) and the pod question opens - this computer's ComfyUI is never started (no /api/comfy/ensure)",
-      open && open.open && open.title === "A pod for " + st.name && reqs.some((x) => /^POST \/api\/genimage/.test(x)) && !reqs.some((x) => /comfy\/ensure/.test(x)), { open, reqs });
+    await p.waitForFunction(() => { const a = document.getElementById("pdAsk"); return a && !a.hidden && document.getElementById("pdAskNo"); }, null, { timeout: 40000 }).catch(() => {});
+    const open = await ev(() => { const a = document.getElementById("pdAsk"); return a ? { open: !a.hidden, t: a.textContent } : null; });
+    check("Generate (🖼 Image, a style with no pod): the render is SENT (POST /api/genimage) and the PODS docker asks for a pod (2.763.3) - this computer's ComfyUI is never started (no /api/comfy/ensure)",
+      open && open.open && open.t.indexOf("⏳ A render of " + st.name + " is waiting for a pod") === 0 && reqs.some((x) => /^POST \/api\/genimage/.test(x)) && !reqs.some((x) => /comfy\/ensure/.test(x)), { open, reqs });
     const jl = await api("/api/jobs"); const j = jl.find((x) => x.pod_ask); if (j) jobs.push(j.id);
-    await p.click("#spaCancel").catch(() => {});
+    await ev(() => document.getElementById("pdAskNo").click());
     let js = null; for (let i = 0; i < 30; i++) { await sleep(500); js = (await api("/api/jobs")).find((x) => j && x.id === j.id); if (!js || js.status !== "queued") break; }
     check("Cancel: the render is cancelled - not failed, and not rendered on this computer", js && js.status === "cancelled", js && { status: js.status });
     // a failed render's reason is printed after "that one failed" (podroute.why)

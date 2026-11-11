@@ -73,7 +73,10 @@
     + ".pdk .psPick [data-psall].on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}"
     + ".pdk .psChips{display:flex;flex-wrap:wrap;gap:4px 6px}.pdk .psChip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line,#333);border-radius:12px;padding:1px 4px 1px 9px;font-size:12px}"
     + ".pdk .psChip button{padding:0 5px;line-height:1.2}"
-    + ".pdk .psTools .psPrep{flex:1}";
+    + ".pdk .psTools .psPrep{flex:1}"
+    // 2.763.3: the waiting render's banner + the form's style / kind
+    + ".pdk .pdAsk{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.pdk .pdAsk .t{flex:1;min-width:220px}"
+    + ".pdk .pdForm .pdKinds{display:flex;flex-wrap:wrap;gap:4px 12px}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -126,7 +129,8 @@
       + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
       + '<select id="pdKind" class="pdTplOnly" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
       + '<label class="chk pdTplOnly" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label>'
-      + '<select id="pdFor" class="pdTplOnly" title="Templates that look made for this bitGen style first - a pod created this way gets the style\'s P_ style when it has loaded" style="width:auto"><option value="">For any style</option></select></div>'
+      + '<select id="pdFor" class="pdTplOnly" title="Templates that look made for this bitGen style first - a pod created this way renders the style (linked to it)" style="width:auto"><option value="">For any style</option></select></div>'
+      + '<div id="pdAsk" class="pdAsk" hidden></div>'   // 2.763.3: a render waiting for a pod
       + '<div class="hint" id="pdMsg" aria-live="polite"></div>'
       + '<div id="pdStarAdd" class="rowbtns" style="align-items:center;display:none"><input type="text" id="pdCutLink" placeholder="A template that is not listed: paste its RunPod link" spellcheck="false" style="flex:1;min-width:160px">'
       + '<button type="button" class="ghost" id="pdCutAdd">＋ Add</button><a class="pdLink" href="https://www.runpod.io/console/explore" target="_blank" rel="noopener">Explore RunPod templates ↗</a></div>'
@@ -257,9 +261,10 @@
     }; });
     paintForm();
   }
-  function openForm(id) {
+  function openForm(id, pre) {
     var t = S.all.find(function (x) { return x.id === id; }); if (!t) return;
-    S.form = S.form && S.form.id === t.id ? null : { id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50 };
+    S.form = S.form && S.form.id === t.id && !pre ? null : Object.assign({ id: t.id, port: t.port, cloud: "SECURE", disk: t.disk || 50, style: S.forStyle || "", kinds: [] }, pre || {});
+    var cc = $("pdCreate"); if (cc && pre) cc.dataset.tpl = "";
     box2sel(); paintForm(); view();
     if (S.form) { gpus(S.form.cloud); var c = $("pdCreate"); if (c && c.scrollIntoView) c.scrollIntoView({ block: "nearest" }); }
   }
@@ -280,9 +285,14 @@
       + '<span class="f">Cloud</span><span><label class="chk" style="margin:0 10px 0 0" title="RunPod\'s own data centres"><input type="radio" name="pdCloud" value="SECURE" checked> Secure</label>'
       + '<label class="chk" style="margin:0" title="Machines run by RunPod\'s community hosts - usually cheaper"><input type="radio" name="pdCloud" value="COMMUNITY"> Community</label></span>'
       + '<label class="f" for="pdGpu" style="margin:0">GPU</label><select id="pdGpu"><option value="">asking RunPod…</option></select>'
-      + '<label class="f" for="pdCount" style="margin:0">GPUs</label><input type="number" id="pdCount" min="1" max="8" value="1" style="width:70px">'
+      + '<label class="f" for="pdCount" style="margin:0">GPUs</label><input type="number" id="pdCount" min="1" max="8" value="' + ((S.form && S.form.count) || 1) + '" style="width:70px">'
+      // 2.763.3 (Tim: "auto select the type and style"): the style it renders + the kinds of style it is the pod for
+      + '<label class="f" for="pdStyle" style="margin:0">Style</label><select id="pdStyle" title="The style that renders on this pod (linked to it)"><option value="">— none —</option>'
+      + (S.styles || []).map(function (x) { return '<option value="' + esc(x.id) + '"' + (S.form && S.form.style === x.id ? " selected" : "") + ">" + esc(x.name) + "</option>"; }).join("") + "</select>"
+      + '<span class="f">For</span><span class="pdKinds" title="This pod renders every style of the kinds ticked that has no pod of its own - one pod per kind">'
+      + [["image", "Image"], ["image_edit", "Image edit"], ["video", "Video"]].map(function (k) { return '<label class="chk" style="margin:0"><input type="checkbox" data-pdkind="' + k[0] + '"' + (S.form && (S.form.kinds || []).indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("") + "</span>"
       + '<label class="f" for="pdDisk" style="margin:0">Container disk</label><span><input type="number" id="pdDisk" min="10" max="1000" value="' + (+t.disk || 50) + '" style="width:80px"> GB <span class="hint">(wiped when the pod stops)</span></span>'
-      + '<label class="f" for="pdVol" style="margin:0">/workspace</label><span><input type="number" id="pdVol" min="10" max="2000" value="50" style="width:80px"> GB <span class="hint">(kept while stopped - billed for storage)</span></span>'
+      + '<label class="f" for="pdVol" style="margin:0">/workspace</label><span><input type="number" id="pdVol" min="10" max="2000" value="' + ((S.form && S.form.volume) || 50) + '" style="width:80px"> GB <span class="hint">(kept while stopped - billed for storage)</span></span>'
       + '<span class="full hint" id="pdPrice"></span>'
       + '<span class="full"><button type="button" id="pdGo">Create pod</button></span></div>';
   }
@@ -299,6 +309,7 @@
         return '<option value="' + esc(g.id) + '"' + (g.offered ? "" : " disabled") + ">" + esc(g.name) + " · " + g.memory + " GB · " + esc(money(g.price, "/h")) + (g.offered ? (g.availability ? " · " + g.availability.toLowerCase() : "") : " · none free") + "</option>";
       }).join("") || '<option value="">no GPUs offered</option>';
       var first = list.find(function (g) { return g.offered && g.memory >= 20; }) || list.find(function (g) { return g.offered; });
+      if (S.form && S.form.gpu && list.some(function (g) { return g.id === S.form.gpu && g.offered; })) first = { id: S.form.gpu };   // 2.763.3: bitGen's pick for the waiting style
       if (first) sel.value = first.id;
       price();
     };
@@ -310,7 +321,8 @@
     if (el) { el.textContent = g ? "About " + money(g.price * n) + " an hour while it runs (RunPod's price now), plus storage" : ""; el.title = g && root.H3Money ? H3Money.usdText(g.price * n, H3Money.state()).title : ""; }
   }
   function create() {
-    var b = { for_style: S.forStyle || "", templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
+    var kinds = []; doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { if (c.checked) kinds.push(c.dataset.pdkind); });
+    var b = { for_style: ($("pdStyle") || {}).value || "", kinds: kinds, templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
     $("pdGo").disabled = true; say("creating the pod on RunPod…");
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
@@ -319,6 +331,7 @@
       say("✓ pod created - loading pod…", true);
       S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port; S.open = S.open || {}; S.open[r.pod.id] = true;
       loadPods().then(tick);
+      if (S.ask && b.for_style === S.ask.style_id) answerAsk({ action: "use", pod_id: r.pod.id }, r.pod.name);   // 2.763.3: the waiting render goes there
     });
   }
 
@@ -352,7 +365,7 @@
     box.innerHTML = S.pods.map(function (p) {
       var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
       if (S.watch[p.id] === "start" && S.open[p.id] == null) S.open[p.id] = true;
-      var open = !!S.open[p.id], c = (S.cost && S.cost.pods && S.cost.pods[p.id]) || null;
+      var open = !!S.open[p.id] || (!!S.ask && S.open[p.id] !== false), c = (S.cost && S.cost.pods && S.cost.pods[p.id]) || null;
       return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '">'
         + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
         + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span>'
@@ -360,6 +373,7 @@
         + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
         + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")
         + '<div class="pdActs"><button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
+        + (S.ask ? '<button type="button" data-pdfor title="The waiting render of ' + esc(S.ask.style_name) + ' goes to this pod, and the style stays linked to it">▶ Use for ' + esc(S.ask.style_name) + "</button>" : "")
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
@@ -372,8 +386,8 @@
     box.querySelectorAll(".pdRow[data-pod]").forEach(function (r) {
       var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (!p) return;
       setSt(r.querySelector(".pdSt"), p);
-      r.querySelector(".pdHead").onclick = function () { S.open[p.id] = !S.open[p.id]; paintPods(); };
-      if (!S.open[p.id]) return;
+      r.querySelector(".pdHead").onclick = function () { S.open[p.id] = !(S.open[p.id] || (!!S.ask && S.open[p.id] !== false)); paintPods(); };
+      if (!(S.open[p.id] || (!!S.ask && S.open[p.id] !== false))) return;   // 2.763.3: open while a render waits
       if (root.H3PodSetup) H3PodSetup.wire(r, p, (S.port && S.port[p.id]) || 0, paintPods);
       // 2.758.0 (Tim: "can you show progess of pod loading?"): the stage + the timed bar while it loads (static/podload.js)
       var st = S.st[p.id], lb = r.querySelector(".pdLoadBox");
@@ -382,6 +396,7 @@
       var mo = r.querySelector("[data-pdmod]"); if (mo) mo.onclick = function () { modelsFor(p); };
       var a = r.querySelector("[data-pdact]"); if (a) a.onclick = function () { act(p, a.dataset.pdact); };
       r.querySelector("[data-pduse]").onclick = function () { use(p); };
+      var uf = r.querySelector("[data-pdfor]"); if (uf) uf.onclick = function () { answerAsk({ action: "use", pod_id: p.id }, p.name); };
       r.querySelector("[data-pdkill]").onclick = function () { S.kill = S.kill === p.id ? null : p.id; paintPods(); };
       var y = r.querySelector("[data-pdkillyes]"); if (y) y.onclick = function () { S.kill = null; act(p, "terminate"); };
       var n = r.querySelector("[data-pdkillno]"); if (n) n.onclick = function () { S.kill = null; paintPods(); };
@@ -435,6 +450,48 @@
       try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ }
     });
   }
+  /* 2.763.3 (Tim: "if a pod doesn't exist for a style popup the pods docker to create the pod when generate button is
+     pressed, auto select the type and style. let user select gpu and number of gpu's and let the user start and stop and
+     terminate the pod from the docker"): a render waiting for a pod opens this docker - a banner names it, the create form
+     opens on RunPod's ComfyUI CUDA 13 template with the style, its kind, bitGen's GPU pick and the disk filled in (GPU, how
+     many, cloud all yours to change); ▶ Use for <style> on any of your pods; Cancel the render. o = the question's offer
+     (lib/stylePods.js offer) */
+  function forRender(o) {
+    if (!o || !o.ask) return false;
+    if (!(root.SecFloat && SecFloat.windows && SecFloat.windows.pods)) return false;
+    S.ask = o.ask;
+    show(true);   // (false when it is on screen already)
+    paintAsk();
+    var pre = { style: o.ask.style_id, kinds: [o.ask.kind], gpu: o.pick || "", volume: o.volume_gb || 50, count: 1 };
+    var openIt = function () {
+      if (!o.template) { go("mine"); say(o.template_error || "RunPod's ComfyUI CUDA 13 template was not found - pick a template, or use one of your pods", false); return; }
+      if (!S.all.some(function (t) { return t.id === o.template.id; })) { setTimeout(openIt, 400); return; }
+      S.src = "all"; filter();
+      openForm(o.template.id, pre);
+      var nm = $("pdName"); if (nm) nm.value = ("bitGen " + o.ask.style_name).slice(0, 40);
+    };
+    Promise.resolve(loadStyles()).then(function () { S.forStyle = o.ask.style_id; var f = $("pdFor"); if (f) f.value = o.ask.style_id; openIt(); });
+    paintPods();
+    return true;
+  }
+  function paintAsk() {
+    var b = $("pdAsk"); if (!b) return;
+    if (!S.ask) { b.hidden = true; b.innerHTML = ""; return; }
+    b.hidden = false;
+    b.innerHTML = '<span class="t">⏳ A render of <b>' + esc(S.ask.style_name) + "</b> is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for " + esc(S.ask.style_name) + " on one of yours.</span>"
+      + '<button type="button" class="ghost" id="pdAskMine">🖥 My pods</button><button type="button" class="ghost" id="pdAskNo" title="Do not render it now">Cancel the render</button>';
+    $("pdAskMine").onclick = function () { go("mine"); };
+    $("pdAskNo").onclick = function () { answerAsk({ action: "cancel" }); };
+  }
+  function answerAsk(b, podName) {
+    var a = S.ask; if (!a) return;
+    post("/api/stylepods/ask/" + encodeURIComponent(a.id), b).then(function (r) {
+      if (r.error) { say(r.error, false); return; }
+      S.ask = null; paintAsk(); paintPods();
+      if (root.H3StylePodAsk && H3StylePodAsk.answered) H3StylePodAsk.answered(a.id);
+      say(b.action === "cancel" ? "the render of " + a.style_name + " was cancelled" : "✓ " + a.style_name + " renders on " + (podName || b.pod_id) + " - it starts when the pod has loaded and has the style's files", b.action !== "cancel");
+    });
+  }
   function show(on) { if (!(root.SecFloat && SecFloat.windows && SecFloat.windows.pods)) return false; var r = SecFloat.show("pods", on); paintBtn(); return r; }
 
   function boot() {
@@ -451,5 +508,5 @@
     doc.addEventListener("change", function (e) { if (e.target && /^(gpuProv|gpuRunpod|gpuWhere)$/.test(e.target.name || "")) setTimeout(loadG, 500); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3Pods = { show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; }, matches: matches, initials: initials };
+  root.H3Pods = { forRender: forRender, ask: function () { return S.ask; }, show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; }, matches: matches, initials: initials };
 })(typeof window !== "undefined" ? window : globalThis);

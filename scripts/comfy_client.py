@@ -30,6 +30,17 @@ import urllib.request
 import uuid
 from pathlib import Path
 
+# 2.763.3 (Tim's pod render: "cannot reach ComfyUI at https://<pod>-8188.proxy.runpod.net (HTTP Error 403: Forbidden)"):
+# RunPod's proxy (Cloudflare) refuses Python's own "Python-urllib/3.x" User-Agent with a 403 - the studio's own checks
+# (Node's fetch) got through, the workers did not. Every urlopen in a worker that imports this module now says who it is.
+USER_AGENT = "bitGen-Studio (ComfyUI client)"
+try:
+    _ua = urllib.request.build_opener()
+    _ua.addheaders = [("User-Agent", USER_AGENT)]
+    urllib.request.install_opener(_ua)
+except Exception:   # never stop a worker over a header
+    pass
+
 
 def explain_execution_error(messages):
     """A targeted explanation for failures whose text does not explain itself.
