@@ -68,9 +68,12 @@
     + ".pdk .psKinds,.pdk .psTools,.pdk .pdActs,.pdk .psLlm,.pdk .psNf{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}"
     + ".pdk .psKinds .chk{margin:0}.pdk .psTools [data-pssave]{margin-left:auto}.pdk .psTools [data-pssave]:disabled{opacity:.45}"
     + ".pdk .psInto select{width:auto;max-width:200px}"
-    // 2.762.0: the pod's checkpoint + LoRAs with Override style's dropdowns (cmCombo)
-    + ".pdk .psModels{display:flex;flex-direction:column;gap:4px}.pdk .psModels .f{margin:4px 0 0}.pdk .psLora{display:flex;gap:6px;align-items:center}.pdk .psLoraBox{flex:1;min-width:0}"
-    + ".pdk .psTools .psSend{flex:1}";
+    // 2.763.0: the pod's styles - a dropdown of yours (the Generate mode's, or All) + chips
+    + ".pdk .psStyles{display:flex;flex-direction:column;gap:4px}.pdk .psStyles .f{margin:4px 0 0}.pdk .psPick{display:flex;gap:6px;align-items:center}.pdk .psPick select{flex:1;min-width:0;width:auto}"
+    + ".pdk .psPick [data-psall].on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}"
+    + ".pdk .psChips{display:flex;flex-wrap:wrap;gap:4px 6px}.pdk .psChip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line,#333);border-radius:12px;padding:1px 4px 1px 9px;font-size:12px}"
+    + ".pdk .psChip button{padding:0 5px;line-height:1.2}"
+    + ".pdk .psTools .psPrep{flex:1}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -338,7 +341,7 @@
     el.textContent = String(p.status || "").toLowerCase();
   }
   /* 2.761.0 (Tim: "make each pod name in my pods a accordian menuitem ..."): each pod is an item - its name (a button: ▸ / ▾,
-     🅱, the GPU, $/h, the state) opens it; inside, what it is for + 📁 / ➕ Checkpoint / ➕ LoRA + 💾 Save (static/podsetup.js)
+     🅱, the GPU, $/h, the state) opens it; inside, what it is for + its styles (2.763.0) + 💾 Save (static/podsetup.js)
      and the pod's own buttons. A pod loading or just created opens by itself. */
   function paintPods() {
     var box = $("pdPods"); if (!box) return;

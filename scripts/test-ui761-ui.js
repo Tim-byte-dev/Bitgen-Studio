@@ -80,10 +80,26 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     let r = await row();
     check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), 💾 Save OFF; its own buttons below",
       r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
-    // 2.762.0 (Tim: "in pods for lora and checkpoint and folder filters use the same dropdown types like overide settings has")
-    const ckc = await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod761u"]'), c = r.querySelector("[data-psck] .cmcombo"), ov = document.querySelector("#imgCkptCombo .cmcombo");
-      return { c: !!c, kids: c ? [...c.children].map((x) => x.tagName + "." + x.className).join() : "", ov: ov ? [...ov.children].map((x) => x.tagName + "." + x.className).join() : "", blank: c ? c.querySelector(".cmfile").options[0].textContent : "" }; });
-    check("2.762.0: the pod's Checkpoint is Basic Settings' Override dropdowns (a folder filter, the file, 📁) - blank = the pod's own models", ckc.c && ckc.kids === ckc.ov && /cmfolder/.test(ckc.kids) && /cmfile/.test(ckc.kids) && ckc.blank === "— the pod's own models —", ckc);
+    // 2.763.0 (Tim: "can we use a dropdown of our styles for the mode selected ... add an all button so that it shows all styles")
+    await ev(() => { const g = document.getElementById("genModeSel"); g.value = "image"; if (typeof g.onchange === "function") g.onchange(); g.dispatchEvent(new Event("change", { bubbles: true })); });
+    await sleep(500);   // the open item lists the 🖼 Image styles now (podsetup.js follows #genModeSel)
+    const sty = () => ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod761u"]'), sel = r.querySelector("[data-psstyle]");
+      return { sel: !!sel, n: sel ? sel.options.length - 1 : 0, first: sel && sel.options[1] ? sel.options[1].textContent : "", all: (r.querySelector("[data-psall]") || {}).textContent || "", hint: (r.querySelector(".psStyles .hint") || {}).textContent || "",
+        chips: [...r.querySelectorAll("[data-pschip]")].map((c) => c.dataset.pschip), ck: !!r.querySelector("[data-psck]"), lora: !!r.querySelector("[data-psloraadd]") }; });
+    await p.waitForFunction(() => { const s = document.querySelector('#pdPods .pdRow[data-pod="pod761u"] [data-psstyle]'); return s && s.options.length > 1; }, null, { timeout: 10000 }).catch(() => {});
+    const s1 = await sty();
+    const imgN = ((await api("/api/styles?kind=image")).styles || []).filter((x) => x.runs_on !== "remote" && x.runs_on !== "api").length;
+    check("2.763.0: the pod's Styles - a dropdown of your image styles (the Generate mode is 🖼 Image) + All; no checkpoint / LoRA dropdowns any more", s1.sel && s1.n === imgN && /image styles/.test(s1.hint) && s1.all === "All" && !s1.ck && !s1.lora, { s1, imgN });
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psall]'); await sleep(400);
+    const s2 = await sty();
+    check("…All lists every kind (more than the image ones)", s2.n > s1.n && /all styles/.test(s2.hint), s2);
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psall]'); await sleep(400);
+    const pick = await ev(() => { const s = document.querySelector('#pdPods .pdRow[data-pod="pod761u"] [data-psstyle]'); s.value = s.options[1].value; s.dispatchEvent(new Event("change")); return s.value; });
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psadd]'); await sleep(400);
+    const s3 = await sty();
+    check("…＋ links the picked style (a chip), it leaves the dropdown; 💾 Save on", s3.chips.join() === pick && s3.n === s1.n - 1 && (await row()).save === false, s3);
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psdel]'); await sleep(400);
+    check("…✕ takes it off again - nothing changed, Save off", (await sty()).chips.length === 0 && (await row()).save === true);
     await p.check('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="image"]'); await sleep(200);
     check("a tick turns 💾 Save on", (await row()).save === false);
     await p.uncheck('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="image"]'); await sleep(200);
@@ -92,25 +108,19 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.check('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="llm"]'); await sleep(400);
     r = await row();
     check("LLM ticked: the pod's LLM server - its port (8000) and model", r.llm && (await ev(() => document.querySelector('#pdPods [data-psport]').value)) === "8000" && r.save === false, r);
+    await ev((v) => { const s = document.querySelector('#pdPods .pdRow[data-pod="pod761u"] [data-psstyle]'); s.value = v; s.dispatchEvent(new Event("change")); }, pick);
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psadd]'); await sleep(300);
     await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-pssave]');
     await p.waitForFunction(() => /✓ saved/.test((document.querySelector('#pdPods .pdRow[data-pod="pod761u"] .psMsg') || {}).textContent || ""), null, { timeout: 20000 }).catch(() => {});
     r = await row();
-    const st = (await api("/api/styles?kind=image")).styles || [];
-    const made = st.find((x) => x.name === "P_sdxl_ui761");
-    check("💾 Save: P_sdxl_ui761 made from the pod's checkpoint (a pod style of this pod, Save's own), the LLM on this pod; Save OFF again",
-      made && made.runs_on === "pod" && made.pod_id === "pod761u" && made.pod_setup === true && /made \/ updated P_sdxl_ui761/.test(r.msg) && /the LLM runs on this pod/.test(r.msg) && r.save === true
-      && r.kinds.join() === "Video,LLM*,vLLM,Image*,Image edit", { r, made });
+    check("💾 Save: the style linked to this pod, Image + the LLM on this pod; no P_ style made; Save OFF again",
+      /1 style on this pod/.test(r.msg) && /the LLM runs on this pod/.test(r.msg) && r.save === true && r.kinds.join() === "Video,LLM*,vLLM,Image*,Image edit"
+      && !((await api("/api/styles?kind=image")).styles || []).some((x) => /^P_/.test(x.name)), r);
     const set = await api("/api/pods/pod761u/setup");
-    check("…kept: the ticks and the LLM's port (GET /api/pods/:id/setup)", set.kinds.join() === "llm,image" && set.llm_here && set.llm.port === 8000, set);
-    // Basic Settings on Pods: only P_ styles
-    const only = await ev(() => fetch("/api/remotegpu/serverless/styles").then((r) => r.json()).then((j) => Object.values(j.styles).filter((s) => s.kind === "image" && !s.hide).map((s) => s.name).sort()));
-    check("with Pods picked in Basic Settings only pod styles are offered (P_sdxl_ui761)", only.length === 1 && only[0] === "P_sdxl_ui761", only);
-    // 2.762.0: LoRAs - ＋ a row with the same dropdowns (loras); ✕ takes it away
-    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psloraadd]'); await sleep(400);
-    const lr = await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod761u"]'); return { rows: r.querySelectorAll("[data-pslora]").length, combo: !!r.querySelector("[data-pslora] .cmcombo .cmfolder"), save: r.querySelector("[data-pssave]").disabled }; });
-    check("2.762.0: LoRAs ＋ adds a row with Override's dropdowns; Save on", lr.rows === 1 && lr.combo && lr.save === false, lr);
-    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psloradel="0"]'); await sleep(300);
-    check("…✕ removes it - nothing changed, Save off again", (await ev(() => document.querySelectorAll('#pdPods .pdRow[data-pod="pod761u"] [data-pslora]').length)) === 0 && (await row()).save === true);
+    check("…kept: the ticks, the LLM's port and the style (GET /api/pods/:id/setup)", set.kinds.join() === "llm,image" && set.llm_here && set.llm.port === 8000 && set.styles.join() === pick, set);
+    // Basic Settings on Pods: your own styles (each renders on its pod)
+    const shown = await ev(() => fetch("/api/remotegpu/serverless/styles").then((r) => r.json()).then((j) => Object.values(j.styles).filter((s) => s.kind === "image" && !s.hide).length));
+    check("2.763.0: with Pods picked in Basic Settings your own image styles are offered (not only P_)", shown >= imgN, { shown, imgN });
     await p.click('#pdPods .pdRow[data-pod="pod761u"] .pdHead'); await sleep(300);
     check("the name again closes the item", !(await row()).open);
     check("no page errors", errs.length === 0, errs);
@@ -119,7 +129,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
   } finally {
     await b.close(); rp.close();
     try { const all = await api("/api/styles?kind=image"); for (const s of (all.styles || []).filter((x) => x.runs_on === "pod" && /^P_/.test(x.name))) await api("/api/styles/" + s.id, null, "DELETE"); } catch { /* fine */ }
-    await api("/api/pods/pod761u/setup", { kinds: [], pod_name: "Item pod", port: 3000 }).catch(() => {});
+    await api("/api/pods/pod761u/setup", { kinds: [], styles: [], pod_name: "Item pod", port: 3000 }).catch(() => {});
     await api("/api/currency", { code: (c0 && c0.code) || "USD" }).catch(() => {});
     await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/remotegpu/use", { mode: "local" }).catch(() => {});

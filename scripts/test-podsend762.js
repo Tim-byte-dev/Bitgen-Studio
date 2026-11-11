@@ -50,7 +50,6 @@ check("findLocal: the file behind a name in this computer's lists (its root + th
 check("onPod: the pod's own name for one it has (same name, else the same file name elsewhere); none = \"\"", SD.onPod({ checkpoints: ["x/Krea/krea2_turbo_fp8.safetensors"] }, SD.CKPT_CATS, "Krea\\krea2_turbo_fp8.safetensors") === "x/Krea/krea2_turbo_fp8.safetensors"
   && SD.onPod({ diffusion_models: ["Krea/krea2_turbo_fp8.safetensors"] }, SD.CKPT_CATS, "Krea/krea2_turbo_fp8.safetensors") === "Krea/krea2_turbo_fp8.safetensors" && SD.onPod({ loras: ["b.safetensors"] }, ["loras"], "a.safetensors") === "");
 check("folderFor: the same category and sub-folders on the pod (two at most)", SD.folderFor("checkpoints", "Krea/krea2.safetensors") === "checkpoints/Krea" && SD.folderFor("loras", "x.safetensors") === "loras" && SD.folderFor("loras", "a/b/c/x.safetensors") === "loras/a/b");
-check("the page: Save turns on for a picked checkpoint or LoRA (not for an empty LoRA row)", H.isDirty({ saved: {}, cur: { checkpoint: "Krea/k.safetensors" } }) && H.isDirty({ saved: { checkpoint: "a" }, cur: { checkpoint: "a", loras: ["l.safetensors"] } }) && !H.isDirty({ saved: {}, cur: { loras: [""] } }));
 // 2.762.1 (Tim: "not made: Krea2/jibMixKrea_v60CarolinaReaper.safetensors (image) (bitGen has no image workflow for this model's family)")
 check("2.762.1 starterOf: a fine-tune's folder names its family (Krea2/jibMix… -> Krea 2, flux krea/ccc_krea -> FLUX.1 dev), else the family the file itself says (sdxl -> SDXL, krea2 + gguf -> Krea 2 GGUF, turbo -> Turbo, qwen edit)",
   PS.starterOf("Krea2/jibMixKrea_v60CarolinaReaper.safetensors", "image") === "Krea 2 Raw" && PS.starterOf("flux krea/ccc_krea.safetensors", "image") === "R_FLUX.1 dev"
@@ -66,8 +65,8 @@ check("2.762.1 starterOf: a fine-tune's folder names its family (Krea2/jibMix…
     JSON.parse((/bitgen-comfy (\[.*\])/.exec(r.stdout) || [0, "[]"])[1]).includes(fs.realpathSync(FC)), r.stdout + r.stderr);
 }
 const PL = fs.readFileSync(path.join(ROOT, "static", "podsetup.js"), "utf8"), IDX = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8"), PLD = fs.readFileSync(path.join(ROOT, "static", "podload.js"), "utf8");
-check("wiring: My pods' Checkpoint / LoRAs use Basic Settings' Override dropdowns (cmCombo); no file dialog or folder box any more; a P_ render keeps Basic Settings' checkpoint and podload no longer locks it; core rewrites the job's model to the pod's name",
-  /cmCombo\(host, inp, cats/.test(PL) && !/FileDialog/.test(PL) && !/data-psnf/.test(PL) && /if \(podStyle\) \{ delete b\.extra_loras; delete b\.lora_weights; delete b\.mm_override; \}/.test(IDX)
+check("wiring (2.763.0: My pods picks styles now, not a checkpoint): a P_ render keeps Basic Settings' checkpoint and podload no longer locks it; core rewrites the job's model to the pod's name",
+  !/FileDialog/.test(PL) && !/data-psnf/.test(PL) && /if \(podStyle\) \{ delete b\.extra_loras; delete b\.lora_weights; delete b\.mm_override; \}/.test(IDX)
   && /image: \["imgLoras", "tliRows"\]/.test(PLD) && /if \(g && g\.model\) st0\.model = g\.model;/.test(fs.readFileSync(path.join(ROOT, "lib", "core.js"), "utf8")));
 /* ---------------- live */
 const seen = [], PODS = [{ id: "pod761", name: "Pod A", desiredStatus: "RUNNING", costPerHr: 0.69, gpu: { id: "NVIDIA GeForce RTX 4090", count: 1 } }];
@@ -161,25 +160,25 @@ srv.listen(0, "127.0.0.1", async () => {
   const S = require("../lib/styles");
   const waitSend = async (id) => { let s; for (let i = 0; i < 200; i++) { s = SD.status(id); if (s && !s.running) return s; await new Promise((r) => setTimeout(r, 150)); } return s; };
   try {
-    // 💾 Save with a checkpoint the pod lacks + a LoRA
-    const sv = await SU.save("pod761", { kinds: ["image"], checkpoint: "Krea/krea2_turbo_fp8.safetensors", loras: ["style_a.safetensors"], pod_name: "Krea pod", port: 3000 });
+    // 2.763.0: My pods' 💾 Save no longer makes a P_ style from a checkpoint - podStyles.makeFor + podSend.queue still do
+    // (the P_ styles made before keep working)
+    const items = [{ name: "Krea/krea2_turbo_fp8.safetensors", cats: SD.CKPT_CATS }, { name: "style_a.safetensors", cats: ["loras"] }];
+    const sending = SD.queue("pod761", 3000, items).items;
+    const mk = await PS.makeFor("pod761", { file: "Krea/krea2_turbo_fp8.safetensors", kinds: ["image"], pod_name: "Krea pod", port: 3000, loras: ["style_a.safetensors"], arch: "krea2" });
     const st = S.read(path.join(TMP, "styles")).find((x) => x.name === "P_Krea pod");
     const g = st ? JSON.parse(fs.readFileSync(path.join(TMP, st.workflow), "utf8")) : {};
     const unets = Object.values(g).filter((n) => /UNETLoader|CheckpointLoaderSimple/.test(n.class_type)).map((n) => n.inputs.unet_name || n.inputs.ckpt_name);
-    check("💾 Save with a checkpoint: the pod becomes ONE style - P_Krea pod with bitGen's Krea 2 Turbo workflow, the checkpoint by its name on the pod, the LoRA in it; it and the LoRA go to the pod in the background",
-      sv.made.join() === "P_Krea pod" && st && st.arch === "krea2" && st.pod_model === "Krea/krea2_turbo_fp8.safetensors" && unets.length && unets.every((u) => u === "Krea/krea2_turbo_fp8.safetensors")
-      && st.loras.map((l) => l.path).join() === "style_a.safetensors" && sv.checkpoint_on_pod === "Krea/krea2_turbo_fp8.safetensors" && sv.sending.length === 2, { sv, st: st && { arch: st.arch, pm: st.pod_model, loras: st.loras }, unets });
+    check("a P_ style from a checkpoint (podStyles.makeFor): bitGen's Krea 2 Turbo workflow, the checkpoint by its name on the pod, the LoRA in it; both go to the pod in the background",
+      mk.made.join() === "P_Krea pod" && st && st.arch === "krea2" && st.pod_model === "Krea/krea2_turbo_fp8.safetensors" && unets.length && unets.every((u) => u === "Krea/krea2_turbo_fp8.safetensors")
+      && st.loras.map((l) => l.path).join() === "style_a.safetensors" && sending.length === 2, { mk, st: st && { arch: st.arch, pm: st.pod_model, loras: st.loras }, unets });
     const s1 = await waitSend("pod761");
     const ck = path.join(COMFY.pod761, "models", "checkpoints", "Krea", "krea2_turbo_fp8.safetensors"), lo = path.join(COMFY.pod761, "models", "loras", "style_a.safetensors");
     check("…sent: the checkpoint into models/checkpoints/Krea (the same sub-folder), the LoRA into models/loras, whole", s1 && !s1.running && s1.done.length === 2 && !s1.failed.length && fs.existsSync(ck) && fs.readFileSync(ck).equals(CK) && fs.existsSync(lo) && fs.readFileSync(lo).equals(LO), { s1, err: seen.filter((x) => /PYERR/.test(x)) });
-    const kept = SU.view("pod761");
-    check("…kept with the pod: its checkpoint + LoRAs (GET setup), the line under them says what is on the pod", kept.checkpoint === "Krea/krea2_turbo_fp8.safetensors" && kept.loras.join() === "style_a.safetensors" && kept.sending && kept.sending.done.length === 2, kept);
-    // the checkpoint the template brought: just picked
     seen.length = 0;
-    const sv2 = await SU.save("pod761", { kinds: ["image"], checkpoint: "sdxl_base_1.0.safetensors", pod_name: "Krea pod", port: 3000 });
-    const st2 = S.read(path.join(TMP, "styles")).filter((x) => x.runs_on === "pod" && x.pod_setup && x.pod_kind === "image");
-    check("a checkpoint the pod already has: nothing sent, just picked - the same P_ style now SDXL (bitGen's SDXL workflow)", !sv2.sending && st2.length === 1 && st2[0].name === "P_Krea pod" && st2[0].arch === "sdxl" && st2[0].pod_model === "sdxl_base_1.0.safetensors"
-      && !seen.some((x) => /bitgen_up_/.test(x)), { sv2, st2: st2.map((x) => [x.name, x.arch, x.pod_model]) });
+    const mk2 = await PS.makeFor("pod761", { file: "sdxl_base_1.0.safetensors", kinds: ["image"], pod_name: "Krea pod", port: 3000, arch: "sdxl" });
+    const st2 = S.read(path.join(TMP, "styles")).filter((x) => x.runs_on === "pod" && x.name === "P_Krea pod");
+    check("a checkpoint the pod already has: nothing sent - the same P_ style now SDXL (bitGen's SDXL workflow)", mk2.made.join() === "P_Krea pod" && st2.length === 1 && st2[0].arch === "sdxl" && st2[0].pod_model === "sdxl_base_1.0.safetensors"
+      && !seen.some((x) => /bitgen_up_/.test(x)), { mk2, st2: st2.map((x) => [x.name, x.arch, x.pod_model]) });
     // Basic Settings ▸ Override style's checkpoint on a P_ render: the pod lacks it -> sent, then the job uses the pod's name
     fs.rmSync(path.join(COMFY.pod761, "models", "checkpoints", "Krea"), { recursive: true, force: true });
     const job = Object.assign({}, st2[0], { model: "Krea\\krea2_turbo_fp8.safetensors", model_override: true });

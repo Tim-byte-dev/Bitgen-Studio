@@ -44,7 +44,7 @@ check("starterOf: the kind decides bitGen's workflow - Qwen 2.1 image / edit, Wa
   && PS.starterOf("wan2.2_t2v_14B.safetensors", "video") === "Wan 2.2" && PS.starterOf("sdxl_base.safetensors", "video") === "" && PS.starterOf("flux1-kontext-dev.safetensors", "image_edit") === "FLUX.1 Kontext edit");
 check("folderOk: a models folder or a folder in it, three deep at most, no ..", PM.folderOk("loras") === "loras" && PM.folderOk("loras/characters") === "loras/characters"
   && PM.folderOk("loras/../x") === "" && PM.folderOk("nope") === "" && PM.folderOk("loras/a/b/c") === "");
-check("cleanSetup: the five ticks in order, unknown ones dropped, port 8000 by default", JSON.stringify(SU.cleanSetup({ kinds: ["image", "xx", "llm", "video"], llm: { port: "0" } })) === JSON.stringify({ kinds: ["video", "llm", "image"], llm: { port: 8000, model: "", vlm_model: "" }, checkpoint: "", loras: [] }));   // 2.762.0: + the pod's checkpoint and LoRAs
+check("cleanSetup: the five ticks in order, unknown ones dropped, port 8000 by default", JSON.stringify(SU.cleanSetup({ kinds: ["image", "xx", "llm", "video"], llm: { port: "0" } })) === JSON.stringify({ kinds: ["video", "llm", "image"], llm: { port: 8000, model: "", vlm_model: "" }, styles: [] }));   // 2.763.0: the pod's styles (no checkpoint / LoRAs)
 const vw = SU.viewOf({ pod_cfg: { a: { kinds: ["llm", "image"] } }, pod_llm: { pod_id: "b" } }, "a");
 check("viewOf: LLM is ticked only on the pod the LLM really is on (another pod's Save moved it)", vw.kinds.join() === "image" && !vw.llm_here, vw);
 const lt = SU.llmTargetOf({ pod_llm: { pod_id: "pod761", pod_name: "A", port: 8000, model: "qwen3" } }, "llm", (id, p) => `https://${id}-${p}.proxy.runpod.net`, true);
@@ -181,12 +181,13 @@ srv.listen(0, "127.0.0.1", async () => {
     const dst = path.join(COMFY.pod761, "models", "loras", "characters", "mylora_v1.safetensors");
     check("➕ LoRA: sent in parts into models/loras/characters, whole; remembered with where it came from (rgpu.pod_files)", up.name === "mylora_v1.safetensors" && fs.existsSync(dst) && fs.readFileSync(dst).equals(fs.readFileSync(SRC))
       && (CFG.rgpu.pod_files.pod761 || []).some((f) => f.name === "mylora_v1.safetensors" && f.folder === "loras/characters" && f.path === SRC), { up, st, files: CFG.rgpu.pod_files });
-    // 💾 Save: image + video + LLM
+    // 2.763.0: My pods' 💾 Save makes no P_ styles any more - podStyles.make does (the P_ styles made before keep working)
+    const mk = await PS.make("pod761", { models: ["sdxl_base_1.0.safetensors"], kinds: ["image", "video"], pod_name: "Pod A", port: 3000 });
     const sv = await SU.save("pod761", { kinds: ["image", "video", "llm"], llm: { port: 8000, model: "" }, pod_name: "Pod A", port: 3000 });
     const ps = S.read(path.join(TMP, "styles")).filter((x) => x.runs_on === "pod");
     const sdxl = ps.find((x) => x.name === "P_sdxl_base_1.0");
-    check("💾 Save (Image ticked): P_sdxl_base_1.0 from the pod's checkpoint - SDXL's own workflow, pod_setup, kind image; SDXL has no video workflow so none for Video, said",
-      sv.made.includes("P_sdxl_base_1.0") && sdxl && sdxl.pod_setup === true && sdxl.pod_kind === "image" && sdxl.pod_id === "pod761" && !ps.some((x) => /video$/.test(x.name)), { sv, ps: ps.map((x) => x.name) });
+    check("a P_ style from the pod's checkpoint (podStyles.make, Image): P_sdxl_base_1.0 - SDXL's own workflow, kind image; SDXL has no video workflow so none for Video, said; 💾 Save made none",
+      mk.made.includes("P_sdxl_base_1.0") && sdxl && sdxl.pod_kind === "image" && sdxl.pod_id === "pod761" && !ps.some((x) => /video$/.test(x.name)) && !("made" in sv), { mk, sv, ps: ps.map((x) => x.name) });
     check("…the style keeps its recipe: the template, GPU, cloud, sizes, port and the LoRA from this computer", sdxl.pod_recipe && sdxl.pod_recipe.template_id === "tplA7610" && sdxl.pod_recipe.gpu === "NVIDIA GeForce RTX 4090"
       && sdxl.pod_recipe.volume === 60 && sdxl.pod_recipe.files.some((f) => f.name === "mylora_v1.safetensors" && f.path === SRC), sdxl && sdxl.pod_recipe);
     check("…LLM ticked: the app's LLM goes to this pod's server (rgpu.pod_llm, port 8000); the setup kept", sv.llm === true && CFG.rgpu.pod_llm.pod_id === "pod761" && CFG.rgpu.pod_llm.port === 8000
@@ -195,8 +196,8 @@ srv.listen(0, "127.0.0.1", async () => {
     check("gpuSplit.llmTarget: the pod's /v1/chat/completions through the proxy, the model asked of the server (/v1/models) when none is typed",
       t && t.url === "http://127.0.0.1:" + P + "/proxy/pod761-8000/v1/chat/completions" && t.model === "served-model", t);
     const sv2 = await SU.save("pod761", { kinds: ["video"], llm: { port: 8000 }, pod_name: "Pod A", port: 3000 });
-    check("💾 Save again with Image + LLM unticked: its image P_ style removed (only Save's own), the LLM back where it was", sv2.removed.includes("P_sdxl_base_1.0") && !CFG.rgpu.pod_llm
-      && !S.read(path.join(TMP, "styles")).some((x) => x.name === "P_sdxl_base_1.0"), sv2);
+    check("💾 Save again with Image + LLM unticked: the LLM back where it was; the P_ style made before is left alone (2.763.0)", !CFG.rgpu.pod_llm
+      && S.read(path.join(TMP, "styles")).some((x) => x.name === "P_sdxl_base_1.0"), sv2);
     await SU.save("pod761", { kinds: ["image"], pod_name: "Pod A", port: 3000 });
     // the pod is gone: a P_ job makes it again
     const style = S.read(path.join(TMP, "styles")).find((x) => x.name === "P_sdxl_base_1.0");

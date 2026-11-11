@@ -8,7 +8,7 @@
  *   - ▶ Start a pod: the bar walks waiting for a GPU machine -> starting the container -> ComfyUI starting -> pod loaded
  *     (the time it took kept); the next start of it shows "of about …"
  *   - 🎨 Styles: the pod's models (the bitGen style each fits; Boogu: none) + its saved workflows -> Make P_ styles
- *   - RunPod ▸ Pods: only P_ styles in the prompt docker's list; Override style ticked; with a P_ style picked the
+ *   - RunPod ▸ Pods: P_ styles in the prompt docker's list (2.763.0: your own too); Override style ticked; with a P_ style picked the
  *     checkpoint box and the LoRA rows are off
  * Put back afterwards (the P_ styles removed). No server / no Playwright / 8399 busy = SKIP. */
 "use strict";
@@ -116,7 +116,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     // only P_ styles
     await p.waitForFunction(() => [...document.querySelectorAll("#styleSel option")].some((o) => o.textContent === "P_Boogu fast"), null, { timeout: 15000 }).catch(() => {});
     const opts = await ev(() => fetch("/api/remotegpu/serverless/styles").then((r) => r.json()).then((j) => Object.values(j.styles).filter((s) => s.kind === "image" && !s.hide).map((s) => s.name).sort()));
-    check("RunPod ▸ Pods (Remote): only the P_ styles are shown", opts.length === 3 && opts.every((n) => /^P_/.test(n)), opts);
+    check("RunPod ▸ Pods (Remote): the P_ styles are shown (2.763.0: your own styles too - each renders on its pod)", ["P_Boogu fast", "P_qwen_image_2512_int8_convrot", "P_z_image_turbo_bf16"].every((n) => opts.includes(n)) && opts.some((n) => !/^P_/.test(n)), opts);
     // the P_ style picked: checkpoint + LoRAs off
     await ev(() => { const s = document.getElementById("styleSel"), o = [...s.options].find((x) => x.textContent === "P_Boogu fast"); s.value = o.value; s.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(500);

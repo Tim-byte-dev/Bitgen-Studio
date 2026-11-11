@@ -3541,6 +3541,7 @@
 <script src="/static/openrouter.js"></script>  <!-- 2.753.0: its 🧠 LLM on OpenRouter (H3OpenRouter - lib/openRouter.js) -->
 <script src="/static/podload.js"></script>  <!-- 2.758.0: a pod's loading bar + its P_ styles (H3PodLoad) -->
 <script src="/static/podsetup.js"></script>  <!-- 2.761.0: what a pod is for, its folders / checkpoints / LoRAs, 💾 Save (H3PodSetup) -->
+<script src="/static/stylepodask.js"></script>  <!-- 2.763.0: "no pod renders this style yet" - create a CUDA 13 pod / use one of yours (H3StylePodAsk; routes/stylePods.js) -->
 <script src="/static/remotedock.js"></script>  <!-- 2.754.0: the Remote generation docker + Use remote generation (H3RemoteDock - routes/remoteDock.js) -->
 <script src="/static/podsdock.js"></script>  <!-- 2.756.0: the PODS docker - RunPod templates, create / start / stop / terminate pods (H3Pods - routes/pods.js) -->
 <script src="/static/bugreport.js"></script>  <!-- 2.522.0: 🐞 the Bug report docker, Ctrl+Alt+Shift+B (H3BugReport - lib/bugReport.js) -->
@@ -6478,6 +6479,7 @@ async function refreshJobs() {
   liveJobsById = {};
   for (const j of list) liveJobsById[j.id] = j;
   if (window.H3ModelsFound && H3ModelsFound.watchJobs) H3ModelsFound.watchJobs(list);   // 2.720.0: a render that stopped on missing models asks to download them
+  if (window.H3StylePodAsk) H3StylePodAsk.watchJobs(list);   // 2.763.0: a render whose style has no pod yet asks for one (create / use / cancel)
   // 2.400.0: the job the queue's RUNNING card stands for is shown THERE, not twice
   let merged = null;
   try { merged = window.QueueRun ? QueueRun.mergedJobId(GQ.items, GENQUEUE.RUNNING) : null; } catch { merged = null; }

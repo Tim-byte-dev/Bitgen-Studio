@@ -5068,6 +5068,25 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **Override style + Pods**：选中 P_ 风格时，Basic Settings 的检查点框重新可用。在那里选的检查点会在 Pod 上使用：如果 Pod 上没有，bitGen 会在渲染前发送它（任务等待，日志中有 [pod] 行），然后用它在 Pod 上的名字。P_ 风格的临时 LoRA 行仍然关闭。
 - Pod 条目中的 📁 New folder 和文件对话框已移除——由下拉框取代。
 
+## 🧩 你的风格在你的 Pod 上 (2.763.0)
+<!-- en: your-styles-on-your-pods-2-763-0 d0378c69c531 -->
+
+- **不再生成 P_ 副本。** 在 RunPod Pods 上（Basic Settings ▸ GPU ▸ Remote 或 Both ▸ RunPod ▸ Pods），风格列表重新显示你自己的风格，每个风格都在一个 Pod 上渲染。你以前做的 P_ 风格照样能用。RunPod Serverless（R_）风格在 Pods 上隐藏。
+- **风格用哪个 Pod：** 先是风格自己的 Pod（🖥 My pods 中 Pod 的 **Styles**），再是为它的类型（Image、Image edit、Video）勾选的
+  Pod，再是正在使用的 Pod。想每种类型一个 Pod，就在不同的 Pod 上勾选 **Image**、**Image edit** 和 **Video**；想用一个 Pod
+  做所有事，就在一个 Pod 上全部勾选。每种类型同一时间只属于一个 Pod - 在一个 Pod 上勾选它，就会从另一个 Pod 上去掉。
+- **Pod 的 Styles**（在 🖥 My pods 中 Pod 的项目里）取代了 2.762.0 的 Checkpoint 和 LoRA 下拉列表：下拉列表列出 Generate 模式（🖼 Image、🎬 Video、🎶 Music）的风格；**All** 列出所有风格。选一个后按 **＋**；风格上的 **✕** 可以去掉它。**💾 Save** 把它们关联到 Pod，并在 Pod 运行时在上面把它们准备好。
+- **在 Pod 上准备好** 的意思是：把风格的工作流、模型、文本编码器、VAE 和 LoRA 放到 Pod 上 - bitGen 下载列表里的文件由 Pod
+  自己下载（很快），其他文件从这台电脑发送 - 并通过 Pod 的 Jupyter 安装工作流需要的节点包，然后通过 ComfyUI-Manager 重启
+  ComfyUI。💾 Save 旁边的一行显示进度；做不到的事（bitGen 所知的任何节点包都不提供的节点、哪里都找不到的文件）也会在那里写明。
+- **还没有 Pod 的风格：** 按 Generate 后渲染会等待，一个对话框询问：用 RunPod 的“ComfyUI CUDA 13”模板 **Create pod**（在 CUDA
+  13 或更新的主机上）- 选择 Secure 或 Community、GPU（⭐ 是 bitGen 的推荐：显存足够放下风格模型的最便宜的一个，以你的货币显示每小时价格）和磁盘 - 或者对你的某个 Pod 选 **Use this pod**（已停止的 Pod 会被启动）。无论哪种，风格都会关联到那个
+  Pod，下次会自动去那里。**Cancel** 让渲染按平常的方式进行。
+- **每次在 Pod 上渲染之前**，bitGen 会启动已停止的 Pod；如果 RunPod 上已经没有这个 Pod，就按当初的方式重新创建；等它的
+  ComfyUI 就绪，并在应用每次运行时把风格在 Pod 上准备一次。任务日志的 [pod] 行会说明正在发生什么。
+- **Override style** 在 Pods 上依然可用：如果 Pod 没有 Basic Settings 的 checkpoint，会在渲染前发送到 Pod。
+- **Pod 上的 LLM：** ComfyUI 不是聊天服务器，所以 LLM 在 Pod 上作为单独的服务器运行（vLLM、llama.cpp 或 Ollama）；和以前一样，在那个 Pod 上勾选 LLM / vLLM 并填写它的端口。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

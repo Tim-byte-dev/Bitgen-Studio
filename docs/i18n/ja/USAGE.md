@@ -4838,6 +4838,24 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   Pod 上での名前で使います。P_ スタイルでは一時的な LoRA の行はオフのままです。
 - Pod の項目から 📁 New folder とファイルダイアログはなくなりました - ドロップダウンがその代わりです。
 
+## 🧩 自分のスタイルを自分の Pod で (2.763.0)
+<!-- en: your-styles-on-your-pods-2-763-0 d0378c69c531 -->
+
+- **P_ のコピーはもう作りません。** RunPod Pods（Basic Settings ▸ GPU ▸ Remote または Both ▸ RunPod ▸ Pods）では、スタイルの一覧に自分のスタイルがまた表示され、それぞれが Pod でレンダリングされます。以前作った P_ スタイルもそのまま使えます。
+  RunPod Serverless（R_）のスタイルは Pods では表示されません。
+- **スタイルが使う Pod：** まずスタイル自身の Pod（🖥 My pods の Pod の **Styles**）、次にその種類（Image、Image edit、Video）にチェックした Pod、次に使用中の Pod です。種類ごとに Pod を分けるなら **Image**、**Image edit**、**Video** を別々の Pod
+  でチェックし、1 つの Pod ですべてを済ませるなら全部を 1 つの Pod でチェックします。1 つの種類は一度に 1 つの Pod にだけ付きます - ある Pod でチェックすると、ほかの Pod からは外れます。
+- **Pod の Styles**（🖥 My pods の Pod の項目内）は 2.762.0 の Checkpoint と LoRA のドロップダウンに代わるものです。ドロップダウンには Generate モード（🖼 Image、🎬 Video、🎶 Music）のスタイルが並び、**All** ですべてのスタイルが並びます。
+  1 つ選んで **＋** を押します。スタイルの **✕** で外せます。**💾 Save** でそれらを Pod に紐付け、Pod が動いていれば Pod 上で準備します。
+- **Pod 上で準備する** とは：スタイルのワークフロー、モデル、テキストエンコーダー、VAE、LoRA を Pod に置くことです - bitGen
+  のダウンロード一覧にあるファイルは Pod 自身がダウンロードし（速い）、それ以外はこのコンピューターから送ります - さらにワークフローに必要なノードパックを Pod の Jupyter でインストールし、ComfyUI-Manager で ComfyUI を再起動します。💾 Save の横の行に進み具合が表示され、できなかったこと（bitGen の知るどのパックにもないノード、どこにもないファイル）もそこに書かれます。
+- **まだ Pod のないスタイル：** Generate を押すと、レンダリングは待機し、ボックスが確認します：RunPod の「ComfyUI CUDA 13」テンプレートから **Create pod**（CUDA 13 以降のホストで） - Secure か Community、GPU（⭐ は bitGen のおすすめ：スタイルのモデルに十分なメモリを持つ最も安いもの。1 時間あたりの料金を自分の通貨で表示）、ディスクを選びます - または自分の
+  Pod を **Use this pod**（停止中の Pod は起動します）。どちらでもスタイルはその Pod に紐付けられ、次からは自動でそこへ送られます。**Cancel** はレンダリングをいつもの方法で進めます。
+- **Pod でのレンダリングの前には毎回**、bitGen は停止中の Pod を起動し、RunPod にもう Pod がなければ作られたときと同じ方法で作り直し、その ComfyUI を待ち、アプリの起動ごとに 1 回スタイルを Pod 上で準備します。何が起きているかはジョブのログの
+  [pod] の行に表示されます。
+- **Override style** は Pods でも使えます：Pod に Basic Settings のチェックポイントがなければ、レンダリングの前に Pod へ送られます。
+- **Pod 上の LLM：** ComfyUI はチャットサーバーではないため、LLM は Pod 上で独自のサーバー（vLLM、llama.cpp、Ollama）として動きます。これまでどおり、その Pod で LLM / vLLM にチェックしてポートを入力します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

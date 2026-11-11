@@ -73,10 +73,10 @@ check("…back to This computer: P_ and the pod fields go", back.name === "my fl
 
 // ---- only P_ styles when Pods are picked
 const set = (o) => Object.assign({ where: "remote", pods: true, sls: false, show_all: false }, o);
-check("Basic Settings ▸ GPU on RunPod ▸ Pods (Remote / Both): only P_ styles show - local, R_ and API_ ones hidden, the template too",
-  RP.hideWhy({ runs_on: "pod" }, { ok: true }, set()) === null && /only P_ pod styles/.test(RP.hideWhy({ runs_on: "local" }, { ok: true }, set()))
-  && /only P_/.test(RP.hideWhy({ runs_on: "remote" }, { ok: true }, set({ where: "both" }))) && /only P_/.test(RP.hideWhy({ runs_on: "api" }, { ok: true }, set()))
-  && /template\.hide = st\.pods && st\.where !== "local"/.test(rd("lib", "rpslStyles.js")));
+check("Basic Settings ▸ GPU on RunPod ▸ Pods (Remote / Both): 2.763.0 - your own styles + P_ + API_ show (each renders on its pod), the RunPod Serverless R_ ones hide, the template shows",
+  RP.hideWhy({ runs_on: "pod" }, { ok: true }, set()) === null && RP.hideWhy({ runs_on: "local" }, { ok: true }, set()) === null
+  && /Serverless/.test(RP.hideWhy({ runs_on: "remote" }, { ok: true }, set({ where: "both" }))) && RP.hideWhy({ runs_on: "api" }, { ok: true }, set()) === null
+  && /template\.hide = st\.pods && st\.where !== "local" \? null/.test(rd("lib", "rpslStyles.js")));
 check("…not on Pods (Serverless, or Local): a P_ style is hidden (it needs a pod); the rest as before",
   /Pods shows it/.test(RP.hideWhy({ runs_on: "pod" }, { ok: true }, set({ pods: false }))) && /Pods shows it/.test(RP.hideWhy({ runs_on: "pod" }, { ok: true }, set({ where: "local" })))
   && RP.hideWhy({ runs_on: "local" }, { ok: true }, set({ where: "local" })) === null);

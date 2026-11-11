@@ -8355,6 +8355,36 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   and then uses the name it has on the pod. The temporary LoRA rows stay off for P_ styles.
 - 📁 New folder and the file dialogs are gone from the pod item - the dropdowns replace them.
 
+## 🧩 Your styles on your pods (2.763.0)
+
+- **No more P_ copies.** On RunPod Pods (Basic Settings ▸ GPU ▸ Remote or Both ▸ RunPod ▸ Pods) the style lists show your
+  own styles again, and each one renders on a pod. The P_ styles you made before still work. RunPod Serverless (R_)
+  styles are hidden on Pods.
+- **Which pod a style uses:** first the style's own pod (a pod's **Styles** in 🖥 My pods), then the pod ticked for its
+  kind (Image, Image edit, Video), then the pod in use. Tick **Image**, **Image edit** and **Video** on different pods for
+  a pod per kind, or tick them all on one pod to use one pod for everything. Each kind is on one pod at a time - ticking
+  it on a pod takes it from another.
+- **A pod's Styles** (in its item in 🖥 My pods) replace the Checkpoint and LoRA dropdowns of 2.762.0: the dropdown lists
+  your styles for the Generate mode (🖼 Image, 🎬 Video, 🎶 Music); **All** lists every style. Pick one and press **＋**;
+  **✕** on a style takes it off. **💾 Save** links them to the pod and, when the pod is running, makes them ready on it.
+- **Made ready on the pod** means: the style's workflow, model, text encoders, VAE and LoRAs are put on the pod - files in
+  bitGen's download list are downloaded by the pod itself (fast), other files are sent from this computer - and node
+  packs the workflow needs are installed through the pod's Jupyter, then ComfyUI is restarted through ComfyUI-Manager. The
+  line beside 💾 Save says how far it is; anything it could not do (a node no pack bitGen knows adds, a file that is
+  nowhere) is named there.
+- **A style with no pod yet:** press Generate and the render waits while a box asks: **Create pod** from RunPod's
+  "ComfyUI CUDA 13" template (on hosts with CUDA 13 or newer) - pick Secure or Community, the GPU (⭐ is bitGen's pick: the
+  cheapest with enough memory for the style's model, with its price an hour in your currency) and the disk - or **Use this
+  pod** for one of your pods (a stopped one is started). Either way the style is linked to that pod, so next time it goes
+  there by itself. **Cancel** sends the render the usual way.
+- **Before every render** on a pod, bitGen starts the pod when it is stopped, makes it again from how it was made when
+  RunPod no longer has it, waits for its ComfyUI and makes the style ready on it once per run of the app. The job's log
+  says what happens in [pod] lines.
+- **Override style** still works on Pods: Basic Settings' checkpoint is sent to the pod before the render when the pod
+  lacks it.
+- **LLM on a pod:** ComfyUI is not a chat server, so the LLM runs as its own server on the pod (vLLM, llama.cpp or
+  Ollama); tick LLM / vLLM on that pod and give its port, as before.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

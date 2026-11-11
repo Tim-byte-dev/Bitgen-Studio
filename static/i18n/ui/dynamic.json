@@ -592,899 +592,899 @@
   },
   {
    "s": "Pending",
-   "src": "index.html:2904"
-  },
-  {
-   "s": "Done",
    "src": "index.html:2905"
   },
   {
+   "s": "Done",
+   "src": "index.html:2906"
+  },
+  {
    "s": "Nothing waiting",
-   "src": "index.html:2914"
+   "src": "index.html:2915"
   },
   {
    "s": "Nothing finished yet",
-   "src": "index.html:2914"
+   "src": "index.html:2915"
   },
   {
    "s": "Resume",
-   "src": "index.html:2941"
-  },
-  {
-   "s": "Queue this job again with its saved settings (same id — its files carry on)",
    "src": "index.html:2942"
   },
   {
-   "s": "Open",
-   "src": "index.html:2946"
+   "s": "Queue this job again with its saved settings (same id — its files carry on)",
+   "src": "index.html:2943"
   },
   {
-   "s": "Show the output",
+   "s": "Open",
    "src": "index.html:2947"
   },
   {
+   "s": "Show the output",
+   "src": "index.html:2948"
+  },
+  {
    "s": "Remove from this project's job list (jobs.info); output files are not touched",
-   "src": "index.html:2954"
+   "src": "index.html:2955"
   },
   {
    "s": "Render details - seed, cfg, steps, model, LoRAs",
-   "src": "index.html:2974"
+   "src": "index.html:2975"
   },
   {
    "s": "Render details",
-   "src": "index.html:2974"
+   "src": "index.html:2975"
   },
   {
    "s": "No seed used yet",
-   "src": "index.html:2987"
+   "src": "index.html:2988"
   },
   {
    "s": "preview · chunk (joins as it renders)",
-   "src": "index.html:3029"
+   "src": "index.html:3030"
   },
   {
    "s": "load a picture first — 🖼 Picture",
-   "src": "index.html:3096"
+   "src": "index.html:3097"
   },
   {
    "s": "Fit",
-   "src": "index.html:3247"
+   "src": "index.html:3248"
   },
   {
    "s": "Generated images appear here",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Pick a style beside the prompt and press",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Generate Image",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "They are added to the",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Images",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "asset column too, which is where you drag them onto the timeline from",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Reading project",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Rendered videos in a different project? Use",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Load",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "next to the project name to switch to it",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Generated songs appear here",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Write the LYRICS in the prompt box, pick a music style beside it and press",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Generate Music",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Sound",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "Finished videos appear here",
-   "src": "index.html:3297"
+   "src": "index.html:3298"
   },
   {
    "s": "asset column too",
-   "src": "index.html:3300"
+   "src": "index.html:3301"
   },
   {
    "s": "music style beside it and press",
-   "src": "index.html:3304"
+   "src": "index.html:3305"
   },
   {
    "s": "They are added to",
-   "src": "index.html:3304"
+   "src": "index.html:3305"
   },
   {
    "s": "the",
-   "src": "index.html:3305"
+   "src": "index.html:3306"
   },
   {
    "s": "asset column too, which is where you drag them onto the",
-   "src": "index.html:3305"
+   "src": "index.html:3306"
   },
   {
    "s": "Save as… - pick a folder and a name (it becomes the folder 💾 Save uses)",
-   "src": "index.html:3338"
+   "src": "index.html:3339"
   },
   {
    "s": "Save as",
-   "src": "index.html:3338"
+   "src": "index.html:3339"
   },
   {
    "s": "Delete",
-   "src": "index.html:3338"
+   "src": "index.html:3339"
   },
   {
    "s": "read from ComfyUI itself — exactly what its dropdowns hold",
-   "src": "index.html:3663"
+   "src": "index.html:3664"
   },
   {
    "s": "read from the model folders and extra_model_paths.yaml",
-   "src": "index.html:3663"
+   "src": "index.html:3664"
   },
   {
    "s": "read from the model folders",
-   "src": "index.html:3663"
+   "src": "index.html:3664"
   },
   {
    "s": "no ComfyUI folder set (Settings → ComfyUI)",
-   "src": "index.html:3671"
+   "src": "index.html:3672"
   },
   {
    "s": "Show folders",
-   "src": "index.html:3698"
+   "src": "index.html:3699"
   },
   {
    "s": "Show only files in one folder",
-   "src": "index.html:3755"
+   "src": "index.html:3756"
   },
   {
    "s": "Browse ComfyUI's models folders",
-   "src": "index.html:3760"
+   "src": "index.html:3761"
   },
   {
    "s": "All folders",
-   "src": "index.html:3770"
+   "src": "index.html:3771"
   },
   {
    "s": "Select a ComfyUI model",
-   "src": "index.html:3832"
+   "src": "index.html:3833"
   },
   {
    "s": "nothing here — check the folder filter, or ⟳ to rescan",
-   "src": "index.html:3851"
+   "src": "index.html:3852"
   },
   {
    "s": "ComfyUI's folder is not set or does not exist (Settings → ComfyUI)",
-   "src": "index.html:3851"
+   "src": "index.html:3852"
   },
   {
    "s": "Selected — press Ctrl+C",
-   "src": "index.html:3885"
+   "src": "index.html:3886"
   },
   {
    "s": "Copy",
-   "src": "index.html:3887"
+   "src": "index.html:3888"
   },
   {
    "s": "rescanning",
-   "src": "index.html:3892"
+   "src": "index.html:3893"
   },
   {
    "s": "reading model folders",
-   "src": "index.html:3926"
+   "src": "index.html:3927"
   },
   {
    "s": "Rescan model folders",
-   "src": "index.html:3945"
+   "src": "index.html:3946"
   },
   {
    "s": "Start ComfyUI & scan models",
-   "src": "index.html:3945"
+   "src": "index.html:3946"
   },
   {
    "s": "Select a checkpoint, diffusers model or diffusion model",
-   "src": "index.html:3955"
+   "src": "index.html:3956"
   },
   {
    "s": "override — ComfyUI dropdown value, blank = use the workflow's",
-   "src": "index.html:3975"
+   "src": "index.html:3976"
   },
   {
    "s": "loras\\name.safetensors",
-   "src": "index.html:4003"
+   "src": "index.html:4004"
   },
   {
    "s": "Select a LoRA",
-   "src": "index.html:4025"
+   "src": "index.html:4026"
   },
   {
    "s": "Model",
-   "src": "index.html:4086"
+   "src": "index.html:4087"
   },
   {
    "s": "VAE",
-   "src": "index.html:4089"
+   "src": "index.html:4090"
   },
   {
    "s": "models\\…safetensors or .gguf",
-   "src": "index.html:4092"
+   "src": "index.html:4093"
   },
   {
    "s": "Select a VAE",
-   "src": "index.html:4115"
+   "src": "index.html:4116"
   },
   {
    "s": "Names as ComfyUI lists them, relative to",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "its",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "loras folder (",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "flux/grain.safetensors",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "LoRA nodes are built into the workflow at render time, so the exported graph needs none. Weight 0 switches one off without removing it from the stack",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "Files are resolved against the LoRA folder in Settings → Paths. Weight 0 switches one off without removing it from the stack",
-   "src": "index.html:4136"
-  },
-  {
-   "s": "loras folder",
    "src": "index.html:4137"
   },
   {
+   "s": "its",
+   "src": "index.html:4137"
+  },
+  {
+   "s": "loras folder (",
+   "src": "index.html:4137"
+  },
+  {
+   "s": "flux/grain.safetensors",
+   "src": "index.html:4137"
+  },
+  {
+   "s": "LoRA nodes are built into the workflow at render time, so the exported graph needs none. Weight 0 switches one off without removing it from the stack",
+   "src": "index.html:4137"
+  },
+  {
+   "s": "Files are resolved against the LoRA folder in Settings → Paths. Weight 0 switches one off without removing it from the stack",
+   "src": "index.html:4137"
+  },
+  {
+   "s": "loras folder",
+   "src": "index.html:4138"
+  },
+  {
    "s": "no styles yet (Settings → Image) —",
-   "src": "index.html:4215"
+   "src": "index.html:4216"
   },
   {
    "s": "none —",
-   "src": "index.html:4230"
+   "src": "index.html:4231"
   },
   {
    "s": "Create an image style first: Settings → Image",
-   "src": "index.html:4256"
+   "src": "index.html:4257"
   },
   {
    "s": "Render a still image from the prompt using the selected style",
-   "src": "index.html:4262"
+   "src": "index.html:4263"
   },
   {
    "s": "make an image style first —",
-   "src": "index.html:4280"
+   "src": "index.html:4281"
   },
   {
    "s": "Select the output ControlNet model",
-   "src": "index.html:4292"
+   "src": "index.html:4293"
   },
   {
    "s": "new chain —",
-   "src": "index.html:4295"
+   "src": "index.html:4296"
   },
   {
    "s": "the preprocessor's own default —",
-   "src": "index.html:4322"
+   "src": "index.html:4323"
   },
   {
    "s": "pick a ControlNet —",
-   "src": "index.html:4366"
+   "src": "index.html:4367"
   },
   {
    "s": "none in ComfyUI models/controlnet —",
-   "src": "index.html:4366"
+   "src": "index.html:4367"
   },
   {
    "s": "model's own",
-   "src": "index.html:4379"
+   "src": "index.html:4380"
   },
   {
    "s": "Select the second model (checkpoint or diffusion model)",
-   "src": "index.html:4400"
+   "src": "index.html:4401"
   },
   {
    "s": "on - pick a ControlNet (Preprocessor)",
-   "src": "index.html:4420"
+   "src": "index.html:4421"
   },
   {
    "s": "on - pick the second model",
-   "src": "index.html:4420"
+   "src": "index.html:4421"
   },
   {
    "s": "on - Generate Image: first image -> control image -> the second model",
-   "src": "index.html:4420"
+   "src": "index.html:4421"
   },
   {
    "s": "off",
-   "src": "index.html:4420"
+   "src": "index.html:4421"
   },
   {
    "s": "not saved",
-   "src": "index.html:4420"
+   "src": "index.html:4421"
   },
   {
    "s": "Select the face detector",
-   "src": "index.html:4465"
+   "src": "index.html:4466"
   },
   {
    "s": "on - the final picture's faces are re-rendered",
-   "src": "index.html:4477"
+   "src": "index.html:4478"
   },
   {
    "s": "saved — applies to every scene created from now on",
-   "src": "index.html:4589"
+   "src": "index.html:4590"
   },
   {
    "s": "the style's own size",
-   "src": "index.html:4609"
+   "src": "index.html:4610"
   },
   {
    "s": "pick an image style —",
-   "src": "index.html:4631"
+   "src": "index.html:4632"
   },
   {
    "s": "this style uses no LoRAs —",
-   "src": "index.html:4633"
+   "src": "index.html:4634"
   },
   {
    "s": "Pick a checkpoint to test (ComfyUI models folder)",
-   "src": "index.html:4692"
+   "src": "index.html:4693"
   },
   {
    "s": "New style",
-   "src": "index.html:4739"
-  },
-  {
-   "s": "unsaved — press Save style",
    "src": "index.html:4740"
   },
   {
+   "s": "unsaved — press Save style",
+   "src": "index.html:4741"
+  },
+  {
    "s": "unsaved copy — press Save style",
-   "src": "index.html:4747"
+   "src": "index.html:4748"
   },
   {
    "s": "save failed",
-   "src": "index.html:4769"
+   "src": "index.html:4770"
   },
   {
    "s": "Select the music model",
-   "src": "index.html:4845"
+   "src": "index.html:4846"
   },
   {
    "s": "Reused for every song made with this style. The lyrics go in the prompt box, not here",
-   "src": "index.html:4863"
+   "src": "index.html:4864"
   },
   {
    "s": "no music styles yet (Settings → Audio ▸ Music styles) —",
-   "src": "index.html:4938"
+   "src": "index.html:4939"
   },
   {
    "s": "Create a music style first: Settings → Audio ▸ Music styles",
-   "src": "index.html:5003"
+   "src": "index.html:5004"
   },
   {
    "s": "Make a song: the lyrics box is the PROMPT, the selected music style is the sound",
-   "src": "index.html:5009"
+   "src": "index.html:5010"
   },
   {
    "s": "New music style",
-   "src": "index.html:5025"
+   "src": "index.html:5026"
   },
   {
    "s": "linking",
-   "src": "index.html:5326"
+   "src": "index.html:5327"
   },
   {
    "s": "this format cannot play in the browser — use ↗ to open it",
-   "src": "index.html:5450"
+   "src": "index.html:5451"
   },
   {
    "s": "select and copy",
-   "src": "index.html:5978"
+   "src": "index.html:5979"
   },
   {
    "s": "assistant",
-   "src": "index.html:6038"
+   "src": "index.html:6039"
   },
   {
    "s": "you",
-   "src": "index.html:6038"
+   "src": "index.html:6039"
   },
   {
    "s": "Retry",
-   "src": "index.html:6064"
-  },
-  {
-   "s": "Ask this again",
    "src": "index.html:6065"
   },
   {
+   "s": "Ask this again",
+   "src": "index.html:6066"
+  },
+  {
    "s": "Copy this message",
-   "src": "index.html:6070"
+   "src": "index.html:6071"
   },
   {
    "s": "none yet —",
-   "src": "index.html:6099"
+   "src": "index.html:6100"
   },
   {
    "s": "Nothing yet — ask for help with a shot, a still or a line of speech",
-   "src": "index.html:6111"
+   "src": "index.html:6112"
   },
   {
    "s": "Nothing yet — ask for help with a shot",
-   "src": "index.html:6111"
+   "src": "index.html:6112"
   },
   {
    "s": "nothing picked —",
-   "src": "index.html:6375"
+   "src": "index.html:6376"
   },
   {
    "s": "could not build the phrase",
-   "src": "index.html:6377"
+   "src": "index.html:6378"
   },
   {
    "s": "Speak",
-   "src": "index.html:6440"
-  },
-  {
-   "s": "Transcribing",
    "src": "index.html:6441"
   },
   {
+   "s": "Transcribing",
+   "src": "index.html:6442"
+  },
+  {
    "s": "naming and saving",
-   "src": "index.html:6540"
+   "src": "index.html:6541"
   },
   {
    "s": "chat cleared",
-   "src": "index.html:6554"
+   "src": "index.html:6555"
   },
   {
    "s": "clear failed",
-   "src": "index.html:6554"
+   "src": "index.html:6555"
   },
   {
    "s": "pick a saved chat first",
-   "src": "index.html:6559"
+   "src": "index.html:6560"
   },
   {
    "s": "load failed",
-   "src": "index.html:6566"
+   "src": "index.html:6567"
   },
   {
    "s": "no song (silent cut) —",
-   "src": "index.html:6668"
+   "src": "index.html:6669"
   },
   {
    "s": "no group —",
-   "src": "index.html:6736"
+   "src": "index.html:6737"
   },
   {
    "s": "no groups saved —",
-   "src": "index.html:6736"
+   "src": "index.html:6737"
   },
   {
    "s": "no layer · start:end (s) - frames",
-   "src": "index.html:7144"
+   "src": "index.html:7145"
   },
   {
    "s": "opacity",
-   "src": "index.html:7275"
+   "src": "index.html:7276"
   },
   {
    "s": "volume",
-   "src": "index.html:7278"
+   "src": "index.html:7279"
   },
   {
    "s": "scale %",
-   "src": "index.html:7286"
-  },
-  {
-   "s": "rot °",
    "src": "index.html:7287"
   },
   {
-   "s": "colour",
-   "src": "index.html:7289"
+   "s": "rot °",
+   "src": "index.html:7288"
   },
   {
-   "s": "to the next ◆",
+   "s": "colour",
    "src": "index.html:7290"
   },
   {
-   "s": "Delete keyframe",
+   "s": "to the next ◆",
    "src": "index.html:7291"
   },
   {
+   "s": "Delete keyframe",
+   "src": "index.html:7292"
+  },
+  {
    "s": "Remove from this layer",
-   "src": "index.html:7830"
+   "src": "index.html:7831"
   },
   {
    "s": "Cut (no transition)",
-   "src": "index.html:7876"
+   "src": "index.html:7877"
   },
   {
    "s": "Drag up or down to reorder (render order)",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Click to rename this layer",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Visibility — include this layer in the preview and the export",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Isolate — show only soloed layers (filmstrip stays on)",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Remove this layer",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Volume",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Opacity",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "In transition",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Out transition",
-   "src": "index.html:7949"
+   "src": "index.html:7950"
   },
   {
    "s": "Preview started here — double-click to send the position marker back",
-   "src": "index.html:8220"
+   "src": "index.html:8221"
   },
   {
    "s": "Drag across the ruler to select a time range (shift+drag works on the tracks too)",
-   "src": "index.html:8366"
+   "src": "index.html:8367"
   },
   {
    "s": "path - write what follows it · draw it on the canvas (P)",
-   "src": "index.html:8489"
+   "src": "index.html:8490"
   },
   {
    "s": "path - write what follows it",
-   "src": "index.html:8489"
+   "src": "index.html:8490"
   },
   {
    "s": "First/Last frame markers (First/Last mode)",
-   "src": "index.html:8544"
+   "src": "index.html:8545"
   },
   {
    "s": "REF",
-   "src": "index.html:8552"
+   "src": "index.html:8553"
   },
   {
    "s": "Reference frame markers (Reference mode)",
-   "src": "index.html:8552"
+   "src": "index.html:8553"
   },
   {
    "s": "Drag the selection start",
-   "src": "index.html:8567"
+   "src": "index.html:8568"
   },
   {
    "s": "Drag the selection end",
-   "src": "index.html:8567"
+   "src": "index.html:8568"
   },
   {
    "s": "extracting frames",
-   "src": "index.html:8854"
+   "src": "index.html:8855"
   },
   {
    "s": "Selection starts on this frame",
-   "src": "index.html:8887"
+   "src": "index.html:8888"
   },
   {
    "s": "Selection ends after this frame",
-   "src": "index.html:8887"
+   "src": "index.html:8888"
   },
   {
    "s": "Use as the FIRST frame",
-   "src": "index.html:8887"
+   "src": "index.html:8888"
   },
   {
    "s": "Use as the LAST frame",
-   "src": "index.html:8887"
+   "src": "index.html:8888"
   },
   {
    "s": "Add as a reference image",
-   "src": "index.html:8887"
+   "src": "index.html:8888"
   },
   {
    "s": "Transcribe speech to text",
-   "src": "index.html:8981"
+   "src": "index.html:8982"
   },
   {
    "s": "Extract timed lyrics (.lrc + .srt)",
-   "src": "index.html:8981"
+   "src": "index.html:8982"
   },
   {
    "s": "empty — drop files above",
-   "src": "index.html:9016"
+   "src": "index.html:9017"
   },
   {
    "s": "none — drag a video here from Assets or the Gallery, or + add video",
-   "src": "index.html:9128"
-  },
-  {
-   "s": "none — drag a sound file here from Assets, or + add sound",
    "src": "index.html:9129"
   },
   {
+   "s": "none — drag a sound file here from Assets, or + add sound",
+   "src": "index.html:9130"
+  },
+  {
    "s": "Click to choose which frames of this video are the reference",
-   "src": "index.html:9139"
+   "src": "index.html:9140"
   },
   {
    "s": "Reference",
-   "src": "index.html:9142"
+   "src": "index.html:9143"
   },
   {
    "s": "Append",
-   "src": "index.html:9142"
+   "src": "index.html:9143"
   },
   {
    "s": "Prepend",
-   "src": "index.html:9142"
+   "src": "index.html:9143"
   },
   {
    "s": "Preview",
-   "src": "index.html:9142"
+   "src": "index.html:9143"
   },
   {
    "s": "fl2va · <Picture 1> = its last frame - the new part starts on it; <Picture 2> = the Image tab's picture (its end)",
-   "src": "index.html:9156"
+   "src": "index.html:9157"
   },
   {
    "s": "fl2va · <Picture 1> = its first frame - the new part ends on it; <Picture 2> = the Image tab's picture (its start)",
-   "src": "index.html:9156"
+   "src": "index.html:9157"
   },
   {
    "s": "Text encoder",
-   "src": "index.html:9695"
-  },
-  {
-   "s": "blank = the workflow's own",
    "src": "index.html:9696"
   },
   {
+   "s": "blank = the workflow's own",
+   "src": "index.html:9697"
+  },
+  {
    "s": "Checkpoint",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "Steps (blank = the workflow's)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "cfg (blank = the workflow's)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "Load as (8-bit halves a bf16/fp16 model's VRAM)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "the workflow's own —",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "Full precision (as stored)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "8-bit fp8 (e4m3fn) — half the VRAM",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "8-bit fp8 fast (RTX 40/50 fp8 math)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "8-bit fp8 (e5m2)",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "Remove this phase",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "wf",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "How ComfyUI loads this checkpoint. 8-bit (fp8) halves a bf16/fp16 model in VRAM - e.g. a 34 GB bf16 model loads as about 17 GB and fits a 32 GB card. A file that is already int8/fp8/fp4/GGUF is left as it is",
-   "src": "index.html:9721"
+   "src": "index.html:9722"
   },
   {
    "s": "Pick the checkpoint (ComfyUI models folder)",
-   "src": "index.html:9740"
+   "src": "index.html:9741"
   },
   {
    "s": "new video style",
-   "src": "index.html:9779"
+   "src": "index.html:9780"
   },
   {
    "s": "new video style —",
-   "src": "index.html:9816"
+   "src": "index.html:9817"
   },
   {
    "s": "template —",
-   "src": "index.html:9823"
+   "src": "index.html:9824"
   },
   {
    "s": "give the style a name",
-   "src": "index.html:9862"
+   "src": "index.html:9863"
   },
   {
    "s": "a project name is required",
-   "src": "index.html:9900"
+   "src": "index.html:9901"
   },
   {
    "s": "could not create the project",
-   "src": "index.html:9911"
+   "src": "index.html:9912"
   },
   {
    "s": "right-click: ↺ Reset pin",
-   "src": "index.html:10420"
+   "src": "index.html:10421"
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10921"
+   "src": "index.html:10922"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:11019"
-  },
-  {
-   "s": "Checkpoints",
-   "src": "index.html:11019"
-  },
-  {
-   "s": "Text encoders",
    "src": "index.html:11020"
   },
   {
-   "s": "CLIP vision",
+   "s": "Checkpoints",
+   "src": "index.html:11020"
+  },
+  {
+   "s": "Text encoders",
    "src": "index.html:11021"
   },
   {
-   "s": "Embeddings",
+   "s": "CLIP vision",
    "src": "index.html:11022"
   },
   {
-   "s": "Upscale models",
+   "s": "Embeddings",
    "src": "index.html:11023"
+  },
+  {
+   "s": "Upscale models",
+   "src": "index.html:11024"
   },
   {
    "s": "Configs",
-   "src": "index.html:11023"
+   "src": "index.html:11024"
   },
   {
    "s": "folder, or a name under the base folder",
-   "src": "index.html:11025"
+   "src": "index.html:11026"
   },
   {
    "s": "Select folder",
-   "src": "index.html:11025"
+   "src": "index.html:11026"
   },
   {
    "s": "Select Folder",
-   "src": "index.html:11049"
+   "src": "index.html:11050"
   },
   {
    "s": "the folder dialog could not open — type the path",
-   "src": "index.html:11052"
+   "src": "index.html:11053"
   },
   {
    "s": "pick the base folder first",
-   "src": "index.html:11057"
+   "src": "index.html:11058"
   },
   {
    "s": "standard folders filled — 💾 to write them",
-   "src": "index.html:11060"
+   "src": "index.html:11061"
   },
   {
    "s": "writing",
-   "src": "index.html:11065"
+   "src": "index.html:11066"
   },
   {
    "s": "refused",
-   "src": "index.html:11070"
-  },
-  {
-   "s": "written: nothing new · restart ComfyUI to pick the folders up",
    "src": "index.html:11071"
   },
   {
+   "s": "written: nothing new · restart ComfyUI to pick the folders up",
+   "src": "index.html:11072"
+  },
+  {
    "s": "new graph —",
-   "src": "index.html:11114"
+   "src": "index.html:11115"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11121"
+   "src": "index.html:11122"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11138"
+   "src": "index.html:11139"
   },
   {
    "s": "label",
-   "src": "index.html:11145"
+   "src": "index.html:11146"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11145"
+   "src": "index.html:11146"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11145"
+   "src": "index.html:11146"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11145"
+   "src": "index.html:11146"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11175"
+   "src": "index.html:11176"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11214"
+   "src": "index.html:11215"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11345"
+   "src": "index.html:11346"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11422"
+   "src": "index.html:11423"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11422"
+   "src": "index.html:11423"
   },
   {
    "s": "Version",
@@ -5396,255 +5396,263 @@
   },
   {
    "s": "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods",
-   "src": "static/podsdock.js:81"
+   "src": "static/podsdock.js:84"
   },
   {
    "s": "PODS",
-   "src": "static/podsdock.js:81"
+   "src": "static/podsdock.js:84"
   },
   {
    "s": "RunPod pods",
-   "src": "static/podsdock.js:98"
-  },
-  {
-   "s": "now",
-   "src": "static/podsdock.js:98"
-  },
-  {
-   "s": "today",
-   "src": "static/podsdock.js:98"
-  },
-  {
-   "s": "this month",
-   "src": "static/podsdock.js:98"
-  },
-  {
-   "s": "RunPod pods: none running",
-   "src": "static/podsdock.js:98"
-  },
-  {
-   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
    "src": "static/podsdock.js:101"
   },
   {
+   "s": "now",
+   "src": "static/podsdock.js:101"
+  },
+  {
+   "s": "today",
+   "src": "static/podsdock.js:101"
+  },
+  {
+   "s": "this month",
+   "src": "static/podsdock.js:101"
+  },
+  {
+   "s": "RunPod pods: none running",
+   "src": "static/podsdock.js:101"
+  },
+  {
+   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
+   "src": "static/podsdock.js:104"
+  },
+  {
    "s": "Every kind",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "NVIDIA",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "AMD",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "ComfyUI only",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "For any style",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "Explore RunPod templates ↗",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "Search templates - name, image, port, kind",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "Ask RunPod again",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "The kind of machine the template is made for",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "Only templates that run ComfyUI - the ones bitGen can render with",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "A template that is not listed: paste its RunPod link",
-   "src": "static/podsdock.js:119"
+   "src": "static/podsdock.js:122"
   },
   {
    "s": "Official",
-   "src": "static/podsdock.js:123"
+   "src": "static/podsdock.js:126"
   },
   {
    "s": "Verified",
-   "src": "static/podsdock.js:123"
+   "src": "static/podsdock.js:126"
   },
   {
    "s": "My pods",
-   "src": "static/podsdock.js:123"
+   "src": "static/podsdock.js:126"
   },
   {
    "s": "kept under ★ Shortcuts",
-   "src": "static/podsdock.js:200"
+   "src": "static/podsdock.js:203"
   },
   {
    "s": "removed from ★ Shortcuts",
-   "src": "static/podsdock.js:200"
+   "src": "static/podsdock.js:203"
   },
   {
    "s": "Runs ComfyUI - bitGen can render on it",
-   "src": "static/podsdock.js:234"
+   "src": "static/podsdock.js:237"
   },
   {
    "s": "fits",
-   "src": "static/podsdock.js:236"
-  },
-  {
-   "s": "Container disk",
    "src": "static/podsdock.js:239"
   },
   {
+   "s": "Container disk",
+   "src": "static/podsdock.js:242"
+  },
+  {
    "s": "Kept while the pod is stopped",
-   "src": "static/podsdock.js:240"
+   "src": "static/podsdock.js:243"
   },
   {
    "s": "No shortcuts yet - press ☆ on a template to keep it here",
-   "src": "static/podsdock.js:249"
+   "src": "static/podsdock.js:252"
   },
   {
    "s": "No template matches - try fewer words, another kind, or untick ComfyUI only",
-   "src": "static/podsdock.js:249"
+   "src": "static/podsdock.js:252"
   },
   {
    "s": "No templates here",
-   "src": "static/podsdock.js:249"
+   "src": "static/podsdock.js:252"
   },
   {
    "s": "Create a pod from",
-   "src": "static/podsdock.js:270"
+   "src": "static/podsdock.js:273"
   },
   {
    "s": "Cloud",
-   "src": "static/podsdock.js:277"
-  },
-  {
-   "s": "Secure",
-   "src": "static/podsdock.js:277"
-  },
-  {
-   "s": "GPU",
-   "src": "static/podsdock.js:279"
-  },
-  {
-   "s": "asking RunPod",
-   "src": "static/podsdock.js:279"
-  },
-  {
-   "s": "GPUs",
    "src": "static/podsdock.js:280"
   },
   {
+   "s": "Secure",
+   "src": "static/podsdock.js:280"
+  },
+  {
+   "s": "GPU",
+   "src": "static/podsdock.js:282"
+  },
+  {
+   "s": "asking RunPod",
+   "src": "static/podsdock.js:282"
+  },
+  {
+   "s": "GPUs",
+   "src": "static/podsdock.js:283"
+  },
+  {
    "s": "wiped when the pod stops",
-   "src": "static/podsdock.js:281"
-  },
-  {
-   "s": "workspace",
-   "src": "static/podsdock.js:282"
-  },
-  {
-   "s": "GB",
-   "src": "static/podsdock.js:282"
-  },
-  {
-   "s": "kept while stopped - billed for storage",
-   "src": "static/podsdock.js:282"
-  },
-  {
-   "s": "Create pod",
    "src": "static/podsdock.js:284"
   },
   {
+   "s": "workspace",
+   "src": "static/podsdock.js:285"
+  },
+  {
+   "s": "GB",
+   "src": "static/podsdock.js:285"
+  },
+  {
+   "s": "kept while stopped - billed for storage",
+   "src": "static/podsdock.js:285"
+  },
+  {
+   "s": "Create pod",
+   "src": "static/podsdock.js:287"
+  },
+  {
    "s": "no GPUs offered",
-   "src": "static/podsdock.js:295"
+   "src": "static/podsdock.js:298"
   },
   {
    "s": "terminating",
-   "src": "static/podsdock.js:331"
-  },
-  {
-   "s": "stopping pod",
-   "src": "static/podsdock.js:332"
-  },
-  {
-   "s": "loading pod",
-   "src": "static/podsdock.js:333"
-  },
-  {
-   "s": "pod loaded",
    "src": "static/podsdock.js:334"
   },
   {
-   "s": "stopped",
+   "s": "stopping pod",
+   "src": "static/podsdock.js:335"
+  },
+  {
+   "s": "loading pod",
+   "src": "static/podsdock.js:336"
+  },
+  {
+   "s": "pod loaded",
    "src": "static/podsdock.js:337"
   },
   {
+   "s": "stopped",
+   "src": "static/podsdock.js:340"
+  },
+  {
    "s": "No pods yet - pick a template (All, Official …) and press Create pod",
-   "src": "static/podsdock.js:349"
+   "src": "static/podsdock.js:352"
   },
   {
    "s": "bitGen created or started it",
-   "src": "static/podsdock.js:354"
+   "src": "static/podsdock.js:357"
   },
   {
    "s": "Render on this pod (its ComfyUI)",
-   "src": "static/podsdock.js:360"
+   "src": "static/podsdock.js:363"
   },
   {
    "s": "Styles",
-   "src": "static/podsdock.js:361"
+   "src": "static/podsdock.js:364"
   },
   {
    "s": "Terminate",
-   "src": "static/podsdock.js:363"
+   "src": "static/podsdock.js:366"
   },
   {
    "s": "Delete the pod and everything on it",
-   "src": "static/podsdock.js:363"
+   "src": "static/podsdock.js:366"
   },
   {
    "s": "Video",
-   "src": "static/podsetup.js:23"
+   "src": "static/podsetup.js:21"
   },
   {
    "s": "Image edit",
-   "src": "static/podsetup.js:23"
+   "src": "static/podsetup.js:21"
   },
   {
    "s": "What this pod is for",
-   "src": "static/podsetup.js:61"
+   "src": "static/podsetup.js:80"
+  },
+  {
+   "s": "Ticked = this pod renders every style of that kind that has no pod of its own. One pod per kind - tick them all on one pod to use one pod for everything",
+   "src": "static/podsetup.js:80"
   },
   {
    "s": "The pod's LLM server (vLLM, Ollama",
-   "src": "static/podsetup.js:64"
+   "src": "static/podsetup.js:83"
   },
   {
-   "s": "one per pod - it becomes the pod's P_ style",
-   "src": "static/podsetup.js:67"
+   "s": "Your styles that render on this pod - their workflow, models, text encoders, VAE, LoRAs and node packs go to the pod",
+   "src": "static/podsetup.js:86"
   },
   {
-   "s": "Add a LoRA - sent with the checkpoint, in its P_ style",
-   "src": "static/podsetup.js:69"
+   "s": "pick a style —",
+   "src": "static/podsetup.js:87"
   },
   {
-   "s": "From this computer's ComfyUI models folders",
-   "src": "static/podsetup.js:81"
+   "s": "A style for this pod",
+   "src": "static/podsetup.js:87"
   },
   {
-   "s": "Save again - sends what was not sent",
-   "src": "static/podsetup.js:143"
+   "s": "Link the picked style to this pod",
+   "src": "static/podsetup.js:89"
+  },
+  {
+   "s": "no styles of its own yet",
+   "src": "static/podsetup.js:92"
   },
   {
    "s": "since start",
@@ -6709,6 +6717,58 @@
   {
    "s": "Style doctor",
    "src": "static/styledoctor.js:159"
+  },
+  {
+   "s": "A pod for this style",
+   "src": "static/stylepodask.js:53"
+  },
+  {
+   "s": "No pod renders",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "yet. Create one, or use one of your pods - the style is linked to it, so next time it goes there by itself. Its files and node packs are put on the pod before it renders",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Create a pod",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Community (cheaper)",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Disk",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Use one of your pods",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Use this pod",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "A stopped pod is started",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "No pod of its own - the render goes the usual way (Basic Settings ▸ GPU)",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "A pod for",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "s": "Template",
+   "src": "static/stylepodask.js:61"
+  },
+  {
+   "s": "bitGen's pick: the cheapest GPU with at least",
+   "src": "static/stylepodask.js:67"
   },
   {
    "s": "Built-in",
@@ -22422,471 +22482,471 @@
   },
   {
    "p": "Pending ({0})",
-   "src": "index.html:2904"
-  },
-  {
-   "p": "Done ({0})",
    "src": "index.html:2905"
   },
   {
+   "p": "Done ({0})",
+   "src": "index.html:2906"
+  },
+  {
    "p": "{0} active",
-   "src": "index.html:2913"
+   "src": "index.html:2914"
   },
   {
    "p": "last seed used: {0}",
-   "src": "index.html:2986"
-  },
-  {
-   "p": "Reuse the last seed used ({0})",
    "src": "index.html:2987"
   },
   {
+   "p": "Reuse the last seed used ({0})",
+   "src": "index.html:2988"
+  },
+  {
    "p": "{0} · running",
-   "src": "index.html:3016"
+   "src": "index.html:3017"
   },
   {
    "p": "preview · chunk {0}/{1} (joins as it renders) · step {2} of {3}",
-   "src": "index.html:3029"
+   "src": "index.html:3030"
   },
   {
    "p": "preview · chunk {0}/{1} (joins as it renders)",
-   "src": "index.html:3029"
+   "src": "index.html:3030"
   },
   {
    "p": "preview · chunk (joins as it renders) · step {0} of {1}",
-   "src": "index.html:3029"
+   "src": "index.html:3030"
   },
   {
    "p": "saved {0}",
-   "src": "index.html:3110"
+   "src": "index.html:3111"
   },
   {
    "p": "downloaded {0} (to your Downloads folder)",
-   "src": "index.html:3117"
+   "src": "index.html:3118"
   },
   {
    "p": "could not save: {0}",
-   "src": "index.html:3121"
+   "src": "index.html:3122"
   },
   {
    "p": "tone-mapping {0}",
-   "src": "index.html:3135"
+   "src": "index.html:3136"
   },
   {
    "p": "HDR preview failed (HTTP {0})",
-   "src": "index.html:3143"
+   "src": "index.html:3144"
   },
   {
    "p": "Gallery could not load ({0}). Retrying",
-   "src": "index.html:3289"
+   "src": "index.html:3290"
   },
   {
    "p": "{0} — {1} — {2} MB — exported (final/)",
-   "src": "index.html:3338"
+   "src": "index.html:3339"
   },
   {
    "p": "{0} — {1} — {2} MB",
-   "src": "index.html:3338"
+   "src": "index.html:3339"
   },
   {
    "p": "no preview — {0} can't play in the browser",
-   "src": "index.html:3365"
+   "src": "index.html:3366"
   },
   {
    "p": "no preview — {0}",
-   "src": "index.html:3365"
+   "src": "index.html:3366"
   },
   {
    "p": "{0} model file found",
-   "src": "index.html:3658"
+   "src": "index.html:3659"
   },
   {
    "p": "{0} model files found",
-   "src": "index.html:3658"
+   "src": "index.html:3659"
   },
   {
    "p": "folder: {0}",
-   "src": "index.html:3671"
+   "src": "index.html:3672"
   },
   {
    "p": "{0} file",
-   "src": "index.html:3851"
+   "src": "index.html:3852"
   },
   {
    "p": "{0} files",
-   "src": "index.html:3851"
+   "src": "index.html:3852"
   },
   {
    "p": "{0} · optional",
-   "src": "index.html:3975"
+   "src": "index.html:3976"
   },
   {
    "p": "This workflow loads with {0}, so only that kind is offered. Tick to see the rest — ComfyUI will refuse a kind its loader cannot take",
-   "src": "index.html:4107"
+   "src": "index.html:4108"
   },
   {
    "p": "This style still needs: {0} — fill it in under Settings → Image",
-   "src": "index.html:4259"
+   "src": "index.html:4260"
   },
   {
    "p": "Edit the picture(s) in the Refs dock with this prompt (up to {0})",
-   "src": "index.html:4262"
+   "src": "index.html:4263"
   },
   {
    "p": "Input: {0} with {1}. Output: a {2} ControlNet ({3})",
-   "src": "index.html:4329"
+   "src": "index.html:4330"
   },
   {
    "p": "Input: {0} with {1}. Output: a {2} ControlNet ({3}). No comfyui_controlnet_aux ckpts folder found — use 📁, or leave the default",
-   "src": "index.html:4329"
+   "src": "index.html:4330"
   },
   {
    "p": "{0} — not found",
-   "src": "index.html:4369"
+   "src": "index.html:4370"
   },
   {
    "p": "not saved: {0}",
-   "src": "index.html:4425"
+   "src": "index.html:4426"
   },
   {
    "p": "could not draw this style: {0} — see the console below",
-   "src": "index.html:4723"
+   "src": "index.html:4724"
   },
   {
    "p": "saved as {0} — still needs: {1}",
-   "src": "index.html:4780"
+   "src": "index.html:4781"
   },
   {
    "p": "saved as styles\\{0}",
-   "src": "index.html:4780"
+   "src": "index.html:4781"
   },
   {
    "p": "This style still needs: {0} — fill it in under Settings → Audio ▸ Music styles",
-   "src": "index.html:5006"
+   "src": "index.html:5007"
   },
   {
    "p": "Make it available as a {0}",
-   "src": "index.html:5317"
-  },
-  {
-   "p": "Hard-links {0} from your {1} folder into ComfyUI's {2} folder. On one drive this is instant and uses no extra space",
    "src": "index.html:5318"
   },
   {
+   "p": "Hard-links {0} from your {1} folder into ComfyUI's {2} folder. On one drive this is instant and uses no extra space",
+   "src": "index.html:5319"
+  },
+  {
    "p": "Copied to {0}. Try generating again",
-   "src": "index.html:5343"
+   "src": "index.html:5344"
   },
   {
    "p": "It was already there: {0} (created that folder — your extra_model_paths.yaml already named it, it just did not exist yet) Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5348"
+   "src": "index.html:5349"
   },
   {
    "p": "It was already there: {0} Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5348"
+   "src": "index.html:5349"
   },
   {
    "p": "Linked to {0} (created that folder — your extra_model_paths.yaml already named it, it just did not exist yet) Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5348"
+   "src": "index.html:5349"
   },
   {
    "p": "Linked to {0} Try generating again. If ComfyUI still refuses it, restart ComfyUI so it re-reads its model folders",
-   "src": "index.html:5348"
+   "src": "index.html:5349"
   },
   {
    "p": "Save a copy to {0} (the last Save-as folder) - Shift-click: Save as",
-   "src": "index.html:5548"
+   "src": "index.html:5549"
   },
   {
    "p": "loaded {0}",
-   "src": "index.html:6566"
+   "src": "index.html:6567"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ over the 5-minute cap",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3} · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shot · {1}f · {2}:{3}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap ⚠ a shot is over the per-shot ceiling",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap · {4}",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} shots · {1}f · {2}:{3} ⚠ over the 5-minute cap",
-   "src": "index.html:6608"
+   "src": "index.html:6609"
   },
   {
    "p": "{0} ({1} img · {2} vid · {3} snd)",
-   "src": "index.html:6742"
+   "src": "index.html:6743"
   },
   {
    "p": "{0} ({1} img · {2} vid)",
-   "src": "index.html:6742"
+   "src": "index.html:6743"
   },
   {
    "p": "{0} ({1} img · {2} snd)",
-   "src": "index.html:6742"
+   "src": "index.html:6743"
   },
   {
    "p": "{0} ({1} img)",
-   "src": "index.html:6742"
+   "src": "index.html:6743"
   },
   {
    "p": "{0} image, {1} video, {2} sound — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} image, {1} video — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} image, {1} sound — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} image — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} images, {1} video, {2} sound — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} images, {1} video — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} images, {1} sound — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} images — saving an existing name overwrites that group",
-   "src": "index.html:6814"
+   "src": "index.html:6815"
   },
   {
    "p": "{0} · start:end (s) - frames",
-   "src": "index.html:7144"
+   "src": "index.html:7145"
   },
   {
    "p": "keyframe @ +{0}s — tweens to the next diamond",
-   "src": "index.html:7291"
+   "src": "index.html:7292"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7} · hold",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7} · ease {8}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · colour {7}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · hold",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}° · ease {7}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · rot {6}°",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6} · hold",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6} · ease {7}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · colour {6}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · hold",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}% · ease {6}",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "keyframe @ +{0}s — click to edit · opacity {1}% · volume {2}% · x {3} y {4} · scale {5}%",
-   "src": "index.html:7442"
+   "src": "index.html:7443"
   },
   {
    "p": "{0} transition — {1}, {2}s {3}",
-   "src": "index.html:7993"
+   "src": "index.html:7994"
   },
   {
    "p": "{0} transition — cut {1}",
-   "src": "index.html:7993"
+   "src": "index.html:7994"
   },
   {
    "p": "{0} — click to highlight this layer for Keep / Cut",
-   "src": "index.html:8068"
+   "src": "index.html:8069"
   },
   {
    "p": "{0} · starts {1}s · in {2}s out {3}s ({4}s) — click to select, double-click to set its start time (or add a ◆ keyframe), drag to reorder, edges to trim",
-   "src": "index.html:8382"
+   "src": "index.html:8383"
   },
   {
    "p": "starts {0}s · in {1} out {2} — click to select, double-click to set its start time (or add a ◆ keyframe), drag to move, edges to trim",
-   "src": "index.html:8432"
+   "src": "index.html:8433"
   },
   {
    "p": "image · starts {0}s +{1}s · opacity {2}% — click to select, double-click to set its start time (or add a ◆ keyframe), right edge = duration",
-   "src": "index.html:8459"
+   "src": "index.html:8460"
   },
   {
    "p": "{0} · draw it on the canvas (P)",
-   "src": "index.html:8489"
-  },
-  {
-   "p": "Path layer: {0} point(s), {1}s +{2}s - click to select it",
    "src": "index.html:8490"
   },
   {
+   "p": "Path layer: {0} point(s), {1}s +{2}s - click to select it",
+   "src": "index.html:8491"
+  },
+  {
    "p": "{0} · layer V{1}2 · {2}s +{3}s — click to select, double-click to set its start time (or add a ◆ keyframe), edges trim, drag to move",
-   "src": "index.html:8503"
+   "src": "index.html:8504"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps (capped at {6}) · cached",
-   "src": "index.html:8871"
+   "src": "index.html:8872"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps (capped at {6})",
-   "src": "index.html:8871"
+   "src": "index.html:8872"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps · cached",
-   "src": "index.html:8871"
+   "src": "index.html:8872"
   },
   {
    "p": "{0} · {1} · {2}→{3}s · {4} frames @ {5} fps",
-   "src": "index.html:8871"
+   "src": "index.html:8872"
   },
   {
    "p": "phase {0}1",
-   "src": "index.html:9747"
+   "src": "index.html:9748"
   },
   {
    "p": "{0} · {1} · {2} phases",
-   "src": "index.html:9816"
+   "src": "index.html:9817"
   },
   {
    "p": "saved \"{0}\" → styles/video/",
-   "src": "index.html:9870"
+   "src": "index.html:9871"
   },
   {
    "p": "preview · {0}",
-   "src": "index.html:10042"
+   "src": "index.html:10043"
   },
   {
    "p": "{0}s (from {1}s)",
-   "src": "index.html:10173"
+   "src": "index.html:10174"
   },
   {
    "p": "{0} · right-click: ↺ Reset pin",
-   "src": "index.html:10420"
+   "src": "index.html:10421"
   },
   {
    "p": "{0} dock",
-   "src": "index.html:10821"
+   "src": "index.html:10822"
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10878"
+   "src": "index.html:10879"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10883"
+   "src": "index.html:10884"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:11025"
+   "src": "index.html:11026"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11071"
+   "src": "index.html:11072"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11071"
+   "src": "index.html:11072"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11071"
+   "src": "index.html:11072"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11123"
+   "src": "index.html:11124"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11214"
+   "src": "index.html:11215"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11270"
+   "src": "index.html:11271"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11270"
+   "src": "index.html:11271"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11379"
+   "src": "index.html:11380"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11443"
+   "src": "index.html:11444"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11571"
+   "src": "index.html:11572"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11572"
+   "src": "index.html:11573"
   },
   {
    "p": "The credits could not be read: {0}",
@@ -23778,51 +23838,51 @@
   },
   {
    "p": "{0} running · {1}",
-   "src": "static/podsdock.js:98"
+   "src": "static/podsdock.js:101"
   },
   {
    "p": "{0} pod on your RunPod account",
-   "src": "static/podsdock.js:223"
+   "src": "static/podsdock.js:226"
   },
   {
    "p": "{0} pods on your RunPod account",
-   "src": "static/podsdock.js:223"
+   "src": "static/podsdock.js:226"
   },
   {
    "p": "{0} of {1} templates · RunPod did not answer for: {2}",
-   "src": "static/podsdock.js:224"
+   "src": "static/podsdock.js:227"
   },
   {
    "p": "{0} of {1} templates",
-   "src": "static/podsdock.js:224"
+   "src": "static/podsdock.js:227"
   },
   {
    "p": "{0} GB disk",
-   "src": "static/podsdock.js:239"
+   "src": "static/podsdock.js:242"
   },
   {
    "p": "{0} GB /workspace",
-   "src": "static/podsdock.js:240"
+   "src": "static/podsdock.js:243"
   },
   {
    "p": "About {0} an hour while it runs (RunPod's price now), plus storage",
-   "src": "static/podsdock.js:307"
+   "src": "static/podsdock.js:310"
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:405"
+   "src": "static/podsdock.js:408"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:421"
+   "src": "static/podsdock.js:424"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:422"
+   "src": "static/podsdock.js:425"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:431"
+   "src": "static/podsdock.js:434"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",
@@ -24119,6 +24179,26 @@
   {
    "p": "{0} skipped",
    "src": "static/styledoctor.js:61"
+  },
+  {
+   "p": "A pod for {0}",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "p": "Template: {0} (CUDA 13 or newer hosts only)",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "p": "bitGen's pick: the cheapest GPU with at least {0} GB for this style (its files: about {1} GB)",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "p": "bitGen's pick: the cheapest GPU with at least {0} GB for this style",
+   "src": "static/stylepodask.js:58"
+  },
+  {
+   "p": "About {0} while it runs (stopped: only its disk)",
+   "src": "static/stylepodask.js:75"
   },
   {
    "p": "Put back the built-in {0} styles that are missing (deleted or lost) - yours are not touched",

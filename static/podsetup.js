@@ -1,22 +1,20 @@
-/* bitGen Studio — static/podsetup.js (2.761.0 / 2.762.0): WHAT A POD IS FOR, inside its My pods item (H3PodSetup; lib/podSetup.js).
- * Tim (verbatim, 2.761.0): "make each pod name in my pods a accordian menuitem, add folder, checkpoint and add lora to each
- * pod in my pod upload those files to the checkpoint and lora folder in the runpod pod comfyui space , add checkboxes under
- * the pod name to tell if it is a video,llm,vllm,image,image-edit style. add a save button to the menu item that is
- * disabled until changes are made and disabled again after save unless new changes are made. this will save the style P_"
- * Tim (verbatim, 2.762.0): "in pods for lora and checkpoint and folder filters use the same dropdown types like overide
- * settings has. we only upload 1 checkpoint for each pod then this pod becomes the style ... the workflow for the style
- * like a krea style will use our krea workflow, if the model is already on the pod the just select it as the model to use.
- * this can simplify user experience"
- *   ☐ Video ☐ LLM ☐ vLLM ☐ Image ☐ Image edit   under the pod's name (LLM / vLLM: the port and model of the pod's own
- *                                               OpenAI-compatible server - vLLM, Ollama …)
- *   Checkpoint   ONE per pod - the same dropdowns as Basic Settings' Override style (a folder filter + the file, from this
- *                computer's ComfyUI models folders; index.html cmCombo). The pod becomes that style: 💾 Save makes
- *                P_<pod> (P_<pod> edit, P_<pod> video for the other ticks) with bitGen's workflow for the model's family
- *                (Krea -> bitGen's Krea workflow …). On the pod already = used by its name there; else sent once (in the
- *                same sub-folder), in the background, the line under it says how far.
- *   LoRAs        ＋ adds a row with the same dropdowns (loras); they go with the checkpoint and into the P_ style
- *   💾 Save      off until something changed (a tick, a field, a dropdown); saves; off again after
- * Pure (Node: scripts/test-podsetup761.js, test-podsend762.js): KINDS, isDirty, clean.
+/* bitGen Studio — static/podsetup.js (2.761.0 / 2.763.0): WHAT A POD IS FOR, inside its My pods item (H3PodSetup; lib/podSetup.js).
+ * Tim (verbatim, 2.761.0): "make each pod name in my pods a accordian menuitem ... add checkboxes under the pod name to tell
+ * if it is a video,llm,vllm,image,image-edit style. add a save button to the menu item that is disabled until changes are
+ * made and disabled again after save unless new changes are made"
+ * Tim (verbatim, 2.763.0): "instead of the dropdown for the folder filter and lora, can we use a dropdown of our styles for
+ * the mode selected, image selected show image styles, add an all button so that it shows all styles. then we send our
+ * styles workflow to the pod with our styles stand models, text encoders and vaes, we reuse the same styles, no p_" +
+ * "allow the user to have a separate pod for each type of style, llm, vllm,image,video if they want to and can afford too
+ * otherwise we use the one pod"
+ *   ☐ Video ☐ LLM ☐ vLLM ☐ Image ☐ Image edit   under the pod's name: this pod renders every style of that kind that has no
+ *                                               pod of its own - one pod per kind (ticking it here takes it from another
+ *                                               pod); LLM / vLLM = the port + model of the pod's own OpenAI-compatible server
+ *   Styles   a dropdown of YOUR styles for the Generate mode picked (🖼 Image = image styles, 🎬 Video = video, 🎶 Music =
+ *            music) - All lists every style - ＋ links the style to this pod (a chip, ✕ takes it off). Their workflow,
+ *            standard model, text encoders, VAE, LoRAs and node packs go to the pod (lib/podPrep.js) - no P_ copies
+ *   💾 Save  off until something changed; saves; off again after - and makes the styles ready on the pod when it is running
+ * Pure (Node: scripts/test-stylepods763.js): KINDS, clean, isDirty, kindOfMode, listFor.
  */
 (function (root) {
   "use strict";
@@ -26,69 +24,83 @@
     s = s || {}; var l = s.llm || {};
     return { kinds: KINDS.map(function (k) { return k[0]; }).filter(function (k) { return (s.kinds || []).indexOf(k) >= 0; }),
       llm: { port: +l.port || 8000, model: String(l.model || "").trim(), vlm_model: String(l.vlm_model || "").trim() },
-      checkpoint: String(s.checkpoint || "").trim(), loras: (s.loras || []).map(function (x) { return String(x || "").trim(); }).filter(Boolean) };
+      styles: (s.styles || []).map(function (x) { return String(x || "").trim(); }).filter(function (x, i, a) { return x && a.indexOf(x) === i; }) };
   }
-  /** something to save (pure): the ticks / fields / dropdowns differ from the saved ones */
+  /** something to save (pure): the ticks / fields / styles differ from the saved ones */
   function isDirty(ed) { return !!ed && (!!ed.touched || JSON.stringify(clean(ed.cur)) !== JSON.stringify(clean(ed.saved))); }
-  var pure = { KINDS: KINDS, clean: clean, isDirty: isDirty };
+  /** the Generate mode (#genModeSel) -> the style kind its list shows (pure) */
+  function kindOfMode(m) { return m === "video" ? "video" : m === "audio" ? "music" : "image"; }
+  /** the dropdown's styles (pure): all = every kind, else the mode's; minus the ones linked already; by name */
+  function listFor(styles, kind, all, linked) {
+    return (styles || []).filter(function (s) { return s && s.id && (all || (s.kind || "image") === kind) && (linked || []).indexOf(s.id) < 0 && s.runs_on !== "remote" && s.runs_on !== "api"; })
+      .sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); });
+  }
+  var pure = { KINDS: KINDS, clean: clean, isDirty: isDirty, kindOfMode: kindOfMode, listFor: listFor };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
-  var doc = root.document, ED = {};
-  var CKPT_CATS = ["checkpoints", "diffusion_models", "unet"];
+  var doc = root.document, ED = {}, STYLES = null, ALL = false, REPAINT = null;
+  // the Generate mode changed: the open pod items list that mode's styles
+  doc.addEventListener("change", function (ev) { if (ev.target && ev.target.id === "genModeSel" && REPAINT && !ALL) { try { REPAINT(); } catch (x) { /* the docker is gone */ } } });
+  var ICON = { image: "🖼", video: "🎬", music: "🎶" };
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
   function ed(id) { return ED[id] = ED[id] || { saved: clean({}), cur: clean({}), loaded: false, msg: "" }; }
+  function modeKind() { var g = doc.getElementById("genModeSel"); return kindOfMode(g ? g.value : "image"); }
+  function styles(repaint) {
+    if (STYLES) return STYLES;
+    STYLES = [];
+    getj("/api/styles").then(function (j) { STYLES = (j && j.styles) || []; if (repaint) repaint(); }).catch(function () { STYLES = null; });
+    return STYLES;
+  }
+  function nameOf(id) { var s = (STYLES || []).filter(function (x) { return x.id === id; })[0]; return s ? s.name : id; }
+  function kindIcon(id) { var s = (STYLES || []).filter(function (x) { return x.id === id; })[0]; return s ? ICON[s.kind || "image"] || "" : ""; }
   /** the setup from the server (not over edits being made) */
   function load(id, repaint) {
     return getj("/api/pods/" + encodeURIComponent(id) + "/setup").then(function (j) {
       if (!j || j.error) return;
       var e = ed(id); e.saved = clean(j);
       if (!isDirty(e) || !e.loaded) { e.cur = clean(j); e.touched = false; }
-      e.loaded = true; e.revive = j.revive || null; e.sending = j.sending || null;
-      if (e.sending && !e.sending.running && e.sending.failed.length) e.touched = true;   // 2.762.1: Save again = send what failed again
+      e.loaded = true; e.prep = j.prep || null; e.run = j.run || null; e.revive = j.revive || null;
       if (repaint) repaint();
     }).catch(function () { /* offline */ });
   }
-  function sendLine(s) {
-    if (!s) return "";
-    if (s.running) return "⬆ sending " + s.current + (s.pct ? " - " + s.pct + "%" : "") + " to the pod (" + (s.done.length + 1) + " of " + s.items.length + ")";
-    return (s.done.length ? "✓ on the pod: " + s.done.map(function (d) { return d.name; }).join(", ") : "") + (s.failed.length ? (s.done.length ? " · " : "") + "not sent: " + s.failed.map(function (f) { return f.name + " (" + f.why + ")"; }).join("; ") : "");
+  function prepLine(e) {
+    var p = e.prep;
+    if (p && p.running) return "⏳ " + p.note;
+    if (p && p.problems && p.problems.length) return "⚠ " + p.problems.join(" · ");
+    if (p && p.done && p.done.length) return "✓ ready on the pod: " + p.done.join(", ");
+    if (e.run && e.run.note) return "🔁 " + e.run.note;
+    return "";
   }
-  /** the item's body (below the name): the ticks, the LLM server, the checkpoint + LoRAs, 💾 Save */
+  /** the item's body (below the name): the ticks, the LLM server, the styles, 💾 Save */
   function html(p) {
     var e = ed(p.id), c = e.cur, llm = c.kinds.indexOf("llm") >= 0 || c.kinds.indexOf("vlm") >= 0;
-    return '<div class="psKinds" role="group" aria-label="What this pod is for">'
+    var mk = modeKind(), list = listFor(styles(null), mk, ALL, c.styles);
+    return '<div class="psKinds" role="group" aria-label="What this pod is for" title="Ticked = this pod renders every style of that kind that has no pod of its own. One pod per kind - tick them all on one pod to use one pod for everything">'
       + KINDS.map(function (k) { return '<label class="chk"><input type="checkbox" data-pskind="' + k[0] + '"' + (c.kinds.indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("")
       + "</div>"
       + (llm ? '<div class="psLlm"><span class="hint">The pod\'s LLM server (vLLM, Ollama …):</span> <label>port <input type="number" min="1" max="65535" data-psport value="' + c.llm.port + '" style="width:76px"></label>'
         + ' <label>model <input type="text" data-psmodel value="' + esc(c.llm.model) + '" placeholder="blank = the one it serves" spellcheck="false" style="width:170px"></label>'
         + (c.kinds.indexOf("vlm") >= 0 ? ' <label>vision model <input type="text" data-psvmodel value="' + esc(c.llm.vlm_model) + '" placeholder="blank = the same" spellcheck="false" style="width:150px"></label>' : "") + "</div>" : "")
-      + '<div class="psModels"><label class="f" title="ONE checkpoint per pod - the pod becomes its style (P_ and the pod\'s name), with bitGen\'s workflow for its family. On the pod already = used; else sent once from this computer">Checkpoint <span class="hint">(one per pod - it becomes the pod\'s P_ style)</span></label>'
-      + '<div class="psCk" data-psck></div>'
-      + '<label class="f">LoRAs <button type="button" class="ghost" data-psloraadd title="Add a LoRA - sent with the checkpoint, in its P_ style" style="padding:0 8px">＋</button></label>'
-      + '<div class="psLoras">' + c.loras.map(function (l, i) { return '<div class="psLora" data-pslora="' + i + '"><div class="psLoraBox"></div><button type="button" class="ghost" data-psloradel="' + i + '" title="Remove this LoRA">✕</button></div>'; }).join("") + "</div></div>"
-      + '<div class="psTools"><span class="hint psSend">' + esc(sendLine(e.sending)) + '</span><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its P_ style from the checkpoint (sent to the pod when it lacks it), the LLM / vLLM on it">💾 Save</button></div>'
-      + '<div class="hint psMsg" aria-live="polite">' + esc(e.msg || (e.revive && e.revive.note ? "🔁 " + e.revive.note : "")) + "</div>";
+      + '<div class="psStyles"><label class="f" title="Your styles that render on this pod - their workflow, models, text encoders, VAE, LoRAs and node packs go to the pod">Styles <span class="hint">(' + (ALL ? "all styles" : ICON[mk] + " " + mk + " styles - the Generate mode") + ")</span></label>"
+      + '<div class="psPick"><select data-psstyle aria-label="A style for this pod"><option value="">— pick a style —</option>'
+      + list.map(function (s) { return '<option value="' + esc(s.id) + '">' + (ALL ? (ICON[s.kind || "image"] || "") + " " : "") + esc(s.name) + "</option>"; }).join("")
+      + '</select><button type="button" class="ghost" data-psadd title="Link the picked style to this pod" disabled>＋</button>'
+      + '<button type="button" class="ghost' + (ALL ? " on" : "") + '" data-psall aria-pressed="' + (ALL ? "true" : "false") + '" title="List every style, not only the Generate mode\'s">All</button></div>'
+      + '<div class="psChips">' + (c.styles.length ? c.styles.map(function (id) { return '<span class="psChip" data-pschip="' + esc(id) + '">' + kindIcon(id) + " " + esc(nameOf(id)) + ' <button type="button" class="ghost" data-psdel="' + esc(id) + '" title="Take this style off the pod">✕</button></span>'; }).join("")
+        : '<span class="hint">no styles of its own yet</span>') + "</div></div>"
+      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
+      + '<div class="hint psMsg" aria-live="polite">' + esc(e.msg || "") + "</div>";
   }
   function say(row, id, t) { ed(id).msg = t; var m = row.querySelector(".psMsg"); if (m) m.textContent = t; }
   function paintSave(row, id) { var b = row.querySelector("[data-pssave]"); if (b) b.disabled = !isDirty(ed(id)); }
-  /** Basic Settings' Override style dropdowns (index.html cmCombo: a folder filter + the file + 📁) */
-  function combo(host, cats, value, blank, onPick) {
-    if (!host || typeof cmCombo !== "function") return;
-    var inp = doc.createElement("input"); inp.type = "hidden"; inp.value = value || "";
-    host.appendChild(inp);
-    try { cmCombo(host, inp, cats, { blank: blank, title: "From this computer's ComfyUI models folders" }); } catch (x) { return; }
-    host.appendChild(inp);
-    var sel = host.querySelector(".cmfile");
-    if (sel) sel.addEventListener("change", function () { onPick(inp.value.trim()); });
-    inp.addEventListener("input", function () { onPick(inp.value.trim()); });
-  }
   /** wire the body: p = the pod, port = its ComfyUI port, repaint = the docker's own */
   function wire(row, p, port, repaint) {
     var e = ed(p.id), q = function (s) { return row.querySelector(s); };
     if (!e.loaded) load(p.id, repaint);
-    if (typeof cmData !== "undefined" && !cmData && typeof loadComfyModels === "function") loadComfyModels().then(function () { repaint(); });
+    styles(repaint);
+    REPAINT = repaint;
     row.querySelectorAll("[data-pskind]").forEach(function (cb) {
       cb.onchange = function () {
         var k = cb.dataset.pskind, ks = e.cur.kinds.filter(function (x) { return x !== k; });
@@ -101,50 +113,43 @@
     if (pt) pt.oninput = function () { e.cur.llm.port = +pt.value || 8000; paintSave(row, p.id); };
     if (md) md.oninput = function () { e.cur.llm.model = md.value; paintSave(row, p.id); };
     if (vm) vm.oninput = function () { e.cur.llm.vlm_model = vm.value; paintSave(row, p.id); };
-    var cats = (typeof cmData !== "undefined" && cmData && cmData.model_categories) || CKPT_CATS;
-    combo(q("[data-psck]"), cats, e.cur.checkpoint, "— the pod's own models —", function (v) { e.cur.checkpoint = v; paintSave(row, p.id); });
-    row.querySelectorAll("[data-pslora]").forEach(function (r) {
-      var i = +r.dataset.pslora;
-      combo(r.querySelector(".psLoraBox"), ["loras"], e.cur.loras[i] || "", "— pick a LoRA —", function (v) { e.cur.loras[i] = v; paintSave(row, p.id); });
-    });
-    var la = q("[data-psloraadd]"); if (la) la.onclick = function () { e.cur.loras = e.cur.loras.concat([""]); e.touched = true; repaint(); };
-    row.querySelectorAll("[data-psloradel]").forEach(function (b) { b.onclick = function () { var i = +b.dataset.psloradel; e.cur.loras = e.cur.loras.filter(function (_, k) { return k !== i; }); e.touched = e.cur.loras.some(function (x) { return !x; }); repaint(); }; });
+    var sel = q("[data-psstyle]"), add = q("[data-psadd]"), all = q("[data-psall]");
+    if (sel && add) sel.onchange = function () { add.disabled = !sel.value; };
+    if (add) add.onclick = function () { if (!sel || !sel.value) return; e.cur.styles = clean({ styles: e.cur.styles.concat([sel.value]) }).styles; repaint(); };
+    if (all) all.onclick = function () { ALL = !ALL; repaint(); };
+    row.querySelectorAll("[data-psdel]").forEach(function (b) { b.onclick = function () { var id = b.dataset.psdel; e.cur.styles = e.cur.styles.filter(function (x) { return x !== id; }); repaint(); }; });
     var sv = q("[data-pssave]"); if (sv) sv.onclick = function () {
       sv.disabled = true; say(row, p.id, "saving…");
-      post("/api/pods/" + encodeURIComponent(p.id) + "/setup", { kinds: e.cur.kinds, llm: e.cur.llm, checkpoint: e.cur.checkpoint, loras: e.cur.loras.filter(Boolean), pod_name: p.name, port: port || 0 }).then(function (r) {
+      post("/api/pods/" + encodeURIComponent(p.id) + "/setup", { kinds: e.cur.kinds, llm: e.cur.llm, styles: e.cur.styles, pod_name: p.name, port: port || 0 }).then(function (r) {
         if (r.error) { say(row, p.id, r.error); paintSave(row, p.id); return; }
         e.saved = clean(r.setup); e.cur = clean(r.setup); e.touched = false;
         var bits = [];
-        if (r.checkpoint_on_pod) bits.push("the pod's checkpoint: " + r.checkpoint_on_pod + (r.sending && r.sending.length ? " (being sent)" : " (on the pod)"));
-        if (r.made && r.made.length) bits.push("made / updated " + r.made.join(", "));
-        if (r.removed && r.removed.length) bits.push("removed " + r.removed.join(", "));
+        if (r.setup.styles.length) bits.push(r.setup.styles.length + (r.setup.styles.length === 1 ? " style" : " styles") + " on this pod" + (r.preparing ? " - making them ready on it now" : " - made ready when the pod runs"));
+        var kk = r.setup.kinds.filter(function (k) { return k !== "llm" && k !== "vlm"; });
+        if (kk.length) bits.push("renders the " + kk.map(function (k) { return k.replace("_", " "); }).join(" / ") + " styles with no pod of their own");
         if (r.llm) bits.push("the LLM runs on this pod");
         if (r.vlm) bits.push("the vision LLM runs on this pod");
-        if (r.skipped && r.skipped.length) bits.push("not made: " + r.skipped.map(function (s) { return s.what + " (" + s.why + ")"; }).join("; "));
         e.msg = "✓ saved" + (bits.length ? " - " + bits.join(" · ") : "");
         repaint();
-        try { if (typeof root.refreshStyles === "function") root.refreshStyles(); } catch (x) { /* the lists refresh on their own */ }
-        if (r.sending && r.sending.length) watchSend(p.id, port, repaint);
+        if (r.preparing) watchPrep(p.id, repaint);
       });
     };
-    if (e.sending && e.sending.running && !e.watching) watchSend(p.id, port, repaint);
+    if (e.prep && e.prep.running && !e.watching) watchPrep(p.id, repaint);
   }
-  /** the background sending's line under the dropdowns, until it is done */
-  function watchSend(id, port, repaint) {
+  /** the making-ready line, until it is done */
+  function watchPrep(id, repaint) {
     var e = ed(id); e.watching = true;
     var tick = function () {
       getj("/api/pods/" + encodeURIComponent(id) + "/setup").then(function (j) {
-        e.sending = (j && j.sending) || null;
-        var line = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] .psSend');
-        if (line) line.textContent = sendLine(e.sending);
-        if (e.sending && e.sending.running) setTimeout(tick, 3000);
-        else {
-          e.watching = false;
-          if (e.sending && e.sending.failed.length) { e.touched = true; var sb = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] [data-pssave]'); if (sb) { sb.disabled = false; sb.title = "Save again - sends what was not sent"; } }   // 2.762.1
-        }
+        e.prep = (j && j.prep) || null; e.run = (j && j.run) || null;
+        var line = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] .psPrep');
+        if (line) line.textContent = prepLine(e);
+        if (e.prep && e.prep.running) setTimeout(tick, 3000); else e.watching = false;
       }).catch(function () { setTimeout(tick, 5000); });
     };
     setTimeout(tick, 1500);
   }
-  root.H3PodSetup = Object.assign({ html: html, wire: wire, load: load, state: function (id) { return ed(id); } }, pure);
+  // a style made / renamed / deleted elsewhere - read again when the list is next drawn
+  function forget() { STYLES = null; }
+  root.H3PodSetup = Object.assign({ html: html, wire: wire, load: load, forget: forget, state: function (id) { return ed(id); } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);
