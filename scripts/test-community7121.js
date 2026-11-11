@@ -24,7 +24,7 @@ const PASS = "Tiger-db-pass#2026 with spaces & ünïcode";
 /** run PHP: the settings as JSON (or the error) with these env vars */
 function settings(env, cwd) {
   const r = spawnSync("php", ["-r", "define('BGC','t'); require 'lib/http.php'; require 'lib/settings.php'; try { echo json_encode(bgc_settings()); } catch (ApiError \\$e) { echo json_encode(['error' => \\$e->getMessage()]); }".replace(/\\\$/g, "$")],
-    { cwd: cwd || COMM, env: Object.assign({}, process.env, { BGC_DSN: "", BITGEN_PRIVATE_DIR: PRIV }, env || {}), encoding: "utf8" });
+    { cwd: cwd || COMM, env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "", BITGEN_PRIVATE_DIR: PRIV }, env || {}), encoding: "utf8" });
   try { return JSON.parse(r.stdout); } catch (e) { return { out: r.stdout + r.stderr }; }
 }
 /** seal like /b_admin/ does (its lib/core.php secret_seal) */
@@ -55,7 +55,7 @@ fs.writeFileSync(path.join(PRIV, "db.json"), JSON.stringify(Object.assign({}, db
 s = settings();
 check("a host with :port (as Plesk shows it) becomes host + port", s.dsn === "mysql:host=localhost;port=3307;dbname=timpaul_bitgen;charset=utf8mb4", s.dsn);
 fs.writeFileSync(path.join(PRIV, "db.json"), JSON.stringify(dbj));
-s = settings({ BGC_DSN: "sqlite:" + path.join(TMP, "x.db") });
+s = settings({ BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + path.join(TMP, "x.db") });
 check("BGC_DSN still replaces the address (the password still read)", s.dsn.startsWith("sqlite:") && s.pass === PASS, s);
 
 fs.writeFileSync(path.join(PRIV, "secret.key"), Buffer.alloc(32, 9).toString("base64"));
@@ -73,7 +73,7 @@ const home = path.join(TMP, "home"), www = path.join(home, "public_html");
 fs.mkdirSync(www, { recursive: true });
 fs.cpSync(PRIV, path.join(home, "bitgen-private"), { recursive: true });
 const r = spawnSync("php", ["-r", "$_SERVER['DOCUMENT_ROOT']=$argv[1]; define('BGC','t'); require 'lib/http.php'; require 'lib/settings.php'; echo json_encode(bgc_settings());", www],
-  { cwd: COMM, env: Object.assign({}, process.env, { BGC_DSN: "", BITGEN_PRIVATE_DIR: "" }), encoding: "utf8" });
+  { cwd: COMM, env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "", BITGEN_PRIVATE_DIR: "" }), encoding: "utf8" });
 let d = {}; try { d = JSON.parse(r.stdout); } catch (e) { d = { out: r.stdout + r.stderr }; }
 check("by default the private folder beside public_html (/home/<user>/bitgen-private)", d.pass === PASS, d);
 

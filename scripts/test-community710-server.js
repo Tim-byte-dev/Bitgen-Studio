@@ -67,7 +67,7 @@ async function main() {
 
   // ---- the server -------------------------------------------------------------------------------------------------
   const port = await freePort(); BASE = "http://127.0.0.1:" + port;
-  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "Alice", BGC_REGISTER_PER_HOUR: String(REG_LIMIT), BGC_MAIL_LOG: MAIL }), stdio: ["ignore", "pipe", "pipe"] });
+  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "Alice", BGC_REGISTER_PER_HOUR: String(REG_LIMIT), BGC_MAIL_LOG: MAIL }), stdio: ["ignore", "pipe", "pipe"] });
   let phpLog = ""; php.stdout.on("data", (d) => { phpLog += d; }); php.stderr.on("data", (d) => { phpLog += d; });
   let up = false;
   for (let i = 0; i < 60 && !up; i++) { try { await fetch(BASE + "/api.php?a=info"); up = true; } catch (e) { await sleep(100); } }

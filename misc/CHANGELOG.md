@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.756.3** — 🤖 Joining the Community Is for People: Made-Up Names Turned Away Before Any Email Goes Out, a Short Automatic Check on bitGen Studio's Join (About a Second), a Slider on the Website's Join Form, and /b_admin/ ▸ Members ▸ Remove Unconfirmed Sign-Ups (Without Blocking Their Addresses)
 - **2.756.2** — 🩹 bitGen Studio No Longer Closes Itself at Start When Basic Settings Is on RunPod Serverless: the Start-Up Check for a ComfyUI Left Running Took the Studio's Own RunPod Serverless Adapter (127.0.0.1:8311/rpsl) for a ComfyUI and Ended the Process on That Port - the Studio; Now It Leaves the Studio's Own Address Alone and Never Ends Its Own Process
 - **2.756.1** — 🃏 Every RunPod Template as a Card: the PODS Docker Lists All of RunPod's Public Templates at Once (All / Official / Verified / Community With Counts), a Card Each Like ComfyUI's (Tile, Kind, ComfyUI Badge, Image, Disk, Ports, Create Pod…, ↗), a Search as You Type (Every Word) and a Kind Filter; ComfyUI Only Off at the Start (It Hid All 100 Official Templates)
 - **2.756.0** — 🖥 The PODS Docker: RunPod's Public Templates (Official / Verified / Community, ComfyUI Only, Search), Create a Pod in bitGen (Live GPU Prices, Secure / Community, Disk Sizes) and Start / Stop / Use / Terminate Your Pods; Basic Settings ▸ GPU ▸ Remote Servers RunPod or OpenRouter, RunPod ▸ Serverless or Pods

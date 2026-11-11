@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.756.3 (bots joining the community with random names and other people's email addresses - Tim: "yes please go ahead with all 4")
+node scripts/test-community7563.js > /tmp/community7563.log 2>&1 \
+  && ok "2.756.3 units: the app's Join does the server's sum (join_check -> pow), sign-in asks none, an older server still works; the server code checks people before anything is stored" \
+  || { bad "2.756.3 joining check units"; grep -a "^FAIL" -A1 /tmp/community7563.log | head -12; }
+node scripts/test-community7563-server.js > /tmp/community7563srv.log 2>&1 \
+  && ok "2.756.3 LIVE Community server: the bots' made-up names refused (real names kept), register needs the check (once, right, fresh), no email before; unconfirmed accounts removed without banning addresses" \
+  || { bad "2.756.3 joining check (server)"; grep -a "^FAIL" -A1 /tmp/community7563srv.log | head -12; }
 # ---- 2.756.2 (Tim: "bitgen has crashed - i rebooted the pc" - the start-up ComfyUI restart ended the studio itself on RunPod Serverless)
 node scripts/test-comfyboot7562.js > /tmp/comfyboot7562.log 2>&1 \
   && ok "2.756.2 units: the start-up restart leaves the studio's own address alone (/rpsl, its port) and never ends its own process; a real ComfyUI left running is still restarted" \

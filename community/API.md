@@ -27,7 +27,8 @@ HTTP 4xx/5xx status (400 bad input, 401 no / bad token, 403 not allowed / banned
 | action | body | reply |
 |---|---|---|
 | info | - | `{name, version, rules, users, help_room: "help"}` |
-| register | `{handle, password, display?, first_name, last_name, email}` | `{token, user, profile, mail_sent}` - a code goes to the address (409 when the handle or the address is taken, 403 a banned address) |
+| join_check | `{}` | `{c, bits}` (2.756.3) - a sum for the joining program: find a number `n` so that sha256(`c` + ":" + `n`) starts with `bits` zero bits; good once, for 10 minutes |
+| register | `{handle, password, display?, first_name, last_name, email, pow: {c, n}}` | `{token, user, profile, mail_sent}` - a code goes to the address (409 when the handle or the address is taken, 403 a banned address; 2.756.3: 400 without the done `join_check`, or a first / last name that looks machine-made) |
 | login | `{handle, password}` | `{token, user, profile}` (401 wrong; 403 banned) |
 | verify_email | `{code}` | `{profile}` - 6 digits, 15 minutes, 5 tries (400 wrong / run out, 429 too many) |
 | resend_code | - | `{profile, mail_sent}` - 4 an hour per account, 10 per caller address |

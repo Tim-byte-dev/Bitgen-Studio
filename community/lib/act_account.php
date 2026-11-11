@@ -28,6 +28,7 @@ function act_register(array $b, ?array $me): array
     $first = v_name($b, 'first_name', 'A first name');
     $last = v_name($b, 'last_name', 'A last name');
     $email = v_email($b);
+    human_check($b);                        // 2.756.3: the website's slider, or the joining program's sum
     $key = email_key($email);
     $ip = bgc_client_ip();
     $lim = bgc_settings()['limits']['register_per_hour'];

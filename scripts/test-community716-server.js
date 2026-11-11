@@ -44,7 +44,7 @@ const b64 = (b) => Buffer.from(b).toString("base64");
 (async () => {
   const port = await freePort();
   BASE = "http://127.0.0.1:" + port;
-  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "100", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }) });
+  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "100", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }) });
   for (let i = 0; i < 60; i++) { try { await fetch(BASE + "/api.php?a=info"); break; } catch (e) { await sleep(100); } }
   const tim = await join("tim"), ann = await join("ann"), boss = await join("boss");
   let r = await call("info"); check("info: version 2.716.0 or newer, packs: true", /^2\.(71[6-9]|7[2-9]\d)\./.test(r.j.version) && r.j.packs === true, r.j);

@@ -40,7 +40,7 @@ const bug = (o) => Object.assign({ title: "The timeline freezes", severity: "cra
 (async () => {
   const port = await freePort();
   BASE = "http://127.0.0.1:" + port;
-  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "100", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }) });
+  php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "100", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }) });
   for (let i = 0; i < 60; i++) { try { await fetch(BASE + "/api.php?a=info"); break; } catch (e) { await sleep(100); } }
   const tim = await join("tim"), boss = await join("boss");
   let r = await call("info"); check("info: version 2.714.0 or later", /^2\.(71[4-9]|7[2-9]\d)\./.test(r.j.version), r.j);
@@ -118,12 +118,12 @@ const bug = (o) => Object.assign({ title: "The timeline freezes", severity: "cra
   check("status: Being fixed", ok(r) && r.j.status_label === "Being fixed");
   r = await call("forum_topic", { id: b1.topic_id }); check("... shown on its discussion", r.j.bug.status === "working");
   const exp = spawnSync("php", ["-r", "define('BGC','t'); require 'lib/boot.php'; echo json_encode(array_map(fn($r) => [$r['id'], $r['severity'], $r['status'], count($r['replies']), $r['shot_type']], bug_export_rows($argv[1])));", "open"],
-    { cwd: DIR, env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }), encoding: "utf8" });
+    { cwd: DIR, env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }), encoding: "utf8" });
   let rows = []; try { rows = JSON.parse(exp.stdout); } catch (e) { rows = exp.stdout + exp.stderr; }
   check("bug_export_rows(open): open + being fixed, the worst severity first, with the replies and the screenshot type", Array.isArray(rows) && rows.length >= 5 && rows[0][1] === "crash" && rows.some((x) => x[0] === b1.bug_id && x[2] === "working" && x[3] === 1 && x[4] === "png"), rows);
   await call("admin_bug_status", { bug_id: b1.bug_id, status: "fixed" }, boss);
   const exp2 = spawnSync("php", ["-r", "define('BGC','t'); require 'lib/boot.php'; echo json_encode([count(bug_export_rows('open')), count(bug_export_rows('all')), bug_counts()]);"],
-    { cwd: DIR, env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }), encoding: "utf8" });
+    { cwd: DIR, env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }), encoding: "utf8" });
   let c2 = null; try { c2 = JSON.parse(exp2.stdout); } catch (e) { c2 = exp2.stdout + exp2.stderr; }
   check("a fixed bug leaves the open list but stays in 'all'; bug_counts per status", Array.isArray(c2) && c2[1] === c2[0] + 1 && c2[2].fixed === 1, c2);
   const leaver = await join("leaver");

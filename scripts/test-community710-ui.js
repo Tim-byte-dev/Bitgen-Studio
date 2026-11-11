@@ -29,7 +29,7 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.710.0 browser test did not run"); process.exit(0); }
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-cm710-")), port = await freePort();
-  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_ADMINS: "boss", BGC_MAIL_LOG: path.join(tmp, "mail.log") }), stdio: "ignore" });
+  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_ADMINS: "boss", BGC_MAIL_LOG: path.join(tmp, "mail.log") }), stdio: "ignore" });
   const API = "http://127.0.0.1:" + port + "/api.php", A = (a) => API + "?a=" + a;
   // 2.713.0: joining = a name + an email address, confirmed with the emailed code (BGC_MAIL_LOG)
   const codeFor = (email) => { const f = path.join(tmp, "mail.log"); const m = fs.existsSync(f) ? fs.readFileSync(f, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((x) => x.to === email).pop() : null; return m ? m.text.match(/\b(\d{6})\b/)[1] : ""; };

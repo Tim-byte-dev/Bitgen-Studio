@@ -90,6 +90,7 @@ can write (SQLite writes a journal file next to it). Fine for a few dozen people
 | `BGC_DSN` | `dsn` | tests / tiny installs: `sqlite:/tmp/bgc.db`. With it set, `config.php` is optional. |
 | `BGC_ADMINS` | `admins` | a comma list of user ids, e.g. `tim,lili` |
 | `BGC_REGISTER_PER_HOUR` | `limits.register_per_hour` | the tests register more than 5 users from 127.0.0.1 |
+| `BGC_POW_BITS` | - | 2.756.3: how hard the joining check's sum is (default 20 - about a second for bitGen Studio; 0 = none, the older tests) |
 
 ## Email (2.713.0)
 

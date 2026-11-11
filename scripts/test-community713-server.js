@@ -33,7 +33,7 @@ const mails = () => (fs.existsSync(MAIL) ? fs.readFileSync(MAIL, "utf8").trim().
 const codeFor = (email) => { const m = mails().filter((x) => x.to === email); const c = m.length ? m[m.length - 1].text.match(/\b(\d{6})\b/) : null; return c ? c[1] : null; };
 async function server(db, extra) {
   const port = await freePort();
-  const p = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + db, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "200", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }, extra || {}) });
+  const p = spawn("php", ["-S", "127.0.0.1:" + port, "-t", DIR], { stdio: "ignore", env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + db, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "200", BGC_MAIL_LOG: MAIL, BITGEN_PRIVATE_DIR: path.join(TMP, "none") }, extra || {}) });
   procs.push(p);
   for (let i = 0; i < 60; i++) { try { await fetch("http://127.0.0.1:" + port + "/api.php?a=info"); break; } catch (e) { await sleep(100); } }
   return "http://127.0.0.1:" + port;

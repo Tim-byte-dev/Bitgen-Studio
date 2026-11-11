@@ -38,7 +38,7 @@ function pack(meta, words) {
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.716.0 browser test did not run"); process.exit(0); }
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-lp716-")), port = await freePort(), MAIL = path.join(tmp, "mail.log");
-  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_MAIL_LOG: MAIL, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "50", BITGEN_PRIVATE_DIR: path.join(tmp, "none") }), stdio: "ignore" });
+  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + path.join(tmp, "c.db"), BGC_MAIL_LOG: MAIL, BGC_ADMINS: "boss", BGC_REGISTER_PER_HOUR: "50", BITGEN_PRIVATE_DIR: path.join(tmp, "none") }), stdio: "ignore" });
   const API = "http://127.0.0.1:" + port + "/api.php", A = (a) => API + "?a=" + a;
   const codeFor = (email) => { const m = fs.readFileSync(MAIL, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((x) => x.to === email).pop(); return m.text.match(/\b(\d{6})\b/)[1]; };
   const member = async (h) => { const e = h + "@example.com"; const r = await post(A("register"), { handle: h, password: "pw-" + h + "-123", first_name: "F", last_name: "L", email: e }); await post(A("verify_email"), { code: codeFor(e) }, r.token); return r.token; };

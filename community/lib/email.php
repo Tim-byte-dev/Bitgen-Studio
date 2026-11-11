@@ -14,7 +14,10 @@ const BGC_STALE_MS = 7 * 24 * 3600 * 1000;    // an account never confirmed is l
 /** a first / last name: 1-40 printable characters on one line */
 function v_name(array $b, string $key, string $what): string
 {
-    return v_text($b, $key, 1, 40, false, $what);
+    $v = v_text($b, $key, 1, 40, false, $what);
+    // 2.756.3: bots sign up with random names ("aJizTlgdmOafqerJwBanQA") - turned away before any email goes out
+    if (looks_made_up($v)) throw new ApiError(400, $key === 'last_name' ? 'That does not look like a real last name - type it the way it is written.' : 'That does not look like a real first name - type it the way it is written.');
+    return $v;
 }
 
 /** an email address: at most 190 characters, a plain address with a domain that has a dot */
@@ -56,12 +59,20 @@ function email_free_or_fail(string $key, int $exceptUserId = 0): void
 /** accounts nobody confirmed for a week go (they could never post, so nothing of theirs stays) */
 function email_drop_stale(): void
 {
-    $cut = now_ms() - BGC_STALE_MS;
+    users_drop_unconfirmed(BGC_STALE_MS);
+}
+/** 2.756.3: remove the accounts whose email address was never confirmed, older than $olderMs -> how many. Their addresses
+ *  are NOT banned (bots sign up with other people's addresses - those people may join themselves one day). /b_admin/ ▸
+ *  Members ▸ Remove unconfirmed sign-ups calls it with an hour. */
+function users_drop_unconfirmed(int $olderMs): int
+{
+    $cut = now_ms() - max(0, $olderMs);
     $ids = array_map(fn ($r) => (int) $r['id'], q_all('SELECT id FROM bgc_users WHERE email_verified = 0 AND email IS NOT NULL AND created_at < ?', [$cut]));
     foreach ($ids as $id) {
         q('DELETE FROM bgc_tokens WHERE user_id = ?', [$id]);
         q('DELETE FROM bgc_users WHERE id = ?', [$id]);
     }
+    return count($ids);
 }
 
 function code_hash(int $userId, string $code): string { return hash('sha256', $userId . ':' . $code); }

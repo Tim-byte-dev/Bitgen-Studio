@@ -29,7 +29,7 @@ const post = async (u, b, tok) => { const r = await fetch(u, { method: "POST", h
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.713.0 browser test did not run"); process.exit(0); }
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "bg-cm713-")), port = await freePort(), MAIL = path.join(tmp, "mail.log"), DB = path.join(tmp, "c.db");
-  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_DSN: "sqlite:" + DB, BGC_MAIL_LOG: MAIL }), stdio: "ignore" });
+  const php = spawn("php", ["-S", "127.0.0.1:" + port, "-t", path.join(ROOT, "community")], { env: Object.assign({}, process.env, { BGC_POW_BITS: "0", BGC_DSN: "sqlite:" + DB, BGC_MAIL_LOG: MAIL }), stdio: "ignore" });
   const API = "http://127.0.0.1:" + port + "/api.php", A = (a) => API + "?a=" + a;
   const codeFor = (email) => { const m = fs.existsSync(MAIL) ? fs.readFileSync(MAIL, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((x) => x.to === email).pop() : null; return m ? m.text.match(/\b(\d{6})\b/)[1] : ""; };
   for (let i = 0; i < 50; i++) { try { const j = await post(A("info")); if (j.ok) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 100)); }

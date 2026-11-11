@@ -8194,6 +8194,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   to see only the templates bitGen can render with.
 - If RunPod doesn't answer for one group, the others still show and the line under the buttons names the missing one.
 
+## 🤖 Joining the Community is for people (2.756.3)
+
+- Bots were joining the Community with random names and other people's email addresses, so the Community emailed codes to
+  strangers. Joining now turns them away before any email goes out.
+- **💬 Community ▸ Join** in bitGen Studio does a short automatic check first. It takes about a second and you don't see
+  it. Older versions of bitGen Studio can't join any more (they say so): update, or join on the website. Signing in is
+  the same as before.
+- On the website, **Join** has a slider: slide it to the end before pressing Join.
+- A first or last name that looks machine-made (random capital letters inside one word) is refused. Type your name the
+  way it is written.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -10,6 +10,7 @@ if (!defined('BGC')) { http_response_code(404); exit; }
 const BGC_ACTIONS = [
     'info' => ['act_info', false, false, true],
     'register' => ['act_register', false, false, false],
+    'join_check' => ['act_join_check', false, false, false],   // 2.756.3: the joining program's sum (lib/human.php)
     'login' => ['act_login', false, false, false],
     'logout' => ['act_logout', true, false, true],
     'me' => ['act_me', true, false, true],
