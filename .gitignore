@@ -37,6 +37,8 @@ workspace/
 projects/
 # langpacks/ holds the language packs installed on this PC (2.715.0, Settings ▸ Languages) - the built-in ones are docs/i18n/
 langpacks/
+# runpod/ holds this PC's RunPod pod presets (2.764.0, 🖥 PODS ▸ 📦 Presets: runpod/pods/presets/<name>.pod)
+runpod/
 # team/ is this PC's render-farm identity (2.583.0): its PRIVATE keys, the pinned team, who may render here
 team/
 # llm_arena/ is this PC's 🔁 Compare LLMs record (2.584.0): the requests, every LLM's reply, which one was picked

@@ -58,6 +58,7 @@
     // 2.760.0: two views - the templates, or 🖥 My pods; Create pod… shows the form alone
     + ".pdk:not(.pdMine) #pdMineBox{display:none}.pdk.pdMine #pdTpl,.pdk.pdMine #pdCreate,.pdk.pdMine .pdTplOnly,.pdk.pdMine #pdStarAdd{display:none!important}"
     + ".pdk.pdMaking #pdTpl,.pdk.pdMaking .pdTplOnly,.pdk.pdMaking #pdStarAdd{display:none!important}"
+    + ".pdk:not(.pdPre) #pdPresetBox{display:none}.pdk.pdPre #pdTpl,.pdk.pdPre #pdCreate,.pdk.pdPre .pdTplOnly,.pdk.pdPre #pdStarAdd,.pdk.pdPre #pdMineBox{display:none!important}"
     + ".pdk .pdTabs button[data-pdsrc=mine]{margin-left:6px}"
     // 2.761.0: My pods as an accordion (static/podsetup.js inside)
     + ".pdk .pdAcc{display:block;padding:0;border:1px solid var(--line,#3a342a);border-radius:7px;margin:0 0 6px;background:var(--panel,#1b1814)}"
@@ -75,7 +76,7 @@
     + ".pdk .psChip button{padding:0 5px;line-height:1.2}"
     + ".pdk .psTools .psPrep{flex:1}"
     // 2.763.3: the waiting render's banner + the form's style / kind
-    + ".pdk .pdAsk{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.pdk .pdAsk .t{flex:1;min-width:220px}"
+    + ".pdk .pdAsk{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:8px 10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}.pdk .pdAsk[hidden]{display:none}.pdk .pdAsk .t{flex:1;min-width:220px}"
     + ".pdk .pdForm .pdKinds{display:flex;flex-wrap:wrap;gap:4px 12px}"
     // 2.763.4: the pod's load / memory / disks as bars; the summary before Create pod
     + ".pdk .pdStats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 8px;margin:2px 0}.pdk .pdStatsHead{display:inline-flex;gap:6px;margin-left:6px;vertical-align:middle}"
@@ -126,7 +127,7 @@
       + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button>'
       + '<button type="button" class="ghost" id="pdRpDock" title="The 💲 RunPod docker: your balance, what your pods cost, RunPod\'s GPU prices">💲 RunPod</button></div>'
       + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
-      + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
+      + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"], ["presets", "📦 Presets"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
       + '<select id="pdKind" class="pdTplOnly" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
       + '<label class="chk pdTplOnly" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label>'
       + '<select id="pdFor" class="pdTplOnly" title="Templates that look made for this bitGen style first - a pod created this way renders the style (linked to it)" style="width:auto"><option value="">For any style</option></select></div>'
@@ -137,7 +138,8 @@
       + '<div id="pdCreate"></div>'
       + '<div class="pdGrid" id="pdTpl"></div>'
       + '<div id="pdMineBox"><div id="pdPods"></div><div id="pdStyPanel"></div>'
-      + '<div class="hint">🅱 = bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it.</div></div>';
+      + '<div class="hint">🅱 = bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it.</div></div>'
+      + '<div id="pdPresetBox"></div>';   // 2.764.0: 📦 Presets (static/podpresets.js)
     return d;
   }
   function wire() {
@@ -156,11 +158,14 @@
   function go(src) {
     if (S.form) { S.form = null; var c = $("pdCreate"); if (c) c.dataset.tpl = ""; paintForm(); }
     S.src = src; filter();
+    // 2.764.0 (Tim: "in pods docker add a presets tab"): 📦 Presets - static/podpresets.js paints it
+    if (root.H3PodPresets) { if (src === "presets") H3PodPresets.show($("pdPresetBox")).then(function () { filter(); }); else H3PodPresets.hide(); }
   }
   /** 2.760.0: the docker's view - the templates, the form alone, or 🖥 My pods alone */
   function view() {
     var b = $("pdBody"); if (!b) return;
     b.classList.toggle("pdMine", S.src === "mine");
+    b.classList.toggle("pdPre", S.src === "presets");   // 2.764.0
     b.classList.toggle("pdMaking", S.src !== "mine" && !!S.form);
   }
   function money(v, sfx) { return root.H3Money ? root.H3Money.usd(v, sfx) : "$" + (+v || 0).toFixed(2) + (sfx || ""); }
@@ -230,12 +235,13 @@
     if (S.src === "star") (S.cuts || []).forEach(function (c) { if (!S.all.some(function (t) { return t.id === c.id; }) && matches({ name: c.name, id: c.id }, S.q)) S.tpl.push({ id: c.id, name: c.name, page: c.page, deploy: c.deploy, image: "", ports: [], source: "", cut: true }); });
     var sa = $("pdStarAdd"); if (sa) sa.style.display = S.src === "star" ? "" : "none";
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) {
-      var k = b.dataset.pdsrc, n = k === "mine" ? (S.pods || []).length : k === "all" ? pre.length : k === "star" ? (S.cuts || []).length : pre.filter(function (t) { return t.source === k; }).length;
+      var k = b.dataset.pdsrc, n = k === "presets" ? (root.H3PodPresets ? H3PodPresets.count() : 0) : k === "mine" ? (S.pods || []).length : k === "all" ? pre.length : k === "star" ? (S.cuts || []).length : pre.filter(function (t) { return t.source === k; }).length;
       b.classList.toggle("on", k === S.src); b.querySelector(".n").textContent = String(n);
     });
     paintTpl(); view();
     var m = $("pdMsg"); if (!m) return;
     m.style.color = "";
+    if (S.src === "presets") { m.textContent = ""; return; }
     if (S.src === "mine") { m.textContent = (S.pods || []).length + " pod" + ((S.pods || []).length === 1 ? "" : "s") + " on your RunPod account"; return; }
     m.textContent = S.failed.length ? S.tpl.length + " of " + S.all.length + " templates · RunPod did not answer for: " + S.failed.map(function (k) { return SRC_WORD[k] || k; }).join(", ")
       : S.tpl.length + " of " + S.all.length + " templates";
@@ -356,7 +362,7 @@
       $("pdGo").disabled = false;
       if (r.error) { say(r.error, false); return; }
       S.form = null; box2sel(); paintForm(); S.src = "mine"; filter();   // 2.760.0: a pod created -> 🖥 My pods
-      say("✓ pod created - loading pod…", true);
+      say("✓ pod created - loading pod…" + (r.preset ? " Kept as the preset " + r.preset + " (📦 Presets)." : ""), true);
       S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port; S.open = S.open || {}; S.open[r.pod.id] = true;
       loadPods().then(tick);
       if (S.ask && b.for_style === S.ask.style_id) answerAsk({ action: "use", pod_id: r.pod.id }, r.pod.name);   // 2.763.3: the waiting render goes there
@@ -407,6 +413,7 @@
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
+        + '<button type="button" class="ghost" data-pdpre title="Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated">💾 Save as preset</button>'
         + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button></div>'
         + '<div class="pdLoadBox"></div>'
         + (S.kill === p.id ? '<div class="pdKill">Terminate <b>' + esc(p.name) + "</b>? The pod and every file on it (models, outputs) are deleted - only a network volume survives. "
@@ -428,6 +435,10 @@
       r.querySelector("[data-pduse]").onclick = function () { use(p); };
       var uf = r.querySelector("[data-pdfor]"); if (uf) uf.onclick = function () { answerAsk({ action: "use", pod_id: p.id }, p.name); };
       r.querySelector("[data-pdkill]").onclick = function () { S.kill = S.kill === p.id ? null : p.id; paintPods(); };
+      var sp = r.querySelector("[data-pdpre]"); if (sp) sp.onclick = function () {   // 2.764.0
+        sp.disabled = true;
+        post("/api/podpresets/from-pod/" + encodeURIComponent(p.id), {}).then(function (j) { sp.disabled = false; if (j.error) { say(j.error, false); return; } say("✓ kept as the preset " + j.name + " (📦 Presets)", true); });
+      };
       var y = r.querySelector("[data-pdkillyes]"); if (y) y.onclick = function () { S.kill = null; act(p, "terminate"); };
       var n = r.querySelector("[data-pdkillno]"); if (n) n.onclick = function () { S.kill = null; paintPods(); };
     });

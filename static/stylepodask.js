@@ -123,7 +123,13 @@
     var p = pending(list, asked);
     if (!p.length) return;
     var id = p[0]; open = id;
-    viaDocker(id).then(function (ok) { if (ok) { asked[id] = true; open = null; } else { open = null; show(id); } });
+    // 2.764.0 (Tim: "bring up a dialog with my pods and a + style button ... add a create pod button"): the box of your pods
+    // and presets (static/podpick.js); its Create pod… opens the PODS docker's form. Without it: the docker, then this box.
+    var pick = root.H3PodPick ? H3PodPick.show(id) : Promise.resolve(false);
+    pick.then(function (ok) {
+      if (ok) return;   // it calls answered() when you pick
+      viaDocker(id).then(function (ok2) { if (ok2) { asked[id] = true; open = null; } else { open = null; show(id); } });
+    });
   }
   root.H3StylePodAsk = Object.assign({ watchJobs: watchJobs, show: show, answered: answered }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 1070,
+    "count": 1071,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -620,6 +620,7 @@
         "Settings ▸ Remote generation ▸ RunPod pod",
         "Settings ▸ Remote generation ▸ Use remote generation turns it on. Off, everything runs on your computer and Basic Settings ▸ GPU is hidden.",
         "Settings ▸ Remote generation ▸ 🧠 LLM",
+        "Several styles can share one pod. Generate with a style that has no pod opens a box of your pods and presets - ＋ puts the style on one, or Create pod makes a new one. 📦 Presets in the PODS docker keeps a pod's template, GPU, disks and styles as a file: ▶ starts it (a terminated pod is made again with every style's files), ⏹ stops it, 🗑 terminates the pod and ✕ deletes the preset - with the hours used and what it cost.",
         "Severity",
         "Share a pack",
         "Share it",

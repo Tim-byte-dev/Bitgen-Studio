@@ -47,11 +47,16 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
   await api("/api/gpusplit", { where: "remote", engine: { provider: "runpod", runpod: "pods" } });
   const st = ((await api("/api/styles?kind=image")).styles || []).find((x) => x.engine === "comfy" && (!x.runs_on || x.runs_on === "local") && !x.chain && !/edit/i.test(x.name));
   const jobs = [];
+  // 2.764.0: a pod made for a style is kept as a preset (runpod/pods/presets) - the ones this test makes go afterwards
+  const PDIR = require("path").join(__dirname, "..", "runpod", "pods", "presets"), pre0 = (() => { try { return require("fs").readdirSync(PDIR); } catch { return []; } })();
   const b = await chromium.launch();
   try {
     const p = await b.newPage({ viewport: { width: 1500, height: 1000 } }); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const reqs = []; p.on("request", (r) => { if (/\/api\/(comfy\/ensure|genimage|stylepods\/route|models\/check)/.test(r.url())) reqs.push(r.method() + " " + r.url().replace(/^https?:\/\/[^/]+/, "")); });
     const ev = (f, a) => p.evaluate(f, a);
+    // 2.764.0: Generate with a style that has no pod opens the box of your pods + presets (static/podpick.js, tested in
+    // test-ui764-ui.js) - here its Create pod… is pressed, as a person would, so the PODS docker's form opens as before
+    await p.addInitScript(() => { setInterval(() => { const b = document.querySelector("#ppkDlg[open] [data-ppkcreate]"); if (b && !b.disabled) b.click(); }, 300); });
     await p.goto(URL0);
     await p.waitForFunction(() => window.H3PodRoute && window.H3StylePodAsk && document.getElementById("genModeSel") && document.getElementById("go"), null, { timeout: 30000 });
     const route = await api("/api/stylepods/route?mode=image&style_id=" + encodeURIComponent(st.id));
@@ -79,6 +84,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e));
   } finally {
     await b.close();
+    try { for (const f of require("fs").readdirSync(PDIR)) if (!pre0.includes(f)) require("fs").unlinkSync(require("path").join(PDIR, f)); } catch { /* none made */ }
     for (const j of jobs) await api("/api/jobs/" + j + "/cancel", {}).catch(() => {});
     rp.close();
     await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});

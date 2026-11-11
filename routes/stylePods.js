@@ -3,7 +3,7 @@
 //   POST /api/stylepods/link               {style_id, pod_id | ""} -> links (one style to a pod / off it)
 //   GET  /api/stylepods/ask/:id            the box's offer: GPUs (the first bitGen's pick), your pods, the CUDA 13 template,
 //                                          the GPU memory + disk the style wants (?cloud=SECURE|COMMUNITY)
-//   POST /api/stylepods/ask/:id            {action: create | use | cancel, gpu, cloud, volume, pod_id}
+//   POST /api/stylepods/ask/:id            {action: create | use | preset (2.764.0: {name, gpu?}) | cancel, gpu, cloud, volume, pod_id}
 //   POST /api/stylepods/prepare/:pod       {styles: [ids], port} -> make them ready on the pod now (background)
 //   GET  /api/stylepods/prepare/:pod       how far that is (lib/podPrep.js status)
 //   GET  /api/stylepods/route?mode=&style_id=  2.763.2: {pod, why} - a render of the style goes to a pod (the page skips this

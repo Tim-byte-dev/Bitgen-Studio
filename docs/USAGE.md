@@ -8460,6 +8460,31 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   out (the pod installs its own). The log says how far it is: the files packed, then each part sent and its size. A
   pack over 2 GB is not uploaded and the log says why - put it on the pod with git, or make it smaller.
 
+## 📦 Pod presets, and several styles on one pod (2.764.0)
+
+- **Several styles share one pod:** a pod can hold as many styles as its disk takes - only one style's models are loaded at
+  a time, so the first render after switching styles takes a little longer.
+- **Generate with a style that has no pod:** a box opens with your pods - each with its GPU, whether it is running, its
+  price an hour, the styles it holds and whether its GPU memory is enough for this style - and ＋ <style> on each: the
+  style goes on that pod (its files are sent first; a stopped pod is started) and the render goes there. Your presets
+  whose pod is not on RunPod now are listed too: ＋ <style> & ▶ adds the style and makes the pod. Create pod… opens the
+  PODS docker's form, filled in for the style; Cancel render drops the render. The box only opens when you press Generate.
+- **📦 Presets tab (🖥 PODS):** every preset is a file in your bitGen folder, runpod/pods/presets/<name>.pod, with the
+  template, the GPU, how many GPUs, the cloud, both disks, a CUDA 13 host, the kinds and the styles. Each one is an item
+  you open: edit any detail, ✕ takes a style off, ＋ Add a style puts one on, then 💾 Save changes. Styles change on a
+  running pod at once; the GPU, template and disks the next time the pod is made.
+- **The title bar:** ▶ starts the pod (a terminated one is made again with every detail and all its styles' files -
+  workflows, models, text encoders, VAE and LoRAs - plus your custom nodes); ⏹ stops it (the GPU charge ends, /workspace
+  stays); 🗑 terminates the pod - everything on it is deleted, the preset stays so ▶ can make it again; ✕ deletes the
+  preset (the pod is left as it is). 🗑 and ✕ ask first.
+- **Under the details:** the loading sequence while it starts (creating, the pod loading, ComfyUI starting, your custom
+  nodes, each style's files, ready - a step that could not finish says why), the pod, its cost an hour, the hours used
+  and the total cost of every pod the preset has had (with RunPod's bill for this month).
+- **When its GPU is not free:** ▶ lists the GPUs with as much memory or more that are free now - pick one and the preset
+  keeps it.
+- **Making presets:** a pod created for a style is kept as a preset by itself; 💾 Save as preset on any pod in 🖥 My pods;
+  ＋ New preset starts one from scratch. A style put on a preset's pod anywhere joins the preset.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

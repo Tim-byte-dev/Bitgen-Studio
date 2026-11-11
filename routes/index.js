@@ -255,6 +255,7 @@ function mount(app) {
   require("./remoteDock").mount(app); // 2.754.0: the Remote generation docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
   require("./pods").mount(app);       // 2.756.0: the PODS docker - public templates, GPU prices, create / start / stop / terminate (lib/pods.js)
   require("./stylePods").mount(app);  // 2.763.0: your styles on your pods - links, the create-a-pod question, made ready (lib/stylePods.js)
+  require("./podPresets").mount(app); // 2.764.0: pod presets - runpod/pods/presets/<name>.pod, ▶ ⏹ 🗑 ✕ (lib/podPresets.js)
   require("./apis").mount(app);       // 2.757.0: Settings ▸ API - online services as API_ styles + the LLM (lib/apis.js)
   require("./currency").mount(app);   // 2.760.0: Settings ▸ General ▸ Currency - prices in your money (lib/currency.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,

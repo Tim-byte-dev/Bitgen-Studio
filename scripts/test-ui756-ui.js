@@ -100,7 +100,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const t1 = await tpl();
     check("2.756.1: the PODS docker opens on ALL the templates (Official + Verified + Community, each once, never a serverless one), ComfyUI ones first; a count per source; ComfyUI only OFF",
       (await ev(() => SecFloat.state("pods").shown)) && t1.join() === "ComfyUI - CUDA 12.8,MiniMax H3 (community),PyTorch 2.8,ROCm PyTorch" && /^4 of 4 templates$/.test(await msg())
-      && /^all\*=4 official=2 verified=1 community=1 star=\d+ mine=\d+$/.test(await tabs()) && !(await ev(() => document.getElementById("pdComfy").checked)) && seen.filter((x) => /catalog\/templates/.test(x)).length >= 3, { t1, m: await msg(), tabs: await tabs() });
+      && /^all\*=4 official=2 verified=1 community=1 star=\d+ mine=\d+( presets=\d+)?$/.test(await tabs()) && !(await ev(() => document.getElementById("pdComfy").checked)) && seen.filter((x) => /catalog\/templates/.test(x)).length >= 3, { t1, m: await msg(), tabs: await tabs() });
     const c0 = await ev(() => { const c = document.querySelector('#pdTpl .pdCard[data-tpl="h3com756"]'); return { glyph: c.querySelector(".pdGlyph").textContent, cat: c.querySelector(".pdCat").textContent, cfy: !!c.querySelector(".pdCfy"),
       img: c.querySelector(".pdImg").textContent, chips: [...c.querySelectorAll(".pdChips span")].map((x) => x.textContent), href: c.querySelector("a.pdLink").href, h: c.querySelector(".pdArt").style.getPropertyValue("--h"),
       w: c.getBoundingClientRect().width, cols: getComputedStyle(document.getElementById("pdTpl")).gridTemplateColumns.split(" ").length }; });
