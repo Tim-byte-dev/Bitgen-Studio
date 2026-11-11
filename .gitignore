@@ -136,3 +136,4 @@ community/config.php
 community/*.db
 /misc/brand/.cache/
 /.pdocs/
+comfy_workflows/pod/

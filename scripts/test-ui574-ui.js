@@ -38,8 +38,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(300);
     const h1 = await ev(() => { const h = document.querySelector("#videodock > .bhead"); return { own: [...h.childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join("").trim(), pin: !!h.querySelector(".pinbtn"), btns: h.querySelectorAll("button").length,
       other: [...document.querySelector("#musicdock > .bhead").childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join("").trim() }; });
-    check("typed \"Music Video\": the title bar says ▾ Music Video, its 📌 and buttons kept; the Music docker's title untouched",
-      /^[▾▸] Music Video$/.test(h1.own) && h1.pin && h1.btns >= 2 && /Music/.test(h1.other) && !/Video/.test(h1.other), h1);
+    check("typed \"Music Video\": the title bar says ▾ Music Video, its 📌 and buttons kept; the Music docker's title untouched (2.760.0: it reads Audio - Music is the Audio docker's tab)",
+      /^[▾▸] Music Video$/.test(h1.own) && h1.pin && h1.btns >= 2 && /^[▾▸] Audio$/.test(h1.other), h1);
     await ev(() => window.H3ThemeEdit.toggle(false, { force: true }));
     await ev(() => document.querySelector("#videodock > .bhead").click());
     await p.waitForTimeout(400);

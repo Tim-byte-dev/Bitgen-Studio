@@ -67,7 +67,7 @@ check("summarize: two days (oldest first), jobs newest first, the bill = energy 
 check("inRange", U.inRange("2026-10-19", "2026-10-01", "2026-10-31") && !U.inRange("2026-09-30", "2026-10-01", "") && U.inRange("2020-01-01", "", ""));
 const csvJ = U.toCsv("jobs", sm.jobs), csvD = U.toCsv("days", sm.days);
 check("toCsv jobs: a header + a row a job, prompts with commas quoted", csvJ.split("\n")[0].startsWith("finished,day,id,project,mode") && csvJ.trim().split("\n").length === 3 && U.toCsv("jobs", [Object.assign({}, en, { prompt: 'a, "b"' })]).includes('"a, ""b"""'), csvJ.slice(0, 300));
-check("toCsv days: kWh, peak / off-peak kWh, supply, total", csvD.split("\n")[0] === "day,kwh,peak_kwh,offpeak_kwh,jobs_kwh,jobs,app_hours,energy_cost,supply_charge,remote_hours,remote_cost,total" && /^2026-10-19,0\.2,0\.1,0\.1,/m.test(csvD), csvD);
+check("toCsv days: kWh, peak / off-peak kWh, supply, total (2.761.0: + RunPod pods)", csvD.split("\n")[0] === "day,kwh,peak_kwh,offpeak_kwh,jobs_kwh,jobs,app_hours,energy_cost,supply_charge,remote_hours,remote_cost,pods_cost,total" && /^2026-10-19,0\.2,0\.1,0\.1,/m.test(csvD), csvD);
 
 /* ---- the docker */
 const now = new Date(2026, 9, 18, 12, 0);

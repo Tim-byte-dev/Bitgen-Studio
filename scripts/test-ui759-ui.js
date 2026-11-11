@@ -64,6 +64,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     const order1 = await ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((c) => c.dataset.tpl + (c.querySelector(".pdFits") ? " ✓" : "")));
     check("For Krea 2 Turbo: the template that has Krea first, marked ✓ fits; the other after it", order1.join() === "krea759a ✓,pyt759aa" && order0.join() !== order1.join(), { order0, order1 });
     await p.click('[data-pdsrc="mine"]'); await sleep(300);   // 2.760.0: the pods are under 🖥 My pods
+    await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod759"] .pdHead'), null, { timeout: 10000 });
+    await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod759"]'); if (!r.classList.contains("open")) r.querySelector(".pdHead").click(); }); await sleep(300);   // 2.761.0: open the item
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod759"] [data-pdmod]'), null, { timeout: 10000 });
     await p.click('#pdPods .pdRow[data-pod="pod759"] [data-pdmod]');
     await p.waitForFunction(() => document.querySelector("#pdStyPanel [data-pmgo]"), null, { timeout: 15000 });

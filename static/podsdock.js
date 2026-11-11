@@ -58,7 +58,16 @@
     // 2.760.0: two views - the templates, or 🖥 My pods; Create pod… shows the form alone
     + ".pdk:not(.pdMine) #pdMineBox{display:none}.pdk.pdMine #pdTpl,.pdk.pdMine #pdCreate,.pdk.pdMine .pdTplOnly,.pdk.pdMine #pdStarAdd{display:none!important}"
     + ".pdk.pdMaking #pdTpl,.pdk.pdMaking .pdTplOnly,.pdk.pdMaking #pdStarAdd{display:none!important}"
-    + ".pdk .pdTabs button[data-pdsrc=mine]{margin-left:6px}";
+    + ".pdk .pdTabs button[data-pdsrc=mine]{margin-left:6px}"
+    // 2.761.0: My pods as an accordion (static/podsetup.js inside)
+    + ".pdk .pdAcc{display:block;padding:0;border:1px solid var(--line,#3a342a);border-radius:7px;margin:0 0 6px;background:var(--panel,#1b1814)}"
+    + ".pdk .pdAcc.open{border-color:var(--tiger,#f59e2c)}"
+    + ".pdk .pdHead{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;padding:6px 8px;color:inherit;cursor:pointer;font:inherit}"
+    + ".pdk .pdHead .ar{color:var(--tiger,#f59e2c);width:1em;flex:none}.pdk .pdHead .nm{flex:1;min-width:0}"
+    + ".pdk .pdBodyIn{padding:2px 10px 8px 26px;display:flex;flex-direction:column;gap:6px}"
+    + ".pdk .psKinds,.pdk .psTools,.pdk .pdActs,.pdk .psLlm,.pdk .psNf{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}"
+    + ".pdk .psKinds .chk{margin:0}.pdk .psTools [data-pssave]{margin-left:auto}.pdk .psTools [data-pssave]:disabled{opacity:.45}"
+    + ".pdk .psInto select{width:auto;max-width:200px}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -69,7 +78,26 @@
     b.title = "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods"; b.textContent = "🖥 PODS";
     b.onclick = function () { show(); };
     box.appendChild(b);
+    // 2.761.0 (Tim: "add the cost in basics settings refresh after every minute to show total cost, keep track of all costs
+    // like we do with electricity"): what the pods cost - RunPod's bill, asked every minute (lib/podCosts.js); 📊 Usage keeps it
+    var c = doc.createElement("div"); c.id = "gpuPodCost"; c.className = "hint"; c.style.cssText = "margin:4px 0 0;display:none"; c.setAttribute("aria-live", "polite");
+    box.appendChild(c);
     return true;
+  }
+  /** 2.761.0: 💲 the pods' cost in Basic Settings ▸ GPU (once a minute while RunPod ▸ Pods is on) */
+  function costLine() {
+    var el = $("gpuPodCost"); if (!el) return;
+    if (!wanted()) { el.style.display = "none"; return; }
+    getj("/api/pods/costs").then(function (j) {
+      if (!j) return;
+      S.cost = j; el.style.display = "";
+      var u = function (v, sfx) { return money(v, sfx); };
+      el.innerHTML = "💲 RunPod pods: " + (j.running ? "<b>" + j.running + " running · " + esc(u(j.running_hr, "/h")) + "</b> now · " : "none running · ")
+        + "<b>" + esc(u(j.today_usd)) + "</b> today · <b>" + esc(u(j.month_usd)) + "</b> this month"
+        + (j.error ? ' <span style="color:#e88">(' + esc(j.error) + ")</span>" : "");
+      el.title = "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity.";
+      if ($("pdPods") && S.pods.length) paintPods();
+    }).catch(function () { /* offline */ });
   }
   function paintBtn() {
     var b = $("gpuPods"); if (!b) return;
@@ -283,7 +311,7 @@
       if (r.error) { say(r.error, false); return; }
       S.form = null; box2sel(); paintForm(); S.src = "mine"; filter();   // 2.760.0: a pod created -> 🖥 My pods
       say("✓ pod created - loading pod…", true);
-      S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port;
+      S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port; S.open = S.open || {}; S.open[r.pod.id] = true;
       loadPods().then(tick);
     });
   }
@@ -306,25 +334,41 @@
     if (/EXITED/.test(p.status)) { el.textContent = "stopped"; return; }
     el.textContent = String(p.status || "").toLowerCase();
   }
+  /* 2.761.0 (Tim: "make each pod name in my pods a accordian menuitem ..."): each pod is an item - its name (a button: ▸ / ▾,
+     🅱, the GPU, $/h, the state) opens it; inside, what it is for + 📁 / ➕ Checkpoint / ➕ LoRA + 💾 Save (static/podsetup.js)
+     and the pod's own buttons. A pod loading or just created opens by itself. */
   function paintPods() {
     var box = $("pdPods"); if (!box) return;
+    // typing in an item: only the states change, the fields stay as they are
+    var ae = doc.activeElement;
+    if (ae && box.contains(ae) && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && !/^(checkbox|radio)$/.test(ae.type || "")) { box.querySelectorAll(".pdRow[data-pod]").forEach(function (r) { var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (p) setSt(r.querySelector(".pdSt"), p); }); return; }
+    S.open = S.open || {};
     box.innerHTML = S.pods.map(function (p) {
       var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
-      return '<div class="pdRow" data-pod="' + esc(p.id) + '"><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
-        + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span></span></span>'
-        + '<button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
+      if (S.watch[p.id] === "start" && S.open[p.id] == null) S.open[p.id] = true;
+      var open = !!S.open[p.id], c = (S.cost && S.cost.pods && S.cost.pods[p.id]) || null;
+      return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '">'
+        + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
+        + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span>'
+        + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "") + "</span></span></button>"
+        + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
+        + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")
+        + '<div class="pdActs"><button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
+        + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button></div>'
         + '<div class="pdLoadBox"></div>'
-        + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button>'
         + (S.kill === p.id ? '<div class="pdKill">Terminate <b>' + esc(p.name) + "</b>? The pod and every file on it (models, outputs) are deleted - only a network volume survives. "
           + '<button type="button" class="ghost" data-pdkillyes>Terminate</button> <button type="button" class="ghost" data-pdkillno>Cancel</button></div>' : "")
-        + "</div>";
+        + "</div></div>";
     }).join("") || '<div class="hint">No pods yet - pick a template (All, Official …) and press Create pod….</div>';
     box.querySelectorAll(".pdRow[data-pod]").forEach(function (r) {
       var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (!p) return;
       setSt(r.querySelector(".pdSt"), p);
+      r.querySelector(".pdHead").onclick = function () { S.open[p.id] = !S.open[p.id]; paintPods(); };
+      if (!S.open[p.id]) return;
+      if (root.H3PodSetup) H3PodSetup.wire(r, p, (S.port && S.port[p.id]) || 0, paintPods);
       // 2.758.0 (Tim: "can you show progess of pod loading?"): the stage + the timed bar while it loads (static/podload.js)
       var st = S.st[p.id], lb = r.querySelector(".pdLoadBox");
       if (lb && root.H3PodLoad && st && st.progress && (S.watch[p.id] === "start" || !st.ready || st.progress.took)) lb.innerHTML = H3PodLoad.bar(st);
@@ -394,8 +438,9 @@
       SecFloat.add({ id: "pods", title: "PODS", w: 760, h: 700, body: body(), onShow: function () { loadTpl(); loadPods(); loadCuts(); loadStyles(); } });
       wire();
     }
-    loadG();
-    doc.addEventListener("h3:rgpu", loadG);
+    loadG().then(costLine);
+    setInterval(costLine, +(root.H3_POD_COST_POLL || 60000));
+    doc.addEventListener("h3:rgpu", function () { loadG().then(costLine); });
     root.addEventListener("h3:currency", function () { if (!$("pdBody")) return; paintPods(); if (S.form && $("pdGpu") && S.gpus[S.form.cloud]) { var keep = $("pdGpu").value; gpus(S.form.cloud); if (keep) { $("pdGpu").value = keep; price(); } } });
     doc.addEventListener("change", function (e) { if (e.target && /^(gpuProv|gpuRunpod|gpuWhere)$/.test(e.target.name || "")) setTimeout(loadG, 500); });
   }

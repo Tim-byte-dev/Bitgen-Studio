@@ -7,6 +7,8 @@
  *   with its own height, ▾ fold, ⛶ maximize and ⇱ float, so everything that opens one of them (a workspace, a saved
  *   docker layout, voice chat, the 🎤 music video button) opens it as the Audio docker's tab: at most ONE of the three is
  *   on screen - the one shown last wins. A tab whose extension is turned off (Settings ▸ Extensions) is not offered.
+ *   2.761.0: the rule is for the main column - a docker floated (⇱) or dragged into a ▣ docker is on its own and shows
+ *   beside the others (the gate's 2.545.0 docker-group test floats Music and Stems side by side).
  * Pure (Node: scripts/test-audiodock760.js): IDS, TABS, keep(before, now, active) -> the one to keep on screen.
  */
 (function (root) {
@@ -35,7 +37,9 @@
   try { var a = root.localStorage.getItem("h3.autab"); if (IDS.indexOf(a) >= 0) S.active = a; } catch (e) { /* private window */ }
   function setActive(id) { S.active = id; try { root.localStorage.setItem("h3.autab", id); } catch (e) { /* fine */ } }
   function there(id) { var d = $(id); return !!d && !d.classList.contains("dockoff"); }
-  function showing(id) { var d = $(id); return !!d && !d.classList.contains("dockgone") && !d.classList.contains("dockoff"); }
+  // 2.761.0: only the dockers IN the main column are tabs - one floated (⇱) or put in a ▣ docker shows beside the others
+  function docked(d) { return !!d && !!d.parentElement && d.parentElement.id === "maincol"; }
+  function showing(id) { var d = $(id); return !!d && docked(d) && !d.classList.contains("dockgone") && !d.classList.contains("dockoff"); }
   function shownNow() { return IDS.filter(showing); }
   function gone(id, hide) {
     var d = $(id); if (!d || d.classList.contains("dockgone") === hide) return;

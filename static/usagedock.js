@@ -50,7 +50,7 @@
     document.querySelectorAll(".usd [data-utab]").forEach(function (b) { b.classList.toggle("on", b.dataset.utab === S.tab); });
     var t = d.totals, cur = t.currency;
     $("usTot").innerHTML = [
-      ["Bill for the range", money(t.bill, cur), "energy " + money(t.day_energy_cost, cur) + " + supply " + money(t.supply, cur) + (t.remote_cost ? " + remote " + money(t.remote_cost, cur) : "")],
+      ["Bill for the range", money(t.bill, cur), "energy " + money(t.day_energy_cost, cur) + " + supply " + money(t.supply, cur) + (t.remote_cost ? " + remote " + money(t.remote_cost, cur) : "") + (t.pods_cost ? " + RunPod pods " + money(t.pods_cost, cur) : "")],
       ["Energy while the app ran", kwh(t.day_wh) + " kWh", "peak " + kwh(t.day_wh_peak) + " · off-peak " + kwh(t.day_wh - t.day_wh_peak)],
       ["Jobs", t.jobs, hours(t.job_secs) + " h of work"],
       ["The jobs' energy", kwh(t.job_wh) + " kWh", "cost " + money(t.job_cost, cur) + " (with their supply share)"],
@@ -58,10 +58,10 @@
     ].map(function (c) { return '<div class="ucard"><span>' + esc(c[0]) + "</span><b>" + esc(c[1]) + "</b><span>" + esc(c[2]) + "</span></div>"; }).join("");
     var w = $("usWrap");
     if (S.tab === "days") {
-      w.innerHTML = d.days.length ? "<table><thead><tr><th class=\"l\">Day</th><th>kWh</th><th>peak</th><th>off-peak</th><th>jobs</th><th>jobs kWh</th><th>app h</th><th>energy</th><th>supply</th><th>remote</th><th>total</th></tr></thead><tbody>"
+      w.innerHTML = d.days.length ? "<table><thead><tr><th class=\"l\">Day</th><th>kWh</th><th>peak</th><th>off-peak</th><th>jobs</th><th>jobs kWh</th><th>app h</th><th>energy</th><th>supply</th><th>remote</th><th title=\"RunPod's own bill for your pods that day (2.761.0)\">pods</th><th>total</th></tr></thead><tbody>"
         + d.days.slice().reverse().map(function (x) {
           return "<tr><td class=\"l\">" + esc(x.day) + "</td><td>" + kwh(x.wh) + "</td><td>" + kwh(x.wh_peak) + "</td><td>" + kwh(x.wh - x.wh_peak) + "</td><td>" + x.jobs + "</td><td>" + kwh(x.wh_jobs) + "</td><td>" + hours(x.secs)
-            + "</td><td>" + money(x.cost_energy, cur) + "</td><td>" + money(x.supply, cur) + "</td><td>" + (x.remote_cost ? money(x.remote_cost, cur) : "") + "</td><td><b>" + money(x.total, cur) + "</b></td></tr>";
+            + "</td><td>" + money(x.cost_energy, cur) + "</td><td>" + money(x.supply, cur) + "</td><td>" + (x.remote_cost ? money(x.remote_cost, cur) : "") + "</td><td>" + (x.pods_cost ? money(x.pods_cost, cur) : "") + "</td><td><b>" + money(x.total, cur) + "</b></td></tr>";
         }).join("") + "</tbody></table>" : '<div class="unote" style="padding:8px">Nothing for this range yet - the app adds the day every 5 minutes while it runs.</div>';
     } else {
       w.innerHTML = d.jobs.length ? "<table><thead><tr><th class=\"l\">Finished</th><th class=\"l\">Mode</th><th class=\"l\">What</th><th class=\"l\">Status</th><th>min</th><th>kWh</th><th>peak kWh</th><th>avg W</th><th>cost</th><th class=\"l\">remote</th></tr></thead><tbody>"

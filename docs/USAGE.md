@@ -8312,6 +8312,33 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   shows the form alone (✕ Close or a tab goes back), and once the pod is created the docker switches to My pods, where
   its loading bar runs.
 
+## 🖥 Pods as items: what a pod is for, files onto it, its cost, and pods made again (2.761.0)
+
+- **Each pod in 🖥 My pods is an item.** Press its name to open it (▸ / ▾). The name line shows the GPU, the price an hour,
+  the state and what RunPod has billed for it today and this month.
+- **What the pod is for**: under its name tick **Video**, **LLM**, **vLLM** (the picture-describing model), **Image** and
+  **Image edit**. **💾 Save** is off until you change something - a tick, a field, a file sent or a folder made - and off
+  again once saved. Save makes the pod's P_ styles: for every model file on the pod that bitGen has a workflow for, a P_
+  style of each ticked kind (P_<file>, P_<file> edit, P_<file> video). A kind you untick removes the P_ styles Save made
+  for it (the ones 🎨 Styles made stay).
+- **LLM / vLLM on a pod**: ticked and saved, bitGen's prompt LLM (or the picture-describing model) talks to an
+  OpenAI-compatible server running on the pod - vLLM, Ollama and the like - through RunPod's proxy. Give its port (8000 by
+  default) and model; leave the model blank and bitGen asks the server which one it serves. One pod at a time holds each.
+- **📁 New folder** makes a folder inside the pod's checkpoints or loras. **➕ Checkpoint** and **➕ LoRA** send a file from
+  this computer into models/checkpoints or models/loras on the pod - or into the folder picked under **into**. They go
+  through the pod's Jupyter (pods bitGen creates have it ready; for others paste the password in ⬇ Models).
+- **The cost** (Basic Settings ▸ GPU, while RunPod ▸ Pods is picked): 💲 how many pods run and what they cost an hour now,
+  plus RunPod's own bill for today and this month (GPU, CPU and disk) - asked again every minute. 📊 Usage keeps the pods
+  day by day beside the electricity, in the Energy cost currency, and adds them to each day's bill.
+- **A P_ style remembers its pod**: the template, the GPU, Secure or Community, the disk sizes and the files bitGen put on
+  it (and where each came from). When you render with a P_ style whose pod is stopped, bitGen starts it; when RunPod no
+  longer has the pod, bitGen creates a new one from the same template on the same GPU, waits for its ComfyUI, and puts the
+  files on it - from this computer when the file is still there, else from its link, else from bitGen's download list.
+  The job waits in the queue meanwhile ([pod] lines in its log), then renders on the new pod; the style moves to it.
+- With Pods picked in Basic Settings, only P_ styles are offered.
+- **The Audio docker** keeps one tab on screen only in the main column: Music, Stems or SFX floated (⇱) or put in a ▣ Docker
+  shows beside the others.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

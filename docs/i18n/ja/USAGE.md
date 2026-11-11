@@ -4810,6 +4810,22 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **🖥 My pods**（PODS ドッカー）：テンプレートのタブの横にあるボタンで、Pod の数が表示されます。押すと Pod だけを表示します - テンプレートのカードも検索もなし。テンプレートのタブ（All、Official など）はテンプレートだけを表示します。
   **Create pod…** はフォームだけを表示し（✕ Close かタブで戻ります）、Pod が作成されるとドッカーは My pods に切り替わり、そこで読み込みバーが進みます。
 
+## 🖥 項目としての Pod：Pod の用途、ファイルの送信、費用、Pod の作り直し (2.761.0)
+<!-- en: pods-as-items-what-a-pod-is-for-files-onto-it-its-cost-and-pods-made-again-2-761 c5fed3df1878 -->
+
+- **🖥 My pods の各 Pod は項目になりました。** 名前を押すと開きます（▸ / ▾）。名前の行には GPU、1 時間あたりの価格、状態、
+  RunPod が今日と今月その Pod に請求した額が表示されます。
+- **Pod の用途**：名前の下で **Video**、**LLM**、**vLLM**（画像を説明するモデル）、**Image**、**Image edit** にチェックを入れます。**💾 Save** は何か変更するまで（チェック、欄、送ったファイル、作ったフォルダー）オフで、保存すると再びオフになります。Save は Pod の P_ スタイルを作ります：bitGen がワークフローを持つ Pod 上の各モデルファイルについて、チェックした種類ごとに P_ スタイル（P_<file>、P_<file> edit、P_<file> video）を作ります。チェックを外した種類は、Save が作ったその
+  P_ スタイルを削除します（🎨 Styles で作ったものは残ります）。
+- **Pod 上の LLM / vLLM**：チェックして保存すると、bitGen のプロンプト LLM（または画像を説明するモデル）は Pod 上で動く
+  OpenAI 互換サーバー（vLLM、Ollama など）と RunPod のプロキシ経由で通信します。ポート（既定 8000）とモデルを指定します。モデルを空にすると bitGen がサーバーに提供中のモデルを尋ねます。それぞれ一度に 1 つの Pod だけが担当します。
+- **📁 New folder** は Pod の checkpoints または loras の中にフォルダーを作ります。**➕ Checkpoint** と **➕ LoRA** はこのコンピューターのファイルを Pod の models/checkpoints または models/loras（または **into** で選んだフォルダー）へ送ります。Pod の Jupyter を使います（bitGen が作った Pod は準備済み。それ以外は ⬇ Models でパスワードを貼り付けます）。
+- **費用**（Basic Settings ▸ GPU、RunPod ▸ Pods を選んでいるとき）：💲 動いている Pod の数と現在の 1 時間あたりの費用、さらに今日と今月の RunPod 自身の請求額（GPU、CPU、ディスク）- 1 分ごとに再確認します。📊 Usage は Pod の費用を電気代と並べて日ごとに Energy cost の通貨で記録し、各日の請求に加えます。
+- **P_ スタイルは自分の Pod を覚えています**：テンプレート、GPU、Secure か Community、ディスクのサイズ、bitGen が入れたファイル（とそれぞれの入手元）。Pod が停止している P_ スタイルでレンダリングすると bitGen が起動し、RunPod にその Pod がもうない場合は、同じテンプレートと同じ GPU で新しい Pod を作り、ComfyUI を待ってファイルを入れます - ファイルがまだこのコンピューターにあればそこから、なければリンクから、それもなければ bitGen のダウンロード一覧から。その間ジョブはキューで待ち（ログに [pod] 行）、新しい Pod でレンダリングします。スタイルはその Pod に移ります。
+- Basic Settings で Pods を選んでいるときは、P_ スタイルだけが表示されます。
+- **Audio ドッカー**の「画面にタブ 1 つ」の決まりはメインの列だけです：フロート（⇱）したり ▣ Docker に入れた Music、
+  Stems、SFX はほかと並んで表示されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

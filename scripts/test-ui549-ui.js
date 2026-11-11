@@ -38,6 +38,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
   const serverLay = async (ok) => { let o = {}; for (let i = 0; i < 40; i++) { o = await ev(() => fetch("/api/layout/panel").then((r) => r.json())); if (ok(o)) return o; await p.waitForTimeout(400); } return o; };
   try {
     await open();
+    await ev(() => { if (window.H3Audio) H3Audio.tab("musicdock"); }); await p.waitForTimeout(300);   // 2.760.0: Music is the Audio docker's tab
     const fl = await ev(() => { const b = document.getElementById("dgFloat_musicdock"); return { text: b.textContent, w: b.offsetWidth }; });
     check("⇱ on a main docker's title bar has its label again (it was an empty button since 2.545.0)", fl.text === "⇱" && fl.w > 10, fl);
     // the music docker open, a ▣ docker

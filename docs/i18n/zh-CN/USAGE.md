@@ -5040,6 +5040,24 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **🖥 My pods**（PODS 停靠栏）：模板标签页旁的一个按钮，显示你有多少个 Pod。它只显示你的 Pod——没有模板卡片，没有搜索。模板标签页（All、Official 等）只显示模板。**Create pod…** 只显示表单（✕ Close 或点一个标签页即可返回），
   Pod 创建后停靠栏会切换到 My pods，加载进度条在那里运行。
 
+## 🖥 作为条目的 Pod：Pod 的用途、把文件放到上面、费用，以及重新创建 Pod (2.761.0)
+<!-- en: pods-as-items-what-a-pod-is-for-files-onto-it-its-cost-and-pods-made-again-2-761 c5fed3df1878 -->
+
+- **🖥 My pods 中的每个 Pod 现在都是一个条目。** 点它的名字即可展开（▸ / ▾）。名字这一行显示 GPU、每小时价格、状态，以及
+  RunPod 今天和本月为它收取的费用。
+- **Pod 的用途**：在名字下方勾选 **Video**、**LLM**、**vLLM**（描述图片的模型）、**Image** 和 **Image edit**。**💾 Save**
+  在你做出更改之前（勾选、字段、发送的文件或新建的文件夹）是关闭的，保存后再次关闭。Save 会创建该 Pod 的 P_ 风格：对 Pod 上
+  bitGen 有工作流的每个模型文件，为每种勾选的类型各创建一个 P_ 风格（P_<file>、P_<file> edit、P_<file> video）。取消勾选的类型会删除 Save 为它创建的 P_ 风格（🎨 Styles 创建的保留）。
+- **Pod 上的 LLM / vLLM**：勾选并保存后，bitGen 的提示词 LLM（或描述图片的模型）会通过 RunPod 的代理与 Pod 上运行的
+  OpenAI 兼容服务器（vLLM、Ollama 等）通信。填写端口（默认 8000）和模型；模型留空时 bitGen 会询问服务器提供的是哪个模型。每项同一时间只由一个 Pod 承担。
+- **📁 New folder** 在 Pod 的 checkpoints 或 loras 中新建文件夹。**➕ Checkpoint** 和 **➕ LoRA** 把这台电脑上的文件发送到
+  Pod 的 models/checkpoints 或 models/loras，或发送到 **into** 中选择的文件夹。它们通过 Pod 的 Jupyter 传输（bitGen 创建的
+  Pod 已就绪；其他 Pod 请在 ⬇ Models 中粘贴密码）。
+- **费用**（Basic Settings ▸ GPU，选择 RunPod ▸ Pods 时）：💲 正在运行的 Pod 数量和当前每小时费用，以及 RunPod 自己今天和本月的账单（GPU、CPU 和磁盘）——每分钟重新查询。📊 Usage 按天记录 Pod 费用，与电费并列，使用 Energy cost 的货币，并计入每天的账单。
+- **P_ 风格会记住它的 Pod**：模板、GPU、Secure 或 Community、磁盘大小，以及 bitGen 放到上面的文件（和每个文件的来源）。用 Pod 已停止的 P_ 风格渲染时，bitGen 会启动它；RunPod 上已没有该 Pod 时，bitGen 会用同一模板、同一 GPU 创建新 Pod，等待它的 ComfyUI，并把文件放上去——文件仍在这台电脑上就从这里上传，否则用它的链接，再否则从 bitGen 的下载列表获取。这期间任务在队列中等待（日志中的 [pod] 行），然后在新 Pod 上渲染；风格会转到新 Pod。
+- 在 Basic Settings 中选择 Pods 时，只显示 P_ 风格。
+- **Audio 停靠栏**“屏幕上只显示一个标签页”的规则只适用于主列：浮动（⇱）或放进 ▣ Docker 的 Music、Stems、SFX 会与其他并排显示。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

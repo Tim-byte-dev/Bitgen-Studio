@@ -311,6 +311,8 @@
   }
   function floatDock(id) {
     const p = P(), d = $(id); if (!p || !d) return;
+    // 2.761.0: a hidden docker (another Audio tab on screen) is shown as it floats
+    if (d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone(id, null);
     if (d.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse(id);
     const r = p.get("bd." + id), w = Math.min(720, root.innerWidth - 80), hh = Math.min(520, root.innerHeight - 140);
     p.float("bd." + id, r && r.w ? null : { x: Math.max(20, root.innerWidth - w - 40), y: 70, w, h: hh });

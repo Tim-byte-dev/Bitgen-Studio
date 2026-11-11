@@ -81,6 +81,8 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(700);
     await p.click("#gpuPods"); await sleep(600);
     await p.click('[data-pdsrc="mine"]'); await sleep(300);   // 2.760.0: the pods are under 🖥 My pods
+    await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod758"] .pdHead'), null, { timeout: 10000 });
+    await p.click('#pdPods .pdRow[data-pod="pod758"] .pdHead'); await sleep(300);   // 2.761.0: a pod is an item - open it
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod758"]'), null, { timeout: 10000 });
     // ▶ Start: the stages, as the stand-in moves through them
     await p.click('#pdPods .pdRow[data-pod="pod758"] [data-pdact="start"]');
