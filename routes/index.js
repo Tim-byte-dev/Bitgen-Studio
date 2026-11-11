@@ -254,6 +254,7 @@ function mount(app) {
   require("./openRouter").mount(app); // 2.753.0: OpenRouter - the LLM on Settings ▸ Remote generation (lib/openRouter.js)
   require("./remoteDock").mount(app); // 2.754.0: the Remote generation docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
   require("./pods").mount(app);       // 2.756.0: the PODS docker - public templates, GPU prices, create / start / stop / terminate (lib/pods.js)
+  require("./apis").mount(app);       // 2.757.0: Settings ▸ API - online services as API_ styles + the LLM (lib/apis.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
   // "fresh" for 10% of the file's age, hours for files months old) can
@@ -581,6 +582,16 @@ function mount(app) {
     if (f.video_style_id) {
       const vs = styles.byId(core.STYLES_DIR, String(f.video_style_id));
       if (!vs || vs.kind !== "video") return res.status(400).json({ error: "that video style no longer exists — pick another in the dropdown" });
+      // 2.757.0: an API_ style (Settings ▸ API) - the online service renders the request as typed (lib/apiJobs.js)
+      if (require("../lib/apiJobs").isApiStyle(vs)) {
+        const ap = require("../lib/apiJobs").videoParams({ style: vs, mode: frameOp ? "fl2va" : askedMode, prompt: typedPrompt, files: referenceFiles,
+          width: frameOp ? frameOp.width : f.width || d.width, height: frameOp ? frameOp.height : f.height || d.height, frames: f.frames || d.frames,
+          seed: f.seed, format: f.format, negative: negOf(f) });
+        if (ap.error) return res.status(400).json({ error: ap.error });
+        const ajob = core.makeJob(ap.params, id, dir);
+        ajob.chunk = { i: 0, n: 1 };
+        return res.json(core.jobDict(ajob));
+      }
       // 2.328.0: a CHARACTER-SWAP style (mmh3_chr_swap) only renders in Swap mode
       if (swapLib.isSwapStyle(vs, core.BASE))
         return res.status(400).json({ error: `"${vs.name}" is a character-swap style - it only runs in Swap mode `

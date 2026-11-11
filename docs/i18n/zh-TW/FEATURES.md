@@ -377,6 +377,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **☁ 使用遠端生成 + 遠端生成停靠窗 + Pod 捷徑** — 一個核取方塊開啟或關閉遠端生成（關閉：一切在這裡執行，基本設定 ▸ GPU 隱藏）；從 基本設定 ▸ GPU（而不是狀態列）開啟的浮動停靠窗顯示任務在哪裡執行、你的 RunPod Pod（開始 / 停止 / 使用）以及 Pod 捷徑：用連結新增的 RunPod 範本，部署 ↗ 會開啟已選好該範本的 RunPod。 *Where:* Settings ▸ Remote generation ▸ Use remote generation；Basic Settings ▸ GPU ▸ ☁ Remote generation docker。 *Since:* 2.754.0
 - **🖥 PODS 停靠窗 + RunPod 的 Serverless 或 Pod** — 基本設定 ▸ GPU 選擇遠端伺服器（RunPod 或 OpenRouter），RunPod 再選 Serverless 或 Pod；選擇 Pod 時，PODS 停靠窗列出 RunPod 的公開範本（官方 / 已驗證 / Community、僅 ComfyUI、搜尋），建立 Pod（帶 RunPod 即時價格的 GPU、Secure / Community 雲、磁碟大小、每小時估算），並可開始、停止、使用或終止你的 Pod（🅱 = bitGen 的）。 *Where:* Basic Settings ▸ GPU ▸ Remote servers；Basic Settings ▸ GPU ▸ 🖥 PODS。 *Since:* 2.756.0
 - **🃏 每個 RunPod 範本都是一張卡片** — PODS 停靠窗一次列出 RunPod 的全部公開範本（全部 / 官方 / 已驗證 / 社群，各附數量），每個範本一張卡片（帶首字母的色塊、NVIDIA / AMD / CPU 和 ComfyUI 標記；名稱、映像、分組、磁碟、/workspace 和 Web 連接埠；建立 Pod… 和 ↗ 其頁面），邊輸入邊搜尋（每個詞：名稱、映像、連接埠、種類、分組）和種類篩選；「僅 ComfyUI」一開始是關閉的。*Where:* Basic Settings ▸ GPU ▸ 🖥 PODS。 *Since:* 2.756.1
+- **🔑 設定 ▸ API：線上服務作為 API_ 風格 + LLM** — 新增 OpenRouter、fal.ai、Replicate、OpenAI、Google Gemini、Claude 或 RunningHub 的 API 金鑰（根據金鑰識別服務），起個名字並勾選「使用」：它的 API_ 風格（服務能生成的圖片、影片、歌曲）會出現在風格清單中，並在服務端生成，這臺電腦不需要顯示卡或 ComfyUI；每個風格的模型都可以修改（RunningHub 為工作流 ID），✓ Test 檢查金鑰，「用作 LLM」把提示詞 LLM、字幕和分鏡清單傳送到該服務（Claude 只用作 LLM）；金鑰加密儲存。 *Where:* Settings ▸ API；風格的 Runs on ▸ API。 *Since:* 2.757.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

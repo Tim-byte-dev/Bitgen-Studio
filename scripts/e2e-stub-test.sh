@@ -34,7 +34,7 @@ cat > custom.settings << CFG
 }
 CFG
 
-H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v2 H3_OPENROUTER_API=http://127.0.0.1:8397/v1 H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port} node misc/server.js > /tmp/h3srv.log 2>&1 &   # H3_E2E gates test-only routes; 2.755.0: RunPod REST v2 (pods, endpoints) to the stand-ins too; 2.753.0: OpenRouter to test-ui753-ui.js's stand-in on 8397; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
+H3_E2E=1 BITGEN_FREE_VRAM=always H3_RUNPOD_SLS_API=http://127.0.0.1:8399/v2 H3_RUNPOD_REST_API=http://127.0.0.1:8399/v2 H3_OPENROUTER_API=http://127.0.0.1:8397/v1 H3_RUNPOD_PROXY=http://127.0.0.1:8399/proxy/{id}-{port} H3_API_BASE_OPENROUTER=http://127.0.0.1:8396/or H3_API_BASE_CLAUDE=http://127.0.0.1:8396/anth node misc/server.js > /tmp/h3srv.log 2>&1 &   # 2.757.0: Settings ▸ API's OpenRouter + Claude to test-ui757-ui.js's stand-in on 8396; H3_E2E gates test-only routes; 2.755.0: RunPod REST v2 (pods, endpoints) to the stand-ins too; 2.753.0: OpenRouter to test-ui753-ui.js's stand-in on 8397; 2.749.0: RunPod's REST API (the endpoint's image) to the stand-in too, never the real one; 2.743.0: RunPod Serverless calls go to test-ui743-ui.js's stand-in on 8399; 2.722.0: every render frees the card (its legs count /free)
 SRV=$!
 trap 'kill $SRV 2>/dev/null' EXIT
 for i in $(seq 1 40); do curl -sf http://127.0.0.1:8311/api/health > /dev/null && break; sleep 0.25; done
@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.757.0 (+ Tim: "can we add claude as well?") (Tim: "can you add an api tab to bitgen with add api input and name input and a use checkbox for each api the use adds. if api is checked add it to styles with prefix API_ so bitgen can truly work without good hardware" + "add runninghub too")
+node scripts/test-apis757.js > /tmp/apis757.log 2>&1 \
+  && ok "2.757.0 units: seven services incl. Claude (key shapes = Auto-detect, page = server; Claude = the LLM, its body fitted), add / Use = API_ styles per kind (rename follows, your Model kept, untick removes only Use's), the LLM (one API at a time), keys encrypted per API (a removed one's key goes), API jobs -> misc/api_worker.py (no GPU wait, only its key in job.json), the video request as typed, never hidden, no model-file check" \
+  || { bad "2.757.0 API units"; grep -a "^FAIL" -A1 /tmp/apis757.log | head -12; }
+node scripts/test-apis757-worker.js > /tmp/apis757w.log 2>&1 \
+  && ok "2.757.0 LIVE misc/api_worker.py against stand-ins: OpenRouter pictures + video (poll, /content), fal.ai pictures + song (queue), Replicate video (wait, poll) + a failed run, OpenAI edit (multipart), Gemini (inline), RunningHub workflow (nodes filled, picture uploaded); refused key / removed API / no key in words; Python's own library only" \
+  || { bad "2.757.0 API worker"; grep -a "^FAIL" -A1 /tmp/apis757w.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui757-ui.js > /tmp/ui757ui.log 2>&1 \
+  && ok "2.757.0 browser test: Settings ▸ API (Auto-detect, Name, key, Use, + Add), API_ styles in the lists at once, the key only as its last 4 + encrypted, ✓ Test, a picture rendered by the API_ style with no ComfyUI, Runs on ◉ API in Settings ▸ Image, Use for the LLM, untick Use, ✕ asks; Claude = the LLM (the chat answers, no temperature) - on stand-in OpenRouter + Claude, or SKIP without playwright" \
+  || { bad "2.757.0 API browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui757ui.log | head -14; }
 # ---- 2.756.3 (bots joining the community with random names and other people's email addresses - Tim: "yes please go ahead with all 4")
 node scripts/test-community7563.js > /tmp/community7563.log 2>&1 \
   && ok "2.756.3 units: the app's Join does the server's sum (join_check -> pow), sign-in asks none, an older server still works; the server code checks people before anything is stored" \

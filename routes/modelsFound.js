@@ -36,6 +36,8 @@ const loraList = (v) => {
 function plan(b) {
   const C = require("../lib/core"), styles = require("../lib/styles");
   const kind = ["image", "music", "video", "aiedit"].includes(b.kind) ? b.kind : "image";
+  { const sid = String(b.video_style_id || b.style_id || ""), st0 = sid ? styles.byId(C.STYLES_DIR, sid) : null;
+    if (st0 && st0.runs_on === "api") return { skip: "an API_ style - the online service has its own models (Settings ▸ API)" }; }   // 2.757.0
   // 2.719.1: the image editor's ✨ AI (/api/aiedit, /api/aiedit/compose - routes/aiedit.js): its Edit / Regenerate style; a
   // selection filled through the Edit model (fill_edit) = that edit style; Edit / Compose run the style's workflow, the
   // others its inpaint workflow (none = only the style's own names - lib/aiEdit.js picks the graph)

@@ -8205,6 +8205,39 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - A first or last name that looks machine-made (random capital letters inside one word) is refused. Type your name the
   way it is written.
 
+## 🔑 Settings ▸ API - render on an online service (2.757.0)
+
+- **Settings ▸ API** (right after Remote generation) lets bitGen render without a good graphics card: an online service
+  does the work and charges your account for each render. Seven services are built in - **OpenRouter** (pictures, video,
+  the LLM), **fal.ai** (pictures, video, songs), **Replicate** (pictures, video, songs), **OpenAI** (pictures, the LLM),
+  **Google Gemini** (pictures, the LLM), **Claude** from Anthropic (the LLM) and **RunningHub** (ComfyUI workflows in the
+  cloud: pictures, video, songs).
+- To add one: paste its **API key** - **Service** on **Auto-detect** recognises it from the key's shape (or pick it) -
+  type a **Name**, leave **Use** ticked and press **+ Add**. **Get a key** under the boxes opens the service's key page.
+- **Use** makes the API's styles: `API_<name> pictures`, `API_<name> video` and `API_<name> songs` (only the kinds the
+  service makes). They are in the picture, video and song style lists like any other style and render on the service -
+  nothing runs on this computer's graphics card and ComfyUI is not needed. Untick **Use** and the styles it made go
+  again; a style you made yourself stays.
+- **Models and key** shows the model each kind starts with (for example `google/gemini-2.5-flash-image` on OpenRouter,
+  `fal-ai/flux/schnell` on fal.ai) - type another of the service's models, or a new key, and **Save models and key**.
+  For **RunningHub** the model is the **workflow ID** - the number in the workflow's address on runninghub.ai. bitGen reads
+  the workflow and fills in your prompt, the size, the seed and your reference pictures.
+- Any style can run on an API: in Settings ▸ Image, Video or Audio ▸ Music, set the style's **Runs on** to **API**, pick
+  the API, its **Model** and, if the model has options of its own, **Extra settings** as JSON (for example
+  `{"num_inference_steps": 4}`; for RunningHub a list of `{"nodeId", "fieldName", "fieldValue"}`). The name then starts
+  with **API_**.
+- **Claude** is the LLM only - it makes no pictures, video or songs. Add its key (it starts with `sk-ant-`, from the Claude
+  Console) and **Use** ticks **Use for the LLM** for you: the screenplay writer, prompt help, picture descriptions and the
+  shot list then run on `claude-sonnet-5-5` (change it in **Models and key**, for example to `claude-opus-5-5` or
+  `claude-haiku-5-5`). bitGen leaves out the settings Claude refuses and gives it room to think before it answers.
+- **✓ Test** asks the service whether it takes the key. **Use for the LLM** (OpenRouter, OpenAI, Gemini, Claude) sends every
+  LLM call - the prompt LLM, picture descriptions, the shot list - to that service; one API at a time. **✕** asks
+  first, then removes the API and its styles.
+- The key is kept **encrypted** on this computer (settings/keys.json) and only sent to its service; the page shows only
+  its last four characters. A render's job file carries only the key it needs.
+- Video: OpenAI ended its video API (Sora) in September 2026, and Gemini's video models are not offered through the
+  API keys bitGen uses - use OpenRouter, fal.ai, Replicate or RunningHub for video.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

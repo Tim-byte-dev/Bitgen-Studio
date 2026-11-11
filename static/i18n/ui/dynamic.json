@@ -1,5 +1,5 @@
 {
- "made": "2026-11-10",
+ "made": "2026-11-11",
  "scope": "all",
  "strings": [
   {
@@ -1575,6 +1575,110 @@
    "src": "static/addons.js:146"
   },
   {
+   "s": "API",
+   "src": "static/apis.js:45"
+  },
+  {
+   "s": "Online services that render for you - no graphics card needed on this computer. Add a service's API key, tick Use, and its API_ styles appear in the picture, video and song style lists. The service charges your account for each render. The key is kept encrypted on this computer and only sent to that service",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Service",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Auto-detect from the key",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Name",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "API key",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Use",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Add",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "e.g. My OpenRouter",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Paste the key",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Make its API_ styles now",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Online services that render for you - no graphics card needed on this computer",
+   "src": "static/apis.js:49"
+  },
+  {
+   "s": "Not a key shape bitGen knows - pick the service in the list",
+   "src": "static/apis.js:78"
+  },
+  {
+   "s": "Get a key",
+   "src": "static/apis.js:79"
+  },
+  {
+   "s": "Use = its API_ styles are in the style lists",
+   "src": "static/apis.js:98"
+  },
+  {
+   "s": "no key",
+   "src": "static/apis.js:100"
+  },
+  {
+   "s": "Use for the LLM",
+   "src": "static/apis.js:101"
+  },
+  {
+   "s": "Every LLM call (the prompt LLM, captions, the shot list) goes to this service - one API at a time",
+   "src": "static/apis.js:101"
+  },
+  {
+   "s": "Test",
+   "src": "static/apis.js:102"
+  },
+  {
+   "s": "Ask the service whether it takes the key",
+   "src": "static/apis.js:102"
+  },
+  {
+   "s": "Remove this API and its API_ styles",
+   "src": "static/apis.js:103"
+  },
+  {
+   "s": "Models and key",
+   "src": "static/apis.js:105"
+  },
+  {
+   "s": "New key",
+   "src": "static/apis.js:106"
+  },
+  {
+   "s": "Leave blank to keep the key",
+   "src": "static/apis.js:106"
+  },
+  {
+   "s": "Save models and key",
+   "src": "static/apis.js:107"
+  },
+  {
+   "s": "No APIs yet - add one above",
+   "src": "static/apis.js:113"
+  },
+  {
    "s": "Ungrouped",
    "src": "static/assetgroups.js:79"
   },
@@ -2509,10 +2613,6 @@
   {
    "s": "the folder shown above - or pick / type one",
    "src": "static/filedialog.js:375"
-  },
-  {
-   "s": "Name",
-   "src": "static/filedialog.js:425"
   },
   {
    "s": "Date modified",
@@ -3465,10 +3565,6 @@
   {
    "s": "In use",
    "src": "static/langpacks.js:48"
-  },
-  {
-   "s": "Use",
-   "src": "static/langpacks.js:49"
   },
   {
    "s": "installed - used instead of the built-in one",
@@ -4643,10 +4739,6 @@
    "src": "static/modelmgr.js:634"
   },
   {
-   "s": "Add",
-   "src": "static/modelmgr.js:634"
-  },
-  {
    "s": "Add pictures, videos or sounds of this model - from this computer (or drop them here from the gallery / Assets)",
    "src": "static/modelmgr.js:634"
   },
@@ -5080,10 +5172,6 @@
   },
   {
    "s": "Free models only",
-   "src": "static/openrouter.js:32"
-  },
-  {
-   "s": "Test",
    "src": "static/openrouter.js:32"
   },
   {
@@ -6008,15 +6096,31 @@
   },
   {
    "s": "Runs on",
-   "src": "static/runson.js:21"
+   "src": "static/runson.js:24"
   },
   {
    "s": "RunPod endpoint ID (blank = the one in Settings ▸ Remote generation)",
-   "src": "static/runson.js:32"
+   "src": "static/runson.js:36"
   },
   {
    "s": "The RunPod Serverless endpoint this style renders on - its models and node packs must be there",
-   "src": "static/runson.js:33"
+   "src": "static/runson.js:37"
+  },
+  {
+   "s": "Which API from Settings ▸ API renders this style",
+   "src": "static/runson.js:43"
+  },
+  {
+   "s": "pick an API —",
+   "src": "static/runson.js:74"
+  },
+  {
+   "s": "none: add one in Settings ▸ API —",
+   "src": "static/runson.js:74"
+  },
+  {
+   "s": "an API that is not in Settings ▸ API any more",
+   "src": "static/runson.js:76"
   },
   {
    "s": "Settings (Ctrl+Alt+S)",
@@ -22601,6 +22705,18 @@
    "src": "static/addtile.js:82"
   },
   {
+   "p": "Looks like {0}. {1}",
+   "src": "static/apis.js:79"
+  },
+  {
+   "p": "key …{0}",
+   "src": "static/apis.js:100"
+  },
+  {
+   "p": "{0} keys",
+   "src": "static/apis.js:108"
+  },
+  {
    "p": "{0} — {1} here, {2} in the group (drop assets here to move them in; hold Ctrl to add)",
    "src": "static/assetgroups.js:124"
   },
@@ -23647,6 +23763,10 @@
   {
    "p": "This ComfyUI has no DenoRTXVFXVideoFinisher yet. {0}",
    "src": "static/rtxvfxpanel.js:138"
+  },
+  {
+   "p": "{0} ({1}) - Use is off",
+   "src": "static/runson.js:75"
   },
   {
    "p": "{0} (Ctrl+Alt+S)",
@@ -24974,10 +25094,6 @@
   },
   {
    "p": "{0} keys · ◆ here",
-   "src": "ext/timelinedock/camera.js:165"
-  },
-  {
-   "p": "{0} keys",
    "src": "ext/timelinedock/camera.js:165"
   },
   {

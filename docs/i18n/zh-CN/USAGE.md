@@ -4991,6 +4991,19 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 网站上的 **加入** 有一个滑块：按加入之前先把它滑到最后。
 - 看起来像机器生成的名字或姓氏（一个单词里夹着随机的大写字母）会被拒绝。请按实际写法输入你的名字。
 
+## 🔑 设置 ▸ API - 在在线服务上生成 (2.757.0)
+<!-- en: settings-api-render-on-an-online-service-2-757-0 6515d9088a9a -->
+
+- **设置 ▸ API**（紧跟在远程生成之后）让 bitGen 不需要好显卡也能生成：由在线服务完成工作，并按每次生成向你的账户收费。内置七个服务 - **OpenRouter**（图片、视频、LLM）、**fal.ai**（图片、视频、歌曲）、**Replicate**（图片、视频、歌曲）、**OpenAI**（图片、LLM）、**Google Gemini**（图片、LLM）、Anthropic 的 **Claude**（LLM）和 **RunningHub**（云端的 ComfyUI 工作流：图片、视频、歌曲）。
+- 添加方法：粘贴它的 **API 密钥** - **服务** 设为 **根据密钥自动识别** 时会按密钥的格式识别（也可以手动选择）- 输入 **名称**，保持勾选 **使用**，然后按 **+ Add**。输入框下方的 **获取密钥** 会打开该服务的密钥页面。
+- **使用** 会创建这个 API 的风格：`API_<name> pictures`、`API_<name> video` 和 `API_<name> songs`（只有服务能生成的类型）。它们像其他风格一样出现在图片、视频和歌曲的风格列表中，并在服务端生成 - 不使用这台电脑的显卡，也不需要 ComfyUI。取消勾选 **使用**，它创建的风格会被移除；你自己创建的风格会保留。
+- **模型和密钥** 显示每种类型初始使用的模型（例如 OpenRouter 的 `google/gemini-2.5-flash-image`、fal.ai 的 `fal-ai/flux/schnell`）- 输入该服务的其他模型或新密钥，然后按 **保存模型和密钥**。对 **RunningHub** 来说，模型就是 **工作流 ID** - runninghub.ai 上工作流地址中的数字。bitGen 会读取工作流并填入你的提示词、尺寸、种子和参考图片。
+- 任何风格都可以在 API 上运行：在设置 ▸ 图片、视频或音频 ▸ 音乐中，把风格的 **Runs on** 设为 **API**，选择 API、它的 **模型**，如果模型有自己的选项，再用 JSON 填写 **额外设置**（例如 `{"num_inference_steps": 4}`；RunningHub 则是 `{"nodeId", "fieldName", "fieldValue"}` 的列表）。名称随后以 **API_** 开头。
+- **Claude** 只用作 LLM，不生成图片、视频或歌曲。添加它的密钥（在 Claude Console 中创建，以 `sk-ant-` 开头）后，**使用** 会自动同时勾选 **用作 LLM**：剧本写作、提示词帮助、图片描述和分镜列表都会在 `claude-sonnet-5-5` 上运行（可在 **模型和密钥** 中更改，例如 `claude-opus-5-5` 或 `claude-haiku-5-5`）。bitGen 会去掉 Claude 不接受的设置，并给它回答前思考的空间。
+- **✓ Test** 询问服务是否接受该密钥。**用作 LLM**（OpenRouter、OpenAI、Gemini、Claude）会把所有 LLM 调用 - 提示词 LLM、图片描述、分镜列表 - 发送到该服务；一次只能一个 API。**✕** 会先确认，然后删除该 API 及其风格。
+- 密钥 **加密** 保存在这台电脑上（settings/keys.json），只发送给对应的服务；页面只显示最后四个字符。生成任务的文件只包含它需要的密钥。
+- 视频：OpenAI 已在 2026 年 9 月停止其视频 API（Sora），Gemini 的视频模型也不通过 bitGen 使用的 API 密钥提供 - 视频请使用 OpenRouter、fal.ai、Replicate 或 RunningHub。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
