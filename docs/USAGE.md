@@ -8376,7 +8376,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   "ComfyUI CUDA 13" template (on hosts with CUDA 13 or newer) - pick Secure or Community, the GPU (⭐ is bitGen's pick: the
   cheapest with enough memory for the style's model, with its price an hour in your currency) and the disk - or **Use this
   pod** for one of your pods (a stopped one is started). Either way the style is linked to that pod, so next time it goes
-  there by itself. **Cancel** sends the render the usual way.
+  there by itself. **Cancel** cancels the render.
 - **Before every render** on a pod, bitGen starts the pod when it is stopped, makes it again from how it was made when
   RunPod no longer has it, waits for its ComfyUI and makes the style ready on it once per run of the app. The job's log
   says what happens in [pod] lines.
@@ -8384,6 +8384,23 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   lacks it.
 - **LLM on a pod:** ComfyUI is not a chat server, so the LLM runs as its own server on the pod (vLLM, llama.cpp or
   Ollama); tick LLM / vLLM on that pod and give its port, as before.
+
+## 🖥 Your custom nodes on a pod, and what the pod is doing (2.763.1)
+
+- **While a render waits for its pod** a line over the status bar says what is happening: starting the pod, making it
+  again, waiting for its ComfyUI, putting the style's files and node packs on it, or waiting for you to answer the pod
+  question. The job's log has every step in [pod] lines.
+- **A pod that cannot be used stops the render** with the reason in its log - it is no longer rendered somewhere else
+  instead. Cancel in the pod question cancels the render.
+- **Basic Settings ▸ GPU ▸ Both:** a style with its own pod, or whose kind is ticked on a pod, goes to that pod. Any other
+  style renders on this computer unless Image (or Video) is ticked - the job's log says so and how to change it.
+- **Your custom nodes go to the pod:** a pod bitGen creates for a style gets every custom node pack of this computer's
+  ComfyUI, then its ComfyUI is restarted. Packs from GitHub (or another git address) are cloned on the pod at the same
+  version you have; other packs - and ones the pod cannot clone, like a private one - are zipped here (without __pycache__
+  or files over 50 MB) and uploaded. Packs the pod already has are left alone, and packs you switched off (.disabled) are
+  not sent. **⬆ My custom nodes** in a pod's item in 🖥 My pods does the same for any pod.
+- When a style needs a node the pod lacks, bitGen asks this computer's ComfyUI which pack it comes from and sends that
+  pack. Restarting uses ComfyUI-Manager when the pod has it, else RunPod restarts the pod.
 
 ## Tips
 

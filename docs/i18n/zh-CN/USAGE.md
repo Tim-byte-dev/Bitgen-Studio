@@ -5069,7 +5069,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - Pod 条目中的 📁 New folder 和文件对话框已移除——由下拉框取代。
 
 ## 🧩 你的风格在你的 Pod 上 (2.763.0)
-<!-- en: your-styles-on-your-pods-2-763-0 d0378c69c531 -->
+<!-- en: your-styles-on-your-pods-2-763-0 760435606283 -->
 
 - **不再生成 P_ 副本。** 在 RunPod Pods 上（Basic Settings ▸ GPU ▸ Remote 或 Both ▸ RunPod ▸ Pods），风格列表重新显示你自己的风格，每个风格都在一个 Pod 上渲染。你以前做的 P_ 风格照样能用。RunPod Serverless（R_）风格在 Pods 上隐藏。
 - **风格用哪个 Pod：** 先是风格自己的 Pod（🖥 My pods 中 Pod 的 **Styles**），再是为它的类型（Image、Image edit、Video）勾选的
@@ -5081,11 +5081,24 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   ComfyUI。💾 Save 旁边的一行显示进度；做不到的事（bitGen 所知的任何节点包都不提供的节点、哪里都找不到的文件）也会在那里写明。
 - **还没有 Pod 的风格：** 按 Generate 后渲染会等待，一个对话框询问：用 RunPod 的“ComfyUI CUDA 13”模板 **Create pod**（在 CUDA
   13 或更新的主机上）- 选择 Secure 或 Community、GPU（⭐ 是 bitGen 的推荐：显存足够放下风格模型的最便宜的一个，以你的货币显示每小时价格）和磁盘 - 或者对你的某个 Pod 选 **Use this pod**（已停止的 Pod 会被启动）。无论哪种，风格都会关联到那个
-  Pod，下次会自动去那里。**Cancel** 让渲染按平常的方式进行。
+  Pod，下次会自动去那里。**Cancel** 取消这次渲染。
 - **每次在 Pod 上渲染之前**，bitGen 会启动已停止的 Pod；如果 RunPod 上已经没有这个 Pod，就按当初的方式重新创建；等它的
   ComfyUI 就绪，并在应用每次运行时把风格在 Pod 上准备一次。任务日志的 [pod] 行会说明正在发生什么。
 - **Override style** 在 Pods 上依然可用：如果 Pod 没有 Basic Settings 的 checkpoint，会在渲染前发送到 Pod。
 - **Pod 上的 LLM：** ComfyUI 不是聊天服务器，所以 LLM 在 Pod 上作为单独的服务器运行（vLLM、llama.cpp 或 Ollama）；和以前一样，在那个 Pod 上勾选 LLM / vLLM 并填写它的端口。
+
+## 🖥 你的自定义节点上 Pod，以及 Pod 在做什么 (2.763.1)
+<!-- en: your-custom-nodes-on-a-pod-and-what-the-pod-is-doing-2-763-1 a63060b9abac -->
+
+- **渲染在等待它的 Pod 时**，状态栏上方的一行会说明正在发生什么：启动 Pod、重新创建它、等待它的 ComfyUI、把风格的文件和节点包放上去，或者在等你回答 Pod 的询问。任务日志的 [pod] 行记录每一步。
+- **无法使用的 Pod 会停止渲染**，原因写在日志里 - 不会再改到别处去渲染。在 Pod 的询问中按 Cancel 会取消这次渲染。
+- **Basic Settings ▸ GPU ▸ Both：** 有自己 Pod 的风格，或其类型在某个 Pod 上被勾选的风格，会送到那个 Pod。其他风格在没有勾选
+  Image（或 Video）时在这台电脑上渲染 - 任务日志会说明这一点以及怎样改变。
+- **你的自定义节点会上 Pod：** bitGen 为风格创建的 Pod 会装上这台电脑 ComfyUI 的所有自定义节点包，然后重启它的 ComfyUI。来自 GitHub（或其他 git 地址）的包会在 Pod 上按你现有的同一版本 clone；其他包 - 以及 Pod 无法 clone 的包，比如私有的 -
+  会在这里打成 zip（不含 __pycache__ 和超过 50 MB 的文件）并上传。Pod 上已有的包保持不动，你停用的包（.disabled）不会发送。
+  🖥 My pods 中 Pod 项目里的 **⬆ My custom nodes** 可以对任何 Pod 做同样的事。
+- 当风格需要 Pod 上没有的节点时，bitGen 会问这台电脑的 ComfyUI 这个节点来自哪个包，并发送那个包。重启时如果 Pod 有
+  ComfyUI-Manager 就用它，否则由 RunPod 重启 Pod。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

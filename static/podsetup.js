@@ -61,12 +61,14 @@
       if (!j || j.error) return;
       var e = ed(id); e.saved = clean(j);
       if (!isDirty(e) || !e.loaded) { e.cur = clean(j); e.touched = false; }
-      e.loaded = true; e.prep = j.prep || null; e.run = j.run || null; e.revive = j.revive || null;
+      e.loaded = true; e.prep = j.prep || null; e.run = j.run || null; e.nodes = j.nodes || null; e.revive = j.revive || null;
       if (repaint) repaint();
     }).catch(function () { /* offline */ });
   }
   function prepLine(e) {
-    var p = e.prep;
+    var p = e.prep, n = e.nodes;
+    if (n && n.running) return "⏳ " + n.note;   // 2.763.1: this computer's custom nodes going to the pod
+    if (n && n.note && (!p || (n.at || 0) > (p.at || 0))) return (/failed|could not|paste/.test(n.note) ? "⚠ " : "✓ ") + n.note;
     if (p && p.running) return "⏳ " + p.note;
     if (p && p.problems && p.problems.length) return "⚠ " + p.problems.join(" · ");
     if (p && p.done && p.done.length) return "✓ ready on the pod: " + p.done.join(", ");
@@ -90,7 +92,7 @@
       + '<button type="button" class="ghost' + (ALL ? " on" : "") + '" data-psall aria-pressed="' + (ALL ? "true" : "false") + '" title="List every style, not only the Generate mode\'s">All</button></div>'
       + '<div class="psChips">' + (c.styles.length ? c.styles.map(function (id) { return '<span class="psChip" data-pschip="' + esc(id) + '">' + kindIcon(id) + " " + esc(nameOf(id)) + ' <button type="button" class="ghost" data-psdel="' + esc(id) + '" title="Take this style off the pod">✕</button></span>'; }).join("")
         : '<span class="hint">no styles of its own yet</span>') + "</div></div>"
-      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
+      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" class="ghost" data-psnodes title="Put this computer\'s ComfyUI custom nodes on the pod (the ones it lacks) - cloned from their own address at the same version, or uploaded - then its ComfyUI is restarted">⬆ My custom nodes</button><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
       + '<div class="hint psMsg" aria-live="polite">' + esc(e.msg || "") + "</div>";
   }
   function say(row, id, t) { ed(id).msg = t; var m = row.querySelector(".psMsg"); if (m) m.textContent = t; }
@@ -134,17 +136,25 @@
         if (r.preparing) watchPrep(p.id, repaint);
       });
     };
-    if (e.prep && e.prep.running && !e.watching) watchPrep(p.id, repaint);
+    var nb = q("[data-psnodes]"); if (nb) nb.onclick = function () {
+      nb.disabled = true; say(row, p.id, "putting this computer's custom nodes on the pod…");
+      post("/api/stylepods/nodes/" + encodeURIComponent(p.id), { port: port || 0 }).then(function (r) {
+        nb.disabled = false;
+        if (r.error) { say(row, p.id, r.error); return; }
+        say(row, p.id, ""); watchPrep(p.id, repaint);
+      });
+    };
+    if (((e.prep && e.prep.running) || (e.nodes && e.nodes.running)) && !e.watching) watchPrep(p.id, repaint);
   }
   /** the making-ready line, until it is done */
   function watchPrep(id, repaint) {
     var e = ed(id); e.watching = true;
     var tick = function () {
       getj("/api/pods/" + encodeURIComponent(id) + "/setup").then(function (j) {
-        e.prep = (j && j.prep) || null; e.run = (j && j.run) || null;
+        e.prep = (j && j.prep) || null; e.run = (j && j.run) || null; e.nodes = (j && j.nodes) || null;
         var line = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] .psPrep');
         if (line) line.textContent = prepLine(e);
-        if (e.prep && e.prep.running) setTimeout(tick, 3000); else e.watching = false;
+        if ((e.prep && e.prep.running) || (e.nodes && e.nodes.running)) setTimeout(tick, 3000); else e.watching = false;
       }).catch(function () { setTimeout(tick, 5000); });
     };
     setTimeout(tick, 1500);

@@ -72,6 +72,10 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       box && box.open && box.title === "A pod for " + imgs[0].name && /ComfyUI CUDA 13/.test(box.tpl) && +box.vol >= 50 && box.create, box);
     check("…the GPUs with memory and $/h - ⭐ bitGen's pick (the cheapest with enough memory) picked, one with none free greyed; your stopped pod offered; the cost line",
       box && box.gpus.some((g) => /^⭐ .* · \d+ GB · \$\d\.\d\d\/h \[x\]$/.test(g)) && box.gpus.some((g) => /H100.*\(none free now\) \[off\]/.test(g)) && box.pods.some((t) => /Stopped pod/.test(t) && /exited/.test(t)) && /About \$\d\.\d\d\/h while it runs/.test(box.cost), box);
+    // 2.763.1 (Tim: "it says starting in queue but i don't know what it's doing"): the waiting render's pod line on screen
+    await p.waitForFunction(() => { const c = document.getElementById("spaChip"); return c && !c.hidden; }, null, { timeout: 15000 }).catch(() => {});
+    const chip = await ev(() => { const c = document.getElementById("spaChip"); return c ? { hidden: c.hidden, t: c.textContent } : null; });
+    check("2.763.1: a line over the status bar says what the waiting render's pod is doing", chip && !chip.hidden && /^🖥 waiting for you - no pod renders /.test(chip.t), chip);
     await p.keyboard.press("Escape"); await sleep(300);
     check("…Esc does not close it (Cancel says what happens to the render)", await ev(() => document.getElementById("spaDlg").open));
     const q1 = await api("/api/jobs");
@@ -100,7 +104,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     let j3s = null;
     for (let i = 0; i < 40; i++) { await sleep(500); const all = await api("/api/jobs"); j3s = all.find((x) => x.id === jobs[2]); if (!j3s || j3s.status !== "queued") break; }
     const lg = await api("/api/jobs/" + jobs[2] + "?log_from=0").catch(() => ({}));
-    check("a third style: Cancel - the render stops waiting (said in its log), no link made", (!j3s || j3s.status !== "queued") && !(await api("/api/stylepods")).links[imgs[2].id]
+    check("a third style: Cancel - the render is cancelled (2.763.1: not rendered anywhere else; said in its log), no link made", (!j3s || j3s.status === "cancelled") && !(await api("/api/stylepods")).links[imgs[2].id]
       && (lg.log || []).some((l) => /you cancelled/.test(l)), { j3s: j3s && j3s.status, log: (lg.log || []).filter((l) => /\[pod\]|\[gpu\]/.test(l)) });
     check("no page errors", errs.length === 0, errs);
   } catch (e) {

@@ -6,6 +6,7 @@
 //   POST /api/stylepods/ask/:id            {action: create | use | cancel, gpu, cloud, volume, pod_id}
 //   POST /api/stylepods/prepare/:pod       {styles: [ids], port} -> make them ready on the pod now (background)
 //   GET  /api/stylepods/prepare/:pod       how far that is (lib/podPrep.js status)
+//   POST /api/stylepods/nodes/:pod         2.763.1: this computer's custom nodes onto the pod (lib/podNodes.js; GET setup .nodes)
 "use strict";
 const SP = require("../lib/stylePods");
 
@@ -24,6 +25,16 @@ function mount(app) {
     await require("../lib/podModels").ways(req.params.pod, port);
     require("../lib/podPrep").prepare(req.params.pod, port, sts).catch(() => null);
     return { started: sts.map((s) => s.name) };
+  }));
+  // 2.763.1 (Tim: "we may have to upload all of the nodes in comfy custom nodes to the pod and restart the pod"): My pods ▸
+  // ⬆ My custom nodes - this computer's custom node packs onto the pod (lib/podNodes.js), in the background
+  app.post("/api/stylepods/nodes/:pod", wrap(async (req) => {
+    const port = +(req.body || {}).port || SP.portOf(rg(), req.params.pod), PN = require("../lib/podNodes");
+    if (!PN.localDir()) { const e = new Error("bitGen did not find this computer's ComfyUI custom_nodes folder - Settings ▸ ComfyUI ▸ Folder"); e.status = 404; throw e; }
+    const w = await require("../lib/podModels").ways(req.params.pod, port);
+    if (!w.jupyter) { const e = new Error("bitGen puts custom nodes on a pod through its Jupyter - paste its password in ⬇ Models"); e.status = 409; throw e; }
+    PN.mirror(req.params.pod, port, {}).catch(() => null);
+    return { started: PN.list().length };
   }));
   app.get("/api/stylepods/prepare/:pod", wrap((req) => ({ prep: require("../lib/podPrep").status(String(req.params.pod).replace(/[^A-Za-z0-9]/g, "")) })));
 }

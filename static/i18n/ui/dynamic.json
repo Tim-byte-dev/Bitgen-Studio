@@ -5624,35 +5624,39 @@
   },
   {
    "s": "What this pod is for",
-   "src": "static/podsetup.js:80"
+   "src": "static/podsetup.js:82"
   },
   {
    "s": "Ticked = this pod renders every style of that kind that has no pod of its own. One pod per kind - tick them all on one pod to use one pod for everything",
-   "src": "static/podsetup.js:80"
+   "src": "static/podsetup.js:82"
   },
   {
    "s": "The pod's LLM server (vLLM, Ollama",
-   "src": "static/podsetup.js:83"
+   "src": "static/podsetup.js:85"
   },
   {
    "s": "Your styles that render on this pod - their workflow, models, text encoders, VAE, LoRAs and node packs go to the pod",
-   "src": "static/podsetup.js:86"
+   "src": "static/podsetup.js:88"
   },
   {
    "s": "pick a style —",
-   "src": "static/podsetup.js:87"
-  },
-  {
-   "s": "A style for this pod",
-   "src": "static/podsetup.js:87"
-  },
-  {
-   "s": "Link the picked style to this pod",
    "src": "static/podsetup.js:89"
   },
   {
+   "s": "A style for this pod",
+   "src": "static/podsetup.js:89"
+  },
+  {
+   "s": "Link the picked style to this pod",
+   "src": "static/podsetup.js:91"
+  },
+  {
    "s": "no styles of its own yet",
-   "src": "static/podsetup.js:92"
+   "src": "static/podsetup.js:94"
+  },
+  {
+   "s": "My custom nodes",
+   "src": "static/podsetup.js:95"
   },
   {
    "s": "since start",
@@ -6755,7 +6759,7 @@
    "src": "static/stylepodask.js:58"
   },
   {
-   "s": "No pod of its own - the render goes the usual way (Basic Settings ▸ GPU)",
+   "s": "Do not render it now - no pod is made or used",
    "src": "static/stylepodask.js:58"
   },
   {
@@ -6769,6 +6773,10 @@
   {
    "s": "bitGen's pick: the cheapest GPU with at least",
    "src": "static/stylepodask.js:67"
+  },
+  {
+   "s": "The render waits for its RunPod pod - the job's log has every step ([pod] lines)",
+   "src": "static/stylepodask.js:110"
   },
   {
    "s": "Built-in",

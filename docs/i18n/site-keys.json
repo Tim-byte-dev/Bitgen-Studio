@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 1067,
+    "count": 1068,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -931,6 +931,7 @@
         "Your account",
         "Your bitGen Community account - the same user ID in bitGen Studio and in the Discussions.",
         "Your computer, your files",
+        "Your custom nodes go with it: a pod bitGen creates for a style gets every custom node pack of your ComfyUI - the ones from GitHub cloned on the pod at the same version, the rest (and private ones) uploaded - then its ComfyUI restarts. ⬆ My custom nodes in a pod's item does the same for any pod. While a render waits for its pod, a line over the status bar says what the pod is doing.",
         "Your details",
         "Your discussion is up.",
         "Your hardware",

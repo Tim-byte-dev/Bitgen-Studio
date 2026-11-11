@@ -9,7 +9,7 @@
  *                    offered with the GPU memory the style's model wants; each with its memory and $/h in your currency),
  *                    the disk (the style's files + room)
  *     Use a pod      one of your pods (running or stopped - a stopped one is started)
- *     Cancel         the render goes the usual way (Basic Settings ▸ GPU) without a pod of its own
+ *     Cancel         the render is cancelled (2.763.1 - nothing is rendered somewhere else instead)
  *   Either way the style is linked to that pod (My pods ▸ Styles shows it) - next time it goes there by itself.
  * Pure (Node: scripts/test-stylepods763.js): gpuLabel, pending.
  */
@@ -70,7 +70,7 @@
           + pods.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + " · " + esc(p.gpu || "") + " · " + esc(String(p.status || "").toLowerCase()) + (p.cost_hr ? " · " + esc(money(p.cost_hr, "/h")) : "") + "</option>"; }).join("")
           + '</select><button type="button" id="spaUse">Use this pod</button></div><div class="hint">A stopped pod is started.</div></fieldset>' : "")
         + '<div class="hint spaMsg" id="spaMsg" aria-live="polite"></div>'
-        + '<div class="act"><button type="button" class="ghost" id="spaCancel" title="No pod of its own - the render goes the usual way (Basic Settings ▸ GPU)">Cancel</button></div>';
+        + '<div class="act"><button type="button" class="ghost" id="spaCancel" title="Do not render it now - no pod is made or used">Cancel</button></div>';
       var q = function (s) { return d.querySelector(s); };
       var cost = function () { var g = gpus.filter(function (x) { return x.id === (q("#spaGpu") || {}).value; })[0]; var c = q("#spaCost"); if (c) c.textContent = g ? "About " + money(g.price, "/h") + " while it runs (stopped: only its disk)." : ""; };
       cost();
@@ -94,7 +94,23 @@
     d.oncancel = function (ev) { ev.preventDefault(); };   // Esc does not leave a render waiting - Cancel says what happens
     load();
   }
+  /** 2.763.1 (Tim: "it says starting in queue but i don't know what it's doing"): what the waiting render's pod is doing -
+   *  a line over the status bar while a render waits for its pod (job.pod_note: starting it, making it again, waiting for
+   *  its ComfyUI, putting the style's files and node packs on it …) */
+  function chip(list) {
+    var j = (list || []).filter(function (x) { return x && x.status === "queued" && x.pod_note; })[0], c = doc.getElementById("spaChip");
+    if (!j) { if (c) c.hidden = true; return; }
+    if (!c) {
+      c = doc.createElement("div"); c.id = "spaChip"; c.setAttribute("role", "status"); c.setAttribute("aria-live", "polite");
+      c.style.cssText = "position:fixed;right:12px;bottom:40px;z-index:250;max-width:min(560px,90vw);padding:6px 12px;border-radius:8px;border:1px solid var(--tiger,#f59e2c);background:var(--panel,#1b1b1f);color:var(--text,#eee);font-size:12px;box-shadow:0 2px 10px rgba(0,0,0,.35)";
+      doc.body.appendChild(c);
+    }
+    c.hidden = false;
+    c.textContent = "🖥 " + j.pod_note;
+    c.title = "The render waits for its RunPod pod - the job's log has every step ([pod] lines)";
+  }
   function watchJobs(list) {
+    chip(list);
     if (open) return;
     var p = pending(list, asked);
     if (p.length) show(p[0]);
