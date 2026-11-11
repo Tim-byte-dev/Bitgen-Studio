@@ -92,13 +92,13 @@ check("…the job's ComfyUI address = the pod's (ComfyUI here not started), said
 
 // ---- Basic Settings' override with a pod style
 const IDX = rd("routes", "index.js");
-check("routes/index.js: a P_ picture style takes Basic Settings' steps / seed / CFG / size, never its checkpoint, LoRAs, LoRA weights or the Model manager's pick; the pod workflow keeps its own numbers otherwise",
-  /if \(podStyle\) \{ delete b\.model; delete b\.extra_loras; delete b\.lora_weights; delete b\.mm_override; \}/.test(IDX)
+check("routes/index.js: a P_ picture style takes Basic Settings' steps / seed / CFG / size (2.762.0: and its checkpoint - sent to the pod), never its temporary LoRAs, LoRA weights or the Model manager's pick; the pod workflow keeps its own numbers otherwise",
+  /if \(podStyle\) \{ delete b\.extra_loras; delete b\.lora_weights; delete b\.mm_override; \}/.test(IDX)
   && /if \(podStyle\) styled = Object\.assign\(\{\}, styled, \{ steps: null, cfg: null, width: null, height: null, sampler: "", clip_skip: null \}\);/.test(IDX));
 check("…a P_ video style: Basic Settings' model and LoRAs left out (steps / seed / CFG stay)", /if \(podVs && podVs\.runs_on === "pod"\) \{ if \(bo\) \{ bo\.model = ""; bo\.loras = \[\]; \} f\.extra_loras = "\[\]"; \}/.test(IDX));
 const PL = rd("static", "podload.js");
-check("static/podload.js: with a P_ style picked, Basic Settings' checkpoint box, LoRA sliders and temporary LoRAs (pictures) / model box and temporary LoRAs (video) are switched off; RunPod ▸ Pods ticks Override style",
-  /image: \["imgCkptCombo", "imgLoras", "tliRows"\], video: \["vidModel", "tlvRows"\]/.test(PL) && /t\.name === "gpuRunpod" && t\.value === "pods" && t\.checked/.test(PL) && /A P_ pod style: the pod's own model and LoRAs are used\./.test(PL));
+check("static/podload.js: with a P_ style picked, Basic Settings' LoRA sliders and temporary LoRAs (pictures) / model box and temporary LoRAs (video) are switched off; RunPod ▸ Pods ticks Override style",
+  /image: \["imgLoras", "tliRows"\], video: \["vidModel", "tlvRows"\]/.test(PL) && /t\.name === "gpuRunpod" && t\.value === "pods" && t\.checked/.test(PL) && /A checkpoint picked below is sent to the pod once/.test(PL));   // 2.762.0: the checkpoint box is open
 check("the model-file check skips P_ styles; Runs on has ◉ RunPod pod with its pod ID (blank = the pod in use)",
   /st0\.runs_on === "pod"\) return \{ skip: "a P_ pod style/.test(rd("routes", "modelsFound.js")) && /\["pod", "RunPod pod", /.test(rd("static", "runson.js")) && /if \(v === "pod"\) return \{ runs_on: "pod", endpoint: "", pod_id:/.test(rd("static", "runson.js")));
 check("routes/pods.js: GET /api/pods/:id/comfy + POST /api/pods/:id/styles, before /:id/:action; the PODS docker's 🎨 Styles opens them",

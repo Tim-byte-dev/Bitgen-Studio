@@ -8339,6 +8339,22 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **The Audio docker** keeps one tab on screen only in the main column: Music, Stems or SFX floated (⇱) or put in a ▣ Docker
   shows beside the others.
 
+## 🧩 One checkpoint per pod - the pod becomes the style (2.762.0)
+
+- **Checkpoint** (in a pod's item in 🖥 My pods) is now the same dropdown as Basic Settings' Override style - a folder
+  filter, the file and 📁 - listing this computer's ComfyUI models. Pick ONE checkpoint for the pod: the pod becomes that
+  style. **💾 Save** makes **P_<the pod's name>** (and P_<pod> edit / P_<pod> video for those ticks) with bitGen's own
+  workflow for the model's family - a Krea checkpoint gets bitGen's Krea workflow, an SDXL one the SDXL workflow - and the
+  pod's text encoder and VAE closest to the workflow's.
+- When the pod already has that model (the template brought it), it is simply picked - nothing is sent. Otherwise it is
+  sent once from this computer, into the same sub-folder it has here (checkpoints/Krea/…), in the background; the line
+  beside 💾 Save says how far it is.
+- **LoRAs**: ＋ adds a row with the same dropdowns. They go to the pod with the checkpoint and into its P_ style.
+- **Override style + Pods**: with a P_ style picked, Basic Settings' checkpoint box is open again. A checkpoint picked
+  there is used on the pod: if the pod lacks it, bitGen sends it before the render (the job waits, [pod] lines in its log)
+  and then uses the name it has on the pod. The temporary LoRA rows stay off for P_ styles.
+- 📁 New folder and the file dialogs are gone from the pod item - the dropdowns replace them.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

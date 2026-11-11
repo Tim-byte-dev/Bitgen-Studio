@@ -79,7 +79,8 @@
      for step, seed and cfg and the size and aspect ratio" - with a P_ style picked, Basic Settings' checkpoint / model box
      and its LoRA rows are switched off (the pod's own are used; the server leaves them out too - routes/index.js), and
      picking RunPod ▸ Pods ticks Override style so its steps / seed / CFG / size / aspect go with the render. */
-  var LOCKS = { image: ["imgCkptCombo", "imgLoras", "tliRows"], video: ["vidModel", "tlvRows"] };
+  // 2.762.0: Basic Settings' checkpoint is open again on a P_ style - it is sent to the pod once and used there
+  var LOCKS = { image: ["imgLoras", "tliRows"], video: ["vidModel", "tlvRows"] };
   function isPod(selId) { var s = doc.getElementById(selId), o = s && s.options && s.options[s.selectedIndex]; return !!(o && /^P_/.test(String(o.textContent || "").trim())); }
   function lockBasics() {
     var want = { image: isPod("styleSel"), video: isPod("videoStyleSel") };
@@ -89,7 +90,7 @@
         var list = el.matches && el.matches("input,select,button,textarea") ? [el] : [].slice.call(el.querySelectorAll("input,select,button,textarea"));
         list.forEach(function (x) { if (want[k]) { if (!x.disabled) { x.disabled = true; x.setAttribute("data-podlock", "1"); } } else if (x.getAttribute("data-podlock")) { x.disabled = false; x.removeAttribute("data-podlock"); } });
         var note = doc.getElementById(id + "PodNote");
-        if (want[k] && !note) { note = doc.createElement("div"); note.id = id + "PodNote"; note.className = "hint"; note.textContent = `A P_ pod style: the pod's own model and LoRAs are used.`; (el.parentNode || el).insertBefore(note, el.nextSibling); }
+        if (want[k] && !note) { note = doc.createElement("div"); note.id = id + "PodNote"; note.className = "hint"; note.textContent = k === "image" ? `A P_ pod style: the pod's own LoRAs are used. A checkpoint picked below is sent to the pod once (unless it has it) and used there.` : `A P_ pod style: the pod's own model and LoRAs are used.`; (el.parentNode || el).insertBefore(note, el.nextSibling); }
         if (!want[k] && note) note.remove();
       });
     });

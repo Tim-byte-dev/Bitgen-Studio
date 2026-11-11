@@ -67,7 +67,10 @@
     + ".pdk .pdBodyIn{padding:2px 10px 8px 26px;display:flex;flex-direction:column;gap:6px}"
     + ".pdk .psKinds,.pdk .psTools,.pdk .pdActs,.pdk .psLlm,.pdk .psNf{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}"
     + ".pdk .psKinds .chk{margin:0}.pdk .psTools [data-pssave]{margin-left:auto}.pdk .psTools [data-pssave]:disabled{opacity:.45}"
-    + ".pdk .psInto select{width:auto;max-width:200px}";
+    + ".pdk .psInto select{width:auto;max-width:200px}"
+    // 2.762.0: the pod's checkpoint + LoRAs with Override style's dropdowns (cmCombo)
+    + ".pdk .psModels{display:flex;flex-direction:column;gap:4px}.pdk .psModels .f{margin:4px 0 0}.pdk .psLora{display:flex;gap:6px;align-items:center}.pdk .psLoraBox{flex:1;min-width:0}"
+    + ".pdk .psTools .psSend{flex:1}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }

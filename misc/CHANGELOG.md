@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.762.0** — 🧩 One Checkpoint per Pod: a Pod's Checkpoint and LoRAs Are Basic Settings' Override Dropdowns; 💾 Save Makes P_<Pod> With bitGen's Workflow for the Model's Family (Krea -> Krea), Picks It When the Pod Has It, Else Sends It Once in the Background; Override Style's Checkpoint on a P_ Style Is Sent to the Pod Before the Render and Used There
 - **2.761.1** — 💲 the Pods' Cost Reads RunPod's Bill Again: RunPod Refused It ("startTime and endTime must be provided together") - bitGen Now Sends Both, This Month by Day and Today by Hour (This Computer's Day)
 - **2.761.0** — 🖥 Pods as Items: Each Pod in My Pods Opens From Its Name - Ticks for Video, LLM, vLLM, Image and Image Edit, 💾 Save (Off Until Something Changes) Makes Its P_ Styles and Points the LLM at the Pod's Own Server; 📁 New Folder, ➕ Checkpoint and ➕ LoRA From This Computer; the Pods' Cost in Basic Settings Every Minute (RunPod's Bill) and by Day in 📊 Usage; a P_ Style Starts or Makes Its Pod Again From Its Template and Puts the Files Back; the Audio Docker's One-Tab Rule Only in the Main Column
 - **2.760.0** — 🎵 The Audio Docker: Music, Stems and SFX as the Tabs of One Docker, One Audio Button on the Statusbar Instead of Three; Settings ▸ General ▸ Currency: the US-Dollar Prices (RunPod, OpenRouter, a Remote GPU) in Your Currency at the Day's Reference Rate or Your Own, the Dollars on Hover; the PODS Docker's 🖥 My Pods Shows Your Pods Alone, Create Pod… the Form Alone, and a New Pod Lands in My Pods

@@ -5058,6 +5058,16 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 在 Basic Settings 中选择 Pods 时，只显示 P_ 风格。
 - **Audio 停靠栏**“屏幕上只显示一个标签页”的规则只适用于主列：浮动（⇱）或放进 ▣ Docker 的 Music、Stems、SFX 会与其他并排显示。
 
+## 🧩 每个 Pod 一个检查点——Pod 就成为这个风格 (2.762.0)
+<!-- en: one-checkpoint-per-pod-the-pod-becomes-the-style-2-762-0 74c6dc4c0638 -->
+
+- **Checkpoint**（在 🖥 My pods 中某个 Pod 的条目里）现在与 Basic Settings 的 Override style 使用相同的下拉框——文件夹筛选、文件和 📁，列出这台电脑上的 ComfyUI 模型。为 Pod 只选一个检查点：Pod 就成为这个风格。**💾 Save** 会用 bitGen 为该模型系列准备的工作流创建 **P_<Pod 的名字>**（勾选了的话还有 P_<Pod> edit / P_<Pod> video）——Krea 检查点用 bitGen 的 Krea 工作流，
+  SDXL 用 SDXL 工作流——并使用 Pod 上与工作流最接近的文本编码器和 VAE。
+- 如果 Pod 上已经有这个模型（模板自带的），就直接选用，不发送任何东西。否则会从这台电脑在后台发送一次，放进与这里相同的子文件夹（checkpoints/Krea/…）；💾 Save 旁边的一行显示进度。
+- **LoRAs**：＋ 会增加一行同样的下拉框。它们与检查点一起发送到 Pod，并加入它的 P_ 风格。
+- **Override style + Pods**：选中 P_ 风格时，Basic Settings 的检查点框重新可用。在那里选的检查点会在 Pod 上使用：如果 Pod 上没有，bitGen 会在渲染前发送它（任务等待，日志中有 [pod] 行），然后用它在 Pod 上的名字。P_ 风格的临时 LoRA 行仍然关闭。
+- Pod 条目中的 📁 New folder 和文件对话框已移除——由下拉框取代。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

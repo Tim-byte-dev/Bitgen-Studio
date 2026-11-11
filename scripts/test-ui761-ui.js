@@ -78,8 +78,12 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       kinds: [...r.querySelectorAll("[data-pskind]")].map((c) => c.closest("label").textContent.trim() + (c.checked ? "*" : "")), save: !!(r.querySelector("[data-pssave]") || {}).disabled,
       tools: [...r.querySelectorAll(".psTools button")].map((x) => x.textContent), llm: !!r.querySelector("[data-psport]"), acts: [...r.querySelectorAll(".pdActs button")].map((x) => x.textContent), msg: (r.querySelector(".psMsg") || {}).textContent || "" }; });
     let r = await row();
-    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), 📁 New folder, ➕ Checkpoint, ➕ LoRA, 💾 Save OFF; its own buttons below",
-      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "📁 New folder|➕ Checkpoint|➕ LoRA|💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
+    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), 💾 Save OFF; its own buttons below",
+      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
+    // 2.762.0 (Tim: "in pods for lora and checkpoint and folder filters use the same dropdown types like overide settings has")
+    const ckc = await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod761u"]'), c = r.querySelector("[data-psck] .cmcombo"), ov = document.querySelector("#imgCkptCombo .cmcombo");
+      return { c: !!c, kids: c ? [...c.children].map((x) => x.tagName + "." + x.className).join() : "", ov: ov ? [...ov.children].map((x) => x.tagName + "." + x.className).join() : "", blank: c ? c.querySelector(".cmfile").options[0].textContent : "" }; });
+    check("2.762.0: the pod's Checkpoint is Basic Settings' Override dropdowns (a folder filter, the file, 📁) - blank = the pod's own models", ckc.c && ckc.kids === ckc.ov && /cmfolder/.test(ckc.kids) && /cmfile/.test(ckc.kids) && ckc.blank === "— the pod's own models —", ckc);
     await p.check('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="image"]'); await sleep(200);
     check("a tick turns 💾 Save on", (await row()).save === false);
     await p.uncheck('#pdPods .pdRow[data-pod="pod761u"] [data-pskind="image"]'); await sleep(200);
@@ -101,11 +105,12 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     // Basic Settings on Pods: only P_ styles
     const only = await ev(() => fetch("/api/remotegpu/serverless/styles").then((r) => r.json()).then((j) => Object.values(j.styles).filter((s) => s.kind === "image" && !s.hide).map((s) => s.name).sort()));
     check("with Pods picked in Basic Settings only pod styles are offered (P_sdxl_ui761)", only.length === 1 && only[0] === "P_sdxl_ui761", only);
-    // 📁 New folder without the pod's Jupyter: says so
-    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psnf]'); await sleep(300);
-    await p.fill('#pdPods [data-psnfname]', "characters"); await p.click('#pdPods [data-psnfgo]');
-    await p.waitForFunction(() => /Jupyter/.test((document.querySelector('#pdPods .pdRow[data-pod="pod761u"] .psMsg') || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
-    check("📁 New folder: a folder name inside checkpoints / loras - without the pod's Jupyter it says what it needs", /needs the pod's Jupyter/.test((await row()).msg), (await row()).msg);
+    // 2.762.0: LoRAs - ＋ a row with the same dropdowns (loras); ✕ takes it away
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psloraadd]'); await sleep(400);
+    const lr = await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod761u"]'); return { rows: r.querySelectorAll("[data-pslora]").length, combo: !!r.querySelector("[data-pslora] .cmcombo .cmfolder"), save: r.querySelector("[data-pssave]").disabled }; });
+    check("2.762.0: LoRAs ＋ adds a row with Override's dropdowns; Save on", lr.rows === 1 && lr.combo && lr.save === false, lr);
+    await p.click('#pdPods .pdRow[data-pod="pod761u"] [data-psloradel="0"]'); await sleep(300);
+    check("…✕ removes it - nothing changed, Save off again", (await ev(() => document.querySelectorAll('#pdPods .pdRow[data-pod="pod761u"] [data-pslora]').length)) === 0 && (await row()).save === true);
     await p.click('#pdPods .pdRow[data-pod="pod761u"] .pdHead'); await sleep(300);
     check("the name again closes the item", !(await row()).open);
     check("no page errors", errs.length === 0, errs);

@@ -44,7 +44,7 @@ check("starterOf: the kind decides bitGen's workflow - Qwen 2.1 image / edit, Wa
   && PS.starterOf("wan2.2_t2v_14B.safetensors", "video") === "Wan 2.2" && PS.starterOf("sdxl_base.safetensors", "video") === "" && PS.starterOf("flux1-kontext-dev.safetensors", "image_edit") === "FLUX.1 Kontext edit");
 check("folderOk: a models folder or a folder in it, three deep at most, no ..", PM.folderOk("loras") === "loras" && PM.folderOk("loras/characters") === "loras/characters"
   && PM.folderOk("loras/../x") === "" && PM.folderOk("nope") === "" && PM.folderOk("loras/a/b/c") === "");
-check("cleanSetup: the five ticks in order, unknown ones dropped, port 8000 by default", JSON.stringify(SU.cleanSetup({ kinds: ["image", "xx", "llm", "video"], llm: { port: "0" } })) === JSON.stringify({ kinds: ["video", "llm", "image"], llm: { port: 8000, model: "", vlm_model: "" } }));
+check("cleanSetup: the five ticks in order, unknown ones dropped, port 8000 by default", JSON.stringify(SU.cleanSetup({ kinds: ["image", "xx", "llm", "video"], llm: { port: "0" } })) === JSON.stringify({ kinds: ["video", "llm", "image"], llm: { port: 8000, model: "", vlm_model: "" }, checkpoint: "", loras: [] }));   // 2.762.0: + the pod's checkpoint and LoRAs
 const vw = SU.viewOf({ pod_cfg: { a: { kinds: ["llm", "image"] } }, pod_llm: { pod_id: "b" } }, "a");
 check("viewOf: LLM is ticked only on the pod the LLM really is on (another pod's Save moved it)", vw.kinds.join() === "image" && !vw.llm_here, vw);
 const lt = SU.llmTargetOf({ pod_llm: { pod_id: "pod761", pod_name: "A", port: 8000, model: "qwen3" } }, "llm", (id, p) => `https://${id}-${p}.proxy.runpod.net`, true);

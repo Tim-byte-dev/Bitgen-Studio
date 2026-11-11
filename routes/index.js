@@ -1909,8 +1909,10 @@ function mount(app) {
     // 2.758.0 (Tim: "use overide settings when pods load but disable checkpoints and lora loader, overide settings will be
     // for step, seed and cfg"): a P_ pod style keeps the pod's model and LoRAs - Basic Settings' checkpoint, temporary LoRAs,
     // LoRA weights and the Model manager's pick are not used; steps / seed / CFG still are
+    // 2.762.0 (Tim: "if overide settings is selected and pods are selected in basic settings then upload the selected
+    // checkpoint"): Basic Settings' checkpoint IS used on a pod - core.js has lib/podRevive.js put it on the pod first
     const podStyle = style.runs_on === "pod";
-    if (podStyle) { delete b.model; delete b.extra_loras; delete b.lora_weights; delete b.mm_override; }
+    if (podStyle) { delete b.extra_loras; delete b.lora_weights; delete b.mm_override; }
     let styled = styles.applyLoraWeights(style, b.lora_weights);
     // + "overide settings will be for step, seed and cfg and the size and aspect ratio": the pod's workflow keeps its own
     // numbers unless Basic Settings sends them (Override style on) - the style's saved defaults are not written in

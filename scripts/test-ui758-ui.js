@@ -120,10 +120,10 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     // the P_ style picked: checkpoint + LoRAs off
     await ev(() => { const s = document.getElementById("styleSel"), o = [...s.options].find((x) => x.textContent === "P_Boogu fast"); s.value = o.value; s.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(500);
-    const lk = await ev(() => ({ ck: [...document.querySelectorAll("#imgCkptCombo input, #imgCkptCombo select")].map((x) => x.disabled), note: !!document.getElementById("imgCkptComboPodNote"),
+    const lk = await ev(() => ({ ck: [...document.querySelectorAll("#imgCkptCombo input, #imgCkptCombo select")].map((x) => x.disabled), note: ((document.getElementById("imgLorasPodNote") || {}).textContent || ""),
       add: [...document.querySelectorAll("#tliRows input, #tliRows button")].every((x) => x.disabled), steps: document.getElementById("imgSteps").disabled, res: document.getElementById("imgRes").disabled }));
-    check("…a P_ style picked: Basic Settings' checkpoint box and temporary LoRA rows are off ('A P_ pod style: the pod's own model and LoRAs are used.'), steps and size stay on",
-      lk.ck.length > 0 && lk.ck.every(Boolean) && lk.note && lk.add && !lk.steps && !lk.res, lk);
+    check("…a P_ style picked: Basic Settings' temporary LoRA rows are off, its checkpoint box stays on (2.762.0: sent to the pod once), steps and size stay on",
+      lk.ck.length > 0 && !lk.ck.some(Boolean) && /A checkpoint picked below is sent to the pod once/.test(lk.note) && lk.add && !lk.steps && !lk.res, lk);   // 2.762.0: the checkpoint box is open
     // pod shortcuts on the cards (Tim: "add to pod's card in pods docker can bitgen fill in the template link automatically?")
     await p.click('[data-pdsrc="all"]');   // 2.760.0: back to the templates
     await p.click("#pdRefresh");

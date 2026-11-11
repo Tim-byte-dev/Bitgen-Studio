@@ -5299,344 +5299,348 @@
    "src": "static/podload.js:69"
   },
   {
+   "s": "A P_ pod style: the pod's own LoRAs are used. A checkpoint picked below is sent to the pod once (unless it has it) and used there",
+   "src": "static/podload.js:93"
+  },
+  {
    "s": "A P_ pod style: the pod's own model and LoRAs are used",
-   "src": "static/podload.js:92"
+   "src": "static/podload.js:93"
   },
   {
    "s": "Asking the pod how files can reach it",
-   "src": "static/podload.js:125"
+   "src": "static/podload.js:126"
   },
   {
    "s": "Make P_ styles from the pod",
-   "src": "static/podload.js:130"
+   "src": "static/podload.js:131"
   },
   {
    "s": "ComfyUI on this pod is not under /workspace - the files go when the pod stops",
-   "src": "static/podload.js:135"
+   "src": "static/podload.js:136"
   },
   {
    "s": "Download models onto the pod",
-   "src": "static/podload.js:142"
-  },
-  {
-   "s": "Use it",
    "src": "static/podload.js:143"
   },
   {
+   "s": "Use it",
+   "src": "static/podload.js:144"
+  },
+  {
    "s": "For a style",
-   "src": "static/podload.js:144"
-  },
-  {
-   "s": "pick a bitGen style —",
-   "src": "static/podload.js:144"
-  },
-  {
-   "s": "Files",
    "src": "static/podload.js:145"
   },
   {
+   "s": "pick a bitGen style —",
+   "src": "static/podload.js:145"
+  },
+  {
+   "s": "Files",
+   "src": "static/podload.js:146"
+  },
+  {
    "s": "A file from a link or from this computer",
-   "src": "static/podload.js:148"
+   "src": "static/podload.js:149"
   },
   {
    "s": "The ComfyUI models folder it goes in",
-   "src": "static/podload.js:148"
+   "src": "static/podload.js:149"
   },
   {
    "s": "From the link",
-   "src": "static/podload.js:150"
+   "src": "static/podload.js:151"
   },
   {
    "s": "A link to the file (Civitai, Hugging Face, any web address)",
-   "src": "static/podload.js:150"
+   "src": "static/podload.js:151"
   },
   {
    "s": "From this computer",
-   "src": "static/podload.js:151"
+   "src": "static/podload.js:152"
   },
   {
    "s": "Send a file from this computer to the pod (your upload speed decides how long)",
-   "src": "static/podload.js:151"
+   "src": "static/podload.js:152"
   },
   {
    "s": "Nothing in bitGen's download list matches",
-   "src": "static/podload.js:159"
+   "src": "static/podload.js:160"
   },
   {
    "s": "bitGen's download list has none of this style's files",
-   "src": "static/podload.js:172"
+   "src": "static/podload.js:173"
   },
   {
    "s": "The password is kept (encrypted) and used for the download",
-   "src": "static/podload.js:179"
+   "src": "static/podload.js:180"
   },
   {
    "s": "Paste a link first",
-   "src": "static/podload.js:190"
+   "src": "static/podload.js:191"
   },
   {
    "s": "A model file to send to the pod",
-   "src": "static/podload.js:196"
+   "src": "static/podload.js:197"
   },
   {
    "s": "Model files",
-   "src": "static/podload.js:196"
+   "src": "static/podload.js:197"
   },
   {
    "s": "Tick a style or a file first",
-   "src": "static/podload.js:204"
-  },
-  {
-   "s": "Starting the downloads on the pod",
    "src": "static/podload.js:205"
   },
   {
+   "s": "Starting the downloads on the pod",
+   "src": "static/podload.js:206"
+  },
+  {
    "s": "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods",
-   "src": "static/podsdock.js:78"
+   "src": "static/podsdock.js:81"
   },
   {
    "s": "PODS",
-   "src": "static/podsdock.js:78"
+   "src": "static/podsdock.js:81"
   },
   {
    "s": "RunPod pods",
-   "src": "static/podsdock.js:95"
-  },
-  {
-   "s": "now",
-   "src": "static/podsdock.js:95"
-  },
-  {
-   "s": "today",
-   "src": "static/podsdock.js:95"
-  },
-  {
-   "s": "this month",
-   "src": "static/podsdock.js:95"
-  },
-  {
-   "s": "RunPod pods: none running",
-   "src": "static/podsdock.js:95"
-  },
-  {
-   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
    "src": "static/podsdock.js:98"
   },
   {
+   "s": "now",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "today",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "this month",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "RunPod pods: none running",
+   "src": "static/podsdock.js:98"
+  },
+  {
+   "s": "RunPod's own bill for your pods (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity",
+   "src": "static/podsdock.js:101"
+  },
+  {
    "s": "Every kind",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "NVIDIA",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "AMD",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "ComfyUI only",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "For any style",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "Explore RunPod templates ↗",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "Search templates - name, image, port, kind",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "Ask RunPod again",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "The kind of machine the template is made for",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "Only templates that run ComfyUI - the ones bitGen can render with",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "A template that is not listed: paste its RunPod link",
-   "src": "static/podsdock.js:116"
+   "src": "static/podsdock.js:119"
   },
   {
    "s": "Official",
-   "src": "static/podsdock.js:120"
+   "src": "static/podsdock.js:123"
   },
   {
    "s": "Verified",
-   "src": "static/podsdock.js:120"
+   "src": "static/podsdock.js:123"
   },
   {
    "s": "My pods",
-   "src": "static/podsdock.js:120"
+   "src": "static/podsdock.js:123"
   },
   {
    "s": "kept under ★ Shortcuts",
-   "src": "static/podsdock.js:197"
+   "src": "static/podsdock.js:200"
   },
   {
    "s": "removed from ★ Shortcuts",
-   "src": "static/podsdock.js:197"
+   "src": "static/podsdock.js:200"
   },
   {
    "s": "Runs ComfyUI - bitGen can render on it",
-   "src": "static/podsdock.js:231"
+   "src": "static/podsdock.js:234"
   },
   {
    "s": "fits",
-   "src": "static/podsdock.js:233"
-  },
-  {
-   "s": "Container disk",
    "src": "static/podsdock.js:236"
   },
   {
+   "s": "Container disk",
+   "src": "static/podsdock.js:239"
+  },
+  {
    "s": "Kept while the pod is stopped",
-   "src": "static/podsdock.js:237"
+   "src": "static/podsdock.js:240"
   },
   {
    "s": "No shortcuts yet - press ☆ on a template to keep it here",
-   "src": "static/podsdock.js:246"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "No template matches - try fewer words, another kind, or untick ComfyUI only",
-   "src": "static/podsdock.js:246"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "No templates here",
-   "src": "static/podsdock.js:246"
+   "src": "static/podsdock.js:249"
   },
   {
    "s": "Create a pod from",
-   "src": "static/podsdock.js:267"
+   "src": "static/podsdock.js:270"
   },
   {
    "s": "Cloud",
-   "src": "static/podsdock.js:274"
-  },
-  {
-   "s": "Secure",
-   "src": "static/podsdock.js:274"
-  },
-  {
-   "s": "GPU",
-   "src": "static/podsdock.js:276"
-  },
-  {
-   "s": "asking RunPod",
-   "src": "static/podsdock.js:276"
-  },
-  {
-   "s": "GPUs",
    "src": "static/podsdock.js:277"
   },
   {
+   "s": "Secure",
+   "src": "static/podsdock.js:277"
+  },
+  {
+   "s": "GPU",
+   "src": "static/podsdock.js:279"
+  },
+  {
+   "s": "asking RunPod",
+   "src": "static/podsdock.js:279"
+  },
+  {
+   "s": "GPUs",
+   "src": "static/podsdock.js:280"
+  },
+  {
    "s": "wiped when the pod stops",
-   "src": "static/podsdock.js:278"
-  },
-  {
-   "s": "workspace",
-   "src": "static/podsdock.js:279"
-  },
-  {
-   "s": "GB",
-   "src": "static/podsdock.js:279"
-  },
-  {
-   "s": "kept while stopped - billed for storage",
-   "src": "static/podsdock.js:279"
-  },
-  {
-   "s": "Create pod",
    "src": "static/podsdock.js:281"
   },
   {
+   "s": "workspace",
+   "src": "static/podsdock.js:282"
+  },
+  {
+   "s": "GB",
+   "src": "static/podsdock.js:282"
+  },
+  {
+   "s": "kept while stopped - billed for storage",
+   "src": "static/podsdock.js:282"
+  },
+  {
+   "s": "Create pod",
+   "src": "static/podsdock.js:284"
+  },
+  {
    "s": "no GPUs offered",
-   "src": "static/podsdock.js:292"
+   "src": "static/podsdock.js:295"
   },
   {
    "s": "terminating",
-   "src": "static/podsdock.js:328"
-  },
-  {
-   "s": "stopping pod",
-   "src": "static/podsdock.js:329"
-  },
-  {
-   "s": "loading pod",
-   "src": "static/podsdock.js:330"
-  },
-  {
-   "s": "pod loaded",
    "src": "static/podsdock.js:331"
   },
   {
-   "s": "stopped",
+   "s": "stopping pod",
+   "src": "static/podsdock.js:332"
+  },
+  {
+   "s": "loading pod",
+   "src": "static/podsdock.js:333"
+  },
+  {
+   "s": "pod loaded",
    "src": "static/podsdock.js:334"
   },
   {
+   "s": "stopped",
+   "src": "static/podsdock.js:337"
+  },
+  {
    "s": "No pods yet - pick a template (All, Official …) and press Create pod",
-   "src": "static/podsdock.js:346"
+   "src": "static/podsdock.js:349"
   },
   {
    "s": "bitGen created or started it",
-   "src": "static/podsdock.js:351"
+   "src": "static/podsdock.js:354"
   },
   {
    "s": "Render on this pod (its ComfyUI)",
-   "src": "static/podsdock.js:357"
+   "src": "static/podsdock.js:360"
   },
   {
    "s": "Styles",
-   "src": "static/podsdock.js:358"
+   "src": "static/podsdock.js:361"
   },
   {
    "s": "Terminate",
-   "src": "static/podsdock.js:360"
+   "src": "static/podsdock.js:363"
   },
   {
    "s": "Delete the pod and everything on it",
-   "src": "static/podsdock.js:360"
+   "src": "static/podsdock.js:363"
   },
   {
    "s": "Video",
-   "src": "static/podsetup.js:16"
+   "src": "static/podsetup.js:23"
   },
   {
    "s": "Image edit",
-   "src": "static/podsetup.js:16"
+   "src": "static/podsetup.js:23"
   },
   {
    "s": "What this pod is for",
-   "src": "static/podsetup.js:46"
+   "src": "static/podsetup.js:60"
   },
   {
    "s": "The pod's LLM server (vLLM, Ollama",
-   "src": "static/podsetup.js:49"
+   "src": "static/podsetup.js:63"
   },
   {
-   "s": "into",
-   "src": "static/podsetup.js:56"
+   "s": "one per pod - it becomes the pod's P_ style",
+   "src": "static/podsetup.js:66"
   },
   {
-   "s": "The folder on the pod a checkpoint / LoRA goes in",
-   "src": "static/podsetup.js:56"
+   "s": "Add a LoRA - sent with the checkpoint, in its P_ style",
+   "src": "static/podsetup.js:68"
   },
   {
-   "s": "Make it",
-   "src": "static/podsetup.js:60"
+   "s": "From this computer's ComfyUI models folders",
+   "src": "static/podsetup.js:80"
   },
   {
    "s": "since start",
@@ -16275,6 +16279,10 @@
    "src": "ext/promptdock/llmarena.js:267"
   },
   {
+   "s": "into",
+   "src": "ext/promptdock/llmarena.js:267"
+  },
+  {
    "s": "the longest is ≈",
    "src": "ext/promptdock/llmarena.js:268"
   },
@@ -23746,71 +23754,71 @@
   },
   {
    "p": "Ticked the style's {0} file(s), {1}",
-   "src": "static/podload.js:172"
+   "src": "static/podload.js:173"
   },
   {
    "p": "Downloading {0} file(s) through the pod's Jupyter. Not in ComfyUI-Manager's list: {1}",
-   "src": "static/podload.js:209"
+   "src": "static/podload.js:210"
   },
   {
    "p": "Downloading {0} file(s) through the pod's Jupyter",
-   "src": "static/podload.js:209"
+   "src": "static/podload.js:210"
   },
   {
    "p": "ComfyUI-Manager is downloading {0} file(s). Not in ComfyUI-Manager's list: {1}",
-   "src": "static/podload.js:209"
+   "src": "static/podload.js:210"
   },
   {
    "p": "ComfyUI-Manager is downloading {0} file(s)",
-   "src": "static/podload.js:209"
+   "src": "static/podload.js:210"
   },
   {
    "p": "{0} running · {1}",
-   "src": "static/podsdock.js:95"
+   "src": "static/podsdock.js:98"
   },
   {
    "p": "{0} pod on your RunPod account",
-   "src": "static/podsdock.js:220"
+   "src": "static/podsdock.js:223"
   },
   {
    "p": "{0} pods on your RunPod account",
-   "src": "static/podsdock.js:220"
+   "src": "static/podsdock.js:223"
   },
   {
    "p": "{0} of {1} templates · RunPod did not answer for: {2}",
-   "src": "static/podsdock.js:221"
+   "src": "static/podsdock.js:224"
   },
   {
    "p": "{0} of {1} templates",
-   "src": "static/podsdock.js:221"
+   "src": "static/podsdock.js:224"
   },
   {
    "p": "{0} GB disk",
-   "src": "static/podsdock.js:236"
+   "src": "static/podsdock.js:239"
   },
   {
    "p": "{0} GB /workspace",
-   "src": "static/podsdock.js:237"
+   "src": "static/podsdock.js:240"
   },
   {
    "p": "About {0} an hour while it runs (RunPod's price now), plus storage",
-   "src": "static/podsdock.js:304"
+   "src": "static/podsdock.js:307"
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:402"
+   "src": "static/podsdock.js:405"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:418"
+   "src": "static/podsdock.js:421"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:419"
+   "src": "static/podsdock.js:422"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:428"
+   "src": "static/podsdock.js:431"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",
