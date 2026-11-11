@@ -154,7 +154,7 @@ srv.on("upgrade", (q, sock) => {
       const msg = JSON.parse(t); seen.push("KERNEL " + m[1]);
       const py = spawn("python3", ["-c", msg.content.code], { cwd: dir });
       let out = "", sent = false;
-      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders)/.test(out)) { sent = true;
+      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy)/.test(out)) { sent = true;
         wsSend(sock, { msg_type: "stream", parent_header: { msg_id: msg.header.msg_id }, content: { name: "stdout", text: out } });
         wsSend(sock, { msg_type: "execute_reply", parent_header: { msg_id: msg.header.msg_id }, content: { status: "ok" } }); } });
       py.stderr.on("data", (x) => { seen.push("PYERR " + String(x).slice(0, 300)); });

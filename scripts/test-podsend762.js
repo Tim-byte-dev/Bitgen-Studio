@@ -51,6 +51,20 @@ check("onPod: the pod's own name for one it has (same name, else the same file n
   && SD.onPod({ diffusion_models: ["Krea/krea2_turbo_fp8.safetensors"] }, SD.CKPT_CATS, "Krea/krea2_turbo_fp8.safetensors") === "Krea/krea2_turbo_fp8.safetensors" && SD.onPod({ loras: ["b.safetensors"] }, ["loras"], "a.safetensors") === "");
 check("folderFor: the same category and sub-folders on the pod (two at most)", SD.folderFor("checkpoints", "Krea/krea2.safetensors") === "checkpoints/Krea" && SD.folderFor("loras", "x.safetensors") === "loras" && SD.folderFor("loras", "a/b/c/x.safetensors") === "loras/a/b");
 check("the page: Save turns on for a picked checkpoint or LoRA (not for an empty LoRA row)", H.isDirty({ saved: {}, cur: { checkpoint: "Krea/k.safetensors" } }) && H.isDirty({ saved: { checkpoint: "a" }, cur: { checkpoint: "a", loras: ["l.safetensors"] } }) && !H.isDirty({ saved: {}, cur: { loras: [""] } }));
+// 2.762.1 (Tim: "not made: Krea2/jibMixKrea_v60CarolinaReaper.safetensors (image) (bitGen has no image workflow for this model's family)")
+check("2.762.1 starterOf: a fine-tune's folder names its family (Krea2/jibMix… -> Krea 2, flux krea/ccc_krea -> FLUX.1 dev), else the family the file itself says (sdxl -> SDXL, krea2 + gguf -> Krea 2 GGUF, turbo -> Turbo, qwen edit)",
+  PS.starterOf("Krea2/jibMixKrea_v60CarolinaReaper.safetensors", "image") === "Krea 2 Raw" && PS.starterOf("flux krea/ccc_krea.safetensors", "image") === "R_FLUX.1 dev"
+  && PS.starterOf("myMix.safetensors", "image", "sdxl") === "SDXL" && PS.starterOf("myMix.gguf", "image", "krea2") === "Krea 2 Raw GGUF" && PS.starterOf("myMix_turbo.safetensors", "image", "krea2") === "Krea 2 Turbo"
+  && PS.starterOf("myMix.safetensors", "image_edit", "qwen-image") === "Qwen Image Edit 2511" && PS.starterOf("myMix.safetensors", "image", "") === "");
+{ // 2.762.1 (Tim: "(the pod's ComfyUI did not say where it is installed)"): the pod's Jupyter finds the folder of a ComfyUI started as "python main.py"
+  const PMx = require("../lib/podModels"), FC = path.join(TMP, "relcomfy", "ComfyUI");
+  fs.mkdirSync(path.join(FC, "models"), { recursive: true }); fs.writeFileSync(path.join(FC, "main.py"), "import time\ntime.sleep(15)\n");
+  const proc = spawn("python3", ["main.py", "--listen"], { cwd: FC });
+  const r = require("child_process").spawnSync("python3", ["-c", PMx.FIND_COMFY], { encoding: "utf8" });
+  proc.kill();
+  check("2.762.1 FIND_COMFY (run by the pod's Jupyter): a ComfyUI started as 'python main.py' (no folder in /system_stats) - found from its process (cwd + main.py)",
+    JSON.parse((/bitgen-comfy (\[.*\])/.exec(r.stdout) || [0, "[]"])[1]).includes(fs.realpathSync(FC)), r.stdout + r.stderr);
+}
 const PL = fs.readFileSync(path.join(ROOT, "static", "podsetup.js"), "utf8"), IDX = fs.readFileSync(path.join(ROOT, "routes", "index.js"), "utf8"), PLD = fs.readFileSync(path.join(ROOT, "static", "podload.js"), "utf8");
 check("wiring: My pods' Checkpoint / LoRAs use Basic Settings' Override dropdowns (cmCombo); no file dialog or folder box any more; a P_ render keeps Basic Settings' checkpoint and podload no longer locks it; core rewrites the job's model to the pod's name",
   /cmCombo\(host, inp, cats/.test(PL) && !/FileDialog/.test(PL) && !/data-psnf/.test(PL) && /if \(podStyle\) \{ delete b\.extra_loras; delete b\.lora_weights; delete b\.mm_override; \}/.test(IDX)
@@ -130,7 +144,7 @@ srv.on("upgrade", (q, sock) => {
       const msg = JSON.parse(t); seen.push("KERNEL " + m[1]);
       const py = spawn("python3", ["-c", msg.content.code], { cwd: dir });
       let out = "", sent = false;
-      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders)/.test(out)) { sent = true;
+      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|made|folders|comfy)/.test(out)) { sent = true;
         wsSend(sock, { msg_type: "stream", parent_header: { msg_id: msg.header.msg_id }, content: { name: "stdout", text: out } });
         wsSend(sock, { msg_type: "execute_reply", parent_header: { msg_id: msg.header.msg_id }, content: { status: "ok" } }); } });
       py.stderr.on("data", (x) => { seen.push("PYERR " + String(x).slice(0, 300)); });

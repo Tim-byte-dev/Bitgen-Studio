@@ -46,6 +46,7 @@
       var e = ed(id); e.saved = clean(j);
       if (!isDirty(e) || !e.loaded) { e.cur = clean(j); e.touched = false; }
       e.loaded = true; e.revive = j.revive || null; e.sending = j.sending || null;
+      if (e.sending && !e.sending.running && e.sending.failed.length) e.touched = true;   // 2.762.1: Save again = send what failed again
       if (repaint) repaint();
     }).catch(function () { /* offline */ });
   }
@@ -136,7 +137,11 @@
         e.sending = (j && j.sending) || null;
         var line = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] .psSend');
         if (line) line.textContent = sendLine(e.sending);
-        if (e.sending && e.sending.running) setTimeout(tick, 3000); else e.watching = false;
+        if (e.sending && e.sending.running) setTimeout(tick, 3000);
+        else {
+          e.watching = false;
+          if (e.sending && e.sending.failed.length) { e.touched = true; var sb = doc.querySelector('#pdPods .pdRow[data-pod="' + id + '"] [data-pssave]'); if (sb) { sb.disabled = false; sb.title = "Save again - sends what was not sent"; } }   // 2.762.1
+        }
       }).catch(function () { setTimeout(tick, 5000); });
     };
     setTimeout(tick, 1500);

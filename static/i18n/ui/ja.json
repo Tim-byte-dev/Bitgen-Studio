@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "48df15a3b11e",
- "count": 9206,
+ "v": "4569cd10bdea",
+ "count": 9207,
  "patternCount": 1103,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -5153,6 +5153,7 @@
   "Save Project As (.bgi)": "プロジェクトを別名で保存 (.bgi)",
   "Save Selection": "選択範囲を保存",
   "Save a copy to the last Save-as folder (Shift-click: Save as": "前回「名前を付けて保存」したフォルダーにコピーを保存します (Shift+クリック：名前を付けて保存",
+  "Save again - sends what was not sent": "もう一度保存 - 送られなかったものを送ります",
   "Save and send": "保存して送信",
   "Save as": "名前を付けて保存",
   "Save as JPEG": "JPEG で保存",

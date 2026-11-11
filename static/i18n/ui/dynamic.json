@@ -5624,23 +5624,27 @@
   },
   {
    "s": "What this pod is for",
-   "src": "static/podsetup.js:60"
+   "src": "static/podsetup.js:61"
   },
   {
    "s": "The pod's LLM server (vLLM, Ollama",
-   "src": "static/podsetup.js:63"
+   "src": "static/podsetup.js:64"
   },
   {
    "s": "one per pod - it becomes the pod's P_ style",
-   "src": "static/podsetup.js:66"
+   "src": "static/podsetup.js:67"
   },
   {
    "s": "Add a LoRA - sent with the checkpoint, in its P_ style",
-   "src": "static/podsetup.js:68"
+   "src": "static/podsetup.js:69"
   },
   {
    "s": "From this computer's ComfyUI models folders",
-   "src": "static/podsetup.js:80"
+   "src": "static/podsetup.js:81"
+  },
+  {
+   "s": "Save again - sends what was not sent",
+   "src": "static/podsetup.js:143"
   },
   {
    "s": "since start",

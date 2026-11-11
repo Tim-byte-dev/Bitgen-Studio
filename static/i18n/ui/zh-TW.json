@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "873cb580b4dd",
- "count": 9206,
+ "v": "0844c6638db1",
+ "count": 9207,
  "patternCount": 1103,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -5153,6 +5153,7 @@
   "Save Project As (.bgi)": "專案檔另存新檔 (.bgi)",
   "Save Selection": "儲存選取範圍",
   "Save a copy to the last Save-as folder (Shift-click: Save as": "將副本儲存到上次「另存新檔」的資料夾 (Shift+點選：另存新檔",
+  "Save again - sends what was not sent": "再次儲存——傳送未傳送的內容",
   "Save and send": "儲存併發送",
   "Save as": "另存新檔",
   "Save as JPEG": "儲存為 JPEG",

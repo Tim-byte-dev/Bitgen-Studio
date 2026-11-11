@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "c258a0675e3b",
- "count": 9206,
+ "v": "0a147f27f724",
+ "count": 9207,
  "patternCount": 1103,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -5153,6 +5153,7 @@
   "Save Project As (.bgi)": "工程另存为 (.bgi)",
   "Save Selection": "存储选区",
   "Save a copy to the last Save-as folder (Shift-click: Save as": "将副本保存到上次“另存为”的文件夹 (Shift+点击：另存为",
+  "Save again - sends what was not sent": "再次保存——发送未发送的内容",
   "Save and send": "保存并发送",
   "Save as": "另存为",
   "Save as JPEG": "保存为 JPEG",
