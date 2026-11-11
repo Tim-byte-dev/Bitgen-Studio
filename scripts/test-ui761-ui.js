@@ -43,7 +43,9 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       if (q.headers.authorization !== "Bearer rpa_UI761") return send(401, {});
       if (q.method === "GET" && q.url === "/v2/pods?limit=1000") return send(200, { pods: [POD] });
       if (q.method === "GET" && q.url === "/v2/pods/" + POD.id) return send(200, POD);
-      if (/^\/v2\/billing\/pods/.test(q.url)) return send(200, { records: [{ startTime: new Date().toISOString(), podId: POD.id, totalAmount: 1.25 }], metadata: {} });
+      if (/^\/v2\/billing\/pods/.test(q.url)) {   // 2.761.1: RunPod wants startTime AND endTime
+        const u = new URL(q.url, "http://x"); if (!u.searchParams.get("startTime") || !u.searchParams.get("endTime")) return send(400, { detail: "startTime and endTime must be provided together" });
+        return send(200, { records: [{ startTime: new Date().toISOString(), podId: POD.id, totalAmount: 1.25 }], metadata: {} }); }
       if (/^\/v2\/catalog\/templates/.test(q.url)) return send(200, { templates: [], pagination: { hasNextPage: false } });
       send(404, {});
     });

@@ -64,6 +64,8 @@ const now = new Date(2026, 10, 11, 15, 0);
 const sb = PC.sumBilling(PC.recordsOf({ records: [{ startTime: new Date(2026, 10, 11, 9).toISOString(), podId: "a", totalAmount: 0.5 }, { startTime: new Date(2026, 10, 11, 10).toISOString(), podId: "b", totalAmount: 0.25 },
   { startTime: new Date(2026, 10, 3, 10).toISOString(), podId: "a", totalAmount: 2 }, { startTime: "bad", totalAmount: 9 }] }), now);
 check("sumBilling: RunPod's hour rows -> each local day, today, this month, per pod", sb.today === 0.75 && sb.month === 2.75 && sb.days["2026-11-03"] === 2 && sb.pods.a.today === 0.5 && sb.pods.a.month === 2.5, sb);
+const mb = PC.mergeBilling({ days: { "2026-11-03": 2, "2026-11-11": 0.9 }, pods: { a: { today: 0.9, month: 2.9 } }, today: 0.9, month: 2.9 }, { days: { "2026-11-11": 0.75 }, pods: { a: { today: 0.5, month: 0.5 }, b: { today: 0.25, month: 0.25 } }, today: 0.75, month: 0.75 }, "2026-11-11");
+check("mergeBilling (2.761.1): today and each pod's today from the hours, the month = the other days + today's hours", mb.today === 0.75 && mb.month === 2.75 && mb.days["2026-11-11"] === 0.75 && mb.pods.a.month === 2.5 && mb.pods.b.month === 0.25, mb);
 const sum = U.summarize([], { "2026-11-11": { wh: 1000, wh_peak: 0, secs: 3600, cost_energy: 0.3, pods_cost: 1.2, pods_usd: 0.8 }, "2026-11-10": { pods_cost: 2, pods_usd: 1.33 } }, { supply_day: 1, currency: "AUD" });
 check("usage log: a day's bill = energy + supply + remote + RunPod's pods (a day with pods only counts too); totals carry pods_cost",
   sum.days.find((d) => d.day === "2026-11-11").total === 2.5 && sum.days.find((d) => d.day === "2026-11-10").total === 3 && sum.totals.pods_cost === 3.2 && /pods_cost/.test(U.toCsv("days", sum.days).split("\n")[0]), sum);
@@ -129,7 +131,13 @@ const srv = http.createServer(async (q, s) => {
   if (q.method === "POST" && q.url === "/v2/pods") { const body = JSON.parse(b); seen.push("CREATE " + b); const p = { id: "pod761b", name: body.name, desiredStatus: "RUNNING", costPerHr: 0.69, gpu: { id: body.gpu.id, count: 1 }, ready: Date.now() + 700 }; PODS.push(p); return send(201, p); }
   const act = /^\/v2\/pods\/(\w+)\/action$/.exec(q.url); if (act && q.method === "POST") { const p = PODS.find((x) => x.id === act[1]); if (p) p.desiredStatus = JSON.parse(b).action === "start" ? "RUNNING" : "EXITED"; return send(200, p || {}); }
   if (/^\/v2\/catalog\/templates/.test(q.url)) return send(200, { templates: q.url.includes("official") ? [{ id: "tplA7610", name: "ComfyUI SDXL", ports: ["3000/http"] }] : [], pagination: { hasNextPage: false } });
-  if (/^\/v2\/billing\/pods\?bucketSize=hour&startTime=/.test(q.url)) return send(200, { records: [{ startTime: new Date().toISOString(), podId: "pod761", totalAmount: 0.4 }, { startTime: new Date(Date.now() - 3600e3).toISOString(), podId: "pod761", totalAmount: 0.3 }], metadata: {} });
+  if (/^\/v2\/billing\/pods\?/.test(q.url)) {   // RunPod: startTime and endTime together (2.761.1)
+    const u = new URL(q.url, "http://x"), bs = u.searchParams.get("bucketSize");
+    if (!u.searchParams.get("startTime") !== !u.searchParams.get("endTime") || !u.searchParams.get("endTime")) return send(400, { title: "Bad Request", status: 400, detail: "startTime and endTime must be provided together" });
+    const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+    if (bs === "day") return send(200, { records: [{ startTime: t0.toISOString(), podId: "pod761", totalAmount: 0.65 }], metadata: {} });   // the day row (RunPod's day) - today's comes from the hours
+    return send(200, { records: [{ startTime: new Date(Math.max(t0.getTime(), Date.now() - 3600e3)).toISOString(), podId: "pod761", totalAmount: 0.3 }, { startTime: new Date().toISOString(), podId: "pod761", totalAmount: 0.4 }], metadata: {} });
+  }
   send(404, {});
 });
 srv.on("upgrade", (q, sock) => {
@@ -213,8 +221,9 @@ srv.listen(0, "127.0.0.1", async () => {
     const c = await PC.costs(true);
     const days = JSON.parse(fs.readFileSync(path.join(TMP, "usage", "days.json"), "utf8"));
     const today = Object.keys(days).sort().pop();
-    check("costs: the running pods' $/h + RunPod's bill (today, this month, per pod); each day into usage/days.json in the bill's currency (A$ at 1.5)",
-      c.running === 1 && c.running_hr === 0.69 && c.month_usd === 0.7 && c.pods.pod761.month === 0.7 && Object.values(days).reduce((a, d) => a + (d.pods_usd || 0), 0) === 0.7
+    check("costs (2.761.1: startTime AND endTime - RunPod refuses one alone; the month by day, today by hour): the running pods' $/h + RunPod's bill (today, this month, per pod); each day into usage/days.json in the bill's currency (A$ at 1.5)",
+      !c.error && seen.filter((x) => /billing\/pods\?bucketSize=(day|hour)&startTime=[^&]+&endTime=/.test(x)).length === 2
+      && c.running === 1 && c.running_hr === 0.69 && c.month_usd === 0.7 && c.pods.pod761.month === 0.7 && Object.values(days).reduce((a, d) => a + (d.pods_usd || 0), 0) === 0.7
       && Math.abs(Object.values(days).reduce((a, d) => a + (d.pods_cost || 0), 0) - 1.05) < 1e-9, { c, days, today });
   } catch (e) { fail++; console.log("FAIL: crashed - " + (e && e.stack || e)); }
   srv.close();
