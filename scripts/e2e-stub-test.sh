@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.759.0 (Tim: "if i select a pod, how do i choose what model comfyui template to use and to dl it?" - asked: Both)
+node scripts/test-pods759.js > /tmp/pods759.log 2>&1 \
+  && ok "2.759.0 units: a style's files from bitGen's download list (address + folder), Manager's list only, ComfyUI's folder from its argv, the pod's download Python, templates scored for a style (page = server), bitGen's own Jupyter password per pod (encrypted) + the template's ports, the routes + docker wiring" \
+  || { bad "2.759.0 pod models units"; grep -a "^FAIL" -A1 /tmp/pods759.log | head -12; }
+node scripts/test-pods759-live.js > /tmp/pods759l.log 2>&1 \
+  && ok "2.759.0 LIVE ⬇ Models on a stand-in pod: ComfyUI-Manager (its list only - the rest refused in words), the pod's Jupyter (a kernel runs bitGen's Python: files land whole in <ComfyUI>/models/<folder>, the HF token as a header, one already there skipped), only Hugging Face addresses passed; a file from a link (its name, the folder picked) and from this computer (sent in parts, moved in whole)" \
+  || { bad "2.759.0 pod models (live)"; grep -a "^FAIL" -A1 /tmp/pods759l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui759-ui.js > /tmp/ui759ui.log 2>&1 \
+  && ok "2.759.0 browser test: For Krea 2 Turbo puts the Krea template first (✓ fits); ⬇ Models says how files reach the pod, a style ticks its files, Download ticked -> ComfyUI-Manager's queue, a bar per file, then Make P_ styles - on a stand-in RunPod, or SKIP without playwright" \
+  || { bad "2.759.0 pod models browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui759ui.log | head -14; }
 # ---- 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?" + "can you show progess of pod loading?" + "use overide settings when pods load but disable checkpoints and lora loader")
 node scripts/test-pods758.js > /tmp/pods758.log 2>&1 \
   && ok "2.758.0 units: the loading stages + the timed bar (kept per pod / image), the bitGen style for each pod model, the pod's files put in, P_ styles (Runs on: RunPod pod), only P_ on Pods, P_ renders on its pod, Override = steps / seed / CFG / size (no checkpoint / LoRAs)" \

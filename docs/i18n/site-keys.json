@@ -1,6 +1,6 @@
 {
     "about": "the tigerart.com.au website's words (tigerart: php scripts/site-i18n.php export <bitgen>) - a language pack's site.json translates them",
-    "count": 1065,
+    "count": 1066,
     "keys": [
         "\"RunPod does not know the endpoint\"",
         "\"RunPod refused the API key\"",
@@ -302,6 +302,7 @@
         "Get bitGen Studio",
         "Get the installer",
         "Get the master pack",
+        "Getting models onto a pod: For … in the PODS docker puts the templates that fit a bitGen style first. On a running pod, ⬇ Models downloads a style's files - or single files from bitGen's download list - into its ComfyUI, through the pod's Jupyter (bitGen sets its own password on pods it creates; for others, paste it) or ComfyUI-Manager (only the models in its own list).",
         "Git comes from Homebrew when you have it, otherwise from Apple's Command Line Tools: a window asks to install them and the installer waits.",
         "Git comes from your package manager (apt, dnf, yum, pacman, zypper or apk), so it asks for your password once.",
         "Git, Node.js and Python stay installed - other programs may use them. Remove them the usual way for your system if nothing needs them.",

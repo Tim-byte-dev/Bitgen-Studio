@@ -8,6 +8,8 @@
 //   GET  /api/pods/:id/comfy?port=              2.758.0: the pod's ComfyUI - its models, the bitGen style each fits, its
 //                                               saved workflows (lib/podStyles.js contents)
 //   POST /api/pods/:id/styles {models, workflows, pod_name, port}   2.758.0: P_ styles from them -> {made, skipped}
+//   2.759.0 ⬇ Models: GET /api/pods/catalog (bitGen's ComfyUI files), POST /api/pods/plan {styles} (a style's files),
+//   GET /api/pods/:id/ways (Manager / Jupyter), POST /api/pods/:id/models {files, jupyter_password?, port}, GET /api/pods/:id/models
 "use strict";
 const P = require("../lib/pods");
 
@@ -20,6 +22,15 @@ function mount(app) {
   // 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?"): before /:id/:action
   app.get("/api/pods/:id/comfy", wrap((req) => require("../lib/podStyles").contents(req.params.id, +req.query.port || 0)));
   app.post("/api/pods/:id/styles", wrap((req) => require("../lib/podStyles").make(req.params.id, req.body || {})));
+  // 2.759.0 (Tim: "how do i choose what model comfyui template to use and to dl it?"): ⬇ Models (lib/podModels.js)
+  app.get("/api/pods/catalog", wrap(() => ({ files: require("../lib/podModels").catalog() })));
+  app.post("/api/pods/plan", wrap((req) => require("../lib/podModels").planFor((req.body || {}).styles || [])));
+  app.get("/api/pods/:id/ways", wrap((req) => require("../lib/podModels").ways(req.params.id, +req.query.port || 0)));
+  app.get("/api/pods/:id/models", wrap((req) => require("../lib/podModels").state(req.params.id, +req.query.port || 0)));
+  app.post("/api/pods/:id/models", wrap((req) => require("../lib/podModels").start(req.params.id, req.body || {})));
+  // + Tim: "add mounting the model in the pod from the hdd or link?" - a file from a link / from this computer (Jupyter)
+  app.post("/api/pods/:id/link", wrap((req) => require("../lib/podModels").fromLink(req.params.id, req.body || {})));
+  app.post("/api/pods/:id/upload", wrap((req) => require("../lib/podModels").upload(req.params.id, req.body || {})));
   app.post("/api/pods/:id/:action", wrap((req) => {
     if (!["start", "stop", "terminate"].includes(req.params.action)) { const e = new Error("start, stop or terminate"); e.status = 400; throw e; }
     return P.act(req.params.id, req.params.action);

@@ -8271,6 +8271,29 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   template picked) and **Create pod…**; press **★** again to remove one. A template RunPod doesn't list (a private one) can
   still be added on that tab by pasting its link.
 
+## ⬇ Models onto a pod, and pods for a style (2.759.0)
+
+- **A pod for a style.** In the PODS docker, **For …** (beside ComfyUI only) picks one of your bitGen styles: the
+  templates whose name or image carries that style's model family come first, marked **✓ fits** (Krea, Qwen, Z-Image,
+  FLUX, Wan, SDXL …). A pod you create this way gets that style's P_ style by itself once it has loaded, when the pod has
+  the model.
+- **⬇ Models** on a running pod downloads models into its ComfyUI. Pick **a style** - its files from bitGen's download list
+  are ticked, with their total size - or search bitGen's list and tick single files, then **⬇ Download ticked**. A bar
+  shows each file; then **🎨 Make P_ styles from the pod**. Files go to the folder ComfyUI loads them from; when that is
+  not under `/workspace` bitGen says so, because those files go when the pod stops.
+- ComfyUI has no "download a file" call of its own, so bitGen uses what the pod has:
+  - **The pod's Jupyter** - any file. Pods bitGen creates get a Jupyter password of bitGen's own (kept encrypted), so this
+    just works when the template runs Jupyter. For a pod made on RunPod's site, paste its Jupyter password (RunPod ▸ the
+    pod ▸ Connect) in the box.
+  - **ComfyUI-Manager** - when there is no Jupyter. It only downloads models in its own list (Qwen Image, FLUX.1, Wan 2.2,
+    SDXL … - not Z-Image or Krea 2); bitGen names the files it can't fetch that way.
+- A gated model on Hugging Face uses your Hugging Face token (Settings), sent only to your own pod with the download.
+- **A file from a link or from this computer** (in ⬇ Models): pick the models folder it goes in (loras, checkpoints …), then
+  paste a link - Civitai, Hugging Face or any web address - and press **⬇ From the link**, or press **⬆ From this
+  computer…** and pick a file from your disk. Both go through the pod's Jupyter. A file from your computer is sent in
+  parts; your upload speed decides how long it takes, so a model that is on Hugging Face or Civitai is quicker by its link.
+  Civitai links use your Civitai token from Settings.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

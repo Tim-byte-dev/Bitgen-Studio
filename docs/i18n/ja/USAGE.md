@@ -4787,6 +4787,17 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **読み込みバー。** Pod の起動中、PODS ドッカーとリモート生成ドッカーに今の段階が表示されます：1/4 *waiting for a GPU machine*（GPU マシン待ち）→ 2/4 *starting the container*（テンプレートのイメージをダウンロード）→ 3/4 *ComfyUI starting*（このようなテンプレートはここでモデルをダウンロードします - たいてい一番長い部分）→ *pod loaded in …*。RunPod はダウンロードの割合を伝えないので、バーは経過時間を、この Pod - または同じテンプレートの別の Pod - の前回の読み込み時間と比べたものです（「3 min of about 7 min」）。初回は段階ごとに進みます。
 - **Pod と Pod のショートカットは PODS ドッカーに移りました。** リモート生成ドッカーには作業の実行場所と **🖥 PODS docker** ボタンが残ります。Pod のショートカットはテンプレートのカードの **☆** です。押すと bitGen がそのテンプレートを記録します - リンクは自動で入ります。**★ Shortcuts** に一覧が出て、それぞれに **Deploy ↗**（テンプレートを選んだ状態の RunPod のデプロイページ）と **Create pod…** があります。もう一度 **★** を押すと外れます。RunPod の一覧にないテンプレート（非公開のもの）は、そのタブでリンクを貼り付けて追加できます。
 
+## ⬇ Pod へのモデルとスタイル用の Pod (2.759.0)
+<!-- en: models-onto-a-pod-and-pods-for-a-style-2-759-0 1ba6ab5d3dc6 -->
+
+- **スタイル用の Pod。** PODS ドッカーの **For …**（ComfyUI only の横）で bitGen のスタイルを選ぶと、名前やイメージにそのスタイルのモデル系統（Krea、Qwen、Z-Image、FLUX、Wan、SDXL など）が含まれるテンプレートが先頭に並び、**✓ fits** と表示されます。こうして作った Pod は、そのモデルがあれば、読み込み後に自動でそのスタイルの P_ スタイルを得ます。
+- 起動中の Pod の **⬇ Models** で、その ComfyUI にモデルをダウンロードします。**スタイル**を選ぶと bitGen のダウンロード一覧にあるそのファイルにチェックが入り（合計サイズ付き）、または一覧を検索して個別のファイルにチェックを入れ、**⬇ Download ticked** を押します。ファイルごとにバーが表示され、その後 **🎨 Make P_ styles from the pod** を押せます。ファイルは ComfyUI が読み込むフォルダーに入ります。それが `/workspace` の下でない場合は bitGen が伝えます。Pod を停止するとそのファイルは消えるからです。
+- ComfyUI 自体には「ファイルをダウンロード」する機能がないため、bitGen は Pod にあるものを使います：
+  - **Pod の Jupyter** - どのファイルでも可。bitGen が作った Pod には bitGen 自身の Jupyter パスワード（暗号化して保存）が付くので、テンプレートが Jupyter を動かしていればそのまま使えます。RunPod のサイトで作った Pod は、その Jupyter パスワード（RunPod ▸ Pod ▸ Connect）を欄に貼り付けてください。
+  - **ComfyUI-Manager** - Jupyter がないとき。その一覧にあるモデルだけをダウンロードします（Qwen Image、FLUX.1、Wan 2.2、SDXL など - Z-Image や Krea 2 はなし）。この方法で取得できないファイルは bitGen が名前を示します。
+- Hugging Face のゲート付きモデルには、設定の Hugging Face トークンを使います。トークンはダウンロードと一緒に自分の Pod にだけ送られます。
+- **リンクまたはこのコンピューターからのファイル**（⬇ Models 内）：入れるモデルフォルダー（loras、checkpoints など）を選び、リンク - Civitai、Hugging Face、任意の Web アドレス - を貼り付けて **⬇ From the link** を押すか、**⬆ From this computer…** を押してディスクのファイルを選びます。どちらも Pod の Jupyter を使います。コンピューターからのファイルは分割して送られ、かかる時間はアップロード速度次第なので、Hugging Face や Civitai にあるモデルはリンクからの方が速く入ります。Civitai のリンクには設定の Civitai トークンを使います。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

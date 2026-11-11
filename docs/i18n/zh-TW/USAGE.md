@@ -5015,6 +5015,17 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **載入進度列。** Pod 啟動時，PODS 停靠窗和遠端生成停靠窗會顯示目前階段：1/4 *waiting for a GPU machine*（等待 GPU 機器）→ 2/4 *starting the container*（下載範本的鏡像）→ 3/4 *ComfyUI starting*（這類别範本會在此時下載模型 - 通常是最長的部分）→ *pod loaded in …*。RunPod 不報告下載百分比，所以進度列是把已用時間與這個 Pod - 或同一範本的另一個 Pod - 上次的載入時間相比（「3 min of about 7 min」）；第一次按階段前進。
 - **Pod 和 Pod 快捷方式現在在 PODS 停靠窗中。** 遠端生成停靠窗保留工作執行位置和 **🖥 PODS docker** 按鈕。Pod 快捷方式就是範本卡片上的 **☆**：按下後 bitGen 會記住這個範本 - 連結會自動填入。**★ Shortcuts** 列出它們，每個都有 **Deploy ↗**（已選好範本的 RunPod 部署頁面）和 **Create pod…**；再按一次 **★** 即可移除。RunPod 不列出的範本（私有範本）仍可在該分頁貼上連結新增。
 
+## ⬇ 把模型下載到 Pod，以及為風格選 Pod (2.759.0)
+<!-- en: models-onto-a-pod-and-pods-for-a-style-2-759-0 1ba6ab5d3dc6 -->
+
+- **為風格選 Pod。** 在 PODS 停靠窗的 **For …**（ComfyUI only 旁邊）選擇一個 bitGen 風格：名稱或鏡像中包含該風格模型系列（Krea、Qwen、Z-Image、FLUX、Wan、SDXL 等）的範本會排在前面，並標記 **✓ fits**。這樣建立的 Pod 如果有該模型，載入後會自動得到該風格的 P_ 風格。
+- 執行中 Pod 的 **⬇ Models** 會把模型下載到它的 ComfyUI。選擇 **一個風格** - 它在 bitGen 下載清單中的檔案會被勾選，並顯示總大小 - 或搜尋清單勾選單個檔案，然後按 **⬇ Download ticked**。每個檔案都有一條進度列；之後可按 **🎨 Make P_ styles from the pod**。檔案會放到 ComfyUI 讀取模型的資料夾；如果它不在 `/workspace` 下，bitGen 會提示，因為 Pod 停止後這些檔案會消失。
+- ComfyUI 本身沒有「下載檔案」的介面，所以 bitGen 使用 Pod 上已有的方式：
+  - **Pod 的 Jupyter** - 任何檔案都可以。bitGen 建立的 Pod 會帶有 bitGen 自己的 Jupyter 密碼（加密儲存），只要範本執行 Jupyter 就能直接使用。在 RunPod 網站上建立的 Pod，請把它的 Jupyter 密碼（RunPod ▸ Pod ▸ Connect）貼上到輸入框。
+  - **ComfyUI-Manager** - 沒有 Jupyter 時使用。它只下載自己清單中的模型（Qwen Image、FLUX.1、Wan 2.2、SDXL 等 - 不包括 Z-Image 或 Krea 2）；bitGen 會列出無法通過這種方式取得的檔案。
+- Hugging Face 上需要授權的模型會使用你在設定中的 Hugging Face 權杖，它只隨下載傳送到你自己的 Pod。
+- **來自連結或這臺電腦的檔案**（在 ⬇ Models 中）：選擇要放入的模型資料夾（loras、checkpoints 等），然後貼上連結 - Civitai、Hugging Face 或任何網址 - 並按 **⬇ From the link**，或按 **⬆ From this computer…** 從磁碟選擇檔案。兩者都通過 Pod 的 Jupyter。來自電腦的檔案會分段傳送，所需時間取決於你的上傳速度，所以 Hugging Face 或 Civitai 上已有的模型用連結會更快。Civitai 連結使用設定中的 Civitai 權杖。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

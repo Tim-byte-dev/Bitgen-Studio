@@ -19,7 +19,7 @@
  *   Links open in the browser (target _blank). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [] };
+  var doc = root.document, S = { g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "" };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
@@ -48,6 +48,7 @@
     + ".pdk .pdChips{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}.pdk .pdChips span{font-size:.6rem;border:1px solid var(--line,#3a342a);border-radius:4px;padding:0 4px;color:var(--dim,#aaa)}"
     + ".pdk .pdAct{display:flex;gap:4px;align-items:center;padding:4px 8px 7px}.pdk .pdAct button{flex:1;font-size:.7rem}.pdk .pdAct a{text-decoration:none;padding:0 4px}"
     + ".pdk .pdAct button.pdStar{flex:0 0 auto;font-size:.9rem;padding:0 6px;color:var(--tiger,#f59e2c)}.pdk .pdAct a.pdDeploy{flex:0 0 auto;font-size:.7rem;padding:2px 6px}"
+    + ".pdk .pdFits{font-size:.68rem;color:#7fd17f}"
     + ".pdk .pdNew{border:1px solid var(--tiger,#f59e2c);border-radius:8px;padding:6px 8px;background:var(--panel,#1b1814)}.pdk .pdNew .pdForm{border:0;padding:4px 0 0;margin:0;background:none}";
 
   /* ---------------- where it shows */
@@ -79,7 +80,8 @@
       + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
       + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
       + '<select id="pdKind" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
-      + '<label class="chk" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label></div>'
+      + '<label class="chk" style="margin:0" title="Only templates that run ComfyUI - the ones bitGen can render with"><input type="checkbox" id="pdComfy"> ComfyUI only</label>'
+      + '<select id="pdFor" title="Templates that look made for this bitGen style first - a pod created this way gets the style\'s P_ style when it has loaded" style="width:auto"><option value="">For any style</option></select></div>'
       + '<div class="hint" id="pdMsg" aria-live="polite"></div>'
       + '<div id="pdStarAdd" class="rowbtns" style="align-items:center;display:none"><input type="text" id="pdCutLink" placeholder="A template that is not listed: paste its RunPod link" spellcheck="false" style="flex:1;min-width:160px">'
       + '<button type="button" class="ghost" id="pdCutAdd">＋ Add</button><a class="pdLink" href="https://www.runpod.io/console/explore" target="_blank" rel="noopener">Explore RunPod templates ↗</a></div>'
@@ -93,6 +95,7 @@
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { S.src = b.dataset.pdsrc; filter(); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
     $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };
+    $("pdFor").onchange = function () { S.forStyle = $("pdFor").value; filter(); };
     var t = null; $("pdQ").addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { S.q = $("pdQ").value; filter(); }, 120); });
     $("pdRefresh").onclick = function () { loadTpl(true); loadPods(); };
     $("pdCutAdd").onclick = function () { star({ link: $("pdCutLink").value, name: "" }, true).then(function (ok) { if (ok) $("pdCutLink").value = ""; }); };
@@ -111,6 +114,27 @@
      pods docker can bitgen fill in the template link automatically?"): a pod shortcut is a ☆ on a template's card - its link
      is the template's own (lib/podShortcuts.js takes the ID); ★ Shortcuts lists them (Deploy ↗ = RunPod's deploy page with
      bitGen's referral code); a template that is not listed (a private one) can still be added by its link there */
+  /* 2.759.0 (Tim: "how do i choose what model comfyui template to use"): For style - the templates whose name / image carry the
+     style's model family come first (lib/podModels.js templateScore - the same words) */
+  var WORDS = { "qwen-image": ["qwen"], "z-image": ["z-image", "zimage", "z image", "zit", "z_image"], krea2: ["krea"], flux: ["flux"],
+    flux2klein9b: ["flux.2", "flux2", "flux-2", "klein"], flux3klein: ["flux 3", "flux3", "klein"], sdxl: ["sdxl", "sd xl", "illustrious", "pony"], sd3: ["sd3", "sd 3"],
+    "minimax-h3": ["h3", "minimax"], wan: ["wan"], "ltx-2.3": ["ltx"], ltx: ["ltx"], anima: ["anima"], moss: ["moss"], ph3: ["p-h3", "ph3"] };
+  function templateScore(t, st) {
+    st = st || {}; var hay = [t.name, t.image].join(" ").toLowerCase(), a = String(st.arch || "").toLowerCase(), fam = WORDS[a] || WORDS[a.split("-")[0]] || [], s = 0;
+    fam.forEach(function (w) { if (hay.indexOf(w) >= 0) s += 10; });
+    if (s && t.comfy) s += 3;
+    return s;
+  }
+  function loadStyles() {
+    return Promise.all([getj("/api/styles?kind=image"), getj("/api/styles?kind=video")]).then(function (a) {
+      S.styles = [].concat((a[0] || {}).styles || [], (a[1] || {}).styles || []).filter(function (x) { return x.runs_on !== "api"; });
+      var sel = $("pdFor"); if (!sel) return;
+      var keep = sel.value;
+      sel.innerHTML = '<option value="">For any style</option>' + S.styles.map(function (x) { return '<option value="' + esc(x.id) + '">For ' + esc(x.name) + "</option>"; }).join("");
+      sel.value = keep;
+    }).catch(function () { /* offline */ });
+  }
+  function forSt() { return S.forStyle ? (S.styles || []).find(function (x) { return x.id === S.forStyle; }) : null; }
   function loadCuts() { return getj("/api/remotegen").then(function (j) { S.cuts = (j && j.shortcuts) || []; filter(); }).catch(function () { /* offline */ }); }
   function isStar(id) { return (S.cuts || []).some(function (c) { return c.id === id; }); }
   /** add {id|link, name} (add = true) or remove {id} a shortcut -> promise of ok */
@@ -129,6 +153,8 @@
   function filter() {
     var pre = S.all.filter(function (t) { return (!S.comfy || t.comfy) && (!S.kind || t.category === S.kind) && matches(t, S.q); });
     S.tpl = pre.filter(function (t) { return S.src === "all" || (S.src === "star" ? isStar(t.id) : t.source === S.src); });
+    var fs = forSt();
+    if (fs) S.tpl = S.tpl.map(function (t, i) { return { t: t, s: templateScore(t, fs), i: i }; }).sort(function (x, y) { return y.s - x.s || x.i - y.i; }).map(function (x) { return x.t; });
     // ★: a shortcut whose template is not in RunPod's lists (a private one) gets a plain card of its own
     if (S.src === "star") (S.cuts || []).forEach(function (c) { if (!S.all.some(function (t) { return t.id === c.id; }) && matches({ name: c.name, id: c.id }, S.q)) S.tpl.push({ id: c.id, name: c.name, page: c.page, deploy: c.deploy, image: "", ports: [], source: "", cut: true }); });
     var sa = $("pdStarAdd"); if (sa) sa.style.display = S.src === "star" ? "" : "none";
@@ -151,6 +177,7 @@
       + '<div class="pdArt" style="--h:' + hue(t.image || t.name) + '"><span class="pdGlyph">' + esc(initials(t.name)) + "</span>"
       + (t.category ? '<span class="pdCat">' + esc(t.category) + "</span>" : "") + (t.comfy ? '<span class="pdCfy" title="Runs ComfyUI - bitGen can render on it">ComfyUI</span>' : "") + "</div>"
       + '<div class="pdInfo"><span class="pdName" title="' + esc(t.name) + '">' + esc(t.name) + "</span>"
+      + (forSt() && templateScore(t, forSt()) ? '<span class="pdFits" title="Its name says it has this style\'s model family">✓ fits ' + esc(forSt().name) + "</span>" : "")
       + '<span class="pdImg" title="' + esc(t.image) + '">' + esc(t.image) + "</span>"
       + '<div class="pdChips"><span>' + esc(SRC_WORD[t.source] || t.source) + "</span>"
       + (t.disk ? `<span title="Container disk">${t.disk} GB disk</span>` : "")
@@ -224,7 +251,7 @@
     if (el) el.textContent = g ? "About $" + (g.price * n).toFixed(2) + " an hour while it runs (RunPod's price now), plus storage" : "";
   }
   function create() {
-    var b = { templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
+    var b = { for_style: S.forStyle || "", templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
     $("pdGo").disabled = true; say("creating the pod on RunPod…");
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
@@ -261,6 +288,7 @@
         + '<button type="button" class="ghost" data-pdact="' + (up ? "stop" : "start") + '">' + (up ? "⏹ Stop" : "▶ Start") + "</button>"
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
+        + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
         + '<div class="pdLoadBox"></div>'
         + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button>'
         + (S.kill === p.id ? '<div class="pdKill">Terminate <b>' + esc(p.name) + "</b>? The pod and every file on it (models, outputs) are deleted - only a network volume survives. "
@@ -274,6 +302,7 @@
       var st = S.st[p.id], lb = r.querySelector(".pdLoadBox");
       if (lb && root.H3PodLoad && st && st.progress && (S.watch[p.id] === "start" || !st.ready || st.progress.took)) lb.innerHTML = H3PodLoad.bar(st);
       var sy = r.querySelector("[data-pdsty]"); if (sy) sy.onclick = function () { stylesFor(p); };
+      var mo = r.querySelector("[data-pdmod]"); if (mo) mo.onclick = function () { modelsFor(p); };
       var a = r.querySelector("[data-pdact]"); if (a) a.onclick = function () { act(p, a.dataset.pdact); };
       r.querySelector("[data-pduse]").onclick = function () { use(p); };
       r.querySelector("[data-pdkill]").onclick = function () { S.kill = S.kill === p.id ? null : p.id; paintPods(); };
@@ -287,6 +316,13 @@
     if (S.sty === p.id && host.innerHTML) { S.sty = null; host.innerHTML = ""; return; }
     S.sty = p.id;
     H3PodLoad.styles(host, p, (S.port && S.port[p.id]) || 0);
+  }
+  /** 2.759.0: ⬇ Models (static/podload.js) in the same panel place */
+  function modelsFor(p) {
+    var host = $("pdStyPanel"); if (!host || !root.H3PodLoad) return;
+    if (S.mod === p.id && host.innerHTML) { S.mod = null; host.innerHTML = ""; return; }
+    S.mod = p.id; S.sty = null;
+    H3PodLoad.models(host, p, (S.port && S.port[p.id]) || 0);
   }
   function act(p, a) {
     delete S.st[p.id]; S.watch[p.id] = a; paintPods();
@@ -328,7 +364,7 @@
     if (!(root.SecFloat && SecFloat.add && SecFloat.started) || !buildBtn()) { setTimeout(boot, 250); return; }
     if (!$("pdCss")) { var st = doc.createElement("style"); st.id = "pdCss"; st.textContent = CSS; doc.head.appendChild(st); }
     if (!$("pdBody")) {
-      SecFloat.add({ id: "pods", title: "PODS", w: 760, h: 700, body: body(), onShow: function () { loadTpl(); loadPods(); loadCuts(); } });
+      SecFloat.add({ id: "pods", title: "PODS", w: 760, h: 700, body: body(), onShow: function () { loadTpl(); loadPods(); loadCuts(); loadStyles(); } });
       wire();
     }
     loadG();

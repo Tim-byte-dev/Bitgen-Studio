@@ -115,5 +115,104 @@
     };
     if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", watchSel); else setTimeout(watchSel, 0);
   }
-  root.H3PodLoad = { bar: bar, line: line, mins: mins, styles: styles, lockBasics: lockBasics };
+  /* 2.759.0 (Tim: "if i select a pod, how do i choose what model comfyui template to use and to dl it?"): ⬇ Models - a
+     bitGen style's files (or single files from bitGen's download list) downloaded into the pod's ComfyUI through its
+     ComfyUI-Manager (its own list only) or its Jupyter (any file; bitGen's own password on pods it creates, else pasted) */
+  function gb(n) { n = +n || 0; return n >= 1e9 ? (n / 1e9).toFixed(1) + " GB" : n >= 1e6 ? Math.round(n / 1e6) + " MB" : n ? Math.round(n / 1e3) + " KB" : ""; }
+  function models(host, pod, port) {
+    css();
+    var q = port ? "?port=" + port : "";
+    host.innerHTML = `<div class="pdStyles"><span class="hint">Asking the pod how files can reach it…</span></div>`;
+    var box = host.firstChild, S = { files: [], timer: null };
+    function stop() { if (S.timer) { clearTimeout(S.timer); S.timer = null; } }
+    function paintState(st) {
+      var el = box.querySelector("[data-pmprog]"); if (!el) return;
+      el.innerHTML = (st.files || []).map(function (f) {
+        var pct = f.size ? Math.min(100, Math.round(f.done / f.size * 100)) : (f.state === "done" ? 100 : 0);
+        return '<div class="pdLoad' + (/done|there already/.test(f.state) ? " done" : "") + '"><div class="bar"><i style="width:' + Math.max(2, pct) + '%"></i></div><span>' + esc(f.name) + " · " + esc(f.state) + (f.size ? " · " + gb(f.done) + " of " + gb(f.size) : "") + "</span></div>";
+      }).join("") + (st.running ? "" : (st.files || []).length ? `<div class="btns"><button type="button" data-pmsty>🎨 Make P_ styles from the pod</button></div>` : "");
+      var b = el.querySelector("[data-pmsty]"); if (b) b.onclick = function () { stop(); styles(host, pod, port); };
+      if (st.kept === false) el.insertAdjacentHTML("beforeend", `<div class="hint">ComfyUI on this pod is not under /workspace - the files go when the pod stops.</div>`);
+    }
+    function poll() { getj("/api/pods/" + encodeURIComponent(pod.id) + "/models" + q).then(function (st) { if (!st.error) paintState(st); if (st.running) S.timer = setTimeout(poll, +(root.H3_POD_POLL || 3000)); }).catch(function () { S.timer = setTimeout(poll, 5000); }); }
+    return Promise.all([getj("/api/pods/" + encodeURIComponent(pod.id) + "/ways" + q), getj("/api/styles?kind=image"), getj("/api/pods/catalog")]).then(function (a) {
+      var w = a[0] || {}, sts = ((a[1] || {}).styles || []).filter(function (x) { return x.runs_on !== "api" && x.runs_on !== "pod"; }), cat = (a[2] || {}).files || [];
+      if (w.error) { box.innerHTML = '<span class="hint" style="color:#e88">' + esc(w.error) + "</span>"; return; }
+      var how = w.jupyter ? `Downloads go through the pod's Jupyter - any file.` : w.manager ? `Downloads go through ComfyUI-Manager - only the models in its own list. Paste the pod's Jupyter password to fetch any file.` : `This pod has no ComfyUI-Manager - paste its Jupyter password (RunPod ▸ the pod ▸ Connect) to download onto it.`;
+      var h = `<h5>Download models onto the pod</h5><div class="hint">${how}</div>`;
+      if (!w.jupyter) h += `<div class="btns"><input type="password" data-pmpw autocomplete="off" placeholder="The pod's Jupyter password" style="flex:1;min-width:140px"><button type="button" class="ghost" data-pmpwgo>Use it</button></div>`;
+      h += `<h5>For a style</h5><select data-pmstyle><option value="">— pick a bitGen style —</option>` + sts.map(function (x) { return '<option value="' + esc(x.id) + '">' + esc(x.name) + "</option>"; }).join("") + "</select>";
+      h += `<h5>Files</h5><input type="search" data-pmq placeholder="Search bitGen's download list" style="width:100%"><div data-pmlist style="max-height:220px;overflow:auto"></div>`;
+      h += `<div class="btns"><button type="button" data-pmgo>⬇ Download ticked</button><button type="button" class="ghost" data-pclose>Close</button></div>`;
+      // + Tim: "add mounting the model in the pod from the hdd or link?" - one file from a link or from this computer (needs Jupyter)
+      h += `<h5>A file from a link or from this computer</h5><div class="btns"><select data-pmfold title="The ComfyUI models folder it goes in">`
+        + ["checkpoints", "diffusion_models", "unet", "loras", "vae", "text_encoders", "clip", "clip_vision", "controlnet", "upscale_models", "embeddings"].map(function (f) { return '<option value="' + f + '"' + (f === "loras" ? " selected" : "") + ">" + f + "</option>"; }).join("")
+        + `</select><input type="text" data-pmlink placeholder="A link to the file (Civitai, Hugging Face, any web address)" spellcheck="false" style="flex:1;min-width:160px"><button type="button" class="ghost" data-pmlinkgo>⬇ From the link</button>`
+        + `<button type="button" class="ghost" data-pmup title="Send a file from this computer to the pod (your upload speed decides how long)">⬆ From this computer…</button></div>`
+        + `<div class="hint" data-pmmsg aria-live="polite"></div><div data-pmprog></div>`;
+      box.innerHTML = h;
+      var picked = {};
+      function list(qs) {
+        var w2 = String(qs || "").toLowerCase().split(/\s+/).filter(Boolean);
+        var rows = cat.filter(function (f) { var hay = (f.label + " " + f.name + " " + f.group).toLowerCase(); return w2.every(function (x) { return hay.indexOf(x) >= 0; }); });
+        rows.sort(function (x, y) { return (picked[y.name] ? 1 : 0) - (picked[x.name] ? 1 : 0); });
+        box.querySelector("[data-pmlist]").innerHTML = rows.slice(0, 80).map(function (f) {
+          return '<label><input type="checkbox" data-pmf="' + esc(f.name) + '"' + (picked[f.name] ? " checked" : "") + "> " + esc(f.label) + ' <span class="fit">' + esc(f.folder) + " · " + gb(f.size) + "</span></label>";
+        }).join("") || `<span class="hint">Nothing in bitGen's download list matches.</span>`;
+        box.querySelectorAll("[data-pmf]").forEach(function (i) { i.onchange = function () { if (i.checked) picked[i.getAttribute("data-pmf")] = true; else delete picked[i.getAttribute("data-pmf")]; }; });
+      }
+      list("");
+      box.querySelector("[data-pmq]").addEventListener("input", function (e) { list(e.target.value); });
+      box.querySelector("[data-pmq]").addEventListener("keydown", function (e) { e.stopPropagation(); });
+      box.querySelector("[data-pmstyle]").onchange = function (e) {
+        var id = e.target.value, msg = box.querySelector("[data-pmmsg]"); if (!id) return;
+        post("/api/pods/plan", { styles: [id] }).then(function (p) {
+          (p.files || []).forEach(function (f) { picked[f.name] = true; });
+          list(box.querySelector("[data-pmq]").value);
+          msg.textContent = (p.files || []).length ? `Ticked the style's ${p.files.length} file(s), ${gb(p.files.reduce(function (n, f) { return n + (f.size || 0); }, 0))}.` : `bitGen's download list has none of this style's files.`;
+          if ((p.unknown || []).length) msg.textContent += " " + `Not in bitGen's list: ${p.unknown.join(", ")}`;
+        });
+      };
+      var pw = box.querySelector("[data-pmpwgo]");
+      if (pw) pw.onclick = function () {
+        var v = box.querySelector("[data-pmpw]").value.trim(); if (!v) return;
+        S.pw = v; box.querySelector("[data-pmmsg]").textContent = `The password is kept (encrypted) and used for the download.`;
+      };
+      box.querySelector("[data-pclose]").onclick = function () { stop(); host.innerHTML = ""; };
+      box.querySelector("[data-pmlink]").addEventListener("keydown", function (e) { e.stopPropagation(); });
+      var after = function (r, what) {
+        var msg = box.querySelector("[data-pmmsg]");
+        if (r.error) { msg.style.color = "#e88"; msg.textContent = r.error; return; }
+        msg.style.color = ""; msg.textContent = what; stop(); poll();
+      };
+      box.querySelector("[data-pmlinkgo]").onclick = function () {
+        var u = box.querySelector("[data-pmlink]").value.trim(), f = box.querySelector("[data-pmfold]").value;
+        if (!u) { box.querySelector("[data-pmmsg]").textContent = `Paste a link first.`; return; }
+        post("/api/pods/" + encodeURIComponent(pod.id) + "/link", { url: u, folder: f, port: port || 0, jupyter_password: S.pw || "" }).then(function (r) { after(r, r.name ? `Downloading ${r.name} into models/${f}.` : ""); });
+      };
+      box.querySelector("[data-pmup]").onclick = function () {
+        var f = box.querySelector("[data-pmfold]").value;
+        if (!(root.FileDialog && FileDialog.open)) return;
+        FileDialog.open({ mode: "file", title: "A model file to send to the pod", okLabel: "Send", key: "podupload", filters: [{ label: "Model files", exts: ["safetensors", "gguf", "ckpt", "pt", "pth", "bin", "sft"] }] }).then(function (sel) {
+          if (!sel || !sel.path) return;
+          post("/api/pods/" + encodeURIComponent(pod.id) + "/upload", { path: sel.path, folder: f, port: port || 0, jupyter_password: S.pw || "" }).then(function (r) { after(r, r.name ? `Sending ${r.name} (${gb(r.size)}) to models/${f} - your upload speed decides how long.` : ""); });
+        });
+      };
+      box.querySelector("[data-pmgo]").onclick = function () {
+        var names = Object.keys(picked), msg = box.querySelector("[data-pmmsg]");
+        var files = cat.filter(function (f) { return names.indexOf(f.name) >= 0; }).map(function (f) { return { name: f.name, folder: f.folder, url: f.url, size: f.size }; });
+        if (!files.length) { msg.textContent = `Tick a style or a file first.`; return; }
+        msg.textContent = `Starting the downloads on the pod…`;
+        post("/api/pods/" + encodeURIComponent(pod.id) + "/models", { files: files, port: port || 0, jupyter_password: S.pw || "" }).then(function (r) {
+          if (r.error) { msg.style.color = "#e88"; msg.textContent = r.error; return; }
+          msg.style.color = "";
+          msg.textContent = (r.way === "jupyter" ? `Downloading ${r.started} file(s) through the pod's Jupyter.` : `ComfyUI-Manager is downloading ${r.started} file(s).`)
+            + ((r.not || []).length ? " " + `Not in ComfyUI-Manager's list: ${r.not.join(", ")}` : "");
+          poll();
+        });
+      };
+      if ((w.jupyter || w.manager)) poll();
+    }).catch(function (e) { box.innerHTML = '<span class="hint" style="color:#e88">' + esc(e.message || e) + "</span>"; });
+  }
+  root.H3PodLoad = { bar: bar, line: line, mins: mins, styles: styles, lockBasics: lockBasics, models: models, gb: gb };
 })(typeof window !== "undefined" ? window : globalThis);
