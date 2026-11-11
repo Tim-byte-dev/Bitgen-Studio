@@ -3542,6 +3542,7 @@
 <script src="/static/podload.js"></script>  <!-- 2.758.0: a pod's loading bar + its P_ styles (H3PodLoad) -->
 <script src="/static/podsetup.js"></script>  <!-- 2.761.0: what a pod is for, its folders / checkpoints / LoRAs, 💾 Save (H3PodSetup) -->
 <script src="/static/stylepodask.js"></script>  <!-- 2.763.0: "no pod renders this style yet" - create a CUDA 13 pod / use one of yours (H3StylePodAsk; routes/stylePods.js) -->
+<script src="/static/podroute.js"></script>  <!-- 2.763.2: a render that goes to a RunPod pod skips this computer's ComfyUI; a failed render's reason in the log (H3PodRoute) -->
 <script src="/static/remotedock.js"></script>  <!-- 2.754.0: the Remote generation docker + Use remote generation (H3RemoteDock - routes/remoteDock.js) -->
 <script src="/static/podsdock.js"></script>  <!-- 2.756.0: the PODS docker - RunPod templates, create / start / stop / terminate pods (H3Pods - routes/pods.js) -->
 <script src="/static/bugreport.js"></script>  <!-- 2.522.0: 🐞 the Bug report docker, Ctrl+Alt+Shift+B (H3BugReport - lib/bugReport.js) -->
@@ -5695,7 +5696,9 @@ async function submitJob(promptText) {
       extra_loras: ovrStyleOn() ? tempLoras("video") : [] };
     if (!(await H3ModelsFound.ensure(vreq))) return null;
   }
-  if (!(await ensureComfyReady())) return;
+  // 2.763.2: a pod renders it - this computer's ComfyUI is not needed
+  const onPodV = window.H3PodRoute && $("videoStyleSel") ? await H3PodRoute.isPod("t2va", $("videoStyleSel").value) : false;
+  if (!onPodV && !(await ensureComfyReady())) return;
   const fd = new FormData();
   // 2.340.0: a picture typed First frame -> fl2va (+ its Last frame); else
   // References with at most 9 pictures (lib: static/refroles.js)
@@ -5762,7 +5765,7 @@ function swapText(text) {
 async function submitSwap(text) {
   if (refs.length !== 1) { alert("Swap needs exactly ONE picture of the new character in the reference tray."); return null; }
   if (!refVids.length) { alert("Swap needs a reference video — drag one into the reference dock's Video tab."); return null; }
-  if (!(await ensureComfyReady({ need: true }))) return null;
+  if (!(window.H3PodRoute && $("videoStyleSel") && await H3PodRoute.isPod("t2va", $("videoStyleSel").value)) && !(await ensureComfyReady({ need: true }))) return null;   // 2.763.2: a pod renders it
   const fd = new FormData();
   fd.append("image", refs[0].file, refs[0].file.name);
   fd.append("video", refVids[0]);
@@ -5812,7 +5815,7 @@ function ltxModePaint() {
 }
 window.ltxModePaint = ltxModePaint;
 async function submitLtx(text) {
-  if (!(await ensureComfyReady({ need: true }))) return null;
+  if (!(window.H3PodRoute && $("videoStyleSel") && await H3PodRoute.isPod("t2va", $("videoStyleSel").value)) && !(await ensureComfyReady({ need: true }))) return null;   // 2.763.2: a pod renders it
   const fd = new FormData();
   fd.append("prompt", String(text || ""));
   fd.append("ltx_mode", $("ltxModeSel") ? $("ltxModeSel").value : "auto");
@@ -6083,7 +6086,12 @@ async function drainQueue() {
          which case its row must not be overwritten by this line. */
       if (it.status === GENQUEUE.RUNNING) {
         it.status = status === "done" ? "done" : status === "cancelled" ? "cancelled" : "failed";
-        if (it.status === "failed") logLine(`[generate] ${GENQUEUE.label(it, 70)} — that one ${status || "failed"}.`);
+        if (it.status === "failed") {
+          logLine(`[generate] ${GENQUEUE.label(it, 70)} — that one ${status || "failed"}.`);
+          // 2.763.2 (Tim: "it says starting in queue but i don't know what it's doing"): the reason, from the job's log
+          if (window.H3PodRoute && it.jobId) H3PodRoute.why(it.jobId).then((ls) => ls.forEach((l) => logLine("   " + l))).catch(() => {});
+          else if (!it.jobId) logLine("   it was not sent - see the message above (or the 🐞 bug report's page errors)");
+        }
       }
       paintQueue();
     }
@@ -8692,10 +8700,11 @@ async function startMusicJob(text) {
   if (!id) { alert("Create a music style first: Settings → Audio ▸ Music styles"); return null; }
   const st = musicList.find(s => s.id === id) || {};
   if (window.H3ModelsFound && !(await H3ModelsFound.ensure({ kind: "music", style_id: id }))) return null;   // 2.719.0
-  if (!(await ensureComfyReady({ button: $("goMusic"), need: true }))) return null;
+  const onPodM = window.H3PodRoute ? await H3PodRoute.isPod("music", id) : false;   // 2.763.2: a pod renders it
+  if (!onPodM && !(await ensureComfyReady({ button: $("goMusic"), need: true }))) return null;
   // ComfyUI is up, so its dropdowns are authoritative — check the style's
   // model names against them rather than discovering the mismatch in the log.
-  const why = await comfyPreflight(st);
+  const why = onPodM ? null : await comfyPreflight(st);
   if (why) {
     pfOfferFix(why.fix, why.wanted, why.foundIn);
     showRefusal("This music style will not render as saved", why.text);
@@ -9352,11 +9361,13 @@ async function startImageJob(text) {
     const ib = imgBasicsBody({});
     if (!(await H3ModelsFound.ensure({ kind: "image", style_id: id, model: ib.model, extra_loras: ib.extra_loras }))) return null;
   }
-  if ((st.engine || "comfy") === "comfy"
+  // 2.763.2: a render that goes to a RunPod pod never needs this computer's ComfyUI (H3PodRoute - static/podroute.js)
+  const onPod = window.H3PodRoute ? await H3PodRoute.isPod("image", id) : false;
+  if (!onPod && (st.engine || "comfy") === "comfy"
       && !(await ensureComfyReady({ button: $("goImg"), need: true }))) return null;
   // ComfyUI is up now, so its dropdowns are authoritative — check the style
   // against them rather than discovering the mismatch in the worker log.
-  const why = await comfyPreflight(st);
+  const why = onPod ? null : await comfyPreflight(st);
   if (why) {
     pfOfferFix(why.fix, why.wanted, why.foundIn);
     showRefusal("This style will not render as saved", why.text);

@@ -4857,7 +4857,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **Pod 上の LLM：** ComfyUI はチャットサーバーではないため、LLM は Pod 上で独自のサーバー（vLLM、llama.cpp、Ollama）として動きます。これまでどおり、その Pod で LLM / vLLM にチェックしてポートを入力します。
 
 ## 🖥 Pod 上の自分のカスタムノードと、Pod が何をしているか (2.763.1)
-<!-- en: your-custom-nodes-on-a-pod-and-what-the-pod-is-doing-2-763-1 a63060b9abac -->
+<!-- en: your-custom-nodes-on-a-pod-and-what-the-pod-is-doing-2-763-1 5d518be0fbb3 -->
 
 - **レンダリングが Pod を待っている間**、ステータスバーの上の行に何が起きているかが表示されます：Pod の起動、作り直し、その ComfyUI を待っている、スタイルのファイルとノードパックを置いている、または Pod の確認への回答を待っている、など。ジョブのログにはすべての手順が [pod] の行で残ります。
 - **使えない Pod はレンダリングを止めます**。理由はログに書かれ、ほかの場所で代わりにレンダリングされることはもうありません。
@@ -4868,6 +4868,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **自分のカスタムノードが Pod へ：** bitGen がスタイルのために作った Pod には、このコンピューターの ComfyUI のカスタムノードパックがすべて入り、そのあと ComfyUI が再起動されます。GitHub（またはほかの git アドレス）のパックは、手元と同じバージョンで
   Pod 上に clone されます。それ以外のパック - および Pod が clone できないもの（プライベートなものなど）- はここで zip にされ（__pycache__ と 50 MB を超えるファイルは除く）、アップロードされます。Pod にすでにあるパックはそのままで、無効にしたパック（.disabled）は送られません。🖥 My pods の Pod の項目にある **⬆ My custom nodes** で、どの Pod にも同じことができます。
 - スタイルに Pod にないノードが必要なときは、bitGen がこのコンピューターの ComfyUI にそのノードがどのパックのものかを尋ね、そのパックを送ります。再起動は Pod に ComfyUI-Manager があればそれを使い、なければ RunPod が Pod を再起動します。
+- **2.763.2：** Pod へ行くレンダリングは、このコンピューターの ComfyUI を起動したり、スタイルをそのモデル一覧と照合したりせずに、すぐに送られます（以前は Pod に届く前にこのコンピューターで失敗することがありました）。レンダリングが失敗すると、その理由を示す行（[pod]、[gpu]、エラー）がログの「that one failed」のあとに表示されます。
 
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->

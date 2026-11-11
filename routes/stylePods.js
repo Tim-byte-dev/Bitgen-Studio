@@ -6,6 +6,8 @@
 //   POST /api/stylepods/ask/:id            {action: create | use | cancel, gpu, cloud, volume, pod_id}
 //   POST /api/stylepods/prepare/:pod       {styles: [ids], port} -> make them ready on the pod now (background)
 //   GET  /api/stylepods/prepare/:pod       how far that is (lib/podPrep.js status)
+//   GET  /api/stylepods/route?mode=&style_id=  2.763.2: {pod, why} - a render of the style goes to a pod (the page skips this
+//                                          computer's ComfyUI checks)
 //   POST /api/stylepods/nodes/:pod         2.763.1: this computer's custom nodes onto the pod (lib/podNodes.js; GET setup .nodes)
 "use strict";
 const SP = require("../lib/stylePods");
@@ -15,6 +17,11 @@ function mount(app) {
   const rg = () => ((require("../lib/core").getConfig() || {}).rgpu) || {};
   app.get("/api/stylepods", wrap(() => ({ links: SP.cleanLinks(rg().style_pods), kinds: { image: SP.kindPod(rg(), "image"), image_edit: SP.kindPod(rg(), "image_edit"), video: SP.kindPod(rg(), "video") } })));
   app.post("/api/stylepods/link", wrap((req) => ({ links: SP.link((req.body || {}).style_id, (req.body || {}).pod_id || "") })));
+  // 2.763.2: does a render of this style go to a pod? (the page skips its own ComfyUI's checks then)
+  app.get("/api/stylepods/route", wrap((req) => {
+    const S = require("../lib/styles"), C = require("../lib/core"), st = S.byId(C.STYLES_DIR, String(req.query.style_id || ""));
+    return SP.willUsePod(String(req.query.mode || ""), st);
+  }));
   app.get("/api/stylepods/ask/:id", wrap((req) => SP.offer(req.params.id, req.query.cloud)));
   app.post("/api/stylepods/ask/:id", wrap((req) => SP.answer(req.params.id, req.body || {})));
   app.post("/api/stylepods/prepare/:pod", wrap(async (req) => {

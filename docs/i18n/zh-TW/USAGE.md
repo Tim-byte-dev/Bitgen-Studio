@@ -5087,7 +5087,7 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **Pod 上的 LLM：** ComfyUI 不是聊天伺服器，所以 LLM 在 Pod 上作為單獨的伺服器執行（vLLM、llama.cpp 或 Ollama）；和以前一樣，在那個 Pod 上勾選 LLM / vLLM 並填寫它的埠。
 
 ## 🖥 你的自訂節點上 Pod，以及 Pod 在做什麼 (2.763.1)
-<!-- en: your-custom-nodes-on-a-pod-and-what-the-pod-is-doing-2-763-1 a63060b9abac -->
+<!-- en: your-custom-nodes-on-a-pod-and-what-the-pod-is-doing-2-763-1 5d518be0fbb3 -->
 
 - **渲染在等待它的 Pod 時**，狀態列上方的一行會說明正在發生什麼：啟動 Pod、重新建立它、等待它的 ComfyUI、把風格的檔案和節點包放上去，或者在等你回答 Pod 的詢問。任務日誌的 [pod] 行記錄每一步。
 - **無法使用的 Pod 會停止渲染**，原因寫在日誌裡 - 不會再改到別處去渲染。在 Pod 的詢問中按 Cancel 會取消這次渲染。
@@ -5098,6 +5098,8 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   🖥 My pods 中 Pod 專案裡的 **⬆ My custom nodes** 可以對任何 Pod 做同樣的事。
 - 當風格需要 Pod 上沒有的節點時，bitGen 會問這臺電腦的 ComfyUI 這個節點來自哪個包，併發送那個包。重新啟動時如果 Pod 有
   ComfyUI-Manager 就用它，否則由 RunPod 重新啟動 Pod。
+- **2.763.2：** 送到 Pod 的渲染不再先啟動這臺電腦的 ComfyUI，也不再拿風格對照它的模型清單 - 渲染會立即傳送（以前可能還沒到
+  Pod 就在這臺電腦上失敗）。渲染失敗時，說明原因的行（[pod]、[gpu]、錯誤）會顯示在日誌的「that one failed」之後。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

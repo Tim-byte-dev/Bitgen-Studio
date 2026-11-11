@@ -8401,6 +8401,9 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   not sent. **⬆ My custom nodes** in a pod's item in 🖥 My pods does the same for any pod.
 - When a style needs a node the pod lacks, bitGen asks this computer's ComfyUI which pack it comes from and sends that
   pack. Restarting uses ComfyUI-Manager when the pod has it, else RunPod restarts the pod.
+- **2.763.2:** a render that goes to a pod no longer starts this computer's ComfyUI or checks the style against its model
+  lists first - the render is sent straight away (before, it could fail on this computer without reaching the pod). When
+  a render fails, the lines that say why ([pod], [gpu], errors) are printed after "that one failed" in the log.
 
 ## Tips
 

@@ -38,7 +38,9 @@ function plan(b) {
   const kind = ["image", "music", "video", "aiedit"].includes(b.kind) ? b.kind : "image";
   { const sid = String(b.video_style_id || b.style_id || ""), st0 = sid ? styles.byId(C.STYLES_DIR, sid) : null;
     if (st0 && st0.runs_on === "api") return { skip: "an API_ style - the online service has its own models (Settings ▸ API)" };   // 2.757.0
-    if (st0 && st0.runs_on === "pod") return { skip: "a P_ pod style - its models are on the pod" }; }   // 2.758.0
+    if (st0 && st0.runs_on === "pod") return { skip: "a P_ pod style - its models are on the pod" };   // 2.758.0
+    // 2.763.2: a style that renders on a RunPod pod - its files are put on the pod (lib/podPrep.js), not looked for here
+    try { if (st0 && require("../lib/stylePods").willUsePod(kind === "music" ? "music" : kind === "video" ? "t2va" : "image", st0).pod) return { skip: "it renders on a RunPod pod - its files are put on the pod" }; } catch { /* checked here */ } }
   // 2.719.1: the image editor's ✨ AI (/api/aiedit, /api/aiedit/compose - routes/aiedit.js): its Edit / Regenerate style; a
   // selection filled through the Edit model (fill_edit) = that edit style; Edit / Compose run the style's workflow, the
   // others its inpaint workflow (none = only the style's own names - lib/aiEdit.js picks the graph)

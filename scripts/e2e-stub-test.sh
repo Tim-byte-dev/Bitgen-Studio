@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.763.2 (Tim's log: "[comfy] launching via run.bat … [generate] Image · house — that one failed." - pod mode still started his own ComfyUI and checked the style against it)
+node scripts/test-podroute7632.js > /tmp/podroute7632.log 2>&1 \
+  && ok "2.763.2 units: willUsePod (Remote + Pods = a pod; Both = the box or a pod; Local / off / Serverless / API_ / R_ = not), the reason lines of a failed job, index.html's image / video / song / swap / LTX guards, GET /api/stylepods/route, the models check skips pod styles" \
+  || { bad "2.763.2 pod renders skip this computer's ComfyUI units"; grep -a "^FAIL" -A1 /tmp/podroute7632.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7632-ui.js > /tmp/ui7632ui.log 2>&1 \
+  && ok "2.763.2 browser test: RunPod Pods + 🖼 Image + Generate = POST /api/genimage sent, the pod question opens, /api/comfy/ensure never called; the models check skips it; Cancel = cancelled; H3PodRoute.why = the job's [pod] lines - on a stand-in RunPod, or SKIP without playwright" \
+  || { bad "2.763.2 pod renders browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7632ui.log | head -14; }
 # ---- 2.763.1 (Tim: "i tried generating from a style, i did not get any popups, it says starting in queue but i don't know what it;s doing" + "we may have to upload all of the nodes in comfy custom nodes to the pod and restart the pod when created")
 node scripts/test-podnodes7631.js > /tmp/podnodes7631.log 2>&1 \
   && ok "2.763.1 units + LIVE: this computer's custom nodes on a pod - git packs (origin + commit, ssh -> https, no token) cloned ON the pod at your commit, a private one uploaded instead, a plain folder / a .py zipped (no __pycache__ / big files), the pod's own + .disabled left alone, ComfyUI restarted through ComfyUI-Manager; a class's folder from this computer's /object_info; Both: no box + no pod = here (said), a pod of its kind = the pod; a pod that cannot be had fails the job; pod_note on screen" \
