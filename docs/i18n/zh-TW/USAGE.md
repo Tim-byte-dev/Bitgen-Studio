@@ -5183,6 +5183,16 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **受限模型會提示：** 在 Pod 下載 Hugging Face 檔案之前，bitGen 會先詢問 Hugging Face 是否允許下載。受限的檔案（未接受其許可，或沒有 Hugging Face 權杖）或已不存在的檔案不會開始下載——渲染的 Pod 備註、日誌和 ⬇ Models 會說明是哪個檔案以及該怎麼做：在 huggingface.co 開啟它的頁面並接受許可，然後在 設定 ▸ Models 中新增你的 Hugging Face 權杖。Krea-2 不是受限模型。
 - **任務停止或沒有資料：** 3 分鐘沒有資料的下載會在進度列旁邊提示；被 Pod 停止的任務（90 秒沒有響應——Pod 重新啟動或記憶體不足）會帶著原因標記為失敗，而不是一直等待。
 
+## 把檢查點和 LoRA 從 Civitai 直接下載到 Pod (2.765.0)
+<!-- en: checkpoints-and-loras-from-civitai-straight-onto-the-pod-2-765-0 9977a8886567 -->
+
+- **在 Civitai 上找到就由 Pod 下載：** 當 Pod 需要本機的檢查點或 LoRA 時（風格的模型、Override 風格的檢查點、重新啟動的預設），
+  bitGen 會先在 Civitai 上查詢完全相同的檔案。找到後由 Pod 從 civitai.com 或 civitai.red 下載——比從你的電腦傳送快得多。只有在 Civitai 上沒有，或 Pod 無法取得時，才從本機發送這個檔案。
+- **查詢方式：** 如果它在 Model manager 中的卡片（🔎 Civitai 查詢）記有 Civitai 版本，就用這個版本；否則 bitGen 會讀取檔案一次得到它的 SHA-256（儲存在卡片中，所以只有第一次需要一點時間），再向 Civitai 查詢。只使用 SHA-256 相同的檔案——絕不使用不同的版本或大小。
+- **civitai.red：** 先查詢在 設定 ▸ General ▸ Civitai 中選擇的站點，再查詢另一個；成人模型在 civitai.red 上，需要你的
+  Civitai API 金鑰。金鑰只隨 Pod 的下載傳送給 Civitai，不會儲存在 Pod 的檔案清單中。
+- 渲染的 Pod 備註會顯示 「the pod is downloading <文件> from civitai.red - 1.2 of 6.5 GB (18%) · 45 MB/s」；如果 Civitai 拒絕（沒有金鑰、civitai.com 上的成人模型等），會說明原因並改為從本機發送。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -8553,6 +8553,21 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **A job that stopped, or no data:** a download with no data for 3 minutes says so next to its bar; a job the pod stopped
   (no sign of it for 90 seconds - the pod restarted or ran out of memory) is marked failed with the reason instead of waiting.
 
+## Checkpoints and LoRAs from Civitai straight onto the pod (2.765.0)
+
+- **Found on Civitai, downloaded by the pod:** when a pod needs a checkpoint or LoRA from this computer (a style's model, the
+  Override style's checkpoint, a preset started again), bitGen first looks for the very same file on Civitai. The pod then
+  downloads it from civitai.com or civitai.red - far faster than sending it from your computer. Only this computer's own
+  file sends when it is not on Civitai, or the pod could not get it.
+- **How it is found:** its Model manager card (🔎 Civitai look-up) names its Civitai version; otherwise bitGen reads the file
+  once to get its SHA-256 (kept in its card, so only the first time takes a moment) and asks Civitai for it. Only a file with
+  the same SHA-256 is used - never a different version or size.
+- **civitai.red:** the site picked in Settings ▸ General ▸ Civitai is asked first, then the other one; mature models are on
+  civitai.red and need your Civitai API key. The key goes only to Civitai with the pod's download - it is not kept in the
+  pod's file list.
+- The render's pod note shows "the pod is downloading <file> from civitai.red - 1.2 of 6.5 GB (18%) · 45 MB/s"; if Civitai
+  refuses it (no key, a mature model on civitai.com) it says why and sends it from this computer instead.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

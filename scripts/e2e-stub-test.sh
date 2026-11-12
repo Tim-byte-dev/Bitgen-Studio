@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.765.0 (Tim: "can you find my checkpoint and send it to the pod via civitai or civitai.red . if is very slow from my pc , 0.5mb/sec")
+node scripts/test-podonline765.js > /tmp/podonline765.log 2>&1 \
+  && ok "2.765.0 units: a model of this computer found on Civitai (its card's version, else its SHA-256 read once and kept; civitai.com then civitai.red) - only the same SHA-256; the pod downloads it from there (the key as ?token= in the pod's job only), progress in the render's note; refused on both sites -> sent from this computer with the reason" \
+  || { bad "2.765.0 Civitai onto the pod units"; grep -a "^FAIL" -A1 /tmp/podonline765.log | head -12; }
 # ---- 2.764.6 (Tim: "if the model is gated, i am guessing krea2 is gated, downloading for 5 minutes so far and still 0%, check to see if it is gated and report to the user")
 node scripts/test-hfcheck7646.js > /tmp/hfcheck7646.log 2>&1 \
   && ok "2.764.6 units: a Hugging Face file asked first (HEAD, no redirect followed) - gated (with / without a token) and not found held back with the reason in words, Krea-2 and unknown answers go; a pod job with no heartbeat for 90 s failed with the reason, no data for 3 min said; the jobs detached; wired into ⬇ Models, the render's pod note" \
