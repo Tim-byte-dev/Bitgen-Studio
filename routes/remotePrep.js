@@ -18,12 +18,12 @@ function mount(app) {
   app.get("/api/pods/:id/comfy-update", wrap((req) => require("../lib/podComfyUpdate").state(req.params.id) || {}));
   app.post("/api/llm/start", (req, res, next) => {
     try {
-      const RM = require("../lib/remoteModels"), r = ((require("../lib/core").getConfig() || {}).rgpu) || {}, w = PL().whereOf(r, "llm");
-      if (!RM.podsMode() && !(w && require("../lib/gpuSplit").enabled() && require("../lib/gpuSplit").split().where !== "local")) return next();
+      const RM = require("../lib/remoteModels"), r = ((require("../lib/core").getConfig() || {}).rgpu) || {};
+      const w = require("../lib/remoteLlm").hostOf(r, "llm");   // 2.768.0: Remote mode with nothing picked = OpenRouter
       if (w !== "runpod" && w !== "openrouter") return next();
       // the pick is kept (config llm.last_file - the page saves it); the pod's LLM is set up with it when a prompt is first sent
       if (w === "runpod" && RM.podsMode()) { const s = PL().STATE.llm; if (s && s.phase === "ready" && s.file !== String((req.body || {}).file || "")) s.phase = "stale"; }
-      return res.json({ ok: true, remote: w, note: w === "runpod" ? "the LLM runs on your pod (Basic Settings ▸ GPU) - set up there when you send a prompt" : "the LLM runs on OpenRouter (Basic Settings ▸ GPU)" });
+      return res.json({ ok: true, remote: w, note: w === "runpod" ? "the LLM runs on your pod (☁ Remote generation docker) - set up there when you send a prompt" : "the LLM runs on OpenRouter (☁ Remote generation docker)" });
     } catch { return next(); }
   });
 }

@@ -1,5 +1,7 @@
-/* bitGen Studio — static/remoteprep.js (2.767.0): BASIC SETTINGS ▸ GPU - where the LLM / Vision LLM run in remote mode, and how
- * far bitGen is with getting them and the video style ready. window.H3RemotePrep (+ require() in Node for the pure part).
+/* bitGen Studio — static/remoteprep.js (2.767.0): where the LLM / Vision LLM run in remote mode, and how far bitGen is with
+ * getting them and the video style ready. window.H3RemotePrep (+ require() in Node for the pure part).
+ * 2.768.0: these rows are in the ☁ Remote generation docker (static/gpusplit.js #gpuRemoteOpts, moved by static/remotedock.js);
+ * Remote with nothing picked = OpenRouter (lib/remoteLlm.js hostOf); the prompt docker's lists follow (static/remotellm.js).
  *
  * Tim (verbatim): "when in remote mode, prepare the llm and video models for remote use" + "give user option to use openrouter
  * or runpod for llm/vllm or local"
@@ -32,7 +34,7 @@
     ["runpod", "RunPod", "Your pod: bitGen sets up llama.cpp there with the same GGUF as here (Pods) - or the RunPod vLLM endpoint (Serverless)"]];
   function build() {
     var box = $("sec-gpu"); if (!box || $("gpuLlmWhere") || !$("gpuEngine")) return !!$("gpuLlmWhere");
-    if (!$("rpPrepCss")) { var st = doc.createElement("style"); st.id = "rpPrepCss"; st.textContent = "#sec-gpu.gpuLocal #gpuLlmWhere{display:none!important}#gpuLlmWhere .rpRow{display:flex;gap:4px 12px;flex-wrap:wrap;align-items:center;margin-top:3px}#gpuLlmWhere .rpRow > span:first-child{font-size:.7rem;min-width:92px}#gpuLlmWhere .rpSt{font-size:.68rem;margin-left:96px}"; doc.head.appendChild(st); }
+    if (!$("rpPrepCss")) { var st = doc.createElement("style"); st.id = "rpPrepCss"; st.textContent = "#sec-gpu.gpuLocal #gpuLlmWhere,#gpuRemoteOpts.gpuLocal #gpuLlmWhere{display:none!important}#gpuLlmWhere .rpRow{display:flex;gap:4px 12px;flex-wrap:wrap;align-items:center;margin-top:3px}#gpuLlmWhere .rpRow > span:first-child{font-size:.7rem;min-width:92px}#gpuLlmWhere .rpSt{font-size:.68rem;margin-left:96px}"; doc.head.appendChild(st); }
     var w = doc.createElement("div"); w.id = "gpuLlmWhere"; w.style.marginTop = "6px";
     [["llm", "LLM"], ["vlm", "Vision LLM"]].forEach(function (k) {
       var row = doc.createElement("div"); row.className = "rpRow"; row.setAttribute("role", "radiogroup"); row.setAttribute("aria-label", k[1] + " runs on");
@@ -40,7 +42,8 @@
       CHOICES.forEach(function (c) {
         var l = doc.createElement("label"); l.className = "chk"; l.style.margin = "0"; l.title = c[2];
         var i = doc.createElement("input"); i.type = "radio"; i.name = "rp_" + k[0]; i.value = c[0];
-        i.onchange = function () { var b = picks(); b[k[0]] = c[0]; post("/api/remoteprep/where", b).then(paint); };
+        // 2.768.0: the prompt docker's LLM / Vision list follows the choice (static/remotellm.js listens to h3:rgpu)
+        i.onchange = function () { var b = picks(); b[k[0]] = c[0]; post("/api/remoteprep/where", b).then(function (v) { paint(v); try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } }); };
         l.appendChild(i); l.appendChild(doc.createTextNode(" " + c[1])); row.appendChild(l);
       });
       w.appendChild(row);

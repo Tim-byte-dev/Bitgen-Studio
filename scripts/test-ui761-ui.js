@@ -69,8 +69,8 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await ev(() => { if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(1800);
     await ev(() => H3RunPod.show(true));
     await p.waitForFunction(() => /1\.25/.test((document.getElementById("rpCost") || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
-    const cost = await ev(() => { const e = document.getElementById("rpCost"); return { t: e ? e.textContent : "", line: !!document.getElementById("gpuPodCost"), btn: document.getElementById("gpuRpDock").offsetParent !== null }; });
-    check("the 💲 RunPod docker (💲 RunPod in Basic Settings ▸ GPU, no 💲 line there now): 1 running at $0.69/h now, RunPod's bill today and this month",
+    const cost = await ev(() => { const e = document.getElementById("rpCost"); return { t: e ? e.textContent : "", line: !!document.getElementById("gpuPodCost"), btn: !!document.getElementById("gpuRpDock").closest("#rgdOpts") }; });   // 2.768.0: in the ☁ Remote generation docker
+    check("the 💲 RunPod docker (💲 RunPod in the ☁ Remote generation docker since 2.768.0, no 💲 line in Basic Settings): 1 running at $0.69/h now, RunPod's bill today and this month",
       cost.btn && !cost.line && /Running now1 pod · \$0\.69\/h/.test(cost.t) && /Today\$1\.25/.test(cost.t) && /This month\$1\.25/.test(cost.t), cost);
     await ev(() => H3RunPod.show(false));
     await ev(() => H3Pods.show(true)); await sleep(500);
@@ -83,8 +83,8 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       kinds: [...r.querySelectorAll("[data-pskind]")].map((c) => c.closest("label").textContent.trim() + (c.checked ? "*" : "")), save: !!(r.querySelector("[data-pssave]") || {}).disabled,
       tools: [...r.querySelectorAll(".psTools button")].map((x) => x.textContent), llm: !!r.querySelector("[data-psport]"), acts: [...r.querySelectorAll(".pdActs button")].map((x) => x.textContent), msg: (r.querySelector(".psMsg") || {}).textContent || "" }; });
     let r = await row();
-    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), ⬆ Nodes its styles need (2.764.2) + 💾 Save OFF; its own buttons below",
-      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "⬆ Nodes its styles need|💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
+    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), ⬆ Nodes its styles need (2.764.2), ⬆ Update ComfyUI (2.767.0) + 💾 Save OFF; its own buttons below",
+      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "⬆ Nodes its styles need|⬆ Update ComfyUI|💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
     // 2.763.0 (Tim: "can we use a dropdown of our styles for the mode selected ... add an all button so that it shows all styles")
     await ev(() => { const g = document.getElementById("genModeSel"); g.value = "image"; if (typeof g.onchange === "function") g.onchange(); g.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(500);   // the open item lists the 🖼 Image styles now (podsetup.js follows #genModeSel)

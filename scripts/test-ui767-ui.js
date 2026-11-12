@@ -52,7 +52,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
   await api("/api/gpusplit", { where: "remote", engine: { provider: "runpod", runpod: "pods" } });
   await api("/api/pods/costs?refresh=1").catch(() => {});
   const b = await chromium.launch();
-  const where0 = (await api("/api/remoteprep")).where || {}, or0 = await api("/api/openrouter");
+  const rp0 = await api("/api/remoteprep"), where0 = rp0.where_set || rp0.where || {}, or0 = await api("/api/openrouter");   // 2.768.0: where = the effective one, where_set = the choice
   await api("/api/openrouter", { key: "sk-or-ui767", model: "google/gemma-4-31b-it:free" });
   try {
     const p = await b.newPage({ viewport: { width: 1500, height: 1000 } }); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
@@ -65,7 +65,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       const h = document.querySelector('h2.sec[data-sec="gpu"]'), b = document.getElementById("sec-gpu"); if (h && b && getComputedStyle(b).display === "none") h.click(); });
     await sleep(500);
     const rows = await ev(() => ({ shown: getComputedStyle(document.getElementById("gpuLlmWhere")).display !== "none", llm: [...document.querySelectorAll('input[name="rp_llm"]')].map((i) => i.value), vlm: [...document.querySelectorAll('input[name="rp_vlm"]')].map((i) => i.value) }));
-    check("remote mode: Basic Settings ▸ GPU shows LLM and Vision LLM - Local / OpenRouter / RunPod", rows.shown && rows.llm.join() === "local,openrouter,runpod" && rows.vlm.join() === "local,openrouter,runpod", rows);
+    check("remote mode: the ☁ Remote generation docker (2.768.0; was Basic Settings ▸ GPU) shows LLM and Vision LLM - Local / OpenRouter / RunPod", rows.shown && rows.llm.join() === "local,openrouter,runpod" && rows.vlm.join() === "local,openrouter,runpod", rows);
     await ev(() => document.querySelector('input[name="rp_llm"][value="runpod"]').click());
     await p.waitForFunction(() => /set up on your pod when you send a prompt|on the pod/.test(document.getElementById("rpSt_llm").textContent), null, { timeout: 10000 }).catch(() => {});
     const s1 = await ev(() => document.getElementById("rpSt_llm").textContent);

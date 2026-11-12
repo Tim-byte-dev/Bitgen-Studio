@@ -93,7 +93,7 @@
     var b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "gpuPods"; b.style.cssText = "margin:4px 0 0 6px;font-size:.72rem;display:none";
     b.title = "Show / hide the PODS docker: RunPod's public templates, create a pod, your pods"; b.textContent = "🖥 PODS";
     b.onclick = function () { show(); };
-    box.appendChild(b);
+    ($("gpuOptBtns") || box).appendChild(b);   // 2.768.0: with the remote options (the ☁ Remote generation docker)
     // 2.761.0's 💲 line (what the pods cost) moved to the 💲 RunPod docker in 2.763.5 (static/runpoddock.js)
     return true;
   }

@@ -31,7 +31,12 @@
   /** what Local hides: the Remote servers / RunPod groups, the Both boxes, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod, the
    *  old 💲 line, ⚙ Settings ▸ Remote generation */
   var LOCAL_HIDE = ["gpuEngine", "gpuBoxes", "gpuDock", "gpuPods", "gpuRpDock", "gpuPodCost", "gpuSetup"];
-  var pure = { isReady: isReady, localView: localView, LOCAL_HIDE: LOCAL_HIDE };
+  /* 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker"): Basic Settings ▸ GPU keeps Local / Remote /
+   * Both, the line saying where each kind runs and ☁ Remote generation docker; the remote options (Remote servers / RunPod,
+   * the Both boxes, the LLM / Vision LLM rows - static/remoteprep.js, 🖥 PODS, 💲 RunPod) are built in #gpuRemoteOpts, which
+   * static/remotedock.js moves into the ☁ Remote generation docker. hostOf(): where the other scripts add their part. */
+  var OPTS = "gpuRemoteOpts";
+  var pure = { isReady: isReady, localView: localView, LOCAL_HIDE: LOCAL_HIDE, OPTS: OPTS };
   if (typeof module === "object" && module.exports && !root.document) { module.exports = pure; return; }
   var doc = root.document, S = { v: null, pick: null };
   function $(id) { return doc.getElementById(id); }
@@ -41,7 +46,8 @@
   function build() {
     var box = $("sec-gpu"); if (!box || $("gpuWhere")) return !!box;
     if (!$("gpuLocalCss")) { var st = el("style", { id: "gpuLocalCss" });   // 2.764.1: Local = the remote details hidden (other scripts set their own display)
-      st.textContent = LOCAL_HIDE.map(function (id) { return "#sec-gpu.gpuLocal #" + id; }).join(",") + "{display:none!important}";
+      st.textContent = LOCAL_HIDE.map(function (id) { return "#sec-gpu.gpuLocal #" + id + ",#" + OPTS + ".gpuLocal #" + id; }).join(",") + "{display:none!important}"
+        + "#rgdBody #gpuSetup,#rgdBody #gpuPods{display:none!important}#" + OPTS + "{display:flex;flex-direction:column;gap:2px}#" + OPTS + " .rgOptBtns{display:flex;flex-wrap:wrap;gap:4px}";
       doc.head.appendChild(st); }
     var g = el("div", { id: "gpuWhere", role: "radiogroup", "aria-label": "Where the work runs", style: "display:flex;gap:12px;flex-wrap:wrap" });
     [["local", "Local", "Every job on this computer (the default)"], ["remote", "Remote", "Every job on the remote GPU set up in Settings ▸ Remote generation"], ["both", "Both", "Pick what runs on the remote GPU - the rest runs on this computer"]].forEach(function (o) {
@@ -67,9 +73,14 @@
     var line = el("div", { id: "gpuLine", class: "hint", "aria-live": "polite", style: "margin-top:6px;font-size:.7rem" });
     var msg = el("div", { id: "gpuMsg", class: "hint", "aria-live": "polite", style: "font-size:.7rem" });
     var open = el("button", { type: "button", class: "ghost", id: "gpuSetup", style: "margin-top:4px;font-size:.72rem" }, "⚙ Settings ▸ Remote generation");
-    box.appendChild(g); box.appendChild(eng); box.appendChild(b); box.appendChild(line);
+    var opts = el("div", { id: OPTS, role: "group", "aria-label": "Remote generation options" });
+    opts.appendChild(el("h4", { style: "margin:4px 0 0" }, "Remote options"));
+    var omsg = el("div", { id: "gpuOptMsg", class: "hint", "aria-live": "polite", style: "font-size:.7rem" });
+    opts.appendChild(eng); opts.appendChild(b); opts.appendChild(omsg);
+    var obtn = el("div", { class: "rgOptBtns", id: "gpuOptBtns" }); obtn.appendChild(open); opts.appendChild(obtn);
+    box.appendChild(g); box.appendChild(line); box.appendChild(opts);
     eng.querySelectorAll('input[name="gpuProv"]').forEach(function (i) { i.onchange = function () { save({ engine: { provider: i.value } }).then(waiting); }; });
-    eng.querySelectorAll('input[name="gpuRunpod"]').forEach(function (i) { i.onchange = function () { save({ engine: { runpod: i.value } }).then(waiting); }; }); box.appendChild(msg); box.appendChild(open);
+    eng.querySelectorAll('input[name="gpuRunpod"]').forEach(function (i) { i.onchange = function () { save({ engine: { runpod: i.value } }).then(waiting); }; }); box.insertBefore(msg, opts);
     g.querySelectorAll("input").forEach(function (i) { i.onchange = function () { choose(i.value); }; });
     b.querySelectorAll("input").forEach(function (i) { i.onchange = function () { var o = {}; o[i.id.slice(4)] = i.checked; save(o); }; });
     open.onclick = function () {
@@ -86,7 +97,7 @@
     // 2.753.0: Both needs a remote GPU OR a remote LLM (OpenRouter alone: the LLMs there, every render here); Remote a GPU
     // 2.764.1: Remote / Both can always be picked - not set up yet = it waits (S.pick) with the remote options shown
     doc.querySelectorAll('input[name="gpuWhere"]').forEach(function (i) { i.checked = i.value === (S.pick || v.where); i.disabled = false; });
-    var loc = localView(v, S.pick); $("sec-gpu").classList.toggle("gpuLocal", loc);
+    var loc = localView(v, S.pick); $("sec-gpu").classList.toggle("gpuLocal", loc); if ($(OPTS)) $(OPTS).classList.toggle("gpuLocal", loc);
     $("gpuBoxes").style.display = (S.pick || v.where) === "both" ? "flex" : "none";
     var e = v.engine || { provider: "runpod", runpod: "serverless" };
     $("gpuEngine").style.display = loc ? "none" : "";
@@ -101,7 +112,7 @@
     // 2.746.0: in Both a style decides - R_ styles on the remote GPU, the others here; the boxes are for jobs with no style
     var L = function (r) { return r === "remote" ? llmName() : "this computer"; };
     $("gpuLine").textContent = loc ? "Every job runs on this computer."
-      : S.pick ? (S.pick === "remote" ? "Remote" : "Both") + " needs somewhere to render first: pick RunPod ▸ Pods (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation."
+      : S.pick ? (S.pick === "remote" ? "Remote" : "Both") + " needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation."
       : !v.remote && v.where === "both" ? "No remote GPU - pictures, videos and songs render on this computer · LLM: " + L(R.llm) + " · Vision LLM: " + L(R.vlm)
       : !v.remote ? "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation."
       : v.where === "both" ? "R_ styles: " + where("remote") + " · other styles: this computer · no style - Image: " + where(R.image) + " · Video + songs: " + where(R.video)
@@ -115,10 +126,14 @@
   /** 2.764.1: a choice of Local / Remote / Both - one not set up yet waits for its set-up (the remote options show) */
   function choose(w) {
     var v = S.v || {};
-    if (w !== "local" && !isReady(w, v)) { S.pick = w; $("gpuMsg").textContent = ""; paint(); return Promise.resolve(null); }
+    if (w !== "local" && !isReady(w, v)) { S.pick = w; $("gpuMsg").textContent = ""; paint(); showOpts(); return Promise.resolve(null); }
     S.pick = null;
     return save({ where: w }).then(function (r) { if (w === "local" && r && !r.error) closeRemote(); return r; });
   }
+  /** 2.768.0: the remote options are in the ☁ Remote generation docker - it opens when Remote / Both waits for a set-up */
+  function showOpts() { try { if (root.H3RemoteDock && H3RemoteDock.show) H3RemoteDock.show(true); } catch (e) { /* fine */ } }
+  /** where a remote option goes (static/podsdock.js, runpoddock.js, remoteprep.js) */
+  function hostOf() { return $(OPTS) || $("sec-gpu"); }
   /** the engine picked while Remote / Both waits: saved as soon as it can be */
   function waiting(v) { if (S.pick && v && !v.error && isReady(S.pick, v)) { var w = S.pick; S.pick = null; return save({ where: w }); } return v; }
   /** Local picked: the remote dockers close (their buttons are hidden now) */
@@ -130,9 +145,9 @@
     return root.fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (v) { if (v && v.where) { S.v = v; paint(); } return v; }).catch(function () { /* offline */ });
   }
   function save(b) {
-    $("gpuMsg").textContent = "";
+    $("gpuMsg").textContent = ""; if ($("gpuOptMsg")) $("gpuOptMsg").textContent = "";
     return post("/api/gpusplit", b).then(function (v) {
-      if (v.error) { $("gpuMsg").textContent = "✗ " + v.error; paint(); return v; }
+      if (v.error) { $("gpuMsg").textContent = "✗ " + v.error; if ($("gpuOptMsg") && !b.where) $("gpuOptMsg").textContent = "✗ " + v.error; paint(); return v; }
       S.v = v; paint();
       // 2.766.2 (Tim: "when local is selected in basic settings go to local mode ... in remote mode stop comfyi"): what the
       // switch did (ComfyUI here started / stopped - lib/modeSwitch.js), and the page's model lists read again at once
@@ -158,5 +173,5 @@
     doc.addEventListener("h3:rgpu", function () { if (!S.mine) load(); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3GpuSplit = Object.assign({ load: load, save: save, choose: choose, state: function () { return S; } }, pure);
+  root.H3GpuSplit = Object.assign({ load: load, save: save, choose: choose, hostOf: hostOf, state: function () { return S; } }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -8654,6 +8654,24 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   update is tried again on the next render and says why (with the end of the pod's log); after a successful one that still
   lacks a node, bitGen says to restart the pod.
 
+## Remote options in their docker, and the prompt docker's model lists in remote mode (2.768.0)
+
+- **Basic Settings ▸ GPU** now holds only Local / Remote / Both, the line saying where each kind of job runs, and
+  **☁ Remote generation docker**. Everything else for remote work is in that docker: Remote servers (RunPod / OpenRouter),
+  RunPod Serverless / Pods, the Both boxes, the **LLM** and **Vision LLM** rows (Local / OpenRouter / RunPod) and 💲 RunPod.
+  Picking Remote or Both before anything is set up opens the docker so you can pick RunPod ▸ Pods there.
+- **The prompt docker's LLM and Vision lists in remote mode** list the remote host's models instead of the GGUFs on this
+  computer:
+  - **OpenRouter** (the default when nothing is picked) - OpenRouter's **free** models; the Vision list shows the free ones
+    that take pictures. The list loads without a key, but sending a prompt needs your OpenRouter API key (free to make) -
+    ☁ Remote generation ▸ ⚙ Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter.
+  - **RunPod with Pods** - the GGUFs bitGen can put on your pod; the one you pick is set up there when you next send a prompt.
+  - **RunPod Serverless** - the vLLM endpoint's model.
+  Picking a model saves it; nothing is loaded on this computer. Switch back to Local and the lists show this computer's
+  models again (Settings ▸ LLM always lists them).
+- **⬆ Update ComfyUI** on a pod now installs ComfyUI's requirements with the same Python the pod's ComfyUI runs with, and
+  says the real error if a step fails.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -32,13 +32,15 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.waitForFunction(() => window.H3GpuSplit && H3GpuSplit.state().v && document.getElementById("gpuDock") && document.getElementById("gpuPods") && document.getElementById("gpuRpDock") && window.SecFloat && SecFloat.windows.pods, null, { timeout: 30000 });
     await ev(() => { if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(600);
     const look = () => ev(() => { const v = (id) => { const e = document.getElementById(id); return !!e && e.offsetWidth > 0 && getComputedStyle(e).display !== "none"; };
-      return { where: [...document.querySelectorAll('input[name="gpuWhere"]')].filter((i) => i.checked).map((i) => i.value).join(), radios: v("gpuWhere"), engine: v("gpuEngine"), dock: v("gpuDock"), pods: v("gpuPods"), rp: v("gpuRpDock"), setup: v("gpuSetup"), boxes: v("gpuBoxes"), line: document.getElementById("gpuLine").textContent }; });
+      return { where: [...document.querySelectorAll('input[name="gpuWhere"]')].filter((i) => i.checked).map((i) => i.value).join(), radios: v("gpuWhere"), engine: v("gpuEngine"), dock: v("gpuDock"), pods: v("gpuPods"), rp: v("gpuRpDock"), setup: v("gpuSetup"), boxes: v("gpuBoxes"), line: document.getElementById("gpuLine").textContent,
+        dockSetup: v("rgdSettings"), dockPods: v("rgdPodsDock") }; });   // 2.768.0: the remote options are in the ☁ Remote generation docker (⚙ / 🖥 PODS its own buttons)
     const l1 = await look();
     check("Local: only Local / Remote / Both and one line - no Remote servers / RunPod radio groups, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod, ⚙ Settings ▸ Remote generation",
       l1.where === "local" && l1.radios && !l1.engine && !l1.dock && !l1.pods && !l1.rp && !l1.setup && !l1.boxes && l1.line === "Every job runs on this computer.", l1);
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(1000);
+    await ev(() => SecFloat.show("rgen", true)); await sleep(400);   // 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker")
     const l2 = await look();
-    check("Remote: the radio groups, ☁ Remote generation docker, 🖥 PODS and 💲 RunPod show again", (await api("/api/gpusplit")).where === "remote" && l2.engine && l2.dock && l2.pods && l2.rp, l2);
+    check("Remote: ☁ Remote generation docker shows again; in it the radio groups, 🖥 PODS and 💲 RunPod", (await api("/api/gpusplit")).where === "remote" && l2.engine && l2.dock && l2.dockPods && l2.rp, l2);
     await ev(() => { SecFloat.show("pods", true); SecFloat.show("rgen", true); SecFloat.show("runpod", true); }); await sleep(400);
     await ev(() => { const i = document.querySelector('input[name="gpuWhere"][value="local"]'); i.checked = true; i.dispatchEvent(new Event("change")); }); await sleep(1000);   // (the dockers just opened float over Basic Settings)
     const l3 = await look(), open = await ev(() => ["pods", "rgen", "runpod"].filter((id) => (SecFloat.state(id) || {}).shown));
@@ -47,7 +49,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await api("/api/gpusplit", { where: "local", engine: { provider: "runpod", runpod: "serverless" } }); await ev(() => H3GpuSplit.load()); await sleep(600);
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(800);
     const l4 = await look();
-    check("nothing set up yet: Remote picked = it waits (not saved) and shows the Remote servers / RunPod choices and what to do", (await api("/api/gpusplit")).where === "local" && l4.where === "remote" && l4.engine && l4.setup && /needs somewhere to render first/.test(l4.line), l4);
+    check("nothing set up yet: Remote picked = it waits (not saved), the ☁ Remote generation docker opens with the Remote servers / RunPod choices (+ ⚙ Settings) and the line says what to do", (await api("/api/gpusplit")).where === "local" && l4.where === "remote" && l4.engine && l4.dockSetup && /needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker/.test(l4.line), l4);
     await p.check('input[name="gpuRunpod"][value="pods"]'); await sleep(1500);
     check("…RunPod ▸ Pods picked: Remote is saved", (await api("/api/gpusplit")).where === "remote" && (await api("/api/gpusplit")).engine.pods === true);
     check("no page errors", errs.length === 0, errs);

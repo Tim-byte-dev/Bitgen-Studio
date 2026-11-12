@@ -123,6 +123,7 @@ function mount(app) {
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   app.use(express.json());
   require("./remoteModels").mount(app);
+  require("./remoteLlm").mount(app);   // 2.768.0: the prompt docker's LLM / Vision lists in remote mode (lib/remoteLlm.js)
   require("./remotePrep").mount(app);   // 2.767.0: remote mode prepares the LLM / Vision LLM and the video style (lib/remotePrep.js, lib/podLlm.js)   // 2.766.0: FIRST after the JSON parser - remote mode answers /api/comfymodels + /api/modelmgr/cards with runpod/pods/remote_models.json; transfers; the ticked pods (lib/remoteModels.js)
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat

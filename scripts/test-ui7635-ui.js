@@ -111,8 +111,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => H3DockGroup.toggle(false));
 
     /* ---- 3 the 💲 RunPod docker */
-    const bs = await ev(() => { const b = document.getElementById("gpuRpDock"); return { has: !!b, shown: !!b && b.style.display !== "none", inGpu: !!b && !!b.closest("#sec-gpu"), cost: !!document.getElementById("gpuPodCost") }; });
-    check("Basic Settings ▸ GPU: a 💲 RunPod button (RunPod chosen) and no 💲 cost line any more", bs.has && bs.shown && bs.inGpu && !bs.cost, bs);
+    const bs = await ev(() => { const b = document.getElementById("gpuRpDock"); return { has: !!b, shown: !!b && b.style.display !== "none", inGpu: !!b && !!b.closest("#rgdOpts"), cost: !!document.getElementById("gpuPodCost") }; });
+    check("the ☁ Remote generation docker (2.768.0 - the remote options moved there from Basic Settings ▸ GPU): a 💲 RunPod button (RunPod chosen) and no 💲 cost line any more", bs.has && bs.shown && bs.inGpu && !bs.cost, bs);
     await ev(() => { SecFloat.show("runpod", false); document.getElementById("gpuRpDock").click(); });
     await p.waitForFunction(() => document.getElementById("rpBalance") && document.querySelector("#rpPods tbody tr") && document.querySelector("#rpGpus tbody tr"), null, { timeout: 15000 }).catch(() => {});
     const rp = await ev(() => ({ shown: (SecFloat.state("runpod") || {}).shown, bal: (document.getElementById("rpBalance") || {}).textContent, spend: (document.getElementById("rpSpend") || {}).textContent, lasts: (document.getElementById("rpLasts") || {}).textContent,

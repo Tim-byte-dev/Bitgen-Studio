@@ -3551,6 +3551,7 @@
 <script src="/static/podxfer.js"></script>  <!-- 2.766.0: a progress bar for each transfer to a pod - PODS docker, Model manager (H3PodXfer - GET /api/pods/transfers) -->
 <script src="/static/remotemodels.js"></script>  <!-- 2.766.0: Model manager in remote mode - runpod/pods/remote_models.json, ＋ From this computer, ＋ Link (H3RemoteModels - routes/remoteModels.js) -->
 <script src="/static/remoteprep.js"></script>  <!-- 2.767.0: Basic Settings ▸ GPU - LLM / Vision LLM: Local, OpenRouter or RunPod; remote mode prepares them and the video style (H3RemotePrep - routes/remotePrep.js) -->
+<script src="/static/remotellm.js"></script>  <!-- 2.768.0: remote mode - the prompt docker's LLM / Vision lists are the host's models (H3RemoteLlm - routes/remoteLlm.js) -->
 <script src="/static/bugreport.js"></script>  <!-- 2.522.0: 🐞 the Bug report docker, Ctrl+Alt+Shift+B (H3BugReport - lib/bugReport.js) -->
 <script src="/static/housegeo.js"></script>  <!-- 2.524.0: 🏠 the house geometry (H3HouseGeo - also lib/house.js) -->
 <!-- 2.630.0: the 🏠 House builder docker (static/housebuilder.js) is gone - it lives on in the 📏 Sketcher (furniture,
@@ -6222,9 +6223,14 @@ async function refreshLlms() {
     : j.engine_found ? "LLM: off" : "LLM: not installed";
   $("sbllm").style.color = j.running && j.running.ready ? "var(--ok)" : "var(--dim)";
   const sel = $("llmSel");
-  const prev = sel.value || store.get("llm", "");
-  sel.innerHTML = "";
-  if (j.external) {
+  // 2.768.0 (Tim: "when in remote mode clear the llm and vllm dropdown lists in prompt docker add the list of free llm and vl
+  // models from openrouter(default) or the selected host"): remote = the host's models (static/remotellm.js) - this
+  // computer's GGUFs stay in Settings ▸ LLM only
+  const remoteOwn = !!(window.H3RemoteLlm && H3RemoteLlm.owns("llm"));
+  const prev = remoteOwn ? store.get("llm", "") : sel.value || store.get("llm", "");
+  if (!remoteOwn) sel.innerHTML = "";
+  if (remoteOwn) { /* the Settings picker below still lists this computer's models */ }
+  else if (j.external) {
     sel.innerHTML = '<option value="">external endpoint (Settings → LLM)</option>';
     sel.disabled = true;
     return;
@@ -6244,6 +6250,7 @@ async function refreshLlms() {
     $("s_llmstatus2").textContent = j.running
       ? `serving ${j.running.file}${j.running.ready ? " — ready" : " — loading…"}`
       : j.engine_found ? "server not running" : "engine not installed";
+  if (remoteOwn) { H3RemoteLlm.paint("llm"); return; }
   if (!j.files.length) {
     sel.innerHTML = `<option value="">${j.engine_found ? "drop .gguf files into llm-models\\" : "run misc\\get-llama.ps1 first"}</option>`;
     return;

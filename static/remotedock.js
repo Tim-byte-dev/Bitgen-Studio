@@ -83,6 +83,9 @@
   function body() {
     var d = doc.createElement("div"); d.className = "rgd"; d.id = "rgdBody";
     d.innerHTML = '<div class="rgdNow" id="rgdNow" aria-live="polite"></div>'
+      // 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker"): Basic Settings ▸ GPU's remote options
+      // (#gpuRemoteOpts - static/gpusplit.js) are moved in here
+      + '<div id="rgdOpts"></div>'
       // 2.758.0 (Tim: "can you remove this My pods ... Pod shortcuts ... from remote generation docker and add to pod's card in
       // pods docker"): your pods, their loading bars and the shortcuts (☆ on a template's card) live in the PODS docker
       + '<span class="hint" id="rgdMsg" aria-live="polite"></span>'
@@ -113,6 +116,8 @@
       paintOn(); paintNow();
     }).catch(function () { /* offline */ });
   }
+  /** 2.768.0: Basic Settings ▸ GPU's remote options into the docker (once - their handlers move with them) */
+  function adopt() { var o = $("gpuRemoteOpts"), h = $("rgdOpts"); if (o && h && o.parentNode !== h) h.appendChild(o); return !!(o && h && o.parentNode === h); }
   function show(on) { if (!(root.SecFloat && SecFloat.show && SecFloat.windows && SecFloat.windows.rgen)) return false; var r = SecFloat.show("rgen", on); paintBtn(); return r; }
 
   function boot() {
@@ -124,11 +129,12 @@
       SecFloat.add({ id: "rgen", title: "Remote generation", w: 460, h: 560, body: body(), onShow: function () { load(); } });
       wire();
     }
+    adopt();
     load();
     doc.addEventListener("h3:rgpu", function () { load(); });
     var tb = doc.querySelector('#settings .stabs [data-stab="rgpu"]'); if (tb) tb.addEventListener("click", load);
     doc.addEventListener("click", function (e) { if (e.target && e.target.closest && e.target.closest(".df-x, .sf-x, [data-sfclose]")) setTimeout(paintBtn, 50); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3RemoteDock = { load: load, show: show, setOn: setOn, state: function () { return S; } };
+  root.H3RemoteDock = { load: load, show: show, setOn: setOn, adopt: adopt, state: function () { return S; } };
 })(typeof window !== "undefined" ? window : globalThis);

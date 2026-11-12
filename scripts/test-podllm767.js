@@ -47,7 +47,7 @@ const freePort = () => new Promise((ok) => { const s = net.createServer().listen
   check("RunPod + Pods: the LLM goes to the pod's server (through its ComfyUI address); Local: llama-server here (null)", asked === "llm" && /\/bitgen_llm\/llm\/v1\/chat\/completions$/.test(t1.url) && t2 === null, { t1, t2 });
   CFG.rgpu.llm_where = { llm: "openrouter" };
   let e1 = null; try { await G.llmTarget("llm"); } catch (e) { e1 = e; }
-  check("OpenRouter not set up: said where to set it up", e1 && /OpenRouter is not set up - Settings ▸ Remote generation/.test(e1.message));
+  check("OpenRouter not set up: said where to set it up", e1 && /OpenRouter is not set up - add its API key .*Settings ▸ Remote generation/.test(e1.message));
   CFG.rgpu.openrouter = { key: "or_k", model: "openai/gpt-x" };
   const t3 = await G.llmTarget("llm");
   check("OpenRouter set up: its model", t3 && t3.model === "openai/gpt-x" && /openrouter/.test(t3.url), t3);

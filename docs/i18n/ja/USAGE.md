@@ -5023,6 +5023,17 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - リモートモードで LLM が RunPod か OpenRouter の場合、LLM ドロップダウンを変えてもこのコンピューターには読み込みません。
 - **⬆ Update ComfyUI**（PODS ▸ My pods、各ポッド）：ポッドの ComfyUI を今すぐ最新版に更新します - git pull（固定または編集されたチェックアウトは ComfyUI 自身の master へ）、requirements、ComfyUI の再起動 - 進み具合を表示します。失敗した自動更新は次のレンダーで再試行され、理由（ポッドのログの末尾付き）を表示します。成功したのにノードがまだない場合は、ポッドの再起動を促します。
 
+## リモート設定は専用ドッカーへ、リモートモードのプロンプトドッカーのモデル一覧 (2.768.0)
+<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 4482a95f5b9d -->
+
+- **基本設定 ▸ GPU** に残るのは、ローカル / リモート / 両方、各ジョブの実行場所を示す行、そして
+  **☁ Remote generation docker** だけになりました。リモート用のほかの設定はすべてそのドッカーにあります: リモートサーバー（RunPod / OpenRouter）、RunPod の Serverless / Pods、「両方」のチェックボックス、**LLM** と **Vision LLM** の行（ローカル / OpenRouter / RunPod）、💲 RunPod。何も設定していないうちにリモートか両方を選ぶと、ドッカーが開くので、そこで RunPod ▸ Pods を選べます。
+- **リモートモードのプロンプトドッカーの LLM と Vision の一覧**には、このコンピューターの GGUF ではなく、リモート側のモデルが表示されます:
+  - **OpenRouter**（何も選んでいないときの既定）- OpenRouter の**無料**モデル。Vision の一覧には、画像を受け取れる無料モデルが表示されます。一覧はキーなしで読み込めますが、プロンプトを送るには OpenRouter の API キー（無料で作れます）が必要です - ☁ Remote generation ▸ ⚙ 設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter。
+  - **RunPod（Pods）** - bitGen がポッドに入れられる GGUF。選んだものは、次にプロンプトを送ったときにポッドで準備されます。
+  - **RunPod Serverless** - vLLM エンドポイントのモデル。モデルを選ぶと保存されます。このコンピューターでは何も読み込みません。ローカルに戻すと、一覧はこのコンピューターのモデルに戻ります（設定 ▸ LLM にはいつも表示されます）。
+- ポッドの **⬆ Update ComfyUI** は、ポッドの ComfyUI が使っているのと同じ Python で ComfyUI の必要なパッケージをインストールするようになり、途中で失敗したときは本当のエラーを表示します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

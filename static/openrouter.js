@@ -102,7 +102,7 @@
       if (j.error) { say("✗ " + j.error, false); return; }
       S.models = j.models || []; paintModels();
       var nf = S.models.filter(function (m) { return m.free; }).length;
-      var mm = $("rgOrMsg"); mm.style.color = ""; mm.textContent = S.models.length + " models · " + nf + " free";
+      var mm = $("rgOrMsg"); if (mm) { mm.style.color = ""; mm.textContent = S.models.length + " models · " + nf + " free"; }
     }).catch(function () { say("✗ OpenRouter could not be reached", false); });
   }
   function paint() {
@@ -159,7 +159,8 @@
       };
     }
     var go = function () { if (host._draw) host._draw(); };
-    (S.v ? Promise.resolve() : load()).then(function () { if (!S.models.length && S.v && S.v.key) return models(false); }).then(go, go);
+    // 2.768.0: OpenRouter lists its models without a key - the list shows before one is added
+    (S.v ? Promise.resolve() : load()).then(function () { if (!S.models.length && !S.asked) { S.asked = true; return models(false); } }).then(go, go);
   }
   root.H3OpenRouter = { load: load, models: models, picker: picker, match: match, state: function () { return S; } };
 })(typeof window !== "undefined" ? window : globalThis);

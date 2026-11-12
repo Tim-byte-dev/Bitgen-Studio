@@ -161,7 +161,8 @@
       b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "gpuRpDock"; b.style.cssText = "margin:4px 0 0 6px;font-size:.72rem;display:none";
       b.title = "Show / hide the 💲 RunPod docker: your balance, what your pods cost, RunPod's GPU prices"; b.textContent = "💲 RunPod";
       b.onclick = () => show();
-      const pods = $("gpuPods"); if (pods && pods.parentNode === box) pods.after(b); else box.appendChild(b);
+      const pods = $("gpuPods"), host = $("gpuOptBtns") || box;   // 2.768.0: with the remote options (the ☁ Remote generation docker)
+      if (pods && pods.parentNode === host) pods.after(b); else host.appendChild(b);
     }
     return b;
   }

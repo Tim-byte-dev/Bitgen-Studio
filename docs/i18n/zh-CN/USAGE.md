@@ -5258,6 +5258,19 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **⬆ Update ComfyUI**（PODS ▸ My pods，每个 Pod 上）：立即把 Pod 的 ComfyUI 更新到最新版本——git pull（固定或修改过的检出会切换到 ComfyUI 自己的 master）、requirements、重启 ComfyUI——并显示进度。失败的自动更新会在下一次渲染时重试并说明原因（附 Pod
   日志的末尾）；更新成功但仍缺少节点时，bitGen 会提示重启 Pod。
 
+## 远程选项移到专用停靠窗，以及远程模式下提示停靠窗的模型列表 (2.768.0)
+<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 4482a95f5b9d -->
+
+- **基本设置 ▸ GPU** 现在只保留本地 / 远程 / 两者、说明每类任务在哪里运行的一行，以及
+  **☁ Remote generation docker**。远程工作的其他选项都在该停靠窗中：远程服务器（RunPod / OpenRouter）、
+  RunPod Serverless / Pods、“两者”的复选框、**LLM** 和 **Vision LLM** 两行（本地 / OpenRouter / RunPod）以及 💲 RunPod。在尚未设置任何内容时选择远程或两者，会打开该停靠窗，你可以在那里选择 RunPod ▸ Pods。
+- **远程模式下提示停靠窗的 LLM 和 Vision 列表**显示远程主机的模型，而不是本机上的 GGUF：
+  - **OpenRouter**（未选择时的默认）- OpenRouter 的**免费**模型；Vision 列表显示能接收图片的免费模型。列表无需密钥即可加载，但发送提示需要你的 OpenRouter API 密钥（可免费创建）- ☁ Remote generation ▸ ⚙ 设置 ▸ Remote generation ▸
+    🧠 LLM ▸ OpenRouter。
+  - **RunPod（Pods）** - bitGen 能放到你的 Pod 上的 GGUF；你选择的模型会在下次发送提示时在 Pod 上完成设置。
+  - **RunPod Serverless** - vLLM 端点的模型。选择模型后即保存，不会在本机加载任何内容。切换回本地后，列表会再次显示本机的模型（设置 ▸ LLM 始终列出它们）。
+- Pod 上的 **⬆ Update ComfyUI** 现在用与 Pod 上 ComfyUI 相同的 Python 安装 ComfyUI 所需的软件包，某一步失败时会显示真正的错误。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

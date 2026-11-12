@@ -45,7 +45,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const v0 = await api("/api/remotegpu"), g0 = await api("/api/gpusplit");
   await api("/api/remotegpu/use", { mode: "local" });
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI754" } });
-  await api("/api/gpusplit", { where: "local" });
+  await api("/api/gpusplit", { where: "local", engine: { provider: "runpod", runpod: "serverless" } });   // 2.768.0: a known engine (RunPod ▸ Pods left by another test lets Remote save at once)
   await api("/api/remotegen/enabled", { on: false });
   const b = await chromium.launch();
   try {
@@ -72,6 +72,10 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await ev(() => H3GpuSplit.choose("remote")); await sleep(900);   // 2.764.1: on Local the remote details are hidden - Remote shows them
     check("…Basic Settings ▸ GPU shows, with \"☁ Remote generation docker\" in it - and no status-bar button for the docker", (await gpuShown()) && (await ev(() => !!document.querySelector("#sec-gpu #gpuDock")))
       && !(await ev(() => /Remote generation/.test(document.getElementById("statusbar").textContent))));
+    // 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker"): Remote waiting for its set-up opens the docker
+    // with the remote options in it
+    check("2.768.0: Remote waiting for a set-up opens the ☁ Remote generation docker, the remote options in it", await ev(() => SecFloat.state("rgen").shown && !!document.querySelector("#rgdOpts #gpuEngine") && document.getElementById("gpuEngine").offsetWidth > 0));
+    await ev(() => SecFloat.show("rgen", false)); await sleep(400);
     await p.click("#gpuDock"); await sleep(1500);
     const d0 = await ev(() => ({ shown: SecFloat.state("rgen").shown, body: !!document.getElementById("rgdBody") && document.getElementById("rgdBody").offsetWidth > 0, pressed: document.getElementById("gpuDock").getAttribute("aria-pressed"),
       now: document.getElementById("rgdNow").textContent, title: (document.getElementById("rgdBody").closest(".df-panel, .df-float, [data-dfid]") || {}).textContent || "" }));
@@ -101,7 +105,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await api("/api/remotegpu/save", { runpod: Object.assign({ key: "", pod_id: "", pod_name: "", cost_hr: 0, port: 8188 }, v0.runpod || {}) }).catch(() => {});
     for (const c of ((await api("/api/remotegen").catch(() => ({}))).shortcuts || [])) await api("/api/remotegen/shortcuts", { remove: c.id }).catch(() => {});
     await api("/api/remotegen/enabled", { on: null }).catch(() => {});
-    await api("/api/gpusplit", { where: "local", llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
+    await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
   }
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

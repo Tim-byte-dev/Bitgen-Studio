@@ -85,7 +85,8 @@ const R = require("../lib/remoteGpu.js");
   });
   await new Promise((r) => srv.listen(0, "127.0.0.1", r));
   process.env.H3_RUNPOD_SLS_API = `http://127.0.0.1:${srv.address().port}/v2`;
-  check("no vLLM endpoint: the LLMs stay here (llmTarget null) even on Remote", (G.set({ where: "remote" }), (await G.llmTarget("llm")) === null) && G.view().vllm_ready === false);
+  // 2.768.0 (Tim: "... free llm and vl models from openrouter(default) or the selected host"): Remote with nothing picked = OpenRouter
+  check("no vLLM endpoint on Remote: the LLM goes to OpenRouter (2.768.0 default) - with no key, said where to add it", (G.set({ where: "remote" }), await G.llmTarget("llm").then(() => false, (e) => /OpenRouter is not set up - add its API key/.test(e.message))) && G.view().vllm_ready === false);
   G.saveVllm({ endpoint: "llmep", vlm_endpoint: "vlmep" });
   G.set({ where: "both", llm: true, vlm: false });
   let t = await G.llmTarget("llm");

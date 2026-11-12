@@ -13133,6 +13133,17 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker, when in remote mode clear the llm and vllm dropdown lists in prompt docker add the list of free llm and vl models from openrouter(default) or the selected host in our prompt llm and vllm dropdowns." + his log: "✗ not updated: installing what the new ComfyUI needs (pip) - the pod's log ends: Reset branch 'master'")
+node scripts/test-remotellm768.js > /tmp/remotellm768.log 2>&1 \
+  && ok "2.768.0 remote mode's LLM / Vision lists (stand-in OpenRouter): OpenRouter's free models by default (no key needed to list), the pod's GGUFs on RunPod ▸ Pods, the vLLM endpoint's model on Serverless; the pick saved and used by the LLM calls; Local = this computer's lists" \
+  || { bad "2.768.0 remote LLM lists"; grep -a "^FAIL" -A1 /tmp/remotellm768.log | head -12; }
+node scripts/test-comfyupd768.js > /tmp/comfyupd768.log 2>&1 \
+  && ok "2.768.0 ComfyUI's update on the pod (real Python, a venv, a git repo): pip with ComfyUI's own Python + environment when it was started as a bare 'python'; a step that raises says why" \
+  || { bad "2.768.0 ComfyUI update pip step"; grep -a "^FAIL" -A1 /tmp/comfyupd768.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui768-ui.js > /tmp/ui768ui.log 2>&1 \
+  && ok "2.768.0 browser test: the remote options in the ☁ Remote generation docker; the prompt docker's LLM / Vision lists = OpenRouter's free models (Remote), the pod's GGUFs (RunPod), this computer's again (Local); a pick saved, nothing started here - or SKIP without playwright" \
+  || { bad "2.768.0 remote docker + LLM lists browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui768ui.log | head -14; }
+
 # ---- 2.767.0 (Tim: "when in remote mode, prepare the llm and video models for remote use" + "give user option to use openrouter or runpod for llm/vllm or local" + "when user presses enter button to send prompt to llm" + OpenRouter's reasoning example: "the model should be able to be changed. it would be good to list/search open routers models and choose one from the list")
 node scripts/test-podllm767.js > /tmp/podllm767.log 2>&1 \
   && ok "2.767.0 the LLM / Vision LLM Local / OpenRouter / RunPod; the pod's LLM job run for real (GGUF downloaded, ComfyUI route, ComfyUI restarted, the server answering through ComfyUI's address); set up on the first prompt and waited for; the LLM not loaded here when remote; the video style made ready ahead" \
