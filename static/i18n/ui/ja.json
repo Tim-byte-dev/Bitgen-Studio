@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "0db45afa1137",
- "count": 9279,
+ "v": "3688dc4eb8f8",
+ "count": 9282,
  "patternCount": 1113,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3864,6 +3864,7 @@
   "New key": "新しいキー",
   "New layer (Ctrl+Shift+N)": "新規レイヤー (Ctrl+Shift+N)",
   "New layer, or a component of the active shape layer": "新規レイヤー、またはアクティブなシェイプレイヤーのコンポーネント",
+  "New members confirm their email address with a 6-digit code we send to it. We do this to prevent spam sign-ups and to make sure a real person is joining": "新しいメンバーは、送られてくる 6 桁のコードでメールアドレスを確認します。スパムの登録を防ぎ、本物の人が参加していることを確かめるためです",
   "New movie": "新規ムービー",
   "New movie clears the cast, chapters and scenes (files are stashed, renders stay) — press 🆕 again to confirm": "新規ムービーはキャスト、チャプター、シーンをクリアします（ファイルは退避され、レンダリング結果は残ります）— 確定するにはもう一度 🆕 を押してください",
   "New movie — clears the cast, chapters and scenes from the docker. Nothing is deleted: the cast is stashed under movies/, renders stay in the gallery": "新規ムービー — ドッカーからキャスト、チャプター、シーンを消去します。何も削除されません：キャストは movies/ に保管され、レンダリング結果はギャラリーに残ります",
@@ -7027,6 +7028,7 @@
   "Waveform - drag to select a part": "波形 - ドラッグで一部を選択",
   "Waves": "波",
   "Way": "方法",
+  "We confirm every new member's email address to prevent spam and to make sure a real person is joining": "スパムを防ぎ、本物の人が参加していることを確かめるため、新しいメンバー全員のメールアドレスを確認しています",
   "We dance until the light": "夜明けまで踊ろう",
   "We emailed a 6-digit code to": "6 桁の確認コードを次のアドレスに送りました：",
   "WeVisOne-VL": "WeVisOne-VL",
@@ -7215,6 +7217,7 @@
   "Yellow": "イエロー",
   "You": "あなた",
   "You become friends": "友達になります",
+  "You don't have to be a member to use bitGen Studio - you only need to be a member to talk to the community": "bitGen Studio を使うのにメンバーになる必要はありません - メンバーが必要なのはコミュニティで話すときだけです",
   "Your RunPod pods, the templates and the ★ shortcuts": "RunPod の Pod、テンプレート、★ ショートカット",
   "Your details": "あなたの情報",
   "Your electricity price (on your bill, e.g. 0.35 AUD per kWh) and the daily supply charge (the fixed amount per day, e.g. 1.10). Every finished job's ⚡ card, its": "電気料金（請求書に記載、例：1 kWh あたり 0.35 AUD）と 1 日あたりの基本料金（1 日ごとの固定額、例：1.10）。完了した各ジョブの ⚡ カード、その",

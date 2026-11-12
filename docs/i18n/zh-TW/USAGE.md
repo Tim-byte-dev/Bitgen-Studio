@@ -5163,6 +5163,12 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **在 Pod 上 clone，不從你的電腦傳送：** 風格的工作流需要的節點包會從它的 git 地址在 Pod 上 clone（從 GitHub 到 RunPod 很快）。用 git 安裝的包會按相同的提交 clone。這裡沒有 git 檢出的包會先查詢 - bitGen 自己的節點清單、它的 pyproject.toml、你電腦上 ComfyUI-Manager 的節點清單、Comfy Registry - 有版本標籤時按該標籤 clone（否則用最新的，日誌會說明）。位於更大倉庫裡的包（例如 ComfyUI-H3-NativeAudioLock）會 clone 到旁邊再連結進來。
 - **只有在別無他法時才上傳：** 哪裡都找不到地址的包（你自己做的）、單個 .py，或 Pod 無法 clone 的包（私有倉庫）會從你的電腦上傳 - 日誌會寫出它的名字和原因。
 
+## 加入社群：為什麼要郵箱驗證碼 (2.764.4)
+<!-- en: joining-the-community-why-the-email-code-2-764-4 79acd925f991 -->
+
+- **使用或下載 bitGen Studio 不需要成為會員** - 只有在社群裡交流（Help 房間、聊天和好友，以及無需等待管理員稽核就在 Discussions 發帖；遊客仍可在那裡發帖，需管理員批准）才需要成為會員。
+- **新會員需確認郵箱地址** - 用傳送到郵箱的 6 位驗證碼。這是為了防止垃圾註冊，並確認加入的是真實的人。在輸入驗證碼之前，新帳戶可以登入，但不能發帖、聊天或加好友；從未確認的帳戶會在一週後刪除。💬 Community 和網站的加入表單都會這樣說明。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

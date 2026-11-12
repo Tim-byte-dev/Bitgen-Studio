@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "494ef12ef05c",
- "count": 9279,
+ "v": "8d2f847cea34",
+ "count": 9282,
  "patternCount": 1113,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -3864,6 +3864,7 @@
   "New key": "新密钥",
   "New layer (Ctrl+Shift+N)": "新建图层 (Ctrl+Shift+N)",
   "New layer, or a component of the active shape layer": "新图层，或当前形状图层的一个组件",
+  "New members confirm their email address with a 6-digit code we send to it. We do this to prevent spam sign-ups and to make sure a real person is joining": "新会员需用我们发送到邮箱的 6 位验证码确认邮箱地址。这样做是为了防止垃圾注册，并确认加入的是真实的人",
   "New movie": "新建影片",
   "New movie clears the cast, chapters and scenes (files are stashed, renders stay) — press 🆕 again to confirm": "新建影片会清空角色阵容、章节和场景（文件会被暂存，渲染结果保留）— 再按一次 🆕 确认",
   "New movie — clears the cast, chapters and scenes from the docker. Nothing is deleted: the cast is stashed under movies/, renders stay in the gallery": "新建影片——从面板中清空演员表、章节和场景。不会删除任何内容：演员表暂存在 movies/ 下，渲染结果保留在图库中",
@@ -7027,6 +7028,7 @@
   "Waveform - drag to select a part": "波形 - 拖动以选择一部分",
   "Waves": "波浪",
   "Way": "方式",
+  "We confirm every new member's email address to prevent spam and to make sure a real person is joining": "我们会确认每位新会员的邮箱地址，以防止垃圾信息并确认加入的是真实的人",
   "We dance until the light": "我们一直跳到天亮",
   "We emailed a 6-digit code to": "我们已把 6 位验证码发到",
   "WeVisOne-VL": "WeVisOne-VL",
@@ -7215,6 +7217,7 @@
   "Yellow": "黄色",
   "You": "你",
   "You become friends": "你们成为好友",
+  "You don't have to be a member to use bitGen Studio - you only need to be a member to talk to the community": "使用 bitGen Studio 不需要成为会员 - 只有在社区里交流才需要成为会员",
   "Your RunPod pods, the templates and the ★ shortcuts": "你的 RunPod Pod、模板和 ★ 快捷方式",
   "Your details": "你的资料",
   "Your electricity price (on your bill, e.g. 0.35 AUD per kWh) and the daily supply charge (the fixed amount per day, e.g. 1.10). Every finished job's ⚡ card, its": "你的电价（见电费账单，例如每 kWh 0.35 AUD）和每日供电费（每天的固定金额，例如 1.10）。每个已完成任务的 ⚡ 卡片、其",

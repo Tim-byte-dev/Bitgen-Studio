@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.4 (Tim: "make it so that new members have to verify their email - add a note that we do this to prevent spam emails and to verify the user is a real person and say, you don't have to be a member to use or download bitgen studio - you only need to be a member to talk to the community")
+node scripts/test-joinnote7644.js > /tmp/joinnote7644.log 2>&1 \
+  && ok "2.764.4 units: the join form says no membership is needed to use bitGen Studio and why the email code (spam, a real person); the code box too; the server still needs the code (2.713.0)" \
+  || { bad "2.764.4 join note units"; grep -a "^FAIL" -A1 /tmp/joinnote7644.log | head -8; }
 # ---- 2.764.3 (Tim: "add the custom nodes needed from their git repos to the pod if the style needs it. it is tooo slow from the pc")
 node scripts/test-podnodes7643.js > /tmp/podnodes7643.log 2>&1 \
   && ok "2.764.3 units: a pack without a checkout is found (bitGen's list incl. a folder inside a repo, pyproject, ComfyUI-Manager's list, the Comfy Registry stand-in) and cloned on the pod at its version's tag (a real git repo); uploaded only when nowhere / the clone fails" \

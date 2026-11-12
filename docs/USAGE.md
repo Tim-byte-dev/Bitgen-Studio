@@ -8519,6 +8519,15 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **Uploaded only when there is no other way:** a pack with no address anywhere (one you made yourself), a single .py, or
   one the pod cannot clone (a private repository) is uploaded from your computer - the log names it and says why.
 
+## Joining the community: why the email code (2.764.4)
+
+- **You don't have to be a member to use or download bitGen Studio** - you only need to be a member to talk to the community
+  (the Help room, chat and friends, and posting in the Discussions without waiting for an admin; guests can still post there
+  with an admin's approval).
+- **New members confirm their email address** with a 6-digit code sent to it - to prevent spam sign-ups and to make sure a
+  real person is joining. Until the code is typed, a new account can sign in but not post, chat or add friends; an account
+  never confirmed is removed after a week. The join forms in 💬 Community and on the website say so.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

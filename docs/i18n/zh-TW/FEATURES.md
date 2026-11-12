@@ -393,6 +393,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Basic Settings ▸ GPU 選 Local 時不顯示遠端內容** — 選 Local 時只顯示 Local · Remote · Both 和「Every job runs on this computer.」：Remote servers / RunPod 選項、☁ Remote generation docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都會隱藏，這些停靠窗也會關閉；尚未設定任何遠端時選 Remote 或 Both 會等待並顯示這些選項，直到有可渲染的地方；等待 Pod 的渲染會在 Queue 裡顯示 Pod 正在做什麼（而不是「waiting for the GPU」），傳送到 Pod 的模型會顯示已傳送的 GB、百分比、速度和剩餘時間。 *Where:* Basic Settings ▸ GPU；Queue。 *Since:* 2.764.1
 - **Pod 上只放工作流用到的自訂節點** — Pod 只會得到其風格的工作流用到、而 Pod 上沒有的自訂節點包（從這臺電腦的 ComfyUI 查詢，按相同版本 clone 或上傳）- 為風格建立的 Pod、預設的 ▶ 以及加到 Pod 上的風格都是如此；任何 Pod 都可用 ⬆ Nodes its styles need；日誌會說明每一步（小包顯示 KB、解包、安裝第 n / m 個），Pod 3 分鐘無法彙報時會帶著原因結束這一步。 *Where:* 🖥 PODS ▸ My pods；Presets；Pod 模式下的 Generate。 *Since:* 2.764.2
 - **風格的自訂節點來自它們的 git 地址** — 風格需要的節點包會在 Pod 上 clone（用 git 安裝的按相同提交；其他的從 bitGen 的節點清單、pyproject.toml、ComfyUI-Manager 的清單或 Comfy Registry 查詢，並按其版本標籤 clone；位於更大倉庫裡的包會連結進來）；只有沒有地址或 Pod 無法 clone 的包（私有）才會從你的電腦上傳，日誌會說明原因。 *Where:* Pod 模式 - Generate、預設、⬆ Nodes its styles need。 *Since:* 2.764.3
+- **加入社群時說明為什麼要郵箱驗證碼** — 加入表單（💬 Community 和網站）說明使用或下載 bitGen Studio 不需要成為會員 - 只有在社群裡交流才需要 - 並說明新會員用 6 位驗證碼確認郵箱，是為了防止垃圾註冊並確認加入的是真實的人。 *Where:* 💬 Community ▸ Join；tigerart.com.au ▸ Account。 *Since:* 2.764.4
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

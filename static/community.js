@@ -131,12 +131,16 @@
   function joinView(b) {
     const pad = el("div", { class: "cmpad" });
     pad.appendChild(el("div", { text: "Join the bitGen Community: ask for help in the Help room, and add friends to chat with." }));
+    // 2.764.4 (Tim: "add a note that we do this to prevent spam emails and to verify the user is a real person and say, you
+    // don't have to be a member to use or download bitgen studio - you only need to be a member to talk to the community")
+    pad.appendChild(el("div", { class: "hint", id: "cmNoNeed", text: "You don't have to be a member to use bitGen Studio - you only need to be a member to talk to the community." }));
     const f = (id, label, type, ph) => [el("label", { for: id, text: label }), el("input", { id, type, placeholder: ph || "", autocomplete: type === "password" ? "current-password" : "off", spellcheck: "false" })];
     pad.append(...f("cmHandle", "User ID (3-24 letters, numbers, _ . -)", "text", "your_id"), ...f("cmPass", "Password (8 or more characters)", "password", ""));
     // 2.713.0: a new ID also needs a name and an email address (a code goes to it); a sign-in needs neither
     const fresh = el("fieldset", { class: "cmnew" }, [el("legend", { text: "New here? Also:" }),
       ...f("cmFirst", "First name", "text", ""), ...f("cmLast", "Last name", "text", ""), ...f("cmEmail", "Email address (a code goes to it)", "email", ""),
       ...f("cmDisplay", "Display name (what others see - your user ID if empty)", "text", ""),
+      el("div", { class: "hint", id: "cmWhyCode", text: "New members confirm their email address with a 6-digit code we send to it. We do this to prevent spam sign-ups and to make sure a real person is joining." }),
       el("div", { class: "hint", text: "Only the community's admins see your name and email address. Nobody else does." })]);
     pad.appendChild(fresh);
     const go = (mode) => async () => {
@@ -167,6 +171,7 @@
         btn("Send a new code", "Another code to the same address", async () => { const j = await call("resend_code"); say(j.ok ? (j.mail_sent ? "a new code is on its way" : "the email did not go - try again later") : j.error, !j.ok || !j.mail_sent); }),
         btn("Wrong address?", "Change your name or email address", () => { S.editProfile = true; render(); })]),
       el("div", { class: "hint", style: "margin-top:8px", text: "No email? Look in the spam folder. The code works for 15 minutes." }),
+      el("div", { class: "hint", text: "We confirm every new member's email address to prevent spam and to make sure a real person is joining." }),
       el("div", { class: "rowbtns", style: "margin-top:12px" }, [btn("Sign out", "Sign out on this computer", async () => { await api("/api/community/signout", {}); S.joined = false; S.profile = null; render(); })]));
     b.appendChild(pad); setTimeout(() => code.focus(), 0);
   }
