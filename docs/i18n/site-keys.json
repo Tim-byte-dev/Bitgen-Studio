@@ -470,7 +470,7 @@
         "Only the community's admins can do this.",
         "Only the community's admins can see this.",
         "Only the community's admins see your name and email address. A code goes to the address to confirm it.",
-        "Only the custom nodes your workflows use go with it: a pod gets the custom node packs its styles' workflows use and it lacks - the ones from GitHub cloned on the pod at the same version, the rest (and private ones) uploaded - then its ComfyUI restarts. ⬆ Nodes its styles need in a pod's item does the same for any pod. While a render waits for its pod, a line over the status bar and the Queue say what the pod is doing - a model being sent shows how far it is.",
+        "Only the custom nodes your workflows use go with it, cloned on the pod from their git address: a pod gets the custom node packs its styles' workflows use and it lacks - found in bitGen's node list, the pack's own pyproject.toml, ComfyUI-Manager's list or the Comfy Registry, at the same version - then its ComfyUI restarts. Only a pack with no address (one you made) or a private one is uploaded from your computer. ⬆ Nodes its styles need in a pod's item does the same for any pod. While a render waits for its pod, a line over the status bar and the Queue say what the pod is doing - a model being sent shows how far it is.",
         "Open",
         "Open a terminal in that folder and run {0}.",
         "Open source",

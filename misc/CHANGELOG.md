@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.764.3** — A Style's Custom Nodes Are Cloned on the Pod From Their Git Address (Found in bitGen's Node List, Their pyproject.toml, ComfyUI-Manager's List or the Comfy Registry, at Their Version's Tag), a Pack Inside a Bigger Repo Linked In; Uploaded From Your Computer Only When There Is No Address or the Clone Fails
 - **2.764.2** — Only the Custom Nodes Your Workflows Use Go on a Pod (Not Every Pack of This Computer); ⬆ Nodes Its Styles Need; Node Uploads Say Each Step (KB for a Small Pack, Unpacking, Installing n of m) and Stop With the Reason When the Pod Cannot Report
 - **2.764.1** — Basic Settings ▸ GPU on Local Shows Nothing Remote: the Remote Servers / RunPod Choices, ☁ Remote Generation Docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸ Remote Generation Are Hidden and Those Dockers Close; Remote or Both With Nothing Set Up Waits and Shows the Choices; a Render Waiting for Its Pod Says What the Pod Is Doing in the Queue, and a Model Sent to the Pod Shows GB Sent, %, Speed and Time Left
 - **2.764.0** — 📦 Pod Presets: a Pod's Template, GPU, GPUs, Cloud, Disks and Styles Kept in runpod/pods/presets/<Name>.pod, an Accordion in 🖥 PODS ▸ 📦 Presets With ▶ ⏹ 🗑 (Terminate - the Preset Stays) ✕ (Delete the Preset), Every Detail Editable, the Loading Sequence, Cost per Hour, Hours Used and Total Cost; ▶ on a Terminated Preset Makes the Pod Again With Every Style's Files; Generate With a Style That Has No Pod Opens a Box of Your Pods and Presets With ＋ <Style> and Create Pod

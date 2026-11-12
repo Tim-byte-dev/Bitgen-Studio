@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.3 (Tim: "add the custom nodes needed from their git repos to the pod if the style needs it. it is tooo slow from the pc")
+node scripts/test-podnodes7643.js > /tmp/podnodes7643.log 2>&1 \
+  && ok "2.764.3 units: a pack without a checkout is found (bitGen's list incl. a folder inside a repo, pyproject, ComfyUI-Manager's list, the Comfy Registry stand-in) and cloned on the pod at its version's tag (a real git repo); uploaded only when nowhere / the clone fails" \
+  || { bad "2.764.3 node packs from git units"; grep -a "^FAIL" -A1 /tmp/podnodes7643.log | head -12; }
 # ---- 2.764.2 (Tim: "only upload nodes that are necessary for the workflows we are using to the pod" + "[pod] uploading ComfyUI-H3-NativeAudioLock - 0 MB to the pod")
 node scripts/test-podnodes7642.js > /tmp/podnodes7642.log 2>&1 \
   && ok "2.764.2 units: only the node pack a workflow uses and the pod lacks is mirrored (none when the pod has them all), nodesOnly for ⬆ Nodes its styles need, KB sizes, every install step said, a 3-minute unreadable status ends it; no pod gets every pack" \

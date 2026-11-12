@@ -8509,6 +8509,16 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   minutes, the step ends with that reason instead of waiting.
 - **A preset's loading sequence** has one step per style - its nodes and its files.
 
+## A style's custom nodes come from their git address (2.764.3)
+
+- **Cloned on the pod, not sent from your computer:** a node pack a style's workflows need is cloned on the pod from its git
+  address (GitHub to RunPod is fast). A pack you installed with git is cloned at the same commit. A pack without a git
+  checkout here is looked up first - bitGen's own node list, its pyproject.toml, ComfyUI-Manager's node list on your
+  computer, the Comfy Registry - and cloned at its version's tag when there is one (else the newest, and the log says so).
+  A pack that lives inside a bigger repository (like ComfyUI-H3-NativeAudioLock) is cloned aside and linked in.
+- **Uploaded only when there is no other way:** a pack with no address anywhere (one you made yourself), a single .py, or
+  one the pod cannot clone (a private repository) is uploaded from your computer - the log names it and says why.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

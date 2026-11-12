@@ -4926,6 +4926,12 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **ログは各手順を表示します：** 小さなパックは KB でサイズを表示し、続いて「<パック> is on the pod」、「asking the pod to unpack and install …」、「installing <パック> on the pod (1 of 2 done, 40 s)」。Pod が 3 分間インストールの結果を報告できないと、待ち続けずにその理由で手順を終えます。
 - **プリセットの読み込みの流れ**は、スタイルごとに 1 つの手順です - そのノードとファイル。
 
+## スタイルのカスタムノードは git のアドレスから (2.764.3)
+<!-- en: a-style-s-custom-nodes-come-from-their-git-address-2-764-3 aa3fc9b6498d -->
+
+- **Pod 上で clone、コンピューターからは送りません：** スタイルのワークフローに必要なノードパックは、その git のアドレスから Pod 上で clone されます（GitHub から RunPod へは速い）。git でインストールしたパックは同じコミットで clone されます。ここに git のチェックアウトがないパックは先に探します - bitGen 自身のノード一覧、その pyproject.toml、コンピューター上の ComfyUI-Manager のノード一覧、Comfy Registry - そしてバージョンのタグがあればそれで clone します（なければ最新で、ログにそう出ます）。大きなリポジトリの中にあるパック（ComfyUI-H3-NativeAudioLock など）は別の場所に clone してリンクします。
+- **ほかに方法がないときだけアップロード：** どこにもアドレスがないパック（自作のもの）、単体の .py、Pod が clone できないもの（プライベートなリポジトリ）はコンピューターからアップロードされます - ログにその名前と理由が出ます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

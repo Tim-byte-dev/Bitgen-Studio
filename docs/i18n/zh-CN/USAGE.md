@@ -5159,6 +5159,12 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **日志会说明每一步：** 小包以 KB 显示大小，接着是「<包> is on the pod」、「asking the pod to unpack and install …」和「installing <包> on the pod (1 of 2 done, 40 s)」。如果 Pod 3 分钟内无法汇报安装结果，这一步会带着原因结束，而不是一直等待。
 - **预设的加载步骤**每个风格一步 - 它的节点和文件。
 
+## 风格的自定义节点来自它们的 git 地址 (2.764.3)
+<!-- en: a-style-s-custom-nodes-come-from-their-git-address-2-764-3 aa3fc9b6498d -->
+
+- **在 Pod 上 clone，不从你的电脑发送：** 风格的工作流需要的节点包会从它的 git 地址在 Pod 上 clone（从 GitHub 到 RunPod 很快）。用 git 安装的包会按相同的提交 clone。这里没有 git 检出的包会先查找 - bitGen 自己的节点列表、它的 pyproject.toml、你电脑上 ComfyUI-Manager 的节点列表、Comfy Registry - 有版本标签时按该标签 clone（否则用最新的，日志会说明）。位于更大仓库里的包（例如 ComfyUI-H3-NativeAudioLock）会 clone 到旁边再链接进来。
+- **只有在别无他法时才上传：** 哪里都找不到地址的包（你自己做的）、单个 .py，或 Pod 无法 clone 的包（私有仓库）会从你的电脑上传 - 日志会写出它的名字和原因。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
