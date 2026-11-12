@@ -401,6 +401,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Model manager 中的 Civitai 筛选** — 全部 / 检查点 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（来自 Civitai 自己的列表，Krea、Flux、Qwen 等系列的全部基础模型，或只选一个）、排序方式和时间段；更改后立即重新搜索，筛选条件会被保留。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
 - **本地 / 远程切换整个应用** — 在基本设置中选择本地：列表和文件夹筛选显示本机的模型文件夹，ComfyUI 未运行时会启动；选择远程（Pod）：停止 bitGen 在本机启动的 ComfyUI，列出远程模型，文件夹筛选改为显示它们的模型系列（Krea、Flux、Pony 等）以供筛选。 *Where:* 基本设置 ▸ GPU；模型下拉框；Model manager。 *Since:* 2.766.2
 - **Pod：文件放在 ComfyUI 能看到的位置，旧版 ComfyUI 会被更新** — 文件会放到 Pod 的 ComfyUI 读取的文件夹（包括模板自己的模型文件夹，放错位置的副本会被移动），缺少新版 ComfyUI 内置节点的 Pod 会在渲染前更新 ComfyUI（git pull、requirements、重启）。 *Where:* 渲染的 Pod 备注；PODS。 *Since:* 2.766.3
+- **远程模式下的 LLM、Vision LLM 和视频风格** — LLM 和 Vision LLM 各自可在本地、OpenRouter（在基本设置中即可搜索并选择模型；推理开启，每轮都会传回 reasoning_details）或 RunPod（你的 Pod 用 llama.cpp 运行同一个 GGUF，首次发送提示时完成设置）上运行；选择远程后，所选视频风格的模型会立即送到其 Pod。 *Where:* 基本设置 ▸ GPU；设置 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 

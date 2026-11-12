@@ -122,7 +122,8 @@ function mount(app) {
   require("./layouts").guard(app);     // 2.587.0: FIRST - a layout being applied holds off the page's own layout saves; a fresh install starts from layouts/default.json
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   app.use(express.json());
-  require("./remoteModels").mount(app);   // 2.766.0: FIRST after the JSON parser - remote mode answers /api/comfymodels + /api/modelmgr/cards with runpod/pods/remote_models.json; transfers; the ticked pods (lib/remoteModels.js)
+  require("./remoteModels").mount(app);
+  require("./remotePrep").mount(app);   // 2.767.0: remote mode prepares the LLM / Vision LLM and the video style (lib/remotePrep.js, lib/podLlm.js)   // 2.766.0: FIRST after the JSON parser - remote mode answers /api/comfymodels + /api/modelmgr/cards with runpod/pods/remote_models.json; transfers; the ticked pods (lib/remoteModels.js)
   require("./jxl").mount(app);         // 2.479.0: JPEG XL - a .jxl sent to an <img> goes as a PNG (lib/jxl.js)
   require("./remote").mount(app);      // phone pairing, QR, uploads, voice chat
   require("./characters").mount(app);  // the Video docker's character panel

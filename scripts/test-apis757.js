@@ -101,7 +101,7 @@ check("…fitBody: Claude 5 refuses temperature / top_p (400) - dropped with n a
   !("temperature" in fb) && !("top_p" in fb) && !("n" in fb) && !("chat_template_kwargs" in fb) && fb.max_tokens === 2048 && A.fitBody(t, { max_tokens: 4096 }).max_tokens === 4096
   && JSON.stringify(A.fitBody({ url: "x" }, { temperature: 0.4, max_tokens: 300 })) === JSON.stringify({ temperature: 0.4, max_tokens: 300 }) && JSON.stringify(A.fitBody(null, { a: 1 })) === '{"a":1}', fb);
 check("…every LLM caller sends its body through fitBody (lib/llmChat.js, lib/quickPrompt.js, lib/captioner.js)",
-  ["llmChat", "quickPrompt", "captioner"].every((f) => /JSON\.stringify\(require\("\.\/apis"\)\.fitBody\(remote, \{/.test(rd("lib", f + ".js"))));
+  ["llmChat", "quickPrompt", "captioner"].every((f) => /JSON\.stringify\((?:Object\.assign\()?require\("\.\/apis"\)\.fitBody\(remote, (?:Object\.assign\()?\{/.test(rd("lib", f + ".js"))));
 check("…✓ Test asks Anthropic's /v1/models with x-api-key + anthropic-version", /a\.service === "claude"\) r = await get\(\(base \|\| "https:\/\/api\.anthropic\.com\/v1"\) \+ "\/models\?limit=1", \{ "x-api-key": a\.key, "anthropic-version": "2023-06-01" \}\)/.test(rd("lib", "apis.js")));
 A.remove(clId);
 const G = rd("lib", "gpuSplit.js");

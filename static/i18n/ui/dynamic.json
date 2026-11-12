@@ -5259,6 +5259,10 @@
    "src": "static/openrouter.js:32"
   },
   {
+   "s": "Reasoning",
+   "src": "static/openrouter.js:32"
+  },
+  {
    "s": "Make a free account and a key at openrouter.ai (Keys). Nothing to install - the studio sends the LLM's requests over the internet",
    "src": "static/openrouter.js:32"
   },
@@ -5283,8 +5287,20 @@
    "src": "static/openrouter.js:32"
   },
   {
+   "s": "The model thinks before it answers (OpenRouter reasoning) - its thinking is given back to it on the next turn of a chat",
+   "src": "static/openrouter.js:32"
+  },
+  {
    "s": "Ask OpenRouter for its model list again",
    "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Vision LLM on OpenRouter",
+   "src": "static/openrouter.js:149"
+  },
+  {
+   "s": "LLM on OpenRouter",
+   "src": "static/openrouter.js:149"
   },
   {
    "s": "Picture style",
@@ -5832,6 +5848,10 @@
   },
   {
    "s": "Nodes its styles need",
+   "src": "static/podsetup.js:97"
+  },
+  {
+   "s": "Update ComfyUI on this pod to its latest version (git pull, its requirements, ComfyUI restarted) - for a style that needs a node built into a newer ComfyUI (2.767.0)",
    "src": "static/podsetup.js:97"
   },
   {
@@ -24122,11 +24142,11 @@
   },
   {
    "p": "{0} · {1} tokens",
-   "src": "static/openrouter.js:73"
+   "src": "static/openrouter.js:79"
   },
   {
    "p": "{0} models · {1} free",
-   "src": "static/openrouter.js:94"
+   "src": "static/openrouter.js:105"
   },
   {
    "p": "{0}+ · ↑ ↓ pick · Enter runs · Esc closes",
@@ -24427,6 +24447,10 @@
   {
    "p": "pod {0} - 🔄 My pods lists them",
    "src": "static/remotegpu.js:248"
+  },
+  {
+   "p": "{0} runs on",
+   "src": "static/remoteprep.js:38"
   },
   {
    "p": "try {0} (virtual)",

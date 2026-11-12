@@ -5243,6 +5243,21 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 当 Pod 的 ComfyUI 仍缺少风格的工作流所用的节点时（ComfyUI 无法更新，或是 bitGen 不知道的节点包），渲染会在发送之前停止并说明原因，而不是在 Pod 上失败。下一次渲染会再次尝试准备 Pod。
 - 刚放到 Pod 上的文件，在判定缺失之前会再查找一次（最多 30 秒）。
 
+## 远程模式下的 LLM、Vision LLM 和视频风格 (2.767.0)
+<!-- en: the-llm-vision-llm-and-video-style-in-remote-mode-2-767-0 d7a56c38ddd6 -->
+
+- **LLM 在哪里运行：** 基本设置 ▸ GPU（远程或两者）新增两行——**LLM** 和 **Vision LLM**——各自可选本地、OpenRouter 或 RunPod：
+  - **本地**——本机的 llama-server，与以前相同。
+  - **OpenRouter**——OpenRouter 的模型；直接在那里从可搜索的列表中选择（设置 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter 中也有搜索框）。**推理**是开启的：模型在回答前先思考，它的思考（reasoning_details）会在聊天的下一轮原样传回给它。要关闭，在那里取消勾选“推理”。
+  - **RunPod**——Pods 模式下：你的 Pod 运行与 LLM / Vision 下拉框相同的 GGUF。第一次按 Enter 发送提示时，bitGen 会在 Pod 上完成设置，提示会等待：为 Pod 的 GPU 编译 llama.cpp（只一次——保存在 /workspace），下载 GGUF（以及视觉模型的 mmproj），给 Pod 的
+    ComfyUI 加一个小路由（ComfyUI 重启一次），然后启动服务器。这两行会显示进度。bitGen 没有链接的 GGUF 会上传一次到你的私有
+    Hugging Face 仓库。Serverless 模式下：RunPod 的 vLLM 端点（设置 ▸ Remote generation）。
+- **视频风格：** 选择远程时（以及更改视频风格时），所选视频风格的模型、LoRA 和节点包会在后台放到其 Pod 上——每个都有进度条——
+  这样第一个视频不必等待它们。
+- 远程模式下 LLM 在 RunPod 或 OpenRouter 上时，更改 LLM 下拉框不再在本机加载它。
+- **⬆ Update ComfyUI**（PODS ▸ My pods，每个 Pod 上）：立即把 Pod 的 ComfyUI 更新到最新版本——git pull（固定或修改过的检出会切换到 ComfyUI 自己的 master）、requirements、重启 ComfyUI——并显示进度。失败的自动更新会在下一次渲染时重试并说明原因（附 Pod
+  日志的末尾）；更新成功但仍缺少节点时，bitGen 会提示重启 Pod。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

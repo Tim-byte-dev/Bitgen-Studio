@@ -132,6 +132,8 @@
         if (typeof root.loadComfyModels === "function") try { root.loadComfyModels(true); } catch (e) { /* fine */ }
         if (root.H3ModelMgr && root.H3ModelMgr.load) try { root.H3ModelMgr.load(); } catch (e) { /* fine */ }
         local = null;
+        // 2.767.0: remote mode - the LLM / Vision LLM and the video style made ready (static/remoteprep.js)
+        if (m && root.H3RemotePrep) root.H3RemotePrep.start(); else if (root.H3RemotePrep) root.H3RemotePrep.refresh();
       }
       mode = m;
       return m;

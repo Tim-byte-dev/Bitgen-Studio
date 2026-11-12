@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.767.0 (Tim: "when in remote mode, prepare the llm and video models for remote use" + "give user option to use openrouter or runpod for llm/vllm or local" + "when user presses enter button to send prompt to llm" + OpenRouter's reasoning example: "the model should be able to be changed. it would be good to list/search open routers models and choose one from the list")
+node scripts/test-podllm767.js > /tmp/podllm767.log 2>&1 \
+  && ok "2.767.0 the LLM / Vision LLM Local / OpenRouter / RunPod; the pod's LLM job run for real (GGUF downloaded, ComfyUI route, ComfyUI restarted, the server answering through ComfyUI's address); set up on the first prompt and waited for; the LLM not loaded here when remote; the video style made ready ahead" \
+  || { bad "2.767.0 remote LLM / video prepare"; grep -a "^FAIL" -A1 /tmp/podllm767.log | head -12; }
+node scripts/test-openrouter767.js > /tmp/openrouter767.log 2>&1 \
+  && ok "2.767.0 OpenRouter (stand-in): reasoning enabled, reasoning_details given back unmodified on the next turn, Reasoning off, the model changed; the model search" \
+  || { bad "2.767.0 OpenRouter reasoning"; grep -a "^FAIL" -A1 /tmp/openrouter767.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui767-ui.js > /tmp/ui767ui.log 2>&1 \
+  && ok "2.767.0 browser test: Basic Settings ▸ GPU - LLM / Vision LLM Local / OpenRouter / RunPod, RunPod says when it is set up, OpenRouter's searchable list (vision models), picking saves, hidden in Local - or SKIP without playwright" \
+  || { bad "2.767.0 GPU LLM choice browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui767ui.log | head -14; }
 # ---- 2.766.4 (Tim: "[worker] ERROR: ComfyUI does not have these node types: TextEncodeQwenImage21 … the custom nodes didn't get installed")
 node scripts/test-podlacks7664.js > /tmp/podlacks7664.log 2>&1 \
   && ok "2.766.4 units: a node the pod still lacks stops the render before it is sent (not kept as ready); files just put on the pod are looked for again" \

@@ -401,6 +401,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **Model manager の Civitai フィルター** — すべて / チェックポイント / LoRA（VAE、Embedding、ControlNet、Upscaler も）、モデルファミリー（Civitai の一覧から Krea、Flux、Qwen などの全ベースモデル、または 1 つ）、並べ替えと期間。変更するとすぐに再検索し、フィルターは保存されます。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
 - **ローカル / リモートで全体が切り替わる** — 基本設定でローカルを選ぶと、一覧とフォルダーフィルターにこのコンピューターのモデルフォルダーが表示され、ComfyUI が動いていなければ起動します。リモート（ポッド）を選ぶと、bitGen がここで起動した ComfyUI を停止し、リモートモデルを一覧表示し、フォルダーフィルターにはフォルダーの代わりにモデルファミリー（Krea、Flux、Pony など）が表示され、それで絞り込めます。 *Where:* 基本設定 ▸ GPU、モデルのドロップダウン、Model manager。 *Since:* 2.766.2
 - **ポッド：ComfyUI が見える場所にファイル、古い ComfyUI を更新** — ファイルはポッドの ComfyUI が読むフォルダーに置かれ（テンプレート独自のモデルフォルダーも、間違った場所のコピーは移動）、新しい ComfyUI に組み込まれたノードがないポッドは、レンダーの前に ComfyUI を更新します（git pull、requirements、再起動）。 *Where:* レンダーのポッドメモ、PODS。 *Since:* 2.766.3
+- **リモートモードの LLM、Vision LLM、動画スタイル** — LLM と Vision LLM はそれぞれローカル、OpenRouter（基本設定で検索できるモデル一覧。推論はオン、毎回 reasoning_details を返します）、RunPod（ポッドで同じ GGUF を llama.cpp で実行。最初にプロンプトを送ったときに準備）で動かせます。選んだ動画スタイルのモデルは、リモートを選ぶとすぐにポッドへ送られます。 *Where:* 基本設定 ▸ GPU、設定 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
 

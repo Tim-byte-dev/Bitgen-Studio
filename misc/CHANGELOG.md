@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.767.0** — Remote Mode: the LLM and Vision LLM Each Run Local, on OpenRouter (a Searchable Model List in Basic Settings; Reasoning On With reasoning_details Passed Back) or on RunPod (Your Pod Runs the Same GGUF With llama.cpp - Set Up When You First Send a Prompt); the Picked Video Style's Models Go to Its Pod When Remote Is Picked; ⬆ Update ComfyUI on Each Pod, a Failed Update Tried Again With Why
 - **2.766.4** — A Pod That Still Lacks a Node the Style Uses Stops the Render Before It Is Sent (With Why), Tried Again Next Time; Files Just Put on a Pod Are Looked For Again Before They Are Called Missing
 - **2.766.3** — Pods: Files Go Where the Pod's ComfyUI Reads Them (Its Own Models Folders; a Copy in the Wrong Place Moves); a Pod Whose ComfyUI Is Too Old for a Style (a Node Built Into a Newer ComfyUI) Is Updated - Git Pull, Its Requirements, a Restart
 - **2.766.2** — Local / Remote in Basic Settings Switches the App Over: Local Lists This Computer's Model Folders and Starts ComfyUI If It Is Not Running; Remote Stops the ComfyUI bitGen Started Here, Lists the Remote Models and the Folder Filter Shows Their Model Families to Filter By

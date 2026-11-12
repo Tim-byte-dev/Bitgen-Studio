@@ -5010,6 +5010,19 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - ポッドの ComfyUI にスタイルのワークフローが使うノードがまだない場合（ComfyUI を更新できなかった、または bitGen が知らないノードパック）、レンダーはポッドで失敗する代わりに、送る前に理由付きで止まります。次のレンダーで再びポッドの準備を試みます。
 - ポッドに置いたばかりのファイルは、足りないと判断する前に（最大 30 秒）もう一度探します。
 
+## リモートモードの LLM、Vision LLM、動画スタイル (2.767.0)
+<!-- en: the-llm-vision-llm-and-video-style-in-remote-mode-2-767-0 d7a56c38ddd6 -->
+
+- **LLM の実行場所:** 基本設定 ▸ GPU（リモートまたは両方）に 2 つの行が加わりました - **LLM** と **Vision LLM** - それぞれローカル、OpenRouter、RunPod から選べます:
+  - **ローカル** - このコンピューターの llama-server（今までどおり）。
+  - **OpenRouter** - OpenRouter のモデル。その場で検索できる一覧から選べます（設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter
+    にも検索ボックスがあります）。**推論**はオンです：モデルは答える前に考え、その思考（reasoning_details）はチャットの次のターンでそのままモデルに返されます。オフにするには、そこで「推論」のチェックを外します。
+  - **RunPod** - Pods の場合：ポッドが LLM / Vision のドロップダウンと同じ GGUF を実行します。最初に Enter でプロンプトを送ったときに bitGen がポッドで準備し、プロンプトはその間待ちます：ポッドの GPU 用に llama.cpp をビルドし（一度だけ -
+    /workspace に保存）、GGUF（と Vision モデルの mmproj）をダウンロードし、ポッドの ComfyUI に小さなルートを加え（ComfyUI は一度再起動）、サーバーを起動します。行に進み具合が表示されます。リンクのない GGUF は自分の非公開 Hugging Face リポジトリに一度だけ上げます。Serverless の場合：RunPod の vLLM エンドポイント（設定 ▸ Remote generation）。
+- **動画スタイル:** リモートを選んだとき（と動画スタイルを変えたとき）、選んだ動画スタイルのモデル、LoRA、ノードパックをバックグラウンドでポッドに置きます - それぞれ進行状況バー付き - 最初の動画がそれを待たないように。
+- リモートモードで LLM が RunPod か OpenRouter の場合、LLM ドロップダウンを変えてもこのコンピューターには読み込みません。
+- **⬆ Update ComfyUI**（PODS ▸ My pods、各ポッド）：ポッドの ComfyUI を今すぐ最新版に更新します - git pull（固定または編集されたチェックアウトは ComfyUI 自身の master へ）、requirements、ComfyUI の再起動 - 進み具合を表示します。失敗した自動更新は次のレンダーで再試行され、理由（ポッドのログの末尾付き）を表示します。成功したのにノードがまだない場合は、ポッドの再起動を促します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

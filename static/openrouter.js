@@ -31,6 +31,10 @@
     var or = el("div", { id: "rgOr" });
     or.innerHTML = '<div class="rowbtns" style="align-items:center"><input type="password" id="rgOrKey" spellcheck="false" autocomplete="off" placeholder="OpenRouter API key (openrouter.ai → Keys)" style="flex:1">'
       + '<label class="chk" style="margin:0;flex:none" title="List only the models OpenRouter offers free"><input type="checkbox" id="rgOrFree"> Free models only</label></div>'
+      // 2.767.0 (Tim: "the model should be able to be changed. it would be good to list/search open routers models and choose one
+      // from the list"): a search over OpenRouter's list; reasoning on (its reasoning_details given back on the next turn)
+      + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="search" id="rgOrQ" placeholder="Search OpenRouter\'s models (gemma, qwen, free, vision…)" aria-label="Search OpenRouter\'s models" style="flex:1">'
+      + '<label class="chk" style="margin:0;flex:none" title="The model thinks before it answers (OpenRouter reasoning) - its thinking is given back to it on the next turn of a chat"><input type="checkbox" id="rgOrReason"> Reasoning</label></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><label class="f" for="rgOrModel" style="margin:0;flex:none;min-width:84px">LLM</label><select id="rgOrModel" style="flex:1;min-width:200px"></select>'
       + '<button type="button" class="ghost" id="rgOrRefresh" title="Ask OpenRouter for its model list again" style="flex:none">🔄</button><button type="button" class="ghost" id="rgOrTest" style="flex:none">✓ Test</button></div>'
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><label class="f" for="rgOrVlm" style="margin:0;flex:none;min-width:84px">Vision LLM</label><select id="rgOrVlm" style="flex:1;min-width:200px"></select>'
@@ -50,6 +54,8 @@
     g.querySelectorAll("input").forEach(function (i) { i.onchange = function () { paintProv(); save({ provider: i.value }); }; });
     $("rgOrKey").addEventListener("change", function () { save({ key: $("rgOrKey").value }).then(function () { models(true); }); });
     $("rgOrFree").onchange = function () { save({ free_only: $("rgOrFree").checked }); paintModels(); };
+    $("rgOrQ").addEventListener("input", function () { paintModels(); });   // 2.767.0
+    $("rgOrReason").onchange = function () { save({ reasoning: $("rgOrReason").checked }); };
     $("rgOrModel").onchange = function () { save({ model: $("rgOrModel").value }); };
     $("rgOrVlm").onchange = function () { save({ vlm_model: $("rgOrVlm").value }); };
     $("rgOrRefresh").onclick = function () { models(true); };
@@ -74,9 +80,14 @@
     if (cur && !has) sel.appendChild(el("option", { value: cur }, cur + " (not in the list)"));
     sel.value = cur || "";
   }
+  /** 2.767.0: OpenRouter's models that match a search (pure-ish): every word in its id / name; "free" / "vision" match those */
+  function match(m, q) {
+    var w = String(q || "").toLowerCase().split(/\s+/).filter(Boolean), h = (m.id + " " + m.name + (m.free ? " free" : "") + (m.vision ? " vision" : "")).toLowerCase();
+    return w.every(function (x) { return h.indexOf(x) >= 0; });
+  }
   function paintModels() {
-    var v = S.v || {}, free = $("rgOrFree").checked;
-    var all = S.models.filter(function (m) { return !free || m.free; });
+    var v = S.v || {}, free = $("rgOrFree").checked, q = $("rgOrQ") ? $("rgOrQ").value : "";
+    var all = S.models.filter(function (m) { return (!free || m.free) && match(m, q); });
     if (!S.models.length) {
       fill($("rgOrModel"), [], v.model, v.key ? "(no list yet - 🔄)" : "(the API key first)");
       fill($("rgOrVlm"), [], v.vlm_model, "Same as the LLM (when it takes pictures)");
@@ -99,6 +110,7 @@
     var r = doc.querySelector('input[name="rgLlmProv"][value="' + v.provider + '"]'); if (r) r.checked = true;
     if (doc.activeElement !== $("rgOrKey")) $("rgOrKey").value = v.key || "";
     $("rgOrFree").checked = v.free_only !== false;
+    if ($("rgOrReason")) $("rgOrReason").checked = v.reasoning !== false;
     paintProv(); paintModels();
   }
   function load() {
@@ -127,5 +139,27 @@
     load();
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3OpenRouter = { load: load, models: models, state: function () { return S; } };
+  /** 2.767.0: a search + a list of OpenRouter's models in `host` (Basic Settings ▸ GPU when the LLM / Vision LLM is on
+   *  OpenRouter) - picking one saves it */
+  function picker(host, kind) {
+    if (!host) return;
+    var vis = kind === "vlm";
+    if (!host.dataset.orBuilt) {
+      host.dataset.orBuilt = "1";
+      host.innerHTML = '<input type="search" class="orpQ" placeholder="Search OpenRouter\'s models…" aria-label="Search OpenRouter\'s models" style="flex:1;min-width:120px"><select class="orpSel" aria-label="' + (vis ? "Vision LLM" : "LLM") + ' on OpenRouter" style="flex:2;min-width:160px"></select>';
+      host.style.cssText += ";gap:6px;flex-wrap:wrap;align-items:center;margin:2px 0 0 96px";
+      var q = host.querySelector(".orpQ"), sel = host.querySelector(".orpSel");
+      [q, sel].forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
+      q.addEventListener("input", function () { draw(); });
+      sel.onchange = function () { var b = {}; b[vis ? "vlm_model" : "model"] = sel.value; save(b); };
+      var draw = host._draw = function () {
+        var v = S.v || {}, cur = vis ? v.vlm_model : v.model, free = v.free_only !== false;
+        var list = S.models.filter(function (m) { return (!free || m.free) && (!vis || m.vision) && match(m, q.value); }).slice(0, 300);
+        fill(sel, list, cur, S.models.length ? (vis ? "Same as the LLM (when it takes pictures)" : "Pick a model…") : (v.key ? "(loading the list…)" : "(an OpenRouter key first - Settings ▸ Remote generation)"));
+      };
+    }
+    var go = function () { if (host._draw) host._draw(); };
+    (S.v ? Promise.resolve() : load()).then(function () { if (!S.models.length && S.v && S.v.key) return models(false); }).then(go, go);
+  }
+  root.H3OpenRouter = { load: load, models: models, picker: picker, match: match, state: function () { return S; } };
 })(typeof window !== "undefined" ? window : globalThis);

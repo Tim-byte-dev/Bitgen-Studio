@@ -8633,6 +8633,27 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   to make the pod ready again.
 - Files just put on the pod are looked for again (up to 30 seconds) before bitGen says they are missing.
 
+## The LLM, Vision LLM and video style in remote mode (2.767.0)
+
+- **Where the LLM runs:** Basic Settings ▸ GPU (Remote or Both) has two new rows - **LLM** and **Vision LLM** - each
+  Local, OpenRouter or RunPod:
+  - **Local** - llama-server on this computer, as before.
+  - **OpenRouter** - OpenRouter's model; pick it right there from a searchable list (or in Settings ▸ Remote generation ▸
+    🧠 LLM ▸ OpenRouter, which has a search box too). **Reasoning** is on: the model thinks before it answers, and its
+    thinking (reasoning_details) is given back to it unchanged on the next turn of a chat. Untick Reasoning there to turn it off.
+  - **RunPod** - with Pods: your pod runs the same GGUF as your LLM / Vision dropdowns. The first time you press Enter to
+    send a prompt, bitGen sets it up there and the prompt waits: it builds llama.cpp for the pod's GPU (once - kept in
+    /workspace), downloads the GGUF (and the vision model's mmproj), adds a small route to the pod's ComfyUI (ComfyUI restarts
+    once) and starts the server. The rows show how far it is. A GGUF bitGen has no link for goes once into your private
+    Hugging Face repo. With Serverless: the RunPod vLLM endpoint (Settings ▸ Remote generation).
+- **The video style:** when Remote is picked (and when you change the Video style), the picked video style's models, LoRAs
+  and node packs are put on its pod in the background - a progress bar each - so the first video does not wait for them.
+- In remote mode with the LLM on RunPod or OpenRouter, changing the LLM dropdown no longer loads it on this computer.
+- **⬆ Update ComfyUI** (PODS ▸ My pods, on each pod): updates the pod's ComfyUI to its latest version now - git pull (a pinned
+  or edited checkout goes to ComfyUI's own master), its requirements, ComfyUI restarted - and says how far. A failed automatic
+  update is tried again on the next render and says why (with the end of the pod's log); after a successful one that still
+  lacks a node, bitGen says to restart the pod.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
