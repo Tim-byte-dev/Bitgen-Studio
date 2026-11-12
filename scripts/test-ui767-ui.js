@@ -65,22 +65,17 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       const h = document.querySelector('h2.sec[data-sec="gpu"]'), b = document.getElementById("sec-gpu"); if (h && b && getComputedStyle(b).display === "none") h.click(); });
     await sleep(500);
     const rows = await ev(() => ({ shown: getComputedStyle(document.getElementById("gpuLlmWhere")).display !== "none", llm: [...document.querySelectorAll('input[name="rp_llm"]')].map((i) => i.value), vlm: [...document.querySelectorAll('input[name="rp_vlm"]')].map((i) => i.value) }));
-    check("remote mode: the ☁ Remote generation docker (2.768.0; was Basic Settings ▸ GPU) shows LLM and Vision LLM - Local / OpenRouter / RunPod", rows.shown && rows.llm.join() === "local,openrouter,runpod" && rows.vlm.join() === "local,openrouter,runpod", rows);
-    await ev(() => document.querySelector('input[name="rp_llm"][value="runpod"]').click());
+    // 2.770.0 (Tim: "remove the openrouter search, and runpod and openrouter dialog, instead just have local and remote radio
+    // buttons for llm and vllm" - the platform is Settings' choice, OpenRouter by default)
+    check("remote mode: the ☁ Remote generation docker shows LLM and Vision LLM - Local / Remote (2.770.0; no OpenRouter search there)", rows.shown && rows.llm.join() === "local,remote" && rows.vlm.join() === "local,remote" && !(await ev(() => !!document.getElementById("rpOr_llm"))), rows);
+    await api("/api/openrouter", { provider: "runpod" });
+    await ev(() => document.querySelector('input[name="rp_llm"][value="remote"]').click());
     await p.waitForFunction(() => /set up on your pod when you send a prompt|on the pod/.test(document.getElementById("rpSt_llm").textContent), null, { timeout: 10000 }).catch(() => {});
     const s1 = await ev(() => document.getElementById("rpSt_llm").textContent);
-    check("LLM ▸ RunPod (Pods): kept, and it says the LLM is set up on the pod when a prompt is sent", (await api("/api/remoteprep")).where.llm === "runpod" && /set up on your pod when you send a prompt/.test(s1), s1);
-    await ev(() => document.querySelector('input[name="rp_vlm"][value="openrouter"]').click());
-    await p.waitForFunction(() => document.querySelector("#rpOr_vlm .orpSel") && getComputedStyle(document.getElementById("rpOr_vlm")).display !== "none", null, { timeout: 10000 }).catch(() => {});
-    const o1 = await ev(() => ({ shown: getComputedStyle(document.getElementById("rpOr_vlm")).display !== "none", opts: [...document.querySelectorAll("#rpOr_vlm .orpSel option")].map((o) => o.value), why: document.getElementById("rpSt_vlm").textContent }));
-    check("Vision LLM ▸ OpenRouter: a searchable list of OpenRouter's models right there (vision models only)", o1.shown && o1.opts.includes("qwen/qwen3-vl-8b:free") && !o1.opts.includes("openai/gpt-x") && !o1.opts.includes("google/gemma-4-31b-it:free") && o1.why === "", o1);
-    const typeQ = (v) => ev((x) => { const q = document.querySelector("#rpOr_vlm .orpQ"); q.value = x; q.dispatchEvent(new Event("input", { bubbles: true })); }, v);
-    await typeQ("nothing-like-this"); await sleep(200);
-    check("…the search filters it", await ev(() => [...document.querySelectorAll("#rpOr_vlm .orpSel option")].filter((o) => o.value).length === 0));
-    await typeQ("qwen"); await sleep(200);
-    await ev(() => { const s = document.querySelector("#rpOr_vlm .orpSel"); s.value = "qwen/qwen3-vl-8b:free"; s.dispatchEvent(new Event("change", { bubbles: true })); }); await sleep(600);
-    check("…picking one saves it (the Vision LLM's OpenRouter model)", (await api("/api/openrouter")).vlm_model === "qwen/qwen3-vl-8b:free");
-    check("…the LLM row's OpenRouter list stays hidden (the LLM is on RunPod)", await ev(() => getComputedStyle(document.getElementById("rpOr_llm")).display === "none"));
+    check("LLM ▸ Remote with RunPod picked in Settings (Pods): kept, and it says the LLM is set up on the pod when a prompt is sent", (await api("/api/remoteprep")).where.llm === "runpod" && /set up on your pod when you send a prompt/.test(s1), s1);
+    await api("/api/openrouter", { provider: "openrouter" });
+    await ev(() => { const i = document.querySelector('input[name="rp_vlm"][value="remote"]'); i.checked = true; i.dispatchEvent(new Event("change")); }); await sleep(1200);
+    check("Vision LLM ▸ Remote with OpenRouter (the default): OpenRouter, the model picked in the prompt docker's list", (await api("/api/remoteprep")).where.vlm === "openrouter" && /prompt docker/.test(await ev(() => document.getElementById("rpSt_vlm").textContent)));
     await ev(() => { document.querySelector('input[name="gpuWhere"][value="local"]').click(); }); await sleep(1500);
     check("Local: the LLM / Vision LLM choice is hidden (this computer)", await ev(() => getComputedStyle(document.getElementById("gpuLlmWhere")).display === "none"));
     if (process.env.H3_SHOT) { await ev(() => document.querySelector('input[name="gpuWhere"][value="remote"]').click()); await sleep(1500); await ev(() => { const g = document.getElementById("sec-gpu"); g.scrollIntoView(); }); await p.screenshot({ path: process.env.H3_SHOT + "-gpu.png" }); }
@@ -91,7 +86,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await b.close();
     rp.close();
     await api("/api/remoteprep/where", { llm: where0.llm || "", vlm: where0.vlm || "" }).catch(() => {});
-    await api("/api/openrouter", { key: or0.key || "", model: or0.model || "", vlm_model: or0.vlm_model || "" }).catch(() => {});
+    await api("/api/openrouter", { key: or0.key || "", model: or0.model || "", vlm_model: or0.vlm_model || "", provider: or0.provider || "openrouter" }).catch(() => {});
     await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: "", pod_id: "", port: 8188 } }).catch(() => {});
     await api("/api/remotegen/enabled", { on: null }).catch(() => {});

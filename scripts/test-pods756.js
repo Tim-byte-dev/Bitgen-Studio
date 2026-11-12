@@ -37,7 +37,8 @@ try {
   G.setEngine({ provider: "openrouter" });
   check("setEngine OpenRouter: saved, and the LLM goes to OpenRouter", CFG.rgpu.engine.provider === "openrouter" && CFG.rgpu.llm_provider === "openrouter");
   G.setEngine({ provider: "runpod", runpod: "pods" });
-  check("setEngine RunPod ▸ Pods: saved; the LLM back to RunPod's vLLM", CFG.rgpu.engine.runpod === "pods" && CFG.rgpu.llm_provider === "runpod" && G.view().engine.pods === true);
+  // 2.770.0 (Tim: "the remote platform will be selected in settings with openrouter as default"): the render engine no longer moves the LLM
+  check("setEngine RunPod ▸ Pods: saved; the LLM's platform stays Settings' own (2.770.0)", CFG.rgpu.engine.runpod === "pods" && CFG.rgpu.llm_provider !== "runpod" && G.view().engine.pods === true);
   G.set({ where: "remote" });
   check("…Pods: Remote can be picked with no pod yet (a pod comes from the PODS docker)", G.split().where === "remote");
   G.set({ where: "local" }); G.setEngine({ runpod: "serverless" });

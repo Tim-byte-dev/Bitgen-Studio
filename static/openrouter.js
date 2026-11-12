@@ -30,7 +30,9 @@
     Array.prototype.forEach.call(box.children, function (c) { if (c !== head && c !== g) c.classList.add("rgVrp"); });
     var or = el("div", { id: "rgOr" });
     or.innerHTML = '<div class="rowbtns" style="align-items:center"><input type="password" id="rgOrKey" spellcheck="false" autocomplete="off" placeholder="OpenRouter API key (openrouter.ai → Keys)" style="flex:1">'
-      + '<label class="chk" style="margin:0;flex:none" title="List only the models OpenRouter offers free"><input type="checkbox" id="rgOrFree"> Free models only</label></div>'
+      // 2.770.0 (Tim: "in settings openrouter and checkbox show paid, show free"): which of OpenRouter's models the lists offer
+      + '<label class="chk" style="margin:0;flex:none" title="List the models OpenRouter offers free"><input type="checkbox" id="rgOrFree"> Show free</label>'
+      + '<label class="chk" style="margin:0;flex:none" title="List the models OpenRouter charges for (their price per million tokens beside them)"><input type="checkbox" id="rgOrPaid"> Show paid</label></div>'
       // 2.767.0 (Tim: "the model should be able to be changed. it would be good to list/search open routers models and choose one
       // from the list"): a search over OpenRouter's list; reasoning on (its reasoning_details given back on the next turn)
       + '<div class="rowbtns" style="align-items:center;margin-top:4px"><input type="search" id="rgOrQ" placeholder="Search OpenRouter\'s models (gemma, qwen, free, vision…)" aria-label="Search OpenRouter\'s models" style="flex:1">'
@@ -53,7 +55,8 @@
     paintProv();
     g.querySelectorAll("input").forEach(function (i) { i.onchange = function () { paintProv(); save({ provider: i.value }); }; });
     $("rgOrKey").addEventListener("change", function () { save({ key: $("rgOrKey").value }).then(function () { models(true); }); });
-    $("rgOrFree").onchange = function () { save({ free_only: $("rgOrFree").checked }); paintModels(); };
+    $("rgOrFree").onchange = function () { save({ show_free: $("rgOrFree").checked }); paintModels(); };
+    $("rgOrPaid").onchange = function () { save({ show_paid: $("rgOrPaid").checked }); paintModels(); };
     $("rgOrQ").addEventListener("input", function () { paintModels(); });   // 2.767.0
     $("rgOrReason").onchange = function () { save({ reasoning: $("rgOrReason").checked }); };
     $("rgOrModel").onchange = function () { save({ model: $("rgOrModel").value }); };
@@ -86,8 +89,8 @@
     return w.every(function (x) { return h.indexOf(x) >= 0; });
   }
   function paintModels() {
-    var v = S.v || {}, free = $("rgOrFree").checked, q = $("rgOrQ") ? $("rgOrQ").value : "";
-    var all = S.models.filter(function (m) { return (!free || m.free) && match(m, q); });
+    var v = S.v || {}, sf = $("rgOrFree").checked, sp = $("rgOrPaid") ? $("rgOrPaid").checked : !sf, q = $("rgOrQ") ? $("rgOrQ").value : "";
+    var all = S.models.filter(function (m) { return (m.free ? sf : sp) && match(m, q); });
     if (!S.models.length) {
       fill($("rgOrModel"), [], v.model, v.key ? "(no list yet - 🔄)" : "(the API key first)");
       fill($("rgOrVlm"), [], v.vlm_model, "Same as the LLM (when it takes pictures)");
@@ -109,7 +112,7 @@
     var v = S.v; if (!v || !$("rgOr")) return;
     var r = doc.querySelector('input[name="rgLlmProv"][value="' + v.provider + '"]'); if (r) r.checked = true;
     if (doc.activeElement !== $("rgOrKey")) $("rgOrKey").value = v.key || "";
-    $("rgOrFree").checked = v.free_only !== false;
+    $("rgOrFree").checked = v.show_free !== false; if ($("rgOrPaid")) $("rgOrPaid").checked = !!v.show_paid;
     if ($("rgOrReason")) $("rgOrReason").checked = v.reasoning !== false;
     paintProv(); paintModels();
   }
@@ -153,8 +156,8 @@
       q.addEventListener("input", function () { draw(); });
       sel.onchange = function () { var b = {}; b[vis ? "vlm_model" : "model"] = sel.value; save(b); };
       var draw = host._draw = function () {
-        var v = S.v || {}, cur = vis ? v.vlm_model : v.model, free = v.free_only !== false;
-        var list = S.models.filter(function (m) { return (!free || m.free) && (!vis || m.vision) && match(m, q.value); }).slice(0, 300);
+        var v = S.v || {}, cur = vis ? v.vlm_model : v.model;
+        var list = S.models.filter(function (m) { return (m.free ? v.show_free !== false : !!v.show_paid) && (!vis || m.vision) && match(m, q.value); }).slice(0, 300);
         fill(sel, list, cur, S.models.length ? (vis ? "Same as the LLM (when it takes pictures)" : "Pick a model…") : (v.key ? "(loading the list…)" : "(an OpenRouter key first - Settings ▸ Remote generation)"));
       };
     }

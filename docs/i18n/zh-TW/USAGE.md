@@ -5291,6 +5291,15 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 
 - 用沒有 Pod 的風格渲染時，詢問使用哪個 Pod 的對話方塊現在**只列出 My pods 中的 Pod** - 執行中或已停止的。已終止（或正在終止）的 Pod，以及其 Pod 已不存在的預設，不再在此列出；🖥 PODS ▸ 📦 Presets 仍可重新建立預設的 Pod。如果 RunPod 沒有返回你的 Pod 清單，對話方塊會說明原因。
 
+## LLM 本地 / 遠端、OpenRouter 清單和 ☰ All (2.770.0)
+<!-- en: llm-local-remote-openrouter-lists-and-all-2-770-0 4ceef016ab55 -->
+
+- **☁ Remote generation 停靠窗：** LLM 和 Vision LLM 現在只有 **本地** 或 **遠端**。遠端使用 設定 ▸ Remote generation ▸
+  🧠 LLM 中選擇的平臺 - 預設 OpenRouter，或 RunPod。在 RunPod 上渲染不再把 LLM 也移過去。
+- **設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter：** **Show free** 和 **Show paid** 決定清單提供哪些 OpenRouter 模型（付費模型顯示每百萬 token 的價格）。
+- **提示停靠窗（遠端模式）：** LLM 和 Vision 清單 **每次顯示 10 個模型** - 在每個清單前的 🔍 框中輸入即可搜尋（名稱、作者、free、paid、vision）。**☰ All** 在對話方塊中開啟所有 OpenRouter 模型：搜尋，Free / Paid / 👁 Vision 篩選，按名稱、價格、上下文或最新排序，以及每個模型的詳情。選擇一個，選擇 LLM 或 Vision LLM，然後按 **Use** - 清單切換到該模型並使用它。
+- **不列出任何節點的 Pod ComfyUI**（通常是缺少所需軟體包的新程式碼）會在渲染前被修復：安裝其所需軟體包並重新啟動。Pod 的原因每行寫一項，不會被截斷。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

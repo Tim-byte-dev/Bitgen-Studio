@@ -8702,6 +8702,19 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   running or stopped. Pods that were terminated (or are being terminated) and presets whose pod is gone are no longer offered
   there; 🖥 PODS ▸ 📦 Presets still makes a preset's pod again. If RunPod could not list your pods, the box says why.
 
+## LLM Local / Remote, OpenRouter lists and ☰ All (2.770.0)
+
+- **☁ Remote generation docker:** LLM and Vision LLM are now just **Local** or **Remote**. Remote uses the platform picked in
+  Settings ▸ Remote generation ▸ 🧠 LLM - OpenRouter by default, or RunPod. Rendering on RunPod no longer moves the LLM there.
+- **Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter:** **Show free** and **Show paid** decide which OpenRouter models the
+  lists offer (paid ones show their price per million tokens).
+- **Prompt docker, remote mode:** the LLM and Vision lists show **10 models at a time** - type in the 🔍 box before each list
+  to search (name, maker, free, paid, vision). **☰ All** opens every OpenRouter model in a dialog: search, Free / Paid /
+  👁 Vision filters, sort by name, price, context or newest, and each model's details. Pick one, choose LLM or Vision LLM and
+  press **Use** - the list switches to it and it is the model used.
+- **A pod's ComfyUI that lists no nodes** (usually newer code without the packages it needs) is repaired before a render:
+  its requirements are installed and it is restarted. A pod's reason is written one part per line, so nothing is cut off.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

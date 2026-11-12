@@ -36,7 +36,7 @@ const listen = (srv, port) => new Promise((ok, bad) => { srv.once("error", bad);
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI768", pod_id: "", port: 8188 }, serverless: { endpoint: "" } });
   await api("/api/remotegen/enabled", { on: true });
   await api("/api/remoteprep/where", { llm: "", vlm: "" });
-  await api("/api/openrouter", { key: "", model: "", vlm_model: "" });
+  await api("/api/openrouter", { key: "", model: "", vlm_model: "", provider: "openrouter", show_free: true, show_paid: false });   // 2.770.0: the Settings platform = OpenRouter
   await api("/api/gpusplit", { where: "remote", engine: { provider: "runpod", runpod: "pods" } });
   const b = await chromium.launch();
   try {
@@ -54,7 +54,7 @@ const listen = (srv, port) => new Promise((ok, bad) => { srv.once("error", bad);
     await p.waitForFunction(() => document.querySelector("#llmSel optgroup[data-rl]") && document.querySelector("#visionSel optgroup[data-rl]"), null, { timeout: 15000 }).catch(() => {});
     const L1 = await ev(() => ({ g: (document.querySelector("#llmSel optgroup") || {}).label, llm: [...document.querySelectorAll("#llmSel option")].map((o) => o.value), vlm: [...document.querySelectorAll("#visionSel option")].map((o) => o.value), sb: document.getElementById("sbllm").textContent }));
     check("Remote + nothing picked: the prompt docker's LLM list = OpenRouter's FREE text models (this computer's GGUFs cleared); the first one picked + saved",
-      L1.g === "☁ OpenRouter - free models" && L1.llm.join() === "google/gemma-4-31b-it:free,qwen/qwen3.8-27b:free" && !L1.llm.some((v) => /\.gguf$/i.test(v)) && /LLM: ☁ /.test(L1.sb), L1);
+      L1.g === "☁ OpenRouter" && L1.llm.join() === "google/gemma-4-31b-it:free,qwen/qwen3.8-27b:free" && !L1.llm.some((v) => /\.gguf$/i.test(v)) && /LLM: ☁ /.test(L1.sb), L1);
     check("…the Vision list = the free models that take pictures", L1.vlm.join() === "google/gemma-4-31b-it:free", L1.vlm);
     await sleep(500);
     check("…the first ones saved as OpenRouter's models (a prompt works at once once a key is added)", (await api("/api/openrouter")).model === "google/gemma-4-31b-it:free" && (await api("/api/openrouter")).vlm_model === "google/gemma-4-31b-it:free");
@@ -63,10 +63,11 @@ const listen = (srv, port) => new Promise((ok, bad) => { srv.once("error", bad);
     await ev(() => { const s = document.getElementById("visionSel"); s.dispatchEvent(new Event("focus")); s.focus(); }); await sleep(1500);
     check("…the Vision list stays the remote one when it is opened (the page's own loader kept out)", await ev(() => !!document.querySelector("#visionSel optgroup[data-rl]") && [...document.querySelectorAll("#visionSel option")].every((o) => !/\.gguf$/i.test(o.value))));
     // the docker's LLM row ▸ RunPod (Pods): the pod's GGUFs
-    await ev(() => document.querySelector('input[name="rp_llm"][value="runpod"]').click());
+    await api("/api/openrouter", { provider: "runpod" });   // 2.770.0: Remote = the platform Settings picks
+    await ev(() => { const i = document.querySelector('input[name="rp_llm"][value="remote"]'); i.checked = true; i.dispatchEvent(new Event("change")); });
     await p.waitForFunction(() => /RunPod pod/.test((document.querySelector("#llmSel optgroup") || {}).label || ""), null, { timeout: 10000 }).catch(() => {});
     const L2 = await ev(() => ({ g: (document.querySelector("#llmSel optgroup") || {}).label, llm: [...document.querySelectorAll("#llmSel option")].map((o) => o.value) }));
-    check("LLM ▸ RunPod in the docker: the LLM list = the GGUFs bitGen puts on the pod", L2.g === "☁ RunPod pod" && L2.llm.includes("Qwen3-8B-Q4_K_M.gguf") && !L2.llm.some((v) => /VL|mmproj/.test(v)), L2);
+    check("LLM ▸ Remote with RunPod picked in Settings: the LLM list = the GGUFs bitGen puts on the pod", L2.g === "☁ RunPod pod" && L2.llm.includes("Qwen3-8B-Q4_K_M.gguf") && !L2.llm.some((v) => /VL|mmproj/.test(v)), L2);
     await ev(() => { const s = document.getElementById("llmSel"); s.value = "Qwen3-8B-Q4_K_M.gguf"; s.dispatchEvent(new Event("change", { bubbles: true })); }); await sleep(800);
     check("…picking one: kept for the pod (set up with it at the next prompt), nothing started here", (await api("/api/remotellm")).llm.current === "Qwen3-8B-Q4_K_M.gguf" && starts.length === 0);
     // Local: this computer's lists back
@@ -85,7 +86,7 @@ const listen = (srv, port) => new Promise((ok, bad) => { srv.once("error", bad);
   } finally {
     await b.close(); orsrv.close(); rp.close();
     await api("/api/remoteprep/where", { llm: where0.llm || "", vlm: where0.vlm || "" }).catch(() => {});
-    await api("/api/openrouter", { key: or0.key || "", model: or0.model || "", vlm_model: or0.vlm_model || "" }).catch(() => {});
+    await api("/api/openrouter", { key: or0.key || "", model: or0.model || "", vlm_model: or0.vlm_model || "", provider: or0.provider || "openrouter" }).catch(() => {});
     await api("/api/gpusplit", { where: "local", engine: { provider: (g0.engine || {}).provider || "runpod", runpod: (g0.engine || {}).runpod || "serverless" }, llm: !!g0.llm, vlm: !!g0.vlm, image: !!g0.image, video: !!g0.video }).catch(() => {});
     await api("/api/remotegpu/save", { runpod: { key: "", pod_id: "", port: 8188 } }).catch(() => {});
     await api("/api/remotegen/enabled", { on: null }).catch(() => {});

@@ -31,9 +31,9 @@ srv.listen(0, "127.0.0.1", async () => {
     const H = (r, k) => RL.hostOf(r, k || "llm");
     check("hostOf: Remote with nothing picked = OpenRouter (Tim: 'openrouter(default)'), for the LLM and the vision LLM", H({ enabled: true, split: { where: "remote" } }) === "openrouter" && H({ enabled: true, split: { where: "remote" } }, "vlm") === "openrouter");
     check("…Local / remote generation off / Both with nothing picked: this computer's lists ('')", H({ enabled: true, split: { where: "local" } }) === "" && H({ enabled: false, split: { where: "remote" } }) === "" && H({ enabled: true, split: { where: "both" } }) === "");
-    check("…a pick wins (RunPod / OpenRouter); Local picked = this computer; an old RunPod vLLM set-up (llm_provider runpod + its endpoint) keeps working the old way",
+    check("…a pick wins (RunPod / OpenRouter); Local picked = this computer; 2.770.0: nothing picked = the platform Settings picks (RunPod when chosen there, else OpenRouter)",
       H({ enabled: true, split: { where: "remote" }, llm_where: { llm: "runpod" } }) === "runpod" && H({ enabled: true, split: { where: "both" }, llm_where: { llm: "openrouter" } }) === "openrouter"
-      && H({ enabled: true, split: { where: "remote" }, llm_where: { llm: "local" } }) === "" && H({ enabled: true, split: { where: "remote" }, llm_provider: "runpod", vllm: { endpoint: "ep" } }) === "" && H({ enabled: true, split: { where: "remote" }, llm_provider: "runpod" }) === "openrouter");
+      && H({ enabled: true, split: { where: "remote" }, llm_where: { llm: "local" } }) === "" && H({ enabled: true, split: { where: "remote" }, llm_provider: "runpod", vllm: { endpoint: "ep" } }) === "runpod" && H({ enabled: true, split: { where: "remote" }, llm_provider: "openrouter" }) === "openrouter");
     /* ---- the pod's GGUFs */
     const cat = JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "modelCatalog.json"), "utf8")).models;
     const tl = RL.catalogLlms(cat, "llm"), vl = RL.catalogLlms(cat, "vlm");
@@ -79,7 +79,7 @@ srv.listen(0, "127.0.0.1", async () => {
   srv.close();
   /* ---- the page */
   const o = UI.optionsOf({ host: "openrouter", label: "OpenRouter", models: [{ id: "a/b:free", name: "B (free)", note: "32k context" }, { id: "c/d:free", name: "D" }], current: "c/d:free" });
-  check("optionsOf: under '☁ OpenRouter - free models', name · note, the current one selected; an empty list says so", o.label === "☁ OpenRouter - free models" && o.items[0].text === "B (free) · 32k context" && o.items[1].selected && !o.items[0].selected && UI.optionsOf({ host: "runpod", label: "RunPod pod", models: [] }).empty === "(no models RunPod pod lists)");
+  check("optionsOf: under '☁ OpenRouter', name · note, the current one selected; an empty list says so", o.label === "☁ OpenRouter" && o.items[0].text === "B (free) · 32k context" && o.items[1].selected && !o.items[0].selected && UI.optionsOf({ host: "runpod", label: "RunPod pod", models: [] }).empty === "(no models RunPod pod lists)");
   const page = fs.readFileSync(path.join(ROOT, "static", "index.html"), "utf8"), js = fs.readFileSync(path.join(ROOT, "static", "remotellm.js"), "utf8");
   check("the page: refreshLlms leaves the prompt docker's LLM list to H3RemoteLlm in remote mode (the Settings ▸ LLM picker still lists this computer's); remotellm.js loaded",
     /const remoteOwn = !!\(window\.H3RemoteLlm && H3RemoteLlm\.owns\("llm"\)\)/.test(page) && /if \(remoteOwn\) \{ H3RemoteLlm\.paint\("llm"\); return; \}/.test(page) && /<script src="\/static\/remotellm\.js"><\/script>/.test(page));

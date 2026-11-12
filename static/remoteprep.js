@@ -30,8 +30,10 @@
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
   function picks() { return { video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "", llm_file: $("llmSel") ? $("llmSel").value : "" }; }
-  var CHOICES = [["local", "Local", "llama-server on this computer"], ["openrouter", "OpenRouter", "OpenRouter's model (Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter) - paid per token"],
-    ["runpod", "RunPod", "Your pod: bitGen sets up llama.cpp there with the same GGUF as here (Pods) - or the RunPod vLLM endpoint (Serverless)"]];
+  // 2.770.0 (Tim: "in the remote generation docker, remove the openrouter search, and runpod and openrouter dialog, instead just
+  // have local and remote radio buttons for llm and vllm" + "the remote platform will be selected in settings with openrouter as
+  // default"): Remote = the platform Settings ▸ Remote generation ▸ 🧠 LLM picks; the model is picked in the prompt docker
+  var CHOICES = [["local", "Local", "llama-server on this computer"], ["remote", "Remote", "The platform picked in Settings ▸ Remote generation ▸ 🧠 LLM (OpenRouter by default) - pick the model in the prompt docker's list"]];
   function build() {
     var box = $("sec-gpu"); if (!box || $("gpuLlmWhere") || !$("gpuEngine")) return !!$("gpuLlmWhere");
     if (!$("rpPrepCss")) { var st = doc.createElement("style"); st.id = "rpPrepCss"; st.textContent = "#sec-gpu.gpuLocal #gpuLlmWhere,#gpuRemoteOpts.gpuLocal #gpuLlmWhere{display:none!important}#gpuLlmWhere .rpRow{display:flex;gap:4px 12px;flex-wrap:wrap;align-items:center;margin-top:3px}#gpuLlmWhere .rpRow > span:first-child{font-size:.7rem;min-width:92px}#gpuLlmWhere .rpSt{font-size:.68rem;margin-left:96px}"; doc.head.appendChild(st); }
@@ -47,7 +49,6 @@
         l.appendChild(i); l.appendChild(doc.createTextNode(" " + c[1])); row.appendChild(l);
       });
       w.appendChild(row);
-      var op = doc.createElement("div"); op.id = "rpOr_" + k[0]; op.style.display = "none"; w.appendChild(op);   // OpenRouter's model (static/openrouter.js picker)
       var st2 = doc.createElement("div"); st2.className = "hint rpSt"; st2.id = "rpSt_" + k[0]; st2.setAttribute("aria-live", "polite"); w.appendChild(st2);
     });
     var vs = doc.createElement("div"); vs.className = "hint rpSt"; vs.id = "rpSt_video"; vs.style.marginLeft = "0"; vs.setAttribute("aria-live", "polite"); w.appendChild(vs);
@@ -60,15 +61,11 @@
     v = S.v; if (!v || !build()) return;
     ["llm", "vlm"].forEach(function (k) {
       var w = (v.where || {})[k] || "";
-      doc.querySelectorAll('input[name="rp_' + k + '"]').forEach(function (i) { i.checked = i.value === (w || "local"); });
+      doc.querySelectorAll('input[name="rp_' + k + '"]').forEach(function (i) { i.checked = i.value === (w && w !== "local" ? "remote" : "local"); });
       var s = v[k], why = w === "openrouter" && !v.openrouter_ready ? "✗ OpenRouter is not set up - Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter"
         : w === "runpod" && !v.engine_pods && !v.vllm_ready ? "✗ RunPod Serverless needs its vLLM endpoint (Settings ▸ Remote generation) - or pick RunPod ▸ Pods"
         : w === "runpod" && v.engine_pods ? (s ? lineOf("on the pod", s) : "set up on your pod when you send a prompt (the first time takes a few minutes)") : "";
-      $("rpSt_" + k).textContent = why;
-      // 2.767.0 (Tim: "the model should be able to be changed ... list/search open routers models and choose one"): OpenRouter's
-      // model, searchable, right here
-      var op = $("rpOr_" + k); op.style.display = w === "openrouter" ? "flex" : "none";
-      if (w === "openrouter" && root.H3OpenRouter && root.H3OpenRouter.picker) root.H3OpenRouter.picker(op, k);
+      $("rpSt_" + k).textContent = why || (w === "openrouter" ? "on OpenRouter - pick its model in the prompt docker's list" : "");
     });
     $("rpSt_video").textContent = v.video ? lineOf("Video style " + (v.video.style || ""), v.video) : "";
     clearTimeout(S.t);

@@ -5255,7 +5255,11 @@
    "src": "static/openrouter.js:23"
   },
   {
-   "s": "Free models only",
+   "s": "Show free",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "Show paid",
    "src": "static/openrouter.js:32"
   },
   {
@@ -5283,7 +5287,11 @@
    "src": "static/openrouter.js:32"
   },
   {
-   "s": "List only the models OpenRouter offers free",
+   "s": "List the models OpenRouter offers free",
+   "src": "static/openrouter.js:32"
+  },
+  {
+   "s": "List the models OpenRouter charges for (their price per million tokens beside them)",
    "src": "static/openrouter.js:32"
   },
   {
@@ -5296,11 +5304,11 @@
   },
   {
    "s": "Vision LLM on OpenRouter",
-   "src": "static/openrouter.js:149"
+   "src": "static/openrouter.js:152"
   },
   {
    "s": "LLM on OpenRouter",
-   "src": "static/openrouter.js:149"
+   "src": "static/openrouter.js:152"
   },
   {
    "s": "Picture style",
@@ -6447,6 +6455,90 @@
    "src": "static/remotegpu.js:252"
   },
   {
+   "s": "Search the Vision LLM models",
+   "src": "static/remotellm.js:79"
+  },
+  {
+   "s": "Search the LLM models",
+   "src": "static/remotellm.js:79"
+  },
+  {
+   "s": "Search the models (every word: name, maker, free, paid, vision) - the list shows 10 at a time",
+   "src": "static/remotellm.js:81"
+  },
+  {
+   "s": "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list",
+   "src": "static/remotellm.js:88"
+  },
+  {
+   "s": "OpenRouter models",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Paid",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Vision",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Price (low first)",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Context (large first)",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "in / out per M",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Context",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Pick a model to see its details",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Use for",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Search - name, maker, free, paid, vision",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "Only models that take pictures",
+   "src": "static/remotellm.js:110"
+  },
+  {
+   "s": "asking OpenRouter for its models",
+   "src": "static/remotellm.js:140"
+  },
+  {
+   "s": "OpenRouter could not be reached",
+   "src": "static/remotellm.js:144"
+  },
+  {
+   "s": "No model matches",
+   "src": "static/remotellm.js:151"
+  },
+  {
+   "s": "Free (rate-limited by OpenRouter and the provider)",
+   "src": "static/remotellm.js:163"
+  },
+  {
+   "s": "Context: not said · takes pictures 👁",
+   "src": "static/remotellm.js:163"
+  },
+  {
+   "s": "Added",
+   "src": "static/remotellm.js:166"
+  },
+  {
    "s": "Remote mode",
    "src": "static/remotemodels.js:51"
   },
@@ -6489,6 +6581,10 @@
   {
    "s": "could not read this computer's model folders",
    "src": "static/remotemodels.js:111"
+  },
+  {
+   "s": "on OpenRouter - pick its model in the prompt docker's list",
+   "src": "static/remoteprep.js:68"
   },
   {
    "s": "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU",
@@ -24126,11 +24222,11 @@
   },
   {
    "p": "{0} · {1} tokens",
-   "src": "static/openrouter.js:79"
+   "src": "static/openrouter.js:82"
   },
   {
    "p": "{0} models · {1} free",
-   "src": "static/openrouter.js:105"
+   "src": "static/openrouter.js:108"
   },
   {
    "p": "{0}+ · ↑ ↓ pick · Enter runs · Esc closes",
@@ -24433,32 +24529,52 @@
    "src": "static/remotegpu.js:248"
   },
   {
+   "p": "{0} more - search, or ☰ All",
+   "src": "static/remotellm.js:65"
+  },
+  {
    "p": "Vision LLM on {0} - {1}",
-   "src": "static/remotellm.js:44"
+   "src": "static/remotellm.js:68"
   },
   {
    "p": "Vision LLM on {0}",
-   "src": "static/remotellm.js:44"
+   "src": "static/remotellm.js:68"
   },
   {
    "p": "LLM on {0} - {1}",
-   "src": "static/remotellm.js:44"
+   "src": "static/remotellm.js:68"
   },
   {
    "p": "LLM on {0}",
-   "src": "static/remotellm.js:44"
+   "src": "static/remotellm.js:68"
   },
   {
    "p": "LLM: ☁ {0} ({1})",
-   "src": "static/remotellm.js:49"
+   "src": "static/remotellm.js:73"
+  },
+  {
+   "p": "{0} of {1} models",
+   "src": "static/remotellm.js:150"
+  },
+  {
+   "p": "Context: {0} tokens · takes pictures 👁",
+   "src": "static/remotellm.js:163"
+  },
+  {
+   "p": "Added: {0}",
+   "src": "static/remotellm.js:163"
+  },
+  {
+   "p": "Context: {0} tokens · text only",
+   "src": "static/remotellm.js:163"
   },
   {
    "p": "LLM: ☁ {0} ()",
-   "src": "static/remotellm.js:61"
+   "src": "static/remotellm.js:179"
   },
   {
    "p": "{0} runs on",
-   "src": "static/remoteprep.js:40"
+   "src": "static/remoteprep.js:42"
   },
   {
    "p": "try {0} (virtual)",
