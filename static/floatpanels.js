@@ -208,7 +208,7 @@
       const up = () => {
         root.removeEventListener("pointermove", mv, true); root.removeEventListener("pointerup", up, true);
         marker(null);
-        if (over && R[over]) { R[over].win.classList.remove("drop"); dockInto(r.id, over, slot ? slot.index : undefined); }
+        if (over && R[over]) { R[over].win.classList.remove("drop"); dockInto(r.id, over, slot || undefined); }
         else if (zone) { try { zone.host.drop(r.id, zone.zone.key); } catch (e) { /* the host's */ } save(); }
         else save();
       };
@@ -329,14 +329,50 @@
     if (r.onState) r.onState("home");
     save();
   }
-  /** 2.545.0: the slot a drop at (x, y) takes in docker d laid out as a row / column (null for tabs) */
-  function slotOf(d, x, y) {
-    if (!d || !d.layout || d.layout === "tabs") return null;
+  /** 2.764.5 (Tim: "add vertical drop zones to all dockers as well so floating dockers can dock below or above another
+   *  docker that is docked inside a docked docker"): the top / bottom band of a docker shown in docker d (side by side, or
+   *  the tab showing) -> {member, edge, line}; null = not near one. Pure on rects: parts [{id, rect}], band = 28% (24-90 px). */
+  function edgeIn(parts, x, y) {
+    for (const p of parts || []) {
+      const r = p.rect; if (!r || !inRect(r, x, y) || r.height < 40) continue;
+      const band = Math.max(24, Math.min(90, r.height * 0.28));
+      const edge = y <= r.top + band ? "top" : y >= r.bottom - band ? "bottom" : "";
+      if (!edge) return null;
+      const at = edge === "top" ? r.top : r.bottom;
+      return { member: p.id, edge, line: { x: r.left, y: at - 2, w: r.right - r.left, h: 4 } };
+    }
+    return null;
+  }
+  /** 2.545.0: the slot a drop at (x, y) takes in docker d laid out as a row / column (null for tabs).
+   *  2.764.5: over the top / bottom of a docker in it (not a column already - its slots are above / below) = {wrap} - the
+   *  drop stacks them there (lib: dockInto with that slot) */
+  function slotOf(d, x, y, depth) {
+    if (!d) return null;
+    const shown = d.win ? (d.tabs || []).map((t) => (R[t] && R[t].win && !R[t].win.classList.contains("hid") ? { id: t, rect: R[t].win.getBoundingClientRect() } : null)).filter((p) => p && p.rect.width > 0) : [];
+    // a docker inside this one under the pointer (a stack made here): its own slots - between the dockers in it too
+    const under = shown.find((p) => inRect(p.rect, x, y) && R[p.id].kind === "docker" && R[p.id].win.querySelector(".h3fd-pane"));
+    // …except near its sides along this docker's own direction (beside it in a row, above / below it in a column)
+    const sideOf = (r) => (d.layout === "row" ? Math.min(x - r.left, r.right - x) < Math.max(24, Math.min(70, r.width * 0.2)) : d.layout === "col" ? Math.min(y - r.top, r.bottom - y) < Math.max(24, Math.min(70, r.height * 0.2)) : false);
+    if (under && !sideOf(under.rect) && (depth || 0) < 4) {
+      const inner = slotOf(R[under.id], x, y, (depth || 0) + 1);
+      if (inner) return Object.assign({}, inner, { into: inner.into || under.id });
+    }
+    if (d.layout !== "col" && d.win) {
+      const e = edgeIn(shown, x, y);
+      if (e) return { index: Math.max(0, (d.tabs || []).indexOf(e.member) + (e.edge === "bottom" ? 1 : 0)), line: e.line, wrap: e };
+    }
+    if (!d.layout || d.layout === "tabs") return null;
     const pane = d.win.querySelector(".h3fd-pane");
     const parts = (d.tabs || []).map((t) => (R[t] && R[t].win ? { rect: R[t].win.getBoundingClientRect() } : null)).filter((p) => p && p.rect.width > 0);
     return slotIn(parts, d.layout === "row" ? "x" : "y", x, y, pane.getBoundingClientRect());
   }
   function dockInto(id, into, at) {
+    // 2.764.5: a slot from slotOf - its place, or "stack it above / below that docker" (wrap)
+    if (at && typeof at === "object") {
+      if (at.into && at.into !== into && R[at.into]) return dockInto(id, at.into, Object.assign({}, at, { into: null }));   // a docker inside it
+      if (at.wrap) return stackWith(id, into, at.wrap.member, at.wrap.edge);
+      at = at.index;
+    }
     const r = R[id], d = R[into]; if (!r || !d || !canDock(id, into, (k) => (R[k] ? R[k].docker : null))) return;
     if (!r.win) makeWin(r);
     if (r.state === "zone") leaveZone(r);               // 2.609.0
@@ -352,6 +388,22 @@
     if (r.win._dfGrips) r.win._dfGrips.refresh();
     if (r.onState) r.onState("in");
     save();
+  }
+  /** 2.764.5: `id` above / below `member` (a docker inside docker `into`): a member that is itself a stacked docker takes it at
+   *  that end; else the two go into a new stacked docker in the member's place (named after them; ⚙ renames it) */
+  function stackWith(id, into, member, edge) {
+    const d = R[into], m = R[member], r = R[id];
+    if (!d || !m || !r || id === member || !canDock(id, into, (k) => (R[k] ? R[k].docker : null))) return;
+    if (m.kind === "docker" && m.layout === "col" && canDock(id, member, (k) => (R[k] ? R[k].docker : null))) return dockInto(id, member, edge === "top" ? 0 : (m.tabs || []).length);
+    const idx = (d.tabs || []).indexOf(member);
+    const s = newDocker({ name: (m.title + " / " + r.title).slice(0, 40), layout: "col" });
+    dockInto(s.id, into, idx < 0 ? undefined : idx);
+    dockInto(member, s.id);
+    dockInto(id, s.id, edge === "top" ? 0 : 1);
+    if (idx >= 0 && into && R[into]) { R[into].active = s.id; paintTabs(R[into]); }
+    if (root.H3TestEvent) { try { root.H3TestEvent("docker_stacked", id + (edge === "top" ? " over " : " under ") + member); } catch (e) { /* the 🧪 list */ } }
+    save();
+    return s.id;
   }
   function undock(r) {
     const d = R[r.docker]; r.docker = null;
@@ -614,7 +666,7 @@
     root.addEventListener("pointerdown", () => { down = true; }, true); root.addEventListener("pointerup", () => { down = false; }, true);
   }
 
-  const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), dockerAt, zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
+  const H3Panels = { zoneInto, zoneOut, zoneMark: (line) => marker(line), dockerAt, edgeIn, stackWith, zones: () => ZONES.map((z) => z.id), setPerm, slotIn, LAYOUTS, setLayout, editTitle, slotOf: (id, x, y) => slotOf(R[id], x, y), ask, fit, hitDocker, canDock, slug, columnZones, zoneHost, zoneAt, placeAt, adopt, float, home, dockInto, newDocker, show, rename, confineTo, remove, hosts, load, relayout, cfgMenu,
     restoring: () => restoring > 0, keepTabs, flush,   // 2.575.0
     get: (id) => R[id], list: () => Object.values(R).map((r) => ({ id: r.id, kind: r.kind, title: r.title, state: r.state, docker: r.docker || null, confine: r.confineId || "", tabs: (r.tabs || []).slice() })), snapshot };
   if (typeof module !== "undefined" && module.exports) module.exports = H3Panels;

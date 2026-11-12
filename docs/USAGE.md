@@ -8528,6 +8528,19 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   real person is joining. Until the code is typed, a new account can sign in but not post, chat or add friends; an account
   never confirmed is removed after a week. The join forms in 💬 Community and on the website say so.
 
+## Dock a docker above or below another one; floating dockers stay in front (2.764.5)
+
+- **Above or below:** drag a floating docker over a docker that sits inside one of your dockers (side by side, or the tab
+  showing) - near its top edge an orange bar shows across its top, near its bottom edge across its bottom. Let go and the
+  two are stacked in that place (a new stacked docker named after them - ⚙ renames it); the others stay beside them. This
+  works in a floating docker and in a ▣ docker docked in the main column, for main dockers, Basic Settings, PODS and the
+  other docker windows.
+- **Into a stack:** over a stacked docker the bar shows between the dockers in it - drop there to add one between them. Near
+  its left or right side it goes beside the stack instead. The middle of a docker still adds it beside (side by side) or as a
+  tab, as before.
+- **Floating dockers in front:** a floating docker is always in front of a docker docked inside another docker, even when you
+  press the docked one; the floating dialogs (Basic Settings, PODS, 💬 Community …) stay in front of both.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

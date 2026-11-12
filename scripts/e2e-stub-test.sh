@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.5 (Tim: "move floating dockers to the front of all docked dockers. add vertical drop zones to all dockers as well so floating dockers can dock below or above another docker that is docked inside a docked docker if that makes sense")
+node scripts/test-dockzones7645.js > /tmp/dockzones7645.log 2>&1 \
+  && ok "2.764.5 units: three tiers (docked dockers < floating dockers < dialogs), edgeIn top / bottom bands, slotOf into an inner docker (not near its sides), dockInto {into} / {wrap} -> stackWith, every drag passes the slot" \
+  || { bad "2.764.5 drop zones units"; grep -a "^FAIL" -A1 /tmp/dockzones7645.log | head -10; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7645-ui.js > /tmp/ui7645ui.log 2>&1 \
+  && ok "2.764.5 browser test: top band of a docker in a row docker = stacked above (the bar), bottom band = below, between two in a stack, PODS (dgdock) too, the side = beside; a ▣ docker docked in the column: stacked below its docker; a confined docker pressed stays under a floating one - or SKIP without playwright" \
+  || { bad "2.764.5 drop zones browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7645ui.log | head -14; }
 # ---- 2.764.4 (Tim: "make it so that new members have to verify their email - add a note that we do this to prevent spam emails and to verify the user is a real person and say, you don't have to be a member to use or download bitgen studio - you only need to be a member to talk to the community")
 node scripts/test-joinnote7644.js > /tmp/joinnote7644.log 2>&1 \
   && ok "2.764.4 units: the join form says no membership is needed to use bitGen Studio and why the email code (spam, a real person); the code box too; the server still needs the code (2.713.0)" \

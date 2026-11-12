@@ -56,7 +56,7 @@ const rd = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   const Z = require("../static/floatz.js");
   check("floatz layered: the dockers under the floating dialogs, each layer in the order used", JSON.stringify(Z.layered(["c", "D", "b", "E"], (x) => /[A-Z]/.test(x))) === JSON.stringify(["D", "E", "c", "b"]));
   const FZ = rd("static", "floatz.js");
-  check("floatz raise: the floating ones not raised yet join the order, then painted layered", /if \(!stack\.includes\(w\) && !ws\.includes\(w\) && floating\(w\)\) stack\.unshift\(w\)/.test(FZ) && /layered\(stack, isDocker\)\.forEach/.test(FZ) && Z.SEL.includes(".h3fp.h3fp-dk"));
+  check("floatz raise: the floating ones not raised yet join the order, then painted layered", /if \(!stack\.includes\(w\) && !ws\.includes\(w\) && floating\(w\)\) stack\.unshift\(w\)/.test(FZ) && /layered\(stack, tierOf\)\.forEach/.test(FZ) && Z.SEL.includes(".h3fp.h3fp-dk"));
   const FP = rd("static", "floatpanels.js");
   check("floatpanels: a named docker is .h3fp-dk, in the band (60, not 9300 when confined); dockerAt(x, y, id) for the others", /\+ "\.h3fp\.h3fp-dk\{z-index:60\}"/.test(FP) && /function dockerAt\(x, y, id\)/.test(FP) && /zoneMark: \(line\) => marker\(line\), dockerAt,/.test(FP));
   check("dgdock: Basic Settings / PODS / … go into the named docker under them (dockerAt), not only ▣ ones", /const did = P\(\)\.dockerAt \? P\(\)\.dockerAt\(x, y, id\) : null;/.test(rd("static", "dgdock.js")));

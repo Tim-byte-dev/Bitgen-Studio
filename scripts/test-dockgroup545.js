@@ -33,7 +33,7 @@ check("the main dockers ⇱ floats (not the prompt docker - its own float; not t
 const FP = rd("static", "floatpanels.js"), DG = rd("static", "dockgroup.js"), IX = rd("static", "index.html"), SJ = JSON.parse(rd("docs", "shortcuts.json"));
 check("floatpanels: the layout is kept (snapshot + newDocker + load), each one's share (grow), drop = at the slot, a docker restored in its saved place",
   /layout: r\.layout \|\| "tabs"/.test(FP) && /newDocker\(\{ id, name: d\.name, confine: d\.confine, layout: d\.layout \}\)/.test(FP) && /s\.grow = r\.grow/.test(FP)
-  && /dockInto\(r\.id, over, slot \? slot\.index : undefined\)/.test(FP) && /dockInto\(o\.id, lay\.docker, at\)/.test(FP));
+  && /dockInto\(r\.id, over, slot \|\| undefined\)/.test(FP) && /dockInto\(o\.id, lay\.docker, at\)/.test(FP));
 check("floatpanels: the title edited in place (double-click), ⇆ / ⇅ in the title bar, Layout in ⚙, splitters, ⇱ on a docker in one",
   /\.ondblclick = \(\) => editTitle\(r\.id\)/.test(FP) && /class="h3fp-lay"/.test(FP) && /\["h", "Layout:"\]/.test(FP) && /h3fd-split/.test(FP) && /class="h3fp-out"/.test(FP));
 check("index.html loads dockgroup.js after floatpanels.js; the shortcut is listed (Anywhere)",

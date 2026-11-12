@@ -418,7 +418,7 @@
         root.addEventListener("click", eat, true); root.setTimeout(() => root.removeEventListener("click", eat, true), 300);
         if (!over) return;
         if (d.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse(id);
-        P().dockInto(pid || "bd." + id, over.id, slot ? slot.index : undefined);
+        P().dockInto(pid || "bd." + id, over.id, slot || undefined);   // 2.764.5: a place, or stacked above / below one
         tev("docker_dragged_in", id + ">" + over.id);
       };
       root.addEventListener("pointermove", mv, true); root.addEventListener("pointerup", up, true);

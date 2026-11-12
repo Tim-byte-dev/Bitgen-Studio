@@ -394,6 +394,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Pod 上只放工作流用到的自訂節點** — Pod 只會得到其風格的工作流用到、而 Pod 上沒有的自訂節點包（從這臺電腦的 ComfyUI 查詢，按相同版本 clone 或上傳）- 為風格建立的 Pod、預設的 ▶ 以及加到 Pod 上的風格都是如此；任何 Pod 都可用 ⬆ Nodes its styles need；日誌會說明每一步（小包顯示 KB、解包、安裝第 n / m 個），Pod 3 分鐘無法彙報時會帶著原因結束這一步。 *Where:* 🖥 PODS ▸ My pods；Presets；Pod 模式下的 Generate。 *Since:* 2.764.2
 - **風格的自訂節點來自它們的 git 地址** — 風格需要的節點包會在 Pod 上 clone（用 git 安裝的按相同提交；其他的從 bitGen 的節點清單、pyproject.toml、ComfyUI-Manager 的清單或 Comfy Registry 查詢，並按其版本標籤 clone；位於更大倉庫裡的包會連結進來）；只有沒有地址或 Pod 無法 clone 的包（私有）才會從你的電腦上傳，日誌會說明原因。 *Where:* Pod 模式 - Generate、預設、⬆ Nodes its styles need。 *Since:* 2.764.3
 - **加入社群時說明為什麼要郵箱驗證碼** — 加入表單（💬 Community 和網站）說明使用或下載 bitGen Studio 不需要成為會員 - 只有在社群裡交流才需要 - 並說明新會員用 6 位驗證碼確認郵箱，是為了防止垃圾註冊並確認加入的是真實的人。 *Where:* 💬 Community ▸ Join；tigerart.com.au ▸ Account。 *Since:* 2.764.4
+- **把停靠窗停靠到另一個停靠窗的上方或下方** — 把浮動停靠窗拖到你的停靠窗（浮動的，或停靠在主列中的 ▣ 停靠窗）裡某個停靠窗的上邊緣或下邊緣附近，兩者就會在那裡上下堆疊；拖到堆疊上時會放到其中停靠窗之間；拖到側邊或中間則像以前一樣並排或作為標籤新增；浮動停靠窗總是顯示在停靠於停靠窗內的停靠窗前面。 *Where:* 你的任何停靠窗（⊞ Docker configs ▸ ▣ New docker…、▣ 停靠窗）。 *Since:* 2.764.5
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

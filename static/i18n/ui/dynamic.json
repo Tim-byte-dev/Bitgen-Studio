@@ -2696,43 +2696,43 @@
   },
   {
    "s": "Drag to size them",
-   "src": "static/floatpanels.js:373"
+   "src": "static/floatpanels.js:425"
   },
   {
    "s": "Float it",
-   "src": "static/floatpanels.js:379"
+   "src": "static/floatpanels.js:431"
   },
   {
    "s": "Side by side - click: stacked (vertical)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "Side by side - click: side by side (horizontal)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "Stacked - click: stacked (vertical)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "Stacked - click: side by side (horizontal)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "Tabs - click: stacked (vertical)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "Tabs - click: side by side (horizontal)",
-   "src": "static/floatpanels.js:402"
+   "src": "static/floatpanels.js:454"
   },
   {
    "s": "The docker's name",
-   "src": "static/floatpanels.js:427"
+   "src": "static/floatpanels.js:479"
   },
   {
    "s": "Where it floats",
-   "src": "static/floatpanels.js:502"
+   "src": "static/floatpanels.js:554"
   },
   {
    "s": "FlowHMR motion capture",

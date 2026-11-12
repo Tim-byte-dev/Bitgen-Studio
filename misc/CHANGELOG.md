@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.764.5** — Dock a Docker Above or Below Another One Inside a Docker (Top / Bottom Drop Zones Stack Them, Also in a ▣ Docker Docked in the Main Column, and Between the Dockers of a Stack); Floating Dockers Always in Front of Dockers Docked Inside a Docker
 - **2.764.4** — Joining the Community Says Why the Email Code (to Prevent Spam Sign-Ups and Make Sure a Real Person Is Joining) and That You Don't Have to Be a Member to Use or Download bitGen Studio - Only to Talk to the Community (App and Website)
 - **2.764.3** — A Style's Custom Nodes Are Cloned on the Pod From Their Git Address (Found in bitGen's Node List, Their pyproject.toml, ComfyUI-Manager's List or the Comfy Registry, at Their Version's Tag), a Pack Inside a Bigger Repo Linked In; Uploaded From Your Computer Only When There Is No Address or the Clone Fails
 - **2.764.2** — Only the Custom Nodes Your Workflows Use Go on a Pod (Not Every Pack of This Computer); ⬆ Nodes Its Styles Need; Node Uploads Say Each Step (KB for a Small Pack, Unpacking, Installing n of m) and Stop With the Reason When the Pod Cannot Report

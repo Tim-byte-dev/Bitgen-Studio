@@ -286,7 +286,7 @@
       if (r.state === "zone") { G().paint(); return; }                                                   // 2.609.0: floatpanels docked it in a zone
       if (z && z.col) G().makePerm(id, false, { mode: "col", before: z.before });
       else if (z) G().makePerm(id, false, { mode: "dock", to: z.key, side: z.side });
-      else if (carry && into) P().dockInto(id, into, slot ? slot.index : undefined);
+      else if (carry && into) P().dockInto(id, into, slot || undefined);   // 2.764.5: the slot (a place, or stacked above / below one)
       else if (carry) P().float(id, { x: r.x, y: r.y, w: r.w, h: r.h });
       G().paint();
     };
@@ -372,7 +372,7 @@
     unplaceMember(id, el);
     const r = adoptMember(id);
     Promise.resolve(r && r.ready).then(() => {
-      P().dockInto(id, gid, slot ? slot.index : undefined);
+      P().dockInto(id, gid, slot || undefined);
       if (P().get(id).state !== "in") return;
       G().paint();
       tev("docker_member_in", id + ">" + gid);

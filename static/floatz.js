@@ -37,9 +37,13 @@
    *  layers in the band - the dockers (▣ dockers, ▣ New docker… ones, floated main dockers, the stage docker: isDocker) under the floating
    *  dialogs (PODS, 💲 RunPod, Basic Settings, 💬 Community …); in each, the one used last on top. The order -> the order
    *  painted (pure) */
-  function layered(list, isDocker) {
-    const l = list || [];
-    return l.filter((x) => isDocker(x)).concat(l.filter((x) => !isDocker(x)));
+  // 2.764.5 (Tim: "move floating dockers to the front of all docked dockers"): tierOf(x) -> a number (lower = under; true =
+  // 0, false = 1): a docker DOCKED inside another one (a ▣ New docker… one confined to a docker) 0, floating dockers 1, the
+  // floating dialogs 2 - so no docked docker is ever over a floating one
+  function layered(list, tierOf) {
+    const l = list || [], t = (x) => { const v = tierOf(x); return v === true ? 0 : v === false ? 1 : +v || 0; };
+    const tiers = [...new Set(l.map(t))].sort((a, b) => a - b);
+    return [].concat(...tiers.map((k) => l.filter((x) => t(x) === k)));
   }
   /** the z of the i-th in the order (0 = the lowest raised one) - never past the cap */
   function zFor(i) { return Math.min(BAND.cap, BAND.base + 1 + Math.max(0, i | 0)); }
@@ -69,6 +73,8 @@
   /** bring the floating dialog holding `t` (and any it floats inside) to the top of the band; returns it (null = `t` is
    *  in no floating dialog) */
   const isDocker = (w) => !!(w.classList && (w.classList.contains("h3fp") || w.classList.contains("tsd")));   // ▣ / named / floated main dockers, the timeline's stage docker
+  /** 2.764.5: 0 = docked inside a docker (a confined named docker), 1 = a floating docker, 2 = a floating dialog */
+  const tierOf = (w) => (isDocker(w) ? (w.classList.contains("h3fp-dk") && w.parentElement !== doc.body ? 0 : 1) : 2);
   function raise(t) {
     const ws = winsOf(t); if (!ws.length) return null;
     for (const x of stack) if (!floating(x)) drop(x);
@@ -76,7 +82,7 @@
     // floating dialog that kept its stylesheet z
     for (const w of doc.querySelectorAll(sel)) if (!stack.includes(w) && !ws.includes(w) && floating(w)) stack.unshift(w);
     for (const w of ws) stack = order(stack, w, floating);
-    layered(stack, isDocker).forEach((x, i) => { x.style.zIndex = String(zFor(i)); x.dataset.fz = "1"; });
+    layered(stack, tierOf).forEach((x, i) => { x.style.zIndex = String(zFor(i)); x.dataset.fz = "1"; });
     return ws[ws.length - 1];
   }
   /** `w` docked / zoned / gone: out of the order, the z it was given cleared (a zoned docker is position: relative) */
@@ -86,7 +92,7 @@
     if (w.dataset && w.dataset.fz) { w.style.zIndex = ""; delete w.dataset.fz; }
   }
   /** the order now, lowest first (floating ones only) */
-  function list() { for (const x of stack.slice()) if (!floating(x)) drop(x); return layered(stack, isDocker); }
+  function list() { for (const x of stack.slice()) if (!floating(x)) drop(x); return layered(stack, tierOf); }
   /** the one on top (null = none raised yet) */
   function top() { const l = list(); return l.length ? l[l.length - 1] : null; }   // (the top of what is painted)
 
