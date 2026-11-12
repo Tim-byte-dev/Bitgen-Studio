@@ -61,7 +61,7 @@
     + ".pdk:not(.pdPre) #pdPresetBox{display:none}.pdk.pdPre #pdTpl,.pdk.pdPre #pdCreate,.pdk.pdPre .pdTplOnly,.pdk.pdPre #pdStarAdd,.pdk.pdPre #pdMineBox{display:none!important}"
     + ".pdk .pdTabs button[data-pdsrc=mine]{margin-left:6px}"
     // 2.761.0: My pods as an accordion (static/podsetup.js inside)
-    + ".pdk .pdAcc{display:block;padding:0;border:1px solid var(--line,#3a342a);border-radius:7px;margin:0 0 6px;background:var(--panel,#1b1814)}"
+    + ".pdk .pdTop{display:flex;align-items:flex-start}.pdk .pdSel{flex:none;margin:9px 0 0 8px;width:auto}.pdk .pdAcc{display:block;padding:0;border:1px solid var(--line,#3a342a);border-radius:7px;margin:0 0 6px;background:var(--panel,#1b1814)}"
     + ".pdk .pdAcc.open{border-color:var(--tiger,#f59e2c)}"
     + ".pdk .pdHead{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;padding:6px 8px;color:inherit;cursor:pointer;font:inherit}"
     + ".pdk .pdHead .ar{color:var(--tiger,#f59e2c);width:1em;flex:none}.pdk .pdHead .nm{flex:1;min-width:0}"
@@ -133,6 +133,7 @@
       + '<select id="pdFor" class="pdTplOnly" title="Templates that look made for this bitGen style first - a pod created this way renders the style (linked to it)" style="width:auto"><option value="">For any style</option></select></div>'
       + '<div id="pdAsk" class="pdAsk" hidden></div>'   // 2.763.3: a render waiting for a pod
       + '<div class="hint" id="pdMsg" aria-live="polite"></div>'
+      + '<div id="pdXfer" hidden></div>'   // 2.766.0: a progress bar for each transfer to a pod (static/podxfer.js)
       + '<div id="pdStarAdd" class="rowbtns" style="align-items:center;display:none"><input type="text" id="pdCutLink" placeholder="A template that is not listed: paste its RunPod link" spellcheck="false" style="flex:1;min-width:160px">'
       + '<button type="button" class="ghost" id="pdCutAdd">＋ Add</button><a class="pdLink" href="https://www.runpod.io/console/explore" target="_blank" rel="noopener">Explore RunPod templates ↗</a></div>'
       + '<div id="pdCreate"></div>'
@@ -143,6 +144,8 @@
     return d;
   }
   function wire() {
+    if (root.H3PodXfer) H3PodXfer.mount($("pdXfer"));   // 2.766.0
+    getj("/api/pods/selected").then(function (j) { S.selPods = (j && j.selected) || []; if ($("pdPods") && S.pods && S.pods.length) paintPods(); }).catch(function () { S.selPods = []; });
     $("pdRpDock").onclick = function () { if (root.H3RunPod) H3RunPod.show(true); };   // 2.763.5
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { go(b.dataset.pdsrc); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
@@ -399,11 +402,15 @@
       var up = /RUNNING|STARTING|PROVISIONING/.test(p.status) && S.watch[p.id] !== "stop";
       if (S.watch[p.id] === "start" && S.open[p.id] == null) S.open[p.id] = true;
       var open = !!S.open[p.id] || (!!S.ask && S.open[p.id] !== false), c = (S.cost && S.cost.pods && S.cost.pods[p.id]) || null;
-      return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '">'
+      // 2.766.0 (Tim: "add a checkbox to the left of the pod name to select the pod(mulitple pods can be selected)"): ticked
+      // pods are where Model manager's ⇪ sends a model (rgpu.pod_selected - routes/remoteModels.js)
+      var ticked = (S.selPods || []).some(function (x) { return x.id === p.id; });
+      return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '"><div class="pdTop">'
+        + '<input type="checkbox" class="pdSel" data-pdsel' + (ticked ? " checked" : "") + ' aria-label="Select ' + esc(p.name) + '" title="Select this pod - Model manager (remote mode) sends models to every ticked pod' + (/RUNNING/.test(p.status) ? "" : " (it has to be running to receive them)") + '">'
         + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
         + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span>'
         + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "")
-        + (/RUNNING/.test(p.status) ? '<span class="pdStatsHead" data-pdstath="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], true) + "</span>" : "") + "</span></span></button>"
+        + (/RUNNING/.test(p.status) ? '<span class="pdStatsHead" data-pdstath="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], true) + "</span>" : "") + "</span></span></button></div>"
         + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
         + (/RUNNING/.test(p.status) ? '<div class="pdStats" data-pdstats="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], false) + "</div>" : "")
         + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")
@@ -422,6 +429,7 @@
     box.querySelectorAll(".pdRow[data-pod]").forEach(function (r) {
       var p = S.pods.find(function (x) { return x.id === r.dataset.pod; }); if (!p) return;
       setSt(r.querySelector(".pdSt"), p);
+      var sel = r.querySelector("[data-pdsel]"); if (sel) sel.onchange = function () { selectPod(p, sel.checked); };   // 2.766.0
       r.querySelector(".pdHead").onclick = function () { S.open[p.id] = !(S.open[p.id] || (!!S.ask && S.open[p.id] !== false)); paintPods(); };
       if (!(S.open[p.id] || (!!S.ask && S.open[p.id] !== false))) return;   // 2.763.3: open while a render waits
       if (root.H3PodSetup) H3PodSetup.wire(r, p, (S.port && S.port[p.id]) || 0, paintPods);
@@ -441,6 +449,13 @@
       var y = r.querySelector("[data-pdkillyes]"); if (y) y.onclick = function () { S.kill = null; act(p, "terminate"); };
       var n = r.querySelector("[data-pdkillno]"); if (n) n.onclick = function () { S.kill = null; paintPods(); };
     });
+  }
+  /** 2.766.0: a pod ticked / unticked -> rgpu.pod_selected (kept by the server, read by Model manager's ⇪) */
+  function selectPod(p, on) {
+    var L = (S.selPods || []).filter(function (x) { return x.id !== p.id; });
+    if (on) L.push({ id: p.id, name: p.name });
+    S.selPods = L;
+    post("/api/pods/selected", { pods: L }).then(function (j) { if (j && j.selected) S.selPods = j.selected; say(L.length ? "☑ " + L.length + " pod(s) ticked - Model manager's ⇪ sends models to them" : "no pods ticked", true); });
   }
   /** 2.758.0: 🎨 the pod's models + workflows -> P_ styles (static/podload.js), under the list so a repaint keeps it */
   function stylesFor(p) {

@@ -9,6 +9,7 @@ const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "podonline765-"));
+process.env.H3_REMOTE_MODELS = path.join(T, "remote_models.json");   // 2.766.0: a model the pod got from Civitai goes in the list
 let CFG = { civitai: { token: "CIVKEY765", site: "civitai.red" }, rgpu: {} };
 const coreP = require.resolve("../lib/core");
 const fake = new Module(coreP); fake.filename = coreP; fake.loaded = true;
@@ -85,7 +86,7 @@ const PO = require("../lib/podOnline");
 
   /* ---- wired in */
   const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8"), PS = src("lib/podSend.js"), PMs = src("lib/podModels.js");
-  check("sendOne asks Civitai first, uploads only when that returns null", /const on = await viaCivitai\(id, port, local, folder, name, size, tell\);\n  if \(on === ""\) return "";\n  for \(let i = 0; i < 600; i\+\+\) \{/.test(PS));
+  check("sendOne asks Civitai first, uploads only when that returns null", /const on = o\.noCivitai \? null : await viaCivitai\(id, port, local, folder, name, size, tell, o\);\n  if \(on === ""\) return "";/.test(PS));
   check("fromLink: a Civitai address takes the key as ?token= in the pod's job only (no Authorization header, not in the kept address)",
     /const token = civ \? "" : /.test(PMs) && /const jobUrl = civ && ckey \? require\("\.\/podOnline"\)\.dlUrl\(u, "", ckey\) \|\| u : u;/.test(PMs) && /dlCode\(\[\{ name, folder, url: jobUrl, size: \+o\.size \|\| 0, token \}\]/.test(PMs) && /putFiles\(w\.pod_id, \[\{ name, folder, url: u \}\]\)/.test(PMs));
   check("…Civitai's refusal in words on the pod (the key, civitai.red for mature models); the key cut from the address it shows", /'Civitai refused it - add your Civitai API key in Settings > General > Civitai/.test(PMs) && /else url\.split\('\?'\)\[0\]/.test(PMs));

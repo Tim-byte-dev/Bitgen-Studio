@@ -5193,6 +5193,21 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   Civitai API 金鑰。金鑰只隨 Pod 的下載傳送給 Civitai，不會儲存在 Pod 的檔案清單中。
 - 渲染的 Pod 備註會顯示 「the pod is downloading <文件> from civitai.red - 1.2 of 6.5 GB (18%) · 45 MB/s」；如果 Civitai 拒絕（沒有金鑰、civitai.com 上的成人模型等），會說明原因並改為從本機發送。
 
+## 遠端模型：你的 Pod 使用的模型清單、勾選的 Pod 和每次傳輸的進度列 (2.766.0)
+<!-- en: remote-models-the-list-your-pods-use-ticked-pods-and-a-bar-for-each-transfer-2-7 53f683009124 -->
+
+- **清單：** runpod/pods/remote_models.json 記錄你的 Pod 使用的模型——每個模型的標籤和分組（「Krea raw」、「Krea」）、ComfyUI
+  資料夾和檔案，以及 Pod 下載它的連結（Hugging Face、Civitai、你自己的 Hugging Face 倉庫或任何連結）。清單會自動填充：你的
+  Pod 使用的風格、在 Civitai 上找到的模型、上傳到你的 Hugging Face 倉庫的模型、遠端模式下的 Civitai ⤓。其中從不寫入金鑰或權杖。
+- **遠端模式：** 在基本設定中開啟遠端生成並選擇 RunPod Pod 時，Model manager 和基本設定的 Override 下拉框（檢查點和 LoRA 行）列出的是這些模型，而不是本機的模型。選擇某個 Pod 還沒有的模型時，Pod 會在渲染前從其連結下載。本地模式與以前相同。
+- **勾選 Pod：** PODS ▸ My pods 中每個 Pod 名稱左側都有一個核取方塊——可以勾選任意多個。在 Model manager 中按模型卡片上的 ⇪，會把它傳送到所有勾選的 Pod；卡片上的 ✓ 數量表示有多少個 Pod 已有它。
+- **硬碟上沒有連結的模型：** Model manager ▸ ＋ From this computer…——搜尋它並按 ⇪ Add。bitGen 會先在 Civitai 上查詢完全相同的檔案；如果沒有，就把它上傳一次到你自己 Hugging Face 帳戶的私有倉庫（<你>/bitgen-models——需要在 設定 ▸ Models 中填入可寫的
+  Hugging Face 權杖），之後每個勾選的 Pod 都會在幾分鐘內從那裡下載。沒有這樣的權杖時，會從本機發送到每個勾選的 Pod（較慢）。渲染需要你的某個模型到 Pod 上時，也會自動這樣做。
+- **＋ Link…** 新增一個下載連結及其資料夾；**↻ My styles' models** 新增你的 Pod 使用的風格的檔案。
+- **每次傳輸的進度列：** PODS 停靠窗和 Model manager 會顯示每次傳輸——Pod 下載、本機發送到 Pod、檔案上傳到你的 Hugging Face
+  倉庫、為在 Civitai 上查詢而讀取一次的檔案——都帶有百分比、大小、速度和剩餘時間；失敗的顯示為紅色並說明原因。✕ Clear 移除已完成的。
+- 渲染的 LoRA（包括 Override 的臨時 LoRA）現在也以同樣方式送到 Pod；無法取得的 LoRA 會提示，渲染繼續進行。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -157,7 +157,7 @@ srv.listen(0, "127.0.0.1", async () => {
   const P = srv.address().port;
   process.env.H3_RUNPOD_PROXY = "http://127.0.0.1:" + P + "/proxy/{id}-{port}";
   process.env.H3_RUNPOD_REST_API = "http://127.0.0.1:" + P + "/v2";
-  process.env.H3_POD_REVIVE_POLL = "200"; process.env.H3_POD_CHUNK = "100000"; process.env.H3_POD_NO_CIVITAI = "1";   // 2.765.0: no Civitai look-up here (scripts/test-podonline765.js)
+  process.env.H3_POD_REVIVE_POLL = "200"; process.env.H3_POD_CHUNK = "100000"; process.env.H3_POD_NO_CIVITAI = "1"; process.env.H3_POD_NO_HF = "1";   // 2.765.0: no Civitai look-up here (scripts/test-podonline765.js)
   const S = require("../lib/styles");
   const waitSend = async (id) => { let s; for (let i = 0; i < 200; i++) { s = SD.status(id); if (s && !s.running) return s; await new Promise((r) => setTimeout(r, 150)); } return s; };
   try {

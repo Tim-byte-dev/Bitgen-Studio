@@ -8568,6 +8568,29 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - The render's pod note shows "the pod is downloading <file> from civitai.red - 1.2 of 6.5 GB (18%) · 45 MB/s"; if Civitai
   refuses it (no key, a mature model on civitai.com) it says why and sends it from this computer instead.
 
+## Remote models: the list your pods use, ticked pods and a bar for each transfer (2.766.0)
+
+- **The list:** runpod/pods/remote_models.json holds the models your pods use - for each one its label and group ("Krea raw",
+  "Krea"), the ComfyUI folder and file, and the link a pod downloads it from (Hugging Face, Civitai, your own Hugging Face
+  repo or any link). It fills itself: the styles your pods use, a model found on Civitai, a model put in your Hugging Face
+  repo, a Civitai ⤓ in remote mode. Keys and tokens are never written in it.
+- **Remote mode:** with remote generation on and RunPod pods picked in Basic Settings, Model manager and Basic Settings'
+  Override dropdowns (the checkpoint and the LoRA rows) list THESE models instead of this computer's. Picking one that a pod
+  does not have yet: the pod downloads it from its link before the render. Local mode is as before.
+- **Tick pods:** a ☐ left of each pod's name in PODS ▸ My pods - tick as many as you like. ⇪ on a model's card in Model
+  manager sends it to every ticked pod; a ✓ count on the card shows how many pods have it.
+- **A model on your hard drive with no link:** Model manager ▸ ＋ From this computer… - search for it and press ⇪ Add. bitGen
+  looks for the very same file on Civitai first; if it is not there it puts it ONCE in a private repo on your own Hugging
+  Face account (<you>/bitgen-models - needs a Hugging Face token that can write, in Settings ▸ Models), and every ticked pod
+  downloads it from there in minutes. With no such token it is sent from this computer to each ticked pod (slow). The same
+  happens by itself when a render needs a model of yours on a pod.
+- **＋ Link…** adds a download link with its folder; **↻ My styles' models** adds the files of the styles your pods use.
+- **A progress bar for each transfer:** PODS docker and Model manager show every transfer - a pod downloading, this
+  computer sending to a pod, a file going to your Hugging Face repo, a file read once to find it on Civitai - with %, size,
+  speed and time left; a failed one is red with the reason. ✕ Clear takes the finished ones off.
+- The render's LoRAs (Override's temporary LoRAs too) now go to the pod the same way; a LoRA that cannot be fetched is said
+  and the render goes on.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

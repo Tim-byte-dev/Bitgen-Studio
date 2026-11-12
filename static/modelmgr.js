@@ -225,17 +225,29 @@
     fam.innerHTML = '<option value="">every family</option>' + S.data.families.map(function (f) { return '<option value="' + esc(f.id) + '">' + esc(f.label) + "</option>"; }).join("");
     fam.value = cur;
   }
+  /* 2.766.0 (Tim: remote mode - "these will be the models listed in remote mode in model manager"): a card of
+     runpod/pods/remote_models.json - ⇪ the selected pods download it, ✕ it leaves the list (static/remotemodels.js); the pods
+     that have it under its picture */
+  function rmActs(c) {
+    return '<button class="ghost" data-rmsend title="⇪ Send to the selected pods (☐ beside each pod in PODS ▸ My pods) - each pod downloads it' + (c.url ? "" : " (no link yet - it is sent from this computer)") + '">⇪</button>'
+      + '<button class="ghost" data-rmdel title="✕ Take it off the list (the pods keep their copy)">✕</button>';
+  }
+  function rmPods(c) {
+    var ids = Object.keys(c.pods || {}).filter(function (k) { return c.pods[k] === "done"; });
+    return '<span class="nfo" title="' + esc(ids.length ? "On " + ids.length + " pod(s): " + ids.join(", ") : "Not on a pod yet") + '">' + (ids.length ? "✓ " + ids.length : "☁") + "</span>";
+  }
   function cardHtml(c) {
     var sel = c.kind === "model" ? S.sel.model === c.key : S.sel.loras.some(function (l) { return l.key === c.key; });
     var t = thumbUrl(c, S.v), init = esc((c.family_label || "?").slice(0, 2));
     var date = c.released ? c.released : c.file_date ? "file " + c.file_date : "";
     return '<div class="mmcard' + (sel ? " sel" : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
       + '<div class="th"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? (c.thumb_kind === "video" ? vidFill(t) : "") : init) + "</div>"
-      + (c.remote ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
-      + '<div class="acts">' + (c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
+      + (c.remote || c.rm ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
+      + '<div class="acts">' + (c.rm ? rmActs(c) : c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
         + (c.civitai ? "" : '<button class="ghost" data-mmlook title="🔍 Look this file up on Civitai (reads its SHA-256 once)">🔍</button>')) + "</div>"
       + (c.nsfw ? '<span class="nsfw" title="marked NSFW">🔞</span>' : "")
-      + (c.remote ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
+      + (c.remote || c.rm ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
+      + (c.rm ? rmPods(c) : "")
       + '<div class="bd"><div class="nm" title="' + esc(c.name || c.title) + '">' + esc(c.title) + "</div>"
       + '<div class="mt">' + (c.remote ? '<span class="rt">' + esc(stars(c)) + "</span>" : (c.user_rating != null || c.rating ? starBar(c.user_rating != null ? c.user_rating : c.rating) : "")) + "<span>" + esc(date) + "</span></div>"
       + '<div class="mt"><span class="tag fam">' + esc(c.family_label) + '</span><span class="tag">' + esc(c.category) + "</span>" + (c.remote ? '<span class="tag">' + esc(c.type) + "</span>" : c.model_type ? '<span class="tag">' + esc(c.model_type) + "</span>" : "") + "</div>"
@@ -263,6 +275,10 @@
     if ($("mmPaths")) $("mmPaths").style.display = paths ? "" : "none";
     if (paths) { $("mmLocalBar").style.display = "none"; $("mmCvBar").style.display = "none"; $("mmPager").style.display = "none"; if (window.H3ModelPaths) window.H3ModelPaths.render($("mmPaths"), say); return; }
     $("mmSel").style.display = ""; $("mmGrid").style.display = "";
+    // 2.766.0: remote mode - the cards are runpod/pods/remote_models.json; the local-only buttons step aside
+    var rml = !!(S.data && S.data.remote_list);
+    if ($("mmRemote")) { $("mmRemote").style.display = rml && S.tab !== "civitai" ? "" : "none"; if (rml && window.H3RemoteModels && S.tab !== "civitai") window.H3RemoteModels.bar($("mmRemote"), { say: say, reload: function () { return load(); }, data: S.data }); }
+    ["mmFetch", "mmSync", "mmFoldBtn", "mmEdit"].forEach(function (id) { var b = $(id); if (b) b.style.display = rml ? "none" : ""; });
     $("mmLocalBar").style.display = S.tab === "civitai" ? "none" : "";
     $("mmCvBar").style.display = S.tab === "civitai" ? "" : "none";
     $("mmSel").innerHTML = selHtml();
@@ -385,6 +401,7 @@
   }
   /* ---- the info page */
   function openInfo(key) {
+    if (/^rm:/.test(String(key || ""))) return;   // 2.766.0: a remote-list card has no file here to read
     var c = byKey(key); if (!c) return;
     hideHover();
     S.info = key; S.infoData = null; S.exSel = 0; S.form = null; S.media = null; S.mSel = -1; S.mEdit = false; paint();
@@ -861,6 +878,15 @@
     var t = window.prompt(title, start); return Promise.resolve(t ? t.trim() : "");
   }
   function cvGet(it, v, f, shift, sub) {
+    // 2.766.0: remote mode - the file goes in runpod/pods/remote_models.json (a Civitai link) and the selected pods download it
+    if (S.data && S.data.remote_list) {
+      say("⤓ " + f.name + " → remote_models.json…");
+      return jpost("/api/remotemodels/civitai", { version_id: v.id, file_id: f.id, title: it.title, subfolder: sub || "" }).then(function (j) {
+        if (j.error) { say(j.error, "bad"); return; }
+        say("⤓ " + f.name + " is in remote_models.json" + (j.sending && j.sending.length ? " - " + j.sending.length + " pod(s) downloading it" : " - tick pods in PODS ▸ My pods, then ⇪ on its card"), "ok");
+        if (window.H3PodXfer) window.H3PodXfer.poke();
+      });
+    }
     return jpost("/api/modelfolders/resolve", { base_model: v.base_model, name: (it.title || "") + " " + (f.name || ""), cat: f.cat, type: it.type }).then(function (r) {
       if (r.error) { say(r.error, "bad"); return; }
       var go = function () {
@@ -990,6 +1016,7 @@
       + '<select id="mmCvType" aria-label="Civitai type"><option value="">every type</option><option value="Checkpoint">Checkpoint</option><option value="LORA">LoRA</option><option value="LoCon">LoCon</option><option value="DoRA">DoRA</option><option value="VAE">VAE</option><option value="TextualInversion">Embedding</option><option value="Controlnet">ControlNet</option><option value="Upscaler">Upscaler</option></select>'
       + '<select id="mmCvSort" aria-label="Civitai sort"><option>Highest Rated</option><option>Most Downloaded</option><option>Most Liked</option><option>Newest</option></select>'
       + '<input id="mmCvBase" placeholder="base model e.g. Pony" style="width:120px" aria-label="Base model"><button class="ghost" id="mmCvGo" type="button">Search</button></div>'
+      + '<div class="mmremote" id="mmRemote" style="display:none"></div>'   // 2.766.0: remote mode (static/remotemodels.js)
       + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div>'
       + '<div class="mmpager" id="mmPager" style="display:none"></div><div class="mmdl" id="mmDl" style="display:none"></div>';
     return body;
@@ -1023,6 +1050,8 @@
       if (kw) { e.stopPropagation(); var p = $("prompt"); if (p) { p.value = (p.value.trim() ? p.value.replace(/\s*$/, ", ") : "") + kw.dataset.kw; p.dispatchEvent(new Event("input", { bubbles: true })); say("“" + kw.dataset.kw + "” is in the prompt", "ok"); } return; }
       var card = e.target.closest && e.target.closest(".mmcard"); if (!card) return;
       if (e.target.closest("[data-mmgrip]")) return;
+      if (e.target.closest("[data-rmsend]")) { if (window.H3RemoteModels) window.H3RemoteModels.send(card.dataset.key.replace(/^rm:/, ""), say); return; }   // 2.766.0
+      if (e.target.closest("[data-rmdel]")) { if (window.H3RemoteModels) window.H3RemoteModels.del(card.dataset.key.replace(/^rm:/, ""), say).then(function () { load(); }); return; }
       if (e.target.closest("[data-mminfo]")) { openInfo(card.dataset.key); return; }
       if (e.target.closest("[data-mmedit]")) { editForm(card.dataset.key); return; }
       if (e.target.closest("[data-mmdel]")) { delModel(card.dataset.key); return; }       // 2.579.0
@@ -1128,7 +1157,7 @@
     paint();
     if (S.override) setTimeout(function () { load(false).then(function () { if (S.override) apply(); }); }, 2500);
   }
-  root.H3ModelMgr = Object.assign({ delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
+  root.H3ModelMgr = Object.assign({ remoteList: function () { return !!(S.data && S.data.remote_list); }, delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
     show: function (on) { return window.SecFloat && SecFloat.show ? SecFloat.show("modelmgr", on) : false; }, apply: apply, search: cvSearch }, pure);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

@@ -397,6 +397,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **把停靠窗停靠到另一个停靠窗的上方或下方** — 把浮动停靠窗拖到你的停靠窗（浮动的，或停靠在主列中的 ▣ 停靠窗）里某个停靠窗的上边缘或下边缘附近，两者就会在那里上下堆叠；拖到堆叠上时会放到其中停靠窗之间；拖到侧边或中间则像以前一样并排或作为标签添加；浮动停靠窗总是显示在停靠于停靠窗内的停靠窗前面。 *Where:* 你的任何停靠窗（⊞ Docker configs ▸ ▣ New docker…、▣ 停靠窗）。 *Since:* 2.764.5
 - **Pod 下载能完成，受限模型会提示** — Pod 上的下载和节点安装作为独立任务运行，不再停在 0%；下载 Hugging Face 文件前，bitGen 会检查它是否受限或已不存在，并说明是哪个文件以及该怎么做（接受其许可并添加你的 Hugging Face 令牌）；3 分钟没有数据的下载或被 Pod 停止的任务也会提示。 *Where:* PODS ▸ ⬇ Models；渲染的 Pod 备注；日志。 *Since:* 2.764.6
 - **把你的检查点和 LoRA 从 Civitai 下载到 Pod** — Pod 需要的本机模型会先在 Civitai 上查找（按其卡片中的版本，否则按只读取一次的 SHA-256），然后由 Pod 用你的 API 密钥从 civitai.com 或 civitai.red 下载完全相同的文件，代替缓慢的上传；只有在 Civitai 上没有或被拒绝时才从本机发送，并说明原因。 *Where:* PODS（风格的模型、Override 风格的检查点、预设）；渲染的 Pod 备注；设置 ▸ General ▸ Civitai。 *Since:* 2.765.0
+- **远程模型、勾选的 Pod 和每次传输的进度条** — runpod/pods/remote_models.json 记录你的 Pod 使用的模型及各自的下载链接；在远程模式下，Model manager 和基本设置的 Override 下拉框列出这些模型，而不是本机的模型；勾选 Pod（每个名称左侧的复选框，可多选），⇪ 会把模型发送到所有勾选的 Pod；没有链接的模型只上传一次到你的私有 Hugging Face 仓库（Civitai 上有则用其链接，否则直接发送到 Pod）；每次传输都有自己的进度条。 *Where:* PODS ▸ My pods；Model manager（远程模式）；基本设置 ▸ Override。 *Since:* 2.766.0
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 

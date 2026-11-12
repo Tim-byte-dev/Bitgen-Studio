@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.766.0 (Tim: "add a remote_models.json in our pods folder ... these will be the models listed in remote mode in model manager and the overide settings dropdowns instead of the local models ... add a checkbox to the left of the pod name to select the pod(mulitple pods can be selected)" + "go with your suggestions and add a progress bar for each transfer to the pod")
+node scripts/test-remotemodels766.js > /tmp/remotemodels766.log 2>&1 \
+  && ok "2.766.0 units: remote_models.json (no tokens, merged by SHA-256 / name, ComfyUI names), remote mode, ticked pods, ⇪ send to each, a model of this computer -> Civitai / your Hugging Face repo / straight to each pod, pullWait one at a time per pod with a bar, ensure from the list, the render's LoRAs, transfers" \
+  || { bad "2.766.0 remote models units"; grep -a "^FAIL" -A1 /tmp/remotemodels766.log | head -12; }
+node scripts/test-hfupload766.js > /tmp/hfupload766.log 2>&1 \
+  && ok "2.766.0 your private Hugging Face repo (stand-in): whoami, the private repo, one PUT with its length or parts + completion, verify, commit; a file it has already not sent; a read token refused; the routes in remote mode (/api/comfymodels, /api/modelmgr/cards, ?local=1), ticked pods, transfers" \
+  || { bad "2.766.0 Hugging Face upload + routes"; grep -a "^FAIL" -A1 /tmp/hfupload766.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui766-ui.js > /tmp/ui766ui.log 2>&1 \
+  && ok "2.766.0 browser test: a ☐ left of each pod's name (several ticked, kept), Model manager's remote cards + bar, ⇪ = a progress bar per ticked pod (red with the reason when a pod cannot take it), the Override / LoRA lists remote, ＋ Link, local mode as before - or SKIP without playwright" \
+  || { bad "2.766.0 remote models browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui766ui.log | head -14; }
 # ---- 2.765.0 (Tim: "can you find my checkpoint and send it to the pod via civitai or civitai.red . if is very slow from my pc , 0.5mb/sec")
 node scripts/test-podonline765.js > /tmp/podonline765.log 2>&1 \
   && ok "2.765.0 units: a model of this computer found on Civitai (its card's version, else its SHA-256 read once and kept; civitai.com then civitai.red) - only the same SHA-256; the pod downloads it from there (the key as ?token= in the pod's job only), progress in the render's note; refused on both sites -> sent from this computer with the reason" \
