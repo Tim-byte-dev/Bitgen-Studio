@@ -5340,83 +5340,83 @@
   },
   {
    "s": "ComfyUI on this pod is not under /workspace - the files go when the pod stops",
-   "src": "static/podload.js:136"
+   "src": "static/podload.js:139"
   },
   {
    "s": "Download models onto the pod",
-   "src": "static/podload.js:143"
-  },
-  {
-   "s": "Use it",
-   "src": "static/podload.js:144"
-  },
-  {
-   "s": "For a style",
-   "src": "static/podload.js:145"
-  },
-  {
-   "s": "pick a bitGen style —",
-   "src": "static/podload.js:145"
-  },
-  {
-   "s": "Files",
    "src": "static/podload.js:146"
   },
   {
-   "s": "A file from a link or from this computer",
+   "s": "Use it",
+   "src": "static/podload.js:147"
+  },
+  {
+   "s": "For a style",
+   "src": "static/podload.js:148"
+  },
+  {
+   "s": "pick a bitGen style —",
+   "src": "static/podload.js:148"
+  },
+  {
+   "s": "Files",
    "src": "static/podload.js:149"
+  },
+  {
+   "s": "A file from a link or from this computer",
+   "src": "static/podload.js:152"
   },
   {
    "s": "The ComfyUI models folder it goes in",
-   "src": "static/podload.js:149"
+   "src": "static/podload.js:152"
   },
   {
    "s": "From the link",
-   "src": "static/podload.js:151"
+   "src": "static/podload.js:154"
   },
   {
    "s": "A link to the file (Civitai, Hugging Face, any web address)",
-   "src": "static/podload.js:151"
+   "src": "static/podload.js:154"
   },
   {
    "s": "From this computer",
-   "src": "static/podload.js:152"
+   "src": "static/podload.js:155"
   },
   {
    "s": "Send a file from this computer to the pod (your upload speed decides how long)",
-   "src": "static/podload.js:152"
+   "src": "static/podload.js:155"
   },
   {
    "s": "Nothing in bitGen's download list matches",
-   "src": "static/podload.js:160"
+   "src": "static/podload.js:163"
   },
   {
    "s": "bitGen's download list has none of this style's files",
-   "src": "static/podload.js:173"
+   "src": "static/podload.js:176"
   },
   {
    "s": "The password is kept (encrypted) and used for the download",
-   "src": "static/podload.js:180"
+   "src": "static/podload.js:183"
   },
   {
    "s": "Paste a link first",
-   "src": "static/podload.js:191"
+   "src": "static/podload.js:194"
   },
   {
    "s": "A model file to send to the pod",
-   "src": "static/podload.js:197"
+   "src": "static/podload.js:200"
   },
   {
    "s": "Model files",
-   "src": "static/podload.js:197"
+   "src": "static/podload.js:200"
   },
   {
    "s": "Tick a style or a file first",
-   "src": "static/podload.js:205"
+   "src": "static/podload.js:208"
   },
   {
    "s": "Starting the downloads on the pod",
-   "src": "static/podload.js:206"
+   "src": "static/podload.js:209"
   },
   {
    "s": "Several styles can share one pod - put",
@@ -24066,23 +24066,39 @@
   },
   {
    "p": "Ticked the style's {0} file(s), {1}",
-   "src": "static/podload.js:173"
+   "src": "static/podload.js:176"
+  },
+  {
+   "p": "Downloading {0} file(s) through the pod's Jupyter. Not in ComfyUI-Manager's list: {1} Not downloaded: {2}",
+   "src": "static/podload.js:213"
   },
   {
    "p": "Downloading {0} file(s) through the pod's Jupyter. Not in ComfyUI-Manager's list: {1}",
-   "src": "static/podload.js:210"
+   "src": "static/podload.js:213"
+  },
+  {
+   "p": "Downloading {0} file(s) through the pod's Jupyter. Not downloaded: {1}",
+   "src": "static/podload.js:213"
   },
   {
    "p": "Downloading {0} file(s) through the pod's Jupyter",
-   "src": "static/podload.js:210"
+   "src": "static/podload.js:213"
+  },
+  {
+   "p": "ComfyUI-Manager is downloading {0} file(s). Not in ComfyUI-Manager's list: {1} Not downloaded: {2}",
+   "src": "static/podload.js:213"
   },
   {
    "p": "ComfyUI-Manager is downloading {0} file(s). Not in ComfyUI-Manager's list: {1}",
-   "src": "static/podload.js:210"
+   "src": "static/podload.js:213"
+  },
+  {
+   "p": "ComfyUI-Manager is downloading {0} file(s). Not downloaded: {1}",
+   "src": "static/podload.js:213"
   },
   {
    "p": "ComfyUI-Manager is downloading {0} file(s)",
-   "src": "static/podload.js:210"
+   "src": "static/podload.js:213"
   },
   {
    "p": "{0} pod on your RunPod account",

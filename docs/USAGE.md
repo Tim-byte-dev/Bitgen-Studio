@@ -8541,6 +8541,18 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **Floating dockers in front:** a floating docker is always in front of a docker docked inside another docker, even when you
   press the docked one; the floating dialogs (Basic Settings, PODS, 💬 Community …) stay in front of both.
 
+## Pod downloads that stop at 0%, and gated models (2.764.6)
+
+- **Downloads keep going:** since 2.763.4 the pod's downloads and node installs could stop at 0% / "installing" right after
+  they started. They now run as their own job on the pod, so they finish even after bitGen has closed its connection to
+  the pod's Jupyter.
+- **Gated models are said:** before a pod downloads a Hugging Face file, bitGen asks Hugging Face whether it may. A gated
+  file (its license not accepted, or no Hugging Face token) or one that is not there any more is not started - the render's
+  pod note, the log and ⬇ Models say which file and what to do: open its page on huggingface.co, accept the license, and add
+  your Hugging Face token in Settings ▸ Models. Krea-2 is not gated.
+- **A job that stopped, or no data:** a download with no data for 3 minutes says so next to its bar; a job the pod stopped
+  (no sign of it for 90 seconds - the pod restarted or ran out of memory) is marked failed with the reason instead of waiting.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

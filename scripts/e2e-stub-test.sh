@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.6 (Tim: "if the model is gated, i am guessing krea2 is gated, downloading for 5 minutes so far and still 0%, check to see if it is gated and report to the user")
+node scripts/test-hfcheck7646.js > /tmp/hfcheck7646.log 2>&1 \
+  && ok "2.764.6 units: a Hugging Face file asked first (HEAD, no redirect followed) - gated (with / without a token) and not found held back with the reason in words, Krea-2 and unknown answers go; a pod job with no heartbeat for 90 s failed with the reason, no data for 3 min said; the jobs detached; wired into ⬇ Models, the render's pod note" \
+  || { bad "2.764.6 gated check / job tracking units"; grep -a "^FAIL" -A1 /tmp/hfcheck7646.log | head -12; }
+node scripts/test-podjob7646.js > /tmp/podjob7646.log 2>&1 \
+  && ok "2.764.6 the pod's Python for real: the kernel ends at once and the download still finishes (whole, heartbeat kept); gated / missing said in words on the pod; a job that cannot start says why" \
+  || { bad "2.764.6 detached pod job"; grep -a "^FAIL" -A1 /tmp/podjob7646.log | head -12; }
 # ---- 2.764.5 (Tim: "move floating dockers to the front of all docked dockers. add vertical drop zones to all dockers as well so floating dockers can dock below or above another docker that is docked inside a docked docker if that makes sense")
 node scripts/test-dockzones7645.js > /tmp/dockzones7645.log 2>&1 \
   && ok "2.764.5 units: three tiers (docked dockers < floating dockers < dialogs), edgeIn top / bottom bands, slotOf into an inner docker (not near its sides), dockInto {into} / {wrap} -> stackWith, every drag passes the slot" \

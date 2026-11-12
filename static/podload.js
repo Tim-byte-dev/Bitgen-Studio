@@ -130,7 +130,10 @@
       var el = box.querySelector("[data-pmprog]"); if (!el) return;
       el.innerHTML = (st.files || []).map(function (f) {
         var pct = f.size ? Math.min(100, Math.round(f.done / f.size * 100)) : (f.state === "done" ? 100 : 0);
-        return '<div class="pdLoad' + (/done|there already/.test(f.state) ? " done" : "") + '"><div class="bar"><i style="width:' + Math.max(2, pct) + '%"></i></div><span>' + esc(f.name) + " · " + esc(f.state) + (f.size ? " · " + gb(f.done) + " of " + gb(f.size) : "") + "</span></div>";
+        // 2.764.6: a refused file (gated / not found) or a stopped job in red, a download with no data for minutes says so
+        var bad = /^failed/.test(String(f.state));
+        return '<div class="pdLoad' + (/done|there already/.test(f.state) ? " done" : "") + '"><div class="bar"><i style="width:' + Math.max(2, pct) + '%"></i></div><span' + (bad ? ' style="color:#e88"' : "") + ">" + esc(f.name) + " · " + esc(f.state) + (f.size ? " · " + gb(f.done) + " of " + gb(f.size) : "") + "</span>"
+          + (f.note ? '<span class="hint" style="color:#e8a35a">' + esc(f.note) + "</span>" : "") + "</div>";
       }).join("") + (st.running ? "" : (st.files || []).length ? `<div class="btns"><button type="button" data-pmsty>🎨 Make P_ styles from the pod</button></div>` : "");
       var b = el.querySelector("[data-pmsty]"); if (b) b.onclick = function () { stop(); styles(host, pod, port); };
       if (st.kept === false) el.insertAdjacentHTML("beforeend", `<div class="hint">ComfyUI on this pod is not under /workspace - the files go when the pod stops.</div>`);
@@ -208,7 +211,9 @@
           if (r.error) { msg.style.color = "#e88"; msg.textContent = r.error; return; }
           msg.style.color = "";
           msg.textContent = (r.way === "jupyter" ? `Downloading ${r.started} file(s) through the pod's Jupyter.` : `ComfyUI-Manager is downloading ${r.started} file(s).`)
-            + ((r.not || []).length ? " " + `Not in ComfyUI-Manager's list: ${r.not.join(", ")}` : "");
+            + ((r.not || []).length ? " " + `Not in ComfyUI-Manager's list: ${r.not.join(", ")}` : "")
+            + ((r.blocked || []).length ? " " + `Not downloaded: ${r.blocked.map(function (b) { return b.name + " (" + b.why + ")"; }).join("; ")}` : "");   // 2.764.6: gated / not found
+          if ((r.blocked || []).length) msg.style.color = "#e8a35a";
           poll();
         });
       };
