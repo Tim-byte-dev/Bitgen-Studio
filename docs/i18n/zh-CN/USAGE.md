@@ -5144,6 +5144,13 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **GPU 没有空闲时：** ▶ 会列出当前空闲、显存相同或更多的 GPU - 选一个，预设会记住它。
 - **创建预设：** 为风格创建的 Pod 会自动保存为预设；🖥 My pods 里任何 Pod 都可 💾 Save as preset；＋ New preset 从头开始。在任何地方把风格放到预设的 Pod 上，它也会加入该预设。
 
+## Basic Settings ▸ GPU 选 Local 时不显示远程内容；发送到 Pod 的模型会显示进度 (2.764.1)
+<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 3bd1ca6e3b99 -->
+
+- **Local 很简洁：** 选 Local 时，Basic Settings ▸ GPU 只显示 Local · Remote · Both 和「Every job runs on this computer.」- Remote servers 和 RunPod 选项、☁ Remote generation docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都会隐藏，选 Local 时 Remote generation、PODS 和 💲 RunPod 停靠窗会关闭。
+- **Remote 和 Both 会重新显示它们。** 尚未设置任何东西时选 Remote（或 Both）会等待：选项会显示出来，让你选 RunPod ▸ Pods（或在 Settings ▸ Remote generation 里设置一个），一旦有可渲染的地方就会保存。
+- **等待 Pod 的渲染会说明原因：** 这时 Queue 卡片不再显示「waiting for the GPU」，而是显示 Pod 正在做什么：启动、加载、放入你的自定义节点、在 Pod 上下载文件，或者从这台电脑发送模型以及进度：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。状态栏上方的那一行和任务日志也会显示同样的内容。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

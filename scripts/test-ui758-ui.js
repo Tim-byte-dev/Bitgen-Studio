@@ -76,6 +76,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.waitForFunction(() => window.H3Pods && window.H3PodLoad && document.getElementById("gpuEngine") && window.SecFloat && SecFloat.windows.pods, null, { timeout: 30000 });
     await ev(() => { window.H3_POD_POLL = 300; if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(500);
     const ovr0 = await ev(() => { const o = document.getElementById("ovrStyle"); if (o && o.checked) { o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); } return !!o; });
+    await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(600);   // 2.764.1: Local hides the RunPod choices - Remote shows them (it waits until Pods)
     await p.check('input[name="gpuRunpod"][value="pods"]'); await sleep(900);
     check("RunPod ▸ Pods ticks Override style (its steps / seed / CFG / size / aspect go with a pod render)", ovr0 && (await ev(() => document.getElementById("ovrStyle").checked)));
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(700);

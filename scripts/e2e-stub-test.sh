@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.1 (Tim: "if local is selected in basic settings, hide all the remote gpu details and options. the remote gpu radio group ☁ Remote generation docker🖥 PODS 💲 RunPod pods: ...")
+node scripts/test-gpulocal7641.js > /tmp/gpulocal7641.log 2>&1 \
+  && ok "2.764.1 units: Local hides the remote groups, ☁ / 🖥 PODS / 💲 RunPod / ⚙ buttons (#sec-gpu.gpuLocal), one line, closes those dockers; Remote / Both wait for a set-up (isReady / localView)" \
+  || { bad "2.764.1 GPU Local units"; grep -a "^FAIL" -A1 /tmp/gpulocal7641.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7641-ui.js > /tmp/ui7641ui.log 2>&1 \
+  && ok "2.764.1 browser test: Basic Settings ▸ GPU on Local shows no remote option; Remote shows them; Local again hides them and closes the PODS / Remote generation / 💲 RunPod dockers; nothing set up: Remote waits, RunPod ▸ Pods saves it - or SKIP without playwright" \
+  || { bad "2.764.1 GPU Local browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7641ui.log | head -14; }
 # ---- 2.764.0 (Tim: "I think we can use multiple styles on the same pod. so if a user clicks a style that is not assigned to a pod bring up a dialog with my pods and a + style button ... add a create pod button ... in pods docker add a presets tab ... <preset name>.pod file in a folder called runpod\pods\presets ... play button a stop button and a delete button ... if user presses the play button and pod has been terminated the create a new pod with all those details and populate it with the styles files" + "delete should only terminate the pod x should delete the preset. dialog should only appear when u press generate")
 node scripts/test-podpresets764.js > /tmp/podpresets764.log 2>&1 \
   && ok "2.764.0 units + LIVE (stand-ins): .pod files (names, only known fields, never a key), runs -> hours + total cost, a pod saved as a preset, styles onto the running pod, ▶ running / stopped / terminated (its GPU not free = the choice; a new pod with every detail, then nodes + each style's files in turn, the loading sequence), ⏹, 🗑 keeps the preset, ✕ deletes it; the box + answer {preset}" \

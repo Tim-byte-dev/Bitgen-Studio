@@ -24,7 +24,11 @@
     return Math.round(((i - 1) + step / pr.total) / n * 100);
   }
   /** "chunk i/n · step s of t · m:ss" - the same words the job row used (2.384.0). */
-  function runText(pr, status) {
+  function runText(pr, status, note) {
+    // 2.764.1 (Tim: "in pod mode, pod loaded 2 minutes, waiting for gpu... could this wording be wrong, instead should it be
+    // transferring model ? and show progress of model transfer?"): a render waiting for its RunPod pod says what the pod is
+    // doing (job.pod_note - starting it, sending a model and how far, downloading on the pod) instead of the GPU wait
+    if (status === "queued" && note) return "🖥 " + String(note);
     if (status === "queued") return "waiting for the GPU";
     if (!pr) return "starting";
     const t = Math.max(0, Math.round(pr.elapsed || 0)), mm = Math.floor(t / 60), ss = String(t % 60).padStart(2, "0");
@@ -61,7 +65,7 @@
     bar.firstElementChild.style.width = (p == null ? 0 : p) + "%";
     bar.setAttribute("role", "progressbar");
     bar.setAttribute("aria-valuenow", String(p == null ? 0 : p));
-    box.querySelector(".gqrun").textContent = job ? runText(job.progress, job.status) + (p != null ? ` · ${p}%` : "") : "";
+    box.querySelector(".gqrun").textContent = job ? runText(job.progress, job.status, job.pod_note) + (p != null ? ` · ${p}%` : "") : "";
     card.classList.toggle("sel", !!(job && selected === job.id));
     if (job) {
       card.dataset.job = job.id;

@@ -107,7 +107,7 @@ const MODELS = [
     const gpu = () => ev(() => ({ radios: [...document.querySelectorAll('input[name="gpuWhere"]')].map((i) => i.value + (i.checked ? "*" : "") + (i.disabled ? "-" : "")),
       ticks: ["llm", "vlm", "image", "video"].map((k) => { const i = document.getElementById("gpu_" + k); return k + (i.checked ? "*" : "") + (i.disabled ? "-" : ""); }), line: document.getElementById("gpuLine").textContent }));
     let G = await gpu();
-    if (!rm0) check("Basic Settings ▸ GPU, no remote GPU but OpenRouter set up: Both can be picked (Remote still needs a GPU)", G.radios.join() === "local*,remote-,both", G);
+    if (!rm0) check("Basic Settings ▸ GPU, no remote GPU but OpenRouter set up: Both can be picked (2.764.1: Remote can be picked too - it waits for a GPU)", G.radios.join() === "local*,remote,both", G);
     else console.log("NOTE: this studio remembers a remote GPU - the 'OpenRouter alone' legs are skipped");
     await p.check('input[name="gpuWhere"][value="both"]'); await sleep(900);
     await p.check("#gpu_llm"); await sleep(700); await p.check("#gpu_vlm"); await sleep(900);

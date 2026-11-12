@@ -4911,6 +4911,13 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **GPU に空きがないとき：** ▶ は同じ以上のメモリを持つ今空いている GPU を並べます - 選ぶとプリセットはそれを覚えます。
 - **プリセットを作る：** スタイル用に作った Pod は自動でプリセットとして保存されます；🖥 My pods のどの Pod でも 💾 Save as preset；＋ New preset で一から作れます。プリセットの Pod にどこからかスタイルを入れると、プリセットにも加わります。
 
+## Basic Settings ▸ GPU で Local のときはリモートを表示しません；Pod に送るモデルは進み具合を表示 (2.764.1)
+<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 3bd1ca6e3b99 -->
+
+- **Local はすっきり：** Local を選ぶと、Basic Settings ▸ GPU には Local · Remote · Both と「Every job runs on this computer.」だけが表示されます - Remote servers と RunPod の選択、☁ Remote generation docker、🖥 PODS、💲 RunPod、⚙ Settings ▸ Remote generation は隠れ、Local を選ぶと Remote generation、PODS、💲 RunPod のドッカーは閉じます。
+- **Remote と Both で再び表示されます。** まだ何も設定していないときに Remote（または Both）を選ぶと待ちになります：選択肢が表示されるので RunPod ▸ Pods を選ぶ（または Settings ▸ Remote generation で設定する）と、レンダリング先ができた時点で保存されます。
+- **Pod を待っているレンダリングは理由を表示します：** そのとき Queue のカードは「waiting for the GPU」ではなく、Pod が何をしているかを表示します：起動中、読み込み中、カスタムノードを入れている、Pod 上でファイルをダウンロード中、またはこのコンピューターからモデルを送っていて、その進み具合：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。ステータスバーの上の行とジョブのログにも同じことが出ます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

@@ -61,7 +61,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     let G = await gpu();
     const rm0 = (await api("/api/gpusplit")).remote;
     check("Basic Settings ▸ GPU: an accordion item in Basic Settings with Local · Remote · Both (2.747.0: Local first)", /GPU( · \w+)?$/.test(G.head) && G.inBasic && G.radios.map((r) => r.replace(/[*-]/g, "")).join() === "local,remote,both", G);
-    if (!rm0) check("…no remote GPU set up: only Local can be chosen, the line says so, a button to Settings ▸ Remote GPU", G.radios.join() === "local*,remote-,both-" && /No remote GPU set up/.test(G.line) && G.setup, G);
+    // 2.764.1: Local hides every remote detail (no ⚙ button here); Remote / Both can be picked - not set up = they wait
+    if (!rm0) check("…no remote GPU set up: Local · Remote · Both all pickable (Remote / Both wait for a set-up), Local says \"Every job runs on this computer.\" with no remote options", G.radios.join() === "local*,remote,both" && G.line === "Every job runs on this computer." && !G.setup, G);
     else console.log("NOTE: this studio remembers a remote GPU (" + rm0.label + ") - the 'none set up' leg is skipped");
     if (G.setup) { await p.click("#gpuSetup"); await sleep(500); }
     check("…the button opens Settings ▸ Remote GPU", !G.setup || await ev(() => document.getElementById("settings").open && document.getElementById("stab-rgpu").classList.contains("active")));

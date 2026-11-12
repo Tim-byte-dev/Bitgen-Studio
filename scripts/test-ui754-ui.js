@@ -69,6 +69,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("ticked: the tab's parts show again; the server says on", t1.mode !== "none" && t1.llm !== "none" && (await api("/api/remotegen")).enabled === true, t1);
     await ev(() => document.getElementById("settings").close());
     await ev(() => { if (window.SecFloat && SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(400);   // Basic Settings is a floating docker of its own
+    await ev(() => H3GpuSplit.choose("remote")); await sleep(900);   // 2.764.1: on Local the remote details are hidden - Remote shows them
     check("…Basic Settings ▸ GPU shows, with \"☁ Remote generation docker\" in it - and no status-bar button for the docker", (await gpuShown()) && (await ev(() => !!document.querySelector("#sec-gpu #gpuDock")))
       && !(await ev(() => /Remote generation/.test(document.getElementById("statusbar").textContent))));
     await p.click("#gpuDock"); await sleep(1500);

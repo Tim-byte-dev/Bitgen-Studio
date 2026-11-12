@@ -8485,6 +8485,18 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **Making presets:** a pod created for a style is kept as a preset by itself; 💾 Save as preset on any pod in 🖥 My pods;
   ＋ New preset starts one from scratch. A style put on a preset's pod anywhere joins the preset.
 
+## Basic Settings ▸ GPU on Local shows nothing remote; a model sent to a pod shows how far it is (2.764.1)
+
+- **Local is quiet:** with Local picked, Basic Settings ▸ GPU shows only Local · Remote · Both and "Every job runs on this
+  computer." - the Remote servers and RunPod choices, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸
+  Remote generation are hidden, and the Remote generation, PODS and 💲 RunPod dockers close when you pick Local.
+- **Remote and Both show them again.** With nothing set up yet, picking Remote (or Both) waits: the choices show so you can
+  pick RunPod ▸ Pods (or set one up in Settings ▸ Remote generation), and it is saved as soon as there is somewhere to render.
+- **A render waiting for its pod says why:** the Queue card no longer says "waiting for the GPU" then - it says what the pod
+  is doing: starting, loading, putting your custom nodes on it, downloading a file on the pod, or sending a model from this
+  computer with how far it is: "sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min
+  left". The line over the status bar and the job's log say the same.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -1,5 +1,5 @@
 {
- "made": "2026-11-11",
+ "made": "2026-11-12",
  "scope": "all",
  "strings": [
   {
@@ -2852,43 +2852,55 @@
   },
   {
    "s": "Local",
-   "src": "static/gpusplit.js:25"
+   "src": "static/gpusplit.js:47"
   },
   {
    "s": "Remote",
-   "src": "static/gpusplit.js:25"
+   "src": "static/gpusplit.js:47"
   },
   {
    "s": "Both",
-   "src": "static/gpusplit.js:25"
+   "src": "static/gpusplit.js:47"
   },
   {
    "s": "Vision LLM",
-   "src": "static/gpusplit.js:30"
+   "src": "static/gpusplit.js:52"
   },
   {
    "s": "Image",
-   "src": "static/gpusplit.js:31"
+   "src": "static/gpusplit.js:53"
   },
   {
    "s": "Video + songs",
-   "src": "static/gpusplit.js:31"
+   "src": "static/gpusplit.js:53"
   },
   {
    "s": "Remote servers",
-   "src": "static/gpusplit.js:38"
+   "src": "static/gpusplit.js:60"
   },
   {
    "s": "Serverless",
-   "src": "static/gpusplit.js:39"
+   "src": "static/gpusplit.js:61"
   },
   {
    "s": "Pods",
-   "src": "static/gpusplit.js:39"
+   "src": "static/gpusplit.js:61"
+  },
+  {
+   "s": "Every job runs on this computer",
+   "src": "static/gpusplit.js:103"
+  },
+  {
+   "s": "Remote needs somewhere to render first: pick RunPod ▸ Pods (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
+   "src": "static/gpusplit.js:103"
+  },
+  {
+   "s": "Both needs somewhere to render first: pick RunPod ▸ Pods (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
+   "src": "static/gpusplit.js:103"
   },
   {
    "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:79"
+   "src": "static/gpusplit.js:103"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -5856,7 +5868,7 @@
   },
   {
    "s": "Click to follow this render (console + preview)",
-   "src": "static/queuerun.js:68"
+   "src": "static/queuerun.js:72"
   },
   {
    "s": "no objects - nothing to give a reference",
@@ -23585,24 +23597,28 @@
    "src": "static/fontlist.js:106"
   },
   {
+   "p": "{0}{display:none!important}",
+   "src": "static/gpusplit.js:44"
+  },
+  {
    "p": "{0} - set up Settings ▸ Remote generation ▸ 🧠 LLM first",
-   "src": "static/gpusplit.js:74"
+   "src": "static/gpusplit.js:98"
   },
   {
    "p": "No remote GPU - pictures, videos and songs render on this computer · LLM: {0} · Vision LLM: {1}",
-   "src": "static/gpusplit.js:79"
+   "src": "static/gpusplit.js:103"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: {3} · Vision LLM: {4}",
-   "src": "static/gpusplit.js:79"
+   "src": "static/gpusplit.js:103"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:79"
+   "src": "static/gpusplit.js:103"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:79"
+   "src": "static/gpusplit.js:103"
   },
   {
    "p": "{0} takes {1} · saves: {2}",

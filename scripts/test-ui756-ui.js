@@ -80,10 +80,13 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.waitForFunction(() => window.H3Pods && H3Pods.state().g && document.getElementById("gpuPods") && document.getElementById("gpuEngine") && window.SecFloat && SecFloat.windows.pods, null, { timeout: 30000 });
     await ev(() => { window.H3_POD_POLL = 400; if (SecFloat.windows.basic) SecFloat.show("basic", true); toggleSec("gpu", false); }); await sleep(500);
     const vis = (sel) => ev((s) => { const e = document.querySelector(s); return !!e && e.offsetWidth > 0 && getComputedStyle(e).display !== "none"; }, sel);
+    // 2.764.1: on Local the remote options are hidden - picking Remote (nothing set up yet) shows them and waits
+    const hid0 = !(await vis("#gpuEngine"));
+    await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(600);
     const e0 = await ev(() => ({ prov: [...document.querySelectorAll('input[name="gpuProv"]')].map((i) => i.value + (i.checked ? "*" : "")), rp: [...document.querySelectorAll('input[name="gpuRunpod"]')].map((i) => i.value + (i.checked ? "*" : "")),
-      remote: document.querySelector('input[name="gpuWhere"][value="remote"]').disabled }));
-    check("Basic Settings ▸ GPU (nothing remote set up yet): Remote servers RunPod (picked) / OpenRouter, RunPod: Serverless (picked) / Pods; Remote locked; no 🖥 PODS button",
-      (await vis("#gpuEngine")) && e0.prov.join() === "runpod*,openrouter" && e0.rp.join() === "serverless*,pods" && e0.remote && !(await vis("#gpuPods")), e0);
+      remote: H3GpuSplit.state().pick === "remote" }));
+    check("Basic Settings ▸ GPU (nothing remote set up yet): Local hides the remote options; Remote picked = it waits and shows Remote servers RunPod (picked) / OpenRouter, RunPod: Serverless (picked) / Pods; no 🖥 PODS button",
+      hid0 && (await vis("#gpuEngine")) && e0.prov.join() === "runpod*,openrouter" && e0.rp.join() === "serverless*,pods" && e0.remote && (await api("/api/gpusplit")).where === "local" && !(await vis("#gpuPods")), e0);
     await p.check('input[name="gpuProv"][value="openrouter"]'); await sleep(700);
     check("…OpenRouter: the RunPod row hides (the LLM goes there)", !(await vis("#gpuRunpod")) && (await api("/api/gpusplit")).engine.provider === "openrouter");
     await p.check('input[name="gpuProv"][value="runpod"]'); await sleep(600);
