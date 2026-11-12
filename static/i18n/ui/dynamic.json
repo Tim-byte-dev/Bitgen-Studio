@@ -4619,472 +4619,496 @@
    "src": "static/mmpaths.js:85"
   },
   {
-   "s": "every model type",
-   "src": "static/modelmgr.js:224"
+   "s": "every family",
+   "src": "static/modelmgr.js:149"
   },
   {
-   "s": "every family",
-   "src": "static/modelmgr.js:225"
+   "s": "every model type",
+   "src": "static/modelmgr.js:242"
   },
   {
    "s": "Take it off the list (the pods keep their copy)",
-   "src": "static/modelmgr.js:233"
+   "src": "static/modelmgr.js:251"
   },
   {
    "s": "The full details (I)",
-   "src": "static/modelmgr.js:246"
+   "src": "static/modelmgr.js:264"
   },
   {
    "s": "Edit this card (name, type, cfg, steps, VAE, keywords",
-   "src": "static/modelmgr.js:246"
+   "src": "static/modelmgr.js:264"
   },
   {
    "s": "Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first",
-   "src": "static/modelmgr.js:246"
+   "src": "static/modelmgr.js:264"
   },
   {
    "s": "Look this file up on Civitai (reads its SHA-256 once)",
-   "src": "static/modelmgr.js:247"
+   "src": "static/modelmgr.js:265"
   },
   {
    "s": "marked NSFW",
-   "src": "static/modelmgr.js:248"
+   "src": "static/modelmgr.js:266"
   },
   {
    "s": "Drag: the card size (every card)",
-   "src": "static/modelmgr.js:249"
+   "src": "static/modelmgr.js:267"
   },
   {
    "s": "LoRA weight",
-   "src": "static/modelmgr.js:261"
+   "src": "static/modelmgr.js:279"
   },
   {
    "s": "Clear the model",
-   "src": "static/modelmgr.js:264"
+   "src": "static/modelmgr.js:282"
   },
   {
    "s": "click a model card",
-   "src": "static/modelmgr.js:264"
+   "src": "static/modelmgr.js:282"
   },
   {
    "s": "LoRAs",
-   "src": "static/modelmgr.js:265"
+   "src": "static/modelmgr.js:283"
   },
   {
    "s": "click LoRA cards",
-   "src": "static/modelmgr.js:265"
+   "src": "static/modelmgr.js:283"
   },
   {
    "s": "More",
-   "src": "static/modelmgr.js:304"
+   "src": "static/modelmgr.js:323"
   },
   {
    "s": "Search Civitai - models go straight into the right ComfyUI folder",
-   "src": "static/modelmgr.js:304"
+   "src": "static/modelmgr.js:323"
   },
   {
    "s": "nothing matches",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "reading this project's jobs",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "this project's jobs have not used a model ComfyUI lists yet - pick one in Models",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "no LoRAs in ComfyUI's folders",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "no LoRAs in ComfyUI's folders - set the ComfyUI folder in Settings -> ComfyUI",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "no models in ComfyUI's folders",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "no models in ComfyUI's folders - set the ComfyUI folder in Settings -> ComfyUI",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "s": "auto (fit)",
-   "src": "static/modelmgr.js:352"
+   "src": "static/modelmgr.js:371"
   },
   {
    "s": "Cards a page",
-   "src": "static/modelmgr.js:352"
+   "src": "static/modelmgr.js:371"
   },
   {
    "s": "Cards a page - auto = as many as fit the docker",
-   "src": "static/modelmgr.js:352"
+   "src": "static/modelmgr.js:371"
   },
   {
    "s": "that card is gone",
-   "src": "static/modelmgr.js:442"
+   "src": "static/modelmgr.js:461"
   },
   {
    "s": "Back to the cards (Esc)",
-   "src": "static/modelmgr.js:451"
+   "src": "static/modelmgr.js:470"
   },
   {
    "s": "Edit card",
-   "src": "static/modelmgr.js:458"
+   "src": "static/modelmgr.js:477"
   },
   {
    "s": "Ask Civitai again for this file (Shift: even if it has details)",
-   "src": "static/modelmgr.js:458"
+   "src": "static/modelmgr.js:477"
   },
   {
    "s": "By SHA-256",
-   "src": "static/modelmgr.js:459"
+   "src": "static/modelmgr.js:478"
   },
   {
    "s": "Delete this model from the disk - the file, its preview / info files beside it and its model_info page (asks first)",
-   "src": "static/modelmgr.js:460"
+   "src": "static/modelmgr.js:479"
   },
   {
    "s": "Civitai's examples",
-   "src": "static/modelmgr.js:466"
+   "src": "static/modelmgr.js:485"
   },
   {
    "s": "GIF",
-   "src": "static/modelmgr.js:466"
+   "src": "static/modelmgr.js:485"
   },
   {
    "s": "Its prompt with its seed, cfg and steps into the prompt box + Basic Settings",
-   "src": "static/modelmgr.js:469"
+   "src": "static/modelmgr.js:488"
   },
   {
    "s": "Click: see it whole",
-   "src": "static/modelmgr.js:500"
+   "src": "static/modelmgr.js:519"
   },
   {
    "s": "New style from",
-   "src": "static/modelmgr.js:588"
+   "src": "static/modelmgr.js:607"
   },
   {
    "s": "Copy the style",
-   "src": "static/modelmgr.js:590"
+   "src": "static/modelmgr.js:609"
   },
   {
    "s": "automatic (",
-   "src": "static/modelmgr.js:590"
+   "src": "static/modelmgr.js:609"
   },
   {
    "s": "Its workflow, text encoder, VAE, sampler and negative are copied; this model, the LoRAs and the card's cfg / steps / VAE / text encoder replace them",
-   "src": "static/modelmgr.js:592"
+   "src": "static/modelmgr.js:611"
   },
   {
    "s": "Create the style",
-   "src": "static/modelmgr.js:593"
+   "src": "static/modelmgr.js:612"
   },
   {
    "s": "not rated",
-   "src": "static/modelmgr.js:600"
+   "src": "static/modelmgr.js:619"
   },
   {
    "s": "thumb",
-   "src": "static/modelmgr.js:643"
+   "src": "static/modelmgr.js:662"
   },
   {
    "s": "Your pictures, videos and sounds",
-   "src": "static/modelmgr.js:651"
+   "src": "static/modelmgr.js:670"
   },
   {
    "s": "Add pictures, videos or sounds of this model - from this computer (or drop them here from the gallery / Assets)",
-   "src": "static/modelmgr.js:651"
+   "src": "static/modelmgr.js:670"
   },
   {
    "s": "read from",
-   "src": "static/modelmgr.js:655"
+   "src": "static/modelmgr.js:674"
   },
   {
    "s": "Negative",
-   "src": "static/modelmgr.js:657"
+   "src": "static/modelmgr.js:676"
   },
   {
    "s": "Seed",
-   "src": "static/modelmgr.js:658"
+   "src": "static/modelmgr.js:677"
   },
   {
    "s": "CFG",
-   "src": "static/modelmgr.js:659"
+   "src": "static/modelmgr.js:678"
   },
   {
    "s": "Sampler",
-   "src": "static/modelmgr.js:659"
+   "src": "static/modelmgr.js:678"
   },
   {
    "s": "To prompt",
-   "src": "static/modelmgr.js:660"
+   "src": "static/modelmgr.js:679"
   },
   {
    "s": "Thumbnail",
-   "src": "static/modelmgr.js:780"
-  },
-  {
-   "s": "Change",
-   "src": "static/modelmgr.js:781"
-  },
-  {
-   "s": "Its own",
-   "src": "static/modelmgr.js:782"
-  },
-  {
-   "s": "Your rating",
-   "src": "static/modelmgr.js:785"
-  },
-  {
-   "s": "No rating",
-   "src": "static/modelmgr.js:785"
-  },
-  {
-   "s": "Model type",
-   "src": "static/modelmgr.js:788"
-  },
-  {
-   "s": "NSFW",
-   "src": "static/modelmgr.js:789"
-  },
-  {
-   "s": "Family",
-   "src": "static/modelmgr.js:790"
-  },
-  {
-   "s": "Category",
-   "src": "static/modelmgr.js:791"
-  },
-  {
-   "s": "Keywords",
-   "src": "static/modelmgr.js:796"
-  },
-  {
-   "s": "Released",
-   "src": "static/modelmgr.js:797"
-  },
-  {
-   "s": "Save card",
    "src": "static/modelmgr.js:799"
   },
   {
+   "s": "Change",
+   "src": "static/modelmgr.js:800"
+  },
+  {
+   "s": "Its own",
+   "src": "static/modelmgr.js:801"
+  },
+  {
+   "s": "Your rating",
+   "src": "static/modelmgr.js:804"
+  },
+  {
+   "s": "No rating",
+   "src": "static/modelmgr.js:804"
+  },
+  {
+   "s": "Model type",
+   "src": "static/modelmgr.js:807"
+  },
+  {
+   "s": "NSFW",
+   "src": "static/modelmgr.js:808"
+  },
+  {
+   "s": "Family",
+   "src": "static/modelmgr.js:809"
+  },
+  {
+   "s": "Category",
+   "src": "static/modelmgr.js:810"
+  },
+  {
+   "s": "Keywords",
+   "src": "static/modelmgr.js:815"
+  },
+  {
+   "s": "Released",
+   "src": "static/modelmgr.js:816"
+  },
+  {
+   "s": "Save card",
+   "src": "static/modelmgr.js:818"
+  },
+  {
    "s": "No description yet",
-   "src": "static/modelmgr.js:812"
+   "src": "static/modelmgr.js:831"
   },
   {
    "s": "click: its versions + downloads ›",
-   "src": "static/modelmgr.js:814"
+   "src": "static/modelmgr.js:833"
   },
   {
    "s": "click for the full details",
-   "src": "static/modelmgr.js:814"
+   "src": "static/modelmgr.js:833"
   },
   {
    "s": "Into a subfolder (optional)",
-   "src": "static/modelmgr.js:849"
+   "src": "static/modelmgr.js:885"
   },
   {
    "s": "e.g. sdxl",
-   "src": "static/modelmgr.js:849"
+   "src": "static/modelmgr.js:885"
   },
   {
    "s": "Where each type downloads to",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "model_folders.json · ⤓ asks once per type, Shift+⤓ changes it",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "Pick a folder",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "Main category",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "Kind",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "none yet - the first ⤓ of each type asks",
-   "src": "static/modelmgr.js:923"
+   "src": "static/modelmgr.js:959"
   },
   {
    "s": "Forget it - the next ⤓ asks again",
-   "src": "static/modelmgr.js:924"
+   "src": "static/modelmgr.js:960"
   },
   {
    "s": "This project",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Models",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Civitai",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Model paths",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Civitai info",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Sync",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Edit",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "every category",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "image",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "image edit",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "video",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "music",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "newest",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "rating",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "size",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
-   "s": "every type",
-   "src": "static/modelmgr.js:999"
-  },
-  {
-   "s": "LoCon",
-   "src": "static/modelmgr.js:999"
-  },
-  {
-   "s": "DoRA",
-   "src": "static/modelmgr.js:999"
+   "s": "other types",
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Embedding",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "ControlNet",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Upscaler",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "Sort by",
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Highest Rated",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Most Downloaded",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Most Liked",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Newest",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "all time",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "this year",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "this month",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "this week",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "today",
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "The folder each model type downloads to (model_folders.json)",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Read the model folders again",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Folders",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Search name, type, keywords",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Search the models",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "2.575.0: the kind of file - checkpoint, LoRA",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Sort",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Card size",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "Search Civitai",
-   "src": "static/modelmgr.js:999"
+   "src": "static/modelmgr.js:1035"
   },
   {
-   "s": "Civitai type",
-   "src": "static/modelmgr.js:999"
+   "s": "Other types",
+   "src": "static/modelmgr.js:1035"
   },
   {
-   "s": "Civitai sort",
-   "src": "static/modelmgr.js:999"
+   "s": "Other kinds of file",
+   "src": "static/modelmgr.js:1035"
   },
   {
-   "s": "base model e.g. Pony",
-   "src": "static/modelmgr.js:999"
+   "s": "Model family",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "Period",
+   "src": "static/modelmgr.js:1035"
+  },
+  {
+   "s": "Rated / downloaded / liked over",
+   "src": "static/modelmgr.js:1035"
   },
   {
    "s": "saved - Test key checks it",
-   "src": "static/modelmgr.js:1120"
+   "src": "static/modelmgr.js:1167"
   },
   {
    "s": "asking Civitai",
-   "src": "static/modelmgr.js:1125"
+   "src": "static/modelmgr.js:1172"
   },
   {
    "s": "Model manager - your models + LoRAs as cards, select them, a new style from one, Civitai downloads",
-   "src": "static/modelmgr.js:1152"
+   "src": "static/modelmgr.js:1200"
   },
   {
    "s": "Model manager",
-   "src": "static/modelmgr.js:1154"
+   "src": "static/modelmgr.js:1202"
   },
   {
    "s": "Model catalog · Hugging Face",
@@ -5808,15 +5832,15 @@
   },
   {
    "s": "Transfers",
-   "src": "static/podxfer.js:59"
+   "src": "static/podxfer.js:60"
   },
   {
    "s": "Take the finished ones off the list",
-   "src": "static/podxfer.js:59"
+   "src": "static/podxfer.js:60"
   },
   {
    "s": "all finished",
-   "src": "static/podxfer.js:59"
+   "src": "static/podxfer.js:60"
   },
   {
    "s": "since start",
@@ -23906,43 +23930,43 @@
   },
   {
    "p": "nothing matches in {0}",
-   "src": "static/modelmgr.js:315"
+   "src": "static/modelmgr.js:334"
   },
   {
    "p": "{0}-{1} of {2}",
-   "src": "static/modelmgr.js:352"
+   "src": "static/modelmgr.js:371"
   },
   {
    "p": "Civitai {0} / {1} · {2} · {3} found · {4} no match · {5} failed",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "Civitai {0} / {1} · {2} · {3} found · {4} no match",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "Civitai {0} / {1} · {2} found · {3} no match · {4} failed",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "Civitai {0} / {1} · {2} found · {3} no match",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "last run: {0} / {1} · {2} found · {3} no match · {4} failed",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "last run: {0} / {1} · {2} found · {3} no match",
-   "src": "static/modelmgr.js:398"
+   "src": "static/modelmgr.js:417"
   },
   {
    "p": "the key works - signed in as {0} ({1})",
-   "src": "static/modelmgr.js:1127"
+   "src": "static/modelmgr.js:1174"
   },
   {
    "p": "the key works ({0})",
-   "src": "static/modelmgr.js:1127"
+   "src": "static/modelmgr.js:1174"
   },
   {
    "p": "{0} file(s), {1} · {2} free on the models drive - NOT ENOUGH SPACE",
@@ -24214,7 +24238,7 @@
   },
   {
    "p": "{0} running",
-   "src": "static/podxfer.js:59"
+   "src": "static/podxfer.js:60"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",

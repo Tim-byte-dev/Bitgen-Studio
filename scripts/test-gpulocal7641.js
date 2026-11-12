@@ -27,7 +27,7 @@ check("Queue card: a render waiting for its pod says what the pod is doing (job.
   && /runText\(job\.progress, job\.status, job\.pod_note\)/.test(fs.readFileSync(path.join(ROOT, "static", "queuerun.js"), "utf8")));
 const PSd = fs.readFileSync(path.join(ROOT, "lib", "podSend.js"), "utf8"), PP = fs.readFileSync(path.join(ROOT, "lib", "podPrep.js"), "utf8"), RV = fs.readFileSync(path.join(ROOT, "lib", "podRevive.js"), "utf8");
 check("…the progress reaches the job: podSend.sendOne tells it every few seconds, podPrep passes its say, Override's checkpoint (modelGate) too",
-  /tell\(progressText\(name, f \? f\.done \|\| 0 : 0/.test(PSd) && /async function ensure\(id, port, cats, name, say\)/.test(PSd) && /D\.send\(pod, port, f\.cats, f\.name, \(t\) => say\(t\)\)/.test(PP) && /await SD\.ensure\(podId, \+st\.pod_port \|\| 0, it\.cats, it\.name, \(t\) => \{ m\.note = t/.test(RV));
+  /tell\(progressText\(name, f \? f\.done \|\| 0 : 0/.test(PSd) && /async function ensure\(id, port, cats, name, say\)/.test(PSd) && /D\.send\(pod, port, f\.cats, f\.name, \(t\) => say\(t\)\)/.test(PP) && /await SD\.ensure\(podId, \+port \|\| \+st\.pod_port \|\| 0, it\.cats, it\.name, \(t\) => \{ m\.note = t/.test(RV));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

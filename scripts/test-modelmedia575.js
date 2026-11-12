@@ -88,7 +88,7 @@ const GRAPH = { "3": { class_type: "KSampler", inputs: { seed: 4242, steps: 26, 
   check("filterCards: 🔞 unticked hides NSFW cards; by model type", MG.filterCards(cards, { nsfw: false }).length === 1 && MG.filterCards(cards, { nsfw: true }).length === 2 && MG.filterCards(cards, { mtype: "LoRA" })[0].title === "b");
   const MS = rd("static", "modelmgr.js");
   check("the editor: 🖼 Change… thumbnail, the star editor, Model type, NSFW; the filter bar: model type + 🔞 NSFW (remembered)",
-    /id="mmeThumb"/.test(MS) && /starBar\(c\.user_rating, true\)/.test(MS) && /id="mmeType"/.test(MS) && /id="mmeNsfw"/.test(MS) && /id="mmMType"/.test(MS) && /id="mmNsfw"/.test(MS) && /nsfw: S\.nsfw \}\)\); \} catch/.test(MS));
+    /id="mmeThumb"/.test(MS) && /starBar\(c\.user_rating, true\)/.test(MS) && /id="mmeType"/.test(MS) && /id="mmeNsfw"/.test(MS) && /id="mmMType"/.test(MS) && /id="mmNsfw"/.test(MS) && /nsfw: S\.nsfw(?:, cvf: \{[^}]*\})? \}\)\); \} catch/.test(MS));
   check("the info page: your files (＋ Add, drop from the gallery / Assets), a click opens the viewer (lbOpen), ✎→ / 🖼 / ✎ / 🗑 each; Civitai's examples open the viewer on a click and ✎→ uses seed / cfg / steps",
     /mediaHtml\(c\)/.test(MS) && /id="mmMAdd"/.test(MS) && /root\.lbOpen\(lb, i\)/.test(MS) && /data-mmmuse/.test(MS) && /data-mmmthumb/.test(MS) && /data-mmmdel/.test(MS) && /S\.exSel = n;(?: S\.lastPick = "ex";)? paint\(\);\s+if \(typeof root\.lbOpen === "function"\) root\.lbOpen\(items, n\)/.test(MS) && /useMeta\(e\.meta \|\| \{\}, kindForCard\(c\)\)/.test(MS));
 

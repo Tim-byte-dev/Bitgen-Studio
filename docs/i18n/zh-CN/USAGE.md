@@ -5210,6 +5210,15 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   仓库、为在 Civitai 上查找而读取一次的文件——都带有百分比、大小、速度和剩余时间；失败的显示为红色并说明原因。✕ Clear 移除已完成的。
 - 渲染的 LoRA（包括 Override 的临时 LoRA）现在也以同样方式送到 Pod；无法获取的 LoRA 会提示，渲染继续进行。
 
+## 发送到忙碌的 Pod、远程模式下的 Override、Civitai 筛选 (2.766.1)
+<!-- en: sending-to-a-pod-that-is-busy-override-in-remote-mode-civitai-filters-2-766-1 563341eafc87 -->
+
+- **“the pod's ComfyUI is not answering yet”：** bitGen 现在会找到 Pod 的 ComfyUI 实际响应的端口（已知的端口、8188，然后是从
+  RunPod 获取的 Pod 自己的端口）并记住它。暂时忙碌的 Pod（正在加载模型）最多等待 3 分钟——进度条下显示“waiting for the pod to
+  answer”；已停止的 Pod 会立即提示（请先 ▶ 启动它）。ComfyUI 忙碌但 Pod 的 Jupyter 有响应时，下载照常进行。
+- **远程模式下的 Override：** Override 风格的检查点和 LoRA 之前是在设置的端口而不是 Pod 自己的端口上检查的——现在会送到渲染使用的 Pod。
+- **Civitai 筛选（Model manager ▸ Civitai）：** 全部 / 检查点 / LoRA（以及其他类型：VAE、Embedding、ControlNet、Upscaler）、模型系列——某个系列的全部基础模型（All Krea = Krea 2 + Flux.1 Krea、All Flux 等）或只选一个，来自 Civitai 自己的列表——排序方式（评分最高、下载最多、点赞最多、最新）和时间段（全部时间 … 今天）。更改后立即重新搜索，筛选条件会被保留。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

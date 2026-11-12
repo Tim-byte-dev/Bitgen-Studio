@@ -21,6 +21,7 @@
     var st = String(x.state || "");
     if (st === "done") return (x.size ? gb(x.size) + " · " : "") + "done";
     if (/^failed/.test(st)) return st;
+    if (x.note && !(x.done > 0)) return x.note;   // 2.766.1: waiting for the pod to answer
     var bits = [x.size ? gb(x.done) + " of " + gb(x.size) + " (" + (x.pct || 0) + "%)" : gb(x.done)];
     if (x.rate > 0) bits.push((x.rate / 1e6).toFixed(1) + " MB/s");
     if (x.left > 0) bits.push(x.left < 90 ? "under 2 min left" : x.left < 5400 ? "about " + Math.round(x.left / 60) + " min left" : "about " + (x.left / 3600).toFixed(1) + " h left");

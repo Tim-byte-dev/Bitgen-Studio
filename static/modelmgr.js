@@ -135,7 +135,24 @@
   }
   /** a card in a folder tab ("" = all) (pure) */
   function inFolder(c, folder) { return !folder || String(c.folder || "").toLowerCase() === String(folder).toLowerCase(); }
-  var pure = { starBar: starBar, starAt: starAt, filterCards: filterCards, sortCards: sortCards, stars: stars, hoverPos: hoverPos, fmtSize: fmtSize, mergeLoras: mergeLoras, thumbUrl: thumbUrl,
+  /* 2.766.1: the Civitai search's query (pure) - group (All / Checkpoint / LoRA …), family ("fam:Krea" = every Krea base model,
+     "bm:Flux.1 D" = that one), sort, period */
+  function cvQuery(cv) {
+    var c = cv || {}, f = String(c.fam || "");
+    return "query=" + encodeURIComponent(c.q || "") + "&group=" + encodeURIComponent(c.group || "") + "&sort=" + encodeURIComponent(c.sort || "Highest Rated")
+      + (c.period && c.period !== "AllTime" ? "&period=" + encodeURIComponent(c.period) : "")
+      + (/^fam:/.test(f) ? "&family=" + encodeURIComponent(f.slice(4)) : /^bm:/.test(f) ? "&baseModels=" + encodeURIComponent(f.slice(3)) : "");
+  }
+  /** the family dropdown (pure): each family an optgroup - "All <family>" then its base models */
+  function famOptions(fams) {
+    var e = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (x) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[x]; }); };
+    return '<option value="">every family</option>' + (fams || []).map(function (f) {
+      var bm = f.base_models || [];
+      return '<optgroup label="' + e(f.name) + '">' + (bm.length > 1 ? '<option value="fam:' + e(f.name) + '">All ' + e(f.name) + "</option>" : "")
+        + bm.map(function (b) { return '<option value="bm:' + e(b) + '">' + e(b) + "</option>"; }).join("") + "</optgroup>";
+    }).join("");
+  }
+  var pure = { cvQuery: cvQuery, famOptions: famOptions, starBar: starBar, starAt: starAt, filterCards: filterCards, sortCards: sortCards, stars: stars, hoverPos: hoverPos, fmtSize: fmtSize, mergeLoras: mergeLoras, thumbUrl: thumbUrl,
     pageOf: pageOf, autoPer: autoPer, pagerModel: pagerModel, inFolder: inFolder };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
@@ -146,6 +163,7 @@
     + ".mmgr .mmcard .th,.mmgr .mminfo .hero,.mmgr .mminfo .exg div{position:relative;overflow:hidden}.mmgr video.mmvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none}"
     + ".mmgr .mmanim{position:absolute;right:3px;bottom:3px;font-size:.55rem;padding:0 3px;border-radius:4px;background:rgba(0,0,0,.6);color:#ddd}"
     + ".mmgr .mmtabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center}.mmgr .mmtabs button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}"
+    + ".mmgr .mmcvchips{display:inline-flex;gap:3px}.mmgr .mmcvchips button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}.mmgr .mmcvlab{font-size:.72rem;color:var(--dim,#9a917f);white-space:nowrap}.mmgr .mmcvsort{display:inline-flex;gap:4px;align-items:center}"   // 2.766.1
     + ".mmgr .mmbar{display:flex;gap:4px;flex-wrap:wrap;align-items:center}.mmgr .mmbar input[type=search]{flex:1;min-width:120px}.mmgr .mmbar select{max-width:140px}"
     + ".mmgr .mmsel{border:1px solid var(--line,#3a342a);border-radius:6px;padding:5px 6px;display:flex;flex-direction:column;gap:4px;background:rgba(255,255,255,.02)}"
     + ".mmgr .mmsel .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.mmgr .mmsel .lab{color:var(--dim,#999)}"
@@ -195,7 +213,7 @@
     + "#mmHover.on{display:block}#mmHover h4{margin:0 0 4px;font-size:.84rem}#mmHover .g{display:grid;grid-template-columns:96px 1fr;gap:2px 6px;margin:6px 0}#mmHover .g span{color:var(--dim,#999)}"
     + "#mmHover .ds{white-space:pre-wrap;color:var(--text,#ddd);max-height:30vh;overflow:hidden}#mmHover .kw{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}";
   var S = { tab: "models", data: null, q: "", category: "", family: "", sort: "name", sel: { model: null, loras: [] }, override: false,
-            mine: [], prevOvr: null, prevCkpt: null, cv: { items: [], next: "", q: "", types: "", sort: "Highest Rated", base: "", open: null }, dl: [], v: 0, form: null,
+            mine: [], prevOvr: null, prevCkpt: null, cv: { items: [], next: "", q: "", types: "", group: "", fam: "", period: "AllTime", sort: "Highest Rated", base: "", open: null }, dl: [], v: 0, form: null,
             folder: "", page: 0, per: "auto", cardW: 138, nsfw: true, mtype: "", media: null, mSel: -1, mEdit: false, edit: false, info: null, infoData: null, exSel: 0, used: null, fetch: null, mf: {}, mfList: null, fold: false };
   var LS = "h3mm.sel.v1";
   function $(id) { return document.getElementById(id); }
@@ -204,7 +222,7 @@
   function jpost(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
   function say(t, cls) { var m = $("mmMsg"); if (m) { m.textContent = t || ""; m.className = "mmmsg" + (cls ? " " + cls : ""); } }
   function lsGet() { try { return JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) { return null; } }
-  function lsSet() { try { localStorage.setItem(LS, JSON.stringify({ sel: S.sel, override: S.override, mine: S.mine, tab: S.tab, sort: S.sort, per: S.per, cardW: S.cardW, folder: S.folder, nsfw: S.nsfw })); } catch (e) { /* private window */ } }
+  function lsSet() { try { localStorage.setItem(LS, JSON.stringify({ sel: S.sel, override: S.override, mine: S.mine, tab: S.tab, sort: S.sort, per: S.per, cardW: S.cardW, folder: S.folder, nsfw: S.nsfw, cvf: { group: S.cv.group, fam: S.cv.fam, sort: S.cv.sort, period: S.cv.period } })); } catch (e) { /* private window */ } }
   function all() { return S.data ? S.data.models.concat(S.data.loras) : []; }
   function byKey(k) { return all().find(function (c) { return c.key === k; }) || null; }
 
@@ -281,6 +299,7 @@
     ["mmFetch", "mmSync", "mmFoldBtn", "mmEdit"].forEach(function (id) { var b = $(id); if (b) b.style.display = rml ? "none" : ""; });
     $("mmLocalBar").style.display = S.tab === "civitai" ? "none" : "";
     $("mmCvBar").style.display = S.tab === "civitai" ? "" : "none";
+    if (S.tab === "civitai") loadCvEnums();   // 2.766.1: the model families
     $("mmSel").innerHTML = selHtml();
     var grid = $("mmGrid");
     grid.style.setProperty("--mmw", S.cardW + "px");
@@ -827,10 +846,27 @@
   function hideSoon() { clearTimeout(hoverT); hoverT = setTimeout(hideHover, 260); }
 
   /* ---- Civitai */
+  /* 2.766.1: the Civitai filters */
+  function cvChips() {
+    return [["", "All"], ["Checkpoint", "Checkpoints"], ["LoRA", "LoRAs"]].map(function (t) { return '<button class="ghost' + (S.cv.group === t[0] ? " on" : "") + '" type="button" data-cvgrp="' + t[0] + '" aria-pressed="' + (S.cv.group === t[0]) + '">' + t[1] + "</button>"; }).join("");
+  }
+  function paintCvChips() {
+    document.querySelectorAll(".mmgr [data-cvgrp]").forEach(function (b) { var on = b.dataset.cvgrp === S.cv.group; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    var o = $("mmCvType"); if (o) o.value = ["VAE", "Embedding", "ControlNet", "Upscaler"].indexOf(S.cv.group) >= 0 ? S.cv.group : "";
+  }
+  function loadCvEnums() {
+    var sel = $("mmCvFam"); if (!sel || sel.dataset.loaded) return;
+    sel.dataset.loaded = "1";
+    jget("/api/civitai/enums").then(function (j) {
+      if (!j || j.error) { sel.dataset.loaded = ""; return; }
+      sel.innerHTML = famOptions(j.families || []);
+      sel.value = S.cv.fam; if (sel.value !== S.cv.fam) { S.cv.fam = ""; sel.value = ""; }
+    }).catch(function () { sel.dataset.loaded = ""; });
+  }
   function cvSearch(more) {
     var cv = S.cv;
-    cv.q = $("mmCvQ").value.trim(); cv.types = $("mmCvType").value; cv.sort = $("mmCvSort").value; cv.base = $("mmCvBase").value.trim();
-    var qs = "query=" + encodeURIComponent(cv.q) + "&types=" + encodeURIComponent(cv.types) + "&sort=" + encodeURIComponent(cv.sort) + (cv.base ? "&baseModels=" + encodeURIComponent(cv.base) : "") + (more && cv.next ? "&cursor=" + encodeURIComponent(cv.next) : "");
+    cv.q = $("mmCvQ").value.trim(); cv.sort = $("mmCvSort").value; cv.period = $("mmCvPeriod").value; cv.fam = $("mmCvFam").value;
+    var qs = cvQuery(cv) + (more && cv.next ? "&cursor=" + encodeURIComponent(cv.next) : "");
     cv.msg = "asking Civitai…"; if (!more) { cv.items = []; cv.open = null; } paint();
     return jget("/api/civitai/search?" + qs).then(function (j) {
       if (j.error) { cv.msg = j.error; paint(); return; }
@@ -1013,9 +1049,15 @@
       + '<select id="mmSort" aria-label="Sort"><option value="name">A-Z</option><option value="newest">newest</option><option value="rating">rating</option><option value="size">size</option></select>'
       + '<span id="mmSizeBox" style="display:none" title="Card size"> ⇲ <input type="range" id="mmSize" min="90" max="360" step="2" aria-label="Card size"></span></div>'
       + '<div class="mmbar" id="mmCvBar" style="display:none"><input type="search" id="mmCvQ" placeholder="Search Civitai…" aria-label="Search Civitai">'
-      + '<select id="mmCvType" aria-label="Civitai type"><option value="">every type</option><option value="Checkpoint">Checkpoint</option><option value="LORA">LoRA</option><option value="LoCon">LoCon</option><option value="DoRA">DoRA</option><option value="VAE">VAE</option><option value="TextualInversion">Embedding</option><option value="Controlnet">ControlNet</option><option value="Upscaler">Upscaler</option></select>'
-      + '<select id="mmCvSort" aria-label="Civitai sort"><option>Highest Rated</option><option>Most Downloaded</option><option>Most Liked</option><option>Newest</option></select>'
-      + '<input id="mmCvBase" placeholder="base model e.g. Pony" style="width:120px" aria-label="Base model"><button class="ghost" id="mmCvGo" type="button">Search</button></div>'
+      // 2.766.1 (Tim: "add civitai filters to model manager, checkpoint, lora,all, model family - krea2,flux etc. sort by"):
+      // All / Checkpoints / LoRAs (+ the other types), the model family (Civitai's base models grouped - all of a family or
+      // one), sort by, the period - a change searches again (kept between sessions)
+      + '<span class="mmcvchips" role="group" aria-label="Type">' + cvChips() + "</span>"
+      + '<select id="mmCvType" aria-label="Other types" title="Other kinds of file"><option value="">other types…</option><option value="VAE">VAE</option><option value="Embedding">Embedding</option><option value="ControlNet">ControlNet</option><option value="Upscaler">Upscaler</option></select>'
+      + '<select id="mmCvFam" aria-label="Model family" title="The model family (Civitai\'s base model) - all of a family, or one"><option value="">every family</option></select>'
+      + '<span class="mmcvsort"><label class="mmcvlab" for="mmCvSort">Sort by</label><select id="mmCvSort" aria-label="Sort by"><option>Highest Rated</option><option>Most Downloaded</option><option>Most Liked</option><option>Newest</option></select></span>'
+      + '<select id="mmCvPeriod" aria-label="Period" title="Rated / downloaded / liked over"><option value="AllTime">all time</option><option value="Year">this year</option><option value="Month">this month</option><option value="Week">this week</option><option value="Day">today</option></select>'
+      + '<button class="ghost" id="mmCvGo" type="button">Search</button></div>'
       + '<div class="mmremote" id="mmRemote" style="display:none"></div>'   // 2.766.0: remote mode (static/remotemodels.js)
       + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div>'
       + '<div class="mmpager" id="mmPager" style="display:none"></div><div class="mmdl" id="mmDl" style="display:none"></div>';
@@ -1042,6 +1084,11 @@
     $("mmSort").onchange = function (e) { S.sort = e.target.value; lsSet(); paint(); };
     $("mmSort").value = S.sort;
     $("mmCvGo").onclick = function () { cvSearch(false); };
+    // 2.766.1: a filter changed = search again
+    document.querySelectorAll(".mmgr [data-cvgrp]").forEach(function (b) { b.onclick = function () { S.cv.group = b.dataset.cvgrp; paintCvChips(); lsSet(); cvSearch(false); }; });
+    $("mmCvType").onchange = function (e) { S.cv.group = e.target.value; paintCvChips(); lsSet(); cvSearch(false); };
+    ["mmCvFam", "mmCvSort", "mmCvPeriod"].forEach(function (id) { $(id).onchange = function () { lsSet(); cvSearch(false); }; $(id).addEventListener("keydown", function (e) { e.stopPropagation(); }); });
+    $("mmCvSort").value = S.cv.sort; $("mmCvPeriod").value = S.cv.period; paintCvChips();
     $("mmCvQ").onkeydown = function (e) { e.stopPropagation(); if (e.key === "Enter") cvSearch(false); };
     $("mmQ").onkeydown = function (e) { e.stopPropagation(); };
     var grid = $("mmGrid");
@@ -1138,7 +1185,8 @@
     if (!$("mmCss")) { var st = document.createElement("style"); st.id = "mmCss"; st.textContent = CSS; document.head.appendChild(st); }
     var saved = lsGet();
     if (saved) { S.sel = saved.sel && Array.isArray(saved.sel.loras) ? saved.sel : S.sel; S.override = !!saved.override; S.mine = saved.mine || []; S.tab = saved.tab || S.tab; S.sort = saved.sort || S.sort;
-      S.per = saved.per || "auto"; S.cardW = +saved.cardW || 138; S.folder = saved.folder || ""; S.nsfw = saved.nsfw !== false; }
+      S.per = saved.per || "auto"; S.cardW = +saved.cardW || 138; S.folder = saved.folder || ""; S.nsfw = saved.nsfw !== false;
+      if (saved.cvf) { S.cv.group = saved.cvf.group || ""; S.cv.fam = saved.cvf.fam || ""; S.cv.sort = saved.cvf.sort || S.cv.sort; S.cv.period = saved.cvf.period || "AllTime"; } }   // 2.766.1
     var body = build();
     var hv = document.createElement("div"); hv.id = "mmHover"; hv.setAttribute("role", "tooltip"); document.body.appendChild(hv);
     hv.addEventListener("mouseenter", function () { clearTimeout(hoverT); });

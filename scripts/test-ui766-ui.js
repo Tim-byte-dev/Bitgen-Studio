@@ -91,9 +91,10 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     await p.waitForFunction(() => document.querySelectorAll("#pdXfer .pxRow").length >= 2, null, { timeout: 20000 }).catch(() => {});
     const x1 = await ev(() => [...document.querySelectorAll("#pdXfer .pxRow")].map((r) => ({ nm: r.querySelector(".pxNm").textContent, bar: !!r.querySelector('.pxBar[role="progressbar"]'), sub: r.querySelector(".pxSub").textContent, bad: r.classList.contains("bad") })));
     check("⇪ Send: a progress bar for EACH ticked pod in the PODS docker (my_lora → Busy pod / Spare pod, from Civitai)", x1.length >= 2 && x1.some((x) => /my_lora_ui766\.safetensors → Busy pod \(from Civitai\)/.test(x.nm)) && x1.some((x) => /→ Spare pod/.test(x.nm)) && x1.every((x) => x.bar), x1);
-    await p.waitForFunction(() => [...document.querySelectorAll("#pdXfer .pxRow")].every((r) => r.classList.contains("bad") || r.classList.contains("done")), null, { timeout: 30000 }).catch(() => {});
-    const x2 = await ev(() => [...document.querySelectorAll("#pdXfer .pxRow")].map((r) => ({ sub: r.querySelector(".pxSub").textContent, bad: r.classList.contains("bad") })));
-    check("…a pod that cannot take it: its bar red with the reason", x2.length >= 2 && x2.every((x) => x.bad && /^failed: /.test(x.sub)), x2);
+    // 2.766.1: a stopped pod fails at once (▶ Start it); a running pod that does not answer is waited for (3 min) - its bar says so
+    await p.waitForFunction(() => [...document.querySelectorAll("#pdXfer .pxRow")].some((r) => r.classList.contains("bad")) && [...document.querySelectorAll("#pdXfer .pxRow .pxSub")].some((x) => /waiting for the pod to answer/.test(x.textContent)), null, { timeout: 40000 }).catch(() => {});
+    const x2 = await ev(() => [...document.querySelectorAll("#pdXfer .pxRow")].map((r) => ({ nm: r.querySelector(".pxNm").textContent, sub: r.querySelector(".pxSub").textContent, bad: r.classList.contains("bad") })));
+    check("…the stopped pod: its bar red at once (▶ Start it); the running pod that does not answer: waiting for it, said under its bar", x2.some((x) => /Spare pod/.test(x.nm) && x.bad && /stopped on RunPod - ▶ Start it/.test(x.sub)) && x2.some((x) => /Busy pod/.test(x.nm) && !x.bad && /waiting for the pod to answer/.test(x.sub)), x2);
     if (process.env.H3_SHOT) { await p.screenshot({ path: process.env.H3_SHOT + "-a.png" }); }
     check("…the same bars in Model manager's remote bar", await ev(() => document.querySelectorAll("#mmRemote [data-rmxfer] .pxRow").length >= 2));
     // Basic Settings' Override combos read the remote list

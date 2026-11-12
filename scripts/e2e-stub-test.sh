@@ -13133,6 +13133,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.766.1 (Tim: "when trying to send a model from civitai to th pod it fails. it works for the style model it generated. but overide styles still doesn't work with remote, failed: the pod's ComfyUI is not answering yet" + "add civitai filters to model manager, checkpoint, lora,all, model family - krea2,flux etc. sort by")
+node scripts/test-podport7661.js > /tmp/podport7661.log 2>&1 \
+  && ok "2.766.1 the pod's ComfyUI found on the port that answers (RunPod's ports for the pod, remembered), a stopped pod said at once, a busy one waited for (the bar's note), Override on the pod's own port" \
+  || { bad "2.766.1 pod port units"; grep -a "^FAIL" -A1 /tmp/podport7661.log | head -12; }
+node scripts/test-cvfilters7661.js > /tmp/cvfilters7661.log 2>&1 \
+  && ok "2.766.1 units: Civitai filters - type groups (LoRAs = LORA + LoCon + DoRA, repeated keys), families of Civitai's base models (/enums), a family or one base model, sort, period" \
+  || { bad "2.766.1 Civitai filters units"; grep -a "^FAIL" -A1 /tmp/cvfilters7661.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7661-ui.js > /tmp/ui7661ui.log 2>&1 \
+  && ok "2.766.1 browser test: Model manager ▸ Civitai - All / Checkpoints / LoRAs, the family grouped, Sort by, the period, each change searches again, kept after a reload - or SKIP without playwright" \
+  || { bad "2.766.1 Civitai filters browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7661ui.log | head -14; }
 # ---- 2.766.0 (Tim: "add a remote_models.json in our pods folder ... these will be the models listed in remote mode in model manager and the overide settings dropdowns instead of the local models ... add a checkbox to the left of the pod name to select the pod(mulitple pods can be selected)" + "go with your suggestions and add a progress bar for each transfer to the pod")
 node scripts/test-remotemodels766.js > /tmp/remotemodels766.log 2>&1 \
   && ok "2.766.0 units: remote_models.json (no tokens, merged by SHA-256 / name, ComfyUI names), remote mode, ticked pods, ⇪ send to each, a model of this computer -> Civitai / your Hugging Face repo / straight to each pod, pullWait one at a time per pod with a bar, ensure from the list, the render's LoRAs, transfers" \

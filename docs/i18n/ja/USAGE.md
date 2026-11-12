@@ -4979,6 +4979,16 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **転送ごとの進行状況バー:** PODS ドッカーと Model manager に全ての転送が表示されます - ポッドのダウンロード、このコンピューターからポッドへの送信、Hugging Face リポジトリへのアップロード、Civitai で探すために一度だけ読むファイル - それぞれ %、サイズ、速度、残り時間付きです。失敗したものは理由付きで赤く表示されます。✕ Clear で完了したものを外します。
 - レンダーの LoRA（Override の一時 LoRA も）も同じ方法でポッドに送られます。取得できない LoRA は表示され、レンダーは続行します。
 
+## 忙しいポッドへの送信、リモートモードの Override、Civitai フィルター (2.766.1)
+<!-- en: sending-to-a-pod-that-is-busy-override-in-remote-mode-civitai-filters-2-766-1 563341eafc87 -->
+
+- **「the pod's ComfyUI is not answering yet」:** bitGen はポッドの ComfyUI が実際に応答するポート（知っているポート、8188、次に RunPod から得たポッド自身のポート）を探し、覚えておきます。一時的に忙しいポッド（モデルの読み込み中）は最大 3 分待ちます -
+  バーに「waiting for the pod to answer」と表示されます。停止中のポッドはすぐに表示されます（▶ で起動してください）。ComfyUI が忙しくてもポッドの Jupyter が応答すれば、ダウンロードはそのまま進みます。
+- **リモートモードの Override:** Override スタイルのチェックポイントと LoRA が、ポッド自身のポートではなく設定のポートで確認されていました。今はレンダーが使うポッドに送られます。
+- **Civitai フィルター（Model manager ▸ Civitai）:** すべて / チェックポイント / LoRA（その他の種類：VAE、Embedding、ControlNet、
+  Upscaler）、モデルファミリー - ファミリーの全ベースモデル（All Krea = Krea 2 + Flux.1 Krea、All Flux など）または 1 つだけ、
+  Civitai 自身の一覧から - 並べ替え（評価順、ダウンロード数、いいね数、新しい順）と期間（全期間 … 今日）。変更するとすぐに再検索し、フィルターは保存されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

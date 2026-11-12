@@ -8591,6 +8591,19 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - The render's LoRAs (Override's temporary LoRAs too) now go to the pod the same way; a LoRA that cannot be fetched is said
   and the render goes on.
 
+## Sending to a pod that is busy, Override in remote mode, Civitai filters (2.766.1)
+
+- **"The pod's ComfyUI is not answering yet":** bitGen now finds the port the pod's ComfyUI really answers on (the one it
+  knows, 8188, then the pod's own ports from RunPod) and remembers it. A pod that is busy for a moment (loading a model) is
+  waited for up to 3 minutes - its bar says "waiting for the pod to answer"; a stopped pod is said at once (▶ Start it). When
+  ComfyUI is busy but the pod's Jupyter answers, downloads go ahead anyway.
+- **Override in remote mode:** Override style's checkpoint and LoRAs were checked on Settings' port instead of the pod's own
+  port - they now go to the pod the render uses.
+- **Civitai filters (Model manager ▸ Civitai):** All / Checkpoints / LoRAs (and other types: VAE, Embedding, ControlNet,
+  Upscaler), the model family - every base model of a family (All Krea = Krea 2 + Flux.1 Krea, All Flux …) or just one, from
+  Civitai's own list - Sort by (highest rated, most downloaded, most liked, newest) and the period (all time … today). A change
+  searches again; your filters are kept.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
