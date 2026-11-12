@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.766.4 (Tim: "[worker] ERROR: ComfyUI does not have these node types: TextEncodeQwenImage21 … the custom nodes didn't get installed")
+node scripts/test-podlacks7664.js > /tmp/podlacks7664.log 2>&1 \
+  && ok "2.766.4 units: a node the pod still lacks stops the render before it is sent (not kept as ready); files just put on the pod are looked for again" \
+  || { bad "2.766.4 pod lacks a node"; grep -a "^FAIL" -A1 /tmp/podlacks7664.log | head -12; }
 # ---- 2.766.3 (Tim: "[pod] qwen2_1 cannot render on the pod yet - these files are not on it: … (… no node pack bitGen knows adds TextEncodeQwenImage21 …) but the files are already transferred")
 node scripts/test-podcomfyupd7663.js > /tmp/podcomfyupd7663.log 2>&1 \
   && ok "2.766.3 files where the pod's ComfyUI reads them (/internal/folder_paths; a copy left in <ComfyUI>/models moved - run for real), an old ComfyUI updated (git pull, requirements with its Python, restarted - run for real), prep says it" \

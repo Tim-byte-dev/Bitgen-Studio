@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.766.4** — A Pod That Still Lacks a Node the Style Uses Stops the Render Before It Is Sent (With Why), Tried Again Next Time; Files Just Put on a Pod Are Looked For Again Before They Are Called Missing
 - **2.766.3** — Pods: Files Go Where the Pod's ComfyUI Reads Them (Its Own Models Folders; a Copy in the Wrong Place Moves); a Pod Whose ComfyUI Is Too Old for a Style (a Node Built Into a Newer ComfyUI) Is Updated - Git Pull, Its Requirements, a Restart
 - **2.766.2** — Local / Remote in Basic Settings Switches the App Over: Local Lists This Computer's Model Folders and Starts ComfyUI If It Is Not Running; Remote Stops the ComfyUI bitGen Started Here, Lists the Remote Models and the Folder Filter Shows Their Model Families to Filter By
 - **2.766.1** — Sending to a Pod Finds the Port Its ComfyUI Answers On, Waits for a Busy Pod (Its Bar Says So) and Says a Stopped One at Once; Override's Checkpoint and LoRAs Go to the Pod's Own Port in Remote Mode; Civitai Filters in Model Manager: All / Checkpoints / LoRAs, Model Family, Sort By, Period

@@ -8626,6 +8626,13 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   the pod needs a restart (PODS ▸ My pods) - said. A ComfyUI that is not a git checkout is not changed - update it with
   ComfyUI-Manager.
 
+## A pod that still lacks a node stops the render first (2.766.4)
+
+- When the pod's ComfyUI still lacks a node the style's workflow uses (its ComfyUI could not be updated, or a node pack bitGen
+  does not know), the render now stops before it is sent, with the reason - instead of failing on the pod. The next render tries
+  to make the pod ready again.
+- Files just put on the pod are looked for again (up to 30 seconds) before bitGen says they are missing.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

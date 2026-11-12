@@ -5004,6 +5004,12 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **ポッドの古い ComfyUI:** スタイルのワークフローが新しい ComfyUI に組み込まれたノード（例：Qwen Image 2.1 の
   TextEncodeQwenImage21）を使う場合、レンダーの前にポッドの ComfyUI を更新します - git pull、requirements、ComfyUI の再起動。レンダーのポッドメモに各段階が表示されます。ポッドの ComfyUI がメインプロセスの場合は、更新は済みますがポッドの再起動（PODS ▸ My pods）が必要です - そう表示されます。git のチェックアウトでない ComfyUI は変更しません - ComfyUI-Manager で更新してください。
 
+## ノードが足りないポッドはレンダーを先に止める (2.766.4)
+<!-- en: a-pod-that-still-lacks-a-node-stops-the-render-first-2-766-4 73e18970a946 -->
+
+- ポッドの ComfyUI にスタイルのワークフローが使うノードがまだない場合（ComfyUI を更新できなかった、または bitGen が知らないノードパック）、レンダーはポッドで失敗する代わりに、送る前に理由付きで止まります。次のレンダーで再びポッドの準備を試みます。
+- ポッドに置いたばかりのファイルは、足りないと判断する前に（最大 30 秒）もう一度探します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

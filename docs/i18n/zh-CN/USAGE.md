@@ -5237,6 +5237,12 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   ComfyUI 是其主进程，更新会完成，但需要重启 Pod（PODS ▸ My pods）——会提示。不是 git 检出的 ComfyUI 不会被改动——请用
   ComfyUI-Manager 更新。
 
+## 仍缺少节点的 Pod 会先停止渲染 (2.766.4)
+<!-- en: a-pod-that-still-lacks-a-node-stops-the-render-first-2-766-4 73e18970a946 -->
+
+- 当 Pod 的 ComfyUI 仍缺少风格的工作流所用的节点时（ComfyUI 无法更新，或是 bitGen 不知道的节点包），渲染会在发送之前停止并说明原因，而不是在 Pod 上失败。下一次渲染会再次尝试准备 Pod。
+- 刚放到 Pod 上的文件，在判定缺失之前会再查找一次（最多 30 秒）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
