@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.766.3 (Tim: "[pod] qwen2_1 cannot render on the pod yet - these files are not on it: … (… no node pack bitGen knows adds TextEncodeQwenImage21 …) but the files are already transferred")
+node scripts/test-podcomfyupd7663.js > /tmp/podcomfyupd7663.log 2>&1 \
+  && ok "2.766.3 files where the pod's ComfyUI reads them (/internal/folder_paths; a copy left in <ComfyUI>/models moved - run for real), an old ComfyUI updated (git pull, requirements with its Python, restarted - run for real), prep says it" \
+  || { bad "2.766.3 pod model folders / ComfyUI update"; grep -a "^FAIL" -A1 /tmp/podcomfyupd7663.log | head -12; }
 # ---- 2.766.2 (Tim: "when local is selected in basic settings go to local mode . show all the local model folders in folder filter, check if comfyui is running, start it if it is not running ... in remote mode stop comfyi if it is running, clear the folders in folder filer in basic settings and show the model families instead, list the models in the remote models list, filter by family")
 node scripts/test-modeswitch7662.js > /tmp/modeswitch7662.log 2>&1 \
   && ok "2.766.2 units: Local = local mode (ComfyUI here started when not running), Remote = the ComfyUI bitGen started here stopped (one started another way left, said); remote mode follows Basic Settings ▸ GPU; the models' families as the folder filter" \

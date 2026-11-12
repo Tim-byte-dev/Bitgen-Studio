@@ -4997,6 +4997,13 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - 何が起きたかは選択肢の下に表示され（「Local mode - starting ComfyUI on this computer」、「Remote mode - ComfyUI on this computer
   was stopped」）、ページの一覧はすぐに切り替わります。
 
+## ポッドの ComfyUI が見えるファイルと、ポッドの古い ComfyUI の更新 (2.766.3)
+<!-- en: files-the-pod-s-comfyui-can-see-and-an-old-comfyui-on-the-pod-updated-2-766-3 982742c31a2e -->
+
+- **ダウンロード済みなのに「not on it」:** RunPod のテンプレートによっては、モデルを ComfyUI フォルダーの外に置いています（extra_model_paths.yaml、--base-directory）。bitGen はポッドの ComfyUI に各種類のモデルをどこから読むかを尋ね、そこにファイルを置きます。前の場所にダウンロード済みのファイルは、もう一度ダウンロードせずに移動します。
+- **ポッドの古い ComfyUI:** スタイルのワークフローが新しい ComfyUI に組み込まれたノード（例：Qwen Image 2.1 の
+  TextEncodeQwenImage21）を使う場合、レンダーの前にポッドの ComfyUI を更新します - git pull、requirements、ComfyUI の再起動。レンダーのポッドメモに各段階が表示されます。ポッドの ComfyUI がメインプロセスの場合は、更新は済みますがポッドの再起動（PODS ▸ My pods）が必要です - そう表示されます。git のチェックアウトでない ComfyUI は変更しません - ComfyUI-Manager で更新してください。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

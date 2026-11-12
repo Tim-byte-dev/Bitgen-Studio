@@ -8615,6 +8615,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - What happened is said under the choice ("Local mode - starting ComfyUI on this computer", "Remote mode - ComfyUI on this
   computer was stopped"), and the page's lists change at once.
 
+## Files the pod's ComfyUI can see, and an old ComfyUI on the pod updated (2.766.3)
+
+- **Downloaded but "not on it":** some RunPod templates keep their models outside the ComfyUI folder (extra_model_paths.yaml,
+  --base-directory). bitGen now asks the pod's ComfyUI where it reads each kind of model from and puts files there; a file
+  already downloaded to the old place is moved, not downloaded again.
+- **An old ComfyUI on the pod:** when a style's workflow uses a node that is built into a newer ComfyUI (for example
+  TextEncodeQwenImage21 for Qwen Image 2.1), the pod's ComfyUI is updated before the render - git pull, its requirements, then
+  ComfyUI restarted. The render's pod note says each step. When the pod's ComfyUI is its main process, the update is done but
+  the pod needs a restart (PODS ▸ My pods) - said. A ComfyUI that is not a git checkout is not changed - update it with
+  ComfyUI-Manager.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

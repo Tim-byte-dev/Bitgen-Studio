@@ -88,7 +88,7 @@ const PO = require("../lib/podOnline");
   const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8"), PS = src("lib/podSend.js"), PMs = src("lib/podModels.js");
   check("sendOne asks Civitai first, uploads only when that returns null", /const on = o\.noCivitai \? null : await viaCivitai\(id, port, local, folder, name, size, tell, o\);\n  if \(on === ""\) return "";/.test(PS));
   check("fromLink: a Civitai address takes the key as ?token= in the pod's job only (no Authorization header, not in the kept address)",
-    /const token = civ \? "" : /.test(PMs) && /const jobUrl = civ && ckey \? require\("\.\/podOnline"\)\.dlUrl\(u, "", ckey\) \|\| u : u;/.test(PMs) && /dlCode\(\[\{ name, folder, url: jobUrl, size: \+o\.size \|\| 0, token \}\]/.test(PMs) && /putFiles\(w\.pod_id, \[\{ name, folder, url: u \}\]\)/.test(PMs));
+    /const token = civ \? "" : /.test(PMs) && /const jobUrl = civ && ckey \? require\("\.\/podOnline"\)\.dlUrl\(u, "", ckey\) \|\| u : u;/.test(PMs) && /dlCode\(withDirs\(\[\{ name, folder, url: jobUrl, size: \+o\.size \|\| 0, token \}\], w\)/.test(PMs) && /putFiles\(w\.pod_id, \[\{ name, folder, url: u \}\]\)/.test(PMs));
   check("…Civitai's refusal in words on the pod (the key, civitai.red for mature models); the key cut from the address it shows", /'Civitai refused it - add your Civitai API key in Settings > General > Civitai/.test(PMs) && /else url\.split\('\?'\)\[0\]/.test(PMs));
   fs.rmSync(T, { recursive: true, force: true });
   console.log(`\n${pass} passed, ${fail} failed`);

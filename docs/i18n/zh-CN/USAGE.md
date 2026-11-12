@@ -5228,6 +5228,15 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 发生了什么会显示在选项下方（“Local mode - starting ComfyUI on this computer”、“Remote mode - ComfyUI on this computer was
   stopped”），页面上的列表会立即切换。
 
+## Pod 的 ComfyUI 能看到的文件，以及更新 Pod 上的旧版 ComfyUI (2.766.3)
+<!-- en: files-the-pod-s-comfyui-can-see-and-an-old-comfyui-on-the-pod-updated-2-766-3 982742c31a2e -->
+
+- **已下载却显示 “not on it”：** 有些 RunPod 模板把模型放在 ComfyUI 文件夹之外（extra_model_paths.yaml、--base-directory）。
+  bitGen 现在会询问 Pod 的 ComfyUI 从哪里读取每种模型，并把文件放在那里；已经下载到旧位置的文件会被移动，而不是再下载一次。
+- **Pod 上的旧版 ComfyUI：** 当风格的工作流使用了新版 ComfyUI 内置的节点（例如 Qwen Image 2.1 的 TextEncodeQwenImage21）时，会在渲染前更新 Pod 的 ComfyUI——git pull、requirements，然后重启 ComfyUI。渲染的 Pod 备注会显示每一步。如果 Pod 的
+  ComfyUI 是其主进程，更新会完成，但需要重启 Pod（PODS ▸ My pods）——会提示。不是 git 检出的 ComfyUI 不会被改动——请用
+  ComfyUI-Manager 更新。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
