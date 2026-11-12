@@ -5288,6 +5288,11 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **⬆ Update ComfyUI** 现在更新实际正在运行的 ComfyUI（通过它应答的端口找到），而不是 Pod 上的另一个副本，并重启它。自动更新失败时会再试一次（最多 3 次）。
 - Pod 任务的错误行现在显示完整的原因，关于缺失文件的信息排在最前面。
 
+## “还没有 Pod”对话框只列出现有的 Pod (2.769.2)
+<!-- en: only-your-live-pods-in-the-no-pod-yet-box-2-769-2 a4bd9629c6e8 -->
+
+- 用没有 Pod 的风格渲染时，询问使用哪个 Pod 的对话框现在**只列出 My pods 中的 Pod** - 运行中或已停止的。已终止（或正在终止）的 Pod，以及其 Pod 已不存在的预设，不再在此列出；🖥 PODS ▸ 📦 Presets 仍可重新创建预设的 Pod。如果 RunPod 没有返回你的 Pod 列表，对话框会说明原因。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

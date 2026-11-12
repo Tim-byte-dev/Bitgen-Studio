@@ -8696,6 +8696,12 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   the pod, and restarts it. A failed automatic update is tried again (3 times at most).
 - A pod job's error line now shows the whole reason, with what is known about missing files first.
 
+## Only your live pods in the "no pod yet" box (2.769.2)
+
+- When you render with a style that has no pod, the box that asks which pod to use now lists **only the pods in My pods** -
+  running or stopped. Pods that were terminated (or are being terminated) and presets whose pod is gone are no longer offered
+  there; 🖥 PODS ▸ 📦 Presets still makes a preset's pod again. If RunPod could not list your pods, the box says why.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

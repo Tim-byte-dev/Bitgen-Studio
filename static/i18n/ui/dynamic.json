@@ -5471,20 +5471,12 @@
    "src": "static/podpick.js:65"
   },
   {
-   "s": "Its pod (",
-   "src": "static/podpick.js:66"
-  },
-  {
    "s": "Your pods",
    "src": "static/podpick.js:67"
   },
   {
    "s": "preset",
    "src": "static/podpick.js:69"
-  },
-  {
-   "s": "No pods on your RunPod account",
-   "src": "static/podpick.js:73"
   },
   {
    "s": "Your presets",

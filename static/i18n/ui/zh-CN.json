@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "a835f61ced35",
- "count": 9312,
+ "v": "a40f050a595b",
+ "count": 9310,
  "patternCount": 1124,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -3084,7 +3084,6 @@
   "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own": "其自身的文字（按钮、输入框和 ▾ 箭头保留）- 留空 = 使用其自身的",
   "Its page on RunPod": "它在 RunPod 上的页面",
   "Its part in the 🎚 mix: the music ducks under the voices": "它在 🎚 混音中的角色：人声出现时音乐自动压低",
-  "Its pod (": "它的 Pod（",
   "Its prompt with its seed, cfg and steps into the prompt box + Basic Settings": "将它的提示词及其种子、cfg 和步数填入提示词框 + 基本设置",
   "Its rectangle = what is in it": "矩形 = 其中内容的范围",
   "Its voice on / off": "开 / 关其语音",
@@ -3954,7 +3953,6 @@
   "No pictures yet. 10-30 varied pictures of the subject / style (different angles, light, backgrounds) train best": "还没有图片。10-30 张主体 / 风格多样的图片（不同角度、光线、背景）训练效果最佳",
   "No pictures yet. Add pictures and write, under each, the answer you want for the job's instruction (Job tab) - 50-500 pictures teach a captioning style": "还没有图片。添加图片，并在每张图片下写出你希望它对任务指令（任务选项卡）给出的答案 - 50-500 张图片即可教会一种描述风格",
   "No pod renders": "还没有 Pod 渲染",
-  "No pods on your RunPod account": "你的 RunPod 账户上没有 Pod",
   "No pods yet - pick a template (All, Official …) and press Create pod": "还没有 Pod - 选一个模板（All、Official …）并按 Create pod",
   "No pose sheet": "无姿势表",
   "No pose sheet matches": "没有匹配的姿势表",

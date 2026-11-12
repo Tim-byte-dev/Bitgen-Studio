@@ -405,6 +405,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **遠端選項移到專用停靠窗，提示停靠窗顯示遠端模型清單** — 基本設定 ▸ GPU 只保留本地 / 遠端 / 兩者；遠端選項（伺服器、Pods、LLM / Vision LLM 的選擇、💲 RunPod）移到 ☁ Remote generation 停靠窗。遠端模式下，提示停靠窗的 LLM 和 Vision 清單顯示 OpenRouter 的免費模型（預設）、你的 Pod 的 GGUF 或 vLLM 端點的模型；選擇後即儲存，不會在本機載入任何模型。 *Where:* ☁ Remote generation 停靠窗；提示停靠窗 ▸ LLM / Vision。 *Since:* 2.768.0
 - **新 Pod 的 ComfyUI 自動更新，查詢缺失的檔案** — bitGen 建立的 Pod 在首次載入時會自動更新一次 ComfyUI（渲染會等待它；已是最新的 ComfyUI 保持執行）；下載後 ComfyUI 仍未列出的檔案會在 Pod 上查詢，並連結到它讀取的資料夾，或說明原因。 *Where:* PODS ▸ My pods；在 Pod 上渲染。 *Since:* 2.769.0
 - **bitGen 建立的 Pod 自行完成設定** — bitGen 建立的 Pod 會被記錄為 bitGen 的（Pod 本身也有標記），載入後會更新其 ComfyUI、準備好關聯的風格，如果還沒有正在使用的 Pod，它就成為正在使用的 Pod - 無需按按鈕；⬆ Update ComfyUI 會更新實際正在執行的 ComfyUI。 *Where:* PODS ▸ My pods。 *Since:* 2.769.1
+- **「還沒有 Pod」對話方塊只列出現有的 Pod** — 用沒有 Pod 的風格渲染時，只列出 My pods 中的 Pod（執行中或已停止）；已終止的 Pod 和其 Pod 已不存在的預設不再列出。 *Where:* 詢問由哪個 Pod 渲染風格的對話方塊。 *Since:* 2.769.2
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

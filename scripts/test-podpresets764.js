@@ -126,8 +126,8 @@ const tick = () => new Promise((r) => setTimeout(r, 30));
   check("routes/podPresets.js mounted from routes/index.js (not server.js): list, save, from-pod, ✕ DELETE, styles, ▶ play, ⏹ stop, 🗑 terminate",
     /require\("\.\/podPresets"\)\.mount\(app\)/.test(IX) && !/podPresets/.test(rd("misc", "server.js")) && ["app.get(\"/api/podpresets\"", "app.post(\"/api/podpresets\"", "from-pod/:id", "app.delete(\"/api/podpresets/:name\"", "/:name/styles", "/:name/play", "/:name/stop", "/:name/terminate"].every((x) => RT.includes(x)));
   const SPs = rd("lib", "stylePods.js");
-  check("stylePods: answer {action: preset} adds the style + ▶ (need_gpu passed back); offer lists each pod's styles / memory / preset + the presets with no pod; link / setStylesOf tell the presets",
-    /if \(o\.action === "preset"\)/.test(SPs) && /await PP\.styles\(String\(o\.name \|\| ""\), \[a\.style_id\], \[\]\)/.test(SPs) && /if \(r\.need_gpu\) return/.test(SPs) && /presets: presetsFor\(/.test(SPs) && /require\("\.\/podPresets"\)\.onLink\(/.test(SPs) && /require\("\.\/podPresets"\)\.onSet\(/.test(SPs));
+  check("stylePods: answer {action: preset} adds the style + ▶ (need_gpu passed back); offer lists each pod's styles / memory / preset (2.769.2: no presets of gone pods); link / setStylesOf tell the presets",
+    /if \(o\.action === "preset"\)/.test(SPs) && /await PP\.styles\(String\(o\.name \|\| ""\), \[a\.style_id\], \[\]\)/.test(SPs) && /if \(r\.need_gpu\) return/.test(SPs) && /presets: \[\] \}/.test(SPs) && /require\("\.\/podPresets"\)\.onLink\(/.test(SPs) && /require\("\.\/podPresets"\)\.onSet\(/.test(SPs));
   check("pods.create: a pod made for a style is kept as a preset (not when a preset makes it)", /if \(o\.for_style && !o\.preset\) \{ try \{ preset = \(await require\("\.\/podPresets"\)\.fromPod\(/.test(rd("lib", "pods.js")));
   check(".gitignore + make_zips.sh keep runpod/ (this PC's presets) out", /^runpod\/$/m.test(rd(".gitignore")) && /! -path "\.\/runpod\/\*"/.test(rd("scripts", "make_zips.sh")));
   const UI = require("../static/podpresets.js");

@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "a1b623010bb2",
- "count": 9312,
+ "v": "ad108b9c5af9",
+ "count": 9310,
  "patternCount": 1124,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3084,7 +3084,6 @@
   "Its own words (its buttons, boxes and the ▾ caret stay) - empty = its own": "表示する文字（ボタン、ボックス、▾ キャレットはそのまま）- 空欄 = 元のまま",
   "Its page on RunPod": "RunPod 上のページ",
   "Its part in the 🎚 mix: the music ducks under the voices": "🎚 ミックスでの役割：音楽はボイスの下にダッキングされます",
-  "Its pod (": "その Pod（",
   "Its prompt with its seed, cfg and steps into the prompt box + Basic Settings": "このプロンプトとシード、cfg、ステップをプロンプト欄 + 基本設定へ",
   "Its rectangle = what is in it": "長方形 = 中に含まれるもの",
   "Its voice on / off": "音声読み上げのオン / オフ",
@@ -3954,7 +3953,6 @@
   "No pictures yet. 10-30 varied pictures of the subject / style (different angles, light, backgrounds) train best": "画像はまだありません。被写体 / スタイルの多様な画像 10～30 枚（異なる角度、光、背景）が最もよく学習できます",
   "No pictures yet. Add pictures and write, under each, the answer you want for the job's instruction (Job tab) - 50-500 pictures teach a captioning style": "画像はまだありません。画像を追加し、各画像の下に、ジョブの指示（「ジョブ」タブ）に対する望む回答を書いてください - 50～500 枚の画像でキャプションのスタイルを学習できます",
   "No pod renders": "まだどの Pod もレンダリングしていません：",
-  "No pods on your RunPod account": "RunPod アカウントに Pod がありません",
   "No pods yet - pick a template (All, Official …) and press Create pod": "Pod はまだありません - テンプレート（All、Official …）を選んで Create pod を押してください",
   "No pose sheet": "ポーズシートなし",
   "No pose sheet matches": "一致するポーズシートはありません",

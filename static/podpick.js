@@ -63,14 +63,14 @@
     var a = o.ask, sn = a.style_name, pods = o.pods || [], pre = o.presets || [];
     var h = '<div class="in"><h3 id="ppkTitle">' + esc(sn) + " has no pod</h3>"
       + '<div class="hint">Several styles can share one pod - put ' + esc(sn) + " on one of yours, start a preset with it, or create a pod for it." + (o.need_gb ? " It wants about " + o.need_gb + " GB of GPU memory" + (o.size_gb ? " and " + o.size_gb + " GB of files" : "") + "." : "") + "</div>"
-      + (o.was ? '<div class="warn">Its pod (' + esc(o.was.name) + ") is gone on RunPod.</div>" : "");
+      ;   // 2.769.2 (Tim: "if pods have been terminated or does not exist in my pods remove them from the dialog"): no gone pod here
     h += "<h4>Your pods</h4>" + (pods.length ? pods.map(function (p) {
       var f = fits(p.memory, o.need_gb);
       return '<div class="row" data-ppkpod="' + esc(p.id) + '"><span class="nm">' + esc(p.name) + (p.preset ? ' <span class="hint">(preset ' + esc(p.preset) + ")</span>" : "") + "</span>"
         + '<span class="sub">' + esc(rowText(p)) + (p.cost_hr ? " · " + esc(money(p.cost_hr, "/h")) : "") + (f === "yes" ? ' · <span class="ok">' + p.memory + " GB - fits</span>" : f === "no" ? ' · <span class="warn">' + p.memory + " GB - " + esc(sn) + " wants ~" + o.need_gb + " GB</span>" : "") + "</span>"
         + '<span class="sub">' + (p.styles && p.styles.length ? "Holds: " + esc(p.styles.join(", ")) : "No styles on it yet") + "</span>"
         + '<span class="act"><button type="button" data-ppkuse="' + esc(p.id) + '" title="Put ' + esc(sn) + ' on this pod - the render goes there (a stopped pod is started)">＋ ' + esc(sn) + "</button></span></div>";
-    }).join("") : '<div class="hint">No pods on your RunPod account.</div>');
+    }).join("") : '<div class="hint">' + (o.pods_error ? "RunPod did not list your pods (" + esc(o.pods_error) + ")." : "No pods in My pods - create one for " + esc(sn) + ".") + "</div>");
     if (pre.length) h += "<h4>Your presets</h4>" + pre.map(function (p) {
       var n = need && need.name === p.name ? need : null;
       return '<div class="row" data-ppkpre="' + esc(p.name) + '"><span class="nm">📦 ' + esc(p.name) + "</span>"
