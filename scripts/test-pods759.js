@@ -42,7 +42,7 @@ check("…the PODS docker scores the same (its words = the server's)", JSON.stri
 // creating a pod
 const b = P.createBody({ templateId: "abcd1234", gpu: "X", jupyter: "pw", ports: ["3000/http", "22/tcp", "bad"] });
 check("createBody: a pod bitGen creates gets bitGen's own Jupyter password (env) and the template's ports + 8888/http (ports replace the template's)",
-  b.env.JUPYTER_PASSWORD === "pw" && b.ports.join() === "3000/http,22/tcp,8888/http" && !("env" in P.createBody({ templateId: "abcd1234", gpu: "X" })), b);
+  b.env.JUPYTER_PASSWORD === "pw" && b.ports.join() === "3000/http,22/tcp,8888/http" && P.createBody({ templateId: "abcd1234", gpu: "X" }).env.BITGEN_MADE === "1" && !("JUPYTER_PASSWORD" in P.createBody({ templateId: "abcd1234", gpu: "X" }).env), b);
 check("…the password kept encrypted per pod (rgpu.pod_jupyter.<id> - lib/secrets.js), dropped from custom.settings",
   SEC.isKeyPath("rgpu.pod_jupyter.abc123") && SEC.pathsOf({ rgpu: { pod_jupyter: { abc123: "x" } } }).includes("rgpu.pod_jupyter.abc123") && !JSON.stringify(SEC.strip({ rgpu: { pod_jupyter: { abc123: "secretpw" } } })).includes("secretpw"));
 const PJ = rd("lib", "pods.js");

@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "cb36a9cf39e6",
- "count": 9313,
+ "v": "a835f61ced35",
+ "count": 9312,
  "patternCount": 1124,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -7473,7 +7473,6 @@
   "bitGen Studio stands on the work of many people. Thank you to everyone below - the projects whose code, models, ideas and tools we use or learned from": "bitGen Studio 建立在许多人的工作之上。感谢下面列出的每一位 - 我们使用或借鉴了这些项目的代码、模型、想法和工具",
   "bitGen add-on for Blender": "Blender 的 bitGen 附加组件",
   "bitGen could not be asked for the presets": "无法向 bitGen 查询预设",
-  "bitGen created or started it": "由 bitGen 创建或启动",
   "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it": "由 bitGen 创建或启动。运行中的 Pod 每小时都要花钱；停止的 Pod 在终止之前仍要支付存储费用",
   "bitGen links to it through the bitGen Bridge plugin. Pick the project here and bitGen puts the plugin in, switches on what it needs and restarts Unreal with it": "bitGen 通过 bitGen Bridge 插件与其连接。在这里选择项目，bitGen 会放入插件、开启所需功能，并带着插件重启 Unreal",
   "bitGen update": "bitGen 更新",

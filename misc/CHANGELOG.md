@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.769.1** — Pods bitGen Makes Are Remembered as bitGen's (Also on the Pod) and Set Themselves Up When They Load (ComfyUI Updated, Linked Styles Made Ready, Used if None Is) - No Button Needed; ⬆ Update ComfyUI Updates the ComfyUI That Is Actually Running; the Whole Reason in a Pod Job's Error
 - **2.769.0** — A Pod bitGen Makes Has Its ComfyUI Updated Automatically When It First Loads (a Render Waits for It; an Up-to-Date ComfyUI Is Left Running); Files ComfyUI Does Not List After a Download Are Looked for on the Pod and Linked Into the Folder It Reads, or the Reason Is Said
 - **2.768.0** — Remote Options Moved to the ☁ Remote Generation Docker (Basic Settings ▸ GPU Keeps Local / Remote / Both); in Remote Mode the Prompt Docker's LLM and Vision Lists Show OpenRouter's Free Models (the Default), Your Pod's GGUFs or the vLLM Endpoint's Model; ⬆ Update ComfyUI Installs Its Requirements With the Pod ComfyUI's Own Python and Says the Real Error
 - **2.767.0** — Remote Mode: the LLM and Vision LLM Each Run Local, on OpenRouter (a Searchable Model List in Basic Settings; Reasoning On With reasoning_details Passed Back) or on RunPod (Your Pod Runs the Same GGUF With llama.cpp - Set Up When You First Send a Prompt); the Picked Video Style's Models Go to Its Pod When Remote Is Picked; ⬆ Update ComfyUI on Each Pod, a Failed Update Tried Again With Why

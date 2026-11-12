@@ -5278,6 +5278,14 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **⬆ Update ComfyUI** 每個版本只安裝一次 ComfyUI 所需的軟體包，只有在程式碼比正在執行的更新時才重新啟動 ComfyUI。
 - **下載後沒有出現的檔案：** 當 Pod 上的 ComfyUI 仍未列出某個檔案時，bitGen 會在 Pod 上查詢它。在 ComfyUI 讀取的資料夾之外找到的檔案會被連結到正確的資料夾。否則任務行會說明原因：只下載了一部分（下載已停止）、Pod 上任何地方都沒有、在正確的資料夾中但未被列出，或 Pod 上的 ComfyUI 沒有返回其模型或節點清單。
 
+## bitGen 建立的 Pod 自行完成設定 (2.769.1)
+<!-- en: pods-bitgen-makes-set-themselves-up-2-769-1 492f1ce22c85 -->
+
+- **bitGen 建立的 Pod 會被記錄為 bitGen 的** - 記錄在本機和 Pod 本身上（RunPod 會保留該標記），因此即使重新安裝後也能識別。PODS ▸ My pods 中會標上 🅱。
+- **載入後自行完成設定** - 無需渲染或按按鈕：更新其 ComfyUI，為關聯的風格放好檔案和節點包，如果還沒有正在使用的 Pod，它就成為正在使用的 Pod。My pods 中它的一行會顯示進度。如果 Pod 載入時 bitGen 被關閉，下次啟動 bitGen 時會繼續。
+- **⬆ Update ComfyUI** 現在更新實際正在執行的 ComfyUI（通過它應答的埠找到），而不是 Pod 上的另一個副本，並重新啟動它。自動更新失敗時會再試一次（最多 3 次）。
+- Pod 任務的錯誤行現在顯示完整的原因，關於缺失檔案的資訊排在最前面。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

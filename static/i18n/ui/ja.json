@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "083864d1b756",
- "count": 9313,
+ "v": "a1b623010bb2",
+ "count": 9312,
  "patternCount": 1124,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -7473,7 +7473,6 @@
   "bitGen Studio stands on the work of many people. Thank you to everyone below - the projects whose code, models, ideas and tools we use or learned from": "bitGen Studio は多くの人々の仕事の上に成り立っています。以下のすべての方々に感謝します - 私たちが使っている、または学ばせてもらったコード、モデル、アイデア、ツールのプロジェクトです",
   "bitGen add-on for Blender": "Blender 用 bitGen アドオン",
   "bitGen could not be asked for the presets": "bitGen にプリセットを問い合わせられませんでした",
-  "bitGen created or started it": "bitGen が作成または起動した",
   "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it": "bitGen が作成または起動した Pod。実行中の Pod は 1 時間ごとに費用がかかり、停止した Pod も削除するまではストレージ料金がかかります",
   "bitGen links to it through the bitGen Bridge plugin. Pick the project here and bitGen puts the plugin in, switches on what it needs and restarts Unreal with it": "bitGen は bitGen Bridge プラグインを介して連携します。ここでプロジェクトを選ぶと、bitGen がプラグインを組み込み、必要な機能を有効にして、プラグイン付きで Unreal を再起動します",
   "bitGen update": "bitGen のアップデート",

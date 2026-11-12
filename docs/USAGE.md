@@ -8685,6 +8685,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   why: only partly downloaded (the download stopped), not anywhere on the pod, in the right folder but not listed, or the
   pod's ComfyUI did not answer its model or node lists.
 
+## Pods bitGen makes set themselves up (2.769.1)
+
+- **A pod bitGen makes is remembered as bitGen's** - on this computer and on the pod itself (RunPod keeps the mark), so it is
+  known again even after a reinstall. PODS ▸ My pods marks it 🅱.
+- **It sets itself up once it loads** - no render or button needed: its ComfyUI is updated, the styles linked to it get their
+  files and node packs, and if no pod is in use yet it becomes the one in use. Its line in My pods says how far it is. If
+  bitGen is closed while the pod loads, it carries on when bitGen starts again.
+- **⬆ Update ComfyUI** now updates the ComfyUI that is actually running (found by the port it answers on), not another copy on
+  the pod, and restarts it. A failed automatic update is tried again (3 times at most).
+- A pod job's error line now shows the whole reason, with what is known about missing files first.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

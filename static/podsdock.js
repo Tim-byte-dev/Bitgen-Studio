@@ -407,10 +407,12 @@
       var ticked = (S.selPods || []).some(function (x) { return x.id === p.id; });
       return '<div class="pdRow pdAcc' + (open ? " open" : "") + '" data-pod="' + esc(p.id) + '"><div class="pdTop">'
         + '<input type="checkbox" class="pdSel" data-pdsel' + (ticked ? " checked" : "") + ' aria-label="Select ' + esc(p.name) + '" title="Select this pod - Model manager (remote mode) sends models to every ticked pod' + (/RUNNING/.test(p.status) ? "" : " (it has to be running to receive them)") + '">'
-        + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="bitGen created or started it">🅱</span> ' : "")
+        + '<button type="button" class="pdHead" aria-expanded="' + (open ? "true" : "false") + '" title="' + (open ? "Close this pod" : "Open this pod") + '"><span class="ar">' + (open ? "▾" : "▸") + '</span><span class="nm"><b>' + esc(p.name) + "</b> " + (p.bitgen ? '<span class="bg" title="' + (p.made_by_bitgen ? "bitGen made it - it is set up by itself when it loads (its ComfyUI updated, its styles made ready)" : "bitGen created or started it") + '">🅱</span> ' : "")
         + '<span class="sub">' + esc(p.gpu || "") + (p.gpus > 1 ? " ×" + p.gpus : "") + " · " + moneyHtml(+p.cost_hr || 0, "/h") + ' · <span class="pdSt"></span>'
         + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "")
         + (/RUNNING/.test(p.status) ? '<span class="pdStatsHead" data-pdstath="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], true) + "</span>" : "") + "</span></span></button></div>"
+        // 2.769.1 (Tim: "... automatically treat it as such, don't wait for button press"): what bitGen does by itself on a pod it made
+        + (p.made_by_bitgen && p.setup && p.setup.note ? '<div class="hint pdMade" aria-live="polite" style="margin:2px 0 0 24px;font-size:.7rem">' + (p.setup.phase === "ready" ? "✓ " : p.setup.phase === "failed" ? "✗ " : "⏳ ") + "made by bitGen: " + esc(p.setup.note) + "</div>" : "")
         + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
         + (/RUNNING/.test(p.status) ? '<div class="pdStats" data-pdstats="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], false) + "</div>" : "")
         + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")

@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "4fd23cb7e6a2",
- "count": 9313,
+ "v": "6df5d6f8b5d5",
+ "count": 9312,
  "patternCount": 1124,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -7473,7 +7473,6 @@
   "bitGen Studio stands on the work of many people. Thank you to everyone below - the projects whose code, models, ideas and tools we use or learned from": "bitGen Studio 建立在許多人的工作之上。感謝下面列出的每一位 - 我們使用或借鑑了這些專案的程式碼、模型、想法和工具",
   "bitGen add-on for Blender": "Blender 的 bitGen 附加元件",
   "bitGen could not be asked for the presets": "無法向 bitGen 查詢預設",
-  "bitGen created or started it": "由 bitGen 建立或啟動",
   "bitGen created or started it. Running pods cost money every hour; a stopped pod still pays for its storage until you terminate it": "由 bitGen 建立或啟動。執行中的 Pod 每小時都要花錢；停止的 Pod 在終止之前仍要支付儲存費用",
   "bitGen links to it through the bitGen Bridge plugin. Pick the project here and bitGen puts the plugin in, switches on what it needs and restarts Unreal with it": "bitGen 透過 bitGen Bridge 外掛與其連線。在這裡選擇專案，bitGen 會放入外掛、開啟所需功能，並帶著外掛重新啟動 Unreal",
   "bitGen update": "bitGen 更新",

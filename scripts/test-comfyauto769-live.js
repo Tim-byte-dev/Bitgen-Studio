@@ -70,6 +70,13 @@ const freePort = () => new Promise((ok) => { const s = net.createServer().listen
       kernel(PJ.detach(CU.updateCode(cdir, port)));
       const u3 = await wait(500);
       check("code newer than the running ComfyUI (pulled before, not restarted): its requirements + a restart - the new version answers", u3 && u3.state === "done" && !u3.same && (await up()) === "0.41.0", { u3, v: await up() });
+      // 2.769.1 (Tim's log: "restart needed: ComfyUI is updated, but bitGen did not find its running process"): bitGen guessed
+      // another ComfyUI copy (not the running one) - the job finds the RUNNING one by the port it listens on and updates that
+      const other = path.join(T, "otherCopy"); g(["clone", "-q", "-b", "master", origin, other], T);
+      fs.writeFileSync(path.join(work, "comfyui_version.py"), '__version__ = "0.42.0"\n'); g(["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "n2"], work); g(["push", "-q", "origin", "HEAD:master"], work);
+      kernel(PJ.detach(CU.updateCode(other, port)));
+      const u4 = await wait(500);
+      check("2.769.1: the guessed folder is another copy - the running ComfyUI is found by its port, ITS folder updated and restarted (the new version answers)", u4 && u4.state === "done" && u4.comfy === fs.realpathSync(cdir) && u4.comfy_was === other && (await up()) === "0.42.0", { u4, v: await up() });
       try { spawnSync("bash", ["-c", `pkill -f "main.py --port ${port}"`]); } catch { /* fine */ }
     }
   } catch (e) { check("no error", false, String(e && e.stack)); }
