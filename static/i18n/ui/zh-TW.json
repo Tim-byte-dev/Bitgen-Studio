@@ -1,6 +1,6 @@
 {
  "lang": "zh-TW",
- "v": "90092ae11e6e",
+ "v": "80f3c492f893",
  "count": 9279,
  "patternCount": 1113,
  "strings": {
@@ -3787,7 +3787,6 @@
   "Music video": "音樂影片",
   "Mute": "靜音",
   "Mute / unmute V1 and every video layer at once - the song on its sound layer plays alone, with no cuts in it": "一次性將 V1 和所有影片圖層靜音 / 取消靜音 - 聲音圖層上的歌曲單獨播放，中間沒有剪接",
-  "My custom nodes": "我的自訂節點",
   "My image has extra node packs - show every style": "我的鏡像有額外的節點包 - 顯示所有風格",
   "My pods": "我的 Pod",
   "NAME": "名稱",
@@ -3987,6 +3986,7 @@
   "Node Pen Tool": "節點鋼筆工具",
   "Node.js, Express and Multer": "Node.js、Express 和 Multer",
   "Nodes": "節點",
+  "Nodes its styles need": "其風格需要的節點",
   "Noise": "雜訊",
   "Non-commercial use only": "僅限非商業用途",
   "None": "無",

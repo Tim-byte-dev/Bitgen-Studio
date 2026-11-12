@@ -1,6 +1,6 @@
 {
  "lang": "ja",
- "v": "3d94e5a489e9",
+ "v": "0db45afa1137",
  "count": 9279,
  "patternCount": 1113,
  "strings": {
@@ -3787,7 +3787,6 @@
   "Music video": "ミュージックビデオ",
   "Mute": "ミュート",
   "Mute / unmute V1 and every video layer at once - the song on its sound layer plays alone, with no cuts in it": "V1 とすべてのビデオレイヤーをまとめてミュート / ミュート解除します - サウンドレイヤーの曲だけが、途切れずに再生されます",
-  "My custom nodes": "自分のカスタムノード",
   "My image has extra node packs - show every style": "イメージに追加のノードパックがある - すべてのスタイルを表示",
   "My pods": "マイポッド",
   "NAME": "名前",
@@ -3987,6 +3986,7 @@
   "Node Pen Tool": "ノードペンツール",
   "Node.js, Express and Multer": "Node.js、Express、Multer",
   "Nodes": "ノード",
+  "Nodes its styles need": "スタイルに必要なノード",
   "Noise": "ノイズ",
   "Non-commercial use only": "非商用のみ",
   "None": "なし",

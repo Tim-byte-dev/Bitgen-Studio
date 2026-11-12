@@ -83,8 +83,8 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       kinds: [...r.querySelectorAll("[data-pskind]")].map((c) => c.closest("label").textContent.trim() + (c.checked ? "*" : "")), save: !!(r.querySelector("[data-pssave]") || {}).disabled,
       tools: [...r.querySelectorAll(".psTools button")].map((x) => x.textContent), llm: !!r.querySelector("[data-psport]"), acts: [...r.querySelectorAll(".pdActs button")].map((x) => x.textContent), msg: (r.querySelector(".psMsg") || {}).textContent || "" }; });
     let r = await row();
-    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), ⬆ My custom nodes (2.763.1) + 💾 Save OFF; its own buttons below",
-      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "⬆ My custom nodes|💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
+    check("opened: the ticks under its name (Video, LLM, vLLM, Image, Image edit), ⬆ Nodes its styles need (2.764.2) + 💾 Save OFF; its own buttons below",
+      r.open && r.kinds.join() === "Video,LLM,vLLM,Image,Image edit" && r.tools.join("|") === "⬆ Nodes its styles need|💾 Save" && r.save === true && r.acts.includes("Use it") && r.acts.includes("Terminate"), r);
     // 2.763.0 (Tim: "can we use a dropdown of our styles for the mode selected ... add an all button so that it shows all styles")
     await ev(() => { const g = document.getElementById("genModeSel"); g.value = "image"; if (typeof g.onchange === "function") g.onchange(); g.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(500);   // the open item lists the 🖼 Image styles now (podsetup.js follows #genModeSel)

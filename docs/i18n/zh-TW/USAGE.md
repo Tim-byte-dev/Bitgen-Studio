@@ -5149,6 +5149,14 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **Remote 和 Both 會重新顯示它們。** 尚未設定任何東西時選 Remote（或 Both）會等待：選項會顯示出來，讓你選 RunPod ▸ Pods（或在 Settings ▸ Remote generation 裡設定一個），一旦有可渲染的地方就會儲存。
 - **等待 Pod 的渲染會說明原因：** 這時 Queue 卡片不再顯示「waiting for the GPU」，而是顯示 Pod 正在做什麼：啟動、載入、放入你的自訂節點、在 Pod 上下載檔案，或者從這臺電腦傳送模型以及進度：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。狀態列上方的那一行和任務日誌也會顯示同樣的內容。
 
+## Pod 上只放你的工作流用到的自訂節點 (2.764.2)
+<!-- en: only-the-custom-nodes-your-workflows-use-go-on-a-pod-2-764-2 77997c358c1e -->
+
+- **不再是所有自訂節點：** Pod 只會得到其風格的工作流用到、而 Pod 上沒有的自訂節點包 - 從這臺電腦的 ComfyUI 查詢（每個節點來自哪個資料夾），按相同版本 clone 或上傳。為風格建立的 Pod、預設的 ▶ 以及加到 Pod 上的風格都這樣做；沒有任何工作流用到的包會留在這裡。
+- **⬆ Nodes its styles need**（🖥 My pods ▸ 某個 Pod）會放入該 Pod 的風格的工作流用到的包 - 請先把風格放到 Pod 上。
+- **日誌會說明每一步：** 小包以 KB 顯示大小，接著是「<包> is on the pod」、「asking the pod to unpack and install …」和「installing <包> on the pod (1 of 2 done, 40 s)」。如果 Pod 3 分鐘內無法彙報安裝結果，這一步會帶著原因結束，而不是一直等待。
+- **預設的載入步驟**每個風格一步 - 它的節點和檔案。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

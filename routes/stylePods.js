@@ -33,15 +33,20 @@ function mount(app) {
     require("../lib/podPrep").prepare(req.params.pod, port, sts).catch(() => null);
     return { started: sts.map((s) => s.name) };
   }));
-  // 2.763.1 (Tim: "we may have to upload all of the nodes in comfy custom nodes to the pod and restart the pod"): My pods ▸
-  // ⬆ My custom nodes - this computer's custom node packs onto the pod (lib/podNodes.js), in the background
+  // 2.763.1: My pods ▸ ⬆ My custom nodes; 2.764.2: ⬆ Nodes its styles need - only the packs the pod's styles' workflows use
+  // (lib/podPrep.js nodesOnly -> lib/podNodes.js mirror of those folders), in the background
   app.post("/api/stylepods/nodes/:pod", wrap(async (req) => {
     const port = +(req.body || {}).port || SP.portOf(rg(), req.params.pod), PN = require("../lib/podNodes");
     if (!PN.localDir()) { const e = new Error("bitGen did not find this computer's ComfyUI custom_nodes folder - Settings ▸ ComfyUI ▸ Folder"); e.status = 404; throw e; }
     const w = await require("../lib/podModels").ways(req.params.pod, port);
     if (!w.jupyter) { const e = new Error("bitGen puts custom nodes on a pod through its Jupyter - paste its password in ⬇ Models"); e.status = 409; throw e; }
-    PN.mirror(req.params.pod, port, {}).catch(() => null);
-    return { started: PN.list().length };
+    // 2.764.2 (Tim: "only upload nodes that are necessary for the workflows we are using to the pod"): the packs the pod's
+    // styles' workflows use (and it lacks) - not every custom node of this computer
+    const S = require("../lib/styles"), C = require("../lib/core"), pod = String(req.params.pod).replace(/[^A-Za-z0-9]/g, "");
+    const sts = SP.stylesOf(pod).map((id) => { try { return S.byId(C.STYLES_DIR, id); } catch { return null; } }).filter(Boolean);
+    if (!sts.length) { const e = new Error("the pod has no styles yet - put a style on it (Styles, then 💾 Save) and its workflows' nodes go with it"); e.status = 409; throw e; }
+    require("../lib/podPrep").prepare(pod, port, sts, { nodesOnly: true }).catch(() => null);
+    return { started: sts.length, styles: sts.map((s) => s.name) };
   }));
   // 2.763.4: how many custom node packs this computer would put on a pod (the PODS docker's summary before Create pod)
   app.get("/api/stylepods/nodes", wrap(() => { const L = require("../lib/podNodes").list(); return { count: L.length, folders: L.map((k) => k.folder) }; }));

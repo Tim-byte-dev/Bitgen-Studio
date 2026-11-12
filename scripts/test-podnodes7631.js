@@ -35,8 +35,11 @@ check("folderOfModule: custom_nodes.<folder>.… -> the folder; a core node -> n
 const CORE = rd("lib", "core.js"), SPs = rd("lib", "stylePods.js"), PPs = rd("lib", "podPrep.js"), ASK = rd("static", "stylepodask.js"), PSU = rd("static", "podsetup.js"), RT = rd("routes", "stylePods.js");
 check("wiring: a pod that cannot be had FAILS the job with the reason (cancelled when you cancelled) - never rendered elsewhere; jobs carry pod_note while queued; the page shows it over the status bar",
   /j\.status = g\.cancelled \? "cancelled" : "failed";/.test(CORE) && /pod_note: job\.status === "queued" \? job\._podNote \|\| null : null/.test(CORE) && !/pod_job = \{ error/.test(CORE) && /id = "spaChip"/.test(ASK) && /"🖥 " \+ j\.pod_note/.test(ASK));
-check("wiring: a pod bitGen creates (asked, or from the PODS docker - 2.763.4: a gone pod is never made again by itself) gets this computer's custom nodes once (rgpu.pod_nodes); a style's missing classes come from this computer's own folders first (podPrep localFolders); My pods ▸ ⬆ My custom nodes (POST /api/stylepods/nodes/:pod)",
-  /nodesTodo\(made\.pod\.id, true\)/.test(SPs) && /SP\.nodesTodo\(p\.id, true\)/.test(fs.readFileSync(path.join(ROOT, "lib", "pods.js"), "utf8")) && /require\("\.\/podNodes"\)\.mirror\(id, port/.test(SPs)
+// 2.764.2 (Tim: "only upload nodes that are necessary for the workflows we are using to the pod"): a new pod no longer gets
+// EVERY custom node pack - only the ones its styles' workflows use (podPrep); the button does the same for the pod's styles
+check("wiring (2.764.2): a new pod does NOT get every custom node pack any more; a style's missing classes come from this computer's own folders (podPrep localFolders - only those); My pods ▸ ⬆ Nodes its styles need (POST /api/stylepods/nodes/:pod -> podPrep nodesOnly)",
+  !/nodesTodo\(made\.pod\.id, true\)/.test(SPs) && !/SP\.nodesTodo\(p\.id, true\)/.test(fs.readFileSync(path.join(ROOT, "lib", "pods.js"), "utf8")) && !/require\("\.\/podNodes"\)\.mirror\(id, port/.test(SPs)
+  && /prepare\(pod, port, sts, \{ nodesOnly: true \}\)/.test(RT) && /if \(nodesOnly\) \{/.test(PPs)
   && /localFolders: \(classes\) => require\("\.\/podNodes"\)\.foldersFor\(classes\)/.test(PPs) && /data-psnodes/.test(PSU) && /\/api\/stylepods\/nodes\//.test(PSU) && /app\.post\("\/api\/stylepods\/nodes\/:pod"/.test(RT));
 
 /* ---------------- live: this computer's ComfyUI with four packs + a switched-off one */

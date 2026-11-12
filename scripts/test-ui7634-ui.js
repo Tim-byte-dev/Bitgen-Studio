@@ -86,7 +86,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     const sum = await ev(() => ({ style: (document.getElementById("pdStyle") || {}).value, rows: [...document.querySelectorAll("#pdSum .k")].map((k) => k.textContent + ": " + k.nextElementSibling.textContent) }));
     check("Create pod… : the form's Style is the prompt docker's; everything the pod will be is listed before Create pod (template + image, GPU, price, cloud, both disks, a CUDA 13 host, ports + Jupyter, the style, the custom nodes)",
       sum.style === st.id && ["Template", "GPU", "Price", "Cloud", "Container disk", "/workspace", "Host", "Ports", "Style", "Then"].every((k) => sum.rows.some((r) => r.indexOf(k + ":") === 0))
-      && sum.rows.some((r) => /^Template: ComfyUI CUDA 13 \(runpod\/comfyui:cuda13\)$/.test(r)) && sum.rows.some((r) => /^Host: CUDA 13 or newer only$/.test(r)) && sum.rows.some((r) => r.indexOf("Style: " + st.name) === 0) && sum.rows.some((r) => /^Then: this computer's custom nodes/.test(r)), sum);
+      && sum.rows.some((r) => /^Template: ComfyUI CUDA 13 \(runpod\/comfyui:cuda13\)$/.test(r)) && sum.rows.some((r) => /^Host: CUDA 13 or newer only$/.test(r)) && sum.rows.some((r) => r.indexOf("Style: " + st.name) === 0) && sum.rows.some((r) => /^Then: the custom nodes .+'s workflows use/.test(r)), sum);
     await ev(() => { const g = document.getElementById("pdGpu"); g.value = "NVIDIA A40"; g.dispatchEvent(new Event("change")); const c = document.getElementById("pdCount"); c.value = "2"; c.dispatchEvent(new Event("change")); });
     await sleep(200);
     const sum2 = await ev(() => [...document.querySelectorAll("#pdSum .k")].map((k) => k.textContent + ": " + k.nextElementSibling.textContent));

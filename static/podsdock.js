@@ -316,7 +316,6 @@
     doc.querySelectorAll('input[name="pdCloud"]').forEach(function (r) { r.checked = r.value === S.form.cloud; r.onchange = function () { S.form.cloud = r.value; gpus(r.value); }; });
     ["pdGpu", "pdCount", "pdDisk", "pdVol", "pdStyle"].forEach(function (id) { var x = $(id); if (x) { x.addEventListener("change", price); x.addEventListener("input", price); } });
     doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { c.addEventListener("change", price); });
-    if (S.nodesN == null) getj("/api/stylepods/nodes").then(function (j) { S.nodesN = (j && j.count) || 0; summary(); }).catch(function () { /* offline */ });
     $("pdGo").onclick = create;
     $("pdForm").querySelectorAll("input,select").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
   }
@@ -346,7 +345,7 @@
       ["Container disk", (+(($("pdDisk") || {}).value) || 0) + " GB (wiped when it stops)"], ["/workspace", (+(($("pdVol") || {}).value) || 0) + " GB (kept while stopped)"],
       ["Host", cu ? "CUDA 13 or newer only" : "any"], ["Ports", (web || "-") + " + Jupyter (bitGen's own password)"],
       ["Style", sty ? sty.name + (ks.length ? " · this pod renders " + ks.join(", ") + " styles with no pod of their own" : "") : (ks.length ? "renders " + ks.join(", ") + " styles with no pod of their own" : "none")],
-      ["Then", "this computer's custom nodes" + (S.nodesN != null ? " (" + S.nodesN + ")" : "") + (sty ? " and " + sty.name + "'s files" + (S.ask && S.askSize ? " (about " + S.askSize + " GB)" : "") : "") + " go on it"]];
+      ["Then", (sty ? "the custom nodes " + sty.name + "'s workflows use" : "the custom nodes its styles' workflows use") + (sty ? " and " + sty.name + "'s files" + (S.ask && S.askSize ? " (about " + S.askSize + " GB)" : "") : "") + " go on it"]];
     el.innerHTML = rows.map(function (r) { return '<span class="k">' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span>"; }).join("");
   }
   function price() {

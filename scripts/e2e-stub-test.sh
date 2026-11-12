@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.764.2 (Tim: "only upload nodes that are necessary for the workflows we are using to the pod" + "[pod] uploading ComfyUI-H3-NativeAudioLock - 0 MB to the pod")
+node scripts/test-podnodes7642.js > /tmp/podnodes7642.log 2>&1 \
+  && ok "2.764.2 units: only the node pack a workflow uses and the pod lacks is mirrored (none when the pod has them all), nodesOnly for ⬆ Nodes its styles need, KB sizes, every install step said, a 3-minute unreadable status ends it; no pod gets every pack" \
+  || { bad "2.764.2 needed-only node packs units"; grep -a "^FAIL" -A1 /tmp/podnodes7642.log | head -12; }
 # ---- 2.764.1 (Tim: "if local is selected in basic settings, hide all the remote gpu details and options. the remote gpu radio group ☁ Remote generation docker🖥 PODS 💲 RunPod pods: ...")
 node scripts/test-gpulocal7641.js > /tmp/gpulocal7641.log 2>&1 \
   && ok "2.764.1 units: Local hides the remote groups, ☁ / 🖥 PODS / 💲 RunPod / ⚙ buttons (#sec-gpu.gpuLocal), one line, closes those dockers; Remote / Both wait for a set-up (isReady / localView)" \

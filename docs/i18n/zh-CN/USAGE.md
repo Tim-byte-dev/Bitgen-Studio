@@ -5151,6 +5151,14 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **Remote 和 Both 会重新显示它们。** 尚未设置任何东西时选 Remote（或 Both）会等待：选项会显示出来，让你选 RunPod ▸ Pods（或在 Settings ▸ Remote generation 里设置一个），一旦有可渲染的地方就会保存。
 - **等待 Pod 的渲染会说明原因：** 这时 Queue 卡片不再显示「waiting for the GPU」，而是显示 Pod 正在做什么：启动、加载、放入你的自定义节点、在 Pod 上下载文件，或者从这台电脑发送模型以及进度：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。状态栏上方的那一行和任务日志也会显示同样的内容。
 
+## Pod 上只放你的工作流用到的自定义节点 (2.764.2)
+<!-- en: only-the-custom-nodes-your-workflows-use-go-on-a-pod-2-764-2 77997c358c1e -->
+
+- **不再是所有自定义节点：** Pod 只会得到其风格的工作流用到、而 Pod 上没有的自定义节点包 - 从这台电脑的 ComfyUI 查找（每个节点来自哪个文件夹），按相同版本 clone 或上传。为风格创建的 Pod、预设的 ▶ 以及加到 Pod 上的风格都这样做；没有任何工作流用到的包会留在这里。
+- **⬆ Nodes its styles need**（🖥 My pods ▸ 某个 Pod）会放入该 Pod 的风格的工作流用到的包 - 请先把风格放到 Pod 上。
+- **日志会说明每一步：** 小包以 KB 显示大小，接着是「<包> is on the pod」、「asking the pod to unpack and install …」和「installing <包> on the pod (1 of 2 done, 40 s)」。如果 Pod 3 分钟内无法汇报安装结果，这一步会带着原因结束，而不是一直等待。
+- **预设的加载步骤**每个风格一步 - 它的节点和文件。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

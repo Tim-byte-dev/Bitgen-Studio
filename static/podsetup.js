@@ -94,7 +94,7 @@
       + '<button type="button" class="ghost' + (ALL ? " on" : "") + '" data-psall aria-pressed="' + (ALL ? "true" : "false") + '" title="List every style, not only the Generate mode\'s">All</button></div>'
       + '<div class="psChips">' + (c.styles.length ? c.styles.map(function (id) { return '<span class="psChip" data-pschip="' + esc(id) + '">' + kindIcon(id) + " " + esc(nameOf(id)) + ' <button type="button" class="ghost" data-psdel="' + esc(id) + '" title="Take this style off the pod">✕</button></span>'; }).join("")
         : '<span class="hint">no styles of its own yet</span>') + "</div></div>"
-      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" class="ghost" data-psnodes title="Put this computer\'s ComfyUI custom nodes on the pod (the ones it lacks) - cloned from their own address at the same version, or uploaded - then its ComfyUI is restarted">⬆ My custom nodes</button><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
+      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" class="ghost" data-psnodes title="Put on the pod the custom nodes its styles\' workflows use and it lacks (2.764.2: only those) - cloned from their own address at the same version, or uploaded - then its ComfyUI is restarted">⬆ Nodes its styles need</button><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
       + '<div class="hint psMsg" aria-live="polite">' + esc(e.msg || "") + "</div>";
   }
   function say(row, id, t) { ed(id).msg = t; var m = row.querySelector(".psMsg"); if (m) m.textContent = t; }
@@ -139,7 +139,7 @@
       });
     };
     var nb = q("[data-psnodes]"); if (nb) nb.onclick = function () {
-      nb.disabled = true; say(row, p.id, "putting this computer's custom nodes on the pod…");
+      nb.disabled = true; say(row, p.id, "putting on the pod the custom nodes its styles' workflows use…");
       post("/api/stylepods/nodes/" + encodeURIComponent(p.id), { port: port || 0 }).then(function (r) {
         nb.disabled = false;
         if (r.error) { say(row, p.id, r.error); return; }

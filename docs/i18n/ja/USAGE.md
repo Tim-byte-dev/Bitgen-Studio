@@ -4918,6 +4918,14 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **Remote と Both で再び表示されます。** まだ何も設定していないときに Remote（または Both）を選ぶと待ちになります：選択肢が表示されるので RunPod ▸ Pods を選ぶ（または Settings ▸ Remote generation で設定する）と、レンダリング先ができた時点で保存されます。
 - **Pod を待っているレンダリングは理由を表示します：** そのとき Queue のカードは「waiting for the GPU」ではなく、Pod が何をしているかを表示します：起動中、読み込み中、カスタムノードを入れている、Pod 上でファイルをダウンロード中、またはこのコンピューターからモデルを送っていて、その進み具合：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。ステータスバーの上の行とジョブのログにも同じことが出ます。
 
+## Pod にはワークフローが使うカスタムノードだけが入ります (2.764.2)
+<!-- en: only-the-custom-nodes-your-workflows-use-go-on-a-pod-2-764-2 77997c358c1e -->
+
+- **すべてのカスタムノードではありません：** Pod には、そのスタイルのワークフローが使い、Pod にないカスタムノードパックだけが入ります - このコンピューターの ComfyUI から（各ノードがどのフォルダーのものか）探し、同じバージョンで clone するかアップロードします。スタイル用に作った Pod、プリセットの ▶、Pod に加えたスタイルはすべてこのやり方です；どのワークフローも使わないパックはここに残ります。
+- **⬆ Nodes its styles need**（🖥 My pods ▸ Pod）は、その Pod のスタイルのワークフローが使うパックを入れます - 先に Pod にスタイルを入れてください。
+- **ログは各手順を表示します：** 小さなパックは KB でサイズを表示し、続いて「<パック> is on the pod」、「asking the pod to unpack and install …」、「installing <パック> on the pod (1 of 2 done, 40 s)」。Pod が 3 分間インストールの結果を報告できないと、待ち続けずにその理由で手順を終えます。
+- **プリセットの読み込みの流れ**は、スタイルごとに 1 つの手順です - そのノードとファイル。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

@@ -8497,6 +8497,18 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   computer with how far it is: "sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min
   left". The line over the status bar and the job's log say the same.
 
+## Only the custom nodes your workflows use go on a pod (2.764.2)
+
+- **Not every custom node any more:** a pod gets only the custom node packs its styles' workflows use and it lacks - found
+  from this computer's ComfyUI (which folder each node comes from), cloned at the same version or uploaded. A pod made for a
+  style, a preset's ▶, and a style added to a pod all work this way; a pack none of your workflows use stays here.
+- **⬆ Nodes its styles need** (🖥 My pods ▸ a pod) puts on the packs the pod's styles' workflows use - put a style on the
+  pod first.
+- **The log says each step:** a small pack shows its size in KB, then "<pack> is on the pod", "asking the pod to unpack and
+  install …", and "installing <pack> on the pod (1 of 2 done, 40 s)". If the pod cannot report how the install went for 3
+  minutes, the step ends with that reason instead of waiting.
+- **A preset's loading sequence** has one step per style - its nodes and its files.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

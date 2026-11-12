@@ -67,7 +67,7 @@ const tick = () => new Promise((r) => setTimeout(r, 30));
   const G = [{ id: "A40", name: "A40", memory: 48, price: 0.44, offered: false }, { id: "L40S", name: "L40S", memory: 48, price: 0.86, offered: true }, { id: "4090", name: "RTX 4090", memory: 24, price: 0.69, offered: true }, { id: "A6000", name: "RTX A6000", memory: 48, price: 0.49, offered: true }, { id: "H100", name: "H100", memory: 80, price: 2.99, offered: true }];
   check("gpuOptions: free ones with as much memory or more, cheapest first", PP.gpuOptions(G, "A40").map((g) => g.id).join() === "A6000,L40S,H100");
   const st = PP.stepsFor(true, ["Krea Raw", "Wan Video"]);
-  check("stepsFor: Creating -> Pod loading -> ComfyUI -> custom nodes -> each style's files -> Ready", st.map((x) => x.id).join() === "create,load,comfy,nodes,style0,style1,ready" && st.every((x) => x.state === "todo") && PP.stepsFor(false, []).length === 4);
+  check("stepsFor: Creating -> Pod loading -> ComfyUI -> each style's nodes + files (2.764.2: only the node packs its workflows use) -> Ready", st.map((x) => x.id).join() === "create,load,comfy,style0,style1,ready" && /its nodes and files/.test(st[3].label) && st.every((x) => x.state === "todo") && PP.stepsFor(false, []).length === 3);
 
   /* ---- live: presets on disk, ▶ on a terminated preset, ⏹, 🗑, ✕ */
   const D = process.env.H3_POD_PRESETS_DIR;
@@ -108,8 +108,8 @@ const tick = () => new Promise((r) => setTimeout(r, 30));
   await tick();
   k = (await PP.list()).presets.find((p) => p.name === "Krea pod");
   const sts = k.job && k.job.steps.map((x) => x.id + ":" + x.state).join();
-  check("…populated in the background: pod loading -> ComfyUI -> custom nodes (mirror) -> each style's files (workflows, models, encoders, VAE, LoRAs) in turn", LOG.some((x) => x[0] === "mirror" && x[1] === p2.pod_id) && LOG.filter((x) => x[0] === "prepare" && x[1] === p2.pod_id).map((x) => x[2][0]).join() === "s1,s3", LOG);
-  check("…the loading sequence: each step's state; a file still missing = that step failed (named)", sts === "create:done,load:done,comfy:done,nodes:done,style0:done,style1:failed,ready:done" && /wan_vae/.test(k.job.steps.find((x) => x.id === "style1").note) && k.job.phase === "failed", k.job);
+  check("…populated in the background: pod loading -> ComfyUI -> each style's nodes + files (workflows, models, encoders, VAE, LoRAs) in turn - never every custom node pack (2.764.2)", !LOG.some((x) => x[0] === "mirror") && LOG.filter((x) => x[0] === "prepare" && x[1] === p2.pod_id).map((x) => x[2][0]).join() === "s1,s3", LOG);
+  check("…the loading sequence: each step's state; a file still missing = that step failed (named)", sts === "create:done,load:done,comfy:done,style0:done,style1:failed,ready:done" && /wan_vae/.test(k.job.steps.find((x) => x.id === "style1").note) && k.job.phase === "failed", k.job);
   check("…running now: a new run at the pod's $/h; hours + total cost keep the old pod's too", k.state === "failed" && k.runs.length >= 2 && k.runs[k.runs.length - 1].pod === p2.pod_id && k.total_usd > 1.6, k);
   // rename + edit
   const ed = await PP.save({ was: "Krea pod", preset: Object.assign({}, PP.get("Krea pod"), { name: "Krea + Wan", count: 1, volume: 200 }) });
