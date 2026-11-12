@@ -10,7 +10,8 @@ function mount(app) {
   try { G.defaultLocal(); } catch (e) { console.error("[gpu] " + ((e && e.message) || e)); }   // 2.747.0: once - Local by default
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   app.get("/api/gpusplit", wrap(() => G.view()));
-  app.post("/api/gpusplit", wrap((req) => G.set(req.body || {})));
+  // 2.766.2: Local <-> Remote switches the app over - ComfyUI here started / stopped (lib/modeSwitch.js)
+  app.post("/api/gpusplit", wrap(async (req) => { const MS = require("../lib/modeSwitch"), before = MS.modeOf(); const v = await G.set(req.body || {}); return Object.assign({}, v, { mode_switch: await MS.after(before) }); }));
   app.post("/api/gpusplit/vllm", wrap((req) => G.saveVllm(req.body || {})));
   app.post("/api/gpusplit/vllm/test", wrap((req) => G.testVllm(String((req.body || {}).kind || "llm") === "vlm" ? "vlm" : "llm")));
 }

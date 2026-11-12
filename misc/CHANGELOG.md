@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.766.2** — Local / Remote in Basic Settings Switches the App Over: Local Lists This Computer's Model Folders and Starts ComfyUI If It Is Not Running; Remote Stops the ComfyUI bitGen Started Here, Lists the Remote Models and the Folder Filter Shows Their Model Families to Filter By
 - **2.766.1** — Sending to a Pod Finds the Port Its ComfyUI Answers On, Waits for a Busy Pod (Its Bar Says So) and Says a Stopped One at Once; Override's Checkpoint and LoRAs Go to the Pod's Own Port in Remote Mode; Civitai Filters in Model Manager: All / Checkpoints / LoRAs, Model Family, Sort By, Period
 - **2.766.0** — Remote Models: runpod/pods/remote_models.json Lists the Models Your Pods Use and Where Each Downloads From; in Remote Mode Model Manager and the Override Dropdowns List These; Tick Pods Left of Their Names and ⇪ Sends a Model to All of Them; a Model With No Link Goes Up Once to Your Private Hugging Face Repo; a Progress Bar for Each Transfer; the Render's LoRAs Go to the Pod Too
 - **2.765.0** — Your Checkpoints and LoRAs Found on Civitai (Its Card's Version or Its SHA-256) Are Downloaded by the Pod From civitai.com or civitai.red Instead of Sent Slowly From This Computer; Sent From Here Only When Not There or Refused, With the Reason

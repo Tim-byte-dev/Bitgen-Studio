@@ -399,6 +399,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **把你的检查点和 LoRA 从 Civitai 下载到 Pod** — Pod 需要的本机模型会先在 Civitai 上查找（按其卡片中的版本，否则按只读取一次的 SHA-256），然后由 Pod 用你的 API 密钥从 civitai.com 或 civitai.red 下载完全相同的文件，代替缓慢的上传；只有在 Civitai 上没有或被拒绝时才从本机发送，并说明原因。 *Where:* PODS（风格的模型、Override 风格的检查点、预设）；渲染的 Pod 备注；设置 ▸ General ▸ Civitai。 *Since:* 2.765.0
 - **远程模型、勾选的 Pod 和每次传输的进度条** — runpod/pods/remote_models.json 记录你的 Pod 使用的模型及各自的下载链接；在远程模式下，Model manager 和基本设置的 Override 下拉框列出这些模型，而不是本机的模型；勾选 Pod（每个名称左侧的复选框，可多选），⇪ 会把模型发送到所有勾选的 Pod；没有链接的模型只上传一次到你的私有 Hugging Face 仓库（Civitai 上有则用其链接，否则直接发送到 Pod）；每次传输都有自己的进度条。 *Where:* PODS ▸ My pods；Model manager（远程模式）；基本设置 ▸ Override。 *Since:* 2.766.0
 - **Model manager 中的 Civitai 筛选** — 全部 / 检查点 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（来自 Civitai 自己的列表，Krea、Flux、Qwen 等系列的全部基础模型，或只选一个）、排序方式和时间段；更改后立即重新搜索，筛选条件会被保留。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
+- **本地 / 远程切换整个应用** — 在基本设置中选择本地：列表和文件夹筛选显示本机的模型文件夹，ComfyUI 未运行时会启动；选择远程（Pod）：停止 bitGen 在本机启动的 ComfyUI，列出远程模型，文件夹筛选改为显示它们的模型系列（Krea、Flux、Pony 等）以供筛选。 *Where:* 基本设置 ▸ GPU；模型下拉框；Model manager。 *Since:* 2.766.2
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
 

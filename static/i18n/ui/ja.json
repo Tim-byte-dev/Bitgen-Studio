@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "e7b1f4af0269",
- "count": 9307,
+ "v": "12d389d23a0f",
+ "count": 9308,
  "patternCount": 1118,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -454,6 +454,7 @@
   "All layers on GPU": "全レイヤーを GPU に",
   "All layers on GPU is fastest; GPU + CPU/RAM keeps only N layers in VRAM and runs the rest from system RAM — slower, but a bigger model fits": "全レイヤーを GPU に置くのが最速です。GPU + CPU/RAM では VRAM に N レイヤーだけを置き、残りをシステム RAM から実行します — 遅くなりますが、より大きなモデルが収まります",
   "All missing": "不足分すべて",
+  "All model families": "すべてのモデルファミリー",
   "All of AFTER DRAWING": "描画後のすべて",
   "All of BODIES": "ボディのすべて",
   "All of BRIDGE": "ブリッジのすべて",

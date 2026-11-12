@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.766.2 (Tim: "when local is selected in basic settings go to local mode . show all the local model folders in folder filter, check if comfyui is running, start it if it is not running ... in remote mode stop comfyi if it is running, clear the folders in folder filer in basic settings and show the model families instead, list the models in the remote models list, filter by family")
+node scripts/test-modeswitch7662.js > /tmp/modeswitch7662.log 2>&1 \
+  && ok "2.766.2 units: Local = local mode (ComfyUI here started when not running), Remote = the ComfyUI bitGen started here stopped (one started another way left, said); remote mode follows Basic Settings ▸ GPU; the models' families as the folder filter" \
+  || { bad "2.766.2 mode switch units"; grep -a "^FAIL" -A1 /tmp/modeswitch7662.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7662-ui.js > /tmp/ui7662ui.log 2>&1 \
+  && ok "2.766.2 browser test: remote mode - Basic Settings' folder filter = the model families, filtering by one; Local picked - said, this computer's folders back; Remote again - families back - or SKIP without playwright" \
+  || { bad "2.766.2 mode switch browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7662ui.log | head -14; }
 # ---- 2.766.1 (Tim: "when trying to send a model from civitai to th pod it fails. it works for the style model it generated. but overide styles still doesn't work with remote, failed: the pod's ComfyUI is not answering yet" + "add civitai filters to model manager, checkpoint, lora,all, model family - krea2,flux etc. sort by")
 node scripts/test-podport7661.js > /tmp/podport7661.log 2>&1 \
   && ok "2.766.1 the pod's ComfyUI found on the port that answers (RunPod's ports for the pod, remembered), a stopped pod said at once, a busy one waited for (the bar's note), Override on the pod's own port" \

@@ -5217,6 +5217,15 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **遠端模式下的 Override：** Override 風格的檢查點和 LoRA 之前是在設定的埠而不是 Pod 自己的埠上檢查的——現在會送到渲染使用的 Pod。
 - **Civitai 篩選（Model manager ▸ Civitai）：** 全部 / 檢查點 / LoRA（以及其他類型：VAE、Embedding、ControlNet、Upscaler）、模型系列——某個系列的全部基礎模型（All Krea = Krea 2 + Flux.1 Krea、All Flux 等）或只選一個，來自 Civitai 自己的清單——排序方式（評分最高、下載最多、點贊最多、最新）和時間段（全部時間 … 今天）。更改後立即重新搜尋，篩選條件會被保留。
 
+## 基本設定中的本地 / 遠端會切換整個應用 (2.766.2)
+<!-- en: local-or-remote-in-basic-settings-switches-everything-over-2-766-2 ba005cdf9124 -->
+
+- **本地**（基本設定 ▸ GPU）：本地模式——模型清單和資料夾篩選再次顯示本機的模型資料夾，並檢查本機的 ComfyUI：未執行就啟動。其他一切照舊。
+- **遠端**（RunPod Pod）：遠端模式——停止 bitGen 在本機啟動的 ComfyUI（你自己啟動的會保持開啟，bitGen 會提示），模型清單顯示
+  runpod/pods/remote_models.json 中的模型，資料夾篩選改為顯示它們的模型系列（Krea、Flux、Pony 等）而不是資料夾——選一個就只看該系列。Model manager 的分頁也顯示系列。
+- 發生了什麼會顯示在選項下方（「Local mode - starting ComfyUI on this computer」、「Remote mode - ComfyUI on this computer was
+  stopped」），頁面上的清單會立即切換。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

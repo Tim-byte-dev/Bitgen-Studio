@@ -8604,6 +8604,17 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   Civitai's own list - Sort by (highest rated, most downloaded, most liked, newest) and the period (all time … today). A change
   searches again; your filters are kept.
 
+## Local or Remote in Basic Settings switches everything over (2.766.2)
+
+- **Local** (Basic Settings ▸ GPU): local mode - the model lists and the folder filter show this computer's model folders
+  again, and ComfyUI on this computer is checked: not running = started. Everything else works as before.
+- **Remote** (with RunPod pods): remote mode - the ComfyUI bitGen started on this computer is stopped (one you started
+  yourself is left open; bitGen says so), the model lists show the models in runpod/pods/remote_models.json, and the folder
+  filter shows their model families (Krea, Flux, Pony …) instead of folders - pick one to see only that family. Model
+  manager's tabs show the families too.
+- What happened is said under the choice ("Local mode - starting ComfyUI on this computer", "Remote mode - ComfyUI on this
+  computer was stopped"), and the page's lists change at once.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

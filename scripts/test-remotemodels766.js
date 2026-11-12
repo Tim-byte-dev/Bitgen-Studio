@@ -17,7 +17,7 @@ const T = fs.mkdtempSync(path.join(os.tmpdir(), "remotemodels766-"));
 process.env.H3_REMOTE_MODELS = path.join(T, "pods", "remote_models.json");
 process.env.H3_POD_PRESETS_DIR = path.join(T, "presets");
 process.env.H3_POD_REVIVE_POLL = "5";
-let CFG = { rgpu: { enabled: true, engine: { provider: "runpod", runpod: "pods" }, style_pods: {} }, hf: { token: "" }, civitai: { site: "civitai.red" } };
+let CFG = { rgpu: { enabled: true, engine: { provider: "runpod", runpod: "pods" }, split: { where: "remote" }, style_pods: {} }, hf: { token: "" }, civitai: { site: "civitai.red" } };
 const coreP = require.resolve("../lib/core");
 const fake = new Module(coreP); fake.filename = coreP; fake.loaded = true;
 fake.exports = { getConfig: () => CFG, setConfig: (c) => { CFG = c; }, BASE: ROOT, STYLES_DIR: path.join(T, "styles") };
@@ -43,10 +43,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const cm = RM.asComfyModels([e1, sub, RM.clean({ folder: "loras", name: "style.safetensors", group: "Krea LoRAs", url: "https://x.io/l" })]);
   check("asComfyModels: the shape Basic Settings' combos + LoRA rows read (categories.<cat>.files [{name, folder}]), marked remote, a note why this computer's are not listed",
     cm.remote && cm.source === "remote" && cm.categories.checkpoints.files[0].name === "SDXL/jugg.safetensors" && cm.categories.diffusion_models.files[0].name === "krea2_raw_fp8_scaled.safetensors"
-    && cm.categories.loras.files[0].folder === "Krea LoRAs" && cm.model_categories.includes("checkpoints") && /this computer's models are not listed/.test(cm.warnings[0]), cm.categories.loras);
+    && cm.categories.loras.files[0].group === "Krea LoRAs" && cm.categories.loras.files[0].folder === "Krea" && cm.model_categories.includes("checkpoints") && /this computer's models are not listed/.test(cm.warnings[0]), cm.categories.loras);
   check("byName: the entry behind a name a style / Override uses (its ComfyUI name, else its file name; only in the categories asked)", RM.byName([e1, sub], ["checkpoints"], "SDXL\\jugg.safetensors") === sub && RM.byName([e1, sub], ["checkpoints", "diffusion_models"], "x/krea2_raw_fp8_scaled.safetensors") === e1 && RM.byName([e1], ["loras"], "krea2_raw_fp8_scaled.safetensors") === null);
   const card = RM.cardOf(sub, require("../lib/modelCards").cardFrom);
-  check("cardOf: a Model manager card (key rm:<id>, its group as the folder tab, the ComfyUI name for Override, where the pod gets it)", card.key === "rm:" + sub.id && card.rm && card.kind === "model" && card.name === "SDXL/jugg.safetensors" && card.folder === "SDXL" && /Downloaded by the pod from its link/.test(card.description), card);
+  check("cardOf: a Model manager card (key rm:<id>, its group as the folder tab, the ComfyUI name for Override, where the pod gets it)", card.key === "rm:" + sub.id && card.rm && card.kind === "model" && card.name === "SDXL/jugg.safetensors" && card.folder === "SDXL" && card.group === "SDXL" && /Downloaded by the pod from its link/.test(card.description), card);
 
   /* ---- the file */
   check("remote mode = remote generation on with RunPod pods; local / serverless = not", RM.podsMode() === true);

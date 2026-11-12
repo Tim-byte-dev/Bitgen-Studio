@@ -7234,11 +7234,16 @@ function cmModelCats(styleId, allBoxId) {
    names; the Model field spans checkpoints AND diffusion_models, so its options
    are prefixed with the category — which is what makes "filter checkpoints by
    folder" a single dropdown rather than two. */
+/* 2.766.2 (Tim: "in remote mode ... clear the folders in folder filer in basic settings and show the model families instead
+   ... filter by family"): in remote mode (runpod/pods/remote_models.json - cmData.remote) a model's "folder" is its model
+   family, and one family is one choice across checkpoints / diffusion models */
+function cmFolderKey(f) { return cmData && cmData.remote ? "fam:" + f.folder : f.category + "/" + f.folder; }
+function cmAllOption() { return cmData && cmData.remote ? `<option value="${CM_ALL}">All model families</option>` : `<option value="${CM_ALL}">All folders</option>`; }
 function cmFolderOptions(cats) {
-  const multi = cats.length > 1;
+  const multi = cats.length > 1 && !(cmData && cmData.remote);
   const seen = new Map();
   for (const f of cmFiles(cats)) {
-    const key = f.category + "/" + f.folder;
+    const key = cmFolderKey(f);
     if (seen.has(key)) continue;
     const label = multi
       ? (f.folder ? `${f.category}/${f.folder}` : f.category)
@@ -7369,7 +7374,7 @@ function cmCombo(host, inp, cats, opts) {
   const paintFolders = () => {
     const FM = window.H3FolderMem, mem = FM && !fsel.dataset.picked ? FM.get(fkey) : null;
     const keep = mem != null ? mem : fsel.value;
-    fsel.innerHTML = `<option value="${CM_ALL}">All folders</option>`
+    fsel.innerHTML = cmAllOption()
       + cmFolderOptions(cats).map(f =>
           `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join("");
     // "All" is the default AND the fallback: a filter whose folder vanished
@@ -7385,7 +7390,7 @@ function cmCombo(host, inp, cats, opts) {
     const filter = fsel.value;
     let files = cmFiles(cats);
     if (filter !== CM_ALL)
-      files = files.filter(f => f.category + "/" + f.folder === filter);
+      files = files.filter(f => cmFolderKey(f) === filter);
     const multi = cats.length > 1;
     let html = `<option value="">${esc(o.blank || "— none —")}</option>`;
     html += files.map(f => {
@@ -7434,7 +7439,7 @@ function cmBrowse(cats, current, onPick, title) {
   $("cm_title").textContent = title || "Select a ComfyUI model";
   $("cm_find").value = "";
   const opts = cmFolderOptions(cats);
-  $("cm_folder").innerHTML = `<option value="${CM_ALL}">All folders</option>`
+  $("cm_folder").innerHTML = cmAllOption()
     + opts.map(f => `<option value="${esc(f.value)}">${esc(f.label)}</option>`).join("");
   // 2.559.0: the browser's folder filter is kept too (one per kind of model)
   const fm = window.H3FolderMem ? window.H3FolderMem.get("cmbrowse:" + cats.join(",")) : null;
@@ -7448,7 +7453,7 @@ function cmPaintList(current) {
   const q = $("cm_find").value.trim().toLowerCase();
   const filter = $("cm_folder").value;
   let files = cmFiles(cmPick.cats);
-  if (filter !== CM_ALL) files = files.filter(f => f.category + "/" + f.folder === filter);
+  if (filter !== CM_ALL) files = files.filter(f => cmFolderKey(f) === filter);
   if (q) files = files.filter(f => f.name.toLowerCase().includes(q));
   $("cm_hint").textContent = files.length
     ? `${files.length} file${files.length === 1 ? "" : "s"}`

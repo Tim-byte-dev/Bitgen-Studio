@@ -12,7 +12,7 @@ let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 700))); } };
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "hfupload766-"));
 process.env.H3_REMOTE_MODELS = path.join(T, "remote_models.json");
-let CFG = { rgpu: { enabled: true, engine: { provider: "runpod", runpod: "pods" } }, hf: { token: "hf_W" } };
+let CFG = { rgpu: { enabled: true, engine: { provider: "runpod", runpod: "pods" }, split: { where: "remote" } }, hf: { token: "hf_W" } };
 const coreP = require.resolve("../lib/core");
 const fake = new Module(coreP); fake.filename = coreP; fake.loaded = true;
 fake.exports = { getConfig: () => CFG, setConfig: (c) => { CFG = c; }, BASE: ROOT, STYLES_DIR: path.join(T, "styles") };

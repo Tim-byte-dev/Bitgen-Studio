@@ -122,18 +122,22 @@
     return post("/api/remotemodels/" + encodeURIComponent(id), {}, "DELETE").then(function (j) { if (j.error && say) say(j.error, "bad"); else if (say) say("✕ off the list (the pods keep their copy)", "ok"); return j; });
   }
   /* remote mode switched in Basic Settings: the page's model lists again */
-  var mode = null;
-  function watch() {
-    getj("/api/remotemodels/mode").then(function (j) {
+  var mode = null, wt = null;
+  /** 2.766.2: the mode now (force = read the lists again even if it looks the same) - Basic Settings' Local / Remote calls it */
+  function recheck(force) {
+    return getj("/api/remotemodels/mode").then(function (j) {
       var m = !!(j && j.pods_mode);
-      if (mode !== null && m !== mode) {
+      if (force || (mode !== null && m !== mode)) {
+        // local: this computer's folders in the folder filter; remote: the remote models, the folder filter = their families
         if (typeof root.loadComfyModels === "function") try { root.loadComfyModels(true); } catch (e) { /* fine */ }
         if (root.H3ModelMgr && root.H3ModelMgr.load) try { root.H3ModelMgr.load(); } catch (e) { /* fine */ }
         local = null;
       }
       mode = m;
-    }).catch(function () { /* the server is restarting */ }).then(function () { setTimeout(watch, 5000); });
+      return m;
+    }).catch(function () { return mode; });
   }
+  function watch() { clearTimeout(wt); recheck(false).then(function () { wt = setTimeout(watch, 5000); }); }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", watch); else watch();
-  root.H3RemoteModels = Object.assign({ bar: bar, send: send, del: del, mode: function () { return mode; } }, api);
+  root.H3RemoteModels = Object.assign({ bar: bar, send: send, del: del, recheck: recheck, mode: function () { return mode; } }, api);
 })(typeof window !== "undefined" ? window : globalThis);

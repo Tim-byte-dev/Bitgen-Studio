@@ -134,6 +134,12 @@
     return post("/api/gpusplit", b).then(function (v) {
       if (v.error) { $("gpuMsg").textContent = "✗ " + v.error; paint(); return v; }
       S.v = v; paint();
+      // 2.766.2 (Tim: "when local is selected in basic settings go to local mode ... in remote mode stop comfyi"): what the
+      // switch did (ComfyUI here started / stopped - lib/modeSwitch.js), and the page's model lists read again at once
+      if (v.mode_switch && v.mode_switch.changed) {
+        if (v.mode_switch.note) $("gpuMsg").textContent = v.mode_switch.note;
+        if (root.H3RemoteModels && root.H3RemoteModels.recheck) root.H3RemoteModels.recheck(true);
+      }
       // the page's own copy of ComfyUI's address follows (Settings ▸ Save sends it back - lib/remoteGpu.js guardComfy)
       root.fetch("/api/config").then(function (r) { return r.json(); }).then(function (c) {
         try { if (typeof cfg !== "undefined" && cfg && cfg.engine && c.engine) { cfg.engine.comfy = Object.assign({}, cfg.engine.comfy, { url: c.engine.comfy.url, autostart: c.engine.comfy.autostart }); } } catch (e) { /* fine */ }   // eslint-disable-line no-undef

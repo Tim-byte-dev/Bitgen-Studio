@@ -10,7 +10,7 @@ const P = require("../lib/podShortcuts");
 function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   app.get("/api/remotegen", wrap(() => ({ enabled: G.enabled(), shortcuts: P.list(), explore: P.EXPLORE, max: P.MAX })));
-  app.post("/api/remotegen/enabled", wrap((req) => { const on = (req.body || {}).on; return G.setEnabled(on === null ? null : !!on); }));
+  app.post("/api/remotegen/enabled", wrap(async (req) => { const MS = require("../lib/modeSwitch"), before = MS.modeOf(), on = (req.body || {}).on; const v = await G.setEnabled(on === null ? null : !!on); return Object.assign({}, v, { mode_switch: await MS.after(before) }); }));   // 2.766.2
   app.post("/api/remotegen/shortcuts", wrap((req) => ({ shortcuts: P.change(req.body || {}) })));
 }
 module.exports = { mount };

@@ -4989,6 +4989,14 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   Upscaler）、モデルファミリー - ファミリーの全ベースモデル（All Krea = Krea 2 + Flux.1 Krea、All Flux など）または 1 つだけ、
   Civitai 自身の一覧から - 並べ替え（評価順、ダウンロード数、いいね数、新しい順）と期間（全期間 … 今日）。変更するとすぐに再検索し、フィルターは保存されます。
 
+## 基本設定のローカル / リモートで全体が切り替わる (2.766.2)
+<!-- en: local-or-remote-in-basic-settings-switches-everything-over-2-766-2 ba005cdf9124 -->
+
+- **ローカル**（基本設定 ▸ GPU）：ローカルモード - モデル一覧とフォルダーフィルターに再びこのコンピューターのモデルフォルダーが表示され、このコンピューターの ComfyUI を確認し、動いていなければ起動します。その他は今までどおりです。
+- **リモート**（RunPod のポッド）：リモートモード - bitGen がこのコンピューターで起動した ComfyUI を停止します（自分で起動したものは開いたままにし、そう表示します）。モデル一覧には runpod/pods/remote_models.json のモデルが表示され、フォルダーフィルターにはフォルダーの代わりにモデルファミリー（Krea、Flux、Pony など）が表示されます - 選ぶとそのファミリーだけになります。Model manager のタブもファミリーになります。
+- 何が起きたかは選択肢の下に表示され（「Local mode - starting ComfyUI on this computer」、「Remote mode - ComfyUI on this computer
+  was stopped」）、ページの一覧はすぐに切り替わります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

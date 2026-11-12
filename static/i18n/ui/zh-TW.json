@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "eee9c823cbfd",
- "count": 9307,
+ "v": "2db83ee5a847",
+ "count": 9308,
  "patternCount": 1118,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -454,6 +454,7 @@
   "All layers on GPU": "所有層都在 GPU 上",
   "All layers on GPU is fastest; GPU + CPU/RAM keeps only N layers in VRAM and runs the rest from system RAM — slower, but a bigger model fits": "「所有層都在 GPU 上」最快；「GPU + CPU/記憶體」只在顯示記憶體中保留 N 層，其餘在系統記憶體中執行——較慢，但可容納更大的模型",
   "All missing": "全部缺失項",
+  "All model families": "所有模型系列",
   "All of AFTER DRAWING": "“繪製後”中的全部工具",
   "All of BODIES": "實體：全部",
   "All of BRIDGE": "“橋接”中的全部工具",
