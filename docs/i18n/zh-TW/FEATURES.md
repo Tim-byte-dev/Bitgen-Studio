@@ -403,6 +403,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Pod：檔案放在 ComfyUI 能看到的位置，舊版 ComfyUI 會被更新** — 檔案會放到 Pod 的 ComfyUI 讀取的資料夾（包括範本自己的模型資料夾，放錯位置的副本會被移動），缺少新版 ComfyUI 內建節點的 Pod 會在渲染前更新 ComfyUI（git pull、requirements、重新啟動）。 *Where:* 渲染的 Pod 備註；PODS。 *Since:* 2.766.3
 - **遠端模式下的 LLM、Vision LLM 和影片風格** — LLM 和 Vision LLM 各自可在本地、OpenRouter（在基本設定中即可搜尋並選擇模型；推理開啟，每輪都會傳回 reasoning_details）或 RunPod（你的 Pod 用 llama.cpp 運行同一個 GGUF，首次傳送提示時完成設定）上執行；選擇遠端後，所選影片風格的模型會立即送到其 Pod。 *Where:* 基本設定 ▸ GPU；設定 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
 - **遠端選項移到專用停靠窗，提示停靠窗顯示遠端模型清單** — 基本設定 ▸ GPU 只保留本地 / 遠端 / 兩者；遠端選項（伺服器、Pods、LLM / Vision LLM 的選擇、💲 RunPod）移到 ☁ Remote generation 停靠窗。遠端模式下，提示停靠窗的 LLM 和 Vision 清單顯示 OpenRouter 的免費模型（預設）、你的 Pod 的 GGUF 或 vLLM 端點的模型；選擇後即儲存，不會在本機載入任何模型。 *Where:* ☁ Remote generation 停靠窗；提示停靠窗 ▸ LLM / Vision。 *Since:* 2.768.0
+- **新 Pod 的 ComfyUI 自動更新，查詢缺失的檔案** — bitGen 建立的 Pod 在首次載入時會自動更新一次 ComfyUI（渲染會等待它；已是最新的 ComfyUI 保持執行）；下載後 ComfyUI 仍未列出的檔案會在 Pod 上查詢，並連結到它讀取的資料夾，或說明原因。 *Where:* PODS ▸ My pods；在 Pod 上渲染。 *Since:* 2.769.0
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
 

@@ -147,16 +147,19 @@
       });
     };
     // 2.767.0 (Tim: "can we update to the latest version of comfyui on the pod?"): ⬆ Update ComfyUI - how far, under the buttons
-    var cb = q("[data-pscomfy]"); if (cb) cb.onclick = function () {
+    var cb = q("[data-pscomfy]");
+    var tick = function () {
+      getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) {
+        say(row, p.id, (j && j.note) ? (j.running ? "⬆ " : j.ok ? "✓ " : "✗ ") + (j.auto ? "new pod: " : "") + j.note : "");
+        if (j && j.running) setTimeout(tick, 3000); else if (cb) cb.disabled = false;
+      }).catch(function () { setTimeout(tick, 5000); });
+    };
+    if (cb) cb.onclick = function () {
       cb.disabled = true; say(row, p.id, "updating ComfyUI on the pod…");
-      var tick = function () {
-        getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) {
-          say(row, p.id, (j && j.note) ? (j.running ? "⬆ " : j.ok ? "✓ " : "✗ ") + j.note : "");
-          if (j && j.running) setTimeout(tick, 3000); else cb.disabled = false;
-        }).catch(function () { setTimeout(tick, 5000); });
-      };
       post("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update", { port: port || 0 }).then(function (r) { if (r.error) { cb.disabled = false; say(row, p.id, r.error); return; } tick(); });
     };
+    // 2.769.0 (Tim: "update comfy automatically when the pod is created as well"): a new pod's own update shows here too
+    if (cb && !cb.dataset.asked) { cb.dataset.asked = "1"; getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) { if (j && j.running) { cb.disabled = true; tick(); } }).catch(function () { /* fine */ }); }
     if (((e.prep && e.prep.running) || (e.nodes && e.nodes.running)) && !e.watching) watchPrep(p.id, repaint);
   }
   /** the making-ready line, until it is done */

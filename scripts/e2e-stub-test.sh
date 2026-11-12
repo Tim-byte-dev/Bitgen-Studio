@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.769.0 (Tim: "update comfy automatically when the pod is created as well" + his log: "… waiting for the pod's ComfyUI to list the new files / [pod] qwen2_1 cannot render on the pod yet - these files are not on it: …")
+node scripts/test-comfyauto769-live.js > /tmp/comfyauto769.log 2>&1 \
+  && ok "2.769.0 the pod's Python for real: a ComfyUI already on the latest code is left running (no pip, no restart), newer code than the running one is restarted; a file ComfyUI does not list is found on the pod and linked into the folder it reads, a .part / a missing one said" \
+  || { bad "2.769.0 new pod's ComfyUI update / file search"; grep -a "^FAIL" -A1 /tmp/comfyauto769.log | head -12; }
+
 # ---- 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker, when in remote mode clear the llm and vllm dropdown lists in prompt docker add the list of free llm and vl models from openrouter(default) or the selected host in our prompt llm and vllm dropdowns." + his log: "✗ not updated: installing what the new ComfyUI needs (pip) - the pod's log ends: Reset branch 'master'")
 node scripts/test-remotellm768.js > /tmp/remotellm768.log 2>&1 \
   && ok "2.768.0 remote mode's LLM / Vision lists (stand-in OpenRouter): OpenRouter's free models by default (no key needed to list), the pod's GGUFs on RunPod ▸ Pods, the vLLM endpoint's model on Serverless; the pick saved and used by the LLM calls; Local = this computer's lists" \

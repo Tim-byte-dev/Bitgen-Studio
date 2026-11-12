@@ -5034,6 +5034,15 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   - **RunPod Serverless** - vLLM エンドポイントのモデル。モデルを選ぶと保存されます。このコンピューターでは何も読み込みません。ローカルに戻すと、一覧はこのコンピューターのモデルに戻ります（設定 ▸ LLM にはいつも表示されます）。
 - ポッドの **⬆ Update ComfyUI** は、ポッドの ComfyUI が使っているのと同じ Python で ComfyUI の必要なパッケージをインストールするようになり、途中で失敗したときは本当のエラーを表示します。
 
+## 新しいポッドの ComfyUI を自動で更新、見つからないファイルを探す (2.769.0)
+<!-- en: a-new-pod-s-comfyui-is-updated-automatically-missing-files-are-looked-for-2-769- 3372ac8da65e -->
+
+- **bitGen が作るポッド**（PODS ▸ Create pod、またはスタイルが求めるポッド）は、最初に読み込まれたときに **ComfyUI を一度だけ自動で更新**します - ⬆ Update ComfyUI と同じです。新しいポッドに送ったレンダーはそれを待ち（ジョブの行に「updating ComfyUI
+  on the new pod first」と表示）、PODS ▸ My pods のポッドにも表示されます。すでに最新の ComfyUI はそのまま動かします -
+  再インストールも再起動もしません。オフにするには、設定ファイルの `rgpu` に `"pod_comfy_auto": false` を書きます。
+- **⬆ Update ComfyUI** は ComfyUI の必要なパッケージをバージョンごとに一度だけインストールし、動いているものよりコードが新しいときだけ ComfyUI を再起動します。
+- **ダウンロード後に出てこないファイル:** ポッドの ComfyUI がまだファイルを一覧に出さないとき、bitGen はポッド内でそれを探します。ComfyUI が読むフォルダーの外で見つかったファイルは、正しいフォルダーにリンクします。それ以外はジョブの行に理由を表示します: 途中までしかダウンロードされていない（ダウンロードが止まった）、ポッドのどこにもない、正しいフォルダーにあるのに一覧に出ない、またはポッドの ComfyUI がモデルやノードの一覧に答えなかった。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

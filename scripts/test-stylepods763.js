@@ -218,6 +218,7 @@ srv.listen(0, "127.0.0.1", async () => {
   // the style itself as a file (the ask box reads its name)
   let savedId = ""; try { savedId = S.save(path.join(TMP, "styles"), Object.assign({}, STYLE)).id; } catch (e) { console.log("note: style not saved - " + e.message); }
   const job = () => ({ mode: "image", style: Object.assign({}, STYLE) });
+  CFG.rgpu.pod_comfy_auto = false;   // 2.769.0: a new pod's ComfyUI update (lib/podComfyUpdate.js auto) is test-comfyauto769.js's - the stand-in pod is no git checkout
   const run = async (lim) => { let r; for (let i = 0; i < (lim || 400); i++) { r = SPl.gate(job()); if (!r || !r.wait || r.ask) return r; await sleep(120); } return r; };
   try {
     // no pod for the style: the job waits for the question

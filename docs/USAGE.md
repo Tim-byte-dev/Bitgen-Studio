@@ -8672,6 +8672,19 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **⬆ Update ComfyUI** on a pod now installs ComfyUI's requirements with the same Python the pod's ComfyUI runs with, and
   says the real error if a step fails.
 
+## A new pod's ComfyUI is updated automatically; missing files are looked for (2.769.0)
+
+- **A pod bitGen makes** (PODS ▸ Create pod, or the pod a style asks for) has its **ComfyUI updated once, automatically**,
+  when it first loads - the same as ⬆ Update ComfyUI. A render sent to the new pod waits for it (the job's line says
+  "updating ComfyUI on the new pod first"), and PODS ▸ My pods shows it on the pod. A ComfyUI that is already the latest is
+  left running - no reinstall, no restart. To turn this off, set `"pod_comfy_auto": false` under `rgpu` in the config.
+- **⬆ Update ComfyUI** installs ComfyUI's requirements once per version, and restarts ComfyUI only when its code is newer
+  than the one running.
+- **Files that do not show up after a download:** when the pod's ComfyUI still does not list a file, bitGen looks for it on
+  the pod. A file it finds outside the folders ComfyUI reads is linked into the right folder. Otherwise the job's line says
+  why: only partly downloaded (the download stopped), not anywhere on the pod, in the right folder but not listed, or the
+  pod's ComfyUI did not answer its model or node lists.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

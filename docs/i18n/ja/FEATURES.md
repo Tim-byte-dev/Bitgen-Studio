@@ -403,6 +403,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **ポッド：ComfyUI が見える場所にファイル、古い ComfyUI を更新** — ファイルはポッドの ComfyUI が読むフォルダーに置かれ（テンプレート独自のモデルフォルダーも、間違った場所のコピーは移動）、新しい ComfyUI に組み込まれたノードがないポッドは、レンダーの前に ComfyUI を更新します（git pull、requirements、再起動）。 *Where:* レンダーのポッドメモ、PODS。 *Since:* 2.766.3
 - **リモートモードの LLM、Vision LLM、動画スタイル** — LLM と Vision LLM はそれぞれローカル、OpenRouter（基本設定で検索できるモデル一覧。推論はオン、毎回 reasoning_details を返します）、RunPod（ポッドで同じ GGUF を llama.cpp で実行。最初にプロンプトを送ったときに準備）で動かせます。選んだ動画スタイルのモデルは、リモートを選ぶとすぐにポッドへ送られます。 *Where:* 基本設定 ▸ GPU、設定 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
 - **リモート設定は専用ドッカーへ、プロンプトドッカーにはリモートのモデル一覧** — 基本設定 ▸ GPU にはローカル / リモート / 両方だけが残り、リモート用の設定（サーバー、Pods、LLM / Vision LLM の選択、💲 RunPod）は ☁ Remote generation ドッカーに移りました。リモートモードでは、プロンプトドッカーの LLM と Vision の一覧に OpenRouter の無料モデル（既定）、ポッドの GGUF、または vLLM エンドポイントのモデルが表示されます。選ぶと保存され、このコンピューターでは何も読み込みません。 *Where:* ☁ Remote generation ドッカー、プロンプトドッカー ▸ LLM / Vision。 *Since:* 2.768.0
+- **新しいポッドの ComfyUI を自動更新、見つからないファイルを探す** — bitGen が作ったポッドは、最初に読み込まれたときに ComfyUI を一度だけ更新します（レンダーはそれを待ちます。最新の ComfyUI はそのまま動かします）。ダウンロード後に ComfyUI が一覧に出さないファイルはポッド内で探し、ComfyUI が読むフォルダーにリンクするか、理由を表示します。 *Where:* PODS ▸ My pods、ポッドでのレンダー。 *Since:* 2.769.0
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
 

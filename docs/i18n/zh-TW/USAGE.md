@@ -5269,6 +5269,15 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   - **RunPod Serverless** - vLLM 端點的模型。選擇模型後即儲存，不會在本機載入任何內容。切換回本地後，清單會再次顯示本機的模型（設定 ▸ LLM 始終列出它們）。
 - Pod 上的 **⬆ Update ComfyUI** 現在用與 Pod 上 ComfyUI 相同的 Python 安裝 ComfyUI 所需的軟體包，某一步失敗時會顯示真正的錯誤。
 
+## 新 Pod 的 ComfyUI 自動更新，查詢缺失的檔案 (2.769.0)
+<!-- en: a-new-pod-s-comfyui-is-updated-automatically-missing-files-are-looked-for-2-769- 3372ac8da65e -->
+
+- **bitGen 建立的 Pod**（PODS ▸ Create pod，或某個風格需要的 Pod）在首次載入時會**自動更新一次 ComfyUI** - 與
+  ⬆ Update ComfyUI 相同。傳送到新 Pod 的渲染會等待它（任務行顯示「updating ComfyUI on the new pod first」），
+  PODS ▸ My pods 中的該 Pod 上也會顯示。已是最新的 ComfyUI 保持執行 - 不重新安裝，也不重新啟動。要關閉此功能，在配置的 `rgpu` 下設定 `"pod_comfy_auto": false`。
+- **⬆ Update ComfyUI** 每個版本只安裝一次 ComfyUI 所需的軟體包，只有在程式碼比正在執行的更新時才重新啟動 ComfyUI。
+- **下載後沒有出現的檔案：** 當 Pod 上的 ComfyUI 仍未列出某個檔案時，bitGen 會在 Pod 上查詢它。在 ComfyUI 讀取的資料夾之外找到的檔案會被連結到正確的資料夾。否則任務行會說明原因：只下載了一部分（下載已停止）、Pod 上任何地方都沒有、在正確的資料夾中但未被列出，或 Pod 上的 ComfyUI 沒有返回其模型或節點清單。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
