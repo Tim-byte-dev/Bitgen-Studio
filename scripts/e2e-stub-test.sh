@@ -13146,6 +13146,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui775-ui.js > /tmp/ui775ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui776-ui.js > /tmp/ui776ui.log 2>&1 \
   && ok "2.776.0 browser test: the Remote generation docker in four sections (servers, Generation Image / Video / Music, Language models, Audio), each type Local / Remote in one column, saved per type, the theme's border + background - or SKIP without playwright" \
   || { bad "2.776.0 remote types browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui776ui.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui777-ui.js > /tmp/ui777ui.log 2>&1 \
+  && ok "2.777.0 browser test: Basic Settings ▸ Use model over the checkpoint / video model and Use temporary LoRAs over each LoRA list - unticked leaves the model / the LoRAs out of the request (Override's other settings still go), saved and kept after a reload; the pod docker's ⬆ buttons gone - or SKIP without playwright" \
+  || { bad "2.777.0 use model / LoRAs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui777ui.log | head -14; }
 node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
   && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
   || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }

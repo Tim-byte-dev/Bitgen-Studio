@@ -18,6 +18,7 @@
 
   function on() { var el = $("ovrStyle"); return el ? el.checked : true; }
   function loras() {
+    if (window.H3OvrUse && !H3OvrUse.loras("video")) return [];   // 2.777.0: Use temporary LoRAs off
     try { return typeof tempLoras === "function" ? tempLoras("video") : []; } catch (e) { return []; }
   }
   function collect() {
@@ -27,7 +28,7 @@
       steps: st ? parseInt(st.value, 10) || 0 : 0,
       cfg: cf && cf.value !== "" ? parseFloat(cf.value) : null,
       seed: sd && sd.value !== "" ? parseInt(sd.value, 10) : -1,
-      model: md ? md.value.trim() : "",
+      model: md && !(window.H3OvrUse && !H3OvrUse.model("video")) ? md.value.trim() : "",   // 2.777.0: Use model off = the style's own
       loras: on() ? loras() : [],
     };
   }

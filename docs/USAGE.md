@@ -8870,6 +8870,17 @@ RunPod pod, like pictures, video and songs.
   (`--rt-sec-bg`, `--rt-sec-border`, `--rt-sec-radius`, `--rt-sec-head`). 🖌 edit theme mode styles a section like any
   other element.
 
+## Use model and Use temporary LoRAs (2.777.0)
+
+With **Override style** on, Basic Settings has two new ticks for pictures and two for video:
+
+- **Use model** sits above the Checkpoint (pictures) and the Model (video). Ticked, the model you picked replaces the style's. Unticked, the style's own model renders, and Override's other settings (size, steps, CFG, seed) still apply. Your pick is kept for next time.
+- **Use temporary LoRAs** sits above each Temporary LoRAs list. Ticked, those LoRAs are added to whichever model renders, the style's or the override. Unticked, none are added, and the list is kept.
+
+So one style can render with its own model plus your LoRAs, with another model and no LoRAs, or with both. Both ticks are on by default, which works as before. An unticked field is dimmed.
+
+The pod docker no longer has the **⬆ Nodes its styles need** and **⬆ Update ComfyUI** buttons. bitGen does both when it sets up a pod, and the pod's activity line shows how far it has got.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

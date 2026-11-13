@@ -555,7 +555,7 @@ function queueScene(project, n, opts) {
   // (LoraLoaderModelOnly chain, "lora N: <path> @ <w>" in the job log).
   // The style FILE never changes; remove them in Basic Settings and the
   // next render is clean.
-  const extraV = tempLoras.read(core.projDir(project || core.getProject()), "video");
+  const extraV = require("../lib/basicUse").loras("video") ? tempLoras.read(core.projDir(project || core.getProject()), "video") : [];   // 2.777.0: Use temporary LoRAs
   const styled = extraV.length
     ? { ...style, loras: tempLoras.merge(style.loras, extraV) } : style;
   const cast = chars.cast(project);        // 2.216.0: the actors IN the scene
@@ -1124,7 +1124,7 @@ function queueRefScene(project, st, r) {
   if (!style) return { status: 400, error:
     "the " + flow + " video style is missing - restore styles/video/"
     + flow + ".json from the delivery zip" + (flow === extendVideo.FAST_STYLE ? " (or Settings ▸ Add-ons ▸ FastH3 Omni ▸ Install puts it back)" : "") };
-  const extraV = tempLoras.read(core.projDir(project || core.getProject()), "video");
+  const extraV = require("../lib/basicUse").loras("video") ? tempLoras.read(core.projDir(project || core.getProject()), "video") : [];   // 2.777.0: Use temporary LoRAs
   const styled = extraV.length
     ? { ...style, loras: tempLoras.merge(style.loras, extraV) } : style;
   const notes = [];
@@ -1259,7 +1259,7 @@ function queueLtxScene(project, st, r) {
   const style = all.find((x) => x.id === (rsRec || {}).video_style_id) || all.find((x) => x.name === "LTX 2.5") || all[0];
   if (!style) return { status: 400, error: "no LTX 2.5 video style - restart the app to seed \"LTX 2.5\"" };
   // 2.409.0: Override style ON - Basic Settings' temporary video LoRAs ride on LTX scenes too (H3 scenes always had them)
-  const extraV = rsRec && rsRec.basic_override ? tempLoras.read(core.projDir(project || core.getProject()), "video") : [];
+  const extraV = rsRec && rsRec.basic_override && require("../lib/basicUse").loras("video") ? tempLoras.read(core.projDir(project || core.getProject()), "video") : [];
   const rs = renderSettings.jobOverrides(rsRec, { width: d0.width, height: d0.height,
     style: extraV.length ? { ...style, loras: tempLoras.merge(style.loras, extraV) } : style });
   const first = sceneRefs.slotFor(project, r, "first"), last = sceneRefs.slotFor(project, r, "last");

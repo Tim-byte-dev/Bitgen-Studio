@@ -40,7 +40,7 @@ check("wiring: a pod that cannot be had FAILS the job with the reason (cancelled
 check("wiring (2.764.2): a new pod does NOT get every custom node pack any more; a style's missing classes come from this computer's own folders (podPrep localFolders - only those); My pods ▸ ⬆ Nodes its styles need (POST /api/stylepods/nodes/:pod -> podPrep nodesOnly)",
   !/nodesTodo\(made\.pod\.id, true\)/.test(SPs) && !/SP\.nodesTodo\(p\.id, true\)/.test(fs.readFileSync(path.join(ROOT, "lib", "pods.js"), "utf8")) && !/require\("\.\/podNodes"\)\.mirror\(id, port/.test(SPs)
   && /prepare\(pod, port, sts, \{ nodesOnly: true \}\)/.test(RT) && /if \(nodesOnly\) \{/.test(PPs)
-  && /localFolders: \(classes\) => require\("\.\/podNodes"\)\.foldersFor\(classes\)/.test(PPs) && /data-psnodes/.test(PSU) && /\/api\/stylepods\/nodes\//.test(PSU) && /app\.post\("\/api\/stylepods\/nodes\/:pod"/.test(RT));
+  && /localFolders: \(classes\) => require\("\.\/podNodes"\)\.foldersFor\(classes\)/.test(PPs) && !/data-psnodes/.test(PSU) /* 2.777.0: the button gone */ && /app\.post\("\/api\/stylepods\/nodes\/:pod"/.test(RT));
 
 /* ---------------- live: this computer's ComfyUI with four packs + a switched-off one */
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), "podnodes7631-"));

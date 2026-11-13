@@ -27,7 +27,7 @@
     var ovr = false;
     try { ovr = root.H3Basic && typeof root.H3Basic.on === "function" ? !!root.H3Basic.on() : !!((document.getElementById("ovrStyle") || {}).checked); } catch (e) { ovr = false; }
     var rows = [];
-    if (ovr) { try { if (typeof root.tempLoras === "function") rows = root.tempLoras(k).map(function (l) { return l.path; }); } catch (e) { rows = []; } }
+    if (ovr && !(root.H3OvrUse && !root.H3OvrUse.loras(k))) { try { if (typeof root.tempLoras === "function") rows = root.tempLoras(k).map(function (l) { return l.path; }); } catch (e) { rows = []; } }
     return { lora_override: ovr, loras: merge(rows) };
   }
   function paths(mode) {

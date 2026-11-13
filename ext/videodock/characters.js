@@ -1677,7 +1677,7 @@
       out.steps = stp ? parseInt(stp.value, 10) || 0 : 0;
       out.cfg = cf && cf.value !== "" ? parseFloat(cf.value) : null;
       var md = document.getElementById("vidModel");                    // 2.409.0: Basic Settings' model
-      out.model = md ? md.value.trim() : "";
+      out.model = md && !(window.H3OvrUse && !H3OvrUse.model("video")) ? md.value.trim() : "";   // 2.777.0: Use model
     }
     return Object.keys(out).length ? out : null;
   }

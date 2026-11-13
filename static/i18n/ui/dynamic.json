@@ -1300,207 +1300,207 @@
   },
   {
    "s": "Text encoder",
-   "src": "index.html:9722"
+   "src": "index.html:9725"
   },
   {
    "s": "blank = the workflow's own",
-   "src": "index.html:9723"
+   "src": "index.html:9726"
   },
   {
    "s": "Checkpoint",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "Steps (blank = the workflow's)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "cfg (blank = the workflow's)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "Load as (8-bit halves a bf16/fp16 model's VRAM)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "the workflow's own —",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "Full precision (as stored)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "8-bit fp8 (e4m3fn) — half the VRAM",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "8-bit fp8 fast (RTX 40/50 fp8 math)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "8-bit fp8 (e5m2)",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "Remove this phase",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "wf",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "How ComfyUI loads this checkpoint. 8-bit (fp8) halves a bf16/fp16 model in VRAM - e.g. a 34 GB bf16 model loads as about 17 GB and fits a 32 GB card. A file that is already int8/fp8/fp4/GGUF is left as it is",
-   "src": "index.html:9748"
+   "src": "index.html:9751"
   },
   {
    "s": "Pick the checkpoint (ComfyUI models folder)",
-   "src": "index.html:9767"
+   "src": "index.html:9770"
   },
   {
    "s": "new video style",
-   "src": "index.html:9806"
+   "src": "index.html:9809"
   },
   {
    "s": "new video style —",
-   "src": "index.html:9843"
+   "src": "index.html:9846"
   },
   {
    "s": "template —",
-   "src": "index.html:9850"
+   "src": "index.html:9853"
   },
   {
    "s": "give the style a name",
-   "src": "index.html:9889"
+   "src": "index.html:9892"
   },
   {
    "s": "a project name is required",
-   "src": "index.html:9927"
+   "src": "index.html:9930"
   },
   {
    "s": "could not create the project",
-   "src": "index.html:9938"
+   "src": "index.html:9941"
   },
   {
    "s": "right-click: ↺ Reset pin",
-   "src": "index.html:10447"
+   "src": "index.html:10450"
   },
   {
    "s": "Restore (Esc)",
-   "src": "index.html:10948"
+   "src": "index.html:10951"
   },
   {
    "s": "Diffusion models",
-   "src": "index.html:11046"
-  },
-  {
-   "s": "Checkpoints",
-   "src": "index.html:11046"
-  },
-  {
-   "s": "Text encoders",
-   "src": "index.html:11047"
-  },
-  {
-   "s": "CLIP vision",
-   "src": "index.html:11048"
-  },
-  {
-   "s": "Embeddings",
    "src": "index.html:11049"
   },
   {
-   "s": "Upscale models",
+   "s": "Checkpoints",
+   "src": "index.html:11049"
+  },
+  {
+   "s": "Text encoders",
    "src": "index.html:11050"
+  },
+  {
+   "s": "CLIP vision",
+   "src": "index.html:11051"
+  },
+  {
+   "s": "Embeddings",
+   "src": "index.html:11052"
+  },
+  {
+   "s": "Upscale models",
+   "src": "index.html:11053"
   },
   {
    "s": "Configs",
-   "src": "index.html:11050"
+   "src": "index.html:11053"
   },
   {
    "s": "folder, or a name under the base folder",
-   "src": "index.html:11052"
+   "src": "index.html:11055"
   },
   {
    "s": "Select folder",
-   "src": "index.html:11052"
+   "src": "index.html:11055"
   },
   {
    "s": "Select Folder",
-   "src": "index.html:11076"
-  },
-  {
-   "s": "the folder dialog could not open — type the path",
    "src": "index.html:11079"
   },
   {
-   "s": "pick the base folder first",
-   "src": "index.html:11084"
+   "s": "the folder dialog could not open — type the path",
+   "src": "index.html:11082"
   },
   {
-   "s": "standard folders filled — 💾 to write them",
+   "s": "pick the base folder first",
    "src": "index.html:11087"
   },
   {
+   "s": "standard folders filled — 💾 to write them",
+   "src": "index.html:11090"
+  },
+  {
    "s": "writing",
-   "src": "index.html:11092"
+   "src": "index.html:11095"
   },
   {
    "s": "refused",
-   "src": "index.html:11097"
+   "src": "index.html:11100"
   },
   {
    "s": "written: nothing new · restart ComfyUI to pick the folders up",
-   "src": "index.html:11098"
+   "src": "index.html:11101"
   },
   {
    "s": "new graph —",
-   "src": "index.html:11141"
+   "src": "index.html:11144"
   },
   {
    "s": "pick a workflow in comfy_workflows/ —",
-   "src": "index.html:11148"
+   "src": "index.html:11151"
   },
   {
    "s": "No inputs yet. Press ＋, or ⊕ on a value on the right to make one already wired to it",
-   "src": "index.html:11165"
+   "src": "index.html:11168"
   },
   {
    "s": "label",
-   "src": "index.html:11172"
+   "src": "index.html:11175"
   },
   {
    "s": "Remove this input",
-   "src": "index.html:11172"
+   "src": "index.html:11175"
   },
   {
    "s": "Drag to a value on the right",
-   "src": "index.html:11172"
+   "src": "index.html:11175"
   },
   {
    "s": "not connected — drag from the dot",
-   "src": "index.html:11172"
+   "src": "index.html:11175"
   },
   {
    "s": "options, comma separated",
-   "src": "index.html:11202"
+   "src": "index.html:11205"
   },
   {
    "s": "Make an input for this value and connect it",
-   "src": "index.html:11241"
+   "src": "index.html:11244"
   },
   {
    "s": "no workflow loaded",
-   "src": "index.html:11372"
+   "src": "index.html:11375"
   },
   {
    "s": "pick a graph —",
-   "src": "index.html:11449"
+   "src": "index.html:11452"
   },
   {
    "s": "none wired yet (Settings → ComfyUI → Graphs) —",
-   "src": "index.html:11449"
+   "src": "index.html:11452"
   },
   {
    "s": "Version",
@@ -1808,7 +1808,7 @@
   },
   {
    "s": "Off: each style's own settings",
-   "src": "static/basicset.js:38"
+   "src": "static/basicset.js:39"
   },
   {
    "s": "Save the project as .bgp",
@@ -5323,6 +5323,22 @@
    "src": "static/openrouter.js:152"
   },
   {
+   "s": "Use model",
+   "src": "static/ovruse.js:16"
+  },
+  {
+   "s": "Use temporary LoRAs",
+   "src": "static/ovruse.js:16"
+  },
+  {
+   "s": "Ticked: this model replaces the style's while Override style is on. Unticked: the style's own model renders - the other Override settings still apply",
+   "src": "static/ovruse.js:45"
+  },
+  {
+   "s": "Ticked: these LoRAs are added to whichever model renders (the style's or the override). Unticked: none are added - the list is kept",
+   "src": "static/ovruse.js:45"
+  },
+  {
    "s": "Picture style",
    "src": "static/palette.js:148"
   },
@@ -5873,14 +5889,6 @@
   {
    "s": "no styles of its own yet",
    "src": "static/podsetup.js:96"
-  },
-  {
-   "s": "Nodes its styles need",
-   "src": "static/podsetup.js:97"
-  },
-  {
-   "s": "Update ComfyUI on this pod to its latest version (git pull, its requirements, ComfyUI restarted) - for a style that needs a node built into a newer ComfyUI (2.767.0)",
-   "src": "static/podsetup.js:97"
   },
   {
    "s": "Transfers",
@@ -23598,87 +23606,87 @@
   },
   {
    "p": "phase {0}1",
-   "src": "index.html:9774"
+   "src": "index.html:9777"
   },
   {
    "p": "{0} · {1} · {2} phases",
-   "src": "index.html:9843"
+   "src": "index.html:9846"
   },
   {
    "p": "saved \"{0}\" → styles/video/",
-   "src": "index.html:9897"
+   "src": "index.html:9900"
   },
   {
    "p": "preview · {0}",
-   "src": "index.html:10069"
+   "src": "index.html:10072"
   },
   {
    "p": "{0}s (from {1}s)",
-   "src": "index.html:10200"
+   "src": "index.html:10203"
   },
   {
    "p": "{0} · right-click: ↺ Reset pin",
-   "src": "index.html:10447"
+   "src": "index.html:10450"
   },
   {
    "p": "{0} dock",
-   "src": "index.html:10848"
+   "src": "index.html:10851"
   },
   {
    "p": "{0} in prompt",
-   "src": "index.html:10905"
+   "src": "index.html:10908"
   },
   {
    "p": "{0} tok",
-   "src": "index.html:10910"
+   "src": "index.html:10913"
   },
   {
    "p": "Select the {0} folder",
-   "src": "index.html:11052"
+   "src": "index.html:11055"
   },
   {
    "p": "written: {0} · already in the file: {1} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11098"
+   "src": "index.html:11101"
   },
   {
    "p": "written: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11098"
+   "src": "index.html:11101"
   },
   {
    "p": "written: nothing new · already in the file: {0} · restart ComfyUI to pick the folders up",
-   "src": "index.html:11098"
+   "src": "index.html:11101"
   },
   {
    "p": "{0} — {1} ({2} nodes)",
-   "src": "index.html:11150"
+   "src": "index.html:11153"
   },
   {
    "p": "from the reference dock ({0})",
-   "src": "index.html:11241"
+   "src": "index.html:11244"
   },
   {
    "p": "API workflow — {0} nodes, {1} value(s) you can wire",
-   "src": "index.html:11297"
+   "src": "index.html:11300"
   },
   {
    "p": "{0} workflow — {1}",
-   "src": "index.html:11297"
+   "src": "index.html:11300"
   },
   {
    "p": "saved as {0}",
-   "src": "index.html:11406"
+   "src": "index.html:11409"
   },
   {
    "p": "{0} input(s) → {1}",
-   "src": "index.html:11470"
+   "src": "index.html:11473"
   },
   {
    "p": "{0} in / {1} out",
-   "src": "index.html:11598"
+   "src": "index.html:11601"
   },
   {
    "p": "{0} LLM call(s) since the app started",
-   "src": "index.html:11599"
+   "src": "index.html:11602"
   },
   {
    "p": "The credits could not be read: {0}",
@@ -23738,51 +23746,51 @@
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · seed {2} · {3} · +{4} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · seed {2} · {3}",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · seed {2} · the style's model · +{3} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · seed {2} · the style's model",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · random seed · {2} · +{3} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · random seed · {2}",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · random seed · the style's model · +{2} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg {1} · random seed · the style's model",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg its own · seed {1} · {2} · +{3} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg its own · seed {1} · {2}",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg its own · seed {1} · the style's model · +{2} LoRA(s)",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "Every video model (MiniMax H3, Wan, LTX 2.3 / 2.5): {0} steps · cfg its own · seed {1} · the style's model",
-   "src": "static/basicset.js:40"
+   "src": "static/basicset.js:41"
   },
   {
    "p": "{0} file(s) in \"{1}\" ({2}), {3} of them media ({4})",
@@ -24527,6 +24535,10 @@
   {
    "p": "{0} models · {1} free",
    "src": "static/openrouter.js:108"
+  },
+  {
+   "p": "Not used - tick {0} above",
+   "src": "static/ovruse.js:38"
   },
   {
    "p": "{0}+ · ↑ ↓ pick · Enter runs · Esc closes",

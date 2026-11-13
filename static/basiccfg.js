@@ -11,7 +11,9 @@
   "use strict";
   // 2.745.0: + #sec-gpu - Basic Settings ▸ GPU is saved by itself (lib/gpuSplit.js); put back with a style it re-routed the
   // renders (its boxes fired change - every page load ticked LLM / Image again)
-  const SKIP = "#bsStyleCard, #gsControls, #ovrSummary, #sec-gpu";
+  // 2.777.0: + .ovrUse - Basic Settings ▸ Use model / Use temporary LoRAs are saved by themselves (lib/basicUse.js); put
+  // back from basic.cfg they undid an untick a moment later
+  const SKIP = "#bsStyleCard, #gsControls, #ovrSummary, #sec-gpu, .ovrUse";
   /** the fields of Basic Settings that are kept: inputs / selects / textareas with an id, not buttons / files, not in SKIP */
   function keepable(el) {
     if (!el || !el.id || !/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName || "")) return false;

@@ -29,7 +29,7 @@ const CU = require("../lib/podComfyUpdate");
   const code = CU.updateCode("/workspace/ComfyUI", 8188);
   check("updateCode: a pull that cannot fast-forward -> ComfyUI's own master (checkout --force -B master origin/master); the versions before / after", /'git', 'checkout', '--force', '-B', 'master', 'origin\/master'/.test(code) && /S\['from'\] = ver\(\)/.test(code) && /S\['to'\] = ver\(\)/.test(code) && /comfyui_version\.py/.test(code));
   const RR = fs.readFileSync(path.join(ROOT, "routes", "remotePrep.js"), "utf8"), PS = fs.readFileSync(path.join(ROOT, "static", "podsetup.js"), "utf8");
-  check("PODS ▸ My pods ▸ ⬆ Update ComfyUI: POST / GET /api/pods/:id/comfy-update, the button shows how far", /app\.post\("\/api\/pods\/:id\/comfy-update"/.test(RR) && /app\.get\("\/api\/pods\/:id\/comfy-update"/.test(RR) && /data-pscomfy/.test(PS) && /⬆ Update ComfyUI/.test(PS) && /\/comfy-update"\)\.then\(function \(j\)/.test(PS));
+  check("POST / GET /api/pods/:id/comfy-update kept (the pod's setup uses it); 2.777.0: no ⬆ Update ComfyUI button in My pods", /app\.post\("\/api\/pods\/:id\/comfy-update"/.test(RR) && /app\.get\("\/api\/pods\/:id\/comfy-update"/.test(RR) && !/data-pscomfy/.test(PS) /* 2.777.0: the button gone - the pod's setup updates ComfyUI by itself */);
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

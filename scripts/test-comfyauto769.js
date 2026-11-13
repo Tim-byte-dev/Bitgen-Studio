@@ -80,7 +80,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   check("locateRead: the kernel's BITGEN_LOCATE line; anything else = null", PP.locateRead("noise\nBITGEN_LOCATE {\"a\": {\"hits\": []}}\n").a.hits.length === 0 && PP.locateRead("Traceback …") === null);
   const ps = fs.readFileSync(path.join(ROOT, "static", "podsetup.js"), "utf8"), rg = fs.readFileSync(path.join(ROOT, "lib", "remoteGpu.js"), "utf8");
   check("PODS ▸ My pods shows a new pod's own update (asked once per row); the docker watching a pod load starts it when it first loads",
-    /cb\.dataset\.asked = "1"; getj\("\/api\/pods\/" \+ encodeURIComponent\(p\.id\) \+ "\/comfy-update"\)/.test(ps) && /\(j\.auto \? "new pod: " : ""\)/.test(ps) && /require\("\.\/podComfyUpdate"\)\.auto\(m\.id, port \|\| 0\)/.test(rg));
+    /row\.dataset\.cuAsked = "1"; getj\("\/api\/pods\/" \+ encodeURIComponent\(p\.id\) \+ "\/comfy-update"\)/.test(ps) && /\(j\.auto \? "new pod: " : ""\)/.test(ps) && /require\("\.\/podComfyUpdate"\)\.auto\(m\.id, port \|\| 0\)/.test(rg));
   await sleep(10);
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

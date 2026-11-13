@@ -3474,6 +3474,7 @@
 <script src="/static/gradegl.js"></script>
 <script src="/static/vfxgl.js"></script>  <!-- 2.409.0: ✨ effects in the canvas preview (H3Vfx) -->
 <script src="/static/basicset.js"></script>  <!-- 2.409.0: Override style for every video model (H3Basic) -->
+<script src="/static/ovruse.js"></script>  <!-- 2.777.0: Basic Settings ▸ Use model / Use temporary LoRAs (H3OvrUse - lib/basicUse.js) -->
 <script src="/static/basictabs.js"></script>  <!-- 2.742.0: every Basic Settings tab keeps its own settings (H3BasicTabs) -->
 <script src="/static/rpstyles.js"></script>  <!-- 2.744.0: on a RunPod Serverless endpoint the style lists show only the styles it can render (H3RpStyles) -->
 <script src="/static/gpusplit.js"></script>  <!-- 2.745.0: Basic Settings ▸ GPU - remote / local / both (H3GpuSplit) -->
@@ -5707,7 +5708,7 @@ async function submitJob(promptText) {
     const rp0 = window.RefRoles ? RefRoles.plan(mode, refs) : { mode };
     const vreq = { kind: "video", video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "",
       mode: curFrameOp() ? "fl2va" : rp0.mode, basic: window.H3Basic ? H3Basic.json() : "",
-      extra_loras: ovrStyleOn() ? tempLoras("video") : [] };
+      extra_loras: ovrStyleOn() && useTL("video") ? tempLoras("video") : [] };
     if (!(await H3ModelsFound.ensure(vreq))) return null;
   }
   // 2.763.2: a pod renders it - this computer's ComfyUI is not needed
@@ -5726,7 +5727,7 @@ async function submitJob(promptText) {
   logLine(`[generate] Basic Settings: steps ${+$("steps").value > 0 ? $("steps").value : "auto (the workflow's own)"}, cfg ${$("cfg").value}`);
   fd.append("frames", framesFromSeconds());
   if ($("videoStyleSel") && $("videoStyleSel").value) fd.append("video_style_id", $("videoStyleSel").value);   // 2.110.0
-  { const extra = ovrStyleOn() ? tempLoras("video") : [];               // 2.256.0: OFF = the style's own chain rules
+  { const extra = ovrStyleOn() && useTL("video") ? tempLoras("video") : [];               // 2.256.0: OFF = the style's own chain rules
     if (extra.length) fd.append("extra_loras", JSON.stringify(extra)); }   // 2.111.0
   if (window.H3Basic) fd.append("basic", H3Basic.json());                  // 2.409.0: Override style -> lib/basicOverride
   fd.append("speed", $("speed").value);
@@ -8297,10 +8298,10 @@ function imgBasicsBody(body) {
     });
     if (Object.keys(m).length) body.lora_weights = m;
   }
-  const extra = tempLoras("image");                    // 2.111.0
+  const extra = useTL("image") ? tempLoras("image") : [];   // 2.111.0; 2.777.0: Basic Settings ▸ Use temporary LoRAs
   if (extra.length) body.extra_loras = extra;
   const ck = $("imgCkpt") ? $("imgCkpt").value.trim() : "";   // 2.115.0: checkpoint override
-  if (ck) body.model = ck;
+  if (ck && useMD("image")) body.model = ck;   // 2.777.0: Use model off = the style's own checkpoint
   if (window.H3ModelMgr && H3ModelMgr.overriding && H3ModelMgr.overriding()) body.mm_override = true;   // 2.518.0: 🧩 the Model manager's pick
   return body;
 }
@@ -10333,7 +10334,7 @@ $("mv_go").onclick = async () => {
         steps: $("mv_steps").value, seed: $("seed").value,
         format: $("mv_format").value, ref_group: $("mv_group").value || null,
         video_style_id: $("videoStyleSel") ? $("videoStyleSel").value || null : null,   // 2.110.0
-        extra_loras: tempLoras("video"),                                                  // 2.111.0
+        extra_loras: useTL("video") ? tempLoras("video") : [],                            // 2.111.0; 2.777.0: Use temporary LoRAs
         default_mode: $("mv_defmode").value,
       }),
     });
@@ -13249,6 +13250,9 @@ let tempLoraTimer = null;
 /* 2.312.0: a SECOND view of the same list (the video docker's ⚙ dropdown):
    hostId names the box the rows live in; saving from it repaints the Basic
    Settings box so the two never disagree. */
+/* 2.777.0: Basic Settings ▸ Use model / Use temporary LoRAs (static/ovruse.js; on when it has not loaded) */
+function useTL(kind) { return !window.H3OvrUse || H3OvrUse.loras(kind); }
+function useMD(kind) { return !window.H3OvrUse || H3OvrUse.model(kind); }
 function tempLoras(kind, hostId) {
   const box = $(hostId || tempLoraHost[kind]); if (!box) return [];
   return [...box.querySelectorAll(".lorarow")].map((r) => { const [t, g] = r.querySelectorAll("input"); return { path: t.value.trim(), weight: parseFloat(g.value) }; }).filter((l) => l.path);

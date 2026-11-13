@@ -94,7 +94,9 @@
       + '<button type="button" class="ghost' + (ALL ? " on" : "") + '" data-psall aria-pressed="' + (ALL ? "true" : "false") + '" title="List every style, not only the Generate mode\'s">All</button></div>'
       + '<div class="psChips">' + (c.styles.length ? c.styles.map(function (id) { return '<span class="psChip" data-pschip="' + esc(id) + '">' + kindIcon(id) + " " + esc(nameOf(id)) + ' <button type="button" class="ghost" data-psdel="' + esc(id) + '" title="Take this style off the pod">✕</button></span>'; }).join("")
         : '<span class="hint">no styles of its own yet</span>') + "</div></div>"
-      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" class="ghost" data-psnodes title="Put on the pod the custom nodes its styles\' workflows use and it lacks (2.764.2: only those) - cloned from their own address at the same version, or uploaded - then its ComfyUI is restarted">⬆ Nodes its styles need</button><button type="button" class="ghost" data-pscomfy title="Update ComfyUI on this pod to its latest version (git pull, its requirements, ComfyUI restarted) - for a style that needs a node built into a newer ComfyUI (2.767.0)">⬆ Update ComfyUI</button><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
+      // 2.777.0 (Tim: "remove styles this pod needs and update comfyui buttons from the pods docker, bitgen does this automaically
+      // when the pod is created"): ⬆ Nodes its styles need / ⬆ Update ComfyUI gone - the pod's setup (lib/podMade.js) does both
+      + '<div class="psTools"><span class="hint psPrep" aria-live="polite">' + esc(prepLine(e)) + '</span><button type="button" data-pssave' + (isDirty(e) ? "" : " disabled") + ' title="Save what the pod is for - its styles are made ready on it (their files and node packs), the kinds it renders, the LLM / vLLM on it">💾 Save</button></div>'
       + '<div class="hint psMsg" aria-live="polite">' + esc(e.msg || "") + "</div>";
   }
   function say(row, id, t) { ed(id).msg = t; var m = row.querySelector(".psMsg"); if (m) m.textContent = t; }
@@ -140,28 +142,15 @@
         if (r.preparing) watchPrep(p.id, repaint);
       });
     };
-    var nb = q("[data-psnodes]"); if (nb) nb.onclick = function () {
-      nb.disabled = true; say(row, p.id, "putting on the pod the custom nodes its styles' workflows use…");
-      post("/api/stylepods/nodes/" + encodeURIComponent(p.id), { port: port || 0 }).then(function (r) {
-        nb.disabled = false;
-        if (r.error) { say(row, p.id, r.error); return; }
-        say(row, p.id, ""); watchPrep(p.id, repaint);
-      });
-    };
-    // 2.767.0 (Tim: "can we update to the latest version of comfyui on the pod?"): ⬆ Update ComfyUI - how far, under the buttons
-    var cb = q("[data-pscomfy]");
+    // 2.777.0: ⬆ Nodes its styles need / ⬆ Update ComfyUI removed (the pod's setup does both - its activity line says how far)
+    // 2.769.0 (Tim: "update comfy automatically when the pod is created as well"): a new pod's own update shows here (asked once per row)
     var tick = function () {
       getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) {
         say(row, p.id, (j && j.note) ? (j.running ? "⬆ " : j.ok ? "✓ " : "✗ ") + (j.auto ? "new pod: " : "") + j.note : "");
-        if (j && j.running) setTimeout(tick, 3000); else if (cb) cb.disabled = false;
+        if (j && j.running) setTimeout(tick, 3000);
       }).catch(function () { setTimeout(tick, 5000); });
     };
-    if (cb) cb.onclick = function () {
-      cb.disabled = true; say(row, p.id, "updating ComfyUI on the pod…");
-      post("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update", { port: port || 0 }).then(function (r) { if (r.error) { cb.disabled = false; say(row, p.id, r.error); return; } tick(); });
-    };
-    // 2.769.0 (Tim: "update comfy automatically when the pod is created as well"): a new pod's own update shows here too
-    if (cb && !cb.dataset.asked) { cb.dataset.asked = "1"; getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) { if (j && j.running) { cb.disabled = true; tick(); } }).catch(function () { /* fine */ }); }
+    if (!row.dataset.cuAsked) { row.dataset.cuAsked = "1"; getj("/api/pods/" + encodeURIComponent(p.id) + "/comfy-update").then(function (j) { if (j && j.running) tick(); }).catch(function () { /* fine */ }); }
     if (((e.prep && e.prep.running) || (e.nodes && e.nodes.running)) && !e.watching) watchPrep(p.id, repaint);
   }
   /** the making-ready line, until it is done */
