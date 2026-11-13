@@ -85,8 +85,7 @@ const VER = { id: 77, name: "v2", model: { name: "Krea2 NSFW AIO" }, files: [{ n
   files.checkpoints.push("x.safetensors");
   const r2 = await PP.prepare("pod1", 8188, ST, { deps: D });
   check("…a run that puts them on the pod clears them (nothing to ask)", r2.notThere.length === 0 && PF.list().length === 0, { nt: r2.notThere, L: PF.list() });
-  PP.prepare("pod2", 8188, ST, { deps: Object.assign({}, D, { needs: () => [{ name: "y.safetensors", cat: "loras" }], online: undefined }) });
-  await new Promise((ok) => setTimeout(ok, 30));
+  await PP.prepare("pod2", 8188, ST, { deps: Object.assign({}, D, { needs: () => [{ name: "y.safetensors", cat: "loras" }], online: undefined }) });
   check("…a failure again is asked again (a new entry, not asked)", PF.list().some((f) => f.pod === "pod2" && f.name === "y.safetensors" && !f.asked));
   let thrown = null; try { PF.retry("nope"); } catch (e) { thrown = e; }
   check("…a file no longer waiting: 404", thrown && thrown.status === 404);
