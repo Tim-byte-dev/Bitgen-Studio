@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.778.1** — Civitai Blocks Australian Users (Since 16 March 2026): a Note on Each Civitai Feature in the Feature List (All Four Languages) and a Pinned Discussion on the Website Saying What It Affects and What Still Works - the Features Stay
 - **2.778.0** — A File That Did Not Get Onto a RunPod Pod (Its Upload, the Pod's Download, or Found Nowhere) Opens a Box per Pod - Each File, How It Failed and Why: ↻ Try Again Makes Those Styles Ready Again (the Waiting Render Goes Again When They Land) or Not Now; a File the Pod Needs Is Looked For Online by Its Name Before It Is Called Missing - Your Remote Models List, Its Civitai Info Card, a Civitai Search - and the Pod Downloads It From Civitai
 - **2.777.0** — Basic Settings ▸ Use Model (Over the Checkpoint and the Video Model) and Use Temporary LoRAs (Over Each LoRA List) - Send Override's Settings With the Style's Own Model, or With or Without Your LoRAs on Either Model; the Pod Docker's ⬆ Nodes Its Styles Need / ⬆ Update ComfyUI Buttons Removed (the Pod's Setup Does Both)
 - **2.776.0** — ☁ The Remote Generation Docker in Themed Sections - Remote Servers; Generation (Image, Video, Music); Language Models (LLM, Vision LLM); Audio (Text to Speech, Speech to Text, Song Separation) - Every Type Local or Remote in One Column, With Where It Goes; Music Is Its Own Type; Remote Audio With No Pod Ticked Goes to the Pod in Use

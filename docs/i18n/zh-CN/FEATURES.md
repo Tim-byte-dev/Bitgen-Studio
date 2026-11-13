@@ -162,8 +162,8 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **一键获取更多 ComfyUI 节点包** — 安装或更新 KJNodes、Yusu H3 Unified 和 RH DLSS 5。 *Where:* Settings > ComfyUI > Video accelerators。 *Since:* 2.503.0
 - **Veda 稀疏注意力** — 视频风格中可选的 MiniMax H3 加速器（On / Quality）：在其训练尺寸下比标准注意力快约 2-3 倍，可一键安装，其预测器在模型目录中。 *Where:* Settings > Video styles；Settings > ComfyUI > Video accelerators。 *Since:* 2.536.0
 - **根据盲测调整的 Veda 与 Spectrum** — Veda 会跳过提示词描述打斗、变形、爆炸或追逐的镜头（这类镜头省时不多，画面还会变软；☑ 动作镜头也使用 Veda 可保留），并取代 Long video 的低显存注意力，而不再被跳过；Spectrum 在 12 步以上的运行中让前 2 步和最后 3 步真实计算，使脸部保持清晰。 *Where:* 设置 ▸ 视频样式 ▸ Veda 稀疏注意力 / Spectrum。 *Since:* 2.717.0
-- **可管理数百个模型的模型管理器** — 适应面板大小的分页、文件夹标签页（SDXL、Pony …）、📌 This project 标签页、可调整大小的卡片、每个模型的信息页（含示例图片和提示词），每个模型的 Civitai 详情 + 缩略图 + 示例都保存在一个共享的 model_info 文件夹中。 *Where:* 🧩 Models。 *Since:* 2.537.0
-- **Civitai 下载到各类型的文件夹** — 任意 Civitai 卡片上的 ⤓ 会下载到你为该类型选定过一次的文件夹（SDXL LoRA、Pony 模型、Wan LoRA …）；Shift+点击可更改；📁 列出这些文件夹（model_folders.json）；🔄 Sync 为电脑上的每个模型获取 Civitai 详情。 *Where:* 🧩 Models。 *Since:* 2.538.0
+- **可管理数百个模型的模型管理器** — 适应面板大小的分页、文件夹标签页（SDXL、Pony …）、📌 This project 标签页、可调整大小的卡片、每个模型的信息页（含示例图片和提示词），每个模型的 Civitai 详情 + 缩略图 + 示例都保存在一个共享的 model_info 文件夹中。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.537.0
+- **Civitai 下载到各类型的文件夹** — 任意 Civitai 卡片上的 ⤓ 会下载到你为该类型选定过一次的文件夹（SDXL LoRA、Pony 模型、Wan LoRA …）；Shift+点击可更改；📁 列出这些文件夹（model_folders.json）；🔄 Sync 为电脑上的每个模型获取 Civitai 详情。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 🧩 Models。 *Since:* 2.538.0
 - **参考图描述** — 每张参考图片、每个参考视频和声音下方都有一段简短描述，随项目和分组保存，用于映射行、提示词对话和 ✨ Enhance；另有墙 / 地板 / 家具 / 灯光等图片类型。 *Where:* References 面板。 *Since:* 2.539.0
 - **图像编辑器中的参考图** — 拖入的参考图会变成一个图层；✨ Edit 可以把参考图用作 Picture 2。 *Where:* 🖼 Image editor。 *Since:* 2.539.0
 - **借助参考图让渲染变为写实** — 每个 Blender / Unreal 对象都会与一张参考图片匹配，可按名称匹配或手动指定。首帧由编辑模型借助这些图片变为写实画面，然后由 LTX 2.3 3DREAL 沿着渲染让它动起来。 *Where:* 🟧 Timeline 的 Blender scene / UNREAL ▸ Render to Real，🖼 图像编辑器的 3D 和 Unreal 图层。 *Since:* 2.540.0
@@ -300,8 +300,8 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Krea 2** — Krea 的 12B 开放图像模型，提供四种风格：Turbo（8 步）和 Raw（52 步，带负面提示词），各有 safetensors 和 GGUF 两种格式。 *Where:* 图像风格. *Since:* 2.516.0
 - **Anima** — CircleStone Labs 的 2B 动漫 / 插画模型，提供两种风格（Aesthetic v1.1、Base v1.0；30 步，cfg 4）。 *Where:* 图像风格. *Since:* 2.517.0
 - **队列预设** — Normal / Quiet（夜间）/ Eco / Cool-down / Max performance / Custom：设置 GPU 功耗上限、任务之间的休息时间、显卡过热时等待，以及降频警告。 *Where:* 菜单栏的 ⏱. *Since:* 2.518.0
-- **模型管理器** — 以卡片形式展示你的模型和 LoRA（缩略图、评分、发布日期、类型、类别、关键词；悬停时显示说明卡片），选择一个模型和若干 LoRA，用它们覆盖风格，✚ 以某个模型新建风格，✎ 编辑卡片，🔍 在 Civitai 上查找。 *Where:* 状态栏中的 🧩 Models. *Since:* 2.518.0
-- **Civitai 下载** — 搜索 civitai.red / civitai.com，并连同卡片直接下载到对应的 ComfyUI 文件夹。 *Where:* Model manager 的 Civitai 选项卡；密钥在 Settings ▸ General 中设置. *Since:* 2.518.0
+- **模型管理器** — 以卡片形式展示你的模型和 LoRA（缩略图、评分、发布日期、类型、类别、关键词；悬停时显示说明卡片），选择一个模型和若干 LoRA，用它们覆盖风格，✚ 以某个模型新建风格，✎ 编辑卡片，🔍 在 Civitai 上查找。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 状态栏中的 🧩 Models. *Since:* 2.518.0
+- **Civitai 下载** — 搜索 civitai.red / civitai.com，并连同卡片直接下载到对应的 ComfyUI 文件夹。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* Model manager 的 Civitai 选项卡；密钥在 Settings ▸ General 中设置. *Since:* 2.518.0
 - **电费** — 每 kWh 的电价：每个任务的 ⚡ 卡片、其 [power] 行以及启动以来的耗电量都会显示费用。 *Where:* Settings ▸ General. *Since:* 2.518.0
 - **测试面板** — 某个版本需要做的测试，完成后逐项勾选（很多会自动勾选），可写备注，💾 保存日志以便上传。 *Where:* Settings ▸ General ▸ 🧪 Testing. *Since:* 2.518.0
 - **安装程序询问你的硬件** — 安装程序检测不到时，会询问显卡（从列表中选择）、内存和 CPU；“Not right?” 可修改。 *Where:* 安装程序的第一页. *Since:* 2.519.0
@@ -396,9 +396,9 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **加入社区时说明为什么要邮箱验证码** — 加入表单（💬 Community 和网站）说明使用或下载 bitGen Studio 不需要成为会员 - 只有在社区里交流才需要 - 并说明新会员用 6 位验证码确认邮箱，是为了防止垃圾注册并确认加入的是真实的人。 *Where:* 💬 Community ▸ Join；tigerart.com.au ▸ Account。 *Since:* 2.764.4
 - **把停靠窗停靠到另一个停靠窗的上方或下方** — 把浮动停靠窗拖到你的停靠窗（浮动的，或停靠在主列中的 ▣ 停靠窗）里某个停靠窗的上边缘或下边缘附近，两者就会在那里上下堆叠；拖到堆叠上时会放到其中停靠窗之间；拖到侧边或中间则像以前一样并排或作为标签添加；浮动停靠窗总是显示在停靠于停靠窗内的停靠窗前面。 *Where:* 你的任何停靠窗（⊞ Docker configs ▸ ▣ New docker…、▣ 停靠窗）。 *Since:* 2.764.5
 - **Pod 下载能完成，受限模型会提示** — Pod 上的下载和节点安装作为独立任务运行，不再停在 0%；下载 Hugging Face 文件前，bitGen 会检查它是否受限或已不存在，并说明是哪个文件以及该怎么做（接受其许可并添加你的 Hugging Face 令牌）；3 分钟没有数据的下载或被 Pod 停止的任务也会提示。 *Where:* PODS ▸ ⬇ Models；渲染的 Pod 备注；日志。 *Since:* 2.764.6
-- **把你的检查点和 LoRA 从 Civitai 下载到 Pod** — Pod 需要的本机模型会先在 Civitai 上查找（按其卡片中的版本，否则按只读取一次的 SHA-256），然后由 Pod 用你的 API 密钥从 civitai.com 或 civitai.red 下载完全相同的文件，代替缓慢的上传；只有在 Civitai 上没有或被拒绝时才从本机发送，并说明原因。 *Where:* PODS（风格的模型、Override 风格的检查点、预设）；渲染的 Pod 备注；设置 ▸ General ▸ Civitai。 *Since:* 2.765.0
+- **把你的检查点和 LoRA 从 Civitai 下载到 Pod** — Pod 需要的本机模型会先在 Civitai 上查找（按其卡片中的版本，否则按只读取一次的 SHA-256），然后由 Pod 用你的 API 密钥从 civitai.com 或 civitai.red 下载完全相同的文件，代替缓慢的上传；只有在 Civitai 上没有或被拒绝时才从本机发送，并说明原因。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* PODS（风格的模型、Override 风格的检查点、预设）；渲染的 Pod 备注；设置 ▸ General ▸ Civitai。 *Since:* 2.765.0
 - **远程模型、勾选的 Pod 和每次传输的进度条** — runpod/pods/remote_models.json 记录你的 Pod 使用的模型及各自的下载链接；在远程模式下，Model manager 和基本设置的 Override 下拉框列出这些模型，而不是本机的模型；勾选 Pod（每个名称左侧的复选框，可多选），⇪ 会把模型发送到所有勾选的 Pod；没有链接的模型只上传一次到你的私有 Hugging Face 仓库（Civitai 上有则用其链接，否则直接发送到 Pod）；每次传输都有自己的进度条。 *Where:* PODS ▸ My pods；Model manager（远程模式）；基本设置 ▸ Override。 *Since:* 2.766.0
-- **Model manager 中的 Civitai 筛选** — 全部 / 检查点 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（来自 Civitai 自己的列表，Krea、Flux、Qwen 等系列的全部基础模型，或只选一个）、排序方式和时间段；更改后立即重新搜索，筛选条件会被保留。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
+- **Model manager 中的 Civitai 筛选** — 全部 / 检查点 / LoRA（以及 VAE、Embedding、ControlNet、Upscaler）、模型系列（来自 Civitai 自己的列表，Krea、Flux、Qwen 等系列的全部基础模型，或只选一个）、排序方式和时间段；更改后立即重新搜索，筛选条件会被保留。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* Model manager ▸ Civitai。 *Since:* 2.766.1
 - **本地 / 远程切换整个应用** — 在基本设置中选择本地：列表和文件夹筛选显示本机的模型文件夹，ComfyUI 未运行时会启动；选择远程（Pod）：停止 bitGen 在本机启动的 ComfyUI，列出远程模型，文件夹筛选改为显示它们的模型系列（Krea、Flux、Pony 等）以供筛选。 *Where:* 基本设置 ▸ GPU；模型下拉框；Model manager。 *Since:* 2.766.2
 - **Pod：文件放在 ComfyUI 能看到的位置，旧版 ComfyUI 会被更新** — 文件会放到 Pod 的 ComfyUI 读取的文件夹（包括模板自己的模型文件夹，放错位置的副本会被移动），缺少新版 ComfyUI 内置节点的 Pod 会在渲染前更新 ComfyUI（git pull、requirements、重启）。 *Where:* 渲染的 Pod 备注；PODS。 *Since:* 2.766.3
 - **远程模式下的 LLM、Vision LLM 和视频风格** — LLM 和 Vision LLM 各自可在本地、OpenRouter（在基本设置中即可搜索并选择模型；推理开启，每轮都会传回 reasoning_details）或 RunPod（你的 Pod 用 llama.cpp 运行同一个 GGUF，首次发送提示时完成设置）上运行；选择远程后，所选视频风格的模型会立即送到其 Pod。 *Where:* 基本设置 ▸ GPU；设置 ▸ Remote generation ▸ OpenRouter。 *Since:* 2.767.0
@@ -417,7 +417,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **在 Pod 上进行语音合成、语音识别和歌曲分离** — 创建 Pod 时（或在 My pods 的 Pod 上）勾选 Audio，远程模式下语音、克隆的声音、转录和分轨都会在 Pod 上运行；引擎只在 Pod 上安装一次，声音片段只在使用时发送并保留在那里；结果回到项目中。 *Where:* PODS ▸ Create pod… ▸ Audio；My pods ▸ 🔊 Audio。 *Since:* 2.775.0
 - **每种类型都可选本地或远程，并分区显示** — 远程生成停靠窗按主题样式分区：远程服务器；生成（图像、视频、音乐）；语言模型（LLM、视觉 LLM）；音频（语音合成、语音识别、歌曲分离）——每项在同一列中选择本地或远程，并显示去向。 *Where:* ☁ 远程生成停靠窗。 *Since:* 2.776.0
 - **使用模型 / 使用临时 LoRA** — 开启“覆盖风格”时，检查点／视频模型上方和每个临时 LoRA 列表上方各有一个勾选框：用风格自带的模型发送覆盖设置，或在任一模型上加上或去掉你的 LoRA。 *Where:* 基本设置。 *Since:* 2.777.0
-- **Pod 文件重试** — 没能放到 RunPod Pod 上的文件（上传、Pod 的下载失败或哪里都找不到）会弹出一个框，说明失败方式和原因：↻ 重试 或 暂不；Pod 需要的文件也会按名称在 Civitai 上查找，并由 Pod 下载。 *Where:* 远程生成（Pod）。 *Since:* 2.778.0
+- **Pod 文件重试** — 没能放到 RunPod Pod 上的文件（上传、Pod 的下载失败或哪里都找不到）会弹出一个框，说明失败方式和原因：↻ 重试 或 暂不；Pod 需要的文件也会按名称在 Civitai 上查找，并由 Pod 下载。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 远程生成（Pod）。 *Since:* 2.778.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
@@ -772,9 +772,9 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **模型管理器：你的文件、缩略图、元数据** — 模型的图片 / 视频 / 声音及其提示词 + 种子 / cfg / 步数（从文件或渲染记录中读取），点击打开查看器，✎→ 发送到提示词，🖼 设为缩略图。 *Where:* 🧩 Model manager ▸ ⓘ ▸ Your pictures, videos and sounds；✎ Edit ▸ Thumbnail。 *Since:* 2.575.0
 - **模型管理器：半星评分、模型类型、NSFW** — 以半星为单位的五星评分编辑器、模型类型（检查点（checkpoint）、LoRA …）以及 NSFW 标记；筛选栏可按这两项筛选。 *Where:* 🧩 Model manager ▸ ✎ Edit；筛选栏。 *Since:* 2.575.0
 - **✎→ 从任意文件发送到提示词** — 将文件的提示词及其种子、cfg 和步数发送到提示词框 + Basic Settings。 *Where:* 图库、Assets、References 的缩略图块；查看器的 ⓘ 详情。 *Since:* 2.575.0
-- **状态栏中的 Civitai 同步** — 同步时显示 🔄 Civitai n/total，完成时显示 ✓ synced 及各项计数。 *Since:* 2.575.0
+- **状态栏中的 Civitai 同步** — 同步时显示 🔄 Civitai n/total，完成时显示 ✓ synced 及各项计数。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Since:* 2.575.0
 - **面板按离开时的布局恢复** — ▣ 面板的成员、标签顺序、当前显示的标签页、隐藏 / 折叠状态、最小化的浮动面板、扩展面板——重启后都会保留。 *Since:* 2.575.0
-- **按 SHA-256 进行 Civitai 同步** — 按名称找不到的模型会按文件内容查找；状态栏显示读取进度 n%。 *Where:* 🧩 Model manager ▸ 🔄 Sync。 *Since:* 2.576.0
+- **按 SHA-256 进行 Civitai 同步** — 按名称找不到的模型会按文件内容查找；状态栏显示读取进度 n%。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager ▸ 🔄 Sync。 *Since:* 2.576.0
 - **🧩 发送到模型… / Ctrl+↓ 设为缩略图** — 查看器可将图片 / 视频 / 歌曲连同其元数据发送到某个模型的文件中；Ctrl+↓ 将图片设为该模型的缩略图。 *Where:* 查看器；🧩 Model manager ▸ ⓘ。 *Since:* 2.576.0
 - **自定义姿势表** — Character creator 的 🧍 Pose sheet 对话框会显示 pose_sheets 文件夹中图片的缩略图；选中的那张决定角色设定表的分格、姿势和机位角度。 *Where:* StoryBoard ▸ 🖼 NEW（Character creator）▸ Sheet ▸ Pose sheet；pose_sheets 文件夹。 *Since:* 2.577.0
 - **📐 SolidCraft 面板** — 开源参数化 3D CAD（SolidCraft，MIT OR Apache-2.0）位于独立面板中，包含 SolidCraft 的全部功能；设计和零件保存在项目中，SolidCraft 的 Save 会使其保持最新；可将模型的图片（或 SolidCraft 的渲染图）送入图像编辑器，将模型作为时间线 3D 图层，将图像编辑器的草图图层送入 SolidCraft，并将 STEP / STL / OBJ / 3MF 导入项目。 *Where:* 状态栏中的 📐 SolidCraft；Settings ▸ Add-ons ▸ SolidCraft。 *Since:* 2.578.0
@@ -783,7 +783,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **从磁盘删除模型** — 删除该文件、其旁边的相关文件以及它的 model_info 页面，删除前会弹出确认，列出这些文件及使用该模型的风格。 *Where:* 🧩 Model manager ▸ 卡片上的 🗑 / ⓘ ▸ 🗑 Delete。 *Since:* 2.579.0
 - **设置 ▸ 面板** — 列出每个面板和浮动窗口（包括扩展的），显示其所在位置，↺ Reset 可将其恢复到默认位置和大小；↺ Reset all 全部重置。 *Where:* Settings ▸ Dockers。 *Since:* 2.579.0
 - **模型路径（extra_model_paths.yaml）** — 管理 ComfyUI 额外模型路径的每个组：➕ 新建组（other_ui1、other_ui2 …，根据其 base 下的文件夹自动填充），更改 / 添加 / 删除路径（用 📁 选择），重命名，is_default，🗑 删除组；文件的其余内容保持不变，并保留上一版的 .bak 备份；⟳ Restart ComfyUI。 *Where:* 🧩 Model manager ▸ 📁 Model paths。 *Since:* 2.580.0
-- **Civitai 视频和动态图片** — 🔄 Sync / ⤓ Civitai info 也会保存模型的视频和 GIF 示例；视频缩略图在卡片及其 ⓘ 页面上播放，查看器也可播放；视频可用作卡片的缩略图。 *Where:* 🧩 Model manager。 *Since:* 2.581.0
+- **Civitai 视频和动态图片** — 🔄 Sync / ⤓ Civitai info 也会保存模型的视频和 GIF 示例；视频缩略图在卡片及其 ⓘ 页面上播放，查看器也可播放；视频可用作卡片的缩略图。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 🧩 Model manager。 *Since:* 2.581.0
 - **LLM 提示词中的 LoRA 关键词** — ✨ Enhance 和提示词聊天会将所选 LoRA 的关键词（触发词）写入提示词；LLM 遗漏的关键词由 Enhance 补上。 *Where:* Prompt 面板 ▸ ✨ Enhance / 提示词聊天。 *Since:* 2.581.0
 - **✨ 在 SolidCraft 中生成零件** — 文字描述或图片 -> CadQuery 代码（cadrille，或带错误修复的本地 LLM）-> SolidCraft 自身可编辑的草图、拉伸、切除、孔、圆角和倒角（按体积校验；否则将 STEP 作为单个实体导入）；代码可编辑并重新运行。 *Where:* 📐 SolidCraft ▸ ✨ Generate；Settings ▸ Add-ons ▸ CAD generate。 *Since:* 2.581.0
 - **Fibo 2.0（编辑，低显存）** — Bria 的 8B 模型，提供两种图像风格：Edit Turbo（4 步指令编辑）和 Dev（文生图 + 编辑）；最多 4 张图片 <image_1>..；w4a8 或 GGUF Q4_0 文件适用于约 8 GB 显存的显卡；从 Settings ▸ Add-ons ▸ Fibo 2.0 下载（CC BY-NC 4.0）。 *Where:* image editor ▸ ✨ AI ▸ Edit；Settings ▸ Image。 *Since:* 2.582.0

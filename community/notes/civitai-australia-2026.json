@@ -1,0 +1,23 @@
+{
+ "key": "civitai-australia-2026",
+ "rev": 1,
+ "category": "general",
+ "pinned": true,
+ "title": "Civitai and Australia: which bitGen Studio features it affects",
+ "lines": [
+  "Civitai has been blocking visitors from Australia since 16 March 2026. That came a week after Australia's age-check codes for online services took effect on 9 March 2026.",
+  "",
+  "bitGen Studio talks to Civitai from your computer. In Australia, these parts can't reach it:",
+  "- Model manager ▸ Civitai: search, the filters and ⤓ download",
+  "- 🔄 Sync, ⤓ Civitai info and 🔍 look it up on Civitai (details, thumbnails, examples, SHA-256 lookups)",
+  "- Pods: finding a model the pod needs on Civitai (by its card, its SHA-256 or its name) so the pod downloads it",
+  "When Civitai can't be reached, bitGen says so in the log and carries on with the next way it has.",
+  "",
+  "What still works in Australia:",
+  "- The models and LoRAs already on your computer, and Civitai details already saved in model_info",
+  "- bitGen's download list (Hugging Face) and the links you add yourself",
+  "- Sending a model from your computer to a pod, or through your private Hugging Face repo",
+  "",
+  "Nothing has been removed. The Civitai features stay in bitGen Studio for everyone outside Australia, and each one carries a note in the feature list."
+ ]
+}
