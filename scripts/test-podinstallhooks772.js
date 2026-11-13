@@ -78,8 +78,11 @@ const A = require("../lib/runpodApi"), P = require("../lib/pods"), PM = require(
   check("a render's pod (podRevive.waitReady): its Jupyter answers but ComfyUI does not - bitGen installs / starts it, then the render goes on with the pod's ComfyUI", en === 1 && w.comfy_answers === true && said.some((t) => /^loading ComfyUI/.test(t)), { en, w, said });
   wn = 0; en = 0; CFG.rgpu.pod_made.podR.install = false;
   PM.ways = async () => { wn++; if (wn === 1) return { comfy_answers: false, jupyter: true }; return { comfy_answers: true, jupyter: true }; };
+  const oldLB = PI.looksBlank; PI.looksBlank = async () => false;   // (its image says ComfyUI)
   const w2 = await RV.waitReady("podR", 8188, () => {});
-  check("…not on a pod with its own ComfyUI (the Jupyter answer is enough, as before)", en === 0 && wn === 1 && w2.jupyter === true);
+  PI.looksBlank = oldLB;
+  // 2.773.1 (Tim's log - the render went on before the template's ComfyUI was there): the Jupyter answer alone is NOT enough
+  check("…not on a pod with its own ComfyUI - and it is waited for until its ComfyUI answers (2.773.1: Jupyter alone is not enough)", en === 0 && wn === 2 && w2.comfy_answers === true, { en, wn, w2 });
   CFG.rgpu.pod_made.podR.install = true;
   PI.ensure = async () => ({ ok: false, why: "git clone did not work - fatal: unable to access" });
   PM.ways = async () => ({ comfy_answers: false, jupyter: true });
