@@ -125,7 +125,7 @@
     d.innerHTML = '<div class="rowbtns" style="align-items:center">'
       + '<input type="search" id="pdQ" class="pdTplOnly" placeholder="Search templates - name, image, port, kind" spellcheck="false" style="flex:1;min-width:140px">'
       + '<button type="button" class="ghost" id="pdRefresh" title="Ask RunPod again">🔄</button>'
-      + '<button type="button" class="ghost" id="pdRpDock" title="The 💲 RunPod docker: your balance, what your pods cost, RunPod\'s GPU prices">💲 RunPod</button></div>'
+      + '<button type="button" class="ghost" id="pdRpDock" title="The 💲 Costs docker on RunPod\'s list: your balance, what your pods cost, RunPod\'s GPU prices (← All costs: this computer and every platform)">💲 Costs</button></div>'
       + '<div class="rowbtns pdTabs" style="align-items:center;flex-wrap:wrap">'
       + [["all", "All"], ["official", "Official"], ["verified", "Verified"], ["community", "Community"], ["star", "★ Shortcuts"], ["mine", "🖥 My pods"], ["presets", "📦 Presets"]].map(function (t) { return '<button type="button" class="ghost" data-pdsrc="' + t[0] + '">' + t[1] + '<span class="n"></span></button>'; }).join("")
       + '<select id="pdKind" class="pdTplOnly" title="The kind of machine the template is made for" style="width:auto"><option value="">Every kind</option><option value="NVIDIA">NVIDIA</option><option value="AMD">AMD</option><option value="CPU">CPU</option></select>'
@@ -146,7 +146,7 @@
   function wire() {
     if (root.H3PodXfer) H3PodXfer.mount($("pdXfer"));   // 2.766.0
     getj("/api/pods/selected").then(function (j) { S.selPods = (j && j.selected) || []; if ($("pdPods") && S.pods && S.pods.length) paintPods(); }).catch(function () { S.selPods = []; });
-    $("pdRpDock").onclick = function () { if (root.H3RunPod) H3RunPod.show(true); };   // 2.763.5
+    $("pdRpDock").onclick = function () { if (root.H3RunPod) H3RunPod.show(true, "runpod"); };   // 2.763.5; 2.771.0: the 💲 Costs docker on RunPod's list
     $("pdBody").querySelectorAll("[data-pdsrc]").forEach(function (b) { b.onclick = function () { go(b.dataset.pdsrc); }; });
     $("pdComfy").onchange = function () { S.comfy = $("pdComfy").checked; filter(); };
     $("pdKind").onchange = function () { S.kind = $("pdKind").value; filter(); };

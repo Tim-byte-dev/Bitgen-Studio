@@ -136,10 +136,11 @@
   function hostOf() { return $(OPTS) || $("sec-gpu"); }
   /** the engine picked while Remote / Both waits: saved as soon as it can be */
   function waiting(v) { if (S.pick && v && !v.error && isReady(S.pick, v)) { var w = S.pick; S.pick = null; return save({ where: w }); } return v; }
-  /** Local picked: the remote dockers close (their buttons are hidden now) */
+  /** Local picked: the remote dockers close (their buttons are hidden now) - 2.771.0: not 💲 Costs (this computer's costs are
+   *  in it too) */
   function closeRemote() {
     if (!(root.SecFloat && SecFloat.windows)) return;
-    ["rgen", "pods", "runpod"].forEach(function (id) { if (SecFloat.windows[id] && (SecFloat.state(id) || {}).shown) SecFloat.show(id, false); });
+    ["rgen", "pods"].forEach(function (id) { if (SecFloat.windows[id] && (SecFloat.state(id) || {}).shown) SecFloat.show(id, false); });
   }
   function load() {
     return root.fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (v) { if (v && v.where) { S.v = v; paint(); } return v; }).catch(function () { /* offline */ });

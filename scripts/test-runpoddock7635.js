@@ -45,8 +45,8 @@ const rd = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   const rows = RD.podRows([{ id: "p1", name: "one", status: "RUNNING", cost_hr: 0.69 }, { id: "p2", name: "two", status: "EXITED", cost_hr: 0.4 }], { pods: { p1: { today: 1, month: 5 }, p2: { today: 0, month: 9 }, p9: { today: 0, month: 3 } } });
   check("podRows: each pod with its $/h (running only), today, month; a terminated pod still on the bill", rows.length === 3 && rows[0].id === "p1" && rows[0].hr === 0.69 && rows[1].id === "p2" && rows[1].hr === 0 && rows[2].status === "GONE" && rows[2].month === 3, rows);
   const RDs = rd("static", "runpoddock.js");
-  check("the docker: a SecFloat window 'runpod' (floats, docks, goes in a ▣ docker), balance + usage + GPU prices, asked every minute",
-    /SecFloat\.add\(\{ id: "runpod", title: "💲 RUNPOD"/.test(RDs) && /\/api\/pods\/account/.test(RDs) && /\/api\/pods\/costs/.test(RDs) && /\/api\/pods\/gpus\?cloud=/.test(RDs) && /H3_RUNPOD_POLL \|\| 60000/.test(RDs));
+  check("the docker: a SecFloat window 'runpod' (2.771.0: titled 💲 COSTS; floats, docks, goes in a ▣ docker), balance + usage + GPU prices, asked every minute",
+    /SecFloat\.add\(\{ id: "runpod", title: "💲 COSTS"/.test(RDs) && /\/api\/pods\/account/.test(RDs) && /\/api\/pods\/costs/.test(RDs) && /\/api\/pods\/gpus\?cloud=/.test(RDs) && /H3_RUNPOD_POLL \|\| 60000/.test(RDs));
   check("💲 RunPod in Basic Settings ▸ GPU (#gpuRpDock) and in the PODS docker (#pdRpDock)", /b\.id = "gpuRpDock"/.test(RDs) && /id="pdRpDock"/.test(rd("static", "podsdock.js")));
   check("the 💲 line left Basic Settings (no #gpuPodCost made)", !/c\.id = "gpuPodCost"/.test(rd("static", "podsdock.js")));
   const ix = rd("static", "index.html");

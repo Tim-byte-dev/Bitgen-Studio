@@ -5611,7 +5611,7 @@
    "src": "static/podsdock.js:94"
   },
   {
-   "s": "RunPod",
+   "s": "Costs",
    "src": "static/podsdock.js:125"
   },
   {
@@ -5864,27 +5864,27 @@
   },
   {
    "s": "since start",
-   "src": "static/powerstats.js:95"
+   "src": "static/powerstats.js:98"
   },
   {
    "s": "to",
-   "src": "static/powerstats.js:123"
+   "src": "static/powerstats.js:129"
   },
   {
    "s": "Remove these peak times",
-   "src": "static/powerstats.js:124"
+   "src": "static/powerstats.js:130"
   },
   {
    "s": "saved - energy only · add the peak times",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "s": "saved - energy only",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "s": "could not save",
-   "src": "static/powerstats.js:163"
+   "src": "static/powerstats.js:169"
   },
   {
    "s": "prompt docker",
@@ -6232,6 +6232,10 @@
   },
   {
    "s": "hour",
+   "src": "static/remotegpu.js:35"
+  },
+  {
+   "s": "RunPod",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -6647,124 +6651,280 @@
    "src": "static/rtxvfxpanel.js:138"
   },
   {
-   "s": "Balance",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Usage",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "GPU prices",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Secure cloud",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Community cloud",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Cheapest first",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Most memory first",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "By name",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Ask RunPod again now",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "The order of the list",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "Find a GPU - 4090, 48gb, H100",
-   "src": "static/runpoddock.js:80"
-  },
-  {
-   "s": "spending",
-   "src": "static/runpoddock.js:96"
-  },
-  {
-   "s": "now · lasts",
-   "src": "static/runpoddock.js:96"
-  },
-  {
-   "s": "at that",
-   "src": "static/runpoddock.js:96"
-  },
-  {
-   "s": "The balance is running low - add credit on runpod.io ▸ Billing, or pods stop when it runs out",
-   "src": "static/runpoddock.js:96"
-  },
-  {
-   "s": "now",
-   "src": "static/runpoddock.js:96"
-  },
-  {
-   "s": "lasts",
-   "src": "static/runpoddock.js:98"
-  },
-  {
-   "s": "Spend limit",
-   "src": "static/runpoddock.js:99"
-  },
-  {
-   "s": "Running now",
-   "src": "static/runpoddock.js:108"
-  },
-  {
-   "s": "pods",
-   "src": "static/runpoddock.js:108"
-  },
-  {
    "s": "Today",
-   "src": "static/runpoddock.js:108"
+   "src": "static/runpoddock.js:75"
+  },
+  {
+   "s": "7 days",
+   "src": "static/runpoddock.js:75"
   },
   {
    "s": "This month",
-   "src": "static/runpoddock.js:108"
+   "src": "static/runpoddock.js:75"
   },
   {
-   "s": "Per hour",
-   "src": "static/runpoddock.js:108"
+   "s": "Last month",
+   "src": "static/runpoddock.js:75"
   },
   {
-   "s": "RunPod's own bill (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity. A stopped pod still pays for its disk until it is terminated",
-   "src": "static/runpoddock.js:108"
+   "s": "Everything",
+   "src": "static/runpoddock.js:75"
   },
   {
-   "s": "asking RunPod for its GPUs",
+   "s": "Statistics",
    "src": "static/runpoddock.js:120"
   },
   {
-   "s": "Memory",
-   "src": "static/runpoddock.js:123"
+   "s": "All costs",
+   "src": "static/runpoddock.js:120"
   },
   {
-   "s": "Free now",
-   "src": "static/runpoddock.js:123"
+   "s": "Click a row for its detailed list. US-dollar prices show in your currency (Settings ▸ General ▸ Currency); the total is in your energy bill's currency (Settings ▸ General ▸ Energy cost)",
+   "src": "static/runpoddock.js:120"
   },
   {
-   "s": "Most a pod",
-   "src": "static/runpoddock.js:123"
+   "s": "Balance",
+   "src": "static/runpoddock.js:120"
   },
   {
-   "s": "Show / hide the 💲 RunPod docker: your balance, what your pods cost, RunPod's GPU prices",
+   "s": "Usage",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "By day",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "GPU prices",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Secure cloud",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Community cloud",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Cheapest first",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Most memory first",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "By name",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Which days",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Statistics: how long each generation took to start and to render, and each pod preparation",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Ask again now",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Back to all costs",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "The order of the list",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Find a GPU - 4090, 48gb, H100",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "adding up",
+   "src": "static/runpoddock.js:146"
+  },
+  {
+   "s": "Cost",
+   "src": "static/runpoddock.js:148"
+  },
+  {
+   "s": "Total",
+   "src": "static/runpoddock.js:148"
+  },
+  {
+   "s": "Its detailed list",
+   "src": "static/runpoddock.js:149"
+  },
+  {
+   "s": "nothing in these days",
+   "src": "static/runpoddock.js:160"
+  },
+  {
+   "s": "By model",
    "src": "static/runpoddock.js:162"
   },
   {
-   "s": "RUNPOD",
-   "src": "static/runpoddock.js:181"
+   "s": "Each call",
+   "src": "static/runpoddock.js:164"
+  },
+  {
+   "s": "the service did not say what that call cost (a free model, or one that reports no price)",
+   "src": "static/runpoddock.js:166"
+  },
+  {
+   "s": "Energy",
+   "src": "static/runpoddock.js:177"
+  },
+  {
+   "s": "Supply charge",
+   "src": "static/runpoddock.js:177"
+  },
+  {
+   "s": "Together",
+   "src": "static/runpoddock.js:177"
+  },
+  {
+   "s": "Jobs on this computer",
+   "src": "static/runpoddock.js:177"
+  },
+  {
+   "s": "This computer's meters while the app ran (the graphics cards + the CPU where it can be read) at the prices in Settings ▸ General ▸ Energy cost - 📊 Usage there has the same days",
+   "src": "static/runpoddock.js:177"
+  },
+  {
+   "s": "The days bitGen kept of RunPod's bill (asked while bitGen runs). runpod.io ▸ Billing has every invoice",
+   "src": "static/runpoddock.js:187"
+  },
+  {
+   "s": "Serverless endpoints this month",
+   "src": "static/runpoddock.js:189"
+  },
+  {
+   "s": "Today (UTC)",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "This week (UTC)",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "This month (UTC)",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "Since the key was made",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "Limit left",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "free tier (no credits bought)",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "OpenRouter's own figures for the API key in Settings ▸ Remote generation - every use of that key, from bitGen or not",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "No OpenRouter API key in Settings ▸ Remote generation - only bitGen's own record below",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "s": "bitGen's calls",
+   "src": "static/runpoddock.js:197"
+  },
+  {
+   "s": "Renders",
+   "src": "static/runpoddock.js:199"
+  },
+  {
+   "s": "the service gave no price for that render - its own site's billing page has it",
+   "src": "static/runpoddock.js:199"
+  },
+  {
+   "s": "LLM calls",
+   "src": "static/runpoddock.js:202"
+  },
+  {
+   "s": "The time bitGen used the remote GPU at the $/hour set in Settings ▸ Remote generation",
+   "src": "static/runpoddock.js:204"
+  },
+  {
+   "s": "spending",
+   "src": "static/runpoddock.js:228"
+  },
+  {
+   "s": "now · lasts",
+   "src": "static/runpoddock.js:228"
+  },
+  {
+   "s": "at that",
+   "src": "static/runpoddock.js:228"
+  },
+  {
+   "s": "The balance is running low - add credit on runpod.io ▸ Billing, or pods stop when it runs out",
+   "src": "static/runpoddock.js:228"
+  },
+  {
+   "s": "now",
+   "src": "static/runpoddock.js:228"
+  },
+  {
+   "s": "lasts",
+   "src": "static/runpoddock.js:230"
+  },
+  {
+   "s": "Spend limit",
+   "src": "static/runpoddock.js:231"
+  },
+  {
+   "s": "Running now",
+   "src": "static/runpoddock.js:240"
+  },
+  {
+   "s": "pods",
+   "src": "static/runpoddock.js:240"
+  },
+  {
+   "s": "Per hour",
+   "src": "static/runpoddock.js:240"
+  },
+  {
+   "s": "RunPod's own bill (GPU, CPU and disk), checked every minute; 📊 Usage (Settings ▸ General ▸ Energy cost) keeps it day by day beside the electricity. A stopped pod still pays for its disk until it is terminated",
+   "src": "static/runpoddock.js:240"
+  },
+  {
+   "s": "asking RunPod for its GPUs",
+   "src": "static/runpoddock.js:252"
+  },
+  {
+   "s": "Memory",
+   "src": "static/runpoddock.js:255"
+  },
+  {
+   "s": "Free now",
+   "src": "static/runpoddock.js:255"
+  },
+  {
+   "s": "Most a pod",
+   "src": "static/runpoddock.js:255"
+  },
+  {
+   "s": "Show / hide the 💲 Costs docker on RunPod's list: your balance, what your pods cost, RunPod's GPU prices (← All costs: this computer and every platform)",
+   "src": "static/runpoddock.js:309"
+  },
+  {
+   "s": "The 💲 Costs docker: this computer's electricity and every platform's costs, each with its detailed list",
+   "src": "static/runpoddock.js:333"
+  },
+  {
+   "s": "COSTS",
+   "src": "static/runpoddock.js:342"
   },
   {
    "s": "Runs on",
@@ -7085,6 +7245,130 @@
   {
    "s": "Turn the check on startup off (Settings ▸ General ▸ ⟳ Updates turns it on again)",
    "src": "static/startcheck.js:60"
+  },
+  {
+   "s": "ComfyUI repair",
+   "src": "static/statsdlg.js:33"
+  },
+  {
+   "s": "ComfyUI restart",
+   "src": "static/statsdlg.js:34"
+  },
+  {
+   "s": "Finished",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Mode",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "What",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Status",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Queued",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Startup",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Generation",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "Waiting behind other jobs",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "No generations in these days yet - each render is added when it finishes",
+   "src": "static/statsdlg.js:94"
+  },
+  {
+   "s": "When",
+   "src": "static/statsdlg.js:103"
+  },
+  {
+   "s": "Took",
+   "src": "static/statsdlg.js:103"
+  },
+  {
+   "s": "Phases",
+   "src": "static/statsdlg.js:103"
+  },
+  {
+   "s": "Problems",
+   "src": "static/statsdlg.js:103"
+  },
+  {
+   "s": "No pod preparations in these days - a pod is made ready when a style first renders on it, or needs files, node packs or a restart",
+   "src": "static/statsdlg.js:103"
+  },
+  {
+   "s": "Generations",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "Average startup",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "Average generation",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "Average total",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "All together",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "Nothing in these days yet",
+   "src": "static/statsdlg.js:110"
+  },
+  {
+   "s": "how long each generation took to start and to render, and each pod preparation",
+   "src": "static/statsdlg.js:118"
+  },
+  {
+   "s": "CSV",
+   "src": "static/statsdlg.js:118"
+  },
+  {
+   "s": "Close (Esc)",
+   "src": "static/statsdlg.js:118"
+  },
+  {
+   "s": "Read again",
+   "src": "static/statsdlg.js:118"
+  },
+  {
+   "s": "What to list",
+   "src": "static/statsdlg.js:118"
+  },
+  {
+   "s": "Pod preparations",
+   "src": "static/statsdlg.js:123"
+  },
+  {
+   "s": "By place",
+   "src": "static/statsdlg.js:123"
+  },
+  {
+   "s": "By mode",
+   "src": "static/statsdlg.js:123"
+  },
+  {
+   "s": "How long each generation took to start and to render, and each pod preparation",
+   "src": "static/statsdlg.js:149"
   },
   {
    "s": "uses",
@@ -8635,22 +8919,6 @@
    "src": "static/usagedock.js:61"
   },
   {
-   "s": "Finished",
-   "src": "static/usagedock.js:67"
-  },
-  {
-   "s": "Mode",
-   "src": "static/usagedock.js:67"
-  },
-  {
-   "s": "What",
-   "src": "static/usagedock.js:67"
-  },
-  {
-   "s": "Status",
-   "src": "static/usagedock.js:67"
-  },
-  {
    "s": "min",
    "src": "static/usagedock.js:67"
   },
@@ -8679,27 +8947,7 @@
    "src": "static/usagedock.js:80"
   },
   {
-   "s": "CSV",
-   "src": "static/usagedock.js:80"
-  },
-  {
    "s": "To",
-   "src": "static/usagedock.js:80"
-  },
-  {
-   "s": "Read again",
-   "src": "static/usagedock.js:80"
-  },
-  {
-   "s": "7 days",
-   "src": "static/usagedock.js:80"
-  },
-  {
-   "s": "Last month",
-   "src": "static/usagedock.js:80"
-  },
-  {
-   "s": "Everything",
    "src": "static/usagedock.js:80"
   },
   {
@@ -16687,10 +16935,6 @@
    "src": "ext/promptdock/llmarena.js:224"
   },
   {
-   "s": "When",
-   "src": "ext/promptdock/llmarena.js:228"
-  },
-  {
    "s": "Request",
    "src": "ext/promptdock/llmarena.js:228"
   },
@@ -17556,10 +17800,6 @@
   },
   {
    "s": "Drag to move",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:56"
-  },
-  {
-   "s": "Close (Esc)",
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
   {
@@ -24334,67 +24574,67 @@
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: off-peak",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1}",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "Energy used since the app started: GPUs {0} (the CPU is not measured on this computer){1} Now: PEAK",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "Energy used since the app started: GPUs {0} (the CPU is not measured on this computer){1} Now: off-peak",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "Energy used since the app started: GPUs {0} (the CPU is not measured on this computer){1}",
-   "src": "static/powerstats.js:99"
+   "src": "static/powerstats.js:105"
   },
   {
    "p": "saved - 1 kWh = {0} + {1} a day ({2} an hour) · peak {3}/kWh in {4} time window(s), the rest off-peak",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - 1 kWh = {0} + {1} a day ({2} an hour) · add the peak times",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - 1 kWh = {0} + {1} a day ({2} an hour)",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - 1 kWh = {0} · peak {1}/kWh in {2} time window(s), the rest off-peak",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - 1 kWh = {0} · add the peak times",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - 1 kWh = {0}",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - energy only + {0} a day ({1} an hour) · peak {2}/kWh in {3} time window(s), the rest off-peak",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - energy only + {0} a day ({1} an hour) · add the peak times",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - energy only + {0} a day ({1} an hour)",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "saved - energy only · peak {0}/kWh in {1} time window(s), the rest off-peak",
-   "src": "static/powerstats.js:161"
+   "src": "static/powerstats.js:167"
   },
   {
    "p": "This tool uses the prompt docker's text - click to edit it there {0}",
@@ -24589,12 +24829,24 @@
    "src": "static/rtxvfxpanel.js:138"
   },
   {
+   "p": "Serverless endpoints this month: {0}",
+   "src": "static/runpoddock.js:187"
+  },
+  {
+   "p": "bitGen's calls: {0} · {1}",
+   "src": "static/runpoddock.js:193"
+  },
+  {
+   "p": "LLM calls: {0} · {1}",
+   "src": "static/runpoddock.js:199"
+  },
+  {
    "p": "Spend limit {0} (RunPod ▸ Settings)",
-   "src": "static/runpoddock.js:96"
+   "src": "static/runpoddock.js:228"
   },
   {
    "p": "Checked {0} - again every minute while this shows",
-   "src": "static/runpoddock.js:127"
+   "src": "static/runpoddock.js:259"
   },
   {
    "p": "{0} ({1}) - Use is off",

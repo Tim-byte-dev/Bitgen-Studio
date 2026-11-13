@@ -43,8 +43,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("Remote: ☁ Remote generation docker shows again; in it the radio groups, 🖥 PODS and 💲 RunPod", (await api("/api/gpusplit")).where === "remote" && l2.engine && l2.dock && l2.dockPods && l2.rp, l2);
     await ev(() => { SecFloat.show("pods", true); SecFloat.show("rgen", true); SecFloat.show("runpod", true); }); await sleep(400);
     await ev(() => { const i = document.querySelector('input[name="gpuWhere"][value="local"]'); i.checked = true; i.dispatchEvent(new Event("change")); }); await sleep(1000);   // (the dockers just opened float over Basic Settings)
-    const l3 = await look(), open = await ev(() => ["pods", "rgen", "runpod"].filter((id) => (SecFloat.state(id) || {}).shown));
-    check("Local again: hidden again, and the PODS / Remote generation / 💲 RunPod dockers close", (await api("/api/gpusplit")).where === "local" && !l3.engine && !l3.dock && !l3.pods && !l3.rp && open.length === 0, { l3, open });
+    const l3 = await look(), open = await ev(() => ["pods", "rgen"].filter((id) => (SecFloat.state(id) || {}).shown)), costs = await ev(() => !!(SecFloat.state("runpod") || {}).shown);
+    check("Local again: hidden again, and the PODS / Remote generation dockers close - 💲 Costs stays (2.771.0: this computer's costs are in it)", (await api("/api/gpusplit")).where === "local" && !l3.engine && !l3.dock && !l3.pods && !l3.rp && open.length === 0 && costs, { l3, open, costs });
+    await ev(() => SecFloat.show("runpod", false));
     // nothing remote set up: Remote waits, shows the choices, RunPod ▸ Pods saves it
     await api("/api/gpusplit", { where: "local", engine: { provider: "runpod", runpod: "serverless" } }); await ev(() => H3GpuSplit.load()); await sleep(600);
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(800);

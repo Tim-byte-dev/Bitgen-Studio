@@ -92,7 +92,13 @@
       if (!CPU.power) { CPU.power = new Spark("CPU power", { color: "#e6c84a", fill: "rgba(230,200,74,.16)", lo: 0, hi: 250 }); CPU.clock.el.after(CPU.power.el); }
       CPU.power.push(P.cpu_power_w, null, Math.round(P.cpu_power_w) + " W");
     }
-    if (!ENERGY) { ENERGY = document.createElement("div"); ENERGY.className = "stat"; ENERGY.id = "statEnergy"; ENERGY.innerHTML = '<div class="row"><span>⚡ since start</span><b></b></div>'; box.appendChild(ENERGY); }
+    if (!ENERGY) {
+      ENERGY = document.createElement("div"); ENERGY.className = "stat"; ENERGY.id = "statEnergy";
+      // 2.771.0: 💲 = the Costs docker (this computer + every platform); a click on the rest of the row = 📊 Usage, as before
+      ENERGY.innerHTML = '<div class="row"><span>⚡ since start <button type="button" class="ghost" id="statCosts" title="💲 Costs: this computer\'s electricity and every platform\'s costs" aria-label="Costs" style="padding:0 4px;font-size:.68rem;line-height:1.3;min-height:0">💲</button></span><b></b></div>';
+      ENERGY.querySelector("#statCosts").addEventListener("click", function (e) { e.stopPropagation(); if (window.H3RunPod && H3RunPod.show) H3RunPod.show(true, ""); });
+      box.appendChild(ENERGY);
+    }
     var E = P.energy || {}, tot = (+E.gpu_wh || 0) + (+E.cpu_wh || 0), pr = price();
     var secs = E.since ? Math.max(0, (Date.now() - E.since) / 1000) : 0, c = jobCost(tot, secs, pr, E.peak_wh);
     ENERGY.querySelector("b").textContent = fmtWh(tot) + (c ? " · " + money(c.total, pr.currency) : "");

@@ -5074,6 +5074,23 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **ポッドで ComfyUI が動いていないとき:** ComfyUI のポートに出る Web ページ（ComfyUI が止まっている間のテンプレートの仮ページ）を「ComfyUI が応答している」とはみなさなくなりました。動いている ComfyUI が見つからないときは、bitGen がそのフォルダーから専用の Python で起動します。起動しないときは、ジョブの行にそのログの最後（またはポートを使っているプログラム - その場合はポッドを再起動）が表示されます。
 - **PODS ドッカーの転送:** ポッドにすでにあるファイルには進捗バーを出さず、もう一度送ったファイルは古い行を置き換えます。
 
+## 💲 Costs ドッカーと 📊 Statistics (2.771.0)
+<!-- en: costs-docker-and-statistics-2-771-0 5c42cf4e25d8 -->
+
+- **💲 Costs**（名前が変わった 💲 RunPod ドッカー）: **All costs** にすべての費用が並びます - **🖥 This computer**（アプリ実行中の電力 + 1 日の基本料金、Settings ▸ General ▸ Energy cost の価格）、**☁ RunPod**（あなたのポッド、RunPod 自身の請求から + Serverless エンドポイント）、**🧠 OpenRouter**（LLM とビジョン LLM）、使っている **🔑 Settings ▸ API** の各サービス、$/時間 を設定した **🌐 リモート GPU** - それぞれ 1 行ずつ、**Total** は電気料金の通貨です。上で期間を選びます: **Today**、**7 days**、**This month**、**Last month**、**Everything**。
+- **行をクリック**（または Enter）すると、そのプラットフォームの**詳細な一覧**を表示します。**← All costs** で戻ります:
+  - This computer: 電力と基本料金を日別に、そして実行したすべてのジョブ（分、kWh、費用）。
+  - RunPod: 残高、ポッド（今日 / 今月）、**By day**（ポッド + Serverless）、RunPod の GPU 価格 - これまでどおり。
+  - OpenRouter: あなたのキーに対する OpenRouter 自身の数値（今日、今週、今月、キー作成以来、残りの上限）と、bitGen のすべての呼び出しをモデル別と 1 件ずつ（入力 / 出力トークン、OpenRouter が報告した費用。「-」= 価格の報告なし）。
+  - API サービス: そのレンダー（日時、内容、所要時間、サービスが示した価格）と LLM の呼び出し。
+  - リモート GPU: 日別の時間と費用。
+- **開き方**: ☁ Remote generation ドッカーまたは PODS ドッカーの 💲 Costs（RunPod の一覧が直接開きます）、Settings ▸ General ▸ Energy cost の **💲 Costs…**、System stats の「⚡ since start」の横の 💲。Local を選んでも閉じなくなりました。
+- **📊 Statistics**（Costs ドッカー内、または Settings ▸ General ▸ Energy cost の **📊 Statistics…**）はダイアログを開き、**各生成を 1 件ずつ**表示します: **起動**（キューの先頭から ComfyUI に作業が渡されるまで - ポッドの起動や準備、ファイルの送信やダウンロード、ノードパックのインストール、ComfyUI の更新や再起動、ワークフローの構築）、**生成**（レンダーそのもの。オンラインサービスなら実行全体）、**合計**、さらにほかのジョブの後ろで待った時間。上のカードに件数と平均が出ます。
+  - ポッドを待ったポッドレンダーには ⚙ が付きます - クリックするとその**ポッドの準備**と段階（ダウンロード、ノードパック、再起動 …）を表示します。
+  - **Pod preparations** には、ポッドが起動または準備されたすべての回が並びます: 所要時間、各段階、スタイル、問題。
+  - **By place**（このコンピューター、RunPod のポッド、API …）と **By mode** はそれぞれの平均を表示します。**⤓ CSV** で一覧を保存します。
+  - このコンピューターにだけ保存されます（usage フォルダー）。2.771.0 以降の分で、それ以前のレンダーは入っていません。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

@@ -13133,6 +13133,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.771.0 (Tim: "add a tab for statistics - change the runpod docker to Costs, show all costs summary, if user clicks on one of the costs open a detailed lists of expenditure for that platform or local" + "statistics go is Statistics Dialog, Costs Docker should include local costs and all the diferent platform costs individually")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui771-ui.js > /tmp/ui771ui.log 2>&1 \
+  && ok "2.771.0 browser test: 💲 Costs - all costs a row each (this computer, RunPod, OpenRouter, an API), the range buttons, a row clicked = its detailed list, ← All costs; 📊 Statistics - startup / generation / total per generation, the pod preparation it waited for, Pod preparations, By place, CSV, Esc - or SKIP without playwright" \
+  || { bad "2.771.0 Costs docker / Statistics dialog browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui771ui.log | head -14; }
+
 # ---- 2.770.0 (Tim: "in the remote generation docker , remove the openrouter search, and runpod and openrouter dialog, instead just have local and remote radio buttons for llm and vllm. in settings openrouter and checkbox show paid, show free, add the list to the dropdowns but only show 10 at a time, add a search to each dropdown , add a button to the docker , show all …")
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui770-ui.js > /tmp/ui770ui.log 2>&1 \
   && ok "2.770.0 browser test: the prompt docker's OpenRouter lists 10 at a time with a search, Show paid adds the paid ones, ☰ All's dialog (filters, sort, details) and Use sets the LLM - or SKIP without playwright" \

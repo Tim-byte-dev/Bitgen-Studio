@@ -5308,6 +5308,23 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **Pod 上 ComfyUI 未运行时：** ComfyUI 端口上的网页（ComfyUI 停止期间模板的占位页）不再被当作“ComfyUI 在应答”。找不到正在运行的 ComfyUI 时，bitGen 会用它自己的 Python 从其文件夹启动它；如果没有启动起来，任务行会给出其日志的结尾（或占用其端口的程序 - 这时请重启 Pod）。
 - **PODS 停靠窗中的传输：** Pod 上已有的文件不显示进度条，再次发送的文件会替换其旧的一行。
 
+## 💲 Costs 停靠窗和 📊 Statistics (2.771.0)
+<!-- en: costs-docker-and-statistics-2-771-0 5c42cf4e25d8 -->
+
+- **💲 Costs**（改名后的 💲 RunPod 停靠窗）：**All costs** 列出所有花费 - **🖥 This computer**（应用运行时的电能 + 每天的供电费，按 Settings ▸ General ▸ Energy cost 的价格）、**☁ RunPod**（你的 Pod，取自 RunPod 自己的账单 + Serverless 端点）、**🧠 OpenRouter**（LLM 和视觉 LLM）、你使用的每个 **🔑 Settings ▸ API** 服务，以及设置了 $/小时 的 **🌐 远程 GPU** - 每项一行，**Total** 使用电费的货币。在顶部选择天数：**Today**、**7 days**、**This month**、**Last month** 或 **Everything**。
+- **点击一行**（或按 Enter）查看该平台的**详细列表**；**← All costs** 返回：
+  - This computer：按天的电能和供电费，以及它运行的每个任务（分钟、kWh、费用）。
+  - RunPod：余额、Pod（今天 / 本月）、**By day**（Pod + Serverless）和 RunPod 的 GPU 价格 - 与以前相同。
+  - OpenRouter：OpenRouter 对你的密钥给出的数字（今天、本周、本月、自密钥创建以来、剩余额度），以及 bitGen 的每次调用，按模型和逐条列出（输入 / 输出 token、OpenRouter 报告的费用；“-” = 未报告价格）。
+  - API 服务：它的渲染（时间、内容、用时、服务给出的价格）和它的 LLM 调用。
+  - 远程 GPU：按天的小时数和费用。
+- **打开方式**：☁ Remote generation 停靠窗或 PODS 停靠窗中的 💲 Costs（直接打开 RunPod 的列表）、Settings ▸ General ▸ Energy cost 中的 **💲 Costs…**，或 System stats 中“⚡ since start”旁的 💲。选择 Local 不再关闭它。
+- **📊 Statistics**（在 Costs 停靠窗中，或 Settings ▸ General ▸ Energy cost 中的 **📊 Statistics…**）打开一个对话框，**逐条列出每次生成**：**启动**（从队列开头到 ComfyUI 拿到工作 - 启动或准备 Pod、发送或下载文件、安装节点包、更新或重启 ComfyUI、构建工作流）、**生成**（渲染本身；在线服务则为整个运行）和**合计**，以及在其他任务后面等待的时间。顶部的卡片显示数量和平均值。
+  - 等待过 Pod 的 Pod 渲染显示 ⚙ - 点击可查看该次 **Pod 准备**及其阶段（下载、节点包、重启 …）。
+  - **Pod preparations** 列出每次启动或准备 Pod：用时、每个阶段、风格、问题。
+  - **By place**（这台电脑、RunPod Pod、API …）和 **By mode** 给出各自的平均值。**⤓ CSV** 保存列表。
+  - 只保存在这台电脑上（usage 文件夹），从 2.771.0 开始记录 - 更早的渲染不在其中。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

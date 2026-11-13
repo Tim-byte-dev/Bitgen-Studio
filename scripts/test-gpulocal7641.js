@@ -14,8 +14,8 @@ check("localView: Local = hidden; a Remote / Both waiting for its set-up shows t
 const S = fs.readFileSync(path.join(ROOT, "static", "gpusplit.js"), "utf8");
 check("Local hides: the Remote servers / RunPod groups, the Both boxes, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod, the old 💲 line, ⚙ Settings ▸ Remote generation",
   G.LOCAL_HIDE.join() === "gpuEngine,gpuBoxes,gpuDock,gpuPods,gpuRpDock,gpuPodCost,gpuSetup" && /"#sec-gpu\.gpuLocal #" \+ id/.test(S) && /\{display:none!important\}/.test(S) && /classList\.toggle\("gpuLocal", loc\)/.test(S));
-check("…its line: \"Every job runs on this computer.\"; picking Local closes the Remote generation / PODS / 💲 RunPod dockers",
-  /loc \? "Every job runs on this computer\."/.test(S) && /\["rgen", "pods", "runpod"\]/.test(S) && /if \(w === "local" && r && !r\.error\) closeRemote\(\)/.test(S));
+check("…its line: \"Every job runs on this computer.\"; picking Local closes the Remote generation / PODS dockers (2.771.0: not 💲 Costs - this computer's costs are in it)",
+  /loc \? "Every job runs on this computer\."/.test(S) && /\["rgen", "pods"\]/.test(S) && /if \(w === "local" && r && !r\.error\) closeRemote\(\)/.test(S));
 check("Remote / Both always pickable: not set up = it waits (S.pick), the engine choice saves it when it can", /i\.disabled = false;/.test(S) && /S\.pick = w;/.test(S) && /function waiting\(v\)/.test(S) && /\.then\(waiting\)/.test(S));
 // 2.764.1: a model sent to the pod - how far, and the Queue card says it instead of "waiting for the GPU"
 const SD = require("../lib/podSend");

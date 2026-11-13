@@ -8722,6 +8722,33 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   does not come up, the job's line gives the end of its log (or which program holds its port - then restart the pod).
 - **Transfers in the PODS docker:** a file already on the pod gets no progress bar, and a file sent again replaces its old row.
 
+## 💲 Costs docker and 📊 Statistics (2.771.0)
+
+- **💲 Costs** (the 💲 RunPod docker, renamed): **All costs** lists what everything cost - **🖥 This computer** (the energy
+  while the app ran + the daily supply charge, at Settings ▸ General ▸ Energy cost), **☁ RunPod** (your pods, from RunPod's
+  own bill, + Serverless endpoints), **🧠 OpenRouter** (the LLM and vision LLM), each **🔑 Settings ▸ API** service you use
+  and a **🌐 remote GPU** with a $/hour - each on its own row, with the **Total** in your energy bill's currency. Pick the days
+  at the top: **Today**, **7 days**, **This month**, **Last month** or **Everything**.
+- **Click a row** (or Enter on it) for that platform's **detailed list**; **← All costs** goes back:
+  - This computer: energy and supply, day by day, and every job it ran (minutes, kWh, cost).
+  - RunPod: the balance, the pods (today / this month), **By day** (pods + Serverless) and RunPod's GPU prices - as before.
+  - OpenRouter: OpenRouter's own figures for your key (today, this week, this month, since the key was made, the limit left)
+    and every call bitGen made, by model and one by one (tokens in / out, the cost OpenRouter reported; "-" = no price said).
+  - An API service: its renders (when, what, how long, the price the service gave) and its LLM calls.
+  - Remote GPU: day by day, hours and cost.
+- **Open it** with 💲 Costs in the ☁ Remote generation docker or the PODS docker (straight to RunPod's list), **💲 Costs…**
+  in Settings ▸ General ▸ Energy cost, or the 💲 beside "⚡ since start" in the System stats. Picking Local no longer closes it.
+- **📊 Statistics** (in the Costs docker, or **📊 Statistics…** in Settings ▸ General ▸ Energy cost) opens a dialog with
+  **every generation on its own**: its **startup** (from the head of the queue until ComfyUI is handed the work - a pod
+  started or made ready, files sent or downloaded, node packs installed, ComfyUI updated or restarted, the workflow built),
+  its **generation** (the render itself; an online service: its whole run) and the **total**, plus the time it waited behind
+  other jobs. The cards on top give the counts and the averages.
+  - A pod render that waited for its pod shows ⚙ - click it for that **pod preparation** and its phases (downloads, node
+    packs, restart …).
+  - **Pod preparations** lists every time a pod was started or made ready: how long, each phase, the styles, any problems.
+  - **By place** (this computer, RunPod pods, an API …) and **By mode** give the averages for each. **⤓ CSV** saves the list.
+  - Kept on this computer only (the usage folder), from 2.771.0 on - earlier renders are not in it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

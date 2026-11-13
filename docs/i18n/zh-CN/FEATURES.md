@@ -407,6 +407,8 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **bitGen 创建的 Pod 自行完成设置** — bitGen 创建的 Pod 会被记录为 bitGen 的（Pod 本身也有标记），加载后会更新其 ComfyUI、准备好关联的风格，如果还没有正在使用的 Pod，它就成为正在使用的 Pod - 无需按按钮；⬆ Update ComfyUI 会更新实际正在运行的 ComfyUI。 *Where:* PODS ▸ My pods。 *Since:* 2.769.1
 - **“还没有 Pod”对话框只列出现有的 Pod** — 用没有 Pod 的风格渲染时，只列出 My pods 中的 Pod（运行中或已停止）；已终止的 Pod 和其 Pod 已不存在的预设不再列出。 *Where:* 询问由哪个 Pod 渲染风格的对话框。 *Since:* 2.769.2
 - **LLM 本地 / 远程，带搜索和 ☰ All 的 OpenRouter 列表** — Remote generation 停靠窗的 LLM 和 Vision LLM 只有本地或远程（远程为设置中选择的平台，默认 OpenRouter）；设置 ▸ OpenRouter 中“显示免费”“显示付费”；提示停靠窗的列表每次显示 10 个并可搜索，☰ All 打开所有 OpenRouter 模型，可筛选、排序并查看详情，按 Use 即设定。 *Where:* ☁ Remote generation 停靠窗；设置 ▸ Remote generation ▸ 🧠 LLM；提示停靠窗。 *Since:* 2.770.0
+- **💲 Costs 停靠窗** — RunPod 停靠窗变成了 💲 Costs：所有费用在一个列表中 - 这台电脑的电费和供电费、RunPod（Pod + Serverless）、OpenRouter、Settings ▸ API 的每个服务和远程 GPU，各占一行并有合计 - 可选今天、7 天、本月、上月或全部；点击一行打开其详细列表（按天、任务、Pod、模型、调用）。 *Where:* ☁ Remote generation 停靠窗；PODS；设置 ▸ 常规 ▸ 电费；System stats 的 💲。 *Since:* 2.771.0
+- **📊 Statistics** — 一个对话框，显示每次生成的启动时间（启动或准备 Pod、文件、节点包、更新或重启 ComfyUI）、生成时间和合计，每次 Pod 准备及其阶段，按位置和按模式的平均值，以及 CSV。 *Where:* 💲 Costs ▸ 📊 Statistics；设置 ▸ 常规 ▸ 电费。 *Since:* 2.771.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
