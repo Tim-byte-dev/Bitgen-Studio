@@ -8881,6 +8881,15 @@ So one style can render with its own model plus your LoRAs, with another model a
 
 The pod docker no longer has the **⬆ Nodes its styles need** and **⬆ Update ComfyUI** buttons. bitGen does both when it sets up a pod, and the pod's activity line shows how far it has got.
 
+## A file that did not get onto the pod: Try again? (2.778.0)
+
+When bitGen makes a style ready on a RunPod pod and a file it needs still isn't on the pod at the end, a box asks whether to try again. That covers three cases: a file sent from this computer whose upload failed, a download on the pod that failed, or a file found nowhere. The box lists each file, says how it failed and why, and names the styles that need it. There is one box per pod.
+
+- **↻ Try again** makes those styles ready on the pod again. Files already there are skipped. When the files arrive, the render that was waiting for the pod goes again by itself.
+- **Not now** closes the box. It isn't asked again unless the file fails again.
+
+Before a file is called missing, bitGen also looks for it online by its name: first your remote models list (`runpod/pods/remote_models.json`), then the model's Civitai info card, then a Civitai search for that exact file name. If it's found, the pod downloads it from Civitai. A mature model needs your Civitai API key (Settings ▸ General ▸ Civitai).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -5391,6 +5391,34 @@
    "src": "static/podaudio.js:37"
   },
   {
+   "s": "Sending it from this computer failed",
+   "src": "static/podfails.js:21"
+  },
+  {
+   "s": "The pod could not download it",
+   "src": "static/podfails.js:21"
+  },
+  {
+   "s": "Not found anywhere",
+   "src": "static/podfails.js:21"
+  },
+  {
+   "s": "A file did not get onto the pod",
+   "src": "static/podfails.js:51"
+  },
+  {
+   "s": "A file found nowhere: put it in this computer's ComfyUI models folder (or add its link in 🧩 Model manager) before you try again",
+   "src": "static/podfails.js:62"
+  },
+  {
+   "s": "Not now",
+   "src": "static/podfails.js:65"
+  },
+  {
+   "s": "Trying again",
+   "src": "static/podfails.js:70"
+  },
+  {
    "s": "Reading the pod's ComfyUI",
    "src": "static/podload.js:44"
   },
@@ -5565,10 +5593,6 @@
   {
    "s": "Keep it",
    "src": "static/podpresets.js:94"
-  },
-  {
-   "s": "Not now",
-   "src": "static/podpresets.js:98"
   },
   {
    "s": "Template",
@@ -24547,6 +24571,26 @@
   {
    "p": "{0} · ↑ ↓ pick · Enter runs · Esc closes",
    "src": "static/palette.js:168"
+  },
+  {
+   "p": "{0} files did not get onto the pod",
+   "src": "static/podfails.js:51"
+  },
+  {
+   "p": "Pod {0} · needed by {1}. Try again",
+   "src": "static/podfails.js:52"
+  },
+  {
+   "p": "Pod {0}. Try again",
+   "src": "static/podfails.js:52"
+  },
+  {
+   "p": "{0} (tried again {1}×)",
+   "src": "static/podfails.js:57"
+  },
+  {
+   "p": "Could not try again: {0}",
+   "src": "static/podfails.js:74"
   },
   {
    "p": "Made: {0}. Skipped: {1}",

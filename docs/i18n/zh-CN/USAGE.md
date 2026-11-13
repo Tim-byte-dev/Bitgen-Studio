@@ -5408,6 +5408,16 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 
 Pod 停靠窗中不再有 **⬆ 风格所需的节点** 和 **⬆ 更新 ComfyUI** 按钮。bitGen 在设置 Pod 时会自动完成这两项，Pod 的活动行会显示进度。
 
+## 没能放到 Pod 上的文件：重试？ (2.778.0)
+<!-- en: a-file-that-did-not-get-onto-the-pod-try-again-2-778-0 0a812f47d03c -->
+
+bitGen 在 RunPod Pod 上准备风格时，如果所需的文件到最后仍不在 Pod 上，会弹出一个框询问是否重试。包括三种情况：从这台电脑上传失败、Pod 上的下载失败，或者哪里都找不到。框中列出每个文件、失败方式和原因，以及需要它的风格。每个 Pod 一个框。
+
+- **↻ 重试** 会在 Pod 上重新准备这些风格，已经在的文件会跳过。文件到位后，等待该 Pod 的生成会自动重新开始。
+- **暂不** 关闭这个框。除非该文件再次失败，否则不会再问。
+
+在把文件判定为找不到之前，bitGen 也会按名称在网上查找：先查你的远程模型列表（`runpod/pods/remote_models.json`），再查该模型的 Civitai 信息卡，最后按完全相同的文件名在 Civitai 搜索。找到后由 Pod 从 Civitai 下载。成人模型需要你的 Civitai API 密钥（设置 ▸ 常规 ▸ Civitai）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
