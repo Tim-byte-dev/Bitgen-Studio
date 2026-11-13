@@ -6455,88 +6455,76 @@
    "src": "static/remotegpu.js:252"
   },
   {
-   "s": "Search the Vision LLM models",
-   "src": "static/remotellm.js:79"
-  },
-  {
-   "s": "Search the LLM models",
-   "src": "static/remotellm.js:79"
-  },
-  {
-   "s": "Search the models (every word: name, maker, free, paid, vision) - the list shows 10 at a time",
-   "src": "static/remotellm.js:81"
-  },
-  {
    "s": "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list",
-   "src": "static/remotellm.js:88"
+   "src": "static/remotellm.js:82"
   },
   {
    "s": "OpenRouter models",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Paid",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Vision",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Price (low first)",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Context (large first)",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "in / out per M",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Context",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Pick a model to see its details",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Use for",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Search - name, maker, free, paid, vision",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "Only models that take pictures",
-   "src": "static/remotellm.js:110"
+   "src": "static/remotellm.js:103"
   },
   {
    "s": "asking OpenRouter for its models",
-   "src": "static/remotellm.js:140"
+   "src": "static/remotellm.js:133"
   },
   {
    "s": "OpenRouter could not be reached",
-   "src": "static/remotellm.js:144"
+   "src": "static/remotellm.js:137"
   },
   {
    "s": "No model matches",
-   "src": "static/remotellm.js:151"
+   "src": "static/remotellm.js:144"
   },
   {
    "s": "Free (rate-limited by OpenRouter and the provider)",
-   "src": "static/remotellm.js:163"
+   "src": "static/remotellm.js:156"
   },
   {
    "s": "Context: not said · takes pictures 👁",
-   "src": "static/remotellm.js:163"
+   "src": "static/remotellm.js:156"
   },
   {
    "s": "Added",
-   "src": "static/remotellm.js:166"
+   "src": "static/remotellm.js:159"
   },
   {
    "s": "Remote mode",
@@ -24529,7 +24517,7 @@
    "src": "static/remotegpu.js:248"
   },
   {
-   "p": "{0} more - search, or ☰ All",
+   "p": "{0} more - ☰ All",
    "src": "static/remotellm.js:65"
   },
   {
@@ -24554,23 +24542,23 @@
   },
   {
    "p": "{0} of {1} models",
-   "src": "static/remotellm.js:150"
+   "src": "static/remotellm.js:143"
   },
   {
    "p": "Context: {0} tokens · takes pictures 👁",
-   "src": "static/remotellm.js:163"
+   "src": "static/remotellm.js:156"
   },
   {
    "p": "Added: {0}",
-   "src": "static/remotellm.js:163"
+   "src": "static/remotellm.js:156"
   },
   {
    "p": "Context: {0} tokens · text only",
-   "src": "static/remotellm.js:163"
+   "src": "static/remotellm.js:156"
   },
   {
    "p": "LLM: ☁ {0} ()",
-   "src": "static/remotellm.js:179"
+   "src": "static/remotellm.js:172"
   },
   {
    "p": "{0} runs on",

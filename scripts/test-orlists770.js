@@ -33,7 +33,7 @@ check("…sorted by price (free first), context, newest, name", UI.listOf(L, {},
 const rp = fs.readFileSync(path.join(ROOT, "static", "remoteprep.js"), "utf8"), rl = fs.readFileSync(path.join(ROOT, "static", "remotellm.js"), "utf8"), so = fs.readFileSync(path.join(ROOT, "static", "openrouter.js"), "utf8");
 check("the docker: LLM / Vision LLM = Local / Remote only (no OpenRouter search, no RunPod / OpenRouter choice); Settings: Show free + Show paid; the prompt docker: a search per list, ☰ All, its dialog with Use for LLM / Vision LLM",
   /var CHOICES = \[\["local", "Local"[^\]]*\], \["remote", "Remote"/.test(rp) && !/rpOr_/.test(rp) && /id="rgOrFree"> Show free/.test(so) && /id="rgOrPaid"> Show paid/.test(so)
-  && /q\.id = "rlQ_" \+ k/.test(rl) && /b\.id = "rlAll"/.test(rl) && /name="rlDlgK" value="vlm"/.test(rl) && /pick\(k, id\)\.then/.test(rl));
+  && !/q\.id = "rlQ_"/.test(rl) && /b\.id = "rlAll"/.test(rl) && /name="rlDlgK" value="vlm"/.test(rl) && /pick\(k, id\)\.then/.test(rl));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
 process.exit(fail ? 1 : 0);

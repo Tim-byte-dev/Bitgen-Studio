@@ -62,7 +62,7 @@
     var g = doc.createElement("optgroup"); g.label = o.label; g.dataset.rl = "1";
     if (o.empty) { var e = doc.createElement("option"); e.value = ""; e.textContent = o.empty; g.appendChild(e); }
     o.items.forEach(function (it) { var op = doc.createElement("option"); op.value = it.value; op.textContent = it.text; op.dataset.rl = "1"; if (it.selected) op.selected = true; g.appendChild(op); });
-    if (o.more) { var mo = doc.createElement("option"); mo.value = ""; mo.disabled = true; mo.textContent = "… " + o.more + " more - search, or ☰ All"; g.appendChild(mo); }
+    if (o.more) { var mo = doc.createElement("option"); mo.value = ""; mo.disabled = true; mo.textContent = "… " + o.more + " more - ☰ All"; g.appendChild(mo); }
     sel.appendChild(g);
     sel.disabled = !!L.fixed && o.items.length < 2;
     sel.title = (k === "vlm" ? "Vision LLM" : "LLM") + " on " + (L.label || L.host) + (L.note ? " - " + L.note : "");
@@ -75,21 +75,14 @@
   /* 2.770.0: a search box before each remote list, ☰ All after the Vision list (shown in remote mode only) */
   function tools(k) {
     var sel = $(IDS[k]); if (!sel) return;
-    if (!$("rlQ_" + k)) {
-      var q = doc.createElement("input"); q.type = "search"; q.id = "rlQ_" + k; q.className = "rlQ"; q.placeholder = "🔍"; q.setAttribute("aria-label", "Search the " + (k === "vlm" ? "Vision LLM" : "LLM") + " models");
-      q.style.cssText = "flex:0 0 74px;width:74px;min-width:0;padding:3px 5px;font-size:.74rem";
-      q.title = "Search the models (every word: name, maker, free, paid, vision) - the list shows 10 at a time";
-      q.addEventListener("keydown", function (e) { e.stopPropagation(); });
-      q.addEventListener("input", function () { S.q[k] = q.value; paint(k); });
-      sel.parentNode.insertBefore(q, sel);
-    }
+    // 2.770.2 (Tim: "remove the input boxes that are to the left of llm dropdown and vllm dropdown in prompt docker"): no search
+    // box before the lists - ☰ All searches every model
     if (!$("rlAll") && $(IDS.vlm)) {
       var b = doc.createElement("button"); b.type = "button"; b.id = "rlAll"; b.className = "ghost ibtn"; b.textContent = "☰ All";
       b.title = "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list";
       b.onclick = function () { allDialog(owns("vlm") && !owns("llm") ? "vlm" : "llm"); };
       $(IDS.vlm).parentNode.insertBefore(b, $(IDS.vlm).nextSibling);
     }
-    ["llm", "vlm"].forEach(function (x) { var e = $("rlQ_" + x); if (e) e.style.display = owns(x) ? "" : "none"; });
     if ($("rlAll")) $("rlAll").style.display = (owns("llm") && S.v.llm.host === "openrouter") || (owns("vlm") && S.v.vlm.host === "openrouter") ? "" : "none";
   }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
