@@ -5091,6 +5091,25 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   - **By place**（このコンピューター、RunPod のポッド、API …）と **By mode** はそれぞれの平均を表示します。**⤓ CSV** で一覧を保存します。
   - このコンピューターにだけ保存されます（usage フォルダー）。2.771.0 以降の分で、それ以前のレンダーは入っていません。
 
+## 空のポッドに ComfyUI をインストール、ポッドが今していること (2.772.0)
+<!-- en: comfyui-installed-on-a-blank-pod-and-what-a-pod-is-doing-2-772-0 0d6f97e350e8 -->
+
+- **新しいポッドは空の状態から始まります。** bitGen がスタイル用に作るポッドは、RunPod 自身の **PyTorch** テンプレート（Python、PyTorch、CUDA、Jupyter - ComfyUI なし）から作られ、bitGen が自分で ComfyUI をインストールします。RunPod の ComfyUI 入りテンプレートは、ComfyUI のコピーをテンプレート側の状態のまま持っています（スタイルには古すぎる、ノードが足りない、クラッシュしている）。空のポッドなら、bitGen は何が入っているかを正確に把握できます。bitGen は CUDA 12.8 の PyTorch テンプレートを選び（RTX 50 シリーズとそれ以前のカードで動きます）、ポッドはそれを動かせるドライバーのホストに置かれます。RunPod の ComfyUI CUDA 13 テンプレートは、PyTorch テンプレートが一覧にないときだけ使われます。
+- **ComfyUI の入っていないテンプレートはどれも同じように使えます:** PODS ドッカー（All、Official …）で選んで Create pod… を押すと、まとめに **ComfyUI: bitGen installs it on the pod** と表示され、ポッドではそのためにポート **8188** が開かれます。ComfyUI テンプレートはこれまでどおり自分の ComfyUI を使います。
+- **インストールで行うこと**（ポッド上で 1 段階ずつ、それぞれ PODS ドッカーに表示されます）:
+  1. **Finding** - ポッドにあるものを調べます: Python、PyTorch とその CUDA、GPU、空き容量（git がなければインストールします）。
+  2. **Downloading** - GitHub から ComfyUI を /workspace/ComfyUI にダウンロードします。/workspace はポッドを停止しても残ります。
+  3. **Creating** - **ポッドの PyTorch をそのまま使う** ComfyUI 専用の Python 環境を作ります（数 GB の二重ダウンロードはありません）。
+  4. **Installing** - ComfyUI に必要なもの（requirements）と ComfyUI-Manager をインストールします。
+  5. **Starting** - ポート 8188 で ComfyUI を起動し、応答するまで **Loading** します。初回は数分かかります。そのあとは bitGen が作るほかのポッドと同じように準備されます - スタイルのファイルとノードパックが入り、使用中のポッドがなければそのポッドが使われます。すぐに再アップデートはされません（すでに最新の ComfyUI です）。
+- **ポッドを停止して再開すると、** 同じ手順がもう一度実行されますが、すでにあるものはすべて飛ばされ、ComfyUI の起動だけが行われます（空のテンプレートは自分では起動しません）。ポッドを待っているレンダーもこれを待ちます。
+- **失敗した段階** があると、インストールはその理由を言葉で示して止まります（git や pip 自身のエラー行、または ComfyUI のログの末尾）。理由はポッドとレンダーの行に表示されます。📊 Statistics には、各インストールがポッドの準備として載ります（"ComfyUI installed / started"）。
+- **ポッドが今していることを、ポッドのところに。** 🖥 PODS ▸ My pods では、各ポッド名の下（開いていても閉じていても）に、**今** 行っていることが 1 行で表示されます: その動詞 - **⬇ Downloading**、**📦 Installing**、**⏳ Loading**、**🔍 Finding**、**⇪ Sending**、**▶ Starting**、**🔄 Restarting**、**⬆ Updating**、**🔗 Linking**、**🔎 Checking**、**🧩 Preparing** … - 何を、そしてここまでの時間。ComfyUI のインストール、新しいポッドの準備、⬆ Update ComfyUI、スタイルの準備（ファイル、ノードパック、ダウンロード）、ポッドを待っているレンダーが対象です。
+  - **終わった作業** はその下のドロップダウンに入ります - **✓ 7 done · 2 already there · ✗ 1 failed** - 閉じた状態なので、ポッドは小さいままです。開くと新しい順の一覧になります: ✓ 完了、– すでにあった、✗ 失敗、それぞれにかかった時間。一覧が更新されても、開いた / 閉じた状態はそのままです。
+  - 何も実行していないときは、その行に結果が出ます: **✓ Done**（準備完了）または赤字の **✗ Stopped** と理由。
+  - 一覧は bitGen が動いている間保持されます（1 ポッドにつき最大 60 件）。
+- **閉じたポッド項目は本当に閉じるようになりました** - 以前は ▸ のままでもボタンや詳細が表示されていました。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

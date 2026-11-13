@@ -71,7 +71,7 @@
       return S.list;
     }).catch(function () { if (S.host) S.host.querySelector(".ppMsgTop").textContent = "bitGen could not be asked for the presets"; });
   }
-  function formOf(p) { return S.edit[p.name] || (S.edit[p.name] = JSON.parse(JSON.stringify({ name: p.name, template_id: p.template_id, template_name: p.template_name, gpu: p.gpu, gpu_name: p.gpu_name, count: p.count, cloud: p.cloud, disk: p.disk, volume: p.volume, cuda: p.cuda, kinds: p.kinds, styles: p.styles }))); }
+  function formOf(p) { return S.edit[p.name] || (S.edit[p.name] = JSON.parse(JSON.stringify({ name: p.name, template_id: p.template_id, template_name: p.template_name, gpu: p.gpu, gpu_name: p.gpu_name, count: p.count, cloud: p.cloud, disk: p.disk, volume: p.volume, cuda: p.cuda, cuda_was: p.cuda, kinds: p.kinds, styles: p.styles }))); }
   function stepsHtml(p) {
     var J = p.job;
     if (!J) return p.state === "running" ? '<div class="hint">Running - its styles were made ready when they were added or first rendered.</div>' : "";
@@ -107,7 +107,7 @@
       + '<label>GPUs</label><input type="number" data-ppf="count" min="1" max="8" value="' + f.count + '">'
       + '<label>Container disk</label><span><input type="number" data-ppf="disk" min="10" max="1000" value="' + f.disk + '"> GB (wiped when the pod stops)</span>'
       + '<label>/workspace</label><span><input type="number" data-ppf="volume" min="10" max="2000" value="' + f.volume + '"> GB (the models - kept while it is stopped)</span>'
-      + '<label>Host</label><label class="chk" style="color:inherit"><input type="checkbox" data-ppf="cuda"' + (f.cuda ? " checked" : "") + "> CUDA 13 (RunPod's ComfyUI CUDA 13 template needs it)</label>"
+      + '<label>Host</label><label class="chk" style="color:inherit"><input type="checkbox" data-ppf="cuda"' + (f.cuda ? " checked" : "") + "> CUDA " + esc(f.cuda || f.cuda_was || "13.0") + " or newer hosts only (the template's image needs it)</label>"
       + '<label>Kinds</label><span>' + [["image", "Image"], ["image_edit", "Image edit"], ["video", "Video"]].map(function (k) { return '<label class="chk" style="color:inherit;margin-right:8px"><input type="checkbox" data-ppkind="' + k[0] + '"' + (f.kinds.indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("") + "</span>"
       + "</div>"
       + '<div><div class="hint" style="margin-bottom:3px">Styles on this pod</div><div class="ppSty">'
@@ -188,7 +188,7 @@
         var k = el.dataset.ppf;
         el.oninput = el.onchange = function () {
           if (k === "count" || k === "disk" || k === "volume") f[k] = parseInt(el.value, 10) || 0;
-          else if (k === "cuda") f.cuda = el.checked ? "13.0" : "";
+          else if (k === "cuda") f.cuda = el.checked ? (f.cuda_was || "13.0") : "";
           else f[k] = el.value;
           if (k === "template_id") f.template_name = el.selectedOptions[0] ? el.selectedOptions[0].textContent : "";
           if (k === "gpu") f.gpu_name = el.selectedOptions[0] ? el.selectedOptions[0].textContent.split(" · ")[0] : "";
@@ -210,13 +210,16 @@
       };
     });
   }
+  function cuOf(img) { var s = String(img || ""), m = /cuda[-_]?(\d{2})\.(\d)/i.exec(s) || /[-_:]cu(\d{2})(\d)\d?(?=[-_.]|$)/i.exec(s); return m ? m[1] + "." + m[2] : ""; }   // = lib/podInstall.js cudaOf
   function newPreset() {
     var n = "Preset " + (S.list.length + 1), taken = S.list.map(function (p) { return p.name; }), k = S.list.length + 1;
     while (taken.indexOf(n) >= 0) n = "Preset " + (++k);
     Promise.all([loadAux(), gpusOf("SECURE")]).then(function (a) {
-      var t = a[0][0].filter(function (x) { return /cuda[\s_-]*13/i.test(x.name + " " + (x.image || "")); })[0] || a[0][0][0] || {};
+      // 2.772.0: RunPod's PyTorch template first (CUDA 12.8) - bitGen installs ComfyUI on it (lib/podInstall.js); else ComfyUI CUDA 13
+      var pt = a[0][0].filter(function (x) { return !x.comfy && /^runpod\/pytorch:/i.test(x.image || "") && /^12\.[89]$/.test(cuOf(x.image)); })[0];
+      var t = pt || a[0][0].filter(function (x) { return /cuda[\s_-]*13/i.test(x.name + " " + (x.image || "")); })[0] || a[0][0][0] || {};
       var g = a[1].filter(function (x) { return x.offered && x.memory >= 24; }).sort(function (x, y) { return x.price - y.price; })[0] || {};
-      return send("POST", "/api/podpresets", { preset: { name: n, template_id: t.id || "", template_name: t.name || "", gpu: g.id || "", gpu_name: g.name || "", count: 1, cloud: "SECURE", disk: 50, volume: 100, cuda: /cuda[\s_-]*13/i.test(t.name || "") ? "13.0" : "", kinds: [], styles: [] } });
+      return send("POST", "/api/podpresets", { preset: { name: n, template_id: t.id || "", template_name: t.name || "", gpu: g.id || "", gpu_name: g.name || "", count: 1, cloud: "SECURE", disk: 50, volume: 100, cuda: pt ? cuOf(t.image) : /cuda[\s_-]*13/i.test(t.name || "") ? "13.0" : "", kinds: [], styles: [] } });
     }).then(function (r) { if (r && r.error) { var m = S.host.querySelector(".ppMsgTop"); if (m) m.textContent = r.error; return; } S.open[n] = true; load(); });
   }
   /** the tab shows in `host` */

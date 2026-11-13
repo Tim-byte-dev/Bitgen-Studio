@@ -13,6 +13,8 @@
 //   2.763.5: GET /api/pods/account (?refresh=1) {balance, spend_hr, spend_limit, under, lasts_hr, at, error?} - lib/runpodAccount.js
 //   2.761.0: GET /api/pods/costs (RunPod's bill + the running pods), GET|POST /api/pods/:id/setup {kinds, llm, pod_name, port}
 //   (lib/podSetup.js), GET /api/pods/:id/folders, POST /api/pods/:id/folder {folder, name} (lib/podModels.js)
+//   2.772.0: GET /api/pods/activity {pods: {id: {now, done, last, at}}} - what each pod is doing now and has done
+//   (lib/podActivity.js); GET /api/pods/:id/install - ComfyUI installed on a blank pod (lib/podInstall.js status)
 "use strict";
 const P = require("../lib/pods");
 
@@ -23,6 +25,7 @@ function mount(app) {
   app.get("/api/pods/account", wrap((req) => require("../lib/runpodAccount").account(req.query.refresh === "1")));   // 2.763.5: the balance (the 💲 RunPod docker)
   app.post("/api/pods/create", wrap((req) => P.create(req.body || {})));
   app.get("/api/pods/mine", wrap(() => P.mine()));
+  app.get("/api/pods/activity", wrap(() => ({ pods: require("../lib/podActivity").all() })));   // 2.772.0
   // 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?"): before /:id/:action
   app.get("/api/pods/:id/comfy", wrap((req) => require("../lib/podStyles").contents(req.params.id, +req.query.port || 0)));
   app.post("/api/pods/:id/styles", wrap((req) => require("../lib/podStyles").make(req.params.id, req.body || {})));
@@ -39,6 +42,7 @@ function mount(app) {
   // video,llm,vllm,image,image-edit ... a save button ... add the cost in basics settings refresh after every minute")
   // 2.763.4 (Tim: "in the pods docker show utilization, memory and disk visualizations and usage"): a running pod's GPU load,
   // GPU memory, RAM, CPU and disks (lib/podStats.js)
+  app.get("/api/pods/:id/install", wrap((req) => ({ install: require("../lib/podInstall").status(req.params.id) })));   // 2.772.0
   app.get("/api/pods/:id/stats", wrap((req) => require("../lib/podStats").stats(req.params.id, +req.query.port || 0)));
   app.get("/api/pods/costs", wrap((req) => require("../lib/podCosts").costs(req.query.refresh === "1")));
   app.get("/api/pods/:id/setup", wrap((req) => Object.assign(require("../lib/podSetup").view(req.params.id), { revive: require("../lib/podRevive").status(req.params.id) })));

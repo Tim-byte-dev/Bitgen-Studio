@@ -5323,6 +5323,25 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
   - **By place**（這臺電腦、RunPod Pod、API …）和 **By mode** 給出各自的平均值。**⤓ CSV** 儲存列表。
   - 只儲存在這臺電腦上（usage 資料夾），從 2.771.0 開始記錄 - 更早的渲染不在其中。
 
+## 在空白 pod 上安裝 ComfyUI，以及 pod 正在做什麼 (2.772.0)
+<!-- en: comfyui-installed-on-a-blank-pod-and-what-a-pod-is-doing-2-772-0 0d6f97e350e8 -->
+
+- **新的 pod 從空白開始。** bitGen 為某個風格建立的 pod 現在使用 RunPod 自己的 **PyTorch** 範本（Python、PyTorch、CUDA 和 Jupyter - 沒有 ComfyUI），由 bitGen 自己在上面安裝 ComfyUI。RunPod 現成的 ComfyUI 範本帶著自己的 ComfyUI 副本，狀態由範本決定（對某個風格來說太舊、缺少節點、已當機）；在空白 pod 上，bitGen 清楚知道上面有什麼。bitGen 會選擇 CUDA 12.8 的 PyTorch 範本（可在 RTX 50 系列及更早的顯示卡上執行），pod 會被放在驅動程式能執行它的主機上。只有當 RunPod 沒有列出 PyTorch 範本時，才會使用 RunPod 的 ComfyUI CUDA 13 範本。
+- **任何不含 ComfyUI 的範本都同樣適用：** 在 PODS 停靠視窗（All、Official …）中選擇一個並按 Create pod… - 摘要會顯示 **ComfyUI: bitGen installs it on the pod**，pod 會為它開啟連接埠 **8188**。ComfyUI 範本仍像以前一樣使用它自己的 ComfyUI。
+- **安裝會做什麼**（在 pod 上逐步進行，每一步都會顯示在 PODS 停靠視窗中）：
+  1. **Finding** - 查找 pod 上有什麼：Python、PyTorch 及其 CUDA、GPU、可用空間（缺少 git 時會安裝）。
+  2. **Downloading** - 從 GitHub 把 ComfyUI 下載到 /workspace/ComfyUI - pod 停止時 /workspace 會保留。
+  3. **Creating** - 建立 ComfyUI 自己的 Python 環境，**沿用 pod 的 PyTorch**（不會再下載一次好幾 GB）。
+  4. **Installing** - 安裝 ComfyUI 需要的東西（它的 requirements）和 ComfyUI-Manager。
+  5. **Starting** - 在連接埠 8188 啟動 ComfyUI，並 **Loading** 直到它回應。第一次需要幾分鐘。之後 pod 會像 bitGen 建立的其他 pod 一樣完成設定 - 放入其風格的檔案和節點套件，如果目前沒有使用中的 pod，它就成為使用中的 pod。它不會馬上再更新（已經是最新的 ComfyUI）。
+- **pod 停止後再啟動時，** 同樣的步驟會再執行一次，但已有的內容都會略過 - 只啟動 ComfyUI（空白範本不會自己啟動它）。等待該 pod 的算圖也會等它完成。
+- **某一步失敗** 時，安裝會停止並用文字說明原因（git 或 pip 自己的錯誤行，或 ComfyUI 記錄的結尾），顯示在 pod 上和算圖那一行中。📊 Statistics 會把每次安裝列為一次 pod 準備（"ComfyUI installed / started"）。
+- **pod 正在做什麼 - 就顯示在 pod 上。** 在 🖥 PODS ▸ My pods 中，每個 pod 名稱下方（無論展開還是收合）有一行顯示 **現在** 正在做什麼：它的動詞 - **⬇ Downloading**、**📦 Installing**、**⏳ Loading**、**🔍 Finding**、**⇪ Sending**、**▶ Starting**、**🔄 Restarting**、**⬆ Updating**、**🔗 Linking**、**🔎 Checking**、**🧩 Preparing** … - 做什麼，以及到目前為止用了多久。涵蓋 ComfyUI 安裝、新 pod 的設定、⬆ Update ComfyUI、讓風格就緒（檔案、節點套件、下載）以及等待該 pod 的算圖。
+  - **已完成的工作** 放在它下面的下拉清單中 - **✓ 7 done · 2 already there · ✗ 1 failed** - 預設收合，pod 保持精簡。展開後依從新到舊列出：✓ 完成、– 已存在、✗ 失敗，每項都附耗時。清單更新時，它會保持你留下的展開或收合狀態。
+  - 沒有工作在執行時，這一行顯示結果：**✓ Done**（就緒）或紅色的 **✗ Stopped** 加原因。
+  - 清單在 bitGen 執行期間保留（每個 pod 最多 60 項）。
+- **收合的 pod 項目現在真的收合了** - 以前即使顯示 ▸，它的按鈕和詳細內容仍會顯示。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

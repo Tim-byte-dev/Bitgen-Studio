@@ -24,7 +24,7 @@
  *               The prices show in Settings ▸ General ▸ Currency (static/currency.js H3Money). */
 (function (root) {
   "use strict";
-  var doc = root.document, S = { stats: {}, g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "" };
+  var doc = root.document, S = { stats: {}, g: null, src: "all", comfy: false, kind: "", q: "", all: [], counts: {}, failed: [], tpl: [], gpus: {}, pods: [], st: {}, watch: {}, form: null, kill: null, cuts: [], styles: [], forStyle: "", act: {}, actOpen: {} };
   function $(id) { return doc.getElementById(id); }
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
@@ -66,6 +66,8 @@
     + ".pdk .pdHead{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;padding:6px 8px;color:inherit;cursor:pointer;font:inherit}"
     + ".pdk .pdHead .ar{color:var(--tiger,#f59e2c);width:1em;flex:none}.pdk .pdHead .nm{flex:1;min-width:0}"
     + ".pdk .pdBodyIn{padding:2px 10px 8px 26px;display:flex;flex-direction:column;gap:6px}"
+    // 2.772.0: a closed pod item really is closed (its display:flex had overridden the hidden attribute - every pod showed its body)
+    + ".pdk .pdBodyIn[hidden]{display:none}"
     + ".pdk .psKinds,.pdk .psTools,.pdk .pdActs,.pdk .psLlm,.pdk .psNf{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}"
     + ".pdk .psKinds .chk{margin:0}.pdk .psTools [data-pssave]{margin-left:auto}.pdk .psTools [data-pssave]:disabled{opacity:.45}"
     + ".pdk .psInto select{width:auto;max-width:200px}"
@@ -83,7 +85,17 @@
     + ".pdk .pdBar{position:relative;display:block;height:16px;border-radius:4px;background:var(--panel-2,#26262c);overflow:hidden;font-size:11px;line-height:16px}"
     + ".pdk .pdBar i{position:absolute;left:0;top:0;bottom:0;background:var(--tiger,#f59e2c);opacity:.55}.pdk .pdBar.hi i{background:#e66;opacity:.7}"
     + ".pdk .pdBar b{position:relative;padding:0 6px;font-weight:normal;white-space:nowrap}.pdk .pdStatsHead .pdBar{width:92px;height:12px;line-height:12px;font-size:10px}"
-    + ".pdk .pdSum{border:1px solid var(--line,#333);border-radius:6px;padding:6px 10px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px}.pdk .pdSum .k{color:var(--dim,#999)}";
+    + ".pdk .pdSum{border:1px solid var(--line,#333);border-radius:6px;padding:6px 10px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12px}.pdk .pdSum .k{color:var(--dim,#999)}"
+    // 2.772.0: what the pod is doing now (its verb + what) and the finished tasks in a dropdown under it
+    + ".pdk .pdDoing{margin:0 8px 6px 30px;font-size:12px;display:flex;flex-direction:column;gap:3px}.pdk .pdDoing:empty{display:none}"
+    + ".pdk .pdNow{display:flex;gap:6px;align-items:baseline;min-width:0}.pdk .pdNow .ic{flex:none;width:1.3em;text-align:center}.pdk .pdNow .vb{flex:none;color:var(--tiger,#f59e2c);font-weight:600}"
+    + ".pdk .pdNow .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pdk .pdNow .tm{flex:none;color:var(--dim,#999);font-variant-numeric:tabular-nums}"
+    + ".pdk .pdNow.run .ic{animation:pdPulse 1.4s ease-in-out infinite}@keyframes pdPulse{50%{opacity:.35}}"
+    + ".pdk .pdNow.ok .vb{color:#7c7}.pdk .pdNow.bad .vb{color:#e66}.pdk .pdNow.bad .tx{white-space:normal}"
+    + ".pdk .pdDone summary{cursor:pointer;color:var(--dim,#999);list-style:none;width:max-content}.pdk .pdDone summary::-webkit-details-marker{display:none}.pdk .pdDone summary:before{content:'▸ ';color:var(--tiger,#f59e2c)}.pdk .pdDone[open] summary:before{content:'▾ '}"
+    + ".pdk .pdDone ol{list-style:none;margin:3px 0 0;padding:0 0 0 14px;max-height:180px;overflow:auto;display:flex;flex-direction:column;gap:1px}"
+    + ".pdk .pdDone li{display:flex;gap:6px;align-items:baseline}.pdk .pdDone li .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pdk .pdDone li .tm{flex:none;color:var(--dim,#999)}"
+    + ".pdk .pdDone li.skipped{opacity:.6}.pdk .pdDone li.failed .st{color:#e66}.pdk .pdDone li .st{flex:none;width:1em;color:#7c7}";
 
   /* ---------------- where it shows */
   function wanted() { var g = S.g || {}; return !!(g.enabled && g.engine && g.engine.pods); }
@@ -337,6 +349,7 @@
     getj("/api/pods/gpus?cloud=" + cloud).then(function (j) { if (j.error) { say(j.error, false); return; } S.gpus[cloud] = j.gpus || []; fill(S.gpus[cloud]); });
   }
   /** 2.763.4 (Tim: "show all the details before i create the pod"): everything the pod will be, above Create pod */
+  function cuOf(img) { var s = String(img || ""), m = /cuda[-_]?(\d{2})\.(\d)/i.exec(s) || /[-_:]cu(\d{2})(\d)\d?(?=[-_.]|$)/i.exec(s); return m ? m[1] + "." + m[2] : ""; }   // = lib/podInstall.js cudaOf
   function summary() {
     var el = $("pdSum"); if (!el || !S.form) return;
     var t = S.all.find(function (x) { return x.id === S.form.id; }) || {}, list = S.gpus[S.form.cloud] || [], g = list.find(function (x) { return x.id === ($("pdGpu") || {}).value; }), n = +(($("pdCount") || {}).value) || 1;
@@ -346,7 +359,9 @@
     var rows = [["Template", (t.name || "?") + (t.image ? " (" + t.image + ")" : "")], ["GPU", g ? n + " × " + g.name + " · " + g.memory + " GB each" + (n > 1 ? " (" + (g.memory * n) + " GB in all)" : "") : "pick one"],
       ["Price", g ? money(g.price * n, "/h") + " while it runs (RunPod's price now) + storage" : "-"], ["Cloud", S.form.cloud === "COMMUNITY" ? "Community" : "Secure"],
       ["Container disk", (+(($("pdDisk") || {}).value) || 0) + " GB (wiped when it stops)"], ["/workspace", (+(($("pdVol") || {}).value) || 0) + " GB (kept while stopped)"],
-      ["Host", cu ? "CUDA 13 or newer only" : "any"], ["Ports", (web || "-") + " + Jupyter (bitGen's own password)"],
+      ["Host", cu ? "CUDA 13 or newer only" : cuOf(t.image) && !t.comfy ? "CUDA " + cuOf(t.image) + " or newer" : "any"], ["Ports", (web || "-") + (t.comfy ? "" : " + 8188 (ComfyUI)") + " + Jupyter (bitGen's own password)"],
+      // 2.772.0: a template without ComfyUI (RunPod's PyTorch) - bitGen installs it there
+      ["ComfyUI", t.comfy ? "the template's own" : "bitGen installs it on the pod - the newest ComfyUI from GitHub + ComfyUI-Manager, reusing the template's PyTorch (a few minutes the first time; kept in /workspace)"],
       ["Style", sty ? sty.name + (ks.length ? " · this pod renders " + ks.join(", ") + " styles with no pod of their own" : "") : (ks.length ? "renders " + ks.join(", ") + " styles with no pod of their own" : "none")],
       ["Then", (sty ? "the custom nodes " + sty.name + "'s workflows use" : "the custom nodes its styles' workflows use") + (sty ? " and " + sty.name + "'s files" + (S.ask && S.askSize ? " (about " + S.askSize + " GB)" : "") : "") + " go on it"]];
     el.innerHTML = rows.map(function (r) { return '<span class="k">' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span>"; }).join("");
@@ -412,7 +427,9 @@
         + (c && c.month ? ' · <span title="RunPod\'s bill for this pod: today / this month">' + esc(money(c.today)) + " today, " + esc(money(c.month)) + " this month</span>" : "")
         + (/RUNNING/.test(p.status) ? '<span class="pdStatsHead" data-pdstath="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], true) + "</span>" : "") + "</span></span></button></div>"
         // 2.769.1 (Tim: "... automatically treat it as such, don't wait for button press"): what bitGen does by itself on a pod it made
-        + (p.made_by_bitgen && p.setup && p.setup.note ? '<div class="hint pdMade" aria-live="polite" style="margin:2px 0 0 24px;font-size:.7rem">' + (p.setup.phase === "ready" ? "✓ " : p.setup.phase === "failed" ? "✗ " : "⏳ ") + "made by bitGen: " + esc(p.setup.note) + "</div>" : "")
+        + (S.act && S.act[p.id] ? "" : p.made_by_bitgen && p.setup && p.setup.note ? '<div class="hint pdMade" aria-live="polite" style="margin:2px 0 0 24px;font-size:.7rem">' + (p.setup.phase === "ready" ? "✓ " : p.setup.phase === "failed" ? "✗ " : "⏳ ") + "made by bitGen: " + esc(p.setup.note) + "</div>" : "")
+        // 2.772.0 (Tim: "… show what is being done, then hide the completed tasks in a dropdown"): what it is doing now + the done ones
+        + '<div class="pdDoing" data-pdactbox="' + esc(p.id) + '" aria-live="polite">' + actHtml(p.id) + "</div>"
         + '<div class="pdBodyIn"' + (open ? "" : " hidden") + ">"
         + (/RUNNING/.test(p.status) ? '<div class="pdStats" data-pdstats="' + esc(p.id) + '">' + statsHtml(S.stats[p.id], false) + "</div>" : "")
         + (open && root.H3PodSetup ? H3PodSetup.html(p) : "")
@@ -530,6 +547,41 @@
     (st.disks || []).forEach(function (d) { out.push(bar((d.path === "/" ? "Disk" : d.path) + " " + gb(d.used) + "/" + gb(d.total) + " GB", 100 * d.used / (d.total || 1), d.path === "/" ? "the container disk (wiped when the pod stops)" : "/workspace (kept while the pod is stopped)")); });
     return out.join("") || '<span class="hint">no figures from the pod yet</span>';
   }
+  /* 2.772.0 (Tim: "in the pod that is installing and being used show what is being done, then hide the completed tasks in a
+     dropdown so the pods details don't get too big. say what it is doing, downloading, loading, finding etc"): the pod's
+     activity (GET /api/pods/activity - lib/podActivity.js): what it is doing NOW, one line each - its verb (Downloading,
+     Installing, Loading, Finding …) + what + how long so far; when nothing runs, the last result (✓ / ✗); the finished tasks
+     in a dropdown ("✓ 7 done"), closed unless you open it - it stays as you leave it while the list updates */
+  function dur(s) { s = Math.max(0, Math.round(+s || 0)); return s < 60 ? s + " s" : s < 3600 ? Math.floor(s / 60) + " min" + (s % 60 ? " " + (s % 60) + " s" : "") : Math.floor(s / 3600) + " h " + Math.round((s % 3600) / 60) + " min"; }
+  function actHtml(id) {
+    var a = S.act && S.act[id]; if (!a) return "";
+    var out = (a.now || []).map(function (x) {
+      return '<div class="pdNow run"><span class="ic">' + esc(x.icon) + '</span><span class="vb">' + esc(x.verb) + '</span><span class="tx" title="' + esc(x.text) + '">' + esc(x.rest || x.text) + '</span><span class="tm">' + esc(dur(x.secs)) + "</span></div>";
+    }).join("");
+    if (!(a.now || []).length && a.last) out += '<div class="pdNow ' + (a.last.ok ? "ok" : "bad") + '"><span class="ic">' + (a.last.ok ? "✓" : "✗") + '</span><span class="vb">' + (a.last.ok ? "Done" : "Stopped") + '</span><span class="tx" title="' + esc(a.last.text) + '">' + esc(a.last.text) + "</span></div>";
+    var done = (a.done || []).filter(function (x) { return !(x.result && a.last && !(a.now || []).length && x.text === a.last.text); });
+    if (done.length) {
+      var nOk = done.filter(function (x) { return x.state === "done"; }).length, nBad = done.filter(function (x) { return x.state === "failed"; }).length, nSk = done.filter(function (x) { return x.state === "skipped"; }).length;
+      out += '<details class="pdDone" data-pddone="' + esc(id) + '"' + (S.actOpen && S.actOpen[id] ? " open" : "") + "><summary>✓ " + nOk + " done" + (nSk ? " · " + nSk + " already there" : "") + (nBad ? " · ✗ " + nBad + " failed" : "") + "</summary><ol>"
+        + done.map(function (x) { return '<li class="' + esc(x.state) + '"><span class="st">' + (x.state === "failed" ? "✗" : x.state === "skipped" ? "–" : "✓") + "</span><span>" + esc(x.icon) + '</span><span class="tx" title="' + esc(x.text) + '"><b>' + esc(x.verb) + "</b> " + esc(x.rest || x.text) + '</span><span class="tm">' + (x.secs ? esc(dur(x.secs)) : "") + "</span></li>"; }).join("")
+        + "</ol></details>";
+    }
+    return out;
+  }
+  function paintAct() {
+    doc.querySelectorAll("[data-pdactbox]").forEach(function (b) {
+      var id = b.dataset.pdactbox, d = b.querySelector("details.pdDone"), top = d ? d.querySelector("ol").scrollTop : 0, h = actHtml(id);
+      if (b.innerHTML === h) return;
+      b.innerHTML = h;
+      var d2 = b.querySelector("details.pdDone"); if (d2 && top) d2.querySelector("ol").scrollTop = top;
+      var mk = b.previousElementSibling; if (mk && mk.classList && mk.classList.contains("pdMade") && S.act[id]) mk.remove();
+    });
+  }
+  function pollAct() {
+    var vis = $("pdBody") && $("pdBody").offsetParent !== null;
+    (vis ? getj("/api/pods/activity").then(function (j) { S.act = (j && j.pods) || {}; paintAct(); }).catch(function () { /* next time */ }) : Promise.resolve())
+      .then(function () { setTimeout(pollAct, +(root.H3_POD_ACT_POLL || 2500)); });
+  }
   function pollStats() {
     var vis = $("pdBody") && $("pdBody").offsetParent !== null;
     var ids = vis ? (S.pods || []).filter(function (p) { return /RUNNING/.test(p.status); }).map(function (p) { return p.id; }) : [];
@@ -557,7 +609,7 @@
     paintAsk();
     var pre = { style: o.ask.style_id, kinds: [o.ask.kind], gpu: o.pick || "", volume: o.volume_gb || 50, count: o.count || 1, cloud: o.cloud || "SECURE" };
     var openIt = function () {
-      if (!o.template) { go("mine"); say(o.template_error || "RunPod's ComfyUI CUDA 13 template was not found - pick a template, or use one of your pods", false); return; }
+      if (!o.template) { go("mine"); say(o.template_error || "RunPod's PyTorch template was not found - pick a template, or use one of your pods", false); return; }
       if (!S.all.some(function (t) { return t.id === o.template.id; })) { setTimeout(openIt, 400); return; }
       S.src = "all"; filter();
       openForm(o.template.id, pre);
@@ -596,6 +648,9 @@
     }
     loadG().then(costLine);
     pollStats();   // 2.763.4
+    pollAct();     // 2.772.0
+    // 2.772.0: the done-list dropdown stays open / closed as you leave it while the activity updates
+    doc.addEventListener("toggle", function (e) { var d = e.target; if (d && d.dataset && d.dataset.pddone) { S.actOpen = S.actOpen || {}; S.actOpen[d.dataset.pddone] = d.open; } }, true);
     setInterval(costLine, +(root.H3_POD_COST_POLL || 60000));
     doc.addEventListener("h3:rgpu", function () { loadG().then(costLine); });
     root.addEventListener("h3:currency", function () { if (!$("pdBody")) return; paintPods(); if (S.form && $("pdGpu") && S.gpus[S.form.cloud]) { var keep = $("pdGpu").value; gpus(S.form.cloud); if (keep) { $("pdGpu").value = keep; price(); } } });

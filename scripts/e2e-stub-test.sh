@@ -13133,6 +13133,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.772.0 (Tim: "is there an empty pod template that we can install our comfy ui on from scratch" + "lets do that, also in the pod that is installing and being used show what is being done, then hide the completed tasks in a dropdown so the pods details don't get too big. say what it is doing, downloading, loading, finding etc")
+node scripts/test-podinstall772.js > /tmp/podinstall772.log 2>&1 \
+  && ok "2.772.0 units: ComfyUI installed on a blank pod - RunPod's PyTorch template picked (CUDA 12.8 first), 8188 opened, the pod's job run for real (git clone, a venv reusing PyTorch, requirements, ComfyUI-Manager, started + loaded; again after a restart = only started), ensure() into the pod's activity" \
+  || { bad "2.772.0 ComfyUI install units"; grep -a "^FAIL" -A2 /tmp/podinstall772.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui772-ui.js > /tmp/ui772ui.log 2>&1 \
+  && ok "2.772.0 browser test: on the pod - what it is doing now (its verb: Installing / Loading …, how long), the finished tasks in a closed dropdown that stays as left, ✓ Done / ✗ Stopped; a closed pod really closed; the create form on RunPod's PyTorch template says bitGen installs ComfyUI - or SKIP without playwright" \
+  || { bad "2.772.0 pod activity browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui772ui.log | head -14; }
 # ---- 2.771.0 (Tim: "add a tab for statistics - change the runpod docker to Costs, show all costs summary, if user clicks on one of the costs open a detailed lists of expenditure for that platform or local" + "statistics go is Statistics Dialog, Costs Docker should include local costs and all the diferent platform costs individually")
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui771-ui.js > /tmp/ui771ui.log 2>&1 \
   && ok "2.771.0 browser test: 💲 Costs - all costs a row each (this computer, RunPod, OpenRouter, an API), the range buttons, a row clicked = its detailed list, ← All costs; 📊 Statistics - startup / generation / total per generation, the pod preparation it waited for, Pod preparations, By place, CSV, Esc - or SKIP without playwright" \

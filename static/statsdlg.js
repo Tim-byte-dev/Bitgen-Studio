@@ -10,7 +10,7 @@
  *                their time
  *   GENERATIONS  one row each: finished, mode, what, where (this computer / RunPod pod / an API / a remote GPU), status,
  *                waited in the queue, STARTUP, GENERATION, TOTAL; a row with pod preparations opens their phases
- *   POD PREPARATIONS  one row each: when, the pod, start / prepare / node packs, how long, the phases (checking, starting,
+ *   POD PREPARATIONS  one row each: when, the pod, start / prepare / node packs / ComfyUI install (2.772.0), how long, the phases (checking, starting,
  *                ComfyUI update / repair, node packs, restart, downloads, sending, linking), the styles, problems
  *   BY PLACE / BY MODE  count and the three averages
  *   ⤓ CSV        the generations or the preparations (GET /api/genstats/csv - lib/genStats.toCsv)
@@ -30,7 +30,7 @@
     if (name === "last") { var f = new Date(d.getFullYear(), d.getMonth() - 1, 1), t = new Date(d.getFullYear(), d.getMonth(), 0); return { from: ymd(f), to: ymd(t) }; }
     return { from: "", to: "" };
   }
-  var PHASES = [["check", "checking"], ["start", "starting the pod"], ["update", "ComfyUI update"], ["repair", "ComfyUI repair"], ["nodes", "node packs"],
+  var PHASES = [["check", "checking"], ["install", "ComfyUI install"], ["start", "starting the pod"], ["update", "ComfyUI update"], ["repair", "ComfyUI repair"], ["nodes", "node packs"],
     ["restart", "ComfyUI restart"], ["download", "downloads"], ["send", "sending files"], ["link", "finding / linking files"]];
   function durText(ms) {
     var v = Math.max(0, Math.round(+ms || 0));
@@ -96,13 +96,13 @@
           var np = (g.preps || []).length, row = '<tr class="' + esc(g.status) + (np ? " hasprep" : "") + '" data-stgen="' + esc(g.id) + '" title="' + esc((g.prompt || "") + (np ? "\n" + np + " pod preparation" + (np > 1 ? "s" : "") + " while it waited - click" : "")) + '">'
             + '<td class="l">' + esc(when(g.t)) + '</td><td class="l">' + esc(g.mode) + '</td><td class="l">' + esc(g.what || (g.prompt || "").slice(0, 40)) + '</td><td class="l">' + esc(whereText(g)) + (np ? " ⚙" + np : "") + '</td><td class="l">' + esc(g.never_started ? g.status + " (before it ran)" : g.status)
             + "</td><td>" + (g.queued_ms ? durText(g.queued_ms) : "") + '</td><td class="k">' + durText(g.startup_ms) + '</td><td class="k">' + durText(g.gen_ms) + '</td><td class="k">' + durText(g.total_ms) + "</td></tr>";
-          if (np && S.open[g.id]) row += g.preps.map(function (p) { return '<tr class="prep"><td></td><td colspan="8">⚙ ' + esc(p.kind === "start" ? "pod started" : "pod made ready") + " " + esc(durText(p.ms)) + (phaseText(p.phases) ? ": " + esc(phaseText(p.phases)) : "") + "</td></tr>"; }).join("");
+          if (np && S.open[g.id]) row += g.preps.map(function (p) { return '<tr class="prep"><td></td><td colspan="8">⚙ ' + esc(p.kind === "start" ? "pod started" : p.kind === "install" ? "ComfyUI installed / started" : "pod made ready") + " " + esc(durText(p.ms)) + (phaseText(p.phases) ? ": " + esc(phaseText(p.phases)) : "") + "</td></tr>"; }).join("");
           return row;
         }).join("") + "</tbody></table>" : '<div class="note" style="padding:8px">No generations in these days yet - each render is added when it finishes.</div>';
     } else if (S.tab === "preps") {
       w.innerHTML = d.preps.length ? '<table id="stPrepList"><thead><tr><th class="l">When</th><th class="l">Pod</th><th class="l">What</th><th>Took</th><th class="l">Phases</th><th class="l">Styles</th><th class="l">Problems</th></tr></thead><tbody>'
         + d.preps.map(function (p) {
-          return '<tr><td class="l">' + esc(when(p.at)) + '</td><td class="l">' + esc(p.pod) + '</td><td class="l">' + esc(p.kind === "start" ? "started the pod" : p.kind === "nodes" ? "node packs" : "made styles ready") + '</td><td class="k">' + durText(p.ms) + '</td><td class="l" style="white-space:normal">' + esc(phaseText(p.phases) || "checks only")
+          return '<tr><td class="l">' + esc(when(p.at)) + '</td><td class="l">' + esc(p.pod) + '</td><td class="l">' + esc(p.kind === "start" ? "started the pod" : p.kind === "install" ? "ComfyUI installed / started" : p.kind === "nodes" ? "node packs" : "made styles ready") + '</td><td class="k">' + durText(p.ms) + '</td><td class="l" style="white-space:normal">' + esc(phaseText(p.phases) || "checks only")
             + '</td><td class="l" style="white-space:normal">' + esc((p.styles || []).join(", ")) + '</td><td class="l" style="white-space:normal" title="' + esc((p.problems || []).join("\n")) + '">' + ((p.problems || []).length ? esc((p.problems || []).length + " - " + String(p.problems[0]).slice(0, 80)) : "") + "</td></tr>";
         }).join("") + "</tbody></table>" : '<div class="note" style="padding:8px">No pod preparations in these days - a pod is made ready when a style first renders on it, or needs files, node packs or a restart.</div>';
     } else {

@@ -8749,6 +8749,41 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   - **By place** (this computer, RunPod pods, an API …) and **By mode** give the averages for each. **⤓ CSV** saves the list.
   - Kept on this computer only (the usage folder), from 2.771.0 on - earlier renders are not in it.
 
+## ComfyUI installed on a blank pod, and what a pod is doing (2.772.0)
+
+- **New pods start blank.** A pod bitGen makes for a style is now made from RunPod's own **PyTorch** template (Python,
+  PyTorch, CUDA and Jupyter - no ComfyUI), and bitGen installs ComfyUI on it itself. RunPod's ready-made ComfyUI templates
+  keep their own ComfyUI copy in their own state (too old for a style, missing its nodes, crashed); on a blank pod bitGen
+  knows exactly what is there. bitGen picks a PyTorch template with CUDA 12.8 (it runs on RTX 50-series and older cards) and
+  the pod lands on a host whose driver runs it. RunPod's ComfyUI CUDA 13 template is used only when RunPod lists no PyTorch one.
+- **Any template without ComfyUI works the same way:** pick one in the PODS docker (All, Official …) and press Create pod… -
+  the summary says **ComfyUI: bitGen installs it on the pod**, and the pod gets port **8188** opened for it. A ComfyUI
+  template keeps its own ComfyUI, as before.
+- **What the install does,** on the pod, step by step (each one said in the PODS docker):
+  1. **Finding** what the pod has - Python, PyTorch and its CUDA, the GPU, the free space (git is installed if missing).
+  2. **Downloading** ComfyUI from GitHub into /workspace/ComfyUI - /workspace is kept while the pod is stopped.
+  3. **Creating** ComfyUI's own Python environment that **reuses the pod's PyTorch** (no second download of several GB).
+  4. **Installing** what ComfyUI needs (its requirements) and ComfyUI-Manager.
+  5. **Starting** ComfyUI on port 8188 and **Loading** it until it answers.
+  The first time takes a few minutes. Then the pod is set up as any pod bitGen makes - its styles' files and node packs go on
+  it, and it becomes the pod in use if none is. It is not updated again straight away (it is the newest ComfyUI already).
+- **After the pod is stopped and started,** the same steps run again, but everything already there is skipped - only ComfyUI is
+  started (a blank template does not start it by itself). A render waiting for the pod waits for this too.
+- **A step that fails** stops the install with the reason in words (git's or pip's own error line, or the end of ComfyUI's
+  log), shown on the pod and in the render's line. 📊 Statistics lists each install as a pod preparation ("ComfyUI installed
+  / started").
+- **What a pod is doing - on the pod itself.** In 🖥 PODS ▸ My pods, under each pod's name (open or closed), one line says what
+  is being done **now**: its verb - **⬇ Downloading**, **📦 Installing**, **⏳ Loading**, **🔍 Finding**, **⇪ Sending**,
+  **▶ Starting**, **🔄 Restarting**, **⬆ Updating**, **🔗 Linking**, **🔎 Checking**, **🧩 Preparing** … - what, and how
+  long so far. It covers the ComfyUI install, a new pod's setup, ⬆ Update ComfyUI, making styles ready (files, node packs,
+  downloads) and a render waiting for its pod.
+  - The **finished tasks** go into a dropdown under it - **✓ 7 done · 2 already there · ✗ 1 failed** - closed, so the pod
+    stays small. Open it for the list, newest first: ✓ done, – already there, ✗ failed, each with how long it took. It stays
+    open or closed as you leave it while the list updates.
+  - When nothing is running the line gives the result: **✓ Done** (ready) or **✗ Stopped** with the reason, in red.
+  - The list is kept while bitGen runs (60 tasks a pod at most).
+- **A closed pod item is really closed now** - before, its buttons and details showed even with ▸.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

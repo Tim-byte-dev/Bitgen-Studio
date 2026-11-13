@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "fea2ae1248c0",
- "count": 9390,
+ "v": "b05ee5cb6fb4",
+ "count": 9391,
  "patternCount": 1132,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -1302,6 +1302,7 @@
   "ComfyUI folder": "ComfyUI 文件夹",
   "ComfyUI from 21 Oct 2026 or later (its own Fibo 2.0 nodes); about an 8 GB card with the w4a8 or GGUF Q4_0 file (ComfyUI moves the rest to RAM); ComfyUI-GGUF for a .gguf (installed when you tick one). The weights are CC BY-NC 4.0 - non-commercial use only": "2026 年 10 月 21 日或之后的 ComfyUI（自带 Fibo 2.0 节点）；使用 w4a8 或 GGUF Q4_0 文件约需 8 GB 显卡（其余部分由 ComfyUI 移至内存）；.gguf 文件需要 ComfyUI-GGUF（勾选时自动安装）。权重采用 CC BY-NC 4.0 - 仅限非商业用途",
   "ComfyUI in the endpoint's image": "端点镜像里的 ComfyUI",
+  "ComfyUI install": "ComfyUI 安装",
   "ComfyUI is not answering, so this list comes from the model folders. Start ComfyUI and rescan to see exactly what its dropdowns hold": "ComfyUI 没有响应，因此此列表来自模型文件夹。启动 ComfyUI 并重新扫描，即可准确查看其下拉列表中的内容",
   "ComfyUI is not reachable at http://127.0.0.1:8188. Start it in Settings → ComfyUI (or press ↻ once it is up)": "无法连接 http://127.0.0.1:8188 上的 ComfyUI。请在设置 → ComfyUI 中启动它（或在它启动后按 ↻）",
   "ComfyUI is not running - what it has is checked when it is": "ComfyUI 未运行 - 运行时会检查其已有的内容",

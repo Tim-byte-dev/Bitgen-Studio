@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "895a2e7ef24e",
- "count": 9390,
+ "v": "f6f6ebc8580a",
+ "count": 9391,
  "patternCount": 1132,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -1302,6 +1302,7 @@
   "ComfyUI folder": "ComfyUI フォルダー",
   "ComfyUI from 21 Oct 2026 or later (its own Fibo 2.0 nodes); about an 8 GB card with the w4a8 or GGUF Q4_0 file (ComfyUI moves the rest to RAM); ComfyUI-GGUF for a .gguf (installed when you tick one). The weights are CC BY-NC 4.0 - non-commercial use only": "2026 年 10 月 21 日以降の ComfyUI（本体の Fibo 2.0 ノード）、w4a8 または GGUF Q4_0 ファイルなら 8 GB 程度のカード（残りは ComfyUI が RAM に移します）、.gguf には ComfyUI-GGUF（いずれかにチェックを入れるとインストールされます）。重みは CC BY-NC 4.0 - 非商用利用のみ",
   "ComfyUI in the endpoint's image": "エンドポイントのイメージの ComfyUI",
+  "ComfyUI install": "ComfyUI のインストール",
   "ComfyUI is not answering, so this list comes from the model folders. Start ComfyUI and rescan to see exactly what its dropdowns hold": "ComfyUI が応答しないため、この一覧はモデルフォルダーから作成しています。ComfyUI を起動して再スキャンすると、ドロップダウンの実際の内容を確認できます",
   "ComfyUI is not reachable at http://127.0.0.1:8188. Start it in Settings → ComfyUI (or press ↻ once it is up)": "http://127.0.0.1:8188 の ComfyUI に接続できません。設定 → ComfyUI で起動してください（起動済みなら ↻ を押してください）",
   "ComfyUI is not running - what it has is checked when it is": "ComfyUI が起動していません - 起動したときに内容を確認します",
