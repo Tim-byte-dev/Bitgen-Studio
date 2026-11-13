@@ -5349,6 +5349,21 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **pod 上只放你目前模式的風格。** 在圖像模式（🖼 Image、⚙ Graph）下，bitGen 只上傳和檢查你的**圖像**風格 - 你選的 Image 風格會在它的 pod 上準備好；在 🎬 Video（或 🎶 Music）下只處理**影片**風格。自行設定的 pod、My pods 中的 💾 Save 和預設也一樣：另一種模式的風格會在 pod 上註明（"left for Video mode: …"），等你切換到那個模式或用它算圖時再準備。🗣 Speech 和 💬 Chat 不準備任何風格。☁ Remote generation 停靠視窗的那一行顯示你目前模式的風格。
 - **從本機傳送的 LoRA 不會再在最後因 "[Errno 2] No such file" 而停止。** 檔案其實已完整到達，但在某些 pod 範本上，Jupyter 把上傳放在與 bitGen 查找的不同資料夾裡，bitGen 要把它移到 ComfyUI 的 models 資料夾時找不到。現在 bitGen 會在 Jupyter 放置的位置找到它；如果確實找不到，會用文字說明。每次上傳的分塊檔案都有自己的名字，所以不會把舊上傳的殘留誤當成它。
 
+## 在 Pod 上失敗的渲染會重新執行；等待範本的 ComfyUI (2.774.0)
+<!-- en: a-render-that-failed-on-its-pod-goes-again-a-template-s-comfyui-waited-for-2-774 19cc8e39a7d7 -->
+
+- **因 Pod 無法使用而失敗的渲染，會在該 Pod 就緒後自動重新執行。** 包括設定中斷、檔案還沒到 Pod 上，或它的 ComfyUI 還缺少某個節點。渲染會被保留，佇列中顯示 **失敗 · Pod 就緒後會重新執行**。當該 Pod 有新的進展時它就會重新執行：
+  - 設定完成；
+  - 在上面安裝或更新了 ComfyUI；
+  - 它的風格已準備好；
+  - 你從這台電腦傳送的檔案已到達。
+  bitGen 會先等到 Pod 上沒有其他工作在執行。新的渲染使用相同設定，記錄中會說明為何重新執行；舊的那筆則顯示 **失敗 · 已重新執行**。
+  - 每個渲染最多 3 次，12 小時內有效。之後請在修好 Pod 後再按 Generate。
+  - 從佇列中清除失敗的渲染，它就不會再執行。
+  - 只在 bitGen 執行期間保留（重新啟動後不保留）。
+- **(2.773.1) 渲染使用 Pod 之前會等待它的 ComfyUI。** 仍在自行設定的 ComfyUI 範本會被等待，Pod 上顯示 "its ComfyUI is being set up by the template"。RunPod 映像中沒有 ComfyUI 的 Pod，即使不是這台電腦建立的，也會由 bitGen 安裝。
+- 設定 RunPod（註冊、**All** 權限的 API 金鑰、由 bitGen 建立的 Pod）和 OpenRouter（註冊、金鑰、在上面執行 LLM）的**逐步教學**在 [tigerart.com.au/tutorials.php](https://tigerart.com.au/tutorials.php#runpod)。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

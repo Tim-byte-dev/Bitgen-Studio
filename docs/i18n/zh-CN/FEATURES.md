@@ -413,6 +413,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **pod 正在做什么，显示在 pod 上** — 每个 pod 名称下方显示现在正在做什么，带有动词（Downloading、Installing、Loading、Finding、Sending、Starting、Updating …）和到目前为止的时间；已完成的任务放在下拉列表中（✓ 完成、– 已存在、✗ 失败），pod 保持紧凑；没有任务运行时显示 ✓ Done 或带原因的 ✗ Stopped。 *Where:* PODS ▸ My pods。 *Since:* 2.772.0
 - **左侧停靠窗显示 pod 的统计** — 远程模式下 System 统计显示正在使用的 pod：CPU 负载、内存、每个 GPU 的负载、温度和显存，以及磁盘；⚡ since start 仍是本机的。 *Where:* 左侧停靠窗的 System。 *Since:* 2.773.0
 - **pod 上只放当前模式的风格** — 图像模式下只上传和检查图像风格，Video 模式下只处理视频风格；其他风格等到切换到它们的模式。 *Where:* 提示词停靠窗的 Generate 模式；PODS ▸ My pods。 *Since:* 2.773.0
+- **在 Pod 上失败的渲染会重新运行** — 因 Pod 无法使用而停下的渲染（配置中断、文件还没到、缺少节点）会在该 Pod 就绪时自动重新运行：配置完成、ComfyUI 安装或更新完毕，或你发送的文件到达。最多 3 次，从队列中清除后就不再运行。 *Where:* 队列（“Pod 就绪后会重新运行”）。 *Since:* 2.774.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

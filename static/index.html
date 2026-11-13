@@ -6539,6 +6539,8 @@ async function refreshJobs() {
     if (j.status === "running") el.querySelector(".st").textContent = jobRunText(j.progress);
     // 2.384.0: a finished job's ⓘ - its render details (seed, cfg, steps, model, LoRAs) in a dialog
     if (j.status === "done" && j.meta) jobInfoBtn(el, j.meta, j.id);
+    // 2.774.0: a render that failed on its pod goes again by itself when the pod is ready (lib/podRetry.js)
+    if (j.pod_held || j.retried_as) { const st = el.querySelector(".st"); st.textContent = j.retried_as ? "failed · went again" : "failed · goes again when its pod is ready"; st.title = j.retried_as ? "Queued again as " + j.retried_as + " when its pod was ready" : "It goes again by itself when its pod is set up or gets the files it lacks - clear it to stop that"; }
     if (j.energy && window.H3Power) { const eb = H3Power.badge(j.energy); if (eb) el.querySelector(".top").insertBefore(eb, el.querySelector(".st")); }   // 2.517.0: ⚡ what it used
     el.onclick = () => selectJob(j.id);
     box.appendChild(el);

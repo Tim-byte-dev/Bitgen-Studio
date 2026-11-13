@@ -8802,6 +8802,26 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   models folder. bitGen now finds it where Jupyter put it; if it really cannot, it says so in words. Each upload's part file
   has its own name, so a leftover from an older upload is never taken for it.
 
+## A render that failed on its pod goes again; a template's ComfyUI waited for (2.774.0)
+
+- **A render that failed because its pod could not be used goes again by itself** once that pod is ready. That covers
+  a setup that stopped, files not on the pod yet, or a node its ComfyUI still lacked. The render is held, and the Queue
+  says **failed · goes again when its pod is ready**. It goes again when something new is done to that pod:
+  - its setup finishes;
+  - ComfyUI is installed or updated on it;
+  - its styles are made ready;
+  - a file you send from this computer lands on it.
+  bitGen first waits until nothing else is running on the pod. The new render has the same settings and its log says
+  why it went again; the old one then says **failed · went again**.
+  - At most 3 tries per render, within 12 hours. After that, press Generate when the pod is fixed.
+  - Clear the failed render from the Queue and it is not tried again.
+  - It is kept while bitGen runs (not over a restart).
+- **(2.773.1) A pod's ComfyUI is waited for before a render uses it.** A ComfyUI template still setting itself up is
+  waited for, and the pod says "its ComfyUI is being set up by the template". A pod whose RunPod image has no ComfyUI
+  gets bitGen's install even when this computer did not make it.
+- **Step-by-step tutorials** for setting up RunPod (sign up, an **All** API key, a pod made by bitGen) and OpenRouter
+  (sign up, a key, the LLM on it) are on [tigerart.com.au/tutorials.php](https://tigerart.com.au/tutorials.php#runpod).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

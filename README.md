@@ -148,6 +148,20 @@ troubleshooting.
 | RAM / disk | 32 GB RAM or more; ~100 GB free disk for ComfyUI, the models and your projects. |
 | Software | Node.js 18+, Python 3.10+, Git and ffmpeg on the PATH. Optional: Blender 4.x (the Blender engine, bakes, add-on), Daz Studio, Unreal Engine 5.8. |
 
+### Don't have the hardware?
+
+bitGen Studio can rent what your computer lacks and still run everything else at home:
+
+- **[RunPod](https://runpod.io?ref=gbj9zxqh)** - render on a GPU you rent by the hour. Pick a style and press Generate: bitGen
+  makes the pod, installs ComfyUI on it, puts the style's models and node packs there, and your render starts by itself
+  when the pod is ready. Stop the pod when you are done. (The link is bitGen's referral link - signing up with it helps fund
+  bitGen Studio.)
+- **[OpenRouter](https://openrouter.ai)** - run the language model (screenplays, ✨ Enhance, the prompt chat, picture
+  descriptions) on OpenRouter instead of your card. One key, hundreds of models, many of them free.
+
+Step by step, with pictures: [Render on a RunPod GPU](https://tigerart.com.au/tutorials.php#runpod) and
+[The LLM on OpenRouter](https://tigerart.com.au/tutorials.php#openrouter).
+
 ## How it fits together
 
 ```
