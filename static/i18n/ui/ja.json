@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "9fe027ea59bb",
- "count": 9396,
+ "v": "7fd8c40fa5a6",
+ "count": 9399,
  "patternCount": 1136,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -632,6 +632,7 @@
   "Audio file": "オーディオファイル",
   "Audio files": "オーディオファイル",
   "Audio layer": "オーディオレイヤー",
+  "Audio on this pod": "このポッドの音声",
   "Audio settings": "オーディオ設定",
   "Audio to video (text + audio)": "オーディオから動画（テキスト + オーディオ）",
   "Audio → keys": "オーディオ → キー",
@@ -3053,6 +3054,7 @@
   "Installed - install it again over the top (repairs a broken install)": "インストール済み - 上書きで再インストールします（壊れたインストールを修復）",
   "Installed - install rembg + BiRefNet again over the top (repairs a broken install)": "インストール済み - rembg + BiRefNet を上書きで再インストールします（壊れたインストールを修復）",
   "Installed into": "インストール先",
+  "Installed on the pod - in remote mode these jobs run there instead of on this computer": "ポッドにインストール - リモートモードでは、これらのジョブはこのコンピューターではなくポッドで動きます",
   "Installing": "インストール中",
   "Instruction": "指示",
   "Instruments": "楽器",
@@ -5855,6 +5857,7 @@
   "Song (project Sound assets)": "曲（プロジェクトのサウンドアセット）",
   "Song generation (MiniMax Music 3, YuE2)": "曲の生成（MiniMax Music 3、YuE2）",
   "Song name": "曲名",
+  "Song separation": "曲の分離",
   "Song separation (demucs)": "曲の分離（demucs）",
   "Song tab's": "「曲」タブの",
   "Song waveform with segment lines": "セグメント線付きの曲の波形",

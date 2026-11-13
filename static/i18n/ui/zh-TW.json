@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "63deaa82c3f9",
- "count": 9396,
+ "v": "a933730106d5",
+ "count": 9399,
  "patternCount": 1136,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -632,6 +632,7 @@
   "Audio file": "音訊檔案",
   "Audio files": "音訊檔案",
   "Audio layer": "音訊圖層",
+  "Audio on this pod": "此 Pod 上的音訊",
   "Audio settings": "音訊設定",
   "Audio to video (text + audio)": "音訊生成影片（文字 + 音訊）",
   "Audio → keys": "音訊 → 關鍵影格",
@@ -3053,6 +3054,7 @@
   "Installed - install it again over the top (repairs a broken install)": "已安裝 - 覆蓋重新安裝（修復損壞的安裝）",
   "Installed - install rembg + BiRefNet again over the top (repairs a broken install)": "已安裝 - 覆蓋重新安裝 rembg + BiRefNet（修復損壞的安裝）",
   "Installed into": "安裝到",
+  "Installed on the pod - in remote mode these jobs run there instead of on this computer": "安裝在 Pod 上——遠端模式下這些任務在 Pod 上執行，而不是在這臺電腦上",
   "Installing": "正在安裝",
   "Instruction": "指令",
   "Instruments": "樂器",
@@ -5855,6 +5857,7 @@
   "Song (project Sound assets)": "歌曲（專案的聲音素材）",
   "Song generation (MiniMax Music 3, YuE2)": "歌曲生成（MiniMax Music 3、YuE2）",
   "Song name": "歌曲名稱",
+  "Song separation": "歌曲分離",
   "Song separation (demucs)": "歌曲分離（demucs）",
   "Song tab's": "歌曲分頁的",
   "Song waveform with segment lines": "帶分段線的歌曲波形",

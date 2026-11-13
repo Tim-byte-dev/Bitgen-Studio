@@ -8822,6 +8822,35 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **Step-by-step tutorials** for setting up RunPod (sign up, an **All** API key, a pod made by bitGen) and OpenRouter
   (sign up, a key, the LLM on it) are on [tigerart.com.au/tutorials.php](https://tigerart.com.au/tutorials.php#runpod).
 
+## Text to speech, speech to text and song separation on a pod (2.775.0)
+
+On a mini PC or a small graphics card, speech, transcripts and stems are slow or do not run. They can now run on your
+RunPod pod, like pictures, video and songs.
+
+- **Tick them when you make the pod.** 🖥 PODS ▸ Create pod… has an **Audio** row:
+  - **Text to speech** - OmniVoice: speech, your cloned and designed voices, 🗣 Speech & dialog;
+  - **Speech to text** - faster-whisper: transcripts, lyric timing, a new clone's words, ✨ Create's lyrics;
+  - **Song separation** - demucs: ✂ Split into layers, the Stems docker, the sheet music's song layers.
+  bitGen installs the ticked ones on the pod when it is set up, under /workspace/bitgen-audio. That folder is kept
+  while the pod is stopped. They reuse the pod's PyTorch, so it is a few minutes the first time.
+- **Or tick them on a pod you have.** Open the pod in 🖥 PODS ▸ My pods. The **🔊 Audio** row is under "what it is
+  for". A tick is saved at once and installed now if the pod is running. A stopped pod is never started for it: the
+  engine is installed when the pod next runs.
+- **Where the jobs run.** In remote mode (Basic Settings ▸ GPU **Remote** or **Both**, RunPod ▸ **Pods**), each of
+  these jobs goes to the pod ticked for it - the pod in use first. On **Local** they run on this computer, as before.
+  Nothing needs installing on this computer for the ones a pod takes: Settings ▸ Audio and the install box count the
+  pod's engine as installed.
+- **Your voices stay on this computer.** A cloned voice (its clip and its words) stays in the project's voice store,
+  where you made it. Its clip goes to the pod only when you speak with that voice, and only once - it is kept there
+  under a name made from its contents. The speech comes back to the project's Sound folder, as before.
+- **How it works.** The job's files go up through the pod's Jupyter. bitGen's own helper runs there with the same
+  job. The results come back through the pod's ComfyUI, to where this computer would have saved them. The pod's
+  activity line says what is being done, and the job's log carries the pod's own lines.
+- **YuE2 (its own program) no longer asks for a pod.** It renders on this computer in every mode; before, remote mode
+  asked for (or started) a pod and then rendered here anyway. **YuE2 ComfyUI**, ACE-Step 1.5 and MiniMax Music3 render
+  on the pod.
+- Ming-3.0 TTS and Bark STT stay on this computer.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

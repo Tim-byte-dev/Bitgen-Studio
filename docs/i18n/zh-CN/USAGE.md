@@ -5366,6 +5366,23 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **(2.773.1) 渲染使用 Pod 之前会等待它的 ComfyUI。** 仍在自行配置的 ComfyUI 模板会被等待，Pod 上显示 "its ComfyUI is being set up by the template"。RunPod 镜像中没有 ComfyUI 的 Pod，即使不是这台电脑创建的，也会由 bitGen 安装。
 - 设置 RunPod（注册、**All** 权限的 API 密钥、由 bitGen 创建的 Pod）和 OpenRouter（注册、密钥、在上面运行 LLM）的**分步教程**在 [tigerart.com.au/tutorials.php](https://tigerart.com.au/tutorials.php#runpod)。
 
+## 在 Pod 上进行语音合成、语音识别和歌曲分离 (2.775.0)
+<!-- en: text-to-speech-speech-to-text-and-song-separation-on-a-pod-2-775-0 ba3b9b483896 -->
+
+在迷你电脑或小显卡上，语音合成、转录和分轨很慢或无法运行。现在它们也可以像图像、视频和歌曲一样在你的 RunPod Pod 上运行。
+
+- **创建 Pod 时勾选它们。** 🖥 PODS ▸ Create pod… 中有 **Audio** 一行：
+  - **Text to speech** - OmniVoice：语音、你克隆和设计的声音、🗣 Speech & dialog；
+  - **Speech to text** - faster-whisper：转录、歌词时间、新克隆的台词、✨ Create 的歌词；
+  - **Song separation** - demucs：✂ Split into layers、Stems 停靠窗、乐谱的歌曲分层。
+  bitGen 会在 Pod 配置时把勾选的引擎安装到 /workspace/bitgen-audio。Pod 停止后该文件夹仍会保留。它们复用 Pod 的 PyTorch，所以第一次只需几分钟。
+- **也可以在已有的 Pod 上勾选。** 在 🖥 PODS ▸ My pods 中打开 Pod，"what it is for" 下面有 **🔊 Audio** 一行。勾选会立即保存，Pod 运行中时会马上安装。已停止的 Pod 不会为此被启动：引擎会在 Pod 下次运行时安装。
+- **任务在哪里运行。** 在远程模式下（Basic Settings ▸ GPU 为 **Remote** 或 **Both**，RunPod ▸ **Pods**），这些任务会发送到勾选了对应项的 Pod - 优先使用当前使用中的 Pod。在 **Local** 下它们照旧在这台电脑上运行。由 Pod 承担的任务无需在这台电脑上安装任何东西：Settings ▸ Audio 和安装对话框会把 Pod 上的引擎视为已安装。
+- **你的声音留在这台电脑上。** 克隆的声音（片段及其台词）保留在你创建它的项目声音库中。只有用这个声音说话时才会把片段发送到 Pod，而且只发送一次 - 它会以根据内容生成的名字保存在 Pod 上。语音照旧回到项目的 Sound 文件夹。
+- **工作原理。** 任务的文件通过 Pod 的 Jupyter 上传。bitGen 自己的辅助程序在那里用同样的任务运行。结果通过 Pod 的 ComfyUI 回到这台电脑本来会保存的位置。Pod 的活动行会显示正在做什么，任务日志中包含 Pod 自己的输出。
+- **YuE2（它自己的程序）不再请求 Pod。** 它在任何模式下都在这台电脑上渲染；以前远程模式会请求（或启动）一个 Pod，结果还是在本机渲染。**YuE2 ComfyUI**、ACE-Step 1.5 和 MiniMax Music3 在 Pod 上渲染。
+- Ming-3.0 TTS 和 Bark STT 仍在这台电脑上运行。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

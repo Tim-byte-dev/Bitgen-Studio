@@ -45,6 +45,11 @@ function mount(app) {
   // 2.763.4 (Tim: "in the pods docker show utilization, memory and disk visualizations and usage"): a running pod's GPU load,
   // GPU memory, RAM, CPU and disks (lib/podStats.js)
   app.get("/api/pods/:id/install", wrap((req) => ({ install: require("../lib/podInstall").status(req.params.id) })));   // 2.772.0
+  // 2.775.0: the audio engines on a pod (lib/podAudio.js) - its ticks; ticking one installs it now
+  app.get("/api/pods/:id/audio", wrap((req) => require("../lib/podAudio").status(req.params.id)));
+  app.post("/api/pods/:id/audio", wrap((req) => { const A = require("../lib/podAudio"), before = A.kinds(req.params.id), now = A.setKinds(req.params.id, (req.body || {}).kinds);
+    if (now.some((k) => !before.includes(k))) A.install(req.params.id, now, null, { noStart: true }).catch(() => null);   // a stopped pod is not started for it
+    return A.status(req.params.id); }));
   app.get("/api/pods/:id/stats", wrap((req) => require("../lib/podStats").stats(req.params.id, +req.query.port || 0)));
   app.get("/api/pods/costs", wrap((req) => require("../lib/podCosts").costs(req.query.refresh === "1")));
   app.get("/api/pods/:id/setup", wrap((req) => Object.assign(require("../lib/podSetup").view(req.params.id), { revive: require("../lib/podRevive").status(req.params.id) })));

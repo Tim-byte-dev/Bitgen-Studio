@@ -321,6 +321,10 @@
       + (S.styles || []).map(function (x) { return '<option value="' + esc(x.id) + '"' + (S.form && S.form.style === x.id ? " selected" : "") + ">" + esc(x.name) + "</option>"; }).join("") + "</select>"
       + '<span class="f">For</span><span class="pdKinds" title="This pod renders every style of the kinds ticked that has no pod of its own - one pod per kind">'
       + [["image", "Image"], ["image_edit", "Image edit"], ["video", "Video"]].map(function (k) { return '<label class="chk" style="margin:0"><input type="checkbox" data-pdkind="' + k[0] + '"' + (S.form && (S.form.kinds || []).indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("") + "</span>"
+      // 2.775.0 (Tim: "when we create the pod can we have a button for tts, stt and demacus(sheet music)"): the audio engines
+      // installed on the pod (lib/podAudio.js) - in remote mode these jobs then run there instead of this computer
+      + '<span class="f">Audio</span><span class="pdKinds" title="Installed on the pod - in remote mode these jobs run there instead of on this computer">'
+      + AUDIO.map(function (k) { return '<label class="chk" style="margin:0" title="' + esc(k[2]) + '"><input type="checkbox" data-pdaudio="' + k[0] + '"' + (S.form && (S.form.audio || []).indexOf(k[0]) >= 0 ? " checked" : "") + "> " + k[1] + "</label>"; }).join("") + "</span>"
       + '<label class="f" for="pdDisk" style="margin:0">Container disk</label><span><input type="number" id="pdDisk" min="10" max="1000" value="' + (+t.disk || 50) + '" style="width:80px"> GB <span class="hint">(wiped when the pod stops)</span></span>'
       + '<label class="f" for="pdVol" style="margin:0">/workspace</label><span><input type="number" id="pdVol" min="10" max="2000" value="' + ((S.form && S.form.volume) || 50) + '" style="width:80px"> GB <span class="hint">(kept while stopped - billed for storage)</span></span>'
       + '<span class="full hint" id="pdPrice"></span>'
@@ -330,7 +334,7 @@
   function wireForm() {
     doc.querySelectorAll('input[name="pdCloud"]').forEach(function (r) { r.checked = r.value === S.form.cloud; r.onchange = function () { S.form.cloud = r.value; gpus(r.value); }; });
     ["pdGpu", "pdCount", "pdDisk", "pdVol", "pdStyle"].forEach(function (id) { var x = $(id); if (x) { x.addEventListener("change", price); x.addEventListener("input", price); } });
-    doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { c.addEventListener("change", price); });
+    doc.querySelectorAll("#pdForm [data-pdkind], #pdForm [data-pdaudio]").forEach(function (c) { c.addEventListener("change", price); });
     $("pdGo").onclick = create;
     $("pdForm").querySelectorAll("input,select").forEach(function (x) { x.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
   }
@@ -349,6 +353,10 @@
     getj("/api/pods/gpus?cloud=" + cloud).then(function (j) { if (j.error) { say(j.error, false); return; } S.gpus[cloud] = j.gpus || []; fill(S.gpus[cloud]); });
   }
   /** 2.763.4 (Tim: "show all the details before i create the pod"): everything the pod will be, above Create pod */
+  // 2.775.0: the audio engines a pod can hold (lib/podAudio.js KINDS) - the create form and static/podaudio.js (My pods)
+  var AUDIO = [["tts", "Text to speech", "OmniVoice: speech, your cloned voices (sent from this computer when used), 🗣 Speech & dialog"],
+    ["stt", "Speech to text", "faster-whisper: transcripts, lyric timing, a clone's words, ✨ Create's lyrics"],
+    ["stems", "Song separation", "demucs: vocals / drums / bass / other - ✂ Split into layers, the Stems docker, sheet music"]];
   function cuOf(img) { var s = String(img || ""), m = /cuda[-_]?(\d{2})\.(\d)/i.exec(s) || /[-_:]cu(\d{2})(\d)\d?(?=[-_.]|$)/i.exec(s); return m ? m[1] + "." + m[2] : ""; }   // = lib/podInstall.js cudaOf
   function summary() {
     var el = $("pdSum"); if (!el || !S.form) return;
@@ -363,6 +371,8 @@
       // 2.772.0: a template without ComfyUI (RunPod's PyTorch) - bitGen installs it there
       ["ComfyUI", t.comfy ? "the template's own" : "bitGen installs it on the pod - the newest ComfyUI from GitHub + ComfyUI-Manager, reusing the template's PyTorch (a few minutes the first time; kept in /workspace)"],
       ["Style", sty ? sty.name + (ks.length ? " · this pod renders " + ks.join(", ") + " styles with no pod of their own" : "") : (ks.length ? "renders " + ks.join(", ") + " styles with no pod of their own" : "none")],
+      ["Audio", (function () { var a = []; doc.querySelectorAll("#pdForm [data-pdaudio]").forEach(function (c) { if (c.checked) a.push(c.parentNode.textContent.trim()); });
+        return a.length ? a.join(", ") + " installed on it (in remote mode those jobs run on the pod)" : "none - text to speech, speech to text and song separation stay on this computer"; })()],
       ["Then", (sty ? "the custom nodes " + sty.name + "'s workflows use" : "the custom nodes its styles' workflows use") + (sty ? " and " + sty.name + "'s files" + (S.ask && S.askSize ? " (about " + S.askSize + " GB)" : "") : "") + " go on it"]];
     el.innerHTML = rows.map(function (r) { return '<span class="k">' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span>"; }).join("");
   }
@@ -373,7 +383,8 @@
   }
   function create() {
     var kinds = []; doc.querySelectorAll("#pdForm [data-pdkind]").forEach(function (c) { if (c.checked) kinds.push(c.dataset.pdkind); });
-    var b = { for_style: ($("pdStyle") || {}).value || "", kinds: kinds, templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
+    var audio = []; doc.querySelectorAll("#pdForm [data-pdaudio]").forEach(function (c) { if (c.checked) audio.push(c.dataset.pdaudio); });   // 2.775.0
+    var b = { for_style: ($("pdStyle") || {}).value || "", kinds: kinds, audio: audio, templateId: S.form.id, name: $("pdName").value, gpu: $("pdGpu").value, count: $("pdCount").value, cloud: S.form.cloud, disk: $("pdDisk").value, volume: $("pdVol").value, port: S.form.port };
     $("pdGo").disabled = true; say("creating the pod on RunPod…");
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
@@ -657,5 +668,5 @@
     doc.addEventListener("change", function (e) { if (e.target && /^(gpuProv|gpuRunpod|gpuWhere)$/.test(e.target.name || "")) setTimeout(loadG, 500); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
-  root.H3Pods = { forRender: forRender, ask: function () { return S.ask; }, show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; }, matches: matches, initials: initials };
+  root.H3Pods = { AUDIO: AUDIO, forRender: forRender, ask: function () { return S.ask; }, show: show, load: function () { loadG(); loadTpl(); loadPods(); }, state: function () { return S; }, matches: matches, initials: initials };
 })(typeof window !== "undefined" ? window : globalThis);

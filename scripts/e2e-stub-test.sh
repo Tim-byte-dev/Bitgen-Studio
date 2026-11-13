@@ -13140,6 +13140,12 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui773-ui.js > /tmp/ui773ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui774-ui.js > /tmp/ui774ui.log 2>&1 \
   && ok "2.774.0 browser test: a render that failed on its pod says it goes again when its pod is ready (went again: the new job), a plain failure still failed - or SKIP without playwright" \
   || { bad "2.774.0 pod retry browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui774ui.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui775-ui.js > /tmp/ui775ui.log 2>&1 \
+  && ok "2.775.0 browser test: 🖥 PODS - Audio ticks (text to speech, speech to text, song separation) in Create pod… and its summary, sent with the pod; 🔊 Audio on a pod in My pods saved at once with the install's line - or SKIP without playwright" \
+  || { bad "2.775.0 audio on a pod browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui775ui.log | head -14; }
+node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
+  && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
+  || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }
 # ---- 2.772.0 (Tim: "is there an empty pod template that we can install our comfy ui on from scratch" + "lets do that, also in the pod that is installing and being used show what is being done, then hide the completed tasks in a dropdown so the pods details don't get too big. say what it is doing, downloading, loading, finding etc")
 node scripts/test-podinstall772.js > /tmp/podinstall772.log 2>&1 \
   && ok "2.772.0 units: ComfyUI installed on a blank pod - RunPod's PyTorch template picked (CUDA 12.8 first), 8188 opened, the pod's job run for real (git clone, a venv reusing PyTorch, requirements, ComfyUI-Manager, started + loaded; again after a restart = only started), ensure() into the pod's activity" \

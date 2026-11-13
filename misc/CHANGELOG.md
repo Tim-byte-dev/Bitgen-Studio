@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.775.0** — Text to Speech, Speech to Text and Song Separation on a RunPod Pod: Tick Audio When You Make a Pod (or 🔊 Audio on a Pod in My Pods) and in Remote Mode Speech, Your Cloned Voices, Transcripts and Stems Run There - the Engines Installed Once in /workspace, a Voice Clip Sent Only When Used, the Results Back in the Project; YuE2's Own Program No Longer Asks for a Pod
 - **2.774.0** — A Render That Failed Because Its Pod Could Not Be Used Goes Again by Itself When the Pod Is Ready (Its Setup Finishes, ComfyUI Is Installed or Updated, or a File You Send Lands on It) - Up to 3 Times, Not Once Cleared From the Queue; the Queue Says "Goes Again When Its Pod Is Ready"; README: Don't Have the Hardware? (RunPod and OpenRouter, With Tutorials on the Website)
 - **2.773.1** — A Render No Longer Goes On Before the Pod's ComfyUI Is There: a ComfyUI Template Still Setting Itself Up Is Waited For ("its ComfyUI is being set up by the template"), a Pod Whose Image Has No ComfyUI Gets bitGen's Install Even When This Computer Did Not Mark It, and "No ComfyUI on the Pod Yet" Replaces the Wrong "Paste Its Password"
 - **2.773.0** — In Remote Mode the Left Docker's System Stats Show the Pod in Use (CPU, RAM, Each GPU's Load, Temperature and VRAM, Its Disks); Only the Styles of the Mode You Are In Are Uploaded and Checked on Pods (Image Modes = Image Styles, Video = Video Styles); a LoRA Sent From This Computer No Longer Stops at the End With "[Errno 2] No Such File"
