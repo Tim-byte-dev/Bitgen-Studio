@@ -30,8 +30,10 @@ function mount(app) {
     if (!sts.length) { const e = new Error("no styles linked to this pod - pick them in My pods ▸ Styles"); e.status = 400; throw e; }
     const port = +b.port || SP.portOf(rg(), req.params.pod);
     await require("../lib/podModels").ways(req.params.pod, port);
-    require("../lib/podPrep").prepare(req.params.pod, port, sts).catch(() => null);
-    return { started: sts.map((s) => s.name) };
+    // 2.773.0: the styles of the prompt docker's mode now (an explicit list = as asked), the others when their mode is used
+    const fm = Array.isArray(b.styles) ? { now: sts, later: [] } : require("../lib/remotePrep").forMode(sts);
+    if (fm.now.length) require("../lib/podPrep").prepare(req.params.pod, port, fm.now).catch(() => null);
+    return { started: fm.now.map((s) => s.name), later: fm.later.map((s) => s.name) };
   }));
   // 2.763.1: My pods ▸ ⬆ My custom nodes; 2.764.2: ⬆ Nodes its styles need - only the packs the pod's styles' workflows use
   // (lib/podPrep.js nodesOnly -> lib/podNodes.js mirror of those folders), in the background

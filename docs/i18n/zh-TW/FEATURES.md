@@ -411,6 +411,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **📊 Statistics** — 一個對話框，顯示每次生成的啟動時間（啟動或準備 Pod、檔案、節點包、更新或重啟 ComfyUI）、生成時間和合計，每次 Pod 準備及其階段，按位置和按模式的平均值，以及 CSV。 *Where:* 💲 Costs ▸ 📊 Statistics；設定 ▸ 一般 ▸ 電費。 *Since:* 2.771.0
 - **在空白 pod 上安裝 ComfyUI** — bitGen 為風格建立的 pod 從 RunPod 的 PyTorch 範本開始，由 bitGen 自己安裝 ComfyUI：查找 pod 上有什麼，下載最新的 ComfyUI，為它建立沿用 pod 的 PyTorch 的 Python 環境，安裝其 requirements 和 ComfyUI-Manager，啟動並載入 - 每一步都會顯示；重新啟動後只啟動 ComfyUI。任何不含 ComfyUI 的範本都同樣適用。 *Where:* PODS ▸ Create pod…；詢問由哪個 pod 算圖風格的對話框。 *Since:* 2.772.0
 - **pod 正在做什麼，顯示在 pod 上** — 每個 pod 名稱下方顯示現在正在做什麼，帶有動詞（Downloading、Installing、Loading、Finding、Sending、Starting、Updating …）和到目前為止的時間；已完成的工作放在下拉清單中（✓ 完成、– 已存在、✗ 失敗），pod 保持精簡；沒有工作執行時顯示 ✓ Done 或附原因的 ✗ Stopped。 *Where:* PODS ▸ My pods。 *Since:* 2.772.0
+- **左側停靠視窗顯示 pod 的統計** — 遠端模式下 System 統計顯示使用中的 pod：CPU 負載、記憶體、每個 GPU 的負載、溫度和顯示記憶體，以及磁碟；⚡ since start 仍是本機的。 *Where:* 左側停靠視窗的 System。 *Since:* 2.773.0
+- **pod 上只放目前模式的風格** — 圖像模式下只上傳和檢查圖像風格，Video 模式下只處理影片風格；其他風格等到切換到它們的模式。 *Where:* 提示詞停靠視窗的 Generate 模式；PODS ▸ My pods。 *Since:* 2.773.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

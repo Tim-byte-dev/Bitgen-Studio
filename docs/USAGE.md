@@ -8784,6 +8784,24 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   - The list is kept while bitGen runs (60 tasks a pod at most).
 - **A closed pod item is really closed now** - before, its buttons and details showed even with ▸.
 
+## Remote mode: the pod's stats, one mode's styles, uploads that finish (2.773.0)
+
+- **The left docker's System stats show the pod in remote mode.** With Basic Settings ▸ GPU on **Remote**, RunPod ▸ Pods and
+  a pod in use, the System heading says **System · ☁ <your pod>** and the charts are the pod's: its CPU load, RAM, each GPU
+  (load, temperature, VRAM) and its disks as bars - **Disk /** (the container disk, wiped when the pod stops) and
+  **Disk /workspace** (kept while it is stopped). The queue, the progress bar and ⚡ since start stay this computer's (that
+  is your electricity). On Local the charts are this computer's again. In remote mode with no pod in use (or Serverless /
+  OpenRouter) the heading says **System · this computer** - hover it for why.
+- **Only the styles of the mode you are in go on a pod.** In an image mode (🖼 Image, ⚙ Graph) bitGen uploads and checks only
+  your **image** styles - the Image style you picked is made ready on its pod; in 🎬 Video (or 🎶 Music) only the **video**
+  styles. A pod setting itself up, 💾 Save in My pods and a preset do the same: the other mode's styles are said on the pod
+  ("left for Video mode: …") and made ready when you switch to that mode or render one of them. 🗣 Speech and 💬 Chat make no
+  style ready. The ☁ Remote generation docker's line shows the style of your mode.
+- **A LoRA sent from this computer no longer stops at the end with "[Errno 2] No such file".** The file arrived whole, but on
+  some pod templates Jupyter keeps the upload in another folder than the one bitGen looked in to move it into ComfyUI's
+  models folder. bitGen now finds it where Jupyter put it; if it really cannot, it says so in words. Each upload's part file
+  has its own name, so a leftover from an older upload is never taken for it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

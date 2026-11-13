@@ -12,6 +12,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const WS = fs.mkdtempSync(path.join(os.tmpdir(), "pods759l-")), COMFY = path.join(WS, "workspace", "ComfyUI"), JROOT = path.join(WS, "jroot");
 fs.mkdirSync(COMFY, { recursive: true }); fs.mkdirSync(JROOT, { recursive: true });
+const KCWD = { dir: JROOT };
 let CFG = { rgpu: { runpod: { port: 3000 } }, hf: { token: "hf_TEST759" } };
 const coreP = require.resolve("../lib/core");
 const fake = new Module(coreP); fake.filename = coreP; fake.loaded = true;
@@ -84,9 +85,9 @@ srv.on("upgrade", (q, sock) => {
       const msg = JSON.parse(t); seen.push("KERNEL " + msg.header.msg_type);
       // the kernel: run the Python here, in the Jupyter root, kept alive for its download thread
       const code = msg.content.code + "\nimport time\nfor _ in range(200):\n    if 'S' not in globals() or not S['running']: break\n    time.sleep(0.1)\n";
-      const py = spawn("python3", ["-c", code], { cwd: JROOT });
+      const py = spawn("python3", ["-c", code], { cwd: KCWD.dir });   // 2.773.0: a template whose kernel runs in another folder than Jupyter's root
       let out = "", sent = false;
-      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved)/.test(out)) { sent = true;
+      py.stdout.on("data", (x) => { out += x; if (!sent && /bitgen-(started|moved|notfound)/.test(out)) { sent = true;
         wsSend(sock, { msg_type: "stream", parent_header: { msg_id: msg.header.msg_id }, content: { name: "stdout", text: out } });
         wsSend(sock, { msg_type: "execute_reply", parent_header: { msg_id: msg.header.msg_id }, content: { status: "ok" } }); } });
       py.stderr.on("data", (x) => { seen.push("PYERR " + String(x).slice(0, 200)); });
@@ -140,6 +141,16 @@ srv.listen(0, "127.0.0.1", async () => {
     const upf = path.join(COMFY, "models", "loras", "my_trained_lora.safetensors"), u = st.files.find((f) => /from this computer/.test(f.name));
     check("from this computer: the file sent to the pod's Jupyter in parts (3 here: 1, 2, -1), then moved into models/loras whole; its bar done",
       r5.way === "upload" && fs.existsSync(upf) && fs.readFileSync(upf).equals(BLOB) && seen.filter((x) => /^CHUNK/.test(x)).join() === "CHUNK 1,CHUNK 2,CHUNK -1" && u && u.state === "done" && u.done === BLOB.length, { r5, u, chunks: seen.filter((x) => /^CHUNK/.test(x)) });
+    // 2.773.0 (Tim: "when bitgen was uploading a lora from my hdd it stopped about 90% through and said error 2 , file not found"):
+    // the pod's kernel works in ANOTHER folder than Jupyter's root (where the parts were written) - the file is still found + moved
+    KCWD.dir = path.join(WS, "elsewhere"); fs.mkdirSync(KCWD.dir, { recursive: true });
+    const SRC2 = path.join(WS, "second_lora.safetensors"); fs.writeFileSync(SRC2, BLOB);
+    await PM.upload("pod759", { path: SRC2, folder: "loras", port: 3000 });
+    let u2 = null; for (let i = 0; i < 400; i++) { st = await PM.state("pod759", 3000); u2 = st.files.find((f) => /second_lora/.test(f.name)); if (u2 && u2.state !== "uploading") break; await sleep(250); }
+    const upf2 = path.join(COMFY, "models", "loras", "second_lora.safetensors");
+    check("2.773.0: the kernel's folder is not Jupyter's root - the part file is still found where Jupyter wrote it and moved in (was: [Errno 2] No such file at the end)",
+      u2 && u2.state === "done" && fs.existsSync(upf2) && fs.readFileSync(upf2).equals(BLOB) && !fs.readdirSync(JROOT).some((f) => /^bitgen-upload-/.test(f)), u2);
+    KCWD.dir = JROOT;
     err = null; try { await PM.start("pod759", { files: [{ name: "x.safetensors", folder: "vae", url: "https://evil.example/x" }], port: 3000 }); } catch (e) { err = e; }
     check("only bitGen's download host (Hugging Face) is fetched - another address is not passed to the pod", err && err.status === 400, err && err.message);
   } catch (e) { fail++; console.log("FAIL: " + (e && e.stack || e)); }

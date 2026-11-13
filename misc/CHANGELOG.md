@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.773.0** — In Remote Mode the Left Docker's System Stats Show the Pod in Use (CPU, RAM, Each GPU's Load, Temperature and VRAM, Its Disks); Only the Styles of the Mode You Are In Are Uploaded and Checked on Pods (Image Modes = Image Styles, Video = Video Styles); a LoRA Sent From This Computer No Longer Stops at the End With "[Errno 2] No Such File"
 - **2.772.0** — New Pods for a Style Start From RunPod's PyTorch Template and bitGen Installs ComfyUI on Them Itself (Finding, Downloading, a Python Environment That Reuses the Pod's PyTorch, Its Requirements and ComfyUI-Manager, Starting, Loading - After a Restart Only Started); Under Each Pod in PODS ▸ My Pods What It Is Doing Now (Downloading, Installing, Loading, Finding …) and the Finished Tasks in a Dropdown; a Closed Pod Item Is Really Closed
 - **2.771.0** — 💲 the RunPod Docker Is Now Costs: This Computer's Electricity and Every Platform on Its Own (RunPod Pods + Serverless, OpenRouter, Each API Service, a Remote GPU) With a Total, for Today / 7 Days / This Month / Last Month / Everything - a Row Clicked Opens Its Detailed List; 📊 Statistics Dialog: Each Generation's Startup, Generation and Total Time, Every Pod Preparation and Its Phases, Averages by Place and Mode, CSV
 - **2.770.2** — No Search Boxes Before the Prompt Docker's LLM / Vision Lists (☰ All Searches Every Model)

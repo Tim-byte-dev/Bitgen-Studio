@@ -15,6 +15,7 @@
 //   (lib/podSetup.js), GET /api/pods/:id/folders, POST /api/pods/:id/folder {folder, name} (lib/podModels.js)
 //   2.772.0: GET /api/pods/activity {pods: {id: {now, done, last, at}}} - what each pod is doing now and has done
 //   (lib/podActivity.js); GET /api/pods/:id/install - ComfyUI installed on a blank pod (lib/podInstall.js status)
+//   2.773.0: GET /api/pods/remote-stats - the pod in use's GPU / RAM / CPU / disks in /api/stats' shape (lib/remoteStats.js)
 "use strict";
 const P = require("../lib/pods");
 
@@ -26,6 +27,7 @@ function mount(app) {
   app.post("/api/pods/create", wrap((req) => P.create(req.body || {})));
   app.get("/api/pods/mine", wrap(() => P.mine()));
   app.get("/api/pods/activity", wrap(() => ({ pods: require("../lib/podActivity").all() })));   // 2.772.0
+  app.get("/api/pods/remote-stats", wrap(() => require("../lib/remoteStats").now()));   // 2.773.0: the left docker's System stats in remote mode
   // 2.758.0 (Tim: "when pods are chosen only show pod styles ... how can i choose the model?"): before /:id/:action
   app.get("/api/pods/:id/comfy", wrap((req) => require("../lib/podStyles").contents(req.params.id, +req.query.port || 0)));
   app.post("/api/pods/:id/styles", wrap((req) => require("../lib/podStyles").make(req.params.id, req.body || {})));

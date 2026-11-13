@@ -24,7 +24,7 @@ check("fromComfy (no Jupyter): RAM + each GPU's memory from /system_stats, no lo
   check("CODE runs (here: no GPU) - RAM, CPU, the disk of /", o && o.ram && o.ram.total > 0 && o.cpu && o.cpu.cores > 0 && o.disks.some((d) => d.path === "/"), r.stdout + r.stderr); }
 const PM = rd("lib", "podModels.js"), PN = rd("lib", "podNodes.js");
 check("uploads: the part file is \"bitgen-upload-<name>\" (Jupyter refuses hidden names with HTTP 400), node zips \"bitgen-nodes-…\"; every kernel shut down after it answers",
-  /tmp = "bitgen-upload-" \+ name;/.test(PM) && !/"\.bitgen_up_"/.test(PM) && /k\.zip = "bitgen-nodes-"/.test(PN) && /method: "DELETE"/.test(PM));
+  /tmp = "bitgen-upload-" \+ Date\.now\(\)\.toString\(36\) \+ "-" \+ name;/.test(PM) && !/"\.bitgen_up_"/.test(PM) && /k\.zip = "bitgen-nodes-"/.test(PN) && /method: "DELETE"/.test(PM));
 const PD = rd("static", "podsdock.js"), PSU = rd("static", "podsetup.js"), RT = rd("routes", "pods.js");
 check("the docker: GET /api/pods/:id/stats bars (GPU %, VRAM, RAM, CPU, disks) beside a running pod's name + inside it, every 5 s while on screen; the summary before Create pod; the prompt docker's style picked",
   /app\.get\("\/api\/pods\/:id\/stats"/.test(RT) && /function statsHtml\(st, small\)/.test(PD) && /function pollStats\(\)/.test(PD) && /id="pdSum"/.test(PD) && /function summary\(\)/.test(PD)

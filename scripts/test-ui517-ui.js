@@ -44,7 +44,8 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
       const head = document.querySelector("#stats .gpuframe .gtitle b");
       return { labels, vals, head: head ? head.textContent : "" };
     });
-    check("System: CPU clock (and ⚡ since start) beside CPU load / temp / RAM", sys.labels.includes("CPU clock") && sys.labels.includes("⚡ since start") && /(GHz|MHz|n\/a)/.test(sys.vals["CPU clock"] || ""), sys);
+    check("System: CPU clock (and ⚡ since start) beside CPU load / temp / RAM", sys.labels.includes("CPU clock") && sys.labels.some((l) => /^⚡ since start/.test(l)) &&   // 2.771.0 put 💲 Costs beside it
+      /(GHz|MHz|n\/a)/.test(sys.vals["CPU clock"] || ""), sys);
     if (hasGpu) {
       const pk = Object.keys(sys.vals).find((k) => /^Power/.test(k)), ck = Object.keys(sys.vals).find((k) => /^Clock/.test(k));
       check("System: each GPU's frame has its power draw (0 - its limit W) and its clock (0 - its top MHz) graphs; its title adds watts and GHz",

@@ -13133,6 +13133,10 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui689-ui.js > /tmp/ui689ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui690-ui.js > /tmp/ui690ui.log 2>&1 \
   && ok "2.690.0 browser test: a wall pulled onto another's end (⊕ joined, Shift free), the new wall dragged = the old one resizes (live, on release, undo), the old one dragged = the new one follows - or SKIP without playwright" \
   || { bad "2.690.0 joined walls browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui690ui.log | head -14; }
+# ---- 2.773.0 (Tim: "when in remote mode , show the remote gpus/ram/cpu/hdd stats in the left docker instead of the local stats. when bitgen was uploading a lora from my hdd it stopped about 90% through and said error 2 , file not found. if in any image mode then only upload or check image styles, if in video mode , then only upload/check the video styles")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui773-ui.js > /tmp/ui773ui.log 2>&1 \
+  && ok "2.773.0 browser test: remote mode = the pod's GPU / RAM / CPU / disks in the left docker's System stats (heading System · ☁ pod), back to this computer on Local, why in the tooltip with no pod; the Generate mode told to the server - or SKIP without playwright" \
+  || { bad "2.773.0 remote stats browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui773ui.log | head -14; }
 # ---- 2.772.0 (Tim: "is there an empty pod template that we can install our comfy ui on from scratch" + "lets do that, also in the pod that is installing and being used show what is being done, then hide the completed tasks in a dropdown so the pods details don't get too big. say what it is doing, downloading, loading, finding etc")
 node scripts/test-podinstall772.js > /tmp/podinstall772.log 2>&1 \
   && ok "2.772.0 units: ComfyUI installed on a blank pod - RunPod's PyTorch template picked (CUDA 12.8 first), 8188 opened, the pod's job run for real (git clone, a venv reusing PyTorch, requirements, ComfyUI-Manager, started + loaded; again after a restart = only started), ensure() into the pod's activity" \

@@ -5344,6 +5344,13 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   - 列表在 bitGen 运行期间保留（每个 pod 最多 60 项）。
 - **收起的 pod 项现在真的收起了** - 以前即使显示 ▸，它的按钮和详情仍会显示。
 
+## 远程模式：pod 的统计、按模式的风格、能传完的上传 (2.773.0)
+<!-- en: remote-mode-the-pod-s-stats-one-mode-s-styles-uploads-that-finish-2-773-0 bf47cf9f17bc -->
+
+- **远程模式下，左侧停靠窗的 System 统计显示 pod。** 当 Basic Settings ▸ GPU 为 **Remote**、RunPod ▸ Pods 且有正在使用的 pod 时，标题显示 **System · ☁ <你的 pod>**，图表是 pod 的：CPU 负载、内存、每个 GPU（负载、温度、显存）以及磁盘条 - **Disk /**（容器磁盘，pod 停止时清空）和 **Disk /workspace**（停止时保留）。队列、进度条和 ⚡ since start 仍是本机的（那是你的电费）。切回 Local 后，图表又是本机的。远程模式下没有正在使用的 pod（或用的是 Serverless / OpenRouter）时，标题为 **System · this computer** - 把鼠标移到标题上可看原因。
+- **pod 上只放你当前模式的风格。** 在图像模式（🖼 Image、⚙ Graph）下，bitGen 只上传和检查你的**图像**风格 - 你选的 Image 风格会在它的 pod 上准备好；在 🎬 Video（或 🎶 Music）下只处理**视频**风格。自行设置的 pod、My pods 中的 💾 Save 和预设也一样：另一种模式的风格会在 pod 上注明（"left for Video mode: …"），等你切换到那个模式或用它渲染时再准备。🗣 Speech 和 💬 Chat 不准备任何风格。☁ Remote generation 停靠窗的那一行显示你当前模式的风格。
+- **从本机发送的 LoRA 不会再在最后因 "[Errno 2] No such file" 而停止。** 文件其实已完整到达，但在某些 pod 模板上，Jupyter 把上传放在与 bitGen 查找的不同文件夹里，bitGen 要把它移到 ComfyUI 的 models 文件夹时找不到。现在 bitGen 会在 Jupyter 放置的位置找到它；如果确实找不到，会用文字说明。每次上传的分块文件都有自己的名字，所以不会把旧上传的残留误当成它。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

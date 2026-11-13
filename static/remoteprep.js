@@ -29,7 +29,10 @@
   function $(id) { return doc.getElementById(id); }
   function getj(u) { return root.fetch(u).then(function (r) { return r.json(); }); }
   function post(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }); }
-  function picks() { return { video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "", llm_file: $("llmSel") ? $("llmSel").value : "" }; }
+  // 2.773.0 (Tim: "if in any image mode then only upload or check image styles, if in video mode , then only upload/check the video
+  // styles"): + the prompt docker's Generate mode and the Image style - the server makes ready the one of that mode only
+  function picks() { return { video_style_id: $("videoStyleSel") ? $("videoStyleSel").value : "", image_style_id: $("styleSel") ? $("styleSel").value : "",
+    gen_mode: $("genModeSel") ? $("genModeSel").value : "video", llm_file: $("llmSel") ? $("llmSel").value : "" }; }
   // 2.770.0 (Tim: "in the remote generation docker, remove the openrouter search, and runpod and openrouter dialog, instead just
   // have local and remote radio buttons for llm and vllm" + "the remote platform will be selected in settings with openrouter as
   // default"): Remote = the platform Settings ▸ Remote generation ▸ 🧠 LLM picks; the model is picked in the prompt docker
@@ -54,6 +57,7 @@
     var vs = doc.createElement("div"); vs.className = "hint rpSt"; vs.id = "rpSt_video"; vs.style.marginLeft = "0"; vs.setAttribute("aria-live", "polite"); w.appendChild(vs);
     $("gpuEngine").parentNode.insertBefore(w, $("gpuEngine").nextSibling);
     if ($("videoStyleSel")) $("videoStyleSel").addEventListener("change", function () { if (S.v && S.v.pods_mode) start(); });
+    ["styleSel", "genModeSel"].forEach(function (id) { if ($(id)) $(id).addEventListener("change", function () { if (S.v && S.v.pods_mode) start(); else if (id === "genModeSel") post("/api/remoteprep/start", picks()).catch(function () { /* fine */ }); }); });   // 2.773.0
     return true;
   }
   function paint(v) {
@@ -67,15 +71,18 @@
         : w === "runpod" && v.engine_pods ? (s ? lineOf("on the pod", s) : "set up on your pod when you send a prompt (the first time takes a few minutes)") : "";
       $("rpSt_" + k).textContent = why || (w === "openrouter" ? "on OpenRouter - pick its model in the prompt docker's list" : "");
     });
-    $("rpSt_video").textContent = v.video ? lineOf("Video style " + (v.video.style || ""), v.video) : "";
+    // 2.773.0: the line of the mode the prompt docker is in (Image style in an image mode, Video style otherwise)
+    var im = v.mode === "image";
+    $("rpSt_video").textContent = im ? (v.image ? lineOf("Image style " + (v.image.style || ""), v.image) : "") : v.video ? lineOf("Video style " + (v.video.style || ""), v.video) : "";
     clearTimeout(S.t);
-    var busy = ["llm", "vlm", "video"].some(function (k) { return v[k] && v[k].phase === "preparing"; });
+    var busy = ["llm", "vlm", "video", "image"].some(function (k) { return v[k] && v[k].phase === "preparing"; });
     S.t = setTimeout(refresh, busy ? 3000 : 20000);
   }
   function refresh() { return getj("/api/remoteprep").then(paint).catch(function () { clearTimeout(S.t); S.t = setTimeout(refresh, 20000); }); }
   /** the picks of this page to the server - it prepares what remote mode needs */
   function start() { return post("/api/remoteprep/start", picks()).then(paint).catch(function () { /* the server is restarting */ }); }
-  function boot() { if (!build()) { setTimeout(boot, 1500); return; } refresh().then(function () { if (S.v && S.v.pods_mode) start(); }); }
+  // 2.773.0: the mode is told at start in any case (a pod setting itself up makes ready only that mode's styles)
+  function boot() { if (!build()) { setTimeout(boot, 1500); return; } refresh().then(function () { start(); }); }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 800); }); else setTimeout(boot, 800);
   root.H3RemotePrep = Object.assign({ start: start, refresh: refresh }, api);
 })(typeof window !== "undefined" ? window : globalThis);

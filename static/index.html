@@ -3593,6 +3593,7 @@
 <script src="/static/pinmenu.js"></script>  <!-- 2.675.0: right-click a 📌 pin ▸ ↺ Reset pin / 📌 Pin at this size (H3PinMenu) -->
 <script src="/static/seedctl.js"></script>  <!-- 2.598.0: the seed's 🎲 Random / 📌 Fixed toggle - Basic Settings + the style editors (H3Seed) -->
 <script src="/static/socialfmt.js"></script>  <!-- 2.600.0: Basic Settings ▸ Format ▸ social media - Aspect follows, the line under it says what happens (H3SocialFmt) -->
+<script src="/static/remotestats.js"></script>  <!-- 2.773.0: remote mode = the pod's GPU / RAM / CPU / disks in the left docker's System stats (H3RemoteStats) -->
 <!-- ext:scripts -->
 
 <script>
@@ -3736,6 +3737,9 @@ $("stats").appendChild(charts.ram.el);
 async function refreshStats() {
   let s;
   try { s = await (await fetch("/api/stats")).json(); } catch { $("sbdot").classList.remove("ok"); return; }
+  // 2.773.0 (Tim: "when in remote mode , show the remote gpus/ram/cpu/hdd stats in the left docker instead of the local stats"):
+  // the pod's CPU / RAM / GPUs (+ its disks) in remote mode - static/remotestats.js
+  if (window.H3RemoteStats) { try { s = await H3RemoteStats.apply(s, charts, Bar); } catch (e) { /* this computer's, as before */ } }
   charts.cpuLoad.push(s.cpu, null, s.cpu + "%");
   if (s.cpu_temp != null) charts.cpuTemp.push(s.cpu_temp, null, s.cpu_temp.toFixed(0) + "°C");
   else charts.cpuTemp.value.textContent = "n/a";
@@ -3760,12 +3764,12 @@ async function refreshStats() {
       $("stats").appendChild(frame);
     }
     const g = charts.gpus[i];
-    g.load.push(gpu.util, null, gpu.util + "%");
-    g.temp.push(gpu.temp, null, gpu.temp + "°C");
+    g.load.push(gpu.util, null, gpu.util == null ? "n/a" : gpu.util + "%");   // 2.773.0: a pod may not say (n/a)
+    if (gpu.temp == null) g.temp.value.textContent = "n/a"; else g.temp.push(gpu.temp, null, gpu.temp + "°C");
     g.vram.push(gpu.mem_used / gpu.mem_total * 100, null,
       `${(gpu.mem_used / 1024).toFixed(1)}/${(gpu.mem_total / 1024).toFixed(0)}GB`);
     if (g.head) g.head.textContent =
-      `${gpu.util}% · ${gpu.temp}°C · ${(gpu.mem_used / 1024).toFixed(1)}GB`;
+      `${gpu.util == null ? "n/a" : gpu.util + "%"} · ${gpu.temp == null ? "n/a" : gpu.temp + "°C"} · ${(gpu.mem_used / 1024).toFixed(1)}GB`;
   });
   if (window.H3Power) { try { H3Power.paint(s, charts); } catch (e) { /* 2.517.0: ⚡ power + clocks are extra */ } }
   const bar = $("progbar").firstElementChild;

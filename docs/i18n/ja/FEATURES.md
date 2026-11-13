@@ -411,6 +411,8 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **📊 Statistics** — 各生成の起動時間（ポッドの起動や準備、ファイル、ノードパック、ComfyUI の更新や再起動）、生成時間、合計、すべてのポッド準備とその段階、場所別・モード別の平均、CSV を表示するダイアログ。 *Where:* 💲 Costs ▸ 📊 Statistics、設定 ▸ 一般 ▸ 電力コスト。 *Since:* 2.771.0
 - **空のポッドに ComfyUI をインストール** — bitGen がスタイル用に作るポッドは RunPod の PyTorch テンプレートから始まり、bitGen が自分で ComfyUI をインストールします: ポッドにあるものを調べ、最新の ComfyUI をダウンロードし、ポッドの PyTorch をそのまま使う Python 環境を作り、requirements と ComfyUI-Manager をインストールし、起動して読み込みます - 各段階が表示されます。再起動後は ComfyUI を起動するだけです。ComfyUI の入っていないテンプレートはどれも同じように使えます。 *Where:* PODS ▸ Create pod…; スタイルをどのポッドで描くか尋ねるボックス。 *Since:* 2.772.0
 - **ポッドが今していることをポッドのところに** — 各ポッド名の下に、今行っていることをその動詞（Downloading、Installing、Loading、Finding、Sending、Starting、Updating …）とここまでの時間で表示します。終わった作業はドロップダウンに入り（✓ 完了、– すでにあった、✗ 失敗）、ポッドは小さいままです。何も実行していないときは ✓ Done か、理由付きの ✗ Stopped。 *Where:* PODS ▸ My pods。 *Since:* 2.772.0
+- **ポッドの統計を左ドッカーに** — リモートモードでは System 統計に使用中のポッドを表示します: CPU 負荷、RAM、各 GPU の負荷・温度・VRAM、ディスク。⚡ since start はこのコンピューターのままです。 *Where:* 左ドッカーの System。 *Since:* 2.773.0
+- **ポッドにはモードのスタイルだけ** — 画像モードでは画像スタイルだけ、Video では動画スタイルだけをポッドにアップロード・確認します。ほかはそのモードまで待ちます。 *Where:* プロンプトドッカーの Generate モード、PODS ▸ My pods。 *Since:* 2.773.0
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー

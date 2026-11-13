@@ -11,7 +11,7 @@ function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   const RP = () => require("../lib/remotePrep"), PL = () => require("../lib/podLlm");
   app.get("/api/remoteprep", wrap(() => RP().status()));
-  app.post("/api/remoteprep/where", wrap((req) => { const b = req.body || {}; PL().setWhere(b); return RP().start({ video_style_id: b.video_style_id, llm_file: b.llm_file }); }));
+  app.post("/api/remoteprep/where", wrap((req) => { const b = req.body || {}; PL().setWhere(b); return RP().start({ video_style_id: b.video_style_id, image_style_id: b.image_style_id, gen_mode: b.gen_mode, llm_file: b.llm_file }); }));
   app.post("/api/remoteprep/start", wrap((req) => RP().start(req.body || {})));
   // 2.767.0 (Tim: "can we update to the latest version of comfyui on the pod?"): PODS ▸ My pods ▸ ⬆ Update ComfyUI
   app.post("/api/pods/:id/comfy-update", wrap((req) => require("../lib/podComfyUpdate").start(req.params.id, +((req.body || {}).port) || 0)));

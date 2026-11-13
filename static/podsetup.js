@@ -129,6 +129,8 @@
         e.saved = clean(r.setup); e.cur = clean(r.setup); e.touched = false;
         var bits = [];
         if (r.setup.styles.length) bits.push(r.setup.styles.length + (r.setup.styles.length === 1 ? " style" : " styles") + " on this pod" + (r.preparing ? " - making them ready on it now" : " - made ready when the pod runs"));
+        // 2.773.0: the styles of the other mode wait for it (lib/remotePrep.js forMode)
+        if (r.later && r.later.length) bits.push(r.later.join(", ") + " - made ready when you switch to " + (r.mode === "image" ? "🎬 Video" : "🖼 Image") + " (or render one)");
         var kk = r.setup.kinds.filter(function (k) { return k !== "llm" && k !== "vlm"; });
         if (kk.length) bits.push("renders the " + kk.map(function (k) { return k.replace("_", " "); }).join(" / ") + " styles with no pod of their own");
         if (r.llm) bits.push("the LLM runs on this pod");
