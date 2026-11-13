@@ -177,7 +177,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   check("PODS docker: a ☐ LEFT of each pod's name (before its name button), kept on the server; the transfers' bars", /<div class="pdTop">'\n        \+ '<input type="checkbox" class="pdSel" data-pdsel/.test(PD) && /post\("\/api\/pods\/selected", \{ pods: L \}\)/.test(PD) && /H3PodXfer\.mount\(\$\("pdXfer"\)\)/.test(PD) && /id="pdXfer"/.test(PD));
   check("index.html loads podxfer.js + remotemodels.js", /<script src="\/static\/podxfer\.js"><\/script>/.test(HT) && /<script src="\/static\/remotemodels\.js"><\/script>/.test(HT));
   check("podSend: sendOne = Civitai, then your Hugging Face repo, then this computer (a bar each); ensure tries remote_models.json first", /const hf = o\.noHf \? null : await viaHf\(/.test(src("lib/podSend.js")) && /RM\.byName\(RM\.load\(\), cats, name\)/.test(src("lib/podSend.js")) && /how: "upload", from: "this computer"/.test(src("lib/podSend.js")));
-  check("podPrep: a bar per downloaded file, the files listed with their styles", /bars\[f\.name\] = PT\.begin\(/.test(src("lib/podPrep.js")) && /RM\.add\(\{ label: f\.name/.test(src("lib/podPrep.js")));
+  check("podPrep: a bar per downloaded file (2.770.1: once it really downloads), the files listed with their styles", /bars\[n\] = PT\.begin\(/.test(src("lib/podPrep.js")) && /RM\.add\(\{ label: f\.name/.test(src("lib/podPrep.js")));
 
   fs.rmSync(T, { recursive: true, force: true });
   console.log(`\n${pass} passed, ${fail} failed`);

@@ -5302,6 +5302,12 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **提示停靠窗（远程模式）：** LLM 和 Vision 列表 **每次显示 10 个模型** - 在每个列表前的 🔍 框中输入即可搜索（名称、作者、free、paid、vision）。**☰ All** 在对话框中打开所有 OpenRouter 模型：搜索，Free / Paid / 👁 Vision 筛选，按名称、价格、上下文或最新排序，以及每个模型的详情。选择一个，选择 LLM 或 Vision LLM，然后按 **Use** - 列表切换到该模型并使用它。
 - **不列出任何节点的 Pod ComfyUI**（通常是缺少所需软件包的新代码）会在渲染前被修复：安装其所需软件包并重启。Pod 的原因每行写一项，不会被截断。
 
+## ComfyUI 已崩溃的 Pod (2.770.1)
+<!-- en: a-pod-whose-comfyui-crashed-2-770-1 02e8aa14087d -->
+
+- **Pod 上 ComfyUI 未运行时：** ComfyUI 端口上的网页（ComfyUI 停止期间模板的占位页）不再被当作“ComfyUI 在应答”。找不到正在运行的 ComfyUI 时，bitGen 会用它自己的 Python 从其文件夹启动它；如果没有启动起来，任务行会给出其日志的结尾（或占用其端口的程序 - 这时请重启 Pod）。
+- **PODS 停靠窗中的传输：** Pod 上已有的文件不显示进度条，再次发送的文件会替换其旧的一行。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

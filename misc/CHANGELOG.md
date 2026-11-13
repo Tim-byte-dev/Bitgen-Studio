@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.770.1** — A Web Page on ComfyUI's Port Is Not Taken for ComfyUI; a Pod ComfyUI That Is Not Running Is Started by bitGen (or Its Log's End Said); No Transfer Bar for Files Already on the Pod, One Row per File
 - **2.770.0** — LLM and Vision LLM Local or Remote in the Remote Generation Docker (Remote = the Platform Settings Picks, OpenRouter by Default); Settings ▸ OpenRouter Show Free / Show Paid; the Prompt Docker's Lists 10 at a Time With a Search and ☰ All (Every OpenRouter Model: Filters, Sort, Details, Use); a Pod ComfyUI Listing No Nodes Is Repaired; Pod Reasons One Part per Line
 - **2.769.2** — The 'No Pod Yet' Box Lists Only the Pods in My Pods (Running or Stopped) - Terminated Pods and Presets of Gone Pods Are Left Out
 - **2.769.1** — Pods bitGen Makes Are Remembered as bitGen's (Also on the Pod) and Set Themselves Up When They Load (ComfyUI Updated, Linked Styles Made Ready, Used if None Is) - No Button Needed; ⬆ Update ComfyUI Updates the ComfyUI That Is Actually Running; the Whole Reason in a Pod Job's Error

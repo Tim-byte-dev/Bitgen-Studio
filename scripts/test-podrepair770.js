@@ -32,6 +32,14 @@ const PP = require("../lib/podPrep");
   const pl = new Function("log", core.slice(core.indexOf("function podLines"), core.indexOf("function log(job, line)")) + "; return podLines;");
   const out = []; pl((j, l) => out.push(l))({}, "qwen2_1 cannot render on the pod yet - these files are not on it: a, b (one; two is long; three)");
   check("podLines: the reason's parts one per line (a long reason is not cut off)", out.join("|") === "[pod] qwen2_1 cannot render on the pod yet - these files are not on it: a, b:|[pod]   • one|[pod]   • two is long|[pod]   • three", out);
+  // 2.770.1 (Tim: "if the files are already on the pod, don't repeat the download progress in the pods docker")
+  const PT = require("../lib/podTransfers");
+  const a = PT.begin({ pod: "p1", name: "f.safetensors", size: 5 }); PT.end(a, "done");
+  PT.begin({ pod: "p1", name: "f.safetensors", size: 5 });
+  check("2.770.1 transfers: one row per file and pod - a finished row of the same file is replaced", PT.list().filter((x) => x.name === "f.safetensors" && x.pod === "p1").length === 1, PT.list());
+  const pp = fs.readFileSync(path.join(ROOT, "lib", "podPrep.js"), "utf8"), pm = fs.readFileSync(path.join(ROOT, "lib", "podModels.js"), "utf8");
+  check("…a bar only once a file really downloads ('there already' = none); a web page on ComfyUI's port is not ComfyUI answering",
+    /if \(f\.state === "there already"\) \{ delete want\[f\.name\]/.test(pp) && /st\.j && typeof st\.j === "object" && \(st\.j\.system \|\| st\.j\.devices\)/.test(pm));
   console.log(`\n${pass} passed, ${fail} failed`);
   console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");
   process.exit(fail ? 1 : 0);

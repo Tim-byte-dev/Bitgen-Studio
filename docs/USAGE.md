@@ -8715,6 +8715,13 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - **A pod's ComfyUI that lists no nodes** (usually newer code without the packages it needs) is repaired before a render:
   its requirements are installed and it is restarted. A pod's reason is written one part per line, so nothing is cut off.
 
+## A pod whose ComfyUI crashed (2.770.1)
+
+- **ComfyUI not running on the pod:** a web page on ComfyUI's port (a template's placeholder while ComfyUI is down) no longer
+  counts as "ComfyUI answers". When bitGen finds no ComfyUI running, it starts it from its folder with its own Python; if it
+  does not come up, the job's line gives the end of its log (or which program holds its port - then restart the pod).
+- **Transfers in the PODS docker:** a file already on the pod gets no progress bar, and a file sent again replaces its old row.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

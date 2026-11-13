@@ -44,7 +44,7 @@ const freePort = () => new Promise((ok) => { const s = net.createServer().listen
     const origin = path.join(T, "origin.git"), work = path.join(T, "seed");
     const g = (args, cwd) => spawnSync("git", args, { cwd, encoding: "utf8" });
     g(["init", "-q", "--bare", origin], T); g(["clone", "-q", origin, work], T);
-    fs.writeFileSync(path.join(work, "main.py"), `import http.server, json, sys\nclass H(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(200); self.end_headers(); self.wfile.write(json.dumps({'system': {'comfyui_version': open('comfyui_version.py').read().split('=')[-1].strip().strip(chr(34))}}).encode())\n    def log_message(self, *a): pass\nhttp.server.HTTPServer(('127.0.0.1', int(sys.argv[2])), H).serve_forever()\n`);
+    fs.writeFileSync(path.join(work, "main.py"), `import http.server, json, sys\nclass H(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(200); self.end_headers(); self.wfile.write(json.dumps({'system': {'comfyui_version': open('comfyui_version.py').read().split('=')[-1].strip().strip(chr(34))}}).encode())\n    def log_message(self, *a): pass\nhttp.server.HTTPServer(('127.0.0.1', int(sys.argv[sys.argv.index('--port') + 1])), H).serve_forever()\n`);
     fs.writeFileSync(path.join(work, "comfyui_version.py"), '__version__ = "0.40.0"\n'); fs.writeFileSync(path.join(work, "requirements.txt"), "");
     g(["add", "-A"], work); g(["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "v"], work); g(["push", "-q", "origin", "HEAD:master"], work);
     const cdir = path.join(T, "podComfy"); g(["clone", "-q", "-b", "master", origin, cdir], T);
@@ -77,6 +77,13 @@ const freePort = () => new Promise((ok) => { const s = net.createServer().listen
       kernel(PJ.detach(CU.updateCode(other, port)));
       const u4 = await wait(500);
       check("2.769.1: the guessed folder is another copy - the running ComfyUI is found by its port, ITS folder updated and restarted (the new version answers)", u4 && u4.state === "done" && u4.comfy === fs.realpathSync(cdir) && u4.comfy_was === other && (await up()) === "0.42.0", { u4, v: await up() });
+      // 2.770.1 (Tim's log: "did not find its running process" - ComfyUI had crashed): not running at all = started by bitGen
+      spawnSync("bash", ["-c", `pkill -f "main.py --port ${port}"`]); await sleep(800);
+      const down = await up();
+      kernel(PJ.detach(CU.updateCode(cdir, port)));
+      const u5 = await wait(600);
+      check("2.770.1: ComfyUI not running (crashed): bitGen starts it from its folder - it answers again", down === "" && u5 && u5.state === "done" && u5.started === true && (await up()) === "0.42.0", { down, u5 });
+      spawnSync("bash", ["-c", `pkill -f "main.py --listen 0.0.0.0 --port ${port}"`]);
       try { spawnSync("bash", ["-c", `pkill -f "main.py --port ${port}"`]); } catch { /* fine */ }
     }
   } catch (e) { check("no error", false, String(e && e.stack)); }
