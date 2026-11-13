@@ -5381,6 +5381,19 @@ dialogs** 可將 *Choose file* 按鈕切換回瀏覽器的選擇器。
 - **YuE2（它自己的程式）不再請求 Pod。** 它在任何模式下都在這臺電腦上渲染；以前遠端模式會請求（或啟動）一個 Pod，結果還是在本機渲染。**YuE2 ComfyUI**、ACE-Step 1.5 和 MiniMax Music3 在 Pod 上渲染。
 - Ming-3.0 TTS 和 Bark STT 仍在這臺電腦上執行。
 
+## 每種型別都可選本地或遠端，並分割槽顯示 (2.776.0)
+<!-- en: every-type-local-or-remote-in-sections-2-776-0 978276709053 -->
+
+- **☁ 遠端生成停靠窗現在分為幾個區：**
+  - **☁ Remote servers** - RunPod 或 OpenRouter，Serverless 或 Pods；
+  - **🎨 Generation** - **Image**、**Video** 和 **Music**；
+  - **🧠 Language models** - **LLM** 和 **Vision LLM**；
+  - **🔊 Audio** - **Text to speech**、**Speech to text** 和 **Song separation**。每種型別都是 **Local**（這臺電腦）或 **Remote**，排在同一列中，一眼就能看出什麼在哪裡執行。遠端型別下面的一行會說明去向：它風格的 Pod、遠端 GPU，或者音訊對應的 Pod。
+- **Music 現在是獨立的型別。** 歌曲以前跟隨 Video；現在可以讓影片在 Pod 上渲染而歌曲留在這臺電腦上，反之亦然。
+- **遠端音訊** 在勾選了它的 Pod 上執行（🖥 PODS ▸ 🔊 Audio）。如果還沒有 Pod 有它，當前使用中的 Pod 會被勾選並安裝。在 RunPod Serverless 上，音訊仍在這臺電腦上執行（它需要 Pod）。
+- 第一次在這裡更改某個型別時，其他型別保持原來的去向。在 Basic Settings ▸ GPU 中選擇 **Remote**，在你單獨設定某個型別之前，仍然表示"全部遠端"。
+- **外觀來自主題。** 每個區的背景、邊框、圓角和標題顏色都來自主題（`--rt-sec-bg`、`--rt-sec-border`、`--rt-sec-radius`、`--rt-sec-head`）。🖌 主題編輯模式可以像其他元素一樣設定區的樣式。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

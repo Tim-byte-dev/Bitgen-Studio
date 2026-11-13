@@ -8851,6 +8851,25 @@ RunPod pod, like pictures, video and songs.
   on the pod.
 - Ming-3.0 TTS and Bark STT stay on this computer.
 
+## Every type Local or Remote, in sections (2.776.0)
+
+- **The ☁ Remote generation docker is in sections:**
+  - **☁ Remote servers** - RunPod or OpenRouter, Serverless or Pods;
+  - **🎨 Generation** - **Image**, **Video** and **Music**;
+  - **🧠 Language models** - **LLM** and **Vision LLM**;
+  - **🔊 Audio** - **Text to speech**, **Speech to text** and **Song separation**.
+  Each type is **Local** (this computer) or **Remote**, in one column, so you see at a glance what runs where. A line
+  under a Remote type says where it goes: its style's pod, the remote GPU, or for audio the pod that has it.
+- **Music is its own type now.** Songs used to follow Video; now they can stay on this computer while video renders on a
+  pod, or the other way round.
+- **Audio on Remote** runs on the pod ticked for it (🖥 PODS ▸ 🔊 Audio). If no pod has it yet, the pod in use gets the
+  tick and the install. On RunPod Serverless, audio stays on this computer (it needs a pod).
+- The first time you change a type here, the others keep what they were doing. Picking **Remote** in Basic Settings ▸ GPU
+  still means "everything remote" until you set a type on its own.
+- **The look is the theme's.** Each section's background, border, corners and heading colour come from the theme
+  (`--rt-sec-bg`, `--rt-sec-border`, `--rt-sec-radius`, `--rt-sec-head`). 🖌 edit theme mode styles a section like any
+  other element.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

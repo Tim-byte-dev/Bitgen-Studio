@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "1ea12e306a7b",
- "count": 9399,
+ "v": "00fa1296b6fd",
+ "count": 9402,
  "patternCount": 1136,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -3283,6 +3283,7 @@
   "Landscape": "横向",
   "Language": "语言",
   "Language (blank = detect)": "语言（留空 = 自动检测）",
+  "Language models": "语言模型",
   "Language of the guide and help": "指南和帮助的语言",
   "Language packs": "语言包",
   "Language packs other people translated, from the bitGen Community on tigerart.com.au - an admin checks each one before it shows here": "其他人翻译的语言包，来自 tigerart.com.au 上的 bitGen 社区 - 每个语言包在显示于此之前都经过管理员检查",
@@ -4147,6 +4148,8 @@
   "On Red Axis": "在红轴上",
   "On White": "白底",
   "On the canvas": "在画布上",
+  "On the remote GPU / your pod": "在远程 GPU / 你的 Pod 上",
+  "On this computer": "在这台电脑上",
   "On to the settings (Enter)": "进入设置 (Enter)",
   "On — conservative (audio-safe defaults)": "开——保守（对音频安全的默认值）",
   "On ▶ Start, every caption without it gets it in front": "点击 ▶ 开始时，所有不含它的描述都会在开头加上它",

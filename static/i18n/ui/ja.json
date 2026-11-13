@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "7fd8c40fa5a6",
- "count": 9399,
+ "v": "625f4497de45",
+ "count": 9402,
  "patternCount": 1136,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3283,6 +3283,7 @@
   "Landscape": "横",
   "Language": "言語",
   "Language (blank = detect)": "言語（空欄 = 自動検出）",
+  "Language models": "言語モデル",
   "Language of the guide and help": "ガイドとヘルプの言語",
   "Language packs": "言語パック",
   "Language packs other people translated, from the bitGen Community on tigerart.com.au - an admin checks each one before it shows here": "ほかの人が翻訳した言語パックです（tigerart.com.au の bitGen コミュニティから）- ここに表示される前に、管理者がそれぞれ確認しています",
@@ -4147,6 +4148,8 @@
   "On Red Axis": "赤い軸上",
   "On White": "白地",
   "On the canvas": "キャンバス上",
+  "On the remote GPU / your pod": "リモート GPU / あなたのポッドで",
+  "On this computer": "このコンピューターで",
   "On to the settings (Enter)": "設定へ進む（Enter）",
   "On — conservative (audio-safe defaults)": "オン — 控えめ（音声に安全な既定値）",
   "On ▶ Start, every caption without it gets it in front": "▶ 開始時に、これを含まないすべてのキャプションの先頭に追加されます",

@@ -22,7 +22,7 @@ const A = require("../lib/podAudio");
   check("kindsOf: only tts / stt / stems, once each", JSON.stringify(A.kindsOf(["tts", "x", "stems", "tts"])) === '["tts","stems"]');
   const r = { runpod: { pod_id: "podB" }, pod_audio: { podA: ["tts", "stt"], podB: ["tts"] } };
   check("pick: remote + pods - the pod in use first when it is ticked, else any pod ticked for the kind",
-    A.pick(r, "tts", true, { pods: true }, "remote") === "podB" && A.pick(r, "stt", true, { pods: true }, "both") === "podA" && A.pick(r, "stems", true, { pods: true }, "remote") === "");
+    A.pick(r, "tts", true, { pods: true }, "remote") === "podB" && A.pick(r, "stt", true, { pods: true }, { where: "both", per: true, stt: true }) === "podA" && A.pick(r, "stt", true, { pods: true }, { where: "both", per: true, stt: false }) === "" && A.pick(r, "stems", true, { pods: true }, "remote") === "");
   check("…Local, remote generation off, or Serverless = this computer", A.pick(r, "tts", true, { pods: true }, "local") === "" && A.pick(r, "tts", false, { pods: true }, "remote") === "" && A.pick(r, "tts", true, { pods: false }, "remote") === "");
   const job = { text: "hi", out: "/home/u/proj/sound/tts_x.wav", ref_audio: "/home/u/proj/voices/Anna.wav", ref_text: "hello", prompt_cache: "/home/u/cache.pt",
     items: [{ text: "a", ref_audio: "/home/u/proj/voices/Bob.wav", out: "/tmp/sp_1.wav" }] };

@@ -5383,6 +5383,19 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **YuE2（它自己的程序）不再请求 Pod。** 它在任何模式下都在这台电脑上渲染；以前远程模式会请求（或启动）一个 Pod，结果还是在本机渲染。**YuE2 ComfyUI**、ACE-Step 1.5 和 MiniMax Music3 在 Pod 上渲染。
 - Ming-3.0 TTS 和 Bark STT 仍在这台电脑上运行。
 
+## 每种类型都可选本地或远程，并分区显示 (2.776.0)
+<!-- en: every-type-local-or-remote-in-sections-2-776-0 978276709053 -->
+
+- **☁ 远程生成停靠窗现在分为几个区：**
+  - **☁ Remote servers** - RunPod 或 OpenRouter，Serverless 或 Pods；
+  - **🎨 Generation** - **Image**、**Video** 和 **Music**；
+  - **🧠 Language models** - **LLM** 和 **Vision LLM**；
+  - **🔊 Audio** - **Text to speech**、**Speech to text** 和 **Song separation**。每种类型都是 **Local**（这台电脑）或 **Remote**，排在同一列中，一眼就能看出什么在哪里运行。远程类型下面的一行会说明去向：它风格的 Pod、远程 GPU，或者音频对应的 Pod。
+- **Music 现在是独立的类型。** 歌曲以前跟随 Video；现在可以让视频在 Pod 上渲染而歌曲留在这台电脑上，反之亦然。
+- **远程音频** 在勾选了它的 Pod 上运行（🖥 PODS ▸ 🔊 Audio）。如果还没有 Pod 有它，当前使用中的 Pod 会被勾选并安装。在 RunPod Serverless 上，音频仍在这台电脑上运行（它需要 Pod）。
+- 第一次在这里更改某个类型时，其他类型保持原来的去向。在 Basic Settings ▸ GPU 中选择 **Remote**，在你单独设置某个类型之前，仍然表示"全部远程"。
+- **外观来自主题。** 每个区的背景、边框、圆角和标题颜色都来自主题（`--rt-sec-bg`、`--rt-sec-border`、`--rt-sec-radius`、`--rt-sec-head`）。🖌 主题编辑模式可以像其他元素一样设置区的样式。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

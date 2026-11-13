@@ -29,8 +29,9 @@ const R = require("../lib/remoteGpu.js");
 
 (async () => {
   /* ---- pure */
-  check("kindOf: pictures = image (image, upscale, a graph, 3D); video jobs and songs = video; ffmpeg / native / training = never",
-    ["image", "imgupscale", "graph", "mesh3d"].every((m) => G.kindOf(m) === "image") && ["t2va", "ref2va", "fl2va", "swap", "ltx", "wan", "music", "seedvr2"].every((m) => G.kindOf(m) === "video")
+  // 2.776.0: songs are their own kind ("music") - without per-type choices they still follow Video (gpuSplit.onRemote)
+  check("kindOf: pictures = image (image, upscale, a graph, 3D); video jobs = video; songs = music; ffmpeg / native / training = never",
+    ["image", "imgupscale", "graph", "mesh3d"].every((m) => G.kindOf(m) === "image") && ["t2va", "ref2va", "fl2va", "swap", "ltx", "wan", "seedvr2"].every((m) => G.kindOf(m) === "video") && G.kindOf("music") === "music"
       && ["export", "karaoke", "bridge", "viggle_native", "lora_train", "ft_llm", "install_whatever"].every((m) => G.kindOf(m) === null));
   const sp = { where: "both", image: true, video: false };
   check("routeOf: both = the ticked kinds remote; remote = all; local = none; no remote set up = local", G.routeOf("image", sp, true) === "remote" && G.routeOf("video", sp, true) === "local"

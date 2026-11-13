@@ -6619,6 +6619,22 @@
    "src": "static/remotestats.js:65"
   },
   {
+   "s": "On this computer",
+   "src": "static/remotetypes.js:61"
+  },
+  {
+   "s": "On the remote GPU / your pod",
+   "src": "static/remotetypes.js:62"
+  },
+  {
+   "s": "Generation",
+   "src": "static/remotetypes.js:79"
+  },
+  {
+   "s": "Language models",
+   "src": "static/remotetypes.js:80"
+  },
+  {
    "s": "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU",
    "src": "static/rpstyles.js:57"
   },
@@ -7320,10 +7336,6 @@
   },
   {
    "s": "Startup",
-   "src": "static/statsdlg.js:94"
-  },
-  {
-   "s": "Generation",
    "src": "static/statsdlg.js:94"
   },
   {
