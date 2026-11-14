@@ -63,8 +63,7 @@
     // 2.756.0 (Tim: "if user ... remote selected in basic settings show the remote servers, runpod and openrouter, if user
     // selects runpod show serverless or pods radio group"): the generation engine, under Remote (and Both)
     var eng = el("div", { id: "gpuEngine", style: "margin-top:6px;display:none" });
-    [["gpuProv", "Remote servers", [["runpod", "RunPod", "Render on a RunPod GPU - Serverless or a pod (the LLM on RunPod's vLLM when set up)"], ["openrouter", "OpenRouter", "The LLM on OpenRouter - pictures, videos and songs render on this computer"]]],
-     ["gpuRunpod", "RunPod", [["serverless", "Serverless", "A RunPod Serverless endpoint - paid only while a job runs"], ["pods", "Pods", "A RunPod pod - your own GPU machine, paid by the hour while it runs (the PODS docker)"]]]].forEach(function (grp) {
+    [["gpuProv", "Remote servers", [["runpod", "RunPod", "Render on a RunPod GPU - Serverless or a pod (the LLM on RunPod's vLLM when set up)"], ["openrouter", "OpenRouter", "The LLM on OpenRouter - pictures, videos and songs render on this computer"]]]].forEach(function (grp) {   // 2.782.1 (Tim: "remove runpod options for serverless or pods from remote generation docker, the user can choose that from the settings dialog"): RunPod ▸ Serverless / Pods is in Settings ▸ Remote generation (static/remotegpu.js)
       var row = el("div", { id: grp[0], role: "radiogroup", "aria-label": grp[1], style: "display:flex;gap:4px 12px;flex-wrap:wrap;align-items:center;margin-top:3px" });
       row.appendChild(el("span", { class: "hint", style: "font-size:.7rem;min-width:92px" }, grp[1]));
       grp[2].forEach(function (o) { var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "radio", name: grp[0], value: o[0] }); l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); row.appendChild(l); });
@@ -103,7 +102,7 @@
     $("gpuEngine").style.display = loc ? "none" : "";
     doc.querySelectorAll('input[name="gpuProv"]').forEach(function (i) { i.checked = i.value === e.provider; });
     doc.querySelectorAll('input[name="gpuRunpod"]').forEach(function (i) { i.checked = i.value === e.runpod; });
-    $("gpuRunpod").style.display = e.provider === "runpod" ? "flex" : "none";
+    if ($("gpuRunpod")) $("gpuRunpod").style.display = "none";   // 2.782.1: in Settings ▸ Remote generation now
     // a box that cannot apply is not shown ticked (LLM / Vision LLM with no vLLM endpoint run here, whatever was saved)
     ["llm", "vlm", "image", "video"].forEach(function (k) { $("gpu_" + k).checked = !!v[k] && (k === "image" || k === "video" || !!v.vllm_ready); });
     ["llm", "vlm"].forEach(function (k) { var i = $("gpu_" + k); i.disabled = !v.vllm_ready; i.parentNode.title = i.parentNode.title.replace(/ - set up .*$/, "") + (v.vllm_ready ? "" : " - set up Settings ▸ Remote generation ▸ 🧠 LLM first"); });
@@ -112,7 +111,7 @@
     // 2.746.0: in Both a style decides - R_ styles on the remote GPU, the others here; the boxes are for jobs with no style
     var L = function (r) { return r === "remote" ? llmName() : "this computer"; };
     $("gpuLine").textContent = loc ? "Every job runs on this computer."
-      : S.pick ? (S.pick === "remote" ? "Remote" : "Both") + " needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation."
+      : S.pick ? (S.pick === "remote" ? "Remote" : "Both") + " needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation."
       : !v.remote && v.where === "both" ? "No remote GPU - pictures, videos and songs render on this computer · LLM: " + L(R.llm) + " · Vision LLM: " + L(R.vlm)
       : !v.remote ? "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation."
       : v.where === "both" ? "R_ styles: " + where("remote") + " · other styles: this computer · no style - Image: " + where(R.image) + " · Video + songs: " + where(R.video)
@@ -171,7 +170,8 @@
   function boot() {
     if (!build()) { setTimeout(boot, 300); return; }
     load();
-    doc.addEventListener("h3:rgpu", function () { if (!S.mine) load(); });
+    // 2.782.1: RunPod ▸ Pods / Serverless is picked in Settings now - a Remote / Both waiting for it is saved when it is ready
+    doc.addEventListener("h3:rgpu", function () { if (!S.mine) load().then(waiting); });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
   root.H3GpuSplit = Object.assign({ load: load, save: save, choose: choose, hostOf: hostOf, state: function () { return S; } }, pure);

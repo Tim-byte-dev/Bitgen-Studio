@@ -424,6 +424,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Pod 的模型文件、GPU 显存、日志中的 ComfyUI 用时** — 运行中 Pod 的 📁 Files 按文件夹列出模型文件及大小和剩余磁盘，并删除勾选的文件（先确认；bitGen 会为该 Pod 忘记它们）；GPU 显存：把模型留在显卡上（默认——24 GB 以上的显卡上不用 Dynamic VRAM 启动 ComfyUI）或 ComfyUI 的 Dynamic VRAM，⟳ 应用到此 Pod；每次渲染的日志会显示 ComfyUI 用时和模型的加载方式。 *Where:* PODS。 *Since:* 2.781.2
 - **在 Pod 上 ⟳ 重启 ComfyUI** — PODS ▸ My pods 中运行的 Pod 可以重启其 ComfyUI（按两次），保留原有命令和 GPU 显存方式，并在它再次响应时告知。 *Where:* PODS。 *Since:* 2.781.3
 - **在 Pod 上运行来自 Hugging Face 的 LLM；一个 Pod 运行全部** — 使用 RunPod Pod 时，提示词停靠窗的 LLM / Vision 列表只显示你的列表；＋ From Hugging Face… 列出仓库的 GGUF（分卷的算作一个，含视觉投影器），把选中的发送到 Pod（llama.cpp 在 Pod 上只编译一次），并询问是否以其名称保存到你的列表；可在你的某个 Pod 上运行，或为它新建一个 Pod；在共享的 Pod 上，渲染会停止 LLM 并释放显存，下一次聊天会卸载 ComfyUI 的模型并重新加载 LLM；可扩大 Pod 的卷。 *Where:* 提示词停靠窗、PODS。 *Since:* 2.782.0
+- **浮动停靠窗置前；每种类型 Local 或 Remote；RunPod 的选择移到设置** — 变为浮动的停靠窗会立即置于其他停靠窗之前（包括 ▣ 停靠窗）；☁ Remote generation 停靠窗中 Image / Video / Music 的 Local / Remote 决定该类型的模式（全部 Local = 本地模式；混合 = 保留本机的 ComfyUI 并列出两种模型列表）；RunPod ▸ Pods / Serverless 移到 Settings ▸ Remote generation；Pod 的 ComfyUI 也把文本编码器和 VAE 留在显卡上（--highvram）。 *Where:* 停靠窗、☁ Remote generation、Settings ▸ Remote generation。 *Since:* 2.782.1
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

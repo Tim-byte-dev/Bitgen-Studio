@@ -96,6 +96,30 @@
   /** the one on top (null = none raised yet) */
   function top() { const l = list(); return l.length ? l[l.length - 1] : null; }   // (the top of what is painted)
 
+  // 2.782.1 (Tim: "if a docker is in floating state bring it to the front, right now new floating dockers are going behind the new
+  // custom docker"): a docker / dialog that BECOMES floating and shown (floated out, opened, shown again, made) is raised at
+  // once - before, only a press raised one, so a docker just floated kept its stylesheet z (or joined the order lowest) and sat
+  // behind a ▣ docker raised earlier. A MutationObserver (class / style / added nodes), batched to one frame.
+  const shownNow = (w) => { if (!floating(w)) return false; try { const cs = root.getComputedStyle(w); return cs.display !== "none" && cs.visibility !== "hidden"; } catch (e) { return false; } };
+  const was = new WeakMap();
+  let pend = false;
+  function sweepNew() {
+    pend = false;
+    for (const w of doc.querySelectorAll(sel)) {
+      const on = shownNow(w), before = was.get(w);
+      was.set(w, on);
+      if (on && before === false) raise(w);              // just floated / shown again
+      else if (on && before === undefined && booted) raise(w);   // a new one made floating (after the page's start)
+    }
+  }
+  let booted = false;
+  function soon() { if (pend) return; pend = true; (root.requestAnimationFrame || setTimeout)(sweepNew); }
+  try {
+    // only changes on a docker / dialog itself, or one added - the timeline's playback changes styles every frame elsewhere
+    const ours = (n) => n && n.nodeType === 1 && ((n.matches && n.matches(sel)) || (n.querySelector && n.querySelector(sel)));
+    new root.MutationObserver((ms) => { for (const m of ms) { if (m.type === "attributes" ? (m.target.matches && m.target.matches(sel)) : Array.prototype.some.call(m.addedNodes, ours)) { soon(); return; } } }).observe(doc.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "style", "hidden", "open"] });
+    setTimeout(() => { sweepNew(); booted = true; }, 0);
+  } catch (e) { /* an old browser: presses still raise */ }
   doc.addEventListener("pointerdown", (e) => { raise(e.target); }, true);
   doc.addEventListener("focusin", (e) => { raise(e.target); }, true);
 

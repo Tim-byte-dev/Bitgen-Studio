@@ -5251,6 +5251,17 @@ PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Res
 
 **もっと容量を.** ダイアログはモデルに必要な容量を示し、ポッドのボリュームを大きくできます（**Make it bigger**、10〜4000 GB、大きくするのみ）。RunPod がポッドを再起動することがあります。/workspace は残ります。
 
+## フローティングドッカーを前面に、タイプごとに Local / Remote、RunPod の選択は設定に (2.782.1)
+<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- ef92bc6b1c2c -->
+
+**フローティングドッカーが前面に.** フローティングにした、開いた、またはフローティングになったドッカーは、すぐに他のフローティングドッカー（▣ ドッカーを含む）より前に出ます。以前は押したときだけ前に出ていました。フローティングダイアログ（💬 Community、Basic Settings など）は引き続きドッカーより上にあります。
+
+**タイプごとに Local / Remote.** ☁ Remote generation ドッカーで Image、Video、Music を Local にするとそのタイプはローカルモードに、Remote にするとリモートモードになります。3 つとも Local ならアプリはローカルモードです（このコンピューターのモデル一覧、ComfyUI を起動）。Local と Remote が混在する場合、このコンピューターの ComfyUI は Local のタイプのために動き続け、Basic Settings のモデル一覧にはこのコンピューターのモデルとリモートのモデル（☁）の両方が出ます。
+
+**RunPod ▸ Pods / Serverless は設定に.** ドッカーには Serverless / Pods の選択がなくなりました。⚙ Settings ▸ Remote generation ▸ **RunPod renders on** で選びます。
+
+**テキストエンコーダーと VAE もカードに.** GPU メモリが **Keep the models on the card** のとき、ポッドの ComfyUI は（フラグを知っていれば）`--highvram` でも起動します。テキストエンコーダーと VAE も拡散モデルとともにレンダリングの間カードに残り、入りきらないものは ComfyUI が降ろします。稼働中のポッドには ⟳ Apply to this pod か ⟳ Restart ComfyUI で適用します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

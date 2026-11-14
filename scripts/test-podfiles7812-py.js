@@ -40,6 +40,8 @@ smi("49140");
 check("an A40 (48 GB) + a ComfyUI that knows the flag: --disable-dynamic-vram; Dynamic VRAM picked: nothing", extra("gpu") === '["--disable-dynamic-vram"]' && extra("dynamic") === "[]", [extra("gpu"), extra("dynamic")]);
 smi("12288");
 check("…a 12 GB card: nothing (Dynamic VRAM suits it)", extra("gpu") === "[]");
+smi("49140"); fs.writeFileSync(path.join(C, "comfy", "cli_args.py"), "parser.add_argument('--disable-dynamic-vram')\nparser.add_argument('--highvram')\n");
+check("2.782.1: a ComfyUI that knows --highvram too: the text encoder + VAE kept on the card as well (ComfyUI still unloads what does not fit)", extra("gpu") === '["--disable-dynamic-vram", "--highvram"]', extra("gpu"));
 smi("49140"); fs.writeFileSync(path.join(C, "comfy", "cli_args.py"), "parser.add_argument('--lowvram')\n");
 check("…a ComfyUI without the flag (older, or after it is removed): nothing - an unknown flag would stop it starting", extra("gpu") === "[]");
 // the log report

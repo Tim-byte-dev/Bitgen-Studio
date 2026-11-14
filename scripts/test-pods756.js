@@ -53,7 +53,7 @@ try {
 const IDX = rd("routes", "index.js"), RP = rd("routes", "pods.js"), HTML = rd("static", "index.html"), JS = rd("static", "podsdock.js"), GS = rd("static", "gpusplit.js");
 check("routes/pods.js mounted: templates, gpus, create, mine, start / stop / terminate", /require\("\.\/pods"\)\.mount\(app\)/.test(IDX) && ["/api/pods/templates", "/api/pods/gpus", "/api/pods/create", "/api/pods/mine", "/api/pods/:id/:action"].every((u) => RP.includes(u)));
 check("the page loads static/podsdock.js: a SecFloat docker \"PODS\"; its 🖥 PODS button in Basic Settings ▸ GPU, shown only for RunPod ▸ Pods", HTML.indexOf("/static/podsdock.js") > HTML.indexOf("/static/remotedock.js")
-  && /SecFloat\.add\(\{ id: "pods", title: "PODS"/.test(JS) && /b\.id = "gpuPods"/.test(JS) && /g\.enabled && g\.engine && g\.engine\.pods/.test(JS) && /name: grp\[0\]/.test(GS) && /"gpuProv", "Remote servers"/.test(GS) && /"gpuRunpod", "RunPod"/.test(GS));
+  && /SecFloat\.add\(\{ id: "pods", title: "PODS"/.test(JS) && /b\.id = "gpuPods"/.test(JS) && /g\.enabled && g\.engine && g\.engine\.pods/.test(JS) && /name: grp\[0\]/.test(GS) && /"gpuProv", "Remote servers"/.test(GS) && /name="rgEng" value="pods"/.test(rd("static", "remotegpu.js")) /* 2.782.1: RunPod ▸ Pods / Serverless moved to Settings ▸ Remote generation */);
 check("lib/runpodApi.js: templates (GET /catalog/templates?source=), gpus (GET /catalog/gpus …POD&cloud=), createPod (POST /pods)", /\/catalog\/templates\?source=/.test(rd("lib", "runpodApi.js")) && /\/catalog\/gpus\?include=AVAILABILITY&product=POD&cloud=/.test(rd("lib", "runpodApi.js")) && /call\("POST", "\/pods"/.test(rd("lib", "runpodApi.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -20,7 +20,20 @@ function mount(app) {
   const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
   const remote = (req) => req.query.local !== "1" && RM.podsMode();
   // remote mode: Basic Settings' combos + LoRA rows list the remote models (the page's loadComfyModels)
-  app.get("/api/comfymodels", (req, res, next) => { if (!remote(req)) return next(); try { RM.ensureFilled(); res.json(RM.asComfyModels(RM.load())); } catch (e) { next(); } });
+  app.get("/api/comfymodels", (req, res, next) => {
+    if (!remote(req)) return next();
+    // 2.782.1 (Tim: "when local is selected in any of the remote generation radios, set that type to local mode"): a type still
+    // on this computer (☁ Remote generation docker) - this computer's models AND the remote ones, each marked
+    let mix = false; try { mix = require("../lib/modeSwitch").mixed(require("../lib/gpuSplit").split()); } catch { mix = false; }
+    if (mix) {
+      try { RM.ensureFilled(); } catch { /* fine */ }
+      const remoteList = (() => { try { return RM.asComfyModels(RM.load()); } catch { return null; } })(), json = res.json.bind(res);
+      res.json = (j) => json(RM.mergeComfy(j, remoteList));
+      req.query.local = "1";
+      return next();
+    }
+    try { RM.ensureFilled(); res.json(RM.asComfyModels(RM.load())); } catch (e) { next(); }
+  });
   // remote mode: Model manager's cards are the remote models
   app.get("/api/modelmgr/cards", (req, res, next) => {
     if (!remote(req)) return next();

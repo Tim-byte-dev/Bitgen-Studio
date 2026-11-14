@@ -2907,28 +2907,20 @@
    "src": "static/gpusplit.js:66"
   },
   {
-   "s": "Serverless",
-   "src": "static/gpusplit.js:67"
-  },
-  {
-   "s": "Pods",
-   "src": "static/gpusplit.js:67"
-  },
-  {
    "s": "Every job runs on this computer",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
-   "s": "Remote needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:114"
+   "s": "Remote needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
+   "src": "static/gpusplit.js:113"
   },
   {
-   "s": "Both needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:114"
+   "s": "Both needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
+   "src": "static/gpusplit.js:113"
   },
   {
    "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -6555,24 +6547,44 @@
    "src": "static/remotegpu.js:85"
   },
   {
+   "s": "RunPod renders on",
+   "src": "static/remotegpu.js:124"
+  },
+  {
+   "s": "Pods",
+   "src": "static/remotegpu.js:124"
+  },
+  {
+   "s": "Serverless",
+   "src": "static/remotegpu.js:124"
+  },
+  {
+   "s": "Your own GPU machines on RunPod, paid by the hour while they run - the 🖥 PODS docker",
+   "src": "static/remotegpu.js:124"
+  },
+  {
+   "s": "A RunPod Serverless endpoint - paid only while a job runs",
+   "src": "static/remotegpu.js:124"
+  },
+  {
    "s": "Use this computer",
-   "src": "static/remotegpu.js:119"
+   "src": "static/remotegpu.js:146"
   },
   {
    "s": "No remote styles yet - set a style's Runs on to Remote GPU (Settings ▸ Image, Video or Audio ▸ Music styles)",
-   "src": "static/remotegpu.js:193"
+   "src": "static/remotegpu.js:220"
   },
   {
    "s": "Every remote style shows - the endpoint's image has node packs the studio cannot see",
-   "src": "static/remotegpu.js:193"
+   "src": "static/remotegpu.js:220"
   },
   {
    "s": "The styles it cannot render, and why",
-   "src": "static/remotegpu.js:199"
+   "src": "static/remotegpu.js:226"
   },
   {
    "s": "pod",
-   "src": "static/remotegpu.js:252"
+   "src": "static/remotegpu.js:279"
   },
   {
    "s": "From Hugging Face… / your list",
@@ -24198,23 +24210,23 @@
   },
   {
    "p": "{0} - set up Settings ▸ Remote generation ▸ 🧠 LLM first",
-   "src": "static/gpusplit.js:109"
+   "src": "static/gpusplit.js:108"
   },
   {
    "p": "No remote GPU - pictures, videos and songs render on this computer · LLM: {0} · Vision LLM: {1}",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: {3} · Vision LLM: {4}",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:114"
+   "src": "static/gpusplit.js:113"
   },
   {
    "p": "{0} takes {1} · saves: {2}",
@@ -24946,23 +24958,23 @@
   },
   {
    "p": "stopped · {0}",
-   "src": "static/remotegpu.js:120"
+   "src": "static/remotegpu.js:147"
   },
   {
    "p": "now: {0} · {1}",
-   "src": "static/remotegpu.js:124"
+   "src": "static/remotegpu.js:151"
   },
   {
    "p": "now: {0}",
-   "src": "static/remotegpu.js:124"
+   "src": "static/remotegpu.js:151"
   },
   {
    "p": "This endpoint can render {0} of your {1} remote styles; the others are hidden from the style lists",
-   "src": "static/remotegpu.js:193"
+   "src": "static/remotegpu.js:220"
   },
   {
    "p": "pod {0} - 🔄 My pods lists them",
-   "src": "static/remotegpu.js:248"
+   "src": "static/remotegpu.js:275"
   },
   {
    "p": "{0} more - ☰ All",

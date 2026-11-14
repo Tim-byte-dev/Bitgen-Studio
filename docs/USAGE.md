@@ -8951,6 +8951,16 @@ A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files.
 
 **More room.** The dialog says how much room the model needs and can make the pod's volume bigger (**Make it bigger**, from 10 to 4000 GB, only bigger). RunPod may restart the pod; /workspace is kept.
 
+## Floating dockers in front; each type Local or Remote; RunPod's choice in Settings (2.782.1)
+
+**Floating dockers come to the front.** A docker you float, open or make floating now comes in front of the other floating dockers at once, a ▣ docker included. Before, it only came to the front when you pressed it. Floating dialogs (💬 Community, Basic Settings …) still stay above the dockers.
+
+**Each type Local or Remote.** In the ☁ Remote generation docker, Local on Image, Video or Music puts that type in local mode and Remote puts it in remote mode. With all three Local the app is in local mode: this computer's model lists, and its ComfyUI started. With some Local and some Remote, ComfyUI on this computer is kept running for the Local types, and Basic Settings' model lists show this computer's models and the remote ones (☁).
+
+**RunPod ▸ Pods / Serverless is in Settings.** The docker no longer has the Serverless / Pods choice. Pick it in ⚙ Settings ▸ Remote generation ▸ **RunPod renders on**.
+
+**The text encoder and VAE stay on the card.** With GPU memory on **Keep the models on the card**, a pod's ComfyUI now also starts with `--highvram` (when it knows the flag): the text encoder and VAE stay on the card between renders with the diffusion model, and ComfyUI still unloads what does not fit. ⟳ Apply to this pod or ⟳ Restart ComfyUI puts a running pod on it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

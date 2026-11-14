@@ -5484,6 +5484,17 @@ PODS ▸ My pods 中執行的 Pod 在 📁 Files 旁邊有 **⟳ Restart ComfyUI
 
 **更多空間.** 對話框會顯示模型需要多少空間，並可擴大 Pod 的磁碟區（**Make it bigger**，10 到 4000 GB，只能擴大）。RunPod 可能會重新啟動 Pod；/workspace 會保留。
 
+## 浮動停靠窗置前；每種類型 Local 或 Remote；RunPod 的選擇移到設定 (2.782.1)
+<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- ef92bc6b1c2c -->
+
+**浮動停靠窗置前.** 你浮動、開啟或變為浮動的停靠窗會立即置於其他浮動停靠窗（包括 ▣ 停靠窗）之前。以前只有在點按它時才會置前。浮動對話框（💬 Community、Basic Settings 等）仍然在停靠窗之上。
+
+**每種類型 Local 或 Remote.** 在 ☁ Remote generation 停靠窗中，把 Image、Video 或 Music 設為 Local，該類型進入本機模式；設為 Remote 則進入遠端模式。三者都是 Local 時，應用處於本機模式：本機的模型列表，並啟動本機的 ComfyUI。Local 和 Remote 混合時，本機的 ComfyUI 會為 Local 類型保持執行，Basic Settings 的模型列表會同時顯示本機的模型和遠端模型（☁）。
+
+**RunPod ▸ Pods / Serverless 移到設定.** 停靠窗中不再有 Serverless / Pods 選項。請在 ⚙ Settings ▸ Remote generation ▸ **RunPod renders on** 中選擇。
+
+**文字編碼器和 VAE 也留在顯示卡上.** GPU 顯示記憶體設為 **Keep the models on the card** 時，Pod 的 ComfyUI 現在也會以 `--highvram` 啟動（若它認得此參數）：文字編碼器和 VAE 會與擴散模型一起在兩次算繪之間留在顯示卡上，放不下的仍由 ComfyUI 卸載。用 ⟳ Apply to this pod 或 ⟳ Restart ComfyUI 讓執行中的 Pod 生效。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

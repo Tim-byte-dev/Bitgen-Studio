@@ -50,8 +50,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await api("/api/gpusplit", { where: "local", engine: { provider: "runpod", runpod: "serverless" } }); await ev(() => H3GpuSplit.load()); await sleep(600);
     await p.check('input[name="gpuWhere"][value="remote"]'); await sleep(800);
     const l4 = await look();
-    check("nothing set up yet: Remote picked = it waits (not saved), the ☁ Remote generation docker opens with the Remote servers / RunPod choices (+ ⚙ Settings) and the line says what to do", (await api("/api/gpusplit")).where === "local" && l4.where === "remote" && l4.engine && l4.dockSetup && /needs somewhere to render first: pick RunPod ▸ Pods in the ☁ Remote generation docker/.test(l4.line), l4);
-    await p.check('input[name="gpuRunpod"][value="pods"]'); await sleep(1500);
+    check("nothing set up yet: Remote picked = it waits (not saved), the ☁ Remote generation docker opens with the Remote servers / RunPod choices (+ ⚙ Settings) and the line says what to do", (await api("/api/gpusplit")).where === "local" && l4.where === "remote" && l4.engine && l4.dockSetup && /needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation/.test(l4.line), l4);
+    // 2.782.1: RunPod ▸ Pods / Serverless is in Settings ▸ Remote generation now (static/remotegpu.js rgEng) - the same call it makes
+    await p.evaluate(() => fetch("/api/gpusplit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ engine: { provider: "runpod", runpod: "pods" } }) }).then(() => document.dispatchEvent(new CustomEvent("h3:rgpu")))); await sleep(1500);
     check("…RunPod ▸ Pods picked: Remote is saved", (await api("/api/gpusplit")).where === "remote" && (await api("/api/gpusplit")).engine.pods === true);
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test crashed: " + (e && e.stack || e)); }

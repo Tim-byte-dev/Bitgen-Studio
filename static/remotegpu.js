@@ -29,7 +29,7 @@
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function post(u, b) { return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json().then(function (j) { if (!r.ok && !j.error) j.error = "HTTP " + r.status; return j; }); }); }
   function say(id, t, ok) { var m = $(id); if (m) { m.textContent = t || ""; m.style.color = ok === true ? "#7c7" : ok === false ? "#e66" : ""; } }
-  function load() { return fetch("/api/remotegpu").then(function (r) { return r.json(); }).then(function (v) { if (!v || !v.mode) return v; S.v = v; paint(); return v; }).catch(function () { /* offline */ }); }
+  function load() { try { paintEngine(); } catch (e) { /* fine */ } return fetch("/api/remotegpu").then(function (r) { return r.json(); }).then(function (v) { if (!v || !v.mode) return v; S.v = v; paint(); return v; }).catch(function () { /* offline */ }); }
   function build() {
     var h = $("stab-rgpu"); if (!h || $("rgMode")) return;
     h.innerHTML = '<label class="f">Render with</label>'
@@ -114,6 +114,33 @@
     $("rgVtest").onclick = function () { testVllm("llm"); }; $("rgVvtest").onclick = function () { testVllm("vlm"); };
     h.querySelectorAll("input").forEach(function (el) { if (el.type !== "radio") el.addEventListener("change", save); el.addEventListener("keydown", function (e) { e.stopPropagation(); }); });
     var tb = document.querySelector('#settings .stabs [data-stab="rgpu"]'); if (tb) tb.addEventListener("click", load);
+    engineRow(h);
+  }
+  /** 2.782.1 (Tim: "remove runpod options for serverless or pods from remote generation docker, the user can choose that from the
+   *  settings dialog"): RunPod ▸ Pods / Serverless - where remote generation on RunPod renders (lib/gpuSplit.js setEngine) */
+  function engineRow(h) {
+    if ($("rgEngine")) return;
+    var box = document.createElement("div"); box.id = "rgEngine"; box.style.marginTop = "10px";
+    box.innerHTML = '<label class="f">RunPod renders on</label>'
+      + '<div class="rowbtns" role="radiogroup" aria-label="RunPod renders on" style="margin-top:4px;align-items:center;flex-wrap:wrap">'
+      + '<label class="chk" style="margin:0 10px 0 0" title="Your own GPU machines on RunPod, paid by the hour while they run - the 🖥 PODS docker"><input type="radio" name="rgEng" value="pods"> Pods</label>'
+      + '<label class="chk" style="margin:0 10px 0 0" title="A RunPod Serverless endpoint - paid only while a job runs"><input type="radio" name="rgEng" value="serverless"> Serverless</label>'
+      + '<span id="rgEngNow" class="hint" style="flex:1"></span></div>';
+    var after = $("rgMode"); if (after && after.parentNode) after.parentNode.insertBefore(box, after.nextSibling); else h.insertBefore(box, h.firstChild);
+    box.querySelectorAll('input[name="rgEng"]').forEach(function (r) {
+      r.onchange = function () {
+        post("/api/gpusplit", { engine: { provider: "runpod", runpod: r.value } }).then(function (j) {
+          say("rgEngNow", j && j.error ? "✗ " + j.error : r.value === "pods" ? "the pods in 🖥 PODS render" : "your Serverless endpoint renders", !(j && j.error));
+          try { document.dispatchEvent(new CustomEvent("h3:rgpu")); } catch (e) { /* fine */ }
+        });
+      };
+    });
+    paintEngine();
+  }
+  function paintEngine() {
+    fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (v) {
+      var e = (v && v.engine) || {}; document.querySelectorAll('input[name="rgEng"]').forEach(function (i) { i.checked = i.value === e.runpod; });
+    }).catch(function () { /* offline */ });
   }
   function mode() { var r = document.querySelector('input[name="rgmode"]:checked'); return r ? r.value : "local"; }
   function paintSecs() { var m = mode(); document.querySelectorAll("#stab-rgpu .rgsec").forEach(function (s) { s.style.display = s.dataset.rg === m ? "" : "none"; }); $("rgUse").textContent = m === "local" ? "Use this computer" : "Use it"; }
