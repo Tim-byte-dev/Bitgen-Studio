@@ -40,6 +40,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       return json(r, AUD);
     });
     await p.route("**/api/pods/create", (r) => { created.push(JSON.parse(r.request().postData() || "{}")); return json(r, { pod: { id: "pod775u", name: "Audio pod" }, port: 8188 }); });
+    await p.route("**/api/pods/bitgen-template*", (r) => json(r, { id: "pt28", name: "Runpod Pytorch 2.8.0", image: "runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04", ports: ["8888/http", "22/tcp"], disk: 50, comfy: false, install: true, cuda: "12.8" }));   // 2.780.0
     await p.route("**/api/pods/templates*", (r) => json(r, { source: "all", total: 1, counts: { official: 1 }, failed: [], templates: [
       { id: "pt28", name: "Runpod Pytorch 2.8.0", image: "runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04", ports: ["8888/http", "22/tcp"], comfy: false, port: 8888, category: "NVIDIA", source: "official" }] }));
     await p.route("**/api/pods/gpus*", (r) => json(r, { cloud: "SECURE", gpus: [{ id: "NVIDIA GeForce RTX 4090", name: "RTX 4090", memory: 24, price: 0.69, availability: "High", offered: true, max: 8 }] }));
@@ -48,9 +49,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.waitForFunction(() => window.H3Pods && window.H3PodAudio && window.SecFloat && SecFloat.windows.pods, null, { timeout: 30000 });
     await ev(() => H3Pods.show(true)); await sleep(600);
     // the create form
-    await p.click('[data-pdsrc="all"]').catch(() => 0); await sleep(500);
-    await p.waitForFunction(() => document.querySelector('#pdTpl [data-pdcreate], [data-pdcreate="pt28"], .pdCard [data-pdcreate]'), null, { timeout: 10000 }).catch(() => 0);
-    await ev(() => { const bt = document.querySelector('[data-pdcreate="pt28"]') || document.querySelector("[data-pdcreate]"); if (bt) bt.click(); });
+    await p.click('[data-pdsrc="create"]');   // 2.780.0: ＋ Create pod (no template cards)
     await p.waitForSelector("#pdForm [data-pdaudio]", { timeout: 10000 });
     const f0 = await ev(() => ({ ticks: [...document.querySelectorAll("#pdForm [data-pdaudio]")].map((c) => c.dataset.pdaudio + ":" + c.parentNode.textContent.trim() + ":" + c.checked),
       sum: [...document.querySelectorAll("#pdSum .k")].map((k) => k.textContent + "=" + (k.nextElementSibling || {}).textContent).find((x) => /^Audio=/.test(x)) }));

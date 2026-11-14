@@ -24,7 +24,7 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
 (async () => {
   try { const r = await fetch(URL0); if (!r.ok) throw 0; } catch { console.log("SKIP: no studio at " + URL0 + " - the 2.759.0 browser test did not run"); process.exit(0); }
   const queued = []; let done = 0;
-  const POD = { id: "pod759", name: "Qwen pod", desiredStatus: "RUNNING", status: "RUNNING", imageName: "ls250824/run-comfyui-image", gpu: { id: "NVIDIA RTX A5000", count: 1 }, costPerHr: 0.27, runtime: { uptime: 60 } };
+  const POD = { id: "pod759", name: "Qwen pod", desiredStatus: "RUNNING", status: "RUNNING", imageName: "ls250824/run-comfyui-image", gpu: { id: "NVIDIA RTX A5000", count: 1 }, costPerHr: 0.27, runtime: { uptime: 60 }, env: { BITGEN_MADE: "1" } };   // 2.780.0: My pods lists bitGen's pods
   const TPL = [{ id: "pyt759aa", name: "PyTorch 2.8", image: "runpod/pytorch:2.8", ports: ["8888/http"], category: "NVIDIA" },
     { id: "krea759a", name: "ComfyUI Krea 2 ready", image: "someone/krea2-comfy", ports: ["8188/http"], category: "NVIDIA" }];
   let MVAE = "qwen_image_vae.safetensors";   // Manager's list: the style's VAE (set from the files the style ticks - its files follow bitGen's catalogue)
@@ -57,12 +57,10 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     await p.goto(URL0);
     await p.waitForFunction(() => window.H3Pods && window.H3PodLoad && window.SecFloat && SecFloat.windows.pods, null, { timeout: 30000 });
     await ev(() => { window.H3_POD_POLL = 300; H3Pods.show(true); }); await p.click("#pdRefresh");
-    await p.waitForFunction(() => document.querySelectorAll("#pdTpl .pdCard").length === 2 && document.querySelectorAll("#pdFor option").length > 3, null, { timeout: 15000 });
-    const order0 = await ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((c) => c.dataset.tpl));
-    await ev(() => { const s = document.getElementById("pdFor"), o = [...s.options].find((x) => x.textContent === "For Krea 2 Turbo"); s.value = o.value; s.dispatchEvent(new Event("change")); });
-    await sleep(300);
-    const order1 = await ev(() => [...document.querySelectorAll("#pdTpl .pdCard")].map((c) => c.dataset.tpl + (c.querySelector(".pdFits") ? " ✓" : "")));
-    check("For Krea 2 Turbo: the template that has Krea first, marked ✓ fits; the other after it", order1.join() === "krea759a ✓,pyt759aa" && order0.join() !== order1.join(), { order0, order1 });
+    // 2.780.0 (Tim: "we drop the template browser completely"): no template cards / For style ordering any more
+    await p.waitForFunction(() => document.querySelector('[data-pdsrc="create"]'), null, { timeout: 15000 });
+    const tb = await ev(() => ({ tabs: [...document.querySelectorAll("#pdBody [data-pdsrc]")].map((b) => b.dataset.pdsrc).join(), cards: document.querySelectorAll(".pdCard").length, forSel: !!document.getElementById("pdFor"), q: !!document.getElementById("pdQ") }));
+    check("PODS: no template browser - the tabs are 🖥 My pods / 📦 Presets / ＋ Create pod; no template cards, search or For style", tb.tabs === "mine,presets,create" && !tb.cards && !tb.forSel && !tb.q, tb);
     await p.click('[data-pdsrc="mine"]'); await sleep(300);   // 2.760.0: the pods are under 🖥 My pods
     await p.waitForFunction(() => document.querySelector('#pdPods .pdRow[data-pod="pod759"] .pdHead'), null, { timeout: 10000 });
     await ev(() => { const r = document.querySelector('#pdPods .pdRow[data-pod="pod759"]'); if (!r.classList.contains("open")) r.querySelector(".pdHead").click(); }); await sleep(300);   // 2.761.0: open the item

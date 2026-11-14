@@ -47,7 +47,8 @@ const BUSY = "There are no longer any instances available with the requested spe
   let pe = null; try { await P.create({ templateId: "runpod-torch-v280", gpu: "NVIDIA GeForce RTX 5090", cloud: "SECURE" }); } catch (e) { pe = e; }
   check("create: RunPod asked (the template id sent as it is), its refusal comes back with problem = busy", sent && sent.templateId === "runpod-torch-v280" && pe && pe.problem && pe.problem.kind === "busy" && pe.problem.said === BUSY && pe.problem.status === 500, pe && pe.problem);
   let le = null; try { await P.create({ templateId: "", gpu: "x" }); } catch (e) { le = e; }
-  check("…bitGen's own check too (no template) - problem kind template", le && le.problem && le.problem.kind === "template" && /no template was picked/.test(le.problem.said), le && le.problem);
+  // 2.780.0: no template named = the bitGen pod's own; none in RunPod's list = said as a template problem
+  check("…no template named and the bitGen pod's not in RunPod's list - problem kind template", le && le.problem && le.problem.kind === "template" && /PyTorch template .* is not in its template list/.test(le.problem.said) && /🔄/.test(le.problem.hint), le && le.problem);
 
   /* ---- the routes hand it over */
   const R = {}; require("../routes/pods").mount({ get: () => {}, post: (u, f) => { R[u] = f; }, delete: () => {} });

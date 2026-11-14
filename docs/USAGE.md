@@ -8902,6 +8902,16 @@ If RunPod won't create a pod, a dialog says why:
 
 Fixed: creating a pod from one of RunPod's own templates (such as its PyTorch template, which bitGen uses for a style's pod) said "pick a template first". bitGen's own check refused RunPod's template ids, so RunPod was never asked.
 
+## A pod is a bitGen pod (2.780.0)
+
+The PODS docker no longer lists RunPod's templates. It has three tabs:
+
+- **🖥 My pods** lists the pods bitGen made or started. Any other pods on your RunPod account sit in one line under them, showing how many there are and what the running ones cost an hour. Open that line to see each one, with ⏹ Stop on any that is running, so nothing runs unseen. They still count in 💲 Costs.
+- **📦 Presets** is as before. A preset's template is shown but can't be changed.
+- **＋ Create pod** creates a bitGen pod. Pick the GPU, cloud, disks, styles, what it is for and audio. One line says what it's made from: RunPod's PyTorch template, which bitGen installs ComfyUI, the custom nodes your styles use and their files on. That takes a few minutes the first time; after that it's kept in /workspace. If RunPod stops listing that template, bitGen uses its ComfyUI CUDA 13 one.
+
+A render waiting for a pod opens ＋ Create pod, filled in for its style.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -5429,6 +5429,17 @@ RunPod 不建立 Pod 時，會彈出對話方塊說明原因：
 
 已修復：用 RunPod 自己的模板（例如 bitGen 為風格的 Pod 使用的 PyTorch 模板）建立 Pod 時會提示“先選擇模板”。原因是 bitGen 自己的檢查拒絕了 RunPod 的模板 ID，所以根本沒有去問 RunPod。
 
+## Pod 都是 bitGen Pod (2.780.0)
+<!-- en: a-pod-is-a-bitgen-pod-2-780-0 a11bbb35eb3e -->
+
+PODS 停靠窗不再列出 RunPod 的模板。它有三個標籤：
+
+- **🖥 My pods** 列出 bitGen 建立或啟動的 Pod。RunPod 賬戶裡的其他 Pod 合成下面的一行，顯示數量以及正在執行的那些每小時的費用。展開這一行可以逐個檢視，正在執行的有 ⏹ 停止，不會有 Pod 在你不知道的情況下執行。它們仍計入 💲 Costs。
+- **📦 Presets** 與以前相同。預設的模板會顯示，但不能更改。
+- **＋ Create pod** 建立一個 bitGen Pod。選擇 GPU、雲、磁碟、風格、用途和音訊。一行說明它用什麼建立：RunPod 的 PyTorch 模板，bitGen 會在上面安裝 ComfyUI、你的風格使用的自定義節點及其檔案。第一次需要幾分鐘，之後保留在 /workspace 中。如果 RunPod 不再列出這個模板，bitGen 會改用它的 ComfyUI CUDA 13 模板。
+
+等待 Pod 的生成會開啟已為其風格填好的 ＋ Create pod。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

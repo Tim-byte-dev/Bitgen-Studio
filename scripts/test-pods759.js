@@ -35,10 +35,8 @@ check("dlCode: the Python a pod's Jupyter runs - a background thread, each file 
 check("templateScore: a template whose name / image carries the style's model family comes first (ComfyUI ones a little higher); others 0",
   PM.templateScore({ name: "ComfyUI - Qwen Image - ZiT - Boogu - Krea", image: "ls250824/run-comfyui-image", comfy: true }, { arch: "krea2" }) === 13
   && PM.templateScore({ name: "ComfyUI - Qwen Image - ZiT - Boogu - Krea", comfy: true }, { arch: "z-image" }) === 13 && PM.templateScore({ name: "PyTorch 2.8" }, { arch: "krea2" }) === 0);
-const PD = rd("static", "podsdock.js"), vm = require("vm"), ctx = { window: { document: null } }; ctx.window.window = ctx.window; vm.createContext(ctx);
-const W = new Function(PD.slice(PD.indexOf("var WORDS = "), PD.indexOf("function loadStyles")) + "return { WORDS, templateScore };")();
-check("…the PODS docker scores the same (its words = the server's)", JSON.stringify(W.WORDS) === JSON.stringify(PM.WORDS)
-  && [{ name: "Krea dev ComfyUI", comfy: true }, { name: "wan 2.2" }, { name: "x" }].every((t) => ["krea2", "wan", "z-image", "sdxl"].every((a) => W.templateScore(t, { arch: a }) === PM.templateScore(t, { arch: a }))));
+// 2.780.0: the PODS docker no longer scores templates (no template browser) - the server's templateScore stays (above)
+const PD = rd("static", "podsdock.js");
 // creating a pod
 const b = P.createBody({ templateId: "abcd1234", gpu: "X", jupyter: "pw", ports: ["3000/http", "22/tcp", "bad"] });
 check("createBody: a pod bitGen creates gets bitGen's own Jupyter password (env) and the template's ports + 8888/http (ports replace the template's)",
@@ -54,7 +52,7 @@ check("routes/pods.js: catalog / plan / ways / models (GET state, POST start), b
   ["/api/pods/catalog", "/api/pods/plan", "/api/pods/:id/ways", "/api/pods/:id/models"].every((r) => RT.includes('"' + r + '"') && RT.indexOf('"' + r + '"') < RT.indexOf('"/api/pods/:id/:action"')));
 const PL = rd("static", "podload.js");
 check("the PODS docker: ⬇ Models on a running pod (a style ticks its files, a search of bitGen's list, the Jupyter password box when needed, a bar per file, then 🎨 Make P_ styles); For style + ✓ fits on the cards; Create sends for_style",
-  /data-pdmod/.test(PD) && /H3PodLoad\.models\(host, p,/.test(PD) && /id="pdFor"/.test(PD) && /✓ fits /.test(PD) && /for_style: \(\$\("pdStyle"\) \|\| \{\}\)\.value/.test(PD)
+  /data-pdmod/.test(PD) && /H3PodLoad\.models\(host, p,/.test(PD) && /for_style: \(\$\("pdStyle"\) \|\| \{\}\)\.value/.test(PD)
   && /data-pmstyle/.test(PL) && /data-pmq/.test(PL) && /data-pmpw/.test(PL) && /data-pmsty/.test(PL) && /\/api\/pods\/plan/.test(PL));
 check("+ \"add mounting the model in the pod from the hdd or link?\": nameFromLink (the link's file name, a model extension added when it has none), only ComfyUI model folders; the routes; the panel's link box, folder list and ⬆ From this computer… (bitGen's Open dialog)",
   PM.nameFromLink("https://civitai.com/api/download/models/12345") === "12345.safetensors" && PM.nameFromLink("https://h/x/my%20lora.safetensors?x=1") === "my lora.safetensors"

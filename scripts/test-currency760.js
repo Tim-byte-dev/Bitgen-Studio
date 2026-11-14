@@ -85,9 +85,10 @@ const C = require("../lib/currency"), M = require("../static/currency.js"), A = 
     W.hidden("basic").includes("tAu") && W.hidden("image").includes("tAu") && !W.hidden("musicvideo").includes("tAu") && W.plan("musicvideo").bottom.musicdock === "open" && W.plan("musicvideo").bottom.stemsdock === "gone");
   check("voice chat: show music / stems / sfx = that tab of the Audio docker", /root\.H3Audio\.tab\(d\.el\)/.test(rd("static", "voicechat.js")));
   /* ---- the PODS docker */
-  check("PODS: 🖥 My pods beside the template tabs; the two views (pdMine), Create pod… alone (pdMaking); a pod created -> My pods",
-    /\["mine", "🖥 My pods"\]/.test(PD) && /classList\.toggle\("pdMine", S\.src === "mine"\)/.test(PD) && /classList\.toggle\("pdMaking", S\.src !== "mine" && !!S\.form\)/.test(PD)
-    && /S\.src = "mine"; filter\(\);\s+\/\/ 2\.760\.0: a pod created/.test(PD) && /\.pdk:not\(\.pdMine\) #pdMineBox\{display:none\}/.test(PD) && /\.pdk\.pdMaking #pdTpl/.test(PD));
+  // 2.780.0: no template tabs any more - 🖥 My pods / 📦 Presets / ＋ Create pod, one view at a time
+  check("PODS: 🖥 My pods tab; the views (pdMine), Create pod alone (pdMaking); a pod created -> My pods",
+    /\["mine", "🖥 My pods"\]/.test(PD) && /classList\.toggle\("pdMine", S\.src === "mine"\)/.test(PD) && /classList\.toggle\("pdMaking", S\.src === "create"\)/.test(PD)
+    && /go\("mine"\);\s+\/\/ 2\.760\.0: a pod created/.test(PD) && /\.pdk:not\(\.pdMine\) #pdMineBox\{display:none\}/.test(PD));
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })();

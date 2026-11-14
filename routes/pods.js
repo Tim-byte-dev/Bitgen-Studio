@@ -25,6 +25,7 @@ function mount(app) {
   app.get("/api/pods/templates", wrap((req) => P.templates({ source: req.query.source, comfy: req.query.comfy === "1", q: req.query.q, refresh: req.query.refresh === "1" })));
   app.get("/api/pods/gpus", wrap((req) => P.gpus(req.query.cloud)));
   app.get("/api/pods/account", wrap((req) => require("../lib/runpodAccount").account(req.query.refresh === "1")));   // 2.763.5: the balance (the 💲 RunPod docker)
+  app.get("/api/pods/bitgen-template", wrap(() => P.bitgenTemplate()));   // 2.780.0: the one template a bitGen pod is made from
   app.post("/api/pods/create", wrap((req) => P.create(req.body || {})));
   app.get("/api/pods/mine", wrap(() => P.mine()));
   app.get("/api/pods/activity", wrap(() => ({ pods: require("../lib/podActivity").all() })));   // 2.772.0

@@ -55,20 +55,11 @@ check("searchText: lower case, the ComfyUI word for ComfyUI ones", /comfyui/.tes
   let err = null; try { await P.templates({ refresh: true }); } catch (e) { err = e; }
   check("…all three failing = the error itself (the docker shows it)", err && err.status === 401 && /refused/.test(err.message));
 
+  // 2.780.0 (Tim: "we drop the template browser completely"): the server's template list stays (the bitGen pod's template is
+  // picked from it - lib/pods.js bitgenTemplate); the docker's template browser is gone
   const D = rd("static", "podsdock.js");
-  check("static/podsdock.js: one request for all (source=all), filters here as you type; All / Official / Verified / Community tabs with counts; a kind filter; ComfyUI only unticked",
-    /\/api\/pods\/templates\?source=all/.test(D) && /\["all", "All"\]/.test(D) && /id="pdKind"/.test(D) && /<input type="checkbox" id="pdComfy">/.test(D) && /src: "all", comfy: false/.test(D) && /function filter\(\)/.test(D));
-  check("…a card each (.pdCard: .pdArt tile with initials + kind + ComfyUI badge, .pdName, .pdImg, .pdChips, Create pod…, ↗ its page) in a grid; the form in #pdCreate above the cards",
-    /class="pdCard/.test(D) && /class="pdArt"/.test(D) && /class="pdGlyph"/.test(D) && /class="pdCfy"/.test(D) && /class="pdChips"/.test(D) && /\.pdGrid\{display:grid;grid-template-columns:repeat\(auto-fill/.test(D)
-    && /id="pdCreate"/.test(D) && /Create a pod from/.test(D));
-  const vm = require("vm"), ctx = { window: { document: { readyState: "complete", getElementById: () => null, addEventListener() {}, querySelectorAll: () => [] }, setTimeout() {} } };
-  ctx.window.window = ctx.window; ctx.setTimeout = () => {}; vm.createContext(ctx);
-  vm.runInContext(D.replace("typeof window !== \"undefined\" ? window : globalThis", "window"), ctx);
-  const W = ctx.window.H3Pods;
-  check("…the page's search is the server's (same words found): pytorch rocm / 3000 / amd / comfy",
-    !!W && ["pytorch", "pytorch rocm", "3000", "amd", "comfy", "community h3", ""].every((q) => all.every((t) => W.matches(t, q) === P.matches(t, q))));
-  check("…the tile's initials: two words -> their first letters, one word -> its first two",
-    W.initials("MiniMax H3 (community)") === "MH" && W.initials("ComfyUI") === "CO" && W.initials("PyTorch 2.8") === "P2" && W.initials("") === "?");
+  check("static/podsdock.js: no template browser any more (no All / Official / Verified / Community tabs, search, kind, ComfyUI only, cards, ★ Shortcuts)",
+    !/\["all", "All"\]/.test(D) && !/id="pdKind"/.test(D) && !/id="pdComfy"/.test(D) && !/id="pdQ"/.test(D) && !/class="pdCard/.test(D) && !/data-pdstar/.test(D) && /\["create", "＋ Create pod"\]/.test(D) && /\/api\/pods\/bitgen-template/.test(D));
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch((e) => { console.log("FAIL: " + (e && e.stack || e)); process.exit(1); });

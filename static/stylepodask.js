@@ -58,7 +58,7 @@
       d.innerHTML = '<h3 id="spaTitle">A pod for ' + esc(a.style_name) + "</h3>"
         + '<p class="hint" style="margin:0">No pod renders <b>' + esc(a.style_name) + "</b> yet. Create one, or use one of your pods - the style is linked to it, so next time it goes there by itself. Its files and node packs are put on the pod before it renders.</p>"
         + '<fieldset><legend>Create a pod</legend>'
-        + (o.template ? '<div class="hint">Template: ' + esc(o.template.name) + " (CUDA 13 or newer hosts only)</div>" : '<div class="hint" style="color:var(--bad,#e66)">' + esc(o.template_error || "no template") + "</div>")
+        + (o.template ? '<div class="hint">A bitGen pod, made from RunPod\'s ' + esc(o.template.name) + (/pytorch/i.test(o.template.image || o.template.name || "") ? " - bitGen installs ComfyUI on it" : "") + "</div>" : '<div class="hint" style="color:var(--bad,#e66)">' + esc(o.template_error || "no template") + "</div>")
         + '<div class="row"><label>Cloud <select id="spaCloud"><option value="SECURE"' + (cloud === "SECURE" ? " selected" : "") + '>Secure</option><option value="COMMUNITY"' + (cloud === "COMMUNITY" ? " selected" : "") + ">Community (cheaper)</option></select></label>"
         + '<label>Disk <input type="number" id="spaVol" min="10" max="2000" value="' + (o.volume_gb || 50) + '" style="width:80px"> GB</label></div>'
         + '<div class="row"><label for="spaGpu">GPU</label><select id="spaGpu" class="spaGpu">'

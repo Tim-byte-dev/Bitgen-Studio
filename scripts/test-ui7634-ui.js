@@ -33,6 +33,7 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
       if (q.headers.authorization !== "Bearer rpa_UI7634") return send(401, {});
       if (q.method === "GET" && q.url === "/v2/pods?limit=1000") return send(200, { pods: PODS });
       const one = /^\/v2\/pods\/(\w+)$/.exec(q.url); if (one && q.method === "GET") { const p = PODS.find((x) => x.id === one[1]); return p ? send(200, p) : send(404, {}); }
+      if (q.method === "POST" && /^\/v2\/pods\/\w+\/action$/.test(q.url)) return send(200, PODS[0]);   // 2.780.0: ▶ Start (bitGen started it)
       if (q.method === "POST" && q.url === "/v2/pods") { const body = JSON.parse(b); created.push(body); return send(201, { id: "pod7634n", name: body.name, desiredStatus: "RUNNING", status: "RUNNING", gpu: { id: body.gpu.id, count: body.gpu.count } }); }   // made - and then gone from the list
       if (/^\/v2\/catalog\/templates/.test(q.url)) return send(200, { templates: q.url.includes("official") ? [{ id: "tplCu13u", name: "ComfyUI CUDA 13", image: "runpod/comfyui:cuda13", ports: ["8188/http", "8888/http"] }] : [], pagination: { hasNextPage: false } });
       if (/^\/v2\/catalog\/gpus/.test(q.url)) return send(200, { gpus: [{ id: "NVIDIA RTX A5000", name: "RTX A5000", memory: 24, price: { secure: 0.27, community: 0.16 }, availability: "HIGH", secure: true, community: true },
@@ -47,6 +48,9 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
   await api("/api/remotegpu/save", { runpod: { key: "rpa_UI7634", pod_id: "", port: 8188 }, serverless: { endpoint: "" } });
   await api("/api/remotegen/enabled", { on: true });
   await api("/api/gpusplit", { where: "remote", engine: { provider: "runpod", runpod: "pods" } });
+  // 2.780.0: My pods lists bitGen's pods - the running pod is started through bitGen (a pod MADE by bitGen would be put in use
+  // by itself and take the render the test wants asked about)
+  await api("/api/pods/pod7634r/start", {});
   const sts = ((await api("/api/styles?kind=image")).styles || []).filter((x) => x.engine === "comfy" && (!x.runs_on || x.runs_on === "local") && !x.chain);
   const st = sts[1] || sts[0];
   const jobs = [];
@@ -77,11 +81,12 @@ const api = (p, b, m) => fetch(URL0 + p.replace(/^\//, ""), b || m ? { method: m
     const full = await ev(() => [...document.querySelectorAll('[data-pdstats="pod7634r"] .pdBar')].map((x) => x.textContent));
     check("…opened: its figures as bars - VRAM and RAM (50.0 of 200.0 GB) - updated every few seconds", full.some((t) => /^VRAM 18\.0\/48\.0 GB$/.test(t)) && full.some((t) => /^RAM 50\.0\/200\.0 GB$/.test(t)), full);
     // the prompt docker's style in the docker's dropdowns + the summary
-    await p.click('[data-pdsrc="all"]');
-    await p.waitForFunction(() => document.querySelector('#pdTpl .pdCard[data-tpl="tplCu13u"] [data-pdcreate]'), null, { timeout: 15000 }).catch(() => {});
-    const forV = await ev(() => document.getElementById("pdFor").value);
-    check("the docker's For dropdown starts on the style picked in the prompt docker", forV === st.id, { forV, want: st.id });
-    await ev(() => document.querySelector('#pdTpl .pdCard[data-tpl="tplCu13u"] [data-pdcreate]').click());
+    // 2.780.0 (Tim: "we drop the template browser completely"): ＋ Create pod = the bitGen pod form, its template picked by bitGen
+    // (the stand-in RunPod lists no PyTorch template, so its ComfyUI CUDA 13 one)
+    await p.click('[data-pdsrc="create"]');
+    await p.waitForFunction(() => /ComfyUI CUDA 13/.test((document.getElementById("pdTplLine") || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
+    const tl = await ev(() => (document.getElementById("pdTplLine") || {}).textContent || "");
+    check("＋ Create pod: a bitGen pod - what it is made from in one line (RunPod's ComfyUI CUDA 13 when no PyTorch template is listed)", /^Made from RunPod's ComfyUI CUDA 13/.test(tl), tl);
     await p.waitForFunction(() => { const s = document.getElementById("pdSum"); return s && /GPU/.test(s.textContent) && /A5000|A40/.test(s.textContent); }, null, { timeout: 15000 }).catch(() => {});
     const sum = await ev(() => ({ style: (document.getElementById("pdStyle") || {}).value, rows: [...document.querySelectorAll("#pdSum .k")].map((k) => k.textContent + ": " + k.nextElementSibling.textContent) }));
     check("Create pod… : the form's Style is the prompt docker's; everything the pod will be is listed before Create pod (template + image, GPU, price, cloud, both disks, a CUDA 13 host, ports + Jupyter, the style, the custom nodes)",

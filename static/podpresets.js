@@ -51,7 +51,8 @@
 
   function css() { if (!doc.getElementById("ppCss")) { var st = doc.createElement("style"); st.id = "ppCss"; st.textContent = CSS; doc.head.appendChild(st); } }
   function loadAux() {
-    if (!S.tpls) S.tpls = getj("/api/pods/templates?source=all").then(function (j) { return (j.templates || []).filter(function (t) { return t.comfy; }); }).catch(function () { return []; });
+    // 2.780.0 (Tim: "we drop the template browser completely"): the one template a bitGen pod is made from - no template list
+    if (!S.tpls) S.tpls = getj("/api/pods/bitgen-template").then(function (j) { return j && j.id ? [j] : []; }).catch(function () { return []; });
     if (!S.styles) S.styles = Promise.all(["image", "video"].map(function (k) { return getj("/api/styles?kind=" + k).then(function (j) { return j.styles || []; }).catch(function () { return []; }); }))
       .then(function (a) { return a[0].concat(a[1]).filter(function (x) { return x.runs_on !== "api" && x.runs_on !== "remote" && x.runs_on !== "pod"; }); });
     return Promise.all([S.tpls, S.styles]);
@@ -101,7 +102,7 @@
     h += '<div class="ppBody">'
       + '<div class="ppGrid">'
       + '<label for="ppN_' + esc(p.name) + '">Name</label><input type="text" id="ppN_' + esc(p.name) + '" data-ppf="name" maxlength="60" value="' + esc(f.name) + '">'
-      + '<label>Template</label><select data-ppf="template_id"><option value="' + esc(f.template_id) + '">' + esc(f.template_name || f.template_id) + "</option></select>"
+      + '<label>Template</label><span class="hint" title="A bitGen pod - the template is picked by bitGen">' + esc(f.template_name || f.template_id || "bitGen pod") + "</span>"
       + '<label>Cloud</label><select data-ppf="cloud"><option value="SECURE"' + (f.cloud === "SECURE" ? " selected" : "") + '>Secure</option><option value="COMMUNITY"' + (f.cloud === "COMMUNITY" ? " selected" : "") + ">Community</option></select>"
       + '<label>GPU</label><select data-ppf="gpu"><option value="' + esc(f.gpu) + '">' + esc(f.gpu_name || f.gpu) + "</option></select>"
       + '<label>GPUs</label><input type="number" data-ppf="count" min="1" max="8" value="' + f.count + '">'
@@ -148,9 +149,6 @@
   function fill(it, p) {
     var f = formOf(p);
     loadAux().then(function (a) {
-      var tsel = it.querySelector('[data-ppf="template_id"]');
-      if (tsel) { var tl = a[0]; if (!tl.some(function (t) { return t.id === f.template_id; }) && f.template_id) tl = [{ id: f.template_id, name: f.template_name || f.template_id }].concat(tl);
-        tsel.innerHTML = tl.map(function (t) { return '<option value="' + esc(t.id) + '"' + (t.id === f.template_id ? " selected" : "") + ">" + esc(t.name) + "</option>"; }).join(""); }
       var add = it.querySelector("[data-ppsadd]"); S.styleName = {};
       a[1].forEach(function (s) { S.styleName[s.id] = s.name; });
       if (add) add.innerHTML = '<option value="">＋ Add a style…</option>' + a[1].filter(function (s) { return f.styles.indexOf(s.id) < 0; }).map(function (s) { return '<option value="' + esc(s.id) + '">' + esc(s.name) + "</option>"; }).join("");
@@ -215,11 +213,10 @@
     var n = "Preset " + (S.list.length + 1), taken = S.list.map(function (p) { return p.name; }), k = S.list.length + 1;
     while (taken.indexOf(n) >= 0) n = "Preset " + (++k);
     Promise.all([loadAux(), gpusOf("SECURE")]).then(function (a) {
-      // 2.772.0: RunPod's PyTorch template first (CUDA 12.8) - bitGen installs ComfyUI on it (lib/podInstall.js); else ComfyUI CUDA 13
-      var pt = a[0][0].filter(function (x) { return !x.comfy && /^runpod\/pytorch:/i.test(x.image || "") && /^12\.[89]$/.test(cuOf(x.image)); })[0];
-      var t = pt || a[0][0].filter(function (x) { return /cuda[\s_-]*13/i.test(x.name + " " + (x.image || "")); })[0] || a[0][0][0] || {};
+      // 2.780.0: the bitGen pod's template (lib/pods.js bitgenTemplate - RunPod's PyTorch one; bitGen installs ComfyUI on it)
+      var t = a[0][0] || {};
       var g = a[1].filter(function (x) { return x.offered && x.memory >= 24; }).sort(function (x, y) { return x.price - y.price; })[0] || {};
-      return send("POST", "/api/podpresets", { preset: { name: n, template_id: t.id || "", template_name: t.name || "", gpu: g.id || "", gpu_name: g.name || "", count: 1, cloud: "SECURE", disk: 50, volume: 100, cuda: pt ? cuOf(t.image) : /cuda[\s_-]*13/i.test(t.name || "") ? "13.0" : "", kinds: [], styles: [] } });
+      return send("POST", "/api/podpresets", { preset: { name: n, template_id: t.id || "", template_name: t.name || "", gpu: g.id || "", gpu_name: g.name || "", count: 1, cloud: "SECURE", disk: 50, volume: 100, cuda: t.cuda || "", kinds: [], styles: [] } });
     }).then(function (r) { if (r && r.error) { var m = S.host.querySelector(".ppMsgTop"); if (m) m.textContent = r.error; return; } S.open[n] = true; load(); });
   }
   /** the tab shows in `host` */

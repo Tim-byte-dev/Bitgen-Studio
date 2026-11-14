@@ -43,6 +43,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.route("**/api/pods/costs*", (r) => json(r, { pods: {} }));
     await p.route("**/api/pods/selected", (r) => json(r, { selected: [] }));
     await p.route("**/api/pods/pod772u/stats*", (r) => json(r, { gpus: [] }));
+    // 2.780.0: the PODS docker asks only for the bitGen pod's template (no template browser)
+    let TPLB = { id: "pt28", name: "Runpod Pytorch 2.8.0", image: "runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04", ports: ["8888/http", "22/tcp"], disk: 50, comfy: false, install: true, cuda: "12.8" };
+    await p.route("**/api/pods/bitgen-template*", (r) => json(r, TPLB));
     await p.route("**/api/pods/templates*", (r) => json(r, { source: "all", total: 2, counts: { official: 2 }, failed: [], templates: [
       { id: "pt28", name: "Runpod Pytorch 2.8.0", image: "runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04", ports: ["8888/http", "22/tcp"], comfy: false, port: 8888, category: "NVIDIA", source: "official" },
       { id: "cf13", name: "ComfyUI - CUDA 13.0", image: "runpod/comfyui:cuda13.0", ports: ["8188/http", "8888/http"], comfy: true, port: 8188, category: "NVIDIA", source: "official" }] }));
@@ -83,17 +86,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const a5 = await ev(() => { const n = document.querySelector('#pdPods .pdRow[data-pod="pod772u"] .pdNow'); return { cls: n.className, txt: n.textContent, col: getComputedStyle(n.querySelector(".vb")).color }; });
     check("…stopped: ✗ Stopped <the reason>, in red", /bad/.test(a5.cls) && a5.txt === "✗StoppedComfyUI was not installed: git clone did not work - fatal: unable to access" && a5.col === "rgb(238, 102, 102)", a5);
     // the create form on RunPod's PyTorch template says bitGen installs ComfyUI there
-    await p.click('[data-pdsrc="all"]'); await p.waitForSelector('[data-pdcreate="pt28"]', { timeout: 8000 });
-    await p.click('[data-pdcreate="pt28"]');
+    await p.click('[data-pdsrc="create"]'); await p.waitForSelector("#pdForm", { timeout: 8000 });
     await p.waitForFunction(() => /ComfyUI/.test((document.getElementById("pdSum") || {}).textContent || "") && /RTX 4090/.test((document.getElementById("pdSum") || {}).textContent || ""), null, { timeout: 8000 }).catch(() => {});
     const f1 = await ev(() => { const s = document.getElementById("pdSum"); const rows = {}; const k = s ? [...s.querySelectorAll(".k")] : []; k.forEach((x) => { rows[x.textContent] = x.nextElementSibling.textContent; }); return rows; });
     check("the create form on RunPod's PyTorch template: ComfyUI = bitGen installs it (newest, + ComfyUI-Manager, the template's PyTorch); port 8188 opened; a CUDA 12.8 host",
       /^bitGen installs it on the pod - the newest ComfyUI from GitHub \+ ComfyUI-Manager, reusing the template's PyTorch/.test(f1.ComfyUI || "") && /8888\/http, 22\/tcp \+ 8188 \(ComfyUI\) \+ Jupyter/.test(f1.Ports || "") && f1.Host === "CUDA 12.8 or newer", f1);
-    await p.click("#pdClose").catch(() => {});
-    await p.click('[data-pdcreate="cf13"]');
-    await sleep(400);
+    // RunPod's PyTorch template gone: the bitGen pod falls back to its ComfyUI CUDA 13 one
+    TPLB = { id: "cf13", name: "ComfyUI - CUDA 13.0", image: "runpod/comfyui:cuda13.0", ports: ["8188/http", "8888/http"], disk: 50, comfy: true, install: false, cuda: "13.0" };
+    await p.click('[data-pdsrc="mine"]'); await ev(() => H3Pods.load()); await sleep(500); await p.click('[data-pdsrc="create"]');
+    await p.waitForFunction(() => /the template's own/.test((document.getElementById("pdSum") || {}).textContent || ""), null, { timeout: 8000 }).catch(() => {});
     const f2 = await ev(() => { const s = document.getElementById("pdSum"); const rows = {}; [...s.querySelectorAll(".k")].forEach((x) => { rows[x.textContent] = x.nextElementSibling.textContent; }); return rows; });
-    check("…on a ComfyUI template: the template's own ComfyUI, no extra port", f2.ComfyUI === "the template's own" && !/8188 \(ComfyUI\)/.test(f2.Ports || ""), f2);
+    check("…the fallback (RunPod's ComfyUI CUDA 13 template): the template's own ComfyUI, no extra port", f2.ComfyUI === "the template's own" && !/8188 \(ComfyUI\)/.test(f2.Ports || ""), f2);
     check("no script errors", errs.length === 0, errs);
   } finally { await b.close(); }
   console.log("\n" + pass + " passed, " + fail + " failed");
