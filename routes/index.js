@@ -127,6 +127,7 @@ function mount(app) {
   app.use(require("../lib/samplers").middleware);
   require("../lib/samplers").mount(app);
   require("./remoteLlm").mount(app);
+  require("./llmRepos").mount(app);   // 2.782.0: your LLMs from Hugging Face for your pod (lib/llmRepos.js)
   // 2.769.1: pods bitGen made that were never set up are watched again after a restart (lib/podMade.js)
   { const t = setTimeout(() => { try { require("../lib/podMade").resume(); } catch { /* fine */ } }, 20000); if (t.unref) t.unref(); }   // 2.768.0: the prompt docker's LLM / Vision lists in remote mode (lib/remoteLlm.js)
   require("./remotePrep").mount(app);   // 2.767.0: remote mode prepares the LLM / Vision LLM and the video style (lib/remotePrep.js, lib/podLlm.js)   // 2.766.0: FIRST after the JSON parser - remote mode answers /api/comfymodels + /api/modelmgr/cards with runpod/pods/remote_models.json; transfers; the ticked pods (lib/remoteModels.js)

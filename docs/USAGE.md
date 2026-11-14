@@ -8938,6 +8938,19 @@ A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel
 
 A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files. Press it twice; the first press asks. bitGen stops the pod's ComfyUI and starts it again with the same command and the GPU memory way picked, then waits until it answers. The pod's GPU memory line says how it went. A render running on that pod stops; nothing else on the pod changes.
 
+## Your LLMs from Hugging Face on your pod; one pod for everything (2.782.0)
+
+**Your list.** With the LLM or Vision LLM on a RunPod pod (☁ Remote generation docker), the prompt docker's LLM and Vision lists show only **your list**. Pick **＋ From Hugging Face… / your list** at the end of either list to open the dialog:
+
+1. Type a Hugging Face repo as owner/name (for example unsloth/Qwen3-8B-GGUF) or paste its address, then press **List its GGUF files**. bitGen lists the repo's GGUFs with their quantisation and size, Q4_K_M first; a model split into parts is one row. A vision LLM also needs its projector (mmproj). A gated or private repo needs your Hugging Face token (Settings ▸ Models).
+2. **Run it on**: one of your pods, or **a new pod just for the LLM** (PODS opens on Create pod; tick LLM or vLLM on the new pod in My pods).
+3. **▶ Send to the pod**. The pod downloads the files from Hugging Face and runs them with llama.cpp. llama.cpp is built on the pod once (5–10 minutes) and kept in /workspace.
+4. bitGen asks **Keep it in your list?** **Save** keeps it under its name; **Not now** leaves it picked until you pick another. In the dialog, Use picks one of your list and 🗑 takes one off it (📁 Files deletes the file from the pod).
+
+**One pod for the LLM, vision LLM, pictures and video.** With **Share the card with pictures and video** on (the default), bitGen swaps the models on the card. A picture or video render stops the LLM servers and frees their VRAM. The next chat waits until ComfyUI has finished, unloads ComfyUI's models and loads the LLM again, so the first answer after a render takes as long as the model takes to load. Turn sharing off for a pod that runs only the LLM.
+
+**More room.** The dialog says how much room the model needs and can make the pod's volume bigger (**Make it bigger**, from 10 to 4000 GB, only bigger). RunPod may restart the pod; /workspace is kept.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

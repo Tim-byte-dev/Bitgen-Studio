@@ -13173,6 +13173,12 @@ python3 scripts/test-combo7811.py > /tmp/combo7811.log 2>&1 \
 node scripts/test-podfiles7812-py.js > /tmp/podfiles7812py.log 2>&1 \
   && ok "2.781.2 a pod's model files listed / deleted by the pod's own Python (links only unlinked, nothing outside models), the GPU memory flag chosen (24 GB+, the ComfyUI knows it), ComfyUI's time + loading lines in the render log" \
   || { bad "2.781.2 pod files / GPU memory / load report"; grep -a "FAIL" -A2 /tmp/podfiles7812py.log | head -14; }
+node scripts/test-llmrepos782.js > /tmp/llmrepos782.log 2>&1 \
+  && ok "2.782.0 your LLMs from Hugging Face: a repo's GGUFs listed (split ones as one, the projector), sent, kept in your list on Save; the RunPod LLM / Vision lists show only your list; the pod picked for it; the pod's volume made bigger" \
+  || { bad "2.782.0 your LLM list"; grep -a "FAIL" -A2 /tmp/llmrepos782.log | head -14; }
+node scripts/test-llmswap782.js > /tmp/llmswap782.log 2>&1 \
+  && ok "2.782.0 one pod for the LLM and ComfyUI: the pod's node unloads ComfyUI's models before a chat starts the LLM server, a render stops it (its VRAM free), a chat waits while a render runs - or SKIP without aiohttp" \
+  || { bad "2.782.0 the pod's VRAM swap"; grep -a "FAIL" -A2 /tmp/llmswap782.log | head -14; }
 node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
   && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
   || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }

@@ -3959,6 +3959,82 @@
    "src": "static/lbrestyle.js:298"
   },
   {
+   "s": "Your",
+   "src": "static/llmrepos.js:43"
+  },
+  {
+   "s": "Your list",
+   "src": "static/llmrepos.js:47"
+  },
+  {
+   "s": "Nothing yet - send one from Hugging Face below and keep it",
+   "src": "static/llmrepos.js:52"
+  },
+  {
+   "s": "From Hugging Face",
+   "src": "static/llmrepos.js:54"
+  },
+  {
+   "s": "owner/name - for example unsloth/Qwen3-8B-GGUF (or paste its address)",
+   "src": "static/llmrepos.js:55"
+  },
+  {
+   "s": "List its GGUF files",
+   "src": "static/llmrepos.js:56"
+  },
+  {
+   "s": "Vision projector (mmproj)",
+   "src": "static/llmrepos.js:63"
+  },
+  {
+   "s": "this repo has none - a vision LLM needs one",
+   "src": "static/llmrepos.js:64"
+  },
+  {
+   "s": "Run it on",
+   "src": "static/llmrepos.js:69"
+  },
+  {
+   "s": "bitGen swaps the models: a render stops the",
+   "src": "static/llmrepos.js:77"
+  },
+  {
+   "s": "The model needs",
+   "src": "static/llmrepos.js:78"
+  },
+  {
+   "s": "on the pod's volume",
+   "src": "static/llmrepos.js:78"
+  },
+  {
+   "s": "Make the volume",
+   "src": "static/llmrepos.js:78"
+  },
+  {
+   "s": "Make it bigger",
+   "src": "static/llmrepos.js:79"
+  },
+  {
+   "s": "Keep",
+   "src": "static/llmrepos.js:82"
+  },
+  {
+   "s": "list",
+   "src": "static/llmrepos.js:82"
+  },
+  {
+   "s": "Not now",
+   "src": "static/llmrepos.js:82"
+  },
+  {
+   "s": "Pod",
+   "src": "static/llmrepos.js:84"
+  },
+  {
+   "s": "reading your list",
+   "src": "static/llmrepos.js:163"
+  },
+  {
    "s": "llama.cpp: checking the installed and the newest version",
    "src": "static/llmtab.js:45"
   },
@@ -5431,10 +5507,6 @@
    "src": "static/podfails.js:62"
   },
   {
-   "s": "Not now",
-   "src": "static/podfails.js:65"
-  },
-  {
    "s": "Trying again",
    "src": "static/podfails.js:70"
   },
@@ -5701,10 +5773,6 @@
   {
    "s": "Styles change on a running pod at once; the GPU, template and disks the next time the pod is made",
    "src": "static/podpresets.js:119"
-  },
-  {
-   "s": "Pod",
-   "src": "static/podpresets.js:121"
   },
   {
    "s": "Cost / hour",
@@ -6507,76 +6575,80 @@
    "src": "static/remotegpu.js:252"
   },
   {
+   "s": "From Hugging Face… / your list",
+   "src": "static/remotellm.js:68"
+  },
+  {
    "s": "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list",
-   "src": "static/remotellm.js:82"
+   "src": "static/remotellm.js:84"
   },
   {
    "s": "OpenRouter models",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Paid",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Vision",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Price (low first)",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Context (large first)",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "in / out per M",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Context",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Pick a model to see its details",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Use for",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Search - name, maker, free, paid, vision",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "Only models that take pictures",
-   "src": "static/remotellm.js:103"
+   "src": "static/remotellm.js:105"
   },
   {
    "s": "asking OpenRouter for its models",
-   "src": "static/remotellm.js:133"
+   "src": "static/remotellm.js:135"
   },
   {
    "s": "OpenRouter could not be reached",
-   "src": "static/remotellm.js:137"
+   "src": "static/remotellm.js:139"
   },
   {
    "s": "No model matches",
-   "src": "static/remotellm.js:144"
+   "src": "static/remotellm.js:146"
   },
   {
    "s": "Free (rate-limited by OpenRouter and the provider)",
-   "src": "static/remotellm.js:156"
+   "src": "static/remotellm.js:158"
   },
   {
    "s": "Context: not said · takes pictures 👁",
-   "src": "static/remotellm.js:156"
+   "src": "static/remotellm.js:158"
   },
   {
    "s": "Added",
-   "src": "static/remotellm.js:159"
+   "src": "static/remotellm.js:161"
   },
   {
    "s": "Remote mode",
@@ -8025,10 +8097,6 @@
   {
    "s": "Back to vidTemp",
    "src": "static/swapdlg.js:827"
-  },
-  {
-   "s": "Keep",
-   "src": "static/swapdlg.js:828"
   },
   {
    "s": "Keep it - moves to vidSwap, ready to join",
@@ -24902,43 +24970,43 @@
   },
   {
    "p": "Vision LLM on {0} - {1}",
-   "src": "static/remotellm.js:68"
+   "src": "static/remotellm.js:70"
   },
   {
    "p": "Vision LLM on {0}",
-   "src": "static/remotellm.js:68"
+   "src": "static/remotellm.js:70"
   },
   {
    "p": "LLM on {0} - {1}",
-   "src": "static/remotellm.js:68"
+   "src": "static/remotellm.js:70"
   },
   {
    "p": "LLM on {0}",
-   "src": "static/remotellm.js:68"
+   "src": "static/remotellm.js:70"
   },
   {
    "p": "LLM: ☁ {0} ({1})",
-   "src": "static/remotellm.js:73"
+   "src": "static/remotellm.js:75"
   },
   {
    "p": "{0} of {1} models",
-   "src": "static/remotellm.js:143"
+   "src": "static/remotellm.js:145"
   },
   {
    "p": "Context: {0} tokens · takes pictures 👁",
-   "src": "static/remotellm.js:156"
+   "src": "static/remotellm.js:158"
   },
   {
    "p": "Added: {0}",
-   "src": "static/remotellm.js:156"
+   "src": "static/remotellm.js:158"
   },
   {
    "p": "Context: {0} tokens · text only",
-   "src": "static/remotellm.js:156"
+   "src": "static/remotellm.js:158"
   },
   {
    "p": "LLM: ☁ {0} ()",
-   "src": "static/remotellm.js:172"
+   "src": "static/remotellm.js:174"
   },
   {
    "p": "{0} runs on",

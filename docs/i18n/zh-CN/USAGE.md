@@ -5472,6 +5472,20 @@ Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会�
 
 PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI**。按两次；第一次是确认。bitGen 会停止 Pod 的 ComfyUI，再用同样的命令和所选的 GPU 显存方式重新启动它，并等到它响应。结果显示在该 Pod 的 GPU memory 一行。该 Pod 上正在进行的渲染会停止，Pod 上的其他内容不变。
 
+## 在 Pod 上运行来自 Hugging Face 的 LLM；一个 Pod 运行全部 (2.782.0)
+<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 4e484f3a8f86 -->
+
+**你的列表.** 当 LLM 或 Vision LLM 在 RunPod Pod 上运行时（☁ Remote generation 停靠窗），提示词停靠窗的 LLM 和 Vision 列表只显示 **你的列表**。选择任一列表末尾的 **＋ From Hugging Face… / your list** 打开对话框：
+
+1. 以 owner/name 输入 Hugging Face 仓库（例如 unsloth/Qwen3-8B-GGUF）或粘贴其地址，然后按 **List its GGUF files**。bitGen 会列出该仓库的 GGUF 及其量化方式和大小，Q4_K_M 排在最前；分卷的模型算作一行。视觉 LLM 还需要其投影器（mmproj）。需要授权或私有的仓库需要你的 Hugging Face 令牌（Settings ▸ Models）。
+2. **Run it on**：你的某个 Pod，或 **a new pod just for the LLM**（PODS 会在 Create pod 打开；在 My pods 中为新 Pod 勾选 LLM 或 vLLM）。
+3. **▶ Send to the pod**。Pod 会从 Hugging Face 下载文件并用 llama.cpp 运行。llama.cpp 只在 Pod 上编译一次（5–10 分钟），并保存在 /workspace。
+4. bitGen 会询问 **是否保存到你的列表？** **Save** 以其名称保存；**Not now** 会让它保持选中，直到你选择别的。在对话框中，Use 从列表中选择，🗑 把它从列表移除（📁 Files 会从 Pod 上删除文件）。
+
+**一个 Pod 运行 LLM、视觉 LLM、图片和视频.** 开启 **Share the card with pictures and video**（默认）时，bitGen 会在显卡上交换模型。图片或视频渲染会停止 LLM 服务器并释放其显存。下一次聊天会等 ComfyUI 完成，卸载 ComfyUI 的模型并重新加载 LLM，因此渲染后的第一个回答需要模型加载的时间。只运行 LLM 的 Pod 请关闭共享。
+
+**更多空间.** 对话框会显示模型需要多少空间，并可扩大 Pod 的卷（**Make it bigger**，10 到 4000 GB，只能扩大）。RunPod 可能会重启 Pod；/workspace 会保留。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

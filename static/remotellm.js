@@ -64,12 +64,14 @@
     o.items.forEach(function (it) { var op = doc.createElement("option"); op.value = it.value; op.textContent = it.text; op.dataset.rl = "1"; if (it.selected) op.selected = true; g.appendChild(op); });
     if (o.more) { var mo = doc.createElement("option"); mo.value = ""; mo.disabled = true; mo.textContent = "… " + o.more + " more - ☰ All"; g.appendChild(mo); }
     sel.appendChild(g);
+    // 2.782.0 (Tim: "select an llm from a hf repo to send to the pod"): on your pod the list is YOUR LIST - ＋ adds from Hugging Face
+    if (L.hfAdd) { var ad = doc.createElement("option"); ad.value = "__hfadd"; ad.textContent = "＋ From Hugging Face… / your list"; ad.dataset.rl = "1"; sel.appendChild(ad); }
     sel.disabled = !!L.fixed && o.items.length < 2;
     sel.title = (k === "vlm" ? "Vision LLM" : "LLM") + " on " + (L.label || L.host) + (L.note ? " - " + L.note : "");
     sel.dataset.rlHost = L.host;
     S.painting = false;
     // nothing picked yet: the first one (saved, so a prompt works at once)
-    if (!L.current && o.items.length && !L.fixed && !S.q[k]) { sel.selectedIndex = o.empty ? 1 : 0; pick(k, sel.value); }
+    if (!L.current && o.items.length && !L.fixed && !S.q[k]) { sel.selectedIndex = o.empty ? 1 : 0; if (sel.value && sel.value !== "__hfadd") pick(k, sel.value); }
     if (k === "llm" && $("sbllm")) { $("sbllm").textContent = "LLM: ☁ " + shortName(sel.value || L.current) + " (" + (L.label || L.host) + ")"; $("sbllm").style.color = "var(--dim)"; }
   }
   /* 2.770.0: a search box before each remote list, ☰ All after the Vision list (shown in remote mode only) */
@@ -197,6 +199,11 @@
     var t = e.target, k = t && t.id === IDS.llm ? "llm" : t && t.id === IDS.vlm ? "vlm" : "";
     if (!k || !owns(k)) return;
     e.stopPropagation();
+    if (t.value === "__hfadd") {   // 2.782.0: the list's ＋ - the dialog (static/llmrepos.js); the pick stays as it was
+      var L0 = S.v && S.v[k]; t.value = (L0 && L0.current) || "";
+      if (root.H3LlmRepos) H3LlmRepos.open(k);
+      return;
+    }
     if (k === "llm") { try { if (root.store && root.store.set) root.store.set("llm", t.value); } catch (x) { /* fine */ } }
     pick(k, t.value);
   }, true);

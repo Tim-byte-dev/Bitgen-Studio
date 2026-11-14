@@ -58,7 +58,8 @@ srv.listen(0, "127.0.0.1", async () => {
     /* ---- RunPod ▸ Pods: the GGUFs the pod downloads */
     CFG.rgpu.llm_where = { llm: "runpod", vlm: "runpod" };
     L = await RL.lists();
-    check("RunPod + Pods: the GGUFs bitGen can put on the pod (not this computer's files); the LLM file picked here before is the current one only if listed", L.llm.host === "runpod" && L.llm.label === "RunPod pod" && L.llm.models.some((m) => m.id === "Qwen3-8B-Q4_K_M.gguf") && L.llm.current === "" && L.vlm.models.length >= 1, L.llm);
+    // 2.782.0 (Tim: "if user selects runpod for llm then show only this list in the llm dropdown"): the RunPod pod's lists are YOUR LIST (lib/llmRepos.js) - empty here, with ＋ From Hugging Face (test-llmrepos782.js)
+    check("RunPod + Pods: only your list (lib/llmRepos.js) - none yet: an empty list that says ＋ From Hugging Face adds one", L.llm.host === "runpod" && L.llm.label === "RunPod pod" && L.llm.hfAdd === true && Array.isArray(L.llm.models) && !L.llm.models.some((m) => m.id === "Qwen3-8B-Q4_K_M.gguf") && /From Hugging Face/.test(L.llm.note), L.llm);
     PL.STATE.llm = { pod: "p", phase: "ready", file: "Qwen3-4B-Q4_K_M.gguf" };
     r = RL.pick("llm", "Qwen3-8B-Q4_K_M.gguf"); RL.pick("vlm", "Qwen3-VL-8B-NSFW-Caption-V4.Q4_K_M.gguf");
     const f1 = PL.filesFor("llm"), f2 = PL.filesFor("vlm");

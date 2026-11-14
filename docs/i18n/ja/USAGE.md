@@ -5237,6 +5237,20 @@ Jupyter がまだ起動中のポッド（bitGen がカーネルを頼むと HTTP
 
 PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Restart ComfyUI** があります。2 回押します。最初の 1 回は確認です。bitGen はポッドの ComfyUI を止め、同じコマンドと選んだ GPU メモリの方法でもう一度起動し、応答するまで待ちます。結果はポッドの GPU memory の行に出ます。そのポッドで実行中のレンダリングは止まりますが、ポッドのそれ以外は何も変わりません。
 
+## Hugging Face の LLM をポッドで、1 つのポッドですべて (2.782.0)
+<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 4e484f3a8f86 -->
+
+**あなたのリスト.** LLM または Vision LLM を RunPod ポッドで使うとき（☁ Remote generation ドッカー）、プロンプトドッカーの LLM と Vision の一覧には **あなたのリスト** だけが出ます。どちらかの一覧の最後にある **＋ From Hugging Face… / your list** を選ぶとダイアログが開きます。
+
+1. Hugging Face のリポジトリを owner/name（例: unsloth/Qwen3-8B-GGUF）で入力するかアドレスを貼り付け、**List its GGUF files** を押します。bitGen はリポジトリの GGUF を量子化とサイズ付きで一覧し、Q4_K_M を先頭にします。分割されたモデルは 1 行です。ビジョン LLM にはプロジェクター（mmproj）も必要です。ゲート付きや非公開のリポジトリには Hugging Face トークンが必要です（Settings ▸ Models）。
+2. **Run it on**: 自分のポッドの 1 つか、**a new pod just for the LLM**（PODS が Create pod で開きます。新しいポッドで My pods の LLM または vLLM にチェックを入れます）。
+3. **▶ Send to the pod**。ポッドが Hugging Face からファイルをダウンロードし、llama.cpp で実行します。llama.cpp はポッド上で一度だけビルドされ（5〜10 分）、/workspace に残ります。
+4. bitGen が **リストに保存しますか？** と尋ねます。**Save** は名前を付けて保存し、**Not now** は別のものを選ぶまで選ばれたままにします。ダイアログでは Use でリストから選び、🗑 でリストから外します（ポッドのファイルは 📁 Files で削除します）。
+
+**1 つのポッドで LLM、ビジョン LLM、画像、動画.** **Share the card with pictures and video** がオン（既定）のとき、bitGen はカード上のモデルを入れ替えます。画像や動画のレンダリングは LLM サーバーを止めて VRAM を空けます。次のチャットは ComfyUI の処理が終わるのを待ち、ComfyUI のモデルを降ろして LLM を再び読み込みます。そのため、レンダリング後の最初の回答はモデルの読み込み時間だけかかります。LLM だけを動かすポッドでは共有をオフにします。
+
+**もっと容量を.** ダイアログはモデルに必要な容量を示し、ポッドのボリュームを大きくできます（**Make it bigger**、10〜4000 GB、大きくするのみ）。RunPod がポッドを再起動することがあります。/workspace は残ります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
