@@ -5465,6 +5465,11 @@ Jupyter 仍在啟動的 Pod（bitGen 請求核心時返回 HTTP 404）現在會�
 
 **算繪時間花在哪裡.** 每次算繪後，日誌會顯示 ComfyUI 自己的用時（`[comfy] ComfyUI ran it in … s`）以及 ComfyUI 自己關於載入模型的輸出（`[comfy log] loaded completely …` / `loaded partially …`）。「partially」表示模型有一部分沒有放在顯示卡上。
 
+## 重新啟動 Pod 的 ComfyUI (2.781.3)
+<!-- en: restart-a-pod-s-comfyui-2-781-3 ad9fb4792ab8 -->
+
+PODS ▸ My pods 中執行的 Pod 在 📁 Files 旁邊有 **⟳ Restart ComfyUI**。按兩次；第一次是確認。bitGen 會停止 Pod 的 ComfyUI，再用同樣的命令和所選的 GPU 顯示記憶體方式重新啟動它，並等到它回應。結果顯示在該 Pod 的 GPU memory 一行。該 Pod 上正在進行的算繪會停止，Pod 上的其他內容不變。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

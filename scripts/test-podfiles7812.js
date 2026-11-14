@@ -50,7 +50,7 @@ const PF = require("../lib/podFiles"), PV = require("../lib/podVram"), PG = requ
   check("a ComfyUI bitGen installs / starts on a pod gets those arguments (podInstall + podComfyUpdate)", /'--port', str\(J\['port'\]\)\] \+ xa/.test(IC) && /\\"vram\\":\\"gpu\\"/.test(IC) && /def comfy_extra/.test(IC) && /\] \+ comfy_extra\(c, J\.get\('vram', 'gpu'\)\)/.test(UC) && /def comfy_extra/.test(UC));
   const AC = PV.applyCode("/x", 8188, "gpu");
   check("⟳ Apply: the running ComfyUI's own command kept, the mode's flag added / taken away, restarted only when it changes; ComfyUI as the pod's first process is not stopped",
-    /keep = \[a for a in argv if a not in \["--disable-dynamic-vram"\]\]/.test(AC) && /if new == argv: out\(\{'ok': True, 'same': True/.test(AC) && /elif pid == 1/.test(AC) && /subprocess\.Popen\(new, cwd=cwd, env=env/.test(AC));
+    /keep = \[a for a in argv if a not in \["--disable-dynamic-vram"\]\]/.test(AC) && /if new == argv and not FORCE: out\(\{'ok': True, 'same': True/.test(AC) && /elif pid == 1/.test(AC) && /subprocess\.Popen\(new, cwd=cwd, env=env/.test(AC));
   // the page
   check("page: sizes, files by folder (a link counts no room), the picked ones", PG.gb(17.8e9) === "17.8 GB" && PG.gb(229e6) === "229 MB" && PG.groups(sh.files).map((g) => g.folder).join("|") === "checkpoints|diffusion_models|loras/flux krea"
     && PG.groups(sh.files)[1].size === 0 && JSON.stringify(PG.picked(sh.files, { "loras/flux krea/B.safetensors": true, "x": true })) === JSON.stringify({ n: 1, size: 229e6, paths: ["loras/flux krea/B.safetensors"] }));

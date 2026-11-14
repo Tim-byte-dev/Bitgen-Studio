@@ -382,6 +382,7 @@
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdfiles title="The model files on the pod - their sizes, the disk left; delete the ones you no longer need (2.781.2)">📁 Files</button>' : "")
+        + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdcrs title="Stop the pod\'s ComfyUI and start it again (a render running on it stops) - press twice (2.781.3)">⟳ Restart ComfyUI</button>' : "")
         + '<button type="button" class="ghost" data-pdpre title="Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated">💾 Save as preset</button>'
         + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button></div>'
         + '<div class="pdLoadBox"></div>'
@@ -402,6 +403,7 @@
       var sy = r.querySelector("[data-pdsty]"); if (sy) sy.onclick = function () { stylesFor(p); };
       var mo = r.querySelector("[data-pdmod]"); if (mo) mo.onclick = function () { modelsFor(p); };
       var fl = r.querySelector("[data-pdfiles]"); if (fl) fl.onclick = function () { filesFor(p); };   // 2.781.2
+      var crs = r.querySelector("[data-pdcrs]"); if (crs && root.H3PodFiles) H3PodFiles.restartBtn(crs, p.id, (S.port && S.port[p.id]) || 0);   // 2.781.3
       var a = r.querySelector("[data-pdact]"); if (a) a.onclick = function () { act(p, a.dataset.pdact); };
       r.querySelector("[data-pduse]").onclick = function () { use(p); };
       var uf = r.querySelector("[data-pdfor]"); if (uf) uf.onclick = function () { answerAsk({ action: "use", pod_id: p.id }, p.name); };

@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "5bf4d3e02a4c",
- "count": 9406,
+ "v": "f99d30caacdb",
+ "count": 9408,
  "patternCount": 1145,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -5067,6 +5067,7 @@
   "Restart a ComfyUI left running when the app starts": "アプリ起動時に、起動したままの ComfyUI を再起動する",
   "Restart now": "今すぐ再起動",
   "Restart: close start.bat and start it again": "再起動：start.bat を閉じて、もう一度起動してください",
+  "Restarting ComfyUI": "ComfyUI を再起動中",
   "Restore": "元のサイズに戻す",
   "Restore (Esc)": "元のサイズに戻す（Esc）",
   "Restore - its height in the column again (Esc)": "元に戻す - 列内の元の高さに戻します（Esc）",
@@ -6098,6 +6099,7 @@
   "Superiors (sups)": "上付き (sups)",
   "Superscript": "上付き文字",
   "Supply charge": "基本料金",
+  "Sure? Press again": "よろしいですか？ もう一度押してください",
   "Surface Blur": "ぼかし（表面）",
   "Surprised": "驚き",
   "Surrounding picture the model sees around the selection (px)": "モデルが選択範囲の周囲に見る画像の範囲（px）",

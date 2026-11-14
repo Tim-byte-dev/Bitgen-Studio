@@ -5467,6 +5467,11 @@ Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会�
 
 **渲染时间花在哪里.** 每次渲染后，日志会显示 ComfyUI 自己的用时（`[comfy] ComfyUI ran it in … s`）以及 ComfyUI 自己关于加载模型的输出（`[comfy log] loaded completely …` / `loaded partially …`）。“partially”表示模型有一部分没有放在显卡上。
 
+## 重启 Pod 的 ComfyUI (2.781.3)
+<!-- en: restart-a-pod-s-comfyui-2-781-3 ad9fb4792ab8 -->
+
+PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI**。按两次；第一次是确认。bitGen 会停止 Pod 的 ComfyUI，再用同样的命令和所选的 GPU 显存方式重新启动它，并等到它响应。结果显示在该 Pod 的 GPU memory 一行。该 Pod 上正在进行的渲染会停止，Pod 上的其他内容不变。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

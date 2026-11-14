@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "9969d879563c",
- "count": 9406,
+ "v": "152bc592884e",
+ "count": 9408,
  "patternCount": 1145,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -5067,6 +5067,7 @@
   "Restart a ComfyUI left running when the app starts": "应用启动时重启仍在运行的 ComfyUI",
   "Restart now": "立即重启",
   "Restart: close start.bat and start it again": "重启：关闭 start.bat 后重新启动它",
+  "Restarting ComfyUI": "正在重启 ComfyUI",
   "Restore": "还原",
   "Restore (Esc)": "还原 (Esc)",
   "Restore - its height in the column again (Esc)": "还原 - 恢复它在列中的高度 (Esc)",
@@ -6098,6 +6099,7 @@
   "Superiors (sups)": "上标字 (sups)",
   "Superscript": "上标",
   "Supply charge": "供电费",
+  "Sure? Press again": "确定吗？再按一次",
   "Surface Blur": "表面模糊",
   "Surprised": "惊讶",
   "Surrounding picture the model sees around the selection (px)": "模型能看到的选区周围画面范围 (px)",

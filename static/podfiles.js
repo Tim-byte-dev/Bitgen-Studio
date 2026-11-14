@@ -7,6 +7,7 @@
  *   🗑 Delete selected (asked first) - the pod's room back; bitGen forgets them for that pod.
  *   GPU memory (each open running pod): Keep the models on the card (default) | ComfyUI's Dynamic VRAM - one setting for
  *   every pod (rgpu.pod_vram); ⟳ Apply restarts that pod's ComfyUI that way now (a new pod starts that way by itself).
+ *   ⟳ Restart ComfyUI (2.781.3, a running pod's item): the pod's ComfyUI stopped and started again (the GPU memory way), pressed twice.
  * Pure (Node: scripts/test-podfiles7812.js): gb, groups, picked, vramLine.
  */
 (function (root) {
@@ -34,7 +35,7 @@
   var pure = { gb: gb, groups: groups, picked: picked, vramLine: vramLine };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
-  var doc = root.document, F = { pod: null, data: null, sel: {}, ask: false, busy: false, msg: "" }, V = { mode: "gpu", st: {} };
+  var SURE = {}, doc = root.document, F = { pod: null, data: null, sel: {}, ask: false, busy: false, msg: "" }, V = { mode: "gpu", st: {} };
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function getJ(u) { return root.fetch(u).then(function (r) { return r.json(); }).catch(function (e) { return { error: String(e) }; }); }
   function postJ(u, b) { return root.fetch(u, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b || {}) }).then(function (r) { return r.json(); }).catch(function (e) { return { error: String(e) }; }); }
@@ -132,9 +133,31 @@
       postJ("/api/pods/" + encodeURIComponent(id) + "/vram/apply", {}).then(function (j) { V.st[id] = j && !j.error ? j : { note: "✗ " + ((j && j.error) || "no answer") }; sweep(); watch(id); });
     };
   }
-  function watch(id) {
-    if (!(V.st[id] && V.st[id].running)) return;
-    setTimeout(function () { getJ("/api/pods/" + encodeURIComponent(id) + "/vram").then(function (j) { if (j && j.state) V.st[id] = j.state; sweep(); watch(id); }); }, 3000);
+  /** 2.781.3 (Tim: "can u add a restart comfyui button to the pod info"): ⟳ Restart ComfyUI in a running pod's item - pressed
+   *  twice (the first press asks, 4 s), the state on the pod's GPU memory line while it restarts */
+  function restartBtn(btn, id, port) {
+    var st = V.st[id];
+    if (st && st.running) { btn.disabled = true; btn.textContent = "⏳ Restarting ComfyUI…"; return; }
+    // the first press is kept per pod (the docker repaints its items - the button may be a new one by the second press)
+    var sure = function () { return SURE[id] && Date.now() - SURE[id] < 4000; };
+    if (sure()) btn.textContent = "⟳ Sure? Press again";
+    btn.onclick = function () {
+      if (!sure()) {
+        SURE[id] = Date.now(); btn.textContent = "⟳ Sure? Press again";
+        setTimeout(function () { if (!sure()) btn.textContent = "⟳ Restart ComfyUI"; }, 4100);
+        return;
+      }
+      delete SURE[id]; btn.disabled = true; btn.textContent = "⏳ Restarting ComfyUI…";
+      V.st[id] = { running: true, note: "asking the pod" }; sweep();
+      postJ("/api/pods/" + encodeURIComponent(id) + "/comfy/restart" + (port ? "?port=" + port : ""), {}).then(function (j) {
+        V.st[id] = j && !j.error ? j : { note: "✗ " + ((j && j.error) || "no answer") }; sweep(); watch(id, btn);
+        if (!(V.st[id] && V.st[id].running)) { btn.disabled = false; btn.textContent = "⟳ Restart ComfyUI"; }
+      });
+    };
+  }
+  function watch(id, btn) {
+    if (!(V.st[id] && V.st[id].running)) { if (btn) { btn.disabled = false; btn.textContent = "⟳ Restart ComfyUI"; } return; }
+    setTimeout(function () { getJ("/api/pods/" + encodeURIComponent(id) + "/vram").then(function (j) { if (j && j.state) V.st[id] = j.state; sweep(); watch(id, btn); }); }, 3000);
   }
   function sweep() { doc.querySelectorAll("#pdPods .pdRow[data-pod]").forEach(function (row) { if (row.querySelector(".pdStats")) vramRow(row, row.dataset.pod); }); }
   function boot() {
@@ -143,6 +166,6 @@
     getJ("/api/pod-vram").then(function (j) { if (j && j.mode) V.mode = j.mode; sweep(); });
     new MutationObserver(function () { sweep(); }).observe(host, { childList: true, subtree: true });
   }
-  root.H3PodFiles = Object.assign({ open: open, close: close }, pure);
+  root.H3PodFiles = Object.assign({ open: open, close: close, restartBtn: restartBtn }, pure);
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

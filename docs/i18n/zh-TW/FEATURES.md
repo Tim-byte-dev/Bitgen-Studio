@@ -422,6 +422,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Pod 都是 bitGen Pod** — PODS 停靠窗不再有模板瀏覽器：🖥 My pods（bitGen 的 Pod；RunPod 賬戶裡的其他 Pod 合成一行並顯示費用，可 ⏹ 停止）、📦 Presets 和 ＋ Create pod——選 GPU、雲、磁碟、風格和音訊，用 bitGen 選定的模板（RunPod 的 PyTorch 模板；bitGen 在上面安裝 ComfyUI、自定義節點和檔案）建立。 *Where:* PODS。 *Since:* 2.780.0
 - **取樣器列表；始終起不來的新 Pod 會重建** — 基本設定的模型下拉框上方有取樣器 / 排程器列表（你的 ComfyUI 提供的；在 Pod 上則是 Pod 的），開啟「覆蓋風格」時用於風格工作流程中的每個取樣器節點（風格自帶 = 保持工作流程原樣）；新 Pod 首次啟動時若 5 分鐘毫無動靜，會被終止並按同樣設定重建（最多兩次）；Jupyter 仍在啟動的 Pod 會被等待。 *Where:* 基本設定、PODS。 *Since:* 2.781.0
 - **Pod 的模型檔案、GPU 顯示記憶體、日誌中的 ComfyUI 用時** — 執行中 Pod 的 📁 Files 按資料夾列出模型檔案及大小和剩餘磁碟，並刪除勾選的檔案（先確認；bitGen 會為該 Pod 忘記它們）；GPU 顯示記憶體：把模型留在顯示卡上（預設——24 GB 以上的顯示卡上不用 Dynamic VRAM 啟動 ComfyUI）或 ComfyUI 的 Dynamic VRAM，⟳ 套用到此 Pod；每次算繪的日誌會顯示 ComfyUI 用時和模型的載入方式。 *Where:* PODS。 *Since:* 2.781.2
+- **在 Pod 上 ⟳ 重新啟動 ComfyUI** — PODS ▸ My pods 中執行的 Pod 可以重新啟動其 ComfyUI（按兩次），保留原有命令和 GPU 顯示記憶體方式，並在它再次回應時告知。 *Where:* PODS。 *Since:* 2.781.3
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

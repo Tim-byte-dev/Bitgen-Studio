@@ -5232,6 +5232,11 @@ Jupyter がまだ起動中のポッド（bitGen がカーネルを頼むと HTTP
 
 **レンダリング時間の内訳.** 各レンダリングの後、ログには ComfyUI 自身の所要時間（`[comfy] ComfyUI ran it in … s`）と、モデルの読み込みに関する ComfyUI 自身の行（`[comfy log] loaded completely …` / `loaded partially …`）が出ます。「partially」はモデルの一部がカードに載っていなかったという意味です。
 
+## ポッドの ComfyUI を再起動 (2.781.3)
+<!-- en: restart-a-pod-s-comfyui-2-781-3 ad9fb4792ab8 -->
+
+PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Restart ComfyUI** があります。2 回押します。最初の 1 回は確認です。bitGen はポッドの ComfyUI を止め、同じコマンドと選んだ GPU メモリの方法でもう一度起動し、応答するまで待ちます。結果はポッドの GPU memory の行に出ます。そのポッドで実行中のレンダリングは止まりますが、ポッドのそれ以外は何も変わりません。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

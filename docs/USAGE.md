@@ -8934,6 +8934,10 @@ A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel
 
 **Where a render's time went.** After each render the log says how long ComfyUI itself took (`[comfy] ComfyUI ran it in … s`) and ComfyUI's own lines about loading the models (`[comfy log] loaded completely …` / `loaded partially …`). "Partially" means part of the model was not on the card.
 
+## Restart a pod's ComfyUI (2.781.3)
+
+A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files. Press it twice; the first press asks. bitGen stops the pod's ComfyUI and starts it again with the same command and the GPU memory way picked, then waits until it answers. The pod's GPU memory line says how it went. A render running on that pod stops; nothing else on the pod changes.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

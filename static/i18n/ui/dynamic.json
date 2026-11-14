@@ -5440,27 +5440,35 @@
   },
   {
    "s": "Model files on",
-   "src": "static/podfiles.js:46"
-  },
-  {
-   "s": "Read the list again",
    "src": "static/podfiles.js:47"
   },
   {
+   "s": "Read the list again",
+   "src": "static/podfiles.js:48"
+  },
+  {
    "s": "asking the pod",
-   "src": "static/podfiles.js:49"
+   "src": "static/podfiles.js:50"
   },
   {
    "s": "used",
-   "src": "static/podfiles.js:53"
+   "src": "static/podfiles.js:54"
   },
   {
    "s": "No model files on the pod yet",
-   "src": "static/podfiles.js:55"
+   "src": "static/podfiles.js:56"
   },
   {
    "s": "GPU memory",
-   "src": "static/podfiles.js:120"
+   "src": "static/podfiles.js:121"
+  },
+  {
+   "s": "Restarting ComfyUI",
+   "src": "static/podfiles.js:140"
+  },
+  {
+   "s": "Sure? Press again",
+   "src": "static/podfiles.js:143"
   },
   {
    "s": "Reading the pod's ComfyUI",
@@ -5832,35 +5840,35 @@
   },
   {
    "s": "Save as preset",
-   "src": "static/podsdock.js:385"
-  },
-  {
-   "s": "Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated",
-   "src": "static/podsdock.js:385"
-  },
-  {
-   "s": "Delete the pod and everything on it",
    "src": "static/podsdock.js:386"
   },
   {
+   "s": "Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated",
+   "src": "static/podsdock.js:386"
+  },
+  {
+   "s": "Delete the pod and everything on it",
+   "src": "static/podsdock.js:387"
+  },
+  {
    "s": "asking the pod how busy it is",
-   "src": "static/podsdock.js:487"
+   "src": "static/podsdock.js:489"
   },
   {
    "s": "no figures from the pod yet",
-   "src": "static/podsdock.js:499"
+   "src": "static/podsdock.js:501"
   },
   {
    "s": "Cancel the render",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "s": "Do not render it now",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "s": "A render of",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "s": "What this pod is for",
@@ -24674,31 +24682,31 @@
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:448"
+   "src": "static/podsdock.js:450"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:464"
+   "src": "static/podsdock.js:466"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:465"
+   "src": "static/podsdock.js:467"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:474"
+   "src": "static/podsdock.js:476"
   },
   {
    "p": "The pod {0} ({1}) is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "p": "is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for {0} on one of yours",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "p": "The pod {0} is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:571"
+   "src": "static/podsdock.js:573"
   },
   {
    "p": "{0} running",

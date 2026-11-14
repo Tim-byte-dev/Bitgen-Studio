@@ -5,6 +5,7 @@
  *   GET  /api/pod-vram                      -> {mode, modes}
  *   POST /api/pod-vram                      {mode: "gpu" | "dynamic"} -> {mode}
  *   POST /api/pods/:id/vram/apply[?port=]   -> the restart's state; GET /api/pods/:id/vram -> {state}
+ *   POST /api/pods/:id/comfy/restart[?port=] (2.781.3) -> the restart's state (always restarted)
  */
 "use strict";
 function mount(app) {
@@ -16,5 +17,7 @@ function mount(app) {
   app.post("/api/pod-vram", wrap((req) => ({ mode: V().setMode(String((req.body || {}).mode || "")) })));
   app.post("/api/pods/:id/vram/apply", wrap((req) => V().apply(req.params.id, +req.query.port || +(req.body || {}).port || 0)));
   app.get("/api/pods/:id/vram", wrap((req) => ({ state: V().state(req.params.id) })));
+  // 2.781.3 (Tim: "can u add a restart comfyui button to the pod info"): the pod's ComfyUI stopped and started again, the same way
+  app.post("/api/pods/:id/comfy/restart", wrap((req) => V().apply(req.params.id, +req.query.port || +(req.body || {}).port || 0, { force: true })));
 }
 module.exports = { mount };
