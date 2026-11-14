@@ -12,6 +12,7 @@
 //   POST   /api/remotemodels/:id             {label?, group?, url?, folder?} -> the entry      DELETE /api/remotemodels/:id
 //   GET    /api/pods/transfers               {transfers: [{id, pod, pod_name, name, how, from, size, done, pct, state, rate, left}]}
 //   POST   /api/pods/transfers/clear         the finished ones go
+//   POST   /api/pods/transfers/:id/stop | /restart   (2.782.2) ⏹ / ↻ on its bar (can_stop / can_restart in the list)
 //   GET    /api/pods/selected                {selected}         POST /api/pods/selected {pods: [{id, name}]}
 "use strict";
 const RM = require("../lib/remoteModels");
@@ -57,6 +58,9 @@ function mount(app) {
   app.delete("/api/remotemodels/:id", wrap((req) => ({ ok: RM.remove(req.params.id) })));
   app.get("/api/pods/transfers", wrap(() => ({ transfers: require("../lib/podTransfers").list() })));
   app.post("/api/pods/transfers/clear", wrap(() => { require("../lib/podTransfers").clear(); return { ok: true }; }));
+  // 2.782.2 (Tim: "add a stop and restart download button icon only at the end of the progressbar"): ⏹ / ↻ on a transfer's bar
+  app.post("/api/pods/transfers/:id/stop", wrap((req) => require("../lib/podTransfers").stop(String(req.params.id))));
+  app.post("/api/pods/transfers/:id/restart", wrap((req) => require("../lib/podTransfers").restart(String(req.params.id))));
   app.get("/api/pods/selected", wrap(() => ({ selected: RM.selected() })));
   app.post("/api/pods/selected", wrap((req) => ({ selected: RM.setSelected((req.body || {}).pods) })));
 }

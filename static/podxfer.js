@@ -21,6 +21,7 @@
     var st = String(x.state || "");
     if (st === "done") return (x.size ? gb(x.size) + " · " : "") + "done";
     if (/^failed/.test(st)) return st;
+    if (st === "stopped") return (x.size ? gb(x.done) + " of " + gb(x.size) + " · " : "") + "stopped" + (x.can_restart ? " - ↻ starts it again" : "");
     if (x.note && !(x.done > 0)) return x.note;   // 2.766.1: waiting for the pod to answer
     var bits = [x.size ? gb(x.done) + " of " + gb(x.size) + " (" + (x.pct || 0) + "%)" : gb(x.done)];
     if (x.rate > 0) bits.push((x.rate / 1e6).toFixed(1) + " MB/s");
@@ -38,7 +39,10 @@
   function rowHtml(x) {
     var st = String(x.state || ""), bad = /^failed/.test(st), done = st === "done";
     return '<div class="pxRow' + (bad ? " bad" : done ? " done" : "") + '" data-pxid="' + esc(x.id) + '"><div class="pxTop"><span class="pxIc" aria-hidden="true">' + (ICON[x.how] || "⬇") + '</span><span class="pxNm" title="' + esc(whatText(x)) + '">' + esc(whatText(x)) + "</span></div>"
-      + '<div class="pxBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + (x.pct || 0) + '" aria-label="' + esc(x.name) + '"><i style="width:' + Math.max(done ? 100 : 2, x.pct || 0) + '%"></i></div>'
+      // 2.782.2 (Tim: "add a stop and restart download button icon only at the end of the progressbar"): ⏹ / ↻ after the bar
+      + '<div class="pxLine"><div class="pxBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + (x.pct || 0) + '" aria-label="' + esc(x.name) + '"><i style="width:' + Math.max(done ? 100 : 2, x.pct || 0) + '%"></i></div>'
+      + (x.can_stop ? '<button type="button" class="pxIb" data-pxstop="' + esc(x.id) + '" title="Stop this transfer" aria-label="Stop this transfer">⏹</button>' : "")
+      + (x.can_restart ? '<button type="button" class="pxIb" data-pxre="' + esc(x.id) + '" title="Start this transfer again from the beginning" aria-label="Start this transfer again">↻</button>' : "") + "</div>"
       + '<div class="pxSub">' + esc(rowText(x)) + "</div></div>";
   }
   var api = { gb: gb, rowText: rowText, whatText: whatText, rowHtml: rowHtml };
@@ -48,6 +52,7 @@
   var CSS = ".pxBox{display:flex;flex-direction:column;gap:6px;margin:6px 0;padding:6px 8px;border:1px solid var(--line,#3a342a);border-radius:7px;background:var(--panel,#1b1814)}"
     + ".pxBox .pxHd{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--dim,#9a917f)}.pxBox .pxHd b{color:var(--text,#eee);font-weight:600}.pxBox .pxHd button{margin-left:auto;padding:1px 7px;font-size:.7rem}"
     + ".pxRow{display:flex;flex-direction:column;gap:2px}.pxTop{display:flex;gap:6px;align-items:center;font-size:.76rem;min-width:0}.pxNm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
+    + ".pxLine{display:flex;align-items:center;gap:4px}.pxLine .pxBar{flex:1}.pxIb{flex:none;padding:0 4px;min-width:0;height:18px;line-height:16px;font-size:.72rem;background:none;border:1px solid var(--line,#3a342a);border-radius:4px;color:var(--text,#eee);cursor:pointer}.pxIb:hover{border-color:var(--tiger,#f59e2c)}.pxIb[disabled]{opacity:.4}"
     + ".pxBar{height:7px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}.pxBar i{display:block;height:100%;background:var(--tiger,#f59e2c);transition:width .4s}"
     + ".pxRow.done .pxBar i{background:#6c6}.pxRow.bad .pxBar i{background:#c55}.pxSub{font-size:.68rem;color:var(--dim,#9a917f)}.pxRow.bad .pxSub{color:#e88}";
   function css() { if (!doc.getElementById("pxCss")) { var s = doc.createElement("style"); s.id = "pxCss"; s.textContent = CSS; doc.head.appendChild(s); } }
@@ -60,6 +65,12 @@
       h.innerHTML = '<div class="pxBox"><div class="pxHd"><b>Transfers</b><span>' + (running ? running + " running" : "all finished") + "</span>"
         + (last.length > running ? '<button type="button" class="ghost" data-pxclear title="Take the finished ones off the list">✕ Clear</button>' : "") + "</div>" + last.map(rowHtml).join("") + "</div>";
       var c = h.querySelector("[data-pxclear]"); if (c) c.onclick = function () { root.fetch("/api/pods/transfers/clear", { method: "POST" }).then(function () { poke(); }); };
+      h.querySelectorAll("[data-pxstop],[data-pxre]").forEach(function (b) {
+        b.onclick = function () {
+          var id = b.dataset.pxstop || b.dataset.pxre; b.disabled = true;
+          root.fetch("/api/pods/transfers/" + encodeURIComponent(id) + (b.dataset.pxstop ? "/stop" : "/restart"), { method: "POST" }).then(function () { poke(); }, function () { poke(); });
+        };
+      });
     });
   }
   function poll() {

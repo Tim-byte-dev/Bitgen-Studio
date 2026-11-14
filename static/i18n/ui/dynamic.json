@@ -5960,15 +5960,15 @@
   },
   {
    "s": "Transfers",
-   "src": "static/podxfer.js:60"
+   "src": "static/podxfer.js:65"
   },
   {
    "s": "Take the finished ones off the list",
-   "src": "static/podxfer.js:60"
+   "src": "static/podxfer.js:65"
   },
   {
    "s": "all finished",
-   "src": "static/podxfer.js:60"
+   "src": "static/podxfer.js:65"
   },
   {
    "s": "since start",
@@ -24790,7 +24790,7 @@
   },
   {
    "p": "{0} running",
-   "src": "static/podxfer.js:60"
+   "src": "static/podxfer.js:65"
   },
   {
    "p": "Energy used since the app started: GPUs {0}, CPU {1} Now: PEAK",

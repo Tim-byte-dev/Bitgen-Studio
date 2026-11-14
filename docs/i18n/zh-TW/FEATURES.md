@@ -425,6 +425,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **在 Pod 上 ⟳ 重新啟動 ComfyUI** — PODS ▸ My pods 中執行的 Pod 可以重新啟動其 ComfyUI（按兩次），保留原有命令和 GPU 顯示記憶體方式，並在它再次回應時告知。 *Where:* PODS。 *Since:* 2.781.3
 - **在 Pod 上執行來自 Hugging Face 的 LLM；一個 Pod 執行全部** — 使用 RunPod Pod 時，提示詞停靠窗的 LLM / Vision 列表只顯示你的列表；＋ From Hugging Face… 列出儲存庫的 GGUF（分卷的算作一個，含視覺投影器），把選中的傳送到 Pod（llama.cpp 在 Pod 上只編譯一次），並詢問是否以其名稱儲存到你的列表；可在你的某個 Pod 上執行，或為它新建一個 Pod；在共用的 Pod 上，算繪會停止 LLM 並釋放顯示記憶體，下一次聊天會卸載 ComfyUI 的模型並重新載入 LLM；可擴大 Pod 的磁碟區。 *Where:* 提示詞停靠窗、PODS。 *Since:* 2.782.0
 - **浮動停靠窗置前；每種類型 Local 或 Remote；RunPod 的選擇移到設定** — 變為浮動的停靠窗會立即置於其他停靠窗之前（包括 ▣ 停靠窗）；☁ Remote generation 停靠窗中 Image / Video / Music 的 Local / Remote 決定該類型的模式（全部 Local = 本機模式；混合 = 保留本機的 ComfyUI 並列出兩種模型列表）；RunPod ▸ Pods / Serverless 移到 Settings ▸ Remote generation；Pod 的 ComfyUI 也把文字編碼器和 VAE 留在顯示卡上（--highvram）。 *Where:* 停靠窗、☁ Remote generation、Settings ▸ Remote generation。 *Since:* 2.782.1
+- **傳輸到 Pod 時的 ⏹ / ↻** — 每個模型傳輸的進度列（PODS ▸ Transfers）末尾有停止和重新開始圖示：上傳在目前分塊後停止（Pod 上的分塊被刪除），Pod 的下載在目前片段後停止；↻ 從頭重新開始。 *Where:* PODS。 *Since:* 2.782.2
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

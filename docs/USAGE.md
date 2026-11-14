@@ -8961,6 +8961,10 @@ A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files.
 
 **The text encoder and VAE stay on the card.** With GPU memory on **Keep the models on the card**, a pod's ComfyUI now also starts with `--highvram` (when it knows the flag): the text encoder and VAE stay on the card between renders with the diffusion model, and ComfyUI still unloads what does not fit. ⟳ Apply to this pod or ⟳ Restart ComfyUI puts a running pod on it.
 
+## Stop or restart a transfer to a pod (2.782.2)
+
+Each model transfer to a pod (PODS ▸ Transfers) has two icon buttons at the end of its bar: **⏹** stops it, **↻** starts it again from the beginning. An upload from this computer stops after the part it is sending, and the part already on the pod is deleted. A download by the pod stops after the piece it is on. A stopped download is not sent from this computer instead; the render that needed it says you stopped it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

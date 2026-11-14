@@ -5497,6 +5497,11 @@ PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI
 
 **文本编码器和 VAE 也留在显卡上.** GPU 显存设为 **Keep the models on the card** 时，Pod 的 ComfyUI 现在也会以 `--highvram` 启动（若它认识此参数）：文本编码器和 VAE 会与扩散模型一起在两次渲染之间留在显卡上，放不下的仍由 ComfyUI 卸载。用 ⟳ Apply to this pod 或 ⟳ Restart ComfyUI 让运行中的 Pod 生效。
 
+## 停止或重新开始到 Pod 的传输 (2.782.2)
+<!-- en: stop-or-restart-a-transfer-to-a-pod-2-782-2 d5525ba4acf2 -->
+
+每个到 Pod 的模型传输（PODS ▸ Transfers）的进度条末尾有两个图标按钮：**⏹** 停止，**↻** 从头重新开始。从本机的上传会在当前分块发送完后停止，已在 Pod 上的分块会被删除。Pod 的下载会在当前片段后停止。停止的下载不会改由本机发送；需要它的渲染会说明是你停止了它。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

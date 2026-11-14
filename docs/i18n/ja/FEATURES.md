@@ -425,6 +425,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **ポッドの ⟳ ComfyUI を再起動** — PODS ▸ My pods の稼働中のポッドから、ポッドの ComfyUI を再起動します（2 回押す）。元のコマンドと GPU メモリの設定はそのままで、再び応答したら知らせます。 *Where:* PODS。 *Since:* 2.781.3
 - **Hugging Face の LLM をポッドで、1 つのポッドですべて** — RunPod ポッドを使うとき、プロンプトドッカーの LLM / Vision の一覧はあなたのリストだけを表示します。＋ From Hugging Face… はリポジトリの GGUF（分割されたものは 1 つとして、ビジョンプロジェクターも）を一覧し、選んだものをポッドに送り（llama.cpp はポッド上で一度だけビルド）、名前を付けてリストに保存するか尋ねます。自分のポッドの 1 つか、専用の新しいポッドで実行できます。共有ポッドではレンダリングが LLM を止めて VRAM を空け、次のチャットが ComfyUI のモデルを降ろして再び読み込みます。ポッドのボリュームを大きくできます。 *Where:* プロンプトドッカー、PODS。 *Since:* 2.782.0
 - **フローティングドッカーを前面に、タイプごとに Local / Remote、RunPod の選択は設定に** — フローティングになったドッカーはすぐ他のドッカーより前に出ます（▣ ドッカーも含む）。☁ Remote generation ドッカーの Image / Video / Music の Local / Remote がそのタイプのモードを決めます（すべて Local = ローカルモード、混在 = このコンピューターの ComfyUI を維持し両方のモデル一覧）。RunPod ▸ Pods / Serverless は Settings ▸ Remote generation に移動。ポッドの ComfyUI はテキストエンコーダーと VAE もカードに保持します（--highvram）。 *Where:* ドッカー、☁ Remote generation、Settings ▸ Remote generation。 *Since:* 2.782.1
+- **ポッドへの転送に ⏹ / ↻** — 各モデル転送のバー（PODS ▸ Transfers）の最後に停止と再開のアイコン: アップロードは送信中のパートの後に止まり（ポッド上のパートは削除）、ポッドのダウンロードは処理中の部分の後に止まります。↻ は最初からやり直します。 *Where:* PODS。 *Since:* 2.782.2
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー
