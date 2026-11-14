@@ -123,6 +123,9 @@ function mount(app) {
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   app.use(express.json());
   require("./remoteModels").mount(app);
+  // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
+  app.use(require("../lib/samplers").middleware);
+  require("../lib/samplers").mount(app);
   require("./remoteLlm").mount(app);
   // 2.769.1: pods bitGen made that were never set up are watched again after a restart (lib/podMade.js)
   { const t = setTimeout(() => { try { require("../lib/podMade").resume(); } catch { /* fine */ } }, 20000); if (t.unref) t.unref(); }   // 2.768.0: the prompt docker's LLM / Vision lists in remote mode (lib/remoteLlm.js)

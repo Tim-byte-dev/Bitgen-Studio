@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "c09a34aa834d",
- "count": 9397,
+ "v": "f782f9af0a38",
+ "count": 9399,
  "patternCount": 1145,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -7264,6 +7264,8 @@
   "Wipe up": "ワイプ（上へ）",
   "Wire a ComfyUI workflow to this app’s inputs. Load a workflow (a file from your disk, or one already in": "ComfyUI のワークフローをこのアプリの入力に接続します。ワークフローを読み込みます (ディスク上のファイル、または既に次にあるもの：",
   "Wireframe": "ワイヤーフレーム",
+  "With Override style on, a picture render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay": "スタイルの上書きがオンのとき、画像のレンダリングではスタイルのワークフロー内でこの設定を受け付けるすべてのサンプラーノードに使われます（スタイル自身の設定 = ワークフローのまま）。蒸留モデルの固定ステップはそのままです",
+  "With Override style on, a video render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay": "スタイルの上書きがオンのとき、動画のレンダリングではスタイルのワークフロー内でこの設定を受け付けるすべてのサンプラーノードに使われます（スタイル自身の設定 = ワークフローのまま）。蒸留モデルの固定ステップはそのままです",
   "With Override style on, this model replaces the style's (phase 1) for MiniMax H3, Wan and LTX 2.3 / 2.5 - a ComfyUI dropdown value. Blank = the style's own model": "スタイルの上書きがオンのとき、MiniMax H3、Wan、LTX 2.3 / 2.5 でこのモデルがスタイルのモデル（フェーズ 1）を置き換えます - ComfyUI のドロップダウン値です。空欄 = スタイル自身のモデル",
   "With a key the": "キーがあると",
   "With a mouse: a slow stroke is heavy, a fast one light": "マウスの場合：ゆっくり描くと濃く、速く描くと薄くなります",

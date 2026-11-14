@@ -3486,6 +3486,11 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
         ws_thread.start()
         say(f"[comfy] queueing on {base} ({seg_mode}, {frames}f = {frames / FPS:.2f}s, "
             f"{len(uploads)} img / {len(up_vids)} vid / {len(up_auds)} aud ref)")
+        if _cc is not None:                    # 2.781.0: Basic Settings' sampler / scheduler (if sent) - comfy_client
+            try:
+                _cc.apply_sampler_pick(base, graph, say=say)
+            except Exception:                   # noqa: BLE001 - never stops a render
+                pass
         if _cc is not None:                    # 2.384.0: the job's metadata (seed, steps, cfg, models, loras)
             _cc.print_meta(graph)
         resp = _http_json(base + "/prompt", {"prompt": graph, "client_id": client},

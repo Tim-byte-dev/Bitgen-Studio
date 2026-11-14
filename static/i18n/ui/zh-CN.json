@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "a31695451174",
- "count": 9397,
+ "v": "a8635581b653",
+ "count": 9399,
  "patternCount": 1145,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -7264,6 +7264,8 @@
   "Wipe up": "向上擦除",
   "Wire a ComfyUI workflow to this app’s inputs. Load a workflow (a file from your disk, or one already in": "将 ComfyUI 工作流连接到本应用的输入。加载一个工作流（来自磁盘的文件，或已在",
   "Wireframe": "线框",
+  "With Override style on, a picture render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay": "开启“覆盖风格”时，图片渲染会在风格工作流中所有接受此设置的采样器节点里使用它（风格自带 = 保持工作流原样）。蒸馏模型的固定步数保持不变",
+  "With Override style on, a video render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay": "开启“覆盖风格”时，视频渲染会在风格工作流中所有接受此设置的采样器节点里使用它（风格自带 = 保持工作流原样）。蒸馏模型的固定步数保持不变",
   "With Override style on, this model replaces the style's (phase 1) for MiniMax H3, Wan and LTX 2.3 / 2.5 - a ComfyUI dropdown value. Blank = the style's own model": "开启覆盖风格时，此模型会替换风格（第 1 阶段）的模型，适用于 MiniMax H3、Wan 和 LTX 2.3 / 2.5 - 一个 ComfyUI 下拉列表值。留空 = 风格自身的模型",
   "With a key the": "有密钥时，",
   "With a mouse: a slow stroke is heavy, a fast one light": "使用鼠标时：慢速笔画较重，快速笔画较轻",

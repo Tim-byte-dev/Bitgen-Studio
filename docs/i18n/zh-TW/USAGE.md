@@ -5440,6 +5440,15 @@ PODS 停靠窗不再列出 RunPod 的模板。它有三個標籤：
 
 等待 Pod 的生成會開啟已為其風格填好的 ＋ Create pod。
 
+## 取樣器列表，始終起不來的新 Pod (2.781.0)
+<!-- en: sampler-lists-a-new-pod-that-never-starts-2-781-0 8c591023997b -->
+
+**Basic Settings ▸ Sampler / Scheduler.** 在模型下拉框（圖片檢查點和影片模型）上方有兩個列表：你的 ComfyUI 提供的取樣器和排程器（在 Pod 上算繪時是 Pod 的，否則是這台電腦的；兩者都沒有回應時用 ComfyUI 的標準列表）。開啟 **Override style** 時，算繪會在風格工作流程中每個接受此設定的取樣器節點裡使用你的選擇。**— Style's own —** 保持工作流程原樣。蒸餾模型的固定步數保持不變。你的選擇會保存到下次。
+
+**始終起不來的 Pod。** 新 Pod 首次啟動時，bitGen 會觀察它是否有動靜：RunPod 的狀態、容器、Jupyter、ComfyUI 以及安裝輸出。如果 5 分鐘內毫無變化，就認為這個 Pod 有故障：bitGen 會終止它，並按同樣的設定新建一個（相同的 GPU、磁碟、範本和風格；等待它的算繪也會轉過去）。最多嘗試兩次，之後交給你處理。Pod 一旦安裝並執行過，就只有 ⏹ Terminate 才會結束它。
+
+Jupyter 仍在啟動的 Pod（bitGen 請求核心時返回 HTTP 404）現在會被等待，而不會讓算繪失敗。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

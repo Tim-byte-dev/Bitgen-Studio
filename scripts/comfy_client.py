@@ -1299,7 +1299,89 @@ def print_meta(graph, extra=None):
         pass
 
 
+# 2.781.0 (Tim: "please add a list of samplers to the basic settings docker"): Basic Settings' sampler / scheduler, set by
+# lib/core.js for a render sent with them (BITGEN_SAMPLER / BITGEN_SCHEDULER - lib/samplers.js). Written into every node whose
+# sampler_name / scheduler holds one of ComfyUI's own names (KSampler, KSamplerAdvanced, KSamplerSelect, BasicScheduler …) -
+# a custom node with words of its own is left alone - and only a name this ComfyUI lists (else the workflow's is kept, said).
+BUILTIN_SAMPLERS = ("euler", "euler_cfg_pp", "euler_ancestral", "euler_ancestral_cfg_pp", "heun", "heunpp2", "dpm_2",
+                    "dpm_2_ancestral", "lms", "dpm_fast", "dpm_adaptive", "dpmpp_2s_ancestral", "dpmpp_2s_ancestral_cfg_pp",
+                    "dpmpp_sde", "dpmpp_sde_gpu", "dpmpp_2m", "dpmpp_2m_cfg_pp", "dpmpp_2m_sde", "dpmpp_2m_sde_gpu",
+                    "dpmpp_3m_sde", "dpmpp_3m_sde_gpu", "ddpm", "lcm", "ipndm", "ipndm_v", "deis", "res_multistep",
+                    "res_multistep_cfg_pp", "res_multistep_ancestral", "res_multistep_ancestral_cfg_pp",
+                    "gradient_estimation", "er_sde", "seeds_2", "seeds_3", "sa_solver", "sa_solver_pece", "ddim", "uni_pc",
+                    "uni_pc_bh2")
+BUILTIN_SCHEDULERS = ("simple", "sgm_uniform", "karras", "exponential", "ddim_uniform", "beta", "normal",
+                      "linear_quadratic", "kl_optimal")
+_SAMPLER_LISTS = {}
+
+
+def _combo(spec):
+    if not isinstance(spec, list) or not spec:
+        return None
+    if isinstance(spec[0], list):
+        return [str(x) for x in spec[0]]
+    opts = (spec[1] or {}).get("options") if len(spec) > 1 and isinstance(spec[1], dict) else None
+    return [str(x) for x in opts] if opts else None
+
+
+def sampler_lists(base):
+    """ComfyUI's own sampler / scheduler names (its KSampler), else the standard ones."""
+    if base in _SAMPLER_LISTS:
+        return _SAMPLER_LISTS[base]
+    s, c = None, None
+    try:
+        info = http_json(f"{base}/object_info/KSampler", timeout=15) or {}
+        req = (((info.get("KSampler") or {}).get("input") or {}).get("required")) or {}
+        s, c = _combo(req.get("sampler_name")), _combo(req.get("scheduler"))
+    except Exception:                       # noqa: BLE001
+        pass
+    v = (s or list(BUILTIN_SAMPLERS), c or list(BUILTIN_SCHEDULERS), bool(s))
+    _SAMPLER_LISTS[base] = v
+    return v
+
+
+def apply_sampler_pick(base, graph, sampler=None, scheduler=None, say=print):
+    """Basic Settings' sampler / scheduler into the graph -> the node ids written ({sampler: [...], scheduler: [...]})."""
+    s = (os.environ.get("BITGEN_SAMPLER", "") if sampler is None else sampler).strip()
+    c = (os.environ.get("BITGEN_SCHEDULER", "") if scheduler is None else scheduler).strip()
+    out = {"sampler": [], "scheduler": []}
+    if not (s or c) or not isinstance(graph, dict):
+        return out
+    ok_s, ok_c, live = sampler_lists(base)
+    words = []
+    if s and s not in ok_s:
+        words.append(f"sampler {s} is not in this ComfyUI's list - the workflow's own kept")
+        s = ""
+    if c and c not in ok_c:
+        words.append(f"scheduler {c} is not in this ComfyUI's list - the workflow's own kept")
+        c = ""
+    for nid, n in graph.items():
+        ins = (n or {}).get("inputs") or {}
+        if s and isinstance(ins.get("sampler_name"), str) and ins["sampler_name"] in ok_s:
+            ins["sampler_name"] = s
+            out["sampler"].append(str(nid))
+        if c and isinstance(ins.get("scheduler"), str) and ins["scheduler"] in ok_c:
+            ins["scheduler"] = c
+            out["scheduler"].append(str(nid))
+    if s:
+        words.append(f"sampler {s}: node(s) {', '.join(out['sampler'])}" if out["sampler"]
+                     else f"sampler {s}: this workflow has no sampler node with ComfyUI's own names (its own kept)")
+    if c:
+        words.append(f"scheduler {c}: node(s) {', '.join(out['scheduler'])}" if out["scheduler"]
+                     else f"scheduler {c}: this workflow has no scheduler node with ComfyUI's own names - a distilled "
+                          "model's fixed steps (sigmas) are kept")
+    try:
+        say("[sampler] Basic Settings - " + "; ".join(words))
+    except Exception:                       # noqa: BLE001
+        pass
+    return out
+
+
 def queue(base, graph, client_id=None):
+    try:
+        apply_sampler_pick(base, graph)                   # 2.781.0: Basic Settings' sampler / scheduler (if sent)
+    except Exception:                       # noqa: BLE001 - never stops a render
+        pass
     print_meta(graph)
     res = http_json(f"{base}/prompt",
                     {"prompt": graph, "client_id": client_id or uuid.uuid4().hex},

@@ -51,7 +51,7 @@ const lt = SU.llmTargetOf({ pod_llm: { pod_id: "pod761", pod_name: "A", port: 80
 check("llmTargetOf: the pod's OpenAI-compatible server through RunPod's proxy (/v1/chat/completions); off = none", lt.url === "https://pod761-8000.proxy.runpod.net/v1/chat/completions" && lt.model === "qwen3"
   && SU.llmTargetOf({ pod_llm: { pod_id: "x" } }, "llm", () => "u", false) === null && SU.llmTargetOf({}, "vlm", () => "u", true) === null, lt);
 const rc = RV.cleanRecipe({ template_id: "tpl-123", gpu: "RTX", cloud: "community", disk: 5, volume: 99999, port: 3000, files: [{ name: "a b.safetensors", folder: "loras", path: "/x/a b.safetensors" }, { name: "c", folder: "vae", url: "ftp://x" }, { folder: "x" }] });
-check("cleanRecipe: the template (no template = no recipe), sizes in range, files with a name + folder, a path or an http link", rc.template_id === "tpl123" && rc.cloud === "COMMUNITY" && rc.disk === 50 && rc.volume === 50
+check("cleanRecipe: the template (no template = no recipe), sizes in range, files with a name + folder, a path or an http link", rc.template_id === "tpl-123" /* 2.781.0: RunPod ids keep - _ . */ && rc.cloud === "COMMUNITY" && rc.disk === 50 && rc.volume === 50
   && rc.files.length === 2 && rc.files[0].path && !rc.files[1].url && RV.cleanRecipe({ files: [] }) === null, rc);
 const r0 = RV.recipeOf(CFG.rgpu, "pod761", null), r1 = RV.recipeOf({}, "zz", { templateId: "tplRaw01", gpu: { id: "A40", count: 2 }, cloudType: "COMMUNITY", containerDiskInGb: 30, volumeInGb: 80, name: "raw" });
 check("recipeOf: how bitGen made the pod (rgpu.pod_made), else what RunPod's own record says", r0.template_id === "tplA7610" && r0.gpu === "NVIDIA GeForce RTX 4090" && r0.volume === 60

@@ -8912,6 +8912,14 @@ The PODS docker no longer lists RunPod's templates. It has three tabs:
 
 A render waiting for a pod opens ＋ Create pod, filled in for its style.
 
+## Sampler lists, a new pod that never starts (2.781.0)
+
+**Basic Settings ▸ Sampler / Scheduler.** Above the model dropdowns (the picture checkpoint and the video model) there are two lists: the samplers and schedulers your ComfyUI has (the pod's when you render on a pod, else this computer's; ComfyUI's standard ones when neither answers). With **Override style** on, a render uses your pick in every sampler node of the style's workflow that takes it. **— Style's own —** leaves the workflow as it is. A distilled model's fixed steps stay as they are. Your pick is kept for next time.
+
+**A pod that never starts.** On a new pod's first start bitGen watches it for signs of life: RunPod's state, its container, its Jupyter, its ComfyUI and the install lines. If nothing changes for 5 minutes, the pod looks faulty: bitGen terminates it and makes a new one the same way (the same GPU, disks, template and styles; the renders waiting for it move over). It tries this twice at most, then leaves it for you. Once a pod has installed and run, only ⏹ Terminate ends it.
+
+A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel) is now waited for instead of failing the render.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

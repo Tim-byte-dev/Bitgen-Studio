@@ -420,6 +420,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Pod 文件重试** — 没能放到 RunPod Pod 上的文件（上传、Pod 的下载失败或哪里都找不到）会弹出一个框，说明失败方式和原因：↻ 重试 或 暂不；Pod 需要的文件也会按名称在 Civitai 上查找，并由 Pod 下载。 *注意：* Civitai 自 2026 年 3 月 16 日起屏蔽澳大利亚用户，因此在澳大利亚无法使用其中的 Civitai 部分。 *Where:* 远程生成（Pod）。 *Since:* 2.778.0
 - **Pod 无法创建的原因** — RunPod 不创建 Pod 时，用对话框说明原因：GPU 被占用就直说、该怎么做、RunPod 自己的原话和 HTTP 状态，以及请求的内容（模板、GPU、云、主机、磁盘）；可 📋 复制。RunPod 自己的模板（如 PyTorch）不再被“先选择模板”拒绝。 *Where:* PODS ▸ Create pod、📦 Presets ▸ ▶、询问 Pod 的框。 *Since:* 2.779.0
 - **Pod 都是 bitGen Pod** — PODS 停靠窗不再有模板浏览器：🖥 My pods（bitGen 的 Pod；RunPod 账户里的其他 Pod 合成一行并显示费用，可 ⏹ 停止）、📦 Presets 和 ＋ Create pod——选 GPU、云、磁盘、风格和音频，用 bitGen 选定的模板（RunPod 的 PyTorch 模板；bitGen 在上面安装 ComfyUI、自定义节点和文件）创建。 *Where:* PODS。 *Since:* 2.780.0
+- **采样器列表；始终起不来的新 Pod 会重建** — 基本设置的模型下拉框上方有采样器 / 调度器列表（你的 ComfyUI 提供的；在 Pod 上则是 Pod 的），开启“覆盖风格”时用于风格工作流中的每个采样器节点（风格自带 = 保持工作流原样）；新 Pod 首次启动时若 5 分钟毫无动静，会被终止并按同样设置重建（最多两次）；Jupyter 仍在启动的 Pod 会被等待。 *Where:* 基本设置、PODS。 *Since:* 2.781.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

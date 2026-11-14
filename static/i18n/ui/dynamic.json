@@ -7003,6 +7003,22 @@
    "src": "static/safetheme.js:101"
   },
   {
+   "s": "Scheduler",
+   "src": "static/samplerset.js:15"
+  },
+  {
+   "s": "Style's own",
+   "src": "static/samplerset.js:15"
+  },
+  {
+   "s": "With Override style on, a picture render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay",
+   "src": "static/samplerset.js:66"
+  },
+  {
+   "s": "With Override style on, a video render uses it in every sampler node of the style's workflow that takes it (Style's own = as the workflow has it). A distilled model's fixed steps stay",
+   "src": "static/samplerset.js:66"
+  },
+  {
    "s": "Save As",
    "src": "static/saveas.js:104"
   },

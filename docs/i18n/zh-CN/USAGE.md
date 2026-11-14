@@ -5442,6 +5442,15 @@ PODS 停靠窗不再列出 RunPod 的模板。它有三个标签：
 
 等待 Pod 的生成会打开已为其风格填好的 ＋ Create pod。
 
+## 采样器列表，始终起不来的新 Pod (2.781.0)
+<!-- en: sampler-lists-a-new-pod-that-never-starts-2-781-0 8c591023997b -->
+
+**Basic Settings ▸ Sampler / Scheduler.** 在模型下拉框（图片检查点和视频模型）上方有两个列表：你的 ComfyUI 提供的采样器和调度器（在 Pod 上渲染时是 Pod 的，否则是这台电脑的；两者都没有响应时用 ComfyUI 的标准列表）。开启 **Override style** 时，渲染会在风格工作流中每个接受此设置的采样器节点里使用你的选择。**— Style's own —** 保持工作流原样。蒸馏模型的固定步数保持不变。你的选择会保存到下次。
+
+**始终起不来的 Pod。** 新 Pod 首次启动时，bitGen 会观察它是否有动静：RunPod 的状态、容器、Jupyter、ComfyUI 以及安装输出。如果 5 分钟内毫无变化，就认为这个 Pod 有故障：bitGen 会终止它，并按同样的设置新建一个（相同的 GPU、磁盘、模板和风格；等待它的渲染也会转过去）。最多尝试两次，之后交给你处理。Pod 一旦安装并运行过，就只有 ⏹ Terminate 才会结束它。
+
+Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会被等待，而不会让渲染失败。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
