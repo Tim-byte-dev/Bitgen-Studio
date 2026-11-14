@@ -880,14 +880,17 @@ def relocate_model_loaders(base, graph, lists=None):
 
     def names(ct, key):
         ck = (ct, key)
+        # 2.781.1: None = the server did not say (no answer / not a combo); [] = it has NONE (a new pod's empty
+        # diffusion_models folder - Tim's "not in []"), which must still move the loader to where the file IS
         if ck not in cache:
             if lists is not None:
-                cache[ck] = list(lists.get(ck) or [])
+                got = lists.get(ck)
+                cache[ck] = list(got) if got is not None else None
             else:
                 try:
-                    cache[ck] = combo_values(base, ct, key)
+                    cache[ck] = combo_listed(base, ct, key)
                 except Exception:                                       # noqa: BLE001
-                    cache[ck] = []
+                    cache[ck] = None
         return cache[ck]
 
     for nid, node in list(graph.items()):
@@ -919,7 +922,7 @@ def relocate_model_loaders(base, graph, lists=None):
         if not isinstance(v, str) or not v.strip():
             continue
         own = names(ct, key)
-        if not own or v in own:
+        if own is None or v in own:
             continue                       # no answer from the server, or it is there
         hit = find_model_name(own, v)
         if hit:
@@ -927,7 +930,7 @@ def relocate_model_loaders(base, graph, lists=None):
             out.append((str(nid), key, v, f"{hit} (the same file in another folder of {ct}'s list)"))
             continue
         if ct in UNET_CLASSES and not v.lower().endswith(".gguf"):
-            hit = find_model_name(names(CKPT_CLASS, "ckpt_name"), v)
+            hit = find_model_name(names(CKPT_CLASS, "ckpt_name") or [], v)
             if hit:
                 node["class_type"] = CKPT_CLASS
                 for k in ("unet_name", "weight_dtype", "dequant_dtype", "patch_dtype", "patch_on_device"):
@@ -938,7 +941,7 @@ def relocate_model_loaders(base, graph, lists=None):
                                               "does not list; the workflow's own text encoder + VAE loaders stay"))
             continue
         if ct == CKPT_CLASS and not (_uses_outputs(graph, nid) & {1, 2}):
-            hit = find_model_name(names("UNETLoader", "unet_name"), v)
+            hit = find_model_name(names("UNETLoader", "unet_name") or [], v)
             if hit:
                 node["class_type"] = "UNETLoader"
                 ins.pop("ckpt_name", None)
@@ -1043,10 +1046,45 @@ def fill_required_inputs(base, graph):
             if "default" in opts:
                 ins[name] = opts["default"]
                 out.append((str(nid), ct, name, opts["default"], "server default"))
-            elif isinstance(sp, (list, tuple)) and sp and isinstance(sp[0], list) and sp[0]:
-                ins[name] = sp[0][0]
-                out.append((str(nid), ct, name, sp[0][0], "first choice"))
+            elif combo_choices(sp):
+                ins[name] = combo_choices(sp)[0]
+                out.append((str(nid), ct, name, ins[name], "first choice"))
     return out
+
+
+def combo_choices(spec):
+    """The choices of one /object_info input spec, in any of the three shapes ComfyUI answers in, or None.
+
+    2.781.1 (Tim's log, a new pod's ComfyUI 0.45: "node 70: Value not in list [unet_name] = krea2_nsfw-aio-2.safetensors
+    not in []" - the file was in models/checkpoints): newer ComfyUIs declare their loaders as ["COMBO", {"options": [...]}]
+    (or {"type": "COMBO", "options": [...]}); only the classic [[...], {...}] was read here, so every list read empty and the
+    UNETLoader -> Load Checkpoint move (relocate_model_loaders) never happened. lib/comfyModels.js comboFrom reads all three."""
+    if isinstance(spec, (list, tuple)) and spec:
+        if isinstance(spec[0], list):
+            return [str(x) for x in spec[0]]
+        if len(spec) > 1 and isinstance(spec[1], dict):
+            o = spec[1].get("options", spec[1].get("values"))
+            if isinstance(o, list):
+                return [str(x) for x in o if isinstance(x, (str, int, float))]
+    if isinstance(spec, dict):
+        o = spec.get("options", spec.get("values"))
+        if isinstance(o, list):
+            return [str(x) for x in o if isinstance(x, (str, int, float))]
+    return None
+
+
+def combo_listed(base, class_type, input_name):
+    """2.781.1: like combo_values, but None when the server did not answer / the input is not a combo, and [] only when
+    ComfyUI really lists nothing (an empty models folder)."""
+    info = object_info(base, class_type)
+    if not isinstance(info, dict):
+        return None
+    spec = ((info.get(class_type) or {}).get("input") or {})
+    for group in ("required", "optional"):
+        ch = combo_choices((spec.get(group) or {}).get(input_name))
+        if ch is not None:
+            return ch
+    return None
 
 
 def combo_values(base, class_type, input_name):
@@ -1062,9 +1100,10 @@ def combo_values(base, class_type, input_name):
     spec = ((info.get(class_type) or {}).get("input") or {})
     for group in ("required", "optional"):
         got = (spec.get(group) or {}).get(input_name)
-        # A combo input is declared as [[choice, choice, ...], {opts}].
-        if isinstance(got, list) and got and isinstance(got[0], list):
-            return [str(x) for x in got[0]]
+        # A combo input: [[choice, ...], {opts}] (classic), ["COMBO", {"options": [...]}] or {"type": "COMBO", ...} (newer)
+        ch = combo_choices(got)
+        if ch is not None:
+            return ch
     return []
 
 
@@ -1316,12 +1355,7 @@ _SAMPLER_LISTS = {}
 
 
 def _combo(spec):
-    if not isinstance(spec, list) or not spec:
-        return None
-    if isinstance(spec[0], list):
-        return [str(x) for x in spec[0]]
-    opts = (spec[1] or {}).get("options") if len(spec) > 1 and isinstance(spec[1], dict) else None
-    return [str(x) for x in opts] if opts else None
+    return combo_choices(spec) or None
 
 
 def sampler_lists(base):

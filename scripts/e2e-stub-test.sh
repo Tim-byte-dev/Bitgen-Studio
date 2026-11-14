@@ -13164,6 +13164,12 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui781-ui.js > /tmp/ui781ui.log 2
 node scripts/test-podwatchdog781.js > /tmp/podwatchdog781.log 2>&1 \
   && ok "2.781.0 a new pod with no activity for 5 minutes on its first start is terminated and made again (twice at most); a pod that installs and runs is only ended by Terminate" \
   || { bad "2.781.0 pod first-start watch"; grep -a "FAIL" -A2 /tmp/podwatchdog781.log | head -14; }
+node scripts/test-samplers781.js > /tmp/samplers781.log 2>&1 \
+  && ok "2.781.0 Basic Settings sampler / scheduler pick: GET /api/samplers, the request's pick (multipart too) into the job, the worker writes it only into standard sampler / scheduler inputs" \
+  || { bad "2.781.0 sampler pick"; grep -a "FAIL" -A2 /tmp/samplers781.log | head -14; }
+python3 scripts/test-combo7811.py > /tmp/combo7811.log 2>&1 \
+  && ok "2.781.1 ComfyUI's newer [\"COMBO\", {options}] lists read by the worker: a checkpoint in models/checkpoints moves the UNETLoader to Load Checkpoint on a new pod (an empty list is empty, not no answer)" \
+  || { bad "2.781.1 newer combo lists"; grep -a "FAIL" -A2 /tmp/combo7811.log | head -14; }
 node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
   && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
   || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }

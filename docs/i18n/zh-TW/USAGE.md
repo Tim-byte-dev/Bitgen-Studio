@@ -5449,6 +5449,13 @@ PODS 停靠窗不再列出 RunPod 的模板。它有三個標籤：
 
 Jupyter 仍在啟動的 Pod（bitGen 請求核心時返回 HTTP 404）現在會被等待，而不會讓算繪失敗。
 
+## 新 Pod 首次啟動需要時間；較新 ComfyUI 上的模型 (2.781.1)
+<!-- en: a-new-pod-s-first-start-takes-time-models-on-a-newer-comfyui-2-781-1 af8241abe61b -->
+
+**首次啟動需要些時間。** 建立並設定一個新 Pod 大約需要 10–15 分鐘，另加把模型傳到 Pod 上的時間。Pod 自己下載的檔案（Hugging Face、Civitai）很快就到；從你的電腦傳送的檔案則取決於你的上傳速度。之後 Pod 幾分鐘就能啟動。
+
+**新 Pod 上 checkpoints 資料夾裡的檢查點。** 新 Pod 會裝上最新的 ComfyUI，它用一種較新的方式列出模型。bitGen 現在也能讀取這種方式，所以放在 models/checkpoints 裡的 Basic Settings 模型（例如 Civitai 上的一體化檢查點），在風格工作流程需要擴散模型時會用 Load Checkpoint 載入——和在你自己的電腦上一樣。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

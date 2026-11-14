@@ -8920,6 +8920,12 @@ A render waiting for a pod opens ＋ Create pod, filled in for its style.
 
 A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel) is now waited for instead of failing the render.
 
+## A new pod's first start takes time; models on a newer ComfyUI (2.781.1)
+
+**Allow time for the first start.** Creating a new pod and setting it up takes about 10-15 minutes, plus the time to transfer your models to it. Files the pod downloads itself (Hugging Face, Civitai) arrive quickly; files sent from your computer go at your upload speed. After that the pod starts in a few minutes.
+
+**A checkpoint in the checkpoints folder on a new pod.** A new pod gets the latest ComfyUI, which lists its models in a newer way. bitGen now reads that too, so a Basic Settings model (for example an all-in-one checkpoint from Civitai) that sits in models/checkpoints is loaded with Load Checkpoint when the style's workflow asks for a diffusion model, as it already was on your own computer.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

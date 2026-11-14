@@ -2710,11 +2710,12 @@ def _schema_sync(base, g):
                 _SYNC_FILLS.setdefault(str(_nid), []).append(f"{name}={opts['default']!r}")
                 _SYNC_FILLS.setdefault("class:" + ct, []).append(f"{name}={opts['default']!r}")
                 say(f"[comfy] schema sync: {ct}.{name} = {opts['default']} (server default)")
-            elif isinstance(sp, (list, tuple)) and sp and isinstance(sp[0], list) and sp[0]:
-                ins[name] = sp[0][0]
-                _SYNC_FILLS.setdefault(str(_nid), []).append(f"{name}={sp[0][0]!r}")
-                _SYNC_FILLS.setdefault("class:" + ct, []).append(f"{name}={sp[0][0]!r}")
-                say(f"[comfy] schema sync: {ct}.{name} = {sp[0][0]!r} (first choice)")
+            elif _combo_list(sp) or (isinstance(sp, (list, tuple)) and len(sp) > 1 and isinstance(sp[1], dict) and sp[1].get("options")):
+                _c0 = (_combo_list(sp) or [str(x) for x in sp[1].get("options")])[0]   # 2.781.1: ["COMBO", {options}] too
+                ins[name] = _c0
+                _SYNC_FILLS.setdefault(str(_nid), []).append(f"{name}={_c0!r}")
+                _SYNC_FILLS.setdefault("class:" + ct, []).append(f"{name}={_c0!r}")
+                say(f"[comfy] schema sync: {ct}.{name} = {_c0!r} (first choice)")
             else:
                 # 2.280.0: modern combo shapes — ["COMBO", {options: [...]}]
                 # (opts already unpacked above) and the OBJECT-form spec

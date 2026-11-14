@@ -97,14 +97,15 @@ check("a file in no list: unchanged (ComfyUI's error + the 2.525 hint follow)", 
 check("no answer from the server: unchanged", CC.relocate_model_loaders("", copy.deepcopy(g8), {}) == [])
 
 # every worker gets it: canonicalise_combos runs it (combo_values monkeypatched as the running ComfyUI)
-real = CC.combo_values
+real, real2 = CC.combo_values, CC.combo_listed      # 2.781.1: relocate reads combo_listed (None = no answer, [] = none)
 CC.combo_values = lambda base, ct, key: list(LISTS.get((ct, key)) or [])
+CC.combo_listed = lambda base, ct, key: (list(LISTS[(ct, key)]) if (ct, key) in LISTS else None)
 try:
     g9, _ = C.patch(wf("img_krea2_raw_t2i.json"), {"model": KREA}, {"prompt": "x", "seed": 1})
     fx = CC.canonicalise_combos("http://x", g9)
     check("canonicalise_combos (every worker) does it too", g9["70"]["class_type"] == "CheckpointLoaderSimple" and any(f[0] == "70" for f in fx), fx)
 finally:
-    CC.combo_values = real
+    CC.combo_values, CC.combo_listed = real, real2
 
 # the error when it is nowhere names every list it was looked for in
 src = open(os.path.join(HERE, "comfy_client.py"), encoding="utf-8").read()
