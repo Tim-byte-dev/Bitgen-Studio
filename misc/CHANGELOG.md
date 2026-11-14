@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.779.0** — A Pod RunPod Will Not Create Opens a Dialog Saying Why: a Busy GPU Said as Busy, What to Do (Another GPU, the Other Cloud, Fewer GPUs, Later - Nothing Charged), RunPod's Own Words With Its HTTP Status and What Was Asked For, 📋 Copy; Fixed: RunPod's Own Templates (Its PyTorch One, Used for a Style's Pod) Were Refused With "Pick a Template First" Before RunPod Was Asked
 - **2.778.1** — Civitai Blocks Australian Users (Since 16 March 2026): a Note on Each Civitai Feature in the Feature List (All Four Languages) and a Pinned Discussion on the Website Saying What It Affects and What Still Works - the Features Stay
 - **2.778.0** — A File That Did Not Get Onto a RunPod Pod (Its Upload, the Pod's Download, or Found Nowhere) Opens a Box per Pod - Each File, How It Failed and Why: ↻ Try Again Makes Those Styles Ready Again (the Waiting Render Goes Again When They Land) or Not Now; a File the Pod Needs Is Looked For Online by Its Name Before It Is Called Missing - Your Remote Models List, Its Civitai Info Card, a Civitai Search - and the Pod Downloads It From Civitai
 - **2.777.0** — Basic Settings ▸ Use Model (Over the Checkpoint and the Video Model) and Use Temporary LoRAs (Over Each LoRA List) - Send Override's Settings With the Style's Own Model, or With or Without Your LoRAs on Either Model; the Pod Docker's ⬆ Nodes Its Styles Need / ⬆ Update ComfyUI Buttons Removed (the Pod's Setup Does Both)

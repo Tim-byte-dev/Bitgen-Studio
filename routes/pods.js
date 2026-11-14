@@ -20,7 +20,8 @@
 const P = require("../lib/pods");
 
 function mount(app) {
-  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
+  // 2.779.0: an error's explanation goes with it (problem: lib/podCreateErr.js - the dialog static/poderr.js shows it)
+  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json(Object.assign({ error: String((e && e.message) || e) }, e && e.problem ? { problem: e.problem } : {})); } };
   app.get("/api/pods/templates", wrap((req) => P.templates({ source: req.query.source, comfy: req.query.comfy === "1", q: req.query.q, refresh: req.query.refresh === "1" })));
   app.get("/api/pods/gpus", wrap((req) => P.gpus(req.query.cloud)));
   app.get("/api/pods/account", wrap((req) => require("../lib/runpodAccount").account(req.query.refresh === "1")));   // 2.763.5: the balance (the 💲 RunPod docker)

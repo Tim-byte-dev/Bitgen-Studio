@@ -78,7 +78,7 @@
       q("#spaCloud").onchange = function () { cloud = q("#spaCloud").value; load(); };
       var busy = function (t) { d.querySelectorAll("button,select,input").forEach(function (b) { b.disabled = true; }); q("#spaMsg").textContent = t; };
       var done = function (r) {
-        if (r && r.error) { q("#spaMsg").textContent = r.error; d.querySelectorAll("button,select,input").forEach(function (b) { b.disabled = false; }); return; }
+        if (r && r.error) { q("#spaMsg").textContent = r.error; if (root.H3PodErr) H3PodErr.show(r); d.querySelectorAll("button,select,input").forEach(function (b) { b.disabled = false; }); return; }
         asked[id] = true; open = null; try { d.close(); } catch (x) { d.removeAttribute("open"); }
       };
       if (q("#spaCreate")) q("#spaCreate").onclick = function () { busy("creating the pod…"); post("/api/stylepods/ask/" + id, { action: "create", gpu: q("#spaGpu").value, cloud: cloud, volume: +q("#spaVol").value || 50 }).then(done, function (e) { done({ error: String(e) }); }); };

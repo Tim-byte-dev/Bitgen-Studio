@@ -13152,6 +13152,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui777-ui.js > /tmp/ui777ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui778-ui.js > /tmp/ui778ui.log 2>&1 \
   && ok "2.778.0 browser test: a file that did not get onto a pod opens a box per pod (each file, how it failed, why) - Not now not asked again, a new failure asked again, ↻ Try again starts the retry - or SKIP without playwright" \
   || { bad "2.778.0 pod try again browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui778ui.log | head -14; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui779-ui.js > /tmp/ui779ui.log 2>&1 \
+  && ok "2.779.0 browser test: a pod RunPod would not create opens a dialog - 'The GPU you picked is busy', what to do, RunPod's own words + HTTP status, what was asked for, 📋 Copy, OK - or SKIP without playwright" \
+  || { bad "2.779.0 pod create error dialog browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui779ui.log | head -14; }
 node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
   && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
   || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }

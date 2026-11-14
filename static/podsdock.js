@@ -388,7 +388,7 @@
     $("pdGo").disabled = true; say("creating the pod on RunPod…");
     post("/api/pods/create", b).then(function (r) {
       $("pdGo").disabled = false;
-      if (r.error) { say(r.error, false); return; }
+      if (r.error) { say(r.error, false); if (root.H3PodErr) H3PodErr.show(r); return; }   // 2.779.0: the real error in a dialog
       S.form = null; box2sel(); paintForm(); S.src = "mine"; filter();   // 2.760.0: a pod created -> 🖥 My pods
       say("✓ pod created - loading pod…" + (r.preset ? " Kept as the preset " + r.preset + " (📦 Presets)." : ""), true);
       S.watch[r.pod.id] = "start"; S.port = S.port || {}; S.port[r.pod.id] = r.port; S.open = S.open || {}; S.open[r.pod.id] = true;

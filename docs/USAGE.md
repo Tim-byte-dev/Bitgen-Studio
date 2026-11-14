@@ -8890,6 +8890,18 @@ When bitGen makes a style ready on a RunPod pod and a file it needs still isn't 
 
 Before a file is called missing, bitGen also looks for it online by its name: first your remote models list (`runpod/pods/remote_models.json`), then the model's Civitai info card, then a Civitai search for that exact file name. If it's found, the pod downloads it from Civitai. A mature model needs your Civitai API key (Settings ▸ General ▸ Civitai).
 
+## When a pod cannot be created (2.779.0)
+
+If RunPod won't create a pod, a dialog says why:
+- a title, for example **The GPU you picked is busy**;
+- what to do (another GPU, the other cloud, fewer GPUs, or try again in a few minutes - nothing was charged);
+- RunPod's own words, with its HTTP status;
+- what was asked for: the template, GPU, cloud, host and disks.
+
+📋 Copy copies all of it, for a bug report. It comes up from 🖥 PODS ▸ Create pod, 📦 Presets ▸ ▶ and the box that asks for a pod when a style has none.
+
+Fixed: creating a pod from one of RunPod's own templates (such as its PyTorch template, which bitGen uses for a style's pod) said "pick a template first". bitGen's own check refused RunPod's template ids, so RunPod was never asked.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

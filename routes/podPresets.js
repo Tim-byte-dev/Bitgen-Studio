@@ -11,7 +11,8 @@
 const PP = require("../lib/podPresets");
 
 function mount(app) {
-  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
+  // 2.779.0: a pod that could not be created says why (problem: lib/podCreateErr.js - the dialog static/poderr.js)
+  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json(Object.assign({ error: String((e && e.message) || e) }, e && e.problem ? { problem: e.problem } : {})); } };
   const nm = (req) => decodeURIComponent(String(req.params.name || ""));
   app.get("/api/podpresets", wrap(() => PP.list()));
   app.post("/api/podpresets", wrap((req) => PP.save(req.body || {})));

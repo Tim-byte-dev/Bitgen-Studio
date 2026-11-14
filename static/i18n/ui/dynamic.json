@@ -1,5 +1,5 @@
 {
- "made": "2026-11-13",
+ "made": "2026-11-14",
  "scope": "all",
  "strings": [
   {
@@ -5391,6 +5391,26 @@
    "src": "static/podaudio.js:37"
   },
   {
+   "s": "The pod could not be created",
+   "src": "static/poderr.js:43"
+  },
+  {
+   "s": "RunPod said",
+   "src": "static/poderr.js:45"
+  },
+  {
+   "s": "nothing",
+   "src": "static/poderr.js:46"
+  },
+  {
+   "s": "Asked for",
+   "src": "static/poderr.js:48"
+  },
+  {
+   "s": "OK",
+   "src": "static/poderr.js:54"
+  },
+  {
    "s": "Sending it from this computer failed",
    "src": "static/podfails.js:21"
   },
@@ -10489,10 +10509,6 @@
   {
    "s": "Where it stops guiding",
    "src": "ext/imageeditdock/imageedit.js:2148"
-  },
-  {
-   "s": "OK",
-   "src": "ext/imageeditdock/imageedit.js:2278"
   },
   {
    "s": "Back to the defaults",
@@ -24571,6 +24587,10 @@
   {
    "p": "{0} · ↑ ↓ pick · Enter runs · Esc closes",
    "src": "static/palette.js:168"
+  },
+  {
+   "p": "RunPod said (HTTP {0})",
+   "src": "static/poderr.js:45"
   },
   {
    "p": "{0} files did not get onto the pod",

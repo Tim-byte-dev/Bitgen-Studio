@@ -138,7 +138,7 @@
   function play(p, gpu) {
     say(p.name, "starting…");
     send("POST", u(p.name) + "/play", gpu ? { gpu: gpu } : {}).then(function (r) {
-      if (r.error) { say(p.name, r.error, true); return; }
+      if (r.error) { say(p.name, r.error, true); if (root.H3PodErr) H3PodErr.show(r); return; }   // 2.779.0
       if (r.need_gpu) { S.need[p.name] = r; S.open[p.name] = true; say(p.name, ""); paint(); return; }
       delete S.need[p.name];
       say(p.name, r.state === "creating" ? "▶ making the pod again - then every style's files go on it" : r.state === "running" ? "it is running" : "▶ starting the pod");

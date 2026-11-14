@@ -5416,6 +5416,19 @@ bitGen 在 RunPod Pod 上準備風格時，如果所需的檔案到最後仍不�
 
 在把檔案判定為找不到之前，bitGen 也會按名稱在網上查詢：先查你的遠端模型列表（`runpod/pods/remote_models.json`），再查該模型的 Civitai 資訊卡，最後按完全相同的檔名在 Civitai 搜尋。找到後由 Pod 從 Civitai 下載。成人模型需要你的 Civitai API 金鑰（設定 ▸ 常規 ▸ Civitai）。
 
+## Pod 無法建立時 (2.779.0)
+<!-- en: when-a-pod-cannot-be-created-2-779-0 a82cf44832a2 -->
+
+RunPod 不建立 Pod 時，會彈出對話方塊說明原因：
+- 標題（例如 **你選的 GPU 正忙**）
+- 該怎麼做（換一個 GPU、換另一種雲、減少 GPU 數量，或幾分鐘後再試——沒有扣費）
+- RunPod 自己的原話及 HTTP 狀態
+- 請求的內容：模板、GPU、雲、主機和磁碟
+
+📋 複製可複製全部內容（用於錯誤報告）。它會在 🖥 PODS ▸ Create pod、📦 Presets ▸ ▶ 以及風格沒有 Pod 時詢問的框中出現。
+
+已修復：用 RunPod 自己的模板（例如 bitGen 為風格的 Pod 使用的 PyTorch 模板）建立 Pod 時會提示“先選擇模板”。原因是 bitGen 自己的檢查拒絕了 RunPod 的模板 ID，所以根本沒有去問 RunPod。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

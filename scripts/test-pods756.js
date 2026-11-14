@@ -25,7 +25,7 @@ check("createBody: name (cleaned), template, GPU + count, cloud, container disk,
 const lim = P.createBody({ templateId: "abc123", gpu: "x", count: 99, disk: 1, volume: 99999 });
 check("…kept in RunPod's limits (1-8 GPUs, disk 10+, /workspace 10-2000 GB), a name when none", lim.gpu.count === 8 && lim.disk === 10 && lim.mounts.persistent.size === 2000 && lim.name === "bitGen pod" && lim.cloud === "SECURE");
 const bad = (b) => { try { P.createBody(b); return null; } catch (e) { return e; } };
-check("…refused with a plain reason: no template, no GPU", /pick a template first/.test((bad({ gpu: "x" }) || {}).message) && /pick a GPU/.test((bad({ templateId: "abc123" }) || {}).message) && (bad({ gpu: "x" }) || {}).status === 400);
+check("…refused with a plain reason: no template, no GPU", /no template was picked/.test((bad({ gpu: "x" }) || {}).message) && /pick a GPU/.test((bad({ templateId: "abc123" }) || {}).message) && (bad({ gpu: "x" }) || {}).status === 400);
 const G = require("../lib/gpuSplit");
 check("engineOf: saved; never saved = from what is in use (a pod = Pods; OpenRouter's LLM alone = OpenRouter; else RunPod Serverless)",
   JSON.stringify(G.engineOf({})) === JSON.stringify({ provider: "runpod", runpod: "serverless", pods: false }) && G.engineOf({ mode: "runpod" }).pods === true

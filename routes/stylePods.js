@@ -13,7 +13,8 @@
 const SP = require("../lib/stylePods");
 
 function mount(app) {
-  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json({ error: String((e && e.message) || e) }); } };
+  // 2.779.0: a pod that could not be created says why (problem: lib/podCreateErr.js - the dialog static/poderr.js)
+  const wrap = (fn) => async (req, res) => { try { res.json(await fn(req)); } catch (e) { res.status(e.status || 500).json(Object.assign({ error: String((e && e.message) || e) }, e && e.problem ? { problem: e.problem } : {})); } };
   const rg = () => ((require("../lib/core").getConfig() || {}).rgpu) || {};
   app.get("/api/stylepods", wrap(() => ({ links: SP.cleanLinks(rg().style_pods), kinds: { image: SP.kindPod(rg(), "image"), image_edit: SP.kindPod(rg(), "image_edit"), video: SP.kindPod(rg(), "video") } })));
   app.post("/api/stylepods/link", wrap((req) => ({ links: SP.link((req.body || {}).style_id, (req.body || {}).pod_id || "") })));
