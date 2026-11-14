@@ -22,6 +22,7 @@ same explanation whichever worker hits it. worker.py guards the import and logs
 if it ever fails, so the video renderer never depends on it to render.
 """
 import json
+import re
 import os
 import time
 import urllib.error
@@ -1411,12 +1412,69 @@ def apply_sampler_pick(base, graph, sampler=None, scheduler=None, say=print):
     return out
 
 
+_LOG_MARK = {}     # 2.781.2: base -> the last ComfyUI log entry seen before a queue (load_report)
+LOAD_WORDS = re.compile(r"(loaded completely|loaded partially|requested to load|prompt executed in|dynamic vram|"
+                        r"offload|unload|lowvram|model weight dtype|loaded in \d)", re.I)
+
+
+def _log_entries(base, timeout=4):
+    """ComfyUI's own console lines (its /internal/logs/raw - the frontend's log panel) -> [{t, m}] | None."""
+    try:
+        j = http_json(f"{base}/internal/logs/raw", timeout=timeout) or {}
+    except Exception:                                       # noqa: BLE001 - an older ComfyUI / a stand-in has none
+        return None
+    e = j.get("entries") if isinstance(j, dict) else None
+    return [x for x in e if isinstance(x, dict)] if isinstance(e, list) else None
+
+
+def mark_log(base):
+    """Remember where ComfyUI's console is before a queue (best effort)."""
+    e = _log_entries(base)
+    _LOG_MARK[base] = (e[-1] if e else None) if e is not None else False
+
+
+def load_report(base, hist=None, say=print):
+    """2.781.2 (Tim: "I think comfy is not using vram thats why the renders are so slow"): after a render, how long ComfyUI
+    itself took (its execution_start -> execution_success) and its own lines about loading the models into VRAM
+    (loaded completely / partially, dynamic VRAM, offloading) - so a slow render says where the time went. Never raises."""
+    try:
+        msgs = ((hist or {}).get("status") or {}).get("messages") or []
+        ts = {m[0]: (m[1] or {}).get("timestamp") for m in msgs if isinstance(m, (list, tuple)) and len(m) > 1 and isinstance(m[1], dict)}
+        a, b = ts.get("execution_start"), ts.get("execution_success")
+        if a and b and b >= a:
+            say(f"[comfy] ComfyUI ran it in {(b - a) / 1000.0:.1f} s")
+        if _LOG_MARK.get(base) is False:
+            return
+        e = _log_entries(base)
+        if not e:
+            return
+        last = _LOG_MARK.get(base)
+        new = e
+        if last is not None:
+            i = next((k for k in range(len(e) - 1, -1, -1) if e[k] == last), None)
+            new = e[i + 1:] if i is not None else e[-60:]
+        lines = []
+        for x in new:
+            for ln in str(x.get("m") or "").splitlines():
+                ln = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", ln).strip()
+                if ln and LOAD_WORDS.search(ln) and ln not in lines:
+                    lines.append(ln[:220])
+        for ln in lines[-10:]:
+            say("[comfy log] " + ln)
+    except Exception:                                       # noqa: BLE001 - a report, never a failure
+        pass
+
+
 def queue(base, graph, client_id=None):
     try:
         apply_sampler_pick(base, graph)                   # 2.781.0: Basic Settings' sampler / scheduler (if sent)
     except Exception:                       # noqa: BLE001 - never stops a render
         pass
     print_meta(graph)
+    try:
+        mark_log(base)                                    # 2.781.2: ComfyUI's console before this render (load_report)
+    except Exception:                       # noqa: BLE001
+        pass
     res = http_json(f"{base}/prompt",
                     {"prompt": graph, "client_id": client_id or uuid.uuid4().hex},
                     timeout=60, read_error_body=True)
@@ -1468,6 +1526,7 @@ def wait(base, pid, on_tick=None, timeout=7200, poll=1.0):
                                  + "\n".join(msgs)
                                  + explain_execution_error(st.get("messages") or []))
             if hist.get("outputs"):
+                load_report(base, hist)                   # 2.781.2: how long ComfyUI took + its model-loading lines
                 return hist["outputs"]
         el = int(time.time() - t0)
         if on_tick and el != last_tick:

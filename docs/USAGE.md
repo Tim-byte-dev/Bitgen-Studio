@@ -8926,6 +8926,14 @@ A pod whose Jupyter is still starting (HTTP 404 when bitGen asks it for a kernel
 
 **A checkpoint in the checkpoints folder on a new pod.** A new pod gets the latest ComfyUI, which lists its models in a newer way. bitGen now reads that too, so a Basic Settings model (for example an all-in-one checkpoint from Civitai) that sits in models/checkpoints is loaded with Load Checkpoint when the style's workflow asks for a diffusion model, as it already was on your own computer.
 
+## A pod's model files, its GPU memory, where a render's time went (2.781.2)
+
+**📁 Files.** In PODS ▸ My pods a running pod has 📁 Files beside ⬇ Models. It lists every model file in the pod's ComfyUI models folder by folder, with its size, and the pod's disk (used and free). 🔗 marks a link bitGen made, ⏳ a download that did not finish. Tick files, or a whole folder, then 🗑 Delete selected; bitGen asks first. bitGen then forgets those files for that pod, so a pod made again from its recipe does not bring them back. A style that needs one sends or downloads it again on its next render.
+
+**GPU memory.** An open running pod has a GPU memory line. **Keep the models on the card** (the default) starts the pod's ComfyUI without its Dynamic VRAM when the card has 24 GB or more, so a model stays loaded on the card between renders. **ComfyUI's Dynamic VRAM** keeps the models in the pod's RAM and streams them to the card, which suits small cards. A new pod starts the way picked; ⟳ Apply to this pod restarts a running pod's ComfyUI that way now (a render running on it stops). bitGen adds the flag only when that ComfyUI knows it.
+
+**Where a render's time went.** After each render the log says how long ComfyUI itself took (`[comfy] ComfyUI ran it in … s`) and ComfyUI's own lines about loading the models (`[comfy log] loaded completely …` / `loaded partially …`). "Partially" means part of the model was not on the card.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

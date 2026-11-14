@@ -20,6 +20,7 @@
 | 🎵 **Music** | ✅ Tested on real hardware - works |
 | 💬 **Local LLM** (chat, screenplays, ✨ Enhance) | ✅ Tested on real hardware - works |
 | 📦 **Installing from this repository** (Windows, the setup wizard: ComfyUI, PyTorch, the node packs) | ✅ Tested on a fresh install - works |
+| ☁️ **RunPod pods** (remote generation) | ✅ Tested on a real RunPod A40 pod - works: create / start / stop / terminate, ComfyUI installed on a new pod, models downloaded by the pod from Hugging Face and Civitai, LoRAs sent from your computer, Krea 2 pictures rendered, YuE2's model on the same pod |
 | 🖌️ **The editors** (image editor, timeline, CAD sketches and 3D bodies) | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
 | 📏 **Sketcher** (3D modelling, rooms, profiles, cameras) | ⚠️ Built and covered by the automated tests, but **not yet tested enough with real projects** |
 | 🎮 **Unreal Engine and Daz Studio bridges** | 🧪 Experimental - tested only against stand-in servers, not inside the real programs |

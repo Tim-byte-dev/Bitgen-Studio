@@ -28,6 +28,7 @@ The developer has used these end to end on a real GPU with real models, and they
 | **🎵 Music** | Song generation |
 | **💬 Local LLM** | Chat, screenplays, ✨ Enhance |
 | **📦 Installing from the repository** | A fresh clone on Windows: the setup wizard installs ComfyUI, PyTorch and the node packs |
+| **☁️ RunPod pods** | On a real A40 pod: creating, starting, stopping and terminating a bitGen pod; ComfyUI installed and started on it; models downloaded by the pod from Hugging Face and from Civitai (where Civitai is available); a LoRA sent from this computer; Krea 2 pictures rendered there (about 1 min 40 s each after the first, before 2.781.2's GPU memory change); YuE2's model sent to the same pod |
 
 ## Built, but not yet tested enough
 

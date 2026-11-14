@@ -13170,6 +13170,9 @@ node scripts/test-samplers781.js > /tmp/samplers781.log 2>&1 \
 python3 scripts/test-combo7811.py > /tmp/combo7811.log 2>&1 \
   && ok "2.781.1 ComfyUI's newer [\"COMBO\", {options}] lists read by the worker: a checkpoint in models/checkpoints moves the UNETLoader to Load Checkpoint on a new pod (an empty list is empty, not no answer)" \
   || { bad "2.781.1 newer combo lists"; grep -a "FAIL" -A2 /tmp/combo7811.log | head -14; }
+node scripts/test-podfiles7812-py.js > /tmp/podfiles7812py.log 2>&1 \
+  && ok "2.781.2 a pod's model files listed / deleted by the pod's own Python (links only unlinked, nothing outside models), the GPU memory flag chosen (24 GB+, the ComfyUI knows it), ComfyUI's time + loading lines in the render log" \
+  || { bad "2.781.2 pod files / GPU memory / load report"; grep -a "FAIL" -A2 /tmp/podfiles7812py.log | head -14; }
 node scripts/test-podaudio775-py.js > /tmp/podaudio775py.log 2>&1 \
   && ok "2.775.0 the pod's audio job program run with python3 (the helper's JSON answer, its log, a failing helper's reason)" \
   || { bad "2.775.0 pod audio job program"; grep -a "^FAIL" -A2 /tmp/podaudio775py.log | head -14; }

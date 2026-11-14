@@ -5456,6 +5456,15 @@ Jupyter 仍在啟動的 Pod（bitGen 請求核心時返回 HTTP 404）現在會�
 
 **新 Pod 上 checkpoints 資料夾裡的檢查點。** 新 Pod 會裝上最新的 ComfyUI，它用一種較新的方式列出模型。bitGen 現在也能讀取這種方式，所以放在 models/checkpoints 裡的 Basic Settings 模型（例如 Civitai 上的一體化檢查點），在風格工作流程需要擴散模型時會用 Load Checkpoint 載入——和在你自己的電腦上一樣。
 
+## Pod 的模型檔案、GPU 顯示記憶體、算繪時間花在哪裡 (2.781.2)
+<!-- en: a-pod-s-model-files-its-gpu-memory-where-a-render-s-time-went-2-781-2 9b4e9448ef05 -->
+
+**📁 Files.** 在 PODS ▸ My pods 中，執行中的 Pod 在 ⬇ Models 旁邊有 📁 Files。它按資料夾列出 Pod 上 ComfyUI models 資料夾裡的所有模型檔案及其大小，以及 Pod 的磁碟（已用和剩餘）。🔗 表示 bitGen 建立的連結，⏳ 表示沒有下載完的檔案。勾選檔案（或整個資料夾），然後按 🗑 Delete selected；bitGen 會先詢問。之後 bitGen 會為該 Pod 忘記這些檔案，因此按其配方重建的 Pod 不會再把它們帶回來。需要其中某個檔案的風格會在下次算繪時重新傳送或下載。
+
+**GPU 顯示記憶體.** 開啟的執行中 Pod 有一行 GPU memory。**Keep the models on the card**（預設）在顯示卡有 24 GB 或以上時不用 Dynamic VRAM 啟動 Pod 的 ComfyUI，這樣模型在兩次算繪之間會一直留在顯示卡上。**ComfyUI's Dynamic VRAM** 把模型放在 Pod 的記憶體裡再串流送到顯示卡，適合小顯示卡。新 Pod 會按所選方式啟動；⟳ Apply to this pod 會立即按該方式重新啟動執行中 Pod 的 ComfyUI（該 Pod 上正在進行的算繪會停止）。只有當該 ComfyUI 認得這個參數時，bitGen 才會加上它。
+
+**算繪時間花在哪裡.** 每次算繪後，日誌會顯示 ComfyUI 自己的用時（`[comfy] ComfyUI ran it in … s`）以及 ComfyUI 自己關於載入模型的輸出（`[comfy log] loaded completely …` / `loaded partially …`）。「partially」表示模型有一部分沒有放在顯示卡上。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

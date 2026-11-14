@@ -3494,6 +3494,11 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                 pass
         if _cc is not None:                    # 2.384.0: the job's metadata (seed, steps, cfg, models, loras)
             _cc.print_meta(graph)
+        if _cc is not None:
+            try:
+                _cc.mark_log(base)                         # 2.781.2: ComfyUI's console before this render
+            except Exception:                              # noqa: BLE001
+                pass
         resp = _http_json(base + "/prompt", {"prompt": graph, "client_id": client},
                           read_error_body=True)
         pid = resp.get("prompt_id")
@@ -3642,6 +3647,8 @@ def comfy_generate(params, cfg, seg_mode, refs, first_frame, last_frame,
                              "message verbatim.")
                     if hist.get("outputs"):
                         outputs = hist["outputs"]
+                        if _cc is not None:                 # 2.781.2: ComfyUI's own time + its model-loading lines
+                            _cc.load_report(base, hist, say=say)
                         break
                 el = int(time.time() - t0)
                 # heartbeat only when the WS has been quiet (no steps for 15s) -

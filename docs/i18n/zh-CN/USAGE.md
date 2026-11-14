@@ -5458,6 +5458,15 @@ Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会�
 
 **新 Pod 上 checkpoints 文件夹里的检查点。** 新 Pod 会装上最新的 ComfyUI，它用一种较新的方式列出模型。bitGen 现在也能读取这种方式，所以放在 models/checkpoints 里的 Basic Settings 模型（例如 Civitai 上的一体化检查点），在风格工作流需要扩散模型时会用 Load Checkpoint 加载——和在你自己的电脑上一样。
 
+## Pod 的模型文件、GPU 显存、渲染时间花在哪里 (2.781.2)
+<!-- en: a-pod-s-model-files-its-gpu-memory-where-a-render-s-time-went-2-781-2 9b4e9448ef05 -->
+
+**📁 Files.** 在 PODS ▸ My pods 中，运行中的 Pod 在 ⬇ Models 旁边有 📁 Files。它按文件夹列出 Pod 上 ComfyUI models 文件夹里的所有模型文件及其大小，以及 Pod 的磁盘（已用和剩余）。🔗 表示 bitGen 创建的链接，⏳ 表示没有下载完的文件。勾选文件（或整个文件夹），然后按 🗑 Delete selected；bitGen 会先询问。之后 bitGen 会为该 Pod 忘记这些文件，因此按其配方重建的 Pod 不会再把它们带回来。需要其中某个文件的风格会在下次渲染时重新发送或下载。
+
+**GPU 显存.** 打开的运行中 Pod 有一行 GPU memory。**Keep the models on the card**（默认）在显卡有 24 GB 或以上时不用 Dynamic VRAM 启动 Pod 的 ComfyUI，这样模型在两次渲染之间会一直留在显卡上。**ComfyUI's Dynamic VRAM** 把模型放在 Pod 的内存里再流式送到显卡，适合小显卡。新 Pod 会按所选方式启动；⟳ Apply to this pod 会立即按该方式重启运行中 Pod 的 ComfyUI（该 Pod 上正在进行的渲染会停止）。只有当该 ComfyUI 认识这个参数时，bitGen 才会加上它。
+
+**渲染时间花在哪里.** 每次渲染后，日志会显示 ComfyUI 自己的用时（`[comfy] ComfyUI ran it in … s`）以及 ComfyUI 自己关于加载模型的输出（`[comfy log] loaded completely …` / `loaded partially …`）。“partially”表示模型有一部分没有放在显卡上。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

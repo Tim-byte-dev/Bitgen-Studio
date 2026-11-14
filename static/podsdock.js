@@ -381,6 +381,7 @@
         + '<button type="button" class="ghost" data-pduse title="Render on this pod (its ComfyUI)">Use it</button>'
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdsty title="P_ styles from the pod\'s models and saved workflows (2.758.0)">🎨 Styles</button>' : "")
         + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdmod title="Download a style\'s models (or single files) onto the pod (2.759.0)">⬇ Models</button>' : "")
+        + (/RUNNING/.test(p.status) ? '<button type="button" class="ghost" data-pdfiles title="The model files on the pod - their sizes, the disk left; delete the ones you no longer need (2.781.2)">📁 Files</button>' : "")
         + '<button type="button" class="ghost" data-pdpre title="Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated">💾 Save as preset</button>'
         + '<button type="button" class="ghost" data-pdkill title="Delete the pod and everything on it">Terminate</button></div>'
         + '<div class="pdLoadBox"></div>'
@@ -400,6 +401,7 @@
       if (lb && root.H3PodLoad && st && st.progress && (S.watch[p.id] === "start" || !st.ready || st.progress.took)) lb.innerHTML = H3PodLoad.bar(st);
       var sy = r.querySelector("[data-pdsty]"); if (sy) sy.onclick = function () { stylesFor(p); };
       var mo = r.querySelector("[data-pdmod]"); if (mo) mo.onclick = function () { modelsFor(p); };
+      var fl = r.querySelector("[data-pdfiles]"); if (fl) fl.onclick = function () { filesFor(p); };   // 2.781.2
       var a = r.querySelector("[data-pdact]"); if (a) a.onclick = function () { act(p, a.dataset.pdact); };
       r.querySelector("[data-pduse]").onclick = function () { use(p); };
       var uf = r.querySelector("[data-pdfor]"); if (uf) uf.onclick = function () { answerAsk({ action: "use", pod_id: p.id }, p.name); };
@@ -432,6 +434,12 @@
     if (S.mod === p.id && host.innerHTML) { S.mod = null; host.innerHTML = ""; return; }
     S.mod = p.id; S.sty = null;
     H3PodLoad.models(host, p, (S.port && S.port[p.id]) || 0);
+  }
+  /** 2.781.2: 📁 Files - the pod's model files (static/podfiles.js) in the same panel place */
+  function filesFor(p) {
+    var host = $("pdStyPanel"); if (!host || !root.H3PodFiles) return;
+    S.sty = null; S.mod = null;
+    H3PodFiles.open(host, p, (S.port && S.port[p.id]) || 0);
   }
   function act(p, a) {
     delete S.st[p.id]; S.watch[p.id] = a; paintPods();

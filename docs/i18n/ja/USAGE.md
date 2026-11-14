@@ -5223,6 +5223,15 @@ Jupyter がまだ起動中のポッド（bitGen がカーネルを頼むと HTTP
 
 **新しいポッドの checkpoints フォルダーにあるチェックポイント。** 新しいポッドには最新の ComfyUI が入り、モデルの一覧を新しい形式で返します。bitGen はその形式も読めるようになったので、models/checkpoints にある Basic Settings のモデル（たとえば Civitai のオールインワンのチェックポイント）は、スタイルのワークフローが拡散モデルを求めるときに Load Checkpoint で読み込まれます。あなたのコンピューターではすでにそうなっていた動作です。
 
+## ポッドのモデルファイル、GPU メモリ、レンダリング時間の内訳 (2.781.2)
+<!-- en: a-pod-s-model-files-its-gpu-memory-where-a-render-s-time-went-2-781-2 9b4e9448ef05 -->
+
+**📁 Files.** PODS ▸ My pods で、稼働中のポッドには ⬇ Models の横に 📁 Files があります。ポッドの ComfyUI の models フォルダーにあるすべてのモデルファイルをフォルダー別にサイズ付きで一覧し、ポッドのディスク（使用量と空き）も示します。🔗 は bitGen が作ったリンク、⏳ は完了しなかったダウンロードです。ファイル（またはフォルダーごと）にチェックを入れて 🗑 Delete selected を押します。bitGen は先に確認します。その後 bitGen はそのポッドについてそれらのファイルを忘れるので、レシピから作り直したポッドに戻ってくることはありません。ファイルを必要とするスタイルは、次のレンダリングで送り直すかダウンロードし直します。
+
+**GPU メモリ.** 開いている稼働中のポッドには GPU memory の行があります。**Keep the models on the card**（既定）は、カードが 24 GB 以上のとき、ポッドの ComfyUI を Dynamic VRAM なしで起動します。これでモデルはレンダリングの間もカードに読み込まれたままになります。**ComfyUI's Dynamic VRAM** はモデルをポッドの RAM に置いてカードへ流し込み、小さなカードに向いています。新しいポッドは選んだ方法で起動します。⟳ Apply to this pod は稼働中のポッドの ComfyUI を今その方法で再起動します（そのポッドで実行中のレンダリングは止まります）。bitGen はその ComfyUI がフラグを知っているときだけ付けます。
+
+**レンダリング時間の内訳.** 各レンダリングの後、ログには ComfyUI 自身の所要時間（`[comfy] ComfyUI ran it in … s`）と、モデルの読み込みに関する ComfyUI 自身の行（`[comfy log] loaded completely …` / `loaded partially …`）が出ます。「partially」はモデルの一部がカードに載っていなかったという意味です。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
