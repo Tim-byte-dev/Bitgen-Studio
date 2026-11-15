@@ -65,7 +65,7 @@ const rd = src("static/remotedock.js");
 check("remotedock: the radio group section first in the docker, the choices moved into it", /d\.innerHTML = '<section class="rgdWhere" id="rgdWhere"/.test(rd) && /\["gpuWhere", "gpuLine", "gpuMsg"\]/.test(rd));
 check("remotedock: no ☁ button in Basic Settings any more", !/gpuDock/.test(rd));
 const rbj = src("static/remotebtns.js");
-check("remotebtns: Remote shown while Use remote generation is on, Pods only while something runs remotely", /r\.style\.display = S\.on \? "" : "none"/.test(rbj) && /useP = !!S\.on && anyRemote\(S\.v\)/.test(rbj));
+check("remotebtns: Remote shown while Use remote generation is on, Pods only while something runs remotely (2.785.0: a row on RunPod)", /r\.style\.display = S\.on \? "" : "none"/.test(rbj) && /useP = !!S\.on && \(S\.h \? !!S\.h\.any_runpod : anyRemote\(S\.v\)\)/.test(rbj));
 
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? "RESULT: FAIL" : "RESULT: PASS");

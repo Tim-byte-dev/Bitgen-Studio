@@ -8981,6 +8981,12 @@ PODS ▸ Create pod has **Sort GPUs** above the GPU list: **Cheapest** (the defa
 
 The Queue docker's **Pending** tab shows only the generations still queued or running. Finished, failed and cancelled ones go to the **Done** tab, with ↻ to make one again. The Pending count includes the queued ones.
 
+## Runs on: one dropdown per type in the Remote generation docker (2.785.0)
+
+The top of the ☁ Remote generation docker is now **Runs on**: one dropdown for each type of work - Image, Video, Music, Text to speech, Speech to text, Song separation, LLM and Vision LLM. Each can be **Local**, **RunPod** (your pods) or **OpenRouter** (the LLM and Vision LLM for now - OpenRouter's paid picture and video models come next). **LAN** and **Team** are greyed until they work. **Set all** changes every row at once; a choice a row cannot take is skipped.
+
+The radio buttons that were there before are gone (All local / All remote / Both, Remote servers, each type's Local / Remote). RunPod ▸ Pods or Serverless is still picked in Settings ▸ Remote generation. **Pods** shows on the status bar only while a row is on RunPod.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

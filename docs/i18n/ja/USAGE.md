@@ -5286,6 +5286,13 @@ PODS ▸ Create pod の GPU リストの上に **GPU の並べ替え** があり
 
 Queue ドッカーの **Pending** タブには、待機中または実行中の生成だけが表示されます。完了・失敗・キャンセルしたものは **Done** タブに移り、↻ でもう一度作れます。Pending の件数には待機中のものも含まれます。
 
+## Runs on: Remote generation ドッカーで種類ごとに 1 つのドロップダウン (2.785.0)
+<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 823d6b01941e -->
+
+☁ Remote generation ドッカーの一番上は **Runs on** になりました: 作業の種類ごとに 1 つのドロップダウン - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM、Vision LLM。それぞれ **Local**、**RunPod**（自分のポッド）、**OpenRouter**（今は LLM と Vision LLM - OpenRouter の有料の画像・動画モデルは次に対応）を選べます。**LAN** と **Team** は動くまでグレー表示です。**すべて設定** で全行を一度に変更し、その行で選べないものはスキップされます。
+
+以前あったラジオボタン（すべてローカル / すべてリモート / Both、Remote servers、各種類の Local / Remote）はなくなりました。RunPod ▸ Pods か Serverless は引き続き Settings ▸ Remote generation で選びます。ステータスバーの **Pods** は、RunPod の行がある間だけ表示されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

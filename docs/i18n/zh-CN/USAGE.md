@@ -5521,6 +5521,13 @@ PODS ▸ Create pod 的 GPU 列表上方有 **GPU 排序**:**最便宜**(默认,
 
 Queue 停靠窗的 **Pending** 标签只显示仍在排队或正在运行的生成。已完成、失败和取消的会移到 **Done** 标签,可用 ↻ 再生成一次。Pending 的数量包括排队中的。
 
+## Runs on:在 Remote generation 停靠窗中每种类型一个下拉框 (2.785.0)
+<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 823d6b01941e -->
+
+☁ Remote generation 停靠窗的最上方现在是 **Runs on**:每种工作一个下拉框 - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM。每个都可以选 **Local**、**RunPod**(你的 Pod)或 **OpenRouter**(目前用于 LLM 和 Vision LLM - OpenRouter 的付费图片和视频模型即将推出)。**LAN** 和 **Team** 在可用之前显示为灰色。**全部设置** 可一次更改所有行;某行不能用的选项会被跳过。
+
+以前的单选按钮(全部本地 / 全部远程 / Both、Remote servers、各类型的 Local / Remote)已移除。RunPod ▸ Pods 或 Serverless 仍在 Settings ▸ Remote generation 中选择。只有某行为 RunPod 时,状态栏上才显示 **Pods**。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

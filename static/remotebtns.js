@@ -11,6 +11,8 @@
  *            Video, Music, Text to speech, Speech to text, Song separation) or the LLM / Vision LLM on Remote. Everything
  *            Local = hidden (and the PODS docker closes, like All local in the docker).
  *   Both are lit while their docker is on screen, like the other status bar buttons. They sit after Queue.
+ * 2.785.0 (Tim: "show the pods button in statusbar only if one of the selections is runpod"): Pods = a "Runs on" row on RunPod
+ *   (GET /api/remotehosts any_runpod - lib/remoteHosts.js); OpenRouter alone does not show it.
  * Pure (Node: scripts/test-system783.js): anyRemote, KINDS.
  */
 (function (root) {
@@ -48,7 +50,7 @@
   }
   function paint() {
     if (!build()) return;
-    var r = $("tRgen"), p = $("tPods"), useP = !!S.on && anyRemote(S.v);
+    var r = $("tRgen"), p = $("tPods"), useP = !!S.on && (S.h ? !!S.h.any_runpod : anyRemote(S.v));   // 2.785.0: a row on RunPod
     r.style.display = S.on ? "" : "none";
     p.style.display = useP ? "" : "none";
     [[r, "rgen"], [p, "pods"]].forEach(function (x) { var on = shown(x[1]); x[0].classList.toggle("on", on); x[0].setAttribute("aria-pressed", on ? "true" : "false"); });
@@ -57,9 +59,10 @@
     if (S.v) S.was = useP;
   }
   function load() {
-    return Promise.all([getj("/api/remotegen").catch(function () { return null; }), getj("/api/gpusplit").catch(function () { return null; })]).then(function (a) {
+    return Promise.all([getj("/api/remotegen").catch(function () { return null; }), getj("/api/gpusplit").catch(function () { return null; }), getj("/api/remotehosts").catch(function () { return null; })]).then(function (a) {
       if (a[0]) S.on = !!a[0].enabled;
       if (a[1] && a[1].where) S.v = a[1];
+      if (a[2] && a[2].hosts) S.h = a[2];
       paint();
     });
   }

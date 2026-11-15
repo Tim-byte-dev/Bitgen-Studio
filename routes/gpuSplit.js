@@ -12,6 +12,10 @@ function mount(app) {
   app.get("/api/gpusplit", wrap(() => G.view()));
   // 2.766.2: Local <-> Remote switches the app over - ComfyUI here started / stopped (lib/modeSwitch.js)
   app.post("/api/gpusplit", wrap(async (req) => { const MS = require("../lib/modeSwitch"), before = MS.modeOf(); const v = await G.set(req.body || {}); return Object.assign({}, v, { mode_switch: await MS.after(before) }); }));
+  // 2.785.0 (Tim: "replace them with a dropdown, local, runpod, openrouter,LAN,Team ... for each type"): lib/remoteHosts.js
+  app.get("/api/remotehosts", wrap(() => require("../lib/remoteHosts").view()));
+  app.post("/api/remotehosts", wrap(async (req) => { const MS = require("../lib/modeSwitch"), before = MS.modeOf(), b = req.body || {};
+    const v = require("../lib/remoteHosts").set(String(b.kind || ""), String(b.host || "")); return Object.assign({}, v, { mode_switch: await MS.after(before) }); }));
   app.post("/api/gpusplit/vllm", wrap((req) => G.saveVllm(req.body || {})));
   app.post("/api/gpusplit/vllm/test", wrap((req) => G.testVllm(String((req.body || {}).kind || "llm") === "vlm" ? "vlm" : "llm")));
 }

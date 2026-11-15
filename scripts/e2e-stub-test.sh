@@ -13188,6 +13188,13 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui784-ui.js > /tmp/ui784ui.log 2
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7841-ui.js > /tmp/ui7841ui.log 2>&1 \
   && ok "2.784.1 browser test: the Queue's Pending tab shows only queued / running generation cards, Done the finished / failed / cancelled ones with ↻ - or SKIP" \
   || { bad "2.784.1 queue tabs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7841ui.log | head -14; }
+# ---- 2.785.0 (Tim: "remove the radiogroups from remote generation docker, replace them with a dropdown, local, runpod, openrouter,LAN,Team ... for each type. show the pods button in statusbar only if one of the selections is runpod")
+node scripts/test-remotehosts785.js > /tmp/remotehosts785.log 2>&1 \
+  && ok "2.785.0 Runs on units: eight kinds x Local / RunPod / OpenRouter / LAN / Team (greyed where it cannot run, why), hostsOf from the saved split + the LLM platform, where = local | both, any_runpod, routes mounted" \
+  || { bad "2.785.0 Runs on units"; grep -a "^FAIL" -A1 /tmp/remotehosts785.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui785-ui.js > /tmp/ui785ui.log 2>&1 \
+  && ok "2.785.0 browser test: Runs on dropdowns first in the docker, the radio groups hidden, greyed options, Image ▸ RunPod = both + Pods shown, LLM ▸ OpenRouter alone = no Pods, Set all RunPod / Local - or SKIP" \
+  || { bad "2.785.0 Runs on browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui785ui.log | head -14; }
 node scripts/test-llmrepos782.js > /tmp/llmrepos782.log 2>&1 \
   && ok "2.782.0 your LLMs from Hugging Face: a repo's GGUFs listed (split ones as one, the projector), sent, kept in your list on Save; the RunPod LLM / Vision lists show only your list; the pod picked for it; the pod's volume made bigger" \
   || { bad "2.782.0 your LLM list"; grep -a "FAIL" -A2 /tmp/llmrepos782.log | head -14; }

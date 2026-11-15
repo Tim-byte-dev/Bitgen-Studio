@@ -429,6 +429,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **System ドッカー、ステータスバーの Remote と Pods、すべてローカル / すべてリモート / Both** — 左のドッカーは System という名前に。すべてポッドで実行するときはグラフがポッドの数値になり、一部をここで・一部をポッドで実行するときはこのコンピューターのグラフはそのままで、その下に ☁ 枠でポッドの数値。Basic Settings ▸ GPU はなくなり、すべてローカル / すべてリモート / Both は ☁ Remote generation ドッカーの一番上に（行を Local に戻すとすべてリモートは Both に）。ステータスバーの Remote はそのドッカーを、Pods は PODS を開き、Pods は何かをリモートで実行している間だけ表示。 *Where:* System ドッカー、ステータスバー、☁ Remote generation。 *Since:* 2.783.0
 - **Create pod の GPU リストを並べ替え: 速い順 / 安い順** — PODS ▸ Create pod の GPU リストの上に GPU の並べ替え（既定は安い順、記憶されます）。各カードに RTX 5090 と比べたおおよその速さを表示（拡散・動画レンダリング向けの bitGen 独自の目安で、ベンチマークではありません）。並べ替えると、その順で 20 GB 以上の空いている最初のカードが選ばれます。 *Where:* PODS。 *Since:* 2.784.0
 - **Queue の Pending タブはこれからのものだけ** — 待機中と実行中の生成は Pending に、完了・失敗・キャンセルしたものは Done に（↻ で再生成）。Pending の件数に待機中のものも含みます。 *Where:* Queue。 *Since:* 2.784.1
+- **Runs on: 種類ごとに 1 つのドロップダウン** — ☁ Remote generation ドッカーの一番上に Image、Video、Music、Text to speech、Speech to text、Song separation、LLM、Vision LLM のドロップダウン: Local、RunPod（自分のポッド）、OpenRouter（今は LLM のみ）、LAN と Team（動くまでグレー表示）。すべて設定で全行を変更。ラジオボタンはなくなり、ステータスバーの Pods は RunPod の行がある間だけ表示。 *Where:* ☁ Remote generation、ステータスバー。 *Since:* 2.785.0
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー

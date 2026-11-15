@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.785.0** — Runs On: One Dropdown per Type at the Top of the ☁ Remote Generation Docker (Image, Video, Music, Text to Speech, Speech to Text, Song Separation, LLM, Vision LLM) - Local, RunPod, OpenRouter (the LLMs for Now), LAN and Team (Greyed); Set All; the Radio Groups Gone; Pods on the Status Bar Only While a Row Is on RunPod
 - **2.784.1** — The Queue's Pending Tab Shows Only Queued and Running Generations - Finished, Failed and Cancelled Ones Are on Done (With ↻ Regenerate); the Pending Count Includes the Queued Ones
 - **2.784.0** — PODS ▸ Create Pod: Sort GPUs (Fastest / Cheapest, Remembered) Above the GPU List; Each Card Says Its Rough Speed Next to an RTX 5090 (bitGen's Own Guide for Diffusion and Video, Not a Benchmark); a Card Picked by Hand Is Kept When the Cloud Changes
 - **2.783.0** — The Left Docker Is Called System; With Everything on a Pod Its Charts Are the Pod's, With Some Work Here and Some on a Pod This Computer's Charts Stay and the Pod's Come Under Them in a ☁ Frame; Basic Settings ▸ GPU Is Gone - All Local / All Remote / Both at the Top of the ☁ Remote Generation Docker (All Remote = Every Type and the LLMs Remote; a Row Put Back to Local Switches to Both); Remote and Pods Buttons on the Status Bar (Pods Only While Something Runs Remotely)
