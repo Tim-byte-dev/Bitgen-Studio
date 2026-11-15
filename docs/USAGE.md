@@ -8977,6 +8977,10 @@ Each model transfer to a pod (PODS ▸ Transfers) has two icon buttons at the en
 
 PODS ▸ Create pod has **Sort GPUs** above the GPU list: **Cheapest** (the default, as before) or **Fastest**. Each card in the list also says its rough speed next to an RTX 5090 (for example "~0.45× RTX 5090" for an RTX A6000). Changing the order picks the first free card with 20 GB or more in that order; your choice is remembered. The speeds are bitGen's own rough guide for diffusion and video renders, not a benchmark. A card bitGen does not know says "speed not known" and comes after the known ones when sorting by speed.
 
+## The Queue: Pending holds only what is still to come (2.784.1)
+
+The Queue docker's **Pending** tab shows only the generations still queued or running. Finished, failed and cancelled ones go to the **Done** tab, with ↻ to make one again. The Pending count includes the queued ones.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

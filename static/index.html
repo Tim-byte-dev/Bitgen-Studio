@@ -5988,7 +5988,11 @@ function paintQueue() {
   const box = $("genq");
   if (!box) return;
   box.innerHTML = "";
+  // 2.784.1 (Tim: "only show queued items in the current queue all done items in queue go to the done tab"): Pending = the
+  // queued + running cards, Done = the finished / failed / cancelled ones (with ↻ Regenerate)
+  const tabNow = gqTabNow();
   for (const it of GQ.items) {
+    if ((tabNow === "done") !== GENQUEUE.OVER.includes(it.status)) continue;
     const el = document.createElement("div");
     el.className = "gq " + (it.status === GENQUEUE.RUNNING ? "run" : it.status);
     /* The controls sit on their own line so the summary underneath gets the
@@ -6510,6 +6514,10 @@ $("enhDiscard").onclick = () => $("enhanced").classList.add("hidden");
    cancelled, including this project's history from projects/<name>/jobs.info.
    Live jobs come from /api/jobs; the rest from /api/jobs/history. */
 let qTab = store.get("qtab", "pending");
+/** 2.784.1: the queue tab on screen - paintQueue can run before qTab is set up (the page's first paint) */
+function gqTabNow() { try { return qTab === "done" ? "done" : "pending"; } catch { return store.get("qtab", "pending") === "done" ? "done" : "pending"; } }
+/** 2.784.1: the generation-queue cards each tab shows (pure on GQ): pending = waiting + running, done = finished */
+function gqShown(tab) { return (GQ.items || []).filter((it) => (tab === "done") === GENQUEUE.OVER.includes(it.status)); }
 const PENDING_ST = (s) => s === "queued" || s === "running" || s === "interrupted";
 async function refreshJobs() {
   let list = [], hist = [];
@@ -6528,7 +6536,8 @@ async function refreshJobs() {
   const live = list.filter((j) => (qTab === "pending") === PENDING_ST(j.status) && !(j.id === merged && PENDING_ST(j.status)));
   const old = hist.filter((h) => (qTab === "pending") === PENDING_ST(h.status));
   const act = list.filter(j => j.status === "queued" || j.status === "running").length;
-  const nPending = list.filter((j) => PENDING_ST(j.status)).length + hist.filter((h) => PENDING_ST(h.status)).length;
+  // 2.784.1: + the generation queue's waiting cards (not sent yet - no job of their own)
+  const nPending = list.filter((j) => PENDING_ST(j.status)).length + hist.filter((h) => PENDING_ST(h.status)).length + (GQ.items || []).filter((it) => it.status === GENQUEUE.WAITING).length;
   const nDone = list.length + hist.length - nPending;
   if ($("qtabPending")) $("qtabPending").textContent = `Pending${nPending ? ` (${nPending})` : ""}`;
   if ($("qtabDone")) $("qtabDone").textContent = `Done${nDone ? ` (${nDone})` : ""}`;
@@ -6540,7 +6549,7 @@ async function refreshJobs() {
   lastDoneN = nDone;
   paintClearBtn();
   $("qfcount").textContent = act ? `${act} active` : "";
-  box.innerHTML = (live.length || old.length || (merged && qTab === "pending")) ? "" : `<span class="modehint">${qTab === "pending" ? "Nothing waiting." : "Nothing finished yet."}</span>`;
+  box.innerHTML = (live.length || old.length || (merged && qTab === "pending") || gqShown(qTab).length) ? "" : `<span class="modehint">${qTab === "pending" ? "Nothing waiting." : "Nothing finished yet."}</span>`;
   for (const j of live) {
     const el = document.createElement("div");
     el.className = "job" + (j.id === selJob ? " sel" : "");
@@ -6622,7 +6631,7 @@ if ($("seedLast")) $("seedLast").onclick = () => { if (lastSeedSeen != null) $("
 // 2.346.0: ONLY the two tabs - the ⏹ / ⏹✕ / 🧹 buttons wear .qtab for their
 // look, and this loop used to overwrite THEIR onclick with the tab switch
 // (so 🧹 cleared nothing and ⏹ stopped nothing since 2.260.0)
-document.querySelectorAll(".qtab[data-qtab]").forEach((b) => { b.onclick = () => { qTab = b.dataset.qtab; store.set("qtab", qTab); refreshJobs(); }; });
+document.querySelectorAll(".qtab[data-qtab]").forEach((b) => { b.onclick = () => { qTab = b.dataset.qtab; store.set("qtab", qTab); paintQueue(); refreshJobs(); }; });   // 2.784.1: the cards follow the tab
 function selectJob(id) {
   comfyFollow = false;                       // console back to job logs
   if (comfyLogTimer) clearTimeout(comfyLogTimer);

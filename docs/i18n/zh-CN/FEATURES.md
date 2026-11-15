@@ -428,6 +428,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **传输到 Pod 时的 ⏹ / ↻** — 每个模型传输的进度条（PODS ▸ Transfers）末尾有停止和重新开始图标：上传在当前分块后停止（Pod 上的分块被删除），Pod 的下载在当前片段后停止；↻ 从头重新开始。 *Where:* PODS。 *Since:* 2.782.2
 - **System 停靠窗;状态栏上的 Remote 和 Pods;全部本地 / 全部远程 / Both** — 左侧停靠窗改名为 System;全部在 Pod 上运行时图表显示 Pod 的数据,一部分在本机、一部分在 Pod 上时本机的图表保持不变,Pod 的数据在下方的 ☁ 框中;Basic Settings ▸ GPU 已移除 - 全部本地 / 全部远程 / Both 位于 ☁ Remote generation 停靠窗最上方(某一行改回 Local 时全部远程会切换为 Both);状态栏上的 Remote 打开该停靠窗,Pods 打开 PODS,且只在有工作远程运行时显示。 *Where:* System 停靠窗、状态栏、☁ Remote generation。 *Since:* 2.783.0
 - **Create pod 的 GPU 列表排序:最快 / 最便宜** — PODS ▸ Create pod 的 GPU 列表上方有 GPU 排序(默认最便宜,会记住);每张卡显示与 RTX 5090 相比的大致速度(bitGen 针对扩散和视频渲染的粗略参考,不是基准测试);换一种排序会选中该顺序中第一张有 20 GB 以上的空闲卡。 *Where:* PODS。 *Since:* 2.784.0
+- **Queue 的 Pending 标签只显示尚未完成的** — 排队中和运行中的生成在 Pending;已完成、失败和取消的在 Done(可用 ↻ 重新生成);Pending 的数量包括排队中的。 *Where:* Queue。 *Since:* 2.784.1
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

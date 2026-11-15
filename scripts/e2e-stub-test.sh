@@ -13184,6 +13184,10 @@ node scripts/test-gpusort784.js > /tmp/gpusort784.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui784-ui.js > /tmp/ui784ui.log 2>&1 \
   && ok "2.784.0 browser test: PODS ▸ Create pod's Sort GPUs above the list (Cheapest default), Fastest reorders and picks the fastest free card, speeds shown, a hand-picked card kept on another cloud, remembered - or SKIP" \
   || { bad "2.784.0 GPU sort browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui784ui.log | head -14; }
+# ---- 2.784.1 (Tim: "only show queued items in the current queue all done items in queue go to the done tab")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7841-ui.js > /tmp/ui7841ui.log 2>&1 \
+  && ok "2.784.1 browser test: the Queue's Pending tab shows only queued / running generation cards, Done the finished / failed / cancelled ones with ↻ - or SKIP" \
+  || { bad "2.784.1 queue tabs browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7841ui.log | head -14; }
 node scripts/test-llmrepos782.js > /tmp/llmrepos782.log 2>&1 \
   && ok "2.782.0 your LLMs from Hugging Face: a repo's GGUFs listed (split ones as one, the projector), sent, kept in your list on Save; the RunPod LLM / Vision lists show only your list; the pod picked for it; the pod's volume made bigger" \
   || { bad "2.782.0 your LLM list"; grep -a "FAIL" -A2 /tmp/llmrepos782.log | head -14; }

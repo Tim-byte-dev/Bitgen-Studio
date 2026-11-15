@@ -5514,6 +5514,11 @@ PODS ▸ My pods 中執行的 Pod 在 📁 Files 旁邊有 **⟳ Restart ComfyUI
 
 PODS ▸ Create pod 的 GPU 清單上方有 **GPU 排序**:**最便宜**(預設,與以前一樣)或 **最快**。清單中每張卡還會顯示與 RTX 5090 相比的大致速度(例如 RTX A6000 為"~0.45× RTX 5090")。換一種排序會選取該順序中第一張有 20 GB 以上的空閒卡,你的選擇會被記住。這些速度是 bitGen 針對擴散和影片渲染的粗略參考,不是基準測試。bitGen 不認識的卡顯示"speed not known",按最快排序時排在已知的卡之後。
 
+## Queue:Pending 只顯示尚未完成的 (2.784.1)
+<!-- en: the-queue-pending-holds-only-what-is-still-to-come-2-784-1 a059ef3d6e5e -->
+
+Queue 停靠窗的 **Pending** 標籤只顯示仍在排隊或正在執行的生成。已完成、失敗和取消的會移到 **Done** 標籤,可用 ↻ 再生成一次。Pending 的數量包括排隊中的。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
