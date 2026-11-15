@@ -270,6 +270,7 @@ function mount(app) {
   require("./podFiles").mount(app);   // 2.781.2: a pod's model files listed / deleted + how its ComfyUI uses the card (lib/podFiles.js, lib/podVram.js)
   require("./podPresets").mount(app); // 2.764.0: pod presets - runpod/pods/presets/<name>.pod, ▶ ⏹ 🗑 ✕ (lib/podPresets.js)
   require("./apis").mount(app);       // 2.757.0: Settings ▸ API - online services as API_ styles + the LLM (lib/apis.js)
+  require("./orModels").mount(app);   // 2.786.0: OpenRouter models - the dialog, your list, the price before a render (lib/orModels.js, lib/orRender.js)
   require("./currency").mount(app);   // 2.760.0: Settings ▸ General ▸ Currency - prices in your money (lib/currency.js)
   // 2.239.0: Cache-Control no-cache on the app's own assets. Without it,
   // Chromium's HEURISTIC caching (Last-Modified and no Cache-Control =
@@ -598,6 +599,23 @@ function mount(app) {
     // 2.758.0: a P_ pod style - Basic Settings' steps / seed / CFG only (the pod's model and LoRAs stay)
     const podVs = f.video_style_id ? styles.byId(core.STYLES_DIR, String(f.video_style_id)) : null;
     if (podVs && podVs.runs_on === "pod") { if (bo) { bo.model = ""; bo.loras = []; } f.extra_loras = "[]"; }
+    // 2.786.0: an "openrouter/<id>" video model (Basic Settings ▸ Model, Use model + Override style) or ☁ Runs on ▸ Video =
+    // OpenRouter - the video is made there (lib/orRender.js, misc/api_worker.py: POST /videos -> poll -> content), as typed
+    { const ORR = require("../lib/orRender"), orr = ORR.modelFor("video", bo ? bo.model : "");
+      if (orr && orr.error) return res.status(400).json({ error: orr.error });
+      if (orr) {
+        const ke = ORR.keyError(); if (ke) return res.status(400).json({ error: ke });
+        const vs0 = podVs && podVs.kind === "video" ? podVs : null;
+        const W = frameOp ? frameOp.width : f.width || d.width, H = frameOp ? frameOp.height : f.height || d.height;
+        const st = ORR.styleFor(vs0, "video", orr.entry, { w: +W, h: +H, seconds: (parseInt(f.frames || d.frames, 10) || 120) / 24 });
+        const ap = require("../lib/apiJobs").videoParams({ style: st, mode: frameOp ? "fl2va" : askedMode, prompt: typedPrompt, files: referenceFiles,
+          width: W, height: H, frames: f.frames || d.frames, seed: bo && bo.seed >= 0 ? bo.seed : f.seed, format: f.format, negative: negOf(f) });
+        if (ap.error) return res.status(400).json({ error: ap.error });
+        ap.params.workflow_note = `OpenRouter ${orr.id} (${orr.why}) - ${orr.entry.price || "paid"}; ${st.api_extra.duration} s; Basic Settings' ${ORR.IGNORED.video.join(" / ")} are not used there`;
+        const ajob = core.makeJob(ap.params, id, dir);
+        ajob.chunk = { i: 0, n: 1 };
+        return res.json(core.jobDict(ajob));
+      } }
     if (f.video_style_id) {
       const vs = styles.byId(core.STYLES_DIR, String(f.video_style_id));
       if (!vs || vs.kind !== "video") return res.status(400).json({ error: "that video style no longer exists — pick another in the dropdown" });
@@ -1914,6 +1932,28 @@ function mount(app) {
     const missing = styles.missingSlots(style);
     if (missing.length) return res.status(400).json({
       error: `style "${style.name}" is missing: ${missing.join(", ")}` });
+    // 2.786.0 (Tim: "if use model is selected and an openrouter model is selected use openrouter"): an "openrouter/<id>"
+    // checkpoint from Basic Settings, or ☁ Runs on ▸ Image = OpenRouter - the picture is made there (lib/orRender.js,
+    // misc/api_worker.py); its steps / CFG / sampler / LoRAs are not used
+    { const ORR = require("../lib/orRender"), orr = ORR.modelFor("image", typeof b.model === "string" ? b.model : "");
+      if (orr && orr.error) return res.status(400).json({ error: orr.error });
+      if (orr) {
+        const ke = ORR.keyError(); if (ke) return res.status(400).json({ error: ke });
+        const w = styles.numOrNull(b.width) || style.width || 1024, h = styles.numOrNull(b.height) || style.height || 1024;
+        const p = { mode: "image", prompt, style: ORR.styleFor(style, "image", orr.entry, { w, h }), style_id: style.id, style_name: style.name,
+          workflow_note: `OpenRouter ${orr.id} (${orr.why}) - ${orr.entry.price || "paid"}; Basic Settings' ${ORR.IGNORED.image.join(" / ")} are not used there`,
+          width: w, height: h, batch: Math.max(1, Math.min(8, styles.numOr(b.batch, 1))) };
+        if (b.negative !== undefined) p.negative = String(b.negative).slice(0, 2000);
+        if (Array.isArray(b.images) && b.images.length) {
+          const cap = orr.entry.caps && orr.entry.caps.refs != null ? orr.entry.caps.refs : 16;
+          p.images = b.images.slice(0, Math.max(0, cap)).map((n) => path.join(core.pDir("images"), path.basename(String(n)))).filter((f) => fs.existsSync(f));
+        }
+        const rolled = imageSeed.forRequest(b.seed === undefined || b.seed === null || b.seed === "" ? -1 : styles.numOrNull(b.seed));
+        p.seed = rolled.seed; p.seed_random = rolled.random;
+        const job = core.makeJob(p);
+        job.chunk = { i: 0, n: p.batch };
+        return res.json(core.jobDict(job));
+      } }
 
     // Overrides are OPTIONAL: anything absent must fall through to the style,
     // and then to the architecture default, inside scripts/image_gen.py. Only

@@ -8987,6 +8987,23 @@ The top of the ☁ Remote generation docker is now **Runs on**: one dropdown for
 
 The radio buttons that were there before are gone (All local / All remote / Both, Remote servers, each type's Local / Remote). RunPod ▸ Pods or Serverless is still picked in Settings ▸ Remote generation. **Pods** shows on the status bar only while a row is on RunPod.
 
+## OpenRouter models: your own lists, pictures and video on OpenRouter (2.786.0)
+
+☁ Remote generation ▸ **☁ OpenRouter models…** (under Runs on) opens a dialog of what OpenRouter offers. The tabs along the top are the types - **Image**, **Video**, **LLM** and **Vision LLM** - and inside each type there is a tab for every family (the maker: Google, OpenAI, ByteDance Seed …) plus **All**. Search, tick **Free** / **Paid**, or sort by name, cheapest or newest; ⟳ asks OpenRouter again.
+
+The left frame, **Available**, lists the models with their price: free ones in green, paid ones with what they cost (per picture, per megapixel, per second of video, or per million tokens for the LLMs). A click shows a model's details underneath (lengths, sizes, how many reference pictures it takes). **Double-click** a model (or press Enter) to add it to **My models** on the right; 🗑 at the end of a row takes it off. Listing needs no key - rendering does (⚙ Settings ▸ Remote generation ▸ OpenRouter).
+
+When you close the dialog your models go into the dropdowns as `openrouter/<model>` - nothing else is taken out of them:
+
+- Basic Settings ▸ the picture **Model** (checkpoint) list gets a ☁ OpenRouter (paid) group, and the video **Model** list your video models;
+- the prompt docker's **LLM** and **Vision** lists get "☁ OpenRouter · your models". Picking one of those runs the LLM (or the Vision LLM) on OpenRouter with that model - Runs on follows.
+
+To make a picture or a video on OpenRouter, tick **Override style** and **Use model** in Basic Settings and pick an `openrouter/…` model. Or set ☁ Runs on ▸ **Image** or **Video** to **OpenRouter**: every picture or video then goes there, with the model you picked last (or the first of your list) - the line under the row names it and its price. OpenRouter does not take Basic Settings' steps, CFG, sampler or LoRAs; the model decides those. The size becomes the nearest aspect ratio the model takes, and a video's length the nearest length it offers (5 s asked for a model that makes 4, 6 or 8 s = 6 s). LTX styles do not render on OpenRouter.
+
+Before a paid render a box names the model and about what it will cost (for example "about $2.40 (6 s × $0.4 a second)") - **Render** or **Cancel**. Tick "Don't ask again for 10 minutes" for a batch. A free model renders without asking. What each render cost (OpenRouter's own figure) is in 💲 Costs ▸ OpenRouter, the renders listed under its LLM calls.
+
+A model OpenRouter no longer lists is taken off your list - when the dialog asks OpenRouter, and once each time the studio opens - and a note says which. Nothing is taken off when OpenRouter cannot be reached.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

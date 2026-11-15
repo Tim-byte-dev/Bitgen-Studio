@@ -47,6 +47,9 @@ function mount(app) {
     // 2.409.0: Override style ON - Basic Settings' model (phase 1) + temporary LoRAs ride on a copy of the style,
     // its seed is the job's, its steps / cfg go into the graph
     const bo = basicOverride.parse(b.basic);
+    // 2.786.0: an "openrouter/<id>" video model / ☁ Runs on ▸ Video = OpenRouter is not an LTX render - /api/generate makes it
+    { const orr = require("../lib/orRender").modelFor("video", bo ? bo.model : "");
+      if (orr) return res.status(400).json({ error: orr.error || `${orr.id} renders on OpenRouter, not with LTX - pick a MiniMax H3 / Wan video style (or none) for an OpenRouter video, or clear the OpenRouter model in Basic Settings` }); }
     const style = basicOverride.withStyle(pickStyle(b.video_style_id), bo, { loras: true, topModel: true });
     if (!style) return res.status(400).json({ error: "no LTX 2.5 video style - restart the app to seed \"LTX 2.5\" (Settings -> Video styles)" });
     const id = crypto.randomBytes(6).toString("hex");

@@ -1,8 +1,8 @@
 {
  "lang": "zh-CN",
  "v": "6dc353b6b2bc",
- "count": 9436,
- "patternCount": 1145,
+ "count": 9453,
+ "patternCount": 1160,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
   "(the API key first)": "（请先填写 API 密钥）",
@@ -9439,7 +9439,24 @@
   "⚙ Settings ▸ Remote generation": "⚙ 设置 ▸ 远程生成",
   "🕺 Motion": "🕺 动作",
   "🕺 Motion in the preview bar: a video of a person becomes 3D motion - an animated skeleton (.fbx) and SMPL-H (.npz) in the project's models3d, for the timeline's 3D layers, Blender, Daz or Unreal. ⚠ NON-COMMERCIAL USE ONLY: it needs the SMPL-H body model and Meta's SAM 3D Body / VGGT-Omega, whose licences forbid commercial use": "预览栏中的 🕺 动作：把有人物的视频变成 3D 动作 - 带动画的骨架（.fbx）和 SMPL-H（.npz）存入项目的 models3d，可用于时间线的 3D 图层、Blender、Daz 或 Unreal。⚠ 仅限非商业用途：它需要 SMPL-H 人体模型以及 Meta 的 SAM 3D Body / VGGT-Omega，这些许可证禁止商业使用",
-  "🧠 LLM": "🧠 LLM"
+  "🧠 LLM": "🧠 LLM",
+  "Don't ask again for 10 minutes": "10 分钟内不再询问",
+  "Free first, by name": "免费优先,按名称",
+  "Newest first": "最新优先",
+  "Available": "可用",
+  "Double-click a model (or Enter) to add it to yours": "双击模型(或按 Enter)即可加入你的列表",
+  "My models": "我的模型",
+  "In the dropdowns as openrouter/": "在下拉列表中显示为 openrouter/",
+  "Close - the dropdowns get your list": "关闭 - 下拉列表会加入你的列表",
+  "Search models": "搜索模型",
+  "Ask OpenRouter again": "重新询问 OpenRouter",
+  "Nothing matches": "没有匹配项",
+  "In your models": "已在你的模型中",
+  "None yet - double-click a model on the left": "还没有 - 双击左侧的模型",
+  "openrouter/": "openrouter/",
+  "Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter": "列出模型不需要密钥,生成需要:⚙ Settings ▸ Remote generation ▸ OpenRouter",
+  "Pick the OpenRouter models you use - pictures, video, LLM, vision LLM (free and paid)": "选择你要用的 OpenRouter 模型 - 图片、视频、LLM、Vision LLM(免费和付费)",
+  "Renders on OpenRouter": "在 OpenRouter 上的生成"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 对 - 此任务从中学习（{0}）",
@@ -10586,6 +10603,21 @@
   "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 约 {2}×{3} (×{4}) · 帧生成 {5}",
   "{0}×{1} → {2}×{3} (RelayVSR {4})": "{0}×{1} → {2}×{3}（RelayVSR {4}）",
   "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6}": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}",
-  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（边缘已裁切）"
+  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（边缘已裁切）",
+  "OpenRouter did not answer - {0}": "OpenRouter 没有回应 - {0}",
+  "lengths {0} s": "时长 {0} 秒",
+  "aspect {0}": "宽高比 {0}",
+  "up to {0} reference picture": "最多 {0} 张参考图片",
+  "up to {0} reference pictures": "最多 {0} 张参考图片",
+  "{0}k context": "{0}k 上下文",
+  "{0} - free · {1}. {2}": "{0} - 免费 · {1}。{2}",
+  "{0} - free · {1}": "{0} - 免费 · {1}",
+  "{0} - free. {1}": "{0} - 免费。{1}",
+  "{0} - free": "{0} - 免费",
+  "{0} - paid · {1}. {2}": "{0} - 付费 · {1}。{2}",
+  "{0} - paid · {1}": "{0} - 付费 · {1}",
+  "{0} - paid. {1}": "{0} - 付费。{1}",
+  "{0} - paid": "{0} - 付费",
+  "Renders on OpenRouter: {0}": "在 OpenRouter 上的生成:{0}"
  }
 }

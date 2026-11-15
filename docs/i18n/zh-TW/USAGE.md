@@ -5526,6 +5526,24 @@ Queue 停靠窗的 **Pending** 標籤只顯示仍在排隊或正在執行的生�
 
 以前的單選按鈕(全部本地 / 全部遠端 / Both、Remote servers、各類型的 Local / Remote)已移除。RunPod ▸ Pods 或 Serverless 仍在 Settings ▸ Remote generation 中選擇。只有某行為 RunPod 時,狀態列上才顯示 **Pods**。
 
+## OpenRouter models:你自己的清單,在 OpenRouter 上產生圖片和影片 (2.786.0)
+<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 1a449eed0c36 -->
+
+☁ Remote generation ▸ **☁ OpenRouter models…**(在 Runs on 下方)會開啟一個對話框,列出 OpenRouter 提供的模型。頂端的標籤是類型 - **Image**、**Video**、**LLM** 和 **Vision LLM** - 每種類型裡都有依系列(製作方:Google、OpenAI、ByteDance Seed 等)分的標籤,再加上 **All**。可以搜尋,勾選 **Free** / **Paid**,依名稱、最便宜或最新排序;⟳ 會重新詢問 OpenRouter。
+
+左側框 **Available** 列出模型和價格:免費的顯示為綠色,付費的顯示費用(每張圖片、每百萬像素、每秒影片,LLM 為每百萬 token)。按一下會在下方顯示模型的詳細資訊(長度、尺寸、可用的參考圖片數量)。**按兩下**模型(或按 Enter)就會把它加入右側的 **My models**;每列末尾的 🗑 可以移除。檢視清單不需要金鑰,產生需要(⚙ Settings ▸ Remote generation ▸ OpenRouter)。
+
+關閉對話框後,你的模型會以 `openrouter/<model>` 加入下拉清單 - 其他項目都不會被移除:
+
+- Basic Settings ▸ 圖片的 **Model**(檢查點)清單多出一個 ☁ OpenRouter (paid) 群組,影片的 **Model** 清單加入你的影片模型;
+- 提示詞停靠窗的 **LLM** 和 **Vision** 清單多出「☁ OpenRouter · your models」。從這裡選擇一個,LLM(或 Vision LLM)就會用該模型在 OpenRouter 上執行 - Runs on 也會隨之改變。
+
+要在 OpenRouter 上產生圖片或影片,請在 Basic Settings 中勾選 **Override style** 和 **Use model**,然後選擇一個 `openrouter/…` 模型。或者把 ☁ Runs on ▸ **Image** 或 **Video** 設為 **OpenRouter**:之後所有圖片或影片都會在那裡產生,使用你最後選擇的模型(沒有則用清單中的第一個) - 該列下方會顯示模型名稱和價格。OpenRouter 不使用 Basic Settings 的 steps、CFG、sampler 或 LoRA,由模型決定。尺寸會變為模型支援的最接近的長寬比,影片長度會變為該模型提供的最接近的長度(對只做 4、6、8 秒的模型要求 5 秒 = 6 秒)。LTX 風格不能在 OpenRouter 上產生。
+
+付費產生之前,會彈出一個框顯示模型和大約的費用(例如「about $2.40 (6 s × $0.4 a second)」)- **Render** 或 **Cancel**。批次產生時可勾選「Don't ask again for 10 minutes」。免費模型直接產生,不會詢問。每次產生的費用(OpenRouter 自己的數字)在 💲 Costs ▸ OpenRouter 中,產生記錄列在 LLM 呼叫下方。
+
+OpenRouter 不再列出的模型會從你的清單中移除 - 在對話框詢問 OpenRouter 時,以及每次開啟工作室時檢查一次 - 並會提示是哪些。無法連線 OpenRouter 時不會移除任何模型。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

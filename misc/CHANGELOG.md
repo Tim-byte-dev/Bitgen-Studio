@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.786.0** — ☁ OpenRouter Models…: a Dialog of OpenRouter's Picture, Video, LLM and Vision LLM Models by Type and Family With Their Price (Free or Paid) - Double-Click Adds to Your List, 🗑 Takes Off; Your Models in the Dropdowns as openrouter/<model> (Basic Settings' Model Lists, the LLM / Vision Lists - Nothing Else Removed); Pictures and Video Made on OpenRouter With Use Model + an openrouter/ Model or Runs On ▸ Image / Video = OpenRouter, After a Box With the Price; 💲 Costs Counts Them; a Model OpenRouter No Longer Lists Leaves Your List
 - **2.785.0** — Runs On: One Dropdown per Type at the Top of the ☁ Remote Generation Docker (Image, Video, Music, Text to Speech, Speech to Text, Song Separation, LLM, Vision LLM) - Local, RunPod, OpenRouter (the LLMs for Now), LAN and Team (Greyed); Set All; the Radio Groups Gone; Pods on the Status Bar Only While a Row Is on RunPod
 - **2.784.1** — The Queue's Pending Tab Shows Only Queued and Running Generations - Finished, Failed and Cancelled Ones Are on Done (With ↻ Regenerate); the Pending Count Includes the Queued Ones
 - **2.784.0** — PODS ▸ Create Pod: Sort GPUs (Fastest / Cheapest, Remembered) Above the GPU List; Each Card Says Its Rough Speed Next to an RTX 5090 (bitGen's Own Guide for Diffusion and Video, Not a Benchmark); a Card Picked by Hand Is Kept When the Cloud Changes

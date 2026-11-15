@@ -194,7 +194,10 @@
         + '</b></span><span class="k">This month (UTC)</span><span><b>' + money(k.usage_monthly) + '</b></span><span class="k">Since the key was made</span><span><b>' + money(k.usage) + "</b></span>"
         + (k.limit != null ? '<span class="k">Limit left</span><span>' + money(k.limit_remaining) + " of " + money(k.limit) + "</span>" : "") + (k.is_free_tier ? '<span class="k">Account</span><span>free tier (no credits bought)</span>' : "") + "</div>"
         + '<div class="hint">OpenRouter\'s own figures for the API key in Settings ▸ Remote generation - every use of that key, from bitGen or not.</div>' : '<span class="hint">No OpenRouter API key in Settings ▸ Remote generation - only bitGen\'s own record below.</span>')
-        + '<h4 style="margin-top:8px">bitGen\'s calls: ' + d.own.count + " · " + money(d.own.cost) + "</h4>" + callsHtml(d.own, d.calls);
+        + '<h4 style="margin-top:8px">bitGen\'s calls: ' + d.own.count + " · " + money(d.own.cost) + "</h4>" + callsHtml(d.own, d.calls)
+        // 2.786.0: pictures / video made on OpenRouter
+        + ((d.jobs || []).length ? '<h4 style="margin-top:8px">Renders on OpenRouter: ' + d.jobs.length + "</h4>" + tbl("cdOrJobs", [["Finished"], ["Mode"], ["What"], ["Status"], ["Took", 1], ["Price", 1]],
+          d.jobs.map((j) => '<tr class="' + esc(j.status) + '"><td>' + esc(when(j.t)) + "</td><td>" + esc(j.mode) + "</td><td>" + esc(j.what) + "</td><td>" + esc(j.status) + '</td><td class="n">' + esc(durText(j.total_ms)) + '</td><td class="n">' + (j.usd != null ? money(j.usd) : "-") + "</td></tr>")) : "");
     } else if (/^api:/.test(id)) {
       el.innerHTML = "<h4>Renders</h4>" + tbl("cdApiJobs", [["Finished"], ["Mode"], ["What"], ["Status"], ["Took", 1], ["Price", 1]],
         d.jobs.map((j) => '<tr class="' + esc(j.status) + '"><td>' + esc(when(j.t)) + "</td><td>" + esc(j.mode) + "</td><td>" + esc(j.what) + "</td><td>" + esc(j.status) + '</td><td class="n">' + esc(durText(j.total_ms)) + '</td><td class="n">' + (j.usd != null ? money(j.usd) : "-") + "</td></tr>"))

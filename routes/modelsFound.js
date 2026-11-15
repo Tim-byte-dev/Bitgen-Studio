@@ -36,6 +36,11 @@ const loraList = (v) => {
 function plan(b) {
   const C = require("../lib/core"), styles = require("../lib/styles");
   const kind = ["image", "music", "video", "aiedit"].includes(b.kind) ? b.kind : "image";
+  // 2.786.0: a picture / video made on OpenRouter needs no files here (lib/orRender.js)
+  if (kind === "image" || kind === "video") {
+    const bm = kind === "image" ? String(b.model || "") : ((require("../lib/basicOverride").parse(b.basic) || {}).model || "");
+    try { if (require("../lib/orRender").modelFor(kind, bm)) return { skip: "it renders on OpenRouter - no model files here" }; } catch { /* checked here */ }
+  }
   { const sid = String(b.video_style_id || b.style_id || ""), st0 = sid ? styles.byId(C.STYLES_DIR, sid) : null;
     if (st0 && st0.runs_on === "api") return { skip: "an API_ style - the online service has its own models (Settings ▸ API)" };   // 2.757.0
     if (st0 && st0.runs_on === "pod") return { skip: "a P_ pod style - its models are on the pod" };   // 2.758.0

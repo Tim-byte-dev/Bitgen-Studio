@@ -5293,6 +5293,24 @@ Queue ドッカーの **Pending** タブには、待機中または実行中の�
 
 以前あったラジオボタン（すべてローカル / すべてリモート / Both、Remote servers、各種類の Local / Remote）はなくなりました。RunPod ▸ Pods か Serverless は引き続き Settings ▸ Remote generation で選びます。ステータスバーの **Pods** は、RunPod の行がある間だけ表示されます。
 
+## OpenRouter models: 自分のリスト、OpenRouter で画像と動画 (2.786.0)
+<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 1a449eed0c36 -->
+
+☁ Remote generation ▸ **☁ OpenRouter models…**（Runs on の下）を押すと、OpenRouter で使えるモデルのダイアログが開きます。上のタブは種類 - **Image**、**Video**、**LLM**、**Vision LLM** - で、各種類の中にファミリー（作り手: Google、OpenAI、ByteDance Seed など）ごとのタブと **All** があります。検索、**Free** / **Paid** のチェック、名前・安い順・新しい順の並べ替えができ、⟳ で OpenRouter にもう一度問い合わせます。
+
+左の枠 **Available** にはモデルと価格が並びます: 無料のものは緑、有料のものはその料金（1 枚あたり、1 メガピクセルあたり、動画 1 秒あたり、LLM は 100 万トークンあたり）。クリックすると下に詳細（長さ、サイズ、参照画像の数）が出ます。モデルを**ダブルクリック**（または Enter）すると右の **My models** に追加され、各行の最後の 🗑 で外せます。一覧を見るのにキーは不要ですが、生成にはキーが必要です（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
+
+ダイアログを閉じると、自分のモデルが `openrouter/<model>` としてドロップダウンに入ります - ほかの項目は何も消えません:
+
+- Basic Settings ▸ 画像の **Model**（チェックポイント）リストに ☁ OpenRouter (paid) のグループ、動画の **Model** リストに自分の動画モデル;
+- プロンプトドッカーの **LLM** と **Vision** リストに「☁ OpenRouter · your models」。そこから選ぶと、そのモデルで LLM（または Vision LLM）が OpenRouter で動きます - Runs on もそれに合わせて変わります。
+
+OpenRouter で画像や動画を作るには、Basic Settings で **Override style** と **Use model** にチェックを入れて `openrouter/…` のモデルを選びます。または ☁ Runs on ▸ **Image** か **Video** を **OpenRouter** にすると、画像や動画はすべてそちらで作られます。使うのは最後に選んだモデル（なければ自分のリストの最初のもの）で、その行の下の行にモデル名と価格が出ます。OpenRouter は Basic Settings の steps、CFG、sampler、LoRA を使いません - モデルが決めます。サイズはモデルが受け付ける一番近い縦横比に、動画の長さはそのモデルの一番近い長さになります（4・6・8 秒のモデルに 5 秒を頼むと 6 秒）。LTX のスタイルは OpenRouter では作れません。
+
+有料の生成の前に、モデル名とおおよその料金を示すボックスが出ます（例: 「about $2.40 (6 s × $0.4 a second)」）- **Render** か **Cancel**。まとめて作るときは「Don't ask again for 10 minutes」にチェック。無料のモデルは聞かずに作ります。各生成の料金（OpenRouter の数字）は 💲 Costs ▸ OpenRouter で、LLM の呼び出しの下に生成が並びます。
+
+OpenRouter が載せなくなったモデルは自分のリストから外れます - ダイアログが OpenRouter に問い合わせたときと、スタジオを開くたびに 1 回 - どれが外れたかはメモで知らせます。OpenRouter に届かないときは何も外れません。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

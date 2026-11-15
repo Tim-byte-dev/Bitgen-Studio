@@ -43,6 +43,8 @@
   function noteOf(k) {
     var v = S.v, h = v.hosts[k], g = S.g || {};
     if (h === "local") return "";
+    var row = (v.kinds || []).filter(function (x) { return x.k === k; })[0];
+    if (h === "openrouter" && row && row.note) return row.note;   // 2.786.0: the picture / video model on OpenRouter + its price
     if (h === "runpod" && root.H3RemoteTypes && H3RemoteTypes.noteOf && ["image", "video", "music", "tts", "stt", "stems"].indexOf(k) >= 0) return H3RemoteTypes.noteOf(g, k);
     if (k === "llm" || k === "vlm") return h === "openrouter" ? "pick the model in the prompt docker's list" : "on your pod - set up when you first send a prompt";
     return "";

@@ -40,8 +40,9 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
     check("the old radio groups are gone from sight (All local / All remote / Both, Remote servers, each type's Local / Remote, the LLM rows)",
       !(await vis("#gpuWhere")) && !(await vis('input[name="gpuProv"]')) && !(await vis('input[name="rt_image"]')) && !(await vis('input[name="rp_llm"]')) && !(await vis('#gpuLlmWhere .rpRow')));
     const opt = await ev(() => { const o = (k) => [...document.querySelector('#rhGrid select[data-rhkind="' + k + '"]').options].map((x) => (x.disabled ? "-" : "+") + x.value); return { image: o("image"), llm: o("llm"), stems: o("stems") }; });
-    check("Local / RunPod / OpenRouter / LAN / Team; LAN + Team greyed everywhere, OpenRouter greyed on Image (next release) and Song separation, open on the LLM",
-      opt.image.join() === "+local,+runpod,-openrouter,-lan,-team" && opt.llm.join() === "+local,+runpod,+openrouter,-lan,-team" && opt.stems.join() === "+local,+runpod,-openrouter,-lan,-team", opt);
+    // 2.786.0: OpenRouter makes pictures + video (lib/orRender.js) - open on Image now
+    check("Local / RunPod / OpenRouter / LAN / Team; LAN + Team greyed everywhere, OpenRouter greyed on Song separation, open on Image and the LLM",
+      opt.image.join() === "+local,+runpod,+openrouter,-lan,-team" && opt.llm.join() === "+local,+runpod,+openrouter,-lan,-team" && opt.stems.join() === "+local,+runpod,-openrouter,-lan,-team", opt);
     check("everything Local: no Pods button", !(await vis("#tPods")));
 
     await p.selectOption('#rhGrid select[data-rhkind="image"]', "runpod"); await sleep(1800);

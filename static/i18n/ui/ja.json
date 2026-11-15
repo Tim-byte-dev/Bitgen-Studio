@@ -1,8 +1,8 @@
 {
  "lang": "ja",
  "v": "1cdef9262a7c",
- "count": 9436,
- "patternCount": 1145,
+ "count": 9453,
+ "patternCount": 1160,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
   "(the API key first)": "（先に API キーを）",
@@ -9439,7 +9439,24 @@
   "⚙ Settings ▸ Remote generation": "⚙ 設定 ▸ リモート生成",
   "🕺 Motion": "🕺 モーション",
   "🕺 Motion in the preview bar: a video of a person becomes 3D motion - an animated skeleton (.fbx) and SMPL-H (.npz) in the project's models3d, for the timeline's 3D layers, Blender, Daz or Unreal. ⚠ NON-COMMERCIAL USE ONLY: it needs the SMPL-H body model and Meta's SAM 3D Body / VGGT-Omega, whose licences forbid commercial use": "プレビューバーの 🕺 モーション：人が映った動画を 3D の動きに - アニメーション付きのスケルトン（.fbx）と SMPL-H（.npz）をプロジェクトの models3d に。タイムラインの 3D レイヤー、Blender、Daz、Unreal で使えます。⚠ 非営利目的のみ：SMPL-H ボディモデルと Meta の SAM 3D Body / VGGT-Omega が必要で、それらのライセンスは商用利用を禁じています",
-  "🧠 LLM": "🧠 LLM"
+  "🧠 LLM": "🧠 LLM",
+  "Don't ask again for 10 minutes": "10 分間は再確認しない",
+  "Free first, by name": "無料を先に、名前順",
+  "Newest first": "新しい順",
+  "Available": "利用可能",
+  "Double-click a model (or Enter) to add it to yours": "モデルをダブルクリック（または Enter）で自分のリストに追加",
+  "My models": "自分のモデル",
+  "In the dropdowns as openrouter/": "ドロップダウンでは openrouter/",
+  "Close - the dropdowns get your list": "閉じる - ドロップダウンに自分のリストが入ります",
+  "Search models": "モデルを検索",
+  "Ask OpenRouter again": "OpenRouter にもう一度問い合わせる",
+  "Nothing matches": "一致するものはありません",
+  "In your models": "自分のモデルにあります",
+  "None yet - double-click a model on the left": "まだありません - 左のモデルをダブルクリック",
+  "openrouter/": "openrouter/",
+  "Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter": "一覧表示にキーは不要、生成には必要です: ⚙ Settings ▸ Remote generation ▸ OpenRouter",
+  "Pick the OpenRouter models you use - pictures, video, LLM, vision LLM (free and paid)": "使う OpenRouter のモデルを選ぶ - 画像、動画、LLM、Vision LLM（無料と有料）",
+  "Renders on OpenRouter": "OpenRouter での生成"
  },
  "patterns": {
   "0 pairs - this job learns from them ({0})": "0 ペア - このジョブはこれらから学習します（{0}）",
@@ -10586,6 +10603,21 @@
   "{0}×{1} → about {2}×{3} (×{4}) · frame generation {5}": "{0}×{1} → 約 {2}×{3}（×{4}） · フレーム生成 {5}",
   "{0}×{1} → {2}×{3} (RelayVSR {4})": "{0}×{1} → {2}×{3}（RelayVSR {4}）",
   "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6}": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}",
-  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（端をトリミング）"
+  "{0}×{1} → {2}×{3} (RelayVSR {4}) → {5}×{6} (edges trimmed)": "{0}×{1} → {2}×{3}（RelayVSR {4}）→ {5}×{6}（端をトリミング）",
+  "OpenRouter did not answer - {0}": "OpenRouter から応答がありません - {0}",
+  "lengths {0} s": "長さ {0} 秒",
+  "aspect {0}": "縦横比 {0}",
+  "up to {0} reference picture": "参照画像 {0} 枚まで",
+  "up to {0} reference pictures": "参照画像 {0} 枚まで",
+  "{0}k context": "コンテキスト {0}k",
+  "{0} - free · {1}. {2}": "{0} - 無料 · {1}。{2}",
+  "{0} - free · {1}": "{0} - 無料 · {1}",
+  "{0} - free. {1}": "{0} - 無料。{1}",
+  "{0} - free": "{0} - 無料",
+  "{0} - paid · {1}. {2}": "{0} - 有料 · {1}。{2}",
+  "{0} - paid · {1}": "{0} - 有料 · {1}",
+  "{0} - paid. {1}": "{0} - 有料。{1}",
+  "{0} - paid": "{0} - 有料",
+  "Renders on OpenRouter: {0}": "OpenRouter での生成: {0}"
  }
 }

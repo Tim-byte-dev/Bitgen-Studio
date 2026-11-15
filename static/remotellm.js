@@ -25,13 +25,15 @@
   function optionsOf(L, q, per) {
     var x = L || {}, all = x.models || [], n = per || 10;
     var ms = all.filter(function (m) { return matches(m, q); });
-    var shown = ms.slice(0, n);
+    // 2.786.0: your OpenRouter models (★, lib/orModels.js) are always shown - the first `per` of the rest after them
+    var mine = ms.filter(function (m) { return m.mine; }), rest = ms.filter(function (m) { return !m.mine; });
+    var shown = mine.concat(rest.slice(0, n));
     var cur = all.find ? all.find(function (m) { return m.id === x.current; }) : null;
     if (cur && shown.indexOf(cur) < 0) shown.unshift(cur);
     var label = x.host === "openrouter" ? "☁ OpenRouter" : "☁ " + (x.label || x.host || "remote");
     var items = shown.map(function (m) { return { value: m.id, text: (m.name || m.id) + (m.note ? " · " + m.note : ""), selected: m.id === x.current }; });
     var empty = x.error ? "(" + x.label + " did not list its models - " + x.error + ")" : !all.length ? "(no models " + (x.label || "") + " lists)" : !ms.length ? "(nothing matches \"" + q + "\")" : "";
-    return { label: label, items: items, empty: empty, more: Math.max(0, ms.length - Math.min(ms.length, n)) };
+    return { label: label, items: items, empty: empty, more: Math.max(0, rest.length - Math.min(rest.length, n)) };
   }
   /** the Show all list (pure): filters {q, free, paid, vision} and a sort - name | price | context | newest */
   function listOf(models, f, by) {

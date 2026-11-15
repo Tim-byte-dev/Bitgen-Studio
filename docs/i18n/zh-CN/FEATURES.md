@@ -430,6 +430,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Create pod 的 GPU 列表排序:最快 / 最便宜** — PODS ▸ Create pod 的 GPU 列表上方有 GPU 排序(默认最便宜,会记住);每张卡显示与 RTX 5090 相比的大致速度(bitGen 针对扩散和视频渲染的粗略参考,不是基准测试);换一种排序会选中该顺序中第一张有 20 GB 以上的空闲卡。 *Where:* PODS。 *Since:* 2.784.0
 - **Queue 的 Pending 标签只显示尚未完成的** — 排队中和运行中的生成在 Pending;已完成、失败和取消的在 Done(可用 ↻ 重新生成);Pending 的数量包括排队中的。 *Where:* Queue。 *Since:* 2.784.1
 - **Runs on:每种类型一个下拉框** — ☁ Remote generation 停靠窗最上方有 Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM 的下拉框:Local、RunPod(你的 Pod)、OpenRouter(目前仅 LLM)、LAN 和 Team(可用前显示为灰色);全部设置可一次更改所有行;单选按钮已移除;只有某行为 RunPod 时状态栏才显示 Pods。 *Where:* ☁ Remote generation、状态栏。 *Since:* 2.785.0
+- **OpenRouter models;在 OpenRouter 上生成图片和视频** — ☁ Remote generation ▸ OpenRouter models… 按系列列出 OpenRouter 的图片、视频、LLM 和 Vision LLM 模型及价格(免费或付费);双击即可加入你的列表(🗑 移除);你的模型以 openrouter/<model> 出现在 Basic Settings 的 Model 列表和提示词停靠窗的 LLM / Vision 列表中(其他条目保留);Use model + openrouter/ 模型,或 Runs on ▸ Image / Video = OpenRouter,会在显示价格的对话框之后在 OpenRouter 上生成图片或视频;💲 Costs 会统计它们;OpenRouter 不再列出的模型会离开你的列表。 *Where:* ☁ Remote generation、Basic Settings、提示词停靠窗。 *Since:* 2.786.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

@@ -3566,6 +3566,9 @@
 <script src="/static/remoteprep.js"></script>  <!-- 2.767.0: Basic Settings ▸ GPU - LLM / Vision LLM: Local, OpenRouter or RunPod; remote mode prepares them and the video style (H3RemotePrep - routes/remotePrep.js) -->
 <script src="/static/remotetypes.js"></script>  <!-- 2.776.0: the ☁ Remote generation docker in sections - Image / Video / Music, LLMs, Audio each Local / Remote (H3RemoteTypes) -->
 <script src="/static/remotehosts.js"></script>  <!-- 2.785.0: "Runs on" - one dropdown per type at the top of the ☁ Remote generation docker (H3RemoteHosts - lib/remoteHosts.js) -->
+<script src="/static/ormine.js"></script>  <!-- 2.786.0: your OpenRouter models as "openrouter/<id>" in Basic Settings' Model lists + the LLM / Vision lists (H3OrMine - lib/orModels.js); before remotellm.js (its change listener first) -->
+<script src="/static/ormodels.js"></script>  <!-- 2.786.0: ☁ Remote generation ▸ OpenRouter models… - the dialog: types x families, Available | My models (H3OrModels - routes/orModels.js) -->
+<script src="/static/orcost.js"></script>  <!-- 2.786.0: the price before a paid OpenRouter render - Render / Cancel (H3OrCost - POST /api/ormodels/check) -->
 <script src="/static/remotellm.js"></script>  <!-- 2.768.0: remote mode - the prompt docker's LLM / Vision lists are the host's models (H3RemoteLlm - routes/remoteLlm.js) -->
 <script src="/static/llmrepos.js"></script>  <!-- 2.782.0: your LLMs from Hugging Face for your pod - the dialog from the LLM / Vision list's ＋ (H3LlmRepos - routes/llmRepos.js) -->
 <script src="/static/bugreport.js"></script>  <!-- 2.522.0: 🐞 the Bug report docker, Ctrl+Alt+Shift+B (H3BugReport - lib/bugReport.js) -->
@@ -7436,9 +7439,12 @@ function cmCombo(host, inp, cats, opts) {
       const label = multi ? `${f.category}/${f.name}` : f.name;
       return `<option value="${esc(f.name)}">${esc(label)}</option>`;
     }).join("");
+    // 2.786.0: your OpenRouter picture models as "openrouter/<id>" in Basic Settings' checkpoint (static/ormine.js)
+    const orx = window.H3OrMine && H3OrMine.comboExtra ? H3OrMine.comboExtra(inp.id, cur) : null;
+    if (orx) html += orx.html;
     // The stored value survives even when the filter hides it or the file is
     // gone — otherwise selecting a folder would silently blank the field.
-    if (cur && !files.some(f => f.name === cur)) {
+    if (cur && !files.some(f => f.name === cur) && !(orx && orx.has)) {
       const known = cmFiles(cats).some(f => f.name === cur);
       html += `<option value="${esc(cur)}" class="${known ? "" : "missing"}">`
         + `${esc(cur)}${known ? " (hidden by the folder filter)" : " — not found"}</option>`;

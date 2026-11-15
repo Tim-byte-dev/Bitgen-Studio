@@ -13,8 +13,9 @@ const H = require("../lib/remoteHosts");
 const ids = (k) => H.optionsFor(k).map((o) => (o.off ? "-" : "+") + o.id).join();
 check("eight kinds: Image, Video, Music, Text to speech, Speech to text, Song separation, LLM, Vision LLM", H.KINDS.map((x) => x[0]).join() === "image,video,music,tts,stt,stems,llm,vlm");
 check("hosts: Local, RunPod, OpenRouter, LAN, Team - LAN and Team greyed on every kind", H.KINDS.every(([k]) => /-lan,-team$/.test(ids(k))));
-check("OpenRouter open on the LLM / Vision LLM, greyed on pictures / video (next release) and speech / transcripts / stems / music", ids("llm") === "+local,+runpod,+openrouter,-lan,-team" && ids("vlm") === ids("llm")
-  && ids("image") === "+local,+runpod,-openrouter,-lan,-team" && /next release/.test(H.optionsFor("video").find((o) => o.id === "openrouter").why) && /does not run/.test(H.optionsFor("stems").find((o) => o.id === "openrouter").why));
+// 2.786.0: OpenRouter makes pictures + video now (lib/orRender.js) - still greyed on speech / transcripts / stems / music
+check("OpenRouter open on the LLM / Vision LLM / pictures / video, greyed on speech / transcripts / stems / music", ids("llm") === "+local,+runpod,+openrouter,-lan,-team" && ids("vlm") === ids("llm")
+  && ids("image") === "+local,+runpod,+openrouter,-lan,-team" && ids("video") === ids("image") && /does not run/.test(H.optionsFor("stems").find((o) => o.id === "openrouter").why));
 const per = { where: "both", per: true, image: true, video: false, music: false, tts: true, stt: false, stems: false };
 let h = H.hostsOf({ mode: "runpod" }, per, { provider: "runpod", pods: true }, (k) => (k === "llm" ? "openrouter" : ""));
 check("hostsOf: per-type remote = RunPod, the rest Local; the LLM's platform as it is", h.image === "runpod" && h.tts === "runpod" && h.video === "local" && h.llm === "openrouter" && h.vlm === "local", h);

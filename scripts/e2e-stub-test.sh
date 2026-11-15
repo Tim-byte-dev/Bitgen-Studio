@@ -13940,6 +13940,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui671-ui.js > /tmp/ui671ui.log 2
   && ok "2.671.0 browser test: the roof's Gutters + Gutter profile pictures, OG picked, ✎ Gutter profiles… = the editor for a gutter (Convert to curve, double-click a node), Save = the roof's own gutter with its curves - or SKIP without playwright" \
   || { bad "2.671.0 gutter profile browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui671ui.log | head -14; }
 
+# ---- 2.786.0 (Tim: "Add an openrouter button to remote generation docker to select models to use, show dialog with free and paid models and tabs for each type ... if use model is selected and an openrouter model is selected use openrouter") - LAST: its renders would be counted by the 2.771.0 statistics leg
+node scripts/test-ormodels786.js > /tmp/ormodels786.log 2>&1 \
+  && ok "2.786.0 OpenRouter units: families, prices (per picture / megapixel / second / tokens), your list pruned, lengths + aspects snapped, the estimate, the job's style + key, Runs on Image / Video = OpenRouter, the page's lists" \
+  || { bad "2.786.0 OpenRouter units"; grep -a "^FAIL" -A1 /tmp/ormodels786.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui786-ui.js > /tmp/ui786ui.log 2>&1 \
+  && ok "2.786.0 browser test: ☁ OpenRouter models… - type + family tabs, prices, double-click adds / 🗑, the dropdowns get openrouter/<id>; a picture + a video rendered on OpenRouter after the price box, Costs, the LLM pick, a gone model taken off - or SKIP" \
+  || { bad "2.786.0 OpenRouter browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui786ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
