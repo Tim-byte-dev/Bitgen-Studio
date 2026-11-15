@@ -98,7 +98,7 @@
     if (el.classList.contains("collapsed") && typeof root.toggleCollapse === "function") root.toggleCollapse(id);
     setTimeout(function () { flash(el); }, 80);
   }
-  var SIDES = { ldock: ["tL", "no-left", "Left dock (Settings, system)"], refsdock: ["tRefs", "no-refs", "References"], assetsdock: ["tAssets", "no-assets", "Assets"], qdock: ["tQ", "no-queue", "Queue"], rdock: ["tR", "no-right", "Gallery"] };
+  var SIDES = { ldock: ["tL", "no-left", "System dock (left - project, system stats, Basic Settings)"], refsdock: ["tRefs", "no-refs", "References"], assetsdock: ["tAssets", "no-assets", "Assets"], qdock: ["tQ", "no-queue", "Queue"], rdock: ["tR", "no-right", "Gallery"] };
   function openSettings(tab, el) {
     var dlg = $("settings"); if (!dlg) return;
     if (root.H3TestEvent) root.H3TestEvent("palette_settings", tab);

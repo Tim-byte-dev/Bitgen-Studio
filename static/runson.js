@@ -24,9 +24,9 @@
     var lab = doc.createElement("label"); lab.className = "f"; lab.textContent = "Runs on"; box.appendChild(lab);
     var row = doc.createElement("div"); row.setAttribute("role", "radiogroup"); row.setAttribute("aria-label", "Runs on");
     row.style.cssText = "display:flex;gap:12px;flex-wrap:wrap;align-items:center";
-    [["local", "This computer", "Renders with the models on this computer"], ["remote", "Remote GPU", "Renders on the remote GPU (Basic Settings ▸ GPU) - its models must be there; the name starts with R_"],
+    [["local", "This computer", "Renders with the models on this computer"], ["remote", "Remote GPU", "Renders on the remote GPU (☁ Remote generation) - its models must be there; the name starts with R_"],
      ["api", "API", "Renders on an online service from Settings ▸ API - no graphics card needed here; the name starts with API_"],
-     ["pod", "RunPod pod", "Renders on a RunPod pod with the models already on it (Basic Settings ▸ GPU ▸ RunPod ▸ Pods); the name starts with P_"]].forEach(function (o) {
+     ["pod", "RunPod pod", "Renders on a RunPod pod with the models already on it (Settings ▸ Remote generation ▸ RunPod ▸ Pods); the name starts with P_"]].forEach(function (o) {
       var l = doc.createElement("label"); l.className = "chk"; l.style.margin = "0"; l.title = o[2];
       var i = doc.createElement("input"); i.type = "radio"; i.name = "s_" + p + "runson"; i.value = o[0];
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); row.appendChild(l);

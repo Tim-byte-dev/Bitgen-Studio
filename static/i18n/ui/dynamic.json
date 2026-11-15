@@ -1,5 +1,5 @@
 {
- "made": "2026-11-14",
+ "made": "2026-11-15",
  "scope": "all",
  "strings": [
   {
@@ -2879,48 +2879,56 @@
    "src": "static/framesize.js:26"
   },
   {
-   "s": "Local",
-   "src": "static/gpusplit.js:53"
+   "s": "All local",
+   "src": "static/gpusplit.js:60"
   },
   {
-   "s": "Remote",
-   "src": "static/gpusplit.js:53"
+   "s": "All remote",
+   "src": "static/gpusplit.js:60"
   },
   {
    "s": "Both",
-   "src": "static/gpusplit.js:53"
+   "src": "static/gpusplit.js:60"
   },
   {
    "s": "Vision LLM",
-   "src": "static/gpusplit.js:58"
+   "src": "static/gpusplit.js:65"
   },
   {
    "s": "Image",
-   "src": "static/gpusplit.js:59"
-  },
-  {
-   "s": "Video + songs",
-   "src": "static/gpusplit.js:59"
-  },
-  {
-   "s": "Remote servers",
    "src": "static/gpusplit.js:66"
   },
   {
+   "s": "Video + songs",
+   "src": "static/gpusplit.js:66"
+  },
+  {
+   "s": "Remote servers",
+   "src": "static/gpusplit.js:73"
+  },
+  {
    "s": "Every job runs on this computer",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "s": "Remote needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "s": "Both needs somewhere to render first: pick RunPod ▸ Pods in ⚙ Settings ▸ Remote generation (your own pod - the PODS docker) or set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "s": "No remote GPU set up - everything runs on this computer. Set one up in Settings ▸ Remote generation",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
+  },
+  {
+   "s": "Remote",
+   "src": "static/gpusplit.js:130"
+  },
+  {
+   "s": "Local",
+   "src": "static/gpusplit.js:130"
   },
   {
    "s": "Import a ComfyUI workflow - bitGen checks it, test-runs it and saves it when it works",
@@ -5359,7 +5367,7 @@
    "src": "static/openrouter.js:32"
   },
   {
-   "s": "Basic Settings ▸ GPU decides when they are used: Both with LLM / Vision LLM ticked, or Remote. It works without a remote GPU - pictures, videos and songs still render here",
+   "s": "The ☁ Remote generation docker decides when they are used: LLM / Vision LLM on Remote, or All remote. It works without a remote GPU - pictures, videos and songs still render here",
    "src": "static/openrouter.js:32"
   },
   {
@@ -5912,23 +5920,23 @@
   },
   {
    "s": "asking the pod how busy it is",
-   "src": "static/podsdock.js:489"
+   "src": "static/podsdock.js:491"
   },
   {
    "s": "no figures from the pod yet",
-   "src": "static/podsdock.js:501"
+   "src": "static/podsdock.js:503"
   },
   {
    "s": "Cancel the render",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "s": "Do not render it now",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "s": "A render of",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "s": "What this pod is for",
@@ -6292,43 +6300,35 @@
   },
   {
    "s": "Use remote generation",
-   "src": "static/remotedock.js:38"
+   "src": "static/remotedock.js:45"
   },
   {
-   "s": "Render, or run the LLM, somewhere else: a RunPod GPU, OpenRouter or another computer. Off: everything runs on this computer, and Basic Settings ▸ GPU is hidden",
-   "src": "static/remotedock.js:38"
-  },
-  {
-   "s": "Show / hide the Remote generation docker: your pods, pod shortcuts and where the work runs",
-   "src": "static/remotedock.js:69"
-  },
-  {
-   "s": "Remote generation docker",
-   "src": "static/remotedock.js:70"
-  },
-  {
-   "s": "PODS docker",
-   "src": "static/remotedock.js:85"
-  },
-  {
-   "s": "Settings ▸ Remote generation",
-   "src": "static/remotedock.js:85"
-  },
-  {
-   "s": "Your RunPod pods, the templates and the ★ shortcuts",
-   "src": "static/remotedock.js:85"
+   "s": "Render, or run the LLM, somewhere else: a RunPod GPU, OpenRouter or another computer. Off: everything runs on this computer, and the Remote / Pods buttons on the status bar are hidden",
+   "src": "static/remotedock.js:45"
   },
   {
    "s": "Where the work runs",
-   "src": "static/remotedock.js:108"
+   "src": "static/remotedock.js:76"
+  },
+  {
+   "s": "PODS docker",
+   "src": "static/remotedock.js:76"
+  },
+  {
+   "s": "Settings ▸ Remote generation",
+   "src": "static/remotedock.js:76"
+  },
+  {
+   "s": "Your RunPod pods, the templates and the ★ shortcuts",
+   "src": "static/remotedock.js:76"
   },
   {
    "s": "Remote GPU",
-   "src": "static/remotedock.js:108"
+   "src": "static/remotedock.js:100"
   },
   {
    "s": "Remote generation",
-   "src": "static/remotedock.js:129"
+   "src": "static/remotedock.js:126"
   },
   {
    "s": "Render with",
@@ -6463,7 +6463,7 @@
    "src": "static/remotegpu.js:35"
   },
   {
-   "s": "Basic Settings ▸ GPU decides when they are used: Remote, or Both with LLM / Vision LLM ticked",
+   "s": "The ☁ Remote generation docker decides when they are used: LLM / Vision LLM on Remote, or All remote",
    "src": "static/remotegpu.js:35"
   },
   {
@@ -6708,34 +6708,42 @@
   },
   {
    "s": "on OpenRouter - pick its model in the prompt docker's list",
-   "src": "static/remoteprep.js:72"
+   "src": "static/remoteprep.js:74"
   },
   {
    "s": "System · this computer",
-   "src": "static/remotestats.js:31"
+   "src": "static/remotestats.js:34"
+  },
+  {
+   "s": "RAM",
+   "src": "static/remotestats.js:50"
+  },
+  {
+   "s": "the pod's figures (its Jupyter)",
+   "src": "static/remotestats.js:86"
   },
   {
    "s": "Disks",
-   "src": "static/remotestats.js:65"
+   "src": "static/remotestats.js:98"
   },
   {
    "s": "On this computer",
-   "src": "static/remotetypes.js:61"
+   "src": "static/remotetypes.js:64"
   },
   {
    "s": "On the remote GPU / your pod",
-   "src": "static/remotetypes.js:62"
+   "src": "static/remotetypes.js:65"
   },
   {
    "s": "Generation",
-   "src": "static/remotetypes.js:79"
+   "src": "static/remotetypes.js:82"
   },
   {
    "s": "Language models",
-   "src": "static/remotetypes.js:80"
+   "src": "static/remotetypes.js:83"
   },
   {
-   "s": "No remote styles: Basic Settings ▸ GPU is on Remote - set it to Local, or a style's Runs on to Remote GPU",
+   "s": "No remote styles: Remote generation is on All remote - set it to Local, or a style's Runs on to Remote GPU",
    "src": "static/rpstyles.js:57"
   },
   {
@@ -24210,23 +24218,23 @@
   },
   {
    "p": "{0} - set up Settings ▸ Remote generation ▸ 🧠 LLM first",
-   "src": "static/gpusplit.js:108"
+   "src": "static/gpusplit.js:115"
   },
   {
    "p": "No remote GPU - pictures, videos and songs render on this computer · LLM: {0} · Vision LLM: {1}",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "p": "R_ styles: {0} · other styles: this computer · no style - Image: {1} · Video + songs: {2} · LLM: {3} · Vision LLM: {4}",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "p": "Remote styles (R_) only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "p": "Styles for this computer only · Image: {0} · Video + songs: {1} · LLM: {2} · Vision LLM: {3}",
-   "src": "static/gpusplit.js:113"
+   "src": "static/gpusplit.js:120"
   },
   {
    "p": "{0} takes {1} · saves: {2}",
@@ -24762,31 +24770,31 @@
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:450"
+   "src": "static/podsdock.js:452"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:466"
+   "src": "static/podsdock.js:468"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:467"
+   "src": "static/podsdock.js:469"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:476"
+   "src": "static/podsdock.js:478"
   },
   {
    "p": "The pod {0} ({1}) is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "p": "is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for {0} on one of yours",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "p": "The pod {0} is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:573"
+   "src": "static/podsdock.js:575"
   },
   {
    "p": "{0} running",
@@ -25033,11 +25041,11 @@
    "src": "static/remoteui.js:71"
   },
   {
-   "p": "{0} remote styles hidden: Basic Settings ▸ GPU is on Local",
+   "p": "{0} remote styles hidden: Remote generation is on All local",
    "src": "static/rpstyles.js:57"
   },
   {
-   "p": "{0} styles hidden: Basic Settings ▸ GPU is on Remote - only the remote styles it can render show",
+   "p": "{0} styles hidden: Remote generation is on All remote - only the remote styles it can render show",
    "src": "static/rpstyles.js:57"
   },
   {

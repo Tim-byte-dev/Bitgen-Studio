@@ -115,7 +115,7 @@ const GS = require("../lib/genStats");
   check("…RunPod's list keeps its Balance / Usage / GPU prices and gains By day", /id="rpBal"/.test(rp) && /id="rpUse"/.test(rp) && /id="rpGpus"/.test(rp) && /id="rpDays"/.test(rp));
   check("…📊 Statistics opens the Statistics dialog with the docker's range", /H3Stats\.show\(true, \{ range: S\.range \}\)/.test(rp));
   check("…the RunPod buttons open RunPod's list, the others all costs", /show\(undefined, "runpod"\)/.test(rp) && /H3RunPod\.show\(true, "runpod"\)/.test(src("static/podsdock.js")) && /H3RunPod\.show\(true, ""\)/.test(src("static/powerstats.js")) && /id = "s_costs"/.test(rp));
-  check("picking Local no longer closes 💲 Costs (this computer's costs are in it)", /\["rgen", "pods"\]\.forEach/.test(src("static/gpusplit.js")));
+  check("picking Local no longer closes 💲 Costs (this computer's costs are in it)", /\["pods"\]\.forEach/.test(src("static/gpusplit.js")));
   check("routes/costs.js mounted from routes/index.js (not server.js)", /require\("\.\/costs"\)\.mount\(app\)/.test(src("routes/index.js")) && !/costs/.test(src("misc/server.js")));
   check("the LLM answers are kept by llmChat / captioner / quickPrompt", ["lib/llmChat.js", "lib/captioner.js", "lib/quickPrompt.js"].every((f) => /require\("\.\/costs"\)\.noteLlm\(remote, /.test(src(f))));
 

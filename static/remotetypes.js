@@ -11,7 +11,7 @@
  *   The old Both boxes are hidden - the rows replace them. Each section is a .rtSec with its heading .rtSecH; their look is
  *   the theme's: --rt-sec-bg, --rt-sec-border, --rt-sec-radius, --rt-sec-head (a theme sets them; edit theme mode styles any
  *   section like any other element). Rows are a grid - the names, Local and Remote line up in columns.
- * Pure (Node: scripts/test-remotetypes776.js): ROWS, rowsOf, noteOf.
+ * Pure (Node: scripts/test-remotetypes776.js, test-system783.js): ROWS, rowsOf, noteOf, rowBody.
  */
 (function (root) {
   "use strict";
@@ -34,7 +34,10 @@
     }
     return o.remote ? "on " + o.remote.label : pods ? "on its style's pod" : "✗ no remote GPU set up";
   }
-  var pure = { ROWS: ROWS, rowsOf: rowsOf, noteOf: noteOf };
+  /** 2.783.0: the body a row sends (pure) - one row put back to Local while All remote is picked = Both (the radio group at the
+   *  docker's top follows: some here, some remote) */
+  function rowBody(where, k, remote) { var b = { per: true }; b[k] = !!remote; if (where === "remote" && !remote) b.where = "both"; return b; }
+  var pure = { ROWS: ROWS, rowsOf: rowsOf, noteOf: noteOf, rowBody: rowBody };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
 
   var doc = root.document, S = { v: null };
@@ -66,7 +69,7 @@
     return g;
   }
   function choose(k, remote) {
-    var b = { per: true }; b[k] = remote;
+    var b = rowBody(S.v && S.v.where, k, remote);
     root.fetch("/api/gpusplit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
       .then(function (r) { return r.json(); }).then(function (v) { if (v && !v.error) { S.v = v; paint(); try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } } });
   }

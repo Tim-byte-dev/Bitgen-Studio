@@ -36,7 +36,14 @@
    * the Both boxes, the LLM / Vision LLM rows - static/remoteprep.js, 🖥 PODS, 💲 RunPod) are built in #gpuRemoteOpts, which
    * static/remotedock.js moves into the ☁ Remote generation docker. hostOf(): where the other scripts add their part. */
   var OPTS = "gpuRemoteOpts";
-  var pure = { isReady: isReady, localView: localView, LOCAL_HIDE: LOCAL_HIDE, OPTS: OPTS };
+  /** 2.783.0: what each choice saves (pure) - All remote = every type Remote; Both = the per-type rows decide */
+  var TYPES_ALL = ["image", "video", "music", "tts", "stt", "stems"];
+  function bodyOf(w) {
+    if (w === "remote") { var b = { where: "remote", per: true }; TYPES_ALL.forEach(function (k) { b[k] = true; }); return b; }
+    if (w === "both") return { where: "both", per: true };
+    return { where: "local" };
+  }
+  var pure = { isReady: isReady, localView: localView, LOCAL_HIDE: LOCAL_HIDE, OPTS: OPTS, bodyOf: bodyOf, TYPES_ALL: TYPES_ALL };
   if (typeof module === "object" && module.exports && !root.document) { module.exports = pure; return; }
   var doc = root.document, S = { v: null, pick: null };
   function $(id) { return doc.getElementById(id); }
@@ -50,7 +57,7 @@
         + "#rgdBody #gpuSetup,#rgdBody #gpuPods{display:none!important}#" + OPTS + "{display:flex;flex-direction:column;gap:2px}#" + OPTS + " .rgOptBtns{display:flex;flex-wrap:wrap;gap:4px}";
       doc.head.appendChild(st); }
     var g = el("div", { id: "gpuWhere", role: "radiogroup", "aria-label": "Where the work runs", style: "display:flex;gap:12px;flex-wrap:wrap" });
-    [["local", "Local", "Every job on this computer (the default)"], ["remote", "Remote", "Every job on the remote GPU set up in Settings ▸ Remote generation"], ["both", "Both", "Pick what runs on the remote GPU - the rest runs on this computer"]].forEach(function (o) {
+    [["local", "All local", "Everything on this computer (the default)"], ["remote", "All remote", "Everything on the remote GPU / your pod - pictures, video, music, speech, transcripts, song separation and the LLMs"], ["both", "Both", "Pick below what runs remotely - the rest runs on this computer"]].forEach(function (o) {
       var l = el("label", { class: "chk", title: o[2], style: "margin:0" }), i = el("input", { type: "radio", name: "gpuWhere", value: o[0] });
       l.appendChild(i); l.appendChild(doc.createTextNode(" " + o[1])); g.appendChild(l);
     });
@@ -127,19 +134,26 @@
     var v = S.v || {};
     if (w !== "local" && !isReady(w, v)) { S.pick = w; $("gpuMsg").textContent = ""; paint(); showOpts(); return Promise.resolve(null); }
     S.pick = null;
-    return save({ where: w }).then(function (r) { if (w === "local" && r && !r.error) closeRemote(); return r; });
+    return save(bodyOf(w)).then(function (r) { if (r && !r.error) { if (w === "local") closeRemote(); if (w === "remote") llmAll("remote"); } return r; });
+  }
+  /** 2.783.0: All remote = the LLM / Vision LLM rows Remote too (static/remoteprep.js's rows; their own route) */
+  function llmAll(where) {
+    var o = { llm: where, vlm: where };
+    ["videoStyleSel", "styleSel", "genModeSel", "llmSel"].forEach(function (id) { var e = $(id); if (e) o[{ videoStyleSel: "video_style_id", styleSel: "image_style_id", genModeSel: "gen_mode", llmSel: "llm_file" }[id]] = e.value; });
+    return post("/api/remoteprep/where", o).then(function () { try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } }).catch(function () { /* fine */ });
   }
   /** 2.768.0: the remote options are in the ☁ Remote generation docker - it opens when Remote / Both waits for a set-up */
   function showOpts() { try { if (root.H3RemoteDock && H3RemoteDock.show) H3RemoteDock.show(true); } catch (e) { /* fine */ } }
   /** where a remote option goes (static/podsdock.js, runpoddock.js, remoteprep.js) */
   function hostOf() { return $(OPTS) || $("sec-gpu"); }
   /** the engine picked while Remote / Both waits: saved as soon as it can be */
-  function waiting(v) { if (S.pick && v && !v.error && isReady(S.pick, v)) { var w = S.pick; S.pick = null; return save({ where: w }); } return v; }
-  /** Local picked: the remote dockers close (their buttons are hidden now) - 2.771.0: not 💲 Costs (this computer's costs are
+  function waiting(v) { if (S.pick && v && !v.error && isReady(S.pick, v)) { var w = S.pick; S.pick = null; return save(bodyOf(w)).then(function (r) { if (w === "remote" && r && !r.error) llmAll("remote"); return r; }); } return v; }
+  /** Local picked: 🖥 PODS closes (their buttons are hidden now) - 2.771.0: not 💲 Costs (this computer's costs are
    *  in it too) */
   function closeRemote() {
     if (!(root.SecFloat && SecFloat.windows)) return;
-    ["rgen", "pods"].forEach(function (id) { if (SecFloat.windows[id] && (SecFloat.state(id) || {}).shown) SecFloat.show(id, false); });
+    // 2.783.0: not ☁ Remote generation - All local is picked in it
+    ["pods"].forEach(function (id) { if (SecFloat.windows[id] && (SecFloat.state(id) || {}).shown) SecFloat.show(id, false); });
   }
   function load() {
     return root.fetch("/api/gpusplit").then(function (r) { return r.json(); }).then(function (v) { if (v && v.where) { S.v = v; paint(); } return v; }).catch(function () { /* offline */ });

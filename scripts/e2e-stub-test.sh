@@ -13173,6 +13173,10 @@ python3 scripts/test-combo7811.py > /tmp/combo7811.log 2>&1 \
 node scripts/test-podfiles7812-py.js > /tmp/podfiles7812py.log 2>&1 \
   && ok "2.781.2 a pod's model files listed / deleted by the pod's own Python (links only unlinked, nothing outside models), the GPU memory flag chosen (24 GB+, the ComfyUI knows it), ComfyUI's time + loading lines in the render log" \
   || { bad "2.781.2 pod files / GPU memory / load report"; grep -a "FAIL" -A2 /tmp/podfiles7812py.log | head -14; }
+# ---- 2.782.3 + 2.783.0 (Tim: "...if pod is running, just say running in green" + "in the left docker, rename it to system - when using a pod show pod stats, if using pod + local show all the stats ... remove the gpu menuitem in basic settings, add remote docker button to the statusbar ... add a radio group to the top of the remote generation docker for all Local, all remote, both")
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui783-ui.js > /tmp/ui783ui.log 2>&1 \
+  && ok "2.783.0 browser test: the left docker is System; no Basic Settings ▸ GPU; Remote on the status bar (Pods only while something runs remotely); All local / All remote / Both first in the ☁ Remote generation docker, All remote = every type remote, a row put back to Local = Both; pod + local stats (the pod in its own ☁ frame); All local closes PODS only - or SKIP" \
+  || { bad "2.783.0 System docker / remote buttons browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui783ui.log | head -14; }
 node scripts/test-llmrepos782.js > /tmp/llmrepos782.log 2>&1 \
   && ok "2.782.0 your LLMs from Hugging Face: a repo's GGUFs listed (split ones as one, the projector), sent, kept in your list on Save; the RunPod LLM / Vision lists show only your list; the pod picked for it; the pod's volume made bigger" \
   || { bad "2.782.0 your LLM list"; grep -a "FAIL" -A2 /tmp/llmrepos782.log | head -14; }
@@ -13294,9 +13298,11 @@ node scripts/test-podnodes7642.js > /tmp/podnodes7642.log 2>&1 \
 node scripts/test-gpulocal7641.js > /tmp/gpulocal7641.log 2>&1 \
   && ok "2.764.1 units: Local hides the remote groups, ☁ / 🖥 PODS / 💲 RunPod / ⚙ buttons (#sec-gpu.gpuLocal), one line, closes those dockers; Remote / Both wait for a set-up (isReady / localView)" \
   || { bad "2.764.1 GPU Local units"; grep -a "^FAIL" -A1 /tmp/gpulocal7641.log | head -12; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7641-ui.js > /tmp/ui7641ui.log 2>&1 \
-  && ok "2.764.1 browser test: Basic Settings ▸ GPU on Local shows no remote option; Remote shows them; Local again hides them and closes the PODS / Remote generation / 💲 RunPod dockers; nothing set up: Remote waits, RunPod ▸ Pods saves it - or SKIP without playwright" \
-  || { bad "2.764.1 GPU Local browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7641ui.log | head -14; }
+# 2.783.0 (Tim: "remove the gpu menuitem in basic settings"): this leg tested Basic Settings ▸ GPU, which is gone -
+# retired; scripts/test-ui783-ui.js covers All local / All remote / Both in the ☁ Remote generation docker + the status bar buttons
+# H3_URL=http://127.0.0.1:8311/ node scripts/test-ui7641-ui.js > /tmp/ui7641ui.log 2>&1 \
+#   && ok "2.764.1 browser test: Basic Settings ▸ GPU on Local shows no remote option; Remote shows them; Local again hides them and closes the PODS / Remote generation / 💲 RunPod dockers; nothing set up: Remote waits, RunPod ▸ Pods saves it - or SKIP without playwright" \
+#   || { bad "2.764.1 GPU Local browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui7641ui.log | head -14; }
 # ---- 2.764.0 (Tim: "I think we can use multiple styles on the same pod. so if a user clicks a style that is not assigned to a pod bring up a dialog with my pods and a + style button ... add a create pod button ... in pods docker add a presets tab ... <preset name>.pod file in a folder called runpod\pods\presets ... play button a stop button and a delete button ... if user presses the play button and pod has been terminated the create a new pod with all those details and populate it with the styles files" + "delete should only terminate the pod x should delete the preset. dialog should only appear when u press generate")
 node scripts/test-podpresets764.js > /tmp/podpresets764.log 2>&1 \
   && ok "2.764.0 units + LIVE (stand-ins): .pod files (names, only known fields, never a key), runs -> hours + total cost, a pod saved as a preset, styles onto the running pod, ▶ running / stopped / terminated (its GPU not free = the choice; a new pod with every detail, then nodes + each style's files in turn, the loading sequence), ⏹, 🗑 keeps the preset, ✕ deletes it; the box + answer {preset}" \
@@ -13418,9 +13424,11 @@ node scripts/test-runpodv2755.js > /tmp/rp755.log 2>&1 \
 node scripts/test-remotedock754.js > /tmp/rd754.log 2>&1 \
   && ok "2.754.0 units: pod shortcuts (a template link / deploy link / ID, Deploy = RunPod's deploy page + bitGen's referral code, kept, refused when not a template), Use remote generation (never chosen = on when something remote is set up; off = Local + the LLM here + Both refused + jobs here), routes, the docker a SecFloat window with no status-bar button" \
   || { bad "2.754.0 remote docker units"; grep -a "^FAIL" -A1 /tmp/rd754.log | head -12; }
-H3_URL=http://127.0.0.1:8311/ node scripts/test-ui754-ui.js > /tmp/ui754ui.log 2>&1 \
-  && ok "2.754.0 browser test: off hides Basic Settings ▸ GPU + the tab's parts; ticked shows them; ☁ Remote generation docker (in GPU, not the status bar) floats: where the work runs, My pods (2.755.0: REST v2 - start: loading pod… then pod loaded with time + cost; Use it; stop: stopping pod… then stopped - on a stand-in RunPod), pod shortcuts (Deploy ↗ with the referral code, a bad link refused, ✕); unticked = all here again - or SKIP without playwright" \
-  || { bad "2.754.0 remote docker browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui754ui.log | head -14; }
+# 2.783.0 (Tim: "remove the gpu menuitem in basic settings"): this leg tested Basic Settings ▸ GPU, which is gone -
+# retired; scripts/test-ui783-ui.js covers All local / All remote / Both in the ☁ Remote generation docker + the status bar buttons
+# H3_URL=http://127.0.0.1:8311/ node scripts/test-ui754-ui.js > /tmp/ui754ui.log 2>&1 \
+#   && ok "2.754.0 browser test: off hides Basic Settings ▸ GPU + the tab's parts; ticked shows them; ☁ Remote generation docker (in GPU, not the status bar) floats: where the work runs, My pods (2.755.0: REST v2 - start: loading pod… then pod loaded with time + cost; Use it; stop: stopping pod… then stopped - on a stand-in RunPod), pod shortcuts (Deploy ↗ with the referral code, a bad link refused, ✕); unticked = all here again - or SKIP without playwright" \
+#   || { bad "2.754.0 remote docker browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui754ui.log | head -14; }
 # ---- 2.753.1 (Tim: "replace all the logos with the orange border with the new logo" / "the old orange border logo is also in the video")
 node scripts/test-logo7531.js > /tmp/logo7531.log 2>&1 \
   && ok "2.753.1 units: Windows' icon cache refreshed once per logo at start (lib/iconRefresh.js, ie4uinit.exe -show, Windows only, never in the way) so the shortcuts drop the old orange-bordered logo" \
@@ -13467,9 +13475,11 @@ node scripts/test-ui748-ui.js > /tmp/ui748ui.log 2>&1 \
 node scripts/test-gpulocal747.js > /tmp/gpulocal747.log 2>&1 \
   && ok "2.747.0 Local by default: nothing saved = Local; once per install Remote / Both -> Local (ComfyUI back here, the remote kept), never again; a new install marked; the update check: ls-remote (30 s), a 60 s fetch at most, a slow line still says newer, counted without a fetch when the commits are here; the update's fetch an hour" \
   || { bad "2.747.0 GPU Local + update check units"; grep -a "^FAIL" -A1 /tmp/gpulocal747.log | head -14; }
-node scripts/test-ui747-ui.js > /tmp/ui747ui.log 2>&1 \
-  && ok "2.747.0 browser test: Basic Settings ▸ GPU first (above Override style), closed, GPU · Local in its header, remembered open; Local first; Remote with no R_ style says so in the list; Updates: a check the studio stops answering says so - or SKIP" \
-  || { bad "2.747.0 GPU section + update message browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui747ui.log | head -14; }
+# 2.783.0 (Tim: "remove the gpu menuitem in basic settings"): this leg tested Basic Settings ▸ GPU, which is gone -
+# retired; scripts/test-ui783-ui.js covers All local / All remote / Both in the ☁ Remote generation docker + the status bar buttons
+# node scripts/test-ui747-ui.js > /tmp/ui747ui.log 2>&1 \
+#   && ok "2.747.0 browser test: Basic Settings ▸ GPU first (above Override style), closed, GPU · Local in its header, remembered open; Local first; Remote with no R_ style says so in the list; Updates: a check the studio stops answering says so - or SKIP" \
+#   || { bad "2.747.0 GPU section + update message browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui747ui.log | head -14; }
 # ---- 2.746.0 (Tim: "when radio is selected for local show local styles, remote show remote styles (create remote styles),
 # both , show all styles" + "A Runs on setting per style ... add text input in styles for endpoints if remote style is selected,
 # prefix remote style names with R_ add this on save if it is not there")
@@ -13484,9 +13494,11 @@ node scripts/test-ui746-ui.js > /tmp/ui746ui.log 2>&1 \
 node scripts/test-gpusplit745.js > /tmp/gpusplit745.log 2>&1 \
   && ok "2.745.0 GPU split: jobs sorted image / video + songs / never; Remote / Local / Both put ComfyUI's address where it belongs; Both gives a ticked kind's job.json the remote's ComfyUI (the usage log too); Use it / This computer follow; the LLM + vision LLM go to a stand-in RunPod vLLM endpoint (the model asked of /models, the key) and nothing starts here; not one of Basic Settings' remembered fields" \
   || { bad "2.745.0 GPU split units"; grep -a "^FAIL" -A1 /tmp/gpusplit745.log | head -14; }
-node scripts/test-ui745-ui.js > /tmp/ui745ui.log 2>&1 \
-  && ok "2.745.0 browser test: Basic Settings ▸ GPU - only Local with no remote; Use it = Remote; Both shows the four boxes (LLMs only with a vLLM endpoint), an image job renders on the endpoint (stand-in on 8399) while video stays here, only image styles filtered; Local = everything here - or SKIP" \
-  || { bad "2.745.0 Basic Settings GPU browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui745ui.log | head -14; }
+# 2.783.0 (Tim: "remove the gpu menuitem in basic settings"): this leg tested Basic Settings ▸ GPU, which is gone -
+# retired; scripts/test-ui783-ui.js covers All local / All remote / Both in the ☁ Remote generation docker + the status bar buttons
+# node scripts/test-ui745-ui.js > /tmp/ui745ui.log 2>&1 \
+#   && ok "2.745.0 browser test: Basic Settings ▸ GPU - only Local with no remote; Use it = Remote; Both shows the four boxes (LLMs only with a vLLM endpoint), an image job renders on the endpoint (stand-in on 8399) while video stays here, only image styles filtered; Local = everything here - or SKIP" \
+#   || { bad "2.745.0 Basic Settings GPU browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui745ui.log | head -14; }
 # ---- 2.744.0 (Tim: "if user is using runpod only show the styles that will work with runpod" + his test that rendered locally)
 node scripts/test-rpslstyles744.js > /tmp/rpslstyles744.log 2>&1 \
   && ok "2.744.0 RunPod styles: ComfyUI 0.34.0 / newer node lists from ComfyUI's source; each style's workflow checked node by node (image, music, video own / per-mode / templates; LTX + Wan need /object_info; UI exports, other engines, chains); Settings ▸ Save keeps the remote ComfyUI (the ComfyUI tab's address = this computer's)" \

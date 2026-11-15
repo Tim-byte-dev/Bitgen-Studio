@@ -22,9 +22,10 @@ const MB = 1048576, GB = 1e9;
   check("shape: /api/stats' own units - CPU load % (6 / 16 cores = 38%), RAM and VRAM in MB, the disks in bytes",
     sh.cpu === 38 && sh.ram_used === 20480 && sh.ram_total === 65536 && sh.gpus[0].mem_used === 12000 && sh.gpus[0].mem_total === 24564 && sh.gpus[0].temp === 71 && sh.disks.length === 2 && sh.disks[1].total === 100 * GB, sh);
   const on = true, rem = { where: "remote" }, pods = { provider: "runpod", runpod: "pods", pods: true };
-  check("which: Local / Both / remote generation off = this computer (null)",
-    RS.which({ runpod: { pod_id: "p1" } }, on, { where: "local" }, pods) === null && RS.which({ runpod: { pod_id: "p1" } }, on, { where: "both" }, pods) === null && RS.which({ runpod: { pod_id: "p1" } }, false, rem, pods) === null);
-  check("…Remote + RunPod ▸ Pods + a pod in use = that pod (its name, its ComfyUI port)", JSON.stringify(RS.which({ runpod: { pod_id: "p1", pod_name: "Krea pod", port: 3000 } }, on, rem, pods)) === JSON.stringify({ pod_id: "p1", name: "Krea pod", port: 3000 }));
+  check("which: Local / remote generation off = this computer (null); 2.783.0: Both with a pod in use = this computer + the pod (mixed)",
+    RS.which({ runpod: { pod_id: "p1" } }, on, { where: "local" }, pods) === null && RS.which({ runpod: { pod_id: "p1" } }, on, { where: "both" }, pods).mixed === true && RS.which({ runpod: { pod_id: "p1" } }, false, rem, pods) === null
+    && RS.which({}, on, { where: "both" }, pods) === null);
+  check("…Remote + RunPod ▸ Pods + a pod in use = that pod (its name, its ComfyUI port)", JSON.stringify(RS.which({ runpod: { pod_id: "p1", pod_name: "Krea pod", port: 3000 } }, on, rem, pods)) === JSON.stringify({ pod_id: "p1", name: "Krea pod", port: 3000, mixed: false }));
   check("…Remote with no pod in use, Serverless or OpenRouter: why there is no machine to show",
     /no pod in use/.test(RS.which({}, on, rem, pods).none) && /Serverless/.test(RS.which({}, on, rem, { provider: "runpod", pods: false }).none) && /OpenRouter/.test(RS.which({}, on, rem, { provider: "openrouter" }).none));
   // live now(): stubbed split + pod stats

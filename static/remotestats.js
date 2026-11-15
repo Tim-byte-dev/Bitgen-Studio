@@ -8,7 +8,10 @@
  *                           computer's (its electricity). Back on Local the charts are this computer's again (started over -
  *                           the two are never drawn in one line).
  *   remote mode, no pod in use (or Serverless / OpenRouter): this computer's figures, the heading says why.
- * Pure (Node: scripts/test-remotestats773.js): merge, heading, diskRows.
+ * 2.783.0 (Tim: "when using a pod show pod stats, if using pod + local show all the stats of hardware being used including
+ *   remote"): mixed (r.remote.mixed - Both, or one type still Local) = this computer's charts stay and the pod's figures come
+ *   under them in their own "☁ <pod>" frame (CPU, RAM, each GPU's load / temperature / VRAM, the disks) - podRows().
+ * Pure (Node: scripts/test-remotestats773.js, test-system783.js): merge, heading, diskRows, podRows.
  */
 (function (root) {
   "use strict";
@@ -30,6 +33,7 @@
     if (!r || !r.remote) return { text: "System", title: "" };
     if (r.remote.none) return { text: "System · this computer", title: "Remote mode - " + r.remote.none };
     if (r.remote.error) return { text: "System · this computer", title: "Remote mode - ☁ " + r.remote.name + " is not answering yet" };
+    if (r.remote.mixed) return { text: "System", title: "this computer's figures, then ☁ " + r.remote.name + "'s - some work runs here, some on the pod" };
     return { text: "System · ☁ " + r.remote.name, title: "the pod's figures (its Jupyter) - the queue, the progress and ⚡ since start are this computer's" };
   }
   /** the disk bars (pure) -> [{label, pct, text, title}] */
@@ -39,10 +43,22 @@
         title: d.path === "/" ? "the pod's container disk (wiped when the pod stops)" : d.path + " (kept while the pod is stopped)" };
     });
   }
-  var api = { merge: merge, heading: heading, diskRows: diskRows };
+  /** 2.783.0: the pod's figures as bar rows for its own frame in mixed mode (pure) -> [{label, pct, text, title}] */
+  function podRows(x) {
+    var o = x || {}, rows = [];
+    if (o.cpu != null) rows.push({ label: "CPU", pct: +o.cpu || 0, text: (+o.cpu || 0) + "%", title: "the pod's CPU load" });
+    if (o.ram_total) rows.push({ label: "RAM", pct: 100 * (o.ram_used || 0) / o.ram_total, text: ((o.ram_used || 0) / 1024).toFixed(1) + "/" + (o.ram_total / 1024).toFixed(0) + "GB", title: "the pod's RAM" });
+    (o.gpus || []).forEach(function (g, i) {
+      var nm = "GPU" + i + " · " + String(g.name || "GPU").replace(/NVIDIA |GeForce (RTX )?/g, "").trim();
+      rows.push({ label: nm, pct: g.util == null ? 0 : +g.util, text: (g.util == null ? "n/a" : g.util + "%") + (g.temp == null ? "" : " · " + g.temp + "°C"), title: "the pod's " + (g.name || "GPU") + " - load and temperature" });
+      if (g.mem_total) rows.push({ label: "GPU" + i + " VRAM", pct: 100 * (g.mem_used || 0) / g.mem_total, text: ((g.mem_used || 0) / 1024).toFixed(1) + "/" + (g.mem_total / 1024).toFixed(0) + "GB", title: "the pod's GPU memory" });
+    });
+    return rows.concat(diskRows(o.disks));
+  }
+  var api = { merge: merge, heading: heading, diskRows: diskRows, podRows: podRows };
   if (typeof module === "object" && module.exports) { module.exports = api; return; }
 
-  var doc = root.document, S = { src: "local", r: null, at: 0, busy: null, disks: {}, head: "System" };
+  var doc = root.document, S = { src: "local", r: null, at: 0, busy: null, disks: {}, pod: {}, head: "System" };
   function get() {
     if (S.busy) return S.busy;
     if (S.r && Date.now() - S.at < +(root.H3_REMOTE_STATS_POLL || 4000)) return Promise.resolve(S.r);
@@ -57,7 +73,24 @@
     (charts.gpus || []).forEach(function (g) { var f = g && g.load && g.load.el && g.load.el.parentNode; if (f && f.parentNode) f.parentNode.removeChild(f); });
     charts.gpus.length = 0;
     var box = doc.getElementById("statsDisks"); if (box) box.parentNode.removeChild(box);
-    S.disks = {};
+    var pb = doc.getElementById("statsPod"); if (pb) pb.parentNode.removeChild(pb);
+    S.disks = {}; S.pod = {};
+  }
+  /** 2.783.0: mixed - the pod's frame under this computer's charts */
+  function paintPod(r, Bar) {
+    var st = doc.getElementById("stats"); if (!st || !Bar) return;
+    var box = doc.getElementById("statsPod");
+    if (!box) { box = doc.createElement("div"); box.id = "statsPod"; box.className = "gpuframe"; box.innerHTML = '<div class="gtitle"><span></span><b></b></div>'; }
+    st.appendChild(box);   // kept last (this computer's GPU frames are added as they are found)
+    box.querySelector(".gtitle span").textContent = "☁ " + r.remote.name;
+    box.title = "the pod's figures (its Jupyter)";
+    var seen = {};
+    podRows(r.stats).forEach(function (d) {
+      seen[d.label] = 1;
+      var b = S.pod[d.label]; if (!b) { b = S.pod[d.label] = new Bar(d.label); box.appendChild(b.el); }
+      b.el.title = d.title; b.push(d.pct, null, d.text);
+    });
+    Object.keys(S.pod).forEach(function (k) { if (!seen[k]) { var e = S.pod[k].el; if (e.parentNode) e.parentNode.removeChild(e); delete S.pod[k]; } });
   }
   function paintDisks(rows, Bar) {
     var st = doc.getElementById("stats"); if (!st || !Bar) return;
@@ -72,12 +105,13 @@
   /** /api/stats -> what the left docker draws (the pod's in remote mode) */
   function apply(s, charts, Bar) {
     return get().then(function (r) {
-      var src = r && r.remote && r.stats ? "pod:" + r.remote.pod_id : "local";
+      var src = r && r.remote && r.stats ? (r.remote.mixed ? "mixed:" : "pod:") + r.remote.pod_id : "local";
       if (src !== S.src) { reset(charts); S.src = src; }
       // written only when it changes (the language dropdown translates what is there - it is not put back to English each time)
       var h = head(); if (h) { var t = heading(r); if (S.head !== t.text) { S.head = t.text; h.textContent = t.text; } h.title = t.title;
         if (!h.dataset.rsOne) { h.dataset.rsOne = "1"; h.style.whiteSpace = "nowrap"; h.style.overflow = "hidden"; h.style.textOverflow = "ellipsis"; } }
       if (src === "local") return s;
+      if (r.remote.mixed) { paintPod(r, Bar); return s; }   // 2.783.0: this computer's charts as they are + the pod's frame
       paintDisks(diskRows(r.stats.disks), Bar);
       return merge(s, r);
     });

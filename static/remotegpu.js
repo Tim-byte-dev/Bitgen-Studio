@@ -98,7 +98,7 @@
       + '<ul class="hint help" style="margin:6px 0 0;padding-left:18px">'
       + '<li>Make the endpoint on runpod.io: Serverless ▸ New Endpoint ▸ Deploy LLM API (RunPod\'s vLLM worker), with the Hugging Face model it should run.</li>'
       + '<li>The vision LLM must be a vision-language model (one that takes pictures, such as Qwen2.5-VL). One vision-language endpoint can serve both - leave the vision endpoint blank.</li>'
-      + '<li>Basic Settings ▸ GPU decides when they are used: Remote, or Both with LLM / Vision LLM ticked.</li>'
+      + '<li>The ☁ Remote generation docker decides when they are used: LLM / Vision LLM on Remote, or All remote.</li>'
       + '</ul></div>';
     h.querySelectorAll('input[name="rgmode"]').forEach(function (r) { r.onchange = function () { paintSecs(); }; });
     $("rgTest").onclick = test; $("rgUse").onclick = use;

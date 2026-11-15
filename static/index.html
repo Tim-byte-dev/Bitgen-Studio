@@ -1232,7 +1232,8 @@
   <!-- LEFT DOCK: stats + params + queue -->
   <aside class="dock" id="ldock">
     <!-- 2.382.1: the project / app buttons moved to the MENU BAR under the title bar (#menubar) -->
-    <div class="dockhead"><h1 style="font-size:.8rem">Settings</h1></div>
+    <!-- 2.783.0 (Tim: "in the left docker, rename it to system"): the left docker is System (it was Settings) -->
+    <div class="dockhead"><h1 style="font-size:.8rem">System</h1></div>
     <!-- The project identity sits under the menu bar rather than in it, so a
          long name can wrap instead of squeezing the buttons. -->
     <div class="projbar" id="projbar">
@@ -1274,8 +1275,11 @@
            the remote GPU (vllm = the vision LLM; the LLMs on a RunPod vLLM endpoint) - static/gpusplit.js, lib/gpuSplit.js.
            2.747.0 (Tim: "minimize the gpu menu item in basic settings, put gpu menu item above overide checkbox"): first in
            Basic Settings, closed until opened (remembered), the choice shown beside its name -->
-      <h2 class="sec drop" data-sec="gpu" style="margin-top:0;font-size:.8rem" title="Where the work runs - Local, Remote or Both (closed by default; the choice shows beside it)"><span class="caret">▾</span>GPU <span id="gpuNow" class="dim" style="font-weight:normal;font-size:.7rem"></span></h2>
-      <div class="secbody" id="sec-gpu" style="margin-bottom:8px"></div>
+      <!-- 2.783.0 (Tim: "remove the gpu menuitem in basic settings ... add a radio group to the top of the remote generation
+           docker for all Local, all remote, both"): no GPU item here any more - #sec-gpu is only where static/gpusplit.js
+           builds its parts (never shown); static/remotedock.js moves All local / All remote / Both to the top of the ☁ Remote
+           generation docker (the status bar's Remote button) -->
+      <div id="sec-gpu" hidden aria-hidden="true"></div>
       <!-- 2.256.0 (by instruction): the override switch sits at the TOP of
            Basic Settings and governs ALL style kinds — checked, the settings
            below ride every render and beat the style's own values (the
@@ -1870,7 +1874,7 @@
 </div>
 
 <div id="statusbar">
-  <button id="tL" title="Left dock">⟨</button>
+  <button id="tL" title="System dock (left)">⟨</button>
   <button id="tRefs" title="References dock">Refs</button>
   <button id="tAssets" title="Assets dock">Assets</button>
   <button id="tPv" title="Preview dock — the player above the timeline">Preview</button>
@@ -3549,6 +3553,7 @@
 <script src="/static/podroute.js"></script>  <!-- 2.763.2: a render that goes to a RunPod pod skips this computer's ComfyUI; a failed render's reason in the log (H3PodRoute) -->
 <script src="/static/remotedock.js"></script>  <!-- 2.754.0: the Remote generation docker + Use remote generation (H3RemoteDock - routes/remoteDock.js) -->
 <script src="/static/podsdock.js"></script>  <!-- 2.756.0: the PODS docker - RunPod templates, create / start / stop / terminate pods (H3Pods - routes/pods.js) -->
+<script src="/static/remotebtns.js"></script>  <!-- 2.783.0: the status bar's Remote + Pods buttons (H3RemoteBtns) -->
 <script src="/static/podaudio.js"></script>  <!-- 2.775.0: 🔊 Audio on a pod in 🖥 PODS ▸ My pods (H3PodAudio - lib/podAudio.js) -->
 <script src="/static/podfiles.js"></script>  <!-- 2.781.2: 📁 a pod's model files + its GPU memory in 🖥 PODS ▸ My pods (H3PodFiles - lib/podFiles.js, lib/podVram.js) -->
 <script src="/static/runpoddock.js"></script>  <!-- 2.763.5: the 💲 RunPod docker - balance, what the pods cost, GPU prices (H3RunPod - routes/pods.js) -->

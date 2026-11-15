@@ -48,7 +48,9 @@
         var l = doc.createElement("label"); l.className = "chk"; l.style.margin = "0"; l.title = c[2];
         var i = doc.createElement("input"); i.type = "radio"; i.name = "rp_" + k[0]; i.value = c[0];
         // 2.768.0: the prompt docker's LLM / Vision list follows the choice (static/remotellm.js listens to h3:rgpu)
-        i.onchange = function () { var b = picks(); b[k[0]] = c[0]; post("/api/remoteprep/where", b).then(function (v) { paint(v); try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } }); };
+        i.onchange = function () { var b = picks(); b[k[0]] = c[0]; post("/api/remoteprep/where", b).then(function (v) { paint(v); try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } });
+          // 2.783.0: the LLM / Vision LLM put on Local while All remote is picked = Both (the docker's radio group follows)
+          var gs = root.H3GpuSplit && H3GpuSplit.state && H3GpuSplit.state(); if (c[0] === "local" && gs && gs.v && gs.v.where === "remote") H3GpuSplit.save({ where: "both", per: true }); };
         l.appendChild(i); l.appendChild(doc.createTextNode(" " + c[1])); row.appendChild(l);
       });
       w.appendChild(row);

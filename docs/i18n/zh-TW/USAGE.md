@@ -5500,6 +5500,15 @@ PODS ▸ My pods 中執行的 Pod 在 📁 Files 旁邊有 **⟳ Restart ComfyUI
 
 每個到 Pod 的模型傳輸（PODS ▸ Transfers）的進度列末尾有兩個圖示按鈕：**⏹** 停止，**↻** 從頭重新開始。從本機的上傳會在目前分塊傳送完後停止，已在 Pod 上的分塊會被刪除。Pod 的下載會在目前片段後停止。停止的下載不會改由本機傳送；需要它的算繪會說明是你停止了它。
 
+## System 停靠窗;狀態列上的 Remote 和 Pods;全部本地 / 全部遠端 / Both (2.783.0)
+<!-- en: the-system-docker-remote-and-pods-on-the-status-bar-all-local-all-remote-both-2- bf14ce1715f8 -->
+
+- **System:** 左側停靠窗現在叫 **System**(以前叫 Settings)。
+- **Pod 資料:** 所有工作都在 Pod 上執行時,System 的圖表顯示 Pod 的 CPU、RAM、GPU 和磁碟。一部分在這臺電腦、一部分在 Pod 上執行時,這臺電腦的圖表保持不變,Pod 的資料顯示在下方單獨的 **☁ <Pod>** 框中。
+- **Basic Settings 裡不再有 GPU 項。** 工作在哪裡執行,在 ☁ Remote generation 停靠窗的最上方選擇:**全部本地**(全部在這臺電腦上)、**全部遠端**(每種類型都設為 Remote,LLM 和 Vision LLM 也一樣)或 **Both**(由下方各行決定)。選取全部遠端時把某一行改回 Local,選擇會切換為 Both。
+- 狀態列上的 **Remote**(在 Queue 之後)用於顯示或隱藏 ☁ Remote generation 停靠窗。只在勾選 Settings ▸ Remote generation ▸ Use remote generation 時顯示。
+- 狀態列上的 **Pods** 用於顯示或隱藏 PODS 停靠窗。只在有工作遠端執行時顯示。全部為 Local 時它會隱藏,PODS 停靠窗也會關閉。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

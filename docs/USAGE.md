@@ -8965,6 +8965,14 @@ A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files.
 
 Each model transfer to a pod (PODS ▸ Transfers) has two icon buttons at the end of its bar: **⏹** stops it, **↻** starts it again from the beginning. An upload from this computer stops after the part it is sending, and the part already on the pod is deleted. A download by the pod stops after the piece it is on. A stopped download is not sent from this computer instead; the render that needed it says you stopped it.
 
+## The System docker; Remote and Pods on the status bar; All local / All remote / Both (2.783.0)
+
+- **System:** the left docker is called **System** (it was Settings).
+- **Pod stats:** when everything runs on a pod, the System charts show the pod's CPU, RAM, GPUs and disks. When some work runs here and some on a pod, this computer's charts stay and the pod's figures come under them in their own **☁ <pod>** frame.
+- **No GPU item in Basic Settings any more.** Where the work runs is picked at the top of the ☁ Remote generation docker: **All local** (everything on this computer), **All remote** (every type on Remote, the LLM and Vision LLM too) or **Both** (the rows below decide). Putting one row back to Local while All remote is picked switches the choice to Both.
+- **Remote** on the status bar (after Queue) shows or hides the ☁ Remote generation docker. It is there while Settings ▸ Remote generation ▸ Use remote generation is ticked.
+- **Pods** on the status bar shows or hides the PODS docker. It is there only while something runs remotely. With everything Local it is hidden, and the PODS docker closes.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
