@@ -13177,6 +13177,13 @@ node scripts/test-podfiles7812-py.js > /tmp/podfiles7812py.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui783-ui.js > /tmp/ui783ui.log 2>&1 \
   && ok "2.783.0 browser test: the left docker is System; no Basic Settings ▸ GPU; Remote on the status bar (Pods only while something runs remotely); All local / All remote / Both first in the ☁ Remote generation docker, All remote = every type remote, a row put back to Local = Both; pod + local stats (the pod in its own ☁ frame); All local closes PODS only - or SKIP" \
   || { bad "2.783.0 System docker / remote buttons browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui783ui.log | head -14; }
+# ---- 2.784.0 (Tim: "add a sort order to the top of the gpu selection list in create new pod, by fastest, by cheapest")
+node scripts/test-gpusort784.js > /tmp/gpusort784.log 2>&1 \
+  && ok "2.784.0 GPU speed order: RunPod's names to bitGen's rough speed (an RTX 5090 = 100), Fastest / Cheapest with free cards first, the pick, every GPU carries its speed" \
+  || { bad "2.784.0 GPU sort units"; grep -a "^FAIL" -A1 /tmp/gpusort784.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui784-ui.js > /tmp/ui784ui.log 2>&1 \
+  && ok "2.784.0 browser test: PODS ▸ Create pod's Sort GPUs above the list (Cheapest default), Fastest reorders and picks the fastest free card, speeds shown, a hand-picked card kept on another cloud, remembered - or SKIP" \
+  || { bad "2.784.0 GPU sort browser test"; grep -a "FAIL\\|Error" -A2 /tmp/ui784ui.log | head -14; }
 node scripts/test-llmrepos782.js > /tmp/llmrepos782.log 2>&1 \
   && ok "2.782.0 your LLMs from Hugging Face: a repo's GGUFs listed (split ones as one, the projector), sent, kept in your list on Save; the RunPod LLM / Vision lists show only your list; the pod picked for it; the pod's volume made bigger" \
   || { bad "2.782.0 your LLM list"; grep -a "FAIL" -A2 /tmp/llmrepos782.log | head -14; }

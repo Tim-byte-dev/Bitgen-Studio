@@ -5509,6 +5509,11 @@ PODS ▸ My pods 中執行的 Pod 在 📁 Files 旁邊有 **⟳ Restart ComfyUI
 - 狀態列上的 **Remote**(在 Queue 之後)用於顯示或隱藏 ☁ Remote generation 停靠窗。只在勾選 Settings ▸ Remote generation ▸ Use remote generation 時顯示。
 - 狀態列上的 **Pods** 用於顯示或隱藏 PODS 停靠窗。只在有工作遠端執行時顯示。全部為 Local 時它會隱藏,PODS 停靠窗也會關閉。
 
+## 建立 Pod 時為 GPU 清單排序:最快或最便宜 (2.784.0)
+<!-- en: sort-the-gpu-list-when-you-create-a-pod-fastest-or-cheapest-2-784-0 cd3a6669b5d4 -->
+
+PODS ▸ Create pod 的 GPU 清單上方有 **GPU 排序**:**最便宜**(預設,與以前一樣)或 **最快**。清單中每張卡還會顯示與 RTX 5090 相比的大致速度(例如 RTX A6000 為"~0.45× RTX 5090")。換一種排序會選取該順序中第一張有 20 GB 以上的空閒卡,你的選擇會被記住。這些速度是 bitGen 針對擴散和影片渲染的粗略參考,不是基準測試。bitGen 不認識的卡顯示"speed not known",按最快排序時排在已知的卡之後。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

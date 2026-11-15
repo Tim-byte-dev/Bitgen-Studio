@@ -226,6 +226,10 @@
     return '<div class="pdForm" id="pdForm"><label class="f" for="pdName" style="margin:0">Name</label><input type="text" id="pdName" value="' + esc(((S.form && S.form.name) || "bitGen pod").slice(0, 40)) + '" spellcheck="false">'
       + '<span class="f">Cloud</span><span><label class="chk" style="margin:0 10px 0 0" title="RunPod\'s own data centres"><input type="radio" name="pdCloud" value="SECURE" checked> Secure</label>'
       + '<label class="chk" style="margin:0" title="Machines run by RunPod\'s community hosts - usually cheaper"><input type="radio" name="pdCloud" value="COMMUNITY"> Community</label></span>'
+      // 2.784.0 (Tim: "add a sort order to the top of the gpu selection list in create new pod, by fastest, by cheapest"): the order
+      // above the list (static/gpuspeed.js - bitGen's rough speed, an RTX 5090 = 1×), remembered (localStorage h3.pod.gpuSort)
+      + '<span class="f">Sort GPUs</span><span id="pdGpuSort" role="radiogroup" aria-label="Sort the GPU list" title="Fastest uses bitGen\'s rough speed for diffusion and video renders (an RTX 5090 = 1×) - a guide, not a benchmark">'
+      + [["fast", "Fastest"], ["cheap", "Cheapest"]].map(function (o) { return '<label class="chk" style="margin:0 10px 0 0"><input type="radio" name="pdGpuSort" value="' + o[0] + '"' + (sortBy() === o[0] ? " checked" : "") + "> " + o[1] + "</label>"; }).join("") + "</span>"
       + '<label class="f" for="pdGpu" style="margin:0">GPU</label><select id="pdGpu"><option value="">asking RunPod…</option></select>'
       + '<label class="f" for="pdCount" style="margin:0">GPUs</label><input type="number" id="pdCount" min="1" max="8" value="' + ((S.form && S.form.count) || 1) + '" style="width:70px">'
       // 2.763.3 (Tim: "auto select the type and style"): the style it renders + the kinds of style it is the pod for
@@ -243,7 +247,11 @@
       + '<div class="full pdSum" id="pdSum" aria-live="polite"></div>'
       + '<span class="full"><button type="button" id="pdGo">Create pod</button></span></div>';
   }
+  /** 2.784.0: the GPU list's order - "fast" | "cheap" (Cheapest by default, as the list was) */
+  function sortBy() { try { var v = root.localStorage.getItem("h3.pod.gpuSort"); return v === "fast" ? "fast" : "cheap"; } catch (e) { return "cheap"; } }
   function wireForm() {
+    if ($("pdGpu")) $("pdGpu").addEventListener("change", function () { if (S.form) S.form.gpu = $("pdGpu").value; });   // 2.784.0: picked by hand = kept
+    doc.querySelectorAll('input[name="pdGpuSort"]').forEach(function (r) { r.onchange = function () { try { root.localStorage.setItem("h3.pod.gpuSort", r.value); } catch (e) { /* fine */ } S.sortPick = true; gpus(S.form.cloud); }; });
     doc.querySelectorAll('input[name="pdCloud"]').forEach(function (r) { r.checked = r.value === S.form.cloud; r.onchange = function () { S.form.cloud = r.value; gpus(r.value); }; });
     ["pdGpu", "pdCount", "pdDisk", "pdVol", "pdStyle"].forEach(function (id) { var x = $(id); if (x) { x.addEventListener("change", price); x.addEventListener("input", price); } });
     doc.querySelectorAll("#pdForm [data-pdkind], #pdForm [data-pdaudio]").forEach(function (c) { c.addEventListener("change", price); });
@@ -252,13 +260,18 @@
   }
   function gpus(cloud) {
     var sel = $("pdGpu"); if (!sel) return;
-    var fill = function (list) {
+    var fill = function (list0) {
+      var GS = root.H3GpuSpeed, by = sortBy(), list = GS ? GS.sortGpus(list0, by) : list0, keep = sel.value;
       sel.innerHTML = list.map(function (g) {
-        return '<option value="' + esc(g.id) + '"' + (g.offered ? "" : " disabled") + ">" + esc(g.name) + " · " + g.memory + " GB · " + esc(money(g.price, "/h")) + (g.offered ? (g.availability ? " · " + g.availability.toLowerCase() : "") : " · none free") + "</option>";
+        return '<option value="' + esc(g.id) + '"' + (g.offered ? "" : " disabled") + ">" + esc(g.name) + " · " + g.memory + " GB · " + esc(money(g.price, "/h"))
+          + (GS ? " · " + GS.speedText(g.speed) : "") + (g.offered ? (g.availability ? " · " + g.availability.toLowerCase() : "") : " · none free") + "</option>";
       }).join("") || '<option value="">no GPUs offered</option>';
-      var first = list.find(function (g) { return g.offered && g.memory >= 20; }) || list.find(function (g) { return g.offered; });
-      if (S.form && S.form.gpu && list.some(function (g) { return g.id === S.form.gpu && g.offered; })) first = { id: S.form.gpu };   // 2.763.3: bitGen's pick for the waiting style
+      // 2.784.0: a new order picks its first card (Fastest = the fastest one free with 20 GB+); otherwise the card picked stays
+      var first = S.sortPick && GS ? GS.pick(list, by) : (keep && list.some(function (g) { return g.id === keep && g.offered; }) ? { id: keep } : (list.find(function (g) { return g.offered && g.memory >= 20; }) || list.find(function (g) { return g.offered; })));
+      if (!S.sortPick && S.form && S.form.gpu && list.some(function (g) { return g.id === S.form.gpu && g.offered; })) first = { id: S.form.gpu };   // 2.763.3: bitGen's pick for the waiting style
+      S.sortPick = false;
       if (first) sel.value = first.id;
+      if (S.form && sel.value) S.form.gpu = sel.value;   // 2.784.0: the card on screen is the one kept (another cloud / a repaint keeps it)
       price();
     };
     if (S.gpus[cloud]) { fill(S.gpus[cloud]); return; }

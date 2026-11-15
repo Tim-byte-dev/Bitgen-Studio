@@ -5276,6 +5276,11 @@ PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Res
 - ステータスバーの **Remote**（Queue の後）は ☁ Remote generation ドッカーを表示 / 非表示にします。Settings ▸ Remote generation ▸ Use remote generation にチェックが入っている間だけ表示されます。
 - ステータスバーの **Pods** は PODS ドッカーを表示 / 非表示にします。何かをリモートで実行している間だけ表示されます。すべて Local なら非表示になり、PODS ドッカーは閉じます。
 
+## ポッド作成時の GPU リストの並べ替え: 速い順 / 安い順 (2.784.0)
+<!-- en: sort-the-gpu-list-when-you-create-a-pod-fastest-or-cheapest-2-784-0 cd3a6669b5d4 -->
+
+PODS ▸ Create pod の GPU リストの上に **GPU の並べ替え** があります: **安い順**（既定、これまでどおり）または **速い順**。リストの各カードには RTX 5090 と比べたおおよその速さも表示されます（例: RTX A6000 は「~0.45× RTX 5090」）。並べ替えると、その順で 20 GB 以上の空いている最初のカードが選ばれ、選択は記憶されます。速さは拡散・動画レンダリング向けの bitGen 独自のおおよその目安で、ベンチマークではありません。bitGen が知らないカードは「speed not known」と表示され、速い順では既知のカードの後に並びます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

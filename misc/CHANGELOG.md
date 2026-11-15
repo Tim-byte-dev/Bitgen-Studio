@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.784.0** — PODS ▸ Create Pod: Sort GPUs (Fastest / Cheapest, Remembered) Above the GPU List; Each Card Says Its Rough Speed Next to an RTX 5090 (bitGen's Own Guide for Diffusion and Video, Not a Benchmark); a Card Picked by Hand Is Kept When the Cloud Changes
 - **2.783.0** — The Left Docker Is Called System; With Everything on a Pod Its Charts Are the Pod's, With Some Work Here and Some on a Pod This Computer's Charts Stay and the Pod's Come Under Them in a ☁ Frame; Basic Settings ▸ GPU Is Gone - All Local / All Remote / Both at the Top of the ☁ Remote Generation Docker (All Remote = Every Type and the LLMs Remote; a Row Put Back to Local Switches to Both); Remote and Pods Buttons on the Status Bar (Pods Only While Something Runs Remotely)
 - **2.782.3** — ▶ on a Pod That Already Runs Says "Running" in Green in the PODS Docker (Not RunPod's "Action Start Is Not Valid for Status RUNNING"); ⏹ on a Stopped One Says Stopped
 - **2.782.2** — ⏹ Stop and ↻ Restart as Icon Buttons at the End of Each Model Transfer's Bar (PODS ▸ Transfers): an Upload From This Computer Stops After Its Part (the Part on the Pod Deleted), the Pod's Download After Its Piece; ↻ Starts It Again From the Beginning
