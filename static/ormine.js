@@ -71,10 +71,12 @@
     var check = !S.checked; S.checked = true;
     return root.fetch("/api/ormodels/mine" + (check ? "?check=1" : "")).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || j.error || !j.mine) return;
-      S.mine = j.mine; S.runs = j.runs || {}; S.key = !!j.key;
+      // 2.792.0: a dead model (OpenRouter no longer lists it - red in 🧩 Model manager) is left out of the dropdowns
+      var live = {}; Object.keys(j.mine).forEach(function (k) { live[k] = (j.mine[k] || []).filter(function (m) { return !m.dead; }); });
+      S.mine = live; S.runs = j.runs || {}; S.key = !!j.key;
       if (j.removed && j.removed.length) {
         var names = j.removed.map(function (m) { return m.name || m.id; }).join(", ");
-        note("OpenRouter no longer lists " + names + " - taken off your OpenRouter models");
+        note("OpenRouter no longer lists " + names + " - red in 🧩 Model manager ▸ ☁ OpenRouter (🗑 takes it off); left out of the dropdowns");
       }
       paintAll();
       try { doc.dispatchEvent(new CustomEvent("h3:ormine", { detail: S })); } catch (e) { /* fine */ }

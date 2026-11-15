@@ -5620,6 +5620,17 @@ pod 重新建立後，其檔案會再次以它的名稱顯示（`Krea pod/<file>
 - 如果 Settings ▸ ComfyUI 中設定了自訂啟動命令，bitGen 無法為顯示卡提供專屬 ComfyUI——渲染時會說明；請清空啟動命令（bitGen 會直接執行 ComfyUI 的 main.py），或選擇普通的 Local。
 - 傳送到 RunPod pod 或 OpenRouter 的渲染不受影響。
 
+## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
+<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 227756892371 -->
+
+OpenRouter 模型對話方塊已移除：🧩 Model manager ▸ **☁ OpenRouter** 負責管理你的 OpenRouter 模型（☁ Remote generation ▸ **☁ OpenRouter models…** 現在會開啟該分頁）。你用 **＋** 新增的模型會在該分頁和 Models 分頁中加上邊框和底色：
+
+- **深綠色**——你的模型，免費；
+- **深橙色**——你的模型，付費；
+- **深紅色**——你的模型，但 OpenRouter 已不再列出。
+
+OpenRouter 不再列出的模型不會再被自動從你的清單中移除：它會以紅色保留在分頁最前面，標明 “✗ no longer on OpenRouter”，直到你用 🗑 將其移除（會有一行說明哪個變紅了）。它不會出現在下拉式清單中，用它渲染會被拒絕並說明原因。如果 OpenRouter 再次列出它，它會重新變成綠色或橙色。篩選欄下方的小圖例說明各顏色的含義。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

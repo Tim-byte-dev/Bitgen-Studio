@@ -4652,71 +4652,87 @@
   },
   {
    "s": "Video",
-   "src": "static/mmor.js:19"
+   "src": "static/mmor.js:24"
+  },
+  {
+   "s": "no longer on OpenRouter",
+   "src": "static/mmor.js:35"
   },
   {
    "s": "yours",
-   "src": "static/mmor.js:26"
+   "src": "static/mmor.js:36"
   },
   {
    "s": "In your models",
-   "src": "static/mmor.js:26"
+   "src": "static/mmor.js:36"
   },
   {
    "s": "asking OpenRouter",
-   "src": "static/mmor.js:55"
+   "src": "static/mmor.js:72"
   },
   {
    "s": "nothing matches",
-   "src": "static/mmor.js:55"
+   "src": "static/mmor.js:72"
   },
   {
    "s": "no models",
-   "src": "static/mmor.js:55"
+   "src": "static/mmor.js:72"
   },
   {
    "s": "every family",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Paid",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "free first, A-Z",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "cheapest",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "newest",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
+  },
+  {
+   "s": "yours, free",
+   "src": "static/mmor.js:79"
+  },
+  {
+   "s": "yours, paid",
+   "src": "static/mmor.js:79"
+  },
+  {
+   "s": "yours, no longer on OpenRouter",
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Family",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Free models",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Paid models",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Sort",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "Ask OpenRouter again",
-   "src": "static/mmor.js:62"
+   "src": "static/mmor.js:79"
   },
   {
    "s": "not saved yet",
@@ -5504,63 +5520,7 @@
   },
   {
    "s": "OpenRouter models",
-   "src": "static/ormodels.js:68"
-  },
-  {
-   "s": "Free first, by name",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Cheapest first",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Newest first",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Available",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Double-click a model (or Enter) to add it to yours",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "My models",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "In the dropdowns as openrouter/",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "model",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Close - the dropdowns get your list",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Search models",
-   "src": "static/ormodels.js:69"
-  },
-  {
-   "s": "Nothing matches",
-   "src": "static/ormodels.js:116"
-  },
-  {
-   "s": "None yet - double-click a model on the left",
-   "src": "static/ormodels.js:124"
-  },
-  {
-   "s": "openrouter/",
-   "src": "static/ormodels.js:125"
-  },
-  {
-   "s": "Pick the OpenRouter models you use - pictures, video, LLM, vision LLM (free and paid)",
-   "src": "static/ormodels.js:192"
+   "src": "static/ormodels.js:63"
   },
   {
    "s": "Use model",
@@ -7084,6 +7044,10 @@
   },
   {
    "s": "Community cloud",
+   "src": "static/runpoddock.js:120"
+  },
+  {
+   "s": "Cheapest first",
    "src": "static/runpoddock.js:120"
   },
   {
@@ -10332,6 +10296,10 @@
   },
   {
    "s": "Fill (continue the picture)",
+   "src": "ext/imageeditdock/imageedit.js:751"
+  },
+  {
+   "s": "model",
    "src": "ext/imageeditdock/imageedit.js:751"
   },
   {
@@ -24646,15 +24614,15 @@
   },
   {
    "p": "{0} of {1} · {2} yours",
-   "src": "static/mmor.js:54"
+   "src": "static/mmor.js:71"
   },
   {
    "p": "{0} of {1}",
-   "src": "static/mmor.js:54"
+   "src": "static/mmor.js:71"
   },
   {
    "p": "OpenRouter did not answer - {0}",
-   "src": "static/mmor.js:55"
+   "src": "static/mmor.js:72"
   },
   {
    "p": "nothing matches in {0}",
@@ -24847,58 +24815,6 @@
   {
    "p": "{0} models · {1} free",
    "src": "static/openrouter.js:108"
-  },
-  {
-   "p": "lengths {0} s",
-   "src": "static/ormodels.js:133"
-  },
-  {
-   "p": "aspect {0}",
-   "src": "static/ormodels.js:135"
-  },
-  {
-   "p": "up to {0} reference picture",
-   "src": "static/ormodels.js:136"
-  },
-  {
-   "p": "up to {0} reference pictures",
-   "src": "static/ormodels.js:136"
-  },
-  {
-   "p": "{0}k context",
-   "src": "static/ormodels.js:137"
-  },
-  {
-   "p": "{0} - free · {1}. {2}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - free · {1}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - free. {1}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - free",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - paid · {1}. {2}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - paid · {1}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - paid. {1}",
-   "src": "static/ormodels.js:138"
-  },
-  {
-   "p": "{0} - paid",
-   "src": "static/ormodels.js:138"
   },
   {
    "p": "Not used - tick {0} above",

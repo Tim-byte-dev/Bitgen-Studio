@@ -9075,6 +9075,16 @@ Good to know:
 - When Settings ▸ ComfyUI has a custom launch command, bitGen cannot give a card its own ComfyUI - the render says so; empty the launch command (bitGen then runs ComfyUI's main.py itself) or pick plain Local.
 - A render that goes to a RunPod pod or OpenRouter is not affected.
 
+## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
+
+The OpenRouter models dialog is gone: 🧩 Model manager ▸ **☁ OpenRouter** looks after your OpenRouter models (☁ Remote generation ▸ **☁ OpenRouter models…** now opens that tab). Your models - the ones you added with **＋** - are framed and tinted there and on the Models tab:
+
+- **dark green** - yours, free;
+- **dark orange** - yours, paid;
+- **dark red** - yours, but OpenRouter no longer lists it.
+
+A model OpenRouter stops listing is no longer taken off your list by itself: it stays, red, first in the tab with "✗ no longer on OpenRouter", until you take it off with 🗑 (a line says which went red). It is left out of the dropdowns, and a render with it is refused with why. If OpenRouter lists it again it turns green or orange again. A small legend under the filters says which colour is which.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

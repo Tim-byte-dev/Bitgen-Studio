@@ -269,7 +269,7 @@
     var sel = c.kind === "model" ? S.sel.model === c.key : S.sel.loras.some(function (l) { return l.key === c.key; });
     var t = thumbUrl(c, S.v), init = esc((c.family_label || "?").slice(0, 2));
     var date = c.released ? c.released : c.file_date ? "file " + c.file_date : "";
-    return '<div class="mmcard' + (sel ? " sel" : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
+    return '<div class="mmcard' + (sel ? " sel" : "") + (c.or && c.or_state ? " or" + c.or_state : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
       + '<div class="th"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? (c.thumb_kind === "video" ? vidFill(t) : "") : init) + "</div>"
       + (away ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
       + '<div class="acts">' + (c.rm ? rmActs(c) : c.pi || c.or ? srcActs(c) : c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
@@ -1238,7 +1238,9 @@
     paint();
     if (S.override) setTimeout(function () { load(false).then(function () { if (S.override) apply(); }); }, 2500);
   }
-  root.H3ModelMgr = Object.assign({ remoteList: function () { return !!(S.data && S.data.remote_list); }, delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
+  /** 2.792.0: open a tab (static/ormodels.js - ☁ Remote generation's OpenRouter models… opens "openrouter") */
+  function openTab(t) { S.tab = t; S.form = null; S.info = null; S.page = 0; lsSet(); paint(); }
+  root.H3ModelMgr = Object.assign({ openTab: openTab, remoteList: function () { return !!(S.data && S.data.remote_list); }, delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
     show: function (on) { return window.SecFloat && SecFloat.show ? SecFloat.show("modelmgr", on) : false; }, apply: apply, search: cvSearch }, pure);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);

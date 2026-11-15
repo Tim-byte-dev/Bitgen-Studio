@@ -94,43 +94,45 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     const p = await ctx.newPage(); const errs = []; p.on("pageerror", (e) => errs.push(e.message));
     const ev = (f, a) => p.evaluate(f, a);
     await p.goto(URL0);
-    await p.waitForFunction(() => window.H3OrModels && window.H3OrMine && document.getElementById("tRgen") && window.SecFloat && SecFloat.windows.rgen, null, { timeout: 30000 });
+    await p.waitForFunction(() => window.H3OrModels && window.H3OrMine && window.H3MmOr && window.H3ModelMgr && document.getElementById("tRgen") && window.SecFloat && SecFloat.windows.rgen, null, { timeout: 30000 });
     await sleep(1200);
     await p.click("#tRgen");
     await p.waitForSelector("#rhOrBtn", { timeout: 15000 }).catch(() => {});
     check("☁ Remote generation has the OpenRouter models… button under Runs on", await ev(() => { const b = document.getElementById("rhOrBtn"); return !!b && b.closest("#rgdWhere") && b.offsetParent !== null; }));
+    // 2.792.0: no dialog - the button opens 🧩 Model manager ▸ ☁ OpenRouter (static/mmor.js)
     await p.click("#rhOrBtn");
-    await sleep(500); await p.click("#orRefresh");   // OpenRouter's lists asked again (the studio keeps them 10 minutes)
-    await p.waitForFunction(() => document.querySelectorAll("#orAvail li[data-id]").length === 2, null, { timeout: 20000 }).catch(() => {});
-    const tabs = await ev(() => [...document.querySelectorAll("#orTypes [data-ort]")].map((x) => x.dataset.ort));
-    check("the dialog: type tabs Image / Video / LLM / Vision LLM", tabs.join() === "image,video,llm,vlm", tabs);
-    const fams = await ev(() => [...document.querySelectorAll("#orFams [data-orf]")].map((x) => x.textContent));
-    check("…family tabs: All + each maker with its count", fams[0] === "All 2" && fams.includes("ByteDance Seed 1") && fams.includes("Google 1"), fams);
-    const av = await ev(() => [...document.querySelectorAll("#orAvail li[data-id]")].map((li) => ({ id: li.dataset.id, name: li.querySelector("b").textContent, price: li.querySelector(".orPrice").textContent, cls: li.querySelector(".orPrice").className })));
+    await p.waitForFunction(() => document.querySelector("#mmOr .mmorre"), null, { timeout: 15000 }).catch(() => {});
+    check("…it opens 🧩 Model manager on its ☁ OpenRouter tab (no dialog any more)", await ev(() => !document.getElementById("orDlg") && getComputedStyle(document.getElementById("mmOr")).display !== "none" && document.querySelector('.mmgr [data-mmtab="openrouter"]').classList.contains("on")));
+    await ev(() => document.querySelector("#mmOr .mmorre").click());   // OpenRouter's lists asked again (the studio keeps them 10 minutes)
+    await p.waitForFunction(() => document.querySelectorAll("#mmOr .mmorc").length === 2, null, { timeout: 20000 }).catch(() => {});
+    const tabs = await ev(() => [...document.querySelectorAll("#mmOr [data-ortype]")].map((x) => x.dataset.ortype));
+    check("the tab: types Image / Video / LLM / Vision LLM", tabs.join() === "image,video,llm,vlm", tabs);
+    const fams = await ev(() => [...document.querySelectorAll("#mmOr .mmorfam option")].map((x) => x.textContent));
+    check("…the family list: every family + each maker with its count", fams[0] === "every family" && fams.includes("ByteDance Seed (1)") && fams.includes("Google (1)"), fams);
+    const av = await ev(() => [...document.querySelectorAll("#mmOr .mmorc")].map((c) => ({ id: c.dataset.orid, name: c.querySelector("b").textContent, price: c.querySelector(".orp").textContent, cls: c.querySelector(".orp").className })));
     const sd = av.find((x) => x.id === "bytedance-seed/seedream-4.5"), gf = av.find((x) => x.id === "google/flash-image");
-    check("…Available: names, a paid model's price per picture, a free one in green", sd && sd.name === "ByteDance Seed: Seedream 4.5" && sd.price === "$0.04 / image" && /paid/.test(sd.cls) && gf && gf.price === "free" && /free/.test(gf.cls), av);
-    await p.click('#orFams [data-orf="google"]');
-    check("…a family tab shows only its models", (await ev(() => [...document.querySelectorAll("#orAvail li[data-id]")].map((x) => x.dataset.id))).join() === "google/flash-image");
-    await p.click('#orFams [data-orf="all"]');
-    await p.dblclick('#orAvail li[data-id="bytedance-seed/seedream-4.5"]');
-    await p.waitForFunction(() => document.querySelectorAll("#orMine li[data-id]").length === 1, null, { timeout: 8000 }).catch(() => {});
-    const my = await ev(() => [...document.querySelectorAll("#orMine li[data-id]")].map((li) => ({ id: li.dataset.id, del: !!li.querySelector("[data-ordel]") && li.lastElementChild.matches("[data-ordel]"), t: li.textContent })));
-    check("double-click adds it to My models - with 🗑 at the end, openrouter/<id>", my.length === 1 && my[0].id === "bytedance-seed/seedream-4.5" && my[0].del && /openrouter\/bytedance-seed\/seedream-4\.5/.test(my[0].t), my);
-    check("…✓ on the left, Image (1) on its tab", (await ev(() => !!document.querySelector('#orAvail li[data-id="bytedance-seed/seedream-4.5"] .mine'))) && /Image \(1\)/.test(await ev(() => document.querySelector('#orTypes [data-ort="image"]').textContent)));
-    await p.dblclick('#orAvail li[data-id="google/flash-image"]'); await sleep(800);
-    await p.click('#orMine [data-ordel="google/flash-image"]'); await sleep(800);
-    check("🗑 takes one off", (await ev(() => [...document.querySelectorAll("#orMine li[data-id]")].map((x) => x.dataset.id))).join() === "bytedance-seed/seedream-4.5");
-    await p.click('#orTypes [data-ort="video"]');
-    await sleep(500); await p.click("#orRefresh");
-    await p.waitForFunction(() => document.querySelectorAll("#orAvail li[data-id]").length === 2 && document.querySelector('#orAvail li[data-id="google/veo-3.1"]'), null, { timeout: 15000 }).catch(() => {});
-    check("Video tab: $ per second", /\$0\.4 \/ second/.test(await ev(() => (document.querySelector('#orAvail li[data-id="google/veo-3.1"] .orPrice') || {}).textContent || "")));
-    await p.dblclick('#orAvail li[data-id="google/veo-3.1"]'); await sleep(900);
-    await p.click('#orTypes [data-ort="llm"]');
-    await p.waitForFunction(() => document.querySelector('#orAvail li[data-id="big/paid"]'), null, { timeout: 15000 }).catch(() => {});
-    check("LLM tab: $ in / out per M tokens", /\$3 in \/ \$15 out per M tokens/.test(await ev(() => (document.querySelector('#orAvail li[data-id="big/paid"] .orPrice') || {}).textContent || "")));
-    await p.dblclick('#orAvail li[data-id="big/paid"]'); await sleep(900);
-    await p.click("#orDlgX"); await sleep(1800);
-    check("closing: the dialog shuts", !(await ev(() => document.getElementById("orDlg").open)));
+    check("…names, a paid model's price per picture, a free one marked free", sd && sd.name === "ByteDance Seed: Seedream 4.5" && sd.price === "$0.04 / image" && /paid/.test(sd.cls) && gf && gf.price === "free" && /free/.test(gf.cls), av);
+    await ev(() => { const f = document.querySelector("#mmOr .mmorfam"); f.value = "google"; f.dispatchEvent(new Event("change", { bubbles: true })); });
+    check("…a family shows only its models", (await ev(() => [...document.querySelectorAll("#mmOr .mmorc")].map((x) => x.dataset.orid))).join() === "google/flash-image");
+    await ev(() => { const f = document.querySelector("#mmOr .mmorfam"); f.value = ""; f.dispatchEvent(new Event("change", { bubbles: true })); });
+    await ev(() => document.querySelector('#mmOr [data-oradd="bytedance-seed/seedream-4.5"]').click());
+    await p.waitForFunction(() => document.querySelector('#mmOr .mmorc.orpaid[data-orid="bytedance-seed/seedream-4.5"]'), null, { timeout: 8000 }).catch(() => {});
+    const my = (await api("/api/ormodels/mine")).mine.image;
+    check("＋ adds it to your models - paid = framed dark orange, ✓ yours + 🗑", my.length === 1 && my[0].id === "bytedance-seed/seedream-4.5" && await ev(() => { const c = document.querySelector('#mmOr .mmorc.orpaid[data-orid="bytedance-seed/seedream-4.5"]'); return !!c && /✓ yours/.test(c.textContent) && !!c.querySelector("[data-orrm]") && /179, 89, 0|b35900/i.test(getComputedStyle(c).borderTopColor + getComputedStyle(c).boxShadow); }), my);
+    check("…Image (1) on its type", /Image \(1\)/.test(await ev(() => document.querySelector('#mmOr [data-ortype="image"]').textContent)));
+    await ev(() => document.querySelector('#mmOr [data-oradd="google/flash-image"]').click()); await sleep(900);
+    check("…a free one of yours = framed dark green", await ev(() => !!document.querySelector('#mmOr .mmorc.orfree[data-orid="google/flash-image"]')));
+    await ev(() => document.querySelector('#mmOr [data-orrm="google/flash-image"]').click()); await sleep(900);
+    check("🗑 takes one off", ((await api("/api/ormodels/mine")).mine.image || []).map((m) => m.id).join() === "bytedance-seed/seedream-4.5");
+    await ev(() => document.querySelector('#mmOr [data-ortype="video"]').click());
+    await sleep(500); await ev(() => document.querySelector("#mmOr .mmorre").click());
+    await p.waitForFunction(() => document.querySelectorAll("#mmOr .mmorc").length === 2 && document.querySelector('#mmOr .mmorc[data-orid="google/veo-3.1"]'), null, { timeout: 15000 }).catch(() => {});
+    check("Video: $ per second", /\$0\.4 \/ second/.test(await ev(() => (document.querySelector('#mmOr .mmorc[data-orid="google/veo-3.1"] .orp') || {}).textContent || "")));
+    await ev(() => document.querySelector('#mmOr [data-oradd="google/veo-3.1"]').click()); await sleep(900);
+    await ev(() => document.querySelector('#mmOr [data-ortype="llm"]').click());
+    await p.waitForFunction(() => document.querySelector('#mmOr .mmorc[data-orid="big/paid"]'), null, { timeout: 15000 }).catch(() => {});
+    check("LLM: $ in / out per M tokens", /\$3 in \/ \$15 out per M tokens/.test(await ev(() => (document.querySelector('#mmOr .mmorc[data-orid="big/paid"] .orp') || {}).textContent || "")));
+    await ev(() => document.querySelector('#mmOr [data-oradd="big/paid"]').click()); await sleep(1800);
     const lists1 = await ev(() => ({
       ckpt: [...document.querySelectorAll("#imgCkptCombo .cmfile option")].map((o) => o.value),
       ckGroup: !!document.querySelector('#imgCkptCombo .cmfile optgroup[data-or]'),
@@ -191,13 +193,16 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     const hh = await api("/api/remotehosts"), oo = await api("/api/openrouter");
     check("an LLM picked from your OpenRouter list: the LLM runs on OpenRouter with it", hh.hosts.llm === "openrouter" && oo.model === "big/paid", { llm: hh.hosts.llm, model: oo.model });
 
-    // ---- a model OpenRouter no longer lists is taken off
+    // ---- 2.792.0: a model OpenRouter no longer lists is marked dead (red), not taken off; left out of the dropdowns
     S.dropVeo = true;
-    await ev(() => H3OrModels.open("video")); await sleep(600);
-    await p.click("#orRefresh");
-    await p.waitForFunction(() => /no longer lists/.test((document.getElementById("orMsg") || {}).textContent || ""), null, { timeout: 15000 }).catch(() => {});
-    check("⟳: a model OpenRouter no longer lists is taken off - the line says which", /no longer lists Google: Veo 3\.1/.test(await ev(() => document.getElementById("orMsg").textContent)) && (await api("/api/ormodels/mine")).mine.video.length === 0);
-    await p.click("#orDlgX"); await sleep(600);
+    await ev(() => H3OrModels.open("video")); await sleep(800);
+    await ev(() => document.querySelector("#mmOr .mmorre").click());
+    await p.waitForFunction(() => document.querySelector('#mmOr .mmorc.ordead[data-orid="google/veo-3.1"]'), null, { timeout: 15000 }).catch(() => {});
+    const vm = (await api("/api/ormodels/mine")).mine.video || [];
+    check("⟳: a model OpenRouter no longer lists stays in your list marked dead - framed dark red, ✗ no longer on OpenRouter + 🗑", vm.length === 1 && vm[0].dead === true
+      && await ev(() => { const c = document.querySelector('#mmOr .mmorc.ordead[data-orid="google/veo-3.1"]'); return !!c && /no longer on OpenRouter/.test(c.textContent) && !!c.querySelector("[data-orrm]"); }), vm);
+    await ev(() => H3OrMine.load()); await sleep(800);
+    check("…left out of the video Model list", !(await ev(() => [...document.querySelectorAll("#vidModelList option")].map((o) => o.value))).includes("openrouter/google/veo-3.1"));
     check("no page errors", errs.length === 0, errs);
   } finally {
     await b.close();

@@ -5387,6 +5387,17 @@ NVIDIA のグラフィックカードが 2 枚以上あるコンピューター�
 - Settings ▸ ComfyUI にカスタムの起動コマンドがある場合、bitGen はカード専用の ComfyUI を用意できず、レンダリングでその旨が表示されます。起動コマンドを空にする（bitGen が ComfyUI の main.py を直接実行します）か、通常の Local を選んでください。
 - RunPod のポッドや OpenRouter に送られるレンダリングには影響しません。
 
+## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
+<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 227756892371 -->
+
+OpenRouter のモデルのダイアログはなくなりました。🧩 Model manager ▸ **☁ OpenRouter** で自分の OpenRouter モデルを管理します（☁ Remote generation ▸ **☁ OpenRouter models…** はこのタブを開きます）。**＋** で追加した自分のモデルは、そのタブと Models タブで枠と色付きで表示されます。
+
+- **濃い緑** - 自分のモデル、無料。
+- **濃いオレンジ** - 自分のモデル、有料。
+- **濃い赤** - 自分のモデルだが、OpenRouter にもう載っていない。
+
+OpenRouter に載らなくなったモデルは、自動では一覧から外されなくなりました。🗑 で外すまで、タブの先頭に「✗ no longer on OpenRouter」と赤で残ります（どれが赤になったかは 1 行で表示されます）。ドロップダウンからは除かれ、そのモデルでのレンダリングは理由を添えて拒否されます。OpenRouter に再び載ると、緑またはオレンジに戻ります。フィルターの下の小さな凡例で各色の意味が分かります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

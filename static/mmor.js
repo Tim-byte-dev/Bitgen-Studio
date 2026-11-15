@@ -8,7 +8,12 @@
  *       <base>/chat/completions); then it is in Basic Settings' / the prompt docker's dropdowns as openrouter/<id> (static/ormine.js)
  *       and on the Models tab under ☐ OpenRouter
  *   ✓ 🗑 a model already in your list: 🗑 takes it off
- * Pure (Node: scripts/test-mmsources790.js): cardHtml.
+ * 2.792.0 (Tim: "no need for the openrouter dialog anymore, model manager should be able to look after it, highlight the free models
+ *   the open router that we selected (+) to be in our model list with green, paid models with orange and dead models with red, use
+ *   the darker green , red and orange"): YOUR models are framed + tinted - free dark green, paid dark orange, dead (OpenRouter no
+ *   longer lists it) dark red, the dead ones first (🗑 takes them off); the Models tab's OpenRouter cards the same (.mmcard.orfree …).
+ *   static/ormodels.js's dialog is gone - ☁ Remote generation's button opens this tab.
+ * Pure (Node: scripts/test-mmsources790.js, test-orcolors792.js): cardHtml, stateOf, COLORS.
  */
 (function (root, factory) {
   var api = factory();
@@ -18,12 +23,17 @@
   "use strict";
   var TYPES = [["image", "Image"], ["video", "Video"], ["llm", "LLM"], ["vlm", "Vision LLM"]];
   var esc = function (s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+  var COLORS = { free: "#1e7b34", paid: "#b35900", dead: "#a32020" };   // the darker green / orange / red
+  /** one of yours: free | paid | dead; not yours: "" (pure) */
+  function stateOf(m, mine) { return !mine ? "" : (mine.dead || m.dead) ? "dead" : (m.free || mine.free) ? "free" : "paid"; }
   function cardHtml(m, mine) {
-    return '<div class="mmorc' + (mine ? " mine" : "") + '" data-orid="' + esc(m.id) + '" title="' + esc(m.id + (m.desc ? " - " + m.desc.slice(0, 300) : "")) + '">'
+    var st = typeof mine === "string" ? mine : mine ? stateOf(m, mine === true ? m : mine) : "";
+    return '<div class="mmorc' + (st ? " mine or" + st : "") + '" data-orid="' + esc(m.id) + '" title="' + esc((st === "dead" ? "OpenRouter no longer lists it - 🗑 takes it off your models. " : "") + m.id + (m.desc ? " - " + m.desc.slice(0, 300) : "")) + '">'
       + '<div class="nm"><b>' + esc(m.name || m.id) + "</b><small>" + esc(m.id) + "</small></div>"
       + '<div class="mt"><span class="orp ' + (m.free ? "free" : "paid") + '">' + esc(m.free ? "free" : m.price || "paid") + "</span>" + (m.maker ? '<span class="tag">' + esc(m.maker) + "</span>" : "") + "</div>"
       + (m.desc ? '<div class="ds">' + esc(m.desc.slice(0, 160)) + "</div>" : "")
-      + (mine ? '<div class="ac"><span class="ok" title="In your models">✓ yours</span><button type="button" class="ghost" data-orrm="' + esc(m.id) + '" title="Take it off your models">🗑</button></div>'
+      + (st === "dead" ? '<div class="ac"><span class="gone">✗ no longer on OpenRouter</span><button type="button" class="ghost" data-orrm="' + esc(m.id) + '" title="Take it off your models">🗑</button></div>'
+        : st ? '<div class="ac"><span class="ok" title="In your models">✓ yours</span><button type="button" class="ghost" data-orrm="' + esc(m.id) + '" title="Take it off your models">🗑</button></div>'
         : '<div class="ac"><button type="button" class="ghost orAdd" data-oradd="' + esc(m.id) + '" title="＋ Add ' + esc(m.name || m.id) + ' to your models (its endpoint is kept with it)" aria-label="Add ' + esc(m.name || m.id) + '">＋</button></div>')
       + "</div>";
   }
@@ -33,7 +43,11 @@
     + ".mmorc.mine{border-color:var(--accent,#e8a33d)}.mmorc .nm{display:flex;flex-direction:column;min-width:0}.mmorc .nm b,.mmorc .nm small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
     + ".mmorc .nm small{color:var(--dim)}.mmorc .mt{display:flex;gap:5px;flex-wrap:wrap}.mmorc .orp.free{color:#7c7}.mmorc .orp.paid{color:var(--accent,#e8a33d)}"
     + ".mmorc .ds{color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mmorc .ac{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:auto}"
-    + ".mmorc .ac button{width:auto;padding:0 10px}.mmorc .ok{color:#7c7}.mmortypes button[aria-selected=true]{border-color:var(--accent,#e8a33d);color:var(--accent,#e8a33d)}";
+    + ".mmorc .ac button{width:auto;padding:0 10px}.mmorc .ok{color:#7c7}.mmortypes button[aria-selected=true]{border-color:var(--accent,#e8a33d);color:var(--accent,#e8a33d)}"
+    + ".mmorc.orfree,.mmcard.orfree{border-color:" + COLORS.free + "!important;box-shadow:inset 4px 0 0 " + COLORS.free + ";background:rgba(30,123,52,.16)}"
+    + ".mmorc.orpaid,.mmcard.orpaid{border-color:" + COLORS.paid + "!important;box-shadow:inset 4px 0 0 " + COLORS.paid + ";background:rgba(179,89,0,.16)}"
+    + ".mmorc.ordead,.mmcard.ordead{border-color:" + COLORS.dead + "!important;box-shadow:inset 4px 0 0 " + COLORS.dead + ";background:rgba(163,32,32,.18)}"
+    + ".mmorc .gone{color:#e06060}.mmorleg{display:flex;gap:10px;font-size:.7rem;color:var(--dim)}.mmorleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}";
 
   function live(win) {
     var doc = win.document, S = { type: "image", fam: "", q: "", free: true, paid: true, sort: "name", v: null, busy: false, host: null, say: null, onChange: null };
@@ -50,9 +64,12 @@
     function mineIds() { return ((S.v && S.v.mine) || []).map(function (m) { return m.id; }); }
     function drawGrid() {
       var g = S.host && S.host.querySelector(".mmorgrid"); if (!g) return;
-      var v = S.v || {}, ids = mineIds(), L = filtered();
+      var v = S.v || {}, ids = mineIds(), L = filtered(), by = {};
+      ((v.mine) || []).forEach(function (m) { by[m.id] = m; });
+      var words = String(S.q || "").toLowerCase().split(/\s+/).filter(Boolean);
+      var dead = ((v.mine) || []).filter(function (m) { return m.dead && words.every(function (w) { return (m.id + " " + (m.name || "")).toLowerCase().indexOf(w) >= 0; }); });
       var n = S.host.querySelector(".mmorn"); if (n) n.textContent = L.length + " of " + (v.models || []).length + (ids.length ? " · " + ids.length + " yours" : "");
-      g.innerHTML = L.length ? L.slice(0, 400).map(function (m) { return cardHtml(m, ids.indexOf(m.id) >= 0); }).join("")
+      g.innerHTML = (L.length || dead.length) ? dead.map(function (m) { return cardHtml(m, "dead"); }).join("") + L.slice(0, 400).map(function (m) { return cardHtml(m, by[m.id] ? stateOf(m, by[m.id]) : ""); }).join("")
         : '<div class="mmmsg" style="grid-column:1/-1">' + (S.busy ? "asking OpenRouter…" : v.error ? "OpenRouter did not answer - " + esc(v.error) : (v.models || []).length ? "nothing matches" : "no models") + "</div>";
     }
     function draw() {
@@ -66,13 +83,14 @@
         + '<select class="mmorsort" aria-label="Sort"><option value="name">free first, A-Z</option><option value="price">cheapest</option><option value="newest">newest</option></select>'
         + '<button type="button" class="ghost mmorre" title="Ask OpenRouter again">⟳</button><span class="mmorn" style="color:var(--dim);font-size:.72rem"></span></div>'
         + (v.key === false ? '<div class="mmmsg">Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter.</div>' : "")
+        + '<div class="mmorleg"><span><i style="background:' + COLORS.free + '"></i>yours, free</span><span><i style="background:' + COLORS.paid + '"></i>yours, paid</span><span><i style="background:' + COLORS.dead + '"></i>yours, no longer on OpenRouter</span></div>'
         + '<div class="mmorgrid"></div>';
       S.host.querySelector(".mmorsort").value = S.sort;
       drawGrid();
     }
     function load(force) {
       S.busy = true; draw();
-      return jget("/api/ormodels?type=" + S.type + (force ? "&refresh=1" : "")).then(function (v) { S.v = v; if (v.removed && v.removed.length) say("taken off your models (OpenRouter no longer lists them): " + v.removed.map(function (m) { return m.name; }).join(", ")); })
+      return jget("/api/ormodels?type=" + S.type + (force ? "&refresh=1" : "")).then(function (v) { S.v = v; if (v.removed && v.removed.length) { var names = v.removed.map(function (m) { return m.name; }).join(", "); changed().then(function () { say("OpenRouter no longer lists " + names + " - red below (🗑 takes it off your models); left out of the dropdowns", "bad"); }); } })
         .catch(function (e) { S.v = { error: e.message, models: [] }; }).then(function () { S.busy = false; draw(); });
     }
     /** the dropdowns + the Models tab read your list again -> a promise (the message comes after the Models tab's own status) */
@@ -81,17 +99,19 @@
       var p = null; if (S.onChange) try { p = S.onChange(); } catch (e) { p = null; }
       return Promise.resolve(p).catch(function () { return null; });
     }
+    /** the type buttons' counts follow your list (＋ / 🗑) */
+    function counted(mine) { ((S.v && S.v.types) || []).forEach(function (t) { if (t.id === S.type) t.n = (mine || []).length; }); }
     function add(id) {
       return post("/api/ormodels/add", { type: S.type, id: id }).then(function (j) {
         if (j.error) { say(j.error, "bad"); return; }
-        S.v.mine = j.mine;
+        S.v.mine = j.mine; counted(j.mine);
         var e = j.entry || (j.mine || []).filter(function (m) { return m.id === id; })[0] || {};
-        drawGrid();
+        draw();
         return changed().then(function () { say("＋ " + (e.name || id) + " is in your models - renders at " + (e.endpoint || "OpenRouter") + "; listed as openrouter/" + id, "ok"); });
       });
     }
     function rm(id) {
-      return post("/api/ormodels/remove", { type: S.type, id: id }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } S.v.mine = j.mine; drawGrid(); return changed().then(function () { say("🗑 " + id + " taken off your models", "ok"); }); });
+      return post("/api/ormodels/remove", { type: S.type, id: id }).then(function (j) { if (j.error) { say(j.error, "bad"); return; } S.v.mine = j.mine; counted(j.mine); draw(); return changed().then(function () { say("🗑 " + id + " taken off your models", "ok"); }); });
     }
     function bind(host) {
       if (host._mmor) return; host._mmor = true;
@@ -110,11 +130,12 @@
       host.addEventListener("keydown", function (e) { e.stopPropagation(); });
     }
     /** modelmgr.js paint(): the tab's body */
+    css();   // 2.792.0: the Models tab's OpenRouter cards use the colours too
     function render(host, o) {
       css(); S.host = host; S.say = (o && o.say) || null; S.onChange = (o && o.onChange) || null; bind(host);
       if (!S.v) load(false); else draw();
     }
-    return { render: render, load: load, add: add, state: function () { return S; }, cardHtml: cardHtml };
+    return { render: render, load: load, add: add, state: function () { return S; }, cardHtml: cardHtml, stateOf: stateOf, COLORS: COLORS };
   }
-  return { cardHtml: cardHtml, live: live };
+  return { cardHtml: cardHtml, stateOf: stateOf, COLORS: COLORS, live: live };
 });

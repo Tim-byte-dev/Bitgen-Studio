@@ -436,6 +436,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **已终止 pod 的文件保留为 NO_Pod** — 终止 pod 时会询问：把它的模型和 LoRA 连同 pod 的创建方式以 NO_Pod (<old name>)/<file> 的形式保留在 Basic Settings 的列表中，还是移除；选择 NO_Pod 文件会显示该创建方式并询问——Make the pod again 会在下一次渲染时按原样重新创建并放回其文件（先在线查找，否则从本机发送）；绝不会未经询问就重新创建。*Where:* 🖥 PODS, Basic Settings. *Since:* 2.789.0
 - **Model manager：Local、RunPod、OpenRouter + ☁ OpenRouter 标签页** — Models / LoRAs 标签页把本机文件、pod 上的文件和你的 OpenRouter 模型一起列出并加标签；用 ☐ Local ☐ RunPod ☐ OpenRouter ☐ All 筛选；🗑 删除本机文件，或把 pod 文件 / OpenRouter 模型从列表中移除；☁ OpenRouter 标签页按类型和系列列出 OpenRouter 的模型，带 Free / Paid 和排序，＋ 把模型连同端点加入你的模型。*Where:* 🧩 Model manager. *Since:* 2.790.0
 - **多块显卡：Local - <card>** — 有两块或更多 NVIDIA 显卡时，☁ Runs on ▸ Image / Video / Music 可以选择每块显卡；选中的显卡有专属的 ComfyUI（--cuda-device、独立端口和日志），在该类工作第一次渲染时启动并保持运行——图片在一块显卡上，视频在另一块上。*Where:* ☁ Remote generation. *Since:* 2.791.0
+- **你的 OpenRouter 模型显示为绿、橙、红** — OpenRouter 对话框已移除：🧩 Model manager ▸ ☁ OpenRouter 管理你的列表（☁ Remote generation 的按钮会打开它）；你的模型在该标签页和 Models 标签页中以深绿（免费）、深橙（付费）或深红（OpenRouter 已不再列出——保留到你 🗑 为止，不出现在下拉列表中，渲染被拒绝）的边框显示。*Where:* 🧩 Model manager. *Since:* 2.792.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

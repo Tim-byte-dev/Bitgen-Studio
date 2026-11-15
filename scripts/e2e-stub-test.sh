@@ -13988,6 +13988,11 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui791-ui.js > /tmp/ui791ui.log 2
   && ok "2.791.0 browser test: Runs on ▸ Local - <card>, a picture waits for that card's own ComfyUI and is sent to it - SKIP on a server with one card (run it with H3_TEST_GPUS + H3_GPU_CARD_CMD, see the file)" \
   || { bad "2.791.0 local multi-GPU browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui791ui.log | head -14; }
 
+# ---- 2.792.0 (Tim: "i think there is no need for the openrouter dialog anymore, model manager should be able to look after it, highlight the free models ... green, paid models with orange and dead models with red, use the darker green , red and orange")
+node scripts/test-orcolors792.js > /tmp/orcolors792.log 2>&1 \
+  && ok "2.792.0 OpenRouter in the Model manager units: dead marked not removed (markDead), refused for a render, out of the dropdowns; the darker green / orange / red on the tab's + the Models tab's cards; the dialog gone (the button opens the tab)" \
+  || { bad "2.792.0 OpenRouter colours units"; grep -a "^FAIL" -A1 /tmp/orcolors792.log | head -12; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
