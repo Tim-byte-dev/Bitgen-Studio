@@ -9004,6 +9004,16 @@ Before a paid render a box names the model and about what it will cost (for exam
 
 A model OpenRouter no longer lists is taken off your list - when the dialog asks OpenRouter, and once each time the studio opens - and a note says which. Nothing is taken off when OpenRouter cannot be reached.
 
+## Pod models in your lists, and ☐ Remote (2.787.0)
+
+Each of your RunPod pods keeps an **inventory**: the models, VAEs, text encoders and LoRAs on it and the styles it serves. PODS ▸ a pod ▸ **🗂 Inventory** shows it, grouped (Models / VAE / Text encoders / LoRAs) with sizes - ✓ a file the pod listed itself, ⇪ a file bitGen sent it. While the pod runs, **⟳** asks the pod again; a stopped pod shows what was known last. The inventory fills in by itself whenever the pod lists its files and whenever bitGen puts a file on it.
+
+The pod's **models and LoRAs** (not its VAEs or text encoders) then show in Basic Settings' lists as `<pod name>/<file>` - for example `Krea pod/Models/mine_v1.safetensors` - next to this computer's, with the pod as a folder of its own in the folder filter. Pick one and that render goes to that pod (a stopped pod is started first); the Queue says which pod and why. The file is judged by its own name, not the pod's - a pod called "Krea pod" does not make a file a Krea model. A model and a LoRA from two different pods in one render is refused with a note saying so.
+
+Basic Settings ▸ under **Use model** and under **Use temporary LoRAs** (pictures and video) there is now **☐ Remote** with a pod list next to it. Tick it, pick a pod, and a model or LoRA of **this computer** that you pick renders on that pod instead: bitGen looks for the file on the pod first, then on Civitai / Hugging Face for the pod to download, and otherwise uploads it from this computer - then renders there. Untick it and your local picks render here as before.
+
+A pod that is terminated leaves the lists.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

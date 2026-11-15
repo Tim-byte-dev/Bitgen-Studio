@@ -122,6 +122,7 @@ function mount(app) {
   require("./layouts").guard(app);     // 2.587.0: FIRST - a layout being applied holds off the page's own layout saves; a fresh install starts from layouts/default.json
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
   app.use(express.json());
+  require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
   app.use(require("../lib/samplers").middleware);
@@ -679,6 +680,9 @@ function mount(app) {
     if (bo && bo.model)
       videoStyle = basicOverride.withStyle(videoStyle, bo, { synth: { id: null, name: "(Basic Settings model)", kind: "video", engine: "comfy",
         arch: "minimax-h3", workflow: "", workflows: {}, phases: [{}], te: [""], vae: "", loras: [], negative: "", synthetic: true } });
+    // 2.787.0: which model / LoRAs came from Basic Settings - a "<pod>/<file>" pick or ☐ Remote sends the render to a pod (lib/podPick.js)
+    if (videoStyle && bo && bo.model) videoStyle = Object.assign({}, videoStyle, { basic_model: bo.model });
+    if (videoStyle && extraV.length) videoStyle = Object.assign({}, videoStyle, { temp_loras: extraV.map((l) => l.path || l.name || l.file).filter(Boolean) });
     // 2.588.0: @name in the prompt = a RefMod from the library (refmod/<name>/, lib/refmodLib.js) - an H3 render splices it in
     let libMods = [], libNotes = [];
     try {
@@ -1978,13 +1982,16 @@ function mount(app) {
     // FLUX 3 Klein or Qwen edit workflow can only fail; it is left out for this render and the log says why
     let overrideNote = "";
     if (b.model && typeof b.model === "string" && b.model.trim() && !b.model.includes("..")) {
-      const mf = modelFit.fit(styled, b.model.trim());
+      // 2.787.0: a pod's file ("<pod name>/<file>") is judged by the file - the pod's name is no family (lib/podInv.js)
+      let fitName = b.model.trim();
+      try { const PI = require("../lib/podInv"); const ref = PI.resolve(fitName, PI.live(), PI.MODEL_CATS); if (ref) fitName = ref.rel; } catch { /* no pods */ }
+      const mf = modelFit.fit(styled, fitName);
       if (mf.ok) styled = Object.assign({}, styled, { model: b.model.trim().slice(0, 300), model_override: true });
       else overrideNote = modelFit.note(styled, mf, b.model.trim());
     }
     // 2.111.0: temporary LoRAs from Basic Settings ride along, after the style's own
     const extra = tempLoras.normalize(b.extra_loras);
-    if (extra.length) styled = Object.assign({}, styled, { loras: tempLoras.merge(styled.loras, extra) });
+    if (extra.length) styled = Object.assign({}, styled, { loras: tempLoras.merge(styled.loras, extra), temp_loras: extra.map((l) => l.path || l.name || l.file).filter(Boolean) });   // 2.787.0: temp_loras - Remote (lib/podPick.js)
     if (b.mm_override === true) styled = Object.assign({}, styled, { mm_override: true });   // 2.518.0: the 🧩 Model manager's selection
     const p = { mode: "image", prompt, style: styled,
                 style_id: style.id, style_name: style.name };

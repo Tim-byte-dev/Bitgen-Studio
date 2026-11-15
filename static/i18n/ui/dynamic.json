@@ -5412,79 +5412,79 @@
   },
   {
    "s": "OpenRouter models",
-   "src": "static/ormodels.js:67"
+   "src": "static/ormodels.js:68"
   },
   {
    "s": "Paid",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Free first, by name",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Cheapest first",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Newest first",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Available",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Double-click a model (or Enter) to add it to yours",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "My models",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "In the dropdowns as openrouter/",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "model",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Close - the dropdowns get your list",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Search models",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Ask OpenRouter again",
-   "src": "static/ormodels.js:68"
+   "src": "static/ormodels.js:69"
   },
   {
    "s": "Nothing matches",
-   "src": "static/ormodels.js:115"
+   "src": "static/ormodels.js:116"
   },
   {
    "s": "In your models",
-   "src": "static/ormodels.js:117"
+   "src": "static/ormodels.js:118"
   },
   {
    "s": "None yet - double-click a model on the left",
-   "src": "static/ormodels.js:123"
-  },
-  {
-   "s": "openrouter/",
    "src": "static/ormodels.js:124"
   },
   {
+   "s": "openrouter/",
+   "src": "static/ormodels.js:125"
+  },
+  {
    "s": "Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter",
-   "src": "static/ormodels.js:148"
+   "src": "static/ormodels.js:149"
   },
   {
    "s": "Pick the OpenRouter models you use - pictures, video, LLM, vision LLM (free and paid)",
-   "src": "static/ormodels.js:191"
+   "src": "static/ormodels.js:192"
   },
   {
    "s": "Use model",
@@ -5629,6 +5629,30 @@
   {
    "s": "Sure? Press again",
    "src": "static/podfiles.js:143"
+  },
+  {
+   "s": "Ask the pod for its files now",
+   "src": "static/podinv.js:21"
+  },
+  {
+   "s": "No files known yet",
+   "src": "static/podinv.js:29"
+  },
+  {
+   "s": "Styles on this pod",
+   "src": "static/podinv.js:30"
+  },
+  {
+   "s": "Its models and LoRAs are in Basic Settings' lists as",
+   "src": "static/podinv.js:31"
+  },
+  {
+   "s": "asking the pod for its files",
+   "src": "static/podinv.js:40"
+  },
+  {
+   "s": "loading",
+   "src": "static/podinv.js:40"
   },
   {
    "s": "Reading the pod's ComfyUI",
@@ -5847,10 +5871,6 @@
    "src": "static/podpresets.js:112"
   },
   {
-   "s": "Styles on this pod",
-   "src": "static/podpresets.js:114"
-  },
-  {
    "s": "Add a style",
    "src": "static/podpresets.js:117"
   },
@@ -6007,36 +6027,44 @@
    "src": "static/podsdock.js:397"
   },
   {
+   "s": "Inventory",
+   "src": "static/podsdock.js:399"
+  },
+  {
+   "s": "What bitGen knows is on this pod - models, VAE, text encoders, LoRAs, its styles (2.787.0)",
+   "src": "static/podsdock.js:399"
+  },
+  {
    "s": "Save as preset",
-   "src": "static/podsdock.js:399"
-  },
-  {
-   "s": "Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated",
-   "src": "static/podsdock.js:399"
-  },
-  {
-   "s": "Delete the pod and everything on it",
    "src": "static/podsdock.js:400"
   },
   {
+   "s": "Keep this pod as a preset (📦 Presets): its template, GPU, how many, cloud, disks and styles - ▶ there makes it again after it is terminated",
+   "src": "static/podsdock.js:400"
+  },
+  {
+   "s": "Delete the pod and everything on it",
+   "src": "static/podsdock.js:401"
+  },
+  {
    "s": "asking the pod how busy it is",
-   "src": "static/podsdock.js:504"
+   "src": "static/podsdock.js:506"
   },
   {
    "s": "no figures from the pod yet",
-   "src": "static/podsdock.js:516"
+   "src": "static/podsdock.js:518"
   },
   {
    "s": "Cancel the render",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "s": "Do not render it now",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "s": "A render of",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "s": "What this pod is for",
@@ -16959,10 +16987,6 @@
    "src": "ext/musicdock/musicdock.js:81"
   },
   {
-   "s": "loading",
-   "src": "ext/musicdock/musicdock.js:263"
-  },
-  {
    "s": "none yet — Save one first —",
    "src": "ext/musicdock/musicdock.js:267"
   },
@@ -24750,59 +24774,59 @@
   },
   {
    "p": "OpenRouter did not answer - {0}",
-   "src": "static/ormodels.js:115"
+   "src": "static/ormodels.js:116"
   },
   {
    "p": "lengths {0} s",
-   "src": "static/ormodels.js:132"
+   "src": "static/ormodels.js:133"
   },
   {
    "p": "aspect {0}",
-   "src": "static/ormodels.js:134"
+   "src": "static/ormodels.js:135"
   },
   {
    "p": "up to {0} reference picture",
-   "src": "static/ormodels.js:135"
-  },
-  {
-   "p": "up to {0} reference pictures",
-   "src": "static/ormodels.js:135"
-  },
-  {
-   "p": "{0}k context",
    "src": "static/ormodels.js:136"
   },
   {
-   "p": "{0} - free · {1}. {2}",
+   "p": "up to {0} reference pictures",
+   "src": "static/ormodels.js:136"
+  },
+  {
+   "p": "{0}k context",
    "src": "static/ormodels.js:137"
+  },
+  {
+   "p": "{0} - free · {1}. {2}",
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - free · {1}",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - free. {1}",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - free",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - paid · {1}. {2}",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - paid · {1}",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - paid. {1}",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "{0} - paid",
-   "src": "static/ormodels.js:137"
+   "src": "static/ormodels.js:138"
   },
   {
    "p": "Not used - tick {0} above",
@@ -24926,31 +24950,31 @@
   },
   {
    "p": "{0} terminated - no more charges for it",
-   "src": "static/podsdock.js:465"
+   "src": "static/podsdock.js:467"
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:481"
+   "src": "static/podsdock.js:483"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:482"
+   "src": "static/podsdock.js:484"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:491"
+   "src": "static/podsdock.js:493"
   },
   {
    "p": "The pod {0} ({1}) is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "p": "is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for {0} on one of yours",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "p": "The pod {0} is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:588"
+   "src": "static/podsdock.js:590"
   },
   {
    "p": "{0} running",

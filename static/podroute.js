@@ -22,9 +22,20 @@
   }
   var pure = { reasonLines: reasonLines };
   if (typeof module !== "undefined" && module.exports) { module.exports = pure; return; }
+  /** 2.787.0: Basic Settings' picks as they would be sent - a "<pod>/<file>" model / LoRA or ☐ Remote sends the render to a pod */
+  function picks(mode) {
+    var nm = function (l) { return typeof l === "string" ? l : (l && (l.path || l.name || l.file)) || ""; };
+    try {
+      if (mode === "image") { var b = typeof root.imgBasicsBody === "function" ? root.imgBasicsBody({}) : {}; return { model: b.model || "", loras: (b.extra_loras || []).map(nm).filter(Boolean) }; }
+      if (mode !== "music" && root.H3Basic && H3Basic.collect) { var v = H3Basic.collect(); return { model: v.override ? v.model || "" : "", loras: (v.loras || []).map(nm).filter(Boolean) }; }
+    } catch (e) { /* the style decides */ }
+    return { model: "", loras: [] };
+  }
   function isPod(mode, styleId) {
-    if (!styleId) return Promise.resolve(false);
-    return root.fetch("/api/stylepods/route?mode=" + encodeURIComponent(mode || "") + "&style_id=" + encodeURIComponent(styleId))
+    var pk = picks(mode);
+    if (!styleId && !pk.model && !pk.loras.length) return Promise.resolve(false);
+    return root.fetch("/api/stylepods/route?mode=" + encodeURIComponent(mode || "") + "&style_id=" + encodeURIComponent(styleId || "")
+      + (pk.model ? "&model=" + encodeURIComponent(pk.model) : "") + (pk.loras.length ? "&loras=" + encodeURIComponent(pk.loras.join("|")) : ""))
       .then(function (r) { return r.json(); }).then(function (j) { return !!(j && j.pod); }).catch(function () { return false; });
   }
   function why(jobId) {

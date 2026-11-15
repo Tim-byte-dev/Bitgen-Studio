@@ -21,7 +21,13 @@ function mount(app) {
   // 2.763.2: does a render of this style go to a pod? (the page skips its own ComfyUI's checks then)
   app.get("/api/stylepods/route", wrap((req) => {
     const S = require("../lib/styles"), C = require("../lib/core"), st = S.byId(C.STYLES_DIR, String(req.query.style_id || ""));
-    return SP.willUsePod(String(req.query.mode || ""), st);
+    // 2.787.0: the picked model / LoRAs decide - a "<pod>/<file>" pick or Basic Settings ▸ Remote (lib/podPick.js)
+    const mode = String(req.query.mode || ""), loras = String(req.query.loras || "").split("|").filter(Boolean);
+    if (req.query.model || loras.length) {
+      const k = require("../lib/gpuSplit").kindOf(mode), w = require("../lib/podPick").wouldPod(k === "image" ? "image" : "video", String(req.query.model || ""), loras);
+      if (w) return { pod: true, why: w.why, pod_id: w.pod_id };
+    }
+    return SP.willUsePod(mode, st);
   }));
   app.get("/api/stylepods/ask/:id", wrap((req) => SP.offer(req.params.id, req.query.cloud)));
   app.post("/api/stylepods/ask/:id", wrap((req) => SP.answer(req.params.id, req.body || {})));

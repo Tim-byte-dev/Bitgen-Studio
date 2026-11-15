@@ -40,6 +40,8 @@ function plan(b) {
   if (kind === "image" || kind === "video") {
     const bm = kind === "image" ? String(b.model || "") : ((require("../lib/basicOverride").parse(b.basic) || {}).model || "");
     try { if (require("../lib/orRender").modelFor(kind, bm)) return { skip: "it renders on OpenRouter - no model files here" }; } catch { /* checked here */ }
+    // 2.787.0: a "<pod>/<file>" pick or Basic Settings ▸ Remote - the files are on (or go to) the pod (lib/podPick.js)
+    try { const w = require("../lib/podPick").wouldPod(kind, bm, loraList(b.extra_loras).map((l) => l.path || l.name || l.file)); if (w) return { skip: "it renders on a RunPod pod (" + w.why + ") - its files are on the pod" }; } catch { /* checked here */ }
   }
   { const sid = String(b.video_style_id || b.style_id || ""), st0 = sid ? styles.byId(C.STYLES_DIR, sid) : null;
     if (st0 && st0.runs_on === "api") return { skip: "an API_ style - the online service has its own models (Settings ▸ API)" };   // 2.757.0

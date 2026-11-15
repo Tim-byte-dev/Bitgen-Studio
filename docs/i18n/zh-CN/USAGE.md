@@ -5546,6 +5546,17 @@ Queue 停靠窗的 **Pending** 标签只显示仍在排队或正在运行的生�
 
 OpenRouter 不再列出的模型会从你的列表中移除 - 在对话框询问 OpenRouter 时,以及每次打开工作室时检查一次 - 并会提示是哪些。无法连接 OpenRouter 时不会移除任何模型。
 
+## Pod models in your lists, and ☐ Remote (2.787.0)
+<!-- en: pod-models-in-your-lists-and-remote-2-787-0 5608f8a815fc -->
+
+你的每个 RunPod pod 都保存一份 **inventory**（清单）：pod 上的模型、VAE、文本编码器和 LoRA，以及它所服务的风格。PODS ▸ 某个 pod ▸ **🗂 Inventory** 会显示这份清单，按组（Models / VAE / Text encoders / LoRAs）列出并附带大小——✓ 表示 pod 自己列出的文件，⇪ 表示 bitGen 发送给它的文件。pod 运行时，**⟳** 会重新询问 pod；已停止的 pod 显示最后一次已知的内容。每当 pod 列出其文件，或 bitGen 把文件放到 pod 上时，清单都会自动更新。
+
+随后，pod 的**模型和 LoRA**（不包括 VAE 和文本编码器）会以 `<pod name>/<file>` 的形式出现在 Basic Settings 的列表中，例如 `Krea pod/Models/mine_v1.safetensors`，与本机的模型并列；在文件夹筛选中，该 pod 是一个单独的文件夹。选择其中一个，这次渲染就会在该 pod 上进行（已停止的 pod 会先启动）；Queue 会说明是哪个 pod 以及原因。文件按其自身的名称判断，而不是按 pod 的名称——名为“Krea pod”的 pod 并不会让文件被当作 Krea 模型。一次渲染中若使用来自两个不同 pod 的模型和 LoRA，会被拒绝并附上说明。
+
+Basic Settings ▸ 在 **Use model** 和 **Use temporary LoRAs**（图片和视频）下方，现在有 **☐ Remote**，旁边是 pod 列表。勾选它并选择一个 pod，你选择的**本机**模型或 LoRA 就会改在该 pod 上渲染：bitGen 先在 pod 上查找该文件，再到 Civitai / Hugging Face 查找并让 pod 下载，否则从本机上传——然后在那里渲染。取消勾选后，你在本地选择的内容照常在本机渲染。
+
+已终止（terminate）的 pod 会从列表中移除。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

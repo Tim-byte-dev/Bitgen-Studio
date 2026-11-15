@@ -13948,6 +13948,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui786-ui.js > /tmp/ui786ui.log 2
   && ok "2.786.0 browser test: ☁ OpenRouter models… - type + family tabs, prices, double-click adds / 🗑, the dropdowns get openrouter/<id>; a picture + a video rendered on OpenRouter after the price box, Costs, the LLM pick, a gone model taken off - or SKIP" \
   || { bad "2.786.0 OpenRouter browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui786ui.log | head -14; }
 
+# ---- 2.787.0 (Tim, agreed design C: each pod's inventory, its models + LoRAs in Basic Settings' lists as "<pod name>/<file>" - picking one sends the render to that pod; ☐ Remote + a pod under Use model / Use temporary LoRAs) - after 2.786.0: its renders are queued too
+node scripts/test-podinv787.js > /tmp/podinv787.log 2>&1 \
+  && ok "2.787.0 pod inventory units: a pod's files from its listing (models / VAE / text encoders / LoRAs, ⇪ sent), <pod>/<file> entries (not VAE / encoders, not a gone pod), the pick resolved longest name first, on different pods = refused, Remote sends a local pick, basic_use *_pod kept" \
+  || { bad "2.787.0 pod inventory units"; grep -a "^FAIL" -A1 /tmp/podinv787.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui787-ui.js > /tmp/ui787ui.log 2>&1 \
+  && ok "2.787.0 browser test: the pod's checkpoint + LoRA in the lists as <pod>/<file> (a folder of their own), ☐ Remote + the pod under the Use boxes, a picture with the pod's file goes to that pod with plain names (a pod named Krea is no Krea model), Remote + a local model goes to the pod, PODS ▸ 🗂 Inventory - or SKIP" \
+  || { bad "2.787.0 pod inventory browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui787ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -34,7 +34,7 @@ const api = async (u, b) => (await fetch(URL0 + u, b === undefined ? {} : { meth
     await p.waitForFunction(() => window.H3OvrUse && ["useImgModel", "useImgLoras", "useVidModel", "useVidLoras"].every((i) => document.getElementById(i)), null, { timeout: 60000 });
     await sleep(800);
     const a = await ev(() => {
-      const over = (box, id) => { const l = document.getElementById(box).closest("label"), n = l.nextElementSibling; return !!n && (n.contains(document.getElementById(id)) || n.getAttribute("for") === id || (n.nextElementSibling && n.nextElementSibling.id === id)); };
+      const over = (box, id) => { const l = document.getElementById(box).closest("label"); let n = l.nextElementSibling; if (n && n.classList.contains("ruRow")) n = n.nextElementSibling;   /* 2.787.0: ☐ Remote sits under the box */ return !!n && (n.contains(document.getElementById(id)) || n.getAttribute("for") === id || (n.nextElementSibling && n.nextElementSibling.id === id)); };
       return { txt: ["useImgModel", "useImgLoras", "useVidModel", "useVidLoras"].map((i) => document.getElementById(i).closest("label").textContent.trim()),
         on: ["useImgModel", "useImgLoras", "useVidModel", "useVidLoras"].map((i) => document.getElementById(i).checked),
         over: [over("useImgModel", "imgCkptCombo"), over("useImgLoras", "tliAdd"), over("useVidModel", "vidModel"), over("useVidLoras", "tlvAdd")] };
