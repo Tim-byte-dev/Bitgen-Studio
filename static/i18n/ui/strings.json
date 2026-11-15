@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5694,
+ "count": 5701,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52567,6 +52567,69 @@
    ],
    "where": [
     "#npDlg"
+   ]
+  },
+  {
+   "s": "Graphics card memory",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.f in #stab-general"
+   ]
+  },
+  {
+   "s": "Offload to CPU / RAM when a model does not fit",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "label.chk in #stab-general"
+   ]
+  },
+  {
+   "s": "On: a model bigger than its card's free memory keeps the rest in RAM - the LLM / vision LLM put the layers that fit on the card, ComfyUI moves models to RAM as it needs (slower, never refused). Off: everything on the card (ComfyUI --gpu-only) - an LLM that does not fit is refused with what it needs",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "label.chk in #stab-general"
+   ]
+  },
+  {
+   "s": "On - a model too big for its card keeps the rest in RAM (slower, never refused)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#s_offload_msg"
+   ]
+  },
+  {
+   "s": "Off - everything on the card; a model that does not fit is refused with what it needs",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#s_offload_msg"
+   ]
+  },
+  {
+   "s": "Offload is on - a model that does not fit its card keeps the rest in RAM (slower, never refused)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#s_offload_msg"
+   ]
+  },
+  {
+   "s": "Offload is off - everything on the card; a model that does not fit is refused with what it needs. bitGen's ComfyUI takes it at its next start (⟳ Restart ComfyUI)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#s_offload_msg"
    ]
   }
  ]

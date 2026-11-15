@@ -14001,6 +14001,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui793-ui.js > /tmp/ui793ui.log 2
   && ok "2.793.0 browser test: a NO_Pod pick names the stopped pod that has it (Start that pod - RunPod asked, nothing sent, the pick = SDXL-2/<file>), a file no pod has goes on the running pod (Use this pod - only the model + text encoder, the pick = Krea pod/<file>, saved in basic.cfg), the lists follow - or SKIP" \
   || { bad "2.793.0 NO_Pod part 2 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui793ui.log | head -14; }
 
+
+# ---- 2.794.0 (the agreed design's D part 2: "the LLM / vision LLM already pin a card ... "max layers" = layers worked out from the GGUF size vs the card's free VRAM; speech engines (PyTorch) get cuda:N. NEW Settings ▸ General ☐ "Offload to CPU / RAM when a model does not fit"")
+node scripts/test-carduse794.js > /tmp/carduse794.log 2>&1 \
+  && ok "2.794.0 local multi-GPU part 2 units: Local - <card> for the LLMs + speech, -ngl = the layers that fit the card's free memory (offload) or refused with why (offload off), speech jobs on their card (CUDA_VISIBLE_DEVICES + PCI order, device cuda), ComfyUI --gpu-only when offload is off, Settings ▸ General ☐ Offload" \
+  || { bad "2.794.0 local multi-GPU part 2 units"; grep -a "^FAIL" -A1 /tmp/carduse794.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui794-ui.js > /tmp/ui794ui.log 2>&1 \
+  && ok "2.794.0 browser test: Runs on ▸ LLM / speech ▸ Local - <card> with the line saying what runs there, Settings ▸ General ☐ Offload saved + kept - SKIP on a server with one card (run it with H3_TEST_GPUS, see the file)" \
+  || { bad "2.794.0 local multi-GPU part 2 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui794ui.log | head -14; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

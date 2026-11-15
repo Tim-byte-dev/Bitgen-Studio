@@ -5647,6 +5647,21 @@ OpenRouter 不再列出的模型不会再被自动从你的列表中移除：它
 
 当 bitGen 不知道其他 Pod 时，显示的是 2.789.0 的对话框。由 NO_Pod 重新创建的 Pod 也会同样改名（`NO_Pod (Krea pod)/…` 变成 `Krea pod/…`），并且它的 VAE 和文本编码器会和模型、LoRA 一起放回去。
 
+## The LLM and speech on a graphics card of their own (2.794.0)
+<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 86bf03ad2af3 -->
+
+有两块或更多 NVIDIA 显卡时，☁ Remote generation ▸ Runs on 的每一行现在都提供 **Local - <card>**，不再只有 Image / Video / Music：**LLM**、**Vision LLM**、**Text to speech**、**Speech to text** 和 **Song separation** 也有。行下面的一句话说明那里运行的是什么。
+
+- **LLM / Vision LLM** - llama.cpp 在那块显卡上启动（代替 Settings ▸ LLM 中的设备）。启动前，bitGen 会算出模型有多少层能放进显卡的空闲显存——包括模型文件、它的投影器和上下文所需的内存——并且是在上一个模型离开显卡之后再算。全部放得下，就像以前一样所有层都放在显卡上；放不下，就把放得下的层放在显卡上，其余留在内存里（会慢一些）。你在 Settings ▸ LLM 中自己设定的 GPU 层数会照你设的使用。
+- **Text to speech、Speech to text、Song separation** - 它们的程序只看得到那块显卡，所以语音、转写（包括实时转写）和分轨都在那里完成。
+
+普通的 **Local** 和以前一样。在两块显卡上用到的模型会在每块显卡上各加载一次。
+
+**Settings ▸ General ▸ Graphics card memory ▸ Offload to CPU / RAM when a model does not fit**（默认勾选）：
+
+- **勾选** - 对显卡来说太大的模型，其余部分放在内存里：LLM 如上所述，ComfyUI 则按需要把模型移到内存。不会被拒绝，只是变慢。
+- **不勾选** - 全部留在显卡上。放不下的 LLM 或 Vision LLM 在启动前就被拒绝，并说明需要多少、显卡还有多少空闲。bitGen 的 ComfyUI 以 `--gpu-only` 启动（显卡专用的 ComfyUI 从下次启动起；主 ComfyUI 只在 bitGen 自己运行它的 main.py 时——.bat 或你自己的启动命令保持不变），放不下的生成会以 ComfyUI 的显存不足错误失败。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

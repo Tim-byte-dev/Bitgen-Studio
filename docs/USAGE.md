@@ -9098,6 +9098,20 @@ A model goes with the VAE and text encoders the NO_Pod had; a LoRA goes alone. O
 
 When bitGen knows no other pod, the box is the one from 2.789.0. A pod made again from a NO_Pod is renamed the same way (`NO_Pod (Krea pod)/…` becomes `Krea pod/…`), and its VAE and text encoders are put back with its models and LoRAs.
 
+## The LLM and speech on a graphics card of their own (2.794.0)
+
+With two or more NVIDIA cards, ☁ Remote generation ▸ Runs on now offers **Local - <card>** on every row, not only Image / Video / Music: **LLM**, **Vision LLM**, **Text to speech**, **Speech to text** and **Song separation** too. The line under the row says what runs there.
+
+- **LLM / Vision LLM** - llama.cpp starts on that card (it takes the place of the device in Settings ▸ LLM). Before it starts, bitGen works out how many of the model's layers fit the card's free memory - the model file, its projector and the context's memory - after the model before it has left the card. If everything fits, every layer goes on the card as before. If not, the layers that fit go on the card and the rest stay in RAM (slower). A number of GPU layers you set yourself in Settings ▸ LLM is kept as you set it.
+- **Text to speech, Speech to text, Song separation** - their program sees only that card, so the voice, the transcription (also the live one) and the stems are made there.
+
+Plain **Local** works as before. A model used on two cards is loaded on each.
+
+**Settings ▸ General ▸ Graphics card memory ▸ Offload to CPU / RAM when a model does not fit** (ticked by default):
+
+- **Ticked** - a model too big for its card keeps the rest in RAM: the LLMs as above, and ComfyUI moves models to RAM as it needs. Never refused, only slower.
+- **Unticked** - everything stays on the card. An LLM or vision LLM that does not fit is refused before it starts, with what it needs and what the card has free. bitGen's ComfyUIs start with `--gpu-only` (a card's own ComfyUI at its next start; the main one when bitGen runs its main.py itself - a .bat or a launch command of your own is left as it is), and a render that does not fit fails with ComfyUI's out-of-memory error.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

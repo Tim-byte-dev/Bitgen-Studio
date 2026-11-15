@@ -31,8 +31,8 @@ const api = (p, b) => fetch(URL0 + p.replace(/^\//, ""), b ? { method: "POST", h
   const jobs = [];
   try {
     const opts = (before.kinds.find((k) => k.k === "image") || {}).options || [];
-    check("Runs on ▸ Image lists Local - <card> for each card, after Local; speech rows do not", opts.map((o) => o.id).slice(0, 3).join() === "local,local:0,local:1" && /Local - RTX 3090 \(GPU 1, 24 GB\)/.test(opts[2].label)
-      && !((before.kinds.find((k) => k.k === "tts") || {}).options || []).some((o) => /^local:/.test(o.id)), opts.slice(0, 3));
+    check("Runs on ▸ Image lists Local - <card> for each card, after Local (2.794.0: speech rows too)", opts.map((o) => o.id).slice(0, 3).join() === "local,local:0,local:1" && /Local - RTX 3090 \(GPU 1, 24 GB\)/.test(opts[2].label)
+      && ((before.kinds.find((k) => k.k === "tts") || {}).options || []).some((o) => /^local:/.test(o.id)), opts.slice(0, 3));
     const v1 = await api("/api/remotehosts", { kind: "image", host: "local:1" });
     const g1 = await api("/api/gpucards");
     check("picked Local - RTX 3090: Image = local:1, kept (rgpu.local_cards), nothing remote", (v1.hosts || {}).image === "local:1" && g1.picks.image === 1 && v1.where === "local", { hosts: v1.hosts, where: v1.where, picks: g1.picks });

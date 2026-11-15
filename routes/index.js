@@ -127,6 +127,7 @@ function mount(app) {
   require("./gpuCards").mount(app);   // 2.791.0: this computer's cards for ☁ Runs on ▸ Local - <card> (lib/gpuCards.js)
   require("./mmSources").mount(app);  // 2.790.0: 🧩 Model manager's RunPod + OpenRouter cards, their 🗑 (lib/mmSources.js)
   require("./famFilter").mount(app);  // 2.788.0: Basic Settings' Override lists by the picked styles' family + type (lib/famFilter.js)
+  require("./cardUse").mount(app);    // 2.794.0: Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit (lib/cardUse.js)
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
   app.use(require("../lib/samplers").middleware);
   require("../lib/samplers").mount(app);

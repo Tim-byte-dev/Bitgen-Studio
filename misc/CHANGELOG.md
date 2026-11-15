@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.794.0** — The LLM, the Vision LLM, Text to Speech, Speech to Text and Song Separation on a Graphics Card of Their Own: ☁ Runs On Offers Local - <Card> on Every Row; the LLMs Put as Many Layers on the Card as Its Free Memory Holds (the Rest in RAM); Settings ▸ General ☐ Offload to CPU / RAM When a Model Does Not Fit (On by Default - Off Keeps Everything on the Card, ComfyUI --gpu-only, and Refuses an LLM That Does Not Fit, With Why)
 - **2.793.0** — A NO_Pod File Onto a Pod You Have: Picking a Terminated Pod's File Says Which of Your Pods Has It (Start That Pod / Use That Pod) and Offers Every Other Pod, Running First, With What It Has and What Would Be Sent; Only What the Pod Lacks Is Sent (a Model Goes With Its VAE and Text Encoders) and the Pick Becomes <pod name>/<file> Wherever It Is Kept
 - **2.792.0** — The OpenRouter Models Dialog Is Gone - 🧩 Model Manager ▸ ☁ OpenRouter Looks After Your List (☁ Remote Generation's Button Opens It); Your Models Framed Dark Green (Free), Dark Orange (Paid) or Dark Red (No Longer on OpenRouter - Kept Until You 🗑 It, Left Out of the Dropdowns, Refused for a Render)
 - **2.791.0** — Several Graphics Cards: ☁ Runs On ▸ Image / Video / Music Offer Local - <Card> for Each NVIDIA Card - a Picked Card Gets a ComfyUI of Its Own (--cuda-device, Port 8189 + N, Its Own Log), Started With the First Render of That Kind and Kept Running; Pictures on One Card, Video on Another

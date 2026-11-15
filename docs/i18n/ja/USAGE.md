@@ -5412,6 +5412,21 @@ Basic Settings で NO_Pod のファイル（画像のチェックポイント、
 
 bitGen がほかの Pod を知らないときは、2.789.0 のボックスが表示されます。NO_Pod から作り直した Pod も同じように名前が変わり（`NO_Pod (Krea pod)/…` は `Krea pod/…` になります）、モデルと LoRA と一緒に VAE とテキストエンコーダーも戻されます。
 
+## The LLM and speech on a graphics card of their own (2.794.0)
+<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 86bf03ad2af3 -->
+
+NVIDIA のカードが 2 枚以上あると、☁ Remote generation ▸ Runs on のすべての行に **Local - <card>** が表示されるようになりました。Image / Video / Music だけでなく、**LLM**、**Vision LLM**、**Text to speech**、**Speech to text**、**Song separation** にも表示されます。行の下の一文が、そこで何が動くかを示します。
+
+- **LLM / Vision LLM** - llama.cpp がそのカードで起動します（Settings ▸ LLM のデバイスの代わりになります）。起動する前に、bitGen はモデルの層のうちいくつがカードの空きメモリに収まるかを計算します。計算に入るのはモデルファイル、そのプロジェクター、コンテキストのメモリで、前のモデルがカードから出たあとに計算します。すべて収まるなら、これまでどおりすべての層がカードに載ります。収まらなければ、収まる層だけがカードに載り、残りは RAM に置かれます（遅くなります）。Settings ▸ LLM で自分で設定した GPU 層の数は、そのまま使われます。
+- **Text to speech、Speech to text、Song separation** - それぞれのプログラムにはそのカードしか見えないので、音声、文字起こし（ライブのものも）、ステムはそこで作られます。
+
+ふつうの **Local** はこれまでどおりです。2 枚のカードで使うモデルは、それぞれのカードに読み込まれます。
+
+**Settings ▸ General ▸ Graphics card memory ▸ Offload to CPU / RAM when a model does not fit**（初期設定はオン）:
+
+- **オン** - カードに大きすぎるモデルは、残りを RAM に置きます。LLM は上のとおりで、ComfyUI は必要に応じてモデルを RAM に移します。拒否されることはなく、遅くなるだけです。
+- **オフ** - すべてをカードに置きます。収まらない LLM や Vision LLM は起動する前に拒否され、必要な量とカードの空きが表示されます。bitGen の ComfyUI は `--gpu-only` で起動します（カード専用の ComfyUI は次の起動時から、メインの ComfyUI は bitGen が main.py を自分で起動するときだけ。.bat や自分で設定した起動コマンドはそのままです）。収まらない生成は ComfyUI のメモリ不足エラーで失敗します。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

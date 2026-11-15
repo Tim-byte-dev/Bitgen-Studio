@@ -6772,19 +6772,19 @@
   },
   {
    "s": "Runs on",
-   "src": "static/remotehosts.js:55"
+   "src": "static/remotehosts.js:56"
   },
   {
    "s": "Where each type of work runs",
-   "src": "static/remotehosts.js:57"
+   "src": "static/remotehosts.js:58"
   },
   {
    "s": "Set all",
-   "src": "static/remotehosts.js:60"
+   "src": "static/remotehosts.js:61"
   },
   {
    "s": "Every type at once - a choice a type cannot take is skipped",
-   "src": "static/remotehosts.js:60"
+   "src": "static/remotehosts.js:61"
   },
   {
    "s": "From Hugging Face… / your list",

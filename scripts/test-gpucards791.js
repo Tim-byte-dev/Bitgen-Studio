@@ -21,7 +21,7 @@ check("pickOf: rgpu.local_cards per kind", GC.pickOf({ local_cards: { image: 1 }
 
 // Runs on
 const o1 = RH.optionsFor("image", cards).map((x) => x.id), o2 = RH.optionsFor("tts", cards).map((x) => x.id), o3 = RH.optionsFor("image", cards.slice(0, 1)).map((x) => x.id);
-check("Runs on: Image / Video / Music get Local - <card> right after Local (2+ cards); speech / one card / no list = as before", o1.join() === "local,local:0,local:1,runpod,openrouter,lan,team" && o2.join() === "local,runpod,openrouter,lan,team" && o3.join() === "local,runpod,openrouter,lan,team" && RH.optionsFor("video").length === 5, { o1, o2, o3 });
+check("Runs on: Image / Video / Music (and since 2.794.0 speech + the LLMs) get Local - <card> right after Local (2+ cards); one card / no list = as before", o1.join() === "local,local:0,local:1,runpod,openrouter,lan,team" && o2.join() === "local,local:0,local:1,runpod,openrouter,lan,team" && o3.join() === "local,runpod,openrouter,lan,team" && RH.optionsFor("video").length === 5, { o1, o2, o3 });
 const H = RH.hostsOf({ local_cards: { image: 1, music: 0 } }, { where: "local" }, {}, () => "", {});
 check("hostsOf: a kind with a card = local:<N>", H.image === "local:1" && H.music === "local:0" && H.video === "local" && H.tts === "local", H);
 check("whereFor: a card is local (nothing remote = local)", RH.whereFor({ image: "local:1", video: "local" }) === "local" && RH.whereFor({ image: "local:1", video: "runpod" }) === "both");

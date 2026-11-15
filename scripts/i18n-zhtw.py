@@ -47,6 +47,8 @@ TW_WORDS = [
     ("居中", "置中"), ("向下取整", "無條件捨去"), ("向上取整", "無條件進位"), ("檢測", "偵測"), ("導航窗格", "瀏覽窗格"),
     ("單詞", "字詞"), ("稠密", "密集"), ("克隆", "複製"), ("另存為", "另存新檔"), ("構建", "建構"), ("裁剪", "裁切"),
     ("依賴包", "相依套件"), ("快速訪問", "快速存取"),
+    # 2.794.0: 卸载 = offload to RAM here (s2twp makes it 解除安裝 - uninstall); the card's memory
+    ("解除安裝到", "卸載到"), ("解除安裝已開啟", "卸載已開啟"), ("解除安裝已關閉", "卸載已關閉"), ("顯示卡顯示記憶體", "顯示卡記憶體"),
 ]
 # NOT automatic (the meaning decides - read for them): 行 / 列 in tables (Taiwan: 列 = row, 欄 = column); 應用 = 應用程式
 # (the app) or 套用 (apply); 項目 = 專案 (a project) or 項目 (an item); 連線 (a connection) vs 連接 (walls that join);

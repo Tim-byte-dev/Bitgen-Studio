@@ -219,10 +219,10 @@ check("the describe prompt asks for a screenwriter's paragraph",
 // ---- 2.234.0: the vision model rides the LLM's GPU -----------------------
 {
   const L34 = read("lib", "captioner.js");
-  check("2.234.0: the vision llama-server pins to the LLM's device (llm.device via CUDA_VISIBLE_DEVICES, -ngl 99, cpu = -ngl 0), and the device joins the launch signature",
-    L34.includes('llmCfg.device || "cuda1"')
+  check("2.234.0: the vision llama-server pins to the LLM's device (llm.device via CUDA_VISIBLE_DEVICES, -ngl = what fits (2.794.0, 99 when it fits), cpu = -ngl 0), and the device joins the launch signature",
+    L34.includes('(all.llm || {}).device || "cuda1"')
     && L34.includes('env.CUDA_VISIBLE_DEVICES = dev.replace("cuda", "")')
-    && L34.includes('args.push("-ngl", "99")')
+    && L34.includes('let ngl = 99;') && L34.includes('args.push("-ngl", String(ngl))')
     && L34.includes('if (dev === "cpu") args.push("-ngl", "0")')
     && L34.includes("${c.port}|${dev}")
     && L34.includes("spawn(core.llmPaths().exe, args, { env,"));

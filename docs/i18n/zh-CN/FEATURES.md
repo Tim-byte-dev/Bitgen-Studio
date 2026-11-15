@@ -438,6 +438,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **多块显卡：Local - <card>** — 有两块或更多 NVIDIA 显卡时，☁ Runs on ▸ Image / Video / Music 可以选择每块显卡；选中的显卡有专属的 ComfyUI（--cuda-device、独立端口和日志），在该类工作第一次渲染时启动并保持运行——图片在一块显卡上，视频在另一块上。*Where:* ☁ Remote generation. *Since:* 2.791.0
 - **你的 OpenRouter 模型显示为绿、橙、红** — OpenRouter 对话框已移除：🧩 Model manager ▸ ☁ OpenRouter 管理你的列表（☁ Remote generation 的按钮会打开它）；你的模型在该标签页和 Models 标签页中以深绿（免费）、深橙（付费）或深红（OpenRouter 已不再列出——保留到你 🗑 为止，不出现在下拉列表中，渲染被拒绝）的边框显示。*Where:* 🧩 Model manager. *Since:* 2.792.0
 - **把 NO_Pod 文件放到你已有的 Pod 上** — 选择已终止 Pod 的文件时，会指出你的哪个 Pod 上已经有它（Start that pod / Use that pod），并列出其他所有 Pod（正在运行的在前），说明每个 Pod 上已有什么、要发送什么（空间不足或模型可能放不进显卡时会警告）；只发送 Pod 上没有的文件——模型会连同 VAE 和文本编码器一起转移——所选项在所有保存的地方都变成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
+- **LLM 和语音使用专属显卡；卸载到 CPU / 内存** — 有两块或更多 NVIDIA 显卡时，☁ Runs on ▸ LLM / Vision LLM / Text to speech / Speech to text / Song separation 也提供 Local - <card>；LLM 会把显卡空闲显存放得下的层都放到显卡上（其余放在内存），语音只在那块显卡上运行。Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit（默认开启）——关闭后全部留在显卡上，放不下的 LLM 会被拒绝并说明原因。*Where:* ☁ Remote generation, Settings ▸ General. *Since:* 2.794.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
