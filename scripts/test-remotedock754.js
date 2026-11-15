@@ -53,8 +53,8 @@ check("deployUrl: RunPod's deploy page with the template + bitGen's referral cod
 
   const IDX = rd("routes", "index.js"), RD = rd("routes", "remoteDock.js"), HTML = rd("static", "index.html"), JS = rd("static", "remotedock.js"), RG = rd("lib", "remoteGpu.js");
   check("routes/remoteDock.js mounted from routes/index.js: GET /api/remotegen, POST /enabled, POST /shortcuts", /require\("\.\/remoteDock"\)\.mount\(app\)/.test(IDX) && /app\.get\("\/api\/remotegen"/.test(RD) && /\/api\/remotegen\/enabled/.test(RD) && /\/api\/remotegen\/shortcuts/.test(RD));
-  check("the page loads static/remotedock.js; the docker is a SecFloat window (id rgen) ; 2.783.0: its button is the status bar's Remote (static/remotebtns.js), Basic Settings ▸ GPU is gone",
-    HTML.indexOf("/static/remotedock.js") > HTML.indexOf("/static/openrouter.js") && /SecFloat\.add\(\{ id: "rgen", title: "Remote generation"/.test(JS) && /H3RemoteBtns\.paint\(\)/.test(JS) && !/id = "gpuDock"/.test(JS));
+  check("the page loads static/remotedock.js; the docker is a SecFloat window (id rgen) ; 2.783.0: its button is the status bar's GPU (2.795.0, was Remote) (static/remotebtns.js), Basic Settings ▸ GPU is gone",
+    HTML.indexOf("/static/remotedock.js") > HTML.indexOf("/static/openrouter.js") && /SecFloat\.add\(\{ id: "rgen", title: "GPU"/.test(JS) && /H3RemoteBtns\.paint\(\)/.test(JS) && !/id = "gpuDock"/.test(JS));
   check("the pod list honours H3_RUNPOD_REST_API (the tests' stand-in, never the real RunPod)", /process\.env\.H3_RUNPOD_REST_API \|\| "https:\/\/api\.runpod\.io\/v2"/.test(fs.readFileSync(path.join(ROOT, "lib", "runpodApi.js"), "utf8")));
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

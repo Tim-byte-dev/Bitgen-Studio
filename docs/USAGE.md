@@ -8135,9 +8135,9 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 ## ☁ Use remote generation, the Remote generation docker and pod shortcuts (2.754.0)
 
 - **Settings ▸ Remote generation ▸ Use remote generation** is the first thing in the tab. Unticked, the rest of the tab,
-  Basic Settings ▸ GPU and the Remote generation docker are hidden, and everything runs on this computer. A new install
+  Basic Settings ▸ GPU and the GPU docker are hidden, and everything runs on this computer. A new install
   starts unticked; an update starts ticked when something remote was already set up.
-- **The Remote generation docker:** in Basic Settings ▸ GPU, press **☁ Remote generation docker**. It floats and docks
+- **The GPU docker:** in Basic Settings ▸ GPU, press **🖥 GPU docker**. It floats and docks
   like the others, and it has no button in the status bar. It shows:
   - where the work runs, the remote GPU in use and where the LLM runs;
   - **My pods**: your RunPod pods (your API key - an "All" key), with **▶ Start**, **⏹ Stop** and **Use it** (render
@@ -8155,7 +8155,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 - RunPod retires the API bitGen used for pods (REST v1) on 15 November 2026. bitGen now uses RunPod's new API (REST
   v2) for 🔄 My pods, ▶ Start / ⏹ Stop and the Serverless endpoint's image. Nothing to change on your side. Your API key
   needs access to pods - an "All" key.
-- **The Remote generation docker shows what a pod is doing:**
+- **The GPU docker shows what a pod is doing:**
   - **▶ Start** - "loading pod…" while RunPod starts it and then its ComfyUI, then "pod loaded" once ComfyUI answers.
     Then it shows how long the pod has been running and about what that has cost.
   - **⏹ Stop** - "stopping pod…", then "stopped". A stopped pod still pays for its storage until you terminate it on
@@ -8260,12 +8260,12 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   CFG, size and aspect ratio** go with every pod render. The **checkpoint** box and the **LoRA** rows are switched off
   while a P_ style is picked - the pod's own model and LoRAs are used. With Override style off, the pod's workflow keeps
   its own numbers.
-- **The loading bar.** While a pod starts, the PODS docker and the Remote generation docker show where it is:
+- **The loading bar.** While a pod starts, the PODS docker and the GPU docker show where it is:
   1/4 *waiting for a GPU machine* → 2/4 *starting the container* (the template's image is downloaded) → 3/4 *ComfyUI
   starting* (a template like this one downloads its models now - often the longest part) → *pod loaded in …*. RunPod
   doesn't report download percentages, so the bar is the time so far against how long this pod - or another pod of the
   same template - took last time ("3 min of about 7 min"); the first time it moves by stage.
-- **Your pods and pod shortcuts are in the PODS docker now.** The Remote generation docker keeps where the work runs and
+- **Your pods and pod shortcuts are in the PODS docker now.** The GPU docker keeps where the work runs and
   a **🖥 PODS docker** button. A pod shortcut is the **☆** on a template's card: press it and bitGen keeps the template
   - its link is filled in for you. **★ Shortcuts** lists them, each with **Deploy ↗** (RunPod's deploy page with the
   template picked) and **Create pod…**; press **★** again to remove one. A template RunPod doesn't list (a private one) can
@@ -8488,7 +8488,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 ## Basic Settings ▸ GPU on Local shows nothing remote; a model sent to a pod shows how far it is (2.764.1)
 
 - **Local is quiet:** with Local picked, Basic Settings ▸ GPU shows only Local · Remote · Both and "Every job runs on this
-  computer." - the Remote servers and RunPod choices, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸
+  computer." - the Remote servers and RunPod choices, 🖥 GPU docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸
   Remote generation are hidden, and the Remote generation, PODS and 💲 RunPod dockers close when you pick Local.
 - **Remote and Both show them again.** With nothing set up yet, picking Remote (or Both) waits: the choices show so you can
   pick RunPod ▸ Pods (or set one up in Settings ▸ Remote generation), and it is saved as soon as there is somewhere to render.
@@ -8657,14 +8657,14 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 ## Remote options in their docker, and the prompt docker's model lists in remote mode (2.768.0)
 
 - **Basic Settings ▸ GPU** now holds only Local / Remote / Both, the line saying where each kind of job runs, and
-  **☁ Remote generation docker**. Everything else for remote work is in that docker: Remote servers (RunPod / OpenRouter),
+  **🖥 GPU docker**. Everything else for remote work is in that docker: Remote servers (RunPod / OpenRouter),
   RunPod Serverless / Pods, the Both boxes, the **LLM** and **Vision LLM** rows (Local / OpenRouter / RunPod) and 💲 RunPod.
   Picking Remote or Both before anything is set up opens the docker so you can pick RunPod ▸ Pods there.
 - **The prompt docker's LLM and Vision lists in remote mode** list the remote host's models instead of the GGUFs on this
   computer:
   - **OpenRouter** (the default when nothing is picked) - OpenRouter's **free** models; the Vision list shows the free ones
     that take pictures. The list loads without a key, but sending a prompt needs your OpenRouter API key (free to make) -
-    ☁ Remote generation ▸ ⚙ Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter.
+    🖥 GPU ▸ ⚙ Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter.
   - **RunPod with Pods** - the GGUFs bitGen can put on your pod; the one you pick is set up there when you next send a prompt.
   - **RunPod Serverless** - the vLLM endpoint's model.
   Picking a model saves it; nothing is loaded on this computer. Switch back to Local and the lists show this computer's
@@ -8704,7 +8704,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
 
 ## LLM Local / Remote, OpenRouter lists and ☰ All (2.770.0)
 
-- **☁ Remote generation docker:** LLM and Vision LLM are now just **Local** or **Remote**. Remote uses the platform picked in
+- **🖥 GPU docker:** LLM and Vision LLM are now just **Local** or **Remote**. Remote uses the platform picked in
   Settings ▸ Remote generation ▸ 🧠 LLM - OpenRouter by default, or RunPod. Rendering on RunPod no longer moves the LLM there.
 - **Settings ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter:** **Show free** and **Show paid** decide which OpenRouter models the
   lists offer (paid ones show their price per million tokens).
@@ -8736,7 +8736,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
     and every call bitGen made, by model and one by one (tokens in / out, the cost OpenRouter reported; "-" = no price said).
   - An API service: its renders (when, what, how long, the price the service gave) and its LLM calls.
   - Remote GPU: day by day, hours and cost.
-- **Open it** with 💲 Costs in the ☁ Remote generation docker or the PODS docker (straight to RunPod's list), **💲 Costs…**
+- **Open it** with 💲 Costs in the 🖥 GPU docker or the PODS docker (straight to RunPod's list), **💲 Costs…**
   in Settings ▸ General ▸ Energy cost, or the 💲 beside "⚡ since start" in the System stats. Picking Local no longer closes it.
 - **📊 Statistics** (in the Costs docker, or **📊 Statistics…** in Settings ▸ General ▸ Energy cost) opens a dialog with
   **every generation on its own**: its **startup** (from the head of the queue until ComfyUI is handed the work - a pod
@@ -8796,7 +8796,7 @@ start or stop: each render is one job, and you pay only while a worker runs it.
   your **image** styles - the Image style you picked is made ready on its pod; in 🎬 Video (or 🎶 Music) only the **video**
   styles. A pod setting itself up, 💾 Save in My pods and a preset do the same: the other mode's styles are said on the pod
   ("left for Video mode: …") and made ready when you switch to that mode or render one of them. 🗣 Speech and 💬 Chat make no
-  style ready. The ☁ Remote generation docker's line shows the style of your mode.
+  style ready. The 🖥 GPU docker's line shows the style of your mode.
 - **A LoRA sent from this computer no longer stops at the end with "[Errno 2] No such file".** The file arrived whole, but on
   some pod templates Jupyter keeps the upload in another folder than the one bitGen looked in to move it into ComfyUI's
   models folder. bitGen now finds it where Jupyter put it; if it really cannot, it says so in words. Each upload's part file
@@ -8853,7 +8853,7 @@ RunPod pod, like pictures, video and songs.
 
 ## Every type Local or Remote, in sections (2.776.0)
 
-- **The ☁ Remote generation docker is in sections:**
+- **The 🖥 GPU docker is in sections:**
   - **☁ Remote servers** - RunPod or OpenRouter, Serverless or Pods;
   - **🎨 Generation** - **Image**, **Video** and **Music**;
   - **🧠 Language models** - **LLM** and **Vision LLM**;
@@ -8940,7 +8940,7 @@ A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files.
 
 ## Your LLMs from Hugging Face on your pod; one pod for everything (2.782.0)
 
-**Your list.** With the LLM or Vision LLM on a RunPod pod (☁ Remote generation docker), the prompt docker's LLM and Vision lists show only **your list**. Pick **＋ From Hugging Face… / your list** at the end of either list to open the dialog:
+**Your list.** With the LLM or Vision LLM on a RunPod pod (🖥 GPU docker), the prompt docker's LLM and Vision lists show only **your list**. Pick **＋ From Hugging Face… / your list** at the end of either list to open the dialog:
 
 1. Type a Hugging Face repo as owner/name (for example unsloth/Qwen3-8B-GGUF) or paste its address, then press **List its GGUF files**. bitGen lists the repo's GGUFs with their quantisation and size, Q4_K_M first; a model split into parts is one row. A vision LLM also needs its projector (mmproj). A gated or private repo needs your Hugging Face token (Settings ▸ Models).
 2. **Run it on**: one of your pods, or **a new pod just for the LLM** (PODS opens on Create pod; tick LLM or vLLM on the new pod in My pods).
@@ -8955,7 +8955,7 @@ A running pod in PODS ▸ My pods has **⟳ Restart ComfyUI** beside 📁 Files.
 
 **Floating dockers come to the front.** A docker you float, open or make floating now comes in front of the other floating dockers at once, a ▣ docker included. Before, it only came to the front when you pressed it. Floating dialogs (💬 Community, Basic Settings …) still stay above the dockers.
 
-**Each type Local or Remote.** In the ☁ Remote generation docker, Local on Image, Video or Music puts that type in local mode and Remote puts it in remote mode. With all three Local the app is in local mode: this computer's model lists, and its ComfyUI started. With some Local and some Remote, ComfyUI on this computer is kept running for the Local types, and Basic Settings' model lists show this computer's models and the remote ones (☁).
+**Each type Local or Remote.** In the 🖥 GPU docker, Local on Image, Video or Music puts that type in local mode and Remote puts it in remote mode. With all three Local the app is in local mode: this computer's model lists, and its ComfyUI started. With some Local and some Remote, ComfyUI on this computer is kept running for the Local types, and Basic Settings' model lists show this computer's models and the remote ones (☁).
 
 **RunPod ▸ Pods / Serverless is in Settings.** The docker no longer has the Serverless / Pods choice. Pick it in ⚙ Settings ▸ Remote generation ▸ **RunPod renders on**.
 
@@ -8969,8 +8969,8 @@ Each model transfer to a pod (PODS ▸ Transfers) has two icon buttons at the en
 
 - **System:** the left docker is called **System** (it was Settings).
 - **Pod stats:** when everything runs on a pod, the System charts show the pod's CPU, RAM, GPUs and disks. When some work runs here and some on a pod, this computer's charts stay and the pod's figures come under them in their own **☁ <pod>** frame.
-- **No GPU item in Basic Settings any more.** Where the work runs is picked at the top of the ☁ Remote generation docker: **All local** (everything on this computer), **All remote** (every type on Remote, the LLM and Vision LLM too) or **Both** (the rows below decide). Putting one row back to Local while All remote is picked switches the choice to Both.
-- **Remote** on the status bar (after Queue) shows or hides the ☁ Remote generation docker. It is there while Settings ▸ Remote generation ▸ Use remote generation is ticked.
+- **No GPU item in Basic Settings any more.** Where the work runs is picked at the top of the 🖥 GPU docker: **All local** (everything on this computer), **All remote** (every type on Remote, the LLM and Vision LLM too) or **Both** (the rows below decide). Putting one row back to Local while All remote is picked switches the choice to Both.
+- **Remote** on the status bar (after Queue) shows or hides the 🖥 GPU docker. It is there while Settings ▸ Remote generation ▸ Use remote generation is ticked.
 - **Pods** on the status bar shows or hides the PODS docker. It is there only while something runs remotely. With everything Local it is hidden, and the PODS docker closes.
 
 ## Sort the GPU list when you create a pod: Fastest or Cheapest (2.784.0)
@@ -8983,13 +8983,13 @@ The Queue docker's **Pending** tab shows only the generations still queued or ru
 
 ## Runs on: one dropdown per type in the Remote generation docker (2.785.0)
 
-The top of the ☁ Remote generation docker is now **Runs on**: one dropdown for each type of work - Image, Video, Music, Text to speech, Speech to text, Song separation, LLM and Vision LLM. Each can be **Local**, **RunPod** (your pods) or **OpenRouter** (the LLM and Vision LLM for now - OpenRouter's paid picture and video models come next). **LAN** and **Team** are greyed until they work. **Set all** changes every row at once; a choice a row cannot take is skipped.
+The top of the 🖥 GPU docker is now **Runs on**: one dropdown for each type of work - Image, Video, Music, Text to speech, Speech to text, Song separation, LLM and Vision LLM. Each can be **Local**, **RunPod** (your pods) or **OpenRouter** (the LLM and Vision LLM for now - OpenRouter's paid picture and video models come next). **LAN** and **Team** are greyed until they work. **Set all** changes every row at once; a choice a row cannot take is skipped.
 
 The radio buttons that were there before are gone (All local / All remote / Both, Remote servers, each type's Local / Remote). RunPod ▸ Pods or Serverless is still picked in Settings ▸ Remote generation. **Pods** shows on the status bar only while a row is on RunPod.
 
 ## OpenRouter models: your own lists, pictures and video on OpenRouter (2.786.0)
 
-☁ Remote generation ▸ **☁ OpenRouter models…** (under Runs on) opens a dialog of what OpenRouter offers. The tabs along the top are the types - **Image**, **Video**, **LLM** and **Vision LLM** - and inside each type there is a tab for every family (the maker: Google, OpenAI, ByteDance Seed …) plus **All**. Search, tick **Free** / **Paid**, or sort by name, cheapest or newest; ⟳ asks OpenRouter again.
+🖥 GPU ▸ **☁ OpenRouter models…** (under Runs on) opens a dialog of what OpenRouter offers. The tabs along the top are the types - **Image**, **Video**, **LLM** and **Vision LLM** - and inside each type there is a tab for every family (the maker: Google, OpenAI, ByteDance Seed …) plus **All**. Search, tick **Free** / **Paid**, or sort by name, cheapest or newest; ⟳ asks OpenRouter again.
 
 The left frame, **Available**, lists the models with their price: free ones in green, paid ones with what they cost (per picture, per megapixel, per second of video, or per million tokens for the LLMs). A click shows a model's details underneath (lengths, sizes, how many reference pictures it takes). **Double-click** a model (or press Enter) to add it to **My models** on the right; 🗑 at the end of a row takes it off. Listing needs no key - rendering does (⚙ Settings ▸ Remote generation ▸ OpenRouter).
 
@@ -9064,7 +9064,7 @@ The **☁ OpenRouter** tab lists OpenRouter's models: **Image**, **Video**, **LL
 
 ## Several graphics cards: Local - <card> (2.791.0)
 
-On a computer with two or more NVIDIA cards, ☁ Remote generation ▸ Runs on ▸ **Image**, **Video** and **Music** also offer **Local - <card>** for each card, for example `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`, right after plain **Local**. Set all offers them too (the other rows keep their choice).
+On a computer with two or more NVIDIA cards, 🖥 GPU ▸ Runs on ▸ **Image**, **Video** and **Music** also offer **Local - <card>** for each card, for example `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`, right after plain **Local**. Set all offers them too (the other rows keep their choice).
 
 Pick a card and that kind of work gets a ComfyUI of its own on that card: the same ComfyUI folder as Settings ▸ ComfyUI, started with `--cuda-device <N>` on port 8189 + N (GPU 0 = 8189, GPU 1 = 8190 …), its log in `comfyui-gpu<N>.log` beside the app. It starts with the first render of that kind - the Queue says "starting ComfyUI for GPU N" while it loads - and then stays running for the next renders; bitGen stops it when it exits. Plain **Local** is Settings ▸ ComfyUI's own ComfyUI, as before. So you can render pictures on one card and video on another at the same time.
 
@@ -9077,7 +9077,7 @@ Good to know:
 
 ## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
 
-The OpenRouter models dialog is gone: 🧩 Model manager ▸ **☁ OpenRouter** looks after your OpenRouter models (☁ Remote generation ▸ **☁ OpenRouter models…** now opens that tab). Your models - the ones you added with **＋** - are framed and tinted there and on the Models tab:
+The OpenRouter models dialog is gone: 🧩 Model manager ▸ **☁ OpenRouter** looks after your OpenRouter models (🖥 GPU ▸ **☁ OpenRouter models…** now opens that tab). Your models - the ones you added with **＋** - are framed and tinted there and on the Models tab:
 
 - **dark green** - yours, free;
 - **dark orange** - yours, paid;
@@ -9100,7 +9100,7 @@ When bitGen knows no other pod, the box is the one from 2.789.0. A pod made agai
 
 ## The LLM and speech on a graphics card of their own (2.794.0)
 
-With two or more NVIDIA cards, ☁ Remote generation ▸ Runs on now offers **Local - <card>** on every row, not only Image / Video / Music: **LLM**, **Vision LLM**, **Text to speech**, **Speech to text** and **Song separation** too. The line under the row says what runs there.
+With two or more NVIDIA cards, 🖥 GPU ▸ Runs on now offers **Local - <card>** on every row, not only Image / Video / Music: **LLM**, **Vision LLM**, **Text to speech**, **Speech to text** and **Song separation** too. The line under the row says what runs there.
 
 - **LLM / Vision LLM** - llama.cpp starts on that card (it takes the place of the device in Settings ▸ LLM). Before it starts, bitGen works out how many of the model's layers fit the card's free memory - the model file, its projector and the context's memory - after the model before it has left the card. If everything fits, every layer goes on the card as before. If not, the layers that fit go on the card and the rest stay in RAM (slower). A number of GPU layers you set yourself in Settings ▸ LLM is kept as you set it.
 - **Text to speech, Speech to text, Song separation** - their program sees only that card, so the voice, the transcription (also the live one) and the stems are made there.
@@ -9111,6 +9111,19 @@ Plain **Local** works as before. A model used on two cards is loaded on each.
 
 - **Ticked** - a model too big for its card keeps the rest in RAM: the LLMs as above, and ComfyUI moves models to RAM as it needs. Never refused, only slower.
 - **Unticked** - everything stays on the card. An LLM or vision LLM that does not fit is refused before it starts, with what it needs and what the card has free. bitGen's ComfyUIs start with `--gpu-only` (a card's own ComfyUI at its next start; the main one when bitGen runs its main.py itself - a .bat or a launch command of your own is left as it is), and a render that does not fit fails with ComfyUI's out-of-memory error.
+
+## Model manager sources, and the GPU docker (2.795.0)
+
+The ☁ Remote generation docker is now called **🖥 GPU** (its status-bar button too), because it decides where every kind of work runs: on this computer's cards, on a pod or online. Settings ▸ Remote generation keeps its name.
+
+**🧩 Model manager ▸ ＋ Add source** makes a tab for any model API:
+
+1. Press **＋ Add source**. A tab **🔌 Source 1** opens with its **⚙ Settings** dialog.
+2. Give it a name, pick the **Format** - **OpenAI-compatible** (most services: Together, Groq, DeepSeek, Mistral, Fireworks, LM Studio, vLLM…), **Ollama**, **Anthropic-style**, or **Custom template** (your own model-list and chat addresses with `{url}` and `{model}`, and the key's header) - and type the **URL** and the **API key**. The key is kept encrypted and never shown again (only its last 4 characters).
+3. **✓ Test** asks the API for its models; the **Model** list fills, and the **Endpoint** shows the address bitGen fills in from the URL and the model picked.
+4. **Save**. The tab lists the API's models, each with its type guessed (LLM, Vision LLM, Image, Video - change it before adding). **＋** adds one to your models; **🗑** takes it off. **⟳ Models** asks the API again; the search and the type list narrow the list; **🗑 Remove source** removes the tab, its models and its key.
+
+Your LLM and vision models from a source are in the prompt docker's LLM / Vision lists under **🔌 <source> · your models** as `<source>/<model>`. Picking one sends the chat (and picture describes, quick prompts) to that source's endpoint with its key; 🖥 GPU ▸ Runs on ▸ LLM says so. Picking anything else in that list, or another Runs on choice, ends it. Picture and video models are kept in the tab; rendering with them comes in the next update. The ☁ OpenRouter tab stays as it was.
 
 ## Tips
 

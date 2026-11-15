@@ -297,7 +297,16 @@
   }
   function paint() {
     var host = $("mmBody"); if (!host) return;
-    ["used", "models", "loras", "civitai", "paths", "openrouter"].forEach(function (t) { var b = document.querySelector('.mmgr [data-mmtab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); });
+    document.querySelectorAll(".mmgr [data-mmtab]").forEach(function (b) { b.classList.toggle("on", S.tab === b.dataset.mmtab); });   // 2.795.0: + the sources' tabs
+    // 2.795.0: ＋ Add source - a tab per model API (static/mmapisrc.js, lib/apiSources.js)
+    var srcTab = /^src:/.test(S.tab || "") && !S.info && !S.form;
+    if ($("mmApiSrc")) $("mmApiSrc").style.display = srcTab ? "" : "none";
+    if (srcTab) {
+      ["mmSel", "mmGrid", "mmFolders", "mmRemote", "mmPaths", "mmOr"].forEach(function (id) { var e = $(id); if (e) e.style.display = "none"; });
+      $("mmLocalBar").style.display = "none"; $("mmCvBar").style.display = "none"; $("mmPager").style.display = "none";
+      if (window.H3ApiSrc) window.H3ApiSrc.render($("mmApiSrc"), S.tab.slice(4), { say: say });
+      return;
+    }
     // 2.580.0: 📁 Model paths - every group of extra_model_paths.yaml (static/mmpaths.js, lib/extraPaths.js)
     var paths = S.tab === "paths" && !S.info && !S.form;
     ["mmSel", "mmGrid", "mmFolders"].forEach(function (id) { var e = $(id); if (e && paths) e.style.display = "none"; });
@@ -1057,6 +1066,7 @@
     body.innerHTML = '<div class="mmtabs"><button class="ghost" data-mmtab="used" type="button" title="The models + LoRAs this project\'s jobs used">📌 This project</button><button class="ghost" data-mmtab="models" type="button">Models</button><button class="ghost" data-mmtab="loras" type="button">LoRAs</button>'
       + '<button class="ghost" data-mmtab="civitai" type="button" title="Search Civitai and download into ComfyUI\'s folders">Civitai</button>'
       + '<button class="ghost" data-mmtab="openrouter" type="button" title="☁ OpenRouter\'s models - free / paid, by type and family; ＋ adds one to your models with its endpoint">☁ OpenRouter</button>'
+      + '<span id="mmSrcTabs" class="mmsrctabs"></span><button class="ghost" id="mmAddSrc" type="button" title="＋ Add source - any model API (OpenAI-compatible, Ollama, Anthropic-style or your own template) as a tab of its own: ⚙ its URL, API key and endpoint format, its models from the API, ＋ to yours">＋ Add source</button>'
       + '<button class="ghost" data-mmtab="paths" type="button" title="📁 ComfyUI\'s extra_model_paths.yaml - every group of paths: add a group (other_ui1 …), change a path, delete a group, ⟳ Restart ComfyUI">📁 Model paths</button>'
       + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓ Civitai info</button>'
       + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄 Sync</button>'
@@ -1082,12 +1092,13 @@
       + '<select id="mmCvPeriod" aria-label="Period" title="Rated / downloaded / liked over"><option value="AllTime">all time</option><option value="Year">this year</option><option value="Month">this month</option><option value="Week">this week</option><option value="Day">today</option></select>'
       + '<button class="ghost" id="mmCvGo" type="button">Search</button></div>'
       + '<div class="mmremote" id="mmRemote" style="display:none"></div>'   // 2.766.0: remote mode (static/remotemodels.js)
-      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div><div class="mmor" id="mmOr" style="display:none"></div>'
+      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div><div class="mmor" id="mmOr" style="display:none"></div><div class="mmapisrc" id="mmApiSrc" style="display:none"></div>'
       + '<div class="mmpager" id="mmPager" style="display:none"></div><div class="mmdl" id="mmDl" style="display:none"></div>';
     return body;
   }
   function wire(body) {
     body.querySelectorAll("[data-mmtab]").forEach(function (b) { b.onclick = function () { S.tab = b.dataset.mmtab; S.form = null; S.info = null; S.page = 0; S.folder = (window.H3FolderMem && window.H3FolderMem.get("mm:" + S.tab)) || ""; lsSet(); paint(); if (S.tab === "civitai") pollDl(); if (S.tab === "used") loadUsed(); if (S.tab === "paths" && window.H3ModelPaths) window.H3ModelPaths.load(); }; });
+    if (window.H3ApiSrc) window.H3ApiSrc.mountTabs();   // 2.795.0: the sources' tabs + ＋ Add source
     // 2.718.0: ⟳ also refreshes the app's own model lists (Settings' style model combos, Basic Settings' overrides) - a model
     // just copied in showed "— not found" in its new style until the app was reloaded
     $("mmRescan").onclick = function () { load(true); if (S.tab === "used") loadUsed(); if (typeof root.loadComfyModels === "function") root.loadComfyModels(true);
@@ -1238,7 +1249,7 @@
     paint();
     if (S.override) setTimeout(function () { load(false).then(function () { if (S.override) apply(); }); }, 2500);
   }
-  /** 2.792.0: open a tab (static/ormodels.js - ☁ Remote generation's OpenRouter models… opens "openrouter") */
+  /** 2.792.0: open a tab (static/ormodels.js - 🖥 GPU's OpenRouter models… opens "openrouter") */
   function openTab(t) { S.tab = t; S.form = null; S.info = null; S.page = 0; lsSet(); paint(); }
   root.H3ModelMgr = Object.assign({ openTab: openTab, remoteList: function () { return !!(S.data && S.data.remote_list); }, delModel: delModel, reloadKeep: function (key) { return reloadKeep(key, !!S.form); }, load: load, state: function () { return S; }, pick: pick, openInfo: openInfo, closeInfo: closeInfo, setCardW: setCardW, perPage: perPage, startFetch: startFetch, loadUsed: loadUsed, setOverride: setOverride, overriding: function () { return !!S.override; },
     show: function (on) { return window.SecFloat && SecFloat.show ? SecFloat.show("modelmgr", on) : false; }, apply: apply, search: cvSearch }, pure);

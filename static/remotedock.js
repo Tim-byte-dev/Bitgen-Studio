@@ -6,7 +6,7 @@
  * public pods to my account is it possible to have a shortcut to them?"
  *   Settings ▸ Remote generation  ☐ Use remote generation, first in the tab. Off: the rest of the tab, Basic Settings ▸ GPU
  *                                 and this docker are hidden, and everything runs on this computer (lib/gpuSplit.js).
- *   Basic Settings ▸ GPU          "☁ Remote generation docker" shows / hides it (no status-bar button).
+ *   Basic Settings ▸ GPU          "🖥 GPU docker" shows / hides it (no status-bar button).
  *   The docker (SecFloat "rgen": floats, docks, remembered like the others)
  *     NOW        where the work runs (Basic Settings ▸ GPU), the remote GPU, the LLM
  *     🖥 PODS    opens the PODS docker - since 2.758.0 your pods, their loading bars and the pod shortcuts (☆ on a
@@ -123,7 +123,7 @@
     if (!ready || !sw || !bt) { setTimeout(boot, 250); return; }
     if (!$("rgdCss")) { var st = doc.createElement("style"); st.id = "rgdCss"; st.textContent = CSS; doc.head.appendChild(st); }
     if (!$("rgdBody")) {
-      SecFloat.add({ id: "rgen", title: "Remote generation", w: 460, h: 560, body: body(), onShow: function () { load(); } });
+      SecFloat.add({ id: "rgen", title: "GPU", w: 460, h: 560, body: body(), onShow: function () { load(); } });
       wire();
     }
     adopt();

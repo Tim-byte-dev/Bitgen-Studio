@@ -1,6 +1,6 @@
 /* bitGen Studio — static/remoteprep.js (2.767.0): where the LLM / Vision LLM run in remote mode, and how far bitGen is with
  * getting them and the video style ready. window.H3RemotePrep (+ require() in Node for the pure part).
- * 2.768.0: these rows are in the ☁ Remote generation docker (static/gpusplit.js #gpuRemoteOpts, moved by static/remotedock.js);
+ * 2.768.0: these rows are in the 🖥 GPU docker (static/gpusplit.js #gpuRemoteOpts, moved by static/remotedock.js);
  * Remote with nothing picked = OpenRouter (lib/remoteLlm.js hostOf); the prompt docker's lists follow (static/remotellm.js).
  *
  * Tim (verbatim): "when in remote mode, prepare the llm and video models for remote use" + "give user option to use openrouter

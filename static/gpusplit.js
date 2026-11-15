@@ -13,8 +13,8 @@
  *   decide only for jobs with no style. A change saves at once; document "h3:rgpu" follows (the style
  *   lists, the Remote generation tab) and is listened to (the tab's Use it changes this).
  *   2.764.1 (Tim: "if local is selected in basic settings, hide all the remote gpu details and options. the remote gpu radio
- *   group ☁ Remote generation docker 🖥 PODS 💲 RunPod pods: ..."): Local = only the three choices and one line - the
- *   Remote servers / RunPod groups, the Both boxes, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸ Remote
+ *   group 🖥 GPU docker 🖥 PODS 💲 RunPod pods: ..."): Local = only the three choices and one line - the
+ *   Remote servers / RunPod groups, the Both boxes, 🖥 GPU docker, 🖥 PODS, 💲 RunPod and ⚙ Settings ▸ Remote
  *   generation are hidden (#sec-gpu.gpuLocal), and those dockers close when you pick Local. Remote / Both can always be
  *   picked: with nothing set up yet, the choice waits (S.pick) and the remote options show so you can pick RunPod ▸ Pods (or
  *   set one up) - then it is saved. Pure (Node: scripts/test-gpulocal7641.js): isReady, localView. */
@@ -28,13 +28,13 @@
   }
   /** Local on screen = the remote details hidden (a Remote / Both still waiting for its set-up shows them) */
   function localView(v, pick) { return !pick && !!v && v.where === "local"; }
-  /** what Local hides: the Remote servers / RunPod groups, the Both boxes, ☁ Remote generation docker, 🖥 PODS, 💲 RunPod, the
+  /** what Local hides: the Remote servers / RunPod groups, the Both boxes, 🖥 GPU docker, 🖥 PODS, 💲 RunPod, the
    *  old 💲 line, ⚙ Settings ▸ Remote generation */
   var LOCAL_HIDE = ["gpuEngine", "gpuBoxes", "gpuDock", "gpuPods", "gpuRpDock", "gpuPodCost", "gpuSetup"];
   /* 2.768.0 (Tim: "move all the remote gpu options to the remote gpu docker"): Basic Settings ▸ GPU keeps Local / Remote /
-   * Both, the line saying where each kind runs and ☁ Remote generation docker; the remote options (Remote servers / RunPod,
+   * Both, the line saying where each kind runs and 🖥 GPU docker; the remote options (Remote servers / RunPod,
    * the Both boxes, the LLM / Vision LLM rows - static/remoteprep.js, 🖥 PODS, 💲 RunPod) are built in #gpuRemoteOpts, which
-   * static/remotedock.js moves into the ☁ Remote generation docker. hostOf(): where the other scripts add their part. */
+   * static/remotedock.js moves into the 🖥 GPU docker. hostOf(): where the other scripts add their part. */
   var OPTS = "gpuRemoteOpts";
   /** 2.783.0: what each choice saves (pure) - All remote = every type Remote; Both = the per-type rows decide */
   var TYPES_ALL = ["image", "video", "music", "tts", "stt", "stems"];
@@ -79,7 +79,7 @@
     var line = el("div", { id: "gpuLine", class: "hint", "aria-live": "polite", style: "margin-top:6px;font-size:.7rem" });
     var msg = el("div", { id: "gpuMsg", class: "hint", "aria-live": "polite", style: "font-size:.7rem" });
     var open = el("button", { type: "button", class: "ghost", id: "gpuSetup", style: "margin-top:4px;font-size:.72rem" }, "⚙ Settings ▸ Remote generation");
-    var opts = el("div", { id: OPTS, role: "group", "aria-label": "Remote generation options" });
+    var opts = el("div", { id: OPTS, role: "group", "aria-label": "GPU options" });
     opts.appendChild(el("h4", { style: "margin:4px 0 0" }, "Remote options"));
     var omsg = el("div", { id: "gpuOptMsg", class: "hint", "aria-live": "polite", style: "font-size:.7rem" });
     opts.appendChild(eng); opts.appendChild(b); opts.appendChild(omsg);
@@ -142,7 +142,7 @@
     ["videoStyleSel", "styleSel", "genModeSel", "llmSel"].forEach(function (id) { var e = $(id); if (e) o[{ videoStyleSel: "video_style_id", styleSel: "image_style_id", genModeSel: "gen_mode", llmSel: "llm_file" }[id]] = e.value; });
     return post("/api/remoteprep/where", o).then(function () { try { doc.dispatchEvent(new Event("h3:rgpu")); } catch (e) { /* fine */ } }).catch(function () { /* fine */ });
   }
-  /** 2.768.0: the remote options are in the ☁ Remote generation docker - it opens when Remote / Both waits for a set-up */
+  /** 2.768.0: the remote options are in the 🖥 GPU docker - it opens when Remote / Both waits for a set-up */
   function showOpts() { try { if (root.H3RemoteDock && H3RemoteDock.show) H3RemoteDock.show(true); } catch (e) { /* fine */ } }
   /** where a remote option goes (static/podsdock.js, runpoddock.js, remoteprep.js) */
   function hostOf() { return $(OPTS) || $("sec-gpu"); }

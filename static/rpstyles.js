@@ -54,9 +54,9 @@
       if (n) {
         var note = doc.createElement("option");
         note.dataset.rpsl = "note"; note.disabled = true; note.value = "__rpsl";
-        note.textContent = m.where === "local" ? "🖥 " + n + " remote styles hidden: Remote generation is on All local"
-          : m.where === "remote" && !shown ? "☁ No remote styles: Remote generation is on All remote - set it to Local, or a style's Runs on to Remote GPU"   // 2.747.0
-          : m.where === "remote" ? "☁ " + n + " styles hidden: Remote generation is on All remote - only the remote styles it can render show"
+        note.textContent = m.where === "local" ? "🖥 " + n + " remote styles hidden: the GPU docker is on All local"
+          : m.where === "remote" && !shown ? "☁ No remote styles: the GPU docker is on All remote - set it to Local, or a style's Runs on to Remote GPU"   // 2.747.0
+          : m.where === "remote" ? "☁ " + n + " styles hidden: the GPU docker is on All remote - only the remote styles it can render show"
           : "☁ " + n + " styles hidden: your RunPod endpoint cannot render them (Settings ▸ Remote generation)";
         sel.appendChild(note);
       }

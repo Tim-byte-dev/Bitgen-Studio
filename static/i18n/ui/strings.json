@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5701,
+ "count": 5702,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52630,6 +52630,15 @@
    ],
    "where": [
     "#s_offload_msg"
+   ]
+  },
+  {
+   "s": "GPU docker - this computer's cards and remote GPUs: all local, all remote or both, and what runs where",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "#tRgen"
    ]
   }
  ]

@@ -4940,7 +4940,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 你的提示词和图片会发送给 OpenRouter 及模型提供方。私密素材请留在这台电脑上。
 
 ## ☁ 使用远程生成、远程生成停靠窗和 Pod 快捷方式 (2.754.0)
-<!-- en: use-remote-generation-the-remote-generation-docker-and-pod-shortcuts-2-754-0 94cd5331d611 -->
+<!-- en: use-remote-generation-the-remote-generation-docker-and-pod-shortcuts-2-754-0 166ef7a86d3a -->
 
 - **设置 ▸ 远程生成 ▸ 使用远程生成** 是这个标签页的第一项。取消勾选时，标签页的其余部分、基本设置 ▸ GPU 和远程生成停靠窗都会隐藏，一切都在这台电脑上运行。新安装时默认不勾选；更新时如果已经设置过远程，则默认勾选。
 - **远程生成停靠窗：** 在 基本设置 ▸ GPU 中按 **☁ 远程生成停靠窗**。它和其他停靠窗一样可以浮动和停靠，状态栏里没有它的按钮。它显示：
@@ -4954,7 +4954,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   4. 回到停靠窗，**🔄 我的 Pod** 会列出新的 Pod - 按 **使用**。
 
 ## ☁ 11 月 15 日之后 Pod 照常可用；正在加载 Pod、Pod 已就绪、正在停止 Pod (2.755.0)
-<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 78732d83c2a8 -->
+<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 fe0a0c834031 -->
 
 - RunPod 将在 2026 年 11 月 15 日停用 bitGen 用于 Pod 的 API（REST v1）。现在 bitGen 的 🔄 我的 Pod、▶ 开始 / ⏹ 停止以及 Serverless 端点的镜像都使用 RunPod 的新 API（REST v2）。你不需要做任何更改。你的 API 密钥需要有 Pod 的访问权限 -
   All 权限的密钥。
@@ -5005,7 +5005,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 视频：OpenAI 已在 2026 年 9 月停止其视频 API（Sora），Gemini 的视频模型也不通过 bitGen 使用的 API 密钥提供 - 视频请使用 OpenRouter、fal.ai、Replicate 或 RunningHub。
 
 ## 🧩 P_ Pod 风格和 Pod 加载进度条 (2.758.0)
-<!-- en: p-pod-styles-and-a-pod-s-loading-bar-2-758-0 4dd5ce6454aa -->
+<!-- en: p-pod-styles-and-a-pod-s-loading-bar-2-758-0 089a2f704eec -->
 
 - **Pods 下只显示 P_ 风格。** 基本设置 ▸ GPU 为 **RunPod ▸ Pods**（远程或两者）时，风格列表只显示 **P_** 风格 - 用 Pod 上已有的模型生成的风格。在本地或 Serverless 下 P_ 风格会隐藏，因为它们需要 Pod。
 - **选择模型：🎨 Styles。** Pod 显示 *pod loaded* 后，在 PODS 停靠窗中按它的 **🎨 Styles**。bitGen 会读取 Pod 的 ComfyUI 并列出：
@@ -5145,9 +5145,9 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **创建预设：** 为风格创建的 Pod 会自动保存为预设；🖥 My pods 里任何 Pod 都可 💾 Save as preset；＋ New preset 从头开始。在任何地方把风格放到预设的 Pod 上，它也会加入该预设。
 
 ## Basic Settings ▸ GPU 选 Local 时不显示远程内容；发送到 Pod 的模型会显示进度 (2.764.1)
-<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 3bd1ca6e3b99 -->
+<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 032615fe72ec -->
 
-- **Local 很简洁：** 选 Local 时，Basic Settings ▸ GPU 只显示 Local · Remote · Both 和「Every job runs on this computer.」- Remote servers 和 RunPod 选项、☁ Remote generation docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都会隐藏，选 Local 时 Remote generation、PODS 和 💲 RunPod 停靠窗会关闭。
+- **Local 很简洁：** 选 Local 时，Basic Settings ▸ GPU 只显示 Local · Remote · Both 和「Every job runs on this computer.」- Remote servers 和 RunPod 选项、🖥 GPU docker、🖥 PODS、💲 RunPod 和 ⚙ Settings ▸ Remote generation 都会隐藏，选 Local 时 Remote generation、PODS 和 💲 RunPod 停靠窗会关闭。
 - **Remote 和 Both 会重新显示它们。** 尚未设置任何东西时选 Remote（或 Both）会等待：选项会显示出来，让你选 RunPod ▸ Pods（或在 Settings ▸ Remote generation 里设置一个），一旦有可渲染的地方就会保存。
 - **等待 Pod 的渲染会说明原因：** 这时 Queue 卡片不再显示「waiting for the GPU」，而是显示 Pod 正在做什么：启动、加载、放入你的自定义节点、在 Pod 上下载文件，或者从这台电脑发送模型以及进度：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。状态栏上方的那一行和任务日志也会显示同样的内容。
 
@@ -5259,13 +5259,13 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   日志的末尾）；更新成功但仍缺少节点时，bitGen 会提示重启 Pod。
 
 ## 远程选项移到专用停靠窗，以及远程模式下提示停靠窗的模型列表 (2.768.0)
-<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 4482a95f5b9d -->
+<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 2a6597386fcb -->
 
 - **基本设置 ▸ GPU** 现在只保留本地 / 远程 / 两者、说明每类任务在哪里运行的一行，以及
-  **☁ Remote generation docker**。远程工作的其他选项都在该停靠窗中：远程服务器（RunPod / OpenRouter）、
+  **🖥 GPU docker**。远程工作的其他选项都在该停靠窗中：远程服务器（RunPod / OpenRouter）、
   RunPod Serverless / Pods、“两者”的复选框、**LLM** 和 **Vision LLM** 两行（本地 / OpenRouter / RunPod）以及 💲 RunPod。在尚未设置任何内容时选择远程或两者，会打开该停靠窗，你可以在那里选择 RunPod ▸ Pods。
 - **远程模式下提示停靠窗的 LLM 和 Vision 列表**显示远程主机的模型，而不是本机上的 GGUF：
-  - **OpenRouter**（未选择时的默认）- OpenRouter 的**免费**模型；Vision 列表显示能接收图片的免费模型。列表无需密钥即可加载，但发送提示需要你的 OpenRouter API 密钥（可免费创建）- ☁ Remote generation ▸ ⚙ 设置 ▸ Remote generation ▸
+  - **OpenRouter**（未选择时的默认）- OpenRouter 的**免费**模型；Vision 列表显示能接收图片的免费模型。列表无需密钥即可加载，但发送提示需要你的 OpenRouter API 密钥（可免费创建）- 🖥 GPU ▸ ⚙ 设置 ▸ Remote generation ▸
     🧠 LLM ▸ OpenRouter。
   - **RunPod（Pods）** - bitGen 能放到你的 Pod 上的 GGUF；你选择的模型会在下次发送提示时在 Pod 上完成设置。
   - **RunPod Serverless** - vLLM 端点的模型。选择模型后即保存，不会在本机加载任何内容。切换回本地后，列表会再次显示本机的模型（设置 ▸ LLM 始终列出它们）。
@@ -5294,9 +5294,9 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - 用没有 Pod 的风格渲染时，询问使用哪个 Pod 的对话框现在**只列出 My pods 中的 Pod** - 运行中或已停止的。已终止（或正在终止）的 Pod，以及其 Pod 已不存在的预设，不再在此列出；🖥 PODS ▸ 📦 Presets 仍可重新创建预设的 Pod。如果 RunPod 没有返回你的 Pod 列表，对话框会说明原因。
 
 ## LLM 本地 / 远程、OpenRouter 列表和 ☰ All (2.770.0)
-<!-- en: llm-local-remote-openrouter-lists-and-all-2-770-0 4ceef016ab55 -->
+<!-- en: llm-local-remote-openrouter-lists-and-all-2-770-0 f82fb1203874 -->
 
-- **☁ Remote generation 停靠窗：** LLM 和 Vision LLM 现在只有 **本地** 或 **远程**。远程使用 设置 ▸ Remote generation ▸
+- **🖥 GPU 停靠窗：** LLM 和 Vision LLM 现在只有 **本地** 或 **远程**。远程使用 设置 ▸ Remote generation ▸
   🧠 LLM 中选择的平台 - 默认 OpenRouter，或 RunPod。在 RunPod 上渲染不再把 LLM 也移过去。
 - **设置 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter：** **Show free** 和 **Show paid** 决定列表提供哪些 OpenRouter 模型（付费模型显示每百万 token 的价格）。
 - **提示停靠窗（远程模式）：** LLM 和 Vision 列表 **每次显示 10 个模型** - 在每个列表前的 🔍 框中输入即可搜索（名称、作者、free、paid、vision）。**☰ All** 在对话框中打开所有 OpenRouter 模型：搜索，Free / Paid / 👁 Vision 筛选，按名称、价格、上下文或最新排序，以及每个模型的详情。选择一个，选择 LLM 或 Vision LLM，然后按 **Use** - 列表切换到该模型并使用它。
@@ -5309,7 +5309,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **PODS 停靠窗中的传输：** Pod 上已有的文件不显示进度条，再次发送的文件会替换其旧的一行。
 
 ## 💲 Costs 停靠窗和 📊 Statistics (2.771.0)
-<!-- en: costs-docker-and-statistics-2-771-0 5c42cf4e25d8 -->
+<!-- en: costs-docker-and-statistics-2-771-0 cb216de73b9e -->
 
 - **💲 Costs**（改名后的 💲 RunPod 停靠窗）：**All costs** 列出所有花费 - **🖥 This computer**（应用运行时的电能 + 每天的供电费，按 Settings ▸ General ▸ Energy cost 的价格）、**☁ RunPod**（你的 Pod，取自 RunPod 自己的账单 + Serverless 端点）、**🧠 OpenRouter**（LLM 和视觉 LLM）、你使用的每个 **🔑 Settings ▸ API** 服务，以及设置了 $/小时 的 **🌐 远程 GPU** - 每项一行，**Total** 使用电费的货币。在顶部选择天数：**Today**、**7 days**、**This month**、**Last month** 或 **Everything**。
 - **点击一行**（或按 Enter）查看该平台的**详细列表**；**← All costs** 返回：
@@ -5318,7 +5318,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
   - OpenRouter：OpenRouter 对你的密钥给出的数字（今天、本周、本月、自密钥创建以来、剩余额度），以及 bitGen 的每次调用，按模型和逐条列出（输入 / 输出 token、OpenRouter 报告的费用；“-” = 未报告价格）。
   - API 服务：它的渲染（时间、内容、用时、服务给出的价格）和它的 LLM 调用。
   - 远程 GPU：按天的小时数和费用。
-- **打开方式**：☁ Remote generation 停靠窗或 PODS 停靠窗中的 💲 Costs（直接打开 RunPod 的列表）、Settings ▸ General ▸ Energy cost 中的 **💲 Costs…**，或 System stats 中“⚡ since start”旁的 💲。选择 Local 不再关闭它。
+- **打开方式**：🖥 GPU 停靠窗或 PODS 停靠窗中的 💲 Costs（直接打开 RunPod 的列表）、Settings ▸ General ▸ Energy cost 中的 **💲 Costs…**，或 System stats 中“⚡ since start”旁的 💲。选择 Local 不再关闭它。
 - **📊 Statistics**（在 Costs 停靠窗中，或 Settings ▸ General ▸ Energy cost 中的 **📊 Statistics…**）打开一个对话框，**逐条列出每次生成**：**启动**（从队列开头到 ComfyUI 拿到工作 - 启动或准备 Pod、发送或下载文件、安装节点包、更新或重启 ComfyUI、构建工作流）、**生成**（渲染本身；在线服务则为整个运行）和**合计**，以及在其他任务后面等待的时间。顶部的卡片显示数量和平均值。
   - 等待过 Pod 的 Pod 渲染显示 ⚙ - 点击可查看该次 **Pod 准备**及其阶段（下载、节点包、重启 …）。
   - **Pod preparations** 列出每次启动或准备 Pod：用时、每个阶段、风格、问题。
@@ -5345,10 +5345,10 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - **收起的 pod 项现在真的收起了** - 以前即使显示 ▸，它的按钮和详情仍会显示。
 
 ## 远程模式：pod 的统计、按模式的风格、能传完的上传 (2.773.0)
-<!-- en: remote-mode-the-pod-s-stats-one-mode-s-styles-uploads-that-finish-2-773-0 bf47cf9f17bc -->
+<!-- en: remote-mode-the-pod-s-stats-one-mode-s-styles-uploads-that-finish-2-773-0 1afebf5577ce -->
 
 - **远程模式下，左侧停靠窗的 System 统计显示 pod。** 当 Basic Settings ▸ GPU 为 **Remote**、RunPod ▸ Pods 且有正在使用的 pod 时，标题显示 **System · ☁ <你的 pod>**，图表是 pod 的：CPU 负载、内存、每个 GPU（负载、温度、显存）以及磁盘条 - **Disk /**（容器磁盘，pod 停止时清空）和 **Disk /workspace**（停止时保留）。队列、进度条和 ⚡ since start 仍是本机的（那是你的电费）。切回 Local 后，图表又是本机的。远程模式下没有正在使用的 pod（或用的是 Serverless / OpenRouter）时，标题为 **System · this computer** - 把鼠标移到标题上可看原因。
-- **pod 上只放你当前模式的风格。** 在图像模式（🖼 Image、⚙ Graph）下，bitGen 只上传和检查你的**图像**风格 - 你选的 Image 风格会在它的 pod 上准备好；在 🎬 Video（或 🎶 Music）下只处理**视频**风格。自行设置的 pod、My pods 中的 💾 Save 和预设也一样：另一种模式的风格会在 pod 上注明（"left for Video mode: …"），等你切换到那个模式或用它渲染时再准备。🗣 Speech 和 💬 Chat 不准备任何风格。☁ Remote generation 停靠窗的那一行显示你当前模式的风格。
+- **pod 上只放你当前模式的风格。** 在图像模式（🖼 Image、⚙ Graph）下，bitGen 只上传和检查你的**图像**风格 - 你选的 Image 风格会在它的 pod 上准备好；在 🎬 Video（或 🎶 Music）下只处理**视频**风格。自行设置的 pod、My pods 中的 💾 Save 和预设也一样：另一种模式的风格会在 pod 上注明（"left for Video mode: …"），等你切换到那个模式或用它渲染时再准备。🗣 Speech 和 💬 Chat 不准备任何风格。🖥 GPU 停靠窗的那一行显示你当前模式的风格。
 - **从本机发送的 LoRA 不会再在最后因 "[Errno 2] No such file" 而停止。** 文件其实已完整到达，但在某些 pod 模板上，Jupyter 把上传放在与 bitGen 查找的不同文件夹里，bitGen 要把它移到 ComfyUI 的 models 文件夹时找不到。现在 bitGen 会在 Jupyter 放置的位置找到它；如果确实找不到，会用文字说明。每次上传的分块文件都有自己的名字，所以不会把旧上传的残留误当成它。
 
 ## 在 Pod 上失败的渲染会重新运行；等待模板的 ComfyUI (2.774.0)
@@ -5384,7 +5384,7 @@ dialogs** 可将 *Choose file* 按钮切换回浏览器的选择器。
 - Ming-3.0 TTS 和 Bark STT 仍在这台电脑上运行。
 
 ## 每种类型都可选本地或远程，并分区显示 (2.776.0)
-<!-- en: every-type-local-or-remote-in-sections-2-776-0 978276709053 -->
+<!-- en: every-type-local-or-remote-in-sections-2-776-0 d25278756b86 -->
 
 - **☁ 远程生成停靠窗现在分为几个区：**
   - **☁ Remote servers** - RunPod 或 OpenRouter，Serverless 或 Pods；
@@ -5473,9 +5473,9 @@ Jupyter 仍在启动的 Pod（bitGen 请求内核时返回 HTTP 404）现在会�
 PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI**。按两次；第一次是确认。bitGen 会停止 Pod 的 ComfyUI，再用同样的命令和所选的 GPU 显存方式重新启动它，并等到它响应。结果显示在该 Pod 的 GPU memory 一行。该 Pod 上正在进行的渲染会停止，Pod 上的其他内容不变。
 
 ## 在 Pod 上运行来自 Hugging Face 的 LLM；一个 Pod 运行全部 (2.782.0)
-<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 4e484f3a8f86 -->
+<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 b399e9805e7f -->
 
-**你的列表.** 当 LLM 或 Vision LLM 在 RunPod Pod 上运行时（☁ Remote generation 停靠窗），提示词停靠窗的 LLM 和 Vision 列表只显示 **你的列表**。选择任一列表末尾的 **＋ From Hugging Face… / your list** 打开对话框：
+**你的列表.** 当 LLM 或 Vision LLM 在 RunPod Pod 上运行时（🖥 GPU 停靠窗），提示词停靠窗的 LLM 和 Vision 列表只显示 **你的列表**。选择任一列表末尾的 **＋ From Hugging Face… / your list** 打开对话框：
 
 1. 以 owner/name 输入 Hugging Face 仓库（例如 unsloth/Qwen3-8B-GGUF）或粘贴其地址，然后按 **List its GGUF files**。bitGen 会列出该仓库的 GGUF 及其量化方式和大小，Q4_K_M 排在最前；分卷的模型算作一行。视觉 LLM 还需要其投影器（mmproj）。需要授权或私有的仓库需要你的 Hugging Face 令牌（Settings ▸ Models）。
 2. **Run it on**：你的某个 Pod，或 **a new pod just for the LLM**（PODS 会在 Create pod 打开；在 My pods 中为新 Pod 勾选 LLM 或 vLLM）。
@@ -5487,11 +5487,11 @@ PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI
 **更多空间.** 对话框会显示模型需要多少空间，并可扩大 Pod 的卷（**Make it bigger**，10 到 4000 GB，只能扩大）。RunPod 可能会重启 Pod；/workspace 会保留。
 
 ## 浮动停靠窗置前；每种类型 Local 或 Remote；RunPod 的选择移到设置 (2.782.1)
-<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- ef92bc6b1c2c -->
+<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- 5d427d554038 -->
 
 **浮动停靠窗置前.** 你浮动、打开或变为浮动的停靠窗会立即置于其他浮动停靠窗（包括 ▣ 停靠窗）之前。以前只有在点按它时才会置前。浮动对话框（💬 Community、Basic Settings 等）仍然在停靠窗之上。
 
-**每种类型 Local 或 Remote.** 在 ☁ Remote generation 停靠窗中，把 Image、Video 或 Music 设为 Local，该类型进入本地模式；设为 Remote 则进入远程模式。三者都是 Local 时，应用处于本地模式：本机的模型列表，并启动本机的 ComfyUI。Local 和 Remote 混合时，本机的 ComfyUI 会为 Local 类型保持运行，Basic Settings 的模型列表会同时显示本机的模型和远程模型（☁）。
+**每种类型 Local 或 Remote.** 在 🖥 GPU 停靠窗中，把 Image、Video 或 Music 设为 Local，该类型进入本地模式；设为 Remote 则进入远程模式。三者都是 Local 时，应用处于本地模式：本机的模型列表，并启动本机的 ComfyUI。Local 和 Remote 混合时，本机的 ComfyUI 会为 Local 类型保持运行，Basic Settings 的模型列表会同时显示本机的模型和远程模型（☁）。
 
 **RunPod ▸ Pods / Serverless 移到设置.** 停靠窗中不再有 Serverless / Pods 选项。请在 ⚙ Settings ▸ Remote generation ▸ **RunPod renders on** 中选择。
 
@@ -5503,12 +5503,12 @@ PODS ▸ My pods 中运行的 Pod 在 📁 Files 旁边有 **⟳ Restart ComfyUI
 每个到 Pod 的模型传输（PODS ▸ Transfers）的进度条末尾有两个图标按钮：**⏹** 停止，**↻** 从头重新开始。从本机的上传会在当前分块发送完后停止，已在 Pod 上的分块会被删除。Pod 的下载会在当前片段后停止。停止的下载不会改由本机发送；需要它的渲染会说明是你停止了它。
 
 ## System 停靠窗;状态栏上的 Remote 和 Pods;全部本地 / 全部远程 / Both (2.783.0)
-<!-- en: the-system-docker-remote-and-pods-on-the-status-bar-all-local-all-remote-both-2- bf14ce1715f8 -->
+<!-- en: the-system-docker-remote-and-pods-on-the-status-bar-all-local-all-remote-both-2- 7c8c7f0716c6 -->
 
 - **System:** 左侧停靠窗现在叫 **System**(以前叫 Settings)。
 - **Pod 数据:** 所有工作都在 Pod 上运行时,System 的图表显示 Pod 的 CPU、RAM、GPU 和磁盘。一部分在这台电脑、一部分在 Pod 上运行时,这台电脑的图表保持不变,Pod 的数据显示在下方单独的 **☁ <Pod>** 框中。
-- **Basic Settings 里不再有 GPU 项。** 工作在哪里运行,在 ☁ Remote generation 停靠窗的最上方选择:**全部本地**(全部在这台电脑上)、**全部远程**(每种类型都设为 Remote,LLM 和 Vision LLM 也一样)或 **Both**(由下方各行决定)。选中全部远程时把某一行改回 Local,选择会切换为 Both。
-- 状态栏上的 **Remote**(在 Queue 之后)用于显示或隐藏 ☁ Remote generation 停靠窗。只在勾选 Settings ▸ Remote generation ▸ Use remote generation 时显示。
+- **Basic Settings 里不再有 GPU 项。** 工作在哪里运行,在 🖥 GPU 停靠窗的最上方选择:**全部本地**(全部在这台电脑上)、**全部远程**(每种类型都设为 Remote,LLM 和 Vision LLM 也一样)或 **Both**(由下方各行决定)。选中全部远程时把某一行改回 Local,选择会切换为 Both。
+- 状态栏上的 **Remote**(在 Queue 之后)用于显示或隐藏 🖥 GPU 停靠窗。只在勾选 Settings ▸ Remote generation ▸ Use remote generation 时显示。
 - 状态栏上的 **Pods** 用于显示或隐藏 PODS 停靠窗。只在有工作远程运行时显示。全部为 Local 时它会隐藏,PODS 停靠窗也会关闭。
 
 ## 创建 Pod 时为 GPU 列表排序:最快或最便宜 (2.784.0)
@@ -5522,16 +5522,16 @@ PODS ▸ Create pod 的 GPU 列表上方有 **GPU 排序**:**最便宜**(默认,
 Queue 停靠窗的 **Pending** 标签只显示仍在排队或正在运行的生成。已完成、失败和取消的会移到 **Done** 标签,可用 ↻ 再生成一次。Pending 的数量包括排队中的。
 
 ## Runs on:在 Remote generation 停靠窗中每种类型一个下拉框 (2.785.0)
-<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 823d6b01941e -->
+<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 554ab0507560 -->
 
-☁ Remote generation 停靠窗的最上方现在是 **Runs on**:每种工作一个下拉框 - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM。每个都可以选 **Local**、**RunPod**(你的 Pod)或 **OpenRouter**(目前用于 LLM 和 Vision LLM - OpenRouter 的付费图片和视频模型即将推出)。**LAN** 和 **Team** 在可用之前显示为灰色。**全部设置** 可一次更改所有行;某行不能用的选项会被跳过。
+🖥 GPU 停靠窗的最上方现在是 **Runs on**:每种工作一个下拉框 - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM 和 Vision LLM。每个都可以选 **Local**、**RunPod**(你的 Pod)或 **OpenRouter**(目前用于 LLM 和 Vision LLM - OpenRouter 的付费图片和视频模型即将推出)。**LAN** 和 **Team** 在可用之前显示为灰色。**全部设置** 可一次更改所有行;某行不能用的选项会被跳过。
 
 以前的单选按钮(全部本地 / 全部远程 / Both、Remote servers、各类型的 Local / Remote)已移除。RunPod ▸ Pods 或 Serverless 仍在 Settings ▸ Remote generation 中选择。只有某行为 RunPod 时,状态栏上才显示 **Pods**。
 
 ## OpenRouter models:你自己的列表,在 OpenRouter 上生成图片和视频 (2.786.0)
-<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 1a449eed0c36 -->
+<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 84a41fd51708 -->
 
-☁ Remote generation ▸ **☁ OpenRouter models…**(在 Runs on 下方)会打开一个对话框,列出 OpenRouter 提供的模型。顶部的标签是类型 - **Image**、**Video**、**LLM** 和 **Vision LLM** - 每种类型里都有按系列(制作方:Google、OpenAI、ByteDance Seed 等)分的标签,再加上 **All**。可以搜索,勾选 **Free** / **Paid**,按名称、最便宜或最新排序;⟳ 会重新询问 OpenRouter。
+🖥 GPU ▸ **☁ OpenRouter models…**(在 Runs on 下方)会打开一个对话框,列出 OpenRouter 提供的模型。顶部的标签是类型 - **Image**、**Video**、**LLM** 和 **Vision LLM** - 每种类型里都有按系列(制作方:Google、OpenAI、ByteDance Seed 等)分的标签,再加上 **All**。可以搜索,勾选 **Free** / **Paid**,按名称、最便宜或最新排序;⟳ 会重新询问 OpenRouter。
 
 左侧框 **Available** 列出模型和价格:免费的显示为绿色,付费的显示费用(每张图片、每百万像素、每秒视频,LLM 为每百万 token)。单击会在下方显示模型的详情(时长、尺寸、可用的参考图片数量)。**双击**模型(或按 Enter)就会把它加入右侧的 **My models**;每行末尾的 🗑 可以移除。查看列表不需要密钥,生成需要(⚙ Settings ▸ Remote generation ▸ OpenRouter)。
 
@@ -5609,9 +5609,9 @@ pod 重新创建后，其文件会再次以它的名称显示（`Krea pod/<file>
 **☁ OpenRouter** 标签页列出 OpenRouter 的模型：顶部是 **Image**、**Video**、**LLM** 和 **Vision LLM**，下面是系列（提供方）、搜索、**Free** / **Paid**、排序（免费优先、最便宜、最新）以及重新询问 OpenRouter 的 ⟳。每张卡片显示名称、模型 ID、价格和简短说明。**＋** 把模型加入你的模型，并一并保存它的端点——渲染所用的 OpenRouter 地址（图片为 `…/images`，视频为 `…/videos`，LLM 为 `…/chat/completions`）；顶部的一行会说明。之后它会以 `openrouter/<model>` 出现在 Basic Settings 和提示词停靠窗的下拉列表中，并出现在 Models 标签页的 OpenRouter 下。已是你的模型的会显示 ✓ yours 和 🗑。列出模型不需要密钥；渲染需要（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
 
 ## Several graphics cards: Local - <card> (2.791.0)
-<!-- en: several-graphics-cards-local-2-791-0 920f5527e4a6 -->
+<!-- en: several-graphics-cards-local-2-791-0 7276f6f63520 -->
 
-在装有两块或更多 NVIDIA 显卡的电脑上，☁ Remote generation ▸ Runs on ▸ **Image**、**Video** 和 **Music** 会在普通的 **Local** 之后为每块显卡提供 **Local - <card>** 选项，例如 `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all 也可以选择它们（其他行保持原来的选择）。
+在装有两块或更多 NVIDIA 显卡的电脑上，🖥 GPU ▸ Runs on ▸ **Image**、**Video** 和 **Music** 会在普通的 **Local** 之后为每块显卡提供 **Local - <card>** 选项，例如 `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all 也可以选择它们（其他行保持原来的选择）。
 
 选择一块显卡后，该类工作会在这块显卡上使用一个专属的 ComfyUI：使用与 Settings ▸ ComfyUI 相同的 ComfyUI 文件夹，以 `--cuda-device <N>` 在端口 8189 + N 上启动（GPU 0 = 8189，GPU 1 = 8190 …），日志写在应用旁边的 `comfyui-gpu<N>.log` 中。它在该类工作的第一次渲染时启动——加载期间 Queue 会显示 “starting ComfyUI for GPU N”——之后保持运行以供后续渲染；bitGen 退出时会停止它。普通的 **Local** 仍是 Settings ▸ ComfyUI 的 ComfyUI。这样就可以同时在一块显卡上渲染图片、在另一块上渲染视频。
 
@@ -5623,9 +5623,9 @@ pod 重新创建后，其文件会再次以它的名称显示（`Krea pod/<file>
 - 发送到 RunPod pod 或 OpenRouter 的渲染不受影响。
 
 ## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
-<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 227756892371 -->
+<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 162efc066a9d -->
 
-OpenRouter 模型对话框已移除：🧩 Model manager ▸ **☁ OpenRouter** 负责管理你的 OpenRouter 模型（☁ Remote generation ▸ **☁ OpenRouter models…** 现在会打开该标签页）。你用 **＋** 添加的模型会在该标签页和 Models 标签页中加上边框和底色：
+OpenRouter 模型对话框已移除：🧩 Model manager ▸ **☁ OpenRouter** 负责管理你的 OpenRouter 模型（🖥 GPU ▸ **☁ OpenRouter models…** 现在会打开该标签页）。你用 **＋** 添加的模型会在该标签页和 Models 标签页中加上边框和底色：
 
 - **深绿色**——你的模型，免费；
 - **深橙色**——你的模型，付费；
@@ -5648,9 +5648,9 @@ OpenRouter 不再列出的模型不会再被自动从你的列表中移除：它
 当 bitGen 不知道其他 Pod 时，显示的是 2.789.0 的对话框。由 NO_Pod 重新创建的 Pod 也会同样改名（`NO_Pod (Krea pod)/…` 变成 `Krea pod/…`），并且它的 VAE 和文本编码器会和模型、LoRA 一起放回去。
 
 ## The LLM and speech on a graphics card of their own (2.794.0)
-<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 86bf03ad2af3 -->
+<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 8b28b388b438 -->
 
-有两块或更多 NVIDIA 显卡时，☁ Remote generation ▸ Runs on 的每一行现在都提供 **Local - <card>**，不再只有 Image / Video / Music：**LLM**、**Vision LLM**、**Text to speech**、**Speech to text** 和 **Song separation** 也有。行下面的一句话说明那里运行的是什么。
+有两块或更多 NVIDIA 显卡时，🖥 GPU ▸ Runs on 的每一行现在都提供 **Local - <card>**，不再只有 Image / Video / Music：**LLM**、**Vision LLM**、**Text to speech**、**Speech to text** 和 **Song separation** 也有。行下面的一句话说明那里运行的是什么。
 
 - **LLM / Vision LLM** - llama.cpp 在那块显卡上启动（代替 Settings ▸ LLM 中的设备）。启动前，bitGen 会算出模型有多少层能放进显卡的空闲显存——包括模型文件、它的投影器和上下文所需的内存——并且是在上一个模型离开显卡之后再算。全部放得下，就像以前一样所有层都放在显卡上；放不下，就把放得下的层放在显卡上，其余留在内存里（会慢一些）。你在 Settings ▸ LLM 中自己设定的 GPU 层数会照你设的使用。
 - **Text to speech、Speech to text、Song separation** - 它们的程序只看得到那块显卡，所以语音、转写（包括实时转写）和分轨都在那里完成。
@@ -5661,6 +5661,20 @@ OpenRouter 不再列出的模型不会再被自动从你的列表中移除：它
 
 - **勾选** - 对显卡来说太大的模型，其余部分放在内存里：LLM 如上所述，ComfyUI 则按需要把模型移到内存。不会被拒绝，只是变慢。
 - **不勾选** - 全部留在显卡上。放不下的 LLM 或 Vision LLM 在启动前就被拒绝，并说明需要多少、显卡还有多少空闲。bitGen 的 ComfyUI 以 `--gpu-only` 启动（显卡专用的 ComfyUI 从下次启动起；主 ComfyUI 只在 bitGen 自己运行它的 main.py 时——.bat 或你自己的启动命令保持不变），放不下的生成会以 ComfyUI 的显存不足错误失败。
+
+## Model manager sources, and the GPU docker (2.795.0)
+<!-- en: model-manager-sources-and-the-gpu-docker-2-795-0 ff1368a228d4 -->
+
+☁ Remote generation 停靠栏现在叫 **🖥 GPU**（状态栏上的按钮也是），因为它决定每种工作在哪里运行：这台电脑的显卡、Pod 或在线服务。Settings ▸ Remote generation 保留原名。
+
+**🧩 Model manager ▸ ＋ Add source** 可以为任何模型 API 建一个标签页：
+
+1. 按 **＋ Add source**。会打开 **🔌 Source 1** 标签页和它的 **⚙ Settings** 对话框。
+2. 起个名字，选择 **Format** - **OpenAI-compatible**（大多数服务：Together、Groq、DeepSeek、Mistral、Fireworks、LM Studio、vLLM 等）、**Ollama**、**Anthropic-style** 或 **Custom template**（用 `{url}` 和 `{model}` 写你自己的模型列表和聊天地址，以及密钥的请求头）- 然后填入 **URL** 和 **API key**。密钥加密保存，以后不再显示（只显示最后 4 个字符）。
+3. **✓ Test** 向 API 询问它的模型；**Model** 列表会填好，**Endpoint** 显示 bitGen 用 URL 和所选模型填好的地址。
+4. **Save**。标签页列出 API 的模型，并猜测每个模型的类型（LLM、Vision LLM、Image、Video - 添加前可以修改）。**＋** 把它加入你的模型；**🗑** 移除。**⟳ Models** 再次询问 API；搜索框和类型列表可以缩小范围；**🗑 Remove source** 删除标签页、它的模型和密钥。
+
+来自某个来源的 LLM 和视觉模型会出现在提示词停靠栏的 LLM / Vision 列表中 **🔌 <source> · your models** 下，显示为 `<source>/<model>`。选中一个后，聊天（以及图片描述、快速提示词）会带着密钥发送到该来源的端点；🖥 GPU ▸ Runs on ▸ LLM 也会这样显示。在该列表中选其他项，或在 Runs on 中选别的，就会结束。图片和视频模型保存在标签页中，用它们生成将在下次更新中提供。☁ OpenRouter 标签页保持不变。
 
 ## 提示
 <!-- en: tips 29dfdc949d42 -->

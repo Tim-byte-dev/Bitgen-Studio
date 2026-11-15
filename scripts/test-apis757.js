@@ -105,7 +105,7 @@ check("…every LLM caller sends its body through fitBody (lib/llmChat.js, lib/q
 check("…✓ Test asks Anthropic's /v1/models with x-api-key + anthropic-version", /a\.service === "claude"\) r = await get\(\(base \|\| "https:\/\/api\.anthropic\.com\/v1"\) \+ "\/models\?limit=1", \{ "x-api-key": a\.key, "anthropic-version": "2023-06-01" \}\)/.test(rd("lib", "apis.js")));
 A.remove(clId);
 const G = rd("lib", "gpuSplit.js");
-check("lib/gpuSplit.js llmTarget asks Settings ▸ API first (the prompt LLM, captions, the shot list all go there)", /async function llmTarget\(kind\) \{\n  const api = require\("\.\/apis"\)\.llmTarget\(kind\);[^\n]*\n  if \(api\) return api;/.test(G));
+check("lib/gpuSplit.js llmTarget asks Settings ▸ API first (the prompt LLM, captions, the shot list all go there) - after a 🧩 Model manager source picked in the list (2.795.0)", /async function llmTarget\(kind\) \{\n  const src = require\("\.\/apiSources"\)\.llmTarget\(kind\);[^\n]*\n  if \(src\) return src;\n  const api = require\("\.\/apis"\)\.llmTarget\(kind\);[^\n]*\n  if \(api\) return api;/.test(G));
 
 // ---- the keys: encrypted in settings/keys.json, never in custom.settings
 const cfg = { rgpu: { runpod: { key: "rp" } }, apis: { ab12cd34: { name: "x", service: "fal", key: "secret1" } } };

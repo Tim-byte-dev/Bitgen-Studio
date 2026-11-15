@@ -4711,7 +4711,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - プロンプトと画像は OpenRouter とモデルの提供元に送られます。非公開の素材はこのコンピューターで扱ってください。
 
 ## ☁ リモート生成を使う、リモート生成ドッカー、Pod のショートカット (2.754.0)
-<!-- en: use-remote-generation-the-remote-generation-docker-and-pod-shortcuts-2-754-0 94cd5331d611 -->
+<!-- en: use-remote-generation-the-remote-generation-docker-and-pod-shortcuts-2-754-0 166ef7a86d3a -->
 
 - **設定 ▸ リモート生成 ▸ リモート生成を使う** がタブの最初にあります。チェックを外すと、タブの残り、基本設定 ▸ GPU、リモート生成ドッカーは表示されず、すべてこのコンピューターで実行します。新規インストールではチェックなしで始まり、更新では、すでにリモートの設定があればチェックありで始まります。
 - **リモート生成ドッカー：** 基本設定 ▸ GPU で **☁ リモート生成ドッカー** を押します。ほかのドッカーと同じようにフローティングやドッキングができ、ステータスバーにはボタンがありません。表示する内容：
@@ -4725,7 +4725,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   4. ドッカーに戻り、**🔄 マイポッド** に新しい Pod が表示されます - **これを使う**。
 
 ## ☁ 11 月 15 日以降も Pod はそのまま使えます。Pod を読み込み中、Pod の準備完了、Pod を停止中 (2.755.0)
-<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 78732d83c2a8 -->
+<!-- en: pods-keep-working-after-15-november-loading-pod-pod-loaded-stopping-pod-2-755-0 fe0a0c834031 -->
 
 - RunPod は、bitGen が Pod に使っていた API（REST v1）を 2026 年 11 月 15 日に終了します。bitGen は 🔄 マイポッド、▶ 開始 /
   ⏹ 停止、Serverless エンドポイントのイメージに、RunPod の新しい API（REST v2）を使うようになりました。設定の変更は不要です。
@@ -4776,7 +4776,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - 動画：OpenAI は 2026 年 9 月に動画 API（Sora）を終了し、Gemini の動画モデルは bitGen が使う API キーでは提供されていません。動画には OpenRouter、fal.ai、Replicate、RunningHub を使ってください。
 
 ## 🧩 P_ Pod スタイルと Pod の読み込みバー (2.758.0)
-<!-- en: p-pod-styles-and-a-pod-s-loading-bar-2-758-0 4dd5ce6454aa -->
+<!-- en: p-pod-styles-and-a-pod-s-loading-bar-2-758-0 089a2f704eec -->
 
 - **Pods では P_ スタイルだけ。** 基本設定 ▸ GPU が **RunPod ▸ Pods**（リモートまたは両方）のとき、スタイル一覧には **P_** スタイル - Pod 上にすでにあるモデルでレンダーするスタイル - だけが表示されます。ローカルや Serverless では P_ スタイルは隠れます。Pod が必要だからです。
 - **モデルの選び方：🎨 Styles。** Pod が *pod loaded* になったら、PODS ドッカーでその Pod の **🎨 Styles** を押します。bitGen は Pod の ComfyUI を読み取り、次を一覧にします：
@@ -4912,9 +4912,9 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **プリセットを作る：** スタイル用に作った Pod は自動でプリセットとして保存されます；🖥 My pods のどの Pod でも 💾 Save as preset；＋ New preset で一から作れます。プリセットの Pod にどこからかスタイルを入れると、プリセットにも加わります。
 
 ## Basic Settings ▸ GPU で Local のときはリモートを表示しません；Pod に送るモデルは進み具合を表示 (2.764.1)
-<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 3bd1ca6e3b99 -->
+<!-- en: basic-settings-gpu-on-local-shows-nothing-remote-a-model-sent-to-a-pod-shows-how 032615fe72ec -->
 
-- **Local はすっきり：** Local を選ぶと、Basic Settings ▸ GPU には Local · Remote · Both と「Every job runs on this computer.」だけが表示されます - Remote servers と RunPod の選択、☁ Remote generation docker、🖥 PODS、💲 RunPod、⚙ Settings ▸ Remote generation は隠れ、Local を選ぶと Remote generation、PODS、💲 RunPod のドッカーは閉じます。
+- **Local はすっきり：** Local を選ぶと、Basic Settings ▸ GPU には Local · Remote · Both と「Every job runs on this computer.」だけが表示されます - Remote servers と RunPod の選択、🖥 GPU docker、🖥 PODS、💲 RunPod、⚙ Settings ▸ Remote generation は隠れ、Local を選ぶと Remote generation、PODS、💲 RunPod のドッカーは閉じます。
 - **Remote と Both で再び表示されます。** まだ何も設定していないときに Remote（または Both）を選ぶと待ちになります：選択肢が表示されるので RunPod ▸ Pods を選ぶ（または Settings ▸ Remote generation で設定する）と、レンダリング先ができた時点で保存されます。
 - **Pod を待っているレンダリングは理由を表示します：** そのとき Queue のカードは「waiting for the GPU」ではなく、Pod が何をしているかを表示します：起動中、読み込み中、カスタムノードを入れている、Pod 上でファイルをダウンロード中、またはこのコンピューターからモデルを送っていて、その進み具合：「sending model.safetensors to the pod - 1.2 GB of 6.5 GB (18%) · 3.4 MB/s · about 26 min left」。ステータスバーの上の行とジョブのログにも同じことが出ます。
 
@@ -5024,12 +5024,12 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **⬆ Update ComfyUI**（PODS ▸ My pods、各ポッド）：ポッドの ComfyUI を今すぐ最新版に更新します - git pull（固定または編集されたチェックアウトは ComfyUI 自身の master へ）、requirements、ComfyUI の再起動 - 進み具合を表示します。失敗した自動更新は次のレンダーで再試行され、理由（ポッドのログの末尾付き）を表示します。成功したのにノードがまだない場合は、ポッドの再起動を促します。
 
 ## リモート設定は専用ドッカーへ、リモートモードのプロンプトドッカーのモデル一覧 (2.768.0)
-<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 4482a95f5b9d -->
+<!-- en: remote-options-in-their-docker-and-the-prompt-docker-s-model-lists-in-remote-mod 2a6597386fcb -->
 
 - **基本設定 ▸ GPU** に残るのは、ローカル / リモート / 両方、各ジョブの実行場所を示す行、そして
-  **☁ Remote generation docker** だけになりました。リモート用のほかの設定はすべてそのドッカーにあります: リモートサーバー（RunPod / OpenRouter）、RunPod の Serverless / Pods、「両方」のチェックボックス、**LLM** と **Vision LLM** の行（ローカル / OpenRouter / RunPod）、💲 RunPod。何も設定していないうちにリモートか両方を選ぶと、ドッカーが開くので、そこで RunPod ▸ Pods を選べます。
+  **🖥 GPU docker** だけになりました。リモート用のほかの設定はすべてそのドッカーにあります: リモートサーバー（RunPod / OpenRouter）、RunPod の Serverless / Pods、「両方」のチェックボックス、**LLM** と **Vision LLM** の行（ローカル / OpenRouter / RunPod）、💲 RunPod。何も設定していないうちにリモートか両方を選ぶと、ドッカーが開くので、そこで RunPod ▸ Pods を選べます。
 - **リモートモードのプロンプトドッカーの LLM と Vision の一覧**には、このコンピューターの GGUF ではなく、リモート側のモデルが表示されます:
-  - **OpenRouter**（何も選んでいないときの既定）- OpenRouter の**無料**モデル。Vision の一覧には、画像を受け取れる無料モデルが表示されます。一覧はキーなしで読み込めますが、プロンプトを送るには OpenRouter の API キー（無料で作れます）が必要です - ☁ Remote generation ▸ ⚙ 設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter。
+  - **OpenRouter**（何も選んでいないときの既定）- OpenRouter の**無料**モデル。Vision の一覧には、画像を受け取れる無料モデルが表示されます。一覧はキーなしで読み込めますが、プロンプトを送るには OpenRouter の API キー（無料で作れます）が必要です - 🖥 GPU ▸ ⚙ 設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter。
   - **RunPod（Pods）** - bitGen がポッドに入れられる GGUF。選んだものは、次にプロンプトを送ったときにポッドで準備されます。
   - **RunPod Serverless** - vLLM エンドポイントのモデル。モデルを選ぶと保存されます。このコンピューターでは何も読み込みません。ローカルに戻すと、一覧はこのコンピューターのモデルに戻ります（設定 ▸ LLM にはいつも表示されます）。
 - ポッドの **⬆ Update ComfyUI** は、ポッドの ComfyUI が使っているのと同じ Python で ComfyUI の必要なパッケージをインストールするようになり、途中で失敗したときは本当のエラーを表示します。
@@ -5058,9 +5058,9 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   実行中または停止中のもの。終了した（または終了中の）ポッドや、ポッドがなくなったプリセットはそこには出ません。プリセットのポッドは 🖥 PODS ▸ 📦 Presets から作り直せます。RunPod がポッドの一覧を返さなかったときは、ボックスに理由が表示されます。
 
 ## LLM はローカル / リモート、OpenRouter の一覧と ☰ All (2.770.0)
-<!-- en: llm-local-remote-openrouter-lists-and-all-2-770-0 4ceef016ab55 -->
+<!-- en: llm-local-remote-openrouter-lists-and-all-2-770-0 f82fb1203874 -->
 
-- **☁ Remote generation ドッカー:** LLM と Vision LLM は **ローカル** か **リモート** だけになりました。リモートは設定 ▸ Remote generation ▸ 🧠 LLM で選んだプラットフォームを使います - 既定は OpenRouter、または RunPod。RunPod でレンダーしても、LLM がそちらへ移ることはなくなりました。
+- **🖥 GPU ドッカー:** LLM と Vision LLM は **ローカル** か **リモート** だけになりました。リモートは設定 ▸ Remote generation ▸ 🧠 LLM で選んだプラットフォームを使います - 既定は OpenRouter、または RunPod。RunPod でレンダーしても、LLM がそちらへ移ることはなくなりました。
 - **設定 ▸ Remote generation ▸ 🧠 LLM ▸ OpenRouter:** **Show free** と **Show paid** で、一覧に出す OpenRouter のモデルを決めます（有料のものには 100 万トークンあたりの価格が付きます）。
 - **プロンプトドッカー（リモートモード）:** LLM と Vision の一覧は **10 件ずつ** 表示します - 各一覧の前の 🔍 に入力して検索します（名前、作者、free、paid、vision）。**☰ All** は OpenRouter の全モデルをダイアログで開きます: 検索、Free / Paid /
   👁 Vision の絞り込み、名前・価格・コンテキスト・新しい順の並べ替え、各モデルの詳細。1 つ選び、LLM か Vision LLM を選んで
@@ -5075,7 +5075,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **PODS ドッカーの転送:** ポッドにすでにあるファイルには進捗バーを出さず、もう一度送ったファイルは古い行を置き換えます。
 
 ## 💲 Costs ドッカーと 📊 Statistics (2.771.0)
-<!-- en: costs-docker-and-statistics-2-771-0 5c42cf4e25d8 -->
+<!-- en: costs-docker-and-statistics-2-771-0 cb216de73b9e -->
 
 - **💲 Costs**（名前が変わった 💲 RunPod ドッカー）: **All costs** にすべての費用が並びます - **🖥 This computer**（アプリ実行中の電力 + 1 日の基本料金、Settings ▸ General ▸ Energy cost の価格）、**☁ RunPod**（あなたのポッド、RunPod 自身の請求から + Serverless エンドポイント）、**🧠 OpenRouter**（LLM とビジョン LLM）、使っている **🔑 Settings ▸ API** の各サービス、$/時間 を設定した **🌐 リモート GPU** - それぞれ 1 行ずつ、**Total** は電気料金の通貨です。上で期間を選びます: **Today**、**7 days**、**This month**、**Last month**、**Everything**。
 - **行をクリック**（または Enter）すると、そのプラットフォームの**詳細な一覧**を表示します。**← All costs** で戻ります:
@@ -5084,7 +5084,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
   - OpenRouter: あなたのキーに対する OpenRouter 自身の数値（今日、今週、今月、キー作成以来、残りの上限）と、bitGen のすべての呼び出しをモデル別と 1 件ずつ（入力 / 出力トークン、OpenRouter が報告した費用。「-」= 価格の報告なし）。
   - API サービス: そのレンダー（日時、内容、所要時間、サービスが示した価格）と LLM の呼び出し。
   - リモート GPU: 日別の時間と費用。
-- **開き方**: ☁ Remote generation ドッカーまたは PODS ドッカーの 💲 Costs（RunPod の一覧が直接開きます）、Settings ▸ General ▸ Energy cost の **💲 Costs…**、System stats の「⚡ since start」の横の 💲。Local を選んでも閉じなくなりました。
+- **開き方**: 🖥 GPU ドッカーまたは PODS ドッカーの 💲 Costs（RunPod の一覧が直接開きます）、Settings ▸ General ▸ Energy cost の **💲 Costs…**、System stats の「⚡ since start」の横の 💲。Local を選んでも閉じなくなりました。
 - **📊 Statistics**（Costs ドッカー内、または Settings ▸ General ▸ Energy cost の **📊 Statistics…**）はダイアログを開き、**各生成を 1 件ずつ**表示します: **起動**（キューの先頭から ComfyUI に作業が渡されるまで - ポッドの起動や準備、ファイルの送信やダウンロード、ノードパックのインストール、ComfyUI の更新や再起動、ワークフローの構築）、**生成**（レンダーそのもの。オンラインサービスなら実行全体）、**合計**、さらにほかのジョブの後ろで待った時間。上のカードに件数と平均が出ます。
   - ポッドを待ったポッドレンダーには ⚙ が付きます - クリックするとその**ポッドの準備**と段階（ダウンロード、ノードパック、再起動 …）を表示します。
   - **Pod preparations** には、ポッドが起動または準備されたすべての回が並びます: 所要時間、各段階、スタイル、問題。
@@ -5111,10 +5111,10 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - **閉じたポッド項目は本当に閉じるようになりました** - 以前は ▸ のままでもボタンや詳細が表示されていました。
 
 ## リモートモード: ポッドの統計、モードごとのスタイル、最後まで届くアップロード (2.773.0)
-<!-- en: remote-mode-the-pod-s-stats-one-mode-s-styles-uploads-that-finish-2-773-0 bf47cf9f17bc -->
+<!-- en: remote-mode-the-pod-s-stats-one-mode-s-styles-uploads-that-finish-2-773-0 1afebf5577ce -->
 
 - **リモートモードでは左ドッカーの System 統計がポッドを表示します。** Basic Settings ▸ GPU が **Remote**、RunPod ▸ Pods で使用中のポッドがあるとき、見出しは **System · ☁ <あなたのポッド>** になり、グラフはポッドのものになります: CPU 負荷、RAM、各 GPU（負荷、温度、VRAM）、ディスクのバー - **Disk /**（コンテナーディスク、ポッドを止めると消えます）と **Disk /workspace**（止めても残ります）。キュー、進行バー、⚡ since start はこのコンピューターのままです（あなたの電気代です）。Local に戻すと、グラフはまたこのコンピューターのものになります。リモートモードで使用中のポッドがない（または Serverless / OpenRouter の）ときは、見出しは **System · this computer** です - 理由は見出しにカーソルを合わせると出ます。
-- **ポッドに載せるのは今のモードのスタイルだけです。** 画像モード（🖼 Image、⚙ Graph）では **画像** スタイルだけをアップロード・確認します - 選んだ Image スタイルがそのポッドで準備されます。🎬 Video（または 🎶 Music）では **動画** スタイルだけです。自分で準備を始めるポッド、My pods の 💾 Save、プリセットも同じで、もう一方のモードのスタイルはポッドに表示され（"left for Video mode: …"）、そのモードに切り替えるか、そのスタイルでレンダーしたときに準備されます。🗣 Speech と 💬 Chat ではスタイルは準備しません。☁ Remote generation ドッカーの行には、今のモードのスタイルが出ます。
+- **ポッドに載せるのは今のモードのスタイルだけです。** 画像モード（🖼 Image、⚙ Graph）では **画像** スタイルだけをアップロード・確認します - 選んだ Image スタイルがそのポッドで準備されます。🎬 Video（または 🎶 Music）では **動画** スタイルだけです。自分で準備を始めるポッド、My pods の 💾 Save、プリセットも同じで、もう一方のモードのスタイルはポッドに表示され（"left for Video mode: …"）、そのモードに切り替えるか、そのスタイルでレンダーしたときに準備されます。🗣 Speech と 💬 Chat ではスタイルは準備しません。🖥 GPU ドッカーの行には、今のモードのスタイルが出ます。
 - **このコンピューターから送る LoRA が、最後に "[Errno 2] No such file" で止まらなくなりました。** ファイルは全部届いていましたが、一部のポッドテンプレートでは Jupyter がアップロードを、bitGen が ComfyUI の models フォルダーへ移すときに見ていたのとは別のフォルダーに置いていました。bitGen は今は Jupyter が置いた場所で見つけます。本当に見つからないときは、言葉でそう伝えます。アップロードごとの部分ファイルには専用の名前が付くので、古いアップロードの残りを取り違えることもありません。
 
 ## ポッドで失敗したレンダリングが再実行される、テンプレートの ComfyUI を待つ (2.774.0)
@@ -5149,7 +5149,7 @@ Gallery、Assets ▸ Sound、References で曲やサウンドをクリックす�
 - Ming-3.0 TTS と Bark STT はこのコンピューターのままです。
 
 ## すべての種類をローカルかリモートで、セクション別に (2.776.0)
-<!-- en: every-type-local-or-remote-in-sections-2-776-0 978276709053 -->
+<!-- en: every-type-local-or-remote-in-sections-2-776-0 d25278756b86 -->
 
 - **☁ リモート生成ドッカーがセクションに分かれました:**
   - **☁ Remote servers** - RunPod か OpenRouter、Serverless か Pods;
@@ -5238,9 +5238,9 @@ Jupyter がまだ起動中のポッド（bitGen がカーネルを頼むと HTTP
 PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Restart ComfyUI** があります。2 回押します。最初の 1 回は確認です。bitGen はポッドの ComfyUI を止め、同じコマンドと選んだ GPU メモリの方法でもう一度起動し、応答するまで待ちます。結果はポッドの GPU memory の行に出ます。そのポッドで実行中のレンダリングは止まりますが、ポッドのそれ以外は何も変わりません。
 
 ## Hugging Face の LLM をポッドで、1 つのポッドですべて (2.782.0)
-<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 4e484f3a8f86 -->
+<!-- en: your-llms-from-hugging-face-on-your-pod-one-pod-for-everything-2-782-0 b399e9805e7f -->
 
-**あなたのリスト.** LLM または Vision LLM を RunPod ポッドで使うとき（☁ Remote generation ドッカー）、プロンプトドッカーの LLM と Vision の一覧には **あなたのリスト** だけが出ます。どちらかの一覧の最後にある **＋ From Hugging Face… / your list** を選ぶとダイアログが開きます。
+**あなたのリスト.** LLM または Vision LLM を RunPod ポッドで使うとき（🖥 GPU ドッカー）、プロンプトドッカーの LLM と Vision の一覧には **あなたのリスト** だけが出ます。どちらかの一覧の最後にある **＋ From Hugging Face… / your list** を選ぶとダイアログが開きます。
 
 1. Hugging Face のリポジトリを owner/name（例: unsloth/Qwen3-8B-GGUF）で入力するかアドレスを貼り付け、**List its GGUF files** を押します。bitGen はリポジトリの GGUF を量子化とサイズ付きで一覧し、Q4_K_M を先頭にします。分割されたモデルは 1 行です。ビジョン LLM にはプロジェクター（mmproj）も必要です。ゲート付きや非公開のリポジトリには Hugging Face トークンが必要です（Settings ▸ Models）。
 2. **Run it on**: 自分のポッドの 1 つか、**a new pod just for the LLM**（PODS が Create pod で開きます。新しいポッドで My pods の LLM または vLLM にチェックを入れます）。
@@ -5252,11 +5252,11 @@ PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Res
 **もっと容量を.** ダイアログはモデルに必要な容量を示し、ポッドのボリュームを大きくできます（**Make it bigger**、10〜4000 GB、大きくするのみ）。RunPod がポッドを再起動することがあります。/workspace は残ります。
 
 ## フローティングドッカーを前面に、タイプごとに Local / Remote、RunPod の選択は設定に (2.782.1)
-<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- ef92bc6b1c2c -->
+<!-- en: floating-dockers-in-front-each-type-local-or-remote-runpod-s-choice-in-settings- 5d427d554038 -->
 
 **フローティングドッカーが前面に.** フローティングにした、開いた、またはフローティングになったドッカーは、すぐに他のフローティングドッカー（▣ ドッカーを含む）より前に出ます。以前は押したときだけ前に出ていました。フローティングダイアログ（💬 Community、Basic Settings など）は引き続きドッカーより上にあります。
 
-**タイプごとに Local / Remote.** ☁ Remote generation ドッカーで Image、Video、Music を Local にするとそのタイプはローカルモードに、Remote にするとリモートモードになります。3 つとも Local ならアプリはローカルモードです（このコンピューターのモデル一覧、ComfyUI を起動）。Local と Remote が混在する場合、このコンピューターの ComfyUI は Local のタイプのために動き続け、Basic Settings のモデル一覧にはこのコンピューターのモデルとリモートのモデル（☁）の両方が出ます。
+**タイプごとに Local / Remote.** 🖥 GPU ドッカーで Image、Video、Music を Local にするとそのタイプはローカルモードに、Remote にするとリモートモードになります。3 つとも Local ならアプリはローカルモードです（このコンピューターのモデル一覧、ComfyUI を起動）。Local と Remote が混在する場合、このコンピューターの ComfyUI は Local のタイプのために動き続け、Basic Settings のモデル一覧にはこのコンピューターのモデルとリモートのモデル（☁）の両方が出ます。
 
 **RunPod ▸ Pods / Serverless は設定に.** ドッカーには Serverless / Pods の選択がなくなりました。⚙ Settings ▸ Remote generation ▸ **RunPod renders on** で選びます。
 
@@ -5268,12 +5268,12 @@ PODS ▸ My pods の稼働中のポッドには、📁 Files の横に **⟳ Res
 ポッドへの各モデル転送（PODS ▸ Transfers）のバーの最後に 2 つのアイコンボタンがあります。**⏹** は停止、**↻** は最初からやり直します。このコンピューターからのアップロードは送信中のパートの後に止まり、ポッドにすでにあるパートは削除されます。ポッドのダウンロードは処理中の部分の後に止まります。停止したダウンロードの代わりにこのコンピューターから送ることはなく、それを必要としたレンダリングはあなたが停止したと伝えます。
 
 ## System ドッカー、ステータスバーの Remote と Pods、すべてローカル / すべてリモート / Both (2.783.0)
-<!-- en: the-system-docker-remote-and-pods-on-the-status-bar-all-local-all-remote-both-2- bf14ce1715f8 -->
+<!-- en: the-system-docker-remote-and-pods-on-the-status-bar-all-local-all-remote-both-2- 7c8c7f0716c6 -->
 
 - **System:** 左のドッカーは **System** という名前になりました（以前は Settings）。
 - **ポッドの数値:** すべてをポッドで実行しているときは、System のグラフにポッドの CPU、RAM、GPU、ディスクが表示されます。一部をこのコンピューターで、一部をポッドで実行しているときは、このコンピューターのグラフはそのままで、その下にポッドの数値が専用の **☁ <ポッド>** 枠で表示されます。
-- **Basic Settings に GPU 項目はもうありません。** 作業をどこで実行するかは ☁ Remote generation ドッカーの一番上で選びます: **すべてローカル**（すべてこのコンピューター）、**すべてリモート**（すべての種類を Remote に、LLM と Vision LLM も）、**Both**（下の行で決めます）。すべてリモートを選んでいるときに一つの行を Local に戻すと、選択は Both に切り替わります。
-- ステータスバーの **Remote**（Queue の後）は ☁ Remote generation ドッカーを表示 / 非表示にします。Settings ▸ Remote generation ▸ Use remote generation にチェックが入っている間だけ表示されます。
+- **Basic Settings に GPU 項目はもうありません。** 作業をどこで実行するかは 🖥 GPU ドッカーの一番上で選びます: **すべてローカル**（すべてこのコンピューター）、**すべてリモート**（すべての種類を Remote に、LLM と Vision LLM も）、**Both**（下の行で決めます）。すべてリモートを選んでいるときに一つの行を Local に戻すと、選択は Both に切り替わります。
+- ステータスバーの **Remote**（Queue の後）は 🖥 GPU ドッカーを表示 / 非表示にします。Settings ▸ Remote generation ▸ Use remote generation にチェックが入っている間だけ表示されます。
 - ステータスバーの **Pods** は PODS ドッカーを表示 / 非表示にします。何かをリモートで実行している間だけ表示されます。すべて Local なら非表示になり、PODS ドッカーは閉じます。
 
 ## ポッド作成時の GPU リストの並べ替え: 速い順 / 安い順 (2.784.0)
@@ -5287,16 +5287,16 @@ PODS ▸ Create pod の GPU リストの上に **GPU の並べ替え** があり
 Queue ドッカーの **Pending** タブには、待機中または実行中の生成だけが表示されます。完了・失敗・キャンセルしたものは **Done** タブに移り、↻ でもう一度作れます。Pending の件数には待機中のものも含まれます。
 
 ## Runs on: Remote generation ドッカーで種類ごとに 1 つのドロップダウン (2.785.0)
-<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 823d6b01941e -->
+<!-- en: runs-on-one-dropdown-per-type-in-the-remote-generation-docker-2-785-0 554ab0507560 -->
 
-☁ Remote generation ドッカーの一番上は **Runs on** になりました: 作業の種類ごとに 1 つのドロップダウン - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM、Vision LLM。それぞれ **Local**、**RunPod**（自分のポッド）、**OpenRouter**（今は LLM と Vision LLM - OpenRouter の有料の画像・動画モデルは次に対応）を選べます。**LAN** と **Team** は動くまでグレー表示です。**すべて設定** で全行を一度に変更し、その行で選べないものはスキップされます。
+🖥 GPU ドッカーの一番上は **Runs on** になりました: 作業の種類ごとに 1 つのドロップダウン - Image、Video、Music、Text to speech、Speech to text、Song separation、LLM、Vision LLM。それぞれ **Local**、**RunPod**（自分のポッド）、**OpenRouter**（今は LLM と Vision LLM - OpenRouter の有料の画像・動画モデルは次に対応）を選べます。**LAN** と **Team** は動くまでグレー表示です。**すべて設定** で全行を一度に変更し、その行で選べないものはスキップされます。
 
 以前あったラジオボタン（すべてローカル / すべてリモート / Both、Remote servers、各種類の Local / Remote）はなくなりました。RunPod ▸ Pods か Serverless は引き続き Settings ▸ Remote generation で選びます。ステータスバーの **Pods** は、RunPod の行がある間だけ表示されます。
 
 ## OpenRouter models: 自分のリスト、OpenRouter で画像と動画 (2.786.0)
-<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 1a449eed0c36 -->
+<!-- en: openrouter-models-your-own-lists-pictures-and-video-on-openrouter-2-786-0 84a41fd51708 -->
 
-☁ Remote generation ▸ **☁ OpenRouter models…**（Runs on の下）を押すと、OpenRouter で使えるモデルのダイアログが開きます。上のタブは種類 - **Image**、**Video**、**LLM**、**Vision LLM** - で、各種類の中にファミリー（作り手: Google、OpenAI、ByteDance Seed など）ごとのタブと **All** があります。検索、**Free** / **Paid** のチェック、名前・安い順・新しい順の並べ替えができ、⟳ で OpenRouter にもう一度問い合わせます。
+🖥 GPU ▸ **☁ OpenRouter models…**（Runs on の下）を押すと、OpenRouter で使えるモデルのダイアログが開きます。上のタブは種類 - **Image**、**Video**、**LLM**、**Vision LLM** - で、各種類の中にファミリー（作り手: Google、OpenAI、ByteDance Seed など）ごとのタブと **All** があります。検索、**Free** / **Paid** のチェック、名前・安い順・新しい順の並べ替えができ、⟳ で OpenRouter にもう一度問い合わせます。
 
 左の枠 **Available** にはモデルと価格が並びます: 無料のものは緑、有料のものはその料金（1 枚あたり、1 メガピクセルあたり、動画 1 秒あたり、LLM は 100 万トークンあたり）。クリックすると下に詳細（長さ、サイズ、参照画像の数）が出ます。モデルを**ダブルクリック**（または Enter）すると右の **My models** に追加され、各行の最後の 🗑 で外せます。一覧を見るのにキーは不要ですが、生成にはキーが必要です（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
 
@@ -5374,9 +5374,9 @@ Basic Settings で NO_Pod のファイル（画像のチェックポイント、
 **☁ OpenRouter** タブには OpenRouter のモデルが表示されます。上部に **Image**、**Video**、**LLM**、**Vision LLM**、その下にファミリー（提供元）、検索、**Free** / **Paid**、並べ替え（無料を先に、安い順、新しい順）、OpenRouter に再度問い合わせる ⟳ があります。各カードには名前、モデル ID、価格、短い説明が表示されます。**＋** を押すとモデルが自分のモデルに追加され、そのエンドポイント（レンダリングに使う OpenRouter のアドレス。画像は `…/images`、動画は `…/videos`、LLM は `…/chat/completions`）も一緒に保存されます。上部の行にその内容が表示されます。追加したモデルは Basic Settings とプロンプトドッカーのドロップダウンに `openrouter/<model>` として表示され、Models タブの OpenRouter にも表示されます。すでに自分のモデルにあるものには ✓ yours と 🗑 が表示されます。一覧の表示にキーは不要ですが、レンダリングには必要です（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
 
 ## Several graphics cards: Local - <card> (2.791.0)
-<!-- en: several-graphics-cards-local-2-791-0 920f5527e4a6 -->
+<!-- en: several-graphics-cards-local-2-791-0 7276f6f63520 -->
 
-NVIDIA のグラフィックカードが 2 枚以上あるコンピューターでは、☁ Remote generation ▸ Runs on ▸ **Image**、**Video**、**Music** の選択肢に、通常の **Local** のすぐ後に各カードの **Local - <card>** が加わります。例: `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all でも選べます（他の行は選択がそのまま残ります）。
+NVIDIA のグラフィックカードが 2 枚以上あるコンピューターでは、🖥 GPU ▸ Runs on ▸ **Image**、**Video**、**Music** の選択肢に、通常の **Local** のすぐ後に各カードの **Local - <card>** が加わります。例: `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all でも選べます（他の行は選択がそのまま残ります）。
 
 カードを選ぶと、その種類の作業にそのカード専用の ComfyUI が使われます。Settings ▸ ComfyUI と同じ ComfyUI フォルダーを使い、`--cuda-device <N>` を付けてポート 8189 + N（GPU 0 = 8189、GPU 1 = 8190 …）で起動し、ログはアプリの横の `comfyui-gpu<N>.log` に書かれます。その種類の最初のレンダリングで起動し（読み込み中は Queue に「starting ComfyUI for GPU N」と表示されます）、以降のレンダリングのために起動したままになります。bitGen の終了時に停止します。通常の **Local** は従来どおり Settings ▸ ComfyUI の ComfyUI です。これにより、画像を 1 枚のカードで、動画を別のカードで同時にレンダリングできます。
 
@@ -5388,9 +5388,9 @@ NVIDIA のグラフィックカードが 2 枚以上あるコンピューター�
 - RunPod のポッドや OpenRouter に送られるレンダリングには影響しません。
 
 ## Your OpenRouter models in the Model manager: green, orange, red (2.792.0)
-<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 227756892371 -->
+<!-- en: your-openrouter-models-in-the-model-manager-green-orange-red-2-792-0 162efc066a9d -->
 
-OpenRouter のモデルのダイアログはなくなりました。🧩 Model manager ▸ **☁ OpenRouter** で自分の OpenRouter モデルを管理します（☁ Remote generation ▸ **☁ OpenRouter models…** はこのタブを開きます）。**＋** で追加した自分のモデルは、そのタブと Models タブで枠と色付きで表示されます。
+OpenRouter のモデルのダイアログはなくなりました。🧩 Model manager ▸ **☁ OpenRouter** で自分の OpenRouter モデルを管理します（🖥 GPU ▸ **☁ OpenRouter models…** はこのタブを開きます）。**＋** で追加した自分のモデルは、そのタブと Models タブで枠と色付きで表示されます。
 
 - **濃い緑** - 自分のモデル、無料。
 - **濃いオレンジ** - 自分のモデル、有料。
@@ -5413,9 +5413,9 @@ Basic Settings で NO_Pod のファイル（画像のチェックポイント、
 bitGen がほかの Pod を知らないときは、2.789.0 のボックスが表示されます。NO_Pod から作り直した Pod も同じように名前が変わり（`NO_Pod (Krea pod)/…` は `Krea pod/…` になります）、モデルと LoRA と一緒に VAE とテキストエンコーダーも戻されます。
 
 ## The LLM and speech on a graphics card of their own (2.794.0)
-<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 86bf03ad2af3 -->
+<!-- en: the-llm-and-speech-on-a-graphics-card-of-their-own-2-794-0 8b28b388b438 -->
 
-NVIDIA のカードが 2 枚以上あると、☁ Remote generation ▸ Runs on のすべての行に **Local - <card>** が表示されるようになりました。Image / Video / Music だけでなく、**LLM**、**Vision LLM**、**Text to speech**、**Speech to text**、**Song separation** にも表示されます。行の下の一文が、そこで何が動くかを示します。
+NVIDIA のカードが 2 枚以上あると、🖥 GPU ▸ Runs on のすべての行に **Local - <card>** が表示されるようになりました。Image / Video / Music だけでなく、**LLM**、**Vision LLM**、**Text to speech**、**Speech to text**、**Song separation** にも表示されます。行の下の一文が、そこで何が動くかを示します。
 
 - **LLM / Vision LLM** - llama.cpp がそのカードで起動します（Settings ▸ LLM のデバイスの代わりになります）。起動する前に、bitGen はモデルの層のうちいくつがカードの空きメモリに収まるかを計算します。計算に入るのはモデルファイル、そのプロジェクター、コンテキストのメモリで、前のモデルがカードから出たあとに計算します。すべて収まるなら、これまでどおりすべての層がカードに載ります。収まらなければ、収まる層だけがカードに載り、残りは RAM に置かれます（遅くなります）。Settings ▸ LLM で自分で設定した GPU 層の数は、そのまま使われます。
 - **Text to speech、Speech to text、Song separation** - それぞれのプログラムにはそのカードしか見えないので、音声、文字起こし（ライブのものも）、ステムはそこで作られます。
@@ -5426,6 +5426,20 @@ NVIDIA のカードが 2 枚以上あると、☁ Remote generation ▸ Runs on 
 
 - **オン** - カードに大きすぎるモデルは、残りを RAM に置きます。LLM は上のとおりで、ComfyUI は必要に応じてモデルを RAM に移します。拒否されることはなく、遅くなるだけです。
 - **オフ** - すべてをカードに置きます。収まらない LLM や Vision LLM は起動する前に拒否され、必要な量とカードの空きが表示されます。bitGen の ComfyUI は `--gpu-only` で起動します（カード専用の ComfyUI は次の起動時から、メインの ComfyUI は bitGen が main.py を自分で起動するときだけ。.bat や自分で設定した起動コマンドはそのままです）。収まらない生成は ComfyUI のメモリ不足エラーで失敗します。
+
+## Model manager sources, and the GPU docker (2.795.0)
+<!-- en: model-manager-sources-and-the-gpu-docker-2-795-0 ff1368a228d4 -->
+
+☁ Remote generation ドッカーは **🖥 GPU** という名前になりました（ステータスバーのボタンも）。このコンピューターのカード、Pod、オンラインのどこで各作業を動かすかを決めるドッカーだからです。Settings ▸ Remote generation の名前はそのままです。
+
+**🧩 Model manager ▸ ＋ Add source** で、どのモデル API にも専用のタブを作れます。
+
+1. **＋ Add source** を押します。**🔌 Source 1** タブが開き、その **⚙ Settings** ダイアログが表示されます。
+2. 名前を付け、**Format** を選びます - **OpenAI-compatible**（ほとんどのサービス: Together、Groq、DeepSeek、Mistral、Fireworks、LM Studio、vLLM など）、**Ollama**、**Anthropic-style**、または **Custom template**（`{url}` と `{model}` を使った自分のモデル一覧とチャットのアドレス、そしてキーのヘッダー）。そして **URL** と **API key** を入力します。キーは暗号化して保存され、二度と表示されません（最後の 4 文字だけ）。
+3. **✓ Test** で API にモデルを問い合わせます。**Model** 一覧が埋まり、**Endpoint** には URL と選んだモデルから bitGen が組み立てたアドレスが表示されます。
+4. **Save**。タブに API のモデルが一覧され、それぞれの種類（LLM、Vision LLM、Image、Video）が推測されます（追加する前に変更できます）。**＋** で自分のモデルに追加し、**🗑** で外します。**⟳ Models** で API にもう一度問い合わせます。検索と種類の一覧で絞り込めます。**🗑 Remove source** はタブ、そのモデル、キーを削除します。
+
+ソースからの自分の LLM と Vision モデルは、プロンプトドッカーの LLM / Vision 一覧の **🔌 <source> · your models** に `<source>/<model>` として表示されます。1 つ選ぶと、チャット（画像の説明、クイックプロンプトも）がそのソースのエンドポイントにキー付きで送られます。🖥 GPU ▸ Runs on ▸ LLM にもそう表示されます。その一覧でほかのものを選ぶか、Runs on でほかを選ぶと終わります。画像と動画のモデルはタブに保存され、それらでの生成は次の更新で使えるようになります。☁ OpenRouter タブはこれまでどおりです。
 
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->

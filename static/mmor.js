@@ -3,7 +3,7 @@
  * Tim (verbatim): "add an openrouter tab show models from openrouter , free , paid and the other filters, put a + button next to the
  * openrouter model to add the model to our model list and save it's endpoint"
  *   the types Image / Video / LLM / Vision LLM, the family (maker), a search, ☑ Free ☑ Paid, sort (free first / cheapest / newest),
- *   ⟳ asks OpenRouter again - the same lists as ☁ Remote generation ▸ OpenRouter models… (GET /api/ormodels?type=, lib/orModels.js)
+ *   ⟳ asks OpenRouter again - the same lists as 🖥 GPU ▸ OpenRouter models… (GET /api/ormodels?type=, lib/orModels.js)
  *   ＋  POST /api/ormodels/add {type, id} - your list keeps it with its endpoint (image <base>/images, video <base>/videos, the LLMs
  *       <base>/chat/completions); then it is in Basic Settings' / the prompt docker's dropdowns as openrouter/<id> (static/ormine.js)
  *       and on the Models tab under ☐ OpenRouter
@@ -12,7 +12,7 @@
  *   the open router that we selected (+) to be in our model list with green, paid models with orange and dead models with red, use
  *   the darker green , red and orange"): YOUR models are framed + tinted - free dark green, paid dark orange, dead (OpenRouter no
  *   longer lists it) dark red, the dead ones first (🗑 takes them off); the Models tab's OpenRouter cards the same (.mmcard.orfree …).
- *   static/ormodels.js's dialog is gone - ☁ Remote generation's button opens this tab.
+ *   static/ormodels.js's dialog is gone - 🖥 GPU's button opens this tab.
  * Pure (Node: scripts/test-mmsources790.js, test-orcolors792.js): cardHtml, stateOf, COLORS.
  */
 (function (root, factory) {

@@ -2,7 +2,7 @@
  * routes/orModels.js, lib/orModels.js).
  * 2.792.0 (Tim: "i think there is no need for the openrouter dialog anymore, model manager should be able to look after it"): the dialog
  * below is GONE - 🧩 Model manager ▸ ☁ OpenRouter (static/mmor.js) does it all; this file keeps the pure list helpers the tab uses
- * (filterList, sortList, typeLabel) and the button in ☁ Remote generation, which now opens that tab (open(type)).
+ * (filterList, sortList, typeLabel) and the button in 🖥 GPU, which now opens that tab (open(type)).
  * (The 2.786.0 description that follows is history.)
  *
  * Tim (verbatim): "Add an openrouter button to remote generation docker to select models to use, show dialog with free and paid
@@ -56,7 +56,7 @@
     if (MM.openTab) MM.openTab("openrouter");
   }
   function close() { /* nothing to close - the Model manager is a docker */ }
-  /* the button in ☁ Remote generation (under Runs on) */
+  /* the button in 🖥 GPU (under Runs on) */
   function ensureBtn() {
     var box = $("rgdWhere"); if (!box || $("rhOrBtn")) return;
     var b = doc.createElement("button"); b.type = "button"; b.id = "rhOrBtn"; b.className = "ghost"; b.style.cssText = "margin-top:8px;font-size:.78rem";

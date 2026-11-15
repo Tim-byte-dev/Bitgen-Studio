@@ -14009,6 +14009,13 @@ node scripts/test-carduse794.js > /tmp/carduse794.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui794-ui.js > /tmp/ui794ui.log 2>&1 \
   && ok "2.794.0 browser test: Runs on ▸ LLM / speech ▸ Local - <card> with the line saying what runs there, Settings ▸ General ☐ Offload saved + kept - SKIP on a server with one card (run it with H3_TEST_GPUS, see the file)" \
   || { bad "2.794.0 local multi-GPU part 2 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui794ui.log | head -14; }
+# ---- 2.795.0 (Tim: "change the name of the remote docker to GPU seeing as we use local and remote together. Is is possible to make the model manager dynamic, add source button will create a tab, in the tab we have a settings button to bring up a dialog, for url, api key and endpoint format ...")
+node scripts/test-apisources795.js > /tmp/apisources795.log 2>&1 \
+  && ok "2.795.0 Model manager sources units: OpenAI-compatible / Ollama / Anthropic-style / custom template - the list + chat addresses, the key's header, the model list read, types guessed, the key encrypted + never shown, ＋ yours, the pick -> the chat target; the docker named GPU" \
+  || { bad "2.795.0 Model manager sources units"; grep -a "^FAIL" -A1 /tmp/apisources795.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui795-ui.js > /tmp/ui795ui.log 2>&1 \
+  && ok "2.795.0 browser test: ＋ Add source -> its tab + ⚙ dialog, ✓ Test lists the stand-in API's models + fills the endpoint, Save, ＋ a model, the prompt docker's LLM list picks it and a chat goes to the source with its key; the GPU button - or SKIP" \
+  || { bad "2.795.0 Model manager sources browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui795ui.log | head -14; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -8,7 +8,7 @@
  *   The page's own fillers are kept out while remote: refreshLlms (static/index.html) asks owns("llm"); the vision list's
  *   loader (ext/promptdock) is stopped at its focus and undone if it fills the list anyway (a MutationObserver); a change
  *   is caught before the page's own handler (it would load the model here).
- *   Reloaded on "h3:rgpu" (Basic Settings ▸ GPU, the ☁ Remote generation docker, OpenRouter's picker).
+ *   Reloaded on "h3:rgpu" (Basic Settings ▸ GPU, the 🖥 GPU docker, OpenRouter's picker).
  * Pure (Node: scripts/test-remotellm768.js): optionsOf, shortName.
  */
 (function (root) {

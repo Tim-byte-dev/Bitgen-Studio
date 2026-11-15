@@ -161,7 +161,7 @@ bitGen Studio can rent what your computer lacks and still run everything else at
   bitGen Studio.)
 - **[OpenRouter](https://openrouter.ai)** - run the language model (screenplays, ✨ Enhance, the prompt chat, picture
   descriptions) on OpenRouter instead of your card. One key, hundreds of models, many of them free. Its paid picture and
-  video models work too: pick the ones you want in ☁ Remote generation ▸ OpenRouter models… - bitGen shows the price
+  video models work too: pick the ones you want in 🖥 GPU ▸ OpenRouter models… - bitGen shows the price
   before each render.
 
 Step by step, with pictures: [Render on a RunPod GPU](https://tigerart.com.au/tutorials.php#runpod) and

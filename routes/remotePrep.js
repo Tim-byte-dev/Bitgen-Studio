@@ -23,7 +23,7 @@ function mount(app) {
       if (w !== "runpod" && w !== "openrouter") return next();
       // the pick is kept (config llm.last_file - the page saves it); the pod's LLM is set up with it when a prompt is first sent
       if (w === "runpod" && RM.podsMode()) { const s = PL().STATE.llm; if (s && s.phase === "ready" && s.file !== String((req.body || {}).file || "")) s.phase = "stale"; }
-      return res.json({ ok: true, remote: w, note: w === "runpod" ? "the LLM runs on your pod (☁ Remote generation docker) - set up there when you send a prompt" : "the LLM runs on OpenRouter (☁ Remote generation docker)" });
+      return res.json({ ok: true, remote: w, note: w === "runpod" ? "the LLM runs on your pod (🖥 GPU docker) - set up there when you send a prompt" : "the LLM runs on OpenRouter (🖥 GPU docker)" });
     } catch { return next(); }
   });
 }

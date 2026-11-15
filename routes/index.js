@@ -127,6 +127,7 @@ function mount(app) {
   require("./gpuCards").mount(app);   // 2.791.0: this computer's cards for ☁ Runs on ▸ Local - <card> (lib/gpuCards.js)
   require("./mmSources").mount(app);  // 2.790.0: 🧩 Model manager's RunPod + OpenRouter cards, their 🗑 (lib/mmSources.js)
   require("./famFilter").mount(app);  // 2.788.0: Basic Settings' Override lists by the picked styles' family + type (lib/famFilter.js)
+  require("./apiSources").mount(app); // 2.795.0: 🧩 Model manager ▸ ＋ Add source - any model API as a tab (lib/apiSources.js)
   require("./cardUse").mount(app);    // 2.794.0: Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit (lib/cardUse.js)
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
   app.use(require("../lib/samplers").middleware);
@@ -268,7 +269,7 @@ function mount(app) {
   require("./runpodServerless").mount(app);   // 2.743.0: a RunPod Serverless endpoint behind a ComfyUI-shaped /rpsl (lib/runpodServerless.js)
   require("./gpuSplit").mount(app);   // 2.745.0: Basic Settings ▸ GPU - remote / local / both (lib/gpuSplit.js)
   require("./openRouter").mount(app); // 2.753.0: OpenRouter - the LLM on Settings ▸ Remote generation (lib/openRouter.js)
-  require("./remoteDock").mount(app); // 2.754.0: the Remote generation docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
+  require("./remoteDock").mount(app); // 2.754.0: the GPU docker + Use remote generation (lib/podShortcuts.js, lib/gpuSplit.js)
   require("./pods").mount(app);       // 2.756.0: the PODS docker - public templates, GPU prices, create / start / stop / terminate (lib/pods.js)
   require("./stylePods").mount(app);  // 2.763.0: your styles on your pods - links, the create-a-pod question, made ready (lib/stylePods.js)
   require("./podFails").mount(app);   // 2.778.0: a file that did not get onto a pod - ↻ Try again (lib/podFails.js)

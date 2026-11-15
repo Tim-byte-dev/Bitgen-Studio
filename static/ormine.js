@@ -1,5 +1,5 @@
 /* bitGen Studio — static/ormine.js (2.786.0): YOUR OPENROUTER MODELS IN THE DROPDOWNS as "openrouter/<id>" (window.H3OrMine;
- * lib/orModels.js, GET /api/ormodels/mine; the list is made in ☁ Remote generation ▸ OpenRouter models… - static/ormodels.js).
+ * lib/orModels.js, GET /api/ormodels/mine; the list is made in 🖥 GPU ▸ OpenRouter models… - static/ormodels.js).
  *
  * Tim (verbatim): "when user closes the dialog update all the dropdowns with the new lists add models to the appropriate dropdown
  * in llm/vllm and the override model dropdown (not the video/image styles) as openrouter/model name but don't remove the other

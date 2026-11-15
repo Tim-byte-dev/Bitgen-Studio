@@ -47,7 +47,7 @@
       + '<li>Free models: about 20 requests a minute and 50 a day; 1000 a day once the account has bought $10 of credits. Paid models show their price per million tokens.</li>'
       + '<li>The vision LLM must take pictures (marked 👁). Blank = the LLM, when it does.</li>'
       + '<li>Your prompts and pictures go to OpenRouter and the model\'s provider - keep private material on this computer.</li>'
-      + '<li>The ☁ Remote generation docker decides when they are used: LLM / Vision LLM on Remote, or All remote. It works without a remote GPU - pictures, videos and songs still render here.</li>'
+      + '<li>The 🖥 GPU docker decides when they are used: LLM / Vision LLM on Remote, or All remote. It works without a remote GPU - pictures, videos and songs still render here.</li>'
       + '</ul>';
     box.appendChild(or);
     // RunPod vLLM until the saved choice loads (load() paints it) - never both parts at once

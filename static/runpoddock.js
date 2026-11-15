@@ -26,7 +26,7 @@
  *                lib/podCosts.js, RunPod's own bill)
  *     GPU prices every GPU RunPod rents pods on, Secure or Community cloud: memory, $/h, how many are free now, the most
  *                one pod can have (GET /api/pods/gpus); search it, sort it by price / memory / name
- *   Opened by 💲 Costs in the ☁ Remote generation docker and the PODS docker (straight to RunPod's list), Settings ▸ General ▸
+ *   Opened by 💲 Costs in the 🖥 GPU docker and the PODS docker (straight to RunPod's list), Settings ▸ General ▸
  *   Energy cost and the System stats' 💲 (all costs); asked again every minute while it shows, 🔄 at once. US-dollar prices in
  *   your currency (static/currency.js H3Money); this computer's in the energy bill's currency.
  * Pure (Node: scripts/test-runpoddock7635.js, scripts/test-costs771.js): availWord, lastsText, sortGpus, filterGpus, podRows,
@@ -301,7 +301,7 @@
     $("cdSumBox").addEventListener("click", (e) => { const tr = e.target.closest && e.target.closest("tr[data-cdrow]"); if (tr) open(tr.dataset.cdrow); });
     $("cdSumBox").addEventListener("keydown", (e) => { const tr = e.target.closest && e.target.closest("tr[data-cdrow]"); if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(tr.dataset.cdrow); } });
   }
-  /* ---- 💲 Costs in the ☁ Remote generation docker (where the 💲 line was), shown while Remote generation is RunPod - opens
+  /* ---- 💲 Costs in the 🖥 GPU docker (where the 💲 line was), shown while Remote generation is RunPod - opens
    *      RunPod's list */
   function wanted() { const g = S.g || {}; return !!(g.engine && g.engine.provider === "runpod" && (g.enabled || (g.engine && g.engine.pods))); }
   function btn() {
@@ -311,7 +311,7 @@
       b = doc.createElement("button"); b.type = "button"; b.className = "ghost"; b.id = "gpuRpDock"; b.style.cssText = "margin:4px 0 0 6px;font-size:.72rem;display:none";
       b.title = "Show / hide the 💲 Costs docker on RunPod's list: your balance, what your pods cost, RunPod's GPU prices (← All costs: this computer and every platform)"; b.textContent = "💲 Costs";
       b.onclick = () => show(undefined, "runpod");
-      const pods = $("gpuPods"), host = $("gpuOptBtns") || box;   // 2.768.0: with the remote options (the ☁ Remote generation docker)
+      const pods = $("gpuPods"), host = $("gpuOptBtns") || box;   // 2.768.0: with the remote options (the 🖥 GPU docker)
       if (pods && pods.parentNode === host) pods.after(b); else host.appendChild(b);
     }
     return b;

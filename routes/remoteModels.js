@@ -24,7 +24,7 @@ function mount(app) {
   app.get("/api/comfymodels", (req, res, next) => {
     if (!remote(req)) return next();
     // 2.782.1 (Tim: "when local is selected in any of the remote generation radios, set that type to local mode"): a type still
-    // on this computer (☁ Remote generation docker) - this computer's models AND the remote ones, each marked
+    // on this computer (🖥 GPU docker) - this computer's models AND the remote ones, each marked
     let mix = false; try { mix = require("../lib/modeSwitch").mixed(require("../lib/gpuSplit").split()); } catch { mix = false; }
     if (mix) {
       try { RM.ensureFilled(); } catch { /* fine */ }

@@ -42,8 +42,9 @@
   }
   function noteOf(k) {
     var v = S.v, h = v.hosts[k], g = S.g || {};
-    if (h === "local") return "";
     var row = (v.kinds || []).filter(function (x) { return x.k === k; })[0];
+    if (row && /^🔌 /.test(row.note || "")) return row.note;   // 2.795.0: a 🧩 Model manager source's model is picked
+    if (h === "local") return "";
     if (/^local:\d+$/.test(h)) return (row && row.note) || "";   // 2.794.0: a card of its own - what runs there (lib/remoteHosts.js cardNote)
     if (h === "openrouter" && row && row.note) return row.note;   // 2.786.0: the picture / video model on OpenRouter + its price
     if (h === "runpod" && root.H3RemoteTypes && H3RemoteTypes.noteOf && ["image", "video", "music", "tts", "stt", "stems"].indexOf(k) >= 0) return H3RemoteTypes.noteOf(g, k);

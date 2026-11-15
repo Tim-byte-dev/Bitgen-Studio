@@ -1,4 +1,4 @@
-// bitGen Studio — routes/remoteDock.js (2.754.0): the Remote generation docker (static/remotedock.js) and Settings ▸ Remote
+// bitGen Studio — routes/remoteDock.js (2.754.0): the GPU docker (static/remotedock.js) and Settings ▸ Remote
 // generation ▸ Use remote generation. Mounted from routes/index.js.
 //   GET  /api/remotegen                       {enabled, shortcuts: [{id, name, deploy, page}], explore, max}
 //   POST /api/remotegen/enabled   {on: true | false | null}   on / off (null = never chosen) -> /api/gpusplit's view

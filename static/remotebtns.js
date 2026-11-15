@@ -4,7 +4,7 @@
  * Tim (verbatim): "remove the gpu menuitem in basic settings, add remote docker button to the statusbar, if any of the tools
  * use remote generation show Pods button in statusbar for the pods docker if everything is in local mode then hide the pods
  * button."
- *   Remote   shows / hides the ☁ Remote generation docker (SecFloat "rgen" - All local / All remote / Both at its top).
+ *   Remote   shows / hides the 🖥 GPU docker (SecFloat "rgen" - All local / All remote / Both at its top).
  *            On the status bar while Settings ▸ Remote generation ▸ Use remote generation is ticked (off = everything runs
  *            here and the docker is closed - as since 2.754.0).
  *   Pods     shows / hides 🖥 PODS (SecFloat "pods"). On the status bar only while something runs remotely: a type (Image,
@@ -42,7 +42,7 @@
     return b;
   }
   function build() {
-    var r = btn("tRgen", "Remote", "Remote generation docker - all local, all remote or both, and what runs where", "rgen",
+    var r = btn("tRgen", "GPU", "GPU docker - this computer's cards and remote GPUs: all local, all remote or both, and what runs where", "rgen",
       function (on) { if (root.H3RemoteDock && H3RemoteDock.show) H3RemoteDock.show(on); });
     var p = btn("tPods", "Pods", "PODS docker - your RunPod pods (shown while something runs remotely)", "pods",
       function (on) { if (root.H3Pods && H3Pods.show) H3Pods.show(on); });

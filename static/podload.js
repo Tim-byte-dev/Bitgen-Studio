@@ -1,5 +1,5 @@
 /* bitGen Studio — static/podload.js (2.758.0): A POD'S LOADING BAR + ITS P_ STYLES (window.H3PodLoad), used by the PODS docker
- * (static/podsdock.js) and the Remote generation docker (static/remotedock.js).
+ * (static/podsdock.js) and the GPU docker (static/remotedock.js).
  * Tim (verbatim): "can you show progess of pod loading?" (asked: "Stages + timed bar") + "when pods are chosen only show pod
  * styles, I am trying with this pod ComfyUI - Qwen Image - ZiT - Boogu - Krea , how can i choose the model?" (asked: "Both").
  *   bar(st)            the progress lib/remoteGpu.js podState() sends (lib/podProgress.js): "2/3 ComfyUI starting · 3 min of
