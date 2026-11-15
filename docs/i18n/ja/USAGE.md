@@ -5373,6 +5373,20 @@ Basic Settings で NO_Pod のファイル（画像のチェックポイント、
 
 **☁ OpenRouter** タブには OpenRouter のモデルが表示されます。上部に **Image**、**Video**、**LLM**、**Vision LLM**、その下にファミリー（提供元）、検索、**Free** / **Paid**、並べ替え（無料を先に、安い順、新しい順）、OpenRouter に再度問い合わせる ⟳ があります。各カードには名前、モデル ID、価格、短い説明が表示されます。**＋** を押すとモデルが自分のモデルに追加され、そのエンドポイント（レンダリングに使う OpenRouter のアドレス。画像は `…/images`、動画は `…/videos`、LLM は `…/chat/completions`）も一緒に保存されます。上部の行にその内容が表示されます。追加したモデルは Basic Settings とプロンプトドッカーのドロップダウンに `openrouter/<model>` として表示され、Models タブの OpenRouter にも表示されます。すでに自分のモデルにあるものには ✓ yours と 🗑 が表示されます。一覧の表示にキーは不要ですが、レンダリングには必要です（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
 
+## Several graphics cards: Local - <card> (2.791.0)
+<!-- en: several-graphics-cards-local-2-791-0 920f5527e4a6 -->
+
+NVIDIA のグラフィックカードが 2 枚以上あるコンピューターでは、☁ Remote generation ▸ Runs on ▸ **Image**、**Video**、**Music** の選択肢に、通常の **Local** のすぐ後に各カードの **Local - <card>** が加わります。例: `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all でも選べます（他の行は選択がそのまま残ります）。
+
+カードを選ぶと、その種類の作業にそのカード専用の ComfyUI が使われます。Settings ▸ ComfyUI と同じ ComfyUI フォルダーを使い、`--cuda-device <N>` を付けてポート 8189 + N（GPU 0 = 8189、GPU 1 = 8190 …）で起動し、ログはアプリの横の `comfyui-gpu<N>.log` に書かれます。その種類の最初のレンダリングで起動し（読み込み中は Queue に「starting ComfyUI for GPU N」と表示されます）、以降のレンダリングのために起動したままになります。bitGen の終了時に停止します。通常の **Local** は従来どおり Settings ▸ ComfyUI の ComfyUI です。これにより、画像を 1 枚のカードで、動画を別のカードで同時にレンダリングできます。
+
+知っておくこと:
+
+- ComfyUI ごとに RAM を使い、2 枚のカードで使うモデルはそれぞれに読み込まれます。
+- カード番号は nvidia-smi が表示する番号です（bitGen はカードの ComfyUI を `CUDA_DEVICE_ORDER=PCI_BUS_ID` で起動します）。
+- Settings ▸ ComfyUI にカスタムの起動コマンドがある場合、bitGen はカード専用の ComfyUI を用意できず、レンダリングでその旨が表示されます。起動コマンドを空にする（bitGen が ComfyUI の main.py を直接実行します）か、通常の Local を選んでください。
+- RunPod のポッドや OpenRouter に送られるレンダリングには影響しません。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

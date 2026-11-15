@@ -124,6 +124,7 @@ function mount(app) {
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
+  require("./gpuCards").mount(app);   // 2.791.0: this computer's cards for ☁ Runs on ▸ Local - <card> (lib/gpuCards.js)
   require("./mmSources").mount(app);  // 2.790.0: 🧩 Model manager's RunPod + OpenRouter cards, their 🗑 (lib/mmSources.js)
   require("./famFilter").mount(app);  // 2.788.0: Basic Settings' Override lists by the picked styles' family + type (lib/famFilter.js)
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)

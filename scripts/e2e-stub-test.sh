@@ -13980,6 +13980,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui790-ui.js > /tmp/ui790ui.log 2
   && ok "2.790.0 browser test: ☁ OpenRouter tab (types, family, Free / Paid, sort, ＋ = yours with its endpoint), Models: this computer + RunPod + OpenRouter tagged, ☐ Local / RunPod / OpenRouter / All, 🗑 a pod file + an OpenRouter model off their lists - or SKIP" \
   || { bad "2.790.0 Model manager places browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui790ui.log | head -14; }
 
+# ---- 2.791.0 (Tim: "go ahead with part D" - the agreed design's D, local multi-GPU part 1: "Local - <card> per type. ComfyUI runs on ONE card per process -> one ComfyUI per picked card")
+node scripts/test-gpucards791.js > /tmp/gpucards791.log 2>&1 \
+  && ok "2.791.0 local multi-GPU units: the cards, Local - <card> after Local for Image / Video / Music (2+ cards), local:<N> kept + local, the card's ComfyUI launch (--port 8189+N --cuda-device N, PCI order), the gate + the job's address" \
+  || { bad "2.791.0 local multi-GPU units"; grep -a "^FAIL" -A1 /tmp/gpucards791.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui791-ui.js > /tmp/ui791ui.log 2>&1 \
+  && ok "2.791.0 browser test: Runs on ▸ Local - <card>, a picture waits for that card's own ComfyUI and is sent to it - SKIP on a server with one card (run it with H3_TEST_GPUS + H3_GPU_CARD_CMD, see the file)" \
+  || { bad "2.791.0 local multi-GPU browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui791ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

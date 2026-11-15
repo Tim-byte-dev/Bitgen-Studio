@@ -5606,6 +5606,20 @@ pod 重新建立後，其檔案會再次以它的名稱顯示（`Krea pod/<file>
 
 **☁ OpenRouter** 分頁列出 OpenRouter 的模型：頂部是 **Image**、**Video**、**LLM** 和 **Vision LLM**，下面是系列（提供方）、搜尋、**Free** / **Paid**、排序（免費優先、最便宜、最新）以及重新詢問 OpenRouter 的 ⟳。每張卡片顯示名稱、模型 ID、價格和簡短說明。**＋** 把模型加入你的模型，並一併儲存它的端點——渲染所用的 OpenRouter 地址（圖片為 `…/images`，影片為 `…/videos`，LLM 為 `…/chat/completions`）；頂部的一行會說明。之後它會以 `openrouter/<model>` 出現在 Basic Settings 和提示詞停靠窗的下拉式清單中，並出現在 Models 分頁的 OpenRouter 下。已是你的模型的會顯示 ✓ yours 和 🗑。列出模型不需要金鑰；渲染需要（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
 
+## Several graphics cards: Local - <card> (2.791.0)
+<!-- en: several-graphics-cards-local-2-791-0 920f5527e4a6 -->
+
+在裝有兩塊或更多 NVIDIA 顯示卡的電腦上，☁ Remote generation ▸ Runs on ▸ **Image**、**Video** 和 **Music** 會在普通的 **Local** 之後為每塊顯示卡提供 **Local - <card>** 選項，例如 `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`。Set all 也可以選擇它們（其他行保持原來的選擇）。
+
+選擇一塊顯示卡後，該類工作會在這塊顯示卡上使用一個專屬的 ComfyUI：使用與 Settings ▸ ComfyUI 相同的 ComfyUI 資料夾，以 `--cuda-device <N>` 在埠 8189 + N 上啟動（GPU 0 = 8189，GPU 1 = 8190 …），日誌寫在應用旁邊的 `comfyui-gpu<N>.log` 中。它在該類工作的第一次渲染時啟動——載入期間 Queue 會顯示 “starting ComfyUI for GPU N”——之後保持執行以供後續渲染；bitGen 退出時會停止它。普通的 **Local** 仍是 Settings ▸ ComfyUI 的 ComfyUI。這樣就可以同時在一塊顯示卡上渲染圖片、在另一塊上渲染影片。
+
+注意事項：
+
+- 每個 ComfyUI 各自佔用記憶體，在兩塊顯示卡上使用的同一個模型會分別載入。
+- 顯示卡編號與 nvidia-smi 顯示的一致（bitGen 以 `CUDA_DEVICE_ORDER=PCI_BUS_ID` 啟動顯示卡的 ComfyUI）。
+- 如果 Settings ▸ ComfyUI 中設定了自訂啟動命令，bitGen 無法為顯示卡提供專屬 ComfyUI——渲染時會說明；請清空啟動命令（bitGen 會直接執行 ComfyUI 的 main.py），或選擇普通的 Local。
+- 傳送到 RunPod pod 或 OpenRouter 的渲染不受影響。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.791.0** — Several Graphics Cards: ☁ Runs On ▸ Image / Video / Music Offer Local - <Card> for Each NVIDIA Card - a Picked Card Gets a ComfyUI of Its Own (--cuda-device, Port 8189 + N, Its Own Log), Started With the First Render of That Kind and Kept Running; Pictures on One Card, Video on Another
 - **2.790.0** — 🧩 Model Manager: Local, RunPod and OpenRouter Models in One List, Each Tagged, ☐ Local ☐ RunPod ☐ OpenRouter ☐ All to Filter; 🗑 Deletes a File of This Computer, or Takes a Pod's File / an OpenRouter Model Off the Lists; a ☁ OpenRouter Tab - OpenRouter's Models by Type and Family, Free / Paid, Sort - ＋ Adds One to Your Models With Its Endpoint
 - **2.789.0** — A Terminated Pod's Files: Keep Them in Basic Settings' Lists as NO_Pod (<old name>)/<file> (With How the Pod Was Made) or Remove Them - Asked When You Terminate; Picking a NO_Pod File Shows That Recipe - Make the Pod Again Remakes It the Same Way on the Next Render and Puts Its Models and LoRAs Back (Found Online First, Else Sent From This Computer); Never Made Again Unasked
 - **2.788.0** — Basic Settings' Model and LoRA Lists Follow the Prompt Docker's Styles: the Picture Checkpoint and LoRAs Show the Image Style's Model Family and Type (Image / Image Edit), the Video Model and LoRAs the Video Style's (MiniMax H3, LTX, Wan); Files of No Known Family Stay at the End, Marked; a Line Says What Is Shown, With Show All

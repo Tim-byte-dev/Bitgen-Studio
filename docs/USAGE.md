@@ -9062,6 +9062,19 @@ Tick **Local**, **RunPod**, **OpenRouter** or **All** at the start of the search
 
 The **☁ OpenRouter** tab lists OpenRouter's models: **Image**, **Video**, **LLM** and **Vision LLM** along the top, then the family (maker), a search, **Free** / **Paid**, the sort (free first, cheapest, newest) and ⟳ to ask OpenRouter again. Each card shows the name, the model id, the price and a short description. **＋** adds the model to your models and keeps its endpoint with it - the OpenRouter address it renders at (`…/images` for pictures, `…/videos` for video, `…/chat/completions` for the LLMs); the line at the top says it. It is then in Basic Settings' and the prompt docker's dropdowns as `openrouter/<model>` and on the Models tab under OpenRouter. A model already yours shows ✓ yours and 🗑. Listing needs no key; rendering needs one (⚙ Settings ▸ Remote generation ▸ OpenRouter).
 
+## Several graphics cards: Local - <card> (2.791.0)
+
+On a computer with two or more NVIDIA cards, ☁ Remote generation ▸ Runs on ▸ **Image**, **Video** and **Music** also offer **Local - <card>** for each card, for example `Local - NVIDIA GeForce RTX 3090 (GPU 1, 24 GB)`, right after plain **Local**. Set all offers them too (the other rows keep their choice).
+
+Pick a card and that kind of work gets a ComfyUI of its own on that card: the same ComfyUI folder as Settings ▸ ComfyUI, started with `--cuda-device <N>` on port 8189 + N (GPU 0 = 8189, GPU 1 = 8190 …), its log in `comfyui-gpu<N>.log` beside the app. It starts with the first render of that kind - the Queue says "starting ComfyUI for GPU N" while it loads - and then stays running for the next renders; bitGen stops it when it exits. Plain **Local** is Settings ▸ ComfyUI's own ComfyUI, as before. So you can render pictures on one card and video on another at the same time.
+
+Good to know:
+
+- Each ComfyUI uses its own RAM, and a model used on two cards is loaded on each.
+- The card numbers are the ones nvidia-smi shows (bitGen starts the card's ComfyUI with `CUDA_DEVICE_ORDER=PCI_BUS_ID`).
+- When Settings ▸ ComfyUI has a custom launch command, bitGen cannot give a card its own ComfyUI - the render says so; empty the launch command (bitGen then runs ComfyUI's main.py itself) or pick plain Local.
+- A render that goes to a RunPod pod or OpenRouter is not affected.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
