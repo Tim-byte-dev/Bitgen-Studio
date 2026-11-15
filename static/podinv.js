@@ -23,7 +23,7 @@
       + (g.length ? g.map(function (x) {
         return '<div class="piGrp" data-pikind="' + esc(x.kind) + '"><div class="hint" style="margin:6px 0 2px;font-weight:600">' + esc(x.label) + " (" + x.files.length + ")</div>"
           + x.files.map(function (f) {
-            return '<div class="piFile" style="display:flex;gap:8px;font-size:.74rem"><span title="' + (f.state === "on" ? "on the pod" : "sent by bitGen since the pod last listed its files") + '">' + (f.state === "on" ? "✓" : "⇪") + "</span>"
+            return '<div class="piFile" style="display:flex;gap:8px;font-size:.74rem"><span title="' + (f.state === "on" ? "on the pod" : f.state === "todo" ? "being put back on the pod (it was made again - 2.789.0)" : "sent by bitGen since the pod last listed its files") + '">' + (f.state === "on" ? "✓" : f.state === "todo" ? "⏳" : "⇪") + "</span>"
               + '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">' + esc(f.cat + "/" + f.rel) + '</span><span class="hint">' + esc(size(f.size)) + "</span></div>";
           }).join("") + "</div>";
       }).join("") : '<div class="hint">No files known yet' + (running ? " - press ⟳" : " - start the pod and press ⟳") + ".</div>")

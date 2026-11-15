@@ -464,7 +464,9 @@
       if (r.error) { delete S.watch[p.id]; say(r.error, false); paintPods(); return; }
       // 2.782.3 (Tim: "if pod is running, just say running in green"): ▶ on a pod that already runs / ⏹ on a stopped one
       if (r.running || r.stopped) { delete S.watch[p.id]; say(p.name + (r.running ? " - running" : " - stopped"), r.running ? true : null); loadPods(); return; }
-      if (a === "terminate") { delete S.watch[p.id]; var m = $("pdMsg"); m.style.color = "#7c7"; m.textContent = "✓ " + p.name + " terminated - no more charges for it"; loadPods(); return; }
+      if (a === "terminate") { delete S.watch[p.id]; var m = $("pdMsg"); m.style.color = "#7c7"; m.textContent = "✓ " + p.name + " terminated - no more charges for it"; loadPods();
+        try { doc.dispatchEvent(new Event("h3:podinv")); } catch (e) { /* 2.789.0: static/nopod.js asks about its files */ }
+        return; }
       say(a === "start" ? "▶ loading pod - RunPod is starting it, then its ComfyUI" : "⏹ stopping pod…");
       if (!S.ticking) tick();
     });

@@ -5567,6 +5567,23 @@ Basic Settings ▸ 在 **Use model** 和 **Use temporary LoRAs**（圖片和影�
 
 無法判斷系列的檔案仍留在清單末尾，並標為“family not known”——不會隱藏任何可能可用的檔案。每個 Model 欄位下方的一行說明顯示的內容：風格、它的系列和類型、符合的模型和 LoRA 數量以及被隱藏的數量。勾選那裡的 **Show all** 即可重新列出全部（圖片和影片分別儲存）。你已選擇但不符合風格的檔案會保持選取，其所在行會說明它不屬於該風格的系列。📁 瀏覽器和風格編輯器仍列出所有檔案。
 
+## A terminated pod's files: NO_Pod (2.789.0)
+<!-- en: a-terminated-pod-s-files-no-pod-2-789-0 c420b23ad782 -->
+
+當你終止一個 pod（🖥 PODS ▸ My pods ▸ 某個 pod ▸ **Terminate**），或 bitGen 發現它的某個 pod 已不存在，而該 pod 上有模型或 LoRA 時，會彈出一個框詢問如何處理它們：
+
+- **Keep as NO_Pod** - 這些檔案以 `NO_Pod (<old name>)/<file>` 的形式保留在 Basic Settings 的清單中，例如 `NO_Pod (Krea pod)/krea2_raw.safetensors`。bitGen 會一併儲存該 pod 的建立方式（範本、GPU、數量、雲、磁碟和卷）。
+- **Remove from the lists** - 這些檔案從清單中移除，bitGen 不再記住它們。
+
+在你回答之前，重新啟動後這個框仍會出現。
+
+在 Basic Settings 中選擇一個 NO_Pod 檔案（圖片 checkpoint、臨時 LoRA、影片 Model）時，會顯示其 pod 的建立方式，並在產生任何費用之前先詢問：
+
+- **Make the pod again** - 下一次使用該檔案的渲染會完全按原樣重新建立 pod（執行期間 RunPod 會收費），等待其載入後在那裡渲染，並把舊 pod 上的其他模型和 LoRA 逐個放回——先在 Civitai / Hugging Face 上查詢並讓 pod 下載，否則從本機發送。PODS ▸ 該 pod ▸ 🗂 Inventory 中尚未放回的檔案顯示 ⏳，pod 的狀態行會說明哪些無法放回。
+- **Not now** - 該欄位被清空（使用風格自身的模型）。在你同意之前用 NO_Pod 檔案渲染會被拒絕，並說明該怎麼做。
+
+pod 重新建立後，其檔案會再次以它的名稱顯示（`Krea pod/<file>`）；仍儲存著 `NO_Pod (Krea pod)/…` 名稱的欄位照常可用，並會發送到新的 pod。bitGen 絕不會未經詢問就重新建立已終止的 pod。如果 bitGen 不知道某個 pod 是如何建立的，其檔案仍可保留，但框中會說明無法從這裡重新建立該 pod——請用 Basic Settings ▸ Remote 把檔案傳送到另一個 pod。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

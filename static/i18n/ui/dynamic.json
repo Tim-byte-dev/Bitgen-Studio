@@ -5343,6 +5343,38 @@
    "src": "static/negprompt.js:134"
   },
   {
+   "s": "It had",
+   "src": "static/nopod.js:28"
+  },
+  {
+   "s": "on it. Keep them in Basic Settings' lists as",
+   "src": "static/nopod.js:28"
+  },
+  {
+   "s": "NO_Pod (",
+   "src": "static/nopod.js:28"
+  },
+  {
+   "s": "bitGen does not know how this pod was made, so it cannot be made again from here - its files can still be sent to another pod",
+   "src": "static/nopod.js:30"
+  },
+  {
+   "s": "Pick another file, or send this one to a pod with Basic Settings ▸ Remote",
+   "src": "static/nopod.js:37"
+  },
+  {
+   "s": "Make",
+   "src": "static/nopod.js:38"
+  },
+  {
+   "s": "was on",
+   "src": "static/nopod.js:39"
+  },
+  {
+   "s": "Its",
+   "src": "static/nopod.js:41"
+  },
+  {
    "s": "RunPod vLLM",
    "src": "static/openrouter.js:23"
   },
@@ -6052,23 +6084,23 @@
   },
   {
    "s": "asking the pod how busy it is",
-   "src": "static/podsdock.js:506"
+   "src": "static/podsdock.js:508"
   },
   {
    "s": "no figures from the pod yet",
-   "src": "static/podsdock.js:518"
+   "src": "static/podsdock.js:520"
   },
   {
    "s": "Cancel the render",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "s": "Do not render it now",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "s": "A render of",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "s": "What this pod is for",
@@ -13697,10 +13729,6 @@
   {
    "s": "Stroke colour",
    "src": "ext/imageeditdock/pcpen.js:128"
-  },
-  {
-   "s": "Make",
-   "src": "ext/imageeditdock/pcpen.js:129"
   },
   {
    "s": "Selection",
@@ -24958,27 +24986,27 @@
   },
   {
    "p": "{0} - pod loaded",
-   "src": "static/podsdock.js:483"
+   "src": "static/podsdock.js:485"
   },
   {
    "p": "{0} stopped - storage is still billed until you terminate it on RunPod",
-   "src": "static/podsdock.js:484"
+   "src": "static/podsdock.js:486"
   },
   {
    "p": "rendering on {0}",
-   "src": "static/podsdock.js:493"
+   "src": "static/podsdock.js:495"
   },
   {
    "p": "The pod {0} ({1}) is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "p": "is waiting for a pod. Create one below (the style and its kind are filled in - pick the GPU and how many), or open 🖥 My pods and press ▶ Use for {0} on one of yours",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "p": "The pod {0} is gone on RunPod - the new one below is filled in the same way. A render of",
-   "src": "static/podsdock.js:590"
+   "src": "static/podsdock.js:592"
   },
   {
    "p": "{0} running",

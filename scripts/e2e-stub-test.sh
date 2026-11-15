@@ -13964,6 +13964,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui788-ui.js > /tmp/ui788ui.log 2
   && ok "2.788.0 browser test: a Krea style lists Krea checkpoints + LoRAs (no-family ones marked at the end), a Qwen edit style the edit file, ☐ Show all, a picked file of another family kept + said, MiniMax H3 video Model list + video LoRAs - or SKIP" \
   || { bad "2.788.0 family filter browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui788ui.log | head -14; }
 
+# ---- 2.789.0 (Tim, the agreed design C part 2: "if pod is terminated ask user if they want to remove models from the list, if no, change the podname to NO_Pod, but keep all the model details in a file so if user clicks a nopod/model name, the pod will be recreated and the models uploaded to the new pod")
+node scripts/test-nopod789.js > /tmp/nopod789.log 2>&1 \
+  && ok "2.789.0 NO_Pod units: a terminated pod's recipe + files kept / removed, NO_Pod (<name>)/<file> listed + resolved, the pick refused until Make the pod again, made again from the recipe, the inventory moved, its files put back" \
+  || { bad "2.789.0 NO_Pod units"; grep -a "^FAIL" -A1 /tmp/nopod789.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui789-ui.js > /tmp/ui789ui.log 2>&1 \
+  && ok "2.789.0 browser test: two pods terminated through bitGen - the question (keep one as NO_Pod, remove the other), NO_Pod files in the lists, picking one shows the recipe (Not now / Make the pod again), the render makes the pod again the same way, the lists say its name again - or SKIP" \
+  || { bad "2.789.0 NO_Pod browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui789ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -9025,6 +9025,22 @@ A list keeps the files of the style's model family - a Krea style lists Krea fil
 
 Files whose family cannot be told stay in the list, at the end, marked "family not known" - nothing that might work is hidden. The line under each Model field says what is shown: the style, its family and type, how many models and LoRAs fit and how many are hidden. Tick **Show all** there to list everything again (kept for pictures and video separately). A file you picked that does not fit the style stays picked, and its line says it is not of the style's family. The 📁 browser and the style editors still list every file.
 
+## A terminated pod's files: NO_Pod (2.789.0)
+
+When you terminate a pod (🖥 PODS ▸ My pods ▸ a pod ▸ **Terminate**), or bitGen finds that one of its pods is gone, and that pod had models or LoRAs, a box asks what to do with them:
+
+- **Keep as NO_Pod** - its files stay in Basic Settings' lists as `NO_Pod (<old name>)/<file>`, for example `NO_Pod (Krea pod)/krea2_raw.safetensors`. bitGen keeps how the pod was made (its template, GPU, how many, cloud, disk and volume) with them.
+- **Remove from the lists** - its files leave the lists and bitGen forgets them.
+
+The box comes back after a restart until you answer it.
+
+Picking a NO_Pod file in Basic Settings (the picture checkpoint, a temporary LoRA, the video Model) shows how its pod was made and asks before anything is spent:
+
+- **Make the pod again** - the next render with that file makes the pod again exactly that way (RunPod charges for it while it runs), waits for it to load, renders there, and puts the old pod's other models and LoRAs back on it one at a time - found on Civitai / Hugging Face for the pod to download first, else sent from this computer. PODS ▸ the pod ▸ 🗂 Inventory shows ⏳ on the files still to put back, and the pod's line says which could not be.
+- **Not now** - the field is emptied (the style's own model is used). A render with a NO_Pod file before you said yes is refused with what to do.
+
+Once the pod is made again its files show under its name again (`Krea pod/<file>`); a field that still holds the `NO_Pod (Krea pod)/…` name keeps working and goes to the new pod. bitGen never makes a terminated pod again without asking. When bitGen does not know how a pod was made, its files can still be kept, but the box says the pod cannot be made again from here - send the files to another pod with Basic Settings ▸ Remote.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
