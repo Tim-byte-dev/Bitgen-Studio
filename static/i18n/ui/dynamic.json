@@ -5420,35 +5420,51 @@
   },
   {
    "s": "It had",
-   "src": "static/nopod.js:28"
-  },
-  {
-   "s": "on it. Keep them in Basic Settings' lists as",
-   "src": "static/nopod.js:28"
-  },
-  {
-   "s": "NO_Pod (",
-   "src": "static/nopod.js:28"
-  },
-  {
-   "s": "bitGen does not know how this pod was made, so it cannot be made again from here - its files can still be sent to another pod",
-   "src": "static/nopod.js:30"
-  },
-  {
-   "s": "Pick another file, or send this one to a pod with Basic Settings ▸ Remote",
-   "src": "static/nopod.js:37"
-  },
-  {
-   "s": "Make",
-   "src": "static/nopod.js:38"
-  },
-  {
-   "s": "was on",
    "src": "static/nopod.js:39"
   },
   {
-   "s": "Its",
+   "s": "on it. Keep them in Basic Settings' lists as",
+   "src": "static/nopod.js:39"
+  },
+  {
+   "s": "NO_Pod (",
+   "src": "static/nopod.js:39"
+  },
+  {
+   "s": "bitGen does not know how this pod was made, so it cannot be made again from here - its files can still be sent to another pod",
    "src": "static/nopod.js:41"
+  },
+  {
+   "s": "Pick another file, or send this one to a pod with Basic Settings ▸ Remote",
+   "src": "static/nopod.js:48"
+  },
+  {
+   "s": "Make",
+   "src": "static/nopod.js:49"
+  },
+  {
+   "s": "was on",
+   "src": "static/nopod.js:50"
+  },
+  {
+   "s": "That pod was terminated",
+   "src": "static/nopod.js:68"
+  },
+  {
+   "s": "only what the pod does not have is sent",
+   "src": "static/nopod.js:70"
+  },
+  {
+   "s": "RunPod did not say which pods run",
+   "src": "static/nopod.js:72"
+  },
+  {
+   "s": "Or make the pod again the way it was made",
+   "src": "static/nopod.js:73"
+  },
+  {
+   "s": "Pick a pod first",
+   "src": "static/nopod.js:148"
   },
   {
    "s": "RunPod vLLM",

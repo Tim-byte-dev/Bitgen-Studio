@@ -437,6 +437,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **Model manager：Local、RunPod、OpenRouter + ☁ OpenRouter 分頁** — Models / LoRAs 分頁把本機檔案、pod 上的檔案和你的 OpenRouter 模型一起列出並加標籤；用 ☐ Local ☐ RunPod ☐ OpenRouter ☐ All 篩選；🗑 刪除本機檔案，或把 pod 檔案 / OpenRouter 模型從清單中移除；☁ OpenRouter 分頁按類型和系列列出 OpenRouter 的模型，帶 Free / Paid 和排序，＋ 把模型連同端點加入你的模型。*Where:* 🧩 Model manager. *Since:* 2.790.0
 - **多塊顯示卡：Local - <card>** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ Image / Video / Music 可以選擇每塊顯示卡；選取的顯示卡有專屬的 ComfyUI（--cuda-device、獨立埠和日誌），在該類工作第一次渲染時啟動並保持執行——圖片在一塊顯示卡上，影片在另一塊上。*Where:* ☁ Remote generation. *Since:* 2.791.0
 - **你的 OpenRouter 模型顯示為綠、橙、紅** — OpenRouter 對話方塊已移除：🧩 Model manager ▸ ☁ OpenRouter 管理你的清單（☁ Remote generation 的按鈕會開啟它）；你的模型在該分頁和 Models 分頁中以深綠（免費）、深橙（付費）或深紅（OpenRouter 已不再列出——保留到你 🗑 為止，不出現在下拉式清單中，渲染被拒絕）的邊框顯示。*Where:* 🧩 Model manager. *Since:* 2.792.0
+- **把 NO_Pod 檔案放到你已有的 Pod 上** — 選擇已終止 Pod 的檔案時，會指出你的哪個 Pod 上已經有它（Start that pod / Use that pod），並列出其他所有 Pod（正在執行的在前），說明每個 Pod 上已有什麼、要傳送什麼（空間不足或模型可能放不進顯示卡時會警告）；只發送 Pod 上沒有的檔案——模型會連同 VAE 和文字編碼器一起轉移——所選項在所有儲存的地方都變成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

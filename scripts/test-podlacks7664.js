@@ -4,6 +4,8 @@
  * Tim (verbatim): "[worker] ERROR: ComfyUI does not have these node types: TextEncodeQwenImage21 … i think the download wasn't
  * completed before... the timining is off, but the custom nodes didn't get installed" */
 "use strict";
+// 2.793.0: remote_models.json + the pods' inventories in a temporary folder - they were left in the tree's runpod/pods and tripped the pod browser tests
+{ const T = require("fs").mkdtempSync(require("path").join(require("os").tmpdir(), "rmleak-")); process.env.H3_REMOTE_MODELS = process.env.H3_REMOTE_MODELS || require("path").join(T, "remote_models.json"); process.env.H3_POD_INV_DIR = process.env.H3_POD_INV_DIR || require("path").join(T, "inv"); }
 const fs = require("fs"), path = require("path");
 const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;

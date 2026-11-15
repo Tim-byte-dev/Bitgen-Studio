@@ -9,6 +9,13 @@
 //   POST /api/podinv/:id/keep {keep}  keep = its files stay as "NO_Pod (<old name>)/<file>"; false = taken out (the inventory deleted)
 //   GET  /api/podinv/nopod?name=<"NO_Pod (x)/file">   {pod: {id, name, label, recipe, recipe_line, remake_ok, count}, file} | 404
 //   POST /api/podinv/:id/remake {ok}  "Make the pod again" (ok) / not now - a render with its file makes it again only when ok
+//   2.793.0 NO_Pod part 2 (lib/noPodWhere.js, lib/noPod.js useOn, static/nopod.js):
+//   GET  /api/podinv/nopod/where?name=<"NO_Pod (x)/file">   {file, kind, companions, pod (as /nopod), has: [pods that have it],
+//                                     others: [pods to put it on - running first], runpod_error} - RunPod asked which pods run
+//                                     (the inventories' names kept up to date), the running ones list their files first
+//   POST /api/podinv/nopod/use {name, pod}   the file (+ its VAE / text encoders the pod lacks) onto that pod - started first
+//                                     when stopped; the pick renamed to "<pod name>/<file>" -> {name, pod_id, started, sending}
+//   GET  /api/podinv/nopod/now?name=  the name a stored pick goes by now ({name}) - a NO_Pod made again = "<name>/<file>"
 //   GET  /api/comfymodels             whoever answers it (this computer / remote mode): each live pod's checkpoints,
 //                                     diffusion models, unets and LoRAs ADDED as "<pod name>/<file>" (pod_models: true)
 "use strict";
@@ -57,7 +64,47 @@ function mount(app) {
     const v = String(req.query.name || ""), ref = PI.resolve(v, PI.live(), null);
     if (!ref || !ref.nopod) { const e = new Error("no NO_Pod file of that name"); e.status = 404; throw e; }
     const i = PI.load(ref.pod_id), rc = require("../lib/podRevive").cleanRecipe(i.recipe);
-    return { pod: { id: i.id, name: i.name, label: PI.labelOf(i), recipe: rc, recipe_line: NP().recipeLine(rc), remake_ok: !!i.remake_ok, count: (i.files || []).filter((f) => f.kind === "model" || f.kind === "lora").length }, file: ref.rel };
+    return { pod: { id: i.id, name: i.name, label: PI.labelOf(i), recipe: rc, recipe_line: NP().recipeLine(rc), remake_ok: !!i.remake_ok, count: (i.files || []).filter((f) => f.kind === "model" || f.kind === "lora").length,
+      groups: PI.groupsOf(i.files).map((g) => ({ label: g.label, n: g.files.length })) }, file: ref.rel };   // 2.793.0: + groups (the VAE / text encoders go back too)
+  }));
+  // 2.793.0: where a NO_Pod file can run now - and onto a pod you have
+  const rgp = () => { try { return (require("../lib/core").getConfig() || {}).rgpu || {}; } catch { return {}; } };
+  const hasKey = () => !!String((rgp().runpod || {}).key || "");
+  const portOf = () => +((rgp().runpod || {}).port) || 8188;
+  async function podsNow() {
+    if (!hasKey()) return { status: {}, error: "" };
+    try {
+      const mine = (await require("../lib/pods").mine()).pods || [];
+      try { PI.sync(mine); } catch { /* names are a nicety */ }
+      const status = {};
+      for (const p of mine) status[String(p.id).replace(/[^A-Za-z0-9]/g, "")] = { status: p.status, gpu: p.gpu, gpus: p.gpus };
+      return { status, error: "" };
+    } catch (e) { return { status: {}, error: String((e && e.message) || e).slice(0, 300) }; }
+  }
+  const within = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(() => r(null), ms))]);
+  app.get("/api/podinv/nopod/where", wrap(async (req) => {
+    const v = String(req.query.name || ""), ref = PI.resolve(v, PI.live(), null);
+    if (!ref || !ref.nopod) { const e = new Error("no NO_Pod file of that name"); e.status = 404; throw e; }
+    const W = require("../lib/noPodWhere"), old = PI.load(ref.pod_id), f = (old.files || []).find((y) => y.cat === ref.cat && y.rel === ref.rel);
+    const comps = W.companions(old, f), now = await podsNow();
+    // the running pods list their files now (a few seconds at most - a pod that does not answer keeps what bitGen saw last)
+    const run = PI.all().filter((i) => !i.gone && i.id !== old.id && /RUNNING/.test(String((now.status[i.id] || {}).status || "")));
+    await Promise.all(run.map((i) => within(PI.refresh(i.id, { port: portOf() }).catch(() => null), +(process.env.H3_NOPOD_LIST_MS || 8000))));
+    const w = W.where(f, comps, PI.all(), now.status, old.id), words = (L) => L.map((r) => Object.assign(r, { words: W.rowWords(r) }));
+    const rc = require("../lib/podRevive").cleanRecipe(old.recipe);
+    return { file: f.rel, kind: f.kind, size: f.size || 0, companions: comps.map((c) => c.rel.split("/").pop()), has: words(w.has), others: words(w.others), runpod_error: now.error,
+      pod: { id: old.id, name: old.name, label: PI.labelOf(old), recipe: rc, recipe_line: NP().recipeLine(rc), remake_ok: !!old.remake_ok, count: NP().todo({ files: (old.files || []).map((y) => Object.assign({}, y, { state: "todo" })) }).length,
+        groups: PI.groupsOf(old.files).map((g) => ({ label: g.label, n: g.files.length })) } };
+  }));
+  app.post("/api/podinv/nopod/use", wrap(async (req) => {
+    const b = req.body || {}, pod = String(b.pod || "").replace(/[^A-Za-z0-9]/g, ""), now = await podsNow();
+    const st = String((now.status[pod] || {}).status || "");
+    return NP().useOn(String(b.name || ""), pod, { stopped: /EXITED|STOPPED/.test(st), port: portOf() });
+  }));
+  app.get("/api/podinv/nopod/now", wrap(async (req) => {
+    const v = String(req.query.name || ""), r = PI.resolve(v, PI.live(), null);
+    if (!r || r.nopod) return { name: v, nopod: !!(r && r.nopod), found: !!r };
+    return { name: PI.labelOf(PI.load(r.pod_id)) + "/" + r.rel, pod_id: r.pod_id, found: true };
   }));
   app.post("/api/podinv/:id/keep", wrap(async (req) => {
     const r = PI.decide(req.params.id, !!(req.body || {}).keep);

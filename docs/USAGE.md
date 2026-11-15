@@ -9085,6 +9085,19 @@ The OpenRouter models dialog is gone: 🧩 Model manager ▸ **☁ OpenRouter** 
 
 A model OpenRouter stops listing is no longer taken off your list by itself: it stays, red, first in the tab with "✗ no longer on OpenRouter", until you take it off with 🗑 (a line says which went red). It is left out of the dropdowns, and a render with it is refused with why. If OpenRouter lists it again it turns green or orange again. A small legend under the filters says which colour is which.
 
+## A NO_Pod file onto a pod you have (2.793.0)
+
+Picking a NO_Pod file in Basic Settings (the picture checkpoint, a temporary LoRA, the video Model) now looks at your other pods first: RunPod is asked which of them are running, and the running ones list their files. The box then shows:
+
+- **This pod has it** - a pod that already has the file (the same name, or the same file in another folder). **Use that pod** for a running one; **Start that pod** for a stopped one (RunPod starts it - a stopped pod may get no GPU back, and the box then says what RunPod said).
+- **Or put it on another pod** - every other pod of yours, running ones first; a stopped one says *starts it*. Each line says what the pod already has and what would be sent, for example "sdxl_vae.safetensors there, sends 7.1 GB", and warns when there is not enough room on it or the model may not fit its card. Pick one and press **Use this pod**.
+- **Make the pod again** - as before, with how the pod was made.
+- **Not now** - the field is emptied.
+
+A model goes with the VAE and text encoders the NO_Pod had; a LoRA goes alone. Only what the pod does not have is sent (found online first for the pod to download, else sent from this computer), after the pod has loaded - 🖥 PODS shows the transfers. The pick is renamed to `<pod name>/<file>`: in the field, in Basic Settings' saved settings, in each style's saved Basic Settings and in the project's temporary LoRAs. The file leaves the NO_Pod; a NO_Pod with none of its models or LoRAs left is gone from the lists. Styles that were linked to the terminated pod now go to the pod you picked.
+
+When bitGen knows no other pod, the box is the one from 2.789.0. A pod made again from a NO_Pod is renamed the same way (`NO_Pod (Krea pod)/…` becomes `Krea pod/…`), and its VAE and text encoders are put back with its models and LoRAs.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

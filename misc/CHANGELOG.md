@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.793.0** — A NO_Pod File Onto a Pod You Have: Picking a Terminated Pod's File Says Which of Your Pods Has It (Start That Pod / Use That Pod) and Offers Every Other Pod, Running First, With What It Has and What Would Be Sent; Only What the Pod Lacks Is Sent (a Model Goes With Its VAE and Text Encoders) and the Pick Becomes <pod name>/<file> Wherever It Is Kept
 - **2.792.0** — The OpenRouter Models Dialog Is Gone - 🧩 Model Manager ▸ ☁ OpenRouter Looks After Your List (☁ Remote Generation's Button Opens It); Your Models Framed Dark Green (Free), Dark Orange (Paid) or Dark Red (No Longer on OpenRouter - Kept Until You 🗑 It, Left Out of the Dropdowns, Refused for a Render)
 - **2.791.0** — Several Graphics Cards: ☁ Runs On ▸ Image / Video / Music Offer Local - <Card> for Each NVIDIA Card - a Picked Card Gets a ComfyUI of Its Own (--cuda-device, Port 8189 + N, Its Own Log), Started With the First Render of That Kind and Kept Running; Pictures on One Card, Video on Another
 - **2.790.0** — 🧩 Model Manager: Local, RunPod and OpenRouter Models in One List, Each Tagged, ☐ Local ☐ RunPod ☐ OpenRouter ☐ All to Filter; 🗑 Deletes a File of This Computer, or Takes a Pod's File / an OpenRouter Model Off the Lists; a ☁ OpenRouter Tab - OpenRouter's Models by Type and Family, Free / Paid, Sort - ＋ Adds One to Your Models With Its Endpoint

@@ -12,6 +12,7 @@ let pass = 0, fail = 0;
 const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } else { fail++; console.log("FAIL: " + n + (got === undefined ? "" : "\n      got " + JSON.stringify(got).slice(0, 600))); } };
 const rd = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), "pf7812-")); process.env.H3_REMOTE_MODELS = path.join(TMP, "remote_models.json");
+process.env.H3_POD_INV_DIR = path.join(TMP, "inv");   // 2.793.0: the pod's inventory (lib/podInv.js fromList) out of the tree's runpod/pods
 const PF = require("../lib/podFiles"), PV = require("../lib/podVram"), PG = require("../static/podfiles.js");
 
 (async () => {

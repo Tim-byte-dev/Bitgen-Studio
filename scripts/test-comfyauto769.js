@@ -7,6 +7,8 @@
  * qwen_image_2.1_vae_bf16.safetensors / [pod] making qwen2_1 ready: waiting for the pod's ComfyUI to list the new files / [pod]
  * qwen2_1 cannot render on the pod yet - these files are not on it: …" */
 "use strict";
+// 2.793.0: remote_models.json + the pods' inventories in a temporary folder - they were left in the tree's runpod/pods and tripped the pod browser tests
+{ const T = require("fs").mkdtempSync(require("path").join(require("os").tmpdir(), "rmleak-")); process.env.H3_REMOTE_MODELS = process.env.H3_REMOTE_MODELS || require("path").join(T, "remote_models.json"); process.env.H3_POD_INV_DIR = process.env.H3_POD_INV_DIR || require("path").join(T, "inv"); }
 const fs = require("fs"), path = require("path"), Module = require("module");
 const ROOT = path.join(__dirname, "..");
 let pass = 0, fail = 0;

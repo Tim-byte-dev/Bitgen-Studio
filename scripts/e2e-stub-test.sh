@@ -13993,6 +13993,14 @@ node scripts/test-orcolors792.js > /tmp/orcolors792.log 2>&1 \
   && ok "2.792.0 OpenRouter in the Model manager units: dead marked not removed (markDead), refused for a render, out of the dropdowns; the darker green / orange / red on the tab's + the Models tab's cards; the dialog gone (the button opens the tab)" \
   || { bad "2.792.0 OpenRouter colours units"; grep -a "^FAIL" -A1 /tmp/orcolors792.log | head -12; }
 
+# ---- 2.793.0 (Tim: "also ask the user if the model + vae + textencoder should be added to an existing pod. show user running pods and stopped pods. check if the files exist, only upload necessary files that don't exist on the pod" + "change the name of the model to pod name/model name ... advise the user of which pod has it and ask if it should start that pod, create a new pod or add the model to a different pod")
+node scripts/test-nopodwhere793.js > /tmp/nopodwhere793.log 2>&1 \
+  && ok "2.793.0 NO_Pod part 2 units: the pods that have the file (running first), the others with what they have / would be sent (room, card), only what a pod lacks put on it (+ VAE / text encoders), started when stopped (RunPod's words when it cannot), the pick renamed to <pod>/<file> in basic.cfg + each style's Basic Settings, the NO_Pod dropped when empty, a remake renames too" \
+  || { bad "2.793.0 NO_Pod part 2 units"; grep -a "^FAIL" -A1 /tmp/nopodwhere793.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui793-ui.js > /tmp/ui793ui.log 2>&1 \
+  && ok "2.793.0 browser test: a NO_Pod pick names the stopped pod that has it (Start that pod - RunPod asked, nothing sent, the pick = SDXL-2/<file>), a file no pod has goes on the running pod (Use this pod - only the model + text encoder, the pick = Krea pod/<file>, saved in basic.cfg), the lists follow - or SKIP" \
+  || { bad "2.793.0 NO_Pod part 2 browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui793ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

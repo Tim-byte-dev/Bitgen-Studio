@@ -16,6 +16,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 const T = fs.mkdtempSync(path.join(os.tmpdir(), "remotemodels766-"));
 process.env.H3_REMOTE_MODELS = path.join(T, "pods", "remote_models.json");
 process.env.H3_POD_PRESETS_DIR = path.join(T, "presets");
+process.env.H3_POD_INV_DIR = path.join(T, "inv");   // 2.793.0: the pods' inventories (lib/podInv.js, noted by every send) out of the tree's runpod/pods - they were left there and tripped the NO_Pod browser tests
 process.env.H3_POD_REVIVE_POLL = "5";
 let CFG = { rgpu: { enabled: true, engine: { provider: "runpod", runpod: "pods" }, split: { where: "remote" }, style_pods: {} }, hf: { token: "" }, civitai: { site: "civitai.red" } };
 const coreP = require.resolve("../lib/core");

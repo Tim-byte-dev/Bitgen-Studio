@@ -33,7 +33,8 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
   check("gonePatch: no files = no question; already gone = nothing; decided = no question", !PI.gonePatch({ id: "x", files: [] }).ask && JSON.stringify(PI.gonePatch({ gone: true, files })) === "{}" && !PI.gonePatch({ files, keep: true }).ask);
   const rc = { template_id: "runpod-torch-v280", template_name: "RunPod Pytorch 2.8.0", gpu: "NVIDIA A40", count: 2, cloud: "COMMUNITY", disk: 50, volume: 120, port: 8188 };
   check("recipeLine: template · GPUs · cloud · disk · volume", NP.recipeLine(rc) === "RunPod Pytorch 2.8.0 · 2 × NVIDIA A40 · Community cloud · disk 50 GB · volume 120 GB", NP.recipeLine(rc));
-  check("todo: the models + LoRAs still to put back (not VAE)", NP.todo({ files: files.map((f) => Object.assign({}, f, { state: "todo" })) }).map((f) => f.rel).join() === "Models/krea2_mine.safetensors,grain.safetensors");
+  // 2.793.0: the VAE / text encoders go back too (a model does not render without them)
+  check("todo: the models, LoRAs + (2.793.0) the VAE still to put back", NP.todo({ files: files.map((f) => Object.assign({}, f, { state: "todo" })) }).map((f) => f.rel).join() === "Models/krea2_mine.safetensors,grain.safetensors,ae.safetensors");
 
   // ---- live (the temporary folder)
   PI.save({ id: "podT1", name: "Test pod", files });
@@ -76,7 +77,7 @@ const src = (f) => fs.readFileSync(path.join(ROOT, f), "utf8");
   const sent = [], notes = []; SD.ensure = async (id, port, cats, name) => { sent.push([id, cats.join("+"), name]); if (/grain/.test(name)) throw new Error("found nowhere"); return { name, sent: true }; };
   PA.note = (pod, t) => notes.push(t);
   const pb = await NP.putBack("podNEW1", 8188);
-  check("putBack: each model / LoRA put on the new pod in turn (checkpoint cats for a model, loras for a LoRA), VAE not", sent.length === 2 && sent[0][0] === "podNEW1" && /checkpoints/.test(sent[0][1]) && sent[1][1] === "loras", sent);
+  check("putBack: each model / LoRA / (2.793.0) VAE put on the new pod in turn, each in its own folders", sent.length === 3 && sent[0][0] === "podNEW1" && /checkpoints/.test(sent[0][1]) && sent[1][1] === "loras" && sent[2][1] === "vae", sent);
   check("putBack: what could not be put back is said", pb.missed.length === 1 && /grain/.test(pb.missed[0]) && notes.some((t) => /not: grain/.test(t)), { pb, notes });
 
   // the page's words

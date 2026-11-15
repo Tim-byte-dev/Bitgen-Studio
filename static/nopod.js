@@ -11,6 +11,17 @@
  *                 {ok: true} - the next render with it makes the pod, lib/noPod.js) or "Not now" (the field emptied). 2.763.4:
  *                 bitGen never makes a gone pod again unasked.
  * Pure (Node: scripts/test-nopod789.js): isNoPod, groupsText, askHtml, pickHtml.
+ * 2.793.0 NO_POD PART 2 (Tim: "also ask the user if the model + vae + textencoder should be added to an existing pod. show user
+ * running pods and stopped pods ... check the full list of pods and models in the pods to see if the model exists in any other
+ * pod - advise the user of which pod has it and ask if it should start that pod, create a new pod or add the model to a
+ * different pod" + "change the name of the model to pod name/model name"):
+ *   THE PICK      GET /api/podinv/nopod/where: the pods that HAVE the file ("Start that pod" / "Use that pod"), then every other
+ *                 pod of yours (running first, stopped ones say "starts it") with what it already has and what would be sent
+ *                 ("VAE + text encoder there, sends 6.9 GB", "not enough room", "may not fit its 24 GB card") - Use this pod,
+ *                 Make the pod again (its recipe), Not now. No other pod = the 2.789.0 box. POST /api/podinv/nopod/use -> the
+ *                 field gets the new name "<pod name>/<file>" (whereHtml, rowHtml - pure)
+ *   STALE NAMES   every 30 s a field still holding "NO_Pod (x)/…" asks GET /api/podinv/nopod/now - a pod made again from it =
+ *                 the field renamed to "<name>/<file>"
  */
 (function (root, factory) {
   var api = factory();
@@ -38,8 +49,33 @@
     return '<h3 style="margin:0 0 8px">Make ' + esc(p.name) + ' again?</h3>'
       + '<p style="margin:0 0 8px"><b>' + esc(j.file) + '</b> was on <b>' + esc(p.label) + '</b>, a pod that was terminated. Using it makes the pod again the way it was made:</p>'
       + '<p style="margin:0 0 8px;font-family:var(--mono,monospace);font-size:12px">' + esc(p.recipe_line) + '</p>'
-      + '<p style="margin:0 0 8px">Its ' + esc(p.count) + (p.count === 1 ? ' model / LoRA is' : ' models and LoRAs are') + ' put back on it (found online first, else sent from this computer). RunPod charges for it while it runs. It is made when you render with this file.</p>'
+      + '<p style="margin:0 0 8px">' + (p.groups && p.groups.length ? 'Its files (' + esc(groupsText(p.groups)) + ') are' : 'Its ' + esc(p.count) + (p.count === 1 ? ' model / LoRA is' : ' models and LoRAs are')) + ' put back on it (found online first, else sent from this computer). RunPod charges for it while it runs. It is made when you render with this file.</p>'
       + '<div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="ghost" style="' + BTN + '" data-npmake="0">Not now</button><button type="button" class="ghost" style="' + MAIN + '" data-npmake="1">Make the pod again</button></div>';
+  }
+
+  /* 2.793.0: the pods a NO_Pod file can run on now */
+  function stateWord(r) { return r.status === "running" ? "running" : r.status === "starting" ? "starting" : r.status === "stopped" ? "stopped" : "not checked"; }
+  function rowHtml(r, radio, first) {
+    var st = '<span style="color:' + (r.status === "running" ? "#5c5" : "var(--dim,#999)") + '">' + esc(stateWord(r)) + (r.status === "stopped" ? " - starts it" : "") + '</span>';
+    var w = r.words ? ' · <span' + ((r.warn || []).length ? ' style="color:var(--bad,#e66)"' : '') + '>' + esc(r.words) + '</span>' : '';
+    if (radio) return '<label class="nprow" style="display:block;margin:3px 0;cursor:pointer"><input type="radio" name="npPod" value="' + esc(r.id) + '"' + (first ? ' checked' : '') + '> 🖥 <b>' + esc(r.name) + '</b> · ' + st + w + '</label>';
+    return '<div class="nprow" style="display:flex;gap:8px;align-items:center;margin:3px 0"><span style="flex:1">🖥 <b>' + esc(r.name) + '</b> · ' + st + w + '</span>'
+      + '<button type="button" class="ghost" style="' + MAIN + '" data-npuse="' + esc(r.id) + '">' + (r.status === "stopped" ? "Start that pod" : "Use that pod") + '</button></div>';
+  }
+  function whereHtml(j) {
+    var p = j.pod || {}, has = j.has || [], oth = j.others || [];
+    var h = '<h3 style="margin:0 0 8px">' + esc(j.file) + ' was on ' + esc(p.label) + '</h3>'
+      + '<p style="margin:0 0 8px">That pod was terminated.' + ((j.companions || []).length ? ' It renders with ' + esc(j.companions.join(" + ")) + ' - they go with it.' : '') + '</p>';
+    if (has.length) h += '<p style="margin:8px 0 2px"><b>' + (has.length === 1 ? 'This pod has it:' : 'These pods have it:') + '</b></p>' + has.map(function (r) { return rowHtml(r, false); }).join("");
+    if (oth.length) h += '<p style="margin:10px 0 2px"><b>' + (has.length ? 'Or put it on another pod:' : 'Put it on one of your pods:') + '</b> <span style="color:var(--dim,#999)">(only what the pod does not have is sent)</span></p>'
+      + oth.map(function (r, i) { return rowHtml(r, true, i === 0); }).join("");
+    if (j.runpod_error) h += '<p style="margin:6px 0;color:var(--dim,#999);font-size:12px">RunPod did not say which pods run: ' + esc(j.runpod_error) + '</p>';
+    if (p.recipe) h += '<p style="margin:10px 0 2px;color:var(--dim,#999);font-size:12px">Or make the pod again the way it was made: <span style="font-family:var(--mono,monospace)">' + esc(p.recipe_line) + '</span></p>';
+    h += '<p class="npmsg" style="margin:6px 0;min-height:1em;color:var(--bad,#e66)"></p>'
+      + '<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="ghost" style="' + BTN + '" data-npmake="0">Not now</button>'
+      + (p.recipe ? '<button type="button" class="ghost" style="' + BTN + '" data-npmake="1">Make the pod again</button>' : '')
+      + (oth.length ? '<button type="button" class="ghost" style="' + MAIN + '" data-npusesel="1">Use this pod</button>' : '') + '</div>';
+    return h;
   }
 
   function boot(win) {
@@ -70,12 +106,46 @@
         });
       }).catch(function () { /* asked next time */ });
     }
-    /** a NO_Pod file picked in Basic Settings: asks before its pod is made again */
+    /** 2.793.0: the field gets a new name (a select gets the option when its list does not have it yet) */
+    function setField(el, name) {
+      if (el.tagName === "SELECT" && ![].some.call(el.options, function (o) { return o.value === name; })) { var o = doc.createElement("option"); o.value = name; o.textContent = name; el.appendChild(o); }
+      el.value = name; el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    var FIELDS = "#imgCkptCombo select.cmfile, #tliRows select.cmfile, #tlvRows select.cmfile, #vidModel";
+    /** 2.793.0: fields still holding a NO_Pod name whose pod was made again - renamed to "<name>/<file>" */
+    function renameStale() {
+      [].forEach.call(doc.querySelectorAll(FIELDS), function (el) {
+        var v = String(el.value || "").trim(); if (!isNoPod(v)) return;
+        win.fetch("/api/podinv/nopod/now?name=" + encodeURIComponent(v)).then(function (r) { return r.json(); }).then(function (j) {
+          if (j && j.found && j.name && j.name !== v && String(el.value || "").trim() === v) { setField(el, j.name); lists(); }
+        }).catch(function () { /* next time */ });
+      });
+    }
+    function useIt(el, v, pod, b, d, close) {
+      var msg = d.querySelector(".npmsg"); if (msg) msg.textContent = "";
+      [].forEach.call(d.querySelectorAll("button"), function (x) { x.disabled = true; });
+      b.textContent = "⏳ " + b.textContent;
+      win.fetch("/api/podinv/nopod/use", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: v, pod: pod }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (x) {
+          if (!x.ok || !x.j || !x.j.name) throw new Error((x.j && x.j.error) || "the pod could not be used");
+          close(); setField(el, x.j.name); lists();
+          var said = x.j.name + (x.j.started ? " - the pod is starting" : "") + (x.j.sending && x.j.sending.length ? " - sending " + x.j.sending.join(", ") + " (🖥 PODS shows it)" : "");
+          try { if (typeof win.appNote === "function") win.appNote(said); } catch (e) { /* fine */ }
+          S.lastUse = x.j;
+        })
+        .catch(function (e) { [].forEach.call(d.querySelectorAll("button"), function (x) { x.disabled = false; }); b.textContent = b.textContent.replace(/^⏳ /, ""); if (msg) msg.textContent = String((e && e.message) || e); });
+    }
+    /** a NO_Pod file picked in Basic Settings: asks where it runs now (2.793.0) / before its pod is made again */
     function picked(el) {
       var v = String(el.value || "").trim(); if (!isNoPod(v) || S.open) return;
-      win.fetch("/api/podinv/nopod?name=" + encodeURIComponent(v)).then(function (r) { return r.json(); }).then(function (j) {
+      win.fetch("/api/podinv/nopod/where?name=" + encodeURIComponent(v)).then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.pod || j.pod.remake_ok) return;
-        show(pickHtml(j), function (b, close) {
+        var many = (j.has || []).length + (j.others || []).length > 0;
+        show(many ? whereHtml(j) : pickHtml(j), function (b, close) {
+          var d = $("npDlg"), use = b.getAttribute("data-npuse");
+          if (use) return useIt(el, v, use, b, d, close);
+          if (b.getAttribute("data-npusesel") != null) { var r = d.querySelector('input[name="npPod"]:checked'); if (!r) { d.querySelector(".npmsg").textContent = "Pick a pod first"; return; } return useIt(el, v, r.value, b, d, close); }
           var ok = b.getAttribute("data-npmake"); if (ok == null) return;
           if (ok === "1") {
             b.disabled = true;
@@ -90,11 +160,11 @@
     }
     doc.addEventListener("change", function (e) {
       var t = e.target; if (!t || !t.matches) return;
-      if (t.matches("#imgCkptCombo select.cmfile, #tliRows select.cmfile, #tlvRows select.cmfile, #vidModel")) picked(t);
+      if (t.matches(FIELDS)) picked(t);
     }, true);
-    doc.addEventListener("h3:podinv", function () { setTimeout(check, 1500); });
-    setTimeout(check, 4000); setInterval(check, 30000);
-    win.H3NoPod = { check: check, picked: picked, state: function () { return S; } };
+    doc.addEventListener("h3:podinv", function () { setTimeout(check, 1500); setTimeout(renameStale, 2500); });
+    setTimeout(check, 4000); setInterval(function () { check(); renameStale(); }, 30000);
+    win.H3NoPod = { check: check, picked: picked, renameStale: renameStale, state: function () { return S; } };
   }
-  return { isNoPod: isNoPod, groupsText: groupsText, askHtml: askHtml, pickHtml: pickHtml, boot: boot };
+  return { isNoPod: isNoPod, groupsText: groupsText, askHtml: askHtml, pickHtml: pickHtml, rowHtml: rowHtml, whereHtml: whereHtml, boot: boot };
 });

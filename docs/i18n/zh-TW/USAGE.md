@@ -5631,6 +5631,20 @@ OpenRouter 模型對話方塊已移除：🧩 Model manager ▸ **☁ OpenRouter
 
 OpenRouter 不再列出的模型不會再被自動從你的清單中移除：它會以紅色保留在分頁最前面，標明 “✗ no longer on OpenRouter”，直到你用 🗑 將其移除（會有一行說明哪個變紅了）。它不會出現在下拉式清單中，用它渲染會被拒絕並說明原因。如果 OpenRouter 再次列出它，它會重新變成綠色或橙色。篩選欄下方的小圖例說明各顏色的含義。
 
+## A NO_Pod file onto a pod you have (2.793.0)
+<!-- en: a-no-pod-file-onto-a-pod-you-have-2-793-0 43d2860cb4ce -->
+
+在 Basic Settings 中選擇 NO_Pod 檔案（圖片的檢查點、臨時 LoRA、影片的 Model）時，現在會先檢視你的其他 Pod：向 RunPod 詢問哪些 Pod 正在執行，並讓正在執行的 Pod 列出它們的檔案。然後對話方塊顯示：
+
+- **This pod has it** - 已經有這個檔案的 Pod（同名，或在另一個資料夾中的同一檔案）。正在執行的用 **Use that pod**；已停止的用 **Start that pod**（由 RunPod 啟動——已停止的 Pod 可能拿不回 GPU，這時對話方塊會顯示 RunPod 的原話）。
+- **Or put it on another pod** - 你的其他所有 Pod，正在執行的排在前面；已停止的會註明 *starts it*。每一行都說明這個 Pod 上已經有什麼、要傳送什麼，例如「sdxl_vae.safetensors there, sends 7.1 GB」；空間不夠或模型可能放不進它的顯示卡時會給出警告。選一個，然後按 **Use this pod**。
+- **Make the pod again** - 和以前一樣，按 Pod 原來的建立方式重新建立。
+- **Not now** - 清空該欄位。
+
+模型會連同 NO_Pod 上的 VAE 和文字編碼器一起轉移；LoRA 單獨轉移。只發送 Pod 上沒有的檔案（先在網上查詢並讓 Pod 下載，否則從這臺電腦傳送），並且在 Pod 載入完成後才傳送——🖥 PODS 中會顯示傳輸情況。所選項會改名為 `<pod name>/<file>`：欄位中、Basic Settings 儲存的設定中、每個風格儲存的 Basic Settings 中以及專案的臨時 LoRA 中都會改。檔案會離開 NO_Pod；模型和 LoRA 都不剩的 NO_Pod 會從清單中消失。原來關聯到已終止 Pod 的風格，現在會轉到你選擇的 Pod。
+
+當 bitGen 不知道其他 Pod 時，顯示的是 2.789.0 的對話方塊。由 NO_Pod 重新建立的 Pod 也會同樣改名（`NO_Pod (Krea pod)/…` 變成 `Krea pod/…`），並且它的 VAE 和文字編碼器會和模型、LoRA 一起放回去。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

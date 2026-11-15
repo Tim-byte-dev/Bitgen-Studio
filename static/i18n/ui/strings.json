@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5681,
+ "count": 5694,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52450,6 +52450,123 @@
    ],
    "where": [
     "label.f in #rgVllm"
+   ]
+  },
+  {
+   "s": "That pod was terminated",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "only what the pod does not have is sent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "RunPod did not say which pods run",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Or make the pod again the way it was made",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Pick a pod first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "This pod has it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "These pods have it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Use that pod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Start that pod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "everything is there",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Put it on one of your pods",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Or put it on another pod",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
+   ]
+  },
+  {
+   "s": "Make the pod again",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#npDlg"
    ]
   }
  ]
