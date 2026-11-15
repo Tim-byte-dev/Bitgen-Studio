@@ -13972,6 +13972,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui789-ui.js > /tmp/ui789ui.log 2
   && ok "2.789.0 browser test: two pods terminated through bitGen - the question (keep one as NO_Pod, remove the other), NO_Pod files in the lists, picking one shows the recipe (Not now / Make the pod again), the render makes the pod again the same way, the lists say its name again - or SKIP" \
   || { bad "2.789.0 NO_Pod browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui789ui.log | head -14; }
 
+# ---- 2.790.0 (Tim: "in model manager docker add checkboxes for local - runpod - openrouter - all use this to filter the models the user uses, allow user to delete models ... add an openrouter tab ... put a + button next to the openrouter model to add the model to our model list and save it's endpoint")
+node scripts/test-mmsources790.js > /tmp/mmsources790.log 2>&1 \
+  && ok "2.790.0 Model manager places units: the endpoint kept with an OpenRouter model, pod + OpenRouter cards (the lists' names), one list + the ticks, 🗑 off the list (a pod file hidden, not brought back by its listing), the tab's card" \
+  || { bad "2.790.0 Model manager places units"; grep -a "^FAIL" -A1 /tmp/mmsources790.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui790-ui.js > /tmp/ui790ui.log 2>&1 \
+  && ok "2.790.0 browser test: ☁ OpenRouter tab (types, family, Free / Paid, sort, ＋ = yours with its endpoint), Models: this computer + RunPod + OpenRouter tagged, ☐ Local / RunPod / OpenRouter / All, 🗑 a pod file + an OpenRouter model off their lists - or SKIP" \
+  || { bad "2.790.0 Model manager places browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui790ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

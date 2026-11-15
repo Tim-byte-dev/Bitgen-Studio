@@ -41,6 +41,8 @@ const F = (cat, rel) => ({ cat, rel, size: 1e9, kind: cat === "loras" ? "lora" :
     const ev = (f, a) => p.evaluate(f, a);
     await p.goto(URL0);
     await p.waitForFunction(() => window.H3FamFilter && document.getElementById("styleSel") && document.getElementById("imgCkptCombo") && typeof loadComfyModels === "function", null, { timeout: 60000 });
+    // the page puts the last styles back ~4 s after it loads (static/stylebasic.js) - pick after that
+    await p.waitForFunction(() => performance.now() > 6500, null, { timeout: 20000 });
     await ev(() => { try { localStorage.removeItem("h3.famfilter.off.image"); localStorage.removeItem("h3.famfilter.off.video"); } catch (e) { /* fine */ } return loadComfyModels(true); });
     const pick = (id, v) => ev(([i, x]) => { const s = document.getElementById(i); if (![...s.options].some((o) => o.value === x)) { const o = document.createElement("option"); o.value = x; o.textContent = x; s.appendChild(o); } s.value = x; s.dispatchEvent(new Event("change", { bubbles: true })); }, [id, v]);
     const opts = () => ev(() => [...document.querySelectorAll("#imgCkptCombo .cmfile option")].map((o) => o.textContent));

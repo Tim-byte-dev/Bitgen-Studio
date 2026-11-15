@@ -434,6 +434,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **列表中的 pod 模型;☐ Remote** — 每个 pod 都保存一份清单（模型、VAE、文本编码器、LoRA、它的风格），显示在 PODS ▸ 🗂 Inventory 中；pod 的模型和 LoRA 以 <pod name>/<file> 的形式出现在 Basic Settings 的列表中，选择其一即在该 pod 上渲染；在 Use model / Use temporary LoRAs 下勾选 ☐ Remote 并选择 pod，会把本机的模型或 LoRA 发送到该 pod（在 Civitai / Hugging Face 上找到则由 pod 下载，否则上传）并在那里渲染。*Where:* Basic Settings, PODS. *Since:* 2.787.0
 - **Basic Settings 的列表跟随所选风格** — 图片的 Checkpoint 和 LoRA 列表显示图片风格的模型系列和类型（image / image edit），视频的 Model 和 LoRA 列表显示视频风格的（MiniMax H3、LTX、Wan）；无法判断系列的文件留在末尾并加标记；有一行说明显示的内容，并带 Show all；已选但不符合的文件保持选中并加以说明。*Where:* Basic Settings. *Since:* 2.788.0
 - **已终止 pod 的文件保留为 NO_Pod** — 终止 pod 时会询问：把它的模型和 LoRA 连同 pod 的创建方式以 NO_Pod (<old name>)/<file> 的形式保留在 Basic Settings 的列表中，还是移除；选择 NO_Pod 文件会显示该创建方式并询问——Make the pod again 会在下一次渲染时按原样重新创建并放回其文件（先在线查找，否则从本机发送）；绝不会未经询问就重新创建。*Where:* 🖥 PODS, Basic Settings. *Since:* 2.789.0
+- **Model manager：Local、RunPod、OpenRouter + ☁ OpenRouter 标签页** — Models / LoRAs 标签页把本机文件、pod 上的文件和你的 OpenRouter 模型一起列出并加标签；用 ☐ Local ☐ RunPod ☐ OpenRouter ☐ All 筛选；🗑 删除本机文件，或把 pod 文件 / OpenRouter 模型从列表中移除；☁ OpenRouter 标签页按类型和系列列出 OpenRouter 的模型，带 Free / Paid 和排序，＋ 把模型连同端点加入你的模型。*Where:* 🧩 Model manager. *Since:* 2.790.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹

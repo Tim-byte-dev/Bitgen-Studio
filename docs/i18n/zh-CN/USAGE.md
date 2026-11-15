@@ -5586,6 +5586,28 @@ Basic Settings ▸ 在 **Use model** 和 **Use temporary LoRAs**（图片和视�
 
 pod 重新创建后，其文件会再次以它的名称显示（`Krea pod/<file>`）；仍保存着 `NO_Pod (Krea pod)/…` 名称的字段照常可用，并会发送到新的 pod。bitGen 绝不会未经询问就重新创建已终止的 pod。如果 bitGen 不知道某个 pod 是如何创建的，其文件仍可保留，但框中会说明无法从这里重新创建该 pod——请用 Basic Settings ▸ Remote 把文件发送到另一个 pod。
 
+## 🧩 Model manager: Local, RunPod, OpenRouter (2.790.0)
+<!-- en: model-manager-local-runpod-openrouter-2-790-0 64778dcc60ae -->
+
+🧩 Model manager 的 **Models**、**LoRAs** 和 **📌 This project** 标签页现在把你在各处使用的模型列在同一个列表中：
+
+- **Local** - 本机的 ComfyUI 文件夹（与以前相同）；
+- **RunPod** - 你的 pod 上的文件（显示为 `<pod name>/<file>`，已终止 pod 保留的文件显示为 `NO_Pod (<old name>)/<file>`）以及 `runpod/pods/remote_models.json`；
+- **OpenRouter** - 你的 OpenRouter 图片和视频模型（显示为 `openrouter/<model>`）。
+
+在搜索栏开头勾选 **Local**、**RunPod**、**OpenRouter** 或 **All**，选择要显示的位置（每项都显示数量，并为下次保留）。每张卡片都有一个小标签说明它在哪里。点击卡片仍会像以前一样选中它——pod 上的文件在该 pod 上渲染，OpenRouter 模型在 OpenRouter 上渲染。
+
+**🗑 Delete** 会按位置执行相应的操作：
+
+- **本机**的卡片——在列出将删除内容的框之后，从磁盘删除该文件（与以前相同）；
+- **pod 上的文件**——从列表中移除；文件仍保留在 pod 上（在 pod 上删除请用 🖥 PODS ▸ 📁 Files）。pod 下一次列出文件时不会把它带回来；再次发送到该 pod 则会重新列出；
+- `remote_models.json` 中的条目——✕ 将其从该列表中移除（与以前相同）；
+- **OpenRouter** 模型——从你的 OpenRouter 模型中移除。
+
+### ☁ OpenRouter tab
+
+**☁ OpenRouter** 标签页列出 OpenRouter 的模型：顶部是 **Image**、**Video**、**LLM** 和 **Vision LLM**，下面是系列（提供方）、搜索、**Free** / **Paid**、排序（免费优先、最便宜、最新）以及重新询问 OpenRouter 的 ⟳。每张卡片显示名称、模型 ID、价格和简短说明。**＋** 把模型加入你的模型，并一并保存它的端点——渲染所用的 OpenRouter 地址（图片为 `…/images`，视频为 `…/videos`，LLM 为 `…/chat/completions`）；顶部的一行会说明。之后它会以 `openrouter/<model>` 出现在 Basic Settings 和提示词停靠窗的下拉列表中，并出现在 Models 标签页的 OpenRouter 下。已是你的模型的会显示 ✓ yours 和 🗑。列出模型不需要密钥；渲染需要（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

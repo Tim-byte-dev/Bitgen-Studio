@@ -63,6 +63,11 @@
     function rule(kind) { return off(kind) ? null : S.rules[kind]; }
     /** cmCombo's hook: null = no filter for this field */
     function files(inp, list) {
+      // a LoRA row is painted BEFORE it is put in its box (index.html loraRow) - paint it again once it is there
+      if (inp && !inp.isConnected && !inp._ffLater) {
+        inp._ffLater = true;
+        setTimeout(function () { var row = inp.closest && inp.closest(".lorarow"), w = row && row.querySelector(".cmcombo"); if (inp.isConnected && kindOfInp(inp) && w && w._repaint) try { w._repaint(); } catch (e) { /* one row */ } }, 0);
+      }
       var kind = kindOfInp(inp); if (!kind) return null;
       var r = rule(kind), p = pick(list, S.info, r);
       if (!p) return null;
@@ -129,6 +134,7 @@
         .then(function () { S.busy = false; if (S.again) { S.again = false; refresh(); } });
     }
     function tick() {
+      watchRows();   // the LoRA boxes may come after the start
       var img = $("styleSel"), vid = $("videoStyleSel");
       var now = (img ? img.value : "") + "\u0001" + (vid ? vid.value : "");
       if (now !== S.seen || cm() !== S.data) refresh();

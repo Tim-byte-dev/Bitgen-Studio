@@ -5351,6 +5351,28 @@ Basic Settings で NO_Pod のファイル（画像のチェックポイント、
 
 ポッドが作り直されると、そのファイルは再びポッドの名前（`Krea pod/<file>`）で表示されます。`NO_Pod (Krea pod)/…` の名前が残っている欄もそのまま使え、新しいポッドに送られます。bitGen は、確認なしに終了したポッドを作り直すことはありません。ポッドの作り方が分からない場合もファイルは残せますが、ここからは作り直せないことがボックスに表示されます。そのファイルは Basic Settings ▸ Remote で別のポッドに送ってください。
 
+## 🧩 Model manager: Local, RunPod, OpenRouter (2.790.0)
+<!-- en: model-manager-local-runpod-openrouter-2-790-0 64778dcc60ae -->
+
+🧩 Model manager の **Models**、**LoRAs**、**📌 This project** タブには、使っている場所すべてのモデルが 1 つの一覧で表示されるようになりました。
+
+- **Local** - このコンピューターの ComfyUI フォルダー（従来どおり）。
+- **RunPod** - ポッド上のファイル（`<pod name>/<file>` として表示。終了したポッドの残したファイルは `NO_Pod (<old name>)/<file>`）と `runpod/pods/remote_models.json`。
+- **OpenRouter** - 自分の OpenRouter の画像・動画モデル（`openrouter/<model>` として表示）。
+
+検索バーの先頭にある **Local**、**RunPod**、**OpenRouter**、**All** にチェックを入れて、表示する場所を選びます（それぞれ件数が表示され、次回も保持されます）。各カードには、どこにあるかを示す小さなタグが付きます。カードをクリックすると従来どおり選択されます。ポッドのファイルはそのポッドで、OpenRouter のモデルは OpenRouter でレンダリングされます。
+
+**🗑 Delete** は場所に合った動作をします。
+
+- **このコンピューター**のカード - 何が削除されるかを示すボックスの後、ファイルがディスクから削除されます（従来どおり）。
+- **ポッドのファイル** - 一覧から外されます。ファイルはポッドに残ります（ポッド上で削除するには 🖥 PODS ▸ 📁 Files）。ポッドの次のファイル一覧でも戻ってきませんが、再びポッドに送ると戻ります。
+- `remote_models.json` の項目 - ✕ でその一覧から外れます（従来どおり）。
+- **OpenRouter** のモデル - 自分の OpenRouter モデルから外されます。
+
+### ☁ OpenRouter tab
+
+**☁ OpenRouter** タブには OpenRouter のモデルが表示されます。上部に **Image**、**Video**、**LLM**、**Vision LLM**、その下にファミリー（提供元）、検索、**Free** / **Paid**、並べ替え（無料を先に、安い順、新しい順）、OpenRouter に再度問い合わせる ⟳ があります。各カードには名前、モデル ID、価格、短い説明が表示されます。**＋** を押すとモデルが自分のモデルに追加され、そのエンドポイント（レンダリングに使う OpenRouter のアドレス。画像は `…/images`、動画は `…/videos`、LLM は `…/chat/completions`）も一緒に保存されます。上部の行にその内容が表示されます。追加したモデルは Basic Settings とプロンプトドッカーのドロップダウンに `openrouter/<model>` として表示され、Models タブの OpenRouter にも表示されます。すでに自分のモデルにあるものには ✓ yours と 🗑 が表示されます。一覧の表示にキーは不要ですが、レンダリングには必要です（⚙ Settings ▸ Remote generation ▸ OpenRouter）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

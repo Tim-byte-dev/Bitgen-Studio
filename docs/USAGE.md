@@ -9041,6 +9041,27 @@ Picking a NO_Pod file in Basic Settings (the picture checkpoint, a temporary LoR
 
 Once the pod is made again its files show under its name again (`Krea pod/<file>`); a field that still holds the `NO_Pod (Krea pod)/…` name keeps working and goes to the new pod. bitGen never makes a terminated pod again without asking. When bitGen does not know how a pod was made, its files can still be kept, but the box says the pod cannot be made again from here - send the files to another pod with Basic Settings ▸ Remote.
 
+## 🧩 Model manager: Local, RunPod, OpenRouter (2.790.0)
+
+The 🧩 Model manager's **Models**, **LoRAs** and **📌 This project** tabs now list your models from every place you use them, in one list:
+
+- **Local** - this computer's ComfyUI folders (as before);
+- **RunPod** - the files on your pods (shown as `<pod name>/<file>`, a terminated pod's kept files as `NO_Pod (<old name>)/<file>`) and `runpod/pods/remote_models.json`;
+- **OpenRouter** - your OpenRouter picture and video models (shown as `openrouter/<model>`).
+
+Tick **Local**, **RunPod**, **OpenRouter** or **All** at the start of the search bar to choose which places are shown (each says how many it has; kept for next time). Each card has a small tag saying where it is. Clicking a card selects it as before - a pod's file renders on that pod, an OpenRouter model on OpenRouter.
+
+**🗑 Delete** does what fits the place:
+
+- a card of **this computer** - the file is deleted from the disk, after a box listing what goes (as before);
+- a **pod's file** - it is taken off the lists; the pod keeps the file (🖥 PODS ▸ 📁 Files deletes it there). Its next file listing does not bring it back; sending it to the pod again does;
+- an entry of `remote_models.json` - ✕ takes it off that list (as before);
+- an **OpenRouter** model - it is taken off your OpenRouter models.
+
+### ☁ OpenRouter tab
+
+The **☁ OpenRouter** tab lists OpenRouter's models: **Image**, **Video**, **LLM** and **Vision LLM** along the top, then the family (maker), a search, **Free** / **Paid**, the sort (free first, cheapest, newest) and ⟳ to ask OpenRouter again. Each card shows the name, the model id, the price and a short description. **＋** adds the model to your models and keeps its endpoint with it - the OpenRouter address it renders at (`…/images` for pictures, `…/videos` for video, `…/chat/completions` for the LLMs); the line at the top says it. It is then in Basic Settings' and the prompt docker's dropdowns as `openrouter/<model>` and on the Models tab under OpenRouter. A model already yours shows ✓ yours and 🗑. Listing needs no key; rendering needs one (⚙ Settings ▸ Remote generation ▸ OpenRouter).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

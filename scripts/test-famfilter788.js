@@ -57,7 +57,7 @@ const IX = src("static/index.html"), BS = src("static/basicset.js"), RI = src("r
 check("cmCombo asks H3FamFilter.files, marks no-family files, says why a picked file is hidden", /H3FamFilter\.files\(inp, files\)/.test(IX) && /family not known/.test(IX) && /FF\.hid\(cur\) \? FF\.why/.test(IX));
 check("index.html loads famfilter.js", /<script src="\/static\/famfilter\.js"><\/script>/.test(IX));
 check("the video Model list goes through H3FamFilter.names; H3Basic.refill", /H3FamFilter\.names\("video", pairs\)/.test(BS) && /refill: refill/.test(BS));
-check("routes: /api/famfilter mounted from routes/index.js (after remoteModels)", /require\("\.\/remoteModels"\)\.mount\(app\);\n  require\("\.\/famFilter"\)\.mount\(app\);/.test(RI) && /app\.post\("\/api\/famfilter"/.test(RF));
+check("routes: /api/famfilter mounted from routes/index.js (after remoteModels)", /require\("\.\/remoteModels"\)\.mount\(app\);\n(  require\("\.\/mmSources"\)\.mount\(app\);[^\n]*\n)?  require\("\.\/famFilter"\)\.mount\(app\);/.test(RI) && /app\.post\("\/api\/famfilter"/.test(RF));
 let route = null; require("../routes/famFilter").mount({ post: (p, f) => { route = f; } });
 let out = null; route({ body: { image: "", video: "", files: [{ cat: "checkpoints", name: "krea2_raw.safetensors" }] } }, { json: (j) => { out = j; }, status: () => ({ json: (j) => { out = j; } }) });
 check("the route answers rules + each file's family", out && out.rules && out.rules.image.families.length === 0 && out.info["checkpoints|krea2_raw.safetensors"] && out.info["checkpoints|krea2_raw.safetensors"].family === "krea", out);

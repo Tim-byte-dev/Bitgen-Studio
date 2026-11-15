@@ -43,6 +43,10 @@
  *   📁            the folders per type: Change… / ✕ forget / pick one for any type
  *   🔄 SYNC       Civitai's details for EVERY model + LoRA on this computer (every tab) - by its Civitai version id
  *                 when it has one, else SHA-256, else the file name (Shift = all of them again)
+ * 2.790.0 (Tim: "in model manager docker add checkboxes for local - runpod - openrouter - all use this to filter the models the
+ * user uses, allow user to delete models ... add an openrouter tab"): ☐ Local ☐ RunPod ☐ OpenRouter ☐ All in the search bar - the
+ * cards of every place in one list (static/mmsrc.js, routes/mmSources.js), each tagged; 🗑 deletes a file of this computer (asks)
+ * or takes a pod's file / an OpenRouter model off its list; ☁ OpenRouter tab (static/mmor.js) - ＋ adds a model with its endpoint.
  * Pure (Node: scripts/test-modelmgr518.js, test-modelinfo537.js): filterCards, sortCards, stars, hoverPos, fmtSize,
  * mergeLoras, thumbUrl, pageOf, autoPer, pagerModel, inFolder.
  */
@@ -228,7 +232,9 @@
 
   function load(refresh) {
     say("reading the model folders…");
-    return jget("/api/modelmgr/cards" + (refresh ? "?refresh=1" : "")).then(function (d) {
+    // 2.790.0: this computer + RunPod + OpenRouter in one list, filtered by ☐ Local ☐ RunPod ☐ OpenRouter (static/mmsrc.js)
+    var get = window.H3MmSrc ? window.H3MmSrc.load(jget, refresh) : jget("/api/modelmgr/cards" + (refresh ? "?refresh=1" : ""));
+    return get.then(function (d) {
       if (d.error) { say(d.error, "bad"); return; }
       S.data = d; S.v++;
       say((d.models.length + " models · " + d.loras.length + " LoRAs") + (d.warnings && d.warnings.length ? " · " + d.warnings[0] : ""));
@@ -254,21 +260,26 @@
     var ids = Object.keys(c.pods || {}).filter(function (k) { return c.pods[k] === "done"; });
     return '<span class="nfo" title="' + esc(ids.length ? "On " + ids.length + " pod(s): " + ids.join(", ") : "Not on a pod yet") + '">' + (ids.length ? "✓ " + ids.length : "☁") + "</span>";
   }
+  /* 2.790.0: a card of a pod's files / your OpenRouter list - 🗑 takes it off the list (static/mmsrc.js) */
+  function srcActs(c) {
+    return '<button class="ghost" data-mmsrcdel title="🗑 Take it off the list' + (c.pi ? " - the pod keeps the file (🖥 PODS ▸ 📁 Files deletes it there)" : " of your OpenRouter models") + '">🗑</button>';
+  }
   function cardHtml(c) {
+    var away = c.remote || c.rm || c.pi || c.or;   // 2.790.0: not a file on this computer
     var sel = c.kind === "model" ? S.sel.model === c.key : S.sel.loras.some(function (l) { return l.key === c.key; });
     var t = thumbUrl(c, S.v), init = esc((c.family_label || "?").slice(0, 2));
     var date = c.released ? c.released : c.file_date ? "file " + c.file_date : "";
     return '<div class="mmcard' + (sel ? " sel" : "") + '" data-key="' + esc(c.key) + '" tabindex="0" role="button" aria-pressed="' + sel + '">'
       + '<div class="th"' + (t && c.thumb_kind !== "video" ? ' style="background-image:url(&quot;' + esc(t) + '&quot;)"' : "") + ">" + (t ? (c.thumb_kind === "video" ? vidFill(t) : "") : init) + "</div>"
-      + (c.remote || c.rm ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
-      + '<div class="acts">' + (c.rm ? rmActs(c) : c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
+      + (away ? "" : c.info_status === "found" ? '<span class="nfo" title="Civitai details + ' + (c.examples || 0) + ' example pictures in model_info">ⓘ ' + (c.examples || 0) + "</span>" : "")
+      + '<div class="acts">' + (c.rm ? rmActs(c) : c.pi || c.or ? srcActs(c) : c.remote ? '<button class="ghost" data-cvget title="⤓ Download the newest version into its type\'s folder (model_folders.json - asked once per type). Shift+click: change the folder">⤓</button>' : '<button class="ghost" data-mminfo title="ⓘ The full details (I)">ⓘ</button><button class="ghost" data-mmedit title="✎ Edit this card (name, type, cfg, steps, VAE, keywords…)">✎</button><button class="ghost" data-mmdel title="🗑 Delete this model from the disk (the file, its preview / info files beside it and its model_info page) - asks first">🗑</button>'
         + (c.civitai ? "" : '<button class="ghost" data-mmlook title="🔍 Look this file up on Civitai (reads its SHA-256 once)">🔍</button>')) + "</div>"
       + (c.nsfw ? '<span class="nsfw" title="marked NSFW">🔞</span>' : "")
-      + (c.remote || c.rm ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
+      + (away ? "" : '<span class="grip" data-mmgrip title="Drag: the card size (every card)"></span>')
       + (c.rm ? rmPods(c) : "")
       + '<div class="bd"><div class="nm" title="' + esc(c.name || c.title) + '">' + esc(c.title) + "</div>"
       + '<div class="mt">' + (c.remote ? '<span class="rt">' + esc(stars(c)) + "</span>" : (c.user_rating != null || c.rating ? starBar(c.user_rating != null ? c.user_rating : c.rating) : "")) + "<span>" + esc(date) + "</span></div>"
-      + '<div class="mt"><span class="tag fam">' + esc(c.family_label) + '</span><span class="tag">' + esc(c.category) + "</span>" + (c.remote ? '<span class="tag">' + esc(c.type) + "</span>" : c.model_type ? '<span class="tag">' + esc(c.model_type) + "</span>" : "") + "</div>"
+      + '<div class="mt">' + (window.H3MmSrc && S.data && S.data.sources && !c.remote ? window.H3MmSrc.tagHtml(c) : "") + '<span class="tag fam">' + esc(c.family_label) + '</span><span class="tag">' + esc(c.category) + "</span>" + (c.remote ? '<span class="tag">' + esc(c.type) + "</span>" : c.model_type ? '<span class="tag">' + esc(c.model_type) + "</span>" : "") + "</div>"
       + (c.kind === "lora" && (c.keywords || []).length ? '<div class="kw">' + c.keywords.slice(0, 4).map(function (k) { return '<span class="kwc" data-kw="' + esc(k) + '" title="Put it in the prompt">' + esc(k) + "</span>"; }).join("") + "</div>" : "")
       + "</div></div>";
   }
@@ -286,11 +297,20 @@
   }
   function paint() {
     var host = $("mmBody"); if (!host) return;
-    ["used", "models", "loras", "civitai", "paths"].forEach(function (t) { var b = document.querySelector('.mmgr [data-mmtab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); });
+    ["used", "models", "loras", "civitai", "paths", "openrouter"].forEach(function (t) { var b = document.querySelector('.mmgr [data-mmtab="' + t + '"]'); if (b) b.classList.toggle("on", S.tab === t); });
     // 2.580.0: 📁 Model paths - every group of extra_model_paths.yaml (static/mmpaths.js, lib/extraPaths.js)
     var paths = S.tab === "paths" && !S.info && !S.form;
     ["mmSel", "mmGrid", "mmFolders"].forEach(function (id) { var e = $(id); if (e && paths) e.style.display = "none"; });
     if ($("mmPaths")) $("mmPaths").style.display = paths ? "" : "none";
+    // 2.790.0: ☁ OpenRouter - its models, ＋ adds one to yours with its endpoint (static/mmor.js)
+    var orTab = S.tab === "openrouter" && !S.info && !S.form;
+    if ($("mmOr")) $("mmOr").style.display = orTab ? "" : "none";
+    if (orTab) {
+      ["mmSel", "mmGrid", "mmFolders", "mmRemote"].forEach(function (id) { var e = $(id); if (e) e.style.display = "none"; });
+      $("mmLocalBar").style.display = "none"; $("mmCvBar").style.display = "none"; $("mmPager").style.display = "none";
+      if (window.H3MmOr) window.H3MmOr.render($("mmOr"), { say: say, onChange: function () { return load(); } });
+      return;
+    }
     if (paths) { $("mmLocalBar").style.display = "none"; $("mmCvBar").style.display = "none"; $("mmPager").style.display = "none"; if (window.H3ModelPaths) window.H3ModelPaths.render($("mmPaths"), say); return; }
     $("mmSel").style.display = ""; $("mmGrid").style.display = "";
     // 2.766.0: remote mode - the cards are runpod/pods/remote_models.json; the local-only buttons step aside
@@ -298,6 +318,7 @@
     if ($("mmRemote")) { $("mmRemote").style.display = rml && S.tab !== "civitai" ? "" : "none"; if (rml && window.H3RemoteModels && S.tab !== "civitai") window.H3RemoteModels.bar($("mmRemote"), { say: say, reload: function () { return load(); }, data: S.data }); }
     ["mmFetch", "mmSync", "mmFoldBtn", "mmEdit"].forEach(function (id) { var b = $(id); if (b) b.style.display = rml ? "none" : ""; });
     $("mmLocalBar").style.display = S.tab === "civitai" ? "none" : "";
+    if ($("mmSrc") && window.H3MmSrc) $("mmSrc").innerHTML = window.H3MmSrc.barHtml(window.H3MmSrc.counts(tabList()));   // 2.790.0
     $("mmCvBar").style.display = S.tab === "civitai" ? "" : "none";
     if (S.tab === "civitai") loadCvEnums();   // 2.766.1: the model families
     $("mmSel").innerHTML = selHtml();
@@ -346,7 +367,7 @@
     return S.data.models;
   }
   function shownList(list) {
-    return sortCards(filterCards(list, { q: S.q, category: S.category, family: S.family, nsfw: S.nsfw, mtype: S.mtype }).filter(function (c) { return inFolder(c, S.folder); }), S.sort);
+    return sortCards(filterCards(list, { q: S.q, category: S.category, family: S.family, nsfw: S.nsfw, mtype: S.mtype }).filter(function (c) { return inFolder(c, S.folder) && (!window.H3MmSrc || window.H3MmSrc.shown(c)); }), S.sort);
   }
   function perPage() {
     if (S.per !== "auto") return Math.max(1, +S.per || 48);
@@ -421,6 +442,7 @@
   /* ---- the info page */
   function openInfo(key) {
     if (/^rm:/.test(String(key || ""))) return;   // 2.766.0: a remote-list card has no file here to read
+    if (/^(pi|or):/.test(String(key || ""))) return;   // 2.790.0: a pod's file / an OpenRouter model - nothing here to read
     var c = byKey(key); if (!c) return;
     hideHover();
     S.info = key; S.infoData = null; S.exSel = 0; S.form = null; S.media = null; S.mSel = -1; S.mEdit = false; paint();
@@ -1034,6 +1056,7 @@
     var body = document.createElement("div"); body.className = "mmgr"; body.id = "mmBody";
     body.innerHTML = '<div class="mmtabs"><button class="ghost" data-mmtab="used" type="button" title="The models + LoRAs this project\'s jobs used">📌 This project</button><button class="ghost" data-mmtab="models" type="button">Models</button><button class="ghost" data-mmtab="loras" type="button">LoRAs</button>'
       + '<button class="ghost" data-mmtab="civitai" type="button" title="Search Civitai and download into ComfyUI\'s folders">Civitai</button>'
+      + '<button class="ghost" data-mmtab="openrouter" type="button" title="☁ OpenRouter\'s models - free / paid, by type and family; ＋ adds one to your models with its endpoint">☁ OpenRouter</button>'
       + '<button class="ghost" data-mmtab="paths" type="button" title="📁 ComfyUI\'s extra_model_paths.yaml - every group of paths: add a group (other_ui1 …), change a path, delete a group, ⟳ Restart ComfyUI">📁 Model paths</button>'
       + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓ Civitai info</button>'
       + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄 Sync</button>'
@@ -1041,7 +1064,7 @@
       + '<button class="ghost" id="mmEdit" type="button" title="⇲ Edit mode: drag a card\'s corner to size every card">⇲ Edit</button>'
       + '<button class="ghost" id="mmRescan" type="button" title="Read the model folders again">⟳</button></div>'
       + '<div class="mmfold" id="mmFolders" aria-label="Folders"></div>'
-      + '<div class="mmbar" id="mmLocalBar"><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
+      + '<div class="mmbar" id="mmLocalBar"><span id="mmSrc"></span><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
       + '<select id="mmCat" aria-label="Category"><option value="">every category</option><option value="image">image</option><option value="image edit">image edit</option><option value="video">video</option><option value="music">music</option></select>'
       + '<select id="mmFam" aria-label="Family"><option value="">every family</option></select>'
       + '<select id="mmMType" aria-label="Model type" title="2.575.0: the kind of file - checkpoint, LoRA …"><option value="">every model type</option></select>'
@@ -1059,7 +1082,7 @@
       + '<select id="mmCvPeriod" aria-label="Period" title="Rated / downloaded / liked over"><option value="AllTime">all time</option><option value="Year">this year</option><option value="Month">this month</option><option value="Week">this week</option><option value="Day">today</option></select>'
       + '<button class="ghost" id="mmCvGo" type="button">Search</button></div>'
       + '<div class="mmremote" id="mmRemote" style="display:none"></div>'   // 2.766.0: remote mode (static/remotemodels.js)
-      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div>'
+      + '<div class="mmsel" id="mmSel"></div><div class="mmmsg" id="mmMsg" aria-live="polite"></div><div class="mmfetch" id="mmFetchMsg" style="display:none"></div><div class="mmfoldbox" id="mmFoldBox" style="display:none"></div><div class="mmgrid" id="mmGrid"></div><div class="mmpaths" id="mmPaths" style="display:none"></div><div class="mmor" id="mmOr" style="display:none"></div>'
       + '<div class="mmpager" id="mmPager" style="display:none"></div><div class="mmdl" id="mmDl" style="display:none"></div>';
     return body;
   }
@@ -1081,6 +1104,8 @@
     $("mmMType").onchange = function (e) { S.mtype = e.target.value; S.page = 0; paint(); };
     $("mmNsfw").checked = S.nsfw !== false;
     $("mmNsfw").onchange = function (e) { S.nsfw = e.target.checked; S.page = 0; lsSet(); paint(); };
+    // 2.790.0: ☐ Local ☐ RunPod ☐ OpenRouter ☐ All (static/mmsrc.js - kept)
+    if ($("mmSrc")) $("mmSrc").addEventListener("change", function (e) { var k = e.target && e.target.dataset && e.target.dataset.mmsrc; if (!k || !window.H3MmSrc) return; window.H3MmSrc.set(k, e.target.checked); S.page = 0; paint(); });
     $("mmSort").onchange = function (e) { S.sort = e.target.value; lsSet(); paint(); };
     $("mmSort").value = S.sort;
     $("mmCvGo").onclick = function () { cvSearch(false); };
@@ -1102,6 +1127,14 @@
       if (e.target.closest("[data-mminfo]")) { openInfo(card.dataset.key); return; }
       if (e.target.closest("[data-mmedit]")) { editForm(card.dataset.key); return; }
       if (e.target.closest("[data-mmdel]")) { delModel(card.dataset.key); return; }       // 2.579.0
+      if (e.target.closest("[data-mmsrcdel]") && window.H3MmSrc) {                         // 2.790.0: off its list
+        var dk = card.dataset.key, dc = byKey(dk);
+        window.H3MmSrc.remove(dk).then(function (j) { if (j.error) { say(j.error, "bad"); return; }
+          if (/^or:/.test(dk)) try { if (window.H3OrMine && window.H3OrMine.load) window.H3OrMine.load(); } catch (x) { /* fine */ }
+          if (typeof root.loadComfyModels === "function") try { root.loadComfyModels(true); } catch (x) { /* fine */ }
+          return load().then(function () { say("🗑 " + ((dc && dc.title) || dk) + " " + j.said, j.ok ? "ok" : "bad"); }); });
+        return;
+      }
       if (e.target.closest("[data-mmlook]")) { lookup(card.dataset.key); return; }
       if (e.target.closest("[data-cvget]")) { cvQuick(card.dataset.key, e.shiftKey); return; }   // 2.538.0
       if (S.tab === "civitai") { S.cv.open = S.cv.items.find(function (x) { return x.key === card.dataset.key; }) || null; paint(); grid.scrollTop = 0; return; }
