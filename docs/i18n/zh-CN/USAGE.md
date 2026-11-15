@@ -5557,6 +5557,18 @@ Basic Settings ▸ 在 **Use model** 和 **Use temporary LoRAs**（图片和视�
 
 已终止（terminate）的 pod 会从列表中移除。
 
+## Basic Settings' lists follow the picked style (2.788.0)
+<!-- en: basic-settings-lists-follow-the-picked-style-2-788-0 3ae4d82807b9 -->
+
+开启 **Override style** 后，Basic Settings 的列表现在只显示与提示词停靠窗中所选风格相符的内容：
+
+- 图片的 **Checkpoint** 和图片的 **Temporary LoRAs** 跟随 **Style** 下拉列表（图片风格）；
+- 视频的 **Model** 和视频的 **Temporary LoRAs** 跟随 **Video** 下拉列表。
+
+列表保留该风格所属模型系列的文件——Krea 风格列出 Krea 文件，SDXL / Pony / Illustrious 风格列出 SDXL 系列的文件，MiniMax H3 风格列出 H3 文件，LTX 列出 LTX 文件，Wan 列出 Wan 文件——并按类型筛选：**image**、**image edit**（edit、Kontext、inpaint 或 Fill 风格）或 **video**。如果某个系列没有该类型的文件（FLUX.2 Klein 的 edit 风格使用 Klein 的图片模型），则保留该系列的其他文件。文件的系列以 🧩 Model manager 中显示的为准（你改过的优先，否则依次为 Civitai、文件头、文件名）；pod 的 `<pod name>/<file>` 按文件本身判断。
+
+无法判断系列的文件仍留在列表末尾，并标为“family not known”——不会隐藏任何可能可用的文件。每个 Model 字段下方的一行说明显示的内容：风格、它的系列和类型、符合的模型和 LoRA 数量以及被隐藏的数量。勾选那里的 **Show all** 即可重新列出全部（图片和视频分别保存）。你已选择但不符合风格的文件会保持选中，其所在行会说明它不属于该风格的系列。📁 浏览器和风格编辑器仍列出所有文件。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

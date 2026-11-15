@@ -124,6 +124,7 @@ function mount(app) {
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
+  require("./famFilter").mount(app);  // 2.788.0: Basic Settings' Override lists by the picked styles' family + type (lib/famFilter.js)
   // 2.781.0: Basic Settings' sampler / scheduler sent with a render (X-Bitgen-Sampler) -> the job it makes (lib/samplers.js)
   app.use(require("../lib/samplers").middleware);
   require("../lib/samplers").mount(app);

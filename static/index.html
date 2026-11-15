@@ -3566,6 +3566,7 @@
 <script src="/static/remoteprep.js"></script>  <!-- 2.767.0: Basic Settings ▸ GPU - LLM / Vision LLM: Local, OpenRouter or RunPod; remote mode prepares them and the video style (H3RemotePrep - routes/remotePrep.js) -->
 <script src="/static/remotetypes.js"></script>  <!-- 2.776.0: the ☁ Remote generation docker in sections - Image / Video / Music, LLMs, Audio each Local / Remote (H3RemoteTypes) -->
 <script src="/static/remotehosts.js"></script>  <!-- 2.785.0: "Runs on" - one dropdown per type at the top of the ☁ Remote generation docker (H3RemoteHosts - lib/remoteHosts.js) -->
+<script src="/static/famfilter.js"></script>  <!-- 2.788.0: Basic Settings' Override lists by the picked styles' family + type (H3FamFilter - routes/famFilter.js) -->
 <script src="/static/podinv.js"></script>  <!-- 2.787.0: PODS ▸ 🗂 Inventory - what is on a pod (H3PodInv - routes/podInv.js) -->
 <script src="/static/remoteuse.js"></script>  <!-- 2.787.0: Basic Settings ▸ Use model / Use temporary LoRAs ▸ ☐ Remote + a pod (H3RemoteUse - lib/basicUse.js, lib/podPick.js) -->
 <script src="/static/ormine.js"></script>  <!-- 2.786.0: your OpenRouter models as "openrouter/<id>" in Basic Settings' Model lists + the LLM / Vision lists (H3OrMine - lib/orModels.js); before remotellm.js (its change listener first) -->
@@ -7435,10 +7436,13 @@ function cmCombo(host, inp, cats, opts) {
     let files = cmFiles(cats);
     if (filter !== CM_ALL)
       files = files.filter(f => cmFolderKey(f) === filter);
+    // 2.788.0: Basic Settings' Override lists = the prompt docker's style's family + type (static/famfilter.js)
+    const FF = window.H3FamFilter && H3FamFilter.files ? H3FamFilter.files(inp, files) : null;
+    if (FF) files = FF.files;
     const multi = cats.length > 1;
     let html = `<option value="">${esc(o.blank || "— none —")}</option>`;
     html += files.map(f => {
-      const label = multi ? `${f.category}/${f.name}` : f.name;
+      const label = (multi ? `${f.category}/${f.name}` : f.name) + (FF && FF.unknown.has(f) ? " · family not known" : "");
       return `<option value="${esc(f.name)}">${esc(label)}</option>`;
     }).join("");
     // 2.786.0: your OpenRouter picture models as "openrouter/<id>" in Basic Settings' checkpoint (static/ormine.js)
@@ -7449,7 +7453,7 @@ function cmCombo(host, inp, cats, opts) {
     if (cur && !files.some(f => f.name === cur) && !(orx && orx.has)) {
       const known = cmFiles(cats).some(f => f.name === cur);
       html += `<option value="${esc(cur)}" class="${known ? "" : "missing"}">`
-        + `${esc(cur)}${known ? " (hidden by the folder filter)" : " — not found"}</option>`;
+        + `${esc(cur)}${known ? (FF && FF.hid(cur) ? FF.why : " (hidden by the folder filter)") : " — not found"}</option>`;
     }
     sel.innerHTML = html;
     sel.value = cur;

@@ -13956,6 +13956,14 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui787-ui.js > /tmp/ui787ui.log 2
   && ok "2.787.0 browser test: the pod's checkpoint + LoRA in the lists as <pod>/<file> (a folder of their own), ☐ Remote + the pod under the Use boxes, a picture with the pod's file goes to that pod with plain names (a pod named Krea is no Krea model), Remote + a local model goes to the pod, PODS ▸ 🗂 Inventory - or SKIP" \
   || { bad "2.787.0 pod inventory browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui787ui.log | head -14; }
 
+# ---- 2.788.0 (Tim: "in the model and lora lists in overide settings, filter the list by the syle selected in the prompt docker dropdowns family of models and the type (image/image-edit/video)")
+node scripts/test-famfilter788.js > /tmp/famfilter788.log 2>&1 \
+  && ok "2.788.0 family filter units: a style's families (its architecture / MiniMax H3 / LTX / Wan) + type (image / image edit / video), a file's family from its card or name (a pod file by the file), fitting + no-family + hidden, the line, the hooks" \
+  || { bad "2.788.0 family filter units"; grep -a "^FAIL" -A1 /tmp/famfilter788.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui788-ui.js > /tmp/ui788ui.log 2>&1 \
+  && ok "2.788.0 browser test: a Krea style lists Krea checkpoints + LoRAs (no-family ones marked at the end), a Qwen edit style the edit file, ☐ Show all, a picked file of another family kept + said, MiniMax H3 video Model list + video LoRAs - or SKIP" \
+  || { bad "2.788.0 family filter browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui788ui.log | head -14; }
+
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

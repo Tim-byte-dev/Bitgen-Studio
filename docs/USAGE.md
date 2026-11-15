@@ -9014,6 +9014,17 @@ Basic Settings ▸ under **Use model** and under **Use temporary LoRAs** (pictur
 
 A pod that is terminated leaves the lists.
 
+## Basic Settings' lists follow the picked style (2.788.0)
+
+With Override style on, Basic Settings' lists now show only what fits the styles picked in the prompt docker:
+
+- the picture **Checkpoint** and the picture **Temporary LoRAs** follow the **Style** dropdown (the image style);
+- the video **Model** and the video **Temporary LoRAs** follow the **Video** dropdown.
+
+A list keeps the files of the style's model family - a Krea style lists Krea files, an SDXL / Pony / Illustrious style the SDXL-family ones, a MiniMax H3 style the H3 ones, LTX the LTX ones, Wan the Wan ones - and of its type: **image**, **image edit** (an edit, Kontext, inpaint or Fill style) or **video**. When a family has no file of that type (FLUX.2 Klein's edit style uses the Klein picture model), its other files stay. A file's family is the one the 🧩 Model manager shows for it (yours when you changed it, else Civitai's, its header's or its name's); a pod's `<pod name>/<file>` is judged by the file.
+
+Files whose family cannot be told stay in the list, at the end, marked "family not known" - nothing that might work is hidden. The line under each Model field says what is shown: the style, its family and type, how many models and LoRAs fit and how many are hidden. Tick **Show all** there to list everything again (kept for pictures and video separately). A file you picked that does not fit the style stays picked, and its line says it is not of the style's family. The 📁 browser and the style editors still list every file.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

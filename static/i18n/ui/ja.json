@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "fecdea742433",
- "count": 9459,
+ "v": "e01424dfd666",
+ "count": 9460,
  "patternCount": 1160,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -5686,6 +5686,7 @@
   "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list": "OpenRouter の全モデルを表示 - 絞り込み、並べ替え、検索、無料 / 有料、詳細。Use で選んだものを LLM か Vision の一覧に設定",
   "Show boxes": "ボックスを表示",
   "Show every frame inside the selection": "選択範囲内のすべてのフレームを表示します",
+  "Show every model and LoRA in these lists, whatever their family": "ファミリーに関係なく、これらの一覧にすべてのモデルと LoRA を表示",
   "Show every scene, or only the one chosen": "すべてのシーン、または選んだシーンだけを表示します",
   "Show folders": "フォルダーを表示",
   "Show free": "無料を表示",

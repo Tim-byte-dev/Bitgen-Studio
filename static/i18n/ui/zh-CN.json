@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "7fd125e65c3c",
- "count": 9459,
+ "v": "4680c8bbe8e5",
+ "count": 9460,
  "patternCount": 1160,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -5686,6 +5686,7 @@
   "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list": "显示所有 OpenRouter 模型 - 筛选、排序、搜索、免费 / 付费、详情；Use 把所选模型放入 LLM 或 Vision 列表",
   "Show boxes": "显示方框",
   "Show every frame inside the selection": "显示选区内的每一帧",
+  "Show every model and LoRA in these lists, whatever their family": "在这些列表中显示所有模型和 LoRA，不论其系列",
   "Show every scene, or only the one chosen": "显示所有场景，或仅显示所选的那个",
   "Show folders": "显示文件夹",
   "Show free": "显示免费",

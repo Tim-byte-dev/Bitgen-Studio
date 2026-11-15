@@ -5322,6 +5322,18 @@ Basic Settings ▸ **Use model** と **Use temporary LoRAs**（画像と動画�
 
 終了（terminate）したポッドは一覧から消えます。
 
+## Basic Settings' lists follow the picked style (2.788.0)
+<!-- en: basic-settings-lists-follow-the-picked-style-2-788-0 3ae4d82807b9 -->
+
+**Override style** をオンにすると、Basic Settings の一覧には、プロンプトドッカーで選んだスタイルに合うものだけが表示されるようになりました。
+
+- 画像の **Checkpoint** と画像の **Temporary LoRAs** は **Style** ドロップダウン（画像スタイル）に従います。
+- 動画の **Model** と動画の **Temporary LoRAs** は **Video** ドロップダウンに従います。
+
+一覧には、スタイルのモデルファミリーのファイルが残ります。Krea スタイルなら Krea のファイル、SDXL / Pony / Illustrious スタイルなら SDXL 系のファイル、MiniMax H3 スタイルなら H3 のファイル、LTX なら LTX、Wan なら Wan のファイルです。さらに種類（**image**、**image edit**（edit、Kontext、inpaint、Fill のスタイル）、**video**）でも絞り込みます。ファミリーにその種類のファイルがない場合（FLUX.2 Klein の edit スタイルは Klein の画像モデルを使います）、そのファミリーの他のファイルは残ります。ファイルのファミリーは 🧩 Model manager に表示されるもの（自分で変更していればそれ、なければ Civitai、ファイルのヘッダー、名前の順）です。ポッドの `<pod name>/<file>` はファイル自体で判断されます。
+
+ファミリーが分からないファイルは一覧の最後に「family not known」と付けて残ります。使える可能性のあるものは隠しません。各 Model 欄の下の行に、表示内容（スタイル、そのファミリーと種類、合うモデルと LoRA の数、隠れている数）が表示されます。そこで **Show all** にチェックを入れると、すべてを再び表示します（画像と動画で別々に保存されます）。選んだファイルがスタイルに合わない場合も選択は残り、その行にスタイルのファミリーではないことが表示されます。📁 ブラウザーとスタイルエディターでは、引き続きすべてのファイルが表示されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

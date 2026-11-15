@@ -48,14 +48,17 @@
     if (listed) return;
     listed = true;
     fetch("/api/comfymodels").then(function (r) { return r.json(); }).then(function (j) {
-      var cats = j.categories || {}, names = [];
+      var cats = j.categories || {}, names = [], pairs = [];
       (j.model_categories || ["checkpoints", "diffusers", "diffusion_models"]).concat(["unet", "unet_gguf"]).forEach(function (k) {
         // 2.622.0: a category is {files: [{name}]} (lib/comfyModels.js) - read as a plain list it threw, and the list stayed EMPTY
         var c = cats[k], L = Array.isArray(c) ? c : ((c && c.files) || []).map(function (f) { return f && f.name; });
-        L.forEach(function (n) { if (n && names.indexOf(n) < 0) names.push(n); });
+        L.forEach(function (n) { if (n && names.indexOf(n) < 0) { names.push(n); pairs.push({ cat: k, name: n }); } });
       });
       var dl = $("vidModelList"); if (!dl) return;
-      dl.innerHTML = names.map(function (n) { return '<option value="' + String(n).replace(/"/g, "&quot;") + '"></option>'; }).join("");
+      // 2.788.0: the prompt docker's video style's family (static/famfilter.js) - its files, then the ones of no known family
+      var shown = window.H3FamFilter && H3FamFilter.names ? H3FamFilter.names("video", pairs) : names.map(function (n) { return { name: n }; });
+      dl.innerHTML = shown.map(function (x) { return '<option value="' + String(x.name).replace(/"/g, "&quot;") + '"' + (x.unknown ? ' label="family not known"' : "") + '></option>'; }).join("");
+      if (window.H3OrMine && H3OrMine.paintAll) try { H3OrMine.paintAll(); } catch (e) { /* its own list */ }
       listed = names.length > 0;                  // nothing yet (ComfyUI not found) - the next focus asks again
     }).catch(function () { listed = false; });
   }
@@ -75,6 +78,7 @@
     setInterval(summary, 1500);              // the seed's 🎲 / ♻ and the LoRA rows change it from elsewhere
     summary();
   }
-  window.H3Basic = { collect: collect, json: json, summary: summary, on: on };
+  function refill() { listed = false; fill(); }   // 2.788.0: the video style changed (static/famfilter.js)
+  window.H3Basic = { collect: collect, json: json, summary: summary, on: on, refill: refill };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();
