@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.782.3** — ▶ on a Pod That Already Runs Says "Running" in Green in the PODS Docker (Not RunPod's "Action Start Is Not Valid for Status RUNNING"); ⏹ on a Stopped One Says Stopped
 - **2.782.2** — ⏹ Stop and ↻ Restart as Icon Buttons at the End of Each Model Transfer's Bar (PODS ▸ Transfers): an Upload From This Computer Stops After Its Part (the Part on the Pod Deleted), the Pod's Download After Its Piece; ↻ Starts It Again From the Beginning
 - **2.782.1** — A Docker That Becomes Floating Comes to the Front at Once (a ▣ Docker Included); Local / Remote on Image, Video and Music in the ☁ Remote Generation Docker Sets That Type's Mode (All Local = Local Mode; Mixed = This Computer's ComfyUI Kept and Both Model Lists); RunPod ▸ Pods / Serverless Moved to Settings ▸ Remote Generation; a Pod's ComfyUI Keeps the Text Encoder and VAE on the Card Too (--highvram)
 - **2.782.0** — Your LLMs From Hugging Face on Your Pod: ＋ From Hugging Face… Lists a Repo's GGUFs (a Split Model as One, the Vision Projector), Sends the One Picked to the Pod (llama.cpp Built There Once), Then Asks to Keep It in Your List Under Its Name - the RunPod LLM / Vision Lists Show Only Your List; Run It on One of Your Pods or a New Pod Just for It; One Pod for the LLM, Vision LLM, Pictures and Video (a Render Stops the LLM and Frees Its VRAM, the Next Chat Waits for ComfyUI, Unloads Its Models and Loads the LLM Again); the Pod's Volume Made Bigger
