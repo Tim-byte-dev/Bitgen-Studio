@@ -442,6 +442,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **モデルマネージャーのソース、GPU ドッカー** — 🧩 Model manager ▸ ＋ Add source で、どのモデル API にも専用のタブを作れます: ⚙ Settings で URL、API キー（暗号化して保存）、形式（OpenAI 互換、Ollama、Anthropic 形式、または自分のテンプレート）を設定し、✓ Test でモデルを一覧して bitGen が組み立てるエンドポイントを表示します。＋ で自分のモデルに追加すると、LLM / Vision モデルはプロンプトドッカーの一覧に <source>/<model> として表示され、そのソースでチャットします。☁ Remote generation ドッカーは 🖥 GPU になりました。*Where:* 🧩 Model manager, the prompt docker, 🖥 GPU. *Since:* 2.795.0
 - **モデルマネージャーのフィルターをドロップダウンに** — 場所（All places / This computer / RunPod / OpenRouter、件数つき - 以前は何も絞り込めていませんでした。修正済み）、フォルダー、Civitai の種類、OpenRouter の種類と価格がドロップダウンになりました。タブバーのツールはアイコンです。*Where:* 🧩 Model manager. *Since:* 2.796.0
 - **Basic Settings の一覧を場所で** — 画像の Checkpoint、動画の Model、一時 LoRA の各行の先頭に All places / This computer / RunPod / OpenRouter（件数つき）。スタイルのファミリーで絞り込んだあとの数です。☐ Remote と Pod の行はなくなりました（Pod のファイルは <pod>/<file> として選びます）。Model manager の Civitai info と Sync は Civitai タブにあります。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
+- **スタイルのファミリー一覧で画像 / 編集を分けない** — Basic Settings の一覧には、スタイルのファミリーのすべてのモデルが画像モデルも編集モデルも表示されます（Klein は画像を作ることも編集することもできます）。*Where:* Basic Settings. *Since:* 2.798.0
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー

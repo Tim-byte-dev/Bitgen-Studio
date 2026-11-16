@@ -9142,6 +9142,10 @@ Your LLM and vision models from a source are in the prompt docker's LLM / Vision
 - The lists still follow the prompt docker's style (2.788.0): in image mode the picture checkpoint and LoRAs show the image style's model family, in video mode the video Model and LoRAs show the video style's - from every place - and the counts are after that.
 - 🧩 Model manager: **⤓ Civitai info** and **🔄 Sync** moved into the **Civitai** tab.
 
+## Style family lists without the image / edit split (2.798.0)
+
+Basic Settings' lists show every model of the style's family - picture models and edit models alike. Before, an edit style listed only the family's edit models and a picture style only its picture models; some models (FLUX.2 Klein, for one) both make and edit pictures, so the split hid ones that work. The line under the checkpoint now names just the family (for example "For Krea 2 Raw: Krea - 2 models").
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

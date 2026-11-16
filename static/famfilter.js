@@ -29,9 +29,8 @@
       var x = I[keyOf(f)];
       if (unknownFam(x)) unknown.push(f); else if (fams.indexOf(x.family) >= 0) fam.push(f); else out++;
     });
-    var typed = fam.filter(function (f) { var c = I[keyOf(f)].category; return !c || c === rule.type; });
-    var fit = typed.length ? typed : fam;
-    out += fam.length - fit.length;
+    // 2.798.0 (Tim: "drop the split because some image models like klein can edit as well as generate"): every file of the family
+    var fit = fam;
     return { files: fit.concat(unknown), fit: fit.length, unknown: new Set(unknown), out: out };
   }
   /** which list an input belongs to: "image" | "video" | null */
@@ -42,7 +41,7 @@
   }
   function noteText(rule, m, l, off) {
     if (!rule || !(rule.families || []).length) return rule && rule.style ? "All models listed - " + rule.style + "'s model family is not known" : "";
-    var what = (rule.labels || []).join(" / ") + " · " + rule.type;
+    var what = (rule.labels || []).join(" / ");   // 2.798.0: no image / image edit split - the family only
     if (off) return "Showing every model and LoRA - ticked, only " + what + " ones for " + rule.style;
     var part = function (n, x) { return x ? x.fit + " " + (x.fit === 1 ? n.replace(/s$/, "") : n) + (x.unknown.size ? " + " + x.unknown.size + " family not known" : "") + (x.out ? ", " + x.out + " hidden" : "") : ""; };
     return "For " + rule.style + ": " + what + " - " + [part("models", m), part("LoRAs", l)].filter(Boolean).join(" · ");

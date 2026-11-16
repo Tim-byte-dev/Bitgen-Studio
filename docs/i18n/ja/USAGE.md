@@ -5460,6 +5460,11 @@ NVIDIA のカードが 2 枚以上あると、🖥 GPU ▸ Runs on のすべて�
 - 一覧はこれまでどおりプロンプトドッカーのスタイルに従います（2.788.0）: 画像モードでは画像の Checkpoint と LoRA に画像スタイルのモデルファミリーが、動画モードでは動画の Model と LoRA に動画スタイルのファミリーが、すべての場所から表示され、件数はそのあとの数です。
 - 🧩 Model manager: **⤓ Civitai info** と **🔄 Sync** は **Civitai** タブに移りました。
 
+## Style family lists without the image / edit split (2.798.0)
+<!-- en: style-family-lists-without-the-image-edit-split-2-798-0 2ecc572e2c62 -->
+
+Basic Settings の一覧には、スタイルのファミリーのすべてのモデルが表示されます - 画像モデルも編集モデルも同じように。以前は、編集スタイルではファミリーの編集モデルだけ、画像スタイルでは画像モデルだけが表示されていました。FLUX.2 Klein のように画像を作ることも編集することもできるモデルがあるため、この分け方では使えるモデルが隠れていました。Checkpoint の下の一文は、ファミリー名だけを示すようになりました（例: 「For Krea 2 Raw: Krea - 2 models」）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

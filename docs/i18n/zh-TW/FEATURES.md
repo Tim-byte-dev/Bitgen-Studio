@@ -442,6 +442,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **模型管理器的來源；GPU 停靠欄** — 🧩 Model manager ▸ ＋ Add source 可為任何模型 API 建一個分頁：⚙ Settings 中設定 URL、API 金鑰（加密儲存）和格式（OpenAI 相容、Ollama、Anthropic 風格或你自己的範本），✓ Test 列出它的模型並顯示 bitGen 填好的端點；＋ 把模型加入你的模型，你的 LLM / 視覺模型會以 <source>/<model> 出現在提示詞停靠欄的清單中，通過該來源聊天。☁ Remote generation 停靠欄現在叫 🖥 GPU。*Where:* 🧩 Model manager, the prompt docker, 🖥 GPU. *Since:* 2.795.0
 - **模型管理器的篩選改為下拉式清單** — 位置（All places / This computer / RunPod / OpenRouter，帶數量 - 之前什麼都篩不掉，已修復）、資料夾、Civitai 的類型、OpenRouter 的類型和價格都改成了下拉式清單；標籤欄的工具改為圖示。*Where:* 🧩 Model manager. *Since:* 2.796.0
 - **Basic Settings 的清單按位置篩選** — 圖片 Checkpoint、影片 Model 和每行臨時 LoRA 前面都有 All places / This computer / RunPod / OpenRouter（帶數量），在風格家族篩選之後；☐ Remote 和 Pod 行已移除（Pod 的檔案以 <pod>/<file> 選擇）；Model manager 的 Civitai info 和 Sync 在它的 Civitai 分頁中。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
+- **風格家族清單不再區分圖片 / 編輯** — Basic Settings 的清單顯示風格家族的所有模型，圖片模型和編輯模型都包括（Klein 既能生成也能編輯圖片）。*Where:* Basic Settings. *Since:* 2.798.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

@@ -5695,6 +5695,11 @@ OpenRouter 不再列出的模型不会再被自动从你的列表中移除：它
 - 列表仍按提示词停靠栏的风格筛选（2.788.0）：图片模式下，图片 Checkpoint 和 LoRA 显示图片风格的模型家族；视频模式下，视频 Model 和 LoRA 显示视频风格的家族 - 来自所有位置，数量是筛选之后的。
 - 🧩 Model manager：**⤓ Civitai info** 和 **🔄 Sync** 移到了 **Civitai** 标签页。
 
+## Style family lists without the image / edit split (2.798.0)
+<!-- en: style-family-lists-without-the-image-edit-split-2-798-0 2ecc572e2c62 -->
+
+Basic Settings 的列表会显示风格所属家族的所有模型 - 图片模型和编辑模型一视同仁。以前，编辑风格只列出该家族的编辑模型，图片风格只列出图片模型；而有些模型（例如 FLUX.2 Klein）既能生成也能编辑图片，这种划分会把能用的模型藏起来。Checkpoint 下面的一句话现在只写家族名（例如“For Krea 2 Raw: Krea - 2 models”）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

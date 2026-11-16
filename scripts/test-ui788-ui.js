@@ -57,7 +57,7 @@ const F = (cat, rel) => ({ cat, rel, size: 1e9, kind: cat === "loras" ? "lora" :
       has(o, "krea2_mine") && has(o, "mystery_v3") && o.find((t) => t.includes("mystery_v3")).includes("family not known") && !has(o, "juggernaut") && !has(o, "qwen_image") && !has(o, "wan2.2") && !has(o, "mmh3")
       && o.findIndex((t) => t.includes("krea2_mine")) < o.findIndex((t) => t.includes("mystery_v3")), o);
     let n = await note("image");
-    check("the line under the checkpoint: the style, Krea · image, models + LoRAs counted, ☐ Show all", /For .*Krea 2 Raw|For .*Krea/.test(n) && /Krea · image/.test(n) && /\d+ models?/.test(n) && /\d+ LoRAs?/.test(n) && /Show all/.test(n), n);
+    check("the line under the checkpoint: the style, its family Krea (2.798.0: no image / edit split), models + LoRAs counted, ☐ Show all", /For .*Krea 2 Raw|For .*Krea/.test(n) && /: Krea - /.test(n) && /\d+ models?/.test(n) && /\d+ LoRAs?/.test(n) && /Show all/.test(n), n);
 
     // a picture temporary LoRA row
     await ev(() => { const b = document.getElementById("tliAdd"); b.click(); });
@@ -66,12 +66,12 @@ const F = (cat, rel) => ({ cat, rel, size: 1e9, kind: cat === "loras" ? "lora" :
     check("a picture temporary LoRA row lists the Krea LoRA, not the SDXL / video ones", lo && has(lo, "krea_grain") && !has(lo, "detail_tweaker_xl") && !has(lo, "mmh3_motion"), lo);
     await ev(() => { const rows = document.querySelectorAll("#tliRows .lorarow"); const r = rows[rows.length - 1]; if (r) r.querySelector(".lx").click(); });
 
-    // an edit style: the Qwen edit file, not the plain Qwen picture model
+    // an edit style: 2.798.0 (Tim: "drop the split because some image models like klein can edit as well as generate") - every Qwen file
     if (qwenSt) {
       await pick("styleSel", qwenSt.id);
-      await waitNote("image", "image edit");
+      await waitNote("image", "Qwen");
       o = await opts();
-      check("a Qwen edit style: the Qwen EDIT file (type image edit) - not the plain Qwen picture model, not Krea", has(o, "qwen_image_2.1_edit") && !has(o, "qwen_image_fp8") && !has(o, "krea2_mine") && /Qwen · image edit/.test(await note("image")), o);
+      check("a Qwen edit style: every Qwen file - the edit one AND the picture one (no type split) - not Krea", has(o, "qwen_image_2.1_edit") && has(o, "qwen_image_fp8") && !has(o, "krea2_mine") && /: Qwen - /.test(await note("image")), o);
     } else check("a Qwen edit style exists", false, istyles.map((s) => s.name));
 
     // Show all
@@ -95,7 +95,7 @@ const F = (cat, rel) => ({ cat, rel, size: 1e9, kind: cat === "loras" ? "lora" :
     await ev(() => { const m = document.getElementById("vidModel"); m.dispatchEvent(new Event("focus")); });
     await p.waitForFunction(() => document.querySelectorAll("#vidModelList option").length > 0, null, { timeout: 10000 }).catch(() => {});
     const vl = await ev(() => [...document.querySelectorAll("#vidModelList option")].map((o) => o.value));
-    check("a MiniMax H3 video style: the video Model list = the H3 file (+ no known family) - not Wan, not the picture models", has(vl, "mmh3_dev") && !has(vl, "wan2.2") && !has(vl, "krea2_mine") && !has(vl, "juggernaut") && /MiniMax H3 · video/.test(await note("video")), vl);
+    check("a MiniMax H3 video style: the video Model list = the H3 file (+ no known family) - not Wan, not the picture models", has(vl, "mmh3_dev") && !has(vl, "wan2.2") && !has(vl, "krea2_mine") && !has(vl, "juggernaut") && /: MiniMax H3 - /.test(await note("video")), vl);
     await ev(() => document.getElementById("tlvAdd").click());
     await sleep(600);
     const vlo = await ev(() => { const rows = document.querySelectorAll("#tlvRows .lorarow"); const r = rows[rows.length - 1]; return r ? [...r.querySelectorAll(".cmfile option")].map((o) => o.textContent) : null; });

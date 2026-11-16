@@ -2568,7 +2568,7 @@
   },
   {
    "s": "Show every model and LoRA in these lists, whatever their family",
-   "src": "static/famfilter.js:113"
+   "src": "static/famfilter.js:112"
   },
   {
    "s": "feat-off{display:none !important}",

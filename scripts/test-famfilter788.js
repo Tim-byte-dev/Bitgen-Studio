@@ -36,7 +36,7 @@ check("info: a pod's <pod name>/<file> is judged by the file, not the pod's name
 // ---- picking (server + page agree)
 const files = [{ name: "a.safetensors", family: "krea", category: "image" }, { name: "b", family: "sdxl", category: "image" }, { name: "c", family: "", category: "" }, { name: "d", family: "other" }, { name: "e", family: "krea", category: "image edit" }];
 const P = FF.pick(files, krea);
-check("pick: the family's files of the style's type, no family = kept apart, the rest out", P.fit.map((f) => f.name).join() === "a.safetensors" && P.unknown.map((f) => f.name).join() === "c,d" && P.out.map((f) => f.name).sort().join() === "b,e", P);
+check("pick: every file of the style's family - picture AND edit models (2.798.0: no type split - Klein edits as well as generates); no family = kept apart, the rest out", P.fit.map((f) => f.name).join() === "a.safetensors,e" && P.unknown.map((f) => f.name).join() === "c,d" && P.out.map((f) => f.name).sort().join() === "b", P);
 const klein = FF.rule({ name: "FLUX.2 Klein 9B edit", arch: "flux2klein9b" }, "image");
 const PK = FF.pick([{ name: "flux-2-klein-9b.safetensors", family: "flux2", category: "image" }], klein);
 check("pick: a family with no file of the type keeps its files (Klein's edit style renders with its picture model)", klein.type === "image edit" && PK.fit.length === 1, PK);
@@ -44,11 +44,11 @@ check("pick: no families = everything", FF.pick(files, FF.rule(null, "image")).f
 const info = { "checkpoints|a.safetensors": { family: "krea", category: "image" }, "checkpoints|b": { family: "sdxl", category: "image" }, "loras|c": { family: "" }, "checkpoints|e": { family: "krea", category: "image edit" } };
 const cf = [{ name: "a.safetensors", category: "checkpoints" }, { name: "b", category: "checkpoints" }, { name: "c", category: "loras" }, { name: "e", category: "checkpoints" }, { name: "z", category: "checkpoints" }];
 const C = FC.pick(cf, info, krea);
-check("page pick: fitting first, then no family (marked), the count hidden", C.files.map((f) => f.name).join() === "a.safetensors,c,z" && C.fit === 1 && C.unknown.size === 2 && C.out === 2, { names: C.files.map((f) => f.name), fit: C.fit, out: C.out });
+check("page pick: fitting first (2.798.0: the family's edit model too), then no family (marked), the count hidden", C.files.map((f) => f.name).join() === "a.safetensors,e,c,z" && C.fit === 2 && C.unknown.size === 2 && C.out === 1, { names: C.files.map((f) => f.name), fit: C.fit, out: C.out });
 check("page pick: no rule / no families = null (the list as it was)", FC.pick(cf, info, null) === null && FC.pick(cf, info, { families: [] }) === null);
 check("which list: picture checkpoint + picture LoRAs = image, video Model + video LoRAs = video, others none", FC.kindOfId("imgCkpt", "") === "image" && FC.kindOfId("", "tliRows") === "image" && FC.kindOfId("vidModel", "") === "video" && FC.kindOfId("", "tlvRows") === "video" && FC.kindOfId("s_stckpt", "") === null && FC.kindOfId("", "cnLoras") === null);
 const nt = FC.noteText(krea, { fit: 4, unknown: new Set([1]), out: 9 }, { fit: 2, unknown: new Set(), out: 0 }, false);
-check("the line: the style, family + type, models and LoRAs counted", nt === "For Krea 2 Raw: Krea · image - 4 models + 1 family not known, 9 hidden · 2 LoRAs", nt);
+check("the line: the style, its family (2.798.0: no type), models and LoRAs counted", nt === "For Krea 2 Raw: Krea - 4 models + 1 family not known, 9 hidden · 2 LoRAs", nt);
 check("the line: one model / one LoRA said in the singular", /1 model \+ 1 family not known · 1 LoRA$/.test(FC.noteText(krea, { fit: 1, unknown: new Set([1]), out: 0 }, { fit: 1, unknown: new Set(), out: 0 }, false)));
 check("the line: Show all on / no family to filter by", /^Showing every model and LoRA/.test(FC.noteText(krea, null, null, true)) && /family is not known/.test(FC.noteText(FF.rule({ name: "P-H3 Image", arch: "ph3" }, "image"))) && FC.noteText(FF.rule(null, "image")) === "");
 
