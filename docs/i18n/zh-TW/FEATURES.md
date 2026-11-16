@@ -448,6 +448,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **連結文字框和文字繞排** — 段落文字從一個框流向另一個框、從一頁流向另一頁（＋ Frame、＋ Next page、Edit Story、Unlink），在任何框中輸入都會進入文章；文字帶間距繞排形狀（沿輪廓）和圖片；作為真實文字逐行匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
 - **印刷就緒 PDF** — 匯出時帶出血（邊緣內容延伸到裁切線之外）、裁切和套準標記、頁面資訊、TrimBox / BleedBox / MediaBox、CMYK 顏色和圖片（銅版紙 / 非塗布紙 / 新聞紙）以及嵌入字型。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
 - **雷射刀路和 G-code** — Laser 面板：GRBL 或 Marlin 機器設定，每個圖層一個操作（Line 切割 / 劃線、Fill 填充線、Offset fill、Image 光柵雕刻 - 抖動、閾值或灰度），圖片圖層按中心線或輪廓描摹，用 ControlNet 前處理器從圖片生成線稿，帶時間和距離的刀路預覽，G-code 儲存到專案中。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
+- **通過 USB 或 Wi-Fi 傳送到雷射機** — Laser 面板連線機器（USB 序列埠或 Wi-Fi / TCP，由 bitGen 的伺服器保持，桌面應用中也可）：回原點、解鎖、走邊框、開始（先確認）、暫停 / 繼續、始終可用的 STOP、主控台；為自帶雷射軟體的機器匯出 SVG + PNG。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.804.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

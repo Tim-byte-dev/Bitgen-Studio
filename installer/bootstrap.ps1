@@ -11,7 +11,7 @@
 #   runtime\python   a Python 3.12 environment - the app's python
 #   runtime\git      MinGit, only when git is not installed
 #   runtime\ffmpeg   ffmpeg + ffprobe, only when there is none on PATH
-#   node_modules     express, multer, jsdom + Electron (the app window)
+#   node_modules     express, multer, jsdom, serialport (the laser over USB) + Electron (the app window)
 #
 # then the Start-menu and desktop shortcuts (straight to the app window, no
 # console) and .setup-pending, so the first start opens the setup wizard -
@@ -188,7 +188,7 @@ if (-not (Test-Path "$env:SystemRoot\System32\vcruntime140_1.dll")) {
 }
 
 # ---- 6. Node packages + the app window ---------------------------------------------
-Say "[..] npm install (express, multer, jsdom) - a minute or two"
+Say "[..] npm install (express, multer, jsdom, serialport) - a minute or two"
 & $npm install --no-audit --no-fund --loglevel=error 2>&1 | ForEach-Object { "$_" }
 if (-not (Test-Path (Join-Path $root "node_modules\express"))) { Fail "npm install failed" }
 Say "[ok] Node packages installed"

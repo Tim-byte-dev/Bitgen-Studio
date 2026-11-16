@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.804.0** — Laser: Send Over USB (Serial) or Wi-Fi (TCP) From bitGen's Server - Connect, Home, Unlock, Frame, Start (Asked First), Pause / Resume, STOP (Always There, Also When bitGen Closes), Console; SVG + PNG for Machines With Their Own Laser Software
 - **2.803.0** — Image Editor Laser Panel: GRBL / Marlin Machine Profile; an Operation per Layer - Line (Cut / Score), Fill (Hatch), Offset Fill, Image (Dithered / Threshold / Greyscale Raster); Centreline or Outline Tracing of Picture Layers; Line Art From the Picture (ControlNet); Toolpath Preview With Time and Lengths; G-code Saved in the Project's laser Folder
 - **2.802.0** — Image Editor Print-Ready PDF: Bleed (Shapes and Pictures on the Edge Carried Past the Trim), Crop and Registration Marks, Page Information, TrimBox / BleedBox / MediaBox, CMYK Colours and Pictures (Coated / Uncoated / Newsprint), Embedded Fonts
 - **2.801.0** — Image Editor Linked Text Frames (Paragraph Text Flowing Frame to Frame and Page to Page; ＋ Frame, ＋ Next Page, Edit Story, Unlink; Typing in Any Frame Goes Into the Story, Undoable) and Text Wrap (Around a Shape's Outline or a Picture's Box, With a Gap); Paragraph Text Exported as Real Text Line by Line

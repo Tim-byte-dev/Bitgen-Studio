@@ -9216,6 +9216,17 @@ The image editor can make a laser cutter / engraver job from the picture's layer
 - **⤓ Save G-code** - a .gcode file for your machine, kept in the project's **laser** folder and downloaded. GRBL needs laser mode on ($32=1).
 - Coming next: sending the job to the laser over USB (connect, home, frame, start / pause / stop).
 
+## Laser: send over USB or Wi-Fi (2.804.0)
+
+The Laser panel (**Window ▸ Laser**) now sends the job to the machine itself. bitGen's own server holds the connection - in the desktop app too - so the job keeps going while the panel is closed or the page reloads.
+
+- **Send to the laser** - **USB** (pick the port - ⟳ looks for them - and the baud, usually 115200) or **Wi-Fi / network** (the machine's address and port - 23 for most Wi-Fi boards: FluidNC, grblHAL, ESP3D). **🔌 Connect** shows the machine's state and position (GRBL).
+- **⌂ Home** (GRBL $H / Marlin G28), **🔓 Unlock** (after an alarm: GRBL $X / Marlin M999), **▭ Frame** - the head traces the job's box, laser off (or at the small power you give, to see it on the material).
+- **▶ Start** saves the G-code and streams it, one line after the machine's "ok" - it asks first (eyes, lid, air, stay with the machine). **⏸ Pause** / **▶ Resume** (GRBL feed hold), and the red **■ STOP** - at once, laser off (GRBL soft reset; Marlin quick stop + M5) - in the panel and in its title bar while connected. An error from the machine stops the job; so does bitGen closing.
+- A **console** sends single lines (for example `$$` for GRBL's settings) and shows the log.
+- **⤓ SVG + PNG** - for a machine that has its own laser software (some all-in-one printers with a laser module only take jobs from their maker's app): the layers as an SVG in mm (Line = red strokes, Offset fill = blue outlines, Fill = black shapes, Image = the picture) plus the picture layers as PNG files - open them in that software and set the power and speed there.
+- USB uses the serial-port support the installer / update adds (serialport); Wi-Fi works without it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9313,6 +9324,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **jxl-oxide, libjxl and @jsquash/jxl** - JPEG XL open and save (MIT / Apache-2.0 / BSD-3-Clause)
 - **[Node.js, Express and Multer](https://nodejs.org)** - the app's server
 - **[Electron](https://github.com/electron/electron)** - the desktop app
+- **[Node SerialPort](https://serialport.io)** - the laser over USB (MIT)
 - **Python, NumPy, OpenCV, soundfile and pyaaf2** - the workers, tracking, beats, sound and AAF export
 - **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
 - **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python

@@ -5775,6 +5775,18 @@ Basic Settings 的列表会显示风格所属家族的所有模型 - 图片模�
 - **⤓ Save G-code** - 适用于你的机器的 .gcode 文件，保存在项目的 **laser** 文件夹中并同时下载。GRBL 需要开启激光模式（$32=1）。
 - 接下来：通过 USB 把任务发送到激光机（连接、回原点、走边框、开始 / 暂停 / 停止）。
 
+## Laser: send over USB or Wi-Fi (2.804.0)
+<!-- en: laser-send-over-usb-or-wi-fi-2-804-0 7a5f562c0777 -->
+
+Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器。连接由 bitGen 自己的服务器保持（桌面应用中也一样），所以关闭面板或重新加载页面时任务会继续进行。
+
+- **Send to the laser** - **USB**（选择端口 - ⟳ 查找端口 - 和波特率，通常为 115200）或 **Wi-Fi / network**（机器的地址和端口 - 大多数 Wi-Fi 主板为 23：FluidNC、grblHAL、ESP3D）。**🔌 Connect** 显示机器的状态和位置（GRBL）。
+- **⌂ Home**（GRBL $H / Marlin G28）、**🔓 Unlock**（报警之后：GRBL $X / Marlin M999）、**▭ Frame** - 激光头沿任务的边框走一圈，激光关闭（或用你给的小功率，以便在材料上看到）。
+- **▶ Start** 保存 G-code 并在机器每次回复“ok”后逐行发送 - 会先确认（护目镜、盖子、气辅、守在机器旁）。**⏸ Pause** / **▶ Resume**（GRBL 进给保持），以及红色的 **■ STOP** - 立即停止并关闭激光（GRBL 软复位；Marlin 快速停止 + M5）- 连接时在面板中和面板标题栏中。机器报错会停止任务，关闭 bitGen 时也会停止。
+- **控制台** 可以逐行发送（例如查看 GRBL 设置的 `$$`），并显示日志。
+- **⤓ SVG + PNG** - 适用于自带激光软件的机器（一些带激光模块的一体式打印机只接受厂商应用发出的任务）：把图层导出为以 mm 为单位的 SVG（Line = 红色线条、Offset fill = 蓝色轮廓、Fill = 黑色形状、Image = 图片），图片图层导出为 PNG 文件 - 在那个软件中打开，并在那里设置功率和速度。
+- USB 使用安装程序 / 更新添加的串口支持（serialport）；Wi-Fi 不需要它。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5789,7 +5801,7 @@ Basic Settings 的列表会显示风格所属家族的所有模型 - 图片模�
 <!-- credits:start -->
 
 ## 致谢
-<!-- en: credits 3eaf20d85f70 -->
+<!-- en: credits 88c929d0ebae -->
 
 **出品与开发：Tim Paul**
 
@@ -5873,6 +5885,7 @@ bitGen Studio 建立在许多人的成果之上。感谢以下所有人——我
 - **jxl-oxide、libjxl 和 @jsquash/jxl**——JPEG XL 的打开和保存（MIT / Apache-2.0 / BSD-3-Clause）
 - **[Node.js、Express 和 Multer](https://nodejs.org)**——应用的服务器
 - **[Electron](https://github.com/electron/electron)**——桌面应用
+- **[Node SerialPort](https://serialport.io)**——通过 USB 连接激光机（MIT）
 - **Python、NumPy、OpenCV、soundfile 和 pyaaf2**——工作进程、跟踪、节拍、声音和 AAF 导出
 - **[OpenTimelineIO](https://opentimeline.io)**——时间线交换（OTIO、FCP XML、EDL）
 - **[uv](https://github.com/astral-sh/uv)**（Astral）——安装程序所用的 Python

@@ -20,7 +20,14 @@
  *   PREVIEW       the bed with the toolpath (each layer its colour, travel moves dashed), the time and lengths
  *   SAVE          ⤓ Save G-code: projects/<p>/laser (lib/laserStore.js, routes/laser.js) + a download
  *
- * Pure (Node: scripts/test-laser803.js): flattenSegs, rdp, thin, skeletonPaths, distance, isolines, hatch, order,
+ *   2.804.0  SEND (Tim: "can we access bambu labs h2d? and please continue. bitgen is using eclipse can we send over
+ *            usb/wifi using eclipse?"): bitGen's own server holds the connection (lib/laserLink.js, routes/laserLink.js -
+ *            inside the Electron app too): USB (a serial port) or Wi-Fi (TCP, e.g. port 23); Connect, Home, Unlock, Frame
+ *            (the job's box, laser off or at a low power), ▶ Start (asks first), ⏸ Pause / Resume, ■ STOP (always there
+ *            while connected - also in the panel's title bar), progress, a console and its log.
+ *            ⤓ SVG + PNG for other laser software: the layers' lines / shapes as an SVG in mm, picture layers as PNGs.
+ *
+ * Pure (Node: scripts/test-laser803.js, test-laserlink804.js): svgOf, flattenSegs, rdp, thin, skeletonPaths, distance, isolines, hatch, order,
  * rasterRows, toMm, gcode, estimate, MACHINE, OPS.
  */
 (function (root) {
@@ -297,6 +304,24 @@
     return { cut: Math.round(cut), travel: Math.round(travel), seconds: Math.round(t) };
   }
 
+  /** 2.804.0: the job for other laser software - an SVG in mm (Line = red strokes, Offset = blue outlines, Fill = black
+   *  shapes, Image = the picture) + the pictures; ops [{name, op, paths (px polylines), rings (px), png (Uint8Array)}] */
+  function svgOf(ops, w, h, mmpp, b64) {
+    const r = (v) => Math.round(v * mmpp * 1000) / 1000, X = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
+    const d = (pts, closed) => pts.map((q, i) => (i ? "L" : "M") + r(q[0]) + " " + r(q[1])).join("") + (closed ? "Z" : "");
+    const out = [`<?xml version="1.0" encoding="UTF-8"?>`, `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="${r(w)}mm" height="${r(h)}mm" viewBox="0 0 ${r(w)} ${r(h)}">`];
+    ops.forEach((o, i) => {
+      out.push(`<g id="op${i + 1}" inkscape:groupmode="layer" inkscape:label="${X(o.name + " - " + o.op)}">`);
+      if (o.op === "image" && o.png) out.push(`<image x="0" y="0" width="${r(w)}" height="${r(h)}" preserveAspectRatio="none" xlink:href="data:image/png;base64,${b64(o.png)}"/>`);
+      else if (o.op === "fill" && o.rings) out.push(`<path d="${o.rings.map((g) => d(g, true)).join("")}" fill="#000000" fill-rule="evenodd" stroke="none"/>`);
+      else if (o.op === "offset" && o.rings) out.push(`<path d="${o.rings.map((g) => d(g, true)).join("")}" fill="none" stroke="#0000ff" stroke-width="0.1"/>`);
+      else if (o.paths) for (const p of o.paths) out.push(`<path d="${d(p.pts, p.closed)}" fill="none" stroke="#ff0000" stroke-width="0.1"/>`);
+      out.push("</g>");
+    });
+    out.push("</svg>");
+    return out.join("\n");
+  }
+
   /* ================================ the page ================================ */
   function install(E) {
     const { S, D, doc, say, ctx, newCanvas, kx, store } = E;
@@ -350,9 +375,10 @@
       for (const L of leaves()) {
         const o = opOf(L); if (o.op === "off") continue;
         const ipx = Math.max(0.01, o.interval) / J.mmpp;    // the interval in picture px
-        let op = null;
+        let op = null, src = null;
         if (o.op === "image") {
           const c = alone(L, 1), dk = darkOf(c);
+          src = { pic: c };
           const rows = rasterRows(dk, S.w, S.h, { rowStep: ipx, mode: o.dither, threshold: o.threshold });
           rows.forEach((r, i) => { r.dir = i % 2 ? -1 : 1; });
           op = { kind: "raster", rows: rows.map((r) => ({ y: toMm(0, r.y, T)[1], dir: r.dir, runs: r.runs.map((u) => ({ x0: toMm(u.x0, 0, T)[0], x1: toMm(u.x1, 0, T)[0], p: u.p })) })) };
@@ -368,19 +394,22 @@
           } else if (o.op === "fill") {
             let rings = polys ? polys.filter((p) => p.closed).map((p) => p.pts) : null;
             if (!rings || !rings.length) { const M = maskOf(L, o, J.mmpp); rings = scalePaths(isolines(Float32Array.from(M.m), M.w, M.h, 0.5), M.k).filter((p) => p.closed).map((p) => rdp(p.pts, 0.3)); }
+            src = { rings };
             paths = hatch(rings, ipx, o.angle, true).map((sg) => ({ pts: sg, closed: false }));
           } else if (o.op === "offset") {
             const M = maskOf(L, o, J.mmpp), dist = distance(M.m, M.w, M.h), step = ipx * M.k;
             let mx = 0; for (let i = 0; i < dist.length; i++) if (dist[i] > mx) mx = dist[i];
             for (let lv = step / 2; lv < mx && paths.length < 20000; lv += step) paths.push(...isolines(dist, M.w, M.h, lv).map((p) => ({ pts: rdp(p.pts, 0.4), closed: p.closed })));
             paths = scalePaths(paths, M.k);
+            src = { rings: scalePaths(isolines(Float32Array.from(M.m), M.w, M.h, 0.5), M.k).filter((p) => p.closed).map((p) => rdp(p.pts, 0.3)) };
           }
           if (o.op !== "fill") paths = order(paths, headPx);
+          if (o.op === "line") src = { paths };
           if (!paths.length) { notes.push(`${L.name}: nothing to ${o.op}`); continue; }
           op = { kind: "vector", paths: paths.map((p) => ({ pts: p.pts.map(([x, y]) => toMm(x, y, T)), closed: p.closed })) };
         }
         if (!op || (op.kind === "raster" && !op.rows.length)) { notes.push(`${L.name}: nothing to engrave`); continue; }
-        ops.push(Object.assign(op, { op: o.op, at: ops.length, name: L.name, layer: L.id, power: Math.max(0, Math.min(100, +o.power || 0)) / 100, minPower: Math.max(0, Math.min(100, +o.minPower || 0)) / 100, speed: Math.max(1, Math.round(+o.speed || 1000)), passes: Math.max(1, Math.round(+o.passes || 1)), overscan: Math.max(0, +o.overscan || 0) }));
+        ops.push(Object.assign(op, { src, op: o.op, at: ops.length, name: L.name, layer: L.id, power: Math.max(0, Math.min(100, +o.power || 0)) / 100, minPower: Math.max(0, Math.min(100, +o.minPower || 0)) / 100, speed: Math.max(1, Math.round(+o.speed || 1000)), passes: Math.max(1, Math.round(+o.passes || 1)), overscan: Math.max(0, +o.overscan || 0) }));
       }
       // engrave first, cut last (a part cut free can move): Image, Fill, Offset fill, then Line - each kind bottom layer first
       const RANK = { image: 0, fill: 1, offset: 2, line: 3 };
@@ -454,6 +483,125 @@
         return L;
       } catch (e) { say("Line art failed: " + e.message); return null; }
     }
+    /* ---------------- 2.804.0: ⤓ SVG + PNG for other laser software ---------------- */
+    async function exportSvg() {
+      const r = await preview(); if (!r || !r.job.ops.length) return null;
+      const Z = await new Promise((ok, no) => { if (root.BgZip) return ok(root.BgZip); const sc = doc.createElement("script"); sc.src = "/static/bgzip.js"; sc.onload = () => ok(root.BgZip); sc.onerror = () => no(new Error("bgzip.js is missing")); doc.head.appendChild(sc); });
+      const png = (c) => new Promise((ok) => c.toBlob((b) => b.arrayBuffer().then((ab) => ok(new Uint8Array(ab))), "image/png"));
+      const stem = String(S.bgiName || S.name || "laser").replace(/\.[a-z0-9]{2,4}$/i, "").replace(/[^A-Za-z0-9 ._()-]+/g, "_").trim() || "laser";
+      const ops = [], files = [];
+      for (const op of r.job.ops) {
+        const o = { name: op.name, op: op.op, paths: op.src && op.src.paths, rings: op.src && op.src.rings };
+        if (op.op === "image" && op.src && op.src.pic) { o.png = await png(op.src.pic); files.push({ name: `${stem} - ${String(op.name).replace(/[^A-Za-z0-9 ._()-]+/g, "_")}.png`, data: o.png, deflate: false }); }
+        ops.push(o);
+      }
+      const b64 = (root.PCDtpOut && root.PCDtpOut.b64) || ((u8) => root.btoa(Array.from(u8, (c) => String.fromCharCode(c)).join("")));
+      files.unshift({ name: stem + " - laser.svg", data: svgOf(ops, S.w, S.h, r.T.mmpp, b64), deflate: true });
+      files.push({ name: "README.txt", data: "The job for other laser software: the SVG is in mm (Line = red strokes, Offset fill = blue outlines, Fill = black shapes, Image = the picture, one layer each); the PNGs are the picture layers at the page's size. Set power / speed there.\n", deflate: true });
+      const bytes = await Z.zipAsync(files);
+      try {
+        const res = await root.fetch("/api/dtp/save?name=" + encodeURIComponent(stem + " (laser SVG).zip"), { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: bytes });
+        const j = await res.json(); if (!res.ok) throw new Error(j.error || "the save was refused");
+        const a = doc.createElement("a"); a.href = root.URL.createObjectURL(new root.Blob([bytes], { type: "application/zip" })); a.download = j.name; doc.body.appendChild(a); a.click(); setTimeout(() => { root.URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+        say(`saved ${j.name} (the SVG in mm + ${files.length - 2} picture(s)) in the project's dtp folder and downloaded - for other laser software`);
+        return Object.assign({ files: files.map((f) => f.name) }, j);
+      } catch (e) { say("SVG export failed: " + e.message); return null; }
+    }
+
+    /* ---------------- 2.804.0: the connection (bitGen's server holds it - lib/laserLink.js) ---------------- */
+    const linkApi = (p, body) => root.fetch("/api/laser/link/" + p, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
+      .then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
+    let LS = null, pollT = 0, portList = null;
+    const linkPrefs = () => Object.assign({ kind: "serial", path: "", baud: 115200, host: "", port: 23, framePow: 0 }, store.get("laser.link", {}) || {});
+    const setLinkPrefs = (o) => store.set("laser.link", Object.assign(linkPrefs(), o));
+    async function poll() { try { LS = await linkApi("status"); } catch (e) { LS = null; } paintLink(); }
+    function startPoll() { clearInterval(pollT); pollT = setInterval(() => { if (!shown()) { clearInterval(pollT); pollT = 0; return; } poll(); }, 700); }
+    const act = (p, body, msg) => linkApi(p, body).then((j) => { LS = j; paintLink(); if (msg) say(msg); return j; }).catch((e) => { say("Laser: " + e.message); poll(); return null; });
+    async function connect() {
+      const pr = linkPrefs(), kind = $("lzKind").value;
+      const spec = kind === "tcp" ? { kind, host: $("lzHost").value.trim(), port: +$("lzTcpPort").value || 23 } : { kind, path: $("lzPortSel").value, baud: +$("lzBaud").value || 115200 };
+      setLinkPrefs(Object.assign({ kind }, kind === "tcp" ? { host: spec.host, port: spec.port } : { path: spec.path, baud: spec.baud }));
+      void pr;
+      say(`connecting to ${kind === "tcp" ? spec.host + ":" + spec.port : spec.path}…`);
+      return act("connect", Object.assign(spec, { flavor: mach().flavor }), "connected - Home or Frame, then ▶ Start");
+    }
+    async function refreshPorts() { try { portList = await linkApi("ports"); } catch (e) { portList = { serial: false, ports: [], error: e.message }; } paintLink(true); }
+    function confirmStart() {
+      return new Promise((ok) => {
+        const old = $("lzConfirm"); if (old) old.remove();
+        const d = doc.createElement("div"); d.id = "lzConfirm";
+        d.style.cssText = "position:fixed;left:50%;top:25%;transform:translateX(-50%);z-index:9100;background:var(--pc-panel,#222);color:var(--pc-text,#eee);border:2px solid #d33;border-radius:6px;padding:14px 16px;width:380px;font-size:12px;box-shadow:0 8px 30px rgba(0,0,0,.6)";
+        d.innerHTML = `<div style="font-weight:700;color:#f55;margin-bottom:6px">🔥 The laser is about to fire</div><div style="line-height:1.5">Eye protection on, the lid closed, air assist / extraction running, nothing under the head that should not burn - and stay with the machine. ■ STOP stops it at once.</div><div class="kxrow" style="justify-content:flex-end;gap:6px;margin-top:10px"><button class="ghost" id="lzNo">Cancel</button><button id="lzYes" style="background:#c22;color:#fff">▶ Start the job</button></div>`;
+        doc.body.appendChild(d);
+        $("lzNo").onclick = () => { d.remove(); ok(false); }; $("lzYes").onclick = () => { d.remove(); ok(true); };
+      });
+    }
+    async function startJob(skipAsk) {
+      if (!LS || !LS.connected) return say("connect to the laser first");
+      if (!skipAsk && !(await confirmStart())) return null;
+      const r = await save(false); if (!r) return null;
+      return act("start", { name: r.name }, `▶ ${r.name} sent to the laser`);
+    }
+    async function frameJob() {
+      const r = last && last.box ? last : await preview(); if (!r || !r.box) return say("nothing to frame - give a layer an operation");
+      const m = mach(), pw = Math.max(0, Math.min(20, +$("lzFramePow").value || 0));
+      setLinkPrefs({ framePow: pw });
+      return act("frame", { box: r.box, power: pw / 100, speed: m.travel, sMax: m.sMax }, pw ? `framing at ${pw} % power` : "framing (laser off)");
+    }
+    const stopNow = () => act("stop", {}, "■ STOPPED");
+    function linkHtml() {
+      const pr = linkPrefs(), ports = (portList && portList.ports) || [];
+      return `<fieldset><legend>Send to the laser</legend>
+        <div class="lzr"><select id="lzKind"><option value="serial"${pr.kind === "serial" ? " selected" : ""}>USB</option><option value="tcp"${pr.kind === "tcp" ? " selected" : ""}>Wi-Fi / network</option></select>
+          <span id="lzUsb"${pr.kind === "serial" ? "" : ' style="display:none"'}><select id="lzPortSel" style="max-width:150px">${ports.length ? ports.map((p) => `<option value="${esc(p.path)}"${p.path === pr.path ? " selected" : ""}>${esc(p.path)}${p.maker ? " · " + esc(p.maker) : ""}</option>`).join("") : `<option value="${esc(pr.path)}">${pr.path ? esc(pr.path) : "(⟳ for the ports)"}</option>`}</select><button class="ghost" id="lzPorts" title="Look for USB ports">⟳</button> baud <input type="number" id="lzBaud" value="${pr.baud}" style="width:70px"></span>
+          <span id="lzNet"${pr.kind === "tcp" ? "" : ' style="display:none"'}><input id="lzHost" value="${esc(pr.host)}" placeholder="192.168.1.50" style="width:110px"> port <input type="number" id="lzTcpPort" value="${pr.port}" style="width:50px"></span></div>
+        ${portList && !portList.serial ? '<div style="color:#e9a">USB needs the serial-port support - run the installer / update again to add it. Wi-Fi works without it.</div>' : ""}
+        <div class="lzr"><button class="ghost" id="lzConnect">🔌 Connect</button><button class="ghost" id="lzDisconnect">Disconnect</button><span id="lzLinkState" style="color:var(--pc-dim)"></span></div>
+        <div class="lzr"><button class="ghost" id="lzHome" title="GRBL $H / Marlin G28 X Y">⌂ Home</button><button class="ghost" id="lzUnlock" title="GRBL $X / Marlin M999 - after an alarm">🔓 Unlock</button><button class="ghost" id="lzFrame" title="Trace the job's box - laser off, or at the power here">▭ Frame</button> at <input type="number" id="lzFramePow" value="${pr.framePow}" min="0" max="20" style="width:40px">% power</div>
+        <div class="lzr"><button id="lzStart" title="Save the G-code and stream it (asks first)">▶ Start</button><button class="ghost" id="lzPause">⏸ Pause</button><button class="ghost" id="lzResume">▶ Resume</button><button id="lzStop" style="background:#c22;color:#fff;font-weight:700" title="Stop at once, laser off">■ STOP</button></div>
+        <progress id="lzProg" max="1" value="0" style="width:100%"></progress>
+        <div class="lzr"><input id="lzCmd" placeholder="a G-code line, e.g. $$ or G0 X10 Y10" style="flex:1"><button class="ghost" id="lzSend">Send</button></div>
+        <pre id="lzLog" style="max-height:110px;overflow:auto;margin:0;font-size:10px;background:#111;color:#bbb;padding:4px;border-radius:3px"></pre>
+      </fieldset>`;
+    }
+    function wireLink() {
+      $("lzKind").onchange = () => { const k = $("lzKind").value; setLinkPrefs({ kind: k }); $("lzUsb").style.display = k === "serial" ? "" : "none"; $("lzNet").style.display = k === "tcp" ? "" : "none"; if (k === "serial" && !portList) refreshPorts(); };
+      $("lzPorts").onclick = () => refreshPorts();
+      $("lzConnect").onclick = () => connect();
+      $("lzDisconnect").onclick = () => act("disconnect", {}, "disconnected");
+      $("lzHome").onclick = () => act("home", {}, "homing…");
+      $("lzUnlock").onclick = () => act("unlock", {}, "unlocked");
+      $("lzFrame").onclick = () => frameJob();
+      $("lzStart").onclick = () => startJob();
+      $("lzPause").onclick = () => act("pause", {}, "⏸ paused");
+      $("lzResume").onclick = () => act("resume", {}, "▶ resumed");
+      $("lzStop").onclick = () => stopNow();
+      const sendCmd = () => { const v = $("lzCmd").value.trim(); if (!v) return; act("send", { line: v }).then(() => { $("lzCmd").value = ""; }); };
+      $("lzSend").onclick = sendCmd; $("lzCmd").onkeydown = (e) => { e.stopPropagation(); if (e.key === "Enter") sendCmd(); };
+      paintLink(); startPoll(); poll();
+      if (linkPrefs().kind === "serial" && !portList) refreshPorts();
+    }
+    function paintLink(rebuildPorts) {
+      if (!shown() || !$("lzLinkState")) return;
+      if (rebuildPorts) { const sel = $("lzPortSel"), pr = linkPrefs(), ports = (portList && portList.ports) || []; if (sel) sel.innerHTML = ports.length ? ports.map((p) => `<option value="${esc(p.path)}"${p.path === pr.path ? " selected" : ""}>${esc(p.path)}${p.maker ? " · " + esc(p.maker) : ""}</option>`).join("") : '<option value="">(no USB ports found)</option>'; }
+      const c = !!(LS && LS.connected), j = LS && LS.job, run = !!(j && j.running), m = (LS && LS.machine) || {};
+      const parts = [];
+      if (c) {
+        parts.push("● " + LS.target, LS.flavor === "marlin" ? "Marlin" : "GRBL");
+        if (m.state) parts.push(m.state);
+        if (m.pos) parts.push("X" + m.pos[0] + " Y" + m.pos[1]);
+        if (run) parts.push((j.paused ? "⏸" : "▶") + " " + j.done + " / " + j.total);
+        else if (j && j.error) parts.push(j.error);
+        else if (j && j.endedAt) parts.push("✓");
+      }
+      $("lzLinkState").textContent = c ? parts.join(" · ") : "not connected";
+      $("lzLinkState").style.color = c ? (run ? "#f80" : "#7c7") : "var(--pc-dim)";
+      for (const [id, on] of [["lzConnect", !c], ["lzDisconnect", c], ["lzHome", c && !run], ["lzUnlock", c && !run], ["lzFrame", c && !run], ["lzStart", c && !run], ["lzPause", run && !j.paused], ["lzResume", run && j.paused], ["lzSend", c && !run]]) { const b = $(id); if (b) b.disabled = !on; }
+      const pg = $("lzProg"); if (pg) pg.value = j && j.total ? j.done / j.total : 0;
+      const lg = $("lzLog"); if (lg && LS) { const t = LS.log.slice(-14).map((l) => (l.dir === ">" ? "› " : l.dir === "<" ? "‹ " : "· ") + l.line).join("\n"); if (lg.textContent !== t) { lg.textContent = t; lg.scrollTop = lg.scrollHeight; } }
+      const top = $("lzStopTop"); if (top) top.style.display = c ? "" : "none";
+    }
+
     /* ---------------- the panel ---------------- */
     let panel = null;
     function css() {
@@ -479,7 +627,7 @@
           + `<div class="lzr">${o.op !== "line" ? `interval <input type="number" data-lz="${id}" data-k="interval" value="${o.interval}" min="0.01" max="10" step="0.01"> mm` : ""}${o.op === "fill" ? ` angle <input type="number" data-lz="${id}" data-k="angle" value="${o.angle}" min="-180" max="180">°` : ""}${o.op === "line" && pic ? `trace <select data-lz="${id}" data-k="trace"><option value="centre"${o.trace === "centre" ? " selected" : ""}>Centreline</option><option value="outline"${o.trace === "outline" ? " selected" : ""}>Outline</option></select>` : ""}${o.op === "image" ? ` <select data-lz="${id}" data-k="dither"><option value="floyd"${o.dither === "floyd" ? " selected" : ""}>Dithered</option><option value="threshold"${o.dither === "threshold" ? " selected" : ""}>Threshold</option><option value="grey"${o.dither === "grey" ? " selected" : ""}>Greyscale</option></select> min power <input type="number" data-lz="${id}" data-k="minPower" value="${o.minPower}" min="0" max="100">% overscan <input type="number" data-lz="${id}" data-k="overscan" value="${o.overscan}" min="0" max="50"> mm` : ""}${(pic && o.op !== "image") || o.dither === "threshold" ? ` threshold <input type="number" data-lz="${id}" data-k="threshold" value="${o.threshold}" min="1" max="99">%` : ""}</div>`;
         return `<div class="lzl"><div class="lzr"><b title="${esc(L.name)}">${esc(L.name)}</b><select data-lz="${id}" data-k="op">${OPS.map(([v, l]) => `<option value="${v}"${v === o.op ? " selected" : ""}>${l}</option>`).join("")}</select></div>${more}</div>`;
       }).join("") : '<div style="color:var(--pc-dim)">No picture open.</div>';
-      panel.innerHTML = `<div class="lzh"><b>🔥 Laser</b><button class="ghost" id="lzHide" title="Hide (Window ▸ Laser shows it again)">✕</button></div>
+      panel.innerHTML = `<div class="lzh"><b>🔥 Laser</b><button id="lzStopTop" style="background:#c22;color:#fff;font-weight:700;display:none" title="Stop at once, laser off">■ STOP</button><button class="ghost" id="lzHide" title="Hide (Window ▸ Laser shows it again)">✕</button></div>
         <div class="lzb">
           <fieldset><legend>Machine</legend>
             <div class="lzr"><select id="lzFlavor"><option value="grbl"${m.flavor === "grbl" ? " selected" : ""}>GRBL</option><option value="marlin"${m.flavor === "marlin" ? " selected" : ""}>Marlin</option></select> bed <input type="number" id="lzBedW" value="${m.bedW}" min="10" max="5000"> × <input type="number" id="lzBedH" value="${m.bedH}" min="10" max="5000"> mm</div>
@@ -494,7 +642,8 @@
           <div class="lzr"><button class="ghost" id="lzArt" title="The ControlNet line-art preprocessor on the visible picture - a new layer, traced as a centreline">✎ Line art from the picture</button></div>
           <canvas id="lzPrev" width="400" height="300"></canvas>
           <div id="lzStats" style="color:var(--pc-dim)"></div>
-          <div class="lzr"><button class="ghost" id="lzGo">⟳ Preview</button><button id="lzSave">⤓ Save G-code</button></div>
+          <div class="lzr"><button class="ghost" id="lzGo">⟳ Preview</button><button id="lzSave">⤓ Save G-code</button><button class="ghost" id="lzSvg" title="The layers as an SVG in mm (+ the pictures as PNG) - for other laser software">⤓ SVG + PNG</button></div>
+          ${linkHtml()}
         </div>`;
       $("lzHide").onclick = hidePanel;
       const num = (id) => +$(id).value;
@@ -509,6 +658,9 @@
       $("lzArt").onclick = () => lineArt();
       $("lzGo").onclick = () => preview();
       $("lzSave").onclick = () => save();
+      $("lzSvg").onclick = () => exportSvg();
+      $("lzStopTop").onclick = () => stopNow();
+      wireLink();
       if (last) drawPreview(last);
     }
     // a document to the front / layers changed: the list follows
@@ -518,10 +670,10 @@
     const C = E.ui.addCmd;
     C("win.laser", "Laser", "", () => (shown() ? hidePanel() : showPanel()), { checked: () => shown() });
     const W = E.ui.MENUS.find(([x]) => x === "Window"); if (W) { const it = W[1], at = it.indexOf("win.pages"); it.splice(at >= 0 ? at + 1 : it.length, 0, "win.laser"); }
-    E.laser = { build, preview, save, lineArt, showPanel, hidePanel, shown, setOp, opOf, machine: mach, setMachine: setMach, last: () => last };
+    E.laser = { exportSvg, connect, startJob, frameJob, stop: stopNow, poll, linkStatus: () => LS, refreshPorts, build, preview, save, lineArt, showPanel, hidePanel, shown, setOp, opOf, machine: mach, setMachine: setMach, last: () => last };
   }
 
-  const pure = { MACHINE, OPS, OP_DEFAULT, flattenSegs, rdp, thin, skeletonPaths, distance, isolines, hatch, order, rasterRows, toMm, gcode, estimate, inside };
+  const pure = { svgOf, MACHINE, OPS, OP_DEFAULT, flattenSegs, rdp, thin, skeletonPaths, distance, isolines, hatch, order, rasterRows, toMm, gcode, estimate, inside };
   const api = Object.assign({ install }, pure);
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCLaser = api;

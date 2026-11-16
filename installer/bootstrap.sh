@@ -13,7 +13,7 @@
 #   runtime/python   a Python 3.12 environment (the app's python: workers,
 #                    OmniVoice / whisper venvs, ComfyUI's venv is built from it)
 #   runtime/ffmpeg   ffmpeg + ffprobe (static build) when there is none
-#   node_modules     express, multer, jsdom + the Electron window
+#   node_modules     express, multer, jsdom, serialport (the laser over USB) + the Electron window
 #
 # then marks .setup-pending, adds a desktop / Applications launcher and opens
 # the setup wizard (electron/installer.html) - which installs ComfyUI, the
@@ -113,7 +113,7 @@ fi
 
 # ---- the app's Node packages + the Electron window ----------------------------
 cd "$ROOT" || die "no app folder"
-say "[..] npm install (express, multer, jsdom) - a minute or two"
+say "[..] npm install (express, multer, jsdom, serialport) - a minute or two"
 busy "installing the Node packages" "$NPM" install --no-audit --no-fund --loglevel=error || die "npm install failed"
 if [ -z "${BITGEN_NO_ELECTRON:-}" ]; then
   say "[..] the app window (Electron, ~150 MB, one time) - a few minutes on a slow connection"

@@ -5773,6 +5773,18 @@ Basic Settings 的清單會顯示風格所屬家族的所有模型 - 圖片模�
 - **⤓ Save G-code** - 適用於你的機器的 .gcode 檔案，儲存在專案的 **laser** 資料夾中並同時下載。GRBL 需要開啟雷射模式（$32=1）。
 - 接下來：通過 USB 把任務傳送到雷射機（連線、回原點、走邊框、開始 / 暫停 / 停止）。
 
+## Laser: send over USB or Wi-Fi (2.804.0)
+<!-- en: laser-send-over-usb-or-wi-fi-2-804-0 7a5f562c0777 -->
+
+Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器。連線由 bitGen 自己的伺服器保持（桌面應用中也一樣），所以關閉面板或重新載入頁面時任務會繼續進行。
+
+- **Send to the laser** - **USB**（選擇埠 - ⟳ 查詢埠 - 和波特率，通常為 115200）或 **Wi-Fi / network**（機器的地址和埠 - 大多數 Wi-Fi 主機板為 23：FluidNC、grblHAL、ESP3D）。**🔌 Connect** 顯示機器的狀態和位置（GRBL）。
+- **⌂ Home**（GRBL $H / Marlin G28）、**🔓 Unlock**（報警之後：GRBL $X / Marlin M999）、**▭ Frame** - 雷射頭沿任務的邊框走一圈，雷射關閉（或用你給的小功率，以便在材料上看到）。
+- **▶ Start** 儲存 G-code 並在機器每次回覆「ok」後逐行傳送 - 會先確認（護目鏡、蓋子、氣輔、守在機器旁）。**⏸ Pause** / **▶ Resume**（GRBL 進給保持），以及紅色的 **■ STOP** - 立即停止並關閉雷射（GRBL 軟復位；Marlin 快速停止 + M5）- 連線時在面板中和面板標題欄中。機器報錯會停止任務，關閉 bitGen 時也會停止。
+- **主控台** 可以逐行傳送（例如檢視 GRBL 設定的 `$$`），並顯示日誌。
+- **⤓ SVG + PNG** - 適用於自帶雷射軟體的機器（一些帶雷射模組的一體式印表機只接受廠商應用發出的任務）：把圖層匯出為以 mm 為單位的 SVG（Line = 紅色線條、Offset fill = 藍色輪廓、Fill = 黑色形狀、Image = 圖片），圖片圖層匯出為 PNG 檔案 - 在那個軟體中開啟，並在那裡設定功率和速度。
+- USB 使用安裝程式 / 更新新增的序列埠支援（serialport）；Wi-Fi 不需要它。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5787,7 +5799,7 @@ Basic Settings 的清單會顯示風格所屬家族的所有模型 - 圖片模�
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits 3eaf20d85f70 -->
+<!-- en: credits 88c929d0ebae -->
 
 **出品與開發：Tim Paul**
 
@@ -5871,6 +5883,7 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **jxl-oxide、libjxl 和 @jsquash/jxl**——JPEG XL 的開啟和儲存（MIT / Apache-2.0 / BSD-3-Clause）
 - **[Node.js、Express 和 Multer](https://nodejs.org)**——應用程式的伺服器
 - **[Electron](https://github.com/electron/electron)**——桌面應用程式
+- **[Node SerialPort](https://serialport.io)**——通過 USB 連線雷射機（MIT）
 - **Python、NumPy、OpenCV、soundfile 和 pyaaf2**——工作處理程序、追蹤、節拍、聲音和 AAF 匯出
 - **[OpenTimelineIO](https://opentimeline.io)**——時間軸交換（OTIO、FCP XML、EDL）
 - **[uv](https://github.com/astral-sh/uv)**（Astral）——安裝程式所用的 Python

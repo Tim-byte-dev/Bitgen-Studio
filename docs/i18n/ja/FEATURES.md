@@ -448,6 +448,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **リンクされたテキストフレームとテキストの回り込み** — 段落テキストがフレームからフレームへ、ページからページへ流れます（＋ Frame、＋ Next page、Edit Story、Unlink）。どのフレームに入力してもストーリーに入ります。テキストはシェイプ（輪郭）や画像を間隔つきで回り込みます。本物のテキストとして 1 行ずつ書き出し。.bgi に保存されます。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
 - **印刷用 PDF** — 裁ち落とし（端の内容を仕上がりの外まで延長）、トンボとレジストレーションマーク、ページ情報、TrimBox / BleedBox / MediaBox、CMYK の色と画像（コート紙 / 非コート紙 / 新聞用紙）、フォント埋め込みで書き出し。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
 - **レーザーのツールパスと G-code** — Laser パネル: GRBL または Marlin のマシン設定、レイヤーごとの操作（Line 切断 / 罫書き、Fill ハッチング、Offset fill、Image ラスター彫刻 - ディザ、しきい値、グレースケール）、画像レイヤーの中心線またはアウトラインのトレース、ControlNet プリプロセッサーで画像から線画、所要時間と距離つきのツールパスのプレビュー、プロジェクトに G-code を保存。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
+- **USB / Wi-Fi でレーザーへ送信** — Laser パネルがマシンに接続します（USB シリアルまたは Wi-Fi / TCP、bitGen のサーバーが保持、デスクトップアプリでも）: 原点復帰、ロック解除、枠取り、開始（先に確認）、一時停止 / 再開、常にある STOP、コンソール。独自のレーザーソフトがあるマシン向けに SVG + PNG。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.804.0
 - **ポッドで止まった ComfyUI を起動し直す** — ComfyUI のポートに出る Web ページを ComfyUI とみなさなくなりました。動いていない ComfyUI は bitGen が起動し（できないときは理由を表示）、ポッドにすでにあるファイルには転送バーを出しません。 *Where:* ポッドでのレンダー、PODS ▸ Transfers。 *Since:* 2.770.1
 - **チャットから曲を作成** — チャットが選択中の音楽スタイルに合った歌詞を書き、Music ドッカーへ送ります。 *Where:* プロンプトのチャット。 *Since:* 2.92.0
 - **歌詞ファイル** — 各曲の歌詞はプロジェクト内にテキストファイルとして保存されます。 *Where:* プロジェクトの lyrics フォルダー

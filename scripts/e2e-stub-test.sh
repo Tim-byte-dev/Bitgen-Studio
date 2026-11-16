@@ -14058,6 +14058,13 @@ node scripts/test-laser803.js > /tmp/laser803.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui803-ui.js > /tmp/ui803.log 2>&1 \
   && ok "2.803.0 laser panel in a real browser: operations per layer, a centreline, engrave-before-cut order, the preview, GRBL + Marlin G-code saved, line art from the picture" \
   || { bad "2.803.0 laser browser test"; grep -a "^FAIL" -A1 /tmp/ui803.log | head -12; }
+# ---- 2.804.0 (Tim: "can we access bambu labs h2d? and please continue. bitgen is using eclipse can we send over usb/wifi using eclipse?")
+node scripts/test-laserlink804.js > /tmp/laserlink804.log 2>&1 \
+  && ok "2.804.0 laser link units: a stand-in GRBL over TCP (stream, pause, resume, STOP, errors, ALARM, frame, exit), USB through serialport's mock (Marlin STOP), the SVG for other software" \
+  || { bad "2.804.0 laser link units"; grep -a "^FAIL" -A1 /tmp/laserlink804.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui804-ui.js > /tmp/ui804.log 2>&1 \
+  && ok "2.804.0 laser send in a real browser: connect over Wi-Fi, frame, start (asked), pause, STOP, console, SVG + PNG" \
+  || { bad "2.804.0 laser send browser test"; grep -a "^FAIL" -A1 /tmp/ui804.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

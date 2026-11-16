@@ -5540,6 +5540,18 @@ Basic Settings の一覧には、スタイルのファミリーのすべての�
 - **⤓ Save G-code** - マシン用の .gcode ファイル。プロジェクトの **laser** フォルダーに保存され、ダウンロードもされます。GRBL ではレーザーモードを有効にしてください（$32=1）。
 - 次の予定: USB でレーザーにジョブを送る機能（接続、原点復帰、枠取り、開始 / 一時停止 / 停止）。
 
+## Laser: send over USB or Wi-Fi (2.804.0)
+<!-- en: laser-send-over-usb-or-wi-fi-2-804-0 7a5f562c0777 -->
+
+Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接送れるようになりました。接続は bitGen のサーバーが保持するので（デスクトップアプリでも同じ）、パネルを閉じてもページを再読み込みしてもジョブは続きます。
+
+- **Send to the laser** - **USB**（ポートを選択 - ⟳ で探します - とボーレート、通常 115200）または **Wi-Fi / network**（マシンのアドレスとポート - 多くの Wi-Fi ボードでは 23: FluidNC、grblHAL、ESP3D）。**🔌 Connect** でマシンの状態と位置を表示します（GRBL）。
+- **⌂ Home**（GRBL $H / Marlin G28）、**🔓 Unlock**（アラームの後: GRBL $X / Marlin M999）、**▭ Frame** - ヘッドがジョブの枠をなぞります。レーザーはオフ（または素材の上で見えるよう指定した小さな出力）。
+- **▶ Start** で G-code を保存し、マシンの「ok」ごとに 1 行ずつ送信します - 先に確認します（保護メガネ、蓋、エア、マシンのそばにいること）。**⏸ Pause** / **▶ Resume**（GRBL のフィードホールド）、そして赤い **■ STOP** - すぐに停止してレーザーオフ（GRBL ソフトリセット、Marlin クイックストップ + M5）- 接続中はパネル内とタイトルバーにあります。マシンからのエラーでもジョブは止まり、bitGen を閉じたときも止まります。
+- **コンソール** で 1 行ずつ送信でき（例: GRBL の設定を見る `$$`）、ログを表示します。
+- **⤓ SVG + PNG** - 独自のレーザーソフトがあるマシン向け（レーザーモジュール付きの一体型プリンターには、メーカーのアプリからのジョブしか受け付けないものがあります）: レイヤーを mm 単位の SVG に（Line = 赤い線、Offset fill = 青い輪郭、Fill = 黒い図形、Image = 画像）、画像レイヤーを PNG ファイルに - そのソフトで開いて、出力と速度はそこで設定してください。
+- USB はインストーラー / 更新が追加するシリアルポートのサポート（serialport）を使います。Wi-Fi はなくても使えます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5552,7 +5564,7 @@ Basic Settings の一覧には、スタイルのファミリーのすべての�
 <!-- credits:start -->
 
 ## クレジット
-<!-- en: credits 3eaf20d85f70 -->
+<!-- en: credits 88c929d0ebae -->
 
 **制作・開発：Tim Paul**
 
@@ -5636,6 +5648,7 @@ bitGen Studio は多くの人々の成果の上に成り立っています。コ
 - **jxl-oxide、libjxl、@jsquash/jxl** - JPEG XL の読み込みと保存（MIT / Apache-2.0 / BSD-3-Clause）
 - **[Node.js、Express、Multer](https://nodejs.org)** - アプリのサーバー
 - **[Electron](https://github.com/electron/electron)** - デスクトップアプリ
+- **[Node SerialPort](https://serialport.io)** - USB でのレーザー接続（MIT）
 - **Python、NumPy、OpenCV、soundfile、pyaaf2** - ワーカー、トラッキング、ビート、サウンド、AAF 書き出し
 - **[OpenTimelineIO](https://opentimeline.io)** - タイムラインの交換（OTIO、FCP XML、EDL）
 - **[uv](https://github.com/astral-sh/uv)**（Astral）- セットアップで使う Python
