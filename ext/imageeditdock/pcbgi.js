@@ -98,6 +98,7 @@
 
     /* ---------------- write ---------------- */
     async function toBytes(opts) {
+      if (!(opts && opts.nested) && E.pages && E.pages.settle) E.pages.settle();   // 2.800.0: a master being edited goes back first (pcpages.js)
       await libs();
       const X = win.BgXml, Z = win.BgZip, files = [], SM = E.smart || {};
       const STORE = SM.STORE || new Map(), FIELDS = SM.FIELDS || new Map();
@@ -147,7 +148,7 @@
         for (const n of used) { const c = PT.tile(n); if (c) m.patterns.push({ name: n, png: await putPng(`patterns/${String(n).replace(/[^\w .()&+-]+/g, "_")}.png`, c) }); }
       }
       // 2.799.0: a document of pages (pcpages.js) - every other page as its own .bgi inside (pages/<id>.bgi); this one stays the main document
-      if (!(opts && opts.nested) && E.pages && E.pages.count() > 1) m.pages = await E.pages.toBgi(async () => (await toBytes({ nested: true })).bytes, (name, data) => put(name, data));
+      if (!(opts && opts.nested) && E.pages && (E.pages.needsBgi ? E.pages.needsBgi() : E.pages.count() > 1)) m.pages = await E.pages.toBgi(async () => (await toBytes({ nested: true })).bytes, (name, data) => put(name, data));
       try { put("preview.png", await pngOf(E.flatten())); } catch (e) { /* no preview */ }
       const app = (win.H3Version || (doc.querySelector('meta[name="h3-version"]') || {}).content || "");
       const xml = X.doc("bitgen-image", { version: VERSION, app, w: S.w, h: S.h, name: S.name || "", layers: S.layers.length, saved: new Date().toISOString() },

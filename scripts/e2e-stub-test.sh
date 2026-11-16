@@ -14030,6 +14030,13 @@ node scripts/test-dtpout799.js > /tmp/dtpout799.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui799-ui.js > /tmp/ui799.log 2>&1 \
   && ok "2.799.0 pages in a real browser: New Document with Pages, each page its own layers, copy / rename / move / delete, Page setup, export PDF / .cdr pack / .ai, .bgi keeps the pages" \
   || { bad "2.799.0 pages browser test"; grep -a "^FAIL" -A1 /tmp/ui799.log | head -12; }
+# ---- 2.800.0 (Tim: "go with the next version" - desktop publishing part 2: master pages, page numbers, facing pages)
+node scripts/test-masters800.js > /tmp/masters800.log 2>&1 \
+  && ok "2.800.0 masters units: page number styles, {page} tokens, spreads, odd / even, joinSpread; masters in the export + .bgi" \
+  || { bad "2.800.0 masters units"; grep -a "^FAIL" -A1 /tmp/masters800.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui800-ui.js > /tmp/ui800.log 2>&1 \
+  && ok "2.800.0 masters in a real browser: ＋ Master, # page number, ⌂ layer per page with its own number, None, i ii iii, {page} on a page, export masters + spreads, .bgi keeps them" \
+  || { bad "2.800.0 masters browser test"; grep -a "^FAIL" -A1 /tmp/ui800.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

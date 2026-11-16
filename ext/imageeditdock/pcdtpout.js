@@ -20,7 +20,10 @@
  *            (.zip, one .svg a page) · CorelDRAW (.zip: the PDF + the SVG pages - open either in CorelDRAW, then save as
  *            .cdr there). Saved in the project's dtp folder (lib/dtpStore.js, routes/dtp.js) and downloaded.
  *
- * Pure (Node: scripts/test-dtpout799.js): recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf (given
+ *   2.800.0  a page's master (pcpages.js) = its own layers as "Master / <layer>" (paths and real text, its {page} filled
+ *            in); As spreads (facing pages) = each spread one PDF / SVG page (joinSpread: the right page moved over).
+ *
+ * Pure (Node: scripts/test-dtpout799.js, test-masters800.js): joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf (given
  * pdf-lib), buildSvg, b64, extOf.
  */
 (function (root) {
@@ -305,6 +308,24 @@
     pdf.catalog.set(N("OCProperties"), pdf.context.obj({ OCGs: all, D: { Name: PL.PDFHexString.fromText("bitGen layers"), Order: order, ON: all, BaseState: N("ON") } }));
     return { bytes: await pdf.save(), notes };
   }
+  /** pages side by side as one page (a spread): the second one's items moved right by the first one's width; layer
+   *  names get the page's name in front */
+  function joinSpread(outs) {
+    if (!outs || outs.length < 2) return outs && outs[0];
+    const H = Math.max(...outs.map((o) => o.h)), out = { w: 0, h: H, k: outs[0].k, name: outs.map((o) => o.name).join(" + "), layers: [] };
+    for (const o of outs) {
+      const dx = out.w, dy = 0;
+      const mv = (it) => {
+        if (it.t === "vec") return { t: "vec", items: it.items.map((v) => Object.assign({}, v, { segs: v.segs.map((sg) => sg.map((n, j) => (j === 0 ? n : (j % 2 === 1 ? n + dx : n + dy)))) })) };
+        if (it.t === "img") return Object.assign({}, it, { x: it.x + dx, y: it.y + dy });
+        if (it.t === "text") return Object.assign({}, it, { lines: it.lines.map((l) => Object.assign({}, l, { x: l.x + dx, y: l.y + dy })) });
+        return it;
+      };
+      for (const L of o.layers) out.layers.push({ name: o.name + " / " + L.name, items: L.items.map(mv) });
+      out.w += o.w;
+    }
+    return out;
+  }
   const FORMATS = [["pdf", "PDF (.pdf)"], ["ai", ".ai (PDF-compatible)"], ["svg", "SVG pages (.zip, one .svg a page)"], ["cdr", "For .cdr (.zip: the PDF + the SVG pages)"]];
   /** the file a format makes */
   const extOf = (fmt) => (fmt === "ai" ? ".ai" : fmt === "svg" || fmt === "cdr" ? ".zip" : ".pdf");
@@ -366,12 +387,13 @@
         family: String(t.font || "sans-serif").split(",")[0].replace(/["']/g, "").trim(), weight: t.weight || 400, italic: !!t.italic, tracking: t.tracking || 0, align: t.align || "left", css: t.font };
     }
     /** the open page (S) as an export page: its layers as paths / text / pictures */
-    async function pageOut(name, k) {
+    async function pageOut(name, k, pageIdx) {
       const W = S.w, H = S.h, layers = S.layers;
       const leaves = layers.filter((L) => L.type !== "group" && L.visible !== false && D.shown(layers, L));
       const info = leaves.map((L) => {
         let kind = "raster";
-        if (L.type === "text" && isText(L) && (o.anyText || !PP().winAnsi || PP().winAnsi(L.text.str))) kind = "text";
+        if (L.master != null && E.pages && E.pages.masterOut) kind = "master";   // 2.800.0: its master's own layers
+        else if (L.type === "text" && isText(L) && (o.anyText || !PP().winAnsi || PP().winAnsi(L.text.str))) kind = "text";
         else if (vectorOf(L, W, H)) kind = "vector";
         const path = []; let p = L.parent; for (let g = 0; p != null && g < 50; g++) { const G = layers.find((x) => x.id === p); if (!G) break; path.unshift(G.name); p = G.parent; }
         return { id: L.id, name: path.concat([L.name || "Layer"]).join(" / "), kind, needsBelow: L.type === "adjust" || (L.blend || "normal") !== "normal" || !!L.clip };
@@ -379,6 +401,12 @@
       const out = { w: W, h: H, k, name, layers: [] };
       for (const g of plan(info)) {
         const items = [];
+        if (g.kind === "master") {
+          const ML = layers.find((x) => x.id === g.ids[0]);
+          const mo = await E.pages.masterOut(ML.master, pageIdx == null ? 0 : pageIdx, () => pageOut("Master", k, -1));
+          if (mo) for (const ml of mo.layers) out.layers.push({ name: "Master / " + ml.name, items: ml.items });
+          continue;
+        }
         if (g.kind === "vector") items.push({ t: "vec", items: vectorOf(layers.find((x) => x.id === g.ids[0]), W, H) });
         else if (g.kind === "text") items.push(textOf(layers.find((x) => x.id === g.ids[0])));
         else {
@@ -401,9 +429,12 @@
     async function pagesOut(opts) {
       o = opts || {};
       const P = E.pages;
-      if (P && P.count() > 1) return P.eachPage(async (pg, i) => pageOut(pg.name || "Page " + (i + 1), 72 / (pg.dpi || 150)));
-      const pg = P && P.current ? P.current() : null;
-      return [await pageOut((pg && pg.name) || "Page 1", 72 / ((pg && pg.dpi) || 150))];
+      if (P && P.settle) P.settle();
+      let pages;
+      if (P && P.list().length) pages = await P.eachPage(async (pg, i) => pageOut(pg.name || "Page " + (i + 1), 72 / (pg.dpi || 150), i));
+      else pages = [await pageOut("Page 1", 72 / 150, 0)];
+      if (o.spreads && P && P.facing()) pages = P.spreads().map((g) => (g.length > 1 ? joinSpread(g.map((i) => pages[i])) : pages[g[0]]));
+      return pages;
     }
     const stdOf = (it) => { const f = PP().fontOf ? PP().fontOf((it.css || it.family || "") + (it.weight >= 600 ? " bold" : "") + (it.italic ? " italic" : ""), "") : null; return f && PP().stdName ? PP().stdName(f) : "Helvetica"; };
     async function fontFor(it) {
@@ -413,7 +444,7 @@
     /** build the file(s): fmt pdf | ai | svg | cdr -> {bytes, ext, notes} */
     async function build(fmt, opts) {
       const op2 = opts || {};
-      const pages = await pagesOut({ anyText: !!op2.embed });
+      const pages = await pagesOut({ anyText: !!op2.embed, spreads: !!op2.spreads });
       const title = safeStem(S.bgiName || S.name);
       let pdf = null, notes = { pages: pages.length };
       if (fmt !== "svg") {
@@ -460,15 +491,16 @@
       d.innerHTML = `<div style="font-weight:600;margin-bottom:8px">Export document (${n} page${n === 1 ? "" : "s"})</div>
         <div class="kxrow"><span style="width:60px">Format</span><select id="dtpFmt">${FORMATS.map(([v, l]) => `<option value="${v}"${v === fmt0 ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></div>
         <div class="kxrow"><span style="width:60px">Name</span><input id="dtpName" value="${esc(safeStem(S.bgiName || S.name))}" style="flex:1"></div>
+        ${E.pages && E.pages.facing() ? `<label class="kxrow" title="Facing pages: each spread (2 + 3, 4 + 5 …) as one page"><input type="checkbox" id="dtpSpreads"${store.get("dtp.spreads", true) ? " checked" : ""}> As spreads</label>` : ""}
         <label class="kxrow" title="Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier"><input type="checkbox" id="dtpEmbed"${store.get("dtp.embed", true) ? " checked" : ""}> Embed fonts</label>
         <div style="color:var(--pc-dim,#999);margin:6px 0;line-height:1.4">Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there.</div>
         <div class="kxrow" style="justify-content:flex-end;gap:6px"><button class="ghost" id="dtpCancel">Cancel</button><button id="dtpGo">⤓ Export</button></div>`;
       doc.body.appendChild(d);
       $("dtpCancel").onclick = () => d.remove();
       $("dtpGo").onclick = async () => {
-        const f = $("dtpFmt").value, embed = $("dtpEmbed").checked, name = $("dtpName").value;
-        store.set("dtp.fmt", f); store.set("dtp.embed", embed); d.remove();
-        await exportDoc(f, { embed, name });
+        const f = $("dtpFmt").value, embed = $("dtpEmbed").checked, name = $("dtpName").value, spreads = !!($("dtpSpreads") && $("dtpSpreads").checked);
+        store.set("dtp.fmt", f); store.set("dtp.embed", embed); if ($("dtpSpreads")) store.set("dtp.spreads", spreads); d.remove();
+        await exportDoc(f, { embed, name, spreads });
       };
     }
     const C = E.ui.addCmd;
@@ -478,7 +510,7 @@
     E.dtpOut = { build, exportDoc, dialog, pagesOut, vectorOf, isText };
   }
 
-  const pure = { recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf, buildSvg, b64, extOf, safeStem, FORMATS };
+  const pure = { joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf, buildSvg, b64, extOf, safeStem, FORMATS };
   const api = Object.assign({ install }, pure);
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCDtpOut = api;

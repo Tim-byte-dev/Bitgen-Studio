@@ -9164,6 +9164,17 @@ The image editor can now make documents of many pages, each page with its own la
 
 Coming next: master pages and page numbers, linked text frames, and print-ready PDF (bleed, crop marks, CMYK).
 
+## Master pages, page numbers and facing pages (2.800.0)
+
+In the image editor's **Pages** panel (Window ▸ Pages):
+
+- **＋ Master** makes a master page (A-Master, B-Master …) the size of the page in front, gives it to every page that has none and opens it. What you put on a master - a header, a footer, a logo, a background - shows under the layers of every page that uses it, as a locked **⌂ A-Master** layer just above the page's Background. **✎** opens a master again, **← Pages** goes back (the pages are brought up to date), **🗑** deletes it (click twice; its pages keep their own layers), double-click its name to rename it.
+- **Master** - the master of the page in front (or None). **All**, **Odd** (1, 3, 5 … right-hand pages) and **Even** (2, 4, 6 … left-hand) give the picked master to those pages.
+- **Page numbers** - type **{page}** (this page's number), **{pages}** (the last page's number) or **{name}** (the page's name) in any type layer. On a master they show as typed there and as each page's own number on the pages; on a page the layer shows the number (type the token again to change it). **#** adds a page number at the bottom centre of the page or master in front. The numbers can be 1 2 3, i ii iii, I II III, a b c or A B C, starting at any number - the strip shows them too.
+- **☐ Facing** - the strip shows spreads: page 1 alone on the right, then 2 + 3, 4 + 5 …. The Export dialog then offers **As spreads**: each spread is one PDF / SVG page.
+- **Export** writes a master's own layers on each page that uses it, as "Master / <layer>" - shapes as paths, type as real text with that page's number.
+- **Save Project (.bgi)** keeps the masters, which page uses which, facing and the numbering.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

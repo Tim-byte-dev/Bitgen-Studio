@@ -11452,19 +11452,19 @@
   },
   {
    "s": "No .bgi saved in this project yet - File ▸ Save Project (.bgi) keeps one here",
-   "src": "ext/imageeditdock/pcbgi.js:295"
+   "src": "ext/imageeditdock/pcbgi.js:296"
   },
   {
    "s": "bgi",
-   "src": "ext/imageeditdock/pcbgi.js:301"
+   "src": "ext/imageeditdock/pcbgi.js:302"
   },
   {
    "s": "also download it",
-   "src": "ext/imageeditdock/pcbgi.js:301"
+   "src": "ext/imageeditdock/pcbgi.js:302"
   },
   {
    "s": "Kept in the project's bgi folder. Everything stays editable: layers, masks, text / shape / fill / adjustment layers, styles, smart objects and their filters, paths, channels, the selection and layer comps",
-   "src": "ext/imageeditdock/pcbgi.js:301"
+   "src": "ext/imageeditdock/pcbgi.js:302"
   },
   {
    "s": "The view as shown (instant)",
@@ -12472,27 +12472,35 @@
   },
   {
    "s": "PDF (.pdf)",
-   "src": "ext/imageeditdock/pcdtpout.js:308"
+   "src": "ext/imageeditdock/pcdtpout.js:329"
   },
   {
    "s": "SVG pages (.zip, one .svg a page)",
-   "src": "ext/imageeditdock/pcdtpout.js:308"
+   "src": "ext/imageeditdock/pcdtpout.js:329"
   },
   {
    "s": "For .cdr (.zip: the PDF + the SVG pages)",
-   "src": "ext/imageeditdock/pcdtpout.js:308"
+   "src": "ext/imageeditdock/pcdtpout.js:329"
+  },
+  {
+   "s": "As spreads",
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "s": "Embed fonts",
-   "src": "ext/imageeditdock/pcdtpout.js:460"
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "s": "Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there",
-   "src": "ext/imageeditdock/pcdtpout.js:460"
+   "src": "ext/imageeditdock/pcdtpout.js:491"
+  },
+  {
+   "s": "Facing pages: each spread (2 + 3, 4 + 5 …) as one page",
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "s": "Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier",
-   "src": "ext/imageeditdock/pcdtpout.js:460"
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "s": "Author",
@@ -13664,67 +13672,127 @@
   },
   {
    "s": "Page 1",
-   "src": "ext/imageeditdock/pcpages.js:98"
+   "src": "ext/imageeditdock/pcpages.js:143"
   },
   {
    "s": "Pages",
-   "src": "ext/imageeditdock/pcpages.js:237"
+   "src": "ext/imageeditdock/pcpages.js:492"
   },
   {
    "s": "No document open",
-   "src": "ext/imageeditdock/pcpages.js:237"
-  },
-  {
-   "s": "Page setup",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "Hide (Window ▸ Pages shows it again)",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "A new page after this one, the same size - its own layers",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "A copy of this page with its layers",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "Move this page up",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "Move this page down",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "Delete this page (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:239"
-  },
-  {
-   "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
-   "src": "ext/imageeditdock/pcpages.js:239"
+   "src": "ext/imageeditdock/pcpages.js:492"
   },
   {
    "s": "Click: this page · drag: move · double-click the name: rename",
-   "src": "ext/imageeditdock/pcpages.js:240"
+   "src": "ext/imageeditdock/pcpages.js:495"
+  },
+  {
+   "s": "Master",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Odd",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Even",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Facing",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Page setup",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Hide (Window ▸ Pages shows it again)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Back to the pages (the pages that use this master are made again)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "This master for every page",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "This master for the odd pages (1, 3, 5 … right-hand)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "This master for the even pages (2, 4, 6 … left-hand)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Show and export the pages as spreads (page 1 alone on the right)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "How page numbers are written",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "A page number ({page}) at the bottom of this page or master",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "A new page after this one, the same size - its own layers",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "A copy of this page with its layers",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Move this page up",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Move this page down",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Delete this page (click twice)",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
+   "src": "ext/imageeditdock/pcpages.js:498"
+  },
+  {
+   "s": "Double-click: rename",
+   "src": "ext/imageeditdock/pcpages.js:502"
+  },
+  {
+   "s": "Edit this master - what is on it shows under its pages",
+   "src": "ext/imageeditdock/pcpages.js:502"
+  },
+  {
+   "s": "Delete this master (click twice)",
+   "src": "ext/imageeditdock/pcpages.js:502"
   },
   {
    "s": "W × H mm",
-   "src": "ext/imageeditdock/pcpages.js:289"
+   "src": "ext/imageeditdock/pcpages.js:581"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcpages.js:289"
+   "src": "ext/imageeditdock/pcpages.js:581"
   },
   {
    "s": "dpi",
-   "src": "ext/imageeditdock/pcpages.js:289"
+   "src": "ext/imageeditdock/pcpages.js:581"
   },
   {
    "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
-   "src": "ext/imageeditdock/pcpages.js:314"
+   "src": "ext/imageeditdock/pcpages.js:606"
   },
   {
    "s": "Color palette",
@@ -19695,10 +19763,6 @@
    "src": "ext/timelinedock/colourpanel.js:357"
   },
   {
-   "s": "Master",
-   "src": "ext/timelinedock/colourpanel.js:357"
-  },
-  {
    "s": "HSL secondaries",
    "src": "ext/timelinedock/colourpanel.js:357"
   },
@@ -20685,10 +20749,6 @@
   {
    "s": "rembg + BiRefNet in their own venv (venvs/matte, ~1.5 GB with the model)",
    "src": "ext/timelinedock/paths.js:332"
-  },
-  {
-   "s": "Facing",
-   "src": "ext/timelinedock/paths.js:343"
   },
   {
    "s": "Side view: it is mirrored where the path goes left. From above: it turns with the path",
@@ -25894,7 +25954,7 @@
   },
   {
    "p": "{0} — {1} KB",
-   "src": "ext/imageeditdock/pcbgi.js:294"
+   "src": "ext/imageeditdock/pcbgi.js:295"
   },
   {
    "p": "{0} in the References docker",
@@ -25974,11 +26034,11 @@
   },
   {
    "p": "Export document ({0} page)",
-   "src": "ext/imageeditdock/pcdtpout.js:460"
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "p": "Export document ({0} pages)",
-   "src": "ext/imageeditdock/pcdtpout.js:460"
+   "src": "ext/imageeditdock/pcdtpout.js:491"
   },
   {
    "p": "{0} px",
@@ -26058,11 +26118,11 @@
   },
   {
    "p": "{0} ({1} × {2} mm)",
-   "src": "ext/imageeditdock/pcpages.js:289"
+   "src": "ext/imageeditdock/pcpages.js:581"
   },
   {
    "p": "{0} × {1} px",
-   "src": "ext/imageeditdock/pcpages.js:299"
+   "src": "ext/imageeditdock/pcpages.js:591"
   },
   {
    "p": "{0} - click: fill (the foreground colour) · right-click: outline (the background colour)",

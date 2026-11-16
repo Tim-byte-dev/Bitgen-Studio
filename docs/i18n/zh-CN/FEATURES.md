@@ -444,6 +444,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Basic Settings 的列表按位置筛选** — 图片 Checkpoint、视频 Model 和每行临时 LoRA 前面都有 All places / This computer / RunPod / OpenRouter（带数量），在风格家族筛选之后；☐ Remote 和 Pod 行已移除（Pod 的文件以 <pod>/<file> 选择）；Model manager 的 Civitai info 和 Sync 在它的 Civitai 标签页中。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
 - **风格家族列表不再区分图片 / 编辑** — Basic Settings 的列表显示风格家族的所有模型，图片模型和编辑模型都包括（Klein 既能生成也能编辑图片）。*Where:* Basic Settings. *Since:* 2.798.0
 - **页面与文档导出** — 图像编辑器可制作多页文档（A3 - A6、Letter、Legal、Tabloid、卡片、DL、自定义尺寸；纵向 / 横向；72 - 300 dpi），每页都有自己的图层和撤销历史；Pages 列表可添加、复制、移动、重命名和删除页面；Page setup；所有页面及其图层可导出为 PDF（形状为路径，文字为真实文本，每个图层是一个 PDF 图层）、.ai、SVG 页面或用于 .cdr 的包；.bgi 会保存所有页面。*Where:* Image editor ▸ File ▸ New Document with Pages…, Window ▸ Pages, File ▸ Export ▸ Document. *Since:* 2.799.0
+- **主页、页码和对页** — 主页的图层（页眉、页脚、标志、背景）显示在每个使用它的页面下方，可分配给所有 / 奇数 / 偶数页；文字中的 {page} / {pages} / {name} 自动生成页码（1、i、I、a、A，可从任意数字开始），# 添加页码；对页以跨页显示并可按跨页导出；主页作为自己的图层导出；.bgi 会保存它们。*Where:* Image editor ▸ Window ▸ Pages. *Since:* 2.800.0
 - **重新启动 Pod 上已崩溃的 ComfyUI** — ComfyUI 端口上的网页不再被当作 ComfyUI；未运行的 ComfyUI 由 bitGen 启动（不能启动时说明原因），Pod 上已有的文件不再显示传输进度条。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **从聊天中创作歌曲** — 聊天会写出符合所选音乐风格的歌词，并发送到 Music 面板。 *Where:* 提示词聊天. *Since:* 2.92.0
 - **歌词文件** — 每首歌曲的歌词都以文本文件形式保存在项目中。 *Where:* 项目的 lyrics 文件夹
