@@ -5816,6 +5816,12 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **本機** - bitGen 下載清單中的檔案和以前一樣下載。不在清單中的檔案（LoRA、微調模型等）現在會按名稱在網路上查詢（它的 Civitai 資訊卡、Civitai 搜尋、你的遠端模型清單）；找到後 **⬇ Download** 會把它下載到本機 ComfyUI 的模型資料夾，然後繼續渲染。
 - **RunPod Pod** - 傳送到 Pod 的渲染現在會針對該 Pod 檢查：**Models not on <pod>** 對話方塊列出 Pod 缺少的檔案，**⬆ Send to <pod>** 把它們放到 Pod 上（透過下載連結、Civitai 或從本機傳送），然後繼續渲染。取消 = 不渲染。尚未回應的 Pod 不會檢查 - 它自己的準備過程會放好檔案。
 
+## Blender layers come back at their view; ComfyUI starts for the editor (2.807.1)
+<!-- en: blender-layers-come-back-at-their-view-comfyui-starts-for-the-editor-2-807-1 279559f5187f -->
+
+- 再次選取 Blender 圖層時，它的場景會以離開時的**同一檢視**開啟 - 相機、視野、檢視環繞的中心點和影格（如果當時用的是場景相機，則為場景相機）。
+- 影像編輯器的 ✨ AI（從 Blender 圖層 Generate / Edit / Refine 等）、預覽中的 🎨 Change style 和線稿，在 ComfyUI 未執行時會先在本機**啟動 ComfyUI** 並等待 - 渲染不會再因「cannot reach ComfyUI at http://127.0.0.1:8188」而失敗。傳送到 RunPod Pod 的渲染會跳過這一步。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

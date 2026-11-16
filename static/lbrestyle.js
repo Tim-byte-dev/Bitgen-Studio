@@ -269,6 +269,8 @@
     S.busy = true; $("lb_restyle").disabled = true;
     try {
       S.line = null; say("🎨 " + L.label + " - preparing…");
+      // 2.807.0: this computer's ComfyUI started first - the line art and the render both need it (a pod render skips it)
+      if (root.H3PodRoute && root.H3PodRoute.ready && !(await root.H3PodRoute.ready("image", st.id))) throw new Error("ComfyUI is not running and could not be started - Settings ▸ ComfyUI");
       const img = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error("the picture could not be read")); im.src = it.url; });
       const sz = fit(img.naturalWidth, img.naturalHeight), c = canvas(sz.w, sz.h), g = c.getContext("2d");
       g.imageSmoothingQuality = "high"; g.drawImage(img, 0, 0, sz.w, sz.h);

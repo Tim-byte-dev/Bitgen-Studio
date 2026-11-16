@@ -5583,6 +5583,12 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **このコンピューター** - bitGen のダウンロードリストにあるファイルはこれまでどおりダウンロードされます。リストにないファイル（LoRA、ファインチューンなど）は、名前でオンライン検索されるようになりました（Civitai 情報カード、Civitai 検索、リモートモデルの一覧）。見つかれば **⬇ Download** でここの ComfyUI のモデルフォルダーに取得し、レンダリングが続きます。
 - **RunPod の Pod** - Pod に送られるレンダリングは、その Pod に対して確認されるようになりました。**Models not on <pod>** ボックスに Pod にないものが並び、**⬆ Send to <pod>** で Pod に置きます（ダウンロードリンク、Civitai、またはこのコンピューターから送信）。その後レンダリングが続きます。キャンセル = レンダリングしません。まだ応答しない Pod は確認されず、Pod 自身の準備でファイルが置かれます。
 
+## Blender layers come back at their view; ComfyUI starts for the editor (2.807.1)
+<!-- en: blender-layers-come-back-at-their-view-comfyui-starts-for-the-editor-2-807-1 279559f5187f -->
+
+- Blender レイヤーを再び選ぶと、そのシーンは離れたときと**同じビュー**で開きます - カメラ、画角、ビューが回る中心点、フレーム（シーンカメラがビューだった場合はシーンカメラ）。
+- 画像エディターの ✨ AI（Blender レイヤーからの Generate / Edit / Refine など）、プレビューの 🎨 Change style、線画は、ComfyUI が動いていなければ先にこのコンピューターで**ComfyUI を起動**して待つようになりました - 「cannot reach ComfyUI at http://127.0.0.1:8188」でレンダリングが失敗しなくなります。RunPod の Pod に送られるレンダリングではこの手順を省きます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

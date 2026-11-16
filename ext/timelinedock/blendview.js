@@ -420,6 +420,28 @@
       orbit.target.copy(p).add(fwd.multiplyScalar(dist));
       setView("free"); orbit.update();
     }
+    /** 2.807.0 (Tim: "is it possible to go to the same view when returning to a blender layer"): a view kept by
+     *  viewOf() + look() put back - {matrix, fov, target, sceneCam, frame}. The scene camera = setView("scene"); else the
+     *  free camera takes the matrix, the orbit centre the kept target (else 5 m ahead) */
+    function restoreView(v) {
+      if (!v || !camFree || !orbit) return false;
+      if (v.frame != null) { try { goto(v.frame); } catch (e) { /* the frame range changed */ } }
+      if (v.sceneCam && camScene) { setView("scene"); return true; }
+      var m = v.matrix || (v.view && v.view.matrix);
+      if (!m || m.length !== 16) return false;
+      var M = new T.Matrix4().fromArray(m), pos = new T.Vector3(), q = new T.Quaternion(), sc = new T.Vector3();
+      M.decompose(pos, q, sc);
+      camFree.position.copy(pos); camFree.quaternion.copy(q);
+      var fov = +(v.fov || (v.view && v.view.fov)); if (fov > 1 && fov < 179) camFree.fov = fov;
+      camFree.updateProjectionMatrix();
+      var t = v.target;
+      if (Array.isArray(t) && t.length === 3 && t.every(isFinite)) orbit.target.fromArray(t);
+      else orbit.target.copy(pos).add(new T.Vector3(0, 0, -1).applyQuaternion(q).multiplyScalar(5));
+      setView("free"); orbit.update();
+      camFree.position.copy(pos); camFree.quaternion.copy(q); camFree.updateMatrixWorld(true);   // orbit.update() keeps it - set again to be exact
+      dirty();
+      return true;
+    }
     /** 2.546.0: f < 1 = in (closer), > 1 = out; never through what it looks at */
     function zoomBy(f) {
       if (!camFree || !orbit) return;
@@ -933,7 +955,7 @@
       attach: attach, detach: detach, openUi: openUi, snapshot: viewPicture, still: stillReal, host: function () { return ext; },
       open: openPath, show: show, state: S, select: select, setTrs: setSelTrs, key: keyNow, unkey: unkeyNow, dup: dup, del: del,
       hide: hide, reset: resetObj, undo: undo, goto: goto, setRange: setRange, setView: setView, setGizmo: setGizmo, save: save,
-      render: renderReal, view: viewOf, node: node, frameAll: frameAll, zoomBy: zoomBy, zoomToObject: zoomToObject, pickOwner: pickOwner,
+      render: renderReal, view: viewOf, restoreView: restoreView, node: node, frameAll: frameAll, zoomBy: zoomBy, zoomToObject: zoomToObject, pickOwner: pickOwner,
       look: function () { return camFree && orbit ? { dist: camFree.position.distanceTo(orbit.target), target: orbit.target.toArray(), view: S.view } : null; },   // 2.546.0: where the free view looks (tests)
       trs: function (id) { var n = node(id); return n ? trsOf(n) : null; },
       draw: function () { if (R) R.render(scene, curCam()); }, _cam: curCam,

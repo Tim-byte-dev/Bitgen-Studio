@@ -3948,43 +3948,43 @@
   },
   {
    "s": "Use the Basic Settings the style last had (the ones in Basic Settings now): its own values",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "s": "Use the Basic Settings the style last had: its own values",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "s": "Use the Basic Settings the style last had - none kept for it yet (it is used with its own settings until you render with it once)",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "s": "The prompt's style",
-   "src": "static/lbrestyle.js:346"
+   "src": "static/lbrestyle.js:348"
   },
   {
    "s": "The look 🎨 Change style makes - it stays picked",
-   "src": "static/lbrestyle.js:360"
+   "src": "static/lbrestyle.js:362"
   },
   {
    "s": "Look",
-   "src": "static/lbrestyle.js:360"
+   "src": "static/lbrestyle.js:362"
   },
   {
    "s": "Change style",
-   "src": "static/lbrestyle.js:365"
+   "src": "static/lbrestyle.js:367"
   },
   {
    "s": "The image style 🎨 Change style renders with - ✎ The prompt's style = the one picked in the prompt",
-   "src": "static/lbrestyle.js:371"
+   "src": "static/lbrestyle.js:373"
   },
   {
    "s": "Before / after",
-   "src": "static/lbrestyle.js:384"
+   "src": "static/lbrestyle.js:386"
   },
   {
    "s": "The picture this one was restyled from, side by side with it (click again to go back)",
-   "src": "static/lbrestyle.js:385"
+   "src": "static/lbrestyle.js:387"
   },
   {
    "s": "Your",
@@ -10924,11 +10924,11 @@
   },
   {
    "s": "The image editor is open: Generate makes pictures and each one lands on its canvas as a new layer (the gallery keeps them too)",
-   "src": "ext/imageeditdock/mount.js:205"
+   "src": "ext/imageeditdock/mount.js:209"
   },
   {
    "s": "canvas",
-   "src": "ext/imageeditdock/mount.js:207"
+   "src": "ext/imageeditdock/mount.js:211"
   },
   {
    "s": "3D view",
@@ -11556,7 +11556,7 @@
   },
   {
    "s": "Blender scene tools (as in the timeline) - open a .blend, look around, move objects; the view becomes a Blender layer, and ▾ Edit in the prompt docker makes a picture from it",
-   "src": "ext/imageeditdock/pcblendlayer.js:354"
+   "src": "ext/imageeditdock/pcblendlayer.js:362"
   },
   {
    "s": "These",
@@ -19372,131 +19372,131 @@
   },
   {
    "s": "Open a .blend",
-   "src": "ext/timelinedock/blendview.js:661"
+   "src": "ext/timelinedock/blendview.js:683"
   },
   {
    "s": "Close the scene tools (the layer keeps the view)",
-   "src": "ext/timelinedock/blendview.js:661"
+   "src": "ext/timelinedock/blendview.js:683"
   },
   {
    "s": "Open another .blend",
-   "src": "ext/timelinedock/blendview.js:672"
+   "src": "ext/timelinedock/blendview.js:694"
   },
   {
    "s": "Reload",
-   "src": "ext/timelinedock/blendview.js:673"
-  },
-  {
-   "s": "Drop the edits and read the .blend again",
-   "src": "ext/timelinedock/blendview.js:673"
-  },
-  {
-   "s": "click to select · 👁 hide",
-   "src": "ext/timelinedock/blendview.js:676"
-  },
-  {
-   "s": "no .glb in models3d yet",
-   "src": "ext/timelinedock/blendview.js:684"
-  },
-  {
-   "s": "animated in Blender - a move here is a key",
-   "src": "ext/timelinedock/blendview.js:688"
-  },
-  {
-   "s": "Duplicate it (beside it)",
    "src": "ext/timelinedock/blendview.js:695"
   },
   {
-   "s": "Hide / show it in the render",
-   "src": "ext/timelinedock/blendview.js:696"
+   "s": "Drop the edits and read the .blend again",
+   "src": "ext/timelinedock/blendview.js:695"
   },
   {
-   "s": "Delete it (Ctrl+Z brings it back)",
-   "src": "ext/timelinedock/blendview.js:697"
-  },
-  {
-   "s": "Undo every edit on it",
+   "s": "click to select · 👁 hide",
    "src": "ext/timelinedock/blendview.js:698"
   },
   {
-   "s": "Every move keys the object at this frame (objects Blender animates are always keyed)",
-   "src": "ext/timelinedock/blendview.js:701"
-  },
-  {
-   "s": "Where 💾 Save writes the scene",
-   "src": "ext/timelinedock/blendview.js:703"
-  },
-  {
-   "s": "Only in bitGen (",
-   "src": "ext/timelinedock/blendview.js:704"
-  },
-  {
-   "s": "Write back to the original .blend (keeps .blend1)",
-   "src": "ext/timelinedock/blendview.js:705"
-  },
-  {
-   "s": "Copy to a new file (",
+   "s": "no .glb in models3d yet",
    "src": "ext/timelinedock/blendview.js:706"
   },
   {
+   "s": "animated in Blender - a move here is a key",
+   "src": "ext/timelinedock/blendview.js:710"
+  },
+  {
+   "s": "Duplicate it (beside it)",
+   "src": "ext/timelinedock/blendview.js:717"
+  },
+  {
+   "s": "Hide / show it in the render",
+   "src": "ext/timelinedock/blendview.js:718"
+  },
+  {
+   "s": "Delete it (Ctrl+Z brings it back)",
+   "src": "ext/timelinedock/blendview.js:719"
+  },
+  {
+   "s": "Undo every edit on it",
+   "src": "ext/timelinedock/blendview.js:720"
+  },
+  {
+   "s": "Every move keys the object at this frame (objects Blender animates are always keyed)",
+   "src": "ext/timelinedock/blendview.js:723"
+  },
+  {
+   "s": "Where 💾 Save writes the scene",
+   "src": "ext/timelinedock/blendview.js:725"
+  },
+  {
+   "s": "Only in bitGen (",
+   "src": "ext/timelinedock/blendview.js:726"
+  },
+  {
+   "s": "Write back to the original .blend (keeps .blend1)",
+   "src": "ext/timelinedock/blendview.js:727"
+  },
+  {
+   "s": "Copy to a new file (",
+   "src": "ext/timelinedock/blendview.js:728"
+  },
+  {
    "s": "Render to real",
-   "src": "ext/timelinedock/blendview.js:709"
+   "src": "ext/timelinedock/blendview.js:731"
   },
   {
    "s": "frames",
-   "src": "ext/timelinedock/blendview.js:709"
+   "src": "ext/timelinedock/blendview.js:731"
   },
   {
    "s": "Solid (fast)",
-   "src": "ext/timelinedock/blendview.js:712"
+   "src": "ext/timelinedock/blendview.js:734"
   },
   {
    "s": "Scene's own",
-   "src": "ext/timelinedock/blendview.js:712"
+   "src": "ext/timelinedock/blendview.js:734"
   },
   {
    "s": "3DREAL",
-   "src": "ext/timelinedock/blendview.js:714"
+   "src": "ext/timelinedock/blendview.js:736"
   },
   {
    "s": "Auto (newest)",
-   "src": "ext/timelinedock/blendview.js:714"
+   "src": "ext/timelinedock/blendview.js:736"
   },
   {
    "s": "strong v2",
-   "src": "ext/timelinedock/blendview.js:714"
+   "src": "ext/timelinedock/blendview.js:736"
   },
   {
    "s": "strong",
-   "src": "ext/timelinedock/blendview.js:715"
+   "src": "ext/timelinedock/blendview.js:737"
   },
   {
    "s": "no keys",
-   "src": "ext/timelinedock/blendview.js:761"
+   "src": "ext/timelinedock/blendview.js:783"
   },
   {
    "s": "Describe it - the LLM lays it out, Blender builds it, it opens here. Detailed things (an animal, a statue",
-   "src": "ext/timelinedock/blendview.js:814"
+   "src": "ext/timelinedock/blendview.js:836"
   },
   {
    "s": "Max 3D",
-   "src": "ext/timelinedock/blendview.js:819"
+   "src": "ext/timelinedock/blendview.js:841"
   },
   {
    "s": "Hunyuan3D 2.1 - shape (default)",
-   "src": "ext/timelinedock/blendview.js:820"
+   "src": "ext/timelinedock/blendview.js:842"
   },
   {
    "s": "Image to 3D (ComfyUI)",
-   "src": "ext/timelinedock/blendview.js:820"
+   "src": "ext/timelinedock/blendview.js:842"
   },
   {
    "s": "Hunyuan3D only",
-   "src": "ext/timelinedock/blendview.js:821"
+   "src": "ext/timelinedock/blendview.js:843"
   },
   {
    "s": "pictures with",
-   "src": "ext/timelinedock/blendview.js:824"
+   "src": "ext/timelinedock/blendview.js:846"
   },
   {
    "s": "Use in Generate",
@@ -25106,47 +25106,47 @@
   },
   {
    "p": "Make this picture again as {0} - with {1} + the Basic Settings it last had. Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:336"
+   "src": "static/lbrestyle.js:338"
   },
   {
    "p": "Make this picture again as {0} - with {1} (its own settings). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:336"
+   "src": "static/lbrestyle.js:338"
   },
   {
    "p": "Make this picture again as {0} - with the prompt's image style + the Basic Settings it last had. Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:336"
+   "src": "static/lbrestyle.js:338"
   },
   {
    "p": "Make this picture again as {0} - with the prompt's image style (its own settings). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:336"
+   "src": "static/lbrestyle.js:338"
   },
   {
    "p": "Use the Basic Settings {0} last had (the ones in Basic Settings now): {1}",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings {0} last had (the ones in Basic Settings now): its own values",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings {0} last had: {1}",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings {0} last had: its own values",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings {0} last had - none kept for it yet (it is used with its own settings until you render with it once)",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings the style last had (the ones in Basic Settings now): {0}",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "Use the Basic Settings the style last had: {0}",
-   "src": "static/lbrestyle.js:338"
+   "src": "static/lbrestyle.js:340"
   },
   {
    "p": "llama.cpp: {0}",

@@ -14086,6 +14086,9 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui806-ui.js > /tmp/ui806.log 2>&
 node scripts/test-runpodv2807.js > /tmp/runpodv2807.log 2>&1 \
   && ok "2.807.0 RunPod REST v2 only: no v1 host / path / field anywhere, the volume resize the v2 way" \
   || { bad "2.807.0 RunPod v2 check"; grep -a "^FAIL" -A1 /tmp/runpodv2807.log | head -12; }
+node scripts/test-comfyready807.js > /tmp/comfyready807.log 2>&1 \
+  && ok "2.807.1 the editor's AI starts ComfyUI first; a Blender layer comes back at its view" \
+  || { bad "2.807.1 ComfyUI start / Blender view pins"; grep -a "^FAIL" -A1 /tmp/comfyready807.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -9254,6 +9254,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **On this computer** - a file in bitGen's download list downloads as before. A file that is not in the list (a LoRA, a fine-tune) is now looked for online by its name (its Civitai info card, a Civitai search, your remote models list); found = **⬇ Download** fetches it into ComfyUI's models folder here, then the render goes on.
 - **On a RunPod pod** - a render that goes to a pod is now checked against that pod: the box **Models not on <pod>** lists what the pod lacks and **⬆ Send to <pod>** puts it there (from its download link, Civitai, or sent from this computer), then the render goes on. Cancel = no render. A pod that does not answer yet is not checked - its own preparation puts the files on it.
 
+## Blender layers come back at their view; ComfyUI starts for the editor (2.807.1)
+
+- A Blender layer picked again opens its scene at the **same view** it was left at - the camera, the field of view, the point the view turns round and the frame (or the scene camera, when that was the view).
+- The image editor's ✨ AI (Generate / Edit / Refine from a Blender layer and everything else), the preview's 🎨 Change style and the line art now **start ComfyUI** on this computer first when it is not running, and wait for it - the render no longer fails with "cannot reach ComfyUI at http://127.0.0.1:8188". A render that goes to a RunPod pod skips this.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

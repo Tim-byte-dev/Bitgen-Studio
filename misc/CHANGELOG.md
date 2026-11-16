@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.807.1** — A Blender Layer Picked Again Opens Its Scene at the Same View (Camera, Field of View, Orbit Centre, Frame); the Image Editor's AI, Change Style and the Line Art Start ComfyUI Here First and Wait for It (Renders Failed With "Cannot Reach ComfyUI at 127.0.0.1:8188")
 - **2.807.0** — RunPod Retired REST API v1: Every Pod Call Checked Against REST v2 Again - a Pod's Bigger Volume Now Sent the v2 Way (mounts.persistent.size; v2 Refused the Old volumeInGb), the Old v1 Update Path Removed; Nothing in bitGen Calls v1
 - **2.806.0** — Image Editor: ✨ Generate With a Blender Layer Picked Makes a Picture From Its Scene, the Prompt and the References Docker's Pictures (an Edit Model, or a Picture Style at the 🟧 Scene Strength); the Blender Layer Is Live (Picked = Its Scene Open Again, Another Layer = Closed, the View Kept); Missing Models / LoRAs Found Online and Downloaded Here, or Checked Against the RunPod Pod and ⬆ Sent There After Asking
 - **2.805.0** — Local - <card> Works With ComfyUI Portable (run_nvidia_gpu.bat or a Custom Launch Command Is Read for Its python + main.py Line); Image Preview: a Style Dropdown + ☐ Basic Settings Beside 🎨 Change Style (the Style's Last Basic Settings), Shown Only for Pictures

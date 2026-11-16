@@ -166,7 +166,8 @@
       ensureDoc(info);
       const snap = tb.snapshot(S.w, S.h); if (!snap) return null;
       let L = target && S.layers.includes(target) ? target : cur();
-      const meta = { stem: info.stem, source: info.source, view: tb.view ? tb.view() : null, frame: tb.state.frame, sceneCam: tb.state.view === "scene" };
+      const lk = tb.look ? tb.look() : null;   // 2.807.0: + where the free view looks (its orbit centre) - restoreView puts it back
+      const meta = { stem: info.stem, source: info.source, view: tb.view ? tb.view() : null, target: lk && lk.target ? lk.target : null, frame: tb.state.frame, sceneCam: tb.state.view === "scene" };
       if (!L) {
         E.structOp("new Blender layer", () => {
           L = E.makeLayer("🟧 " + info.stem, S.w, S.h, "pixel");
@@ -211,8 +212,15 @@
       watch = root.setInterval(() => { if (!open) { root.clearInterval(watch); return; } if (!target && sceneInfo() && TB().snapshot(16, 16)) afterLoad(); }, 1200);
       return p;
     }
+    /** 2.807.0: the layer's own view back (camera, orbit centre, frame) when its scene opens again */
+    function putView(L) {
+      const tb = TB(), b = L && L.bscene;
+      if (!tb || !tb.restoreView || !b || (!b.view && !b.sceneCam)) return false;
+      try { return tb.restoreView({ matrix: b.view && b.view.matrix, fov: b.view && b.view.fov, target: b.target, sceneCam: b.sceneCam, frame: b.frame }); } catch (e) { return false; }
+    }
     function afterLoad() {
       const info = sceneInfo(); if (!info || !open) return;
+      if (target && target.bscene && target.bscene.stem === info.stem) putView(target);
       root.setTimeout(() => { if (open && (!target || !S.layers.includes(target))) keepView("new Blender layer"); paint(); status(`scene ${info.stem} - the layer follows the view when the tools close`); }, 400);
     }
     function leave(fromTools, taken, drop) {
@@ -361,7 +369,7 @@
     const prevShow = E.ui.showTab;
     E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "kbl") paint(); return r; };
     paint();
-    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
+    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, putView, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
   }
 
   const PCBlendLayer = { REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, genHow, strengthOf, liveStep, install };

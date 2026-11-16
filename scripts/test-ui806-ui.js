@@ -43,9 +43,13 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
         detach() { host = null; window.__tb.detach++; }, host: () => host,
         open(src) { window.__tb.opened.push(src); return Promise.resolve(this.state.st); },
         snapshot(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; const g = c.getContext("2d"); g.fillStyle = "#e01010"; g.fillRect(0, 0, w, h); return c; },
-        view: () => null,
+        view: () => ({ matrix: window.__camM.slice(), fov: 40 }), look: () => ({ target: [1, 2, 3], dist: 5, view: "free" }),
+        restoreView(v) { window.__tb.restored.push(v); return true; },   // 2.807.0
       };
+      window.__camM = [1,0,0,0, 0,1,0,0, 0,0,1,0, 4,5,6,1];
+      window.__tb.restored = [];
       window.__rq = [];
+      window.__origAiedit = E.api.aiedit;   // 2.807.0: the real one - ComfyUI is started before it queues
       E.api.aiedit = async (req) => { window.__rq.push({ mode: req.mode, prompt: req.prompt, style: req.style_id, strength: req.strength, ovr: req.ovr || "", w: req.width, h: req.height }); return { jobs: [{ id: "g" + window.__rq.length, seed: 1 }] }; };
       E.api.awaitResult = async () => { const r = window.__rq[window.__rq.length - 1], c = document.createElement("canvas"); c.width = r.w; c.height = r.h; const g = c.getContext("2d"); g.fillStyle = "#10e010"; g.fillRect(0, 0, r.w, r.h); return c.toDataURL("image/png"); };
       window.__comp = [];
@@ -70,6 +74,8 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForTimeout(1200);
     const back = await ev(() => ({ open: window.imageEditorInstance.E.blendLayer.isOpen(), attach: window.__tb.attach, wrap: document.getElementById("ieBlendWrap").style.display }));
     check("the Blender layer picked again: its scene is shown again (the tools open - the layer is live)", back.open && back.attach === att0 + 1 && back.wrap === "block", back);
+    const rv = await ev(() => window.__tb.restored.slice(-1)[0] || null);
+    check("2.807.0 …at the SAME view it was left at (camera matrix, field of view, orbit centre, frame)", rv && JSON.stringify(rv.matrix) === JSON.stringify([1,0,0,0,0,1,0,0,0,0,1,0,4,5,6,1]) && rv.fov === 40 && JSON.stringify(rv.target) === "[1,2,3]" && rv.frame === 1 && rv.sceneCam === true, rv);
     // ☑ Live off: picking it does not open it
     await ev(() => { const E = window.imageEditorInstance.E; E.setActive(E.S.layers.findIndex((L) => !L.bscene)); });
     await p.waitForTimeout(900);
@@ -129,6 +135,21 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.click("#mfDownload");
     const okL = await boxL;
     check("⬇ Download: fetched into this computer's models folders, checked again, the render goes on", okL === true && fetched && fetched.items[0].name === "detail.safetensors" && fetched.items[0].cat === "loras", { okL, fetched });
+    // 2.807.0: the editor's AI starts this computer's ComfyUI before it queues (Tim's log: "cannot reach ComfyUI at 127.0.0.1:8188")
+    let podNow = false, up = false; const order = [];
+    await p.route("**/api/aiedit", async (r) => { order.push("post"); return r.fulfill({ status: 500, json: { error: "e2e807" } }); });
+    await p.route("**/api/stylepods/route*", async (r) => r.fulfill({ json: { pod: podNow } }));
+    await p.route("**/api/comfy/status", async (r) => r.fulfill({ json: { backend: "comfy", reachable: up, starting: !up, managed: true } }));
+    await p.route("**/api/comfy/ensure", async (r) => { order.push("ensure"); setTimeout(() => { up = true; }, 2000); return r.fulfill({ json: { started: true } }); });
+    const run = () => ev(async () => {
+      const blob = await new Promise((ok) => { const c = document.createElement("canvas"); c.width = c.height = 8; c.toBlob(ok); });
+      await window.__origAiedit({ style_id: "x", prompt: "p", mode: "edit", crop: blob }, () => {});
+    });
+    await run();
+    const here = order.slice(); order.length = 0; podNow = true; up = false;
+    await run();
+    check("2.807.0 the editor's AI: this computer's ComfyUI started and waited for BEFORE the job is sent; a pod render skips it", here.join() === "ensure,post" && order.join() === "post", { here, pod: order });
+    await p.unroute("**/api/comfy/status"); await p.unroute("**/api/comfy/ensure");
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the browser part stopped - " + (e.stack || e.message)); }
   await br.close();
