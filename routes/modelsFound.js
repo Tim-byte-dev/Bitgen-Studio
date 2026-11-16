@@ -12,6 +12,10 @@
 //        the same request the render will send (static/modelsfound.js reads it from the Generate path); the style's
 //        overrides, Basic Settings' model / LoRAs and the workflow for the mode, as /api/genimage, /api/genmusic and
 //        /api/generate would run them. The ⬇ Download is POST /api/setup/download (routes/setup.js) with source.id.
+//        2.806.0: a render on a RunPod pod -> {place: "pod", pod_id, pod_name, missing [{..., here}]} (what the pod lacks);
+//        here, a file not in the download list -> {online: {from, size, model}} when found online (lib/modelsWhere.js)
+//   POST /api/models/pod-send {pod_id, items: [{name, cat}]} / GET ?pod_id=   ⬆ Send to <pod> and its progress
+//   POST /api/models/fetch {items: [{name, cat}]} / GET                         ⬇ a file found online, into models/<folder> here
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -32,8 +36,14 @@ const loraList = (v) => {
   return require("../lib/tempLoras").normalize(a);
 };
 
-/** what the render would load -> needs() rows, or {skip: why} */
+/** what the render would load -> needs() rows (+ pod: the RunPod pod it renders on - 2.806.0), or {skip: why} */
 function plan(b) {
+  const ctx = {}, p = plan0(b, ctx);
+  if (!p.skip && ctx.pod) p.pod = ctx.pod;
+  return p;
+}
+function plan0(b, ctx) {
+  const MW = require("../lib/modelsWhere");
   const C = require("../lib/core"), styles = require("../lib/styles");
   const kind = ["image", "music", "video", "aiedit"].includes(b.kind) ? b.kind : "image";
   // 2.786.0: a picture / video made on OpenRouter needs no files here (lib/orRender.js)
@@ -41,13 +51,15 @@ function plan(b) {
     const bm = kind === "image" ? String(b.model || "") : ((require("../lib/basicOverride").parse(b.basic) || {}).model || "");
     try { if (require("../lib/orRender").modelFor(kind, bm)) return { skip: "it renders on OpenRouter - no model files here" }; } catch { /* checked here */ }
     // 2.787.0: a "<pod>/<file>" pick or Basic Settings ▸ Remote - the files are on (or go to) the pod (lib/podPick.js)
-    try { const w = require("../lib/podPick").wouldPod(kind, bm, loraList(b.extra_loras).map((l) => l.path || l.name || l.file)); if (w) return { skip: "it renders on a RunPod pod (" + w.why + ") - its files are on the pod" }; } catch { /* checked here */ }
+    // 2.806.0: checked against THAT pod (lib/modelsWhere.js) - the box asks ⬆ Send to <pod>
+    try { const w = require("../lib/podPick").wouldPod(kind, bm, loraList(b.extra_loras).map((l) => l.path || l.name || l.file)); if (w) ctx.pod = MW.podOf(kind, null, w); } catch { /* checked here */ }
   }
   { const sid = String(b.video_style_id || b.style_id || ""), st0 = sid ? styles.byId(C.STYLES_DIR, sid) : null;
     if (st0 && st0.runs_on === "api") return { skip: "an API_ style - the online service has its own models (Settings ▸ API)" };   // 2.757.0
     if (st0 && st0.runs_on === "pod") return { skip: "a P_ pod style - its models are on the pod" };   // 2.758.0
     // 2.763.2: a style that renders on a RunPod pod - its files are put on the pod (lib/podPrep.js), not looked for here
-    try { if (st0 && require("../lib/stylePods").willUsePod(kind === "music" ? "music" : kind === "video" ? "t2va" : "image", st0).pod) return { skip: "it renders on a RunPod pod - its files are put on the pod" }; } catch { /* checked here */ } }
+    // 2.806.0: checked against its pod; no pod yet = the "no pod" box asks first, its preparation puts the files on it
+    try { if (!ctx.pod && st0 && require("../lib/stylePods").willUsePod(kind === "music" ? "music" : kind === "video" ? "t2va" : "image", st0).pod) { ctx.pod = MW.podOf(kind === "aiedit" ? "image" : kind, st0); if (!ctx.pod) return { skip: "it renders on a RunPod pod that is not made yet - its files are put on it when it is" }; } } catch { /* checked here */ } }
   // 2.719.1: the image editor's ✨ AI (/api/aiedit, /api/aiedit/compose - routes/aiedit.js): its Edit / Regenerate style; a
   // selection filled through the Edit model (fill_edit) = that edit style; Edit / Compose run the style's workflow, the
   // others its inpaint workflow (none = only the style's own names - lib/aiEdit.js picks the graph)
@@ -58,7 +70,11 @@ function plan(b) {
     if (!st) return { skip: "no style picked" };
     if ((st.engine || "comfy") !== "comfy") return { skip: "an sd-cli style - its files are paths, not ComfyUI model names" };
     const wf = es || !b.mode || b.mode === "edit" ? st.workflow : (st.inpaint_workflow || "");
-    return { kind, wf: wf || "", rows: MF.needs(readGraph(wf), st, "image", {}) };
+    // 2.806.0: Basic Settings' Override (the editor's ovr: a checkpoint that fits the style + the temporary LoRAs) - checked too
+    let ov = {}; try { ov = typeof b.ovr === "string" ? JSON.parse(b.ovr || "{}") || {} : b.ovr || {}; } catch { ov = {}; }
+    let om = typeof ov.model === "string" && ov.model.trim() && !ov.model.includes("..") ? ov.model.trim() : "";
+    if (om) { try { if (!require("../lib/modelFit").fit(st, om).ok) om = ""; } catch { om = ""; } }
+    return { kind, wf: wf || "", rows: MF.needs(readGraph(wf), st, "image", { model: om, extra_loras: loraList(ov.extra_loras) }) };
   }
   if (kind === "video") {
     const id = String(b.video_style_id || b.style_id || "");
@@ -96,7 +112,7 @@ function mount(app) {
     res.json({ file: "misc/models_found.json", made: list.made, comfy_dir: list.comfy_dir, yaml: list.yaml, count: list.count,
       roots: list.roots, warnings: list.warnings || [], models: req.query.names === "0" ? undefined : list.models });
   }));
-  app.post("/api/models/check", trap.guard((req, res) => {
+  app.post("/api/models/check", trap.guard(async (req, res) => {
     const b = req.body || {};
     // 2.720.0: {job_id} = a failed job checked again (after ⬇ Download): the names ComfyUI refused + its style's files
     if (b.job_id) {
@@ -106,9 +122,17 @@ function mount(app) {
     }
     const p = plan(b);
     if (p.skip) return res.json(skip(p.skip));
+    // 2.806.0: a render on a RunPod pod = what THAT pod lacks (⬆ Send to <pod>); here = also looked for online (⬇ Download)
+    if (p.pod) return res.json(Object.assign({ kind: p.kind, workflow: p.wf }, await require("../lib/modelsWhere").checkPod(p.rows, p.pod)));
     const r = MF.check(p.rows);
+    if (r.checked && (r.missing || []).some((m) => !m.source) && b.online !== false) { try { await require("../lib/modelsWhere").online(r.missing); } catch { /* the list's own sources */ } }
     res.json(Object.assign({ kind: p.kind, workflow: p.wf }, r));
   }));
+  // 2.806.0: ⬆ Send to <pod> (lib/podSend.js queue) and ⬇ a file found online into this computer's ComfyUI models folders
+  app.post("/api/models/pod-send", trap.guard((req, res) => { const b = req.body || {}; res.json(require("../lib/modelsWhere").sendPod(b.pod_id, b.items)); }));
+  app.get("/api/models/pod-send", trap.guard((req, res) => res.json(require("../lib/modelsWhere").podSendState(req.query.pod_id))));
+  app.post("/api/models/fetch", trap.guard((req, res) => res.json(require("../lib/modelsWhere").fetchLocal((req.body || {}).items))));
+  app.get("/api/models/fetch", trap.guard((req, res) => res.json(require("../lib/modelsWhere").fetchState())));
 }
 
 module.exports = { mount, plan };

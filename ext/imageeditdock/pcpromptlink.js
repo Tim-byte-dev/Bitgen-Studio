@@ -46,6 +46,9 @@
   function actionFor(s) {
     if (!s || s.genMode !== "image") return null;
     const op = s.op || (s.aiShown && LINKED_MODES.includes(s.mode) ? s.mode : "generate");
+    // 2.806.0 (Tim: "a blender layer is being worked on an the generate button is pressed, then generate the image from the
+    // blender scene and the prompt and reference images if any"): ✨ Generate with a Blender / 3D layer picked = from its scene
+    if (op === "generate" && s.onScreen && s.open && s.blender && !s.hasSel) return { kind: "blender", op, mode: "generate" };
     if (op === "generate") return linkedNow(s) && s.mode === "generate" ? { kind: "run", op, mode: "generate", whole: true, into: true } : null;
     if (!["edit", "refine", "fill", "background", "remove", "compose"].includes(op)) return null;
     // 2.543.0: the editor minimized / closed -> the References docker's pictures (Fill / Remove need the editor)
@@ -157,6 +160,7 @@
     root.H3GoLabel = () => {
       const s = state();
       if (E.imgOp && s.genMode === "image" && s.op && s.op !== "generate") return E.imgOp.label();   // 2.541.0
+      if (E.imgOp && s.genMode === "image" && s.onScreen && s.open && s.blender && !s.hasSel && (!s.op || s.op === "generate")) return E.imgOp.label();   // 2.806.0: ✨ Generate · 🟧
       return goLabelFor(s);
     };
     /** 2.541.0: open the editor docker (shown, not collapsed) */
@@ -168,7 +172,7 @@
     }
     root.H3TakeGenerate = (gm, text) => {
       const act = actionFor(Object.assign(state(), { genMode: gm }));
-      if (act && act.op !== "generate") return takeOp(act, text);
+      if (act && (act.op !== "generate" || act.kind === "blender")) return takeOp(act, text);   // 2.806.0: + Generate on a Blender layer
       if (!linked() || gm !== "image") return false;
       if (S.busy) { say("still working on the last one"); return true; }
       if (!S.w) {                                                           // 2.451.0: nothing open yet
@@ -210,6 +214,11 @@
       if (E.ui && E.ui.showTab) { try { E.ui.showTab("kxAi"); } catch (e) { /* the results show there */ } }
       if (S.aiMode !== act.mode && E.setAiMode) { inTake = true; try { E.setAiMode(act.mode); } finally { inTake = false; } }
       if (act.kind === "blender") {                                         // 🟧 Blender mode: the scene, rendered, is the picture
+        if (act.mode === "generate") {                                      // 2.806.0: ✨ Generate from the scene
+          const st = (styleSel() || {}).value || "";
+          if (E.blendLayer && E.blendLayer.isCurrent()) { E.blendLayer.generateFromScene(E.layer(), text, st); return true; }
+          if (E.layer3d && E.layer3d.editFromScene) { E.layer3d.editFromScene(E.layer(), text, "edit", editStyleNow()); return true; }
+        }
         if (E.blendLayer && E.blendLayer.isCurrent()) { E.blendLayer.editFromScene(E.layer(), text, act.mode, editStyle); return true; }   // 2.542.0: a Blender layer
         if (!E.layer3d || !E.layer3d.editFromScene) { say("the 3D layer tools are not loaded (reload the page)"); return true; }
         E.layer3d.editFromScene(E.layer(), text, act.mode, editStyle);

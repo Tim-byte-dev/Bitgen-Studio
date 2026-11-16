@@ -9240,6 +9240,20 @@ In the image preview, **🎨 Change style** now has two more controls beside it:
 
 Picking one of your cards in **🖥 GPU ▸ Runs on** (Local - <card>) failed when Settings ▸ ComfyUI starts ComfyUI with a launcher file - the usual Windows setup, ComfyUI portable's **run_nvidia_gpu.bat** - while plain **Local** worked. bitGen now reads the launcher (it never changes it), finds its python + main.py line and starts the card's own ComfyUI from it, keeping the launcher's own options (--fast, --use-sage-attention ...) and adding the card's port and --cuda-device. A custom launch command is read the same way. If a launcher has no such line, ComfyUI portable's or a venv's own python is used; if there is nothing to go on, the line under the row in Runs on says so as soon as you pick the card.
 
+## Blender layers: Generate from the scene, live layers (2.806.0)
+
+In the image editor, a Blender layer now works with the prompt docker's **✨ Generate** too, and it stays live.
+
+- **✨ Generate from the scene** - pick the Blender layer, type in the prompt docker and press ✨ Generate (the button reads **✨ Generate · 🟧 Blender**). The scene (the view as shown, or a Blender render - the 🟧 Blender tab's Edit from), the prompt and the References docker's pictures, if there are any, make a new picture. An edit model picked in the prompt docker gets the scene as picture 1; with references, they go along to the edit model (two at most - the 🟧 tab's References "Never" keeps them out); a picture style (SDXL, FLUX …) redraws the scene at the 🟧 tab's **Scene strength** (low keeps the scene, high makes it new). Basic Settings' Override (checkpoint, LoRAs, steps, CFG) rides along when it is on. Each result is a new ordinary layer above the Blender layer.
+- **The Blender layer is live** - pick it and its scene opens again in the scene tools, with its edits; pick another layer and the tools close, the Blender layer keeping the view. The layers your edits make are ordinary picture layers. Untick **Live** in the 🟧 Blender tab to open the tools only with 🟧.
+
+## Missing models: download here or send to the pod (2.806.0)
+
+Before a render, bitGen checks the models and LoRAs it needs:
+
+- **On this computer** - a file in bitGen's download list downloads as before. A file that is not in the list (a LoRA, a fine-tune) is now looked for online by its name (its Civitai info card, a Civitai search, your remote models list); found = **⬇ Download** fetches it into ComfyUI's models folder here, then the render goes on.
+- **On a RunPod pod** - a render that goes to a pod is now checked against that pod: the box **Models not on <pod>** lists what the pod lacks and **⬆ Send to <pod>** puts it there (from its download link, Civitai, or sent from this computer), then the render goes on. Cancel = no render. A pod that does not answer yet is not checked - its own preparation puts the files on it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

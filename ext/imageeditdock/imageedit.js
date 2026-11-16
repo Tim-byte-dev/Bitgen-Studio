@@ -2534,11 +2534,12 @@
       rg.globalCompositeOperation = "destination-in"; rg.drawImage(mask, 0, 0);
       let prompt = (opt.prompt != null ? String(opt.prompt).trim() : "") || $("iePrompt").value.trim() || (api.mainPrompt ? api.mainPrompt() : "");
       if (!prompt && hasHole && mode === "generate") prompt = "the same scene continues naturally, seamless, same style and light";
-      const req = { mode: mode === "background" ? "generate" : mode, prompt, count: S.count, strength: mode === "refine" ? S.strength : 100,
+      const req = { mode: mode === "background" ? "generate" : mode, prompt, count: S.count, strength: mode === "refine" ? (+opt.strength > 0 ? Math.round(+opt.strength) : S.strength) : 100,   // 2.806.0: opt.strength (the 🟧 Scene strength)
                     style_id: mode === "edit" ? (opt.editStyle || $("ieEditStyle").value) : (opt.style || $("ieStyle").value), width: fit.w, height: fit.h,   // 2.550.0: opt.style
                     crop: await blobOf(crop), mask: await blobOf(mask), rgba: await blobOf(rgba) };
       if (mp) { req.mask_grow = Math.round(mp.grow * fit.scale); req.mask_feather = Math.round(mp.feather * fit.scale); }
       if (whole) req.whole = "1";
+      if (opt.ovr) req.ovr = typeof opt.ovr === "string" ? opt.ovr : JSON.stringify(opt.ovr);   // 2.806.0: Basic Settings' Override (🟧 ✨ Generate)
       if (viaEdit) { req.fill_edit = "1"; req.edit_style_id = editId; req.fill_kind = mode === "generate" ? (kind === "add" ? "add" : "generate") : mode; }   // 2.553.0; 2.555.0 add
       // 2.539.0: Edit + a picture from the References docker (Picture 2); 2.556.0: up to two, named in the prompt or picked,
       // with an Edit and with every run through the edit model; a style that cannot take pictures gets their descriptions

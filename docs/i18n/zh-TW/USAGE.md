@@ -5800,6 +5800,22 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 
 在 **🖥 GPU ▸ Runs on** 中選擇你的某張顯示卡（Local - <card>）時，如果 Settings ▸ ComfyUI 是透過啟動檔案來啟動 ComfyUI 的（Windows 上常見的配置：ComfyUI portable 的 **run_nvidia_gpu.bat**），就會失敗，而普通的 **Local** 可以正常使用。現在 bitGen 會讀取啟動檔案（不會修改它），找到其中的 python + main.py 那一行，並據此啟動該顯示卡專用的 ComfyUI：保留啟動檔案自己的選項（--fast、--use-sage-attention 等），再加上該顯示卡的埠和 --cuda-device。自訂啟動命令也會用同樣的方式讀取。如果啟動檔案中沒有這樣的一行，則使用 ComfyUI portable 或 venv 內建的 python；如果完全無從判斷，在你選擇顯示卡時，Runs on 中該行下方就會說明。
 
+## Blender layers: Generate from the scene, live layers (2.806.0)
+<!-- en: blender-layers-generate-from-the-scene-live-layers-2-806-0 f30c87781c25 -->
+
+在影像編輯器中，Blender 圖層現在也能配合提示詞面板的 **✨ Generate** 使用，並且保持即時。
+
+- **✨ 從場景 Generate** - 選取 Blender 圖層，在提示詞面板中輸入並按 ✨ Generate（按鈕顯示為 **✨ Generate · 🟧 Blender**）。場景（顯示的檢視，或 Blender 渲染 - 🟧 Blender 分頁的 Edit from）、提示詞以及 References 面板中的圖片（如果有）一起生成新圖片。如果在提示詞面板中選擇了編輯模型，場景就是圖片 1；有參考圖片時會一併傳送給編輯模型（最多 2 張 - 把 🟧 分頁的 References 設為「Never」則不傳送）；圖片風格（SDXL、FLUX 等）按 🟧 分頁的 **Scene strength** 重繪場景（低則保留場景，高則全新）。Basic Settings 的 Override（檢查點、LoRA、步數、CFG）開啟時會一併使用。每個結果都作為普通新圖層放在 Blender 圖層上方。
+- **Blender 圖層是即時的** - 選取它，它的場景會連同編輯一起在場景工具中再次開啟；選取其他圖層，工具會關閉，Blender 圖層保留檢視。編輯生成的圖層是普通的圖片圖層。如果只想用 🟧 開啟工具，請在 🟧 Blender 分頁中取消勾選 **Live**。
+
+## Missing models: download here or send to the pod (2.806.0)
+<!-- en: missing-models-download-here-or-send-to-the-pod-2-806-0 a5ec219b408c -->
+
+渲染之前，bitGen 會檢查所需的模型和 LoRA：
+
+- **本機** - bitGen 下載清單中的檔案和以前一樣下載。不在清單中的檔案（LoRA、微調模型等）現在會按名稱在網路上查詢（它的 Civitai 資訊卡、Civitai 搜尋、你的遠端模型清單）；找到後 **⬇ Download** 會把它下載到本機 ComfyUI 的模型資料夾，然後繼續渲染。
+- **RunPod Pod** - 傳送到 Pod 的渲染現在會針對該 Pod 檢查：**Models not on <pod>** 對話方塊列出 Pod 缺少的檔案，**⬆ Send to <pod>** 把它們放到 Pod 上（透過下載連結、Civitai 或從本機傳送），然後繼續渲染。取消 = 不渲染。尚未回應的 Pod 不會檢查 - 它自己的準備過程會放好檔案。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

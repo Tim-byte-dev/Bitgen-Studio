@@ -5567,6 +5567,22 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 
 **🖥 GPU ▸ Runs on** で自分のカード（Local - <card>）を選ぶと、Settings ▸ ComfyUI がランチャーファイル（Windows の標準的な構成である ComfyUI portable の **run_nvidia_gpu.bat**）で ComfyUI を起動している場合に失敗していました（通常の **Local** は動作していました）。bitGen はランチャーを読み取り（変更はしません）、その python + main.py の行を見つけて、そこからカード専用の ComfyUI を起動するようになりました。ランチャー自身のオプション（--fast、--use-sage-attention など）は保ち、カードのポートと --cuda-device を加えます。カスタム起動コマンドも同じように読み取ります。そのような行がないランチャーでは、ComfyUI portable または venv 自身の python を使います。手がかりがまったくない場合は、カードを選んだ時点で Runs on の行の下にそう表示されます。
 
+## Blender layers: Generate from the scene, live layers (2.806.0)
+<!-- en: blender-layers-generate-from-the-scene-live-layers-2-806-0 f30c87781c25 -->
+
+画像エディターで、Blender レイヤーがプロンプトドッカーの **✨ Generate** にも対応し、ライブのまま保たれるようになりました。
+
+- **✨ シーンから Generate** - Blender レイヤーを選び、プロンプトドッカーに入力して ✨ Generate を押します（ボタンは **✨ Generate · 🟧 Blender** と表示されます）。シーン（表示どおりのビュー、または Blender のレンダー - 🟧 Blender タブの Edit from）、プロンプト、そして References ドッカーの画像（あれば）から新しい画像を作ります。プロンプトドッカーで編集モデルを選んでいれば、シーンが画像 1 になります。参照画像があれば編集モデルに一緒に送られます（最大 2 枚 - 🟧 タブの References を「Never」にすると送りません）。画像スタイル（SDXL、FLUX など）は 🟧 タブの **Scene strength** でシーンを描き直します（低いとシーンを保ち、高いと新しくします）。Basic Settings の Override（チェックポイント、LoRA、ステップ数、CFG）はオンのときに一緒に使われます。結果はそれぞれ Blender レイヤーの上に通常の新しいレイヤーとして入ります。
+- **Blender レイヤーはライブ** - 選ぶとそのシーンが編集ごとシーンツールで再び開きます。別のレイヤーを選ぶとツールが閉じ、Blender レイヤーはビューを保ちます。編集で作られるレイヤーは通常の画像レイヤーです。🟧 でだけツールを開きたい場合は、🟧 Blender タブの **Live** のチェックを外してください。
+
+## Missing models: download here or send to the pod (2.806.0)
+<!-- en: missing-models-download-here-or-send-to-the-pod-2-806-0 a5ec219b408c -->
+
+レンダリングの前に、bitGen は必要なモデルと LoRA を確認します:
+
+- **このコンピューター** - bitGen のダウンロードリストにあるファイルはこれまでどおりダウンロードされます。リストにないファイル（LoRA、ファインチューンなど）は、名前でオンライン検索されるようになりました（Civitai 情報カード、Civitai 検索、リモートモデルの一覧）。見つかれば **⬇ Download** でここの ComfyUI のモデルフォルダーに取得し、レンダリングが続きます。
+- **RunPod の Pod** - Pod に送られるレンダリングは、その Pod に対して確認されるようになりました。**Models not on <pod>** ボックスに Pod にないものが並び、**⬆ Send to <pod>** で Pod に置きます（ダウンロードリンク、Civitai、またはこのコンピューターから送信）。その後レンダリングが続きます。キャンセル = レンダリングしません。まだ応答しない Pod は確認されず、Pod 自身の準備でファイルが置かれます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

@@ -5464,23 +5464,23 @@
   },
   {
    "s": "Models not found",
-   "src": "static/modelsfound.js:64"
+   "src": "static/modelsfound.js:71"
   },
   {
    "s": "None of these can be downloaded from here. Put the files in the folders above, then press Generate again",
-   "src": "static/modelsfound.js:104"
-  },
-  {
-   "s": "Downloading",
-   "src": "static/modelsfound.js:127"
-  },
-  {
-   "s": "the download failed",
-   "src": "static/modelsfound.js:136"
+   "src": "static/modelsfound.js:114"
   },
   {
    "s": "Checking again",
-   "src": "static/modelsfound.js:140"
+   "src": "static/modelsfound.js:152"
+  },
+  {
+   "s": "Downloading",
+   "src": "static/modelsfound.js:186"
+  },
+  {
+   "s": "the download failed",
+   "src": "static/modelsfound.js:195"
   },
   {
    "s": "Song separation (demucs)",
@@ -10892,31 +10892,31 @@
   },
   {
    "s": "failed - see the job log",
-   "src": "ext/imageeditdock/imageedit.js:2758"
+   "src": "ext/imageeditdock/imageedit.js:2759"
   },
   {
    "s": "rendering",
-   "src": "ext/imageeditdock/imageedit.js:2758"
+   "src": "ext/imageeditdock/imageedit.js:2759"
   },
   {
    "s": "Add as a layer",
-   "src": "ext/imageeditdock/imageedit.js:2867"
+   "src": "ext/imageeditdock/imageedit.js:2868"
   },
   {
    "s": "Open as a new document",
-   "src": "ext/imageeditdock/imageedit.js:2867"
+   "src": "ext/imageeditdock/imageedit.js:2868"
   },
   {
    "s": "Leave full screen (F or Esc)",
-   "src": "ext/imageeditdock/imageedit.js:2912"
+   "src": "ext/imageeditdock/imageedit.js:2913"
   },
   {
    "s": "Full screen editor - bitGen's bars stay (F; Esc leaves)",
-   "src": "ext/imageeditdock/imageedit.js:2912"
+   "src": "ext/imageeditdock/imageedit.js:2913"
   },
   {
    "s": "The image editor's status",
-   "src": "ext/imageeditdock/imageedit.js:2923"
+   "src": "ext/imageeditdock/imageedit.js:2924"
   },
   {
    "s": "no inpaint-capable image style",
@@ -10924,11 +10924,11 @@
   },
   {
    "s": "The image editor is open: Generate makes pictures and each one lands on its canvas as a new layer (the gallery keeps them too)",
-   "src": "ext/imageeditdock/mount.js:204"
+   "src": "ext/imageeditdock/mount.js:205"
   },
   {
    "s": "canvas",
-   "src": "ext/imageeditdock/mount.js:206"
+   "src": "ext/imageeditdock/mount.js:207"
   },
   {
    "s": "3D view",
@@ -11488,59 +11488,75 @@
   },
   {
    "s": "The view as shown (instant)",
-   "src": "ext/imageeditdock/pcblendlayer.js:33"
+   "src": "ext/imageeditdock/pcblendlayer.js:47"
   },
   {
    "s": "When the prompt names them (picture 1",
-   "src": "ext/imageeditdock/pcblendlayer.js:36"
+   "src": "ext/imageeditdock/pcblendlayer.js:50"
   },
   {
    "s": "Always (the named ones, else the first)",
-   "src": "ext/imageeditdock/pcblendlayer.js:36"
+   "src": "ext/imageeditdock/pcblendlayer.js:50"
   },
   {
    "s": "Never",
-   "src": "ext/imageeditdock/pcblendlayer.js:36"
+   "src": "ext/imageeditdock/pcblendlayer.js:50"
   },
   {
    "s": "Blender",
-   "src": "ext/imageeditdock/pcblendlayer.js:85"
+   "src": "ext/imageeditdock/pcblendlayer.js:122"
   },
   {
    "s": "The Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded here",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "Close the scene tools",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "Blender layer",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "Edit from",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
-   "s": "Blender mode: pick this layer, type in the prompt docker, ▾ Edit (or Refine) - each result comes in as a new layer above it",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "s": "Scene strength",
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
+  },
+  {
+   "s": "Live - pick the layer = its scene",
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
+  },
+  {
+   "s": "Blender mode: pick this layer, type in the prompt docker, ✨ Generate (the scene + the prompt + the References docker's pictures) or ▾ Edit / Refine - each result comes in as a new layer above it",
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
+  },
+  {
+   "s": "Generate with a picture style (SDXL, FLUX …): how much of the scene it redraws - low keeps the scene, high makes it new",
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
+  },
+  {
+   "s": "Picking a Blender layer opens its scene again (live); picking another layer closes the tools and the layer keeps the view",
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "the scene becomes a Blender layer when it is open",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "no Blender layer picked - 🟧 makes one",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "Scene tools",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "Blender scene tools (as in the timeline) - open a .blend, look around, move objects; the view becomes a Blender layer, and ▾ Edit in the prompt docker makes a picture from it",
-   "src": "ext/imageeditdock/pcblendlayer.js:261"
+   "src": "ext/imageeditdock/pcblendlayer.js:354"
   },
   {
    "s": "These",
@@ -13227,10 +13243,6 @@
    "src": "ext/imageeditdock/pcimgop.js:97"
   },
   {
-   "s": "Blender mode: the selected layer is a Blender / Daz 3D layer - Edit and Refine render its scene with Blender first and work from that picture",
-   "src": "ext/imageeditdock/pcimgop.js:97"
-  },
-  {
    "s": "Line",
    "src": "ext/imageeditdock/pclaser.js:37"
   },
@@ -14808,31 +14820,31 @@
   },
   {
    "s": "Type the instruction in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "s": "and press its",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "s": "and press its button - the results come in below, ✔ keeps one as a layer",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "s": "Type in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "s": "it renders into the selection of the selected layer (else the whole picture) and ✔ Apply blends it into that layer",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "s": "generate",
-   "src": "ext/imageeditdock/pcpromptlink.js:191"
+   "src": "ext/imageeditdock/pcpromptlink.js:195"
   },
   {
    "s": "edit",
-   "src": "ext/imageeditdock/pcpromptlink.js:237"
+   "src": "ext/imageeditdock/pcpromptlink.js:246"
   },
   {
    "s": "nothing on this layer",
@@ -25362,75 +25374,131 @@
   },
   {
    "p": "The render stopped: {0} model file it needs is not in any of ComfyUI's model paths. Download it",
-   "src": "static/modelsfound.js:78"
+   "src": "static/modelsfound.js:86"
   },
   {
    "p": "The render stopped: {0} model files it needs are not in any of ComfyUI's model paths. Download them",
-   "src": "static/modelsfound.js:78"
+   "src": "static/modelsfound.js:86"
   },
   {
    "p": "This render needs {0} model file that is not in any of ComfyUI's model paths",
-   "src": "static/modelsfound.js:80"
+   "src": "static/modelsfound.js:88"
   },
   {
    "p": "This render needs {0} model files that are not in any of ComfyUI's model paths",
-   "src": "static/modelsfound.js:80"
+   "src": "static/modelsfound.js:88"
   },
   {
    "p": "goes in {0} (Basic Settings)",
-   "src": "static/modelsfound.js:87"
+   "src": "static/modelsfound.js:95"
   },
   {
    "p": "goes in {0} (the style)",
-   "src": "static/modelsfound.js:87"
+   "src": "static/modelsfound.js:95"
   },
   {
    "p": "goes in {0} (ComfyUI refused it)",
-   "src": "static/modelsfound.js:87"
+   "src": "static/modelsfound.js:95"
   },
   {
    "p": "goes in {0} (the workflow)",
-   "src": "static/modelsfound.js:87"
+   "src": "static/modelsfound.js:95"
   },
   {
    "p": "{0} - Hugging Face: {1}",
-   "src": "static/modelsfound.js:91"
+   "src": "static/modelsfound.js:99"
   },
   {
    "p": "Hugging Face: {0}",
-   "src": "static/modelsfound.js:91"
+   "src": "static/modelsfound.js:99"
+  },
+  {
+   "p": "{0} - found on {1}: {2}",
+   "src": "static/modelsfound.js:100"
+  },
+  {
+   "p": "{0} - found on {1}",
+   "src": "static/modelsfound.js:100"
+  },
+  {
+   "p": "found on {0}: {1}",
+   "src": "static/modelsfound.js:100"
+  },
+  {
+   "p": "found on {0}",
+   "src": "static/modelsfound.js:100"
   },
   {
    "p": "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into {0}",
-   "src": "static/modelsfound.js:92"
+   "src": "static/modelsfound.js:101"
   },
   {
    "p": "Download {0} ({1})",
-   "src": "static/modelsfound.js:102"
+   "src": "static/modelsfound.js:112"
   },
   {
    "p": "Download {0}",
-   "src": "static/modelsfound.js:102"
+   "src": "static/modelsfound.js:112"
   },
   {
    "p": "Download ({0})",
-   "src": "static/modelsfound.js:102"
+   "src": "static/modelsfound.js:112"
   },
   {
-   "p": "Still not found: {0}. A download failed - the line under it says why",
-   "src": "static/modelsfound.js:149"
+   "p": "Models not on {0}",
+   "src": "static/modelsfound.js:119"
   },
   {
-   "p": "Still not found: {0}",
-   "src": "static/modelsfound.js:149"
+   "p": "This render needs 1 model file that is not on the pod {0}. Send it to the pod",
+   "src": "static/modelsfound.js:120"
+  },
+  {
+   "p": "This render needs 1 model file that is not on the pod {0}. Send them to the pod",
+   "src": "static/modelsfound.js:120"
+  },
+  {
+   "p": "This render needs {0} model files that are not on the pod {1}. Send it to the pod",
+   "src": "static/modelsfound.js:120"
+  },
+  {
+   "p": "This render needs {0} model files that are not on the pod {1}. Send them to the pod",
+   "src": "static/modelsfound.js:120"
+  },
+  {
+   "p": "Send to {0}",
+   "src": "static/modelsfound.js:131"
+  },
+  {
+   "p": "Still not there: {0}. {1}",
+   "src": "static/modelsfound.js:159"
+  },
+  {
+   "p": "Still not there: {0}",
+   "src": "static/modelsfound.js:159"
   },
   {
    "p": "Could not check again: {0}",
-   "src": "static/modelsfound.js:150"
+   "src": "static/modelsfound.js:160"
+  },
+  {
+   "p": "Sending to {0}",
+   "src": "static/modelsfound.js:165"
+  },
+  {
+   "p": "Not sent: {0}",
+   "src": "static/modelsfound.js:179"
+  },
+  {
+   "p": "Still not found: {0}. A download failed - the line under it says why",
+   "src": "static/modelsfound.js:209"
+  },
+  {
+   "p": "Still not found: {0}",
+   "src": "static/modelsfound.js:209"
   },
   {
    "p": "The download did not start: {0}",
-   "src": "static/modelsfound.js:153"
+   "src": "static/modelsfound.js:213"
   },
   {
    "p": "Back to {0} (now: {1})",
@@ -26290,15 +26358,15 @@
   },
   {
    "p": "rendering{0}",
-   "src": "ext/imageeditdock/imageedit.js:2758"
+   "src": "ext/imageeditdock/imageedit.js:2759"
   },
   {
    "p": "result {0}1 (seed {1})",
-   "src": "ext/imageeditdock/imageedit.js:2762"
+   "src": "ext/imageeditdock/imageedit.js:2763"
   },
   {
    "p": "Apply result {0}1 as a layer",
-   "src": "ext/imageeditdock/imageedit.js:2767"
+   "src": "ext/imageeditdock/imageedit.js:2768"
   },
   {
    "p": "Daz · {0}",
@@ -26350,7 +26418,7 @@
   },
   {
    "p": "{0} in the References docker",
-   "src": "ext/imageeditdock/pcblendlayer.js:102"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "p": "All closed profiles ({0}, holes cut out)",
@@ -26590,7 +26658,7 @@
   },
   {
    "p": "{0}: type in the",
-   "src": "ext/imageeditdock/pcpromptlink.js:125"
+   "src": "ext/imageeditdock/pcpromptlink.js:128"
   },
   {
    "p": "{0} corner radius",

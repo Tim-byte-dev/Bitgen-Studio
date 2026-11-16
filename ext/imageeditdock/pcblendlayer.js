@@ -25,7 +25,21 @@
  *       (/api/aiedit/compose scene_refs): the scene is the model's picture 1, the references follow, and the server
  *       renumbers + renames them in the model's own words (lib/refWords.js: FLUX.2 Klein "image 2", Qwen 2.1 "<image2>",
  *       Qwen 2511 "Picture 2"). The 🟧 Blender tab's "References" picks when: named in the prompt (default) / always / never.
- * Pure (Node: scripts/test-blendlayer542.js, test-scenerefs546.js): REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs.
+ * 2.806.0 (Tim: "when in image editor and a blender layer is being worked on an the generate button is pressed, then generate
+ *       the image from the blender scene and the prompt and reference images if any ... if a blender scene is on a layer, if
+ *       user clicks away from that layer and returns show the blender scene edited blender layers are raster layers but the
+ *       blender scene layer is live"):
+ *   ✨ GENERATE FROM THE SCENE  the prompt docker's ✨ Generate with a Blender layer picked = generateFromScene(): the scene
+ *       (as Edit from says) + the prompt + the References docker's pictures, if any (all of them up to 2 - named ones first;
+ *       the 🟧 tab's References "Never" keeps them out). How (genHow, pure): the prompt docker's style an edit model = that
+ *       model, the scene as picture 1; references there = the editor's ✏ Edit model (only an edit model takes pictures);
+ *       else a picture style that can redraw = Refine the scene with it at the 🟧 tab's Scene strength (the layout kept,
+ *       the look new); else the Edit model. Each result is a new RASTER layer above the Blender layer.
+ *   THE BLENDER LAYER IS LIVE  picking it (Layers panel, a click) opens its scene in the tools again - the scene it was made
+ *       from, with its edits; picking another layer closes them and the Blender layer keeps the view (🟧 tab ☑ Live).
+ *       pcbridgeoff.js still closes the scene for a hidden / deleted Blender layer; a hidden one is not opened.
+ * Pure (Node: scripts/test-blendlayer542.js, test-scenerefs546.js, test-blendgen806.js): REFS, refOf, docSize, RULES, ruleOf,
+ * mentions, pickRefs, genHow, strengthOf, liveStep.
  */
 (function (root) {
   "use strict";
@@ -47,6 +61,29 @@
     const named = mentions(text).filter((n) => n <= H);
     if (rule === "always") for (let i = 1; i <= H && named.length < M; i++) if (!named.includes(i)) named.push(i);
     return named.slice(0, M);
+  }
+  /** 2.806.0: how ✨ Generate makes a picture from the scene (pure). style = the prompt docker's style id, eng = the editor's
+   *  engines {edit, inpaint}, refs = how many References docker pictures go along, editId = the editor's ✏ Edit model
+   *  -> {how: "edit" | "refine" | null, style, why} */
+  function genHow(style, eng, refs, editId) {
+    const E = eng || {}, isEdit = (id) => !!id && (E.edit || []).some((x) => x.id === id);
+    if (isEdit(style)) return { how: "edit", style, why: "" };
+    const pic = (E.inpaint || []).find((x) => x.id === style && x.refine !== false);
+    const ed = isEdit(editId) ? editId : ((E.edit || [])[0] || {}).id || "";
+    if (refs > 0 && ed) return { how: "edit", style: ed, why: pic ? "the References docker's pictures go along - only an edit model takes pictures, so the ✏ Edit model makes it" : "" };
+    if (pic) return { how: "refine", style, why: "" };
+    if (ed) return { how: "edit", style: ed, why: style ? "the prompt docker's style cannot redraw a picture - the ✏ Edit model makes it" : "" };
+    return { how: null, style: "", why: "no edit model or picture style that can redraw a picture is installed" };
+  }
+  /** the 🟧 tab's Scene strength (pure): 20-95 %, 60 by default */
+  function strengthOf(v) { const n = Math.round(+v); return Number.isFinite(n) && n > 0 ? Math.max(20, Math.min(95, n)) : 60; }
+  /** 2.806.0: the layer picked changed (pure) -> "open" | "close" | "" . L = {blender, shown} of the layer picked now,
+   *  open = the scene tools are open, same = it is the layer they are on, live = ☑ Live */
+  function liveStep(L, open, same, live) {
+    if (!live) return "";
+    if (open && !same) return "close";
+    if (!open && L && L.blender && L.shown) return "open";
+    return "";
   }
   /** a new picture for a scene of w x h: the long side 1280, at least 64 */
   function docSize(w, h) {
@@ -104,11 +141,15 @@
         <div class="r"><span class="dim">${L ? "Blender layer: <b>" + esc(L.name) + "</b>" + (b && b.stem ? " · " + esc(b.stem) : "") : open ? "the scene becomes a Blender layer when it is open" : "no Blender layer picked - 🟧 makes one"}</span></div>
         <div class="r"><span>Edit from</span><select id="kblRef" title="What the prompt docker's ✏ Edit / 🔁 Refine start from while a Blender layer is picked">${REFS.map(([v, t]) => `<option value="${v}"${refOf(store.get("bl.ref", "view")) === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></div>
         <div class="r"><span>References</span><select id="kblRefs" title="✏ Edit sends the References docker's pictures with the scene - e.g. &quot;photo real blonde woman on a beach with the face of the woman in picture 1&quot; (the model's own words are put in: image 2, Picture 2 …)">${RULES.map(([v, t]) => `<option value="${v}"${ruleOf(store.get("bl.refs", "named")) === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select><span class="dim" id="kblRefN">${refsHave()} in the References docker</span></div>
-        <div class="r dim">Blender mode: pick this layer, type in the prompt docker, ▾ Edit (or Refine) - each result comes in as a new layer above it.</div>
+        <div class="r"><span>Scene strength</span><input type="range" id="kblStr" min="20" max="95" step="5" value="${strengthOf(store.get("bl.str", 60))}" title="✨ Generate with a picture style (SDXL, FLUX …): how much of the scene it redraws - low keeps the scene, high makes it new"><span id="kblStrV">${strengthOf(store.get("bl.str", 60))}%</span></div>
+        <div class="r"><label title="Picking a Blender layer opens its scene again (live); picking another layer closes the tools and the layer keeps the view"><input type="checkbox" id="kblLive"${store.get("bl.live", true) !== false ? " checked" : ""}> Live - pick the layer = its scene</label></div>
+        <div class="r dim">Blender mode: pick this layer, type in the prompt docker, ✨ Generate (the scene + the prompt + the References docker's pictures) or ▾ Edit / Refine - each result comes in as a new layer above it.</div>
         <div id="kblMsg">${esc(msg)}</div>`;
       const o = $("kblOpen"); if (o) o.onclick = () => (open ? leave() : start());
       const r = $("kblRef"); if (r) r.onchange = (e) => store.set("bl.ref", refOf(e.target.value));
       const rr = $("kblRefs"); if (rr) rr.onchange = (e) => store.set("bl.refs", ruleOf(e.target.value));
+      const ks = $("kblStr"); if (ks) ks.oninput = (e) => { store.set("bl.str", strengthOf(e.target.value)); const v = $("kblStrV"); if (v) v.textContent = strengthOf(e.target.value) + "%"; };
+      const kl = $("kblLive"); if (kl) kl.onchange = (e) => store.set("bl.live", !!e.target.checked);
       const btn = $("kblBtn"); if (btn) btn.classList.toggle("on", open);
     }
 
@@ -196,8 +237,8 @@
       const c = E.newCanvas(bmp.width, bmp.height); c.getContext("2d").drawImage(bmp, 0, 0); return c;
     }
     /** -> true when it went as a compose with references (false = nothing named / none to send: the caller edits alone) */
-    async function sceneWithRefs(scene, text, editStyle, keep, label) {
-      const all = refsAll(), rule = ruleOf(store.get("bl.refs", "named"));
+    async function sceneWithRefs(scene, text, editStyle, keep, label, ruleOver) {
+      const all = refsAll(), rule0 = ruleOf(store.get("bl.refs", "named")), rule = rule0 === "never" ? "never" : ruleOver || rule0;
       const want = mentions(text), picked = pickRefs(text, all.length, 2, rule);
       const missing = rule === "never" ? [] : want.filter((n) => n > all.length);
       if (missing.length) say(`the References docker has ${all.length} picture(s) - picture ${missing.join(", ")} is not there${picked.length ? "" : " (the scene goes alone)"}`);
@@ -254,6 +295,58 @@
       return c;
     }
 
+    /* ---- 2.806.0: ✨ Generate from the scene + the prompt + the References docker's pictures (if any) */
+    /** Basic Settings ▸ Override style on = its steps / CFG / checkpoint / LoRAs ride along (as the prompt docker's Generate) */
+    function ovrNow() {
+      try {
+        if (typeof root.ovrStyleOn === "function" && !root.ovrStyleOn()) return null;
+        const b = typeof root.imgBasicsBody === "function" ? root.imgBasicsBody({}) || {} : {}, o = {};
+        ["steps", "cfg", "model", "lora_weights", "extra_loras", "mm_override"].forEach((k) => { if (b[k] !== undefined) o[k] = b[k]; });
+        return Object.keys(o).length ? o : null;
+      } catch (e) { return null; }
+    }
+    async function generateFromScene(L, text, style) {
+      if (!isBL(L)) { say("pick a Blender layer first"); return null; }
+      const t = String(text || "").trim();
+      if (!t) { say("type in the prompt docker what to make of the scene (e.g. \"a photo of a cosy living room, evening light\")"); return null; }
+      if (S.busy && !(E.pending && !E.pending.auto)) { say("still working on the last one"); return null; }
+      const rule = ruleOf(store.get("bl.refs", "named"));
+      const nRefs = rule === "never" ? 0 : Math.min(2, refsHave());
+      const g = genHow(style || "", S.engines || {}, nRefs, ($("ieEditStyle") || {}).value || "");
+      if (!g.how) { status(g.why); say("✨ " + g.why); return null; }
+      let c = null;
+      try { c = await reference(L); } catch (e) { status("Blender: " + e.message); say("Blender: " + e.message); return null; }
+      const label = "✨ " + (L.bscene.stem || L.name);
+      if (g.why) say("✨ " + g.why);
+      if (root.H3TestEvent) { try { root.H3TestEvent("ie_blendgen", g.how + (nRefs ? "+" + nRefs : "")); } catch (e) { /* the 🧪 list */ } }
+      if (g.how === "edit") {
+        if (nRefs && await sceneWithRefs(c, t, g.style, L, label, "always")) return c;
+        status("🟧 the scene + the prompt go to the edit model - each result is a new layer");
+        await E.runAI({ mode: "edit", prompt: t, editStyle: g.style, source: c, whole: true, into: false, direct: true, keep: L, label, noRefs: true, ovr: ovrNow() });
+        return c;
+      }
+      const k = strengthOf(store.get("bl.str", 60));
+      status(`🟧 the scene is redrawn with the prompt's picture style at ${k} % - each result is a new layer`);
+      await E.runAI({ mode: "refine", prompt: t, style: g.style, strength: k, source: c, whole: true, into: false, direct: true, keep: L, label, ovr: ovrNow() });
+      return c;
+    }
+
+    /* ---- 2.806.0: THE BLENDER LAYER IS LIVE - picked = its scene open again, another layer picked = closed (the view kept) */
+    let lastPick = null;
+    function followPick() {
+      const L = S.w ? E.layer() : null;
+      if (L === lastPick) return;
+      lastPick = L;
+      if (!TB() || !TB().attach) return;
+      const shown = L ? (E.D && E.D.shown ? E.D.shown(S.layers, L) : L.visible !== false) : false;
+      const step = liveStep(L ? { blender: isBL(L), shown } : null, open, !!L && L === target, store.get("bl.live", true) !== false);
+      if (step === "close") leave(false, false);
+      else if (step === "open" && !S.busy) { start(); if (root.H3TestEvent) { try { root.H3TestEvent("ie_blendlive", L.bscene.stem || ""); } catch (e) { /* the 🧪 list */ } } }
+    }
+    const prevPanel = E.renderLayersPanel;
+    if (typeof prevPanel === "function") E.renderLayersPanel = function () { const r = prevPanel.apply(this, arguments); try { root.setTimeout(followPick, 0); } catch (e) { /* fine */ } return r; };
+    root.setInterval(() => { try { followPick(); } catch (e) { /* fine */ } }, 700);
+
     /* ---- the button + the command; the tab follows the picked layer */
     const mr = $("kxFull") ? $("kxFull").parentNode : null;
     if (mr) {
@@ -268,10 +361,10 @@
     const prevShow = E.ui.showTab;
     E.ui.showTab = function (id) { const r = prevShow.apply(this, arguments); if (id === "kbl") paint(); return r; };
     paint();
-    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, isOpen: () => open, keepView, editFromScene, reference, paint, wrap, target: () => target };
+    E.blendLayer = { isCurrent: () => !!cur(), current: cur, start, leave, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
   }
 
-  const PCBlendLayer = { REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, install };
+  const PCBlendLayer = { REFS, refOf, docSize, RULES, ruleOf, mentions, pickRefs, genHow, strengthOf, liveStep, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCBlendLayer;
   else root.PCBlendLayer = PCBlendLayer;
 })(typeof window !== "undefined" ? window : globalThis);

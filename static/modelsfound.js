@@ -20,6 +20,13 @@
  *                 /api/aiedit(/compose) is checked first, whoever sends it (the image editor's ✨ AI, the StoryBoard, the
  *                 characters, the timeline …); Cancel = 409 {error, models_missing} to that caller. Just checked = not
  *                 asked again for 10 s. "X-Models-Check: skip" = not checked (the 🩺 Style doctor).
+ *   2.806.0 (Tim: "If any lora/model is missing popup a message box asking if bitgen should download it, download it to local
+ *                 if generation is in local mode or send to the pod if in runpod mode"): a render on a RunPod pod is checked
+ *                 against THAT pod (r.place "pod") - the box says "Models not on <pod>" and ⬆ Send to <pod> puts them there
+ *                 (POST /api/models/pod-send - on the pod already / its link / Civitai / sent from this computer), the bar
+ *                 follows GET /api/models/pod-send, then checked again; here, a file not in bitGen's download list that was
+ *                 found online (m.online: Civitai …) downloads too (POST /api/models/fetch into ComfyUI's models/<folder>).
+ *                 The image editor's runs carry Basic Settings' Override (ovr: checkpoint + temporary LoRAs) into the check.
  */
 (function (root) {
   "use strict";
@@ -72,9 +79,10 @@
     btns.appendChild(go); btns.appendChild(no);
     d.appendChild(h); d.appendChild(p); d.appendChild(ul); d.appendChild(note); d.appendChild(btns);
     doc.body.appendChild(d);
-    var rows = {};
+    var rows = {}, onl = {}, pod = r.place === "pod" ? { id: r.pod_id, name: r.pod_name || r.pod_id } : null;
     function paint(res) {
       var miss = res.missing || [];
+      if (pod) { paintPod(miss); return; }
       if (opt.job) p.textContent = miss.length === 1 ? "The render stopped: " + miss.length + " model file it needs is not in any of ComfyUI's model paths. Download it?"
         : "The render stopped: " + miss.length + " model files it needs are not in any of ComfyUI's model paths. Download them?";
       else p.textContent = miss.length === 1 ? "This render needs " + miss.length + " model file that is not in any of ComfyUI's model paths:"
@@ -89,6 +97,7 @@
         li.appendChild(where);
         var src = el("span", m.source ? "mfsrc" : "mfsrc none");
         if (m.source) src.textContent = "⬇ " + (gb(m.source.size) ? gb(m.source.size) + " - " : "") + "Hugging Face: " + m.source.repo;
+        else if (m.online) { src.className = "mfsrc"; src.textContent = "⬇ " + (gb(m.online.size) ? gb(m.online.size) + " - " : "") + "found on " + m.online.from + (m.online.model ? ": " + m.online.model : ""); }   // 2.806.0
         else src.textContent = "Not in bitGen's download list - download it yourself (Civitai, Hugging Face) into " + m.folder;
         li.appendChild(src);
         var bar = el("div", "mfbar"); bar.appendChild(el("i"));
@@ -96,12 +105,30 @@
         li.appendChild(bar); li.appendChild(err);
         ul.appendChild(li);
         if (m.source) rows[m.source.id] = { li: li, bar: bar, err: err };
+        else if (m.online) onl[m.name] = { li: li, bar: bar, err: err, cat: m.cat };
       });
-      var n = Object.keys(rows).length;
-      var total = miss.reduce(function (t, m) { return t + (m.source ? +m.source.size || 0 : 0); }, 0);
+      var n = Object.keys(rows).length + Object.keys(onl).length;
+      var total = miss.reduce(function (t, m) { return t + (m.source ? +m.source.size || 0 : m.online ? +m.online.size || 0 : 0); }, 0);
       go.textContent = "⬇ Download" + (n > 1 ? " " + n : "") + (total ? " (" + gb(total) + ")" : "");
       go.disabled = !n;
       note.textContent = n ? "" : "None of these can be downloaded from here. Put the files in the folders above, then press Generate again";
+    }
+    /* 2.806.0: what the pod lacks - ⬆ Send to <pod> */
+    var podRows = {};
+    function paintPod(miss) {
+      h.textContent = "Models not on " + pod.name;
+      p.textContent = (miss.length === 1 ? "This render needs 1 model file that is not on the pod " : "This render needs " + miss.length + " model files that are not on the pod ") + pod.name + ". Send " + (miss.length === 1 ? "it" : "them") + " to the pod?";
+      ul.textContent = ""; podRows = {};
+      miss.forEach(function (m) {
+        var li = el("li"); li.dataset.name = m.name;
+        li.appendChild(el("span", "mfname", m.name));
+        li.appendChild(el("span", "mfwhere", "goes in " + m.folder + " on the pod"));
+        li.appendChild(el("span", "mfsrc", m.here ? "⬆ on this computer (or its download link / Civitai - the pod takes the quickest)" : "found online by its name (Civitai, Hugging Face), else not to be had"));
+        var bar = el("div", "mfbar"); bar.appendChild(el("i")); var err = el("span", "mferr"); err.style.display = "none";
+        li.appendChild(bar); li.appendChild(err); ul.appendChild(li);
+        podRows[m.name] = { li: li, bar: bar, err: err, cat: m.cat };
+      });
+      go.textContent = "⬆ Send to " + pod.name; go.disabled = !miss.length; note.textContent = "";
     }
     paint(r);
     return new Promise(function (resolve) {
@@ -121,9 +148,41 @@
         done(false);
       };
       d.addEventListener("cancel", function (e) { e.preventDefault(); no.onclick(); });
+      function again(failedNote) {
+        note.textContent = "Checking again…";
+        jpost("/api/models/check", req).then(function (r2) {
+          if (!r2.checked || !(r2.missing || []).length) {
+            log(pod ? "the files are on the pod " + pod.name + " - the render goes on" : opt.job ? "the missing models are in place - press ↻ Retry on the job in the Queue docker, or Generate again" : "the missing models are in place - the render goes on");
+            done(true); return;
+          }
+          r = r2; paint(r2); busy = false;
+          note.textContent = "Still not there: " + r2.missing.length + ". " + (failedNote || "");
+        }).catch(function (e) { busy = false; note.textContent = "Could not check again: " + e.message; go.disabled = false; });
+      }
+      /* 2.806.0: ⬆ Send to <pod> */
+      function sendPod() {
+        var names = Object.keys(podRows); if (!names.length) return;
+        busy = true; go.disabled = true; note.textContent = "Sending to " + pod.name + "…";
+        names.forEach(function (n) { podRows[n].bar.style.display = "block"; });
+        jpost("/api/models/pod-send", { pod_id: pod.id, items: names.map(function (n) { return { name: n, cat: podRows[n].cat }; }) }).then(function () {
+          timer = setInterval(function () {
+            realFetch("/api/models/pod-send?pod_id=" + encodeURIComponent(pod.id)).then(function (x) { return x.json(); }).then(function (st) {
+              (st.done || []).forEach(function (d) { Object.keys(podRows).forEach(function (n) { if (n.split("/").pop() === String(d.name).split("/").pop()) podRows[n].bar.firstChild.style.width = "100%"; }); });
+              (st.failed || []).forEach(function (f) { var R = podRows[f.name]; if (R) { R.err.textContent = f.why; R.err.style.display = ""; } });
+              if (st.current && podRows[st.current]) podRows[st.current].bar.firstChild.style.width = Math.max(5, +st.pct || 0) + "%";
+              if (st.note) note.textContent = st.note;
+              if (st.running) return;
+              clearInterval(timer); timer = 0;
+              again((st.failed || []).length ? "A file could not be sent - the line under it says why." : "");
+            }).catch(function () { /* next tick */ });
+          }, 1000);
+        }).catch(function (e) { busy = false; go.disabled = false; note.textContent = "Not sent: " + e.message; });
+      }
       go.onclick = function () {
-        var ids = Object.keys(rows);
-        if (!ids.length || busy) return;
+        if (pod) { if (!busy) sendPod(); return; }
+        var ids = Object.keys(rows), names = Object.keys(onl);
+        if ((!ids.length && !names.length) || busy) return;
+        if (!ids.length) { fetchOnline(names); return; }
         busy = true; go.disabled = true; note.textContent = "Downloading…";
         ids.forEach(function (id) { rows[id].bar.style.display = "block"; rows[id].err.style.display = "none"; });
         jpost("/api/setup/download", { ids: ids }).then(function () {
@@ -137,6 +196,7 @@
               });
               if (st.busy || !st.result) return;
               clearInterval(timer); timer = 0; busy = false;
+              if (Object.keys(onl).length) { fetchOnline(Object.keys(onl)); return; }   // 2.806.0: then the ones found online
               note.textContent = "Checking again…";
               jpost("/api/models/check", req).then(function (r2) {
                 if (!r2.checked || !(r2.missing || []).length) {
@@ -152,6 +212,26 @@
           }, 800);
         }).catch(function (e) { busy = false; go.disabled = false; note.textContent = "The download did not start: " + e.message; });
       };
+      /* 2.806.0: the files found online -> ComfyUI's models folders here */
+      function fetchOnline(names) {
+        busy = true; go.disabled = true; note.textContent = "Downloading…";
+        names.forEach(function (n) { onl[n].bar.style.display = "block"; onl[n].err.style.display = "none"; });
+        jpost("/api/models/fetch", { items: names.map(function (n) { return { name: n, cat: onl[n].cat }; }) }).then(function () {
+          timer = setInterval(function () {
+            realFetch("/api/models/fetch").then(function (x) { return x.json(); }).then(function (st) {
+              var bad = 0;
+              names.forEach(function (n) {
+                var f = (st.files || {})[n], R = onl[n]; if (!f || !R) return;
+                R.bar.firstChild.style.width = (f.state === "ok" ? 100 : f.total ? Math.min(100, Math.floor(100 * f.got / f.total)) : 3) + "%";
+                if (f.state === "err") { bad++; R.err.textContent = f.error || "the download failed"; R.err.style.display = ""; }
+              });
+              if (st.busy) return;
+              clearInterval(timer); timer = 0;
+              realFetch("/api/models/found?refresh=1&names=0").then(function () { again(bad ? "A download failed - the line under it says why." : ""); }, function () { again(""); });
+            }).catch(function () { /* next tick */ });
+          }, 800);
+        }).catch(function (e) { busy = false; go.disabled = false; note.textContent = "The download did not start: " + e.message; });
+      }
       d.showModal();
       no.focus();                                     // Enter = Cancel: a 10 GB download is never one stray key away
     });
@@ -201,7 +281,7 @@
     if (!body || typeof body !== "object") return null;
     var f = function (k) { return field(body, k); };
     if (kind === "video") return { kind: "video", video_style_id: f("video_style_id") || "", mode: f("mode") || "ref2va", basic: f("basic") || "", extra_loras: loras(f("extra_loras")) };
-    if (kind === "aiedit") return { kind: "aiedit", style_id: f("style_id") || "", mode: f("mode") || "", fill_edit: f("fill_edit") || "", edit_style_id: f("edit_style_id") || "" };
+    if (kind === "aiedit") return { kind: "aiedit", style_id: f("style_id") || "", mode: f("mode") || "", fill_edit: f("fill_edit") || "", edit_style_id: f("edit_style_id") || "", ovr: f("ovr") || "" };   // 2.806.0: + ovr
     if (kind === "music") return { kind: "music", style_id: f("style_id") || "" };
     var q = { kind: "image", style_id: f("style_id") || "" };
     if (f("model")) q.model = f("model");
@@ -229,7 +309,7 @@
       if (!q) return orig(input, init);
       return ensure(q).then(function (go) {
         if (go) return orig(input, init);
-        return new Response(JSON.stringify({ error: "Not rendered - model files it needs are not in ComfyUI's model paths (cancelled). The Console lists them.", models_missing: true }),
+        return new Response(JSON.stringify({ error: "Not rendered - model files it needs are not there (cancelled). The Console lists them.", models_missing: true }),
           { status: 409, headers: { "Content-Type": "application/json" } });
       });
     };

@@ -72,7 +72,7 @@
   function labelFor(id, strength, blender) {
     const o = opOf(id);
     if (o.id === "refine") return `${o.icon} ${o.label} ${Math.round(+strength || 50)}%` + (blender ? " · 🟧" : "");
-    if (o.id === "edit" && blender) return `${o.icon} ${o.label} · 🟧 Blender`;
+    if ((o.id === "edit" || o.id === "generate") && blender) return `${o.icon} ${o.label} · 🟧 Blender`;   // 2.806.0: + Generate
     return `${o.icon} ${o.label}`;
   }
   /** the dropdown is there only while the prompt docker makes pictures */
@@ -97,7 +97,7 @@
     box.innerHTML = `<select id="pmOpSel" title="What the Generate button does with the picture in the image editor (Krita AI's way)" aria-label="Image operation">`
       + OPS.map((o) => `<option value="${o.id}" title="${o.tip.replace(/"/g, "&quot;")}">${o.icon} ${o.label}</option>`).join("") + `</select>`
       + `<span id="pmRefWrap" title="How much Refine changes (5 % = a touch, 95 % = nearly new)"><span>strength</span><input type="range" id="pmRefine" min="5" max="95" step="5"><span id="pmRefineV"></span></span>`
-      + `<span id="pmBlendChip" title="Blender mode: the selected layer is a Blender / Daz 3D layer - Edit and Refine render its scene with Blender first and work from that picture">🟧 Blender</span>`
+      + `<span id="pmBlendChip" title="Blender mode: the selected layer is a Blender / Daz 3D layer - Generate, Edit and Refine work from its scene (Generate: the scene + the prompt + the References docker's pictures)">🟧 Blender</span>`
       + `<span id="pmSrcChip" title="What the button works from: the References docker's pictures (the image editor closed), the selected layer / the layers picked with Ctrl-click (open), or the selection"></span>`;
     bar.insertBefore(box, bar.firstChild);
     let op = opOf(store.get("imgop", "generate")).id, quiet = false;
@@ -123,7 +123,7 @@
       $("pmSrcChip").textContent = src; $("pmSrcChip").hidden = !src;
       $("pmRefWrap").hidden = op !== "refine";
       $("pmRefine").value = strength(); $("pmRefineV").textContent = strength() + "%";
-      $("pmBlendChip").hidden = !(blender() && (op === "edit" || op === "refine"));
+      $("pmBlendChip").hidden = !(blender() && (op === "edit" || op === "refine" || op === "generate"));   // 2.806.0: + Generate
       if (typeof root.paintGoLabel === "function") { try { root.paintGoLabel(); } catch (e) { /* the page's */ } }
     }
     /** pick an op: the ✨ AI panel follows (its tab), the button's words follow */
@@ -145,7 +145,7 @@
     if (E.ui) E.ui.history = function () { const r = prevHist ? prevHist.apply(this, arguments) : undefined; try { paint(); } catch (er) { /* fine */ } return r; };
     // the page sets the mode in code too (sel.value = …; sel.onchange() - no change event): a light look twice a second
     root.setInterval(() => {
-      const chipOff = !(blender() && (op === "edit" || op === "refine"));
+      const chipOff = !(blender() && (op === "edit" || op === "refine" || op === "generate"));
       if ($("pmBlendChip").hidden !== chipOff || box.hidden !== !shown(genMode()) || sourceText(srcState()) !== lastSrc || available(op, editorOn()) === false
           || [...$("pmOpSel").options].some((o) => o.hidden === available(o.value, editorOn()))) paint();
     }, 500);

@@ -14072,6 +14072,16 @@ node scripts/test-launchline805.js > /tmp/launchline805.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui805-ui.js > /tmp/ui805.log 2>&1 \
   && ok "2.805.0 the preview's style dropdown + Basic Settings tick in a real browser: the picked style and the Basic Settings it last had sent, pictures only, kept" \
   || { bad "2.805.0 preview style browser test"; grep -a "^FAIL" -A1 /tmp/ui805.log | head -12; }
+# ---- 2.806.0 (Tim: "when in image editor and a blender layer is being worked on an the generate button is pressed, then generate the image from the blender scene ..." + missing models download / send to the pod + the live Blender layer)
+node scripts/test-blendgen806.js > /tmp/blendgen806.log 2>&1 \
+  && ok "2.806.0 Generate from a Blender layer's scene + the live layer units" \
+  || { bad "2.806.0 Blender generate units"; grep -a "^FAIL" -A1 /tmp/blendgen806.log | head -12; }
+node scripts/test-modelswhere806.js > /tmp/modelswhere806.log 2>&1 \
+  && ok "2.806.0 missing models: checked against the pod, found online + downloaded here" \
+  || { bad "2.806.0 missing models units"; grep -a "^FAIL" -A1 /tmp/modelswhere806.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui806-ui.js > /tmp/ui806.log 2>&1 \
+  && ok "2.806.0 Blender layer Generate + live layer + the models box (send to pod / download) in a real browser" \
+  || { bad "2.806.0 Blender generate browser test"; grep -a "^FAIL" -A1 /tmp/ui806.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

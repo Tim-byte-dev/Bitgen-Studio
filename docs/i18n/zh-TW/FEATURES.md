@@ -450,6 +450,8 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **雷射刀路和 G-code** — Laser 面板：GRBL 或 Marlin 機器設定，每個圖層一個操作（Line 切割 / 劃線、Fill 填充線、Offset fill、Image 光柵雕刻 - 抖動、閾值或灰度），圖片圖層按中心線或輪廓描摹，用 ControlNet 前處理器從圖片生成線稿，帶時間和距離的刀路預覽，G-code 儲存到專案中。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
 - **通過 USB 或 Wi-Fi 傳送到雷射機** — Laser 面板連線機器（USB 序列埠或 Wi-Fi / TCP，由 bitGen 的伺服器保持，桌面應用中也可）：回原點、解鎖、走邊框、開始（先確認）、暫停 / 繼續、始終可用的 STOP、主控台；為自帶雷射軟體的機器匯出 SVG + PNG。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.804.0
 - **用任意風格 + 它的基本設定 Change style** — 影像預覽中 🎨 Change style 旁邊：風格下拉式清單（提示詞的風格或任意影像風格）和 ☐ Basic Settings（該風格上次的步數、CFG、種子和檢查點）；只在顯示圖片時出現。*Where:* 影像預覽。*Since:* 2.805.0
+- **從 Blender 圖層的場景 Generate + 即時 Blender 圖層** — 選取 Blender 圖層後 ✨ Generate 會用它的場景、提示詞和 References 面板的圖片生成圖片（編輯模型，或按場景強度使用圖片風格）；選取該圖層會再次開啟場景，選取其他圖層則關閉。*Where:* 影像編輯器 ▸ 🟧 Blender 分頁 + 提示詞面板。*Since:* 2.806.0
+- **缺少的模型：下載到本機或傳送到 Pod** — 渲染缺少的模型 / LoRA 按名稱在網路上查詢並下載到本機，或（在 RunPod Pod 上）詢問後 ⬆ Send to <pod>。*Where:* Models not found 對話方塊。*Since:* 2.806.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾
