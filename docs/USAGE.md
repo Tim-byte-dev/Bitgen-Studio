@@ -9146,6 +9146,24 @@ Your LLM and vision models from a source are in the prompt docker's LLM / Vision
 
 Basic Settings' lists show every model of the style's family - picture models and edit models alike. Before, an edit style listed only the family's edit models and a picture style only its picture models; some models (FLUX.2 Klein, for one) both make and edit pictures, so the split hid ones that work. The line under the checkpoint now names just the family (for example "For Krea 2 Raw: Krea - 2 models").
 
+## Pages and document export (2.799.0)
+
+The image editor can now make documents of many pages, each page with its own layers - for brochures, flyers, menus, cards and the like.
+
+- **File ▸ New Document with Pages…** - a name, the page size (A3, A4, A5, A6, Letter, Legal, Tabloid, Business card, DL, Square, or your own in mm), portrait or landscape, the resolution (72 - 300 dpi) and how many pages. Any open picture becomes a one-page document the first time you add a page.
+- **Window ▸ Pages** - the strip of pages (it shows by itself for a document of more than one page). Click a page to work on it; drag to move it; double-click its name to rename it. **＋ Page** adds one after this page at the same size, **⧉** copies this page with its layers, **▲ ▼** move it, **🗑** deletes it (click twice).
+- **Each page keeps its own** layers, selection, paths, channels, layer comps and undo history - switching pages never mixes them.
+- **📐 Page setup…** - this page's size, orientation and resolution. The page's canvas follows: another size works like Canvas Size (centred, the new room white), another resolution like Image Size. Both can be undone.
+- **⤓ Export…** (also **File ▸ Export ▸ Document (PDF / AI / SVG)…**) - every page with its layers:
+  - **PDF** - each page at its size; each layer is a PDF layer (named "Page 2 / Logo"). Shapes go as real paths (fill, outline, dashes, opacity), plain type as real, selectable text (with **Embed fonts**, in its own font from this computer - only the letters used; else Helvetica / Times / Courier), everything else as a picture of just that layer. An adjustment layer, a blend mode other than Normal or a clipped layer needs what is under it, so everything up to it becomes one "Flattened" picture.
+  - **.ai** - the same PDF saved as a PDF-compatible .ai (vector apps open one page at a time).
+  - **SVG pages** - a .zip with one .svg a page, each layer a layer group.
+  - **For .cdr** - a .zip with the PDF and the SVG pages. A .cdr file has no open way to be written, so open the PDF (or the SVG pages) in your vector app and save it as .cdr there.
+  - Saved in the project's **dtp** folder and downloaded.
+- **Save Project (.bgi)** keeps every page and opens them all again.
+
+Coming next: master pages and page numbers, linked text frames, and print-ready PDF (bleed, crop marks, CMYK).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

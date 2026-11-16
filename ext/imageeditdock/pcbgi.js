@@ -97,7 +97,7 @@
     const f32 = (a, b) => { const o = new Float32Array(a.length + b.length); o.set(a, 0); o.set(b, a.length); return new Uint8Array(o.buffer); };
 
     /* ---------------- write ---------------- */
-    async function toBytes() {
+    async function toBytes(opts) {
       await libs();
       const X = win.BgXml, Z = win.BgZip, files = [], SM = E.smart || {};
       const STORE = SM.STORE || new Map(), FIELDS = SM.FIELDS || new Map();
@@ -146,6 +146,8 @@
         m.patterns = [];
         for (const n of used) { const c = PT.tile(n); if (c) m.patterns.push({ name: n, png: await putPng(`patterns/${String(n).replace(/[^\w .()&+-]+/g, "_")}.png`, c) }); }
       }
+      // 2.799.0: a document of pages (pcpages.js) - every other page as its own .bgi inside (pages/<id>.bgi); this one stays the main document
+      if (!(opts && opts.nested) && E.pages && E.pages.count() > 1) m.pages = await E.pages.toBgi(async () => (await toBytes({ nested: true })).bytes, (name, data) => put(name, data));
       try { put("preview.png", await pngOf(E.flatten())); } catch (e) { /* no preview */ }
       const app = (win.H3Version || (doc.querySelector('meta[name="h3-version"]') || {}).content || "");
       const xml = X.doc("bitgen-image", { version: VERSION, app, w: S.w, h: S.h, name: S.name || "", layers: S.layers.length, saved: new Date().toISOString() },
@@ -189,7 +191,8 @@
     }
     const bytesOf = (files, name) => (name && files.get(name)) || null;
     const chansOf = (files, list) => (list || []).map((c) => Object.assign({ id: c.id, name: c.name, w: c.w, h: c.h, data: bytesOf(files, c.file) ? Uint8Array.from(bytesOf(files, c.file)) : new Uint8Array((c.w || 1) * (c.h || 1)) }, c.spot ? { spot: { color: String(c.spot.color || "#000000"), solidity: +c.spot.solidity || 0 } } : {}));
-    async function openBytes(u8, fileName) {
+    async function openBytes(u8, fileName, opts) {
+      const o = opts || {};   // 2.799.0: {inPlace, nested, docName} - a page of a document of pages, opened into the document in front
       await libs();
       const X = win.BgXml, Z = win.BgZip;
       const files = await Z.unzipAsync(u8 instanceof Uint8Array ? u8 : new Uint8Array(u8));
@@ -233,7 +236,7 @@
         }
       }
       const name = m.name || stemOf(fileName) + ".png";
-      E.openDoc(m.w, m.h, name, null);
+      E.openDoc(m.w, m.h, o.inPlace ? (o.docName || S.name) : name, null, o.inPlace ? { inPlace: true } : undefined);
       const b = await buildLayers(m.layers, files, m.w, m.h);
       remap(m, b.map);
       b.layers.forEach((L, i) => { L.parent = m.layers[i].parent; });
@@ -250,10 +253,13 @@
       const sb = bytesOf(files, m.sel);
       E.setSel(sb && sb.length === m.w * m.h ? Uint8Array.from(sb) : new Uint8Array(m.w * m.h), true);
       for (const L of S.layers) if (D && D.isLive(L)) { try { D.rasterize(L); } catch (e) { /* drawn on the next refresh */ } }
-      S.undo = []; S.redo = []; S.savedTop = undefined; S.bgiName = stemOf(fileName) + ".bgi";
+      S.undo = []; S.redo = []; S.savedTop = undefined;
+      if (o.nested) return { layers: S.layers.length, w: m.w, h: m.h };
+      S.bgiName = stemOf(fileName) + ".bgi";
       E.snapHistorySource(); E.refresh(); E.renderLayersPanel(); if (E.ui.history) E.ui.history();
       if (E.comps && E.comps.paint) E.comps.paint();
       if (E.docs && E.docs.paint) E.docs.paint();
+      if (m.pages && E.pages) { const keep = S.name; await E.pages.fromBgi(m.pages, files, (bytes) => openBytes(bytes, fileName, { inPlace: true, nested: true, docName: keep })); }   // 2.799.0
       say(`${S.bgiName}: ${S.layers.length} layer(s), ${m.w}×${m.h}` + ((m.smart || []).length ? ` · ${m.smart.length} smart object(s)` : "") + ((m.comps || []).length ? ` · ${m.comps.length} layer comp(s)` : ""));
       return { layers: S.layers.length, w: m.w, h: m.h, smart: (m.smart || []).length, comps: (m.comps || []).length };
     }

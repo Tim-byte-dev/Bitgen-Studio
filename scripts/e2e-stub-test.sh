@@ -14020,6 +14020,16 @@ H3_URL=http://127.0.0.1:8311/ node scripts/test-ui795-ui.js > /tmp/ui795ui.log 2
 node scripts/test-basicplace797.js > /tmp/basicplace797.log 2>&1 \
   && ok "2.797.0 Basic Settings by place units: All places / This computer / RunPod / OpenRouter on the checkpoint, video Model + LoRA lists after the family filter; no ☐ Remote rows; Civitai info + Sync in the Civitai tab" \
   || { bad "2.797.0 Basic Settings by place units"; grep -a "^FAIL" -A1 /tmp/basicplace797.log | head -12; }
+# ---- 2.799.0 (Tim: "i want to give the editor full desktop publishing ability like coreldraw, user can add multiple pages each page will have it's own layers. export to cdr, ai,pdf")
+node scripts/test-pages799.js > /tmp/pages799.log 2>&1 \
+  && ok "2.799.0 pages units: sizes / orientation / dpi, the page read back, moves, what a page keeps; pcdocs + pcbgi carry the pages" \
+  || { bad "2.799.0 pages units"; grep -a "^FAIL" -A1 /tmp/pages799.log | head -12; }
+node scripts/test-dtpout799.js > /tmp/dtpout799.log 2>&1 \
+  && ok "2.799.0 document export units: the path recorder, the layer plan, the PDF (each layer a PDF layer) + SVG pages, the dtp store" \
+  || { bad "2.799.0 document export units"; grep -a "^FAIL" -A1 /tmp/dtpout799.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui799-ui.js > /tmp/ui799.log 2>&1 \
+  && ok "2.799.0 pages in a real browser: New Document with Pages, each page its own layers, copy / rename / move / delete, Page setup, export PDF / .cdr pack / .ai, .bgi keeps the pages" \
+  || { bad "2.799.0 pages browser test"; grep -a "^FAIL" -A1 /tmp/ui799.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

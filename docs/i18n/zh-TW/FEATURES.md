@@ -443,6 +443,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **模型管理器的篩選改為下拉式清單** — 位置（All places / This computer / RunPod / OpenRouter，帶數量 - 之前什麼都篩不掉，已修復）、資料夾、Civitai 的類型、OpenRouter 的類型和價格都改成了下拉式清單；標籤欄的工具改為圖示。*Where:* 🧩 Model manager. *Since:* 2.796.0
 - **Basic Settings 的清單按位置篩選** — 圖片 Checkpoint、影片 Model 和每行臨時 LoRA 前面都有 All places / This computer / RunPod / OpenRouter（帶數量），在風格家族篩選之後；☐ Remote 和 Pod 行已移除（Pod 的檔案以 <pod>/<file> 選擇）；Model manager 的 Civitai info 和 Sync 在它的 Civitai 分頁中。*Where:* Basic Settings, 🧩 Model manager. *Since:* 2.797.0
 - **風格家族清單不再區分圖片 / 編輯** — Basic Settings 的清單顯示風格家族的所有模型，圖片模型和編輯模型都包括（Klein 既能生成也能編輯圖片）。*Where:* Basic Settings. *Since:* 2.798.0
+- **頁面與文件匯出** — 影像編輯器可製作多頁文件（A3 - A6、Letter、Legal、Tabloid、卡片、DL、自訂尺寸；縱向 / 橫向；72 - 300 dpi），每頁都有自己的圖層和復原歷史；Pages 清單可新增、複製、移動、重新命名和刪除頁面；Page setup；所有頁面及其圖層可匯出為 PDF（形狀為路徑，文字為真實文字，每個圖層是一個 PDF 圖層）、.ai、SVG 頁面或用於 .cdr 的包；.bgi 會儲存所有頁面。*Where:* Image editor ▸ File ▸ New Document with Pages…, Window ▸ Pages, File ▸ Export ▸ Document. *Since:* 2.799.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

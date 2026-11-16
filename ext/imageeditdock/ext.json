@@ -90,6 +90,8 @@
     "pctabdock.js",
     "pccoldock.js",
     "pcbridgeoff.js",
+    "pcpages.js",
+    "pcdtpout.js",
     "pczones.js",
     "pcpending.js",
     "imageedit.js",

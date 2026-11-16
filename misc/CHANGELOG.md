@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.799.0** — Image Editor Pages: Documents of Many Pages (Page Sizes, Orientation, dpi), Each Page With Its Own Layers + Undo; the Pages Strip (Add / Copy / Move / Rename / Delete), Page Setup; File ▸ Export ▸ Document - Every Page With Its Layers as PDF (Shapes as Paths, Type as Real Text, Each Layer a PDF Layer), PDF-Compatible .ai, SVG Pages, or a PDF + SVG Pack for .cdr, Saved in the Project's dtp Folder; .bgi Keeps Every Page
 - **2.798.0** — Basic Settings' Lists Show Every Model of the Style's Family - Picture and Edit Models Alike (the Image / Image-Edit Split Dropped: Models Like FLUX.2 Klein Both Make and Edit Pictures)
 - **2.797.0** — Basic Settings' Checkpoint, Video Model and Temporary LoRA Lists Start With a Place Dropdown - All Places / This Computer / RunPod / OpenRouter With Counts, After the Style-Family Filter (Image Mode = the Image Style's Family, Video Mode = the Video Style's); the ☐ Remote + Pod Rows Removed; the Model Manager's ⤓ Civitai Info and 🔄 Sync in Its Civitai Tab
 - **2.796.0** — 🧩 Model Manager: the Place Filter Works (a Model of This Computer Counted as 0 and Unticking Local Hid Nothing); the Filters Are Dropdowns - Place With Counts, Folder, Civitai's Type, OpenRouter's Type and Price; the Tab Bar's Tools as Icons, the Search Bar Even

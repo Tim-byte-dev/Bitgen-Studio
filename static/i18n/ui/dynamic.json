@@ -11452,19 +11452,19 @@
   },
   {
    "s": "No .bgi saved in this project yet - File ▸ Save Project (.bgi) keeps one here",
-   "src": "ext/imageeditdock/pcbgi.js:289"
+   "src": "ext/imageeditdock/pcbgi.js:295"
   },
   {
    "s": "bgi",
-   "src": "ext/imageeditdock/pcbgi.js:295"
+   "src": "ext/imageeditdock/pcbgi.js:301"
   },
   {
    "s": "also download it",
-   "src": "ext/imageeditdock/pcbgi.js:295"
+   "src": "ext/imageeditdock/pcbgi.js:301"
   },
   {
    "s": "Kept in the project's bgi folder. Everything stays editable: layers, masks, text / shape / fill / adjustment layers, styles, smart objects and their filters, paths, channels, the selection and layer comps",
-   "src": "ext/imageeditdock/pcbgi.js:295"
+   "src": "ext/imageeditdock/pcbgi.js:301"
   },
   {
    "s": "The view as shown (instant)",
@@ -12224,47 +12224,47 @@
   },
   {
    "s": "Open documents",
-   "src": "ext/imageeditdock/pcdocs.js:102"
+   "src": "ext/imageeditdock/pcdocs.js:103"
   },
   {
    "s": "Click to bring this document to the front",
-   "src": "ext/imageeditdock/pcdocs.js:102"
+   "src": "ext/imageeditdock/pcdocs.js:103"
   },
   {
    "s": "Dock as a tab (or drag me onto the tab strip)",
-   "src": "ext/imageeditdock/pcdocs.js:201"
+   "src": "ext/imageeditdock/pcdocs.js:202"
   },
   {
    "s": "Close (Ctrl+W)",
-   "src": "ext/imageeditdock/pcdocs.js:201"
+   "src": "ext/imageeditdock/pcdocs.js:202"
   },
   {
    "s": "Resize",
-   "src": "ext/imageeditdock/pcdocs.js:201"
+   "src": "ext/imageeditdock/pcdocs.js:202"
   },
   {
    "s": "Untitled",
-   "src": "ext/imageeditdock/pcdocs.js:210"
+   "src": "ext/imageeditdock/pcdocs.js:211"
   },
   {
    "s": "Save the changes to",
-   "src": "ext/imageeditdock/pcdocs.js:333"
+   "src": "ext/imageeditdock/pcdocs.js:334"
   },
   {
    "s": "in the project's Images before closing",
-   "src": "ext/imageeditdock/pcdocs.js:333"
+   "src": "ext/imageeditdock/pcdocs.js:334"
   },
   {
    "s": "Close without saving",
-   "src": "ext/imageeditdock/pcdocs.js:335"
+   "src": "ext/imageeditdock/pcdocs.js:336"
   },
   {
    "s": "Close it - the changes are lost",
-   "src": "ext/imageeditdock/pcdocs.js:335"
+   "src": "ext/imageeditdock/pcdocs.js:336"
   },
   {
    "s": "Arrange",
-   "src": "ext/imageeditdock/pcdocs.js:373"
+   "src": "ext/imageeditdock/pcdocs.js:374"
   },
   {
    "s": "Round",
@@ -12469,6 +12469,30 @@
   {
    "s": "Connector Tool",
    "src": "ext/imageeditdock/pcdraw.js:657"
+  },
+  {
+   "s": "PDF (.pdf)",
+   "src": "ext/imageeditdock/pcdtpout.js:308"
+  },
+  {
+   "s": "SVG pages (.zip, one .svg a page)",
+   "src": "ext/imageeditdock/pcdtpout.js:308"
+  },
+  {
+   "s": "For .cdr (.zip: the PDF + the SVG pages)",
+   "src": "ext/imageeditdock/pcdtpout.js:308"
+  },
+  {
+   "s": "Embed fonts",
+   "src": "ext/imageeditdock/pcdtpout.js:460"
+  },
+  {
+   "s": "Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there",
+   "src": "ext/imageeditdock/pcdtpout.js:460"
+  },
+  {
+   "s": "Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier",
+   "src": "ext/imageeditdock/pcdtpout.js:460"
   },
   {
    "s": "Author",
@@ -13639,6 +13663,70 @@
    "src": "ext/imageeditdock/pcotype.js:26"
   },
   {
+   "s": "Page 1",
+   "src": "ext/imageeditdock/pcpages.js:98"
+  },
+  {
+   "s": "Pages",
+   "src": "ext/imageeditdock/pcpages.js:237"
+  },
+  {
+   "s": "No document open",
+   "src": "ext/imageeditdock/pcpages.js:237"
+  },
+  {
+   "s": "Page setup",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Hide (Window ▸ Pages shows it again)",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "A new page after this one, the same size - its own layers",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "A copy of this page with its layers",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Move this page up",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Move this page down",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Delete this page (click twice)",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
+   "src": "ext/imageeditdock/pcpages.js:239"
+  },
+  {
+   "s": "Click: this page · drag: move · double-click the name: rename",
+   "src": "ext/imageeditdock/pcpages.js:240"
+  },
+  {
+   "s": "W × H mm",
+   "src": "ext/imageeditdock/pcpages.js:289"
+  },
+  {
+   "s": "Resolution",
+   "src": "ext/imageeditdock/pcpages.js:289"
+  },
+  {
+   "s": "dpi",
+   "src": "ext/imageeditdock/pcpages.js:289"
+  },
+  {
+   "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
+   "src": "ext/imageeditdock/pcpages.js:314"
+  },
+  {
    "s": "Color palette",
    "src": "ext/imageeditdock/pcpalette.js:81"
   },
@@ -13763,10 +13851,6 @@
    "src": "ext/imageeditdock/pcpdf.js:378"
   },
   {
-   "s": "dpi",
-   "src": "ext/imageeditdock/pcpdf.js:378"
-  },
-  {
    "s": "Hide the pages (File ▸ PDF Pages shows them again)",
    "src": "ext/imageeditdock/pcpdf.js:378"
   },
@@ -13776,14 +13860,6 @@
   },
   {
    "s": "The pages of another PDF, after this one",
-   "src": "ext/imageeditdock/pcpdf.js:378"
-  },
-  {
-   "s": "Move this page up",
-   "src": "ext/imageeditdock/pcpdf.js:378"
-  },
-  {
-   "s": "Move this page down",
    "src": "ext/imageeditdock/pcpdf.js:378"
   },
   {
@@ -18148,10 +18224,6 @@
   },
   {
    "s": "Sheet",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:56"
-  },
-  {
-   "s": "Pages",
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
   {
@@ -25822,7 +25894,7 @@
   },
   {
    "p": "{0} — {1} KB",
-   "src": "ext/imageeditdock/pcbgi.js:288"
+   "src": "ext/imageeditdock/pcbgi.js:294"
   },
   {
    "p": "{0} in the References docker",
@@ -25882,11 +25954,11 @@
   },
   {
    "p": "{0} (not saved)",
-   "src": "ext/imageeditdock/pcdocs.js:255"
+   "src": "ext/imageeditdock/pcdocs.js:256"
   },
   {
    "p": "{0} document(s) have changes that are not saved: {1}",
-   "src": "ext/imageeditdock/pcdocs.js:342"
+   "src": "ext/imageeditdock/pcdocs.js:343"
   },
   {
    "p": "size {0}",
@@ -25899,6 +25971,14 @@
   {
    "p": "dpi {0}",
    "src": "ext/imageeditdock/pcdraw.js:550"
+  },
+  {
+   "p": "Export document ({0} page)",
+   "src": "ext/imageeditdock/pcdtpout.js:460"
+  },
+  {
+   "p": "Export document ({0} pages)",
+   "src": "ext/imageeditdock/pcdtpout.js:460"
   },
   {
    "p": "{0} px",
@@ -25975,6 +26055,14 @@
   {
    "p": "{0} colours. Click one to change it",
    "src": "ext/imageeditdock/pcmode.js:334"
+  },
+  {
+   "p": "{0} ({1} × {2} mm)",
+   "src": "ext/imageeditdock/pcpages.js:289"
+  },
+  {
+   "p": "{0} × {1} px",
+   "src": "ext/imageeditdock/pcpages.js:299"
   },
   {
    "p": "{0} - click: fill (the foreground colour) · right-click: outline (the background colour)",
