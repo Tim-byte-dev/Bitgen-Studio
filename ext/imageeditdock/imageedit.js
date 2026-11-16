@@ -980,8 +980,8 @@
       else if (e.t === "doc") putDoc(back ? e.before : e.after);
       else if (e.t === "multi") (back ? e.list.slice().reverse() : e.list).forEach((x) => applyEntry(x, back));
     }
-    function undo() { const e = S.undo.pop(); if (!e) return say("nothing to undo"); applyEntry(e, true); S.redo.push(e); refresh(); renderLayersPanel(); say("undone: " + (e.label || e.t)); }
-    function redo() { const e = S.redo.pop(); if (!e) return say("nothing to redo"); applyEntry(e, false); S.undo.push(e); refresh(); renderLayersPanel(); say("redone: " + (e.label || e.t)); }
+    function undo() { const e = S.undo.pop(); if (!e) return say("nothing to undo"); applyEntry(e, true); S.redo.push(e); refresh(); renderLayersPanel(); say("undone: " + (e.label || e.t)); if (E.onUndo) { try { E.onUndo(e, true); } catch (er) { /* a listener */ } } }
+    function redo() { const e = S.redo.pop(); if (!e) return say("nothing to redo"); applyEntry(e, false); S.undo.push(e); refresh(); renderLayersPanel(); say("redone: " + (e.label || e.t)); if (E.onUndo) { try { E.onUndo(e, false); } catch (er) { /* a listener */ } } }
     /** the History panel: step back / forward to entry n (0 = as opened) */
     function historyTo(n) { while (S.undo.length > n && S.undo.length) undo(); while (S.undo.length < n && S.redo.length) redo(); }
     /** begin a pixel change on a layer (or its mask / the quick mask): a copy to diff against */
@@ -2987,7 +2987,8 @@
     if (win.PCPromptLink && win.PCPromptLink.install) win.PCPromptLink.install(E);
     if (win.PCArtboards && win.PCArtboards.install) win.PCArtboards.install(E);
     if (win.PCPages && win.PCPages.install) win.PCPages.install(E);       // 2.799.0: a document of many pages, each with its own layers
-    if (win.PCDtpOut && win.PCDtpOut.install) win.PCDtpOut.install(E);   // 2.799.0: File ▸ Export ▸ Document (PDF / AI / SVG / CorelDRAW pack)   // 2.447.0: artboards   // 2.444.0: ✨ Edit / Generate run from the prompt docker   // 2.442.0: frames (PowerClip) - layers inside a closed shape   // 2.441.0: CAD dimensions - exact points, live ends, the scale
+    if (win.PCDtpOut && win.PCDtpOut.install) win.PCDtpOut.install(E);   // 2.799.0: File ▸ Export ▸ Document (PDF / AI / SVG / CorelDRAW pack)
+    if (win.PCFlow && win.PCFlow.install) win.PCFlow.install(E);         // 2.801.0: linked text frames + text wrap   // 2.447.0: artboards   // 2.444.0: ✨ Edit / Generate run from the prompt docker   // 2.442.0: frames (PowerClip) - layers inside a closed shape   // 2.441.0: CAD dimensions - exact points, live ends, the scale
     if (win.PCCaFill && win.PCCaFill.install) win.PCCaFill.install(E);   // 2.448.0: the Content-Aware Fill workspace
     if (win.PCDimGroup && win.PCDimGroup.install) win.PCDimGroup.install(E);   // 2.457.0: dimensions as groups of parts (before the handles: its parts win)
     if (win.PCDimAuto && win.PCDimAuto.install) win.PCDimAuto.install(E);   // 2.458.0: auto / floorplan dimensions + the Chain Dimension tool

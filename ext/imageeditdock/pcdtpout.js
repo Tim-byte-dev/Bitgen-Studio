@@ -357,8 +357,13 @@
       return Number.isFinite(off) && off > 0 ? off : t.size * 0.8;
     }
     const plainLayer = (L) => (L.opacity == null || L.opacity > 0) && (L.blend || "normal") === "normal" && !L.mask && !L.vmask && !L.fmask && !D.hasStyles(L) && !L.clip;
+    /** 2.801.0: paragraph text (a box, linked frames, text wrap, justify, indents, spacing) the export can write as lines -
+     *  not the character tricks (scales, baseline shift, small caps, super / sub, faux styles, OpenType features, lines) */
+    const n0 = (v) => (isFinite(+v) ? +v : 0);
+    const plainPara = (t) => !!(root.PCType && root.PCType.owns && root.PCType.owns(t)) && (!t.hscale || +t.hscale === 100) && (!t.vscale || +t.vscale === 100) && !n0(t.baseline)
+      && !t.smallcaps && !t.pos && !t.fauxBold && !t.fauxItalic && !t.underline && !t.strike && !(root.PCOType && root.PCOType.engineOn && root.PCOType.engineOn(t));
     const isText = (L) => L.type === "text" && L.text && plainLayer(L) && !L.text.fx && !L.text.rot && !L.text.xm && !L.text.mesh
-      && !(root.PCText && root.PCText.wants(L.text)) && !(root.PCType && root.PCType.owns && root.PCType.owns(L.text)) && !(root.PCRuns && root.PCRuns.owns && root.PCRuns.owns(L.text));
+      && !(root.PCText && root.PCText.wants(L.text)) && (!(root.PCType && root.PCType.owns && root.PCType.owns(L.text)) || plainPara(L.text)) && !(root.PCRuns && root.PCRuns.owns && root.PCRuns.owns(L.text));
     const simplePath = (p) => ((p && p.subs) || []).every((s, i) => s.op === "add" || (i === 0 && s.op !== "subtract" && s.op !== "intersect"));
     /** a shape layer as paths, or null (then a picture) */
     function vectorOf(L, w, h) {
@@ -380,11 +385,23 @@
       if (a < 1) R.items.forEach((v) => { v.alpha *= a; });
       return R.items;
     }
+    const scratchG = ctx(newCanvas(8, 8));
+    /** paragraph text laid out as it is drawn (pctype.js): its shown lines, a justified line word by word */
+    function paraLines(t, off) {
+      const PT = root.PCType, m = PT.canvasMeasure(t, scratchG), Lo = PT.layout(t, m), out = [];
+      for (const ln of Lo.lines) {
+        if (ln.over || !ln.text) continue;
+        if (ln.gap > 0) { let x = ln.x; for (const part of ln.text.split(/( +)/).filter((q) => q.length)) { if (/^ +$/.test(part)) { x += m(part) + ln.gap * part.length; continue; } out.push({ s: part, x, y: ln.y + off }); x += m(part); } }
+        else out.push({ s: ln.text, x: ln.x, y: ln.y + off });
+      }
+      return out;
+    }
     function textOf(L) {
       const t = L.text, lh = t.size * (t.leading || 1.2), off = baseOff(t);
       const c = parseColor(t.color || "#000000") || { r: 0, g: 0, b: 0, a: 1 };
-      return { t: "text", lines: String(t.str || "").split("\n").map((s, i) => ({ s, x: t.x, y: t.y + i * lh + off })), size: t.size, color: hex(c), alpha: c.a * (L.opacity == null ? 1 : L.opacity),
-        family: String(t.font || "sans-serif").split(",")[0].replace(/["']/g, "").trim(), weight: t.weight || 400, italic: !!t.italic, tracking: t.tracking || 0, align: t.align || "left", css: t.font };
+      const para = plainPara(t);
+      return { t: "text", lines: para ? paraLines(t, off) : String(t.str || "").split("\n").map((s, i) => ({ s, x: t.x, y: t.y + i * lh + off })), size: t.size, color: hex(c), alpha: c.a * (L.opacity == null ? 1 : L.opacity),
+        family: String(t.font || "sans-serif").split(",")[0].replace(/["']/g, "").trim(), weight: t.weight || 400, italic: !!t.italic, tracking: t.tracking || 0, align: para ? "left" : t.align || "left", css: t.font };
     }
     /** the open page (S) as an export page: its layers as paths / text / pictures */
     async function pageOut(name, k, pageIdx) {

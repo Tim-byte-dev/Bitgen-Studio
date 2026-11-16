@@ -97,7 +97,9 @@
   /** the inside spans of a polygon at height y: [[x0, x1] ...] (even-odd) */
   function spansAt(poly, y) {
     const xs = [];
-    for (let i = 0; i < poly.length; i++) { const a = poly[i], b = poly[(i + 1) % poly.length]; if ((a[1] <= y && b[1] > y) || (b[1] <= y && a[1] > y)) xs.push(a[0] + (y - a[1]) / (b[1] - a[1]) * (b[0] - a[0])); }
+    for (const ring of poly && poly.rings ? poly.rings : [poly]) {   // 2.801.0: {rings: [outer, hole …]} - text wrap (pcflow.js)
+      for (let i = 0; i < ring.length; i++) { const a = ring[i], b = ring[(i + 1) % ring.length]; if ((a[1] <= y && b[1] > y) || (b[1] <= y && a[1] > y)) xs.push(a[0] + (y - a[1]) / (b[1] - a[1]) * (b[0] - a[0])); }
+    }
     xs.sort((a, b) => a - b); const out = []; for (let i = 0; i + 1 < xs.length; i += 2) out.push([xs[i], xs[i + 1]]); return out;
   }
   /** a line band's room: the widest span at its middle, narrowed to what its top and bottom also have */
@@ -112,7 +114,7 @@
   }
   function areaLayout(t, m, poly, size, lh) {
     const indL = n0(t.indL), indR = n0(t.indR), indF = n0(t.indF), spB = n0(t.spB), spA = n0(t.spA);
-    const ys = poly.map((p) => p[1]), bottom = Math.max(...ys), out = [];
+    const outer = poly && poly.rings ? poly.rings[0] : poly, ys = outer.map((p) => p[1]), bottom = Math.max(...ys), out = [];
     let y = Math.min(...ys);
     const roomAt = (first) => {          // the next band with room for a letter or two (steps down a quarter line at a time)
       while (y + lh <= bottom + 0.5) { const sp = bandSpan(poly, y, y + lh); if (sp && sp[1] - sp[0] - indL - indR - (first ? indF : 0) >= size * 0.8) return sp; y += lh / 4; }
@@ -145,13 +147,18 @@
       });
       y += spA;
     });
-    const bx = t.box && t.box.w > 0 ? { x: t.x, y: t.y, w: t.box.w, h: t.box.h } : (() => { const xs = poly.map((p) => p[0]); return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: bottom - Math.min(...ys) }; })();
+    const bx = t.box && t.box.w > 0 ? { x: t.x, y: t.y, w: t.box.w, h: t.box.h } : (() => { const xs = outer.map((p) => p[0]); return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: bottom - Math.min(...ys) }; })();
     return { lines: out, box: bx, lh, overflow: out.some((l) => l.over), area: true };
   }
   function layout(t, measure) {
     const m = measure || measureOf(t), size = +t.size || 48, lh = size * (+t.leading || 1.2);
     if (t.area && Array.isArray(t.area.poly) && t.area.poly.length > 2) return areaLayout(t, m, t.area.poly.map(([x, y]) => [t.x + x, t.y + y]), size, lh);
     const box = t.box && t.box.w > 0 ? t.box : null;
+    // 2.801.0: text wrap - paragraph text with other layers' outlines cut out of its box (t.wrapHoles, picture px, pcflow.js)
+    if (box && Array.isArray(t.wrapHoles) && t.wrapHoles.some((h) => Array.isArray(h) && h.length > 2)) {
+      const rect = [[t.x, t.y], [t.x + box.w, t.y], [t.x + box.w, t.y + box.h], [t.x, t.y + box.h]];
+      return areaLayout(t, m, { rings: [rect].concat(t.wrapHoles.filter((h) => Array.isArray(h) && h.length > 2)) }, size, lh);
+    }
     const indL = n0(t.indL), indR = n0(t.indR), indF = n0(t.indF), spB = n0(t.spB), spA = n0(t.spA);
     const pars = strOf(t).split("\n"), out = [];
     let y = t.y, maxW = 0;

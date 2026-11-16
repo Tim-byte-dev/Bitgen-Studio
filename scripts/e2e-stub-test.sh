@@ -14037,6 +14037,13 @@ node scripts/test-masters800.js > /tmp/masters800.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui800-ui.js > /tmp/ui800.log 2>&1 \
   && ok "2.800.0 masters in a real browser: ＋ Master, # page number, ⌂ layer per page with its own number, None, i ii iii, {page} on a page, export masters + spreads, .bgi keeps them" \
   || { bad "2.800.0 masters browser test"; grep -a "^FAIL" -A1 /tmp/ui800.log | head -12; }
+# ---- 2.801.0 (Tim: "ok, next please" - desktop publishing part 3: linked text frames + text wrap)
+node scripts/test-flow801.js > /tmp/flow801.log 2>&1 \
+  && ok "2.801.0 text flow units: cut points, the story through its frames, clipped wrap holes, pctype lines beside a hole; the export's paragraph lines" \
+  || { bad "2.801.0 text flow units"; grep -a "^FAIL" -A1 /tmp/flow801.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui801-ui.js > /tmp/ui801.log 2>&1 \
+  && ok "2.801.0 text flow in a real browser: ＋ Frame / ＋ Next page, every word once in the PDF, typing in frame 2 (+ undo), wrap around an ellipse, Edit Story, Unlink, .bgi" \
+  || { bad "2.801.0 text flow browser test"; grep -a "^FAIL" -A1 /tmp/ui801.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

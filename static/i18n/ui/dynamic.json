@@ -12484,23 +12484,23 @@
   },
   {
    "s": "As spreads",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "s": "Embed fonts",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "s": "Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "s": "Facing pages: each spread (2 + 3, 4 + 5 …) as one page",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "s": "Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "s": "Author",
@@ -12625,6 +12625,66 @@
   {
    "s": "Look at all visible layers to find the area",
    "src": "ext/imageeditdock/pcfill.js:129"
+  },
+  {
+   "s": "Paragraph text flows around this layer",
+   "src": "ext/imageeditdock/pcflow.js:300"
+  },
+  {
+   "s": "Gap",
+   "src": "ext/imageeditdock/pcflow.js:300"
+  },
+  {
+   "s": "px",
+   "src": "ext/imageeditdock/pcflow.js:300"
+  },
+  {
+   "s": "Text flow",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "Next page",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "Story",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "Unlink",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "A new frame beside this one - the text goes on in it",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "A new frame on the next page, in the same place",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "The whole story in a box",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "Break the chain before this frame",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "one frame",
+   "src": "ext/imageeditdock/pcflow.js:315"
+  },
+  {
+   "s": "Text wrap",
+   "src": "ext/imageeditdock/pcflow.js:322"
+  },
+  {
+   "s": "gap",
+   "src": "ext/imageeditdock/pcflow.js:322"
+  },
+  {
+   "s": "Paragraph text on this page flows around this layer",
+   "src": "ext/imageeditdock/pcflow.js:322"
   },
   {
    "s": "Alt+P / Esc closes · right click = background",
@@ -13780,19 +13840,19 @@
   },
   {
    "s": "W × H mm",
-   "src": "ext/imageeditdock/pcpages.js:581"
+   "src": "ext/imageeditdock/pcpages.js:583"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcpages.js:581"
+   "src": "ext/imageeditdock/pcpages.js:583"
   },
   {
    "s": "dpi",
-   "src": "ext/imageeditdock/pcpages.js:581"
+   "src": "ext/imageeditdock/pcpages.js:583"
   },
   {
    "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
-   "src": "ext/imageeditdock/pcpages.js:606"
+   "src": "ext/imageeditdock/pcpages.js:608"
   },
   {
    "s": "Color palette",
@@ -14079,10 +14139,6 @@
    "src": "ext/imageeditdock/pcpen.js:320"
   },
   {
-   "s": "px",
-   "src": "ext/imageeditdock/pcpen.js:322"
-  },
-  {
    "s": "Round Corners",
    "src": "ext/imageeditdock/pcpen.js:322"
   },
@@ -14304,10 +14360,6 @@
   },
   {
    "s": "Into the layer mask (pixels)",
-   "src": "ext/imageeditdock/pcpen.js:861"
-  },
-  {
-   "s": "Unlink",
    "src": "ext/imageeditdock/pcpen.js:861"
   },
   {
@@ -15872,143 +15924,143 @@
   },
   {
    "s": "no file for this font on the computer - drawn without them",
-   "src": "ext/imageeditdock/pctype.js:364"
+   "src": "ext/imageeditdock/pctype.js:371"
   },
   {
    "s": "OpenType",
-   "src": "ext/imageeditdock/pctype.js:365"
+   "src": "ext/imageeditdock/pctype.js:372"
   },
   {
    "s": "Stylistic set: none",
-   "src": "ext/imageeditdock/pctype.js:365"
+   "src": "ext/imageeditdock/pctype.js:372"
   },
   {
    "s": "Stylistic Set",
-   "src": "ext/imageeditdock/pctype.js:365"
+   "src": "ext/imageeditdock/pctype.js:372"
   },
   {
    "s": "Metrics",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Optical",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Color",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Character Styles",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Font family",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Font style",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Leading - line height (× the size)",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Vertical scale (%)",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Horizontal scale (%)",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Baseline shift (px, + = up)",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "New character style from the text",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Redefine the applied style from the text",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Clear override: the text back to its style",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Delete the picked style",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "None yet - ＋ makes one from the text",
-   "src": "ext/imageeditdock/pctype.js:440"
+   "src": "ext/imageeditdock/pctype.js:447"
   },
   {
    "s": "Regular",
-   "src": "ext/imageeditdock/pctype.js:443"
+   "src": "ext/imageeditdock/pctype.js:450"
   },
   {
    "s": "Bold Italic",
-   "src": "ext/imageeditdock/pctype.js:443"
+   "src": "ext/imageeditdock/pctype.js:450"
   },
   {
    "s": "Click: apply · double-click: rename",
-   "src": "ext/imageeditdock/pctype.js:457"
+   "src": "ext/imageeditdock/pctype.js:464"
   },
   {
    "s": "Hyphenate",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Paragraph text box",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "the text does not fit the box - make it larger",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Paragraph Styles",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Indent left margin (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Indent right margin (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Indent first line (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Add space before paragraph (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Add space after paragraph (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Hyphenate words that do not fit on a line (paragraph text)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Box width (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Box height (px)",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "New paragraph style from the text",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "s": "Unreal Camera",
@@ -26034,11 +26086,27 @@
   },
   {
    "p": "Export document ({0} page)",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
   },
   {
    "p": "Export document ({0} pages)",
-   "src": "ext/imageeditdock/pcdtpout.js:491"
+   "src": "ext/imageeditdock/pcdtpout.js:508"
+  },
+  {
+   "p": "Edit story ({0} frame)",
+   "src": "ext/imageeditdock/pcflow.js:272"
+  },
+  {
+   "p": "Edit story ({0} frames)",
+   "src": "ext/imageeditdock/pcflow.js:272"
+  },
+  {
+   "p": "Text wrap - {0}",
+   "src": "ext/imageeditdock/pcflow.js:300"
+  },
+  {
+   "p": "frame {0} of {1}",
+   "src": "ext/imageeditdock/pcflow.js:315"
   },
   {
    "p": "{0} px",
@@ -26118,11 +26186,11 @@
   },
   {
    "p": "{0} ({1} × {2} mm)",
-   "src": "ext/imageeditdock/pcpages.js:581"
+   "src": "ext/imageeditdock/pcpages.js:583"
   },
   {
    "p": "{0} × {1} px",
-   "src": "ext/imageeditdock/pcpages.js:591"
+   "src": "ext/imageeditdock/pcpages.js:593"
   },
   {
    "p": "{0} - click: fill (the foreground colour) · right-click: outline (the background colour)",
@@ -26354,11 +26422,11 @@
   },
   {
    "p": "{0} {1}px",
-   "src": "ext/imageeditdock/pctype.js:457"
+   "src": "ext/imageeditdock/pctype.js:464"
   },
   {
    "p": "{0}\" · paragraph text",
-   "src": "ext/imageeditdock/pctype.js:484"
+   "src": "ext/imageeditdock/pctype.js:491"
   },
   {
    "p": "{0} ({1}, {2} again cycles; right-click for the others)",

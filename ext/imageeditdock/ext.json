@@ -92,6 +92,7 @@
     "pcbridgeoff.js",
     "pcpages.js",
     "pcdtpout.js",
+    "pcflow.js",
     "pczones.js",
     "pcpending.js",
     "imageedit.js",

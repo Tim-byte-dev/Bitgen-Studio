@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.801.0** — Image Editor Linked Text Frames (Paragraph Text Flowing Frame to Frame and Page to Page; ＋ Frame, ＋ Next Page, Edit Story, Unlink; Typing in Any Frame Goes Into the Story, Undoable) and Text Wrap (Around a Shape's Outline or a Picture's Box, With a Gap); Paragraph Text Exported as Real Text Line by Line
 - **2.800.0** — Image Editor Master Pages (Their Layers Under Every Page That Uses Them, Given to All / Odd / Even Pages, Edited Like a Page), Automatic Page Numbers ({page} / {pages} / {name}; 1, i, I, a, A From Any Start), Facing Pages (Spreads in the Strip, Export As Spreads); Masters Exported as Their Own Layers; .bgi Keeps Them
 - **2.799.0** — Image Editor Pages: Documents of Many Pages (Page Sizes, Orientation, dpi), Each Page With Its Own Layers + Undo; the Pages Strip (Add / Copy / Move / Rename / Delete), Page Setup; File ▸ Export ▸ Document - Every Page With Its Layers as PDF (Shapes as Paths, Type as Real Text, Each Layer a PDF Layer), PDF-Compatible .ai, SVG Pages, or a PDF + SVG Pack for .cdr, Saved in the Project's dtp Folder; .bgi Keeps Every Page
 - **2.798.0** — Basic Settings' Lists Show Every Model of the Style's Family - Picture and Edit Models Alike (the Image / Image-Edit Split Dropped: Models Like FLUX.2 Klein Both Make and Edit Pictures)

@@ -9175,6 +9175,19 @@ In the image editor's **Pages** panel (Window ▸ Pages):
 - **Export** writes a master's own layers on each page that uses it, as "Master / <layer>" - shapes as paths, type as real text with that page's number.
 - **Save Project (.bgi)** keeps the masters, which page uses which, facing and the numbering.
 
+## Linked text frames and text wrap (2.801.0)
+
+Paragraph text (a type layer with a box - Type: Convert to Paragraph Text, or drag a box with the Type tool) can now flow on from frame to frame and page to page, and flow around pictures and shapes.
+
+- **＋ Frame** (in the **⛓ Text flow** row of the Properties panel, or **Layer ▸ Text Flow: Add Frame Here**) adds a frame beside this one (or under it when there is no room) with the same size and type settings; the text that does not fit goes on in it. **＋ Next page** (**Text Flow: Add Frame on the Next Page**) adds one in the same place on the next page - a new page when this is the last one. Add as many as you like; the row says "frame 2 of 3".
+- **Typing** - the first frame holds the whole story; type in it as usual. Typing in a later frame puts your change into the story at that frame's place, and everything after it flows on. **Ctrl+Z** takes it out again.
+- **✎ Story…** (**Text Flow: Edit Story…**) - the whole story in one box.
+- **⛓ Unlink** (**Text Flow: Unlink Frame**) - the chain breaks before this frame: the frames before keep their text, this one starts a new story with the rest.
+- What does not fit in the last frame stays hidden (its corner shows ⊞) - add a frame or make the box bigger.
+- **Text wrap** - pick a shape, a picture or any other layer and tick **☐ Text wrap** in the Properties panel (or **Layer ▸ Text Wrap…**), with a **gap** in px. Paragraph text on the same page flows around it: a rectangle, ellipse or polygon shape around its outline, anything else around the box of what it covers. The text takes the wider side of the object on each line.
+- **Export** writes the frames and the wrapped text as real, selectable text, line by line (a justified line word by word). Text with character tricks (scaled letters, small caps, a baseline shift …) still goes as a picture.
+- **Save Project (.bgi)** keeps the stories and the wraps.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -573,6 +573,8 @@
     }
     const prevPush = E.onPush;
     E.onPush = function () { if (prevPush) prevPush.apply(this, arguments); if (S.pages) fieldsSoon(); };
+    const prevUndo = E.onUndo;   // 2.801.0: page numbers after an undo / redo too
+    E.onUndo = function () { if (prevUndo) prevUndo.apply(this, arguments); if (S.pages) fieldsSoon(); };
     // a new document starts without pages (pcdocs.js parks the old one's with it)
     const prevBefore = E.docBefore;
     E.docBefore = function (inPlace) { const r = prevBefore ? prevBefore.apply(this, arguments) : undefined; if (!inPlace) S.pages = null; return r; };
