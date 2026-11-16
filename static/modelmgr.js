@@ -1073,9 +1073,7 @@
       + '<button class="ghost" data-mmtab="openrouter" type="button" title="☁ OpenRouter\'s models - free / paid, by type and family; ＋ adds one to your models with its endpoint">☁ OpenRouter</button>'
       + '<span id="mmSrcTabs" class="mmsrctabs"></span><button class="ghost" id="mmAddSrc" type="button" title="＋ Add source - any model API (OpenAI-compatible, Ollama, Anthropic-style or your own template) as a tab of its own: ⚙ its URL, API key and endpoint format, its models from the API, ＋ to yours">＋ Add source</button>'
       + '<button class="ghost" data-mmtab="paths" type="button" title="📁 ComfyUI\'s extra_model_paths.yaml - every group of paths: add a group (other_ui1 …), change a path, delete a group, ⟳ Restart ComfyUI">📁 Model paths</button>'
-      + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓</button>'
-      + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄</button>'
-      + '<button class="ghost" id="mmFoldBtn" type="button" title="📁 The folder each model type downloads to (model_folders.json)">📁</button>'
+      + '<button class="ghost" style="margin-left:auto" id="mmFoldBtn" type="button" title="📁 The folder each model type downloads to (model_folders.json)">📁</button>'
       + '<button class="ghost" id="mmEdit" type="button" title="⇲ Edit mode: drag a card\'s corner to size every card">⇲</button>'
       + '<button class="ghost" id="mmRescan" type="button" title="Read the model folders again">⟳</button></div>'
       + '<div class="mmbar" id="mmLocalBar"><span id="mmSrc"></span><span class="mmfold" id="mmFolders"></span><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
@@ -1086,6 +1084,9 @@
       + '<select id="mmSort" aria-label="Sort"><option value="name">A-Z</option><option value="newest">newest</option><option value="rating">rating</option><option value="size">size</option></select>'
       + '<span id="mmSizeBox" style="display:none" title="Card size"> ⇲ <input type="range" id="mmSize" min="90" max="360" step="2" aria-label="Card size"></span></div>'
       + '<div class="mmbar" id="mmCvBar" style="display:none"><input type="search" id="mmCvQ" placeholder="Search Civitai…" aria-label="Search Civitai">'
+      // 2.797.0 (Tim: "move the civitai info and sync buttons into the civitai tab"): ⤓ + 🔄 sit in the Civitai bar
+      + '<button class="ghost" id="mmFetch" type="button" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓ Civitai info</button>'
+      + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄 Sync</button>'
       // 2.766.1 (Tim: "add civitai filters to model manager, checkpoint, lora,all, model family - krea2,flux etc. sort by"):
       // All / Checkpoints / LoRAs (+ the other types), the model family (Civitai's base models grouped - all of a family or
       // one), sort by, the period - a change searches again (kept between sessions)

@@ -71,7 +71,7 @@ const u = BU.of({ basic_use: { image_model: false, image_model_pod: "pod!A1", vi
 check("basicUse.of: the *_pod keys cleaned, left out when Remote is off (the four flags' JSON as before)", u.image_model === false && u.image_model_pod === "podA1" && u.video_loras_pod === "podB2" && !("image_loras_pod" in u) && BU.POD_KEYS.length === 4
   && JSON.stringify(BU.of({})) === '{"image_model":true,"image_loras":true,"video_model":true,"video_loras":true}');
 const rh = RU.rowHtml(RU.ROWS[0], [{ id: "podA1", label: "Krea pod 2" }, { id: "podN9", label: "New one" }], "podN9");
-check("remoteuse rowHtml: ☐ Remote ticked + the pod picked", /data-rukey="image_model_pod" checked/.test(rh) && /value="podN9" selected/.test(rh) && !/disabled/.test(rh) && RU.ROWS.length === 4);
+check("remoteuse rowHtml: ☐ Remote ticked + the pod picked (static/remoteuse.js kept, no longer loaded since 2.797.0)", /data-rukey="image_model_pod" checked/.test(rh) && /value="podN9" selected/.test(rh) && !/disabled/.test(rh) && RU.ROWS.length === 4 && !/<script src="\/static\/remoteuse\.js">/.test(require("fs").readFileSync(require("path").join(__dirname, "..", "static", "index.html"), "utf8")));
 check("remoteuse rowHtml: unticked = the list greyed", /disabled/.test(RU.rowHtml(RU.ROWS[1], [{ id: "a", label: "A" }], "")));
 
 // ---- the lists + the panel

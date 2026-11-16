@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "9018ce0d1650",
- "count": 9510,
+ "v": "93c810ed7941",
+ "count": 9511,
  "patternCount": 1159,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -7275,6 +7275,7 @@
   "Where it stops guiding": "停止引导的位置",
   "Where the downloaded weights go (blank = models/native)": "下载的权重存放位置（留空 = models/native）",
   "Where the models are": "模型所在位置",
+  "Where the models are - this computer, your pods (RunPod) or OpenRouter": "模型所在位置 - 这台电脑、你的 Pod（RunPod）或 OpenRouter",
   "Where the models are - this computer, your pods or OpenRouter": "模型所在位置 - 这台电脑、你的 Pod 或 OpenRouter",
   "Where the virtual camera looks - left / right, degrees (click the preview to aim)": "虚拟摄像机的朝向 - 左 / 右，单位为度（点击预览以对准）",
   "Where the warp folds over itself, a pin set forward draws its part on top": "变形发生自身重叠时，设为前移的图钉所控制的部分显示在上层",

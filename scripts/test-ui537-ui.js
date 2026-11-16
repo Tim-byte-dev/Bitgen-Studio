@@ -145,7 +145,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("📌 This project: the model + the LoRA its jobs used (from jobs.info)", used.length === 2 && used.includes("checkpoints|SDXL/" + SDXL(7)) && used.includes("loras|SDXL/e2e537_lora_2.safetensors"), used);
 
     /* ---- ⤓ Civitai info */
-    check("⤓ Civitai info is on the tab bar (an icon since 2.796.0, its name on hover; Shift = fetch again); GET /api/modelmgr/fetch answers the queue", await ev(() => document.getElementById("mmFetch").textContent.trim() === "⤓" && /Details, a thumbnail/.test(document.getElementById("mmFetch").title)) && typeof (await api("/api/modelmgr/fetch")).running === "boolean");
+    check("⤓ Civitai info is in the Civitai tab's bar (2.797.0, with 🔄 Sync; Shift = fetch again); GET /api/modelmgr/fetch answers the queue", await ev(() => document.getElementById("mmFetch").textContent.trim() === "⤓ Civitai info" && !!document.getElementById("mmFetch").closest("#mmCvBar") && !!document.getElementById("mmSync").closest("#mmCvBar")) && typeof (await api("/api/modelmgr/fetch")).running === "boolean");
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("the run finished", false, String(e && e.stack || e)); }
   finally {

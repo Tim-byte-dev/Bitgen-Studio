@@ -5452,6 +5452,14 @@ NVIDIA のカードが 2 枚以上あると、🖥 GPU ▸ Runs on のすべて�
   - **☁ OpenRouter** - 種類（Image / Video / LLM / Vision LLM、件数つき）と価格（無料 + 有料 / 無料のみ / 有料のみ）。
 - タブバーのツールはアイコンになりました（⤓ Civitai info、🔄 Sync、📁 フォルダー、⇲ Edit、⟳ 読み直し - 名前はマウスを重ねると表示）。検索バーの入力欄は同じ高さにそろいました。
 
+## Basic Settings' lists by place (2.797.0)
+<!-- en: basic-settings-lists-by-place-2-797-0 61f1d29b89b8 -->
+
+- Use model / Use temporary LoRAs の下の **☐ Remote** と Pod の行はなくなりました。Pod のモデルや LoRA を使うには、一覧から `<pod>/<file>` を選んでください - 生成はその Pod で行われます。以前の Remote で選ばれたままの Pod は解除されるので、見えないところで Pod に送られることはありません。
+- 画像の **Checkpoint**、動画の **Model**、各 **一時 LoRA** の行の先頭に場所のドロップダウンがあります: **All places / This computer / RunPod / OpenRouter**（LoRA の一覧には OpenRouter はありません）、それぞれ件数つき。一覧にはその場所のファイルが表示されます。一覧ごとに選択が保持されます。
+- 一覧はこれまでどおりプロンプトドッカーのスタイルに従います（2.788.0）: 画像モードでは画像の Checkpoint と LoRA に画像スタイルのモデルファミリーが、動画モードでは動画の Model と LoRA に動画スタイルのファミリーが、すべての場所から表示され、件数はそのあとの数です。
+- 🧩 Model manager: **⤓ Civitai info** と **🔄 Sync** は **Civitai** タブに移りました。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

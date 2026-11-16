@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "ab9de2053e3b",
- "count": 9510,
+ "v": "6e4406ccc822",
+ "count": 9511,
  "patternCount": 1159,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -7275,6 +7275,7 @@
   "Where it stops guiding": "コントロールが誘導を終える時点を指定します",
   "Where the downloaded weights go (blank = models/native)": "ダウンロードした重みの保存先（空欄 = models/native）",
   "Where the models are": "モデルの場所",
+  "Where the models are - this computer, your pods (RunPod) or OpenRouter": "モデルの場所 - このコンピューター、あなたの Pod（RunPod）、または OpenRouter",
   "Where the models are - this computer, your pods or OpenRouter": "モデルの場所 - このコンピューター、あなたの Pod、または OpenRouter",
   "Where the virtual camera looks - left / right, degrees (click the preview to aim)": "仮想カメラが向く方向 - 左 / 右、度（プレビューをクリックして向きを合わせます）",
   "Where the warp folds over itself, a pin set forward draws its part on top": "ワープが重なる所では、前面に設定したピンの部分が上に描かれます",

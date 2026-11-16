@@ -5685,6 +5685,14 @@ OpenRouter 不再列出的模型不會再被自動從你的清單中移除：它
   - **☁ OpenRouter** - 類型（Image / Video / LLM / Vision LLM，帶數量）和價格（免費 + 付費 / 僅免費 / 僅付費）。
 - 標籤欄的工具改成了圖示（⤓ Civitai info、🔄 Sync、📁 資料夾、⇲ Edit、⟳ 重新讀取 - 懸停時顯示名稱），搜尋欄的輸入框高度統一。
 
+## Basic Settings' lists by place (2.797.0)
+<!-- en: basic-settings-lists-by-place-2-797-0 61f1d29b89b8 -->
+
+- Use model / Use temporary LoRAs 下面的 **☐ Remote** 和 Pod 行已經移除。要使用 Pod 上的模型或 LoRA，請在清單中選擇 `<pod>/<file>` - 生成會在那個 Pod 上進行。舊的 Remote 中仍選著的 Pod 會被清除，因此不會在看不見的情況下把任務發到 Pod。
+- 圖片的 **Checkpoint**、影片的 **Model** 和每一行 **臨時 LoRA** 前面都有一個位置下拉式清單：**All places / This computer / RunPod / OpenRouter**（LoRA 清單沒有 OpenRouter），各帶數量。清單只顯示該位置的檔案。每個清單各自記住選擇。
+- 清單仍按提示詞停靠欄的風格篩選（2.788.0）：圖片模式下，圖片 Checkpoint 和 LoRA 顯示圖片風格的模型家族；影片模式下，影片 Model 和 LoRA 顯示影片風格的家族 - 來自所有位置，數量是篩選之後的。
+- 🧩 Model manager：**⤓ Civitai info** 和 **🔄 Sync** 移到了 **Civitai** 分頁。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

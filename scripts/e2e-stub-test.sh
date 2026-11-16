@@ -14016,6 +14016,10 @@ node scripts/test-apisources795.js > /tmp/apisources795.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui795-ui.js > /tmp/ui795ui.log 2>&1 \
   && ok "2.795.0 browser test: ＋ Add source -> its tab + ⚙ dialog, ✓ Test lists the stand-in API's models + fills the endpoint, Save, ＋ a model, the prompt docker's LLM list picks it and a chat goes to the source with its key; the GPU button - or SKIP" \
   || { bad "2.795.0 Model manager sources browser test"; grep -a "FAIL\|Error" -A2 /tmp/ui795ui.log | head -14; }
+# ---- 2.797.0 (Tim: "move the civitai info and sync buttons into the civitai tab, in basic settings remove the remote checkboxes, show local/openrouter/runpod/all in the dropdowns then filter the model lists by the type, do the same for loras ...")
+node scripts/test-basicplace797.js > /tmp/basicplace797.log 2>&1 \
+  && ok "2.797.0 Basic Settings by place units: All places / This computer / RunPod / OpenRouter on the checkpoint, video Model + LoRA lists after the family filter; no ☐ Remote rows; Civitai info + Sync in the Civitai tab" \
+  || { bad "2.797.0 Basic Settings by place units"; grep -a "^FAIL" -A1 /tmp/basicplace797.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

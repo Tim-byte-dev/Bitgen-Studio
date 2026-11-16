@@ -43,6 +43,7 @@
   function paintVideo() {
     var dl = $("vidModelList"); if (!dl) return;
     Array.prototype.slice.call(dl.querySelectorAll("option[data-or]")).forEach(function (o) { o.remove(); });
+    var pl = root.H3BasicPlace ? root.H3BasicPlace.get("video-model") : "all"; if (pl !== "all" && pl !== "openrouter") return;   // 2.797.0: the place picked
     S.mine.video.forEach(function (m) { var o = doc.createElement("option"); o.value = PREFIX + m.id; o.label = (m.name || m.id) + (m.price ? " · " + m.price : ""); o.dataset.or = "1"; dl.appendChild(o); });
   }
   function paintSel(k) {

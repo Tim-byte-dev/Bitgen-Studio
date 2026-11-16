@@ -106,7 +106,8 @@ const MFILE = path.join(ROOT, "model_folders.json");
     await p.selectOption("#mfMain", "video"); await p.selectOption("#mfType", "wan"); await p.selectOption("#mfKind", "lora");
     await p.click("#mfAdd"); await p.waitForTimeout(600);
     check("…a folder for any type: Video · Wan LoRAs picked from the form", ((await api("/api/modelfolders")).folders || []).some((x) => x.key === "video/wan/lora" && x.dir === "/tmp/e2e538/Wan"));
-    // 🔄 Sync
+    // 🔄 Sync - in the Civitai tab since 2.797.0
+    await ev(() => H3ModelMgr.openTab("civitai")); await p.waitForTimeout(600);
     await p.click("#mmSync"); await p.waitForTimeout(500);
     await p.keyboard.down("Shift"); await p.click("#mmSync"); await p.keyboard.up("Shift"); await p.waitForTimeout(500);
     check("🔄 Sync asks for EVERY model on this computer ({all, sync}); Shift = all of them again (force)", posted.fetch.length === 2 && posted.fetch[0].all === true && posted.fetch[0].sync === true && !posted.fetch[0].force && posted.fetch[1].force === true, posted.fetch);

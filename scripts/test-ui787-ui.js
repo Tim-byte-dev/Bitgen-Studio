@@ -59,20 +59,16 @@ const DIR = path.join(__dirname, "..", "runpod", "pods"), POD = "pod787test", NA
     const names = (c) => (((cm.categories || {})[c] || {}).files || []).map((f) => f.name);
     check("the model lists get the pod's checkpoints + LoRAs as <pod name>/<file> (pod_models), not its VAE / text encoders", cm.pod_models === true && names("checkpoints").includes(NAME + "/Models/mine_v1.safetensors") && names("loras").includes(NAME + "/film_grain.safetensors")
       && !(names("vae") || []).some((n) => n.startsWith(NAME + "/")), { ck: names("checkpoints").slice(-3), lo: names("loras").slice(-3) });
+    await api("/api/basic-use", { image_model_pod: POD });   // 2.797.0: a pod left from the old ☐ Remote - the page clears it
     await p.goto(URL0);
-    await p.waitForFunction(() => window.H3RemoteUse && window.H3PodInv && window.H3Pods && document.getElementById("imgCkptCombo") && document.querySelector("#imgCkptCombo .cmfile"), null, { timeout: 30000 });
+    await p.waitForFunction(() => window.H3BasicPlace && window.H3PodInv && window.H3Pods && document.getElementById("imgCkptCombo") && document.querySelector("#imgCkptCombo .cmfile"), null, { timeout: 30000 });
     await p.waitForFunction((n) => [...document.querySelectorAll("#imgCkptCombo .cmfile option")].some((o) => o.value === n + "/Models/mine_v1.safetensors"), NAME, { timeout: 20000 }).catch(() => {});
     check("Basic Settings ▸ the picture Model list offers Krea pod/Models/mine_v1.safetensors (this computer's kept)", await ev((n) => { const o = [...document.querySelectorAll("#imgCkptCombo .cmfile option")].map((x) => x.value); return o.includes(n + "/Models/mine_v1.safetensors") && o.includes(""); }, NAME));
-    const fold = await ev(() => [...document.querySelectorAll("#imgCkptCombo .cmfolder option")].map((o) => o.textContent));
-    check("…the folder filter has the pod as a folder", fold.some((t) => /Krea pod/.test(t)), fold);
-    // ☐ Remote + a pod under each Use … box
-    await p.waitForFunction(() => document.querySelectorAll(".ruRow:not([hidden]) [data-rukey]").length === 4, null, { timeout: 15000 }).catch(() => {});
-    const rows = await ev(() => [...document.querySelectorAll(".ruRow [data-rukey]")].map((c) => ({ k: c.dataset.rukey, under: c.closest(".ruRow").previousElementSibling && (c.closest(".ruRow").previousElementSibling.querySelector("input") || {}).id, opts: [...c.closest(".ruRow").querySelectorAll("option")].map((o) => o.textContent) })));
-    const under = Object.fromEntries(rows.map((r) => [r.k, r.under]));
-    check("☐ Remote + the pod list under Use model / Use temporary LoRAs (picture + video), the pod listed", rows.length === 4 && under.image_model_pod === "useImgModel" && under.image_loras_pod === "useImgLoras" && under.video_model_pod === "useVidModel" && under.video_loras_pod === "useVidLoras" && rows.every((r) => r.opts.includes(NAME)), rows);
-    await ev(() => { const c = document.querySelector('[data-rukey="image_model_pod"]'); c.checked = true; c.dispatchEvent(new Event("change")); });
-    await sleep(900);
-    check("…ticked: kept (basic_use.image_model_pod = the pod)", (await api("/api/basic-use")).image_model_pod === POD);
+    const fold = await ev(() => [...document.querySelectorAll("#imgCkptCombo .cmplace option")].map((o) => o.value + ":" + o.textContent));
+    check("…2.797.0: the place dropdown (All places / This computer / RunPod / OpenRouter) in place of the folder filter", fold.length === 4 && /^runpod:RunPod \(\d+\)/.test(fold[2]) && /^local:This computer/.test(fold[1]), fold);
+    // 2.797.0 (Tim: "in basic settings remove the remote checkboxes"): no ☐ Remote rows; a pod left picked there is cleared
+    let bu = null; for (let i = 0; i < 20; i++) { bu = await api("/api/basic-use"); if (!bu.image_model_pod) break; await sleep(300); }
+    check("2.797.0: no ☐ Remote + pod rows under Use model / Use temporary LoRAs; the old pick cleared (nothing goes to a pod unseen)", (await ev(() => document.querySelectorAll("[data-rukey], .ruRow").length)) === 0 && !bu.image_model_pod, bu);
     // the route check the page asks before starting this computer's ComfyUI
     const rt = await api("/api/stylepods/route?mode=image&style_id=" + encodeURIComponent(st.id) + "&model=" + encodeURIComponent(NAME + "/Models/mine_v1.safetensors"));
     check("the page's check: a <pod>/<file> pick goes to a pod (this computer's ComfyUI is not started)", rt.pod === true && rt.pod_id === POD, rt);

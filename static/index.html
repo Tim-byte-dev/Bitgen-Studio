@@ -1109,6 +1109,7 @@
   /* 2.111.5 (Tim): the image temp-LoRA frames drop the folder filter — the
      LoRA dropdown lists every folder's files; the folder is in the name */
   #tliRows .lorarow.stacked .cmcombo select.cmfolder { display: none; }
+  .cmcombo select.cmplace { flex: 0 0 auto; width: auto; max-width: 46%; min-width: 8.5em; }   /* 2.797.0: Basic Settings place dropdown */
   .lorarow.stacked .cmcombo select.cmfile { width: 100%; min-width: 0; }
   .lorarow.stacked .lline { display: flex; align-items: center; gap: 6px; }
   .lorarow.stacked .lline input[type=range] { flex: 1; width: auto; min-width: 0; }
@@ -1411,7 +1412,8 @@
       </div>
       <!-- 2.409.0: the video model for EVERY video style while Override style is on (blank = the style's own) -->
       <label class="f" for="vidModel" title="With Override style on, this model replaces the style's (phase 1) for MiniMax H3, Wan and LTX 2.3 / 2.5 - a ComfyUI dropdown value. Blank = the style's own model.">Model <span style="color:var(--dim)">(Override style — blank = the style's)</span></label>
-      <input type="text" id="vidModel" list="vidModelList" placeholder="the style's own model" autocomplete="off" style="width:100%">
+      <div class="cmcombo" style="display:flex;gap:6px"><select id="vidModelPlace" class="cmplace" aria-label="Where the models are" title="Where the models are - this computer, your pods (RunPod) or OpenRouter"><option value="all">All places (0)</option><option value="local">This computer (0)</option><option value="runpod">RunPod (0)</option><option value="openrouter">OpenRouter (0)</option></select>
+      <input type="text" id="vidModel" list="vidModelList" placeholder="the style's own model" autocomplete="off" style="flex:1;min-width:0"></div>
       <datalist id="vidModelList"></datalist>
       <label class="f">Max seconds per segment <span style="color:var(--dim)">(chunked renders only — Auto keeps ≤15s in ONE generation)</span></label>
       <input type="number" id="segSec" min="2" max="15" step="0.5" value="15">
@@ -3578,7 +3580,7 @@
 <script src="/static/famfilter.js"></script>  <!-- 2.788.0: Basic Settings' Override lists by the picked styles' family + type (H3FamFilter - routes/famFilter.js) -->
 <script src="/static/nopod.js"></script>  <!-- 2.789.0: a terminated pod's files kept as NO_Pod (<old name>)/<file> or removed; picking one asks before the pod is made again (H3NoPod - lib/noPod.js) -->
 <script src="/static/podinv.js"></script>  <!-- 2.787.0: PODS ▸ 🗂 Inventory - what is on a pod (H3PodInv - routes/podInv.js) -->
-<script src="/static/remoteuse.js"></script>  <!-- 2.787.0: Basic Settings ▸ Use model / Use temporary LoRAs ▸ ☐ Remote + a pod (H3RemoteUse - lib/basicUse.js, lib/podPick.js) -->
+<script src="/static/basicplace.js"></script>  <!-- 2.797.0: Basic Settings. lists by place (H3BasicPlace); static/remoteuse.js (☐ Remote + a pod, 2.787.0) is no longer loaded -->
 <script src="/static/ormine.js"></script>  <!-- 2.786.0: your OpenRouter models as "openrouter/<id>" in Basic Settings' Model lists + the LLM / Vision lists (H3OrMine - lib/orModels.js); before remotellm.js (its change listener first) -->
 <script src="/static/ormodels.js"></script>  <!-- 2.786.0: ☁ Remote generation ▸ OpenRouter models…; 2.792.0 the dialog gone - the button opens 🧩 Model manager ▸ ☁ OpenRouter (H3OrModels) -->
 <script src="/static/orcost.js"></script>  <!-- 2.786.0: the price before a paid OpenRouter render - Render / Cancel (H3OrCost - POST /api/ormodels/check) -->
@@ -7426,7 +7428,25 @@ function cmCombo(host, inp, cats, opts) {
   // 2.559.0 (Tim: "when user selects a folder to filter remember the folder selection until changed for all folder
   // select dropdowns"): each combo's folder is kept (static/folderfilter.js, folder_filters.cfg) - its key is its field
   const fkey = "cm:" + (inp.id || host.id || "") + ":" + cats.join(",");
+  // 2.797.0 (Tim: "in basic settings ... show local/openrouter/runpod/all in the dropdowns then filter the model lists"): in Basic
+  // Settings' checkpoint + LoRA lists the first dropdown is the PLACE (static/basicplace.js), counted after the style-family filter
+  // a LoRA row is built before it is put in #tliRows / #tlvRows - so the list is found when it paints (H3BasicPlace repaints new rows)
+  const BP = window.H3BasicPlace;
+  let bsList = null;
+  const bsNow = () => {
+    if (bsList || !BP || !host.isConnected) return bsList;
+    bsList = BP.listOf(host);
+    if (bsList) { fsel.className = "cmplace"; fsel.title = "Where the models are - this computer, your pods (RunPod) or OpenRouter"; }
+    return bsList;
+  };
+  const famFiles = (all) => { const F = window.H3FamFilter && H3FamFilter.files ? H3FamFilter.files(inp, all) : null; return F ? F.files : all; };
+  const orCount = () => (bsList === "image-model" && window.H3OrMine && H3OrMine.state ? ((H3OrMine.state().mine || {}).image || []).length : 0);
+  const paintPlaces = () => {
+    const n = BP.counts(famFiles(cmFiles(cats))); n.openrouter += orCount(); n.all += orCount();
+    fsel.innerHTML = BP.optionsHtml(bsList, BP.get(bsList), n);
+  };
   const paintFolders = () => {
+    if (bsNow()) return paintPlaces();
     const FM = window.H3FolderMem, mem = FM && !fsel.dataset.picked ? FM.get(fkey) : null;
     const keep = mem != null ? mem : fsel.value;
     fsel.innerHTML = cmAllOption()
@@ -7444,11 +7464,14 @@ function cmCombo(host, inp, cats, opts) {
     const cur = inp.value.trim();
     const filter = fsel.value;
     let files = cmFiles(cats);
-    if (filter !== CM_ALL)
+    bsNow();
+    if (!bsList && filter !== CM_ALL)
       files = files.filter(f => cmFolderKey(f) === filter);
     // 2.788.0: Basic Settings' Override lists = the prompt docker's style's family + type (static/famfilter.js)
     const FF = window.H3FamFilter && H3FamFilter.files ? H3FamFilter.files(inp, files) : null;
     if (FF) files = FF.files;
+    const place = bsList ? BP.get(bsList) : "all";   // 2.797.0: the place picked
+    if (bsList && place !== "all") files = files.filter(f => BP.placeOf(f) === place);
     const multi = cats.length > 1;
     let html = `<option value="">${esc(o.blank || "— none —")}</option>`;
     html += files.map(f => {
@@ -7456,7 +7479,7 @@ function cmCombo(host, inp, cats, opts) {
       return `<option value="${esc(f.name)}">${esc(label)}</option>`;
     }).join("");
     // 2.786.0: your OpenRouter picture models as "openrouter/<id>" in Basic Settings' checkpoint (static/ormine.js)
-    const orx = window.H3OrMine && H3OrMine.comboExtra ? H3OrMine.comboExtra(inp.id, cur) : null;
+    const orx = window.H3OrMine && H3OrMine.comboExtra && (place === "all" || place === "openrouter") ? H3OrMine.comboExtra(inp.id, cur) : null;
     if (orx) html += orx.html;
     // The stored value survives even when the filter hides it or the file is
     // gone — otherwise selecting a folder would silently blank the field.
@@ -7471,7 +7494,9 @@ function cmCombo(host, inp, cats, opts) {
   paintFolders(); paintFiles();
   if (window.H3FolderMem) window.H3FolderMem.onReady(() => { if (!fsel.dataset.picked) { paintFolders(); paintFiles(); } });
 
-  fsel.onchange = () => { fsel.dataset.picked = "1"; if (window.H3FolderMem) window.H3FolderMem.set(fkey, fsel.value === CM_ALL ? null : fsel.value); paintFiles(); };
+  fsel.onchange = () => {
+    if (bsList) { BP.set(bsList, fsel.value); paintFiles(); return; }   // 2.797.0: the place, kept per list
+    fsel.dataset.picked = "1"; if (window.H3FolderMem) window.H3FolderMem.set(fkey, fsel.value === CM_ALL ? null : fsel.value); paintFiles(); };
   // 2.305.0: a combo outside the Image style editor says so with onChange,
   // so picking a ControlNet does not mark the image style unsaved
   const dirty = typeof o.onChange === "function" ? o.onChange : () => { styleDirty = true; };

@@ -44,19 +44,29 @@
       + (b.loras.length ? " · +" + b.loras.length + " LoRA(s)" : "");
   }
 
-  function fill() {
-    if (listed) return;
+  function fill(again) {
+    if (listed && !again) return;
     listed = true;
     fetch("/api/comfymodels").then(function (r) { return r.json(); }).then(function (j) {
       var cats = j.categories || {}, names = [], pairs = [];
       (j.model_categories || ["checkpoints", "diffusers", "diffusion_models"]).concat(["unet", "unet_gguf"]).forEach(function (k) {
         // 2.622.0: a category is {files: [{name}]} (lib/comfyModels.js) - read as a plain list it threw, and the list stayed EMPTY
-        var c = cats[k], L = Array.isArray(c) ? c : ((c && c.files) || []).map(function (f) { return f && f.name; });
-        L.forEach(function (n) { if (n && names.indexOf(n) < 0) { names.push(n); pairs.push({ cat: k, name: n }); } });
+        var c = cats[k], L = Array.isArray(c) ? c.map(function (n) { return { name: n }; }) : ((c && c.files) || []);
+        L.forEach(function (f) { var n = f && f.name; if (n && names.indexOf(n) < 0) { names.push(n); pairs.push({ cat: k, name: n, pod: f.pod, remote: f.remote, nopod: f.nopod }); } });
       });
       var dl = $("vidModelList"); if (!dl) return;
       // 2.788.0: the prompt docker's video style's family (static/famfilter.js) - its files, then the ones of no known family
       var shown = window.H3FamFilter && H3FamFilter.names ? H3FamFilter.names("video", pairs) : names.map(function (n) { return { name: n }; });
+      // 2.797.0 (Tim: "show local/openrouter/runpod/all in the dropdowns then filter the model lists"): the place (static/basicplace.js)
+      var BP = window.H3BasicPlace, byName = {}; pairs.forEach(function (p) { byName[p.name] = p; });
+      if (BP) {
+        var full = shown.map(function (x) { return Object.assign({}, byName[x.name] || {}, x); });
+        var orN = window.H3OrMine && H3OrMine.state ? ((H3OrMine.state().mine || {}).video || []).length : 0;
+        var n = BP.counts(full); n.openrouter += orN; n.all += orN;
+        var ps = $("vidModelPlace"), pl = BP.get("video-model");
+        if (ps) ps.innerHTML = BP.optionsHtml("video-model", pl, n);
+        if (pl !== "all") shown = full.filter(function (x) { return BP.placeOf(x) === pl; });
+      }
       dl.innerHTML = shown.map(function (x) { return '<option value="' + String(x.name).replace(/"/g, "&quot;") + '"' + (x.unknown ? ' label="family not known"' : "") + '></option>'; }).join("");
       if (window.H3OrMine && H3OrMine.paintAll) try { H3OrMine.paintAll(); } catch (e) { /* its own list */ }
       listed = names.length > 0;                  // nothing yet (ComfyUI not found) - the next focus asks again

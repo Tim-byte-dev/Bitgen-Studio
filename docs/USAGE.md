@@ -9135,6 +9135,13 @@ Your LLM and vision models from a source are in the prompt docker's LLM / Vision
   - **☁ OpenRouter** - the type (Image / Video / LLM / Vision LLM, with counts) and the price (free + paid / free only / paid only).
 - The tab bar's tools are icons now (⤓ Civitai info, 🔄 Sync, 📁 folders, ⇲ Edit, ⟳ read again - their names on hover), and the search bar's boxes are one height.
 
+## Basic Settings' lists by place (2.797.0)
+
+- The **☐ Remote** + pod rows under Use model / Use temporary LoRAs are gone. To use a pod's model or LoRA, pick it from the list as `<pod>/<file>` - the render goes to that pod. A pod left picked under the old Remote is cleared, so nothing goes to a pod you cannot see.
+- The picture **Checkpoint**, the video **Model** and every **temporary LoRA** row start with a place dropdown: **All places / This computer / RunPod / OpenRouter** (the LoRA lists have no OpenRouter), each with how many there are. The list shows that place's files. Each list keeps its own choice.
+- The lists still follow the prompt docker's style (2.788.0): in image mode the picture checkpoint and LoRAs show the image style's model family, in video mode the video Model and LoRAs show the video style's - from every place - and the counts are after that.
+- 🧩 Model manager: **⤓ Civitai info** and **🔄 Sync** moved into the **Civitai** tab.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
