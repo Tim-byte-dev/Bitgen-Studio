@@ -79,9 +79,9 @@ const LR = require("../lib/llmRepos"), RL = require("../lib/remoteLlm"), PL = re
   const RA = require("../lib/runpodApi"), calls = [];
   const origCall = RA.call;
   CFG.rgpu.runpod = { key: "rk" };
-  const fakeFetch = async (u, o) => { calls.push([o.method, u.replace(/^.*\/pods/, "/pods"), o.body]); return { ok: true, status: 200, text: async () => JSON.stringify({ id: "pod9", volumeInGb: 40 }) }; };
-  const g = await RA.update("pod9", { volumeInGb: 80 }, "rk", { fetch: fakeFetch });
-  check("runpodApi.update: PATCH /pods/{id} with the new volume", g.id === "pod9" && calls[0][0] === "PATCH" && calls[0][1] === "/pods/pod9" && /"volumeInGb":80/.test(calls[0][2]), calls);
+  const fakeFetch = async (u, o) => { calls.push([o.method, u.replace(/^.*\/pods/, "/pods"), o.body]); return { ok: true, status: 200, text: async () => JSON.stringify({ id: "pod9", mounts: { persistent: { size: 40, path: "/workspace" } } }) }; };
+  const g = await RA.update("pod9", { mounts: { persistent: { size: 80 } } }, "rk", { fetch: fakeFetch });
+  check("runpodApi.update: REST v2 PATCH /pods/{id} {mounts: {persistent: {size}}} (2.807.0 - v1's volumeInGb refused by v2)", g.id === "pod9" && calls[0][0] === "PATCH" && calls[0][1] === "/pods/pod9" && /"mounts":\{"persistent":\{"size":80\}\}/.test(calls[0][2]) && calls.length === 1, calls);
   let gerr = ""; try { await LR.grow("pod9", 5); } catch (e) { gerr = e.message; }
   check("grow: 10-4000 GB only", /10 to 4000/.test(gerr));
   // the page
