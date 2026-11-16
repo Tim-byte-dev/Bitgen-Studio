@@ -446,6 +446,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **頁面與文件匯出** — 影像編輯器可製作多頁文件（A3 - A6、Letter、Legal、Tabloid、卡片、DL、自訂尺寸；縱向 / 橫向；72 - 300 dpi），每頁都有自己的圖層和復原歷史；Pages 清單可新增、複製、移動、重新命名和刪除頁面；Page setup；所有頁面及其圖層可匯出為 PDF（形狀為路徑，文字為真實文字，每個圖層是一個 PDF 圖層）、.ai、SVG 頁面或用於 .cdr 的包；.bgi 會儲存所有頁面。*Where:* Image editor ▸ File ▸ New Document with Pages…, Window ▸ Pages, File ▸ Export ▸ Document. *Since:* 2.799.0
 - **主頁、頁碼和對頁** — 主頁的圖層（頁首、頁尾、標誌、背景）顯示在每個使用它的頁面下方，可分配給所有 / 奇數 / 偶數頁；文字中的 {page} / {pages} / {name} 自動生成頁碼（1、i、I、a、A，可從任意數字開始），# 新增頁碼；對頁以跨頁顯示並可按跨頁匯出；主頁作為自己的圖層匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Window ▸ Pages. *Since:* 2.800.0
 - **連結文字框和文字繞排** — 段落文字從一個框流向另一個框、從一頁流向另一頁（＋ Frame、＋ Next page、Edit Story、Unlink），在任何框中輸入都會進入文章；文字帶間距繞排形狀（沿輪廓）和圖片；作為真實文字逐行匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
+- **印刷就緒 PDF** — 匯出時帶出血（邊緣內容延伸到裁切線之外）、裁切和套準標記、頁面資訊、TrimBox / BleedBox / MediaBox、CMYK 顏色和圖片（銅版紙 / 非塗布紙 / 新聞紙）以及嵌入字型。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

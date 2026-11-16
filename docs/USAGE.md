@@ -9188,6 +9188,17 @@ Paragraph text (a type layer with a box - Type: Convert to Paragraph Text, or dr
 - **Export** writes the frames and the wrapped text as real, selectable text, line by line (a justified line word by word). Text with character tricks (scaled letters, small caps, a baseline shift …) still goes as a picture.
 - **Save Project (.bgi)** keeps the stories and the wraps.
 
+## Print-ready PDF (2.802.0)
+
+The image editor's **Export ▸ Document…** dialog (or **⤓ Export…** in the Pages panel) has a **Print-ready** box for PDF, .ai and the .cdr pack - for sending a document to a print shop:
+
+- **Bleed** (mm, 3 by default) - what touches the page's edge is carried past it, so there is no white edge after trimming: shapes on the edge are drawn out into the bleed, pictures on the edge have their edge pixels stretched into it. Put backgrounds and pictures right to the page edge.
+- **Crop marks** - where to cut, at each corner outside the bleed. **Registration marks** - targets in the middle of each side. **Page information** - a line under the page: the document, the page, the date, RGB / CMYK and the bleed. The marks are on their own PDF layer ("Printer's marks") and printed in every ink.
+- **Page boxes** - each page's TrimBox (the finished size), BleedBox and MediaBox are set, so print software knows where to cut.
+- **Colour: CMYK** - shape and text colours as CMYK, pictures as CMYK images (their transparency kept), made for **coated**, **uncoated** or **newsprint** paper with the same press model as Image ▸ Mode ▸ CMYK; greys and black text use black ink only. **RGB** keeps the colours as they are.
+- **Fonts** are embedded (only the letters used). A font that is not on this computer falls back to Helvetica / Times / Courier and the message says how many.
+- It is a careful print file, not a certified PDF/X file (no colour profile inside) - ask your printer for a proof.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -14044,6 +14044,13 @@ node scripts/test-flow801.js > /tmp/flow801.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui801-ui.js > /tmp/ui801.log 2>&1 \
   && ok "2.801.0 text flow in a real browser: ＋ Frame / ＋ Next page, every word once in the PDF, typing in frame 2 (+ undo), wrap around an ellipse, Edit Story, Unlink, .bgi" \
   || { bad "2.801.0 text flow browser test"; grep -a "^FAIL" -A1 /tmp/ui801.log | head -12; }
+# ---- 2.802.0 (Tim: "please go with next" - desktop publishing part 4: print-ready PDF)
+node scripts/test-print802.js > /tmp/print802.log 2>&1 \
+  && ok "2.802.0 print-ready units: CMYK, bleed paths, page boxes, crop / registration marks, CMYK pictures with soft masks, the slug" \
+  || { bad "2.802.0 print-ready units"; grep -a "^FAIL" -A1 /tmp/print802.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui802-ui.js > /tmp/ui802.log 2>&1 \
+  && ok "2.802.0 print-ready in a real browser: the dialog's box, the saved PDF's boxes, CMYK pictures, the bleed rendered, the slug" \
+  || { bad "2.802.0 print-ready browser test"; grep -a "^FAIL" -A1 /tmp/ui802.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

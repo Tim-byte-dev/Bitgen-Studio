@@ -23,7 +23,15 @@
  *   2.800.0  a page's master (pcpages.js) = its own layers as "Master / <layer>" (paths and real text, its {page} filled
  *            in); As spreads (facing pages) = each spread one PDF / SVG page (joinSpread: the right page moved over).
  *
- * Pure (Node: scripts/test-dtpout799.js, test-masters800.js): joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf (given
+ *   2.802.0  PRINT-READY (Tim: "please go with next" - desktop publishing part 4): Bleed (mm - the page's content that
+ *            touches the edge carried past it: paths moved out, pictures' edge pixels stretched), crop marks,
+ *            registration marks, page information (a slug), MediaBox / BleedBox / TrimBox set, the marks on their own
+ *            PDF layer; CMYK: vector and text colours as DeviceCMYK, pictures as CMYK images (pcmode.js's press model -
+ *            coated / uncoated / newsprint; greys as black ink only), fonts embedded. Not a certified PDF/X file (no
+ *            output-intent profile).
+ *
+ * Pure (Node: scripts/test-dtpout799.js, test-masters800.js, test-print802.js): cmykSimple, bleedSegs, marksOps,
+ * printBoxes, joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf (given
  * pdf-lib), buildSvg, b64, extOf.
  */
 (function (root) {
@@ -177,17 +185,18 @@
   }
   const JOIN = { miter: 0, round: 1, bevel: 2 }, CAP = { butt: 0, round: 1, square: 2 };
   /** a recorded item as PDF operators [[op, ...numbers]] - k = pt per px, H = the page height in px (y goes up in a PDF) */
-  function toPdfOps(item, k, H) {
+  function toPdfOps(item, k, H, cmykOf) {
     const X = (x) => r3(x * k), Y = (y) => r3((H - y) * k), c = parseColor(item.color) || { r: 0, g: 0, b: 0 };
-    const out = [], col = [r3(c.r / 255), r3(c.g / 255), r3(c.b / 255)];
+    const out = [], col = cmykOf ? cmykOf(c.r, c.g, c.b).slice(0, 4).map(r3) : [r3(c.r / 255), r3(c.g / 255), r3(c.b / 255)];
+    const F = cmykOf ? "k" : "rg", Sk = cmykOf ? "K" : "RG";
     for (const s of item.segs) {
       if (s[0] === "M") out.push(["m", X(s[1]), Y(s[2])]);
       else if (s[0] === "L") out.push(["l", X(s[1]), Y(s[2])]);
       else if (s[0] === "C") out.push(["c", X(s[1]), Y(s[2]), X(s[3]), Y(s[4]), X(s[5]), Y(s[6])]);
       else if (s[0] === "Z") out.push(["h"]);
     }
-    if (item.t === "fill") return [["rg", ...col]].concat(out, [[item.rule === "evenodd" ? "f*" : "f"]]);
-    const pre = [["RG", ...col], ["w", r3(item.width * k)], ["J", CAP[item.cap] || 0], ["j", JOIN[item.join] || 0]];
+    if (item.t === "fill") return [[F, ...col]].concat(out, [[item.rule === "evenodd" ? "f*" : "f"]]);
+    const pre = [[Sk, ...col], ["w", r3(item.width * k)], ["J", CAP[item.cap] || 0], ["j", JOIN[item.join] || 0]];
     if (item.dash && item.dash.length) pre.push(["d", item.dash.map((v) => r3(v * k)), r3((item.dashOff || 0) * k)]);
     return pre.concat(out, [["S"]]);
   }
@@ -231,6 +240,44 @@
     out.push(`</svg>`);
     return out.join("\n");
   }
+  /* ---- 2.802.0: print-ready ---- */
+  /** a plain RGB -> CMYK (0..1) without a press model (tests; greys = black ink only) */
+  function cmykSimple(r, g, b) {
+    if (r === g && g === b) return [0, 0, 0, 1 - r / 255];
+    const R = r / 255, G = g / 255, B = b / 255, K = 1 - Math.max(R, G, B);
+    if (K >= 1) return [0, 0, 0, 1];
+    return [(1 - R - K) / (1 - K), (1 - G - K) / (1 - K), (1 - B - K) / (1 - K), K];
+  }
+  /** a path that touches the page's edge carried past it by the bleed b (px): points within half a pixel of an edge go out */
+  function bleedSegs(segs, W, H, b) {
+    if (!(b > 0)) return segs;
+    const fx = (x) => (x <= 0.5 ? x - b : x >= W - 0.5 ? x + b : x), fy = (y) => (y <= 0.5 ? y - b : y >= H - 0.5 ? y + b : y);
+    return segs.map((sg) => sg.map((v, j) => (j === 0 ? v : j % 2 === 1 ? fx(v) : fy(v))));
+  }
+  const MARK = { gap: 3, len: 12, room: 24, reg: 4 };
+  /** the page boxes in pt: trim w x h, bleed b, marks (crop / registration / slug) -> {W, H (the media), M (trim's offset), trim, bleed} */
+  function printBoxes(w, h, b, marks) {
+    const M = (b || 0) + (marks ? MARK.room : 0);
+    return { W: w + 2 * M, H: h + 2 * M, M, trim: [M, M, w, h], bleed: [M - (b || 0), M - (b || 0), w + 2 * (b || 0), h + 2 * (b || 0)] };
+  }
+  /** printer's marks as line / circle ops in pt (y up): crop marks at the trim's corners outside the bleed, registration
+   *  targets at the middle of each side; -> [["line", x0, y0, x1, y1] | ["circle", cx, cy, r]] */
+  function marksOps(w, h, b, o) {
+    const bx = printBoxes(w, h, b, true), M = bx.M, x0 = M, y0 = M, x1 = M + w, y1 = M + h, d = (b || 0) + MARK.gap, L = MARK.len, out = [];
+    if (o.crop) {
+      for (const [x, y, sx, sy] of [[x0, y0, -1, -1], [x1, y0, 1, -1], [x0, y1, -1, 1], [x1, y1, 1, 1]]) {
+        out.push(["line", x + sx * d, y, x + sx * (d + L), y]);       // horizontal, level with the trim edge
+        out.push(["line", x, y + sy * d, x, y + sy * (d + L)]);       // vertical
+      }
+    }
+    if (o.reg) {
+      const c = d + L / 2, R = MARK.reg;
+      for (const [cx, cy] of [[(x0 + x1) / 2, y0 - c], [(x0 + x1) / 2, y1 + c], [x0 - c, (y0 + y1) / 2], [x1 + c, (y0 + y1) / 2]]) {
+        out.push(["circle", cx, cy, R]); out.push(["line", cx - R * 1.6, cy, cx + R * 1.6, cy]); out.push(["line", cx, cy - R * 1.6, cx, cy + R * 1.6]);
+      }
+    }
+    return out.map((m) => m.map((v, i) => (i ? r3(v) : v)));
+  }
   /** the PDF of every page: pages as above; PL = pdf-lib; o: {title, fontkit, fontFor(it) -> bytes | null (embed),
    *  stdOf(it) -> "Helvetica" … (a StandardFonts key)}; each layer an optional-content group (a PDF layer) */
   async function buildPdf(PL, pages, o) {
@@ -243,15 +290,22 @@
     const std = {}, own = {}, notes = { pages: 0, layers: 0, vector: 0, text: 0, embedded: 0, pictures: 0 };
     const stdFont = async (name) => (std[name] = std[name] || await pdf.embedFont(PL.StandardFonts[name] || PL.StandardFonts.Helvetica));
     const order = [], all = [];
+    const pr = o.print || null, cmykOf = pr && pr.cmyk ? pr.cmyk : null, marked = !!(pr && (pr.crop || pr.reg || pr.slug));
+    if (pr) Object.assign(notes, { print: true, cmyk: !!cmykOf, bleed: pr.bleed || 0, standard: 0 });
+    const colour = (c) => (cmykOf ? PL.cmyk(...cmykOf(c.r, c.g, c.b).slice(0, 4)) : PL.rgb(c.r / 255, c.g / 255, c.b / 255));
     for (let pi = 0; pi < pages.length; pi++) {
       const p = pages[pi], k = p.k, H = p.h;
-      const page = pdf.addPage([r3(p.w * k), r3(p.h * k)]);
+      const bPt = pr ? Math.max(0, +pr.bleed || 0) : 0, bx = printBoxes(r3(p.w * k), r3(p.h * k), bPt, marked);
+      const page = pdf.addPage([r3(bx.W), r3(bx.H)]);
+      if (pr) { page.setMediaBox(0, 0, r3(bx.W), r3(bx.H)); page.setBleedBox(...bx.bleed.map(r3)); page.setTrimBox(...bx.trim.map(r3)); page.setCropBox(0, 0, r3(bx.W), r3(bx.H)); }
+      const bPx = bPt / k;
       const res = page.node.Resources ? page.node.Resources() : page.node.lookup(N("Resources"));
       let props = res.lookup(N("Properties"));
       if (!props) { props = pdf.context.obj({}); res.set(N("Properties"), props); }
       const gsKey = {};
       const gs = (a) => { const key = r3(a); if (!gsKey[key]) gsKey[key] = page.node.newExtGState("GS", pdf.context.obj({ Type: "ExtGState", ca: key, CA: key })); return gsKey[key]; };
       const group = [PL.PDFHexString.fromText(p.name || ("Page " + (pi + 1)))];
+      if (bx.M) page.pushOperators(op("q"), op("cm", [1, 0, 0, 1, r3(bx.M), r3(bx.M)]));   // the trim's corner = (M, M)
       for (let li = 0; li < p.layers.length; li++) {
         const L = p.layers[li];
         const ref = pdf.context.register(pdf.context.obj({ Type: "OCG", Name: PL.PDFHexString.fromText((p.name || "Page " + (pi + 1)) + " / " + L.name) }));
@@ -263,7 +317,7 @@
             for (const v of it.items) {
               page.pushOperators(op("q"));
               if (v.alpha < 1) page.pushOperators(op("gs", [gs(v.alpha)]));
-              for (const o2 of toPdfOps(v, k, H)) {
+              for (const o2 of toPdfOps(bPx ? Object.assign({}, v, { segs: bleedSegs(v.segs, p.w, p.h, bPx) }) : v, k, H, cmykOf)) {
                 if (o2[0] === "d") page.pushOperators(PL.setDashPattern(o2[1], o2[2]));
                 else page.pushOperators(op(o2[0], o2.slice(1)));
               }
@@ -271,8 +325,24 @@
             }
             notes.vector++;
           } else if (it.t === "img") {
-            const im = await pdf.embedPng(it.png);
-            page.drawImage(im, Object.assign({ x: r3(it.x * k), y: r3((H - it.y - it.h) * k), width: r3(it.w * k), height: r3(it.h * k) }, it.alpha != null && it.alpha < 1 ? { opacity: it.alpha } : {}));
+            if (cmykOf && it.rgba && it.iw && it.ih) {    // 2.802.0: a CMYK picture (+ its transparency as a soft mask)
+              const n = it.iw * it.ih, cm = new Uint8Array(n * 4), al = new Uint8Array(n); let soft = false;
+              for (let i = 0; i < n; i++) {
+                const c4 = cmykOf(it.rgba[i * 4], it.rgba[i * 4 + 1], it.rgba[i * 4 + 2]);
+                cm[i * 4] = Math.round(c4[0] * 255); cm[i * 4 + 1] = Math.round(c4[1] * 255); cm[i * 4 + 2] = Math.round(c4[2] * 255); cm[i * 4 + 3] = Math.round(c4[3] * 255);
+                al[i] = it.rgba[i * 4 + 3]; if (al[i] < 255) soft = true;
+              }
+              const sm = soft ? pdf.context.register(pdf.context.flateStream(al, { Type: "XObject", Subtype: "Image", Width: it.iw, Height: it.ih, ColorSpace: "DeviceGray", BitsPerComponent: 8 })) : null;
+              const ref = pdf.context.register(pdf.context.flateStream(cm, Object.assign({ Type: "XObject", Subtype: "Image", Width: it.iw, Height: it.ih, ColorSpace: "DeviceCMYK", BitsPerComponent: 8 }, sm ? { SMask: sm } : {})));
+              const nm = page.node.newXObject("ImC", ref);
+              page.pushOperators(op("q"));
+              if (it.alpha != null && it.alpha < 1) page.pushOperators(op("gs", [gs(it.alpha)]));
+              page.pushOperators(op("cm", [r3(it.w * k), 0, 0, r3(it.h * k), r3(it.x * k), r3((H - it.y - it.h) * k)]), op("Do", [nm]), op("Q"));
+              notes.cmykPictures = (notes.cmykPictures || 0) + 1;
+            } else {
+              const im = await pdf.embedPng(it.png);
+              page.drawImage(im, Object.assign({ x: r3(it.x * k), y: r3((H - it.y - it.h) * k), width: r3(it.w * k), height: r3(it.h * k) }, it.alpha != null && it.alpha < 1 ? { opacity: it.alpha } : {}));
+            }
             notes.pictures++;
           } else if (it.t === "text") {
             let font = null;
@@ -284,7 +354,7 @@
                 && !it.lines.every((ln) => [...ln.s].every((ch) => /\s/.test(ch) || font.embedder.font.hasGlyphForCodePoint(ch.codePointAt(0))))) font = null;
               if (font) notes.embedded++;
             }
-            if (!font) font = await stdFont(o.stdOf ? o.stdOf(it) : "Helvetica");
+            if (!font) { font = await stdFont(o.stdOf ? o.stdOf(it) : "Helvetica"); if (pr) notes.standard++; }
             const c = parseColor(it.color) || { r: 0, g: 0, b: 0 }, size = r3(it.size * k), tr = r3(((it.tracking || 0) / 1000) * size);
             for (const ln of it.lines) {
               if (!ln.s) continue;
@@ -293,7 +363,7 @@
               let str = ln.s;
               try { font.encodeText(str); } catch (e) { str = [...str].map((ch) => { try { font.encodeText(ch); return ch; } catch (e2) { notes.lost = (notes.lost || 0) + 1; return "?"; } }).join(""); }
               if (tr) page.pushOperators(PL.setCharacterSpacing(tr));
-              page.drawText(str, Object.assign({ x: r3(x), y: r3((H - ln.y) * k), size, font, color: PL.rgb(c.r / 255, c.g / 255, c.b / 255) }, it.alpha != null && it.alpha < 1 ? { opacity: it.alpha } : {}));
+              page.drawText(str, Object.assign({ x: r3(x), y: r3((H - ln.y) * k), size, font, color: colour(c) }, it.alpha != null && it.alpha < 1 ? { opacity: it.alpha } : {}));
               if (tr) page.pushOperators(PL.setCharacterSpacing(0));
             }
             notes.text++;
@@ -301,6 +371,26 @@
         }
         page.pushOperators(op("EMC"));
         notes.layers++;
+      }
+      if (bx.M) page.pushOperators(op("Q"));
+      // 2.802.0: printer's marks + page information on their own PDF layer, in registration colour (every ink) / black
+      if (marked) {
+        const ref = pdf.context.register(pdf.context.obj({ Type: "OCG", Name: PL.PDFHexString.fromText((p.name || "Page " + (pi + 1)) + " / Printer's marks") }));
+        all.push(ref); group.push(ref);
+        const tag = "OC" + all.length; props.set(N(tag), ref);
+        page.pushOperators(op("BDC", [N("OC"), N(tag)]), op("q"), cmykOf ? op("K", [1, 1, 1, 1]) : op("RG", [0, 0, 0]), op("w", [0.25]));
+        const W0 = r3(p.w * k), H0 = r3(p.h * k);
+        for (const m of marksOps(W0, H0, bPt, { crop: !!pr.crop, reg: !!pr.reg })) {
+          if (m[0] === "line") page.pushOperators(op("m", [m[1], m[2]]), op("l", [m[3], m[4]]), op("S"));
+          else { const [, cx, cy, R] = m, kk = 0.5523 * R; page.pushOperators(op("m", [r3(cx + R), cy]), op("c", [r3(cx + R), r3(cy + kk), r3(cx + kk), r3(cy + R), cx, r3(cy + R)]), op("c", [r3(cx - kk), r3(cy + R), r3(cx - R), r3(cy + kk), r3(cx - R), cy]), op("c", [r3(cx - R), r3(cy - kk), r3(cx - kk), r3(cy - R), cx, r3(cy - R)]), op("c", [r3(cx + kk), r3(cy - R), r3(cx + R), r3(cy - kk), r3(cx + R), cy]), op("S")); }
+        }
+        page.pushOperators(op("Q"));
+        if (pr.slug) {
+          const f = await stdFont("Helvetica"), txt = [pr.doc || "", p.name || "Page " + (pi + 1), pr.date || "", cmykOf ? "CMYK" : "RGB", bPt ? "bleed " + Math.round(bPt * 25.4 / 72 * 10) / 10 + " mm" : ""].filter(Boolean).join("  ·  ");
+          let t2 = txt; try { f.encodeText(t2); } catch (e) { t2 = [...t2].map((ch) => { try { f.encodeText(ch); return ch; } catch (e2) { return "?"; } }).join(""); }
+          page.drawText(t2, { x: r3(bx.M), y: 4, size: 6, font: f, color: cmykOf ? PL.cmyk(0, 0, 0, 1) : PL.rgb(0, 0, 0) });
+        }
+        page.pushOperators(op("EMC"));
       }
       order.push(pdf.context.obj(group));
       notes.pages++;
@@ -434,8 +524,18 @@
           if (!pic) continue;
           const data = ctx(pic).getImageData(0, 0, W, H).data, b = alphaBox(data, W, H);
           if (!b) continue;
-          const cut = newCanvas(b.w, b.h); ctx(cut).drawImage(pic, b.x, b.y, b.w, b.h, 0, 0, b.w, b.h);
-          items.push({ t: "img", png: await pngOf(cut), x: b.x, y: b.y, w: b.w, h: b.h });
+          // 2.802.0: bleed - a picture that touches the page's edge gets its edge pixels stretched past it
+          const bp = o.bleedMm ? Math.ceil((o.bleedMm / 25.4) * (72 / k)) : 0;
+          const ex = { l: bp && b.x <= 0 ? bp : 0, t: bp && b.y <= 0 ? bp : 0, r: bp && b.x + b.w >= W ? bp : 0, d: bp && b.y + b.h >= H ? bp : 0 };
+          const cw = b.w + ex.l + ex.r, chh = b.h + ex.t + ex.d, cut = newCanvas(cw, chh), cg = ctx(cut);
+          cg.drawImage(pic, b.x, b.y, b.w, b.h, ex.l, ex.t, b.w, b.h);
+          if (ex.l) cg.drawImage(pic, b.x, b.y, 1, b.h, 0, ex.t, ex.l, b.h);
+          if (ex.r) cg.drawImage(pic, b.x + b.w - 1, b.y, 1, b.h, ex.l + b.w, ex.t, ex.r, b.h);
+          if (ex.t) cg.drawImage(cut, 0, ex.t, cw, 1, 0, 0, cw, ex.t);
+          if (ex.d) cg.drawImage(cut, 0, ex.t + b.h - 1, cw, 1, 0, ex.t + b.h, cw, ex.d);
+          const img = { t: "img", png: await pngOf(cut), x: b.x - ex.l, y: b.y - ex.t, w: cw, h: chh };
+          if (o.cmyk) Object.assign(img, { rgba: cg.getImageData(0, 0, cw, chh).data, iw: cw, ih: chh });   // for a CMYK picture
+          items.push(img);
         }
         out.layers.push({ name: g.name, items });
       }
@@ -461,13 +561,25 @@
     /** build the file(s): fmt pdf | ai | svg | cdr -> {bytes, ext, notes} */
     async function build(fmt, opts) {
       const op2 = opts || {};
-      const pages = await pagesOut({ anyText: !!op2.embed, spreads: !!op2.spreads });
+      const pr = fmt !== "svg" && op2.print ? op2.print : null;
+      const embed = !!op2.embed || !!pr;                     // print-ready: the fonts go inside
+      const pages = await pagesOut({ anyText: embed, spreads: !!op2.spreads, bleedMm: pr ? Math.max(0, +pr.bleedMm || 0) : 0, cmyk: !!(pr && pr.cmyk) });
       const title = safeStem(S.bgiName || S.name);
       let pdf = null, notes = { pages: pages.length };
       if (fmt !== "svg") {
         const PL = await pdflib(); let fk = null;
-        if (op2.embed) { try { fk = await fontkitLib(); } catch (e) { fk = null; } }
-        const r = await buildPdf(PL, pages, { title, fontkit: fk, fontFor: fk ? fontFor : null, stdOf });
+        if (embed) { try { fk = await fontkitLib(); } catch (e) { fk = null; } }
+        let print = null;
+        if (pr) {
+          let cmyk = null;
+          if (pr.cmyk) {
+            const MO = root.PCMode;
+            if (MO && MO.buildLut) { const lut = MO.buildLut({ press: pr.press || "coated", gcr: "medium" }, 17), out = [0, 0, 0, 0]; cmyk = (r, g, b) => (r === g && g === b ? [0, 0, 0, 1 - r / 255] : MO.lutAt(lut, lut.cmyk, 4, r, g, b, out)); }
+            else cmyk = cmykSimple;
+          }
+          print = { bleed: Math.max(0, +pr.bleedMm || 0) * 72 / 25.4, crop: !!pr.crop, reg: !!pr.reg, slug: !!pr.slug, cmyk, doc: title, date: new Date().toISOString().slice(0, 10) };
+        }
+        const r = await buildPdf(PL, pages, { title, fontkit: fk, fontFor: fk ? fontFor : null, stdOf, print });
         pdf = r.bytes; notes = r.notes;
       }
       if (fmt === "pdf" || fmt === "ai") return { bytes: pdf, ext: extOf(fmt), notes };
@@ -495,6 +607,7 @@
         }
         const n = r.notes;
         say(`exported ${saved ? saved.name : stem + r.ext}: ${n.pages} page(s)` + (n.layers != null ? `, ${n.layers} layer(s) - ${n.vector} as paths, ${n.text} as real text${n.embedded ? ` (${n.embedded} in their own font)` : ""}, ${n.pictures} as pictures` : "")
+          + (n.print ? ` · print-ready${n.cmyk ? " CMYK" : ""}${n.bleed ? `, ${Math.round(n.bleed * 25.4 / 72 * 10) / 10} mm bleed` : ""}${n.standard ? ` - ${n.standard} type layer(s) in a standard font (not embedded: their font is not on this computer)` : ""}` : "")
           + (saved ? " · in the project's dtp folder" : "") + (op2.download !== false ? " · downloaded" : ""));
         return Object.assign({ ext: r.ext, size: r.bytes.length }, saved || {}, n);
       } catch (e) { say("Export failed: " + e.message); return null; }
@@ -505,19 +618,32 @@
       const d = doc.createElement("div"); d.id = "pcDtpDlg"; d.className = "pcdlg";
       d.style.cssText = "position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:9000;background:var(--pc-panel,#222);color:var(--pc-text,#eee);border:1px solid var(--pc-line,#444);border-radius:6px;padding:12px 14px;min-width:340px;font-size:12px;box-shadow:0 8px 30px rgba(0,0,0,.5)";
       const fmt0 = store.get("dtp.fmt", "pdf"), n = E.pages ? E.pages.count() : 1;
+      const pv = Object.assign({ on: false, bleedMm: 3, crop: true, reg: true, slug: true, cmyk: true, press: "coated" }, store.get("dtp.print", {}) || {});
       d.innerHTML = `<div style="font-weight:600;margin-bottom:8px">Export document (${n} page${n === 1 ? "" : "s"})</div>
         <div class="kxrow"><span style="width:60px">Format</span><select id="dtpFmt">${FORMATS.map(([v, l]) => `<option value="${v}"${v === fmt0 ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></div>
         <div class="kxrow"><span style="width:60px">Name</span><input id="dtpName" value="${esc(safeStem(S.bgiName || S.name))}" style="flex:1"></div>
         ${E.pages && E.pages.facing() ? `<label class="kxrow" title="Facing pages: each spread (2 + 3, 4 + 5 …) as one page"><input type="checkbox" id="dtpSpreads"${store.get("dtp.spreads", true) ? " checked" : ""}> As spreads</label>` : ""}
+        <div id="dtpPrintBox" style="border:1px solid var(--pc-line,#444);border-radius:4px;padding:6px;margin:6px 0">
+          <label class="kxrow" title="For a print shop: bleed, marks, page boxes, CMYK, fonts embedded"><input type="checkbox" id="dtpPrint"${pv.on ? " checked" : ""}> <b>Print-ready</b></label>
+          <div id="dtpPrintOpts"${pv.on ? "" : ' style="display:none"'}>
+            <div class="kxrow"><span style="width:60px">Bleed</span><input type="number" id="dtpBleed" value="${pv.bleedMm}" min="0" max="20" step="0.5" style="width:60px"> mm</div>
+            <div class="kxrow" style="flex-wrap:wrap;gap:8px"><label><input type="checkbox" id="dtpCrop"${pv.crop ? " checked" : ""}> Crop marks</label><label><input type="checkbox" id="dtpReg"${pv.reg ? " checked" : ""}> Registration marks</label><label><input type="checkbox" id="dtpSlug"${pv.slug ? " checked" : ""}> Page information</label></div>
+            <div class="kxrow"><span style="width:60px">Colour</span><select id="dtpColour"><option value="rgb"${pv.cmyk ? "" : " selected"}>RGB</option><option value="cmyk"${pv.cmyk ? " selected" : ""}>CMYK</option></select><select id="dtpPress" title="The press the CMYK numbers are made for"${pv.cmyk ? "" : ' style="display:none"'}>${[["coated", "Coated paper"], ["uncoated", "Uncoated paper"], ["newsprint", "Newsprint"]].map(([v, l]) => `<option value="${v}"${v === pv.press ? " selected" : ""}>${l}</option>`).join("")}</select></div>
+            <div style="color:var(--pc-dim,#999);line-height:1.4">Content touching the page edge is carried into the bleed; fonts are embedded. A simple press model, not a colour profile - ask your printer for a proof.</div>
+          </div>
+        </div>
         <label class="kxrow" title="Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier"><input type="checkbox" id="dtpEmbed"${store.get("dtp.embed", true) ? " checked" : ""}> Embed fonts</label>
         <div style="color:var(--pc-dim,#999);margin:6px 0;line-height:1.4">Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there.</div>
         <div class="kxrow" style="justify-content:flex-end;gap:6px"><button class="ghost" id="dtpCancel">Cancel</button><button id="dtpGo">⤓ Export</button></div>`;
       doc.body.appendChild(d);
       $("dtpCancel").onclick = () => d.remove();
+      const showPrint = () => { const svg = $("dtpFmt").value === "svg"; $("dtpPrintBox").style.display = svg ? "none" : ""; $("dtpPrintOpts").style.display = $("dtpPrint").checked ? "" : "none"; $("dtpPress").style.display = $("dtpColour").value === "cmyk" ? "" : "none"; };
+      $("dtpFmt").onchange = showPrint; $("dtpPrint").onchange = showPrint; $("dtpColour").onchange = showPrint; showPrint();
       $("dtpGo").onclick = async () => {
         const f = $("dtpFmt").value, embed = $("dtpEmbed").checked, name = $("dtpName").value, spreads = !!($("dtpSpreads") && $("dtpSpreads").checked);
-        store.set("dtp.fmt", f); store.set("dtp.embed", embed); if ($("dtpSpreads")) store.set("dtp.spreads", spreads); d.remove();
-        await exportDoc(f, { embed, name, spreads });
+        const pr = { on: $("dtpPrint").checked, bleedMm: Math.max(0, Math.min(20, +$("dtpBleed").value || 0)), crop: $("dtpCrop").checked, reg: $("dtpReg").checked, slug: $("dtpSlug").checked, cmyk: $("dtpColour").value === "cmyk", press: $("dtpPress").value };
+        store.set("dtp.fmt", f); store.set("dtp.embed", embed); store.set("dtp.print", pr); if ($("dtpSpreads")) store.set("dtp.spreads", spreads); d.remove();
+        await exportDoc(f, { embed, name, spreads, print: pr.on && f !== "svg" ? pr : null });
       };
     }
     const C = E.ui.addCmd;
@@ -527,7 +653,7 @@
     E.dtpOut = { build, exportDoc, dialog, pagesOut, vectorOf, isText };
   }
 
-  const pure = { joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf, buildSvg, b64, extOf, safeStem, FORMATS };
+  const pure = { cmykSimple, bleedSegs, marksOps, printBoxes, MARK, joinSpread, recorder, ellipseCurves, parseColor, plan, alphaBox, toPdfOps, buildPdf, buildSvg, b64, extOf, safeStem, FORMATS };
   const api = Object.assign({ install }, pure);
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCDtpOut = api;

@@ -12472,35 +12472,91 @@
   },
   {
    "s": "PDF (.pdf)",
-   "src": "ext/imageeditdock/pcdtpout.js:329"
+   "src": "ext/imageeditdock/pcdtpout.js:419"
   },
   {
    "s": "SVG pages (.zip, one .svg a page)",
-   "src": "ext/imageeditdock/pcdtpout.js:329"
+   "src": "ext/imageeditdock/pcdtpout.js:419"
   },
   {
    "s": "For .cdr (.zip: the PDF + the SVG pages)",
-   "src": "ext/imageeditdock/pcdtpout.js:329"
+   "src": "ext/imageeditdock/pcdtpout.js:419"
   },
   {
    "s": "As spreads",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Print-ready",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Bleed",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "mm",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Crop marks",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Registration marks",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Page information",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "RGB",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "CMYK",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Content touching the page edge is carried into the bleed; fonts are embedded. A simple press model, not a colour profile - ask your printer for a proof",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
    "s": "Embed fonts",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
    "s": "Shapes go as paths, plain type as real text, everything else as pictures; each layer is a PDF / SVG layer. A .cdr file has no open way to be written - open the PDF (or the SVG pages) in your vector app and save as .cdr there",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
    "s": "Facing pages: each spread (2 + 3, 4 + 5 …) as one page",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "For a print shop: bleed, marks, page boxes, CMYK, fonts embedded",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "The press the CMYK numbers are made for",
+   "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
    "s": "Each type layer in its own font from this computer (only the letters used) - else Helvetica / Times / Courier",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
+  },
+  {
+   "s": "Coated paper",
+   "src": "ext/imageeditdock/pcdtpout.js:631"
+  },
+  {
+   "s": "Uncoated paper",
+   "src": "ext/imageeditdock/pcdtpout.js:631"
+  },
+  {
+   "s": "Newsprint",
+   "src": "ext/imageeditdock/pcdtpout.js:631"
   },
   {
    "s": "Author",
@@ -13268,10 +13324,6 @@
   },
   {
    "s": "Selected layer",
-   "src": "ext/imageeditdock/pcmeasure.js:232"
-  },
-  {
-   "s": "RGB",
    "src": "ext/imageeditdock/pcmeasure.js:232"
   },
   {
@@ -14984,10 +15036,6 @@
   },
   {
    "s": "px (as drawn)",
-   "src": "ext/imageeditdock/pcsketchcadui.js:128"
-  },
-  {
-   "s": "mm",
    "src": "ext/imageeditdock/pcsketchcadui.js:128"
   },
   {
@@ -26086,11 +26134,7 @@
   },
   {
    "p": "Export document ({0} page)",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
-  },
-  {
-   "p": "Export document ({0} pages)",
-   "src": "ext/imageeditdock/pcdtpout.js:508"
+   "src": "ext/imageeditdock/pcdtpout.js:622"
   },
   {
    "p": "Edit story ({0} frame)",
