@@ -84,13 +84,13 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("› the next page: other cards, 25-…", a4.page === 1 && first2 !== first1 && new RegExp("25-" + Math.min(48, total) + " of " + total).test(a4.pager), [a4, first1, first2]);
 
     /* ---- folder tabs */
-    const tabs = await ev(() => [...document.querySelectorAll("#mmFolders [data-mmfold]")].map((x) => x.textContent));
-    check("folder tabs: All + the folders INSIDE checkpoints by their own names (Pony 12, SDXL 30) - not 'checkpoints/SDXL'", tabs[0].startsWith("All") && tabs.includes("Pony12") && tabs.includes("SDXL30") && !tabs.some((t) => /checkpoints/i.test(t)), tabs);
-    await p.click('#mmFolders [data-mmfold="sdxl"]'); await p.waitForTimeout(250);
+    const tabs = await ev(() => [...document.querySelectorAll("#mmFold option")].map((x) => x.textContent.replace(/ \((\d+)\)$/, "$1")));
+    check("folders (2.796.0: a dropdown): every folder + the folders INSIDE checkpoints by their own names (Pony 12, SDXL 30) - not 'checkpoints/SDXL'", tabs[0].startsWith("every folder") && tabs.includes("Pony12") && tabs.includes("SDXL30") && !tabs.some((t) => /checkpoints/i.test(t)), tabs);
+    await p.selectOption("#mmFold", "sdxl"); await p.waitForTimeout(250);
     const f1 = await ev(() => ({ keys: [...document.querySelectorAll("#mmGrid .mmcard")].map((c) => c.dataset.key), pager: document.getElementById("mmPager").textContent }));
     check("SDXL: only checkpoints/SDXL/… cards (30), page 1 again", f1.keys.length === 24 && f1.keys.every((k) => /^checkpoints\|SDXL\//.test(k)) && /1-24 of 30/.test(f1.pager), f1);
     await p.click('[data-mmtab="loras"]'); await p.waitForTimeout(250);
-    const lt = await ev(() => [...document.querySelectorAll("#mmFolders [data-mmfold]")].map((x) => x.textContent));
+    const lt = await ev(() => [...document.querySelectorAll("#mmFold option")].map((x) => x.textContent.replace(/ \((\d+)\)$/, "$1")));
     check("…the LoRAs tab has its own folder tabs (sdxl / SDXL as ONE tab, 6 = the fixture's 1 + these 5)", lt.some((t) => /^sdxl6$/i.test(t)) && !lt.some((t) => /Pony/.test(t)), lt);
     await p.click('[data-mmtab="models"]'); await p.waitForTimeout(250);
 
@@ -108,7 +108,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     await ev(() => H3ModelMgr.setCardW(138)); await p.click("#mmEdit"); await p.waitForTimeout(200);
 
     /* ---- a card click selects; the hover card -> the info page */
-    await p.click('#mmFolders [data-mmfold="sdxl"]'); await p.selectOption("#mmPer", "48"); await p.waitForTimeout(300);
+    await p.selectOption("#mmFold", "sdxl"); await p.selectOption("#mmPer", "48"); await p.waitForTimeout(300);
     const k03 = "checkpoints|SDXL/" + SDXL(3);
     const card03 = `#mmGrid .mmcard[data-key="${k03}"]`;
     const badge = await ev((s) => ((document.querySelector(s) || {}).querySelector ? (document.querySelector(s).querySelector(".nfo") || {}).textContent : null), card03);
@@ -145,7 +145,7 @@ const api = async (u, body) => (await fetch(URL_ + u.replace(/^\//, ""), body ==
     check("📌 This project: the model + the LoRA its jobs used (from jobs.info)", used.length === 2 && used.includes("checkpoints|SDXL/" + SDXL(7)) && used.includes("loras|SDXL/e2e537_lora_2.safetensors"), used);
 
     /* ---- ⤓ Civitai info */
-    check("⤓ Civitai info is on the tab bar (Shift = fetch again); GET /api/modelmgr/fetch answers the queue", await ev(() => /Civitai info/.test(document.getElementById("mmFetch").textContent)) && typeof (await api("/api/modelmgr/fetch")).running === "boolean");
+    check("⤓ Civitai info is on the tab bar (an icon since 2.796.0, its name on hover; Shift = fetch again); GET /api/modelmgr/fetch answers the queue", await ev(() => document.getElementById("mmFetch").textContent.trim() === "⤓" && /Details, a thumbnail/.test(document.getElementById("mmFetch").title)) && typeof (await api("/api/modelmgr/fetch")).running === "boolean");
     check("no page errors", errs.length === 0, errs);
   } catch (e) { check("the run finished", false, String(e && e.stack || e)); }
   finally {

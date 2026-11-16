@@ -440,6 +440,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **把 NO_Pod 檔案放到你已有的 Pod 上** — 選擇已終止 Pod 的檔案時，會指出你的哪個 Pod 上已經有它（Start that pod / Use that pod），並列出其他所有 Pod（正在執行的在前），說明每個 Pod 上已有什麼、要傳送什麼（空間不足或模型可能放不進顯示卡時會警告）；只發送 Pod 上沒有的檔案——模型會連同 VAE 和文字編碼器一起轉移——所選項在所有儲存的地方都變成 <pod name>/<file>。*Where:* Basic Settings, 🖥 PODS. *Since:* 2.793.0
 - **LLM 和語音使用專屬顯示卡；卸載到 CPU / 記憶體** — 有兩塊或更多 NVIDIA 顯示卡時，☁ Runs on ▸ LLM / Vision LLM / Text to speech / Speech to text / Song separation 也提供 Local - <card>；LLM 會把顯示卡空閒顯示記憶體放得下的層都放到顯示卡上（其餘放在記憶體），語音只在那塊顯示卡上執行。Settings ▸ General ☐ Offload to CPU / RAM when a model does not fit（預設開啟）——關閉後全部留在顯示卡上，放不下的 LLM 會被拒絕並說明原因。*Where:* 🖥 GPU, Settings ▸ General. *Since:* 2.794.0
 - **模型管理器的來源；GPU 停靠欄** — 🧩 Model manager ▸ ＋ Add source 可為任何模型 API 建一個分頁：⚙ Settings 中設定 URL、API 金鑰（加密儲存）和格式（OpenAI 相容、Ollama、Anthropic 風格或你自己的範本），✓ Test 列出它的模型並顯示 bitGen 填好的端點；＋ 把模型加入你的模型，你的 LLM / 視覺模型會以 <source>/<model> 出現在提示詞停靠欄的清單中，通過該來源聊天。☁ Remote generation 停靠欄現在叫 🖥 GPU。*Where:* 🧩 Model manager, the prompt docker, 🖥 GPU. *Since:* 2.795.0
+- **模型管理器的篩選改為下拉式清單** — 位置（All places / This computer / RunPod / OpenRouter，帶數量 - 之前什麼都篩不掉，已修復）、資料夾、Civitai 的類型、OpenRouter 的類型和價格都改成了下拉式清單；標籤欄的工具改為圖示。*Where:* 🧩 Model manager. *Since:* 2.796.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

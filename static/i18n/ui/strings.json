@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5702,
+ "count": 5704,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52639,6 +52639,24 @@
    ],
    "where": [
     "#tRgen"
+   ]
+  },
+  {
+   "s": "Upscalers",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#mmCvType"
+   ]
+  },
+  {
+   "s": "The model folder (a subfolder of ComfyUI's models folders)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "#mmFold"
    ]
   }
  ]

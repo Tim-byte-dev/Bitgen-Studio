@@ -5676,6 +5676,17 @@ OpenRouter 不再列出的模型不会再被自动从你的列表中移除：它
 
 来自某个来源的 LLM 和视觉模型会出现在提示词停靠栏的 LLM / Vision 列表中 **🔌 <source> · your models** 下，显示为 `<source>/<model>`。选中一个后，聊天（以及图片描述、快速提示词）会带着密钥发送到该来源的端点；🖥 GPU ▸ Runs on ▸ LLM 也会这样显示。在该列表中选其他项，或在 Runs on 中选别的，就会结束。图片和视频模型保存在标签页中，用它们生成将在下次更新中提供。☁ OpenRouter 标签页保持不变。
 
+## The Model manager's filters, tidied (2.796.0)
+<!-- en: the-model-manager-s-filters-tidied-2-796-0 f9a1cc9787a2 -->
+
+- **修复：** 位置筛选不起作用 - 这台电脑上的模型被计为 0，取消勾选 Local 也隐藏不了任何东西。现在可以用了。
+- 筛选改成了下拉列表，不再是一排勾选框和按钮：
+  - **位置** - All places / This computer / RunPod / OpenRouter，各带数量（下次仍保留）。
+  - **文件夹** - 所有文件夹，或 ComfyUI 的 models 文件夹中的某一个文件夹（只在有时显示），位于搜索栏中。
+  - **Civitai ▸ 类型** - All types / Checkpoints / LoRAs / VAE / Embeddings / ControlNet / Upscalers 合在一个列表里。
+  - **☁ OpenRouter** - 类型（Image / Video / LLM / Vision LLM，带数量）和价格（免费 + 付费 / 仅免费 / 仅付费）。
+- 标签栏的工具改成了图标（⤓ Civitai info、🔄 Sync、📁 文件夹、⇲ Edit、⟳ 重新读取 - 悬停时显示名称），搜索栏的输入框高度统一。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

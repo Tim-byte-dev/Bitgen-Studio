@@ -175,7 +175,8 @@
     + ".mmgr .mmchip input[type=range]{width:70px}.mmgr .mmchip b{font-family:var(--mono,monospace);font-size:.68rem}"
     + ".mmgr .mmgrid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--mmw,138px),1fr));gap:6px;align-content:start;padding:1px}"
     // 2.537.0: folder tabs, pages, edit mode (card size), the info page, the clickable hover card
-    + ".mmgr .mmfold{display:flex;gap:3px;flex-wrap:wrap}.mmgr .mmfold button{padding:1px 7px;font-size:.68rem;border-radius:10px}.mmgr .mmfold button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}.mmgr .mmfold i{font-style:normal;color:var(--dim,#999);margin-left:3px}"
+    + ".mmgr .mmfold,.mmgr #mmSrc{display:contents}"   // 2.796.0: the folder + place dropdowns sit in the search bar
+    + ".mmgr .mmtabs button{padding:3px 9px;font-size:.76rem}.mmgr .mmtabs #mmFetch,.mmgr .mmtabs #mmSync,.mmgr .mmtabs #mmFoldBtn,.mmgr .mmtabs #mmEdit,.mmgr .mmtabs #mmRescan{padding:3px 7px;min-width:30px}.mmgr .mmbar{gap:6px;margin:4px 0}.mmgr .mmbar select{width:auto;max-width:170px}.mmgr .mmbar input[type=search]{min-width:160px}.mmgr .mmbar select,.mmgr .mmbar input[type=search],.mmgr .mmbar button,.mmgr .mmorbar select,.mmgr .mmorbar input[type=search],.mmgr .mmorbar button,.mmgr .mmapisrc .srbar select,.mmgr .mmapisrc .srbar input,.mmgr .mmapisrc .srbar button{height:28px;box-sizing:border-box;padding-top:2px;padding-bottom:2px;font-size:.78rem}.mmgr .mmnsfw{order:9}"
     + ".mmgr .mmpager{display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:wrap}.mmgr .mmpager button{min-width:26px;padding:0 6px}.mmgr .mmpager button.on{border-color:var(--tiger,#f59e2c);color:var(--tiger,#f59e2c)}.mmgr .mmpager span{color:var(--dim,#999)}"
     + ".mmgr .mmgrid.edit .mmcard{outline:1px dashed rgba(245,158,44,.45)}.mmgr .mmcard .grip{display:none;position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--tiger,#f59e2c) 50%)}.mmgr .mmgrid.edit .mmcard .grip{display:block}"
     + ".mmgr .mmfoldbox{display:flex;flex-direction:column;gap:4px;padding:6px;border:1px solid var(--line,#333);border-radius:6px;font-size:.78rem}.mmgr .mmfoldbox .r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.mmgr .mmfoldbox code{flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim,#999)}.mmgr #mmFoldBtn.on{outline:1px solid var(--acc,#6af)}"
@@ -327,7 +328,15 @@
     if ($("mmRemote")) { $("mmRemote").style.display = rml && S.tab !== "civitai" ? "" : "none"; if (rml && window.H3RemoteModels && S.tab !== "civitai") window.H3RemoteModels.bar($("mmRemote"), { say: say, reload: function () { return load(); }, data: S.data }); }
     ["mmFetch", "mmSync", "mmFoldBtn", "mmEdit"].forEach(function (id) { var b = $(id); if (b) b.style.display = rml ? "none" : ""; });
     $("mmLocalBar").style.display = S.tab === "civitai" ? "none" : "";
-    if ($("mmSrc") && window.H3MmSrc) $("mmSrc").innerHTML = window.H3MmSrc.barHtml(window.H3MmSrc.counts(tabList()));   // 2.790.0
+    // 2.790.0 / 2.796.0: the place dropdown (written out here so the translator sees its words - H3MmSrc.barHtml is the same)
+    if ($("mmSrc") && window.H3MmSrc) {
+      var pn = window.H3MmSrc.counts(tabList()), pl = window.H3MmSrc.state().place || "all";
+      $("mmSrc").innerHTML = '<select id="mmPlace" data-mmsrc="place" aria-label="Where the models are" title="Where the models are - this computer, your pods or OpenRouter">'
+        + '<option value="all"' + (pl === "all" ? " selected" : "") + ">All places (" + (pn.local + pn.runpod + pn.openrouter) + ")</option>"
+        + '<option value="local"' + (pl === "local" ? " selected" : "") + ">This computer (" + pn.local + ")</option>"
+        + '<option value="runpod"' + (pl === "runpod" ? " selected" : "") + ">RunPod (" + pn.runpod + ")</option>"
+        + '<option value="openrouter"' + (pl === "openrouter" ? " selected" : "") + ">OpenRouter (" + pn.openrouter + ")</option></select>";
+    }
     $("mmCvBar").style.display = S.tab === "civitai" ? "" : "none";
     if (S.tab === "civitai") loadCvEnums();   // 2.766.1: the model families
     $("mmSel").innerHTML = selHtml();
@@ -390,9 +399,10 @@
     list.forEach(function (c) { var f = String(c.folder || ""); if (!f) return; var k = f.toLowerCase(); if (!seen[k]) { seen[k] = { id: k, label: f, n: 0 }; tabs.push(seen[k]); } seen[k].n++; });
     tabs.sort(function (a, b) { return a.label.localeCompare(b.label, undefined, { sensitivity: "base" }); });
     if (S.folder && !seen[S.folder]) S.folder = "";
-    box.innerHTML = tabs.length ? '<button class="ghost' + (S.folder ? "" : " on") + '" data-mmfold="" type="button">All<i>' + list.length + "</i></button>"
-      + tabs.map(function (t) { return '<button class="ghost' + (S.folder === t.id ? " on" : "") + '" data-mmfold="' + esc(t.id) + '" type="button" title="the ' + esc(t.label) + ' folder">' + esc(t.label) + "<i>" + t.n + "</i></button>"; }).join("") : "";
-    box.querySelectorAll("[data-mmfold]").forEach(function (b) { b.onclick = function () { S.folder = b.dataset.mmfold; S.page = 0; lsSet(); if (window.H3FolderMem) window.H3FolderMem.set("mm:" + S.tab, S.folder || null); paint(); }; });   // 2.559.0: kept per tab
+    // 2.796.0 (Tim: "use dropdowns instead of radiogroups"): the folders are a dropdown in the search bar (were a row of buttons)
+    box.innerHTML = tabs.length ? '<select id="mmFold" aria-label="Folder" title="The model folder (a subfolder of ComfyUI\'s models folders)"><option value=""' + (S.folder ? "" : " selected") + ">every folder (" + list.length + ")</option>"
+      + tabs.map(function (t) { return '<option value="' + esc(t.id) + '"' + (S.folder === t.id ? " selected" : "") + ">" + esc(t.label) + " (" + t.n + ")</option>"; }).join("") + "</select>" : "";
+    var fs = $("mmFold"); if (fs) fs.onchange = function () { S.folder = fs.value; S.page = 0; lsSet(); if (window.H3FolderMem) window.H3FolderMem.set("mm:" + S.tab, S.folder || null); paint(); };   // 2.559.0: kept per tab
   }
   function paintPager(pg, n) {
     var box = $("mmPager"); if (!box) return;
@@ -878,13 +888,8 @@
 
   /* ---- Civitai */
   /* 2.766.1: the Civitai filters */
-  function cvChips() {
-    return [["", "All"], ["Checkpoint", "Checkpoints"], ["LoRA", "LoRAs"]].map(function (t) { return '<button class="ghost' + (S.cv.group === t[0] ? " on" : "") + '" type="button" data-cvgrp="' + t[0] + '" aria-pressed="' + (S.cv.group === t[0]) + '">' + t[1] + "</button>"; }).join("");
-  }
-  function paintCvChips() {
-    document.querySelectorAll(".mmgr [data-cvgrp]").forEach(function (b) { var on = b.dataset.cvgrp === S.cv.group; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
-    var o = $("mmCvType"); if (o) o.value = ["VAE", "Embedding", "ControlNet", "Upscaler"].indexOf(S.cv.group) >= 0 ? S.cv.group : "";
-  }
+  var CV_TYPES = [["", "All types"], ["Checkpoint", "Checkpoints"], ["LoRA", "LoRAs"], ["VAE", "VAE"], ["Embedding", "Embeddings"], ["ControlNet", "ControlNet"], ["Upscaler", "Upscalers"]];
+  function paintCvChips() { var o = $("mmCvType"); if (o) o.value = CV_TYPES.some(function (t) { return t[0] === S.cv.group; }) ? S.cv.group : ""; }
   function loadCvEnums() {
     var sel = $("mmCvFam"); if (!sel || sel.dataset.loaded) return;
     sel.dataset.loaded = "1";
@@ -1068,13 +1073,12 @@
       + '<button class="ghost" data-mmtab="openrouter" type="button" title="☁ OpenRouter\'s models - free / paid, by type and family; ＋ adds one to your models with its endpoint">☁ OpenRouter</button>'
       + '<span id="mmSrcTabs" class="mmsrctabs"></span><button class="ghost" id="mmAddSrc" type="button" title="＋ Add source - any model API (OpenAI-compatible, Ollama, Anthropic-style or your own template) as a tab of its own: ⚙ its URL, API key and endpoint format, its models from the API, ＋ to yours">＋ Add source</button>'
       + '<button class="ghost" data-mmtab="paths" type="button" title="📁 ComfyUI\'s extra_model_paths.yaml - every group of paths: add a group (other_ui1 …), change a path, delete a group, ⟳ Restart ComfyUI">📁 Model paths</button>'
-      + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓ Civitai info</button>'
-      + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄 Sync</button>'
+      + '<button class="ghost" id="mmFetch" type="button" style="margin-left:auto" title="⤓ Details, a thumbnail and example pictures from Civitai for every card on this tab that has none yet - matched by the file name, kept in model_info for every project. Shift+click: fetch them all again">⤓</button>'
+      + '<button class="ghost" id="mmSync" type="button" title="🔄 Sync: Civitai\'s details, thumbnails and example pictures for EVERY model + LoRA on this computer (every tab) that has none yet or is out of date - by its Civitai version id, its SHA-256, else the file name. Shift+click: all of them again">🔄</button>'
       + '<button class="ghost" id="mmFoldBtn" type="button" title="📁 The folder each model type downloads to (model_folders.json)">📁</button>'
-      + '<button class="ghost" id="mmEdit" type="button" title="⇲ Edit mode: drag a card\'s corner to size every card">⇲ Edit</button>'
+      + '<button class="ghost" id="mmEdit" type="button" title="⇲ Edit mode: drag a card\'s corner to size every card">⇲</button>'
       + '<button class="ghost" id="mmRescan" type="button" title="Read the model folders again">⟳</button></div>'
-      + '<div class="mmfold" id="mmFolders" aria-label="Folders"></div>'
-      + '<div class="mmbar" id="mmLocalBar"><span id="mmSrc"></span><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
+      + '<div class="mmbar" id="mmLocalBar"><span id="mmSrc"></span><span class="mmfold" id="mmFolders"></span><input type="search" id="mmQ" placeholder="Search name, type, keywords…" aria-label="Search the models">'
       + '<select id="mmCat" aria-label="Category"><option value="">every category</option><option value="image">image</option><option value="image edit">image edit</option><option value="video">video</option><option value="music">music</option></select>'
       + '<select id="mmFam" aria-label="Family"><option value="">every family</option></select>'
       + '<select id="mmMType" aria-label="Model type" title="2.575.0: the kind of file - checkpoint, LoRA …"><option value="">every model type</option></select>'
@@ -1085,8 +1089,8 @@
       // 2.766.1 (Tim: "add civitai filters to model manager, checkpoint, lora,all, model family - krea2,flux etc. sort by"):
       // All / Checkpoints / LoRAs (+ the other types), the model family (Civitai's base models grouped - all of a family or
       // one), sort by, the period - a change searches again (kept between sessions)
-      + '<span class="mmcvchips" role="group" aria-label="Type">' + cvChips() + "</span>"
-      + '<select id="mmCvType" aria-label="Other types" title="Other kinds of file"><option value="">other types…</option><option value="VAE">VAE</option><option value="Embedding">Embedding</option><option value="ControlNet">ControlNet</option><option value="Upscaler">Upscaler</option></select>'
+      // 2.796.0 (Tim: "use dropdowns instead of radiogroups"): All / Checkpoints / LoRAs + the other types in ONE dropdown
+      + '<select id="mmCvType" aria-label="Type" title="The kind of file">' + CV_TYPES.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + "</option>"; }).join("") + "</select>"
       + '<select id="mmCvFam" aria-label="Model family" title="The model family (Civitai\'s base model) - all of a family, or one"><option value="">every family</option></select>'
       + '<span class="mmcvsort"><label class="mmcvlab" for="mmCvSort">Sort by</label><select id="mmCvSort" aria-label="Sort by"><option>Highest Rated</option><option>Most Downloaded</option><option>Most Liked</option><option>Newest</option></select></span>'
       + '<select id="mmCvPeriod" aria-label="Period" title="Rated / downloaded / liked over"><option value="AllTime">all time</option><option value="Year">this year</option><option value="Month">this month</option><option value="Week">this week</option><option value="Day">today</option></select>'
@@ -1116,12 +1120,11 @@
     $("mmNsfw").checked = S.nsfw !== false;
     $("mmNsfw").onchange = function (e) { S.nsfw = e.target.checked; S.page = 0; lsSet(); paint(); };
     // 2.790.0: ☐ Local ☐ RunPod ☐ OpenRouter ☐ All (static/mmsrc.js - kept)
-    if ($("mmSrc")) $("mmSrc").addEventListener("change", function (e) { var k = e.target && e.target.dataset && e.target.dataset.mmsrc; if (!k || !window.H3MmSrc) return; window.H3MmSrc.set(k, e.target.checked); S.page = 0; paint(); });
+    if ($("mmSrc")) $("mmSrc").addEventListener("change", function (e) { var k = e.target && e.target.dataset && e.target.dataset.mmsrc; if (k !== "place" || !window.H3MmSrc) return; window.H3MmSrc.set(e.target.value); S.page = 0; paint(); });   // 2.796.0: one dropdown
     $("mmSort").onchange = function (e) { S.sort = e.target.value; lsSet(); paint(); };
     $("mmSort").value = S.sort;
     $("mmCvGo").onclick = function () { cvSearch(false); };
     // 2.766.1: a filter changed = search again
-    document.querySelectorAll(".mmgr [data-cvgrp]").forEach(function (b) { b.onclick = function () { S.cv.group = b.dataset.cvgrp; paintCvChips(); lsSet(); cvSearch(false); }; });
     $("mmCvType").onchange = function (e) { S.cv.group = e.target.value; paintCvChips(); lsSet(); cvSearch(false); };
     ["mmCvFam", "mmCvSort", "mmCvPeriod"].forEach(function (id) { $(id).onchange = function () { lsSet(); cvSearch(false); }; $(id).addEventListener("keydown", function (e) { e.stopPropagation(); }); });
     $("mmCvSort").value = S.cv.sort; $("mmCvPeriod").value = S.cv.period; paintCvChips();

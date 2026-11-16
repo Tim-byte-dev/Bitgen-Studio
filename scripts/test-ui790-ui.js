@@ -58,14 +58,14 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     // ☁ OpenRouter tab: the models, Free / Paid, ＋
     await p.click('[data-mmtab="openrouter"]');
     await p.waitForFunction(() => document.querySelectorAll("#mmOr .mmorc").length >= 2, null, { timeout: 20000 }).catch(() => {});
-    const t1 = await ev(() => ({ cards: [...document.querySelectorAll("#mmOr .mmorc")].map((c) => c.textContent), types: [...document.querySelectorAll("#mmOr [data-ortype]")].map((x) => x.textContent), free: !!document.querySelector("#mmOr .mmorfree"), paid: !!document.querySelector("#mmOr .mmorpaid"), fam: !!document.querySelector("#mmOr .mmorfam"), sort: !!document.querySelector("#mmOr .mmorsort"), adds: document.querySelectorAll("#mmOr [data-oradd]").length, grid: getComputedStyle(document.getElementById("mmGrid")).display }));
-    check("☁ OpenRouter tab: OpenRouter's picture models with their price, ＋ on each, types / family / Free / Paid / sort, the Models grid hidden", t1.cards.some((t) => /Seedream 4\.5/.test(t) && /\$0\.04/.test(t)) && t1.cards.some((t) => /Flash Image/.test(t) && /free/.test(t)) && t1.adds === 2
+    const t1 = await ev(() => ({ cards: [...document.querySelectorAll("#mmOr .mmorc")].map((c) => c.textContent), types: [...document.querySelectorAll("#mmOr .mmortype option")].map((x) => x.textContent), free: !!document.querySelector('#mmOr .mmorprice option[value="free"]'), paid: !!document.querySelector('#mmOr .mmorprice option[value="paid"]'), fam: !!document.querySelector("#mmOr .mmorfam"), sort: !!document.querySelector("#mmOr .mmorsort"), adds: document.querySelectorAll("#mmOr [data-oradd]").length, grid: getComputedStyle(document.getElementById("mmGrid")).display }));
+    check("☁ OpenRouter tab: OpenRouter's picture models with their price, ＋ on each, the type / family / price / sort dropdowns (2.796.0), the Models grid hidden", t1.cards.some((t) => /Seedream 4\.5/.test(t) && /\$0\.04/.test(t)) && t1.cards.some((t) => /Flash Image/.test(t) && /free/.test(t)) && t1.adds === 2
       && t1.types.join("|").includes("Image") && t1.types.join("|").includes("Vision LLM") && t1.free && t1.paid && t1.fam && t1.sort && t1.grid === "none", t1);
-    await ev(() => { const c = document.querySelector("#mmOr .mmorpaid"); c.checked = false; c.dispatchEvent(new Event("change", { bubbles: true })); });
+    await ev(() => { const c = document.querySelector("#mmOr .mmorprice"); c.value = "free"; c.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(200);
     const onlyFree = await ev(() => [...document.querySelectorAll("#mmOr .mmorc")].map((c) => c.dataset.orid));
-    check("☐ Paid unticked: only the free one", onlyFree.join() === "google/flash-image", onlyFree);
-    await ev(() => { const c = document.querySelector("#mmOr .mmorpaid"); c.checked = true; c.dispatchEvent(new Event("change", { bubbles: true })); });
+    check("price ▸ free only: only the free one", onlyFree.join() === "google/flash-image", onlyFree);
+    await ev(() => { const c = document.querySelector("#mmOr .mmorprice"); c.value = "both"; c.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(200);
     await ev(() => document.querySelector('#mmOr [data-oradd="bytedance-seed/seedream-4.5"]').click());
     await p.waitForFunction(() => document.querySelector('#mmOr [data-orrm="bytedance-seed/seedream-4.5"]'), null, { timeout: 10000 }).catch(() => {});
@@ -81,23 +81,23 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     const cards = () => ev(() => [...document.querySelectorAll("#mmGrid .mmcard")].map((c) => ({ key: c.dataset.key, tag: (c.querySelector(".tag.src") || {}).textContent || "" })));
     let c1 = await cards();
     const pc = c1.find((c) => c.key === "pi:" + POD + "|checkpoints|Models/krea2_mine.safetensors"), oc = c1.find((c) => c.key === "or:image:bytedance-seed/seedream-4.5");
-    const bar = await ev(() => [...document.querySelectorAll("#mmSrc [data-mmsrc]")].map((x) => x.dataset.mmsrc + ":" + x.checked + ":" + x.parentNode.textContent.trim()));
-    check("Models: the pod's checkpoint (RunPod) + your OpenRouter model (OpenRouter) beside this computer's; ☑ Local ☑ RunPod ☑ OpenRouter ☑ All with counts", pc && pc.tag === "RunPod" && oc && oc.tag === "OpenRouter"
-      && bar.length === 4 && bar.every((x) => /:true:/.test(x)) && bar.some((x) => /^runpod:true:RunPod 1/.test(x)) && bar.some((x) => /^openrouter:true:OpenRouter 1/.test(x)), { c1, bar });
-    const tick = (k, on) => ev(([x, o]) => { const c = document.querySelector('#mmSrc [data-mmsrc="' + x + '"]'); c.checked = o; c.dispatchEvent(new Event("change", { bubbles: true })); }, [k, on]);
-    await tick("runpod", false); await sleep(300);
+    const bar = await ev(() => [...document.querySelectorAll("#mmPlace option")].map((x) => x.value + ":" + x.textContent));
+    check("Models: the pod's checkpoint (RunPod) + your OpenRouter model (OpenRouter) beside this computer's; the place dropdown (2.796.0) with counts", pc && pc.tag === "RunPod" && oc && oc.tag === "OpenRouter"
+      && bar.length === 4 && /^all:All places \(\d+\)/.test(bar[0]) && bar.some((x) => /^runpod:RunPod \(1\)/.test(x)) && bar.some((x) => /^openrouter:OpenRouter \(1\)/.test(x)) && bar.some((x) => /^local:This computer \(\d+\)/.test(x)), { c1, bar });
+    const place = (v) => ev((x) => { const c = document.querySelector("#mmPlace"); c.value = x; c.dispatchEvent(new Event("change", { bubbles: true })); }, v);
+    await place("openrouter"); await sleep(300);
     let c2 = await cards();
-    check("☐ RunPod unticked: no pod cards, OpenRouter's still there; All unticked", !c2.some((c) => /^pi:/.test(c.key)) && c2.some((c) => /^or:/.test(c.key)) && await ev(() => !document.querySelector('#mmSrc [data-mmsrc="all"]').checked), c2);
-    await tick("all", false); await sleep(300);
+    check("place ▸ OpenRouter: only your OpenRouter model", c2.length >= 1 && c2.every((c) => /^or:/.test(c.key)), c2);
+    await place("local"); await sleep(300);
     c2 = await cards();
-    check("☐ All: nothing shown; ☑ All again = every place (kept)", c2.length === 0, c2);
-    await tick("all", true); await sleep(300);
+    check("place ▸ This computer: no pod / OpenRouter cards", !c2.some((c) => /^(pi|or):/.test(c.key)), c2);
+    await place("all"); await sleep(300);
     c2 = await cards();
-    check("…every place again, remembered", c2.some((c) => /^pi:/.test(c.key)) && c2.some((c) => /^or:/.test(c.key)) && await ev(() => JSON.parse(localStorage.getItem("h3.mmsrc")).runpod === true));
-    await tick("local", false); await tick("openrouter", false); await sleep(300);
+    check("…All places again, remembered", c2.some((c) => /^pi:/.test(c.key)) && c2.some((c) => /^or:/.test(c.key)) && await ev(() => JSON.parse(localStorage.getItem("h3.mmsrc")).place === "all"));
+    await place("runpod"); await sleep(300);
     c2 = await cards();
-    check("only ☑ RunPod: only the pod's files", c2.length >= 1 && c2.every((c) => /^(pi|rm):/.test(c.key)), c2);
-    await tick("all", true); await sleep(300);
+    check("place ▸ RunPod: only the pod's files", c2.length >= 1 && c2.every((c) => /^(pi|rm):/.test(c.key)), c2);
+    await place("all"); await sleep(300);
 
     // the LoRAs tab has the pod's LoRA
     await p.click('[data-mmtab="loras"]'); await sleep(500);

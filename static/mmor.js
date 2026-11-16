@@ -76,10 +76,12 @@
       if (!S.host) return;
       var v = S.v || {}, n = {}; (v.types || []).forEach(function (t) { n[t.id] = t.n; });
       var fams = (v.families || []).filter(function (f) { return f.id !== "all"; });
-      S.host.innerHTML = '<div class="mmorbar mmortypes" role="tablist" aria-label="Type">' + TYPES.map(function (t) { return '<button type="button" class="ghost" role="tab" data-ortype="' + t[0] + '" aria-selected="' + (t[0] === S.type) + '">' + t[1] + (n[t[0]] ? " (" + n[t[0]] + ")" : "") + "</button>"; }).join("") + "</div>"
-        + '<div class="mmorbar"><input type="search" class="mmorq" placeholder="Search OpenRouter\'s models…" aria-label="Search OpenRouter\'s models" value="' + esc(S.q) + '">'
+      // 2.796.0 (Tim: "use dropdowns instead of radiogroups"): the type and Free / Paid are dropdowns, one bar
+      var pr = S.free && S.paid ? "both" : S.free ? "free" : S.paid ? "paid" : "both";
+      S.host.innerHTML = '<div class="mmorbar"><select class="mmortype" aria-label="Type" title="The kind of model">' + TYPES.map(function (t) { return '<option value="' + t[0] + '"' + (t[0] === S.type ? " selected" : "") + ">" + t[1] + (n[t[0]] ? " (" + n[t[0]] + ")" : "") + "</option>"; }).join("") + "</select>"
+        + '<input type="search" class="mmorq" placeholder="Search OpenRouter\'s models…" aria-label="Search OpenRouter\'s models" value="' + esc(S.q) + '">'
         + '<select class="mmorfam" aria-label="Family"><option value="">every family</option>' + fams.map(function (f) { return '<option value="' + esc(f.id) + '"' + (f.id === S.fam ? " selected" : "") + ">" + esc(f.label) + " (" + f.n + ")</option>"; }).join("") + "</select>"
-        + '<label title="Free models"><input type="checkbox" class="mmorfree"' + (S.free ? " checked" : "") + "> Free</label><label title=\"Paid models\"><input type=\"checkbox\" class=\"mmorpaid\"" + (S.paid ? " checked" : "") + "> Paid</label>"
+        + '<select class="mmorprice" aria-label="Price" title="Free and / or paid models"><option value="both"' + (pr === "both" ? " selected" : "") + '>free + paid</option><option value="free"' + (pr === "free" ? " selected" : "") + '>free only</option><option value="paid"' + (pr === "paid" ? " selected" : "") + ">paid only</option></select>"
         + '<select class="mmorsort" aria-label="Sort"><option value="name">free first, A-Z</option><option value="price">cheapest</option><option value="newest">newest</option></select>'
         + '<button type="button" class="ghost mmorre" title="Ask OpenRouter again">⟳</button><span class="mmorn" style="color:var(--dim);font-size:.72rem"></span></div>'
         + (v.key === false ? '<div class="mmmsg">Listing needs no key - rendering does: ⚙ Settings ▸ Remote generation ▸ OpenRouter.</div>' : "")
@@ -116,7 +118,6 @@
     function bind(host) {
       if (host._mmor) return; host._mmor = true;
       host.addEventListener("click", function (e) {
-        var t = e.target.closest && e.target.closest("[data-ortype]"); if (t) { S.type = t.dataset.ortype; S.fam = ""; load(false); return; }
         var a = e.target.closest && e.target.closest("[data-oradd]"); if (a) { a.disabled = true; add(a.dataset.oradd); return; }
         var r = e.target.closest && e.target.closest("[data-orrm]"); if (r) { rm(r.dataset.orrm); return; }
         if (e.target.closest && e.target.closest(".mmorre")) load(true);
@@ -124,6 +125,8 @@
       host.addEventListener("input", function (e) { if (e.target.classList.contains("mmorq")) { S.q = e.target.value; drawGrid(); } });
       host.addEventListener("change", function (e) {
         var c = e.target.classList;
+        if (c.contains("mmortype")) { S.type = e.target.value; S.fam = ""; load(false); return; }
+        if (c.contains("mmorprice")) { S.free = e.target.value !== "paid"; S.paid = e.target.value !== "free"; drawGrid(); return; }
         if (c.contains("mmorfam")) S.fam = e.target.value; else if (c.contains("mmorfree")) S.free = e.target.checked; else if (c.contains("mmorpaid")) S.paid = e.target.checked; else if (c.contains("mmorsort")) S.sort = e.target.value; else return;
         drawGrid();
       });

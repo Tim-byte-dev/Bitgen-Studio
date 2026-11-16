@@ -30,11 +30,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.evaluate(() => { try { localStorage.removeItem("h3mm.sel.v1"); } catch (e) { /* fine */ } H3ModelMgr.show(true); });
     await sleep(800);
     await p.click('[data-mmtab="civitai"]'); await sleep(800);
-    const f1 = await p.evaluate(() => ({ chips: [...document.querySelectorAll(".mmgr [data-cvgrp]")].map((b) => b.textContent + (b.classList.contains("on") ? "*" : "")), fam: [...document.querySelectorAll("#mmCvFam optgroup")].map((g) => g.label + ":" + g.children.length),
+    const f1 = await p.evaluate(() => ({ chips: [...document.querySelectorAll("#mmCvType option")].map((o) => o.textContent + (o.selected ? "*" : "")), fam: [...document.querySelectorAll("#mmCvFam optgroup")].map((g) => g.label + ":" + g.children.length),
       sortLabel: (document.querySelector('.mmgr label[for="mmCvSort"]') || {}).textContent || "", period: [...document.querySelectorAll("#mmCvPeriod option")].map((o) => o.value) }));
-    check("Civitai tab: All / Checkpoints / LoRAs (All on), the model family grouped (Krea: All Krea + Krea 2 + Flux.1 Krea), Sort by, the period", f1.chips.join() === "All*,Checkpoints,LoRAs" && f1.fam.join() === "Krea:3,Flux:1,Qwen:1" && f1.sortLabel === "Sort by" && f1.period.join() === "AllTime,Year,Month,Week,Day", f1);
-    await p.click('.mmgr [data-cvgrp="LoRA"]'); await sleep(600);
-    check("LoRAs: it searches at once with group=LoRA, the chip on", /group=LoRA/.test(asked[asked.length - 1] || "") && await p.evaluate(() => document.querySelector('.mmgr [data-cvgrp="LoRA"]').classList.contains("on")), asked);
+    check("Civitai tab: the type dropdown (2.796.0) All types / Checkpoints / LoRAs / the other types (All on), the model family grouped (Krea: All Krea + Krea 2 + Flux.1 Krea), Sort by, the period", f1.chips.join() === "All types*,Checkpoints,LoRAs,VAE,Embeddings,ControlNet,Upscalers" && f1.fam.join() === "Krea:3,Flux:1,Qwen:1" && f1.sortLabel === "Sort by" && f1.period.join() === "AllTime,Year,Month,Week,Day", f1);
+    await p.selectOption("#mmCvType", "LoRA"); await sleep(600);
+    check("LoRAs: it searches at once with group=LoRA, picked in the dropdown", /group=LoRA/.test(asked[asked.length - 1] || "") && await p.evaluate(() => document.getElementById("mmCvType").value === "LoRA"), asked);
     await p.selectOption("#mmCvFam", "fam:Krea"); await sleep(500);
     await p.selectOption("#mmCvSort", "Newest"); await sleep(500);
     await p.selectOption("#mmCvPeriod", "Month"); await sleep(600);
@@ -43,7 +43,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await p.selectOption("#mmCvFam", "bm:Flux.1 D"); await sleep(600);
     check("…one base model", new URL(asked[asked.length - 1]).searchParams.get("baseModels") === "Flux.1 D");
     await p.selectOption("#mmCvType", "VAE"); await sleep(600);
-    check("other types: VAE (no chip on)", /group=VAE/.test(asked[asked.length - 1]) && await p.evaluate(() => !document.querySelector(".mmgr [data-cvgrp].on")));
+    check("other types: VAE", /group=VAE/.test(asked[asked.length - 1]) && await p.evaluate(() => document.getElementById("mmCvType").value === "VAE"));
     check("the cards show", await p.evaluate(() => /A Krea LoRA/.test(document.getElementById("mmGrid").textContent)));
     await p.reload(); await p.waitForFunction(() => window.H3ModelMgr, null, { timeout: 30000 }); await p.evaluate(() => H3ModelMgr.show(true)); await sleep(800);
     await p.click('[data-mmtab="civitai"]'); await sleep(800);

@@ -105,7 +105,7 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     check("…it opens 🧩 Model manager on its ☁ OpenRouter tab (no dialog any more)", await ev(() => !document.getElementById("orDlg") && getComputedStyle(document.getElementById("mmOr")).display !== "none" && document.querySelector('.mmgr [data-mmtab="openrouter"]').classList.contains("on")));
     await ev(() => document.querySelector("#mmOr .mmorre").click());   // OpenRouter's lists asked again (the studio keeps them 10 minutes)
     await p.waitForFunction(() => document.querySelectorAll("#mmOr .mmorc").length === 2, null, { timeout: 20000 }).catch(() => {});
-    const tabs = await ev(() => [...document.querySelectorAll("#mmOr [data-ortype]")].map((x) => x.dataset.ortype));
+    const tabs = await ev(() => [...document.querySelectorAll("#mmOr .mmortype option")].map((x) => x.value));
     check("the tab: types Image / Video / LLM / Vision LLM", tabs.join() === "image,video,llm,vlm", tabs);
     const fams = await ev(() => [...document.querySelectorAll("#mmOr .mmorfam option")].map((x) => x.textContent));
     check("…the family list: every family + each maker with its count", fams[0] === "every family" && fams.includes("ByteDance Seed (1)") && fams.includes("Google (1)"), fams);
@@ -119,17 +119,17 @@ const json = (s, o, code) => { s.writeHead(code || 200, { "Content-Type": "appli
     await p.waitForFunction(() => document.querySelector('#mmOr .mmorc.orpaid[data-orid="bytedance-seed/seedream-4.5"]'), null, { timeout: 8000 }).catch(() => {});
     const my = (await api("/api/ormodels/mine")).mine.image;
     check("＋ adds it to your models - paid = framed dark orange, ✓ yours + 🗑", my.length === 1 && my[0].id === "bytedance-seed/seedream-4.5" && await ev(() => { const c = document.querySelector('#mmOr .mmorc.orpaid[data-orid="bytedance-seed/seedream-4.5"]'); return !!c && /✓ yours/.test(c.textContent) && !!c.querySelector("[data-orrm]") && /179, 89, 0|b35900/i.test(getComputedStyle(c).borderTopColor + getComputedStyle(c).boxShadow); }), my);
-    check("…Image (1) on its type", /Image \(1\)/.test(await ev(() => document.querySelector('#mmOr [data-ortype="image"]').textContent)));
+    check("…Image (1) on its type", /Image \(1\)/.test(await ev(() => document.querySelector('#mmOr .mmortype option[value="image"]').textContent)));
     await ev(() => document.querySelector('#mmOr [data-oradd="google/flash-image"]').click()); await sleep(900);
     check("…a free one of yours = framed dark green", await ev(() => !!document.querySelector('#mmOr .mmorc.orfree[data-orid="google/flash-image"]')));
     await ev(() => document.querySelector('#mmOr [data-orrm="google/flash-image"]').click()); await sleep(900);
     check("🗑 takes one off", ((await api("/api/ormodels/mine")).mine.image || []).map((m) => m.id).join() === "bytedance-seed/seedream-4.5");
-    await ev(() => document.querySelector('#mmOr [data-ortype="video"]').click());
+    await ev(() => { const s = document.querySelector("#mmOr .mmortype"); s.value = "video"; s.dispatchEvent(new Event("change", { bubbles: true })); });
     await sleep(500); await ev(() => document.querySelector("#mmOr .mmorre").click());
     await p.waitForFunction(() => document.querySelectorAll("#mmOr .mmorc").length === 2 && document.querySelector('#mmOr .mmorc[data-orid="google/veo-3.1"]'), null, { timeout: 15000 }).catch(() => {});
     check("Video: $ per second", /\$0\.4 \/ second/.test(await ev(() => (document.querySelector('#mmOr .mmorc[data-orid="google/veo-3.1"] .orp') || {}).textContent || "")));
     await ev(() => document.querySelector('#mmOr [data-oradd="google/veo-3.1"]').click()); await sleep(900);
-    await ev(() => document.querySelector('#mmOr [data-ortype="llm"]').click());
+    await ev(() => { const s = document.querySelector("#mmOr .mmortype"); s.value = "llm"; s.dispatchEvent(new Event("change", { bubbles: true })); });
     await p.waitForFunction(() => document.querySelector('#mmOr .mmorc[data-orid="big/paid"]'), null, { timeout: 15000 }).catch(() => {});
     check("LLM: $ in / out per M tokens", /\$3 in \/ \$15 out per M tokens/.test(await ev(() => (document.querySelector('#mmOr .mmorc[data-orid="big/paid"] .orp') || {}).textContent || "")));
     await ev(() => document.querySelector('#mmOr [data-oradd="big/paid"]').click()); await sleep(1800);

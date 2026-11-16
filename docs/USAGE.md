@@ -9125,6 +9125,16 @@ The ☁ Remote generation docker is now called **🖥 GPU** (its status-bar butt
 
 Your LLM and vision models from a source are in the prompt docker's LLM / Vision lists under **🔌 <source> · your models** as `<source>/<model>`. Picking one sends the chat (and picture describes, quick prompts) to that source's endpoint with its key; 🖥 GPU ▸ Runs on ▸ LLM says so. Picking anything else in that list, or another Runs on choice, ends it. Picture and video models are kept in the tab; rendering with them comes in the next update. The ☁ OpenRouter tab stays as it was.
 
+## The Model manager's filters, tidied (2.796.0)
+
+- **Fixed:** the place filter did nothing - a model of this computer counted as 0 and unticking Local hid nothing. It works now.
+- The filters are dropdowns instead of rows of ticks and buttons:
+  - **Place** - All places / This computer / RunPod / OpenRouter, each with its count (kept between sessions).
+  - **Folder** - every folder or one folder inside ComfyUI's models folders (only when there are some), in the search bar.
+  - **Civitai ▸ type** - All types / Checkpoints / LoRAs / VAE / Embeddings / ControlNet / Upscalers in one list.
+  - **☁ OpenRouter** - the type (Image / Video / LLM / Vision LLM, with counts) and the price (free + paid / free only / paid only).
+- The tab bar's tools are icons now (⤓ Civitai info, 🔄 Sync, 📁 folders, ⇲ Edit, ⟳ read again - their names on hover), and the search bar's boxes are one height.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

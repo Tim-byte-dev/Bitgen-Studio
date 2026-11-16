@@ -5441,6 +5441,17 @@ NVIDIA のカードが 2 枚以上あると、🖥 GPU ▸ Runs on のすべて�
 
 ソースからの自分の LLM と Vision モデルは、プロンプトドッカーの LLM / Vision 一覧の **🔌 <source> · your models** に `<source>/<model>` として表示されます。1 つ選ぶと、チャット（画像の説明、クイックプロンプトも）がそのソースのエンドポイントにキー付きで送られます。🖥 GPU ▸ Runs on ▸ LLM にもそう表示されます。その一覧でほかのものを選ぶか、Runs on でほかを選ぶと終わります。画像と動画のモデルはタブに保存され、それらでの生成は次の更新で使えるようになります。☁ OpenRouter タブはこれまでどおりです。
 
+## The Model manager's filters, tidied (2.796.0)
+<!-- en: the-model-manager-s-filters-tidied-2-796-0 f9a1cc9787a2 -->
+
+- **修正:** 場所のフィルターが働いていませんでした - このコンピューターのモデルが 0 と数えられ、Local を外しても何も隠れませんでした。今は働きます。
+- フィルターは、チェックやボタンの並びではなくドロップダウンになりました:
+  - **場所** - All places / This computer / RunPod / OpenRouter、それぞれ件数つき（次回も保持）。
+  - **フォルダー** - すべてのフォルダー、または ComfyUI の models フォルダー内の 1 つのフォルダー（ある場合のみ）。検索バーにあります。
+  - **Civitai ▸ 種類** - All types / Checkpoints / LoRAs / VAE / Embeddings / ControlNet / Upscalers を 1 つの一覧で。
+  - **☁ OpenRouter** - 種類（Image / Video / LLM / Vision LLM、件数つき）と価格（無料 + 有料 / 無料のみ / 有料のみ）。
+- タブバーのツールはアイコンになりました（⤓ Civitai info、🔄 Sync、📁 フォルダー、⇲ Edit、⟳ 読み直し - 名前はマウスを重ねると表示）。検索バーの入力欄は同じ高さにそろいました。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
