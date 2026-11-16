@@ -9227,6 +9227,19 @@ The Laser panel (**Window ▸ Laser**) now sends the job to the machine itself. 
 - **⤓ SVG + PNG** - for a machine that has its own laser software (some all-in-one printers with a laser module only take jobs from their maker's app): the layers as an SVG in mm (Line = red strokes, Offset fill = blue outlines, Fill = black shapes, Image = the picture) plus the picture layers as PNG files - open them in that software and set the power and speed there.
 - USB uses the serial-port support the installer / update adds (serialport); Wi-Fi works without it.
 
+## Change style: the style and its Basic Settings (2.805.0)
+
+In the image preview, **🎨 Change style** now has two more controls beside it:
+
+- **The style dropdown** - the image style that makes the new picture. **✎ The prompt's style** (the first entry) uses the one picked in the prompt, as before; pick any other image style to restyle with it instead, without changing the prompt. Your pick is kept.
+- **☐ Basic Settings** - tick it to render with the Basic Settings that style last had: its steps, CFG, seed and checkpoint (bitGen keeps them for each style in misc/basic_settings.tmp whenever you switch styles). For the prompt's own style the Basic Settings you see now are used, with its image LoRAs and temporary LoRAs too. A style you have never rendered with has none kept yet - it renders with its own settings, and the message says so. Hover over the tick to see what will be used. Unticked = the style's own settings.
+- The tick replaces **Basic Settings ▸ Override style** for Change style; Override style still decides for the prompt's own renders.
+- The look, 🎨 Change style, the style dropdown and the tick show only while a picture is shown - not for a video or a sound.
+
+## Local - <card> with ComfyUI portable (2.805.0)
+
+Picking one of your cards in **🖥 GPU ▸ Runs on** (Local - <card>) failed when Settings ▸ ComfyUI starts ComfyUI with a launcher file - the usual Windows setup, ComfyUI portable's **run_nvidia_gpu.bat** - while plain **Local** worked. bitGen now reads the launcher (it never changes it), finds its python + main.py line and starts the card's own ComfyUI from it, keeping the launcher's own options (--fast, --use-sage-attention ...) and adding the card's port and --cuda-device. A custom launch command is read the same way. If a launcher has no such line, ComfyUI portable's or a venv's own python is used; if there is nothing to go on, the line under the row in Runs on says so as soon as you pick the card.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -45,24 +45,24 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     await ev(() => { const s = document.getElementById("styleSel"); if (![...s.options].some((o) => o.value === "st_e2e676")) { const o = document.createElement("option"); o.value = "st_e2e676"; o.textContent = "E2E style"; s.appendChild(o); } s.value = "st_e2e676"; const ov = document.getElementById("ovrStyle"); if (ov) ov.checked = false; });
     await ev((png) => lbOpen([{ url: "data:image/png;base64," + png, kind: "image", name: "e2e676_source.png" }], 0), PNG);
     await p.waitForTimeout(300);
-    const btn = await ev(() => { const b = document.getElementById("lb_restyle"), s = document.getElementById("lb_save"); return { text: b.textContent, before: b.nextElementSibling && b.nextElementSibling.nextElementSibling === s, shown: b.offsetParent !== null }; });
+    const btn = await ev(() => { const b = document.getElementById("lb_restyle"), s = document.getElementById("lb_save"); return { text: b.textContent, before: [...b.parentNode.children].indexOf(s) > [...b.parentNode.children].indexOf(b) && [...b.parentNode.children].indexOf(s) - [...b.parentNode.children].indexOf(b) <= 4, /* 2.805.0: the style + ☐ Basic Settings between */ shown: b.offsetParent !== null }; });
     check("🎨 Change style in the preview's bar (its look dropdown before it), beside 💾 Save", btn.text === "🎨 Change style" && btn.before && btn.shown, btn);
     await pickStyle(); await p.hover("#lb_restyle"); await p.waitForTimeout(100);
     const menu = await ev(() => ({ hd: document.getElementById("lb_restyle").title, items: [...document.querySelectorAll("#lb_rslook option")].map((d) => d.textContent), prev: document.getElementById("lb_restyle").previousElementSibling.id }));
-    check("its look dropdown: Photoreal, Pixar, 2.5D, Anime, Cartoon (just before the button); the tooltip: the look With <the prompt's style>", menu.prev === "lb_rslook" && /with E2E style \(the prompt's style\)/.test(menu.hd) && menu.items.join("|") === "📷 Photoreal|🧸 Pixar|🧊 2.5D|🌸 Anime|🖍 Cartoon", menu);
+    check("its look dropdown: Photoreal, Pixar, 2.5D, Anime, Cartoon (just before the button); the tooltip: the look With <the prompt's style>", menu.prev === "lb_rslook" && /with E2E style \(its own settings\)/.test(menu.hd) && menu.items.join("|") === "📷 Photoreal|🧸 Pixar|🧊 2.5D|🌸 Anime|🖍 Cartoon", menu);
     await p.selectOption("#lb_rslook", "pixar"); await p.click("#lb_restyle");
     await p.waitForFunction(() => document.getElementById("lb_name").textContent === "e2e676_result.png", null, { timeout: 15000 });
     const s0 = sent[0];
     check("🧸 Pixar with an edit model: /api/aiedit mode edit, the prompt's style, the picture as the crop (~1 MP, its shape), the whole picture, no override", s0 && field(s0, "mode") === "edit" && field(s0, "style_id") === "st_e2e676" && hasFile(s0, "crop") && !hasFile(s0, "mask") && field(s0, "whole") === "1" && field(s0, "width") === "1296" && field(s0, "height") === "816" && /^Turn this into a Pixar-style/.test(field(s0, "prompt")) && field(s0, "ovr") === null, s0 && { mode: field(s0, "mode"), w: field(s0, "width"), h: field(s0, "height"), ovr: field(s0, "ovr") });
     const after = await ev(() => ({ name: document.getElementById("lb_name").textContent, n: lb.items.length, i: lb.i, msg: document.getElementById("lb_rsmsg").textContent }));
     check("…done: the result opens in the preview (after the source), the bar says so", after.name === "e2e676_result.png" && after.n === 2 && after.i === 1 && /done/.test(after.msg), after);
-    // an SDXL style + Override style on
+    // an SDXL style + the preview's ☐ Basic Settings (2.805.0 - it was Basic Settings ▸ Override style)
     how = "refine";
-    await ev(() => { const ov = document.getElementById("ovrStyle"); if (ov) { ov.checked = true; ov.dispatchEvent(new Event("change", { bubbles: true })); } lb.i = 0; lbShow(); });
+    await ev(() => { const c = document.getElementById("lb_rsbasic"); c.checked = true; c.dispatchEvent(new Event("change")); lb.i = 0; lbShow(); });
     await p.waitForTimeout(200);
     await pickStyle(); await p.hover("#lb_restyle"); await p.waitForTimeout(100);
     const hd2 = await ev(() => document.getElementById("lb_restyle").title);
-    check("Override style on: the tooltip says Basic Settings' values ride along", /\+ Basic Settings \(Override style is on\)/.test(hd2), hd2);
+    check("☐ Basic Settings ticked: the tooltip says the Basic Settings it last had ride along", /\+ the Basic Settings it last had/.test(hd2), hd2);
     await ev(() => { document.getElementById("lb_rsmsg").textContent = ""; });
     await p.selectOption("#lb_rslook", "anime"); await p.click("#lb_restyle");
     await p.waitForFunction(() => /done|can't|refused|not/.test(document.getElementById("lb_rsmsg").textContent), null, { timeout: 15000 });
@@ -79,6 +79,7 @@ const PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAAAoCAIAAADBrGu+AAAAT0lEQVR4nO3PAQkAAAy
     check("a video in the preview: no 🎨 Change style button, no look dropdown", await ev(() => document.getElementById("lb_restyle").style.display === "none" && document.getElementById("lb_rslook").style.display === "none"));
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: the test stopped - " + (e.stack || e.message)); }
+  try { await ev(() => { localStorage.removeItem("h3.restyle.basic"); localStorage.removeItem("h3.restyle.style"); }); } catch (e) { /* closed */ }
   await b.close();
   console.log("\n" + pass + " passed, " + fail + " failed");
   process.exit(fail ? 1 : 0);

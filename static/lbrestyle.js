@@ -28,8 +28,18 @@
  *   2.685.0      Override style reaches a whole-picture refine with a checkpoint style (lib/infill.js whole - image to image
  *                with the style's own graph); the bar says what Override applied, or why not (j.override)
  *               the old menu is gone (its "With <style>" is the button's tooltip)
- * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js): LOOKS, promptFor(look, how, orig),
- * fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look). */
+ *   2.805.0 (Tim: "in preview dialog add a style dropdown next to the change style button, add a checkbox next to it to use
+ *               basic settings. use the last basic settings the style used to change the style of the preview picture (show
+ *               change style dropdown , button and the new button and new dropdown only when in picture mode"):
+ *               #lb_rsstyle = the image style that makes it ("✎ The prompt's style" = #styleSel, as before; kept,
+ *               localStorage h3.restyle.style); ☐ Basic Settings (#lb_rsbasic, kept, h3.restyle.basic) = the Basic Settings
+ *               that style last had (misc/basic_settings.tmp via H3StyleBasic - the live ones when it is the prompt's style
+ *               now) ride on the render: steps, CFG, seed, checkpoint (+ the image LoRAs / temporary LoRAs when live).
+ *               It replaces Basic Settings ▸ Override style here (that switch is for the prompt's own renders). The look,
+ *               🎨 Change style, the style and the tick are shown only while a PICTURE is shown.
+ * Pure (Node: scripts/test-restyle676.js, test-restyle677.js, test-restyle679.js, test-restyle805.js): LOOKS, promptFor(look,
+ * how, orig), fit(w, h), pickHow(styleId, engines), barState(job, label), pairsAdd(map, result, source, look),
+ * ovrFromBasic(basic, useModel), styleFor(pick, options, prompt). */
 (function (root) {
   "use strict";
   const KEEP = "Keep the same picture: the composition, framing, subjects, their faces, poses, clothes and the background - change only the rendering style.";
@@ -96,7 +106,25 @@
     const why = (net && net.error) || "";
     return { how: how === "refine" ? "refine" : null, why };
   }
-  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, chooseHow, barState, pairsAdd }; return; }
+  /** 2.805.0: a style's kept Basic Settings (field id -> value, H3BasicCfg.collect / basic_settings.tmp) -> what /api/aiedit's
+   *  ovr takes {ovr: {steps, cfg, model}, seed, words} (pure); useModel false = the style's own checkpoint (Use model unticked) */
+  function ovrFromBasic(b, useModel) {
+    const v = b || {}, ovr = {}, words = [];
+    const st = parseInt(v.imgSteps, 10); if (v.imgSteps !== "" && v.imgSteps != null && Number.isFinite(st) && st > 0) { ovr.steps = st; words.push(st + " steps"); }
+    const cf = parseFloat(v.imgCfg); if (v.imgCfg !== "" && v.imgCfg != null && Number.isFinite(cf)) { ovr.cfg = cf; words.push("CFG " + cf); }
+    const ck = String(v.imgCkpt == null ? "" : v.imgCkpt).trim(); if (ck && useModel !== false) { ovr.model = ck; words.push(ck.split(/[\\/]/).pop()); }
+    const sd = parseInt(v.imgSeed, 10), seed = Number.isFinite(sd) ? sd : null;
+    if (seed != null) words.push(seed >= 0 ? "seed " + seed : "random seed");
+    return { ovr, seed, words: words.join(", ") };
+  }
+  /** 2.805.0: the style the preview's dropdown picks -> {id, name, own} ("" or a style no longer listed = the prompt's) (pure)
+   *  options = [{id, name}], prompt = {id, name} */
+  function styleFor(pick, options, prompt) {
+    const o = (options || []).find((x) => x.id === pick && pick);
+    const p = prompt || { id: "", name: "" };
+    return o ? { id: o.id, name: o.name, own: o.id === p.id } : { id: p.id, name: p.name, own: true };
+  }
+  if (typeof module !== "undefined" && module.exports) { module.exports = { LOOKS, KEEP, promptFor, fit, pickHow, chooseHow, barState, pairsAdd, ovrFromBasic, styleFor }; return; }
 
   const doc = root.document, $ = (id) => doc.getElementById(id);
   const S = { busy: false, menu: null };
@@ -113,7 +141,11 @@
       + "#lb_rslook{width:auto;flex:none;max-width:150px;box-sizing:border-box;padding:4px 4px 4px 7px;font:inherit;font-size:.76rem;line-height:normal;"
       + "background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:6px;cursor:pointer;margin-right:-2px}"
       + "#lb_rslook:hover{border-color:var(--tiger,#f59e2c)}#lb_restyle,#lb_sbs{white-space:nowrap}"
-      + "#lb_rsmsg{font-size:11px;opacity:.85;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
+      // 2.805.0: the style that makes it + ☐ Basic Settings - the look dropdown's size
+      + "#lb_rsstyle{width:auto;flex:none;max-width:84px;margin-left:-2px;box-sizing:border-box;padding:4px 4px 4px 7px;font:inherit;font-size:.76rem;line-height:normal;"
+      + "background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:6px;cursor:pointer}#lb_rsstyle:hover{border-color:var(--tiger,#f59e2c)}"
+      + "#lb_rsbasicw{display:inline-flex;align-items:center;gap:3px;margin-left:-2px;font-size:.7rem;white-space:nowrap;cursor:pointer;opacity:.9}#lb_rsbasicw input{margin:0;width:auto}"
+      + "#lb_rsmsg:empty{display:none}#lb_rsmsg{font-size:11px;opacity:.85;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}"
       // 2.677.0: the progress bar under the picture
       + "#lb_rsbar{display:none;align-items:center;gap:8px;padding:3px 12px 2px;font-size:11px;transition:opacity .6s}#lb_rsbar.on{display:flex}#lb_rsbar.fade{opacity:0}"
       + "#lb_rsbar .tr{flex:1;height:5px;border-radius:3px;background:#ffffff1a;overflow:hidden;position:relative}"
@@ -131,11 +163,29 @@
     const o = sel && sel.selectedOptions && sel.selectedOptions[0];
     return { id, name: o ? o.textContent.trim() : id };
   }
-  const ovrOn = () => (typeof root.ovrStyleOn === "function" ? root.ovrStyleOn() : (typeof ovrStyleOn === "function" ? ovrStyleOn() : false));   // eslint-disable-line no-undef
-  function ovrBody() {
-    let b = {}; try { b = (typeof imgBasicsBody === "function" ? imgBasicsBody({}) : {}) || {}; } catch (e) { b = {}; }   // eslint-disable-line no-undef
-    const o = {}; ["steps", "cfg", "model", "lora_weights", "extra_loras", "mm_override"].forEach((k) => { if (b[k] !== undefined) o[k] = b[k]; });
-    return { ovr: o, seed: b.seed };
+  /* 2.805.0: the style that makes it (#lb_rsstyle) and ☐ Basic Settings (#lb_rsbasic) */
+  const SK = "h3.restyle.style", BK = "h3.restyle.basic";
+  function styleOpts() { const sel = $("styleSel"); return sel ? [...sel.options].filter((o) => o.value).map((o) => ({ id: o.value, name: o.textContent.trim() })) : []; }
+  function chosen() { const s = $("lb_rsstyle"); return styleFor(s ? s.value : "", styleOpts(), styleNow()); }
+  const ovrOn = () => { const c = $("lb_rsbasic"); return !!(c && c.checked); };
+  const call = (n, ...a) => { try { const f = root[n] || (typeof globalThis[n] === "function" ? globalThis[n] : null); return typeof f === "function" ? f(...a) : undefined; } catch (e) { return undefined; } };
+  /** the Basic Settings that style last had: the live ones when it is the prompt's style now, else misc/basic_settings.tmp's */
+  function basicOf(st) {
+    const SB = root.H3StyleBasic, BC = root.H3BasicCfg;
+    if (st.own && BC && BC.collect) return { vals: BC.collect(), live: true };
+    const e = SB && SB.file && (SB.file().styles || {})["image:" + st.id];
+    return e && e.basic ? { vals: e.basic, live: false, saved: e.saved } : null;
+  }
+  function ovrBody(st) {
+    const k = basicOf(st); if (!k) return null;
+    const useModel = call("useMD", "image") !== false, r = ovrFromBasic(k.vals, useModel), o = r.ovr;
+    if (k.live) {   // what only the live page has: the image LoRAs' weights, the temporary LoRAs, the Model manager's pick
+      try { const touched = typeof imgTouched !== "undefined" && imgTouched.loras, h = $("imgLoras");   // eslint-disable-line no-undef
+        if (touched && h) { const m = {}; h.querySelectorAll("input[data-lora]").forEach((x) => { m[x.dataset.lora] = parseFloat(x.value); }); if (Object.keys(m).length) o.lora_weights = m; } } catch (e) { /* fine */ }
+      const extra = call("useTL", "image") !== false ? (call("tempLoras", "image") || []) : []; if (extra.length) o.extra_loras = extra;
+      try { if (root.H3ModelMgr && root.H3ModelMgr.overriding && root.H3ModelMgr.overriding()) o.mm_override = true; } catch (e) { /* fine */ }
+    }
+    return { ovr: o, seed: r.seed, words: r.words, live: k.live };
   }
   function close() { if (S.menu) { S.menu.remove(); S.menu = null; } }
   /* 2.679.0: the restyled pictures' originals (localStorage - a convenience; without it, this session's results only) */
@@ -171,9 +221,9 @@
   function openMenu(btn) {
     close(); css();
     const it = cur(); if (!it || it.kind !== "image") { say("🎨 pictures only"); return; }
-    const st = styleNow(), m = doc.createElement("div"); m.id = "lb_rsmenu"; m.setAttribute("role", "menu");
+    const st = chosen(), m = doc.createElement("div"); m.id = "lb_rsmenu"; m.setAttribute("role", "menu");
     const hd = doc.createElement("div"); hd.className = "hd";
-    hd.textContent = "With " + (st.name || "the prompt's style") + (ovrOn() ? " + Basic Settings (Override style is on)" : " (the prompt's style)");
+    hd.textContent = "With " + (st.name || "the prompt's style") + (ovrOn() ? " + its Basic Settings" : " (its own settings)");
     m.appendChild(hd);
     LOOKS.forEach((L) => { const d = doc.createElement("div"); d.className = "it"; d.dataset.look = L.id; d.setAttribute("role", "menuitem"); d.textContent = L.label; d.onclick = () => { close(); run(L.id).catch((e) => say("🎨 " + (e.message || e))); }; m.appendChild(d); });
     (btn.closest("dialog") || doc.body).appendChild(m); S.menu = m;   // inside the preview: a modal dialog is on the top layer
@@ -207,7 +257,7 @@
   async function run(lookId) {
     if (S.busy) { say("🎨 still making the last one"); return null; }
     const it = cur(), L = LOOKS.find((x) => x.id === lookId); if (!it || !L) return null;
-    const st = styleNow(); if (!st.id) throw new Error("pick an image style in the prompt first");
+    const st = chosen(); if (!st.id) throw new Error("pick an image style in the prompt or in the dropdown beside 🎨 Change style first");
     const E = await engines();
     let how = pickHow(st.id, E), net = null, why = "";
     // 2.686.0: no edit model = the picture's line art first, then the style renders the look through a line-art ControlNet
@@ -234,7 +284,13 @@
       if (how !== "edit") { const empty = canvas(sz.w, sz.h); fd.append("mask", await blob(empty), "mask.png"); fd.append("rgba", await blob(empty), "hole.png"); }   // all of it is the selection
       const fields = { mode: how === "lineart" ? "generate" : how, prompt: promptFor(L, how === "lineart" ? "refine" : how, orig), style_id: st.id, strength: how === "edit" || how === "lineart" ? 100 : L.strength, count: 1, width: sz.w, height: sz.h, whole: "1" };
       if (how === "lineart") { fields.restyle = "1"; fields.lineart = "1"; fd.append("ctl0", line.blob, "lineart.png"); }
-      if (ovrOn()) { const o = ovrBody(); fields.ovr = JSON.stringify(o.ovr); if (o.seed != null && o.seed >= 0) fields.seed = o.seed; }
+      // 2.805.0: ☐ Basic Settings = the settings this style last had ride along (none kept yet = its own, said)
+      let bnote = "";
+      if (ovrOn()) {
+        const o = ovrBody(st);
+        if (o) { fields.ovr = JSON.stringify(o.ovr); if (o.seed != null && o.seed >= 0) fields.seed = o.seed; S.basic = o; }
+        else { bnote = "no Basic Settings kept for " + (st.name || "this style") + " yet - its own settings"; S.basic = null; }
+      } else S.basic = null;
       Object.keys(fields).forEach((k) => fd.append(k, String(fields[k])));
       if (root.H3Neg && root.H3Neg.get && root.H3Neg.get()) fd.append("negative", root.H3Neg.get());
       S.sent = fields;
@@ -245,7 +301,7 @@
       // 2.685.0: what Basic Settings' Override put on it (or why not) - said, not only in the job log
       const oi = j.override, ovw = oi ? (oi.applied ? " · Override: " + oi.applied : oi.note ? "" : " · Override: the style's own values") + (oi.note ? " · " + oi.note : "") : "";
       S.override = oi || null;
-      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : how === "lineart" ? ", from the line art" : ", refine " + L.strength + " %") + ")" + ovw + (why ? " · " + why : "") + "…");
+      say("🎨 " + L.label + " - queued (" + (st.name || st.id) + (how === "edit" ? ", edit" : how === "lineart" ? ", from the line art" : ", refine " + L.strength + " %") + ")" + ovw + (bnote ? " · " + bnote : "") + (why ? " · " + why : "") + "…");
       S.how = how; S.why = why;
       if (ovw) { const m = $("lb_rsmsg"); if (m) m.title = ovw.replace(/^ · /, ""); }
       bar({ status: "queued" }, L.label);
@@ -276,8 +332,26 @@
   function lookNow() { const s = $("lb_rslook"); return s && LOOKS.some((l) => l.id === s.value) ? s.value : LOOKS[0].id; }
   function tip() {
     const b = $("lb_restyle"); if (!b) return;
-    const st = styleNow(), L = LOOKS.find((x) => x.id === lookNow());
-    b.title = "Make this picture again as " + L.label.replace(/^\S+\s/, "") + " - with " + (st.name || "the prompt's image style") + (ovrOn() ? " + Basic Settings (Override style is on)" : " (the prompt's style)") + ". Pick another look in the dropdown first to change it.";
+    const st = chosen(), L = LOOKS.find((x) => x.id === lookNow());
+    b.title = "Make this picture again as " + L.label.replace(/^\S+\s/, "") + " - with " + (st.name || "the prompt's image style") + (ovrOn() ? " + the Basic Settings it last had" : " (its own settings)") + ". Pick another look in the dropdown first to change it.";
+    const c = $("lb_rsbasicw"); if (c) { const k = st.id ? basicOf(st) : null, w = k ? ovrFromBasic(k.vals, call("useMD", "image") !== false).words : "";
+      c.title = "Use the Basic Settings " + (st.name || "the style") + " last had" + (k ? (k.live ? " (the ones in Basic Settings now): " : ": ") + (w || "its own values") : " - none kept for it yet (it is used with its own settings until you render with it once)"); }
+  }
+  /** 2.805.0: the styles in the dropdown follow the prompt's list */
+  function fillStyles() {
+    const s = $("lb_rsstyle"); if (!s) return;
+    const want = s.value || s.dataset.want || "", list = styleOpts(), sig = JSON.stringify(list);
+    if (s.dataset.sig === sig) return;
+    s.dataset.sig = sig; s.innerHTML = "";
+    const own = doc.createElement("option"); own.value = ""; own.textContent = "✎ The prompt's style"; s.appendChild(own);
+    list.forEach((x) => { const o = doc.createElement("option"); o.value = x.id; o.textContent = x.name; s.appendChild(o); });
+    s.value = list.some((x) => x.id === want) ? want : "";
+  }
+  /** 2.805.0: the look, 🎨 Change style, the style and the tick - only while a picture is shown */
+  function paintKind() {
+    const it = cur(), hide = !it || it.kind !== "image";
+    ["lb_rslook", "lb_restyle", "lb_rsstyle", "lb_rsbasicw", "lb_rsmsg"].forEach((id) => { const n = $(id); if (n) n.style.display = hide ? "none" : ""; });
+    if (hide) close();
   }
   function boot() {
     const save = $("lb_save"); if (!save) { setTimeout(boot, 400); return; }
@@ -292,7 +366,20 @@
     b.onclick = (e) => { e.stopPropagation(); close(); const it = cur(); if (!it || it.kind !== "image") { say("🎨 pictures only"); return; } run(lookNow()).catch((er) => say("🎨 " + (er.message || er))); };
     b.onmouseenter = tip; b.onfocus = tip; tip();
     const msg = doc.createElement("span"); msg.id = "lb_rsmsg";
-    save.parentNode.insertBefore(sel, save); save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(msg, save);
+    // 2.805.0: the style that makes it + ☐ Basic Settings, beside 🎨 Change style
+    const ss = doc.createElement("select"); ss.id = "lb_rsstyle"; ss.setAttribute("aria-label", "Style");
+    ss.title = "The image style 🎨 Change style renders with - ✎ The prompt's style = the one picked in the prompt";
+    try { ss.dataset.want = root.localStorage.getItem(SK) || ""; } catch (e) { ss.dataset.want = ""; }
+    ss.onchange = () => { ss.dataset.want = ss.value; try { root.localStorage.setItem(SK, ss.value); } catch (e) { /* this session only */ } tip(); };
+    const cw = doc.createElement("label"); cw.id = "lb_rsbasicw";
+    const cb = doc.createElement("input"); cb.type = "checkbox"; cb.id = "lb_rsbasic";
+    try { cb.checked = root.localStorage.getItem(BK) === "1"; } catch (e) { cb.checked = false; }
+    cb.onchange = () => { try { root.localStorage.setItem(BK, cb.checked ? "1" : "0"); } catch (e) { /* this session only */ } tip(); };
+    cw.appendChild(cb); cw.appendChild(doc.createTextNode("Basic Settings"));
+    cw.onmouseenter = tip;
+    save.parentNode.insertBefore(sel, save); save.parentNode.insertBefore(b, save); save.parentNode.insertBefore(ss, save); save.parentNode.insertBefore(cw, save); save.parentNode.insertBefore(msg, save);
+    fillStyles(); ss.onfocus = fillStyles; ss.onmousedown = fillStyles;
+    { const s0 = $("styleSel"); if (s0 && root.MutationObserver) new root.MutationObserver(() => { fillStyles(); tip(); }).observe(s0, { childList: true }); }
     // 2.679.0: ⇆ Before / after - a restyled picture beside the one it was made from
     const sb = doc.createElement("button"); sb.className = "ghost"; sb.id = "lb_sbs"; sb.type = "button"; sb.textContent = "⇆ Before / after"; sb.style.display = "none";
     sb.title = "The picture this one was restyled from, side by side with it (click again to go back)";
@@ -304,8 +391,11 @@
     const lbbar = save.closest(".lbbar"); if (lbbar && lbbar.parentNode) lbbar.parentNode.insertBefore(pb, lbbar);
     doc.addEventListener("pointerdown", (e) => { if (S.menu && !S.menu.contains(e.target) && e.target !== b) close(); }, true);
     // only for pictures: hidden while a video / sound is shown
-    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { const it = cur(), hide = it && it.kind !== "image"; b.style.display = hide ? "none" : ""; sel.style.display = hide ? "none" : ""; close(); sbsPaint(); tip(); }).observe(nm, { childList: true, characterData: true, subtree: true });
+    const nm = $("lb_name"); if (nm && root.MutationObserver) new root.MutationObserver(() => { paintKind(); sbsPaint(); fillStyles(); tip(); }).observe(nm, { childList: true, characterData: true, subtree: true });
+    // 2.805.0: also when the preview opens (the same name again fires nothing above)
+    { const lbd = $("lb"); if (lbd && root.MutationObserver) new root.MutationObserver(() => { if (lbd.open) { paintKind(); fillStyles(); tip(); } }).observe(lbd, { attributes: true, attributeFilter: ["open"] }); }
+    paintKind();
   }
-  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, pairsAdd, bar, run, open: openMenu, close, look: lookNow, sbs: sbsToggle, sbsOff, pairs, state: () => S };
+  root.H3Restyle = { LOOKS, promptFor, fit, pickHow, barState, pairsAdd, ovrFromBasic, styleFor, bar, run, open: openMenu, close, look: lookNow, sbs: sbsToggle, sbsOff, pairs, chosen, basicOf, paintKind, fillStyles, state: () => S };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot); else boot();
 })(typeof window !== "undefined" ? window : globalThis);

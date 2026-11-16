@@ -78,6 +78,8 @@ const cancel = async (id) => { for (const u of ["api/jobs/" + id + "/cancel", "a
         const set = (i, v) => { const c = document.getElementById(i); c.value = v; c.dispatchEvent(new Event("input", { bubbles: true })); c.dispatchEvent(new Event("change", { bubbles: true })); };
         set("imgSteps", "37"); set("imgCfg", "3.3"); document.getElementById("imgCkpt").value = ck; }, [ck.id, CKPT]);
       await ev((png) => lbOpen([{ url: "data:image/png;base64," + png, kind: "image", name: "e2e685_source.png" }], 0), PNG);
+      // 2.805.0: the preview's own ☐ Basic Settings (the prompt's style = the live Basic Settings) - Override style no longer decides there
+      await ev(() => { const s = document.getElementById("lb_rsstyle"); s.value = ""; s.dispatchEvent(new Event("change")); const c = document.getElementById("lb_rsbasic"); c.checked = true; c.dispatchEvent(new Event("change")); });
       await p.selectOption("#lb_rslook", "anime"); await p.click("#lb_restyle");
       await p.waitForFunction(() => /Override:/.test(document.getElementById("lb_rsmsg").textContent), null, { timeout: 15000 }).catch(() => {});
       const msg = await ev(() => document.getElementById("lb_rsmsg").textContent);
@@ -89,7 +91,7 @@ const cancel = async (id) => { for (const u of ["api/jobs/" + id + "/cancel", "a
       check("…the preview's bar says what Override put on it - queued and while it renders", /Override: steps 37, CFG 3\.3, checkpoint juggernautXL_v9_e2e685\.safetensors/.test(msg) && /Override: steps 37/.test(msg2), { msg, msg2 });
       check("no page errors", errs.length === 0, errs);
       if (made && made.jobs && made.jobs[0]) await cancel(made.jobs[0].id);
-      await ev(() => { const o = document.getElementById("ovrStyle"); o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); document.getElementById("imgCkpt").value = ""; });
+      await ev(() => { const c = document.getElementById("lb_rsbasic"); c.checked = false; c.dispatchEvent(new Event("change")); const o = document.getElementById("ovrStyle"); o.checked = false; o.dispatchEvent(new Event("change", { bubbles: true })); document.getElementById("imgCkpt").value = ""; });
     } catch (e) { fail++; console.log("FAIL: the browser part stopped - " + (e.stack || e.message)); }
     await br.close();
   }

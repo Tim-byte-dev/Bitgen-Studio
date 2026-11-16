@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.805.0** — Local - <card> Works With ComfyUI Portable (run_nvidia_gpu.bat or a Custom Launch Command Is Read for Its python + main.py Line); Image Preview: a Style Dropdown + ☐ Basic Settings Beside 🎨 Change Style (the Style's Last Basic Settings), Shown Only for Pictures
 - **2.804.0** — Laser: Send Over USB (Serial) or Wi-Fi (TCP) From bitGen's Server - Connect, Home, Unlock, Frame, Start (Asked First), Pause / Resume, STOP (Always There, Also When bitGen Closes), Console; SVG + PNG for Machines With Their Own Laser Software
 - **2.803.0** — Image Editor Laser Panel: GRBL / Marlin Machine Profile; an Operation per Layer - Line (Cut / Score), Fill (Hatch), Offset Fill, Image (Dithered / Threshold / Greyscale Raster); Centreline or Outline Tracing of Picture Layers; Line Art From the Picture (ControlNet); Toolpath Preview With Time and Lengths; G-code Saved in the Project's laser Folder
 - **2.802.0** — Image Editor Print-Ready PDF: Bleed (Shapes and Pictures on the Edge Carried Past the Trim), Crop and Registration Marks, Page Information, TrimBox / BleedBox / MediaBox, CMYK Colours and Pictures (Coated / Uncoated / Newsprint), Embedded Fonts

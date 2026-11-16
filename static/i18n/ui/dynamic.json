@@ -3924,47 +3924,67 @@
   },
   {
    "s": "Photoreal",
-   "src": "static/lbrestyle.js:37"
+   "src": "static/lbrestyle.js:47"
   },
   {
    "s": "Pixar",
-   "src": "static/lbrestyle.js:40"
+   "src": "static/lbrestyle.js:50"
   },
   {
    "s": "Anime",
-   "src": "static/lbrestyle.js:46"
+   "src": "static/lbrestyle.js:56"
   },
   {
    "s": "Cartoon",
-   "src": "static/lbrestyle.js:49"
+   "src": "static/lbrestyle.js:59"
   },
   {
-   "s": "With the prompt's style + Basic Settings (Override style is on)",
-   "src": "static/lbrestyle.js:176"
+   "s": "With the prompt's style + its Basic Settings",
+   "src": "static/lbrestyle.js:226"
   },
   {
-   "s": "With the prompt's style (the prompt's style)",
-   "src": "static/lbrestyle.js:176"
+   "s": "With the prompt's style (its own settings)",
+   "src": "static/lbrestyle.js:226"
+  },
+  {
+   "s": "Use the Basic Settings the style last had (the ones in Basic Settings now): its own values",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "s": "Use the Basic Settings the style last had: its own values",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "s": "Use the Basic Settings the style last had - none kept for it yet (it is used with its own settings until you render with it once)",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "s": "The prompt's style",
+   "src": "static/lbrestyle.js:346"
   },
   {
    "s": "The look 🎨 Change style makes - it stays picked",
-   "src": "static/lbrestyle.js:286"
+   "src": "static/lbrestyle.js:360"
   },
   {
    "s": "Look",
-   "src": "static/lbrestyle.js:286"
+   "src": "static/lbrestyle.js:360"
   },
   {
    "s": "Change style",
-   "src": "static/lbrestyle.js:291"
+   "src": "static/lbrestyle.js:365"
+  },
+  {
+   "s": "The image style 🎨 Change style renders with - ✎ The prompt's style = the one picked in the prompt",
+   "src": "static/lbrestyle.js:371"
   },
   {
    "s": "Before / after",
-   "src": "static/lbrestyle.js:297"
+   "src": "static/lbrestyle.js:384"
   },
   {
    "s": "The picture this one was restyled from, side by side with it (click again to go back)",
-   "src": "static/lbrestyle.js:298"
+   "src": "static/lbrestyle.js:385"
   },
   {
    "s": "Your",
@@ -25065,28 +25085,56 @@
    "src": "static/lbfollow.js:57"
   },
   {
-   "p": "With {0} + Basic Settings (Override style is on)",
-   "src": "static/lbrestyle.js:176"
+   "p": "With {0} + its Basic Settings",
+   "src": "static/lbrestyle.js:226"
   },
   {
-   "p": "With {0} (the prompt's style)",
-   "src": "static/lbrestyle.js:176"
+   "p": "With {0} (its own settings)",
+   "src": "static/lbrestyle.js:226"
   },
   {
-   "p": "Make this picture again as {0} - with {1} + Basic Settings (Override style is on). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:280"
+   "p": "Make this picture again as {0} - with {1} + the Basic Settings it last had. Pick another look in the dropdown first to change it",
+   "src": "static/lbrestyle.js:336"
   },
   {
-   "p": "Make this picture again as {0} - with {1} (the prompt's style). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:280"
+   "p": "Make this picture again as {0} - with {1} (its own settings). Pick another look in the dropdown first to change it",
+   "src": "static/lbrestyle.js:336"
   },
   {
-   "p": "Make this picture again as {0} - with the prompt's image style + Basic Settings (Override style is on). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:280"
+   "p": "Make this picture again as {0} - with the prompt's image style + the Basic Settings it last had. Pick another look in the dropdown first to change it",
+   "src": "static/lbrestyle.js:336"
   },
   {
-   "p": "Make this picture again as {0} - with the prompt's image style (the prompt's style). Pick another look in the dropdown first to change it",
-   "src": "static/lbrestyle.js:280"
+   "p": "Make this picture again as {0} - with the prompt's image style (its own settings). Pick another look in the dropdown first to change it",
+   "src": "static/lbrestyle.js:336"
+  },
+  {
+   "p": "Use the Basic Settings {0} last had (the ones in Basic Settings now): {1}",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings {0} last had (the ones in Basic Settings now): its own values",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings {0} last had: {1}",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings {0} last had: its own values",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings {0} last had - none kept for it yet (it is used with its own settings until you render with it once)",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings the style last had (the ones in Basic Settings now): {0}",
+   "src": "static/lbrestyle.js:338"
+  },
+  {
+   "p": "Use the Basic Settings the style last had: {0}",
+   "src": "static/lbrestyle.js:338"
   },
   {
    "p": "llama.cpp: {0}",

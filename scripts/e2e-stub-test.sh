@@ -14065,6 +14065,13 @@ node scripts/test-laserlink804.js > /tmp/laserlink804.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui804-ui.js > /tmp/ui804.log 2>&1 \
   && ok "2.804.0 laser send in a real browser: connect over Wi-Fi, frame, start (asked), pause, STOP, console, SVG + PNG" \
   || { bad "2.804.0 laser send browser test"; grep -a "^FAIL" -A1 /tmp/ui804.log | head -12; }
+# ---- 2.805.0 (Tim: "in gpu docker, when i select one of my gpu, it fails ..." + "in preview dialog add a style dropdown next to the change style button, add a checkbox next to it to use basic settings ...")
+node scripts/test-launchline805.js > /tmp/launchline805.log 2>&1 \
+  && ok "2.805.0 a card's own ComfyUI from the launcher: run_nvidia_gpu.bat / run.sh / a custom launch command read for its python + main.py line" \
+  || { bad "2.805.0 launch line units"; grep -a "^FAIL" -A1 /tmp/launchline805.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui805-ui.js > /tmp/ui805.log 2>&1 \
+  && ok "2.805.0 the preview's style dropdown + Basic Settings tick in a real browser: the picked style and the Basic Settings it last had sent, pictures only, kept" \
+  || { bad "2.805.0 preview style browser test"; grep -a "^FAIL" -A1 /tmp/ui805.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

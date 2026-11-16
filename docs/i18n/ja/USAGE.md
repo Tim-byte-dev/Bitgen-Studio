@@ -5552,6 +5552,21 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **⤓ SVG + PNG** - 独自のレーザーソフトがあるマシン向け（レーザーモジュール付きの一体型プリンターには、メーカーのアプリからのジョブしか受け付けないものがあります）: レイヤーを mm 単位の SVG に（Line = 赤い線、Offset fill = 青い輪郭、Fill = 黒い図形、Image = 画像）、画像レイヤーを PNG ファイルに - そのソフトで開いて、出力と速度はそこで設定してください。
 - USB はインストーラー / 更新が追加するシリアルポートのサポート（serialport）を使います。Wi-Fi はなくても使えます。
 
+## Change style: the style and its Basic Settings (2.805.0)
+<!-- en: change-style-the-style-and-its-basic-settings-2-805-0 3c6a5c73bdd8 -->
+
+画像プレビューの **🎨 Change style** の横に、2 つのコントロールが加わりました。
+
+- **スタイルのドロップダウン** - 新しい画像を作る画像スタイル。**✎ The prompt's style**（最初の項目）は、これまでどおりプロンプトで選んだスタイルを使います。別の画像スタイルを選ぶと、プロンプトを変えずにそのスタイルで作り直します。選んだものは保持されます。
+- **☐ Basic Settings** - チェックすると、そのスタイルが最後に使った基本設定でレンダリングします: ステップ数、CFG、シード、チェックポイント（スタイルを切り替えるたびに、bitGen がスタイルごとに misc/basic_settings.tmp に保存しています）。プロンプトのスタイル自身なら、いま表示されている基本設定を使い、画像 LoRA と一時 LoRA も含めます。まだ一度もレンダリングしていないスタイルには保存された設定がないので、スタイル自身の設定でレンダリングし、メッセージでそう伝えます。チェックボックスにマウスを重ねると、使われる内容が表示されます。チェックなし = スタイル自身の設定。
+- Change style では、このチェックボックスが **Basic Settings ▸ Override style** の代わりになります。プロンプト自身のレンダリングは、これまでどおり Override style で決まります。
+- ルック、🎨 Change style、スタイルのドロップダウン、チェックボックスは、画像を表示しているときだけ表示されます（動画や音声では表示されません）。
+
+## Local - <card> with ComfyUI portable (2.805.0)
+<!-- en: local-with-comfyui-portable-2-805-0 a659840a5498 -->
+
+**🖥 GPU ▸ Runs on** で自分のカード（Local - <card>）を選ぶと、Settings ▸ ComfyUI がランチャーファイル（Windows の標準的な構成である ComfyUI portable の **run_nvidia_gpu.bat**）で ComfyUI を起動している場合に失敗していました（通常の **Local** は動作していました）。bitGen はランチャーを読み取り（変更はしません）、その python + main.py の行を見つけて、そこからカード専用の ComfyUI を起動するようになりました。ランチャー自身のオプション（--fast、--use-sage-attention など）は保ち、カードのポートと --cuda-device を加えます。カスタム起動コマンドも同じように読み取ります。そのような行がないランチャーでは、ComfyUI portable または venv 自身の python を使います。手がかりがまったくない場合は、カードを選んだ時点で Runs on の行の下にそう表示されます。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

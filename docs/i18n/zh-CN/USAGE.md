@@ -5787,6 +5787,21 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **⤓ SVG + PNG** - 适用于自带激光软件的机器（一些带激光模块的一体式打印机只接受厂商应用发出的任务）：把图层导出为以 mm 为单位的 SVG（Line = 红色线条、Offset fill = 蓝色轮廓、Fill = 黑色形状、Image = 图片），图片图层导出为 PNG 文件 - 在那个软件中打开，并在那里设置功率和速度。
 - USB 使用安装程序 / 更新添加的串口支持（serialport）；Wi-Fi 不需要它。
 
+## Change style: the style and its Basic Settings (2.805.0)
+<!-- en: change-style-the-style-and-its-basic-settings-2-805-0 3c6a5c73bdd8 -->
+
+在图像预览中，**🎨 Change style** 旁边新增了两个控件：
+
+- **风格下拉列表** - 用来生成新图片的图像风格。**✎ The prompt's style**（第一项）和以前一样使用提示词中选择的风格；选择其他图像风格，即可在不改动提示词的情况下用它重新生成。你的选择会被保留。
+- **☐ Basic Settings** - 勾选后，使用该风格上次的基本设置渲染：步数、CFG、种子和检查点（每次切换风格时，bitGen 都会按风格把它们保存在 misc/basic_settings.tmp 中）。如果是提示词自身的风格，则使用当前显示的基本设置，并包括图像 LoRA 和临时 LoRA。从未用来渲染过的风格还没有保存的设置 - 它会用风格自身的设置渲染，消息中会说明。把鼠标悬停在复选框上可查看将使用的内容。不勾选 = 风格自身的设置。
+- 对 Change style 来说，这个复选框取代了 **Basic Settings ▸ Override style**；提示词自身的渲染仍由 Override style 决定。
+- 外观、🎨 Change style、风格下拉列表和复选框只在显示图片时出现 - 显示视频或声音时不会出现。
+
+## Local - <card> with ComfyUI portable (2.805.0)
+<!-- en: local-with-comfyui-portable-2-805-0 a659840a5498 -->
+
+在 **🖥 GPU ▸ Runs on** 中选择你的某张显卡（Local - <card>）时，如果 Settings ▸ ComfyUI 是通过启动文件来启动 ComfyUI 的（Windows 上常见的配置：ComfyUI portable 的 **run_nvidia_gpu.bat**），就会失败，而普通的 **Local** 可以正常使用。现在 bitGen 会读取启动文件（不会修改它），找到其中的 python + main.py 那一行，并据此启动该显卡专用的 ComfyUI：保留启动文件自己的选项（--fast、--use-sage-attention 等），再加上该显卡的端口和 --cuda-device。自定义启动命令也会用同样的方式读取。如果启动文件中没有这样的一行，则使用 ComfyUI portable 或 venv 自带的 python；如果完全无从判断，在你选择显卡时，Runs on 中该行下方就会说明。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
