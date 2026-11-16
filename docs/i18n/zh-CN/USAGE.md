@@ -5757,6 +5757,24 @@ Basic Settings 的列表会显示风格所属家族的所有模型 - 图片模�
 - **字体** 会被嵌入（只含用到的字母）。这台电脑上没有的字体会改用 Helvetica / Times / Courier，消息中会说明有多少个。
 - 这是认真制作的印刷文件，但不是经过认证的 PDF/X 文件（其中不含色彩配置文件）- 请向印刷厂索取打样。
 
+## Laser panel: toolpaths and G-code (2.803.0)
+<!-- en: laser-panel-toolpaths-and-g-code-2-803-0 f618d6c5a3e5 -->
+
+图像编辑器现在可以根据图片的图层生成激光切割 / 雕刻任务。**Window ▸ Laser** 打开面板：
+
+- **Machine** - **GRBL** 或 **Marlin**、台面尺寸（mm）、机器 0,0 的位置（左下或左上）、功率刻度（**max S** - GRBL 的 $30，通常为 1000；Marlin 为 255）、空移速度、**Dynamic power**（GRBL M4：功率随速度变化，转角更干净）和 **Air assist**（M8 / M9）。会保存供下次使用。
+- **Job** - 图片在台面上的大小（**mm per px**，来自页面的 dpi）和位置（**offset X / Y**，mm）。
+- **Layers** - 每个可见图层设置一个操作，并指定 **power** %、**speed** mm/分和 **passes**：
+  - **Line**（切割 / 划线）- 沿图层的矢量走：形状、钢笔路径、导入的 SVG 或文字（字母轮廓）。图片图层会被描摹：**Centreline**（沿每条线的中间走一笔 - 最适合线稿）或 **Outline**（所画内容的边缘），依据比 **threshold** 更暗 / 更不透明的像素。
+  - **Fill** - 用 **interval**（mm）和 **angle** 的往返线条填充封闭形状（或图片的暗部）内部。
+  - **Offset fill** - 从轮廓向内按间距的同心路径。
+  - **Image** - 按间距逐行雕刻图片：**Dithered**、**Threshold** 或 **Greyscale**（功率从 **min power** 到 power），带 **overscan**（mm），让激光头达到速度后再出光。
+  - 任务先雕刻后切割（Image、Fill、Offset fill，然后 Line）；孔先于外围形状切割，激光头移到最近的下一条路径。
+- **✎ Line art from the picture** - 对可见图片使用 ControlNet 线稿预处理器（与 Control 面板相同），生成一个设为 Line · Centreline 的新 **Line art** 图层 - 可直接雕刻的线稿。
+- **⟳ Preview** - 台面上的刀路（每个操作一种颜色，空移为虚线）、所需时间、加工和空移距离，以及在台面上的位置（部分超出台面时会警告）。
+- **⤓ Save G-code** - 适用于你的机器的 .gcode 文件，保存在项目的 **laser** 文件夹中并同时下载。GRBL 需要开启激光模式（$32=1）。
+- 接下来：通过 USB 把任务发送到激光机（连接、回原点、走边框、开始 / 暂停 / 停止）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

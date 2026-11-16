@@ -9199,6 +9199,23 @@ The image editor's **Export ▸ Document…** dialog (or **⤓ Export…** in th
 - **Fonts** are embedded (only the letters used). A font that is not on this computer falls back to Helvetica / Times / Courier and the message says how many.
 - It is a careful print file, not a certified PDF/X file (no colour profile inside) - ask your printer for a proof.
 
+## Laser panel: toolpaths and G-code (2.803.0)
+
+The image editor can make a laser cutter / engraver job from the picture's layers. **Window ▸ Laser** opens the panel:
+
+- **Machine** - **GRBL** or **Marlin**, the bed size (mm), where the machine's 0,0 is (bottom-left or top-left), the power scale (**max S** - GRBL's $30, usually 1000; Marlin 255), the travel speed, **Dynamic power** (GRBL M4: the power follows the speed, for cleaner corners) and **Air assist** (M8 / M9). Kept for next time.
+- **Job** - how big the picture is on the bed (**mm per px**, from the page's dpi) and where (**offset X / Y**, mm).
+- **Layers** - each visible layer gets an operation, with **power** %, **speed** mm/min and **passes**:
+  - **Line** (cut / score) - follows the layer's vectors: a shape, a pen path, an SVG you brought in, or type (its letter outlines). A picture layer is traced: **Centreline** (one stroke down the middle of each line - best for line drawings) or **Outline** (the edges of what is drawn), from its dark / opaque pixels above the **threshold**.
+  - **Fill** - hatches the inside of closed shapes (or a picture's dark areas) with lines at an **interval** (mm) and an **angle**, back and forth.
+  - **Offset fill** - concentric passes at the interval, from the outline inwards.
+  - **Image** - engraves the picture row by row at the interval: **Dithered**, **Threshold** or **Greyscale** (power from **min power** to power), with **overscan** (mm) so the head is at speed before it burns.
+  - The job engraves first and cuts last (Image, Fill, Offset fill, then Line); holes are cut before the shapes round them, and the head goes to the nearest next path.
+- **✎ Line art from the picture** - the ControlNet line-art preprocessor (the one the Control panel uses) on the visible picture makes a new **Line art** layer, set to Line · Centreline - a line drawing ready to engrave.
+- **⟳ Preview** - the toolpath on the bed (each operation its colour, travel moves dashed), the time it will take, how far it burns and travels, and where it sits on the bed (a warning when part of it is off the bed).
+- **⤓ Save G-code** - a .gcode file for your machine, kept in the project's **laser** folder and downloaded. GRBL needs laser mode on ($32=1).
+- Coming next: sending the job to the laser over USB (connect, home, frame, start / pause / stop).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

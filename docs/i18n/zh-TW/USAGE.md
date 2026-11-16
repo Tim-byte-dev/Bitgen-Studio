@@ -5755,6 +5755,24 @@ Basic Settings 的清單會顯示風格所屬家族的所有模型 - 圖片模�
 - **字型** 會被嵌入（只含用到的字母）。這臺電腦上沒有的字型會改用 Helvetica / Times / Courier，訊息中會說明有多少個。
 - 這是認真製作的印刷檔案，但不是經過認證的 PDF/X 檔案（其中不含色彩配置檔案）- 請向印刷廠索取打樣。
 
+## Laser panel: toolpaths and G-code (2.803.0)
+<!-- en: laser-panel-toolpaths-and-g-code-2-803-0 f618d6c5a3e5 -->
+
+影像編輯器現在可以根據圖片的圖層生成雷射切割 / 雕刻任務。**Window ▸ Laser** 打開面板：
+
+- **Machine** - **GRBL** 或 **Marlin**、檯面尺寸（mm）、機器 0,0 的位置（左下或左上）、功率刻度（**max S** - GRBL 的 $30，通常為 1000；Marlin 為 255）、空移速度、**Dynamic power**（GRBL M4：功率隨速度變化，轉角更乾淨）和 **Air assist**（M8 / M9）。會儲存供下次使用。
+- **Job** - 圖片在臺面上的大小（**mm per px**，來自頁面的 dpi）和位置（**offset X / Y**，mm）。
+- **Layers** - 每個可見圖層設定一個操作，並指定 **power** %、**speed** mm/分和 **passes**：
+  - **Line**（切割 / 劃線）- 沿圖層的向量走：形狀、鋼筆路徑、匯入的 SVG 或文字（字母輪廓）。圖片圖層會被描摹：**Centreline**（沿每條線的中間走一筆 - 最適合線稿）或 **Outline**（所畫內容的邊緣），依據比 **threshold** 更暗 / 更不透明的像素。
+  - **Fill** - 用 **interval**（mm）和 **angle** 的往返線條填充封閉形狀（或圖片的暗部）內部。
+  - **Offset fill** - 從輪廓向內按間距的同心路徑。
+  - **Image** - 按間距逐行雕刻圖片：**Dithered**、**Threshold** 或 **Greyscale**（功率從 **min power** 到 power），帶 **overscan**（mm），讓雷射頭達到速度後再出光。
+  - 任務先雕刻後切割（Image、Fill、Offset fill，然後 Line）；孔先於外圍形狀切割，雷射頭移到最近的下一條路徑。
+- **✎ Line art from the picture** - 對可見圖片使用 ControlNet 線稿前處理器（與 Control 面板相同），生成一個設為 Line · Centreline 的新 **Line art** 圖層 - 可直接雕刻的線稿。
+- **⟳ Preview** - 檯面上的刀路（每個操作一種顏色，空移為虛線）、所需時間、加工和空移距離，以及在臺面上的位置（部分超出檯面時會警告）。
+- **⤓ Save G-code** - 適用於你的機器的 .gcode 檔案，儲存在專案的 **laser** 資料夾中並同時下載。GRBL 需要開啟雷射模式（$32=1）。
+- 接下來：通過 USB 把任務傳送到雷射機（連線、回原點、走邊框、開始 / 暫停 / 停止）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

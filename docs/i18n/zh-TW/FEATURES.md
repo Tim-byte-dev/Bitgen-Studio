@@ -447,6 +447,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **主頁、頁碼和對頁** — 主頁的圖層（頁首、頁尾、標誌、背景）顯示在每個使用它的頁面下方，可分配給所有 / 奇數 / 偶數頁；文字中的 {page} / {pages} / {name} 自動生成頁碼（1、i、I、a、A，可從任意數字開始），# 新增頁碼；對頁以跨頁顯示並可按跨頁匯出；主頁作為自己的圖層匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Window ▸ Pages. *Since:* 2.800.0
 - **連結文字框和文字繞排** — 段落文字從一個框流向另一個框、從一頁流向另一頁（＋ Frame、＋ Next page、Edit Story、Unlink），在任何框中輸入都會進入文章；文字帶間距繞排形狀（沿輪廓）和圖片；作為真實文字逐行匯出；.bgi 會儲存它們。*Where:* Image editor ▸ Properties ▸ ⛓ Text flow / ☐ Text wrap, Layer ▸ Text Flow. *Since:* 2.801.0
 - **印刷就緒 PDF** — 匯出時帶出血（邊緣內容延伸到裁切線之外）、裁切和套準標記、頁面資訊、TrimBox / BleedBox / MediaBox、CMYK 顏色和圖片（銅版紙 / 非塗布紙 / 新聞紙）以及嵌入字型。*Where:* Image editor ▸ File ▸ Export ▸ Document ▸ Print-ready. *Since:* 2.802.0
+- **雷射刀路和 G-code** — Laser 面板：GRBL 或 Marlin 機器設定，每個圖層一個操作（Line 切割 / 劃線、Fill 填充線、Offset fill、Image 光柵雕刻 - 抖動、閾值或灰度），圖片圖層按中心線或輪廓描摹，用 ControlNet 前處理器從圖片生成線稿，帶時間和距離的刀路預覽，G-code 儲存到專案中。*Where:* Image editor ▸ Window ▸ Laser. *Since:* 2.803.0
 - **重新啟動 Pod 上已崩潰的 ComfyUI** — ComfyUI 埠上的網頁不再被當作 ComfyUI；未執行的 ComfyUI 由 bitGen 啟動（不能啟動時說明原因），Pod 上已有的檔案不再顯示傳輸進度列。 *Where:* 在 Pod 上渲染；PODS ▸ Transfers。 *Since:* 2.770.1
 - **從聊天中創作歌曲** — 聊天會寫出符合所選音樂風格的歌詞，併發送到 Music 面板。 *Where:* 提示詞聊天. *Since:* 2.92.0
 - **歌詞檔案** — 每首歌曲的歌詞都以文字檔案形式儲存在專案中。 *Where:* 專案的 lyrics 資料夾

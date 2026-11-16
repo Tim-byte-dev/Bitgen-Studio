@@ -14051,6 +14051,13 @@ node scripts/test-print802.js > /tmp/print802.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui802-ui.js > /tmp/ui802.log 2>&1 \
   && ok "2.802.0 print-ready in a real browser: the dialog's box, the saved PDF's boxes, CMYK pictures, the bleed rendered, the slug" \
   || { bad "2.802.0 print-ready browser test"; grep -a "^FAIL" -A1 /tmp/ui802.log | head -12; }
+# ---- 2.803.0 (Tim: "can we add a lightburn feature to image editor, it can do a linedrawing using controlnet or import a vector or create a vector and generate a toolpath?")
+node scripts/test-laser803.js > /tmp/laser803.log 2>&1 \
+  && ok "2.803.0 laser units: curves flattened, thinning + centrelines, distance + isolines, hatch, cut order, raster rows, GRBL / Marlin G-code, the estimate, the laser store" \
+  || { bad "2.803.0 laser units"; grep -a "^FAIL" -A1 /tmp/laser803.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui803-ui.js > /tmp/ui803.log 2>&1 \
+  && ok "2.803.0 laser panel in a real browser: operations per layer, a centreline, engrave-before-cut order, the preview, GRBL + Marlin G-code saved, line art from the picture" \
+  || { bad "2.803.0 laser browser test"; grep -a "^FAIL" -A1 /tmp/ui803.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -2988,7 +2988,8 @@
     if (win.PCArtboards && win.PCArtboards.install) win.PCArtboards.install(E);
     if (win.PCPages && win.PCPages.install) win.PCPages.install(E);       // 2.799.0: a document of many pages, each with its own layers
     if (win.PCDtpOut && win.PCDtpOut.install) win.PCDtpOut.install(E);   // 2.799.0: File ▸ Export ▸ Document (PDF / AI / SVG / CorelDRAW pack)
-    if (win.PCFlow && win.PCFlow.install) win.PCFlow.install(E);         // 2.801.0: linked text frames + text wrap   // 2.447.0: artboards   // 2.444.0: ✨ Edit / Generate run from the prompt docker   // 2.442.0: frames (PowerClip) - layers inside a closed shape   // 2.441.0: CAD dimensions - exact points, live ends, the scale
+    if (win.PCFlow && win.PCFlow.install) win.PCFlow.install(E);         // 2.801.0: linked text frames + text wrap
+    if (win.PCLaser && win.PCLaser.install) win.PCLaser.install(E);       // 2.803.0: Window ▸ Laser - toolpaths + G-code   // 2.447.0: artboards   // 2.444.0: ✨ Edit / Generate run from the prompt docker   // 2.442.0: frames (PowerClip) - layers inside a closed shape   // 2.441.0: CAD dimensions - exact points, live ends, the scale
     if (win.PCCaFill && win.PCCaFill.install) win.PCCaFill.install(E);   // 2.448.0: the Content-Aware Fill workspace
     if (win.PCDimGroup && win.PCDimGroup.install) win.PCDimGroup.install(E);   // 2.457.0: dimensions as groups of parts (before the handles: its parts win)
     if (win.PCDimAuto && win.PCDimAuto.install) win.PCDimAuto.install(E);   // 2.458.0: auto / floorplan dimensions + the Chain Dimension tool

@@ -204,6 +204,7 @@ function mount(app) {
   require("./psd").mount(app);         // 2.390.0: the image editor's PSD files kept in the project (projects/<p>/psd)
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)
   require("./dtp").mount(app);         // 2.799.0: the image editor's desktop-publishing exports (PDF / .ai / SVG / CorelDRAW pack) in projects/<p>/dtp
+  require("./laser").mount(app);       // 2.803.0: the image editor's laser toolpaths (G-code) in projects/<p>/laser
   require("./batch").mount(app);       // 2.427.0: the image editor's batch results kept in the project (projects/<p>/batch/<run>)
   require("./themes").mount(app);      // 2.435.0: saved themes - themes/<name>.json (Settings ▸ Themes)
   require("./fonts").mount(app);       // 2.435.0: the computer's font files - the image editor's PDF save embeds them

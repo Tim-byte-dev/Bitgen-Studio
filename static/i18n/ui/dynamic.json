@@ -13211,6 +13211,162 @@
    "src": "ext/imageeditdock/pcimgop.js:97"
   },
   {
+   "s": "Line",
+   "src": "ext/imageeditdock/pclaser.js:30"
+  },
+  {
+   "s": "Offset fill",
+   "src": "ext/imageeditdock/pclaser.js:30"
+  },
+  {
+   "s": "No layer has an operation - pick one per layer above",
+   "src": "ext/imageeditdock/pclaser.js:421"
+  },
+  {
+   "s": "power",
+   "src": "ext/imageeditdock/pclaser.js:478"
+  },
+  {
+   "s": "speed",
+   "src": "ext/imageeditdock/pclaser.js:478"
+  },
+  {
+   "s": "passes",
+   "src": "ext/imageeditdock/pclaser.js:478"
+  },
+  {
+   "s": "interval",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "mm angle",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "trace",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "Centreline",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "Dithered",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "Greyscale",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "min power",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "overscan",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "mm threshold",
+   "src": "ext/imageeditdock/pclaser.js:479"
+  },
+  {
+   "s": "No picture open",
+   "src": "ext/imageeditdock/pclaser.js:481"
+  },
+  {
+   "s": "Laser",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Machine",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "GRBL",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Marlin",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "bed",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "origin",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "bottom-left",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "top-left",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "max S",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "travel",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "mm/min",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Dynamic power",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Air assist",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "offset X",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Layers (top first)",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Line art from the picture",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Save G-code",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "Hide (Window ▸ Laser shows it again)",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "GRBL $30 (1000), Marlin 255",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "GRBL M4: the power follows the speed (cleaner corners)",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "M8 at the start, M9 at the end",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "The ControlNet line-art preprocessor on the visible picture - a new layer, traced as a centreline",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
+   "s": "mm per px = -",
+   "src": "ext/imageeditdock/pclaser.js:482"
+  },
+  {
    "s": "Live",
    "src": "ext/imageeditdock/pclive.js:84"
   },
@@ -14989,10 +15145,6 @@
   {
    "s": "Point + circle",
    "src": "ext/imageeditdock/pcsketchcad.js:58"
-  },
-  {
-   "s": "Line",
-   "src": "ext/imageeditdock/pcsketchcad.js:63"
   },
   {
    "s": "Spline",
@@ -21787,10 +21939,6 @@
    "src": "ext/timelinedock/tlgraph.js:114"
   },
   {
-   "s": "speed",
-   "src": "ext/timelinedock/tlgraph.js:114"
-  },
-  {
    "s": "Rove",
    "src": "ext/timelinedock/tlgraph.js:114"
   },
@@ -26187,6 +26335,18 @@
   {
    "p": "Diffusion {0}",
    "src": "ext/imageeditdock/pcheal.js:138"
+  },
+  {
+   "p": "{0} operation(s) · about {1} · burn {2} mm · travel {3} mm · on the bed {4}-{5} × {6}-{7} mm",
+   "src": "ext/imageeditdock/pclaser.js:421"
+  },
+  {
+   "p": "{0} operation(s) · about {1} · burn {2} mm · travel {3} mm",
+   "src": "ext/imageeditdock/pclaser.js:421"
+  },
+  {
+   "p": "mm per px = {0} × {1} mm",
+   "src": "ext/imageeditdock/pclaser.js:482"
   },
   {
    "p": "missing: {0}",
