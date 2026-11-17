@@ -14124,6 +14124,13 @@ node scripts/test-doctable812.js > /tmp/doctable812.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui812-ui.js > /tmp/ui812.log 2>&1 \
   && ok "2.812.0 Insert Table, Tab, rows / columns, merge / split, borders, a column dragged, right-click menu, the header row repeated on page 2" \
   || { bad "2.812.0 document table browser test"; grep -a "^FAIL" -A1 /tmp/ui812.log | head -12; }
+# ---- 2.813.0 (Tim: "fix the pagination, page number shows on page 1, but not on page 2. Also add formatting for page numbers. allow user to change \"view\" to show multiple pages on the same window")
+node scripts/test-pageview813.js > /tmp/pageview813.log 2>&1 \
+  && ok "2.813.0 page numbers on the master + their format; View ▸ Pages layout (pins)" \
+  || { bad "2.813.0 page numbers / pages view pins"; grep -a "^FAIL" -A1 /tmp/pageview813.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui813-ui.js > /tmp/ui813.log 2>&1 \
+  && ok "2.813.0 page numbers on page 1 and 2 (Page {page} of {pages}, top right, red), a new page has them, Two / Many Pages, a click on page 2" \
+  || { bad "2.813.0 page numbers / pages view browser test"; grep -a "^FAIL" -A1 /tmp/ui813.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

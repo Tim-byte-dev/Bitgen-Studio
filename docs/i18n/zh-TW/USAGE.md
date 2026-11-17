@@ -5868,6 +5868,13 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **列寬**：在框中指向列的右邊緣（指標變為 ↔）並拖曳；相鄰的列讓出或佔用寬度。
 - 長表格以整行延續到下一個框 / 頁面，頂部帶有標題行。
 
+## Page numbers on every page, and several pages in the window (2.813.0)
+<!-- en: page-numbers-on-every-page-and-several-pages-in-the-window-2-813-0 9d8d6936a7c6 -->
+
+- Pages 面板中的 **#**（或選單中的 **Page Numbers…**）開啟 **頁碼**：**格式**（{page}、Page {page}、Page {page} of {pages}、{page} / {pages}、- {page} -，或使用 {page} / {pages} / {name} 的自訂格式）、**數字**（1 2 3、i ii iii、I II III、a b c、A B C 及起始頁碼）、**位置**（頂部或底部；左、中或右）、**字型**、**字號**和**顏色**。
+- 頁碼放在**主頁**上（沒有主頁時會建立 A-Master 並應用到所有頁面），因此**每一頁都顯示自己的頁碼**，之後新增的頁面（包括文件增長時自動新增的頁面）也會有。以前單獨放在某一頁上的頁碼會被移除。要更改時再次開啟 #。
+- **檢視 ▸ Pages: One Page / Two Pages / Many Pages** - Two 並排顯示頁面，Many 以每行 4 頁的網格顯示。前面的頁面是正在編輯的頁面，其他頁面畫在它周圍。**點選另一頁**即可讓它在原位置來到前面；Ctrl+滾輪縮放整個版面。One Page 返回單頁顯示。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

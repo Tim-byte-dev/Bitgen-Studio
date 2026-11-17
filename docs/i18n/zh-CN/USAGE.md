@@ -5870,6 +5870,13 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **列宽**：在框中指向列的右边缘（指针变为 ↔）并拖动；相邻的列让出或占用宽度。
 - 长表格以整行延续到下一个框 / 页面，顶部带有标题行。
 
+## Page numbers on every page, and several pages in the window (2.813.0)
+<!-- en: page-numbers-on-every-page-and-several-pages-in-the-window-2-813-0 9d8d6936a7c6 -->
+
+- Pages 面板中的 **#**（或菜单中的 **Page Numbers…**）打开 **页码**：**格式**（{page}、Page {page}、Page {page} of {pages}、{page} / {pages}、- {page} -，或使用 {page} / {pages} / {name} 的自定义格式）、**数字**（1 2 3、i ii iii、I II III、a b c、A B C 及起始页码）、**位置**（顶部或底部；左、中或右）、**字体**、**字号**和**颜色**。
+- 页码放在**主页**上（没有主页时会创建 A-Master 并应用到所有页面），因此**每一页都显示自己的页码**，之后添加的页面（包括文档增长时自动添加的页面）也会有。以前单独放在某一页上的页码会被移除。要更改时再次打开 #。
+- **视图 ▸ Pages: One Page / Two Pages / Many Pages** - Two 并排显示页面，Many 以每行 4 页的网格显示。前面的页面是正在编辑的页面，其他页面画在它周围。**点击另一页**即可让它在原位置来到前面；Ctrl+滚轮缩放整个版面。One Page 返回单页显示。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

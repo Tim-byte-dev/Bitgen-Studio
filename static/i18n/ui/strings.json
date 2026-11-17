@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5745,
+ "count": 5748,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53026,6 +53026,33 @@
    ],
    "where": [
     "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Page Numbers",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Page Numbers dialog (2.813.0)"
+   ]
+  },
+  {
+   "s": "Page {page}",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Page Numbers dialog (2.813.0)"
+   ]
+  },
+  {
+   "s": "Page {page} of {pages}",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Page Numbers dialog (2.813.0)"
    ]
   }
  ]

@@ -51,7 +51,7 @@ const has = (bin) => { try { execSync("command -v " + bin, { stdio: "ignore" });
       const E = window.imageEditorInstance.E, D = window.PCDoc;
       const B = E.makeLayer("Header", 420, 595, "shape"); B.shape = Object.assign({}, D.SHAPE_DEFAULT || {}, { kind: "rect", x: 0, y: 0, w: 420, h: 40, fill: "#cc0000", fillOn: true, strokeOn: false }); D.rasterize(B); E.addLayer(B, "header", false);
     });
-    await p.click("#pgNumIns"); await p.waitForTimeout(300);
+    await p.click("#pgNumIns"); await p.waitForTimeout(300); await p.click(".kxdlg.pcd .ok"); await p.waitForTimeout(300);   // 2.813.0: # opens Page Numbers (format, position …)
     st = await ev(() => window.imageEditorInstance.E.S.layers.map((L) => L.name + ":" + (L.text ? L.text.str : "")));
     check("# on the master: a Page number type layer reading {page} (as is, on the master)", st.join("|") === "Master:|Header:|Page number:{page}", st);
 

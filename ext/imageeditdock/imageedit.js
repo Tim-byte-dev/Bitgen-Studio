@@ -3008,6 +3008,7 @@
     if (win.PCShapeOps && win.PCShapeOps.install) win.PCShapeOps.install(E);   // 2.810.0: the Shape tool's modes (click / Shift / Ctrl / Alt on a shape), ✂ Trim, ⇋ Mirror, ⧈ Offset, its right-click items
     if (win.PCDocText && win.PCDocText.install) win.PCDocText.install(E);   // 2.811.0: word-processor text - document frames, the Document Text tool, File ▸ New Text Document…
     if (win.PCDocTable && win.PCDocTable.install) win.PCDocTable.install(E);   // 2.812.0: tables in document text (insert, rows / columns, merge / split, header row, borders, shading, widths)
+    if (win.PCPageView && win.PCPageView.install) win.PCPageView.install(E);   // 2.813.0: View ▸ Pages: One / Two / Many - several pages in the window
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab

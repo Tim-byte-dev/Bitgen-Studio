@@ -14223,120 +14223,176 @@
    "src": "ext/imageeditdock/pcpages.js:143"
   },
   {
+   "s": "Bottom centre",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Bottom right",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Bottom left",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Top centre",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Top right",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Top left",
+   "src": "ext/imageeditdock/pcpages.js:377"
+  },
+  {
+   "s": "Your own",
+   "src": "ext/imageeditdock/pcpages.js:378"
+  },
+  {
+   "s": "Numbers",
+   "src": "ext/imageeditdock/pcpages.js:378"
+  },
+  {
+   "s": "start at",
+   "src": "ext/imageeditdock/pcpages.js:378"
+  },
+  {
+   "s": "page} = the page's number, {pages} = how many pages, {name} = the page's name. They go on the master, so every page shows its own",
+   "src": "ext/imageeditdock/pcpages.js:378"
+  },
+  {
+   "s": "e.g. Section 2 - {page}",
+   "src": "ext/imageeditdock/pcpages.js:378"
+  },
+  {
    "s": "Pages",
-   "src": "ext/imageeditdock/pcpages.js:492"
+   "src": "ext/imageeditdock/pcpages.js:532"
   },
   {
    "s": "No document open",
-   "src": "ext/imageeditdock/pcpages.js:492"
+   "src": "ext/imageeditdock/pcpages.js:532"
   },
   {
    "s": "Click: this page · drag: move · double-click the name: rename",
-   "src": "ext/imageeditdock/pcpages.js:495"
+   "src": "ext/imageeditdock/pcpages.js:535"
   },
   {
    "s": "Master",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Odd",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Even",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Facing",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Page setup",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Hide (Window ▸ Pages shows it again)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Back to the pages (the pages that use this master are made again)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "This master for every page",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "This master for the odd pages (1, 3, 5 … right-hand)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "This master for the even pages (2, 4, 6 … left-hand)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Show and export the pages as spreads (page 1 alone on the right)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "How page numbers are written",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
-   "s": "A page number ({page}) at the bottom of this page or master",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "s": "Page numbers on every page: format, numbers, position, font, size, colour",
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "A new page after this one, the same size - its own layers",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "A copy of this page with its layers",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Move this page up",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Move this page down",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Delete this page (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
-   "src": "ext/imageeditdock/pcpages.js:498"
+   "src": "ext/imageeditdock/pcpages.js:538"
   },
   {
    "s": "Double-click: rename",
-   "src": "ext/imageeditdock/pcpages.js:502"
+   "src": "ext/imageeditdock/pcpages.js:542"
   },
   {
    "s": "Edit this master - what is on it shows under its pages",
-   "src": "ext/imageeditdock/pcpages.js:502"
+   "src": "ext/imageeditdock/pcpages.js:542"
   },
   {
    "s": "Delete this master (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:502"
+   "src": "ext/imageeditdock/pcpages.js:542"
   },
   {
    "s": "W × H mm",
-   "src": "ext/imageeditdock/pcpages.js:583"
+   "src": "ext/imageeditdock/pcpages.js:623"
   },
   {
    "s": "dpi",
-   "src": "ext/imageeditdock/pcpages.js:583"
+   "src": "ext/imageeditdock/pcpages.js:623"
   },
   {
    "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
-   "src": "ext/imageeditdock/pcpages.js:608"
+   "src": "ext/imageeditdock/pcpages.js:648"
+  },
+  {
+   "s": "Pages: One Page",
+   "src": "ext/imageeditdock/pcpageview.js:15"
+  },
+  {
+   "s": "Pages: Two Pages",
+   "src": "ext/imageeditdock/pcpageview.js:15"
+  },
+  {
+   "s": "Pages: Many Pages",
+   "src": "ext/imageeditdock/pcpageview.js:15"
   },
   {
    "s": "Color palette",
@@ -17528,10 +17584,6 @@
   },
   {
    "s": "The selection",
-   "src": "ext/imageeditdock/pcwarp.js:429"
-  },
-  {
-   "s": "Top left",
    "src": "ext/imageeditdock/pcwarp.js:429"
   },
   {
@@ -26774,11 +26826,15 @@
   },
   {
    "p": "{0} ({1} × {2} mm)",
-   "src": "ext/imageeditdock/pcpages.js:583"
+   "src": "ext/imageeditdock/pcpages.js:623"
   },
   {
    "p": "{0} × {1} px",
-   "src": "ext/imageeditdock/pcpages.js:593"
+   "src": "ext/imageeditdock/pcpages.js:633"
+  },
+  {
+   "p": "Page {0} - click to work on it",
+   "src": "ext/imageeditdock/pcpageview.js:66"
   },
   {
    "p": "{0} - click: fill (the foreground colour) · right-click: outline (the background colour)",

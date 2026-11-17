@@ -335,17 +335,57 @@
       if (start == null || start === "") pp.numbering.start = 1;
       renumbered(); paint();
     }
-    /** # Page number: a type layer {page} at the bottom centre of the page / master in front */
-    function insertNumber() {
+    /** 2.813.0 (Tim: "fix the pagination, page number shows on page 1, but not on page 2. Also add formatting for page
+     *  numbers"): the page number goes on the MASTER (made and given to every page when there is none), so every page -
+     *  and every page added later (a new page takes this page's master) - shows its own number. o = {format, pos (b|t +
+     *  l|c|r), size, color, font}; the number layer on the master is updated when there is one. A number put on a page
+     *  by itself before (2.800.0) is taken off that page. */
+    const NUM_FORMATS = ["{page}", "Page {page}", "Page {page} of {pages}", "{page} / {pages}", "- {page} -"];
+    const isNumL = (L) => L && L.type === "text" && L.text && L.name === "Page number";
+    function numText(o, w, h) {
+      const D = E.D, size = Math.max(6, Math.round(+o.size || Math.max(10, Math.round(h / 50)))), pos = String(o.pos || "bc");
+      const align = pos[1] === "l" ? "left" : pos[1] === "r" ? "right" : "center", m = Math.round(w * 0.08);
+      return Object.assign({}, D.TEXT_DEFAULT, { str: String(o.format || "{page}"), size, align, font: o.font || "Arial", color: o.color || "#333333",
+        x: align === "left" ? m : align === "right" ? w - m : Math.round(w / 2), y: pos[0] === "t" ? Math.round(size * 2) : Math.round(h - size * 2.6) });
+    }
+    function placeNumber(o) {
+      const L = S.layers.find(isNumL), t = numText(o, S.w, S.h);
+      if (L) { L.text = Object.assign(L.text, t); delete L.text.tpl; delete L.text.shown; E.D.rasterize(L); E.refresh(); E.renderLayersPanel(); return L; }
+      const T = E.makeLayer("Page number", S.w, S.h, "text"); T.text = t; E.D.rasterize(T); E.addLayer(T, "page number", false); return T;
+    }
+    function insertNumber(opts) {
       if (!S.w) return say("open or make a document first");
-      ensure();
-      const D = E.D, size = Math.max(10, Math.round(S.h / 50)), T = E.makeLayer("Page number", S.w, S.h, "text");
-      T.text = Object.assign({}, D.TEXT_DEFAULT, { str: "{page}", size, align: "center", x: Math.round(S.w / 2), y: Math.round(S.h - size * 2.6), color: "#333333" });
-      D.rasterize(T); E.addLayer(T, "page number", false);
-      if (P().editing == null) { resolveOwn(S.layers, P().cur); E.refresh(); }
-      else renumbered();
-      say(P().editing != null ? "{page} on the master - each page shows its own number" : "page number added ({page} - it follows the page)");
-      return T;
+      const o = Object.assign({ format: "{page}", pos: "bc" }, opts || {});
+      const pp = ensure();
+      if (pp.editing != null) { placeNumber(o); renumbered(); say("{page} on the master - each page shows its own number"); return; }
+      // the page's own old numbers go (they showed on that page only)
+      for (const pg of pp.list) if (pg.st && pg.st.layers) pg.st.layers = pg.st.layers.filter((L) => !isNumL(L));
+      const own = S.layers.filter(isNumL); if (own.length) { S.layers = S.layers.filter((L) => !isNumL(L)); E.refresh(); E.renderLayersPanel(); }
+      const pg = pp.list[pp.cur];
+      let mi = pg.master != null ? pp.masters.findIndex((m) => m.id === pg.master) : -1;
+      if (mi < 0) { addMaster(); mi = pp.masters.length - 1; for (const x of pp.list) if (x.master == null) { x.master = pp.masters[mi].id; x.mdirty = true; } }
+      else editMaster(mi);
+      placeNumber(o);
+      closeMaster(); renumbered(); paint();
+      say(`page numbers on ${pp.masters[mi].name} - every page using it shows its own (${o.format}); new pages take it too`);
+    }
+    function numberDialog() {
+      if (!S.w) return say("open or make a document first");
+      const st = E.store, last = (st && st.get("pg.numfmt", null)) || { format: "{page}", pos: "bc", size: 0, color: "#333333", font: "Arial" };
+      const pp = ensure(), nb = pp.numbering;
+      const fonts = Object.keys(E.D.FONT_STACK || {}).filter((f) => !/^(serif|sans-serif|monospace)$/.test(f));
+      const POS = [["bc", "Bottom centre"], ["br", "Bottom right"], ["bl", "Bottom left"], ["tc", "Top centre"], ["tr", "Top right"], ["tl", "Top left"]];
+      E.ui.dialog("Page Numbers", `<div class="kxrow"><span>Format</span><select id="pgnF">${NUM_FORMATS.map((f) => `<option${f === last.format ? " selected" : ""}>${esc(f)}</option>`).join("")}<option value="">Your own…</option></select><input id="pgnFC" value="${esc(NUM_FORMATS.includes(last.format) ? "" : last.format)}" placeholder="e.g. Section 2 - {page}" style="width:150px"></div>
+        <div class="kxrow"><span>Numbers</span><select id="pgnS">${NUM_STYLES.map(([v, l]) => `<option value="${v}"${v === nb.style ? " selected" : ""}>${esc(l)}</option>`).join("")}</select> <span>start at</span> <input type="number" id="pgnStart" value="${nb.start}" style="width:60px"></div>
+        <div class="kxrow"><span>Position</span><select id="pgnP">${POS.map(([v, l]) => `<option value="${v}"${v === last.pos ? " selected" : ""}>${l}</option>`).join("")}</select></div>
+        <div class="kxrow"><span>Font</span><select id="pgnFont" class="h3-font">${fonts.map((f) => `<option${f === last.font ? " selected" : ""}>${esc(f)}</option>`).join("")}</select> <span>Size</span> <input type="number" id="pgnSize" min="0" value="${last.size || ""}" placeholder="auto" style="width:60px"> <input type="color" id="pgnC" value="${last.color || "#333333"}" title="Colour"></div>
+        <div class="kxrow" style="color:var(--pc-dim)">{page} = the page's number, {pages} = how many pages, {name} = the page's name. They go on the master, so every page shows its own.</div>`, (d) => {
+        const q = (id) => d.querySelector("#" + id), fmt = q("pgnF").value || q("pgnFC").value.trim() || "{page}";
+        const o = { format: fmt, pos: q("pgnP").value, size: +q("pgnSize").value || 0, color: q("pgnC").value, font: q("pgnFont").value };
+        if (st) st.set("pg.numfmt", o);
+        setNumbering(q("pgnS").value, q("pgnStart").value);
+        insertNumber(o);
+      }, { okLabel: "# Apply" });
     }
     /** close a master edit before the pages are read (the export, the .bgi) */
     function settle() { const pp = P(); if (pp && pp.editing != null) closeMaster(); }
@@ -500,7 +540,7 @@
         <div class="pgl" id="pgList">${rows}</div>
         <div class="pgb pgm"><span>Master</span><select id="pgMaster" title="The master this page sits on (its layers under the page's)"><option value="">None</option>${masters.map((m) => `<option value="${m.id}"${m.id === curM ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select><button class="ghost" id="pgMAll" title="This master for every page">All</button><button class="ghost" id="pgMOdd" title="This master for the odd pages (1, 3, 5 … right-hand)">Odd</button><button class="ghost" id="pgMEven" title="This master for the even pages (2, 4, 6 … left-hand)">Even</button></div>
         <div class="pgms">${masters.map((m, mi) => `<div class="pgmr${mi === ed ? " on" : ""}"><span>⌂</span><b data-mmn="${mi}" title="Double-click: rename">${esc(m.name)}</b><span class="dim">${list.filter((x) => x.master === m.id).length} p.</span><button class="ghost" data-mme="${mi}" title="Edit this master - what is on it shows under its pages">✎</button><button class="ghost${armedM === m.id ? " arm" : ""}" data-mmd="${mi}" title="Delete this master (click twice)">🗑</button></div>`).join("")}<button class="ghost" id="pgMAdd" title="A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)">＋ Master</button></div>
-        <div class="pgb"><label title="Show and export the pages as spreads (page 1 alone on the right)"><input type="checkbox" id="pgFacing"${facing ? " checked" : ""}> Facing</label><select id="pgNumStyle" title="How page numbers are written">${NUM_STYLES.map(([v, l]) => `<option value="${v}"${v === nb.style ? " selected" : ""}>${esc(l)}</option>`).join("")}</select><input type="number" id="pgNumStart" value="${nb.start}" style="width:44px" title="The first page's number"><button class="ghost" id="pgNumIns" title="A page number ({page}) at the bottom of this page or master">#</button></div>
+        <div class="pgb"><label title="Show and export the pages as spreads (page 1 alone on the right)"><input type="checkbox" id="pgFacing"${facing ? " checked" : ""}> Facing</label><select id="pgNumStyle" title="How page numbers are written">${NUM_STYLES.map(([v, l]) => `<option value="${v}"${v === nb.style ? " selected" : ""}>${esc(l)}</option>`).join("")}</select><input type="number" id="pgNumStart" value="${nb.start}" style="width:44px" title="The first page's number"><button class="ghost" id="pgNumIns" title="Page numbers on every page: format, numbers, position, font, size, colour">#</button></div>
         <div class="pgb"><button class="ghost" id="pgAdd" title="A new page after this one, the same size - its own layers">＋ Page</button><button class="ghost" id="pgDup" title="A copy of this page with its layers">⧉</button><button class="ghost" id="pgUp" title="Move this page up">▲</button><button class="ghost" id="pgDown" title="Move this page down">▼</button><button class="ghost${pp && armed === list[cur].id ? " arm" : ""}" id="pgDel" title="Delete this page (click twice)">🗑</button></div>
         <div class="pgb"><button class="ghost" id="pgSetup" title="This page's size, orientation and resolution">📐 Page setup…</button><button class="ghost" id="pgExport" title="Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr">⤓ Export…</button></div>`;
       $("pgHide").onclick = hidePanel;
@@ -527,7 +567,7 @@
       $("pgFacing").onchange = (e) => setFacing(e.target.checked);
       $("pgNumStyle").onchange = () => setNumbering($("pgNumStyle").value, $("pgNumStart").value);
       $("pgNumStart").onchange = () => setNumbering($("pgNumStyle").value, $("pgNumStart").value);
-      $("pgNumIns").onclick = () => insertNumber();
+      $("pgNumIns").onclick = () => numberDialog();
       $("pgDup").onclick = () => duplicate();
       $("pgUp").onclick = () => { if (pp && pp.cur > 0) move(pp.cur, pp.cur - 1); };
       $("pgDown").onclick = () => { if (pp && pp.cur < pp.list.length - 1) move(pp.cur, pp.cur + 1); };
@@ -635,12 +675,12 @@
     C("win.pages", "Pages", "", () => (shown() ? hidePanel() : showPanel()), { checked: () => shown() });
     C("page.add", "Add Page", "", () => add(), { enabled: () => !!S.w });
     C("page.master", "New Master Page", "", () => addMaster(), { enabled: () => !!S.w });
-    C("page.number", "Insert Page Number", "", () => insertNumber(), { enabled: () => !!S.w });
+    C("page.number", "Page Numbers…", "", () => numberDialog(), { enabled: () => !!S.w });
     const M = (n) => E.ui.MENUS.find(([x]) => x === n);
     const F = M("File"); if (F) { const it = F[1], at = it.indexOf("file.new"); it.splice(at >= 0 ? at + 1 : 0, 0, "file.newpages"); }
     const W = M("Window"); if (W) { const it = W[1], at = it.indexOf("win.panels"); it.splice(at >= 0 ? at + 1 : it.length, 0, "win.pages"); }
     E.pages = { ensure, count, go, add, duplicate, remove, move, rename, setup, eachPage, toBgi, fromBgi, newDocument, newDialog, setupDialog, showPanel, hidePanel, shown,
-      addMaster, editMaster, closeMaster, removeMaster, renameMaster, assign, setFacing, setNumbering, insertNumber, settle, masterOut, needsBgi, masterPic: (id, i) => { const m = masterById(id); return m ? masterPic(m, i) : null; },
+      addMaster, editMaster, closeMaster, removeMaster, renameMaster, assign, setFacing, setNumbering, insertNumber, numberDialog, settle, masterOut, needsBgi, masterPic: (id, i) => { const m = masterById(id); return m ? masterPic(m, i) : null; },
       masters: () => (P() ? P().masters : []), editing: () => (P() ? P().editing : null), facing: () => !!(P() && P().facing), numbering: () => (P() ? P().numbering : { style: "1", start: 1 }), spreads: () => spreadsOf(count(), !!(P() && P().facing)),
       list: () => (P() ? P().list : []), cur: () => (P() ? P().cur : 0), current: () => (P() ? P().list[P().cur] : null), panel: () => panel };
   }

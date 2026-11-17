@@ -31,6 +31,6 @@ const PG = src("ext/imageeditdock/pcpages.js"), DT = src("ext/imageeditdock/pcdt
 check("a page's master = a locked ⌂ layer just above its Background, made again when the master changes / the numbers change", /L\.master = m\.id; L\.locks = \{ all: true \};/.test(PG) && /\/\^background\$\/i\.test\(S\.layers\[0\]\.name\) \? 1 : 0/.test(PG) && /function renumbered\(\)/.test(PG) && /markPagesOf\(m\.id\)/.test(PG));
 check("the export writes a master's own layers (Master / <layer>) with the page's number; As spreads joins facing pages", /kind = "master"/.test(DT) && /out\.layers\.push\(\{ name: "Master \/ " \+ ml\.name/.test(DT) && /joinSpread\(g\.map\(\(i\) => pages\[i\]\)\)/.test(DT) && /id="dtpSpreads"/.test(DT));
 check(".bgi: a master being edited goes back first; masters saved as masters/<id>.bgi; a one-page document with a master is saved too", /E\.pages\.settle\(\)/.test(BG) && /`masters\/\$\{m\.id\}\.bgi`/.test(PG) && /E\.pages\.needsBgi \? E\.pages\.needsBgi\(\)/.test(BG));
-check("menus: New Master Page, Insert Page Number", /C\("page\.master", "New Master Page"/.test(PG) && /C\("page\.number", "Insert Page Number"/.test(PG));
+check("menus: New Master Page, Insert Page Number (2.813.0: Page Numbers…)", /C\("page\.master", "New Master Page"/.test(PG) && /C\("page\.number", "(Insert Page Number|Page Numbers…)"/.test(PG));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

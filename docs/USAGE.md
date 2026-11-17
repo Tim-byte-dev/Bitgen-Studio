@@ -9300,6 +9300,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Column widths**: point at a column's right edge in the frame (the pointer turns ↔) and drag; the next column gives or takes the room.
 - A long table runs on to the next frame / page in whole rows, with its header row on top.
 
+## Page numbers on every page, and several pages in the window (2.813.0)
+
+- **#** in the Pages panel (or Layer menu ▸ **Page Numbers…**) opens **Page Numbers**: the **format** ({page}, Page {page}, Page {page} of {pages}, {page} / {pages}, - {page} -, or your own with {page} / {pages} / {name}), the **numbers** (1 2 3, i ii iii, I II III, a b c, A B C and the first number), the **position** (top or bottom; left, centre or right), **font**, **size** and **colour**.
+- The number goes on the **master** (A-Master is made and given to every page when there is none), so **every page shows its own number** - and pages added later (also the ones a text document adds as it grows) get it too. A number put on one page by itself before is taken off. Open # again to change it.
+- **View ▸ Pages: One Page / Two Pages / Many Pages** - Two shows the pages side by side, Many in a grid four across. The page in front is the one you work on; the others are drawn around it. **Click another page** to bring it to the front where it is; Ctrl+wheel zooms the whole spread. One Page goes back to a single page.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
