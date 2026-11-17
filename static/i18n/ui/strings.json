@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6081,
+ "count": 6086,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56056,6 +56056,51 @@
    ],
    "where": [
     "Image editor: drop shadow, WP layer (2.829.0)"
+   ]
+  },
+  {
+   "s": "The opacity where the line starts (100 = solid)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: transparency tool, fade sliders (2.830.0)"
+   ]
+  },
+  {
+   "s": "The opacity where the line ends (0 = see-through)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: transparency tool, fade sliders (2.830.0)"
+   ]
+  },
+  {
+   "s": "Where the fade is half way along the line (the diamond on the line)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: transparency tool, fade sliders (2.830.0)"
+   ]
+  },
+  {
+   "s": "Where the gradient is half way along the line (%) - on a shape / a text: the diamond on its line",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: transparency tool, fade sliders (2.830.0)"
+   ]
+  },
+  {
+   "s": "Transparency",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: transparency tool, fade sliders (2.830.0)"
    ]
   }
  ]

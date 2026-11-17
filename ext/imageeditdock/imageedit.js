@@ -896,6 +896,9 @@
     const hasSel = () => !!(S.sel && S.selCount);
     const FX = win.IEFilters || (typeof require === "function" ? require("./filters.js") : null);
     const E = { S, P, B, D, FX, doc, win, host, kx, $, say, store, newCanvas, ctx, layer, hasSel, stage, cv, ov, paper,
+      // 2.830.0 (Tim: "when using freehand select tool or pen etc don't close the selection unless the last position is 5px from the
+      // start position"): ONE distance for every tool that closes a line / selection on its start - 5 px on screen
+      CLOSE_PX: 5, closeR: () => 5 / (S.zoom || 1), nearStart: (pts, x, y) => !!(pts && pts.length > 2 && Math.hypot(pts[0][0] - x, pts[0][1] - y) <= 5 / (S.zoom || 1)),
                 tools: {}, overlayHooks: [], ui: {}, BLEND_NAMES, TOOLS, PAINT };
 
     /* ---------------- layers: the objects ---------------- */
@@ -1332,7 +1335,7 @@
       const L = L_(); if (!L) return;
       const d = makeLayer(L.name + " copy", S.w, S.h, L.type);
       for (const k of ["opacity", "fillOpacity", "blend", "clip", "label"]) d[k] = L[k];
-      for (const k of ["styles", "adj", "text", "shape", "fill", "locks", "vmask", "smart", "frame", "artboard", "sketch", "doc"]) d[k] = D.clone(L[k]);   // 2.462.0: + sketch
+      for (const k of ["styles", "transp", "adj", "text", "shape", "fill", "locks", "vmask", "smart", "frame", "artboard", "sketch", "doc"]) d[k] = D.clone(L[k]);   // 2.462.0: + sketch
       if (L.fmask) { d.fmask = { canvas: newCanvas(S.w, S.h), on: L.fmask.on, ver: 0 }; ctx(d.fmask.canvas).drawImage(L.fmask.canvas, 0, 0); }   // 2.422.0
       ctx(d.canvas).drawImage(L.canvas, 0, 0);
       if (L.mask) { d.mask = newMask("#000"); ctx(d.mask.canvas).drawImage(L.mask.canvas, 0, 0); Object.assign(d.mask, { on: L.mask.on, density: L.mask.density, feather: L.mask.feather }); }
@@ -1541,7 +1544,7 @@
     /* ---------------- tools & options bar ---------------- */
     function setTool(t) {
       if (E.tools[S.tool] && E.tools[S.tool].leave && S.tool !== t) { try { E.tools[S.tool].leave(); } catch (e) { /* fine */ } }
-      S.tool = t; S.pts = [];
+      S.tool = t; S.pts = []; S.lassoOpen = null;
       host.querySelectorAll(".ietool").forEach((b) => b.classList.toggle("on", b.dataset.tool === t || (b.dataset.tools || "").split(",").includes(t)));
       renderOptions(); drawOverlay(); info();
       stage.style.cursor = (E.tools[t] && E.tools[t].cursor) || ({ hand: "grab", picker: "crosshair", move: "move", fill: "crosshair" }[t]) || (["paint", "erase", "brush"].includes(t) ? "none" : "crosshair");
@@ -1759,7 +1762,7 @@
       if ((S.tool === "paint" || S.tool === "erase") && (e.altKey || e.ctrlKey || e.metaKey)) return pickColor(x, y);   // Alt (Photoshop) / Ctrl picks
       switch (S.tool) {
         case "wand": return applyShape(featherShape(P.wand(ctx(S.sampleAll ? flattenCache() : (layer() || {}).canvas || flattenCache()).getImageData(0, 0, S.w, S.h).data, S.w, S.h, x, y, S.tol, S.contiguous && !e.ctrlKey)), selMode(e), "magic wand");
-        case "poly": S.pts.push([fx, fy]); drawOverlay(); return;
+        case "poly": if (S.pts.length >= 3 && E.nearStart(S.pts, fx, fy)) { closePoly(); return; } S.pts.push([fx, fy]); drawOverlay(); return;   // 2.830.0: a click within 5 px of the start closes it
         case "picker": S.drag = { pick: true }; stage.setPointerCapture(e.pointerId); return pickColor(x, y, e.altKey);
         case "fill": return fillAt(x, y);
         case "brush": S.drag = { selBrush: true, erase: e.altKey, before: Uint8Array.from(S.sel) }; selBrushAt(fx, fy, e.altKey); stage.setPointerCapture(e.pointerId); return;
@@ -1787,6 +1790,9 @@
           stage.setPointerCapture(e.pointerId); renderSoon(); return;
         }
         default:                                         // rect / ellipse / lasso
+          // 2.830.0: an OPEN lasso (let go away from its start) goes on from its last point - a straight side to here, then the drag
+          if (S.tool === "lasso" && S.lassoOpen && S.pts.length > 1) { S.drag = { x0: x, y0: y, pts: S.pts.concat([[fx, fy]]), mode: S.lassoOpen.mode, cont: true }; S.pts = S.drag.pts; stage.setPointerCapture(e.pointerId); drawOverlay(); return; }
+          S.lassoOpen = null;
           S.drag = { x0: x, y0: y, pts: [[fx, fy]], mode: selMode(e) }; stage.setPointerCapture(e.pointerId);
       }
     });
@@ -1847,7 +1853,17 @@
         push({ t: "multi", list: list.filter(Boolean), label: "move" }); refresh(); renderLayersPanel(); return;
       }
       if (d.moveSet) { if (d.last[0] || d.last[1]) push({ t: "multi", list: d.list.concat([{ t: "struct", before: d.before, after: snapStruct() }]), label: "move" }); refresh(); renderLayersPanel(); return; }
-      if (S.tool === "lasso") { S.pts = []; if (d.pts.length > 2) applyShape(featherShape(P.polygonMask(d.pts, S.w, S.h)), d.mode, "freehand select"); else drawOverlay(); return; }
+      if (S.tool === "lasso") {
+        // 2.830.0 (Tim: "don't close the selection unless the last position is 5px from the start position"): let go within 5 px of
+        // the start = the selection; anywhere else the line stays open - press again to go on from its end (a straight side to the
+        // press, then the drag), a click adds a straight side; Enter or a double-click closes it as it is, Esc lets it go
+        const end = d.pts[d.pts.length - 1];
+        if (d.pts.length > 2 && E.nearStart(d.pts, end[0], end[1])) { S.pts = []; S.lassoOpen = null; applyShape(featherShape(P.polygonMask(d.pts, S.w, S.h)), d.mode, "freehand select"); return; }
+        if (d.pts.length < 2 || (!d.cont && d.pts.every(([x, y]) => Math.hypot(x - d.pts[0][0], y - d.pts[0][1]) < 3 / (S.zoom || 1)))) { if (!d.cont) { S.pts = []; S.lassoOpen = null; } drawOverlay(); return; }
+        S.pts = d.pts; S.lassoOpen = { mode: d.mode }; drawOverlay();
+        say("the freehand line is open - press again to go on from its end, finish within 5 px of the start (or Enter / double-click) to select, Esc lets it go");
+        return;
+      }
       S.pts = [];
       const ex = d.ex == null ? x : d.ex, ey = d.ey == null ? y : d.ey;
       if (ex === d.x0 && ey === d.y0) { if (d.mode === "replace") changeSel(new Uint8Array(S.w * S.h), "deselect"); drawOverlay(); return; }
@@ -1861,6 +1877,7 @@
     stage.addEventListener("pointerleave", () => { cursor = null; if (!S.drag) drawOverlay(); });
     stage.addEventListener("dblclick", (e) => {
       if (S.tool === "poly" && S.pts.length >= 3) { closePoly(); return; }
+      if (S.tool === "lasso" && S.lassoOpen && S.pts.length >= 3) { closeLasso(); return; }   // 2.830.0
       const T = E.tools[S.tool]; if (T && T.dblclick) { const [fx, fy] = pos(e); T.dblclick(e, fx, fy); }
     });
     stage.addEventListener("wheel", (e) => {
@@ -1876,6 +1893,8 @@
     // left to Artist mode (it leaves it)
     if (win.H3ZoomDrag) win.H3ZoomDrag.attach(stage, { enabled: () => !!S.w, zoom: (f, x, y) => zoomAt(f, x, y) });
     function closePoly() { const pts = S.pts; S.pts = []; applyShape(featherShape(P.polygonMask(pts, S.w, S.h)), S.mode, "polygon select"); }
+    /** 2.830.0: an open freehand lasso closed as it is (Enter / double-click) */
+    function closeLasso() { const pts = S.pts, m = (S.lassoOpen && S.lassoOpen.mode) || S.mode; S.pts = []; S.lassoOpen = null; applyShape(featherShape(P.polygonMask(pts, S.w, S.h)), m, "freehand select"); }
     function selBrushAt(x, y, erase) {
       const r = S.selBrush / 2, shape = P.ellipseMask(x, y, r, r, S.w, S.h);
       S.sel = P.combine(S.sel, shape, erase ? "subtract" : "add"); setSel(S.sel);
@@ -2084,8 +2103,8 @@
       else if ((c && k === "z" && e.shiftKey) || (c && k === "y")) redo();
       else if (c) done = false;
       else if (k === " ") { S.space = true; stage.style.cursor = "grab"; }
-      else if (k === "enter") { if (S.tool === "poly" && S.pts.length >= 3) closePoly(); else if (S.results.length) applyResult(); else done = false; }
-      else if (k === "escape") { if (S.pts.length) { S.pts = []; drawOverlay(); } else if (S.results.length) discardResults(); else if (S.viewMask) { S.viewMask = false; renderLayers(); } else if (fullOn()) setFull(false); else done = false; }
+      else if (k === "enter") { if (S.tool === "poly" && S.pts.length >= 3) closePoly(); else if (S.tool === "lasso" && S.lassoOpen && S.pts.length >= 3) closeLasso(); else if (S.results.length) applyResult(); else done = false; }
+      else if (k === "escape") { if (S.pts.length) { S.pts = []; S.lassoOpen = null; drawOverlay(); } else if (S.results.length) discardResults(); else if (S.viewMask) { S.viewMask = false; renderLayers(); } else if (fullOn()) setFull(false); else done = false; }
       else if (k === "delete") { if (hasSel()) clearSelectionArea(); else if (layer()) deleteLayer(); else done = false; }   // 2.451.0 (Tim): Del deletes the current layer (a selection: clears it, Photoshop's)
       else if (k === "backspace") fillSelectionFg();
       else if (k === "[") { setSize(S.size / 1.15); renderOptions(); }
@@ -3016,7 +3035,8 @@
     if (win.PCDocx && win.PCDocx.install) win.PCDocx.install(E);   // 2.814.0: document text saved as a Word file (.docx) and a .docx opened as document text
     if (win.PCDocNotes && win.PCDocNotes.install) win.PCDocNotes.install(E);   // 2.815.0: comments + footnotes in document text
     if (win.PCDocMerge && win.PCDocMerge.install) win.PCDocMerge.install(E);   // 2.816.0: mail merge in document text
-    if (win.PCShadowTool && win.PCShadowTool.install) win.PCShadowTool.install(E);   // 2.829.0: the interactive Drop Shadow tool (press in a layer, drag)
+    if (win.PCShadowTool && win.PCShadowTool.install) win.PCShadowTool.install(E);
+    if (win.PCTransp && win.PCTransp.install) win.PCTransp.install(E);   // 2.830.0: the transparency gradient + the fade sliders on the gradient lines   // 2.829.0: the interactive Drop Shadow tool (press in a layer, drag)
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab

@@ -113,7 +113,7 @@
     const { S, P, B, D, doc, win, ctx, newCanvas, say, store } = E;
     const num = (k, d) => store.get(k, d);
     S.hard = num("t.hard", 0.5); S.toolStr = num("t.str", 50); S.toneRange = num("t.range", "midtones"); S.spongeMode = num("t.sponge", "desaturate");
-    S.gradType = num("t.gtype", "linear"); S.gradKind = num("t.gkind", "fgbg"); S.gradRev = false; S.gradOpacity = num("t.gop", 100); S.gradBlend = "normal";
+    S.gradType = num("t.gtype", "linear"); S.gradKind = num("t.gkind", "fgbg"); S.gradRev = false; S.gradOpacity = num("t.gop", 100); S.gradBlend = "normal"; S.gradMid = num("t.gmid", 50);   // 2.830.0: the fade point (%)
     S.cloneAligned = num("t.aligned", true); S.cloneAll = num("t.cloneall", false); S.cropRatio = num("t.ratio", "free");
     S.shapeKind = num("t.shape", "rect"); S.shapeStrokeW = num("t.sw", 0); S.shapeRadius = num("t.rad", 0); S.shapeSides = num("t.sides", 5);
     S.typeFont = num("t.font", "Arial"); S.typeSize = num("t.tsize", 48); S.typeBold = false; S.typeItalic = false; S.typeAlign = "left"; S.typeLeading = 1.2; S.typeTracking = 0;
@@ -331,7 +331,7 @@
       if (L.type === "shape") {
         E.setLayer(L, "gradient fill", (X) => {
           X.shape.fillOn = true;
-          X.shape.fillGrad = { type: S.gradType || "linear", x0: gd.x0, y0: gd.y0, x1: gd.x1, y1: gd.y1, css, stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c };
+          X.shape.fillGrad = { type: S.gradType || "linear", x0: gd.x0, y0: gd.y0, x1: gd.x1, y1: gd.y1, css, stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c, mid: S.gradMid / 100 };
         });
         return say(`${L.name}: a gradient fill from the drag (it stays a vector shape - drag again to change it)`);
       }
@@ -340,12 +340,12 @@
       const scale = Math.max(10, Math.min(150, Math.round(Math.hypot(gd.x1 - gd.x0, gd.y1 - gd.y0) / span * 100)));
       E.setLayer(L, "gradient fill", (X) => {
         X.styles = Object.assign({}, X.styles || {});
-        X.styles.gradientOverlay = Object.assign({}, D.STYLE_DEFAULTS.gradientOverlay, X.styles.gradientOverlay || {}, { on: true, angle: ang, scale, style: S.gradType === "radial" || S.gradType === "diamond" ? "radial" : S.gradType === "reflected" ? "reflected" : "linear", stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c, opacity: 1, reverse: false });
+        X.styles.gradientOverlay = Object.assign({}, D.STYLE_DEFAULTS.gradientOverlay, X.styles.gradientOverlay || {}, { on: true, angle: ang, scale, style: S.gradType === "radial" || S.gradType === "diamond" ? "radial" : S.gradType === "reflected" ? "reflected" : "linear", stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c, opacity: 1, reverse: false, mid: S.gradMid / 100 });
       });
       say(`${L.name}: a gradient fill from the drag (Gradient Overlay - the words stay editable)`);
     }
     function drawGradient(g, x0, y0, x1, y1) {
-      const W = S.w, H = S.h, stops = gradStops(S.gradKind, S.fg, S.bg, S.gradRev, S.gradCustom), len = Math.max(1, Math.hypot(x1 - x0, y1 - y0));
+      const W = S.w, H = S.h, st0 = gradStops(S.gradKind, S.fg, S.bg, S.gradRev, S.gradCustom), stops = S.gradMid !== 50 && D.midStops ? D.midStops(st0, S.gradMid / 100) : st0, len = Math.max(1, Math.hypot(x1 - x0, y1 - y0));
       const t = newCanvas(W, H), tg = ctx(t);
       if (S.gradType === "diamond") {
         const ux = (x1 - x0) / len, uy = (y1 - y0) / len, id = tg.createImageData(W, H);
@@ -375,7 +375,7 @@
         + (root.PCGrad ? `<button type="button" class="ptgbtn" id="ptGEdit" title="The gradient - click: the Gradient Editor (many stops, each with its opacity)" style="background:${root.PCGrad.toCss({ stops: gradStops(S.gradKind, S.fg, S.bg, false, S.gradCustom).map(([t, c]) => { const m = /rgba\((\d+),(\d+),(\d+),([\d.]+)\)/.exec(c) || [0, 0, 0, 0, 1]; return { t, c: "#" + [m[1], m[2], m[3]].map((v) => (+v).toString(16).padStart(2, "0")).join(""), a: +m[4] }; }) })}"></button>` : "")
         + `<span class="sep"></span>` + GRAD_KINDS.map((k) => `<button class="ghost ptgt${k === S.gradType ? " on" : ""}" data-gt="${k}" title="${k[0].toUpperCase() + k.slice(1)} gradient">${{ linear: "▭", radial: "◎", angle: "◔", reflected: "◫", diamond: "◇" }[k]}</button>`).join("")
         + `<span class="sep"></span><label>Mode <select id="ptGBlend">${E.BLEND_NAMES.map((b) => `<option${b === S.gradBlend ? " selected" : ""}>${b}</option>`).join("")}</select></label>`
-        + rangeOpt("ptGOp", "Opacity", 1, 100, S.gradOpacity) + `<label><input type="checkbox" id="ptGRev" ${S.gradRev ? "checked" : ""}> Reverse</label>`,
+        + rangeOpt("ptGOp", "Opacity", 1, 100, S.gradOpacity) + rangeOpt("ptGMid", "Fade", 2, 98, S.gradMid, "Where the gradient is half way along the line (%) - on a shape / a text: the diamond on its line") + `<label><input type="checkbox" id="ptGRev" ${S.gradRev ? "checked" : ""}> Reverse</label>`,
       bindOptions(o) {
         const k = o.querySelector("#ptGKind"); k.onchange = () => { S.gradKind = k.value; store.set("t.gkind", k.value); E.renderOptions(); };
         const ge = o.querySelector("#ptGEdit");
@@ -387,6 +387,7 @@
         o.querySelectorAll(".ptgt").forEach((b) => { b.onclick = () => { S.gradType = b.dataset.gt; store.set("t.gtype", S.gradType); E.renderOptions(); }; });
         const bl = o.querySelector("#ptGBlend"); bl.onchange = () => { S.gradBlend = bl.value; };
         bindRange(o, "ptGOp", (v) => { S.gradOpacity = v; store.set("t.gop", v); });
+        bindRange(o, "ptGMid", (v) => { S.gradMid = Math.max(2, Math.min(98, v)); store.set("t.gmid", S.gradMid); });
         const r = o.querySelector("#ptGRev"); r.onchange = () => { S.gradRev = r.checked; };
       },
       down(e, fx, fy) {

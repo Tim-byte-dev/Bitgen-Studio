@@ -8,6 +8,8 @@
  *   One undo step per drag (E.liveSet -> E.commitLive). The active layer's shadow shows a line from where it was pulled to a
  *   square handle at its end - drag the handle to move it again. The options bar: Blur (size), Opacity, Colour (they change the
  *   active layer's shadow at once) and ✕ Remove. Esc lets go; nothing else is changed.
+ *   2.830.0 (Tim: "add a slider to the interactive line ... do this for both gradient types and drop shadow"): a diamond on the
+ *   line is the shadow's OPACITY (CorelDRAW's shadow slider) - at the far end = solid, at the start = none; drag it along the line.
  */
 (function (root) {
   "use strict";
@@ -41,7 +43,9 @@
       return { x: S.w / 2, y: S.h / 2 };
     }
     const anchorOf = (Ly) => anchors.get(Ly) || centre(Ly);
-    function handleOf(Ly) { const sh = shadowOf(Ly); if (!sh) return null; const a = anchorOf(Ly), o = offset(sh); return { ax: a.x, ay: a.y, x: a.x + o.dx, y: a.y + o.dy }; }
+    function handleOf(Ly) { const sh = shadowOf(Ly); if (!sh) return null; const a = anchorOf(Ly), o = offset(sh), op = sh.opacity == null ? 0.75 : sh.opacity; return { ax: a.x, ay: a.y, x: a.x + o.dx, y: a.y + o.dy, op, sx: a.x + o.dx * op, sy: a.y + o.dy * op }; }
+    /** 2.830.0: how far along the anchor -> handle line a point lies (0..1) = the opacity the slider gives */
+    function along(h, x, y) { const dx = h.x - h.ax, dy = h.y - h.ay, L2 = dx * dx + dy * dy || 1; return Math.max(0, Math.min(1, ((x - h.ax) * dx + (y - h.ay) * dy) / L2)); }
     const near = (x, y, h) => h && Math.hypot(x - h.x, y - h.y) <= 9 / (S.zoom || 1);
     function put(Ly, x0, y0, x1, y1) {
       const gm = geom(x0, y0, x1, y1);
@@ -77,6 +81,7 @@
       },
       down(e, fx, fy) {
         const cur = L(), h = handleOf(cur);
+        if (h && Math.hypot(fx - h.sx, fy - h.sy) <= 9 / (S.zoom || 1) && Math.hypot(fx - h.sx, fy - h.sy) < Math.hypot(fx - h.x, fy - h.y)) { drag = { Ly: cur, slider: true, h }; return; }   // 2.830.0: the opacity slider
         if (near(fx, fy, h)) { drag = { Ly: cur, x0: h.ax, y0: h.ay, handle: true }; return; }
         const i = E.layerAt(Math.round(fx), Math.round(fy));
         if (i < 0) { say("press in a layer (a shape, text, a picture …) and drag where its shadow should fall"); return false; }
@@ -87,6 +92,7 @@
       },
       move(e, fx, fy) {
         if (!drag) return;
+        if (drag.slider) { const op = Math.round(along(drag.h, fx, fy) * 100) / 100; drag.moved = true; opt.opacity = Math.round(op * 100); E.liveSet(drag.Ly, (x) => { x.styles = Object.assign({}, x.styles); x.styles.shadow = Object.assign({}, x.styles.shadow, { opacity: op }); }); E.drawOverlay(); return; }
         if (!drag.moved && Math.hypot(fx - drag.x0, fy - drag.y0) < 2) return;
         drag.moved = true;
         put(drag.Ly, drag.x0, drag.y0, fx, fy);
@@ -96,6 +102,7 @@
       up(e, fx, fy) {
         const d = drag; drag = null; if (!d) return;
         if (!d.moved) { E.drawOverlay(); E.renderOptions(); return; }
+        if (d.slider) { E.commitLive("shadow opacity"); store.set("opacity", opt.opacity); E.renderOptions(); E.drawOverlay(); say(`drop shadow opacity ${opt.opacity} % - the diamond on the line, Ctrl+Z takes it back`); return; }
         const gm = put(d.Ly, d.x0, d.y0, fx, fy);
         E.commitLive("drop shadow");
         E.renderOptions(); E.drawOverlay();
@@ -111,9 +118,11 @@
       g.beginPath(); g.moveTo(h.ax, h.ay); g.lineTo(h.x, h.y); g.stroke(); g.setLineDash([]);
       g.fillStyle = "#ffffff"; g.fillRect(h.ax - 3 * px, h.ay - 3 * px, 6 * px, 6 * px); g.strokeRect(h.ax - 3 * px, h.ay - 3 * px, 6 * px, 6 * px);
       g.fillStyle = "#2680eb"; g.fillRect(h.x - 5 * px, h.y - 5 * px, 10 * px, 10 * px); g.strokeStyle = "#ffffff"; g.strokeRect(h.x - 5 * px, h.y - 5 * px, 10 * px, 10 * px);
+      { const r = 5 * px; g.beginPath(); g.moveTo(h.sx, h.sy - r); g.lineTo(h.sx + r, h.sy); g.lineTo(h.sx, h.sy + r); g.lineTo(h.sx - r, h.sy); g.closePath(); g.fillStyle = "#ffd166"; g.fill(); g.strokeStyle = "#1a1a1a"; g.stroke();   // 2.830.0: the opacity slider
+        if (drag && drag.slider) { g.font = `${11 * px}px sans-serif`; g.lineWidth = 3 * px; g.strokeStyle = "#fff"; g.fillStyle = "#000"; const t = Math.round(h.op * 100) + "%"; g.strokeText(t, h.sx + 8 * px, h.sy - 6 * px); g.fillText(t, h.sx + 8 * px, h.sy - 6 * px); } }
       g.restore();
     });
-    E.shadowTool = { geom, offset, handleOf, anchors };
+    E.shadowTool = { geom, offset, handleOf, anchors, along };
   }
   const PCShadowTool = { install, geom, offset };
   if (typeof module !== "undefined" && module.exports) module.exports = PCShadowTool;

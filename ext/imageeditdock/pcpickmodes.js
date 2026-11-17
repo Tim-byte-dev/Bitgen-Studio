@@ -52,11 +52,14 @@
   }
   /** the extra line while a selection is drawn: [x0, y0, x1, y1] | null - Lasso (dragging): its end back to its start;
    *  Polygonal Lasso: its last point on to the pointer */
-  function rubberOf(tool, pts, cursor, dragging) {
+  function rubberOf(tool, pts, cursor, dragging, o) {
     if (!pts || !pts.length) return null;
     const a = pts[pts.length - 1];
     if (tool === "poly") return cursor ? [a[0], a[1], cursor[0], cursor[1]] : null;
-    if (tool === "lasso" && dragging && pts.length > 2) return [a[0], a[1], pts[0][0], pts[0][1]];
+    // 2.830.0: a lasso closes only when it ends within 5 px of its start (o.closeR) - the line back to the start is shown only
+    // then; an OPEN lasso (let go elsewhere, o.open) shows a straight side from its end to the pointer
+    if (tool === "lasso" && dragging && pts.length > 2) return !o || o.closeR == null || Math.hypot(a[0] - pts[0][0], a[1] - pts[0][1]) <= o.closeR ? [a[0], a[1], pts[0][0], pts[0][1]] : null;
+    if (tool === "lasso" && !dragging && o && o.open && cursor) return [a[0], a[1], cursor[0], cursor[1]];
     return null;
   }
   const pure = { MODES, GLYPH, NAMES, DRAW_TOOLS, CLOSED_TOOLS, SHAPE_TOOLS, PEN_TOOLS, CURVE_TOOLS, opFor, syncedOps, rubberOf };
@@ -120,7 +123,7 @@
     });
     E.overlayHooks.push((g, px) => {
       // the selection's extra line (Lasso: back to the start, Polygonal Lasso: on to the pointer)
-      const r = rubberOf(S.tool, S.pts, cursor, !!S.drag);
+      const r = rubberOf(S.tool, S.pts, cursor, !!S.drag, { closeR: E.closeR ? E.closeR() : null, open: !!S.lassoOpen });
       if (r) {
         g.beginPath(); g.moveTo(r[0], r[1]); g.lineTo(r[2], r[3]);
         g.strokeStyle = "rgba(0,0,0,.75)"; g.lineWidth = 1.5 * px; g.setLineDash([]); g.stroke();
@@ -140,7 +143,7 @@
     E.stage.addEventListener("pointermove", (e) => {
       if (!S.w) return;
       cursor = E.pos(e);
-      if ((S.tool === "poly" && S.pts.length) || (S.tool === "lasso" && S.drag) || (DRAW_TOOLS.includes(S.tool) && opFor(S.tool, S) !== "new")) soon();
+      if ((S.tool === "poly" && S.pts.length) || (S.tool === "lasso" && (S.drag || S.lassoOpen)) || (DRAW_TOOLS.includes(S.tool) && opFor(S.tool, S) !== "new")) soon();
     });
     E.stage.addEventListener("pointerleave", () => { cursor = null; soon(); });
     { const st0 = E.setTool; if (typeof st0 === "function") E.setTool = function (t) { if (CLOSED_TOOLS.includes(t)) { lastDraw = t; store.set("pm.lastdraw", t); } return st0.apply(this, arguments); }; }

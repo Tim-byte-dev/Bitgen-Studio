@@ -59,9 +59,16 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
       await p.waitForTimeout(150); await shot("1-lasso");
       const on = await ink(124, 124, 2), back = await ink(124, 60, 2);
       check("Lasso: the line is drawn while dragging, with black in it (seen on a white picture)", on.n > 0 && on.dark > 0, on);
-      check("…and the line back to where it started (where it will close)", back.n > 0, back);
+      // 2.830.0 (Tim: "don't close the selection unless the last position is 5px from the start position"): far from the start
+      // there is no line back yet, and letting go leaves the line open; ending on the start draws the line back and closes it
+      check("…no line back to the start while it ends far from it (2.830.0: it closes only within 5 px of the start)", back.n === 0, back);
+      await p.mouse.up(); await p.waitForTimeout(200);
+      check("…let go there: no selection yet - the line stays open", !(await st()).hasSel && (await ev(() => !!window.imageEditorInstance.E.S.lassoOpen)));
+      const s0 = await scr(60, 60); await p.mouse.move(s0[0] + 1, s0[1] + 1); await p.mouse.down(); await p.mouse.move(s0[0], s0[1], { steps: 2 });
+      await p.waitForTimeout(150); const back2 = await ink(124, 60, 2);
+      check("…pressed again and ended on the start: the line back to where it started", back2.n > 0, back2);
       await p.mouse.up(); await p.waitForTimeout(200); }
-    check("…let go: a selection", (await st()).hasSel);
+    check("…let go there: a selection", (await st()).hasSel);
 
     /* 2 Ctrl+Shift+A: every selection cleared */
     await ev(() => { const E = window.imageEditorInstance.E; E.setTool("shape"); E.S.shapeOp = "new"; E.S.shapeKind = "rect"; E.renderOptions(); });

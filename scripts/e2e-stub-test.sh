@@ -14246,6 +14246,13 @@ node scripts/test-829.js > /tmp/t829.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui829-ui.js > /tmp/ui829.log 2>&1 \
   && ok "2.829.0 browser test: drag a red square's shadow 15 px at 143°, undo, the handle drag, blur / colour / remove; the WP layer named, badged, in Layer ▸ New, typed in from the thumbnail and ✎, moved in the stack" \
   || { bad "2.829.0 drop shadow + WP layer browser test"; grep -a "^FAIL" -A1 /tmp/ui829.log | head -12; }
+# ---- 2.830.0 (Tim: "can you add a transparency gradient of images,shapes,text etc ... add a slider to the interactive line ... do this for both gradient types and drop shadow. when using freehand select tool or pen etc don't close the selection unless the last position is 5px from the start position") the Transparency tool, fade sliders, closing within 5 px
+node scripts/test-830.js > /tmp/t830.log 2>&1 \
+  && ok "2.830.0 transparency maths (fade point, the line as a share of the layer's box, linear / radial opacity), a gradient fill's fade stops, a text's tool gradient keeps both ends, the lasso's closing line only within 5 px, the wiring" \
+  || { bad "2.830.0 transparency + fade sliders units"; grep -a "^FAIL" -A1 /tmp/t830.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui830-ui.js > /tmp/ui830.log 2>&1 \
+  && ok "2.830.0 browser test: a red bar fading 100 -> 0 %, the diamond to a quarter, an end moved, Start %, radial, remove + undo; a shape's gradient line + fade slider; the shadow's opacity slider; the lasso open until it ends within 5 px (go on, Enter, Esc), the polygonal lasso, the freeform pen open / closed" \
+  || { bad "2.830.0 transparency + fade sliders browser test"; grep -a "^FAIL" -A1 /tmp/ui830.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

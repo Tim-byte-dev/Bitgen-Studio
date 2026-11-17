@@ -132,9 +132,15 @@
   }
   /** 2.411.0: a gradient's colour at t (0..1) - {stops: [{c, at}]} or {c1, c2} */
   function stopsOf(go) {
-    const st = Array.isArray(go && go.stops) ? go.stops.filter((x) => x && /^#[0-9a-f]{6}$/i.test(String(x.c))).map((x) => ({ c: x.c, at: Math.max(0, Math.min(1, +x.at || 0)) }))
+    // 2.830.0: a stop's place is `at` (the style dialog) or `t` (the Gradient tool's drag, 2.821.0 - read as 0 before: one colour)
+    const st = Array.isArray(go && go.stops) ? go.stops.filter((x) => x && /^#[0-9a-f]{6}$/i.test(String(x.c))).map((x) => ({ c: x.c, at: Math.max(0, Math.min(1, +(x.at != null ? x.at : x.t) || 0)) }))
       .sort((a, b) => a.at - b.at) : [];
-    return st.length >= 2 ? st : [{ c: (go && go.c1) || "#000000", at: 0 }, { c: (go && go.c2) || "#ffffff", at: 1 }];
+    const S2 = st.length >= 2 ? st : [{ c: (go && go.c1) || "#000000", at: 0 }, { c: (go && go.c2) || "#ffffff", at: 1 }];
+    // 2.830.0: the fade point (the slider on the Gradient tool's line) - sampled again so the half-way colour lands at `mid`
+    const mid = go && go.mid != null ? Math.max(0.02, Math.min(0.98, +go.mid)) : 0.5;
+    if (Math.abs(mid - 0.5) < 1e-3) return S2;
+    const e = Math.log(0.5) / Math.log(mid), hx = (c) => "#" + c.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+    return Array.from({ length: 25 }, (_, k) => ({ at: k / 24, c: hx(colorAt(S2, Math.pow(k / 24, e))) }));
   }
   function colorAt(stops, t) {
     if (t <= stops[0].at) return hex3(stops[0].c);

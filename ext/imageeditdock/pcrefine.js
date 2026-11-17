@@ -213,7 +213,7 @@
         const x = Math.round(fx), y = Math.round(fy);
         if (!ML) { ML = { cost: mlCost(), pts: [[x, y]], anchors: [0], live: [], mode: selMode(e) }; E.drawOverlay(); say("magnetic lasso: move along an edge - a click sets a point, Backspace takes one back, double-click / Enter / the first point closes it, Esc cancels"); return false; }
         const f = ML.pts[0];
-        if (ML.pts.length > 2 && Math.hypot(f[0] - fx, f[1] - fy) <= 8 / (S.zoom || 1)) { closeML(); return false; }
+        if (ML.pts.length > 2 && Math.hypot(f[0] - fx, f[1] - fy) <= (E.closeR ? E.closeR() : 5 / (S.zoom || 1))) { closeML(); return false; }   // 2.830.0: within 5 px of the start
         fixLive(); ML.anchors.push(ML.pts.length - 1); E.drawOverlay(); return false;
       },
       hover(e, fx, fy) {

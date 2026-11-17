@@ -31,6 +31,7 @@
     const nid = () => { uid = Math.max(uid, ...S.paths.map((p) => p.id || 0)) + 1; return uid; };
     const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const R = () => 6 / (S.zoom || 1);
+    const CLOSE = () => (E.closeR ? E.closeR() : 5 / (S.zoom || 1));   // 2.830.0: a path closes only within 5 px (on screen) of its start
     const docOpen = () => !!S.w;
 
     /* ---------------- where the path lives ---------------- */
@@ -165,7 +166,7 @@
         begin();
         if (sub) {
           const s = cur.s, n = sub.pts.length, f = sub.pts[0], l = sub.pts[n - 1];
-          if (n >= 2 && Math.hypot(f.x - fx, f.y - fy) <= R()) { sub.closed = true; writePath(info, info.path); pd = { s, i: 0, x0: fx, y0: fy, close: true }; redraw(info); return; }
+          if (n >= 2 && Math.hypot(f.x - fx, f.y - fy) <= CLOSE()) { sub.closed = true; writePath(info, info.path); pd = { s, i: 0, x0: fx, y0: fy, close: true }; redraw(info); return; }
           if (e.altKey && Math.hypot(l.x - fx, l.y - fy) <= R()) { pd = { s, i: n - 1, x0: fx, y0: fy, cusp: true }; return; }
           let x = fx, y = fy;
           if (e.shiftKey) { const a = Math.round(Math.atan2(fy - l.y, fx - l.x) / (Math.PI / 4)) * Math.PI / 4, r = Math.hypot(fx - l.x, fy - l.y); x = l.x + Math.cos(a) * r; y = l.y + Math.sin(a) * r; }
@@ -240,7 +241,7 @@
       up() {
         const f = ff; ff = null; E.drawOverlay();
         if (!f || f.pts.length < 3) return;
-        const a = f.pts[0], b = f.pts[f.pts.length - 1], closed = Math.hypot(a[0] - b[0], a[1] - b[1]) <= 3 * R();
+        const a = f.pts[0], b = f.pts[f.pts.length - 1], closed = Math.hypot(a[0] - b[0], a[1] - b[1]) <= CLOSE();
         const sub = Q.fromPolygon(f.pts, closed, S.penFit, 60);
         if (sub.pts.length < 2) return;
         once("freeform pen", () => {

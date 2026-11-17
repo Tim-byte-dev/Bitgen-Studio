@@ -1274,6 +1274,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **📌 Paid to——常量的付款夠付到哪一天** — 房租付到哪一天：帳本中的付款從開始日期起逐日抵扣（一天 = 每週 ÷ 7）；常量清單顯示已付到的日期、落後 / 提前的天數和欠款；帳本的 Paid to 列顯示每筆付款後的日期（即時 =PAIDTO()）；常量也可以由你自己記入付款（租客每次不同的付款）。*Where:* ▦ 試算表 ▸ 📌 常量。*Since:* 2.827.0
 - **▦ 從提示詞停靠窗操作試算表** — 用 ＋ 附加 Excel / CSV 檔案即在試算表中開啟；說“create a dashboard”“format it”“received a payment of 540 for rent”“paid 80 for power yesterday”（received = 收入，paid = 支出——先顯示該行，再 ✔ 新增 按日期順序記入帳本）、“rent went up to 580 from 12/01/2027”“bring the ledger up to date”“explain this formula”…；普通聊天照常是聊天。*Where:* 提示詞停靠窗 + ▦ 試算表。*Since:* 2.828.0
 - **🖌 投影工具和 WP 圖層** — 在圖層中按下並拖到影子落下的位置（控點可再次移動；模糊 / 不透明度 / 顏色 / ✕ 移除）；文書處理圖層改為 WP 圖層（Layer ▸ New、WP 標記、✎ 在此 WP 圖層中輸入）。試算表的 Excel 匯出加入 Constants 工作表，開啟時恢復。*Where:* 🖌 影像編輯器（Shift+G）、▦ 試算表 ▸ 匯出。*Since:* 2.829.0
+- **🖌 透明度漸層和漸隱滑塊** — 在圖層（圖片、形狀、文字、WP 圖層、組）中按下並拖曳：沿線從開始 % 漸隱到結束 %，線性或徑向；拖曳兩端或菱形（漸隱到一半的位置）；漸層填充和投影也有同樣的菱形（漸隱 / 影子不透明度）。套索、鋼筆和曲線工具只有在距起點 5 px 以內結束時才閉合——否則線保持開放。*Where:* 🖌 影像編輯器（Shift+G）。*Since:* 2.830.0
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Artist mode 中也可以（2.646.0）。 *Since:* 2.645.0

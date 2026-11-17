@@ -9438,6 +9438,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **WP layer** - the word-processor layer: Layer ▸ New ▸ 📄 WP Layer (word processor); a **WP** badge in Layers; ✎ Type in This WP Layer on the Layers right-click menu, or double-click its thumbnail. It moves in the stack like any layer.
 - **▦ Spreadsheet ▸ Export ▸ Excel** adds a **Constants** sheet: one row per amount (Type, Income / Expense, Amount, Every, From, To - the day before the next amount or its end -, Description, Entered by ⟳) and the ledger's name. Opening the .xlsx in bitGen brings the 📌 Constants back (the sheet is not opened as an ordinary sheet).
 
+## 🖌 Image editor - the Transparency tool, fade sliders, lines close only on their start (2.830.0)
+
+- **Transparency Tool** (the Gradient group - Shift+G cycles Fill → Gradient → Drop Shadow → Transparency): press in a layer (a picture, a shape, text, a WP layer, a group) and drag across it - it fades from **Start** % (at the press) to **End** % (at the pointer). ▭ Linear / ◎ Radial. The line stays on the picked layer: drag its ends, or the **diamond** on it - the fade slider, where it is half way (**Fade** %). ⇄ swaps Start and End, ✕ Remove takes it off; the options bar changes the picked layer at once. It is kept as a share of the layer's size, so it moves and grows with the layer; the layer's drop shadow fades with it. One Ctrl+Z per drag.
+- **Fade sliders on the other lines**: a vector shape's or a text's gradient fill shows its line with the Gradient tool - drag the ends again, drag the diamond to move the fade (**Fade** on the tool bar sets new gradients, pixel ones too). The Drop Shadow tool's line has a diamond for the shadow's **opacity** (solid at the far end).
+- **Closing on the start**: the Lasso makes a selection only when you let go within 5 px (on screen) of where it started. Let go anywhere else and the line stays open - press again to go on from its end (a click adds a straight side), finish on the start or press Enter / double-click to select, Esc lets it go. The Polygonal Lasso closes on a click within 5 px of its start; the Magnetic Lasso, the Pen, the Freeform Pen, Freehand, Bézier, Polyline, B-Spline and the Curvature Pen close only within 5 px too (else the path stays open).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

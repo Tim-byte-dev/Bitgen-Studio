@@ -174,7 +174,7 @@
 
   /* ============================ snapshots (undo) - pure ============================ */
   const STRUCT = ["name", "visible", "opacity", "fillOpacity", "blend", "type", "parent", "clip", "label", "open"];
-  const DEEP = ["control", "locks", "styles", "adj", "text", "shape", "fill", "vmask", "smart", "frame", "artboard", "dimg", "dimPart", "l3d", "sketch", "bscene", "doc"];   // 2.811.0: + a document frame (pcdoctext.js)   // 2.542.0: + a Blender layer's scene (pcblendlayer.js)   // 2.462.0: + a sketch layer's sketch (pcsketch.js)   // 2.460.0: + a 3D layer (pc3d.js)   // 2.457.0: + a dimension group and its parts (pcdimgroup.js)   // 2.442.0: + a frame (pcframes.js)   // 2.422.0: + a smart object's settings (pcsmart.js)   // 2.421.0: + the vector mask (pcpath.js)
+  const DEEP = ["control", "locks", "styles", "transp", "adj", "text", "shape", "fill", "vmask", "smart", "frame", "artboard", "dimg", "dimPart", "l3d", "sketch", "bscene", "doc"];   // 2.811.0: + a document frame (pcdoctext.js)   // 2.542.0: + a Blender layer's scene (pcblendlayer.js)   // 2.462.0: + a sketch layer's sketch (pcsketch.js)   // 2.460.0: + a 3D layer (pc3d.js)   // 2.457.0: + a dimension group and its parts (pcdimgroup.js)   // 2.442.0: + a frame (pcframes.js)   // 2.422.0: + a smart object's settings (pcsmart.js)   // 2.421.0: + the vector mask (pcpath.js)
   function snapLayer(L) {
     const s = { L };
     for (const k of STRUCT) s[k] = L[k];
@@ -281,6 +281,17 @@
   /** 2.821.0: a vector shape's gradient fill (shape.fillGrad) as a canvas style over `box` - {type linear | radial | angle |
    *  reflected | diamond, x0, y0, x1, y1 (the Gradient tool's drag, picture px) | angle (no drag: across the box), css
    *  [[t, "rgba()"]] | stops [{t, c, a}] | c1 / c2}. Shapes, paths and vector lines all fill with it (pcpath / pcbezier). */
+  /** 2.830.0: the fade point - p (0..1 along the line) -> how far between the colours: p ^ (ln 0.5 / ln mid), so at `mid` it is
+   *  half way (CorelDRAW's midpoint slider) */
+  function midEase(p, mid) { const m = Math.max(0.02, Math.min(0.98, mid == null ? 0.5 : +mid)), q = Math.max(0, Math.min(1, p)); return Math.abs(m - 0.5) < 1e-6 ? q : Math.pow(q, Math.log(0.5) / Math.log(m)); }
+  const rgbaOf = (c) => { const s = String(c).trim(); let m = /^#([0-9a-f]{6})$/i.exec(s); if (m) { const n = parseInt(m[1], 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 1]; } m = /rgba?\(([^)]+)\)/i.exec(s); if (m) { const v = m[1].split(",").map(parseFloat); return [v[0] || 0, v[1] || 0, v[2] || 0, v[3] == null || isNaN(v[3]) ? 1 : v[3]]; } return [0, 0, 0, 1]; };
+  /** [[t, css]] sampled again so the half-way colour lands at `mid` */
+  function midStops(stops, mid, n) {
+    const st = stops.map(([t, c]) => [+t, rgbaOf(c)]).sort((a, b) => a[0] - b[0]), N = n || 24, out = [];
+    const at = (s) => { if (s <= st[0][0]) return st[0][1]; for (let i = 1; i < st.length; i++) if (s <= st[i][0]) { const a = st[i - 1], b = st[i], u = (s - a[0]) / Math.max(1e-6, b[0] - a[0]); return a[1].map((v, k) => v + (b[1][k] - v) * u); } return st[st.length - 1][1]; };
+    for (let k = 0; k <= N; k++) { const p = k / N, c = at(midEase(p, mid)); out.push([p, `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${+c[3].toFixed(4)})`]); }
+    return out;
+  }
   function gradStyle(g, s, box) {
     const gr = s && s.fillGrad; if (!gr || !g.createLinearGradient) return (s && s.fill) || "#000";
     const b = box && box.w > 0 && box.h > 0 ? box : { x: 0, y: 0, w: 1, h: 1 }, cx = b.x + b.w / 2, cy = b.y + b.h / 2;
@@ -291,6 +302,7 @@
     let stops = Array.isArray(gr.css) && gr.css.length > 1 ? gr.css.map(([t, c]) => [+t, c])
       : Array.isArray(gr.stops) && gr.stops.length > 1 ? gr.stops.map((q) => { const n = parseInt(String(q.c || "#000000").slice(1), 16) || 0; return [+q.t || 0, `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${q.a == null ? 1 : q.a})`]; })
       : [[0, gr.c1 || s.fill || "#000"], [1, gr.c2 || "#fff"]];
+    if (gr.mid != null && Math.abs(gr.mid - 0.5) > 1e-3) stops = midStops(stops, gr.mid);   // 2.830.0: the fade point (the slider on the line)
     let G;
     if (type === "radial" || type === "diamond") G = g.createRadialGradient(x0, y0, 0, x0, y0, len);
     else if (type === "angle" && g.createConicGradient) G = g.createConicGradient(Math.atan2(y1 - y0, x1 - x0), x0, y0);
@@ -386,9 +398,11 @@
     const m = maskAlpha(L, env, W, H);
     // 2.421.0: + the VECTOR mask (a path - pcpath.js), on top of the pixel mask
     const v = L.vmask && L.vmask.on !== false && root.PCPath ? root.PCPath.vmaskAlpha(L, W, H, env.newCanvas) : null;
-    if (!m && !v) return content;
+    // 2.830.0: + the TRANSPARENCY GRADIENT (pctransp.js - L.transp: from x % to y % opacity along a line, its fade point)
+    const tp = L.transp && L.transp.on !== false && root.PCTransp ? root.PCTransp.alphaFor(env, L, content, W, H) : null;
+    if (!m && !v && !tp) return content;
     const c = copyOf(env, content, W, H), g = c.getContext("2d");
-    g.globalCompositeOperation = "destination-in"; if (m) g.drawImage(m, 0, 0); if (v) g.drawImage(v, 0, 0); g.globalCompositeOperation = "source-over";
+    g.globalCompositeOperation = "destination-in"; if (m) g.drawImage(m, 0, 0); if (v) g.drawImage(v, 0, 0); if (tp) g.drawImage(tp, 0, 0); g.globalCompositeOperation = "source-over";
     return c;
   }
   // 2.411.0: styles.shadows = MORE drop shadows (a PSD text effect stacks 5 - 8 of them)
@@ -580,7 +594,7 @@
   const api = { ADJ_KINDS, STYLE_KINDS, STYLE_DEFAULTS, LABELS, LABEL_HEX, TEXT_DEFAULT, SHAPE_DEFAULT, FONT_STACK,
                 toTree, fromTree, normalize, findNode, descendants, depth, move, moveEnd, insert, group, ungroup, remove, shown,
                 snapLayer, putLayer, clone, isLive, fontCss, textBox, textBox0, textMat, drawText, drawShape, drawFill, shapePath, rasterize,
-                maskAlpha, styled, applyAdjust, render, renderLayer, hasStyles, gradStyle };
+                maskAlpha, styled, applyAdjust, render, renderLayer, hasStyles, gradStyle, midEase, midStops };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCDoc = api;
 })(typeof window !== "undefined" ? window : globalThis);

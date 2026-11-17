@@ -280,7 +280,7 @@
       ]
     },
     {
-      "en": "dc6388761440",
+      "en": "207e15b1ac9e",
       "title": "图像编辑器 - 工具",
       "rows": [
         [
@@ -329,7 +329,7 @@
         ],
         [
           "G  (Shift+G cycles)",
-          "Gradient（渐变）· Paint Bucket（油漆桶）· 投影"
+          "Gradient（渐变）· Paint Bucket（油漆桶）· 投影 · 透明度"
         ],
         [
           "R  (Shift+R cycles)",

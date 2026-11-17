@@ -52,6 +52,9 @@
     const saveDefaults = () => { store.set("vl.w", S.vlW); store.set("vl.line", S.vlLine); store.set("vl.autofill", S.vlFillOn); };
     const auto = () => (E.autoFill ? E.autoFill() : { fill: S.bg, fillOn: S.vlFillOn });
     const R = () => 6 / (S.zoom || 1), JOIN = () => 8 / (S.zoom || 1);
+    // 2.830.0 (Tim: "don't close the selection unless the last position is 5px from the start position"): a line closes only
+    // when it ends within 5 px (on screen) of its start - every curve tool
+    const CLOSE = () => (E.closeR ? E.closeR() : 5 / (S.zoom || 1));
     const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const isVL = (L) => !!(L && L.type === "shape" && L.shape && L.shape.kind === "path" && L.shape.line);
     const near = (a, x, y, r) => Math.hypot(a.x - x, a.y - y) <= (r || R());
@@ -113,7 +116,7 @@
           tgt.pts.push(...piece.pts.slice(1).map((a) => Q.clone(a)));
           // the far end on the line's own start: it closes
           const a0 = tgt.pts[0], z = tgt.pts[tgt.pts.length - 1];
-          if (tgt.pts.length > 2 && near(a0, z.x, z.y, JOIN())) { a0.ix = z.ix; a0.iy = z.iy; tgt.pts.pop(); tgt.closed = true; }
+          if (tgt.pts.length > 2 && near(a0, z.x, z.y, CLOSE())) { a0.ix = z.ix; a0.iy = z.iy; tgt.pts.pop(); tgt.closed = true; }
           setPath(hit.L, p);
           say(`${label}: carried on "${hit.L.name}" - ${Q.count(p)} nodes`);
           return;
@@ -214,7 +217,7 @@
           }
           const L = bz.L, p = Q.clone(L.shape.path), sb = p.subs[bz.s], n = sb.pts.length, f = sb.pts[0], l = sb.pts[n - 1];
           begin();
-          if (n >= 2 && near(f, fx, fy)) { sb.closed = true; setPath(L, p); bz.drag = { close: true, x0: fx, y0: fy }; return; }
+          if (n >= 2 && near(f, fx, fy, CLOSE())) { sb.closed = true; setPath(L, p); bz.drag = { close: true, x0: fx, y0: fy }; return; }
           const [x, y] = e.ctrlKey || e.metaKey ? B.constrain(l.x, l.y, fx, fy) : [fx, fy];
           sb.pts.push(Q.anchor(x, y)); setPath(L, p);
           bz.drag = { i: n, x0: x, y0: y };
@@ -278,7 +281,7 @@
           return;
         }
         fhPend = null;
-        const a = f.pts[0], b = f.pts[f.pts.length - 1], closed = f.pts.length > 4 && Math.hypot(a[0] - b[0], a[1] - b[1]) <= JOIN();
+        const a = f.pts[0], b = f.pts[f.pts.length - 1], closed = f.pts.length > 4 && Math.hypot(a[0] - b[0], a[1] - b[1]) <= CLOSE();
         const sub = Q.fromPolygon(f.pts, closed, 0.5 + S.vlSmooth / 100 * 7.5, 60);
         if (sub.pts.length >= 2) placeSub(sub, "Freehand");
       },
@@ -326,7 +329,7 @@
         }
         const p = Q.clone(pl.L.shape.path), sb = p.subs[pl.s], n = sb.pts.length, f = sb.pts[0], l = sb.pts[n - 1];
         begin();
-        if (n >= 2 && near(f, fx, fy)) { const b = pl; pl = null; sb.closed = true; setPath(b.L, p); commit("close polyline"); say(`${b.L.name}: closed`); return false; }
+        if (n >= 2 && near(f, fx, fy, CLOSE())) { const b = pl; pl = null; sb.closed = true; setPath(b.L, p); commit("close polyline"); say(`${b.L.name}: closed`); return false; }
         const [x, y] = e.ctrlKey || e.metaKey ? B.constrain(l.x, l.y, fx, fy) : [fx, fy];
         sb.pts.push(Q.anchor(x, y)); setPath(pl.L, p); pl.free = [[x, y]];
       },
@@ -406,7 +409,7 @@
         }
         const sp = splineOf(bs.L), f = sp.pts[0];
         begin();
-        if (sp.pts.length >= 3 && Math.hypot(f[0] - fx, f[1] - fy) <= R()) { const b = bs; bs = null; setSpline(b.L, { closed: true, pts: sp.pts }); commit("close B-spline"); say(`${b.L.name}: closed`); E.renderOptions(); return false; }
+        if (sp.pts.length >= 3 && Math.hypot(f[0] - fx, f[1] - fy) <= CLOSE()) { const b = bs; bs = null; setSpline(b.L, { closed: true, pts: sp.pts }); commit("close B-spline"); say(`${b.L.name}: closed`); E.renderOptions(); return false; }
         setSpline(bs.L, { closed: false, pts: sp.pts.concat([[fx, fy]]) }); commit("B-spline point");
         return false;
       },
@@ -637,7 +640,7 @@
         if (!S.w) return false;
         if (cv) {
           const k = cv.pts.findIndex((p) => Math.hypot(p.x - fx, p.y - fy) <= R());
-          if (k === 0 && cv.pts.length >= 3 && !cv.closed) { begin(); cv.closed = true; cvWrite(); commit("close path"); cvFinish(); return false; }
+          if (k === 0 && Math.hypot(cv.pts[0].x - fx, cv.pts[0].y - fy) <= CLOSE() && cv.pts.length >= 3 && !cv.closed) { begin(); cv.closed = true; cvWrite(); commit("close path"); cvFinish(); return false; }
           begin();
           if (k >= 0) { cv.drag = { k, moved: false }; return; }
           // between two points when the click is on the curve, else after the last

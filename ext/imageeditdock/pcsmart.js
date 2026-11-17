@@ -251,7 +251,7 @@
       const id = addSource(copyCanvas(s0.canvas), s0.doc);
       return E.structOp("new smart object via copy", () => {
         const n = E.makeLayer(L.name + " copy", S.w, S.h, "smart");
-        for (const k of ["visible", "opacity", "blend", "clip", "label", "parent", "locks", "styles", "vmask"]) n[k] = D.clone(L[k]);
+        for (const k of ["visible", "opacity", "blend", "clip", "label", "parent", "locks", "styles", "transp", "vmask"]) n[k] = D.clone(L[k]);
         n.smart = Object.assign(D.clone(L.smart), { src: id });
         if (L.fmask) { n.fmask = { canvas: copyCanvas(L.fmask.canvas), on: L.fmask.on, ver: 0 }; }
         S.layers.splice(S.layers.indexOf(L) + 1, 0, n); S.layers = D.normalize(S.layers); S.active = S.layers.indexOf(n);

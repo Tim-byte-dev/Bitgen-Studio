@@ -54,6 +54,7 @@
     vtype: '<path d="M5 5h10M10 5v12M7 17h6"/><path d="M19 6v13M17 17l2 2 2-2"/>',
     typepath: '<path d="M3 19c4-10 14-10 18 0" stroke-dasharray="2 2"/><path d="M8 6h8M12 6v8"/>',
     doctext: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 12h6M9 15h4"/>',   // 2.811.0: a page with lines (pcdoctext.js)
+    transparency: '<rect x="3" y="5" width="18" height="14"/><path d="M6 8h3v3H6zM12 8h3v3h-3zM9 11h3v3H9zM15 11h3v3h-3zM6 14h3v3H6zM12 14h3v3h-3z" fill="currentColor" opacity=".55"/><path d="M3 19L21 5"/>',   // 2.830.0: a checkerboard fading (pctransp.js)
     dropshadow: '<rect x="3" y="3" width="12" height="12"/><path d="M15 7h5v13H7v-5" fill="currentColor" opacity=".45"/><path d="M12 12l6 6"/>',   // 2.829.0: a square with its shadow (pcshadowtool.js)
     shape: '<rect x="3" y="3" width="11" height="11"/><circle cx="15.5" cy="15.5" r="5.5"/>',
     // 2.421.0: pcpen.js
@@ -134,7 +135,7 @@
     { k: "s", tools: [["clone", "Clone Stamp Tool"]] },
     { k: "y", tools: [["histbrush", "History Brush Tool"]] },
     { k: "e", tools: [["erase", "Eraser Tool"], ["bgerase", "Background Eraser Tool"], ["magicerase", "Magic Eraser Tool"]] },
-    { k: "g", tools: [["gradient", "Gradient Tool"], ["dropshadow", "Drop Shadow Tool (press in a layer, drag)"]] },   // 2.829.0: + the interactive drop shadow (pcshadowtool.js)
+    { k: "g", tools: [["gradient", "Gradient Tool"], ["dropshadow", "Drop Shadow Tool (press in a layer, drag)"], ["transparency", "Transparency Tool (press in a layer, drag: from x % to y % opacity)"]] },   // 2.830.0: + the transparency gradient (pctransp.js)   // 2.829.0: + the interactive drop shadow (pcshadowtool.js)
     { k: "g", tools: [["fill", "Paint Bucket Tool"]] },   // 2.396.0: its own button (fills with the foreground, the background or a gradient)
     { k: "r", tools: [["blurtool", "Blur Tool"], ["sharpen", "Sharpen Tool"], ["smudge", "Smudge Tool"]] },
     { k: "o", tools: [["dodge", "Dodge Tool"], ["burn", "Burn Tool"], ["sponge", "Sponge Tool"]] },
