@@ -14159,6 +14159,16 @@ node scripts/test-appstrip817.js > /tmp/appstrip817.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui817-ui.js > /tmp/ui817.log 2>&1 \
   && ok "2.817.0 | 🖼 | 📐 📏 | in the menu bar, none left in the statusbar, icons toggle + light their apps" \
   || { bad "2.817.0 app strip browser test"; grep -a "^FAIL" -A1 /tmp/ui817.log | head -12; }
+# ---- 2.818.0 (Tim: "I would like a mail docker that resembles outlook but works with ai, our models should be able to read the emails and flag important ones and draft a reply. it should also help us construct an email.")
+node scripts/test-mail818.js > /tmp/mail818.log 2>&1 \
+  && ok "2.818.0 ✉ Mail pure parts + pins: accounts (password encrypted, never to the page), safe HTML, compose, the AI prompts + answers" \
+  || { bad "2.818.0 mail pins"; grep -a "^FAIL" -A1 /tmp/mail818.log | head -12; }
+node scripts/test-mail818-live.js > /tmp/mail818l.log 2>&1 \
+  && ok "2.818.0 ✉ Mail LIVE against a stand-in IMAP + SMTP server: folders, sync, bodies, flags, send + Sent, drafts, Trash, the AI with a stand-in LLM" \
+  || { bad "2.818.0 mail live"; grep -a "^FAIL" -A1 /tmp/mail818l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui818-ui.js > /tmp/ui818.log 2>&1 \
+  && ok "2.818.0 ✉ on the top bar: add the account, read, ✨ flag / summarise / draft reply, send, ✨ Help me write + Rewrite + Undo, Delete to Trash" \
+  || { bad "2.818.0 mail browser test"; grep -a "^FAIL" -A1 /tmp/ui818.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

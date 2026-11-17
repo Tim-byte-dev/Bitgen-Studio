@@ -205,6 +205,7 @@ function mount(app) {
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)
   require("./dtp").mount(app);         // 2.799.0: the image editor's desktop-publishing exports (PDF / .ai / SVG / CorelDRAW pack) in projects/<p>/dtp
   require("./docx").mount(app);        // 2.814.0: the image editor's document text as .docx (out + in) in projects/<p>/docs
+  require("./mail").mount(app);        // 2.818.0: ✉ Mail - the user's own mailbox over IMAP / SMTP, the LLM flags + drafts
   require("./laser").mount(app);       // 2.803.0: the image editor's laser toolpaths (G-code) in projects/<p>/laser
   require("./laserLink").mount(app);   // 2.804.0: the laser over USB (serial) / Wi-Fi (TCP), held by this server
   require("./batch").mount(app);       // 2.427.0: the image editor's batch results kept in the project (projects/<p>/batch/<run>)
@@ -343,7 +344,7 @@ function mount(app) {
   });
 
   // ------------------------------------------------------------- config
-  app.get("/api/config", (_req, res) => res.json(core.getConfig()));
+  app.get("/api/config", (_req, res) => res.json(require("../lib/mailStore").hidePasswords(core.getConfig())));   // 2.818.0: mail passwords never go to the page
 
   /** THE GLOBAL DOCK LAYOUT (2.159.0, by instruction): heights and
    *  min/max/normal states in dockers.json at the install root — the same

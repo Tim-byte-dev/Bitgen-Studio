@@ -5906,6 +5906,17 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - 大型應用不再是狀態列按鈕：它們成為**頂部欄上的圖示**，位於工作區下拉選單和 🔍 之後 - **🖼 影像編輯器**（✉ 郵件、▦ 電子表格、🎞 幻燈片推出後也會加入），一條分隔線，然後是 **📐 SolidCraft**（僅在已安裝時）和 **📏 Sketcher**。滑鼠懸停可看到名稱；應用開啟時圖示點亮，點選即可像狀態列按鈕一樣開啟 / 關閉。
 - 工作區、佈局、設定 ▸ 停靠窗和 Ctrl+K 命令面板照常使用。
 
+## ✉ Mail with your own AI (2.818.0)
+<!-- en: mail-with-your-own-ai-2-818-0 7e3c01e5964d -->
+
+- **頂端列上的 ✉** 開啟郵件停靠窗（一開始是隱藏的；按鈕會顯示收件箱中的未讀郵件數）。bitGen 直接與**你自己的郵箱**通訊——用 IMAP 讀取，用 SMTP 傳送——所以無需註冊，中間也沒有任何雲服務。
+- **⚙ 帳戶 ▸ 新增帳戶**：輸入你的地址，Gmail、Outlook.com、Yahoo、iCloud、Fastmail、Zoho 和 GMX 的伺服器會自動填好（其他服務商是推測的——請向服務商核對）。Gmail、Outlook.com、Yahoo 和 iCloud 需要**應用專用密碼**（在帳戶的安全設定中生成）。**✓ 測試**會登入兩臺伺服器，不傳送任何內容。密碼加密儲存在這臺電腦上（settings/keys.json），之後不會再顯示；新郵件可以加上簽名。
+- **閱讀**：左邊是資料夾，中間是郵件清單（未讀為粗體），右邊是郵件內容。↑ ↓ 在清單中移動，**Delete** 把郵件移到廢紙簍，**★** 標記為待跟進，**●** 標為未讀。來自網際網路的圖片會被隱藏，直到你按下**顯示圖片**（它們可能會告訴發件人你打開了郵件），郵件也永遠不會執行腳本。點選 📎 附件即可下載；🔍 搜尋資料夾。bitGen 開啟期間每隔幾分鐘檢查一次郵件。
+- **✨ 用 AI 標記**：你在提示詞停靠窗中選擇的 LLM 閱讀尚未評級的郵件，並給每封郵件打上旗標——紅色**緊急**、橙色**重要**、藍色**普通**、灰色**低**（新聞通訊、促銷、自動郵件）——理由顯示在主題下方。在 ⚙ 帳戶中告訴它**對你重要的事**（你的客戶、會計、學校），這些郵件會被評得更高；**☐ ✨ 自動**會在新郵件到達時自動標記。**顯示 ▸ ⚑ 重要**和 **✨ 最重要的在前**都使用這些旗標。
+- **✨ 總結**用兩句話總結郵件，並告訴你需要做什麼。**✨ 起草回覆** / **✨ 全部回覆**——說明回覆要說什麼（也可以不寫），選擇語氣，回覆就會寫進寫信視窗，傳送前由你通讀。
+- **寫信**（✉ 新建、↩ 回覆、↩↩ 全部回覆、↪ 轉發）：**✨ 幫我寫**把幾條筆記和一種語氣變成郵件及其主題；**✨ 改寫我寫的內容…**可以讓它更簡短、更友好、更正式、修正拼寫和語法、更有自信——或按你自己的指示改寫；**↶ 復原**撤回 AI 的修改。粗體、斜體、下劃線、清單、連結、📎 附件（也可以拖放檔案，最多 25 MB）；轉發時會帶上原郵件的附件。**➤ 傳送**（Ctrl+Enter）會在“已傳送”中儲存一份；**💾 儲存草稿**儲存到草稿箱。
+- 你的郵件保留在郵件伺服器上；bitGen 會把顯示過的內容複製一份儲存在應用的 mail 資料夾中（僅限這臺電腦）。AI 在你的 LLM 執行的地方執行——除非你在 🖥 GPU 停靠窗中把它設為 OpenRouter 或某個 Pod，否則就在這臺電腦上。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5920,7 +5931,7 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits a5a445a46147 -->
+<!-- en: credits a71553c4e355 -->
 
 **出品與開發：Tim Paul**
 
@@ -6001,6 +6012,8 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文件文字儲存為 Word 檔案 (.docx)（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 檔案 (.docx) 作為文件文字開啟（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——郵件合併生成的 Word 檔案 .zip（MIT）
+- **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 郵件：透過 IMAP 讀取郵箱並開啟郵件（MIT）
+- **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 郵件：透過你自己的郵件伺服器傳送（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 檔案及其文字效果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)**——Sketcher 的牆（MIT；另含 splaytree 和 robust-predicates）
 - **[replicad 和 OpenCascade](https://replicad.xyz)**——參數化 3D 實體（MIT；OpenCascade 為 LGPL-2.1）

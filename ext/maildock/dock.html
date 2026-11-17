@@ -1,0 +1,217 @@
+    <div class="bdock" id="maildock" data-own-space="1">
+      <div class="bhead" data-collapse="maildock">▾ ✉ Mail<button class="ghost" type="button" title="Help - accounts, the AI flags, writing with the AI" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('mail')" style="margin-left:auto;padding:0 6px">❔</button><button id="mlMaxBtn" class="maxbtn" data-max="maildock" type="button" title="Maximize" aria-label="Maximize">⛶</button><button id="mlCloseBtn" class="ghost" type="button" title="Close the docker (the ✉ button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="mlBody" style="display:flex;flex-direction:column;gap:6px;min-height:0">
+        <!-- 2.818.0 (Tim: "I would like a mail docker that resembles outlook but works with ai, our models should be able to read
+             the emails and flag important ones and draft a reply. it should also help us construct an email."): no cloud
+             sign-up - bitGen talks to the user's own mailbox (IMAP + SMTP, lib/mailImap.js / lib/mailSend.js, accounts in
+             lib/mailStore.js with the password encrypted in settings/keys.json); the prompt docker's LLM flags, summarises and
+             drafts (lib/mailAi.js). Folders | the list (✨ flags, unread bold) | the reading pane; the composer + ✨ Help me write.
+             ext/maildock/mailview.js (pure), maildock.js, mailcompose.js, mailaccounts.js; routes/mail.js. -->
+        <style>
+          #maildock { min-height: 120px; }
+          #mlBar { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; font-size: 11px; }
+          #mlBar select, #mlBar input[type=search] { font-size: 11px; width: auto; flex: none; }
+          #mlBar .mlsep { width: 1px; height: 18px; background: var(--line); margin: 0 3px; }
+          #mlBar button { white-space: nowrap; }
+          #mlMsg { flex: 1; min-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
+          #mlMsg.bad { color: #e5534b; }
+          #mlMain { display: flex; flex: 1; min-height: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+          #mlFolders { flex: 0 0 170px; overflow: auto; border-right: 1px solid var(--line); font-size: 12px; padding: 4px 0; }
+          #mlFolders .mlacc { padding: 4px 8px; color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          #mlFolders .mlf { padding: 4px 8px 4px 14px; cursor: pointer; display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+          #mlFolders .mlf:hover { background: var(--panel-2); }
+          #mlFolders .mlf.on { background: var(--panel-2); color: var(--tiger); }
+          #mlFolders .mlf .n { margin-left: auto; font-size: 11px; color: var(--tiger); }
+          #mlFolders .mlf .nm { overflow: hidden; text-overflow: ellipsis; }
+          #mlListBox { flex: 0 0 36%; min-width: 220px; display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
+          #mlListHead { display: flex; gap: 4px; align-items: center; padding: 4px 6px; border-bottom: 1px solid var(--line); font-size: 11px; }
+          #mlListHead select { font-size: 11px; width: auto; }
+          #mlList { flex: 1; overflow: auto; min-height: 0; outline: none; }
+          .mlrow { padding: 5px 8px 6px 6px; border-bottom: 1px solid var(--line); cursor: pointer; display: grid; grid-template-columns: 14px 1fr auto; column-gap: 6px; font-size: 12px; }
+          .mlrow:hover { background: var(--panel-2); }
+          .mlrow.on { background: var(--panel-2); box-shadow: inset 3px 0 0 var(--tiger); }
+          .mlrow .fl { grid-row: 1 / span 3; font-size: 11px; padding-top: 1px; }
+          .mlrow .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .mlrow .when { color: var(--dim); font-size: 11px; white-space: nowrap; }
+          .mlrow .sub, .mlrow .snip { grid-column: 2 / span 2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .mlrow .snip { color: var(--dim); font-size: 11px; }
+          .mlrow.unread .who, .mlrow.unread .sub { font-weight: 700; }
+          .mlrow .why { grid-column: 2 / span 2; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .mllv3 { color: #e5534b; } .mllv2 { color: #f0883e; } .mllv1 { color: #58a6ff; } .mllv0 { color: var(--dim); }
+          #mlRead { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+          #mlRead .mlnone { margin: auto; color: var(--dim); font-size: 12px; text-align: center; padding: 20px; }
+          #mlHead { padding: 8px 10px 6px; border-bottom: 1px solid var(--line); font-size: 12px; }
+          #mlHead .subj { font-size: 15px; font-weight: 600; margin-bottom: 4px; word-break: break-word; }
+          #mlHead .meta { color: var(--dim); font-size: 11px; line-height: 1.5; word-break: break-word; }
+          #mlAi { padding: 6px 10px; border-bottom: 1px solid var(--line); font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+          #mlAi .row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+          #mlAi input[type=text] { flex: 1; min-width: 140px; font-size: 11px; }
+          #mlAi select { font-size: 11px; width: auto; }
+          #mlSum { color: var(--text); line-height: 1.45; }
+          #mlSum .act { color: var(--tiger); }
+          #mlAtts { display: flex; gap: 5px; flex-wrap: wrap; padding: 5px 10px; border-bottom: 1px solid var(--line); font-size: 11px; }
+          #mlAtts:empty { display: none; }
+          #mlAtts a { border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; color: inherit; text-decoration: none; }
+          #mlAtts a:hover { border-color: var(--tiger); }
+          #mlPics { padding: 4px 10px; font-size: 11px; background: var(--panel-2); color: var(--dim); }
+          #mlFrame { flex: 1; width: 100%; border: 0; background: #fff; min-height: 0; }
+          #mlText { flex: 1; overflow: auto; padding: 10px 12px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; min-height: 0; }
+          #mlText a { color: var(--tiger); }
+          #mlEmpty { margin: auto; max-width: 560px; text-align: center; line-height: 1.6; padding: 18px; font-size: 13px; }
+          #mlEmpty .hint { font-size: 12px; }
+          #mlCompose, #mlAcctDlg { width: min(860px, 94vw); }
+          #mlCompose .mlcrow, #mlAcctDlg .mlcrow { display: flex; gap: 6px; align-items: center; margin-bottom: 5px; font-size: 12px; }
+          #mlCompose .mlcrow > span:first-child, #mlAcctDlg .mlcrow > span:first-child { flex: 0 0 74px; color: var(--dim); }
+          #mlCompose .mlcrow input, #mlCompose .mlcrow select, #mlAcctDlg .mlcrow input, #mlAcctDlg .mlcrow select { flex: 1; min-width: 0; }
+          #mlCompose .mlcrow input[type=number], #mlAcctDlg .mlcrow input[type=number] { flex: 0 0 80px; }
+          #mlCompose .mlcrow input[type=checkbox], #mlAcctDlg .mlcrow input[type=checkbox] { flex: none; }
+          #mlFmt { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 4px; }
+          #mlFmt button { min-width: 28px; padding: 2px 6px; }
+          #mlEdit { min-height: 200px; max-height: 46vh; overflow: auto; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--ink); font-size: 13px; line-height: 1.5; outline: none; }
+          #mlEdit:focus { border-color: var(--tiger); }
+          #mlQuoteBox { margin-top: 5px; font-size: 11px; }
+          #mlQuote { max-height: 160px; overflow: auto; border-left: 3px solid var(--line); padding: 4px 8px; color: var(--dim); white-space: pre-wrap; margin-top: 4px; }
+          #mlHelp { border: 1px dashed var(--line); border-radius: 6px; padding: 6px 8px; margin: 6px 0; font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+          #mlHelp textarea { width: 100%; min-height: 48px; font-size: 12px; box-sizing: border-box; }
+          #mlHelp .row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+          #mlHelp select { width: auto; font-size: 11px; }
+          #mlCAtts { display: flex; gap: 5px; flex-wrap: wrap; font-size: 11px; margin-top: 4px; }
+          #mlCAtts span { border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; }
+          #mlCMsg { font-size: 11px; color: var(--dim); flex: 1; }
+          #mlCMsg.bad, #mlAMsg.bad { color: #e5534b; }
+          #mlAcctDlg fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 6px 0; padding: 6px 8px; }
+          #mlAcctDlg legend { font-size: 11px; color: var(--dim); padding: 0 4px; }
+          #mlAcctDlg textarea { width: 100%; box-sizing: border-box; font-size: 12px; min-height: 40px; }
+          #mlAMsg { font-size: 11px; color: var(--dim); white-space: pre-wrap; flex: 1; }
+          #mlAcctDlg .mlnote { font-size: 11px; color: var(--dim); line-height: 1.5; margin: 4px 0 6px; }
+          #mlCompose .mlcrow[hidden], #mlAcctDlg .mlcrow[hidden], #mlCompose [hidden] { display: none !important; }
+          .mlprimary { background: var(--tiger) !important; color: #1a1206 !important; border-color: var(--tiger) !important; font-weight: 600; }
+          .mlprimary:disabled { opacity: .55; }
+          .mlbtns { display: flex; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
+          #maildock.ml-noacc #mlMain, #maildock.ml-noacc .mlneedacc { display: none !important; }
+          #maildock:not(.ml-noacc) #mlEmpty { display: none; }
+          #tX_maildock[data-n]::after { content: attr(data-n); font-size: 9px; background: var(--tiger); color: #000; border-radius: 7px; padding: 0 4px; margin-left: 2px; vertical-align: top; }
+        </style>
+        <div id="mlBar">
+          <select id="mlAccSel" class="mlneedacc" title="The mail account shown" aria-label="Mail account"></select>
+          <button class="ghost gbtn mlneedacc" id="mlNew" type="button" title="Write a new email (✨ Help me write in the composer)">✉ New</button>
+          <button class="ghost gbtn mlneedacc" id="mlReply" type="button" title="Reply to the sender">↩ Reply</button>
+          <button class="ghost gbtn mlneedacc" id="mlReplyAll" type="button" title="Reply to the sender and everyone on the email">↩↩ Reply all</button>
+          <button class="ghost gbtn mlneedacc" id="mlFwd" type="button" title="Forward the email (with its attachments)">↪ Forward</button>
+          <button class="ghost gbtn mlneedacc" id="mlDel" type="button" title="Move the email to Trash (in Trash: delete it) - key Delete in the list">🗑</button>
+          <button class="ghost gbtn mlneedacc" id="mlStar" type="button" title="Follow up: flag / unflag the email on the server (★)">★</button>
+          <button class="ghost gbtn mlneedacc" id="mlUnread" type="button" title="Mark as unread / read">●</button>
+          <span class="mlsep mlneedacc"></span>
+          <button class="ghost gbtn mlneedacc" id="mlSync" type="button" title="Check for new mail now (the folder shown)">⟳ Check mail</button>
+          <button class="ghost gbtn mlneedacc" id="mlFlagAll" type="button" title="The AI reads the emails it has not rated yet and flags them: ⚑ red = urgent, orange = important, blue = normal, grey = low (Shift: rate them all again)">✨ Flag with AI</button>
+          <label class="mlneedacc" title="When new mail comes in, the AI flags it by itself" style="display:inline-flex;gap:3px;align-items:center"><input type="checkbox" id="mlAuto"> ✨ auto</label>
+          <input type="search" id="mlSearch" class="mlneedacc" placeholder="🔍 Search this folder" aria-label="Search this folder" style="width:150px">
+          <button class="ghost gbtn" id="mlAccBtn" type="button" title="Mail accounts and settings (what matters to you, checking for mail)">⚙ Accounts</button>
+          <span id="mlMsg" role="status"></span>
+        </div>
+        <div id="mlEmpty">
+          <b>✉ Mail with your own AI</b><br>
+          Add your mail account - bitGen talks to your mailbox itself (IMAP to read, SMTP to send). There is no sign-up and no
+          cloud service in between; your password is kept encrypted on this computer.<br>
+          The LLM you picked in the prompt docker reads your mail, flags what is important, sums emails up and drafts replies.<br>
+          <button class="ghost gbtn" id="mlAddFirst" type="button" style="margin-top:8px">＋ Add your mail account</button>
+          <div class="hint" style="margin-top:6px">Gmail, Outlook.com, Yahoo and iCloud need an app password (made in your account's security settings) - your normal password is refused.</div>
+        </div>
+        <div id="mlMain">
+          <div id="mlFolders" role="tree" aria-label="Folders"></div>
+          <div id="mlListBox">
+            <div id="mlListHead">
+              <select id="mlShow" title="Which emails the list shows" aria-label="Show">
+                <option value="all">All</option>
+                <option value="unread">Unread</option>
+                <option value="important">⚑ Important (AI)</option>
+                <option value="starred">★ Flagged</option>
+              </select>
+              <select id="mlSort" title="The order of the list" aria-label="Sort">
+                <option value="date">Newest first</option>
+                <option value="ai">✨ Most important first</option>
+              </select>
+              <span id="mlCount" class="hint" style="margin-left:auto"></span>
+            </div>
+            <div id="mlList" tabindex="0" role="listbox" aria-label="Emails"></div>
+          </div>
+          <div id="mlRead"><div class="mlnone">Pick an email to read it.</div></div>
+        </div>
+      </div>
+    </div>
+    <dialog id="mlCompose" aria-label="Write an email">
+      <h2 id="mlCTitle" style="margin-bottom:8px">New email</h2>
+      <div class="mlcrow"><span>From</span><select id="mlCFrom" aria-label="From"></select></div>
+      <div class="mlcrow"><span>To</span><input type="text" id="mlCTo" placeholder="name@example.com, …" aria-label="To"><button class="ghost" type="button" id="mlCCcBtn" title="Show Cc and Bcc">Cc / Bcc</button></div>
+      <div class="mlcrow" id="mlCCcRow" hidden><span>Cc</span><input type="text" id="mlCCc" aria-label="Cc"></div>
+      <div class="mlcrow" id="mlCBccRow" hidden><span>Bcc</span><input type="text" id="mlCBcc" aria-label="Bcc"></div>
+      <div class="mlcrow"><span>Subject</span><input type="text" id="mlCSubj" aria-label="Subject"></div>
+      <div id="mlHelp">
+        <div class="row"><b>✨ Help me write</b><span class="hint">- a few words or notes about what to say; the LLM writes the email (or the reply)</span></div>
+        <textarea id="mlCNotes" placeholder="e.g. thank Sam for the photos, ask if Saturday 10am still works for the shoot" aria-label="Notes for the AI"></textarea>
+        <div class="row">
+          <label>Tone <select id="mlCTone" aria-label="Tone"></select></label>
+          <button class="ghost gbtn" type="button" id="mlCWrite" title="Write the email from the notes (replaces what is in the box above the quoted email)">✨ Write it</button>
+          <span class="mlsep" style="width:1px;height:16px;background:var(--line)"></span>
+          <select id="mlCHow" aria-label="Rewrite" title="Rewrite what you wrote">
+            <option value="">✨ Rewrite what I wrote…</option>
+            <option value="shorter and to the point">Shorter</option>
+            <option value="friendlier and warmer">Friendlier</option>
+            <option value="more formal and professional">More formal</option>
+            <option value="clearer, with the spelling and grammar fixed - otherwise unchanged">Fix spelling and grammar</option>
+            <option value="more confident and direct">More confident</option>
+            <option value="*">Your own instruction…</option>
+          </select>
+        </div>
+      </div>
+      <div id="mlFmt" role="toolbar" aria-label="Formatting">
+        <button class="ghost" type="button" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button class="ghost" type="button" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button class="ghost" type="button" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button class="ghost" type="button" data-cmd="insertUnorderedList" title="Bullets">• ≡</button>
+        <button class="ghost" type="button" data-cmd="insertOrderedList" title="Numbering">1. ≡</button>
+        <button class="ghost" type="button" data-cmd="createLink" title="Link the selected words">🔗</button>
+        <button class="ghost" type="button" data-cmd="removeFormat" title="Clear the formatting">⌫ Tx</button>
+        <button class="ghost" type="button" id="mlCAttach" title="Attach files (up to 25 MB in all)">📎 Attach</button>
+        <input type="file" id="mlCFile" class="hidden" multiple hidden>
+      </div>
+      <div id="mlEdit" contenteditable="true" role="textbox" aria-multiline="true" aria-label="The email"></div>
+      <div id="mlCAtts"></div>
+      <div id="mlQuoteBox" hidden><label><input type="checkbox" id="mlCQuoteOn" checked> Include the original email</label><div id="mlQuote"></div></div>
+      <div class="mlbtns">
+        <span id="mlCMsg" role="status"></span>
+        <button class="ghost gbtn" type="button" id="mlCDraft" title="Save it in the Drafts folder on the server">💾 Save draft</button>
+        <button class="ghost gbtn" type="button" id="mlCDiscard">Discard</button>
+        <button class="gbtn mlprimary" type="button" id="mlCSend" title="Send it (Ctrl+Enter)">➤ Send</button>
+      </div>
+    </dialog>
+    <dialog id="mlAcctDlg" aria-label="Mail accounts">
+      <h2 style="margin-bottom:8px">Mail accounts</h2>
+      <div class="mlcrow"><span>Account</span><select id="mlAPick" aria-label="Account"></select></div>
+      <fieldset><legend>You</legend>
+        <div class="mlcrow"><span>Email</span><input type="text" id="mlAEmail" placeholder="you@example.com" autocomplete="off"></div>
+        <div class="mlcrow"><span>Your name</span><input type="text" id="mlAName" placeholder="the name people see" autocomplete="off"></div>
+        <div class="mlcrow"><span>User name</span><input type="text" id="mlAUser" placeholder="usually the email address" autocomplete="off"></div>
+        <div class="mlcrow"><span>Password</span><input type="password" id="mlAPass" placeholder="password or app password" autocomplete="new-password"></div>
+        <div class="mlnote" id="mlANote">Gmail, Outlook.com, Yahoo and iCloud need an app password (made in your account's security settings) - your normal password is refused. The password is kept encrypted on this computer (settings/keys.json) and never shown again.</div>
+      </fieldset>
+      <fieldset><legend>Servers (filled in from the address - change them if your provider says otherwise)</legend>
+        <div class="mlcrow"><span>Incoming</span><input type="text" id="mlAImapHost" placeholder="imap.example.com" aria-label="IMAP server"><input type="number" id="mlAImapPort" min="1" max="65535" aria-label="IMAP port"><label title="SSL / TLS from the start (port 993). Off = STARTTLS or none (port 143)"><input type="checkbox" id="mlAImapSsl"> SSL</label></div>
+        <div class="mlcrow"><span>Outgoing</span><input type="text" id="mlASmtpHost" placeholder="smtp.example.com" aria-label="SMTP server"><input type="number" id="mlASmtpPort" min="1" max="65535" aria-label="SMTP port"><label title="SSL / TLS from the start (port 465). Off = STARTTLS (port 587)"><input type="checkbox" id="mlASmtpSsl"> SSL</label></div>
+        <div class="mlcrow"><span></span><label><input type="checkbox" id="mlATls"> Check the servers' certificates (leave on unless your own server uses a self-made one)</label></div>
+        <div class="mlcrow"><span></span><label><input type="checkbox" id="mlASent"> Put a copy of sent mail in Sent (Gmail does this itself)</label></div>
+      </fieldset>
+      <fieldset><legend>Signature (added to new emails)</legend><textarea id="mlASig" placeholder="Tim Paul&#10;bitGen Studio"></textarea></fieldset>
+      <div class="mlbtns" style="justify-content:flex-start">
+        <button class="ghost gbtn" type="button" id="mlATest" title="Log in to both servers (nothing is sent)">✓ Test</button>
+        <button class="gbtn mlprimary" type="button" id="mlASave">💾 Save account</button>
+        <button class="ghost gbtn" type="button" id="mlARemove" title="Remove the account from bitGen (and the copy of its mail on this computer) - nothing on the server changes">🗑 Remove</button>
+        <span id="mlAMsg" role="status"></span>
+      </div>
+      <fieldset><legend>✨ The AI and checking for mail (every account)</legend>
+        <div class="mlcrow" style="align-items:flex-start"><span>What matters to me</span><textarea id="mlSImp" placeholder="e.g. anything from my clients or my accountant, invoices, the school, Tiger Art orders" aria-label="What matters to me"></textarea></div>
+        <div class="mlcrow"><span></span><label><input type="checkbox" id="mlSAuto"> Flag new mail with the AI when it comes in</label></div>
+        <div class="mlcrow"><span>Check every</span><input type="number" id="mlSMin" min="1" max="120" aria-label="Minutes between checks"> minutes (while bitGen is open)</div>
+      </fieldset>
+      <div class="mlbtns"><button class="ghost gbtn" type="button" id="mlSSave">💾 Save settings</button><button class="ghost gbtn" type="button" id="mlAClose">Close</button></div>
+    </dialog>

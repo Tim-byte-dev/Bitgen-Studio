@@ -39,8 +39,8 @@ try {
   check("…the browser languages each picks, keepAll, the guide's notes in its language", JSON.stringify(LP.get("zh-TW").browser) === JSON.stringify(["zh-tw", "zh-hk", "zh-mo", "zh-hant"]) && LP.get("ja").keepAll && /英語/.test(LP.get("ja").words.stale));
   check("lib/helpI18n.js reads the languages from the packs (LANGS, isLang, each file)", I.LANGS.length === 3 && I.isLang("zh-CN") && !I.isLang("ko") && I.fileOf(ROOT, "ja", "usage") === F.usage);
   const cov = LP.coverage("ja");
-  check("coverage(ja): the app's words 99 %+, every pattern, the guide 190+ sections, 3 help pages, every shortcut group, all 957 features",
-    cov.ui.done / cov.ui.total > 0.99 && cov.patterns.done === cov.patterns.total && cov.guide.done >= 190 && cov.help.done === 3 && cov.shortcuts.done === cov.shortcuts.total && cov.features.done === cov.features.total && cov.features.total > 900, cov);
+  check("coverage(ja): the app's words 99 %+, every pattern, the guide 190+ sections, every help page (4 since 2.818.0 ✉ Mail), every shortcut group, all 957 features",
+    cov.ui.done / cov.ui.total > 0.99 && cov.patterns.done === cov.patterns.total && cov.guide.done >= 190 && cov.help.done === cov.help.total && cov.help.total >= 4 && cov.shortcuts.done === cov.shortcuts.total && cov.features.done === cov.features.total && cov.features.total > 900, cov);
 
   // ---- pack.json rules
   const bad = (j) => LP.cleanMeta(j).error || "";

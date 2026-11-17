@@ -17867,6 +17867,158 @@
    "src": "ext/imageeditdock/pczones.js:318"
   },
   {
+   "s": "New account",
+   "src": "ext/maildock/mailaccounts.js:19"
+  },
+  {
+   "s": "unchanged - type a new one to change it",
+   "src": "ext/maildock/mailaccounts.js:30"
+  },
+  {
+   "s": "password or app password",
+   "src": "ext/maildock/mailaccounts.js:30"
+  },
+  {
+   "s": "Save account",
+   "src": "ext/maildock/mailaccounts.js:34"
+  },
+  {
+   "s": "Add account",
+   "src": "ext/maildock/mailaccounts.js:34"
+  },
+  {
+   "s": "the servers are filled in",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "s": "made in your account's security settings) - your normal password is refused. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "s": "the servers are filled in. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "s": "Servers guessed from the address - check them with your provider",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "s": "Servers guessed from the address - check them with your provider. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "s": "made in your account's security settings) - your normal password is refused",
+   "src": "ext/maildock/mailaccounts.js:45"
+  },
+  {
+   "s": "Forwarded message ----------",
+   "src": "ext/maildock/mailcompose.js:31"
+  },
+  {
+   "s": "Take it off",
+   "src": "ext/maildock/mailcompose.js:38"
+  },
+  {
+   "s": "Email",
+   "src": "ext/maildock/mailcompose.js:57"
+  },
+  {
+   "s": "Write the reply",
+   "src": "ext/maildock/mailcompose.js:64"
+  },
+  {
+   "s": "Write it",
+   "src": "ext/maildock/mailcompose.js:64"
+  },
+  {
+   "s": "Nothing matches",
+   "src": "ext/maildock/maildock.js:91"
+  },
+  {
+   "s": "No emails here",
+   "src": "ext/maildock/maildock.js:91"
+  },
+  {
+   "s": "Mail",
+   "src": "ext/maildock/maildock.js:108"
+  },
+  {
+   "s": "Opening",
+   "src": "ext/maildock/maildock.js:131"
+  },
+  {
+   "s": "Pick an email to read it",
+   "src": "ext/maildock/maildock.js:143"
+  },
+  {
+   "s": "Summarise again",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "Draft reply",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "Reply all",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "Pictures from the internet are hidden - they can tell the sender you opened the email",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "Show pictures",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "The AI sums the email up and says what you need to do",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "What should the reply say? (optional - e.g. yes, Thursday works)",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "What the reply should say",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "Tone",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "The AI writes a reply to the sender - you check it in the composer before it goes",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "The AI writes a reply to everyone on the email",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "The email",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "s": "not rated yet",
+   "src": "ext/maildock/maildock.js:149"
+  },
+  {
+   "s": "Summarise",
+   "src": "ext/maildock/maildock.js:150"
+  },
+  {
+   "s": "Low",
+   "src": "ext/maildock/mailview.js:9"
+  },
+  {
+   "s": "Important",
+   "src": "ext/maildock/mailview.js:11"
+  },
+  {
+   "s": "Urgent",
+   "src": "ext/maildock/mailview.js:12"
+  },
+  {
    "s": "Sheet music",
    "src": "ext/musicdock/muscore.js:52"
   },
@@ -18489,10 +18641,6 @@
   {
    "s": "e.g. a cosy reading corner",
    "src": "ext/pushpulldock/pparchtools.js:1425"
-  },
-  {
-   "s": "Opening",
-   "src": "ext/pushpulldock/pparchtools.js:1431"
   },
   {
    "s": "Along the long side",
@@ -27311,6 +27459,46 @@
   {
    "p": "Remove box {0}1",
    "src": "ext/imageeditdock/pczones.js:194"
+  },
+  {
+   "p": "{0} needs an app password",
+   "src": "ext/maildock/mailaccounts.js:44"
+  },
+  {
+   "p": "From: {0}",
+   "src": "ext/maildock/mailcompose.js:31"
+  },
+  {
+   "p": "Date: {0}",
+   "src": "ext/maildock/mailcompose.js:31"
+  },
+  {
+   "p": "Subject: {0}",
+   "src": "ext/maildock/mailcompose.js:31"
+  },
+  {
+   "p": "To: {0}",
+   "src": "ext/maildock/mailcompose.js:31"
+  },
+  {
+   "p": "On {0}, {1} wrote",
+   "src": "ext/maildock/mailcompose.js:32"
+  },
+  {
+   "p": "{0} from the original",
+   "src": "ext/maildock/mailcompose.js:38"
+  },
+  {
+   "p": "Mail - {0} unread",
+   "src": "ext/maildock/maildock.js:108"
+  },
+  {
+   "p": "Cc: {0}",
+   "src": "ext/maildock/maildock.js:146"
+  },
+  {
+   "p": "{0} - download",
+   "src": "ext/maildock/maildock.js:156"
   },
   {
    "p": "{0} - {1} - {2} page",

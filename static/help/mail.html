@@ -1,0 +1,46 @@
+<h1>✉ Mail</h1>
+<p>Read and write your email in bitGen, with your own AI. bitGen talks to your mailbox itself - <b>IMAP</b> to read,
+<b>SMTP</b> to send - so there is no sign-up and no cloud service in between. The LLM you picked in the prompt docker reads
+your mail, flags what is important, sums emails up and drafts replies. The ✉ button on the top bar opens and closes the
+docker; it shows how many emails in your inbox are unread.</p>
+
+<h3>Adding your account (⚙ Accounts)</h3>
+<ul>
+  <li>Type your <b>email address</b> - for Gmail, Outlook.com, Yahoo, iCloud, Fastmail, Zoho and GMX the servers fill themselves in; for other providers they are guessed (<code>imap.</code> / <code>smtp.</code> + your domain) - check them with your provider.</li>
+  <li><b>Password</b>: Gmail, Outlook.com, Yahoo and iCloud refuse your normal password from a mail program - make an <b>app password</b> in your account's security settings and paste that. The password is kept encrypted on this computer (<code>settings/keys.json</code>) and is never shown again.</li>
+  <li><b>SSL</b> ticked = encrypted from the start (incoming port 993, outgoing 465); unticked = STARTTLS (143 / 587).</li>
+  <li><b>✓ Test</b> logs in to both servers and sends nothing. <b>Check the servers' certificates</b> stays on unless your own server uses a self-made certificate.</li>
+  <li><b>Put a copy of sent mail in Sent</b> - Gmail files sent mail itself, so it is off for Gmail.</li>
+  <li>A <b>signature</b> is added to new emails. Several accounts: pick one in the docker's account list.</li>
+</ul>
+
+<h3>Reading</h3>
+<ul>
+  <li>Folders on the left, the emails in the middle (unread in <b>bold</b>), the email on the right. <b>↑ ↓</b> move through the list, <b>Delete</b> moves the email to Trash (in Trash it is deleted).</li>
+  <li><b>★</b> flags the email for follow-up on the server, <b>●</b> marks it unread / read.</li>
+  <li>Pictures from the internet are hidden until you press <b>Show pictures</b> - they can tell the sender you opened the email. Emails never run scripts here.</li>
+  <li><b>📎</b> attachments download with a click. <b>🔍</b> searches the folder shown (sender, subject, the first words).</li>
+  <li><b>⟳ Check mail</b> checks now; bitGen also checks every few minutes while it is open (⚙ Accounts ▸ Check every).</li>
+</ul>
+
+<h3>✨ The AI</h3>
+<ul>
+  <li><b>✨ Flag with AI</b> - the AI reads the emails it has not rated and puts a flag on each: red ⚑ urgent (needs you soon), orange ⚑ important (a person, your work, bills, appointments), blue ⚑ normal, grey ⚑ low (newsletters, offers, automated mail), with its reason under the subject. <b>Shift+click</b> rates them all again. <b>☐ ✨ auto</b> = new mail is flagged as it comes in.</li>
+  <li>Tell it <b>what matters to you</b> (⚙ Accounts) - your clients, your accountant, the school - and those are rated higher.</li>
+  <li><b>Show ▸ ⚑ Important</b> lists only the urgent and important ones; <b>✨ Most important first</b> sorts by the flags.</li>
+  <li><b>✨ Summarise</b> - two sentences and what you need to do.</li>
+  <li><b>✨ Draft reply</b> / <b>✨ Reply all</b> - type what the reply should say (or leave it empty), pick the tone, and the AI writes the reply in the composer. Read it through before you send - nothing goes until you press Send.</li>
+</ul>
+
+<h3>Writing (✉ New, ↩ Reply, ↩↩ Reply all, ↪ Forward)</h3>
+<ul>
+  <li><b>✨ Help me write</b> - a few words or notes about what to say and a tone; <b>✨ Write it</b> writes the email and its subject (in a reply: the reply).</li>
+  <li><b>✨ Rewrite what I wrote…</b> - shorter, friendlier, more formal, fix spelling and grammar, more confident, or your own instruction. <b>↶ Undo</b> takes an AI change back.</li>
+  <li>Bold, italic, underline, bullets, numbering and links; <b>📎 Attach</b> or drop files on the composer (up to 25 MB). A forward takes the original's attachments with it.</li>
+  <li><b>➤ Send</b> (Ctrl+Enter) or <b>💾 Save draft</b> (into Drafts on the server).</li>
+</ul>
+
+<h3>Where things are kept</h3>
+<p>Your mail stays on your mail server. bitGen keeps a copy of what it has shown in the <code>mail</code> folder beside
+the app (this computer only - never in the repository or a release). Removing an account deletes that copy and the saved
+password. The AI runs where your LLM runs: on this computer, unless you set it to OpenRouter or a pod in the 🖥 GPU docker.</p>

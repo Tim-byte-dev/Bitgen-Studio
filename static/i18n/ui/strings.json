@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5782,
+ "count": 5888,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53359,6 +53359,966 @@
    ],
    "where": [
     "The app strip on the menu bar (2.817.0)"
+   ]
+  },
+  {
+   "s": "Accounts",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Add your mail account",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Add your mail account - bitGen talks to your mailbox itself (IMAP to read, SMTP to send). There is no sign-up and no cloud service in between; your password is kept encrypted on this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Attach",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Attach files (up to 25 MB in all)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Bcc",
+   "kinds": [
+    "text",
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Cc",
+   "kinds": [
+    "text",
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Cc / Bcc",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Check every",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Check for new mail now (the folder shown)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Check mail",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Check the servers' certificates (leave on unless your own server uses a self-made one)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Clear the formatting",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the ✉ button on the top bar shows it again)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Email",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Emails",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Fix spelling and grammar",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Flag new mail with the AI when it comes in",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Flag with AI",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Flagged",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Follow up: flag / unflag the email on the server (★)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Formatting",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Forward the email (with its attachments)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Friendlier",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Gmail, Outlook.com, Yahoo and iCloud need an app password (made in your account's security settings) - your normal password is refused",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Gmail, Outlook.com, Yahoo and iCloud need an app password (made in your account's security settings) - your normal password is refused. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Help - accounts, the AI flags, writing with the AI",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Help me write",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "IMAP port",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "IMAP server",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Important (AI)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Include the original email",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Incoming",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Link the selected words",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Log in to both servers (nothing is sent)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Mail account",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Mail accounts",
+   "kinds": [
+    "aria-label",
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Mail accounts and settings (what matters to you, checking for mail)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Mail with your own AI",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Mark as unread / read",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Minutes between checks",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "More confident",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "More formal",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Most important first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Move the email to Trash (in Trash: delete it) - key Delete in the list",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "New email",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Newest first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Notes for the AI",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Outgoing",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Password",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Pick an email to read it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Put a copy of sent mail in Sent (Gmail does this itself)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Remove the account from bitGen (and the copy of its mail on this computer) - nothing on the server changes",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Reply",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Reply all",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Reply to the sender",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Reply to the sender and everyone on the email",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Rewrite",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Rewrite what I wrote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Rewrite what you wrote",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "SMTP port",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "SMTP server",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "SSL",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "SSL / TLS from the start (port 465). Off = STARTTLS (port 587)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "SSL / TLS from the start (port 993). Off = STARTTLS or none (port 143)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Save account",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Save draft",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Save it in the Drafts folder on the server",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Save settings",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Search this folder",
+   "kinds": [
+    "placeholder",
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Send it (Ctrl+Enter)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Servers (filled in from the address - change them if your provider says otherwise)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Shorter",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Show",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Show Cc and Bcc",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Signature (added to new emails)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "The AI and checking for mail (every account)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "The AI reads the emails it has not rated yet and flags them: ⚑ red = urgent, orange = important, blue = normal, grey = low (Shift: rate them all again)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "The LLM you picked in the prompt docker reads your mail, flags what is important, sums emails up and drafts replies",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "The mail account shown",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "The order of the list",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Tim Paul bitGen Studio",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Tone",
+   "kinds": [
+    "text",
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Tx",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Unread",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "User name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "What matters to me",
+   "kinds": [
+    "text",
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "When new mail comes in, the AI flags it by itself",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Which emails the list shows",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Write a new email (✨ Help me write in the composer)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Write an email",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Write it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Write the email from the notes (replaces what is in the box above the quoted email)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Your name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Your own instruction",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "a few words or notes about what to say; the LLM writes the email (or the reply)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "e.g. anything from my clients or my accountant, invoices, the school, Tiger Art orders",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "e.g. thank Sam for the photos, ask if Saturday 10am still works for the shoot",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "imap.example.com",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "minutes (while bitGen is open)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "name@example.com",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "password or app password",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "smtp.example.com",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "the name people see",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "usually the email address",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "you@example.com",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.818.0)"
    ]
   }
  ]

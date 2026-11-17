@@ -319,6 +319,18 @@
           "what": "mail merge's .zip of Word files (MIT)"
         },
         {
+          "name": "ImapFlow and mailparser",
+          "by": "Postal Systems (Andris Reinman)",
+          "url": "https://github.com/postalsys/imapflow",
+          "what": "✉ Mail - reading your mailbox over IMAP and opening emails (MIT)"
+        },
+        {
+          "name": "Nodemailer",
+          "by": "Andris Reinman",
+          "url": "https://nodemailer.com",
+          "what": "✉ Mail - sending over your own mail server (MIT-0)"
+        },
+        {
           "name": "ag-psd",
           "by": "Agamnentzar",
           "url": "https://github.com/Agamnentzar/ag-psd",

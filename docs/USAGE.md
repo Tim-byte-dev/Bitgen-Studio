@@ -9333,6 +9333,16 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The big apps are no longer statusbar buttons: they are **icons on the top bar**, after the Workspace dropdown and 🔍 - **🖼 Image editor** (and ✉ Mail, ▦ Spreadsheet, 🎞 Slides as they arrive), a separator, then **📐 SolidCraft** (only when it is installed) and **📏 Sketcher**. Hover an icon for its name; it is lit while its app is open, and a click opens / closes it as the statusbar button did.
 - Workspaces, layouts, Settings ▸ Dockers and the Ctrl+K palette work as before.
 
+## ✉ Mail with your own AI (2.818.0)
+
+- **✉ on the top bar** opens the Mail docker (it starts hidden; the button shows how many emails in your inbox are unread). bitGen talks to **your own mailbox** - IMAP to read, SMTP to send - so there is no sign-up and no cloud service in between.
+- **⚙ Accounts ▸ add your account**: type your address and, for Gmail, Outlook.com, Yahoo, iCloud, Fastmail, Zoho and GMX, the servers fill themselves in (others are guessed - check them with your provider). Gmail, Outlook.com, Yahoo and iCloud need an **app password** (made in your account's security settings). **✓ Test** logs in to both servers and sends nothing. The password is kept encrypted on this computer (settings/keys.json) and is never shown again; a signature can be added to new emails.
+- **Reading**: folders on the left, the emails in the middle (unread in bold), the email on the right. ↑ ↓ move through the list, **Delete** moves an email to Trash, **★** flags it for follow-up, **●** marks it unread. Pictures from the internet stay hidden until **Show pictures** (they can tell the sender you opened it) and emails never run scripts. 📎 attachments download with a click; 🔍 searches the folder. bitGen checks for mail every few minutes while it is open.
+- **✨ Flag with AI**: the LLM you picked in the prompt docker reads the emails it has not rated and flags each one - red **urgent**, orange **important**, blue **normal**, grey **low** (newsletters, offers, automated mail) - with its reason under the subject. Tell it **what matters to you** in ⚙ Accounts (your clients, your accountant, the school) and those rate higher; **☐ ✨ auto** flags new mail as it comes in. **Show ▸ ⚑ Important** and **✨ Most important first** use the flags.
+- **✨ Summarise** sums an email up in two sentences and says what you need to do. **✨ Draft reply** / **✨ Reply all** - say what the reply should say (or nothing), pick a tone, and the reply is written into the composer for you to read before you send.
+- **Writing** (✉ New, ↩ Reply, ↩↩ Reply all, ↪ Forward): **✨ Help me write** turns a few notes and a tone into the email and its subject; **✨ Rewrite what I wrote…** makes it shorter, friendlier, more formal, fixes spelling and grammar, more confident - or follows your own instruction; **↶ Undo** takes an AI change back. Bold, italic, underline, lists, links, 📎 attachments (or drop files, up to 25 MB); a forward takes the original's attachments with it. **➤ Send** (Ctrl+Enter) files a copy in Sent; **💾 Save draft** saves it in Drafts.
+- Your mail stays on your mail server; bitGen keeps a copy of what it has shown in the app's mail folder (this computer only). The AI runs where your LLM runs - on this computer unless you put it on OpenRouter or a pod in the 🖥 GPU docker.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9427,6 +9437,8 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[docx](https://github.com/dolanmiu/docx)** (Dolan Miu) - saving document text as Word files (.docx) (MIT)
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)** (Michael Williamson) - opening Word files (.docx) as document text (BSD-2-Clause)
 - **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
+- **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)** (Postal Systems (Andris Reinman)) - ✉ Mail - reading your mailbox over IMAP and opening emails (MIT)
+- **[Nodemailer](https://nodemailer.com)** (Andris Reinman) - ✉ Mail - sending over your own mail server (MIT-0)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - the Sketcher's walls (MIT; with splaytree and robust-predicates)
 - **[replicad and OpenCascade](https://replicad.xyz)** - parametric 3D bodies (MIT; OpenCascade LGPL-2.1)

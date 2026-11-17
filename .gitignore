@@ -139,3 +139,6 @@ community/*.db
 /misc/brand/.cache/
 /.pdocs/
 comfy_workflows/pod/
+
+# mail/ is this PC's local copy of the user's mail (2.818.0, ✉ Mail: headers, bodies, attachments per account)
+mail/

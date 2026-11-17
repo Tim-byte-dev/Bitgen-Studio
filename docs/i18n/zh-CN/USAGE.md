@@ -5908,6 +5908,17 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - 大型应用不再是状态栏按钮：它们成为**顶部栏上的图标**，位于工作区下拉菜单和 🔍 之后 - **🖼 图像编辑器**（✉ 邮件、▦ 电子表格、🎞 幻灯片推出后也会加入），一条分隔线，然后是 **📐 SolidCraft**（仅在已安装时）和 **📏 Sketcher**。鼠标悬停可看到名称；应用打开时图标点亮，点击即可像状态栏按钮一样打开 / 关闭。
 - 工作区、布局、设置 ▸ 停靠窗和 Ctrl+K 命令面板照常使用。
 
+## ✉ Mail with your own AI (2.818.0)
+<!-- en: mail-with-your-own-ai-2-818-0 7e3c01e5964d -->
+
+- **顶栏上的 ✉** 打开邮件停靠窗（一开始是隐藏的；按钮会显示收件箱中的未读邮件数）。bitGen 直接与**你自己的邮箱**通信——用 IMAP 读取，用 SMTP 发送——所以无需注册，中间也没有任何云服务。
+- **⚙ 账户 ▸ 添加账户**：输入你的地址，Gmail、Outlook.com、Yahoo、iCloud、Fastmail、Zoho 和 GMX 的服务器会自动填好（其他服务商是推测的——请向服务商核对）。Gmail、Outlook.com、Yahoo 和 iCloud 需要**应用专用密码**（在账户的安全设置中生成）。**✓ 测试**会登录两台服务器，不发送任何内容。密码加密保存在这台电脑上（settings/keys.json），之后不会再显示；新邮件可以加上签名。
+- **阅读**：左边是文件夹，中间是邮件列表（未读为粗体），右边是邮件内容。↑ ↓ 在列表中移动，**Delete** 把邮件移到废纸篓，**★** 标记为待跟进，**●** 标为未读。来自互联网的图片会被隐藏，直到你按下**显示图片**（它们可能会告诉发件人你打开了邮件），邮件也永远不会运行脚本。点击 📎 附件即可下载；🔍 搜索文件夹。bitGen 打开期间每隔几分钟检查一次邮件。
+- **✨ 用 AI 标记**：你在提示词停靠窗中选择的 LLM 阅读尚未评级的邮件，并给每封邮件打上旗标——红色**紧急**、橙色**重要**、蓝色**普通**、灰色**低**（新闻通讯、促销、自动邮件）——理由显示在主题下方。在 ⚙ 账户中告诉它**对你重要的事**（你的客户、会计、学校），这些邮件会被评得更高；**☐ ✨ 自动**会在新邮件到达时自动标记。**显示 ▸ ⚑ 重要**和 **✨ 最重要的在前**都使用这些旗标。
+- **✨ 总结**用两句话总结邮件，并告诉你需要做什么。**✨ 起草回复** / **✨ 全部回复**——说明回复要说什么（也可以不写），选择语气，回复就会写进写信窗口，发送前由你通读。
+- **写信**（✉ 新建、↩ 回复、↩↩ 全部回复、↪ 转发）：**✨ 帮我写**把几条笔记和一种语气变成邮件及其主题；**✨ 改写我写的内容…**可以让它更简短、更友好、更正式、修正拼写和语法、更有自信——或按你自己的指示改写；**↶ 撤销**撤回 AI 的修改。粗体、斜体、下划线、列表、链接、📎 附件（也可以拖放文件，最多 25 MB）；转发时会带上原邮件的附件。**➤ 发送**（Ctrl+Enter）会在“已发送”中保存一份；**💾 保存草稿**保存到草稿箱。
+- 你的邮件保留在邮件服务器上；bitGen 会把显示过的内容复制一份保存在应用的 mail 文件夹中（仅限这台电脑）。AI 在你的 LLM 运行的地方运行——除非你在 🖥 GPU 停靠窗中把它设为 OpenRouter 或某个 Pod，否则就在这台电脑上。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5922,7 +5933,7 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 <!-- credits:start -->
 
 ## 致谢
-<!-- en: credits a5a445a46147 -->
+<!-- en: credits a71553c4e355 -->
 
 **出品与开发：Tim Paul**
 
@@ -6003,6 +6014,8 @@ bitGen Studio 建立在许多人的成果之上。感谢以下所有人——我
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文档文字保存为 Word 文件 (.docx)（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 文件 (.docx) 作为文档文字打开（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——邮件合并生成的 Word 文件 .zip（MIT）
+- **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 邮件：通过 IMAP 读取邮箱并打开邮件（MIT）
+- **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 邮件：通过你自己的邮件服务器发送（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 文件及其文字效果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)**——Sketcher 的墙（MIT；另含 splaytree 和 robust-predicates）
 - **[replicad 和 OpenCascade](https://replicad.xyz)**——参数化 3D 实体（MIT；OpenCascade 为 LGPL-2.1）

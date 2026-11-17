@@ -1,0 +1,12 @@
+{
+  "id": "maildock",
+  "name": "Mail",
+  "order": 94,
+  "html": "dock.html",
+  "scripts": [
+    "mailview.js",
+    "maildock.js",
+    "mailcompose.js",
+    "mailaccounts.js"
+  ]
+}
