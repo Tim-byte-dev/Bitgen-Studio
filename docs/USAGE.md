@@ -9368,6 +9368,17 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **The Gradient tool on shapes and text**: with a vector shape active, the drag becomes the shape's gradient fill (from where you press to where you let go, in the Gradient tool's colours and type) - it stays a shape, drag again to change it. With a text active it becomes the text's Gradient Overlay, so the words stay editable. A selection or a picture layer is filled with pixels as before.
 - **Real cuts and joins**: ⊕ Add, ⊖ Subtract, ⊗ Intersect and ⊘ Exclude with the Shape tool (and the rectangle / ellipse tools' modes) now turn the result into one real outline - overlapping shapes are merged, a cut is a real hole or notch, nothing is left as a separate part.
 
+## ▦ Spreadsheet - formulas, filling, sorting, filters, sheets (2.822.0)
+
+- **▦ on the top bar** opens the Spreadsheet: a workbook of sheets whose formulas work themselves out again as you type. Workbooks are saved as `.bgs` files in the project's `sheets` folder (💾 Save, Ctrl+S; 📂 Open ▾; 📄 New); what you are typing is kept in the browser too, so closing the docker loses nothing.
+- **Typing**: Enter goes down, Tab right, Esc takes the typing back, F2 or a double-click changes a cell. `$1.50` is 1.5 shown as money, `25%` is 0.25 shown as a percent, `17/11/2026` (day first) or `2026-11-17` is a date. The ƒx bar shows the formula, not its answer. Ctrl + arrows jump to the end of the data, Shift picks as you go, Ctrl+A picks everything.
+- **Formulas** start with `=`: `+ - * / ^`, `&` joins text, comparisons; while typing one, a click on a cell (or a drag over a block) puts its address in. `$A$1` stays fixed when copied, `Sheet2!A1` or `'My costs'!B4` reads another sheet, `B:B` is a whole column. ƒ▾ lists the functions - SUM, AVERAGE, MEDIAN, MIN, MAX, COUNT(A/BLANK), SUMIF(S), COUNTIF(S), AVERAGEIF, ROUND(UP/DOWN), IF, IFS, IFERROR, AND, OR, NOT, text (LEN, TRIM, LEFT, RIGHT, MID, CONCAT, TEXT, VALUE …), dates (TODAY, NOW, DATE, YEAR, MONTH, DAY) and look-ups (VLOOKUP, XLOOKUP, INDEX, MATCH).
+- **Fill handle**: drag the corner of the picked cells down or across - formulas move their references, two numbers or dates in a row carry on the series. Copy, cut and paste move formulas inside the sheet; a table copied from another program pastes into the cells. Ctrl+Z / Ctrl+Y undo and redo.
+- **Rows and columns**: right-click to insert or delete them - formulas on every sheet follow the cells they pointed at. Drag a header's edge to size it.
+- **Looks**: Format (General, Number, Currency, Percent, Date, Text) and decimals, B I U, text and fill colour, alignment, wrap, borders ▾, ⊞ merge.
+- **Tables**: A→Z / Z→A sort the table round the active cell by its column (a heading row stays on top, a row's cells and formulas stay together); ⏷ Filter puts a ▾ on each heading to tick the values shown; ❄ Freeze keeps the rows above and the columns left of the active cell in view; Σ sums the numbers above (or to the left).
+- **Sheets**: ＋ adds a tab; double-click renames it (formulas that use it are renamed too); right-click duplicates, moves or deletes it.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

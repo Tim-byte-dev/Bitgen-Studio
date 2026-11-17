@@ -1,0 +1,50 @@
+<!-- en: sheet 5c4db331c10e -->
+<h1>▦ 試算表</h1>
+<p>在 bitGen 中處理表格、求和與清單——一個由多張工作表組成的工作簿,公式會在你輸入時自動重新計算。頂部欄的 ▦ 按鈕用於開啟和關閉停靠窗。
+工作簿儲存在專案的 <code>sheets</code> 資料夾中(<code>.bgs</code> 檔案);正在輸入的內容也會儲存在瀏覽器中,所以關閉停靠窗不會丟失任何內容。</p>
+
+<h3>輸入</h3>
+<ul>
+  <li>點選儲存格並輸入。<b>Enter</b> 確認並向下移動,<b>Tab</b> 向右移動,<b>Esc</b> 復原輸入。<b>F2</b> 或雙擊可修改儲存格中的內容。</li>
+  <li><b>方向鍵</b>移動;<b>Shift</b> + 方向鍵(或拖曳)選擇區域;<b>Ctrl</b> + 方向鍵跳到資料末端;<b>Home</b> 回到 A 列,<b>Page Up / Down</b> 移動 20 行;<b>Ctrl+A</b> 全選;<b>Delete</b> 清空所選儲存格。</li>
+  <li>數字按你輸入的方式被識別:<code>$1.50</code> 是 1.5,顯示為貨幣;<code>25%</code> 是 0.25,顯示為百分比;<code>17/11/2026</code>(日在前)或 <code>2026-11-17</code> 是日期。</li>
+  <li>網格上方的 <b>ƒx</b> 欄顯示儲存格中真正的內容(公式,而不是結果)——也可以在那裡輸入。</li>
+</ul>
+
+<h3>公式</h3>
+<ul>
+  <li>以 <b>=</b> 開頭:<code>=B2*C2</code>、<code>=SUM(D2:D20)</code>、<code>=IF(D2&gt;100,"big","small")</code>。<code>+ - * / ^</code>,<code>&amp;</code> 連線文字,<code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code> 用於比較。</li>
+  <li>輸入公式時<b>點選儲存格</b>(或拖過一個區域)即可插入其地址。</li>
+  <li>複製或填充公式時,<code>$A$1</code> 保持引用不變;<code>A1</code> 會隨之移動。</li>
+  <li>其他工作表:<code>=Sheet2!A1</code> 或 <code>='My costs'!B4</code>。整列和整行:<code>=SUM(B:B)</code>、<code>=SUM(3:3)</code>。</li>
+  <li><b>ƒ▾</b> 列出函式:求和與計數(SUM、AVERAGE、MEDIAN、MIN、MAX、COUNT、COUNTA、COUNTBLANK、SUMIF(S)、COUNTIF(S)、AVERAGEIF)、數學(ROUND、ROUNDUP、ROUNDDOWN、INT、ABS、SQRT、POWER、MOD、PRODUCT)、邏輯(IF、IFS、IFERROR、AND、OR、NOT)、文字(LEN、TRIM、UPPER、LOWER、LEFT、RIGHT、MID、CONCAT、TEXT、VALUE)、日期(TODAY、NOW、DATE、YEAR、MONTH、DAY)和查詢(VLOOKUP、XLOOKUP、INDEX、MATCH)。</li>
+  <li>錯誤會顯示在儲存格中:<code>#DIV/0!</code>(除以 0)、<code>#REF!</code>(已刪除的儲存格)、<code>#NAME?</code>(不認識的函式)、<code>#CYCLE!</code>(需要自身結果的公式)。</li>
+</ul>
+
+<h3>填充、複製、移動</h3>
+<ul>
+  <li>所選儲存格角上的小方塊是<b>填充柄</b>:向下或橫向拖曳即可複製——公式會移動其引用,兩個及以上相連的數字或日期會延續序列(1、2 → 3、4、5)。</li>
+  <li><b>Ctrl+C / Ctrl+X / Ctrl+V</b> 複製、剪下和貼上——在表內,公式隨貼上位置移動;從其他程式複製的表格(以製表符分隔的文字)會貼上到儲存格中。</li>
+  <li><b>Ctrl+Z / Ctrl+Y</b> 復原和重做。</li>
+  <li>右鍵點選儲存格可<b>插入 / 刪除行和列</b>——所有公式都會跟隨它們所指向的儲存格。拖曳列字母或行號的邊緣可調整大小。</li>
+</ul>
+
+<h3>外觀</h3>
+<ul>
+  <li><b>格式</b>:常規、數字、貨幣、百分比、日期、文字;<b>.0← / .00→</b> 減少或增加小數位。</li>
+  <li><b>B I U</b>、文字顏色、填充顏色(<b>⊘</b> 取消填充)、左 / 中 / 右對齊、長文字<b>自動換行</b>、<b>邊框 ▾</b>,以及把區域<b>⊞ 合併</b>為一個儲存格(再按一次 = 拆分)。</li>
+</ul>
+
+<h3>表格</h3>
+<ul>
+  <li><b>A→Z / Z→A</b> 按活動儲存格所在的列對其周圍的表格排序。第一行標題保持在頂部,同一行的儲存格(包括其公式)保持在一起,空儲存格排在最後。若已選擇區域,則只對該區域排序。</li>
+  <li><b>⏷ 篩選</b>在每個標題上加一個 ▾——勾選要顯示的值;其餘的行會被隱藏(不會被刪除)。再按一次顯示所有行。</li>
+  <li><b>❄ 凍結</b>在滾動時保持活動儲存格上方的行和左側的列可見。</li>
+  <li><b>Σ</b> 對活動儲存格上方(或左側)的數字求和。</li>
+</ul>
+
+<h3>工作表與檔案</h3>
+<ul>
+  <li>網格下方的標籤就是工作簿的工作表:<b>＋</b> 新增一張,雙擊重新命名,右鍵點選可複製、移動或刪除。</li>
+  <li><b>💾 儲存</b>(Ctrl+S)以框中的名稱儲存工作簿;<b>📂 開啟 ▾</b> 列出此專案中的工作簿;<b>📄 新建</b> 開始一個空工作簿。</li>
+</ul>

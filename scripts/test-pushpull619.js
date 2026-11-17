@@ -102,7 +102,7 @@ check("the extension: ext/pushpulldock (geometry, out, view, tools, docker); its
   EJ.id === "pushpulldock" && ["ppgeo.js", "ppglb.js", "ppview.js", "pptools.js", "ppdock.js"].every((f, i, L) => EJ.scripts.includes(f) && (!i || EJ.scripts.indexOf(f) > EJ.scripts.indexOf(L[i - 1])))   /* 2.620.0 adds the architecture between */ && /id="pushpulldock" data-own-space="1"/.test(DH) && /id="ppVcb"/.test(DH)
   && /\/api\/tlcanvas\/model\?name=/.test(DK) && /TlM3D\.add\("model"/.test(DK) && /\/api\/blender\/send/.test(DK) && /\/api\/unreal\/import/.test(DK) && /E\.load\(url|sketcherLayer\(E, url\)/.test(DK));
 check("its keys stay in it: Basic Settings' S / L / 2 (secfloat.js) and the prompt docker's P (pfloat.js) let it have them",
-  /lastOver\.closest\("#pushpulldock"\)/.test(read("static/secfloat.js")) && /OWN = "#imageeditdock, #pushpulldock"/.test(read("ext/promptdock/pfloat.js")));
+  /lastOver\.closest\("#pushpulldock"\)/.test(read("static/secfloat.js")) && /OWN = "#imageeditdock, #pushpulldock(, #[a-z]+)*"/.test(read("ext/promptdock/pfloat.js")));
 check("server.js untouched by this release", !/pushpull/i.test(read("misc/server.js")));
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log("RESULT: " + fail + " failed");

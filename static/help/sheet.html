@@ -1,0 +1,50 @@
+<h1>▦ Spreadsheet</h1>
+<p>Tables, sums and lists in bitGen - a workbook of sheets with formulas that work themselves out again as you type. The
+▦ button on the top bar opens and closes the docker. Workbooks are kept in your project's <code>sheets</code> folder (a
+<code>.bgs</code> file); what you are typing is also kept in the browser, so closing the docker loses nothing.</p>
+
+<h3>Typing</h3>
+<ul>
+  <li>Click a cell and type. <b>Enter</b> keeps it and goes down, <b>Tab</b> goes right, <b>Esc</b> takes the typing back. <b>F2</b> or a double-click changes what is in the cell.</li>
+  <li><b>Arrows</b> move; <b>Shift</b> + arrows (or a drag) pick a block; <b>Ctrl</b> + arrows jump to the end of the data; <b>Home</b> goes to column A, <b>Page Up / Down</b> 20 rows; <b>Ctrl+A</b> picks everything; <b>Delete</b> empties the cells picked.</li>
+  <li>Numbers are understood as you type them: <code>$1.50</code> becomes 1.5 shown as money, <code>25%</code> is 0.25 shown as a percent, <code>17/11/2026</code> (day first) or <code>2026-11-17</code> is a date.</li>
+  <li>The <b>ƒx</b> bar above the grid shows what is really in the cell (the formula, not its answer) - you can type there too.</li>
+</ul>
+
+<h3>Formulas</h3>
+<ul>
+  <li>Start with <b>=</b>: <code>=B2*C2</code>, <code>=SUM(D2:D20)</code>, <code>=IF(D2&gt;100,"big","small")</code>. <code>+ - * / ^</code>, <code>&amp;</code> joins text, <code>= &lt;&gt; &lt; &gt; &lt;= &gt;=</code> compare.</li>
+  <li>While typing a formula, <b>click a cell</b> (or drag over a block) to put its address in.</li>
+  <li><code>$A$1</code> keeps a reference fixed when the formula is copied or filled; <code>A1</code> moves with it.</li>
+  <li>Another sheet: <code>=Sheet2!A1</code> or <code>='My costs'!B4</code>. Whole columns and rows: <code>=SUM(B:B)</code>, <code>=SUM(3:3)</code>.</li>
+  <li><b>ƒ▾</b> lists the functions: sums and counts (SUM, AVERAGE, MEDIAN, MIN, MAX, COUNT, COUNTA, COUNTBLANK, SUMIF(S), COUNTIF(S), AVERAGEIF), maths (ROUND, ROUNDUP, ROUNDDOWN, INT, ABS, SQRT, POWER, MOD, PRODUCT), logic (IF, IFS, IFERROR, AND, OR, NOT), text (LEN, TRIM, UPPER, LOWER, LEFT, RIGHT, MID, CONCAT, TEXT, VALUE), dates (TODAY, NOW, DATE, YEAR, MONTH, DAY) and look-ups (VLOOKUP, XLOOKUP, INDEX, MATCH).</li>
+  <li>Errors show in the cell: <code>#DIV/0!</code> (divided by 0), <code>#REF!</code> (a cell that was deleted), <code>#NAME?</code> (a function it does not know), <code>#CYCLE!</code> (a formula that needs its own answer).</li>
+</ul>
+
+<h3>Filling, copying, moving</h3>
+<ul>
+  <li>The small square at the corner of the picked cells is the <b>fill handle</b>: drag it down or across to copy - formulas move their references, and numbers or dates in a row of two or more carry on the series (1, 2 → 3, 4, 5).</li>
+  <li><b>Ctrl+C / Ctrl+X / Ctrl+V</b> copy, cut and paste - inside the sheet formulas move with the paste; tables copied from another program (text with tabs) paste into the cells.</li>
+  <li><b>Ctrl+Z / Ctrl+Y</b> undo and redo.</li>
+  <li>Right-click a cell for <b>Insert / Delete rows and columns</b> - formulas everywhere follow the cells they pointed at. Drag the edge of a column letter or row number to size it.</li>
+</ul>
+
+<h3>Looks</h3>
+<ul>
+  <li><b>Format</b>: General, Number, Currency, Percent, Date, Text; <b>.0← / .00→</b> fewer or more decimals.</li>
+  <li><b>B I U</b>, the text colour, the fill colour (<b>⊘</b> takes it off), left / centre / right, <b>wrap</b> long text, <b>borders ▾</b>, and <b>⊞ merge</b> a block into one cell (again = split).</li>
+</ul>
+
+<h3>Tables</h3>
+<ul>
+  <li><b>A→Z / Z→A</b> sorts the table round the active cell by the active cell's column. A first row of headings stays on top, the cells of a row stay together (its formulas too), empty cells go last. A block that is picked is sorted on its own.</li>
+  <li><b>⏷ Filter</b> puts a ▾ on each heading - tick the values to show; the other rows are hidden (not deleted). Press it again to show every row.</li>
+  <li><b>❄ Freeze</b> keeps the rows above and the columns left of the active cell in view while you scroll.</li>
+  <li><b>Σ</b> sums the numbers above the active cell (or to its left).</li>
+</ul>
+
+<h3>Sheets and files</h3>
+<ul>
+  <li>The tabs under the grid are the workbook's sheets: <b>＋</b> adds one, a double-click renames one, a right-click copies, moves or deletes it.</li>
+  <li><b>💾 Save</b> (Ctrl+S) keeps the workbook under the name in the box; <b>📂 Open ▾</b> lists the workbooks in this project; <b>📄 New</b> starts an empty one.</li>
+</ul>

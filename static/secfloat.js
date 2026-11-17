@@ -328,6 +328,8 @@
       const dlg = !!document.querySelector("dialog[open]");
       // 2.619.0: over the 📏 PushPull docker every key is its own (the tools' letters, numbers for the Measurements box)
       if ((lastOver && lastOver.closest && lastOver.closest("#pushpulldock")) || (a && a.closest && a.closest("#pushpulldock"))) return;
+      // 2.822.0: with the spreadsheet's cells in focus every key is typed (S, L, 1, 2 … are a cell's words)
+      if (a && a.closest && a.closest("#sheetdock")) return;
       for (const id of Object.keys(W)) {
         const sp = W[id].spec;
         // 2.419.0: a key no tool there owns (2 = the negative prompt) works over the image editor / timeline canvas too;

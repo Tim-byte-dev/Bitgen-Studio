@@ -14190,6 +14190,13 @@ node scripts/test-frames821.js > /tmp/fr821.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui821-ui.js > /tmp/ui821.log 2>&1 \
   && ok "2.821.0 browser test: Insert Into Frame (arrow, lit shape, click), contents follow the frame, the order items inside a frame, Gradient tool on a shape + a text, real cut / join" \
   || { bad "2.821.0 frame / gradient browser test"; grep -a "^FAIL" -A1 /tmp/ui821.log | head -12; }
+# ---- 2.822.0 (Tim: "continue with the spreadsheet please") ▦ the spreadsheet docker, part 1: formulas, filling, tables, sheets, files
+node scripts/test-sheet822.js > /tmp/sh822.log 2>&1 \
+  && ok "2.822.0 spreadsheet units: formula engine (precedence, ranges, sheets, functions, errors, cycles), moved / adjusted references, input parsing, formats, .bgs files, the route" \
+  || { bad "2.822.0 spreadsheet engine / files"; grep -a "^FAIL" -A1 /tmp/sh822.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui822-ui.js > /tmp/ui822.log 2>&1 \
+  && ok "2.822.0 browser test: typing, ƒx bar, click-a-cell references, fill handle, copy / paste, currency, sort with formulas, filter menu, insert row, merge, freeze, a second sheet, undo / redo, save / open" \
+  || { bad "2.822.0 spreadsheet browser test"; grep -a "^FAIL" -A1 /tmp/ui822.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

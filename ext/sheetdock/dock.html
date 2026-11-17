@@ -1,0 +1,90 @@
+    <div class="bdock" id="sheetdock" data-own-space="1">
+      <div class="bhead" data-collapse="sheetdock">▾ ▦ Spreadsheet<button class="ghost" type="button" title="Help - typing, formulas, formats, files" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('sheet')" style="margin-left:auto;padding:0 6px">❔</button><button id="shMaxBtn" class="maxbtn" data-max="sheetdock" type="button" title="Maximize" aria-label="Maximize">⛶</button><button id="shCloseBtn" class="ghost" type="button" title="Close the docker (the ▦ button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="shBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.822.0 (Tim: "continue with the spreadsheet please"): a spreadsheet of our own - the formula engine is
+             sheetcalc.js (no library), the grid + tools sheetgrid.js, the files sheetdock.js (projects/<p>/sheets/*.bgs). -->
+        <style>
+          #sheetdock .bbody { padding: 4px; }
+          .shbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
+          .shbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
+          .shbar button { padding: 2px 7px; min-width: 26px; }
+          .shbar button.on { border-color: var(--tiger); color: var(--tiger); }
+          .shbar select, .shbar input[type=text] { font-size: 12px; width: auto; }
+          .shbar input[type=color] { width: 26px; height: 22px; padding: 0; border: 1px solid var(--line); background: none; }
+          #shFx { display: flex; gap: 4px; align-items: center; }
+          #shName { width: 72px; font: 12px monospace; text-align: center; }
+          #shFormula { flex: 1; font: 13px monospace; }
+          #shGrid { position: relative; flex: 1; min-height: 160px; overflow: auto; border: 1px solid var(--line); background: var(--ink); outline: none; }
+          #shSpace { position: absolute; left: 0; top: 0; pointer-events: none; }
+          #shPane { position: sticky; left: 0; top: 0; overflow: hidden; }
+          #shPane .c, #shPane .h { position: absolute; box-sizing: border-box; overflow: hidden; white-space: nowrap; font-size: 12px; line-height: 20px; padding: 0 4px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--text); }
+          #shPane .c { background: var(--panel); cursor: cell; }
+          #shPane .c.wrap { white-space: normal; line-height: 15px; word-break: break-word; }
+          #shPane .c.num { text-align: right; }
+          #shPane .c.err { color: #ff6b6b; }
+          #shPane .h { background: var(--panel-2); color: var(--dim); text-align: center; cursor: pointer; user-select: none; font-size: 11px; }
+          #shPane .h.on { color: var(--tiger); background: color-mix(in srgb, var(--tiger) 14%, var(--panel-2)); }
+          #shPane .h .ft { position: absolute; right: 2px; top: 2px; font-size: 10px; line-height: 14px; padding: 0 2px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--text); cursor: pointer; }
+          #shPane .h .ft.on { color: var(--tiger); border-color: var(--tiger); }
+          #shPane .rs { position: absolute; right: -3px; top: 0; bottom: 0; width: 6px; cursor: col-resize; }
+          #shPane .rsr { position: absolute; left: 0; right: 0; bottom: -3px; height: 6px; cursor: row-resize; }
+          #shPane .sel { position: absolute; border: 2px solid var(--tiger); background: color-mix(in srgb, var(--tiger) 10%, transparent); pointer-events: none; box-sizing: border-box; }
+          #shPane .act { position: absolute; border: 2px solid var(--tiger); pointer-events: none; box-sizing: border-box; }
+          #shPane .fill { position: absolute; width: 7px; height: 7px; background: var(--tiger); border: 1px solid var(--ink); cursor: crosshair; }
+          #shPane .frz { position: absolute; background: var(--tiger); opacity: .7; pointer-events: none; }
+          #shPane .copy { position: absolute; border: 2px dashed var(--tiger); pointer-events: none; box-sizing: border-box; }
+          #shEdit { position: absolute; z-index: 5; font: 12px monospace; padding: 0 3px; border: 2px solid var(--tiger); background: var(--ink); color: var(--text); box-sizing: border-box; outline: none; }
+          #shTabs { display: flex; gap: 2px; align-items: center; overflow-x: auto; font-size: 12px; }
+          #shTabs .tab { padding: 2px 10px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 6px 6px; cursor: pointer; white-space: nowrap; background: var(--panel); }
+          #shTabs .tab.on { color: var(--tiger); background: var(--panel-2); font-weight: 600; }
+          #shStat { margin-left: auto; color: var(--dim); white-space: nowrap; }
+          #shMsg { color: var(--dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+          #shMsg.bad { color: #ff6b6b; }
+          .shmenu { position: fixed; z-index: 9990; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 0; font-size: 12px; max-height: 60vh; overflow: auto; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+          .shmenu > div { padding: 4px 14px; cursor: pointer; white-space: nowrap; }
+          .shmenu > div:hover { background: var(--panel-2); color: var(--tiger); }
+          .shmenu > hr { border: 0; border-top: 1px solid var(--line); margin: 3px 0; }
+          .shmenu label { display: flex; gap: 6px; align-items: center; padding: 2px 12px; cursor: pointer; }
+        </style>
+        <div class="shbar" id="shBar1">
+          <button class="ghost" type="button" id="shNew" title="A new workbook">📄 New</button>
+          <button class="ghost" type="button" id="shOpen" title="Open a workbook of this project">📂 Open ▾</button>
+          <button class="ghost" type="button" id="shSave" title="Save the workbook in this project's sheets folder (Ctrl+S)">💾 Save</button>
+          <input type="text" id="shFile" value="Workbook" title="The workbook's name" aria-label="Workbook name" style="width:120px">
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="shUndo" title="Undo (Ctrl+Z)">↶</button>
+          <button class="ghost" type="button" id="shRedo" title="Redo (Ctrl+Y)">↷</button>
+          <span class="sep"></span>
+          <select id="shFmt" title="How the numbers show" aria-label="Number format"><option value="">General</option><option value="number">Number</option><option value="currency">Currency</option><option value="percent">Percent</option><option value="date">Date</option><option value="text">Text</option></select>
+          <button class="ghost" type="button" id="shDecLess" title="Fewer decimal places">.0←</button>
+          <button class="ghost" type="button" id="shDecMore" title="More decimal places">.00→</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="shB" title="Bold (Ctrl+B)" style="font-weight:700">B</button>
+          <button class="ghost" type="button" id="shI" title="Italic (Ctrl+I)" style="font-style:italic">I</button>
+          <button class="ghost" type="button" id="shU" title="Underline (Ctrl+U)" style="text-decoration:underline">U</button>
+          <input type="color" id="shColor" value="#e8e2d6" title="Text colour">
+          <input type="color" id="shBg" value="#26221b" title="Fill colour">
+          <button class="ghost" type="button" id="shNoBg" title="No fill">⊘</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="shAL" title="Align left">⯇</button>
+          <button class="ghost" type="button" id="shAC" title="Align centre">≡</button>
+          <button class="ghost" type="button" id="shAR" title="Align right">⯈</button>
+          <button class="ghost" type="button" id="shWrap" title="Wrap the text in the cell">↵ Wrap</button>
+          <button class="ghost" type="button" id="shBorder" title="Borders">▦ Borders ▾</button>
+          <button class="ghost" type="button" id="shMerge" title="Merge the selected cells (again = unmerge)">⊞ Merge</button>
+        </div>
+        <div class="shbar" id="shBar2">
+          <button class="ghost" type="button" id="shSortA" title="Sort A → Z by the active cell's column (the selection, or the whole table)">A→Z</button>
+          <button class="ghost" type="button" id="shSortZ" title="Sort Z → A by the active cell's column">Z→A</button>
+          <button class="ghost" type="button" id="shFilter" title="Filter: ▾ on the table's header row picks the values shown">⏷ Filter</button>
+          <button class="ghost" type="button" id="shFreeze" title="Freeze panes: the rows above and the columns left of the active cell stay put (again = unfreeze)">❄ Freeze</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="shSum" title="AutoSum: the sum of the numbers above (or left of) the active cell">Σ</button>
+          <button class="ghost" type="button" id="shFn" title="Insert a function">ƒx ▾</button>
+          <span id="shMsg"></span>
+        </div>
+        <div id="shFx"><input type="text" id="shName" title="The active cell - type an address (B12) to go there" aria-label="Cell"><span style="color:var(--dim);font-style:italic">ƒx</span><input type="text" id="shFormula" aria-label="The cell's contents" placeholder="a value, or = a formula (=SUM(A1:A9))"></div>
+        <div id="shGrid" tabindex="0" role="grid" aria-label="Cells"><div id="shSpace"></div><div id="shPane" data-noi18n></div></div>
+        <div id="shTabs"></div>
+      </div>
+    </div>

@@ -19639,6 +19639,94 @@
    "src": "ext/sfxdock/sfxspeech.js:70"
   },
   {
+   "s": "Workbook",
+   "src": "ext/sheetdock/sheetdock.js:28"
+  },
+  {
+   "s": "Pick the values shown",
+   "src": "ext/sheetdock/sheetdock.js:123"
+  },
+  {
+   "s": "Drag to fill",
+   "src": "ext/sheetdock/sheetdock.js:138"
+  },
+  {
+   "s": "A new sheet",
+   "src": "ext/sheetdock/sheetdock.js:167"
+  },
+  {
+   "s": "Double-click to rename, right-click for more",
+   "src": "ext/sheetdock/sheetdock.js:167"
+  },
+  {
+   "s": "blanks",
+   "src": "ext/sheetdock/sheetdock.js:342"
+  },
+  {
+   "s": "Cut",
+   "src": "ext/sheetdock/sheetdock.js:401"
+  },
+  {
+   "s": "Paste",
+   "src": "ext/sheetdock/sheetdock.js:401"
+  },
+  {
+   "s": "Insert 1 row below",
+   "src": "ext/sheetdock/sheetdock.js:402"
+  },
+  {
+   "s": "Insert 1 row above",
+   "src": "ext/sheetdock/sheetdock.js:402"
+  },
+  {
+   "s": "Insert 1 column right",
+   "src": "ext/sheetdock/sheetdock.js:403"
+  },
+  {
+   "s": "Insert 1 column left",
+   "src": "ext/sheetdock/sheetdock.js:403"
+  },
+  {
+   "s": "Clear contents",
+   "src": "ext/sheetdock/sheetdock.js:405"
+  },
+  {
+   "s": "Clear contents and formats",
+   "src": "ext/sheetdock/sheetdock.js:405"
+  },
+  {
+   "s": "Duplicate",
+   "src": "ext/sheetdock/sheetdock.js:424"
+  },
+  {
+   "s": "Move left",
+   "src": "ext/sheetdock/sheetdock.js:424"
+  },
+  {
+   "s": "Move right",
+   "src": "ext/sheetdock/sheetdock.js:424"
+  },
+  {
+   "s": "no workbooks in this project yet - 💾 Save one",
+   "src": "ext/sheetdock/sheetdock.js:480"
+  },
+  {
+   "s": "All borders",
+   "src": "ext/sheetdock/sheetdock.js:609"
+  },
+  {
+   "s": "Outside borders",
+   "src": "ext/sheetdock/sheetdock.js:609"
+  },
+  {
+   "s": "Bottom border",
+   "src": "ext/sheetdock/sheetdock.js:609"
+  },
+  {
+   "s": "No borders",
+   "src": "ext/sheetdock/sheetdock.js:609"
+  },
+  {
    "s": "Open from the computer",
    "src": "ext/solidcraftdock/scdock.js:174"
   },
@@ -27895,6 +27983,50 @@
   {
    "p": "In the file: {0} · {1} · voices: {2}",
    "src": "ext/sfxdock/sfxspeech.js:98"
+  },
+  {
+   "p": "Sum {0} · Average {1} · Count {2}",
+   "src": "ext/sheetdock/sheetdock.js:163"
+  },
+  {
+   "p": "Count {0}",
+   "src": "ext/sheetdock/sheetdock.js:163"
+  },
+  {
+   "p": "Clear the filter of {0}",
+   "src": "ext/sheetdock/sheetdock.js:341"
+  },
+  {
+   "p": "Insert {0} rows above",
+   "src": "ext/sheetdock/sheetdock.js:402"
+  },
+  {
+   "p": "Insert {0} rows below",
+   "src": "ext/sheetdock/sheetdock.js:402"
+  },
+  {
+   "p": "Insert {0} columns left",
+   "src": "ext/sheetdock/sheetdock.js:403"
+  },
+  {
+   "p": "Insert {0} columns right",
+   "src": "ext/sheetdock/sheetdock.js:403"
+  },
+  {
+   "p": "Delete rows {0}-{1}",
+   "src": "ext/sheetdock/sheetdock.js:404"
+  },
+  {
+   "p": "Delete columns {0}-{1}",
+   "src": "ext/sheetdock/sheetdock.js:404"
+  },
+  {
+   "p": "Delete column {0}",
+   "src": "ext/sheetdock/sheetdock.js:404"
+  },
+  {
+   "p": "Delete row {0}",
+   "src": "ext/sheetdock/sheetdock.js:404"
   },
   {
    "p": "Update to v{0}",

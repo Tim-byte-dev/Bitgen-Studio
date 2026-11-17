@@ -1011,6 +1011,71 @@
           "🪣 Paint: every wall on that side (a room's insides / every outside wall) - a click paints the one wall side"
         ]
       ]
+    },
+    {
+      "title": "Spreadsheet",
+      "rows": [
+        [
+          "Enter / Tab",
+          "Keep what is typed and go down / right (Shift: up / left)"
+        ],
+        [
+          "Esc",
+          "Take the typing back"
+        ],
+        [
+          "F2 / double-click",
+          "Change what is in the cell"
+        ],
+        [
+          "Arrows / Shift+arrows",
+          "Move / pick a block"
+        ],
+        [
+          "Ctrl+arrows",
+          "To the end of the data that way (Shift: pick to there)"
+        ],
+        [
+          "Home / Page Up / Page Down",
+          "Column A / 20 rows up / down"
+        ],
+        [
+          "Ctrl+A",
+          "Pick everything"
+        ],
+        [
+          "Delete",
+          "Empty the picked cells"
+        ],
+        [
+          "Ctrl+C / Ctrl+X / Ctrl+V",
+          "Copy / cut / paste (formulas move with the paste)"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y",
+          "Undo / redo"
+        ],
+        [
+          "Ctrl+B / Ctrl+I / Ctrl+U",
+          "Bold / italic / underline"
+        ],
+        [
+          "Ctrl+S",
+          "Save the workbook"
+        ],
+        [
+          "Click a cell while typing =…",
+          "Puts its address in the formula (drag: a block)"
+        ],
+        [
+          "Drag the fill handle",
+          "Copy down / across - references move, series carry on"
+        ],
+        [
+          "Right-click a cell / a tab",
+          "Insert / delete rows and columns / rename, duplicate, move, delete a sheet"
+        ]
+      ]
     }
   ]
 }

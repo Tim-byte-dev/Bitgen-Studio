@@ -1,0 +1,10 @@
+{
+  "id": "sheetdock",
+  "name": "Spreadsheet",
+  "order": 95,
+  "html": "dock.html",
+  "scripts": [
+    "sheetcalc.js",
+    "sheetdock.js"
+  ]
+}

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5899,
+ "count": 5964,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -54418,6 +54418,591 @@
    ],
    "where": [
     "span in #ieKx (2.821.0)"
+   ]
+  },
+  {
+   "s": "A new sheet",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "A new workbook",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Align centre",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "AutoSum: the sum of the numbers above (or left of) the active cell",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Borders",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Borders ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Cell",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Cells",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the ▦ button on the top bar shows it again)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Date",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Double-click to rename, right-click for more",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Fewer decimal places",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Filter: ▾ on the table's header row picks the values shown",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Freeze",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Freeze panes: the rows above and the columns left of the active cell stay put (again = unfreeze)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Help - typing, formulas, formats, files",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "How the numbers show",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Insert a function",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Merge",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Merge the selected cells (again = unmerge)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "More decimal places",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "No fill",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Number",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Number format",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Open a workbook of this project",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Open ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Percent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Redo (Ctrl+Y)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Save the workbook in this project's sheets folder (Ctrl+S)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Sort A → Z by the active cell's column (the selection, or the whole table)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Sort Z → A by the active cell's column",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "The active cell - type an address (B12) to go there",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "The cell's contents",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "The workbook's name",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Workbook name",
+   "kinds": [
+    "aria-label"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Wrap",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "Wrap the text in the cell",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "a value, or = a formula (=SUM(A1:A9))",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Spreadsheet docker (2.822.0)"
+   ]
+  },
+  {
+   "s": "nothing to redo",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "nothing to undo",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "✂ cut - paste where it goes",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "copied",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "nothing to sort",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "filter off - every row shown",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "type a table first (its first row = the headings)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "⏷ filter: ▾ on a heading picks the values shown",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "unfrozen",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "unmerged",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "select the cells to merge",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "a workbook keeps one sheet at least",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "there is a sheet of that name already",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "not a cell address",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "📄 a new workbook",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "The sheet's name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Rename sheet",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Delete sheet",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Not saved",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "✂ Cut",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "⧉ Copy",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "📋 Paste",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Rename…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Delete…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "(Select all)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "✓ OK",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "(blanks)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet docker messages and menus (2.822.0)"
    ]
   }
  ]

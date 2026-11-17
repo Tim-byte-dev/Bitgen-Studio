@@ -205,6 +205,7 @@ function mount(app) {
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)
   require("./dtp").mount(app);         // 2.799.0: the image editor's desktop-publishing exports (PDF / .ai / SVG / CorelDRAW pack) in projects/<p>/dtp
   require("./docx").mount(app);        // 2.814.0: the image editor's document text as .docx (out + in) in projects/<p>/docs
+  require("./sheets").mount(app);      // 2.822.0: ▦ Spreadsheet - workbooks (.bgs) in projects/<p>/sheets
   require("./mail").mount(app);        // 2.818.0: ✉ Mail - the user's own mailbox over IMAP / SMTP, the LLM flags + drafts
   require("./laser").mount(app);       // 2.803.0: the image editor's laser toolpaths (G-code) in projects/<p>/laser
   require("./laserLink").mount(app);   // 2.804.0: the laser over USB (serial) / Wi-Fi (TCP), held by this server

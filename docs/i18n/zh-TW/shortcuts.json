@@ -1030,6 +1030,72 @@
           "🪣 Paint：為該側的所有牆上色（房間的所有內牆面 / 所有外牆）——按一下則只為這一面牆的該側上色"
         ]
       ]
+    },
+    {
+      "en": "017110d755df",
+      "title": "試算表",
+      "rows": [
+        [
+          "Enter / Tab",
+          "確認輸入並向下 / 向右移動（Shift：向上 / 向左）"
+        ],
+        [
+          "Esc",
+          "復原輸入"
+        ],
+        [
+          "F2 / double-click",
+          "修改儲存格內容"
+        ],
+        [
+          "Arrows / Shift+arrows",
+          "移動 / 選擇區域"
+        ],
+        [
+          "Ctrl+arrows",
+          "跳到該方向資料的末端（Shift：選擇到那裡）"
+        ],
+        [
+          "Home / Page Up / Page Down",
+          "A 列 / 向上 / 向下 20 行"
+        ],
+        [
+          "Ctrl+A",
+          "全選"
+        ],
+        [
+          "Delete",
+          "清空所選儲存格"
+        ],
+        [
+          "Ctrl+C / Ctrl+X / Ctrl+V",
+          "複製 / 剪下 / 貼上（公式隨貼上位置移動）"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y",
+          "復原 / 重做"
+        ],
+        [
+          "Ctrl+B / Ctrl+I / Ctrl+U",
+          "粗體 / 斜體 / 下劃線"
+        ],
+        [
+          "Ctrl+S",
+          "儲存工作簿"
+        ],
+        [
+          "Click a cell while typing =…",
+          "把它的地址放進公式（拖曳：區域）"
+        ],
+        [
+          "Drag the fill handle",
+          "向下 / 橫向複製——引用會移動，序列會延續"
+        ],
+        [
+          "Right-click a cell / a tab",
+          "插入 / 刪除行和列 / 重新命名、複製、移動、刪除工作表"
+        ]
+      ]
     }
   ]
 }

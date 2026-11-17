@@ -1030,6 +1030,72 @@
           "🪣 Paint：为该侧的所有墙上色（房间的所有内墙面 / 所有外墙）——单击则只为这一面墙的该侧上色"
         ]
       ]
+    },
+    {
+      "en": "017110d755df",
+      "title": "电子表格",
+      "rows": [
+        [
+          "Enter / Tab",
+          "确认输入并向下 / 向右移动（Shift：向上 / 向左）"
+        ],
+        [
+          "Esc",
+          "撤销输入"
+        ],
+        [
+          "F2 / double-click",
+          "修改单元格内容"
+        ],
+        [
+          "Arrows / Shift+arrows",
+          "移动 / 选择区域"
+        ],
+        [
+          "Ctrl+arrows",
+          "跳到该方向数据的末端（Shift：选择到那里）"
+        ],
+        [
+          "Home / Page Up / Page Down",
+          "A 列 / 向上 / 向下 20 行"
+        ],
+        [
+          "Ctrl+A",
+          "全选"
+        ],
+        [
+          "Delete",
+          "清空所选单元格"
+        ],
+        [
+          "Ctrl+C / Ctrl+X / Ctrl+V",
+          "复制 / 剪切 / 粘贴（公式随粘贴位置移动）"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y",
+          "撤销 / 重做"
+        ],
+        [
+          "Ctrl+B / Ctrl+I / Ctrl+U",
+          "粗体 / 斜体 / 下划线"
+        ],
+        [
+          "Ctrl+S",
+          "保存工作簿"
+        ],
+        [
+          "Click a cell while typing =…",
+          "把它的地址放进公式（拖动：区域）"
+        ],
+        [
+          "Drag the fill handle",
+          "向下 / 横向复制——引用会移动，序列会延续"
+        ],
+        [
+          "Right-click a cell / a tab",
+          "插入 / 删除行和列 / 重命名、复制、移动、删除工作表"
+        ]
+      ]
     }
   ]
 }
