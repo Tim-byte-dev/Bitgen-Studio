@@ -324,6 +324,26 @@
 
     /* ---------------- gradient ---------------- */
     let grad = null;
+    /** 2.821.0: the drag as a shape's gradient fill (shape.fillGrad, drawn by pcdoc.gradStyle) or a text's Gradient Overlay */
+    function vecGradient(L, gd) {
+      const css = gradStops(S.gradKind, S.fg, S.bg, S.gradRev, S.gradCustom);
+      const hexA = css.map(([t, c]) => { const m = /rgba?\(([^)]+)\)/.exec(c) || [0, "0,0,0,1"], v = m[1].split(",").map((x) => parseFloat(x)); return { t, c: "#" + v.slice(0, 3).map((n) => Math.max(0, Math.min(255, Math.round(n || 0))).toString(16).padStart(2, "0")).join(""), a: v[3] == null || isNaN(v[3]) ? 1 : v[3] }; });
+      if (L.type === "shape") {
+        E.setLayer(L, "gradient fill", (X) => {
+          X.shape.fillOn = true;
+          X.shape.fillGrad = { type: S.gradType || "linear", x0: gd.x0, y0: gd.y0, x1: gd.x1, y1: gd.y1, css, stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c };
+        });
+        return say(`${L.name}: a gradient fill from the drag (it stays a vector shape - drag again to change it)`);
+      }
+      const b = D.textBox(L.text, ctx(L.canvas)) || { w: 1, h: 1 }, ang = Math.round(Math.atan2(-(gd.y1 - gd.y0), gd.x1 - gd.x0) * 180 / Math.PI);
+      const a = ang * Math.PI / 180, span = Math.abs(b.w * Math.cos(a)) + Math.abs(b.h * Math.sin(a)) || 1;
+      const scale = Math.max(10, Math.min(150, Math.round(Math.hypot(gd.x1 - gd.x0, gd.y1 - gd.y0) / span * 100)));
+      E.setLayer(L, "gradient fill", (X) => {
+        X.styles = Object.assign({}, X.styles || {});
+        X.styles.gradientOverlay = Object.assign({}, D.STYLE_DEFAULTS.gradientOverlay, X.styles.gradientOverlay || {}, { on: true, angle: ang, scale, style: S.gradType === "radial" || S.gradType === "diamond" ? "radial" : S.gradType === "reflected" ? "reflected" : "linear", stops: hexA, c1: hexA[0].c, c2: hexA[hexA.length - 1].c, opacity: 1, reverse: false });
+      });
+      say(`${L.name}: a gradient fill from the drag (Gradient Overlay - the words stay editable)`);
+    }
     function drawGradient(g, x0, y0, x1, y1) {
       const W = S.w, H = S.h, stops = gradStops(S.gradKind, S.fg, S.bg, S.gradRev, S.gradCustom), len = Math.max(1, Math.hypot(x1 - x0, y1 - y0));
       const t = newCanvas(W, H), tg = ctx(t);
@@ -369,7 +389,13 @@
         bindRange(o, "ptGOp", (v) => { S.gradOpacity = v; store.set("t.gop", v); });
         const r = o.querySelector("#ptGRev"); r.onchange = () => { S.gradRev = r.checked; };
       },
-      down(e, fx, fy) { if (!E.canPaint()) return false; grad = { x0: fx, y0: fy, x1: fx, y1: fy }; },
+      down(e, fx, fy) {
+        // 2.821.0 (Tim: "fix the gradient fill, it is only filling selection and background, it should also fill shapes and
+        // text"): with a vector shape or a text layer active the drag is ITS gradient fill (it stays a vector / a text)
+        const L = E.layer();
+        if (L && !L.maskEdit && ((L.type === "shape" && L.shape && L.shape.kind !== "line" && !L.shape.dim) || (L.type === "text" && L.text))) { grad = { x0: fx, y0: fy, x1: fx, y1: fy, vec: L }; return; }
+        if (!E.canPaint()) return false; grad = { x0: fx, y0: fy, x1: fx, y1: fy };
+      },
       move(e, fx, fy) {
         if (!grad) return;
         let x = fx, y = fy;
@@ -379,6 +405,7 @@
       up() {
         const gd = grad; grad = null; E.drawOverlay();
         if (!gd || Math.hypot(gd.x1 - gd.x0, gd.y1 - gd.y0) < 2) return;
+        if (gd.vec) return vecGradient(gd.vec, gd);
         E.pxOp("gradient", (c, g) => drawGradient(g, gd.x0, gd.y0, gd.x1, gd.y1));
       },
     };

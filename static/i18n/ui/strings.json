@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5898,
+ "count": 5899,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -54409,6 +54409,15 @@
    ],
    "where": [
     "Mail docker (2.820.0)"
+   ]
+  },
+  {
+   "s": "Insert Into Frame",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #ieKx (2.821.0)"
    ]
   }
  ]

@@ -9361,6 +9361,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **⤓ Older emails** at the end of the list reads 200 more of the folder's emails from the server each time.
 - **To / Cc / Bcc** suggest the people in your mail as you type (the ones you write to most first) - ↑ ↓ and Enter or Tab (or a click) put one in.
 
+## Insert into a frame, arranging, gradients on shapes and text, real cuts (2.821.0)
+
+- **Insert Into Frame** (right-click the canvas or a layer in Layers, or Layer ▸ Frame): the pointer turns into a thick black arrow. Click a closed shape (a rectangle, an ellipse, a polygon, a closed path) and the picked layer - or the layers picked with Ctrl / Shift - go inside it, where they are. The frame's fill is the background behind them, they keep their stacking order, and they move and scale with the frame. The shape under the arrow is outlined before you click; Esc (or a click on nothing) leaves everything as it was.
+- **Right-click an object** for **Bring to Front**, **Bring Forward**, **Send Backward** and **Send to Back**. A layer inside a frame stays inside its frame - it is moved among the frame's own layers (while editing the frame, right-click the object you want).
+- **The Gradient tool on shapes and text**: with a vector shape active, the drag becomes the shape's gradient fill (from where you press to where you let go, in the Gradient tool's colours and type) - it stays a shape, drag again to change it. With a text active it becomes the text's Gradient Overlay, so the words stay editable. A selection or a picture layer is filled with pixels as before.
+- **Real cuts and joins**: ⊕ Add, ⊖ Subtract, ⊗ Intersect and ⊘ Exclude with the Shape tool (and the rectangle / ellipse tools' modes) now turn the result into one real outline - overlapping shapes are merged, a cut is a real hole or notch, nothing is left as a separate part.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

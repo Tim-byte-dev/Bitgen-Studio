@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "fc478a168c9c",
- "count": 9944,
+ "v": "4bb0afd7c72e",
+ "count": 9945,
  "patternCount": 1217,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3165,6 +3165,7 @@
   "Insert Column Right": "右に列を挿入",
   "Insert DXF": "DXF を挿入",
   "Insert DXF from Project": "プロジェクトから DXF を挿入",
+  "Insert Into Frame": "フレームに挿入",
   "Insert Merge Field": "差し込みフィールドの挿入",
   "Insert Row Above": "上に行を挿入",
   "Insert Row Below": "下に行を挿入",

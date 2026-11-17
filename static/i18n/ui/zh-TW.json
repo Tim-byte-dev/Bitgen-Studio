@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "8f2a4ebdf6eb",
- "count": 9944,
+ "v": "628775ae8969",
+ "count": 9945,
  "patternCount": 1217,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -3165,6 +3165,7 @@
   "Insert Column Right": "在右側插入列",
   "Insert DXF": "插入 DXF",
   "Insert DXF from Project": "從專案插入 DXF",
+  "Insert Into Frame": "插入框架",
   "Insert Merge Field": "插入合併域",
   "Insert Row Above": "在上方插入行",
   "Insert Row Below": "在下方插入行",

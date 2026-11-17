@@ -175,6 +175,7 @@
       T.shape.path = combinePath(T.shape.path, path, op);
       delete T.shape.gen;                                  // a compound shape now (both parts editable as nodes)
       Q.syncShape(T.shape); D.rasterize(T);
+      if (E.bakeShape) E.bakeShape(T);                     // 2.821.0: a REAL cut / join - one outline (pcdockers.js)
       say(`${name}: ${op === "add" ? "added to" : op === "subtract" ? "cut out of" : op === "intersect" ? "intersected with" : "excluded from"} ${T.name}`);
       // what the caller does to "its new layer" next lands on a stand-in, not the shape
       return { id: -1, name, shape: Object.assign({}, D.SHAPE_DEFAULT, { kind: "path", path: { subs: [] }, line: {} }) };

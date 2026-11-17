@@ -679,7 +679,7 @@
   function drawPathShape(g, s) {
     if (s.line && root.PCBez && root.PCBez.drawLine) return root.PCBez.drawLine(g, s);   // 2.425.0: a VECTOR LINE (pcbezier.js: the outline pen, arrowheads)
     const p = s.path; if (!p || !p.subs || !p.subs.length) return;
-    if (s.fillOn !== false) fillArea(g, p, s.fill || "#000");
+    if (s.fillOn !== false) fillArea(g, p, s.fillGrad && root.PCDoc && root.PCDoc.gradStyle ? root.PCDoc.gradStyle(g, s, bbox(p)) : s.fill || "#000");   // 2.821.0: a gradient fill
     const sw = s.strokeOn ? s.strokeW || 0 : 0;
     if (sw > 0) {
       g.save(); g.lineWidth = sw; g.strokeStyle = s.stroke || "#000"; g.lineJoin = "round"; g.lineCap = "round";

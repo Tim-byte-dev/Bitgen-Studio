@@ -404,7 +404,20 @@
     C("dk.shaping", "Dockers: Shaping", "", () => E.ui.showTab && E.ui.showTab("dkShape"), {}, ["Window", "dk.transform"]);
     C("dk.align", "Dockers: Align and Distribute", "", () => E.ui.showTab && E.ui.showTab("dkAlign"), {}, ["Window", "dk.shaping"]);
     C("dk.props", "Dockers: Object Properties", "Alt+Enter", () => E.ui.showTab && E.ui.showTab("dkProps"), {}, ["Window", "dk.align"]);
-    E.dockers = { picked, boxOf, xformLayer, doTransform, doShaping, doAlign, doDistribute, settings: DS, paint };
+    /** 2.821.0 (Tim: "if a shape is cut merge the shapes together and do a real cut (subtract)"): a shape whose parts are
+     *  joined by Add / Subtract / Intersect / Exclude becomes ONE real outline - the cut is gone from the shape, the joined
+     *  parts are one (the same area maths as Shaping). Not for lines / open parts. -> true when it changed */
+    function bakeShape(L) {
+      const s = L && L.shape; if (!s || s.kind !== "path" || s.line || !s.path || !Array.isArray(s.path.subs)) return false;
+      const subs = s.path.subs; if (subs.length < 2 || subs.some((q) => !q.closed)) return false;
+      const p = areaPath([{ path: s.path, step: "add" }]);
+      if (!p.subs.length) return false;
+      p.subs.forEach((q) => { q.op = "add"; });
+      s.path = p; delete s.gen; Q.syncShape(s); D.rasterize(L);
+      return true;
+    }
+    E.bakeShape = bakeShape;
+    E.dockers = { picked, boxOf, xformLayer, doTransform, doShaping, doAlign, doDistribute, settings: DS, paint, bakeShape };
   }
   root.PCDockers = Object.assign({ install }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

@@ -60,12 +60,12 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     check("Ctrl+click: mode Add", await ev(() => window.imageEditorInstance.E.S.shapeOp) === "add");
     await drag(110, 60, 190, 140);
     sh = await shapes();
-    check("drawn in Add mode: joined into the picked shape (one layer, 2 components)", sh.length === 1 && sh[0].kind === "path" && sh[0].subs.length === 2 && sh[0].subs[1][0] === "add", sh);
+    check("drawn in Add mode: joined into the picked shape - 2.821.0: merged into ONE real outline", sh.length === 1 && sh[0].kind === "path" && sh[0].subs.length === 1 && sh[0].subs[0][0] === "add", sh);
     await sk("rect", ["Alt"]);
     check("Alt+click: mode Subtract", await ev(() => window.imageEditorInstance.E.S.shapeOp) === "subtract");
     await drag(60, 80, 90, 100);
     sh = await shapes();
-    check("drawn in Subtract mode: a subtract component in the same shape", sh.length === 1 && sh[0].subs.length === 3 && sh[0].subs[2][0] === "subtract", sh);
+    check("drawn in Subtract mode - 2.821.0: a REAL cut (a hole outline, no subtract component)", sh.length === 1 && sh[0].subs.length === 2 && sh[0].subs.every((q) => q[0] === "add"), sh);
     const opsBar = await ev(() => [...document.querySelectorAll("#kxOpts [data-pnshop]")].map((b) => b.dataset.pnshop + (b.classList.contains("on") ? "*" : "")));
     check("the Ops buttons show the mode, ⇄ Replace beside ▣ New", opsBar.includes("subtract*") && opsBar.indexOf("replace") === opsBar.indexOf("new") + 1, opsBar);
     // Replace: the next shape takes the picked layer's place (its look kept)

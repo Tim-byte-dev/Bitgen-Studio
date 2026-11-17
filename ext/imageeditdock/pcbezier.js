@@ -399,6 +399,7 @@
   /** the fill's style: its colour, or a linear (angle °, 0 = left -> right) / radial gradient over the filled area's box */
   function fillStyleOf(g, s, area) {
     const gr = s.fillGrad; if (!gr || !g.createLinearGradient) return s.fill || "#000";
+    if (root.PCDoc && root.PCDoc.gradStyle) return root.PCDoc.gradStyle(g, s, Q.bbox(area));   // 2.821.0: one gradient fill for every shape (the Gradient tool's drag too)
     const b = Q.bbox(area) || { x: 0, y: 0, w: 1, h: 1 }, cx = b.x + b.w / 2, cy = b.y + b.h / 2;
     let G;
     if (gr.type === "radial") G = g.createRadialGradient(cx, cy, 0, cx, cy, Math.max(1, Math.hypot(b.w, b.h) / 2));

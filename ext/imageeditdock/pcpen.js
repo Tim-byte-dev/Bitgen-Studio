@@ -537,6 +537,7 @@
         S.layers.splice(S.layers.indexOf(L), 1); S.active = S.layers.indexOf(into);
         if (into.shape.kind !== "path") into.shape = Q.toPathShape(into.shape);
         into.shape.path.subs.push(...add.subs); Q.syncShape(into.shape); D.rasterize(into);
+        if (E.bakeShape) E.bakeShape(into);   // 2.821.0: a REAL cut / join - one outline (pcdockers.js)
         E.push({ t: "struct", before, after: E.snapStruct(), label: Q.OP_NAMES[op].toLowerCase() });
         E.refresh(); E.renderLayersPanel(); E.renderOptions();
       };

@@ -365,7 +365,14 @@
     E.stage.addEventListener("contextmenu", (e) => {
       if (!S.w || !E.ui.menuAt) return;
       e.preventDefault(); e.stopPropagation();
-      if (S.frameEdit == null) { const [fx, fy] = E.pos(e), i = E.layerAt(Math.floor(fx), Math.floor(fy)); if (i >= 0 && i !== S.active) E.setActive(i); }
+      { const [fx, fy] = E.pos(e); let i = E.layerAt(Math.floor(fx), Math.floor(fy));
+        // editing a frame: its own fill is under its contents - the content under the pointer wins
+        if (S.frameEdit != null && S.layers[i] && S.layers[i].id === S.frameEdit) {
+          const kids = kidsOf(byId(S.frameEdit)).filter((x) => x.type !== "group" && x.visible !== false && x.canvas);
+          for (let k = kids.length - 1; k >= 0; k--) { try { if (kids[k].canvas.getContext("2d").getImageData(Math.floor(fx), Math.floor(fy), 1, 1).data[3] > 20) { i = S.layers.indexOf(kids[k]); break; } } catch (er) { /* off the picture */ } }
+        }
+        // 2.821.0: editing a frame - the object clicked inside it is picked too (its order items act on it)
+        if (i >= 0 && i !== S.active && (S.frameEdit == null || underFrame(S.layers, S.layers[i], S.frameEdit) || frameOf(S.layers, S.layers[i]) === S.frameEdit)) E.setActive(i); }
       const F = frameHere(), items = [];
       // 2.810.0 (Tim: "add the shape options to the right click context menu when shape tool is selected only"): the modes,
       // Shape ▸, ✂ Trim, ⇋ Mirror ▸, ⧈ Offset… first (pcshapeops.js - nothing with other tools)
@@ -374,10 +381,13 @@
       { const Lc = A(); if (Lc && Lc.type === "text") items.push("layer.rasterizetext", sep); }
       if (S.frameEdit != null) items.push("frame.finish", sep, "frame.extract", "frame.lock");
       else if (F && hasKids(F)) items.push("frame.edit", "frame.extract", "frame.lock");
-      else items.push("frame.place");
+      else items.push("frame.insert", "frame.place");
       // 2.809.0 (Tim: "in image editor right click context menu add copy, paste, artist mode ..."): Copy / Paste after what the
       // thing clicked offers (Rasterize Text, the frame's own items stay first)
       items.push(sep, "edit.copy", "edit.paste", sep, "layer.dup", "layer.del");
+      // 2.821.0 (Tim: "when user clicks an object on a layer add bring foward, send backward, to front and to back to the
+      // context menu"): the clicked object's order (inside its frame / group it stays there)
+      if (A() && !A().control) items.push(sep, "layer.front", "layer.forward", "layer.backward", "layer.back");
       const more = E.ui.stageCtxItems || [];                       // 2.594.0: modules' items (static/mesh3dctx.js: 🧊 Convert to 3D)
       if (more.length) items.push(sep, ...more);
       // 2.809.0: 🎨 Artist Mode - in it: Show Layers + ⏳ Pending, 🟧 Blender Scene, ✨ Prompt, Exit Artist Mode
@@ -421,8 +431,59 @@
       g.stroke(); g.restore();
     });
 
+    /* ---- 2.821.0 (Tim: "when user selects insert in frame change the cursor to a thick black arrow then when user clicks a
+     * shape insert the layer into that frame like envelope ..."): INSERT INTO FRAME - the picked layers (or the active one)
+     * wait for a click: a thick black arrow; the closed shape under the pointer lights up; a click on it puts them inside
+     * (where they are - the frame's fill behind, their own stacking order kept); Esc / a click on nothing = no change */
+    const ARROW = "url(\"data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="40" height="32"><path d="M2 11h22V3l14 13-14 13v-8H2z" fill="#000" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>') + "\") 37 16, crosshair";
+    let ins = null;                                   // {ids, cursor, hover}
+    const insertable = (L) => !!L && !L.control && L.type !== "adjust" && !(L.locks && L.locks.all);
+    function frameAt(fx, fy) {
+      const g = E.ctx(E.newCanvas(1, 1));
+      for (let i = S.layers.length - 1; i >= 0; i--) {
+        const F = S.layers[i];
+        if (!isClosedShape(F) || ins.ids.includes(F.id) || !D.shown(S.layers, F)) continue;
+        if (ins.ids.some((id) => D.descendants(S.layers, id).includes(F))) continue;
+        g.beginPath(); if (F.shape.kind === "path") Q.traceAll(g, F.shape.path); else D.shapePath(g, F.shape);
+        if (g.isPointInPath(fx, fy, "evenodd") || g.isPointInPath(fx, fy)) return F;
+      }
+      return null;
+    }
+    function startInsert() {
+      if (!S.w) return say("open a picture first");
+      const picked = (E.multi && E.multi.count && E.multi.count() > 1 ? E.multi.list() : (E.picked ? E.picked() : [])).filter(Boolean), act = A();
+      const movers = picked.slice(); if (act && !movers.includes(act)) movers.push(act);
+      const ids = movers.filter(insertable).filter((x) => !isFrame(x) || !movers.some((y) => y !== x && D.descendants(S.layers, y.id).includes(x))).map((x) => x.id);
+      if (!ids.length) return say("pick the layer(s) to put inside a frame first");
+      if (!S.layers.some((x) => isClosedShape(x) && !ids.includes(x.id))) return say("draw a closed shape first (a rectangle, an ellipse, a polygon …) - it is the frame");
+      ins = { ids, cursor: E.stage.style.cursor, hover: null };
+      E.stage.style.cursor = ARROW; E.stage.classList.add("pcins");
+      say(`Insert Into Frame: click the shape to put ${ids.length === 1 ? byId(ids[0]).name : ids.length + " layers"} inside (Esc = no)`);
+    }
+    function endInsert(msg) { if (!ins) return; E.stage.style.cursor = ins.cursor || ""; E.stage.classList.remove("pcins"); ins = null; E.drawOverlay(); if (msg) say(msg); }
+    E.stage.addEventListener("pointermove", (e) => { if (!ins) return; const [fx, fy] = E.pos(e), F = frameAt(fx, fy); if (F !== ins.hover) { ins.hover = F; E.drawOverlay(); } E.stage.style.cursor = ARROW; }, true);
+    E.stage.addEventListener("pointerdown", (e) => {
+      if (!ins) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      if (e.button !== 0) return endInsert("Insert Into Frame: not done");
+      const [fx, fy] = E.pos(e), F = frameAt(fx, fy), ids = ins.ids;
+      if (!F) return endInsert("Insert Into Frame: no closed shape there - nothing moved");
+      endInsert();
+      place(ids.map(byId).filter(Boolean), F, false);
+      if (E.selHl && E.selHl.pick) E.selHl.pick(F);
+    }, true);
+    E.stage.addEventListener("pointerup", (e) => { if (ins) { e.stopImmediatePropagation(); } }, true);
+    E.doc.addEventListener("keydown", (e) => { if (ins && e.key === "Escape") { e.preventDefault(); e.stopPropagation(); endInsert("Insert Into Frame: not done"); } }, true);
+    E.overlayHooks.push((g, px) => {
+      if (!ins || !ins.hover || !S.layers.includes(ins.hover)) return;
+      const F = ins.hover; g.save(); g.lineWidth = 3 * px; g.strokeStyle = "#000"; g.setLineDash([]);
+      if (F.shape.kind === "path") Q.traceAll(g, F.shape.path); else D.shapePath(g, F.shape);
+      g.stroke(); g.lineWidth = 1.5 * px; g.strokeStyle = "#ffd166"; g.stroke(); g.restore();
+    });
+
     /* ---- the menus */
     const C = E.ui.addCmd, sep = E.ui.sep;
+    C("frame.insert", "Insert Into Frame", "", startInsert, { enabled: () => !!S.w && !!A() && S.layers.some((x) => isClosedShape(x)) });
     C("frame.place", "Place Inside Frame…", "", placeDialog, { enabled: () => !!S.w && S.layers.some((x) => isClosedShape(x)) });
     C("frame.edit", "Edit Frame Contents", "", () => edit(), { enabled: () => { const F = frameHere(); return !!F && hasKids(F) && S.frameEdit !== F.id; } });
     C("frame.finish", "Finish Editing Frame", "", () => finish(), { enabled: () => S.frameEdit != null });
@@ -432,12 +493,12 @@
     const Lm = E.ui.MENUS.find(([n]) => n === "Layer");
     if (Lm) {
       const items = Lm[1], at = items.indexOf("layer.dimscale");
-      const sub = { label: "Frame", items: ["frame.place", "frame.edit", "frame.finish", "frame.extract", sep, "frame.lock", "frame.gen"] };
+      const sub = { label: "Frame", items: ["frame.insert", "frame.place", "frame.edit", "frame.finish", "frame.extract", sep, "frame.lock", "frame.gen"] };
       if (at >= 0) items.splice(at + 1, 0, sep, sub); else items.push(sep, sub);
     }
-    E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["frame.place", "frame.edit", "frame.finish", "frame.extract"]);
+    E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["frame.insert", "frame.place", "frame.edit", "frame.finish", "frame.extract"]);
 
-    E.frames = { isFrame, isClosedShape, hasKids, place, placeDialog, edit, finish, extract, toggleLock, placeResult, follow, settings: set, editing: () => S.frameEdit, geoOf, owner, kidsOf };
+    E.frames = { isFrame, isClosedShape, hasKids, place, placeDialog, startInsert, inserting: () => !!ins, endInsert, edit, finish, extract, toggleLock, placeResult, follow, settings: set, editing: () => S.frameEdit, geoOf, owner, kidsOf };
   }
 
   const PCFrames = { isClosedShape, geoOf, fitAffine, isIdent, applyM, invM, mulM, frameOf, underFrame, moveInto, extractPlan, content, holds, liveMatrix, install };

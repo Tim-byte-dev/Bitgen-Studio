@@ -14183,6 +14183,13 @@ node scripts/test-mail820.js > /tmp/mail820.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui820-ui.js > /tmp/ui820.log 2>&1 \
   && ok "2.820.0 ✉ Mail browser test: Test keeps the account, Close keeps changes, ⤓ Older, Ctrl / Shift picks, Move ▾ + drag, server search, ＋ folder, To suggestions" \
   || { bad "2.820.0 mail browser test"; grep -a "^FAIL" -A1 /tmp/ui820.log | head -12; }
+# ---- 2.821.0 (Tim: "in image-editor when user selects insert in frame change the cursor to a thick black arrow then when user clicks a shape insert the layer into that frame ... add bring foward, send backward, to front and to back to the context menu ... fix the gradient fill ... if a shape is cut merge the shapes together and do a real cut(subtract)")
+node scripts/test-frames821.js > /tmp/fr821.log 2>&1 \
+  && ok "2.821.0 image editor units: a frame's layers stay in it when arranged, gradStyle, Insert Into Frame / order items / vector gradient / bakeShape wired" \
+  || { bad "2.821.0 frame / gradient pins"; grep -a "^FAIL" -A1 /tmp/fr821.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui821-ui.js > /tmp/ui821.log 2>&1 \
+  && ok "2.821.0 browser test: Insert Into Frame (arrow, lit shape, click), contents follow the frame, the order items inside a frame, Gradient tool on a shape + a text, real cut / join" \
+  || { bad "2.821.0 frame / gradient browser test"; grep -a "^FAIL" -A1 /tmp/ui821.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

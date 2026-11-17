@@ -105,6 +105,7 @@
     const { list, i, parent } = r, node = list[i];
     if (dir > 0 && i < list.length - 1) { list.splice(i, 1); list.splice(i + 1, 0, node); }
     else if (dir < 0 && i > 0) { list.splice(i, 1); list.splice(i - 1, 0, node); }
+    else if (parent && isFrameL(parent.L)) return layers;   // 2.821.0 (Tim: "layers inside a frame will be moved inside the frame group"): they stay in their frame
     else if (parent) {                                   // out of the group, just above / below it
       const pr = findNode(T, parent.L.id);
       list.splice(i, 1);
@@ -267,7 +268,7 @@
   function drawShape0(g, s) {
     if (s.kind === "path") { if (root.PCPath) { g.save(); root.PCPath.drawPathShape(g, s); g.restore(); } return; }
     g.save(); shapePath(g, s);
-    if (s.kind !== "line" && s.fillOn !== false) { g.fillStyle = s.fill || "#000"; g.fill(); }
+    if (s.kind !== "line" && s.fillOn !== false) { g.fillStyle = s.fillGrad ? gradStyle(g, s, { x: Math.min(s.x, s.x + s.w), y: Math.min(s.y, s.y + s.h), w: Math.abs(s.w), h: Math.abs(s.h) }) : s.fill || "#000"; g.fill(); }
     const sw = s.kind === "line" ? Math.max(1, s.strokeW || 4) : (s.strokeOn ? s.strokeW || 0 : 0);
     if (sw > 0) {
       g.lineWidth = sw; g.strokeStyle = s.kind === "line" ? (s.strokeOn ? s.stroke : s.fill) || "#000" : s.stroke || "#000";
@@ -276,6 +277,27 @@
       g.stroke();
     }
     g.restore();
+  }
+  /** 2.821.0: a vector shape's gradient fill (shape.fillGrad) as a canvas style over `box` - {type linear | radial | angle |
+   *  reflected | diamond, x0, y0, x1, y1 (the Gradient tool's drag, picture px) | angle (no drag: across the box), css
+   *  [[t, "rgba()"]] | stops [{t, c, a}] | c1 / c2}. Shapes, paths and vector lines all fill with it (pcpath / pcbezier). */
+  function gradStyle(g, s, box) {
+    const gr = s && s.fillGrad; if (!gr || !g.createLinearGradient) return (s && s.fill) || "#000";
+    const b = box && box.w > 0 && box.h > 0 ? box : { x: 0, y: 0, w: 1, h: 1 }, cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    let x0, y0, x1, y1;
+    if (gr.x0 != null && gr.x1 != null) { x0 = +gr.x0; y0 = +gr.y0; x1 = +gr.x1; y1 = +gr.y1; }
+    else { const a = (+gr.angle || 0) * Math.PI / 180, r = Math.abs(b.w * Math.cos(a)) / 2 + Math.abs(b.h * Math.sin(a)) / 2; x0 = cx - Math.cos(a) * r; y0 = cy + Math.sin(a) * r; x1 = cx + Math.cos(a) * r; y1 = cy - Math.sin(a) * r; }
+    const len = Math.max(1, Math.hypot(x1 - x0, y1 - y0)), type = gr.type || "linear";
+    let stops = Array.isArray(gr.css) && gr.css.length > 1 ? gr.css.map(([t, c]) => [+t, c])
+      : Array.isArray(gr.stops) && gr.stops.length > 1 ? gr.stops.map((q) => { const n = parseInt(String(q.c || "#000000").slice(1), 16) || 0; return [+q.t || 0, `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${q.a == null ? 1 : q.a})`]; })
+      : [[0, gr.c1 || s.fill || "#000"], [1, gr.c2 || "#fff"]];
+    let G;
+    if (type === "radial" || type === "diamond") G = g.createRadialGradient(x0, y0, 0, x0, y0, len);
+    else if (type === "angle" && g.createConicGradient) G = g.createConicGradient(Math.atan2(y1 - y0, x1 - x0), x0, y0);
+    else if (type === "reflected") { G = g.createLinearGradient(2 * x0 - x1, 2 * y0 - y1, x1, y1); stops = stops.map(([t, c]) => [0.5 - t / 2, c]).reverse().concat(stops.map(([t, c]) => [0.5 + t / 2, c])); }
+    else G = g.createLinearGradient(x0, y0, x1, y1);
+    for (const [t, c] of stops) { try { G.addColorStop(Math.max(0, Math.min(1, t)), c); } catch (e) { /* a bad colour */ } }
+    return G;
   }
   function drawFill(g, f, W, H) {
     if (f && f.kind === "pattern") {                      // 2.437.0: a pattern from the library (pcpattern.js), tiled at its scale
@@ -558,7 +580,7 @@
   const api = { ADJ_KINDS, STYLE_KINDS, STYLE_DEFAULTS, LABELS, LABEL_HEX, TEXT_DEFAULT, SHAPE_DEFAULT, FONT_STACK,
                 toTree, fromTree, normalize, findNode, descendants, depth, move, moveEnd, insert, group, ungroup, remove, shown,
                 snapLayer, putLayer, clone, isLive, fontCss, textBox, textBox0, textMat, drawText, drawShape, drawFill, shapePath, rasterize,
-                maskAlpha, styled, applyAdjust, render, renderLayer, hasStyles };
+                maskAlpha, styled, applyAdjust, render, renderLayer, hasStyles, gradStyle };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCDoc = api;
 })(typeof window !== "undefined" ? window : globalThis);
