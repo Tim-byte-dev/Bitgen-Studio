@@ -1092,6 +1092,71 @@
           "Remove the chart / nudge it"
         ]
       ]
+    },
+    {
+      "title": "Slides",
+      "rows": [
+        [
+          "F5 / Shift+F5",
+          "Present from the first slide / from this slide"
+        ],
+        [
+          "Ctrl+M",
+          "A new slide after this one"
+        ],
+        [
+          "Double-click / Enter / F2",
+          "Type in the picked box (Esc = done)"
+        ],
+        [
+          "Shift / Ctrl+click",
+          "Pick more items"
+        ],
+        [
+          "Arrows / Shift+arrows",
+          "Nudge 1 / 10 px (nothing picked: the slide before / after)"
+        ],
+        [
+          "Alt+drag / Shift+drag",
+          "Move without snapping / straight across or down"
+        ],
+        [
+          "Ctrl+D",
+          "Duplicate (in the slide list: the slide)"
+        ],
+        [
+          "Ctrl+C / X / V",
+          "Copy / cut / paste items (a copied picture: pasted onto the slide)"
+        ],
+        [
+          "Ctrl+A",
+          "Pick every item on the slide"
+        ],
+        [
+          "Delete",
+          "Delete the picked items (in the slide list: the slide)"
+        ],
+        [
+          "Page Up / Page Down",
+          "The slide before / after"
+        ],
+        [
+          "Ctrl+Z / Ctrl+Y",
+          "Undo / redo"
+        ],
+        [
+          "Ctrl+S",
+          "Save the presentation"
+        ],
+        [
+          "Showing: → Space click / ← right-click",
+          "Next / back"
+        ],
+        [
+          "Showing: number + Enter, B / W, Esc",
+          "That slide, a black / white screen, end"
+        ]
+      ]
     }
   ]
 }

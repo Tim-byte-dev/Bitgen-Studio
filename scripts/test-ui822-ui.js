@@ -30,7 +30,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.waitForFunction(() => typeof dsReady !== "undefined" && dsReady && document.getElementById("tX_sheetdock") && window.H3Sheet, null, { timeout: 60000 });
     await p.waitForTimeout(800);
     const st = await ev(() => ({ grp: [...document.getElementById("appGrp1").children].map((c) => c.id), gone: document.getElementById("sheetdock").classList.contains("dockgone") }));
-    check("▦ on the top bar's app strip after ✉; the docker starts hidden", st.grp.join() === "tIE,tX_maildock,tX_sheetdock" && st.gone, st);
+    check("▦ on the top bar's app strip after ✉; the docker starts hidden", st.grp.join().startsWith("tIE,tX_maildock,tX_sheetdock") && st.gone   /* 2.831.0: 🎞 Slides after it */, st);
     await p.$eval("#tX_sheetdock", (e) => e.click()); await p.waitForTimeout(500);
     await ev(() => document.querySelectorAll(".h3fp.dfm-float, #promptdock").forEach((d) => { if (d.style.display !== "none") { d.dataset.t822 = d.style.display; d.style.display = "none"; } }));
     await ev(() => { const d = document.getElementById("sheetdock"); d.style.minHeight = "600px"; });

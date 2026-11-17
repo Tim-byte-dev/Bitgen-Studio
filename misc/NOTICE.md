@@ -69,6 +69,7 @@ Installed by `npm` with the rest of the server's packages (not copied into the r
 | `mammoth` (mwilliamson/mammoth.js) | reads a Word file (.docx) into document text | BSD-2-Clause |
 | `jszip` (Stuk/jszip) | packs mail merge's Word files into a .zip (2.816.0) | MIT (dual MIT / GPL-3.0 - used under MIT) |
 | `exceljs` (exceljs/exceljs) | opens and saves the spreadsheet's Excel workbooks (.xlsx) (2.824.0) | MIT |
+| `pptxgenjs` (gitbrent/PptxGenJS) | saves 🎞 Slides presentations as PowerPoint files (.pptx) (2.831.0) | MIT |
 
 ### Node packages for ✉ Mail (2.818.0)
 

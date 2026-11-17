@@ -109,7 +109,7 @@ const api = async (m, u, b) => { const r = await fetch(new URL(u, URL_), { metho
     await until(() => typeof dsReady !== "undefined" && dsReady && document.getElementById("tX_maildock") && document.getElementById("tX_maildock").closest("#appGrp1"), null, 60000);
     await p.waitForTimeout(800);
     const st = await ev(() => ({ grp: [...document.getElementById("appGrp1").children].map((c) => c.id + ":" + c.textContent), title: document.getElementById("tX_maildock").title, gone: document.getElementById("maildock").classList.contains("dockgone"), sb: !!document.querySelector("#statusbar #tX_maildock") }));
-    check("✉ is on the top bar's app strip after 🖼 (group 1), icon only, not in the statusbar", st.grp.join(",") === "tIE:🖼,tX_maildock:✉" && /Mail/.test(st.title) && !st.sb, st);
+    check("✉ is on the top bar's app strip after 🖼 (group 1), icon only, not in the statusbar", st.grp.join(",").startsWith("tIE:🖼,tX_maildock:✉") && /Mail/   /* the apps shipped after Mail follow it */.test(st.title) && !st.sb, st);
     check("the docker starts hidden the first time", st.gone, st);
     await click("#tX_maildock"); await p.waitForTimeout(600);
     const e0 = await ev(() => ({ shown: !document.getElementById("maildock").classList.contains("dockgone"), noacc: document.getElementById("maildock").classList.contains("ml-noacc"), welcome: getComputedStyle(document.getElementById("mlEmpty")).display !== "none" && /no sign-up/.test(document.getElementById("mlEmpty").textContent), lit: document.getElementById("tX_maildock").classList.contains("on") }));

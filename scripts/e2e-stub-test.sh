@@ -14253,6 +14253,13 @@ node scripts/test-830.js > /tmp/t830.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui830-ui.js > /tmp/ui830.log 2>&1 \
   && ok "2.830.0 browser test: a red bar fading 100 -> 0 %, the diamond to a quarter, an end moved, Start %, radial, remove + undo; a shape's gradient line + fade slider; the shadow's opacity slider; the lasso open until it ends within 5 px (go on, Enter, Esc), the polygonal lasso, the freeform pen open / closed" \
   || { bad "2.830.0 transparency + fade sliders browser test"; grep -a "^FAIL" -A1 /tmp/ui830.log | head -12; }
+# ---- 2.831.0 (Tim: "can you add the slides now please") 🎞 Slides - ext/slidesdock, lib/slideFiles.js, lib/slidePptx.js, routes/slides.js
+node scripts/test-831.js > /tmp/t831.log 2>&1 \
+  && ok "2.831.0 slides: themes, 7 layouts, relayout keeping the words, clean, the project's .bgk files, a real .pptx (bullets, shapes, the picture, notes, hidden slides, 16:9), the wiring" \
+  || { bad "2.831.0 slides units"; grep -a "^FAIL" -A1 /tmp/t831.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui831-ui.js > /tmp/ui831.log 2>&1 \
+  && ok "2.831.0 browser test: 🎞 on the app strip, a new deck, typing a title + undo, Ctrl+M bullets, a star moved + sized, a text box, a picture into its box, a theme, a new layout keeping the words, notes, a slide dragged in the list, Save + Open, ▶ Present (→ fade, Space, 1+Enter, B, Esc), ⤓ PowerPoint" \
+  || { bad "2.831.0 slides browser test"; grep -a "^FAIL" -A1 /tmp/ui831.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

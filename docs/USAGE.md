@@ -9444,6 +9444,17 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Fade sliders on the other lines**: a vector shape's or a text's gradient fill shows its line with the Gradient tool - drag the ends again, drag the diamond to move the fade (**Fade** on the tool bar sets new gradients, pixel ones too). The Drop Shadow tool's line has a diamond for the shadow's **opacity** (solid at the far end).
 - **Closing on the start**: the Lasso makes a selection only when you let go within 5 px (on screen) of where it started. Let go anywhere else and the line stays open - press again to go on from its end (a click adds a straight side), finish on the start or press Enter / double-click to select, Esc lets it go. The Polygonal Lasso closes on a click within 5 px of its start; the Magnetic Lasso, the Pen, the Freeform Pen, Freehand, Bézier, Polyline, B-Spline and the Curvature Pen close only within 5 px too (else the path stays open).
 
+## 🎞 Slides - presentations: slides, themes, pictures, presenting, PowerPoint (2.831.0)
+
+- **🎞 on the top bar** (after ▦ Spreadsheet) opens the Slides docker; ⛶ makes it big. ❔ is its help page.
+- **The list** (left): every slide as a picture - click, drag to reorder, right-click: new slide after it (a layout), duplicate, hide in the show, move, delete. **＋ Slide ▾** / **Ctrl+M** adds one after this slide; **▤ Layout ▾** changes this slide's layout (Title slide, Title and content, Two contents, Section header, Picture with caption, Title only, Blank) - the words move into the new boxes.
+- **🎨 Theme ▾**: Plain, bitGen, Night, Forest, Paper, Bold - the background, title / text colours, accent and fonts of every slide; **Bg** a slide's own background.
+- **Text**: an empty box says what goes in it; double-click (or Enter) to type, Esc / a click outside to finish; each line a paragraph (bullets in a content box). **🅃 Text**, **⬚ Shape ▾** (rectangle, rounded, ellipse, triangle, diamond, arrows, star, line - type in a shape too), **🖼 Picture** (or drop / paste one - it fills a Picture with caption slide's box).
+- **Arranging**: click / Shift+click / a box round them; drag to move (pink lines snap to the slide's middle / edges and other items; Alt = free), the white squares size (Shift keeps the shape; pictures keep theirs), arrows nudge, Ctrl+D duplicate, Ctrl+C / X / V, ⇡ front / ⇣ back, Delete. The bar: font, size, B I U, colour, alignment, top / middle / bottom, bullets, a shape's fill / line. Undo Ctrl+Z / Ctrl+Y.
+- **Speaker notes** under the slide; **Transition** per slide (fade, push, wipe, zoom).
+- **▶ Present** (F5) / **▶ From here** (Shift+F5): full screen; → / Space / a click = next, ← = back, a number + Enter = that slide, B / W = black / white screen, Esc = end; hidden slides skipped.
+- **Files**: 📄 New ▾ (a theme, 16:9 or 4:3), 📂 Open ▾, 💾 Save (Ctrl+S) -> the project's slides folder (.bgk); ⤓ **PowerPoint** = a .pptx (backgrounds, text with fonts / bullets, shapes, pictures, notes) downloaded and kept there.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9539,6 +9550,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)** (Michael Williamson) - opening Word files (.docx) as document text (BSD-2-Clause)
 - **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
 - **[ExcelJS](https://github.com/exceljs/exceljs)** (Guyon Roche and the ExcelJS contributors) - ▦ Spreadsheet - opening and saving Excel workbooks (.xlsx) (MIT)
+- **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)** (Brent Ely and the PptxGenJS contributors) - 🎞 Slides - saving presentations as PowerPoint files (.pptx) (MIT)
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)** (Postal Systems (Andris Reinman)) - ✉ Mail - reading your mailbox over IMAP and opening emails (MIT)
 - **[Nodemailer](https://nodemailer.com)** (Andris Reinman) - ✉ Mail - sending over your own mail server (MIT-0)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)

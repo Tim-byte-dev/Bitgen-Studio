@@ -20359,6 +20359,86 @@
    "src": "ext/sheetdock/sheetio.js:83"
   },
   {
+   "s": "Forest",
+   "src": "ext/slidesdock/slidecore.js:27"
+  },
+  {
+   "s": "Title slide",
+   "src": "ext/slidesdock/slidecore.js:32"
+  },
+  {
+   "s": "Click to add a title",
+   "src": "ext/slidesdock/slidecore.js:40"
+  },
+  {
+   "s": "Presentation",
+   "src": "ext/slidesdock/slidesdock.js:25"
+  },
+  {
+   "s": "New slide",
+   "src": "ext/slidesdock/slidesdock.js:141"
+  },
+  {
+   "s": "A new slide at the end (right-click: pick its layout)",
+   "src": "ext/slidesdock/slidesdock.js:141"
+  },
+  {
+   "s": "New slide after this",
+   "src": "ext/slidesdock/slidesdock.js:386"
+  },
+  {
+   "s": "Duplicate slide",
+   "src": "ext/slidesdock/slidesdock.js:387"
+  },
+  {
+   "s": "Show in the presentation",
+   "src": "ext/slidesdock/slidesdock.js:387"
+  },
+  {
+   "s": "Delete slide",
+   "src": "ext/slidesdock/slidesdock.js:387"
+  },
+  {
+   "s": "Hide in the presentation",
+   "src": "ext/slidesdock/slidesdock.js:387"
+  },
+  {
+   "s": "Bring to front",
+   "src": "ext/slidesdock/slidesdock.js:420"
+  },
+  {
+   "s": "Send to back",
+   "src": "ext/slidesdock/slidesdock.js:420"
+  },
+  {
+   "s": "Fit / fill the box",
+   "src": "ext/slidesdock/slidesdock.js:420"
+  },
+  {
+   "s": "Text box",
+   "src": "ext/slidesdock/slidesdock.js:420"
+  },
+  {
+   "s": "Picture",
+   "src": "ext/slidesdock/slidesdock.js:420"
+  },
+  {
+   "s": "no presentations in this project yet - 💾 Save one",
+   "src": "ext/slidesdock/slidesdock.js:449"
+  },
+  {
+   "s": "The end of the presentation - click or press a key to leave",
+   "src": "ext/slidesdock/slideshow.js:38"
+  },
+  {
+   "s": "Next",
+   "src": "ext/slidesdock/slideshow.js:64"
+  },
+  {
+   "s": "End the show (Esc)",
+   "src": "ext/slidesdock/slideshow.js:64"
+  },
+  {
    "s": "Open from the computer",
    "src": "ext/solidcraftdock/scdock.js:174"
   },
@@ -22276,10 +22356,6 @@
   },
   {
    "s": "slows down",
-   "src": "ext/timelinedock/paths.js:332"
-  },
-  {
-   "s": "Picture",
    "src": "ext/timelinedock/paths.js:332"
   },
   {
@@ -28743,6 +28819,10 @@
   {
    "p": "Delete row {0}",
    "src": "ext/sheetdock/sheetdock.js:538"
+  },
+  {
+   "p": "{0} (hidden in the show)",
+   "src": "ext/slidesdock/slidesdock.js:136"
   },
   {
    "p": "Update to v{0}",

@@ -1,0 +1,125 @@
+    <div class="bdock" id="slidesdock" data-own-space="1">
+      <div class="bhead" data-collapse="slidesdock">▾ 🎞 Slides<button class="ghost" type="button" title="Help - slides, text, pictures, presenting, PowerPoint" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('slides')" style="margin-left:auto;padding:0 6px">❔</button><button id="slMaxBtn" class="maxbtn" data-max="slidesdock" type="button" title="Maximize" aria-label="Maximize">⛶</button><button id="slCloseBtn" class="ghost" type="button" title="Close the docker (the 🎞 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="slBody" style="display:flex;flex-direction:column;gap:4px;min-height:0">
+        <!-- 2.831.0 (Tim: "can you add the slides now please"): presentations of our own - the model slidecore.js, the editor
+             slidesdock.js, the show slideshow.js; decks are .bgk files in projects/<p>/slides (lib/slideFiles.js), .pptx out
+             through lib/slidePptx.js (pptxgenjs, MIT). -->
+        <style>
+          #slidesdock .bbody { padding: 4px; }
+          .slbar { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 12px; }
+          .slbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 3px; }
+          .slbar button { padding: 2px 7px; min-width: 26px; }
+          .slbar button.on { border-color: var(--tiger); color: var(--tiger); }
+          .slbar select, .slbar input[type=text], .slbar input[type=number] { font-size: 12px; width: auto; }
+          .slbar input[type=number] { width: 52px; }
+          #slidesdock .slbar select, #slidesdock .slbar input[type=text], #slidesdock .slbar input[type=number] { height: 24px; padding: 1px 4px; box-sizing: border-box; min-width: 0; }
+          #slidesdock #slFont { width: 120px; } #slidesdock #slTrans { width: 80px; }
+          #slidesdock .slbar label { display: inline-flex; gap: 3px; align-items: center; white-space: nowrap; }
+          .slbar input[type=color] { width: 26px; height: 22px; padding: 0; border: 1px solid var(--line); background: none; }
+          #slFile { width: 150px; }
+          #slMsg { color: var(--dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+          #slMsg.bad { color: #ff6b6b; }
+          #slMain { flex: 1; display: flex; gap: 6px; min-height: 180px; }
+          #slList { width: 150px; flex: 0 0 auto; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 8px; padding: 4px 6px 4px 2px; border-right: 1px solid var(--line); outline: none; }
+          #slList .th { position: relative; display: flex; gap: 4px; align-items: flex-start; cursor: pointer; }
+          #slList .th .n { width: 16px; font-size: 11px; color: var(--dim); text-align: right; padding-top: 2px; }
+          #slList .th .pv { position: relative; flex: 1; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; background: #000; }
+          #slList .th.on .pv { outline: 2px solid var(--tiger); outline-offset: 1px; }
+          #slList .th.hid .pv { opacity: .45; }
+          #slList .th.drop::before { content: ""; position: absolute; left: 0; right: 0; top: -5px; height: 2px; background: var(--tiger); }
+          #slList .add { font-size: 12px; }
+          #slStageWrap { position: relative; flex: 1; min-width: 0; overflow: hidden; background: var(--ink); border: 1px solid var(--line); outline: none; }
+          #slStage { position: absolute; left: 0; top: 0; transform-origin: 0 0; box-shadow: 0 4px 22px rgba(0,0,0,.45); }
+          .slslide { position: relative; overflow: hidden; }
+          .slslide .it { position: absolute; box-sizing: border-box; }
+          .slslide .it .tx { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2; outline: none; padding: 4px; box-sizing: border-box; }
+          .slslide .it .tx .p { min-height: 1.2em; }
+          .slslide .it .tx.bul .p:not(:empty) { padding-left: 1.1em; text-indent: -1.1em; }
+          .slslide .it .tx.bul .p:not(:empty)::before { content: "•"; display: inline-block; width: 1.1em; text-indent: 0; color: var(--sl-accent); }
+          .slslide .it .hint { color: #8a9099; font-style: italic; }
+          .slslide .it svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+          .slslide .it img { width: 100%; height: 100%; display: block; }
+          .slslide .it.ph { outline: 1px dashed rgba(128,128,128,.7); }
+          .slslide .it.pic.empty { background: repeating-linear-gradient(45deg, rgba(128,128,128,.12) 0 12px, rgba(128,128,128,.2) 12px 24px); display: flex; align-items: center; justify-content: center; color: #8a9099; font-size: 20px; font-style: italic; }
+          #slStage .it { cursor: move; }
+          #slStage .it.edit { cursor: text; }
+          #slStage .it.on { outline: 2px solid var(--tiger); }
+          #slStage .hd { position: absolute; width: 12px; height: 12px; background: #fff; border: 2px solid var(--tiger); box-sizing: border-box; z-index: 5; }
+          #slStage .guide { position: absolute; background: #ff2fd0; pointer-events: none; z-index: 6; }
+          #slStage .band { position: absolute; border: 1px dashed var(--tiger); background: color-mix(in srgb, var(--tiger) 10%, transparent); pointer-events: none; z-index: 6; }
+          #slNotes { height: 54px; resize: vertical; font-size: 12px; }
+          .slmenu { position: fixed; z-index: 10050; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 0; box-shadow: 0 8px 28px rgba(0,0,0,.45); font-size: 12px; max-height: 70vh; overflow-y: auto; }
+          .slmenu > div { padding: 4px 14px; cursor: pointer; white-space: nowrap; display: flex; gap: 8px; align-items: center; }
+          .slmenu > div:hover { background: var(--panel-2); color: var(--tiger); }
+          .slmenu > div.on { color: var(--tiger); }
+          .slmenu > hr { border: 0; border-top: 1px solid var(--line); margin: 3px 0; }
+          .slmenu .sw { width: 34px; height: 20px; border: 1px solid var(--line); border-radius: 3px; display: inline-block; }
+          #slShow { position: fixed; inset: 0; z-index: 2147483000; background: #000; display: flex; align-items: center; justify-content: center; cursor: none; user-select: none; }
+          #slShow.ptr { cursor: default; }
+          #slShow .host { position: relative; }
+          #slShow .host > .slslide { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+          #slShow .cnt { position: absolute; right: 14px; bottom: 10px; color: rgba(255,255,255,.55); font: 13px sans-serif; }
+          #slShow .bar { position: absolute; left: 12px; bottom: 10px; display: none; gap: 6px; }
+          #slShow.ptr .bar { display: flex; }
+          #slShow .bar button { background: rgba(40,40,40,.85); color: #fff; border: 1px solid #555; border-radius: 4px; padding: 3px 9px; cursor: pointer; }
+          @keyframes slFadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes slPushIn { from { transform: translateX(var(--sl-w)); } to { transform: translateX(0); } }
+          @keyframes slPushInB { from { transform: translateX(calc(-1 * var(--sl-w))); } to { transform: translateX(0); } }
+          @keyframes slZoomIn { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+          @keyframes slWipeIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+        </style>
+        <div class="slbar" id="slBar1">
+          <button class="ghost" type="button" id="slNew" title="A new presentation (pick its look)">📄 New ▾</button>
+          <button class="ghost" type="button" id="slOpen" title="Open a presentation of this project">📂 Open ▾</button>
+          <button class="ghost" type="button" id="slSave" title="Save the presentation in this project's slides folder (Ctrl+S)">💾 Save</button>
+          <input type="text" id="slFile" value="Presentation" title="The presentation's name" spellcheck="false">
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="slUndo" title="Undo (Ctrl+Z)">↶</button>
+          <button class="ghost" type="button" id="slRedo" title="Redo (Ctrl+Y)">↷</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="slPlay" title="Present from the first slide (F5); Shift+F5 = from this slide">▶ Present</button>
+          <button class="ghost" type="button" id="slPlayHere" title="Present from this slide (Shift+F5)">▶ From here</button>
+          <button class="ghost" type="button" id="slExport" title="Save as a PowerPoint file (.pptx) - downloaded and kept in the slides folder">⤓ PowerPoint</button>
+          <span class="sep"></span>
+          <span id="slMsg"></span>
+        </div>
+        <div class="slbar" id="slBar2">
+          <button class="ghost" type="button" id="slAddSlide" title="A new slide after this one (Ctrl+M) - ▾ pick its layout">＋ Slide ▾</button>
+          <button class="ghost" type="button" id="slLayout" title="This slide's layout (its title / text boxes)">▤ Layout ▾</button>
+          <button class="ghost" type="button" id="slTheme" title="The presentation's look: background, colours, fonts">🎨 Theme ▾</button>
+          <label title="This slide's background colour (the theme's when unset)">Bg <input type="color" id="slBg"></label>
+          <button class="ghost" type="button" id="slBgReset" title="The theme's background again">↺</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="slAddText" title="A text box">🅃 Text</button>
+          <button class="ghost" type="button" id="slAddShape" title="A shape">⬚ Shape ▾</button>
+          <button class="ghost" type="button" id="slAddPic" title="A picture from this computer (or drop / paste one on the slide)">🖼 Picture</button>
+          <span class="sep"></span>
+          <select id="slFont" title="Font"></select>
+          <input type="number" id="slSize" min="6" max="300" title="Text size (px on the slide)">
+          <button class="ghost" type="button" id="slB" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button class="ghost" type="button" id="slI" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button class="ghost" type="button" id="slU" title="Underline (Ctrl+U)"><u>U</u></button>
+          <input type="color" id="slColor" title="Text colour">
+          <button class="ghost" type="button" id="slAL" title="Align left">⯇</button>
+          <button class="ghost" type="button" id="slAC" title="Centre">≡</button>
+          <button class="ghost" type="button" id="slAR" title="Align right">⯈</button>
+          <button class="ghost" type="button" id="slVA" title="Top / middle / bottom of the box">⇕</button>
+          <button class="ghost" type="button" id="slBul" title="Bullets">•≡</button>
+          <span class="sep"></span>
+          <label title="Shape fill">Fill <input type="color" id="slFill"></label>
+          <label title="Shape outline">Line <input type="color" id="slLine"></label>
+          <input type="number" id="slLw" min="0" max="40" title="Outline width (0 = none)" style="width:42px">
+          <button class="ghost" type="button" id="slFront" title="Bring to front">⇡</button>
+          <button class="ghost" type="button" id="slBack" title="Send to back">⇣</button>
+          <button class="ghost" type="button" id="slDel" title="Delete (Del)">🗑</button>
+          <span class="sep"></span>
+          <label title="How this slide comes in when presenting">Transition <select id="slTrans"><option value="none">None</option><option value="fade">Fade</option><option value="push">Push</option><option value="wipe">Wipe</option><option value="zoom">Zoom</option></select></label>
+        </div>
+        <div id="slMain">
+          <div id="slList" tabindex="0" title="The slides - drag to reorder; right-click for more"></div>
+          <div id="slStageWrap" tabindex="0"><div id="slStage"></div></div>
+        </div>
+        <textarea id="slNotes" placeholder="Speaker notes for this slide" spellcheck="true"></textarea>
+        <input type="file" id="slPicFile" accept="image/*" multiple hidden>
+      </div>
+    </div>

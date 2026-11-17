@@ -46,7 +46,7 @@ check("sheetFiles.clean: sheet names cleaned + made unique, bad addresses droppe
 check("safeName: <name>.bgs in the folder", SF.safeName("../x/My book") === "My book.bgs" && SF.safeName("") === "Workbook.bgs");
 const IX = read("routes", "index.js"), EXT = JSON.parse(read("ext", "sheetdock", "ext.json"));
 check("routes/sheets.js mounted from routes/index.js (server.js untouched); the docker's scripts: the engine first", /require\("\.\/sheets"\)\.mount\(app\)/.test(IX) && !/sheets/.test(read("misc", "server.js")) && /^sheetfmt\.js,sheetcalc\.js,(sheetchart\.js,)?sheetdock\.js,sheetfmtdlg\.js(,|$)/.test(EXT.scripts.join()))  /* 2.823.0: + the format codes first, the Format Cells dialog last */;
-check("the app's own keys stay out of the cells (P, S, L, digits)", /#sheetdock/.test(read("ext", "promptdock", "pfloat.js")) && /a\.closest\("#sheetdock"\)/.test(read("static", "secfloat.js")));
+check("the app's own keys stay out of the cells (P, S, L, digits)", /#sheetdock/.test(read("ext", "promptdock", "pfloat.js")) && /a\.closest\("#sheetdock[^"]*"\)/.test(read("static", "secfloat.js"))   /* 2.831.0: + #slidesdock, #slShow */);
 
 const fl = SF.clean({ sheets: [{ name: "S", cells: {}, filter: { r: "2", r2: 9, c1: 0, c2: 3, cols: { 1: ["a", 5], x: ["no"], 2: "no" }, evil: "<script>" } }] }).sheets[0].filter;
 check("sheetFiles.clean: a filter keeps only its block + the picked values per column (as text)", JSON.stringify(fl) === '{"r":2,"c1":0,"c2":3,"cols":{"1":["a","5"]},"r2":9}', fl);

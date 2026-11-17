@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6086,
+ "count": 6138,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56101,6 +56101,474 @@
    ],
    "where": [
     "Image editor: transparency tool, fade sliders (2.830.0)"
+   ]
+  },
+  {
+   "s": "Help - slides, text, pictures, presenting, PowerPoint",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the 🎞 button on the top bar shows it again)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "A new presentation (pick its look)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Open a presentation of this project",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Save the presentation in this project's slides folder (Ctrl+S)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "The presentation's name",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Present from the first slide (F5); Shift+F5 = from this slide",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Present from this slide (Shift+F5)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Save as a PowerPoint file (.pptx) - downloaded and kept in the slides folder",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "A new slide after this one (Ctrl+M) - ▾ pick its layout",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "This slide's layout (its title / text boxes)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "The presentation's look: background, colours, fonts",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "This slide's background colour (the theme's when unset)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "The theme's background again",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "A text box",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "A shape",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "A picture from this computer (or drop / paste one on the slide)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Text size (px on the slide)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Top / middle / bottom of the box",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Shape fill",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Shape outline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Outline width (0 = none)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Delete (Del)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "How this slide comes in when presenting",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "The slides - drag to reorder; right-click for more",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Speaker notes for this slide",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "New ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Present",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "From here",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "PowerPoint",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Slide ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Layout ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Theme ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Bg",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Shape ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "B",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "I",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "U",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Push",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Wipe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Title and content",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Two contents",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Section header",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Picture with caption",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Title only",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Blank",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Click to add a subtitle",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Click to add text",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Click 🖼 Picture or drop one here",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Rounded rectangle",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Arrow right",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Arrow left",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides (2.831.0)"
    ]
   }
  ]

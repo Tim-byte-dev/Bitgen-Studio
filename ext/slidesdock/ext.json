@@ -1,0 +1,11 @@
+{
+  "id": "slidesdock",
+  "name": "Slides",
+  "order": 96,
+  "html": "dock.html",
+  "scripts": [
+    "slidecore.js",
+    "slidesdock.js",
+    "slideshow.js"
+  ]
+}
