@@ -9921,6 +9921,13 @@ async function chatSend(text) {
       const sp = await window.bgScenes.maybeScreenplay(t);
       if (sp != null) { think.remove(); chatAdd("assistant", sp); return; }
     }
+    /* 2.828.0: a docker can take the message first (▦ the spreadsheet: "received a payment of 540", "create a dashboard" …) -
+       each window.H3ChatRoutes entry answers with its reply, or null for an ordinary chat turn */
+    for (const route of (window.H3ChatRoutes || [])) {
+      let out = null;
+      try { out = await route(t); } catch (e) { out = "⚠ " + (e.message || e); }
+      if (out != null) { think.remove(); chatAdd("assistant", out); return; }
+    }
     const { r, j } = await chatPost(t, $("llmSel") ? $("llmSel").value : "", null);
     think.remove();
     if (!r.ok) {

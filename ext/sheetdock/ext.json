@@ -12,6 +12,7 @@
     "sheetio.js",
     "sheetdash.js",
     "sheetai.js",
-    "sheetconst.js"
+    "sheetconst.js",
+    "sheetchat.js"
   ]
 }

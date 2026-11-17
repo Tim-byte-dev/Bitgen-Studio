@@ -14232,6 +14232,13 @@ node scripts/test-paid827.js > /tmp/paid827.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui827-ui.js > /tmp/ui827.log 2>&1 \
   && ok "2.827.0 browser test: the Ledger's Paid to column (19/01 … 2/03, live), the list's paid to + days behind, a tenant's typed payments (18/02, 25/02), your words kept, your ledger gets the column" \
   || { bad "2.827.0 paid to browser test"; grep -a "^FAIL" -A1 /tmp/ui827.log | head -12; }
+# ---- 2.828.0 (Tim: "can i use prompt docker to upload a file and the llm formats it or creates a dashboard … received a payment of <number> it adds it to the right columns" + "go with next please") the spreadsheet from the prompt docker
+node scripts/test-chat828.js > /tmp/chat828.log 2>&1 \
+  && ok "2.828.0 the prompt docker's words routed (entry / rate / update / dashboard / format / explain / fill / formula, ordinary chat left alone), amounts, dates (day first), entries, new amounts, the seams" \
+  || { bad "2.828.0 spreadsheet chat units"; grep -a "^FAIL" -A1 /tmp/chat828.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui828-ui.js > /tmp/ui828.log 2>&1 \
+  && ok "2.828.0 browser test: ＋ a .csv opens in the spreadsheet, format it, create a dashboard (stand-in LLM), received / paid shown first then ✔ Add into a Ledger, Cancel, undo, rent went up, ordinary chat" \
+  || { bad "2.828.0 spreadsheet chat browser test"; grep -a "^FAIL" -A1 /tmp/ui828.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

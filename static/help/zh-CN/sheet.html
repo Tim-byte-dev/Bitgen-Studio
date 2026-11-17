@@ -1,4 +1,4 @@
-<!-- en: sheet 283874939cef -->
+<!-- en: sheet 3c259d66cc17 -->
 <h1>▦ 电子表格</h1>
 <p>在 bitGen 中处理表格、求和与清单——一个由多张工作表组成的工作簿,公式会在你输入时自动重新计算。顶部栏的 ▦ 按钮用于打开和关闭停靠窗。
 工作簿保存在项目的 <code>sheets</code> 文件夹中(<code>.bgs</code> 文件);正在输入的内容也会保存在浏览器中,所以关闭停靠窗不会丢失任何内容。</p>
@@ -64,6 +64,13 @@
   <li>账本是带有 Date 和 Income / Expense(或 Amount)标题的工作表——你自己的,或 <b>＋ 创建账本工作表</b>。你自己输入的行会保留,并与其他行一起按日期排序。</li>
   <li>公式可以读取它们:<code>=Rent</code> 是今天的金额,<code>=CONST("Rent", A5)</code> 是某一天的金额(名称中有空格:<code>=Car_loan</code>)。它们随工作簿一起保存。</li>
   <li><b>Paid to</b>——为常量支付的金额从第一个开始日期起逐日抵扣,一天的金额 = 每周金额 ÷ 7(两周 ÷ 14,每月 × 12 ÷ 365,每年 ÷ 365)。列表显示 <i>已付到 24/01/2026 · 落后 3 天 · 欠 $157.14</i>(或提前的天数),账本的 <b>Paid to</b> 列在常量的每一行显示到该行为止的付款付到哪一天——实时公式 <code>=PAIDTO("Rent", 已付金额)</code>。付款按 Category(常量名称)或 Ref 识别。由你自己记入付款的(如租客的房租)取消勾选 <b>⟳ 自动记入</b>——这时 ⟳ 只填写 Paid to。</li>
+</ul>
+
+<h3>从提示词停靠窗</h3>
+<ul>
+  <li>提示词停靠窗的 <b>＋</b>(或拖放)也接受 Excel 或 CSV 文件:它会在电子表格中打开,然后说出要做什么。</li>
+  <li>在提示词中说:<i>create a dashboard(按地区的销售额)</i>——✨ 仪表板;<i>format it</i>——格式化表格;<i>received a payment of 540 for rent</i> / <i>paid 80 for power yesterday</i>——账本记录(received = 收入,paid 或 payment = 支出;所说的日期或今天;提到的常量或类别即其 Category),会先显示供你修改,然后 <b>✔ 添加</b> 按日期顺序记入账本(按一次 <b>Ctrl+Z</b> 即可撤销);<i>rent went up to 580 from 12/01/2027</i>——在 📌 常量中填好新金额;<i>bring the ledger up to date</i>;<i>explain this formula</i>;<i>fill the rest from the examples</i>;<i>a formula for the total of column D</i>。</li>
+  <li>当电子表格在屏幕上、刚附加了工作簿、消息提到电子表格 / 工作表 / 账本,或(付款)工作簿有账本时,消息会交给电子表格。其他的都是普通聊天。</li>
 </ul>
 
 <h3>表格</h3>

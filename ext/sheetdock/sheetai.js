@@ -420,5 +420,7 @@
     m.addEventListener("click", (e) => { const t = e.target.closest("[data-ai]"); if (!t) return; m.remove(); run(t.dataset.ai); });
   }
   function run(what) { if (what === "write") return openWrite(); if (what === "explain") return openExplain(); if (what === "fill") return fillFromExamples(); }
-  root.H3SheetAI = Object.assign({ openWrite, openExplain, fillFromExamples, aiMenu, run, put, contextFor }, SheetAI);
+  /** 2.828.0: ✍ from the prompt docker - the dialog opened for the active cell with the words asked, the LLM asked */
+  function writeAsk(text) { openWrite(); if (!dlg || !dlg.open) return; $("shaiAsk").value = String(text || "").trim(); return write(); }
+  root.H3SheetAI = Object.assign({ writeAsk, openWrite, openExplain, fillFromExamples, aiMenu, run, put, contextFor }, SheetAI);
 })(typeof window !== "undefined" ? window : globalThis);

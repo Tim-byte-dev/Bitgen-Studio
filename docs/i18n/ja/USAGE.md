@@ -5771,6 +5771,18 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **⟳ が記入**（フォーム内、チェック済み）：支払いを自分で入力する定数 - 毎回違う額を払う入居者など - はチェックを外します。⟳ 最新にする はその定数の記入を作らず、自分で入力した行（Category = その名前）に Paid to を入れるだけになります。一覧では ✍ が付きます。
 - **数式で**：=PAIDTO("Rent", 支払額) = その額で払われる最後の日（日付 - セルを日付の書式に）。
 
+## ▦ スプレッドシート - プロンプトドッカーから：ブックを添付し、言葉で頼む（2.828.0）
+<!-- en: spreadsheet-from-the-prompt-docker-attach-a-workbook-ask-in-words-2-828-0 153ec3d2f50e -->
+
+- **プロンプトドッカーの ＋ / ドロップ** は .xlsx、.xlsm、.csv、.tsv ファイルを受け付けます：ブックがスプレッドシートで開き（ドッカーが表示されます）、チャットがそう伝えます - あとは何をするかを書きます。
+- **プロンプトに書く** - メッセージはチャット LLM ではなくスプレッドシートへ送られます：
+  - *create a dashboard of sales by region* - LLM による ✨ ダッシュボード（「dashboard of」の後の言葉 = 表示したいもの）。
+  - *format it* / *tidy up the table* - 開いているシートの表を書式設定：見出し、表示形式、幅、縞模様の行、見出しの固定、フィルター。元に戻すは 1 回。
+  - *received a payment of 540 for rent* / *paid 80 for power yesterday* / *payment of 45.90 to the plumber on 3/02/2026* - received = 収入、paid や payment = 支出；書いた日付（13/01/2026、3 Feb、yesterday …）か今日；for / from / to の後の言葉 = 説明；名前を挙げた定数や台帳にあるカテゴリ = その Category。行は **先に表示**（日付、説明、カテゴリ、金額、収入 / 支出 - すべて変更可）；**✔ 追加** で台帳に日付順に入ります（台帳がなければ Ledger シートを作り、定数のものなら Paid to も入ります）；キャンセルでは何も入りません；Ctrl+Z 1 回で元に戻ります。
+  - *rent went up to 580 from 12/01/2027* / *rent is now 600* - 📌 定数が開き、新しい金額が入っています（日付がなければ今日の後の次の支払日）；＋ Rent に新しい金額を追加。
+  - *bring the ledger up to date*、*show the constants*、*explain this formula*、*fill the rest from the examples*、*write a formula for the total of column D* - ツールバーと同じ ⟳ / 📌 / 💡 / 🪄 / ✍。
+- **スプレッドシートへ送られるとき**：スプレッドシートが画面にある、30 分以内にブックを添付した、メッセージがスプレッドシート / シート / 台帳 / ブック / 表に触れている、または - 支払いと新しい金額 - ブックに台帳か定数がある。それ以外（「what is a good lens for portraits?」）はこれまでどおり普通のチャットです。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

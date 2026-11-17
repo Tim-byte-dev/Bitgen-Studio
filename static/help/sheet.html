@@ -66,6 +66,13 @@
   <li><b>Paid to</b> - what has been paid for a constant covers it day by day from its first start, a day being the weekly amount ÷ 7 (fortnightly ÷ 14, monthly × 12 ÷ 365, yearly ÷ 365). The list says <i>Paid to 24/01/2026 · 3 days behind · $157.14 owing</i> (or days ahead), and the ledger's <b>Paid to</b> column shows, on every row of a constant, the date paid to after that row - a live formula, <code>=PAIDTO("Rent", amount paid)</code>. Payments are found by the Category (the constant's name) or the Ref. Untick <b>⟳ enters it</b> for one whose payments you type yourself (a tenant's rent) - ⟳ then only fills in Paid to.</li>
 </ul>
 
+<h3>From the prompt docker</h3>
+<ul>
+  <li><b>＋</b> (or a drop) on the prompt docker takes an Excel or CSV file too: it opens in the spreadsheet, then say what to do with it.</li>
+  <li>Say it in the prompt: <i>create a dashboard (of sales by region)</i> - the ✨ Dashboard; <i>format it</i> - the table formatted; <i>received a payment of 540 for rent</i> / <i>paid 80 for power yesterday</i> - a ledger entry (received = income, paid or payment = expense; the date said or today; a constant or category named = its Category), shown first so you can change it, then <b>✔ Add</b> puts it in the ledger in date order (one <b>Ctrl+Z</b> takes it back); <i>rent went up to 580 from 12/01/2027</i> - the new amount filled in the 📌 Constants; <i>bring the ledger up to date</i>; <i>explain this formula</i>; <i>fill the rest from the examples</i>; <i>a formula for the total of column D</i>.</li>
+  <li>It goes to the spreadsheet when the spreadsheet is on screen, a workbook was just attached, the message names the spreadsheet / sheet / ledger, or (payments) the workbook keeps a ledger. Anything else is an ordinary chat.</li>
+</ul>
+
 <h3>Tables</h3>
 <ul>
   <li><b>A→Z / Z→A</b> sorts the table round the active cell by the active cell's column. A first row of headings stays on top, the cells of a row stay together (its formulas too), empty cells go last. A block that is picked is sorted on its own.</li>

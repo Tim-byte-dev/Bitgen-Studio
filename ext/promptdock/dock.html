@@ -70,7 +70,7 @@
                    picked files become chips above the prompt input. NOTE the
                    accept list is explicit — never image/* (the 2.157-era
                    comment-stripper reads /* as a block comment). -->
-              <button class="ghost ibtn" id="pdAttachBtn" aria-label="Attach pictures or a vocal stem"
+              <button class="ghost ibtn" id="pdAttachBtn" aria-label="Attach pictures, a vocal stem or a spreadsheet"
                 title="Attach picture(s) to the prompt (described by the vision model when 🖼 Describe image is on) — or a vocal stem / song: audio splits into 15-second segments and each scene gets its own slice as an audio reference">＋</button>
               <!-- 2.270.0: ＋ also takes AUDIO (the vocal stem) — picked
                    audio posts to /api/stems/split, never becomes a chip.
@@ -78,7 +78,7 @@
                    (the 2.157-era comment-stripper reads slash-star as a
                    block comment opener). -->
               <input type="file" id="pdAttachFile" class="hidden" multiple
-                accept="image/png, image/jpeg, image/webp, audio/wav, audio/x-wav, audio/mpeg, audio/flac, audio/ogg, audio/mp4, audio/x-m4a">
+                accept="image/png, image/jpeg, image/webp, audio/wav, audio/x-wav, audio/mpeg, audio/flac, audio/ogg, audio/mp4, audio/x-m4a, .xlsx, .xlsm, .csv, .tsv">
               <label>LLM</label>
               <select id="llmSel"><option value="">— none found —</option></select>
               <!-- 2.233.0: the VISION model — populated from /api/captioner/models

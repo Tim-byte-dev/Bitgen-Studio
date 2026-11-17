@@ -203,7 +203,7 @@
       rows.push({ from: r, cells, date: typeof d === "number" ? d : null });
     }
     for (const a of P.add) {
-      const cells = {}, k = a.k, put = (c, v, f) => { if (c == null) return; cells[c] = { v: String(v) }; if (f) cells[c].f = f; };
+      const cells = {}, k = a.k, put = (c, v, f) => { if (c == null || v == null || v === "") return; cells[c] = { v: String(v) }; if (f) cells[c].f = f; };
       put(cR.date, a.o.iso, "d/mm/yyyy");
       put(cR.desc, k.desc || k.name);
       put(cR.category, k.name);
@@ -439,5 +439,15 @@
     if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
     setTimeout(() => $("sckName").focus(), 30);
   }
-  root.H3SheetConst = Object.assign({ open, preview, doApply, apply, ledgerNow, ledgerRows, paidTotals, makeLedger, list }, SheetConst);
+  /** 2.828.0: the form filled in (a new amount from the prompt docker: "rent went up to 600 from 1/12/2026") */
+  function fill(f) {
+    if (!dlg) open();
+    const k = list().find((x) => x.name.toLowerCase() === String(f.name || "").toLowerCase());
+    $("sckName").value = f.name || ""; $("sckAmt").value = f.amount != null ? f.amount : ""; if (f.every) $("sckEvery").value = f.every; $("sckStart").value = f.start || "";
+    if (k) { pick = k.id; $("sckDesc").value = k.desc || ""; $("sckEnd").value = k.end || ""; $("sckAuto").checked = !k.manual; dlg.querySelector(`[name="sckKind"][value="${k.kind}"]`).checked = true; }
+    paintAddLabel(k); paintList();
+    msg(k ? `a new amount for ${k.name} from ${dmy(f.start)} - ＋ Add a new amount to ${k.name}` : "");
+    setTimeout(() => $("sckAdd").focus(), 30);
+  }
+  root.H3SheetConst = Object.assign({ fill, open, preview, doApply, apply, ledgerNow, ledgerRows, paidTotals, makeLedger, list }, SheetConst);
 })(typeof window !== "undefined" ? window : globalThis);

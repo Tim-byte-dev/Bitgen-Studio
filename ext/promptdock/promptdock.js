@@ -102,6 +102,8 @@
 
   function pdAdd(list) {
     for (const f of list || []) {
+      // 2.828.0: a workbook (.xlsx / .csv …) opens in the ▦ spreadsheet - then say what to do with it
+      if (window.H3SheetChat && window.H3SheetChat.isSheetFile(f)) { window.H3SheetChat.attach(f).catch((e) => typeof chatAdd === "function" && chatAdd("assistant", "⚠ " + (e.message || e))); continue; }
       if (PD_AUDIO_RE.test(f.name || "") || /^audio\//i.test(f.type || "")) {
         pdSplitStem(f);
         continue;

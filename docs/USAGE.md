@@ -9421,6 +9421,17 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **⟳ enters it** (in the form, ticked): untick it for a constant whose payments you type yourself - a tenant who pays different amounts. ⟳ Bring up to date then makes no entries for it and only fills in Paid to on the rows you typed (Category = its name). ✍ marks it in the list.
 - **In formulas**: =PAIDTO("Rent", amount paid) = the last day that amount pays for (a date - format the cell as a date).
 
+## ▦ Spreadsheet - from the prompt docker: attach a workbook, ask in words (2.828.0)
+
+- **＋ / a drop on the prompt docker** takes .xlsx, .xlsm, .csv and .tsv files: the workbook opens in the spreadsheet (the docker is shown) and the chat says so - then say what to do with it.
+- **Say it in the prompt** - the message goes to the spreadsheet instead of the chat LLM:
+  - *create a dashboard of sales by region* - ✨ Dashboard by the LLM (the words after "dashboard of" = what it should show).
+  - *format it* / *tidy up the table* - the open sheet's table formatted: heading, number formats, widths, banded rows, the heading kept on screen, a filter. One undo.
+  - *received a payment of 540 for rent* / *paid 80 for power yesterday* / *payment of 45.90 to the plumber on 3/02/2026* - received = income, paid or payment = expense; the date said (13/01/2026, 3 Feb, yesterday …) or today; the words after for / from / to = the description; a constant or a category already in the ledger named in it = its Category. The row is **shown first** (Date, Description, Category, Amount, Income / Expense - all editable); **✔ Add** puts it in the ledger in date order (a Ledger sheet is made when there is none; Paid to is filled when it is a constant's); Cancel adds nothing; one Ctrl+Z takes it back.
+  - *rent went up to 580 from 12/01/2027* / *rent is now 600* - the 📌 Constants open with the new amount filled in (no date = the next time it is due after today); ＋ Add a new amount to Rent.
+  - *bring the ledger up to date*, *show the constants*, *explain this formula*, *fill the rest from the examples*, *write a formula for the total of column D* - ⟳ / 📌 / 💡 / 🪄 / ✍ as on the toolbar.
+- **When it goes to the spreadsheet**: the spreadsheet is on screen, a workbook was attached in the last 30 minutes, the message names the spreadsheet / sheet / ledger / workbook / table, or - payments and new amounts - the workbook keeps a ledger or constants. Anything else ("what is a good lens for portraits?") is an ordinary chat as before.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

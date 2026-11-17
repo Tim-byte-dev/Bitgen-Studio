@@ -148,6 +148,29 @@
     return out;
   }
   const PFMT = { day: "d mmm yyyy", week: "d mmm yyyy", month: "mmm yyyy", quarter: "mmm yyyy", year: "yyyy" };
+  /** the data as a table: the heading row in the theme, number formats per column, widths, banded rows, the heading kept on
+   *  screen, a filter (2.824.0 inside build; 2.828.0 its own - "format it" from the prompt docker) */
+  function formatTable(ds, D, get, T, formats) {
+    formats = formats || {};
+    const head = { b: true, color: "#ffffff", bg: T.head, bd: { b: { s: "medium", c: T.accent } } };
+    for (let c = D.c1; c <= D.c2; c++) {
+      const k = addr(c, D.header), cl = ds.cells[k] || (ds.cells[k] = {});
+      cl.s = Object.assign({}, cl.s || {}, head);
+    }
+    for (const col of D.cols) {
+      const kind = formats[col.name] || fmtOf(col), code = kind === "text" ? null : FORMATS[kind];
+      let wmax = String(col.name).length;
+      for (let rr = D.r1; rr <= D.r2; rr++) {
+        const k = addr(col.c, rr), cl = ds.cells[k];
+        if (code && cl && cl.v != null && !cl.f && col.type !== "text") cl.f = code;
+        if (rr - D.r1 < 300) { const v = get(D.si, col.c, rr); wmax = Math.max(wmax, String(v == null ? "" : typeof v === "number" ? (kind === "date" ? "00/00/0000" : v.toFixed(kind === "integer" ? 0 : 2)) : v).length + (kind === "currency" ? 3 : 0)); }
+      }
+      if (!ds.cols[col.c]) ds.cols[col.c] = Math.max(60, Math.min(280, Math.round(wmax * 7.4 + 18)));
+    }
+    for (let rr = D.r1; rr <= D.r2; rr += 2) for (let c = D.c1; c <= D.c2; c++) { const k = addr(c, rr + 1); if (rr + 1 > D.r2) break; const cl = ds.cells[k] || (ds.cells[k] = {}); if (!cl.s || !cl.s.bg) cl.s = Object.assign({}, cl.s || {}, { bg: T.band }); }
+    if (!ds.freeze || (!ds.freeze.r && !ds.freeze.c)) ds.freeze = { r: D.header + 1, c: 0 };
+    ds.filter = { r: D.header, r2: D.r2, c1: D.c1, c2: D.c2, cols: {} };
+  }
   function build(ctx, plan, prof) {
     const D = pickSheet(prof, plan.sheet), T = THEMES[plan.theme] || THEMES.blue, get = ctx.get;
     const S = { name: ctx.uniqueName("Dashboard"), cells: {}, cols: {}, rows: {}, merges: [], freeze: { r: 0, c: 0 }, charts: [], dash: true };
@@ -226,31 +249,15 @@
         });
       });
     }
-    // the data sheet as a table
+    // the data sheet as a table (2.828.0: formatTable - the prompt docker's "format it" uses it alone)
     const made = [];
-    for (let c = D.c1; c <= D.c2; c++) {
-      const k = addr(c, D.header), cl = ds.cells[k] || (ds.cells[k] = {});
-      cl.s = Object.assign({}, cl.s || {}, head);
-    }
-    for (const col of D.cols) {
-      const kind = plan.formats[col.name] || fmtOf(col), code = kind === "text" ? null : FORMATS[kind];
-      let wmax = String(col.name).length;
-      for (let rr = D.r1; rr <= D.r2; rr++) {
-        const k = addr(col.c, rr), cl = ds.cells[k];
-        if (code && cl && cl.v != null && !cl.f && col.type !== "text") cl.f = code;
-        if (rr - D.r1 < 300) { const v = get(D.si, col.c, rr); wmax = Math.max(wmax, String(v == null ? "" : typeof v === "number" ? (kind === "date" ? "00/00/0000" : v.toFixed(kind === "integer" ? 0 : 2)) : v).length + (kind === "currency" ? 3 : 0)); }
-      }
-      if (!ds.cols[col.c]) ds.cols[col.c] = Math.max(60, Math.min(280, Math.round(wmax * 7.4 + 18)));
-    }
-    for (let rr = D.r1; rr <= D.r2; rr += 2) for (let c = D.c1; c <= D.c2; c++) { const k = addr(c, rr + 1); if (rr + 1 > D.r2) break; const cl = ds.cells[k] || (ds.cells[k] = {}); if (!cl.s || !cl.s.bg) cl.s = Object.assign({}, cl.s || {}, { bg: T.band }); }
-    if (!ds.freeze || (!ds.freeze.r && !ds.freeze.c)) ds.freeze = { r: D.header + 1, c: 0 };
-    ds.filter = { r: D.header, r2: D.r2, c1: D.c1, c2: D.c2, cols: {} };
+    formatTable(ds, D, get, T, plan.formats);
     made.push(`${kpis.length} headline numbers`, `${plan.breakdowns.length} breakdown${plan.breakdowns.length === 1 ? "" : "s"}`, plan.trend ? "a trend" : "", `"${ds.name}" formatted as a table`);
     ctx.sheets.splice(0, 0, S);
     return { index: 0, name: S.name, made: made.filter(Boolean) };
   }
 
-  const SheetDash = { profile, validate, fallback, build, periods, THEMES, FORMATS, FUNCS, CHARTS };
+  const SheetDash = { profile, validate, fallback, build, formatTable, pickSheet, periods, THEMES, FORMATS, FUNCS, CHARTS };
   root.SheetDash = SheetDash;
   if (typeof module !== "undefined" && module.exports) { module.exports = SheetDash; return; }
 
@@ -336,5 +343,17 @@
     msg(""); pickedFile = null; doc.getElementById("shdFileName").textContent = ""; dlg.querySelector('[name="shdSrc"][value="book"]').checked = true;
     if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
   }
-  root.H3SheetDash = { open, run };
+  /** 2.828.0 ("format it" from the prompt docker): the open sheet's table (else the first) formatted as a table - one undo step */
+  function formatData(o) {
+    o = o || {};
+    const I = X(), Hs = H(); if (!I) return null;
+    const prof = profile(Hs.W.sheets, (si, c, r) => Hs.book().get(si, c, r), (si, c, r) => { const cl = Hs.W.sheets[si].cells[addr(c, r)]; return cl ? I.codeOf(cl) : "General"; });
+    const want = (Hs.W.sheets[Hs.W.active] || {}).name, D = prof.sheets.find((x) => x.name === want) || prof.sheets[0];
+    if (!D) return null;
+    I.step();
+    formatTable(Hs.W.sheets[D.si], D, (si, c, r) => Hs.book().get(si, c, r), THEMES[o.theme] || THEMES.blue, {});
+    Hs.W.active = D.si; Hs.St.book = null; I.tabs(); I.changed();
+    return { name: D.name, rows: D.rows, cols: D.cols.length };
+  }
+  root.H3SheetDash = { open, run, formatData };
 })(typeof window !== "undefined" ? window : globalThis);

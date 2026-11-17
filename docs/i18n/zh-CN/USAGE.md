@@ -6006,6 +6006,18 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **⟳ 自动记入**（表单中，默认勾选）：对于由你自己记入付款的常量——例如每次付不同金额的租客——取消勾选。这时 ⟳ 更新到最新 不为它生成记录，只在你输入的行（Category = 其名称）中填写 Paid to。列表中会标上 ✍。
 - **在公式中**：=PAIDTO("Rent", 已付金额) = 该金额能付到的最后一天（日期——请把单元格设为日期格式）。
 
+## ▦ 电子表格——从提示词停靠窗：附加工作簿，用文字提出要求（2.828.0）
+<!-- en: spreadsheet-from-the-prompt-docker-attach-a-workbook-ask-in-words-2-828-0 153ec3d2f50e -->
+
+- **提示词停靠窗的 ＋ / 拖放** 接受 .xlsx、.xlsm、.csv 和 .tsv 文件：工作簿会在电子表格中打开（停靠窗会显示），聊天中也会说明——然后说出要做什么。
+- **在提示词中说**——消息会交给电子表格，而不是聊天 LLM：
+  - *create a dashboard of sales by region*——由 LLM 生成 ✨ 仪表板（“dashboard of”之后的文字 = 要显示的内容）。
+  - *format it* / *tidy up the table*——格式化当前工作表的表格：标题、数字格式、列宽、隔行底纹、冻结标题、筛选。一步撤销。
+  - *received a payment of 540 for rent* / *paid 80 for power yesterday* / *payment of 45.90 to the plumber on 3/02/2026*——received = 收入，paid 或 payment = 支出；所说的日期（13/01/2026、3 Feb、yesterday …）或今天；for / from / to 之后的文字 = 描述；其中提到的常量或账本中已有的类别 = 其 Category。该行会**先显示**（日期、描述、类别、金额、收入 / 支出——都可修改）；**✔ 添加** 按日期顺序记入账本（没有账本时会创建 Ledger 工作表；属于常量时会填写 Paid to）；取消则不添加；按一次 Ctrl+Z 即可撤销。
+  - *rent went up to 580 from 12/01/2027* / *rent is now 600*——📌 常量会打开并填好新金额（没有日期 = 今天之后的下一个到期日）；＋ 为 Rent 添加新金额。
+  - *bring the ledger up to date*、*show the constants*、*explain this formula*、*fill the rest from the examples*、*write a formula for the total of column D*——与工具栏上的 ⟳ / 📌 / 💡 / 🪄 / ✍ 相同。
+- **何时交给电子表格**：电子表格在屏幕上、过去 30 分钟内附加过工作簿、消息提到电子表格 / 工作表 / 账本 / 工作簿 / 表格，或者——付款和新金额——工作簿有账本或常量。其他的（“what is a good lens for portraits?”）照常是普通聊天。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

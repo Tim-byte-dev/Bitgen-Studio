@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6077,
+ "count": 6078,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56020,6 +56020,15 @@
    ],
    "where": [
     "Spreadsheet: Constants (2.826.0)"
+   ]
+  },
+  {
+   "s": "Attach pictures, a vocal stem or a spreadsheet",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: from the prompt docker (2.828.0)"
    ]
   }
  ]
