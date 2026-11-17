@@ -63,7 +63,7 @@
     const Hs = H(), I = X(), W = Hs.W, B = Hs.book();
     const results = W.sheets.map((S, si) => { const o = {}; for (const [k, cl] of Object.entries(S.cells)) if (cl.v && cl.v[0] === "=") { const p = C().parseAddr(k), v = B.get(si, p.c, p.r); if (v != null && typeof v !== "object") o[k] = v; } return o; });
     const name = (doc.getElementById("shFile").value || W.name || "Workbook").trim();
-    const r = await fetch("/api/sheets/export", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, doc: { sheets: W.sheets, active: W.active }, results }) });
+    const r = await fetch("/api/sheets/export", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, doc: { sheets: W.sheets, active: W.active, constants: W.constants, ledger: W.ledger }, results }) });   // 2.829.0: + the 📌 Constants sheet
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || "HTTP " + r.status); }
     const fname = decodeURIComponent(r.headers.get("X-File-Name") || name + ".xlsx");
     download(await r.blob(), fname);

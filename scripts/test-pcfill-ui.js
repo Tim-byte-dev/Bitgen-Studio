@@ -76,13 +76,13 @@ const near = (a, b, t) => a && b && a.slice(0, 3).every((v, i) => Math.abs(v - b
 
     // the Paint Bucket button
     const tb = await ev(() => [...document.querySelectorAll("#kxTools .ietool")].map((x) => x.dataset.tools));
-    check("the tool column: Gradient and Paint Bucket are two buttons", tb.includes("gradient") && tb.includes("fill"), tb);
+    check("the tool column: Gradient and Paint Bucket are two buttons", tb.some((x) => /^gradient(,|$)/.test(x)) && tb.includes("fill"), tb);   // 2.829.0: the Gradient button holds the Drop Shadow tool too
     await p.click('#kxTools .ietool[data-tools="fill"]'); await p.waitForTimeout(150);
     const op = await ev(() => ({ tool: window.imageEditorInstance.state.tool, src: [...document.querySelectorAll("#pfSrc option")].map((o) => o.value).join(), contig: !!document.getElementById("pfContig"), all: !!document.getElementById("pfAll"), opa: !!document.getElementById("pfOp") }));
     check("...its button picks it; options: Fill (Foreground / Background / Gradient), Tolerance, Contiguous, All layers, Opacity", op.tool === "fill" && op.src === "fg,bg,gradient" && op.contig && op.all && op.opa, op);
     await ev(() => window.imageEditorInstance.E.setTool("rect"));
     await key("g"); const k1 = (await st()).tool; await key("Shift+g"); const k2 = (await st()).tool; await key("Shift+g"); const k3 = (await st()).tool;
-    check("G picks the last used of Gradient / Paint Bucket (the bucket, just used); Shift+G cycles between the two", k1 === "fill" && k2 === "gradient" && k3 === "fill", [k1, k2, k3]);
+    check("G picks the last used of Gradient / Paint Bucket (the bucket, just used); Shift+G cycles across them (2.829.0: + Drop Shadow)", k1 === "fill" && k2 === "gradient" && k3 === "dropshadow", [k1, k2, k3]);
 
     // bucket: foreground into the red half only (contiguous)
     await ev(() => { const E = window.imageEditorInstance.E, g = E.S.layers[0].canvas.getContext("2d"); g.fillStyle = "#ffffff"; g.fillRect(0, 0, 300, 200); g.fillStyle = "#e02020"; g.fillRect(0, 0, 100, 200); g.fillRect(200, 0, 100, 200); E.S.layers[0].ver++; E.refresh(); E.deselect(); });
@@ -145,7 +145,7 @@ const near = (a, b, t) => a && b && a.slice(0, 3).every((v, i) => Math.abs(v - b
       if (a === await sig()) dead.push(t);
       if (t === "crop") await key("Control+z");
     }
-    check("every tool in the column does something on a drag (or says what it needs first)", dead.length === 0 && tools.length === 92, { dead, n: tools.length });   // 2.463.0: + 9 sketch tools; 2.462.0: + the 8 sketch tools; 2.458.0: + the Chain Dimension tool; 2.447.0: + the Artboard tool; 2.428.0: + the F6 shape tools, Artistic Media, the F8 dimension / connector tools; 2.425.0: + the Curvature Pen, the F5 curve tools, the F10 Shape tool; 2.397.0: + Vertical Type, Type on a Path; 2.421.0: + the pen tools, path selection, custom shape
+    check("every tool in the column does something on a drag (or says what it needs first)", dead.length === 0 && tools.length === 93, { dead, n: tools.length });   // 2.829.0: + the Drop Shadow tool   // 2.463.0: + 9 sketch tools; 2.462.0: + the 8 sketch tools; 2.458.0: + the Chain Dimension tool; 2.447.0: + the Artboard tool; 2.428.0: + the F6 shape tools, Artistic Media, the F8 dimension / connector tools; 2.425.0: + the Curvature Pen, the F5 curve tools, the F10 Shape tool; 2.397.0: + Vertical Type, Type on a Path; 2.421.0: + the pen tools, path selection, custom shape
     check("no page errors", errs.length === 0, errs);
   } catch (e) {
     check("the browser run finished", false, String(e && e.stack || e).slice(0, 900));

@@ -5783,6 +5783,13 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
   - *bring the ledger up to date*、*show the constants*、*explain this formula*、*fill the rest from the examples*、*write a formula for the total of column D* - ツールバーと同じ ⟳ / 📌 / 💡 / 🪄 / ✍。
 - **スプレッドシートへ送られるとき**：スプレッドシートが画面にある、30 分以内にブックを添付した、メッセージがスプレッドシート / シート / 台帳 / ブック / 表に触れている、または - 支払いと新しい金額 - ブックに台帳か定数がある。それ以外（「what is a good lens for portraits?」）はこれまでどおり普通のチャットです。
 
+## 🖌 画像エディター - ドロップシャドウツール、WP レイヤー；▦ Excel ファイルの定数（2.829.0）
+<!-- en: image-editor-drop-shadow-tool-wp-layer-constants-in-the-excel-file-2-829-0 be0a6193701c -->
+
+- **ドロップシャドウツール**（Gradient グループ、Shift+G で Fill → Gradient → ドロップシャドウ を切り替え）：レイヤーの中で押して、影が落ちる位置へドラッグ - 距離と角度はドラッグから、その場で反映。選んだレイヤーの影には四角いハンドルがあり、ドラッグで影をもう一度動かせます。ツールバー：ぼかし、不透明度、色、✕ 削除。レイヤースタイル ▸ ドロップシャドウと同じ影；Esc = 変更なし、ドラッグごとに Ctrl+Z 1 回。
+- **WP レイヤー** - ワープロレイヤー：Layer ▸ New ▸ 📄 WP レイヤー（ワープロ）；レイヤーパネルに **WP** バッジ；レイヤーの右クリックメニューの ✎ この WP レイヤーに入力、またはサムネイルをダブルクリック。ほかのレイヤーと同じく重ね順を動かせます。
+- **▦ スプレッドシート ▸ エクスポート ▸ Excel** に **Constants** シートが加わります：金額ごとに 1 行（Type、Income / Expense、Amount、Every、From、To - 次の金額の前日か終了日 -、Description、Entered by ⟳）と台帳の名前。その .xlsx を bitGen で開くと 📌 定数が戻ります（このシートは普通のシートとしては開きません）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

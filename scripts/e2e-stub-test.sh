@@ -14239,6 +14239,13 @@ node scripts/test-chat828.js > /tmp/chat828.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui828-ui.js > /tmp/ui828.log 2>&1 \
   && ok "2.828.0 browser test: ＋ a .csv opens in the spreadsheet, format it, create a dashboard (stand-in LLM), received / paid shown first then ✔ Add into a Ledger, Cancel, undo, rent went up, ordinary chat" \
   || { bad "2.828.0 spreadsheet chat browser test"; grep -a "^FAIL" -A1 /tmp/ui828.log | head -12; }
+# ---- 2.829.0 (Tim: "do the image-editor additions and add the constants sheet to excel export") Drop Shadow tool, the WP layer, Constants in the .xlsx
+node scripts/test-829.js > /tmp/t829.log 2>&1 \
+  && ok "2.829.0 drop shadow geometry (distance / angle / offset round trip), the Constants sheet out and back in (rates, To dates, manual, end, ledger), the wiring" \
+  || { bad "2.829.0 drop shadow + constants sheet units"; grep -a "^FAIL" -A1 /tmp/t829.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui829-ui.js > /tmp/ui829.log 2>&1 \
+  && ok "2.829.0 browser test: drag a red square's shadow 15 px at 143°, undo, the handle drag, blur / colour / remove; the WP layer named, badged, in Layer ▸ New, typed in from the thumbnail and ✎, moved in the stack" \
+  || { bad "2.829.0 drop shadow + WP layer browser test"; grep -a "^FAIL" -A1 /tmp/ui829.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

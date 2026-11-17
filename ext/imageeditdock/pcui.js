@@ -54,6 +54,7 @@
     vtype: '<path d="M5 5h10M10 5v12M7 17h6"/><path d="M19 6v13M17 17l2 2 2-2"/>',
     typepath: '<path d="M3 19c4-10 14-10 18 0" stroke-dasharray="2 2"/><path d="M8 6h8M12 6v8"/>',
     doctext: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 12h6M9 15h4"/>',   // 2.811.0: a page with lines (pcdoctext.js)
+    dropshadow: '<rect x="3" y="3" width="12" height="12"/><path d="M15 7h5v13H7v-5" fill="currentColor" opacity=".45"/><path d="M12 12l6 6"/>',   // 2.829.0: a square with its shadow (pcshadowtool.js)
     shape: '<rect x="3" y="3" width="11" height="11"/><circle cx="15.5" cy="15.5" r="5.5"/>',
     // 2.421.0: pcpen.js
     pen: '<path d="M12 3l6 9-6 9-6-9z"/><circle cx="12" cy="12" r="1.6"/><path d="M12 3v7.4"/>',
@@ -133,7 +134,7 @@
     { k: "s", tools: [["clone", "Clone Stamp Tool"]] },
     { k: "y", tools: [["histbrush", "History Brush Tool"]] },
     { k: "e", tools: [["erase", "Eraser Tool"], ["bgerase", "Background Eraser Tool"], ["magicerase", "Magic Eraser Tool"]] },
-    { k: "g", tools: [["gradient", "Gradient Tool"]] },
+    { k: "g", tools: [["gradient", "Gradient Tool"], ["dropshadow", "Drop Shadow Tool (press in a layer, drag)"]] },   // 2.829.0: + the interactive drop shadow (pcshadowtool.js)
     { k: "g", tools: [["fill", "Paint Bucket Tool"]] },   // 2.396.0: its own button (fills with the foreground, the background or a gradient)
     { k: "r", tools: [["blurtool", "Blur Tool"], ["sharpen", "Sharpen Tool"], ["smudge", "Smudge Tool"]] },
     { k: "o", tools: [["dodge", "Dodge Tool"], ["burn", "Burn Tool"], ["sponge", "Sponge Tool"]] },
@@ -608,8 +609,9 @@
         if (Ly.type === "pixel" || Ly.type === "text" || Ly.type === "shape" || Ly.type === "fill" || Ly.type === "smart" || Ly.type === "doc") { th = thumbFor(Ly.canvas); if (Ly.type === "text") th.title = "Text layer"; if (Ly.type === "smart") { th.classList.add("so"); th.title = "Smart object - double-click: Edit Contents"; } }
         else { th = doc.createElement("span"); th.className = "ic"; th.textContent = Ly.type === "adjust" ? ((D.ADJ_KINDS.find((k) => k[0] === (Ly.adj || {}).kind) || [0, 0, "◐"])[2]) : TYPE_ICON[Ly.type] || "?"; }
         if (i === S.active && !S.maskEdit && !S.fmaskEdit && !(Ly.mask && (Ly.type === "adjust" || Ly.type === "fill"))) th.classList.add("sel");
-        th.title = (th.title || "") + " - Ctrl-click: load its transparency as the selection; double-click: layer style";
+        th.title = (th.title || "") + (Ly.type === "doc" ? " - Ctrl-click: load its transparency as the selection; double-click: type in it" : " - Ctrl-click: load its transparency as the selection; double-click: layer style");
         row.appendChild(th);
+        if (Ly.type === "doc") { const wp = doc.createElement("span"); wp.className = "wp"; wp.textContent = "WP"; wp.title = "A WP (word processor) layer - double-click its thumbnail (or its text with the Move tool) to type in it; move it up and down the stack like any layer"; wp.style.cssText = "font-size:9px;font-weight:700;padding:0 3px;border:1px solid var(--pc-line, #555);border-radius:3px;color:#5aa0ff;flex:none"; row.appendChild(wp); }   // 2.829.0
         if (Ly.mask) {
           const mk = thumbFor(Ly.mask.canvas); mk.classList.add("mk"); if (Ly.mask.on === false) mk.classList.add("off");
           if (i === S.active && (S.maskEdit || Ly.type === "adjust" || Ly.type === "fill")) mk.classList.add("sel");
@@ -651,7 +653,7 @@
           S.pickAnchor = Ly.id; if (S.picks && S.picks.length) S.picks = [];
           S.objSel = true; E.setActive(i, false);
         };
-        th.ondblclick = (e) => { e.stopPropagation(); E.setActive(i); if (Ly.type === "smart" && E.smartEdit) return E.smartEdit(Ly); if (Ly.type === "adjust" || Ly.type === "fill") showTab("pcProps"); else dlgStyle(); };
+        th.ondblclick = (e) => { e.stopPropagation(); E.setActive(i); if (Ly.type === "doc" && E.docText) return E.docText.begin(Ly); if (Ly.type === "smart" && E.smartEdit) return E.smartEdit(Ly); if (Ly.type === "adjust" || Ly.type === "fill") showTab("pcProps"); else dlgStyle(); };
         nm.ondblclick = (e) => {
           e.stopPropagation();
           const inp = doc.createElement("input"); inp.type = "text"; inp.value = Ly.name; inp.style.width = "100%";

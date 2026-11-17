@@ -9432,6 +9432,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
   - *bring the ledger up to date*, *show the constants*, *explain this formula*, *fill the rest from the examples*, *write a formula for the total of column D* - ⟳ / 📌 / 💡 / 🪄 / ✍ as on the toolbar.
 - **When it goes to the spreadsheet**: the spreadsheet is on screen, a workbook was attached in the last 30 minutes, the message names the spreadsheet / sheet / ledger / workbook / table, or - payments and new amounts - the workbook keeps a ledger or constants. Anything else ("what is a good lens for portraits?") is an ordinary chat as before.
 
+## 🖌 Image editor - Drop Shadow tool, WP layer; ▦ Constants in the Excel file (2.829.0)
+
+- **Drop Shadow Tool** (Gradient group, Shift+G cycles Fill → Gradient → Drop Shadow): press in a layer and drag to where its shadow falls - distance and angle come from the drag, live. The picked layer's shadow has a square handle - drag it to move the shadow again. Tool bar: Blur, Opacity, Colour, ✕ Remove. The same shadow as Layer Style ▸ Drop Shadow; Esc = no change, one Ctrl+Z per drag.
+- **WP layer** - the word-processor layer: Layer ▸ New ▸ 📄 WP Layer (word processor); a **WP** badge in Layers; ✎ Type in This WP Layer on the Layers right-click menu, or double-click its thumbnail. It moves in the stack like any layer.
+- **▦ Spreadsheet ▸ Export ▸ Excel** adds a **Constants** sheet: one row per amount (Type, Income / Expense, Amount, Every, From, To - the day before the next amount or its end -, Description, Entered by ⟳) and the ledger's name. Opening the .xlsx in bitGen brings the 📌 Constants back (the sheet is not opened as an ordinary sheet).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

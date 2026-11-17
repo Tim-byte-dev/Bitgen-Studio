@@ -280,7 +280,7 @@
       ]
     },
     {
-      "en": "80a0b0dcdea8",
+      "en": "dc6388761440",
       "title": "画像エディター - ツール",
       "rows": [
         [
@@ -329,7 +329,7 @@
         ],
         [
           "G  (Shift+G cycles)",
-          "Gradient · Paint Bucket"
+          "Gradient · Paint Bucket · ドロップシャドウ"
         ],
         [
           "R  (Shift+R cycles)",

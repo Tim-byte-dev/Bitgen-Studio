@@ -1273,6 +1273,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **📌 电子表格常量——重复出现的金额** — 房租、工资、贷款：名称、金额、每天 / 周 / 两周 / 月 / 季度 / 年、开始日期、收入或支出、结束；从某天起的新金额不影响之前日期的原金额；⟳ 更新到最新 先显示再按日期顺序把每笔应记录写入账本（余额、防止重复记录的 Ref、往前追加的金额勾选后更正），一步撤销；公式中可用 =Rent / CONST("Rent", 日期)。*Where:* ▦ 电子表格 ▸ 📌 常量。*Since:* 2.826.0
 - **📌 Paid to——常量的付款够付到哪一天** — 房租付到哪一天：账本中的付款从开始日期起逐日抵扣（一天 = 每周 ÷ 7）；常量列表显示已付到的日期、落后 / 提前的天数和欠款；账本的 Paid to 列显示每笔付款后的日期（实时 =PAIDTO()）；常量也可以由你自己记入付款（租客每次不同的付款）。*Where:* ▦ 电子表格 ▸ 📌 常量。*Since:* 2.827.0
 - **▦ 从提示词停靠窗操作电子表格** — 用 ＋ 附加 Excel / CSV 文件即在电子表格中打开；说“create a dashboard”“format it”“received a payment of 540 for rent”“paid 80 for power yesterday”（received = 收入，paid = 支出——先显示该行，再 ✔ 添加 按日期顺序记入账本）、“rent went up to 580 from 12/01/2027”“bring the ledger up to date”“explain this formula”…；普通聊天照常是聊天。*Where:* 提示词停靠窗 + ▦ 电子表格。*Since:* 2.828.0
+- **🖌 投影工具和 WP 图层** — 在图层中按下并拖到影子落下的位置（控点可再次移动；模糊 / 不透明度 / 颜色 / ✕ 移除）；文字处理图层改为 WP 图层（Layer ▸ New、WP 标记、✎ 在此 WP 图层中输入）。电子表格的 Excel 导出加入 Constants 工作表，打开时恢复。*Where:* 🖌 图像编辑器（Shift+G）、▦ 电子表格 ▸ 导出。*Since:* 2.829.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Artist mode 中也可以（2.646.0）。 *Since:* 2.645.0

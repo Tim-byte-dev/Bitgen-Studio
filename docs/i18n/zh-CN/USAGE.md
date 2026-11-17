@@ -6018,6 +6018,13 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
   - *bring the ledger up to date*、*show the constants*、*explain this formula*、*fill the rest from the examples*、*write a formula for the total of column D*——与工具栏上的 ⟳ / 📌 / 💡 / 🪄 / ✍ 相同。
 - **何时交给电子表格**：电子表格在屏幕上、过去 30 分钟内附加过工作簿、消息提到电子表格 / 工作表 / 账本 / 工作簿 / 表格，或者——付款和新金额——工作簿有账本或常量。其他的（“what is a good lens for portraits?”）照常是普通聊天。
 
+## 🖌 图像编辑器——投影工具、WP 图层；▦ Excel 文件中的常量（2.829.0）
+<!-- en: image-editor-drop-shadow-tool-wp-layer-constants-in-the-excel-file-2-829-0 be0a6193701c -->
+
+- **投影工具**（Gradient 组，Shift+G 在 Fill → Gradient → 投影 之间切换）：在图层中按下并拖到影子落下的位置——距离和角度来自拖动，实时显示。所选图层的影子有一个方形控点——拖动它可再次移动影子。工具栏：模糊、不透明度、颜色、✕ 移除。与图层样式 ▸ 投影是同一个影子；Esc = 不做更改，每次拖动按一次 Ctrl+Z 撤销。
+- **WP 图层**——文字处理图层：Layer ▸ New ▸ 📄 WP 图层（文字处理）；图层面板中有 **WP** 标记；图层右键菜单中的 ✎ 在此 WP 图层中输入，或双击其缩略图。它和其他图层一样可在堆叠中移动。
+- **▦ 电子表格 ▸ 导出 ▸ Excel** 会加入 **Constants** 工作表：每个金额一行（Type、Income / Expense、Amount、Every、From、To——下一个金额的前一天或结束日——、Description、Entered by ⟳）以及账本的名称。在 bitGen 中打开该 .xlsx 会恢复 📌 常量（该工作表不会作为普通工作表打开）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

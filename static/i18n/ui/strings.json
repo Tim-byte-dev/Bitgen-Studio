@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6078,
+ "count": 6081,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56029,6 +56029,33 @@
    ],
    "where": [
     "Spreadsheet: from the prompt docker (2.828.0)"
+   ]
+  },
+  {
+   "s": "The shadow's colour",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: drop shadow, WP layer (2.829.0)"
+   ]
+  },
+  {
+   "s": "WP Layer (word processor)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: drop shadow, WP layer (2.829.0)"
+   ]
+  },
+  {
+   "s": "Type in This WP Layer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor: drop shadow, WP layer (2.829.0)"
    ]
   }
  ]

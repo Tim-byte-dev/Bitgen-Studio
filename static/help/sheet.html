@@ -64,6 +64,7 @@
   <li>The ledger is a sheet with Date and Income / Expense (or Amount) headings - yours, or <b>＋ Make a Ledger sheet</b>. Rows you type yourself stay and are kept in date order with the rest.</li>
   <li>Formulas read them: <code>=Rent</code> is today's amount, <code>=CONST("Rent", A5)</code> the amount on a date (a name with spaces: <code>=Car_loan</code>). They are saved with the workbook.</li>
   <li><b>Paid to</b> - what has been paid for a constant covers it day by day from its first start, a day being the weekly amount ÷ 7 (fortnightly ÷ 14, monthly × 12 ÷ 365, yearly ÷ 365). The list says <i>Paid to 24/01/2026 · 3 days behind · $157.14 owing</i> (or days ahead), and the ledger's <b>Paid to</b> column shows, on every row of a constant, the date paid to after that row - a live formula, <code>=PAIDTO("Rent", amount paid)</code>. Payments are found by the Category (the constant's name) or the Ref. Untick <b>⟳ enters it</b> for one whose payments you type yourself (a tenant's rent) - ⟳ then only fills in Paid to.</li>
+  <li><b>Export ▸ Excel</b> adds a <b>Constants</b> sheet - one row per amount: Type, Income / Expense, Amount, Every, From, To, Description, Entered by ⟳ - and the ledger's name. Opening that file again (here) brings the constants back.</li>
 </ul>
 
 <h3>From the prompt docker</h3>

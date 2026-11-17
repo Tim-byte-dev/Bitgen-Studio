@@ -48,7 +48,7 @@ check("swatches: 22 px, ringed (a dark colour shows on the dark theme), â‡„ / â—
   /\.kxsw input\{position:absolute;width:22px;height:22px;[^}]*box-shadow:0 0 0 1px #9a917f/.test(IE) && /\.kxsw \.sx,\.kxsw \.sd\{position:absolute;width:13px;height:13px/.test(IE)
   && /fg: store\.get\("fg", "#000000"\)/.test(IE));
 check("the tool column: the Paint Bucket its own button, G on both; Shift+G cycles across every button of a key",
-  /\{ k: "g", tools: \[\["gradient", "Gradient Tool"\]\] \},\s*\n\s*\{ k: "g", tools: \[\["fill", "Paint Bucket Tool"\]\] \}/.test(UI)
+  /\{ k: "g", tools: \[\["gradient", "Gradient Tool"\](, \["dropshadow", "Drop Shadow Tool[^"]*"\])?\] \},[^\n]*\n\s*\{ k: "g", tools: \[\["fill", "Paint Bucket Tool"\]\] \}/.test(UI)   /* 2.829.0: + the Drop Shadow tool in the Gradient group */
   && /const gs = GROUPS\.filter\(\(x\) => x && x\.k === k\);/.test(UI) && /const g = \{ tools: \[\]\.concat\(\.\.\.gs\.map\(\(x\) => x\.tools\)\) \};/.test(UI));
 check("the Paint Bucket: Fill Foreground / Background / Gradient, Tolerance, Contiguous, All layers, Opacity; a drag sets the gradient's direction; Alt-click picks",
   /T\.fill = \{/.test(PF) && /id="pfSrc"/.test(PF) && /\["fg", "Foreground"\], \["bg", "Background"\], \["gradient", "Gradient"\]/.test(PF) && /id="pfContig"/.test(PF) && /id="pfAll"/.test(PF) && /id="pfOp"/.test(PF)

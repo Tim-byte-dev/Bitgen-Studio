@@ -339,7 +339,7 @@
 
     /* ---- frames */
     function makeFrame(x, y, w, h, more) {
-      const L = E.makeLayer("Document text", S.w, S.h, "doc");
+      const L = E.makeLayer("WP layer", S.w, S.h, "doc");   // 2.829.0 (Tim: "make the word processor a wp layer") - was "Document text"
       L.doc = Object.assign({ html: "<p><br></p>", x: Math.round(x), y: Math.round(y), w: Math.max(40, Math.round(w)), h: Math.max(30, Math.round(h)), k: kNow(), top: 0, flow: { id: newId(), idx: 0 } }, more || {});
       return L;
     }
@@ -397,9 +397,9 @@
         else doc.execCommand("insertText", false, t || "");
       });
       doc.addEventListener("selectionchange", keepSel);
-      setTimeout(() => { try { ed.focus({ preventScroll: true }); } catch (e) { ed.focus(); } }, 0);
+      setTimeout(() => { if (!ed) return; try { ed.focus({ preventScroll: true }); } catch (e) { ed.focus(); } }, 0);   // 2.829.0: ended before it ran (begin + end at once) = nothing to focus
       if (S.tool !== "doctext") E.setTool("doctext"); else E.renderOptions();
-      say("typing in the document frame - Esc or a click outside it ends (one undo step)");
+      say("typing in the WP layer - Esc or a click outside it ends (one undo step)");
     }
     function keepSel() { const s = doc.getSelection(); if (s && s.rangeCount && ed && ed.contains(s.anchorNode)) savedRange = s.getRangeAt(0).cloneRange(); }
     function live() {
@@ -601,7 +601,12 @@
       }, { okLabel: "📄 Create" });
     }
     E.ui.addCmd("file.newtextdoc", "📄 New Text Document…", "", newTextDocument, null, ["File", "file.new"]);
-    E.ui.addCmd("layer.newdocframe", "Document Text Frame", "", () => { E.setTool("doctext"); say("drag a box on the canvas for the frame"); });
+    E.ui.addCmd("layer.newdocframe", "📄 WP Layer (word processor)", "", () => { E.setTool("doctext"); say("drag a box on the canvas for the WP layer's frame - then type"); });
+    // 2.829.0 (Tim: "make the word processor a wp layer that the user can edit and change it's position in the stack"): the WP layer
+    // in Layer ▸ New, ✎ Type in it on the right-click menus (pcui's Layers row: its thumbnail double-clicked types in it too)
+    { const lm = (E.ui.MENUS || []).find(([n]) => n === "Layer"), nw = lm && lm[1].find((x) => x && x.label === "New"); if (nw && !nw.items.includes("layer.newdocframe")) nw.items.splice(nw.items.indexOf("layer.newgroup") + 1, 0, "layer.newdocframe"); }
+    E.ui.addCmd("layer.docedit", "✎ Type in This WP Layer", "", () => { const L = E.layer(); if (isDoc(L)) begin(L); }, { enabled: () => isDoc(E.layer()) });
+    E.ui.layerCtxItems = (E.ui.layerCtxItems || []).concat(["layer.docedit"]);
     E.docText = { ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
