@@ -59,6 +59,15 @@ Blender engine for 3D bodies in Settings ▸ 3D.
 `requirements.txt` is a single package, `huggingface_hub`, used to fetch model
 weights.
 
+### Node packages for Word files (2.814.0)
+
+Installed by `npm` with the rest of the server's packages (not copied into the repo):
+
+| Package | Role | Licence |
+|---|---|---|
+| `docx` (dolanmiu/docx) | writes the image editor's document text as a Word file (.docx) | MIT |
+| `mammoth` (mwilliamson/mammoth.js) | reads a Word file (.docx) into document text | BSD-2-Clause |
+
 ## What is downloaded and run, not shipped
 
 | Tool | Role | Where it comes from |

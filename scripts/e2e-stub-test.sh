@@ -14131,6 +14131,13 @@ node scripts/test-pageview813.js > /tmp/pageview813.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui813-ui.js > /tmp/ui813.log 2>&1 \
   && ok "2.813.0 page numbers on page 1 and 2 (Page {page} of {pages}, top right, red), a new page has them, Two / Many Pages, a click on page 2" \
   || { bad "2.813.0 page numbers / pages view browser test"; grep -a "^FAIL" -A1 /tmp/ui813.log | head -12; }
+# ---- 2.814.0 (Tim: "lets do next" - the WORD PLAN's step 3: .docx out + in with margins, headers, footers)
+node scripts/test-docx814.js > /tmp/docx814.log 2>&1 \
+  && ok "2.814.0 .docx: the page's model (styles, runs, lists, tables, page, header / footer), docx writes it, mammoth reads it back" \
+  || { bad "2.814.0 .docx model / writer / reader"; grep -a "^FAIL" -A1 /tmp/docx814.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui814-ui.js > /tmp/ui814.log 2>&1 \
+  && ok "2.814.0 File ▸ Export ▸ Word Document saves + downloads notes814.docx (A4, 20 mm margins, Page {page} of {pages} footer); File ▸ Open Word Document opens it as document text" \
+  || { bad "2.814.0 .docx browser test"; grep -a "^FAIL" -A1 /tmp/ui814.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

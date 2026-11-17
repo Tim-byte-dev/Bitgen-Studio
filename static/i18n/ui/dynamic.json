@@ -12467,6 +12467,22 @@
    "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
+   "s": "docx",
+   "src": "ext/imageeditdock/pcdocx.js:245"
+  },
+  {
+   "s": "Word lays out pages itself - its page breaks can fall a line or two away from these",
+   "src": "ext/imageeditdock/pcdocx.js:245"
+  },
+  {
+   "s": "File",
+   "src": "ext/imageeditdock/pcdocx.js:279"
+  },
+  {
+   "s": "The words, styles, lists and tables come in; pictures are left out for now",
+   "src": "ext/imageeditdock/pcdocx.js:279"
+  },
+  {
    "s": "Round",
    "src": "ext/imageeditdock/pcdraw.js:458"
   },
@@ -18972,10 +18988,6 @@
   },
   {
    "s": "Page 1 of 1",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:56"
-  },
-  {
-   "s": "File",
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
   {
@@ -26703,6 +26715,18 @@
   {
    "p": "{0} document(s) have changes that are not saved: {1}",
    "src": "ext/imageeditdock/pcdocs.js:343"
+  },
+  {
+   "p": "{0} paragraphs / tables",
+   "src": "ext/imageeditdock/pcdocx.js:245"
+  },
+  {
+   "p": "Header from the master's type: {0} · Footer: {1}",
+   "src": "ext/imageeditdock/pcdocx.js:245"
+  },
+  {
+   "p": "Other stories left out: {0} - pick a frame to save its story",
+   "src": "ext/imageeditdock/pcdocx.js:245"
   },
   {
    "p": "size {0}",

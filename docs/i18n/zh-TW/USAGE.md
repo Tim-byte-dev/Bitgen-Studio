@@ -5875,6 +5875,14 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - 頁碼放在**主頁**上（沒有主頁時會建立 A-Master 並應用到所有頁面），因此**每一頁都顯示自己的頁碼**，之後新增的頁面（包括文件增長時自動新增的頁面）也會有。以前單獨放在某一頁上的頁碼會被移除。要更改時再次開啟 #。
 - **檢視 ▸ Pages: One Page / Two Pages / Many Pages** - Two 並排顯示頁面，Many 以每行 4 頁的網格顯示。前面的頁面是正在編輯的頁面，其他頁面畫在它周圍。**點選另一頁**即可讓它在原位置來到前面；Ctrl+滾輪縮放整個版面。One Page 返回單頁顯示。
 
+## Word files: save document text as .docx, open a .docx (2.814.0)
+<!-- en: word-files-save-document-text-as-docx-open-a-docx-2-814-0 402080cef532 -->
+
+- **檔案 ▸ 匯出 ▸ Word 文件 (.docx)…** 把文件文字儲存為 Word 檔案 - 儲存的是你選取的文字框（沒有則為第一個）的文章。其中包括**段落樣式**（Title、Subtitle、Heading 1-3、Quote、Code）、**字型、字號、粗體 / 斜體 / 下劃線 / 刪除線、下標 / 上標、顏色、突出顯示、連結**、**對齊、行距、段前 / 段後間距、縮排**、**項目符號和編號**（含層級）以及**表格**（列寬、標題行 - 在 Word 中也會在每頁重複 - 合併儲存格、底紋、儲存格對齊、邊框）。
+- **頁面大小**取自頁面，**頁邊距**取自第一個文字框在頁面上的位置。頁面**主頁**上的文字成為**頁首**（頁面上方五分之一）和**頁尾**（下方五分之一）；**{page}** 和 **{pages}** 成為 Word 自己的頁碼域，所以 Page {page} of {pages} 在 Word 中也會計數。
+- 檔案儲存在項目的 **docs** 資料夾並下載。Word 會自行排版頁面，所以它的分頁位置可能與 bitGen 相差一兩行。
+- **檔案 ▸ 📂 開啟 Word 文件 (.docx)…** 把 .docx 作為新的文字文件開啟：選擇檔案、頁面大小和頁邊距；文字、樣式、清單和表格進入一個文字框，按需要自動新增頁面。檔案中的圖片暫不匯入。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5889,7 +5897,7 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits 88c929d0ebae -->
+<!-- en: credits f3b3b2f4b50b -->
 
 **出品與開發：Tim Paul**
 
@@ -5967,6 +5975,8 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **[opentype.js](https://github.com/opentypejs/opentype.js)**——3D 文字（MIT）
 - **[pdf.js](https://mozilla.github.io/pdf.js/)**（Mozilla）——在影像編輯器中開啟 PDF（Apache-2.0）
 - **[pdf-lib 和 fontkit](https://pdf-lib.js.org)**——儲存嵌入字型的 PDF（MIT）
+- **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文件文字儲存為 Word 檔案 (.docx)（MIT）
+- **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 檔案 (.docx) 作為文件文字開啟（BSD-2-Clause）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 檔案及其文字效果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)**——Sketcher 的牆（MIT；另含 splaytree 和 robust-predicates）
 - **[replicad 和 OpenCascade](https://replicad.xyz)**——參數化 3D 實體（MIT；OpenCascade 為 LGPL-2.1）

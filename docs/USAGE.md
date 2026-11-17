@@ -9306,6 +9306,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The number goes on the **master** (A-Master is made and given to every page when there is none), so **every page shows its own number** - and pages added later (also the ones a text document adds as it grows) get it too. A number put on one page by itself before is taken off. Open # again to change it.
 - **View ▸ Pages: One Page / Two Pages / Many Pages** - Two shows the pages side by side, Many in a grid four across. The page in front is the one you work on; the others are drawn around it. **Click another page** to bring it to the front where it is; Ctrl+wheel zooms the whole spread. One Page goes back to a single page.
 
+## Word files: save document text as .docx, open a .docx (2.814.0)
+
+- **File ▸ Export ▸ Word Document (.docx)…** saves the document text as a Word file - the story of the frame you picked (or the first one). In it go the **paragraph styles** (Title, Subtitle, Heading 1-3, Quote, Code), **font, size, bold / italic / underline / strikethrough, sub / superscript, colour, highlight, links**, **alignment, line spacing, space before / after, indents**, **bullets and numbering** (with their levels) and **tables** (column widths, the header row - repeated on every page in Word too - merged cells, shading, cell alignment, borders).
+- The **page size** comes from the page and the **margins** from where the first frame sits on it. Type on the page's **master** becomes the **header** (the top fifth of the page) and the **footer** (the bottom fifth); **{page}** and **{pages}** become Word's own page number fields, so Page {page} of {pages} counts in Word as well.
+- The file is kept in the project's **docs** folder and downloaded. Word lays out the pages itself, so its page breaks can fall a line or two away from bitGen's.
+- **File ▸ 📂 Open Word Document (.docx)…** opens a .docx as a new text document: pick the file, the page size and the margins; the words, styles, lists and tables come in, in one frame that adds pages as it needs. Pictures in the file are left out for now.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9397,13 +9404,14 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[opentype.js](https://github.com/opentypejs/opentype.js)** - 3D text (MIT)
 - **[pdf.js](https://mozilla.github.io/pdf.js/)** (Mozilla) - opening PDFs in the image editor (Apache-2.0)
 - **[pdf-lib and fontkit](https://pdf-lib.js.org)** - saving PDFs with embedded fonts (MIT)
+- **[docx](https://github.com/dolanmiu/docx)** (Dolan Miu) - saving document text as Word files (.docx) (MIT)
+- **[mammoth](https://github.com/mwilliamson/mammoth.js)** (Michael Williamson) - opening Word files (.docx) as document text (BSD-2-Clause)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - the Sketcher's walls (MIT; with splaytree and robust-predicates)
 - **[replicad and OpenCascade](https://replicad.xyz)** - parametric 3D bodies (MIT; OpenCascade LGPL-2.1)
 - **jxl-oxide, libjxl and @jsquash/jxl** - JPEG XL open and save (MIT / Apache-2.0 / BSD-3-Clause)
 - **[Node.js, Express and Multer](https://nodejs.org)** - the app's server
 - **[Electron](https://github.com/electron/electron)** - the desktop app
-- **[Node SerialPort](https://serialport.io)** - the laser over USB (MIT)
 - **Python, NumPy, OpenCV, soundfile and pyaaf2** - the workers, tracking, beats, sound and AAF export
 - **[OpenTimelineIO](https://opentimeline.io)** - timeline exchange (OTIO, FCP XML, EDL)
 - **[uv](https://github.com/astral-sh/uv)** (Astral) - the setup's Python

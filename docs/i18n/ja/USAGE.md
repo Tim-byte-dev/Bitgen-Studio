@@ -5642,6 +5642,14 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - 番号は**マスター**に置かれます（マスターがなければ A-Master が作られて全ページに割り当てられます）。そのため**各ページにそれぞれの番号が表示**され、あとで追加したページ（文書の増加で自動追加されるページも）にも付きます。以前に 1 ページだけに置いた番号は取り除かれます。変更するときはもう一度 # を開きます。
 - **表示 ▸ Pages: One Page / Two Pages / Many Pages** - Two はページを横に並べ、Many は 4 列のグリッドで表示します。手前のページが作業対象で、ほかのページはその周りに描かれます。**別のページをクリック**すると、その位置のまま手前に来ます。Ctrl+ホイールで全体を拡大縮小します。One Page で 1 ページ表示に戻ります。
 
+## Word files: save document text as .docx, open a .docx (2.814.0)
+<!-- en: word-files-save-document-text-as-docx-open-a-docx-2-814-0 402080cef532 -->
+
+- **ファイル ▸ 書き出し ▸ Word 文書 (.docx)…** で文書テキストを Word ファイルとして保存します - 選んだフレーム（なければ最初のフレーム）のストーリーです。**段落スタイル**（Title、Subtitle、Heading 1〜3、Quote、Code）、**フォント・サイズ・太字 / 斜体 / 下線 / 取り消し線・下付き / 上付き・色・蛍光ペン・リンク**、**配置・行間・段落前後の間隔・インデント**、**箇条書きと番号付き**（レベルも）、**表**（列幅、見出し行 - Word でも各ページに繰り返し - 結合セル、塗りつぶし、セル内の配置、罫線）が入ります。
+- **ページサイズ**はページから、**余白**は最初のフレームの位置から決まります。ページの**マスター**にある文字は**ヘッダー**（ページの上 5 分の 1）と**フッター**（下 5 分の 1）になり、**{page}** と **{pages}** は Word 自身のページ番号フィールドになるので、Page {page} of {pages} は Word でも数えられます。
+- ファイルはプロジェクトの **docs** フォルダーに保存され、ダウンロードされます。Word はページを自分でレイアウトするため、改ページが bitGen と 1〜2 行ずれることがあります。
+- **ファイル ▸ 📂 Word 文書を開く (.docx)…** で .docx を新しいテキスト文書として開きます：ファイル、ページサイズ、余白を選びます。文字・スタイル・リスト・表が 1 つのフレームに入り、必要に応じてページが追加されます。ファイル内の画像は今のところ読み込みません。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5654,7 +5662,7 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 <!-- credits:start -->
 
 ## クレジット
-<!-- en: credits 88c929d0ebae -->
+<!-- en: credits f3b3b2f4b50b -->
 
 **制作・開発：Tim Paul**
 
@@ -5732,6 +5740,8 @@ bitGen Studio は多くの人々の成果の上に成り立っています。コ
 - **[opentype.js](https://github.com/opentypejs/opentype.js)** - 3D テキスト（MIT）
 - **[pdf.js](https://mozilla.github.io/pdf.js/)**（Mozilla）- 画像エディターで PDF を開く機能（Apache-2.0）
 - **[pdf-lib と fontkit](https://pdf-lib.js.org)** - フォントを埋め込んだ PDF の保存（MIT）
+- **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）- 文書テキストを Word ファイル (.docx) として保存（MIT）
+- **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）- Word ファイル (.docx) を文書テキストとして開く（BSD-2-Clause）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）- PSD ファイルとそのテキスト効果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - Sketcher の壁（MIT。splaytree と robust-predicates を併用）
 - **[replicad と OpenCascade](https://replicad.xyz)** - パラメトリック 3D ボディ（MIT。OpenCascade は LGPL-2.1）

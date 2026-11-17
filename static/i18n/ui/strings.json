@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5748,
+ "count": 5754,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53053,6 +53053,60 @@
    ],
    "where": [
     "Page Numbers dialog (2.813.0)"
+   ]
+  },
+  {
+   "s": "Word Document (.docx)…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "📂 Open Word Document (.docx)…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "Save as Word Document",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "Open Word Document",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "💾 Save",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "📂 Open",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Word files - File ▸ Open / Export (2.814.0)"
    ]
   }
  ]

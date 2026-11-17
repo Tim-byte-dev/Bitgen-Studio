@@ -301,6 +301,18 @@
           "what": "saving PDFs with embedded fonts (MIT)"
         },
         {
+          "name": "docx",
+          "by": "Dolan Miu",
+          "url": "https://github.com/dolanmiu/docx",
+          "what": "saving document text as Word files (.docx) (MIT)"
+        },
+        {
+          "name": "mammoth",
+          "by": "Michael Williamson",
+          "url": "https://github.com/mwilliamson/mammoth.js",
+          "what": "opening Word files (.docx) as document text (BSD-2-Clause)"
+        },
+        {
           "name": "ag-psd",
           "by": "Agamnentzar",
           "url": "https://github.com/Agamnentzar/ag-psd",
