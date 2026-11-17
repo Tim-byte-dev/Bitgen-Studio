@@ -49,6 +49,9 @@
     // 2.806.0 (Tim: "a blender layer is being worked on an the generate button is pressed, then generate the image from the
     // blender scene and the prompt and reference images if any"): ✨ Generate with a Blender / 3D layer picked = from its scene
     if (op === "generate" && s.onScreen && s.open && s.blender && !s.hasSel) return { kind: "blender", op, mode: "generate" };
+    // 2.834.0 (Tim: "when in image-edit mode and a selection has been made and prompt docker is in generate mode then generate
+    // the image inside of the selection"): a selection in the editor on screen = into it, the ✨ AI panel showing or not
+    if (op === "generate" && s.onScreen && s.open && s.hasSel) return { kind: "run", op, mode: "generate", whole: false, into: false };
     if (op === "generate") return linkedNow(s) && s.mode === "generate" ? { kind: "run", op, mode: "generate", whole: true, into: true } : null;
     if (!["edit", "refine", "fill", "background", "remove", "compose"].includes(op)) return null;
     // 2.543.0: the editor minimized / closed -> the References docker's pictures (Fill / Remove need the editor)
@@ -172,7 +175,7 @@
     }
     root.H3TakeGenerate = (gm, text) => {
       const act = actionFor(Object.assign(state(), { genMode: gm }));
-      if (act && (act.op !== "generate" || act.kind === "blender")) return takeOp(act, text);   // 2.806.0: + Generate on a Blender layer
+      if (act && (act.op !== "generate" || act.kind === "blender" || (act.kind === "run" && !act.whole))) return takeOp(act, text);   // 2.806.0: + Generate on a Blender layer; 2.834.0: + into the selection
       if (!linked() || gm !== "image") return false;
       if (S.busy) { say("still working on the last one"); return true; }
       if (!S.w) {                                                           // 2.451.0: nothing open yet
@@ -233,6 +236,9 @@
         E.runCompose({ prompt, layers, direct: true, keep: E.layer() });
         return true;
       }
+      // 2.834.0 (Tim: "in edit mode use inpaint or out paint or fill like krita ai does"): ✏ Edit's fill mode (pcaifill.js) -
+      // Fill / Outpaint run here, Inpaint and an Edit of the layer go on below
+      if (act.op === "edit" && !act.bg && E.aiFill && E.aiFill.edit(prompt, editStyle)) return true;
       if (act.kind === "layer") {                                        // 2.543.0: the selected layer is the picture
         const pk = picksNow(), L = pk.length === 1 ? pk[0] : E.layer();
         let c = L && E.layerPicture ? E.layerPicture(L) : null;
@@ -245,7 +251,10 @@
       }
       if (act.mode === "edit") { E.runAI({ prompt, editStyle, into: false, whole: false, direct: true, keep: E.layer(), label: "✏ edit" }); return true; }   // 2.553.0: in the selection
       if (E.flattenCache) E.flattenCache();
-      if (act.op === "generate") { E.runAI({ prompt, editStyle, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate" }); return true; }   // 2.549.0: a new layer
+      if (act.op === "generate") {                                      // 2.549.0: a new layer; 2.834.0: with the prompt docker's style
+        const fs = sel && S.engines && (S.engines.inpaint || []).some((x) => x.id === sel.value) ? sel.value : "";
+        E.runAI({ prompt, editStyle, style: fs, into: false, whole: act.whole, direct: true, keep: E.layer(), label: "✨ generate" }); return true;
+      }
       E.runAI({ prompt, editStyle, into: act.into && store.get("pl.blend", true) !== false, whole: act.whole });
       return true;
     }

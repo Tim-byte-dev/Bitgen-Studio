@@ -14274,6 +14274,13 @@ node scripts/test-833.js > /tmp/t833.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui833-ui.js > /tmp/ui833.log 2>&1 \
   && ok "2.833.0 browser test: ✨ Make slides (a stand-in LLM) -> a new presentation with notes, the picture box filled by a stand-in job with the image style; ✍ rewrite + undo; 🎤 notes; the outline as written after a slide; 'make a 2 slide presentation about bees' from the prompt docker; ordinary chat still the LLM's" \
   || { bad "2.833.0 slides part 3 browser test"; grep -a "^FAIL" -A1 /tmp/ui833.log | head -12; }
+# ---- 2.834.0 (Tim: "when in image-edit mode and a selection has been made and prompt docker is in generate mode then generate the image inside of the selection ...") Generate into the selection / the whole canvas, Edit Inpaint / Fill / Outpaint
+node scripts/test-834.js > /tmp/t834.log 2>&1 \
+  && ok "2.834.0 pcaifill geometry / editPlan (Auto, Inpaint, Fill, Outpaint) / holeMask / canvasSize; actionFor Generate + a selection = into it; the wiring" \
+  || { bad "2.834.0 generate / edit units"; grep -a "^FAIL" -A1 /tmp/t834.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui834-ui.js > /tmp/ui834.log 2>&1 \
+  && ok "2.834.0 browser test: Generate into the selection with the panel hidden, no selection = the canvas's shape over the whole canvas, Edit Auto = Inpaint / Outpaint, Fill green, the empty canvas outpainted" \
+  || { bad "2.834.0 generate / edit browser test"; grep -a "^FAIL" -A1 /tmp/ui834.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -9472,6 +9472,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✍ Rewrite this slide**, **✂ Make it shorter**, **✓ Fix the words**, **🎤 Speaker notes from the slide** - one undo each.
 - **The prompt docker**: "make slides about bees", "create a 6 slide presentation on solar power with pictures" (a pasted text on the lines after the first) builds it in 🎞 Slides.
 
+## 🖼 Image editor - Generate into the selection or the whole canvas, Edit: Inpaint / Fill / Outpaint (2.834.0)
+
+- **✨ Generate** (prompt docker) with a picture open in the image editor: a selection = rendered into it with the prompt docker's style, fitting the scene; no selection = made at the canvas's shape and laid over the whole canvas - both as a new layer.
+- **✏ Edit**: the dropdown beside the ▾ - **Auto** (a selection across the picture or over empty canvas = Outpaint, another selection = Inpaint; no selection = the empty canvas round the picture outpainted, else the layer edited), **Inpaint**, **Fill**, **Outpaint** (make room first with Image ▸ Canvas Size) - the Krita AI plugin's fill modes, through the prompt docker's edit model.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

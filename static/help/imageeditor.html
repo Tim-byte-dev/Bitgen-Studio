@@ -2,6 +2,13 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="aifill834">✅ Generate into the selection or the whole canvas; Edit: Inpaint / Fill / Outpaint (2.834.0)</h3>
+<ul>
+  <li>The prompt docker on <b>✨ Generate</b> with a picture open: a <b>selection</b> = the picture is rendered into the selection with the prompt docker's style (it fits the scene round it) and comes in as a new layer. <b>No selection</b> = it is made at the canvas's shape and comes in as a new layer covering the <b>whole canvas</b>.</li>
+  <li>On <b>✏ Edit</b> a second dropdown beside the ▾ says how the selection is worked on: <b>Auto</b> (a selection across the whole picture or over empty canvas = Outpaint, another selection = Inpaint; no selection = the empty canvas round the picture is outpainted, else the layer is edited), <b>Inpaint</b> (the instruction changes what is in the selection), <b>Fill</b> (the selection is replaced from the prompt so it belongs in the picture), <b>Outpaint</b> (the picture continued into the selection or the empty canvas - make room first with Image ▸ Canvas Size).</li>
+  <li>All of them use the edit model picked in the prompt docker - it sees the picture round the selection - and the result is a new layer (⏳ Pending first when it is on).</li>
+</ul>
+
 <h3 id="dockers514">✅ View ▸ Dockers; folding and closing the docker groups (2.514.0)</h3>
 <ul>
   <li><b>▾</b> at the start of a docker group's tabs folds the group to its tabs; click a tab to open it again.</li>

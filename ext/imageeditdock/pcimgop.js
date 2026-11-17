@@ -37,7 +37,7 @@
   "use strict";
   /* ================================ pure ================================ */
   const OPS = [
-    { id: "generate", icon: "✨", label: "Generate", mode: "generate", tip: "A new picture from the prompt (with the ✨ AI panel showing: into the selection, else the whole picture)" },
+    { id: "generate", icon: "✨", label: "Generate", mode: "generate", tip: "A new picture from the prompt - with the image editor open: into the selection, else over the whole canvas as a new layer" },
     { id: "edit", icon: "✏", label: "Edit", mode: "edit", tip: "Follow an instruction with the edit model - \"make her jacket red\" (the selection, else the whole picture; in Blender mode the Blender scene)" },
     { id: "refine", icon: "🔁", label: "Refine", mode: "refine", tip: "Redraw the selection (else the whole picture) at the strength on the slider - keeps the shapes, changes the detail" },
     { id: "fill", icon: "🪣", label: "Fill", mode: "generate", needSel: true, needEditor: true, tip: "Fill the selection from the prompt (100 %) - select the area first" },

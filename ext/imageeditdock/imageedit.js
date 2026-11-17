@@ -2495,9 +2495,9 @@
       const refNums = refLegacy ? [kxr] : refsAll.length ? P.pickRefNums(typed0, refsAll.length, 2, 0) : [];
       const editOk = !!editId && (eng.edit || []).some((x) => x.id === editId);
       const wantRefs = refNums.length > 0 && mode !== "edit";
-      const viaEdit = !whole && !clip && editOk && (((mode === "generate" || mode === "remove" || mode === "background") && S.fillEdit !== false
+      const viaEdit = !whole && !clip && editOk && (opt.forceEdit || ((mode === "generate" || mode === "remove" || mode === "background") && S.fillEdit !== false
         && (!fillInfo || (fillInfo.latent !== false && !fillInfo.helper)))   // 2.555.0: a style with Krita's helper fills itself
-        || (wantRefs && (mode === "generate" || mode === "remove" || mode === "background" || mode === "refine")));
+        || (wantRefs && (mode === "generate" || mode === "remove" || mode === "background" || mode === "refine")));   // 2.834.0: opt.forceEdit (✏ Edit's Fill / Outpaint - pcaifill.js)
       // 2.554.0 (Tim: "i think it doesn't know to resize it to the size of the selection - it works if i use qwen2.1 and say
       // transparent background, but the size is not right for the selection"): a style that cannot see around the
       // selection (Krea 2 … with 👁 off or no edit model) draws a whole picture of its own - so it gets the SELECTION'S
@@ -2511,7 +2511,7 @@
         : mode === "generate" || mode === "remove" || mode === "background" ? KB.context
         : P.contextRect(bb, S.w, S.h, S.context, 16);
       // Krita's fill kind (workflow.py detect_inpaint_mode: a selection across the whole picture = expand)
-      const fillKind = mode !== "generate" || whole ? mode : (bb.w >= S.w || bb.h >= S.h) ? "expand" : (opt.fillKind || S.fillMode) === "fill" ? "fill" : "add";
+      const fillKind = mode !== "generate" || whole ? mode : opt.fillKind === "expand" || bb.w >= S.w || bb.h >= S.h ? "expand" : (opt.fillKind || S.fillMode) === "fill" ? "fill" : "add";   // 2.834.0: + Outpaint asked for
       const cropMask = P.cropMask(sel, S.w, box);
       const src = source || flatten();
       // the crop at full resolution (holes filled for Remove / an expanded strip)
@@ -3009,6 +3009,7 @@
     if (win.PCPrefs && win.PCPrefs.install) win.PCPrefs.install(E);   // 2.444.0: ⚙ the editor's settings (tabs modules add)
     if (win.PCImgOp && win.PCImgOp.install) win.PCImgOp.install(E);   // 2.541.0: the prompt docker's ▾ Generate / Edit / Refine / Fill / Replace background / Remove
     if (win.PCPromptLink && win.PCPromptLink.install) win.PCPromptLink.install(E);
+    if (win.PCAiFill && win.PCAiFill.install) win.PCAiFill.install(E);   // 2.834.0: Generate into the selection / the whole canvas, Edit's Inpaint / Fill / Outpaint
     if (win.PCArtboards && win.PCArtboards.install) win.PCArtboards.install(E);
     if (win.PCPages && win.PCPages.install) win.PCPages.install(E);       // 2.799.0: a document of many pages, each with its own layers
     if (win.PCDtpOut && win.PCDtpOut.install) win.PCDtpOut.install(E);   // 2.799.0: File ▸ Export ▸ Document (PDF / AI / SVG / CorelDRAW pack)

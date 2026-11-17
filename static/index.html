@@ -9515,6 +9515,9 @@ async function startImageJob(text) {
       // what <image1..N> are (lib/qwenRefs.js)
       if (window.RefRoles) body.image_roles = RefRoles.roles(refs.slice(0, names.length));
     }
+    /* 2.834.0 (Tim: "if no selection is made generate the image to the full canvas size"): the image editor open with a
+       picture and no selection = the canvas's shape (ext/imageeditdock/pcaifill.js) */
+    if (typeof window.H3ImageSize === "function") { try { const wh = window.H3ImageSize(body); if (wh) { body.width = wh.width; body.height = wh.height; } } catch (e) { /* the editor's */ } }
     const res = await fetch("/api/genimage", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

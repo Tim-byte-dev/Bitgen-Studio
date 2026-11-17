@@ -271,6 +271,7 @@ window.H3OnGenerated = async function (info) {
     const img = await new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.crossOrigin = "anonymous"; im.src = `/outputs/${encodeURIComponent(name)}?v=${Date.now()}`; });
     if (!img) continue;
     const label = "✨ " + base + (pics.length > 1 ? " " + (n + 1) : "");
+    if (E.S.w && E.aiFill && E.aiFill.takeGenerated(img, label)) { n++; continue; }   // 2.834.0: made at the canvas's shape = over the whole canvas
     if (E.S.w) E.addImageLayer(img, label); else E.openImage(img, name);
     n++;
   }

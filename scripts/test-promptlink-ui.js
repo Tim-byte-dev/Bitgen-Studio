@@ -94,8 +94,9 @@ const check = (n, cond, got) => {
 
     /* 3 another tab: not linked - the prompt docker as before */
     await ev(() => window.imageEditorInstance.E.ui.showTab("pcProps")); await p.waitForTimeout(300);
-    const o3 = await ev(() => ({ go: document.getElementById("go").textContent, take: window.H3TakeGenerate("image", "x") }));
-    check("the ✨ AI panel not showing: the button is the prompt docker's own again and its Generate is not taken", !/Edit|✨/.test(o3.go) && o3.take === false, o3);
+    // 2.834.0 (Tim: a selection + Generate = into the selection, the panel showing or not): with no selection it is not taken
+    const o3 = await ev(() => { window.imageEditorInstance.E.deselect(); return { go: document.getElementById("go").textContent, take: window.H3TakeGenerate("image", "x") }; });
+    check("the ✨ AI panel not showing, no selection: the button is the prompt docker's own again and its Generate is not taken", !/Edit|✨/.test(o3.go) && o3.take === false, o3);
 
     /* 4 ⚙ at the right of the editor's menu bar: the editor's settings */
     const g4 = await ev(() => { const mr = document.querySelector("#imageeditdock .pcmenu .mr"); return { last: mr && mr.lastElementChild && mr.lastElementChild.id, cmd: window.imageEditorInstance.E.ui.CMD.has("edit.prefs") }; });
