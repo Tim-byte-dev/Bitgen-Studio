@@ -4,13 +4,17 @@
  * settings/keys.json, never shown again), the incoming (IMAP) and outgoing (SMTP) servers - filled in from the address for
  * the big services (lib/mailStore.js PRESETS), ✓ Test logs in to both (sends nothing), a signature. Below: the AI's "what
  * matters to me" (the flagging reads it), ☐ flag new mail by itself, check every N minutes.
+ * 2.820.0 (Tim: "it logs in successfully but the account dissapears when i close the dialog"): ✓ Test only logged in -
+ * nothing was kept until ＋ Add account. Now a Test that logs in KEEPS the account (new or changed), and closing the
+ * dialog (✕ / Close / Esc) with changes keeps them first (it stays open with why when they cannot be kept). The first
+ * account added closes the dialog and the inbox comes in.
  */
 (function (root) {
   "use strict";
   const doc = root.document; if (!doc) return;
   const $ = (id) => doc.getElementById(id);
   const M = () => root.H3Mail, V = () => root.H3MailView;
-  let cur = null, touchedServers = false;
+  let cur = null, touchedServers = false, dirty = false;
 
   function amsg(t, bad) { const m = $("mlAMsg"); if (m) { m.textContent = t || ""; m.classList.toggle("bad", !!bad); } }
   function accounts() { return (M() && M().S.accounts) || []; }
@@ -24,7 +28,7 @@
     $("mlASmtpHost").value = p.smtp.host || ""; $("mlASmtpPort").value = p.smtp.port || ""; $("mlASmtpSsl").checked = p.smtp.secure !== false;
   }
   function load(id) {
-    cur = id || null; touchedServers = false;
+    cur = id || null; touchedServers = false; dirty = false;
     const a = accounts().find((x) => x.id === cur);
     $("mlAEmail").value = a ? a.email : ""; $("mlAName").value = a ? (a.name === a.email ? "" : a.name) : ""; $("mlAUser").value = a ? (a.user === a.email ? "" : a.user) : "";
     $("mlAPass").value = ""; $("mlAPass").placeholder = a && a.has_pass ? "unchanged - type a new one to change it" : "password or app password";
@@ -59,18 +63,32 @@
     try {
       const r = await M().api("POST", "/api/mail/test", Object.assign(fields(), cur ? { id: cur } : {}));
       const i = r.imap || {}, s = r.smtp || {};
-      amsg((i.ok ? `Incoming ✓ (${i.folders} folders${i.inbox != null ? ", " + i.inbox + " in the inbox" : ""})` : "Incoming ✗ " + i.error) + "\n" + (s.ok ? "Outgoing ✓" : "Outgoing ✗ " + s.error), !r.ok);
+      const said = (i.ok ? `Incoming ✓ (${i.folders} folders${i.inbox != null ? ", " + i.inbox + " in the inbox" : ""})` : "Incoming ✗ " + i.error) + "\n" + (s.ok ? "Outgoing ✓" : "Outgoing ✗ " + s.error);
+      amsg(said, !r.ok);
+      // 2.820.0: it logs in - keep it (a new account, or the changes to this one)
+      if (i.ok && (!cur || dirty)) { const ok = await save(); if (ok) amsg(said + "\n💾 kept - " + $("mlAEmail").value.trim(), !s.ok); }
     } catch (e) { amsg("✗ " + e.message, true); }
   }
   async function save() {
     const f = fields();
-    if (!cur && !f.pass) { amsg("type the password (or app password)", true); $("mlAPass").focus(); return; }
+    if (!cur && !f.pass) { amsg("type the password (or app password)", true); $("mlAPass").focus(); return false; }
     amsg("💾 Saving…");
+    const first = !accounts().length;
     try {
       const a = await M().api("POST", cur ? "/api/mail/accounts/" + cur : "/api/mail/accounts", f);
-      cur = a.id; await M().accountsChanged(a.id); load(a.id);
+      cur = a.id; dirty = false;
+      await M().accountsChanged(a.id); load(a.id);
       amsg("💾 saved - " + a.email + (f.pass ? " (the password is encrypted)" : ""));
-    } catch (e) { amsg("✗ " + e.message, true); }
+      if (first) { const d = $("mlAcctDlg"); if (d && d.open) d.close(); M().msg("✉ " + a.email + " added - reading the inbox…"); }
+      return true;
+    } catch (e) { amsg("✗ " + e.message, true); return false; }
+  }
+  /** 2.820.0: closing keeps what was typed (a new account needs its address + password; nothing typed = just close) */
+  async function closeDlg() {
+    const d = $("mlAcctDlg"); if (!d) return;
+    const f = fields();
+    if (dirty && f.email && (cur || f.pass)) { if (!(await save())) return; }
+    if (d.open) d.close();
   }
   async function remove() {
     const a = accounts().find((x) => x.id === cur); if (!a) return;
@@ -101,8 +119,11 @@
     on("mlAImapSsl", "change", (e) => { const p = $("mlAImapPort"); if (p.value === "993" || p.value === "143" || !p.value) p.value = e.target.checked ? 993 : 143; });
     on("mlASmtpSsl", "change", (e) => { const p = $("mlASmtpPort"); if (p.value === "465" || p.value === "587" || !p.value) p.value = e.target.checked ? 465 : 587; });
     on("mlATest", "click", test); on("mlASave", "click", save); on("mlARemove", "click", remove);
-    on("mlSSave", "click", saveSettings); on("mlAClose", "click", () => d.close());
+    on("mlSSave", "click", saveSettings); on("mlAClose", "click", closeDlg);
+    d.addEventListener("cancel", (e) => { e.preventDefault(); closeDlg(); });   // Esc
+    ["mlAEmail", "mlAName", "mlAUser", "mlAPass", "mlAImapHost", "mlAImapPort", "mlASmtpHost", "mlASmtpPort", "mlASig"].forEach((id) => on(id, "input", () => { dirty = true; }));
+    ["mlAImapSsl", "mlASmtpSsl", "mlATls", "mlASent"].forEach((id) => on(id, "change", () => { dirty = true; }));
   }
-  root.H3MailAccounts = { open, load, fields, test, save };
+  root.H3MailAccounts = { open, load, fields, test, save, close: closeDlg, dirty: () => dirty };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else setTimeout(wire, 0);
 })(window);

@@ -17868,47 +17868,47 @@
   },
   {
    "s": "New account",
-   "src": "ext/maildock/mailaccounts.js:19"
+   "src": "ext/maildock/mailaccounts.js:23"
   },
   {
    "s": "unchanged - type a new one to change it",
-   "src": "ext/maildock/mailaccounts.js:30"
+   "src": "ext/maildock/mailaccounts.js:34"
   },
   {
    "s": "password or app password",
-   "src": "ext/maildock/mailaccounts.js:30"
+   "src": "ext/maildock/mailaccounts.js:34"
   },
   {
    "s": "Save account",
-   "src": "ext/maildock/mailaccounts.js:34"
+   "src": "ext/maildock/mailaccounts.js:38"
   },
   {
    "s": "Add account",
-   "src": "ext/maildock/mailaccounts.js:34"
+   "src": "ext/maildock/mailaccounts.js:38"
   },
   {
    "s": "the servers are filled in",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "s": "made in your account's security settings) - your normal password is refused. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "s": "the servers are filled in. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "s": "Servers guessed from the address - check them with your provider",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "s": "Servers guessed from the address - check them with your provider. The password is kept encrypted on this computer (settings/keys.json) and never shown again",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "s": "made in your account's security settings) - your normal password is refused",
-   "src": "ext/maildock/mailaccounts.js:45"
+   "src": "ext/maildock/mailaccounts.js:49"
   },
   {
    "s": "Forwarded message ----------",
@@ -17931,80 +17931,100 @@
    "src": "ext/maildock/mailcompose.js:64"
   },
   {
+   "s": "A new folder on the server (inside the folder shown when you hold Shift)",
+   "src": "ext/maildock/maildock.js:62"
+  },
+  {
    "s": "Nothing matches",
-   "src": "ext/maildock/maildock.js:91"
+   "src": "ext/maildock/maildock.js:98"
+  },
+  {
+   "s": "Nothing found on the server",
+   "src": "ext/maildock/maildock.js:98"
   },
   {
    "s": "No emails here",
-   "src": "ext/maildock/maildock.js:91"
+   "src": "ext/maildock/maildock.js:98"
   },
   {
    "s": "Mail",
-   "src": "ext/maildock/maildock.js:108"
+   "src": "ext/maildock/maildock.js:119"
   },
   {
    "s": "Opening",
-   "src": "ext/maildock/maildock.js:131"
+   "src": "ext/maildock/maildock.js:142"
   },
   {
    "s": "Pick an email to read it",
-   "src": "ext/maildock/maildock.js:143"
+   "src": "ext/maildock/maildock.js:154"
   },
   {
    "s": "Summarise again",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "Draft reply",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "Reply all",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "Pictures from the internet are hidden - they can tell the sender you opened the email",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "Show pictures",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "The AI sums the email up and says what you need to do",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "What should the reply say? (optional - e.g. yes, Thursday works)",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "What the reply should say",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "Tone",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "The AI writes a reply to the sender - you check it in the composer before it goes",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "The AI writes a reply to everyone on the email",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "The email",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "s": "not rated yet",
-   "src": "ext/maildock/maildock.js:149"
+   "src": "ext/maildock/maildock.js:160"
   },
   {
    "s": "Summarise",
-   "src": "ext/maildock/maildock.js:150"
+   "src": "ext/maildock/maildock.js:161"
+  },
+  {
+   "s": "Move the email to another folder (or drag it onto one)",
+   "src": "ext/maildock/maildock.js:238"
+  },
+  {
+   "s": "no other folder",
+   "src": "ext/maildock/maildock.js:243"
+  },
+  {
+   "s": "Back to the folder",
+   "src": "ext/maildock/maildock.js:253"
   },
   {
    "s": "Low",
@@ -27466,7 +27486,7 @@
   },
   {
    "p": "{0} needs an app password",
-   "src": "ext/maildock/mailaccounts.js:44"
+   "src": "ext/maildock/mailaccounts.js:48"
   },
   {
    "p": "From: {0}",
@@ -27493,16 +27513,40 @@
    "src": "ext/maildock/mailcompose.js:38"
   },
   {
+   "p": "Older emails ({0} more)",
+   "src": "ext/maildock/maildock.js:110"
+  },
+  {
+   "p": "{0} · {1} picked",
+   "src": "ext/maildock/maildock.js:111"
+  },
+  {
+   "p": "{0} of {1} · {2} picked",
+   "src": "ext/maildock/maildock.js:111"
+  },
+  {
    "p": "Mail - {0} unread",
-   "src": "ext/maildock/maildock.js:108"
+   "src": "ext/maildock/maildock.js:119"
   },
   {
    "p": "Cc: {0}",
-   "src": "ext/maildock/maildock.js:146"
+   "src": "ext/maildock/maildock.js:157"
   },
   {
    "p": "{0} - download",
-   "src": "ext/maildock/maildock.js:156"
+   "src": "ext/maildock/maildock.js:167"
+  },
+  {
+   "p": "Move the {0} picked emails to another folder (or drag them onto one)",
+   "src": "ext/maildock/maildock.js:238"
+  },
+  {
+   "p": "{0} newest of {1} found on the server for",
+   "src": "ext/maildock/maildock.js:253"
+  },
+  {
+   "p": "{0} found on the server for",
+   "src": "ext/maildock/maildock.js:253"
   },
   {
    "p": "{0} - {1} - {2} page",

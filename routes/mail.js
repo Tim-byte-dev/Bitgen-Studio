@@ -24,6 +24,11 @@
 //   POST   /api/mail/:id/ai/reply                  {folder, uid, ask, tone, all}
 //   POST   /api/mail/ai/write                      {id?, notes, to, subject, tone}
 //   POST   /api/mail/ai/rewrite                    {id?, text, how}
+//   2.820.0 (lib/mailBatch.js):
+//   POST   /api/mail/:id/batch                     {folder, uids, op seen|unseen|flag|unflag|move|delete, to}
+//   POST   /api/mail/:id/search                    {folder, q, limit} -> {msgs, total} (the whole folder, on the server)
+//   GET    /api/mail/:id/contacts?q=               the addresses seen in the kept mail -> the composer's suggestions
+//   POST   /api/mail/:id/folders                   {name, parent} -> a new folder
 "use strict";
 const express = require("express");
 const fs = require("fs");
@@ -32,6 +37,7 @@ const MS = require("../lib/mailStore");
 const IM = require("../lib/mailImap");
 const SEND = require("../lib/mailSend");
 const AI = require("../lib/mailAi");
+const MB = require("../lib/mailBatch");
 
 function wrap(fn) {
   return async (req, res) => {
@@ -91,6 +97,10 @@ function mount(app) {
   app.post("/api/mail/:id/flags", J, wrap((req) => { const b = B(req); return IM.setFlags(acc(req), b.folder, b.uid, b); }));
   app.post("/api/mail/:id/delete", J, wrap((req) => { const b = B(req); return IM.remove(acc(req), b.folder, b.uid); }));
   app.post("/api/mail/:id/move", J, wrap((req) => { const b = B(req); if (!b.to) throw MS.bad("move it where?"); return IM.move(acc(req), b.folder, b.uid, String(b.to)); }));
+  app.post("/api/mail/:id/batch", J, wrap((req) => { const b = B(req); return MB.batch(acc(req), b.folder, b.uids, String(b.op || ""), b.to); }));
+  app.post("/api/mail/:id/search", J, wrap((req) => { const b = B(req); return MB.search(acc(req), b.folder, b.q, b); }));
+  app.get("/api/mail/:id/contacts", wrap((req) => { const a = acc(req); return MB.contacts(a.id, req.query.q, a.email); }));
+  app.post("/api/mail/:id/folders", J, wrap((req) => { const b = B(req); return MB.createFolder(acc(req), b.name, b.parent); }));
   app.post("/api/mail/:id/send", J, wrap((req) => SEND.send(acc(req), B(req))));
   app.post("/api/mail/:id/draft", J, wrap((req) => SEND.draft(acc(req), B(req))));
 

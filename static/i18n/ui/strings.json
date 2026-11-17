@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5894,
+ "count": 5898,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -54373,6 +54373,42 @@
    ],
    "where": [
     "button[data-pmmode] in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "📁 Move ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail docker (2.820.0)"
+   ]
+  },
+  {
+   "s": "🔍 Search (Enter = whole folder)",
+   "kinds": [
+    "placeholder"
+   ],
+   "where": [
+    "Mail docker (2.820.0)"
+   ]
+  },
+  {
+   "s": "Typing filters the emails in the list; Enter searches the whole folder on the server (from: to: subject: narrow it)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.820.0)"
+   ]
+  },
+  {
+   "s": "Read 200 more of this folder's emails from the server",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Mail docker (2.820.0)"
    ]
   }
  ]

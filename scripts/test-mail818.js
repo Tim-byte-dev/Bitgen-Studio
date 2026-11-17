@@ -122,7 +122,7 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
   const ix2 = read("routes/index.js"), ext = JSON.parse(read("ext/maildock/ext.json")), dock = read("ext/maildock/dock.html");
   check("routes/mail.js mounted from routes/index.js (never server.js); GET /api/config hides the passwords", /require\("\.\/mail"\)\.mount\(app\)/.test(ix2) && !/mail/.test(read("misc/server.js")) && /hidePasswords\(core\.getConfig\(\)\)/.test(ix2));
   check("POST /api/config cannot write mail (its allow-list has no 'mail')", !/"mail"/.test(ix2.slice(ix2.indexOf('app.post("/api/config"'), ix2.indexOf('app.post("/api/config"') + 1500)));
-  check("ext/maildock: Mail, its four scripts (the pure view first), a .bdock #maildock + the two dialogs outside it", ext.id === "maildock" && ext.scripts[0] === "mailview.js" && ext.scripts.length === 4
+  check("ext/maildock: Mail, its scripts (the pure view first; 2.820.0 + mailcontacts.js), a .bdock #maildock + the two dialogs outside it", ext.id === "maildock" && ext.scripts[0] === "mailview.js" && ext.scripts.length === 5
     && /<div class="bdock" id="maildock"/.test(dock) && dock.indexOf('<dialog id="mlCompose"') > dock.lastIndexOf("</div>\n    <dialog") - 1);
   check("the reading frame is sandboxed without scripts or same-origin", /sandbox="allow-popups allow-popups-to-escape-sandbox"/.test(read("ext/maildock/maildock.js")) && !/allow-scripts|allow-same-origin/.test(read("ext/maildock/maildock.js")));
   check("the app strip already has ✉ in group 1 (2.817.0) - the docker's button tX_maildock lands there", /\["tX_maildock", "✉", "Mail"\]/.test(read("static/appstrip.js")));

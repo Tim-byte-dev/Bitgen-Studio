@@ -14176,6 +14176,13 @@ node scripts/test-pickmodes819.js > /tmp/pm819.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui819-ui.js > /tmp/ui819.log 2>&1 \
   && ok "2.819.0 browser test: the Lasso's line on white, Ctrl+Shift+A clears all, Polygonal Lasso + Bézier rubber band, ⊕ on the property bar goes into Add, double-click = handles only, click again = rotate" \
   || { bad "2.819.0 pick / modes browser test"; grep -a "^FAIL" -A1 /tmp/ui819.log | head -12; }
+# ---- 2.820.0 (Tim: "finish the mail client, it logs in successfully but the account dissapears when i close the dialog, it looks like it is just the start")
+node scripts/test-mail820.js > /tmp/mail820.log 2>&1 \
+  && ok "2.820.0 ✉ Mail units: several emails at once, contacts, the account kept after Test / on Close, server search, older, folders" \
+  || { bad "2.820.0 mail pins"; grep -a "^FAIL" -A1 /tmp/mail820.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui820-ui.js > /tmp/ui820.log 2>&1 \
+  && ok "2.820.0 ✉ Mail browser test: Test keeps the account, Close keeps changes, ⤓ Older, Ctrl / Shift picks, Move ▾ + drag, server search, ＋ folder, To suggestions" \
+  || { bad "2.820.0 mail browser test"; grep -a "^FAIL" -A1 /tmp/ui820.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

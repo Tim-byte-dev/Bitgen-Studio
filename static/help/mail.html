@@ -9,7 +9,7 @@ docker; it shows how many emails in your inbox are unread.</p>
   <li>Type your <b>email address</b> - for Gmail, Outlook.com, Yahoo, iCloud, Fastmail, Zoho and GMX the servers fill themselves in; for other providers they are guessed (<code>imap.</code> / <code>smtp.</code> + your domain) - check them with your provider.</li>
   <li><b>Password</b>: Gmail, Outlook.com, Yahoo and iCloud refuse your normal password from a mail program - make an <b>app password</b> in your account's security settings and paste that. The password is kept encrypted on this computer (<code>settings/keys.json</code>) and is never shown again.</li>
   <li><b>SSL</b> ticked = encrypted from the start (incoming port 993, outgoing 465); unticked = STARTTLS (143 / 587).</li>
-  <li><b>✓ Test</b> logs in to both servers and sends nothing. <b>Check the servers' certificates</b> stays on unless your own server uses a self-made certificate.</li>
+  <li><b>✓ Test</b> logs in to both servers and sends nothing - when it logs in, the account is <b>kept</b> (2.820.0). Closing the dialog keeps what you typed too. <b>Check the servers' certificates</b> stays on unless your own server uses a self-made certificate.</li>
   <li><b>Put a copy of sent mail in Sent</b> - Gmail files sent mail itself, so it is off for Gmail.</li>
   <li>A <b>signature</b> is added to new emails. Several accounts: pick one in the docker's account list.</li>
 </ul>
@@ -19,8 +19,17 @@ docker; it shows how many emails in your inbox are unread.</p>
   <li>Folders on the left, the emails in the middle (unread in <b>bold</b>), the email on the right. <b>↑ ↓</b> move through the list, <b>Delete</b> moves the email to Trash (in Trash it is deleted).</li>
   <li><b>★</b> flags the email for follow-up on the server, <b>●</b> marks it unread / read.</li>
   <li>Pictures from the internet are hidden until you press <b>Show pictures</b> - they can tell the sender you opened the email. Emails never run scripts here.</li>
-  <li><b>📎</b> attachments download with a click. <b>🔍</b> searches the folder shown (sender, subject, the first words).</li>
+  <li><b>📎</b> attachments download with a click. <b>🔍</b> filters the list as you type (sender, subject, the first words); <b>Enter</b> searches the <b>whole folder on the server</b> - <code>from:</code> <code>to:</code> <code>subject:</code> <code>body:</code> narrow it, quotes keep words together; ✕ goes back to the folder.</li>
   <li><b>⟳ Check mail</b> checks now; bitGen also checks every few minutes while it is open (⚙ Accounts ▸ Check every).</li>
+</ul>
+
+<h3>Organising (2.820.0)</h3>
+<ul>
+  <li><b>Several emails</b>: Ctrl+click adds one, Shift+click takes every email between, Ctrl+A all of them, Esc none. 🗑, ★, ● and 📁 Move work on all the picked ones at once.</li>
+  <li><b>📁 Move ▾</b> moves to another folder - or drag the emails onto a folder on the left.</li>
+  <li><b>＋</b> beside the account's name makes a new folder on the server (Shift: inside the folder shown).</li>
+  <li><b>⤓ Older emails</b> at the end of the list reads 200 more of the folder from the server each time.</li>
+  <li>In <b>To / Cc / Bcc</b> the people in your mail are suggested as you type - ↑ ↓ and Enter (or a click) put one in.</li>
 </ul>
 
 <h3>✨ The AI</h3>

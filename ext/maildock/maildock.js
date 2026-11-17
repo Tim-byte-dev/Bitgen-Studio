@@ -10,6 +10,10 @@
  *                   attachments, ✨ Summarise, ✨ Draft reply (+ what it should say + the tone)
  *   checking        every N minutes while bitGen is open (⚙ Accounts); the ✉ button shows the unread count;
  *                   ✨ auto = the AI flags new mail as it comes
+ * 2.820.0 (Tim: "finish the mail client ... it looks like it is just the start"): Ctrl / Shift-click (Ctrl+A) picks
+ *                   several - 🗑 ★ ● and 📁 Move ▾ work on all of them at once (one login, lib/mailBatch.js); drag emails
+ *                   onto a folder = move; ＋ on the folders = a new folder; ⤓ Older emails at the end of the list (200 more
+ *                   each time); Enter in 🔍 = search the WHOLE folder on the server (✕ back to the folder)
  * The work is on the server (routes/mail.js); the composer is mailcompose.js, the accounts dialog mailaccounts.js.
  */
 (function (root) {
@@ -18,7 +22,8 @@
   const $ = (id) => doc.getElementById(id);
   const V = () => root.H3MailView;
   const S = { accounts: [], settings: { important: "", auto_flag: false, check_min: 5 }, tones: [], acc: null, folder: "INBOX", folders: [],
-    msgs: [], sel: null, body: null, remote: false, booted: false, timer: 0, busy: 0, unread: 0 };
+    msgs: [], sel: null, body: null, remote: false, booted: false, timer: 0, busy: 0, unread: 0,
+    picks: new Set(), anchor: null, limit: {}, search: null };   // 2.820.0: several picked, older emails per folder, a server search
   const TONE_NAMES = { friendly: "Friendly", professional: "Professional", formal: "Formal", brief: "Brief", warm: "Warm", apologetic: "Apologetic", firm: "Firm" };
   const store = { get: (k) => { try { return root.localStorage.getItem("h3.mail." + k); } catch (e) { return null; } }, set: (k, v) => { try { root.localStorage.setItem("h3.mail." + k, v); } catch (e) { /* off */ } } };
 
@@ -54,7 +59,7 @@
   function paintFolders() {
     const box = $("mlFolders"); if (!box) return;
     const a = accNow();
-    box.innerHTML = (a ? `<div class="mlacc" title="${V().esc(a.email)}">${V().esc(a.name || a.email)}</div>` : "") + S.folders.map((f) => {
+    box.innerHTML = (a ? `<div class="mlacc" title="${V().esc(a.email)}"><span>${V().esc(a.name || a.email)}</span><button class="ghost" type="button" id="mlNewFolder" title="A new folder on the server (inside the folder shown when you hold Shift)">＋</button></div>` : "") + S.folders.map((f) => {
       const ic = V().FICON[f.special] || V().FICON[""];
       // the folder shown counts from the list (reading one takes it off at once); the others as the server last said
       const unread = f.path === S.folder && S.booted ? S.msgs.filter((m) => !m.seen).length : f.unseen;
@@ -66,17 +71,19 @@
 
   /* ---------------------------------------------------------------- the list */
   async function openFolder(p, noSync) {
-    S.folder = p || "INBOX"; S.sel = null; S.body = null; paintFolders(); paintRead();
+    S.folder = p || "INBOX"; S.sel = null; S.body = null; S.picks.clear(); S.search = null; searchBar(); paintFolders(); paintRead();
     try { const r = await api("GET", `/api/mail/${S.acc}/list?folder=${enc(S.folder)}`); S.msgs = r.msgs || []; paintList(); } catch (e) { S.msgs = []; paintList(); }
     if (!noSync) await sync();
   }
   async function sync(quiet) {
-    if (!S.acc) return;
+    if (!S.acc || S.search) return;
     busy(true); if (!quiet) msg("⟳ Checking " + S.folder + "…");
     try {
       const before = new Set(S.msgs.map((m) => m.uid));
-      const r = await api("POST", `/api/mail/${S.acc}/sync`, { folder: S.folder });
+      const r = await api("POST", `/api/mail/${S.acc}/sync`, { folder: S.folder, limit: S.limit[S.folder] || 200 });
+      if (S.search) return;
       S.msgs = r.msgs || []; if (r.folders) S.folders = r.folders;
+      for (const u of [...S.picks]) if (!S.msgs.some((m) => m.uid === u)) S.picks.delete(u);
       paintFolders(); paintList(); badge();
       const fresh = S.msgs.filter((m) => !before.has(m.uid)).length;
       msg(quiet && !fresh ? "" : (before.size && fresh ? `${fresh} new` : `${S.msgs.length} emails`) + " · " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
@@ -90,15 +97,19 @@
     const L = shown(), v = V();
     box.innerHTML = L.map((m) => {
       const f = v.flagOf(m);
-      return `<div class="mlrow${m.seen ? "" : " unread"}${m.uid === S.sel ? " on" : ""}" data-uid="${m.uid}" role="option" aria-selected="${m.uid === S.sel}">`
+      return `<div class="mlrow${m.seen ? "" : " unread"}${m.uid === S.sel ? " on" : ""}${S.picks.has(m.uid) ? " pick" : ""}" data-uid="${m.uid}" draggable="true" role="option" aria-selected="${m.uid === S.sel || S.picks.has(m.uid)}">`
         + `<span class="fl ${f ? f.cls : ""}" title="${v.esc(f ? f.tip : "not rated by the AI yet")}">${f ? f.icon : ""}</span>`
         + `<span class="who">${m.flagged ? "★ " : ""}${m.answered ? "↩ " : ""}${v.esc(v.whoName(S.folder && /sent|draft/i.test(specialOf(S.folder)) ? (m.to || [])[0] : m.from) || "(nobody)")}</span>`
         + `<span class="when">${v.esc(v.shortDate(m.date))}</span>`
         + `<span class="sub">${v.esc(m.subject || "(no subject)")}</span>`
         + (f && f.cls !== "mllv0" && m.ai.why ? `<span class="why ${f.cls}">✨ ${v.esc(m.ai.why)}</span>` : (m.snippet ? `<span class="snip">${v.esc(m.snippet)}</span>` : ""))
         + `</div>`;
-    }).join("") || `<div class="mlnone" style="padding:14px;color:var(--dim);font-size:12px">${S.msgs.length ? "Nothing matches." : "No emails here."}</div>`;
-    const c = $("mlCount"); if (c) c.textContent = L.length === S.msgs.length ? `${S.msgs.length}` : `${L.length} of ${S.msgs.length}`;
+    }).join("") || `<div class="mlnone" style="padding:14px;color:var(--dim);font-size:12px">${S.msgs.length ? "Nothing matches." : S.search ? "Nothing found on the server." : "No emails here."}</div>`;
+    // 2.820.0: the folder holds more than the list - 200 more each time
+    const fo = S.folders.find((f) => f.path === S.folder);
+    if (!S.search && fo && fo.exists > S.msgs.length && S.msgs.length >= (S.limit[S.folder] || 200)) box.insertAdjacentHTML("beforeend", `<div class="mlmore"><button class="ghost gbtn" type="button" id="mlOlder" title="Read 200 more of this folder's emails from the server">⤓ Older emails (${fo.exists - S.msgs.length} more)</button></div>`);
+    const c = $("mlCount"); if (c) c.textContent = (L.length === S.msgs.length ? `${S.msgs.length}` : `${L.length} of ${S.msgs.length}`) + (S.picks.size > 1 ? ` · ${S.picks.size} picked` : "");
+    pickBar();
   }
   function specialOf(p) { const f = S.folders.find((x) => x.path === p); return f ? f.special : ""; }
   function setBadge(n) {
@@ -187,7 +198,83 @@
     const a = accNow();
     C().open({ kind, acc: S.acc, folder: S.folder, body: S.body, me: a && a.email, ai: ai ? { ask: ($("mlAsk") || {}).value || "", tone: ($("mlTone") || {}).value || "friendly" } : null });
   }
+  /* 2.820.0: several picked - one call for all of them */
+  const picked = () => (S.picks.size > 1 ? [...S.picks] : []);
+  async function batch(op, to) {
+    const uids = picked(); if (!uids.length) return false;
+    busy(true); msg(`… ${uids.length} emails`);
+    try {
+      const r = await api("POST", `/api/mail/${S.acc}/batch`, { folder: S.folder, uids, op, to });
+      if (op === "move" || op === "delete") {
+        S.msgs = S.msgs.filter((m) => !S.picks.has(m.uid));
+        if (S.picks.has(S.sel)) { S.sel = null; S.body = null; paintRead(); }
+        S.picks.clear();
+        const fo = S.folders.find((f) => f.path === S.folder); if (fo && fo.exists) fo.exists = Math.max(0, fo.exists - uids.length);
+      } else {
+        const k = op === "seen" || op === "unseen" ? "seen" : "flagged", v = op === "seen" || op === "flag";
+        for (const m of S.msgs) if (S.picks.has(m.uid)) m[k] = v;
+      }
+      paintList(); paintFolders(); badge();
+      msg(r.deleted ? `🗑 ${r.n} deleted` : op === "move" ? `📁 ${r.n} moved to ${r.to}` : `✓ ${r.n} emails`);
+    } catch (e) { msg("✗ " + e.message, true); }
+    finally { busy(false); }
+    return true;
+  }
+  async function moveTo(to, uidsIn) {
+    if (!to || to === S.folder) return;
+    if (uidsIn && uidsIn.length > 1) { S.picks = new Set(uidsIn); return batch("move", to); }
+    const uid = uidsIn && uidsIn.length ? uidsIn[0] : S.sel;
+    if (S.picks.size > 1 && !uidsIn) return batch("move", to);
+    if (!uid) { msg("pick an email first", true); return; }
+    busy(true);
+    try {
+      await api("POST", `/api/mail/${S.acc}/move`, { folder: S.folder, uid, to });
+      S.msgs = S.msgs.filter((m) => m.uid !== uid); if (S.sel === uid) { S.sel = null; S.body = null; paintRead(); }
+      paintList(); paintFolders(); badge(); msg("📁 moved to " + to);
+    } catch (e) { msg("✗ " + e.message, true); }
+    finally { busy(false); }
+  }
+  function pickBar() {
+    const n = S.picks.size, b = $("mlMove"); if (b) b.title = n > 1 ? `Move the ${n} picked emails to another folder (or drag them onto one)` : "Move the email to another folder (or drag it onto one)";
+  }
+  function moveMenu(btn) {
+    const old = doc.getElementById("mlMoveMenu"); if (old) { old.remove(); return; }
+    const m = doc.createElement("div"); m.id = "mlMoveMenu"; m.className = "mlmenu";
+    m.innerHTML = S.folders.filter((f) => f.path !== S.folder).map((f) => `<div data-path="${V().esc(f.path)}">${V().FICON[f.special] || V().FICON[""]} ${V().esc(f.special === "inbox" ? "Inbox" : f.name)}</div>`).join("") || `<div class="hint">no other folder</div>`;
+    const r = btn.getBoundingClientRect(); m.style.left = Math.round(r.left) + "px"; m.style.top = Math.round(r.bottom + 2) + "px";
+    doc.body.appendChild(m);
+    m.addEventListener("click", (e) => { const it = e.target.closest("[data-path]"); if (it) { m.remove(); moveTo(it.dataset.path); } });
+    setTimeout(() => doc.addEventListener("pointerdown", function off(e) { if (!m.contains(e.target) && e.target !== btn) { m.remove(); doc.removeEventListener("pointerdown", off, true); } }, true), 0);
+  }
+  /* 2.820.0: Enter in 🔍 = the whole folder on the server */
+  function searchBar() {
+    const b = $("mlSearchBar"); if (!b) return;
+    b.hidden = !S.search;
+    if (S.search) b.innerHTML = `🔍 ${S.search.total > S.msgs.length ? `${S.msgs.length} newest of ${S.search.total}` : S.search.total} found on the server for <b>${V().esc(S.search.q)}</b> <button class="ghost" type="button" id="mlSearchOff" title="Back to the folder">✕</button>`;
+  }
+  async function serverSearch(q) {
+    if (!S.acc) return;
+    if (!q.trim()) { if (S.search) return openFolder(S.folder, true); return; }
+    busy(true); msg("🔍 Searching " + S.folder + " on the server…");
+    try {
+      const r = await api("POST", `/api/mail/${S.acc}/search`, { folder: S.folder, q });
+      S.search = { q, total: r.total || 0 }; S.msgs = r.msgs || []; S.picks.clear(); S.sel = null; S.body = null;
+      $("mlSearch").value = ""; searchBar(); paintList(); paintRead(); msg("");
+    } catch (e) { msg("✗ " + e.message, true); }
+    finally { busy(false); }
+  }
+  async function older() {
+    S.limit[S.folder] = (S.limit[S.folder] || 200) + 200;
+    await sync();
+  }
+  async function newFolder(shift) {
+    const ask = root.askText ? await root.askText("A new folder on the server" + (shift ? " (inside " + S.folder + ")" : ""), "", "Folder name") : root.prompt("Folder name");
+    if (!ask || !String(ask).trim()) return;
+    try { const r = await api("POST", `/api/mail/${S.acc}/folders`, { name: String(ask).trim(), parent: shift ? S.folder : "" }); S.folders = r.folders || S.folders; paintFolders(); msg("📁 " + String(ask).trim() + " made"); }
+    catch (e) { msg("✗ " + e.message, true); }
+  }
   async function del() {
+    if (await batch("delete")) return;
     if (!S.sel) return;
     const uid = S.sel, L = shown(), i = L.findIndex((m) => m.uid === uid), next = L[i + 1] || L[i - 1];
     busy(true);
@@ -200,6 +287,10 @@
     finally { busy(false); }
   }
   async function toggle(k) {
+    if (S.picks.size > 1) {                            // all of them the way the first one is not
+      const first = S.msgs.find((x) => S.picks.has(x.uid)) || {};
+      return batch(k === "seen" ? (first.seen ? "unseen" : "seen") : (first.flagged ? "unflag" : "flag"));
+    }
     const m = S.msgs.find((x) => x.uid === S.sel); if (!m) { msg("pick an email first", true); return; }
     const val = !m[k]; m[k] = val; paintList(); paintFolders(); badge();
     try { await api("POST", `/api/mail/${S.acc}/flags`, { folder: S.folder, uid: m.uid, [k]: val }); }
@@ -230,10 +321,45 @@
     const on = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
     on("mlCloseBtn", "click", (e) => { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("maildock", "tX_maildock"); });
     on("mlAccSel", "change", async (e) => { S.acc = e.target.value; store.set("acc", S.acc); S.folders = []; S.msgs = []; paintList(); try { await loadFolders(false); await openFolder((S.folders.find((f) => f.special === "inbox") || {}).path || "INBOX"); } catch (er) { msg("✗ " + er.message, true); } });
-    on("mlFolders", "click", (e) => { const f = e.target.closest(".mlf"); if (f) { store.set("folder." + S.acc, f.dataset.path); openFolder(f.dataset.path); } });
-    on("mlList", "click", (e) => { const r = e.target.closest(".mlrow"); if (r) { select(parseInt(r.dataset.uid, 10)); $("mlList").focus({ preventScroll: true }); } });
+    on("mlFolders", "click", (e) => {
+      if (e.target.closest("#mlNewFolder")) { newFolder(e.shiftKey); return; }
+      const f = e.target.closest(".mlf"); if (f) { store.set("folder." + S.acc, f.dataset.path); openFolder(f.dataset.path); }
+    });
+    on("mlList", "click", (e) => {
+      if (e.target.closest("#mlOlder")) { older(); return; }
+      const r = e.target.closest(".mlrow"); if (!r) return;
+      const uid = parseInt(r.dataset.uid, 10);
+      if (e.ctrlKey || e.metaKey) {                    // 2.820.0: Ctrl-click adds / takes away
+        if (!S.picks.size && S.sel) S.picks.add(S.sel);
+        if (S.picks.has(uid)) S.picks.delete(uid); else S.picks.add(uid);
+        S.anchor = uid; paintList(); return;
+      }
+      if (e.shiftKey && (S.anchor || S.sel)) {         // Shift-click: every email between
+        const L = shown().map((m) => m.uid), a = L.indexOf(S.anchor || S.sel), b = L.indexOf(uid);
+        if (a >= 0 && b >= 0) { S.picks = new Set(L.slice(Math.min(a, b), Math.max(a, b) + 1)); paintList(); return; }
+      }
+      S.picks.clear(); S.anchor = uid;
+      select(uid); $("mlList").focus({ preventScroll: true });
+    });
+    on("mlList", "dragstart", (e) => {
+      const r = e.target.closest(".mlrow"); if (!r) return;
+      const uid = parseInt(r.dataset.uid, 10), uids = S.picks.has(uid) && S.picks.size > 1 ? [...S.picks] : [uid];
+      e.dataTransfer.setData("text/x-bitgen-mail", JSON.stringify(uids)); e.dataTransfer.effectAllowed = "move";
+    });
+    on("mlFolders", "dragover", (e) => { const f = e.target.closest(".mlf"); if (f && [...e.dataTransfer.types].includes("text/x-bitgen-mail") && f.dataset.path !== S.folder) { e.preventDefault(); f.classList.add("drop"); } });
+    on("mlFolders", "dragleave", (e) => { const f = e.target.closest(".mlf"); if (f) f.classList.remove("drop"); });
+    on("mlFolders", "drop", (e) => {
+      const f = e.target.closest(".mlf"); if (!f) return; f.classList.remove("drop");
+      let uids = []; try { uids = JSON.parse(e.dataTransfer.getData("text/x-bitgen-mail") || "[]"); } catch (er) { return; }
+      e.preventDefault(); if (uids.length) moveTo(f.dataset.path, uids);
+    });
+    on("mlMove", "click", (e) => moveMenu(e.currentTarget));
+    on("mlSearch", "keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); serverSearch(e.target.value); } });
+    on("mlSearchBar", "click", (e) => { if (e.target.closest("#mlSearchOff")) openFolder(S.folder, true); });
     on("mlList", "keydown", (e) => {
       if (e.key === "Delete") { e.preventDefault(); del(); return; }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A")) { e.preventDefault(); S.picks = new Set(shown().map((m) => m.uid)); paintList(); return; }
+      if (e.key === "Escape" && S.picks.size) { e.preventDefault(); S.picks.clear(); paintList(); return; }
       if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
       e.preventDefault();
       const L = shown(), i = L.findIndex((m) => m.uid === S.sel), n = L[e.key === "ArrowDown" ? Math.min(L.length - 1, i + 1) : Math.max(0, i - 1)];
@@ -274,6 +400,6 @@
     if (S.acc !== had || !S.folders.length) { S.booted = true; await loadFolders(true); await openFolder((S.folders.find((f) => f.special === "inbox") || {}).path || "INBOX"); }
     else paintFolders();
   }
-  root.H3Mail = { S, api, msg, sync, select, openFolder, flagAi, summarise, accountsChanged, loadAccounts, paintList, paintRead, toneOptions, accNow, boot, badge, checkInbox };
+  root.H3Mail = { S, api, msg, sync, select, openFolder, flagAi, summarise, accountsChanged, loadAccounts, paintList, paintRead, toneOptions, accNow, boot, badge, checkInbox, batch, moveTo, serverSearch, older, newFolder };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else setTimeout(wire, 0);
 })(window);

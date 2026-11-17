@@ -125,15 +125,16 @@ const api = async (m, u, b) => { const r = await fetch(new URL(u, URL_), { metho
     await p.fill("#mlAImapHost", "127.0.0.1"); await p.fill("#mlAImapPort", String(IPORT)); await p.uncheck("#mlAImapSsl"); await p.fill("#mlAImapPort", String(IPORT));
     await p.fill("#mlASmtpHost", "127.0.0.1"); await p.uncheck("#mlASmtpSsl"); await p.fill("#mlASmtpPort", String(SPORT));
     await p.uncheck("#mlATls"); await p.check("#mlASent"); await p.fill("#mlASig", "Tim Paul\nbitGen Studio");
-    await p.click("#mlATest"); await until(() => /Outgoing/.test(document.getElementById("mlAMsg").textContent), null, 30000);
     await shot("mail-account", "#mlAcctDlg");
+    // 2.820.0: a Test that logs in KEEPS the account - the first one closes the dialog and the inbox comes in
+    await p.click("#mlATest"); await until(() => /kept/.test(document.getElementById("mlAMsg").textContent), null, 30000);
     const tst = await ev(() => document.getElementById("mlAMsg").textContent);
-    check("✓ Test logs in to both servers", /Incoming ✓/.test(tst) && /Outgoing ✓/.test(tst), tst);
-    await p.click("#mlASave"); await until(() => /saved/.test(document.getElementById("mlAMsg").textContent), null, 30000);
+    check("✓ Test logs in to both servers and keeps the account", /Incoming ✓/.test(tst) && /Outgoing ✓/.test(tst) && /kept/.test(tst), tst);
+    await until(() => !document.getElementById("mlAcctDlg").open, null, 10000);
     const sv = await api("GET", "/api/mail/accounts"), acc = (sv.accounts || []).find((a) => a.email === "tim@example.com");
     const cfg1 = await api("GET", "/api/config");
     check("💾 saved: the account listed without its password (has_pass), and GET /api/config holds no password", acc && acc.has_pass && !("pass" in acc) && !JSON.stringify(cfg1).includes("testpass"), { acc, mail: cfg1.mail });
-    await p.click("#mlAClose");
+    if (await ev(() => document.getElementById("mlAcctDlg").open)) await p.click("#mlAClose");
     await until(() => document.querySelectorAll("#mlList .mlrow").length === 2, null, 30000);
     const L0 = await ev(() => ({ folders: [...document.querySelectorAll("#mlFolders .mlf")].map((f) => f.textContent.trim()), rows: [...document.querySelectorAll("#mlList .mlrow")].map((r) => ({ who: r.querySelector(".who").textContent, sub: r.querySelector(".sub").textContent, unread: r.classList.contains("unread") })), noacc: document.getElementById("maildock").classList.contains("ml-noacc"), badge: document.getElementById("tX_maildock").getAttribute("data-n") }));
     check("folders: Inbox first (2 unread), then Drafts, Sent, Trash", /^📥Inbox2$/.test(L0.folders[0].replace(/\s/g, "")) && /Drafts/.test(L0.folders[1]) && /Sent/.test(L0.folders[2]) && /Trash/.test(L0.folders[3]), L0.folders);

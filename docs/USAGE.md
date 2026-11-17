@@ -9351,6 +9351,16 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The **Lasso**'s line now shows while you draw on any picture - black under white dashes, with a faint line back to where it started (where it will close). The **Polygonal Lasso** shows the next side following the pointer, and the **Bézier** tool shows its next segment, as the Pen does.
 - **One shape mode for every tool**: ◻ New, ⊕ Add, ⊖ Subtract, ⊗ Intersect, ⊘ Exclude. The Shape tool's Ops, the rectangle / ellipse / curve tools' mode buttons and the Pen (Shape mode) all use the same one now. With a vector shape picked - any tool - the five are on the **property bar**: press one to go **into** that mode. The last tool you used that draws a closed shape comes on (the Shape tool the first time), the status line says what the next shape does, and the mode's sign rides beside the pointer until you press ◻ New.
 
+## ✉ Mail - kept accounts, several emails at once, search, folders (2.820.0)
+
+- **✓ Test now keeps the account.** Before, a test that logged in did not save anything - the account was gone when the dialog closed. Now a test that logs in keeps the account (new or changed), closing the dialog keeps what you typed, and the first account you add closes the dialog and brings the inbox in.
+- **Several emails**: Ctrl+click adds one to the picked ones, Shift+click picks every email between, Ctrl+A picks the whole list, Esc picks none. 🗑, ★, ● and **📁 Move ▾** then work on all of them at once (one call to your mail server).
+- **📁 Move ▾** moves the email (or the picked ones) to another folder. You can also drag emails onto a folder on the left.
+- **＋** beside the account's name makes a new folder on your mail server (Shift: inside the folder shown).
+- **🔍** filters the list as you type. **Enter** searches the whole folder on your mail server - every word must be there (sender, recipients, subject or text); `from:` `to:` `subject:` `body:` narrow a word to one field and quotes keep words together. ✕ goes back to the folder.
+- **⤓ Older emails** at the end of the list reads 200 more of the folder's emails from the server each time.
+- **To / Cc / Bcc** suggest the people in your mail as you type (the ones you write to most first) - ↑ ↓ and Enter or Tab (or a click) put one in.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

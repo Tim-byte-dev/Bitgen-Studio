@@ -30,6 +30,22 @@
           .mlrow { padding: 5px 8px 6px 6px; border-bottom: 1px solid var(--line); cursor: pointer; display: grid; grid-template-columns: 14px 1fr auto; column-gap: 6px; font-size: 12px; }
           .mlrow:hover { background: var(--panel-2); }
           .mlrow.on { background: var(--panel-2); box-shadow: inset 3px 0 0 var(--tiger); }
+          .mlrow.pick { background: color-mix(in srgb, var(--tiger) 16%, transparent); }
+          .mlmore { padding: 8px; text-align: center; }
+          #mlSearchBar { padding: 4px 8px; font-size: 11px; border-bottom: 1px solid var(--line); background: var(--panel-2); display: flex; gap: 6px; align-items: center; }
+          #mlSearchBar[hidden] { display: none !important; }
+          #mlSearchBar button { margin-left: auto; }
+          #mlFolders .mlacc { display: flex; align-items: center; gap: 4px; }
+          #mlFolders .mlacc span { overflow: hidden; text-overflow: ellipsis; }
+          #mlFolders .mlacc button { margin-left: auto; padding: 0 6px; font-size: 12px; }
+          #mlFolders .mlf.drop { outline: 2px dashed var(--tiger); outline-offset: -2px; }
+          .mlmenu { position: fixed; z-index: 9990; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 0; font-size: 12px; max-height: 60vh; overflow: auto; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+          .mlmenu > div { padding: 4px 12px; cursor: pointer; white-space: nowrap; }
+          .mlmenu > div:hover { background: var(--panel-2); color: var(--tiger); }
+          .mlsugg { position: fixed; z-index: 9995; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; font-size: 12px; max-height: 240px; overflow: auto; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+          .mlsugg > div { padding: 4px 10px; cursor: pointer; white-space: nowrap; }
+          .mlsugg > div.on, .mlsugg > div:hover { background: var(--panel-2); color: var(--tiger); }
+          .mlsugg .ad { color: var(--dim); margin-left: 6px; }
           .mlrow .fl { grid-row: 1 / span 3; font-size: 11px; padding-top: 1px; }
           .mlrow .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .mlrow .when { color: var(--dim); font-size: 11px; white-space: nowrap; }
@@ -99,13 +115,14 @@
           <button class="ghost gbtn mlneedacc" id="mlReplyAll" type="button" title="Reply to the sender and everyone on the email">↩↩ Reply all</button>
           <button class="ghost gbtn mlneedacc" id="mlFwd" type="button" title="Forward the email (with its attachments)">↪ Forward</button>
           <button class="ghost gbtn mlneedacc" id="mlDel" type="button" title="Move the email to Trash (in Trash: delete it) - key Delete in the list">🗑</button>
+          <button class="ghost gbtn mlneedacc" id="mlMove" type="button" title="Move the email to another folder (or drag it onto one)">📁 Move ▾</button>
           <button class="ghost gbtn mlneedacc" id="mlStar" type="button" title="Follow up: flag / unflag the email on the server (★)">★</button>
           <button class="ghost gbtn mlneedacc" id="mlUnread" type="button" title="Mark as unread / read">●</button>
           <span class="mlsep mlneedacc"></span>
           <button class="ghost gbtn mlneedacc" id="mlSync" type="button" title="Check for new mail now (the folder shown)">⟳ Check mail</button>
           <button class="ghost gbtn mlneedacc" id="mlFlagAll" type="button" title="The AI reads the emails it has not rated yet and flags them: ⚑ red = urgent, orange = important, blue = normal, grey = low (Shift: rate them all again)">✨ Flag with AI</button>
           <label class="mlneedacc" title="When new mail comes in, the AI flags it by itself" style="display:inline-flex;gap:3px;align-items:center"><input type="checkbox" id="mlAuto"> ✨ auto</label>
-          <input type="search" id="mlSearch" class="mlneedacc" placeholder="🔍 Search this folder" aria-label="Search this folder" style="width:150px">
+          <input type="search" id="mlSearch" class="mlneedacc" placeholder="🔍 Search (Enter = whole folder)" aria-label="Search this folder" title="Typing filters the emails in the list; Enter searches the whole folder on the server (from: to: subject: narrow it)" style="width:170px">
           <button class="ghost gbtn" id="mlAccBtn" type="button" title="Mail accounts and settings (what matters to you, checking for mail)">⚙ Accounts</button>
           <span id="mlMsg" role="status"></span>
         </div>
@@ -133,7 +150,8 @@
               </select>
               <span id="mlCount" class="hint" style="margin-left:auto"></span>
             </div>
-            <div id="mlList" tabindex="0" role="listbox" aria-label="Emails"></div>
+            <div id="mlSearchBar" hidden></div>
+            <div id="mlList" tabindex="0" role="listbox" aria-label="Emails" aria-multiselectable="true"></div>
           </div>
           <div id="mlRead"><div class="mlnone">Pick an email to read it.</div></div>
         </div>
