@@ -40,7 +40,7 @@
   const A = (c, r) => C().addr(c, r);
 
   /* ---------------------------------------------------------------- the model */
-  function book() { if (!St.book) St.book = new (C().Book)(W.sheets); St.book.sheets = W.sheets; return St.book; }
+  function book() { if (!St.book) St.book = new (C().Book)(W.sheets); St.book.sheets = W.sheets; St.book.consts = W.constants || null; return St.book; }   // 2.826.0: =Rent reads the 📌 constants
   function changed(noDraft) { St.dirty = true; book().recalc(); if (!noDraft) draft(); paint(); }
   function snapshot() { return JSON.stringify({ sheets: W.sheets, active: W.active }); }
   function step() { St.undo.push(snapshot()); if (St.undo.length > 80) St.undo.shift(); St.redo = []; }
@@ -592,6 +592,7 @@
       for (const t of T) if (t.t === "ref" && t.sheet != null && t.sheet.toLowerCase() === old.toLowerCase()) { out += body.slice(last, t.at) + q(name) + "!" + t.v; last = t.at + t.len; }
       if (last) cell.v = "=" + out + body.slice(last);
     }
+    if (W.ledger && W.ledger.sheet === W.sheets[i].name) W.ledger.sheet = name;   // 2.826.0: the 📌 ledger keeps up
     W.sheets[i].name = name; St.book = null; tabs(); changed();
   }
 
@@ -643,7 +644,7 @@
   }
   async function save() {
     const name = ($("shFile").value || "Workbook").trim();
-    try { const r = await api("POST", "/api/sheets/file", { name, doc: { sheets: W.sheets, active: W.active } }); W.name = r.name.replace(/\.bgs$/i, ""); $("shFile").value = W.name; St.dirty = false; draft(); msg("💾 saved " + r.name); }
+    try { const r = await api("POST", "/api/sheets/file", { name, doc: { sheets: W.sheets, active: W.active, constants: W.constants, ledger: W.ledger } }); W.name = r.name.replace(/\.bgs$/i, ""); $("shFile").value = W.name; St.dirty = false; draft(); msg("💾 saved " + r.name); }
     catch (e) { msg("✗ " + e.message, true); }
   }
   async function okToLeave() { return !St.dirty || typeof root.appConfirm !== "function" || await root.appConfirm(`"${W.name}" has changes that are not saved. Leave it?`, "Not saved"); }
@@ -655,6 +656,7 @@
   function load(d, name) {
     W.sheets = upgradeSheets(d.sheets.map((s) => Object.assign(newSheet(s.name), s, { freeze: s.freeze || { r: 0, c: 0 }, merges: s.merges || [] })));
     W.active = Math.min(d.active || 0, W.sheets.length - 1); W.name = name || "Workbook"; $("shFile").value = W.name;
+    W.constants = Array.isArray(d.constants) ? d.constants : []; W.ledger = d.ledger && d.ledger.sheet ? { sheet: d.ledger.sheet } : null;   // 2.826.0
     St.book = null; St.undo = []; St.redo = []; St.dirty = false; St.sel = { r1: 0, c1: 0, r2: 0, c2: 0 }; St.act = { r: 0, c: 0 };
     const g = $("shGrid"); if (g) { g.scrollLeft = 0; g.scrollTop = 0; }
     tabs(); book().recalc(); draft(); paint();
@@ -815,6 +817,7 @@
     on("shExport", "click", (e) => root.H3SheetIO && root.H3SheetIO.exportMenu(e.currentTarget));
     on("shChart", "click", (e) => chartMenu(e.currentTarget));
     on("shDash", "click", () => root.H3SheetDash && root.H3SheetDash.open());
+    on("shConst", "click", () => root.H3SheetConst && root.H3SheetConst.open());     // 2.826.0
     on("shAi", "click", (e) => root.H3SheetAI && root.H3SheetAI.aiMenu(e.currentTarget));     // 2.825.0
     on("shB", "click", () => toggleStyle("b")); on("shI", "click", () => toggleStyle("i")); on("shU", "click", () => toggleStyle("u"));
     on("shColor", "change", (e) => styleAll((S) => { S.color = e.target.value; }));
@@ -829,7 +832,7 @@
     on("shSum", "click", autoSum);
     on("shFn", "click", (e) => { const r = e.currentTarget.getBoundingClientRect(), m = menu(r.left, r.bottom + 2, C().FUNCS.map((f) => `<div data-fn="${f}" data-noi18n>${f}</div>`).join("")); m.addEventListener("click", (ev) => { const it = ev.target.closest("[data-fn]"); if (!it) return; m.remove(); if (St.edit && St.edit.from !== "fx") { const ed = EDIT; ed.value += it.dataset.fn + "("; ed.focus(); } else startEdit("=" + it.dataset.fn + "("); }); });
     // the draft kept in this browser comes back
-    try { const dr = JSON.parse(root.localStorage.getItem("h3.sheet.draft") || "null"); if (dr && Array.isArray(dr.sheets) && dr.sheets.length) { W.sheets = upgradeSheets(dr.sheets); W.active = Math.min(dr.active || 0, dr.sheets.length - 1); W.name = dr.name || "Workbook"; $("shFile").value = W.name; } } catch (e) { /* a fresh workbook */ }
+    try { const dr = JSON.parse(root.localStorage.getItem("h3.sheet.draft") || "null"); if (dr && Array.isArray(dr.sheets) && dr.sheets.length) { W.sheets = upgradeSheets(dr.sheets); W.active = Math.min(dr.active || 0, dr.sheets.length - 1); W.constants = Array.isArray(dr.constants) ? dr.constants : []; W.ledger = dr.ledger || null; W.name = dr.name || "Workbook"; $("shFile").value = W.name; } } catch (e) { /* a fresh workbook */ }
     const boot = () => { if (St.booted) return; St.booted = true; tabs(); paint(); };
     const seen = () => !d.classList.contains("dockgone") && !d.classList.contains("collapsed");
     if (root.MutationObserver) new MutationObserver(() => { if (seen()) { boot(); paintSoon(); } }).observe(d, { attributes: true, attributeFilter: ["class"] });

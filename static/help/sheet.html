@@ -56,6 +56,15 @@
   <li>New functions in <b>ƒ▾</b>: PROPER, FIND, SEARCH, SUBSTITUTE, REPLACE, REPT, EXACT, TEXTJOIN, AVERAGEIFS, MAXIFS, MINIFS, SUMPRODUCT, LARGE, SMALL, RANK, ROWS, COLUMNS, CEILING, FLOOR, WEEKDAY, HOUR, MINUTE, EDATE, EOMONTH, DATEDIF, CHOOSE, IFNA, ISERROR, ISNA, ISBLANK, ISNUMBER, ISTEXT, SWITCH.</li>
 </ul>
 
+<h3>📌 Constants - amounts that repeat</h3>
+<ul>
+  <li><b>📌 Constants</b> keeps amounts that come or go again and again - rent, wages, a phone plan, a loan: <b>Type</b> (its name), <b>Amount</b>, <b>Every</b> (day, week, fortnight, month, quarter, year), <b>Start date</b>, <b>Description</b>, <i>Expense (paid)</i> or <i>Income (received)</i>, and an <b>Ends</b> date if it stops.</li>
+  <li>When the amount changes, add the same name again with the new amount and the date it starts (click the constant in the list to fill the form). The earlier amount stays for the dates before it - rent at 540 a week for a year, then 580, gives 52 entries at 540 and 580 from the new date. The list shows today's amount; a click shows every amount it has had.</li>
+  <li><b>⟳ Bring up to date</b> works out every due entry up to the day you pick and shows what it would do first: the new entries, entries whose amount changed (an amount added back in time - corrected when ticked) and entries no constant makes any more (removed only when ticked). <b>✔ Apply</b> puts them in the ledger in date order - Date, Description, Category, Income or Expense, the running Balance and a Ref (📌 Rent · 2026-01-13) so nothing is entered twice. One <b>Ctrl+Z</b> takes it back.</li>
+  <li>The ledger is a sheet with Date and Income / Expense (or Amount) headings - yours, or <b>＋ Make a Ledger sheet</b>. Rows you type yourself stay and are kept in date order with the rest.</li>
+  <li>Formulas read them: <code>=Rent</code> is today's amount, <code>=CONST("Rent", A5)</code> the amount on a date (a name with spaces: <code>=Car_loan</code>). They are saved with the workbook.</li>
+</ul>
+
 <h3>Tables</h3>
 <ul>
   <li><b>A→Z / Z→A</b> sorts the table round the active cell by the active cell's column. A first row of headings stays on top, the cells of a row stay together (its formulas too), empty cells go last. A block that is picked is sorted on its own.</li>

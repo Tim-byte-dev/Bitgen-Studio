@@ -14218,6 +14218,13 @@ node scripts/test-ai825.js > /tmp/ai825.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui825-ui.js > /tmp/ui825.log 2>&1 \
   && ok "2.825.0 browser test: 🪄 Ctrl+E filled here, an LLM formula asked again until it gives the examples, the LLM's values as its guess, ✍ Write a formula + Fill down, 💡 Explain from the right-click menu, the LLM down" \
   || { bad "2.825.0 spreadsheet AI browser test"; grep -a "^FAIL" -A1 /tmp/ui825.log | head -12; }
+# ---- 2.826.0 (Tim: "add a button for constants in spreadsheet … rent - 540 - week 13/01/2026 … then changed to 580/wk it will remember all the transactions") 📌 Constants
+node scripts/test-const826.js > /tmp/const826.log 2>&1 \
+  && ok "2.826.0 constants: due dates (rates in turn, month ends, end dates), the plan (add / change / stale), the ledger found by its headings, received / paid, =Rent / CONST(), kept in the .bgs" \
+  || { bad "2.826.0 constants units"; grep -a "^FAIL" -A1 /tmp/const826.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui826-ui.js > /tmp/ui826.log 2>&1 \
+  && ok "2.826.0 browser test: 📌 Rent 540 / week -> a Ledger with 25 entries + balance, 580 back in time corrected, wages in date order, an end date removes when ticked, =Rent, save + open" \
+  || { bad "2.826.0 constants browser test"; grep -a "^FAIL" -A1 /tmp/ui826.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

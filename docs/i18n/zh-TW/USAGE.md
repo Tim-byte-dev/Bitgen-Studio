@@ -5986,6 +5986,15 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **🪄 按範例填充**（Ctrl+E，類似大家熟悉的快速填充）——在表格旁的列中，於一兩個儲存格輸入應有的內容，然後按 Ctrl+E。bitGen 先自己找規則：該行其他儲存格中的詞（第一個、最後一個、第 n 個）、某個符號（@ , - / …）之前 / 之後或兩個符號之間的部分、與你輸入的文字拼接、大寫 / 小寫 / 首字母大寫、首字母縮寫——立即用值填充空行，不用 LLM，並說明規則（“"Name" 的第一個詞（首字母大寫）”）。數字整體使用，從不拆分。沒有這類規則適用時（求和、含稅價格、查詢），由 LLM 編寫公式——只有能得出每一個範例時才使用（會附上不符的行再問一次）——並填入空行；沒有公式能做到時，由 LLM 填入值（最多 200 行），並註明是它的推測。按一次 Ctrl+Z 即可復原填充。
 - **新函式**（ƒ▾，也是 LLM 可用的）：PROPER、FIND、SEARCH、SUBSTITUTE、REPLACE、REPT、EXACT、TEXTJOIN、AVERAGEIFS、MAXIFS、MINIFS、SUMPRODUCT、LARGE、SMALL、RANK、ROWS、COLUMNS、CEILING、FLOOR、WEEKDAY、HOUR、MINUTE、EDATE、EOMONTH、DATEDIF、CHOOSE、IFNA、ISERROR、ISNA、ISBLANK、ISNUMBER、ISTEXT、SWITCH——共 82 個。
 
+## ▦ 試算表——📌 常量：重複出現的金額及其隨時間的變化（2.826.0）
+<!-- en: spreadsheet-constants-amounts-that-repeat-with-their-amount-over-time-2-826-0 6670ae888e37 -->
+
+- 工具列上的 **📌 常量**：類型（名稱——Rent、Wages、Phone、Car loan …）、金額、週期（天 / 周 / 兩週 / 月 / 季度 / 年）、開始日期、描述、支出（付款）或收入（收款）、結束（可選）。＋ 新增；清單顯示每個常量今天的金額、週期、起始日期以及它有過幾個金額；🗑 刪除一個常量（帳本中的記錄保留）或它的某個金額。
+- **從某天起的新金額**：輸入同一名稱（或在清單中點選——表單會自動填好，按鈕變為“＋ 為 Rent 新增新金額”）、新金額及其開始日期。之前的日期保留原金額：13/01/2026 起每週 540、12/01/2027 起 580 的房租 = 52 周的 540，之後是 580。再次輸入同一開始日期會替換該金額。每月 31 日的金額在較短的月份落在當月最後一天。
+- **⟳ 更新到最新**（到今天，或你選的日期）先顯示計劃：新記錄（各多少筆）、金額已變化的記錄——往前追加的金額；以舊 → 新列出，勾選後更正（預設已勾選）——以及不再由任何常量產生的記錄（結束日期、已刪除的金額；僅在勾選時刪除）。**✔ 應用** 以一個復原步驟寫入。
+- **帳本**：帶有 Date 和 Income + Expense（或 Amount + Type）標題的工作表——有 Description、Category、Balance 和 Ref 時會使用（沒有 Ref 時會新增）；都沒有時，⟳ 會建立 **Ledger** 工作表（Date、Description、Category、Income、Expense、Balance、Ref）。記錄按日期順序插入已有的行之間（你的行保留，其公式隨行移動）；新行沿用相鄰行的格式和 Balance 公式（新帳本：=SUM(D$2:D2)-SUM(E$2:E2)）。每筆記錄的 Ref（📌 Rent · 2026-01-13）讓 bitGen 知道它已存在——從不重複記錄。
+- **在公式中**：=Rent = 今天的金額（“Car loan” 則用 =Car_loan），=CONST("Rent", A5) = 該日期的金額，結束後為 0。常量和帳本儲存在 .bgs 中。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -5988,6 +5988,15 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **🪄 按示例填充**（Ctrl+E，类似大家熟悉的快速填充）——在表格旁的列中，于一两个单元格输入应有的内容，然后按 Ctrl+E。bitGen 先自己找规则：该行其他单元格中的词（第一个、最后一个、第 n 个）、某个符号（@ , - / …）之前 / 之后或两个符号之间的部分、与你输入的文字拼接、大写 / 小写 / 首字母大写、首字母缩写——立即用值填充空行，不用 LLM，并说明规则（“"Name" 的第一个词（首字母大写）”）。数字整体使用，从不拆分。没有这类规则适用时（求和、含税价格、查找），由 LLM 编写公式——只有能得出每一个示例时才使用（会附上不符的行再问一次）——并填入空行；没有公式能做到时，由 LLM 填入值（最多 200 行），并注明是它的推测。按一次 Ctrl+Z 即可撤销填充。
 - **新函数**（ƒ▾，也是 LLM 可用的）：PROPER、FIND、SEARCH、SUBSTITUTE、REPLACE、REPT、EXACT、TEXTJOIN、AVERAGEIFS、MAXIFS、MINIFS、SUMPRODUCT、LARGE、SMALL、RANK、ROWS、COLUMNS、CEILING、FLOOR、WEEKDAY、HOUR、MINUTE、EDATE、EOMONTH、DATEDIF、CHOOSE、IFNA、ISERROR、ISNA、ISBLANK、ISNUMBER、ISTEXT、SWITCH——共 82 个。
 
+## ▦ 电子表格——📌 常量：重复出现的金额及其随时间的变化（2.826.0）
+<!-- en: spreadsheet-constants-amounts-that-repeat-with-their-amount-over-time-2-826-0 6670ae888e37 -->
+
+- 工具栏上的 **📌 常量**：类型（名称——Rent、Wages、Phone、Car loan …）、金额、周期（天 / 周 / 两周 / 月 / 季度 / 年）、开始日期、描述、支出（付款）或收入（收款）、结束（可选）。＋ 添加；列表显示每个常量今天的金额、周期、起始日期以及它有过几个金额；🗑 删除一个常量（账本中的记录保留）或它的某个金额。
+- **从某天起的新金额**：输入同一名称（或在列表中点击——表单会自动填好，按钮变为“＋ 为 Rent 添加新金额”）、新金额及其开始日期。之前的日期保留原金额：13/01/2026 起每周 540、12/01/2027 起 580 的房租 = 52 周的 540，之后是 580。再次输入同一开始日期会替换该金额。每月 31 日的金额在较短的月份落在当月最后一天。
+- **⟳ 更新到最新**（到今天，或你选的日期）先显示计划：新记录（各多少笔）、金额已变化的记录——往前追加的金额；以旧 → 新列出，勾选后更正（默认已勾选）——以及不再由任何常量产生的记录（结束日期、已删除的金额；仅在勾选时删除）。**✔ 应用** 以一个撤销步骤写入。
+- **账本**：带有 Date 和 Income + Expense（或 Amount + Type）标题的工作表——有 Description、Category、Balance 和 Ref 时会使用（没有 Ref 时会添加）；都没有时，⟳ 会创建 **Ledger** 工作表（Date、Description、Category、Income、Expense、Balance、Ref）。记录按日期顺序插入已有的行之间（你的行保留，其公式随行移动）；新行沿用相邻行的格式和 Balance 公式（新账本：=SUM(D$2:D2)-SUM(E$2:E2)）。每笔记录的 Ref（📌 Rent · 2026-01-13）让 bitGen 知道它已存在——从不重复记录。
+- **在公式中**：=Rent = 今天的金额（“Car loan” 则用 =Car_loan），=CONST("Rent", A5) = 该日期的金额，结束后为 0。常量和账本保存在 .bgs 中。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6075,
+ "count": 6077,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56002,6 +56002,24 @@
    ],
    "where": [
     "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "Constants: amounts that repeat (rent, wages, a loan …) with their amount over time - entered in the ledger",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Constants (2.826.0)"
+   ]
+  },
+  {
+   "s": "Constants",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Constants (2.826.0)"
    ]
   }
  ]

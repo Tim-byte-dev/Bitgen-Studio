@@ -19695,6 +19695,110 @@
    "src": "ext/sheetdock/sheetai.js:419"
   },
   {
+   "s": "Constants - amounts that repeat",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Rent, wages, a phone plan, a loan … one line each. A new amount from a later date is added to the same name - the earlier amount stays for the dates before it. ⟳ Bring up to date puts every due entry in the ledger",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "How much",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "How often",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "day",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "week",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "fortnight",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "month",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "quarter",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "year",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Start date",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Expense (paid)",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Income (received)",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Ends",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Ledger",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Up to",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "Bring up to date",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "e.g. Rent",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "e.g. Rent payment",
+   "src": "ext/sheetdock/sheetconst.js:222"
+  },
+  {
+   "s": "No constants yet - type one above (e.g. Rent · 540 · week · 13/01/2026) and ＋ Add",
+   "src": "ext/sheetdock/sheetconst.js:293"
+  },
+  {
+   "s": "Delete this amount",
+   "src": "ext/sheetdock/sheetconst.js:296"
+  },
+  {
+   "s": "Delete this constant (the entries already in the ledger stay)",
+   "src": "ext/sheetdock/sheetconst.js:299"
+  },
+  {
+   "s": "Make a Ledger sheet",
+   "src": "ext/sheetdock/sheetconst.js:305"
+  },
+  {
+   "s": "Pick a sheet",
+   "src": "ext/sheetdock/sheetconst.js:305"
+  },
+  {
+   "s": "Correct 1 entry whose amount changed",
+   "src": "ext/sheetdock/sheetconst.js:339"
+  },
+  {
+   "s": "Remove 1 entry no constant makes any more",
+   "src": "ext/sheetdock/sheetconst.js:340"
+  },
+  {
    "s": "Dashboard from the data",
    "src": "ext/sheetdock/sheetdash.js:264"
   },
@@ -19820,35 +19924,35 @@
   },
   {
    "s": "Cells",
-   "src": "ext/sheetdock/sheetdock.js:621"
+   "src": "ext/sheetdock/sheetdock.js:622"
   },
   {
    "s": "Legend",
-   "src": "ext/sheetdock/sheetdock.js:621"
+   "src": "ext/sheetdock/sheetdock.js:622"
   },
   {
    "s": "Delete the chart",
-   "src": "ext/sheetdock/sheetdock.js:621"
+   "src": "ext/sheetdock/sheetdock.js:622"
   },
   {
    "s": "no workbooks in this project yet - 💾 Save one",
-   "src": "ext/sheetdock/sheetdock.js:665"
+   "src": "ext/sheetdock/sheetdock.js:667"
   },
   {
    "s": "All borders",
-   "src": "ext/sheetdock/sheetdock.js:825"
+   "src": "ext/sheetdock/sheetdock.js:828"
   },
   {
    "s": "Outside borders",
-   "src": "ext/sheetdock/sheetdock.js:825"
+   "src": "ext/sheetdock/sheetdock.js:828"
   },
   {
    "s": "Bottom border",
-   "src": "ext/sheetdock/sheetdock.js:825"
+   "src": "ext/sheetdock/sheetdock.js:828"
   },
   {
    "s": "No borders",
-   "src": "ext/sheetdock/sheetdock.js:825"
+   "src": "ext/sheetdock/sheetdock.js:828"
   },
   {
    "s": "A$ (Australian dollar)",
@@ -28403,6 +28507,42 @@
   {
    "p": "Put it in {0}",
    "src": "ext/sheetdock/sheetai.js:289"
+  },
+  {
+   "p": "Add a new amount to {0}",
+   "src": "ext/sheetdock/sheetconst.js:289"
+  },
+  {
+   "p": "div>1 new entry up to {0}: {1}</div>",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "div>{0} new entries up to {1}: {2}</div>",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "div>No new entries - the ledger is up to date to {0}</div>",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "1 new entry up to {0}: {1}",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "{0} new entries up to {1}: {2}",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "No new entries - the ledger is up to date to {0}",
+   "src": "ext/sheetdock/sheetconst.js:338"
+  },
+  {
+   "p": "Correct {0} entries whose amount changed",
+   "src": "ext/sheetdock/sheetconst.js:339"
+  },
+  {
+   "p": "Remove {0} entries no constant makes any more",
+   "src": "ext/sheetdock/sheetconst.js:340"
   },
   {
    "p": "{0} - drag to move, the corner to size, double-click to change, Delete to remove",

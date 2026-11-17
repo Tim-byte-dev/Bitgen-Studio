@@ -264,6 +264,8 @@
   const LAZY = {
     IF: (args, ev) => { const c = bool(ev(args[0])); return c ? (args[1] ? ev(args[1]) : true) : (args[2] ? ev(args[2]) : false); },
     IFS: (args, ev) => { for (let i = 0; i + 1 < args.length; i += 2) if (bool(ev(args[i]))) return ev(args[i + 1]); throw ERR("#N/A"); },
+    // 2.826.0: CONST("Rent", date) - a 📌 constant's amount on that date (its rate then); no date = today
+    CONST: (args, ev, book) => { const nm = str(ev(args[0])), d = args[1] ? num(ev(args[1])) : null, a = constAmount(book && book.consts, nm, d); if (a === undefined) throw ERR("#N/A"); return a; },
     // 2.825.0: the IS… tests see an error without it stopping the formula
     IFNA: (args, ev) => { let v; try { v = ev(args[0]); } catch (e) { if (isErr(e)) v = e; else throw e; } return isErr(v) && v.err === "#N/A" ? ev(args[1]) : v; },
     ISERROR: (args, ev) => { try { return isErr(ev(args[0])); } catch (e) { if (isErr(e)) return true; throw e; } },
@@ -277,6 +279,18 @@
   const FUNCS = Object.keys(F).filter((k) => F[k]).concat(Object.keys(LAZY)).sort();
 
   /* ================================ the workbook ================================ */
+  /** 2.826.0: a 📌 constant's amount on a day (a date serial; none = today): the newest rate started by then, 0 after it ends
+   *  or before it starts; undefined = no constant of that name (a name's _ = a space, any case) */
+  function constAmount(list, name, day) {
+    if (!Array.isArray(list)) return undefined;
+    const want = String(name || "").replace(/_/g, " ").trim().toLowerCase(), k = list.find((x) => x && String(x.name || "").trim().toLowerCase() === want);
+    if (!k) return undefined;
+    let d = day; if (d == null) { const t = new Date(); d = serialOf(t.getFullYear(), t.getMonth() + 1, t.getDate()); }
+    if (k.end && d > parseInput(k.end).value) return 0;
+    let best = null;
+    for (const r of k.rates || []) { const st = parseInput(r.start).value; if (typeof st === "number" && st <= d && (!best || st >= best.st)) best = { st, a: +r.amount || 0 }; }
+    return best ? best.a : 0;
+  }
   function Book(sheets) { this.sheets = sheets || []; this.memo = new Map(); this.busy = new Set(); this.parsed = new Map(); }
   Book.prototype.sheetIndex = function (name) {
     if (name == null) return -1;
@@ -322,7 +336,7 @@
       case "num": case "str": case "bool": return n.v;
       case "blank": return "";
       case "err": throw ERR(n.v);
-      case "name": throw ERR("#NAME?");
+      case "name": { const a = constAmount(this.consts, n.v); if (a === undefined) throw ERR("#NAME?"); return a; }   // 2.826.0: =Rent - a 📌 constant's amount today
       case "ref": { const s = n.sheet != null ? this.sheetIndex(n.sheet) : si; if (s < 0) throw ERR("#REF!"); const v = this.get(s, n.c, n.r); return v; }
       case "range": {
         const s = n.sheet != null ? this.sheetIndex(n.sheet) : si; if (s < 0) throw ERR("#REF!");
@@ -348,7 +362,7 @@
         }
       }
       case "fn": {
-        if (LAZY[n.v]) return LAZY[n.v](n.args, ev);
+        if (LAZY[n.v]) return LAZY[n.v](n.args, ev, this);
         const f = F[n.v]; if (!f) throw ERR("#NAME?");
         const args = n.args.map((x) => (x.k === "blank" ? undefined : ev(x)));
         for (const a of args) if (isErr(a)) throw a;
@@ -455,7 +469,7 @@
     }
   }
 
-  const SheetCalc = { colName, colIndex, addr, parseAddr, tokenize, parse, Book, shiftFormula, adjustRefs, parseInput, format, textFmt, crit, FUNCS, ERRS, isErr, serialOf, dateOf, MAXR, MAXC };
+  const SheetCalc = { constAmount, colName, colIndex, addr, parseAddr, tokenize, parse, Book, shiftFormula, adjustRefs, parseInput, format, textFmt, crit, FUNCS, ERRS, isErr, serialOf, dateOf, MAXR, MAXC };
   if (typeof module !== "undefined" && module.exports) module.exports = SheetCalc;
   else root.SheetCalc = SheetCalc;
 })(typeof window !== "undefined" ? window : globalThis);

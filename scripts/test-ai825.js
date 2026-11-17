@@ -29,7 +29,7 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   const wrong = T.filter(([f, want]) => ev(f) !== want).map(([f, want]) => [f, want, ev(f)]);
   check(`${T.length} formulas with the new functions give Excel's answers`, !wrong.length, wrong);
   for (const f of ["PROPER", "FIND", "SEARCH", "SUBSTITUTE", "REPLACE", "REPT", "EXACT", "TEXTJOIN", "AVERAGEIFS", "MAXIFS", "MINIFS", "SUMPRODUCT", "LARGE", "SMALL", "RANK", "ROWS", "COLUMNS", "CEILING", "FLOOR", "WEEKDAY", "HOUR", "MINUTE", "EDATE", "EOMONTH", "DATEDIF", "CHOOSE", "IFNA", "ISERROR", "ISNA", "ISBLANK", "ISNUMBER", "ISTEXT", "SWITCH"]) if (!C.FUNCS.includes(f)) check("ƒ list has " + f, false);
-  check("ƒ▾ lists them (82 functions)", C.FUNCS.length === 82, C.FUNCS.length);
+  check("ƒ▾ lists them (82 functions; 2.826.0 CONST = 83)", C.FUNCS.length >= 82, C.FUNCS.length);
 
   // ---------------------------------------------------------------- 🪄 the rule found here
   const R = (ex, rows, names) => { const p = AI.learn(ex); return p ? { d: AI.describe(p, names || ["A", "B", "C"]), out: rows.map((r) => AI.apply(p, r)) } : null; };
@@ -98,7 +98,7 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
 
   // ---------------------------------------------------------------- the wiring
   const ext = JSON.parse(read("ext/sheetdock/ext.json"));
-  check("ext.json: sheetai.js last (after the dashboard)", ext.scripts[ext.scripts.length - 1] === "sheetai.js", ext.scripts);
+  check("ext.json: sheetai.js after the dashboard", ext.scripts.indexOf("sheetai.js") === ext.scripts.indexOf("sheetdash.js") + 1, ext.scripts);   // 2.826.0: + sheetconst after
   const routes = read("routes/sheets.js");
   check("routes: /api/sheets/ai/formula, /explain, /fill, /fillvalues (server.js untouched)", ["formula", "explain", "fill", "fillvalues"].every((k) => routes.includes(`"/api/sheets/ai/${k}"`)) && !/sheets/.test(read("misc/server.js")));
   const dock = read("ext/sheetdock/sheetdock.js"), html = read("ext/sheetdock/dock.html");

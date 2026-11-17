@@ -11,6 +11,7 @@
     "sheetfmtdlg.js",
     "sheetio.js",
     "sheetdash.js",
-    "sheetai.js"
+    "sheetai.js",
+    "sheetconst.js"
   ]
 }
