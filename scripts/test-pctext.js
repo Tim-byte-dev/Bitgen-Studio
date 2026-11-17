@@ -121,7 +121,7 @@ const EXT = JSON.parse(read("ext", "imageeditdock", "ext.json")), UI = read("ext
 check("ext.json: pcstyles.js + pctext.js after pcfill.js, before imageedit.js; imageedit installs PCText", EXT.scripts.indexOf("pcstyles.js") === EXT.scripts.indexOf("pcfill.js") + 1
   && EXT.scripts.indexOf("pctext.js") === EXT.scripts.indexOf("pcstyles.js") + 1 && EXT.scripts.indexOf("pctext.js") < EXT.scripts.indexOf("imageedit.js") && /win\.PCText\.install\(E\)/.test(IE));
 check("pcui: the T group = Horizontal Type, Vertical Type, Type on a Path (icons); the Layer Style dialog's fields, checkboxes and Styles list; text Properties ⌒ Shape / fx",
-  /\{ k: "t", tools: \[\["type", "Horizontal Type Tool"\], \["vtype", "Vertical Type Tool"\], \["typepath", "Type on a Path Tool"\]\] \}/.test(UI) && /vtype: '<path/.test(UI) && /typepath: '<path/.test(UI)
+  /\{ k: "t", tools: \[\["type", "Horizontal Type Tool"\], \["vtype", "Vertical Type Tool"\], \["typepath", "Type on a Path Tool"\](, \["doctext", "Document Text Tool \(word processor\)"\])?\] \}/.test(UI) && /vtype: '<path/.test(UI) && /typepath: '<path/.test(UI)
   && /Object\.assign\(fields, root\.PCStyles\.FIELDS\)/.test(UI) && /ty === "chk"/.test(UI) && /id="psPreset"/.test(UI) && /presetStyles\(pre\.value, D\.STYLE_DEFAULTS\)/.test(UI) && /id="ppTShape"/.test(UI));
 check("pcdoc: a shaped text is drawn / boxed by pctext; styled() draws the overlays (pcstyles), satin, bevel - Photoshop's order (overlays, satin, inner glow, inner shadow, bevel, stroke)",
   /root\.PCText\.wants\(L\.text\)\) root\.PCText\.draw\(g, L\.text\)/.test(PD) && /if \(PS\) body = PS\.overlays\(env, st, content, W, H\);/.test(PD)

@@ -9283,6 +9283,15 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **⧈** (Offset): grow (+) or shrink (−) the picked shapes' outlines by a distance in px, with round corners. **Keep the original** puts the offset outline on a new layer above; off, the shape itself changes.
 - With the Shape tool (or Trim) in hand, **right-click** the canvas: the modes, **Shape ▸**, **✂ Trim**, **⇋ Mirror ▸** and **⧈ Offset…** come first in the menu. Other tools don't show them.
 
+## Word-processor text in the image editor (2.811.0)
+
+- **File ▸ New Text Document…** - a page (A4, Letter … portrait or landscape), margins and a resolution; one document frame fills the page inside the margins and you type in it at once. Pages are **added by themselves** as the text grows (and the ones it added go again when it shrinks).
+- The **Document Text tool** (T group, the page icon): drag a box on any picture or page for a frame; click a frame to type in it. With the Move tool, **double-click** a frame. **Esc** or a click outside ends the typing - the whole edit is one undo step.
+- The bar while typing: **paragraph style** (Normal, Title, Subtitle, Heading 1-3, Quote, Code), **font**, **size** (pt), **B / I / U / S**, sub- and superscript, **text colour**, **highlight**, **align** left / centre / right / justify, **line spacing**, **space before / after**, **bullets**, **numbering**, **indent − / +**, **clear formatting**. Keys: Ctrl+B / I / U, Ctrl+L / E / R / J.
+- **W / H** set the frame's size. **⤵ Next page** carries the story on in a frame on the next page; the text flows from frame to frame in whole lines.
+- Pasted text keeps its formatting (cleaned - no pictures or scripts). The frame is drawn on its layer exactly as it looks while you type, so it prints and exports with the page.
+- Coming next: tables, then saving and opening .docx files (with margins, headers and footers), then comments, footnotes and mail merge.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

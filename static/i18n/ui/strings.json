@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5715,
+ "count": 5729,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52756,6 +52756,132 @@
    ],
    "where": [
     "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Bold (Ctrl+B)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Italic (Ctrl+I)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Underline (Ctrl+U)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Align left (Ctrl+L)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Centre (Ctrl+E)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Align right (Ctrl+R)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Justify (Ctrl+J)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Bullets",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Numbering",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Decrease indent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Increase indent",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Clear formatting",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "New Text Document",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Document Text Frame",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "the Document Text tool (2.811.0)"
    ]
   }
  ]

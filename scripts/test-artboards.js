@@ -19,7 +19,7 @@ const ext = JSON.parse(read("ext", "imageeditdock", "ext.json")).scripts;
 check("pcdoc: an artboard group draws through PCArtboards.content (never pass-through), \"artboard\" in the undo snapshot",
   /L\.artboard && root\.PCArtboards\) return root\.PCArtboards\.content/.test(DOC) && /L\.type === "group" && !L\.artboard && blend === "pass-through"/.test(DOC) && /"frame", "artboard"[\],]/.test(DOC));
 check("imageedit: moving / nudging an artboard moves its rectangle (E.moveBoard); duplicating keeps it; installed after pcpromptlink; Canvas Size / Image Size move / scale them (pctools shiftBoards); a PSD artboard; the Artboard tool in the Move group",
-  (IE.match(/E\.moveBoard\(/g) || []).length === 2 && /"frame", "artboard"(, "sketch")?\]\) d\[k\]/.test(IE) && IE.indexOf("PCArtboards.install(E)") > IE.indexOf("PCPromptLink.install(E)") && ext.indexOf("pcartboards.js") === ext.indexOf("pcpromptlink.js") + 1
+  (IE.match(/E\.moveBoard\(/g) || []).length === 2 && /"frame", "artboard"(, "sketch")?(, "doc")?\]\) d\[k\]/.test(IE) && IE.indexOf("PCArtboards.install(E)") > IE.indexOf("PCPromptLink.install(E)") && ext.indexOf("pcartboards.js") === ext.indexOf("pcpromptlink.js") + 1
   && /shiftBoards\(ox, oy, 1, 1\)/.test(PT) && /shiftBoards\(0, 0, kx, ky\)/.test(PT) && /o\.artboard = \{ rect:/.test(PS) && /\["move", "Move Tool"\], \["artboard", "Artboard Tool"\]/.test(UI));
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

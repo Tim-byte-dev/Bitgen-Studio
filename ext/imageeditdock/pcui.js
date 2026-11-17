@@ -53,6 +53,7 @@
     type: '<path d="M5 5h14M12 5v15M9 20h6"/>',
     vtype: '<path d="M5 5h10M10 5v12M7 17h6"/><path d="M19 6v13M17 17l2 2 2-2"/>',
     typepath: '<path d="M3 19c4-10 14-10 18 0" stroke-dasharray="2 2"/><path d="M8 6h8M12 6v8"/>',
+    doctext: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 12h6M9 15h4"/>',   // 2.811.0: a page with lines (pcdoctext.js)
     shape: '<rect x="3" y="3" width="11" height="11"/><circle cx="15.5" cy="15.5" r="5.5"/>',
     // 2.421.0: pcpen.js
     pen: '<path d="M12 3l6 9-6 9-6-9z"/><circle cx="12" cy="12" r="1.6"/><path d="M12 3v7.4"/>',
@@ -138,7 +139,7 @@
     { k: "o", tools: [["dodge", "Dodge Tool"], ["burn", "Burn Tool"], ["sponge", "Sponge Tool"]] },
     null,
     { k: "p", tools: [["pen", "Pen Tool"], ["freepen", "Freeform Pen Tool"], ["curvpen", "Curvature Pen Tool"], ["addanchor", "Add Anchor Point Tool"], ["delanchor", "Delete Anchor Point Tool"], ["convanchor", "Convert Point Tool"]] },   // 2.421.0: pcpen.js; 2.425.0: + Curvature Pen (pcvline.js)
-    { k: "t", tools: [["type", "Horizontal Type Tool"], ["vtype", "Vertical Type Tool"], ["typepath", "Type on a Path Tool"]] },   // 2.397.0: pctext.js
+    { k: "t", tools: [["type", "Horizontal Type Tool"], ["vtype", "Vertical Type Tool"], ["typepath", "Type on a Path Tool"], ["doctext", "Document Text Tool (word processor)"]] },   // 2.811.0: + pcdoctext.js   // 2.397.0: pctext.js
     { k: "a", tools: [["pathsel", "Path Selection Tool"], ["directsel", "Direct Selection Tool"]] },   // 2.421.0
     { k: "u", tools: [["shape", "Shape Tool (rectangle, ellipse, polygon, line)"], ["customshape", "Custom Shape Tool"]] },
     // 2.425.0: CorelDRAW's keys (pcvline.js) - F5 = the curve tools (F5 again cycles), F10 = the Shape tool (nodes)
@@ -605,7 +606,7 @@
         if (Ly.type === "group" || (Ly.frame && S.layers.some((x) => x.parent === Ly.id))) { const tw = doc.createElement("button"); tw.className = "tw"; tw.textContent = Ly.open === false ? "▸" : "▾"; tw.title = Ly.type === "group" ? "Open / close the group" : "Open / close the frame (what is inside it)"; tw.onclick = (e) => { e.stopPropagation(); Ly.open = Ly.open === false; layers(); }; row.appendChild(tw); }
         if (Ly.clip) { const c = doc.createElement("span"); c.className = "clip"; c.textContent = "↳"; c.title = "Clipped to the layer below"; row.appendChild(c); }
         let th;
-        if (Ly.type === "pixel" || Ly.type === "text" || Ly.type === "shape" || Ly.type === "fill" || Ly.type === "smart") { th = thumbFor(Ly.canvas); if (Ly.type === "text") th.title = "Text layer"; if (Ly.type === "smart") { th.classList.add("so"); th.title = "Smart object - double-click: Edit Contents"; } }
+        if (Ly.type === "pixel" || Ly.type === "text" || Ly.type === "shape" || Ly.type === "fill" || Ly.type === "smart" || Ly.type === "doc") { th = thumbFor(Ly.canvas); if (Ly.type === "text") th.title = "Text layer"; if (Ly.type === "smart") { th.classList.add("so"); th.title = "Smart object - double-click: Edit Contents"; } }
         else { th = doc.createElement("span"); th.className = "ic"; th.textContent = Ly.type === "adjust" ? ((D.ADJ_KINDS.find((k) => k[0] === (Ly.adj || {}).kind) || [0, 0, "◐"])[2]) : TYPE_ICON[Ly.type] || "?"; }
         if (i === S.active && !S.maskEdit && !S.fmaskEdit && !(Ly.mask && (Ly.type === "adjust" || Ly.type === "fill"))) th.classList.add("sel");
         th.title = (th.title || "") + " - Ctrl-click: load its transparency as the selection; double-click: layer style";

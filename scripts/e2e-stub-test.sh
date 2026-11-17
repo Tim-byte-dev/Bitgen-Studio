@@ -14110,6 +14110,13 @@ node scripts/test-shapeops810.js > /tmp/shapeops810.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui810-ui.js > /tmp/ui810.log 2>&1 \
   && ok "2.810.0 the shape buttons' modes (new / Shift replace / Ctrl add / Alt subtract), the Shape tool's right-click items, ✂ Trim, ⇋ Mirror, ⧈ Offset" \
   || { bad "2.810.0 shape tool browser test"; grep -a "^FAIL" -A1 /tmp/ui810.log | head -12; }
+# ---- 2.811.0 (Tim: "is there a way to add word editing to image editor? like ms word and export as docx? with all the alignment, text editing/formatting / table options?")
+node scripts/test-doctext811.js > /tmp/doctext811.log 2>&1 \
+  && ok "2.811.0 document text: sanitize, line bands, frame windows, hooks (pins)" \
+  || { bad "2.811.0 document text pins"; grep -a "^FAIL" -A1 /tmp/doctext811.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui811-ui.js > /tmp/ui811.log 2>&1 \
+  && ok "2.811.0 New Text Document, typing + the formatting bar, the frame drawn, pages added / dropped as the text grows / shrinks, one undo step" \
+  || { bad "2.811.0 document text browser test"; grep -a "^FAIL" -A1 /tmp/ui811.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

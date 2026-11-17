@@ -8,6 +8,7 @@ Made by `python3 scripts/make_changelog.py` from the release notes.
 
 ## 2.600–2.699
 
+- **2.811.0** — Word-Processor Text in the Image Editor: Document Frames You Type In (Paragraph Styles, Font, Size, Bold / Italic / Underline / Strikethrough, Sub / Superscript, Colour, Highlight, Alignment Incl. Justify, Line Spacing, Space Before / After, Bullets, Numbering, Indents); the Story Flows Frame to Frame in Whole Lines; File ▸ New Text Document… Adds Pages as the Text Grows; Each Edit One Undo Step
 - **2.810.0** — Image Editor Shape Tool: the Shape Buttons Pick the Mode - Click = New, Shift+Click = the Picked Shape Becomes It (the Next One Replaces It), Ctrl+Click = Add to It, Alt+Click = Subtract From It, Ctrl+Alt+Click = Intersect; ✂ Trim (the Piece of an Outline Between the Places Other Outlines Cross It Cut Away, the Rest Joined End to End); ⇋ Flip / Mirror Copy; ⧈ Offset (Grow / Shrink, Round Corners); the Shape Options First in the Right-Click Menu While the Shape Tool Is in Hand
 - **2.809.0** — The Image Editor's Right-Click Menu Has Copy and Paste (Paste Makes a New Layer) and 🎨 Artist Mode; in Artist Mode It Has Show Layers + ⏳ Pending, 🟧 Blender Scene (Opens / Closes the Scene Tools), ✨ Prompt (the Prompt Docker in Front) and Exit Artist Mode
 - **2.808.0** — Your Own ▣ Dockers Keep the Dockers Put in Them (After a Restart, a ⊞ Layout or a Workspace - Only You Take One Out), and Docked They Sit With the Docked Dockers (z 1, Just Above the System Docker) - Floating Dockers Like 🧩 Model Manager and 🖥 GPU Always in Front

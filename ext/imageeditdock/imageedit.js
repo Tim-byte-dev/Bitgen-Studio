@@ -1329,7 +1329,7 @@
       const L = L_(); if (!L) return;
       const d = makeLayer(L.name + " copy", S.w, S.h, L.type);
       for (const k of ["opacity", "fillOpacity", "blend", "clip", "label"]) d[k] = L[k];
-      for (const k of ["styles", "adj", "text", "shape", "fill", "locks", "vmask", "smart", "frame", "artboard", "sketch"]) d[k] = D.clone(L[k]);   // 2.462.0: + sketch
+      for (const k of ["styles", "adj", "text", "shape", "fill", "locks", "vmask", "smart", "frame", "artboard", "sketch", "doc"]) d[k] = D.clone(L[k]);   // 2.462.0: + sketch
       if (L.fmask) { d.fmask = { canvas: newCanvas(S.w, S.h), on: L.fmask.on, ver: 0 }; ctx(d.fmask.canvas).drawImage(L.fmask.canvas, 0, 0); }   // 2.422.0
       ctx(d.canvas).drawImage(L.canvas, 0, 0);
       if (L.mask) { d.mask = newMask("#000"); ctx(d.mask.canvas).drawImage(L.mask.canvas, 0, 0); Object.assign(d.mask, { on: L.mask.on, density: L.mask.density, feather: L.mask.feather }); }
@@ -1445,7 +1445,7 @@
       if (styles && D.hasStyles(L)) { const look = D.renderLayer({ w: S.w, h: S.h, layers: S.layers }, docEnv({ srcFor: (x) => x.canvas, maskSrc: null }), Object.assign({}, L, { mask: null })); const g = ctx(L.canvas); g.clearRect(0, 0, S.w, S.h); g.drawImage(look, 0, 0); }
       if (L.type === "pixel" && !(styles && D.hasStyles(L))) return say("already a pixel layer");
       const px = endPx(L, copy, null, "rasterize");
-      L.type = "pixel"; delete L.text; delete L.shape; delete L.fill; delete L.smart; delete L.sketch; L.fmask = null; if (styles) { L.styles = null; L.fillOpacity = 1; }
+      L.type = "pixel"; delete L.text; delete L.shape; delete L.fill; delete L.smart; delete L.sketch; delete L.doc; L.fmask = null; if (styles) { L.styles = null; L.fillOpacity = 1; }
       push({ t: "multi", list: [px, { t: "struct", before, after: snapStruct() }].filter(Boolean), label: styles ? "rasterize layer style" : "rasterize layer" });
       refresh(); renderLayersPanel();
     }
@@ -1640,13 +1640,14 @@
       if (L.type === "text" && L.text) { L.text.x += dx; L.text.y += dy; D.rasterize(L); }
       else if (L.type === "shape" && L.shape) { L.shape.x += dx; L.shape.y += dy; D.rasterize(L); }
       else if (L.type === "smart" && E.smartShift) E.smartShift(L, dx, dy);   // 2.422.0: a smart object moves its transform
-      else if (L.type === "sketch" && L.sketch && win.PCSketch) { win.PCSketch.translate(L.sketch, dx, dy); D.rasterize(L); }   // 2.462.0: a sketch moves its points
+      else if (L.type === "sketch" && L.sketch && win.PCSketch) { win.PCSketch.translate(L.sketch, dx, dy); D.rasterize(L); }
+      else if (L.type === "doc" && L.doc) { L.doc.x += dx; L.doc.y += dy; D.rasterize(L); }   // 2.811.0: a document frame (pcdoctext.js)   // 2.462.0: a sketch moves its points
       else if (L.type === "pixel") {
         const copy = beginPx(L), g = ctx(L.canvas), t = newCanvas(S.w, S.h); ctx(t).drawImage(L.canvas, 0, 0);
         g.clearRect(0, 0, S.w, S.h); g.drawImage(t, dx, dy);
         const px = endPx(L, copy, null, "move"); if (px && list) list.push(px);
       }
-      if (L.type === "pixel" || L.type === "text" || L.type === "shape" || L.type === "smart" || L.type === "sketch") shiftMask(L, dx, dy, list);
+      if (L.type === "pixel" || L.type === "text" || L.type === "shape" || L.type === "smart" || L.type === "sketch" || L.type === "doc") shiftMask(L, dx, dy, list);
       if (E.shiftVmask) E.shiftVmask(L, dx, dy);          // 2.421.0: a linked VECTOR mask moves too (the struct step records it)
     }
     /** a LINKED mask moves with its layer (Photoshop's chain between the thumbnails) */
@@ -3005,6 +3006,7 @@
     if (win.PCLive && win.PCLive.install) win.PCLive.install(E);         // 2.588.0: ⚡ live generation (pclive.js - Krita's live mode)
     if (win.PCFocus && win.PCFocus.install) win.PCFocus.install(E);       // 2.588.0: ⬚ focus mode - the canvas alone; Alt+P colours (2.646.0), Ctrl+B brushes, Ctrl+Esc back
     if (win.PCShapeOps && win.PCShapeOps.install) win.PCShapeOps.install(E);   // 2.810.0: the Shape tool's modes (click / Shift / Ctrl / Alt on a shape), ✂ Trim, ⇋ Mirror, ⧈ Offset, its right-click items
+    if (win.PCDocText && win.PCDocText.install) win.PCDocText.install(E);   // 2.811.0: word-processor text - document frames, the Document Text tool, File ▸ New Text Document…
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab
