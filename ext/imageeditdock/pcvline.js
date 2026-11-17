@@ -422,6 +422,7 @@
 
     /* ================================ F10: the Shape tool ================================ */
     const nsel = new Set();   // "s:i"
+    (E.clearSelHooks = E.clearSelHooks || []).push(() => nsel.clear());   // 2.819.0: Ctrl+Shift+A (pcpickmodes.js)
     const nk = (s, i) => s + ":" + i;
     const nodes = () => [...nsel].map((k) => k.split(":").map(Number));
     let sh = null;            // the drag: {mode: nodes | handle | bend | marquee | ctrl, ...}
@@ -711,7 +712,7 @@
           const sb = bz ? bzSub() : null;
           if (sb) {
             const a = sb.pts[sb.pts.length - 1]; handle(a, a.ix, a.iy); handle(a, a.ox, a.oy); sq(a.x, a.y, true);
-            if (bz.tool === "cpen" && bz.hover && !bz.drag) {
+            if (bz.hover && !bz.drag) {   // 2.819.0: the Bézier tool too (Tim: "same with the pen tools")
               let [hx, hy] = bz.hover; if (bz.hover[2]) [hx, hy] = B.constrain(a.x, a.y, hx, hy);
               g.strokeStyle = "rgba(38,128,235,.85)"; g.setLineDash([4 * px, 3 * px]); g.beginPath(); g.moveTo(a.x, a.y);
               if (a.ox !== a.x || a.oy !== a.y) g.bezierCurveTo(a.ox, a.oy, hx, hy, hx, hy); else g.lineTo(hx, hy); g.stroke(); g.setLineDash([]);

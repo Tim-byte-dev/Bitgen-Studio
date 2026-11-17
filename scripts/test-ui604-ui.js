@@ -40,8 +40,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
 
     /* 1 the skew handles: the opposite side stays put */
     await ev(() => { const E = window.imageEditorInstance.E, S = window.imageEditorInstance.state; const L = E.makeLayer("Sq", S.w, S.h, "pixel"); const g = L.canvas.getContext("2d"); g.fillStyle = "#000"; g.fillRect(150, 100, 100, 100); E.addLayer(L, "sq", false); E.setTool("move"); E.refresh(); });
-    await p.mouse.click(...(await T(200, 150))); await p.waitForTimeout(150);
+    // 2.819.0: a double-click = the scale handles, a click on the picked layer again = the rotate / skew handles
     await p.mouse.dblclick(...(await T(200, 150))); await p.waitForTimeout(150);
+    await p.mouse.click(...(await T(200, 150))); await p.waitForTimeout(150);
     const bx = await ev(() => window.imageEditorInstance.E.handles.box());
     const [hx, hy] = await T(bx.x + bx.w / 2, bx.y);
     await p.mouse.move(hx, hy); await p.mouse.down(); await p.mouse.move(hx + 20, hy, { steps: 4 }); await p.mouse.move(hx + 40, hy, { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(300);
@@ -53,9 +54,9 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await p.mouse.click(...(await T(60, 30))); await p.waitForSelector(".kx textarea.pctext"); await p.keyboard.type("IIII"); await p.keyboard.press("Control+Enter"); await p.waitForTimeout(250);
     await ev(() => window.imageEditorInstance.E.setTool("move"));
     await p.mouse.click(...(await T(80, 50))); await p.waitForTimeout(150);
-    // 2.606.0: a double-click INSIDE a text edits it - on one of its handles it switches to the rotate / skew handles
+    // 2.606.0: a double-click INSIDE a text edits it - 2.819.0: a click on the picked text again = the rotate / skew handles
     const tb0 = await ev(() => window.imageEditorInstance.E.handles.box());
-    await p.mouse.dblclick(...(await T(tb0.x + tb0.w, tb0.y + tb0.h / 2))); await p.waitForTimeout(150);
+    await p.mouse.click(...(await T(tb0.x + tb0.w / 2, tb0.y + tb0.h / 2))); await p.waitForTimeout(150);
     const tb = await ev(() => window.imageEditorInstance.E.handles.box());
     const r0 = await rows([Math.round(tb.y + 6), Math.round(tb.y + tb.h - 6)]);
     const [tx, ty] = await T(tb.x + tb.w / 2, tb.y);

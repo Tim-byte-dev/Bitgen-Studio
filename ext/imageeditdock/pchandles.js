@@ -6,7 +6,12 @@
  * Like CorelDRAW's Pick tool, on the Move tool:
  *   SCALE      (a single click on the canvas) eight square handles round the active layer: a corner scales both ways
  *              from the opposite corner (Shift = keeps its proportions, Alt = from the centre), a side handle one way.
- *   ROTATE     (a double click) curved corner handles turn it round its centre (Shift = 15° steps); the side handles
+ *   2.819.0 (Tim: "double click on a shape or layer will put it in move transform mode, don't show the bounding box,
+ *              only show the handles. when user clicks on the same shape again, change the transform resize/skew handles
+ *              to rotate handles"): no box round it - the handles alone; a double-click (any tool, pcpickmodes.js) = the
+ *              Move tool + the scale handles; a click on the picked object again = the rotate / skew handles (again =
+ *              scale) - CorelDRAW's Pick tool. nextMode(mode, same) is the rule.
+ *   ROTATE     (was: a double click) curved corner handles turn it round its centre (Shift = 15° steps); the side handles
  *              skew it (↔ / ↕) - 2.604.0: the opposite side stays put (Alt = round the centre); type skews too (t.xm).
  *   While dragging, the layer is shown where it will go; letting go applies it - ONE undo step. Pixel layers are redrawn
  *   once (smooth), shapes / lines stay vector, type stays editable (turned - pcdoc t.rot), smart objects keep their
@@ -65,6 +70,8 @@
     }
     return scaleAbout(sx, sy, ax, ay);
   }
+  /** 2.819.0: the handles after a plain click - on the object already picked: the other ones, elsewhere: scale */
+  const nextMode = (mode, same) => (same ? (mode === "rotate" ? "scale" : "rotate") : "scale");
   const isIdentity = (m) => Math.abs(m[0] - 1) < 1e-6 && Math.abs(m[1]) < 1e-6 && Math.abs(m[2]) < 1e-6 && Math.abs(m[3] - 1) < 1e-6 && Math.abs(m[4]) < 1e-3 && Math.abs(m[5]) < 1e-3;
 
   function install(E) {
@@ -112,7 +119,8 @@
       if (!shown()) return;
       const L = target(), b = boxNow(L); if (!b || b.w <= 0 || b.h <= 0) return;
       const P = handlePoints(b);
-      g.save(); g.strokeStyle = "#2680eb"; g.lineWidth = 1 * px; g.setLineDash([4 * px, 3 * px]); g.strokeRect(b.x, b.y, b.w, b.h); g.setLineDash([]);
+      // 2.819.0 (Tim: "don't show the bounding box, only show the handles"): no dashed box round it any more
+      g.save(); g.strokeStyle = "#2680eb"; g.setLineDash([]);
       g.fillStyle = "#fff"; g.lineWidth = 1.2 * px;
       if (st.mode === "rotate") {
         const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
@@ -140,7 +148,8 @@
       if (S.tool !== "move" || !S.w || e.button !== 0 || S.space || !shown()) return;
       const L = target(), b = boxNow(L); if (!b) return;
       const [fx, fy] = E.pos(e), h = hitHandle(b, fx, fy, R());
-      if (!h) { st.click = { x: e.clientX, y: e.clientY }; return; }
+      // 2.819.0: a press on the object that is ALREADY picked - a click there (no drag) switches the handles (CorelDRAW)
+      if (!h) { const o = E.selHl && E.selHl.objectAt ? E.selHl.objectAt(fx, fy) : null; st.click = { x: e.clientX, y: e.clientY, same: !!o && sameObj(o, L) }; return; }
       e.stopImmediatePropagation(); e.preventDefault();
       const leaves = leavesOf(L).filter((x) => x.visible !== false && x.canvas);
       // 2.453.0: a frame locked to its contents - they go with it (drawn clipped to it while dragging)
@@ -161,8 +170,10 @@
     const finish = (e) => {
       const d = st.drag;
       if (!d) {
-        // a plain click (no drag) = the scale handles (a double click turns them into the rotate handles)
-        if (st.click && e && Math.hypot(e.clientX - st.click.x, e.clientY - st.click.y) < 4 && S.tool === "move" && st.mode !== "scale") { st.mode = "scale"; E.drawOverlay(); }
+        // 2.819.0 (Tim: "when user clicks on the same shape again, change the transform resize/skew handles to rotate
+        // handles"): a plain click on the picked object = the other handles (scale <-> rotate / skew); a click anywhere
+        // else (another object is picked) = the scale handles
+        if (st.click && e && Math.hypot(e.clientX - st.click.x, e.clientY - st.click.y) < 4 && S.tool === "move") setMode(nextMode(st.mode, st.click.same));
         st.click = null; return;
       }
       if (e) e.stopImmediatePropagation();
@@ -173,11 +184,17 @@
     };
     stage.addEventListener("pointerup", finish, true);
     stage.addEventListener("pointercancel", () => finish(null), true);
+    // 2.819.0 (Tim: "double click on a shape or layer will put it in move transform mode"): a double-click = the scale
+    // handles (its two clicks switched them twice already); pcpickmodes.js brings the Move tool from the other tools
+    const sameObj = (o, L) => o === L || (E.frames && E.frames.owner && E.frames.owner(o) === L) || (L.type === "group" && D && D.descendants(S.layers, L.id).includes(o));
+    function setMode(m, quiet) {
+      const was = st.mode; st.mode = m === "rotate" ? "rotate" : "scale"; E.drawOverlay();
+      { const mb = doc.getElementById("xhMode"); if (mb) { mb.classList.toggle("on", st.mode === "rotate"); mb.textContent = st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"; } }
+      if (!quiet && was !== st.mode) say(st.mode === "rotate" ? "rotate: drag a corner to turn (Shift = 15° steps), a side to skew - click it again for the scale handles" : "scale: drag a handle (Shift keeps the proportions, Alt from the centre) - click it again to rotate");
+    }
     stage.addEventListener("dblclick", () => {
       if (S.tool !== "move" || !shown()) return;
-      st.mode = st.mode === "rotate" ? "scale" : "rotate"; E.drawOverlay();
-      { const mb = doc.getElementById("xhMode"); if (mb) { mb.classList.toggle("on", st.mode === "rotate"); mb.textContent = st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"; } }
-      say(st.mode === "rotate" ? "rotate: drag a corner to turn (Shift = 15° steps), a side to skew - click once for the scale handles" : "scale: drag a handle (Shift keeps the proportions, Alt from the centre) - double-click to rotate");
+      setMode("scale");
     });
 
     /** the matrix onto the layer (all of a group's layers) - one undo step */
@@ -223,16 +240,16 @@
       q("xhSW").onchange = () => { opt.sw = Math.max(1, +q("xhSW").value || 100); if (opt.link) { opt.sh = opt.sw; q("xhSH").value = opt.sw; } keep(); };
       q("xhSH").onchange = () => { opt.sh = Math.max(1, +q("xhSH").value || 100); if (opt.link) { opt.sw = opt.sh; q("xhSW").value = opt.sh; } keep(); };
       q("xhSc").onclick = () => byOptions("scale", opt.sw, opt.sh);
-      q("xhMode").onclick = () => { st.mode = st.mode === "rotate" ? "scale" : "rotate"; q("xhMode").classList.toggle("on", st.mode === "rotate"); q("xhMode").textContent = st.mode === "rotate" ? "↻ Rotate / skew" : "⤡ Scale"; E.drawOverlay(); };
+      q("xhMode").onclick = () => setMode(st.mode === "rotate" ? "scale" : "rotate");
       box.querySelectorAll("input").forEach((x) => x.addEventListener("keydown", (ev) => ev.stopPropagation()));
     }
     const ob = doc.getElementById("kxOpts");
     if (ob && root.MutationObserver) new root.MutationObserver(() => addOptions()).observe(ob, { childList: true });
     addOptions();
-    E.handles = { state: () => ({ mode: st.mode, dragging: !!st.drag }), setMode: (m) => { st.mode = m === "rotate" ? "rotate" : "scale"; E.drawOverlay(); }, apply, byOptions, box: () => { const L = target(); return L ? boxNow(L) : null; } };
+    E.handles = { state: () => ({ mode: st.mode, dragging: !!st.drag }), setMode: (m, quiet) => setMode(m, quiet !== false), apply, byOptions, box: () => { const L = target(); return L ? boxNow(L) : null; } };
   }
 
-  const PCHandles = { HANDLES, mul, about, turnAbout, scaleAbout, handlePoints, hitHandle, matrixFor, isIdentity, install };
+  const PCHandles = { HANDLES, nextMode, mul, about, turnAbout, scaleAbout, handlePoints, hitHandle, matrixFor, isIdentity, install };
   if (typeof module !== "undefined" && module.exports) module.exports = PCHandles;
   if (root && root.document) root.PCHandles = PCHandles;
 })(typeof window !== "undefined" ? window : globalThis);

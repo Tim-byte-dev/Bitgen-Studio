@@ -506,7 +506,7 @@ A full video editor: a preview canvas with layers, editing tools, colour, sound,
 - **Every font on this computer** — each font list has the usual fonts under Common and every installed font under This computer (N); a font only in the app's fonts folder loads from its file. *Where:* the image editor's and the timeline's font lists, captions, karaoke style. *Since:* 2.607.0
 - **Font previews in the font lists** — each font's name is written in that font (the search list too); the closed list shows the picked one in itself. *Where:* every font list. *Since:* 2.608.0
 - **Rasterize Text from the right-click menu** — a text layer (image editor) or a timeline text becomes a picture; undo brings the text back. *Where:* right-click the text. *Since:* 2.604.0
-- **Skew that keeps the far side** — the side handles slant from the opposite side (Alt: round the centre); text skews and stays text. *Where:* the image editor's Move tool, double-click for the rotate / skew handles. *Since:* 2.604.0
+- **Skew that keeps the far side** — the side handles slant from the opposite side (Alt: round the centre); text skews and stays text. *Where:* the image editor's Move tool, click the picked layer again for the rotate / skew handles (2.819.0). *Since:* 2.604.0
 - **💾 Save to Images in any format** — the visible layers kept as a temp copy, flattened (JPEG / BMP on white) and saved in the format picked beside 💾 into Images and the Gallery. *Where:* the image editor's menu bar (Ctrl+S). *Since:* 2.604.0
 - **Typing that fits, editing at the click** — the frame round the text being typed hugs the letters and grows with each key; over a text the pointer is the text I-beam (elsewhere the new-text cursor); a click edits from between the letters where you clicked, also on wrapped paragraph text. *Where:* the image editor's Type tool (T). *Since:* 2.602.0
 - **Hand and Zoom** — pan, zoom and fit the picture. *Where:* keys H, Z
@@ -883,7 +883,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 - **Content-Aware Scale** — narrower or wider while faces, objects and edges keep their shape; protect the selection. *Where:* Edit > Content-Aware Scale (Alt+Shift+Ctrl+C). *Since:* 2.422.0
 - **Liquify** — forward warp, reconstruct, twirl, pucker, bloat, freeze and thaw masks. *Where:* Filter > Liquify (Shift+Ctrl+X). *Since:* 2.422.0
 - **Liquify extras** — Smooth, Push Left and face-aware sliders for the eyes, nose, mouth and face shape. *Where:* Filter > Liquify. *Since:* 2.450.0
-- **Move tool handles** — one click for scale handles, a double-click for rotate and skew handles; type stays editable and shapes stay vector. *Where:* V. *Since:* 2.452.0
+- **Move tool handles** — a double-click for the scale handles (no box, the handles alone), a click on it again for rotate and skew handles (2.819.0); type stays editable and shapes stay vector. *Where:* V. *Since:* 2.452.0
 - **Transform options** — angle, rotate by 90, flips and W x H percentages round the centre. *Where:* the Move tool's options bar. *Since:* 2.452.0
 
 ### Smart objects and smart filters
@@ -980,7 +980,7 @@ A layered picture editor with selections, retouching, smart objects, type, vecto
 
 - **Transform docker** — position, rotate, scale and mirror, size and skew about nine anchor points, with copies. *Where:* Window > Dockers (Alt+F7). *Since:* 2.429.0
 - **Shaping docker** — weld, trim, intersect, simplify, front minus back, back minus front, boundary. *Where:* Window > Dockers. *Since:* 2.429.0
-- **Align and Distribute** — to the active object, the selection, the page edge or centre. *Where:* Shift+Ctrl+A. *Since:* 2.429.0
+- **Align and Distribute** — to the active object, the selection, the page edge or centre. *Where:* Window ▸ Dockers. *Since:* 2.429.0
 - **Object Properties** — fill (uniform or gradient), outline and transparency of a vector shape. *Where:* Alt+Enter. *Since:* 2.429.0
 
 ### Frames and artboards
@@ -1263,6 +1263,7 @@ Precise drawing with constraints, measuring, CAD files, and parametric 3D bodies
 - **Mail merge in document text** — «» Merge ▾: 📇 Data Source… (.csv / .tsv / pasted rows), «» Insert Merge Field… («Field», one piece while typing), Preview Results with ◀ / ▶ records, 🖨 Finish & Merge… - one Word document with every record, a Word document per record (.zip, named by a pattern), or a Word mail-merge document + its .csv; all records or a range. *Where:* image editor ▸ Document Text bar. *Since:* 2.816.0
 - **The app strip on the top bar** — 🖼 Image editor (✉ Mail, ▦ Spreadsheet, 🎞 Slides as they ship) | 📐 SolidCraft 📏 Sketcher as icons after the Workspace and 🔍, out of the statusbar; lit while open, a click opens / closes. *Where:* the top bar. *Since:* 2.817.0
 - **✉ Mail with your own AI** — your own mailbox over IMAP / SMTP (no sign-up; the password encrypted here): folders, the list, the reading pane (no scripts, internet pictures on request), attachments; the LLM flags each email urgent / important / normal / low with its reason (✨ auto for new mail, "what matters to me"), sums emails up, drafts replies; the composer's ✨ Help me write and ✨ Rewrite; send, drafts, forward with attachments. *Where:* ✉ on the top bar. *Since:* 2.818.0
+- **Clear all, double-click to transform, one shape mode** — Ctrl+Shift+A clears every selection (area, picked objects, picks, nodes); double-click a shape or its row in Layers = the Move tool's handles (no box), click it again = rotate / skew; the Lasso's line shows on any picture, the Polygonal Lasso and Bézier show the next side at the pointer; ◻ ⊕ ⊖ ⊗ ⊘ on the property bar go into that mode for every shape tool, its sign beside the pointer. *Where:* the image editor. *Since:* 2.819.0
 - **About and credits** — Settings ▸ About: the version, Produced and Developed by Tim Paul, Programmer - Claude Opus 5.5, and the credits to every project whose code, models, tools and ideas are used (links open in your browser); the same credits close the Guide. *Where:* Settings ▸ About. *Since:* 2.642.0
 - **Move and turn a camera from its own view** — looking through the picked camera, ✥ Move / ⟳ Rotate show its arrows or rings in front of the view; the camera and the view move / turn together; Esc deselects it. *Where:* Sketcher ▸ a camera's panel, 👁 Look through. *Since:* 2.643.0
 - **Ctrl+P: the prompt docker to the front** — anywhere in the app, typing in a box too: the prompt docker opens, unfolds, comes out of a closed ▣ docker and over a floating window or a maximized docker, the prompt box focused. *Where:* anywhere, 🎨 Artist mode too (2.646.0). *Since:* 2.645.0

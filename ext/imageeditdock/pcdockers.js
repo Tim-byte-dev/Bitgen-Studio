@@ -13,7 +13,7 @@
  *                    (anything with a path; plain shape layers become paths); Leave Original source / target
  *   ALIGN AND        left / centre / right, top / middle / bottom to the active layer, the selection's box, the page
  *   DISTRIBUTE       edge or the page centre; distribute left / centres / right / spacing, top / centres / bottom /
- *   (Ctrl+Shift+A)   spacing - over the selection or the page
+ *                    spacing - over the selection or the page (2.819.0: Ctrl+Shift+A clears every selection now)
  *   OBJECT           the active vector shape's fill (none, uniform, linear / radial gradient: two colours + angle),
  *   PROPERTIES       outline (width, colour, style), transparency (opacity, blend mode)
  *
@@ -402,7 +402,7 @@
     const C = E.ui.addCmd;
     C("dk.transform", "Dockers: Transform", "Alt+F7", () => E.ui.showTab && E.ui.showTab("dkXf"), {}, ["Window", "win.pcActions", true]);
     C("dk.shaping", "Dockers: Shaping", "", () => E.ui.showTab && E.ui.showTab("dkShape"), {}, ["Window", "dk.transform"]);
-    C("dk.align", "Dockers: Align and Distribute", "Shift+Ctrl+A", () => E.ui.showTab && E.ui.showTab("dkAlign"), {}, ["Window", "dk.shaping"]);
+    C("dk.align", "Dockers: Align and Distribute", "", () => E.ui.showTab && E.ui.showTab("dkAlign"), {}, ["Window", "dk.shaping"]);
     C("dk.props", "Dockers: Object Properties", "Alt+Enter", () => E.ui.showTab && E.ui.showTab("dkProps"), {}, ["Window", "dk.align"]);
     E.dockers = { picked, boxOf, xformLayer, doTransform, doShaping, doAlign, doDistribute, settings: DS, paint };
   }

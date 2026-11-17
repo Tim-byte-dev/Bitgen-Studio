@@ -582,7 +582,7 @@
       ]
     },
     {
-      "en": "eb8b6a085b0a",
+      "en": "8251ce4e23c7",
       "title": "影像編輯器 - Select 選單",
       "rows": [
         [
@@ -592,6 +592,10 @@
         [
           "Ctrl+D",
           "Deselect（取消選擇）"
+        ],
+        [
+          "Shift+Ctrl+A",
+          "Clear All Selections（清除所有選取：選取範圍、選取的物件、選取、節點）"
         ],
         [
           "Shift+Ctrl+D",
@@ -748,7 +752,7 @@
       ]
     },
     {
-      "en": "a97c9719bdc0",
+      "en": "f7d81bed5cd4",
       "title": "影像編輯器 - Window 選單",
       "rows": [
         [
@@ -766,10 +770,6 @@
         [
           "Alt+F7",
           "Dockers: Transform（變換）"
-        ],
-        [
-          "Shift+Ctrl+A",
-          "Dockers: Align and Distribute（對齊與分佈）"
         ],
         [
           "Alt+Enter",

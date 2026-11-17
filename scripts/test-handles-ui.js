@@ -67,18 +67,22 @@ const check = (n, cond, got) => {
     check("the right side handle: wider only (140 x 100)", b3 && Math.abs(b3[2] - 140) <= 2 && Math.abs(b3[3] - 100) <= 1, b3);
     await ev(() => window.imageEditorInstance.E.undo()); await p.waitForTimeout(200);
 
-    /* 4 double click = the rotate handles; a corner turns it 45° (Shift = 15° steps) */
+    /* 4 (2.819.0) a double-click = the scale handles; a click on the picked layer again = the rotate handles; a corner
+       turns it 45° (Shift = 15° steps) */
     const [mx, my] = await T(250, 200); await p.mouse.dblclick(mx, my); await p.waitForTimeout(250);
+    const mdd = await ev(() => window.imageEditorInstance.E.handles.state().mode);
+    await p.mouse.click(mx, my); await p.waitForTimeout(250);
     const md = await ev(() => window.imageEditorInstance.E.handles.state().mode);
+    check("2.819.0: a double-click = the scale handles (the Move tool's transform), a click on it again = the ROTATE handles", mdd === "scale" && md === "rotate", { mdd, md });
     await shot("4-rotate");
     // the top-right corner (300, 150) round the centre (250, 200) to straight above-right ... 45° on
     await drag(300, 150, 250 + 70.7, 200, ["Shift"]);
     const b4 = await box(), px4 = await ev(() => Array.from(window.imageEditorInstance.E.layer().canvas.getContext("2d").getImageData(250, 135, 1, 1).data));
     await shot("4b-turned");
-    check("double-click = the ROTATE handles; a corner dragged a quarter turn round (Shift = 15° steps) turns it 45°: a diamond about 141 wide, red straight above the centre", md === "rotate" && b4 && Math.abs(b4[2] - 141) <= 4 && px4[0] > 200 && px4[3] > 200, { md, b4, px4 });
+    check("the ROTATE handles: a corner dragged a quarter turn round (Shift = 15° steps) turns it 45°: a diamond about 141 wide, red straight above the centre", md === "rotate" && b4 && Math.abs(b4[2] - 141) <= 4 && px4[0] > 200 && px4[3] > 200, { md, b4, px4 });
     await ev(() => window.imageEditorInstance.E.undo()); await p.waitForTimeout(200);
     const [cx, cy] = await T(250, 200); await p.mouse.click(cx, cy); await p.waitForTimeout(200);
-    check("a single click: back to the scale handles", (await ev(() => window.imageEditorInstance.E.handles.state().mode)) === "scale");
+    check("a click on it again: back to the scale handles", (await ev(() => window.imageEditorInstance.E.handles.state().mode)) === "scale");
 
     /* 5 a drag inside still MOVES the layer */
     await drag(250, 200, 280, 220);

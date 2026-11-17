@@ -715,12 +715,8 @@
       g.globalAlpha = 0.7; D.drawShape(g, s); g.globalAlpha = 1;
       g.strokeStyle = "#2680eb"; g.lineWidth = px; D.shapePath(g, s); g.stroke();
     });
-    // the bounding box of a text / shape layer while the move tool is on it
-    E.overlayHooks.push((g, px) => {
-      const L = E.layer(); if (!L || S.tool !== "move" || S.objSel === false || !(L.type === "text" || L.type === "shape")) return;   // 2.605.0: not after a click on empty canvas (nothing picked)
-      const b = L.type === "text" ? D.textBox(L.text, ctx(L.canvas)) : { x: Math.min(L.shape.x, L.shape.x + L.shape.w), y: Math.min(L.shape.y, L.shape.y + L.shape.h), w: Math.abs(L.shape.w), h: Math.abs(L.shape.h) };
-      g.strokeStyle = "#2680eb"; g.lineWidth = px; g.setLineDash([4 * px, 3 * px]); g.strokeRect(b.x, b.y, b.w, b.h);
-    });
+    // 2.819.0 (Tim: "don't show the bounding box, only show the handles"): the dashed box a text / shape layer had with
+    // the Move tool is gone - its handles (pchandles.js) are all that shows
 
     /* ---------------- free transform (Ctrl+T) ---------------- */
     let X = null;

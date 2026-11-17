@@ -583,6 +583,10 @@
           "Deselect"
         ],
         [
+          "Shift+Ctrl+A",
+          "Clear All Selections"
+        ],
+        [
           "Shift+Ctrl+D",
           "Reselect"
         ],
@@ -750,10 +754,6 @@
         [
           "Alt+F7",
           "Dockers: Transform"
-        ],
-        [
-          "Shift+Ctrl+A",
-          "Dockers: Align and Distribute"
         ],
         [
           "Alt+Enter",

@@ -67,8 +67,8 @@ check("ext.json: pcdockers right after pcdraw; installed after PCDraw", EXT.inde
 check("imageedit: the dock group (Transform / Shaping / Align / Object), hidden until opened; pcui repaints it (showTab, layers)",
   /<div class="pcgrp off" data-g="dock">/.test(IE) && /\$\{tab\("dock", "dkXf", "Transform", true\)\}\$\{tab\("dock", "dkShape", "Shaping"\)\}\$\{tab\("dock", "dkAlign", "Align"\)\}\$\{tab\("dock", "dkProps", "Object"\)\}/.test(IE)
   && /if \(\/\^dk\/\.test\(id\) && E\.ui\.dockers\) E\.ui\.dockers\(\);/.test(UI) && /if \(E\.ui\.dockers\) E\.ui\.dockers\(\);/.test(UI));
-check("the commands: Window ▸ Dockers: Transform (Alt+F7), Shaping, Align and Distribute (Shift+Ctrl+A), Object Properties (Alt+Enter)",
-  /C\("dk\.transform", "Dockers: Transform", "Alt\+F7"/.test(DK) && /C\("dk\.shaping", "Dockers: Shaping"/.test(DK) && /C\("dk\.align", "Dockers: Align and Distribute", "Shift\+Ctrl\+A"/.test(DK) && /C\("dk\.props", "Dockers: Object Properties", "Alt\+Enter"/.test(DK));
+check("the commands: Window ▸ Dockers: Transform (Alt+F7), Shaping, Align and Distribute (no key - 2.819.0: Ctrl+Shift+A clears every selection), Object Properties (Alt+Enter)",
+  /C\("dk\.transform", "Dockers: Transform", "Alt\+F7"/.test(DK) && /C\("dk\.shaping", "Dockers: Shaping"/.test(DK) && /C\("dk\.align", "Dockers: Align and Distribute", ""/.test(DK) && /C\("dk\.props", "Dockers: Object Properties", "Alt\+Enter"/.test(DK));
 check("server.js untouched", !/pcdockers|dkXf/.test(read("misc/server.js")));
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5888,
+ "count": 5894,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -54319,6 +54319,60 @@
    ],
    "where": [
     "Mail docker (2.818.0)"
+   ]
+  },
+  {
+   "s": "Clear All Selections",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "New shape",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button[data-pmmode] in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "Add to the picked shape",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button[data-pmmode] in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "Subtract from the picked shape",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button[data-pmmode] in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "Intersect with the picked shape",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button[data-pmmode] in #ieKx (2.819.0)"
+   ]
+  },
+  {
+   "s": "Exclude where they overlap",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "button[data-pmmode] in #ieKx (2.819.0)"
    ]
   }
  ]

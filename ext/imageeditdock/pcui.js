@@ -280,7 +280,6 @@
     // Select
     cmd("sel.all", "All", "Ctrl+A", () => E.selectAll(), { enabled: docOpen });
     cmd("sel.none", "Deselect", "Ctrl+D", () => E.deselect(), { enabled: docOpen });
-    cmd("sel.none2", "Deselect (Krita)", "Shift+Ctrl+A", () => E.deselect(), { enabled: docOpen, hidden: true });
     cmd("sel.reselect", "Reselect", "Shift+Ctrl+D", () => E.reselect(), { enabled: () => !!S.lastSel });
     cmd("sel.inverse", "Inverse", "Shift+Ctrl+I", () => E.selectInverse(), { enabled: docOpen });
     cmd("sel.range", "Color Range…", "", () => dlgColorRange(), { enabled: docOpen });

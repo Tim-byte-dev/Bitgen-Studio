@@ -20,7 +20,8 @@ try {
     "image editor: the frame = the handles' (#2680eb, 1 px, 4 / 3 dashes) for hover and a picked object with no tool; the thick outline gone": /g\.strokeStyle = "#2680eb"; g\.lineWidth = 1 \* px; g\.setLineDash\(\[4 \* px, 3 \* px\]\)/.test(SL) && !/function outline\(/.test(SL) && /if \(hover && hover !== sel && S\.layers\.includes\(hover\)\) frame\(g, hover, px\)/.test(SL),
     "image editor: a click (no drag) with a drawing tool on an object picks it + the Move tool": /if \(click && d\.obj && S\.layers\.includes\(d\.obj\) && S\.tool === d\.tool\)/.test(SL) && /E\.setTool\("move"\); S\.objSel = true; lastActive = S\.active; hover = null/.test(SL),
     "image editor: a text is hit anywhere in its box": /a TEXT is hit anywhere in its box/.test(SL),
-    "image editor: the Move tool's box not left behind after a click on empty canvas": /S\.tool !== "move" \|\| S\.objSel === false \|\|/.test(PT),
+    // 2.819.0: the Move tool's dashed box is gone altogether (the handles alone - Tim) - so it cannot be left behind
+    "image editor: the Move tool's box not left behind after a click on empty canvas": !/the bounding box of a text \/ shape layer while the move tool is on it/.test(PT) && /2\.819\.0 \(Tim: "don't show the bounding box, only show the handles"\)/.test(PT),
     "pcpen: S.cshape / S.shapeOp set (they were inside a comment) + no Ops = a new layer": /^    S\.cshape = store\.get\("pen\.cshape", "heart"\); S\.shapeOp = store\.get\("pen\.shapeop", "new"\);$/m.test(PP) && /const op = S\.shapeOp && Q\.OP_NAMES && Q\.OP_NAMES\[S\.shapeOp\] \? S\.shapeOp : "new";/.test(PP),
     "timeline: hover with the Move / Text / Shape / Freehand tools = the picked frame (1 px dashed); the press on an object held back (click = pick + Move, drag = the tool draws)": /var HOVER_TOOLS = \["move", "text", "shape", "freehand"\]/.test(TS) && /ctx\.setLineDash\(\[4, 3\]\)/.test(TS) && /d\.started = true;/.test(TS) && /extTool: function \(id\)/.test(CV),
   };

@@ -2737,7 +2737,7 @@ the **picked** layers (Ctrl-click in Layers picks several) or the active one.
 - **Shaping**: Weld, Trim, Intersect, Simplify, Front Minus Back, Back Minus
   Front, Boundary - on the picked vector shapes; the active one is the
   target, the result takes its look; Leave original source / target.
-- **Align and Distribute** (Shift+Ctrl+A): align left / centres / right /
+- **Align and Distribute** (Window ▸ Dockers; 2.819.0: Ctrl+Shift+A clears every selection): align left / centres / right /
   top / middle / bottom to the active object, the first picked, the
   selection's box, the page edge or the page centre; distribute left /
   centres / right / spacing, top / centres / bottom / spacing - over the
@@ -9342,6 +9342,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✨ Summarise** sums an email up in two sentences and says what you need to do. **✨ Draft reply** / **✨ Reply all** - say what the reply should say (or nothing), pick a tone, and the reply is written into the composer for you to read before you send.
 - **Writing** (✉ New, ↩ Reply, ↩↩ Reply all, ↪ Forward): **✨ Help me write** turns a few notes and a tone into the email and its subject; **✨ Rewrite what I wrote…** makes it shorter, friendlier, more formal, fixes spelling and grammar, more confident - or follows your own instruction; **↶ Undo** takes an AI change back. Bold, italic, underline, lists, links, 📎 attachments (or drop files, up to 25 MB); a forward takes the original's attachments with it. **➤ Send** (Ctrl+Enter) files a copy in Sent; **💾 Save draft** saves it in Drafts.
 - Your mail stays on your mail server; bitGen keeps a copy of what it has shown in the app's mail folder (this computer only). The AI runs where your LLM runs - on this computer unless you put it on OpenRouter or a pod in the 🖥 GPU docker.
+
+## Picking, modes and the drawing line in the image editor (2.819.0)
+
+- **Ctrl+Shift+A** (Select ▸ **Clear All Selections**) clears every selection at once: the selected area, the picked object or objects, the numbered picks in Layers and the nodes picked with the pen and curve tools. The active layer stays active. Align and Distribute is still in Window ▸ Dockers, without a key.
+- **Double-click** a shape or layer on the canvas (with no tool, Object Selection, or after a click has picked it), or its row in **Layers**: the **Move tool** comes on with that layer picked and its **scale handles**. No box is drawn round it any more - only the handles.
+- **Click the picked shape again**: the handles become the **rotate / skew** handles (curved corners turn it, the sides skew it). Click again for the scale handles.
+- The **Lasso**'s line now shows while you draw on any picture - black under white dashes, with a faint line back to where it started (where it will close). The **Polygonal Lasso** shows the next side following the pointer, and the **Bézier** tool shows its next segment, as the Pen does.
+- **One shape mode for every tool**: ◻ New, ⊕ Add, ⊖ Subtract, ⊗ Intersect, ⊘ Exclude. The Shape tool's Ops, the rectangle / ellipse / curve tools' mode buttons and the Pen (Shape mode) all use the same one now. With a vector shape picked - any tool - the five are on the **property bar**: press one to go **into** that mode. The last tool you used that draws a closed shape comes on (the Shape tool the first time), the status line says what the next shape does, and the mode's sign rides beside the pointer until you press ◻ New.
 
 ## Tips
 

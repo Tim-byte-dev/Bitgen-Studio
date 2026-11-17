@@ -1161,8 +1161,11 @@
         }
       }
       if (S.pts.length) {
-        g.strokeStyle = "#fff"; g.lineWidth = px; g.setLineDash([3 * px, 3 * px]);
-        g.beginPath(); S.pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); g.setLineDash([]);
+        // 2.819.0 (Tim: "when using freehand select mask, show the line the user is drawing as they are drawing"): it was
+        // white dashes only - nothing on a white picture. Black underneath + white dashes = seen on any colour
+        g.beginPath(); S.pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+        g.lineJoin = "round"; g.strokeStyle = "#000"; g.lineWidth = 1.5 * px; g.setLineDash([]); g.stroke();
+        g.strokeStyle = "#fff"; g.lineWidth = px; g.setLineDash([3 * px, 3 * px]); g.stroke(); g.setLineDash([]);
       }
       const T = E.tools[S.tool];
       const brushy = ["paint", "erase", "brush"].includes(S.tool) || (T && T.brush);
@@ -3006,6 +3009,7 @@
     if (win.PCLive && win.PCLive.install) win.PCLive.install(E);         // 2.588.0: ⚡ live generation (pclive.js - Krita's live mode)
     if (win.PCFocus && win.PCFocus.install) win.PCFocus.install(E);       // 2.588.0: ⬚ focus mode - the canvas alone; Alt+P colours (2.646.0), Ctrl+B brushes, Ctrl+Esc back
     if (win.PCShapeOps && win.PCShapeOps.install) win.PCShapeOps.install(E);   // 2.810.0: the Shape tool's modes (click / Shift / Ctrl / Alt on a shape), ✂ Trim, ⇋ Mirror, ⧈ Offset, its right-click items
+    if (win.PCPickModes && win.PCPickModes.install) win.PCPickModes.install(E);   // 2.819.0: Ctrl+Shift+A clears every selection, the lasso's line, one shape mode for every tool, double-click = transform
     if (win.PCDocText && win.PCDocText.install) win.PCDocText.install(E);   // 2.811.0: word-processor text - document frames, the Document Text tool, File ▸ New Text Document…
     if (win.PCDocTable && win.PCDocTable.install) win.PCDocTable.install(E);   // 2.812.0: tables in document text (insert, rows / columns, merge / split, header row, borders, shading, widths)
     if (win.PCPageView && win.PCPageView.install) win.PCPageView.install(E);   // 2.813.0: View ▸ Pages: One / Two / Many - several pages in the window

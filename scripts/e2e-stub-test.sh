@@ -14169,6 +14169,13 @@ node scripts/test-mail818-live.js > /tmp/mail818l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui818-ui.js > /tmp/ui818.log 2>&1 \
   && ok "2.818.0 ✉ on the top bar: add the account, read, ✨ flag / summarise / draft reply, send, ✨ Help me write + Rewrite + Undo, Delete to Trash" \
   || { bad "2.818.0 mail browser test"; grep -a "^FAIL" -A1 /tmp/ui818.log | head -12; }
+# ---- 2.819.0 (Tim: "... when user presses button to combine,add,subtract,intersect shape go into that mode, when using freehand select mask , show the line the user is drawing as they are drawing ... double click on a shape or layer will put it in move transform mode, don't show the bounding box, only show the handles. when user clicks on the same shape again , change the tranform resize/skew handles to rotate handles ... ctrl+shift+A clears all selections")
+node scripts/test-pickmodes819.js > /tmp/pm819.log 2>&1 \
+  && ok "2.819.0 image editor units: one shape mode for every tool, the selection's extra line, a click again = rotate, Ctrl+Shift+A wired, no box round the picked layer" \
+  || { bad "2.819.0 pick / modes pins"; grep -a "^FAIL" -A1 /tmp/pm819.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui819-ui.js > /tmp/ui819.log 2>&1 \
+  && ok "2.819.0 browser test: the Lasso's line on white, Ctrl+Shift+A clears all, Polygonal Lasso + Bézier rubber band, ⊕ on the property bar goes into Add, double-click = handles only, click again = rotate" \
+  || { bad "2.819.0 pick / modes browser test"; grep -a "^FAIL" -A1 /tmp/ui819.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

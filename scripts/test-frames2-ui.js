@@ -92,10 +92,12 @@ const check = (n, cond, got) => {
     const fin = await ev(() => ({ ed: window.imageEditorInstance.E.frames.editing(), act: window.imageEditorInstance.E.layer().name }));
     check("right-click while editing: Finish Editing Frame first; it goes back to normal mode (the frame active)", m2[0] === "frame.finish" && fin.ed == null && fin.act === "Frame", { m2, fin });
 
-    /* 5 double-click on the frame = the rotate handles (not editing) */
+    /* 5 (2.819.0) double-click on the frame = the Move tool's scale handles, a click on it again = the rotate handles (not editing) */
     await p.mouse.dblclick(cx, cy); await p.waitForTimeout(250);
+    const d5s = await ev(() => window.imageEditorInstance.E.handles.state().mode);
+    await p.mouse.click(cx, cy); await p.waitForTimeout(250);
     const d5 = await ev(() => ({ mode: window.imageEditorInstance.E.handles.state().mode, ed: window.imageEditorInstance.E.frames.editing() }));
-    check("a double-click on the frame = the rotate handles (editing is on the right-click menu now)", d5.mode === "rotate" && d5.ed == null, d5);
+    check("a double-click on the frame = the scale handles, a click again = the rotate handles (editing is on the right-click menu now)", d5s === "scale" && d5.mode === "rotate" && d5.ed == null, { d5s, d5 });
     check("no page errors", errs.length === 0, errs);
   } catch (e) { fail++; console.log("FAIL: crashed - " + e.stack); }
   finally { await b.close(); }

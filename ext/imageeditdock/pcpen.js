@@ -74,6 +74,7 @@
 
     /* ---------------- picking ---------------- */
     const asel = new Set(), csel = new Set();        // picked anchors "s:i" / components s
+    (E.clearSelHooks = E.clearSelHooks || []).push(() => { asel.clear(); csel.clear(); });   // 2.819.0: Ctrl+Shift+A (pcpickmodes.js)
     const key = (s, i) => s + ":" + i;
     const picked = () => [...asel].map((k) => k.split(":").map(Number));
     const hitG = ctx(newCanvas(2, 2));
