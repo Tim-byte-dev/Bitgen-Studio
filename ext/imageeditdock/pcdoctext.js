@@ -206,7 +206,7 @@
     const ser = new root.XMLSerializer();
     return [...box.childNodes].map((n) => ser.serializeToString(n)).join("");
   }
-  const keyOf = (D) => [D.html, D.w, D.h, D.k, D.top, D.rep || "", D.fn || "", PCDocText.showComments !== false].join("|");
+  const keyOf = (D) => [D.view || D.html, D.w, D.h, D.k, D.top, D.rep || "", D.fn || "", PCDocText.showComments !== false].join("|");
   /** draw a doc layer from its cached picture; a new picture is made when it changed (then it is drawn again) */
   function draw(g, L) {
     const D = L.doc; if (!D) return;
@@ -220,7 +220,7 @@
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(D.w)}" height="${Math.ceil(D.h)}"><foreignObject x="0" y="0" width="${Math.ceil(D.w)}" height="${Math.ceil(D.h)}">`
       + `<div xmlns="http://www.w3.org/1999/xhtml" class="${PCDocText.showComments === false ? "pcnocmt" : ""}" style="position:relative;width:${wC}px;height:${hC}px;overflow:hidden;transform:scale(${k});transform-origin:0 0"><style>${CSS.replace(/</g, "")}</style>`
       + (D.rep ? `<div class="pcdoc" style="width:${wC}px">${xhtmlOf(doc, D.rep)}</div>` : "")                 // 2.812.0: the repeated header row
-      + `<div style="width:${wC}px;height:${Math.max(0, hC - (D.rep ? D.repH || 0 : 0) - (D.fn ? D.fnH || 0 : 0))}px;overflow:hidden"><div class="pcdoc" style="width:${wC}px;margin-top:${-(D.top || 0)}px">${xhtmlOf(doc, D.html || "")}</div></div>`
+      + `<div style="width:${wC}px;height:${Math.max(0, hC - (D.rep ? D.repH || 0 : 0) - (D.fn ? D.fnH || 0 : 0))}px;overflow:hidden"><div class="pcdoc" style="width:${wC}px;margin-top:${-(D.top || 0)}px">${xhtmlOf(doc, D.view || D.html || "")}</div></div>`
       + (D.fn ? `<div class="pcdoc pcfn" style="position:absolute;left:0;top:${hC - (D.fnH || 0)}px;width:${wC}px">${xhtmlOf(doc, D.fn)}</div>` : "")   // 2.815.0: this frame's footnotes
       + `</div></foreignObject></svg>`;
     const img = new root.Image();
@@ -265,7 +265,9 @@
       arr.forEach((f, i) => { const d = f.L.doc; d.flow = Object.assign({}, d.flow, { idx: i }); if (i) { d.html = head.html; d.w = w; d.k = k; } });
       // 2.815.0: footnote marks numbered, notes nothing points at dropped
       if (head.notes || /data-fn=/.test(head.html)) { const rn = renumber(head.html, head.notes || {}, doc); if (rn.html !== head.html) { head.html = rn.html; arr.forEach((f, i) => { if (i) f.L.doc.html = head.html; }); } head.notes = rn.notes; }
-      const m = measure(doc, head.html, w / k);
+      // 2.816.0: what the frames show can differ from the story (mail merge's Preview Results - PCDocText.viewOf)
+      const view = PCDocText.viewOf ? PCDocText.viewOf(head) : null;
+      const m = measure(doc, view || head.html, w / k);
       const headAt = (top) => m.heads.find((t) => top >= t.headBottom - 0.5 && top < t.bottom - 0.5) || null;
       // each frame keeps room at its foot for the notes of the marks it shows (worked out again until it settles)
       let fnH = arr.map(() => 0), wins = null, fnOf = arr.map(() => []);
@@ -282,6 +284,7 @@
       arr.forEach((f, i) => {
         const d = f.L.doc, t = wins[i].top; if (d.top !== t) { d.top = t; changed = true; } d.lines = wins[i].lines;
         if (wins[i].head) { d.rep = wins[i].head.html; d.repH = wins[i].head.h; } else { delete d.rep; delete d.repH; }
+        if (view) { if (d.view !== view) changed = true; d.view = view; } else if (d.view) { delete d.view; changed = true; }
         if (fnOf[i].length) { const fh = notesBlock(fnOf[i]); if (d.fn !== fh) changed = true; d.fn = fh; d.fnH = fnH[i]; } else if (d.fn) { delete d.fn; delete d.fnH; changed = true; }
         D.rasterize(f.L);                          // 2.812.0: frames on other pages too (they were left stale)
       });
@@ -602,7 +605,7 @@
     E.docText = { ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
-  const PCDocText = { STYLES, CSS, sanitize, bands, windows, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true };
+  const PCDocText = { STYLES, CSS, sanitize, bands, windows, ptOf, measure, draw, ready, install, renumber, notesBlock, editing: null, showComments: true, viewOf: null };
   if (typeof module !== "undefined" && module.exports) module.exports = PCDocText;
   if (root && root.document) root.PCDocText = PCDocText;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -3011,6 +3011,7 @@
     if (win.PCPageView && win.PCPageView.install) win.PCPageView.install(E);   // 2.813.0: View ▸ Pages: One / Two / Many - several pages in the window
     if (win.PCDocx && win.PCDocx.install) win.PCDocx.install(E);   // 2.814.0: document text saved as a Word file (.docx) and a .docx opened as document text
     if (win.PCDocNotes && win.PCDocNotes.install) win.PCDocNotes.install(E);   // 2.815.0: comments + footnotes in document text
+    if (win.PCDocMerge && win.PCDocMerge.install) win.PCDocMerge.install(E);   // 2.816.0: mail merge in document text
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)
     if (win.PCBody && win.PCBody.install) win.PCBody.install(E);           // 2.471.0: parametric 3D bodies (static/body3d.js) - the SOLID tab, the 🧊 Body tab
     if (win.PCUnreal && win.PCUnreal.install) win.PCUnreal.install(E);     // 2.472.0: Unreal Engine 5.8 + MetaHuman layers (static/unreal.js) - the UNREAL tab

@@ -3,11 +3,13 @@
 //
 //   POST /api/docx/export?name=<n>   {model} (JSON) -> the .docx written to projects/<p>/docs -> {name, size, url}
 //   POST /api/docx/import            the .docx bytes -> {html, messages}
+//   POST /api/docx/merge             mail merge (lib/docxMerge.js) -> {name, size, records, url}
 //   GET  /api/docx/list              {files: [{name, size, mtime}]}
 //   GET  /api/docx/file/:name        the file
 "use strict";
 const express = require("express");
 const docx = require("../lib/docxFiles");
+const merge = require("../lib/docxMerge");
 
 function mount(app) {
   app.post("/api/docx/export", express.json({ limit: "50mb" }), async (req, res) => {
@@ -16,6 +18,11 @@ function mount(app) {
       const r = docx.save(req.query.name || (req.body && req.body.name) || "document", buf);
       res.json(Object.assign(r, { url: "/api/docx/file/" + encodeURIComponent(r.name) }));
     } catch (e) { res.status(e.status || 500).json({ error: e.message }); }
+  });
+  // 2.816.0: mail merge - {model, fields, rows, first, mode one|each|word, name, each} -> one .docx or a .zip
+  app.post("/api/docx/merge", express.json({ limit: "50mb" }), async (req, res) => {
+    try { const r = await merge.run(req.body || {}); res.json(Object.assign(r, { url: "/api/docx/file/" + encodeURIComponent(r.name) })); }
+    catch (e) { res.status(e.status || 500).json({ error: e.message }); }
   });
   app.post("/api/docx/import", express.raw({ type: () => true, limit: docx.MAX }), async (req, res) => {
     try { res.json(await docx.read(req.body)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); }

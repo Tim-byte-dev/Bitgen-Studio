@@ -14145,6 +14145,13 @@ node scripts/test-docnotes815.js > /tmp/docnotes815.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui815-ui.js > /tmp/ui815.log 2>&1 \
   && ok "2.815.0 Ctrl+Alt+M comment + the list (resolve, delete), two footnotes at the foot of page 1 / page 2's frames, .docx with comments + footnotes opened again" \
   || { bad "2.815.0 comments / footnotes browser test"; grep -a "^FAIL" -A1 /tmp/ui815.log | head -12; }
+# ---- 2.816.0 (Tim: "lets go with next, we will do all the releases before i start testing" - WORD PLAN step 4: mail merge)
+node scripts/test-docmerge816.js > /tmp/docmerge816.log 2>&1 \
+  && ok "2.816.0 mail merge: CSV / TSV / ; data, fields filled for the preview, the merge (one .docx, one per record, Word's MERGEFIELDs + .csv)" \
+  || { bad "2.816.0 mail merge units"; grep -a "^FAIL" -A1 /tmp/docmerge816.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui816-ui.js > /tmp/ui816.log 2>&1 \
+  && ok "2.816.0 «» Merge ▾: pasted data, two fields, Preview Results + ▶, Finish & Merge one .docx / the Word pack / records 2-3 one each" \
+  || { bad "2.816.0 mail merge browser test"; grep -a "^FAIL" -A1 /tmp/ui816.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

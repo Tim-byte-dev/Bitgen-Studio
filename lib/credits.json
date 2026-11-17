@@ -313,6 +313,12 @@
           "what": "opening Word files (.docx) as document text (BSD-2-Clause)"
         },
         {
+          "name": "JSZip",
+          "by": "Stuart Knightley",
+          "url": "https://github.com/Stuk/jszip",
+          "what": "mail merge's .zip of Word files (MIT)"
+        },
+        {
           "name": "ag-psd",
           "by": "Agamnentzar",
           "url": "https://github.com/Agamnentzar/ag-psd",

@@ -5659,6 +5659,14 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **¹ 脚注**（または **Ctrl+Alt+F**）でカーソル位置に**脚注**の番号を入れ、脚注の文を入力します。番号はストーリー順に 1、2、3 … と振られ、各脚注は**その番号が表示されているフレームの下端**に短い線の下に描かれます。フレームの本文はそのぶん場所を空けます（必要ならページが追加されます）。**番号をダブルクリック**すると脚注を編集でき、番号を消すと脚注も消えます。
 - **Word ファイル**：コメントは Word のコメント（作成者と日時付き）、脚注は Word の脚注として書き出され、.docx を開くと戻ってきます（コメントは Word が終わらせた位置の直前の語に付きます）。
 
+## Mail merge in document text (2.816.0)
+<!-- en: mail-merge-in-document-text-2-816-0 91dcff88141d -->
+
+- Document Text バーの **«» 差し込み ▾** に差し込み印刷があります。**📇 データソース…** で **.csv / .tsv / .txt** ファイル、または貼り付けた行を読み込みます（1 行目がフィールド名。区切りはカンマ・セミコロン・タブ。引用符は表計算ソフトの書き方どおり）。データはテキストと一緒に保存されます（最大 5000 レコード、100 フィールド）。
+- **«» 差し込みフィールドの挿入…** でカーソル位置にフィールドを入れます。薄い青の **«Field»** と表示され、入力中は 1 つのまとまりとして扱われます（Backspace でまるごと消えます）。
+- **結果のプレビュー** で描画されたページにレコードの値を表示します（テキストのフィールドはそのまま）。**◀ 前のレコード / ▶ 次のレコード** で切り替えます。もう一度 結果のプレビュー を押すと «Field» の表示に戻ります。
+- **🖨 完了と差し込み…** で、すべてのレコードまたは範囲について次のものを作ります：全レコードを含む **1 つの Word 文書**（各レコードは新しいページから）、**レコードごとの Word 文書**を .zip で（«#» - «Last Name» のような名前。«#» はレコード番号）、または **Word の差し込み文書 + データ**（.zip）：.docx には Word 自身の差し込みフィールドが入り、.csv は Word の 差し込み文書 ▸ 宛先の選択 ▸ 既存のリストを使用 で使うリストです。ファイルはプロジェクトの docs フォルダーに保存され、ダウンロードされます。差し込んだ文書にコメントは入りません。脚注は残ります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5671,7 +5679,7 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 <!-- credits:start -->
 
 ## クレジット
-<!-- en: credits f3b3b2f4b50b -->
+<!-- en: credits a5a445a46147 -->
 
 **制作・開発：Tim Paul**
 
@@ -5751,6 +5759,7 @@ bitGen Studio は多くの人々の成果の上に成り立っています。コ
 - **[pdf-lib と fontkit](https://pdf-lib.js.org)** - フォントを埋め込んだ PDF の保存（MIT）
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）- 文書テキストを Word ファイル (.docx) として保存（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）- Word ファイル (.docx) を文書テキストとして開く（BSD-2-Clause）
+- **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）- 差し込み印刷の Word ファイルの .zip（MIT）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）- PSD ファイルとそのテキスト効果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - Sketcher の壁（MIT。splaytree と robust-predicates を併用）
 - **[replicad と OpenCascade](https://replicad.xyz)** - パラメトリック 3D ボディ（MIT。OpenCascade は LGPL-2.1）

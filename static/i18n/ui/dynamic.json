@@ -12259,6 +12259,66 @@
    "src": "ext/imageeditdock/pcdockers.js:401"
   },
   {
+   "s": "File",
+   "src": "ext/imageeditdock/pcdocmerge.js:81"
+  },
+  {
+   "s": "or paste the rows (the first row names the fields; commas, semicolons or tabs)",
+   "src": "ext/imageeditdock/pcdocmerge.js:81"
+  },
+  {
+   "s": "First Name,Last Name,City&#10;Anna,Smith,Perth",
+   "src": "ext/imageeditdock/pcdocmerge.js:81"
+  },
+  {
+   "s": "No data yet",
+   "src": "ext/imageeditdock/pcdocmerge.js:81"
+  },
+  {
+   "s": "Field",
+   "src": "ext/imageeditdock/pcdocmerge.js:102"
+  },
+  {
+   "s": "The field shows as «Field»; Preview Results shows each record's value",
+   "src": "ext/imageeditdock/pcdocmerge.js:102"
+  },
+  {
+   "s": "One Word document - every record from a new page",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "A Word document for each record (.zip)",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "A Word mail-merge document + the data (.zip, for Word's Mailings)",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "Records",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "From … to",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "Each file",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "the record's number; «Field» = its value",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
+   "s": "Merge ▾",
+   "src": "ext/imageeditdock/pcdocmerge.js:169"
+  },
+  {
+   "s": "Mail merge: the data, fields, preview, finish",
+   "src": "ext/imageeditdock/pcdocmerge.js:169"
+  },
+  {
    "s": "Author",
    "src": "ext/imageeditdock/pcdocnotes.js:61"
   },
@@ -12432,95 +12492,91 @@
   },
   {
    "s": "Document Text",
-   "src": "ext/imageeditdock/pcdoctext.js:500"
+   "src": "ext/imageeditdock/pcdoctext.js:503"
   },
   {
    "s": "Paragraph style",
-   "src": "ext/imageeditdock/pcdoctext.js:504"
+   "src": "ext/imageeditdock/pcdoctext.js:507"
   },
   {
    "s": "Size (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:506"
+   "src": "ext/imageeditdock/pcdoctext.js:509"
   },
   {
    "s": "Text colour",
-   "src": "ext/imageeditdock/pcdoctext.js:509"
+   "src": "ext/imageeditdock/pcdoctext.js:512"
   },
   {
    "s": "Highlight",
-   "src": "ext/imageeditdock/pcdoctext.js:509"
+   "src": "ext/imageeditdock/pcdoctext.js:512"
   },
   {
    "s": "Line spacing",
-   "src": "ext/imageeditdock/pcdoctext.js:511"
+   "src": "ext/imageeditdock/pcdoctext.js:514"
   },
   {
    "s": "space",
-   "src": "ext/imageeditdock/pcdoctext.js:512"
+   "src": "ext/imageeditdock/pcdoctext.js:515"
   },
   {
    "s": "Space before / after the paragraph (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:512"
+   "src": "ext/imageeditdock/pcdoctext.js:515"
   },
   {
    "s": "Frame width (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:514"
+   "src": "ext/imageeditdock/pcdoctext.js:517"
   },
   {
    "s": "Frame height (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:514"
+   "src": "ext/imageeditdock/pcdoctext.js:517"
   },
   {
    "s": "Next page",
-   "src": "ext/imageeditdock/pcdoctext.js:515"
+   "src": "ext/imageeditdock/pcdoctext.js:518"
   },
   {
    "s": "Continue this story in a frame on the next page (a new page if this is the last)",
-   "src": "ext/imageeditdock/pcdoctext.js:515"
+   "src": "ext/imageeditdock/pcdoctext.js:518"
   },
   {
    "s": "drag a box to make a document frame - or File ▸ New Text Document",
-   "src": "ext/imageeditdock/pcdoctext.js:515"
+   "src": "ext/imageeditdock/pcdoctext.js:518"
   },
   {
    "s": "Page",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "Portrait",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "Landscape",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "Margins (mm)",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "One frame inside the margins; pages are added as you type",
-   "src": "ext/imageeditdock/pcdoctext.js:588"
+   "src": "ext/imageeditdock/pcdoctext.js:591"
   },
   {
    "s": "docx",
-   "src": "ext/imageeditdock/pcdocx.js:253"
+   "src": "ext/imageeditdock/pcdocx.js:258"
   },
   {
    "s": "Word lays out pages itself - its page breaks can fall a line or two away from these",
-   "src": "ext/imageeditdock/pcdocx.js:253"
-  },
-  {
-   "s": "File",
-   "src": "ext/imageeditdock/pcdocx.js:290"
+   "src": "ext/imageeditdock/pcdocx.js:258"
   },
   {
    "s": "The words, styles, lists and tables come in; pictures are left out for now",
-   "src": "ext/imageeditdock/pcdocx.js:290"
+   "src": "ext/imageeditdock/pcdocx.js:295"
   },
   {
    "s": "Round",
@@ -26741,6 +26797,14 @@
    "src": "ext/imageeditdock/pcdockers.js:353"
   },
   {
+   "p": "Now: {0} - {1} fields, {2} records",
+   "src": "ext/imageeditdock/pcdocmerge.js:81"
+  },
+  {
+   "p": "All {0}",
+   "src": "ext/imageeditdock/pcdocmerge.js:131"
+  },
+  {
    "p": "On: “{0}”",
    "src": "ext/imageeditdock/pcdocnotes.js:61"
   },
@@ -26762,15 +26826,15 @@
   },
   {
    "p": "{0} paragraphs / tables",
-   "src": "ext/imageeditdock/pcdocx.js:253"
+   "src": "ext/imageeditdock/pcdocx.js:258"
   },
   {
    "p": "Header from the master's type: {0} · Footer: {1}",
-   "src": "ext/imageeditdock/pcdocx.js:253"
+   "src": "ext/imageeditdock/pcdocx.js:258"
   },
   {
    "p": "Other stories left out: {0} - pick a frame to save its story",
-   "src": "ext/imageeditdock/pcdocx.js:253"
+   "src": "ext/imageeditdock/pcdocx.js:258"
   },
   {
    "p": "size {0}",

@@ -92,6 +92,7 @@
     "pcpageview.js",
     "pcdocx.js",
     "pcdocnotes.js",
+    "pcdocmerge.js",
     "pcuelive.js",
     "pctabdock.js",
     "pccoldock.js",

@@ -9321,6 +9321,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **¹ Note** (or **Ctrl+Alt+F**) puts a **footnote** mark at the caret and asks for the note. The marks are numbered 1, 2, 3 … in story order, and each note is drawn at the **foot of the frame that shows its mark**, under a short rule - the frame's text makes room for it (a page added if needed). **Double-click a mark** to edit its note; delete the mark and its note goes too.
 - **Word files**: comments go out as Word comments (with the author and date) and footnotes as Word footnotes; opening a .docx brings them back (a comment comes back on the word just before where Word ends it).
 
+## Mail merge in document text (2.816.0)
+
+- **«» Merge ▾** on the Document Text bar holds mail merge. **📇 Data Source…** takes a **.csv / .tsv / .txt** file or rows you paste (the first row names the fields; commas, semicolons or tabs; quotes as spreadsheets write them). The data is kept with the text (up to 5000 records, 100 fields).
+- **«» Insert Merge Field…** puts a field at the caret - it shows as **«Field»** in light blue and is one piece while you type (Backspace takes it whole).
+- **Preview Results** shows a record's values in the drawn pages (the text keeps its fields); **◀ Previous Record / ▶ Next Record** step through them. Preview Results again shows the «Field»s.
+- **🖨 Finish & Merge…** makes, for all records or a range: **one Word document** with every record (each from a new page), **a Word document for each record** in a .zip (named by a pattern like «#» - «Last Name»; «#» = the record's number), or **a Word mail-merge document + the data** (.zip): the .docx has Word's own merge fields and the .csv is the list for Word's Mailings ▸ Select Recipients ▸ Use an Existing List. The file goes to the project's docs folder and is downloaded. Comments are left out of the merged letters; footnotes stay.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9414,6 +9421,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[pdf-lib and fontkit](https://pdf-lib.js.org)** - saving PDFs with embedded fonts (MIT)
 - **[docx](https://github.com/dolanmiu/docx)** (Dolan Miu) - saving document text as Word files (.docx) (MIT)
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)** (Michael Williamson) - opening Word files (.docx) as document text (BSD-2-Clause)
+- **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)** - the Sketcher's walls (MIT; with splaytree and robust-predicates)
 - **[replicad and OpenCascade](https://replicad.xyz)** - parametric 3D bodies (MIT; OpenCascade LGPL-2.1)

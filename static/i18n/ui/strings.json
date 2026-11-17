@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5766,
+ "count": 5779,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53215,6 +53215,123 @@
    ],
    "where": [
     "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "📇 Data Source…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "«» Insert Merge Field…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "Preview Results",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "◀ Previous Record",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "▶ Next Record",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "🖨 Finish & Merge…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "Mail Merge Data",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "Insert Merge Field",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "Finish & Merge",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "📇 Use",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "«» Insert",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "🖨 Merge",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "«» Merge ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Mail merge in document text (2.816.0)"
    ]
   }
  ]

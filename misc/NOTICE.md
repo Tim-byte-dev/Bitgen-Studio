@@ -67,6 +67,7 @@ Installed by `npm` with the rest of the server's packages (not copied into the r
 |---|---|---|
 | `docx` (dolanmiu/docx) | writes the image editor's document text as a Word file (.docx) | MIT |
 | `mammoth` (mwilliamson/mammoth.js) | reads a Word file (.docx) into document text | BSD-2-Clause |
+| `jszip` (Stuk/jszip) | packs mail merge's Word files into a .zip (2.816.0) | MIT (dual MIT / GPL-3.0 - used under MIT) |
 
 ## What is downloaded and run, not shipped
 

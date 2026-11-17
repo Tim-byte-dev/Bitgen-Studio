@@ -5892,6 +5892,14 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **¹ 腳註**（或 **Ctrl+Alt+F**）在游標處放入**腳註**編號並詢問腳註內容。編號按文章順序為 1、2、3 …，每條腳註畫在**顯示其編號的文字框底部**的短線下方 - 文字框的正文會為它讓出位置（需要時新增頁面）。**雙擊編號**可編輯腳註；刪除編號，腳註也隨之刪除。
 - **Word 檔案**：批註作為 Word 批註（含作者和日期）匯出，腳註作為 Word 腳註匯出；開啟 .docx 時它們會回來（批註會落在 Word 結束它的位置之前的那個詞上）。
 
+## Mail merge in document text (2.816.0)
+<!-- en: mail-merge-in-document-text-2-816-0 91dcff88141d -->
+
+- Document Text 工具列上的 **«» 合併 ▾** 包含郵件合併。**📇 資料來源…** 讀取 **.csv / .tsv / .txt** 檔案或貼上的行（第一行為欄位名；以逗號、分號或製表符分隔；引號按電子表格的寫法）。資料隨文字一起儲存（最多 5000 條記錄、100 個欄位）。
+- **«» 插入合併域…** 在游標處放入一個欄位 - 它顯示為淺藍色的 **«Field»**，輸入時作為一個整體（Backspace 會整體刪除）。
+- **預覽結果** 在繪製的頁面中顯示一條記錄的值（文字中的欄位保持不變）；**◀ 上一條記錄 / ▶ 下一條記錄** 逐條切換。再按一次 預覽結果 會重新顯示 «Field»。
+- **🖨 完成併合併…** 針對全部記錄或某個範圍生成：包含所有記錄的**一個 Word 文件**（每條記錄從新的一頁開始）、放在 .zip 中的**每條記錄一個 Word 文件**（按 «#» - «Last Name» 這樣的模式命名；«#» 為記錄編號），或 **Word 郵件合併文件 + 資料**（.zip）：.docx 中是 Word 自己的合併域，.csv 是供 Word 的 郵件 ▸ 選擇收件人 ▸ 使用現有清單 使用的清單。檔案儲存在項目的 docs 資料夾並下載。合併後的信件中不包含批註；腳註保留。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5906,7 +5914,7 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits f3b3b2f4b50b -->
+<!-- en: credits a5a445a46147 -->
 
 **出品與開發：Tim Paul**
 
@@ -5986,6 +5994,7 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **[pdf-lib 和 fontkit](https://pdf-lib.js.org)**——儲存嵌入字型的 PDF（MIT）
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文件文字儲存為 Word 檔案 (.docx)（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 檔案 (.docx) 作為文件文字開啟（BSD-2-Clause）
+- **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——郵件合併生成的 Word 檔案 .zip（MIT）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 檔案及其文字效果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)**——Sketcher 的牆（MIT；另含 splaytree 和 robust-predicates）
 - **[replicad 和 OpenCascade](https://replicad.xyz)**——參數化 3D 實體（MIT；OpenCascade 為 LGPL-2.1）

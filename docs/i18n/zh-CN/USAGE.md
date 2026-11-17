@@ -5894,6 +5894,14 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **¹ 脚注**（或 **Ctrl+Alt+F**）在光标处放入**脚注**编号并询问脚注内容。编号按文章顺序为 1、2、3 …，每条脚注画在**显示其编号的文本框底部**的短线下方 - 文本框的正文会为它让出位置（需要时添加页面）。**双击编号**可编辑脚注；删除编号，脚注也随之删除。
 - **Word 文件**：批注作为 Word 批注（含作者和日期）导出，脚注作为 Word 脚注导出；打开 .docx 时它们会回来（批注会落在 Word 结束它的位置之前的那个词上）。
 
+## Mail merge in document text (2.816.0)
+<!-- en: mail-merge-in-document-text-2-816-0 91dcff88141d -->
+
+- Document Text 工具栏上的 **«» 合并 ▾** 包含邮件合并。**📇 数据源…** 读取 **.csv / .tsv / .txt** 文件或粘贴的行（第一行为字段名；以逗号、分号或制表符分隔；引号按电子表格的写法）。数据随文字一起保存（最多 5000 条记录、100 个字段）。
+- **«» 插入合并域…** 在光标处放入一个字段 - 它显示为浅蓝色的 **«Field»**，输入时作为一个整体（Backspace 会整体删除）。
+- **预览结果** 在绘制的页面中显示一条记录的值（文字中的字段保持不变）；**◀ 上一条记录 / ▶ 下一条记录** 逐条切换。再按一次 预览结果 会重新显示 «Field»。
+- **🖨 完成并合并…** 针对全部记录或某个范围生成：包含所有记录的**一个 Word 文档**（每条记录从新的一页开始）、放在 .zip 中的**每条记录一个 Word 文档**（按 «#» - «Last Name» 这样的模式命名；«#» 为记录编号），或 **Word 邮件合并文档 + 数据**（.zip）：.docx 中是 Word 自己的合并域，.csv 是供 Word 的 邮件 ▸ 选择收件人 ▸ 使用现有列表 使用的列表。文件保存在项目的 docs 文件夹并下载。合并后的信件中不包含批注；脚注保留。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5908,7 +5916,7 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 <!-- credits:start -->
 
 ## 致谢
-<!-- en: credits f3b3b2f4b50b -->
+<!-- en: credits a5a445a46147 -->
 
 **出品与开发：Tim Paul**
 
@@ -5988,6 +5996,7 @@ bitGen Studio 建立在许多人的成果之上。感谢以下所有人——我
 - **[pdf-lib 和 fontkit](https://pdf-lib.js.org)**——保存嵌入字体的 PDF（MIT）
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文档文字保存为 Word 文件 (.docx)（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 文件 (.docx) 作为文档文字打开（BSD-2-Clause）
+- **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——邮件合并生成的 Word 文件 .zip（MIT）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 文件及其文字效果（MIT）
 - **[polygon-clipping](https://github.com/mfogel/polygon-clipping)**——Sketcher 的墙（MIT；另含 splaytree 和 robust-predicates）
 - **[replicad 和 OpenCascade](https://replicad.xyz)**——参数化 3D 实体（MIT；OpenCascade 为 LGPL-2.1）

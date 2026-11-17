@@ -43,6 +43,7 @@
     if (tag === "CODE") o.font = "Consolas";
     if (tag === "A" && /^(https?:|mailto:)/i.test(el.getAttribute("href") || "")) { o.link = el.getAttribute("href"); o.u = true; o.color = o.color || "#0563c1"; }
     if (tag === "SPAN" && el.getAttribute("data-cid")) o.cmt = el.getAttribute("data-cid");   // 2.815.0: a comment's words
+    if (tag === "SPAN" && el.getAttribute("data-field")) o.field = el.getAttribute("data-field");   // 2.816.0: a merge field
     if (st.fontFamily) o.font = firstFont(st.fontFamily);
     if (st.fontSize) { const p = ptOf(st.fontSize); if (p) o.size = p; }
     if (st.color) o.color = st.color;
@@ -75,7 +76,7 @@
     if (j.length && j[j.length - 1].br && !j[j.length - 1].text) j.pop();
     return j;
   }
-  const LOOK_KEYS = ["b", "i", "u", "s", "sub", "sup", "font", "size", "color", "hi", "link", "cmt"];
+  const LOOK_KEYS = ["b", "i", "u", "s", "sub", "sup", "font", "size", "color", "hi", "link", "cmt", "field"];
   const sameLook = (a, b) => LOOK_KEYS.every((k) => (a[k] || null) === (b[k] || null));
   /** paragraph settings from an element's own style */
   function paraOf(el, extra) {
@@ -232,7 +233,11 @@
     /** the model of the picked (else first) story */
     function modelNow() {
       const hs = heads(); if (!hs.length) return null;
-      const h = hs[0], { dpi, name } = pageSetup();
+      return { model: modelOf(hs[0]), more: hs.length - 1 };
+    }
+    /** a story's model (its first frame) */
+    function modelOf(h) {
+      const { dpi, name } = pageSetup();
       const blocks = toModel(E.docText.sanitize(h.doc.html || ""), doc);
       const hf = headFoot(masterLayers(), S.w, S.h, dpi, name);
       // 2.815.0: the story's comments and footnotes go with it
@@ -241,7 +246,7 @@
       walk(blocks);
       const comments = (h.doc.comments || []).filter((c) => used.has(c.id)).map((c) => ({ id: c.id, author: c.author, text: c.text, date: c.date }));
       const footnotes = {}; for (const id of fns) footnotes[id] = String((h.doc.notes || {})[id] || "");
-      return { model: { title: S.name || name || "Document", page: pageOf(S.w, S.h, dpi, h.doc), blocks, header: hf.header, footer: hf.footer, comments, footnotes }, more: hs.length - 1 };
+      return { title: S.name || name || "Document", page: pageOf(S.w, S.h, dpi, h.doc), blocks, header: hf.header, footer: hf.footer, comments, footnotes };
     }
     async function exportDocx() {
       if (!S.w) return say("open or make a document first");
@@ -305,7 +310,7 @@
     const F = MENUS.find(([x]) => x === "File"), has = (id) => !!(F && F[1].includes(id));
     C("file.opendocx", "📂 Open Word Document (.docx)…", "", openDocx, null, ["File", has("file.newtextdoc") ? "file.newtextdoc" : "file.new"]);
     C("file.exportdocx", "Word Document (.docx)…", "", exportDocx, { enabled: () => !!S.w }, ["File", has("file.exportdtp") ? "file.exportdtp" : "file.export"]);
-    E.docx = { model: () => { const m = modelNow(); return m && m.model; }, exportDocx, openDocx, openBytes: openDocxBytes, place: placeOpened, heads };
+    E.docx = { model: () => { const m = modelNow(); return m && m.model; }, modelOf, exportDocx, openDocx, openBytes: openDocxBytes, place: placeOpened, heads };
   }
 
   const PCDocx = { toModel, runsOf, pageOf, headFoot, splitTokens, ptOf, install, last: null };
