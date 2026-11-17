@@ -1254,6 +1254,7 @@ bitGen Studio 是一款本地離線的 AI 影片與影像工作室：無需帳�
 - **房間寬度和長度** — 每個房間的面板都有 Width 和 Length（矩形保持其角點不動，其他形狀則被拉伸）；Room 工具的 Width × Length 一次點選即可放置該尺寸的房間。 *Where:* Sketcher ▸ 房間，Room 工具。 *Since:* 2.647.0
 - **從 Artist mode 生成** — 在 🎨 Artist mode 中，Alt+G 在畫布上方顯示 Layers 面板和 ⏳ Pending，Ctrl+P 顯示提示詞面板：選取圖層，▾ Edit 或 Generate，從 ⏳ Pending 中保留結果——全程不離開全螢幕畫布；調色盤為 Alt+P。 *Where:* 影像編輯器 ▸ 🎨 Artist mode。 *Since:* 2.646.0
 - **右鍵：Copy、Paste 和 Artist Mode** — 影像編輯器的畫布選單有 Copy 和 Paste（新圖層）以及 🎨 Artist Mode；在 Artist Mode 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（開啟 / 關閉場景工具）、✨ Prompt（把提示詞停靠窗帶到前面）和 Exit Artist Mode。*Where:* 影像編輯器 ▸ 右鍵點選畫布。*Since:* 2.809.0
+- **形狀模式、修剪、鏡像、偏移** — 形狀工具的形狀按鈕選擇模式：點選 = 新增，Shift+點選 = 選取的形狀變成它（下一個形狀替換它），Ctrl+點選 = 新增到它，Alt+點選 = 從它中減去，Ctrl+Alt+點選 = 相交；✂ 修剪剪掉輪廓上位於其他輪廓交點之間的一段（其餘首尾相連）；⇋ 翻轉 / 鏡像複製；⧈ 偏移擴大或縮小輪廓（圓角）；拿著形狀工具時也在右鍵選單中。*Where:* 影像編輯器 ▸ 形狀工具 (U)。*Since:* 2.810.0
 - **關於與致謝** — Settings ▸ About：版本號、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及對所有使用了其程式碼、模型、工具和創意的專案的致謝（連結在瀏覽器中開啟）；Guide 的結尾也有同樣的致謝。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在攝影機自身視角中移動和轉動攝影機** — 通過選取的攝影機觀看時，✥ Move / ⟳ Rotate 會在檢視前方顯示其箭頭或旋轉環；攝影機與檢視一起移動 / 轉動；Esc 取消選取。 *Where:* Sketcher ▸ 攝影機的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：將提示詞面板置於最前** — 在應用中任何地方，包括正在輸入框中打字時：提示詞面板會開啟、展開，從關閉的 ▣ 面板中移出，並顯示在浮動視窗或最大化面板之上，焦點置於提示詞框。 *Where:* 任何地方，🎨 Artist mode 中也可以（2.646.0）。 *Since:* 2.645.0

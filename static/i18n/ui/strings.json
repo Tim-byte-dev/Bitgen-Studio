@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5707,
+ "count": 5715,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52684,6 +52684,78 @@
    ],
    "where": [
     "span in #ieKx (right-click, 🎨 Artist Mode)"
+   ]
+  },
+  {
+   "s": "Flip Horizontal",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Flip Vertical",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Mirror Copy → Right",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Mirror Copy ← Left",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Mirror Copy ↓ Down",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Mirror Copy ↑ Up",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Trim: click a piece of a shape's outline to cut it away, between the places other outlines cross it (Esc = back)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
+   ]
+  },
+  {
+   "s": "Offset the picked shapes' outlines: grow (+) or shrink (−) by a distance",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "#kxOpts / right-click with the Shape tool (2.810.0)"
    ]
   }
  ]

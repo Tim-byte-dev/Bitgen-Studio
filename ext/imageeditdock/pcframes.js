@@ -367,6 +367,9 @@
       e.preventDefault(); e.stopPropagation();
       if (S.frameEdit == null) { const [fx, fy] = E.pos(e), i = E.layerAt(Math.floor(fx), Math.floor(fy)); if (i >= 0 && i !== S.active) E.setActive(i); }
       const F = frameHere(), items = [];
+      // 2.810.0 (Tim: "add the shape options to the right click context menu when shape tool is selected only"): the modes,
+      // Shape ▸, ✂ Trim, ⇋ Mirror ▸, ⧈ Offset… first (pcshapeops.js - nothing with other tools)
+      { const sm = E.shapeMenu ? E.shapeMenu() : []; if (sm.length) items.push(...sm, sep); }
       // 2.604.0 (Tim: "add a rightclick context menu with rasterize text"): on a text layer it comes first
       { const Lc = A(); if (Lc && Lc.type === "text") items.push("layer.rasterizetext", sep); }
       if (S.frameEdit != null) items.push("frame.finish", sep, "frame.extract", "frame.lock");

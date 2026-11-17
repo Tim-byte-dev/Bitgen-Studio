@@ -15271,6 +15271,54 @@
    "src": "ext/imageeditdock/pcsam.js:327"
   },
   {
+   "s": "New Shape",
+   "src": "ext/imageeditdock/pcshapeops.js:46"
+  },
+  {
+   "s": "Replace the Picked Shape (Shift+click)",
+   "src": "ext/imageeditdock/pcshapeops.js:46"
+  },
+  {
+   "s": "Add to the Picked Shape (Ctrl+click)",
+   "src": "ext/imageeditdock/pcshapeops.js:47"
+  },
+  {
+   "s": "Subtract From the Picked Shape (Alt+click)",
+   "src": "ext/imageeditdock/pcshapeops.js:47"
+  },
+  {
+   "s": "Intersect With the Picked Shape (Ctrl+Alt+click)",
+   "src": "ext/imageeditdock/pcshapeops.js:48"
+  },
+  {
+   "s": "Replace the picked shape (Shift+click a shape)",
+   "src": "ext/imageeditdock/pcshapeops.js:355"
+  },
+  {
+   "s": "Mirror the picked shapes: flip them, or join a mirrored copy",
+   "src": "ext/imageeditdock/pcshapeops.js:358"
+  },
+  {
+   "s": "Trim - the red piece of an outline (between the places other outlines cross it) is cut away when you click; what is left is joined end to end. Esc /",
+   "src": "ext/imageeditdock/pcshapeops.js:395"
+  },
+  {
+   "s": "Shape tool",
+   "src": "ext/imageeditdock/pcshapeops.js:395"
+  },
+  {
+   "s": "Distance (px)",
+   "src": "ext/imageeditdock/pcshapeops.js:471"
+  },
+  {
+   "s": "grows the outline, − shrinks it (round corners)",
+   "src": "ext/imageeditdock/pcshapeops.js:471"
+  },
+  {
+   "s": "Keep the original (the offset is a new layer above)",
+   "src": "ext/imageeditdock/pcshapeops.js:471"
+  },
+  {
    "s": "Two points",
    "src": "ext/imageeditdock/pcsketchcad.js:49"
   },
@@ -15505,10 +15553,6 @@
   {
    "s": "Tab · Enter",
    "src": "ext/imageeditdock/pcsketchtools.js:479"
-  },
-  {
-   "s": "Distance (px)",
-   "src": "ext/imageeditdock/pcsketchtools.js:744"
   },
   {
    "s": "Side",
@@ -26699,6 +26743,10 @@
   {
    "p": "installing… · {0} s",
    "src": "ext/imageeditdock/pcsam.js:275"
+  },
+  {
+   "p": "{0} - click: a new one, Shift+click: the picked shape becomes it, Ctrl+click: add to it, Alt+click: subtract from it (U)",
+   "src": "ext/imageeditdock/pcshapeops.js:364"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

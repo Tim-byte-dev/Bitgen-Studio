@@ -9269,6 +9269,20 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Right-click the canvas: after what the thing you clicked offers come **Copy** and **Paste** (the Edit menu's - Paste makes a new layer), then Duplicate / Delete layer, and last **🎨 Artist Mode**.
 - In Artist Mode the right-click menu has **Show Layers + ⏳ Pending** (the side panel, ticked while it shows), **🟧 Blender Scene** (opens the Blender scene tools over the canvas, or closes them), **✨ Prompt** (brings the prompt docker in front) and **Exit Artist Mode**.
 
+## The Shape tool's modes, Trim, Mirror and Offset (2.810.0)
+
+- The shape buttons on the Shape tool's bar (▭ ▢ ◯ △ ⬠ ╱) pick the shape **and the mode** the next one is drawn in. Then drag on the canvas as usual:
+  - **click** - a **new** shape on a layer of its own (the picked shape is left as it is);
+  - **Shift+click** - the picked shape layer **becomes** that shape at once, and the next one you draw **replaces** it (its colours kept);
+  - **Ctrl+click** - **add**: the next shape is joined into the picked shape layer (one shape);
+  - **Alt+click** - **subtract**: the next shape is cut out of the picked shape layer;
+  - **Ctrl+Alt+click** - **intersect**: only where the two overlap is kept.
+- The Ops buttons on the same bar show the mode (⇄ = Replace). With no shape layer picked, a new layer is drawn.
+- **✂** (Trim): point at a shape's outline - the piece between the nearest places where other outlines cross it (its own, other shape layers', lines) turns red; click to cut it away. What is left is joined end to end, so two overlapping circles trimmed inside become one outline round both. Pieces left open are drawn as lines. **Esc** goes back to the Shape tool; Ctrl+Z puts a piece back.
+- **⇋▾** (Mirror) for the picked shapes: **Flip Horizontal / Vertical**, or **Mirror Copy** Right / Left / Down / Up - a mirrored copy joined into the shape, about that side of the picked shapes' box (draw half of a symmetric shape, mirror the rest).
+- **⧈** (Offset): grow (+) or shrink (−) the picked shapes' outlines by a distance in px, with round corners. **Keep the original** puts the offset outline on a new layer above; off, the shape itself changes.
+- With the Shape tool (or Trim) in hand, **right-click** the canvas: the modes, **Shape ▸**, **✂ Trim**, **⇋ Mirror ▸** and **⧈ Offset…** come first in the menu. Other tools don't show them.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

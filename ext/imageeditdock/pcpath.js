@@ -51,7 +51,7 @@
   /** a sane path from anything (a PSD, an old save, a typo) */
   function normalize(p) {
     const subs = ((p && p.subs) || []).map((s) => Object.assign({ closed: !!s.closed, op: OPS.includes(s.op) ? s.op : "add",
-      pts: (s.pts || []).filter((a) => a && isFinite(+a.x) && isFinite(+a.y)).map((a) => { const o = anchor(+a.x, +a.y, fin(a.ix, +a.x), fin(a.iy, +a.y), fin(a.ox, +a.x), fin(a.oy, +a.y), a.smooth); if (a.sym && a.smooth) o.sym = true; return o; }) }, s.plain ? { plain: true } : {}))   // 2.425.0: + Corel's symmetrical nodes; 2.428.0: + plain (no arrowheads)
+      pts: (s.pts || []).filter((a) => a && isFinite(+a.x) && isFinite(+a.y)).map((a) => { const o = anchor(+a.x, +a.y, fin(a.ix, +a.x), fin(a.iy, +a.y), fin(a.ox, +a.x), fin(a.oy, +a.y), a.smooth); if (a.sym && a.smooth) o.sym = true; return o; }) }, s.plain ? { plain: true } : {}, s.nofill && !s.closed ? { nofill: true } : {}))   // 2.810.0: + nofill (a trimmed open piece - a line, not an area: pcshapeops.js)   // 2.425.0: + Corel's symmetrical nodes; 2.428.0: + plain (no arrowheads)
       .filter((s) => s.pts.length);
     return { subs };
   }
@@ -641,7 +641,7 @@
   const mk = (c, W, H) => { const d = c && c.ownerDocument; if (d) { const n = d.createElement("canvas"); n.width = W; n.height = H; return n; } return new root.OffscreenCanvas(W, H); };
   /** fill the path's AREA (its ops) on g with `style` */
   function fillArea(g, p, style) {
-    const subs = ((p && p.subs) || []).filter((s) => s.pts.length > 1);
+    const subs = ((p && p.subs) || []).filter((s) => s.pts.length > 1 && !s.nofill);   // 2.810.0: a trimmed open piece is a line, not an area
     if (!subs.length) return;
     if (simple(p)) { g.save(); g.beginPath(); for (const s of subs) trace(g, s); g.fillStyle = style; g.fill("nonzero"); g.restore(); return; }
     const W = g.canvas.width, H = g.canvas.height, t = mk(g.canvas, W, H), tg = t.getContext("2d");

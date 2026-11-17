@@ -14103,6 +14103,13 @@ node scripts/test-ctxmenu809.js > /tmp/ctxmenu809.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui809-ui.js > /tmp/ui809.log 2>&1 \
   && ok "2.809.0 right-click: Copy + Paste make a layer; Artist Mode's Show Layers, Blender Scene, Prompt and Exit work" \
   || { bad "2.809.0 right-click menu browser test"; grep -a "^FAIL" -A1 /tmp/ui809.log | head -12; }
+# ---- 2.810.0 (Tim: "in image editor, click on shape will draw new shapes, shift+click on shape will change shape to new shape clicked, ctrl+ click will add shape to existing shape (boolean) , alt + click will subtract ... add a trim button ... Add mirror and offset buttons for selected shapes")
+node scripts/test-shapeops810.js > /tmp/shapeops810.log 2>&1 \
+  && ok "2.810.0 shape modes, trim (cuts + rejoin), mirror, offset (grid + trace) maths and hooks" \
+  || { bad "2.810.0 shape ops maths"; grep -a "^FAIL" -A1 /tmp/shapeops810.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui810-ui.js > /tmp/ui810.log 2>&1 \
+  && ok "2.810.0 the shape buttons' modes (new / Shift replace / Ctrl add / Alt subtract), the Shape tool's right-click items, ✂ Trim, ⇋ Mirror, ⧈ Offset" \
+  || { bad "2.810.0 shape tool browser test"; grep -a "^FAIL" -A1 /tmp/ui810.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
