@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "4913d16790c6",
- "count": 9793,
+ "v": "b99d28250ecc",
+ "count": 9796,
  "patternCount": 1200,
  "strings": {
   "(no list yet - 🔄)": "（还没有列表 - 🔄）",
@@ -3708,6 +3708,7 @@
   "Magic-wand tolerance (0-255)": "魔棒容差 (0-255)",
   "Magnetic Lasso": "磁性套索",
   "Magnetic Lasso Tool": "磁性套索工具",
+  "Mail": "邮件",
   "Mail Merge Data": "邮件合并数据",
   "Mail merge: the data, fields, preview, finish": "邮件合并：数据、字段、预览、完成",
   "Main category": "主类别",
@@ -6007,6 +6008,7 @@
   "Slide right": "向右滑动",
   "Slide up": "向上滑动",
   "Slide: drag a clip between its neighbours - they give and take": "内滑：在相邻片段之间拖动片段 - 相邻片段随之伸缩",
+  "Slides": "幻灯片",
   "Sliding": "推拉",
   "Sliding glass": "玻璃推拉门",
   "Slip: drag a clip - other frames of its source, same place and length": "外滑：拖动片段 - 改用其源素材的其他帧，位置和长度不变",
@@ -6178,6 +6180,7 @@
   "Spot Healing Brush Tool (J, Shift+J cycles; right-click for the others)": "污点修复画笔工具 (J，Shift+J 循环切换；右键点击显示其他工具)",
   "Spray can": "喷漆罐",
   "Sprayer": "喷涂",
+  "Spreadsheet": "电子表格",
   "Square": "方形",
   "Square 1080 × 1080": "方形 1080 × 1080",
   "Square ▸": "方形 ▸",

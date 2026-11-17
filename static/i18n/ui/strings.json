@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5779,
+ "count": 5782,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53332,6 +53332,33 @@
    ],
    "where": [
     "Mail merge in document text (2.816.0)"
+   ]
+  },
+  {
+   "s": "Mail",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "The app strip on the menu bar (2.817.0)"
+   ]
+  },
+  {
+   "s": "Spreadsheet",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "The app strip on the menu bar (2.817.0)"
+   ]
+  },
+  {
+   "s": "Slides",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "The app strip on the menu bar (2.817.0)"
    ]
   }
  ]

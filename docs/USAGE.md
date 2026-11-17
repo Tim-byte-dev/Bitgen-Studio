@@ -9328,6 +9328,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Preview Results** shows a record's values in the drawn pages (the text keeps its fields); **◀ Previous Record / ▶ Next Record** step through them. Preview Results again shows the «Field»s.
 - **🖨 Finish & Merge…** makes, for all records or a range: **one Word document** with every record (each from a new page), **a Word document for each record** in a .zip (named by a pattern like «#» - «Last Name»; «#» = the record's number), or **a Word mail-merge document + the data** (.zip): the .docx has Word's own merge fields and the .csv is the list for Word's Mailings ▸ Select Recipients ▸ Use an Existing List. The file goes to the project's docs folder and is downloaded. Comments are left out of the merged letters; footnotes stay.
 
+## The app strip on the top bar (2.817.0)
+
+- The big apps are no longer statusbar buttons: they are **icons on the top bar**, after the Workspace dropdown and 🔍 - **🖼 Image editor** (and ✉ Mail, ▦ Spreadsheet, 🎞 Slides as they arrive), a separator, then **📐 SolidCraft** (only when it is installed) and **📏 Sketcher**. Hover an icon for its name; it is lit while its app is open, and a click opens / closes it as the statusbar button did.
+- Workspaces, layouts, Settings ▸ Dockers and the Ctrl+K palette work as before.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

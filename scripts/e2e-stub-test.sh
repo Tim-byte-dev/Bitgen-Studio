@@ -14152,6 +14152,13 @@ node scripts/test-docmerge816.js > /tmp/docmerge816.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui816-ui.js > /tmp/ui816.log 2>&1 \
   && ok "2.816.0 «» Merge ▾: pasted data, two fields, Preview Results + ▶, Finish & Merge one .docx / the Word pack / records 2-3 one each" \
   || { bad "2.816.0 mail merge browser test"; grep -a "^FAIL" -A1 /tmp/ui816.log | head -12; }
+# ---- 2.817.0 (Tim: "put the button for this on the top menu-strip as icon only, not in the statusbar ... (editor,mail,spreadsheet,slides) then add (solidcraft and sketcher buttons)")
+node scripts/test-appstrip817.js > /tmp/appstrip817.log 2>&1 \
+  && ok "2.817.0 the app strip: groups, separators, moved buttons (pins)" \
+  || { bad "2.817.0 app strip pins"; grep -a "^FAIL" -A1 /tmp/appstrip817.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui817-ui.js > /tmp/ui817.log 2>&1 \
+  && ok "2.817.0 | 🖼 | 📐 📏 | in the menu bar, none left in the statusbar, icons toggle + light their apps" \
+  || { bad "2.817.0 app strip browser test"; grep -a "^FAIL" -A1 /tmp/ui817.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

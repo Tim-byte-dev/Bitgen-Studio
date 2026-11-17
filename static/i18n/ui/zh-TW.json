@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "31ca34a7c30e",
- "count": 9793,
+ "v": "bc987fc5d048",
+ "count": 9796,
  "patternCount": 1200,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -3708,6 +3708,7 @@
   "Magic-wand tolerance (0-255)": "魔術棒容差 (0-255)",
   "Magnetic Lasso": "磁性套索",
   "Magnetic Lasso Tool": "磁性套索工具",
+  "Mail": "郵件",
   "Mail Merge Data": "郵件合併資料",
   "Mail merge: the data, fields, preview, finish": "郵件合併：資料、欄位、預覽、完成",
   "Main category": "主類別",
@@ -6007,6 +6008,7 @@
   "Slide right": "向右滑動",
   "Slide up": "向上滑動",
   "Slide: drag a clip between its neighbours - they give and take": "內滑：在相鄰片段之間拖曳片段 - 相鄰片段隨之伸縮",
+  "Slides": "幻燈片",
   "Sliding": "橫拉",
   "Sliding glass": "玻璃拉門",
   "Slip: drag a clip - other frames of its source, same place and length": "外滑：拖曳片段 - 改用其來源素材的其他影格，位置和長度不變",
@@ -6178,6 +6180,7 @@
   "Spot Healing Brush Tool (J, Shift+J cycles; right-click for the others)": "汙點修復筆刷工具 (J，Shift+J 循環切換；右鍵點選顯示其他工具)",
   "Spray can": "噴漆罐",
   "Sprayer": "噴塗",
+  "Spreadsheet": "電子表格",
   "Square": "方形",
   "Square 1080 × 1080": "方形 1080 × 1080",
   "Square ▸": "方形 ▸",

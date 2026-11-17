@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "0eb9fb602982",
- "count": 9793,
+ "v": "67ae1eef3e9c",
+ "count": 9796,
  "patternCount": 1200,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -3708,6 +3708,7 @@
   "Magic-wand tolerance (0-255)": "自動選択の許容値（0-255）",
   "Magnetic Lasso": "マグネット選択",
   "Magnetic Lasso Tool": "マグネット選択ツール",
+  "Mail": "メール",
   "Mail Merge Data": "差し込み印刷のデータ",
   "Mail merge: the data, fields, preview, finish": "差し込み印刷：データ、フィールド、プレビュー、完了",
   "Main category": "メインカテゴリー",
@@ -6007,6 +6008,7 @@
   "Slide right": "スライド（右）",
   "Slide up": "スライド（上）",
   "Slide: drag a clip between its neighbours - they give and take": "スライド：クリップを隣接クリップの間でドラッグ - 隣接クリップが伸縮します",
+  "Slides": "スライド",
   "Sliding": "引き違い",
   "Sliding glass": "ガラス引き戸",
   "Slip: drag a clip - other frames of its source, same place and length": "スリップ：クリップをドラッグ - 位置と長さはそのままで、ソースの別のフレームを使います",
@@ -6178,6 +6180,7 @@
   "Spot Healing Brush Tool (J, Shift+J cycles; right-click for the others)": "スポット修復ブラシツール（J、Shift+J で切り替え。右クリックで他のツール）",
   "Spray can": "スプレー缶",
   "Sprayer": "スプレー",
+  "Spreadsheet": "スプレッドシート",
   "Square": "正方形",
   "Square 1080 × 1080": "正方形 1080 × 1080",
   "Square ▸": "正方形 ▸",
