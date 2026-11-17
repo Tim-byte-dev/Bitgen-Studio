@@ -7,6 +7,11 @@
 //   POST   /api/sheets/import?name=     an .xlsx (raw body) -> {doc, notes}
 //   POST   /api/sheets/export           {name, doc, results} -> the .xlsx (also kept in the project's sheets folder)
 //   POST   /api/sheets/ai/dashboard     {profile, ask} -> {plan} (the LLM's dashboard plan)
+//   2.825.0 ✨ AI in the cells (lib/sheetAi.js; the page checks every answer):
+//   POST   /api/sheets/ai/formula       {context, ask, functions} -> {formula, explain}
+//   POST   /api/sheets/ai/explain       {context, formula, values} -> {text}
+//   POST   /api/sheets/ai/fill          {context, examples, failed, functions} -> {formula, explain}
+//   POST   /api/sheets/ai/fillvalues    {context, examples, rows} -> {values}
 "use strict";
 const express = require("express");
 const SF = require("../lib/sheetFiles");
@@ -35,5 +40,10 @@ function mount(app) {
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
   app.post("/api/sheets/ai/dashboard", J, wrap((req) => require("../lib/sheetAi").dashboardPlan((req.body || {}).profile, (req.body || {}).ask)));
+  const AI = () => require("../lib/sheetAi"), B = (req) => req.body || {};
+  app.post("/api/sheets/ai/formula", J, wrap((req) => AI().writeFormula(B(req).context, B(req).ask, B(req).functions)));
+  app.post("/api/sheets/ai/explain", J, wrap((req) => AI().explainFormula(B(req).context, B(req).formula, B(req).values)));
+  app.post("/api/sheets/ai/fill", J, wrap((req) => AI().fillFormula(B(req).context, B(req).examples, B(req).failed, B(req).functions)));
+  app.post("/api/sheets/ai/fillvalues", J, wrap((req) => AI().fillValues(B(req).context, B(req).examples, B(req).rows)));
 }
 module.exports = { mount };

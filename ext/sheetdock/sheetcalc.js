@@ -230,10 +230,48 @@
     },
   };
   F.CONCATENATE = F.CONCAT;
+  // 2.825.0 (Tim: "lets go next" - the ✨ AI writes formulas): the text, lookup, date and conditional functions it reaches for
+  const ifs = (pairs) => { const R0 = grid(pairs[0]); return (i, j) => { for (let k = 0; k < pairs.length; k += 2) { const R = grid(pairs[k]); if (!crit(pairs[k + 1])(R[i] && R[i][j])) return false; } return true; }; };
+  const condNums = (s, pairs) => { const S = grid(s), ok = ifs(pairs), o = []; S.forEach((row, i) => row.forEach((x, j) => { if (typeof x === "number" && ok(i, j)) o.push(x); })); return o; };
+  const findAt = (needle, hay, start, ci) => { const h = str(hay), n = str(needle), a = start == null ? 1 : num(start); if (a < 1 || a > h.length + 1) throw ERR("#VALUE!"); let i; if (ci) { const re = new RegExp(n.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*").replace(/\?/g, "."), "i"); const m = re.exec(h.slice(a - 1)); i = m ? m.index + a - 1 : -1; } else i = h.indexOf(n, a - 1); if (i < 0) throw ERR("#VALUE!"); return i + 1; };
+  Object.assign(F, {
+    PROPER: ([x]) => str(x).toLowerCase().replace(/(^|[^a-z\u00c0-\u024f])([a-z\u00c0-\u024f])/g, (m, a, b) => a + b.toUpperCase()),
+    FIND: ([n, h, s]) => findAt(n, h, s, false),
+    SEARCH: ([n, h, s]) => findAt(n, h, s, true),
+    SUBSTITUTE: ([x, a, b, k]) => { const s = str(x), f = str(a), t = str(b); if (!f) return s; if (k == null) return s.split(f).join(t); let n = num(k), i = -1; while (n-- > 0) { i = s.indexOf(f, i + 1); if (i < 0) return s; } return s.slice(0, i) + t + s.slice(i + f.length); },
+    REPLACE: ([x, st, n, t]) => { const s = str(x), a = num(st) - 1; if (a < 0) throw ERR("#VALUE!"); return s.slice(0, a) + str(t) + s.slice(a + Math.max(0, num(n))); },
+    REPT: ([x, n]) => { const k = Math.floor(num(n)); if (k < 0) throw ERR("#VALUE!"); return str(x).repeat(Math.min(k, 32767)); },
+    EXACT: ([a, b]) => str(a) === str(b),
+    TEXTJOIN: ([d, skip, ...rest]) => flat(rest).map(({ v }) => str(v)).filter((v) => !bool(skip) || v !== "").join(str(d)),
+    AVERAGEIFS: ([s, ...pairs]) => { const o = condNums(s, pairs); if (!o.length) throw ERR("#DIV/0!"); return o.reduce((a, b) => a + b, 0) / o.length; },
+    MAXIFS: ([s, ...pairs]) => { const o = condNums(s, pairs); return o.length ? Math.max(...o) : 0; },
+    MINIFS: ([s, ...pairs]) => { const o = condNums(s, pairs); return o.length ? Math.min(...o) : 0; },
+    SUMPRODUCT: (arrs) => { const G = arrs.map(grid), R = G[0].length, C = (G[0][0] || []).length; if (G.some((g) => g.length !== R || (g[0] || []).length !== C)) throw ERR("#VALUE!"); let t = 0; for (let i = 0; i < R; i++) for (let j = 0; j < C; j++) { let p = 1; for (const g of G) { const v = g[i][j]; if (isErr(v)) throw v; p *= typeof v === "number" ? v : typeof v === "boolean" ? +v : 0; } t += p; } return t; },
+    LARGE: (a) => { const o = nums([a[0]]).sort((x, y) => y - x), k = num(a[1]); if (k < 1 || k > o.length) throw ERR("#NUM!"); return o[k - 1]; },
+    SMALL: (a) => { const o = nums([a[0]]).sort((x, y) => x - y), k = num(a[1]); if (k < 1 || k > o.length) throw ERR("#NUM!"); return o[k - 1]; },
+    RANK: ([x, r, ord]) => { const o = nums([r]), v = num(x); if (!o.includes(v)) throw ERR("#N/A"); return 1 + o.filter((y) => (ord != null && num(ord) ? y < v : y > v)).length; },
+    ROWS: ([a]) => grid(a).length, COLUMNS: ([a]) => (grid(a)[0] || []).length,
+    CEILING: ([x, s]) => { const k = s == null ? 1 : num(s); return k ? Math.ceil(num(x) / k - 1e-9) * k : 0; },
+    FLOOR: ([x, s]) => { const k = s == null ? 1 : num(s); return k ? Math.floor(num(x) / k + 1e-9) * k : 0; },
+    WEEKDAY: ([x, t]) => { const d = dateOf(num(x)).getUTCDay(), k = t == null ? 1 : num(t); return k === 2 ? (d + 6) % 7 + 1 : k === 3 ? (d + 6) % 7 : d + 1; },
+    HOUR: ([x]) => Math.floor((((num(x) % 1) + 1) % 1) * 24 + 1e-9), MINUTE: ([x]) => Math.floor((((num(x) % 1) + 1) % 1) * 1440 + 1e-9) % 60,
+    EDATE: ([x, m]) => { const d = dateOf(num(x)); return serialOf(d.getUTCFullYear(), d.getUTCMonth() + 1 + Math.trunc(num(m)), d.getUTCDate()); },
+    EOMONTH: ([x, m]) => { const d = dateOf(num(x)); return serialOf(d.getUTCFullYear(), d.getUTCMonth() + 2 + Math.trunc(num(m)), 0); },
+    DATEDIF: ([a, b, u]) => { const x = num(a), y = num(b); if (y < x) throw ERR("#NUM!"); const A = dateOf(x), B = dateOf(y), U = str(u).toUpperCase(); let mo = (B.getUTCFullYear() - A.getUTCFullYear()) * 12 + B.getUTCMonth() - A.getUTCMonth(); if (B.getUTCDate() < A.getUTCDate()) mo--; if (U === "D") return Math.floor(y) - Math.floor(x); if (U === "M") return mo; if (U === "Y") return Math.floor(mo / 12); throw ERR("#NUM!"); },
+    CHOOSE: ([i, ...xs]) => { const k = Math.floor(num(i)); if (k < 1 || k > xs.length) throw ERR("#VALUE!"); return xs[k - 1]; },
+  });
   // the lazy ones (only the branch taken is worked out)
   const LAZY = {
     IF: (args, ev) => { const c = bool(ev(args[0])); return c ? (args[1] ? ev(args[1]) : true) : (args[2] ? ev(args[2]) : false); },
     IFS: (args, ev) => { for (let i = 0; i + 1 < args.length; i += 2) if (bool(ev(args[i]))) return ev(args[i + 1]); throw ERR("#N/A"); },
+    // 2.825.0: the IS… tests see an error without it stopping the formula
+    IFNA: (args, ev) => { let v; try { v = ev(args[0]); } catch (e) { if (isErr(e)) v = e; else throw e; } return isErr(v) && v.err === "#N/A" ? ev(args[1]) : v; },
+    ISERROR: (args, ev) => { try { return isErr(ev(args[0])); } catch (e) { if (isErr(e)) return true; throw e; } },
+    ISNA: (args, ev) => { try { const v = ev(args[0]); return isErr(v) && v.err === "#N/A"; } catch (e) { if (isErr(e)) return e.err === "#N/A"; throw e; } },
+    ISBLANK: (args, ev) => { try { const v = ev(args[0]); return v == null || v === ""; } catch (e) { if (isErr(e)) return false; throw e; } },
+    ISNUMBER: (args, ev) => { try { return typeof ev(args[0]) === "number"; } catch (e) { if (isErr(e)) return false; throw e; } },
+    ISTEXT: (args, ev) => { try { const v = ev(args[0]); return typeof v === "string" && v !== ""; } catch (e) { if (isErr(e)) return false; throw e; } },
+    SWITCH: (args, ev) => { const v = ev(args[0]); let i = 1; for (; i + 1 < args.length; i += 2) if (eqv(ev(args[i]), v)) return ev(args[i + 1]); if (i < args.length) return ev(args[i]); throw ERR("#N/A"); },
     IFERROR: (args, ev) => { try { const v = ev(args[0]); if (isErr(v)) return ev(args[1]); return v; } catch (e) { if (isErr(e)) return ev(args[1]); throw e; } },
   };
   const FUNCS = Object.keys(F).filter((k) => F[k]).concat(Object.keys(LAZY)).sort();

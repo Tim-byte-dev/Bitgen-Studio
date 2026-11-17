@@ -14211,6 +14211,13 @@ node scripts/test-xlsx824.js > /tmp/xlsx824.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui824-ui.js > /tmp/ui824.log 2>&1 \
   && ok "2.824.0 browser test: ⤒ Import an .xlsx, ⤓ Export, 📊 a chart dragged / sized / changed / deleted with undo, ✨ Dashboard from a stand-in LLM and without one, one undo" \
   || { bad "2.824.0 Excel files / charts / dashboard browser test"; grep -a "^FAIL" -A1 /tmp/ui824.log | head -12; }
+# ---- 2.825.0 (Tim: "lets go next" - ✨ AI in the spreadsheet: write a formula from words, explain one, fill from examples)
+node scripts/test-ai825.js > /tmp/ai825.log 2>&1 \
+  && ok "2.825.0 33 new functions, the rule found here (words, marks, case, initials), a formula checked against every example, the LLM calls (formula / explain / fill / values), the wiring" \
+  || { bad "2.825.0 spreadsheet AI units"; grep -a "^FAIL" -A1 /tmp/ai825.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui825-ui.js > /tmp/ui825.log 2>&1 \
+  && ok "2.825.0 browser test: 🪄 Ctrl+E filled here, an LLM formula asked again until it gives the examples, the LLM's values as its guess, ✍ Write a formula + Fill down, 💡 Explain from the right-click menu, the LLM down" \
+  || { bad "2.825.0 spreadsheet AI browser test"; grep -a "^FAIL" -A1 /tmp/ui825.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

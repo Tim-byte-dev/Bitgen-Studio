@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6063,
+ "count": 6075,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -55894,6 +55894,114 @@
    ],
    "where": [
     "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Fill from examples",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "a function bitGen does not have, or a typing slip",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "AI in the cells: write a formula from words, explain a formula, fill a column from your examples (Ctrl+E)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "say what it should work out",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "the LLM is writing the formula",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "the LLM is reading it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "the LLM is looking for the rule",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "the LLM is looking for the rule again",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "nothing to fill - every row of the column has something in it already",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "Fill from examples needs a table: the column to fill beside columns that have something in them",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "no rule of joined words / letters fits the examples - with the LLM it can try a formula",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
+   ]
+  },
+  {
+   "s": "no formula gave every example - the LLM is filling the values",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: AI in the cells (2.825.0)"
    ]
   }
  ]

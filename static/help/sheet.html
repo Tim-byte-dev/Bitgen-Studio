@@ -48,6 +48,14 @@
   <li><b>✨ Dashboard</b> - the LLM (the prompt docker's) looks at your data's columns - their names, what kind of values they hold, a few examples and the totals, not every row - and plans a dashboard; type what you want to see if you like ("sales by region and month"). bitGen builds it on a new first sheet: headline numbers in tiles, breakdowns with their tables and charts, a trend over time - all <b>live formulas</b>, so they follow the data - and formats the data as a table (header, banded rows, number formats, widths, a filter, the header kept on screen). Pick <i>An Excel or CSV file…</i> to start from a file. Untick <i>Use the LLM</i> (or when no LLM answers) and the dashboard is planned from the data's own shape. One <b>Ctrl+Z</b> takes it all back.</li>
 </ul>
 
+<h3>✨ AI in the cells</h3>
+<ul>
+  <li><b>✨ AI ▾ ▸ ✍ Write a formula…</b> - say what it should work out ("the total of Amount where Region is North"). The LLM (the prompt docker's) is told the table's columns - headings, what they hold, a few values - not every row, and answers with a formula. bitGen works it out before it goes in: you see its result, can change it, then <b>Put it in</b>. A formula for one row offers <i>Fill down the table's rows</i>.</li>
+  <li><b>💡 Explain this formula</b> (also on a cell's right-click menu) - every cell and range the formula reads with what is in it now, then the LLM's explanation in plain words.</li>
+  <li><b>🪄 Fill from examples</b> (<b>Ctrl+E</b>) - type what one or two cells of a new column should hold, then Ctrl+E: bitGen finds the rule itself when it can (words of the other cells, the part before / after @ , - and other marks, joined, UPPER / lower / Proper case, initials) and fills the empty rows - no LLM needed. When no rule like that fits (a sum, a lookup…), the LLM writes a formula, and it is used only when it gives <b>every</b> example; if none does, the LLM fills the values and says they are its guess. One <b>Ctrl+Z</b> takes a fill back.</li>
+  <li>New functions in <b>ƒ▾</b>: PROPER, FIND, SEARCH, SUBSTITUTE, REPLACE, REPT, EXACT, TEXTJOIN, AVERAGEIFS, MAXIFS, MINIFS, SUMPRODUCT, LARGE, SMALL, RANK, ROWS, COLUMNS, CEILING, FLOOR, WEEKDAY, HOUR, MINUTE, EDATE, EOMONTH, DATEDIF, CHOOSE, IFNA, ISERROR, ISNA, ISBLANK, ISNUMBER, ISTEXT, SWITCH.</li>
+</ul>
+
 <h3>Tables</h3>
 <ul>
   <li><b>A→Z / Z→A</b> sorts the table round the active cell by the active cell's column. A first row of headings stays on top, the cells of a row stay together (its formulas too), empty cells go last. A block that is picked is sorted on its own.</li>

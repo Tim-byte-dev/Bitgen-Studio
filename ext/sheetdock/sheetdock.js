@@ -536,7 +536,8 @@
       + `<div data-a="rowAbove">${nr > 1 ? `Insert ${nr} rows above` : "Insert 1 row above"}</div><div data-a="rowBelow">${nr > 1 ? `Insert ${nr} rows below` : "Insert 1 row below"}</div>`
       + `<div data-a="colLeft">${nc > 1 ? `Insert ${nc} columns left` : "Insert 1 column left"}</div><div data-a="colRight">${nc > 1 ? `Insert ${nc} columns right` : "Insert 1 column right"}</div><hr>`
       + `<div data-a="delRows">${nr > 1 ? `Delete rows ${rA}-${rB}` : `Delete row ${rA}`}</div><div data-a="delCols">${nc > 1 ? `Delete columns ${cA}-${cB}` : `Delete column ${cA}`}</div><hr>`
-      + `<div data-a="clear">Clear contents</div><div data-a="clearAll">Clear contents and formats</div><hr><div data-a="format">▤ Format Cells… (Ctrl+1)</div>`);
+      + `<div data-a="clear">Clear contents</div><div data-a="clearAll">Clear contents and formats</div><hr><div data-a="format">▤ Format Cells… (Ctrl+1)</div>`
+      + (root.H3SheetAI ? `<hr><div data-a="aiWrite">✍ Write a formula…</div>` + (typeof (cellAt(St.act.c, St.act.r) || {}).v === "string" && String(cellAt(St.act.c, St.act.r).v)[0] === "=" ? `<div data-a="aiExplain">💡 Explain this formula</div>` : "") + `<div data-a="aiFill">🪄 Fill from examples (Ctrl+E)</div>` : ""));
     m.addEventListener("click", async (e) => {
       const a = (e.target.closest("[data-a]") || {}).dataset; if (!a || !a.a) return; m.remove();
       switch (a.a) {
@@ -551,6 +552,9 @@
         case "clear": clear(false); break;
         case "clearAll": clear(true); break;
         case "format": openFormat(); break;
+        case "aiWrite": root.H3SheetAI.openWrite(); break;
+        case "aiExplain": root.H3SheetAI.openExplain(); break;
+        case "aiFill": root.H3SheetAI.fillFromExamples(); break;
       }
     });
   }
@@ -726,7 +730,7 @@
   }
   function onKey(e) {
     if (St.edit || e.target !== $("shGrid")) return;
-    if (!(e.ctrlKey || e.metaKey) || /^[zysabiu1ZYSABIU]$/.test(e.key)) e.stopPropagation();   // the app's own keys (Space, Delete, digits …) stay out of the cells
+    if (!(e.ctrlKey || e.metaKey) || /^[zysabiu1eZYSABIUE]$/.test(e.key)) e.stopPropagation();   // the app's own keys (Space, Delete, digits …) stay out of the cells
     const k = e.key, ctl = e.ctrlKey || e.metaKey, { c, r } = St.act;
     if (St.chart && !ctl) {                          // a picked chart: Delete removes it, Esc lets it go, arrows nudge it
       const ch = chartOf(St.chart);
@@ -742,6 +746,7 @@
     if (ctl && (k === "a" || k === "A")) { e.preventDefault(); St.sel = { r1: 0, c1: 0, r2: Math.max(0, used().r), c2: Math.max(0, used().c) }; paint(); return; }
     if (ctl && /^[biu]$/i.test(k)) { e.preventDefault(); toggleStyle(k.toLowerCase()); return; }
     if (ctl && k === "1") { e.preventDefault(); openFormat(); return; }
+    if (ctl && (k === "e" || k === "E") && !e.shiftKey && !e.altKey) { e.preventDefault(); if (root.H3SheetAI) root.H3SheetAI.fillFromExamples(); return; }   // 2.825.0 🪄
     if (ctl && /^Arrow/.test(k)) {                    // Ctrl + arrow: to the end of the data that way (or the next data after a gap)
       e.preventDefault();
       const dc = k === "ArrowRight" ? 1 : k === "ArrowLeft" ? -1 : 0, dr = k === "ArrowDown" ? 1 : k === "ArrowUp" ? -1 : 0, u = used();
@@ -810,6 +815,7 @@
     on("shExport", "click", (e) => root.H3SheetIO && root.H3SheetIO.exportMenu(e.currentTarget));
     on("shChart", "click", (e) => chartMenu(e.currentTarget));
     on("shDash", "click", () => root.H3SheetDash && root.H3SheetDash.open());
+    on("shAi", "click", (e) => root.H3SheetAI && root.H3SheetAI.aiMenu(e.currentTarget));     // 2.825.0
     on("shB", "click", () => toggleStyle("b")); on("shI", "click", () => toggleStyle("i")); on("shU", "click", () => toggleStyle("u"));
     on("shColor", "change", (e) => styleAll((S) => { S.color = e.target.value; }));
     on("shBg", "change", (e) => styleAll((S) => { S.bg = e.target.value; }));

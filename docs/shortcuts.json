@@ -1068,6 +1068,10 @@
           "Format Cells - number, alignment, font, border, fill, protection"
         ],
         [
+          "Ctrl+E",
+          "🪄 Fill from examples - type one or two cells of a column, the rest filled the same way"
+        ],
+        [
           "Click a cell while typing =…",
           "Puts its address in the formula (drag: a block)"
         ],

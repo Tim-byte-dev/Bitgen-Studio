@@ -21,7 +21,7 @@ const CH = require(path.join(ROOT, "ext", "sheetdock", "sheetchart.js")), SD = r
   ws.addRow(["Region", "Date", "Revenue"]);
   ws.getRow(1).font = { bold: true, color: { theme: 0 } }; ws.getRow(1).fill = { type: "pattern", pattern: "solid", fgColor: { theme: 4, tint: -0.25 } };
   for (let i = 0; i < 5; i++) { const r = ws.addRow(["North", new Date(Date.UTC(2026, i, 15)), 1000 + i * 10]); r.getCell(3).numFmt = '"$"#,##0.00'; }
-  ws.getCell("C7").value = { formula: "SUM(C2:C6)", result: 5100 }; ws.getCell("C8").value = { formula: "SUMPRODUCT(C2:C6,C2:C6)", result: 123 };
+  ws.getCell("C7").value = { formula: "SUM(C2:C6)", result: 5100 }; ws.getCell("C8").value = { formula: "GCD(C2:C6)", result: 123 };
   ws.getCell("D2").value = { formula: "C2*2", result: 2000 }; ws.getCell("D3").value = { sharedFormula: "D2", result: 2020 };
   ws.mergeCells("A10:C10"); ws.getCell("A10").value = "Merged"; ws.getCell("A10").alignment = { horizontal: "centerContinuous", textRotation: 45 };
   ws.getCell("B12").border = { top: { style: "thick", color: { argb: "FFFF0000" } }, diagonal: { up: true, style: "dashed" } };
@@ -34,7 +34,7 @@ const CH = require(path.join(ROOT, "ext", "sheetdock", "sheetchart.js")), SD = r
   check("…centre across selection + rotation, a thick red top + a diagonal, a 75% pattern, merges, widths, frozen rows", S.cells.A10.s.align === "centerSel" && S.cells.A10.s.rot === 45 && S.cells.B12.s.bd.t.s === "thick" && S.cells.B12.s.bd.t.c === "#ff0000" && S.cells.B12.s.bd.d1.s === "dashed" && S.cells.B13.s.pat.t === "gray75" && S.merges.includes("A10:C10") && S.cols[0] === 103 && S.freeze.r === 1, S.cells.B12);
   check("…black text on a light fill stays black (the grid is dark); on no fill it is the theme's ink", S.cells.A14.s.color === "#000000" && !(S.cells.A2.s && S.cells.A2.s.color));
   const B = new C.Book(d.sheets);
-  check("Book: a formula our engine lacks (SUMPRODUCT) shows the file's own result; SUM is worked out", B.value("Sales", "C8") === 123 && B.value("Sales", "C7") === 5100, [B.value("Sales", "C8"), B.value("Sales", "C7")]);
+  check("Book: a formula our engine lacks (GCD - 2.825.0: SUMPRODUCT is ours now) shows the file's own result; SUM is worked out", B.value("Sales", "C8") === 123 && B.value("Sales", "C7") === 5100, [B.value("Sales", "C8"), B.value("Sales", "C7")]);
   // ------------------------------------------------------------ .xlsx out
   const out = await X.toXlsx(d, [{ C7: 5100 }]), wb2 = new ExcelJS.Workbook(); await wb2.xlsx.load(out); const o = wb2.getWorksheet("Sales");
   check("toXlsx: values, the formula + its result, number formats, fills, borders, merges, widths, frozen rows", o.getCell("C2").value === 1000 && o.getCell("C7").value.formula === "SUM(C2:C6)" && o.getCell("C7").value.result === 5100 && o.getCell("C2").numFmt === '"$"#,##0.00' && o.getCell("A1").fill.fgColor.argb === "FF335693" && o.getCell("B12").border.top.style === "thick" && o.model.merges.includes("A10:C10") && Math.round(o.getColumn(1).width) === 14 && o.views[0].ySplit === 1);
@@ -84,7 +84,7 @@ const CH = require(path.join(ROOT, "ext", "sheetdock", "sheetchart.js")), SD = r
   const kept = SF.clean({ sheets: [{ name: "D", dash: true, charts: [{ id: "c1", type: "pie", range: "a1:b5", x: 10, y: 20, w: 300, h: 200, colors: ["#fff", "red"] }, { range: "nope" }], cells: { A1: { v: "=SUMPRODUCT(A2:A3)", c: "42" }, A2: { v: "7", c: "x" } } }] }).sheets[0];
   check("sheetFiles.clean: charts kept (bad ones dropped, colours checked), a formula's cached result kept (only on formulas), the dashboard flag", kept.charts.length === 1 && kept.charts[0].range === "A1:B5" && JSON.stringify(kept.charts[0].colors) === '["#fff"]' && kept.cells.A1.c === "42" && !kept.cells.A2.c && kept.dash === true, kept);
   const EXT = JSON.parse(read("ext", "sheetdock", "ext.json")), RT = read("routes", "sheets.js"), PKG = JSON.parse(read("package.json"));
-  check("ext.json: sheetfmt, sheetcalc, sheetchart, sheetdock, sheetfmtdlg, sheetio, sheetdash", EXT.scripts.join() === "sheetfmt.js,sheetcalc.js,sheetchart.js,sheetdock.js,sheetfmtdlg.js,sheetio.js,sheetdash.js");
+  check("ext.json: sheetfmt, sheetcalc, sheetchart, sheetdock, sheetfmtdlg, sheetio, sheetdash", /^sheetfmt\.js,sheetcalc\.js,sheetchart\.js,sheetdock\.js,sheetfmtdlg\.js,sheetio\.js,sheetdash\.js(,|$)/.test(EXT.scripts.join()))  /* 2.825.0: + sheetai after */;
   check("routes: /api/sheets/import, /export, /ai/dashboard; exceljs (MIT) a dependency; server.js untouched", /\/api\/sheets\/import/.test(RT) && /\/api\/sheets\/export/.test(RT) && /\/api\/sheets\/ai\/dashboard/.test(RT) && PKG.dependencies.exceljs && !/sheetXlsx|sheetAi/.test(read("misc", "server.js")));
   check("credits + NOTICE name exceljs", /exceljs/i.test(read("lib", "credits.json")) && /exceljs/i.test(read("misc", "NOTICE.md")));
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);

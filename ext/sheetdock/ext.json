@@ -10,6 +10,7 @@
     "sheetdock.js",
     "sheetfmtdlg.js",
     "sheetio.js",
-    "sheetdash.js"
+    "sheetdash.js",
+    "sheetai.js"
   ]
 }

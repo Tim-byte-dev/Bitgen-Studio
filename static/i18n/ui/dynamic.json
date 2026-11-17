@@ -19639,6 +19639,62 @@
    "src": "ext/sfxdock/sfxspeech.js:70"
   },
   {
+   "s": "Write a formula",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "What should it work out",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "The LLM is told the table's columns - their headings, what they hold and a few values - not every row",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "Formula for",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "you can change it",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "Fill down the table's rows",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "What it reads now",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "In plain words",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "Put it in",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "e.g. the total of Amount where Region is North, the price with 10% tax, how many days late each invoice is",
+   "src": "ext/sheetdock/sheetai.js:205"
+  },
+  {
+   "s": "Explain this formula",
+   "src": "ext/sheetdock/sheetai.js:257"
+  },
+  {
+   "s": "an error: check the cells it reads",
+   "src": "ext/sheetdock/sheetai.js:299"
+  },
+  {
+   "s": "nothing - it reads no cells",
+   "src": "ext/sheetdock/sheetai.js:338"
+  },
+  {
+   "s": "Fill from examples (Ctrl+E)",
+   "src": "ext/sheetdock/sheetai.js:419"
+  },
+  {
    "s": "Dashboard from the data",
    "src": "ext/sheetdock/sheetdash.js:264"
   },
@@ -19744,55 +19800,55 @@
   },
   {
    "s": "Duplicate",
-   "src": "ext/sheetdock/sheetdock.js:560"
+   "src": "ext/sheetdock/sheetdock.js:564"
   },
   {
    "s": "Move left",
-   "src": "ext/sheetdock/sheetdock.js:560"
+   "src": "ext/sheetdock/sheetdock.js:564"
   },
   {
    "s": "Move right",
-   "src": "ext/sheetdock/sheetdock.js:560"
+   "src": "ext/sheetdock/sheetdock.js:564"
   },
   {
    "s": "Unprotect sheet",
-   "src": "ext/sheetdock/sheetdock.js:560"
+   "src": "ext/sheetdock/sheetdock.js:564"
   },
   {
    "s": "Protect sheet",
-   "src": "ext/sheetdock/sheetdock.js:560"
+   "src": "ext/sheetdock/sheetdock.js:564"
   },
   {
    "s": "Cells",
-   "src": "ext/sheetdock/sheetdock.js:617"
+   "src": "ext/sheetdock/sheetdock.js:621"
   },
   {
    "s": "Legend",
-   "src": "ext/sheetdock/sheetdock.js:617"
+   "src": "ext/sheetdock/sheetdock.js:621"
   },
   {
    "s": "Delete the chart",
-   "src": "ext/sheetdock/sheetdock.js:617"
+   "src": "ext/sheetdock/sheetdock.js:621"
   },
   {
    "s": "no workbooks in this project yet - 💾 Save one",
-   "src": "ext/sheetdock/sheetdock.js:661"
+   "src": "ext/sheetdock/sheetdock.js:665"
   },
   {
    "s": "All borders",
-   "src": "ext/sheetdock/sheetdock.js:819"
+   "src": "ext/sheetdock/sheetdock.js:825"
   },
   {
    "s": "Outside borders",
-   "src": "ext/sheetdock/sheetdock.js:819"
+   "src": "ext/sheetdock/sheetdock.js:825"
   },
   {
    "s": "Bottom border",
-   "src": "ext/sheetdock/sheetdock.js:819"
+   "src": "ext/sheetdock/sheetdock.js:825"
   },
   {
    "s": "No borders",
-   "src": "ext/sheetdock/sheetdock.js:819"
+   "src": "ext/sheetdock/sheetdock.js:825"
   },
   {
    "s": "A$ (Australian dollar)",
@@ -28339,6 +28395,14 @@
   {
    "p": "In the file: {0} · {1} · voices: {2}",
    "src": "ext/sfxdock/sfxspeech.js:98"
+  },
+  {
+   "p": "Fill down the table's rows (to row {0})",
+   "src": "ext/sheetdock/sheetai.js:288"
+  },
+  {
+   "p": "Put it in {0}",
+   "src": "ext/sheetdock/sheetai.js:289"
   },
   {
    "p": "{0} - drag to move, the corner to size, double-click to change, Delete to remove",

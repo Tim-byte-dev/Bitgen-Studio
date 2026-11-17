@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* bitGen Studio — 2.824.0 against the RUNNING app (+ a real browser): ▦ .xlsx in / out, charts, ✨ Dashboard by the LLM.
  * Tim: "can we use the llm to look through an excel file and format it like a dashboard in our spreadsheet. and continue
- * next". An .xlsx made here with exceljs (styles, a merged title, dates, a SUMPRODUCT the engine does not have) is
+ * next". An .xlsx made here with exceljs (styles, a merged title, dates, a GCD the engine does not have (2.825.0: SUMPRODUCT is ours now)) is
  * imported; ✨ Dashboard asks a stand-in OpenAI-style LLM (set as Settings ▸ LLM's endpoint for the run, put back
  * after) - it is shown the columns, not the rows; one of its breakdowns names a column that is not there and is left
  * out; the dashboard is checked on screen (numbers, charts), one undo takes it away; LLM off = from the data's shape;
@@ -50,7 +50,7 @@ async function makeXlsx() {
     const row = ws.addRow([`Order-${String(i + 1).padStart(4, "0")}`, new Date(Date.UTC(2026, Math.floor(i / 8), 1 + (i % 8) * 3)), regions[i % 4], prods[i % 3], u, v]);
     row.getCell(6).numFmt = '"$"#,##0.00';
   }
-  ws.getCell("H2").value = "Check"; ws.getCell("H3").value = { formula: "SUMPRODUCT(E3:E50,F3:F50)", result: 4242 };
+  ws.getCell("H2").value = "Check"; ws.getCell("H3").value = { formula: "GCD(E3:E50)", result: 4242 };
   ws.views = [{ state: "frozen", ySplit: 2 }];
   const ws2 = wb.addWorksheet("Notes"); ws2.getCell("A1").value = "Made for the test";
   return { buf: Buffer.from(await wb.xlsx.writeBuffer()), rev, units };
@@ -82,7 +82,7 @@ async function makeXlsx() {
     await p.waitForFunction(() => window.H3Sheet.W.sheets.length === 2 && window.H3Sheet.W.sheets[0].name === "Orders", null, { timeout: 15000 });
     const imp = await ev(() => { const S0 = window.H3Sheet.W.sheets[0]; return { file: document.getElementById("shFile").value, merges: S0.merges, freeze: S0.freeze, head: S0.cells.A2.s, f6: S0.cells.F3.f, date: S0.cells.B3.f, cols: S0.cols[1] }; });
     check("⤒ Import an .xlsx: both sheets, the merged title, frozen rows, the header's fill + white bold, number formats, dates, widths", imp.file === "orders 2026" && imp.merges.includes("A1:F1") && imp.freeze.r === 2 && imp.head.b && imp.head.bg === "#203864" && imp.head.color === "#ffffff" && imp.f6 === '"$"#,##0.00' && imp.date === "d/mm/yyyy" && imp.cols > 80, imp);
-    check("…values as the file shows them: $2.50, a date, and SUMPRODUCT (not in our engine) = the file's own result 4242", (await S("F3")) === "$2.50" && (await S("B3")) === "1/01/2026" && (await S("H3")) === "4242", [await S("F3"), await S("B3"), await S("H3")]);
+    check("…values as the file shows them: $2.50, a date, and GCD (not in our engine) = the file's own result 4242", (await S("F3")) === "$2.50" && (await S("B3")) === "1/01/2026" && (await S("H3")) === "4242", [await S("F3"), await S("B3"), await S("H3")]);
     await shot("1-imported");
     // ✨ Dashboard by the LLM
     await p.$eval("#shDash", (e) => e.click()); await p.waitForSelector("#shDashDlg[open]");
@@ -129,7 +129,7 @@ async function makeXlsx() {
     const dl = p.waitForEvent("download"); await ev(() => document.querySelector('.shmenu [data-x="xlsx"]').click()); const d1 = await dl;
     const tmp = path.join(require("os").tmpdir(), "ui824.xlsx"); await d1.saveAs(tmp); gone.push("orders 2026.xlsx");
     const back = new ExcelJS.Workbook(); await back.xlsx.readFile(tmp); const o = back.getWorksheet("Orders");
-    check("⤓ Export ▸ .xlsx: downloaded - the same sheets, values, number formats, the header fill, merges, frozen rows, the formula + its result", d1.suggestedFilename() === "orders 2026.xlsx" && back.worksheets.length === 2 && o.getCell("F3").value === 2.5 && o.getCell("F3").numFmt === '"$"#,##0.00' && o.getCell("A2").fill.fgColor.argb === "FF203864" && o.model.merges.includes("A1:F1") && o.views[0].ySplit === 2 && o.getCell("H3").value.formula === "SUMPRODUCT(E3:E50,F3:F50)", [d1.suggestedFilename(), o.getCell("F3").value, o.getCell("H3").value]);
+    check("⤓ Export ▸ .xlsx: downloaded - the same sheets, values, number formats, the header fill, merges, frozen rows, the formula + its result", d1.suggestedFilename() === "orders 2026.xlsx" && back.worksheets.length === 2 && o.getCell("F3").value === 2.5 && o.getCell("F3").numFmt === '"$"#,##0.00' && o.getCell("A2").fill.fgColor.argb === "FF203864" && o.model.merges.includes("A1:F1") && o.views[0].ySplit === 2 && o.getCell("H3").value.formula === "GCD(E3:E50)", [d1.suggestedFilename(), o.getCell("F3").value, o.getCell("H3").value]);
     await p.$eval("#shExport", (e) => e.click()); await p.waitForSelector('.shmenu [data-x="csv"]');
     const dl2 = p.waitForEvent("download"); await ev(() => document.querySelector('.shmenu [data-x="csv"]').click()); const d2 = await dl2;
     const csv = fs.readFileSync(await d2.path(), "utf8").replace(/^﻿/, "").split("\r\n");
