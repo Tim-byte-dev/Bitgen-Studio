@@ -311,6 +311,17 @@ body.ie-focus.ie-focus-side #ieKx>#pcPend{z-index:40;left:auto!important;right:3
       if (!doc.getElementById("pcArtistCss")) { const st = doc.createElement("style"); st.id = "pcArtistCss"; st.textContent = ".pcmenu .pcartist{margin-left:8px;flex:none;white-space:nowrap;border:1px solid var(--pc-accent,#2680eb)!important;border-radius:4px;padding:1px 8px!important;font-size:11px;color:var(--pc-text,#ddd)}.pcmenu .pcartist:hover,.pcmenu .pcartist.on{background:var(--pc-accent,#2680eb);color:#fff}.kx .pcmenu{flex-wrap:wrap;height:auto!important;min-height:26px}.kx[data-theme=bitgen] .pcmenu{min-height:var(--mbar,36px)}.kx .pcmenu .mr{flex-wrap:wrap;justify-content:flex-end}"; doc.head.appendChild(st); }
     }
     if (E.ui && E.ui.addCmd) E.ui.addCmd("view.focus", "🎨 Artist Mode (canvas only)", "Shift+Ctrl+F", () => setFocus(!on), { checked: () => on }, ["View", "view.full"]);
+    // 2.809.0 (Tim: "in image editor right click context menu add copy, paste, artist mode, when in artist mode add show layers,
+    // blender scene,prompt, exit artist mode"): the canvas's right-click menu (pcframes.js) gets these - in artist mode
+    // Show layers (Alt+G), the Blender scene tools (pcblendlayer.js), the prompt docker over the canvas (Ctrl+P), Exit
+    if (E.ui && E.ui.addCmd) {
+      E.ui.addCmd("focus.layers", "Show Layers + ⏳ Pending", "", () => setSide(!side), { checked: () => side });
+      E.ui.addCmd("focus.blender", "🟧 Blender Scene", "", () => { const B = E.blendLayer; if (!B) { say("the Blender scene tools are not loaded (reload the page)"); return; } if (B.isOpen()) B.leave(); else B.start(); tev("ie_focus_blender", B.isOpen() ? "1" : "0"); }, { checked: () => !!(E.blendLayer && E.blendLayer.isOpen()) });
+      E.ui.addCmd("focus.prompt", "✨ Prompt", "", () => { try { if (win.H3PromptFront) win.H3PromptFront.front(); } catch (e) { /* fine */ } tev("ie_focus_prompt", "1"); });
+      E.ui.addCmd("focus.exit", "Exit Artist Mode", "", () => setFocus(false));
+    }
+    /** 2.809.0: the canvas menu's artist-mode part (pure-ish: on -> the command ids) */
+    E.focusMenu = () => (on ? ["focus.layers", "focus.blender", "focus.prompt", "focus.exit"] : ["view.focus"]);
     E.focus = { on: () => on, set: setFocus, palette: () => toggle("palette"), brushes: () => toggle("brushes"), close: closePop, pop: () => popKind, side: () => side, setSide };   // 2.646.0: + Alt+G
   }
 

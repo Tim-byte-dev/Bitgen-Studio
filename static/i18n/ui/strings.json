@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5704,
+ "count": 5707,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52657,6 +52657,33 @@
    ],
    "where": [
     "#mmFold"
+   ]
+  },
+  {
+   "s": "Show Layers + ⏳ Pending",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #ieKx (right-click, 🎨 Artist Mode)"
+   ]
+  },
+  {
+   "s": "Blender Scene",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #ieKx (right-click, 🎨 Artist Mode)"
+   ]
+  },
+  {
+   "s": "Exit Artist Mode",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "span in #ieKx (right-click, 🎨 Artist Mode)"
    ]
   }
  ]

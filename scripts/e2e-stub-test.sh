@@ -14096,6 +14096,13 @@ node scripts/test-dockkeep808.js > /tmp/dockkeep808.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui808-ui.js > /tmp/ui808.log 2>&1 \
   && ok "2.808.0 a ▣ column docker keeps Basic Settings through a layout, a take-out and a restart; the Model manager floats over it" \
   || { bad "2.808.0 ▣ docker browser test"; grep -a "^FAIL" -A1 /tmp/ui808.log | head -12; }
+# ---- 2.809.0 (Tim: "in image editor right click context menu add copy, paste, artist mode, when in artist mode add show layers, blender scene,prompt, exit artist mode")
+node scripts/test-ctxmenu809.js > /tmp/ctxmenu809.log 2>&1 \
+  && ok "2.809.0 the editor's right-click menu: Copy, Paste, 🎨 Artist Mode; in it Show Layers, Blender Scene, Prompt, Exit (pins)" \
+  || { bad "2.809.0 right-click menu pins"; grep -a "^FAIL" -A1 /tmp/ctxmenu809.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui809-ui.js > /tmp/ui809.log 2>&1 \
+  && ok "2.809.0 right-click: Copy + Paste make a layer; Artist Mode's Show Layers, Blender Scene, Prompt and Exit work" \
+  || { bad "2.809.0 right-click menu browser test"; grep -a "^FAIL" -A1 /tmp/ui809.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

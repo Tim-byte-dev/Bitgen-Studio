@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "a084d62aa917",
- "count": 9638,
+ "v": "342866b43ce6",
+ "count": 9641,
  "patternCount": 1190,
  "strings": {
   "(no list yet - 🔄)": "（一覧はまだありません - 🔄）",
@@ -825,6 +825,7 @@
   "Blender": "Blender",
   "Blender (its own window) - with the lights": "Blender（専用ウィンドウ） - 照明付き",
   "Blender (on this computer)": "Blender（このコンピューター上）",
+  "Blender Scene": "Blender シーン",
   "Blender bridge": "Blender ブリッジ",
   "Blender layer": "Blender レイヤー",
   "Blender mode: pick this layer, type in the prompt docker, ▾ Edit (or Refine) - each result comes in as a new layer above it": "Blender モード：このレイヤーを選択し、プロンプトドッカーに入力して ▾ 編集（またはリファイン）- 結果はそれぞれ新しいレイヤーとして上に追加されます",
@@ -2212,6 +2213,7 @@
   "Exclude: the picked shape minus where they overlap, plus the rest of the new one": "除外：選んだシェイプから重なる部分を除き、新しいシェイプの残りを加えます",
   "Exclusion": "除外",
   "Existing chain styles": "既存のチェーンスタイル",
+  "Exit Artist Mode": "アーティストモードを終了",
   "Expand": "拡張",
   "Expand by (px)": "拡張量（px）",
   "Expert": "エキスパート",
@@ -5775,6 +5777,7 @@
   "Show / hide the render details (seed, cfg, steps, model, LoRAs)": "レンダリングの詳細（シード、cfg、ステップ数、モデル、LoRA）の表示 / 非表示",
   "Show / hide the 💲 Costs docker on RunPod's list: your balance, what your pods cost, RunPod's GPU prices (← All costs: this computer and every platform)": "💲 Costs ドッカーを RunPod の一覧で表示 / 非表示: 残高、ポッドの費用、RunPod の GPU 価格（← すべての費用: このコンピューターとすべてのプラットフォーム）",
   "Show All Dockers": "すべてのドッカーを表示",
+  "Show Layers + ⏳ Pending": "レイヤー + ⏳ 処理待ちを表示",
   "Show Mask": "マスクを表示",
   "Show Mesh": "メッシュを表示",
   "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list": "OpenRouter の全モデルを表示 - 絞り込み、並べ替え、検索、無料 / 有料、詳細。Use で選んだものを LLM か Vision の一覧に設定",

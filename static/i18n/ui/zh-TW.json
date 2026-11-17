@@ -1,7 +1,7 @@
 {
  "lang": "zh-TW",
- "v": "a0aab4937e20",
- "count": 9638,
+ "v": "c9b6f75a5f09",
+ "count": 9641,
  "patternCount": 1190,
  "strings": {
   "(no list yet - 🔄)": "（還沒有清單 - 🔄）",
@@ -825,6 +825,7 @@
   "Blender": "Blender",
   "Blender (its own window) - with the lights": "Blender（獨立視窗）- 包含燈光",
   "Blender (on this computer)": "Blender（本機）",
+  "Blender Scene": "Blender 場景",
   "Blender bridge": "Blender 橋接",
   "Blender layer": "Blender 圖層",
   "Blender mode: pick this layer, type in the prompt docker, ▾ Edit (or Refine) - each result comes in as a new layer above it": "Blender 模式：選擇此圖層，在提示詞面板中輸入，▾ 編輯（或精修）- 每個結果都會作為新圖層出現在其上方",
@@ -2212,6 +2213,7 @@
   "Exclude: the picked shape minus where they overlap, plus the rest of the new one": "排除：選取的形狀去掉重疊部分，再加上新形狀的其餘部分",
   "Exclusion": "排除",
   "Existing chain styles": "現有鏈式風格",
+  "Exit Artist Mode": "退出藝術家模式",
   "Expand": "擴展",
   "Expand by (px)": "擴展量 (px)",
   "Expert": "專家",
@@ -5775,6 +5777,7 @@
   "Show / hide the render details (seed, cfg, steps, model, LoRAs)": "顯示 / 隱藏渲染詳細資料（種子、cfg、步數、模型、LoRA）",
   "Show / hide the 💲 Costs docker on RunPod's list: your balance, what your pods cost, RunPod's GPU prices (← All costs: this computer and every platform)": "顯示 / 隱藏 💲 Costs 停靠窗的 RunPod 列表：你的餘額、Pod 的費用、RunPod 的 GPU 價格（← 全部費用：這臺電腦和每個平臺）",
   "Show All Dockers": "顯示所有面板",
+  "Show Layers + ⏳ Pending": "顯示圖層 + ⏳ 待處理",
   "Show Mask": "顯示遮罩",
   "Show Mesh": "顯示網格",
   "Show all OpenRouter models - filter, sort, search, free / paid, details; Use puts the one you pick in the LLM or Vision list": "顯示所有 OpenRouter 模型 - 篩選、排序、搜尋、免費 / 付費、詳情；Use 把所選模型放入 LLM 或 Vision 清單",

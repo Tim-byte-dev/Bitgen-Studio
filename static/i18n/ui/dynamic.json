@@ -1,5 +1,5 @@
 {
- "made": "2026-11-16",
+ "made": "2026-11-17",
  "scope": "all",
  "strings": [
   {
@@ -9696,11 +9696,11 @@
   },
   {
    "s": "Workspace",
-   "src": "static/workspaces.js:227"
+   "src": "static/workspaces.js:230"
   },
   {
    "s": "Put this workspace back to its default layout",
-   "src": "static/workspaces.js:227"
+   "src": "static/workspaces.js:230"
   },
   {
    "s": "not running",
@@ -24922,11 +24922,11 @@
   },
   {
    "p": "Float the {0} docker - a window of its own. Or drag its title bar onto a ▣ docker to put it in there. ⇲ in its title puts it back",
-   "src": "static/dockgroup.js:332"
+   "src": "static/dockgroup.js:336"
   },
   {
    "p": "{0} - drop it on a ▣ docker",
-   "src": "static/dockgroup.js:399"
+   "src": "static/dockgroup.js:403"
   },
   {
    "p": "{0} result · {1} selected",

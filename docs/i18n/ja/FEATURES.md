@@ -1253,6 +1253,7 @@ bitGen Studio は、ローカルかつオフラインで動作する AI 動画�
 - **Esc = Orbit** — Esc を 1 回押すとツールと選択が解除され、Sketcher のすべてのビュー（3D、平面図、カメラのビュー）で 🔄 Orbit になります。 *Where:* Sketcher。 *Since:* 2.647.0
 - **部屋の幅と長さ** — すべての部屋のパネルに Width と Length があります（矩形は角を固定、ほかの形は引き伸ばし）。Room ツールの Width × Length で、そのサイズの部屋を 1 クリックで配置できます。 *Where:* Sketcher ▸ 部屋、Room ツール。 *Since:* 2.647.0
 - **Artist mode から生成** — 🎨 Artist mode では、Alt+G で Layers パネルと ⏳ Pending がキャンバスの上に、Ctrl+P でプロンプトドッカーが表示されます。レイヤーを選び、▾ Edit または Generate を実行し、⏳ Pending から結果を残すまで、全画面のキャンバスを離れずに行えます。カラーパレットは Alt+P です。 *Where:* 画像エディター ▸ 🎨 Artist mode。 *Since:* 2.646.0
+- **右クリック：Copy、Paste、Artist Mode** — 画像エディターのキャンバスのメニューに Copy と Paste（新しいレイヤー）と 🎨 Artist Mode。Artist Mode 中は Show Layers + ⏳ Pending、🟧 Blender Scene（シーンツールを開く / 閉じる）、✨ Prompt（プロンプトドッカーを手前に）、Exit Artist Mode。*Where:* 画像エディター ▸ キャンバスを右クリック。*Since:* 2.809.0
 - **バージョン情報とクレジット** — Settings ▸ About：バージョン、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5、そしてコード、モデル、ツール、アイデアを使わせてもらっているすべてのプロジェクトへのクレジット（リンクはブラウザーで開きます）。同じクレジットがガイドの最後にも載っています。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **カメラ自身のビューから移動・回転** — 選択したカメラから覗いているとき、✥ Move / ⟳ Rotate でビューの手前に矢印やリングが表示され、カメラとビューが一緒に移動 / 回転します。Esc で選択を解除します。 *Where:* Sketcher ▸ カメラのパネル、👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：プロンプトドッカーを最前面に** — アプリのどこでも、ボックスに入力中でも使えます。プロンプトドッカーが開いて展開され、閉じた ▣ ドッカーから出て、フローティングウィンドウや最大化したドッカーの上に表示され、プロンプトボックスにフォーカスが移ります。 *Where:* どこでも、🎨 Artist mode でも（2.646.0）。 *Since:* 2.645.0

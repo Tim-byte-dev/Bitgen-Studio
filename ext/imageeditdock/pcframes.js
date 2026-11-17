@@ -372,9 +372,14 @@
       if (S.frameEdit != null) items.push("frame.finish", sep, "frame.extract", "frame.lock");
       else if (F && hasKids(F)) items.push("frame.edit", "frame.extract", "frame.lock");
       else items.push("frame.place");
-      items.push(sep, "layer.dup", "layer.del");
+      // 2.809.0 (Tim: "in image editor right click context menu add copy, paste, artist mode ..."): Copy / Paste after what the
+      // thing clicked offers (Rasterize Text, the frame's own items stay first)
+      items.push(sep, "edit.copy", "edit.paste", sep, "layer.dup", "layer.del");
       const more = E.ui.stageCtxItems || [];                       // 2.594.0: modules' items (static/mesh3dctx.js: 🧊 Convert to 3D)
       if (more.length) items.push(sep, ...more);
+      // 2.809.0: 🎨 Artist Mode - in it: Show Layers + ⏳ Pending, 🟧 Blender Scene, ✨ Prompt, Exit Artist Mode
+      const fm = E.focusMenu ? E.focusMenu() : ["view.focus"];
+      if (fm.length) items.push(sep, ...fm);
       const kr = (kx || E.stage).getBoundingClientRect();
       E.ui.menuAt(items, e.clientX - kr.left, e.clientY - kr.top, 0);
     });

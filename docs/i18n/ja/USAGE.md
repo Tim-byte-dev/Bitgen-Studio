@@ -5595,6 +5595,12 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - 自分で作ったドッカー（▣ New docker…、Ctrl+Alt+D）は、入れたドッカー（Basic Settings、LLM tokens、プロンプトドッカーなど）を再起動後も、ドッカーレイアウト（⊞）やワークスペースを適用しても保ちます。取り出せるのはユーザーだけです - 小さなタイトルバーをドラッグして外に出すか、⇲ を使います。
 - ドッキングした状態（ドッカーの横、または独立した列）では、ほかのドッキングされたドッカーと同じ層 - System ドッカーのすぐ上 - に置かれるので、フローティングのドッカー（🧩 Model manager、🖥 GPU、PODS など）が常に手前に表示されます。フローティング状態では、ほかと同じフローティングのドッカーです。
 
+## The image editor's right-click menu: Copy, Paste and Artist Mode (2.809.0)
+<!-- en: the-image-editor-s-right-click-menu-copy-paste-and-artist-mode-2-809-0 69920ad031ca -->
+
+- キャンバスを右クリックすると、クリックしたものの項目のあとに **Copy** と **Paste**（Edit メニューと同じ - Paste は新しいレイヤーを作ります）、続いてレイヤーの複製 / 削除、最後に **🎨 Artist Mode** が並びます。
+- Artist Mode 中の右クリックメニューには **Show Layers + ⏳ Pending**（サイドパネル。表示中はチェック付き）、**🟧 Blender Scene**（キャンバスの上に Blender シーンツールを開く、または閉じる）、**✨ Prompt**（プロンプトドッカーを手前に出す）、**Exit Artist Mode** があります。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

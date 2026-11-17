@@ -9264,6 +9264,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - A docker you made (▣ New docker…, Ctrl+Alt+D) keeps the dockers you put in it - Basic Settings, LLM tokens, the prompt docker … - after a restart, and when a docker layout (⊞) or a workspace is applied. Only you take one out: drag its small title bar out, or ⇲.
 - Docked (beside a docker or as a column of its own) it sits with the other docked dockers - just above the System docker - so floating dockers (🧩 Model manager, 🖥 GPU, PODS …) are always in front of it. Floating, it is a floating docker like the others.
 
+## The image editor's right-click menu: Copy, Paste and Artist Mode (2.809.0)
+
+- Right-click the canvas: after what the thing you clicked offers come **Copy** and **Paste** (the Edit menu's - Paste makes a new layer), then Duplicate / Delete layer, and last **🎨 Artist Mode**.
+- In Artist Mode the right-click menu has **Show Layers + ⏳ Pending** (the side panel, ticked while it shows), **🟧 Blender Scene** (opens the Blender scene tools over the canvas, or closes them), **✨ Prompt** (brings the prompt docker in front) and **Exit Artist Mode**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -5828,6 +5828,12 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - 你自己建立的面板（▣ New docker…、Ctrl+Alt+D）在重新啟動後、以及應用面板佈局（⊞）或工作區時，都會保留放進去的面板（Basic Settings、LLM tokens、提示詞面板等）。只有你自己能把它們取出 - 拖曳它的小標題列移出，或使用 ⇲。
 - 停靠時（在某個面板旁邊，或作為單獨的一列），它和其他停靠的面板處在同一層 - 緊挨在 System 面板之上 - 因此浮動面板（🧩 Model manager、🖥 GPU、PODS 等）始終顯示在它前面。浮動時，它和其他浮動面板一樣。
 
+## The image editor's right-click menu: Copy, Paste and Artist Mode (2.809.0)
+<!-- en: the-image-editor-s-right-click-menu-copy-paste-and-artist-mode-2-809-0 69920ad031ca -->
+
+- 右鍵點選畫布：所點物件自己的項目之後是 **Copy** 和 **Paste**（與 Edit 選單相同 - Paste 會新增一個圖層），然後是複製 / 刪除圖層，最後是 **🎨 Artist Mode**。
+- 在 Artist Mode 中，右鍵選單有 **Show Layers + ⏳ Pending**（側面板，顯示時打勾）、**🟧 Blender Scene**（在畫布上開啟或關閉 Blender 場景工具）、**✨ Prompt**（把提示詞停靠窗帶到前面）和 **Exit Artist Mode**。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

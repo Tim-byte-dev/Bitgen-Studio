@@ -1253,6 +1253,7 @@ bitGen Studio 是一款本地离线的 AI 视频与图像工作室：无需账�
 - **Esc = Orbit** — 按一次 Esc 即放下当前工具并取消选取，在所有 Sketcher 视图（3D、平面图、摄像机视图）中切换到 🔄 Orbit。 *Where:* Sketcher。 *Since:* 2.647.0
 - **房间宽度和长度** — 每个房间的面板都有 Width 和 Length（矩形保持其角点不动，其他形状则被拉伸）；Room 工具的 Width × Length 一次点击即可放置该尺寸的房间。 *Where:* Sketcher ▸ 房间，Room 工具。 *Since:* 2.647.0
 - **从 Artist mode 生成** — 在 🎨 Artist mode 中，Alt+G 在画布上方显示 Layers 面板和 ⏳ Pending，Ctrl+P 显示提示词面板：选取图层，▾ Edit 或 Generate，从 ⏳ Pending 中保留结果——全程不离开全屏画布；调色板为 Alt+P。 *Where:* 图像编辑器 ▸ 🎨 Artist mode。 *Since:* 2.646.0
+- **右键：Copy、Paste 和 Artist Mode** — 图像编辑器的画布菜单有 Copy 和 Paste（新图层）以及 🎨 Artist Mode；在 Artist Mode 中有 Show Layers + ⏳ Pending、🟧 Blender Scene（打开 / 关闭场景工具）、✨ Prompt（把提示词停靠窗带到前面）和 Exit Artist Mode。*Where:* 图像编辑器 ▸ 右键点击画布。*Since:* 2.809.0
 - **关于与致谢** — Settings ▸ About：版本号、Produced and Developed by Tim Paul、Programmer - Claude Opus 5.5，以及对所有使用了其代码、模型、工具和创意的项目的致谢（链接在浏览器中打开）；Guide 的结尾也有同样的致谢。 *Where:* Settings ▸ About。 *Since:* 2.642.0
 - **在摄像机自身视角中移动和转动摄像机** — 通过选中的摄像机观看时，✥ Move / ⟳ Rotate 会在视图前方显示其箭头或旋转环；摄像机与视图一起移动 / 转动；Esc 取消选中。 *Where:* Sketcher ▸ 摄像机的面板，👁 Look through。 *Since:* 2.643.0
 - **Ctrl+P：将提示词面板置于最前** — 在应用中任何地方，包括正在输入框中打字时：提示词面板会打开、展开，从关闭的 ▣ 面板中移出，并显示在浮动窗口或最大化面板之上，焦点置于提示词框。 *Where:* 任何地方，🎨 Artist mode 中也可以（2.646.0）。 *Since:* 2.645.0
