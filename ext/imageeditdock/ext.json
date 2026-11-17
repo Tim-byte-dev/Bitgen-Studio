@@ -88,6 +88,7 @@
     "pcfocus.js",
     "pcshapeops.js",
     "pcdoctext.js",
+    "pcdoctable.js",
     "pcuelive.js",
     "pctabdock.js",
     "pccoldock.js",

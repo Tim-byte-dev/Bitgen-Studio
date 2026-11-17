@@ -9292,6 +9292,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Pasted text keeps its formatting (cleaned - no pictures or scripts). The frame is drawn on its layer exactly as it looks while you type, so it prints and exports with the page.
 - Coming next: tables, then saving and opening .docx files (with margins, headers and footers), then comments, footnotes and mail merge.
 
+## Tables in document text (2.812.0)
+
+- While typing in a document frame, **▦ Table ▾** on the bar ▸ **Insert Table…** - rows, columns and a header row; the table fills the frame's width with even columns, a paragraph after it to carry on typing.
+- **Tab** goes to the next cell (Shift+Tab back); Tab in the last cell adds a row. Outside a table Tab types a wide space.
+- In the same menu - or **right-click a cell**: Insert Row Above / Below, Insert Column Left / Right, Delete Row / Column / Table, **Merge Cells** (select across the cells first - they must make a rectangle), **Split Cell**, **Header Row** (repeated at the top of every page the table runs on), **Borders** (All / Outside / None), **Cell Alignment** (Top / Middle / Bottom), **Shading and Border Colour…**. Text alignment in a cell = the bar's align buttons.
+- **Column widths**: point at a column's right edge in the frame (the pointer turns ↔) and drag; the next column gives or takes the room.
+- A long table runs on to the next frame / page in whole rows, with its header row on top.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

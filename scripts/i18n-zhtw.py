@@ -29,6 +29,7 @@ TW_WORDS = [
     # 2.707.0: video frames are 影格 (as Taiwan's video editors say; 首幀 / 尾幀 / 幀數 / 幀率 stay - the AI-video words)
     ("關鍵幀", "關鍵影格"), ("每一幀", "每個影格"), ("上一幀", "上一個影格"), ("下一幀", "下一個影格"), ("最後一幀", "最後一個影格"),
     ("摳像", "去背"),
+    ("單元格", "儲存格"),          # 2.812.0: a table cell - Taiwan's word processors say 儲存格
     ("遮蔽", "封鎖"),              # 2.710.0: block a person (屏蔽) - Taiwan says 封鎖
     ("時間線", "時間軸"), ("撤銷", "復原"), ("模板", "範本"), ("質量", "品質"), ("選中", "選取"), ("當前", "目前"),
     ("網路儲存捲", "網路磁碟區"), ("網路捲", "網路磁碟區"),   # 2.749.0: a network volume (OpenCC turns 卷 into 捲 - Taiwan says 磁碟區)

@@ -14117,6 +14117,13 @@ node scripts/test-doctext811.js > /tmp/doctext811.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui811-ui.js > /tmp/ui811.log 2>&1 \
   && ok "2.811.0 New Text Document, typing + the formatting bar, the frame drawn, pages added / dropped as the text grows / shrinks, one undo step" \
   || { bad "2.811.0 document text browser test"; grep -a "^FAIL" -A1 /tmp/ui811.log | head -12; }
+# ---- 2.812.0 (Tim: "go with the next part please" - the word plan's tables)
+node scripts/test-doctable812.js > /tmp/doctable812.log 2>&1 \
+  && ok "2.812.0 document tables: grid edits with spans, header row, widths, borders; the repeated header in windows() (pins)" \
+  || { bad "2.812.0 document table pins"; grep -a "^FAIL" -A1 /tmp/doctable812.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui812-ui.js > /tmp/ui812.log 2>&1 \
+  && ok "2.812.0 Insert Table, Tab, rows / columns, merge / split, borders, a column dragged, right-click menu, the header row repeated on page 2" \
+  || { bad "2.812.0 document table browser test"; grep -a "^FAIL" -A1 /tmp/ui812.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

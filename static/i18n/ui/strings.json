@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5729,
+ "count": 5745,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -52882,6 +52882,150 @@
    ],
    "where": [
     "the Document Text tool (2.811.0)"
+   ]
+  },
+  {
+   "s": "Insert Table",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Insert Row Above",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Insert Row Below",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Insert Column Left",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Insert Column Right",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Delete Row",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Delete Column",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Delete Table",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Merge Cells",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Split Cell",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Header Row (repeated on every page)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Cell Alignment: Top",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Cell Alignment: Middle",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Cell Alignment: Bottom",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Shading and Border Colour",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
+   ]
+  },
+  {
+   "s": "Table",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "▦ Table ▾ in document text (2.812.0)"
    ]
   }
  ]

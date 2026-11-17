@@ -43,12 +43,14 @@
 .pcdoc li>p{margin:0}
 .pcdoc a{color:#0563c1;text-decoration:underline}
 .pcdoc hr{border:0;border-top:1px solid #999;margin:6pt 0}
-.pcdoc table{border-collapse:collapse;margin:0 0 8pt}
-.pcdoc td,.pcdoc th{border:1px solid #888;padding:2pt 5pt;vertical-align:top}`;
+.pcdoc table{border-collapse:collapse;margin:0 0 8pt;table-layout:fixed}
+.pcdoc td,.pcdoc th{border:1px solid #888;padding:2pt 5pt;vertical-align:top;overflow-wrap:break-word}
+.pcdoc th{font-weight:600;background-color:#f2f2f2;text-align:left}
+.pcdoc td>p,.pcdoc th>p{margin:0}`;
   const TAGS = new Set(["P", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "PRE", "UL", "OL", "LI", "BR", "HR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE", "DEL",
-    "SUB", "SUP", "SPAN", "A", "CODE", "MARK", "TABLE", "THEAD", "TBODY", "TR", "TD", "TH"]);
+    "SUB", "SUP", "SPAN", "A", "CODE", "MARK", "TABLE", "THEAD", "TBODY", "TR", "TD", "TH", "COLGROUP", "COL"]);   // 2.812.0: + colgroup / col (column widths)
   const STYLE_KEYS = ["font-family", "font-size", "font-weight", "font-style", "text-decoration", "text-decoration-line", "color", "background-color",
-    "text-align", "line-height", "margin-top", "margin-bottom", "margin-left", "text-indent", "list-style-type", "vertical-align", "width", "border", "padding"];
+    "text-align", "line-height", "margin-top", "margin-bottom", "margin-left", "text-indent", "list-style-type", "vertical-align", "width", "border", "border-style", "border-width", "border-color", "padding", "table-layout"];
   const DATA_STYLES = new Set(["title", "subtitle"]);
   const SIZE_WORDS = { "xx-small": 7, "x-small": 7.5, small: 10, medium: 12, large: 13.5, "x-large": 18, "xx-large": 24, "xxx-large": 36 };
   /** a CSS font-size -> pt (null = not one we know) */
@@ -86,7 +88,7 @@
         if (tag === "A") { const h = n.getAttribute("href") || ""; if (/^(https?:|mailto:)/i.test(h)) e.setAttribute("href", h); }
         if (tag === "TD" || tag === "TH") for (const a of ["colspan", "rowspan"]) { const v = +n.getAttribute(a); if (v > 1) e.setAttribute(a, String(Math.min(64, v | 0))); }
         dst.appendChild(e);
-        if (tag !== "BR" && tag !== "HR") copy(n, e);
+        if (tag !== "BR" && tag !== "HR" && tag !== "COL") copy(n, e);
       }
     };
     copy(box, out);
@@ -112,14 +114,16 @@
   }
   /** each frame's window into the story: [{top, h, lines, overflow}] - whole lines only (a line taller than a frame
    *  still goes in); heights = the frames' heights (CSS px). The last frame's overflow = lines left over. */
-  function windows(bs, heights) {
+  function windows(bs, heights, headAt) {
     const out = []; let i = 0;
-    heights.forEach((H, k) => {
+    heights.forEach((H0, k) => {
       const top = i < bs.length ? bs[i].top : (bs.length ? bs[bs.length - 1].bottom : 0);
+      // 2.812.0: a frame that starts inside a table with a header row shows that row again at its top - less room
+      const head = k > 0 && headAt ? headAt(top) : null, H = Math.max(1, H0 - (head ? head.h : 0));
       let j = i;
       while (j < bs.length && (bs[j].bottom - top <= H + 0.5 || j === i)) j++;
       if (i < bs.length && bs[i].bottom - top > H + 0.5 && j === i + 1) { /* one tall line - shown, cut */ }
-      out.push({ top, h: H, lines: j - i, overflow: false });
+      out.push({ top, h: H0, lines: j - i, overflow: false, head: head || null });
       i = j;
       if (k === heights.length - 1 && i < bs.length) out[k].overflow = true;
     });
@@ -127,7 +131,7 @@
   }
 
   /* ================================ the page ================================ */
-  const cache = new Map();          // layer id -> {key, img, pending}
+  const cache = new WeakMap();      // layer -> {key, img, pending} (2.812.0: by the layer itself - ids repeat across pages)
   let measureHost = null;
   function cssOnce(doc) {
     if (doc.getElementById("pcdocCss")) return;
@@ -156,19 +160,28 @@
       if (e.tagName === "LI") { const fr = e.getClientRects()[0]; if (fr) rects.push({ top: fr.top - r0.top, bottom: Math.min(fr.bottom, fr.top + 2) - r0.top }); continue; }
       rects.push({ top: r.top - r0.top, bottom: r.bottom - r0.top });
     }
-    return { bands: bands(rects), height: el.getBoundingClientRect().height };
+    // 2.812.0: tables with a header row (thead) - repeated at the top of a later frame that starts inside them
+    const heads = [];
+    for (const t of el.querySelectorAll("table")) {
+      const th = t.tHead; if (!th || !th.rows.length) continue;
+      const tr = t.getBoundingClientRect(), hr = th.getBoundingClientRect();
+      const c = t.cloneNode(false); c.style.margin = "0";
+      for (const ch of t.children) if (ch.tagName === "COLGROUP" || ch.tagName === "THEAD") c.appendChild(ch.cloneNode(true));
+      heads.push({ top: tr.top - r0.top, bottom: tr.bottom - r0.top, headBottom: hr.bottom - r0.top, h: hr.height, html: c.outerHTML });
+    }
+    return { bands: bands(rects), height: el.getBoundingClientRect().height, heads };
   }
   function xhtmlOf(doc, html) {
     const box = doc.createElement("div"); box.innerHTML = html;
     const ser = new root.XMLSerializer();
     return [...box.childNodes].map((n) => ser.serializeToString(n)).join("");
   }
-  const keyOf = (D) => [D.html, D.w, D.h, D.k, D.top].join("|");
+  const keyOf = (D) => [D.html, D.w, D.h, D.k, D.top, D.rep || ""].join("|");
   /** draw a doc layer from its cached picture; a new picture is made when it changed (then it is drawn again) */
   function draw(g, L) {
     const D = L.doc; if (!D) return;
     if (PCDocText.editing === L.id) return;                            // the live page is over it
-    const c = cache.get(L.id), key = keyOf(D), doc = g.canvas.ownerDocument || root.document;
+    const c = cache.get(L), key = keyOf(D), doc = g.canvas.ownerDocument || root.document;
     if (c && c.img && c.key === key) { g.drawImage(c.img, Math.round(D.x), Math.round(D.y)); return; }
     if (c && c.img) g.drawImage(c.img, Math.round(D.x), Math.round(D.y));   // the old one until the new one is in
     if (c && c.pending === key) return;
@@ -176,15 +189,16 @@
     const k = D.k || 1, wC = D.w / k, hC = D.h / k;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(D.w)}" height="${Math.ceil(D.h)}"><foreignObject x="0" y="0" width="${Math.ceil(D.w)}" height="${Math.ceil(D.h)}">`
       + `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${wC}px;height:${hC}px;overflow:hidden;transform:scale(${k});transform-origin:0 0"><style>${CSS.replace(/</g, "")}</style>`
-      + `<div class="pcdoc" style="width:${wC}px;margin-top:${-(D.top || 0)}px">${xhtmlOf(doc, D.html || "")}</div></div></foreignObject></svg>`;
+      + (D.rep ? `<div class="pcdoc" style="width:${wC}px">${xhtmlOf(doc, D.rep)}</div>` : "")                 // 2.812.0: the repeated header row
+      + `<div style="width:${wC}px;height:${Math.max(0, hC - (D.rep ? D.repH || 0 : 0))}px;overflow:hidden"><div class="pcdoc" style="width:${wC}px;margin-top:${-(D.top || 0)}px">${xhtmlOf(doc, D.html || "")}</div></div></div></foreignObject></svg>`;
     const img = new root.Image();
-    const entry = c || { key: null, img: null, pending: null }; entry.pending = key; cache.set(L.id, entry);
-    img.onload = () => { if (entry.pending !== key) return; entry.img = img; entry.key = key; entry.pending = null; try { root.dispatchEvent(new root.CustomEvent("h3docready", { detail: { id: L.id } })); } catch (e) { /* jsdom */ } };
+    const entry = c || { key: null, img: null, pending: null }; entry.pending = key; cache.set(L, entry);
+    img.onload = () => { if (entry.pending !== key) return; entry.img = img; entry.key = key; entry.pending = null; try { root.dispatchEvent(new root.CustomEvent("h3docready", { detail: { id: L.id, L } })); } catch (e) { /* jsdom */ } };
     img.onerror = () => { if (entry.pending === key) entry.pending = null; };
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   }
   /** whether every frame picture is up to date (tests wait on this) */
-  function ready(layers) { return (layers || []).filter((L) => L.type === "doc" && L.doc).every((L) => { const c = cache.get(L.id); return c && c.key === keyOf(L.doc) && !c.pending; }); }
+  function ready(layers) { return (layers || []).filter((L) => L.type === "doc" && L.doc).every((L) => { const c = cache.get(L); return c && c.key === keyOf(L.doc) && !c.pending; }); }
 
   function install(E) {
     const { S, D, doc, win, store, kx } = E;
@@ -194,7 +208,10 @@
     const isDoc = (L) => !!(L && L.type === "doc" && L.doc);
     const kNow = () => { const pg = E.pages && E.pages.current ? E.pages.current() : null; return ((pg && pg.dpi) || 150) / 96; };
     const newId = () => "d" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
-    win.addEventListener("h3docready", (e) => { const L = S.layers.find((x) => x.id === e.detail.id); if (L) { D.rasterize(L); E.refresh(); if (E.renderLayersPanel && !S.drag) E.renderLayersPanel(); } });
+    // a picture came in: that frame drawn again - on the page in front or on another page (its layer kept there)
+    win.addEventListener("h3docready", (e) => {
+      for (const pl of places()) { const L = pl.layers.find((x) => x === e.detail.L); if (!L) continue; D.rasterize(L); if (pl.live) { E.refresh(); if (E.renderLayersPanel && !S.drag) E.renderLayersPanel(); } return; }
+    });
 
     /* ---- stories over every page (like pcflow.js) */
     function places() {
@@ -215,9 +232,14 @@
       const head = arr[0].L.doc, k = head.k || 1, w = head.w;
       arr.forEach((f, i) => { const d = f.L.doc; d.flow = Object.assign({}, d.flow, { idx: i }); if (i) { d.html = head.html; d.w = w; d.k = k; } });
       const m = measure(doc, head.html, w / k);
-      const wins = windows(m.bands, arr.map((f) => f.L.doc.h / k));
+      const headAt = (top) => m.heads.find((t) => top >= t.headBottom - 0.5 && top < t.bottom - 0.5) || null;
+      const wins = windows(m.bands, arr.map((f) => f.L.doc.h / k), headAt);
       let changed = false;
-      arr.forEach((f, i) => { const d = f.L.doc, t = wins[i].top; if (d.top !== t) { d.top = t; changed = true; } d.lines = wins[i].lines; if (f.pl.live) D.rasterize(f.L); });
+      arr.forEach((f, i) => {
+        const d = f.L.doc, t = wins[i].top; if (d.top !== t) { d.top = t; changed = true; } d.lines = wins[i].lines;
+        if (wins[i].head) { d.rep = wins[i].head.html; d.repH = wins[i].head.h; } else { delete d.rep; delete d.repH; }
+        D.rasterize(f.L);                          // 2.812.0: frames on other pages too (they were left stale)
+      });
       const last = wins[wins.length - 1];
       return { overflow: !!(last && last.overflow), empties: arr.filter((f, i) => i > 0 && wins[i].lines === 0), changed };
     }
@@ -310,6 +332,8 @@
       ed.addEventListener("input", () => { clearTimeout(edTimer); edTimer = setTimeout(live, 350); });
       ed.addEventListener("keydown", (e) => {
         if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); end(); return; }
+        // 2.812.0: Tab never leaves the page - in a table the next cell (pcdoctable.js), else a wide space
+        if (e.key === "Tab" && !e.ctrlKey && !e.altKey && !e.metaKey) { e.preventDefault(); e.stopPropagation(); if (!(E.docText && E.docText.tab && E.docText.tab(e.shiftKey))) doc.execCommand("insertText", false, "\u2003\u2003"); return; }
         if ((e.ctrlKey || e.metaKey) && !e.altKey) {
           const k = e.key.toLowerCase(), map = { b: "bold", i: "italic", u: "underline", l: "justifyLeft", e: "justifyCenter", r: "justifyRight", j: "justifyFull" };
           if (map[k] && !e.shiftKey) { e.preventDefault(); exec(map[k]); return; }
@@ -530,7 +554,7 @@
     }
     E.ui.addCmd("file.newtextdoc", "📄 New Text Document…", "", newTextDocument, null, ["File", "file.new"]);
     E.ui.addCmd("layer.newdocframe", "Document Text Frame", "", () => { E.setTool("doctext"); say("drag a box on the canvas for the frame"); });
-    E.docText = { begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
+    E.docText = { ed: () => ed, restoreSel, keepSel, live, exec, sanitize: (h) => sanitize(h, doc), begin, end, reflow, editing: () => editing, addFrame, nextPage, newTextDocument, frameAt, ready: () => ready(S.layers), storyOf: (L) => storyOf(L).map((f) => f.L) };
   }
 
   const PCDocText = { STYLES, CSS, sanitize, bands, windows, ptOf, measure, draw, ready, install, editing: null };

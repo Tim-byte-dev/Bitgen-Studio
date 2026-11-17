@@ -12303,6 +12303,66 @@
    "src": "ext/imageeditdock/pcdocs.js:374"
   },
   {
+   "s": "Rows",
+   "src": "ext/imageeditdock/pcdoctable.js:211"
+  },
+  {
+   "s": "Columns",
+   "src": "ext/imageeditdock/pcdoctable.js:211"
+  },
+  {
+   "s": "Header row (repeated on every page)",
+   "src": "ext/imageeditdock/pcdoctable.js:211"
+  },
+  {
+   "s": "All Borders",
+   "src": "ext/imageeditdock/pcdoctable.js:247"
+  },
+  {
+   "s": "Outside Border",
+   "src": "ext/imageeditdock/pcdoctable.js:247"
+  },
+  {
+   "s": "No Borders",
+   "src": "ext/imageeditdock/pcdoctable.js:247"
+  },
+  {
+   "s": "Top",
+   "src": "ext/imageeditdock/pcdoctable.js:248"
+  },
+  {
+   "s": "Middle",
+   "src": "ext/imageeditdock/pcdoctable.js:248"
+  },
+  {
+   "s": "Bottom",
+   "src": "ext/imageeditdock/pcdoctable.js:248"
+  },
+  {
+   "s": "Cell shading",
+   "src": "ext/imageeditdock/pcdoctable.js:253"
+  },
+  {
+   "s": "Borders",
+   "src": "ext/imageeditdock/pcdoctable.js:261"
+  },
+  {
+   "s": "Cell Alignment",
+   "src": "ext/imageeditdock/pcdoctable.js:262"
+  },
+  {
+   "s": "Table ▾",
+   "src": "ext/imageeditdock/pcdoctable.js:275"
+  },
+  {
+   "s": "Tables: insert, rows, columns, merge, split, header row, borders, shading",
+   "src": "ext/imageeditdock/pcdoctable.js:275"
+  },
+  {
+   "s": "drag a box",
+   "src": "ext/imageeditdock/pcdoctable.js:275"
+  },
+  {
    "s": "Normal",
    "src": "ext/imageeditdock/pcdoctext.js:29"
   },
@@ -12332,79 +12392,79 @@
   },
   {
    "s": "Document Text",
-   "src": "ext/imageeditdock/pcdoctext.js:431"
+   "src": "ext/imageeditdock/pcdoctext.js:455"
   },
   {
    "s": "Paragraph style",
-   "src": "ext/imageeditdock/pcdoctext.js:435"
+   "src": "ext/imageeditdock/pcdoctext.js:459"
   },
   {
    "s": "Size (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:437"
+   "src": "ext/imageeditdock/pcdoctext.js:461"
   },
   {
    "s": "Text colour",
-   "src": "ext/imageeditdock/pcdoctext.js:440"
+   "src": "ext/imageeditdock/pcdoctext.js:464"
   },
   {
    "s": "Highlight",
-   "src": "ext/imageeditdock/pcdoctext.js:440"
+   "src": "ext/imageeditdock/pcdoctext.js:464"
   },
   {
    "s": "Line spacing",
-   "src": "ext/imageeditdock/pcdoctext.js:442"
+   "src": "ext/imageeditdock/pcdoctext.js:466"
   },
   {
    "s": "space",
-   "src": "ext/imageeditdock/pcdoctext.js:443"
+   "src": "ext/imageeditdock/pcdoctext.js:467"
   },
   {
    "s": "Space before / after the paragraph (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:443"
+   "src": "ext/imageeditdock/pcdoctext.js:467"
   },
   {
    "s": "Frame width (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:445"
+   "src": "ext/imageeditdock/pcdoctext.js:469"
   },
   {
    "s": "Frame height (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:445"
+   "src": "ext/imageeditdock/pcdoctext.js:469"
   },
   {
    "s": "Next page",
-   "src": "ext/imageeditdock/pcdoctext.js:446"
+   "src": "ext/imageeditdock/pcdoctext.js:470"
   },
   {
    "s": "Continue this story in a frame on the next page (a new page if this is the last)",
-   "src": "ext/imageeditdock/pcdoctext.js:446"
+   "src": "ext/imageeditdock/pcdoctext.js:470"
   },
   {
    "s": "drag a box to make a document frame - or File ▸ New Text Document",
-   "src": "ext/imageeditdock/pcdoctext.js:446"
+   "src": "ext/imageeditdock/pcdoctext.js:470"
   },
   {
    "s": "Page",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "Portrait",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "Landscape",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "Margins (mm)",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "One frame inside the margins; pages are added as you type",
-   "src": "ext/imageeditdock/pcdoctext.js:519"
+   "src": "ext/imageeditdock/pcdoctext.js:543"
   },
   {
    "s": "Round",
@@ -16279,10 +16339,6 @@
    "src": "ext/imageeditdock/pctools.js:407"
   },
   {
-   "s": "drag a box",
-   "src": "ext/imageeditdock/pctools.js:408"
-  },
-  {
    "s": "Crop (Enter)",
    "src": "ext/imageeditdock/pctools.js:409"
   },
@@ -19628,10 +19684,6 @@
   },
   {
    "s": "Exact path (guide video)",
-   "src": "ext/timelinedock/camera.js:107"
-  },
-  {
-   "s": "Top",
    "src": "ext/timelinedock/camera.js:107"
   },
   {
