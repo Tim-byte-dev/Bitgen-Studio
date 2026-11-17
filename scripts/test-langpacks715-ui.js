@@ -47,7 +47,7 @@ function packFrom(master, meta, words) {
     check("Settings ▸ Languages: the tab after Themes, shown when clicked", tab.after === "themes" && tab.visible, tab);
     check("…English and the built-in packs (简体中文, 繁體中文, 日本語), each marked built in", JSON.stringify(tab.rows.map((r) => r[0])) === JSON.stringify(["en", "zh-CN", "zh-TW", "ja"]) && tab.rows.slice(1).every((r) => r[2] === "built in"), tab.rows);
     const ja = tab.rows.find((r) => r[0] === "ja")[3];
-    check("…how much each has translated: App 99 %, Guide 97 %, Help 3 of 3, Shortcuts 19 of 19, Features 100 %", /App 9\d %/.test(ja) && /Guide 9\d %/.test(ja) && /Help 3 of 3/.test(ja) && /Shortcuts 19 of 19/.test(ja) && /Features 100 %/.test(ja), ja);
+    check("…how much each has translated: App 99 %, Guide 97 %, Help 3 of 3, Shortcuts 19 of 19, Features 100 %", /App 9\d %/.test(ja) && /Guide 9\d %/.test(ja) && /Help (\d+) of \1(?!\d)/.test(ja) && /Shortcuts (\d+) of \1(?!\d)/.test(ja)   /* 2.833.0: the counts grow with each help page / shortcut group */ && /Features 100 %/.test(ja), ja);
     // ⤓ Master pack
     const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#s_lpmaster")]);
     const mp = await dl.path(), fs = require("fs"), master = fs.readFileSync(mp);

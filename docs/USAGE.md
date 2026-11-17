@@ -9464,6 +9464,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🖼 Picture ▾**: from this computer, **the Gallery** or **Assets** (a picker of the project's pictures with a search).
 - Fixed: a workbook (▦) or presentation over 100 KB could not be saved ("the request is too big").
 
+## 🎞 Slides - ✨ slides by the AI (2.833.0)
+
+- **✨ AI ▾ Make slides…**: what the slides are about and / or a text, notes or an outline (or a .txt / .md file) -> the prompt docker's LLM plans them: a title slide, slides of short points, two-column and section slides, speaker notes. How many, a new presentation or after this slide.
+- **🖼 With pictures**: picture slides whose boxes get pictures made with the prompt docker's image style, one job at a time, each put in when done (Ctrl+Z takes one out; ■ Stop the pictures). **🖼 Pictures for the empty boxes** fills every empty picture box from its slide's words.
+- **Use the outline as written** (no LLM): # the title, a heading / line a slide, - points, > speaker notes.
+- **✍ Rewrite this slide**, **✂ Make it shorter**, **✓ Fix the words**, **🎤 Speaker notes from the slide** - one undo each.
+- **The prompt docker**: "make slides about bees", "create a 6 slide presentation on solar power with pictures" (a pasted text on the lines after the first) builds it in 🎞 Slides.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

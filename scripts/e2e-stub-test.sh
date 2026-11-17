@@ -14267,6 +14267,13 @@ node scripts/test-832.js > /tmp/t832.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui832-ui.js > /tmp/ui832.log 2>&1 \
   && ok "2.832.0 browser test: a shape turned 90° + sized along its side, a picture from Assets, a big deck saved, ⤒ a .pptx opened, ⤓ PDF with notes (3 pages, kept), 🎤 the presenter view + the audience window (→ both, a key there, B, Esc closes both)" \
   || { bad "2.832.0 slides part 2 browser test"; grep -a "^FAIL" -A1 /tmp/ui832.log | head -12; }
+# ---- 2.833.0 (Tim: "yes, plese do part 3") 🎞 Slides part 3 - ✨ slides by the LLM, pictures from the image style, rewrite / shorter / notes
+node scripts/test-833.js > /tmp/t833.log 2>&1 \
+  && ok "2.833.0 lib/slideAi plan (fence, thinking, trailing comma, layouts, count, no pictures unless asked), outline as written, rewrite better / shorter / fix / notes; wants() from the prompt docker; buildSlides with slidecore; the wiring" \
+  || { bad "2.833.0 slides part 3 units"; grep -a "^FAIL" -A1 /tmp/t833.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui833-ui.js > /tmp/ui833.log 2>&1 \
+  && ok "2.833.0 browser test: ✨ Make slides (a stand-in LLM) -> a new presentation with notes, the picture box filled by a stand-in job with the image style; ✍ rewrite + undo; 🎤 notes; the outline as written after a slide; 'make a 2 slide presentation about bees' from the prompt docker; ordinary chat still the LLM's" \
+  || { bad "2.833.0 slides part 3 browser test"; grep -a "^FAIL" -A1 /tmp/ui833.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

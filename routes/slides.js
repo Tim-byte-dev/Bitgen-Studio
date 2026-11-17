@@ -8,6 +8,10 @@
 //   2.832.0 (lib/slidePptxIn.js):
 //   POST   /api/slides/import           a .pptx (raw body) -> {deck, notes}
 //   POST   /api/slides/export/pdf?name= a PDF the page made (raw body) -> {name, size} (kept in the project's slides folder)
+//   2.833.0 ✨ (lib/slideAi.js - the prompt docker's LLM):
+//   POST   /api/slides/ai/plan          {ask, text, count, pictures} -> {plan}
+//   POST   /api/slides/ai/outline       {text} -> {plan} (an outline as written, no LLM)
+//   POST   /api/slides/ai/rewrite       {title, points, notes, how better|shorter|fix|notes} -> {title, points, notes}
 "use strict";
 const express = require("express");
 const SF = require("../lib/slideFiles");
@@ -40,5 +44,9 @@ function mount(app) {
     require("fs").writeFileSync(f, req.body);
     return { name, size: req.body.length };
   }));
+  const AI = () => require("../lib/slideAi");
+  app.post("/api/slides/ai/plan", J, wrap((req) => AI().planDeck(req.body || {})));
+  app.post("/api/slides/ai/outline", J, wrap((req) => ({ plan: AI().outlinePlan((req.body || {}).text) })));
+  app.post("/api/slides/ai/rewrite", J, wrap((req) => AI().rewriteSlide(req.body || {})));
 }
 module.exports = { mount };

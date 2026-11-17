@@ -20359,6 +20359,98 @@
    "src": "ext/sheetdock/sheetio.js:83"
   },
   {
+   "s": "Make slides",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "What the slides are about",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "and / or make them from this text or outline",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "optional",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "From a .txt / .md file",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "Slides",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "With pictures",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "Use the outline as written",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "A new presentation",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "After this slide",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "e.g. how solar panels work, for a school talk",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "Paste notes, an article or an outline here",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "The outline as it is written - each heading or line a slide, each - line a point - no LLM",
+   "src": "ext/slidesdock/slideai.js:202"
+  },
+  {
+   "s": "paste the outline (or pick a file) first",
+   "src": "ext/slidesdock/slideai.js:223"
+  },
+  {
+   "s": "say what the slides are about, or give a text",
+   "src": "ext/slidesdock/slideai.js:224"
+  },
+  {
+   "s": "reading the outline",
+   "src": "ext/slidesdock/slideai.js:226"
+  },
+  {
+   "s": "the LLM is planning the slides",
+   "src": "ext/slidesdock/slideai.js:226"
+  },
+  {
+   "s": "Rewrite this slide",
+   "src": "ext/slidesdock/slideai.js:258"
+  },
+  {
+   "s": "Make it shorter",
+   "src": "ext/slidesdock/slideai.js:258"
+  },
+  {
+   "s": "Fix the words",
+   "src": "ext/slidesdock/slideai.js:258"
+  },
+  {
+   "s": "Speaker notes from the slide",
+   "src": "ext/slidesdock/slideai.js:258"
+  },
+  {
+   "s": "Stop the pictures",
+   "src": "ext/slidesdock/slideai.js:259"
+  },
+  {
+   "s": "Pictures for the empty boxes",
+   "src": "ext/slidesdock/slideai.js:259"
+  },
+  {
    "s": "Forest",
    "src": "ext/slidesdock/slidecore.js:27"
   },

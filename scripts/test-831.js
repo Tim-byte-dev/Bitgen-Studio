@@ -68,7 +68,7 @@ const PNG = "data:image/png;base64," + fs.readFileSync(path.join(ROOT, "static/f
 
   // the wiring
   const ej = JSON.parse(read("ext/slidesdock/ext.json")), html = read("ext/slidesdock/dock.html"), idx = read("routes/index.js");
-  check("the extension: slidecore, the docker, the show; its docker html (the ❔ help page 'slides', ⛶, ✕)", ej.id === "slidesdock" && /^slidecore\.js,(slidedraw\.js,)?slidesdock\.js,(slideio\.js,)?slideshow\.js$/.test(ej.scripts.join())   /* 2.832.0: + slidedraw, slideio */ && /H3Help\.open\('slides'\)/.test(html) && /id="slMaxBtn"/.test(html) && /id="slCloseBtn"/.test(html));
+  check("the extension: slidecore, the docker, the show; its docker html (the ❔ help page 'slides', ⛶, ✕)", ej.id === "slidesdock" && /^slidecore\.js,(slidedraw\.js,)?slidesdock\.js,(slideio\.js,)?(slideai\.js,)?slideshow\.js$/.test(ej.scripts.join())   /* 2.832.0: + slidedraw, slideio */ && /H3Help\.open\('slides'\)/.test(html) && /id="slMaxBtn"/.test(html) && /id="slCloseBtn"/.test(html));
   check("routes/slides.js mounted from routes/index.js (not server.js); the app strip's 🎞 button waits for it", /require\("\.\/slides"\)\.mount\(app\)/.test(idx) && !/slides/.test(read("misc/server.js")) && /"tX_slidesdock", "🎞", "Slides"/.test(read("static/appstrip.js")));
   check("the help page in all four languages", ["", "ja/", "zh-CN/", "zh-TW/"].every((l) => fs.existsSync(path.join(ROOT, "static/help", l + "slides.html"))));
   check("pptxgenjs is a dependency (MIT) and credited", /"pptxgenjs"/.test(read("package.json")) && /PptxGenJS/.test(read("lib/credits.json")));

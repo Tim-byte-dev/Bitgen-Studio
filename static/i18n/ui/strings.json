@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6146,
+ "count": 6150,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56641,6 +56641,42 @@
    ],
    "where": [
     "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "AI ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 3 (2.833.0)"
+   ]
+  },
+  {
+   "s": "The LLM: make slides about something / from a text or an outline (with pictures from the image style), rewrite this slide, make it shorter, fix its words, write its speaker notes",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Slides part 3 (2.833.0)"
+   ]
+  },
+  {
+   "s": "Pictures made with the prompt docker's image style, one at a time, each put in its box when done",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Slides part 3 (2.833.0)"
+   ]
+  },
+  {
+   "s": "Make slides",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 3 (2.833.0)"
    ]
   }
  ]
