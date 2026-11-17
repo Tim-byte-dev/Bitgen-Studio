@@ -5809,6 +5809,16 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - **▶ 発表**（F5）/ **▶ ここから**（Shift+F5）：全画面。→ / Space / クリック = 次へ、← = 戻る、番号 + Enter = そのスライド、B / W = 黒 / 白の画面、Esc = 終了。非表示のスライドは飛ばします。
 - **ファイル**：📄 新規 ▾（テーマ、16:9 か 4:3）、📂 開く ▾、💾 保存（Ctrl+S） -> プロジェクトの slides フォルダー（.bgk）。⤓ **PowerPoint** = .pptx（背景、フォント / 箇条書き付きのテキスト、図形、画像、ノート）をダウンロードし、そこにも保存。
 
+## 🎞 スライド - 発表者ビュー、PowerPoint ファイルを開く、PDF 出力、回転（2.832.0）
+<!-- en: slides-the-presenter-view-powerpoint-files-in-pdf-out-turning-2-832-0 e556e1aa3ecd -->
+
+- **🎤 発表者ビュー**（Alt+F5）：ここにスライド、次のスライド、発表者ノート（A− / A+）、タイマー（⏸ / ↺）、時刻、スライド番号。**聴衆ウィンドウ**はスライドだけを表示 - プロジェクターに移してダブルクリック（または F11）で全画面。キーは両方のウィンドウで使えます（→ / Space / クリック、←、番号 + Enter、B = 聴衆に黒、Esc で終了し聴衆ウィンドウを閉じる）。
+- **⤒ PowerPoint を開く**（またはスライドに .pptx をドロップ）：スライド、フォント / サイズ / 色 / 箇条書き付きのテキスト、図形、画像、グループ、背景、ノート、非表示スライド、切り替え - PowerPoint のレイアウトやマスターにある位置もそこから。表、グラフ、SmartArt は省かれます（件数を表示）。⤓ PowerPoint は各スライドの切り替えも書き出します。
+- **⤓ PDF ▾**：スライド（1 枚 1 ページ）またはスライド + 発表者ノート - ダウンロードされ slides フォルダーにも保存。非表示のスライドは省略。
+- **回転**：選んだ項目の上の丸いハンドルで回転（Shift = 15° ずつ、0 / 90 / 180 / 270° に吸着）。回転した項目は自身の辺に沿ってサイズ変更。
+- **🖼 画像 ▾**：このコンピューター、**ギャラリー**、**アセット**から（プロジェクトの画像を検索して選択）。
+- 修正：100 KB を超えるワークブック（▦）やプレゼンテーションが保存できなかった（「the request is too big」）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5821,7 +5831,7 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 <!-- credits:start -->
 
 ## クレジット
-<!-- en: credits 763cf27a1713 -->
+<!-- en: credits e1173dbf242c -->
 
 **制作・開発：Tim Paul**
 
@@ -5903,6 +5913,8 @@ bitGen Studio は多くの人々の成果の上に成り立っています。コ
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）- Word ファイル (.docx) を文書テキストとして開く（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）- 差し込み印刷の Word ファイルの .zip（MIT）
 - **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）- ▦ スプレッドシート - Excel ブック (.xlsx) を開く・保存する（MIT）
+- **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)**（Brent Ely and the PptxGenJS contributors）- 🎞 スライド - プレゼンテーションを PowerPoint ファイル (.pptx) で保存する（MIT）
+- **[xmldom](https://github.com/xmldom/xmldom)**（the xmldom contributors）- 🎞 スライド - PowerPoint ファイル (.pptx) を読み込む（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）- ✉ メール - IMAP でメールボックスを読み、メールを開く（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）- ✉ メール - 自分のメールサーバーから送信（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）- PSD ファイルとそのテキスト効果（MIT）

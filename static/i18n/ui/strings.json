@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6138,
+ "count": 6146,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56569,6 +56569,78 @@
    ],
    "where": [
     "Slides (2.831.0)"
+   ]
+  },
+  {
+   "s": "Presenter view: the slide, the next one, your notes and a timer here - the audience window shows the slide (move it to the projector)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "Open a PowerPoint file (.pptx) as a presentation",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "Save as a PDF - every slide (▾ with the speaker notes) - downloaded and kept in the slides folder",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "A picture - from this computer, the Gallery or Assets (or drop / paste one on the slide)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "Presenter view",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "Open PowerPoint",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "PDF ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
+   ]
+  },
+  {
+   "s": "Picture ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides part 2 (2.832.0)"
    ]
   }
  ]

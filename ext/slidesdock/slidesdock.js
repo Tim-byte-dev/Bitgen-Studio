@@ -113,15 +113,21 @@
     $("slNotes").value = slide().notes || "";
   }
   const HANDLES = ["nw", "n", "ne", "e", "se", "s", "sw", "w"];
+  /** the 8 size handles + (2.832.0) the round turn handle above the box - in a frame turned with the item */
   function handles(st, it) {
     if (!it) return;
-    const k = 6 / St.scale;
+    const k = 6 / St.scale, fr = doc.createElement("div");
+    fr.className = "hbox"; fr.style.cssText = `position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;pointer-events:none;z-index:5;${it.rot ? `transform:rotate(${it.rot}deg);` : ""}`;
     for (const h of HANDLES) {
-      const x = it.x + (h.includes("w") ? 0 : h.includes("e") ? it.w : it.w / 2), y = it.y + (h.includes("n") ? 0 : h.includes("s") ? it.h : it.h / 2);
+      const x = h.includes("w") ? 0 : h.includes("e") ? it.w : it.w / 2, y = h.includes("n") ? 0 : h.includes("s") ? it.h : it.h / 2;
       const d = doc.createElement("div"); d.className = "hd"; d.dataset.h = h;
-      d.style.cssText = `left:${x - k}px;top:${y - k}px;width:${2 * k}px;height:${2 * k}px;border-width:${2 / St.scale}px;cursor:${{ nw: "nwse", se: "nwse", ne: "nesw", sw: "nesw", n: "ns", s: "ns", e: "ew", w: "ew" }[h]}-resize`;
-      st.appendChild(d);
+      d.style.cssText = `left:${x - k}px;top:${y - k}px;width:${2 * k}px;height:${2 * k}px;border-width:${2 / St.scale}px;pointer-events:auto;cursor:${{ nw: "nwse", se: "nwse", ne: "nesw", sw: "nesw", n: "ns", s: "ns", e: "ew", w: "ew" }[h]}-resize`;
+      fr.appendChild(d);
     }
+    const up = 28 / St.scale, r = 7 / St.scale;
+    const ln = doc.createElement("div"); ln.className = "rotl"; ln.style.cssText = `left:${it.w / 2 - 0.5 / St.scale}px;top:${-up}px;width:${1 / St.scale}px;height:${up}px`; fr.appendChild(ln);
+    const rt = doc.createElement("div"); rt.className = "rot"; rt.title = "Turn (Shift = 15° steps)"; rt.style.cssText = `left:${it.w / 2 - r}px;top:${-up - r}px;width:${2 * r}px;height:${2 * r}px;border-width:${2 / St.scale}px;pointer-events:auto`; fr.appendChild(rt);
+    st.appendChild(fr);
   }
   let listT = 0;
   function paintList() {
@@ -313,6 +319,7 @@
     const p = toSlide(e), hd = e.target.closest(".hd"), itEl = e.target.closest(".it");
     if (St.edit) { if (itEl && itEl.dataset.id === St.edit.id) return; endEdit(); }
     $("slStageWrap").focus({ preventScroll: true });
+    if (e.target.closest(".rot") && St.sel.size === 1) { const it = item([...St.sel][0]); St.drag = { kind: "rot", it, r0: it.rot || 0 }; e.preventDefault(); return; }
     if (hd && St.sel.size === 1) {
       const it = item([...St.sel][0]); St.drag = { kind: "size", h: hd.dataset.h, it, b0: { x: it.x, y: it.y, w: it.w, h: it.h }, p0: p }; e.preventDefault(); return;
     }
@@ -339,8 +346,10 @@
       St.guides = s.guides; paintStage();
     } else if (d.kind === "size") {
       if (!d.moved) { step(); d.moved = true; }
-      const b = d.b0, it = d.it, h = d.h, dx = p.x - d.p0.x, dy = p.y - d.p0.y;
-      let x0 = b.x, y0 = b.y, x1 = b.x + b.w, y1 = b.y + b.h;
+      const b = d.b0, it = d.it, h = d.h, gx = p.x - d.p0.x, gy = p.y - d.p0.y;
+      // 2.832.0: in the item's own (turned) frame - the opposite side stays where it is on the slide
+      const th = (it.rot || 0) * Math.PI / 180, co = Math.cos(th), si = Math.sin(th), dx = gx * co + gy * si, dy = -gx * si + gy * co;
+      let x0 = 0, y0 = 0, x1 = b.w, y1 = b.h;
       if (h.includes("w")) x0 += dx; if (h.includes("e")) x1 += dx; if (h.includes("n")) y0 += dy; if (h.includes("s")) y1 += dy;
       const keep = it.type === "image" ? !e.shiftKey : e.shiftKey;
       if (keep && h.length === 2) {                        // a corner keeps the shape
@@ -348,8 +357,18 @@
         const nw = b.w * k, nh = b.h * k;
         if (h.includes("w")) x0 = x1 - nw; else x1 = x0 + nw; if (h.includes("n")) y0 = y1 - nh; else y1 = y0 + nh;
       }
-      it.x = Math.round(Math.min(x0, x1)); it.y = Math.round(Math.min(y0, y1)); it.w = Math.max(4, Math.round(Math.abs(x1 - x0))); it.h = Math.max(4, Math.round(Math.abs(y1 - y0)));
+      const nw = Math.max(4, Math.abs(x1 - x0)), nh = Math.max(4, Math.abs(y1 - y0)), sx = (x0 + x1) / 2 - b.w / 2, sy = (y0 + y1) / 2 - b.h / 2;
+      const cx = b.x + b.w / 2 + sx * co - sy * si, cy = b.y + b.h / 2 + sx * si + sy * co;
+      it.x = Math.round(cx - nw / 2); it.y = Math.round(cy - nh / 2); it.w = Math.round(nw); it.h = Math.round(nh);
       paintStage();
+    } else if (d.kind === "rot") {
+      if (!d.moved) { step(); d.moved = true; }
+      const it = d.it, cx = it.x + it.w / 2, cy = it.y + it.h / 2;
+      let a = Math.atan2(p.y - cy, p.x - cx) * 180 / Math.PI + 90;
+      if (e.shiftKey) a = Math.round(a / 15) * 15; else for (const q of [0, 90, 180, 270, 360, -90]) if (Math.abs(a - q) < 3) a = q;
+      a = ((Math.round(a) + 540) % 360) - 180;
+      if (a) it.rot = a; else delete it.rot;
+      msg(`turned ${a}°`); paintStage();
     } else if (d.kind === "band") {
       const B = St.band; B.x1 = p.x; B.y1 = p.y;
       const x0 = Math.min(B.x0, B.x1), x1 = Math.max(B.x0, B.x1), y0 = Math.min(B.y0, B.y1), y1 = Math.max(B.y0, B.y1);
@@ -490,6 +509,7 @@
     if (c && k.toLowerCase() === "c") { if (copyItems(false)) done(); return; }
     if (c && k.toLowerCase() === "x") { if (copyItems(true)) done(); return; }
     if (c && ["b", "i", "u"].includes(k.toLowerCase())) { done(); const kk = k.toLowerCase(); return style((s) => { s[kk] = !s[kk] || undefined; }); }
+    if (k === "F5" && e.altKey) { done(); return root.H3SlideShow && root.H3SlideShow.presenter(St.cur); }   // 2.832.0: Alt+F5 = the presenter view
     if (k === "F5") { done(); return root.H3SlideShow && root.H3SlideShow.start(e.shiftKey ? St.cur : 0); }
     if (k === "Delete" || k === "Backspace") { if (St.sel.size) { done(); delItems(); } return; }
     if (k === "Escape") { if (St.sel.size) { done(); St.sel.clear(); paint(); } return; }
@@ -523,7 +543,7 @@
     $("slFont").innerHTML = K().FONTS.map((f) => `<option value="${esc(f)}" style="font-family:'${esc(f)}'" data-noi18n>${esc(f)}</option>`).join("");
     const wrap = $("slStageWrap");
     wrap.addEventListener("pointerdown", onStageDown);
-    wrap.addEventListener("dblclick", (e) => { const el = e.target.closest(".it"); if (el) { const it = item(el.dataset.id); if (it && it.type === "image") { if (!mediaUrl(it.src)) { St.sel = new Set([it.id]); $("slPicFile").click(); } } else startEdit(el.dataset.id); } else if (!e.target.closest(".hd")) addText(); });
+    wrap.addEventListener("dblclick", (e) => { const el = e.target.closest(".it"); if (el) { const it = item(el.dataset.id); if (it && it.type === "image") { if (!mediaUrl(it.src)) { St.sel = new Set([it.id]); $("slPicFile").click(); } } else startEdit(el.dataset.id); } else if (!e.target.closest(".hd, .rot")) addText(); });
     wrap.addEventListener("contextmenu", (e) => { e.preventDefault(); const el = e.target.closest(".it"); if (el && !St.sel.has(el.dataset.id)) { St.sel = new Set([el.dataset.id]); paint(); } stageMenu(e.clientX, e.clientY); });
     wrap.addEventListener("keydown", onStageKey);
     wrap.addEventListener("paste", (e) => { if (St.edit) return; const fs = [...(e.clipboardData && e.clipboardData.files) || []].filter((f) => /^image\//.test(f.type)); if (fs.length) { e.preventDefault(); addPictures(fs); return; } if (pasteItems()) e.preventDefault(); });
@@ -551,7 +571,7 @@
     on("slBgReset", "click", () => { step(); delete slide().bg; changed(); });
     on("slAddText", "click", addText);
     on("slAddShape", "click", (e) => shapeMenu(e.currentTarget));
-    on("slAddPic", "click", () => $("slPicFile").click());
+    on("slAddPic", "click", (e) => (root.H3SlideIO ? root.H3SlideIO.picMenu(e.currentTarget) : $("slPicFile").click()));   // 2.832.0: ▾ the Gallery / Assets too
     on("slPicFile", "change", (e) => { const fs = e.target.files; if (fs && fs.length) addPictures(fs); e.target.value = ""; });
     on("slFont", "change", (e) => style((s) => { s.font = e.target.value; }));
     on("slSize", "change", (e) => { const v = Math.max(6, Math.min(300, Math.round(+e.target.value || 0))); if (v) style((s) => { s.size = v; }); });

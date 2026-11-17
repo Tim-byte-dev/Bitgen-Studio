@@ -14260,6 +14260,13 @@ node scripts/test-831.js > /tmp/t831.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui831-ui.js > /tmp/ui831.log 2>&1 \
   && ok "2.831.0 browser test: 🎞 on the app strip, a new deck, typing a title + undo, Ctrl+M bullets, a star moved + sized, a text box, a picture into its box, a theme, a new layout keeping the words, notes, a slide dragged in the list, Save + Open, ▶ Present (→ fade, Space, 1+Enter, B, Esc), ⤓ PowerPoint" \
   || { bad "2.831.0 slides browser test"; grep -a "^FAIL" -A1 /tmp/ui831.log | head -12; }
+# ---- 2.832.0 (Tim: "yes please go ahead wth part 2") 🎞 Slides part 2 - the presenter view, .pptx in, PDF out, turning, project pictures
+node scripts/test-832.js > /tmp/t832.log 2>&1 \
+  && ok "2.832.0 a PowerPoint file in (layout / master places + sizes, theme colours with lumMod, a group, a table left out, notes, hidden, transitions, a picture), our .pptx back in, transitions written, the canvas wrap, the wiring" \
+  || { bad "2.832.0 slides part 2 units"; grep -a "^FAIL" -A1 /tmp/t832.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui832-ui.js > /tmp/ui832.log 2>&1 \
+  && ok "2.832.0 browser test: a shape turned 90° + sized along its side, a picture from Assets, a big deck saved, ⤒ a .pptx opened, ⤓ PDF with notes (3 pages, kept), 🎤 the presenter view + the audience window (→ both, a key there, B, Esc closes both)" \
+  || { bad "2.832.0 slides part 2 browser test"; grep -a "^FAIL" -A1 /tmp/ui832.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -6044,6 +6044,16 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **▶ 放映**（F5）/ **▶ 从此处**（Shift+F5）：全屏；→ / 空格 / 单击 = 下一张，← = 上一张，数字 + Enter = 该张，B / W = 黑屏 / 白屏，Esc = 结束；隐藏的幻灯片会跳过。
 - **文件**：📄 新建 ▾（主题、16:9 或 4:3）、📂 打开 ▾、💾 保存（Ctrl+S）-> 项目的 slides 文件夹（.bgk）；⤓ **PowerPoint** = .pptx（背景、带字体 / 项目符号的文字、形状、图片、备注），下载并保存在那里。
 
+## 🎞 幻灯片——演讲者视图、打开 PowerPoint 文件、导出 PDF、旋转（2.832.0）
+<!-- en: slides-the-presenter-view-powerpoint-files-in-pdf-out-turning-2-832-0 e556e1aa3ecd -->
+
+- **🎤 演讲者视图**（Alt+F5）：这里显示幻灯片、下一张、演讲者备注（A− / A+）、计时器（⏸ / ↺）、时间和幻灯片编号；**观众窗口**只显示幻灯片——把它移到投影仪上，双击（或 F11）全屏。按键在两个窗口中都可用（→ / 空格 / 单击，←，数字 + Enter，B = 给观众黑屏，Esc 结束并关闭观众窗口）。
+- **⤒ 打开 PowerPoint**（或把 .pptx 拖到幻灯片上）：幻灯片、带字体 / 字号 / 颜色 / 项目符号的文字、形状、图片、组合、背景、备注、隐藏的幻灯片和切换效果——存在 PowerPoint 版式和母版中的位置也会从那里读取；表格、图表和 SmartArt 会被省略（并计数）。⤓ PowerPoint 现在也会写入每张幻灯片的切换效果。
+- **⤓ PDF ▾**：幻灯片（每张一页）或幻灯片 + 演讲者备注——下载并保存在 slides 文件夹中；隐藏的幻灯片会被省略。
+- **旋转**：选中项目上方的圆形控点可旋转它（Shift = 每次 15°；会吸附到 0 / 90 / 180 / 270°）；旋转后的项目沿自身的边调整大小。
+- **🖼 图片 ▾**：来自这台电脑、**图库**或**素材**（可搜索的项目图片选择器）。
+- 修复：超过 100 KB 的工作簿（▦）或演示文稿无法保存（“the request is too big”）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -6058,7 +6068,7 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 <!-- credits:start -->
 
 ## 致谢
-<!-- en: credits 763cf27a1713 -->
+<!-- en: credits e1173dbf242c -->
 
 **出品与开发：Tim Paul**
 
@@ -6140,6 +6150,8 @@ bitGen Studio 建立在许多人的成果之上。感谢以下所有人——我
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 文件 (.docx) 作为文档文字打开（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——邮件合并生成的 Word 文件 .zip（MIT）
 - **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）——▦ 电子表格 - 打开和保存 Excel 工作簿 (.xlsx)（MIT）
+- **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)**（Brent Ely and the PptxGenJS contributors）- 🎞 幻灯片 - 将演示文稿保存为 PowerPoint 文件 (.pptx)（MIT）
+- **[xmldom](https://github.com/xmldom/xmldom)**（the xmldom contributors）- 🎞 幻灯片 - 读取 PowerPoint 文件 (.pptx)（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 邮件：通过 IMAP 读取邮箱并打开邮件（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 邮件：通过你自己的邮件服务器发送（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 文件及其文字效果（MIT）

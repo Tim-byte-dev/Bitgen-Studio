@@ -1,6 +1,6 @@
 {
   "name": "bitgen-studio",
-  "version": "2.831.0",
+  "version": "2.832.0",
   "private": true,
   "description": "bitGen Studio - a local, self-hosted studio for video, image, audio and speech generation on Windows, driving ComfyUI.",
   "main": "misc/server.js",
@@ -9,6 +9,7 @@
     "stub": "SD_CLI_STUB=1 node misc/server.js"
   },
   "dependencies": {
+    "@xmldom/xmldom": "^0.8.15",
     "docx": "^9.15.4",
     "exceljs": "^4.4.0",
     "express": "^4.19.0",

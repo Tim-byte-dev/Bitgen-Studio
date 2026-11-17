@@ -20371,72 +20371,172 @@
    "src": "ext/slidesdock/slidecore.js:40"
   },
   {
+   "s": "Slides - a page each",
+   "src": "ext/slidesdock/slideio.js:77"
+  },
+  {
+   "s": "Slides + speaker notes",
+   "src": "ext/slidesdock/slideio.js:77"
+  },
+  {
+   "s": "From the Gallery",
+   "src": "ext/slidesdock/slideio.js:91"
+  },
+  {
+   "s": "From Assets",
+   "src": "ext/slidesdock/slideio.js:91"
+  },
+  {
+   "s": "The Gallery's pictures",
+   "src": "ext/slidesdock/slideio.js:105"
+  },
+  {
+   "s": "Assets - pictures",
+   "src": "ext/slidesdock/slideio.js:105"
+  },
+  {
+   "s": "no pictures in the Gallery yet",
+   "src": "ext/slidesdock/slideio.js:114"
+  },
+  {
+   "s": "no pictures in Assets yet",
+   "src": "ext/slidesdock/slideio.js:114"
+  },
+  {
    "s": "Presentation",
    "src": "ext/slidesdock/slidesdock.js:25"
   },
   {
+   "s": "Turn (Shift = 15° steps)",
+   "src": "ext/slidesdock/slidesdock.js:129"
+  },
+  {
    "s": "New slide",
-   "src": "ext/slidesdock/slidesdock.js:141"
+   "src": "ext/slidesdock/slidesdock.js:147"
   },
   {
    "s": "A new slide at the end (right-click: pick its layout)",
-   "src": "ext/slidesdock/slidesdock.js:141"
+   "src": "ext/slidesdock/slidesdock.js:147"
   },
   {
    "s": "New slide after this",
-   "src": "ext/slidesdock/slidesdock.js:386"
+   "src": "ext/slidesdock/slidesdock.js:405"
   },
   {
    "s": "Duplicate slide",
-   "src": "ext/slidesdock/slidesdock.js:387"
+   "src": "ext/slidesdock/slidesdock.js:406"
   },
   {
    "s": "Show in the presentation",
-   "src": "ext/slidesdock/slidesdock.js:387"
+   "src": "ext/slidesdock/slidesdock.js:406"
   },
   {
    "s": "Delete slide",
-   "src": "ext/slidesdock/slidesdock.js:387"
+   "src": "ext/slidesdock/slidesdock.js:406"
   },
   {
    "s": "Hide in the presentation",
-   "src": "ext/slidesdock/slidesdock.js:387"
+   "src": "ext/slidesdock/slidesdock.js:406"
   },
   {
    "s": "Bring to front",
-   "src": "ext/slidesdock/slidesdock.js:420"
+   "src": "ext/slidesdock/slidesdock.js:439"
   },
   {
    "s": "Send to back",
-   "src": "ext/slidesdock/slidesdock.js:420"
+   "src": "ext/slidesdock/slidesdock.js:439"
   },
   {
    "s": "Fit / fill the box",
-   "src": "ext/slidesdock/slidesdock.js:420"
+   "src": "ext/slidesdock/slidesdock.js:439"
   },
   {
    "s": "Text box",
-   "src": "ext/slidesdock/slidesdock.js:420"
+   "src": "ext/slidesdock/slidesdock.js:439"
   },
   {
    "s": "Picture",
-   "src": "ext/slidesdock/slidesdock.js:420"
+   "src": "ext/slidesdock/slidesdock.js:439"
   },
   {
    "s": "no presentations in this project yet - 💾 Save one",
-   "src": "ext/slidesdock/slidesdock.js:449"
+   "src": "ext/slidesdock/slidesdock.js:468"
+  },
+  {
+   "s": "the end",
+   "src": "ext/slidesdock/slideshow.js:56"
+  },
+  {
+   "s": "no speaker notes for this slide",
+   "src": "ext/slidesdock/slideshow.js:57"
   },
   {
    "s": "The end of the presentation - click or press a key to leave",
-   "src": "ext/slidesdock/slideshow.js:38"
+   "src": "ext/slidesdock/slideshow.js:79"
   },
   {
    "s": "Next",
-   "src": "ext/slidesdock/slideshow.js:64"
+   "src": "ext/slidesdock/slideshow.js:115"
   },
   {
    "s": "End the show (Esc)",
-   "src": "ext/slidesdock/slideshow.js:64"
+   "src": "ext/slidesdock/slideshow.js:115"
+  },
+  {
+   "s": "Audience",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "End",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Speaker notes",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Time since the start",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Pause / go on with the timer",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "The timer from 0",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "The time now",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Back (←)",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Next (→ / Space)",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "A black screen for the audience (B)",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Open the audience window again",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "End the presentation (Esc)",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Smaller notes",
+   "src": "ext/slidesdock/slideshow.js:134"
+  },
+  {
+   "s": "Bigger notes",
+   "src": "ext/slidesdock/slideshow.js:134"
   },
   {
    "s": "Open from the computer",
@@ -28822,7 +28922,11 @@
   },
   {
    "p": "{0} (hidden in the show)",
-   "src": "ext/slidesdock/slidesdock.js:136"
+   "src": "ext/slidesdock/slidesdock.js:142"
+  },
+  {
+   "p": "Slide {0} of {1}",
+   "src": "ext/slidesdock/slideshow.js:58"
   },
   {
    "p": "Update to v{0}",

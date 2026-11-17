@@ -6042,6 +6042,16 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **▶ 放映**（F5）/ **▶ 從此處**（Shift+F5）：全螢幕；→ / 空格 / 點選 = 下一張，← = 上一張，數字 + Enter = 該張，B / W = 黑屏 / 白屏，Esc = 結束；隱藏的幻燈片會跳過。
 - **檔案**：📄 新建 ▾（主題、16:9 或 4:3）、📂 開啟 ▾、💾 儲存（Ctrl+S）-> 專案的 slides 資料夾（.bgk）；⤓ **PowerPoint** = .pptx（背景、帶字型 / 專案符號的文字、形狀、圖片、備註），下載並儲存在那裡。
 
+## 🎞 幻燈片——演講者檢視、開啟 PowerPoint 檔案、匯出 PDF、旋轉（2.832.0）
+<!-- en: slides-the-presenter-view-powerpoint-files-in-pdf-out-turning-2-832-0 e556e1aa3ecd -->
+
+- **🎤 演講者檢視**（Alt+F5）：這裡顯示幻燈片、下一張、演講者備註（A− / A+）、計時器（⏸ / ↺）、時間和幻燈片編號；**觀眾視窗**只顯示幻燈片——把它移到投影儀上，雙擊（或 F11）全螢幕。按鍵在兩個視窗中都可用（→ / 空格 / 點選，←，數字 + Enter，B = 給觀眾黑屏，Esc 結束並關閉觀眾視窗）。
+- **⤒ 開啟 PowerPoint**（或把 .pptx 拖到幻燈片上）：幻燈片、帶字型 / 字號 / 顏色 / 專案符號的文字、形狀、圖片、組合、背景、備註、隱藏的幻燈片和切換效果——存在 PowerPoint 版式和母版中的位置也會從那裡讀取；表格、圖表和 SmartArt 會被省略（並計數）。⤓ PowerPoint 現在也會寫入每張幻燈片的切換效果。
+- **⤓ PDF ▾**：幻燈片（每張一頁）或幻燈片 + 演講者備註——下載並儲存在 slides 資料夾中；隱藏的幻燈片會被省略。
+- **旋轉**：選取專案上方的圓形控點可旋轉它（Shift = 每次 15°；會吸附到 0 / 90 / 180 / 270°）；旋轉後的專案沿自身的邊調整大小。
+- **🖼 圖片 ▾**：來自這臺電腦、**相簿**或**素材**（可搜尋的專案圖片選擇器）。
+- 修復：超過 100 KB 的工作簿（▦）或簡報無法儲存（“the request is too big”）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -6056,7 +6066,7 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits 763cf27a1713 -->
+<!-- en: credits e1173dbf242c -->
 
 **出品與開發：Tim Paul**
 
@@ -6138,6 +6148,8 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 檔案 (.docx) 作為文件文字開啟（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——郵件合併生成的 Word 檔案 .zip（MIT）
 - **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）——▦ 試算表 - 開啟和儲存 Excel 活頁簿 (.xlsx)（MIT）
+- **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)**（Brent Ely and the PptxGenJS contributors）- 🎞 投影片 - 將簡報儲存為 PowerPoint 檔案 (.pptx)（MIT）
+- **[xmldom](https://github.com/xmldom/xmldom)**（the xmldom contributors）- 🎞 投影片 - 讀取 PowerPoint 檔案 (.pptx)（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 郵件：透過 IMAP 讀取郵箱並開啟郵件（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 郵件：透過你自己的郵件伺服器傳送（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 檔案及其文字效果（MIT）

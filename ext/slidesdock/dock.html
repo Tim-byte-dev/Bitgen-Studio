@@ -62,6 +62,30 @@
           #slShow .bar { position: absolute; left: 12px; bottom: 10px; display: none; gap: 6px; }
           #slShow.ptr .bar { display: flex; }
           #slShow .bar button { background: rgba(40,40,40,.85); color: #fff; border: 1px solid #555; border-radius: 4px; padding: 3px 9px; cursor: pointer; }
+          #slPresenter { position: fixed; inset: 0; z-index: 2147483000; background: #16181d; color: #e8e8e8; display: flex; flex-direction: column; font: 14px sans-serif; user-select: none; outline: none; }
+          #slPresenter .pvtop { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: #0f1013; border-bottom: 1px solid #333; }
+          #slPresenter button { background: #2a2d34; color: #eee; border: 1px solid #444; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 13px; }
+          #slPresenter button:hover { border-color: var(--tiger, #ff8a1f); }
+          #slPresenter .pvtimer { font: 600 26px monospace; color: #ffd166; min-width: 120px; }
+          #slPresenter .pvclock { font: 18px monospace; color: #aaa; margin-left: 12px; }
+          #slPresenter .pvcnt { margin-left: 16px; color: #ccc; }
+          #slPresenter .pvmain { flex: 1; display: flex; gap: 12px; padding: 12px; min-height: 0; }
+          #slPresenter .pvcur { flex: 1 1 64%; display: flex; align-items: center; justify-content: center; background: #000; min-width: 0; cursor: pointer; }
+          #slPresenter .pvcur .host, #slPresenter .pvnext { position: relative; overflow: hidden; }
+          #slPresenter .pvside { flex: 1 1 36%; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+          #slPresenter .pvnext { height: 34%; flex: 0 0 auto; background: #000; }
+          #slPresenter .pvlbl { color: #999; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; display: flex; gap: 6px; align-items: center; }
+          #slPresenter .pvlbl button { padding: 0 6px; font-size: 11px; }
+          #slPresenter .pvnotes { flex: 1; overflow-y: auto; background: #0f1013; border: 1px solid #333; border-radius: 4px; padding: 10px 12px; line-height: 1.45; white-space: normal; user-select: text; }
+          #slPick { position: fixed; z-index: 10060; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, 90vw); max-height: 80vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+          #slPick .hd2 { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+          #slPick .grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; padding: 10px; }
+          #slPick .grid figure { margin: 0; cursor: pointer; border: 2px solid transparent; border-radius: 4px; overflow: hidden; background: #000; }
+          #slPick .grid figure:hover { border-color: var(--tiger); }
+          #slPick .grid img { width: 100%; height: 96px; object-fit: cover; display: block; }
+          #slPick .grid figcaption { font-size: 10px; color: var(--dim); padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: var(--panel); }
+          #slStage .rot { position: absolute; border-radius: 50%; background: #fff; border: 2px solid var(--tiger); box-sizing: border-box; z-index: 5; cursor: grab; }
+          #slStage .rotl { position: absolute; background: var(--tiger); z-index: 4; pointer-events: none; }
           @keyframes slFadeIn { from { opacity: 0; } to { opacity: 1; } }
           @keyframes slPushIn { from { transform: translateX(var(--sl-w)); } to { transform: translateX(0); } }
           @keyframes slPushInB { from { transform: translateX(calc(-1 * var(--sl-w))); } to { transform: translateX(0); } }
@@ -79,7 +103,11 @@
           <span class="sep"></span>
           <button class="ghost" type="button" id="slPlay" title="Present from the first slide (F5); Shift+F5 = from this slide">▶ Present</button>
           <button class="ghost" type="button" id="slPlayHere" title="Present from this slide (Shift+F5)">▶ From here</button>
+          <button class="ghost" type="button" id="slPresent2" title="Presenter view: the slide, the next one, your notes and a timer here - the audience window shows the slide (move it to the projector)">🎤 Presenter view</button>
+          <span class="sep"></span>
+          <button class="ghost" type="button" id="slImport" title="Open a PowerPoint file (.pptx) as a presentation">⤒ Open PowerPoint</button>
           <button class="ghost" type="button" id="slExport" title="Save as a PowerPoint file (.pptx) - downloaded and kept in the slides folder">⤓ PowerPoint</button>
+          <button class="ghost" type="button" id="slPdf" title="Save as a PDF - every slide (▾ with the speaker notes) - downloaded and kept in the slides folder">⤓ PDF ▾</button>
           <span class="sep"></span>
           <span id="slMsg"></span>
         </div>
@@ -92,7 +120,7 @@
           <span class="sep"></span>
           <button class="ghost" type="button" id="slAddText" title="A text box">🅃 Text</button>
           <button class="ghost" type="button" id="slAddShape" title="A shape">⬚ Shape ▾</button>
-          <button class="ghost" type="button" id="slAddPic" title="A picture from this computer (or drop / paste one on the slide)">🖼 Picture</button>
+          <button class="ghost" type="button" id="slAddPic" title="A picture - from this computer, the Gallery or Assets (or drop / paste one on the slide)">🖼 Picture ▾</button>
           <span class="sep"></span>
           <select id="slFont" title="Font"></select>
           <input type="number" id="slSize" min="6" max="300" title="Text size (px on the slide)">
@@ -121,5 +149,6 @@
         </div>
         <textarea id="slNotes" placeholder="Speaker notes for this slide" spellcheck="true"></textarea>
         <input type="file" id="slPicFile" accept="image/*" multiple hidden>
+        <input type="file" id="slPptxFile" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
       </div>
     </div>

@@ -331,6 +331,12 @@
           "what": "🎞 Slides - saving presentations as PowerPoint files (.pptx) (MIT)"
         },
         {
+          "name": "xmldom",
+          "by": "the xmldom contributors",
+          "url": "https://github.com/xmldom/xmldom",
+          "what": "🎞 Slides - reading PowerPoint files (.pptx) (MIT)"
+        },
+        {
           "name": "ImapFlow and mailparser",
           "by": "Postal Systems (Andris Reinman)",
           "url": "https://github.com/postalsys/imapflow",

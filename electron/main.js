@@ -92,6 +92,8 @@ function createWindow() {
   win.once("ready-to-show", () => { winReady = true; maybeShowMain(); });   // 2.701.0: after the splash
   // keep external links in the real browser, not in a chromeless app window
   win.webContents.setWindowOpenHandler(({ url }) => {
+    // 2.832.0: 🎞 Slides' audience window (the presenter view) is the app's own page - a window of the app, not the browser
+    if (url === `http://127.0.0.1:${PORT}/static/slideaudience.html`) return { action: "allow", overrideBrowserWindowOptions: { autoHideMenuBar: true, backgroundColor: "#000000", title: "bitGen Studio - Slides", width: 1280, height: 760 } };
     shell.openExternal(url);
     return { action: "deny" };
   });

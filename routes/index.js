@@ -121,6 +121,10 @@ function mount(app) {
   require("../lib/appLog").start();   // 2.522.0: the app console kept for 🐞 bug reports (from the first line on)
   require("./layouts").guard(app);     // 2.587.0: FIRST - a layout being applied holds off the page's own layout saves; a fresh install starts from layouts/default.json
   require("./runpodServerless").early(app);   // 2.743.0: BEFORE express.json - the serverless adapter takes big workflows + multipart uploads
+  // 2.832.0: BEFORE express.json - workbooks and decks are often bigger than its 100 KB (pictures in a deck): the global parser
+  // refused them with 413 "the request is too big" before their own 45 / 90 MB parsers ran (▦ saves of big workbooks too)
+  require("./sheets").mount(app);      // 2.822.0: ▦ Spreadsheet - workbooks (.bgs) in projects/<p>/sheets
+  require("./slides").mount(app);      // 2.831.0: 🎞 Slides - decks (.bgk) in projects/<p>/slides, .pptx in / out, PDF kept
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
@@ -205,8 +209,6 @@ function mount(app) {
   require("./pdf").mount(app);         // 2.424.0: the image editor's PDF files kept in the project (projects/<p>/pdf)
   require("./dtp").mount(app);         // 2.799.0: the image editor's desktop-publishing exports (PDF / .ai / SVG / CorelDRAW pack) in projects/<p>/dtp
   require("./docx").mount(app);        // 2.814.0: the image editor's document text as .docx (out + in) in projects/<p>/docs
-  require("./sheets").mount(app);      // 2.822.0: ▦ Spreadsheet - workbooks (.bgs) in projects/<p>/sheets
-  require("./slides").mount(app);      // 2.831.0: 🎞 Slides - decks (.bgk) in projects/<p>/slides, .pptx out
   require("./mail").mount(app);        // 2.818.0: ✉ Mail - the user's own mailbox over IMAP / SMTP, the LLM flags + drafts
   require("./laser").mount(app);       // 2.803.0: the image editor's laser toolpaths (G-code) in projects/<p>/laser
   require("./laserLink").mount(app);   // 2.804.0: the laser over USB (serial) / Wi-Fi (TCP), held by this server

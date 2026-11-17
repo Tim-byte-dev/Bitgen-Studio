@@ -1101,6 +1101,10 @@
           "Present from the first slide / from this slide"
         ],
         [
+          "Alt+F5",
+          "The presenter view (the audience window shows the slide)"
+        ],
+        [
           "Ctrl+M",
           "A new slide after this one"
         ],

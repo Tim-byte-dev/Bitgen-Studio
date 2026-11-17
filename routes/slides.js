@@ -5,6 +5,9 @@
 //   POST   /api/slides/file             {name, deck} -> {name, size}
 //   DELETE /api/slides/file?name=
 //   POST   /api/slides/export/pptx      {name, deck} -> the .pptx (also kept in the project's slides folder)
+//   2.832.0 (lib/slidePptxIn.js):
+//   POST   /api/slides/import           a .pptx (raw body) -> {deck, notes}
+//   POST   /api/slides/export/pdf?name= a PDF the page made (raw body) -> {name, size} (kept in the project's slides folder)
 "use strict";
 const express = require("express");
 const SF = require("../lib/slideFiles");
@@ -26,5 +29,16 @@ function mount(app) {
       res.send(buf);
     } catch (e) { res.status(e.status || 500).json({ error: e.message || String(e) }); }
   });
+  app.post("/api/slides/import", express.raw({ type: () => true, limit: "200mb" }), wrap(async (req) => {
+    if (!req.body || !req.body.length) throw Object.assign(new Error("no file came"), { status: 400 });
+    if (req.body[0] !== 0x50 || req.body[1] !== 0x4b) throw Object.assign(new Error("that is not a .pptx presentation (an older .ppt? save it as .pptx first)"), { status: 400 });
+    return require("../lib/slidePptxIn").fromPptx(req.body);
+  }));
+  app.post("/api/slides/export/pdf", express.raw({ type: () => true, limit: "300mb" }), wrap((req) => {
+    if (!req.body || req.body.slice(0, 5).toString() !== "%PDF-") throw Object.assign(new Error("that is not a PDF"), { status: 400 });
+    const name = SF.safeName(req.query.name).replace(/\.bgk$/i, ".pdf"), f = require("path").join(SF.dir(), name);
+    require("fs").writeFileSync(f, req.body);
+    return { name, size: req.body.length };
+  }));
 }
 module.exports = { mount };

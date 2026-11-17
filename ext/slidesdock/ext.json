@@ -5,7 +5,9 @@
   "html": "dock.html",
   "scripts": [
     "slidecore.js",
+    "slidedraw.js",
     "slidesdock.js",
+    "slideio.js",
     "slideshow.js"
   ]
 }

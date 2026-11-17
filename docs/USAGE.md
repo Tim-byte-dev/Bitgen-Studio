@@ -9455,6 +9455,15 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **▶ Present** (F5) / **▶ From here** (Shift+F5): full screen; → / Space / a click = next, ← = back, a number + Enter = that slide, B / W = black / white screen, Esc = end; hidden slides skipped.
 - **Files**: 📄 New ▾ (a theme, 16:9 or 4:3), 📂 Open ▾, 💾 Save (Ctrl+S) -> the project's slides folder (.bgk); ⤓ **PowerPoint** = a .pptx (backgrounds, text with fonts / bullets, shapes, pictures, notes) downloaded and kept there.
 
+## 🎞 Slides - the presenter view, PowerPoint files in, PDF out, turning (2.832.0)
+
+- **🎤 Presenter view** (Alt+F5): here the slide, the next slide, your speaker notes (A− / A+), a timer (⏸ / ↺), the time and the slide number; the **audience window** shows only the slide - move it to the projector and double-click it (or F11) for full screen. The keys work in both windows (→ / Space / a click, ←, a number + Enter, B = black for the audience, Esc ends it and closes the audience window).
+- **⤒ Open PowerPoint** (or drop a .pptx on the slide): the slides, text with its fonts / sizes / colours / bullets, shapes, pictures, groups, backgrounds, notes, hidden slides and transitions - places kept in PowerPoint's layouts and masters are found there; tables, charts and SmartArt are left out (and counted). ⤓ PowerPoint now writes each slide's transition too.
+- **⤓ PDF ▾**: Slides (a page each) or Slides + speaker notes - downloaded and kept in the slides folder; hidden slides left out.
+- **Turning**: the round handle over a picked item turns it (Shift = 15° steps; it clicks to 0 / 90 / 180 / 270°); a turned item sizes along its own sides.
+- **🖼 Picture ▾**: from this computer, **the Gallery** or **Assets** (a picker of the project's pictures with a search).
+- Fixed: a workbook (▦) or presentation over 100 KB could not be saved ("the request is too big").
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9551,6 +9560,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
 - **[ExcelJS](https://github.com/exceljs/exceljs)** (Guyon Roche and the ExcelJS contributors) - ▦ Spreadsheet - opening and saving Excel workbooks (.xlsx) (MIT)
 - **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)** (Brent Ely and the PptxGenJS contributors) - 🎞 Slides - saving presentations as PowerPoint files (.pptx) (MIT)
+- **[xmldom](https://github.com/xmldom/xmldom)** (the xmldom contributors) - 🎞 Slides - reading PowerPoint files (.pptx) (MIT)
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)** (Postal Systems (Andris Reinman)) - ✉ Mail - reading your mailbox over IMAP and opening emails (MIT)
 - **[Nodemailer](https://nodemailer.com)** (Andris Reinman) - ✉ Mail - sending over your own mail server (MIT-0)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)

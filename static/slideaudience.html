@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- bitGen Studio — 🎞 Slides (2.832.0): the AUDIENCE window of the presenter view. The presenter (ext/slidesdock/slideshow.js
+     in the main window) opens it and puts each slide in #host; keys here go back to it. Double-click = full screen. -->
+<html><head><meta charset="utf-8"><title>bitGen Studio - Slides</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: none; user-select: none; }
+  body.ptr { cursor: default; }
+  #host { position: absolute; left: 0; top: 0; overflow: hidden; }
+  #host > .wrap { position: absolute; inset: 0; overflow: hidden; }
+  .slslide { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; }
+  .slslide .it { position: absolute; box-sizing: border-box; }
+  .slslide .it .tx { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2; padding: 4px; box-sizing: border-box; }
+  .slslide .it .tx .p { min-height: 1.2em; }
+  .slslide .it .tx.bul .p:not(:empty) { padding-left: 1.1em; text-indent: -1.1em; }
+  .slslide .it .tx.bul .p:not(:empty)::before { content: "•"; display: inline-block; width: 1.1em; text-indent: 0; color: var(--sl-accent); }
+  .slslide .it svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .slslide .it img { width: 100%; height: 100%; display: block; }
+  #tip { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: #bbb; font: 13px sans-serif; background: rgba(30,30,30,.85); padding: 6px 12px; border-radius: 6px; transition: opacity .6s; }
+  @keyframes slFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slPushIn { from { transform: translateX(var(--sl-w)); } to { transform: translateX(0); } }
+  @keyframes slPushInB { from { transform: translateX(calc(-1 * var(--sl-w))); } to { transform: translateX(0); } }
+  @keyframes slZoomIn { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+  @keyframes slWipeIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+</style></head>
+<body><div id="host"></div><div id="tip">Move this window to the screen the audience sees, then double-click it (or press F11) for full screen</div>
+<script>
+  (function () {
+    "use strict";
+    const tip = document.getElementById("tip"); setTimeout(() => { tip.style.opacity = "0"; }, 6000);
+    let t = 0; document.addEventListener("pointermove", () => { document.body.classList.add("ptr"); clearTimeout(t); t = setTimeout(() => document.body.classList.remove("ptr"), 1800); });
+    document.addEventListener("dblclick", () => { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { /* fine */ } });
+    const boss = () => { try { return window.opener && window.opener.H3SlideShow; } catch (e) { return null; } };
+    document.addEventListener("keydown", (e) => { if (e.key === "F11") return; const b = boss(); if (b && b.key) { e.preventDefault(); b.key(e); } }, true);
+    document.addEventListener("click", () => { const b = boss(); if (b && b.next) b.next(); });
+    document.addEventListener("contextmenu", (e) => { e.preventDefault(); const b = boss(); if (b && b.prev) b.prev(); });
+    window.addEventListener("resize", () => { const b = boss(); if (b && b.fitAudience) b.fitAudience(); });
+    window.H3AudReady = true;
+  })();
+</script></body></html>
