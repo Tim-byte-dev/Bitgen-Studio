@@ -9259,6 +9259,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - A Blender layer picked again opens its scene at the **same view** it was left at - the camera, the field of view, the point the view turns round and the frame (or the scene camera, when that was the view).
 - The image editor's ✨ AI (Generate / Edit / Refine from a Blender layer and everything else), the preview's 🎨 Change style and the line art now **start ComfyUI** on this computer first when it is not running, and wait for it - the render no longer fails with "cannot reach ComfyUI at http://127.0.0.1:8188". A render that goes to a RunPod pod skips this.
 
+## Your own dockers keep what is in them, and stay under floating dockers (2.808.0)
+
+- A docker you made (▣ New docker…, Ctrl+Alt+D) keeps the dockers you put in it - Basic Settings, LLM tokens, the prompt docker … - after a restart, and when a docker layout (⊞) or a workspace is applied. Only you take one out: drag its small title bar out, or ⇲.
+- Docked (beside a docker or as a column of its own) it sits with the other docked dockers - just above the System docker - so floating dockers (🧩 Model manager, 🖥 GPU, PODS …) are always in front of it. Floating, it is a floating docker like the others.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

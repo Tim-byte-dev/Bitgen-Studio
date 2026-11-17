@@ -14089,6 +14089,13 @@ node scripts/test-runpodv2807.js > /tmp/runpodv2807.log 2>&1 \
 node scripts/test-comfyready807.js > /tmp/comfyready807.log 2>&1 \
   && ok "2.807.1 the editor's AI starts ComfyUI first; a Blender layer comes back at its view" \
   || { bad "2.807.1 ComfyUI start / Blender view pins"; grep -a "^FAIL" -A1 /tmp/comfyready807.log | head -12; }
+# ---- 2.808.0 (Tim: "please fix the new custom docker ... it doesn't hold it's contents(other dockers) after restart and is in front of other dockers like model manager and gpu ... it should be at the level of the system docker + 1")
+node scripts/test-dockkeep808.js > /tmp/dockkeep808.log 2>&1 \
+  && ok "2.808.0 ▣ dockers keep their members; docked ones at z 1 under floating dockers (pins)" \
+  || { bad "2.808.0 ▣ docker pins"; grep -a "^FAIL" -A1 /tmp/dockkeep808.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui808-ui.js > /tmp/ui808.log 2>&1 \
+  && ok "2.808.0 a ▣ column docker keeps Basic Settings through a layout, a take-out and a restart; the Model manager floats over it" \
+  || { bad "2.808.0 ▣ docker browser test"; grep -a "^FAIL" -A1 /tmp/ui808.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

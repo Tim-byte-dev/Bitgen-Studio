@@ -110,7 +110,7 @@
       try {
         root.applyLayout(sc.docks);
         var pr = p.variant.prompt;
-        if (pr && key.split("+").indexOf("promptdock") >= 0 && typeof root.dsEntry === "function") {
+        if (pr && key.split("+").indexOf("promptdock") >= 0 && typeof root.dsEntry === "function" && !(root.H3DGDock && root.H3DGDock.holds && root.H3DGDock.holds("pf.promptdock"))) {   // 2.808.0: not out of a ▣ docker
           var e = root.dsEntry("promptdock");
           ["floating", "x", "y", "float_w", "float_h", "dock_to", "dock_side", "dock_w"].forEach(function (k) { if (pr[k] !== undefined) e[k] = pr[k]; });
           if (root.PFloat && root.PFloat.restore) root.PFloat.restore();

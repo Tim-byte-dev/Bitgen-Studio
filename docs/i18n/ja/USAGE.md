@@ -5589,6 +5589,12 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - Blender レイヤーを再び選ぶと、そのシーンは離れたときと**同じビュー**で開きます - カメラ、画角、ビューが回る中心点、フレーム（シーンカメラがビューだった場合はシーンカメラ）。
 - 画像エディターの ✨ AI（Blender レイヤーからの Generate / Edit / Refine など）、プレビューの 🎨 Change style、線画は、ComfyUI が動いていなければ先にこのコンピューターで**ComfyUI を起動**して待つようになりました - 「cannot reach ComfyUI at http://127.0.0.1:8188」でレンダリングが失敗しなくなります。RunPod の Pod に送られるレンダリングではこの手順を省きます。
 
+## Your own dockers keep what is in them, and stay under floating dockers (2.808.0)
+<!-- en: your-own-dockers-keep-what-is-in-them-and-stay-under-floating-dockers-2-808-0 52752f4d78b2 -->
+
+- 自分で作ったドッカー（▣ New docker…、Ctrl+Alt+D）は、入れたドッカー（Basic Settings、LLM tokens、プロンプトドッカーなど）を再起動後も、ドッカーレイアウト（⊞）やワークスペースを適用しても保ちます。取り出せるのはユーザーだけです - 小さなタイトルバーをドラッグして外に出すか、⇲ を使います。
+- ドッキングした状態（ドッカーの横、または独立した列）では、ほかのドッキングされたドッカーと同じ層 - System ドッカーのすぐ上 - に置かれるので、フローティングのドッカー（🧩 Model manager、🖥 GPU、PODS など）が常に手前に表示されます。フローティング状態では、ほかと同じフローティングのドッカーです。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

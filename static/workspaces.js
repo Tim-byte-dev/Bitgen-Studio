@@ -111,7 +111,10 @@
   }
   function setFloats(showIds) {
     var SF = root.SecFloat; if (!SF || !SF.windows) return;
-    Object.keys(SF.windows).forEach(function (id) { var on = showIds.indexOf(id) >= 0; if (!!SF.state(id).shown !== on) SF.show(id, on); });
+    Object.keys(SF.windows).forEach(function (id) {
+      if (root.H3DGDock && root.H3DGDock.holds && root.H3DGDock.holds("sf." + id)) return;   // 2.808.0: in a ▣ docker - its docker decides
+      var on = showIds.indexOf(id) >= 0; if (!!SF.state(id).shown !== on) SF.show(id, on);
+    });
   }
   function setGenMode(m) {
     var g = $("genModeSel"); if (!m || !g || g.value === m) return;
@@ -160,7 +163,7 @@
           var d = {}; Object.keys(s.docks || {}).forEach(function (k) { if (BOTTOM.indexOf(k) >= 0) { d[k] = Object.assign({}, s.docks[k]); delete d[k].hidden; delete d[k].state; } });
           if (typeof root.applyLayout === "function") root.applyLayout(d);
           var pr = s.prompt;
-          if (pr && typeof root.dsEntry === "function" && vb.promptdock && !vb.promptdock.gone) {
+          if (pr && typeof root.dsEntry === "function" && vb.promptdock && !vb.promptdock.gone && !(root.H3DGDock && root.H3DGDock.holds && root.H3DGDock.holds("pf.promptdock"))) {   // 2.808.0: not out of a ▣ docker
             var e = root.dsEntry("promptdock");
             ["floating", "x", "y", "float_w", "float_h", "dock_to", "dock_side", "dock_w"].forEach(function (k) { if (pr[k] !== undefined) e[k] = pr[k]; });
             if (root.PFloat && root.PFloat.restore) root.PFloat.restore();

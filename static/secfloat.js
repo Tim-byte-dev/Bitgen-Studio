@@ -353,6 +353,7 @@
       let n = 0;
       for (const id of Object.keys(m)) {
         if (!W[id] || !m[id] || typeof m[id] !== "object") continue;
+        if (window.H3DGDock && window.H3DGDock.holds && window.H3DGDock.holds("sf." + id)) continue;   // 2.808.0: in a ▣ docker - stays there
         const was = !!rec()[id].shown;
         Object.assign(rec()[id], window.DockFloat.pure.cleanState(Object.assign({}, rec()[id], m[id])));
         W[id].panel.restore(); save(id); n++;

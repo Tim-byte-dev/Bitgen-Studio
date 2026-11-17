@@ -5824,6 +5824,12 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - 再次选中 Blender 图层时，它的场景会以离开时的**同一视图**打开 - 相机、视野、视图环绕的中心点和帧（如果当时用的是场景相机，则为场景相机）。
 - 图像编辑器的 ✨ AI（从 Blender 图层 Generate / Edit / Refine 等）、预览中的 🎨 Change style 和线稿，在 ComfyUI 未运行时会先在本机**启动 ComfyUI** 并等待 - 渲染不会再因“cannot reach ComfyUI at http://127.0.0.1:8188”而失败。发送到 RunPod Pod 的渲染会跳过这一步。
 
+## Your own dockers keep what is in them, and stay under floating dockers (2.808.0)
+<!-- en: your-own-dockers-keep-what-is-in-them-and-stay-under-floating-dockers-2-808-0 52752f4d78b2 -->
+
+- 你自己创建的面板（▣ New docker…、Ctrl+Alt+D）在重启后、以及应用面板布局（⊞）或工作区时，都会保留放进去的面板（Basic Settings、LLM tokens、提示词面板等）。只有你自己能把它们取出 - 拖动它的小标题栏移出，或使用 ⇲。
+- 停靠时（在某个面板旁边，或作为单独的一列），它和其他停靠的面板处在同一层 - 紧挨在 System 面板之上 - 因此浮动面板（🧩 Model manager、🖥 GPU、PODS 等）始终显示在它前面。浮动时，它和其他浮动面板一样。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

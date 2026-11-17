@@ -297,6 +297,10 @@
       + ".h3fp .bdock.dg-floating>.bhead{display:none}.h3fp .bdock.dg-floating>.bbody{flex:1 1 auto;min-height:0;overflow:auto;display:block}"
       + ".h3fp:has(>.h3fp-b>.bdock.dg-floating.dockgone){display:none!important}"   // its statusbar button hides the whole window
       // 2.549.0: a permanent ▣ docker - its window fills a regular docker in the main column
+      // 2.808.0 (Tim: "is in front of other dockers like model manager and gpu, but it is a placeholder docker it should be at
+      // the level of the system docker + 1"): a docked ▣ docker is its own stacking context at z 1 (the docked columns are
+      // auto) - the dockers inside it (Basic Settings with the z it had while floating …) can never paint over a floating one
+      + ".bdock.dgperm{position:relative;z-index:1;isolation:isolate}.bdock.dgperm .secfloat,.bdock.dgperm #promptdock{z-index:auto!important}"
       + ".bdock.dgperm{min-height:180px}.bdock.dgperm>.bbody{padding:0;min-height:0;overflow:hidden}.bdock.dgperm.maxed{flex:1 1 auto!important;height:auto!important}.bdock.dgperm.collapsed{flex:0 0 30px!important;min-height:0}"
       + ".h3fp.dg-perm{position:relative!important;left:auto!important;top:auto!important;width:auto!important;height:auto!important;flex:1 1 auto;min-height:0;z-index:auto!important;box-shadow:none!important;border:0!important;border-radius:0!important;display:flex;flex-direction:column}"
       + ".h3fp.dg-perm>.h3fp-t{display:none!important}.h3fp.dg-perm>.h3fp-b{flex:1 1 auto;min-height:0}"

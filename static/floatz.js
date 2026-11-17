@@ -108,6 +108,7 @@
     for (const w of doc.querySelectorAll(sel)) {
       const on = shownNow(w), before = was.get(w);
       was.set(w, on);
+      if (before === true && !floating(w)) drop(w);      // 2.808.0: docked / put in a ▣ docker - its band z goes (it painted over floating ones)
       if (on && before === false) raise(w);              // just floated / shown again
       else if (on && before === undefined && booted) raise(w);   // a new one made floating (after the page's start)
     }

@@ -438,16 +438,21 @@
   }
   function look() {
     if (!P() || !G()) return;
-    // a member taken out by its own system (a ⊞ layout, a workspace): the ▣ docker lets it go where it is
+    // 2.808.0 (Tim: "the new custom docker ... doesn't hold it's contents (other dockers) after restart"): a member taken out
+    // by its own system (a ⊞ layout applied after the start, a workspace, a restore) is PUT BACK in its ▣ docker - before, the
+    // ▣ docker let it go there and forgot it (the next save wrote it out). Only the user moves a member out (drag / ⇲ =
+    // memberState "float"); the layout appliers leave members alone (SecFloat.applyStates, workspaces, ⊞ - holds()).
     regrid();
     for (const r of P().list()) {
       if (!/^(sf|pf)\./.test(r.id) || (r.state !== "in" && r.state !== "zone")) continue;
       const rec = P().get(r.id), el = memberEl(r.id);
       if (rec && el && rec.state === "zone") { if (!el.closest(".pcfd")) { rec.home = { parent: el.parentNode || doc.body, before: el.nextSibling }; QUIET[r.id] = true; P().home(r.id); rec.home = { parent: doc.body, before: null }; } continue; }   // 2.609.0
-      if (rec && el && rec.win && !rec.win.contains(el)) { rec.home = { parent: el.parentNode || doc.body, before: el.nextSibling }; QUIET[r.id] = true; P().home(r.id); rec.home = { parent: doc.body, before: null }; }
+      if (rec && el && rec.win && !rec.win.contains(el) && rec.docker && P().get(rec.docker)) { tev("docker_member_back", r.id + ">" + rec.docker); takeIn(r.id, rec.docker); }
     }
   }
   function start() { css(); membersBack(0); root.setInterval(look, 1000); look(); }
-  root.H3DGDock = Object.assign(API, { place, leaveCol, gone: (id) => leaveCol(id, null), regrid, seams: () => seamsNow(null), headOut, track, takeIn, wantsDock: wants, members: () => P().list().filter((r) => /^(sf|pf)\./.test(r.id)).map((r) => ({ id: r.id, state: r.state, docker: r.docker })) });
+  /** 2.808.0: is a member (sf.<id> / pf.promptdock) in a ▣ docker now? - the layout appliers leave it there */
+  function holds(id) { try { const r = P() && P().get(id); return !!(r && (r.state === "in" || r.state === "zone")); } catch (e) { return false; } }
+  root.H3DGDock = Object.assign(API, { holds, place, leaveCol, gone: (id) => leaveCol(id, null), regrid, seams: () => seamsNow(null), headOut, track, takeIn, wantsDock: wants, members: () => P().list().filter((r) => /^(sf|pf)\./.test(r.id)).map((r) => ({ id: r.id, state: r.state, docker: r.docker })) });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : globalThis);
