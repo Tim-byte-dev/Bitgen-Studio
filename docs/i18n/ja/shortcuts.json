@@ -1032,7 +1032,7 @@
       ]
     },
     {
-      "en": "3e4ad2d5813a",
+      "en": "3fdff6ebbc6a",
       "title": "スプレッドシート",
       "rows": [
         [
@@ -1098,6 +1098,14 @@
         [
           "Right-click a cell / a tab",
           "行と列の挿入 / 削除 / シートの名前変更、複製、移動、削除"
+        ],
+        [
+          "Drag a chart / its corner",
+          "移動／サイズ変更(ダブルクリック:タイトル、種類、セル、凡例を変更)"
+        ],
+        [
+          "Delete / arrows (a chart picked)",
+          "グラフを削除／少し動かす"
         ]
       ]
     }

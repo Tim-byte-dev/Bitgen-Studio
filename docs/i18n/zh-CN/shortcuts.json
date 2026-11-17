@@ -1032,7 +1032,7 @@
       ]
     },
     {
-      "en": "3e4ad2d5813a",
+      "en": "3fdff6ebbc6a",
       "title": "电子表格",
       "rows": [
         [
@@ -1098,6 +1098,14 @@
         [
           "Right-click a cell / a tab",
           "插入 / 删除行和列 / 重命名、复制、移动、删除工作表"
+        ],
+        [
+          "Drag a chart / its corner",
+          "移动／调整大小(双击:更改标题、类型、单元格、图例)"
+        ],
+        [
+          "Delete / arrows (a chart picked)",
+          "删除图表／微调位置"
         ]
       ]
     }

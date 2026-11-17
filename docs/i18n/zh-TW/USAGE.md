@@ -5969,6 +5969,14 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **保護**：鎖定 / 隱藏，以及保護此工作表（也可在工作表標籤的右鍵選單中：🔒 保護工作表 / 🔓 復原工作表保護）。在受保護的工作表中，鎖定的儲存格不能輸入或更改格式，不能插入或刪除行 / 列，隱藏儲存格的公式不會顯示在 ƒx 欄中。所有儲存格預設鎖定——對需要他人填寫的儲存格取消鎖定。
 - 工具列的 **數字格式** 清單（常規、數值、貨幣、會計專用、短 / 長日期、時間、百分比、分數、科學記數、文字、其他數字格式…）和 **.0← / .00→** 編輯的是同樣的程式碼。數字太寬放不下時顯示 `#####`。輸入的內容會自動設定格式：`$1,500` 貨幣、`12%` / `12.5%` 百分比、`1,234` 千位分隔、`9:30 pm` 時間、`1 1/2` 分數、`17/11/2026` 日期。
 
+## ▦ 試算表——Excel 檔案、圖表、由 LLM 生成的 ✨ 儀表板（2.824.0）
+<!-- en: spreadsheet-excel-files-charts-dashboard-by-the-llm-2-824-0 a5a4671233ca -->
+
+- **⤒ 匯入** 可開啟 Excel 工作簿 (.xlsx) 或 CSV / TSV 檔案。從 .xlsx 讀入所有工作表、值、公式（包括共享公式）、數字格式、字型、填充（純色、圖案、雙色漸層）、邊框、對齊、保護、合併儲存格、列寬、行高和凍結窗格；主題顏色轉為普通顏色，淺色填充上的黑色文字保持黑色。使用 bitGen 尚不支援的函式的公式會顯示檔案儲存時的結果。CSV 的分隔符（逗號、分號、製表符）會自動識別，輸入的值會獲得格式（$、%、日期）。
+- **⤓ 匯出 ▾**：Excel 工作簿（.xlsx——下載並儲存在專案的 sheets 資料夾中，公式帶結果）或此工作表的 CSV。圖表保留在 bitGen 自己的 .bgs 中（.xlsx 中儲存的是圖表的資料）。
+- **📊 圖表 ▾**——為所選儲存格建立柱形、條形、折線、面積、餅圖、圓環或散點圖（第一行 = 系列名稱，第一列 = 類別；只選一個儲存格時 = 其周圍的表格）。拖曳可移動，拖曳角可調整大小，雙擊可更改標題、類型、資料範圍或圖例，Delete 刪除，方向鍵微調。範圍會隨插入或刪除的行 / 列移動；圖表隨工作簿一起儲存。
+- **✨ 儀表板**——LLM（提示詞停靠窗的）會看到資料的列——名稱、類型（金額、整數、百分比、日期、文字）、幾個常見值和合計，從不是每一行——以及你的要求，並以計劃作答。bitGen 會核對其中每個列名，然後搭建新的第一張工作表：標題、磁貼中最多 6 個關鍵數字、最多 4 個細分（帶佔比和合計的表格 + 旁邊的柱形 / 條形 / 餅圖 / 圓環圖）、按日 / 周 / 月 / 季度 / 年的趨勢及折線或面積圖——全部是隨資料更新的即時公式（SUMIFS、COUNTIFS …）——並把資料工作表格式化為表格（主題標題、隔行底紋、數字格式、列寬、篩選、凍結標題）。可從此工作簿開始，也可選擇 Excel / CSV 檔案。不使用 LLM 時（取消勾選，或它沒有回應），計劃根據資料本身的形態生成。按一次 Ctrl+Z 即可復原整個儀表板。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5983,7 +5991,7 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 <!-- credits:start -->
 
 ## 致謝
-<!-- en: credits a71553c4e355 -->
+<!-- en: credits 763cf27a1713 -->
 
 **出品與開發：Tim Paul**
 
@@ -6064,6 +6072,7 @@ bitGen Studio 建立在許多人的成果之上。感謝以下所有人——我
 - **[docx](https://github.com/dolanmiu/docx)**（Dolan Miu）——把文件文字儲存為 Word 檔案 (.docx)（MIT）
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)**（Michael Williamson）——把 Word 檔案 (.docx) 作為文件文字開啟（BSD-2-Clause）
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——郵件合併生成的 Word 檔案 .zip（MIT）
+- **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）——▦ 試算表 - 開啟和儲存 Excel 活頁簿 (.xlsx)（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 郵件：透過 IMAP 讀取郵箱並開啟郵件（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 郵件：透過你自己的郵件伺服器傳送（MIT-0）
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)**（Agamnentzar）——PSD 檔案及其文字效果（MIT）

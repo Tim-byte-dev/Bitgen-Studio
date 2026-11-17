@@ -22,6 +22,9 @@
  *                (general left center right fill justify centerSel distributed) indent valign (top center bottom justify
  *                distributed) wrap shrink rot (-90..90) stack dir, bd {t r b l d1 d2: {s: line style, c}}, bg, pat {t, c},
  *                grad {c1, c2, d}, unlock, hide; the sheet's protect. ▤ Format Cells… / Ctrl+1 = sheetfmtdlg.js
+ *   2.824.0      charts on the sheet (sheet.charts, sheetchart.js): 📊 Chart ▾ from the selection, drawn over the cells,
+ *                dragged / sized (the corner), double-click = edit, Delete; ranges follow inserted rows; ⤒ Import /
+ *                ⤓ Export ▾ = sheetio.js; ✨ Dashboard = sheetdash.js
  */
 (function (root) {
   "use strict";
@@ -32,7 +35,7 @@
   const DW = 90, DH = 22, HW = 44, HH = 22;
   const newSheet = (name) => ({ name, cells: {}, cols: {}, rows: {}, merges: [], freeze: { r: 0, c: 0 } });
   const W = { name: "Workbook", sheets: [newSheet("Sheet1")], active: 0 };
-  const St = { sel: { r1: 0, c1: 0, r2: 0, c2: 0 }, act: { r: 0, c: 0 }, undo: [], redo: [], dirty: false, book: null, edit: null, clip: null, drag: null, booted: false, geo: null };
+  const St = { sel: { r1: 0, c1: 0, r2: 0, c2: 0 }, act: { r: 0, c: 0 }, undo: [], redo: [], dirty: false, book: null, edit: null, clip: null, drag: null, booted: false, geo: null, chart: null };
   const sh = () => W.sheets[W.active];
   const A = (c, r) => C().addr(c, r);
 
@@ -220,6 +223,18 @@
     for (const r of frs) for (const c of fcs) h.push(cellHtml(c, r));
     // merged cells that start off screen but reach in
     for (const [k, m] of G.mm) if (m.master) { const [c, r] = k.split(",").map(Number); if (!cs.includes(c) && !fcs.includes(c) || !rs.includes(r) && !frs.includes(r)) { if (m.c2 >= (cs[0] || 0) && m.r2 >= (rs[0] || 0)) h.push(cellHtml(c, r)); } }
+    // 2.824.0 the charts, over the cells (they scroll with the sheet)
+    if (root.SheetChart && (sh().charts || []).length) {
+      const cs0 = root.getComputedStyle(doc.documentElement), cv = (n, d) => okColor((cs0.getPropertyValue(n) || "").trim()) || d;
+      const look = { ink: cv("--text", "#e8e2d6"), dim: cv("--dim", "#9a927f"), line: cv("--line", "#3a352c"), font: baseFamily().replace(/"/g, "'") };
+      const get = (c, r) => book().get(W.active, c, r), label = (c, r) => shown(c, r);
+      for (const ch of sh().charts) {
+        const x = HW + ch.x - g.scrollLeft, y = HH + ch.y - g.scrollTop;
+        if (x > vw || y > vh || x + ch.w < HW || y + ch.h < HH) continue;
+        let pic = ""; try { pic = root.SheetChart.svg(ch, root.SheetChart.data(get, ch.range, label), ch.w - 2, ch.h - 2, look); } catch (e) { pic = ""; }
+        h.push(`<div class="ch${St.chart === ch.id ? " on" : ""}" data-ch="${esc(ch.id)}" data-noi18n title="${esc(ch.title || "Chart")} - drag to move, the corner to size, double-click to change, Delete to remove" style="left:${x}px;top:${y}px;width:${ch.w}px;height:${ch.h}px">${pic}<span class="chr" data-chr="${esc(ch.id)}"></span></div>`);
+      }
+    }
     // the selection
     const box = (r1, c1, r2, c2) => { const x = xOf(G, c1), y = yOf(G, r1); return { x, y, w: xOf(G, c2) + (G.colX[c2 + 1] - G.colX[c2]) - x, h: yOf(G, r2) + (G.rowY[r2 + 1] - G.rowY[r2]) - y }; };
     const sb = box(s.r1, s.c1, s.r2, s.c2), ab = (() => { const m = G.mm.get(St.act.c + "," + St.act.r); return m ? box(m.r1, m.c1, m.r2, m.c2) : box(St.act.r, St.act.c, St.act.r, St.act.c); })();
@@ -397,6 +412,7 @@
     S[key] = sz;
     S.merges = (S.merges || []).map((g) => C().adjustRefs("=" + g, S.name, S.name, axis, at, n).slice(1)).filter((g) => !/#REF!/.test(g));
     for (const X of W.sheets) for (const cell of Object.values(X.cells)) if (cell.v && cell.v[0] === "=") cell.v = C().adjustRefs(cell.v, S.name, X.name, axis, at, n);
+    if (S.charts) S.charts = S.charts.map((ch) => Object.assign(ch, { range: C().adjustRefs("=" + ch.range, S.name, S.name, axis, at, n).slice(1) })).filter((ch) => !/#REF!/.test(ch.range));
     const F = S.filter;      // the filter's block grows / shrinks with the rows (its picked values go with their columns)
     if (F && axis === "r") { if (F.r >= at) F.r = Math.max(at, F.r + n); if (F.r2 >= at) F.r2 = Math.max(F.r, F.r2 + n); }
     if (F && axis === "c") { const cols = {}; for (const [c, v] of Object.entries(F.cols || {})) { const i = +c; if (n < 0 && i >= at && i < at - n) continue; cols[i >= at ? i + n : i] = v; } F.cols = cols; if (F.c1 >= at) F.c1 = Math.max(at, F.c1 + n); if (F.c2 >= at) F.c2 = Math.max(F.c1, F.c2 + n); }
@@ -575,6 +591,45 @@
     W.sheets[i].name = name; St.book = null; tabs(); changed();
   }
 
+  /* ---------------------------------------------------------------- 2.824.0 charts */
+  const chartOf = (id) => (sh().charts || []).find((c) => c.id === id);
+  function insertChart(type) {
+    if (guardSheet()) return;
+    const s = norm(St.sel), R = s.r1 === s.r2 && s.c1 === s.c2 ? tableRange() : s;
+    if (!R) return msg("select the numbers to chart (with their headings) first", true);
+    const G = St.geo || geometry(), S = sh(), list = S.charts || (S.charts = []);
+    let n = list.length + 1; while (list.some((c) => c.id === "c" + n)) n++;
+    step();
+    const ch = { id: "c" + n, type: type || "column", title: "", range: A(R.c1, R.r1) + ":" + A(R.c2, R.r2), x: G.colX[Math.min(R.c2 + 1, G.nC - 1)] + 12, y: G.rowY[R.r1], w: 440, h: 270, legend: true };
+    const head = book().get(W.active, R.c1 + (R.c2 > R.c1 ? 1 : 0), R.r1); if (typeof head === "string" && R.c2 === R.c1 + 1) ch.title = head;
+    list.push(ch); St.chart = ch.id; changed();
+    msg("📊 a chart of " + ch.range + " - drag it, size it by its corner, double-click to change it");
+  }
+  const CHART_NAMES = { column: "Column chart", bar: "Bar chart", line: "Line chart", area: "Area chart", pie: "Pie chart", doughnut: "Doughnut chart", scatter: "Scatter chart" };
+  function chartMenu(btn) {
+    const r = btn.getBoundingClientRect(), names = { column: "▮ Column chart", bar: "▬ Bar chart", line: "⟋ Line chart", area: "◭ Area chart", pie: "◔ Pie chart", doughnut: "◎ Doughnut chart", scatter: "⁘ Scatter chart" };
+    const m = menu(r.left, r.bottom + 2, Object.keys(names).map((t) => `<div data-t="${t}">${names[t]}</div>`).join(""));
+    m.addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (!t) return; m.remove(); insertChart(t.dataset.t); });
+  }
+  function editChart(id, x, y) {
+    const ch = chartOf(id); if (!ch || guardSheet()) return;
+    const types = ["column", "bar", "line", "area", "pie", "doughnut", "scatter"];
+    const m = menu(x, y, `<div style="padding:6px 10px;cursor:default;display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center" data-noclick="1">
+      <span>Title</span><input type="text" id="chT" value="${esc(ch.title)}" style="width:200px">
+      <span>Type</span><select id="chY">${types.map((t) => `<option value="${t}"${t === ch.type ? " selected" : ""}>${CHART_NAMES[t]}</option>`).join("")}</select>
+      <span>Cells</span><input type="text" id="chR" value="${esc(ch.range)}" style="width:110px;font-family:monospace">
+      <span></span><label><input type="checkbox" id="chL"${ch.legend !== false ? " checked" : ""}> Legend</label></div><hr><div data-a="del">🗑 Delete the chart</div>`);
+    m.addEventListener("keydown", (e) => e.stopPropagation());
+    let stepped = false;
+    const upd = (fn) => { if (!stepped) { step(); stepped = true; } fn(); changed(); };
+    m.querySelector("#chT").addEventListener("input", (e) => upd(() => { ch.title = e.target.value.slice(0, 120); }));
+    m.querySelector("#chY").addEventListener("change", (e) => upd(() => { ch.type = e.target.value; }));
+    m.querySelector("#chR").addEventListener("change", (e) => { const v = e.target.value.trim().toUpperCase(); if (!root.SheetChart.parseRange(v)) return msg("not a range - like A1:C9", true); upd(() => { ch.range = v; }); });
+    m.querySelector("#chL").addEventListener("change", (e) => upd(() => { ch.legend = e.target.checked; }));
+    m.addEventListener("click", (e) => { if (e.target.closest('[data-a="del"]')) { m.remove(); removeChart(id); } });
+  }
+  function removeChart(id) { if (guardSheet()) return; step(); sh().charts = (sh().charts || []).filter((c) => c.id !== id); St.chart = null; changed(); msg("chart deleted"); }
+
   /* ---------------------------------------------------------------- files */
   async function api(method, url, body) {
     const r = await fetch(url, { method, headers: body ? { "Content-Type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined });
@@ -614,6 +669,14 @@
   /* ---------------------------------------------------------------- wiring */
   function onGridDown(e) {
     const g = $("shGrid"), pr = $("shPane").getBoundingClientRect(), x = e.clientX - pr.left, y = e.clientY - pr.top, G = St.geo || geometry();
+    const chEl = e.target.closest(".ch");
+    if (chEl) {
+      e.preventDefault(); if (St.edit) commit();
+      const id = chEl.dataset.ch, ch = chartOf(id); St.chart = id; g.focus({ preventScroll: true });
+      if (ch && !sh().protect) St.drag = { kind: e.target.dataset.chr != null ? "chartsize" : "chart", id, x0: e.clientX, y0: e.clientY, o: { x: ch.x, y: ch.y, w: ch.w, h: ch.h }, snap: snapshot(), moved: false };
+      paint(); return;
+    }
+    if (St.chart) { St.chart = null; }
     if (e.target.closest(".ft")) { e.preventDefault(); const fr = e.target.getBoundingClientRect(); filterMenu(+e.target.dataset.ft, { x: fr.left, y: fr.bottom + 2 }); return; }
     if (e.target.dataset.rc != null) { e.preventDefault(); St.drag = { kind: "colw", c: +e.target.dataset.rc, x0: e.clientX, w0: G.colX[+e.target.dataset.rc + 1] - G.colX[+e.target.dataset.rc] }; return; }
     if (e.target.dataset.rr != null) { e.preventDefault(); St.drag = { kind: "rowh", r: +e.target.dataset.rr, y0: e.clientY, h0: G.rowY[+e.target.dataset.rr + 1] - G.rowY[+e.target.dataset.rr] }; return; }
@@ -635,6 +698,14 @@
   function onMove(e) {
     const d = St.drag; if (!d) return;
     const G = St.geo || geometry(), pr = $("shPane").getBoundingClientRect(), h = hit(G, e.clientX - pr.left, e.clientY - pr.top);
+    if (d.kind === "chart" || d.kind === "chartsize") {
+      const ch = chartOf(d.id); if (!ch) return;
+      const dx = e.clientX - d.x0, dy = e.clientY - d.y0; if (!d.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+      if (!d.moved) { St.undo.push(d.snap); if (St.undo.length > 80) St.undo.shift(); St.redo = []; d.moved = true; }
+      if (d.kind === "chart") { ch.x = Math.max(0, Math.round(d.o.x + dx)); ch.y = Math.max(0, Math.round(d.o.y + dy)); }
+      else { ch.w = Math.max(120, Math.round(d.o.w + dx)); ch.h = Math.max(90, Math.round(d.o.h + dy)); }
+      paintSoon(); return;
+    }
     if (d.kind === "colw") { sh().cols[d.c] = Math.max(24, Math.round(d.w0 + e.clientX - d.x0)); paintSoon(); return; }
     if (d.kind === "rowh") { sh().rows[d.r] = Math.max(14, Math.round(d.h0 + e.clientY - d.y0)); paintSoon(); return; }
     if (d.kind === "ref") { if (h.r < 0 || h.c < 0) return; const t = d.el, a = A(d.c, d.r), b = A(Math.max(0, h.c), Math.max(0, h.r)), txt = a === b ? a : C().addr(Math.min(d.c, h.c), Math.min(d.r, h.r)) + ":" + C().addr(Math.max(d.c, h.c), Math.max(d.r, h.r)); const end = t.selectionStart; t.value = t.value.slice(0, d.p) + txt + t.value.slice(end); t.setSelectionRange(d.p + txt.length, d.p + txt.length); $("shFormula").value = t.value; return; }
@@ -649,7 +720,7 @@
   }
   function onUp() {
     const d = St.drag; St.drag = null; if (!d) return;
-    if (d.kind === "colw" || d.kind === "rowh") { St.dirty = true; draft(); }
+    if (d.kind === "colw" || d.kind === "rowh" || ((d.kind === "chart" || d.kind === "chartsize") && d.moved)) { St.dirty = true; draft(); }
     if (d.kind === "fill" && d.to) fill(d.from, d.to); else if (d.kind === "fill") paint();
     if (d.kind === "sel" || d.kind === "rows" || d.kind === "cols") status();
   }
@@ -657,6 +728,13 @@
     if (St.edit || e.target !== $("shGrid")) return;
     if (!(e.ctrlKey || e.metaKey) || /^[zysabiu1ZYSABIU]$/.test(e.key)) e.stopPropagation();   // the app's own keys (Space, Delete, digits …) stay out of the cells
     const k = e.key, ctl = e.ctrlKey || e.metaKey, { c, r } = St.act;
+    if (St.chart && !ctl) {                          // a picked chart: Delete removes it, Esc lets it go, arrows nudge it
+      const ch = chartOf(St.chart);
+      if (k === "Delete" || k === "Backspace") { e.preventDefault(); return removeChart(St.chart); }
+      if (k === "Escape") { St.chart = null; return paint(); }
+      if (ch && /^Arrow/.test(k)) { e.preventDefault(); if (guardSheet()) return; step(); const d = e.shiftKey ? 10 : 1; if (k === "ArrowLeft") ch.x = Math.max(0, ch.x - d); if (k === "ArrowRight") ch.x += d; if (k === "ArrowUp") ch.y = Math.max(0, ch.y - d); if (k === "ArrowDown") ch.y += d; return changed(); }
+      St.chart = null;
+    }
     const move = (dc, dr) => { e.preventDefault(); if (e.shiftKey) { const s = St.sel; go(s.c2 + dc, s.r2 + dr, true); } else go(c + dc, r + dr); };
     if (ctl && (k === "z" || k === "Z")) { e.preventDefault(); undo(e.shiftKey); return; }
     if (ctl && (k === "y" || k === "Y")) { e.preventDefault(); undo(true); return; }
@@ -704,7 +782,7 @@
     const g = $("shGrid");
     g.addEventListener("scroll", paintSoon);
     g.addEventListener("pointerdown", onGridDown);
-    g.addEventListener("dblclick", (e) => { if (e.target.closest(".c")) startEdit(); });
+    g.addEventListener("dblclick", (e) => { const ch = e.target.closest(".ch"); if (ch) { St.drag = null; editChart(ch.dataset.ch, e.clientX, e.clientY); return; } if (e.target.closest(".c")) startEdit(); });
     g.addEventListener("contextmenu", (e) => { e.preventDefault(); if (e.target.closest("#shPane")) cellMenu(e.clientX, e.clientY); });
     g.addEventListener("keydown", onKey);
     g.addEventListener("copy", (e) => { if (St.edit) return; e.preventDefault(); e.clipboardData.setData("text/plain", copy(false)); });
@@ -728,6 +806,10 @@
     on("shDecLess", "click", () => decimalsBy(-1));
     on("shDecMore", "click", () => decimalsBy(1));
     on("shFmtCells", "click", () => openFormat());
+    on("shImport", "click", () => root.H3SheetIO && root.H3SheetIO.pick());
+    on("shExport", "click", (e) => root.H3SheetIO && root.H3SheetIO.exportMenu(e.currentTarget));
+    on("shChart", "click", (e) => chartMenu(e.currentTarget));
+    on("shDash", "click", () => root.H3SheetDash && root.H3SheetDash.open());
     on("shB", "click", () => toggleStyle("b")); on("shI", "click", () => toggleStyle("i")); on("shU", "click", () => toggleStyle("u"));
     on("shColor", "change", (e) => styleAll((S) => { S.color = e.target.value; }));
     on("shBg", "change", (e) => styleAll((S) => { S.bg = e.target.value; }));
@@ -749,6 +831,7 @@
   }
   root.H3Sheet = { W, St, paint, go, startEdit, commit, setRaw, copy, paste, fill, sort, toggleFilter, toggleFreeze, merge, borders, autoSum, shiftCells, save, load, undo, book, shown, renameSheet, setCode, decimalsBy, openFormat,
     // 2.823.0: for the Format Cells dialog (sheetfmtdlg.js)
-    _: { sh, cellAt, style, setStyle, eachSel, norm, step, changed, codeOf, guardSheet, msg, measure, fontOf, okColor, okFont, BSTYLE, PATTERNS, patternUrl, autoInk, fillCss, sideOf, sideCss, DH, DW, tabs } };
+    _: { sh, cellAt, style, setStyle, eachSel, norm, step, changed, codeOf, guardSheet, msg, measure, fontOf, okColor, okFont, BSTYLE, PATTERNS, patternUrl, autoInk, fillCss, sideOf, sideCss, DH, DW, tabs, menu } ,
+    insertChart, removeChart, editChart };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else setTimeout(wire, 0);
 })(window);

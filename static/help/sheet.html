@@ -41,6 +41,13 @@
   <li>The toolbar has the quick ones: the <b>Number Format</b> list, <b>.0← / .00→</b> one decimal fewer / more, <b>B I U</b>, text and fill colour (<b>⊘</b> = no fill), left / centre / right, <b>wrap</b>, <b>borders ▾</b> and <b>⊞ merge</b>. A number too wide for its column shows <b>#####</b> - widen the column.</li>
 </ul>
 
+<h3>Excel files, charts and ✨ Dashboard</h3>
+<ul>
+  <li><b>⤒ Import</b> opens an Excel workbook (<code>.xlsx</code>) or a CSV file: every sheet, values, formulas, number formats, fonts, fills, borders, merged cells, column widths and frozen panes. A formula with a function bitGen does not have yet keeps the result the file was saved with. <b>⤓ Export ▾</b> saves the workbook as <code>.xlsx</code> (downloaded, and kept in the project's <code>sheets</code> folder) or this sheet as CSV.</li>
+  <li><b>📊 Chart ▾</b> makes a chart (column, bar, line, area, pie, doughnut, scatter) of the selected cells - the first row gives the series' names, the first column the categories. Drag it to move it, drag its corner to size it, double-click it to change its title, type or data, <b>Delete</b> removes it. Charts follow rows inserted above them and are kept in the workbook (an <code>.xlsx</code> gets their data, not the charts).</li>
+  <li><b>✨ Dashboard</b> - the LLM (the prompt docker's) looks at your data's columns - their names, what kind of values they hold, a few examples and the totals, not every row - and plans a dashboard; type what you want to see if you like ("sales by region and month"). bitGen builds it on a new first sheet: headline numbers in tiles, breakdowns with their tables and charts, a trend over time - all <b>live formulas</b>, so they follow the data - and formats the data as a table (header, banded rows, number formats, widths, a filter, the header kept on screen). Pick <i>An Excel or CSV file…</i> to start from a file. Untick <i>Use the LLM</i> (or when no LLM answers) and the dashboard is planned from the data's own shape. One <b>Ctrl+Z</b> takes it all back.</li>
+</ul>
+
 <h3>Tables</h3>
 <ul>
   <li><b>A→Z / Z→A</b> sorts the table round the active cell by the active cell's column. A first row of headings stays on top, the cells of a row stay together (its formulas too), empty cells go last. A block that is picked is sorted on its own.</li>

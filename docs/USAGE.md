@@ -9390,6 +9390,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Protection**: Locked / Hidden, and Protect this sheet (also on the sheet tab's right-click menu: 🔒 Protect sheet / 🔓 Unprotect sheet). On a protected sheet locked cells can't be typed in or reformatted, rows / columns can't be inserted or deleted, and a hidden cell's formula is not shown in the ƒx bar. Every cell starts locked - untick Locked on the cells people should still fill in.
 - The toolbar's **Number Format** list (General, Number, Currency, Accounting, Short / Long date, Time, Percentage, Fraction, Scientific, Text, More number formats…) and **.0← / .00→** edit the same codes. A number too wide for its column shows `#####`. Typed entries set a format themselves: `$1,500` currency, `12%` / `12.5%` percent, `1,234` thousands, `9:30 pm` a time, `1 1/2` a fraction, `17/11/2026` a date.
 
+## ▦ Spreadsheet - Excel files, charts, ✨ Dashboard by the LLM (2.824.0)
+
+- **⤒ Import** opens an Excel workbook (.xlsx) or a CSV / TSV file. From an .xlsx come every sheet, the values, formulas (shared formulas too), number formats, fonts, fills (solid, patterns, two-colour shading), borders, alignment, protection, merged cells, column widths, row heights and frozen panes; theme colours become plain colours, black text on a light fill stays black. A formula with a function bitGen does not have yet shows the result the file was saved with. A CSV's separator (comma, semicolon, tab) is found by itself and typed values get their format ($, %, dates).
+- **⤓ Export ▾**: Excel workbook (.xlsx - downloaded and kept in the project's sheets folder, formulas with their results) or CSV of this sheet. Charts stay in bitGen's own .bgs (an .xlsx gets their data).
+- **📊 Chart ▾** - column, bar, line, area, pie, doughnut or scatter of the selected cells (the first row = the series' names, the first column = the categories; one cell selected = the table round it). Drag to move, the corner to size, double-click to change the title, type, data range or legend, Delete removes it, arrows nudge it. Ranges follow rows / columns inserted or deleted; charts are saved with the workbook.
+- **✨ Dashboard** - the LLM (the prompt docker's) is shown your data's columns - names, kinds (money, whole numbers, percent, dates, text), a few common values and the totals, never every row - plus what you ask for, and answers with a plan. bitGen checks every column name in it and builds a new first sheet: the title, up to 6 headline numbers in tiles, up to 4 breakdowns (a table with shares and a total + a bar / column / pie / doughnut chart beside it), a trend by day / week / month / quarter / year with a line or area chart - all live formulas (SUMIFS, COUNTIFS …) that follow the data - and formats the data sheet as a table (themed header, banded rows, number formats, widths, a filter, the header frozen). Start from this workbook or pick an Excel / CSV file. Without the LLM (unticked, or it does not answer) the plan comes from the data's own shape. One Ctrl+Z takes the whole dashboard back.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9484,6 +9491,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[docx](https://github.com/dolanmiu/docx)** (Dolan Miu) - saving document text as Word files (.docx) (MIT)
 - **[mammoth](https://github.com/mwilliamson/mammoth.js)** (Michael Williamson) - opening Word files (.docx) as document text (BSD-2-Clause)
 - **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
+- **[ExcelJS](https://github.com/exceljs/exceljs)** (Guyon Roche and the ExcelJS contributors) - ▦ Spreadsheet - opening and saving Excel workbooks (.xlsx) (MIT)
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)** (Postal Systems (Andris Reinman)) - ✉ Mail - reading your mailbox over IMAP and opening emails (MIT)
 - **[Nodemailer](https://nodemailer.com)** (Andris Reinman) - ✉ Mail - sending over your own mail server (MIT-0)
 - **[ag-psd](https://github.com/Agamnentzar/ag-psd)** (Agamnentzar) - PSD files and their text effects (MIT)

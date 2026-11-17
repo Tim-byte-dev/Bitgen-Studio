@@ -19639,112 +19639,160 @@
    "src": "ext/sfxdock/sfxspeech.js:70"
   },
   {
+   "s": "Dashboard from the data",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "The LLM looks at the workbook's columns - their names, what kind of values they hold, a few examples and the totals (not every row) - and plans a dashboard: headline numbers, breakdowns with charts and a trend over time. bitGen builds it on a new sheet with live formulas, so it follows the data, and formats the data as a table",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "This workbook",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "An Excel or CSV file",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "Pick a file",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "What should it show? (optional)",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "Use the LLM (the prompt docker's) - off: a dashboard from the data's own shape",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "Build the dashboard",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
+   "s": "e.g. sales by region and month, the best products, how much is still owed",
+   "src": "ext/sheetdock/sheetdash.js:264"
+  },
+  {
    "s": "Workbook",
-   "src": "ext/sheetdock/sheetdock.js:34"
+   "src": "ext/sheetdock/sheetdock.js:37"
   },
   {
    "s": "underline",
-   "src": "ext/sheetdock/sheetdock.js:191"
+   "src": "ext/sheetdock/sheetdock.js:194"
   },
   {
    "s": "line-through",
-   "src": "ext/sheetdock/sheetdock.js:191"
+   "src": "ext/sheetdock/sheetdock.js:194"
   },
   {
    "s": "Pick the values shown",
-   "src": "ext/sheetdock/sheetdock.js:213"
+   "src": "ext/sheetdock/sheetdock.js:216"
   },
   {
    "s": "Drag to fill",
-   "src": "ext/sheetdock/sheetdock.js:228"
+   "src": "ext/sheetdock/sheetdock.js:243"
   },
   {
    "s": "A new sheet",
-   "src": "ext/sheetdock/sheetdock.js:276"
+   "src": "ext/sheetdock/sheetdock.js:291"
   },
   {
    "s": "Double-click to rename, right-click for more",
-   "src": "ext/sheetdock/sheetdock.js:276"
+   "src": "ext/sheetdock/sheetdock.js:291"
   },
   {
    "s": "blanks",
-   "src": "ext/sheetdock/sheetdock.js:457"
+   "src": "ext/sheetdock/sheetdock.js:473"
   },
   {
    "s": "Cut",
-   "src": "ext/sheetdock/sheetdock.js:519"
+   "src": "ext/sheetdock/sheetdock.js:535"
   },
   {
    "s": "Paste",
-   "src": "ext/sheetdock/sheetdock.js:519"
+   "src": "ext/sheetdock/sheetdock.js:535"
   },
   {
    "s": "Insert 1 row below",
-   "src": "ext/sheetdock/sheetdock.js:520"
+   "src": "ext/sheetdock/sheetdock.js:536"
   },
   {
    "s": "Insert 1 row above",
-   "src": "ext/sheetdock/sheetdock.js:520"
+   "src": "ext/sheetdock/sheetdock.js:536"
   },
   {
    "s": "Insert 1 column right",
-   "src": "ext/sheetdock/sheetdock.js:521"
+   "src": "ext/sheetdock/sheetdock.js:537"
   },
   {
    "s": "Insert 1 column left",
-   "src": "ext/sheetdock/sheetdock.js:521"
+   "src": "ext/sheetdock/sheetdock.js:537"
   },
   {
    "s": "Clear contents",
-   "src": "ext/sheetdock/sheetdock.js:523"
+   "src": "ext/sheetdock/sheetdock.js:539"
   },
   {
    "s": "Clear contents and formats",
-   "src": "ext/sheetdock/sheetdock.js:523"
+   "src": "ext/sheetdock/sheetdock.js:539"
   },
   {
    "s": "Format Cells… (Ctrl+1)",
-   "src": "ext/sheetdock/sheetdock.js:523"
+   "src": "ext/sheetdock/sheetdock.js:539"
   },
   {
    "s": "Duplicate",
-   "src": "ext/sheetdock/sheetdock.js:544"
+   "src": "ext/sheetdock/sheetdock.js:560"
   },
   {
    "s": "Move left",
-   "src": "ext/sheetdock/sheetdock.js:544"
+   "src": "ext/sheetdock/sheetdock.js:560"
   },
   {
    "s": "Move right",
-   "src": "ext/sheetdock/sheetdock.js:544"
+   "src": "ext/sheetdock/sheetdock.js:560"
   },
   {
    "s": "Unprotect sheet",
-   "src": "ext/sheetdock/sheetdock.js:544"
+   "src": "ext/sheetdock/sheetdock.js:560"
   },
   {
    "s": "Protect sheet",
-   "src": "ext/sheetdock/sheetdock.js:544"
+   "src": "ext/sheetdock/sheetdock.js:560"
+  },
+  {
+   "s": "Cells",
+   "src": "ext/sheetdock/sheetdock.js:617"
+  },
+  {
+   "s": "Legend",
+   "src": "ext/sheetdock/sheetdock.js:617"
+  },
+  {
+   "s": "Delete the chart",
+   "src": "ext/sheetdock/sheetdock.js:617"
   },
   {
    "s": "no workbooks in this project yet - 💾 Save one",
-   "src": "ext/sheetdock/sheetdock.js:606"
+   "src": "ext/sheetdock/sheetdock.js:661"
   },
   {
    "s": "All borders",
-   "src": "ext/sheetdock/sheetdock.js:737"
+   "src": "ext/sheetdock/sheetdock.js:819"
   },
   {
    "s": "Outside borders",
-   "src": "ext/sheetdock/sheetdock.js:737"
+   "src": "ext/sheetdock/sheetdock.js:819"
   },
   {
    "s": "Bottom border",
-   "src": "ext/sheetdock/sheetdock.js:737"
+   "src": "ext/sheetdock/sheetdock.js:819"
   },
   {
    "s": "No borders",
-   "src": "ext/sheetdock/sheetdock.js:737"
+   "src": "ext/sheetdock/sheetdock.js:819"
   },
   {
    "s": "A$ (Australian dollar)",
@@ -20029,6 +20077,14 @@
   {
    "s": "Use 1000 separator (",
    "src": "ext/sheetdock/sheetfmtdlg.js:248"
+  },
+  {
+   "s": "Excel workbook (.xlsx)",
+   "src": "ext/sheetdock/sheetio.js:83"
+  },
+  {
+   "s": "CSV - this sheet (.csv)",
+   "src": "ext/sheetdock/sheetio.js:83"
   },
   {
    "s": "Open from the computer",
@@ -28285,48 +28341,52 @@
    "src": "ext/sfxdock/sfxspeech.js:98"
   },
   {
+   "p": "{0} - drag to move, the corner to size, double-click to change, Delete to remove",
+   "src": "ext/sheetdock/sheetdock.js:235"
+  },
+  {
    "p": "Sum {0} · Average {1} · Count {2}",
-   "src": "ext/sheetdock/sheetdock.js:256"
+   "src": "ext/sheetdock/sheetdock.js:271"
   },
   {
    "p": "Count {0}",
-   "src": "ext/sheetdock/sheetdock.js:256"
+   "src": "ext/sheetdock/sheetdock.js:271"
   },
   {
    "p": "Clear the filter of {0}",
-   "src": "ext/sheetdock/sheetdock.js:456"
+   "src": "ext/sheetdock/sheetdock.js:472"
   },
   {
    "p": "Insert {0} rows above",
-   "src": "ext/sheetdock/sheetdock.js:520"
+   "src": "ext/sheetdock/sheetdock.js:536"
   },
   {
    "p": "Insert {0} rows below",
-   "src": "ext/sheetdock/sheetdock.js:520"
+   "src": "ext/sheetdock/sheetdock.js:536"
   },
   {
    "p": "Insert {0} columns left",
-   "src": "ext/sheetdock/sheetdock.js:521"
+   "src": "ext/sheetdock/sheetdock.js:537"
   },
   {
    "p": "Insert {0} columns right",
-   "src": "ext/sheetdock/sheetdock.js:521"
+   "src": "ext/sheetdock/sheetdock.js:537"
   },
   {
    "p": "Delete rows {0}-{1}",
-   "src": "ext/sheetdock/sheetdock.js:522"
+   "src": "ext/sheetdock/sheetdock.js:538"
   },
   {
    "p": "Delete columns {0}-{1}",
-   "src": "ext/sheetdock/sheetdock.js:522"
+   "src": "ext/sheetdock/sheetdock.js:538"
   },
   {
    "p": "Delete column {0}",
-   "src": "ext/sheetdock/sheetdock.js:522"
+   "src": "ext/sheetdock/sheetdock.js:538"
   },
   {
    "p": "Delete row {0}",
-   "src": "ext/sheetdock/sheetdock.js:522"
+   "src": "ext/sheetdock/sheetdock.js:538"
   },
   {
    "p": "Update to v{0}",

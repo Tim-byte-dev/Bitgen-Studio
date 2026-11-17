@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6043,
+ "count": 6063,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -55714,6 +55714,186 @@
    ],
    "where": [
     "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Open an Excel workbook (.xlsx) or a CSV file from this computer",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Save as an Excel workbook (.xlsx) or this sheet as CSV",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "A chart of the selected cells (or the table round the active cell)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "The LLM looks at the data and plans a dashboard - headline numbers, breakdowns with charts, a trend; bitGen builds it with live formulas",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Dashboard",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Column chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Bar chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Line chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Area chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Pie chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Doughnut chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "Scatter chart",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "chart deleted",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "not a range - like A1:C9",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "pick a file first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "select the numbers to chart (with their headings) first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "no table found - a dashboard needs a row of headings with data under it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "nothing to show - the table needs numbers, dates or a column with a few different values",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
+   ]
+  },
+  {
+   "s": "the LLM is looking at the columns",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Spreadsheet: Excel files, charts, dashboard (2.824.0)"
    ]
   }
  ]

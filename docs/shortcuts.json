@@ -1078,6 +1078,14 @@
         [
           "Right-click a cell / a tab",
           "Insert / delete rows and columns / rename, duplicate, move, delete a sheet"
+        ],
+        [
+          "Drag a chart / its corner",
+          "Move it / size it (double-click: change its title, type, cells, legend)"
+        ],
+        [
+          "Delete / arrows (a chart picked)",
+          "Remove the chart / nudge it"
         ]
       ]
     }

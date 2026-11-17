@@ -14204,6 +14204,13 @@ node scripts/test-fmt823.js > /tmp/fmt823.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui823-ui.js > /tmp/ui823.log 2>&1 \
   && ok "2.823.0 browser test: Format Cells from ▤ / Ctrl+1 / right-click, every tab clicked, cells checked on screen, Cancel, one undo, the dropdown + decimals, protection, save keeps the looks" \
   || { bad "2.823.0 Format Cells browser test"; grep -a "^FAIL" -A1 /tmp/ui823.log | head -12; }
+# ---- 2.824.0 (Tim: "can we use the llm to look through an excel file and format it like a dashboard in our spreadsheet. and continue next") .xlsx / CSV, charts, ✨ Dashboard
+node scripts/test-xlsx824.js > /tmp/xlsx824.log 2>&1 \
+  && ok "2.824.0 .xlsx in / out (values, formulas + results, formats, looks, merges, widths, frozen panes, theme colours), CSV, charts kept, the dashboard plan (LLM answer parsed, columns checked, fallback) and its formulas" \
+  || { bad "2.824.0 xlsx / CSV / dashboard units"; grep -a "^FAIL" -A1 /tmp/xlsx824.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui824-ui.js > /tmp/ui824.log 2>&1 \
+  && ok "2.824.0 browser test: ⤒ Import an .xlsx, ⤓ Export, 📊 a chart dragged / sized / changed / deleted with undo, ✨ Dashboard from a stand-in LLM and without one, one undo" \
+  || { bad "2.824.0 Excel files / charts / dashboard browser test"; grep -a "^FAIL" -A1 /tmp/ui824.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

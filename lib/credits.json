@@ -319,6 +319,12 @@
           "what": "mail merge's .zip of Word files (MIT)"
         },
         {
+          "name": "ExcelJS",
+          "by": "Guyon Roche and the ExcelJS contributors",
+          "url": "https://github.com/exceljs/exceljs",
+          "what": "▦ Spreadsheet - opening and saving Excel workbooks (.xlsx) (MIT)"
+        },
+        {
           "name": "ImapFlow and mailparser",
           "by": "Postal Systems (Andris Reinman)",
           "url": "https://github.com/postalsys/imapflow",

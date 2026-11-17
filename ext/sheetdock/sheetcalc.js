@@ -261,6 +261,8 @@
       finally { this.busy.delete(key); }
       if (Array.isArray(v)) v = v[0] ? v[0][0] : "";       // a range as a value = its first cell
       if (typeof v === "number" && !isFinite(v)) v = ERR("#NUM!");
+      // 2.824.0: a formula from an .xlsx with a function this engine does not have: the file's own last result
+      if (isErr(v) && v.err === "#NAME?" && cl && cl.c != null && cl.c !== "") v = parseInput(cl.c).value;
     } else v = parseInput(raw).value;
     this.memo.set(key, v);
     return v;

@@ -6,7 +6,10 @@
   "scripts": [
     "sheetfmt.js",
     "sheetcalc.js",
+    "sheetchart.js",
     "sheetdock.js",
-    "sheetfmtdlg.js"
+    "sheetfmtdlg.js",
+    "sheetio.js",
+    "sheetdash.js"
   ]
 }
