@@ -14197,6 +14197,13 @@ node scripts/test-sheet822.js > /tmp/sh822.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui822-ui.js > /tmp/ui822.log 2>&1 \
   && ok "2.822.0 browser test: typing, ƒx bar, click-a-cell references, fill handle, copy / paste, currency, sort with formulas, filter menu, insert row, merge, freeze, a second sheet, undo / redo, save / open" \
   || { bad "2.822.0 spreadsheet browser test"; grep -a "^FAIL" -A1 /tmp/ui822.log | head -12; }
+# ---- 2.823.0 (Tim: "continue , add format cells button, format the cells like excel") ▤ Format Cells
+node scripts/test-fmt823.js > /tmp/fmt823.log 2>&1 \
+  && ok "2.823.0 number format codes (sections, colours, conditions, dates / times, fractions, scientific, Accounting), typed entries, Text cells, cleanStyle, the wiring" \
+  || { bad "2.823.0 number formats / Format Cells units"; grep -a "^FAIL" -A1 /tmp/fmt823.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui823-ui.js > /tmp/ui823.log 2>&1 \
+  && ok "2.823.0 browser test: Format Cells from ▤ / Ctrl+1 / right-click, every tab clicked, cells checked on screen, Cancel, one undo, the dropdown + decimals, protection, save keeps the looks" \
+  || { bad "2.823.0 Format Cells browser test"; grep -a "^FAIL" -A1 /tmp/ui823.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

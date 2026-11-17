@@ -4,7 +4,9 @@
   "order": 95,
   "html": "dock.html",
   "scripts": [
+    "sheetfmt.js",
     "sheetcalc.js",
-    "sheetdock.js"
+    "sheetdock.js",
+    "sheetfmtdlg.js"
   ]
 }

@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5964,
+ "count": 6043,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -55003,6 +55003,717 @@
    ],
    "where": [
     "Spreadsheet docker messages and menus (2.822.0)"
+   ]
+  },
+  {
+   "s": "Accounting",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Percentage",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Scientific",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Fraction",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Special",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Shows a number as it is, with as many decimals as fit - no particular look",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Plain numbers with a set number of decimal places. Currency and Accounting are for money",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Money amounts with a currency sign. Accounting lines the signs and decimal points up in a column",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Money in columns: the sign at the cell's left edge, decimal points lined up, a zero shown as a dash",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "A date is a number of days - pick how it looks. Times of day are the part after the decimal point",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "A time is a part of a day - pick how it looks. [h] counts hours past 24",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "The value x 100 with a % sign",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "The part after the decimal point as a fraction",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "A number times a power of ten: 1.23E+05 = 123,000",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "The cell shows exactly what is typed, numbers and = too (they are not worked out)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Postcodes, phone and ID numbers - leading zeros kept, spaces where they belong",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Type a format code or start from one below: 0 # ? digits, , thousands, % percent, d m y h s dates and times, [Red] a colour, \"text\", sections positive;negative;zero;text",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Top border",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Inside horizontal border",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Left border",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Inside vertical border",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Right border",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Diagonal border up",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Diagonal border down",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "75% grey",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "50% grey",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "25% grey",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "12.5% grey",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "6.25% grey",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick horizontal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick vertical stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick reverse diagonal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick diagonal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick diagonal crosshatch",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thick trellis",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin horizontal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin vertical stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin reverse diagonal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin diagonal stripe",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin horizontal crosshatch",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thin trellis",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Short date",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Long date",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "More number formats",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Number format - how the numbers show (▤ Format… for every choice)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Format Cells (Ctrl+1): number, alignment, font, border, fill, protection",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Thai baht",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Up to one digit (1/4)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Up to two digits (21/25)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Up to three digits (312/943)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As halves (1/2)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As quarters (2/4)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As eighths (4/8)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As sixteenths (8/16)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As tenths (3/10)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "As hundredths (30/100)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Postcode (Australia)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "ABN (Australian Business Number)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Phone number (Australia)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Mobile number (Australia)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "ZIP code (US)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "ZIP + 4 (US)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Phone number (US)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Social security number (US)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "the sheet is protected - right-click its tab ▸ Unprotect sheet to change it",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "protected: only cells with Locked unticked (Format Cells ▸ Protection) can be changed",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "unprotected",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "formatted",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog / spreadsheet toolbar (2.823.0)"
+   ]
+  },
+  {
+   "s": "Single underline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Double underline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Single accounting underline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Double accounting underline",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Align top",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Align middle",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Align bottom",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Inside lines",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "From the text",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "How it looks",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
+   ]
+  },
+  {
+   "s": "Line style",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Format Cells dialog (2.823.0)"
    ]
   }
  ]

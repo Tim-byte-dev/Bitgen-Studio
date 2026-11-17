@@ -11,7 +11,8 @@
  *   shiftFormula(text, dr, dc)   the relative references moved (fill / copy-paste); a reference off the sheet = #REF!
  *   parseInput(text)             what a typed entry is: {value, fmt?} - "12%" = 0.12 + percent, "$1,200" = 1200 +
  *                                currency, "2026-11-17" = a date serial + date, TRUE / FALSE
- *   format(value, fmt)           general / number / currency / percent / date / text -> the words shown
+ *   format(value, fmt)           a format code (sheetfmt.js; 2.822.0's names general / number / currency / percent /
+ *                                date / text still read) -> the words shown
  */
 (function (root) {
   "use strict";
@@ -196,7 +197,7 @@
     RIGHT: ([x, n]) => { const s = str(x), k = n == null ? 1 : Math.max(0, num(n)); return k ? s.slice(-k) : ""; },
     MID: ([x, st, n]) => { const a = num(st); if (a < 1) throw ERR("#VALUE!"); return str(x).substr(a - 1, Math.max(0, num(n))); },
     CONCAT: (a) => flat(a).map(({ v }) => str(v)).join(""),
-    TEXT: ([x, f]) => textFmt(num(x), str(f)),
+    TEXT: ([x, f]) => (SF() ? SF().render(typeof x === "string" && isNaN(Number(x)) ? x : num(x), str(f)).text : textFmt(num(x), str(f))),
     VALUE: ([x]) => num(x),
     TODAY: () => { const d = new Date(); return serialOf(d.getFullYear(), d.getMonth() + 1, d.getDate()); },
     NOW: () => { const d = new Date(); return serialOf(d.getFullYear(), d.getMonth() + 1, d.getDate()) + (d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()) / 86400; },
@@ -249,9 +250,10 @@
   Book.prototype.get = function (si, c, r) {
     const key = si + "|" + c + "|" + r;
     if (this.memo.has(key)) return this.memo.get(key);
-    const raw = this.raw(si, c, r);
+    const raw = this.raw(si, c, r), sheet = this.sheets[si], cl = sheet && sheet.cells[addr(c, r)], asText = cl && (cl.f === "@" || cl.f === "text");
     let v;
     if (raw == null || raw === "") v = "";
+    else if (asText) v = String(raw);                       // 2.823.0: a Text cell keeps what was typed - numbers and "=" too
     else if (typeof raw === "string" && raw[0] === "=" && raw.length > 1) {
       if (this.busy.has(key)) return ERR("#CYCLE!");
       this.busy.add(key);
@@ -374,14 +376,30 @@
     if (up === "TRUE" || up === "FALSE") return { value: up === "TRUE" };
     if (ERRS.includes(up)) return { value: ERR(up) };
     let m;
-    if ((m = /^(-?)\$\s?([0-9][0-9,]*\.?[0-9]*)$/.exec(t))) return { value: (m[1] ? -1 : 1) * Number(m[2].replace(/,/g, "")), fmt: "currency" };
-    if ((m = /^(-?[0-9][0-9,]*\.?[0-9]*|-?\.[0-9]+)%$/.exec(t))) return { value: Number(m[1].replace(/,/g, "")) / 100, fmt: "percent" };
-    if (/^-?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)?(\.[0-9]+)?([eE][+-]?[0-9]+)?$/.test(t) && /[0-9]/.test(t)) return { value: Number(t.replace(/,/g, "")) };
-    if ((m = /^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})$/.exec(t))) return { value: serialOf(+m[1], +m[2], +m[3]), fmt: "date" };
-    if ((m = /^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/.exec(t))) return { value: serialOf(+m[3], +m[2], +m[1]), fmt: "date" };   // d/m/yyyy (Australia)
+    // 2.823.0: the format a typed entry suggests is a format code (sheetfmt.js) - as spreadsheet programs do
+    if ((m = /^(-?)\$\s?([0-9][0-9,]*\.?[0-9]*)$/.exec(t))) return { value: (m[1] ? -1 : 1) * Number(m[2].replace(/,/g, "")), fmt: /\./.test(m[2]) ? "$#,##0.00" : "$#,##0" };
+    if ((m = /^(-?[0-9][0-9,]*\.?[0-9]*|-?\.[0-9]+)%$/.exec(t))) return { value: Number(m[1].replace(/,/g, "")) / 100, fmt: /\./.test(m[1]) ? "0.00%" : "0%" };
+    if (/^-?([0-9]{1,3}(,[0-9]{3})+|[0-9]+)?(\.[0-9]+)?([eE][+-]?[0-9]+)?$/.test(t) && /[0-9]/.test(t)) return /[eE]/.test(t) ? { value: Number(t.replace(/,/g, "")), fmt: "0.00E+00" } : /,/.test(t) ? { value: Number(t.replace(/,/g, "")), fmt: /\./.test(t) ? "#,##0.00" : "#,##0" } : { value: Number(t) };
+    if ((m = /^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})$/.exec(t))) return { value: serialOf(+m[1], +m[2], +m[3]), fmt: "yyyy-mm-dd" };
+    if ((m = /^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/.exec(t))) return { value: serialOf(+m[3], +m[2], +m[1]), fmt: "d/mm/yyyy" };   // d/m/yyyy (Australia)
+    if ((m = /^([0-9]{1,2}):([0-5][0-9])(?::([0-5][0-9]))?\s*(am|pm|a|p)?$/i.exec(t))) {   // 9:30 / 21:15:00 / 9:30 pm
+      let h = +m[1]; const ap = (m[4] || "").toLowerCase();
+      if (ap && (h < 1 || h > 12)) return { value: s };
+      if (ap) h = (h % 12) + (ap[0] === "p" ? 12 : 0);
+      if (h > 23 && !ap) return { value: (h * 3600 + +m[2] * 60 + +(m[3] || 0)) / 86400, fmt: m[3] ? "[h]:mm:ss" : "[h]:mm" };
+      return { value: (h * 3600 + +m[2] * 60 + +(m[3] || 0)) / 86400, fmt: ap ? (m[3] ? "h:mm:ss AM/PM" : "h:mm AM/PM") : m[3] ? "h:mm:ss" : "h:mm" };
+    }
+    if ((m = /^(-?)(?:([0-9]+) )?([0-9]+)\/([0-9]+)$/.exec(t)) && +m[4] > 0 && (m[2] || +m[3] < +m[4])) {   // 1 1/2 (a fraction; "1/2" alone stays text)
+      if (!m[2]) return { value: s };
+      const v = +m[2] + +m[3] / +m[4]; return { value: m[1] ? -v : v, fmt: +m[4] > 9 ? "# ??/??" : "# ?/?" };
+    }
     return { value: s };
   }
+  /** 2.823.0: the number-format codes (sheetfmt.js) - loaded before this file in the page, required in Node */
+  let sfm = null;
+  function SF() { if (sfm) return sfm; if (typeof window !== "undefined" && window.SheetFmt) return (sfm = window.SheetFmt); if (typeof require === "function") { try { sfm = require("./sheetfmt.js"); } catch (e) { sfm = null; } } return sfm; }
   function format(v, fmt, dp) {
+    if (SF()) return SF().render(v, SF().upgrade(fmt, dp)).text;
     if (isErr(v)) return v.err;
     if (typeof v === "boolean") return v ? "TRUE" : "FALSE";
     if (v === "" || v == null) return "";

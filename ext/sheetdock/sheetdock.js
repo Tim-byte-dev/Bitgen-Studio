@@ -16,6 +16,12 @@
  *                ƒx ▾ functions, the right-click menu (insert / delete rows and columns - references follow), sheets as
  *                tabs (＋, double-click = rename, right-click = rename / duplicate / delete)
  *   FILES        📄 New, 📂 Open ▾, 💾 Save (Ctrl+S); the open workbook is also kept in this browser as you work (a draft)
+ *   2.823.0      Tim: "continue , add format cells button, format the cells like excel" - cell.f is a NUMBER FORMAT CODE
+ *                (sheetfmt.js: sections, colours, conditions, dates, fractions ...; 2.822.0's names upgraded on load); the
+ *                looks a cell can have (s): b i u (true | double | acc | dacc) strike sup sub font size color, align
+ *                (general left center right fill justify centerSel distributed) indent valign (top center bottom justify
+ *                distributed) wrap shrink rot (-90..90) stack dir, bd {t r b l d1 d2: {s: line style, c}}, bg, pat {t, c},
+ *                grad {c1, c2, d}, unlock, hide; the sheet's protect. ▤ Format Cells… / Ctrl+1 = sheetfmtdlg.js
  */
 (function (root) {
   "use strict";
@@ -58,7 +64,50 @@
   function eachSel(fn) { const s = norm(St.sel); for (let r = s.r1; r <= s.r2; r++) for (let c = s.c1; c <= s.c2; c++) fn(c, r); }
   const norm = (s) => ({ r1: Math.min(s.r1, s.r2), r2: Math.max(s.r1, s.r2), c1: Math.min(s.c1, s.c2), c2: Math.max(s.c1, s.c2) });
   function used(S) { let r = -1, c = -1; for (const k of Object.keys((S || sh()).cells)) { const p = C().parseAddr(k); if (p.r > r) r = p.r; if (p.c > c) c = p.c; } return { r, c }; }
-  function shown(c, r) { const v = book().get(W.active, c, r), cell = cellAt(c, r) || {}; return C().format(v, cell.f, (cell.s || {}).dp); }
+  function shown(c, r) { const v = book().get(W.active, c, r), cell = cellAt(c, r) || {}; return F() ? F().render(v, codeOf(cell)).text : C().format(v, cell.f, (cell.s || {}).dp); }
+
+  /* ---------------------------------------------------------------- 2.823.0 looks */
+  const F = () => root.SheetFmt;
+  const codeOf = (cell) => (cell && (F() ? F().upgrade(cell.f, (cell.s || {}).dp) : cell.f)) || "General";
+  const okColor = (x) => (typeof x === "string" && /^#[0-9a-f]{3,8}$/i.test(x) ? x : null);
+  const okFont = (x) => (typeof x === "string" ? x.replace(/[^\w \-.]/g, "").trim().slice(0, 64) : "");
+  // line styles -> [px, css style] (the dialog draws the same list)
+  const BSTYLE = { hair: [1, "dotted"], dotted: [1, "dotted"], dashDotDot: [1, "dashed"], dashDot: [1, "dashed"], dashed: [1, "dashed"], thin: [1, "solid"], mediumDashDotDot: [2, "dashed"],
+    slantDashDot: [2, "dashed"], mediumDashDot: [2, "dashed"], mediumDashed: [2, "dashed"], medium: [2, "solid"], thick: [3, "solid"], double: [3, "double"] };
+  const sideOf = (b) => (!b ? null : b === 1 || b === true ? { s: "thin" } : typeof b === "object" && BSTYLE[b.s] ? b : null);
+  function sideCss(b) { const o = sideOf(b); if (!o) return null; const st = BSTYLE[o.s]; return `${st[0]}px ${st[1]} ${okColor(o.c) || "var(--text)"}`; }
+  // fill patterns: 4 x 4 bitmaps (1 = the pattern colour), drawn 2 px a dot
+  const PATTERNS = { gray75: ["1110", "1011", "1110", "1011"], gray50: ["1010", "0101", "1010", "0101"], gray25: ["1000", "0010", "1000", "0010"], gray125: ["1000", "0000", "0010", "0000"],
+    gray0625: ["1000", "0000", "0000", "0000"], darkHorizontal: ["1111", "1111", "0000", "0000"], darkVertical: ["1100", "1100", "1100", "1100"], darkDown: ["1100", "0110", "0011", "1001"],
+    darkUp: ["0011", "0110", "1100", "1001"], darkGrid: ["1111", "1100", "1100", "1100"], darkTrellis: ["1111", "0101", "1111", "1010"], lightHorizontal: ["1111", "0000", "0000", "0000"],
+    lightVertical: ["1000", "1000", "1000", "1000"], lightDown: ["1000", "0100", "0010", "0001"], lightUp: ["0001", "0010", "0100", "1000"], lightGrid: ["1111", "1000", "1000", "1000"],
+    lightTrellis: ["1010", "0101", "1010", "0000"] };
+  // "Automatic" pattern colour = the theme's text colour (black would vanish on a dark theme)
+  let INK = null;
+  const autoInk = () => INK || (INK = okColor(((root.getComputedStyle && root.getComputedStyle(doc.documentElement).getPropertyValue("--text")) || "").trim()) || "#c8c8c8");
+  function patternUrl(t, fg) {
+    const P = PATTERNS[t]; if (!P) return ""; fg = okColor(fg) || autoInk();
+    let rects = ""; P.forEach((row, y) => row.split("").forEach((b, x) => { if (b === "1") rects += `<rect x='${x * 2}' y='${y * 2}' width='2' height='2'/>`; }));
+    // single quotes: this lands inside a style="…" attribute
+    return "url('data:image/svg+xml," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges' fill='${fg}'>${rects}</svg>`).replace(/'/g, "%27") + "')";
+  }
+  const GRAD = { h: "to bottom", v: "to right", du: "to top right", dd: "to bottom right" };
+  function fillCss(S) {
+    const g = S.grad;
+    if (g && okColor(g.c1) && okColor(g.c2)) return GRAD[g.d] ? `background:linear-gradient(${GRAD[g.d]},${g.c1},${g.c2});` : `background:radial-gradient(circle,${g.c2},${g.c1});`;
+    const bg = okColor(S.bg); let css = bg ? `background-color:${bg};` : "";
+    if (S.pat && PATTERNS[S.pat.t]) css += `background-image:${patternUrl(S.pat.t, S.pat.c)};`;
+    return css;
+  }
+  let MC = null, BASE = null;
+  function measure(text, font) { if (!MC) MC = doc.createElement("canvas").getContext("2d"); MC.font = font; return MC.measureText(String(text)).width; }
+  const baseFamily = () => BASE || (BASE = ((root.getComputedStyle && $("shGrid") && root.getComputedStyle($("shGrid")).fontFamily) || "sans-serif").replace(/"/g, "'"));
+  const fontOf = (S) => `${S.i ? "italic " : ""}${S.b ? "700 " : ""}${S.size ? (+S.size * 4 / 3).toFixed(1) : 12}px ${S.font ? `'${okFont(S.font)}', ` : ""}${baseFamily()}`;
+  /* protection: a protected sheet keeps its locked cells (every cell, unless Format Cells ▸ Protection unticks Locked) */
+  const locked = (c, r) => !!sh().protect && !style(c, r).unlock;
+  const PROT = "🔒 the sheet is protected - right-click its tab ▸ Unprotect sheet to change it";
+  function guard(range) { if (!sh().protect) return false; const s = norm(range || St.sel); for (let r = s.r1; r <= s.r2; r++) for (let c = s.c1; c <= s.c2; c++) if (locked(c, r)) { msg(PROT, true); return true; } return false; }
+  function guardSheet() { if (!sh().protect) return false; msg(PROT, true); return true; }
 
   /* merges: "A1:B2" -> the master + the covered */
   function mergeMap() {
@@ -82,7 +131,15 @@
     for (let c = 0; c < nC; c++) colX.push(colX[c] + (S.cols[c] || DW));
     for (let r = 0; r < nR; r++) rowY.push(rowY[r] + (hid.has(r) ? 0 : (S.rows[r] || DH)));
     const fr = Math.min(S.freeze.r || 0, nR), fc = Math.min(S.freeze.c || 0, nC);
-    return { nR, nC, colX, rowY, fr, fc, hid, mm: mergeMap() };
+    // 2.823.0 Centre across selection: a cell's text spans the empty cells to its right that are set the same way
+    const cx = new Map();
+    for (const [k, cell] of Object.entries(S.cells)) {
+      if (!cell.s || cell.s.align !== "centerSel" || cell.v == null || cell.v === "") continue;
+      const p = C().parseAddr(k); let c2 = p.c;
+      while (c2 + 1 < nC) { const n = S.cells[A(c2 + 1, p.r)]; if (!n || !n.s || n.s.align !== "centerSel" || (n.v != null && n.v !== "")) break; c2++; }
+      if (c2 > p.c) { cx.set(p.c + "," + p.r, c2); for (let c = p.c + 1; c <= c2; c++) cx.set(c + "," + p.r, -1); }
+    }
+    return { nR, nC, colX, rowY, fr, fc, hid, mm: mergeMap(), cx };
   }
   const bsearch = (arr, v) => { let lo = 0, hi = arr.length - 2; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (arr[mid] <= v) lo = mid; else hi = mid - 1; } return lo; };
   function xOf(G, c) { const g = $("shGrid"); return HW + G.colX[c] - (c >= G.fc ? g.scrollLeft : 0); }
@@ -100,6 +157,7 @@
   const paintSoon = () => { if (!raf) raf = root.requestAnimationFrame(() => { raf = 0; paint(); }); };
   function paint() {
     const g = $("shGrid"), pane = $("shPane"); if (!g || !pane || !St.booted) return;
+    INK = null;
     const G = St.geo = geometry(), vw = g.clientWidth, vh = g.clientHeight;
     $("shSpace").style.width = (HW + G.colX[G.nC]) + "px"; $("shSpace").style.height = (HH + G.rowY[G.nR]) + "px";
     pane.style.width = vw + "px"; pane.style.height = vh + "px";
@@ -111,17 +169,49 @@
     const cellHtml = (c, r) => {
       const m = G.mm.get(c + "," + r); if (m && !m.master) return "";
       if (G.hid.has(r)) return "";
-      const x = xOf(G, c), y = yOf(G, r);
-      const w = m ? G.colX[m.c2 + 1] - G.colX[m.c1] : G.colX[c + 1] - G.colX[c], ht = m ? G.rowY[m.r2 + 1] - G.rowY[m.r1] : G.rowY[r + 1] - G.rowY[r];
-      const v = book().get(W.active, c, r), cell = cellAt(c, r) || {}, S = cell.s || {}, txt = C().format(v, cell.f, S.dp);
-      const isNum = typeof v === "number" && cell.f !== "text";
-      let css = `left:${x}px;top:${y}px;width:${w}px;height:${ht}px;`;
-      if (S.bg) css += `background:${S.bg};`; if (S.color) css += `color:${S.color};`;
-      if (S.b) css += "font-weight:700;"; if (S.i) css += "font-style:italic;"; if (S.u) css += "text-decoration:underline;";
-      if (S.align) css += `text-align:${S.align};`;
-      if (S.bd) for (const [k, side] of [["t", "top"], ["r", "right"], ["b", "bottom"], ["l", "left"]]) if (S.bd[k]) css += `border-${side}:1px solid var(--text);`;
+      const span = G.cx.get(c + "," + r); if (span === -1) return "";
+      const x = xOf(G, c), y = yOf(G, r), c2 = m ? m.c2 : span > c ? span : c;
+      const w = G.colX[c2 + 1] - G.colX[m ? m.c1 : c], ht = m ? G.rowY[m.r2 + 1] - G.rowY[m.r1] : G.rowY[r + 1] - G.rowY[r];
+      const v = book().get(W.active, c, r), cell = cellAt(c, r) || {}, S = cell.s || {};
+      const R = F() ? F().render(v, codeOf(cell)) : { text: C().format(v, cell.f, S.dp) };
+      const err = C().isErr(v), kind = typeof v === "number" ? "num" : err || typeof v === "boolean" ? "mid" : "txt";
+      const ha = S.align && S.align !== "general" ? S.align : kind === "num" ? "right" : kind === "mid" ? "center" : "left", va = S.valign || "bottom";
+      const sizePx = S.size ? Math.max(4, Math.min(545, +S.size * 4 / 3)) : 12, ind = S.indent ? Math.min(15, +S.indent) * 10 : 0;
+      let css = `left:${x}px;top:${y}px;width:${w}px;height:${ht}px;` + fillCss(S);
+      const col = okColor(R.color) || okColor(S.color); if (col) css += `color:${col};`;
+      if (S.font) css += `font-family:'${okFont(S.font)}',${baseFamily()};`;
+      if (S.size) css += `font-size:${sizePx.toFixed(1)}px;line-height:${Math.round(sizePx * 1.3)}px;`;
+      if (S.b) css += "font-weight:700;"; if (S.i) css += "font-style:italic;";
+      if (S.bd) for (const [k, side] of [["t", "top"], ["r", "right"], ["b", "bottom"], ["l", "left"]]) { const b = sideCss(S.bd[k]); if (b) css += `border-${side}:${b};`; }
+      css += `align-items:${va === "top" ? "flex-start" : va === "bottom" ? "flex-end" : "center"};`;
+      if (S.dir === "rtl" || S.dir === "ltr") css += `direction:${S.dir};`;
+      if (ind && (ha === "left" || ha === "distributed")) css += `padding-left:${4 + ind}px;`; else if (ind && ha === "right") css += `padding-right:${4 + ind}px;`;
+      const wrap = !!(S.wrap || ha === "justify" || ha === "distributed" || va === "justify" || va === "distributed");
+      let tcss = `text-align:${ha === "centerSel" ? "center" : ha === "fill" ? "left" : ha === "distributed" ? "justify" : ha};` + (ha === "distributed" ? "text-align-last:justify;" : "");
+      const deco = []; if (S.u) deco.push("underline"); if (S.strike) deco.push("line-through");
+      if (deco.length) tcss += `text-decoration:${deco.join(" ")};` + (S.u === "double" || S.u === "dacc" ? "text-decoration-style:double;" : "") + (S.u === "acc" || S.u === "dacc" ? "text-underline-offset:3px;" : "");
+      if (S.sup) tcss += "font-size:75%;position:relative;top:-0.35em;"; else if (S.sub) tcss += "font-size:75%;position:relative;top:0.3em;";
+      let text = R.text, fill = R.fill || null;
+      const avail = w - 8 - ind, fnt = fontOf(S);
+      if (S.stack) tcss += "writing-mode:vertical-rl;text-orientation:upright;white-space:pre;flex:0 0 auto;overflow:visible;";
+      else if (S.rot) tcss += `transform:rotate(${-Math.max(-90, Math.min(90, +S.rot || 0))}deg);white-space:pre;overflow:visible;flex:0 0 auto;`;
+      else {
+        tcss += wrap ? "white-space:pre-wrap;word-break:break-word;" : "white-space:pre;";
+        if (!wrap && text && avail > 0) {
+          const tw = measure(fill ? fill.left + fill.right : text, fnt);
+          if (S.shrink && tw > avail) tcss += `font-size:${Math.max(3, sizePx * avail / tw).toFixed(1)}px;`;
+          else if (kind === "num" && tw > avail) { text = "#".repeat(Math.max(1, Math.floor(avail / Math.max(1, measure("#", fnt))))); fill = null; }
+          else if (ha === "fill" && !fill) text = text.repeat(Math.max(1, Math.floor(avail / Math.max(1, tw))));
+        }
+      }
+      let diag = "";
+      if (S.bd && (S.bd.d1 || S.bd.d2)) {
+        const ln = (b, x1, y1, x2, y2) => { const o = sideOf(b); if (!o) return ""; const st = BSTYLE[o.s]; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${okColor(o.c) || "currentColor"}" stroke-width="${st[0]}" vector-effect="non-scaling-stroke"${st[1] === "dotted" ? ' stroke-dasharray="1 2"' : st[1] === "dashed" ? ' stroke-dasharray="4 2"' : ""}/>`; };
+        diag = `<svg class="dg" viewBox="0 0 100 100" preserveAspectRatio="none">${ln(S.bd.d1, 0, 100, 100, 0)}${ln(S.bd.d2, 0, 0, 100, 100)}</svg>`;
+      }
+      const inner = fill ? `<span class="t fl" style="${tcss}"><span>${esc(fill.left)}</span><span class="fc">${esc(fill.ch.repeat(160))}</span><span>${esc(fill.right)}</span></span>` : `<span class="t" style="${tcss}">${esc(text)}</span>`;
       const ft = f && r === f.r && c >= f.c1 && c <= f.c2 ? `<span class="ft${f.cols && f.cols[c] ? " on" : ""}" data-ft="${c}" title="Pick the values shown">▾</span>` : "";
-      return `<div class="c${isNum ? " num" : ""}${C().isErr(v) ? " err" : ""}${S.wrap ? " wrap" : ""}" style="${css}" title="${C().isErr(v) ? esc(v.err) : ""}">${esc(txt)}${ft}</div>`;
+      return `<div class="c${kind === "num" ? " num" : ""}${err ? " err" : ""}${wrap ? " wrap" : ""}" style="${css}" title="${err ? esc(v.err) : ""}">${inner}${diag}${ft}</div>`;
     };
     // the body, then the frozen rows / columns over it, then the corner
     for (const r of rs) for (const c of cs) h.push(cellHtml(c, r));
@@ -151,8 +241,11 @@
   function bars() {
     const cell = cellAt(St.act.c, St.act.r) || {}, S = cell.s || {};
     $("shName").value = A(St.act.c, St.act.r);
-    if (!St.edit || St.edit.from !== "fx") $("shFormula").value = cell.v == null ? "" : cell.v;
-    $("shFmt").value = cell.f || "";
+    const hideF = sh().protect && S.hide;
+    if (!St.edit || St.edit.from !== "fx") $("shFormula").value = cell.v == null || hideF ? "" : cell.v;
+    $("shFormula").readOnly = locked(St.act.c, St.act.r);
+    const code = codeOf(cell), det = F() ? F().detect(code) : { cat: "General" };
+    $("shFmt").value = det.cat === "Date" ? (code === LONG_DATE ? "LongDate" : "ShortDate") : det.cat;
     for (const [id, on] of [["shB", S.b], ["shI", S.i], ["shU", S.u], ["shWrap", S.wrap], ["shAL", S.align === "left"], ["shAC", S.align === "center"], ["shAR", S.align === "right"], ["shFilter", !!sh().filter], ["shFreeze", !!(sh().freeze.r || sh().freeze.c)]]) { const b = $(id); if (b) b.classList.toggle("on", !!on); }
   }
   function status() {
@@ -162,9 +255,25 @@
     for (let r = s.r1; r <= Math.min(s.r2, s.r1 + 5000); r++) for (let c = s.c1; c <= s.c2; c++) { const v = book().get(W.active, c, r); if (v !== "" && v != null) cnt++; if (typeof v === "number") { n++; sum += v; } }
     el.textContent = n ? `Sum ${C().format(sum)} · Average ${C().format(sum / n)} · Count ${cnt}` : `Count ${cnt}`;
   }
+  const LONG_DATE = "dddd, d mmmm yyyy";
+  /** the Number Format dropdown -> a code (Custom / More… open the dialog) */
+  const QUICK = { General: "General", Number: "0.00", Currency: "$#,##0.00", Accounting: '_-$* #,##0.00_-;-$* #,##0.00_-;_-$* "-"??_-;_-@_-', ShortDate: "d/mm/yyyy", LongDate: LONG_DATE,
+    Time: "h:mm:ss AM/PM", Percentage: "0.00%", Fraction: "# ?/?", Scientific: "0.00E+00", Text: "@" };
+  function setCode(code) { if (guardSheet()) return paint(); styleAll((S, cell) => { delete S.dp; if (!code || /^general$/i.test(code)) delete cell.f; else cell.f = code; }); }
+  function decimalsBy(delta) {
+    if (guardSheet() || !F()) return;
+    step();
+    eachSel((c, r) => setStyle(c, r, (S, cell) => {
+      const v = book().get(W.active, c, r), code = codeOf(cell), t = typeof v === "number" ? F().render(v, code).text : "";
+      const shownDp = (/\.(\d+)/.exec(t) || [0, ""])[1].length;
+      const n = F().decimals(code, delta, shownDp); delete S.dp;
+      if (n && !/^general$/i.test(n)) cell.f = n;
+    }));
+    changed();
+  }
   function tabs() {
     const t = $("shTabs"); if (!t) return;
-    t.innerHTML = W.sheets.map((s, i) => `<span class="tab${i === W.active ? " on" : ""}" data-i="${i}" title="Double-click to rename, right-click for more"><span data-noi18n>${esc(s.name)}</span></span>`).join("")
+    t.innerHTML = W.sheets.map((s, i) => `<span class="tab${i === W.active ? " on" : ""}" data-i="${i}" title="Double-click to rename, right-click for more"><span data-noi18n>${esc(s.name)}</span>${s.protect ? " 🔒" : ""}</span>`).join("")
       + `<button class="ghost" type="button" id="shAddSheet" title="A new sheet">＋</button><span id="shStat"></span>`;
   }
   function msg(t, bad) { const m = $("shMsg"); if (!m) return; m.textContent = t || ""; m.classList.toggle("bad", !!bad); m.title = t || ""; }
@@ -186,6 +295,7 @@
 
   /* ---------------------------------------------------------------- editing */
   function startEdit(text, from) {
+    if (guard({ r1: St.act.r, c1: St.act.c, r2: St.act.r, c2: St.act.c })) return;
     const cell = cellAt(St.act.c, St.act.r) || {};
     St.edit = { c: St.act.c, r: St.act.r, from: from || "cell", orig: cell.v == null ? "" : cell.v };
     if (from === "fx") return;
@@ -221,6 +331,7 @@
 
   /* ---------------------------------------------------------------- fill handle */
   function fill(src, to) {
+    if (guard(to)) return paint();
     step();
     const s = norm(src), h = s.r2 - s.r1 + 1, w = s.c2 - s.c1 + 1, down = to.r2 > s.r2 || to.r1 < s.r1;
     const series = (vals) => { const n = vals.map((v) => (v != null && v !== "" && !/^=/.test(v) ? C().parseInput(v).value : null)); if (n.length < 2 || n.some((x) => typeof x !== "number")) return null; const d = n[1] - n[0]; return n.every((x, i) => Math.abs(x - (n[0] + d * i)) < 1e-9) ? { a: n[0], d } : null; };
@@ -251,6 +362,7 @@
   }
   function paste(text) {
     const at = norm(St.sel), Q = St.clip;
+    { const lines = String(text || "").replace(/\r/g, "").replace(/\n$/, "").split("\n"); if (guard({ r1: at.r1, c1: at.c1, r2: at.r1 + lines.length - 1, c2: at.c1 + Math.max(...lines.map((l) => l.split("\t").length)) - 1 })) return; }
     step();
     if (Q && text != null && text.replace(/\r/g, "") === Q.text) {
       Q.cells.forEach((row, i) => row.forEach((cell, j) => {
@@ -270,6 +382,7 @@
 
   /* ---------------------------------------------------------------- rows / columns */
   function shiftCells(axis, at, n) {
+    if (guardSheet()) return;
     step();
     const S = sh(), next = {};
     for (const [k, cell] of Object.entries(S.cells)) {
@@ -311,6 +424,7 @@
     return R;
   }
   function sort(desc) {
+    if (guardSheet()) return;
     const R = tableRange(); if (!R) return msg("nothing to sort", true);
     const key = St.act.c;
     let r1 = R.r1;
@@ -326,6 +440,7 @@
     changed(); msg(`sorted ${rows.length} rows by column ${C().colName(key)} ${desc ? "Z → A" : "A → Z"}`);
   }
   function toggleFilter() {
+    if (guardSheet()) return;
     step();
     if (sh().filter) { delete sh().filter; changed(); return msg("filter off - every row shown"); }
     const R = tableRange(); if (!R) return msg("type a table first (its first row = the headings)", true);
@@ -355,6 +470,7 @@
     changed(); msg(sh().freeze.r || sh().freeze.c ? `❄ frozen: ${sh().freeze.r} row(s), ${sh().freeze.c} column(s)` : "unfrozen");
   }
   function merge() {
+    if (guardSheet()) return;
     const s = norm(St.sel), key = A(s.c1, s.r1) + ":" + A(s.c2, s.r2);
     step();
     const M = sh().merges || (sh().merges = []);
@@ -366,6 +482,7 @@
     St.act = { r: s.r1, c: s.c1 }; changed(); msg("merged " + key + " (the top-left cell's value kept)");
   }
   function borders(kind) {
+    if (guardSheet()) return;
     step(); const s = norm(St.sel);
     eachSel((c, r) => setStyle(c, r, (S) => {
       if (kind === "none") { delete S.bd; return; }
@@ -378,6 +495,7 @@
     changed();
   }
   function autoSum() {
+    if (guard({ r1: St.act.r, c1: St.act.c, r2: St.act.r, c2: St.act.c })) return;
     const { c, r } = St.act; let r0 = r - 1;
     while (r0 >= 0 && typeof book().get(W.active, c, r0) === "number") r0--;
     let f = null;
@@ -402,7 +520,7 @@
       + `<div data-a="rowAbove">${nr > 1 ? `Insert ${nr} rows above` : "Insert 1 row above"}</div><div data-a="rowBelow">${nr > 1 ? `Insert ${nr} rows below` : "Insert 1 row below"}</div>`
       + `<div data-a="colLeft">${nc > 1 ? `Insert ${nc} columns left` : "Insert 1 column left"}</div><div data-a="colRight">${nc > 1 ? `Insert ${nc} columns right` : "Insert 1 column right"}</div><hr>`
       + `<div data-a="delRows">${nr > 1 ? `Delete rows ${rA}-${rB}` : `Delete row ${rA}`}</div><div data-a="delCols">${nc > 1 ? `Delete columns ${cA}-${cB}` : `Delete column ${cA}`}</div><hr>`
-      + `<div data-a="clear">Clear contents</div><div data-a="clearAll">Clear contents and formats</div>`);
+      + `<div data-a="clear">Clear contents</div><div data-a="clearAll">Clear contents and formats</div><hr><div data-a="format">▤ Format Cells… (Ctrl+1)</div>`);
     m.addEventListener("click", async (e) => {
       const a = (e.target.closest("[data-a]") || {}).dataset; if (!a || !a.a) return; m.remove();
       switch (a.a) {
@@ -416,16 +534,19 @@
         case "delCols": shiftCells("c", s.c1, -nc); St.sel = { r1: s.r1, c1: s.c1, r2: s.r1, c2: s.c1 }; paint(); break;
         case "clear": clear(false); break;
         case "clearAll": clear(true); break;
+        case "format": openFormat(); break;
       }
     });
   }
-  function clear(all) { step(); eachSel((c, r) => { const k = A(c, r); if (all) delete sh().cells[k]; else if (sh().cells[k]) { delete sh().cells[k].v; if (!Object.keys(sh().cells[k]).length) delete sh().cells[k]; } }); changed(); }
+  function clear(all) { if (guard()) return; step(); eachSel((c, r) => { const k = A(c, r); if (all) delete sh().cells[k]; else if (sh().cells[k]) { delete sh().cells[k].v; if (!Object.keys(sh().cells[k]).length) delete sh().cells[k]; } }); changed(); }
+  function openFormat(tab) { if (St.edit) commit(); if (root.H3SheetFormat) root.H3SheetFormat.open(tab); }
   function tabMenu(i, x, y) {
-    const m = menu(x, y, `<div data-a="rename">Rename…</div><div data-a="dup">Duplicate</div><div data-a="left">Move left</div><div data-a="right">Move right</div><hr><div data-a="del">Delete…</div>`);
+    const m = menu(x, y, `<div data-a="rename">Rename…</div><div data-a="dup">Duplicate</div><div data-a="left">Move left</div><div data-a="right">Move right</div><hr><div data-a="protect">${W.sheets[i].protect ? "🔓 Unprotect sheet" : "🔒 Protect sheet"}</div><hr><div data-a="del">Delete…</div>`);
     m.addEventListener("click", async (e) => {
       const a = (e.target.closest("[data-a]") || {}).dataset.a; if (!a) return; m.remove();
       if (a === "rename") return renameSheet(i);
       step();
+      if (a === "protect") { const S = W.sheets[i]; S.protect = !S.protect || undefined; tabs(); changed(); return msg(S.protect ? "🔒 protected: only cells with Locked unticked (Format Cells ▸ Protection) can be changed" : "🔓 unprotected"); }
       if (a === "dup") { const s = JSON.parse(JSON.stringify(W.sheets[i])); s.name = uniqueName(s.name + " (2)"); W.sheets.splice(i + 1, 0, s); W.active = i + 1; }
       else if (a === "left" && i > 0) { const [s] = W.sheets.splice(i, 1); W.sheets.splice(i - 1, 0, s); W.active = i - 1; }
       else if (a === "right" && i < W.sheets.length - 1) { const [s] = W.sheets.splice(i, 1); W.sheets.splice(i + 1, 0, s); W.active = i + 1; }
@@ -467,8 +588,13 @@
     catch (e) { msg("✗ " + e.message, true); }
   }
   async function okToLeave() { return !St.dirty || typeof root.appConfirm !== "function" || await root.appConfirm(`"${W.name}" has changes that are not saved. Leave it?`, "Not saved"); }
+  function upgradeSheets(list) {   // 2.822.0 kept a format as a name + s.dp - now a code
+    if (!F()) return list;
+    for (const S of list) for (const cell of Object.values(S.cells || {})) if (cell.f && ["number", "currency", "percent", "date", "text"].includes(cell.f)) { cell.f = F().upgrade(cell.f, cell.s && cell.s.dp); if (cell.s) { delete cell.s.dp; if (!Object.keys(cell.s).length) delete cell.s; } }
+    return list;
+  }
   function load(d, name) {
-    W.sheets = d.sheets.map((s) => Object.assign(newSheet(s.name), s, { freeze: s.freeze || { r: 0, c: 0 }, merges: s.merges || [] }));
+    W.sheets = upgradeSheets(d.sheets.map((s) => Object.assign(newSheet(s.name), s, { freeze: s.freeze || { r: 0, c: 0 }, merges: s.merges || [] })));
     W.active = Math.min(d.active || 0, W.sheets.length - 1); W.name = name || "Workbook"; $("shFile").value = W.name;
     St.book = null; St.undo = []; St.redo = []; St.dirty = false; St.sel = { r1: 0, c1: 0, r2: 0, c2: 0 }; St.act = { r: 0, c: 0 };
     const g = $("shGrid"); if (g) { g.scrollLeft = 0; g.scrollTop = 0; }
@@ -529,7 +655,7 @@
   }
   function onKey(e) {
     if (St.edit || e.target !== $("shGrid")) return;
-    if (!(e.ctrlKey || e.metaKey) || /^[zysabiuZYSABIU]$/.test(e.key)) e.stopPropagation();   // the app's own keys (Space, Delete, digits …) stay out of the cells
+    if (!(e.ctrlKey || e.metaKey) || /^[zysabiu1ZYSABIU]$/.test(e.key)) e.stopPropagation();   // the app's own keys (Space, Delete, digits …) stay out of the cells
     const k = e.key, ctl = e.ctrlKey || e.metaKey, { c, r } = St.act;
     const move = (dc, dr) => { e.preventDefault(); if (e.shiftKey) { const s = St.sel; go(s.c2 + dc, s.r2 + dr, true); } else go(c + dc, r + dr); };
     if (ctl && (k === "z" || k === "Z")) { e.preventDefault(); undo(e.shiftKey); return; }
@@ -537,6 +663,7 @@
     if (ctl && (k === "s" || k === "S")) { e.preventDefault(); save(); return; }
     if (ctl && (k === "a" || k === "A")) { e.preventDefault(); St.sel = { r1: 0, c1: 0, r2: Math.max(0, used().r), c2: Math.max(0, used().c) }; paint(); return; }
     if (ctl && /^[biu]$/i.test(k)) { e.preventDefault(); toggleStyle(k.toLowerCase()); return; }
+    if (ctl && k === "1") { e.preventDefault(); openFormat(); return; }
     if (ctl && /^Arrow/.test(k)) {                    // Ctrl + arrow: to the end of the data that way (or the next data after a gap)
       e.preventDefault();
       const dc = k === "ArrowRight" ? 1 : k === "ArrowLeft" ? -1 : 0, dr = k === "ArrowDown" ? 1 : k === "ArrowUp" ? -1 : 0, u = used();
@@ -566,8 +693,8 @@
     }
     if (k.length === 1 && !e.altKey) { e.preventDefault(); startEdit(k); }
   }
-  function toggleStyle(key) { const on = !style(St.act.c, St.act.r)[key]; step(); eachSel((c, r) => setStyle(c, r, (S) => { S[key] = on || null; })); changed(); }
-  function styleAll(fn) { step(); eachSel((c, r) => setStyle(c, r, fn)); changed(); }
+  function toggleStyle(key) { if (guardSheet()) return; const on = !style(St.act.c, St.act.r)[key]; step(); eachSel((c, r) => setStyle(c, r, (S) => { S[key] = on || null; })); changed(); }
+  function styleAll(fn) { if (guardSheet()) return; step(); eachSel((c, r) => setStyle(c, r, fn)); changed(); }
 
   function wire() {
     const d = $("sheetdock"); if (!d) return;
@@ -597,13 +724,14 @@
     on("shSave", "click", save);
     on("shFile", "keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") save(); });
     on("shUndo", "click", () => undo(false)); on("shRedo", "click", () => undo(true));
-    on("shFmt", "change", (e) => styleAll((S, cell) => { if (e.target.value) cell.f = e.target.value; else delete cell.f; }));
-    on("shDecLess", "click", () => styleAll((S) => { S.dp = Math.max(0, (S.dp == null ? 2 : S.dp) - 1); }));
-    on("shDecMore", "click", () => styleAll((S) => { S.dp = Math.min(10, (S.dp == null ? 2 : S.dp) + 1); }));
+    on("shFmt", "change", (e) => { const v = e.target.value; if (v === "Custom" || v === "__more") { bars(); openFormat("number"); return; } setCode(QUICK[v] || "General"); });
+    on("shDecLess", "click", () => decimalsBy(-1));
+    on("shDecMore", "click", () => decimalsBy(1));
+    on("shFmtCells", "click", () => openFormat());
     on("shB", "click", () => toggleStyle("b")); on("shI", "click", () => toggleStyle("i")); on("shU", "click", () => toggleStyle("u"));
     on("shColor", "change", (e) => styleAll((S) => { S.color = e.target.value; }));
     on("shBg", "change", (e) => styleAll((S) => { S.bg = e.target.value; }));
-    on("shNoBg", "click", () => styleAll((S) => { S.bg = null; S.color = null; }));
+    on("shNoBg", "click", () => styleAll((S) => { S.bg = null; S.pat = null; S.grad = null; }));
     for (const [id, a] of [["shAL", "left"], ["shAC", "center"], ["shAR", "right"]]) on(id, "click", () => { const same = style(St.act.c, St.act.r).align === a; styleAll((S) => { S.align = same ? null : a; }); });
     on("shWrap", "click", () => toggleStyle("wrap"));
     on("shBorder", "click", (e) => { const r = e.currentTarget.getBoundingClientRect(), m = menu(r.left, r.bottom + 2, `<div data-b="all">▦ All borders</div><div data-b="outside">▢ Outside borders</div><div data-b="bottom">▁ Bottom border</div><div data-b="none">✕ No borders</div>`); m.addEventListener("click", (ev) => { const b = (ev.target.closest("[data-b]") || {}).dataset; if (b && b.b) { m.remove(); borders(b.b); } }); });
@@ -613,12 +741,14 @@
     on("shSum", "click", autoSum);
     on("shFn", "click", (e) => { const r = e.currentTarget.getBoundingClientRect(), m = menu(r.left, r.bottom + 2, C().FUNCS.map((f) => `<div data-fn="${f}" data-noi18n>${f}</div>`).join("")); m.addEventListener("click", (ev) => { const it = ev.target.closest("[data-fn]"); if (!it) return; m.remove(); if (St.edit && St.edit.from !== "fx") { const ed = EDIT; ed.value += it.dataset.fn + "("; ed.focus(); } else startEdit("=" + it.dataset.fn + "("); }); });
     // the draft kept in this browser comes back
-    try { const dr = JSON.parse(root.localStorage.getItem("h3.sheet.draft") || "null"); if (dr && Array.isArray(dr.sheets) && dr.sheets.length) { W.sheets = dr.sheets; W.active = Math.min(dr.active || 0, dr.sheets.length - 1); W.name = dr.name || "Workbook"; $("shFile").value = W.name; } } catch (e) { /* a fresh workbook */ }
+    try { const dr = JSON.parse(root.localStorage.getItem("h3.sheet.draft") || "null"); if (dr && Array.isArray(dr.sheets) && dr.sheets.length) { W.sheets = upgradeSheets(dr.sheets); W.active = Math.min(dr.active || 0, dr.sheets.length - 1); W.name = dr.name || "Workbook"; $("shFile").value = W.name; } } catch (e) { /* a fresh workbook */ }
     const boot = () => { if (St.booted) return; St.booted = true; tabs(); paint(); };
     const seen = () => !d.classList.contains("dockgone") && !d.classList.contains("collapsed");
     if (root.MutationObserver) new MutationObserver(() => { if (seen()) { boot(); paintSoon(); } }).observe(d, { attributes: true, attributeFilter: ["class"] });
     if (seen()) boot();
   }
-  root.H3Sheet = { W, St, paint, go, startEdit, commit, setRaw, copy, paste, fill, sort, toggleFilter, toggleFreeze, merge, borders, autoSum, shiftCells, save, load, undo, book, shown, renameSheet };
+  root.H3Sheet = { W, St, paint, go, startEdit, commit, setRaw, copy, paste, fill, sort, toggleFilter, toggleFreeze, merge, borders, autoSum, shiftCells, save, load, undo, book, shown, renameSheet, setCode, decimalsBy, openFormat,
+    // 2.823.0: for the Format Cells dialog (sheetfmtdlg.js)
+    _: { sh, cellAt, style, setStyle, eachSel, norm, step, changed, codeOf, guardSheet, msg, measure, fontOf, okColor, okFont, BSTYLE, PATTERNS, patternUrl, autoInk, fillCss, sideOf, sideCss, DH, DW, tabs } };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else setTimeout(wire, 0);
 })(window);

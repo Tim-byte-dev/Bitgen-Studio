@@ -18,14 +18,17 @@
           #shSpace { position: absolute; left: 0; top: 0; pointer-events: none; }
           #shPane { position: sticky; left: 0; top: 0; overflow: hidden; }
           #shPane .c, #shPane .h { position: absolute; box-sizing: border-box; overflow: hidden; white-space: nowrap; font-size: 12px; line-height: 20px; padding: 0 4px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--text); }
-          #shPane .c { background: var(--panel); cursor: cell; }
-          #shPane .c.wrap { white-space: normal; line-height: 15px; word-break: break-word; }
-          #shPane .c.num { text-align: right; }
+          #shPane .c { background: var(--panel); cursor: cell; display: flex; align-items: flex-end; }
+          #shPane .c .t { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: pre; }
+          #shPane .c.wrap { line-height: 15px; }
+          #shPane .c .t.fl { display: flex; }
+          #shPane .c .t.fl .fc { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: pre; }
+          #shPane .c .dg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
           #shPane .c.err { color: #ff6b6b; }
           #shPane .h { background: var(--panel-2); color: var(--dim); text-align: center; cursor: pointer; user-select: none; font-size: 11px; }
           #shPane .h.on { color: var(--tiger); background: color-mix(in srgb, var(--tiger) 14%, var(--panel-2)); }
-          #shPane .h .ft { position: absolute; right: 2px; top: 2px; font-size: 10px; line-height: 14px; padding: 0 2px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--text); cursor: pointer; }
-          #shPane .h .ft.on { color: var(--tiger); border-color: var(--tiger); }
+          #shPane .ft { position: absolute; right: 2px; top: 2px; font-size: 10px; line-height: 14px; padding: 0 2px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--text); cursor: pointer; }
+          #shPane .ft.on { color: var(--tiger); border-color: var(--tiger); }
           #shPane .rs { position: absolute; right: -3px; top: 0; bottom: 0; width: 6px; cursor: col-resize; }
           #shPane .rsr { position: absolute; left: 0; right: 0; bottom: -3px; height: 6px; cursor: row-resize; }
           #shPane .sel { position: absolute; border: 2px solid var(--tiger); background: color-mix(in srgb, var(--tiger) 10%, transparent); pointer-events: none; box-sizing: border-box; }
@@ -55,9 +58,10 @@
           <button class="ghost" type="button" id="shUndo" title="Undo (Ctrl+Z)">↶</button>
           <button class="ghost" type="button" id="shRedo" title="Redo (Ctrl+Y)">↷</button>
           <span class="sep"></span>
-          <select id="shFmt" title="How the numbers show" aria-label="Number format"><option value="">General</option><option value="number">Number</option><option value="currency">Currency</option><option value="percent">Percent</option><option value="date">Date</option><option value="text">Text</option></select>
+          <select id="shFmt" title="Number format - how the numbers show (▤ Format… for every choice)" aria-label="Number format"><option value="General">General</option><option value="Number">Number</option><option value="Currency">Currency</option><option value="Accounting">Accounting</option><option value="ShortDate">Short date</option><option value="LongDate">Long date</option><option value="Time">Time</option><option value="Percentage">Percentage</option><option value="Fraction">Fraction</option><option value="Scientific">Scientific</option><option value="Text">Text</option><option value="Special" hidden>Special</option><option value="Custom">Custom…</option><option value="__more">More number formats…</option></select>
           <button class="ghost" type="button" id="shDecLess" title="Fewer decimal places">.0←</button>
           <button class="ghost" type="button" id="shDecMore" title="More decimal places">.00→</button>
+          <button class="ghost" type="button" id="shFmtCells" title="Format Cells (Ctrl+1): number, alignment, font, border, fill, protection">▤ Format…</button>
           <span class="sep"></span>
           <button class="ghost" type="button" id="shB" title="Bold (Ctrl+B)" style="font-weight:700">B</button>
           <button class="ghost" type="button" id="shI" title="Italic (Ctrl+I)" style="font-style:italic">I</button>

@@ -9379,6 +9379,17 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **Tables**: A→Z / Z→A sort the table round the active cell by its column (a heading row stays on top, a row's cells and formulas stay together); ⏷ Filter puts a ▾ on each heading to tick the values shown; ❄ Freeze keeps the rows above and the columns left of the active cell in view; Σ sums the numbers above (or to the left).
 - **Sheets**: ＋ adds a tab; double-click renames it (formulas that use it are renamed too); right-click duplicates, moves or deletes it.
 
+## ▦ Spreadsheet - Format Cells (2.823.0)
+
+- **▤ Format…** on the spreadsheet's toolbar, **Ctrl+1** or the cells' right-click menu opens **Format Cells** with six tabs. Only what you change there is put on the selected cells - each keeps the rest of its look - and one Ctrl+Z takes the whole OK back.
+- **Number**: General, Number (decimals, 1,000 separator, negatives with a minus, in red, in brackets), Currency (17 signs - $, A$, US$, €, £, ¥, ฿ …), Accounting (the sign at the cell's left edge, decimal points lined up, zero as a dash), Date, Time, Percentage, Fraction, Scientific, Text (what you type stays text - 0012 keeps its zeros, = is not worked out), Special (postcode, ABN, phone numbers) and Custom - any number format code: digits `0 # ?`, `,` thousands (after the digits: / 1000), `%`, `E+00`, fractions `# ?/?`, dates and times `d m y h s AM/PM`, `[h]` past 24 hours, `[Red]` / `[Blue]` colours, `"text"`, `_` and `*` (Accounting's spacing), up to four sections `positive;negative;zero;text` and conditions such as `[>=1000]`. The sample shows the active cell as you pick.
+- **Alignment**: horizontal (general, left / right with an indent, centre, fill, justify, centre across selection, distributed), vertical (top, centre, bottom, justify, distributed), wrap text (the row grows to fit), shrink to fit, merge cells, text direction, and the orientation - a dial to drag, the degrees typed (-90 to 90), or vertical text.
+- **Font**: the font (this computer's too), regular / italic / bold / bold italic, size (the row grows for bigger text), underline (single, double, single / double accounting), colour, strikethrough, superscript, subscript, a preview.
+- **Border**: 13 line styles and a colour; presets None / Outline / Inside lines; each edge (the inside lines and both diagonals) by its button or by clicking it in the preview - again to take it off.
+- **Fill**: a palette (theme colours with lighter / darker shades, standard colours, No colour, More colours…), two-colour shading (horizontal, vertical, diagonal, from the centre) and 17 patterns with their own colour.
+- **Protection**: Locked / Hidden, and Protect this sheet (also on the sheet tab's right-click menu: 🔒 Protect sheet / 🔓 Unprotect sheet). On a protected sheet locked cells can't be typed in or reformatted, rows / columns can't be inserted or deleted, and a hidden cell's formula is not shown in the ƒx bar. Every cell starts locked - untick Locked on the cells people should still fill in.
+- The toolbar's **Number Format** list (General, Number, Currency, Accounting, Short / Long date, Time, Percentage, Fraction, Scientific, Text, More number formats…) and **.0← / .00→** edit the same codes. A number too wide for its column shows `#####`. Typed entries set a format themselves: `$1,500` currency, `12%` / `12.5%` percent, `1,234` thousands, `9:30 pm` a time, `1 1/2` a fraction, `17/11/2026` a date.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

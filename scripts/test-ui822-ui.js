@@ -38,7 +38,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await go("A1");
     await type("Item\tQty\tPrice\tTotal\n"); await go("A2"); await type("Pears\t5\t2\n"); await go("A3"); await type("Apples\t3\t$1.50\n"); await go("A4"); await type("Plums\t12\t25%\n");
     check("typing: words, numbers (P, S, L and digits go into the cells, not the app's keys)", (await S("A2")) === "Pears" && (await S("B4")) === "12" && (await raw("A3")) === "Apples", [await S("A2"), await S("B4")]);
-    check("$1.50 = 1.5 shown as currency, 25% = 0.25 shown as a percent", (await S("C3")) === "$1.50" && (await S("C4")) === "25.00%", [await S("C3"), await S("C4")]);
+    check("$1.50 = 1.5 shown as currency, 25% = 0.25 shown as a percent (2.823.0: 0%, as typed)", (await S("C3")) === "$1.50" && (await S("C4")) === "25%", [await S("C3"), await S("C4")]);
     await go("A1"); await p.keyboard.press("Control+ArrowDown"); const j1 = await ev(() => ({ ...window.H3Sheet.St.act }));
     await p.keyboard.press("Control+ArrowRight"); const j2 = await ev(() => ({ ...window.H3Sheet.St.act }));
     await p.keyboard.press("Control+Shift+ArrowUp"); const j3 = await ev(() => ({ ...window.H3Sheet.St.sel }));
@@ -66,7 +66,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await go("A8"); await ev(() => window.H3Sheet.paste("x\t1\ny\t2"));
     check("pasted text from another program (tabs + lines) fills the cells", (await S("A8")) === "x" && (await S("B9")) === "2");
     // formats
-    await go("D2"); await ev(() => { const s = document.getElementById("shFmt"); s.value = "currency"; s.dispatchEvent(new Event("change")); });
+    await go("D2"); await ev(() => { const s = document.getElementById("shFmt"); s.value = "Currency"; s.dispatchEvent(new Event("change")); });
     check("Format ▸ Currency: D2 shows $10.00", (await S("D2")) === "$10.00", await S("D2"));
     await p.$eval("#shB", (e) => e.click());
     check("B = bold (one undo step)", await ev(() => !!window.H3Sheet.W.sheets[0].cells.D2.s.b));

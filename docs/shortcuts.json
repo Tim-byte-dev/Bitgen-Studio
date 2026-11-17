@@ -1064,6 +1064,10 @@
           "Save the workbook"
         ],
         [
+          "Ctrl+1",
+          "Format Cells - number, alignment, font, border, fill, protection"
+        ],
+        [
           "Click a cell while typing =…",
           "Puts its address in the formula (drag: a block)"
         ],

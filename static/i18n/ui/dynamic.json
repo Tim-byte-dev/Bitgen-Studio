@@ -19640,91 +19640,395 @@
   },
   {
    "s": "Workbook",
-   "src": "ext/sheetdock/sheetdock.js:28"
+   "src": "ext/sheetdock/sheetdock.js:34"
+  },
+  {
+   "s": "underline",
+   "src": "ext/sheetdock/sheetdock.js:191"
+  },
+  {
+   "s": "line-through",
+   "src": "ext/sheetdock/sheetdock.js:191"
   },
   {
    "s": "Pick the values shown",
-   "src": "ext/sheetdock/sheetdock.js:123"
+   "src": "ext/sheetdock/sheetdock.js:213"
   },
   {
    "s": "Drag to fill",
-   "src": "ext/sheetdock/sheetdock.js:138"
+   "src": "ext/sheetdock/sheetdock.js:228"
   },
   {
    "s": "A new sheet",
-   "src": "ext/sheetdock/sheetdock.js:167"
+   "src": "ext/sheetdock/sheetdock.js:276"
   },
   {
    "s": "Double-click to rename, right-click for more",
-   "src": "ext/sheetdock/sheetdock.js:167"
+   "src": "ext/sheetdock/sheetdock.js:276"
   },
   {
    "s": "blanks",
-   "src": "ext/sheetdock/sheetdock.js:342"
+   "src": "ext/sheetdock/sheetdock.js:457"
   },
   {
    "s": "Cut",
-   "src": "ext/sheetdock/sheetdock.js:401"
+   "src": "ext/sheetdock/sheetdock.js:519"
   },
   {
    "s": "Paste",
-   "src": "ext/sheetdock/sheetdock.js:401"
+   "src": "ext/sheetdock/sheetdock.js:519"
   },
   {
    "s": "Insert 1 row below",
-   "src": "ext/sheetdock/sheetdock.js:402"
+   "src": "ext/sheetdock/sheetdock.js:520"
   },
   {
    "s": "Insert 1 row above",
-   "src": "ext/sheetdock/sheetdock.js:402"
+   "src": "ext/sheetdock/sheetdock.js:520"
   },
   {
    "s": "Insert 1 column right",
-   "src": "ext/sheetdock/sheetdock.js:403"
+   "src": "ext/sheetdock/sheetdock.js:521"
   },
   {
    "s": "Insert 1 column left",
-   "src": "ext/sheetdock/sheetdock.js:403"
+   "src": "ext/sheetdock/sheetdock.js:521"
   },
   {
    "s": "Clear contents",
-   "src": "ext/sheetdock/sheetdock.js:405"
+   "src": "ext/sheetdock/sheetdock.js:523"
   },
   {
    "s": "Clear contents and formats",
-   "src": "ext/sheetdock/sheetdock.js:405"
+   "src": "ext/sheetdock/sheetdock.js:523"
+  },
+  {
+   "s": "Format Cells… (Ctrl+1)",
+   "src": "ext/sheetdock/sheetdock.js:523"
   },
   {
    "s": "Duplicate",
-   "src": "ext/sheetdock/sheetdock.js:424"
+   "src": "ext/sheetdock/sheetdock.js:544"
   },
   {
    "s": "Move left",
-   "src": "ext/sheetdock/sheetdock.js:424"
+   "src": "ext/sheetdock/sheetdock.js:544"
   },
   {
    "s": "Move right",
-   "src": "ext/sheetdock/sheetdock.js:424"
+   "src": "ext/sheetdock/sheetdock.js:544"
+  },
+  {
+   "s": "Unprotect sheet",
+   "src": "ext/sheetdock/sheetdock.js:544"
+  },
+  {
+   "s": "Protect sheet",
+   "src": "ext/sheetdock/sheetdock.js:544"
   },
   {
    "s": "no workbooks in this project yet - 💾 Save one",
-   "src": "ext/sheetdock/sheetdock.js:480"
+   "src": "ext/sheetdock/sheetdock.js:606"
   },
   {
    "s": "All borders",
-   "src": "ext/sheetdock/sheetdock.js:609"
+   "src": "ext/sheetdock/sheetdock.js:737"
   },
   {
    "s": "Outside borders",
-   "src": "ext/sheetdock/sheetdock.js:609"
+   "src": "ext/sheetdock/sheetdock.js:737"
   },
   {
    "s": "Bottom border",
-   "src": "ext/sheetdock/sheetdock.js:609"
+   "src": "ext/sheetdock/sheetdock.js:737"
   },
   {
    "s": "No borders",
-   "src": "ext/sheetdock/sheetdock.js:609"
+   "src": "ext/sheetdock/sheetdock.js:737"
+  },
+  {
+   "s": "A$ (Australian dollar)",
+   "src": "ext/sheetdock/sheetfmt.js:335"
+  },
+  {
+   "s": "US$ (US dollar)",
+   "src": "ext/sheetdock/sheetfmt.js:335"
+  },
+  {
+   "s": "NZ$ (New Zealand dollar)",
+   "src": "ext/sheetdock/sheetfmt.js:336"
+  },
+  {
+   "s": "S$ (Singapore dollar)",
+   "src": "ext/sheetdock/sheetfmt.js:337"
+  },
+  {
+   "s": "HK$ (Hong Kong dollar)",
+   "src": "ext/sheetdock/sheetfmt.js:338"
+  },
+  {
+   "s": "CHF",
+   "src": "ext/sheetdock/sheetfmt.js:338"
+  },
+  {
+   "s": "R (rand)",
+   "src": "ext/sheetdock/sheetfmt.js:338"
+  },
+  {
+   "s": "Number",
+   "src": "ext/sheetdock/sheetfmtdlg.js:27"
+  },
+  {
+   "s": "Alignment",
+   "src": "ext/sheetdock/sheetfmtdlg.js:27"
+  },
+  {
+   "s": "Protection",
+   "src": "ext/sheetdock/sheetfmtdlg.js:27"
+  },
+  {
+   "s": "General",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Left (indent)",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Right (indent)",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Justify",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Centre across selection",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Distributed (indent)",
+   "src": "ext/sheetdock/sheetfmtdlg.js:42"
+  },
+  {
+   "s": "Align top",
+   "src": "ext/sheetdock/sheetfmtdlg.js:43"
+  },
+  {
+   "s": "Align middle",
+   "src": "ext/sheetdock/sheetfmtdlg.js:43"
+  },
+  {
+   "s": "Align bottom",
+   "src": "ext/sheetdock/sheetfmtdlg.js:43"
+  },
+  {
+   "s": "Distributed",
+   "src": "ext/sheetdock/sheetfmtdlg.js:43"
+  },
+  {
+   "s": "Format Cells",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "How it looks",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Text alignment",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Indent",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Text control",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Wrap text",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Shrink to fit",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Merge cells",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Right-to-left",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Text direction",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "From the text",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Left-to-right",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Degrees",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "the app's font",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Underline",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Single underline",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Double underline",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Single accounting underline",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Double accounting underline",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Automatic",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Effects",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Strikethrough",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Superscript",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Subscript",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "AaBbCcYyZz 123",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Normal font",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Inside lines",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Pick a line style and a colour, then click a preset, an edge button or the preview. Click an edge again to take it off",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "No colour",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "More colours",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Fill effects (two colours)",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Colour 1",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Colour 2",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Shading",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Diagonal up",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Diagonal down",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "From centre",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Pattern colour",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Pattern style",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Locked",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Hidden",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Locked and Hidden only count while the sheet is protected: then locked cells cannot be changed (unlocked ones can be typed in), and a hidden cell's formula is not shown in the ƒx bar. Every cell starts locked - untick Locked on the cells people should still fill in",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "This sheet",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Protect this sheet when I press OK",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Also from the sheet's tab: right-click ▸ Protect sheet / Unprotect sheet. There is no password - protection keeps cells from being changed by accident",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Vertical text: one letter under another",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "Turn the text",
+   "src": "ext/sheetdock/sheetfmtdlg.js:127"
+  },
+  {
+   "s": "the cell is empty - a sample number",
+   "src": "ext/sheetdock/sheetfmtdlg.js:238"
+  },
+  {
+   "s": "Negative numbers",
+   "src": "ext/sheetdock/sheetfmtdlg.js:243"
+  },
+  {
+   "s": "Symbol",
+   "src": "ext/sheetdock/sheetfmtdlg.js:244"
+  },
+  {
+   "s": "Use 1000 separator (",
+   "src": "ext/sheetdock/sheetfmtdlg.js:248"
   },
   {
    "s": "Open from the computer",
@@ -22957,10 +23261,6 @@
   {
    "s": "Timeline settings",
    "src": "ext/timelinedock/tlsettings.js:60"
-  },
-  {
-   "s": "General",
-   "src": "ext/timelinedock/tlsettings.js:61"
   },
   {
    "s": "moves the selected clip",
@@ -27986,47 +28286,47 @@
   },
   {
    "p": "Sum {0} · Average {1} · Count {2}",
-   "src": "ext/sheetdock/sheetdock.js:163"
+   "src": "ext/sheetdock/sheetdock.js:256"
   },
   {
    "p": "Count {0}",
-   "src": "ext/sheetdock/sheetdock.js:163"
+   "src": "ext/sheetdock/sheetdock.js:256"
   },
   {
    "p": "Clear the filter of {0}",
-   "src": "ext/sheetdock/sheetdock.js:341"
+   "src": "ext/sheetdock/sheetdock.js:456"
   },
   {
    "p": "Insert {0} rows above",
-   "src": "ext/sheetdock/sheetdock.js:402"
+   "src": "ext/sheetdock/sheetdock.js:520"
   },
   {
    "p": "Insert {0} rows below",
-   "src": "ext/sheetdock/sheetdock.js:402"
+   "src": "ext/sheetdock/sheetdock.js:520"
   },
   {
    "p": "Insert {0} columns left",
-   "src": "ext/sheetdock/sheetdock.js:403"
+   "src": "ext/sheetdock/sheetdock.js:521"
   },
   {
    "p": "Insert {0} columns right",
-   "src": "ext/sheetdock/sheetdock.js:403"
+   "src": "ext/sheetdock/sheetdock.js:521"
   },
   {
    "p": "Delete rows {0}-{1}",
-   "src": "ext/sheetdock/sheetdock.js:404"
+   "src": "ext/sheetdock/sheetdock.js:522"
   },
   {
    "p": "Delete columns {0}-{1}",
-   "src": "ext/sheetdock/sheetdock.js:404"
+   "src": "ext/sheetdock/sheetdock.js:522"
   },
   {
    "p": "Delete column {0}",
-   "src": "ext/sheetdock/sheetdock.js:404"
+   "src": "ext/sheetdock/sheetdock.js:522"
   },
   {
    "p": "Delete row {0}",
-   "src": "ext/sheetdock/sheetdock.js:404"
+   "src": "ext/sheetdock/sheetdock.js:522"
   },
   {
    "p": "Update to v{0}",
