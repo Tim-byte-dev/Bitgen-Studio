@@ -14225,6 +14225,13 @@ node scripts/test-const826.js > /tmp/const826.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui826-ui.js > /tmp/ui826.log 2>&1 \
   && ok "2.826.0 browser test: 📌 Rent 540 / week -> a Ledger with 25 entries + balance, 580 back in time corrected, wages in date order, an end date removes when ticked, =Rent, save + open" \
   || { bad "2.826.0 constants browser test"; grep -a "^FAIL" -A1 /tmp/ui826.log | head -12; }
+# ---- 2.827.0 (Tim: "can we have it say rent paid to this date, rent days is calculated by weekly/7") 📌 Paid to
+node scripts/test-paid827.js > /tmp/paid827.log 2>&1 \
+  && ok "2.827.0 paid to: a day = weekly / 7 (fortnight, month, year), across rate changes and an end, PAIDTO(), behind / ahead + owing, you-enter-it constants" \
+  || { bad "2.827.0 paid to units"; grep -a "^FAIL" -A1 /tmp/paid827.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui827-ui.js > /tmp/ui827.log 2>&1 \
+  && ok "2.827.0 browser test: the Ledger's Paid to column (19/01 … 2/03, live), the list's paid to + days behind, a tenant's typed payments (18/02, 25/02), your words kept, your ledger gets the column" \
+  || { bad "2.827.0 paid to browser test"; grep -a "^FAIL" -A1 /tmp/ui827.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

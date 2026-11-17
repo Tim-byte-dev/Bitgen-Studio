@@ -5995,6 +5995,15 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - **帳本**：帶有 Date 和 Income + Expense（或 Amount + Type）標題的工作表——有 Description、Category、Balance 和 Ref 時會使用（沒有 Ref 時會新增）；都沒有時，⟳ 會建立 **Ledger** 工作表（Date、Description、Category、Income、Expense、Balance、Ref）。記錄按日期順序插入已有的行之間（你的行保留，其公式隨行移動）；新行沿用相鄰行的格式和 Balance 公式（新帳本：=SUM(D$2:D2)-SUM(E$2:E2)）。每筆記錄的 Ref（📌 Rent · 2026-01-13）讓 bitGen 知道它已存在——從不重複記錄。
 - **在公式中**：=Rent = 今天的金額（“Car loan” 則用 =Car_loan），=CONST("Rent", A5) = 該日期的金額，結束後為 0。常量和帳本儲存在 .bgs 中。
 
+## ▦ 試算表——📌 Paid to：常量的付款夠付到哪一天（2.827.0）
+<!-- en: spreadsheet-paid-to-how-far-the-payments-for-a-constant-cover-2-827-0 365f3eb82548 -->
+
+- **Paid to**（Tim：“rent paid to this date, rent days is calculated by weekly/7”）：帳本中某個常量的付款——按 Category = 常量名稱或按 Ref 找到的行——從第一個開始日期起逐日抵扣。一天 = 每週金額 ÷ 7（兩週 ÷ 14，每月 × 12 ÷ 365，每季度 × 4 ÷ 365，每年 ÷ 365），按當天有效的金額計算；到結束日期為止。13/01/2026 起每週 540 的房租：付 $540 = 已付到 19/01/2026，$1,000 = 已付到 24/01/2026，另有 $74.29 計入下一天。
+- **📌 常量清單** 中每個常量下方：已付到 24/01/2026 · 落後 3 天 · 欠 $157.14（到今天為止尚未支付的天數，減去已為這些天付的部分）——或 · 提前 6 天，或尚未付款。
+- **帳本的 Paid to 列**（新的 Ledger 工作表自帶；在你自己的帳本中勾選 Paid to 列 即可新增）：在常量的每一行顯示到該行為止的付款付到哪一天——=PAIDTO("Rent",ABS(SUMIF(C$2:C9,"Rent",E$2:E9)))——即時公式，改動金額後之後的日期隨之變化。你在 Paid to 儲存格中自己寫的內容會保留。
+- **⟳ 自動記入**（表單中，預設勾選）：對於由你自己記入付款的常量——例如每次付不同金額的租客——取消勾選。這時 ⟳ 更新到最新 不為它生成記錄，只在你輸入的行（Category = 其名稱）中填寫 Paid to。清單中會標上 ✍。
+- **在公式中**：=PAIDTO("Rent", 已付金額) = 該金額能付到的最後一天（日期——請把儲存格設為日期格式）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

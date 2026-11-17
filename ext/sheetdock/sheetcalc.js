@@ -266,6 +266,8 @@
     IFS: (args, ev) => { for (let i = 0; i + 1 < args.length; i += 2) if (bool(ev(args[i]))) return ev(args[i + 1]); throw ERR("#N/A"); },
     // 2.826.0: CONST("Rent", date) - a 📌 constant's amount on that date (its rate then); no date = today
     CONST: (args, ev, book) => { const nm = str(ev(args[0])), d = args[1] ? num(ev(args[1])) : null, a = constAmount(book && book.consts, nm, d); if (a === undefined) throw ERR("#N/A"); return a; },
+    // 2.827.0: PAIDTO("Rent", amount paid) - the last day that amount pays for (Rent per day = weekly / 7), as a date
+    PAIDTO: (args, ev, book) => { const k = findConst(book && book.consts, str(ev(args[0]))); if (!k) throw ERR("#N/A"); const p = paidTo(k, args[1] ? num(ev(args[1])) : 0); if (!p) throw ERR("#N/A"); return p.to; },
     // 2.825.0: the IS… tests see an error without it stopping the formula
     IFNA: (args, ev) => { let v; try { v = ev(args[0]); } catch (e) { if (isErr(e)) v = e; else throw e; } return isErr(v) && v.err === "#N/A" ? ev(args[1]) : v; },
     ISERROR: (args, ev) => { try { return isErr(ev(args[0])); } catch (e) { if (isErr(e)) return true; throw e; } },
@@ -291,6 +293,27 @@
     for (const r of k.rates || []) { const st = parseInput(r.start).value; if (typeof st === "number" && st <= d && (!best || st >= best.st)) best = { st, a: +r.amount || 0 }; }
     return best ? best.a : 0;
   }
+  /** 2.827.0 (Tim: "rent paid to this date, rent days is calculated by weekly/7"): a constant's amount for ONE day on a date
+   *  (weekly / 7, fortnightly / 14, monthly x 12 / 365, quarterly x 4 / 365, yearly / 365); 0 before it starts / after it ends */
+  const PER_DAY = { day: 1, week: 7, fortnight: 14, month: 365 / 12, quarter: 365 / 4, year: 365 };
+  const isoSerial = (iso) => { const v = parseInput(iso).value; return typeof v === "number" ? v : null; };
+  function dayRate(k, d) {
+    if (!k || (k.end && d > isoSerial(k.end))) return 0;
+    let best = null;
+    for (const r of k.rates || []) { const st = isoSerial(r.start); if (st != null && st <= d && (!best || st >= best.st)) best = { st, r }; }
+    return best ? (+best.r.amount || 0) / (PER_DAY[best.r.every] || 7) : 0;
+  }
+  /** what an amount paid covers, day by day from the first start: {to: the last day fully paid (a serial; the day before the start
+   *  when nothing is), days, credit: what is left over toward the next day} */
+  function paidTo(k, paid) {
+    const starts = (k && k.rates || []).map((r) => isoSerial(r.start)).filter((x) => x != null);
+    if (!starts.length) return null;
+    const first = Math.min(...starts);
+    let d = first, left = +paid || 0;
+    for (let n = 0; n < 40000; n++) { const r = dayRate(k, d); if (r <= 0 || left + 1e-9 < r) break; left -= r; d++; }
+    return { to: d - 1, days: d - first, credit: Math.max(0, Math.round(left * 100) / 100), from: first };
+  }
+  function findConst(list, name) { if (!Array.isArray(list)) return null; const want = String(name || "").replace(/_/g, " ").trim().toLowerCase(); return list.find((x) => x && String(x.name || "").trim().toLowerCase() === want) || null; }
   function Book(sheets) { this.sheets = sheets || []; this.memo = new Map(); this.busy = new Set(); this.parsed = new Map(); }
   Book.prototype.sheetIndex = function (name) {
     if (name == null) return -1;
@@ -469,7 +492,7 @@
     }
   }
 
-  const SheetCalc = { constAmount, colName, colIndex, addr, parseAddr, tokenize, parse, Book, shiftFormula, adjustRefs, parseInput, format, textFmt, crit, FUNCS, ERRS, isErr, serialOf, dateOf, MAXR, MAXC };
+  const SheetCalc = { constAmount, dayRate, paidTo, findConst, PER_DAY, colName, colIndex, addr, parseAddr, tokenize, parse, Book, shiftFormula, adjustRefs, parseInput, format, textFmt, crit, FUNCS, ERRS, isErr, serialOf, dateOf, MAXR, MAXC };
   if (typeof module !== "undefined" && module.exports) module.exports = SheetCalc;
   else root.SheetCalc = SheetCalc;
 })(typeof window !== "undefined" ? window : globalThis);

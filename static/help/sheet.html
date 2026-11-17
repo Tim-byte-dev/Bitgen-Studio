@@ -63,6 +63,7 @@
   <li><b>⟳ Bring up to date</b> works out every due entry up to the day you pick and shows what it would do first: the new entries, entries whose amount changed (an amount added back in time - corrected when ticked) and entries no constant makes any more (removed only when ticked). <b>✔ Apply</b> puts them in the ledger in date order - Date, Description, Category, Income or Expense, the running Balance and a Ref (📌 Rent · 2026-01-13) so nothing is entered twice. One <b>Ctrl+Z</b> takes it back.</li>
   <li>The ledger is a sheet with Date and Income / Expense (or Amount) headings - yours, or <b>＋ Make a Ledger sheet</b>. Rows you type yourself stay and are kept in date order with the rest.</li>
   <li>Formulas read them: <code>=Rent</code> is today's amount, <code>=CONST("Rent", A5)</code> the amount on a date (a name with spaces: <code>=Car_loan</code>). They are saved with the workbook.</li>
+  <li><b>Paid to</b> - what has been paid for a constant covers it day by day from its first start, a day being the weekly amount ÷ 7 (fortnightly ÷ 14, monthly × 12 ÷ 365, yearly ÷ 365). The list says <i>Paid to 24/01/2026 · 3 days behind · $157.14 owing</i> (or days ahead), and the ledger's <b>Paid to</b> column shows, on every row of a constant, the date paid to after that row - a live formula, <code>=PAIDTO("Rent", amount paid)</code>. Payments are found by the Category (the constant's name) or the Ref. Untick <b>⟳ enters it</b> for one whose payments you type yourself (a tenant's rent) - ⟳ then only fills in Paid to.</li>
 </ul>
 
 <h3>Tables</h3>

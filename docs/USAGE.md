@@ -9413,6 +9413,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **The ledger**: the sheet with Date and Income + Expense (or Amount + Type) headings - Description, Category, Balance and Ref are used when there (Ref is added when missing); with none, ⟳ makes a **Ledger** sheet (Date, Description, Category, Income, Expense, Balance, Ref). Entries go in date order among the rows already there (yours stay, their formulas move with them); a new row gets the looks and the Balance formula of the row next to it (a new ledger: =SUM(D$2:D2)-SUM(E$2:E2)). Each entry's Ref (📌 Rent · 2026-01-13) is how bitGen knows it is there - it is never entered twice.
 - **In formulas**: =Rent = today's amount (=Car_loan for "Car loan"), =CONST("Rent", A5) = the amount on that date, 0 after it ends. Constants and the ledger are saved in the .bgs.
 
+## ▦ Spreadsheet - 📌 Paid to: how far the payments for a constant cover (2.827.0)
+
+- **Paid to** (Tim: "rent paid to this date, rent days is calculated by weekly/7"): the payments for a constant in the ledger - its rows found by Category = the constant's name, or by its Ref - cover it day by day from its first start date. A day = the weekly amount ÷ 7 (fortnightly ÷ 14, monthly × 12 ÷ 365, quarterly × 4 ÷ 365, yearly ÷ 365), at the amount in force on that day; it stops at an end date. Rent 540 / week from 13/01/2026: $540 paid = paid to 19/01/2026, $1,000 = paid to 24/01/2026 with $74.29 toward the next day.
+- **In the 📌 Constants list** under each constant: Paid to 24/01/2026 · 3 days behind · $157.14 owing (today's days not yet paid, less the part already paid toward them) - or · 6 days ahead, or Nothing paid yet.
+- **The ledger's Paid to column** (a new Ledger sheet has it; tick Paid to column to add it to your own): on every row of a constant, the date paid to after that row - =PAIDTO("Rent",ABS(SUMIF(C$2:C9,"Rent",E$2:E9))) - live, so a changed amount moves the dates after it. Your own words in a Paid to cell are left alone.
+- **⟳ enters it** (in the form, ticked): untick it for a constant whose payments you type yourself - a tenant who pays different amounts. ⟳ Bring up to date then makes no entries for it and only fills in Paid to on the rows you typed (Category = its name). ✍ marks it in the list.
+- **In formulas**: =PAIDTO("Rent", amount paid) = the last day that amount pays for (a date - format the cell as a date).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
