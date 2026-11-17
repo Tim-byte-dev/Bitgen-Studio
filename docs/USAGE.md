@@ -9313,6 +9313,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The file is kept in the project's **docs** folder and downloaded. Word lays out the pages itself, so its page breaks can fall a line or two away from bitGen's.
 - **File ▸ 📂 Open Word Document (.docx)…** opens a .docx as a new text document: pick the file, the page size and the margins; the words, styles, lists and tables come in, in one frame that adds pages as it needs. Pictures in the file are left out for now.
 
+## Comments and footnotes in document text (2.815.0)
+
+- **💬 New Comment** (the 💬 button on the Document Text bar, or **Ctrl+Alt+M**): select the words (or put the caret in a word), write the comment and your name - the words get a light yellow mark and the comment is kept with the text. A selection running into the next paragraph is cut to the first one.
+- **💬☰** opens the **comments list** beside the editor: each comment with who wrote it, when, the words it is on and its text. Click one to select its words; **✎** edits it, **✓** resolves it (the mark goes pale; ✓ again reopens it), **🗑** deletes it (the words stay).
+- **View ▸ Show Comments** turns the yellow marks off in the drawn pages and the exports (they stay while you type).
+- **¹ Note** (or **Ctrl+Alt+F**) puts a **footnote** mark at the caret and asks for the note. The marks are numbered 1, 2, 3 … in story order, and each note is drawn at the **foot of the frame that shows its mark**, under a short rule - the frame's text makes room for it (a page added if needed). **Double-click a mark** to edit its note; delete the mark and its note goes too.
+- **Word files**: comments go out as Word comments (with the author and date) and footnotes as Word footnotes; opening a .docx brings them back (a comment comes back on the word just before where Word ends it).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

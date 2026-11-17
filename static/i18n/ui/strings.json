@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 5754,
+ "count": 5766,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -53107,6 +53107,114 @@
    ],
    "where": [
     "Word files - File ▸ Open / Export (2.814.0)"
+   ]
+  },
+  {
+   "s": "💬 New Comment",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "💬 Comments",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "¹ Insert Footnote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "Edit Footnote…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "Show Comments",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "New Comment",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "Edit Comment",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "New Footnote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "Edit Footnote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "💬 Add",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "The footnote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
+   ]
+  },
+  {
+   "s": "¹ Note",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Comments + footnotes in document text (2.815.0)"
    ]
   }
  ]

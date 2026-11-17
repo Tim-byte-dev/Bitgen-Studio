@@ -91,6 +91,7 @@
     "pcdoctable.js",
     "pcpageview.js",
     "pcdocx.js",
+    "pcdocnotes.js",
     "pcuelive.js",
     "pctabdock.js",
     "pccoldock.js",

@@ -42,6 +42,7 @@
     if (tag === "MARK") o.hi = o.hi || "#ffff00";
     if (tag === "CODE") o.font = "Consolas";
     if (tag === "A" && /^(https?:|mailto:)/i.test(el.getAttribute("href") || "")) { o.link = el.getAttribute("href"); o.u = true; o.color = o.color || "#0563c1"; }
+    if (tag === "SPAN" && el.getAttribute("data-cid")) o.cmt = el.getAttribute("data-cid");   // 2.815.0: a comment's words
     if (st.fontFamily) o.font = firstFont(st.fontFamily);
     if (st.fontSize) { const p = ptOf(st.fontSize); if (p) o.size = p; }
     if (st.color) o.color = st.color;
@@ -63,17 +64,18 @@
         if (c.nodeType !== 1) continue;
         if (skip && skip(c)) continue;
         if (c.tagName === "BR") { out.push(Object.assign({ text: "", br: true }, look)); continue; }
+        if (c.tagName === "SUP" && c.getAttribute("data-fn")) { const o = Object.assign({ text: "", fn: c.getAttribute("data-fn") }, look); delete o.sup; out.push(o); continue; }   // 2.815.0: a footnote mark
         walk(c, lookOf(c, look));
       }
     };
     walk(el, base || {});
     // neighbours that look the same joined; a lone trailing break (contentEditable's own) dropped
     const j = [];
-    for (const r of out) { const p = j[j.length - 1]; if (p && !r.br && !p.br && sameLook(p, r)) p.text += r.text; else j.push(r); }
+    for (const r of out) { const p = j[j.length - 1]; if (p && !r.br && !p.br && !r.fn && !p.fn && sameLook(p, r)) p.text += r.text; else j.push(r); }
     if (j.length && j[j.length - 1].br && !j[j.length - 1].text) j.pop();
     return j;
   }
-  const LOOK_KEYS = ["b", "i", "u", "s", "sub", "sup", "font", "size", "color", "hi", "link"];
+  const LOOK_KEYS = ["b", "i", "u", "s", "sub", "sup", "font", "size", "color", "hi", "link", "cmt"];
   const sameLook = (a, b) => LOOK_KEYS.every((k) => (a[k] || null) === (b[k] || null));
   /** paragraph settings from an element's own style */
   function paraOf(el, extra) {
@@ -233,7 +235,13 @@
       const h = hs[0], { dpi, name } = pageSetup();
       const blocks = toModel(E.docText.sanitize(h.doc.html || ""), doc);
       const hf = headFoot(masterLayers(), S.w, S.h, dpi, name);
-      return { model: { title: S.name || name || "Document", page: pageOf(S.w, S.h, dpi, h.doc), blocks, header: hf.header, footer: hf.footer }, more: hs.length - 1 };
+      // 2.815.0: the story's comments and footnotes go with it
+      const used = new Set(), fns = new Set();
+      const walk = (bl) => { for (const b of bl) { for (const r of b.runs || []) { if (r.cmt) used.add(r.cmt); if (r.fn) fns.add(r.fn); } for (const row of b.rows || []) for (const c of row) walk(c.blocks || []); } };
+      walk(blocks);
+      const comments = (h.doc.comments || []).filter((c) => used.has(c.id)).map((c) => ({ id: c.id, author: c.author, text: c.text, date: c.date }));
+      const footnotes = {}; for (const id of fns) footnotes[id] = String((h.doc.notes || {})[id] || "");
+      return { model: { title: S.name || name || "Document", page: pageOf(S.w, S.h, dpi, h.doc), blocks, header: hf.header, footer: hf.footer, comments, footnotes }, more: hs.length - 1 };
     }
     async function exportDocx() {
       if (!S.w) return say("open or make a document first");
@@ -262,14 +270,17 @@
       const r = await win.fetch("/api/docx/import", { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: buf });
       const j = await r.json(); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status);
       const html = E.docText.sanitize(String(j.html || "").replace(/<(\/?)h[56]\b/gi, "<$1h3")) || "<p><br></p>";
-      return { html, messages: j.messages || [], name: String(fname || "Document").replace(/\.docx$/i, "") };
+      return { html, messages: j.messages || [], name: String(fname || "Document").replace(/\.docx$/i, ""), comments: j.comments || [], notes: j.notes || {} };
     }
     function placeOpened(o, opts) {
       const SIZES = (win.PCPages && win.PCPages.PAGE_SIZES) || [["A4", 210, 297]];
       const sz = SIZES.find((s) => s[0] === opts.size) || SIZES[0], dpi = opts.dpi || 150;
       E.pages.newDocument({ preset: sz[0], wmm: sz[1], hmm: sz[2], orient: opts.orient || "portrait", dpi }, 1, o.name);
       const m = Math.round((opts.margin == null ? 25 : opts.margin) / 25.4 * dpi);
-      const L = E.docText.addFrame(m, m, S.w - 2 * m, S.h - 2 * m, { auto: true, k: dpi / 96, html: o.html }, false);
+      const more = { auto: true, k: dpi / 96, html: o.html };
+      if (o.comments && o.comments.length) more.comments = o.comments;
+      if (o.notes && Object.keys(o.notes).length) more.notes = o.notes;
+      const L = E.docText.addFrame(m, m, S.w - 2 * m, S.h - 2 * m, more, false);
       E.docText.reflow(L.doc.flow && L.doc.flow.id);
       return L;
     }

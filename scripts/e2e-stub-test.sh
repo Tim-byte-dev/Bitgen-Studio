@@ -14138,6 +14138,13 @@ node scripts/test-docx814.js > /tmp/docx814.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui814-ui.js > /tmp/ui814.log 2>&1 \
   && ok "2.814.0 File ▸ Export ▸ Word Document saves + downloads notes814.docx (A4, 20 mm margins, Page {page} of {pages} footer); File ▸ Open Word Document opens it as document text" \
   || { bad "2.814.0 .docx browser test"; grep -a "^FAIL" -A1 /tmp/ui814.log | head -12; }
+# ---- 2.815.0 (Tim: "lets go with next, we will do all the releases before i start testing" - WORD PLAN step 4: comments + footnotes)
+node scripts/test-docnotes815.js > /tmp/docnotes815.log 2>&1 \
+  && ok "2.815.0 comments + footnotes: marks kept, numbered, notes block, wrapped comments, in the .docx and back" \
+  || { bad "2.815.0 comments / footnotes units"; grep -a "^FAIL" -A1 /tmp/docnotes815.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui815-ui.js > /tmp/ui815.log 2>&1 \
+  && ok "2.815.0 Ctrl+Alt+M comment + the list (resolve, delete), two footnotes at the foot of page 1 / page 2's frames, .docx with comments + footnotes opened again" \
+  || { bad "2.815.0 comments / footnotes browser test"; grep -a "^FAIL" -A1 /tmp/ui815.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

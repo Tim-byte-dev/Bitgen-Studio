@@ -12259,6 +12259,46 @@
    "src": "ext/imageeditdock/pcdockers.js:401"
   },
   {
+   "s": "Author",
+   "src": "ext/imageeditdock/pcdocnotes.js:61"
+  },
+  {
+   "s": "Your comment",
+   "src": "ext/imageeditdock/pcdocnotes.js:61"
+  },
+  {
+   "s": "No comments yet - select words in the document text and press 💬",
+   "src": "ext/imageeditdock/pcdocnotes.js:122"
+  },
+  {
+   "s": "Reopen",
+   "src": "ext/imageeditdock/pcdocnotes.js:123"
+  },
+  {
+   "s": "Delete the comment (the words stay)",
+   "src": "ext/imageeditdock/pcdocnotes.js:123"
+  },
+  {
+   "s": "Resolve",
+   "src": "ext/imageeditdock/pcdocnotes.js:123"
+  },
+  {
+   "s": "Note",
+   "src": "ext/imageeditdock/pcdocnotes.js:182"
+  },
+  {
+   "s": "New comment on the selected words (Ctrl+Alt+M)",
+   "src": "ext/imageeditdock/pcdocnotes.js:182"
+  },
+  {
+   "s": "The comments list",
+   "src": "ext/imageeditdock/pcdocnotes.js:182"
+  },
+  {
+   "s": "Insert a footnote at the caret (Ctrl+Alt+F); double-click a mark to edit its note",
+   "src": "ext/imageeditdock/pcdocnotes.js:182"
+  },
+  {
    "s": "Open documents",
    "src": "ext/imageeditdock/pcdocs.js:103"
   },
@@ -12392,95 +12432,95 @@
   },
   {
    "s": "Document Text",
-   "src": "ext/imageeditdock/pcdoctext.js:455"
+   "src": "ext/imageeditdock/pcdoctext.js:500"
   },
   {
    "s": "Paragraph style",
-   "src": "ext/imageeditdock/pcdoctext.js:459"
+   "src": "ext/imageeditdock/pcdoctext.js:504"
   },
   {
    "s": "Size (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:461"
+   "src": "ext/imageeditdock/pcdoctext.js:506"
   },
   {
    "s": "Text colour",
-   "src": "ext/imageeditdock/pcdoctext.js:464"
+   "src": "ext/imageeditdock/pcdoctext.js:509"
   },
   {
    "s": "Highlight",
-   "src": "ext/imageeditdock/pcdoctext.js:464"
+   "src": "ext/imageeditdock/pcdoctext.js:509"
   },
   {
    "s": "Line spacing",
-   "src": "ext/imageeditdock/pcdoctext.js:466"
+   "src": "ext/imageeditdock/pcdoctext.js:511"
   },
   {
    "s": "space",
-   "src": "ext/imageeditdock/pcdoctext.js:467"
+   "src": "ext/imageeditdock/pcdoctext.js:512"
   },
   {
    "s": "Space before / after the paragraph (pt)",
-   "src": "ext/imageeditdock/pcdoctext.js:467"
+   "src": "ext/imageeditdock/pcdoctext.js:512"
   },
   {
    "s": "Frame width (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:469"
+   "src": "ext/imageeditdock/pcdoctext.js:514"
   },
   {
    "s": "Frame height (px)",
-   "src": "ext/imageeditdock/pcdoctext.js:469"
+   "src": "ext/imageeditdock/pcdoctext.js:514"
   },
   {
    "s": "Next page",
-   "src": "ext/imageeditdock/pcdoctext.js:470"
+   "src": "ext/imageeditdock/pcdoctext.js:515"
   },
   {
    "s": "Continue this story in a frame on the next page (a new page if this is the last)",
-   "src": "ext/imageeditdock/pcdoctext.js:470"
+   "src": "ext/imageeditdock/pcdoctext.js:515"
   },
   {
    "s": "drag a box to make a document frame - or File ▸ New Text Document",
-   "src": "ext/imageeditdock/pcdoctext.js:470"
+   "src": "ext/imageeditdock/pcdoctext.js:515"
   },
   {
    "s": "Page",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "Portrait",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "Landscape",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "Margins (mm)",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "Resolution",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "One frame inside the margins; pages are added as you type",
-   "src": "ext/imageeditdock/pcdoctext.js:543"
+   "src": "ext/imageeditdock/pcdoctext.js:588"
   },
   {
    "s": "docx",
-   "src": "ext/imageeditdock/pcdocx.js:245"
+   "src": "ext/imageeditdock/pcdocx.js:253"
   },
   {
    "s": "Word lays out pages itself - its page breaks can fall a line or two away from these",
-   "src": "ext/imageeditdock/pcdocx.js:245"
+   "src": "ext/imageeditdock/pcdocx.js:253"
   },
   {
    "s": "File",
-   "src": "ext/imageeditdock/pcdocx.js:279"
+   "src": "ext/imageeditdock/pcdocx.js:290"
   },
   {
    "s": "The words, styles, lists and tables come in; pictures are left out for now",
-   "src": "ext/imageeditdock/pcdocx.js:279"
+   "src": "ext/imageeditdock/pcdocx.js:290"
   },
   {
    "s": "Round",
@@ -12773,10 +12813,6 @@
   {
    "s": "Newsprint",
    "src": "ext/imageeditdock/pcdtpout.js:631"
-  },
-  {
-   "s": "Author",
-   "src": "ext/imageeditdock/pcfileplus.js:112"
   },
   {
    "s": "Description",
@@ -13837,10 +13873,6 @@
   {
    "s": "Turn every layer",
    "src": "ext/imageeditdock/pcmeasure.js:323"
-  },
-  {
-   "s": "Note",
-   "src": "ext/imageeditdock/pcmeasure.js:348"
   },
   {
    "s": "click = a new note · click a note to edit it · Alt-click deletes it",
@@ -26709,6 +26741,18 @@
    "src": "ext/imageeditdock/pcdockers.js:353"
   },
   {
+   "p": "On: “{0}”",
+   "src": "ext/imageeditdock/pcdocnotes.js:61"
+  },
+  {
+   "p": "Comments ({0})",
+   "src": "ext/imageeditdock/pcdocnotes.js:122"
+  },
+  {
+   "p": "{0} · {1} · ✓ resolved",
+   "src": "ext/imageeditdock/pcdocnotes.js:123"
+  },
+  {
    "p": "{0} (not saved)",
    "src": "ext/imageeditdock/pcdocs.js:256"
   },
@@ -26718,15 +26762,15 @@
   },
   {
    "p": "{0} paragraphs / tables",
-   "src": "ext/imageeditdock/pcdocx.js:245"
+   "src": "ext/imageeditdock/pcdocx.js:253"
   },
   {
    "p": "Header from the master's type: {0} · Footer: {1}",
-   "src": "ext/imageeditdock/pcdocx.js:245"
+   "src": "ext/imageeditdock/pcdocx.js:253"
   },
   {
    "p": "Other stories left out: {0} - pick a frame to save its story",
-   "src": "ext/imageeditdock/pcdocx.js:245"
+   "src": "ext/imageeditdock/pcdocx.js:253"
   },
   {
    "p": "size {0}",
