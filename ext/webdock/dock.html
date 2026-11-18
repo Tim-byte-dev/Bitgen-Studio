@@ -54,6 +54,13 @@
           #wbDbForm.on { display: flex; }
           #wbDbForm label { display: flex; gap: 6px; align-items: center; }
           #wbDbForm label > span { width: 110px; color: var(--dim); }
+          #wbSkForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; max-height: 50%; }
+          #wbSkForm.on { display: flex; }
+          #wbSkList { overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; }
+          #wbSkList .grp { grid-column: 1 / -1; color: var(--dim); font-size: 10px; text-transform: uppercase; margin-top: 4px; }
+          #wbSkList .sk { border: 1px solid var(--line); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+          #wbSkList .sk p { margin: 0; color: var(--dim); font-size: 11px; }
+          #wbSkList .sk .wbbar { margin-top: auto; }
           #wbPubForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; }
           #wbPubForm.on { display: flex; }
           #wbPubForm label { display: flex; gap: 6px; align-items: center; }
@@ -79,9 +86,16 @@
             <span class="sep"></span>
             <span id="wbFileName" title="The open file">no file open</span>
             <button class="ghost" type="button" id="wbSave" title="Save the open file (Ctrl+S)">💾 Save</button>
+            <button class="ghost" type="button" id="wbSk" title="Galleries, layout, theme, AJAX, login, shop - add one to the open page, or ✨ have the AI write a section with them">🧩 Skills</button>
             <button class="ghost" type="button" id="wbPub" title="Send the www folder to a GitHub repository - your host deploys it (Plesk ▸ Git or FTP)">⤴ Publish</button>
           </span>
           <span id="wbMsg"></span>
+        </div>
+        <div id="wbSkForm">
+          <div class="wbbar"><b>🧩 Web skills</b><span style="font-size:11px;color:var(--dim)">＋ adds it to the open page (its files go into www); ✨ the AI writes a section with the ticked ones (or picks them from your words)</span><button class="ghost" type="button" id="wbSkNo" style="margin-left:auto">Close</button></div>
+          <div id="wbSkList"></div>
+          <div class="wbbar"><input id="wbSkAsk" placeholder="✨ e.g. a gallery of our cakes with a short intro, then the shop's bread category" style="flex:1"><button class="go" type="button" id="wbSkAi">✨ Write the section</button></div>
+          <div id="wbSkOut" style="font-size:11px"></div>
         </div>
         <div id="wbPubForm">
           <b>⤴ Publish www to GitHub</b>

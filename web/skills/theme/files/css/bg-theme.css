@@ -1,0 +1,18 @@
+/* bitGen web skill: 🎨 theme - colours, type and buttons as CSS variables (light + dark). Change the variables, not the rules. */
+:root { --bg-bg: #ffffff; --bg-ink: #1d1d1f; --bg-soft: #f4f4f5; --bg-line: #e4e4e7; --bg-accent: #e8590c; --bg-accent-ink: #ffffff; --bg-dim: #6b7280;
+  --bg-radius: 10px; --bg-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --bg-head: var(--bg-font); --bg-max: 1140px; --bg-gap: 20px; }
+[data-bg-theme="dark"] { --bg-bg: #111214; --bg-ink: #ececec; --bg-soft: #1c1d21; --bg-line: #2c2d33; --bg-dim: #9ca3af; }
+@media (prefers-color-scheme: dark) { :root:not([data-bg-theme="light"]) { --bg-bg: #111214; --bg-ink: #ececec; --bg-soft: #1c1d21; --bg-line: #2c2d33; --bg-dim: #9ca3af; } }
+html { background: var(--bg-bg); color: var(--bg-ink); }
+body { font-family: var(--bg-font); line-height: 1.6; }
+h1, h2, h3 { font-family: var(--bg-head); line-height: 1.2; }
+.bg-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: var(--bg-radius); border: 1px solid var(--bg-accent); background: var(--bg-accent); color: var(--bg-accent-ink); font: inherit; text-decoration: none; cursor: pointer; }
+.bg-btn.ghost { background: transparent; color: var(--bg-accent); }
+.bg-btn:hover { filter: brightness(1.08); }
+.bg-card { background: var(--bg-soft); border: 1px solid var(--bg-line); border-radius: var(--bg-radius); padding: 18px; }
+.bg-dim { color: var(--bg-dim); }
+.bg-input, .bg-form input, .bg-form select, .bg-form textarea { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid var(--bg-line); border-radius: 8px; background: var(--bg-bg); color: var(--bg-ink); font: inherit; }
+.bg-form { display: grid; gap: 12px; max-width: 520px; }
+.bg-form label { display: grid; gap: 4px; }
+.bg-note { padding: 10px 14px; border-radius: 8px; background: var(--bg-soft); border-left: 4px solid var(--bg-accent); }
+.bg-note.err { border-left-color: #dc2626; }

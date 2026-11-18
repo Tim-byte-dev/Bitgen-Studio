@@ -1,0 +1,5 @@
+/* bitGen web skill: 🧊 3D models */
+.bg-model { position: relative; aspect-ratio: 4 / 3; border-radius: var(--bg-radius, 10px); background: radial-gradient(circle at 50% 40%, var(--bg-bg, #fff), var(--bg-soft, #e9e9ec)); overflow: hidden; }
+.bg-model canvas { width: 100% !important; height: 100% !important; display: block; cursor: grab; touch-action: none; }
+.bg-model .bg-model-cap { position: absolute; left: 10px; bottom: 8px; font-size: .85rem; color: var(--bg-dim, #6b7280); pointer-events: none; }
+.bg-model .bg-model-msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--bg-dim, #6b7280); font-size: .9rem; }

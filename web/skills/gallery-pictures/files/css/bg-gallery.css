@@ -1,0 +1,15 @@
+/* bitGen web skill: 🖼 galleries - a grid of thumbnails; a click opens the viewer (pictures, videos) */
+.bg-gallery { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(var(--bg-thumb, 200px), 1fr)); }
+.bg-gallery > a { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--bg-radius, 10px); background: var(--bg-soft, #f4f4f5); }
+.bg-gallery > a img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; display: block; }
+.bg-gallery > a:hover img { transform: scale(1.05); }
+.bg-gallery > a[data-type="video"]::after { content: "▶"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.4rem; color: #fff; text-shadow: 0 2px 10px #0008; }
+.bg-gallery figcaption, .bg-gallery > a span { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 10px; font-size: .85rem; color: #fff; background: linear-gradient(transparent, #0009); }
+.bg-lb { position: fixed; inset: 0; z-index: 1000; background: #000d; display: none; align-items: center; justify-content: center; }
+.bg-lb.on { display: flex; }
+.bg-lb .bg-lb-body { max-width: 92vw; max-height: 86vh; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.bg-lb img, .bg-lb video { max-width: 92vw; max-height: 80vh; border-radius: 6px; }
+.bg-lb .bg-lb-cap { color: #ddd; font-size: .95rem; }
+.bg-lb button { position: absolute; background: #0006; color: #fff; border: 0; font-size: 2rem; width: 52px; height: 52px; border-radius: 50%; cursor: pointer; }
+.bg-lb .bg-lb-x { top: 16px; right: 16px; font-size: 1.5rem; }
+.bg-lb .bg-lb-prev { left: 16px; } .bg-lb .bg-lb-next { right: 16px; }

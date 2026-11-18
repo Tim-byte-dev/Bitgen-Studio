@@ -1,0 +1,17 @@
+{
+  "name": "Catalogue with categories",
+  "icon": "🗂",
+  "group": "Shop",
+  "description": "The products of 🛍 Products as cards with category chips and a search - shop.html?c=Bread opens one category; ＋ Add to cart on each.",
+  "head": [
+    "css/bg-shop.css"
+  ],
+  "scripts": [
+    "js/bg-shop.js"
+  ],
+  "files": [
+    "css/bg-shop.css",
+    "js/bg-shop.js",
+    "shop.html"
+  ]
+}

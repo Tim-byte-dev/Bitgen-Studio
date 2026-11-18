@@ -1,0 +1,16 @@
+{
+  "name": "Theme and buttons",
+  "icon": "🎨",
+  "group": "Look",
+  "description": "Colours, type, buttons, cards and form fields as CSS variables - light and dark (follows the computer, or a 🌓 button).",
+  "head": [
+    "css/bg-theme.css"
+  ],
+  "scripts": [
+    "js/bg-theme.js"
+  ],
+  "files": [
+    "css/bg-theme.css",
+    "js/bg-theme.js"
+  ]
+}

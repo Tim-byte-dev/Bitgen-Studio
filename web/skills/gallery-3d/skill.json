@@ -1,0 +1,21 @@
+{
+  "name": "3D model gallery",
+  "icon": "🧊",
+  "group": "Galleries",
+  "description": "3D models (.glb, .gltf, .obj) you turn with the mouse or a finger and zoom - each turns slowly by itself; loaded when scrolled to.",
+  "head": [
+    "css/bg-model.css"
+  ],
+  "scripts": [
+    "js/vendor/three-m3d.min.js",
+    "js/bg-model.js"
+  ],
+  "app_files": {
+    "js/vendor/three-m3d.min.js": "static/vendor/three-m3d.min.js",
+    "js/vendor/LICENSE-three.txt": "static/vendor/LICENSE-three.txt"
+  },
+  "files": [
+    "css/bg-model.css",
+    "js/bg-model.js"
+  ]
+}

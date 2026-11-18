@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6711,
+ "count": 6722,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -62190,6 +62190,116 @@
    ],
    "where": [
     "🌐 Web editor ⤴ / Build Website (2.858.0)"
+   ]
+  },
+  {
+   "s": "needs PHP on the host",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Add to the page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Use it for ✨",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "say what the section should be",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "the LLM is writing the section",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Skills",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Galleries, layout, theme, AJAX, login, shop - add one to the open page, or ✨ have the AI write a section with them",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Web skills",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "＋ adds it to the open page (its files go into www); ✨ the AI writes a section with the ticked ones (or picks them from your words)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "e.g. a gallery of our cakes with a short intro, then the shop's bread category",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
+   ]
+  },
+  {
+   "s": "Write the section",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🧩 Skills (2.859.0)"
    ]
   }
  ]

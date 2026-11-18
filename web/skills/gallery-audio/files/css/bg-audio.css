@@ -1,0 +1,11 @@
+/* bitGen web skill: 🎵 audio playlist */
+.bg-playlist { border: 1px solid var(--bg-line, #e4e4e7); border-radius: var(--bg-radius, 10px); overflow: hidden; background: var(--bg-soft, #f4f4f5); }
+.bg-playlist .bg-pl-now { display: flex; align-items: center; gap: 12px; padding: 14px; }
+.bg-playlist .bg-pl-play { width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--bg-accent, #e8590c); color: #fff; font-size: 1.2rem; cursor: pointer; flex: none; }
+.bg-playlist .bg-pl-title { font-weight: 600; }
+.bg-playlist .bg-pl-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--bg-line, #e4e4e7); cursor: pointer; position: relative; }
+.bg-playlist .bg-pl-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bg-accent, #e8590c); border-radius: 3px; }
+.bg-playlist .bg-pl-time { font-size: .8rem; color: var(--bg-dim, #6b7280); min-width: 84px; text-align: right; }
+.bg-playlist ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--bg-line, #e4e4e7); }
+.bg-playlist li { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; }
+.bg-playlist li:hover, .bg-playlist li.on { background: var(--bg-bg, #fff); color: var(--bg-accent, #e8590c); }

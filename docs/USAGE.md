@@ -9626,6 +9626,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🌐 Build Website ▸ ☑ Into this project's www folder (the Web editor)** (on by default) also puts the built site into the project's www folder - open and change it in the 🌐 Web editor. The build's files replace the ones of the same name; your own files in www stay. An inc/config.php already in www (the CRM's database link, a password typed on the server) is kept - only the build's settings it lacks (the admin's setup key) are added.
 - **🌐 Web editor ▸ ⤴ Publish** sends the www folder to a GitHub repository, the same way as Build Website's publish: made when missing (🔒 private), only the changed files, one commit with your message, the token kept encrypted; inc/config.php never goes - the repository gets inc/config.sample.php, .gitignore and DEPLOY.md. Plesk ▸ Git (or the 📤 FTP workflow) puts it on your host.
 
+## 🧩 Web skills (2.859.0)
+
+- **🌐 Web editor ▸ 🧩 Skills** - bitGen's own building blocks for a website: 🖼 **Picture gallery** (a click opens the picture big, ← → and swipe), 🎬 **Video gallery**, 🎵 **Audio playlist**, 🧊 **3D model gallery** (.glb / .gltf / .obj turned with the mouse), 🎨 **Theme and buttons** (colours as CSS variables, light / dark), 📐 **Layout** (a header whose menu folds into ☰ on phones, hero, sections, grids, columns, footer), ⚡ **AJAX** (lists filled from data/content.json, forms sent in the background), 🗂 **Catalogue with categories**, 🏷 **Product page**, 🧾 **Cart and checkout** and 🔐 **Member login**.
+- **＋ Add to the page** puts its markup at the cursor (Code tab) or at the end of the page's main part, adds its style sheet and script once, and copies its files into www (bitGen's own bg-* files are refreshed; your pages and pictures are never overwritten). 💾 Save keeps the page.
+- **✨ Write the section**: say what you want - the AI writes one section with the ticked skills (or the ones your words point to); scripts and inline handlers are taken out of its answer.
+- The shop uses the CRM's 🛍 Products. **Checkout** (checkout.php) prices the order again on the server from the products - never the browser's prices - and saves it in the CRM's 🗄 database, so it shows in 🧾 Orders. **Login** (login.php, register.php, account.php, logout) hashes passwords, uses safe session cookies, a CSRF token on every form, and makes you wait 10 minutes after 5 wrong tries. Both need PHP and the CRM's database on the host.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

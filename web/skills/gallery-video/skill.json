@@ -1,0 +1,19 @@
+{
+  "name": "Video gallery",
+  "icon": "🎬",
+  "group": "Galleries",
+  "description": "Video thumbnails with ▶; a click plays the video big - ← → for the next one.",
+  "head": [
+    "css/bg-gallery.css"
+  ],
+  "scripts": [
+    "js/bg-gallery.js"
+  ],
+  "files": [
+    "css/bg-gallery.css",
+    "images/sample-1.svg",
+    "images/sample-2.svg",
+    "images/sample-3.svg",
+    "js/bg-gallery.js"
+  ]
+}

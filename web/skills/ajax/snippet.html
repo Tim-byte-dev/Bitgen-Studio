@@ -1,0 +1,10 @@
+<div class="bg-grid" data-bg-list="data/content.json#posts" data-bg-limit="6" data-bg-empty="No news yet.">
+  <template><article class="bg-card"><h3>{{title}}</h3><p class="bg-dim">{{date}}</p></article></template>
+</div>
+<form class="bg-form" data-bg-ajax action="contact.php" method="post">
+  <label>Name <input name="name" required></label>
+  <label>Email <input name="email" type="email" required></label>
+  <label>Message <textarea name="message" rows="4" required></textarea></label>
+  <button class="bg-btn" type="submit">Send</button>
+  <div data-bg-result></div>
+</form>

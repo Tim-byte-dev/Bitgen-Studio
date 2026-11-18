@@ -1,0 +1,23 @@
+/* bitGen web skill: 📐 layout - a header with a menu that folds on phones, sections, grids, columns, a hero */
+.bg-wrap { max-width: var(--bg-max, 1140px); margin: 0 auto; padding: 0 16px; }
+.bg-header { position: sticky; top: 0; z-index: 50; background: var(--bg-bg, #fff); border-bottom: 1px solid var(--bg-line, #e4e4e7); }
+.bg-header .bg-wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+.bg-brand { font-weight: 700; font-size: 1.2rem; text-decoration: none; color: inherit; }
+.bg-nav { display: flex; gap: 18px; align-items: center; }
+.bg-nav a { color: inherit; text-decoration: none; }
+.bg-nav a.on, .bg-nav a:hover { color: var(--bg-accent, #e8590c); }
+.bg-menu-btn { display: none; background: none; border: 0; font-size: 1.6rem; cursor: pointer; color: inherit; }
+.bg-section { padding: 56px 0; }
+.bg-section.soft { background: var(--bg-soft, #f4f4f5); }
+.bg-hero { padding: 96px 0; text-align: center; background: var(--bg-soft, #f4f4f5) center / cover no-repeat; }
+.bg-hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 0 0 12px; }
+.bg-grid { display: grid; gap: var(--bg-gap, 20px); grid-template-columns: repeat(auto-fill, minmax(var(--bg-min, 240px), 1fr)); }
+.bg-cols { display: grid; gap: calc(var(--bg-gap, 20px) * 2); grid-template-columns: 1fr 1fr; align-items: center; }
+.bg-footer { padding: 32px 0; border-top: 1px solid var(--bg-line, #e4e4e7); color: var(--bg-dim, #6b7280); font-size: .92rem; }
+@media (max-width: 760px) {
+  .bg-menu-btn { display: block; }
+  .bg-nav { display: none; position: absolute; left: 0; right: 0; top: 64px; flex-direction: column; align-items: stretch; gap: 0; background: var(--bg-bg, #fff); border-bottom: 1px solid var(--bg-line, #e4e4e7); }
+  .bg-nav.open { display: flex; }
+  .bg-nav a { padding: 12px 16px; border-top: 1px solid var(--bg-line, #e4e4e7); }
+  .bg-cols { grid-template-columns: 1fr; }
+}

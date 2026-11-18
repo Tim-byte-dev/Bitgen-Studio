@@ -1,0 +1,16 @@
+{
+  "name": "Audio playlist",
+  "icon": "🎵",
+  "group": "Galleries",
+  "description": "Songs or recordings in a list with one player - ▶ / ⏸, a seek bar, the time; the next track plays by itself.",
+  "head": [
+    "css/bg-audio.css"
+  ],
+  "scripts": [
+    "js/bg-audio.js"
+  ],
+  "files": [
+    "css/bg-audio.css",
+    "js/bg-audio.js"
+  ]
+}

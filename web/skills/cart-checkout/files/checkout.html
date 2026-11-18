@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bg-theme.css">
+  <link rel="stylesheet" href="css/bg-shop.css">
+</head>
+<body data-bg-currency="$">
+  <header class="site-head"><a class="brand" href="index.html">Home</a><nav><a href="shop.html">Shop</a> <a href="cart.html">Cart <span class="bg-cart-badge" data-bg-cart-count hidden>0</span></a></nav></header>
+  <main>
+    <section>
+      <h1>Checkout</h1>
+      <form class="bg-form" data-bg-checkout action="checkout.php">
+        <label>Name <input name="name" required autocomplete="name"></label>
+        <label>Email <input name="email" type="email" required autocomplete="email"></label>
+        <label>Phone <input name="phone" autocomplete="tel"></label>
+        <label>Address <input name="address" autocomplete="street-address"></label>
+        <label>City <input name="city"></label>
+        <label>State <input name="state"></label>
+        <label>Postcode <input name="postcode"></label>
+        <label>Notes <textarea name="notes" rows="3"></textarea></label>
+        <button class="bg-btn" type="submit">Place the order</button>
+        <div data-bg-result></div>
+      </form>
+    </section>
+  </main>
+  <script src="js/bg-shop.js"></script>
+</body>
+</html>

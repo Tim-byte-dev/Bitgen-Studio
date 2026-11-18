@@ -1,0 +1,17 @@
+{
+  "name": "Product page",
+  "icon": "🏷",
+  "group": "Shop",
+  "description": "product.html?p=<product> - its picture, price (and sale price), stock, description, quantity and Add to cart.",
+  "head": [
+    "css/bg-shop.css"
+  ],
+  "scripts": [
+    "js/bg-shop.js"
+  ],
+  "files": [
+    "css/bg-shop.css",
+    "js/bg-shop.js",
+    "product.html"
+  ]
+}

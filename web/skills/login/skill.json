@@ -1,0 +1,20 @@
+{
+  "name": "Member login",
+  "icon": "🔐",
+  "group": "Members",
+  "description": "login.php, register.php, account.php (their orders) and logout - passwords hashed, safe session cookies, a CSRF token on every form, 5 wrong tries = a 10-minute wait. Needs PHP + the CRM's 🗄 database.",
+  "head": [],
+  "scripts": [
+    "js/bg-auth.js"
+  ],
+  "needs": "php",
+  "files": [
+    "account.php",
+    "inc/bg-auth.php",
+    "inc/bg-db.php",
+    "js/bg-auth.js",
+    "login.php",
+    "logout.php",
+    "register.php"
+  ]
+}

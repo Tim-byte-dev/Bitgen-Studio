@@ -26184,123 +26184,143 @@
   },
   {
    "s": "Title (the browser tab + search results)",
-   "src": "ext/webdock/webdock.js:51"
+   "src": "ext/webdock/webdock.js:54"
   },
   {
    "s": "Description (search results)",
-   "src": "ext/webdock/webdock.js:51"
+   "src": "ext/webdock/webdock.js:54"
   },
   {
    "s": "Main heading",
-   "src": "ext/webdock/webdock.js:51"
+   "src": "ext/webdock/webdock.js:54"
   },
   {
    "s": "Address name",
-   "src": "ext/webdock/webdock.js:52"
-  },
-  {
-   "s": "Picture (e.g. images/post.jpg)",
-   "src": "ext/webdock/webdock.js:52"
-  },
-  {
-   "s": "Published",
-   "src": "ext/webdock/webdock.js:52"
-  },
-  {
-   "s": "Sale price",
-   "src": "ext/webdock/webdock.js:53"
-  },
-  {
-   "s": "In stock",
-   "src": "ext/webdock/webdock.js:53"
-  },
-  {
-   "s": "In the shop",
-   "src": "ext/webdock/webdock.js:53"
-  },
-  {
-   "s": "Company",
-   "src": "ext/webdock/webdock.js:54"
-  },
-  {
-   "s": "Tags",
-   "src": "ext/webdock/webdock.js:54"
-  },
-  {
-   "s": "Client",
    "src": "ext/webdock/webdock.js:55"
   },
   {
-   "s": "Order number",
+   "s": "Picture (e.g. images/post.jpg)",
+   "src": "ext/webdock/webdock.js:55"
+  },
+  {
+   "s": "Published",
+   "src": "ext/webdock/webdock.js:55"
+  },
+  {
+   "s": "Sale price",
    "src": "ext/webdock/webdock.js:56"
   },
   {
-   "s": "Items",
+   "s": "In stock",
    "src": "ext/webdock/webdock.js:56"
   },
   {
-   "s": "Received",
+   "s": "In the shop",
+   "src": "ext/webdock/webdock.js:56"
+  },
+  {
+   "s": "Company",
    "src": "ext/webdock/webdock.js:57"
   },
   {
+   "s": "Tags",
+   "src": "ext/webdock/webdock.js:57"
+  },
+  {
+   "s": "Client",
+   "src": "ext/webdock/webdock.js:58"
+  },
+  {
+   "s": "Order number",
+   "src": "ext/webdock/webdock.js:59"
+  },
+  {
+   "s": "Items",
+   "src": "ext/webdock/webdock.js:59"
+  },
+  {
+   "s": "Received",
+   "src": "ext/webdock/webdock.js:60"
+  },
+  {
    "s": "no file open",
-   "src": "ext/webdock/webdock.js:97"
+   "src": "ext/webdock/webdock.js:116"
   },
   {
    "s": "showing your unsaved changes - 💾 Save to keep them",
-   "src": "ext/webdock/webdock.js:160"
+   "src": "ext/webdock/webdock.js:179"
   },
   {
    "s": "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page",
-   "src": "ext/webdock/webdock.js:170"
+   "src": "ext/webdock/webdock.js:189"
   },
   {
    "s": "Kept in www/data/content.json - the site reads it (public)",
-   "src": "ext/webdock/webdock.js:170"
+   "src": "ext/webdock/webdock.js:189"
   },
   {
    "s": "Kept in the project's web/crm.json - private, never put on the site",
-   "src": "ext/webdock/webdock.js:170"
+   "src": "ext/webdock/webdock.js:189"
   },
   {
    "s": "no pages",
-   "src": "ext/webdock/webdock.js:179"
+   "src": "ext/webdock/webdock.js:198"
   },
   {
    "s": "none yet - ＋ New",
-   "src": "ext/webdock/webdock.js:179"
+   "src": "ext/webdock/webdock.js:198"
   },
   {
    "s": "Open the page",
-   "src": "ext/webdock/webdock.js:184"
+   "src": "ext/webdock/webdock.js:203"
   },
   {
    "s": "your server",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "s": "Keep the records in the project again (the database stays as it is)",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "s": "this computer",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "s": "Kept in the project (not live)",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "s": "Create the site's database",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "s": "MariaDB is needed - the 🗄 Database docker asks to download it",
-   "src": "ext/webdock/webdock.js:225"
+   "src": "ext/webdock/webdock.js:244"
   },
   {
    "s": "making the database",
-   "src": "ext/webdock/webdock.js:227"
+   "src": "ext/webdock/webdock.js:246"
+  },
+  {
+   "s": "needs PHP on the host",
+   "src": "ext/webdock/webdock.js:268"
+  },
+  {
+   "s": "Add to the page",
+   "src": "ext/webdock/webdock.js:268"
+  },
+  {
+   "s": "Use it for ✨",
+   "src": "ext/webdock/webdock.js:268"
+  },
+  {
+   "s": "say what the section should be",
+   "src": "ext/webdock/webdock.js:287"
+  },
+  {
+   "s": "the LLM is writing the section",
+   "src": "ext/webdock/webdock.js:289"
   }
  ],
  "patterns": [
@@ -31502,31 +31522,35 @@
   },
   {
    "p": "{0} MB",
-   "src": "ext/webdock/webdock.js:83"
+   "src": "ext/webdock/webdock.js:102"
   },
   {
    "p": "{0} KB",
-   "src": "ext/webdock/webdock.js:83"
+   "src": "ext/webdock/webdock.js:102"
   },
   {
    "p": "Live from the database {0} (your server) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:170"
+   "src": "ext/webdock/webdock.js:189"
   },
   {
    "p": "Live from the database {0} (this computer) - what the site's visitors book, order and send shows here",
-   "src": "ext/webdock/webdock.js:170"
+   "src": "ext/webdock/webdock.js:189"
   },
   {
    "p": "Live: {0}",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "p": "your server - ✗ {0}",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
   },
   {
    "p": "this computer - ✗ {0}",
-   "src": "ext/webdock/webdock.js:213"
+   "src": "ext/webdock/webdock.js:232"
+  },
+  {
+   "p": "with {0} - {1}",
+   "src": "ext/webdock/webdock.js:294"
   }
  ]
 }

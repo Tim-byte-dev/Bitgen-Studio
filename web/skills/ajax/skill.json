@@ -1,0 +1,13 @@
+{
+  "name": "AJAX",
+  "icon": "⚡",
+  "group": "Scripts",
+  "description": "Lists filled from data/content.json (posts, products) without a page load, and forms sent in the background with the answer shown under them.",
+  "head": [],
+  "scripts": [
+    "js/bg-ajax.js"
+  ],
+  "files": [
+    "js/bg-ajax.js"
+  ]
+}

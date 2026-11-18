@@ -1,0 +1,16 @@
+{
+  "name": "Layout",
+  "icon": "📐",
+  "group": "Look",
+  "description": "A header with a menu that folds into ☰ on phones, a hero, sections, card grids, two columns and a footer.",
+  "head": [
+    "css/bg-layout.css"
+  ],
+  "scripts": [
+    "js/bg-layout.js"
+  ],
+  "files": [
+    "css/bg-layout.css",
+    "js/bg-layout.js"
+  ]
+}

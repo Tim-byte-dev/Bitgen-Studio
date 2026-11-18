@@ -14,6 +14,9 @@
  *                links the CRM: Clients / Bookings / Orders / Messages are then read from + written to it (⟳ every 30 s while shown)
  *   ⤴ 2.858.0    ⤴ Publish = the www folder to GitHub (the same rules as Build Website's publish: only changed files, never
  *                inc/config.php); 🌐 Build Website ▸ ☑ Into this project's www folder puts a build here
+ *   🧩 2.859.0   Tim: "add skills/scripts for galleries - picture,video-audio-3d models, layout, css, ajax, login, categories, product
+ *                page,checkout etc" - 🧩 Skills: ＋ a skill = its files into www + its markup / <link> / <script> into the open page;
+ *                ✨ the LLM writes a section with the ticked skills' sheets (web/skills/<id>/, lib/webSkills.js)
  *   Files ▸      on the right, collapsible: the www tree (folders open / shut), ＋📄 ＋📁 ⤒ ✎ 🗑 ⟳ (delete = moved to web/trash)
  * One text buffer (St.text) for the open file - the WYSIWYG, the code and the preview all show it; 💾 Save writes it (a change on
  * disk since it was opened = refused, open it again). */
@@ -58,7 +61,23 @@
   };
   const COLS = { pages: ["path", "title", "description"], posts: ["date", "title", "published"], products: ["name", "category", "price", "stock"], clients: ["name", "email", "phone", "company"], bookings: ["date", "time", "client", "service", "status"], orders: ["date", "number", "client", "total", "status"], messages: ["date", "name", "subject", "status"] };
   const match = (it, q) => !q || Object.values(it).some((v) => String(v).toLowerCase().includes(q.toLowerCase()));
-  const pure = { withBase, putBody, rows, FIELDS, COLS, match, isHtml, isPic, dirOf };
+  /** 2.859.0: a skill into a page's text - its <link>s before </head>, its <script>s before </body> (once each, in order), the
+   *  snippet at the cursor (else before </main>, else before </body>); paths made relative to the page's folder */
+  function addToPage(text, rel, sk, at) {
+    const pre = "../".repeat(dirOf(rel).split("/").filter(Boolean).length);
+    const fix = (h) => pre ? h.replace(/\b(src|href)="(?!https?:|\/|#|\.\.|mailto:|tel:|data:)([^"]+)"/g, (m, a, u) => `${a}="${pre}${u}"`) : h;
+    let t = String(text || "");
+    const has = (u) => t.includes(`"${pre}${u}"`);
+    for (const c of sk.head || []) if (!has(c)) t = /<\/head>/i.test(t) ? t.replace(/<\/head>/i, `  <link rel="stylesheet" href="${pre}${c}">\n</head>`) : `<link rel="stylesheet" href="${pre}${c}">\n` + t;
+    let snip = fix(sk.snippet || "");
+    if (at != null && at >= 0 && at <= t.length && !(at > t.search(/<\/body>/i) && t.search(/<\/body>/i) >= 0)) t = t.slice(0, at) + snip + t.slice(at);
+    else if (/<\/main>/i.test(t)) t = t.replace(/(\s*)<\/main>/i, (m, sp) => "\n" + snip + sp + "</main>");
+    else if (/<\/body>/i.test(t)) t = t.replace(/<\/body>/i, snip + "</body>");
+    else t += "\n" + snip;
+    for (const j of sk.scripts || []) if (!has(j)) t = /<\/body>/i.test(t) ? t.replace(/<\/body>/i, `  <script src="${pre}${j}"></script>\n</body>`) : t + `\n<script src="${pre}${j}"></script>`;
+    return t;
+  }
+  const pure = { withBase, putBody, rows, FIELDS, COLS, match, isHtml, isPic, dirOf, addToPage };
 
   /* ---------------- the server */
   async function api(u, body) {
@@ -240,6 +259,43 @@
     if (d && !d.classList.contains("dockgone") && St.tab === "crm" && St.db && St.db.linked && ["clients", "bookings", "orders", "messages"].includes(St.kind) && !$("wbCrmForm").classList.contains("on") && !doc.hidden) loadKind(St.kind);
   }, 30000);
 
+  /* ---------------- 🧩 web skills (2.859.0, lib/webSkills.js) */
+  async function skOpen() {
+    const f = $("wbSkForm"); if (f.classList.contains("on")) { f.classList.remove("on"); return; }
+    let L; try { L = await api("/api/web/skills"); } catch (e) { return msg("✗ " + e.message, true); }
+    St.skills = L.skills; let g = "";
+    $("wbSkList").innerHTML = L.skills.slice().sort((a, b) => (a.group || "").localeCompare(b.group || "")).map((k) => (k.group !== g ? `<div class="grp">${esc(g = k.group)}</div>` : "")
+      + `<div class="sk" data-sk="${esc(k.id)}"><b>${esc(k.icon + " " + k.name)}</b><p>${esc(k.description)}</p>${k.needs === "php" ? '<p>⚠ needs PHP on the host</p>' : ""}<div class="wbbar"><button class="ghost" type="button" data-skadd="${esc(k.id)}">＋ Add to the page</button><label title="Use it for ✨"><input type="checkbox" data-skuse="${esc(k.id)}"> ✨</label></div></div>`).join("");
+    $("wbSkOut").textContent = ""; f.classList.add("on");
+  }
+  /** a skill's answer {head, scripts, snippet, copied} into the open page (or just its files when no page is open) */
+  function placeSkill(r, html) {
+    const sk = Object.assign({}, r, html != null ? { snippet: html } : {});
+    if (!isHtml(St.path)) return `its files are in www (${r.copied.length} new) - open an .html page to put it on one`;
+    syncWys();
+    const c = $("wbCode"), at = St.tab === "code" ? c.selectionStart : null;
+    if (St.tab === "code") St.text = c.value;
+    St.text = addToPage(St.text, St.path, sk, at); changed(); paintTab();
+    return `on ${St.path} - ${r.copied.length} file(s) added to www${r.kept.length ? `, ${r.kept.length} of yours kept` : ""} · 💾 Save to keep the page`;
+  }
+  async function skAdd(id) {
+    try { const r = await api("/api/web/skills/add", { id }); const m = placeSkill(r); $("wbSkOut").textContent = `＋ ${r.name} ${m}`; msg(`🧩 ${r.name} added`); await refreshTreeQuiet(); if (r.needs === "php") $("wbSkOut").textContent += " · ⚠ needs PHP + the CRM's 🗄 database on the host";
+      if (root.H3TestEvent) { try { root.H3TestEvent("web_skill", id); } catch (e) { /* the 🧪 list */ } } }
+    catch (e) { $("wbSkOut").textContent = "✗ " + e.message; }
+  }
+  async function skAi() {
+    const ask = $("wbSkAsk").value.trim(); if (!ask) { $("wbSkOut").textContent = "say what the section should be"; return; }
+    const skills = [...doc.querySelectorAll("#wbSkList [data-skuse]:checked")].map((x) => x.dataset.skuse);
+    $("wbSkAi").disabled = true; $("wbSkOut").textContent = "✨ the LLM is writing the section…";
+    try {
+      const r = await api("/api/web/skills/ai", { ask, skills });
+      const all = { head: [], scripts: [], copied: [], kept: [] };
+      for (const k of r.skills) { for (const x of ["head", "scripts", "copied", "kept"]) for (const v of k[x]) if (!all[x].includes(v)) all[x].push(v); }
+      $("wbSkOut").textContent = `✨ with ${r.skills.map((k) => k.name).join(", ")} - ` + placeSkill(all, r.html);
+    } catch (e) { $("wbSkOut").textContent = "✗ " + e.message; }
+    $("wbSkAi").disabled = false;
+  }
+
   /* ---------------- ⤴ publish www (2.858.0, lib/sitePublish.js publishWww) */
   async function pubOpen() {
     const f = $("wbPubForm"); if (f.classList.contains("on")) { f.classList.remove("on"); return; }
@@ -271,6 +327,9 @@
     on("wbCloseBtn", "click", (e) => { e.stopPropagation(); if (typeof root.toggleDockGone === "function") root.toggleDockGone("webdock", "tX_webdock"); });
     d.querySelectorAll(".wbtab").forEach((b) => b.addEventListener("click", () => tab(b.dataset.tab)));
     on("wbSave", "click", save);
+    on("wbSk", "click", skOpen); on("wbSkNo", "click", () => $("wbSkForm").classList.remove("on")); on("wbSkAi", "click", skAi);
+    on("wbSkAsk", "keydown", (e) => { e.stopPropagation(); if (e.key === "Enter") skAi(); });
+    on("wbSkList", "click", (e) => { const b = e.target.closest("[data-skadd]"); if (b) skAdd(b.dataset.skadd); });
     on("wbPub", "click", pubOpen); on("wbPubGo", "click", pubGo); on("wbPubNo", "click", () => $("wbPubForm").classList.remove("on"));
     on("wbPubForget", "click", async () => { try { await api("/api/sites/publish/token", { token: "" }); $("wbPubForget").disabled = true; $("wbPubOut").textContent = "the token is forgotten"; } catch (e) { $("wbPubOut").textContent = "✗ " + e.message; } });
     ["wbPubTok", "wbPubOwner", "wbPubRepo", "wbPubBranch", "wbPubMsg"].forEach((id) => on(id, "keydown", (e) => e.stopPropagation()));

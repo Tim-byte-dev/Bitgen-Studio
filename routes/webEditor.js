@@ -11,6 +11,7 @@
 //   2.857.0 🗄 the CRM's live database (lib/webDb.js): GET /api/web/db {linked, scope, name, ok, counts} · POST /api/web/db/create
 //   {scope project|external, name?, importLocal?} · POST /api/web/db/unlink. While linked, /api/web/records for clients / bookings /
 //   orders / messages read + write that database (posts / products stay in www/data/content.json).
+//   2.859.0 🧩: GET /api/web/skills · POST /api/web/skills/add {id} -> {copied, kept, head, scripts, snippet} · POST /api/web/skills/ai {ask, skills?}
 //   GET  /web-preview/<path>           the site as files (the Preview + WYSIWYG tabs; no PHP is run)
 "use strict";
 const express = require("express");
@@ -31,6 +32,11 @@ function mount(app) {
   const DB = () => require("../lib/webDb"), live = (k) => DB().CRM.includes(k) && !!DB().link();
   app.get("/api/web/records", wrap((req) => live(req.query.kind) ? DB().list(req.query.kind) : W().records(req.query.kind)));
   app.post("/api/web/records", J, wrap((req) => live(req.body.kind) ? DB().put(req.body.kind, req.body.record) : W().saveRecord(req.body.kind, req.body.record)));
+  // 2.859.0 🧩 web skills (lib/webSkills.js; web/skills/<id>/): the list, ＋ add one (its files into www), ✨ a section by the LLM
+  const SK = () => require("../lib/webSkills");
+  app.get("/api/web/skills", wrap(() => SK().list()));
+  app.post("/api/web/skills/add", J, wrap((req) => SK().install((req.body || {}).id)));
+  app.post("/api/web/skills/ai", J, wrap((req) => SK().ai(req.body || {})));
   app.get("/api/web/db", wrap(() => DB().status()));
   // 2.858.0: ⤴ publish www to GitHub (lib/sitePublish.js pushDir - the same rules as Build Website's publish)
   app.get("/api/web/publish", wrap(() => require("../lib/sitePublish").wwwSettings()));

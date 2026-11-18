@@ -14464,6 +14464,16 @@ node scripts/test-858.js > /tmp/t858.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui858-ui.js > /tmp/ui858.log 2>&1 \
   && ok "2.858.0 browser test: the Web editor's ⤴ Publish panel, Build Website's ☑ into www" \
   || { bad "2.858.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui858.log | head -12; }
+# ---- 2.859.0 (🧩 web skills)
+node scripts/test-859.js > /tmp/t859.log 2>&1 \
+  && ok "2.859.0 🧩 web skills: 11 skills, install into www (your pages kept), three.js + licence, ✨ routed + cleaned, addToPage" \
+  || { bad "2.859.0 units"; grep -a "^FAIL" -A1 /tmp/t859.log | head -12; }
+node scripts/test-859-live.js > /tmp/t859l.log 2>&1 \
+  && ok "2.859.0 LIVE (PHP + MariaDB): checkout.php priced on the server into the CRM's orders; register / login / logout with CSRF, hashed, 5 tries" \
+  || { bad "2.859.0 live"; grep -a "^FAIL" -A1 /tmp/t859l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui859-ui.js > /tmp/ui859.log 2>&1 \
+  && ok "2.859.0 browser test: ＋ gallery on the page + the viewer, the catalogue's chips + cart, ✨ a section" \
+  || { bad "2.859.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui859.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

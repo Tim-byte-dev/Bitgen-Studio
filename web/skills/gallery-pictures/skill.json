@@ -1,0 +1,22 @@
+{
+  "name": "Picture gallery",
+  "icon": "🖼",
+  "group": "Galleries",
+  "description": "A grid of pictures; a click opens them big - ← → keys, swipe on phones, Esc. Fills itself from a JSON list too.",
+  "head": [
+    "css/bg-gallery.css"
+  ],
+  "scripts": [
+    "js/bg-gallery.js"
+  ],
+  "files": [
+    "css/bg-gallery.css",
+    "images/sample-1.svg",
+    "images/sample-2.svg",
+    "images/sample-3.svg",
+    "images/sample-4.svg",
+    "images/sample-5.svg",
+    "images/sample-6.svg",
+    "js/bg-gallery.js"
+  ]
+}
