@@ -14395,6 +14395,16 @@ node scripts/test-849.js > /tmp/t849.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui849-ui.js > /tmp/ui849.log 2>&1 \
   && ok "2.849.0 browser test: the icon toolbar, 🔍 Print Preview of 2 pages + one print job, ✨ Create a flyer / business card / website (plan stubbed)" \
   || { bad "2.849.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui849.log | head -12; }
+# ---- 2.850.0 (Tim: "build she shopfrot end, the public catalog and checkout pages")
+node scripts/test-850.js > /tmp/t850.log 2>&1 \
+  && ok "2.850.0 the shop front end: the PHP (CSRF, prepared SQL, one transaction, the order's key), myadmin's shop settings + upgrade, the build (the tick, the files, the header, the CSS)" \
+  || { bad "2.850.0 units"; grep -a "^FAIL" -A1 /tmp/t850.log | head -12; }
+node scripts/test-850-live.js > /tmp/t850l.log 2>&1 \
+  && ok "2.850.0 LIVE: the shop through PHP + MariaDB - catalogue, stock caps, cart totals (tax inside / added, shipping, a code), checkout -> order + items + stock + client + payment + e-mails, the order's page by key, stock gone = nothing saved" \
+  || { bad "2.850.0 live shop"; grep -a "^FAIL" -A1 /tmp/t850l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui850-ui.js > /tmp/ui850.log 2>&1 \
+  && ok "2.850.0 browser test: Build Website's 🛒 Shop tick (PHP + the admin area picked) -> the shop's pages in the .zip, remembered" \
+  || { bad "2.850.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui850.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

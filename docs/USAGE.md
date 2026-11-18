@@ -9570,6 +9570,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🔍 Print Preview** (Ctrl+F2): every page at its real size; 🖨 Print sends them all in one job.
 - **✨ Create With the AI**: pick a Document, Story, Flyer, Brochure (tri-fold), Business card, Website or Invoice, and say what it's for. The LLM writes it and bitGen lays it out as layers you can change. Tick 🖼 Pictures to have them made with your image style. Your names, prices and contact details are used and never made up.
 
+## 🛒 Websites - the shop: catalogue, cart and checkout (2.850.0)
+
+- **🌐 Build Website ▸ 🛒 Shop** gives a PHP + MySQL site shop.php (categories, search), product.php, cart.php (a code, shipping, the tax), checkout.php (bank transfer / pay on pick-up) and order.php (each order's private page). The admin area comes with it.
+- An order is placed all at once: the stock checked and taken, the client added, its number, items, status history and a pending payment; the buyer and the shop are e-mailed.
+- Products, coupons, shipping, orders and the shop's settings (tax included or added, bank details, who hears of new orders) are in /admin/.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

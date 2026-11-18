@@ -1,7 +1,7 @@
 {
  "lang": "ja",
- "v": "a9b5c8781dcf",
- "count": 10830,
+ "v": "851752c3cb07",
+ "count": 10832,
  "patternCount": 1280,
  "strings": {
   "(Select all)": "(すべて選択)",
@@ -6449,6 +6449,7 @@
   "Shift+F5": "Shift+F5",
   "Shift+F5 · Image editor - Edit menu": "Shift+F5 · 画像エディター - 編集メニュー",
   "Shift+drag a point with the ✒ Mask Pen for its own feather": "✒ マスクペンでポイントを Shift+ドラッグすると、そのポイント独自のぼかしを設定できます",
+  "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)": "ショップ - カタログ、カート、購入手続き（PHP + MySQL。管理エリア付き）",
   "Short date": "短い日付形式",
   "Shortcuts": "ショートカット",
   "Shorter": "もっと短く",
@@ -10815,6 +10816,7 @@
   "🖼 Pictures - made with the prompt docker's image style": "🖼 画像 - プロンプトドッカーの画像スタイルで作成",
   "🗄 The database server is needed": "🗄 データベースサーバーが必要です",
   "🗑 deleted": "🗑 削除しました",
+  "🛒 Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)": "🛒 ショップ - カタログ、カート、購入手続き（PHP + MySQL。管理エリア付き）",
   "🧠 LLM": "🧠 LLM",
   "🧾 Fill": "🧾 記入",
   "🧾 Fill Invoice": "🧾 請求書に記入",

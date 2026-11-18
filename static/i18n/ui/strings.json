@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6506,
+ "count": 6508,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -60140,6 +60140,26 @@
    ],
    "where": [
     "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Website ▸ 🛒 Shop (2.850.0)"
+   ]
+  },
+  {
+   "s": "🛒 Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Website ▸ 🛒 Shop (2.850.0)"
    ]
   }
  ]

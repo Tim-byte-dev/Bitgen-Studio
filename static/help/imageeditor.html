@@ -2,6 +2,18 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="shop850">🛒 The website's shop: catalogue, cart and checkout (2.850.0)</h3>
+<ul>
+  <li><b>🌐 Build Website ▸ 🛒 Shop</b> gives a PHP + MySQL website a shop. Ticking it also picks PHP + MySQL and the 🔐 Admin area, because the products, orders and clients live in the admin database (myadmin). The header gets <b>Shop</b> and <b>Cart</b> (with how many are in it).</li>
+  <li><b>shop.php</b>, the catalogue: the active products with their pictures and prices (a sale price shows beside the old one), the categories, and a search by name, description or SKU. Featured products come first.</li>
+  <li><b>product.php</b>: the pictures, the description, the options (variants with their own prices; the ones out of stock can't be picked) and the quantity. You can never put more in the cart than there is in stock, unless the product allows back-orders.</li>
+  <li><b>cart.php</b>: change the quantities, remove items, enter a code (percent off, an amount off or free shipping, with its dates, uses and least spend) and pick the shipping (free over its amount). The tax is either inside the prices or added on top, as the Settings say.</li>
+  <li><b>checkout.php</b>: name, email, phone, the address (when the shop ships) and how to pay: bank transfer and / or pay on pick-up. Card payments online need the shop's own account with a payment provider, so they aren't built in.</li>
+  <li><b>Placing an order</b> happens all at once or not at all: the stock is checked again and taken (each change in stock_movements), the client is found or added by email with their address, and the order gets its number (ORD-00001), its items, its status history, a pending payment and the code counted. The buyer and the shop are e-mailed.</li>
+  <li><b>order.php</b>: each order's own page, opened only with the private link in the buyer's e-mail. It shows the items, the totals, the status and how to pay.</li>
+  <li>In <b>/admin/ ▸ Settings</b>: currency, tax_rate, prices_include_tax, pay_bank + bank_details, pay_pickup + pickup_note, order_email (who hears of each new order) and order_prefix. Products, categories, coupons, shipping methods and orders are in /admin/ too. An older myadmin database gets the new columns by itself.</li>
+</ul>
+
 <h3 id="create849">✅ The icon toolbar · 🔍 Print Preview · ✨ Create With the AI (2.849.0)</h3>
 <ul>
   <li><b>The icon toolbar</b> sits right under the menus: 🗋 New · 📂 Open · 💾 Save · 💾… Save As · 🖨 Print · 🔍 Print Preview | ↶ Undo · ↷ Redo | ✂ Cut · ⧉ Copy · 📋 Paste | ✨ Create With the AI. A button is greyed out when it can't be used, and its tip shows its key. Save and Save As keep the whole project (.bgi, every page).</li>

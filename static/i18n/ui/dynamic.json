@@ -16256,39 +16256,43 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
+  },
+  {
+   "s": "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "s": "Two points",
@@ -29206,7 +29210,7 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:103"
+   "src": "ext/imageeditdock/pcsite.js:104"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

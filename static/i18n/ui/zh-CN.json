@@ -1,7 +1,7 @@
 {
  "lang": "zh-CN",
- "v": "21544a9db3e2",
- "count": 10830,
+ "v": "0b38d9f076ef",
+ "count": 10832,
  "patternCount": 1280,
  "strings": {
   "(Select all)": "(全选)",
@@ -6449,6 +6449,7 @@
   "Shift+F5": "Shift+F5",
   "Shift+F5 · Image editor - Edit menu": "Shift+F5 · 图像编辑器 - 编辑菜单",
   "Shift+drag a point with the ✒ Mask Pen for its own feather": "用 ✒ 蒙版钢笔 Shift+拖动某个点，为其单独设置羽化",
+  "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)": "商店——商品目录、购物车和结账（PHP + MySQL；附带管理区）",
   "Short date": "短日期",
   "Shortcuts": "快捷键",
   "Shorter": "更简短",
@@ -10815,6 +10816,7 @@
   "🖼 Pictures - made with the prompt docker's image style": "🖼 图片——用提示词停靠窗的图像风格生成",
   "🗄 The database server is needed": "🗄 需要数据库服务器",
   "🗑 deleted": "🗑 已删除",
+  "🛒 Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)": "🛒 商店——商品目录、购物车和结账（PHP + MySQL；附带管理区）",
   "🧠 LLM": "🧠 LLM",
   "🧾 Fill": "🧾 填写",
   "🧾 Fill Invoice": "🧾 填写发票",
