@@ -7,6 +7,9 @@
 //   GET  /api/sites/products?name=   -> {products: [{name, slug, price, image, has}]}   2.853.0: the shop's planned products
 //   GET  /api/sites/asset?name=&file= a picture of the site (its assets/)
 //   POST /api/sites/product-picture {name, slug, b64, ext} -> {image}   a product's picture replaced (✏ edited in the studio)
+//   GET  /api/sites/publish?name=    -> {publish {owner, repo, branch, private, ftp}, token, built, last}   2.854.0 ⤴ GitHub
+//   POST /api/sites/publish {name, owner, repo, branch, private, ftp, message, token?} -> {url, commit, sent, kept, removed}
+//   POST /api/sites/publish/token {token}  -> {saved}   (empty = forgotten; kept encrypted, lib/secrets.js)
 "use strict";
 const express = require("express");
 function mount(app) {
@@ -19,6 +22,10 @@ function mount(app) {
   app.get("/api/sites/products", wrap((req) => ({ products: S().products(req.query.name) })));
   app.get("/api/sites/asset", (req, res) => { try { res.set("Cache-Control", "no-store").sendFile(S().assetFile(req.query.name, req.query.file)); } catch (e) { res.status(e.status || 500).json({ error: e.message }); } });
   app.post("/api/sites/product-picture", express.json({ limit: "60mb" }), wrap((req) => S().putProductPicture(req.body)));
+  const P = () => require("../lib/sitePublish");
+  app.get("/api/sites/publish", wrap((req) => P().settings(req.query.name)));
+  app.post("/api/sites/publish", express.json({ limit: "1mb" }), wrap((req) => P().publish(req.body)));
+  app.post("/api/sites/publish/token", express.json({ limit: "64kb" }), wrap((req) => P().setToken(req.body.token)));
   app.get(/^\/sites-preview\/([^/]+)\/(.*)$/, (req, res) => { try { res.sendFile(S().previewFile(decodeURIComponent(req.params[0]), decodeURIComponent(req.params[1] || "index.html"))); } catch (e) { res.status(e.status || 500).type("text/plain").send(e.message); } });
 }
 module.exports = { mount };

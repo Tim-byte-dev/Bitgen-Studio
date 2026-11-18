@@ -2,6 +2,14 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="pub854">⤴ Publish a website to GitHub (2.854.0)</h3>
+<ul>
+  <li><b>⤴ Publish Website to GitHub…</b> (File menu, Build Website's ⤴ button, Web View's ribbon ⤴) sends the last build of a website to a GitHub repository - no git program needed. The repository is made when it is not there (🔒 private unless you untick it), named after the site; only the files that changed are sent, and files the site no longer has are taken out. Each publish is one commit with your message.</li>
+  <li>The <b>token</b> (github.com ▸ Settings ▸ Developer settings ▸ Personal access tokens, with the repo scope) is kept encrypted on this computer; ✕ forgets it. The owner can be you or an organisation; the branch is <i>main</i> unless you change it. The settings are remembered per site.</li>
+  <li><b>inc/config.php</b> (the database password, the admin's setup key) and <b>README.txt</b> never leave this computer: the repository gets inc/config.sample.php (the key blanked), a .gitignore that keeps inc/config.php out, and DEPLOY.md.</li>
+  <li>Your host takes it from there: <b>Plesk ▸ Git</b> pulls the repository into httpdocs on every publish, or tick <b>📤 Send it to my host by FTP</b> and a GitHub Actions workflow sends it (the FTP login in the repository's secrets). Once, on the server, copy inc/config.sample.php to inc/config.php and fill it in.</li>
+</ul>
+
 <h3 id="vid853">🎬 Hero video and 🛒 Product Pictures (2.853.0)</h3>
 <ul>
   <li><b>🎬 Hero video</b> in 🌐 Build Me a Website: a 5-second film for the Home page's hero, made with the prompt docker's video style from the hero photo (its first frame). On the site it plays muted and looping, with the photo as its poster until it loads. The hero layer is named 🎬 and keeps the film when you build the site again.</li>

@@ -92,7 +92,7 @@
     web: [
       { id: "web", label: "Web", groups: [
         { label: "Site", show: 5, items: [["cmd", "file.webai", "Build Me a Website", "✨"], ["cmd", "file.prodpics", "Product Pictures", "🛒"], ["act", "newsite", "New Website", "🌐"], ["act", "newpage", "Web Page", "＋"], ["cmd", "win.pages", "Pages Panel", "▤"], ["cmd", "page.props", "Page Properties", "📄"]] },
-        { label: "Build", show: 3, items: [["cmd", "file.website", "Build Website", "🌐"], ["act", "quick", "Quick Preview", "⚡"], ["act", "zip", "Download .zip", "⤓"]] },
+        { label: "Build", show: 4, items: [["cmd", "file.website", "Build Website", "🌐"], ["act", "quick", "Quick Preview", "⚡"], ["act", "zip", "Download .zip", "⤓"], ["cmd", "file.sitepub", "Publish to GitHub", "⤴"]] },
         { label: "Preview", show: 3, items: [["act", "dev:desktop", "Desktop", "🖥"], ["act", "dev:tablet", "Tablet", "▭"], ["act", "dev:phone", "Phone", "📱"], ["act", "open", "Open in the Browser", "↗"]] },
         { label: "Content", show: 5, items: [["act", "calendar", "Calendar", "📅"], ["tool", "type", "Text", "T"], ["cmd", "layer.newdocframe", "Text Block", "📄"], ["cmd", "file.place", "Picture", "🖼"], ["tool", "shape", "Shape", "◼"], ["cmd", "layer.docai", "Write With the AI", "✨"]] },
         { label: "Arrange", show: 2, items: [["cmd", "dk.align", "Align", "⊟"], ["cmd", "dk.transform", "Transform", "⤧"]] },

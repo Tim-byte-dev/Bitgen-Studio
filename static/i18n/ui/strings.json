@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6590,
+ "count": 6605,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -60980,6 +60980,156 @@
    ],
    "where": [
     "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Publish to GitHub",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Owner",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Repository",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Branch",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Private repository (when it is made)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Send it to my host by FTP on every publish (GitHub Actions)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "The last build goes up - only the files that changed. inc/config.php (the database password, the admin's setup key) and README.txt stay on this computer: the repository gets inc/config.sample.php and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "kept on this computer (encrypted) - type a new one to change it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Forget the kept token",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "A new repository is made private - only you see it (a host pulls it with a deploy key)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "what changed (optional)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "a GitHub token with the repo scope",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "the token is forgotten",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "publishing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "nothing changed since the last publish -",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - ⤴ Publish to GitHub (2.854.0)"
    ]
   }
  ]

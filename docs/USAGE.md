@@ -9594,6 +9594,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **🛒 Product Pictures** (File menu, Web View 🛒): write what to change and **✏ Edit** with the edit model (Qwen Image Edit first); **✔ Use it** puts the picture in the site. **🖼 Open** edits it in the image editor (File ▸ 🛒 Save to the Product); **📁 Replace…** takes one from this computer.
 - **🌐 Build again** puts the new pictures in the site and its shop.
 
+## ⤴ Websites - publish to GitHub (2.854.0)
+
+- **⤴ Publish Website to GitHub…** (File menu, Build Website's ⤴, Web View ⤴): the last build goes to a GitHub repository - made when missing (🔒 private), only the changed files sent, one commit per publish. The token (repo scope) is kept encrypted here.
+- inc/config.php and README.txt stay on this computer; the repository gets inc/config.sample.php, .gitignore and DEPLOY.md.
+- The host deploys it: Plesk ▸ Git into httpdocs, or tick 📤 FTP for a GitHub Actions workflow. Once on the server: copy inc/config.sample.php to inc/config.php.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

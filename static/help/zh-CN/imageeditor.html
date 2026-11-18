@@ -1,7 +1,15 @@
-<!-- en: imageeditor 1ef8365adba3 -->
+<!-- en: imageeditor 0722c642eccb -->
 <h1>图像编辑器</h1>
 
 <p>编辑器的布局、工具和快捷键。</p>
+
+<h3 id="pub854">⤴ 将网站发布到 GitHub（2.854.0）</h3>
+<ul>
+  <li><b>⤴ 将网站发布到 GitHub…</b>（文件菜单、建网站的 ⤴ 按钮、网页视图功能区的 ⤴）把最近一次生成的网站发送到 GitHub 仓库——不需要 git 程序。仓库不存在时会以网站名称创建（除非取消勾选，否则为 🔒 私有）；只发送有变化的文件，网站已不再有的文件会被移除。每次发布是一个带说明的提交。</li>
+  <li><b>令牌</b>（github.com ▸ Settings ▸ Developer settings ▸ Personal access tokens，需 repo 权限）加密保存在这台电脑上，✕ 可删除。所有者可以是你或某个组织；分支默认为 <i>main</i>。设置按网站记住。</li>
+  <li><b>inc/config.php</b>（数据库密码、管理员设置密钥）和 <b>README.txt</b> 永远不会离开这台电脑：仓库中放入 inc/config.sample.php（密钥为空）、把 inc/config.php 排除在外的 .gitignore，以及 DEPLOY.md。</li>
+  <li>之后由你的主机接手：<b>Plesk ▸ Git</b> 每次发布时把仓库拉取到 httpdocs，或勾选 <b>📤 每次发布时通过 FTP 发送到我的主机</b>，由 GitHub Actions 工作流发送（FTP 登录信息放在仓库的 secrets 中）。在服务器上只需一次：把 inc/config.sample.php 复制为 inc/config.php 并填写。</li>
+</ul>
 
 <h3 id="vid853">🎬 主视觉视频和 🛒 商品图片（2.853.0）</h3>
 <ul>

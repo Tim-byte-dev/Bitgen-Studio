@@ -1,7 +1,15 @@
-<!-- en: imageeditor 1ef8365adba3 -->
+<!-- en: imageeditor 0722c642eccb -->
 <h1>影像編輯器</h1>
 
 <p>編輯器的佈局、工具和快捷鍵。</p>
+
+<h3 id="pub854">⤴ 將網站釋出到 GitHub（2.854.0）</h3>
+<ul>
+  <li><b>⤴ 將網站釋出到 GitHub…</b>（檔案選單、建網站的 ⤴ 按鈕、網頁檢視功能區的 ⤴）把最近一次生成的網站傳送到 GitHub 倉庫——不需要 git 程式。倉庫不存在時會以網站名稱建立（除非取消勾選，否則為 🔒 私有）；只發送有變化的檔案，網站已不再有的檔案會被移除。每次釋出是一個帶說明的提交。</li>
+  <li><b>權杖</b>（github.com ▸ Settings ▸ Developer settings ▸ Personal access tokens，需 repo 權限）加密儲存在這臺電腦上，✕ 可刪除。所有者可以是你或某個組織；分支預設為 <i>main</i>。設定按網站記住。</li>
+  <li><b>inc/config.php</b>（資料庫密碼、管理員設定金鑰）和 <b>README.txt</b> 永遠不會離開這臺電腦：倉庫中放入 inc/config.sample.php（金鑰為空）、把 inc/config.php 排除在外的 .gitignore，以及 DEPLOY.md。</li>
+  <li>之後由你的主機接手：<b>Plesk ▸ Git</b> 每次釋出時把倉庫拉取到 httpdocs，或勾選 <b>📤 每次釋出時通過 FTP 傳送到我的主機</b>，由 GitHub Actions 工作流傳送（FTP 登入資訊放在倉庫的 secrets 中）。在伺服器上只需一次：把 inc/config.sample.php 複製為 inc/config.php 並填寫。</li>
+</ul>
 
 <h3 id="vid853">🎬 主視覺影片和 🛒 商品圖片（2.853.0）</h3>
 <ul>

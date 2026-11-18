@@ -14426,6 +14426,13 @@ node scripts/test-853.js > /tmp/t853.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui853-ui.js > /tmp/ui853.log 2>&1 \
   && ok "2.853.0 browser test: 🎬 the film job from the hero photo, Home plays it, 🛒 Product Pictures ✏ Edit with Qwen -> ✔ Use it -> 🌐 Build again" \
   || { bad "2.853.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui853.log | head -12; }
+# ---- 2.854.0 (⤴ publish a built website to GitHub)
+node scripts/test-854.js > /tmp/t854.log 2>&1 \
+  && ok "2.854.0 ⤴ publish to GitHub: the repository made, only changed files, secrets never sent, DEPLOY.md + FTP workflow, the token encrypted" \
+  || { bad "2.854.0 units"; grep -a "^FAIL" -A1 /tmp/t854.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui854-ui.js > /tmp/ui854.log 2>&1 \
+  && ok "2.854.0 browser test: the publish box with the site's settings, what it sends, the link back, ✕ forgets the token, the Web ribbon" \
+  || { bad "2.854.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui854.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

@@ -1,7 +1,15 @@
-<!-- en: imageeditor 1ef8365adba3 -->
+<!-- en: imageeditor 0722c642eccb -->
 <h1>画像エディター</h1>
 
 <p>エディターのレイアウト、ツール、キー操作について説明します。</p>
+
+<h3 id="pub854">⤴ ウェブサイトを GitHub に公開（2.854.0）</h3>
+<ul>
+  <li><b>⤴ ウェブサイトを GitHub に公開…</b>（ファイルメニュー、ウェブサイトを作成 の ⤴ ボタン、ウェブビューのリボンの ⤴）は、最後に作成したウェブサイトを GitHub のリポジトリに送ります - git プログラムは不要です。リポジトリがなければサイト名で作成され（チェックを外さない限り 🔒 非公開）、変更されたファイルだけが送られ、サイトにもうないファイルは削除されます。公開のたびにメッセージ付きの 1 つのコミットになります。</li>
+  <li><b>トークン</b>（github.com ▸ Settings ▸ Developer settings ▸ Personal access tokens、repo スコープ付き）はこのコンピューターに暗号化して保存され、✕ で削除できます。所有者はあなたか組織、ブランチは変更しない限り <i>main</i> です。設定はサイトごとに記憶されます。</li>
+  <li><b>inc/config.php</b>（データベースのパスワード、管理者のセットアップキー）と <b>README.txt</b> はこのコンピューターから出ません。リポジトリには inc/config.sample.php（キーは空）、inc/config.php を除外する .gitignore、DEPLOY.md が入ります。</li>
+  <li>その後はホストが引き継ぎます：<b>Plesk ▸ Git</b> が公開のたびにリポジトリを httpdocs に取得するか、<b>📤 公開のたびに FTP でホストに送る</b> にチェックすると GitHub Actions のワークフローが送ります（FTP のログイン情報はリポジトリのシークレットに）。サーバーで一度だけ inc/config.sample.php を inc/config.php にコピーして記入します。</li>
+</ul>
 
 <h3 id="vid853">🎬 ヒーロー動画と 🛒 商品画像（2.853.0）</h3>
 <ul>

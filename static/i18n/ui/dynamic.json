@@ -16355,8 +16355,68 @@
    "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
+   "s": "Publish to GitHub",
+   "src": "ext/imageeditdock/pcsite.js:114"
+  },
+  {
    "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
    "src": "ext/imageeditdock/pcsite.js:114"
+  },
+  {
+   "s": "Owner",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "Repository",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "Branch",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "Private repository (when it is made)",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "Send it to my host by FTP on every publish (GitHub Actions)",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "The last build goes up - only the files that changed. inc/config.php (the database password, the admin's setup key) and README.txt stay on this computer: the repository gets inc/config.sample.php and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host)",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "kept on this computer (encrypted) - type a new one to change it",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "Forget the kept token",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "A new repository is made private - only you see it (a host pulls it with a deploy key)",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "what changed (optional)",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "s": "a GitHub token with the repo scope",
+   "src": "ext/imageeditdock/pcsite.js:151"
+  },
+  {
+   "s": "the token is forgotten",
+   "src": "ext/imageeditdock/pcsite.js:151"
+  },
+  {
+   "s": "publishing",
+   "src": "ext/imageeditdock/pcsite.js:154"
+  },
+  {
+   "s": "nothing changed since the last publish -",
+   "src": "ext/imageeditdock/pcsite.js:158"
   },
   {
    "s": "Two points",
@@ -29367,6 +29427,26 @@
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
    "src": "ext/imageeditdock/pcsite.js:114"
+  },
+  {
+   "p": "Last published {0}",
+   "src": "ext/imageeditdock/pcsite.js:141"
+  },
+  {
+   "p": "the repository made, {0} file(s) sent, {1} the same, {2} taken out -",
+   "src": "ext/imageeditdock/pcsite.js:158"
+  },
+  {
+   "p": "the repository made, {0} file(s) sent, {1} the same -",
+   "src": "ext/imageeditdock/pcsite.js:158"
+  },
+  {
+   "p": "{0} file(s) sent, {1} the same, {2} taken out -",
+   "src": "ext/imageeditdock/pcsite.js:158"
+  },
+  {
+   "p": "{0} file(s) sent, {1} the same -",
+   "src": "ext/imageeditdock/pcsite.js:158"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

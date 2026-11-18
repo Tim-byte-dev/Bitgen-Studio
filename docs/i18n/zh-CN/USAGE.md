@@ -6205,6 +6205,13 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - **🛒 商品图片**（文件菜单、网页视图的 🛒）：写下要改什么，用编辑模型（优先 Qwen Image Edit）**✏ 编辑**；**✔ 使用** 把图片放进网站。**🖼 打开** 在图像编辑器中编辑（文件 ▸ 🛒 保存到商品）；**📁 替换…** 使用这台电脑上的图片。
 - **🌐 重新生成** 把新图片放进网站及其商店。
 
+## ⤴ 网站——发布到 GitHub（2.854.0）
+<!-- en: websites-publish-to-github-2-854-0 5431cddb6da0 -->
+
+- **⤴ 将网站发布到 GitHub…**（文件菜单、建网站的 ⤴、网页视图的 ⤴）：把最近一次生成的网站发送到 GitHub 仓库——不存在时创建（🔒 私有），只发送有变化的文件，每次发布一个提交。令牌（repo 权限）加密保存在这里。
+- inc/config.php 和 README.txt 留在这台电脑上；仓库中放入 inc/config.sample.php、.gitignore 和 DEPLOY.md。
+- 由主机部署：Plesk ▸ Git 拉取到 httpdocs，或勾选 📤 FTP 使用 GitHub Actions 工作流。在服务器上一次：把 inc/config.sample.php 复制为 inc/config.php。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

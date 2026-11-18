@@ -118,7 +118,7 @@
         <div class="rw"><label title="A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar"><input type="checkbox" id="siteAdmin" ${last.admin ? "checked" : ""}> 🔐 Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar</label></div>
         <div class="rw"><label title="A catalogue (shop.php: categories, search), product pages, a cart (a code, shipping, the tax), checkout (bank transfer / pay on pick-up) and each order's own page - the products and orders in the admin area"><input type="checkbox" id="siteShop" ${last.shop ? "checked" : ""}> 🛒 Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)</label></div>
         <div style="color:var(--pc-dim);margin-top:6px">${n} page(s) → ${n} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture.</div>
-        <div class="rw" style="margin-top:6px"><button class="ghost" id="siteZip" type="button">⤓ .zip of the last build</button><button class="ghost" id="sitePrev" type="button">👁 Preview the last build</button></div>`, (dlg) => {
+        <div class="rw" style="margin-top:6px"><button class="ghost" id="siteZip" type="button">⤓ .zip of the last build</button><button class="ghost" id="sitePrev" type="button">👁 Preview the last build</button><button class="ghost" id="sitePub" type="button">⤴ Publish to GitHub…</button></div>`, (dlg) => {
         const v = (id) => dlg.querySelector("#" + id).value.trim();
         build({ name: v("siteName"), title: v("siteTitle"), stack: v("siteStack"), lang: v("siteLang"), ai: dlg.querySelector("#siteAi").checked, admin: dlg.querySelector("#siteAdmin").checked || dlg.querySelector("#siteShop").checked, shop: dlg.querySelector("#siteShop").checked }).catch((e) => say("🌐 " + e.message));
       }, { okLabel: "🌐 Build", init: (dlg) => {
@@ -126,10 +126,46 @@
         const shopT = dlg.querySelector("#siteShop"); shopT.onchange = () => { if (shopT.checked) { dlg.querySelector("#siteStack").value = "php"; dlg.querySelector("#siteAdmin").checked = true; } };
         dlg.querySelector("#siteZip").onclick = () => { win.location.href = "/api/sites/zip?name=" + encodeURIComponent(nm()); };
         dlg.querySelector("#sitePrev").onclick = () => win.open("/sites-preview/" + encodeURIComponent(nm()) + "/index.html", "_blank");
+        dlg.querySelector("#sitePub").onclick = () => publishDialog(nm());
       } });
     }
+    /* ---- 2.854.0 (Tim: "then do the publish to github"): ⤴ Publish to GitHub - the last build into a repository (made when
+       missing, private unless unticked), only what changed sent; the token kept encrypted on this computer; the host deploys
+       it (Plesk ▸ Git, or the FTP workflow); inc/config.php + README.txt never leave this computer (lib/sitePublish.js) */
+    async function publishDialog(name0) {
+      let last = {}; try { last = JSON.parse(store.get("site.last", "{}")) || {}; } catch (e) { /* none */ }
+      const name = name0 || last.name; if (!name) return say("build a website first (🌐 Build Website)");
+      let st; try { st = await api("/api/sites/publish?name=" + encodeURIComponent(name)); } catch (e) { return say("⤴ " + e.message); }
+      if (!st.built) return say(`⤴ "${name}" is not built yet - 🌐 Build Website first`);
+      const p = st.publish;
+      E.ui.dialog("⤴ Publish to GitHub - " + name, `<div class="rw"><span>Token</span><input id="spTok" type="password" autocomplete="off" placeholder="${st.token ? "kept on this computer (encrypted) - type a new one to change it" : "a GitHub token with the repo scope"}" style="flex:1"><button type="button" class="ghost" id="spForget"${st.token ? "" : " disabled"} title="Forget the kept token">✕</button></div>
+        <div class="rw"><span>Owner</span><input id="spOwner" value="${esc(p.owner)}" placeholder="you (the token's user) or an organisation" style="flex:1"></div>
+        <div class="rw"><span>Repository</span><input id="spRepo" value="${esc(p.repo)}" style="flex:1"><span>Branch</span><input id="spBranch" value="${esc(p.branch)}" style="width:90px"></div>
+        <div class="rw"><label title="A new repository is made private - only you see it (a host pulls it with a deploy key)"><input type="checkbox" id="spPriv"${p.private !== false ? " checked" : ""}> 🔒 Private repository (when it is made)</label></div>
+        <div class="rw"><label title="Adds .github/workflows/deploy.yml: GitHub sends the website to your host by FTP on every publish - its login in the repository's secrets"><input type="checkbox" id="spFtp"${p.ftp ? " checked" : ""}> 📤 Send it to my host by FTP on every publish (GitHub Actions)</label></div>
+        <div class="rw"><span>Message</span><input id="spMsg" placeholder="what changed (optional)" style="flex:1"></div>
+        <div style="color:var(--pc-dim);margin-top:6px">The last build goes up - only the files that changed. inc/config.php (the database password, the admin's setup key) and README.txt stay on this computer: the repository gets inc/config.sample.php and DEPLOY.md (how Plesk ▸ Git or FTP puts it on your host).${st.last ? `<br>Last published ${esc(new Date(st.last.at).toLocaleString())}: <a href="${esc(st.last.url)}" target="_blank" rel="noopener">${esc(st.last.url)}</a>` : ""}</div>
+        <div id="spOut" style="margin-top:6px"></div>`, () => false, { okLabel: "⤴ Publish", init: (d) => {
+          const v = (id) => d.querySelector("#" + id);
+          d.querySelectorAll("input").forEach((i) => i.addEventListener("keydown", (e) => e.stopPropagation()));
+          v("spForget").onclick = async () => { try { await api("/api/sites/publish/token", { token: "" }); v("spForget").disabled = true; v("spTok").placeholder = "a GitHub token with the repo scope"; v("spOut").textContent = "the token is forgotten"; } catch (e) { v("spOut").textContent = "✗ " + e.message; } };
+          const ok = d.querySelector(".ok");
+          ok.onclick = async (ev) => {
+            ev.preventDefault(); ev.stopPropagation(); ok.disabled = true; v("spOut").textContent = "⤴ publishing…";
+            try {
+              const r = await api("/api/sites/publish", { name, token: v("spTok").value.trim() || undefined, owner: v("spOwner").value.trim(), repo: v("spRepo").value.trim(), branch: v("spBranch").value.trim(), private: v("spPriv").checked, ftp: v("spFtp").checked, message: v("spMsg").value.trim() });
+              v("spTok").value = ""; v("spForget").disabled = false;
+              v("spOut").innerHTML = (r.nothing ? "✓ nothing changed since the last publish - " : `✓ ${r.created ? "the repository made, " : ""}${r.sent} file(s) sent, ${r.kept} the same${r.removed ? `, ${r.removed} taken out` : ""} - `) + `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.owner + "/" + r.repo)}</a> (${esc(r.branch)})`;
+              say(`⤴ "${name}" published to GitHub - ${r.owner}/${r.repo}${r.nothing ? " (nothing changed)" : ` (${r.sent} file(s))`}`);
+              if (root.H3TestEvent) { try { root.H3TestEvent("site_publish", r.repo); } catch (e) { /* the 🧪 list */ } }
+            } catch (e) { v("spOut").textContent = "✗ " + e.message; }
+            ok.disabled = false;
+          };
+        } });
+    }
     E.ui.addCmd("file.website", "🌐 Build Website…", "", dialog, { enabled: () => !!S.w }, ["File", "file.tplsave"]);
-    E.site = { collect, build, dialog, pageSpec };
+    E.ui.addCmd("file.sitepub", "⤴ Publish Website to GitHub…", "", () => publishDialog(), {}, ["File", "file.website"]);
+    E.site = { collect, build, dialog, pageSpec, publishDialog };
   }
   const PCSite = Object.assign({ install }, pure);
   root.PCSite = PCSite;
