@@ -14433,6 +14433,13 @@ node scripts/test-854.js > /tmp/t854.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui854-ui.js > /tmp/ui854.log 2>&1 \
   && ok "2.854.0 browser test: the publish box with the site's settings, what it sends, the link back, ✕ forgets the token, the Web ribbon" \
   || { bad "2.854.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui854.log | head -12; }
+# ---- 2.855.0 (🟧 the Blender skills: ✨ Model with AI + 🧰 Blender tools)
+node scripts/test-855.js > /tmp/t855.log 2>&1 \
+  && ok "2.855.0 🟧 Blender skills: the sheets, routing, the script check, on a copy, the LLM's fixes (3 tries), QA, the tools' arguments, Blender 5.2+" \
+  || { bad "2.855.0 units"; grep -a "^FAIL" -A1 /tmp/t855.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui855-ui.js > /tmp/ui855.log 2>&1 \
+  && ok "2.855.0 browser test: the 🟧 ▾ items, the Download box, the script shown before ▶ Run, the result + 🟧 Open, the tools" \
+  || { bad "2.855.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui855.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

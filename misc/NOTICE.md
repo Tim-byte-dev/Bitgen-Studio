@@ -85,6 +85,13 @@ Installed by `npm` with the rest of the server's packages (not copied into the r
 | `nodemailer` (nodemailer/nodemailer) | builds and sends email over the user's own SMTP server | MIT-0 |
 | `hoodiecrow-imap` (postalsys/hoodiecrow-imap) | a stand-in IMAP + SMTP server for the tests only (a devDependency - never run by the app) | MIT |
 
+## 🟧 Blender skills (2.855.0)
+
+`blender/skills/` is the `skills/` folder of [blender-skills](https://github.com/EL4CTEO/blender-skills) (commit 9e7e04a,
+MIT, `blender/skills/LICENSE`): the SKILL.md sheets are given to the LLM for ✨ Model with AI, and its scripts are the 🧰
+Blender tools (LODs, UV packing, baking, export, toon, time of day, weather, turntable, QA). They run in your own Blender
+(5.2 or newer), headless, on a copy of the scene.
+
 ## What is downloaded and run, not shipped
 
 | Tool | Role | Where it comes from |

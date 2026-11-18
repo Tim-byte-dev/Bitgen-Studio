@@ -6212,6 +6212,13 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - inc/config.php 和 README.txt 留在这台电脑上；仓库中放入 inc/config.sample.php、.gitignore 和 DEPLOY.md。
 - 由主机部署：Plesk ▸ Git 拉取到 httpdocs，或勾选 📤 FTP 使用 GitHub Actions 工作流。在服务器上一次：把 inc/config.sample.php 复制为 inc/config.php。
 
+## 🟧 Blender——Blender 技能（2.855.0）
+<!-- en: blender-the-blender-skills-2-855-0 491d672e176b -->
+
+- **✨ 用 AI 建模…**（🟧 ▾ 菜单、文件 ▸ 🟧）：说明要做什么，**✍ 编写脚本**（LLM 借助 Blender 技能表），阅读 / 修改后 **▶ 在副本上运行**——用你的 Blender（5.2+）生成新场景，错误由 LLM 修复（最多 3 次），预览 + QA，**🟧 作为 Blender 图层打开**。
+- **🧰 Blender 工具…**：LOD、UV 打包、烘焙贴图、为 Unreal / Unity / Godot 导出、卡通风格、时间段、天气、转台、QA——在打开场景的副本上运行。
+- Blender 低于 5.2 时会弹出带 ⬇ 下载的提示框。技能来自 EL4CTEO 的 blender-skills（MIT）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

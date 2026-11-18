@@ -96,6 +96,8 @@
       { k: "import", label: "⤒ Import model…", off: !x.has, tip: x.has ? "A .glb / .gltf into the open scene" : "open a scene first" }];
     const rc = (x.recent || []).slice(0, 5);
     if (rc.length) { it.push({ sep: true }, { head: "Recent" }); rc.forEach((p, i) => it.push({ k: "recent", path: p, label: `${i + 1}  ${base(p)}` })); }
+    if (x.ai) it.push({ sep: true }, { k: "ai", label: "✨ Model with AI…", tip: "Say what to make - the LLM writes a Blender script (shown first) with the Blender skills, it runs on a copy and opens as a Blender layer" },
+      { k: "skilltools", label: "🧰 Blender tools…", off: !x.has, tip: x.has ? "LODs, UV pack, bake, export for a game engine, toon, time of day, weather, turntable, QA - on a copy of the open scene" : "open a scene first" });   // 2.855.0 (pcblendai.js)
     it.push({ sep: true });
     if (x.open) it.push({ k: "close", label: "✕ Close the scene tools", tip: "The view stays on its Blender layer" });
     else if (x.layer) it.push({ k: "tools", label: "🟧 Scene tools - " + x.layer, tip: "Open the picked Blender layer's scene again" });
@@ -441,7 +443,7 @@
     function menu(at) {
       if (menuEl) { closeMenu(); return; }
       const has = open && !!sceneInfo(), L = cur();
-      const items = menuItems({ open, has, layer: L ? L.name : "", recent: recent() });
+      const items = menuItems({ open, has, layer: L ? L.name : "", recent: recent(), ai: !!E.blendAi });
       menuEl = doc.createElement("div"); menuEl.id = "kblMenu";
       menuEl.innerHTML = items.map((it) => (it.sep ? '<div class="sep"></div>' : it.head ? `<div class="hd">${esc(it.head)}</div>`
         : `<button type="button" data-k="${esc(it.k)}"${it.path ? ` data-p="${esc(it.path)}"` : ""}${it.off ? " disabled" : ""} title="${esc(it.tip || it.path || "")}">${esc(it.label)}</button>`)).join("");
@@ -453,6 +455,7 @@
         const k = b.dataset.k, p = b.dataset.p; closeMenu();
         if (k === "new") newScene(); else if (k === "open") openDialog(); else if (k === "save") saveScene(); else if (k === "import") importModel();
         else if (k === "recent") openFile(p); else if (k === "tools") start(); else if (k === "close") leave();
+        else if (k === "ai" && E.blendAi) E.blendAi.model(); else if (k === "skilltools" && E.blendAi) E.blendAi.tools();
       });
       const off = (e) => { if (menuEl && (menuEl.contains(e.target) || at.contains(e.target))) return; closeMenu(); doc.removeEventListener("pointerdown", off, true); };
       root.setTimeout(() => doc.addEventListener("pointerdown", off, true), 0);
@@ -473,7 +476,7 @@
     paint();
     E.ui.addCmd("file.blendnew", "🟧 New Blender Scene…", "", () => newScene(), {}, ["File", null, true]);
     E.ui.addCmd("file.blendopen", "🟧 Open Blender Scene…", "", () => openDialog(), {}, ["File", "file.blendnew"]);
-    E.blendLayer = { menu: (at) => menu(at || $("kblBtn")), closeMenu, newScene, openFile, openDialog, saveScene, importModel, recent, remember,
+    E.blendLayer = { sceneInfo, menu: (at) => menu(at || $("kblBtn")), closeMenu, newScene, openFile, openDialog, saveScene, importModel, recent, remember,
       isCurrent: () => !!cur(), current: cur, start, leave, putView, isOpen: () => open, keepView, editFromScene, generateFromScene, followPick, reference, paint, wrap, target: () => target };
   }
 

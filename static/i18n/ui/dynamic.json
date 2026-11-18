@@ -11591,6 +11591,58 @@
    "src": "ext/imageeditdock/pcbgi.js:302"
   },
   {
+   "s": "Open as a Blender layer",
+   "src": "ext/imageeditdock/pcblendai.js:27"
+  },
+  {
+   "s": "QA: ✓ passed",
+   "src": "ext/imageeditdock/pcblendai.js:36"
+  },
+  {
+   "s": "Skill",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "Auto - bitGen picks the skill",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "Write the script",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "e.g. a ceramic coffee mug with a handle, glossy blue glaze",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "the script comes here - read it, change it if you like, then ▶ Run on a copy",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "The LLM writes a Blender script with the Blender skills; you see it before it runs. It runs on a copy of an empty scene - the result is a new scene",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "s": "say what to make first",
+   "src": "ext/imageeditdock/pcblendai.js:52"
+  },
+  {
+   "s": "the LLM is writing the script",
+   "src": "ext/imageeditdock/pcblendai.js:53"
+  },
+  {
+   "s": "Write the script first",
+   "src": "ext/imageeditdock/pcblendai.js:61"
+  },
+  {
+   "s": "Blender is building it on a copy",
+   "src": "ext/imageeditdock/pcblendai.js:62"
+  },
+  {
+   "s": "Tool",
+   "src": "ext/imageeditdock/pcblendai.js:82"
+  },
+  {
    "s": "The view as shown (instant)",
    "src": "ext/imageeditdock/pcblendlayer.js:47"
   },
@@ -11619,100 +11671,112 @@
    "src": "ext/imageeditdock/pcblendlayer.js:96"
   },
   {
-   "s": "Close the scene tools",
+   "s": "Model with AI",
+   "src": "ext/imageeditdock/pcblendlayer.js:99"
+  },
+  {
+   "s": "Say what to make - the LLM writes a Blender script (shown first) with the Blender skills, it runs on a copy and opens as a Blender layer",
+   "src": "ext/imageeditdock/pcblendlayer.js:99"
+  },
+  {
+   "s": "Blender tools",
    "src": "ext/imageeditdock/pcblendlayer.js:100"
+  },
+  {
+   "s": "Close the scene tools",
+   "src": "ext/imageeditdock/pcblendlayer.js:102"
   },
   {
    "s": "The view stays on its Blender layer",
-   "src": "ext/imageeditdock/pcblendlayer.js:100"
+   "src": "ext/imageeditdock/pcblendlayer.js:102"
   },
   {
    "s": "Open the picked Blender layer's scene again",
-   "src": "ext/imageeditdock/pcblendlayer.js:101"
+   "src": "ext/imageeditdock/pcblendlayer.js:103"
   },
   {
    "s": "Blender",
-   "src": "ext/imageeditdock/pcblendlayer.js:137"
+   "src": "ext/imageeditdock/pcblendlayer.js:139"
   },
   {
    "s": "The Blender scene tools come with the timeline docker (its 🟧 tool) - it is not loaded here",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Blender layer",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Edit from",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Scene strength",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Live - pick the layer = its scene",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Blender mode: pick this layer, type in the prompt docker, ✨ Generate (the scene + the prompt + the References docker's pictures) or ▾ Edit / Refine - each result comes in as a new layer above it",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Generate with a picture style (SDXL, FLUX …): how much of the scene it redraws - low keeps the scene, high makes it new",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Picking a Blender layer opens its scene again (live); picking another layer closes the tools and the layer keeps the view",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "the scene becomes a Blender layer when it is open",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "no Blender layer picked - 🟧 makes one",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "Scene tools",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "s": "The .blend file",
-   "src": "ext/imageeditdock/pcblendlayer.js:395"
+   "src": "ext/imageeditdock/pcblendlayer.js:397"
   },
   {
    "s": "C:\\scenes\\room.blend",
-   "src": "ext/imageeditdock/pcblendlayer.js:395"
+   "src": "ext/imageeditdock/pcblendlayer.js:397"
   },
   {
    "s": "Open a Blender scene",
-   "src": "ext/imageeditdock/pcblendlayer.js:396"
+   "src": "ext/imageeditdock/pcblendlayer.js:398"
   },
   {
    "s": "Blender scenes",
-   "src": "ext/imageeditdock/pcblendlayer.js:396"
+   "src": "ext/imageeditdock/pcblendlayer.js:398"
   },
   {
    "s": "Blender makes an empty scene - a ground, the sun and a camera - in the project's blender/scenes folder, and the scene tools open it",
-   "src": "ext/imageeditdock/pcblendlayer.js:400"
+   "src": "ext/imageeditdock/pcblendlayer.js:402"
   },
   {
    "s": "From the project",
-   "src": "ext/imageeditdock/pcblendlayer.js:416"
+   "src": "ext/imageeditdock/pcblendlayer.js:418"
   },
   {
    "s": "The model goes into the open scene, 1 m tall, on the ground where the view looks - move it with G / R / S",
-   "src": "ext/imageeditdock/pcblendlayer.js:416"
+   "src": "ext/imageeditdock/pcblendlayer.js:418"
   },
   {
    "s": "no .glb / .gltf models yet -",
-   "src": "ext/imageeditdock/pcblendlayer.js:416"
+   "src": "ext/imageeditdock/pcblendlayer.js:418"
   },
   {
    "s": "Blender: New scene, Open, Save, Import a model, the last 5 scenes - the scene tools open over the canvas and the view becomes a Blender layer",
-   "src": "ext/imageeditdock/pcblendlayer.js:464"
+   "src": "ext/imageeditdock/pcblendlayer.js:467"
   },
   {
    "s": "These",
@@ -15557,10 +15621,6 @@
   {
    "s": "Feather (px)",
    "src": "ext/imageeditdock/pcpen.js:645"
-  },
-  {
-   "s": "Tool",
-   "src": "ext/imageeditdock/pcpen.js:651"
   },
   {
    "s": "Brush (the current preset, size, colour)",
@@ -29029,16 +29089,64 @@
    "src": "ext/imageeditdock/pcbgi.js:295"
   },
   {
+   "p": "The Blender skills are written for Blender {0} or newer. Install it from blender.org, then pick it in Settings ▸ Blender if bitGen does not find it",
+   "src": "ext/imageeditdock/pcblendai.js:19"
+  },
+  {
+   "p": "Found: {0}",
+   "src": "ext/imageeditdock/pcblendai.js:19"
+  },
+  {
+   "p": "Try {0}1: {1}",
+   "src": "ext/imageeditdock/pcblendai.js:30"
+  },
+  {
+   "p": "{0} (the LLM fixed it - {1} tries)",
+   "src": "ext/imageeditdock/pcblendai.js:33"
+  },
+  {
+   "p": "QA: {0}",
+   "src": "ext/imageeditdock/pcblendai.js:36"
+  },
+  {
+   "p": "The LLM writes a Blender script with the Blender skills; you see it before it runs. It runs on a copy of {0} - the result is a new scene",
+   "src": "ext/imageeditdock/pcblendai.js:43"
+  },
+  {
+   "p": "Skill: {0} · ✗ bitGen will refuse it: {1} (▶ Run asks the LLM to fix it)",
+   "src": "ext/imageeditdock/pcblendai.js:55"
+  },
+  {
+   "p": "Skill: {0} · ✓ checked - only Blender's own modules, no files, no network",
+   "src": "ext/imageeditdock/pcblendai.js:55"
+  },
+  {
+   "p": "On a copy of {0} - the result is a new scene (an export goes into the project's blender/export folder)",
+   "src": "ext/imageeditdock/pcblendai.js:82"
+  },
+  {
+   "p": "{0} - Blender is working on a copy",
+   "src": "ext/imageeditdock/pcblendai.js:93"
+  },
+  {
+   "p": "{0} done - {1}",
+   "src": "ext/imageeditdock/pcblendai.js:95"
+  },
+  {
+   "p": "{0} done",
+   "src": "ext/imageeditdock/pcblendai.js:95"
+  },
+  {
    "p": "{0} in the References docker",
-   "src": "ext/imageeditdock/pcblendlayer.js:155"
+   "src": "ext/imageeditdock/pcblendlayer.js:157"
   },
   {
    "p": "sending {0}",
-   "src": "ext/imageeditdock/pcblendlayer.js:427"
+   "src": "ext/imageeditdock/pcblendlayer.js:429"
   },
   {
    "p": "{0} - Import puts it in",
-   "src": "ext/imageeditdock/pcblendlayer.js:433"
+   "src": "ext/imageeditdock/pcblendlayer.js:435"
   },
   {
    "p": "All closed profiles ({0}, holes cut out)",

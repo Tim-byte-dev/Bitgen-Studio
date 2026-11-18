@@ -9600,6 +9600,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - inc/config.php and README.txt stay on this computer; the repository gets inc/config.sample.php, .gitignore and DEPLOY.md.
 - The host deploys it: Plesk ▸ Git into httpdocs, or tick 📤 FTP for a GitHub Actions workflow. Once on the server: copy inc/config.sample.php to inc/config.php.
 
+## 🟧 Blender - the Blender skills (2.855.0)
+
+- **✨ Model with AI…** (🟧 ▾ menu, File ▸ 🟧): say what to make, **✍ Write the script** (the LLM with the Blender skill sheets), read / change it, **▶ Run on a copy** - a new scene from your Blender (5.2+), errors fixed by the LLM (3 tries), a preview + QA, **🟧 Open as a Blender layer**.
+- **🧰 Blender tools…**: LODs, UV pack, bake maps, export for Unreal / Unity / Godot, toon look, time of day, weather, turntable, QA - on a copy of the open scene.
+- Blender older than 5.2 = a box with ⬇ Download. The skills: blender-skills by EL4CTEO (MIT).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9687,6 +9693,7 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 
 ### Built into the app
 
+- **[blender-skills](https://github.com/EL4CTEO/blender-skills)** - the Blender skill sheets and scripts behind ✨ Model with AI and the 🧰 Blender tools (MIT)
 - **[three.js](https://threejs.org)** - every 3D view (MIT)
 - **[opentype.js](https://github.com/opentypejs/opentype.js)** - 3D text (MIT)
 - **[pdf.js](https://mozilla.github.io/pdf.js/)** (Mozilla) - opening PDFs in the image editor (Apache-2.0)

@@ -2,6 +2,14 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="bsk855">🟧 Blender skills: ✨ Model with AI and 🧰 Blender tools (2.855.0)</h3>
+<ul>
+  <li>The 🟧 ▾ menu (and File ▸ 🟧) has <b>✨ Model with AI…</b>: say what to make (e.g. "a ceramic coffee mug with a handle"), pick a skill or leave it on Auto, and <b>✍ Write the script</b> - the prompt docker's LLM writes a Blender script with the matching Blender skill sheet. The script is shown before anything runs; you can read and change it. bitGen checks it: only Blender's own modules, no files, no network, no programs.</li>
+  <li><b>▶ Run on a copy</b> runs it in your Blender, without a window, on a copy of the open scene (or an empty one) - the result is a NEW scene in the project's blender/scenes folder, never your original. If Blender reports an error, the LLM gets it and fixes the script (three tries at most). You see a preview, what was made and the QA check's warnings; <b>🟧 Open as a Blender layer</b> opens it.</li>
+  <li><b>🧰 Blender tools…</b> runs the skills' own tools on a copy of the open scene: 📉 LODs, 🗺 UV pack, 🔥 Bake maps, 📤 Export for a game engine (Unreal, Unity, Godot, Roblox, web), 🎨 Toon look, 🌇 Time of day, 🌧 Weather, 🔄 Turntable and ✅ QA check - each with its own settings.</li>
+  <li>The skills need <b>Blender 5.2 or newer</b>; with an older one (or none) a box says so with ⬇ Download (blender.org). The skill sheets and scripts are blender-skills by EL4CTEO (MIT), credited in Settings ▸ About.</li>
+</ul>
+
 <h3 id="pub854">⤴ Publish a website to GitHub (2.854.0)</h3>
 <ul>
   <li><b>⤴ Publish Website to GitHub…</b> (File menu, Build Website's ⤴ button, Web View's ribbon ⤴) sends the last build of a website to a GitHub repository - no git program needed. The repository is made when it is not there (🔒 private unless you untick it), named after the site; only the files that changed are sent, and files the site no longer has are taken out. Each publish is one commit with your message.</li>

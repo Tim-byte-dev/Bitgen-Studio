@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6605,
+ "count": 6620,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -61130,6 +61130,156 @@
    ],
    "where": [
     "image editor - ⤴ Publish to GitHub (2.854.0)"
+   ]
+  },
+  {
+   "s": "Open as a Blender layer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "QA: ✓ passed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Skill",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Auto - bitGen picks the skill",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Write the script",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "e.g. a ceramic coffee mug with a handle, glossy blue glaze",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "the script comes here - read it, change it if you like, then ▶ Run on a copy",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "The LLM writes a Blender script with the Blender skills; you see it before it runs. It runs on a copy of an empty scene - the result is a new scene",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "say what to make first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "the LLM is writing the script",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Write the script first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Blender is building it on a copy",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Model with AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Say what to make - the LLM writes a Blender script (shown first) with the Blender skills, it runs on a copy and opens as a Blender layer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
+   ]
+  },
+  {
+   "s": "Blender tools",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🟧 Blender skills (2.855.0)"
    ]
   }
  ]

@@ -6210,6 +6210,13 @@ Laser 面板（**Window ▸ Laser**）現在可以直接把任務傳送到機器
 - inc/config.php 和 README.txt 留在這臺電腦上；倉庫中放入 inc/config.sample.php、.gitignore 和 DEPLOY.md。
 - 由主機部署：Plesk ▸ Git 拉取到 httpdocs，或勾選 📤 FTP 使用 GitHub Actions 工作流。在伺服器上一次：把 inc/config.sample.php 複製為 inc/config.php。
 
+## 🟧 Blender——Blender 技能（2.855.0）
+<!-- en: blender-the-blender-skills-2-855-0 491d672e176b -->
+
+- **✨ 用 AI 建模…**（🟧 ▾ 選單、檔案 ▸ 🟧）：說明要做什麼，**✍ 編寫腳本**（LLM 藉助 Blender 技能表），閱讀 / 修改後 **▶ 在副本上執行**——用你的 Blender（5.2+）生成新場景，錯誤由 LLM 修復（最多 3 次），預覽 + QA，**🟧 作為 Blender 圖層開啟**。
+- **🧰 Blender 工具…**：LOD、UV 打包、烘焙貼圖、為 Unreal / Unity / Godot 匯出、卡通風格、時間段、天氣、轉檯、QA——在開啟場景的副本上執行。
+- Blender 低於 5.2 時會彈出帶 ⬇ 下載的提示框。技能來自 EL4CTEO 的 blender-skills（MIT）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 

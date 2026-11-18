@@ -5977,6 +5977,13 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - inc/config.php と README.txt はこのコンピューターに残り、リポジトリには inc/config.sample.php、.gitignore、DEPLOY.md が入ります。
 - ホストが配置します：Plesk ▸ Git で httpdocs へ、または 📤 FTP にチェックして GitHub Actions のワークフローで。サーバーで一度：inc/config.sample.php を inc/config.php にコピー。
 
+## 🟧 Blender - Blender スキル（2.855.0）
+<!-- en: blender-the-blender-skills-2-855-0 491d672e176b -->
+
+- **✨ AI でモデリング…**（🟧 ▾ メニュー、ファイル ▸ 🟧）：作るものを書き、**✍ スクリプトを書く**（LLM が Blender スキルシートで）、読んで / 変更して **▶ コピーで実行** - あなたの Blender（5.2 以降）で新しいシーンを作成、エラーは LLM が修正（3 回まで）、プレビュー + QA、**🟧 Blender レイヤーとして開く**。
+- **🧰 Blender ツール…**：LOD、UV パック、マップのベイク、Unreal / Unity / Godot 向けエクスポート、トゥーン、時間帯、天候、ターンテーブル、QA - 開いているシーンのコピーで。
+- Blender が 5.2 より古い場合は ⬇ ダウンロード付きのボックス。スキル：EL4CTEO の blender-skills（MIT）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 

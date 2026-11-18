@@ -280,6 +280,11 @@
       "title": "Built into the app",
       "items": [
         {
+          "name": "blender-skills",
+          "url": "https://github.com/EL4CTEO/blender-skills",
+          "what": "the Blender skill sheets and scripts behind ✨ Model with AI and the 🧰 Blender tools (MIT)"
+        },
+        {
           "name": "three.js",
           "url": "https://threejs.org",
           "what": "every 3D view (MIT)"
