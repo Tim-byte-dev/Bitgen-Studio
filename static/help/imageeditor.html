@@ -2,6 +2,15 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="tpl841">✅ 🧾 Templates: invoices, quotes and receipts (2.841.0)</h3>
+<ul>
+  <li><b>File ▸ 🧾 New From Template…</b> opens a copy of a template: the built-in <b>Invoice</b>, <b>Quote</b> or <b>Receipt</b> (A4, ready to fill), or one of your own. The <b>🧾 Fill</b> box comes up with its fields, your own details remembered per template, and the line items (＋ Item).</li>
+  <li><b>✨ Ask the AI</b> in the box ("3 hours of logo design at $90 and hosting $20 for Acme, due in 7 days") fills it in. bitGen works out every amount, the subtotal, the tax and the total itself, never the LLM. It also gives the next number (INV-0001, INV-0002 … counted per template) and today's date and due date. <b>🧾 Fill</b> puts it in, one undo.</li>
+  <li>Or just say it in the prompt docker: "make an invoice for Acme for 3 hours of design at $90". Your newest template of that kind opens (or the built-in one) and is filled.</li>
+  <li><b>Your own template:</b> lay out any document (your logo, pictures, WP text, text layers) and type <code>{{fields}}</code> where the words go - <code>{{client_name}}</code>, <code>{{from_address}}</code>, <code>{{notes}}</code> … For line items, use a table row of <code>{{item.description}}</code> <code>{{item.qty}}</code> <code>{{item.price}}</code> <code>{{item.amount}}</code>. bitGen fills <code>{{number}}</code>, <code>{{date}}</code>, <code>{{due_date}}</code>, <code>{{subtotal}}</code>, <code>{{tax_rate}}</code>, <code>{{tax}}</code> and <code>{{total}}</code>. Then <b>File ▸ 💾 Save as Template…</b> (its kind, number prefix, tax %, currency, days until due).</li>
+  <li>Export the filled document with File ▸ Export (PDF or Word) as usual.</li>
+</ul>
+
 <h3 id="docxpics840">✅ Word files open with their pictures, a WP frame's edges are its margins (2.840.0)</h3>
 <ul>
   <li><b>File ▸ 📂 Open Word Document (.docx)</b> now brings the pictures in. Each one is a figure at its place in the text, with its alt text as the caption. It can be dragged, put beside the text, and goes back into Word on export. Pictures a browser cannot draw (EMF / WMF) are still left out.</li>

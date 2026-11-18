@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6174,
+ "count": 6186,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56893,6 +56893,114 @@
    ],
    "where": [
     "Image editor WP margins (2.840.0)"
+   ]
+  },
+  {
+   "s": "🧾 New From Template…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 Fill This Template…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "💾 Save as Template…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 New From Template",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "💾 Save as Template",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 Fill",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 Fill Invoice",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 Fill Quote",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "🧾 Fill Receipt",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "✨ Fill in",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "✨ Ask the AI",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "＋ Item",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor templates (2.841.0)"
    ]
   }
  ]

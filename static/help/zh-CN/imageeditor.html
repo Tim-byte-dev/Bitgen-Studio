@@ -1,7 +1,16 @@
-<!-- en: imageeditor b935f3d39807 -->
+<!-- en: imageeditor 4561bace4065 -->
 <h1>图像编辑器</h1>
 
 <p>编辑器的布局、工具和快捷键。</p>
+
+<h3 id="tpl841">✅ 🧾 模板：发票、报价单和收据（2.841.0）</h3>
+<ul>
+  <li><b>文件 ▸ 🧾 从模板新建…</b> 打开模板的副本：内置的<b>发票</b>、<b>报价单</b>或<b>收据</b>（A4，直接填写），或你自己的模板。<b>🧾 填写</b>框随即打开，列出字段、按模板记住的你的信息以及明细行（＋ 明细）。</li>
+  <li>在框中 <b>✨ 让 AI 填写</b>（“给 Acme：Logo 设计 3 小时 $90，主机 $20，7 天内付款”）即可填好。每项金额、小计、税额和总计都由 bitGen 自己计算，而不是 LLM。它还会给出下一个编号（INV-0001、INV-0002……按模板连续编号）以及今天的日期和到期日。<b>🧾 填写</b>即写入，一步撤销。</li>
+  <li>也可以直接在提示词停靠栏说：“给 Acme 开一张设计 3 小时 $90 的发票”。会打开你该类型最新的模板（或内置模板）并填写。</li>
+  <li><b>你自己的模板：</b>排版任意文档（你的标志、图片、WP 文字、文字图层），在需要填写的地方输入 <code>{{fields}}</code>——<code>{{client_name}}</code>、<code>{{from_address}}</code>、<code>{{notes}}</code>……明细使用一行表格：<code>{{item.description}}</code> <code>{{item.qty}}</code> <code>{{item.price}}</code> <code>{{item.amount}}</code>。<code>{{number}}</code>、<code>{{date}}</code>、<code>{{due_date}}</code>、<code>{{subtotal}}</code>、<code>{{tax_rate}}</code>、<code>{{tax}}</code>、<code>{{total}}</code> 由 bitGen 填写。然后 <b>文件 ▸ 💾 另存为模板…</b>（类型、编号前缀、税率、货币、付款天数）。</li>
+  <li>填写好的文档照常用 文件 ▸ 导出（PDF 或 Word）导出。</li>
+</ul>
 
 <h3 id="docxpics840">✅ 打开 Word 文件时带上图片，WP 框架的边缘就是页边距（2.840.0）</h3>
 <ul>

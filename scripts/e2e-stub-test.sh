@@ -14323,6 +14323,13 @@ node scripts/test-840.js > /tmp/t840.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui840-ui.js > /tmp/ui840.log 2>&1 \
   && ok "2.840.0 browser test: a .docx's picture at its place, a frame edge dragged = its margin (undo), the bottom edge, WP Margins typed in mm" \
   || { bad "2.840.0 docx pictures + WP margins browser test"; grep -a "^FAIL" -A1 /tmp/ui840.log | head -12; }
+# ---- 2.841.0 (Tim: "allow user to create a template in image editor so user can create invoices, user can talk to llm or type invoice needs")
+node scripts/test-841.js > /tmp/t841.log 2>&1 \
+  && ok "2.841.0 pcdoctpl fieldsOf / totals / money / fillHtml / builtin, lib/docTemplates save / numbers / meta / fillPlan, the wiring" \
+  || { bad "2.841.0 templates units"; grep -a "^FAIL" -A1 /tmp/t841.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui841-ui.js > /tmp/ui841.log 2>&1 \
+  && ok "2.841.0 browser test: the built-in Invoice, ✨ Ask the AI, Fill (sums, INV-0001), undo, Save as Template, an invoice from the prompt docker" \
+  || { bad "2.841.0 templates browser test"; grep -a "^FAIL" -A1 /tmp/ui841.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

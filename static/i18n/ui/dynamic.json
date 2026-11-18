@@ -12627,6 +12627,82 @@
    "src": "ext/imageeditdock/pcdoctext.js:702"
   },
   {
+   "s": "Ask the AI",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Fill in",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Number",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Date",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Tax %",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Description",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Qty",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Item",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "e.g. 3 hours of logo design at $90 and hosting $20 for Acme Pty Ltd, due in 7 days",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "s": "Invoice (built in)",
+   "src": "ext/imageeditdock/pcdoctpl.js:184"
+  },
+  {
+   "s": "Quote (built in)",
+   "src": "ext/imageeditdock/pcdoctpl.js:184"
+  },
+  {
+   "s": "Receipt (built in)",
+   "src": "ext/imageeditdock/pcdoctpl.js:184"
+  },
+  {
+   "s": "Your own: lay out any document with {{fields}} and an item row ({{item.description}} {{item.qty}} {{item.price}} {{item.amount}}), then File ▸ 💾 Save as Template",
+   "src": "ext/imageeditdock/pcdoctpl.js:186"
+  },
+  {
+   "s": "Delete this template",
+   "src": "ext/imageeditdock/pcdoctpl.js:186"
+  },
+  {
+   "s": "Numbers start",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
+   "s": "Currency",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
+   "s": "Due in (days)",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
+   "s": "No {{fields}} in the words yet - type e.g. {{client_name}} where the filled-in words go. · an item row",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
+   "s": "No {{fields}} in the words yet - type e.g. {{client_name}} where the filled-in words go",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
    "s": "docx",
    "src": "ext/imageeditdock/pcdocx.js:302"
   },
@@ -12929,10 +13005,6 @@
   {
    "s": "Newsprint",
    "src": "ext/imageeditdock/pcdtpout.js:631"
-  },
-  {
-   "s": "Description",
-   "src": "ext/imageeditdock/pcfileplus.js:112"
   },
   {
    "s": "Copyright",
@@ -19347,10 +19419,6 @@
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
   {
-   "s": "Date",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:56"
-  },
-  {
    "s": "Revision",
    "src": "ext/pushpulldock/ppsheetsdlg.js:56"
   },
@@ -20153,10 +20221,6 @@
   {
    "s": "R (rand)",
    "src": "ext/sheetdock/sheetfmt.js:338"
-  },
-  {
-   "s": "Number",
-   "src": "ext/sheetdock/sheetfmtdlg.js:27"
   },
   {
    "s": "Alignment",
@@ -28187,6 +28251,18 @@
   {
    "p": "{0} document(s) have changes that are not saved: {1}",
    "src": "ext/imageeditdock/pcdocs.js:343"
+  },
+  {
+   "p": "{0} (next)",
+   "src": "ext/imageeditdock/pcdoctpl.js:139"
+  },
+  {
+   "p": "Fields found: {0} · an item row",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
+  },
+  {
+   "p": "Fields found: {0}",
+   "src": "ext/imageeditdock/pcdoctpl.js:195"
   },
   {
    "p": "{0} paragraphs / tables",

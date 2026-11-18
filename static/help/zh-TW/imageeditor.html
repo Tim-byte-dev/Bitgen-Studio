@@ -1,7 +1,16 @@
-<!-- en: imageeditor b935f3d39807 -->
+<!-- en: imageeditor 4561bace4065 -->
 <h1>影像編輯器</h1>
 
 <p>編輯器的佈局、工具和快捷鍵。</p>
+
+<h3 id="tpl841">✅ 🧾 範本：發票、報價單和收據（2.841.0）</h3>
+<ul>
+  <li><b>檔案 ▸ 🧾 從範本新建…</b> 開啟範本的副本：內建的<b>發票</b>、<b>報價單</b>或<b>收據</b>（A4，直接填寫），或你自己的範本。<b>🧾 填寫</b>框隨即開啟，列出欄位、按範本記住的你的資訊以及明細行（＋ 明細）。</li>
+  <li>在框中 <b>✨ 讓 AI 填寫</b>（“給 Acme：Logo 設計 3 小時 $90，主機 $20，7 天內付款”）即可填好。每項金額、小計、稅額和總計都由 bitGen 自己計算，而不是 LLM。它還會給出下一個編號（INV-0001、INV-0002……按範本連續編號）以及今天的日期和到期日。<b>🧾 填寫</b>即寫入，一步復原。</li>
+  <li>也可以直接在提示詞停靠欄說：“給 Acme 開一張設計 3 小時 $90 的發票”。會開啟你該類型最新的範本（或內建範本）並填寫。</li>
+  <li><b>你自己的範本：</b>排版任意文件（你的標誌、圖片、WP 文字、文字圖層），在需要填寫的地方輸入 <code>{{fields}}</code>——<code>{{client_name}}</code>、<code>{{from_address}}</code>、<code>{{notes}}</code>……明細使用一行表格：<code>{{item.description}}</code> <code>{{item.qty}}</code> <code>{{item.price}}</code> <code>{{item.amount}}</code>。<code>{{number}}</code>、<code>{{date}}</code>、<code>{{due_date}}</code>、<code>{{subtotal}}</code>、<code>{{tax_rate}}</code>、<code>{{tax}}</code>、<code>{{total}}</code> 由 bitGen 填寫。然後 <b>檔案 ▸ 💾 另存新檔範本…</b>（類型、編號字首、稅率、貨幣、付款天數）。</li>
+  <li>填寫好的文件照常用 檔案 ▸ 匯出（PDF 或 Word）匯出。</li>
+</ul>
 
 <h3 id="docxpics840">✅ 開啟 Word 檔案時帶上圖片，WP 框架的邊緣就是頁邊距（2.840.0）</h3>
 <ul>

@@ -9513,6 +9513,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **File ▸ 📂 Open Word Document (.docx)** brings the pictures in, each a figure at its place in the text (alt text = caption).
 - Drag a **WP frame's edge** (Move or Document Text tool) to change that margin for the whole story - shown in mm while dragging; one undo. **Layer ▸ 📏 WP Margins…** types them in mm; the Word export uses them.
 
+## 🧾 Image editor - templates: invoices, quotes and receipts (2.841.0)
+
+- **File ▸ 🧾 New From Template…**: the built-in Invoice / Quote / Receipt or your own; the **🧾 Fill** box (fields, items, ✨ Ask the AI). bitGen works out the amounts, tax and total and numbers each one (INV-0001 …).
+- Or in the prompt docker: "make an invoice for Acme for 3 hours of design at $90".
+- Your own: any document with `{{fields}}` and a table row of `{{item.description}} {{item.qty}} {{item.price}} {{item.amount}}`, then **File ▸ 💾 Save as Template…**.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

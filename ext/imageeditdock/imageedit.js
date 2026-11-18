@@ -3039,6 +3039,7 @@
     if (win.PCDocAi && win.PCDocAi.install) win.PCDocAi.install(E);   // 2.837.0: ✨ the LLM writes a document into the WP layer (tables in the text, charts / pictures as layers in its group)
     if (win.PCDocFig && win.PCDocFig.install) win.PCDocFig.install(E);   // 2.839.0: a document's figures dragged to a new place in the text, beside the text (wrap)
     if (win.PCDocMargins && win.PCDocMargins.install) win.PCDocMargins.install(E);   // 2.840.0: a WP frame's edges dragged = the page margins; Layer ▸ 📏 WP Margins…
+    if (win.PCDocTpl && win.PCDocTpl.install) win.PCDocTpl.install(E);   // 2.841.0: 🧾 document templates - invoices / quotes / receipts filled by a form or the LLM
     if (win.PCShadowTool && win.PCShadowTool.install) win.PCShadowTool.install(E);
     if (win.PCTransp && win.PCTransp.install) win.PCTransp.install(E);   // 2.830.0: the transparency gradient + the fade sliders on the gradient lines   // 2.829.0: the interactive Drop Shadow tool (press in a layer, drag)
     if (win.PCCadBar && win.PCCadBar.install) win.PCCadBar.install(E);     // 2.470.0: the CAD toolbar along the top (static/cadbar.js)

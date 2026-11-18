@@ -126,6 +126,7 @@ function mount(app) {
   require("./sheets").mount(app);      // 2.822.0: ▦ Spreadsheet - workbooks (.bgs) in projects/<p>/sheets
   require("./slides").mount(app);      // 2.831.0: 🎞 Slides - decks (.bgk) in projects/<p>/slides, .pptx in / out, PDF kept
   require("./docAi").mount(app);       // 2.837.0: 📄 ✨ a document by the LLM into a WP layer (lib/docAi.js) - before the 100 KB json parser
+  require("./docTemplates").mount(app);   // 2.841.0: 🧾 the image editor's document templates (lib/docTemplates.js) - before the 100 KB json parser
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);
