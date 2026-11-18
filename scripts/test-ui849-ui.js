@@ -74,9 +74,10 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => window.imageEditorInstance.E.create.make({ kind: "card", ask: "a card for Dr Jane Lee" }));
     const cd = await ev(() => { const E = window.imageEditorInstance.E; return { n: E.pages.count(), names: E.pages.list().map((p) => p.name), w: E.S.w, h: E.S.h, front: E.S.layers.filter((l) => l.type === "text").map((l) => l.text.str) }; });
     check("💳 Business card: 90 × 55 mm at 300 dpi, Front + Back pages, the name and contact on the front", cd.n === 2 && cd.names.join() === "Front,Back" && cd.w === 1063 && cd.h === 650 && cd.front.includes("Dr Jane Lee"), cd);
+    // 2.852.0: ✨ Create ▸ 🌐 Website opens 🌐 Build Me a Website (the whole site - test-ui852-ui.js) with the words
     const msg = await ev(() => window.imageEditorInstance.E.create.make({ kind: "website", ask: "a dentist's website" }));
-    const ws = await ev(() => { const E = window.imageEditorInstance.E; return { n: E.pages.count(), names: E.pages.list().map((p) => p.name), w: E.S.w, view: E.views && E.views.current(), hero: E.S.layers.some((l) => l.text && l.text.str === "Gentle dental care") }; });
-    check("🌐 Website: Web View, a 1440 px web page per planned page named from the menu (Home, Contact), the hero's heading as text; the line says 🌐 Build Website next", ws.n === 2 && ws.names.join() === "Home,Contact" && ws.w === 1440 && ws.view === "web" && ws.hero && /Build Website/.test(msg), { ws, msg });
+    const ws = await ev(() => { const d = document.querySelector(".kxdlg.pcd"); const r = d ? { t: d.querySelector("h4").textContent, ask: (d.querySelector("#pwaAsk") || {}).value } : null; if (d) d.querySelector(".cn").click(); return r; });
+    check("🌐 Website: ✨ Create hands it to 🌐 Build Me a Website - its box opens with the words", ws && /Build Me a Website/.test(ws.t) && ws.ask === "a dentist's website" && /Build Me a Website/.test(msg), { ws, msg });
     check("no page errors", !errs.length, errs);
   } catch (e) { fail++; console.log("FAIL: " + (e.stack || e) + "\n      page errors: " + JSON.stringify(errs).slice(0, 600)); }
   finally { await b.close(); }

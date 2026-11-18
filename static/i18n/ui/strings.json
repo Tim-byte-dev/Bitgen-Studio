@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6553,
+ "count": 6574,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -60610,6 +60610,216 @@
    ],
    "where": [
     "image editor - 🟧 ▾ menu / Properties / table align (2.851.0)"
+   ]
+  },
+  {
+   "s": "Shop (products, cart, checkout)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "🛒 Shop (products, cart, checkout)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "📅 Booking calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Contact form",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "✉ Contact form",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Pictures - the prompt docker's image style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "🖼 Pictures - the prompt docker's image style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "The AI makes each page responsive",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "✨ The AI makes each page responsive",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Build the site when the pictures are in",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "⚡ Build the site when the pictures are in",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "The prompt docker's LLM plans the pages, words and colours (and the shop's products / the booking services); bitGen lays every page out as layers you can change, makes the pictures one at a time and builds the site - PHP + MySQL when it sells, takes bookings or has a contact form (with its 🔐 admin area), else plain HTML",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build Me a Website…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Build Me a Website…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build Me a Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Build Me a Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "■ Stop the Website Builder",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "🌐 Build it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "What the business is and what the site should do - its name, what it sells or offers, prices, opening hours, phone / email / address. e.g. A website for Rosie's Bakery in Fremantle: sourdough, pastries and celebration cakes, order cakes online, open 7am-3pm Tue-Sun, 0412 345 678",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Contact details",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🌐 Build Me a Website (2.852.0)"
    ]
   }
  ]

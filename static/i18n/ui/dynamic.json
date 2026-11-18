@@ -12376,35 +12376,35 @@
   },
   {
    "s": "words",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "Invoice",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "Quote",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "Receipt",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "Pictures - made with the prompt docker's image style",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "90 × 55 mm at 300 dpi, front + back",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
-   "src": "ext/imageeditdock/pccreate.js:193"
+   "src": "ext/imageeditdock/pccreate.js:195"
   },
   {
    "s": "Distance from the walls (px)",
@@ -16320,43 +16320,43 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "s": "Two points",
@@ -18669,6 +18669,34 @@
   {
    "s": "A face guessed in the middle - the ☺ Face tool (A) puts it where the face is",
    "src": "ext/imageeditdock/pcwarp.js:603"
+  },
+  {
+   "s": "Shop (products, cart, checkout)",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "Booking calendar",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "Contact form",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "Pictures - the prompt docker's image style",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "The AI makes each page responsive",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "Build the site when the pictures are in",
+   "src": "ext/imageeditdock/pcwebai.js:194"
+  },
+  {
+   "s": "The prompt docker's LLM plans the pages, words and colours (and the shop's products / the booking services); bitGen lays every page out as layers you can change, makes the pictures one at a time and builds the site - PHP + MySQL when it sells, takes bookings or has a contact form (with its 🔐 admin area), else plain HTML",
+   "src": "ext/imageeditdock/pcwebai.js:194"
   },
   {
    "s": "One box at a time",
@@ -29274,7 +29302,7 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:104"
+   "src": "ext/imageeditdock/pcsite.js:112"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

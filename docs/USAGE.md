@@ -9582,6 +9582,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - No Blender or ✨ AI tab: a Blender layer's settings are at the foot of Properties; Generate / Edit / Inpaint / Outpaint are in the prompt docker; Window ▸ ⏳ Pending shows the results.
 - A picked table aligns with ⯇ ↔ ⯈, Ctrl+L / E / R or the align buttons. Properties shows in WP View; the Comments list closes with ✕; the Calendar Settings dialog fits its fields.
 
+## 🌐 Websites - Build Me a Website (2.852.0)
+
+- **🌐 Build Me a Website** (File menu, Web View ✨, or "build me a website for my bakery …" in the prompt docker): say what the business is, what it sells or offers and its details; tick 🛒 Shop, 📅 Booking, ✉ Contact form, 🖼 Pictures.
+- The LLM plans the pages, words, colours, products and booking services; bitGen lays out every page as layers, makes the pictures one at a time and builds the site (PHP + MySQL with the admin area when it sells, books or has a contact form).
+- The products go into the shop's database with their pictures; change any page and 🌐 Build Website again.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

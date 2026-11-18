@@ -2,6 +2,15 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="webai852">🌐 Build Me a Website (2.852.0)</h3>
+<ul>
+  <li><b>🌐 Build Me a Website</b> (File menu, Web View's ribbon ✨, ✨ Create With the AI ▸ 🌐 Website, or "build me a website for my bakery …" in the prompt docker): say what the business is and what the site should do - its name, what it sells or offers, prices, opening hours and contact details. 🛒 Shop and 📅 Booking calendar are ticked from your words; ✉ Contact form, 🖼 Pictures, ✨ responsive pages and ⚡ Build when done are on.</li>
+  <li>The prompt docker's LLM plans the pages (Home, About, Menu / Services, Book, Contact …), their words and colours, and - when it sells or takes bookings - the shop's products and the booking services. It uses your names, prices and details and never makes up a phone number, email or address.</li>
+  <li>bitGen lays each page out as layers you can change: a coloured hero with the heading, intro, call to action and its photo, the sections with their photos, the Contact page's details, the Book page's 📅 booking calendar (with the planned services) and a footer. The pictures are made one at a time with the prompt docker's image style, then each product's picture.</li>
+  <li>Then the site is built: PHP + MySQL with the 🔐 admin area when it has a shop, bookings or a contact form, else plain HTML. The products go into the shop's database with admin-schema.sql (with their pictures), and the Contact page gets the contact form under its own words. Change any page and 🌐 Build Website again.</li>
+  <li>A plain coloured rectangle on a web page now becomes a full-width coloured band on the site (the elements on it go inside it), and things stacked one above another stay in one column.</li>
+</ul>
+
 <h3 id="fix851">🟧 The Blender menu, Properties, tables and the calendar dialog (2.851.0)</h3>
 <ul>
   <li><b>🟧 ▾ Blender</b> on the editor's top strip is now a menu: <b>🆕 New scene…</b> (Blender makes an empty scene with a ground, the sun and a camera), <b>📂 Open…</b> (a .blend), <b>💾 Save</b>, <b>⤒ Import model…</b> (a .glb / .gltf from the project or from this computer, into the open scene) and the <b>last 5 scenes</b> you opened. New scene, Open and a recent scene start Blender and open the scene tools over the canvas; the view becomes a new Blender layer. File ▸ 🟧 New / Open Blender Scene… do the same.</li>

@@ -167,6 +167,8 @@
         const r = await E.docAi.write({ ask, kind: kind === "story" ? "story" : a.docKind || "document", words: a.words || (kind === "story" ? 1500 : 800), pictures: !!a.pictures, tables: kind !== "story", charts: kind !== "story" });
         return `✨ ${kind === "story" ? "📖 the story" : "📄 the document"} "${(r && r.title) || ask.slice(0, 40)}" is written - edit it in its WP layer; File ▸ Export for Word / PDF`;
       }
+      // 2.852.0: a website = 🌐 Build Me a Website (the whole site: pages, pictures, shop, booking, the build)
+      if (kind === "website" && E.webAi) { E.webAi.dialog(ask); return "🌐 the Build Me a Website box is open with your words"; }
       say(`✨ the LLM is writing the ${kind === "card" ? "business card" : kind}…`);
       const { plan } = await api("/api/create/plan", { kind, ask });
       if (kind === "website") {

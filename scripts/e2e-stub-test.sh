@@ -14412,6 +14412,13 @@ node scripts/test-851.js > /tmp/t851.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui851-ui.js > /tmp/ui851.log 2>&1 \
   && ok "2.851.0 browser test: no AI / Blender tab, Properties everywhere, the 🟧 ▾ menu + recent files, Blender + Zones in Properties, comments ✕, table aligned, calendar dialog" \
   || { bad "2.851.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui851.log | head -12; }
+# ---- 2.852.0 (the AI website builder plan: "build me a website for my bakery")
+node scripts/test-852.js > /tmp/t852.log 2>&1 \
+  && ok "2.852.0 🌐 Build Me a Website: the plan (lib/siteAi.js), the products as SQL, the page layouts, bands + columns, the Contact page's form, the wiring" \
+  || { bad "2.852.0 units"; grep -a "^FAIL" -A1 /tmp/t852.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui852-ui.js > /tmp/ui852.log 2>&1 \
+  && ok "2.852.0 browser test: the prompt docker's ask -> the box, 4 pages laid out, pictures, the booking calendar, the site built with the shop's products + the contact form" \
+  || { bad "2.852.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui852.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

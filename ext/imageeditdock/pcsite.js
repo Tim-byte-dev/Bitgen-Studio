@@ -64,7 +64,15 @@
         let d = null; try { d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; } catch (e) { return; }
         if (i === 0 && L.type === "pixel") { const pc = plainColour(d, c.width, c.height); if (pc) { bg = pc; return; } }
         const b = alphaBox(d, c.width, c.height); if (!b || b.w < 2 || b.h < 2) return;
-        if (L.cal && L.cal.mode !== "print") { els.push({ kind: "calendar", cal: L.cal, box: sc(b) }); return; }   // 2.846.0: 📅 a booking calendar (pccalendar.js); 2.847.0 a printed one = a picture
+        if (L.cal && L.cal.mode !== "print") { els.push({ kind: "calendar", cal: L.cal, box: sc(b) }); return; }
+        // 2.852.0: a plain filled rectangle is a coloured BOX (a full-width one = a band the site's sections sit on; one as big
+        // as the page = the page's colour), not a picture; an empty photo box (🌐 Build Me a Website's placeholder) is left out
+        const sh = L.type === "shape" && L.shape, styled = !!(L.styles && Object.values(L.styles).some((x) => (Array.isArray(x) ? x.some((y) => y && y.on) : x && x.on)));
+        if (sh && sh.kind === "rect" && /^🖼 /.test(L.name || "") && (L.opacity == null ? 1 : L.opacity) < 0.5) return;
+        if (sh && sh.kind === "rect" && sh.fillOn !== false && !sh.strokeOn && !sh.fillGrad && !styled && !L.mask && (L.opacity == null || L.opacity >= 0.99) && /^#[0-9a-f]{3,8}$/i.test(sh.fill || "")) {
+          if (b.w >= W * 0.97 && b.h >= H * 0.97 && !els.length) { bg = sh.fill; return; }
+          els.push({ kind: "box", color: sh.fill, radius: Math.round((sh.radius || 0) * k), box: sc(b) }); return;
+        }   // 2.846.0: 📅 a booking calendar (pccalendar.js); 2.847.0 a printed one = a picture
         if (L.type === "text" && L.text && String(L.text.str || "").trim()) {
           const t = L.text;
           els.push({ kind: "text", text: String(t.str), size: Math.round((t.size || 16) * k), color: t.color || "#222222", bold: (t.weight || 400) >= 600 || !!t.bold, italic: !!t.italic, align: t.align || "left", font: t.font || "", box: sc(b) }); return;
@@ -86,7 +94,7 @@
       const a = o || {};
       say("🌐 gathering the pages…");
       const c = await collect();
-      await api("/api/sites/save", { name: a.name, title: a.title, stack: a.stack, lang: a.lang, admin: !!a.admin, shop: !!a.shop, pages: c.pages, assets: c.assets });
+      await api("/api/sites/save", Object.assign({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, admin: !!a.admin, shop: !!a.shop, pages: c.pages, assets: c.assets.concat(Array.isArray(a.assets) ? a.assets : []) }, a.seed ? { seed: a.seed } : {}));   // 2.852.0: + the shop's first products and their pictures (🌐 Build Me a Website)
       say(`🌐 building ${c.pages.length} page(s)` + (a.ai !== false ? " - ✨ the LLM writes each one" : "") + "…");
       const r = await api("/api/sites/build", { name: a.name, ai: a.ai !== false });
       store.set("site.last", JSON.stringify({ name: a.name, title: a.title, stack: a.stack, lang: a.lang, ai: a.ai !== false, admin: !!a.admin, shop: !!a.shop }));
