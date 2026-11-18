@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6337,
+ "count": 6414,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -58450,6 +58450,776 @@
    ],
    "where": [
     "image editor zoom - Page Width (2.845.0)"
+   ]
+  },
+  {
+   "s": "Appointments",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Meetings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Classes / group sessions",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Month name",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Weekday names",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Dates",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Available days",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Fully booked / closed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Past / other month",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Chosen day",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Times",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Taken times",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Book button",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "The calendar keeps its bookings in MySQL / MariaDB. bitGen runs its own MariaDB (GPL-2.0, from archive.mariadb.org) on this computer only - it is not installed yet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "No background",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Each booking",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "People per time",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Book up to",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "days ahead",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Notice",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "hours",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Week starts",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Time zone",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Ask for a phone number",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Ask for notes",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Visitors see the free times of each day - opening hours in steps of one booking, from the notice on, up to the days ahead - and book one with their name and email. A time is never booked twice (or more than its people per time)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close a single day on the website: a row in bg_cal_closed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Default style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "The canvas shows each change; the website's CSS is made from the same style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "This project's MariaDB",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Global MariaDB",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Your server (🗄 Database ▸ ⚙)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Make the tables now",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "in the database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "The SQL",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "The website's schema.sql has the same tables - import it on your host. The bookings: the view bg_cal_upcoming",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Load the bookings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "not in the database yet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "not made - see the status line",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "A4 document",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Letter document",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "A5 booklet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "A4 flyer (print)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "A3 poster",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Business card",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "DL leaflet",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "as it is —",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Show the margins on the page (they do not print)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Fit the WP layers to the margins",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "This page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "All pages",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Keep these settings as a template of your own (every project)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Delete the picked template of your own",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "All four the same",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "📅 Calendar Settings…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "📄 Page Properties…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "📅 Calendar (booking, for a website)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "💾 Save as template…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "✔ Keep it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "⟳ Load the bookings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "↺ Default style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Calendar",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Page Properties",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Opening hours",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Bookings",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "— as it is —",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Built in",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Your templates",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "▯ Portrait",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "▭ Landscape",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "🗄 The database server is needed",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "⤒ Make the tables now",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "📁 This project's MariaDB",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "🌐 Global MariaDB",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "🖧 Your server (🗄 Database ▸ ⚙)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "‹ › Arrows",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
+   ]
+  },
+  {
+   "s": "Template name",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 📅 Calendar / 📄 Page Properties (2.846.0)"
    ]
   }
  ]

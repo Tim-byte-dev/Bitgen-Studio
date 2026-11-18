@@ -72,7 +72,7 @@
         { label: "Header & Footer", show: 2, items: [["cmd", "page.number", "Page Numbers", "#"], ["cmd", "page.master", "Master Page", "⌂"]] },
       ] },
       { id: "layout", label: "Layout", groups: [
-        { label: "Page", show: 2, items: [["cmd", "layer.docmargins", "Margins", "📏"], ["act", "pagesetup", "Page Setup", "📐"]] },
+        { label: "Page", show: 2, items: [["cmd", "layer.docmargins", "Margins", "📏"], ["cmd", "page.props", "Page Properties", "📄"]] },
         { label: "Arrange", show: 4, items: [["cmd", "figure.full", "Figure: Full Width", "▭"], ["cmd", "figure.left", "Figure Left", "◧"], ["cmd", "figure.right", "Figure Right", "◨"], ["cmd", "flow.wrap", "Text Wrap", "⧉"], ["cmd", "figure.bigger", "Figure Bigger", "＋"], ["cmd", "figure.smaller", "Figure Smaller", "－"]] },
         { label: "Pages", show: 5, items: [["cmd", "view.pagewidth", "Page Width", "⟷"], ["cmd", "view.pages.column", "One Below Another", "▯"], ["cmd", "view.pages.one", "One Page", "▢"], ["cmd", "view.pages.two", "Two Pages", "▢▢"], ["cmd", "view.pages.many", "Many Pages", "▦"], ["cmd", "win.pages", "Pages Panel", "▤"]] },
       ] },
@@ -91,10 +91,10 @@
     ],
     web: [
       { id: "web", label: "Web", groups: [
-        { label: "Site", show: 3, items: [["act", "newsite", "New Website", "🌐"], ["act", "newpage", "Web Page", "＋"], ["cmd", "win.pages", "Pages Panel", "▤"]] },
+        { label: "Site", show: 3, items: [["act", "newsite", "New Website", "🌐"], ["act", "newpage", "Web Page", "＋"], ["cmd", "win.pages", "Pages Panel", "▤"], ["cmd", "page.props", "Page Properties", "📄"]] },
         { label: "Build", show: 3, items: [["cmd", "file.website", "Build Website", "🌐"], ["act", "quick", "Quick Preview", "⚡"], ["act", "zip", "Download .zip", "⤓"]] },
         { label: "Preview", show: 3, items: [["act", "dev:desktop", "Desktop", "🖥"], ["act", "dev:tablet", "Tablet", "▭"], ["act", "dev:phone", "Phone", "📱"], ["act", "open", "Open in the Browser", "↗"]] },
-        { label: "Content", show: 4, items: [["tool", "type", "Text", "T"], ["cmd", "layer.newdocframe", "Text Block", "📄"], ["cmd", "file.place", "Picture", "🖼"], ["tool", "shape", "Shape", "◼"], ["cmd", "layer.docai", "Write With the AI", "✨"]] },
+        { label: "Content", show: 5, items: [["act", "calendar", "Calendar", "📅"], ["tool", "type", "Text", "T"], ["cmd", "layer.newdocframe", "Text Block", "📄"], ["cmd", "file.place", "Picture", "🖼"], ["tool", "shape", "Shape", "◼"], ["cmd", "layer.docai", "Write With the AI", "✨"]] },
         { label: "Arrange", show: 2, items: [["cmd", "dk.align", "Align", "⊟"], ["cmd", "dk.transform", "Transform", "⤧"]] },
         { label: "Data", show: 1, items: [["act", "db", "Database", "🗄"]] },
       ] },
@@ -226,6 +226,7 @@
       if (a === "open") return win.open(previewUrl(), "_blank");
       if (a.startsWith("dev:")) return preview(a.slice(4), previewUrl());
       if (a === "db") return database();
+      if (a === "calendar") return E.calendar ? E.calendar.addCentre() : say("the calendar is not loaded");
       if (a === "pagesetup") return E.pages && E.pages.setupDialog ? E.pages.setupDialog() : say("pages are not loaded");
     }
 
@@ -247,6 +248,9 @@
         ribbon = root.CadBar.create(bar.parentNode, { tabs: [] }, { store, key: "ws.ribbon" });
         ribbon.el.classList.add("pcribbon"); ribbon.el.id = "pcViewRibbon";
         // the writing buttons keep the caret where it is in the WP layer (no focus taken)
+        // 2.846.0: 📅 Calendar is dragged onto the canvas (a click = the middle of the page)
+        const calDrag = () => { const b = ribbon.el.querySelector('.cbb[data-id="v_act_calendar"]'); if (b && E.calendar) E.calendar.dragSource(b, "appointments"); };
+        new win.MutationObserver(calDrag).observe(ribbon.el, { childList: true, subtree: true }); calDrag();
         ribbon.el.addEventListener("mousedown", (e) => { const b = e.target.closest && e.target.closest('.cbb[data-id^="v_fx_"]'); if (b) e.preventDefault(); });
         bar.parentNode.insertBefore(ribbon.el, bar);
         cb(ribbon);

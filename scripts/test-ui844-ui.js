@@ -65,7 +65,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     await ev(() => window.imageEditorInstance.E.docText.end());
     await p.click('#pcViewRibbon .cbtab[data-tab="layout"]'); await p.waitForTimeout(200);
     const lay = await ev(() => [...document.querySelectorAll("#pcViewRibbon .cbb .lb")].map((x) => x.textContent));
-    check("ribbon LAYOUT: Margins, Page Setup, the figure places, One Below Another", ["Margins", "Page Setup", "Figure Left", "One Below Another"].every((n) => lay.includes(n)), lay);
+    check("ribbon LAYOUT: Margins, Page Properties, the figure places, One Below Another", ["Margins", "Page Properties", "Figure Left", "One Below Another"].every((n) => lay.includes(n)), lay);
     await p.click('#pcViewRibbon .cbb[data-id="v_cmd_view_pages_two"]'); await p.waitForTimeout(500);
     check("ribbon LAYOUT ▢▢ Two Pages switches the page view", await ev(() => window.imageEditorInstance.E.pageView.mode()) === "two");
 

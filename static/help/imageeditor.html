@@ -2,6 +2,29 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="cal846">✅ ✒ Pen fix · 📄 Page Properties · 📅 Booking calendars for websites (2.846.0)</h3>
+<ul>
+  <li><b>✒ Pen</b>: a path is only closed when you click within 5 px of its first point. Until then it is a line: it is not filled, so it no longer looks closed while you draw.</li>
+  <li><b>📄 Page Properties</b> is in the File menu, the right-click menu and the WP and Web ribbons. It sets:
+    <ul>
+      <li>a <b>template</b>: built-in documents, a booklet, a flyer, a poster, a business card, a leaflet, web pages for desktop / tablet / phone, a social post or a slide, or your own (<b>💾 Save as template…</b>, 🗑)</li>
+      <li>the <b>size</b>: a paper size, or your own in mm or px, portrait or landscape</li>
+      <li>the <b>resolution</b> in dpi</li>
+      <li>the <b>margins</b> in mm. They show on the page as dashed lines that don't print, and the page's WP layers can be fitted to them.</li>
+    </ul>
+    You can apply it to this page or to all pages.</li>
+  <li><b>📅 Calendar</b> (the Web View's ribbon, or Layer ▸ New) puts a booking calendar on the page. Drag it onto the canvas, or click it to place it in the middle. Its tables (bg_calendars, bg_cal_hours, bg_cal_closed, bg_cal_bookings and the view bg_cal_upcoming) are made in the project's database straight away. If MariaDB isn't installed yet, a Download / Cancel box asks first.</li>
+  <li><b>📅 Calendar Settings</b> opens with a double-click or the right-click menu. It has five tabs:
+    <ul>
+      <li><b>General</b>: Appointments, Meetings or Classes; the length of a booking; people per time; how far ahead people can book; the notice needed; the week's first day; the time zone; language; whether to ask for a phone number and notes</li>
+      <li><b>Opening hours</b>: two ranges a day, for a break</li>
+      <li><b>Style</b>: each object type has its own font, size, colour, background, bold and corners. The types are the frame, month name, ‹ › arrows, weekday names, dates, today, available days, fully booked / closed days, past days, the chosen day, times, taken times and the Book button. Each change shows on the canvas straight away.</li>
+      <li><b>Database</b>: where the tables go, plus the SQL</li>
+      <li><b>Bookings</b>: what the website's visitors have booked</li>
+    </ul></li>
+  <li>On the website, use <b>🌐 Build Website</b> with <b>PHP + MySQL</b>. Visitors see each month, the days with free times, and a chosen day's free and taken times. They book with their name and email. The form has a check against forged posts, and a time is never booked twice (or more than its people per time). A static site shows the month only.</li>
+</ul>
+
 <h3 id="pagewidth845">✅ ⟷ Zoom to the page width (2.845.0)</h3>
 <ul>
   <li><b>⟷ Page Width</b> zooms so the page's width fills the canvas, leaving room for the rulers. It is in the Zoom tool's settings, on the top strip (⟷, beside ⤢ Fit on Screen), in <b>View ▸ Page Width</b> and on <b>Shift+Ctrl+0</b>. The WP View's Layout ribbon has it too.</li>

@@ -34,7 +34,7 @@ check("ptOf: pt / px / words", X.ptOf("12pt") === 12 && X.ptOf("16px") === 12 &&
 check("STYLES: Normal, Title, Subtitle, Heading 1-3, Quote, Code", X.STYLES.map((s) => s[1]).join() === "Normal,Title,Subtitle,Heading 1,Heading 2,Heading 3,Quote,Code");
 
 const DC = src("ext/imageeditdock/pcdoc.js"), IE = src("ext/imageeditdock/imageedit.js"), UI = src("ext/imageeditdock/pcui.js"), EX = JSON.parse(src("ext/imageeditdock/ext.json"));
-check("pcdoc: \"doc\" layers are live, kept by undo (DEEP) and drawn by PCDocText", /"bscene", "doc"\]/.test(DC) && /L\.type === "sketch" \|\| L\.type === "doc"\)/.test(DC) && /L\.type === "doc" && L\.doc && root\.PCDocText\) root\.PCDocText\.draw\(g, L\)/.test(DC));
+check("pcdoc: \"doc\" layers are live, kept by undo (DEEP) and drawn by PCDocText", /"bscene", "doc"(, "cal")?\]/.test(DC) && /L\.type === "sketch" \|\| L\.type === "doc"\)/.test(DC) && /L\.type === "doc" && L\.doc && root\.PCDocText\) root\.PCDocText\.draw\(g, L\)/.test(DC));
 check("imageedit: a doc layer moves (x / y), copies, rasterizes; PCDocText installed after PCShapeOps", /else if \(L\.type === "doc" && L\.doc\) \{ L\.doc\.x \+= dx; L\.doc\.y \+= dy; D\.rasterize\(L\); \}/.test(IE) && /"sketch", "doc"\]\) d\[k\] = D\.clone/.test(IE) && IE.indexOf("PCDocText.install(E)") > IE.indexOf("PCShapeOps.install(E)"));
 check("the Document Text tool in the T group; pcdoctext.js loaded after pcshapeops.js", /\["doctext", "Document Text Tool \(word processor\)"\]/.test(UI) && EX.scripts.indexOf("pcdoctext.js") === EX.scripts.indexOf("pcshapeops.js") + 2 && EX.scripts.indexOf("pcpickmodes.js") === EX.scripts.indexOf("pcshapeops.js") + 1);
 console.log("\nRESULT: " + pass + " passed, " + fail + " failed");

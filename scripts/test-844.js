@@ -54,8 +54,8 @@ check("pageview: setMode(m, quiet) (a view switching says nothing about one page
 check("doctext: setStyle and indent handed out (the ribbon's Styles / indents)", /E\.docText = \{[^}]*setStyle, indent/.test(DT));
 // the wiring
 const EX = JSON.parse(read("ext/imageeditdock/ext.json")), IE = read("ext/imageeditdock/imageedit.js"), VS = read("ext/imageeditdock/pcviews.js");
-check("the wiring: pcviews.js after pcsite.js, installed after the panel column docker (every panel / tab exists); its strip at the start of the top strip's right part; Window ▸ Workspace",
-  EX.scripts.indexOf("pcviews.js") === EX.scripts.indexOf("pcsite.js") + 1 && IE.indexOf("PCViews.install(E)") > IE.indexOf("PCColDock.install(E)")
+check("the wiring: pcviews.js after pcsite.js + pccalendar.js, installed after the panel column docker (every panel / tab exists); its strip at the start of the top strip's right part; Window ▸ Workspace",
+  EX.scripts.indexOf("pcviews.js") === EX.scripts.indexOf("pccalendar.js") + 1 && EX.scripts.indexOf("pccalendar.js") === EX.scripts.indexOf("pcsite.js") + 2 && IE.indexOf("PCViews.install(E)") > IE.indexOf("PCColDock.install(E)")
   && /mr\.insertBefore\(strip, mr\.firstChild\)/.test(VS) && /label: "Workspace"/.test(VS) && /ws\.view/.test(VS));
 check("the preview iframe runs no scripts (sandbox without allow-scripts)", /sandbox="allow-same-origin"/.test(VS) && !/allow-scripts/.test(VS));
 check("nothing added to misc/server.js", !/pcviews|ws\.view/.test(read("misc/server.js")));

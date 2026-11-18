@@ -14358,6 +14358,16 @@ node scripts/test-845.js > /tmp/t845.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui845-ui.js > /tmp/ui845.log 2>&1 \
   && ok "2.845.0 browser test: ⟷ Page Width from the Zoom tool's settings, the top strip, View menu, Shift+Ctrl+0" \
   || { bad "2.845.0 page width browser test"; grep -a "^FAIL" -A1 /tmp/ui845.log | head -12; }
+# ---- 2.846.0 (Tim: "fix the pen tool ... add a page properties dialog ... add a calender tool for web projects ...")
+node scripts/test-846.js > /tmp/t846.log 2>&1 \
+  && ok "2.846.0 pen fill, Page Properties templates / margins, sitecal (days, times, draw, SQL, CSS), siteCal install, siteBuild with a calendar, the wiring" \
+  || { bad "2.846.0 units"; grep -a "^FAIL" -A1 /tmp/t846.log | head -12; }
+node scripts/test-846-live.js > /tmp/t846l.log 2>&1 \
+  && ok "2.846.0 LIVE: a real booking through the built PHP site against MariaDB (free times, the form, never twice)" \
+  || { bad "2.846.0 live booking"; grep -a "^FAIL" -A1 /tmp/t846l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui846-ui.js > /tmp/ui846.log 2>&1 \
+  && ok "2.846.0 browser test: the pen closes within 5 px, 📄 Page Properties (template, all pages, guides, your template), 📅 dragged onto the canvas -> tables, settings + style + undo, the PHP build" \
+  || { bad "2.846.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui846.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

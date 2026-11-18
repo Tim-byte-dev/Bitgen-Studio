@@ -31,7 +31,7 @@ check("lib/blendView.still: one frame through the view (or the scene camera) at 
   /function still\(stem, opts\)/.test(LB) && /still_only: true, w, h/.test(LB) && /stillStatus, stillPath/.test(LB) && /app\.post\("\/api\/blendview\/still"/.test(RB) && /\/api\/blendview\/still\/:id\/png/.test(RB)
   && /if job\.get\("still_only"\):/.test(PY) && /if job\.get\("w"\) and job\.get\("h"\):/.test(PY));
 check("the Blender layer: L.bscene (L.blend is a layer's blend MODE), kept by undo / copies (pcdoc DEEP), the 🟧 button by ⛶, Layer ▸ New Blender Layer (Scene Tools)…, the 🟧 Blender tab",
-  /const isBL = \(L\) => !!\(L && L\.bscene && typeof L\.bscene === "object"\)/.test(SRC) && !/L\.blend\b/.test(SRC.replace(/not L\.blend - that/g, "")) && /"l3d", "sketch", "bscene"(, "doc")?\]/.test(DOC)
+  /const isBL = \(L\) => !!\(L && L\.bscene && typeof L\.bscene === "object"\)/.test(SRC) && !/L\.blend\b/.test(SRC.replace(/not L\.blend - that/g, "")) && /"l3d", "sketch", "bscene"(, "doc")?(, "cal")?\]/.test(DOC)
   && /b\.id = "kblBtn"/.test(SRC) && /mr\.insertBefore\(b, \$\("kxFull"\)\)/.test(SRC) && /addCmd\("layer\.newblend", "New Blender Layer \(Scene Tools\)…"/.test(SRC) && /dataset\.tab = "kbl"/.test(SRC));
 check("...the tools sit over the canvas as the stage's SIBLING (the editor's tools never see the pointer; its keys stay out, Esc closes)",
   /main\.appendChild\(wrap\)/.test(SRC) && /wrap\.addEventListener\("keydown", \(e\) => \{ if \(e\.key === "Escape"\)/.test(SRC) && /e\.stopPropagation\(\); \}\);/.test(SRC));

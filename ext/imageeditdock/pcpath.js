@@ -674,13 +674,23 @@
     outlineCache.set(key, o);
     return o;
   }
+  /** 2.846.0: the part of a shape's path that is filled - its closed sub-paths (an open one is a line) */
+  function fillPathOf(p) { return { subs: ((p && p.subs) || []).filter((q) => q.closed) }; }
   /** a PATH shape layer (pcdoc.drawShape hands it here): fill (the ops) + stroke (the result's outline; open
    *  components stroked as they are) */
   function drawPathShape(g, s) {
     if (s.line && root.PCBez && root.PCBez.drawLine) return root.PCBez.drawLine(g, s);   // 2.425.0: a VECTOR LINE (pcbezier.js: the outline pen, arrowheads)
     const p = s.path; if (!p || !p.subs || !p.subs.length) return;
-    if (s.fillOn !== false) fillArea(g, p, s.fillGrad && root.PCDoc && root.PCDoc.gradStyle ? root.PCDoc.gradStyle(g, s, bbox(p)) : s.fill || "#000");   // 2.821.0: a gradient fill
+    // 2.846.0 (Tim: "fix the pen tool - don't close the shape until the endpoint is 5 px away from the start point"): only CLOSED
+    // parts are filled - an open one (a pen path still being drawn, or ended open) is a line, never closed by its fill
+    const fp = fillPathOf(p);
+    if (s.fillOn !== false && fp.subs.length) fillArea(g, fp, s.fillGrad && root.PCDoc && root.PCDoc.gradStyle ? root.PCDoc.gradStyle(g, s, bbox(p)) : s.fill || "#000");   // 2.821.0: a gradient fill
     const sw = s.strokeOn ? s.strokeW || 0 : 0;
+    const bare = p.subs.filter((q) => !q.closed && q.pts.length > 1);
+    if (sw <= 0 && bare.length) {             // no outline: an open part still shows as a thin line in the fill colour
+      g.save(); g.lineWidth = 1; g.strokeStyle = s.fill || s.stroke || "#000"; g.lineJoin = "round"; g.lineCap = "round";
+      g.beginPath(); for (const q of bare) trace(g, q); g.stroke(); g.restore();
+    }
     if (sw > 0) {
       g.save(); g.lineWidth = sw; g.strokeStyle = s.stroke || "#000"; g.lineJoin = "round"; g.lineCap = "round";
       if (s.dash && g.setLineDash) g.setLineDash([sw * 3, sw * 2]);
@@ -716,7 +726,7 @@
   const api = { OPS, OP_NAMES, OP_ICON, PSD_OP, CUSTOM, anchor, clone, empty, count, normalize, segs, isLine, cubicAt, splitCubic, flatten, bbox,
     signedArea, hitAnchor, nearestSeg, insertAt, removeAnchor, setCorner, setSmooth, convert, roundCorners, isCorner, splitC, dragHandle, pullHandles, moveAnchors, moveSubs,
     transform, translate, fitBox, reverseSub, ellipseSub, fromShape, toPathShape, syncShape, fitShape, parseSvg, subSvg, toSvg, svgDoc, fromSvgFile,
-    custom, simplify, fromPolygon, raster, contours, fromMask, toPsd, fromPsd, trace, traceAll, fillArea, areaMask, outline, drawPathShape, vmaskAlpha };
+    custom, simplify, fromPolygon, raster, contours, fromMask, toPsd, fromPsd, trace, traceAll, fillArea, fillPathOf, areaMask, outline, drawPathShape, vmaskAlpha };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.PCPath = api;
   api.install = null;     // the page part (tools, panel, menus) is added below when there is a page

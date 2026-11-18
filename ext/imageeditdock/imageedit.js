@@ -3083,6 +3083,8 @@
     if (win.PCBridgeOff && win.PCBridgeOff.install) win.PCBridgeOff.install(E);   // 2.618.0: a Blender / 3D (Daz) layer deleted or hidden = its bridge closed, its scene off the screen (pcbridgeoff.js)
     if (win.PCTabDock && win.PCTabDock.install) win.PCTabDock.install(E); // 2.590.0: every tab is a docker - drag it out to float, onto a docker to tab it (pctabdock.js) - LAST: every tab exists
     if (win.PCColDock && win.PCColDock.install) win.PCColDock.install(E); // 2.609.0: the panel column takes ANY floating docker (main dockers, ▣ dockers, Basic Settings, the prompt docker, ⏳ Pending) - kept
+    if (win.PCPageProps && win.PCPageProps.install) win.PCPageProps.install(E);   // 2.846.0: 📄 Page Properties - template, size, dpi, margins (pcpageprops.js)
+    if (win.PCCalendar && win.PCCalendar.install) win.PCCalendar.install(E);   // 2.846.0: 📅 a booking calendar for a website (pccalendar.js, static/sitecal.js)
     if (win.PCViews && win.PCViews.install) win.PCViews.install(E);       // 2.844.0: 📝 WP · ✒ Vector · 🖼 Image · 🌐 Web View on the top strip (pcviews.js) - after every panel, docker and ribbon exists
     if (win.PCUELive && win.PCUELive.placeFirst) win.PCUELive.placeFirst(E);
 

@@ -129,6 +129,8 @@ function mount(app) {
   require("./docTemplates").mount(app);   // 2.841.0: 🧾 the image editor's document templates (lib/docTemplates.js) - before the 100 KB json parser
   require("./db").mount(app);   // 2.842.0: 🗄 databases - bitGen's own MariaDB per project / global, or your server (lib/dbServer.js, lib/dbAi.js)
   require("./sites").mount(app);   // 2.843.0: 🌐 websites from the image editor's pages (lib/siteBuild.js) - before the 100 KB json parser
+  require("./siteCal").mount(app);   // 2.846.0: 📅 a web project's booking calendar in its database (lib/siteCal.js, static/sitecal.js)
+  require("./pageTemplates").mount(app);   // 2.846.0: 📄 your page templates for the image editor's Page Properties (lib/pageTemplates.js)
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);

@@ -146,6 +146,8 @@ mail/
 /brands/
 # 2.841.0: your document templates (lib/docTemplates.js - <app>/doc_templates/) - user state
 /doc_templates/
+# 2.846.0: your page templates (lib/pageTemplates.js - <app>/page_templates.json) - user state
+/page_templates.json
 # 2.842.0: bitGen's own MariaDB (lib/dbServer.js - <app>/mariadb/<version>/ downloaded, <app>/db/ the global database's data)
 /mariadb/
 /db/

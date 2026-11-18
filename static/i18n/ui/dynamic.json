@@ -7667,6 +7667,62 @@
    "src": "static/sidecollapse.js:29"
   },
   {
+   "s": "Appointments",
+   "src": "static/sitecal.js:24"
+  },
+  {
+   "s": "Meetings",
+   "src": "static/sitecal.js:24"
+  },
+  {
+   "s": "Classes / group sessions",
+   "src": "static/sitecal.js:24"
+  },
+  {
+   "s": "Frame",
+   "src": "static/sitecal.js:27"
+  },
+  {
+   "s": "Month name",
+   "src": "static/sitecal.js:27"
+  },
+  {
+   "s": "Weekday names",
+   "src": "static/sitecal.js:28"
+  },
+  {
+   "s": "Dates",
+   "src": "static/sitecal.js:28"
+  },
+  {
+   "s": "Available days",
+   "src": "static/sitecal.js:29"
+  },
+  {
+   "s": "Fully booked / closed",
+   "src": "static/sitecal.js:29"
+  },
+  {
+   "s": "Past / other month",
+   "src": "static/sitecal.js:30"
+  },
+  {
+   "s": "Chosen day",
+   "src": "static/sitecal.js:30"
+  },
+  {
+   "s": "Times",
+   "src": "static/sitecal.js:30"
+  },
+  {
+   "s": "Taken times",
+   "src": "static/sitecal.js:31"
+  },
+  {
+   "s": "Book button",
+   "src": "static/sitecal.js:31"
+  },
+  {
    "s": "not installed — Install Ming-3.0 TTS… (Settings ▸ Add-ons)",
    "src": "static/speechengines.js:28"
   },
@@ -11055,10 +11111,6 @@
    "src": "ext/imageeditdock/pc3d.js:314"
   },
   {
-   "s": "Frame",
-   "src": "ext/imageeditdock/pc3d.js:314"
-  },
-  {
    "s": "Quick",
    "src": "ext/imageeditdock/pc3d.js:314"
   },
@@ -11977,6 +12029,130 @@
   {
    "s": "Back to the Auto sampling area",
    "src": "ext/imageeditdock/pccafill.js:67"
+  },
+  {
+   "s": "The calendar keeps its bookings in MySQL / MariaDB. bitGen runs its own MariaDB (GPL-2.0, from archive.mariadb.org) on this computer only - it is not installed yet",
+   "src": "ext/imageeditdock/pccalendar.js:81"
+  },
+  {
+   "s": "No background",
+   "src": "ext/imageeditdock/pccalendar.js:134"
+  },
+  {
+   "s": "Each booking",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "People per time",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Book up to",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "days ahead",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Notice",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "hours",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Week starts",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Time zone",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Language",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Ask for a phone number",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Ask for notes",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Visitors see the free times of each day - opening hours in steps of one booking, from the notice on, up to the days ahead - and book one with their name and email. A time is never booked twice (or more than its people per time)",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "A second range makes a break (e.g. 9:00 – 12:30 and 13:30 – 17:00). Close a single day on the website: a row in bg_cal_closed",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Bold",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Default style",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "The canvas shows each change; the website's CSS is made from the same style",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "This project's MariaDB",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Global MariaDB",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Your server (🗄 Database ▸ ⚙)",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Database",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Make the tables now",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "in the database",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "The SQL",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "The website's schema.sql has the same tables - import it on your host. The bookings: the view bg_cal_upcoming",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "Load the bookings",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "not in the database yet",
+   "src": "ext/imageeditdock/pccalendar.js:137"
+  },
+  {
+   "s": "not made - see the status line",
+   "src": "ext/imageeditdock/pccalendar.js:178"
+  },
+  {
+   "s": "Email",
+   "src": "ext/imageeditdock/pccalendar.js:182"
+  },
+  {
+   "s": "Phone",
+   "src": "ext/imageeditdock/pccalendar.js:182"
   },
   {
    "s": "Drag: to another place in the column, or out of it (it floats again)",
@@ -14475,168 +14651,244 @@
    "src": "ext/imageeditdock/pcotype.js:26"
   },
   {
-   "s": "Page 1",
-   "src": "ext/imageeditdock/pcpages.js:143"
+   "s": "A4 document",
+   "src": "ext/imageeditdock/pcpageprops.js:27"
   },
   {
-   "s": "Bottom centre",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "Letter document",
+   "src": "ext/imageeditdock/pcpageprops.js:28"
   },
   {
-   "s": "Bottom right",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "A5 booklet",
+   "src": "ext/imageeditdock/pcpageprops.js:29"
   },
   {
-   "s": "Bottom left",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "A4 flyer (print)",
+   "src": "ext/imageeditdock/pcpageprops.js:30"
   },
   {
-   "s": "Top centre",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "A3 poster",
+   "src": "ext/imageeditdock/pcpageprops.js:31"
   },
   {
-   "s": "Top right",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "Business card",
+   "src": "ext/imageeditdock/pcpageprops.js:32"
   },
   {
-   "s": "Top left",
-   "src": "ext/imageeditdock/pcpages.js:377"
+   "s": "DL leaflet",
+   "src": "ext/imageeditdock/pcpageprops.js:33"
   },
   {
-   "s": "Your own",
-   "src": "ext/imageeditdock/pcpages.js:378"
+   "s": "as it is —",
+   "src": "ext/imageeditdock/pcpageprops.js:114"
   },
   {
-   "s": "Numbers",
-   "src": "ext/imageeditdock/pcpages.js:378"
+   "s": "Save as template",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
   },
   {
-   "s": "start at",
-   "src": "ext/imageeditdock/pcpages.js:378"
-  },
-  {
-   "s": "page} = the page's number, {pages} = how many pages, {name} = the page's name. They go on the master, so every page shows its own",
-   "src": "ext/imageeditdock/pcpages.js:378"
-  },
-  {
-   "s": "e.g. Section 2 - {page}",
-   "src": "ext/imageeditdock/pcpages.js:378"
-  },
-  {
-   "s": "Pages",
-   "src": "ext/imageeditdock/pcpages.js:541"
-  },
-  {
-   "s": "No document open",
-   "src": "ext/imageeditdock/pcpages.js:541"
-  },
-  {
-   "s": "Click: this page · drag: move · double-click the name: rename",
-   "src": "ext/imageeditdock/pcpages.js:544"
-  },
-  {
-   "s": "Master",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Odd",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Even",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Facing",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Page setup",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Hide (Window ▸ Pages shows it again)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Back to the pages (the pages that use this master are made again)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "This master for every page",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "This master for the odd pages (1, 3, 5 … right-hand)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "This master for the even pages (2, 4, 6 … left-hand)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Show and export the pages as spreads (page 1 alone on the right)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "How page numbers are written",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Page numbers on every page: format, numbers, position, font, size, colour",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "A new page after this one, the same size - its own layers",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "A copy of this page with its layers",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Move this page up",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Move this page down",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Delete this page (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
-   "src": "ext/imageeditdock/pcpages.js:547"
-  },
-  {
-   "s": "Double-click: rename",
-   "src": "ext/imageeditdock/pcpages.js:551"
-  },
-  {
-   "s": "Edit this master - what is on it shows under its pages",
-   "src": "ext/imageeditdock/pcpages.js:551"
-  },
-  {
-   "s": "Delete this master (click twice)",
-   "src": "ext/imageeditdock/pcpages.js:551"
-  },
-  {
-   "s": "W × H mm",
-   "src": "ext/imageeditdock/pcpages.js:632"
+   "s": "Template name",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
   },
   {
    "s": "dpi",
-   "src": "ext/imageeditdock/pcpages.js:632"
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Left",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Right",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Show the margins on the page (they do not print)",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Fit the WP layers to the margins",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "This page",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "All pages",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Keep these settings as a template of your own (every project)",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Delete the picked template of your own",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "All four the same",
+   "src": "ext/imageeditdock/pcpageprops.js:115"
+  },
+  {
+   "s": "Page 1",
+   "src": "ext/imageeditdock/pcpages.js:145"
+  },
+  {
+   "s": "Bottom centre",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Bottom right",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Bottom left",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Top centre",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Top right",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Top left",
+   "src": "ext/imageeditdock/pcpages.js:379"
+  },
+  {
+   "s": "Your own",
+   "src": "ext/imageeditdock/pcpages.js:380"
+  },
+  {
+   "s": "Numbers",
+   "src": "ext/imageeditdock/pcpages.js:380"
+  },
+  {
+   "s": "start at",
+   "src": "ext/imageeditdock/pcpages.js:380"
+  },
+  {
+   "s": "page} = the page's number, {pages} = how many pages, {name} = the page's name. They go on the master, so every page shows its own",
+   "src": "ext/imageeditdock/pcpages.js:380"
+  },
+  {
+   "s": "e.g. Section 2 - {page}",
+   "src": "ext/imageeditdock/pcpages.js:380"
+  },
+  {
+   "s": "Pages",
+   "src": "ext/imageeditdock/pcpages.js:543"
+  },
+  {
+   "s": "No document open",
+   "src": "ext/imageeditdock/pcpages.js:543"
+  },
+  {
+   "s": "Click: this page · drag: move · double-click the name: rename",
+   "src": "ext/imageeditdock/pcpages.js:546"
+  },
+  {
+   "s": "Master",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Odd",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Even",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Facing",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Page setup",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Hide (Window ▸ Pages shows it again)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Back to the pages (the pages that use this master are made again)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "This master for every page",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "This master for the odd pages (1, 3, 5 … right-hand)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "This master for the even pages (2, 4, 6 … left-hand)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "A master page: its layers show under every page that uses it (headers, footers, page numbers, a background)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Show and export the pages as spreads (page 1 alone on the right)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "How page numbers are written",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Page numbers on every page: format, numbers, position, font, size, colour",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "A new page after this one, the same size - its own layers",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "A copy of this page with its layers",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Move this page up",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Move this page down",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Delete this page (click twice)",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Every page with its layers: PDF, .ai, SVG pages, or a pack for .cdr",
+   "src": "ext/imageeditdock/pcpages.js:549"
+  },
+  {
+   "s": "Double-click: rename",
+   "src": "ext/imageeditdock/pcpages.js:553"
+  },
+  {
+   "s": "Edit this master - what is on it shows under its pages",
+   "src": "ext/imageeditdock/pcpages.js:553"
+  },
+  {
+   "s": "Delete this master (click twice)",
+   "src": "ext/imageeditdock/pcpages.js:553"
+  },
+  {
+   "s": "W × H mm",
+   "src": "ext/imageeditdock/pcpages.js:634"
   },
   {
    "s": "The page's canvas follows: another size = Canvas Size (centred, new room white), another dpi = Image Size. Both can be undone",
-   "src": "ext/imageeditdock/pcpages.js:657"
+   "src": "ext/imageeditdock/pcpages.js:659"
   },
   {
    "s": "Pages: One Page",
@@ -15792,35 +16044,31 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:101"
-  },
-  {
-   "s": "Language",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "s": "Two points",
@@ -16607,10 +16855,6 @@
    "src": "ext/imageeditdock/pctextfill.js:48"
   },
   {
-   "s": "Bold",
-   "src": "ext/imageeditdock/pctextfill.js:48"
-  },
-  {
    "s": "Italic",
    "src": "ext/imageeditdock/pctextfill.js:48"
   },
@@ -16628,14 +16872,6 @@
   },
   {
    "s": "Centre",
-   "src": "ext/imageeditdock/pctextfill.js:48"
-  },
-  {
-   "s": "Left",
-   "src": "ext/imageeditdock/pctextfill.js:48"
-  },
-  {
-   "s": "Right",
    "src": "ext/imageeditdock/pctextfill.js:48"
   },
   {
@@ -17812,7 +18048,7 @@
   },
   {
    "s": "Views",
-   "src": "ext/imageeditdock/pcviews.js:266"
+   "src": "ext/imageeditdock/pcviews.js:270"
   },
   {
    "s": "Outline width (px) - 0 = none",
@@ -18301,10 +18537,6 @@
   {
    "s": "Take it off",
    "src": "ext/maildock/mailcompose.js:38"
-  },
-  {
-   "s": "Email",
-   "src": "ext/maildock/mailcompose.js:57"
   },
   {
    "s": "Write the reply",
@@ -19248,14 +19480,6 @@
   },
   {
    "s": "shelving",
-   "src": "ext/pushpulldock/ppjoinerydlg.js:64"
-  },
-  {
-   "s": "Template name",
-   "src": "ext/pushpulldock/ppjoinerydlg.js:64"
-  },
-  {
-   "s": "Save as template",
    "src": "ext/pushpulldock/ppjoinerydlg.js:64"
   },
   {
@@ -27949,6 +28173,10 @@
    "src": "static/selsearch.js:320"
   },
   {
+   "p": "{0}: booking opens on the PHP + MySQL website",
+   "src": "static/sitecal.js:265"
+  },
+  {
    "p": "Reinstall {0}",
    "src": "static/speechengines.js:18"
   },
@@ -28405,6 +28633,14 @@
    "src": "ext/imageeditdock/pcbody.js:573"
   },
   {
+   "p": "in \"{0}\" ({1} statements)",
+   "src": "ext/imageeditdock/pccalendar.js:178"
+  },
+  {
+   "p": "{0} booking(s) from today on",
+   "src": "ext/imageeditdock/pccalendar.js:181"
+  },
+  {
    "p": "The picked dimension ({0} px) measures",
    "src": "ext/imageeditdock/pcdims.js:123"
   },
@@ -28618,11 +28854,11 @@
   },
   {
    "p": "{0} ({1} × {2} mm)",
-   "src": "ext/imageeditdock/pcpages.js:632"
+   "src": "ext/imageeditdock/pcpageprops.js:117"
   },
   {
    "p": "{0} × {1} px",
-   "src": "ext/imageeditdock/pcpages.js:642"
+   "src": "ext/imageeditdock/pcpageprops.js:147"
   },
   {
    "p": "Page {0} - click to work on it",
@@ -28734,7 +28970,7 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:101"
+   "src": "ext/imageeditdock/pcsite.js:102"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

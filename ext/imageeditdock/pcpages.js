@@ -39,6 +39,8 @@
     ["Tabloid", 279.4, 431.8], ["Business card", 90, 55], ["DL", 99, 210], ["Square", 210, 210]];
   const DPIS = [72, 96, 150, 200, 300];
   const num = (v, lo, hi, d) => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : d; };
+  /** 2.846.0: a page's margins in mm {top, right, bottom, left} (pcpageprops.js) - null = none set */
+  function cleanMargins(m) { if (!m || typeof m !== "object") return null; const o = {}; for (const k of ["top", "right", "bottom", "left"]) o[k] = Math.round(num(m[k], 0, 500, 0) * 10) / 10; return o; }
   /** a page record's size settings, checked: {name, preset, wmm, hmm, orient, dpi} */
   function cleanPage(p) {
     const o = p && typeof p === "object" ? p : {};
@@ -132,7 +134,7 @@
     }
     const P = () => norm(S.pages || null);
     const count = () => (P() ? P().list.length : (S.w ? 1 : 0));
-    function newEntry(spec) { const pp = P(); const id = ++pp.uid; return Object.assign(cleanPage(spec), { id, name: (spec && spec.name) || "Page " + (pp.list.length + 1), st: null, thumb: null, master: spec && spec.master != null ? spec.master : null, mdirty: !!(spec && spec.master != null) }); }
+    function newEntry(spec) { const pp = P(); const id = ++pp.uid; return Object.assign(cleanPage(spec), { id, name: (spec && spec.name) || "Page " + (pp.list.length + 1), margins: cleanMargins(spec && spec.margins), st: null, thumb: null, master: spec && spec.master != null ? spec.master : null, mdirty: !!(spec && spec.master != null) }); }
     /** 2.800.0: what a pages record has (a 2.799.0 one gets masters, facing, numbering) */
     function norm(pp) { if (!pp) return pp; if (!Array.isArray(pp.masters)) pp.masters = []; if (pp.editing === undefined) pp.editing = null; if (pp.facing == null) pp.facing = false; if (!pp.numbering) pp.numbering = { style: "1", start: 1 }; return pp; }
     /** a document without pages becomes one of a single page (its size read back) */
@@ -467,7 +469,7 @@
       } finally { giveSt(home); }
       return out;
     }
-    const meta = (pg) => ({ id: pg.id, name: pg.name, preset: pg.preset, wmm: pg.wmm, hmm: pg.hmm, orient: pg.orient, dpi: pg.dpi, master: pg.master == null ? null : pg.master });
+    const meta = (pg) => ({ id: pg.id, name: pg.name, preset: pg.preset, wmm: pg.wmm, hmm: pg.hmm, orient: pg.orient, dpi: pg.dpi, master: pg.master == null ? null : pg.master, margins: pg.margins || null });
     /** pcbgi.js: every other page as its own .bgi inside (put(name, bytes) -> name) */
     async function toBgi(nestedBytes, put) {
       settle();
@@ -483,7 +485,7 @@
       const cur = Math.max(0, Math.min(rec.list.length - 1, rec.cur | 0));
       S.pages = norm({ list: [], cur, uid: 0, facing: !!rec.facing, numbering: rec.numbering && typeof rec.numbering === "object" ? { style: NUM_STYLES.some(([v]) => v === rec.numbering.style) ? rec.numbering.style : "1", start: Number.isFinite(+rec.numbering.start) ? Math.round(+rec.numbering.start) : 1 } : null });
       let top = 0;
-      for (const r of rec.list) { const e = Object.assign(cleanPage(r), { id: +r.id > 0 ? +r.id : 0, name: r.name || "Page", st: null, thumb: null, master: r.master != null ? +r.master : null, mdirty: false }); S.pages.list.push(e); top = Math.max(top, e.id); }
+      for (const r of rec.list) { const e = Object.assign(cleanPage(r), { id: +r.id > 0 ? +r.id : 0, name: r.name || "Page", margins: cleanMargins(r.margins), st: null, thumb: null, master: r.master != null ? +r.master : null, mdirty: false }); S.pages.list.push(e); top = Math.max(top, e.id); }
       for (const m of Array.isArray(rec.masters) ? rec.masters : []) { const e = { id: +m.id > 0 ? +m.id : 0, name: String(m.name || "Master"), w: Math.max(1, +m.w || S.w), h: Math.max(1, +m.h || S.h), st: null, thumb: null }; S.pages.masters.push(e); top = Math.max(top, e.id); }
       S.pages.uid = Math.max(top, +rec.uid || 0);
       for (const x of S.pages.list.concat(S.pages.masters)) if (!x.id) x.id = ++S.pages.uid;
@@ -694,7 +696,7 @@
       list: () => (P() ? P().list : []), cur: () => (P() ? P().cur : 0), current: () => (P() ? P().list[P().cur] : null), panel: () => panel };
   }
 
-  const pure = { PAGE_SIZES, DPIS, cleanPage, pagePx, guess, moveIdx, pageKeys, sizeLabel, DOC_ONLY, NUM_STYLES, fmtNum, resolveTokens, hasTokens, spreadsOf, targets, masterName };
+  const pure = { PAGE_SIZES, DPIS, cleanPage, cleanMargins, pagePx, guess, moveIdx, pageKeys, sizeLabel, DOC_ONLY, NUM_STYLES, fmtNum, resolveTokens, hasTokens, spreadsOf, targets, masterName };
   const api = Object.assign({ install }, pure);
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.PCPages = api;

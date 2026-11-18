@@ -9540,6 +9540,14 @@ Before a render, bitGen checks the models and LoRAs it needs:
 
 - **⟷ Page Width** makes the page's width fill the canvas. It is in the Zoom tool's settings, on the top strip beside ⤢, in View ▸ Page Width, on Shift+Ctrl+0 and in the WP View's Layout ribbon. The line at the top of the view stays at the top.
 
+## 📅 Image editor - pen fix, Page Properties, booking calendars for websites (2.846.0)
+
+- **✒ Pen**: a path closes only when you click within 5 px of its first point. Until then it's a line and isn't filled.
+- **📄 Page Properties** (File menu, right-click, the WP and Web ribbons): a template (built in, or your own with 💾 Save as template…), the size in mm or px, portrait / landscape, the dpi, and the margins in mm. The margins show as dashed lines that don't print, and WP layers can be fitted to them. Apply it to this page or all pages.
+- **📅 Calendar** (Web View ribbon - drag it onto the canvas): a booking calendar. Its tables are made in the project's database at once (MariaDB is downloaded first if it isn't there).
+- **📅 Calendar Settings** (double-click): General, Opening hours, Style (each object type: font, size, colour, background, bold, corners), Database and Bookings.
+- **🌐 Build Website → PHP + MySQL**: visitors pick a day, see its free and taken times, and book with their name and email. The form has a check against forged posts, and a time is never booked twice.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -64,6 +64,7 @@
         let d = null; try { d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; } catch (e) { return; }
         if (i === 0 && L.type === "pixel") { const pc = plainColour(d, c.width, c.height); if (pc) { bg = pc; return; } }
         const b = alphaBox(d, c.width, c.height); if (!b || b.w < 2 || b.h < 2) return;
+        if (L.cal) { els.push({ kind: "calendar", cal: L.cal, box: sc(b) }); return; }   // 2.846.0: 📅 a booking calendar (pccalendar.js)
         if (L.type === "text" && L.text && String(L.text.str || "").trim()) {
           const t = L.text;
           els.push({ kind: "text", text: String(t.str), size: Math.round((t.size || 16) * k), color: t.color || "#222222", bold: (t.weight || 400) >= 600 || !!t.bold, italic: !!t.italic, align: t.align || "left", font: t.font || "", box: sc(b) }); return;
