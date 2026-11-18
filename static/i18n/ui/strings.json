@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6478,
+ "count": 6506,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -59860,6 +59860,286 @@
    ],
    "where": [
     "image editor - 🔐 admin area (2.848.0)"
+   ]
+  },
+  {
+   "s": "Invoice",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Receipt",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🧾 Invoice",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🧾 Receipt",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "📝 Quote",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Pictures - made with the prompt docker's image style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🖼 Pictures - made with the prompt docker's image style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "90 × 55 mm at 300 dpi, front + back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Whole page",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Page width",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Previous page (←)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Next page (→)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Quick commands",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "✨ Create With the AI…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Create With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "✨ Create With the AI",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🔍 Print Preview…",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Print Preview",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🔍 Print Preview",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Flyer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Brochure",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "Invoice / quote",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "✨ Create",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "🖨 Print",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "A4 landscape tri-fold: page 1 = the outside (flap, back, cover), page 2 = the inside; fold lines as layers.",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
+   ]
+  },
+  {
+   "s": "What is it for? The business, the offer, prices, dates, names, phone / email / web… e.g. A flyer for Rosie's Bakery's Saturday market stall: sourdough $8, croissants $4, 7am-12pm, 0412 345 678",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - quick bar / ✨ Create (2.849.0)"
    ]
   }
  ]

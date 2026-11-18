@@ -218,7 +218,11 @@
       const s = String(text || ""); if (!WANT.test(s) || !(VERB.test(s) || isTemplateDoc())) return null;
       if (/\b(slides?|presentation|spreadsheet|report|article|story|letter|e-?mail|essay|summary|blog)\b/i.test(s)) return null;
       const kind = /\bquot/i.test(s) ? "quote" : /\breceipt\b/i.test(s) ? "receipt" : "invoice";
-      if (!isTemplateDoc() || (tplNow() && tplNow().kind !== kind && /\b(new|make|create)\b/i.test(s))) {
+      return aiMake(s, kind, !!(!isTemplateDoc() || (tplNow() && tplNow().kind !== kind && /\b(new|make|create)\b/i.test(s))));
+    }
+    /** 2.849.0 (✨ Create With the AI, pccreate.js): a new invoice / quote / receipt from words -> the line said */
+    async function aiMake(s, kind, fresh) {
+      if (fresh !== false) {
         let mine = []; try { mine = (await api("/api/doctemplates")).templates; } catch (e) { /* the built-in one */ }
         const t = mine.find((x) => x.kind === kind);
         await fromTemplate(t ? { name: t.name, kind } : { builtin: true, kind });
@@ -228,7 +232,7 @@
       return `🧾 ${tpl.kind.charAt(0).toUpperCase() + tpl.kind.slice(1)} ${res.number} is in the image editor - ${res.items} item(s), total ${res.total}. File ▸ 🧾 Fill This Template… on a fresh copy to change it, File ▸ Export for PDF / Word.`;
     }
     root.H3ChatRoutes = [maybe].concat(root.H3ChatRoutes || []);
-    E.docTpl = { fill, fillDialog, newDialog, saveDialog, fromTemplate, askAi, tplNow, isTemplateDoc, textsNow };
+    E.docTpl = { fill, fillDialog, newDialog, saveDialog, fromTemplate, askAi, tplNow, isTemplateDoc, textsNow, aiMake };
   }
   const PCDocTpl = Object.assign({ install }, pure);
   root.PCDocTpl = PCDocTpl;

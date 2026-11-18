@@ -9564,6 +9564,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The first visit to /admin/ makes the owner login with the setup key from README.txt / inc/config.php. After that it's a login page. Five wrong passwords lock a login for 15 minutes.
 - In the admin you can: approve or cancel bookings (e-mailed), add phone bookings, close days, edit hours and services (kept when the studio uploads again), and look after clients, products, orders, logins and settings. Bookings and contact messages add clients by email.
 
+## ✨ Image editor - the icon toolbar, Print Preview, Create With the AI (2.849.0)
+
+- **The icon toolbar** under the menus: New, Open, Save, Save As, Print, 🔍 Print Preview, Undo, Redo, Cut, Copy, Paste, ✨ Create.
+- **🔍 Print Preview** (Ctrl+F2): every page at its real size; 🖨 Print sends them all in one job.
+- **✨ Create With the AI**: pick a Document, Story, Flyer, Brochure (tri-fold), Business card, Website or Invoice, and say what it's for. The LLM writes it and bitGen lays it out as layers you can change. Tick 🖼 Pictures to have them made with your image style. Your names, prices and contact details are used and never made up.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

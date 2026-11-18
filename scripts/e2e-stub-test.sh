@@ -14388,6 +14388,13 @@ node scripts/test-848-live.js > /tmp/t848l.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui848-ui.js > /tmp/ui848.log 2>&1 \
   && ok "2.848.0 browser test: Build Website's 🔐 Admin area tick -> /admin/ in the .zip + the setup key; Calendar Settings' admin database" \
   || { bad "2.848.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui848.log | head -12; }
+# ---- 2.849.0 (Tim: "in image editor,below the file text menu add an icon menu ... make the llm help me create the documents and stories and flyers and brochures and business cards and website and invoices")
+node scripts/test-849.js > /tmp/t849.log 2>&1 \
+  && ok "2.849.0 the icon toolbar + print preview (paper, print job), ✨ Create - the planner (stand-in LLM), flyer / brochure / card / web layouts, the wiring" \
+  || { bad "2.849.0 units"; grep -a "^FAIL" -A1 /tmp/t849.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui849-ui.js > /tmp/ui849.log 2>&1 \
+  && ok "2.849.0 browser test: the icon toolbar, 🔍 Print Preview of 2 pages + one print job, ✨ Create a flyer / business card / website (plan stubbed)" \
+  || { bad "2.849.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui849.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

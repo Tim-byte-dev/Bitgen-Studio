@@ -314,8 +314,10 @@
     let colDrag = null;
     const edgeAt = (e) => {
       const el = e.target && e.target.closest ? e.target.closest("td,th") : null; if (!el || !ed() || !ed().contains(el)) return null;
-      const r = el.getBoundingClientRect(); if (Math.abs(e.clientX - r.right) > 5) return null;
-      const t = el.closest("table"), p = cellPos(t, el); return { t, c: p.c + p.cs - 1 };
+      const r = el.getBoundingClientRect(), t = el.closest("table"), p = cellPos(t, el);
+      if (Math.abs(e.clientX - r.right) <= 5) return { t, c: p.c + p.cs - 1 };
+      if (Math.abs(e.clientX - r.left) <= 5 && p.c > 0) return { t, c: p.c - 1 };   // 2.849.0: the edge grabbed from the cell on its right
+      return null;
     };
     doc.addEventListener("contextmenu", (e) => {
       const e0 = ed(); if (!e0 || !e0.contains(e.target) || !e.target.closest("td,th")) return;

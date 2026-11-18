@@ -12323,6 +12323,38 @@
    "src": "ext/imageeditdock/pccomps.js:130"
   },
   {
+   "s": "words",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "Invoice",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "Quote",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "Receipt",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "Pictures - made with the prompt docker's image style",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "3-5 web pages (1440 × 900) in 🌐 Web View - change them, then 🌐 Build Website",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "90 × 55 mm at 300 dpi, front + back",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
+   "s": "The prompt docker's LLM writes it; bitGen lays it out as layers you can change",
+   "src": "ext/imageeditdock/pccreate.js:193"
+  },
+  {
    "s": "Distance from the walls (px)",
    "src": "ext/imageeditdock/pcdimauto.js:129"
   },
@@ -12432,10 +12464,6 @@
   },
   {
    "s": "Write",
-   "src": "ext/imageeditdock/pcdocai.js:177"
-  },
-  {
-   "s": "words",
    "src": "ext/imageeditdock/pcdocai.js:177"
   },
   {
@@ -12824,67 +12852,67 @@
   },
   {
    "s": "Select the table (then Del deletes it, ◢ resizes it, 🎨 styles it)",
-   "src": "ext/imageeditdock/pcdoctable.js:371"
+   "src": "ext/imageeditdock/pcdoctable.js:373"
   },
   {
    "s": "Table Style",
-   "src": "ext/imageeditdock/pcdoctable.js:371"
+   "src": "ext/imageeditdock/pcdoctable.js:373"
   },
   {
    "s": "Delete the table (Del)",
-   "src": "ext/imageeditdock/pcdoctable.js:371"
+   "src": "ext/imageeditdock/pcdoctable.js:373"
   },
   {
    "s": "Drag to resize the table (width and row heights)",
-   "src": "ext/imageeditdock/pcdoctable.js:371"
+   "src": "ext/imageeditdock/pcdoctable.js:373"
   },
   {
    "s": "Width",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "of the frame",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Cell padding",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "px",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "own colour",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "filled",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Banded rows",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Header row",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "own text colour",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Rows: drag a row's bottom edge. Columns: drag a column's right edge. The whole table: ⊞ picks it, ◢ resizes it (Shift = the width only), Del deletes it",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "as is",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Centre",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "s": "Normal",
@@ -12904,10 +12932,6 @@
   },
   {
    "s": "Heading 3",
-   "src": "ext/imageeditdock/pcdoctext.js:30"
-  },
-  {
-   "s": "Quote",
    "src": "ext/imageeditdock/pcdoctext.js:30"
   },
   {
@@ -15785,6 +15809,26 @@
   {
    "s": "Kept in the project's psd folder. Layers, groups, masks, opacity, blend modes and layer styles go in; text / shape / fill layers as pixels",
    "src": "ext/imageeditdock/pcpsd.js:344"
+  },
+  {
+   "s": "Whole page",
+   "src": "ext/imageeditdock/pcquickbar.js:58"
+  },
+  {
+   "s": "Page width",
+   "src": "ext/imageeditdock/pcquickbar.js:58"
+  },
+  {
+   "s": "Previous page (←)",
+   "src": "ext/imageeditdock/pcquickbar.js:58"
+  },
+  {
+   "s": "Next page (→)",
+   "src": "ext/imageeditdock/pcquickbar.js:58"
+  },
+  {
+   "s": "Quick commands",
+   "src": "ext/imageeditdock/pcquickbar.js:79"
   },
   {
    "s": "Overlay (red)",
@@ -28878,11 +28922,11 @@
   },
   {
    "p": "px {0}",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "p": "pt {0}",
-   "src": "ext/imageeditdock/pcdoctable.js:429"
+   "src": "ext/imageeditdock/pcdoctable.js:431"
   },
   {
    "p": "{0} (next)",
@@ -29099,6 +29143,22 @@
   {
    "p": "{0} corner radius",
    "src": "ext/imageeditdock/pcpropbar.js:138"
+  },
+  {
+   "p": "{0} × {1} mm",
+   "src": "ext/imageeditdock/pcquickbar.js:58"
+  },
+  {
+   "p": "{0} page(s)",
+   "src": "ext/imageeditdock/pcquickbar.js:66"
+  },
+  {
+   "p": "Page {0}1 of {1} · {2}",
+   "src": "ext/imageeditdock/pcquickbar.js:66"
+  },
+  {
+   "p": "Page {0}1 of {1}",
+   "src": "ext/imageeditdock/pcquickbar.js:66"
   },
   {
    "p": "spot colour {0}, solidity {1}% - double-click for its options",
@@ -29727,10 +29787,6 @@
   {
    "p": "{0} - {1} lane, {2} km/h, {3} steepest",
    "src": "ext/pushpulldock/pproadtools.js:136"
-  },
-  {
-   "p": "Page {0}1 of {1}",
-   "src": "ext/pushpulldock/ppsheetsdlg.js:148"
   },
   {
    "p": "{0} {1} · {2} · {3} view",

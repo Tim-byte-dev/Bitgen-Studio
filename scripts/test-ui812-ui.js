@@ -66,7 +66,7 @@ const check = (n, c, got) => { if (c) { pass++; console.log("PASS: " + n); } els
     h = await ed();
     check("All Borders + Cell Alignment: Middle on the caret's cell", /<td style="border: 1px solid[^"]*vertical-align: middle;?"/.test(h) || /vertical-align: middle/.test(h), h);
     // a column's width dragged
-    const edge = await ev(() => { const th = document.querySelector(".pcdocedit .pcdoc th"), r = th.getBoundingClientRect(); return [r.right - 1, r.top + r.height / 2]; });
+    const edge = await ev(() => { const th = document.querySelector(".pcdocedit .pcdoc th"), r = th.getBoundingClientRect(); return [r.right + 1, r.top + r.height / 2]; });   // just past the edge (the next cell) - the edge is grabbed from either side
     await p.mouse.move(edge[0], edge[1]); await p.mouse.down(); await p.mouse.move(edge[0] + 60, edge[1], { steps: 4 }); await p.mouse.up(); await p.waitForTimeout(200);
     const ws = await ev(() => [...document.querySelectorAll(".pcdocedit .pcdoc col")].map((c) => parseFloat(c.style.width)));
     check("dragging the first column's right edge: it grows, the next one gives the room (the sum stays 100%)", ws[0] > 27 && ws[1] < 23 && Math.abs(ws.reduce((a, b) => a + b, 0) - 100) < 0.1, ws);

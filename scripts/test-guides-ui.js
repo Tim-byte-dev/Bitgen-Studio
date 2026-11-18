@@ -37,7 +37,7 @@ const check = (n, cond, got) => {
     await p.waitForTimeout(800);
     proj = (await (await fetch(URL_ + "api/projects")).json()).current;
     await ev(() => { const d = document.getElementById("imageeditdock"); if (d.classList.contains("dockgone")) toggleDockGone("imageeditdock", "tIE"); if (d.classList.contains("collapsed")) toggleCollapse("imageeditdock"); });
-    await p.click("#kxFull"); await p.waitForTimeout(800);
+    await ev(() => document.getElementById("kxFull").click()); await p.waitForTimeout(800);   // the floating prompt docker may sit over it
     await ev(() => { const E = window.imageEditorInstance.E, G = E.guides.settings; Object.assign(G, { snap: true, guides: true, objects: true, nodes: true, midpoints: false, intersections: true, page: true, grid: false, show: true, lock: false, unit: "px", dist: 8 });
       E.docs.setTabs(true); E.openDoc(400, 300, "guides.png", (g) => { g.fillStyle = "#fff"; g.fillRect(0, 0, 400, 300); });
       if (!document.querySelector(".kx").classList.contains("rulers")) E.ui.run("view.rulers"); E.setTool("move"); });

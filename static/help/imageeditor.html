@@ -2,6 +2,23 @@
 
 <p>The editor's layout, tools and keys.</p>
 
+<h3 id="create849">✅ The icon toolbar · 🔍 Print Preview · ✨ Create With the AI (2.849.0)</h3>
+<ul>
+  <li><b>The icon toolbar</b> sits right under the menus: 🗋 New · 📂 Open · 💾 Save · 💾… Save As · 🖨 Print · 🔍 Print Preview | ↶ Undo · ↷ Redo | ✂ Cut · ⧉ Copy · 📋 Paste | ✨ Create With the AI. A button is greyed out when it can't be used, and its tip shows its key. Save and Save As keep the whole project (.bgi, every page).</li>
+  <li><b>🔍 Print Preview</b> (File menu, Ctrl+F2) shows every page as it will print, at the page's real size. Use ◀ ▶ to move between pages, and Whole page / Page width / All pages to change the view. <b>🖨 Print</b> sends every page in one print job, each on its own sheet.</li>
+  <li><b>✨ Create With the AI</b> (File menu, the toolbar's ✨): pick what to make and say what it's for. The prompt docker's LLM writes it, and bitGen lays it out as layers you can change:
+    <ul>
+      <li><b>📄 Document</b> and <b>📖 Story</b>: a new A4 document, written into its WP layer (with tables, charts and pictures if you want them).</li>
+      <li><b>📰 Flyer</b>: an A4 page with a headline, a picture, the details, a call to action and the contact details.</li>
+      <li><b>📑 Brochure</b>: an A4 landscape tri-fold on two pages (the outside: flap, back and cover; the inside: three panels), with fold lines.</li>
+      <li><b>💳 Business card</b>: 90 × 55 mm at 300 dpi, front and back.</li>
+      <li><b>🌐 Website</b>: three to five web pages in Web View, each named for the menu. Change them, then use 🌐 Build Website.</li>
+      <li><b>🧾 Invoice / quote / receipt</b>: the template, filled in from your words.</li>
+    </ul>
+    Tick 🖼 Pictures and they're made one at a time with the prompt docker's image style, each placed in its box. The LLM uses your names, prices and contact details and never makes them up. In the prompt docker, "make a flyer / brochure / business cards for …" does the same.</li>
+  <li>A table's column edge can now be dragged from either side.</li>
+</ul>
+
 <h3 id="admin848">✅ 🔐 The website's admin area + the myadmin database (2.848.0)</h3>
 <ul>
   <li><b>Added automatically:</b> a PHP + MySQL website with a 📅 booking calendar always gets an admin area at <b>/admin/</b>. Any other PHP website gets one when you tick <b>🔐 Admin area</b> in 🌐 Build Website.</li>

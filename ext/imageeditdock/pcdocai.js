@@ -196,7 +196,7 @@
       return `📄 "${r.title || "the document"}" is in the WP layer` + (r.tables ? ` - ${r.tables} table(s) in the text` : "") + (r.figures ? `, ${r.figures} chart(s) / picture(s) as layers in its 📄 group` : "") + (r.pictures ? " (the pictures arrive one at a time)" : "") + ". Ctrl+Z takes it back.";
     }
     root.H3ChatRoutes = [maybe].concat(root.H3ChatRoutes || []);
-    E.docAi = { write, dialog, takeFile, wpNow, files: () => files.slice() };
+    E.docAi = { write, dialog, takeFile, wpNow, picture, files: () => files.slice() };
     root.H3DocAi = { takeFile, write, dialog };
   }
   const PCDocAi = Object.assign({ install }, pure);
