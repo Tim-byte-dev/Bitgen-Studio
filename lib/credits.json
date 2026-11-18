@@ -331,6 +331,18 @@
           "what": "🎞 Slides - saving presentations as PowerPoint files (.pptx) (MIT)"
         },
         {
+          "name": "node-mysql2",
+          "by": "Andrey Sidorov and the node-mysql2 contributors",
+          "url": "https://github.com/sidorares/node-mysql2",
+          "what": "🗄 Database - talking to MySQL / MariaDB (MIT)"
+        },
+        {
+          "name": "MariaDB Server",
+          "by": "the MariaDB Foundation and contributors",
+          "url": "https://mariadb.org",
+          "what": "🗄 Database - the database server bitGen downloads on request and runs as its own program (GPL-2.0, not bundled)"
+        },
+        {
           "name": "xmldom",
           "by": "the xmldom contributors",
           "url": "https://github.com/xmldom/xmldom",

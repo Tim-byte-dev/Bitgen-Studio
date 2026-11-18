@@ -9719,6 +9719,26 @@
    "src": "ext/consoledock/consoledock.js:64"
   },
   {
+   "s": "NULL",
+   "src": "ext/dbdock/dbdock.js:27"
+  },
+  {
+   "s": "There is no download for this computer here - on a Mac: brew install mariadb (bitGen finds it), or use ⚙ Your server",
+   "src": "ext/dbdock/dbdock.js:50"
+  },
+  {
+   "s": "no database yet - ＋ New",
+   "src": "ext/dbdock/dbdock.js:77"
+  },
+  {
+   "s": "no database",
+   "src": "ext/dbdock/dbdock.js:83"
+  },
+  {
+   "s": "the LLM is designing",
+   "src": "ext/dbdock/dbdock.js:110"
+  },
+  {
    "s": "Brush",
    "src": "ext/imageeditdock/brushdyn.js:264"
   },
@@ -28083,6 +28103,38 @@
   {
    "p": "{0} — no vision activity yet — attach a picture with 🖼 Describe on, or pick a model in the Vision dropdown —",
    "src": "ext/consoledock/consoledock.js:34"
+  },
+  {
+   "p": "{0}, downloaded once into the app's mariadb folder (MariaDB {1})",
+   "src": "ext/dbdock/dbdock.js:50"
+  },
+  {
+   "p": "Tables ({0})",
+   "src": "ext/dbdock/dbdock.js:88"
+  },
+  {
+   "p": "Views ({0})",
+   "src": "ext/dbdock/dbdock.js:88"
+  },
+  {
+   "p": "{0}: {1} row(s) - the first 200",
+   "src": "ext/dbdock/dbdock.js:93"
+  },
+  {
+   "p": "{0}: {1} row(s)",
+   "src": "ext/dbdock/dbdock.js:93"
+  },
+  {
+   "p": "{0} - {1} row(s)",
+   "src": "ext/dbdock/dbdock.js:97"
+  },
+  {
+   "p": "{0} (left out: {1})",
+   "src": "ext/dbdock/dbdock.js:113"
+  },
+  {
+   "p": "{0} statement(s) - read them, change them if you like, then ▶ Run",
+   "src": "ext/dbdock/dbdock.js:114"
   },
   {
    "p": "Align the layer {0} edges to the selection (or the canvas)",

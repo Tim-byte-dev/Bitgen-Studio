@@ -1,0 +1,97 @@
+    <div class="bdock" id="dbdock" data-own-space="1">
+      <div class="bhead" data-collapse="dbdock">▾ 🗄 Database<button class="ghost" type="button" title="Help - databases, the AI design, your own server" aria-label="Help" onclick="event.stopPropagation(); window.H3Help &amp;&amp; H3Help.open('database')" style="margin-left:auto;padding:0 6px">❔</button><button id="dbMaxBtn" class="maxbtn" data-max="dbdock" type="button" title="Maximize" aria-label="Maximize">⛶</button><button id="dbCloseBtn" class="ghost" type="button" title="Close the docker (the 🗄 button on the top bar shows it again)" aria-label="Close" style="padding:0 6px">✕</button></div>
+      <div class="bbody" id="dbBody" style="display:flex;flex-direction:column;gap:6px;min-height:0">
+        <!-- 2.842.0 (Tim: "allow user to create a mysql or mariadb inside the project or global, llm will create all of the tables,
+             fields and views"): bitGen's own MariaDB for this project or for everything (lib/dbServer.js - downloaded once with a
+             Download / Cancel box), or your own MySQL / MariaDB server; ✨ Design: the LLM writes the tables, fields, keys and views
+             as SQL you read (and can change) before ▶ Run (lib/dbAi.js); the tables / views, their rows, an SQL box. -->
+        <style>
+          #dbdock { min-height: 120px; }
+          #dbBar { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; font-size: 11px; }
+          #dbBar select { font-size: 11px; width: auto; flex: none; }
+          #dbBar .dbsep { width: 1px; height: 18px; background: var(--line); margin: 0 3px; }
+          #dbBar button { white-space: nowrap; }
+          #dbDot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); display: inline-block; }
+          #dbDot.on { background: #3fb950; }
+          #dbMsg { flex: 1; min-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
+          #dbMsg.bad { color: #e5534b; }
+          #dbMain { display: flex; flex: 1; min-height: 160px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+          #dbTables { flex: 0 0 210px; overflow: auto; border-right: 1px solid var(--line); font-size: 12px; padding: 4px 0; }
+          #dbTables .dbt { padding: 3px 8px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          #dbTables .dbt:hover { background: var(--panel-2); }
+          #dbTables .dbt.on { background: var(--panel-2); color: var(--tiger); }
+          #dbTables .dbcols { padding: 0 8px 4px 22px; color: var(--dim); font-size: 11px; }
+          #dbTables .dbh { padding: 4px 8px; color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+          #dbRight { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+          #dbTabs { display: flex; gap: 2px; padding: 4px; border-bottom: 1px solid var(--line); }
+          #dbTabs button.on { color: var(--tiger); border-color: var(--tiger); }
+          .dbpane { flex: 1; overflow: auto; padding: 6px; display: none; flex-direction: column; gap: 6px; min-height: 0; }
+          .dbpane.on { display: flex; }
+          #dbAsk, #dbSql, #dbDesignSql { width: 100%; box-sizing: border-box; font-size: 12px; }
+          #dbDesignSql, #dbSql { font-family: Consolas, "Courier New", monospace; min-height: 140px; }
+          #dbExplain { color: var(--dim); font-size: 12px; white-space: pre-wrap; }
+          .dbgrid { border-collapse: collapse; font-size: 12px; }
+          .dbgrid th, .dbgrid td { border: 1px solid var(--line); padding: 2px 6px; text-align: left; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+          .dbgrid th { background: var(--panel-2); position: sticky; top: 0; }
+          .dbres { font-size: 11px; color: var(--dim); }
+          .dbres.bad { color: #e5534b; }
+          #dbNeed { border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: none; flex-direction: column; gap: 6px; }
+          #dbNeed.on { display: flex; }
+          #dbNeedBar { height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+          #dbNeedBar div { height: 100%; width: 0; background: var(--tiger); }
+        </style>
+        <div id="dbBar">
+          <select id="dbScope" title="Where the database lives">
+            <option value="project">📁 This project</option>
+            <option value="global">🌐 Global (every project)</option>
+            <option value="external">🖧 Your server</option>
+          </select>
+          <span id="dbDot" title="The server"></span>
+          <button class="ghost" id="dbStart" type="button" title="Start the database server">▶ Start</button>
+          <button class="ghost" id="dbStop" type="button" title="Stop the database server">⏹ Stop</button>
+          <span class="dbsep"></span>
+          <select id="dbDbSel" title="The database"></select>
+          <button class="ghost" id="dbNew" type="button" title="A new database">＋ New</button><input id="dbNewName" placeholder="name + Enter" style="display:none;width:130px;font-size:11px">
+          <button class="ghost" id="dbDrop" type="button" title="Delete this database (asked first)">🗑</button>
+          <button class="ghost" id="dbExtBtn" type="button" title="Your own MySQL / MariaDB server - host, port, user, password">⚙ Your server…</button>
+          <span id="dbMsg"></span>
+        </div>
+        <div id="dbNeed">
+          <div><b>MariaDB is not installed.</b> bitGen runs its own MariaDB database server (GPL-2.0, from archive.mariadb.org) for this project or for every project, on this computer only.</div>
+          <div id="dbNeedWhere" style="color:var(--dim)"></div>
+          <div id="dbNeedBar"><div></div></div>
+          <div style="display:flex;gap:6px"><button class="go" id="dbNeedGo" type="button">⬇ Download</button><button class="ghost" id="dbNeedNo" type="button">Cancel</button></div>
+        </div>
+        <div id="dbMain">
+          <div id="dbTables"></div>
+          <div id="dbRight">
+            <div id="dbTabs"><button class="ghost on" data-tab="design" type="button">✨ Design</button><button class="ghost" data-tab="data" type="button">📋 Data</button><button class="ghost" data-tab="sql" type="button">⌨ SQL</button></div>
+            <div class="dbpane on" data-pane="design">
+              <textarea id="dbAsk" rows="3" placeholder="Describe what it is for - e.g. a small shop: customers, products with stock, orders with their lines, and views for sales by month and the best customers"></textarea>
+              <div style="display:flex;gap:6px;align-items:center"><button class="ghost" id="dbDesign" type="button">✨ Design the tables</button><span class="dbres" id="dbDesignMsg"></span></div>
+              <div id="dbExplain"></div>
+              <textarea id="dbDesignSql" placeholder="The SQL the AI writes shows here - read it, change it, then ▶ Run"></textarea>
+              <div><button class="go" id="dbDesignRun" type="button">▶ Run</button></div>
+              <div id="dbDesignOut"></div>
+            </div>
+            <div class="dbpane" data-pane="data"><div class="dbres" id="dbDataMsg">Pick a table or view on the left.</div><div id="dbData"></div></div>
+            <div class="dbpane" data-pane="sql">
+              <textarea id="dbSql" placeholder="SELECT * FROM customers; (several statements, each ending with ;)"></textarea>
+              <div><button class="go" id="dbSqlRun" type="button">▶ Run SQL</button></div>
+              <div id="dbSqlOut"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <dialog id="dbExtDlg" aria-label="Your database server">
+      <form method="dialog" style="display:flex;flex-direction:column;gap:6px;min-width:340px">
+        <h3 style="margin:0">⚙ Your MySQL / MariaDB server</h3>
+        <label>Host <input id="dbExtHost" placeholder="127.0.0.1 or db.example.com"></label>
+        <label>Port <input id="dbExtPort" type="number" value="3306"></label>
+        <label>User <input id="dbExtUser"></label>
+        <label>Password <input id="dbExtPw" type="password" placeholder="(kept encrypted - empty = unchanged)"></label>
+        <label>Database <input id="dbExtDb" placeholder="(optional)"></label>
+        <div style="display:flex;gap:6px;justify-content:flex-end"><button class="ghost" value="cancel">Cancel</button><button class="go" id="dbExtSave" value="ok">💾 Save</button></div>
+      </form>
+    </dialog>

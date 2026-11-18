@@ -1,0 +1,27 @@
+<h1>🗄 Database</h1>
+<p>A MySQL / MariaDB database for a project, for every project, or on your own server - with the AI designing the tables, the
+fields and the views from what you describe. The 🗄 button on the top bar opens and closes the docker.</p>
+
+<h3>Where it lives</h3>
+<ul>
+  <li><b>📁 This project</b> - bitGen runs its own MariaDB server for the project, its data in the project's <code>db</code> folder. It goes with the project.</li>
+  <li><b>🌐 Global</b> - one MariaDB server for every project, its data in the app's <code>db</code> folder.</li>
+  <li><b>🖧 Your server</b> - any MySQL or MariaDB server (⚙ Your server…: host, port, user, password, database). The password is kept encrypted on this computer.</li>
+</ul>
+<p>bitGen's own servers listen on this computer only (127.0.0.1), start by themselves when they are needed (▶ / ⏹ by hand) and stop when bitGen closes. The first time, MariaDB itself is needed: when it is not on this computer a <b>Download / Cancel</b> box offers it (MariaDB, GPL-2.0, from archive.mariadb.org, into the app's <code>mariadb</code> folder). On a Mac install it with Homebrew (<code>brew install mariadb</code>) - bitGen finds it.</p>
+
+<h3>✨ Design - the AI makes the tables</h3>
+<ul>
+  <li>Describe what it is for: "a small shop: customers, products with stock, orders with their lines, and views for sales by month and the best customers".</li>
+  <li><b>✨ Design the tables</b>: the prompt docker's LLM writes the SQL - the tables with their fields and types, keys, links between tables, indexes and the views. It sees the tables already there, so you can ask for more later ("add suppliers").</li>
+  <li>The SQL is shown first. Read it, change it if you like, then <b>▶ Run</b>. It runs statement by statement and the first error stops it. A design never deletes tables or data.</li>
+  <li>Or say it in the prompt docker: "create a database for my shop with customers and orders" - the docker opens with the design in it.</li>
+</ul>
+
+<h3>Tables, data and SQL</h3>
+<ul>
+  <li>On the left: the tables (▦) and views (👁) with their fields - 🔑 the key, 🔗 a link to another table.</li>
+  <li>Click one for <b>📋 Data</b> - its first 200 rows.</li>
+  <li><b>⌨ SQL</b> runs any SQL you type (several statements, each ending with <code>;</code>) and shows the results.</li>
+  <li><b>＋ New</b> makes a database, <b>🗑</b> deletes the one shown (asked first).</li>
+</ul>

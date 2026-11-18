@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6186,
+ "count": 6241,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -57001,6 +57001,501 @@
    ],
    "where": [
     "Image editor templates (2.841.0)"
+   ]
+  },
+  {
+   "s": "Help - databases, the AI design, your own server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Close the docker (the 🗄 button on the top bar shows it again)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Where the database lives",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "📁 This project",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "🌐 Global (every project)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "🖧 Your server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "The server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Start the database server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "▶ Start",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Stop the database server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⏹ Stop",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "The database",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "A new database",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "＋ New",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "name + Enter",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Delete this database (asked first)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Your own MySQL / MariaDB server - host, port, user, password",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⚙ Your server…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "MariaDB is not installed.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "bitGen runs its own MariaDB database server (GPL-2.0, from archive.mariadb.org) for this project or for every project, on this computer only.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⬇ Download",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "✨ Design",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "📋 Data",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⌨ SQL",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Describe what it is for - e.g. a small shop: customers, products with stock, orders with their lines, and views for sales by month and the best customers",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "✨ Design the tables",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "The SQL the AI writes shows here - read it, change it, then ▶ Run",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "▶ Run",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Pick a table or view on the left.",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "SELECT * FROM customers; (several statements, each ending with ;)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "▶ Run SQL",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⚙ Your MySQL / MariaDB server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Host",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "User",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "Database",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "127.0.0.1 or db.example.com",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "(kept encrypted - empty = unchanged)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "(optional)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "▶ starting the database server…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "● running",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⏹ stopped",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "🗑 deleted",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "✓ MariaDB is installed",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⬇ downloading MariaDB…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "📦 unpacking…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "＋ make a database first",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "⏳ running…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "✨ the LLM is designing…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "say what the database is for",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "MariaDB not installed - ⚙ Your server works too",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "NULL",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "There is no download for this computer here - on a Mac: brew install mariadb (bitGen finds it), or use ⚙ Your server",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "no database yet - ＋ New",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "no database",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
+   ]
+  },
+  {
+   "s": "the LLM is designing",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "🗄 Database docker (2.842.0)"
    ]
   }
  ]

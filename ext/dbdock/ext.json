@@ -1,0 +1,9 @@
+{
+  "id": "dbdock",
+  "name": "Database",
+  "order": 97,
+  "html": "dock.html",
+  "scripts": [
+    "dbdock.js"
+  ]
+}

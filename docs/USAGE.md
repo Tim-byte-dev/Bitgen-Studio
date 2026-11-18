@@ -9519,6 +9519,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Or in the prompt docker: "make an invoice for Acme for 3 hours of design at $90".
 - Your own: any document with `{{fields}}` and a table row of `{{item.description}} {{item.qty}} {{item.price}} {{item.amount}}`, then **File ▸ 💾 Save as Template…**.
 
+## 🗄 Database - MySQL / MariaDB designed by the AI (2.842.0)
+
+- The 🗄 button on the top bar: a database for **📁 this project**, **🌐 global** (every project) - bitGen's own MariaDB, downloaded once with a Download / Cancel box - or **🖧 your server**.
+- **✨ Design**: describe what it is for; the LLM writes the tables, fields, keys, links, indexes and views as SQL you read first, then **▶ Run**. Or in the prompt docker: "create a database for my shop with customers and orders".
+- The tables and views on the left, **📋 Data** (their rows), **⌨ SQL** (any SQL).
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and
@@ -9615,6 +9621,8 @@ bitGen Studio stands on the work of many people. Thank you to everyone below - t
 - **[JSZip](https://github.com/Stuk/jszip)** (Stuart Knightley) - mail merge's .zip of Word files (MIT)
 - **[ExcelJS](https://github.com/exceljs/exceljs)** (Guyon Roche and the ExcelJS contributors) - ▦ Spreadsheet - opening and saving Excel workbooks (.xlsx) (MIT)
 - **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)** (Brent Ely and the PptxGenJS contributors) - 🎞 Slides - saving presentations as PowerPoint files (.pptx) (MIT)
+- **[node-mysql2](https://github.com/sidorares/node-mysql2)** (Andrey Sidorov and the node-mysql2 contributors) - 🗄 Database - talking to MySQL / MariaDB (MIT)
+- **[MariaDB Server](https://mariadb.org)** (the MariaDB Foundation and contributors) - 🗄 Database - the database server bitGen downloads on request and runs as its own program (GPL-2.0, not bundled)
 - **[xmldom](https://github.com/xmldom/xmldom)** (the xmldom contributors) - 🎞 Slides - reading PowerPoint files (.pptx) (MIT)
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)** (Postal Systems (Andris Reinman)) - ✉ Mail - reading your mailbox over IMAP and opening emails (MIT)
 - **[Nodemailer](https://nodemailer.com)** (Andris Reinman) - ✉ Mail - sending over your own mail server (MIT-0)

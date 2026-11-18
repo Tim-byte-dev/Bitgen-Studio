@@ -6118,6 +6118,13 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 - 也可在提示词停靠栏说：“给 Acme 开一张设计 3 小时 $90 的发票”。
 - 你自己的：含 `{{fields}}` 和一行 `{{item.description}} {{item.qty}} {{item.price}} {{item.amount}}` 表格的任意文档，然后 **文件 ▸ 💾 另存为模板…**。
 
+## 🗄 数据库——由 AI 设计的 MySQL / MariaDB（2.842.0）
+<!-- en: database-mysql-mariadb-designed-by-the-ai-2-842-0 5f5e5796ef42 -->
+
+- 顶部栏的 🗄 按钮：用于 **📁 此项目**、**🌐 全局**（所有项目）的数据库——bitGen 自己的 MariaDB，通过下载 / 取消框只下载一次——或 **🖧 你的服务器**。
+- **✨ 设计**：描述用途，LLM 以 SQL 编写表、字段、键、关联、索引和视图，先阅读再 **▶ 运行**。也可在提示词停靠栏说：“为我的店创建一个包含客户和订单的数据库”。
+- 左侧是表和视图，**📋 数据**（其行），**⌨ SQL**（任意 SQL）。
+
 ## 提示
 <!-- en: tips 29dfdc949d42 -->
 
@@ -6132,7 +6139,7 @@ Laser 面板（**Window ▸ Laser**）现在可以直接把任务发送到机器
 <!-- credits:start -->
 
 ## 致谢
-<!-- en: credits e1173dbf242c -->
+<!-- en: credits f49a4ef44b05 -->
 
 **出品与开发：Tim Paul**
 
@@ -6215,6 +6222,8 @@ bitGen Studio 建立在许多人的成果之上。感谢以下所有人——我
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）——邮件合并生成的 Word 文件 .zip（MIT）
 - **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）——▦ 电子表格 - 打开和保存 Excel 工作簿 (.xlsx)（MIT）
 - **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)**（Brent Ely and the PptxGenJS contributors）- 🎞 幻灯片 - 将演示文稿保存为 PowerPoint 文件 (.pptx)（MIT）
+- **[node-mysql2](https://github.com/sidorares/node-mysql2)**（Andrey Sidorov and the node-mysql2 contributors）——🗄 数据库——与 MySQL / MariaDB 通信（MIT）
+- **[MariaDB Server](https://mariadb.org)**（the MariaDB Foundation and contributors）——🗄 数据库——bitGen 按需下载并作为独立程序运行的数据库服务器（GPL-2.0，未捆绑）
 - **[xmldom](https://github.com/xmldom/xmldom)**（the xmldom contributors）- 🎞 幻灯片 - 读取 PowerPoint 文件 (.pptx)（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）——✉ 邮件：通过 IMAP 读取邮箱并打开邮件（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）——✉ 邮件：通过你自己的邮件服务器发送（MIT-0）

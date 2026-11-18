@@ -5883,6 +5883,13 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 - プロンプトドッカーでも：「Acme にデザイン 3 時間 $90 の請求書を作って」。
 - 自分のもの：`{{fields}}` と `{{item.description}} {{item.qty}} {{item.price}} {{item.amount}}` の表の行がある文書を作り、**ファイル ▸ 💾 テンプレートとして保存…**。
 
+## 🗄 データベース - AI が設計する MySQL / MariaDB（2.842.0）
+<!-- en: database-mysql-mariadb-designed-by-the-ai-2-842-0 5f5e5796ef42 -->
+
+- 上部バーの 🗄 ボタン：**📁 このプロジェクト**用、**🌐 グローバル**（全プロジェクト）用 - bitGen 自前の MariaDB、ダウンロード / キャンセルのボックスで一度だけダウンロード - または **🖧 あなたのサーバー**。
+- **✨ 設計**：用途を説明すると、LLM がテーブル、フィールド、キー、リンク、インデックス、ビューを SQL で書きます。先に読んでから **▶ 実行**。プロンプトドッカーでも：「顧客と注文のある店のデータベースを作って」。
+- 左にテーブルとビュー、**📋 データ**（その行）、**⌨ SQL**（任意の SQL）。
+
 ## ヒント
 <!-- en: tips 29dfdc949d42 -->
 
@@ -5895,7 +5902,7 @@ Laser パネル（**Window ▸ Laser**）から、ジョブをマシンに直接
 <!-- credits:start -->
 
 ## クレジット
-<!-- en: credits e1173dbf242c -->
+<!-- en: credits f49a4ef44b05 -->
 
 **制作・開発：Tim Paul**
 
@@ -5978,6 +5985,8 @@ bitGen Studio は多くの人々の成果の上に成り立っています。コ
 - **[JSZip](https://github.com/Stuk/jszip)**（Stuart Knightley）- 差し込み印刷の Word ファイルの .zip（MIT）
 - **[ExcelJS](https://github.com/exceljs/exceljs)**（Guyon Roche and the ExcelJS contributors）- ▦ スプレッドシート - Excel ブック (.xlsx) を開く・保存する（MIT）
 - **[PptxGenJS](https://github.com/gitbrent/PptxGenJS)**（Brent Ely and the PptxGenJS contributors）- 🎞 スライド - プレゼンテーションを PowerPoint ファイル (.pptx) で保存する（MIT）
+- **[node-mysql2](https://github.com/sidorares/node-mysql2)**（Andrey Sidorov and the node-mysql2 contributors）- 🗄 データベース - MySQL / MariaDB とのやり取り（MIT）
+- **[MariaDB Server](https://mariadb.org)**（the MariaDB Foundation and contributors）- 🗄 データベース - bitGen が求めに応じてダウンロードし、独立したプログラムとして動かすデータベースサーバー（GPL-2.0、同梱なし）
 - **[xmldom](https://github.com/xmldom/xmldom)**（the xmldom contributors）- 🎞 スライド - PowerPoint ファイル (.pptx) を読み込む（MIT）
 - **[ImapFlow and mailparser](https://github.com/postalsys/imapflow)**（Postal Systems (Andris Reinman)）- ✉ メール - IMAP でメールボックスを読み、メールを開く（MIT）
 - **[Nodemailer](https://nodemailer.com)**（Andris Reinman）- ✉ メール - 自分のメールサーバーから送信（MIT-0）

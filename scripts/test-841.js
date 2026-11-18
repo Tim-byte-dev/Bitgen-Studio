@@ -49,7 +49,7 @@ const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), "utf8");
   T.setComplete(null);
   const RI = read("routes/index.js"), SV = read("misc/server.js"), EX = JSON.parse(read("ext/imageeditdock/ext.json")), IE = read("ext/imageeditdock/imageedit.js"), DT = read("ext/imageeditdock/pcdoctpl.js"), GI = read(".gitignore");
   check("the wiring: /api/doctemplates from routes/index.js (not server.js), doc_templates/ git-ignored, pcdoctpl loaded + installed, File menu items, the prompt docker route",
-    /require\("\.\/docTemplates"\)\.mount\(app\)/.test(RI) && !/doctemplates/i.test(SV) && /\/doc_templates\//.test(GI) && EX.scripts.indexOf("pcdoctpl.js") === EX.scripts.indexOf("pcdocmargins.js") + 1 && IE.indexOf("PCDocTpl.install(E)") > IE.indexOf("PCDocMargins.install(E)")
+    /require\("\.\/docTemplates"\)\.mount\(app\)/.test(RI) && !/doctemplates/i.test(SV) && /^\/doc_templates\/$/m.test(GI) && EX.scripts.indexOf("pcdoctpl.js") === EX.scripts.indexOf("pcdocmargins.js") + 1 && IE.indexOf("PCDocTpl.install(E)") > IE.indexOf("PCDocMargins.install(E)")
     && /addCmd\("file\.tplnew", "🧾 New From Template…"/.test(DT) && /addCmd\("file\.tplsave", "💾 Save as Template…"/.test(DT) && /root\.H3ChatRoutes = \[maybe\]\.concat/.test(DT));
   console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);

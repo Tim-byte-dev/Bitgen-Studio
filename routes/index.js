@@ -127,6 +127,7 @@ function mount(app) {
   require("./slides").mount(app);      // 2.831.0: 🎞 Slides - decks (.bgk) in projects/<p>/slides, .pptx in / out, PDF kept
   require("./docAi").mount(app);       // 2.837.0: 📄 ✨ a document by the LLM into a WP layer (lib/docAi.js) - before the 100 KB json parser
   require("./docTemplates").mount(app);   // 2.841.0: 🧾 the image editor's document templates (lib/docTemplates.js) - before the 100 KB json parser
+  require("./db").mount(app);   // 2.842.0: 🗄 databases - bitGen's own MariaDB per project / global, or your server (lib/dbServer.js, lib/dbAi.js)
   app.use(express.json());
   require("./podInv").mount(app);     // 2.787.0: each pod's inventory + its files as "<pod>/<file>" in /api/comfymodels (lib/podInv.js) - before remoteModels
   require("./remoteModels").mount(app);

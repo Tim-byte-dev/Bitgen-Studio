@@ -71,6 +71,8 @@ Installed by `npm` with the rest of the server's packages (not copied into the r
 | `exceljs` (exceljs/exceljs) | opens and saves the spreadsheet's Excel workbooks (.xlsx) (2.824.0) | MIT |
 | `pptxgenjs` (gitbrent/PptxGenJS) | saves 🎞 Slides presentations as PowerPoint files (.pptx) (2.831.0) | MIT |
 | `@xmldom/xmldom` (xmldom/xmldom) | reads PowerPoint files (.pptx) into 🎞 Slides (2.832.0) | MIT |
+| `mysql2` (sidorares/node-mysql2) | talks to the 🗄 Database docker's MySQL / MariaDB servers (2.842.0) | MIT |
+| MariaDB Server (mariadb.org) - NOT bundled | downloaded on request from archive.mariadb.org into `<app>/mariadb/` and run as its own program for the 🗄 Database docker (2.842.0) | GPL-2.0 (a separate program, unmodified) |
 
 ### Node packages for ✉ Mail (2.818.0)
 

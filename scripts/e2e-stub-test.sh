@@ -14330,6 +14330,13 @@ node scripts/test-841.js > /tmp/t841.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui841-ui.js > /tmp/ui841.log 2>&1 \
   && ok "2.841.0 browser test: the built-in Invoice, ✨ Ask the AI, Fill (sums, INV-0001), undo, Save as Template, an invoice from the prompt docker" \
   || { bad "2.841.0 templates browser test"; grep -a "^FAIL" -A1 /tmp/ui841.log | head -12; }
+# ---- 2.842.0 (Tim: "allow user to create a mysql or mariadb inside the project or global, llm will create all of the tables,fields and views")
+node scripts/test-842.js > /tmp/t842.log 2>&1 \
+  && ok "2.842.0 splitSql / scopes / checkSql / design (stand-in LLM) / dbdock wants, a real MariaDB when there is one, the wiring" \
+  || { bad "2.842.0 database units"; grep -a "^FAIL" -A1 /tmp/t842.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui842-ui.js > /tmp/ui842.log 2>&1 \
+  && ok "2.842.0 browser test: the 🗄 button, \"create a database for my shop\" -> the SQL shown, ▶ Run, tables / view / keys, rows, ⌨ SQL" \
+  || { bad "2.842.0 database browser test"; grep -a "^FAIL" -A1 /tmp/ui842.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
