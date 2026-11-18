@@ -48,6 +48,12 @@
           #wbCrmList th, #wbCrmList td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
           #wbCrmList tr.r { cursor: pointer; }
           #wbCrmList tr.r:hover { background: var(--panel-2); }
+          #wbDbBox { margin-top: 8px; font-size: 11px; color: var(--dim); display: flex; flex-direction: column; gap: 3px; }
+          #wbDbBox .live { color: #3fb950; }
+          #wbDbForm { display: none; border: 1px solid var(--tiger); border-radius: 6px; padding: 6px; gap: 5px; flex-direction: column; font-size: 12px; }
+          #wbDbForm.on { display: flex; }
+          #wbDbForm label { display: flex; gap: 6px; align-items: center; }
+          #wbDbForm label > span { width: 110px; color: var(--dim); }
           #wbCrmForm { display: none; border: 1px solid var(--line); border-radius: 6px; padding: 6px; gap: 4px; flex-direction: column; max-height: 55%; overflow: auto; }
           #wbCrmForm.on { display: flex; }
           #wbCrmForm label { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; }
@@ -90,9 +96,20 @@
                   <button class="ghost" type="button" data-kind="bookings">📅 Bookings</button>
                   <button class="ghost" type="button" data-kind="orders">🧾 Orders</button>
                   <button class="ghost" type="button" data-kind="messages">✉ Messages</button>
+                  <div id="wbDbBox" title="Where Clients, Bookings, Orders and Messages are kept"></div>
                 </div>
                 <div id="wbCrmBody">
                   <div class="wbbar"><input id="wbCrmFind" placeholder="🔍 Search" style="flex:1;min-width:80px"><button class="ghost" type="button" id="wbCrmNew">＋ New</button><span id="wbCrmCount" style="color:var(--dim)"></span></div>
+                  <div id="wbDbForm">
+                    <b>🗄 Create the site's database</b>
+                    <div style="font-size:11px;color:var(--dim)">One database with the site's tables - clients, orders (the shop's tables), the booking calendar, the contact form's messages - and the CRM linked to it: what the site's visitors book, order and send shows here, live.</div>
+                    <label><input type="radio" name="wbDbScope" value="project" checked> 💻 This project's database (bitGen's MariaDB on this computer - build and try the site)</label>
+                    <label><input type="radio" name="wbDbScope" value="external"> 🌐 Your server - the live site's database (🗄 Database ▸ ⚙ Your server)</label>
+                    <label><span>Database name</span><input id="wbDbName" placeholder="mysite_site"></label>
+                    <label><input type="checkbox" id="wbDbImport" checked> Bring the records kept in the project so far</label>
+                    <div style="font-size:11px;color:var(--dim)">www/inc/config.php gets the database's host, name and user for the site's PHP - never the password (set DB_PASS on the server).</div>
+                    <div class="wbbar"><button class="go" type="button" id="wbDbGo">🗄 Create and link</button><button class="ghost" type="button" id="wbDbNo">Cancel</button><span id="wbDbMsg" style="font-size:11px"></span></div>
+                  </div>
                   <div id="wbCrmForm"></div>
                   <div id="wbCrmList"></div>
                   <div id="wbCrmNote" style="font-size:11px;color:var(--dim)"></div>

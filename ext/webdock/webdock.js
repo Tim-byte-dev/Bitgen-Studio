@@ -9,6 +9,9 @@
  *                the toolbar formats; leaving it puts the edited <body> back into the file's text (the head stays as written)
  *   </> Code     the open file's text (Tab = 2 spaces, Ctrl+S saves); a picture is shown
  *   👁 Preview   the site as a browser shows it (the saved page; unsaved changes drawn from the text), 🖥 ▭ 📱 widths, ↗ Open
+ *   🗄 2.857.0   Tim: "have the crm create the sites database and then link to it so it will be live" - 🗄 Create the site's database…
+ *                (this project's MariaDB, or your server = the live site's) makes the site's tables, brings the project's records in and
+ *                links the CRM: Clients / Bookings / Orders / Messages are then read from + written to it (⟳ every 30 s while shown)
  *   Files ▸      on the right, collapsible: the www tree (folders open / shut), ＋📄 ＋📁 ⤒ ✎ 🗑 ⟳ (delete = moved to web/trash)
  * One text buffer (St.text) for the open file - the WYSIWYG, the code and the preview all show it; 💾 Save writes it (a change on
  * disk since it was opened = refused, open it again). */
@@ -70,6 +73,7 @@
     try { St.files = (await api("/api/web/tree")).files; } catch (e) { return msg("✗ " + e.message, true); }
     paintTree(); fillPics();
     if (!St.path && St.files.some((f) => f.path === "index.html")) await open("index.html");
+    await dbStatus();
     if (St.tab === "crm") loadKind(St.kind);
   }
   function paintTree() {
@@ -160,7 +164,8 @@
     St.kind = kind; St.edit = null; $("wbCrmForm").classList.remove("on");
     doc.querySelectorAll("#wbCrmNav button").forEach((b) => b.classList.toggle("on", b.dataset.kind === kind));
     $("wbCrmNew").style.display = kind === "pages" ? "none" : "";
-    $("wbCrmNote").textContent = kind === "pages" ? "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page." : ["posts", "products"].includes(kind) ? "Kept in www/data/content.json - the site reads it (public)." : "Kept in the project's web/crm.json - private, never put on the site.";
+    const L = St.db && St.db.linked && ["clients", "bookings", "orders", "messages"].includes(kind);
+    $("wbCrmNote").textContent = L ? `🟢 Live from the database ${St.db.name} (${St.db.scope === "external" ? "your server" : "this computer"}) - what the site's visitors book, order and send shows here.` : kind === "pages" ? "Each .html page of the site - its title, description and main heading. ✎ Open = edit the whole page." : ["posts", "products"].includes(kind) ? "Kept in www/data/content.json - the site reads it (public)." : "Kept in the project's web/crm.json - private, never put on the site.";
     try { const j = kind === "pages" ? await api("/api/web/pages") : await api("/api/web/records?kind=" + kind); St.items = kind === "pages" ? j.pages : j.items; }
     catch (e) { St.items = []; msg("✗ " + e.message, true); }
     paintList();
@@ -198,6 +203,40 @@
       if (root.H3TestEvent) { try { root.H3TestEvent("web_record", St.kind); } catch (e) { /* the 🧪 list */ } }
     } catch (e) { msg("✗ " + e.message, true); }
   }
+
+  /* ---------------- 🗄 the live database (2.857.0) */
+  async function dbStatus() {
+    try { St.db = await api("/api/web/db"); } catch (e) { St.db = { linked: false }; }
+    const b = $("wbDbBox"); if (!b) return St.db;
+    b.innerHTML = St.db.linked
+      ? `<span class="live">🟢 Live: ${esc(St.db.name)}</span><span>${St.db.scope === "external" ? "🌐 your server" : "💻 this computer"}${St.db.ok ? "" : " - ✗ " + esc(St.db.error || "not reached")}</span><button class="ghost" type="button" id="wbDbUnlink" title="Keep the records in the project again (the database stays as it is)">Unlink</button>`
+      : `<span>📁 Kept in the project (not live)</span><button class="ghost" type="button" id="wbDbMake" title="Make the site's database and link the CRM to it">🗄 Create the site's database…</button>`;
+    if ($("wbDbMake")) $("wbDbMake").onclick = () => { $("wbDbForm").classList.add("on"); $("wbDbName").value = $("wbDbName").value || ""; $("wbDbMsg").textContent = ""; };
+    if ($("wbDbUnlink")) $("wbDbUnlink").onclick = async () => { if (!root.confirm("Unlink the CRM from " + St.db.name + "? The database is left as it is.")) return; await api("/api/web/db/unlink", {}); await dbStatus(); loadKind(St.kind); };
+    return St.db;
+  }
+  async function dbCreate() {
+    const scope = (doc.querySelector('input[name="wbDbScope"]:checked') || {}).value || "project", m = $("wbDbMsg");
+    try {
+      if (scope === "project") {
+        const st = await api("/api/db/status");
+        if (!st.server) { m.textContent = "MariaDB is needed - the 🗄 Database docker asks to download it"; if (root.H3Db) { root.H3Db.show(); if (!(await root.H3Db.ready())) return; } else return; }
+      }
+      $("wbDbGo").disabled = true; m.textContent = "🗄 making the database…";
+      const r = await api("/api/web/db/create", { scope, name: $("wbDbName").value.trim() || undefined, importLocal: $("wbDbImport").checked });
+      $("wbDbForm").classList.remove("on");
+      const im = r.imported ? Object.entries(r.imported).filter(([, n]) => n).map(([k, n]) => n + " " + k).join(", ") : "";
+      msg(`🗄 ${r.name} ${r.made ? "made" : "ready"} and linked${im ? " - brought in " + im : ""}${r.config ? " · www/" + r.config + " points the site at it" : ""}`);
+      await dbStatus(); loadKind(["clients", "bookings", "orders", "messages"].includes(St.kind) ? St.kind : "clients");
+      if (root.H3TestEvent) { try { root.H3TestEvent("web_db", r.name); } catch (e) { /* the 🧪 list */ } }
+    } catch (e) { m.textContent = "✗ " + e.message; if (e.status === 412 && root.H3Db) root.H3Db.show(); }
+    finally { $("wbDbGo").disabled = false; }
+  }
+  // live: the customers' list read again every 30 s while it is on screen (no form open)
+  if (root.setInterval) root.setInterval(() => {
+    const d = $("webdock");
+    if (d && !d.classList.contains("dockgone") && St.tab === "crm" && St.db && St.db.linked && ["clients", "bookings", "orders", "messages"].includes(St.kind) && !$("wbCrmForm").classList.contains("on") && !doc.hidden) loadKind(St.kind);
+  }, 30000);
 
   /* ---------------- wiring */
   function show() { const d = $("webdock"); if (d && d.classList.contains("dockgone") && typeof root.toggleDockGone === "function") root.toggleDockGone("webdock", "tX_webdock"); }
@@ -251,6 +290,8 @@
     d.querySelectorAll("#wbCrmNav [data-kind]").forEach((b) => b.addEventListener("click", () => loadKind(b.dataset.kind)));
     on("wbCrmFind", "input", paintList); on("wbCrmFind", "keydown", (e) => e.stopPropagation());
     on("wbCrmNew", "click", () => form(null));
+    on("wbDbGo", "click", dbCreate); on("wbDbNo", "click", () => $("wbDbForm").classList.remove("on"));
+    on("wbDbName", "keydown", (e) => e.stopPropagation());
     on("wbCrmList", "click", (e) => {
       const op = e.target.closest("[data-openp]"); if (op) { e.stopPropagation(); open(op.dataset.openp).then((ok) => ok && tab("wys")); return; }
       const tr = e.target.closest("tr.r"); if (!tr) return; const it = St.items.find((x) => (x.id || x.path) === tr.dataset.id); if (it) form(it);
@@ -264,5 +305,5 @@
     new root.MutationObserver(go).observe(d, { attributes: true, attributeFilter: ["class"] });
   }
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", wire); else wire();
-  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, state: () => St }, pure);
+  root.H3Web = Object.assign({ show, refresh, open, save, tab, loadKind, dbStatus, state: () => St }, pure);
 })(typeof window !== "undefined" ? window : globalThis);

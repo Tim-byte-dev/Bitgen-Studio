@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6688,
+ "count": 6704,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -61960,6 +61960,166 @@
    ],
    "where": [
     "🌐 Web editor (2.856.0)"
+   ]
+  },
+  {
+   "s": "your server",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Keep the records in the project again (the database stays as it is)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Kept in the project (not live)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Create the site's database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "MariaDB is needed - the 🗄 Database docker asks to download it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "making the database",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Unlink",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Where Clients, Bookings, Orders and Messages are kept",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Make the site's database and link the CRM to it",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "One database with the site's tables - clients, orders (the shop's tables), the booking calendar, the contact form's messages - and the CRM linked to it: what the site's visitors book, order and send shows here, live",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "This project's database (bitGen's MariaDB on this computer - build and try the site)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Your server - the live site's database (🗄 Database ▸ ⚙ Your server)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Database name",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Bring the records kept in the project so far",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "www/inc/config.php gets the database's host, name and user for the site's PHP - never the password (set DB_PASS on the server)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
+   ]
+  },
+  {
+   "s": "Create and link",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "🌐 Web editor ▸ 🗂 CRM ▸ 🗄 (2.857.0)"
    ]
   }
  ]

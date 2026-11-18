@@ -9614,6 +9614,13 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✎ WYSIWYG** - the open page as it looks, with its own style sheet: type on it; bold / italic / underline, headings, lists, alignment, 🔗 links, 🖼 the site's pictures. The page's scripts do not run here. Your edits go back into the page's body - its head stays as written.
 - **</> Code** - the open file's text (Tab = two spaces, Ctrl+S saves). **👁 Preview** - the site as a browser shows it (unsaved changes drawn from the text), 🖥 Desktop / ▭ Tablet / 📱 Phone width, ↗ Open in a browser tab. The ● beside the file name = not saved; 💾 Save (Ctrl+S) writes it - a file changed on disk since you opened it is not overwritten.
 
+## 🗄 The Web editor - the site's live database (2.857.0)
+
+- In **🌐 Web editor ▸ 🗂 CRM**, under Customers, **🗄 Create the site's database…** makes one database with the site's tables - clients, the shop's orders, the booking calendar and the contact form's messages - and links the CRM to it. **💻 This project's database** is bitGen's MariaDB on this computer (build and try the site); **🌐 Your server** is the live site's database on your host (set it in 🗄 Database ▸ ⚙ Your server - on a host that does not let you make databases, its own database is used).
+- Tick **Bring the records kept in the project so far** to move the clients, bookings, orders and messages you already had into it (once).
+- Linked = **🟢 Live**: Clients, Bookings, Orders and Messages are read from and written to the database - what the site's visitors book, order and send shows up (read again every 30 seconds). Posts and products stay in www/data/content.json. **Unlink** keeps the records in the project again; the database is left as it is.
+- www/inc/config.php gets the database's host, name and user, so the site's PHP uses the same database. bitGen never writes the password there - set DB_PASS on the server.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

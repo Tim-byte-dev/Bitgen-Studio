@@ -14447,6 +14447,16 @@ node scripts/test-856.js > /tmp/t856.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui856-ui.js > /tmp/ui856.log 2>&1 \
   && ok "2.856.0 browser test: the 🌐 docker, Make www, the files panel, Code + Ctrl+S, WYSIWYG back into the body, Preview, CRM, New project ☑ Website" \
   || { bad "2.856.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui856.log | head -12; }
+# ---- 2.857.0 (🗄 the CRM's live database)
+node scripts/test-857.js > /tmp/t857.log 2>&1 \
+  && ok "2.857.0 🗄 the CRM's database: your server not set up, a host's own database, inc/config.php without a password, the routes while linked" \
+  || { bad "2.857.0 units"; grep -a "^FAIL" -A1 /tmp/t857.log | head -12; }
+node scripts/test-857-live.js > /tmp/t857l.log 2>&1 \
+  && ok "2.857.0 LIVE (real MariaDB): made + linked, the records brought in, the site's writes shown, CRM edits in the tables, unlink" \
+  || { bad "2.857.0 live"; grep -a "^FAIL" -A1 /tmp/t857l.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui857-ui.js > /tmp/ui857.log 2>&1 \
+  && ok "2.857.0 browser test: 🗄 Create and link, 🟢 Live, a site message shown, a CRM client in the database, Unlink" \
+  || { bad "2.857.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui857.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]
