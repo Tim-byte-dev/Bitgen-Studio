@@ -78,6 +78,23 @@
           #slPresenter .pvlbl button { padding: 0 6px; font-size: 11px; }
           #slPresenter .pvnotes { flex: 1; overflow-y: auto; background: #0f1013; border: 1px solid #333; border-radius: 4px; padding: 10px 12px; line-height: 1.45; white-space: normal; user-select: text; }
           #slPick { position: fixed; z-index: 10060; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, 90vw); max-height: 80vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+          #slidesdock .it.table, .slslide .it.table { overflow: hidden; }
+          .sltbl { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+          .sltbl td { padding: 0.25em 0.45em; vertical-align: middle; overflow: hidden; word-wrap: break-word; line-height: 1.2; }
+          .slchartwait { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; opacity: .5; }
+          #slDataBox, #slBrandBox { position: fixed; z-index: 10060; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(780px, 94vw); max-height: 88vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.55); font-size: 12px; }
+          #slDataBox .hd2, #slBrandBox .hd2 { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+          #slDataBox .bd, #slBrandBox .bd { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; }
+          #slDataBox .row, #slBrandBox .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+          #slDataBox .row label, #slBrandBox .row label { display: flex; align-items: center; gap: 5px; }
+          #slDataBox .dim, #slBrandBox .dim { color: var(--dim); }
+          #slDataBox .gridwrap { overflow: auto; max-height: 46vh; }
+          .sldg { border-collapse: collapse; } .sldg td { padding: 0; border: 1px solid var(--line); }
+          .sldg input { width: 110px; border: 0; border-radius: 0; background: transparent; padding: 3px 5px; font: inherit; color: inherit; }
+          .sldg input.hd { font-weight: 700; background: var(--panel-2); }
+          #slBrandBox .prev { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; }
+          #slBrandBox .prev > .slslide { transform-origin: 0 0; position: absolute; left: 0; top: 0; }
+          #slBrandBox .sws { display: flex; gap: 4px; } #slBrandBox .sws span { width: 26px; height: 18px; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
           #slAiBox { position: fixed; z-index: 10060; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(640px, 92vw); max-height: 86vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.55); font-size: 12px; }
           #slAiBox .hd2 { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); }
           #slAiBox .bd { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; }
@@ -131,6 +148,8 @@
           <button class="ghost" type="button" id="slAddText" title="A text box">🅃 Text</button>
           <button class="ghost" type="button" id="slAddShape" title="A shape">⬚ Shape ▾</button>
           <button class="ghost" type="button" id="slAddPic" title="A picture - from this computer, the Gallery or Assets (or drop / paste one on the slide)">🖼 Picture ▾</button>
+          <button class="ghost" type="button" id="slAddTable" title="A table - the header row in the theme's colour; double-click it to edit the cells (or paste from a spreadsheet)">▦ Table</button>
+          <button class="ghost" type="button" id="slAddChart" title="A chart - column, bar, line, area, pie or doughnut in the theme's colours; double-click it to change the numbers">📊 Chart ▾</button>
           <span class="sep"></span>
           <select id="slFont" title="Font"></select>
           <input type="number" id="slSize" min="6" max="300" title="Text size (px on the slide)">

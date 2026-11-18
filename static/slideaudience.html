@@ -15,6 +15,9 @@
   .slslide .it .tx.bul .p:not(:empty)::before { content: "•"; display: inline-block; width: 1.1em; text-indent: 0; color: var(--sl-accent); }
   .slslide .it svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .slslide .it img { width: 100%; height: 100%; display: block; }
+  .slslide .it.table { overflow: hidden; }
+  .sltbl { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+  .sltbl td { padding: 0.25em 0.45em; vertical-align: middle; overflow: hidden; word-wrap: break-word; line-height: 1.2; }
   #tip { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); color: #bbb; font: 13px sans-serif; background: rgba(30,30,30,.85); padding: 6px 12px; border-radius: 6px; transition: opacity .6s; }
   @keyframes slFadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slPushIn { from { transform: translateX(var(--sl-w)); } to { transform: translateX(0); } }

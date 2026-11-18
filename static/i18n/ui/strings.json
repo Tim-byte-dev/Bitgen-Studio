@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6150,
+ "count": 6161,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56677,6 +56677,105 @@
    ],
    "where": [
     "Slides part 3 (2.833.0)"
+   ]
+  },
+  {
+   "s": "Chart ▾",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "A table - the header row in the theme's colour; double-click it to edit the cells (or paste from a spreadsheet)",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "A chart - column, bar, line, area, pie or doughnut in the theme's colours; double-click it to change the numbers",
+   "kinds": [
+    "title"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "Area",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "Doughnut",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "table added - fill it in (double-click it later to edit)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "chart added - put in your numbers (double-click it later to edit)",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "table updated - Ctrl+Z takes it back",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "chart updated - Ctrl+Z takes it back",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "Chart data",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
+   ]
+  },
+  {
+   "s": "Brand theme…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Slides tables, charts, brands (2.835.0)"
    ]
   }
  ]

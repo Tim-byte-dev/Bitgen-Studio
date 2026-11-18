@@ -9477,6 +9477,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - **✨ Generate** (prompt docker) with a picture open in the image editor: a selection = rendered into it with the prompt docker's style, fitting the scene; no selection = made at the canvas's shape and laid over the whole canvas - both as a new layer.
 - **✏ Edit**: the dropdown beside the ▾ - **Auto** (a selection across the picture or over empty canvas = Outpaint, another selection = Inpaint; no selection = the empty canvas round the picture outpainted, else the layer edited), **Inpaint**, **Fill**, **Outpaint** (make room first with Image ▸ Canvas Size) - the Krita AI plugin's fill modes, through the prompt docker's edit model.
 
+## 🎞 Slides - tables, charts and brand themes; reset-layout.bat clears the whole cache (2.835.0)
+
+- **▦ Table** and **📊 Chart ▾** (Column, Bar, Line, Area, Pie, Doughnut) go into the slide's empty content box; their editor (also on a double-click) takes the cells / the categories, series and numbers - type them or 📋 paste from a spreadsheet. Header and banded rows, the header colour; charts in the theme's two accents. Real tables and charts in ⤓ PowerPoint (and read back by ⤒ Open PowerPoint), drawn in ⤓ PDF.
+- **🎨 Theme ▾ ▸ 🎨 Brand theme…**: background, title, text and two accent colours + fonts, a live preview; 🖼 From a logo… takes the colours out of a picture; ✔ Use in this presentation, 💾 Save brand (listed in Theme ▾ for every project - <app>/brands/).
+- **misc\reset-layout.bat** now clears the desktop app's whole cache folder (%APPDATA%\bitgen-studio-shell), copying its look settings to the backup first - the fix that brought a black window back.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

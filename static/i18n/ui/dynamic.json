@@ -1,5 +1,5 @@
 {
- "made": "2026-11-17",
+ "made": "2026-11-18",
  "scope": "all",
  "strings": [
   {
@@ -20479,16 +20479,148 @@
    "src": "ext/slidesdock/slideai.js:259"
   },
   {
+   "s": "this presentation's",
+   "src": "ext/slidesdock/slidebrand.js:74"
+  },
+  {
+   "s": "Change this brand",
+   "src": "ext/slidesdock/slidebrand.js:75"
+  },
+  {
+   "s": "Delete this brand",
+   "src": "ext/slidesdock/slidebrand.js:75"
+  },
+  {
+   "s": "Brand theme",
+   "src": "ext/slidesdock/slidebrand.js:76"
+  },
+  {
+   "s": "Titles",
+   "src": "ext/slidesdock/slidebrand.js:96"
+  },
+  {
+   "s": "Accent 1",
+   "src": "ext/slidesdock/slidebrand.js:96"
+  },
+  {
+   "s": "Accent 2",
+   "src": "ext/slidesdock/slidebrand.js:96"
+  },
+  {
+   "s": "From a logo",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Light background",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "The logo's colours (click one for Accent 1, Shift+click for Accent 2)",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Title font",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Text font",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Save brand",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Use in this presentation",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "e.g. Tiger Art",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Take the colours out of a logo or any picture",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Keep it for every project (the Theme ▾ list)",
+   "src": "ext/slidesdock/slidebrand.js:97"
+  },
+  {
+   "s": "Bullets in the accent Text in the text colour Titles in the title colour",
+   "src": "ext/slidesdock/slidebrand.js:118"
+  },
+  {
+   "s": "could not read that picture",
+   "src": "ext/slidesdock/slidebrand.js:142"
+  },
+  {
+   "s": "give the brand a name first",
+   "src": "ext/slidesdock/slidebrand.js:147"
+  },
+  {
    "s": "Forest",
-   "src": "ext/slidesdock/slidecore.js:27"
+   "src": "ext/slidesdock/slidecore.js:31"
   },
   {
    "s": "Title slide",
-   "src": "ext/slidesdock/slidecore.js:32"
+   "src": "ext/slidesdock/slidecore.js:38"
   },
   {
    "s": "Click to add a title",
-   "src": "ext/slidesdock/slidecore.js:40"
+   "src": "ext/slidesdock/slidecore.js:46"
+  },
+  {
+   "s": "Sales",
+   "src": "ext/slidesdock/slidecore.js:84"
+  },
+  {
+   "s": "Header row",
+   "src": "ext/slidesdock/slidedata.js:107"
+  },
+  {
+   "s": "Banded rows",
+   "src": "ext/slidesdock/slidedata.js:107"
+  },
+  {
+   "s": "Header colour",
+   "src": "ext/slidesdock/slidedata.js:107"
+  },
+  {
+   "s": "Text size",
+   "src": "ext/slidesdock/slidedata.js:107"
+  },
+  {
+   "s": "Table",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "Row",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "Column",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "Paste from a spreadsheet",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "Paste cells copied from the spreadsheet or Excel (tab-separated) - they replace the grid",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "The first column = the categories (the x axis / the slices), the first row = the series names, the numbers in between",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "Series",
+   "src": "ext/slidesdock/slidedata.js:112"
+  },
+  {
+   "s": "nothing to paste - copy some cells first",
+   "src": "ext/slidesdock/slidedata.js:138"
   },
   {
    "s": "Slides - a page each",
@@ -20528,59 +20660,67 @@
   },
   {
    "s": "Turn (Shift = 15° steps)",
-   "src": "ext/slidesdock/slidesdock.js:129"
+   "src": "ext/slidesdock/slidesdock.js:131"
   },
   {
    "s": "New slide",
-   "src": "ext/slidesdock/slidesdock.js:147"
+   "src": "ext/slidesdock/slidesdock.js:149"
   },
   {
    "s": "A new slide at the end (right-click: pick its layout)",
-   "src": "ext/slidesdock/slidesdock.js:147"
+   "src": "ext/slidesdock/slidesdock.js:149"
   },
   {
    "s": "New slide after this",
-   "src": "ext/slidesdock/slidesdock.js:405"
+   "src": "ext/slidesdock/slidesdock.js:407"
   },
   {
    "s": "Duplicate slide",
-   "src": "ext/slidesdock/slidesdock.js:406"
+   "src": "ext/slidesdock/slidesdock.js:408"
   },
   {
    "s": "Show in the presentation",
-   "src": "ext/slidesdock/slidesdock.js:406"
+   "src": "ext/slidesdock/slidesdock.js:408"
   },
   {
    "s": "Delete slide",
-   "src": "ext/slidesdock/slidesdock.js:406"
+   "src": "ext/slidesdock/slidesdock.js:408"
   },
   {
    "s": "Hide in the presentation",
-   "src": "ext/slidesdock/slidesdock.js:406"
+   "src": "ext/slidesdock/slidesdock.js:408"
+  },
+  {
+   "s": "Edit chart data",
+   "src": "ext/slidesdock/slidesdock.js:442"
+  },
+  {
+   "s": "Edit table",
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "Bring to front",
-   "src": "ext/slidesdock/slidesdock.js:439"
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "Send to back",
-   "src": "ext/slidesdock/slidesdock.js:439"
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "Fit / fill the box",
-   "src": "ext/slidesdock/slidesdock.js:439"
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "Text box",
-   "src": "ext/slidesdock/slidesdock.js:439"
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "Picture",
-   "src": "ext/slidesdock/slidesdock.js:439"
+   "src": "ext/slidesdock/slidesdock.js:442"
   },
   {
    "s": "no presentations in this project yet - 💾 Save one",
-   "src": "ext/slidesdock/slidesdock.js:468"
+   "src": "ext/slidesdock/slidesdock.js:472"
   },
   {
    "s": "the end",
@@ -29041,8 +29181,20 @@
    "src": "ext/sheetdock/sheetdock.js:538"
   },
   {
+   "p": "the colours of {0} - change any of them",
+   "src": "ext/slidesdock/slidebrand.js:141"
+  },
+  {
+   "p": "{0}\" saved - it is in 🎨 Theme ▾ for every project",
+   "src": "ext/slidesdock/slidebrand.js:148"
+  },
+  {
+   "p": "{0} × {1} pasted - ✔ Apply puts it in",
+   "src": "ext/slidesdock/slidedata.js:140"
+  },
+  {
    "p": "{0} (hidden in the show)",
-   "src": "ext/slidesdock/slidesdock.js:142"
+   "src": "ext/slidesdock/slidesdock.js:144"
   },
   {
    "p": "Slide {0} of {1}",

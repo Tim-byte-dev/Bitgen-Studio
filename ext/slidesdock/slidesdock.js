@@ -74,6 +74,8 @@
       e.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${K().shapePath(it.shape)}" fill="${line || S.fill === "none" ? "none" : S.fill}" stroke="${stroke === "none" || !sw ? "none" : stroke}" stroke-width="${sw}" vector-effect="non-scaling-stroke"/></svg>`
         + (String(it.text || "") ? textHtml(Object.assign({}, it, { st: Object.assign({ align: "center", valign: "middle", color: "#ffffff" }, it.st || {}) }), deck, mode) : "");
       if (String(it.text || "")) e.lastChild.style.position = "relative";
+    } else if ((it.type === "table" || it.type === "chart") && root.H3SlideData) {   // 2.835.0: slidedata.js
+      e.innerHTML = root.H3SlideData.html(it, deck, mode);
     } else if (it.type === "image") {
       const u = mediaUrl(it.src);
       if (u) e.innerHTML = `<img alt="" draggable="false" src="${u}" style="object-fit:${it.fit === "contain" ? "contain" : "cover"}">`;
@@ -431,14 +433,16 @@
   function themeMenu(btn) {
     const m = below(btn, Object.entries(K().THEMES).map(([k, T]) => `<div data-t="${k}"${D().theme === k ? ' class="on"' : ""}>${themeSw(k)} ${esc(T.name)} <span style="color:var(--dim);font-family:'${T.font}'">${esc(T.font)}</span></div>`).join(""));
     m.addEventListener("click", (e) => { const it = e.target.closest("[data-t]"); if (!it) return; m.remove(); step(); D().theme = it.dataset.t; changed(); msg("🎨 " + K().THEMES[it.dataset.t].name); });
+    if (root.H3SlideBrand) root.H3SlideBrand.extend(m);                   // 2.835.0: brand themes (slidebrand.js)
   }
   const SHAPE_NAMES = { rect: "▭ Rectangle", round: "▢ Rounded rectangle", ellipse: "◯ Ellipse", triangle: "△ Triangle", diamond: "◇ Diamond", rarrow: "➜ Arrow right", larrow: "⬅ Arrow left", star: "☆ Star", line: "╱ Line" };
   function shapeMenu(btn) { const m = below(btn, K().SHAPES.map((k) => `<div data-s="${k}">${SHAPE_NAMES[k]}</div>`).join("")); m.addEventListener("click", (e) => { const it = e.target.closest("[data-s]"); if (!it) return; m.remove(); addShape(it.dataset.s); }); }
   function stageMenu(x, y) {
     const n = St.sel.size;
-    const m = menu(x, y, (n ? `<div data-a="cut">✂ Cut</div><div data-a="copy">⧉ Copy</div>` : "") + `<div data-a="paste">📋 Paste</div>` + (n ? `<div data-a="dup">⧉ Duplicate</div><hr><div data-a="front">⇡ Bring to front</div><div data-a="back">⇣ Send to back</div>` + (picked().some((i) => i.type === "image") ? `<div data-a="fit">⤢ Fit / fill the box</div>` : "") + `<hr><div data-a="del">🗑 Delete</div>` : `<hr><div data-a="text">🅃 Text box</div><div data-a="pic">🖼 Picture…</div><div data-a="layout">▤ Layout…</div>`));
+    const m = menu(x, y, (n ? `<div data-a="cut">✂ Cut</div><div data-a="copy">⧉ Copy</div>` : "") + `<div data-a="paste">📋 Paste</div>` + (picked().some((i) => i.type === "table" || i.type === "chart") ? `<div data-a="data">✎ Edit ${picked().some((i) => i.type === "chart") ? "chart data" : "table"}…</div>` : "") + (n ? `<div data-a="dup">⧉ Duplicate</div><hr><div data-a="front">⇡ Bring to front</div><div data-a="back">⇣ Send to back</div>` + (picked().some((i) => i.type === "image") ? `<div data-a="fit">⤢ Fit / fill the box</div>` : "") + `<hr><div data-a="del">🗑 Delete</div>` : `<hr><div data-a="text">🅃 Text box</div><div data-a="pic">🖼 Picture…</div><div data-a="layout">▤ Layout…</div>`));
     m.addEventListener("click", (e) => {
       const a = (e.target.closest("[data-a]") || {}).dataset; if (!a || !a.a) return; m.remove();
+      if (a.a === "data") { const t = picked().find((i) => i.type === "table" || i.type === "chart"); if (t && root.H3SlideData) root.H3SlideData.edit(t); return; }   // 2.835.0
       ({ cut: () => copyItems(true), copy: () => copyItems(false), paste: () => pasteItems() || msg("nothing copied yet"), dup: dupItems, front: () => order(true), back: () => order(false), del: delItems,
         text: addText, pic: () => $("slPicFile").click(), layout: () => layoutMenu($("slLayout")),
         fit: () => { step(); for (const it of picked()) if (it.type === "image") it.fit = it.fit === "contain" ? "cover" : "contain"; changed(); } })[a.a]();
@@ -543,7 +547,7 @@
     $("slFont").innerHTML = K().FONTS.map((f) => `<option value="${esc(f)}" style="font-family:'${esc(f)}'" data-noi18n>${esc(f)}</option>`).join("");
     const wrap = $("slStageWrap");
     wrap.addEventListener("pointerdown", onStageDown);
-    wrap.addEventListener("dblclick", (e) => { const el = e.target.closest(".it"); if (el) { const it = item(el.dataset.id); if (it && it.type === "image") { if (!mediaUrl(it.src)) { St.sel = new Set([it.id]); $("slPicFile").click(); } } else startEdit(el.dataset.id); } else if (!e.target.closest(".hd, .rot")) addText(); });
+    wrap.addEventListener("dblclick", (e) => { const el = e.target.closest(".it"); if (el) { const it = item(el.dataset.id); if (it && it.type === "image") { if (!mediaUrl(it.src)) { St.sel = new Set([it.id]); $("slPicFile").click(); } } else if (it && (it.type === "table" || it.type === "chart") && root.H3SlideData) root.H3SlideData.edit(it); else startEdit(el.dataset.id); } else if (!e.target.closest(".hd, .rot")) addText(); });
     wrap.addEventListener("contextmenu", (e) => { e.preventDefault(); const el = e.target.closest(".it"); if (el && !St.sel.has(el.dataset.id)) { St.sel = new Set([el.dataset.id]); paint(); } stageMenu(e.clientX, e.clientY); });
     wrap.addEventListener("keydown", onStageKey);
     wrap.addEventListener("paste", (e) => { if (St.edit) return; const fs = [...(e.clipboardData && e.clipboardData.files) || []].filter((f) => /^image\//.test(f.type)); if (fs.length) { e.preventDefault(); addPictures(fs); return; } if (pasteItems()) e.preventDefault(); });

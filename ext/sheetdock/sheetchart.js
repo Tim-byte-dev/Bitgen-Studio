@@ -58,7 +58,7 @@
   function svg(spec, d, w, h, look) {
     const L = Object.assign({ ink: "#e8e2d6", dim: "#9a927f", line: "#3a352c", font: "sans-serif", bg: "none" }, look || {});
     const type = TYPES.includes(spec.type) ? spec.type : "column", cols = Array.isArray(spec.colors) && spec.colors.length ? spec.colors : COLORS;
-    const W = Math.max(60, w), H = Math.max(60, h), fs = Math.max(9, Math.min(12, Math.round(Math.min(W, H) / 26)));
+    const W = Math.max(60, w), H = Math.max(60, h), fs = +L.fs > 0 ? Math.round(+L.fs) : Math.max(9, Math.min(12, Math.round(Math.min(W, H) / 26)));   // 2.835.0: look.fs (slides draw bigger words)
     let o = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="${esc(L.font)}" font-size="${fs}">`;
     if (L.bg !== "none") o += `<rect width="${W}" height="${H}" fill="${L.bg}"/>`;
     let top = 8;

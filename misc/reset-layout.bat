@@ -7,8 +7,8 @@ rem
 rem  Puts back the default layout: docker positions and sizes, floating panels,
 rem  the prompt docker, the workspaces, the dialog positions. It also resets the
 rem  theme, the UI scale and the other look settings kept in the app's browser
-rem  storage, clears the desktop app's caches (for a black or frozen window)
-rem  and puts away the theme editor's unsaved working copies (themes\*.tmp).
+rem  storage, clears the desktop app's WHOLE cache folder (for a black or frozen
+rem  window - %APPDATA%\bitgen-studio-shell, 2.835.0) and puts away the theme editor's unsaved working copies (themes\*.tmp).
 rem
 rem  NOT touched: your projects, custom.settings, styles, models, ComfyUI, quick
 rem  prompts. Everything it removes is moved to backups\layout-<time>\ first, so
@@ -32,7 +32,7 @@ echo  bitGen Studio - reset the layout and the theme
 echo  ----------------------------------------------
 echo  Resets: docker and panel positions, workspaces, dialog positions,
 echo          the theme, the UI scale and the look settings, the desktop
-echo          app's caches ^(a black or frozen window^).
+echo          app's whole cache folder ^(a black or frozen window^).
 echo  Keeps:  projects, settings, styles, models, ComfyUI, quick prompts.
 echo.
 
@@ -73,20 +73,26 @@ for %%F in (docker_status.json docker_status.json.tmp dockers.json dockers.json.
   )
 )
 
-rem -- the desktop app's browser storage (the theme, the UI scale, the look)
-for %%D in ("%APPDATA%\bitgen-studio-shell" "%APPDATA%\bitGen Studio" "%APPDATA%\bitgen-studio") do (
-  if exist "%%~D\Local Storage" (
-    mkdir "%BK%\appdata" 2>nul
-    move /Y "%%~D\Local Storage" "%BK%\appdata\Local Storage" >nul && (echo  reset the theme and look ^(%%~D\Local Storage^) & set /a N+=1)
-  )
-  if exist "%%~D\Session Storage" (
-    mkdir "%BK%\appdata" 2>nul
-    move /Y "%%~D\Session Storage" "%BK%\appdata\Session Storage" >nul
-  )
-  rem -- 2.540.6: the desktop app caches - for a black or frozen window - only caches, rebuilt on the next start
-  for %%C in ("GPUCache" "Code Cache" "Cache" "DawnCache" "DawnGraphiteCache" "Service Worker") do (
-    if exist "%%~D\%%~C" (
-      rmdir /S /Q "%%~D\%%~C" 2>nul && (echo  cleared %%~C ^(%%~D^) & set /a N+=1)
+rem -- 2.835.0 (Tim: "Make reset-layout.bat clear the whole Electron cache" - at 2.829.0 only deleting the WHOLE folder
+rem    brought his window back): the desktop app's whole data folder goes. What holds settings (the browser storage with
+rem    the theme / UI scale / look, its preferences, IndexedDB) is copied to the backup first; the rest is cache, rebuilt on
+rem    the next start.
+for %%D in ("%APPDATA%\bitgen-studio-shell" "%APPDATA%\bitGen Studio" "%APPDATA%\bitgen-studio" "%LOCALAPPDATA%\bitgen-studio-shell" "%LOCALAPPDATA%\bitGen Studio" "%LOCALAPPDATA%\bitgen-studio") do (
+  if exist "%%~D\" (
+    set "SUB=%%~nxD"
+    mkdir "%BK%\appdata\!SUB!" 2>nul
+    for %%K in ("Local Storage" "Session Storage" "IndexedDB") do (
+      if exist "%%~D\%%~K" xcopy "%%~D\%%~K" "%BK%\appdata\!SUB!\%%~K\" /E /I /Q /Y >nul 2>nul
+    )
+    for %%K in ("Preferences" "Local State") do (
+      if exist "%%~D\%%~K" copy /Y "%%~D\%%~K" "%BK%\appdata\!SUB!\" >nul 2>nul
+    )
+    rmdir /S /Q "%%~D" 2>nul
+    if exist "%%~D\" (
+      echo  could not remove all of %%~D - something still has it open ^(close bitGen Studio and run this again^)
+    ) else (
+      echo  cleared the desktop app's whole cache and storage ^(%%~D^)
+      set /a N+=1
     )
   )
 )

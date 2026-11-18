@@ -8,6 +8,7 @@
 //   2.832.0 (lib/slidePptxIn.js):
 //   POST   /api/slides/import           a .pptx (raw body) -> {deck, notes}
 //   POST   /api/slides/export/pdf?name= a PDF the page made (raw body) -> {name, size} (kept in the project's slides folder)
+//   2.835.0 brand themes (lib/slideBrands.js): GET /api/slides/brands -> {brands}, POST {brand} -> {brand}, DELETE ?name=
 //   2.833.0 ✨ (lib/slideAi.js - the prompt docker's LLM):
 //   POST   /api/slides/ai/plan          {ask, text, count, pictures} -> {plan}
 //   POST   /api/slides/ai/outline       {text} -> {plan} (an outline as written, no LLM)
@@ -44,6 +45,11 @@ function mount(app) {
     require("fs").writeFileSync(f, req.body);
     return { name, size: req.body.length };
   }));
+  // 2.835.0: brand themes (lib/slideBrands.js - <app>/brands/<name>.json)
+  const BR = () => require("../lib/slideBrands");
+  app.get("/api/slides/brands", wrap(() => BR().list()));
+  app.post("/api/slides/brands", J, wrap((req) => BR().save(req.body || {})));
+  app.delete("/api/slides/brands", wrap((req) => BR().remove(req.query.name)));
   const AI = () => require("../lib/slideAi");
   app.post("/api/slides/ai/plan", J, wrap((req) => AI().planDeck(req.body || {})));
   app.post("/api/slides/ai/outline", J, wrap((req) => ({ plan: AI().outlinePlan((req.body || {}).text) })));

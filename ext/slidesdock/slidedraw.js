@@ -54,6 +54,23 @@
     }
     g.restore();
   }
+  /** 2.835.0: a table - equal columns and rows, the header in the accent, banded rows, lines; each cell's words wrapped */
+  function drawTable(g, it, deck) {
+    const L = K().tableLook(it, deck), rows = it.rows || [[""]], nr = rows.length, nc = Math.max(1, rows[0].length), cw = it.w / nc, rh = it.h / nr;
+    const pad = Math.max(3, L.size * 0.35), lh = L.size * 1.2;
+    for (let i = 0; i < nr; i++) for (let j = 0; j < nc; j++) {
+      const x = it.x + j * cw, y = it.y + i * rh, hd = i === 0 && L.hasHead;
+      const bg = hd ? L.head : L.band && i % 2 === (L.hasHead ? 0 : 1) ? L.band : null;
+      if (bg) { g.fillStyle = bg; g.fillRect(x, y, cw, rh); }
+      g.strokeStyle = L.line; g.lineWidth = 1; g.strokeRect(x, y, cw, rh);
+      const t = String(rows[i][j] == null ? "" : rows[i][j]); if (!t) continue;
+      g.save(); g.beginPath(); g.rect(x, y, cw, rh); g.clip();
+      g.font = `${hd ? "bold " : ""}${L.size}px "${L.font}", sans-serif`; g.fillStyle = hd ? L.headColor : L.color; g.textBaseline = "alphabetic";
+      const lines = wrap(g, t, cw - pad * 2), top = y + (rh - lines.length * lh) / 2;
+      lines.forEach((ln, k) => g.fillText(ln, x + pad, top + (k + 0.8) * lh));
+      g.restore();
+    }
+  }
   function drawItem(g, it, deck, images) {
     const box = { x: it.x, y: it.y, w: it.w, h: it.h };
     g.save();
@@ -66,7 +83,9 @@
       const stroke = line ? (S.fill === "none" ? S.line : S.fill) : S.line, sw = line ? Math.max(1, it.lw || 4) : S.lw;
       if (stroke !== "none" && sw) { g.strokeStyle = stroke; g.lineWidth = sw; g.lineJoin = "round"; g.stroke(p); }
       if (String(it.text || "")) drawText(g, Object.assign({}, it, { st: Object.assign({ align: "center", valign: "middle", color: "#ffffff" }, it.st || {}) }), deck, box);
-    } else if (it.type === "image") {
+    } else if (it.type === "table") drawTable(g, it, deck);                 // 2.835.0
+    else if (it.type === "chart") { const im = images && images["chart:" + it.id]; if (im && im.naturalWidth) g.drawImage(im, it.x, it.y, it.w, it.h); }
+    else if (it.type === "image") {
       const im = images && images[it.src];
       if (im && im.naturalWidth) {
         const iw = im.naturalWidth, ih = im.naturalHeight, k = it.fit === "contain" ? Math.min(it.w / iw, it.h / ih) : Math.max(it.w / iw, it.h / ih);
@@ -89,10 +108,17 @@
   function loadImages(deck, slides) {
     const want = new Set(); for (const s of slides || deck.slides) for (const it of s.items) if (it.type === "image" && it.src) want.add(it.src);
     const out = {};
-    return Promise.all([...want].map((src) => new Promise((res) => {
+    // 2.835.0: a chart = its SVG (slidedata.js, the spreadsheet's chart engine) as a picture
+    const charts = []; for (const s of slides || deck.slides) for (const it of s.items) if (it.type === "chart") charts.push(it);
+    const svgOf = (it) => { try { return root.H3SlideData ? root.H3SlideData.chartSvg(it, deck) : null; } catch (e) { return null; } };
+    const chartsReady = charts.length && root.H3SlideData ? root.H3SlideData.engine() : Promise.resolve();
+    return chartsReady.then(() => Promise.all(charts.map((it) => new Promise((res) => {
+      const svg = svgOf(it); if (!svg) return res();
+      const im = new root.Image(); im.onload = () => { out["chart:" + it.id] = im; res(); }; im.onerror = () => res(); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    })))).then(() => Promise.all([...want].map((src) => new Promise((res) => {
       const u = src.startsWith("media:") ? deck.media[src.slice(6)] : ""; if (!u) return res();
       const im = new root.Image(); im.onload = () => { out[src] = im; res(); }; im.onerror = () => res(); im.src = u;
-    }))).then(() => out);
+    })))).then(() => out);
   }
   async function toCanvas(slide, deck, width) {
     const c = root.document.createElement("canvas"), k = (width || 1920) / deck.w;
@@ -101,7 +127,7 @@
     draw(c.getContext("2d"), slide, deck, k, await loadImages(deck, [slide]));
     return c;
   }
-  const api = { wrap, draw, drawItem, loadImages, toCanvas };
+  const api = { wrap, draw, drawItem, drawTable, loadImages, toCanvas };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.SlideDraw = api;
 })(typeof window !== "undefined" ? window : globalThis);

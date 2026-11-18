@@ -14281,6 +14281,13 @@ node scripts/test-834.js > /tmp/t834.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui834-ui.js > /tmp/ui834.log 2>&1 \
   && ok "2.834.0 browser test: Generate into the selection with the panel hidden, no selection = the canvas's shape over the whole canvas, Edit Auto = Inpaint / Outpaint, Fill green, the empty canvas outpainted" \
   || { bad "2.834.0 generate / edit browser test"; grep -a "^FAIL" -A1 /tmp/ui834.log | head -12; }
+# ---- 2.835.0 (Tim: "add charts and tables on slides, or a theme built from brand colours. Make reset-layout.bat clear the whole Electron cache")
+node scripts/test-835.js > /tmp/t835.log 2>&1 \
+  && ok "2.835.0 slidecore brand / table / chart, tsv + grids, logo palette + brandFrom, lib/slideBrands, real PowerPoint tables + charts out and back in, drawTable, wiring, reset-layout.bat" \
+  || { bad "2.835.0 slides tables / charts / brands units"; grep -a "^FAIL" -A1 /tmp/t835.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui835-ui.js > /tmp/ui835.log 2>&1 \
+  && ok "2.835.0 browser test: ▦ table into the content box + its editor, 📊 pie chart drawn in the theme's colours, undo, double-click, the PDF canvas, 🎨 brand from a logo, saved, used" \
+  || { bad "2.835.0 slides tables / charts / brands browser test"; grep -a "^FAIL" -A1 /tmp/ui835.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

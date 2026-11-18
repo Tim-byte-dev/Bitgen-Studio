@@ -12,6 +12,10 @@
  *          shape: rect | round | ellipse | triangle | rarrow | larrow | star | diamond | line, fill, line, lw,
  *          src: "media:<id>" (an image), fit cover | contain}
  * Pictures live once in deck.media (an undo step does not copy them).
+ * 2.835.0 (Tim: "add charts and tables on slides, or a theme built from brand colours"): ITEM type table {rows: [[cell]],
+ *          head (the first row a header), band, headFill?, lineCol?, st} and chart {chart: {type column | bar | line | area |
+ *          pie | doughnut, title, legend, cats, series: [{name, values}]}}; deck.theme "brand" + deck.brand {name, bg, title,
+ *          text, accent, accent2, font, titleFont} (every theme has accent2 now - a chart's second colour).
  */
 (function (root) {
   "use strict";
@@ -21,13 +25,15 @@
   const TRANSITIONS = ["none", "fade", "push", "wipe", "zoom"];
   // the looks: background, title / text colours, the accent (shapes, bullets), fonts
   const THEMES = {
-    plain:  { name: "Plain",      bg: "#ffffff", title: "#1f2328", text: "#3a3f45", accent: "#2f6fde", font: "Calibri", titleFont: "Calibri" },
-    tiger:  { name: "bitGen",     bg: "#16181d", title: "#ffffff", text: "#d6d9de", accent: "#ff8a1f", font: "Segoe UI", titleFont: "Segoe UI" },
-    night:  { name: "Night",      bg: "#0f1b2d", title: "#f2f6ff", text: "#c6d2e6", accent: "#4fc3f7", font: "Arial", titleFont: "Arial" },
-    forest: { name: "Forest",     bg: "#f3f7f1", title: "#1e4d2b", text: "#2f3b31", accent: "#3c8d50", font: "Georgia", titleFont: "Georgia" },
-    paper:  { name: "Paper",      bg: "#fbf6ec", title: "#5a3e1b", text: "#4a3b2a", accent: "#c2702a", font: "Garamond", titleFont: "Garamond" },
-    bold:   { name: "Bold",       bg: "#ffd166", title: "#1b1b1b", text: "#262626", accent: "#d62828", font: "Trebuchet MS", titleFont: "Impact" },
+    plain:  { name: "Plain",      bg: "#ffffff", title: "#1f2328", text: "#3a3f45", accent: "#2f6fde", accent2: "#e8743b", font: "Calibri", titleFont: "Calibri" },
+    tiger:  { name: "bitGen",     bg: "#16181d", title: "#ffffff", text: "#d6d9de", accent: "#ff8a1f", accent2: "#4fc3f7", font: "Segoe UI", titleFont: "Segoe UI" },
+    night:  { name: "Night",      bg: "#0f1b2d", title: "#f2f6ff", text: "#c6d2e6", accent: "#4fc3f7", accent2: "#ff8a65", font: "Arial", titleFont: "Arial" },
+    forest: { name: "Forest",     bg: "#f3f7f1", title: "#1e4d2b", text: "#2f3b31", accent: "#3c8d50", accent2: "#c9a227", font: "Georgia", titleFont: "Georgia" },
+    paper:  { name: "Paper",      bg: "#fbf6ec", title: "#5a3e1b", text: "#4a3b2a", accent: "#c2702a", accent2: "#3f6e8c", font: "Garamond", titleFont: "Garamond" },
+    bold:   { name: "Bold",       bg: "#ffd166", title: "#1b1b1b", text: "#262626", accent: "#d62828", accent2: "#1d3557", font: "Trebuchet MS", titleFont: "Impact" },
   };
+  // 2.835.0: charts on slides (drawn by the spreadsheet's chart engine; native charts in the .pptx)
+  const CHART_TYPES = ["column", "bar", "line", "area", "pie", "doughnut"];
   const LAYOUTS = {
     title:    "Title slide",
     content:  "Title and content",
@@ -40,7 +46,58 @@
   const HINTS = { title: "Click to add a title", sub: "Click to add a subtitle", body: "Click to add text", body2: "Click to add text", pic: "Click 🖼 Picture or drop one here" };
   let seq = 0;
   const uid = (p) => (p || "i") + Date.now().toString(36) + (++seq).toString(36) + Math.floor(Math.random() * 1296).toString(36);
-  const theme = (deck) => THEMES[(deck && deck.theme) || "plain"] || THEMES.plain;
+  /** 2.835.0: a deck's look - a built-in theme, or "brand" = the deck's own brand colours + fonts (deck.brand) */
+  const theme = (deck) => (deck && deck.theme === "brand" && deck.brand ? Object.assign({}, THEMES.plain, deck.brand) : THEMES[(deck && deck.theme) || "plain"] || THEMES.plain);
+  const BRAND_KEYS = ["bg", "title", "text", "accent", "accent2"];
+  /** a brand theme made safe: {name, bg, title, text, accent, accent2, font, titleFont} (colours #rrggbb) | null */
+  function cleanBrand(b) {
+    if (!b || typeof b !== "object") return null;
+    const o = { name: String(b.name || "Brand").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 48) || "Brand" };
+    for (const k of BRAND_KEYS) { const c = typeof b[k] === "string" && /^#[0-9a-fA-F]{6}$/.test(b[k]) ? b[k].toLowerCase() : null; if (!c) return null; o[k] = c; }
+    for (const k of ["font", "titleFont"]) { const f = String(b[k] || "").replace(/[^\w \-.]/g, "").trim().slice(0, 48); o[k] = f || "Calibri"; }
+    return o;
+  }
+  /** black or white words on a colour (whichever reads better) */
+  function contrast(hex) { const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || ""); if (!m) return "#ffffff"; const [r, g, b] = [1, 2, 3].map((i) => parseInt(m[i], 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))); return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.4 ? "#1b1b1b" : "#ffffff"; }
+  /** the colours a chart's series / slices take: the theme's two accents, then lighter / darker steps of them, then a palette */
+  function chartColors(deck) {
+    const T = theme(deck), mix = (h, t, k) => "#" + [1, 3, 5].map((i) => Math.round(parseInt(h.slice(i, i + 2), 16) * (1 - k) + parseInt(t.slice(i, i + 2), 16) * k).toString(16).padStart(2, "0")).join("");
+    const a = T.accent, b = T.accent2 || "#e8743b";
+    return [a, b, mix(a, "#ffffff", 0.45), mix(b, "#ffffff", 0.45), mix(a, "#000000", 0.35), mix(b, "#000000", 0.35), "#a5a5a5", "#ffc000", "#70ad47", "#5b9bd5"];
+  }
+  /** a table's look: the words (its own, else the theme's), the header row in the accent, lines, banded rows */
+  function tableLook(it, deck) {
+    const T = theme(deck), st = it.st || {}, head = it.headFill || T.accent;
+    return { font: st.font || T.font, size: st.size || 20, color: st.color || T.text, head, headColor: contrast(head), line: it.lineCol || mixLine(T), band: it.band !== false ? bandOf(T) : null, hasHead: it.head !== false };
+  }
+  const mixLine = (T) => (contrast(T.bg) === "#ffffff" ? "#5a5f66" : "#c9cdd2");
+  const bandOf = (T) => (contrast(T.bg) === "#ffffff" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.045)");
+  /** 2.835.0: a new table / chart item, middle of the slide (or `box`) */
+  function newTable(deck, rows, cols, box) {
+    const r = Math.max(1, Math.min(30, Math.round(+rows || 4))), c = Math.max(1, Math.min(12, Math.round(+cols || 3))), W = deck.w, H = deck.h, b = box || { x: Math.round(W * 0.08), y: Math.round(H * 0.26), w: Math.round(W * 0.84), h: Math.min(Math.round(H * 0.64), 52 * r) };
+    const cells = []; for (let i = 0; i < r; i++) { const row = []; for (let j = 0; j < c; j++) row.push(i === 0 ? "Heading " + (j + 1) : ""); cells.push(row); }
+    return { id: uid(), type: "table", x: b.x, y: b.y, w: b.w, h: b.h, rows: cells, head: true, band: true, text: "" };
+  }
+  function newChart(deck, type, box) {
+    const W = deck.w, H = deck.h, b = box || { x: Math.round(W * 0.12), y: Math.round(H * 0.24), w: Math.round(W * 0.76), h: Math.round(H * 0.68) };
+    return { id: uid(), type: "chart", x: b.x, y: b.y, w: b.w, h: b.h, text: "",
+      chart: { type: CHART_TYPES.includes(type) ? type : "column", title: "", legend: true, cats: ["Q1", "Q2", "Q3", "Q4"], series: [{ name: "Sales", values: [12, 19, 15, 24] }, { name: "Costs", values: [8, 11, 10, 13] }] } };
+  }
+  /** a table's cells made safe (<= 30 x 12, strings) */
+  function cleanRows(rows) {
+    const rs = (Array.isArray(rows) ? rows : []).slice(0, 30).map((r) => (Array.isArray(r) ? r : []).slice(0, 12).map((c) => String(c == null ? "" : c).slice(0, 500)));
+    const n = Math.max(1, ...rs.map((r) => r.length));
+    if (!rs.length) rs.push([""]);
+    return rs.map((r) => r.concat(Array(n - r.length).fill("")));
+  }
+  /** a chart's data made safe: <= 50 categories, <= 8 series of numbers (a missing number = 0) */
+  function cleanChart(c) {
+    const o = c && typeof c === "object" ? c : {};
+    const cats = (Array.isArray(o.cats) ? o.cats : []).slice(0, 50).map((x) => String(x == null ? "" : x).slice(0, 60));
+    const series = (Array.isArray(o.series) ? o.series : []).slice(0, 8).filter((x) => x && typeof x === "object").map((x, i) => ({ name: String(x.name == null ? "Series " + (i + 1) : x.name).slice(0, 60),
+      values: cats.map((_, k) => { const v = Array.isArray(x.values) ? +x.values[k] : NaN; return Number.isFinite(v) ? v : 0; }) }));
+    return { type: CHART_TYPES.includes(o.type) ? o.type : "column", title: String(o.title || "").slice(0, 100), legend: o.legend !== false, cats, series };
+  }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const num = (v, d) => (Number.isFinite(+v) ? +v : d);
 
@@ -84,7 +141,7 @@
     return o;
   }
   function cleanItem(it, W, H) {
-    if (!it || typeof it !== "object" || !["text", "shape", "image"].includes(it.type)) return null;
+    if (!it || typeof it !== "object" || !["text", "shape", "image", "table", "chart"].includes(it.type)) return null;
     const o = { id: typeof it.id === "string" && it.id ? it.id.slice(0, 40) : uid(), type: it.type,
       x: Math.round(clamp(num(it.x, 0), -W, 2 * W)), y: Math.round(clamp(num(it.y, 0), -H, 2 * H)), w: Math.round(clamp(num(it.w, 100), 2, 4 * W)), h: Math.round(clamp(num(it.h, 60), 2, 4 * H)) };
     if (num(it.rot, 0)) o.rot = Math.round(clamp(num(it.rot, 0), -360, 360));
@@ -93,13 +150,17 @@
     if (it.st) o.st = cleanSt(it.st);
     if (it.type === "shape") { o.shape = SHAPES.includes(it.shape) ? it.shape : "rect"; if (col(it.fill) || it.fill === "none") o.fill = col(it.fill) || "none"; if (col(it.line) || it.line === "none") o.line = col(it.line) || "none"; o.lw = Math.round(clamp(num(it.lw, 0), 0, 40)); }
     if (it.type === "image") { o.src = typeof it.src === "string" && /^media:[\w-]{1,40}$/.test(it.src) ? it.src : ""; o.fit = it.fit === "contain" ? "contain" : "cover"; }
+    if (it.type === "table") { o.rows = cleanRows(it.rows); o.head = it.head !== false; o.band = it.band !== false; if (col(it.headFill)) o.headFill = col(it.headFill); if (col(it.lineCol)) o.lineCol = col(it.lineCol); }   // 2.835.0
+    if (it.type === "chart") o.chart = cleanChart(it.chart);
     if (it.type !== "image" && o.text == null) o.text = "";
     return o;
   }
   function clean(deck) {
     const d = deck && typeof deck === "object" ? deck : {};
     const W = d.w === 960 ? 960 : 1280, H = 720;
-    const out = { v: 1, w: W, h: H, theme: THEMES[d.theme] ? d.theme : "plain", slides: [], media: {} };
+    const brand = cleanBrand(d.brand);                                       // 2.835.0: the deck's brand theme
+    const out = { v: 1, w: W, h: H, theme: THEMES[d.theme] || (d.theme === "brand" && brand) ? d.theme : "plain", slides: [], media: {} };
+    if (brand) out.brand = brand;
     const slides = Array.isArray(d.slides) ? d.slides.slice(0, 500) : [];
     for (const s of slides) {
       if (!s || typeof s !== "object") continue;
@@ -158,7 +219,7 @@
     return slide;
   }
 
-  const api = { SIZES, FONTS, SHAPES, TRANSITIONS, THEMES, LAYOUTS, HINTS, uid, theme, newSlide, newDeck, layoutItems, clean, cleanItem, textLook, bgOf, shapeLook, shapePath, titleOf, moveSlide, copySlide, relayout };
+  const api = { SIZES, FONTS, SHAPES, TRANSITIONS, THEMES, LAYOUTS, HINTS, CHART_TYPES, BRAND_KEYS, cleanBrand, contrast, chartColors, tableLook, newTable, newChart, cleanRows, cleanChart, uid, theme, newSlide, newDeck, layoutItems, clean, cleanItem, textLook, bgOf, shapeLook, shapePath, titleOf, moveSlide, copySlide, relayout };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (root && root.document) root.SlideCore = api;
 })(typeof window !== "undefined" ? window : globalThis);
