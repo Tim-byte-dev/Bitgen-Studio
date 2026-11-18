@@ -9508,6 +9508,11 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - Drag a document's figure with the **Move tool**: its place moves in the text to where you let go (any frame of the story on this page), and it snaps in there. Ctrl+Z puts it back.
 - Right-click a figure: **◧ Left - Text Beside** / **◨ Right - Text Beside** (the text flows round it), **＋ Bigger** / **－ Smaller** (a quarter to three quarters of the column), **▭ Full Width**. A figure beside the text dragged to the frame's other half goes to that side. The caption stays under the picture.
 
+## 🖼 Image editor - Word files open with their pictures, a WP frame's edges are its margins (2.840.0)
+
+- **File ▸ 📂 Open Word Document (.docx)** brings the pictures in, each a figure at its place in the text (alt text = caption).
+- Drag a **WP frame's edge** (Move or Document Text tool) to change that margin for the whole story - shown in mm while dragging; one undo. **Layer ▸ 📏 WP Margins…** types them in mm; the Word export uses them.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

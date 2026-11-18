@@ -14316,6 +14316,13 @@ node scripts/test-839.js > /tmp/t839.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui839-ui.js > /tmp/ui839.log 2>&1 \
   && ok "2.839.0 browser test: a figure dragged with the Move tool moves its place (undo), left / bigger / right by drag / full width" \
   || { bad "2.839.0 figures moved / beside the text browser test"; grep -a "^FAIL" -A1 /tmp/ui839.log | head -12; }
+# ---- 2.840.0 (Tim: "Bring in the pictures when opening a .docx., allow user to resize wp frame to change it's margins")
+node scripts/test-840.js > /tmp/t840.log 2>&1 \
+  && ok "2.840.0 .docx pictures read (figures + data-dx), imageSize, figPlaces, margins edgeAt / dragTo / mmOf / fromMargins, the wiring" \
+  || { bad "2.840.0 docx pictures + WP margins units"; grep -a "^FAIL" -A1 /tmp/t840.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui840-ui.js > /tmp/ui840.log 2>&1 \
+  && ok "2.840.0 browser test: a .docx's picture at its place, a frame edge dragged = its margin (undo), the bottom edge, WP Margins typed in mm" \
+  || { bad "2.840.0 docx pictures + WP margins browser test"; grep -a "^FAIL" -A1 /tmp/ui840.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

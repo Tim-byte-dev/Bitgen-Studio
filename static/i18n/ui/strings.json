@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6172,
+ "count": 6174,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -56875,6 +56875,24 @@
    ],
    "where": [
     "Image editor figures (2.839.0)"
+   ]
+  },
+  {
+   "s": "📏 WP Margins…",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor WP margins (2.840.0)"
+   ]
+  },
+  {
+   "s": "📏 WP Margins",
+   "kinds": [
+    "text"
+   ],
+   "where": [
+    "Image editor WP margins (2.840.0)"
    ]
   }
  ]

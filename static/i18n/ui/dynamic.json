@@ -12311,6 +12311,14 @@
    "src": "ext/imageeditdock/pcdockers.js:401"
   },
   {
+   "s": "WP margins",
+   "src": "ext/imageeditdock/pcdocmargins.js:90"
+  },
+  {
+   "s": "The frame is the page less these margins",
+   "src": "ext/imageeditdock/pcdocmargins.js:117"
+  },
+  {
    "s": "File",
    "src": "ext/imageeditdock/pcdocmerge.js:81"
   },
@@ -12620,15 +12628,15 @@
   },
   {
    "s": "docx",
-   "src": "ext/imageeditdock/pcdocx.js:278"
+   "src": "ext/imageeditdock/pcdocx.js:302"
   },
   {
    "s": "Word lays out pages itself - its page breaks can fall a line or two away from these",
-   "src": "ext/imageeditdock/pcdocx.js:278"
+   "src": "ext/imageeditdock/pcdocx.js:302"
   },
   {
    "s": "The words, styles, lists and tables come in; pictures are left out for now",
-   "src": "ext/imageeditdock/pcdocx.js:315"
+   "src": "ext/imageeditdock/pcdocx.js:348"
   },
   {
    "s": "Round",
@@ -28145,6 +28153,14 @@
    "src": "ext/imageeditdock/pcdockers.js:353"
   },
   {
+   "p": "{0} (mm)",
+   "src": "ext/imageeditdock/pcdocmargins.js:115"
+  },
+  {
+   "p": "All {0} frames of the story get them",
+   "src": "ext/imageeditdock/pcdocmargins.js:117"
+  },
+  {
    "p": "Now: {0} - {1} fields, {2} records",
    "src": "ext/imageeditdock/pcdocmerge.js:81"
   },
@@ -28174,15 +28190,15 @@
   },
   {
    "p": "{0} paragraphs / tables",
-   "src": "ext/imageeditdock/pcdocx.js:278"
+   "src": "ext/imageeditdock/pcdocx.js:302"
   },
   {
    "p": "Header from the master's type: {0} · Footer: {1}",
-   "src": "ext/imageeditdock/pcdocx.js:278"
+   "src": "ext/imageeditdock/pcdocx.js:302"
   },
   {
    "p": "Other stories left out: {0} - pick a frame to save its story",
-   "src": "ext/imageeditdock/pcdocx.js:278"
+   "src": "ext/imageeditdock/pcdocx.js:302"
   },
   {
    "p": "size {0}",

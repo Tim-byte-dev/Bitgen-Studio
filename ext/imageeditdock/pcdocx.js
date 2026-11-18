@@ -209,6 +209,30 @@
   }
 
   /* ================================ the page ================================ */
+  /** 2.840.0: an opened .docx's pictures (<img data-dx="N"> + figures[N] {mime, b64, w, h}) -> figure places in the text: a
+   *  picture alone in its paragraph takes that paragraph's place, one inside words goes right after them; as wide as it is
+   *  (at 96 dpi) up to the column, centred; its alt text as the caption. -> {html, figs: [{id, src}]} */
+  function figPlaces(html, figures, colW, document, tag) {
+    const d = document || root.document, box = d.createElement("div"); box.innerHTML = String(html || "");
+    const figs = [], t = tag || Date.now().toString(36);
+    for (const img of [...box.querySelectorAll("img")]) {
+      const n = +img.getAttribute("data-dx"), f = figures && figures[n];
+      if (!f || !f.b64) { img.remove(); continue; }
+      const id = "dx" + t + "-" + n, w = f.w > 0 ? f.w : colW, h = f.h > 0 ? f.h : w * 0.6, cw = Math.min(colW, w), ch = Math.max(20, Math.round(cw * h / w));
+      const p = d.createElement("p"); p.setAttribute("data-fig", id); p.style.paddingTop = ch + "px";
+      if (cw < colW - 1) { p.style.width = Math.round(cw / colW * 1000) / 10 + "%"; p.style.marginLeft = Math.round((colW - cw) / 2) + "px"; }
+      const alt = (img.getAttribute("alt") || "").trim();
+      if (alt) { const i = d.createElement("i"); i.textContent = alt; p.appendChild(i); } else p.appendChild(d.createElement("br"));
+      const block = img.closest("p,h1,h2,h3,h4,h5,h6,li,blockquote,pre") || null;
+      img.remove();
+      if (block && block.parentNode) {
+        if (!block.textContent.trim() && !block.querySelector("img")) block.parentNode.replaceChild(p, block);
+        else block.parentNode.insertBefore(p, block.nextSibling);
+      } else box.appendChild(p);
+      figs.push({ id, src: "data:" + (f.mime || "image/png") + ";base64," + f.b64 });
+    }
+    return { html: box.innerHTML, figs };
+  }
   function install(E) {
     const { S, doc, win } = E;
     if (!E.docText || !E.ui || !E.ui.addCmd || !doc) return;
@@ -295,18 +319,27 @@
       const r = await win.fetch("/api/docx/import", { method: "POST", headers: { "Content-Type": "application/octet-stream" }, body: buf });
       const j = await r.json(); if (!r.ok || j.error) throw new Error(j.error || "HTTP " + r.status);
       const html = E.docText.sanitize(String(j.html || "").replace(/<(\/?)h[56]\b/gi, "<$1h3")) || "<p><br></p>";
-      return { html, messages: j.messages || [], name: String(fname || "Document").replace(/\.docx$/i, ""), comments: j.comments || [], notes: j.notes || {} };
+      // 2.840.0: + the raw words with their <img data-dx> and the pictures - placeOpened makes them figures at the frame's width
+      return { html, raw: String(j.html || "").replace(/<(\/?)h[56]\b/gi, "<$1h3"), figures: j.figures || [], messages: j.messages || [], name: String(fname || "Document").replace(/\.docx$/i, ""), comments: j.comments || [], notes: j.notes || {} };
     }
     function placeOpened(o, opts) {
       const SIZES = (win.PCPages && win.PCPages.PAGE_SIZES) || [["A4", 210, 297]];
       const sz = SIZES.find((s) => s[0] === opts.size) || SIZES[0], dpi = opts.dpi || 150;
       E.pages.newDocument({ preset: sz[0], wmm: sz[1], hmm: sz[2], orient: opts.orient || "portrait", dpi }, 1, o.name);
       const m = Math.round((opts.margin == null ? 25 : opts.margin) / 25.4 * dpi);
-      const more = { auto: true, k: dpi / 96, html: o.html };
+      // 2.840.0: its pictures as figures in the text (each an anchored layer, drawn at its place - pcdoctext / pcdocfig)
+      const fp = o.figures && o.figures.length && o.raw ? figPlaces(o.raw, o.figures, (S.w - 2 * m) / (dpi / 96), doc) : { html: o.html, figs: [] };
+      const more = { auto: true, k: dpi / 96, html: fp.figs.length ? E.docText.sanitize(fp.html) : o.html };
       if (o.comments && o.comments.length) more.comments = o.comments;
       if (o.notes && Object.keys(o.notes).length) more.notes = o.notes;
       const L = E.docText.addFrame(m, m, S.w - 2 * m, S.h - 2 * m, more, false);
+      if (fp.figs.length) {
+        const flow = L.doc.flow && L.doc.flow.id;
+        fp.figs.forEach((f, i) => { const N = E.makeLayer("🖼 Picture " + (i + 1)); N.anchor = { flow, fig: f.id, box: null, src: f.src, drawn: false }; S.layers.push(N); });
+        S.active = S.layers.indexOf(L); if (E.renderLayersPanel) E.renderLayersPanel();
+      }
       E.docText.reflow(L.doc.flow && L.doc.flow.id);
+      if (fp.figs.length) say(`${fp.figs.length} picture(s) from the document - each a layer at its place in the text (drag one to move it; right-click for beside the text)`);
       return L;
     }
     function openDocx() {
@@ -333,7 +366,7 @@
     E.docx = { model: () => { const m = modelNow(); return m && m.model; }, modelOf, exportDocx, openDocx, openBytes: openDocxBytes, place: placeOpened, heads };
   }
 
-  const PCDocx = { toModel, runsOf, pageOf, headFoot, splitTokens, ptOf, install, last: null };
+  const PCDocx = { toModel, runsOf, pageOf, headFoot, splitTokens, ptOf, figPlaces, install, last: null };
   if (typeof module !== "undefined" && module.exports) module.exports = PCDocx;
   if (root && root.document) root.PCDocx = PCDocx;
 })(typeof window !== "undefined" ? window : globalThis);
