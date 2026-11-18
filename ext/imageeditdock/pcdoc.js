@@ -175,6 +175,7 @@
   /* ============================ snapshots (undo) - pure ============================ */
   const STRUCT = ["name", "visible", "opacity", "fillOpacity", "blend", "type", "parent", "clip", "label", "open"];
   const DEEP = ["control", "locks", "styles", "transp", "adj", "text", "shape", "fill", "vmask", "smart", "frame", "artboard", "dimg", "dimPart", "l3d", "sketch", "bscene", "doc", "cal"];   // 2.846.0: + a booking calendar (pccalendar.js)   // 2.811.0: + a document frame (pcdoctext.js)   // 2.542.0: + a Blender layer's scene (pcblendlayer.js)   // 2.462.0: + a sketch layer's sketch (pcsketch.js)   // 2.460.0: + a 3D layer (pc3d.js)   // 2.457.0: + a dimension group and its parts (pcdimgroup.js)   // 2.442.0: + a frame (pcframes.js)   // 2.422.0: + a smart object's settings (pcsmart.js)   // 2.421.0: + the vector mask (pcpath.js)
+  DEEP.push("webVideo");   // 2.853.0: + a 🎬 web film (pcwebai.js)
   function snapLayer(L) {
     const s = { L };
     for (const k of STRUCT) s[k] = L[k];

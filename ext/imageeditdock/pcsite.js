@@ -65,6 +65,8 @@
         if (i === 0 && L.type === "pixel") { const pc = plainColour(d, c.width, c.height); if (pc) { bg = pc; return; } }
         const b = alphaBox(d, c.width, c.height); if (!b || b.w < 2 || b.h < 2) return;
         if (L.cal && L.cal.mode !== "print") { els.push({ kind: "calendar", cal: L.cal, box: sc(b) }); return; }
+        // 2.853.0: a layer carrying a film (🌐 Build Me a Website's hero video) = the film, its picture the poster
+        if (L.webVideo && /^[\w.-]{1,80}\.(mp4|webm)$/i.test(L.webVideo)) { const n = `p${pi}-l${L.id}-poster.jpg`; assets.push({ name: n, b64: crop(c, b, "image/jpeg") }); els.push({ kind: "image", src: L.webVideo, poster: n, alt: L.name || "", box: sc(b) }); return; }
         // 2.852.0: a plain filled rectangle is a coloured BOX (a full-width one = a band the site's sections sit on; one as big
         // as the page = the page's colour), not a picture; an empty photo box (🌐 Build Me a Website's placeholder) is left out
         const sh = L.type === "shape" && L.shape, styled = !!(L.styles && Object.values(L.styles).some((x) => (Array.isArray(x) ? x.some((y) => y && y.on) : x && x.on)));

@@ -9588,6 +9588,12 @@ Before a render, bitGen checks the models and LoRAs it needs:
 - The LLM plans the pages, words, colours, products and booking services; bitGen lays out every page as layers, makes the pictures one at a time and builds the site (PHP + MySQL with the admin area when it sells, books or has a contact form).
 - The products go into the shop's database with their pictures; change any page and 🌐 Build Website again.
 
+## 🎬 Websites - the hero video and 🛒 Product Pictures (2.853.0)
+
+- **🎬 Hero video** in 🌐 Build Me a Website: a 5-second film for Home's hero with the prompt docker's video style, from the hero photo; it plays muted and looping on the site.
+- **🛒 Product Pictures** (File menu, Web View 🛒): write what to change and **✏ Edit** with the edit model (Qwen Image Edit first); **✔ Use it** puts the picture in the site. **🖼 Open** edits it in the image editor (File ▸ 🛒 Save to the Product); **📁 Replace…** takes one from this computer.
+- **🌐 Build again** puts the new pictures in the site and its shop.
+
 ## Tips
 
 - **Tags beat descriptions** — `@anna` in a prompt brings Anna's sheet and

@@ -122,6 +122,33 @@
       const b = await (await win.fetch(url)).blob();
       return await new Promise((ok, no) => { const r = new win.FileReader(); r.onload = () => ok(String(r.result).split(",")[1] || ""); r.onerror = () => no(new Error("the picture did not read")); r.readAsDataURL(b); });
     }
+    /** 🎬 a film with the prompt docker's video style: from a picture (its first frame) or from words -> its /outputs/ URL */
+    async function film(prompt, fromUrl, secs) {
+      const vs = doc.getElementById("videoStyleSel"); if (!vs || !vs.value) throw new Error("no video style in the prompt docker");
+      const fd = new win.FormData();
+      fd.append("prompt", prompt + ". Slow, smooth camera move; no text, no words, no logos.");
+      fd.append("video_style_id", vs.value); fd.append("width", "1280"); fd.append("height", "736"); fd.append("seed", "-1");
+      fd.append("mode", fromUrl ? "fl2va" : "t2va"); fd.append("frames", String(Math.round(secs * 24))); fd.append("format", "mp4");
+      if (fromUrl) fd.append("references", await (await win.fetch(fromUrl)).blob(), "hero_first.png");
+      const r = await win.fetch("/api/generate", { method: "POST", body: fd }), job = await r.json();
+      if (!r.ok || job.error) throw new Error(job.error || "the film was refused");
+      for (;;) {
+        if (stop) throw new Error("stopped");
+        await sleep(2000);
+        const jr = await win.fetch("/api/jobs/" + encodeURIComponent(job.id)), j = await jr.json();
+        if (j.status === "done") { const n = (j.outputs && j.outputs[0]) || j.output; return n ? "/outputs/" + String(n).split("/").map(encodeURIComponent).join("/") : null; }
+        if (j.status === "failed" || j.status === "cancelled" || !jr.ok) throw new Error("the film's job " + (j.status || "went away"));
+      }
+    }
+    /** a film's first frame as a picture (its poster when there was no photo) */
+    function posterOf(url) {
+      return new Promise((ok, no) => {
+        const v = doc.createElement("video"); v.muted = true; v.preload = "auto"; v.src = url;
+        v.onloadeddata = () => { try { v.currentTime = 0.05; } catch (e) { no(e); } };
+        v.onseeked = () => { const c = doc.createElement("canvas"); c.width = v.videoWidth || 1280; c.height = v.videoHeight || 720; c.getContext("2d").drawImage(v, 0, 0, c.width, c.height); const im = new win.Image(); im.onload = () => ok(im); im.onerror = () => no(new Error("the film's frame did not read")); im.src = c.toDataURL("image/jpeg", 0.9); };
+        v.onerror = () => no(new Error("the film did not load"));
+      });
+    }
     function bar(t) { say(t); try { if (typeof root.logLine === "function") root.logLine("[website] " + t); } catch (e) { /* fine */ } }
 
     /** the whole run: {ask, name, shop, booking, contact, pictures, ai, build} -> the line said */
@@ -132,7 +159,7 @@
       busy = true; stop = false;
       try {
         bar("🌐 the LLM is planning the website…");
-        const { plan } = await api("/api/siteai/plan", { ask, shop: !!a.shop, booking: !!a.booking, contact: !!a.contact });
+        const { plan } = await api("/api/siteai/plan", { ask, shop: !!a.shop, booking: !!a.booking, contact: !!a.contact, video: !!a.video });
         const W = 1440, lays = plan.pages.map((pg, i) => pageLayout(plan, pg, i, W)), H = Math.max(900, ...lays.map((l) => l.h));
         for (const l of lays) l.els[0].h = H;          // each page's colour fills the whole (equally tall) page
         if (E.views && E.views.apply) E.views.apply("web");
@@ -155,9 +182,9 @@
         E.refresh(); E.renderLayersPanel();
         bar(`🌐 "${plan.title}" - ${plan.pages.length} page(s) laid out (${plan.pages.map((p) => p.title).join(", ")})${plan.products.length ? `, ${plan.products.length} product(s) for the shop` : ""}`);
         // the pictures, one job at a time
-        let made = 0; const assets = [], products = plan.products.map((p, i) => Object.assign({}, p, { image: "" }));
-        const total = (a.pictures ? boxes.length + products.filter((p) => p.picture).length : 0);
-        if (a.pictures && total) {
+        let made = 0, heroL = null, heroUrl = null; const assets = [], products = plan.products.map((p, i) => Object.assign({}, p, { image: "" }));
+        const total = (a.pictures ? boxes.length + products.filter((p) => p.picture).length : 0) + (a.video ? 1 : 0);
+        if (a.pictures && boxes.length + products.length) {
           for (const b of boxes) {
             if (stop) break;
             bar(`🌐 picture ${made + 1} of ${total}: ${b.e.prompt.slice(0, 60)}…`);
@@ -166,7 +193,7 @@
               const img = await loadImg(url), back = E.pages.count() > 1 ? E.pages.cur() : 0;
               if (E.pages.count() > 1) E.pages.go(b.i);
               const at = S.layers.indexOf(b.L); if (at >= 0) S.layers.splice(at, 1);
-              putPicture(img, b.e); made++;
+              const PL = putPicture(img, b.e); made++; if (b.i === 0 && !heroL && b.e === lays[0].els.find((x) => x.t === "picture")) { heroL = PL; heroUrl = url; }
               if (E.pages.count() > 1) E.pages.go(back);
               E.refresh(); E.renderLayersPanel();
             } catch (err) { if (stop) break; bar("🌐 a picture was not made: " + err.message); }
@@ -178,6 +205,23 @@
             catch (err) { if (stop) break; bar("🌐 a product's picture was not made: " + err.message); }
           }
         }
+        // 2.853.0 (Tim: "add a hero video"): 🎬 a 5 s film for Home's hero with the prompt docker's video style - from the hero
+        // photo (its first frame) when there is one; the photo becomes the film's poster, the film plays muted and looping
+        if (a.video && !stop) {
+          const hero = lays[0].els.find((x) => x.t === "picture");
+          if (hero) {
+            try {
+              bar("🎬 the hero film (5 s) with the prompt docker's video style…");
+              const url = await film(plan.video || hero.prompt, heroUrl, 5);
+              if (url) {
+                assets.push({ name: "hero.mp4", b64: await b64Of(url) });
+                if (!heroL) { if (E.pages.count() > 1) E.pages.go(0); const im = await posterOf(url); const hb = boxes.find((b) => b.i === 0 && b.e === hero), at = hb ? S.layers.indexOf(hb.L) : -1; if (at >= 0) S.layers.splice(at, 1); heroL = putPicture(im, hero); }
+                heroL.webVideo = "hero.mp4"; heroL.name = "🎬 " + heroL.name.replace(/^🖼 /, "");
+                E.refresh(); E.renderLayersPanel(); made++;
+              }
+            } catch (err) { bar("🎬 the hero film was not made: " + err.message); }
+          }
+        }
         const f = plan.features, stack = stackOf(f);
         const site = { name, title: plan.title, stack, lang: (doc.documentElement.lang || "en").slice(0, 5), ai: a.ai !== false, admin: !!(f.shop || f.booking), shop: !!f.shop, open: true };
         E.webAi.last = { plan, site, products, assets };
@@ -186,18 +230,18 @@
         if (a.build === false || !E.site || !E.site.build) return `🌐 "${plan.title}" is laid out (${plan.pages.length} pages${made ? `, ${made} picture(s)` : ""}) - change anything, then 🌐 Build Website${f.shop ? " (tick 🛒 Shop)" : ""}`;
         bar(`🌐 building "${plan.title}" (${stack === "php" ? "PHP + MySQL" : "static"}${f.shop ? " + 🛒 shop" : ""}${f.booking ? " + 📅 booking" : ""})…`);
         await E.site.build(Object.assign({}, site, { seed: f.shop && products.length ? { products } : undefined, assets }));
-        return `🌐 "${plan.title}" is built - ${plan.pages.length} page(s)${made ? `, ${made} picture(s)` : ""}${f.shop ? `, the shop with ${products.length} product(s)` : ""}${f.booking ? ", a booking calendar" : ""} · change any page and 🌐 Build Website again`;
+        return `🌐 "${plan.title}" is built - ${plan.pages.length} page(s)${made ? `, ${made} picture(s)` : ""}${heroL && heroL.webVideo ? ", the 🎬 hero film" : ""}${f.shop ? `, the shop with ${products.length} product(s) (File ▸ 🛒 Product Pictures… to ✏ change their pictures)` : ""}${f.booking ? ", a booking calendar" : ""} · change any page and 🌐 Build Website again`;
       } finally { busy = false; }
     }
     function dialog(ask0) {
       const ask = ask0 || "", ft = featuresOf(ask), pics = store.get("webai.pics", true) !== false, ai = store.get("webai.ai", true) !== false, bld = store.get("webai.build", true) !== false;
       E.ui.dialog("🌐 Build Me a Website", `<div class="kxrow"><textarea id="pwaAsk" rows="6" style="flex:1" placeholder="What the business is and what the site should do - its name, what it sells or offers, prices, opening hours, phone / email / address. e.g. A website for Rosie's Bakery in Fremantle: sourdough, pastries and celebration cakes, order cakes online, open 7am-3pm Tue-Sun, 0412 345 678">${esc(ask)}</textarea></div>
         <div class="kxrow" style="flex-wrap:wrap;gap:4px 14px"><label><input type="checkbox" id="pwaShop"${ft.shop ? " checked" : ""}> 🛒 Shop (products, cart, checkout)</label><label><input type="checkbox" id="pwaBook"${ft.booking ? " checked" : ""}> 📅 Booking calendar</label><label><input type="checkbox" id="pwaContact"${ft.contact ? " checked" : ""}> ✉ Contact form</label></div>
-        <div class="kxrow" style="flex-wrap:wrap;gap:4px 14px"><label><input type="checkbox" id="pwaPics"${pics ? " checked" : ""}> 🖼 Pictures - the prompt docker's image style</label><label><input type="checkbox" id="pwaAi"${ai ? " checked" : ""}> ✨ The AI makes each page responsive</label><label><input type="checkbox" id="pwaBuild"${bld ? " checked" : ""}> ⚡ Build the site when the pictures are in</label></div>
+        <div class="kxrow" style="flex-wrap:wrap;gap:4px 14px"><label><input type="checkbox" id="pwaPics"${pics ? " checked" : ""}> 🖼 Pictures - the prompt docker's image style</label><label title="A 5-second film for the Home page's hero (from its photo), playing muted and looping - with the prompt docker's video style"><input type="checkbox" id="pwaVideo"${store.get("webai.video", false) ? " checked" : ""}> 🎬 Hero video - the prompt docker's video style</label><label><input type="checkbox" id="pwaAi"${ai ? " checked" : ""}> ✨ The AI makes each page responsive</label><label><input type="checkbox" id="pwaBuild"${bld ? " checked" : ""}> ⚡ Build the site when the pictures are in</label></div>
         <div style="color:var(--pc-dim);margin-top:6px">The prompt docker's LLM plans the pages, words and colours (and the shop's products / the booking services); bitGen lays every page out as layers you can change, makes the pictures one at a time and builds the site - PHP + MySQL when it sells, takes bookings or has a contact form (with its 🔐 admin area), else plain HTML.</div>`, (d) => {
         const v = (id) => d.querySelector("#" + id);
-        store.set("webai.pics", v("pwaPics").checked); store.set("webai.ai", v("pwaAi").checked); store.set("webai.build", v("pwaBuild").checked);
-        build({ ask: v("pwaAsk").value, shop: v("pwaShop").checked, booking: v("pwaBook").checked, contact: v("pwaContact").checked, pictures: v("pwaPics").checked, ai: v("pwaAi").checked, build: v("pwaBuild").checked })
+        store.set("webai.pics", v("pwaPics").checked); store.set("webai.video", v("pwaVideo").checked); store.set("webai.ai", v("pwaAi").checked); store.set("webai.build", v("pwaBuild").checked);
+        build({ ask: v("pwaAsk").value, shop: v("pwaShop").checked, booking: v("pwaBook").checked, contact: v("pwaContact").checked, pictures: v("pwaPics").checked, video: v("pwaVideo").checked, ai: v("pwaAi").checked, build: v("pwaBuild").checked })
           .then((m) => bar(m)).catch((e) => bar("🌐 " + e.message));
         return true;
       }, { okLabel: "🌐 Build it", wide: true, init: (d) => {
@@ -207,8 +251,101 @@
         win.setTimeout(() => t.focus(), 0);
       } });
     }
+    /* ---- 2.853.0 (Tim: "a step to edit product pictures afterwards with Qwen"): 🛒 Product Pictures - each product of the
+       website's shop with its picture: ✏ Edit (the words -> the edit model, Qwen Image Edit picked first), the result shown
+       beside the old one -> ✔ Use it (the site's picture replaced) / ✕ Keep the old one; 🖼 Open in the editor; 📁 Replace
+       from this computer; 🌐 Build again puts them in the site */
+    const siteNow = () => { try { return (JSON.parse(store.get("site.last", "{}")) || {}).name || ""; } catch (e) { return ""; } };
+    async function editStyles() { try { const j = await (await win.fetch("/api/aiedit/engines")).json(); return (j.edit || []).map((x) => ({ id: x.id, name: x.name || x.id })); } catch (e) { return []; } }
+    const pickQwen = (list, kept) => (list.find((x) => x.id === kept) || list.find((x) => /qwen/i.test(x.name + " " + x.id)) || list[0] || {}).id || "";
+    async function editPicture(srcUrl, prompt, style) {
+      const blob = await (await win.fetch(srcUrl)).blob(), bmp = await win.createImageBitmap(blob);
+      const j = await E.api.aiedit({ crop: blob, mode: "edit", prompt, style_id: style, whole: 1, count: 1, strength: 100, width: bmp.width, height: bmp.height }, say);
+      if (!j || !j.jobs || !j.jobs[0]) throw new Error("the edit was not queued");
+      for (;;) {
+        await sleep(1500);
+        const jr = await win.fetch("/api/jobs/" + encodeURIComponent(j.jobs[0].id)), jj = await jr.json();
+        if (jj.status === "done") { const n = (jj.outputs && jj.outputs[0]) || jj.output; if (!n) throw new Error("the edit made no picture"); return "/outputs/" + String(n).split("/").map(encodeURIComponent).join("/"); }
+        if (jj.status === "failed" || jj.status === "cancelled" || !jr.ok) throw new Error("the edit " + (jj.status || "went away"));
+      }
+    }
+    async function productPictures(name0) {
+      const name = name0 || siteNow(); if (!name) return say("build a website with a shop first (🌐 Build Me a Website)");
+      let list = [];
+      try { const r = await win.fetch("/api/sites/products?name=" + encodeURIComponent(name)), j = await r.json(); if (!r.ok) throw new Error(j.error || "HTTP " + r.status); list = j.products || []; } catch (e) { return say("🛒 " + e.message); }
+      if (!list.length) return say(`🛒 "${name}" has no products planned with it (🌐 Build Me a Website with 🛒 Shop makes them)`);
+      const styles = await editStyles(), st0 = pickQwen(styles, store.get("webai.editStyle", ""));
+      const src = (p) => `/api/sites/asset?name=${encodeURIComponent(name)}&file=${encodeURIComponent(p.image)}&v=${Date.now()}`;
+      const row = (p, i) => `<div class="pwp-r" data-i="${i}"><div class="pwp-im">${p.has ? `<img src="${src(p)}" alt="">` : '<span>no picture</span>'}</div><div class="pwp-new"></div>
+        <div class="pwp-c"><b>${esc(p.name)}</b><input class="pwp-t" placeholder="e.g. on a white background, softer light, add a sprig of rosemary" maxlength="300">
+        <div class="kxrow" style="gap:4px;flex-wrap:wrap"><button type="button" class="ghost pwp-e"${p.has ? "" : " disabled"}>✏ Edit</button><button type="button" class="ghost pwp-ok" style="display:none">✔ Use it</button><button type="button" class="ghost pwp-no" style="display:none">✕ Keep the old one</button>
+        <button type="button" class="ghost pwp-o"${p.has ? "" : " disabled"} title="Open it in the image editor - 🛒 Save to the Product saves it back">🖼 Open</button><button type="button" class="ghost pwp-f" title="A picture from this computer">📁 Replace…</button></div><span class="pwp-m"></span></div></div>`;
+      E.ui.dialog("🛒 Product Pictures - " + name, `<div class="kxrow"><span>Edit with</span><select id="pwpStyle" style="flex:1">${styles.map((x) => `<option value="${esc(x.id)}"${x.id === st0 ? " selected" : ""}>${esc(x.name)}</option>`).join("") || '<option value="">- no edit model installed -</option>'}</select></div>
+        <div class="pwp-l">${list.map(row).join("")}</div><input type="file" id="pwpFile" accept="image/png,image/jpeg,image/webp" style="display:none">
+        <div style="color:var(--pc-dim);margin-top:6px">Each change goes into the website's pictures - 🌐 Build again puts them in the site (and its shop).</div>`, () => true, { okLabel: "Close", wide: true,
+        extra: '<button type="button" class="ghost" id="pwpBuild">🌐 Build again</button>', init: (d) => {
+          d.classList.add("pwpDlg");
+          const stSel = d.querySelector("#pwpStyle"); stSel.onchange = () => store.set("webai.editStyle", stSel.value);
+          const put = async (p, b64, ext) => api("/api/sites/product-picture", { name, slug: p.slug, b64, ext });
+          let fileFor = null;
+          d.querySelector("#pwpFile").onchange = async (ev) => {
+            const fl = ev.target.files && ev.target.files[0], i = fileFor; ev.target.value = ""; if (!fl || i == null) return;
+            const r = d.querySelector(`.pwp-r[data-i="${i}"]`), p = list[i], m = r.querySelector(".pwp-m");
+            try { const b64 = await new Promise((ok, no) => { const fr = new win.FileReader(); fr.onload = () => ok(String(fr.result).split(",")[1]); fr.onerror = no; fr.readAsDataURL(fl); }); const o = await put(p, b64, (fl.name.split(".").pop() || "png").toLowerCase()); p.image = o.image; p.has = true;
+              r.querySelector(".pwp-im").innerHTML = `<img src="${src(p)}" alt="">`; r.querySelector(".pwp-e").disabled = false; r.querySelector(".pwp-o").disabled = false; m.textContent = "✓ replaced"; }
+            catch (e) { m.textContent = "✗ " + e.message; }
+          };
+          d.querySelectorAll(".pwp-r").forEach((r) => {
+            const i = +r.dataset.i, p = list[i], m = r.querySelector(".pwp-m"); let made = null;
+            r.querySelector(".pwp-t").addEventListener("keydown", (e) => e.stopPropagation());
+            r.querySelector(".pwp-e").onclick = async () => {
+              const t = r.querySelector(".pwp-t").value.trim(); if (!t) { m.textContent = "say what to change first"; return; }
+              if (!stSel.value) { m.textContent = "no edit model installed (Settings ▸ Image)"; return; }
+              m.textContent = "✏ editing…"; r.querySelector(".pwp-e").disabled = true;
+              try { made = await editPicture(src(p), t, stSel.value); r.querySelector(".pwp-new").innerHTML = `<img src="${made}" alt="">`; m.textContent = "the new one is beside the old one";
+                r.querySelector(".pwp-ok").style.display = ""; r.querySelector(".pwp-no").style.display = ""; }
+              catch (e) { m.textContent = "✗ " + e.message; }
+              r.querySelector(".pwp-e").disabled = false;
+            };
+            r.querySelector(".pwp-ok").onclick = async () => {
+              if (!made) return;
+              try { const o = await put(p, await b64Of(made), "png"); p.image = o.image; r.querySelector(".pwp-im").innerHTML = `<img src="${src(p)}" alt="">`; r.querySelector(".pwp-new").innerHTML = ""; made = null; m.textContent = "✓ in the website's pictures";
+                r.querySelector(".pwp-ok").style.display = "none"; r.querySelector(".pwp-no").style.display = "none"; if (root.H3TestEvent) { try { root.H3TestEvent("webai_prodpic", p.slug); } catch (e) { /* the 🧪 list */ } } }
+              catch (e) { m.textContent = "✗ " + e.message; }
+            };
+            r.querySelector(".pwp-no").onclick = () => { made = null; r.querySelector(".pwp-new").innerHTML = ""; r.querySelector(".pwp-ok").style.display = "none"; r.querySelector(".pwp-no").style.display = "none"; m.textContent = "kept"; };
+            r.querySelector(".pwp-f").onclick = () => { fileFor = i; d.querySelector("#pwpFile").click(); };
+            r.querySelector(".pwp-o").onclick = async () => {
+              try { const im = await loadImg(src(p)); E.openDoc(im.naturalWidth, im.naturalHeight, p.image, (g) => g.drawImage(im, 0, 0)); openFor = { name, p }; say(`🖼 ${p.name}'s picture is open - change it, then File ▸ 🛒 Save to the Product`); }
+              catch (e) { m.textContent = "✗ " + e.message; }
+            };
+          });
+          d.querySelector("#pwpBuild").onclick = async () => {
+            if (!E.site || !E.site.build) return say("the website builder is not loaded");
+            let last = {}; try { last = JSON.parse(store.get("site.last", "{}")) || {}; } catch (e) { /* none */ }
+            say("🌐 building " + name + " again…");
+            try { const j = await api("/api/sites/build", { name, ai: last.ai !== false }); say(`🌐 "${name}" built again - the shop's pictures are in`); if (j.preview && win.open) win.open(j.preview, "_blank"); }
+            catch (e) { say("🌐 " + e.message); }
+          };
+        } });
+    }
+    let openFor = null;
+    async function saveToProduct() {
+      if (!openFor || !S.w) return say("open a product's picture first (File ▸ 🛒 Product Pictures… ▸ 🖼 Open)");
+      const c = E.flatten ? E.flatten() : null; if (!c) return say("nothing to save");
+      const b64 = c.toDataURL("image/png").split(",")[1];
+      try { await api("/api/sites/product-picture", { name: openFor.name, slug: openFor.p.slug, b64, ext: "png" }); say(`🛒 ${openFor.p.name}'s picture saved to "${openFor.name}" - 🌐 Build again puts it in the site`); }
+      catch (e) { say("🛒 " + e.message); }
+    }
+    const pcss = doc.createElement("style");
+    pcss.textContent = ".kxdlg.pwpDlg{width:760px;max-width:96vw}.pwp-l{max-height:58vh;overflow:auto;display:flex;flex-direction:column;gap:8px}.pwp-r{display:grid;grid-template-columns:110px auto 1fr;gap:8px;align-items:start;border-bottom:1px solid var(--pc-line);padding-bottom:8px}"
+      + ".pwp-im,.pwp-new{width:110px;min-height:20px}.pwp-new:empty{display:none}.pwp-im img,.pwp-new img{width:110px;height:110px;object-fit:cover;border-radius:6px;display:block}.pwp-im span{color:var(--pc-dim);font-size:11px}"
+      + ".pwp-c{display:flex;flex-direction:column;gap:4px;min-width:0}.pwp-t{width:100%}.pwp-m{color:var(--pc-dim);font-size:11px}";
+    doc.head.appendChild(pcss);
     E.ui.addCmd("file.webai", "🌐 Build Me a Website…", "", () => dialog(), {}, ["File", "file.createai"]);
     E.ui.addCmd("web.stopai", "■ Stop the Website Builder", "", () => { stop = true; bar("🌐 stopping after this picture…"); }, { enabled: () => busy }, ["File", "file.webai"]);
+    E.ui.addCmd("file.prodpics", "🛒 Product Pictures…", "", () => productPictures(), {}, ["File", "web.stopai"]);
+    E.ui.addCmd("file.prodsave", "🛒 Save to the Product", "", () => saveToProduct(), { enabled: () => !!openFor && !!S.w }, ["File", "file.prodpics"]);
     // the prompt docker: "build me a website for my bakery …" opens the box with the words (nothing runs unasked)
     async function route(text) {
       if (!isAsk(text)) return null;
@@ -216,7 +353,7 @@
       dialog(String(text)); return "🌐 the Build Me a Website box is open with your words - tick what the site needs and press 🌐 Build it";
     }
     root.H3ChatRoutes = [route].concat(root.H3ChatRoutes || []);
-    E.webAi = { dialog, build, picture, stop: () => { stop = true; }, busy: () => busy, last: null };
+    E.webAi = { dialog, build, picture, film, productPictures, saveToProduct, editPicture, stop: () => { stop = true; }, busy: () => busy, last: null };
   }
   const PCWebAi = Object.assign({ install }, pure);
   if (root && root.document) root.PCWebAi = PCWebAi;

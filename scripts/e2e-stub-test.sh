@@ -14419,6 +14419,13 @@ node scripts/test-852.js > /tmp/t852.log 2>&1 \
 H3_URL=http://127.0.0.1:8311/ node scripts/test-ui852-ui.js > /tmp/ui852.log 2>&1 \
   && ok "2.852.0 browser test: the prompt docker's ask -> the box, 4 pages laid out, pictures, the booking calendar, the site built with the shop's products + the contact form" \
   || { bad "2.852.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui852.log | head -12; }
+# ---- 2.853.0 (the hero video + 🛒 Product Pictures edited with Qwen)
+node scripts/test-853.js > /tmp/t853.log 2>&1 \
+  && ok "2.853.0 🎬 the hero video + 🛒 Product Pictures: the plan's film, the film + poster on the site, the products' pictures put in, the wiring" \
+  || { bad "2.853.0 units"; grep -a "^FAIL" -A1 /tmp/t853.log | head -12; }
+H3_URL=http://127.0.0.1:8311/ node scripts/test-ui853-ui.js > /tmp/ui853.log 2>&1 \
+  && ok "2.853.0 browser test: 🎬 the film job from the hero photo, Home plays it, 🛒 Product Pictures ✏ Edit with Qwen -> ✔ Use it -> 🌐 Build again" \
+  || { bad "2.853.0 browser test"; grep -a "^FAIL" -A1 /tmp/ui853.log | head -12; }
 say "======================="
 say "RESULT: $PASS passed, $FAIL failed"
 [ "$FAIL" = "0" ]

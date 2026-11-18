@@ -16320,43 +16320,43 @@
   },
   {
    "s": "Site title",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Built with",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Static HTML / CSS",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "PHP + MySQL",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "The AI makes each page responsive (else bitGen lays it out)",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Admin area (/admin/) + its database myadmin - PHP + MySQL; always with a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Shop - catalogue, cart and checkout (PHP + MySQL; brings the admin area)",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "zip of the last build",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Preview the last build",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "A login page at /admin/ and its own database (myadmin): logins + their history, clients, pets, records, staff, bookings, products, orders, invoices - always there when a page has a 📅 booking calendar",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "s": "Two points",
@@ -18672,31 +18672,99 @@
   },
   {
    "s": "Shop (products, cart, checkout)",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "Booking calendar",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "Contact form",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "Pictures - the prompt docker's image style",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
+  },
+  {
+   "s": "Hero video - the prompt docker's video style",
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "The AI makes each page responsive",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "Build the site when the pictures are in",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
   },
   {
    "s": "The prompt docker's LLM plans the pages, words and colours (and the shop's products / the booking services); bitGen lays every page out as layers you can change, makes the pictures one at a time and builds the site - PHP + MySQL when it sells, takes bookings or has a contact form (with its 🔐 admin area), else plain HTML",
-   "src": "ext/imageeditdock/pcwebai.js:194"
+   "src": "ext/imageeditdock/pcwebai.js:238"
+  },
+  {
+   "s": "Keep the old one",
+   "src": "ext/imageeditdock/pcwebai.js:279"
+  },
+  {
+   "s": "e.g. on a white background, softer light, add a sprig of rosemary",
+   "src": "ext/imageeditdock/pcwebai.js:279"
+  },
+  {
+   "s": "Open it in the image editor - 🛒 Save to the Product saves it back",
+   "src": "ext/imageeditdock/pcwebai.js:279"
+  },
+  {
+   "s": "A picture from this computer",
+   "src": "ext/imageeditdock/pcwebai.js:279"
+  },
+  {
+   "s": "no picture",
+   "src": "ext/imageeditdock/pcwebai.js:279"
+  },
+  {
+   "s": "Edit with",
+   "src": "ext/imageeditdock/pcwebai.js:283"
+  },
+  {
+   "s": "Each change goes into the website's pictures - 🌐 Build again puts them in the site (and its shop)",
+   "src": "ext/imageeditdock/pcwebai.js:283"
+  },
+  {
+   "s": "no edit model installed -",
+   "src": "ext/imageeditdock/pcwebai.js:283"
+  },
+  {
+   "s": "Build again",
+   "src": "ext/imageeditdock/pcwebai.js:286"
+  },
+  {
+   "s": "replaced",
+   "src": "ext/imageeditdock/pcwebai.js:295"
+  },
+  {
+   "s": "say what to change first",
+   "src": "ext/imageeditdock/pcwebai.js:302"
+  },
+  {
+   "s": "no edit model installed (Settings ▸ Image)",
+   "src": "ext/imageeditdock/pcwebai.js:303"
+  },
+  {
+   "s": "editing",
+   "src": "ext/imageeditdock/pcwebai.js:304"
+  },
+  {
+   "s": "the new one is beside the old one",
+   "src": "ext/imageeditdock/pcwebai.js:305"
+  },
+  {
+   "s": "in the website's pictures",
+   "src": "ext/imageeditdock/pcwebai.js:312"
+  },
+  {
+   "s": "kept",
+   "src": "ext/imageeditdock/pcwebai.js:316"
   },
   {
    "s": "One box at a time",
@@ -25927,10 +25995,6 @@
    "src": "ext/videodock/storyboard.js:40"
   },
   {
-   "s": "no picture",
-   "src": "ext/videodock/storyboard.js:40"
-  },
-  {
    "s": "make",
    "src": "ext/videodock/storyboard.js:44"
   },
@@ -29302,7 +29366,7 @@
   },
   {
    "p": "{0} page(s) → {1} web page(s); each page's name is its title in the menu. Text layers stay text, WP layers keep their formatting and figures, everything else goes in as a picture",
-   "src": "ext/imageeditdock/pcsite.js:112"
+   "src": "ext/imageeditdock/pcsite.js:114"
   },
   {
    "p": "{0} entities · {1} × {2} {3}",

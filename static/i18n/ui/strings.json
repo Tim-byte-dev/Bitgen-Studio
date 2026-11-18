@@ -1,6 +1,6 @@
 {
  "made": "2026-11-07",
- "count": 6574,
+ "count": 6590,
  "strings": [
   {
    "s": "(no list yet - 🔄)",
@@ -60820,6 +60820,166 @@
    ],
    "where": [
     "image editor - 🌐 Build Me a Website (2.852.0)"
+   ]
+  },
+  {
+   "s": "Hero video - the prompt docker's video style",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Keep the old one",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "e.g. on a white background, softer light, add a sprig of rosemary",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Open it in the image editor - 🛒 Save to the Product saves it back",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "A picture from this computer",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Edit with",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Each change goes into the website's pictures - 🌐 Build again puts them in the site (and its shop)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "no edit model installed -",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "Build again",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "replaced",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "say what to change first",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "no edit model installed (Settings ▸ Image)",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "editing",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "the new one is beside the old one",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "in the website's pictures",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
+   ]
+  },
+  {
+   "s": "kept",
+   "kinds": [
+    "text",
+    "title"
+   ],
+   "where": [
+    "image editor - 🎬 hero video / 🛒 Product Pictures (2.853.0)"
    ]
   }
  ]
